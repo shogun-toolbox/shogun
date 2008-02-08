@@ -323,7 +323,7 @@ def svmocas ():
 	lab=rand(feats_test.get_num_vectors()).round()*2-1
 	labels=Labels(array(lab))
 
-	svm=SVMOcas(C, feats_test, labels)
+	svm=SVMOcas(C, feats_train, labels)
 	svm.set_epsilon(epsilon)
 	svm.parallel.set_num_threads(num_threads)
 	svm.set_bias_enabled(False)

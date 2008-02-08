@@ -55,7 +55,7 @@ void CPerformanceMeasures::init(
 		else if (lab==-1.)
 			all_negatives++;
 		else
-			throw ShogunException("Illegal true_labels, not {-1, 1}!\n");
+			throw ShogunException("Illegal true labels, not purely {-1, 1}!\n");
 	}
 
 	true_labels=true_labels_;
@@ -103,9 +103,11 @@ void CPerformanceMeasures::compute_ROC(DREAL** result, INT* dim, INT *num)
 
 	for (i=0; i<num_labels; i++) {
 		DREAL out=sorted_output[i];
+		//SG_PRINT("out %d: %g, true: %g ", i, out, sorted_true_labels[i]);
 		if (out!=prev) {
 			(*result)[i]=false_positives/all_negatives;
 			(*result)[*dim+i]=true_positives/all_positives;
+			//SG_PRINT("fp_r: %g, tp_r: %g\n", (*result)[i], (*result)[*dim+i]);
 			prev=out;
 		}
 

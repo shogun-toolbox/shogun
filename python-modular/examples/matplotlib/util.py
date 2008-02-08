@@ -1,18 +1,17 @@
 """ Utilities for matplotlib examples """
 
-import sys
-from pylab import get_current_fig_manager
+import pylab
 
 QUITKEY='q'
 
 def quit (event):
 	if event.key==QUITKEY or event.key==QUITKEY.upper():
-		sys.exit(0)
+		pylab.close()
 
 def set_title (title):
 	quitmsg=" (press '"+QUITKEY+"' to quit)"
 	complete=title+quitmsg
-	manager=get_current_fig_manager()
+	manager=pylab.get_current_fig_manager()
 
 	# now we have to wrap the toolkit
 	if hasattr(manager, 'window'):

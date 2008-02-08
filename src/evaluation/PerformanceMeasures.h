@@ -64,7 +64,7 @@ class CPerformanceMeasures : public CSGObject
 		 *
 		 * @return true labels as seen in real world
 		 */
-		inline CLabels* get_true_labels() { return true_labels; }
+		inline CLabels* get_true_labels() const { return true_labels; }
 
 		/** set output labels/hypothesis from a classifier
 		 *
@@ -82,7 +82,7 @@ class CPerformanceMeasures : public CSGObject
 		 *
 		 * @return output labels
 		 */
-		inline CLabels* get_output() { return output; }
+		inline CLabels* get_output() const { return output; }
 
 		/** compute ROC for selected pair of labels
 		 *
