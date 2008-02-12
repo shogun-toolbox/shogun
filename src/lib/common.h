@@ -175,6 +175,7 @@ enum EKernelType
 	K_MINDYGRAM = 210,
 	K_DISTANCE = 220,
 	K_LOCALALIGNMENT= 230,
+	K_PYRAMIDCHI2= 240,
 };
 
 enum EClassifierType
