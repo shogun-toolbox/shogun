@@ -44,29 +44,53 @@ def classify (true_labels):
 # performance measures
 ###########################################################################
 
-def roc():
+def roc(numrows, numcols, fignum):
+	pylab.subplot(numrows, numcols, fignum)
 	num_points=500
 
 	true_labels=Labels(numpy.concatenate(
 		(-numpy.ones(num_points/2), numpy.ones(num_points/2))))
 	output=Labels(classify(true_labels))
-
 	pm=PerformanceMeasures(true_labels, output)
-	points=pm.compute_ROC()
-	points=numpy.array(points).T # for pylab.plot
 
-	pylab.plot(points[0], points[1], 'b.', linewidth=2.)
-	pylab.plot([0, 1], [0, 1], 'r-s')
+	points=pm.get_ROC()
+	points=numpy.array(points).T # for pylab.plot
+	pylab.plot(points[0], points[1], 'b-', label='ROC')
+
+	acc=pm.get_accROC()
+	accrange=numpy.linspace(0, 1, len(acc))
+	pylab.plot(accrange, acc, 'g-', label='accuracy ROC')
+
+	# not useful here, hence not plotted
+	#pm.get_errROC()
+
+	auROC=pm.get_auROC()
+	aoROC=pm.get_aoROC()
+	text="auROC = %g\naoROC = %f"%(auROC, aoROC)
+	pylab.text(.7, .3, text, bbox=dict(fc='white', ec='black', pad=10.))
+
+	pylab.plot([0, 1], [0, 1], 'r-', label='random guess')
 	pylab.axis([0, 1, 0, 1])
 	ticks=numpy.arange(0., 1., .1, dtype=numpy.float64)
 	pylab.xticks(ticks)
 	pylab.yticks(ticks)
 	pylab.title('ROC of SVMOcas with random examples/true labels')
-	pylab.xlabel('false positive rate')
-	pylab.ylabel('true positive rate')
+	pylab.xlabel('1 - specificity (false positive rate)')
+	pylab.ylabel('sensitivity (true positive rate)')
+	pylab.legend(loc='lower right')
 
-	pylab.connect('key_press_event', quit)
-	pylab.show()
+def prc(numrows, numcols, fignum):
+	pylab.subplot(numrows, numcols, fignum)
+
+	pylab.plot([0, 1], [0, 1], 'r-', label='random guess')
+	pylab.axis([0, 1, 0, 1])
+	ticks=numpy.arange(0., 1., .1, dtype=numpy.float64)
+	pylab.xticks(ticks)
+	pylab.yticks(ticks)
+	pylab.title('PRC of SVMOcas with random examples/true labels')
+	pylab.xlabel('recall (true positive rate)')
+	pylab.ylabel('precision (false positive rate)')
+	pylab.legend(loc='lower right')
 
 ###########################################################################
 # call functions
@@ -76,4 +100,10 @@ if __name__=='__main__':
 	# fixate 'random' values
 	numpy.random.seed(42)
 
-	roc()
+	roc(1, 2, 1)
+	prc(1, 2, 2)
+
+	pylab.connect('key_press_event', quit)
+	pylab.show()
+
+

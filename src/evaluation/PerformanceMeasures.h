@@ -84,35 +84,90 @@ class CPerformanceMeasures : public CSGObject
 		 */
 		inline CLabels* get_output() const { return output; }
 
-		/** compute ROC for selected pair of labels
+		/** get ROC for labels previously given (swig compatible)
+		 * also computes auROC and accROC
+		 * caller has to free
 		 *
 		 * @param result where computed ROC values will be stored
 		 * @param dim number of labels/examples
 		 * @param num number of elements in each result (== 2)
-		 * @throws ShogunException
 		 * @return if computation was successful
 		 */
-		void compute_ROC(DREAL** result, INT* dim, INT* num);
+		void get_ROC(DREAL** result, INT* dim, INT* num);
+
+		/** return area under ROC
+		 *
+		 * @return area under ROC
+		 */
+		inline DREAL get_auROC()
+		{
+			if (auROC==0) compute_ROC();
+			return auROC;
+		}
+
+
+		/** return area over ROC
+		 *
+		 * @return area over ROC
+		 */
+		inline DREAL get_aoROC()
+		{
+			if (auROC==0) compute_ROC();
+			return 1.-auROC;
+		}
+
+		/** get classifier's accuracy aligned to ROC (swig compatible)
+		 * caller has to free
+		 *
+		 * @param result where accuracy will be stored
+		 * @param num number of accuracy values
+		 */
+		void get_accROC(DREAL** result, INT* num);
+
+		/** get classifier's error rate aligned to ROC (swig compatible)
+		 *
+		 * @return error rate of classifier
+		 */
+		void get_errROC(DREAL** result, INT* num);
 
 	protected:
 		/** true labels/examples as seen in real world */
 		CLabels* true_labels;
+		/** output labels/hypothesis from a classifier */
+		CLabels* output;
+		/** number of true labels/outputs/accuracies/ROC points */
+		INT num_labels;
+
 		/** number of positive examples in true_labels */
 		INT all_positives;
 		/** number of negative examples in true_labels */
 		INT all_negatives;
-		/** sorted true labels as seen in real world */
-		DREAL* sorted_true_labels;
 
-		/** output labels/hypothesis from a classifier */
-		CLabels* output;
-		/** sorted output labels/hypothesis from a classifier */
-		DREAL* sorted_output;
+		/** 2 dimensional array of ROC points */
+		DREAL* roc;
+
+		/** area under ROC; 1 - area over ROC */
+		DREAL auROC;
+
+		/** accuracy of classifier, aligned to ROC; 1 - error */
+		DREAL* accROC;
 
 	private:
-		/** sort for ROC
-		 * results are stored in descending order in sorted_*
+		/** calculate trapezoid area for auROC
+		 *
+		 * @param x1 x coordinate of point 1
+		 * @param x2 x coordinate of point 2
+		 * @param y1 y coordinate of point 1
+		 * @param y2 y coordinate of point 2
+		 * @return trapezoid area for auROC
 		 */
-		void ROC_sort();
+		DREAL trapezoid_area(INT x1, INT x2, INT y1, INT y2);
+
+		/** compute ROC of given labels
+		 *
+		 * @throws ShogunException
+		 */
+		void compute_ROC();
+
 };
 #endif /* __PERFORMANCEMEASURES_H_ */

@@ -14,49 +14,74 @@
 #include "lib/Mathematics.h"
 
 CPerformanceMeasures::CPerformanceMeasures()
-: CSGObject(), true_labels(NULL), all_positives(0), all_negatives(0),
-	sorted_true_labels(NULL), output(NULL), sorted_output(NULL)
+: CSGObject(), true_labels(NULL), output(NULL), roc(NULL), accROC(NULL)
 {
+	try {
+		init(NULL, NULL);
+	} catch (ShogunException(e)) {}
 }
 
 CPerformanceMeasures::CPerformanceMeasures(
 	CLabels* true_labels_, CLabels* output_)
-: CSGObject(), all_positives(0), all_negatives(0),
-	sorted_true_labels(NULL), sorted_output(NULL)
+: CSGObject(), true_labels(NULL), output(NULL), roc(NULL), accROC(NULL)
 {
 	init(true_labels_, output_);
 }
 
 CPerformanceMeasures::~CPerformanceMeasures()
 {
-	if (true_labels)
-		SG_UNREF(true_labels);
-	if (sorted_true_labels)
-		delete sorted_true_labels;
-	if (output)
-		SG_UNREF(output);
-	if (sorted_output)
-		delete sorted_output;
+	if (true_labels) SG_UNREF(true_labels);
+	if (output) SG_UNREF(output);
+	if (roc) delete roc;
+	if (accROC) delete accROC;
 }
 
-void CPerformanceMeasures::init(
-	CLabels* true_labels_, CLabels* output_)
+void CPerformanceMeasures::init(CLabels* true_labels_, CLabels* output_)
 {
-	ASSERT(true_labels_);
-	ASSERT(output_);
-	INT num_labels=true_labels_->get_num_labels();
-	if (num_labels!=output_->get_num_labels())
-		throw ShogunException("Number of labels in true_labels and output differ!\n");
+	all_positives=0;
+	all_negatives=0;
+	auROC=0;
+	accROC=0;
+
+	if (!true_labels_)
+		throw ShogunException("No true labels given!\n");
+	if (!output_)
+		throw ShogunException("No output given!\n");
+
+	DREAL* labels=true_labels_->get_labels(num_labels);
+	if (num_labels!=output_->get_num_labels()) {
+		delete labels;
+		throw ShogunException("Number of true labels and output labels differ!\n");
+	}
+
+	if (roc) {
+		delete roc;
+		roc=NULL;
+	}
+	if (accROC) {
+		delete accROC;
+		accROC=NULL;
+	}
+	if (true_labels) {
+		SG_UNREF(true_labels);
+		true_labels=NULL;
+	}
+	if (output) {
+		SG_UNREF(output);
+		output=NULL;
+	}
 
 	for (INT i=0; i<num_labels; i++) {
-		DREAL lab=true_labels_->get_label(i);
-		if (lab==1.)
+		if (labels[i]==1.)
 			all_positives++;
-		else if (lab==-1.)
+		else if (labels[i]==-1.)
 			all_negatives++;
-		else
+		else {
+			delete labels;
 			throw ShogunException("Illegal true labels, not purely {-1, 1}!\n");
+		}
 	}
+	delete labels;
 
 	true_labels=true_labels_;
 	SG_REF(true_labels);
@@ -64,29 +89,98 @@ void CPerformanceMeasures::init(
 	SG_REF(output);
 }
 
-void CPerformanceMeasures::ROC_sort()
+
+DREAL CPerformanceMeasures::trapezoid_area(INT x1, INT x2, INT y1, INT y2)
 {
-	INT num_labels;
-
-	if (sorted_output)
-		delete sorted_output;
-	sorted_output=output->get_labels(num_labels);
-
-	if (sorted_true_labels)
-		delete sorted_true_labels;
-	sorted_true_labels=true_labels->get_labels(num_labels);
-
-	CMath::qsort_backward_index(sorted_output, sorted_true_labels, num_labels);
+	INT base=CMath::abs(x1-x2);
+	DREAL height_avg=(y1+y2)/2.;
+	return base*height_avg;
 }
 
-void CPerformanceMeasures::compute_ROC(DREAL** result, INT* dim, INT *num)
+void CPerformanceMeasures::compute_ROC()
 {
+	if (!true_labels)
+		throw ShogunException("No true labels given!\n");
+	if (!output)
+		throw ShogunException("No output data given!\n");
 	if (all_positives<1)
 		throw ShogunException("Need at least one positive example in true_labels!\n");
 	if (all_negatives<1)
 		throw ShogunException("Need at least one negative example in true_labels!\n");
 
-	INT num_labels=true_labels->get_num_labels();
+	// num_labels+1 due to point 1,1
+	INT num_roc=num_labels+1;
+	if (roc) delete roc;
+	size_t sz=sizeof(DREAL)*num_roc*2;
+	roc=new DREAL[sz];
+	if (!roc)
+		throw ShogunException("Could not allocate memory for ROC result!\n");
+
+	if (accROC) delete accROC;
+	sz=sizeof(DREAL)*num_labels;
+	accROC=new DREAL[sz];
+	if (!accROC)
+		throw ShogunException("Could not allocate memory for accROC!\n");
+
+	// sorting
+	DREAL* sorted_output=output->get_labels(num_labels);
+	DREAL* sorted_true_labels=true_labels->get_labels(num_labels);
+	CMath::qsort_backward_index(sorted_output, sorted_true_labels, num_labels);
+
+	// various states
+	INT fp=0;
+	INT fn=all_positives;
+	INT tp=0;
+	INT tn=all_negatives;
+	INT fp_prev=0;
+	INT tp_prev=0;
+	DREAL out_prev=CMath::ALMOST_NEG_INFTY;
+
+	// area under ROC
+	auROC=0;
+
+	INT i;
+	for (i=0; i<num_labels; i++) {
+		DREAL out=sorted_output[i];
+		if (out!=out_prev) {
+			roc[i]=(DREAL) fp/all_negatives;
+			roc[num_roc+i]=(DREAL) tp/all_positives;
+			auROC+=trapezoid_area(fp, fp_prev, tp, tp_prev);
+			accROC[i]=(DREAL) (tp+tn)/(all_positives+all_negatives);
+
+			fp_prev=fp;
+			tp_prev=tp;
+			out_prev=out;
+		}
+
+		if (sorted_true_labels[i]==1) {
+			tp++;
+			fn--; // fn + tp == all positives
+		} else {
+			fp++;
+			tn--; // tn + fp == all negatives
+		}
+	}
+
+	// calculate for 1,1
+	roc[i]=(DREAL) fp/all_negatives;
+	roc[num_roc+i]=(DREAL) tp/all_positives;
+	/* paper says:
+	 * auROC+=trapezoid_area(1, fp_prev, 1, tp_prev)
+	 * wrong? was meant for calculating with rates?
+	 */
+	auROC+=trapezoid_area(fp, fp_prev, tp, tp_prev);
+	// normalise: geometric means
+	auROC/=all_positives*all_negatives;
+
+	delete sorted_true_labels;
+	delete sorted_output;
+}
+
+void CPerformanceMeasures::get_ROC(DREAL** result, INT *dim, INT *num)
+{
+	if (!roc) compute_ROC();
+
 	*dim=num_labels+1;
 	*num=2;
 	size_t sz=sizeof(DREAL)*(*dim)*(*num);
@@ -94,33 +188,73 @@ void CPerformanceMeasures::compute_ROC(DREAL** result, INT* dim, INT *num)
 	if (!result)
 		throw ShogunException("Could not allocate memory for ROC result!\n");
 
-	ROC_sort();
-
-	DREAL false_positives=0.;
-	DREAL true_positives=0.;
-	INT i=0;
-	DREAL prev=CMath::ALMOST_NEG_INFTY;
-
-	for (i=0; i<num_labels; i++) {
-		DREAL out=sorted_output[i];
-		//SG_PRINT("out %d: %g, true: %g ", i, out, sorted_true_labels[i]);
-		if (out!=prev) {
-			(*result)[i]=false_positives/all_negatives;
-			(*result)[*dim+i]=true_positives/all_positives;
-			//SG_PRINT("fp_r: %g, tp_r: %g\n", (*result)[i], (*result)[*dim+i]);
-			prev=out;
-		}
-
-		if (sorted_true_labels[i]==1)
-			true_positives++;
-		else
-			false_positives++;
-	}
-	(*result)[i]=false_positives/all_negatives;
-	(*result)[*dim+i]=true_positives/all_positives;
-
-	/*
-	delete sorted_output; sorted_output=NULL;
-	delete sorted_true_labels; sorted_true_labels=NULL;
-	*/
+	memcpy(*result, roc, sz);
 }
+
+void CPerformanceMeasures::get_accROC(DREAL** result, INT *num)
+{
+	if (!accROC) compute_ROC();
+
+	*num=num_labels;
+	size_t sz=sizeof(DREAL)*num_labels;
+	*result=(DREAL*) malloc(sz);
+	if (!result)
+		throw ShogunException("Could not allocate memory for accuracy!\n");
+
+	memcpy(*result, accROC, sz);
+}
+
+void CPerformanceMeasures::get_errROC(DREAL** result, INT *num)
+{
+	if (!accROC) compute_ROC();
+
+	*num=num_labels;
+	size_t sz=sizeof(DREAL)*num_labels;
+	*result=(DREAL*) malloc(sz);
+	if (!result)
+		throw ShogunException("Could not allocate memory for error rate!\n");
+
+	memcpy(*result, accROC, sz);
+
+	for (INT i=0; i<num_labels; i++) (*result)[i]=1.-(*result)[i];
+}
+
+/*
+void CPerformanceMeasures::compute_accuracy()
+{
+	if (!true_labels)
+		throw ShogunException("No true labels given!\n");
+	if (!output)
+		throw ShogunException("No output data given!\n");
+	if (all_positives+all_negatives<1)
+		throw ShogunException("The number of positive + negative true labels is less than 1 (which should never happen)!\n");
+
+	INT tp=0;
+	INT tn=0;
+	DREAL* labels=true_labels->get_labels(num_labels);
+	DREAL* out=output->get_labels(num_labels);
+
+	size_t sz=sizeof(DREAL)*num_labels;
+	if (accuracy) delete accuracy;
+	accuracy=new DREAL[sz];
+	if (!accuracy)
+		throw ShogunException("Could not allocate memory for accuracy!\n");
+
+	for (INT i=0; i<num_labels; i++) {
+		DREAL threshold=out[i];
+		for (INT j=0; j<num_labels; j++) {
+			if (out[j]>=threshold && labels[j]==1) {
+				tp++;
+			} else if (out[j]<threshold && labels[j]==-1) {
+				tn++;
+			}
+		}
+		accuracy[i]=(DREAL) (tp+tn)/(all_positives+all_negatives);
+		tp=tn=0;
+	}
+
+	delete labels;
+	delete out;
+}
+*/
+
