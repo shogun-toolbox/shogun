@@ -1,3 +1,13 @@
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Written (W) 2008 Alexander Binder
+ * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ */
+
 #ifndef PYRAMIDCHI2_H_
 #define PYRAMIDCHI2_H_
 
@@ -5,7 +15,6 @@
 #include "kernel/SimpleKernel.h"
 #include "features/Features.h"
 #include "features/RealFeatures.h"
-
 
 //pyramid classifier over Chi2 matched histograms
 //TODO: port to CCombinedKernel (if it is the appropriate) as the pyramid is a weighted linear combination of kernels
@@ -32,21 +41,24 @@ public:
 	virtual bool load_init(FILE* src);
 	virtual bool save_init(FILE* dest);
 
-	// return what type of kernel we are Linear,Polynomial, Gaussian,...
+	/// return what type of kernel we are Linear,Polynomial, Gaussian,...
 	virtual EKernelType get_kernel_type()
 	{
 		//preliminary output
 		return K_PYRAMIDCHI2;
 	}
 
-	// return the name of a kernel
+	/// return the name of a kernel
 	virtual const CHAR* get_name()
 	{
 		return("PyramidoverChi2\0");
 	}
 
-	void setstandardweights(); // sets weights
-	bool sanitycheck_weak(); // performs a weak check, does not test for correct feature length
+	/// sets standard weights
+	void setstandardweights(); 
+
+	/// performs a weak check, does not test for correct feature length
+	bool sanitycheck_weak(); 
 
 protected:
 	/// compute kernel function for features a and b
@@ -57,10 +69,14 @@ protected:
 protected:
 	DREAL width;
 	INT* pyramidlevels;
-	INT numlevels; // length of vector pyramidlevels
+
+	/// length of vector pyramidlevels
+	INT numlevels; 
 	INT numbinsinhistogram;
 	DREAL* weights;
-	INT numweights; // length of vector weights
+
+	/// length of vector weights
+	INT numweights; 
 	//bool sanitycheckbit;
 };
 

@@ -1,40 +1,38 @@
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Written (W) 2008 Alexander Binder
+ * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ */
+
 #include "PyramidChi2.h"
 #include "lib/common.h"
 #include "kernel/GaussianKernel.h"
 #include "features/Features.h"
 #include "features/RealFeatures.h"
 #include "lib/io.h"
-#include <iostream>
 #include "lib/ShogunException.h"
 
-CPyramidChi2::CPyramidChi2(INT size, DREAL width2,
-		INT* pyramidlevels2,INT numlevels2,
-		INT  numbinsinhistogram2, DREAL* weights2,INT numweights2) :
-	CSimpleKernel<DREAL>(size), width(width2),pyramidlevels(NULL),numlevels(numlevels2),weights(NULL),numweights(numweights2)
+CPyramidChi2::CPyramidChi2(INT size, DREAL width2, INT* pyramidlevels2,INT
+		numlevels2, INT  numbinsinhistogram2, DREAL* weights2, INT numweights2)
+: CSimpleKernel<DREAL>(size), width(width2), pyramidlevels(NULL),
+	numlevels(numlevels2), weights(NULL), numweights(numweights2)
 {
-
 	pyramidlevels=new INT[numlevels];
 	for(INT i=0; i<numlevels;++i )
-	{
 		pyramidlevels[i]=pyramidlevels2[i];
-	}
 	
 	numbinsinhistogram=numbinsinhistogram2;
 	
 	weights=new DREAL[numweights];
 	for(INT i=0; i<numweights;++i )
-	{
 		weights[i]=weights2[i];
-	}
-	//sanitycheckbit=false;
 	
-	if(false==sanitycheck_weak())
-	{
-		throw ShogunException::ShogunException  	("CPyramidChi2::CPyramidChi2(... first constructor): false==sanitycheck_weak() occurred! Someone messed up with initializing the kernel. \0"  	 );
-	}
-	//sanity check here between weights size and pyramidlevels?
-	// throw ShogunException::ShogunException  	(   	const char *   	 str  	 ); if fails?
-
+	if (!sanitycheck_weak())
+		throw ShogunException::ShogunException("CPyramidChi2::CPyramidChi2(... first constructor): false==sanitycheck_weak() occurred! Someone messed up the initializing of the kernel.\0");
 }
 
 void CPyramidChi2::cleanup()
@@ -66,29 +64,17 @@ CPyramidChi2::CPyramidChi2(CRealFeatures* l, CRealFeatures* r, INT size, DREAL w
 {
 	pyramidlevels=new INT[numlevels];
 	for(INT i=0; i<numlevels;++i )
-	{
 		pyramidlevels[i]=pyramidlevels2[i];
-	}
 	
 	numbinsinhistogram=numbinsinhistogram2;
 	
 	weights=new DREAL[numweights];
 	for(INT i=0; i<numweights;++i )
-	{
 		weights[i]=weights2[i];
-	}
 	
-		if(false==sanitycheck_weak())
-	{
-		throw ShogunException::ShogunException  	("CPyramidChi2::CPyramidChi2(... second constructor): false==sanitycheck_weak() occurred! Someone messed up with initializing the kernel.\0"  	 );
-	}
-	//sanitycheckbit=false;
+	if(!sanitycheck_weak())
+		throw ShogunException::ShogunException("CPyramidChi2::CPyramidChi2(... second constructor): false==sanitycheck_weak() occurred! Someone messed up with initializing the kernel.\0");
 
-	//bool initsuccess=init(l, r);
-	// if(false==initsuccess)
-	//{
-	//	throw ShogunException::ShogunException  	("constructor of class pyramidchi: init() returned false \0" );
-	//}
 	init(l, r);
 }
 
@@ -112,34 +98,34 @@ bool CPyramidChi2::sanitycheck_weak()
 {
 	if (numbinsinhistogram<=0)
 	{
-		std::cerr << "bool CPyramidChi2::sanitycheck_weak(): member value inconsistencer: numbinsinhistogram<=0"<<std::endl;
+		SG_ERROR("bool CPyramidChi2::sanitycheck_weak(): member value inconsistencer: numbinsinhistogram<=0");
 		return (false);
 	}
 	
-	if((pyramidlevels!=NULL) &&(numlevels<=0))
+	if ((pyramidlevels!=NULL) && (numlevels<=0))
 	{
-		std::cerr<< "void CPyramidChi2::sanitycheck_weak(): inconsistency found: (pyramidlevels!=NULL) && (numlevels <=0)"<<std::endl;
+		SG_ERROR("void CPyramidChi2::sanitycheck_weak(): inconsistency found: (pyramidlevels!=NULL) && (numlevels <=0)");
 		
 		return(false);
 	}
 	
-	if((pyramidlevels==NULL) &&(numlevels>0))
+	if ((pyramidlevels==NULL) && (numlevels>0))
 	{
-		std::cerr<< "void CPyramidChi2::sanitycheck_weak(): inconsistency found: (pyramidlevels==NULL) && (numlevels>0)"<<std::endl;
+		SG_ERROR("void CPyramidChi2::sanitycheck_weak(): inconsistency found: (pyramidlevels==NULL) && (numlevels>0)");
 		
 		return(false);
 	}
 	
 	if((weights!=NULL) &&(numweights<=0))
 	{
-		std::cerr<< "void CPyramidChi2::sanitycheck_weak(): inconsistency found: (weights!=NULL) && (numweights <=0)"<<std::endl;
+		SG_ERROR("void CPyramidChi2::sanitycheck_weak(): inconsistency found: (weights!=NULL) && (numweights <=0)");
 		
 		return(false);
 	}
 	
-	if((weights==NULL) &&(numweights>0))
+	if ((weights==NULL) && (numweights>0))
 	{
-		std::cerr<< "void CPyramidChi2::sanitycheck_weak(): inconsistency found: (weights==NULL) && (numweights >0)"<<std::endl;
+		SG_ERROR("void CPyramidChi2::sanitycheck_weak(): inconsistency found: (weights==NULL) && (numweights >0)");
 		
 		return(false);
 	}
@@ -148,20 +134,14 @@ bool CPyramidChi2::sanitycheck_weak()
 	INT sum=0;
 	for (INT levelind=0; levelind < numlevels; ++levelind)
 	{
-		sum+=(unsigned long)CMath::pow(4, pyramidlevels[levelind]);
+		sum+=(ULONG) CMath::pow(4, pyramidlevels[levelind]);
 	}
 	
 	if (sum!=numweights )
 	{
-		std::cerr << "bool CPyramidChi2::sanitycheck_weak(): member value error: sum!=numweights "<<std::endl;
+		SG_ERROR("bool CPyramidChi2::sanitycheck_weak(): member value error: sum!=numweights ");
 		return (false);
 	}
-	
-
-	
-
-	
-	
 
 	return (true);
 
@@ -201,9 +181,6 @@ DREAL CPyramidChi2::compute(INT idx_a, INT idx_b)
 	DREAL result=0;
 	INT cursum=0;
 	
-	
-	//long zero=0;
-	
 	for (INT lvlind=0; lvlind< numlevels; ++lvlind)
 	{
 		for (INT histoind=0; histoind< (int)CMath::pow(4, pyramidlevels[lvlind]); ++histoind)
@@ -218,10 +195,6 @@ DREAL CPyramidChi2::compute(INT idx_a, INT idx_b)
 					result+= curweight*(avec[index] - bvec[index])*(avec[index]
 						- bvec[index])/(avec[index] + bvec[index]);
 				}
-				//else
-				//{
-				//	++zero;
-				//}
 			}
 		}
 		cursum+=CMath::pow(4, pyramidlevels[lvlind]);
@@ -229,12 +202,8 @@ DREAL CPyramidChi2::compute(INT idx_a, INT idx_b)
 	result=exp(-result/(DREAL)width);
 	
 	
-	((CRealFeatures*) lhs)->free_feature_vector(avec, idx_a,
-			afree);
-	((CRealFeatures*) rhs)->free_feature_vector(bvec, idx_b,
-			bfree);
-	
-
+	((CRealFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
+	((CRealFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
 	return (result);
 }
@@ -249,29 +218,29 @@ void CPyramidChi2::setstandardweights()
 		sum+=CMath::pow(4, pyramidlevels[levelind]);
 		maxlvl=CMath::max(maxlvl,pyramidlevels[levelind]);
 	}
-	if(weights==NULL)
+
+	if (weights==NULL)
 	{
 		numweights=sum;
 		weights=new DREAL[numweights];
-		
 	}
-	else if( numweights!=sum )
+
+	else if (numweights!=sum)
 	{
 		// a possible source of error or leak!
-		if(numweights>0)
+		if (numweights>0)
 		{
 			delete[]  weights;
 		}
 		else
 		{
-			std::cerr<< "void CPyramidChi2::setstandardweights(): inconsistency found: (weights!=NULL) && (numweights <=0), continuing, but memory leak possible"<<std::endl;
+			SG_ERROR("void CPyramidChi2::setstandardweights(): inconsistency found: (weights!=NULL) && (numweights <=0), continuing, but memory leak possible");
 		}
+
 		numweights=sum;
 		weights=new DREAL[numweights];
-		
 	}
 	//weights.resize(sum);
-	
 	
 	INT cursum=0;
 	for (INT levelind=0; levelind < numlevels; ++levelind)
@@ -295,4 +264,3 @@ void CPyramidChi2::setstandardweights()
 		cursum+=CMath::pow(4, pyramidlevels[levelind]);
 	}
 }
-
