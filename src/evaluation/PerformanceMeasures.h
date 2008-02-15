@@ -44,6 +44,7 @@ class CPerformanceMeasures : public CSGObject
 		 *
 		 * @param true_labels_ true labels as seen in real world
 		 * @param output_ output labels/hypothesis from a classifier
+		 * @throws ShogunException
 		 * @return if initialising was successful
 		 */
 		void init(CLabels* true_labels_, CLabels* output_);
@@ -84,14 +85,26 @@ class CPerformanceMeasures : public CSGObject
 		 */
 		inline CLabels* get_output() const { return output; }
 
+		/** get number of labels in output/true labels
+		 *
+		 * @return number of labels in output/true labels
+		 */
+		inline INT get_num_labels() const { return num_labels; }
+
+		/** get classifier's accuracy at threshold 0
+		 *
+		 * @throws ShogunException
+		 * @return classifer's accuracy at threshold 0
+		 */
+		DREAL get_accuracy0();
+
 		/** get ROC for labels previously given (swig compatible)
-		 * also computes auROC and accROC
+		 * also computes auROC
 		 * caller has to free
 		 *
 		 * @param result where computed ROC values will be stored
 		 * @param dim number of labels/examples
 		 * @param num number of elements in each result (== 2)
-		 * @return if computation was successful
 		 */
 		void get_ROC(DREAL** result, INT* dim, INT* num);
 
@@ -101,10 +114,13 @@ class CPerformanceMeasures : public CSGObject
 		 */
 		inline DREAL get_auROC()
 		{
-			if (auROC==0) compute_ROC();
+			if (auROC==0.) {
+				DREAL** roc;
+				compute_ROC(roc);
+				free(*roc);
+			}
 			return auROC;
 		}
-
 
 		/** return area over ROC
 		 *
@@ -112,7 +128,11 @@ class CPerformanceMeasures : public CSGObject
 		 */
 		inline DREAL get_aoROC()
 		{
-			if (auROC==0) compute_ROC();
+			if (auROC==0.) {
+				DREAL** roc;
+				compute_ROC(roc);
+				free(*roc);
+			}
 			return 1.-auROC;
 		}
 
@@ -122,13 +142,70 @@ class CPerformanceMeasures : public CSGObject
 		 * @param result where accuracy will be stored
 		 * @param num number of accuracy values
 		 */
-		void get_accROC(DREAL** result, INT* num);
+		void get_accuracyROC(DREAL** result, INT* num);
 
 		/** get classifier's error rate aligned to ROC (swig compatible)
+		 * caller has to free
 		 *
-		 * @return error rate of classifier
+		 * @param result where error will be stored
+		 * @param num number of error values
 		 */
-		void get_errROC(DREAL** result, INT* num);
+		void get_errorROC(DREAL** result, INT* num);
+
+		/** get PRC for labels previously given (swig compatible)
+		 * also computes auPRC
+		 * caller has to free
+		 *
+		 * @param result where computed ROC values will be stored
+		 * @param dim number of labels/examples
+		 * @param num number of elements in each result (== 2)
+		 * @throws ShogunException
+		 */
+		void get_PRC(DREAL** result, INT* dim, INT* num);
+
+		/** return area under PRC
+		 *
+		 * @return area under PRC
+		 */
+		inline DREAL get_auPRC()
+		{
+			if (auPRC==0.) {
+				DREAL** prc;
+				compute_PRC(prc);
+				free(*prc);
+			}
+			return auPRC;
+		}
+
+		/** return area over PRC
+		 *
+		 * @return area over PRC
+		 */
+		inline DREAL get_aoPRC()
+		{
+			if (auPRC==0.) {
+				DREAL** prc;
+				compute_PRC(prc);
+				free(*prc);
+			}
+			return 1.-auPRC;
+		}
+
+		/** get classifier's F-measure aligned to PRC (swig compatible)
+		 * caller has to free
+		 *
+		 * @param result where F-measure will be stored
+		 * @param num number of accuracy values
+		 * @throws ShogunException
+		 */
+		void get_fmeasurePRC(DREAL** result, INT* num);
+
+		/** get classifier's F-measure at threshold 0
+		 *
+		 * @throws ShogunException
+		 * @return classifer's F-measure at threshold 0
+		 */
+		DREAL get_fmeasure0();
 
 	protected:
 		/** true labels/examples as seen in real world */
@@ -139,18 +216,22 @@ class CPerformanceMeasures : public CSGObject
 		INT num_labels;
 
 		/** number of positive examples in true_labels */
-		INT all_positives;
+		INT all_true;
 		/** number of negative examples in true_labels */
-		INT all_negatives;
+		INT all_false;
 
-		/** 2 dimensional array of ROC points */
-		DREAL* roc;
-
+		/** array of size num_labels with indices of true_labels/output
+		 * sorted to fit ROC algorithm */
+		INT* sortedROC;
 		/** area under ROC; 1 - area over ROC */
 		DREAL auROC;
+		/** classifier's accuracy at threshold 0 */
+		DREAL accuracy0;
 
-		/** accuracy of classifier, aligned to ROC; 1 - error */
-		DREAL* accROC;
+		/** area under PRC; 1 - area over PRC */
+		DREAL auPRC;
+		/** classifier's F-measure at threshold 0 */
+		DREAL fmeasure0;
 
 	private:
 		/** calculate trapezoid area for auROC
@@ -161,13 +242,33 @@ class CPerformanceMeasures : public CSGObject
 		 * @param y2 y coordinate of point 2
 		 * @return trapezoid area for auROC
 		 */
-		DREAL trapezoid_area(INT x1, INT x2, INT y1, INT y2);
+		template <class T> DREAL trapezoid_area(T x1, T x2, T y1, T y2);
 
-		/** compute ROC of given labels
+		/** create index for ROC sorting
 		 *
 		 * @throws ShogunException
 		 */
-		void compute_ROC();
+		void create_sortedROC();
+		
+		/** compute ROC points and auROC
+		 *
+		 * @throws ShogunException
+		 */
+		void compute_ROC(DREAL** result);
 
+		/** compute ROC accuracy/error
+		 *
+		 * @param result where the result will be stored
+		 * @param do_error if error instead of accuracy shall be computed
+		 * @throws ShogunException
+		 */
+		void compute_accuracyROC(DREAL** result, bool do_error=false);
+
+		/** compute PRC points and auPRC
+		 *
+		 * @param result where the result will be stored
+		 * @throws ShogunException
+		 */
+		void compute_PRC(DREAL** result);
 };
 #endif /* __PERFORMANCEMEASURES_H_ */

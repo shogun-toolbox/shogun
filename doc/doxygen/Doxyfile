@@ -31,7 +31,7 @@ PROJECT_NAME           = SHOGUN
 # This could be handy for archiving the generated documentation or 
 # if some version control system is used.
 
-PROJECT_NUMBER         = svn_r2674_2008-02-08_14:00
+PROJECT_NUMBER         = svn_r2681_2008-02-15_09:16
 
 # The OUTPUT_DIRECTORY tag is used to specify the (relative or absolute) 
 # base path where the generated documentation will be put. 
