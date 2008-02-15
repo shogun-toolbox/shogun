@@ -195,17 +195,61 @@ class CPerformanceMeasures : public CSGObject
 		 * caller has to free
 		 *
 		 * @param result where F-measure will be stored
-		 * @param num number of accuracy values
+		 * @param num number of F-measure values
 		 * @throws ShogunException
 		 */
 		void get_fmeasurePRC(DREAL** result, INT* num);
 
 		/** get classifier's F-measure at threshold 0
 		 *
-		 * @throws ShogunException
 		 * @return classifer's F-measure at threshold 0
 		 */
 		DREAL get_fmeasure0();
+
+		/** get classifier's CC (swig compatible)
+		 * caller has to free
+		 *
+		 * @param result where CC will be stored
+		 * @param num number of CC values
+		 * @throws ShogunException
+		 */
+		void get_CC(DREAL** result, INT* num);
+
+		/** get classifier's CC at threshold 0
+		 *
+		 * @return classifer's CC at threshold 0
+		 */
+		DREAL get_CC0();
+
+		/** get classifier's WR accuracy (swig compatible)
+		 * caller has to free
+		 *
+		 * @param result where WR accuracy will be stored
+		 * @param num number of WR accuracy values
+		 * @throws ShogunException
+		 */
+		void get_WRacc(DREAL** result, INT* num);
+
+		/** get classifier's WR accuracy at threshold 0
+		 *
+		 * @return classifer's WR accuracy at threshold 0
+		 */
+		DREAL get_WRacc0();
+
+		/** get classifier's balance (swig compatible)
+		 * caller has to free
+		 *
+		 * @param result where balance will be stored
+		 * @param num number of balance values
+		 * @throws ShogunException
+		 */
+		void get_balance(DREAL** result, INT* num);
+
+		/** get classifier's balance at threshold 0
+		 *
+		 * @return classifer's balance at threshold 0
+		 */
+		DREAL get_balance0();
 
 	protected:
 		/** true labels/examples as seen in real world */
@@ -232,6 +276,13 @@ class CPerformanceMeasures : public CSGObject
 		DREAL auPRC;
 		/** classifier's F-measure at threshold 0 */
 		DREAL fmeasure0;
+
+		/** classifier's CC at threshold 0 */
+		DREAL cc0;
+		/** classifier's WR accuracy at threshold 0 */
+		DREAL wr_acc0;
+		/** classifier's balance at threshold 0 */
+		DREAL balance0;
 
 	private:
 		/** calculate trapezoid area for auROC
@@ -270,5 +321,20 @@ class CPerformanceMeasures : public CSGObject
 		 * @throws ShogunException
 		 */
 		void compute_PRC(DREAL** result);
+
+		/** check classifiers output against true labels
+		 *
+		 * not as efficient as the method applied to ROC, but useable by other
+		 * curves
+		 *
+		 * caller has to delete
+		 *
+		 * @param threshold threshold to check against
+		 * @throws ShogunException
+		 * @return array of 4 values, the number of:
+		 *         true positives, false positives, false negatives, true
+		 *         negatives
+		 */
+		INT* check_classification(DREAL threshold);
 };
 #endif /* __PERFORMANCEMEASURES_H_ */

@@ -32,7 +32,7 @@ CPerformanceMeasures::~CPerformanceMeasures()
 {
 	if (true_labels) SG_UNREF(true_labels);
 	if (output) SG_UNREF(output);
-	if (sortedROC) free(sortedROC);
+	if (sortedROC) delete[] sortedROC;
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -45,6 +45,9 @@ void CPerformanceMeasures::init(CLabels* true_labels_, CLabels* output_)
 	accuracy0=0.;
 	auPRC=0.;
 	fmeasure0=0.;
+	cc0=0.;
+	wr_acc0=0.;
+	balance0=0.;
 
 	if (!true_labels_)
 		throw ShogunException("No true labels given!\n");
@@ -82,7 +85,7 @@ void CPerformanceMeasures::init(CLabels* true_labels_, CLabels* output_)
 			throw ShogunException("Illegal true labels, not purely {-1, 1}!\n");
 		}
 	}
-	free(labels);
+	delete[] labels;
 
 	true_labels=true_labels_;
 	SG_REF(true_labels);
@@ -98,15 +101,15 @@ void CPerformanceMeasures::create_sortedROC()
 		throw ShogunException("Need at least one example!\n");
 
 	size_t sz=sizeof(INT)*num_labels;
-	if (sortedROC) delete sortedROC;
-	sortedROC=(INT*) malloc(sz);
+	if (sortedROC) delete[] sortedROC;
+	sortedROC=new INT[sz];
 	if (!sortedROC)
 		throw ShogunException("Could not allocate memory for sorted ROC index!\n");
 
 	for (INT i=0; i<num_labels; i++) sortedROC[i]=i;
 	DREAL* out=output->get_labels(num_labels);
 	CMath::qsort_backward_index(out, sortedROC, num_labels);
-	free(out);
+	delete[] out;
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -116,6 +119,32 @@ template <class T> DREAL CPerformanceMeasures::trapezoid_area(T x1, T x2, T y1, 
 	DREAL base=CMath::abs(x1-x2);
 	DREAL height_avg=.5*(y1+y2);
 	return base*height_avg;
+}
+
+INT* CPerformanceMeasures::check_classification(DREAL threshold)
+{
+	if (!true_labels)
+		throw ShogunException("No true labels given!\n");
+	if (!output)
+		throw ShogunException("No output data given!\n");
+	if (num_labels<1)
+		throw ShogunException("Need at least one example!\n");
+
+	INT num_results=4;
+	INT* results=new INT[num_results];
+	for (INT i=0; i<num_results; i++) results[i]=0;
+
+	for (INT i=0; i<num_labels; i++) {
+		if (output->get_label(i)>=threshold) {
+			if (true_labels->get_label(i)>0) results[0]++;
+			else results[1]++;
+		} else {
+			if (true_labels->get_label(i)>0) results[2]++;
+			else results[3]++;
+		}
+	}
+
+	return results;
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -190,23 +219,15 @@ DREAL CPerformanceMeasures::get_accuracy0()
 {
 	if (accuracy0!=0.) return accuracy0;
 
-	if (!true_labels)
-		throw ShogunException("No true labels given!\n");
-	if (!output)
-		throw ShogunException("No output data given!\n");
 	if (num_labels<1)
 		throw ShogunException("Need at least one example!\n");
 
-	INT tp=0;
-	INT tn=0;
-
-	for (INT i=0; i<num_labels; i++) {
-		INT out=CMath::sign(output->get_label(i));
-		if (out>0 && true_labels->get_label(i)>0) tp++;
-		else if (out<0 && true_labels->get_label(i)<0) tn++;
-	}
+	INT* checked=check_classification(0);
+	INT tp=checked[0];
+	INT tn=checked[3];
 	accuracy0=(DREAL) (tp+tn)/num_labels;
 
+	delete[] checked;
 	return accuracy0;
 }
 
@@ -268,8 +289,6 @@ void CPerformanceMeasures::get_PRC(DREAL** result, INT *dim, INT *num)
 // FIXME: make as efficient as compute_ROC
 void CPerformanceMeasures::compute_PRC(DREAL** result)
 {
-	if (!true_labels)
-		throw ShogunException("No true labels given!\n");
 	if (!output)
 		throw ShogunException("No output data given!\n");
 	if (num_labels<1)
@@ -280,23 +299,20 @@ void CPerformanceMeasures::compute_PRC(DREAL** result)
 	if (!result)
 		throw ShogunException("Could not allocate memory for PRC result!\n");
 
-	INT fp=0;
-	INT tp=0;
+	INT* checked;
+	INT tp;
+	INT fp;
+	DREAL threshold;
 
 	for (INT i=0; i<num_labels; i++) {
-		tp=0;
-		fp=0;
-		DREAL threshold=output->get_label(i);
-
-		for (INT j=0; j<num_labels; j++) {
-			if (output->get_label(j)>=threshold) {
-				if (true_labels->get_label(j)>0) tp++;
-				else fp++;
-			}
-		}
-
+		threshold=output->get_label(i);
+		checked=check_classification(threshold);
+		tp=checked[0];
+		fp=checked[1];
 		(*result)[i]=(DREAL) tp/all_true; // recall
 		(*result)[num_labels+i]=(DREAL) tp/(tp+fp); // precision
+
+		delete[] checked;
 	}
 
 	// sort by ascending recall
@@ -336,29 +352,155 @@ DREAL CPerformanceMeasures::get_fmeasure0()
 {
 	if (fmeasure0!=0.) return fmeasure0;
 
-	if (!true_labels)
-		throw ShogunException("No true labels given!\n");
+	INT* checked=check_classification(0);
+	INT tp=checked[0];
+	INT fp=checked[1];
+	DREAL recall=(DREAL) tp/all_true;
+	DREAL precision=(DREAL) tp/(tp+fp);
+	fmeasure0=2./(1./precision+1./recall);
+
+	delete[] checked;
+	return fmeasure0;
+}
+
+/////////////////////////////////////////////////////////////////////
+
+DREAL CPerformanceMeasures::get_CC0()
+{
+	if (cc0!=0.) return cc0;
+
+	INT* checked=check_classification(0);
+	INT tp=checked[0];
+	INT fp=checked[1];
+	INT fn=checked[2];
+	INT tn=checked[3];
+	cc0=(tp*tn-fp*fn)/CMath::sqrt((DREAL) (tp+fp)*(tp+fn)*(tn+fp)*(tn+fn));
+
+	delete[] checked;
+	return cc0;
+}
+
+void CPerformanceMeasures::get_CC(DREAL** result, INT* num)
+{
 	if (!output)
 		throw ShogunException("No output data given!\n");
 	if (num_labels<1)
 		throw ShogunException("Need at least one example!\n");
 
-	INT tp=0;
-	INT fp=0;
-	DREAL precision;
-	DREAL recall;
+	*num=num_labels;
+	size_t sz=sizeof(DREAL)*num_labels;
+	*result=(DREAL*) malloc(sz);
+	if (!result)
+		throw ShogunException("Could not allocate memory for CC!\n");
+
+	INT* checked;
+	INT tp;
+	INT fp;
+	INT fn;
+	INT tn;
+	DREAL threshold;
 
 	for (INT i=0; i<num_labels; i++) {
-		if (CMath::sign(output->get_label(i))>0) {
-			if (true_labels->get_label(i)>0) tp++;
-			else fp++;
-		}
+		threshold=output->get_label(i);
+		checked=check_classification(threshold);
+		tp=checked[0];
+		fp=checked[1];
+		fn=checked[2];
+		tn=checked[3];
+		(*result)[i]=(tp*tn-fp*fn)/CMath::sqrt((DREAL) (tp+fp)*(tp+fn)*(tn+fp)*(tn+fn));
+		delete[] checked;
 	}
+}
 
-	recall=(DREAL) tp/all_true;
-	precision=(DREAL) tp/(tp+fp);
-	fmeasure0=2./(1./precision+1./recall);
+/////////////////////////////////////////////////////////////////////
 
-	return fmeasure0;
+DREAL CPerformanceMeasures::get_WRacc0()
+{
+	if (wr_acc0!=0.) return wr_acc0;
+
+	INT* checked=check_classification(0);
+	INT tp=checked[0];
+	INT fp=checked[1];
+	INT fn=checked[2];
+	INT tn=checked[3];
+	wr_acc0=(DREAL) tp/(tp+fn)-fp/(fp+tn);
+
+	delete[] checked;
+	return wr_acc0;
+}
+
+void CPerformanceMeasures::get_WRacc(DREAL** result, INT* num)
+{
+	if (!output)
+		throw ShogunException("No output data given!\n");
+	if (num_labels<1)
+		throw ShogunException("Need at least one example!\n");
+
+	*num=num_labels;
+	size_t sz=sizeof(DREAL)*num_labels;
+	*result=(DREAL*) malloc(sz);
+	if (!result)
+		throw ShogunException("Could not allocate memory for WR accuracy!\n");
+
+	INT* checked;
+	INT tp;
+	INT fp;
+	INT fn;
+	INT tn;
+	DREAL threshold;
+
+	for (INT i=0; i<num_labels; i++) {
+		threshold=output->get_label(i);
+		checked=check_classification(threshold);
+		tp=checked[0];
+		fp=checked[1];
+		fn=checked[2];
+		tn=checked[3];
+		(*result)[i]=(DREAL) tp/(tp+fn)-fp/(fp+tn);
+		delete[] checked;
+	}
+}
+
+/////////////////////////////////////////////////////////////////////
+
+DREAL CPerformanceMeasures::get_balance0()
+{
+	if (balance0!=0.) return balance0;
+
+	INT* checked=check_classification(0);
+	INT tp=checked[0];
+	INT tn=checked[3];
+	balance0=.5*((DREAL) tp/all_true+tn/all_false);
+
+	delete[] checked;
+	return balance0;
+}
+
+void CPerformanceMeasures::get_balance(DREAL** result, INT* num)
+{
+	if (!output)
+		throw ShogunException("No output data given!\n");
+	if (num_labels<1)
+		throw ShogunException("Need at least one example!\n");
+
+	*num=num_labels;
+	size_t sz=sizeof(DREAL)*num_labels;
+	*result=(DREAL*) malloc(sz);
+	if (!result)
+		throw ShogunException("Could not allocate memory for WR accuracy!\n");
+
+	INT* checked;
+	INT tp;
+	INT tn;
+	DREAL threshold;
+
+	for (INT i=0; i<num_labels; i++) {
+		threshold=output->get_label(i);
+		checked=check_classification(threshold);
+		tp=checked[0];
+		tn=checked[3];
+		(*result)[i]=.5*((DREAL) tp/all_true+tn/all_false);
+		delete[] checked;
+	}
 }
 

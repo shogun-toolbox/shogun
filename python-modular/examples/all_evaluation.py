@@ -62,14 +62,14 @@ def roc(pm, numrows, numcols, fignum):
 	aoROC=pm.get_aoROC()
 	acc0=pm.get_accuracy0();
 	text="auROC = %g\naoROC = %f\naccuracy0 = %f"%(auROC, aoROC, acc0)
-	pylab.text(.6, .3, text, bbox=dict(fc='white', ec='black', pad=10.))
+	pylab.text(.45, .3, text, bbox=dict(fc='white', ec='black', pad=10.))
 
 	pylab.plot([0, 1], [0, 1], 'r-', label='random guess')
 	pylab.axis([0, 1, 0, 1])
 	ticks=numpy.arange(0., 1., .1, dtype=numpy.float64)
 	pylab.xticks(ticks)
 	pylab.yticks(ticks)
-	pylab.title('ROC of SVMOcas with %d random examples/true labels'%pm.get_num_labels())
+	pylab.title('ROC of SVMOcas w/ %d random examples'%pm.get_num_labels())
 	pylab.xlabel('1 - specificity (false positive rate)')
 	pylab.ylabel('sensitivity (true positive rate)')
 	pylab.legend(loc='lower right')
@@ -89,16 +89,37 @@ def prc(pm, numrows, numcols, fignum):
 	aoPRC=pm.get_aoPRC()
 	fmeasure0=pm.get_fmeasure0();
 	text="auPRC = %g\naoPRC = %f\nF-measure0 = %f"%(auPRC, aoPRC, fmeasure0)
-	pylab.text(.03, .3, text, bbox=dict(fc='white', ec='black', pad=10.))
+	pylab.text(.03, .2, text, bbox=dict(fc='white', ec='black', pad=10.))
 
 	pylab.axis([0, 1, 0, 1])
 	ticks=numpy.arange(0., 1., .1, dtype=numpy.float64)
 	pylab.xticks(ticks)
 	pylab.yticks(ticks)
-	pylab.title('PRC of SVMOcas with %d random examples/true labels'%pm.get_num_labels())
+	pylab.title('PRC of SVMOcas w/ %d random examples'%pm.get_num_labels())
 	pylab.xlabel('recall (true positive rate)')
 	pylab.ylabel('precision')
 	pylab.legend(loc='lower left')
+
+def cc_wracc_balance(pm, numrows, numcols, fignum):
+	pylab.subplot(numrows, numcols, fignum)
+
+	cc0=pm.get_CC0()
+	wracc0=pm.get_WRacc0()
+	balance0=pm.get_balance0()
+	text="CC0 = %g\nWRacc0 = %f\nbalance0 = %f"%(cc0, wracc0, balance0)
+	pylab.text(.3, .5, text, bbox=dict(fc='white', ec='black', pad=10.))
+
+def cc(pm):
+	#print "All CC:", pm.get_CC()
+	print "CC at threshold 0:", pm.get_CC0()
+
+def wracc(pm):
+	#print "All WR accuracy:", pm.get_WRacc()
+	print "WR accuracy at threshold 0:", pm.get_WRacc0()
+
+def balance(pm):
+	#print "All balance:", pm.get_balance()
+	print "Balance at threshold 0:", pm.get_balance0()
 
 ###########################################################################
 # call functions
@@ -114,8 +135,9 @@ if __name__=='__main__':
 	output=Labels(classify(true_labels))
 	pm=PerformanceMeasures(true_labels, output)
 
-	roc(pm, 1, 2, 1)
-	prc(pm, 1, 2, 2)
+	roc(pm, 1, 3, 1)
+	prc(pm, 1, 3, 2)
+	cc_wracc_balance(pm, 1, 3, 3)
 
 	pylab.connect('key_press_event', quit)
 	pylab.show()
