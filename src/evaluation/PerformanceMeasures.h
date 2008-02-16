@@ -17,13 +17,13 @@
 
 /**
  * class to implement various performance measures, like:
- * ROC
+ * ROC, PRC, DET, CC, WR accuracy, balance
  *
  * based on:
  * Fawcett, T: March 2004, ROC Graphs: Notes and Practical
  * Considerations for Researchers
  *
- * @author Sebastian Henschel
+ * @author Sebastian Henschel <shogun@kodeaffe.de>
  */
 class CPerformanceMeasures : public CSGObject
 {
@@ -98,8 +98,7 @@ class CPerformanceMeasures : public CSGObject
 		 */
 		DREAL get_accuracy0();
 
-		/** get ROC for labels previously given (swig compatible)
-		 * also computes auROC
+		/** get ROC for previously given labels (swig compatible)
 		 * caller has to free
 		 *
 		 * @param result where computed ROC values will be stored
@@ -152,14 +151,12 @@ class CPerformanceMeasures : public CSGObject
 		 */
 		void get_errorROC(DREAL** result, INT* num);
 
-		/** get PRC for labels previously given (swig compatible)
-		 * also computes auPRC
+		/** get PRC for previously given labels (swig compatible)
 		 * caller has to free
 		 *
 		 * @param result where computed ROC values will be stored
 		 * @param dim number of labels/examples
 		 * @param num number of elements in each result (== 2)
-		 * @throws ShogunException
 		 */
 		void get_PRC(DREAL** result, INT* dim, INT* num);
 
@@ -206,6 +203,42 @@ class CPerformanceMeasures : public CSGObject
 		 */
 		DREAL get_fmeasure0();
 
+		/** get DET curve for previously given labels (swig compatible)
+		 * caller has to free
+		 *
+		 * @param result where computed DET values will be stored
+		 * @param dim number of labels/examples
+		 * @param num number of elements in each result (== 2)
+		 */
+		void get_DET(DREAL** result, INT* dim, INT* num);
+
+		/** return area under DET
+		 *
+		 * @return area under DET
+		 */
+		inline DREAL get_auDET()
+		{
+			if (auDET==0.) {
+				DREAL** det;
+				compute_DET(det);
+				free(*det);
+			}
+			return auDET;
+		}
+
+		/** return area over DET
+		 *
+		 * @return area over DET
+		 */
+		inline DREAL get_aoDET()
+		{
+			if (auDET==0.) {
+				DREAL** det;
+				compute_DET(det);
+				free(*det);
+			}
+			return 1.-auDET;
+		}
 		/** get classifier's CC (swig compatible)
 		 * caller has to free
 		 *
@@ -277,6 +310,9 @@ class CPerformanceMeasures : public CSGObject
 		/** classifier's F-measure at threshold 0 */
 		DREAL fmeasure0;
 
+		/** area under DET; 1 - area over DET */
+		DREAL auDET;
+
 		/** classifier's CC at threshold 0 */
 		DREAL cc0;
 		/** classifier's WR accuracy at threshold 0 */
@@ -321,6 +357,13 @@ class CPerformanceMeasures : public CSGObject
 		 * @throws ShogunException
 		 */
 		void compute_PRC(DREAL** result);
+
+		/** compute DET points and auDET
+		 *
+		 * @param result where the result will be stored
+		 * @throws ShogunException
+		 */
+		void compute_DET(DREAL** result);
 
 		/** check classifiers output against true labels
 		 *

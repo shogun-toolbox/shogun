@@ -46,80 +46,77 @@ def classify (true_labels):
 
 def roc(pm, numrows, numcols, fignum):
 	pylab.subplot(numrows, numcols, fignum)
+	pylab.title('ROC of SVMOcas w/ %d random examples'%pm.get_num_labels())
+	pylab.xlabel('1 - specificity (false positive rate)')
+	pylab.ylabel('sensitivity (true positive rate)')
 
 	points=pm.get_ROC()
 	points=numpy.array(points).T # for pylab.plot
-	pylab.plot(points[0], points[1], 'b-', label='ROC', linewidth=3.)
+	pylab.plot(points[0], points[1], 'b-', linewidth=3.)
 
 	accuracy=pm.get_accuracyROC()
 	range_accuracy=numpy.linspace(0, 1, len(accuracy))
-	pylab.plot(range_accuracy, accuracy, 'g-', label='accuracy')
+	pylab.plot(range_accuracy, accuracy, 'g-')
 
 	# not useful here, hence not plotted
 	#error=pm.get_errorROC()
 
+	pylab.plot([0, 1], [0, 1], 'r-')
+
 	auROC=pm.get_auROC()
 	aoROC=pm.get_aoROC()
 	acc0=pm.get_accuracy0();
-	text="auROC = %g\naoROC = %f\naccuracy0 = %f"%(auROC, aoROC, acc0)
-	pylab.text(.45, .3, text, bbox=dict(fc='white', ec='black', pad=10.))
-
-	pylab.plot([0, 1], [0, 1], 'r-', label='random guess')
-	pylab.axis([0, 1, 0, 1])
-	ticks=numpy.arange(0., 1., .1, dtype=numpy.float64)
-	pylab.xticks(ticks)
-	pylab.yticks(ticks)
-	pylab.title('ROC of SVMOcas w/ %d random examples'%pm.get_num_labels())
-	pylab.xlabel('1 - specificity (false positive rate)')
-	pylab.ylabel('sensitivity (true positive rate)')
-	pylab.legend(loc='lower right')
+	text="auROC = %f\naoROC = %f\naccuracy0 = %f"%(auROC, aoROC, acc0)
+	legend=pylab.legend(('ROC', 'accuracy', 'random guess', text),
+		loc='lower right')
+	texts=legend.get_texts()
+	pylab.setp(texts, fontsize='small')
 
 def prc(pm, numrows, numcols, fignum):
 	pylab.subplot(numrows, numcols, fignum)
+	pylab.title('PRC of SVMOcas w/ %d random examples'%pm.get_num_labels())
+	pylab.xlabel('recall (true positive rate)')
+	pylab.ylabel('precision')
 
 	points=pm.get_PRC()
 	points=numpy.array(points).T # for pylab.plot
-	pylab.plot(points[0], points[1], 'b-', label='PRC', linewidth=3.)
+	pylab.plot(points[0], points[1], 'b-', linewidth=3.)
 
 	fmeasure=pm.get_fmeasurePRC()
 	range_fmeasure=numpy.linspace(0, 1, len(fmeasure))
-	pylab.plot(range_fmeasure, fmeasure, 'g-', label='F-measure')
+	pylab.plot(range_fmeasure, fmeasure, 'g-')
 
 	auPRC=pm.get_auPRC()
 	aoPRC=pm.get_aoPRC()
 	fmeasure0=pm.get_fmeasure0();
-	text="auPRC = %g\naoPRC = %f\nF-measure0 = %f"%(auPRC, aoPRC, fmeasure0)
-	pylab.text(.03, .2, text, bbox=dict(fc='white', ec='black', pad=10.))
+	text="auPRC = %f\naoPRC = %f\nF-measure0 = %f"%(auPRC, aoPRC, fmeasure0)
+	legend=pylab.legend(('PRC', 'F-measure', text), loc='lower right')
+	texts=legend.get_texts()
+	pylab.setp(texts, fontsize='small')
 
-	pylab.axis([0, 1, 0, 1])
-	ticks=numpy.arange(0., 1., .1, dtype=numpy.float64)
-	pylab.xticks(ticks)
-	pylab.yticks(ticks)
-	pylab.title('PRC of SVMOcas w/ %d random examples'%pm.get_num_labels())
-	pylab.xlabel('recall (true positive rate)')
-	pylab.ylabel('precision')
-	pylab.legend(loc='lower left')
-
-def cc_wracc_balance(pm, numrows, numcols, fignum):
+def det(pm, numrows, numcols, fignum):
 	pylab.subplot(numrows, numcols, fignum)
+	pylab.title('DET of SVMOcas w/ %d random examples'%pm.get_num_labels())
+	pylab.xlabel('log false positive rate')
+	pylab.ylabel('log false negative rate')
 
-	cc0=pm.get_CC0()
-	wracc0=pm.get_WRacc0()
-	balance0=pm.get_balance0()
-	text="CC0 = %g\nWRacc0 = %f\nbalance0 = %f"%(cc0, wracc0, balance0)
-	pylab.text(.3, .5, text, bbox=dict(fc='white', ec='black', pad=10.))
+	points=pm.get_DET()
+	points=numpy.array(points).T # for pylab.plot
+	pylab.loglog(points[0], points[1], 'b-', linewidth=3.)
+	pylab.grid(True)
+	pylab.gca().xaxis.grid(True, which='minor')  # minor grid on too
 
-def cc(pm):
-	#print "All CC:", pm.get_CC()
-	print "CC at threshold 0:", pm.get_CC0()
+	auDET=pm.get_auDET()
+	aoDET=pm.get_aoDET()
+	text="auDET=%f\naoDET=%f"%(auDET, aoDET)
+	legend=pylab.legend(('DET', text), loc='lower left')
+	texts=legend.get_texts()
+	pylab.setp(texts, fontsize='small')
 
-def wracc(pm):
-	#print "All WR accuracy:", pm.get_WRacc()
-	print "WR accuracy at threshold 0:", pm.get_WRacc0()
-
-def balance(pm):
-	#print "All balance:", pm.get_balance()
-	print "Balance at threshold 0:", pm.get_balance0()
+def cc_wracc_balance(pm):
+	print 'CC at threshold 0:', pm.get_CC0()
+	print 'WR accuracy at threshold 0:', pm.get_WRacc0()
+	print 'Balance at threshold 0', pm.get_balance0()
 
 ###########################################################################
 # call functions
@@ -137,7 +134,8 @@ if __name__=='__main__':
 
 	roc(pm, 1, 3, 1)
 	prc(pm, 1, 3, 2)
-	cc_wracc_balance(pm, 1, 3, 3)
+	det(pm, 1, 3, 3)
+	cc_wracc_balance(pm)
 
 	pylab.connect('key_press_event', quit)
 	pylab.show()

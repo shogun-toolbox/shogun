@@ -45,6 +45,7 @@ void CPerformanceMeasures::init(CLabels* true_labels_, CLabels* output_)
 	accuracy0=0.;
 	auPRC=0.;
 	fmeasure0=0.;
+	auDET=0.;
 	cc0=0.;
 	wr_acc0=0.;
 	balance0=0.;
@@ -361,6 +362,55 @@ DREAL CPerformanceMeasures::get_fmeasure0()
 
 	delete[] checked;
 	return fmeasure0;
+}
+
+/////////////////////////////////////////////////////////////////////
+
+void CPerformanceMeasures::get_DET(DREAL** result, INT *dim, INT *num)
+{
+	*dim=num_labels;
+	*num=2;
+	compute_DET(result);
+}
+
+// FIXME: make as efficient as compute_ROC
+void CPerformanceMeasures::compute_DET(DREAL** result)
+{
+	if (!output)
+		throw ShogunException("No output data given!\n");
+	if (num_labels<1)
+		throw ShogunException("Need at least one example!\n");
+
+	size_t sz=sizeof(DREAL)*num_labels*2;
+	*result=(DREAL*) malloc(sz);
+	if (!result)
+		throw ShogunException("Could not allocate memory for PRC result!\n");
+
+	INT* checked;
+	INT fp;
+	INT fn;
+	DREAL threshold;
+
+	for (INT i=0; i<num_labels; i++) {
+		threshold=output->get_label(i);
+		checked=check_classification(threshold);
+		fp=checked[1];
+		fn=checked[2];
+		(*result)[i]=(DREAL) fp/all_false;
+		(*result)[num_labels+i]=(DREAL) fn/all_false;
+
+		delete[] checked;
+	}
+
+	// sort by ascending false positive rate
+	CMath::qsort_index(*result, (*result)+num_labels, num_labels);
+
+	// calculate auDET
+	auDET=0.;
+	for (INT i=0; i<num_labels-1; i++) {
+		if ((*result)[1+i]==(*result)[i]) continue;
+		auDET+=trapezoid_area((*result)[1+i], (*result)[i], (*result)[1+num_labels+i], (*result)[num_labels+i]);
+	}
 }
 
 /////////////////////////////////////////////////////////////////////
