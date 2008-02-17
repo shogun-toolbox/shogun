@@ -340,7 +340,7 @@ void CPerformanceMeasures::get_fmeasurePRC(DREAL** result, INT* num)
 		throw ShogunException("Could not allocate memory for F-measure!\n");
 
 	*num=num_labels;
-	DREAL** prc;
+	DREAL** prc=NULL;
 	compute_PRC(prc);
 
 	for (INT i=0; i<num_labels; i++) {

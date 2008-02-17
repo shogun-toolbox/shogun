@@ -13,6 +13,7 @@
 #define _SPARSEFEATURES__H__
 
 #include <string.h>
+#include <stdlib.h>
 
 #include "lib/common.h"
 #include "lib/Mathematics.h"
@@ -20,6 +21,7 @@
 #include "lib/io.h"
 #include "lib/Cache.h"
 
+#include "features/Labels.h"
 #include "features/Features.h"
 #include "features/SimpleFeatures.h"
 #include "features/RealFeatures.h"
@@ -817,6 +819,214 @@ template <class ST> class CSparseFeatures: public CFeatures
 			((CSparseFeatures<DREAL>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
 			return CMath::abs(result);
+		}
+
+		/** load features from file
+		 *
+		 * @param fname filename to load from
+		 * @return label object with corresponding labels
+		 */
+		CLabels* load_svmlight_file(CHAR* fname)
+		{
+			CLabels* lab=NULL;
+
+			size_t blocksize=1024*1024;
+			size_t required_blocksize=blocksize;
+			BYTE* dummy=new BYTE[blocksize];
+			ASSERT(dummy);
+			FILE* f=fopen(fname, "ro");
+
+			if (f)
+			{
+				num_vectors=0;
+				num_features=0;
+
+				SG_INFO("counting line numbers in file %s\n", fname);
+				size_t sz=blocksize;
+				size_t block_offs=0;
+				size_t old_block_offs=0;
+				fseek(f, 0, SEEK_END);
+				size_t fsize=ftell(f);
+				rewind(f);
+
+				while (sz == blocksize)
+				{
+					sz=fread(dummy, sizeof(BYTE), blocksize, f);
+					bool contains_cr=false;
+					for (size_t i=0; i<sz; i++)
+					{
+						block_offs++;
+						if (dummy[i]=='\n' || (i==sz-1 && sz<blocksize))
+						{
+							num_vectors++;
+							contains_cr=true;
+							required_blocksize=CMath::max(required_blocksize, block_offs-old_block_offs+1);
+							old_block_offs=block_offs;
+						}
+					}
+					SG_PROGRESS(block_offs, 0, fsize, 1, "COUNTING:\t");
+				}
+
+				SG_INFO("found %d feature vectors\n", num_vectors);
+				delete[] dummy;
+				blocksize=required_blocksize;
+				dummy = new BYTE[blocksize+1]; //allow setting of '\0' at EOL
+				ASSERT(dummy);
+
+				lab=new CLabels(num_vectors);
+				ASSERT(lab);
+				sparse_feature_matrix=new TSparse<ST>[num_vectors];
+				ASSERT(sparse_feature_matrix);
+
+				rewind(f);
+				sz=blocksize;
+				INT lines=0;
+				while (sz == blocksize)
+				{
+					sz=fread(dummy, sizeof(BYTE), blocksize, f);
+
+					size_t old_sz=0;
+					for (size_t i=0; i<sz; i++)
+					{
+						if (i==sz-1 && dummy[i]!='\n' && sz==blocksize)
+						{
+							size_t len=i-old_sz+1;
+							BYTE* data=&dummy[old_sz];
+
+							for (INT j=0; j<len; j++)
+								dummy[j]=data[j];
+
+							sz=fread(dummy+len, sizeof(BYTE), blocksize-len, f);
+							i=0;
+							old_sz=0;
+							sz+=len;
+						}
+
+						if (dummy[i]=='\n' || (i==sz-1 && sz<blocksize))
+						{
+
+							size_t len=i-old_sz;
+							BYTE* data=&dummy[old_sz];
+
+							INT dims=0;
+							for (INT j=0; j<len; j++)
+							{
+								if (data[j]==':')
+									dims++;
+							}
+							num_features=CMath::max(num_features, dims);
+
+							if (dims<=0)
+							{
+								SG_ERROR("Error in line %d - number of"
+										" dimensions is %d line is %d characters"
+										" long\n line_content:'%.*s'\n", lines,
+										dims, len, len, (const char*) data);
+							}
+
+							TSparseEntry<ST>* feat=new TSparseEntry<ST>[dims];
+							ASSERT(feat);
+
+							INT j=0;
+							for (; j<len; j++)
+							{
+								if (data[j]==' ')
+								{
+									data[j]='\0';
+
+									lab->set_label(lines, atof((const char*) data));
+									break;
+								}
+							}
+
+							INT d=0;
+							j++;
+							BYTE* start=&data[j];
+							for (; j<len; j++)
+							{
+								if (data[j]==':')
+								{
+									data[j]='\0';
+
+									feat[d].feat_index=(ST) atoi((const char*) start)-1;
+
+									j++;
+									start=&data[j];
+									for (; j<len; j++)
+									{
+										if (data[j]==' ' || data[j]=='\n')
+										{
+											data[j]='\0';
+											feat[d].entry=(ST) atof((const char*) start);
+											d++;
+											break;
+										}
+									}
+
+									if (j==len)
+									{
+										data[j]='\0';
+										feat[dims-1].entry=(ST) atof((const char*) start);
+									}
+
+									j++;
+									start=&data[j];
+								}
+							}
+
+							sparse_feature_matrix[lines].vec_index=lines;
+							sparse_feature_matrix[lines].num_feat_entries=dims;
+							sparse_feature_matrix[lines].features=feat;
+
+							old_sz=i+1;
+							lines++;
+							SG_PROGRESS(lines, 0, num_vectors, 1, "LOADING:\t");
+						}
+					}
+				}
+				SG_INFO("file successfully read\n");
+				fclose(f);
+			}
+
+			delete[] dummy;
+
+			return lab;
+		}
+
+		/** write features to file
+		 *
+		 * @param fname filename to load from
+		 * @return label object with corresponding labels
+		 */
+		bool write_svmlight_file(CHAR* fname, CLabels* label)
+		{
+			FILE* f=fopen(fname, "wb");
+			INT num=label->get_num_labels();
+			ASSERT(num>0);
+			ASSERT(num==num_vectors);
+
+			if (f)
+			{
+				for (INT i=0; i<num; i++)
+				{
+					fprintf(f, "%d ", (INT) label->get_int_label(i));
+
+					TSparseEntry<ST>* vec = sparse_feature_matrix[i].features;
+					INT num_feat = sparse_feature_matrix[i].num_feat_entries;
+
+					for (INT j=0; j<num_feat; j++)
+					{
+						if (j<num_feat-1)
+							fprintf(f, "%d:%f ", (INT) vec[j].feat_index+1, (double) vec[j].entry);
+						else
+							fprintf(f, "%d:%f\n", (INT) vec[j].feat_index+1, (double) vec[j].entry);
+					}
+				}
+
+				fclose(f);
+				return true;
+			}
+			return false;
 		}
 
 	protected:
