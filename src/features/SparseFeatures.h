@@ -993,10 +993,11 @@ template <class ST> class CSparseFeatures: public CFeatures
 			return lab;
 		}
 
-		/** write features to file
+		/** write features to file using svm light format
 		 *
-		 * @param fname filename to load from
-		 * @return label object with corresponding labels
+		 * @param fname filename to write to
+		 * @param label Label object (number of labels must correspond to number of features)
+		 * @return true if successful
 		 */
 		bool write_svmlight_file(CHAR* fname, CLabels* label)
 		{
