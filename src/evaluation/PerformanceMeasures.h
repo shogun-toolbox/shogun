@@ -15,15 +15,18 @@
 #include "features/Labels.h"
 #include "lib/DynamicArray.h"
 
-/**
- * class to implement various performance measures, like:
- * ROC, PRC, DET, CC, WR accuracy, balance
+/** class to implement various performance measures:
+ * Receiver Operating Curve (ROC),
+ * Precision Recall Curve (PRC),
+ * Detection Error Tradeoff (DET),
+ * Cross Correlation coefficient (CC),
+ * Weighted Relative Accuracy (WRAcc),
+ * Balanced Error (BAL)
  *
  * based on:
  * Fawcett, T: March 2004, ROC Graphs: Notes and Practical
  * Considerations for Researchers
- *
- * @author Sebastian Henschel <shogun@kodeaffe.de>
+ * Sonnenburg, S: Feburary 2008, various discussions
  */
 class CPerformanceMeasures : public CSGObject
 {
@@ -33,30 +36,29 @@ class CPerformanceMeasures : public CSGObject
 
 		/** constructor
 		 *
-		 * @param true_labels_ true labels as seen in real world
-		 * @param output_ output labels/hypothesis from a classifier
+		 * @param true_labels true labels as seen in real world
+		 * @param output output labels/hypothesis from a classifier
 		 */
-		CPerformanceMeasures(CLabels* true_labels_, CLabels* output_);
+		CPerformanceMeasures(CLabels* true_labels, CLabels* output);
 
 		virtual ~CPerformanceMeasures();
 
 		/** initialise performance measures
 		 *
-		 * @param true_labels_ true labels as seen in real world
-		 * @param output_ output labels/hypothesis from a classifier
+		 * @param true_labels true labels as seen in real world
+		 * @param output output labels/hypothesis from a classifier
 		 * @throws ShogunException
-		 * @return if initialising was successful
 		 */
-		void init(CLabels* true_labels_, CLabels* output_);
+		void init(CLabels* true_labels, CLabels* output);
 
 		/** set true labels as seen in real world
 		 *
-		 * @param true_labels_ true labels
+		 * @param true_labels true labels
 		 * @return if setting was successful
 		 */
-		inline bool set_true_labels(CLabels* true_labels_)
+		inline bool set_true_labels(CLabels* true_labels)
 		{
-			true_labels=true_labels_;
+			m_true_labels=true_labels;
 			SG_REF(true_labels);
 			return true;
 		}
@@ -65,40 +67,38 @@ class CPerformanceMeasures : public CSGObject
 		 *
 		 * @return true labels as seen in real world
 		 */
-		inline CLabels* get_true_labels() const { return true_labels; }
+		inline CLabels* get_true_labels() const { return m_true_labels; }
 
 		/** set output labels/hypothesis from a classifier
 		 *
-		 * @param output_ output labels
+		 * @param output output labels
 		 * @return if setting was successful
 		 */
-		inline bool set_output(CLabels* output_)
+		inline bool set_output(CLabels* output)
 		{
-			output=output_;
+			m_output=output;
 			SG_REF(output);
 			return true;
 		}
 
-		/** get output labels/hypothesis from a classifier
+		/** get classifier's output labels/hypothesis
 		 *
 		 * @return output labels
 		 */
-		inline CLabels* get_output() const { return output; }
+		inline CLabels* get_output() const { return m_output; }
 
 		/** get number of labels in output/true labels
 		 *
 		 * @return number of labels in output/true labels
 		 */
-		inline INT get_num_labels() const { return num_labels; }
+		inline INT get_num_labels() const { return m_num_labels; }
 
-		/** get classifier's accuracy at threshold 0
+		/** get Receiver Operating Curve for previously given labels
+		 * (swig compatible)
 		 *
-		 * @throws ShogunException
-		 * @return classifer's accuracy at threshold 0
-		 */
-		DREAL get_accuracy0();
-
-		/** get ROC for previously given labels (swig compatible)
+		 * ROC point = false positives / all false labels,
+		 *             true positives / all true labels
+		 *
 		 * caller has to free
 		 *
 		 * @param result where computed ROC values will be stored
@@ -107,51 +107,77 @@ class CPerformanceMeasures : public CSGObject
 		 */
 		void get_ROC(DREAL** result, INT* dim, INT* num);
 
-		/** return area under ROC
+		/** return area under Receiver Operating Curve
+		 *
+		 * calculated by adding trapezoids
 		 *
 		 * @return area under ROC
 		 */
 		inline DREAL get_auROC()
 		{
-			if (auROC==0.) {
-				DREAL** roc;
+			if (m_auROC==CMath::ALMOST_NEG_INFTY) {
+				DREAL** roc=(DREAL**) malloc(sizeof(DREAL**));
 				compute_ROC(roc);
 				free(*roc);
+				free(roc);
 			}
-			return auROC;
+			return m_auROC;
 		}
 
-		/** return area over ROC
+		/** return area over Reveiver Operating Curve
+		 *
+		 * value is 1 - auROC
 		 *
 		 * @return area over ROC
 		 */
 		inline DREAL get_aoROC()
 		{
-			if (auROC==0.) {
-				DREAL** roc;
+			if (m_auROC==CMath::ALMOST_NEG_INFTY) {
+				DREAL** roc=(DREAL**) malloc(sizeof(DREAL**));
 				compute_ROC(roc);
 				free(*roc);
+				free(roc);
 			}
-			return 1.-auROC;
+			return 1.-m_auROC;
 		}
 
-		/** get classifier's accuracy aligned to ROC (swig compatible)
+		/** get classifier's accuracies aligned to Receiver Operating Curve
+		 * (swig compatible)
+		 *
+		 * accuracy = (true positives + true negatives) / all labels
+		 *
 		 * caller has to free
 		 *
-		 * @param result where accuracy will be stored
+		 * @param result where accuracies will be stored
 		 * @param num number of accuracy values
 		 */
 		void get_accuracyROC(DREAL** result, INT* num);
 
-		/** get classifier's error rate aligned to ROC (swig compatible)
+		/** get classifier's accuracy at threshold 0
+		 *
+		 * @throws ShogunException
+		 * @return classifer's accuracy at threshold 0
+		 */
+		DREAL get_accuracy0();
+
+		/** get classifier's error rates aligned to Receiver Operating Curve
+		 * (swig compatible)
+		 *
+		 * value is 1 - accuracy
+		 *
 		 * caller has to free
 		 *
-		 * @param result where error will be stored
+		 * @param result where errors will be stored
 		 * @param num number of error values
 		 */
 		void get_errorROC(DREAL** result, INT* num);
 
-		/** get PRC for previously given labels (swig compatible)
+		/** get Precision Recall Curve for previously given labels
+		 * (swig compatible)
+		 *
+		 * PRC point = true positives / all true labels,
+		 *             true positives / (true positives + false positives)
+		 *
 		 * caller has to free
 		 *
 		 * @param result where computed ROC values will be stored
@@ -160,35 +186,45 @@ class CPerformanceMeasures : public CSGObject
 		 */
 		void get_PRC(DREAL** result, INT* dim, INT* num);
 
-		/** return area under PRC
+		/** return area under Precision Recall Curve
+		 *
+		 * calculated by adding trapezoids
 		 *
 		 * @return area under PRC
 		 */
 		inline DREAL get_auPRC()
 		{
-			if (auPRC==0.) {
-				DREAL** prc;
+			if (m_auPRC==CMath::ALMOST_NEG_INFTY) {
+				DREAL** prc=(DREAL**) malloc(sizeof(DREAL**));
 				compute_PRC(prc);
 				free(*prc);
+				free(prc);
 			}
-			return auPRC;
+			return m_auPRC;
 		}
 
-		/** return area over PRC
+		/** return area over Precision Recall Curve
+		 *
+		 * value is 1 - auPRC
 		 *
 		 * @return area over PRC
 		 */
 		inline DREAL get_aoPRC()
 		{
-			if (auPRC==0.) {
-				DREAL** prc;
+			if (m_auPRC==CMath::ALMOST_NEG_INFTY) {
+				DREAL** prc=(DREAL**) malloc(sizeof(DREAL**));
 				compute_PRC(prc);
 				free(*prc);
+				free(prc);
 			}
-			return 1.-auPRC;
+			return 1.-m_auPRC;
 		}
 
-		/** get classifier's F-measure aligned to PRC (swig compatible)
+		/** get classifier's F-measure aligned to Precision Recall Curve
+		 * (swig compatible)
+		 *
+		 * F-measure = 2 / (1 / precision + 1 / recall)
+		 *
 		 * caller has to free
 		 *
 		 * @param result where F-measure will be stored
@@ -203,7 +239,12 @@ class CPerformanceMeasures : public CSGObject
 		 */
 		DREAL get_fmeasure0();
 
-		/** get DET curve for previously given labels (swig compatible)
+		/** get Detection Error Tradeoff curve for previously given labels
+		 * (swig compatible)
+		 *
+		 * DET point = false positives / all false labels,
+		 *             false negatives / all false labels
+		 *
 		 * caller has to free
 		 *
 		 * @param result where computed DET values will be stored
@@ -212,115 +253,123 @@ class CPerformanceMeasures : public CSGObject
 		 */
 		void get_DET(DREAL** result, INT* dim, INT* num);
 
-		/** return area under DET
+		/** return area under Detection Error Tradeoff curve
 		 *
-		 * @return area under DET
+		 * calculated by adding trapezoids
+		 *
+		 * @return area under DET curve
 		 */
 		inline DREAL get_auDET()
 		{
-			if (auDET==0.) {
-				DREAL** det;
+			if (m_auDET==CMath::ALMOST_NEG_INFTY) {
+				DREAL** det=(DREAL**) malloc(sizeof(DREAL**));
 				compute_DET(det);
 				free(*det);
+				free(det);
 			}
-			return auDET;
+			return m_auDET;
 		}
 
-		/** return area over DET
+		/** return area over Detection Error Tradeoff curve
 		 *
-		 * @return area over DET
+		 * value is 1 - auDET
+		 *
+		 * @return area over DET curve
 		 */
 		inline DREAL get_aoDET()
 		{
-			if (auDET==0.) {
-				DREAL** det;
+			if (m_auDET==CMath::ALMOST_NEG_INFTY) {
+				DREAL** det=(DREAL**) malloc(sizeof(DREAL**));
 				compute_DET(det);
 				free(*det);
+				free(det);
 			}
-			return 1.-auDET;
+			return 1.-m_auDET;
 		}
-		/** get classifier's CC (swig compatible)
+
+		/** get classifier's Cross Correlation coefficients (swig compatible)
+		 *
+		 * CC = (
+		 *        true positives * true negatives
+		 *        -
+		 *        false positives * false negatives
+		 *      )
+		 *      /
+		 *      sqrt(
+		 *        (true positives + false positives)
+		 *        *
+		 *        (true positives + false negatives)
+		 *        *
+		 *        (true negatives + false positives)
+		 *        *
+		 *        (true negatives + false negatives)
+		 *      )
+		 *
+		 * also check http://en.wikipedia.org/wiki/Correlation
+		 *
 		 * caller has to free
 		 *
-		 * @param result where CC will be stored
+		 * @param result where CCs will be stored
 		 * @param num number of CC values
 		 * @throws ShogunException
 		 */
 		void get_CC(DREAL** result, INT* num);
 
-		/** get classifier's CC at threshold 0
+		/** get classifier's Cross Correlation coefficient at threshold 0
 		 *
 		 * @return classifer's CC at threshold 0
 		 */
 		DREAL get_CC0();
 
-		/** get classifier's WR accuracy (swig compatible)
+		/** get classifier's Weighted Relative Accuracy (swig compatible)
+		 *
+		 * WRAcc = (
+		 *           true positives / (true positives + false negatives)
+		 *         )
+		 *         -
+		 *         (
+		 *           false positives / (false positives + true negatives)
+		 *         )
+		 *
 		 * caller has to free
 		 *
-		 * @param result where WR accuracy will be stored
-		 * @param num number of WR accuracy values
+		 * @param result where WRAcc values will be stored
+		 * @param num number of WRAcc values
 		 * @throws ShogunException
 		 */
-		void get_WRacc(DREAL** result, INT* num);
+		void get_WRAcc(DREAL** result, INT* num);
 
-		/** get classifier's WR accuracy at threshold 0
+		/** get classifier's Weighted Relative Accuracy at threshold 0
 		 *
-		 * @return classifer's WR accuracy at threshold 0
+		 * @return classifer's WRAcc at threshold 0
 		 */
-		DREAL get_WRacc0();
+		DREAL get_WRAcc0();
 
-		/** get classifier's balance (swig compatible)
+		/** get classifier's Balanced Error (swig compatible)
+		 *
+		 * BAL = 0.5
+		 *       *
+		 *       (
+		 *         true positives / all true labels
+		 *         +
+		 *         true negatives / all false labels
+		 *       )
+		 *
 		 * caller has to free
 		 *
-		 * @param result where balance will be stored
-		 * @param num number of balance values
+		 * @param result where BAL values will be stored
+		 * @param num number of BAL values
 		 * @throws ShogunException
 		 */
-		void get_balance(DREAL** result, INT* num);
+		void get_BAL(DREAL** result, INT* num);
 
-		/** get classifier's balance at threshold 0
+		/** get classifier's Balanced Error at threshold 0
 		 *
-		 * @return classifer's balance at threshold 0
+		 * @return classifer's BAL at threshold 0
 		 */
-		DREAL get_balance0();
+		DREAL get_BAL0();
 
 	protected:
-		/** true labels/examples as seen in real world */
-		CLabels* true_labels;
-		/** output labels/hypothesis from a classifier */
-		CLabels* output;
-		/** number of true labels/outputs/accuracies/ROC points */
-		INT num_labels;
-
-		/** number of positive examples in true_labels */
-		INT all_true;
-		/** number of negative examples in true_labels */
-		INT all_false;
-
-		/** array of size num_labels with indices of true_labels/output
-		 * sorted to fit ROC algorithm */
-		INT* sortedROC;
-		/** area under ROC; 1 - area over ROC */
-		DREAL auROC;
-		/** classifier's accuracy at threshold 0 */
-		DREAL accuracy0;
-
-		/** area under PRC; 1 - area over PRC */
-		DREAL auPRC;
-		/** classifier's F-measure at threshold 0 */
-		DREAL fmeasure0;
-
-		/** area under DET; 1 - area over DET */
-		DREAL auDET;
-
-		/** classifier's CC at threshold 0 */
-		DREAL cc0;
-		/** classifier's WR accuracy at threshold 0 */
-		DREAL wr_acc0;
-		/** classifier's balance at threshold 0 */
-		DREAL balance0;
-
-	private:
 		/** calculate trapezoid area for auROC
 		 *
 		 * @param x1 x coordinate of point 1
@@ -370,7 +419,7 @@ class CPerformanceMeasures : public CSGObject
 		 * not as efficient as the method applied to ROC, but useable by other
 		 * curves
 		 *
-		 * caller has to delete
+		 * caller has to delete[]
 		 *
 		 * @param threshold threshold to check against
 		 * @throws ShogunException
@@ -379,5 +428,41 @@ class CPerformanceMeasures : public CSGObject
 		 *         negatives
 		 */
 		INT* check_classification(DREAL threshold);
+
+
+		/** true labels/examples as seen in real world */
+		CLabels* m_true_labels;
+		/** output labels/hypothesis from a classifier */
+		CLabels* m_output;
+		/** number of true labels/outputs/accuracies/ROC points */
+		INT m_num_labels;
+
+		/** number of positive examples in true_labels */
+		INT m_all_true;
+		/** number of negative examples in true_labels */
+		INT m_all_false;
+
+		/** array of size num_labels with indices of true_labels/output
+		 * sorted to fit ROC algorithm */
+		INT* m_sortedROC;
+		/** area under ROC; 1 - area over ROC */
+		DREAL m_auROC;
+		/** classifier's accuracy at threshold 0 */
+		DREAL m_accuracy0;
+
+		/** area under PRC; 1 - area over PRC */
+		DREAL m_auPRC;
+		/** classifier's F-measure at threshold 0 */
+		DREAL m_fmeasure0;
+
+		/** area under DET; 1 - area over DET */
+		DREAL m_auDET;
+
+		/** classifier's CC at threshold 0 */
+		DREAL m_cc0;
+		/** classifier's WR accuracy at threshold 0 */
+		DREAL m_wracc0;
+		/** classifier's balance at threshold 0 */
+		DREAL m_bal0;
 };
 #endif /* __PERFORMANCEMEASURES_H_ */
