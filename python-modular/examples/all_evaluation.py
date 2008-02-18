@@ -115,8 +115,8 @@ def det(pm, numrows, numcols, fignum):
 
 def cc_wracc_balance(pm):
 	print 'CC at threshold 0:', pm.get_CC0()
-	print 'WR accuracy at threshold 0:', pm.get_WRacc0()
-	print 'Balance at threshold 0', pm.get_balance0()
+	print 'WRAcc at threshold 0:', pm.get_WRAcc0()
+	print 'BAL at threshold 0', pm.get_BAL0()
 
 ###########################################################################
 # call functions

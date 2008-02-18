@@ -121,7 +121,7 @@ void CPerformanceMeasures::create_sortedROC()
 template <class T> DREAL CPerformanceMeasures::trapezoid_area(T x1, T x2, T y1, T y2)
 {
 	DREAL base=CMath::abs(x1-x2);
-	DREAL height_avg=.5*(y1+y2);
+	DREAL height_avg=.5*(DREAL)(y1+y2);
 	return base*height_avg;
 }
 
@@ -189,8 +189,8 @@ void CPerformanceMeasures::compute_ROC(DREAL** result)
 	for (i=0; i<m_num_labels; i++) {
 		DREAL out=m_output->get_label(m_sortedROC[i]);
 		if (out!=out_prev) {
-			(*result)[i]=(DREAL) fp/m_all_false;
-			(*result)[num_roc+i]=(DREAL) tp/m_all_true;
+			(*result)[i]=(DREAL)fp/(DREAL)m_all_false;
+			(*result)[num_roc+i]=(DREAL)tp/(DREAL)m_all_true;
 			m_auROC+=trapezoid_area(fp, fp_prev, tp, tp_prev);
 
 			fp_prev=fp;
@@ -206,15 +206,15 @@ void CPerformanceMeasures::compute_ROC(DREAL** result)
 	}
 
 	// calculate for 1,1
-	(*result)[i]=(DREAL) fp/m_all_false;
-	(*result)[num_roc+i]=(DREAL) tp/m_all_true;
+	(*result)[i]=(DREAL)fp/(DREAL)(m_all_false);
+	(*result)[num_roc+i]=(DREAL)tp/DREAL(m_all_true);
 
 	/* paper says:
 	 * auROC+=trapezoid_area(1, fp_prev, 1, tp_prev)
 	 * wrong? was meant for calculating with rates?
 	 */
 	m_auROC+=trapezoid_area(fp, fp_prev, tp, tp_prev);
-	m_auROC/=m_all_true*m_all_false; // normalise
+	m_auROC/=(DREAL)(m_all_true*m_all_false); // normalise
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -229,7 +229,7 @@ DREAL CPerformanceMeasures::get_accuracy0()
 	INT* checked=check_classification(0);
 	INT tp=checked[0];
 	INT tn=checked[3];
-	m_accuracy0=(DREAL) (tp+tn)/m_num_labels;
+	m_accuracy0=(DREAL)(tp+tn)/(DREAL)m_num_labels;
 
 	delete[] checked;
 	return m_accuracy0;
@@ -256,7 +256,7 @@ void CPerformanceMeasures::compute_accuracyROC(DREAL** result, bool do_error)
 	for (INT i=0; i<m_num_labels; i++) {
 		DREAL out=m_output->get_label(m_sortedROC[i]);
 		if (out!=out_prev) {
-			(*result)[i]=(DREAL) (tp+tn)/m_num_labels;
+			(*result)[i]=(DREAL)(tp+tn)/(DREAL)m_num_labels;
 			if (do_error) (*result)[i]=1.-(*result)[i];
 			out_prev=out;
 		}
@@ -313,8 +313,8 @@ void CPerformanceMeasures::compute_PRC(DREAL** result)
 		checked=check_classification(threshold);
 		tp=checked[0];
 		fp=checked[1];
-		(*result)[i]=(DREAL) tp/m_all_true; // recall
-		(*result)[m_num_labels+i]=(DREAL) tp/(tp+fp); // precision
+		(*result)[i]=(DREAL)tp/(DREAL)m_all_true; // recall
+		(*result)[m_num_labels+i]=(DREAL)tp/(DREAL)(tp+fp); // precision
 
 		delete[] checked;
 	}
@@ -360,8 +360,8 @@ DREAL CPerformanceMeasures::get_fmeasure0()
 	INT* checked=check_classification(0);
 	INT tp=checked[0];
 	INT fp=checked[1];
-	DREAL recall=(DREAL) tp/m_all_true;
-	DREAL precision=(DREAL) tp/(tp+fp);
+	DREAL recall=(DREAL)tp/(DREAL)m_all_true;
+	DREAL precision=(DREAL)tp/(DREAL)(tp+fp);
 	m_fmeasure0=2./(1./precision+1./recall);
 
 	delete[] checked;
@@ -400,8 +400,8 @@ void CPerformanceMeasures::compute_DET(DREAL** result)
 		checked=check_classification(threshold);
 		fp=checked[1];
 		fn=checked[2];
-		(*result)[i]=(DREAL) fp/m_all_false;
-		(*result)[m_num_labels+i]=(DREAL) fn/m_all_false;
+		(*result)[i]=(DREAL)fp/(DREAL)m_all_false;
+		(*result)[m_num_labels+i]=(DREAL)fn/(DREAL)m_all_false;
 
 		delete[] checked;
 	}
@@ -428,7 +428,8 @@ DREAL CPerformanceMeasures::get_CC0()
 	INT fp=checked[1];
 	INT fn=checked[2];
 	INT tn=checked[3];
-	m_cc0=(tp*tn-fp*fn)/CMath::sqrt((DREAL) (tp+fp)*(tp+fn)*(tn+fp)*(tn+fn));
+	m_cc0=(DREAL)(tp*tn-fp*fn)/
+		CMath::sqrt((DREAL) (tp+fp)*(tp+fn)*(tn+fp)*(tn+fn));
 
 	delete[] checked;
 	return m_cc0;
@@ -461,7 +462,8 @@ void CPerformanceMeasures::get_CC(DREAL** result, INT* num)
 		fp=checked[1];
 		fn=checked[2];
 		tn=checked[3];
-		(*result)[i]=(tp*tn-fp*fn)/CMath::sqrt((DREAL) (tp+fp)*(tp+fn)*(tn+fp)*(tn+fn));
+		(*result)[i]=(DREAL)(tp*tn-fp*fn)/
+			CMath::sqrt((DREAL) (tp+fp)*(tp+fn)*(tn+fp)*(tn+fn));
 		delete[] checked;
 	}
 }
@@ -477,7 +479,7 @@ DREAL CPerformanceMeasures::get_WRAcc0()
 	INT fp=checked[1];
 	INT fn=checked[2];
 	INT tn=checked[3];
-	m_wracc0=(DREAL) tp/(tp+fn)-fp/(fp+tn);
+	m_wracc0=(DREAL)tp/(DREAL)(tp+fn)-(DREAL)fp/(DREAL)(fp+tn);
 
 	delete[] checked;
 	return m_wracc0;
@@ -510,7 +512,7 @@ void CPerformanceMeasures::get_WRAcc(DREAL** result, INT* num)
 		fp=checked[1];
 		fn=checked[2];
 		tn=checked[3];
-		(*result)[i]=(DREAL) tp/(tp+fn)-fp/(fp+tn);
+		(*result)[i]=(DREAL)tp/(DREAL)(tp+fn)-(DREAL)fp/(DREAL)(fp+tn);
 		delete[] checked;
 	}
 }
@@ -524,7 +526,7 @@ DREAL CPerformanceMeasures::get_BAL0()
 	INT* checked=check_classification(0);
 	INT tp=checked[0];
 	INT tn=checked[3];
-	m_bal0=.5*((DREAL) tp/m_all_true+tn/m_all_false);
+	m_bal0=.5*((DREAL)tp/(DREAL)m_all_true+(DREAL)tn/(DREAL)m_all_false);
 
 	delete[] checked;
 	return m_bal0;

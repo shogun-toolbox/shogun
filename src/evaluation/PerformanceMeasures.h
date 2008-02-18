@@ -172,6 +172,15 @@ class CPerformanceMeasures : public CSGObject
 		 */
 		void get_errorROC(DREAL** result, INT* num);
 
+		/** get classifier's error at threshold 0
+		 *
+		 * value is 1 - accuracy0
+		 *
+		 * @throws ShogunException
+		 * @return classifer's error at threshold 0
+		 */
+		DREAL get_error0() { return 1.-get_accuracy0(); }
+
 		/** get Precision Recall Curve for previously given labels
 		 * (swig compatible)
 		 *
