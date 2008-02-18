@@ -7,7 +7,6 @@
 #define SWIG_FILE_WITH_INIT
 %}
 
-%feature("autodoc","0");
 
 #ifdef HAVE_DOXYGEN
 %include "evaluation/Evaluation_doxygen.i"
@@ -18,10 +17,12 @@
 	  import_array();
 %}
 
+%include "lib/common.i"
 %include "lib/python_typemaps.i"
 #endif
 
-%include "lib/common.i"
+%feature("autodoc","0");
+
 %include "lib/ShogunException.i"
 %include "lib/io.i"
 %include "base/SGObject.i"
