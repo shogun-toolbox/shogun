@@ -231,7 +231,14 @@ class Doxy2SWIG:
         self.generic_parse(node, pad=1)
 
     def do_parameterlist(self, node):
-        self.add_text(['\n', '\n', 'Parameters:', '\n'])
+        text='unknown'
+        for key, val in node.attributes.items():
+            if key == 'kind':
+                if val == 'param': text = 'Parameters'
+                elif val == 'exception': text = 'Exceptions'
+                else: text = val
+                break
+        self.add_text(['\n', '\n', text, ':', '\n'])
         self.generic_parse(node, pad=1)
 
     def do_para(self, node):
@@ -244,7 +251,10 @@ class Doxy2SWIG:
             data=node.firstChild.data
         except AttributeError: # perhaps a <ref> tag in it
             data=node.firstChild.firstChild.data
-        self.add_text("%s: "%data)
+        if data.find('Exception') != -1:
+            self.add_text(data)
+        else:
+            self.add_text("%s: "%data)
 
     def do_parameterdefinition(self, node):
         self.generic_parse(node, pad=1)
@@ -399,8 +409,8 @@ class Doxy2SWIG:
         _data = "".join(ret)
         ret = []
         for i in _data.split('\n\n'):
-            if i == 'Parameters:':
-                ret.extend(['Parameters:\n-----------', '\n\n'])
+            if i == 'Parameters:' or i == 'Exceptions:':
+                ret.extend([i, '\n-----------', '\n\n'])
             elif i.find('// File:') > -1: # leave comments alone.
                 ret.extend([i, '\n'])
             else:
