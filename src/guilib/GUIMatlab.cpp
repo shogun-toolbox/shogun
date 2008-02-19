@@ -761,7 +761,7 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], INT nrhs, mxArray* retva
 			for ( INT i=0;i<8;i++)
 			{
 				for (INT j=0;j<4;j++)
-					SG_PRINT(" precomputed: (%i,%i): %f \n",i,j,(h->get_precomputed_svm_values().get_element(i,j)));
+					SG_PRINT(" precomputed: (%i,%i): %f \n",i,j,(h->get_precomputed_svm_value(i,j)));
 			}
 
 ///////////////////////
