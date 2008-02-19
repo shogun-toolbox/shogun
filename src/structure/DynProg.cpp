@@ -112,12 +112,17 @@ CDynProg::CDynProg(INT p_num_svms /*= 8 */)
 	  svm_value_unnormalized_single(num_svms_single),
 	  num_unique_words_single(0),
 
+ 
 	  max_a_id(0), m_seq(1,1,1), m_pos(1), m_orf_info(1,2), 
       m_segment_sum_weights(1,1), m_plif_list(1), 
 	  m_PEN(1,1), m_PEN_state_signals(1,1), 
 	  m_genestr(1,1), m_dict_weights(1,1), m_segment_loss(1,1,2), 
       m_segment_ids_mask(1,1),
-	  m_scores(1), m_states(1,1), m_positions(1,1)
+	  m_scores(1), m_states(1,1), m_positions(1,1),
+ 
+        //von Jonas
+        precomputed_svm_values(1,1)
+
 {
 	trans_list_forward = NULL ;
 	trans_list_forward_cnt = NULL ;
@@ -180,6 +185,10 @@ void CDynProg::set_N(INT p_N)
 	m_orf_info.resize_array(N,2) ;
 	m_PEN.resize_array(N,N) ;
 	m_PEN_state_signals.resize_array(N,1) ;
+
+	//Jonas
+	SG_WARNING("init precomputed_svm_values");	
+	precomputed_svm_values.resize_array(8,22000);
 }
 
 void CDynProg::set_p_vector(DREAL *p, INT p_N) 
@@ -402,6 +411,83 @@ void CDynProg::init_string_words_array(INT* p_string_words_array, INT num_elem)
 	string_words_array = string_words.get_array() ;
 } 
 
+void CDynProg::create_word_string(const CHAR* genestr, INT genestr_num, INT genestr_len, WORD*** wordstr)
+{
+        SG_WARNING( "genestr_num: %i genestr_len: %i num_degrees: %i word_degree[0]: %i",genestr_num,genestr_len,num_degrees,word_degree[0]); 
+	for (INT k=0; k<genestr_num; k++)
+	{
+		wordstr[k]=new WORD*[num_degrees] ;
+		for (INT j=0; j<num_degrees; j++)
+		{
+			wordstr[k][j]=NULL ;
+			{
+				wordstr[k][j]=new WORD[genestr_len] ;
+				for (INT i=0; i<genestr_len; i++)
+					switch (genestr[i])
+					{
+					case 'A':
+					case 'a': wordstr[k][j][i]=0 ; break ;
+					case 'C':
+					case 'c': wordstr[k][j][i]=1 ; break ;
+					case 'G':
+					case 'g': wordstr[k][j][i]=2 ; break ;
+					case 'T':
+					case 't': wordstr[k][j][i]=3 ; break ;
+					default: ASSERT(0) ;
+					}
+				translate_from_single_order(wordstr[k][j], genestr_len, word_degree[j]-1, word_degree[j]) ;
+			}
+		}
+	}
+        SG_WARNING( "genestr_num: %i genestr_len: %i num_degrees: %i word_degree[0]: %i",genestr_num,genestr_len,num_degrees,word_degree[0]); 
+}
+void CDynProg::precompute_content_values(WORD*** wordstr, const INT *pos,const INT num_cand_pos, const INT genestr_len,DREAL *dictionary_weights,INT dict_len)
+{
+	dict_weights.set_array(dictionary_weights, dict_len, num_svms, false, false) ;
+	dict_weights_array=dict_weights.get_array() ;
+
+        SG_WARNING( "num_cand_pos: %i genestr_len %i",num_cand_pos,genestr_len);
+	
+	for (INT s=0; s<num_svms; s++)
+	{
+		precomputed_svm_values.set_element(0.0,s,0);
+		SG_WARNING( "precomputed_svm_values.element(%i,%i): %f ",s,0,precomputed_svm_values.get_element(s,0));
+	}
+	//for (INT p=0 ; p<num_cand_pos-1 ; p++)
+	for (INT p=0 ; p<10 ; p++)
+	{
+		INT from_pos = pos[p];
+		INT to_pos = pos[p+1];
+		DREAL my_svm_values_unnormalized[num_svms] ;
+		INT my_num_words[num_svms];
+		
+		for (INT s=0; s<num_svms; s++)
+		{
+			my_svm_values_unnormalized[s]=precomputed_svm_values.element(p,s);
+		}
+		SG_WARNING( "from_pos: %i to_pos: %i num_degrees: %i num_svms: %i ",from_pos, to_pos,num_degrees,num_svms);
+		SG_WARNING( "p: %i ",p);
+		for (INT i=from_pos; i<to_pos;i++)
+                {
+			for (INT j=0; j<num_degrees; j++)
+			{
+				WORD word = wordstr[0][j][i] ;
+		                SG_WARNING( "word: %i ",word);
+				for (INT s=0; s<num_svms; s++)
+				{
+					my_svm_values_unnormalized[s] += dict_weights_array[(word+cum_num_words_array[j])+s*cum_num_words_array[num_degrees]] ;
+					my_num_words[s]++ ;
+				}
+			}
+		}
+		for (INT s=0; s<num_svms; s++)
+		{
+			precomputed_svm_values.set_element(my_svm_values_unnormalized[s] / (DREAL) my_num_words[s],p+1,s);
+		}
+                SG_WARNING( "my_svm_values_unnormalized: %f ",my_svm_values_unnormalized[0]);
+	}
+
+}
 bool CDynProg::check_svm_arrays()
 {
 	//SG_DEBUG( "wd_dim1=%d, cum_num_words=%d, num_words=%d, svm_pos_start=%d, num_uniq_w=%d, mod_words_dims=(%d,%d), sign_w=%d,string_w=%d\n num_degrees=%d, num_svms=%d, num_strings=%d", word_degree.get_dim1(), cum_num_words.get_dim1(), num_words.get_dim1(), svm_pos_start.get_dim1(), num_unique_words.get_dim1(), mod_words.get_dim1(), mod_words.get_dim2(), sign_words.get_dim1(), string_words.get_dim1(), num_degrees, num_svms, num_strings);

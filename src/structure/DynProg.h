@@ -547,6 +547,20 @@ public:
 	{
 		return initial_state_distribution_p_deriv[offset];
 	}
+	
+	/** create array of precomputed content svm values
+	 * Jonas
+	 * @param genestr
+	 * @param pos from 
+	 * @param pos to
+	 */
+	void precompute_content_values(WORD*** wordstr, const INT *pos,const INT num_cand_pos, const INT genestr_len,DREAL *dictionary_weights,INT dict_len);
+	/** create word string from char* 
+	 * Jonas
+	 */
+	void create_word_string(const CHAR* genestr, INT genestr_num, INT genestr_len, WORD*** wordstr);
+        
+	CArray2<DREAL> precomputed_svm_values;
 
 	/** access function for matrix a
 	 *
@@ -749,6 +763,7 @@ protected:
 	 */
 	void find_segment_loss_till_pos(const INT * pos, INT t_end, CArray2<INT>& segment_ids, struct segment_loss_struct & loss);
 
+	
 	/**@name model specific variables.
 	 * these are p,q,a,b,N,M etc
 	 */
