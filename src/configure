@@ -2055,7 +2055,15 @@ EOF
 				DEFINES="$DEFINES -DHAVE_LAPACK"
 				LINKFLAGS="$LINKFLAGS -llapack -lblas"
 			else
-				echores "no"
+				if cc_check -llapack_atlas -lblas
+				then
+					echores "yes"
+					HAVE_LAPACK='#define HAVE_LAPACK 1'
+					DEFINES="$DEFINES -DHAVE_LAPACK"
+					LINKFLAGS="$LINKFLAGS -llapack_atlas -lblas"
+				else
+					echores "no"
+				fi
 			fi
 		fi
 	fi

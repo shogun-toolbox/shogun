@@ -47,7 +47,6 @@ class CPerformanceMeasures : public CSGObject
 		 *
 		 * @param true_labels true labels as seen in real world
 		 * @param output output labels/hypothesis from a classifier
-		 * @throws ShogunException
 		 */
 		void init(CLabels* true_labels, CLabels* output);
 
@@ -132,13 +131,7 @@ class CPerformanceMeasures : public CSGObject
 		 */
 		inline DREAL get_aoROC()
 		{
-			if (m_auROC==CMath::ALMOST_NEG_INFTY) {
-				DREAL** roc=(DREAL**) malloc(sizeof(DREAL**));
-				compute_ROC(roc);
-				free(*roc);
-				free(roc);
-			}
-			return 1.-m_auROC;
+			return 1.0-get_auROC();
 		}
 
 		/** get classifier's accuracies aligned to Receiver Operating Curve
@@ -153,12 +146,13 @@ class CPerformanceMeasures : public CSGObject
 		 */
 		void get_accuracyROC(DREAL** result, INT* num);
 
-		/** get classifier's accuracy at threshold 0
+		/** get classifier's accuracy at threshold
 		 *
-		 * @throws ShogunException
-		 * @return classifer's accuracy at threshold 0
+		 * @param threshold all values below are considered negative examples 
+		 *        (default 0)
+		 * @return classifer's accuracy at threshold
 		 */
-		DREAL get_accuracy0();
+		DREAL get_accuracy(DREAL threshold=0);
 
 		/** get classifier's error rates aligned to Receiver Operating Curve
 		 * (swig compatible)
@@ -172,14 +166,18 @@ class CPerformanceMeasures : public CSGObject
 		 */
 		void get_errorROC(DREAL** result, INT* num);
 
-		/** get classifier's error at threshold 0
+		/** get classifier's error at threshold
 		 *
 		 * value is 1 - accuracy0
 		 *
-		 * @throws ShogunException
-		 * @return classifer's error at threshold 0
+		 * @param threshold all values below are considered negative examples
+		 *        (default 0)
+		 * @return classifer's error at threshold
 		 */
-		DREAL get_error0() { return 1.-get_accuracy0(); }
+		inline DREAL get_error(DREAL threshold=0)
+		{
+			return 1.0-get_accuracy(threshold);
+		}
 
 		/** get Precision Recall Curve for previously given labels
 		 * (swig compatible)
@@ -220,13 +218,7 @@ class CPerformanceMeasures : public CSGObject
 		 */
 		inline DREAL get_aoPRC()
 		{
-			if (m_auPRC==CMath::ALMOST_NEG_INFTY) {
-				DREAL** prc=(DREAL**) malloc(sizeof(DREAL**));
-				compute_PRC(prc);
-				free(*prc);
-				free(prc);
-			}
-			return 1.-m_auPRC;
+			return 1-get_auPRC();
 		}
 
 		/** get classifier's F-measure aligned to Precision Recall Curve
@@ -238,7 +230,6 @@ class CPerformanceMeasures : public CSGObject
 		 *
 		 * @param result where F-measure will be stored
 		 * @param num number of F-measure values
-		 * @throws ShogunException
 		 */
 		void get_fmeasurePRC(DREAL** result, INT* num);
 
@@ -246,7 +237,7 @@ class CPerformanceMeasures : public CSGObject
 		 *
 		 * @return classifer's F-measure at threshold 0
 		 */
-		DREAL get_fmeasure0();
+		DREAL get_fmeasure(DREAL threshold=0);
 
 		/** get Detection Error Tradeoff curve for previously given labels
 		 * (swig compatible)
@@ -287,13 +278,7 @@ class CPerformanceMeasures : public CSGObject
 		 */
 		inline DREAL get_aoDET()
 		{
-			if (m_auDET==CMath::ALMOST_NEG_INFTY) {
-				DREAL** det=(DREAL**) malloc(sizeof(DREAL**));
-				compute_DET(det);
-				free(*det);
-				free(det);
-			}
-			return 1.-m_auDET;
+			return 1-get_auDET();
 		}
 
 		/** get classifier's Cross Correlation coefficients (swig compatible)
@@ -320,15 +305,14 @@ class CPerformanceMeasures : public CSGObject
 		 *
 		 * @param result where CCs will be stored
 		 * @param num number of CC values
-		 * @throws ShogunException
 		 */
-		void get_CC(DREAL** result, INT* num);
+		void get_all_CC(DREAL** result, INT* num);
 
-		/** get classifier's Cross Correlation coefficient at threshold 0
+		/** get classifier's Cross Correlation coefficient at threshold
 		 *
-		 * @return classifer's CC at threshold 0
+		 * @return classifer's CC at threshold 
 		 */
-		DREAL get_CC0();
+		DREAL get_CC(DREAL threshold=0);
 
 		/** get classifier's Weighted Relative Accuracy (swig compatible)
 		 *
@@ -344,15 +328,14 @@ class CPerformanceMeasures : public CSGObject
 		 *
 		 * @param result where WRAcc values will be stored
 		 * @param num number of WRAcc values
-		 * @throws ShogunException
 		 */
-		void get_WRAcc(DREAL** result, INT* num);
+		void get_all_WRAcc(DREAL** result, INT* num);
 
 		/** get classifier's Weighted Relative Accuracy at threshold 0
 		 *
 		 * @return classifer's WRAcc at threshold 0
 		 */
-		DREAL get_WRAcc0();
+		DREAL get_WRAcc(DREAL threshold=0);
 
 		/** get classifier's Balanced Error (swig compatible)
 		 *
@@ -368,15 +351,14 @@ class CPerformanceMeasures : public CSGObject
 		 *
 		 * @param result where BAL values will be stored
 		 * @param num number of BAL values
-		 * @throws ShogunException
 		 */
-		void get_BAL(DREAL** result, INT* num);
+		void get_all_BAL(DREAL** result, INT* num);
 
 		/** get classifier's Balanced Error at threshold 0
 		 *
 		 * @return classifer's BAL at threshold 0
 		 */
-		DREAL get_BAL0();
+		DREAL get_BAL(DREAL threshold=0);
 
 	protected:
 		/** calculate trapezoid area for auROC
@@ -391,13 +373,11 @@ class CPerformanceMeasures : public CSGObject
 
 		/** create index for ROC sorting
 		 *
-		 * @throws ShogunException
 		 */
 		void create_sortedROC();
 		
 		/** compute ROC points and auROC
 		 *
-		 * @throws ShogunException
 		 */
 		void compute_ROC(DREAL** result);
 
@@ -405,40 +385,33 @@ class CPerformanceMeasures : public CSGObject
 		 *
 		 * @param result where the result will be stored
 		 * @param do_error if error instead of accuracy shall be computed
-		 * @throws ShogunException
 		 */
 		void compute_accuracyROC(DREAL** result, bool do_error=false);
 
 		/** compute PRC points and auPRC
 		 *
 		 * @param result where the result will be stored
-		 * @throws ShogunException
 		 */
 		void compute_PRC(DREAL** result);
 
 		/** compute DET points and auDET
 		 *
 		 * @param result where the result will be stored
-		 * @throws ShogunException
 		 */
 		void compute_DET(DREAL** result);
 
-		/** check classifiers output against true labels
-		 *
-		 * not as efficient as the method applied to ROC, but useable by other
-		 * curves
+		/** compute confusion matrix 
 		 *
 		 * caller has to delete[]
 		 *
 		 * @param threshold threshold to check against
-		 * @throws ShogunException
 		 * @return array of 4 values, the number of:
 		 *         true positives, false positives, false negatives, true
 		 *         negatives
 		 */
-		INT* check_classification(DREAL threshold);
+		INT* compute_confusion_matrix(DREAL threshold);
 
-
+	protected:
 		/** true labels/examples as seen in real world */
 		CLabels* m_true_labels;
 		/** output labels/hypothesis from a classifier */
@@ -456,22 +429,22 @@ class CPerformanceMeasures : public CSGObject
 		INT* m_sortedROC;
 		/** area under ROC; 1 - area over ROC */
 		DREAL m_auROC;
-		/** classifier's accuracy at threshold 0 */
-		DREAL m_accuracy0;
+		/** classifier's accuracy */
+		DREAL m_accuracy;
 
 		/** area under PRC; 1 - area over PRC */
 		DREAL m_auPRC;
-		/** classifier's F-measure at threshold 0 */
-		DREAL m_fmeasure0;
+		/** classifier's F-measure */
+		DREAL m_fmeasure;
 
 		/** area under DET; 1 - area over DET */
 		DREAL m_auDET;
 
-		/** classifier's CC at threshold 0 */
-		DREAL m_cc0;
-		/** classifier's WR accuracy at threshold 0 */
-		DREAL m_wracc0;
-		/** classifier's balance at threshold 0 */
-		DREAL m_bal0;
+		/** classifier's CC */
+		DREAL m_cc;
+		/** classifier's weighted relative accuracy */
+		DREAL m_wracc;
+		/** classifier's balanced error */
+		DREAL m_bal;
 };
 #endif /* __PERFORMANCEMEASURES_H_ */

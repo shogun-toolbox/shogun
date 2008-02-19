@@ -65,7 +65,7 @@ def roc(pm, numrows, numcols, fignum):
 
 	auROC=pm.get_auROC()
 	aoROC=pm.get_aoROC()
-	acc0=pm.get_accuracy0();
+	acc0=pm.get_accuracy();
 	text="auROC = %f\naoROC = %f\naccuracy0 = %f"%(auROC, aoROC, acc0)
 	legend=pylab.legend(('ROC', 'accuracy', 'random guess', text),
 		loc='lower right')
@@ -88,7 +88,7 @@ def prc(pm, numrows, numcols, fignum):
 
 	auPRC=pm.get_auPRC()
 	aoPRC=pm.get_aoPRC()
-	fmeasure0=pm.get_fmeasure0();
+	fmeasure0=pm.get_fmeasure();
 	text="auPRC = %f\naoPRC = %f\nF-measure0 = %f"%(auPRC, aoPRC, fmeasure0)
 	legend=pylab.legend(('PRC', 'F-measure', text), loc='lower right')
 	texts=legend.get_texts()
@@ -114,9 +114,9 @@ def det(pm, numrows, numcols, fignum):
 	pylab.setp(texts, fontsize='small')
 
 def cc_wracc_balance(pm):
-	print 'CC at threshold 0:', pm.get_CC0()
-	print 'WRAcc at threshold 0:', pm.get_WRAcc0()
-	print 'BAL at threshold 0', pm.get_BAL0()
+	print 'CC at threshold 0:', pm.get_CC()
+	print 'WRAcc at threshold 0:', pm.get_WRAcc()
+	print 'BAL at threshold 0', pm.get_BAL()
 
 ###########################################################################
 # call functions
