@@ -1,3 +1,15 @@
+2008-02-19  Soeren Sonnenburg <debian@nn7.de>
+
+	* SHOGUN Release version 0.5.1
+	* This release contains minor bugfixes
+		- Allow building w/o doxygen
+		- Code cleanups
+		- Support newer lapack/atlas/blas
+	* New methods:
+		- Added several performance measures
+		- SVMSGD
+		- Efficient reading/writing of svmlight format
+
 2008-01-31  Soeren Sonnenburg <debian@nn7.de>
 
 	* SHOGUN Release version 0.5.0

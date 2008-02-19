@@ -247,9 +247,9 @@ endif
 
 lib/versionstring.h:	$(SVNEntries)
 		sh .version.sh > $@
-		-@sed -i "s/PROJECT_NUMBER         = .*/PROJECT_NUMBER         = `sed -n 's/^#define VERSION_RELEASE "\(.*\)_"/\1/p' $@`/" ../doc/doxygen/Doxyfile
 
 doc:	lib/versionstring.h
+		-@sed -i "s/PROJECT_NUMBER         = .*/PROJECT_NUMBER         = `sed -n 's/^#define VERSION_RELEASE "\(.*\)_"/\1/p' $@`/" ../doc/doxygen/Doxyfile
 		cd ../doc && make doxygen
 
 ifeq (python-modular,$(INTERFACE))

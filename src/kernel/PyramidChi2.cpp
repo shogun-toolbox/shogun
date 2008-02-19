@@ -14,7 +14,6 @@
 #include "features/Features.h"
 #include "features/RealFeatures.h"
 #include "lib/io.h"
-#include "lib/ShogunException.h"
 
 CPyramidChi2::CPyramidChi2(INT size, DREAL width2, INT* pyramidlevels2,INT
 		numlevels2, INT  numbinsinhistogram2, DREAL* weights2, INT numweights2)
@@ -32,7 +31,7 @@ CPyramidChi2::CPyramidChi2(INT size, DREAL width2, INT* pyramidlevels2,INT
 		weights[i]=weights2[i];
 	
 	if (!sanitycheck_weak())
-		throw ShogunException::ShogunException("CPyramidChi2::CPyramidChi2(... first constructor): false==sanitycheck_weak() occurred! Someone messed up the initializing of the kernel.\0");
+		SG_ERROR("CPyramidChi2::CPyramidChi2(... first constructor): false==sanitycheck_weak() occurred! Someone messed up the initializing of the kernel.\0");
 }
 
 void CPyramidChi2::cleanup()
@@ -73,7 +72,7 @@ CPyramidChi2::CPyramidChi2(CRealFeatures* l, CRealFeatures* r, INT size, DREAL w
 		weights[i]=weights2[i];
 	
 	if(!sanitycheck_weak())
-		throw ShogunException::ShogunException("CPyramidChi2::CPyramidChi2(... second constructor): false==sanitycheck_weak() occurred! Someone messed up with initializing the kernel.\0");
+		SG_ERROR("CPyramidChi2::CPyramidChi2(... second constructor): false==sanitycheck_weak() occurred! Someone messed up with initializing the kernel.\0");
 
 	init(l, r);
 }

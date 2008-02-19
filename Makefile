@@ -71,6 +71,7 @@ package-from-release:
 
 DESTDIR := ../$(RELEASENAME)
 REMOVE_SVMLIGHT := rm -f $(DESTDIR)/src/classifier/svm/SVM_light.* $(DESTDIR)/src/classifier/svm/Optimizer.* $(DESTDIR)/src/regression/svr/SVR_light.* $(DESTDIR)/src/LICENSE.SVMlight; \
+rm -f $(DESTDIR)/testsuite/data/classifier/SVMLight* $(DESTDIR)/testsuite/data/regression/SVRLight*	; \
 grep -rl USE_SVMLIGHT $(DESTDIR)| xargs --no-run-if-empty sed -i '/\#ifdef USE_SVMLIGHT/,/\#endif \/\/USE_SVMLIGHT/c \\' ; \
 sed -i '/^ \* EXCEPT FOR THE KERNEL CACHING FUNCTIONS WHICH ARE (W) THORSTEN JOACHIMS/,/ \* this program is free software/c\ * This program is free software; you can redistribute it and/or modify' $(DESTDIR)/src/kernel/Kernel.cpp $(DESTDIR)/src/kernel/Kernel.h ; \
 sed -i '/^SVMlight:$$/,/^$$/c\\' $(DESTDIR)/src/LICENSE
@@ -84,6 +85,8 @@ src/lib/versionstring.h:
 
 release: src/lib/versionstring.h $(DESTDIR)/src/lib/versionstring.h vanilla-package r-package
 	rm -rf $(DESTDIR)
+
+
 
 vanilla-package: src/lib/versionstring.h $(DESTDIR)/src/lib/versionstring.h
 	tar -c -f $(DESTDIR).tar -C .. $(RELEASENAME)
@@ -108,6 +111,7 @@ svn-tag-release: src/lib/versionstring.h
 	sed -i "s/^Date:.*$$/Date: `date +%Y-%m-%d`/" R/sg/DESCRIPTION
 	sed -i "s/^SHOGUN:=.*$$/SHOGUN:=sg_$(MAINVERSION)-1.tar.gz/" R/Makefile
 	sed -i 's/VERSION_RELEASE "svn/VERSION_RELEASE "v$(MAINVERSION)/' src/lib/versionstring.h
+	sed -i "s/PROJECT_NUMBER         = .*/PROJECT_NUMBER         = v$(MAINVERSION)/" doc/doxygen/Doxyfile
 	svn ci -m "Preparing for new Release shogun_$(MAINVERSION)"
 	-cd .. && svn --force rm releases/shogun_$(MAINVERSION)
 	-cd .. && svn commit releases -m "clean old tag"

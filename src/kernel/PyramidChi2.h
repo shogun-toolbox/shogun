@@ -24,14 +24,14 @@ class CPyramidChi2 : public CSimpleKernel<DREAL>
 public:
 
 	CPyramidChi2(INT size, DREAL width2,
-		INT* pyramidlevels2,INT numlevels2,
-		INT  numbinsinhistogram2, DREAL* weights2,INT numweights2);
+		INT* pyramidlevels2, INT numlevels2,
+		INT  numbinsinhistogram2, DREAL* weights2, INT numweights2);
 
 	virtual bool init(CFeatures* l, CFeatures* r);
 
 	CPyramidChi2(CRealFeatures* l, CRealFeatures* r, INT size, DREAL width2,
-		INT* pyramidlevels2,INT numlevels2,
-		INT  numbinsinhistogram2, DREAL* weights2,INT numweights2);
+		INT* pyramidlevels2, INT numlevels2,
+		INT  numbinsinhistogram2, DREAL* weights2, INT numweights2);
 
 	virtual ~CPyramidChi2();
 
