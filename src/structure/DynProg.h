@@ -568,7 +568,7 @@ public:
 	 */
 	inline DREAL get_a(T_STATES line_, T_STATES column) const
 	{
-	  return transition_matrix_a.element(line_,column); // look also best_path()!
+		return transition_matrix_a.element(line_,column); // look also best_path()!
 	}
 
 	/** access function for matrix a derivated
@@ -579,9 +579,13 @@ public:
 	 */
 	inline DREAL get_a_deriv(T_STATES line_, T_STATES column) const
 	{
-	  return transition_matrix_a_deriv.element(line_,column); // look also best_path()!
+		return transition_matrix_a_deriv.element(line_,column); // look also best_path()!
 	}
-	//@}
+
+	inline CArray2<DREAL> get_precomputed_svm_values() const
+	{
+		return m_precomputed_svm_values;
+	}
 protected:
 
 	/* helper functions */

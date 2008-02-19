@@ -604,9 +604,9 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], INT nrhs, mxArray* retva
 			double* p=mxGetPr(mx_p);
 			double* q=mxGetPr(mx_q);
 			double* a=mxGetPr(mx_a_trans);
-			INT use_orf=(INT)*mxGetPr(mx_use_orf) ;
+			//INT use_orf=(INT)*mxGetPr(mx_use_orf) ;
 
-			double* seq=mxGetPr(mx_seq) ;
+			//double* seq=mxGetPr(mx_seq) ;
 
 			double* pos_=mxGetPr(mx_pos) ;
 			INT * pos = new INT[M] ;
@@ -710,7 +710,7 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], INT nrhs, mxArray* retva
 			memset(my_pos, -1, M*(nbest+nother)*sizeof(INT)) ;
 			
 			mxArray* mx_prob = mxCreateDoubleMatrix(1, (nbest+nother), mxREAL);
-			double* p_prob = mxGetPr(mx_prob);
+			//double* p_prob = mxGetPr(mx_prob);
 
 			bool segment_loss_nonzero = false ;
 			if (mx_segment_ids_mask!=NULL)
@@ -753,14 +753,16 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], INT nrhs, mxArray* retva
 			assert(genestr_num==1) ;
 ////////////////testzeug
 //
-	WORD** wordstr[8]; 
-	h->create_word_string(genestr,(INT) 1, L,wordstr);
-        printf("\n\n\n  wordstring: %i \n\n\n",wordstr[0][0][2]);
+			WORD** wordstr[8]; 
+			h->create_word_string(genestr,(INT) 1, L,wordstr);
+			SG_PRINT("\n\n\n  wordstring: %i \n\n\n",wordstr[0][0][2]);
 
-	h->precompute_content_values(wordstr, pos , M , L,dict_weights, dict_weigths_num*D); 
-        for ( INT i=0;i<8;i++)
-		for (INT j=0;j<4;j++)
-        		printf(" precomputed: (%i,%i): %f \n",i,j,(h->precomputed_svm_values.get_element(i,j)));
+			h->precompute_content_values(wordstr, pos , M , L,dict_weights, dict_weigths_num*D); 
+			for ( INT i=0;i<8;i++)
+			{
+				for (INT j=0;j<4;j++)
+					SG_PRINT(" precomputed: (%i,%i): %f \n",i,j,(h->get_precomputed_svm_values().get_element(i,j)));
+			}
 
 ///////////////////////
 		
