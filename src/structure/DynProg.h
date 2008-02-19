@@ -582,9 +582,9 @@ public:
 		return transition_matrix_a_deriv.element(line_,column); // look also best_path()!
 	}
 
-	inline CArray2<DREAL> get_precomputed_svm_values() const
+	inline DREAL get_precomputed_svm_value(INT i, INT j) const
 	{
-		return m_precomputed_svm_values;
+		return m_precomputed_svm_values.get_element(i,j);
 	}
 protected:
 

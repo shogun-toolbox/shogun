@@ -136,7 +136,7 @@ targets:
 	@egrep '^[a-z]+:' Makefile | grep -v '\.o:' | sed -e 's/:.*//g' -e 's/out//g' -e 's/end//g' -e 's/^/     /g' | sort | uniq
 
 distclean: clean
-		rm -f .config tags lib/config.h lib/versionstring.h
+		rm -f .config tags lib/config.h
 swigclean:
 	rm -f $(shell find -name "*_wrap.h" -o -name "*_wrap.cxx.o" -o -name "*_wrap.cxx" 2>/dev/null) 
 
@@ -211,7 +211,7 @@ endif #octave
 endif #python+swig
 
 dep:	depend
-depend:		.config lib/versionstring.h
+depend:		.config
 ifeq (makedepend,$(MAKEDEPEND))
 	-$(MAKEDEPEND) $(DEFINES) $(INCLUDES) \
 		$(shell find $(SRCDIR) -mindepth 2 -name "*.$(EXT_SRC_CPP)" ) $(MAKEDEPENDOPTS) | \
@@ -228,7 +228,7 @@ endif
 		cut -c 3- | \
 		$(PYTHON) .generate_link_dependencies.py $(EXT_LIB_SWIG) >>.depend
 
-.depend:	.config lib/versionstring.h
+.depend:	.config
 ifeq (makedepend,$(MAKEDEPEND))
 	-$(MAKEDEPEND) $(DEFINES) $(INCLUDES) \
 		$(shell find $(SRCDIR) -mindepth 2 -name "*.$(EXT_SRC_CPP)" ) $(MAKEDEPENDOPTS) | \
@@ -263,7 +263,7 @@ endif
 ChangeLog:
 		-@svn2cl --group-by-day --authors=.authors 2>/dev/null
 
-$(OBJFILES): .config .depend lib/versionstring.h ChangeLog
+$(OBJFILES): .config .depend ChangeLog
 
 ifeq (yes,$(USE_SWIG))
 $(TARGET): $(OBJFILES) $(SRCFILES) $(HEADERFILES) $(SWIGSRCFILES) $(SWIGDOCFILES) $(SWIGLIBFILES) 
