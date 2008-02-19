@@ -560,8 +560,6 @@ public:
 	 */
 	void create_word_string(const CHAR* genestr, INT genestr_num, INT genestr_len, WORD*** wordstr);
         
-	CArray2<DREAL> precomputed_svm_values;
-
 	/** access function for matrix a
 	 *
 	 * @param line_ row in matrix 0...N-1
@@ -895,5 +893,8 @@ protected:
 	CArray2<INT> m_states;
 	/** m positions */
 	CArray2<INT> m_positions;
+
+	/** m precompted svm values */
+	CArray2<DREAL> m_precomputed_svm_values;
 };
 #endif

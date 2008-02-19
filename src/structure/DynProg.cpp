@@ -119,9 +119,7 @@ CDynProg::CDynProg(INT p_num_svms /*= 8 */)
 	  m_genestr(1,1), m_dict_weights(1,1), m_segment_loss(1,1,2), 
       m_segment_ids_mask(1,1),
 	  m_scores(1), m_states(1,1), m_positions(1,1),
- 
-        //von Jonas
-        precomputed_svm_values(1,1)
+	  m_precomputed_svm_values(1,1) //by Jonas
 
 {
 	trans_list_forward = NULL ;
@@ -188,7 +186,7 @@ void CDynProg::set_N(INT p_N)
 
 	//Jonas
 	SG_WARNING("init precomputed_svm_values");	
-	precomputed_svm_values.resize_array(8,22000);
+	m_precomputed_svm_values.resize_array(8,22000);
 }
 
 void CDynProg::set_p_vector(DREAL *p, INT p_N) 
@@ -450,8 +448,8 @@ void CDynProg::precompute_content_values(WORD*** wordstr, const INT *pos,const I
 	
 	for (INT s=0; s<num_svms; s++)
 	{
-		precomputed_svm_values.set_element(0.0,s,0);
-		SG_WARNING( "precomputed_svm_values.element(%i,%i): %f ",s,0,precomputed_svm_values.get_element(s,0));
+		m_precomputed_svm_values.set_element(0.0,s,0);
+		SG_WARNING( "precomputed_svm_values.element(%i,%i): %f ",s,0,m_precomputed_svm_values.get_element(s,0));
 	}
 	//for (INT p=0 ; p<num_cand_pos-1 ; p++)
 	for (INT p=0 ; p<10 ; p++)
@@ -463,7 +461,7 @@ void CDynProg::precompute_content_values(WORD*** wordstr, const INT *pos,const I
 		
 		for (INT s=0; s<num_svms; s++)
 		{
-			my_svm_values_unnormalized[s]=precomputed_svm_values.element(p,s);
+			my_svm_values_unnormalized[s]=m_precomputed_svm_values.element(p,s);
 		}
 		SG_WARNING( "from_pos: %i to_pos: %i num_degrees: %i num_svms: %i ",from_pos, to_pos,num_degrees,num_svms);
 		SG_WARNING( "p: %i ",p);
@@ -482,7 +480,7 @@ void CDynProg::precompute_content_values(WORD*** wordstr, const INT *pos,const I
 		}
 		for (INT s=0; s<num_svms; s++)
 		{
-			precomputed_svm_values.set_element(my_svm_values_unnormalized[s] / (DREAL) my_num_words[s],p+1,s);
+			m_precomputed_svm_values.set_element(my_svm_values_unnormalized[s] / (DREAL) my_num_words[s],p+1,s);
 		}
                 SG_WARNING( "my_svm_values_unnormalized: %f ",my_svm_values_unnormalized[0]);
 	}
