@@ -1001,10 +1001,12 @@ template <class ST> class CSparseFeatures: public CFeatures
 		 */
 		bool write_svmlight_file(CHAR* fname, CLabels* label)
 		{
-			FILE* f=fopen(fname, "wb");
+			ASSERT(label);
 			INT num=label->get_num_labels();
 			ASSERT(num>0);
 			ASSERT(num==num_vectors);
+
+			FILE* f=fopen(fname, "wb");
 
 			if (f)
 			{
