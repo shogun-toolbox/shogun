@@ -126,6 +126,9 @@ bool CSVMOcas::train()
 	delete[] lab;
 	lab=NULL;
 
+	delete[] old_w;
+	old_w=NULL;
+
 	return true;
 }
 
