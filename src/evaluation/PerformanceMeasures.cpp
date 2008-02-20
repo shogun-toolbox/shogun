@@ -16,9 +16,7 @@
 CPerformanceMeasures::CPerformanceMeasures()
 : CSGObject(), m_true_labels(NULL), m_output(NULL), m_sortedROC(NULL)
 {
-	try {
-		init(NULL, NULL);
-	} catch (ShogunException(e)) {}
+	init_nolabels();
 }
 
 CPerformanceMeasures::CPerformanceMeasures(
@@ -42,19 +40,19 @@ CPerformanceMeasures::~CPerformanceMeasures()
 
 /////////////////////////////////////////////////////////////////////
 
-void CPerformanceMeasures::init(CLabels* true_labels, CLabels* output)
+void CPerformanceMeasures::init_nolabels()
 {
 	m_all_true=0;
 	m_all_false=0;
 	m_num_labels=0;
 	m_auROC=CMath::ALMOST_NEG_INFTY;
-	m_accuracy=CMath::ALMOST_NEG_INFTY;
 	m_auPRC=CMath::ALMOST_NEG_INFTY;
-	m_fmeasure=CMath::ALMOST_NEG_INFTY;
 	m_auDET=CMath::ALMOST_NEG_INFTY;
-	m_cc=CMath::ALMOST_NEG_INFTY;
-	m_wracc=CMath::ALMOST_NEG_INFTY;
-	m_bal=CMath::ALMOST_NEG_INFTY;
+}
+
+void CPerformanceMeasures::init(CLabels* true_labels, CLabels* output)
+{
+	init_nolabels();
 
 	if (!true_labels)
 		SG_ERROR("No true labels given!\n");
@@ -110,8 +108,6 @@ void CPerformanceMeasures::init(CLabels* true_labels, CLabels* output)
 	SG_REF(true_labels);
 	m_output=output;
 	SG_REF(output);
-
-	create_sortedROC();
 }
 
 void CPerformanceMeasures::create_sortedROC()
@@ -141,7 +137,7 @@ template <class T> DREAL CPerformanceMeasures::trapezoid_area(T x1, T x2, T y1, 
 	return base*height_avg;
 }
 
-INT* CPerformanceMeasures::compute_confusion_matrix(DREAL threshold)
+void CPerformanceMeasures::compute_confusion_matrix(DREAL threshold, INT *tp, INT* fp, INT* fn, INT* tn)
 {
 	if (!m_true_labels)
 		SG_ERROR("No true labels given!\n");
@@ -150,39 +146,52 @@ INT* CPerformanceMeasures::compute_confusion_matrix(DREAL threshold)
 	if (m_num_labels<1)
 		SG_ERROR("Need at least one example!\n");
 
-	INT num_types=4;
-	INT* types=new INT[num_types];
-
-	for (INT i=0; i<num_types; i++)
-		types[i]=0;
+	if (tp)
+		*tp=0;
+	if (fp)
+		*fp=0;
+	if (fn)
+		*fn=0;
+	if (tn)
+		*tn=0;
 
 	for (INT i=0; i<m_num_labels; i++)
 	{
 		if (m_output->get_label(i)>=threshold)
 		{
 			if (m_true_labels->get_label(i)>0)
-				types[0]++;
+			{
+				if (tp)
+					(*tp)++;
+			}
 			else
-				types[1]++;
+			{
+				if (fp)
+					(*fp)++;
+			}
 		}
 		else
 		{
 			if (m_true_labels->get_label(i)>0)
-				types[2]++;
+			{
+				if (fn)
+					(*fn)++;
+			}
 			else
-				types[3]++;
+			{
+				if (tn)
+					(*tn)++;
+			}
 		}
 	}
-
-	return types;
 }
 
 /////////////////////////////////////////////////////////////////////
 
-void CPerformanceMeasures::get_ROC(DREAL** result, INT *dim, INT *num)
+void CPerformanceMeasures::get_ROC(DREAL** result, INT *num, INT *dim)
 {
-	*dim=m_num_labels+1;
-	*num=2;
+	*num=m_num_labels+1;
+	*dim=2;
 	compute_ROC(result);
 }
 
@@ -196,6 +205,9 @@ void CPerformanceMeasures::compute_ROC(DREAL** result)
 		SG_ERROR("Need at least one positive example in true labels!\n");
 	if (m_all_false<1)
 		SG_ERROR("Need at least one negative example in true labels!\n");
+
+	if (!m_sortedROC)
+		create_sortedROC();
 
 	// num_labels+1 due to point 1,1
 	INT num_roc=m_num_labels+1;
@@ -248,81 +260,10 @@ void CPerformanceMeasures::compute_ROC(DREAL** result)
 
 /////////////////////////////////////////////////////////////////////
 
-DREAL CPerformanceMeasures::get_accuracy(DREAL threshold)
-{
-	if (m_accuracy!=CMath::ALMOST_NEG_INFTY)
-		return m_accuracy;
-
-	if (m_num_labels<1)
-		SG_ERROR("Need at least one example!\n");
-
-	INT* checked=compute_confusion_matrix(threshold);
-	INT tp=checked[0];
-	INT tn=checked[3];
-	m_accuracy=(DREAL)(tp+tn)/(DREAL)m_num_labels;
-
-	delete[] checked;
-	return m_accuracy;
-}
-
-void CPerformanceMeasures::compute_accuracyROC(DREAL** result, bool do_error)
-{
-	if (!m_true_labels)
-		SG_ERROR("No true labels given!\n");
-	if (!m_output)
-		SG_ERROR("No output data given!\n");
-	if (m_num_labels<1)
-		SG_ERROR("Need at least one example!\n");
-
-	size_t sz=sizeof(DREAL)*m_num_labels;
-	DREAL* r=(DREAL*) malloc(sz);
-	if (!r)
-		SG_ERROR("Couldn't allocate memory for accuracyROC!\n");
-
-	DREAL out_prev=CMath::ALMOST_NEG_INFTY;
-	INT tp=0;
-	INT tn=m_all_false;
-
-	for (INT i=0; i<m_num_labels; i++)
-	{
-		DREAL out=m_output->get_label(m_sortedROC[i]);
-		if (out!=out_prev)
-		{
-			r[i]=(DREAL)(tp+tn)/(DREAL)m_num_labels;
-
-			if (do_error)
-				r[i]=1.0-r[i];
-
-			out_prev=out;
-		}
-
-		if (m_true_labels->get_label(m_sortedROC[i])==1)
-			tp++;
-		else
-			tn--;
-	}
-
-	*result=r;
-}
-
-void CPerformanceMeasures::get_accuracyROC(DREAL** result, INT* num)
+void CPerformanceMeasures::get_PRC(DREAL** result, INT *num, INT *dim)
 {
 	*num=m_num_labels;
-	compute_accuracyROC(result, false);
-}
-
-void CPerformanceMeasures::get_errorROC(DREAL** result, INT *num)
-{
-	*num=m_num_labels;
-	compute_accuracyROC(result, true);
-}
-
-/////////////////////////////////////////////////////////////////////
-
-void CPerformanceMeasures::get_PRC(DREAL** result, INT *dim, INT *num)
-{
-	*dim=m_num_labels;
-	*num=2;
+	*dim=2;
 	compute_PRC(result);
 }
 
@@ -339,21 +280,15 @@ void CPerformanceMeasures::compute_PRC(DREAL** result)
 	if (!r)
 		SG_ERROR("Couldn't allocate memory for PRC result!\n");
 
-	INT* checked;
-	INT tp;
-	INT fp;
+	INT tp, fp;
 	DREAL threshold;
 
 	for (INT i=0; i<m_num_labels; i++)
 	{
 		threshold=m_output->get_label(i);
-		checked=compute_confusion_matrix(threshold);
-		tp=checked[0];
-		fp=checked[1];
+		compute_confusion_matrix(threshold, &tp, &fp, NULL, NULL);
 		r[i]=(DREAL)tp/(DREAL)m_all_true; // recall
 		r[m_num_labels+i]=(DREAL)tp/(DREAL)(tp+fp); // precision
-
-		delete[] checked;
 	}
 
 	// sort by ascending recall
@@ -373,51 +308,10 @@ void CPerformanceMeasures::compute_PRC(DREAL** result)
 
 /////////////////////////////////////////////////////////////////////
 
-void CPerformanceMeasures::get_fmeasurePRC(DREAL** result, INT* num)
+void CPerformanceMeasures::get_DET(DREAL** result, INT *num, INT *dim)
 {
-	if (m_num_labels<1)
-		SG_ERROR("Need at least one example!\n");
-
-	size_t sz=sizeof(DREAL)*m_num_labels;
-	DREAL* r=(DREAL*) malloc(sz);
-	if (!r)
-		SG_ERROR("Couldn't allocate memory for F-measure!\n");
-
 	*num=m_num_labels;
-	DREAL** prc=(DREAL**) malloc(sizeof(DREAL**));
-	compute_PRC(prc);
-
-	for (INT i=0; i<m_num_labels; i++) {
-		r[i]=2./(1./(*prc)[i+m_num_labels]+1./(*prc)[i]);
-	}
-	free(*prc);
-	free(prc);
-
-	*result=r;
-}
-
-DREAL CPerformanceMeasures::get_fmeasure(DREAL threshold)
-{
-	if (m_fmeasure!=CMath::ALMOST_NEG_INFTY)
-		return m_fmeasure;
-
-	INT* checked=compute_confusion_matrix(threshold);
-	INT tp=checked[0];
-	INT fp=checked[1];
-	DREAL recall=(DREAL)tp/(DREAL)m_all_true;
-	DREAL precision=(DREAL)tp/(DREAL)(tp+fp);
-	m_fmeasure=2.0/(1/precision+1/recall);
-
-	delete[] checked;
-	return m_fmeasure;
-}
-
-/////////////////////////////////////////////////////////////////////
-
-void CPerformanceMeasures::get_DET(DREAL** result, INT *dim, INT *num)
-{
-	*dim=m_num_labels;
-	*num=2;
+	*dim=2;
 	compute_DET(result);
 }
 
@@ -434,21 +328,15 @@ void CPerformanceMeasures::compute_DET(DREAL** result)
 	if (!r)
 		SG_ERROR("Couldn't allocate memory for DET result!\n");
 
-	INT* checked;
-	INT fp;
-	INT fn;
+	INT fp, fn;
 	DREAL threshold;
 
 	for (INT i=0; i<m_num_labels; i++)
 	{
 		threshold=m_output->get_label(i);
-		checked=compute_confusion_matrix(threshold);
-		fp=checked[1];
-		fn=checked[2];
+		compute_confusion_matrix(threshold, NULL, &fp, &fn, NULL);
 		r[i]=(DREAL)fp/(DREAL)m_all_false;
 		r[m_num_labels+i]=(DREAL)fn/(DREAL)m_all_false;
-
-		delete[] checked;
 	}
 
 	// sort by ascending false positive rate
@@ -468,24 +356,20 @@ void CPerformanceMeasures::compute_DET(DREAL** result)
 
 /////////////////////////////////////////////////////////////////////
 
-DREAL CPerformanceMeasures::get_CC(DREAL threshold)
+DREAL CPerformanceMeasures::get_accuracy(DREAL threshold)
 {
-	if (m_cc!=CMath::ALMOST_NEG_INFTY)
-		return m_cc;
+	if (m_num_labels<1)
+		SG_ERROR("Need at least one example!\n");
 
-	INT* checked=compute_confusion_matrix(threshold);
-	INT tp=checked[0];
-	INT fp=checked[1];
-	INT fn=checked[2];
-	INT tn=checked[3];
-	m_cc=(DREAL)(tp*tn-fp*fn)/
-		CMath::sqrt((DREAL) (tp+fp)*(tp+fn)*(tn+fp)*(tn+fn));
+	INT tp, tn;
 
-	delete[] checked;
-	return m_cc;
+	compute_confusion_matrix(threshold, &tp, NULL, NULL, &tn);
+
+	return (DREAL)(tp+tn)/(DREAL)m_num_labels;
 }
 
-void CPerformanceMeasures::get_all_CC(DREAL** result, INT* num)
+void CPerformanceMeasures::compute_accuracy(
+	DREAL** result, INT* num, INT* dim, bool do_error)
 {
 	if (!m_output)
 		SG_ERROR("No output data given!\n");
@@ -493,32 +377,125 @@ void CPerformanceMeasures::get_all_CC(DREAL** result, INT* num)
 		SG_ERROR("Need at least one example!\n");
 
 	*num=m_num_labels;
-	size_t sz=sizeof(DREAL)*m_num_labels;
-
+	*dim=2;
+	size_t sz=sizeof(DREAL)*m_num_labels*(*dim);
 	DREAL* r=(DREAL*) malloc(sz);
-	if (!result)
-		SG_ERROR("Couldn't allocate memory for CC!\n");
-
-	INT* checked;
-	INT tp;
-	INT fp;
-	INT fn;
-	INT tn;
-	DREAL threshold;
+	if (!r)
+		SG_ERROR("Couldn't allocate memory for all accuracy points!\n");
 
 	for (INT i=0; i<m_num_labels; i++)
 	{
-		threshold=m_output->get_label(i);
-		checked=compute_confusion_matrix(threshold);
-		tp=checked[0];
-		fp=checked[1];
-		fn=checked[2];
-		tn=checked[3];
-		r[i]=(DREAL)(tp*tn-fp*fn)/
-			CMath::sqrt((DREAL) (tp+fp)*(tp+fn)*(tn+fp)*(tn+fn));
-		delete[] checked;
+		r[i]=m_output->get_label(i);
+		if (do_error)
+			r[i+m_num_labels]=1.0-get_accuracy(r[i]);
+		else
+			r[i+m_num_labels]=get_accuracy(r[i]);
 	}
 
+	CMath::qsort_index(r, r+m_num_labels, m_num_labels);
+	*result=r;
+}
+
+void CPerformanceMeasures::get_all_accuracy(DREAL** result, INT* num, INT* dim)
+{
+	compute_accuracy(result, num, dim, false);
+}
+
+void CPerformanceMeasures::get_all_error(DREAL** result, INT *num, INT* dim)
+{
+	compute_accuracy(result, num, dim, true);
+}
+
+/////////////////////////////////////////////////////////////////////
+
+DREAL CPerformanceMeasures::get_fmeasure(DREAL threshold)
+{
+	DREAL recall, precision;
+	DREAL denominator;
+	INT tp, fp;
+
+	compute_confusion_matrix(threshold, &tp, &fp, NULL, NULL);
+
+	if (m_all_true==0)
+		return 0;
+	else
+		recall=(DREAL)tp/(DREAL)m_all_true;
+
+	denominator=(DREAL)(tp+fp);
+	if (denominator==0)
+		return 0;
+	else
+		precision=(DREAL)tp/denominator;
+
+	if (recall==0 && precision==0)
+		return 0;
+	else if (recall==0)
+		return 2.0/(1/precision);
+	else if (precision==0)
+		return 2.0/(1/recall);
+	else
+		return 2.0/(1/precision+1/recall);
+}
+
+void CPerformanceMeasures::get_all_fmeasure(DREAL** result, INT* num, INT* dim)
+{
+	if (m_num_labels<1)
+		SG_ERROR("Need at least one example!\n");
+
+	*num=m_num_labels;
+	*dim=2;
+	size_t sz=sizeof(DREAL)*m_num_labels*(*dim);
+	DREAL* r=(DREAL*) malloc(sz);
+	if (!r)
+		SG_ERROR("Couldn't allocate memory for all F-measure points!\n");
+
+	for (INT i=0; i<m_num_labels; i++) {
+		r[i]=m_output->get_label(i);
+		r[i+m_num_labels]=get_fmeasure(r[i]);
+	}
+
+	CMath::qsort_index(r, r+m_num_labels, m_num_labels);
+	*result=r;
+}
+
+/////////////////////////////////////////////////////////////////////
+
+DREAL CPerformanceMeasures::get_CC(DREAL threshold)
+{
+	INT tp, fp, fn, tn;
+	DREAL radix;
+
+	compute_confusion_matrix(threshold, &tp, &fp, &fn, &tn);
+
+	radix=(DREAL)(tp+fp)*(tp+fn)*(tn+fp)*(tn+fn);
+	if (radix<=0)
+		return 0;
+	else
+		return (DREAL)(tp*tn-fp*fn)/CMath::sqrt(radix);
+}
+
+void CPerformanceMeasures::get_all_CC(DREAL** result, INT* num, INT* dim)
+{
+	if (!m_output)
+		SG_ERROR("No output data given!\n");
+	if (m_num_labels<1)
+		SG_ERROR("Need at least one example!\n");
+
+	*num=m_num_labels;
+	*dim=2;
+	size_t sz=sizeof(DREAL)*m_num_labels*(*dim);
+
+	DREAL* r=(DREAL*) malloc(sz);
+	if (!r)
+		SG_ERROR("Couldn't allocate memory for all CC points!\n");
+
+	for (INT i=0; i<m_num_labels; i++)
+	{
+		r[i]=m_output->get_label(i);
+		r[i+m_num_labels]=get_CC(r[i]);
+	}
+
+	CMath::qsort_index(r, r+m_num_labels, m_num_labels);
 	*result=r;
 }
 
@@ -526,21 +503,24 @@ void CPerformanceMeasures::get_all_CC(DREAL** result, INT* num)
 
 DREAL CPerformanceMeasures::get_WRAcc(DREAL threshold)
 {
-	if (m_wracc!=CMath::ALMOST_NEG_INFTY)
-		return m_wracc;
+	INT tp, fp, fn, tn;
+	DREAL denominator0, denominator1;
 
-	INT* checked=compute_confusion_matrix(threshold);
-	INT tp=checked[0];
-	INT fp=checked[1];
-	INT fn=checked[2];
-	INT tn=checked[3];
-	m_wracc=(DREAL)tp/(DREAL)(tp+fn)-(DREAL)fp/(DREAL)(fp+tn);
+	compute_confusion_matrix(threshold, &tp, &fp, &fn, &tn);
 
-	delete[] checked;
-	return m_wracc;
+	denominator0=(DREAL)(tp+fn);
+	denominator1=(DREAL)(fp+tn);
+	if (denominator0<=0 && denominator1<=0)
+		return 0;
+	else if (denominator0==0)
+		return -(DREAL)fp/denominator1;
+	else if (denominator1==0)
+		return (DREAL)tp/denominator0;
+	else
+		return (DREAL)tp/denominator0-(DREAL)fp/denominator1;
 }
 
-void CPerformanceMeasures::get_all_WRAcc(DREAL** result, INT* num)
+void CPerformanceMeasures::get_all_WRAcc(DREAL** result, INT* num, INT* dim)
 {
 	if (!m_output)
 		SG_ERROR("No output data given!\n");
@@ -548,31 +528,20 @@ void CPerformanceMeasures::get_all_WRAcc(DREAL** result, INT* num)
 		SG_ERROR("Need at least one example!\n");
 
 	*num=m_num_labels;
-	size_t sz=sizeof(DREAL)*m_num_labels;
+	*dim=2;
+	size_t sz=sizeof(DREAL)*m_num_labels*(*dim);
 
 	DREAL* r=(DREAL*) malloc(sz);
 	if (!r)
-		SG_ERROR("Couldn't allocate memory for WRAcc!\n");
-
-	INT* checked;
-	INT tp;
-	INT fp;
-	INT fn;
-	INT tn;
-	DREAL threshold;
+		SG_ERROR("Couldn't allocate memory for all WRAcc points!\n");
 
 	for (INT i=0; i<m_num_labels; i++)
 	{
-		threshold=m_output->get_label(i);
-		checked=compute_confusion_matrix(threshold);
-		tp=checked[0];
-		fp=checked[1];
-		fn=checked[2];
-		tn=checked[3];
-		r[i]=(DREAL)tp/(DREAL)(tp+fn)-(DREAL)fp/(DREAL)(fp+tn);
-		delete[] checked;
+		r[i]=m_output->get_label(i);
+		r[i+m_num_labels]=get_WRAcc(r[i]);
 	}
 
+	CMath::qsort_index(r, r+m_num_labels, m_num_labels);
 	*result=r;
 }
 
@@ -580,19 +549,21 @@ void CPerformanceMeasures::get_all_WRAcc(DREAL** result, INT* num)
 
 DREAL CPerformanceMeasures::get_BAL(DREAL threshold)
 {
-	if (m_bal!=CMath::ALMOST_NEG_INFTY)
-		return m_bal;
+	INT tp, tn;
 
-	INT* checked=compute_confusion_matrix(threshold);
-	INT tp=checked[0];
-	INT tn=checked[3];
-	m_bal=0.5*((DREAL)tp/(DREAL)m_all_true+(DREAL)tn/(DREAL)m_all_false);
+	compute_confusion_matrix(threshold, &tp, NULL, NULL, &tn);
 
-	delete[] checked;
-	return m_bal;
+	if (m_all_true==0 && m_all_false==0) // actually a logical error
+		return 0;
+	else if (m_all_true==0)
+		return 0.5*((DREAL)tn/(DREAL)m_all_false);
+	else if (m_all_false==0)
+		return 0.5*((DREAL)tp/(DREAL)m_all_true);
+	else
+		return 0.5*((DREAL)tp/(DREAL)m_all_true+(DREAL)tn/(DREAL)m_all_false);
 }
 
-void CPerformanceMeasures::get_all_BAL(DREAL** result, INT* num)
+void CPerformanceMeasures::get_all_BAL(DREAL** result, INT* num, INT* dim)
 {
 	if (!m_output)
 		SG_ERROR("No output data given!\n");
@@ -600,26 +571,19 @@ void CPerformanceMeasures::get_all_BAL(DREAL** result, INT* num)
 		SG_ERROR("Need at least one example!\n");
 
 	*num=m_num_labels;
-	size_t sz=sizeof(DREAL)*m_num_labels;
+	*dim=2;
+	size_t sz=sizeof(DREAL)*m_num_labels*(*dim);
 
 	DREAL* r=(DREAL*) malloc(sz);
 	if (!r)
-		SG_ERROR("Couldn't allocate memory for BAL!\n");
-
-	INT* checked;
-	INT tp;
-	INT tn;
-	DREAL threshold;
+		SG_ERROR("Couldn't allocate memory for all BAL points!\n");
 
 	for (INT i=0; i<m_num_labels; i++)
 	{
-		threshold=m_output->get_label(i);
-		checked=compute_confusion_matrix(threshold);
-		tp=checked[0];
-		tn=checked[3];
-		r[i]=.5*((DREAL) tp/m_all_true+tn/m_all_false);
-		delete[] checked;
+		r[i]=m_output->get_label(i);
+		r[i+m_num_labels]=get_BAL(r[i]);
 	}
 
+	CMath::qsort_index(r, r+m_num_labels, m_num_labels);
 	*result=r;
 }
