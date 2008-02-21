@@ -549,18 +549,18 @@ void CPerformanceMeasures::get_all_WRAcc(DREAL** result, INT* num, INT* dim)
 
 DREAL CPerformanceMeasures::get_BAL(DREAL threshold)
 {
-	INT tp, tn;
+	INT fp, fn;
 
-	compute_confusion_matrix(threshold, &tp, NULL, NULL, &tn);
+	compute_confusion_matrix(threshold, NULL, &fp, &fn, NULL);
 
 	if (m_all_true==0 && m_all_false==0) // actually a logical error
 		return 0;
 	else if (m_all_true==0)
-		return 0.5*((DREAL)tn/(DREAL)m_all_false);
+		return 0.5*((DREAL)fp/(DREAL)m_all_false);
 	else if (m_all_false==0)
-		return 0.5*((DREAL)tp/(DREAL)m_all_true);
+		return 0.5*((DREAL)fn/(DREAL)m_all_true);
 	else
-		return 0.5*((DREAL)tp/(DREAL)m_all_true+(DREAL)tn/(DREAL)m_all_false);
+		return 0.5*((DREAL)fp/(DREAL)m_all_false+(DREAL)fn/(DREAL)m_all_true);
 }
 
 void CPerformanceMeasures::get_all_BAL(DREAL** result, INT* num, INT* dim)
