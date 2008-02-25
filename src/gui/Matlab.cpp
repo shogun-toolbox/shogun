@@ -19,7 +19,7 @@
 #include "lib/io.h"
 #include "lib/matlab.h"
 
-#include <mexversion.c>
+//#include <mexversion.c>
 
 #include "guilib/GUICommands.h"
 #include "guilib/GUIMatlab.h"
@@ -38,7 +38,7 @@ static bool strmatch(CHAR* str, UINT len, const CHAR* cmd)
 			&& !strncmp(str, cmd, strlen(cmd)));
 }
 
-void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
+void obsolete_mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 {
 	if (!gui)
 		gui=new CTextGUI(0, NULL);
