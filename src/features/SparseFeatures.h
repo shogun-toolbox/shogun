@@ -688,6 +688,25 @@ template <class ST> class CSparseFeatures: public CFeatures
 		 */
 		inline INT  get_num_features() { return num_features; }
 
+		/** set number of features
+		 *
+		 * Sometimes when loading sparse features not all possible dimensions
+		 * are used. This may pose a problem to classifiers when being applied
+		 * to higher dimensional test-data. This function allows to
+		 * artificially explode the feature space
+		 *
+		 * @param num the number of features, must be larger
+		 *        than the current number of features
+		 * @return previous number of features
+		 */
+		inline INT set_num_features(INT num)
+		{
+			INT n=num_features;
+			ASSERT(n<=num);
+			num_features=num;
+			return num_features;
+		}
+
 		/** get feature class
 		 *
 		 * @return feature class SPARSE
