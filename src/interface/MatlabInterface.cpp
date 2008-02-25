@@ -39,17 +39,33 @@ IFType CMatlabInterface::get_argument_type()
 
 INT CMatlabInterface::get_int()
 {
-	return 42;
+	const mxArray* i=get_current_arg();
+	if (!i || !mxIsNumeric(i) || mxGetN(i)!=1 || mxGetM(i)!=1)
+		SG_ERROR("Expected Scalar Integer as argument %d\n", arg_counter);
+
+	double s=mxGetScalar(i);
+	if (s-CMath::floor(s)!=0)
+		SG_ERROR("Expected Integer as argument %d\n", arg_counter);
+
+	return INT(s);
 }
 
 DREAL CMatlabInterface::get_real()
 {
-	return 42;
+	const mxArray* f=get_current_arg();
+	if (!f || !mxIsNumeric(f) || mxGetN(f)!=1 || mxGetM(f)!=1)
+		SG_ERROR("Expected Scalar Float as argument %d\n", arg_counter);
+
+	return mxGetScalar(f);
 }
 
 bool CMatlabInterface::get_bool()
 {
-	return false;
+	const mxArray* b=get_current_arg();
+	if (!mxIsLogicalScalar(b))
+		SG_ERROR("Expected Scalar Boolean as argument %d\n", arg_counter);
+
+	return *mxGetLogicals(b)==0;
 }
 
 
@@ -138,6 +154,23 @@ void CMatlabInterface::get_shortreal_matrix(SHORTREAL** matrix, INT* num_feat, I
 
 void CMatlabInterface::get_real_matrix(DREAL** matrix, INT* num_feat, INT* num_vec)
 {
+	const mxArray* mx_mat=get_current_arg();
+	if (!mxIsDouble(mx_mat))
+		SG_ERROR("Expected Double Matrix as argument %d\n", arg_counter);
+
+	*num_vec=mxGetN(mx_mat);
+	*num_feat=mxGetM(mx_mat);
+	INT nf=*num_feat;
+	INT nv=*num_vec;
+	*matrix=new DREAL[nv*nf];
+	DREAL* mat=*matrix;
+	ASSERT(mat);
+	double* feat=mxGetPr(mx_mat);
+
+	SG_DEBUG("dense matrix has %d rows, %d cols\n", nf, nv);
+	for (INT i=0; i<nv; i++)
+		for (INT j=0; j<nf; j++)
+			mat[i*nf+j]=feat[i*nf+j];
 }
 
 
