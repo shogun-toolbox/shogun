@@ -66,12 +66,12 @@ bool CSGInterface::handle()
 		SG_SERROR("%s:%s", "string expected as first argument", e.get_exception_string());
 	}
 
-	//SG_PRINT("action:%s\n", action);
+	SG_PRINT("action:%s\n", action);
 	if (strmatch(action, len, N_SEND_COMMAND))
 	{
 		parse_args(2, 0);
 		CHAR* cmd=interface->get_string(len);
-		//SG_PRINT("cmd:%s\n", cmd);
+		SG_PRINT("cmd:%s\n", cmd);
 		gui->parse_line(cmd);
 		delete[] cmd;
 	}

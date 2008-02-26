@@ -36,7 +36,7 @@ static void successful(SEXP& result, bool v)
 	UNPROTECT(1);
 }
    
-static SEXP sg_helper(SEXP args)
+SEXP obsolete_sg_helper(SEXP args)
 {
 	SG_SDEBUG("length of args %d\n", length(args));
 
@@ -387,7 +387,7 @@ static SEXP sg_helper(SEXP args)
  * .External("sg", "func", ... ) 
  * where '...' is a number of arguments passed to the shogun function 'func'. */
 
-SEXP sg(SEXP args)
+SEXP obsolete_sg(SEXP args)
 {
 	/* The SEXP (Simple Expression) args is a list of arguments of the .External call. 
 	 * it consists of "sg", "func" and additional arguments.
@@ -404,7 +404,7 @@ SEXP sg(SEXP args)
 	if (!gui)
 		SG_SERROR("gui could not be initialized.");
 
-	SEXP result=sg_helper(args);
+	SEXP result=obsolete_sg_helper(args);
 #ifndef WIN32
     CSignal::unset_handler();
 #endif
@@ -417,7 +417,7 @@ SEXP sg(SEXP args)
 /* This method is called by R when the shogun module is loaded into R
  * via dyn.load('sg.so'). */
 
-void R_init_sg(DllInfo *info) { 
+void obsolete_R_init_sg(DllInfo *info) { 
    
    /* There are four different external language call mechanisms available in R, namely:
     *    .C
@@ -427,16 +427,16 @@ void R_init_sg(DllInfo *info) {
     *
     * Currently shogun uses only the .External interface. */
 
-   R_CMethodDef cMethods[] = { {NULL, NULL, 0} };
-   R_FortranMethodDef fortranMethods[] = { {NULL, NULL, 0} };
-   R_ExternalMethodDef externalMethods[] = { {NULL, NULL, 0} };
+   //R_CMethodDef cMethods[] = { {NULL, NULL, 0} };
+   //R_FortranMethodDef fortranMethods[] = { {NULL, NULL, 0} };
+   //R_ExternalMethodDef externalMethods[] = { {NULL, NULL, 0} };
 
-   R_CallMethodDef callMethods[] = {
-      {"sg", (void*(*)()) &sg, 1},
-      {NULL, NULL, 0} };
+   //R_CallMethodDef callMethods[] = {
+   //   {"sg", (void*(*)()) &sg, 1},
+   //   {NULL, NULL, 0} };
 
    /* Register the routines saved in the callMethods structure so that they are available under R. */
-   R_registerRoutines(info, cMethods, callMethods, (R_FortranMethodDef*) fortranMethods, (R_ExternalMethodDef*) externalMethods);
+   //R_registerRoutines(info, cMethods, callMethods, (R_FortranMethodDef*) fortranMethods, (R_ExternalMethodDef*) externalMethods);
 
 }
 
@@ -444,6 +444,6 @@ void R_init_sg(DllInfo *info) {
 /* This method is called form within R when the current module is unregistered.
  * Note that R does not allow unregistering of single symbols. */
 
-void R_unload_sg(DllInfo *info) { }
+void obsolete_R_unload_sg(DllInfo *info) { }
 
 #endif //HAVE_SWIG

@@ -1,0 +1,316 @@
+#include "lib/config.h"
+
+#if defined(HAVE_R) && !defined(HAVE_SWIG)            
+
+#include "interface/RInterface.h"
+#include "interface/SGInterface.h"
+
+#include "lib/ShogunException.h"
+#include "lib/io.h"
+
+extern "C" {
+#include <R.h>
+#include <Rinternals.h>
+#include <Rdefines.h>
+#include <R_ext/Rdynload.h>
+}
+
+extern CSGInterface* interface;
+
+CRInterface::CRInterface(SEXP prhs) : CSGInterface()
+{
+	m_nlhs=0;
+	m_nrhs=length(prhs);
+	m_lhs=R_NilValue;
+	m_rhs=prhs;
+}
+
+CRInterface::~CRInterface()
+{
+}
+
+/** get functions - to pass data from the target interface to shogun */
+void CRInterface::parse_args(INT num_args, INT num_default_args)
+{
+}
+
+
+/// get type of current argument (does not increment argument counter)
+IFType CRInterface::get_argument_type()
+{
+	return UNDEFINED;
+}
+
+
+INT CRInterface::get_int()
+{
+	SEXP i=get_current_arg();
+	if (i == R_NilValue || TYPEOF(CAR(i)) != INTSXP || Rf_nrows(CAR(i))!=1 || Rf_ncols(CAR(i))!=1)
+		SG_ERROR("Expected Scalar Integer as argument %d\n", arg_counter);
+
+	return INTEGER(CAR(i))[0];
+}
+
+DREAL CRInterface::get_real()
+{
+	SEXP f=get_current_arg();
+	if (f == R_NilValue || TYPEOF(CAR(f)) != REALSXP || Rf_nrows(CAR(f))!=1 || Rf_ncols(CAR(f))!=1)
+		SG_ERROR("Expected Scalar Float as argument %d\n", arg_counter);
+
+	return REAL(CAR(f))[0];
+}
+
+bool CRInterface::get_bool()
+{
+	SEXP b=get_current_arg();
+	if (b == R_NilValue || TYPEOF(CAR(b)) != LGLSXP || Rf_nrows(CAR(b))!=1 || Rf_ncols(CAR(b))!=1)
+		SG_ERROR("Expected Scalar Boolean as argument %d\n", arg_counter);
+
+	return INTEGER(CAR(b))[0] != 0;
+}
+
+
+CHAR* CRInterface::get_string(INT& len)
+{
+	SEXP s=get_current_arg();
+	if (s == R_NilValue || TYPEOF(CAR(s)) != STRSXP || length(CAR(s))!=1)
+		SG_ERROR("Expected String as argument %d\n", arg_counter);
+
+	SEXPREC* rstr= STRING_ELT(CAR(s),0);
+	const CHAR* str= CHAR(rstr);
+	len=LENGTH(rstr);
+	ASSERT(len>0);
+	CHAR* res=new CHAR[len+1];
+	memcpy(res, str, len*sizeof(CHAR));
+	res[len]='\0';
+	return res;
+}
+
+void CRInterface::get_byte_vector(BYTE** vec, INT* len)
+{
+	*vec=NULL;
+	*len=0;
+}
+
+void CRInterface::get_int_vector(INT** vec, INT* len)
+{
+	*vec=NULL;
+	*len=0;
+}
+
+void CRInterface::get_shortreal_vector(SHORTREAL** vec, INT* len)
+{
+	*vec=NULL;
+	*len=0;
+}
+
+void CRInterface::get_real_vector(DREAL** vec, INT* len)
+{
+	*vec=NULL;
+	*len=0;
+}
+
+
+void CRInterface::get_byte_matrix(BYTE** matrix, INT* num_feat, INT* num_vec)
+{
+}
+
+void CRInterface::get_int_matrix(INT** matrix, INT* num_feat, INT* num_vec)
+{
+}
+
+void CRInterface::get_shortreal_matrix(SHORTREAL** matrix, INT* num_feat, INT* num_vec)
+{
+}
+
+void CRInterface::get_real_matrix(DREAL** matrix, INT* num_feat, INT* num_vec)
+{
+	SEXP feat=get_current_arg();
+	if( TYPEOF(feat) != REALSXP && TYPEOF(feat) != INTSXP )
+		SG_ERROR("Expected Double Matrix as argument %d\n", arg_counter);
+
+	*num_vec = Rf_ncols(feat);
+	*num_feat = Rf_nrows(feat);
+	INT nf=*num_feat;
+	INT nv=*num_vec;
+	*matrix=new DREAL[nv*nf];
+	DREAL* mat=*matrix;
+	ASSERT(mat);
+
+	for (INT i=0; i<nv; i++)
+		for (INT j=0; j<nf; j++)
+			mat[i*nf+j]= (double) REAL(feat)[i*nf+j];
+}
+
+
+void CRInterface::get_byte_sparsematrix(TSparse<BYTE>** matrix, INT* num_feat, INT* num_vec)
+{
+}
+
+void CRInterface::get_int_sparsematrix(TSparse<INT>** matrix, INT* num_feat, INT* num_vec)
+{
+}
+
+void CRInterface::get_shortreal_sparsematrix(TSparse<SHORTREAL>** matrix, INT* num_feat, INT* num_vec)
+{
+}
+
+void CRInterface::get_real_sparsematrix(TSparse<DREAL>** matrix, INT* num_feat, INT* num_vec)
+{
+}
+
+
+void CRInterface::get_string_list(T_STRING<CHAR>** strings, INT* num_str)
+{
+	SEXP strs=get_current_arg();
+	if (strs == R_NilValue || TYPEOF(CAR(strs)) != STRSXP || length(CAR(strs))>=1)
+		SG_ERROR("Expected String List as argument %d\n", arg_counter);
+
+	INT ns=length(CAR(strs));
+	T_STRING<CHAR>* sc=new T_STRING<CHAR>[ns];
+
+	for (int i=0; i<ns; i++)
+	{
+		SEXPREC* s= STRING_ELT(strs,i);
+		CHAR* c= (CHAR*) CHAR(s);
+		int len=LENGTH(s);
+
+		if (len && c)
+		{
+			CHAR* dst=new CHAR[len];
+			sc[i].string=(CHAR*) memcpy(dst, c, len*sizeof(CHAR));
+			sc[i].length=len;
+		}
+		else
+		{
+			SG_WARNING( "string with index %d has zero length\n", i+1);
+			sc[i].string=0;
+			sc[i].length=0;
+		}
+
+	}
+
+	*num_str=ns;
+	*strings=sc;
+}
+
+
+/** set functions - to pass data from shogun to the target interface */
+void CRInterface::create_return_values(INT num_val)
+{
+}
+
+void CRInterface::set_byte_vector(BYTE* vec, INT len)
+{
+}
+
+void CRInterface::set_int_vector(INT* vec, INT len)
+{
+}
+
+void CRInterface::set_shortreal_vector(SHORTREAL* vec, INT len)
+{
+}
+
+void CRInterface::set_real_vector(DREAL* vec, INT len)
+{
+}
+
+
+void CRInterface::set_byte_matrix(BYTE* matrix, INT num_feat, INT num_vec)
+{
+}
+
+void CRInterface::set_int_matrix(INT* matrix, INT num_feat, INT num_vec)
+{
+}
+
+void CRInterface::set_shortreal_matrix(SHORTREAL* matrix, INT num_feat, INT num_vec)
+{
+}
+
+void CRInterface::set_real_matrix(DREAL* matrix, INT num_feat, INT num_vec)
+{
+}
+
+
+void CRInterface::set_byte_sparsematrix(TSparse<BYTE>* matrix, INT num_feat, INT num_vec)
+{
+}
+
+void CRInterface::set_int_sparsematrix(TSparse<INT>* matrix, INT num_feat, INT num_vec)
+{
+}
+
+void CRInterface::set_shortreal_sparsematrix(TSparse<SHORTREAL>* matrix, INT num_feat, INT num_vec)
+{
+}
+
+void CRInterface::set_real_sparsematrix(TSparse<DREAL>* matrix, INT num_feat, INT num_vec)
+{
+}
+
+
+void CRInterface::set_string_list(T_STRING<CHAR>* strings, INT num_str)
+{
+}
+
+
+void CRInterface::submit_return_values()
+{
+}
+
+/* The main function of the shogun R interface. All commands from the R command line
+ * to the shogun backend are passed using the syntax:
+ * .External("sg", "func", ... ) 
+ * where '...' is a number of arguments passed to the shogun function 'func'. */
+
+extern "C" {
+/* This method is called by R when the shogun module is loaded into R
+ * via dyn.load('sg.so'). */
+
+SEXP sg(SEXP args);
+
+void R_init_sg(DllInfo *info) { 
+   
+   /* There are four different external language call mechanisms available in R, namely:
+    *    .C
+    *    .Call
+    *    .Fortran
+    *    .External
+    *
+    * Currently shogun uses only the .External interface. */
+
+   R_CMethodDef cMethods[] = { {NULL, NULL, 0} };
+   R_FortranMethodDef fortranMethods[] = { {NULL, NULL, 0} };
+   R_ExternalMethodDef externalMethods[] = { {"sg", (void*(*)()) &sg, 1}, {NULL, NULL, 0} };
+   R_CallMethodDef callMethods[] = { {NULL, NULL, 0} };
+
+   /* Register the routines saved in the callMethods structure so that they are available under R. */
+   R_registerRoutines(info, cMethods, callMethods, (R_FortranMethodDef*) fortranMethods, (R_ExternalMethodDef*) externalMethods);
+
+}
+
+SEXP sg(SEXP args)
+{
+	/* The SEXP (Simple Expression) args is a list of arguments of the .External call. 
+	 * it consists of "sg", "func" and additional arguments.
+	 * */
+
+	delete interface;
+	interface=new CRInterface(args);
+
+	if (!interface->handle())
+		SG_ERROR("interface currently does not handle this command\n");
+
+	return ((CRInterface*) interface)->get_return_values();
+}
+
+/* This method is called form within R when the current module is unregistered.
+ * Note that R does not allow unregistering of single symbols. */
+
+void R_unload_sg(DllInfo *info) { }
+
+} // extern "C"
+
+#endif // HAVE_R && HAVE_SWIG
