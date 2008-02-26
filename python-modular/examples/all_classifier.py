@@ -310,8 +310,8 @@ def svmocas ():
 	num_feats=11
 	data=get_clouds(2, num_feats, 12)
 	realfeat=RealFeatures(data)
-	feats_test=SparseRealFeatures()
-	feats_test.obtain_from_simple(realfeat)
+	feats_train=SparseRealFeatures()
+	feats_train.obtain_from_simple(realfeat)
 	data=get_clouds(2, num_feats, 21)
 	realfeat=RealFeatures(data)
 	feats_test=SparseRealFeatures()
@@ -320,7 +320,7 @@ def svmocas ():
 	C=0.42
 	epsilon=1e-5
 	num_threads=1
-	lab=rand(feats_test.get_num_vectors()).round()*2-1
+	lab=rand(feats_train.get_num_vectors()).round()*2-1
 	labels=Labels(array(lab))
 
 	svm=SVMOcas(C, feats_train, labels)
@@ -338,8 +338,8 @@ def svmsgd ():
 	num_feats=11
 	data=get_clouds(2, num_feats, 12)
 	realfeat=RealFeatures(data)
-	feats_test=SparseRealFeatures()
-	feats_test.obtain_from_simple(realfeat)
+	feats_train=SparseRealFeatures()
+	feats_train.obtain_from_simple(realfeat)
 	data=get_clouds(2, num_feats, 21)
 	realfeat=RealFeatures(data)
 	feats_test=SparseRealFeatures()
