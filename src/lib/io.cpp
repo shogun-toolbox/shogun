@@ -127,6 +127,7 @@ void CIO::message(EMessageType prio, const CHAR *fmt, ... ) const
 			case M_EMERGENCY:
 				CSignal::unset_handler();
 				error("%s", str);
+				throw ShogunException(str);
 				break;
 			default:
 				break;
@@ -153,6 +154,7 @@ void CIO::message(EMessageType prio, const CHAR *fmt, ... ) const
 				fprintf(target, "%s", message_strings[p]);
 				fprintf(target, "%s\n", str);
 				PyErr_SetString(PyExc_RuntimeError,str);
+				throw ShogunException(str);
 				break;
 			default:
 				break;
@@ -198,6 +200,7 @@ void CIO::message(EMessageType prio, const CHAR *fmt, ... ) const
 			case M_ALERT:
 			case M_EMERGENCY:
 				error("%s", str);
+				throw ShogunException(str);
 				break;
 			default:
 				break;

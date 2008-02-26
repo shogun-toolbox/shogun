@@ -250,8 +250,15 @@ DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 	delete interface;
 	interface=new COctaveInterface(prhs, nlhs);
 
-	if (!interface->handle())
-		SG_ERROR("interface currently does not handle this command\n");
+	try
+	{
+		if (!interface->handle())
+			SG_ERROR("interface currently does not handle this command\n");
+	}
+	catch (ShogunException e)
+	{
+		return octave_value_list()
+	}
 
 	return ((COctaveInterface*) interface)->get_return_values();
 }

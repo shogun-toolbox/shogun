@@ -300,8 +300,15 @@ SEXP sg(SEXP args)
 	delete interface;
 	interface=new CRInterface(args);
 
-	if (!interface->handle())
-		SG_ERROR("interface currently does not handle this command\n");
+	try
+	{
+		if (!interface->handle())
+			SG_ERROR("interface currently does not handle this command\n");
+	}
+	catch (ShogunException e)
+	{
+		return R_NilValue;
+	}
 
 	return ((CRInterface*) interface)->get_return_values();
 }

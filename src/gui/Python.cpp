@@ -72,7 +72,7 @@ static PyMethodDef sg_pythonmethods[] = {
     {NULL, NULL, 0, NULL}        /* Sentinel */
 };
 
-
+/* all dead
 PyMODINIT_FUNC initsg(void)
 {
 	// initialize python interpreter
@@ -95,5 +95,5 @@ void exitsg(void)
 {
 	SG_SINFO( "quitting...\n");
 	delete gui;
-}
+}*/
 #endif //HAVE_SWIG
