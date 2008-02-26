@@ -103,18 +103,19 @@ CHAR* CMatlabInterface::get_string(INT& len)
 void CMatlabInterface::get_byte_vector(BYTE*& vector, INT& len)
 {
 	const mxArray* mx_vec=get_current_arg();
-	if (!mx_vec || mxGetN(mx_vec)!=1 ||
+	if (!mx_vec || mxGetM(mx_vec)!=1 ||
 		!(mxIsClass(mx_vec,"int8") || mxIsClass(mx_vec, "uint8")))
-		SG_ERROR("Expected Byte Vector as argument %d\n", arg_counter);
+		SG_ERROR("Expected Byte Vector, got class %s as argument %d\n",
+			mxGetClassName(mx_vec), arg_counter);
 
 	len=mxGetNumberOfElements(mx_vec);
 	vector=new BYTE[len];
 	ASSERT(vector);
-	BYTE* feat=(BYTE*) mxGetData(mx_vec);
+	BYTE* data=(BYTE*) mxGetData(mx_vec);
 
 	SG_DEBUG("BYTE vector has %d elements\n", len);
 	for (INT i=0; i<len; i++)
-			vector[i]=feat[i];
+			vector[i]=data[i];
 
 	arg_counter++;
 }
@@ -122,20 +123,22 @@ void CMatlabInterface::get_byte_vector(BYTE*& vector, INT& len)
 void CMatlabInterface::get_int_vector(INT*& vector, INT& len)
 {
 	const mxArray* mx_vec=get_current_arg();
-	if (!mx_vec || mxGetN(mx_vec)!=1 || !(
-		mxIsClass(mx_vec,"int8") || mxIsClass(mx_vec, "int16") ||
-		mxIsClass(mx_vec,"int32") || mxIsClass(mx_vec, "int64"))
+	if (!mx_vec || mxGetM(mx_vec)!=1 ||
+		!(
+			mxIsClass(mx_vec,"int8") || mxIsClass(mx_vec, "int16") ||
+			mxIsClass(mx_vec,"int32") || mxIsClass(mx_vec, "int64"))
 	)
-		SG_ERROR("Expected Integer Vector as argument %d\n", arg_counter);
+		SG_ERROR("Expected Integer Vector, got class %s as argument %d\n",
+			mxGetClassName(mx_vec), arg_counter);
 
 	len=mxGetNumberOfElements(mx_vec);
 	vector=new INT[len];
 	ASSERT(vector);
-	INT* feat=(INT*) mxGetData(mx_vec);
+	INT* data=(INT*) mxGetData(mx_vec);
 
 	SG_DEBUG("INT vector has %d elements\n", len);
 	for (INT i=0; i<len; i++)
-			vector[i]=feat[i];
+			vector[i]=data[i];
 
 	arg_counter++;
 }
@@ -143,17 +146,19 @@ void CMatlabInterface::get_int_vector(INT*& vector, INT& len)
 void CMatlabInterface::get_shortreal_vector(SHORTREAL*& vector, INT& len)
 {
 	const mxArray* mx_vec=get_current_arg();
-	if (!mx_vec || mxGetN(mx_vec)!=1 || !mxIsSingle(mx_vec))
-		SG_ERROR("Expected Single Precision Vector as argument %d\n", arg_counter);
+	if (!mx_vec || mxGetM(mx_vec)!=1 || !mxIsSingle(mx_vec))
+		SG_ERROR(
+			"Expected Single Precision Vector, got class %s as argument %d\n",
+			mxGetClassName(mx_vec), arg_counter);
 
 	len=mxGetM(mx_vec);
 	vector=new SHORTREAL[len];
 	ASSERT(vector);
-	SHORTREAL* feat=(SHORTREAL*) mxGetData(mx_vec);
+	SHORTREAL* data=(SHORTREAL*) mxGetData(mx_vec);
 
 	SG_DEBUG("SHORTREAL vector has %d elements\n", len);
 	for (INT i=0; i<len; i++)
-			vector[i]=feat[i];
+			vector[i]=data[i];
 
 	arg_counter++;
 }
@@ -161,17 +166,18 @@ void CMatlabInterface::get_shortreal_vector(SHORTREAL*& vector, INT& len)
 void CMatlabInterface::get_real_vector(DREAL*& vector, INT& len)
 {
 	const mxArray* mx_vec=get_current_arg();
-	if (!mx_vec || mxGetN(mx_vec)!=1 || !mxIsDouble(mx_vec))
-		SG_ERROR("Expected Double Precision Vector as argument %d\n", arg_counter);
+	if (!mx_vec || mxGetM(mx_vec)!=1 || !mxIsDouble(mx_vec))
+		SG_ERROR("Expected Double Precision Vector, got class %s as argument %d\n",
+			mxGetClassName(mx_vec), arg_counter);
 
 	len=mxGetNumberOfElements(mx_vec);
 	vector=new DREAL[len];
 	ASSERT(vector);
-	double* feat=mxGetPr(mx_vec);
+	double* data=mxGetPr(mx_vec);
 
 	SG_DEBUG("SHORTREAL vector has %d elements\n", len);
 	for (INT i=0; i<len; i++)
-			vector[i]=feat[i];
+			vector[i]=data[i];
 
 	arg_counter++;
 }
@@ -181,18 +187,19 @@ void CMatlabInterface::get_byte_matrix(BYTE*& matrix, INT& num_feat, INT& num_ve
 {
 	const mxArray* mx_mat=get_current_arg();
 	if (!mx_mat || !(mxIsClass(mx_mat,"int8") || mxIsClass(mx_mat, "uint8")))
-		SG_ERROR("Expected Byte Matrix as argument %d\n", arg_counter);
+		SG_ERROR("Expected Byte Matrix, got class %s as argument %d\n",
+			mxGetClassName(mx_mat), arg_counter);
 
 	num_vec=mxGetN(mx_mat);
 	num_feat=mxGetM(mx_mat);
 	matrix=new BYTE[num_vec*num_feat];
 	ASSERT(matrix);
-	BYTE* feat=(BYTE*) mxGetData(mx_mat);
+	BYTE* data=(BYTE*) mxGetData(mx_mat);
 
 	SG_DEBUG("dense BYTE matrix has %d rows, %d cols\n", num_feat, num_vec);
 	for (INT i=0; i<num_vec; i++)
 		for (INT j=0; j<num_feat; j++)
-			matrix[i*num_feat+j]=feat[i*num_feat+j];
+			matrix[i*num_feat+j]=data[i*num_feat+j];
 
 	arg_counter++;
 }
@@ -200,22 +207,24 @@ void CMatlabInterface::get_byte_matrix(BYTE*& matrix, INT& num_feat, INT& num_ve
 void CMatlabInterface::get_int_matrix(INT*& matrix, INT& num_feat, INT& num_vec)
 {
 	const mxArray* mx_mat=get_current_arg();
-	if (!mx_mat || !(
-		mxIsClass(mx_mat,"int8") || mxIsClass(mx_mat, "int16") ||
-		mxIsClass(mx_mat,"int32") || mxIsClass(mx_mat, "int64"))
+	if (!mx_mat ||
+		!(
+			mxIsClass(mx_mat,"int8") || mxIsClass(mx_mat, "int16") ||
+			mxIsClass(mx_mat,"int32") || mxIsClass(mx_mat, "int64"))
 	)
-		SG_ERROR("Expected Integer Matrix as argument %d\n", arg_counter);
+		SG_ERROR("Expected Integer Matrix, got class %s as argument %d\n",
+			mxGetClassName(mx_mat), arg_counter);
 
 	num_vec=mxGetN(mx_mat);
 	num_feat=mxGetM(mx_mat);
 	matrix=new INT[num_vec*num_feat];
 	ASSERT(matrix);
-	INT* feat=(INT*) mxGetData(mx_mat);
+	INT* data=(INT*) mxGetData(mx_mat);
 
 	SG_DEBUG("dense INT matrix has %d rows, %d cols\n", num_feat, num_vec);
 	for (INT i=0; i<num_vec; i++)
 		for (INT j=0; j<num_feat; j++)
-			matrix[i*num_feat+j]=feat[i*num_feat+j];
+			matrix[i*num_feat+j]=data[i*num_feat+j];
 
 	arg_counter++;
 }
@@ -224,18 +233,19 @@ void CMatlabInterface::get_shortreal_matrix(SHORTREAL*& matrix, INT& num_feat, I
 {
 	const mxArray* mx_mat=get_current_arg();
 	if (!mx_mat || !mxIsSingle(mx_mat))
-		SG_ERROR("Expected Single Precision Matrix as argument %d\n", arg_counter);
+		SG_ERROR("Expected Single Precision Matrix, got class %s as argument %d\n",
+			mxGetClassName(mx_mat), arg_counter);
 
 	num_vec=mxGetN(mx_mat);
 	num_feat=mxGetM(mx_mat);
 	matrix=new SHORTREAL[num_vec*num_feat];
 	ASSERT(matrix);
-	SHORTREAL* feat=(SHORTREAL*) mxGetData(mx_mat);
+	SHORTREAL* data=(SHORTREAL*) mxGetData(mx_mat);
 
 	SG_DEBUG("dense SHORTREAL matrix has %d rows, %d cols\n", num_feat, num_vec);
 	for (INT i=0; i<num_vec; i++)
 		for (INT j=0; j<num_feat; j++)
-			matrix[i*num_feat+j]=feat[i*num_feat+j];
+			matrix[i*num_feat+j]=data[i*num_feat+j];
 
 	arg_counter++;
 }
@@ -244,18 +254,19 @@ void CMatlabInterface::get_real_matrix(DREAL*& matrix, INT& num_feat, INT& num_v
 {
 	const mxArray* mx_mat=get_current_arg();
 	if (!mx_mat || !mxIsDouble(mx_mat))
-		SG_ERROR("Expected Double Precision Matrix as argument %d\n", arg_counter);
+		SG_ERROR("Expected Double Precision Matrix, got class %s as argument %d\n",
+			mxGetClassName(mx_mat), arg_counter);
 
 	num_vec=mxGetN(mx_mat);
 	num_feat=mxGetM(mx_mat);
 	matrix=new DREAL[num_vec*num_feat];
 	ASSERT(matrix);
-	double* feat=mxGetPr(mx_mat);
+	double* data=mxGetPr(mx_mat);
 
 	SG_DEBUG("dense DREAL matrix has %d rows, %d cols\n", num_feat, num_vec);
 	for (INT i=0; i<num_vec; i++)
 		for (INT j=0; j<num_feat; j++)
-			matrix[i*num_feat+j]=feat[i*num_feat+j];
+			matrix[i*num_feat+j]=data[i*num_feat+j];
 
 	arg_counter++;
 }
@@ -268,18 +279,19 @@ void CMatlabInterface::get_byte_sparsematrix(TSparse<BYTE>*& matrix, INT& num_fe
 		SG_ERROR("Expected Sparse Matrix as argument %d\n", arg_counter);
 
 	if (!(mxIsClass(mx_mat,"int8") || mxIsClass(mx_mat, "uint8")))
-		SG_ERROR("Expected Byte Matrix as argument %d\n", arg_counter);
+		SG_ERROR("Expected Bute Matrix, got class %s as argument %d\n",
+			mxGetClassName(mx_mat), arg_counter);
 
 	num_vec=mxGetN(mx_mat);
 	num_feat=mxGetM(mx_mat);
 	matrix=new TSparse<BYTE>[num_vec*num_feat];
 	ASSERT(matrix);
-	TSparse<BYTE>* feat=(TSparse<BYTE>*) mxGetData(mx_mat);
+	TSparse<BYTE>* data=(TSparse<BYTE>*) mxGetData(mx_mat);
 
 	SG_DEBUG("sparse BYTE matrix has %d rows, %d cols\n", num_feat, num_vec);
 	for (INT i=0; i<num_vec; i++)
 		for (INT j=0; j<num_feat; j++)
-			matrix[i*num_feat+j]=feat[i*num_feat+j];
+			matrix[i*num_feat+j]=data[i*num_feat+j];
 
 	arg_counter++;
 }
@@ -294,18 +306,19 @@ void CMatlabInterface::get_int_sparsematrix(TSparse<INT>*& matrix, INT& num_feat
 		mxIsClass(mx_mat,"int8") || mxIsClass(mx_mat, "int16") ||
 		mxIsClass(mx_mat,"int32") || mxIsClass(mx_mat, "int64"))
 	)
-		SG_ERROR("Expected Integer Matrix as argument %d\n", arg_counter);
+		SG_ERROR("Expected Integer Matrix, got class %s as argument %d\n",
+			mxGetClassName(mx_mat), arg_counter);
 
 	num_vec=mxGetN(mx_mat);
 	num_feat=mxGetM(mx_mat);
 	matrix=new TSparse<INT>[num_vec*num_feat];
 	ASSERT(matrix);
-	TSparse<INT>* feat=(TSparse<INT>*) mxGetData(mx_mat);
+	TSparse<INT>* data=(TSparse<INT>*) mxGetData(mx_mat);
 
 	SG_DEBUG("sparse INT matrix has %d rows, %d cols\n", num_feat, num_vec);
 	for (INT i=0; i<num_vec; i++)
 		for (INT j=0; j<num_feat; j++)
-			matrix[i*num_feat+j]=feat[i*num_feat+j];
+			matrix[i*num_feat+j]=data[i*num_feat+j];
 
 	arg_counter++;
 }
@@ -317,18 +330,19 @@ void CMatlabInterface::get_shortreal_sparsematrix(TSparse<SHORTREAL>*& matrix, I
 		SG_ERROR("Expected Sparse Matrix as argument %d\n", arg_counter);
 
 	if (!mxIsSingle(mx_mat))
-		SG_ERROR("Expected Single Precision Matrix as argument %d\n", arg_counter);
+		SG_ERROR("Expected Single Precision Matrix, got class %s as argument %d\n",
+			mxGetClassName(mx_mat), arg_counter);
 
 	num_vec=mxGetN(mx_mat);
 	num_feat=mxGetM(mx_mat);
 	matrix=new TSparse<SHORTREAL>[num_vec*num_feat];
 	ASSERT(matrix);
-	TSparse<SHORTREAL>* feat=(TSparse<SHORTREAL>*) mxGetData(mx_mat);
+	TSparse<SHORTREAL>* data=(TSparse<SHORTREAL>*) mxGetData(mx_mat);
 
 	SG_DEBUG("sparse SHORTREAL matrix has %d rows, %d cols\n", num_feat, num_vec);
 	for (INT i=0; i<num_vec; i++)
 		for (INT j=0; j<num_feat; j++)
-			matrix[i*num_feat+j]=feat[i*num_feat+j];
+			matrix[i*num_feat+j]=data[i*num_feat+j];
 
 	arg_counter++;
 }
@@ -340,18 +354,19 @@ void CMatlabInterface::get_real_sparsematrix(TSparse<DREAL>*& matrix, INT& num_f
 		SG_ERROR("Expected Sparse Matrix as argument %d\n", arg_counter);
 
 	if (!mxIsDouble(mx_mat))
-		SG_ERROR("Expected Double Precision Matrix as argument %d\n", arg_counter);
+		SG_ERROR("Expected Double Precision Matrix, got class %s as argument %d\n",
+			mxGetClassName(mx_mat), arg_counter);
 
 	num_vec=mxGetN(mx_mat);
 	num_feat=mxGetM(mx_mat);
 	matrix=new TSparse<DREAL>[num_vec*num_feat];
 	ASSERT(matrix);
-	TSparse<DREAL>* feat=(TSparse<DREAL>*) mxGetData(mx_mat);
+	TSparse<DREAL>* data=(TSparse<DREAL>*) mxGetData(mx_mat);
 
 	SG_DEBUG("sparse DREAL matrix has %d rows, %d cols\n", num_feat, num_vec);
 	for (INT i=0; i<num_vec; i++)
 		for (INT j=0; j<num_feat; j++)
-			matrix[i*num_feat+j]=feat[i*num_feat+j];
+			matrix[i*num_feat+j]=data[i*num_feat+j];
 
 	arg_counter++;
 }
@@ -361,7 +376,8 @@ void CMatlabInterface::get_string_list(T_STRING<CHAR>*& strings, INT& num_str)
 {
 	const mxArray* mx_str=get_current_arg();
 	if (!mx_str || !mxIsChar(mxGetCell(mx_str, 0)))
-		SG_ERROR("Expected String List as argument %d\n", arg_counter);
+		SG_ERROR("Expected String List, got class %s as argument %d\n",
+			mxGetClassName(mx_str), arg_counter);
 
 	num_str=mxGetNumberOfElements(mx_str);
 	strings=new T_STRING<CHAR>[num_str];
@@ -396,19 +412,32 @@ void CMatlabInterface::create_return_values(INT num_val)
 {
 }
 
-void CMatlabInterface::set_byte_vector(BYTE* vec, INT len)
+void CMatlabInterface::set_byte_vector(BYTE* vector, INT len)
+{
+	mxArray* mx_vec=mxCreateNumericMatrix(1, len, mxINT8_CLASS, mxREAL);
+	if (!mx_vec)
+		SG_ERROR("Couldn't create Byte Vector of length %d\n", len);
+
+	BYTE* data=(BYTE*) mxGetData(mx_vec);
+
+	SG_DEBUG("BYTE vector has %d elements\n", len);
+	for (INT i=0; i<len; i++)
+		data[i]=vector[i];
+
+	set_current_arg(mx_vec);
+	arg_counter++;
+}
+
+
+void CMatlabInterface::set_int_vector(INT* vector, INT len)
 {
 }
 
-void CMatlabInterface::set_int_vector(INT* vec, INT len)
+void CMatlabInterface::set_shortreal_vector(SHORTREAL* vector, INT len)
 {
 }
 
-void CMatlabInterface::set_shortreal_vector(SHORTREAL* vec, INT len)
-{
-}
-
-void CMatlabInterface::set_real_vector(DREAL* vec, INT len)
+void CMatlabInterface::set_real_vector(DREAL* vector, INT len)
 {
 }
 
@@ -469,4 +498,4 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 		obsolete_mexFunction(nlhs, plhs, nrhs, prhs);
 	}
 }
-#endif // HAVE_MATLAB && HAVE_SWIG
+#endif // HAVE_MATLAB && !HAVE_SWIG

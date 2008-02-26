@@ -34,15 +34,8 @@ class CSGInterface : public CSGObject
 		CSGInterface();
 		~CSGInterface();
 
-		/// get action name, like 'send_command', 'get_svm' etc
-		inline CHAR* get_action(INT &len)
-		{
-			ASSERT(arg_counter==0);
-			if (m_nrhs<=0)
-				SG_SERROR("No input arguments supplied.");
-
-			return get_string(len);
-		}
+		/** test function */
+		bool test();
 
 		/** get functions - to pass data from the target interface to shogun */
 		virtual void parse_args(INT num_args, INT num_default_args)=0;
@@ -106,9 +99,22 @@ class CSGInterface : public CSGObject
 		/// str is a string of length len (not 0 terminated)
 		static bool strmatch(CHAR* str, UINT len, const CHAR* cmd)
 		{
-			return (len>=strlen(cmd) 
+			return (len>=strlen(cmd)
 					&& !strncmp(str, cmd, strlen(cmd)));
 		}
+
+		/// get action name, like 'send_command', 'get_svm' etc
+		inline CHAR* get_action(INT &len)
+		{
+			ASSERT(arg_counter==0);
+			if (m_nrhs<=0)
+				SG_SERROR("No input arguments supplied.");
+
+			return get_string(len);
+		}
+
+		/** reset argument counter */
+		inline void reset_counter() { arg_counter=0; }
 
 	protected:
 		INT arg_counter;

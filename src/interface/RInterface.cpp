@@ -318,4 +318,4 @@ void R_unload_sg(DllInfo *info) { }
 
 } // extern "C"
 
-#endif // HAVE_R && HAVE_SWIG
+#endif // HAVE_R && !HAVE_SWIG

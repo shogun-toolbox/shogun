@@ -259,4 +259,4 @@ DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 
 	return ((COctaveInterface*) interface)->get_return_values();
 }
-#endif // HAVE_OCTAVE && HAVE_SWIG
+#endif // HAVE_OCTAVE && !HAVE_SWIG

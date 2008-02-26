@@ -46,6 +46,7 @@ bool CSGInterface::get_bool_from_string()
 bool CSGInterface::handle()
 {
 	INT len=0;
+	bool success=true;
 
 	if (!gui)
 		gui=new CTextGUI(0, NULL);
@@ -63,11 +64,16 @@ bool CSGInterface::handle()
 	}
 	catch (ShogunException e)
 	{
-		SG_SERROR("%s:%s", "string expected as first argument", e.get_exception_string());
+		SG_SERROR("%s: %s", "string expected as first argument", e.get_exception_string());
 	}
 
-	SG_PRINT("action:%s\n", action);
-	if (strmatch(action, len, N_SEND_COMMAND))
+	SG_PRINT("action: %s, nlhs %d, nrhs %d\n", action, m_nlhs, m_nrhs);
+	if (strmatch(action, len, "test"))
+	{
+		if (!test())
+			SG_SERROR("action test failed!");
+	}
+	else if(strmatch(action, len, N_SEND_COMMAND))
 	{
 		parse_args(2, 0);
 		CHAR* cmd=interface->get_string(len);
@@ -76,10 +82,29 @@ bool CSGInterface::handle()
 		delete[] cmd;
 	}
 	else
-		return false;
+		success=false;
 
 #ifndef WIN32
     CSignal::unset_handler();
 #endif
+	delete[] action;
+	return success;
+}
+
+bool CSGInterface::test()
+{
+	if (m_nrhs<2)
+		return false;
+
+	BYTE* vector;
+	INT len;
+
+	get_byte_vector(vector, len);
+	reset_counter();
+	set_byte_vector(vector, len);
+	delete[] vector;
+
 	return true;
 }
+
+

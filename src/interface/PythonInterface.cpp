@@ -275,4 +275,4 @@ void exitsg(void)
 	SG_SINFO( "quitting...\n");
 	//delete gui;
 }
-#endif // HAVE_PYTHON && HAVE_SWIG
+#endif // HAVE_PYTHON && !HAVE_SWIG

@@ -71,6 +71,13 @@ class CMatlabInterface : public CSGInterface
 			return m_rhs[arg_counter];
 		}
 
+		void set_current_arg(mxArray* arg)
+		{
+			ASSERT(arg_counter>=0 && arg_counter<m_nlhs);
+			ASSERT(m_lhs);
+			m_lhs[arg_counter]=arg;
+		}
+
 	private:
 		mxArray** m_lhs;
 		const mxArray** m_rhs;
