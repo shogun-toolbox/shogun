@@ -34,6 +34,7 @@
 static CGUIOctave sg_octave;
 extern CTextGUI* gui;
 
+#if 0
 DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 {
 	int nrhs = prhs.length();
@@ -559,4 +560,5 @@ DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 
 	return plhs;
 }
+#endif
 #endif //HAVE_SWIG

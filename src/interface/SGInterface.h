@@ -55,9 +55,9 @@ class CSGInterface : public CSGObject
 		virtual bool get_bool()=0;
 
 		virtual CHAR* get_string(INT& len)=0;
-		virtual INT get_int_from_string()=0;
-		virtual DREAL get_real_from_string()=0;
-		virtual bool get_bool_from_string()=0;
+		virtual INT get_int_from_string();
+		virtual DREAL get_real_from_string();
+		virtual bool get_bool_from_string();
 
 		//get_byte_vector(BYTE*& bytes, INT& len);
 		virtual void get_byte_vector(BYTE** vec, INT* len)=0;

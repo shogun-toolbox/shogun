@@ -1,17 +1,25 @@
-#ifndef __MATLABINTERFACE__H_
-#define __MATLABINTERFACE__H_
+#ifndef __OCTAVEINTERFACE__H_
+#define __OCTAVEINTERFACE__H_
 
 #include "lib/config.h"
 
-#if defined(HAVE_MATLAB) && !defined(HAVE_SWIG)            
+#if defined(HAVE_OCTAVE) && !defined(HAVE_SWIG)            
 #include "interface/SGInterface.h"
-#include "lib/matlab.h"
 
-class CMatlabInterface : public CSGInterface
+#include <octave/config.h>
+
+#include <octave/defun-dld.h>
+#include <octave/error.h>
+#include <octave/oct-obj.h>
+#include <octave/pager.h>
+#include <octave/symtab.h>
+#include <octave/variables.h>
+
+class COctaveInterface : public CSGInterface
 {
 	public:
-		CMatlabInterface(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[]);
-		~CMatlabInterface();
+		COctaveInterface(octave_value_list prhs, INT nlhs);
+		~COctaveInterface();
 
 		/** get functions - to pass data from the target interface to shogun */
 		virtual void parse_args(INT num_args, INT num_default_args);
@@ -25,7 +33,6 @@ class CMatlabInterface : public CSGInterface
 
 		virtual CHAR* get_string(INT& len);
 
-		//get_byte_vector(BYTE*& bytes, INT& len);
 		virtual void get_byte_vector(BYTE** vec, INT* len);
 		virtual void get_int_vector(INT** vec, INT* len);
 		virtual void get_shortreal_vector(SHORTREAL** vec, INT* len);
@@ -64,18 +71,21 @@ class CMatlabInterface : public CSGInterface
 
 		virtual void submit_return_values();
 
-	private:
-		const mxArray* get_current_arg()
+		inline octave_value_list get_return_values()
 		{
-			ASSERT(arg_counter>=0 && arg_counter<m_nrhs+1); // +1 for action
-			ASSERT(m_rhs);
-			return m_rhs[arg_counter];
+			return m_lhs;
 		}
 
 	private:
-		mxArray** m_lhs;
-		const mxArray** m_rhs;
+		const octave_value get_current_arg()
+		{
+			ASSERT(arg_counter>=0 && arg_counter<m_nrhs+1); // +1 for action
+			return m_rhs(arg_counter);
+		}
 
+	private:
+		octave_value_list m_lhs;
+		octave_value_list m_rhs;
 };
-#endif // HAVE_MATLAB && HAVE_SWIG
-#endif // __MATLABINTERFACE__H_
+#endif // HAVE_OCTAVE && HAVE_SWIG
+#endif // __OCTAVEINTERFACE__H_

@@ -47,6 +47,7 @@ INT CMatlabInterface::get_int()
 	if (s-CMath::floor(s)!=0)
 		SG_ERROR("Expected Integer as argument %d\n", arg_counter);
 
+	arg_counter++;
 	return INT(s);
 }
 
@@ -56,6 +57,7 @@ DREAL CMatlabInterface::get_real()
 	if (!f || !mxIsNumeric(f) || mxGetN(f)!=1 || mxGetM(f)!=1)
 		SG_ERROR("Expected Scalar Float as argument %d\n", arg_counter);
 
+	arg_counter++;
 	return mxGetScalar(f);
 }
 
@@ -65,6 +67,7 @@ bool CMatlabInterface::get_bool()
 	if (!mxIsLogicalScalar(b))
 		SG_ERROR("Expected Scalar Boolean as argument %d\n", arg_counter);
 
+	arg_counter++;
 	return *mxGetLogicals(b)==0;
 }
 
@@ -74,44 +77,26 @@ CHAR* CMatlabInterface::get_string(INT& len)
 	bool zero_terminate=true;
 	const mxArray* s=get_current_arg();
 
-	if ( (mxIsChar(s)) && (mxGetM(s)==1) )
-	{
-		len = mxGetN(s);
-		CHAR* string=NULL;
-		if (zero_terminate)
-			string=new CHAR[len+1];
-		else
-			string=new CHAR[len];
-		ASSERT(string);
-		mxChar* c=mxGetChars(s);
-		ASSERT(c);
-		for (INT i=0; i<len; i++)
-			string[i]= (CHAR) (c[i]);
+	if ( !(mxIsChar(s)) || (mxGetM(s)!=1) )
+		SG_ERROR("Expecting string as argument %d\n", arg_counter);
 
-		if (zero_terminate)
-			string[len]='\0';
-
-		arg_counter++;
-		return string;
-	}
+	len = mxGetN(s);
+	CHAR* string=NULL;
+	if (zero_terminate)
+		string=new CHAR[len+1];
 	else
-		throw ShogunException("Expecting string as argument"); //TODO print out arg nr?
-}
+		string=new CHAR[len];
+	ASSERT(string);
+	mxChar* c=mxGetChars(s);
+	ASSERT(c);
+	for (INT i=0; i<len; i++)
+		string[i]= (CHAR) (c[i]);
 
+	if (zero_terminate)
+		string[len]='\0';
 
-INT CMatlabInterface::get_int_from_string()
-{
-	return 42;
-}
-
-DREAL CMatlabInterface::get_real_from_string()
-{
-	return 42;
-}
-
-bool CMatlabInterface::get_bool_from_string()
-{
-	return false;
+	arg_counter++;
+	return string;
 }
 
 
@@ -171,6 +156,7 @@ void CMatlabInterface::get_real_matrix(DREAL** matrix, INT* num_feat, INT* num_v
 	for (INT i=0; i<nv; i++)
 		for (INT j=0; j<nf; j++)
 			mat[i*nf+j]=feat[i*nf+j];
+	arg_counter++;
 }
 
 
