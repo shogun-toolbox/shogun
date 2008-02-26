@@ -117,7 +117,7 @@ bool CGPBTSVM::train()
 	}
 
 	delete prob.KER;
-	delete prob.y;
+	delete[] prob.y;
 	delete[] solution;
 
 	return true;
