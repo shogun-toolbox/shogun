@@ -86,7 +86,7 @@ bool CGPBTSVM::train()
 	prob.gpdtsolve(solution);
 	/****************************************************************************/
 
-  CSVM::set_objective(prob.objective_value);
+	CSVM::set_objective(prob.objective_value);
 
 	int num_sv=0;
 	int bsv=0;
@@ -116,8 +116,9 @@ bool CGPBTSVM::train()
 		}
 	}
 
+	delete prob.KER;
+	delete prob.y;
 	delete[] solution;
-	delete[] lab;
 
 	return true;
 }
