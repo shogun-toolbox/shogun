@@ -59,23 +59,22 @@ class CSGInterface : public CSGObject
 		virtual DREAL get_real_from_string();
 		virtual bool get_bool_from_string();
 
-		//get_byte_vector(BYTE*& bytes, INT& len);
-		virtual void get_byte_vector(BYTE** vec, INT* len)=0;
-		virtual void get_int_vector(INT** vec, INT* len)=0;
-		virtual void get_shortreal_vector(SHORTREAL** vec, INT* len)=0;
-		virtual void get_real_vector(DREAL** vec, INT* len)=0;
+		virtual void get_byte_vector(BYTE*& vector, INT& len)=0;
+		virtual void get_int_vector(INT*& vector, INT& len)=0;
+		virtual void get_shortreal_vector(SHORTREAL*& vector, INT& len)=0;
+		virtual void get_real_vector(DREAL*& vector, INT& len)=0;
 
-		virtual void get_byte_matrix(BYTE** matrix, INT* num_feat, INT* num_vec)=0;
-		virtual void get_int_matrix(INT** matrix, INT* num_feat, INT* num_vec)=0;
-		virtual void get_shortreal_matrix(SHORTREAL** matrix, INT* num_feat, INT* num_vec)=0;
-		virtual void get_real_matrix(DREAL** matrix, INT* num_feat, INT* num_vec)=0;
+		virtual void get_byte_matrix(BYTE*& matrix, INT& num_feat, INT& num_vec)=0;
+		virtual void get_int_matrix(INT*& matrix, INT& num_feat, INT& num_vec)=0;
+		virtual void get_shortreal_matrix(SHORTREAL*& matrix, INT& num_feat, INT& num_vec)=0;
+		virtual void get_real_matrix(DREAL*& matrix, INT& num_feat, INT& num_vec)=0;
 
-		virtual void get_byte_sparsematrix(TSparse<BYTE>** matrix, INT* num_feat, INT* num_vec)=0;
-		virtual void get_int_sparsematrix(TSparse<INT>** matrix, INT* num_feat, INT* num_vec)=0;
-		virtual void get_shortreal_sparsematrix(TSparse<SHORTREAL>** matrix, INT* num_feat, INT* num_vec)=0;
-		virtual void get_real_sparsematrix(TSparse<DREAL>** matrix, INT* num_feat, INT* num_vec)=0;
+		virtual void get_byte_sparsematrix(TSparse<BYTE>*& matrix, INT& num_feat, INT& num_vec)=0;
+		virtual void get_int_sparsematrix(TSparse<INT>*& matrix, INT& num_feat, INT& num_vec)=0;
+		virtual void get_shortreal_sparsematrix(TSparse<SHORTREAL>*& matrix, INT& num_feat, INT& num_vec)=0;
+		virtual void get_real_sparsematrix(TSparse<DREAL>*& matrix, INT& num_feat, INT& num_vec)=0;
 
-		virtual void get_string_list(T_STRING<CHAR>** strings, INT* num_str)=0;
+		virtual void get_string_list(T_STRING<CHAR>*& strings, INT& num_str)=0;
 
 		/** set functions - to pass data from shogun to the target interface */
 		virtual void create_return_values(INT num_val)=0;

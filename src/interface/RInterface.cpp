@@ -1,6 +1,6 @@
 #include "lib/config.h"
 
-#if defined(HAVE_R) && !defined(HAVE_SWIG)            
+#if defined(HAVE_R) && !defined(HAVE_SWIG)
 
 #include "interface/RInterface.h"
 #include "interface/SGInterface.h"
@@ -86,90 +86,90 @@ CHAR* CRInterface::get_string(INT& len)
 	return res;
 }
 
-void CRInterface::get_byte_vector(BYTE** vec, INT* len)
+void CRInterface::get_byte_vector(BYTE*& vec, INT& len)
 {
-	*vec=NULL;
-	*len=0;
+	vec=NULL;
+	len=0;
 }
 
-void CRInterface::get_int_vector(INT** vec, INT* len)
+void CRInterface::get_int_vector(INT*& vec, INT& len)
 {
-	*vec=NULL;
-	*len=0;
+	vec=NULL;
+	len=0;
 }
 
-void CRInterface::get_shortreal_vector(SHORTREAL** vec, INT* len)
+void CRInterface::get_shortreal_vector(SHORTREAL*& vec, INT& len)
 {
-	*vec=NULL;
-	*len=0;
+	vec=NULL;
+	len=0;
 }
 
-void CRInterface::get_real_vector(DREAL** vec, INT* len)
+void CRInterface::get_real_vector(DREAL*& vec, INT& len)
 {
-	*vec=NULL;
-	*len=0;
+	vec=NULL;
+	len=0;
 }
 
 
-void CRInterface::get_byte_matrix(BYTE** matrix, INT* num_feat, INT* num_vec)
-{
-}
-
-void CRInterface::get_int_matrix(INT** matrix, INT* num_feat, INT* num_vec)
+void CRInterface::get_byte_matrix(BYTE*& matrix, INT& num_feat, INT& num_vec)
 {
 }
 
-void CRInterface::get_shortreal_matrix(SHORTREAL** matrix, INT* num_feat, INT* num_vec)
+void CRInterface::get_int_matrix(INT*& matrix, INT& num_feat, INT& num_vec)
 {
 }
 
-void CRInterface::get_real_matrix(DREAL** matrix, INT* num_feat, INT* num_vec)
+void CRInterface::get_shortreal_matrix(SHORTREAL*& matrix, INT& num_feat, INT& num_vec)
+{
+}
+
+void CRInterface::get_real_matrix(DREAL*& matrix, INT& num_feat, INT& num_vec)
 {
 	SEXP feat=get_current_arg();
 	if( TYPEOF(feat) != REALSXP && TYPEOF(feat) != INTSXP )
 		SG_ERROR("Expected Double Matrix as argument %d\n", arg_counter);
 
-	*num_vec = Rf_ncols(feat);
-	*num_feat = Rf_nrows(feat);
-	INT nf=*num_feat;
-	INT nv=*num_vec;
-	*matrix=new DREAL[nv*nf];
-	DREAL* mat=*matrix;
-	ASSERT(mat);
+	num_vec = Rf_ncols(feat);
+	num_feat = Rf_nrows(feat);
+	matrix=new DREAL[num_vec*num_feat];
+	ASSERT(matrix);
 
-	for (INT i=0; i<nv; i++)
-		for (INT j=0; j<nf; j++)
-			mat[i*nf+j]= (double) REAL(feat)[i*nf+j];
+	for (INT i=0; i<num_vec; i++)
+		for (INT j=0; j<num_feat; j++)
+			matrix[i*num_feat+j]= (DREAL) REAL(feat)[i*num_feat+j];
+
+	arg_counter++;
 }
 
 
-void CRInterface::get_byte_sparsematrix(TSparse<BYTE>** matrix, INT* num_feat, INT* num_vec)
+void CRInterface::get_byte_sparsematrix(TSparse<BYTE>*& matrix, INT& num_feat, INT& num_vec)
 {
 }
 
-void CRInterface::get_int_sparsematrix(TSparse<INT>** matrix, INT* num_feat, INT* num_vec)
+void CRInterface::get_int_sparsematrix(TSparse<INT>*& matrix, INT& num_feat, INT& num_vec)
 {
 }
 
-void CRInterface::get_shortreal_sparsematrix(TSparse<SHORTREAL>** matrix, INT* num_feat, INT* num_vec)
+void CRInterface::get_shortreal_sparsematrix(TSparse<SHORTREAL>*& matrix, INT& num_feat, INT& num_vec)
 {
 }
 
-void CRInterface::get_real_sparsematrix(TSparse<DREAL>** matrix, INT* num_feat, INT* num_vec)
+void CRInterface::get_real_sparsematrix(TSparse<DREAL>*& matrix, INT& num_feat, INT& num_vec)
 {
 }
 
 
-void CRInterface::get_string_list(T_STRING<CHAR>** strings, INT* num_str)
+void CRInterface::get_string_list(T_STRING<CHAR>*& strings, INT& num_str)
 {
 	SEXP strs=get_current_arg();
 	if (strs == R_NilValue || TYPEOF(CAR(strs)) != STRSXP || length(CAR(strs))>=1)
 		SG_ERROR("Expected String List as argument %d\n", arg_counter);
 
-	INT ns=length(CAR(strs));
-	T_STRING<CHAR>* sc=new T_STRING<CHAR>[ns];
+	num_str=length(CAR(strs));
+	strings=new T_STRING<CHAR>[num_str];
+	ASSERT(strings);
 
-	for (int i=0; i<ns; i++)
+	for (int i=0; i<num_str; i++)
 	{
 		SEXPREC* s= STRING_ELT(strs,i);
 		CHAR* c= (CHAR*) CHAR(s);
@@ -178,20 +178,18 @@ void CRInterface::get_string_list(T_STRING<CHAR>** strings, INT* num_str)
 		if (len && c)
 		{
 			CHAR* dst=new CHAR[len];
-			sc[i].string=(CHAR*) memcpy(dst, c, len*sizeof(CHAR));
-			sc[i].length=len;
+			strings[i].string=(CHAR*) memcpy(dst, c, len*sizeof(CHAR));
+			strings[i].length=len;
 		}
 		else
 		{
 			SG_WARNING( "string with index %d has zero length\n", i+1);
-			sc[i].string=0;
-			sc[i].length=0;
+			strings[i].string=0;
+			strings[i].length=0;
 		}
-
 	}
 
-	*num_str=ns;
-	*strings=sc;
+	arg_counter++;
 }
 
 

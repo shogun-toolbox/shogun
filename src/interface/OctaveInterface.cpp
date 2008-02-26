@@ -100,82 +100,79 @@ CHAR* COctaveInterface::get_string(INT& len)
 	return cstr;
 }
 
-void COctaveInterface::get_byte_vector(BYTE** vec, INT* len)
+void COctaveInterface::get_byte_vector(BYTE*& vec, INT& len)
 {
-	*vec=NULL;
-	*len=0;
+	vec=NULL;
+	len=0;
 }
 
-void COctaveInterface::get_int_vector(INT** vec, INT* len)
+void COctaveInterface::get_int_vector(INT*& vec, INT& len)
 {
-	*vec=NULL;
-	*len=0;
+	vec=NULL;
+	len=0;
 }
 
-void COctaveInterface::get_shortreal_vector(SHORTREAL** vec, INT* len)
+void COctaveInterface::get_shortreal_vector(SHORTREAL*& vec, INT& len)
 {
-	*vec=NULL;
-	*len=0;
+	vec=NULL;
+	len=0;
 }
 
-void COctaveInterface::get_real_vector(DREAL** vec, INT* len)
+void COctaveInterface::get_real_vector(DREAL*& vec, INT& len)
 {
-	*vec=NULL;
-	*len=0;
+	vec=NULL;
+	len=0;
 }
 
 
-void COctaveInterface::get_byte_matrix(BYTE** matrix, INT* num_feat, INT* num_vec)
-{
-}
-
-void COctaveInterface::get_int_matrix(INT** matrix, INT* num_feat, INT* num_vec)
+void COctaveInterface::get_byte_matrix(BYTE*& matrix, INT& num_feat, INT& num_vec)
 {
 }
 
-void COctaveInterface::get_shortreal_matrix(SHORTREAL** matrix, INT* num_feat, INT* num_vec)
+void COctaveInterface::get_int_matrix(INT*& matrix, INT& num_feat, INT& num_vec)
 {
 }
 
-void COctaveInterface::get_real_matrix(DREAL** matrix, INT* num_feat, INT* num_vec)
+void COctaveInterface::get_shortreal_matrix(SHORTREAL*& matrix, INT& num_feat, INT& num_vec)
+{
+}
+
+void COctaveInterface::get_real_matrix(DREAL*& matrix, INT& num_feat, INT& num_vec)
 {
 	const octave_value mat_feat=get_current_arg();
 	if (!mat_feat.is_real_matrix())
 		SG_ERROR("Expected Double Matrix as argument %d\n", arg_counter);
 
 	Matrix m = mat_feat.matrix_value();
-	*num_vec = m.cols();
-	*num_feat = m.rows();
-	INT nf=*num_feat;
-	INT nv=*num_vec;
-	*matrix=new DREAL[nv*nf];
-	DREAL* mat=*matrix;
-	ASSERT(mat);
+	num_vec = m.cols();
+	num_feat = m.rows();
+	matrix=new DREAL[num_vec*num_feat];
+	ASSERT(matrix);
 
-	for (INT i=0; i<nv; i++)
-		for (INT j=0; j<nf; j++)
-			mat[i*nf+j]= (double) m(j,i);
+	for (INT i=0; i<num_vec; i++)
+		for (INT j=0; j<num_feat; j++)
+			matrix[i*num_feat+j]= (double) m(j,i);
 }
 
 
-void COctaveInterface::get_byte_sparsematrix(TSparse<BYTE>** matrix, INT* num_feat, INT* num_vec)
+void COctaveInterface::get_byte_sparsematrix(TSparse<BYTE>*& matrix, INT& num_feat, INT& num_vec)
 {
 }
 
-void COctaveInterface::get_int_sparsematrix(TSparse<INT>** matrix, INT* num_feat, INT* num_vec)
+void COctaveInterface::get_int_sparsematrix(TSparse<INT>*& matrix, INT& num_feat, INT& num_vec)
 {
 }
 
-void COctaveInterface::get_shortreal_sparsematrix(TSparse<SHORTREAL>** matrix, INT* num_feat, INT* num_vec)
+void COctaveInterface::get_shortreal_sparsematrix(TSparse<SHORTREAL>*& matrix, INT& num_feat, INT& num_vec)
 {
 }
 
-void COctaveInterface::get_real_sparsematrix(TSparse<DREAL>** matrix, INT* num_feat, INT* num_vec)
+void COctaveInterface::get_real_sparsematrix(TSparse<DREAL>*& matrix, INT& num_feat, INT& num_vec)
 {
 }
 
 
-void COctaveInterface::get_string_list(T_STRING<CHAR>** strings, INT* num_str)
+void COctaveInterface::get_string_list(T_STRING<CHAR>*& strings, INT& num_str)
 {
 }
 
@@ -257,7 +254,7 @@ DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 	}
 	catch (ShogunException e)
 	{
-		return octave_value_list()
+		return octave_value_list();
 	}
 
 	return ((COctaveInterface*) interface)->get_return_values();

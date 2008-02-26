@@ -95,67 +95,67 @@ CHAR* CPythonInterface::get_string(INT& len)
 	return cstr;
 }
 
-void CPythonInterface::get_byte_vector(BYTE** vec, INT* len)
+void CPythonInterface::get_byte_vector(BYTE*& vec, INT& len)
 {
-	*vec=NULL;
-	*len=0;
+	vec=NULL;
+	len=0;
 }
 
-void CPythonInterface::get_int_vector(INT** vec, INT* len)
+void CPythonInterface::get_int_vector(INT*& vec, INT& len)
 {
-	*vec=NULL;
-	*len=0;
+	vec=NULL;
+	len=0;
 }
 
-void CPythonInterface::get_shortreal_vector(SHORTREAL** vec, INT* len)
+void CPythonInterface::get_shortreal_vector(SHORTREAL*& vec, INT& len)
 {
-	*vec=NULL;
-	*len=0;
+	vec=NULL;
+	len=0;
 }
 
-void CPythonInterface::get_real_vector(DREAL** vec, INT* len)
+void CPythonInterface::get_real_vector(DREAL*& vec, INT& len)
 {
-	*vec=NULL;
-	*len=0;
+	vec=NULL;
+	len=0;
 }
 
 
-void CPythonInterface::get_byte_matrix(BYTE** matrix, INT* num_feat, INT* num_vec)
-{
-}
-
-void CPythonInterface::get_int_matrix(INT** matrix, INT* num_feat, INT* num_vec)
+void CPythonInterface::get_byte_matrix(BYTE*& matrix, INT& num_feat, INT& num_vec)
 {
 }
 
-void CPythonInterface::get_shortreal_matrix(SHORTREAL** matrix, INT* num_feat, INT* num_vec)
+void CPythonInterface::get_int_matrix(INT*& matrix, INT& num_feat, INT& num_vec)
 {
 }
 
-void CPythonInterface::get_real_matrix(DREAL** matrix, INT* num_feat, INT* num_vec)
+void CPythonInterface::get_shortreal_matrix(SHORTREAL*& matrix, INT& num_feat, INT& num_vec)
+{
+}
+
+void CPythonInterface::get_real_matrix(DREAL*& matrix, INT& num_feat, INT& num_vec)
 {
 	//has to be rewritting using numpy
 }
 
 
-void CPythonInterface::get_byte_sparsematrix(TSparse<BYTE>** matrix, INT* num_feat, INT* num_vec)
+void CPythonInterface::get_byte_sparsematrix(TSparse<BYTE>*& matrix, INT& num_feat, INT& num_vec)
 {
 }
 
-void CPythonInterface::get_int_sparsematrix(TSparse<INT>** matrix, INT* num_feat, INT* num_vec)
+void CPythonInterface::get_int_sparsematrix(TSparse<INT>*& matrix, INT& num_feat, INT& num_vec)
 {
 }
 
-void CPythonInterface::get_shortreal_sparsematrix(TSparse<SHORTREAL>** matrix, INT* num_feat, INT* num_vec)
+void CPythonInterface::get_shortreal_sparsematrix(TSparse<SHORTREAL>*& matrix, INT& num_feat, INT& num_vec)
 {
 }
 
-void CPythonInterface::get_real_sparsematrix(TSparse<DREAL>** matrix, INT* num_feat, INT* num_vec)
+void CPythonInterface::get_real_sparsematrix(TSparse<DREAL>*& matrix, INT& num_feat, INT& num_vec)
 {
 }
 
 
-void CPythonInterface::get_string_list(T_STRING<CHAR>** strings, INT* num_str)
+void CPythonInterface::get_string_list(T_STRING<CHAR>*& strings, INT& num_str)
 {
 }
 

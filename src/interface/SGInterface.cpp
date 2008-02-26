@@ -51,7 +51,7 @@ bool CSGInterface::handle()
 		gui=new CTextGUI(0, NULL);
 
 	if (!gui)
-		SG_SERROR("gui could not be initialized.");
+		SG_SERROR("GUI could not be initialized.\n");
 
 #ifndef WIN32
     CSignal::set_handler();
