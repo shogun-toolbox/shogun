@@ -87,9 +87,7 @@ template <class ST> class CSimpleFeatures: public CFeatures
 		virtual ~CSimpleFeatures()
 		{
 			SG_DEBUG("deleting simplefeatures (0x%p)\n", this);
-#ifndef HAVE_SWIG
 			delete[] feature_matrix;
-#endif
 			delete feature_cache;
 		}
 
@@ -236,7 +234,8 @@ template <class ST> class CSimpleFeatures: public CFeatures
 		 */
 		virtual void copy_feature_matrix(ST* src, INT num_feat, INT num_vec)
 		{
-			feature_matrix=(ST*) malloc(sizeof(ST)*((LONG) num_feat)*num_vec);
+			delete[] feature_matrix;
+			feature_matrix=new ST[((LONG) num_feat)*num_vec];
 			ASSERT(feature_matrix);
 			memcpy(feature_matrix, src, (sizeof(ST)*((LONG) num_feat)*num_vec));
 
