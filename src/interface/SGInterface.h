@@ -1,6 +1,10 @@
 #ifndef __SGINTERFACE__H_
 #define __SGINTERFACE__H_
 
+#include "lib/config.h"
+
+#if !defined(HAVE_SWIG)
+
 #include "lib/common.h"
 #include "base/SGObject.h"
 #include "features/StringFeatures.h"
@@ -122,4 +126,5 @@ class CSGInterface : public CSGObject
 		INT m_nrhs;
 };
 
+#endif // !HAVE_SWIG
 #endif // __SGINTERFACE__H_

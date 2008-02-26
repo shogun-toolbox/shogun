@@ -1,6 +1,9 @@
+#include "lib/config.h"
+
+#if !defined(HAVE_SWIG)
+
 #include <string.h>
 #include <stdlib.h>
-
 
 #include "interface/SGInterface.h"
 #include "lib/ShogunException.h"
@@ -106,5 +109,4 @@ bool CSGInterface::test()
 
 	return true;
 }
-
-
+#endif // !HAVE_SWIG
