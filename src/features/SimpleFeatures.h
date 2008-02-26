@@ -190,7 +190,7 @@ template <class ST> class CSimpleFeatures: public CFeatures
 			LONG num=num_features*num_vectors;
 			*d1=num_features;
 			*d2=num_vectors;
-			*dst=new DREAL[num];
+			*dst=(DREAL*) malloc(sizeof(DREAL)*num);
 			memcpy(*dst, feature_matrix, num * sizeof(DREAL));
 		}
 

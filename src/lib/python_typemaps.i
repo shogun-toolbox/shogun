@@ -542,9 +542,10 @@ TYPEMAP_ARGOUT1(PyObject,      NPY_OBJECT)
     PyArray_Descr* descr=PyArray_DescrFromType(typecode);
     if (descr && $1)
     {
-        $result=PyArray_NewFromDescr(&PyArray_Type,
-                descr, 2, dims, NULL, (void*)*$1, NPY_FARRAY, NULL);
-        ((PyArrayObject*) $result)->flags |= NPY_OWNDATA;
+        PyObject* r=PyArray_NewFromDescr(&PyArray_Type,
+                descr, 2, dims, NULL, (void*)*$1, NPY_FARRAY | NPY_OWNDATA, NULL);
+        $result=SWIG_Python_AppendOutput($result, r);
+        Py_DECREF(r);
     }
     else
         SWIG_fail;
