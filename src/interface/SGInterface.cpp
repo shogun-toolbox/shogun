@@ -14,6 +14,13 @@
 CSGInterface* interface=NULL;
 extern CTextGUI* gui;
 
+static CSGInterfaceMethod sg_methods[] =
+{
+	{(CHAR*) "test", (&CSGInterface::test), 0, (CHAR*) "this is a test."},
+	{NULL, NULL, 0, NULL}        /* Sentinel */
+};
+
+
 CSGInterface::CSGInterface()
 {
 	arg_counter=0;
@@ -49,17 +56,12 @@ bool CSGInterface::get_bool_from_string()
 bool CSGInterface::handle()
 {
 	INT len=0;
-	bool success=true;
-
-	if (!gui)
-		gui=new CTextGUI(0, NULL);
-
-	if (!gui)
-		SG_SERROR("GUI could not be initialized.\n");
+	bool success=false;
 
 #ifndef WIN32
     CSignal::set_handler();
 #endif
+
 	CHAR* action=NULL;
 	try
 	{
@@ -67,30 +69,49 @@ bool CSGInterface::handle()
 	}
 	catch (ShogunException e)
 	{
-		SG_SERROR("%s: %s", "string expected as first argument", e.get_exception_string());
+		SG_SERROR("String expected as first argument: %s\n", e.get_exception_string());
 	}
 
 	SG_PRINT("action: %s, nlhs %d, nrhs %d\n", action, m_nlhs, m_nrhs);
-	if (strmatch(action, len, "test"))
+	INT i=0;
+	while (sg_methods[i].action)
 	{
-		if (!test())
-			SG_SERROR("action test failed!");
+		if (strmatch(action, len, sg_methods[i].action))
+		{
+			if (!(interface->*(sg_methods[i].method))())
+				SG_SERROR("Usage: %s\n", sg_methods[i].usage);
+			else
+			{
+				success=true;
+				break;
+			}
+		}
+		i++;
 	}
-	else if(strmatch(action, len, N_SEND_COMMAND))
+
+	// FIXME: invoke old interface
+	if (!gui)
+		gui=new CTextGUI(0, NULL);
+
+	if (!gui)
+		SG_SERROR("GUI could not be initialized.\n");
+
+	if(!success && strmatch(action, len, N_SEND_COMMAND))
 	{
-		parse_args(2, 0);
+		//parse_args(2, 0);
 		CHAR* cmd=interface->get_string(len);
 		SG_PRINT("cmd:%s\n", cmd);
 		gui->parse_line(cmd);
 		delete[] cmd;
+		success=true;
 	}
-	else
-		success=false;
 
 #ifndef WIN32
     CSignal::unset_handler();
 #endif
+
 	delete[] action;
+	delete gui;
 	return success;
 }
 

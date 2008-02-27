@@ -46,7 +46,7 @@ IFType COctaveInterface::get_argument_type()
 
 INT COctaveInterface::get_int()
 {
-	const octave_value i=get_current_arg();
+	const octave_value i=get_arg_increment();
 	if (!i.is_real_scalar())
 		SG_ERROR("Expected Scalar Integer as argument %d\n", arg_counter);
 
@@ -60,7 +60,7 @@ INT COctaveInterface::get_int()
 
 DREAL COctaveInterface::get_real()
 {
-	const octave_value f=get_current_arg();
+	const octave_value f=get_arg_increment();
 	if (!f.is_real_scalar())
 		SG_ERROR("Expected Scalar Float as argument %d\n", arg_counter);
 
@@ -70,7 +70,7 @@ DREAL COctaveInterface::get_real()
 
 bool COctaveInterface::get_bool()
 {
-	const octave_value b=get_current_arg();
+	const octave_value b=get_arg_increment();
 	if (b.is_scalar_type())
 		SG_ERROR("Expected Scalar Boolean as argument %d\n", arg_counter);
 
@@ -81,7 +81,7 @@ bool COctaveInterface::get_bool()
 
 CHAR* COctaveInterface::get_string(INT& len)
 {
-	const octave_value s=get_current_arg();
+	const octave_value s=get_arg_increment();
 	if (!s.is_string())
 		SG_ERROR("Expected String as argument %d\n", arg_counter);
 
@@ -139,7 +139,7 @@ void COctaveInterface::get_shortreal_matrix(SHORTREAL*& matrix, INT& num_feat, I
 
 void COctaveInterface::get_real_matrix(DREAL*& matrix, INT& num_feat, INT& num_vec)
 {
-	const octave_value mat_feat=get_current_arg();
+	const octave_value mat_feat=get_arg_increment();
 	if (!mat_feat.is_real_matrix())
 		SG_ERROR("Expected Double Matrix as argument %d\n", arg_counter);
 

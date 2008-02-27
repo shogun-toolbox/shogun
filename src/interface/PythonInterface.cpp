@@ -47,7 +47,7 @@ IFType CPythonInterface::get_argument_type()
 
 INT CPythonInterface::get_int()
 {
-	const PyObject* i=get_current_arg();
+	const PyObject* i=get_arg_increment();
 	if (!i || !PyInt_Check(i))
 		SG_ERROR("Expected Scalar Integer as argument %d\n", arg_counter);
 
@@ -56,28 +56,26 @@ INT CPythonInterface::get_int()
 
 DREAL CPythonInterface::get_real()
 {
-	const PyObject* f=get_current_arg();
+	const PyObject* f=get_arg_increment();
 	if (!f || !PyFloat_Check(f))
 		SG_ERROR("Expected Scalar Float as argument %d\n", arg_counter);
 
-	arg_counter++;
 	return PyFloat_AS_DOUBLE(f);
 }
 
 bool CPythonInterface::get_bool()
 {
-	const PyObject* b=get_current_arg();
+	const PyObject* b=get_arg_increment();
 	if (!b || !PyBool_Check(b))
 		SG_ERROR("Expected Scalar Boolean as argument %d\n", arg_counter);
 
-	arg_counter++;
 	return PyInt_AS_LONG(b) != 0;
 }
 
 
 CHAR* CPythonInterface::get_string(INT& len)
 {
-	const PyObject* s=get_current_arg();
+	const PyObject* s=get_arg_increment();
 	if (!s || !PyString_Check(s))
 		SG_ERROR("Expected String as argument %d\n", arg_counter);
 
@@ -91,7 +89,6 @@ CHAR* CPythonInterface::get_string(INT& len)
 	memcpy(cstr, str, len+1);
 	cstr[len]='\0';
 
-	arg_counter++;
 	return cstr;
 }
 

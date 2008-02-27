@@ -44,7 +44,7 @@ IFType CRInterface::get_argument_type()
 
 INT CRInterface::get_int()
 {
-	SEXP i=get_current_arg();
+	SEXP i=get_arg_increment();
 	if (i == R_NilValue || TYPEOF(CAR(i)) != INTSXP || Rf_nrows(CAR(i))!=1 || Rf_ncols(CAR(i))!=1)
 		SG_ERROR("Expected Scalar Integer as argument %d\n", arg_counter);
 
@@ -53,7 +53,7 @@ INT CRInterface::get_int()
 
 DREAL CRInterface::get_real()
 {
-	SEXP f=get_current_arg();
+	SEXP f=get_arg_increment();
 	if (f == R_NilValue || TYPEOF(CAR(f)) != REALSXP || Rf_nrows(CAR(f))!=1 || Rf_ncols(CAR(f))!=1)
 		SG_ERROR("Expected Scalar Float as argument %d\n", arg_counter);
 
@@ -62,7 +62,7 @@ DREAL CRInterface::get_real()
 
 bool CRInterface::get_bool()
 {
-	SEXP b=get_current_arg();
+	SEXP b=get_arg_increment();
 	if (b == R_NilValue || TYPEOF(CAR(b)) != LGLSXP || Rf_nrows(CAR(b))!=1 || Rf_ncols(CAR(b))!=1)
 		SG_ERROR("Expected Scalar Boolean as argument %d\n", arg_counter);
 
@@ -72,7 +72,7 @@ bool CRInterface::get_bool()
 
 CHAR* CRInterface::get_string(INT& len)
 {
-	SEXP s=get_current_arg();
+	SEXP s=get_arg_increment();
 	if (s == R_NilValue || TYPEOF(CAR(s)) != STRSXP || length(CAR(s))!=1)
 		SG_ERROR("Expected String as argument %d\n", arg_counter);
 
@@ -125,7 +125,7 @@ void CRInterface::get_shortreal_matrix(SHORTREAL*& matrix, INT& num_feat, INT& n
 
 void CRInterface::get_real_matrix(DREAL*& matrix, INT& num_feat, INT& num_vec)
 {
-	SEXP feat=get_current_arg();
+	SEXP feat=get_arg_increment();
 	if( TYPEOF(feat) != REALSXP && TYPEOF(feat) != INTSXP )
 		SG_ERROR("Expected Double Matrix as argument %d\n", arg_counter);
 
@@ -161,7 +161,7 @@ void CRInterface::get_real_sparsematrix(TSparse<DREAL>*& matrix, INT& num_feat, 
 
 void CRInterface::get_string_list(T_STRING<CHAR>*& strings, INT& num_str)
 {
-	SEXP strs=get_current_arg();
+	SEXP strs=get_arg_increment();
 	if (strs == R_NilValue || TYPEOF(CAR(strs)) != STRSXP || length(CAR(strs))>=1)
 		SG_ERROR("Expected String List as argument %d\n", arg_counter);
 

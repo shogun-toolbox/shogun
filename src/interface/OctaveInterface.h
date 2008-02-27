@@ -77,15 +77,28 @@ class COctaveInterface : public CSGInterface
 		}
 
 	private:
-		const octave_value get_current_arg()
+		const octave_value get_arg_increment()
 		{
+			octave_value retval;
 			ASSERT(arg_counter>=0 && arg_counter<m_nrhs+1); // +1 for action
-			return m_rhs(arg_counter);
+
+			retval=m_rhs(arg_counter);
+			arg_counter++;
+
+			return retval;
+		}
+
+		void set_arg_increment(octave_value arg)
+		{
+			ASSERT(arg_counter>=0 && arg_counter<m_nlhs);
+
+			m_lhs.append(arg);
+			arg_counter++;
 		}
 
 	private:
 		octave_value_list m_lhs;
 		octave_value_list m_rhs;
 };
-#endif // HAVE_OCTAVE && HAVE_SWIG
+#endif // HAVE_OCTAVE && !HAVE_SWIG
 #endif // __OCTAVEINTERFACE__H_

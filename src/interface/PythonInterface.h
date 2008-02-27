@@ -76,15 +76,29 @@ class CPythonInterface : public CSGInterface
 		}
 
 	private:
-		const PyObject* get_current_arg()
+		const PyObject* get_arg_increment()
 		{
+			const PyObject* retval;
 			ASSERT(arg_counter>=0 && arg_counter<m_nrhs+1); // +1 for action
-			return PyTuple_GET_ITEM(m_rhs, arg_counter);
+			ASSERT(m_rhs);
+
+			retval=PyTuple_GET_ITEM(m_rhs, arg_counter);
+			arg_counter++;
+
+			return retval;
+		}
+
+		void set_arg_increment(PyObject* arg)
+		{
+			ASSERT(arg_counter>=0 && arg_counter<m_nlhs);
+			ASSERT(m_lhs);
+			PyTuple_SET_ITEM(m_lhs, arg_counter, arg);
+			arg_counter++;
 		}
 
 	private:
 		PyObject* m_lhs;
 		PyObject* m_rhs;
 };
-#endif // HAVE_PYTHON && HAVE_SWIG
+#endif // HAVE_PYTHON && !HAVE_SWIG
 #endif // __PYTHONINTERFACE__H_

@@ -64,18 +64,24 @@ class CMatlabInterface : public CSGInterface
 		virtual void submit_return_values();
 
 	private:
-		const mxArray* get_current_arg()
+		const mxArray* get_arg_increment()
 		{
+			const mxArray* retval;
 			ASSERT(arg_counter>=0 && arg_counter<m_nrhs+1); // +1 for action
 			ASSERT(m_rhs);
-			return m_rhs[arg_counter];
+
+			retval=m_rhs[arg_counter];
+			arg_counter++;
+
+			return retval;
 		}
 
-		void set_current_arg(mxArray* arg)
+		void set_arg_increment(mxArray* arg)
 		{
 			ASSERT(arg_counter>=0 && arg_counter<m_nlhs);
 			ASSERT(m_lhs);
 			m_lhs[arg_counter]=arg;
+			arg_counter++;
 		}
 
 	private:

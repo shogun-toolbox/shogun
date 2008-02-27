@@ -3,7 +3,7 @@
 
 #include "lib/config.h"
 
-#if defined(HAVE_R) && !defined(HAVE_SWIG)            
+#if defined(HAVE_R) && !defined(HAVE_SWIG)
 #include "interface/SGInterface.h"
 
 #include <Rdefines.h>
@@ -70,17 +70,27 @@ class CRInterface : public CSGInterface
 		}
 
 	private:
-		const SEXP get_current_arg()
+		const SEXP get_arg_increment()
 		{
 			ASSERT(arg_counter>=0 && arg_counter<m_nrhs+1); // +1 for action
 			m_rhs=CDR(m_rhs);
 			arg_counter++;
+
 			return m_rhs;
+		}
+
+		void set_arg_increment(SEXP arg)
+		{
+			ASSERT(arg_counter>=0 && arg_counter<m_nlhs);
+			m_lhs=CDR(m_lhs);
+			// somehow set value in m_lhs
+			m_lhs=arg;
+			arg_counter++;
 		}
 
 	private:
 		SEXP m_lhs;
 		SEXP m_rhs;
 };
-#endif // HAVE_R && HAVE_SWIG
+#endif // HAVE_R && !HAVE_SWIG
 #endif // __RINTERFACE__H_

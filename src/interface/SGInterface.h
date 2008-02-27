@@ -34,6 +34,7 @@ enum IFType
 
 class CSGInterface : public CSGObject
 {
+
 	public:
 		CSGInterface();
 		~CSGInterface();
@@ -125,6 +126,17 @@ class CSGInterface : public CSGObject
 		INT m_nlhs;
 		INT m_nrhs;
 };
+
+typedef bool (CSGInterface::*CSGInterfacePtr)();
+
+typedef struct {
+	CHAR* action;
+	CSGInterfacePtr method;
+	INT type;
+	CHAR* usage;
+} CSGInterfaceMethod;
+
+
 
 #endif // !HAVE_SWIG
 #endif // __SGINTERFACE__H_
