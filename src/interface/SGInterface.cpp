@@ -120,13 +120,34 @@ bool CSGInterface::test()
 	if (m_nrhs<2)
 		return false;
 
-	BYTE* vector;
+/*
+	DREAL* vector;
 	INT len;
 
-	get_byte_vector(vector, len);
+	get_real_vector(vector, len);
+	for (INT i=0; i<len; i++) SG_PRINT("data %d: %f\n", i, vector[i]);
 	reset_counter();
-	set_byte_vector(vector, len);
+	set_real_vector(vector, len);
 	delete[] vector;
+*/
+
+	TSparse<DREAL>* matrix;
+	INT num_feat, num_vec;
+
+	get_real_sparsematrix(matrix, num_feat, num_vec);
+	for (INT i=0; i<num_vec; i++)
+	{
+		for (INT j=0; j<num_feat; j++)
+		{
+			INT idx=i*num_feat+j;
+			SG_PRINT("data %d, %d, index %d: %f\n", i, j, idx, matrix[idx]);
+		}
+	}
+
+	reset_counter();
+	set_real_sparsematrix(matrix, num_feat, num_vec);
+	delete[] matrix;
+
 
 	return true;
 }

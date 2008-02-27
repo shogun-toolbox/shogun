@@ -143,7 +143,7 @@ void CMatlabInterface::get_shortreal_vector(SHORTREAL*& vector, INT& len)
 			"Expected Single Precision Vector, got class %s as argument %d\n",
 			mxGetClassName(mx_vec), arg_counter);
 
-	len=mxGetM(mx_vec);
+	len=mxGetNumberOfElements(mx_vec);
 	vector=new SHORTREAL[len];
 	ASSERT(vector);
 	SHORTREAL* data=(SHORTREAL*) mxGetData(mx_vec);
@@ -259,7 +259,7 @@ void CMatlabInterface::get_byte_sparsematrix(TSparse<BYTE>*& matrix, INT& num_fe
 		SG_ERROR("Expected Sparse Matrix as argument %d\n", arg_counter);
 
 	if (!(mxIsClass(mx_mat,"int8") || mxIsClass(mx_mat, "uint8")))
-		SG_ERROR("Expected Bute Matrix, got class %s as argument %d\n",
+		SG_ERROR("Expected Byte Matrix, got class %s as argument %d\n",
 			mxGetClassName(mx_mat), arg_counter);
 
 	num_vec=mxGetN(mx_mat);
@@ -400,48 +400,177 @@ void CMatlabInterface::set_byte_vector(BYTE* vector, INT len)
 
 void CMatlabInterface::set_int_vector(INT* vector, INT len)
 {
+	mxArray* mx_vec=mxCreateNumericMatrix(1, len, mxINT32_CLASS, mxREAL);
+	if (!mx_vec)
+		SG_ERROR("Couldn't create Int Vector of length %d\n", len);
+
+	INT* data=(INT*) mxGetData(mx_vec);
+
+	SG_DEBUG("INT vector has %d elements\n", len);
+	for (INT i=0; i<len; i++)
+		data[i]=vector[i];
+
+	set_arg_increment(mx_vec);
 }
 
 void CMatlabInterface::set_shortreal_vector(SHORTREAL* vector, INT len)
 {
+	mxArray* mx_vec=mxCreateNumericMatrix(1, len, mxSINGLE_CLASS, mxREAL);
+	if (!mx_vec)
+		SG_ERROR("Couldn't create Single Precision Vector of length %d\n", len);
+
+	SHORTREAL* data=(SHORTREAL*) mxGetData(mx_vec);
+
+	SG_DEBUG("SHORTREAL vector has %d elements\n", len);
+	for (INT i=0; i<len; i++)
+		data[i]=vector[i];
+
+	set_arg_increment(mx_vec);
 }
 
 void CMatlabInterface::set_real_vector(DREAL* vector, INT len)
 {
+	mxArray* mx_vec=mxCreateNumericMatrix(1, len, mxDOUBLE_CLASS, mxREAL);
+	if (!mx_vec)
+		SG_ERROR("Couldn't create Double Precision Vector of length %d\n", len);
+
+	DREAL* data=(DREAL*) mxGetData(mx_vec);
+
+	SG_DEBUG("DREAL vector has %d elements\n", len);
+	for (INT i=0; i<len; i++)
+		data[i]=vector[i];
+
+	set_arg_increment(mx_vec);
 }
 
 
 void CMatlabInterface::set_byte_matrix(BYTE* matrix, INT num_feat, INT num_vec)
 {
+	mxArray* mx_mat=mxCreateNumericMatrix(num_feat, num_vec, mxINT8_CLASS, mxREAL);
+	if (!mx_mat)
+		SG_ERROR("Couldn't create Byte Matrix of %d rows and %d cols\n", num_feat, num_vec);
+
+	BYTE* data=(BYTE*) mxGetData(mx_mat);
+
+	SG_DEBUG("dense BYTE matrix has %d rows, %d cols\n", num_feat, num_vec);
+	for (INT i=0; i<num_vec; i++)
+		for (INT j=0; j<num_feat; j++)
+			data[i*num_feat+j]=matrix[i*num_feat+j];
+
+	set_arg_increment(mx_mat);
 }
 
 void CMatlabInterface::set_int_matrix(INT* matrix, INT num_feat, INT num_vec)
 {
+	mxArray* mx_mat=mxCreateNumericMatrix(num_feat, num_vec, mxINT32_CLASS, mxREAL);
+	if (!mx_mat)
+		SG_ERROR("Couldn't create Int Matrix of %d rows and %d cols\n", num_feat, num_vec);
+
+	INT* data=(INT*) mxGetData(mx_mat);
+
+	SG_DEBUG("dense INT matrix has %d rows, %d cols\n", num_feat, num_vec);
+	for (INT i=0; i<num_vec; i++)
+		for (INT j=0; j<num_feat; j++)
+			data[i*num_feat+j]=matrix[i*num_feat+j];
+
+	set_arg_increment(mx_mat);
 }
 
 void CMatlabInterface::set_shortreal_matrix(SHORTREAL* matrix, INT num_feat, INT num_vec)
 {
+	mxArray* mx_mat=mxCreateNumericMatrix(num_feat, num_vec, mxSINGLE_CLASS, mxREAL);
+	if (!mx_mat)
+		SG_ERROR("Couldn't create Single Precision Matrix of %d rows and %d cols\n", num_feat, num_vec);
+
+	SHORTREAL* data=(SHORTREAL*) mxGetData(mx_mat);
+
+	SG_DEBUG("dense SHORTREAL matrix has %d rows, %d cols\n", num_feat, num_vec);
+	for (INT i=0; i<num_vec; i++)
+		for (INT j=0; j<num_feat; j++)
+			data[i*num_feat+j]=matrix[i*num_feat+j];
+
+	set_arg_increment(mx_mat);
 }
 
 void CMatlabInterface::set_real_matrix(DREAL* matrix, INT num_feat, INT num_vec)
 {
+	mxArray* mx_mat=mxCreateNumericMatrix(num_feat, num_vec, mxDOUBLE_CLASS, mxREAL);
+	if (!mx_mat)
+		SG_ERROR("Couldn't create Double Precision Matrix of %d rows and %d cols\n", num_feat, num_vec);
+
+	DREAL* data=(DREAL*) mxGetData(mx_mat);
+
+	SG_DEBUG("dense DREAL matrix has %d rows, %d cols\n", num_feat, num_vec);
+	for (INT i=0; i<num_vec; i++)
+		for (INT j=0; j<num_feat; j++)
+			data[i*num_feat+j]=matrix[i*num_feat+j];
+
+	set_arg_increment(mx_mat);
 }
 
 
 void CMatlabInterface::set_byte_sparsematrix(TSparse<BYTE>* matrix, INT num_feat, INT num_vec)
 {
+	mxArray* mx_mat=mxCreateSparse(num_feat, num_vec, num_feat*num_vec, mxREAL);
+	if (!mx_mat)
+		SG_ERROR("Couldn't create Sparse Byte Matrix of %d rows and %d cols\n", num_feat, num_vec);
+
+	TSparse<BYTE>* data=(TSparse<BYTE>*) mxGetData(mx_mat);
+
+	SG_DEBUG("sparse BYTE matrix has %d rows, %d cols\n", num_feat, num_vec);
+	for (INT i=0; i<num_vec; i++)
+		for (INT j=0; j<num_feat; j++)
+			data[i*num_feat+j]=matrix[i*num_feat+j];
+
+	set_arg_increment(mx_mat);
 }
 
 void CMatlabInterface::set_int_sparsematrix(TSparse<INT>* matrix, INT num_feat, INT num_vec)
 {
+	mxArray* mx_mat=mxCreateSparse(num_feat, num_vec, num_feat*num_vec, mxREAL);
+	if (!mx_mat)
+		SG_ERROR("Couldn't create Sparse Int Matrix of %d rows and %d cols\n", num_feat, num_vec);
+
+	TSparse<INT>* data=(TSparse<INT>*) mxGetData(mx_mat);
+
+	SG_DEBUG("sparse INT matrix has %d rows, %d cols\n", num_feat, num_vec);
+	for (INT i=0; i<num_vec; i++)
+		for (INT j=0; j<num_feat; j++)
+			data[i*num_feat+j]=matrix[i*num_feat+j];
+
+	set_arg_increment(mx_mat);
 }
 
 void CMatlabInterface::set_shortreal_sparsematrix(TSparse<SHORTREAL>* matrix, INT num_feat, INT num_vec)
 {
+	mxArray* mx_mat=mxCreateSparse(num_feat, num_vec, num_feat*num_vec, mxREAL);
+	if (!mx_mat)
+		SG_ERROR("Couldn't create Sparse Single Precision Matrix of %d rows and %d cols\n", num_feat, num_vec);
+
+	TSparse<SHORTREAL>* data=(TSparse<SHORTREAL>*) mxGetData(mx_mat);
+
+	SG_DEBUG("sparse SHORTREAL matrix has %d rows, %d cols\n", num_feat, num_vec);
+	for (INT i=0; i<num_vec; i++)
+		for (INT j=0; j<num_feat; j++)
+			data[i*num_feat+j]=matrix[i*num_feat+j];
+
+	set_arg_increment(mx_mat);
 }
 
 void CMatlabInterface::set_real_sparsematrix(TSparse<DREAL>* matrix, INT num_feat, INT num_vec)
 {
+	mxArray* mx_mat=mxCreateSparse(num_feat, num_vec, num_feat*num_vec, mxREAL);
+	if (!mx_mat)
+		SG_ERROR("Couldn't create Sparse Double Precision Matrix of %d rows and %d cols\n", num_feat, num_vec);
+
+	TSparse<DREAL>* data=(TSparse<DREAL>*) mxGetData(mx_mat);
+
+	SG_DEBUG("sparse DREAL matrix has %d rows, %d cols\n", num_feat, num_vec);
+	for (INT i=0; i<num_vec; i++)
+		for (INT j=0; j<num_feat; j++)
+			data[i*num_feat+j]=matrix[i*num_feat+j];
+
+	set_arg_increment(mx_mat);
 }
 
 
