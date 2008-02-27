@@ -124,7 +124,7 @@ bool CGNPPSVM::train()
 	delete[] alpha;
 	delete[] diagK;
 	delete[] vector_y;
+	delete[] History;
 
 	return true;
 }
-
