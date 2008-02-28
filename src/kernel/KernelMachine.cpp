@@ -18,7 +18,7 @@ CKernelMachine::CKernelMachine()
 
 CKernelMachine::~CKernelMachine()
 {
-    SG_REF(kernel);
+    SG_UNREF(kernel);
 }
 
 CLabels* CKernelMachine::classify(CLabels* output)

@@ -50,16 +50,17 @@ void CLabels::set_labels(DREAL* p_labels, INT len)
 	ASSERT(len>0);
 	num_labels = len;
 
-	this->labels = new DREAL[len];
-	ASSERT(this->labels);
+	delete[] labels;
+	labels = new DREAL[len];
+	ASSERT(labels);
 
 	for (INT i=0; i<len; i++)
-		this->labels[i] = p_labels[i];
+		labels[i] = p_labels[i];
 }
 
 bool CLabels::is_two_class_labeling()
 {
-	ASSERT(this->labels);
+	ASSERT(labels);
 
 	for (INT i=0; i<num_labels; i++)
 	{
@@ -132,9 +133,7 @@ INT* CLabels::get_int_labels(INT &len)
 void CLabels::set_int_labels(INT * mylabels, INT len)
 {
 	num_labels = len ;
-#ifndef HAVE_SWIG
 	delete[] labels ;
-#endif
 	
 	labels = new DREAL[num_labels] ;
 	for (INT i=0; i<num_labels; i++)

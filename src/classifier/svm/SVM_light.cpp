@@ -442,6 +442,14 @@ bool CSVMLight::train()
 	SG_DEBUG( "get_kernel()->get_precompute_subkernel_matrix() = %i\n", get_kernel()->get_precompute_subkernel_matrix()) ;
 	SG_DEBUG( "use_kernel_cache = %i\n", use_kernel_cache) ;
 
+	if (use_kernel_cache)
+	{
+		// allocate kernel cache but clean up beforehand
+		CKernelMachine::get_kernel()->kernel_cache_cleanup();
+		CKernelMachine::get_kernel()->kernel_cache_init(get_kernel()->get_cache_size());
+		CKernelMachine::get_kernel()->kernel_cache_reset_lru();
+	}
+
 #ifdef USE_CPLEX
 	cleanup_cplex();
 
@@ -519,7 +527,7 @@ bool CSVMLight::train()
 
 	// train the svm
 	svm_learn();
-	
+
 	// brain damaged svm light work around
 	create_new_model(model->sv_num-1);
 	set_bias(-model->b);
@@ -548,6 +556,9 @@ bool CSVMLight::train()
 		get_kernel()->clear_normal() ;
 		get_kernel()->delete_optimization() ;
 	}
+
+	if (use_kernel_cache)
+		get_kernel()->kernel_cache_cleanup();
 	
 	return true ;
 }
@@ -882,9 +893,6 @@ INT CSVMLight::optimize_to_convergence(INT* docs, INT* label, INT totdoc,
   terminate=0;
   
   CKernelMachine::get_kernel()->set_time(iteration);  /* for lru cache */
-  if (use_kernel_cache)
-	  CKernelMachine::get_kernel()->kernel_cache_reset_lru();
-
 
   for(i=0;i<totdoc;i++) {    /* various inits */
     chosen[i]=0;

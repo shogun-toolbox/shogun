@@ -332,12 +332,6 @@ bool CKernel::init(CFeatures* l, CFeatures* r)
 	lhs=l;
 	rhs=r;
 
-#ifdef USE_SVMLIGHT
-	// allocate kernel cache but clean up beforehand
-	kernel_cache_cleanup();
-	kernel_cache_init(cache_size);
-#endif //USE_SVMLIGHT
-
 	delete[] precomputed_matrix ;
 	precomputed_matrix=NULL ;
 

@@ -310,6 +310,9 @@ class CKernel : public CSGObject
 		{
 			return(kernel_cache.elems < kernel_cache.max_elems);
 		}
+
+		void   kernel_cache_init(INT size, bool regression_hack=false);
+		void   kernel_cache_cleanup();
 #endif //USE_SVMLIGHT
 
 		/** list kernel */
@@ -555,9 +558,7 @@ class CKernel : public CSGObject
 		static void* cache_multiple_kernel_row_helper(void* p);
 
 		/// init kernel cache of size megabytes
-		void   kernel_cache_init(INT size, bool regression_hack=false);
 		void   kernel_cache_free(INT cacheidx);
-		void   kernel_cache_cleanup();
 		INT   kernel_cache_malloc();
 		INT   kernel_cache_free_lru();
 		KERNELCACHE_ELEM *kernel_cache_clean_and_malloc(INT cacheidx);
