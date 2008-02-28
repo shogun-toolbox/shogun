@@ -90,19 +90,20 @@ bool CSGInterface::handle()
 	}
 
 	// FIXME: invoke old interface
-	if (!gui)
-		gui=new CTextGUI(0, NULL);
-
-	if (!gui)
-		SG_SERROR("GUI could not be initialized.\n");
-
 	if(!success && strmatch(action, len, N_SEND_COMMAND))
 	{
+		if (!gui)
+			gui=new CTextGUI(0, NULL);
+		if (!gui)
+			SG_SERROR("GUI could not be initialized.\n");
+
 		//parse_args(2, 0);
 		CHAR* cmd=interface->get_string(len);
 		SG_PRINT("cmd:%s\n", cmd);
 		gui->parse_line(cmd);
+
 		delete[] cmd;
+		delete gui;
 		success=true;
 	}
 
@@ -111,7 +112,6 @@ bool CSGInterface::handle()
 #endif
 
 	delete[] action;
-	delete gui;
 	return success;
 }
 
@@ -131,6 +131,7 @@ bool CSGInterface::test()
 	delete[] vector;
 */
 
+/*
 	TSparse<DREAL>* matrix;
 	INT num_feat, num_vec;
 
@@ -139,15 +140,21 @@ bool CSGInterface::test()
 	{
 		for (INT j=0; j<num_feat; j++)
 		{
-			INT idx=i*num_feat+j;
-			SG_PRINT("data %d, %d, index %d: %f\n", i, j, idx, matrix[idx]);
+			SG_PRINT("data %d, %d, %f\n", i, j, matrix[i].features[j].entry);
 		}
 	}
 
 	reset_counter();
 	set_real_sparsematrix(matrix, num_feat, num_vec);
 	delete[] matrix;
+*/
 
+	T_STRING<CHAR>* list;
+	INT num_str;
+	get_string_list(list, num_str);
+	reset_counter();
+	set_string_list(list, num_str);
+	delete[] list;
 
 	return true;
 }
