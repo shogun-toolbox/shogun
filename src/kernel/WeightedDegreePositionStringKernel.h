@@ -552,6 +552,17 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<CHAR>
 		DREAL* compute_POIM( INT max_degree, INT& num_feat, INT& num_sym,
 			DREAL* result, INT num_suppvec, INT* IDX, DREAL* alphas, DREAL* distrib );
 
+		/*DREAL* prepare_POIM2(DREAL* distrib, INT num_sym, INT num_feat);
+		void compute_POIM2(INT max_degree, CSVM* svm);
+		void get_POIM2(DREAL** poim, INT* num_sym, INT* num_feat)
+		{
+			*poim=malloc();
+			memcpy(*poim, poim_buffer, size);
+			*num_sym=xx;
+			*num_feat=xx;
+		}
+		void cleanup_POIM2();*/
+
 	protected:
 		/** create emtpy tries */
 		void create_empty_tries();
