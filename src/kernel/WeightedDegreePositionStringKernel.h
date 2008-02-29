@@ -14,8 +14,9 @@
 
 #include "lib/common.h"
 #include "kernel/StringKernel.h"
-
 #include "lib/Trie.h"
+
+class CSVM ;
 
 /** kernel WeightedDegreePositionString */
 class CWeightedDegreePositionStringKernel: public CStringKernel<CHAR>
@@ -552,16 +553,12 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<CHAR>
 		DREAL* compute_POIM( INT max_degree, INT& num_feat, INT& num_sym,
 			DREAL* result, INT num_suppvec, INT* IDX, DREAL* alphas, DREAL* distrib );
 
-		/*DREAL* prepare_POIM2(DREAL* distrib, INT num_sym, INT num_feat);
-		void compute_POIM2(INT max_degree, CSVM* svm);
-		void get_POIM2(DREAL** poim, INT* num_sym, INT* num_feat)
-		{
-			*poim=malloc();
-			memcpy(*poim, poim_buffer, size);
-			*num_sym=xx;
-			*num_feat=xx;
-		}
-		void cleanup_POIM2();*/
+		void prepare_POIM2(DREAL* distrib, INT num_sym, INT num_feat) ;		
+		void compute_POIM2(INT max_degree, CSVM* svm) ;
+		void get_POIM2(DREAL** poim, INT* result_len) ;
+		void cleanup_POIM2() ;
+		
+		
 
 	protected:
 		/** create emtpy tries */
@@ -710,5 +707,11 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<CHAR>
 		bool tree_initialized;
 		/** makes add_example_to_tree (ONLY!) use POIMTrie */
 		bool use_poim_tries;
+
+		/** temporary memory for the interface to the poim functions */ 
+		DREAL *m_poim_distrib, *m_poim ;
+		/** temporary memory for the interface to the poim functions */ 
+		INT m_poim_num_sym, m_poim_num_feat, m_poim_result_len ;
+		
 };
 #endif /* _WEIGHTEDDEGREEPOSITIONSTRINGKERNEL_H__ */
