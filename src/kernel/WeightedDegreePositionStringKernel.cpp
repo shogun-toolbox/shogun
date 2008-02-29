@@ -1843,7 +1843,7 @@ void CWeightedDegreePositionStringKernel::compute_POIM2(INT max_degree, CSVM* sv
 	
 	if ((max_degree < 1) || (max_degree > 12))
 	{
-		SG_WARNING( "max_degree out of range 1..12 (%d).\n", max_degree);
+		//SG_WARNING( "max_degree out of range 1..12 (%d).\n", max_degree);
 		SG_WARNING( "max_degree out of range 1..12 (%d). setting to 1.\n", max_degree);
 		max_degree=1;
 	}
@@ -1851,8 +1851,10 @@ void CWeightedDegreePositionStringKernel::compute_POIM2(INT max_degree, CSVM* sv
 	int num_feat = m_poim_num_feat ;
 	int num_sym = m_poim_num_sym ;
 	free(m_poim) ;
+
 	m_poim = compute_POIM(max_degree, num_feat, num_sym, NULL,	num_suppvec, sv_idx, 
 						  sv_weight, m_poim_distrib);
+
 	assert(num_feat==1) ;
 	m_poim_result_len=num_sym ;
 	
@@ -1878,3 +1880,4 @@ void CWeightedDegreePositionStringKernel::cleanup_POIM2()
 	m_poim_num_sym=0 ;
 	m_poim_result_len=0 ;
 }
+
