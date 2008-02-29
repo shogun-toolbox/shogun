@@ -39,8 +39,53 @@ class CSGInterface : public CSGObject
 		CSGInterface();
 		~CSGInterface();
 
+		/* actions */
+		/** get kernel optimization */
+		bool a_get_kernel_optimization();
+		/** plugin estimate classify one example */
+		bool a_plugin_estimate_classify_example();
+		/** plugin estimate classify */
+		bool a_plugin_estimate_classify();
+		/** set plugin estimate */
+		bool a_set_plugin_estimate();
+		/** get plugin estimate */
+		bool a_get_plugin_estimate();
+		/** classify */
+		bool a_classify();
+		/** classify example */
+		bool a_classify_example();
+		/** get classifier */
+		bool a_get_classifier();
+		/** get SVM */
+		bool a_get_svm();
+		/** set SVM */
+		bool a_set_svm();
+		/** get SVM objective */
+		bool a_get_svm_objective();
+		/** compute HMM relative entropy */
+		bool a_relative_entropy();
+		/** compute HMM entropy */
+		bool a_entropy();
+		/** HMM classify */
+		bool a_hmm_classify();
+		/** HMM classify for a single example */
+		bool a_hmm_classify_example();
+		/** LinearHMM classify for 1-class examples */
+		bool a_one_class_linear_hmm_classify();
+		/** HMM classify for 1-class examples */
+		bool a_one_class_hmm_classify();
+		/** HMM classify for a single 1-class example */
+		bool a_one_class_hmm_classify_example();
+		/** get HMM's likelihood */
+		bool a_hmm_likelihood();
+		/** get HMM's Viterbi Path */
+		bool a_get_viterbi_path();
+		/** get HMM */
+		bool a_get_hmm();
+		/** issue help message */
+		bool a_help();
 		/** test function */
-		bool test();
+		bool a_test();
 
 		/** get functions - to pass data from the target interface to shogun */
 		virtual void parse_args(INT num_args, INT num_default_args)=0;
@@ -76,22 +121,22 @@ class CSGInterface : public CSGObject
 
 		/** set functions - to pass data from shogun to the target interface */
 		virtual void create_return_values(INT num_val)=0;
-		virtual void set_byte_vector(BYTE* vec, INT len)=0;
-		virtual void set_int_vector(INT* vec, INT len)=0;
-		virtual void set_shortreal_vector(SHORTREAL* vec, INT len)=0;
-		virtual void set_real_vector(DREAL* vec, INT len)=0;
+		virtual void set_byte_vector(const BYTE* vec, INT len)=0;
+		virtual void set_int_vector(const INT* vec, INT len)=0;
+		virtual void set_shortreal_vector(const SHORTREAL* vec, INT len)=0;
+		virtual void set_real_vector(const DREAL* vec, INT len)=0;
 
-		virtual void set_byte_matrix(BYTE* matrix, INT num_feat, INT num_vec)=0;
-		virtual void set_int_matrix(INT* matrix, INT num_feat, INT num_vec)=0;
-		virtual void set_shortreal_matrix(SHORTREAL* matrix, INT num_feat, INT num_vec)=0;
-		virtual void set_real_matrix(DREAL* matrix, INT num_feat, INT num_vec)=0;
+		virtual void set_byte_matrix(const BYTE* matrix, INT num_feat, INT num_vec)=0;
+		virtual void set_int_matrix(const INT* matrix, INT num_feat, INT num_vec)=0;
+		virtual void set_shortreal_matrix(const SHORTREAL* matrix, INT num_feat, INT num_vec)=0;
+		virtual void set_real_matrix(const DREAL* matrix, INT num_feat, INT num_vec)=0;
 
-		virtual void set_byte_sparsematrix(TSparse<BYTE>* matrix, INT num_feat, INT num_vec)=0;
-		virtual void set_int_sparsematrix(TSparse<INT>* matrix, INT num_feat, INT num_vec)=0;
-		virtual void set_shortreal_sparsematrix(TSparse<SHORTREAL>* matrix, INT num_feat, INT num_vec)=0;
-		virtual void set_real_sparsematrix(TSparse<DREAL>* matrix, INT num_feat, INT num_vec)=0;
+		virtual void set_byte_sparsematrix(const TSparse<BYTE>* matrix, INT num_feat, INT num_vec)=0;
+		virtual void set_int_sparsematrix(const TSparse<INT>* matrix, INT num_feat, INT num_vec)=0;
+		virtual void set_shortreal_sparsematrix(const TSparse<SHORTREAL>* matrix, INT num_feat, INT num_vec)=0;
+		virtual void set_real_sparsematrix(const TSparse<DREAL>* matrix, INT num_feat, INT num_vec)=0;
 
-		virtual void set_string_list(T_STRING<CHAR>* strings, INT num_str)=0;
+		virtual void set_string_list(const T_STRING<CHAR>* strings, INT num_str)=0;
 
 		virtual void submit_return_values()=0;
 
@@ -111,20 +156,24 @@ class CSGInterface : public CSGObject
 		/// get action name, like 'send_command', 'get_svm' etc
 		inline CHAR* get_action(INT &len)
 		{
-			ASSERT(arg_counter==0);
+			ASSERT(m_rhs_counter==0);
 			if (m_nrhs<=0)
 				SG_SERROR("No input arguments supplied.");
 
 			return get_string(len);
 		}
 
-		/** reset argument counter */
-		inline void reset_counter() { arg_counter=0; }
-
 	protected:
-		INT arg_counter;
+		INT m_lhs_counter;
+		INT m_rhs_counter;
 		INT m_nlhs;
 		INT m_nrhs;
+
+	private:
+		/** helper function for hmm classify */
+		bool do_hmm_classify(bool linear=false, bool one_class=false);
+		/** helper function for hmm classify on 1 example */
+		bool do_hmm_classify_example(bool one_class=false);
 };
 
 typedef bool (CSGInterface::*CSGInterfacePtr)();

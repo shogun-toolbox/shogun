@@ -46,7 +46,7 @@ INT CRInterface::get_int()
 {
 	SEXP i=get_arg_increment();
 	if (i == R_NilValue || TYPEOF(CAR(i)) != INTSXP || Rf_nrows(CAR(i))!=1 || Rf_ncols(CAR(i))!=1)
-		SG_ERROR("Expected Scalar Integer as argument %d\n", arg_counter);
+		SG_ERROR("Expected Scalar Integer as argument %d\n", m_rhs_counter);
 
 	return INTEGER(CAR(i))[0];
 }
@@ -55,7 +55,7 @@ DREAL CRInterface::get_real()
 {
 	SEXP f=get_arg_increment();
 	if (f == R_NilValue || TYPEOF(CAR(f)) != REALSXP || Rf_nrows(CAR(f))!=1 || Rf_ncols(CAR(f))!=1)
-		SG_ERROR("Expected Scalar Float as argument %d\n", arg_counter);
+		SG_ERROR("Expected Scalar Float as argument %d\n", m_rhs_counter);
 
 	return REAL(CAR(f))[0];
 }
@@ -64,7 +64,7 @@ bool CRInterface::get_bool()
 {
 	SEXP b=get_arg_increment();
 	if (b == R_NilValue || TYPEOF(CAR(b)) != LGLSXP || Rf_nrows(CAR(b))!=1 || Rf_ncols(CAR(b))!=1)
-		SG_ERROR("Expected Scalar Boolean as argument %d\n", arg_counter);
+		SG_ERROR("Expected Scalar Boolean as argument %d\n", m_rhs_counter);
 
 	return INTEGER(CAR(b))[0] != 0;
 }
@@ -74,7 +74,7 @@ CHAR* CRInterface::get_string(INT& len)
 {
 	SEXP s=get_arg_increment();
 	if (s == R_NilValue || TYPEOF(CAR(s)) != STRSXP || length(CAR(s))!=1)
-		SG_ERROR("Expected String as argument %d\n", arg_counter);
+		SG_ERROR("Expected String as argument %d\n", m_rhs_counter);
 
 	SEXPREC* rstr= STRING_ELT(CAR(s),0);
 	const CHAR* str= CHAR(rstr);
@@ -127,7 +127,7 @@ void CRInterface::get_real_matrix(DREAL*& matrix, INT& num_feat, INT& num_vec)
 {
 	SEXP feat=get_arg_increment();
 	if( TYPEOF(feat) != REALSXP && TYPEOF(feat) != INTSXP )
-		SG_ERROR("Expected Double Matrix as argument %d\n", arg_counter);
+		SG_ERROR("Expected Double Matrix as argument %d\n", m_rhs_counter);
 
 	num_vec = Rf_ncols(feat);
 	num_feat = Rf_nrows(feat);
@@ -137,8 +137,6 @@ void CRInterface::get_real_matrix(DREAL*& matrix, INT& num_feat, INT& num_vec)
 	for (INT i=0; i<num_vec; i++)
 		for (INT j=0; j<num_feat; j++)
 			matrix[i*num_feat+j]= (DREAL) REAL(feat)[i*num_feat+j];
-
-	arg_counter++;
 }
 
 
@@ -163,7 +161,7 @@ void CRInterface::get_string_list(T_STRING<CHAR>*& strings, INT& num_str)
 {
 	SEXP strs=get_arg_increment();
 	if (strs == R_NilValue || TYPEOF(CAR(strs)) != STRSXP || length(CAR(strs))>=1)
-		SG_ERROR("Expected String List as argument %d\n", arg_counter);
+		SG_ERROR("Expected String List as argument %d\n", m_rhs_counter);
 
 	num_str=length(CAR(strs));
 	strings=new T_STRING<CHAR>[num_str];
@@ -188,8 +186,6 @@ void CRInterface::get_string_list(T_STRING<CHAR>*& strings, INT& num_str)
 			strings[i].length=0;
 		}
 	}
-
-	arg_counter++;
 }
 
 
@@ -198,58 +194,58 @@ void CRInterface::create_return_values(INT num_val)
 {
 }
 
-void CRInterface::set_byte_vector(BYTE* vec, INT len)
+void CRInterface::set_byte_vector(const BYTE* vec, INT len)
 {
 }
 
-void CRInterface::set_int_vector(INT* vec, INT len)
+void CRInterface::set_int_vector(const INT* vec, INT len)
 {
 }
 
-void CRInterface::set_shortreal_vector(SHORTREAL* vec, INT len)
+void CRInterface::set_shortreal_vector(const SHORTREAL* vec, INT len)
 {
 }
 
-void CRInterface::set_real_vector(DREAL* vec, INT len)
-{
-}
-
-
-void CRInterface::set_byte_matrix(BYTE* matrix, INT num_feat, INT num_vec)
-{
-}
-
-void CRInterface::set_int_matrix(INT* matrix, INT num_feat, INT num_vec)
-{
-}
-
-void CRInterface::set_shortreal_matrix(SHORTREAL* matrix, INT num_feat, INT num_vec)
-{
-}
-
-void CRInterface::set_real_matrix(DREAL* matrix, INT num_feat, INT num_vec)
+void CRInterface::set_real_vector(const DREAL* vec, INT len)
 {
 }
 
 
-void CRInterface::set_byte_sparsematrix(TSparse<BYTE>* matrix, INT num_feat, INT num_vec)
+void CRInterface::set_byte_matrix(const BYTE* matrix, INT num_feat, INT num_vec)
 {
 }
 
-void CRInterface::set_int_sparsematrix(TSparse<INT>* matrix, INT num_feat, INT num_vec)
+void CRInterface::set_int_matrix(const INT* matrix, INT num_feat, INT num_vec)
 {
 }
 
-void CRInterface::set_shortreal_sparsematrix(TSparse<SHORTREAL>* matrix, INT num_feat, INT num_vec)
+void CRInterface::set_shortreal_matrix(const SHORTREAL* matrix, INT num_feat, INT num_vec)
 {
 }
 
-void CRInterface::set_real_sparsematrix(TSparse<DREAL>* matrix, INT num_feat, INT num_vec)
+void CRInterface::set_real_matrix(const DREAL* matrix, INT num_feat, INT num_vec)
 {
 }
 
 
-void CRInterface::set_string_list(T_STRING<CHAR>* strings, INT num_str)
+void CRInterface::set_byte_sparsematrix(const TSparse<BYTE>* matrix, INT num_feat, INT num_vec)
+{
+}
+
+void CRInterface::set_int_sparsematrix(const TSparse<INT>* matrix, INT num_feat, INT num_vec)
+{
+}
+
+void CRInterface::set_shortreal_sparsematrix(const TSparse<SHORTREAL>* matrix, INT num_feat, INT num_vec)
+{
+}
+
+void CRInterface::set_real_sparsematrix(const TSparse<DREAL>* matrix, INT num_feat, INT num_vec)
+{
+}
+
+
+void CRInterface::set_string_list(const T_STRING<CHAR>* strings, INT num_str)
 {
 }
 

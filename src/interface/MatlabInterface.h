@@ -44,22 +44,22 @@ class CMatlabInterface : public CSGInterface
 
 		/** set functions - to pass data from shogun to the target interface */
 		virtual void create_return_values(INT num_val);
-		virtual void set_byte_vector(BYTE* vec, INT len);
-		virtual void set_int_vector(INT* vec, INT len);
-		virtual void set_shortreal_vector(SHORTREAL* vec, INT len);
-		virtual void set_real_vector(DREAL* vec, INT len);
+		virtual void set_byte_vector(const BYTE* vec, INT len);
+		virtual void set_int_vector(const INT* vec, INT len);
+		virtual void set_shortreal_vector(const SHORTREAL* vec, INT len);
+		virtual void set_real_vector(const DREAL* vec, INT len);
 
-		virtual void set_byte_matrix(BYTE* matrix, INT num_feat, INT num_vec);
-		virtual void set_int_matrix(INT* matrix, INT num_feat, INT num_vec);
-		virtual void set_shortreal_matrix(SHORTREAL* matrix, INT num_feat, INT num_vec);
-		virtual void set_real_matrix(DREAL* matrix, INT num_feat, INT num_vec);
+		virtual void set_byte_matrix(const BYTE* matrix, INT num_feat, INT num_vec);
+		virtual void set_int_matrix(const INT* matrix, INT num_feat, INT num_vec);
+		virtual void set_shortreal_matrix(const SHORTREAL* matrix, INT num_feat, INT num_vec);
+		virtual void set_real_matrix(const DREAL* matrix, INT num_feat, INT num_vec);
 
-		virtual void set_byte_sparsematrix(TSparse<BYTE>* matrix, INT num_feat, INT num_vec);
-		virtual void set_int_sparsematrix(TSparse<INT>* matrix, INT num_feat, INT num_vec);
-		virtual void set_shortreal_sparsematrix(TSparse<SHORTREAL>* matrix, INT num_feat, INT num_vec);
-		virtual void set_real_sparsematrix(TSparse<DREAL>* matrix, INT num_feat, INT num_vec);
+		virtual void set_byte_sparsematrix(const TSparse<BYTE>* matrix, INT num_feat, INT num_vec);
+		virtual void set_int_sparsematrix(const TSparse<INT>* matrix, INT num_feat, INT num_vec);
+		virtual void set_shortreal_sparsematrix(const TSparse<SHORTREAL>* matrix, INT num_feat, INT num_vec);
+		virtual void set_real_sparsematrix(const TSparse<DREAL>* matrix, INT num_feat, INT num_vec);
 
-		virtual void set_string_list(T_STRING<CHAR>* strings, INT num_str);
+		virtual void set_string_list(const T_STRING<CHAR>* strings, INT num_str);
 
 		virtual void submit_return_values();
 
@@ -67,21 +67,21 @@ class CMatlabInterface : public CSGInterface
 		const mxArray* get_arg_increment()
 		{
 			const mxArray* retval;
-			ASSERT(arg_counter>=0 && arg_counter<m_nrhs+1); // +1 for action
+			ASSERT(m_rhs_counter>=0 && m_rhs_counter<m_nrhs+1); // +1 for action
 			ASSERT(m_rhs);
 
-			retval=m_rhs[arg_counter];
-			arg_counter++;
+			retval=m_rhs[m_rhs_counter];
+			m_rhs_counter++;
 
 			return retval;
 		}
 
 		void set_arg_increment(mxArray* arg)
 		{
-			ASSERT(arg_counter>=0 && arg_counter<m_nlhs);
+			ASSERT(m_lhs_counter>=0 && m_lhs_counter<m_nlhs);
 			ASSERT(m_lhs);
-			m_lhs[arg_counter]=arg;
-			arg_counter++;
+			m_lhs[m_lhs_counter]=arg;
+			m_lhs_counter++;
 		}
 
 	private:

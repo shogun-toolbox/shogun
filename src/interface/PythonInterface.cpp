@@ -49,7 +49,7 @@ INT CPythonInterface::get_int()
 {
 	const PyObject* i=get_arg_increment();
 	if (!i || !PyInt_Check(i))
-		SG_ERROR("Expected Scalar Integer as argument %d\n", arg_counter);
+		SG_ERROR("Expected Scalar Integer as argument %d\n", m_rhs_counter);
 
 	return PyInt_AS_LONG(i);
 }
@@ -58,7 +58,7 @@ DREAL CPythonInterface::get_real()
 {
 	const PyObject* f=get_arg_increment();
 	if (!f || !PyFloat_Check(f))
-		SG_ERROR("Expected Scalar Float as argument %d\n", arg_counter);
+		SG_ERROR("Expected Scalar Float as argument %d\n", m_rhs_counter);
 
 	return PyFloat_AS_DOUBLE(f);
 }
@@ -67,7 +67,7 @@ bool CPythonInterface::get_bool()
 {
 	const PyObject* b=get_arg_increment();
 	if (!b || !PyBool_Check(b))
-		SG_ERROR("Expected Scalar Boolean as argument %d\n", arg_counter);
+		SG_ERROR("Expected Scalar Boolean as argument %d\n", m_rhs_counter);
 
 	return PyInt_AS_LONG(b) != 0;
 }
@@ -77,7 +77,7 @@ CHAR* CPythonInterface::get_string(INT& len)
 {
 	const PyObject* s=get_arg_increment();
 	if (!s || !PyString_Check(s))
-		SG_ERROR("Expected String as argument %d\n", arg_counter);
+		SG_ERROR("Expected String as argument %d\n", m_rhs_counter);
 
 	len=PyString_Size((PyObject*) s);
 	CHAR* str=PyString_AS_STRING(s);
@@ -162,58 +162,58 @@ void CPythonInterface::create_return_values(INT num_val)
 {
 }
 
-void CPythonInterface::set_byte_vector(BYTE* vec, INT len)
+void CPythonInterface::set_byte_vector(const BYTE* vec, INT len)
 {
 }
 
-void CPythonInterface::set_int_vector(INT* vec, INT len)
+void CPythonInterface::set_int_vector(const INT* vec, INT len)
 {
 }
 
-void CPythonInterface::set_shortreal_vector(SHORTREAL* vec, INT len)
+void CPythonInterface::set_shortreal_vector(const SHORTREAL* vec, INT len)
 {
 }
 
-void CPythonInterface::set_real_vector(DREAL* vec, INT len)
-{
-}
-
-
-void CPythonInterface::set_byte_matrix(BYTE* matrix, INT num_feat, INT num_vec)
-{
-}
-
-void CPythonInterface::set_int_matrix(INT* matrix, INT num_feat, INT num_vec)
-{
-}
-
-void CPythonInterface::set_shortreal_matrix(SHORTREAL* matrix, INT num_feat, INT num_vec)
-{
-}
-
-void CPythonInterface::set_real_matrix(DREAL* matrix, INT num_feat, INT num_vec)
+void CPythonInterface::set_real_vector(const DREAL* vec, INT len)
 {
 }
 
 
-void CPythonInterface::set_byte_sparsematrix(TSparse<BYTE>* matrix, INT num_feat, INT num_vec)
+void CPythonInterface::set_byte_matrix(const BYTE* matrix, INT num_feat, INT num_vec)
 {
 }
 
-void CPythonInterface::set_int_sparsematrix(TSparse<INT>* matrix, INT num_feat, INT num_vec)
+void CPythonInterface::set_int_matrix(const INT* matrix, INT num_feat, INT num_vec)
 {
 }
 
-void CPythonInterface::set_shortreal_sparsematrix(TSparse<SHORTREAL>* matrix, INT num_feat, INT num_vec)
+void CPythonInterface::set_shortreal_matrix(const SHORTREAL* matrix, INT num_feat, INT num_vec)
 {
 }
 
-void CPythonInterface::set_real_sparsematrix(TSparse<DREAL>* matrix, INT num_feat, INT num_vec)
+void CPythonInterface::set_real_matrix(const DREAL* matrix, INT num_feat, INT num_vec)
 {
 }
 
 
-void CPythonInterface::set_string_list(T_STRING<CHAR>* strings, INT num_str)
+void CPythonInterface::set_byte_sparsematrix(const TSparse<BYTE>* matrix, INT num_feat, INT num_vec)
+{
+}
+
+void CPythonInterface::set_int_sparsematrix(const TSparse<INT>* matrix, INT num_feat, INT num_vec)
+{
+}
+
+void CPythonInterface::set_shortreal_sparsematrix(const TSparse<SHORTREAL>* matrix, INT num_feat, INT num_vec)
+{
+}
+
+void CPythonInterface::set_real_sparsematrix(const TSparse<DREAL>* matrix, INT num_feat, INT num_vec)
+{
+}
+
+
+void CPythonInterface::set_string_list(const T_STRING<CHAR>* strings, INT num_str)
 {
 }
 
