@@ -2278,8 +2278,9 @@ EOF
 		DEFINES="$DEFINES -DHAVE_PYTHON"
 		test -n "$_pyinclude" && _pyinclude="-I$_pyinclude"
 		test -n "$_pyinclude" || _pyinclude=`$PYTHON -c "import numpy; import sys; print '-I'+sys.prefix+'/include/python'+sys.version[0:3]+' -I'+numpy.get_include()"`
-		test -n "$_pylibpath" && _pylibpath="-I$_pylibpath"
-		test -n "$_pylibpath" || _pylibpath=`$PYTHON -c "import sys; print '-L'+sys.exec_prefix+'/lib/python'+sys.version[0:3]+'/config'"`
+		_pylibpath=""
+		#test -n "$_pylibpath" && _pylibpath="-I$_pylibpath"
+		#test -n "$_pylibpath" || _pylibpath=`$PYTHON -c "import sys; print '-L'+sys.exec_prefix+'/lib/python'+sys.version[0:3]+'/config'"`
 		test -n "$_pylibs" || _pylibs=`$PYTHON -c "import sys; print 'python'+sys.version[0:3]"`
 		INCLUDES="$_pyinclude $INCLUDES"
 		COMPFLAGS_CPP="-fno-strict-aliasing -fPIC $COMPFLAGS_CPP"
