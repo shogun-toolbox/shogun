@@ -205,6 +205,12 @@ class CKernel : public CSGObject
 		 */
 		virtual const CHAR* get_name()=0 ;
 
+		/** set the size of the kernel cache
+		 *
+		 * @param size of kernel cache
+		 */
+		inline void set_cache_size(INT size) { cache_size = size; }
+
 		/** return the size of the kernel cache
 		 *
 		 * @return size of kernel cache
