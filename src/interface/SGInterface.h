@@ -40,6 +40,18 @@ class CSGInterface : public CSGObject
 		~CSGInterface();
 
 		/* actions */
+		/** get WD consensus */
+		bool a_get_WD_consensus();
+		/** compute POIM WD */
+		bool a_compute_POIM_WD();
+		/** get WD scoring */
+		bool a_get_WD_scoring();
+		/** get WD position weights */
+		bool a_get_WD_position_weights();
+		/** get last subkernel weights */
+		bool a_get_last_subkernel_weights();
+		/** compute by subkernels */
+		bool a_compute_by_subkernels();
 		/** get kernel optimization */
 		bool a_get_kernel_optimization();
 		/** plugin estimate classify one example */
@@ -181,7 +193,6 @@ typedef bool (CSGInterface::*CSGInterfacePtr)();
 typedef struct {
 	CHAR* action;
 	CSGInterfacePtr method;
-	INT type;
 	CHAR* usage;
 } CSGInterfaceMethod;
 
