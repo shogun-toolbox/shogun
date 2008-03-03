@@ -1855,7 +1855,7 @@ void CWeightedDegreePositionStringKernel::compute_POIM2(INT max_degree, CSVM* sv
 	m_poim = compute_POIM(max_degree, num_feat, num_sym, NULL,	num_suppvec, sv_idx, 
 						  sv_weight, m_poim_distrib);
 
-	assert(num_feat==1) ;
+	ASSERT(num_feat==1) ;
 	m_poim_result_len=num_sym ;
 	
 	delete[] sv_weight ;
