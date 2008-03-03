@@ -219,7 +219,7 @@ bool CSGInterface::a_get_WD_consensus()
 	delete[] sv_idx;
 	delete[] sv_weight;
 
-	//set_char_matrix(consensus, 1, num_feat);
+	set_char_matrix(consensus, 1, num_feat);
 	delete[] consensus;
 
 	return true;

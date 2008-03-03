@@ -92,6 +92,12 @@ void CRInterface::get_byte_vector(BYTE*& vec, INT& len)
 	len=0;
 }
 
+void CRInterface::get_char_vector(CHAR*& vec, INT& len)
+{
+	vec=NULL;
+	len=0;
+}
+
 void CRInterface::get_int_vector(INT*& vec, INT& len)
 {
 	vec=NULL;
@@ -112,6 +118,10 @@ void CRInterface::get_real_vector(DREAL*& vec, INT& len)
 
 
 void CRInterface::get_byte_matrix(BYTE*& matrix, INT& num_feat, INT& num_vec)
+{
+}
+
+void CRInterface::get_char_matrix(CHAR*& matrix, INT& num_feat, INT& num_vec)
 {
 }
 
@@ -141,6 +151,10 @@ void CRInterface::get_real_matrix(DREAL*& matrix, INT& num_feat, INT& num_vec)
 
 
 void CRInterface::get_byte_sparsematrix(TSparse<BYTE>*& matrix, INT& num_feat, INT& num_vec)
+{
+}
+
+void CRInterface::get_char_sparsematrix(TSparse<CHAR>*& matrix, INT& num_feat, INT& num_vec)
 {
 }
 
@@ -198,6 +212,10 @@ void CRInterface::set_byte_vector(const BYTE* vec, INT len)
 {
 }
 
+void CRInterface::set_char_vector(const CHAR* vec, INT len)
+{
+}
+
 void CRInterface::set_int_vector(const INT* vec, INT len)
 {
 }
@@ -215,6 +233,10 @@ void CRInterface::set_byte_matrix(const BYTE* matrix, INT num_feat, INT num_vec)
 {
 }
 
+void CRInterface::set_char_matrix(const CHAR* matrix, INT num_feat, INT num_vec)
+{
+}
+
 void CRInterface::set_int_matrix(const INT* matrix, INT num_feat, INT num_vec)
 {
 }
@@ -229,6 +251,10 @@ void CRInterface::set_real_matrix(const DREAL* matrix, INT num_feat, INT num_vec
 
 
 void CRInterface::set_byte_sparsematrix(const TSparse<BYTE>* matrix, INT num_feat, INT num_vec)
+{
+}
+
+void CRInterface::set_char_sparsematrix(const TSparse<CHAR>* matrix, INT num_feat, INT num_vec)
 {
 }
 

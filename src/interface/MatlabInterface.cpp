@@ -114,6 +114,23 @@ void CMatlabInterface::get_byte_vector(BYTE*& vector, INT& len)
 			vector[i]=data[i];
 }
 
+void CMatlabInterface::get_char_vector(CHAR*& vector, INT& len)
+{
+	const mxArray* mx_vec=get_arg_increment();
+	if (!mx_vec || mxGetM(mx_vec)!=1 || !(mxIsChar(mx_vec)))
+		SG_ERROR("Expected Char Vector, got class %s as argument %d\n",
+			mxGetClassName(mx_vec), m_rhs_counter);
+
+	len=mxGetNumberOfElements(mx_vec);
+	vector=new CHAR[len];
+	ASSERT(vector);
+	CHAR* data=(CHAR*) mxGetData(mx_vec);
+
+	SG_DEBUG("CHAR vector has %d elements\n", len);
+	for (INT i=0; i<len; i++)
+			vector[i]=data[i];
+}
+
 void CMatlabInterface::get_int_vector(INT*& vector, INT& len)
 {
 	const mxArray* mx_vec=get_arg_increment();
@@ -185,6 +202,25 @@ void CMatlabInterface::get_byte_matrix(BYTE*& matrix, INT& num_feat, INT& num_ve
 	BYTE* data=(BYTE*) mxGetData(mx_mat);
 
 	SG_DEBUG("dense BYTE matrix has %d rows, %d cols\n", num_feat, num_vec);
+	for (INT i=0; i<num_vec; i++)
+		for (INT j=0; j<num_feat; j++)
+			matrix[i*num_feat+j]=data[i*num_feat+j];
+}
+
+void CMatlabInterface::get_char_matrix(CHAR*& matrix, INT& num_feat, INT& num_vec)
+{
+	const mxArray* mx_mat=get_arg_increment();
+	if (!mx_mat || !mxIsChar(mxGetCell(mx_mat, 1)))
+		SG_ERROR("Expected Char Matrix, got class %s as argument %d\n",
+			mxGetClassName(mx_mat), m_rhs_counter);
+
+	num_vec=mxGetN(mx_mat);
+	num_feat=mxGetM(mx_mat);
+	matrix=new CHAR[num_vec*num_feat];
+	ASSERT(matrix);
+	CHAR* data=(CHAR*) mxGetData(mx_mat);
+
+	SG_DEBUG("dense CHAR matrix has %d rows, %d cols\n", num_feat, num_vec);
 	for (INT i=0; i<num_vec; i++)
 		for (INT j=0; j<num_feat; j++)
 			matrix[i*num_feat+j]=data[i*num_feat+j];
@@ -282,6 +318,51 @@ void CMatlabInterface::get_byte_sparsematrix(TSparse<BYTE>*& matrix, INT& num_fe
 		if (len>0)
 		{
 			matrix[i].features=new TSparseEntry<BYTE>[len];
+			ASSERT(matrix[i].features);
+
+			for (INT j=0; j<len; j++)
+			{
+				matrix[i].features[j].entry=data[offset];
+				matrix[i].features[j].feat_index=ir[offset];
+				offset++;
+			}
+		}
+		else
+			matrix[i].features=NULL;
+	}
+	ASSERT(offset==nzmax);
+}
+
+void CMatlabInterface::get_char_sparsematrix(TSparse<CHAR>*& matrix, INT& num_feat, INT& num_vec)
+{
+	const mxArray* mx_mat=get_arg_increment();
+	if (!mx_mat || !mxIsSparse(mx_mat))
+		SG_ERROR("Expected Sparse Matrix as argument %d\n", m_rhs_counter);
+
+	if (!mxIsChar(mxGetCell(mx_mat, 1)))
+		SG_ERROR("Expected Char Matrix, got class %s as argument %d\n",
+			mxGetClassName(mx_mat), m_rhs_counter);
+
+	num_vec=mxGetN(mx_mat);
+	num_feat=mxGetM(mx_mat);
+	matrix=new TSparse<CHAR>[num_vec*num_feat];
+	ASSERT(matrix);
+	CHAR* data=(CHAR*) mxGetData(mx_mat);
+
+	SG_DEBUG("sparse CHAR matrix has %d rows, %d cols\n", num_feat, num_vec);
+	LONG nzmax=mxGetNzmax(mx_mat);
+	mwIndex* ir=mxGetIr(mx_mat);
+	mwIndex* jc=mxGetJc(mx_mat);
+	LONG offset=0;
+	for (INT i=0; i<num_vec; i++)
+	{
+		INT len=jc[i+1]-jc[i];
+		matrix[i].vec_index=i;
+		matrix[i].num_feat_entries=len;
+
+		if (len>0)
+		{
+			matrix[i].features=new TSparseEntry<CHAR>[len];
 			ASSERT(matrix[i].features);
 
 			for (INT j=0; j<len; j++)
@@ -494,6 +575,23 @@ void CMatlabInterface::set_byte_vector(const BYTE* vector, INT len)
 	set_arg_increment(mx_vec);
 }
 
+void CMatlabInterface::set_char_vector(const CHAR* vector, INT len)
+{
+	if (!vector)
+		SG_ERROR("Given vector is invalid\n");
+
+	mxArray* mx_vec=mxCreateNumericMatrix(1, len, mxCHAR_CLASS, mxREAL);
+	if (!mx_vec)
+		SG_ERROR("Couldn't create Char Vector of length %d\n", len);
+
+	CHAR* data=(CHAR*) mxGetData(mx_vec);
+
+	SG_DEBUG("CHAR vector has %d elements\n", len);
+	for (INT i=0; i<len; i++)
+		data[i]=vector[i];
+
+	set_arg_increment(mx_vec);
+}
 
 void CMatlabInterface::set_int_vector(const INT* vector, INT len)
 {
@@ -562,6 +660,25 @@ void CMatlabInterface::set_byte_matrix(const BYTE* matrix, INT num_feat, INT num
 	BYTE* data=(BYTE*) mxGetData(mx_mat);
 
 	SG_DEBUG("dense BYTE matrix has %d rows, %d cols\n", num_feat, num_vec);
+	for (INT i=0; i<num_vec; i++)
+		for (INT j=0; j<num_feat; j++)
+			data[i*num_feat+j]=matrix[i*num_feat+j];
+
+	set_arg_increment(mx_mat);
+}
+
+void CMatlabInterface::set_char_matrix(const CHAR* matrix, INT num_feat, INT num_vec)
+{
+	if (!matrix)
+		SG_ERROR("Given matrix is invalid\n");
+
+	mxArray* mx_mat=mxCreateNumericMatrix(num_feat, num_vec, mxCHAR_CLASS, mxREAL);
+	if (!mx_mat)
+		SG_ERROR("Couldn't create Char Matrix of %d rows and %d cols\n", num_feat, num_vec);
+
+	CHAR* data=(CHAR*) mxGetData(mx_mat);
+
+	SG_DEBUG("dense CHAR matrix has %d rows, %d cols\n", num_feat, num_vec);
 	for (INT i=0; i<num_vec; i++)
 		for (INT j=0; j<num_feat; j++)
 			data[i*num_feat+j]=matrix[i*num_feat+j];
@@ -658,6 +775,36 @@ void CMatlabInterface::set_byte_sparsematrix(const TSparse<BYTE>* matrix, INT nu
 	set_arg_increment(mx_mat);
 }
 
+void CMatlabInterface::set_char_sparsematrix(const TSparse<CHAR>* matrix, INT num_feat, INT num_vec)
+{
+	if (!matrix)
+		SG_ERROR("Given matrix is invalid\n");
+
+	mxArray* mx_mat=mxCreateSparse(num_feat, num_vec, num_feat*num_vec, mxREAL);
+	if (!mx_mat)
+		SG_ERROR("Couldn't create Sparse Matrix of %d rows and %d cols\n", num_feat, num_vec);
+
+	CHAR* data=(CHAR*) mxGetData(mx_mat);
+
+	SG_DEBUG("sparse CHAR matrix has %d rows, %d cols\n", num_feat, num_vec);
+	mwIndex* ir=mxGetIr(mx_mat);
+	mwIndex* jc=mxGetJc(mx_mat);
+	LONG offset=0;
+	for (INT i=0; i<num_vec; i++)
+	{
+		INT len=matrix[i].num_feat_entries;
+		jc[i]=offset;
+		for (INT j=0; j<len; j++)
+		{
+			data[offset]=matrix[i].features[j].entry;
+			ir[offset]=matrix[i].features[j].feat_index;
+			offset++;
+		}
+	}
+	jc[num_vec]=offset;
+
+	set_arg_increment(mx_mat);
+}
 void CMatlabInterface::set_int_sparsematrix(const TSparse<INT>* matrix, INT num_feat, INT num_vec)
 {
 	if (!matrix)

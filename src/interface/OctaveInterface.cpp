@@ -75,7 +75,6 @@ bool COctaveInterface::get_bool()
 	return b.bool_value();
 }
 
-
 CHAR* COctaveInterface::get_string(INT& len)
 {
 	const octave_value s=get_arg_increment();
@@ -102,6 +101,12 @@ void COctaveInterface::get_byte_vector(BYTE*& vec, INT& len)
 	len=0;
 }
 
+void COctaveInterface::get_char_vector(CHAR*& vec, INT& len)
+{
+	vec=NULL;
+	len=0;
+}
+
 void COctaveInterface::get_int_vector(INT*& vec, INT& len)
 {
 	vec=NULL;
@@ -122,6 +127,10 @@ void COctaveInterface::get_real_vector(DREAL*& vec, INT& len)
 
 
 void COctaveInterface::get_byte_matrix(BYTE*& matrix, INT& num_feat, INT& num_vec)
+{
+}
+
+void COctaveInterface::get_char_matrix(CHAR*& matrix, INT& num_feat, INT& num_vec)
 {
 }
 
@@ -155,6 +164,10 @@ void COctaveInterface::get_byte_sparsematrix(TSparse<BYTE>*& matrix, INT& num_fe
 {
 }
 
+void COctaveInterface::get_char_sparsematrix(TSparse<CHAR>*& matrix, INT& num_feat, INT& num_vec)
+{
+}
+
 void COctaveInterface::get_int_sparsematrix(TSparse<INT>*& matrix, INT& num_feat, INT& num_vec)
 {
 }
@@ -182,6 +195,10 @@ void COctaveInterface::set_byte_vector(const BYTE* vec, INT len)
 {
 }
 
+void COctaveInterface::set_char_vector(const CHAR* vec, INT len)
+{
+}
+
 void COctaveInterface::set_int_vector(const INT* vec, INT len)
 {
 }
@@ -199,6 +216,10 @@ void COctaveInterface::set_byte_matrix(const BYTE* matrix, INT num_feat, INT num
 {
 }
 
+void COctaveInterface::set_char_matrix(const CHAR* matrix, INT num_feat, INT num_vec)
+{
+}
+
 void COctaveInterface::set_int_matrix(const INT* matrix, INT num_feat, INT num_vec)
 {
 }
@@ -213,6 +234,10 @@ void COctaveInterface::set_real_matrix(const DREAL* matrix, INT num_feat, INT nu
 
 
 void COctaveInterface::set_byte_sparsematrix(const TSparse<BYTE>* matrix, INT num_feat, INT num_vec)
+{
+}
+
+void COctaveInterface::set_char_sparsematrix(const TSparse<CHAR>* matrix, INT num_feat, INT num_vec)
 {
 }
 
