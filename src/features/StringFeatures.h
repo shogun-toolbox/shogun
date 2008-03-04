@@ -684,8 +684,6 @@ template <class ST> class CStringFeatures: public CFeatures
 
 					SG_INFO( "preprocessing using preproc %s\n", get_preproc(i)->get_name());
 
-					fprintf(stderr, "apply_preproc\n") ;
-
 					if (!((CStringPreProc<ST>*) get_preproc(i))->apply_to_string_features(this))
 						return false;
 					fprintf(stderr, "apply_preproc\n") ;
