@@ -686,7 +686,6 @@ template <class ST> class CStringFeatures: public CFeatures
 
 					if (!((CStringPreProc<ST>*) get_preproc(i))->apply_to_string_features(this))
 						return false;
-					fprintf(stderr, "apply_preproc\n") ;
 				}
 			}
 			return true;
