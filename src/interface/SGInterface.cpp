@@ -15,6 +15,7 @@
 #include "kernel/WeightedDegreePositionStringKernel.h"
 #include "kernel/WeightedDegreeStringKernel.h"
 #include "kernel/CommWordStringKernel.h"
+#include "kernel/WeightedCommWordStringKernel.h"
 #include "kernel/LinearKernel.h"
 #include "kernel/SparseLinearKernel.h"
 #include "kernel/CombinedKernel.h"
@@ -29,6 +30,51 @@ extern CTextGUI* gui;
 
 static CSGInterfaceMethod sg_methods[]=
 {
+	{
+		(CHAR*) N_GET_FEATURES,
+		(&CSGInterface::a_get_features),
+		(CHAR*) USAGE_IO(N_GET_FEATURES, "TRAIN|TEST", "features")
+	},
+	{
+		(CHAR*) N_GET_DISTANCE_MATRIX,
+		(&CSGInterface::a_get_distance_matrix),
+		(CHAR*) USAGE_O(N_GET_DISTANCE_MATRIX, "D")
+	},
+	{
+		(CHAR*) N_GET_KERNEL_MATRIX,
+		(&CSGInterface::a_get_kernel_matrix),
+		(CHAR*) USAGE_O(N_GET_KERNEL_MATRIX, "K")
+	},
+	{
+		(CHAR*) N_SET_WD_POS_WEIGHTS,
+		(&CSGInterface::a_set_WD_position_weights),
+		(CHAR*) USAGE_I(N_SET_WD_POS_WEIGHTS, "W[, 'TRAIN|TEST']")
+	},
+	{
+		(CHAR*) N_SET_SUBKERNEL_WEIGHTS,
+		(&CSGInterface::a_set_subkernel_weights),
+		(CHAR*) USAGE_I(N_SET_SUBKERNEL_WEIGHTS, "W")
+	},
+	{
+		(CHAR*) N_SET_SUBKERNEL_WEIGHTS_COMBINED,
+		(&CSGInterface::a_set_subkernel_weights_combined),
+		(CHAR*) USAGE_I(N_SET_SUBKERNEL_WEIGHTS_COMBINED, "W, idx")
+	},
+	{
+		(CHAR*) N_SET_LAST_SUBKERNEL_WEIGHTS,
+		(&CSGInterface::a_set_last_subkernel_weights),
+		(CHAR*) USAGE_I(N_SET_LAST_SUBKERNEL_WEIGHTS, "W")
+	},
+	{
+		(CHAR*) N_GET_SPEC_CONSENSUS,
+		(&CSGInterface::a_get_SPEC_consensus),
+		(CHAR*) USAGE_O(N_GET_SPEC_CONSENSUS, "W")
+	},
+	{
+		(CHAR*) N_GET_SPEC_SCORING,
+		(&CSGInterface::a_get_SPEC_scoring),
+		(CHAR*) USAGE_IO(N_GET_SPEC_SCORING, "max_order", "W")
+	},
 	{
 		(CHAR*) N_GET_WD_CONSENSUS,
 		(&CSGInterface::a_get_WD_consensus),
@@ -195,11 +241,648 @@ CSGInterface::~CSGInterface()
 // actions
 ////////////////////////////////////////////////////////////////////////////
 
+bool CSGInterface::a_get_features()
+{
+	if (m_nlhs!=1 || m_nrhs!=2)
+		return false;
+
+	INT tlen=0;
+	CHAR* target=get_string(tlen);
+	CFeatures* feat=NULL;
+
+	if (strmatch(target, tlen, "TRAIN"))
+		feat=gui->guifeatures.get_train_features();
+	else if (strmatch(target, tlen, "TEST"))
+		feat=gui->guifeatures.get_test_features();
+	else
+	{
+		delete[] target;
+		SG_ERROR("Unknown target, neither TRAIN nor TEST.\n");
+	}
+	delete[] target;
+
+	switch (feat->get_feature_class())
+	{
+		case C_SIMPLE:
+			switch (feat->get_feature_type())
+			{
+				case F_DREAL:
+				{
+					DREAL dummy=0;
+					do_get_features_simple((CRealFeatures*) feat, dummy);
+				}
+				break;
+
+				case F_WORD:
+				{
+					WORD dummy=0;
+					do_get_features_simple((CWordFeatures*) feat, dummy);
+				}
+				break;
+
+				case F_SHORT:
+				{
+					SHORT dummy=0;
+					do_get_features_simple((CShortFeatures*) feat, dummy);
+				}
+				break;
+
+				case F_CHAR:
+				{
+					CHAR dummy=0;
+					do_get_features_simple((CCharFeatures*) feat, dummy);
+				}
+				break;
+
+				case F_BYTE:
+				{
+					BYTE dummy=0;
+					do_get_features_simple((CByteFeatures*) feat, dummy);
+				}
+				break;
+
+				default:
+					SG_ERROR("%s not implemented.\n", feat->get_feature_type());
+			}
+		break;
+
+		case C_SPARSE:
+			switch (feat->get_feature_type())
+			{
+				case F_DREAL:
+				{
+					LONG nnz=((CSparseFeatures<DREAL>*) feat)->
+						get_num_nonzero_entries();
+					INT num_vec=feat->get_num_vectors();
+					INT num_feat=
+						((CSparseFeatures<DREAL>*) feat)->get_num_features();
+
+					SG_DEBUG("sparse matrix has %d rows, %d cols and %d nnz elemements\n", num_feat, num_vec, nnz);
+
+					TSparse<DREAL>* result=new TSparse<DREAL>[num_vec];
+					ASSERT(result);
+
+					for (INT i=0; i<num_vec; i++)
+					{
+						INT len=0;
+						bool dofree=false;
+						TSparseEntry<DREAL>* vec=
+							((CSparseFeatures<DREAL>*) feat)->
+								get_sparse_feature_vector(i, len, dofree);
+						result[i].features=new TSparseEntry<DREAL>[len];
+
+						for (INT j=0; j<len; j++)
+						{
+							result[i].features[j].entry=vec[j].entry;
+							result[i].features[j].feat_index=vec[j].feat_index;
+						}
+						((CSparseFeatures<DREAL>*) feat)->
+							free_feature_vector(vec, len, dofree);
+					}
+
+					set_real_sparsematrix(result, num_feat, num_vec);
+					delete[] result;
+				}
+				break;
+
+				default:
+					SG_ERROR("not implemented\n");
+			}
+		break;
+
+		case C_STRING:
+			switch (feat->get_feature_type())
+			{
+				case F_CHAR:
+				{
+					INT num_vec=feat->get_num_vectors();
+					T_STRING<CHAR> list[num_vec];
+					for (INT i=0; i<num_vec; i++)
+					{
+						INT len=0;
+						CHAR* vec=((CStringFeatures<CHAR>*) feat)->
+							get_feature_vector(i, len);
+
+						if (len>0)
+							list[i].string=vec;
+						else
+							list[i].string=NULL;
+					}
+
+					set_string_list(list, num_vec);
+				}
+				break;
+
+/*
+				case F_WORD:
+				{
+					INT num_vec=feat->get_num_vectors();
+					T_STRING<CHAR> list[num_vec];
+					for (INT i=0; i<num_vec; i++)
+					{
+						INT len=0;
+						CHAR* vec=((CStringFeatures<CHAR>*) feat)->
+							get_feature_vector(i, len);
+
+						if (len>0)
+							list[i].string=vec;
+						else
+							list[i].string=NULL;
+					}
+
+					set_string_list(list, num_vec);
+				}
+				break;
+*/
+
+				default:
+					SG_ERROR("not implemented\n");
+			}
+		break;
+
+		default:
+			SG_ERROR( "not implemented\n");
+	}
+
+	return true;
+}
+
+template <class FT, class DT>
+	void CSGInterface::do_get_features_simple(FT feat, DT dummy)
+{
+	INT num_feat=feat->get_num_features();
+	INT num_vec=feat->get_num_vectors();
+	DT* result=new DT[num_feat*num_vec];
+	ASSERT(result);
+
+	for (INT i=0; i<num_vec; i++)
+	{
+		INT num_vfeat=0;
+		bool free_vec=true;
+		DT* vec=feat->get_feature_vector(i, num_vfeat, free_vec);
+		ASSERT(num_vfeat==num_feat);
+
+		for (INT j=0; j<num_vfeat; j++)
+			result[num_feat*i+j]=vec[j];
+		feat->free_feature_vector(vec, i, free_vec);
+	}
+
+	//set_matrix(result, num_feat, num_vec);
+	delete[] result;
+}
+
+bool CSGInterface::a_get_distance_matrix()
+{
+	if (m_nlhs!=1 || m_nrhs!=1)
+		return false;
+
+	CDistance* distance=gui->guidistance.get_distance();
+	if (!distance || !distance->get_rhs() || !distance->get_lhs())
+		SG_ERROR("No distance defined.\n");
+
+	INT num_vec1=distance->get_lhs()->get_num_vectors();
+	INT num_vec2=distance->get_rhs()->get_num_vectors();
+	DREAL* dmatrix=NULL;
+	distance->get_distance_matrix_real(num_vec1, num_vec2, dmatrix);
+
+	set_real_matrix(dmatrix, num_vec1, num_vec2);
+	delete[] dmatrix;
+
+	return true;
+}
+
+bool CSGInterface::a_get_kernel_matrix()
+{
+	if (m_nlhs!=1 || m_nrhs!=1)
+		return false;
+
+	CKernel* kernel=gui->guikernel.get_kernel();
+	if (!kernel || !kernel->get_rhs() || !kernel->get_lhs())
+		SG_ERROR("No kernel defined.\n");
+
+	INT num_vec1=kernel->get_lhs()->get_num_vectors();
+	INT num_vec2=kernel->get_rhs()->get_num_vectors();
+	DREAL* kmatrix=NULL;
+	kernel->get_kernel_matrix_real(num_vec1, num_vec2, kmatrix);
+
+	set_real_matrix(kmatrix, num_vec1, num_vec2);
+	delete[] kmatrix;
+
+	return true;
+}
+
+bool CSGInterface::a_set_WD_position_weights()
+{
+	if (m_nlhs!=0 || m_nrhs<2 || m_nrhs>3)
+		return false;
+
+	CKernel* kernel=gui->guikernel.get_kernel();
+	if (!kernel)
+		SG_ERROR("No kernel.\n");
+	if (kernel->get_kernel_type()!=K_COMBINED)
+		SG_ERROR("Only works for combined kernels.\n");
+
+	kernel=((CCombinedKernel*) kernel)->get_last_kernel();
+	if (!kernel)
+		SG_ERROR("No last kernel.\n");
+
+	EKernelType ktype=kernel->get_kernel_type();
+	if (ktype!=K_WEIGHTEDDEGREE && ktype!=K_WEIGHTEDDEGREEPOS)
+		SG_ERROR("Unsupported kernel.\n");
+
+	bool success=false;
+	DREAL* weights=NULL;
+	INT dim=0;
+	INT len=0;
+	get_real_matrix(weights, dim, len);
+
+	if (ktype==K_WEIGHTEDDEGREE)
+	{
+		CWeightedDegreeStringKernel* k=
+			(CWeightedDegreeStringKernel*) kernel;
+
+		if (dim!=1 & len>0)
+		{
+			delete[] weights;
+			SG_ERROR("Dimension mismatch (should be 1 x seq_length or 0x0\n");
+		}
+
+		success=k->set_position_weights(weights, len);
+	}
+	else
+	{
+		CWeightedDegreePositionStringKernel* k=
+			(CWeightedDegreePositionStringKernel*) kernel;
+		CHAR* target=NULL;
+		bool is_train=true;
+
+		if (m_nrhs==3)
+		{
+			INT tlen=0;
+			target=get_string(tlen);
+			if (!target)
+			{
+				delete[] weights;
+				SG_ERROR("Couldn't find second argument to method.\n");
+			}
+
+			if (!strmatch(target, tlen, "TRAIN") && !strmatch(target, tlen, "TEST"))
+			{
+				delete[] weights;
+				delete[] target;
+				SG_ERROR("Second argument none of TRAIN or TEST.\n");
+			}
+
+			if (strmatch(target, tlen, "TEST"))
+				is_train=false;
+		}
+
+		if (dim!=1 & len>0)
+		{
+			delete[] weights;
+			delete[] target;
+			SG_ERROR("Dimension mismatch (should be 1 x seq_length or 0x0\n");
+		}
+
+		if (dim==0 & len==0)
+		{
+			if (m_nlhs==3)
+			{
+				if (is_train)
+					success=k->delete_position_weights_lhs();
+				else
+					success=k->delete_position_weights_rhs();
+			}
+			else
+				success=k->delete_position_weights();
+		}
+		else
+		{
+			if (m_nlhs==3)
+			{
+				if (is_train)
+					success=k->set_position_weights_lhs(weights, dim, len);
+				else
+					success=k->set_position_weights_rhs(weights, dim, len);
+			}
+			else
+				success=k->set_position_weights(weights, len);
+		}
+
+		delete[] target;
+	}
+
+	delete[] weights;
+	return success;
+}
+
+bool CSGInterface::a_set_subkernel_weights()
+{
+	if (m_nlhs!=0 || m_nrhs!=2)
+		return false;
+
+	CKernel* kernel=gui->guikernel.get_kernel();
+	if (!kernel)
+		SG_ERROR("No kernel.\n");
+
+	bool success=false;
+	DREAL* weights=NULL;
+	INT dim=0;
+	INT len=0;
+	get_real_matrix(weights, dim, len);
+
+	EKernelType ktype=kernel->get_kernel_type();
+	if (ktype==K_WEIGHTEDDEGREE)
+	{
+		CWeightedDegreeStringKernel* k=
+			(CWeightedDegreeStringKernel*) kernel;
+		INT degree=k->get_degree();
+		if (dim!=degree || len<1)
+		{
+			delete[] weights;
+			SG_ERROR("Dimension mismatch (should be de(seq_length | 1) x degree)\n");
+		}
+
+		if (len==1)
+			len=0;
+
+		success=k->set_weights(weights, dim, len);
+	}
+	else if (ktype==K_WEIGHTEDDEGREEPOS)
+	{
+		CWeightedDegreePositionStringKernel* k=
+			(CWeightedDegreePositionStringKernel*) kernel;
+		INT degree=k->get_degree();
+		if (dim!=degree || len<1)
+		{
+			delete[] weights;
+			SG_ERROR("Dimension mismatch (should be de(seq_length | 1) x degree)\n");
+		}
+
+		if (len==1)
+			len=0;
+
+		success=k->set_weights(weights, dim, len);
+	}
+	else // all other kernels
+	{
+		INT num_subkernels=kernel->get_num_subkernels();
+		if (dim!=1 || len!=num_subkernels)
+		{
+			delete[] weights;
+			SG_ERROR("Dimension mismatch (should be 1 x num_subkernels)\n");
+		}
+
+		kernel->set_subkernel_weights(weights, len);
+		success=true;
+	}
+
+	delete[] weights;
+	return success;
+}
+
+bool CSGInterface::a_set_subkernel_weights_combined()
+{
+	if (m_nlhs!=0 || m_nrhs!=3)
+		return false;
+
+	CKernel* kernel=gui->guikernel.get_kernel();
+	if (!kernel)
+		SG_ERROR("No kernel.\n");
+	if (kernel->get_kernel_type()!=K_COMBINED)
+		SG_ERROR("Only works for combined kernels.\n");
+
+	bool success=false;
+	DREAL* weights=NULL;
+	INT dim=0;
+	INT len=0;
+	get_real_matrix(weights, dim, len);
+
+	INT idx=(INT) get_real();
+	SG_DEBUG("using kernel_idx=%i\n", idx);
+
+	kernel=((CCombinedKernel*) kernel)->get_kernel(idx);
+	if (!kernel)
+	{
+		delete[] weights;
+		SG_ERROR("No subkernel at idx %d.\n", idx);
+	}
+
+	EKernelType ktype=kernel->get_kernel_type();
+	if (ktype==K_WEIGHTEDDEGREE)
+	{
+		CWeightedDegreeStringKernel* k=
+			(CWeightedDegreeStringKernel*) kernel;
+		INT degree=k->get_degree();
+		if (dim!=degree || len<1)
+		{
+			delete[] weights;
+			SG_ERROR("Dimension mismatch (should be de(seq_length | 1) x degree)\n");
+		}
+
+		if (len==1)
+			len=0;
+
+		success=k->set_weights(weights, dim, len);
+	}
+	else if (ktype==K_WEIGHTEDDEGREEPOS)
+	{
+		CWeightedDegreePositionStringKernel* k=
+			(CWeightedDegreePositionStringKernel*) kernel;
+		INT degree=k->get_degree();
+		if (dim!=degree || len<1)
+		{
+			delete[] weights;
+			SG_ERROR("Dimension mismatch (should be de(seq_length | 1) x degree)\n");
+		}
+
+		if (len==1)
+			len=0;
+
+		success=k->set_weights(weights, dim, len);
+	}
+	else // all other kernels
+	{
+		INT num_subkernels=kernel->get_num_subkernels();
+		if (dim!=1 || len!=num_subkernels)
+		{
+			delete[] weights;
+			SG_ERROR("Dimension mismatch (should be 1 x num_subkernels)\n");
+		}
+
+		kernel->set_subkernel_weights(weights, len);
+		success=true;
+	}
+
+	delete[] weights;
+	return success;
+}
+
+bool CSGInterface::a_set_last_subkernel_weights()
+{
+	if (m_nlhs!=0 || m_nrhs!=2)
+		return false;
+
+	CKernel* kernel=gui->guikernel.get_kernel();
+	if (!kernel)
+		SG_ERROR("No kernel.\n");
+	if (kernel->get_kernel_type()!=K_COMBINED)
+		SG_ERROR("Only works for Combined kernels.\n");
+
+	kernel=((CCombinedKernel*) kernel)->get_last_kernel();
+	if (!kernel)
+		SG_ERROR("No last kernel.\n");
+
+	bool success=false;
+	DREAL* weights=NULL;
+	INT dim=0;
+	INT len=0;
+	get_real_matrix(weights, dim, len);
+
+	EKernelType ktype=kernel->get_kernel_type();
+	if (ktype==K_WEIGHTEDDEGREE)
+	{
+		CWeightedDegreeStringKernel* k=(CWeightedDegreeStringKernel*) kernel;
+		if (dim!=k->get_degree() || len<1)
+		{
+			delete[] weights;
+			SG_ERROR("Dimension mismatch (should be de(seq_length | 1) x degree)\n");
+		}
+
+		if (len==1)
+			len=0;
+
+		success=k->set_weights(weights, dim, len);
+	}
+	else if (ktype==K_WEIGHTEDDEGREEPOS)
+	{
+		CWeightedDegreePositionStringKernel* k=
+			(CWeightedDegreePositionStringKernel*) kernel;
+		if (dim!=k->get_degree() || len<1)
+		{
+			delete[] weights;
+			SG_ERROR("Dimension mismatch (should be de(seq_length | 1) x degree)\n");
+		}
+
+		if (len==1)
+			len=0;
+
+		success=k->set_weights(weights, dim, len);
+	}
+	else // all other kernels
+	{
+		INT num_subkernels=kernel->get_num_subkernels();
+		if (dim!=1 || len!=num_subkernels)
+		{
+			delete[] weights;
+			SG_ERROR("Dimension mismatch (should be 1 x num_subkernels)\n");
+		}
+
+		kernel->set_subkernel_weights(weights, len);
+		success=true;
+	}
+
+	delete[] weights;
+	return success;
+}
+
+bool CSGInterface::a_get_SPEC_consensus()
+{
+	if (m_nlhs!=1 || m_nrhs!=1)
+		return false;
+
+	CKernel* kernel=gui->guikernel.get_kernel();
+	if (!kernel)
+		SG_ERROR("No kernel.\n");
+	if (kernel->get_kernel_type()!=K_COMMWORDSTRING)
+		SG_ERROR("Only works for CommWordString kernels.\n");
+
+	CSVM* svm=(CSVM*) gui->guiclassifier.get_classifier();
+	ASSERT(svm);
+	INT num_suppvec=svm->get_num_support_vectors();
+	INT* sv_idx=new INT[num_suppvec];
+	DREAL* sv_weight=new DREAL[num_suppvec];
+	INT num_feat=0;
+
+	for (INT i=0; i<num_suppvec; i++)
+	{
+		sv_idx[i]=svm->get_support_vector(i);
+		sv_weight[i]=svm->get_alpha(i);
+	}
+
+	CHAR* consensus=((CCommWordStringKernel*) kernel)->compute_consensus(
+		num_feat, num_suppvec, sv_idx, sv_weight);
+	delete[] sv_idx;
+	delete[] sv_weight;
+
+	set_char_matrix(consensus, 1, num_feat);
+	delete[] consensus;
+
+	return true;
+}
+
+bool CSGInterface::a_get_SPEC_scoring()
+{
+	if (m_nlhs!=1 || m_nrhs!=2)
+		return false;
+
+	INT max_order=(INT) get_real();
+	CKernel* kernel=gui->guikernel.get_kernel();
+	if (!kernel)
+		SG_ERROR("No kernel.\n");
+
+	EKernelType ktype=kernel->get_kernel_type();
+	if (ktype!=K_COMMWORDSTRING && ktype!=K_WEIGHTEDCOMMWORDSTRING)
+		SG_ERROR("Only works for (Weighted) CommWordString kernels.\n");
+
+	CSVM* svm=(CSVM*) gui->guiclassifier.get_classifier();
+	ASSERT(svm);
+	INT num_suppvec=svm->get_num_support_vectors();
+	INT* sv_idx=new INT[num_suppvec];
+	DREAL* sv_weight=new DREAL[num_suppvec];
+	INT num_feat=0;
+	INT num_sym=0;
+
+	for (INT i=0; i<num_suppvec; i++)
+	{
+		sv_idx[i]=svm->get_support_vector(i);
+		sv_weight[i]=svm->get_alpha(i);
+	}
+
+	if ((max_order<1) || (max_order>8))
+	{
+		SG_WARNING( "max_order out of range 1..8 (%d). setting to 1\n", max_order);
+		max_order=1;
+	}
+
+	DREAL* position_weights=NULL;
+	if (ktype==K_COMMWORDSTRING)
+		position_weights=((CCommWordStringKernel*) kernel)->compute_scoring(
+			max_order, num_feat, num_sym, NULL,
+			num_suppvec, sv_idx, sv_weight);
+	else
+		position_weights=((CWeightedCommWordStringKernel*) kernel)->compute_scoring(
+			max_order, num_feat, num_sym, NULL,
+			num_suppvec, sv_idx, sv_weight);
+	delete[] sv_idx;
+	delete[] sv_weight;
+
+	set_real_matrix(position_weights, num_sym, num_feat);
+	delete[] position_weights;
+
+	return true;
+}
+
 bool CSGInterface::a_get_WD_consensus()
 {
+	if (m_nlhs!=1 || m_nrhs!=1)
+		return false;
+
 	CKernel* kernel=gui->guikernel.get_kernel();
-	if (!kernel || kernel->get_kernel_type()!=K_WEIGHTEDDEGREEPOS)
-		SG_ERROR("One cannot compute a scoring using this kernel function.\n");
+	if (!kernel)
+		SG_ERROR("No kernel.\n");
+	if (kernel->get_kernel_type()!=K_WEIGHTEDDEGREEPOS)
+		SG_ERROR("Only works for Weighted Degree Position kernels.\n");
 
 	CSVM* svm=(CSVM*) gui->guiclassifier.get_classifier();
 	ASSERT(svm);
@@ -248,7 +931,7 @@ bool CSGInterface::a_compute_POIM_WD()
 	if (kernel->get_kernel_type()!=K_WEIGHTEDDEGREEPOS)
 	{
 		delete[] distribution;
-		SG_ERROR("One cannot compute POIM using this kernel function.\n");
+		SG_ERROR("Only works for Weighted Degree Position kernels.\n");
 	}
 
 	INT seqlen=0;
@@ -311,8 +994,10 @@ bool CSGInterface::a_get_WD_scoring()
 	INT max_order=(INT) get_real();
 
 	CKernel* kernel=gui->guikernel.get_kernel();
-	if (!kernel || kernel->get_kernel_type()!=K_WEIGHTEDDEGREEPOS)
-		SG_ERROR("One cannot compute a scoring using this kernel function.\n");
+	if (!kernel)
+		SG_ERROR("No kernel.\n");
+	if (kernel->get_kernel_type()!=K_WEIGHTEDDEGREEPOS)
+		SG_ERROR("Only works for Weighted Degree Position kernels.\n");
 
 	CSVM* svm=(CSVM*) gui->guiclassifier.get_classifier();
 	ASSERT(svm);
@@ -352,16 +1037,18 @@ bool CSGInterface::a_get_WD_position_weights()
 		return false;
 
 	CKernel* kernel=gui->guikernel.get_kernel();
-	if (!kernel || kernel->get_kernel_type()!=K_COMBINED)
-		SG_ERROR("Only works for combined kernels.\n");
+	if (!kernel)
+		SG_ERROR("No kernel.\n");
+	if (kernel->get_kernel_type()!=K_COMBINED)
+		SG_ERROR("Only works for Combined kernels.\n");
 
 	kernel=((CCombinedKernel*) kernel)->get_last_kernel();
 	if (!kernel)
 		SG_ERROR("Couldn't find last kernel.\n");
 
-	if (kernel->get_kernel_type()!=K_WEIGHTEDDEGREE ||
+	if (kernel->get_kernel_type()!=K_WEIGHTEDDEGREE &&
 		kernel->get_kernel_type()!=K_WEIGHTEDDEGREEPOS)
-		SG_ERROR("Wrong kernel type.\n");
+		SG_ERROR("Wrong subkernel type.\n");
 
 	INT len=0;
 	const DREAL* position_weights;
@@ -386,8 +1073,10 @@ bool CSGInterface::a_get_last_subkernel_weights()
 
 	CKernel* kernel=gui->guikernel.get_kernel();
 	EKernelType ktype=kernel->get_kernel_type();
-	if (!kernel || ktype!=K_COMBINED)
-		SG_ERROR("Only works for combined kernels.\n");
+	if (!kernel)
+		SG_ERROR("No kernel.\n");
+	if (ktype!=K_COMBINED)
+		SG_ERROR("Only works for Combined kernels.\n");
 
 	kernel=((CCombinedKernel*) kernel)->get_last_kernel();
 	if (!kernel)
@@ -413,7 +1102,7 @@ bool CSGInterface::a_get_last_subkernel_weights()
 		weights=((CWeightedDegreePositionStringKernel*) kernel)->
 			get_degree_weights(degree, len);
 	else
-		SG_ERROR("Wrong kernel type.\n");
+		SG_ERROR("Only works for Weighted Degree (Position) kernels.\n");
 
 	if (len==0)
 		len=1;
@@ -456,7 +1145,7 @@ bool CSGInterface::a_compute_by_subkernels()
 			SG_ERROR("Kernel optimization not initialized.\n");
 	}
 	else
-		SG_ERROR("Wrong kernel type.\n");
+		SG_ERROR("Only works for Weighted Degree (Position) kernels.\n");
 
 	if (len==0)
 		len=1;
@@ -574,7 +1263,7 @@ bool CSGInterface::a_get_kernel_optimization()
 			return true;
 		}
 		default:
-			break;
+			SG_ERROR("Unsupported kernel %s.\n", kernel->get_name());
 	}
 
 	return true;
@@ -1217,4 +1906,8 @@ bool CSGInterface::handle()
 	return success;
 }
 
+/*template <class T> void set_matrix(const T* matrix, INT num_feat, INT num_vec)
+{
+}
+*/
 #endif // !HAVE_SWIG

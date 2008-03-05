@@ -53,6 +53,7 @@ class CMatlabInterface : public CSGInterface
 		virtual void set_shortreal_vector(const SHORTREAL* vec, INT len);
 		virtual void set_real_vector(const DREAL* vec, INT len);
 
+		//template <class T> void set_matrix(const T* matrix, INT num_feat, INT num_vec);
 		virtual void set_byte_matrix(const BYTE* matrix, INT num_feat, INT num_vec);
 		virtual void set_char_matrix(const CHAR* matrix, INT num_feat, INT num_vec);
 		virtual void set_int_matrix(const INT* matrix, INT num_feat, INT num_vec);

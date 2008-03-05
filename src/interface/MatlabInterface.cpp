@@ -300,7 +300,7 @@ void CMatlabInterface::get_byte_sparsematrix(TSparse<BYTE>*& matrix, INT& num_fe
 
 	num_vec=mxGetN(mx_mat);
 	num_feat=mxGetM(mx_mat);
-	matrix=new TSparse<BYTE>[num_vec*num_feat];
+	matrix=new TSparse<BYTE>[num_vec];
 	ASSERT(matrix);
 	BYTE* data=(BYTE*) mxGetData(mx_mat);
 
@@ -345,7 +345,7 @@ void CMatlabInterface::get_char_sparsematrix(TSparse<CHAR>*& matrix, INT& num_fe
 
 	num_vec=mxGetN(mx_mat);
 	num_feat=mxGetM(mx_mat);
-	matrix=new TSparse<CHAR>[num_vec*num_feat];
+	matrix=new TSparse<CHAR>[num_vec];
 	ASSERT(matrix);
 	CHAR* data=(CHAR*) mxGetData(mx_mat);
 
@@ -393,7 +393,7 @@ void CMatlabInterface::get_int_sparsematrix(TSparse<INT>*& matrix, INT& num_feat
 
 	num_vec=mxGetN(mx_mat);
 	num_feat=mxGetM(mx_mat);
-	matrix=new TSparse<INT>[num_vec*num_feat];
+	matrix=new TSparse<INT>[num_vec];
 	ASSERT(matrix);
 	INT* data=(INT*) mxGetData(mx_mat);
 
@@ -438,7 +438,7 @@ void CMatlabInterface::get_shortreal_sparsematrix(TSparse<SHORTREAL>*& matrix, I
 
 	num_vec=mxGetN(mx_mat);
 	num_feat=mxGetM(mx_mat);
-	matrix=new TSparse<SHORTREAL>[num_vec*num_feat];
+	matrix=new TSparse<SHORTREAL>[num_vec];
 	ASSERT(matrix);
 	SHORTREAL* data=(SHORTREAL*) mxGetData(mx_mat);
 
@@ -483,7 +483,7 @@ void CMatlabInterface::get_real_sparsematrix(TSparse<DREAL>*& matrix, INT& num_f
 
 	num_vec=mxGetN(mx_mat);
 	num_feat=mxGetM(mx_mat);
-	matrix=new TSparse<DREAL>[num_vec*num_feat];
+	matrix=new TSparse<DREAL>[num_vec];
 	ASSERT(matrix);
 	DREAL* data=(DREAL*) mxGetData(mx_mat);
 
@@ -648,6 +648,11 @@ void CMatlabInterface::set_real_vector(const DREAL* vector, INT len)
 }
 
 
+/*template <class T>
+	void CMatlabInterface::set_matrix(const T* matrix, INT num_feat, INT num_vec)
+{
+}
+*/
 void CMatlabInterface::set_byte_matrix(const BYTE* matrix, INT num_feat, INT num_vec)
 {
 	if (!matrix)

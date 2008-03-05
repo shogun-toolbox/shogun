@@ -40,6 +40,24 @@ class CSGInterface : public CSGObject
 		~CSGInterface();
 
 		/* actions */
+		/** get features */
+		bool a_get_features();
+		/** get distance matrix */
+		bool a_get_distance_matrix();
+		/** get kernel matrix */
+		bool a_get_kernel_matrix();
+		/** set WD position weights */
+		bool a_set_WD_position_weights();
+		/** set subkernel weights */
+		bool a_set_subkernel_weights();
+		/** set subkernel weights combined */
+		bool a_set_subkernel_weights_combined();
+		/** set last subkernel weights */
+		bool a_set_last_subkernel_weights();
+		/** get SPEC consensus */
+		bool a_get_SPEC_consensus();
+		/** get SPEC scoring */
+		bool a_get_SPEC_scoring();
 		/** get WD consensus */
 		bool a_get_WD_consensus();
 		/** compute POIM WD */
@@ -142,6 +160,8 @@ class CSGInterface : public CSGObject
 		virtual void set_shortreal_vector(const SHORTREAL* vec, INT len)=0;
 		virtual void set_real_vector(const DREAL* vec, INT len)=0;
 
+		// template and virtual does not work at the same time
+		//template <class T> void set_matrix(const T* matrix, INT num_feat, INT num_vec);
 		virtual void set_byte_matrix(const BYTE* matrix, INT num_feat, INT num_vec)=0;
 		virtual void set_char_matrix(const CHAR* matrix, INT num_feat, INT num_vec)=0;
 		virtual void set_int_matrix(const INT* matrix, INT num_feat, INT num_vec)=0;
@@ -188,6 +208,9 @@ class CSGInterface : public CSGObject
 		INT m_nrhs;
 
 	private:
+		/** helper function for get_features */
+		template <class FT, class DT>
+			void do_get_features_simple(FT feat, DT dummy);
 		/** helper function for hmm classify */
 		bool do_hmm_classify(bool linear=false, bool one_class=false);
 		/** helper function for hmm classify on 1 example */
