@@ -122,6 +122,17 @@ void CPythonInterface::get_real_vector(DREAL*& vec, INT& len)
 	len=0;
 }
 
+void CPythonInterface::get_short_vector(SHORT*& vec, INT& len)
+{
+	vec=NULL;
+	len=0;
+}
+
+void CPythonInterface::get_word_vector(WORD*& vec, INT& len)
+{
+	vec=NULL;
+	len=0;
+}
 
 void CPythonInterface::get_byte_matrix(BYTE*& matrix, INT& num_feat, INT& num_vec)
 {
@@ -143,6 +154,13 @@ void CPythonInterface::get_real_matrix(DREAL*& matrix, INT& num_feat, INT& num_v
 	//has to be rewritting using numpy
 }
 
+void CPythonInterface::get_short_matrix(SHORT*& matrix, INT& num_feat, INT& num_vec)
+{
+}
+
+void CPythonInterface::get_word_matrix(WORD*& matrix, INT& num_feat, INT& num_vec)
+{
+}
 
 void CPythonInterface::get_byte_sparsematrix(TSparse<BYTE>*& matrix, INT& num_feat, INT& num_vec)
 {
@@ -160,6 +178,14 @@ void CPythonInterface::get_shortreal_sparsematrix(TSparse<SHORTREAL>*& matrix, I
 }
 
 void CPythonInterface::get_real_sparsematrix(TSparse<DREAL>*& matrix, INT& num_feat, INT& num_vec)
+{
+}
+
+void CPythonInterface::get_short_sparsematrix(TSparse<SHORT>*& matrix, INT& num_feat, INT& num_vec)
+{
+}
+
+void CPythonInterface::get_word_sparsematrix(TSparse<WORD>*& matrix, INT& num_feat, INT& num_vec)
 {
 }
 
@@ -194,6 +220,14 @@ void CPythonInterface::set_real_vector(const DREAL* vec, INT len)
 {
 }
 
+void CPythonInterface::set_short_vector(const SHORT* vec, INT len)
+{
+}
+
+void CPythonInterface::set_word_vector(const WORD* vec, INT len)
+{
+}
+
 
 void CPythonInterface::set_byte_matrix(const BYTE* matrix, INT num_feat, INT num_vec)
 {
@@ -212,6 +246,14 @@ void CPythonInterface::set_shortreal_matrix(const SHORTREAL* matrix, INT num_fea
 }
 
 void CPythonInterface::set_real_matrix(const DREAL* matrix, INT num_feat, INT num_vec)
+{
+}
+
+void CPythonInterface::set_short_matrix(const SHORT* matrix, INT num_feat, INT num_vec)
+{
+}
+
+void CPythonInterface::set_word_matrix(const WORD* matrix, INT num_feat, INT num_vec)
 {
 }
 
@@ -236,6 +278,13 @@ void CPythonInterface::set_real_sparsematrix(const TSparse<DREAL>* matrix, INT n
 {
 }
 
+void CPythonInterface::set_short_sparsematrix(const TSparse<SHORT>* matrix, INT num_feat, INT num_vec)
+{
+}
+
+void CPythonInterface::set_word_sparsematrix(const TSparse<WORD>* matrix, INT num_feat, INT num_vec)
+{
+}
 
 void CPythonInterface::set_string_list(const T_STRING<CHAR>* strings, INT num_str)
 {

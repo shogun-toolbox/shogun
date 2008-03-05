@@ -31,18 +31,24 @@ class CRInterface : public CSGInterface
 		virtual void get_int_vector(INT*& vec, INT& len);
 		virtual void get_shortreal_vector(SHORTREAL*& vec, INT& len);
 		virtual void get_real_vector(DREAL*& vec, INT& len);
+		virtual void get_short_vector(SHORT*& vec, INT& len);
+		virtual void get_word_vector(WORD*& vec, INT& len);
 
 		virtual void get_byte_matrix(BYTE*& matrix, INT& num_feat, INT& num_vec);
 		virtual void get_char_matrix(CHAR*& matrix, INT& num_feat, INT& num_vec);
 		virtual void get_int_matrix(INT*& matrix, INT& num_feat, INT& num_vec);
 		virtual void get_shortreal_matrix(SHORTREAL*& matrix, INT& num_feat, INT& num_vec);
 		virtual void get_real_matrix(DREAL*& matrix, INT& num_feat, INT& num_vec);
+		virtual void get_short_matrix(SHORT*& matrix, INT& num_feat, INT& num_vec);
+		virtual void get_word_matrix(WORD*& matrix, INT& num_feat, INT& num_vec);
 
 		virtual void get_byte_sparsematrix(TSparse<BYTE>*& matrix, INT& num_feat, INT& num_vec);
 		virtual void get_char_sparsematrix(TSparse<CHAR>*& matrix, INT& num_feat, INT& num_vec);
 		virtual void get_int_sparsematrix(TSparse<INT>*& matrix, INT& num_feat, INT& num_vec);
 		virtual void get_shortreal_sparsematrix(TSparse<SHORTREAL>*& matrix, INT& num_feat, INT& num_vec);
 		virtual void get_real_sparsematrix(TSparse<DREAL>*& matrix, INT& num_feat, INT& num_vec);
+		virtual void get_short_sparsematrix(TSparse<SHORT>*& matrix, INT& num_feat, INT& num_vec);
+		virtual void get_word_sparsematrix(TSparse<WORD>*& matrix, INT& num_feat, INT& num_vec);
 
 		virtual void get_string_list(T_STRING<CHAR>*& strings, INT& num_str);
 
@@ -53,18 +59,24 @@ class CRInterface : public CSGInterface
 		virtual void set_int_vector(const INT* vec, INT len);
 		virtual void set_shortreal_vector(const SHORTREAL* vec, INT len);
 		virtual void set_real_vector(const DREAL* vec, INT len);
+		virtual void set_short_vector(const SHORT* vec, INT len);
+		virtual void set_word_vector(const WORD* vec, INT len);
 
 		virtual void set_byte_matrix(const BYTE* matrix, INT num_feat, INT num_vec);
 		virtual void set_char_matrix(const CHAR* matrix, INT num_feat, INT num_vec);
 		virtual void set_int_matrix(const INT* matrix, INT num_feat, INT num_vec);
 		virtual void set_shortreal_matrix(const SHORTREAL* matrix, INT num_feat, INT num_vec);
 		virtual void set_real_matrix(const DREAL* matrix, INT num_feat, INT num_vec);
+		virtual void set_short_matrix(const SHORT* matrix, INT num_feat, INT num_vec);
+		virtual void set_word_matrix(const WORD* matrix, INT num_feat, INT num_vec);
 
 		virtual void set_byte_sparsematrix(const TSparse<BYTE>* matrix, INT num_feat, INT num_vec);
 		virtual void set_char_sparsematrix(const TSparse<CHAR>* matrix, INT num_feat, INT num_vec);
 		virtual void set_int_sparsematrix(const TSparse<INT>* matrix, INT num_feat, INT num_vec);
 		virtual void set_shortreal_sparsematrix(const TSparse<SHORTREAL>* matrix, INT num_feat, INT num_vec);
 		virtual void set_real_sparsematrix(const TSparse<DREAL>* matrix, INT num_feat, INT num_vec);
+		virtual void set_short_sparsematrix(const TSparse<SHORT>* matrix, INT num_feat, INT num_vec);
+		virtual void set_word_sparsematrix(const TSparse<WORD>* matrix, INT num_feat, INT num_vec);
 
 		virtual void set_string_list(const T_STRING<CHAR>* strings, INT num_str);
 

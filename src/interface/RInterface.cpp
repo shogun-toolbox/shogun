@@ -116,6 +116,18 @@ void CRInterface::get_real_vector(DREAL*& vec, INT& len)
 	len=0;
 }
 
+void CRInterface::get_short_vector(SHORT*& vec, INT& len)
+{
+	vec=NULL;
+	len=0;
+}
+
+void CRInterface::get_word_vector(WORD*& vec, INT& len)
+{
+	vec=NULL;
+	len=0;
+}
+
 
 void CRInterface::get_byte_matrix(BYTE*& matrix, INT& num_feat, INT& num_vec)
 {
@@ -149,6 +161,14 @@ void CRInterface::get_real_matrix(DREAL*& matrix, INT& num_feat, INT& num_vec)
 			matrix[i*num_feat+j]= (DREAL) REAL(feat)[i*num_feat+j];
 }
 
+void CRInterface::get_short_matrix(SHORT*& matrix, INT& num_feat, INT& num_vec)
+{
+}
+
+void CRInterface::get_word_matrix(WORD*& matrix, INT& num_feat, INT& num_vec)
+{
+}
+
 
 void CRInterface::get_byte_sparsematrix(TSparse<BYTE>*& matrix, INT& num_feat, INT& num_vec)
 {
@@ -167,6 +187,14 @@ void CRInterface::get_shortreal_sparsematrix(TSparse<SHORTREAL>*& matrix, INT& n
 }
 
 void CRInterface::get_real_sparsematrix(TSparse<DREAL>*& matrix, INT& num_feat, INT& num_vec)
+{
+}
+
+void CRInterface::get_short_sparsematrix(TSparse<SHORT>*& matrix, INT& num_feat, INT& num_vec)
+{
+}
+
+void CRInterface::get_word_sparsematrix(TSparse<WORD>*& matrix, INT& num_feat, INT& num_vec)
 {
 }
 
@@ -228,6 +256,14 @@ void CRInterface::set_real_vector(const DREAL* vec, INT len)
 {
 }
 
+void CRInterface::set_short_vector(const SHORT* vec, INT len)
+{
+}
+
+void CRInterface::set_word_vector(const WORD* vec, INT len)
+{
+}
+
 
 void CRInterface::set_byte_matrix(const BYTE* matrix, INT num_feat, INT num_vec)
 {
@@ -249,6 +285,14 @@ void CRInterface::set_real_matrix(const DREAL* matrix, INT num_feat, INT num_vec
 {
 }
 
+void CRInterface::set_short_matrix(const SHORT* matrix, INT num_feat, INT num_vec)
+{
+}
+
+void CRInterface::set_word_matrix(const WORD* matrix, INT num_feat, INT num_vec)
+{
+}
+
 
 void CRInterface::set_byte_sparsematrix(const TSparse<BYTE>* matrix, INT num_feat, INT num_vec)
 {
@@ -267,6 +311,14 @@ void CRInterface::set_shortreal_sparsematrix(const TSparse<SHORTREAL>* matrix, I
 }
 
 void CRInterface::set_real_sparsematrix(const TSparse<DREAL>* matrix, INT num_feat, INT num_vec)
+{
+}
+
+void CRInterface::set_short_sparsematrix(const TSparse<SHORT>* matrix, INT num_feat, INT num_vec)
+{
+}
+
+void CRInterface::set_word_sparsematrix(const TSparse<WORD>* matrix, INT num_feat, INT num_vec)
 {
 }
 

@@ -268,39 +268,135 @@ bool CSGInterface::a_get_features()
 			{
 				case F_DREAL:
 				{
-					DREAL dummy=0;
-					do_get_features_simple((CRealFeatures*) feat, dummy);
+					CRealFeatures* realfeat=(CRealFeatures*) feat;
+					INT num_feat=realfeat->get_num_features();
+					INT num_vec=realfeat->get_num_vectors();
+					DREAL* result=new DREAL[num_feat*num_vec];
+					ASSERT(result);
+
+					for (INT i=0; i<num_vec; i++)
+					{
+						INT num_vfeat=0;
+						bool free_vec=true;
+						DREAL* vec=realfeat->get_feature_vector(
+							i, num_vfeat, free_vec);
+						ASSERT(num_vfeat==num_feat);
+
+						for (INT j=0; j<num_vfeat; j++)
+							result[num_feat*i+j]=vec[j];
+						realfeat->free_feature_vector(vec, i, free_vec);
+					}
+
+					set_real_matrix(result, num_feat, num_vec);
+					delete[] result;
+
+					break;
 				}
-				break;
 
 				case F_WORD:
 				{
-					WORD dummy=0;
-					do_get_features_simple((CWordFeatures*) feat, dummy);
-				}
-				break;
+					CWordFeatures* wordfeat=(CWordFeatures*) feat;
+					INT num_feat=wordfeat->get_num_features();
+					INT num_vec=wordfeat->get_num_vectors();
+					WORD* result=new WORD[num_feat*num_vec];
+					ASSERT(result);
 
+					for (INT i=0; i<num_vec; i++)
+					{
+						INT num_vfeat=0;
+						bool free_vec=true;
+						WORD* vec=wordfeat->get_feature_vector(i, num_vfeat, free_vec);
+						ASSERT(num_vfeat==num_feat);
+
+						for (INT j=0; j<num_vfeat; j++)
+							result[num_feat*i+j]=vec[j];
+						wordfeat->free_feature_vector(vec, i, free_vec);
+					}
+
+					set_word_matrix(result, num_feat, num_vec);
+					delete[] result;
+
+					break;
+				}
+				
 				case F_SHORT:
 				{
-					SHORT dummy=0;
-					do_get_features_simple((CShortFeatures*) feat, dummy);
-				}
-				break;
+					CShortFeatures* shortfeat=(CShortFeatures*) feat;
+					INT num_feat=shortfeat->get_num_features();
+					INT num_vec=shortfeat->get_num_vectors();
+					SHORT* result=new SHORT[num_feat*num_vec];
+					ASSERT(result);
 
+					for (INT i=0; i<num_vec; i++)
+					{
+						INT num_vfeat=0;
+						bool free_vec=true;
+						SHORT* vec=shortfeat->get_feature_vector(i, num_vfeat, free_vec);
+						ASSERT(num_vfeat==num_feat);
+
+						for (INT j=0; j<num_vfeat; j++)
+							result[num_feat*i+j]=vec[j];
+						shortfeat->free_feature_vector(vec, i, free_vec);
+					}
+
+					set_short_matrix(result, num_feat, num_vec);
+					delete[] result;
+
+					break;
+				}
+				
 				case F_CHAR:
 				{
-					CHAR dummy=0;
-					do_get_features_simple((CCharFeatures*) feat, dummy);
-				}
-				break;
+					CCharFeatures* charfeat=(CCharFeatures*) feat;
+					INT num_feat=charfeat->get_num_features();
+					INT num_vec=charfeat->get_num_vectors();
+					CHAR* result=new CHAR[num_feat*num_vec];
+					ASSERT(result);
 
+					for (INT i=0; i<num_vec; i++)
+					{
+						INT num_vfeat=0;
+						bool free_vec=true;
+						CHAR* vec=charfeat->get_feature_vector(i, num_vfeat, free_vec);
+						ASSERT(num_vfeat==num_feat);
+
+						for (INT j=0; j<num_vfeat; j++)
+							result[num_feat*i+j]=vec[j];
+						charfeat->free_feature_vector(vec, i, free_vec);
+					}
+
+					set_char_matrix(result, num_feat, num_vec);
+					delete[] result;
+
+					break;
+				}
+				
 				case F_BYTE:
 				{
-					BYTE dummy=0;
-					do_get_features_simple((CByteFeatures*) feat, dummy);
-				}
-				break;
+					CByteFeatures* bytefeat=(CByteFeatures*) feat;
+					INT num_feat=bytefeat->get_num_features();
+					INT num_vec=bytefeat->get_num_vectors();
+					BYTE* result=new BYTE[num_feat*num_vec];
+					ASSERT(result);
 
+					for (INT i=0; i<num_vec; i++)
+					{
+						INT num_vfeat=0;
+						bool free_vec=true;
+						BYTE* vec=bytefeat->get_feature_vector(i, num_vfeat, free_vec);
+						ASSERT(num_vfeat==num_feat);
+
+						for (INT j=0; j<num_vfeat; j++)
+							result[num_feat*i+j]=vec[j];
+						bytefeat->free_feature_vector(vec, i, free_vec);
+					}
+
+					set_byte_matrix(result, num_feat, num_vec);
+					delete[] result;
+
+					break;
+				}
+				
 				default:
 					SG_ERROR("%s not implemented.\n", feat->get_feature_type());
 			}
@@ -405,30 +501,6 @@ bool CSGInterface::a_get_features()
 	}
 
 	return true;
-}
-
-template <class FT, class DT>
-	void CSGInterface::do_get_features_simple(FT feat, DT dummy)
-{
-	INT num_feat=feat->get_num_features();
-	INT num_vec=feat->get_num_vectors();
-	DT* result=new DT[num_feat*num_vec];
-	ASSERT(result);
-
-	for (INT i=0; i<num_vec; i++)
-	{
-		INT num_vfeat=0;
-		bool free_vec=true;
-		DT* vec=feat->get_feature_vector(i, num_vfeat, free_vec);
-		ASSERT(num_vfeat==num_feat);
-
-		for (INT j=0; j<num_vfeat; j++)
-			result[num_feat*i+j]=vec[j];
-		feat->free_feature_vector(vec, i, free_vec);
-	}
-
-	//set_matrix(result, num_feat, num_vec);
-	delete[] result;
 }
 
 bool CSGInterface::a_get_distance_matrix()
@@ -1906,8 +1978,4 @@ bool CSGInterface::handle()
 	return success;
 }
 
-/*template <class T> void set_matrix(const T* matrix, INT num_feat, INT num_vec)
-{
-}
-*/
 #endif // !HAVE_SWIG
