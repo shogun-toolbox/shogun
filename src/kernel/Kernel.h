@@ -19,6 +19,8 @@
 #include "base/SGObject.h"
 #include "features/Features.h"
 
+class CSVM ;
+
 /** class Kernel */
 class CKernel : public CSGObject
 {
@@ -375,6 +377,13 @@ class CKernel : public CSGObject
 		 * @return if deleting was successful
 		 */
 		virtual bool delete_optimization();
+
+		/** initialize optimization
+		 *
+		 * @param svm svm model
+		 * @return if initializing was successful
+		 */
+		bool init_optimization_svm(CSVM * svm) ;
 
 		/** compute optimized
 		 *

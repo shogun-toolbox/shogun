@@ -23,6 +23,8 @@
 #include "kernel/Kernel.h"
 #include "features/Features.h"
 
+#include "classifier/svm/SVM.h"
+
 #include <string.h>
 #include <unistd.h>
 #include <math.h>
@@ -1071,3 +1073,25 @@ void CKernel::init_sqrt_diag(DREAL *v, INT num)
 			v[i] = 1e-16; /* avoid divide by zero exception */
 	}
 }
+
+bool CKernel::init_optimization_svm(CSVM * svm)
+{
+	INT num_suppvec = svm->get_num_support_vectors();
+	INT* sv_idx    = new INT[num_suppvec];
+	ASSERT(sv_idx);
+	DREAL* sv_weight = new DREAL[num_suppvec];
+	ASSERT(sv_weight);
+	
+	for (INT i=0; i<num_suppvec; i++)
+	{
+		sv_idx[i]    = svm->get_support_vector(i);
+		sv_weight[i] = svm->get_alpha(i);
+	}
+	bool ret = init_optimization(num_suppvec, sv_idx, sv_weight);
+
+	delete[] sv_idx ;
+	delete[] sv_weight ;
+
+	return ret ;
+}
+
