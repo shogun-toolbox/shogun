@@ -126,7 +126,7 @@ bool CCommWordStringKernel::init(CFeatures* l, CFeatures* r)
 
 	if (use_dict_diagonal_optimization)
 	{
-	    fprintf(stderr, "use_dict_diagonal_optimization\n") ;
+	    //fprintf(stderr, "use_dict_diagonal_optimization\n") ;
 		delete[] dict_diagonal_optimization ;
 		dict_diagonal_optimization = new WORD[INT(((CStringFeatures<WORD>*)l)->get_num_symbols())] ;
 		ASSERT(dict_diagonal_optimization) ;
