@@ -171,6 +171,16 @@ class CCommWordStringKernel: public CStringKernel<WORD>
 		CHAR* compute_consensus(INT &num_feat, INT num_suppvec,
 			INT* IDX, DREAL* alphas);
 
+
+		void set_use_dict_diagonal_optimization(bool flag)
+			{
+				use_dict_diagonal_optimization=flag ;
+			}
+		bool get_use_dict_diagonal_optimization()
+			{
+				return use_dict_diagonal_optimization ;
+			}
+		
 	protected:
 		/** compute kernel function for features a and b
 		 * idx_{a,b} denote the index of the feature vectors
@@ -182,7 +192,7 @@ class CCommWordStringKernel: public CStringKernel<WORD>
 		 */
 		inline virtual DREAL compute(INT idx_a, INT idx_b)
 		{
-			return compute_helper(idx_a, idx_b, false);
+			return compute_helper<false,false>(idx_a, idx_b);
 		}
 
 		/** helper for compute
@@ -192,8 +202,8 @@ class CCommWordStringKernel: public CStringKernel<WORD>
 		 * @param do_sort if sorting shall be performed
 		 * @return computed value
 		 */
-		virtual DREAL compute_helper(INT idx_a, INT idx_b,
-			bool do_sort);
+		template<bool do_sort, bool left_equal_right>
+			DREAL compute_helper(INT idx_a, INT idx_b);
 
 		/** normalize weight
 		 *
@@ -251,6 +261,9 @@ class CCommWordStringKernel: public CStringKernel<WORD>
 		bool use_sign;
 		/** type of normalization */
 		ENormalizationType normalization;
+
+		bool use_dict_diagonal_optimization ;
+		WORD* dict_diagonal_optimization ;
 };
 
 #endif /* _COMMWORDSTRINGKERNEL_H__ */

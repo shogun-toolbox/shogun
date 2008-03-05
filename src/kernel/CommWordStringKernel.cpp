@@ -17,7 +17,7 @@ CCommWordStringKernel::CCommWordStringKernel(
 	INT size, bool s, ENormalizationType n)
 	: CStringKernel<WORD>(size), sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL),
 	initialized(false), dictionary_size(0), dictionary_weights(NULL),
-	use_sign(s), normalization(n)
+	  use_sign(s), normalization(n), use_dict_diagonal_optimization(false), dict_diagonal_optimization(NULL)
 {
 	properties |= KP_LINADD;
 	init_dictionary(1<<(sizeof(WORD)*8));
@@ -28,7 +28,7 @@ CCommWordStringKernel::CCommWordStringKernel(
 	bool s, ENormalizationType n, INT size)
 	: CStringKernel<WORD>(size), sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL),
 	initialized(false), dictionary_size(0), dictionary_weights(NULL),
-	use_sign(s), normalization(n)
+	  use_sign(s), normalization(n), use_dict_diagonal_optimization(false), dict_diagonal_optimization(NULL)
 {
 	properties |= KP_LINADD;
 
@@ -54,6 +54,7 @@ CCommWordStringKernel::~CCommWordStringKernel()
 	cleanup();
 
 	delete[] dictionary_weights;
+	delete[] dict_diagonal_optimization ;
 }
   
 void CCommWordStringKernel::remove_lhs() 
@@ -123,11 +124,23 @@ bool CCommWordStringKernel::init(CFeatures* l, CFeatures* r)
 	this->lhs=(CStringFeatures<WORD>*) l;
 	this->rhs=(CStringFeatures<WORD>*) l;
 
+	if (use_dict_diagonal_optimization)
+	{
+	    fprintf(stderr, "use_dict_diagonal_optimization\n") ;
+		delete[] dict_diagonal_optimization ;
+		dict_diagonal_optimization = new WORD[INT(((CStringFeatures<WORD>*)l)->get_num_symbols())] ;
+		ASSERT(dict_diagonal_optimization) ;
+		ASSERT(((CStringFeatures<WORD>*)l)->get_num_symbols() == ((CStringFeatures<WORD>*)r)->get_num_symbols()) ;
+	}
+
 	//compute normalize to 1 values
 	for (i=0; i<lhs->get_num_vectors(); i++)
 	{
-		sqrtdiag_lhs[i]=sqrt(compute_helper(i,i, true));
-
+		if (use_dict_diagonal_optimization)
+			sqrtdiag_lhs[i]=sqrt(compute_helper<true,true>(i,i));
+		else
+			sqrtdiag_lhs[i]=sqrt(compute_helper<true,false>(i,i));
+		
 		//trap divide by zero exception
 		if (sqrtdiag_lhs[i]==0)
 			sqrtdiag_lhs[i]=1e-16;
@@ -139,12 +152,15 @@ bool CCommWordStringKernel::init(CFeatures* l, CFeatures* r)
 	{
 		this->lhs=(CStringFeatures<WORD>*) r;
 		this->rhs=(CStringFeatures<WORD>*) r;
-
+		
 		//compute normalize to 1 values
 		for (i=0; i<rhs->get_num_vectors(); i++)
 		{
-			sqrtdiag_rhs[i]=sqrt(compute_helper(i,i, true));
-
+			if (use_dict_diagonal_optimization)
+				sqrtdiag_rhs[i]=sqrt(compute_helper<true,true>(i, i));
+			else
+				sqrtdiag_rhs[i]=sqrt(compute_helper<true,false>(i, i));
+				
 			//trap divide by zero exception
 			if (sqrtdiag_rhs[i]==0)
 				sqrtdiag_rhs[i]=1e-16;
@@ -184,7 +200,8 @@ bool CCommWordStringKernel::save_init(FILE* dest)
 	return false;
 }
 
-DREAL CCommWordStringKernel::compute_helper(INT idx_a, INT idx_b, bool do_sort)
+template<bool do_sort, bool left_equal_right>
+DREAL CCommWordStringKernel::compute_helper(INT idx_a, INT idx_b)
 {
 	INT alen, blen;
 	CStringFeatures<WORD>* l = (CStringFeatures<WORD>*) lhs;
@@ -193,120 +210,151 @@ DREAL CCommWordStringKernel::compute_helper(INT idx_a, INT idx_b, bool do_sort)
 	WORD* av=l->get_feature_vector(idx_a, alen);
 	WORD* bv=r->get_feature_vector(idx_b, blen);
 
-	WORD* avec=av;
-	WORD* bvec=bv;
-
-	if (do_sort)
+	DREAL result=0.0 ;
+	
+	if (left_equal_right)
 	{
-		if (alen>0)
-		{
-			avec= new WORD[alen];
-			ASSERT(avec);
-			memcpy(avec, av, sizeof(WORD)*alen);
-			CMath::radix_sort(avec, alen);
-		}
-		else
-			avec=NULL;
+		ASSERT((idx_a==idx_b) && (l==r))
+		ASSERT(sizeof(WORD)<=sizeof(DREAL)) ;
+		ASSERT((1<<(sizeof(WORD)*8)) > alen) ;
 
-		if (blen>0)
+		INT num_symbols=l->get_num_symbols() ;
+		ASSERT(num_symbols <= dictionary_size) ;
+		
+		WORD* dic = dict_diagonal_optimization ;
+		memset(dic, 0, num_symbols*sizeof(WORD)) ;
+
+		for (INT i=0; i<alen; i++)
+			dic[av[i]]++ ;
+
+		if (use_sign)
 		{
-			bvec= new WORD[blen];
-			ASSERT(bvec);
-			memcpy(bvec, bv, sizeof(WORD)*blen);
-			CMath::radix_sort(bvec, blen);
+			for (INT i=0; i<l->get_num_symbols(); i++)
+				if (dic[i]!=0)
+					result += 1 ;
 		}
 		else
-			bvec=NULL;
+			for (INT i=0; i<num_symbols; i++)
+				if (dic[i]!=0)
+					result+=dic[i]*dic[i] ;
 	}
 	else
 	{
-		if ( (l->get_num_preproc() != l->get_num_preprocessed()) ||
-				(r->get_num_preproc() != r->get_num_preprocessed()))
+		WORD* avec=av;
+		WORD* bvec=bv;
+		
+		if (do_sort)
 		{
-			SG_ERROR("not all preprocessors have been applied to training (%d/%d)"
-					" or test (%d/%d) data\n", l->get_num_preprocessed(), l->get_num_preproc(),
-					r->get_num_preprocessed(), r->get_num_preproc());
-		}
-	}
-
-	DREAL result=0;
-
-	INT left_idx=0;
-	INT right_idx=0;
-
-	if (use_sign)
-	{
-		while (left_idx < alen && right_idx < blen)
-		{
-			if (avec[left_idx]==bvec[right_idx])
+			if (alen>0)
 			{
-				WORD sym=avec[left_idx];
-
-				while (left_idx< alen && avec[left_idx]==sym)
-					left_idx++;
-
-				while (right_idx< blen && bvec[right_idx]==sym)
-					right_idx++;
-
-				result++;
+				avec= new WORD[alen];
+				ASSERT(avec);
+				memcpy(avec, av, sizeof(WORD)*alen);
+				CMath::radix_sort(avec, alen);
+				//CMath::qsort<WORD>(avec, alen);
 			}
-			else if (avec[left_idx]<bvec[right_idx])
-				left_idx++;
 			else
-				right_idx++;
-		}
-	}
-	else
-	{
-		while (left_idx < alen && right_idx < blen)
-		{
-			if (avec[left_idx]==bvec[right_idx])
+				avec=NULL;
+			
+			if (blen>0)
 			{
-				INT old_left_idx=left_idx;
-				INT old_right_idx=right_idx;
-
-				WORD sym=avec[left_idx];
-
-				while (left_idx< alen && avec[left_idx]==sym)
-					left_idx++;
-
-				while (right_idx< blen && bvec[right_idx]==sym)
-					right_idx++;
-
-				result+=((DREAL) (left_idx-old_left_idx)) * ((DREAL) (right_idx-old_right_idx));
+				bvec= new WORD[blen];
+				ASSERT(bvec);
+				memcpy(bvec, bv, sizeof(WORD)*blen);
+				CMath::radix_sort(bvec, blen);
+				//CMath::qsort<WORD>(bvec, blen);
 			}
-			else if (avec[left_idx]<bvec[right_idx])
-				left_idx++;
 			else
-				right_idx++;
+				bvec=NULL;
+		}
+		else
+		{
+			if ( (l->get_num_preproc() != l->get_num_preprocessed()) ||
+				 (r->get_num_preproc() != r->get_num_preprocessed()))
+			{
+				SG_ERROR("not all preprocessors have been applied to training (%d/%d)"
+						 " or test (%d/%d) data\n", l->get_num_preprocessed(), l->get_num_preproc(),
+						 r->get_num_preprocessed(), r->get_num_preproc());
+			}
+		}
+		
+		INT left_idx=0;
+		INT right_idx=0;
+		
+		if (use_sign)
+		{
+			while (left_idx < alen && right_idx < blen)
+			{
+				if (avec[left_idx]==bvec[right_idx])
+				{
+					WORD sym=avec[left_idx];
+					
+					while (left_idx< alen && avec[left_idx]==sym)
+						left_idx++;
+					
+					while (right_idx< blen && bvec[right_idx]==sym)
+						right_idx++;
+					
+					result++;
+				}
+				else if (avec[left_idx]<bvec[right_idx])
+					left_idx++;
+				else
+					right_idx++;
+			}
+		}
+		else
+		{
+			while (left_idx < alen && right_idx < blen)
+			{
+				if (avec[left_idx]==bvec[right_idx])
+				{
+					INT old_left_idx=left_idx;
+					INT old_right_idx=right_idx;
+					
+					WORD sym=avec[left_idx];
+					
+					while (left_idx< alen && avec[left_idx]==sym)
+						left_idx++;
+					
+					while (right_idx< blen && bvec[right_idx]==sym)
+						right_idx++;
+					
+					result+=((DREAL) (left_idx-old_left_idx)) * ((DREAL) (right_idx-old_right_idx));
+				}
+				else if (avec[left_idx]<bvec[right_idx])
+					left_idx++;
+				else
+					right_idx++;
+			}
+		}
+		
+		if (do_sort)
+		{
+			delete[] avec;
+			delete[] bvec;
 		}
 	}
-
-	if (do_sort)
-	{
-		delete[] avec;
-		delete[] bvec;
-	}
-
+	
 	if (initialized)
 	{
 		switch (normalization)
 		{
-			case NO_NORMALIZATION:
-				return result;
-			case SQRT_NORMALIZATION:
-				return result/sqrt(sqrtdiag_lhs[idx_a]*sqrtdiag_rhs[idx_b]);
-			case FULL_NORMALIZATION:
-				return result/(sqrtdiag_lhs[idx_a]*sqrtdiag_rhs[idx_b]);
-			case SQRTLEN_NORMALIZATION:
+		case NO_NORMALIZATION:
+			return result;
+		case SQRT_NORMALIZATION:
+			return result/sqrt(sqrtdiag_lhs[idx_a]*sqrtdiag_rhs[idx_b]);
+		case FULL_NORMALIZATION:
+			return result/(sqrtdiag_lhs[idx_a]*sqrtdiag_rhs[idx_b]);
+		case SQRTLEN_NORMALIZATION:
 				return result/sqrt(sqrt(alen*blen));
-			case LEN_NORMALIZATION:
-				return result/sqrt(alen*blen);
-			case SQLEN_NORMALIZATION:
-				return result/(alen*blen);
-			default:
-				SG_ERROR( "Unknown Normalization in use!\n");
-				return -CMath::INFTY;
+		case LEN_NORMALIZATION:
+			return result/sqrt(alen*blen);
+		case SQLEN_NORMALIZATION:
+			return result/(alen*blen);
+		default:
+			SG_ERROR( "Unknown Normalization in use!\n");
+			return -CMath::INFTY;
 		}
 	}
 	else
