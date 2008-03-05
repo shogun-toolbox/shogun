@@ -1206,18 +1206,18 @@ void CMatlabInterface::set_word_sparsematrix(const TSparse<WORD>* matrix, INT nu
 }
 
 
-void CMatlabInterface::set_string_list(const T_STRING<CHAR>* strings, INT num_str)
+template <class T> void CMatlabInterface::set_string_list(const T_STRING<T>* strings, INT num_str)
 {
 	if (!strings)
-		SG_ERROR("Given strings are invalid\n");
+		SG_ERROR("Given strings are invalid.\n");
 
-	const CHAR* list[num_str];
+	const T* list[num_str];
 	for (INT i=0; i<num_str; i++)
 		list[i]=strings[i].string;
 
 	mxArray* mx_str=mxCreateCharMatrixFromStrings(num_str, list);
 	if (!mx_str)
-		SG_ERROR("Couldn't create String Matrix of %d strings\n", num_str);
+		SG_ERROR("Couldn't create String Matrix of %d strings.\n", num_str);
 
 	set_arg_increment(mx_str);
 }

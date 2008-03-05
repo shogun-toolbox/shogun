@@ -77,7 +77,8 @@ class CMatlabInterface : public CSGInterface
 		virtual void set_short_sparsematrix(const TSparse<SHORT>* matrix, INT num_feat, INT num_vec);
 		virtual void set_word_sparsematrix(const TSparse<WORD>* matrix, INT num_feat, INT num_vec);
 
-		virtual void set_string_list(const T_STRING<CHAR>* strings, INT num_str);
+		template <class T>
+			void set_string_list(const T_STRING<T>* strings, INT num_str);
 
 		virtual void submit_return_values();
 

@@ -286,7 +286,8 @@ void CPythonInterface::set_word_sparsematrix(const TSparse<WORD>* matrix, INT nu
 {
 }
 
-void CPythonInterface::set_string_list(const T_STRING<CHAR>* strings, INT num_str)
+template <class T>
+	void CPythonInterface::set_string_list(const T_STRING<T>* strings, INT num_str)
 {
 }
 

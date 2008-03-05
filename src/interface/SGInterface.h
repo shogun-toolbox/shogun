@@ -40,6 +40,10 @@ class CSGInterface : public CSGObject
 		~CSGInterface();
 
 		/* actions */
+		/** get version */
+		bool a_get_version();
+		/** get labels */
+		bool a_get_labels();
 		/** get features */
 		bool a_get_features();
 		/** get distance matrix */
@@ -184,7 +188,8 @@ class CSGInterface : public CSGObject
 		virtual void set_short_sparsematrix(const TSparse<SHORT>* matrix, INT num_feat, INT num_vec)=0;
 		virtual void set_word_sparsematrix(const TSparse<WORD>* matrix, INT num_feat, INT num_vec)=0;
 
-		virtual void set_string_list(const T_STRING<CHAR>* strings, INT num_str)=0;
+		template <class T>
+			void set_string_list(const T_STRING<T>* strings, INT num_str) {};
 
 		virtual void submit_return_values()=0;
 

@@ -31,6 +31,16 @@ extern CTextGUI* gui;
 static CSGInterfaceMethod sg_methods[]=
 {
 	{
+		(CHAR*) N_GET_VERSION,
+		(&CSGInterface::a_get_version),
+		(CHAR*) USAGE_O(N_GET_VERSION, "version")
+	},
+	{
+		(CHAR*) N_GET_LABELS,
+		(&CSGInterface::a_get_labels),
+		(CHAR*) USAGE_IO(N_GET_LABELS, "TRAIN|TEST", "labels")
+	},
+	{
 		(CHAR*) N_GET_FEATURES,
 		(&CSGInterface::a_get_features),
 		(CHAR*) USAGE_IO(N_GET_FEATURES, "TRAIN|TEST", "features")
@@ -240,6 +250,52 @@ CSGInterface::~CSGInterface()
 ////////////////////////////////////////////////////////////////////////////
 // actions
 ////////////////////////////////////////////////////////////////////////////
+
+bool CSGInterface::a_get_version()
+{
+	if (m_nlhs!=1 || m_nrhs!=1)
+		return false;
+
+	DREAL* ver=(DREAL*) version.get_version_revision();
+	set_real_vector(ver, 1);
+
+	return true;
+}
+
+bool CSGInterface::a_get_labels()
+{
+	if (m_nlhs!=1 || m_nrhs!=2)
+		return false;
+
+	INT tlen=0;
+	CHAR* target=get_string(tlen);
+	CLabels* labels=NULL;
+
+	if (strmatch(target, tlen, "TRAIN"))
+		labels=gui->guilabels.get_train_labels();
+	else if (strmatch(target, tlen, "TEST"))
+		labels=gui->guilabels.get_test_labels();
+	else
+	{
+		delete[] target;
+		SG_ERROR("Unknown target, neither TRAIN nor TEST.\n");
+	}
+	delete[] target;
+
+	if (!labels)
+		SG_ERROR("No labels.\n");
+
+	INT num_labels=labels->get_num_labels();
+	DREAL* lab=new DREAL[num_labels];
+
+	for (INT i=0; i<num_labels ; i++)
+		lab[i]=labels->get_label(i);
+
+	set_real_matrix(lab, 1, num_labels);
+	delete[] lab;
+
+	return true;
+}
 
 bool CSGInterface::a_get_features()
 {
@@ -452,7 +508,7 @@ bool CSGInterface::a_get_features()
 				case F_CHAR:
 				{
 					INT num_vec=feat->get_num_vectors();
-					T_STRING<CHAR> list[num_vec];
+					T_STRING<CHAR>* list=new T_STRING<CHAR>[num_vec];
 					for (INT i=0; i<num_vec; i++)
 					{
 						INT len=0;
@@ -466,18 +522,18 @@ bool CSGInterface::a_get_features()
 					}
 
 					set_string_list(list, num_vec);
+					delete[] list;
 				}
 				break;
 
-/*
 				case F_WORD:
 				{
 					INT num_vec=feat->get_num_vectors();
-					T_STRING<CHAR> list[num_vec];
+					T_STRING<WORD>* list=new T_STRING<WORD>[num_vec];
 					for (INT i=0; i<num_vec; i++)
 					{
 						INT len=0;
-						CHAR* vec=((CStringFeatures<CHAR>*) feat)->
+						WORD* vec=((CStringFeatures<WORD>*) feat)->
 							get_feature_vector(i, len);
 
 						if (len>0)
@@ -487,9 +543,9 @@ bool CSGInterface::a_get_features()
 					}
 
 					set_string_list(list, num_vec);
+					delete[] list;
 				}
 				break;
-*/
 
 				default:
 					SG_ERROR("not implemented\n");

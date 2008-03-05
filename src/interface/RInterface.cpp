@@ -322,8 +322,8 @@ void CRInterface::set_word_sparsematrix(const TSparse<WORD>* matrix, INT num_fea
 {
 }
 
-
-void CRInterface::set_string_list(const T_STRING<CHAR>* strings, INT num_str)
+template <class T>
+	void CRInterface::set_string_list(const T_STRING<T>* strings, INT num_str)
 {
 }
 
