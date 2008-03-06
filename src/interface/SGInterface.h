@@ -40,6 +40,18 @@ class CSGInterface : public CSGObject
 		~CSGInterface();
 
 		/* actions */
+		/** best path 2struct */
+		bool a_best_path_2struct();
+		/** best path trans */
+		bool a_best_path_trans();
+		/** best path trans deriv */
+		bool a_best_path_trans_deriv();
+		/** best path no b */
+		bool a_best_path_no_b();
+		/** best path trans simple */
+		bool a_best_path_trans_simple();
+		/** best path no b trans */
+		bool a_best_path_no_b_trans();
 		/** get version */
 		bool a_get_version();
 		/** get labels */

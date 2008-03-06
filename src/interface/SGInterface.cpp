@@ -8,6 +8,7 @@
 #include "interface/SGInterface.h"
 #include "lib/ShogunException.h"
 #include "lib/Mathematics.h"
+#include "structure/DynProg.h"
 #include "guilib/GUICommands.h"
 #include "gui/TextGUI.h"
 #include "gui/GUI.h"
@@ -30,6 +31,44 @@ extern CTextGUI* gui;
 
 static CSGInterfaceMethod sg_methods[]=
 {
+	{
+		(CHAR*) N_BEST_PATH_2STRUCT,
+		(&CSGInterface::a_best_path_2struct),
+		(CHAR*) USAGE_IO(N_BEST_PATH_2STRUCT,
+			"p, q, a_trans, seq, pos, genestr, penalties, penalty_info, nbest, dict_weights, segment_sum_weights",
+			"prob, path, pos")
+	},
+	{
+		(CHAR*) N_BEST_PATH_TRANS,
+		(&CSGInterface::a_best_path_trans),
+		(CHAR*) USAGE_IO(N_BEST_PATH_TRANS,
+			"p, q, a_trans, seq, pos, orf_info, genestr, penalties, state_signals, penalty_info, nbest, dict_weights, use_orf, mod_words [, segment_loss, segmend_ids_mask]",
+			"prob, path, pos")
+	},
+	{
+		(CHAR*) N_BEST_PATH_TRANS_DERIV,
+		(&CSGInterface::a_best_path_trans_deriv),
+		(CHAR*) USAGE_IO(N_BEST_PATH_TRANS_DERIV,
+			"my_path, my_pos, p, q, a_trans, seq, pos, genestr, penalties, state_signals, penalty_info, dict_weights, mod_words [, segment_loss, segmend_ids_mask]",
+			"p_deriv, q_deriv, a_deriv, penalties_deriv, my_scores, my_loss")
+	},
+	{
+		(CHAR*) N_BEST_PATH_NO_B,
+		(&CSGInterface::a_best_path_no_b),
+		(CHAR*) USAGE_IO(N_BEST_PATH_NO_B, "p, q, a, max_iter", "prob, path")
+	},
+	{
+		(CHAR*) N_BEST_PATH_TRANS_SIMPLE,
+		(&CSGInterface::a_best_path_trans_simple),
+		(CHAR*) USAGE_IO(N_BEST_PATH_TRANS_SIMPLE,
+			"p, q, a_trans, seq, nbest", "prob, path")
+	},
+	{
+		(CHAR*) N_BEST_PATH_NO_B_TRANS,
+		(&CSGInterface::a_best_path_no_b_trans),
+		(CHAR*) USAGE_IO(N_BEST_PATH_NO_B_TRANS,
+			"p, q, a_trans, max_iter, nbest", "prob, path")
+	},
 	{
 		(CHAR*) N_GET_VERSION,
 		(&CSGInterface::a_get_version),
@@ -250,6 +289,238 @@ CSGInterface::~CSGInterface()
 ////////////////////////////////////////////////////////////////////////////
 // actions
 ////////////////////////////////////////////////////////////////////////////
+
+bool CSGInterface::a_best_path_2struct()
+{
+	if (m_nlhs!=3 || m_nrhs!=12)
+		return false;
+
+	SG_ERROR("Sorry, this parameter list is awful!\n");
+	
+	return true;
+}
+
+bool CSGInterface::a_best_path_trans()
+{
+	if (!(m_nlhs==3 && (m_nrhs==15 || m_nrhs==17)))
+		return false;
+
+	SG_ERROR("Sorry, this parameter list is awful!\n");
+	
+	return true;
+}
+
+bool CSGInterface::a_best_path_trans_deriv()
+{
+	if (!((m_nlhs==5 && m_nrhs==14) || (m_nlhs==6 && m_nrhs==16)))
+		return false;
+
+	SG_ERROR("Sorry, this parameter list is awful!\n");
+
+	return true;
+}
+
+bool CSGInterface::a_best_path_no_b()
+{
+	if (m_nlhs!=2 || m_nrhs!=5)
+		return false;
+
+	DREAL* p=NULL;
+	INT M_p=0;
+	INT N_p=0;
+	get_real_matrix(p, M_p, N_p);
+	INT N=N_p;
+
+	DREAL* q=NULL;
+	INT M_q=0;
+	INT N_q=0;
+	get_real_matrix(q, M_q, N_q);
+
+	DREAL* a=NULL;
+	INT M_a=0;
+	INT N_a=0;
+	get_real_matrix(a, M_a, N_a);
+
+	if (N_p!=N || M_p!=1 || N_q!=N || M_q!=1 || N_a!=N || M_a!=N)
+	{
+		delete[] p;
+		delete[] q;
+		delete[] a;
+		SG_ERROR("Model matrices not matching in size.\n");
+	}
+
+	INT max_iter=(INT) get_real();
+	if (max_iter<1)
+	{
+		delete[] p;
+		delete[] q;
+		delete[] a;
+		SG_ERROR("max_iter < 1.\n");
+	}
+
+	CDynProg* h=new CDynProg();
+	h->set_N(N);
+	h->set_p_vector(p, N);
+	h->set_q_vector(q, N);
+	h->set_a(a, N, N);
+
+	INT* path=new INT[max_iter];
+	INT best_iter=0;
+	DREAL prob=h->best_path_no_b(max_iter, best_iter, path);
+	delete h;
+	delete[] p;
+	delete[] q;
+	delete[] a;
+
+	set_real_matrix(&prob, 1, 1);
+	set_int_matrix(path, 1, best_iter+1);
+	delete[] path;
+
+	return true;
+}
+
+bool CSGInterface::a_best_path_trans_simple()
+{
+	if (m_nlhs!=2 || m_nrhs!=6)
+		return false;
+
+	DREAL* p=NULL;
+	INT M_p=0;
+	INT N_p=0;
+	get_real_matrix(p, M_p, N_p);
+	INT N=N_p;
+
+	DREAL* q=NULL;
+	INT M_q=0;
+	INT N_q=0;
+	get_real_matrix(q, M_q, N_q);
+
+	DREAL* a_trans=NULL;
+	INT M_a_trans=0;
+	INT N_a_trans=0;
+	get_real_matrix(a_trans, M_a_trans, N_a_trans);
+
+	DREAL* seq=NULL;
+	INT M_seq=0;
+	INT N_seq=0;
+	get_real_matrix(seq, M_seq, N_seq);
+
+	if (N_p!=N || M_p!=1 || N_q!=N || M_q!=1 || N_a_trans!=3 || M_seq!=N)
+	{
+		delete[] p;
+		delete[] q;
+		delete[] a_trans;
+		delete[] seq;
+		SG_ERROR("Model matrices not matching in size.\n");
+	}
+
+	INT nbest=(INT) get_real();
+	if (nbest<1)
+	{
+		delete[] p;
+		delete[] q;
+		delete[] a_trans;
+		delete[] seq;
+		SG_ERROR("nbest < 1.\n");
+	}
+
+	CDynProg* h=new CDynProg();
+	h->set_N(N);
+	h->set_p_vector(p, N);
+	h->set_q_vector(q, N);
+	h->set_a_trans_matrix(a_trans, M_a_trans, 3);
+
+	INT* path=new INT[N_seq*nbest];
+	memset(path, -1, N_seq*nbest*sizeof(INT));
+	DREAL* prob=new DREAL[nbest];
+
+	h->best_path_trans_simple(seq, N_seq, nbest, prob, path);
+	delete h;
+	delete[] p;
+	delete[] q;
+	delete[] a_trans;
+	delete[] seq;
+
+	set_real_matrix(prob, 1, nbest);
+	delete[] prob;
+	set_int_matrix(path, nbest, N_seq);
+	delete[] path;
+
+	return true;
+}
+
+
+bool CSGInterface::a_best_path_no_b_trans()
+{
+	if (m_nlhs!=2 || m_nrhs!=6)
+		return false;
+
+	DREAL* p=NULL;
+	INT M_p=0;
+	INT N_p=0;
+	get_real_matrix(p, M_p, N_p);
+	INT N=N_p;
+
+	DREAL* q=NULL;
+	INT M_q=0;
+	INT N_q=0;
+	get_real_matrix(q, M_q, N_q);
+
+	DREAL* a_trans=NULL;
+	INT M_a_trans=0;
+	INT N_a_trans=0;
+	get_real_matrix(a_trans, M_a_trans, N_a_trans);
+
+	if (N_p!=N || M_p!=1 || N_q!=N || M_q!=1 || N_a_trans!=3)
+	{
+		delete[] p;
+		delete[] q;
+		delete[] a_trans;
+		SG_ERROR("Model matrices not matching in size.\n");
+	}
+
+	INT max_iter=(INT) get_real();
+	if (max_iter<1)
+	{
+		delete[] p;
+		delete[] q;
+		delete[] a_trans;
+		SG_ERROR("max_iter < 1.\n");
+	}
+
+	INT nbest=(INT) get_real();
+	if (nbest<1)
+	{
+		delete[] p;
+		delete[] q;
+		delete[] a_trans;
+		SG_ERROR("nbest < 1.\n");
+	}
+
+	CDynProg* h=new CDynProg();
+	h->set_N(N);
+	h->set_p_vector(p, N);
+	h->set_q_vector(q, N);
+	h->set_a_trans_matrix(a_trans, M_a_trans, 3);
+
+	INT* path=new INT[(max_iter+1)*nbest];
+	memset(path, -1, (max_iter+1)*nbest*sizeof(INT));
+	INT max_best_iter=0;
+	DREAL* prob=new DREAL[nbest];
+
+	h->best_path_no_b_trans(max_iter, max_best_iter, nbest, prob, path);
+	delete h;
+	delete[] p;
+	delete[] q;
+	delete[] a_trans;
+
+	set_real_matrix(prob, 1, nbest);
+	delete[] prob;
+	set_int_matrix(path, nbest, max_best_iter+1);
+	delete[] path;
+
+	return true;
+}
 
 bool CSGInterface::a_get_version()
 {
