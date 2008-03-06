@@ -20,6 +20,7 @@
 #include "kernel/LinearKernel.h"
 #include "kernel/SparseLinearKernel.h"
 #include "kernel/CombinedKernel.h"
+#include "kernel/CustomKernel.h"
 
 CSGInterface* interface=NULL;
 extern CTextGUI* gui;
@@ -77,12 +78,22 @@ static CSGInterfaceMethod sg_methods[]=
 	{
 		(CHAR*) N_GET_LABELS,
 		(&CSGInterface::a_get_labels),
-		(CHAR*) USAGE_IO(N_GET_LABELS, "TRAIN|TEST", "labels")
+		(CHAR*) USAGE_IO(N_GET_LABELS, "'TRAIN|TEST'", "labels")
+	},
+	{
+		(CHAR*) N_FROM_POSITION_LIST,
+		(&CSGInterface::a_obtain_from_position_list),
+		(CHAR*) USAGE_I(N_FROM_POSITION_LIST, "'TRAIN|TEST', winsize, shift[, skip]")
 	},
 	{
 		(CHAR*) N_GET_FEATURES,
 		(&CSGInterface::a_get_features),
-		(CHAR*) USAGE_IO(N_GET_FEATURES, "TRAIN|TEST", "features")
+		(CHAR*) USAGE_IO(N_GET_FEATURES, "'TRAIN|TEST'", "features")
+	},
+	{
+		(CHAR*) N_SET_FEATURES,
+		(&CSGInterface::a_set_features),
+		(CHAR*) USAGE_O(N_SET_FEATURES, "'TRAIN|TEST', features")
 	},
 	{
 		(CHAR*) N_GET_DISTANCE_MATRIX,
@@ -93,6 +104,11 @@ static CSGInterfaceMethod sg_methods[]=
 		(CHAR*) N_GET_KERNEL_MATRIX,
 		(&CSGInterface::a_get_kernel_matrix),
 		(CHAR*) USAGE_O(N_GET_KERNEL_MATRIX, "K")
+	},
+	{
+		(CHAR*) N_SET_CUSTOM_KERNEL,
+		(&CSGInterface::a_set_custom_kernel),
+		(CHAR*) USAGE_I(N_SET_CUSTOM_KERNEL, "kernelmatrix, 'DIAG|FULL|FULL2DIAG'")
 	},
 	{
 		(CHAR*) N_SET_WD_POS_WEIGHTS,
@@ -264,6 +280,16 @@ static CSGInterfaceMethod sg_methods[]=
 		(CHAR*) USAGE_O(N_GET_HMM, "p, q, a, b")
 	},
 	{
+		(CHAR*) N_APPEND_HMM,
+		(&CSGInterface::a_append_hmm),
+		(CHAR*) USAGE_I(N_APPEND_HMM, "p, q, a, b")
+	},
+	{
+		(CHAR*) N_SET_HMM,
+		(&CSGInterface::a_set_hmm),
+		(CHAR*) USAGE_I(N_SET_HMM, "p, q, a, b")
+	},
+	{
 		(CHAR*) N_HELP,
 		(&CSGInterface::a_help),
 		(CHAR*) USAGE(N_HELP)
@@ -349,7 +375,7 @@ bool CSGInterface::a_best_path_no_b()
 		SG_ERROR("Model matrices not matching in size.\n");
 	}
 
-	INT max_iter=(INT) get_real();
+	INT max_iter=get_int();
 	if (max_iter<1)
 	{
 		delete[] p;
@@ -359,12 +385,14 @@ bool CSGInterface::a_best_path_no_b()
 	}
 
 	CDynProg* h=new CDynProg();
+	ASSERT(h);
 	h->set_N(N);
 	h->set_p_vector(p, N);
 	h->set_q_vector(q, N);
 	h->set_a(a, N, N);
 
 	INT* path=new INT[max_iter];
+	ASSERT(path);
 	INT best_iter=0;
 	DREAL prob=h->best_path_no_b(max_iter, best_iter, path);
 	delete h;
@@ -414,7 +442,7 @@ bool CSGInterface::a_best_path_trans_simple()
 		SG_ERROR("Model matrices not matching in size.\n");
 	}
 
-	INT nbest=(INT) get_real();
+	INT nbest=get_int();
 	if (nbest<1)
 	{
 		delete[] p;
@@ -425,14 +453,17 @@ bool CSGInterface::a_best_path_trans_simple()
 	}
 
 	CDynProg* h=new CDynProg();
+	ASSERT(h);
 	h->set_N(N);
 	h->set_p_vector(p, N);
 	h->set_q_vector(q, N);
 	h->set_a_trans_matrix(a_trans, M_a_trans, 3);
 
 	INT* path=new INT[N_seq*nbest];
+	ASSERT(path);
 	memset(path, -1, N_seq*nbest*sizeof(INT));
 	DREAL* prob=new DREAL[nbest];
+	ASSERT(prob);
 
 	h->best_path_trans_simple(seq, N_seq, nbest, prob, path);
 	delete h;
@@ -479,7 +510,7 @@ bool CSGInterface::a_best_path_no_b_trans()
 		SG_ERROR("Model matrices not matching in size.\n");
 	}
 
-	INT max_iter=(INT) get_real();
+	INT max_iter=get_int();
 	if (max_iter<1)
 	{
 		delete[] p;
@@ -488,7 +519,7 @@ bool CSGInterface::a_best_path_no_b_trans()
 		SG_ERROR("max_iter < 1.\n");
 	}
 
-	INT nbest=(INT) get_real();
+	INT nbest=get_int();
 	if (nbest<1)
 	{
 		delete[] p;
@@ -498,15 +529,18 @@ bool CSGInterface::a_best_path_no_b_trans()
 	}
 
 	CDynProg* h=new CDynProg();
+	ASSERT(h);
 	h->set_N(N);
 	h->set_p_vector(p, N);
 	h->set_q_vector(q, N);
 	h->set_a_trans_matrix(a_trans, M_a_trans, 3);
 
 	INT* path=new INT[(max_iter+1)*nbest];
+	ASSERT(path);
 	memset(path, -1, (max_iter+1)*nbest*sizeof(INT));
 	INT max_best_iter=0;
 	DREAL* prob=new DREAL[nbest];
+	ASSERT(prob);
 
 	h->best_path_no_b_trans(max_iter, max_best_iter, nbest, prob, path);
 	delete h;
@@ -566,6 +600,109 @@ bool CSGInterface::a_get_labels()
 	delete[] lab;
 
 	return true;
+}
+
+bool CSGInterface::a_obtain_from_position_list()
+{
+	if (m_nlhs!=0 || (m_nrhs!=4 && m_nrhs!=5))
+		return false;
+
+	INT tlen=0;
+	CHAR* target=get_string(tlen);
+	if (!strmatch(target, tlen, "TRAIN") && !strmatch(target, tlen, "TEST"))
+	{
+		delete[] target;
+		SG_ERROR("Unknown target, neither TRAIN nor TEST.\n");
+	}
+
+	INT winsize=get_int();
+	INT* shifts=NULL;
+	INT num_shift=0;
+	get_int_vector(shifts, num_shift);
+
+	INT skip=0;
+	if (m_nrhs==5)
+		skip=get_int();
+
+	SG_DEBUG("winsize: %d num_shifts: %d skip: %d\n", winsize, num_shift, skip);
+
+	CDynamicArray<INT> positions(num_shift+1);
+
+	for (INT i=0; i<num_shift; i++)
+		positions.set_element(shifts[i], i);
+
+	CFeatures* features=NULL;
+	if (strmatch(target, tlen, "TRAIN"))
+	{
+		gui->guifeatures.invalidate_train();
+		features=gui->guifeatures.get_train_features();
+	}
+	else
+	{
+		gui->guifeatures.invalidate_test();
+		features=gui->guifeatures.get_test_features();
+	}
+	delete[] target;
+
+	if (!features)
+	{
+		delete[] shifts;
+		SG_ERROR("No features.\n");
+	}
+
+	if (features->get_feature_class()==C_COMBINED)
+	{
+		features=((CCombinedFeatures*) features)->get_last_feature_obj();
+		if (!features)
+		{
+			delete[] shifts;
+			SG_ERROR("No features from combined.\n");
+		}
+	}
+
+	if (features->get_feature_class()!=C_STRING)
+	{
+		delete[] shifts;
+		SG_ERROR("No string features.\n");
+	}
+
+	bool success=false;
+	switch (features->get_feature_type())
+	{
+		case F_CHAR:
+		{
+			success=(((CStringFeatures<CHAR>*) features)->
+				obtain_by_position_list(winsize, &positions, skip)>0);
+			break;
+		}
+		case F_BYTE:
+		{
+			success=(((CStringFeatures<BYTE>*) features)->
+				obtain_by_position_list(winsize, &positions, skip)>0);
+			break;
+		}
+		case F_WORD:
+		{
+			success=(((CStringFeatures<WORD>*) features)->
+				obtain_by_position_list(winsize, &positions, skip)>0);
+			break;
+		}
+		case F_ULONG:
+		{
+			success=(((CStringFeatures<ULONG>*) features)->
+				obtain_by_position_list(winsize, &positions, skip)>0);
+			break;
+		}
+		default:
+		{
+			delete[] shifts;
+			SG_ERROR("Unsupported string features type.\n");
+		}
+	}
+
+	delete[] shifts;
+
+	return success;
 }
 
 bool CSGInterface::a_get_features()
@@ -830,6 +967,284 @@ bool CSGInterface::a_get_features()
 	return true;
 }
 
+bool CSGInterface::a_set_features()
+{
+	if (m_nlhs!=0 || m_nrhs!=2)
+		return false;
+
+	INT tlen=0;
+	CHAR* target=get_string(tlen);
+	if (!strmatch(target, tlen, "TRAIN") && !strmatch(target, tlen, "TEST"))
+	{
+		delete[] target;
+		SG_ERROR("Unknown target, neither TRAIN nor TEST.\n");
+	}
+
+	CFeatures* features=NULL;
+
+/*
+		if (mxIsSparse(mx_feat) && mxIsNumeric(mx_feat))
+		{
+			f= new CSparseFeatures<DREAL>(0);
+			INT num_feat = mxGetM(mx_feat);
+			INT num_vec = mxGetN(mx_feat);
+
+			long nnz=mxGetNzmax(mx_feat);
+			double* A = mxGetPr(mx_feat);
+			mwIndex* iA = mxGetIr(mx_feat);
+			mwIndex* kA = mxGetJc(mx_feat);
+
+			SG_DEBUG("sparse matrix has %d rows, %d cols and %d nnz elemements\n", num_feat, num_vec, nnz);
+			TSparse<DREAL>* sfm= new TSparse<DREAL>[num_vec];
+			ASSERT(sfm);
+
+			long offs=0;
+			for (INT i=0; i<num_vec; i++)
+			{
+				INT len=kA[i+1]-kA[i];
+				sfm[i].vec_index=i;
+				sfm[i].num_feat_entries=len;
+				
+				if (len>0)
+				{
+					sfm[i].features= new TSparseEntry<DREAL>[len];
+					ASSERT(sfm[i].features);
+				}
+				else
+					sfm[i].features=0;
+
+				for (INT j=0; j<len; j++)
+				{
+					sfm[i].features[j].entry=A[offs];
+					sfm[i].features[j].feat_index=iA[offs];
+					offs++;
+				}
+			}
+			ASSERT(offs==nnz);
+			((CSparseFeatures<DREAL>*) f)->set_sparse_feature_matrix(sfm, num_feat, num_vec);
+		}
+		else
+		{
+			if (mxIsDouble(mx_feat))
+			{
+				f= new CRealFeatures(0);
+				INT num_vec=mxGetN(mx_feat);
+				INT num_feat=mxGetM(mx_feat);
+				DREAL* fm=new DREAL[num_vec*num_feat];
+				ASSERT(fm);
+				double* feat=mxGetPr(mx_feat);
+
+				SG_DEBUG("dense matrix has %d rows, %d cols\n", num_feat, num_vec);
+				for (INT i=0; i<num_vec; i++)
+				  for (INT j=0; j<num_feat; j++)
+				    fm[i*num_feat+j]=feat[i*num_feat+j];
+				
+				((CRealFeatures*) f)->set_feature_matrix(fm, num_feat, num_vec);
+			}
+			else if (mxIsChar(mx_feat))
+			{
+				if (nrhs==4)
+				{
+					INT len=0;
+					CHAR* al = CGUIMatlab::get_mxString(vals[3], len);
+
+					if (len==10 && !strncmp(al, "DNABINFILE", 10))
+					{
+						f= new CStringFeatures<BYTE>(DNA);
+						ASSERT(f);
+
+						CHAR* fname = CGUIMatlab::get_mxString(vals[2], len, true);
+						if (!((CStringFeatures<BYTE>*) f)->load_dna_file(fname))
+						{
+							delete f;
+							f=NULL;
+						}
+					}
+					else
+					{
+						CAlphabet* alpha = new CAlphabet(al, len);
+						ASSERT(alpha);
+
+						INT num_vec=mxGetN(mx_feat);
+						INT num_feat=mxGetM(mx_feat);
+						T_STRING<CHAR>* sc=new T_STRING<CHAR>[num_vec];
+						ASSERT(sc);
+						mxChar* c=mxGetChars(mx_feat);
+						ASSERT(c);
+
+						int maxlen=num_feat;
+
+						for (int i=0; i<num_vec; i++)
+						{
+							sc[i].length=num_feat;
+							sc[i].string=new CHAR[num_feat];
+							ASSERT(sc[i].string)
+
+								for (INT j=0; j<num_feat; j++)
+									sc[i].string[j]=(CHAR) c[((LONG) num_feat)*i+j];
+						}
+						f= new CStringFeatures<CHAR>(alpha);
+						ASSERT(f);
+
+
+						if (!((CStringFeatures<CHAR>*) f)->set_features(sc, num_vec, maxlen))
+						{
+							delete f;
+							f=NULL;
+						}
+					}
+				}
+				else
+					SG_ERROR( "please specify alphabet / type!\n");
+			}
+			else if (mxIsClass(mx_feat,"uint8") || mxIsClass(mx_feat, "int8"))
+			{
+				if (nrhs==4)
+				{
+					INT len=0;
+					CHAR* al = CGUIMatlab::get_mxString(vals[3], len);
+					CAlphabet* alpha = new CAlphabet(al, len);
+					ASSERT(alpha);
+
+					INT num_vec=mxGetN(mx_feat);
+					INT num_feat=mxGetM(mx_feat);
+					T_STRING<BYTE>* sc=new T_STRING<BYTE>[num_vec];
+					ASSERT(sc);
+					BYTE* c= (BYTE*) mxGetData(mx_feat);
+
+					int maxlen=num_feat;
+
+					for (int i=0; i<num_vec; i++)
+					{
+						sc[i].length=num_feat;
+						sc[i].string=new BYTE[num_feat];
+						ASSERT(sc[i].string)
+
+						for (INT j=0; j<num_feat; j++)
+							sc[i].string[j]=(BYTE) c[((LONG) num_feat)*i+j];
+					}
+
+					f= new CStringFeatures<BYTE>(alpha);
+					ASSERT(f);
+
+					if (!((CStringFeatures<BYTE>*) f)->set_features(sc, num_vec, maxlen))
+					{
+						delete f;
+						f=NULL;
+					}
+				}
+				else
+					SG_ERROR( "please specify alphabet!\n");
+			}			
+			else if (mxIsCell(mx_feat))
+			{
+				int num_vec=mxGetNumberOfElements(mx_feat);
+
+				ASSERT(num_vec>=1 && mxGetCell(mx_feat, 0));
+
+
+				if (mxIsChar(mxGetCell(mx_feat, 0)))
+				{
+					if (nrhs==4)
+					{
+						INT len=0;
+						CHAR* al = CGUIMatlab::get_mxString(vals[3], len);
+						CAlphabet* alpha = new CAlphabet(al, len);
+						T_STRING<CHAR>* sc=new T_STRING<CHAR>[num_vec];
+						ASSERT(alpha);
+						ASSERT(sc);
+
+						int maxlen=0;
+
+						for (int i=0; i<num_vec; i++)
+						{
+							mxArray* e=mxGetCell(mx_feat, i);
+							ASSERT(e && mxIsChar(e));
+							sc[i].string=get_mxString(e, len);
+
+							if (sc[i].string)
+							{
+								sc[i].length=len;
+								maxlen=CMath::max(maxlen, sc[i].length);
+							}
+							else
+							{
+								SG_WARNING( "string with index %d has zero length\n", i+1);
+								sc[i].length=0;
+							}
+						}
+
+						f= new CStringFeatures<CHAR>(alpha);
+						ASSERT(f);
+
+						if (!((CStringFeatures<CHAR>*) f)->set_features(sc, num_vec, maxlen))
+						{
+							delete f;
+							f=NULL;
+						}
+					}
+					else
+						SG_ERROR( "please specify alphabet!\n");
+				}
+				else if (mxIsClass(mxGetCell(mx_feat, 0), "uint8") || mxIsClass(mxGetCell(mx_feat, 0), "int8"))
+				{
+					if (nrhs==4)
+					{
+						INT len=0;
+						CHAR* al = CGUIMatlab::get_mxString(vals[3], len);
+						CAlphabet* alpha = new CAlphabet(al, len);
+						T_STRING<BYTE>* sc=new T_STRING<BYTE>[num_vec];
+						ASSERT(alpha);
+
+						int maxlen=0;
+
+						for (int i=0; i<num_vec; i++)
+						{
+							mxArray* e=mxGetCell(mx_feat, i);
+							ASSERT(e && (mxIsClass(e, "uint8") || mxIsClass(e, "int8")));
+							INT _len=0;
+							sc[i].string=get_mxBytes(e, _len);
+							if (sc[i].string)
+							{
+								sc[i].length=_len;
+								maxlen=CMath::max(maxlen, sc[i].length);
+							}
+							else
+							{
+								SG_WARNING( "string with index %d has zero length\n", i+1);
+								sc[i].length=0;
+							}
+						}
+
+						f= new CStringFeatures<BYTE>(alpha);
+						ASSERT(f);
+
+						if (!((CStringFeatures<BYTE>*) f)->set_features(sc, num_vec, maxlen))
+						{
+							delete f;
+							f=NULL;
+						}
+					}
+					else
+						SG_ERROR( "please specify alphabet!\n");
+				}
+
+			}
+			else
+				SG_ERROR( "not implemented\n");
+		}
+*/
+
+	if (strmatch(target, tlen, "TRAIN"))
+		gui->guifeatures.set_train_features(features);
+	else
+		gui->guifeatures.set_test_features(features);
+
+	delete[] target;
+
+	return true;
+}
+
 bool CSGInterface::a_get_distance_matrix()
 {
 	if (m_nlhs!=1 || m_nrhs!=1)
@@ -868,6 +1283,69 @@ bool CSGInterface::a_get_kernel_matrix()
 	delete[] kmatrix;
 
 	return true;
+}
+
+bool CSGInterface::a_set_custom_kernel()
+{
+	if (m_nlhs!=0 || m_nrhs!=3)
+		return false;
+
+	CCustomKernel* kernel=(CCustomKernel*) gui->guikernel.get_kernel();
+	if (!kernel)
+		SG_ERROR("No kernel defined.\n");
+
+	if (kernel->get_kernel_type()==K_COMBINED)
+	{
+		SG_DEBUG("Identified combined kernel.\n");
+		kernel=(CCustomKernel*) ((CCombinedKernel*) kernel)->
+			get_last_kernel();
+		if (!kernel)
+			SG_ERROR("No last kernel defined.\n");
+	}
+
+	if (kernel->get_kernel_type()!=K_CUSTOM)
+		SG_ERROR("Not a custom kernel.\n");
+
+	DREAL* kmatrix=NULL;
+	INT num_feat=0;
+	INT num_vec=0;
+	get_real_matrix(kmatrix, num_feat, num_vec);
+
+	INT tlen=0;
+	CHAR* type=get_string(tlen);
+
+	if (!strmatch(type, tlen, "DIAG") && !strmatch(type, tlen, "FULL"))
+	{
+		delete[] kmatrix;
+		delete[] type;
+		SG_ERROR("Undefined type, not DIAG, FULL or FULL2DIAG.\n");
+	}
+
+	bool source_is_diag=false;
+	bool dest_is_diag=false;
+	if (strmatch(type, tlen, "FULL2DIAG"))
+		dest_is_diag=true;
+	else if (strmatch(type, tlen, "DIAG"))
+	{
+		source_is_diag=true;
+		dest_is_diag=true;
+	}
+	// change nothing if FULL
+
+	bool success=false;
+	if (source_is_diag && dest_is_diag && num_vec==num_feat)
+		success=kernel->set_triangle_kernel_matrix_from_triangle(
+			kmatrix, num_vec);
+	else if (!source_is_diag && dest_is_diag && num_vec==num_feat)
+		success=kernel->set_triangle_kernel_matrix_from_full(
+			kmatrix, num_feat, num_vec);
+	else
+		success=kernel->set_full_kernel_matrix_from_full(
+			kmatrix, num_feat, num_vec);
+
+	delete[] kmatrix;
+
+	return success;
 }
 
 bool CSGInterface::a_set_WD_position_weights()
@@ -1057,7 +1535,7 @@ bool CSGInterface::a_set_subkernel_weights_combined()
 	INT len=0;
 	get_real_matrix(weights, dim, len);
 
-	INT idx=(INT) get_real();
+	INT idx=get_int();
 	SG_DEBUG("using kernel_idx=%i\n", idx);
 
 	kernel=((CCombinedKernel*) kernel)->get_kernel(idx);
@@ -1225,7 +1703,7 @@ bool CSGInterface::a_get_SPEC_scoring()
 	if (m_nlhs!=1 || m_nrhs!=2)
 		return false;
 
-	INT max_order=(INT) get_real();
+	INT max_order=get_int();
 	CKernel* kernel=gui->guikernel.get_kernel();
 	if (!kernel)
 		SG_ERROR("No kernel.\n");
@@ -1312,7 +1790,7 @@ bool CSGInterface::a_compute_POIM_WD()
 	if (m_nlhs!=1 || m_nrhs!=3)
 		return false;
 
-	INT max_order=(INT) get_real();
+	INT max_order=get_int();
 	DREAL* distribution=NULL;
 	INT num_dfeat=0;
 	INT num_dvec=0;
@@ -1390,7 +1868,7 @@ bool CSGInterface::a_get_WD_scoring()
 	if (m_nlhs!=1 || m_nrhs!=2)
 		return false;
 
-	INT max_order=(INT) get_real();
+	INT max_order=get_int();
 
 	CKernel* kernel=gui->guikernel.get_kernel();
 	if (!kernel)
@@ -1593,7 +2071,7 @@ bool CSGInterface::a_get_kernel_optimization()
 			if (m_nrhs!=2)
 				SG_ERROR("parameter missing\n");
 
-			INT max_order=(INT) get_real();
+			INT max_order=get_int();
 			if ((max_order<1) || (max_order>12))
 			{
 				SG_WARNING( "max_order out of range 1..12 (%d). setting to 1\n", max_order);
@@ -1673,7 +2151,7 @@ bool CSGInterface::a_plugin_estimate_classify_example()
 	if (m_nlhs!=1 || m_nrhs!=2)
 		return false;
 
-	INT idx=(INT) get_real();
+	INT idx=get_int();
 	DREAL result=gui->guipluginestimate.classify_example(idx);
 
 	set_real_matrix(&result, 1, 1);
@@ -1812,7 +2290,7 @@ bool CSGInterface::a_classify_example()
 	if (m_nlhs!=1 || m_nrhs!=2)
 		return false;
 
-	INT idx=(INT) get_real();
+	INT idx=get_int();
 	DREAL result=0;
 
 	if (!gui->guiclassifier.classify_example(idx, result))
@@ -2049,7 +2527,7 @@ bool CSGInterface::do_hmm_classify_example(bool one_class)
 	if (m_nlhs!=1 || m_nrhs!=2)
 		return false;
 
-	INT idx=(INT) get_real();
+	INT idx=get_int();
 	DREAL result=0;
 
 	if (one_class)
@@ -2069,7 +2547,7 @@ bool CSGInterface::a_hmm_likelihood()
 
 	CHMM* h=gui->guihmm.get_current();
 	if (!h)
-		return false;
+		SG_ERROR("No HMM.\n");
 
 	DREAL likelihood=h->model_probability();
 	set_real_matrix(&likelihood, 1, 1);
@@ -2082,7 +2560,7 @@ bool CSGInterface::a_get_viterbi_path()
 	if (m_nlhs!=2 || m_nrhs!=2)
 		return false;
 
-	INT dim=(INT) get_real(); // less hassle than requiring int from outside?
+	INT dim=get_int();
 	SG_DEBUG("dim: %f\n", dim);
 
 	CHMM* h=gui->guihmm.get_current();
@@ -2112,9 +2590,142 @@ bool CSGInterface::a_get_viterbi_path()
 	return true;
 }
 
+bool CSGInterface::a_append_hmm()
+{
+	if (m_nlhs!=0 || m_nrhs!=5)
+		return false;
+
+	CHMM* old_h=gui->guihmm.get_current();
+	if (!old_h)
+		SG_ERROR("No current HMM set.\n");
+
+	DREAL* p=NULL;
+	INT M_p=0;
+	INT N_p=0;
+	get_real_matrix(p, M_p, N_p);
+
+	DREAL* q=NULL;
+	INT M_q=0;
+	INT N_q=0;
+	get_real_matrix(q, M_q, N_q);
+
+	DREAL* a=NULL;
+	INT M_a=0;
+	INT N_a=0;
+	get_real_matrix(a, M_a, N_a);
+	INT N=N_a;
+
+	DREAL* b=NULL;
+	INT M_b=0;
+	INT N_b=0;
+	get_real_matrix(b, M_b, N_b);
+	INT M=N_b;
+
+	SG_DEBUG("p:(%d,%d) q:(%d,%d) a:(%d,%d) b(%d,%d)\n",
+		N_p, M_p, N_q, M_q, N_a, M_a, N_b, M_b);
+	if (N_p!=N || M_p!=1 || N_q!=N || M_q!=1 ||
+		N_a!=N || M_a!=N || N_b!=M || M_b!=N)
+	{
+		delete[] p;
+		delete[] q;
+		delete[] a;
+		delete[] b;
+		SG_ERROR("Model matrices not matching in size.\n");
+	}
+
+	CHMM* h=new CHMM(N, M, NULL, gui->guihmm.get_pseudo());
+	ASSERT(h);
+	INT i,j;
+
+	for (i=0; i<N; i++)
+	{
+		h->set_p(i, p[i]);
+		h->set_q(i, q[i]);
+	}
+
+	for (i=0; i<N; i++)
+		for (j=0; j<N; j++)
+			h->set_a(i,j, a[i+j*N]);
+
+	for (i=0; i<N; i++)
+		for (j=0; j<M; j++)
+			h->set_b(i,j, b[i+j*N]);
+
+	old_h->append_model(h);
+	delete h;
+
+	return true;
+}
+
+bool CSGInterface::a_set_hmm()
+{
+	if (m_nlhs!=0 || m_nrhs!=5)
+		return false;
+
+	DREAL* p=NULL;
+	INT M_p=0;
+	INT N_p=0;
+	get_real_matrix(p, M_p, N_p);
+
+	DREAL* q=NULL;
+	INT M_q=0;
+	INT N_q=0;
+	get_real_matrix(q, M_q, N_q);
+
+	DREAL* a=NULL;
+	INT M_a=0;
+	INT N_a=0;
+	get_real_matrix(a, M_a, N_a);
+	INT N=N_a;
+
+	DREAL* b=NULL;
+	INT M_b=0;
+	INT N_b=0;
+	get_real_matrix(b, M_b, N_b);
+	INT M=N_b;
+
+	SG_DEBUG("p:(%d,%d) q:(%d,%d) a:(%d,%d) b(%d,%d)\n",
+		N_p, M_p, N_q, M_q, N_a, M_a, N_b, M_b);
+	if (N_p!=N || M_p!=1 || N_q!=N || M_q!=1 ||
+		N_a!=N || M_a!=N || N_b!=M || M_b!=N)
+	{
+		delete[] p;
+		delete[] q;
+		delete[] a;
+		delete[] b;
+		SG_ERROR("Model matrices not matching in size.\n");
+	}
+
+	CHMM* h=new CHMM(N, M, NULL, gui->guihmm.get_pseudo());
+	ASSERT(h);
+	INT i,j;
+
+	for (i=0; i<N; i++)
+	{
+		h->set_p(i, p[i]);
+		h->set_q(i, q[i]);
+	}
+
+	for (i=0; i<N; i++)
+		for (j=0; j<N; j++)
+			h->set_a(i,j, a[i+j*N]);
+
+	for (i=0; i<N; i++)
+		for (j=0; j<M; j++)
+			h->set_b(i,j, b[i+j*N]);
+
+	CHMM* current=gui->guihmm.get_current();
+	if (current)
+		delete current;
+
+	gui->guihmm.set_current(h);
+
+	return true;
+}
+
 bool CSGInterface::a_get_hmm()
 {
-	if (m_nlhs!=4)
+	if (m_nlhs!=4 || m_nrhs!=1)
 		return false;
 
 	CHMM* h=gui->guihmm.get_current();

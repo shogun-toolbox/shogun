@@ -56,12 +56,18 @@ class CSGInterface : public CSGObject
 		bool a_get_version();
 		/** get labels */
 		bool a_get_labels();
+		/** obtain from position list */
+		bool a_obtain_from_position_list();
 		/** get features */
 		bool a_get_features();
+		/** set features */
+		bool a_set_features();
 		/** get distance matrix */
 		bool a_get_distance_matrix();
 		/** get kernel matrix */
 		bool a_get_kernel_matrix();
+		/** set custom kernel */
+		bool a_set_custom_kernel();
 		/** set WD position weights */
 		bool a_set_WD_position_weights();
 		/** set subkernel weights */
@@ -128,6 +134,10 @@ class CSGInterface : public CSGObject
 		bool a_get_viterbi_path();
 		/** get HMM */
 		bool a_get_hmm();
+		/** append HMM */
+		bool a_append_hmm();
+		/** set HMM */
+		bool a_set_hmm();
 		/** issue help message */
 		bool a_help();
 		/** test function */
