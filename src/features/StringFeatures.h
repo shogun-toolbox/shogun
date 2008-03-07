@@ -614,7 +614,7 @@ template <class ST> class CStringFeatures: public CFeatures
 		 *
 		 * @param p_features new features
 		 * @param p_num_vectors number of vectors
-		 * @param p_max_string_length maximum sstring length
+		 * @param p_max_string_length maximum string length
 		 * @return if setting was successful
 		 */
 		bool set_features(T_STRING<ST>* p_features, INT p_num_vectors, INT p_max_string_length)

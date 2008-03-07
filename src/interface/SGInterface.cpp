@@ -33,6 +33,17 @@ extern CTextGUI* gui;
 static CSGInterfaceMethod sg_methods[]=
 {
 	{
+		(CHAR*) N_CRC,
+		(&CSGInterface::a_crc),
+		(CHAR*) USAGE_IO(N_CRC, "string", "crc32")
+	},
+	{
+		(CHAR*) N_TRANSLATE_STRING,
+		(&CSGInterface::a_translate_string),
+		(CHAR*) USAGE_IO(N_TRANSLATE_STRING,
+			"string, order, start", "translation")
+	},
+	{
 		(CHAR*) N_BEST_PATH_2STRUCT,
 		(&CSGInterface::a_best_path_2struct),
 		(CHAR*) USAGE_IO(N_BEST_PATH_2STRUCT,
@@ -76,6 +87,11 @@ static CSGInterfaceMethod sg_methods[]=
 		(CHAR*) USAGE_O(N_GET_VERSION, "version")
 	},
 	{
+		(CHAR*) N_SET_LABELS,
+		(&CSGInterface::a_set_labels),
+		(CHAR*) USAGE_I(N_SET_LABELS, "'TRAIN|TEST', labels")
+	},
+	{
 		(CHAR*) N_GET_LABELS,
 		(&CSGInterface::a_get_labels),
 		(CHAR*) USAGE_IO(N_GET_LABELS, "'TRAIN|TEST'", "labels")
@@ -91,9 +107,16 @@ static CSGInterfaceMethod sg_methods[]=
 		(CHAR*) USAGE_IO(N_GET_FEATURES, "'TRAIN|TEST'", "features")
 	},
 	{
+		(CHAR*) N_ADD_FEATURES,
+		(&CSGInterface::a_add_features),
+		(CHAR*) USAGE_O(N_ADD_FEATURES,
+			"'TRAIN|TEST', features[, DNABINFILE|<ALPHABET>]")
+	},
+	{
 		(CHAR*) N_SET_FEATURES,
 		(&CSGInterface::a_set_features),
-		(CHAR*) USAGE_O(N_SET_FEATURES, "'TRAIN|TEST', features")
+		(CHAR*) USAGE_O(N_SET_FEATURES,
+			"'TRAIN|TEST', features[, DNABINFILE|<ALPHABET>]")
 	},
 	{
 		(CHAR*) N_GET_DISTANCE_MATRIX,
@@ -315,6 +338,97 @@ CSGInterface::~CSGInterface()
 ////////////////////////////////////////////////////////////////////////////
 // actions
 ////////////////////////////////////////////////////////////////////////////
+
+bool CSGInterface::a_crc()
+{
+	if (m_nlhs!=1 || m_nrhs!=2)
+		return false;
+
+	INT slen=0;
+	CHAR* string=get_string(slen);
+	ASSERT(string);
+	BYTE* bstring=new BYTE[slen];
+	ASSERT(bstring);
+
+	for (INT i=0; i<slen; i++)
+		bstring[i]=string[i];
+	delete[] string;
+
+	INT val=CMath::crc32(bstring, slen);
+	set_int_vector(&val, 1);
+	delete[] bstring;
+
+	return true;
+}
+
+bool CSGInterface::a_translate_string()
+{
+	if (m_nlhs!=1 || m_nrhs!=4)
+		return false;
+
+	INT len=0;
+	DREAL* string=NULL;
+	get_real_vector(string, len);
+	INT order=get_int();
+	INT start=get_int();
+
+	const INT max_val=2; /* DNA->2bits */
+	INT i,j;
+
+	WORD* obs=new WORD[len];
+	ASSERT(obs);
+
+	for (i=0; i<len; i++)
+	{
+		switch ((CHAR) string[i])
+		{
+			case 'A': obs[i]=0; break;
+			case 'C': obs[i]=1; break;
+			case 'G': obs[i]=2; break;
+			case 'T': obs[i]=3; break;
+			case 'a': obs[i]=0; break;
+			case 'c': obs[i]=1; break;
+			case 'g': obs[i]=2; break;
+			case 't': obs[i]=3; break;
+			default: SG_ERROR("Wrong letter in string.\n");
+		}
+	}
+	delete[] string;
+
+	//convert interval of size T
+	for (i=len-1; i>=((INT) order)-1; i--)
+	{
+		WORD value=0;
+		for (j=i; j>=i-((INT) order)+1; j--)
+			value=(value>>max_val) | ((obs[j])<<(max_val*(order-1)));
+		
+		obs[i]=(WORD) value;
+	}
+	
+	for (i=order-2;i>=0;i--)
+	{
+		WORD value=0;
+		for (j=i; j>=i-order+1; j--)
+		{
+			value= (value >> max_val);
+			if (j>=0)
+				value|=(obs[j]) << (max_val * (order-1));
+		}
+		obs[i]=value;
+	}
+
+	DREAL* real_obs=new DREAL[len];
+	ASSERT(real_obs);
+
+	for (i=start; i<len; i++)
+		real_obs[i-start]=(DREAL) obs[i];
+	delete[] obs;
+
+	set_real_vector(real_obs, len);
+	delete[] real_obs;
+
+	return true;
+}
 
 bool CSGInterface::a_best_path_2struct()
 {
@@ -563,6 +677,41 @@ bool CSGInterface::a_get_version()
 
 	DREAL* ver=(DREAL*) version.get_version_revision();
 	set_real_vector(ver, 1);
+
+	return true;
+}
+
+bool CSGInterface::a_set_labels()
+{
+	if (m_nlhs!=0 || m_nrhs!=3)
+		return false;
+
+	INT tlen=0;
+	CHAR* target=get_string(tlen);
+	if (!strmatch(target, tlen, "TRAIN") && !strmatch(target, tlen, "TEST"))
+	{
+		delete target;
+		SG_ERROR("Unknown target, neither TRAIN nor TEST.\n");
+	}
+
+	INT len=0;
+	DREAL* lab=NULL;
+	get_real_vector(lab, len);
+
+	CLabels* labels=new CLabels(len);
+	SG_INFO("num labels: %d\n", labels->get_num_labels());
+
+	for (INT i=0; i<len; i++)
+	{
+		if (!labels->set_label(i, lab[i]))
+			SG_ERROR("Couldn't set label %d (of %d): %f.\n", i, len, lab[i]);
+	}
+
+	if (strmatch(target, tlen, "TRAIN"))
+		gui->guilabels.set_train_labels(labels);
+	else
+		gui->guilabels.set_test_labels(labels);
+	delete[] target;
 
 	return true;
 }
@@ -967,11 +1116,24 @@ bool CSGInterface::a_get_features()
 	return true;
 }
 
-bool CSGInterface::a_set_features()
+bool CSGInterface::a_add_features()
 {
-	if (m_nlhs!=0 || m_nrhs!=2)
+	if (m_nlhs!=0 || (m_nrhs!=3 && m_nrhs!=4))
 		return false;
 
+	return do_set_features(true);
+}
+
+bool CSGInterface::a_set_features()
+{
+	if (m_nlhs!=0 || (m_nrhs!=3 && m_nrhs!=4))
+		return false;
+
+	return do_set_features(false);
+}
+
+bool CSGInterface::do_set_features(bool add)
+{
 	INT tlen=0;
 	CHAR* target=get_string(tlen);
 	if (!strmatch(target, tlen, "TRAIN") && !strmatch(target, tlen, "TEST"))
@@ -980,162 +1142,114 @@ bool CSGInterface::a_set_features()
 		SG_ERROR("Unknown target, neither TRAIN nor TEST.\n");
 	}
 
-	CFeatures* features=NULL;
-
+	CFeatures* feat=NULL;
 /*
-		if (mxIsSparse(mx_feat) && mxIsNumeric(mx_feat))
+	INT num_feat=0;
+	INT num_vec=0;
+
+	if (is_sparse() && is_numeric())
+		DREAL* fmatrix=NULL;
+		get_real_sparsematrix(fmatrix, num_feat, num_vec);
+
+		feat=new CSparseFeatures<DREAL)(0);
+		ASSERT(feat);
+		((CSparseFeatures<DREAL>*) feat)->
+			set_sparse_feature_matrix(fmatrix, num_feat, num_vec);
+	}
+	else if (is_double())
+	{
+		DREAL* fmatrix=NULL;
+		get_real_matrix(fmatrix, num_feat, num_vec);
+
+		feat=new CRealFeatures(0);
+		ASSERT(feat);
+		((CRealFeatures*) feat)->
+			set_feature_matrix(fmatrix, num_feat, num_vec);
+	}
+	else if (is_char())
+	{
+		if (m_nrhs!=4)
+			SG_ERROR("Please specify alphabet / type!\n");
+
+		INT alen=0;
+		//FIXME:  problem -> arg4 defines arg3!!!
+		CHAR* alphabet_str=get_string(alen, 4);
+		
+		if (strmatch(alphabet_str, alen, "DNABINFILE"))
 		{
-			f= new CSparseFeatures<DREAL>(0);
-			INT num_feat = mxGetM(mx_feat);
-			INT num_vec = mxGetN(mx_feat);
+			CHAR* fname=get_string();
+			ASSERT(fname);
 
-			long nnz=mxGetNzmax(mx_feat);
-			double* A = mxGetPr(mx_feat);
-			mwIndex* iA = mxGetIr(mx_feat);
-			mwIndex* kA = mxGetJc(mx_feat);
-
-			SG_DEBUG("sparse matrix has %d rows, %d cols and %d nnz elemements\n", num_feat, num_vec, nnz);
-			TSparse<DREAL>* sfm= new TSparse<DREAL>[num_vec];
-			ASSERT(sfm);
-
-			long offs=0;
-			for (INT i=0; i<num_vec; i++)
+			feat=new CStringFeatures<BYTE>(DNA);
+			ASSERT(feat);
+			if (!((CStringFeatures<BYTE>*) feat)->load_dna_file(fname))
 			{
-				INT len=kA[i+1]-kA[i];
-				sfm[i].vec_index=i;
-				sfm[i].num_feat_entries=len;
-				
-				if (len>0)
-				{
-					sfm[i].features= new TSparseEntry<DREAL>[len];
-					ASSERT(sfm[i].features);
-				}
-				else
-					sfm[i].features=0;
-
-				for (INT j=0; j<len; j++)
-				{
-					sfm[i].features[j].entry=A[offs];
-					sfm[i].features[j].feat_index=iA[offs];
-					offs++;
-				}
+				delete alphabet_str;
+				delete fname;
+				delete feat;
+				SG_ERROR("Couldn't load DNA features from file.\n");
 			}
-			ASSERT(offs==nnz);
-			((CSparseFeatures<DREAL>*) f)->set_sparse_feature_matrix(sfm, num_feat, num_vec);
+
+			delete fname;
 		}
 		else
 		{
-			if (mxIsDouble(mx_feat))
-			{
-				f= new CRealFeatures(0);
-				INT num_vec=mxGetN(mx_feat);
-				INT num_feat=mxGetM(mx_feat);
-				DREAL* fm=new DREAL[num_vec*num_feat];
-				ASSERT(fm);
-				double* feat=mxGetPr(mx_feat);
+			CAlphabet* alphabet=new CAlphabet(alphabet_str, alen);
+			ASSERT(alphabet);
+			T_STRING<CHAR>* fmatrix=NULL;
+			get_string_list(fmatrix, num_feat, num_vec);
 
-				SG_DEBUG("dense matrix has %d rows, %d cols\n", num_feat, num_vec);
-				for (INT i=0; i<num_vec; i++)
-				  for (INT j=0; j<num_feat; j++)
-				    fm[i*num_feat+j]=feat[i*num_feat+j];
-				
-				((CRealFeatures*) f)->set_feature_matrix(fm, num_feat, num_vec);
+			INT maxlen=0;
+			for (INT i=0; i<num_vec; i++)
+				maxlen=CMath::max(maxlen, fmatrix[i].length);
+
+			feat=new CStringFeatures<CHAR>(alphabet);
+			ASSERT(feat);
+			if (!((CStringFeatures<CHAR>*) feat)->
+				set_features(fmatrix, num_vec, maxlen))
+			{
+				delete alphabet_str;
+				delete alphabet;
+				delete feat;
+				SG_ERROR("Couldn't set string features.\n");
 			}
-			else if (mxIsChar(mx_feat))
-			{
-				if (nrhs==4)
-				{
-					INT len=0;
-					CHAR* al = CGUIMatlab::get_mxString(vals[3], len);
 
-					if (len==10 && !strncmp(al, "DNABINFILE", 10))
-					{
-						f= new CStringFeatures<BYTE>(DNA);
-						ASSERT(f);
+			delete alphabet;
+		}
 
-						CHAR* fname = CGUIMatlab::get_mxString(vals[2], len, true);
-						if (!((CStringFeatures<BYTE>*) f)->load_dna_file(fname))
-						{
-							delete f;
-							f=NULL;
-						}
-					}
-					else
-					{
-						CAlphabet* alpha = new CAlphabet(al, len);
-						ASSERT(alpha);
+		delete alphabet_str;
+	}
+	else if (is_byte())
+	{
+		if (m_nrhs!=4)
+			SG_ERROR("Please specify alphabet!\n");
 
-						INT num_vec=mxGetN(mx_feat);
-						INT num_feat=mxGetM(mx_feat);
-						T_STRING<CHAR>* sc=new T_STRING<CHAR>[num_vec];
-						ASSERT(sc);
-						mxChar* c=mxGetChars(mx_feat);
-						ASSERT(c);
+		INT alen=0;
+		CHAR* alphabet_str=get_string(alen);
+		ASSERT(alphabet_str);
+		CAlphabet* alphabet=new CAlphabet(alphabet_str, alen);
+		ASSERT(alphabet);
+		delete alphabet_str;
 
-						int maxlen=num_feat;
+		T_STRING<BYTE>* fmatrix=NULL;
+		get_string_list(fmatrix, num_feat, num_vec);
 
-						for (int i=0; i<num_vec; i++)
-						{
-							sc[i].length=num_feat;
-							sc[i].string=new CHAR[num_feat];
-							ASSERT(sc[i].string)
+		INT maxlen=0;
+		for (INT i=0; i<num_vec; i++)
+			maxlen=CMath::max(maxlen, fmatrix[i].length);
 
-								for (INT j=0; j<num_feat; j++)
-									sc[i].string[j]=(CHAR) c[((LONG) num_feat)*i+j];
-						}
-						f= new CStringFeatures<CHAR>(alpha);
-						ASSERT(f);
+		feat=new CStringFeatures<BYTE>(alphabet);
+		ASSERT(feat);
+		if (!((CStringFeatures<BYTE>*) feat)->set_features(fmatrix, num_vec, maxlen))
+		{
+			delete alphabet;
+			delete feat;
+			SG_ERROR("Couldnt set byte string features.\n");
+			f=NULL;
+		}
+	}
 
-
-						if (!((CStringFeatures<CHAR>*) f)->set_features(sc, num_vec, maxlen))
-						{
-							delete f;
-							f=NULL;
-						}
-					}
-				}
-				else
-					SG_ERROR( "please specify alphabet / type!\n");
-			}
-			else if (mxIsClass(mx_feat,"uint8") || mxIsClass(mx_feat, "int8"))
-			{
-				if (nrhs==4)
-				{
-					INT len=0;
-					CHAR* al = CGUIMatlab::get_mxString(vals[3], len);
-					CAlphabet* alpha = new CAlphabet(al, len);
-					ASSERT(alpha);
-
-					INT num_vec=mxGetN(mx_feat);
-					INT num_feat=mxGetM(mx_feat);
-					T_STRING<BYTE>* sc=new T_STRING<BYTE>[num_vec];
-					ASSERT(sc);
-					BYTE* c= (BYTE*) mxGetData(mx_feat);
-
-					int maxlen=num_feat;
-
-					for (int i=0; i<num_vec; i++)
-					{
-						sc[i].length=num_feat;
-						sc[i].string=new BYTE[num_feat];
-						ASSERT(sc[i].string)
-
-						for (INT j=0; j<num_feat; j++)
-							sc[i].string[j]=(BYTE) c[((LONG) num_feat)*i+j];
-					}
-
-					f= new CStringFeatures<BYTE>(alpha);
-					ASSERT(f);
-
-					if (!((CStringFeatures<BYTE>*) f)->set_features(sc, num_vec, maxlen))
-					{
-						delete f;
-						f=NULL;
-					}
-				}
-				else
-					SG_ERROR( "please specify alphabet!\n");
-			}			
+/// eh?
 			else if (mxIsCell(mx_feat))
 			{
 				int num_vec=mxGetNumberOfElements(mx_feat);
@@ -1230,15 +1344,22 @@ bool CSGInterface::a_set_features()
 				}
 
 			}
-			else
-				SG_ERROR( "not implemented\n");
-		}
 */
 
 	if (strmatch(target, tlen, "TRAIN"))
-		gui->guifeatures.set_train_features(features);
+	{
+		if (add)
+			gui->guifeatures.add_train_features(feat);
+		else
+			gui->guifeatures.set_train_features(feat);
+	}
 	else
-		gui->guifeatures.set_test_features(features);
+	{
+		if (add)
+			gui->guifeatures.add_test_features(feat);
+		else
+			gui->guifeatures.set_test_features(feat);
+	}
 
 	delete[] target;
 

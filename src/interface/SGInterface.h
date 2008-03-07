@@ -40,6 +40,10 @@ class CSGInterface : public CSGObject
 		~CSGInterface();
 
 		/* actions */
+		/** calculate CRC sum */
+		bool a_crc();
+		/** translater string */
+		bool a_translate_string();
 		/** best path 2struct */
 		bool a_best_path_2struct();
 		/** best path trans */
@@ -54,12 +58,16 @@ class CSGInterface : public CSGObject
 		bool a_best_path_no_b_trans();
 		/** get version */
 		bool a_get_version();
+		/** set labels */
+		bool a_set_labels();
 		/** get labels */
 		bool a_get_labels();
 		/** obtain from position list */
 		bool a_obtain_from_position_list();
 		/** get features */
 		bool a_get_features();
+		/** add features */
+		bool a_add_features();
 		/** set features */
 		bool a_set_features();
 		/** get distance matrix */
@@ -249,6 +257,8 @@ class CSGInterface : public CSGObject
 		bool do_hmm_classify(bool linear=false, bool one_class=false);
 		/** helper function for hmm classify on 1 example */
 		bool do_hmm_classify_example(bool one_class=false);
+		/** helper function for add/set features */
+		bool do_set_features(bool add=false);
 };
 
 typedef bool (CSGInterface::*CSGInterfacePtr)();
