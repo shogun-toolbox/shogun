@@ -304,11 +304,13 @@ void COctaveInterface::set_word_sparsematrix(const TSparse<WORD>* matrix, INT nu
 }
 
 
-template <class T>
-	void COctaveInterface::set_string_list(const T_STRING<T>* strings, INT num_str)
+void COctaveInterface::set_string_list(const T_STRING<CHAR>* strings, INT num_str)
 {
 }
 
+void COctaveInterface::set_string_list(const T_STRING<WORD>* strings, INT num_str)
+{
+}
 
 void COctaveInterface::submit_return_values()
 {

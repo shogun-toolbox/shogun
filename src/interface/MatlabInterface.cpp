@@ -686,6 +686,39 @@ void CMatlabInterface::get_word_sparsematrix(TSparse<WORD>*& matrix, INT& num_fe
 	ASSERT(offset==nzmax);
 }
 
+void CMatlabInterface::get_string_list(T_STRING<WORD>*& strings, INT& num_str)
+{
+	const mxArray* mx_str=get_arg_increment();
+	if (!mx_str || !mxIsChar(mx_str))
+		SG_ERROR("Expected String, got class %s as argument %d\n",
+			mxGetClassName(mx_str), m_rhs_counter);
+
+	mxChar* data=mxGetChars(mx_str);
+	INT len=mxGetN(mx_str);
+	num_str=mxGetM(mx_str);
+	strings=new T_STRING<WORD>[num_str];
+	ASSERT(strings);
+
+	for (INT i=0; i<num_str; i++)
+	{
+		if (len>0)
+		{
+			strings[i].length=len; // all must have same length in matlab
+			strings[i].string=new WORD[len+1]; // not zero terminated in matlab
+			ASSERT(strings[i].string);
+			INT j;
+			for (j=0; j<len; j++)
+				strings[i].string[j]=data[i+j*num_str];
+			strings[i].string[j]='\0';
+		}
+		else
+		{
+			SG_WARNING( "string with index %d has zero length\n", i+1);
+			strings[i].length=0;
+			strings[i].string=NULL;
+		}
+	}
+}
 
 void CMatlabInterface::get_string_list(T_STRING<CHAR>*& strings, INT& num_str)
 {
@@ -1206,12 +1239,12 @@ void CMatlabInterface::set_word_sparsematrix(const TSparse<WORD>* matrix, INT nu
 }
 
 
-template <class T> void CMatlabInterface::set_string_list(const T_STRING<T>* strings, INT num_str)
+void CMatlabInterface::set_string_list(const T_STRING<CHAR>* strings, INT num_str)
 {
 	if (!strings)
 		SG_ERROR("Given strings are invalid.\n");
 
-	const T* list[num_str];
+	const CHAR* list[num_str];
 	for (INT i=0; i<num_str; i++)
 		list[i]=strings[i].string;
 
@@ -1222,6 +1255,21 @@ template <class T> void CMatlabInterface::set_string_list(const T_STRING<T>* str
 	set_arg_increment(mx_str);
 }
 
+void CMatlabInterface::set_string_list(const T_STRING<WORD>* strings, INT num_str)
+{
+	if (!strings)
+		SG_ERROR("Given strings are invalid.\n");
+
+	const CHAR* list[num_str];
+	for (INT i=0; i<num_str; i++)
+		list[i]=(CHAR*) strings[i].string;
+
+	mxArray* mx_str=mxCreateCharMatrixFromStrings(num_str, list);
+	if (!mx_str)
+		SG_ERROR("Couldn't create String Matrix of %d strings.\n", num_str);
+
+	set_arg_increment(mx_str);
+}
 
 void CMatlabInterface::submit_return_values()
 {

@@ -514,8 +514,8 @@ bool CSGInterface::a_best_path_no_b()
 	delete[] q;
 	delete[] a;
 
-	set_real_matrix(&prob, 1, 1);
-	set_int_matrix(path, 1, best_iter+1);
+	set_real_vector(&prob, 1);
+	set_int_vector(path, best_iter+1);
 	delete[] path;
 
 	return true;
@@ -586,7 +586,7 @@ bool CSGInterface::a_best_path_trans_simple()
 	delete[] a_trans;
 	delete[] seq;
 
-	set_real_matrix(prob, 1, nbest);
+	set_real_vector(prob, nbest);
 	delete[] prob;
 	set_int_matrix(path, nbest, N_seq);
 	delete[] path;
@@ -662,7 +662,7 @@ bool CSGInterface::a_best_path_no_b_trans()
 	delete[] q;
 	delete[] a_trans;
 
-	set_real_matrix(prob, 1, nbest);
+	set_real_vector(prob, nbest);
 	delete[] prob;
 	set_int_matrix(path, nbest, max_best_iter+1);
 	delete[] path;
@@ -745,7 +745,7 @@ bool CSGInterface::a_get_labels()
 	for (INT i=0; i<num_labels ; i++)
 		lab[i]=labels->get_label(i);
 
-	set_real_matrix(lab, 1, num_labels);
+	set_real_vector(lab, num_labels);
 	delete[] lab;
 
 	return true;
@@ -1813,7 +1813,7 @@ bool CSGInterface::a_get_SPEC_consensus()
 	delete[] sv_idx;
 	delete[] sv_weight;
 
-	set_char_matrix(consensus, 1, num_feat);
+	set_char_vector(consensus, num_feat);
 	delete[] consensus;
 
 	return true;
@@ -1900,7 +1900,7 @@ bool CSGInterface::a_get_WD_consensus()
 	delete[] sv_idx;
 	delete[] sv_weight;
 
-	set_char_matrix(consensus, 1, num_feat);
+	set_char_vector(consensus, num_feat);
 	delete[] consensus;
 
 	return true;
@@ -2057,9 +2057,9 @@ bool CSGInterface::a_get_WD_position_weights()
 		position_weights=((CWeightedDegreePositionStringKernel*) kernel)->get_position_weights(len);
 
 	if (position_weights==NULL)
-		set_real_matrix(position_weights, 1, 0);
+		set_real_vector(position_weights, 0);
 	else
-		set_real_matrix(position_weights, 1, len);
+		set_real_vector(position_weights, len);
 
 	return true;
 }
@@ -2088,7 +2088,7 @@ bool CSGInterface::a_get_last_subkernel_weights()
 		INT num_weights=0;
 		const DREAL* weights=
 			((CCombinedKernel*) kernel)->get_subkernel_weights(num_weights);
-		set_real_matrix(weights, 1, num_weights);
+		set_real_vector(weights, num_weights);
 		return true;
 	}
 
@@ -2235,7 +2235,7 @@ bool CSGInterface::a_get_kernel_optimization()
 			DREAL* weights;
 			k->get_dictionary(len, weights);
 
-			set_real_matrix(weights, len, 1);
+			set_real_vector(weights, len);
 			delete[] weights;
 
 			return true;
@@ -2246,7 +2246,7 @@ bool CSGInterface::a_get_kernel_optimization()
 			INT len=0;
 			const double* weights=k->get_normal(len);
 
-			set_real_matrix(weights, len, 1);
+			set_real_vector(weights, len);
 
 			return true;
 		}
@@ -2256,7 +2256,7 @@ bool CSGInterface::a_get_kernel_optimization()
 			INT len=0;
 			const double* weights=k->get_normal(len);
 
-			set_real_matrix(weights, len, 1);
+			set_real_vector(weights, len);
 
 			return true;
 		}
@@ -2275,7 +2275,7 @@ bool CSGInterface::a_plugin_estimate_classify_example()
 	INT idx=get_int();
 	DREAL result=gui->guipluginestimate.classify_example(idx);
 
-	set_real_matrix(&result, 1, 1);
+	set_real_vector(&result, 1);
 	return true;
 }
 
@@ -2297,7 +2297,7 @@ bool CSGInterface::a_plugin_estimate_classify()
 		result[i]=labels->get_label(i);
 	delete labels;
 
-	set_real_matrix(result, 1, num_vec);
+	set_real_vector(result, num_vec);
 	delete[] result;
 
 	return true;
@@ -2374,7 +2374,7 @@ bool CSGInterface::a_get_plugin_estimate()
 	DREAL model_sizes[2];
 	model_sizes[0]=(DREAL) seq_length;
 	model_sizes[1]=(DREAL) num_symbols;
-	set_real_matrix(model_sizes, 1, 2);
+	set_real_vector(model_sizes, 2);
 
 	return true;
 }
@@ -2400,7 +2400,7 @@ bool CSGInterface::a_classify()
 		result[i]=labels->get_label(i);
 	delete labels;
 
-	set_real_matrix(result, 1, num_vec);
+	set_real_vector(result, num_vec);
 	delete[] result;
 
 	return true;
@@ -2417,7 +2417,7 @@ bool CSGInterface::a_classify_example()
 	if (!gui->guiclassifier.classify_example(idx, result))
 		SG_ERROR("Classify_example failed.\n");
 
-	set_real_matrix(&result, 1, 1);
+	set_real_vector(&result, 1);
 
 	return true;
 }
@@ -2497,7 +2497,7 @@ bool CSGInterface::a_get_svm_objective()
 		SG_ERROR("No SVM set.\n");
 
 	DREAL objective=svm->get_objective();
-	set_real_matrix(&objective, 1, 1);
+	set_real_vector(&objective, 1);
 
 	return true;
 }
@@ -2541,7 +2541,7 @@ bool CSGInterface::a_relative_entropy()
 	delete[] p;
 	delete[] q;
 
-	set_real_matrix(entropy, 1, pos_N);
+	set_real_vector(entropy, pos_N);
 	delete[] entropy;
 
 	return true;
@@ -2573,7 +2573,7 @@ bool CSGInterface::a_entropy()
 	}
 	delete[] p;
 
-	set_real_matrix(entropy, 1, N);
+	set_real_vector(entropy, N);
 	delete[] entropy;
 
 	return true;
@@ -2627,7 +2627,7 @@ bool CSGInterface::do_hmm_classify(bool linear, bool one_class)
 		result[i]=labels->get_label(i);
 	delete labels;
 
-	set_real_matrix(result, 1, num_vec);
+	set_real_vector(result, num_vec);
 	delete[] result;
 
 	return true;
@@ -2656,7 +2656,7 @@ bool CSGInterface::do_hmm_classify_example(bool one_class)
 	else
 		result=gui->guihmm.classify_example(idx);
 
-	set_real_matrix(&result, 1, 1);
+	set_real_vector(&result, 1);
 
 	return true;
 }
@@ -2671,7 +2671,7 @@ bool CSGInterface::a_hmm_likelihood()
 		SG_ERROR("No HMM.\n");
 
 	DREAL likelihood=h->model_probability();
-	set_real_matrix(&likelihood, 1, 1);
+	set_real_vector(&likelihood, 1);
 
 	return true;
 }
@@ -2704,9 +2704,9 @@ bool CSGInterface::a_get_viterbi_path()
 	DREAL likelihood=0;
 	DREAL* path=(DREAL*) h->get_path(dim, likelihood);
 
-	set_real_matrix(path, 1, num_feat);
+	set_real_vector(path, num_feat);
 	delete[] path;
-	set_real_matrix(&likelihood, 1, 1);
+	set_real_vector(&likelihood, 1);
 
 	return true;
 }
@@ -2868,9 +2868,9 @@ bool CSGInterface::a_get_hmm()
 		q[i]=h->get_q(i);
 	}
 
-	set_real_matrix(p, 1, N);
+	set_real_vector(p, N);
 	delete[] p;
-	set_real_matrix(q, 1, N);
+	set_real_vector(q, N);
 	delete[] q;
 
 	DREAL* a=new DREAL[N*N];
@@ -2905,41 +2905,41 @@ bool CSGInterface::a_help()
 
 bool CSGInterface::a_test()
 {
-	if (m_nrhs<2)
+	SG_PRINT("entering testing method\n");
+	if (m_nlhs!=1 || m_nrhs!=2)
 		return false;
 
-	/*
-	   DREAL* vector;
-	   INT len;
+/*
+	DREAL* vector;
+	INT len;
+	get_real_vector(vector, len);
+//	for (INT i=0; i<len; i++) SG_PRINT("data %d: %f\n", i, vector[i]);
+	set_real_vector(vector, len);
+	delete[] vector;
+*/
 
-	   get_real_vector(vector, len);
-	   for (INT i=0; i<len; i++) SG_PRINT("data %d: %f\n", i, vector[i]);
-	   set_real_vector(vector, len);
-	   delete[] vector;
-	   */
+/**/
+	TSparse<DREAL>* matrix;
+	INT num_feat, num_vec;
+	get_real_sparsematrix(matrix, num_feat, num_vec);
+	for (INT i=0; i<num_vec; i++)
+	{
+		for (INT j=0; j<num_feat; j++)
+		{
+			SG_PRINT("data %d, %d, %f\n", i, j, matrix[i].features[j].entry);
+		}
+	}
+	set_real_sparsematrix(matrix, num_feat, num_vec);
+	delete[] matrix;
+/**/
 
-	/*
-	   TSparse<DREAL>* matrix;
-	   INT num_feat, num_vec;
-
-	   get_real_sparsematrix(matrix, num_feat, num_vec);
-	   for (INT i=0; i<num_vec; i++)
-	   {
-	   for (INT j=0; j<num_feat; j++)
-	   {
-	   SG_PRINT("data %d, %d, %f\n", i, j, matrix[i].features[j].entry);
-	   }
-	   }
-
-	   set_real_sparsematrix(matrix, num_feat, num_vec);
-	   delete[] matrix;
-	   */
-
+/*
 	T_STRING<CHAR>* list=NULL;
 	INT num_str=0;
 	get_string_list(list, num_str);
 	set_string_list(list, num_str);
 	delete[] list;
+*/
 
 	return true;
 }
@@ -3005,6 +3005,7 @@ bool CSGInterface::handle()
 	{
 		if (strmatch(action, len, sg_methods[i].action))
 		{
+			SG_DEBUG("found method %s\n", sg_methods[i].action);
 			if (!(interface->*(sg_methods[i].method))())
 				SG_SERROR("Usage: %s\n", sg_methods[i].usage);
 			else

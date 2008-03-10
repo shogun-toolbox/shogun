@@ -194,6 +194,9 @@ void CPythonInterface::get_string_list(T_STRING<CHAR>*& strings, INT& num_str)
 {
 }
 
+void CPythonInterface::get_string_list(T_STRING<WORD>*& strings, INT& num_str)
+{
+}
 
 /** set functions - to pass data from shogun to the target interface */
 void CPythonInterface::create_return_values(INT num_val)
@@ -286,8 +289,11 @@ void CPythonInterface::set_word_sparsematrix(const TSparse<WORD>* matrix, INT nu
 {
 }
 
-template <class T>
-	void CPythonInterface::set_string_list(const T_STRING<T>* strings, INT num_str)
+void CPythonInterface::set_string_list(const T_STRING<CHAR>* strings, INT num_str)
+{
+}
+
+void CPythonInterface::set_string_list(const T_STRING<WORD>* strings, INT num_str)
 {
 }
 

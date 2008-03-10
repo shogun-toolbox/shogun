@@ -230,6 +230,36 @@ void CRInterface::get_string_list(T_STRING<CHAR>*& strings, INT& num_str)
 	}
 }
 
+void CRInterface::get_string_list(T_STRING<WORD>*& strings, INT& num_str)
+{
+	SEXP strs=get_arg_increment();
+	if (strs == R_NilValue || TYPEOF(CAR(strs)) != STRSXP || length(CAR(strs))>=1)
+		SG_ERROR("Expected String List as argument %d\n", m_rhs_counter);
+
+	num_str=length(CAR(strs));
+	strings=new T_STRING<WORD>[num_str];
+	ASSERT(strings);
+
+	for (int i=0; i<num_str; i++)
+	{
+		SEXPREC* s= STRING_ELT(strs,i);
+		CHAR* c= (CHAR*) CHAR(s);
+		int len=LENGTH(s);
+
+		if (len && c)
+		{
+			WORD* dst=new WORD[len];
+			strings[i].string=(WORD*) memcpy(dst, c, len*sizeof(CHAR));
+			strings[i].length=len;
+		}
+		else
+		{
+			SG_WARNING( "string with index %d has zero length\n", i+1);
+			strings[i].string=0;
+			strings[i].length=0;
+		}
+	}
+}
 
 /** set functions - to pass data from shogun to the target interface */
 void CRInterface::create_return_values(INT num_val)
@@ -322,11 +352,13 @@ void CRInterface::set_word_sparsematrix(const TSparse<WORD>* matrix, INT num_fea
 {
 }
 
-template <class T>
-	void CRInterface::set_string_list(const T_STRING<T>* strings, INT num_str)
+void CRInterface::set_string_list(const T_STRING<CHAR>* strings, INT num_str)
 {
 }
 
+void CRInterface::set_string_list(const T_STRING<WORD>* strings, INT num_str)
+{
+}
 
 void CRInterface::submit_return_values()
 {

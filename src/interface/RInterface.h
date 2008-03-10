@@ -51,6 +51,7 @@ class CRInterface : public CSGInterface
 		virtual void get_word_sparsematrix(TSparse<WORD>*& matrix, INT& num_feat, INT& num_vec);
 
 		virtual void get_string_list(T_STRING<CHAR>*& strings, INT& num_str);
+		virtual void get_string_list(T_STRING<WORD>*& strings, INT& num_str);
 
 		/** set functions - to pass data from shogun to the target interface */
 		virtual void create_return_values(INT num_val);
@@ -78,8 +79,8 @@ class CRInterface : public CSGInterface
 		virtual void set_short_sparsematrix(const TSparse<SHORT>* matrix, INT num_feat, INT num_vec);
 		virtual void set_word_sparsematrix(const TSparse<WORD>* matrix, INT num_feat, INT num_vec);
 
-		template <class T>
-			void set_string_list(const T_STRING<T>* strings, INT num_str);
+		virtual void set_string_list(const T_STRING<CHAR>* strings, INT num_str);
+		virtual void set_string_list(const T_STRING<WORD>* strings, INT num_str);
 
 		virtual void submit_return_values();
 
