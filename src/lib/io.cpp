@@ -261,10 +261,10 @@ void CIO::progress(DREAL current_val, DREAL min_val, DREAL max_val, INT decimals
 	else
 	{
 		if (v>100) v=100.0 ;
-		if (v<=0) v=1e-6 ;
-		last_progress = v-1e-5 ; ;
+		if (v<=0) v=1e-5 ;
+		last_progress = v-1e-6 ; ;
 
-		if ((v!=100.0) && (runtime - last_progress_time<100))
+		if ((v!=100.0) && (runtime - last_progress_time<10))
 			return ;
 
 		last_progress_time = runtime ;
