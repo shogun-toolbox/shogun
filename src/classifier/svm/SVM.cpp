@@ -255,6 +255,7 @@ void* CSVM::classify_example_helper(void* p)
 #ifdef WIN32
 	for (INT vec=params->start; vec<params->end; vec++)
 #else
+	CSignal::clear() ;
 	for (INT vec=params->start; vec<params->end && 
 			!CSignal::cancel_computations(); vec++)
 #endif

@@ -883,6 +883,7 @@ void CWeightedDegreeStringKernel::compute_batch(INT num_vec, INT* vec_idx, DREAL
 #ifdef CYGWIN
 		for (INT j=0; j<num_feat; j++)
 #else
+        CSignal::clear() ;
 		for (INT j=0; j<num_feat && !CSignal::cancel_computations(); j++)
 #endif
 		{
@@ -907,6 +908,7 @@ void CWeightedDegreeStringKernel::compute_batch(INT num_vec, INT* vec_idx, DREAL
 #ifndef WIN32
 	else
 	{
+        CSignal::clear() ;
 		for (INT j=0; j<num_feat && !CSignal::cancel_computations(); j++)
 		{
 			init_optimization(num_suppvec, IDX, alphas, j);
