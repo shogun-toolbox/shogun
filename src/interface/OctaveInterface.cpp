@@ -213,6 +213,10 @@ void COctaveInterface::get_string_list(T_STRING<CHAR>*& strings, INT& num_str)
 {
 }
 
+void COctaveInterface::get_string_list(T_STRING<WORD>*& strings, INT& num_str)
+{
+}
+
 
 /** set functions - to pass data from shogun to the target interface */
 void COctaveInterface::create_return_values(INT num_val)

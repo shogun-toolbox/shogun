@@ -27,7 +27,7 @@ class CRInterface : public CSGInterface
 		virtual CHAR* get_string(INT& len);
 
 		virtual void get_byte_vector(BYTE*& vec, INT& len);
-		virtual void get_char_vector(BYTE*& vec, INT& len);
+		virtual void get_char_vector(CHAR*& vec, INT& len);
 		virtual void get_int_vector(INT*& vec, INT& len);
 		virtual void get_shortreal_vector(SHORTREAL*& vec, INT& len);
 		virtual void get_real_vector(DREAL*& vec, INT& len);
