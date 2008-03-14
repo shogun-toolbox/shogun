@@ -5,6 +5,11 @@
 
 #if !defined(HAVE_SWIG)
 
+#include "interface/SGInterfaceDataType.h"
+#include "interface/SGInterfaceVector.h"
+#include "interface/SGInterfaceMatrix.h"
+#include "interface/SGInterfaceStringList.h"
+
 #include "lib/common.h"
 #include "base/SGObject.h"
 #include "features/StringFeatures.h"
@@ -166,6 +171,18 @@ class CSGInterface : public CSGObject
 		virtual DREAL get_real_from_string();
 		virtual bool get_bool_from_string();
 
+		virtual void get_vector(CSGInterfaceVector& iv)=0;
+		virtual void set_vector(CSGInterfaceVector& iv)=0;
+
+		virtual void get_matrix(CSGInterfaceMatrix& im)=0;
+		virtual void set_matrix(CSGInterfaceMatrix& im)=0;
+
+		virtual void get_sparsematrix(CSGInterfaceMatrix& im)=0;
+		virtual void set_sparsematrix(CSGInterfaceMatrix& im)=0;
+
+		virtual void get_string_list(CSGInterfaceStringList& isl)=0;
+		virtual void set_string_list(CSGInterfaceStringList& isl)=0;
+
 		virtual void get_byte_vector(BYTE*& vector, INT& len)=0;
 		virtual void get_char_vector(CHAR*& vector, INT& len)=0;
 		virtual void get_int_vector(INT*& vector, INT& len)=0;
@@ -173,6 +190,7 @@ class CSGInterface : public CSGObject
 		virtual void get_real_vector(DREAL*& vector, INT& len)=0;
 		virtual void get_short_vector(SHORT*& vector, INT& len)=0;
 		virtual void get_word_vector(WORD*& vector, INT& len)=0;
+
 
 		virtual void get_byte_matrix(BYTE*& matrix, INT& num_feat, INT& num_vec)=0;
 		virtual void get_char_matrix(CHAR*& matrix, INT& num_feat, INT& num_vec)=0;
@@ -182,6 +200,7 @@ class CSGInterface : public CSGObject
 		virtual void get_short_matrix(SHORT*& matrix, INT& num_feat, INT& num_vec)=0;
 		virtual void get_word_matrix(WORD*& matrix, INT& num_feat, INT& num_vec)=0;
 
+
 		virtual void get_byte_sparsematrix(TSparse<BYTE>*& matrix, INT& num_feat, INT& num_vec)=0;
 		virtual void get_char_sparsematrix(TSparse<CHAR>*& matrix, INT& num_feat, INT& num_vec)=0;
 		virtual void get_int_sparsematrix(TSparse<INT>*& matrix, INT& num_feat, INT& num_vec)=0;
@@ -190,11 +209,14 @@ class CSGInterface : public CSGObject
 		virtual void get_short_sparsematrix(TSparse<SHORT>*& matrix, INT& num_feat, INT& num_vec)=0;
 		virtual void get_word_sparsematrix(TSparse<WORD>*& matrix, INT& num_feat, INT& num_vec)=0;
 
+
 		virtual void get_string_list(T_STRING<CHAR>*& strings, INT& num_str)=0;
 		virtual void get_string_list(T_STRING<WORD>*& strings, INT& num_str)=0;
 
+
 		/** set functions - to pass data from shogun to the target interface */
 		virtual void create_return_values(INT num_val)=0;
+
 		virtual void set_byte_vector(const BYTE* vec, INT len)=0;
 		virtual void set_char_vector(const CHAR* vec, INT len)=0;
 		virtual void set_int_vector(const INT* vec, INT len)=0;
@@ -202,6 +224,7 @@ class CSGInterface : public CSGObject
 		virtual void set_real_vector(const DREAL* vec, INT len)=0;
 		virtual void set_short_vector(const SHORT* vec, INT len)=0;
 		virtual void set_word_vector(const WORD* vec, INT len)=0;
+
 
 		virtual void set_byte_matrix(const BYTE* matrix, INT num_feat, INT num_vec)=0;
 		virtual void set_char_matrix(const CHAR* matrix, INT num_feat, INT num_vec)=0;
@@ -211,6 +234,7 @@ class CSGInterface : public CSGObject
 		virtual void set_short_matrix(const SHORT* matrix, INT num_feat, INT num_vec)=0;
 		virtual void set_word_matrix(const WORD* matrix, INT num_feat, INT num_vec)=0;
 
+
 		virtual void set_byte_sparsematrix(const TSparse<BYTE>* matrix, INT num_feat, INT num_vec)=0;
 		virtual void set_char_sparsematrix(const TSparse<CHAR>* matrix, INT num_feat, INT num_vec)=0;
 		virtual void set_int_sparsematrix(const TSparse<INT>* matrix, INT num_feat, INT num_vec)=0;
@@ -219,8 +243,10 @@ class CSGInterface : public CSGObject
 		virtual void set_short_sparsematrix(const TSparse<SHORT>* matrix, INT num_feat, INT num_vec)=0;
 		virtual void set_word_sparsematrix(const TSparse<WORD>* matrix, INT num_feat, INT num_vec)=0;
 
+
 		virtual void set_string_list(const T_STRING<CHAR>* strings, INT num_str)=0;
 		virtual void set_string_list(const T_STRING<WORD>* strings, INT num_str)=0;
+
 
 		virtual void submit_return_values()=0;
 
@@ -269,8 +295,6 @@ typedef struct {
 	CSGInterfacePtr method;
 	CHAR* usage;
 } CSGInterfaceMethod;
-
-
 
 #endif // !HAVE_SWIG
 #endif // __SGINTERFACE__H_

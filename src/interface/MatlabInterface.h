@@ -4,8 +4,12 @@
 #include "lib/config.h"
 
 #if defined(HAVE_MATLAB) && !defined(HAVE_SWIG)
-#include "interface/SGInterface.h"
+
 #include "lib/matlab.h"
+#include "features/StringFeatures.h"
+
+#include "interface/SGInterface.h"
+
 
 class CMatlabInterface : public CSGInterface
 {
@@ -24,6 +28,18 @@ class CMatlabInterface : public CSGInterface
 		virtual bool get_bool();
 
 		virtual CHAR* get_string(INT& len);
+
+		virtual void get_vector(CSGInterfaceVector& iv);
+		virtual void set_vector(CSGInterfaceVector& iv);
+
+		virtual void get_matrix(CSGInterfaceMatrix& im);
+		virtual void set_matrix(CSGInterfaceMatrix& im);
+
+		virtual void get_sparsematrix(CSGInterfaceMatrix& im);
+		virtual void set_sparsematrix(CSGInterfaceMatrix& im);
+
+		virtual void get_string_list(CSGInterfaceStringList& isl);
+		virtual void set_string_list(CSGInterfaceStringList& isl);
 
 		virtual void get_byte_vector(BYTE*& vector, INT& len);
 		virtual void get_char_vector(CHAR*& vector, INT& len);
@@ -84,25 +100,20 @@ class CMatlabInterface : public CSGInterface
 		virtual void submit_return_values();
 
 	private:
-		const mxArray* get_arg_increment()
-		{
-			const mxArray* retval;
-			ASSERT(m_rhs_counter>=0 && m_rhs_counter<m_nrhs+1); // +1 for action
-			ASSERT(m_rhs);
+		const mxArray* get_arg_increment();
+		void set_arg_increment(mxArray* arg);
+		bool is_int(const mxArray* mx);
 
-			retval=m_rhs[m_rhs_counter];
-			m_rhs_counter++;
-
-			return retval;
-		}
-
-		void set_arg_increment(mxArray* arg)
-		{
-			ASSERT(m_lhs_counter>=0 && m_lhs_counter<m_nlhs);
-			ASSERT(m_lhs);
-			m_lhs[m_lhs_counter]=arg;
-			m_lhs_counter++;
-		}
+		/* quirky: argument matrix is necessary to determine type */
+		template <class T> void get_sparsematrix_t(
+			TSparse<T>*& matrix, const mxArray* mx_mat,
+			CSGInterfaceMatrix& im);
+		template <class T> void set_sparsematrix_t(
+			const TSparse<T>* matrix, const mxArray* mx_mat,
+			CSGInterfaceMatrix& im);
+		template <class T> void get_string_list_t(
+			T_STRING<T>* strings, const mxArray* mx_str,
+			CSGInterfaceStringList& isl);
 
 	private:
 		mxArray** m_lhs;
