@@ -526,7 +526,7 @@ void CMatlabInterface::get_sparsematrix(CSGInterfaceMatrix& im)
 }
 
 template <class T> void CMatlabInterface::set_sparsematrix_t(
-	const TSparse<T>* matrix, const mxArray* mx_mat,
+	TSparse<T>* matrix, const mxArray* mx_mat,
 	CSGInterfaceMatrix& im)
 {
 	mwIndex* ir=mxGetIr(mx_mat);
@@ -567,43 +567,43 @@ void CMatlabInterface::set_sparsematrix(CSGInterfaceMatrix& im)
 	{
 		case SGIDT_SPARSEBYTE:
 		{
-			const TSparse<BYTE>* matrix=NULL;
+			TSparse<BYTE>* matrix=NULL;
 			set_sparsematrix_t(matrix, mx_mat, im);
 			break;
 		}
 		case SGIDT_SPARSECHAR:
 		{
-			const TSparse<CHAR>* matrix=NULL;
+			TSparse<CHAR>* matrix=NULL;
 			set_sparsematrix_t(matrix, mx_mat, im);
 			break;
 		}
 		case SGIDT_SPARSEDREAL:
 		{
-			const TSparse<DREAL>* matrix=NULL;
+			TSparse<DREAL>* matrix=NULL;
 			set_sparsematrix_t(matrix, mx_mat, im);
 			break;
 		}
 		case SGIDT_SPARSEINT:
 		{
-			const TSparse<INT>* matrix=NULL;
+			TSparse<INT>* matrix=NULL;
 			set_sparsematrix_t(matrix, mx_mat, im);
 			break;
 		}
 		case SGIDT_SPARSESHORT:
 		{
-			const TSparse<SHORT>* matrix=NULL;
+			TSparse<SHORT>* matrix=NULL;
 			set_sparsematrix_t(matrix, mx_mat, im);
 			break;
 		}
 		case SGIDT_SPARSESHORTREAL:
 		{
-			const TSparse<SHORTREAL>* matrix=NULL;
+			TSparse<SHORTREAL>* matrix=NULL;
 			set_sparsematrix_t(matrix, mx_mat, im);
 			break;
 		}
 		case SGIDT_SPARSEWORD:
 		{
-			const TSparse<WORD>* matrix=NULL;
+			TSparse<WORD>* matrix=NULL;
 			set_sparsematrix_t(matrix, mx_mat, im);
 			break;
 		}
@@ -688,7 +688,7 @@ void CMatlabInterface::set_string_list(CSGInterfaceStringList& isl)
 	{
 		case SGIDT_CHAR:
 		{
-			const T_STRING<CHAR>* strings=NULL;
+			T_STRING<CHAR>* strings=NULL;
 			isl.get(strings, num_str);
 			const CHAR* list[num_str];
 			for (UINT i=0; i<num_str; i++)
@@ -698,7 +698,7 @@ void CMatlabInterface::set_string_list(CSGInterfaceStringList& isl)
 		}
 		case SGIDT_WORD:
 		{
-			const T_STRING<WORD>* strings=NULL;
+			T_STRING<WORD>* strings=NULL;
 			isl.get(strings, num_str);
 			const CHAR* list[num_str];
 			for (UINT i=0; i<num_str; i++)

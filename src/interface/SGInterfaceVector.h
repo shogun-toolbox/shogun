@@ -93,43 +93,43 @@ class CSGInterfaceVector
 			set(vec, len);
 		}
 
-		virtual inline void get(const BYTE*& vec, UINT& len)
+		virtual inline void get(BYTE*& vec, UINT& len)
 		{
 			vec=m_BYTE;
 			len=m_len;
 		}
 
-		virtual inline void get(const CHAR*& vec, UINT& len)
+		virtual inline void get(CHAR*& vec, UINT& len)
 		{
 			vec=m_CHAR;
 			len=m_len;
 		}
 
-		virtual inline void get(const DREAL*& vec, UINT& len)
+		virtual inline void get(DREAL*& vec, UINT& len)
 		{
 			vec=m_DREAL;
 			len=m_len;
 		}
 
-		virtual inline void get(const INT*& vec, INT& len)
+		virtual inline void get(INT*& vec, INT& len)
 		{
 			vec=m_INT;
 			len=m_len;
 		}
 
-		virtual inline void get(const SHORT*& vec, UINT& len)
+		virtual inline void get(SHORT*& vec, UINT& len)
 		{
 			vec=m_SHORT;
 			len=m_len;
 		}
 
-		virtual inline void get(const SHORTREAL*& vec, UINT& len)
+		virtual inline void get(SHORTREAL*& vec, UINT& len)
 		{
 			vec=m_SHORTREAL;
 			len=m_len;
 		}
 
-		virtual inline void get(const WORD*& vec, UINT& len)
+		virtual inline void get(WORD*& vec, UINT& len)
 		{
 			vec=m_WORD;
 			len=m_len;
@@ -177,7 +177,7 @@ class CSGInterfaceVector
 			element=m_WORD[idx];
 		}
 
-		virtual inline bool set(const BYTE* vec, UINT len)
+		virtual inline bool set(BYTE* vec, UINT len)
 		{
 			if (!vec)
 				return false;
@@ -189,7 +189,7 @@ class CSGInterfaceVector
 			return true;
 		}
 
-		virtual inline bool set(const CHAR* vec, UINT len)
+		virtual inline bool set(CHAR* vec, UINT len)
 		{
 			if (!vec)
 				return false;
@@ -201,7 +201,7 @@ class CSGInterfaceVector
 			return true;
 		}
 
-		virtual inline bool set(const DREAL* vec, UINT len)
+		virtual inline bool set(DREAL* vec, UINT len)
 		{
 			if (!vec)
 				return false;
@@ -213,7 +213,7 @@ class CSGInterfaceVector
 			return true;
 		}
 
-		virtual inline bool set(const INT* vec, UINT len)
+		virtual inline bool set(INT* vec, UINT len)
 		{
 			if (!vec)
 				return false;
@@ -225,7 +225,7 @@ class CSGInterfaceVector
 			return true;
 		}
 
-		virtual inline bool set(const SHORT* vec, UINT len)
+		virtual inline bool set(SHORT* vec, UINT len)
 		{
 			if (!vec)
 				return false;
@@ -237,7 +237,7 @@ class CSGInterfaceVector
 			return true;
 		}
 
-		virtual inline bool set(const SHORTREAL* vec, UINT len)
+		virtual inline bool set(SHORTREAL* vec, UINT len)
 		{
 			if (!vec)
 				return false;
@@ -249,7 +249,7 @@ class CSGInterfaceVector
 			return true;
 		}
 
-		virtual inline bool set(const WORD* vec, UINT len)
+		virtual inline bool set(WORD* vec, UINT len)
 		{
 			if (!vec)
 				return false;
@@ -272,13 +272,13 @@ class CSGInterfaceVector
 		}
 
 	protected:
-		const BYTE* m_BYTE;
-		const CHAR* m_CHAR;
-		const DREAL* m_DREAL;
-		const INT* m_INT;
-		const SHORT* m_SHORT;
-		const SHORTREAL* m_SHORTREAL;
-		const WORD* m_WORD;
+		BYTE* m_BYTE;
+		CHAR* m_CHAR;
+		DREAL* m_DREAL;
+		INT* m_INT;
+		SHORT* m_SHORT;
+		SHORTREAL* m_SHORTREAL;
+		WORD* m_WORD;
 		UINT m_len;
 		SGInterfaceDataType m_type;
 

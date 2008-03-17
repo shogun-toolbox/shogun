@@ -109,7 +109,7 @@ class CMatlabInterface : public CSGInterface
 			TSparse<T>*& matrix, const mxArray* mx_mat,
 			CSGInterfaceMatrix& im);
 		template <class T> void set_sparsematrix_t(
-			const TSparse<T>* matrix, const mxArray* mx_mat,
+			TSparse<T>* matrix, const mxArray* mx_mat,
 			CSGInterfaceMatrix& im);
 		template <class T> void get_string_list_t(
 			T_STRING<T>* strings, const mxArray* mx_str,

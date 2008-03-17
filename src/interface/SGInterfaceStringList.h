@@ -26,26 +26,26 @@ class CSGInterfaceStringList
 			set(data, len);
 		}
 
-		virtual inline void get(const T_STRING<WORD>*& str, UINT& len)
+		virtual inline void get(T_STRING<WORD>*& str, UINT& len)
 		{
 			str=m_WORD;
 			len=m_len;
 		}
 
-		virtual inline void get(const T_STRING<CHAR>*& str, UINT& len)
+		virtual inline void get(T_STRING<CHAR>*& str, UINT& len)
 		{
 			str=m_CHAR;
 			len=m_len;
 		}
 
-		virtual inline void set(const T_STRING<WORD>* str, UINT len)
+		virtual inline void set(T_STRING<WORD>* str, UINT len)
 		{
 			init(len);
 			set_type_from_name(typeid(*str).name());
 			m_WORD=str;
 		}
 
-		virtual inline void set(const T_STRING<CHAR>* str, UINT len)
+		virtual inline void set(T_STRING<CHAR>* str, UINT len)
 		{
 			init(len);
 			set_type_from_name(typeid(*str).name());
@@ -63,8 +63,8 @@ class CSGInterfaceStringList
 		}
 
 	protected:
-		const T_STRING<WORD>* m_WORD;
-		const T_STRING<CHAR>* m_CHAR;
+		T_STRING<WORD>* m_WORD;
+		T_STRING<CHAR>* m_CHAR;
 		UINT m_len;
 		SGInterfaceDataType m_type;
 

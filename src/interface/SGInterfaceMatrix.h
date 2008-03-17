@@ -88,98 +88,98 @@ class CSGInterfaceMatrix
 			set(mat, m, n);
 		}
 
-		virtual inline void get(const BYTE*& mat, UINT& m, UINT& n)
+		virtual inline void get(BYTE*& mat, UINT& m, UINT& n)
 		{
 			mat=m_BYTE;
 			m=m_M;
 			n=m_N;
 		}
 
-		virtual inline void get(const CHAR*& mat, UINT& m, UINT& n)
+		virtual inline void get(CHAR*& mat, UINT& m, UINT& n)
 		{
 			mat=m_CHAR;
 			m=m_M;
 			n=m_N;
 		}
 
-		virtual inline void get(const DREAL*& mat, UINT& m, UINT& n)
+		virtual inline void get(DREAL*& mat, UINT& m, UINT& n)
 		{
 			mat=m_DREAL;
 			m=m_M;
 			n=m_N;
 		}
 
-		virtual inline void get(const INT*& mat, UINT& m, UINT& n)
+		virtual inline void get(INT*& mat, UINT& m, UINT& n)
 		{
 			mat=m_INT;
 			m=m_M;
 			n=m_N;
 		}
 
-		virtual inline void get(const SHORT*& mat, UINT& m, UINT& n)
+		virtual inline void get(SHORT*& mat, UINT& m, UINT& n)
 		{
 			mat=m_SHORT;
 			m=m_M;
 			n=m_N;
 		}
 
-		virtual inline void get(const SHORTREAL*& mat, UINT& m, UINT& n)
+		virtual inline void get(SHORTREAL*& mat, UINT& m, UINT& n)
 		{
 			mat=m_SHORTREAL;
 			m=m_M;
 			n=m_N;
 		}
 
-		virtual inline void get(const WORD*& mat, UINT& m, UINT& n)
+		virtual inline void get(WORD*& mat, UINT& m, UINT& n)
 		{
 			mat=m_WORD;
 			m=m_M;
 			n=m_N;
 		}
 
-		virtual inline void get(const TSparse<BYTE>*& mat, UINT& m, UINT& n)
+		virtual inline void get(TSparse<BYTE>*& mat, UINT& m, UINT& n)
 		{
 			mat=m_SPARSEBYTE;
 			m=m_M;
 			n=m_N;
 		}
 
-		virtual inline void get(const TSparse<CHAR>*& mat, UINT& m, UINT& n)
+		virtual inline void get(TSparse<CHAR>*& mat, UINT& m, UINT& n)
 		{
 			mat=m_SPARSECHAR;
 			m=m_M;
 			n=m_N;
 		}
 
-		virtual inline void get(const TSparse<DREAL>*& mat, UINT& m, UINT& n)
+		virtual inline void get(TSparse<DREAL>*& mat, UINT& m, UINT& n)
 		{
 			mat=m_SPARSEDREAL;
 			m=m_M;
 			n=m_N;
 		}
 
-		virtual inline void get(const TSparse<INT>*& mat, UINT& m, UINT& n)
+		virtual inline void get(TSparse<INT>*& mat, UINT& m, UINT& n)
 		{
 			mat=m_SPARSEINT;
 			m=m_M;
 			n=m_N;
 		}
 
-		virtual inline void get(const TSparse<SHORT>*& mat, UINT& m, UINT& n)
+		virtual inline void get(TSparse<SHORT>*& mat, UINT& m, UINT& n)
 		{
 			mat=m_SPARSESHORT;
 			m=m_M;
 			n=m_N;
 		}
 
-		virtual inline void get(const TSparse<SHORTREAL>*& mat, UINT& m, UINT& n)
+		virtual inline void get(TSparse<SHORTREAL>*& mat, UINT& m, UINT& n)
 		{
 			mat=m_SPARSESHORTREAL;
 			m=m_M;
 			n=m_N;
 		}
 
-		virtual inline void get(const TSparse<WORD>*& mat, UINT& m, UINT& n)
+		virtual inline void get(TSparse<WORD>*& mat, UINT& m, UINT& n)
 		{
 			mat=m_SPARSEWORD;
 			m=m_M;
@@ -270,7 +270,7 @@ class CSGInterfaceMatrix
 			element=m_SPARSEWORD[idx];
 		}
 
-		virtual inline bool set(const BYTE* mat, UINT m, UINT n)
+		virtual inline bool set(BYTE* mat, UINT m, UINT n)
 		{
 			if (!mat)
 				return false;
@@ -282,7 +282,7 @@ class CSGInterfaceMatrix
 			return true;
 		}
 
-		virtual inline bool set(const CHAR* mat, UINT m, UINT n)
+		virtual inline bool set(CHAR* mat, UINT m, UINT n)
 		{
 			if (!mat)
 				return false;
@@ -294,7 +294,7 @@ class CSGInterfaceMatrix
 			return true;
 		}
 
-		virtual inline bool set(const DREAL* mat, UINT m, UINT n)
+		virtual inline bool set(DREAL* mat, UINT m, UINT n)
 		{
 			if (!mat)
 				return false;
@@ -306,7 +306,7 @@ class CSGInterfaceMatrix
 			return true;
 		}
 
-		virtual inline bool set(const INT* mat, UINT m, UINT n)
+		virtual inline bool set(INT* mat, UINT m, UINT n)
 		{
 			if (!mat)
 				return false;
@@ -318,7 +318,7 @@ class CSGInterfaceMatrix
 			return true;
 		}
 
-		virtual inline bool set(const SHORT* mat, UINT m, UINT n)
+		virtual inline bool set(SHORT* mat, UINT m, UINT n)
 		{
 			if (!mat)
 				return false;
@@ -330,7 +330,7 @@ class CSGInterfaceMatrix
 			return true;
 		}
 
-		virtual inline bool set(const SHORTREAL* mat, UINT m, UINT n)
+		virtual inline bool set(SHORTREAL* mat, UINT m, UINT n)
 		{
 			if (!mat)
 				return false;
@@ -342,7 +342,7 @@ class CSGInterfaceMatrix
 			return true;
 		}
 
-		virtual inline bool set(const WORD* mat, UINT m, UINT n)
+		virtual inline bool set(WORD* mat, UINT m, UINT n)
 		{
 			if (!mat)
 				return false;
@@ -354,7 +354,7 @@ class CSGInterfaceMatrix
 			return true;
 		}
 
-		virtual inline bool set(const TSparse<BYTE>* mat, UINT m, UINT n)
+		virtual inline bool set(TSparse<BYTE>* mat, UINT m, UINT n)
 		{
 			if (!mat)
 				return false;
@@ -366,7 +366,7 @@ class CSGInterfaceMatrix
 			return true;
 		}
 
-		virtual inline bool set(const TSparse<CHAR>* mat, UINT m, UINT n)
+		virtual inline bool set(TSparse<CHAR>* mat, UINT m, UINT n)
 		{
 			if (!mat)
 				return false;
@@ -378,7 +378,7 @@ class CSGInterfaceMatrix
 			return true;
 		}
 
-		virtual inline bool set(const TSparse<DREAL>* mat, UINT m, UINT n)
+		virtual inline bool set(TSparse<DREAL>* mat, UINT m, UINT n)
 		{
 			if (!mat)
 				return false;
@@ -390,7 +390,7 @@ class CSGInterfaceMatrix
 			return true;
 		}
 
-		virtual inline bool set(const TSparse<INT>* mat, UINT m, UINT n)
+		virtual inline bool set(TSparse<INT>* mat, UINT m, UINT n)
 		{
 			if (!mat)
 				return false;
@@ -402,7 +402,7 @@ class CSGInterfaceMatrix
 			return true;
 		}
 
-		virtual inline bool set(const TSparse<SHORT>* mat, UINT m, UINT n)
+		virtual inline bool set(TSparse<SHORT>* mat, UINT m, UINT n)
 		{
 			if (!mat)
 				return false;
@@ -414,7 +414,7 @@ class CSGInterfaceMatrix
 			return true;
 		}
 
-		virtual inline bool set(const TSparse<SHORTREAL>* mat, UINT m, UINT n)
+		virtual inline bool set(TSparse<SHORTREAL>* mat, UINT m, UINT n)
 		{
 			if (!mat)
 				return false;
@@ -426,7 +426,7 @@ class CSGInterfaceMatrix
 			return true;
 		}
 
-		virtual inline bool set(const TSparse<WORD>* mat, UINT m, UINT n)
+		virtual inline bool set(TSparse<WORD>* mat, UINT m, UINT n)
 		{
 			if (!mat)
 				return false;
@@ -454,20 +454,20 @@ class CSGInterfaceMatrix
 		}
 
 	protected:
-		const BYTE* m_BYTE;
-		const CHAR* m_CHAR;
-		const DREAL* m_DREAL;
-		const INT* m_INT;
-		const SHORT* m_SHORT;
-		const SHORTREAL* m_SHORTREAL;
-		const WORD* m_WORD;
-		const TSparse<BYTE>* m_SPARSEBYTE;
-		const TSparse<CHAR>* m_SPARSECHAR;
-		const TSparse<DREAL>* m_SPARSEDREAL;
-		const TSparse<INT>* m_SPARSEINT;
-		const TSparse<SHORT>* m_SPARSESHORT;
-		const TSparse<SHORTREAL>* m_SPARSESHORTREAL;
-		const TSparse<WORD>* m_SPARSEWORD;
+		BYTE* m_BYTE;
+		CHAR* m_CHAR;
+		DREAL* m_DREAL;
+		INT* m_INT;
+		SHORT* m_SHORT;
+		SHORTREAL* m_SHORTREAL;
+		WORD* m_WORD;
+		TSparse<BYTE>* m_SPARSEBYTE;
+		TSparse<CHAR>* m_SPARSECHAR;
+		TSparse<DREAL>* m_SPARSEDREAL;
+		TSparse<INT>* m_SPARSEINT;
+		TSparse<SHORT>* m_SPARSESHORT;
+		TSparse<SHORTREAL>* m_SPARSESHORTREAL;
+		TSparse<WORD>* m_SPARSEWORD;
 		UINT m_M;
 		UINT m_N;
 		SGInterfaceDataType m_type;
