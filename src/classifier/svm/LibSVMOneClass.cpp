@@ -99,6 +99,7 @@ bool CLibSVMOneClass::train()
 		delete[] problem.x;
 		delete[] x_space;
 		svm_destroy_model(model);
+		model=NULL;
 
 		return true;
 	}
