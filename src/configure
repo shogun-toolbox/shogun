@@ -1946,6 +1946,24 @@ cat > $TMPC << EOF
 #include <math.h>
 int main(int argc, char** argv)
 {
+	long double a=::sqrtl((long double) argc);
+	return (int) a;
+}
+EOF
+	echocheck "Math sqrtl() support"
+	if cxx_check -lm
+	then
+		HAVE_SQRTL='#define HAVE_SQRTL 1'
+		DEFINES="$DEFINES -DHAVE_SQRTL"
+		echores "yes"
+	else
+		echores "no - resorting to sqrt()"
+	fi
+
+cat > $TMPC << EOF
+#include <math.h>
+int main(int argc, char** argv)
+{
 	double a=::log2((double) argc);
 	return (int) a;
 }
@@ -2687,6 +2705,7 @@ $HAVE_SWIG
 $HAVE_DOXYGEN
 $HAVE_LAPACK
 $HAVE_POWL
+$HAVE_SQRTL
 $HAVE_LOG2
 $USE_LOGCACHE
 $USE_SHORTREAL_KERNELCACHE

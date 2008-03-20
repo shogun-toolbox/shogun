@@ -233,7 +233,13 @@ class CMath : public CSGObject
 		/// x^0.5
 		static inline LONGREAL sqrt(LONGREAL x)
 		{
+			//fall back to double precision sqrt if sqrtl is not
+			//available
+#ifdef HAVE_SQRTL
 			return ::sqrtl(x);
+#else
+			return ::sqrt(x);
+#endif
 		}
 
 
