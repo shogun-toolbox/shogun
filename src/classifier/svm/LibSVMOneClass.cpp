@@ -29,8 +29,6 @@ CLibSVMOneClass::~CLibSVMOneClass()
 
 bool CLibSVMOneClass::train()
 {
-	free(model);
-
 	problem.l = get_kernel()->get_lhs()->get_num_vectors();
 	
 	struct svm_node* x_space;
@@ -100,6 +98,7 @@ bool CLibSVMOneClass::train()
 
 		delete[] problem.x;
 		delete[] x_space;
+		svm_destroy_model(model);
 
 		return true;
 	}

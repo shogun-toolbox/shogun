@@ -26,8 +26,6 @@ CLibSVMMultiClass::~CLibSVMMultiClass()
 
 bool CLibSVMMultiClass::train()
 {
-	free(model);
-
 	struct svm_node* x_space;
 
 	ASSERT(get_labels() && get_labels()->get_num_labels());
@@ -163,6 +161,9 @@ bool CLibSVMMultiClass::train()
 		delete[] problem.x;
 		delete[] problem.y;
 		delete[] x_space;
+
+		svm_destroy_model(model);
+		model=NULL;
 
 		return true;
 	}
