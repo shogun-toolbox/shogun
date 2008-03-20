@@ -107,8 +107,7 @@ bool CLibSVM::train()
 		delete[] problem.y;
 		delete[] x_space;
 
-		free(model->rho);
-		free(model);
+		svm_destroy_model(model);
 		model=NULL;
 		return true;
 	}
