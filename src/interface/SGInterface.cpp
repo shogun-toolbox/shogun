@@ -357,9 +357,7 @@ bool CSGInterface::a_crc()
 
 	INT val=CMath::crc32(bstring, slen);
 	delete[] bstring;
-
-	CSGInterfaceVector iv(&val, 1);
-	set_vector(iv);
+	set_int_vector(&val, 1);
 
 	return true;
 }
@@ -369,17 +367,15 @@ bool CSGInterface::a_translate_string()
 	if (m_nlhs!=1 || m_nrhs!=4)
 		return false;
 
-	CSGInterfaceVector iv(SGIDT_DREAL);
-	get_vector(iv);
 	DREAL* string=NULL;
-	UINT len;
-	iv.get(string, len);
+	INT len;
+	get_real_vector(string, len);
 
-	UINT order=(UINT) get_int();
+	INT order=get_int();
 	INT start=get_int();
 
 	const INT max_val=2; /* DNA->2bits */
-	UINT i,j;
+	INT i,j;
 
 	WORD* obs=new WORD[len];
 	ASSERT(obs);
@@ -429,8 +425,7 @@ bool CSGInterface::a_translate_string()
 		real_obs[i-start]=(DREAL) obs[i];
 	delete[] obs;
 
-	iv.set(real_obs, len);
-	set_vector(iv);
+	set_real_vector(real_obs, len);
 	delete[] real_obs;
 
 	return true;
@@ -471,26 +466,20 @@ bool CSGInterface::a_best_path_no_b()
 	if (m_nlhs!=2 || m_nrhs!=5)
 		return false;
 
-	CSGInterfaceMatrix im_p(SGIDT_DREAL);
-	get_matrix(im_p);
 	DREAL* p=NULL;
-	UINT M_p=0;
-	UINT N_p=0;
-	im_p.get(p, M_p, N_p);
+	INT M_p=0;
+	INT N_p=0;
+	get_real_matrix(p, M_p, N_p);
 
-	CSGInterfaceMatrix im_q(SGIDT_DREAL);
-	get_matrix(im_q);
 	DREAL* q=NULL;
-	UINT M_q=0;
-	UINT N_q=0;
-	im_q.get(q, M_q, N_q);
+	INT M_q=0;
+	INT N_q=0;
+	get_real_matrix(q, M_q, N_q);
 
-	CSGInterfaceMatrix im_a(SGIDT_DREAL);
-	get_matrix(im_a);
 	DREAL* a=NULL;
-	UINT M_a=0;
-	UINT N_a=0;
-	im_a.get(a, M_a, N_a);
+	INT M_a=0;
+	INT N_a=0;
+	get_real_matrix(a, M_a, N_a);
 
 	if (M_p!=1 || N_q!=N_p || M_q!=1 || N_a!=N_p || M_a!=N_p)
 		SG_SERROR("Model matrices not matching in size.\n");
@@ -512,11 +501,8 @@ bool CSGInterface::a_best_path_no_b()
 	DREAL prob=h->best_path_no_b(max_iter, best_iter, path);
 	delete h;
 
-	CSGInterfaceVector iv_prob(&prob, 1);
-	set_vector(iv_prob);
-
-	CSGInterfaceVector iv_path(path, best_iter+1);
-	set_vector(iv_path);
+	set_real_vector(&prob, 1);
+	set_int_vector(path, best_iter+1);
 	delete[] path;
 
 	return true;
@@ -527,33 +513,25 @@ bool CSGInterface::a_best_path_trans_simple()
 	if (m_nlhs!=2 || m_nrhs!=6)
 		return false;
 
-	CSGInterfaceMatrix im_p(SGIDT_DREAL);
-	get_matrix(im_p);
 	DREAL* p=NULL;
-	UINT M_p=0;
-	UINT N_p=0;
-	im_p.get(p, M_p, N_p);
+	INT M_p=0;
+	INT N_p=0;
+	get_real_matrix(p, M_p, N_p);
 
-	CSGInterfaceMatrix im_q(SGIDT_DREAL);
-	get_matrix(im_q);
 	DREAL* q=NULL;
-	UINT M_q=0;
-	UINT N_q=0;
-	im_q.get(q, M_q, N_q);
+	INT M_q=0;
+	INT N_q=0;
+	get_real_matrix(q, M_q, N_q);
 
-	CSGInterfaceMatrix im_a_trans(SGIDT_DREAL);
-	get_matrix(im_a_trans);
 	DREAL* a_trans=NULL;
-	UINT M_a_trans=0;
-	UINT N_a_trans=0;
-	im_a_trans.get(a_trans, M_a_trans, N_a_trans);
+	INT M_a_trans=0;
+	INT N_a_trans=0;
+	get_real_matrix(a_trans, M_a_trans, N_a_trans);
 
-	CSGInterfaceMatrix im_seq(SGIDT_DREAL);
-	get_matrix(im_seq);
 	DREAL* seq=NULL;
-	UINT M_seq=0;
-	UINT N_seq=0;
-	im_seq.get(seq, M_seq, N_seq);
+	INT M_seq=0;
+	INT N_seq=0;
+	get_real_matrix(seq, M_seq, N_seq);
 
 	if (M_p!=1 || N_q!=N_p || M_q!=1 || N_a_trans!=3 || M_seq!=N_p)
 		SG_SERROR("Model matrices not matching in size.\n");
@@ -578,12 +556,10 @@ bool CSGInterface::a_best_path_trans_simple()
 	h->best_path_trans_simple(seq, N_seq, nbest, prob, path);
 	delete h;
 
-	CSGInterfaceVector iv_prob(prob, nbest);
-	set_vector(iv_prob);
+	set_real_vector(prob, nbest);
 	delete[] prob;
 
-	CSGInterfaceMatrix im_path(path, nbest, N_seq);
-	set_matrix(im_path);
+	set_int_matrix(path, nbest, N_seq);
 	delete[] path;
 
 	return true;
@@ -595,26 +571,20 @@ bool CSGInterface::a_best_path_no_b_trans()
 	if (m_nlhs!=2 || m_nrhs!=6)
 		return false;
 
-	CSGInterfaceMatrix im_p(SGIDT_DREAL);
-	get_matrix(im_p);
 	DREAL* p=NULL;
-	UINT M_p=0;
-	UINT N_p=0;
-	im_p.get(p, M_p, N_p);
+	INT M_p=0;
+	INT N_p=0;
+	get_real_matrix(p, M_p, N_p);
 
-	CSGInterfaceMatrix im_q(SGIDT_DREAL);
-	get_matrix(im_q);
 	DREAL* q=NULL;
-	UINT M_q=0;
-	UINT N_q=0;
-	im_q.get(q, M_q, N_q);
+	INT M_q=0;
+	INT N_q=0;
+	get_real_matrix(q, M_q, N_q);
 
-	CSGInterfaceMatrix im_a_trans(SGIDT_DREAL);
-	get_matrix(im_a_trans);
 	DREAL* a_trans=NULL;
-	UINT M_a_trans=0;
-	UINT N_a_trans=0;
-	im_a_trans.get(a_trans, M_a_trans, N_a_trans);
+	INT M_a_trans=0;
+	INT N_a_trans=0;
+	get_real_matrix(a_trans, M_a_trans, N_a_trans);
 
 	if (M_p!=1 || N_q!=N_p || M_q!=1 || N_a_trans!=3)
 		SG_SERROR("Model matrices not matching in size.\n");
@@ -644,12 +614,10 @@ bool CSGInterface::a_best_path_no_b_trans()
 	h->best_path_no_b_trans(max_iter, max_best_iter, nbest, prob, path);
 	delete h;
 
-	CSGInterfaceVector iv_prob(prob, nbest);
-	set_vector(iv_prob);
+	set_real_vector(prob, nbest);
 	delete[] prob;
 
-	CSGInterfaceMatrix iv_path(path, nbest, max_best_iter+1);
-	set_matrix(iv_path);
+	set_int_matrix(path, nbest, max_best_iter+1);
 	delete[] path;
 
 	return true;
@@ -661,8 +629,7 @@ bool CSGInterface::a_get_version()
 		return false;
 
 	DREAL* ver=(DREAL*) version.get_version_revision();
-	CSGInterfaceVector iv(ver, 1);
-	set_vector(iv);
+	set_real_vector(ver, 1);
 
 	return true;
 }
@@ -680,16 +647,14 @@ bool CSGInterface::a_set_labels()
 		SG_SERROR("Unknown target, neither TRAIN nor TEST.\n");
 	}
 
-	CSGInterfaceVector iv(SGIDT_DREAL);
-	get_vector(iv);
 	DREAL* lab=NULL;
-	UINT len=0;
-	iv.get(lab, len);
+	INT len=0;
+	get_real_vector(lab, len);
 
 	CLabels* labels=new CLabels(len);
 	SG_INFO("num labels: %d\n", labels->get_num_labels());
 
-	for (UINT i=0; i<len; i++)
+	for (INT i=0; i<len; i++)
 	{
 		if (!labels->set_label(i, lab[i]))
 			SG_SERROR("Couldn't set label %d (of %d): %f.\n", i, len, lab[i]);
@@ -733,8 +698,7 @@ bool CSGInterface::a_get_labels()
 	for (INT i=0; i<num_labels ; i++)
 		lab[i]=labels->get_label(i);
 
-	CSGInterfaceVector iv(lab, num_labels);
-	set_vector(iv);
+	set_real_vector(lab, num_labels);
 	delete[] lab;
 
 	return true;
@@ -755,11 +719,9 @@ bool CSGInterface::a_obtain_from_position_list()
 
 	INT winsize=get_int();
 
-	CSGInterfaceVector iv(SGIDT_INT);
 	INT* shifts=NULL;
 	INT num_shift=0;
-	get_vector(iv);
-	iv.get(shifts, num_shift);
+	get_int_vector(shifts, num_shift);
 
 	INT skip=0;
 	if (m_nrhs==5)
@@ -878,8 +840,7 @@ bool CSGInterface::a_get_features()
 						realfeat->free_feature_vector(vec, i, free_vec);
 					}
 
-					CSGInterfaceMatrix im(result, num_feat, num_vec);
-					set_matrix(im);
+					set_real_matrix(result, num_feat, num_vec);
 					delete[] result;
 
 					break;
@@ -905,8 +866,7 @@ bool CSGInterface::a_get_features()
 						wordfeat->free_feature_vector(vec, i, free_vec);
 					}
 
-					CSGInterfaceMatrix im(result, num_feat, num_vec);
-					set_matrix(im);
+					set_word_matrix(result, num_feat, num_vec);
 					delete[] result;
 
 					break;
@@ -932,8 +892,7 @@ bool CSGInterface::a_get_features()
 						shortfeat->free_feature_vector(vec, i, free_vec);
 					}
 
-					CSGInterfaceMatrix im(result, num_feat, num_vec);
-					set_matrix(im);
+					set_short_matrix(result, num_feat, num_vec);
 					delete[] result;
 
 					break;
@@ -959,8 +918,7 @@ bool CSGInterface::a_get_features()
 						charfeat->free_feature_vector(vec, i, free_vec);
 					}
 
-					CSGInterfaceMatrix im(result, num_feat, num_vec);
-					set_matrix(im);
+					set_char_matrix(result, num_feat, num_vec);
 					delete[] result;
 
 					break;
@@ -986,8 +944,7 @@ bool CSGInterface::a_get_features()
 						bytefeat->free_feature_vector(vec, i, free_vec);
 					}
 
-					CSGInterfaceMatrix im(result, num_feat, num_vec);
-					set_matrix(im);
+					set_byte_matrix(result, num_feat, num_vec);
 					delete[] result;
 
 					break;
@@ -1032,8 +989,7 @@ bool CSGInterface::a_get_features()
 							free_feature_vector(vec, len, dofree);
 					}
 
-					CSGInterfaceMatrix im(result, num_feat, num_vec);
-					set_matrix(im);
+					set_real_sparsematrix(result, num_feat, num_vec);
 					delete[] result;
 				}
 				break;
@@ -1062,8 +1018,7 @@ bool CSGInterface::a_get_features()
 							list[i].string=NULL;
 					}
 
-					CSGInterfaceStringList isl(list, num_vec);
-					set_string_list(isl);
+					set_char_string_list(list, num_vec);
 					delete[] list;
 				}
 				break;
@@ -1084,8 +1039,7 @@ bool CSGInterface::a_get_features()
 							list[i].string=NULL;
 					}
 
-					CSGInterfaceStringList isl(list, num_vec);
-					set_string_list(isl);
+					set_word_string_list(list, num_vec);
 					delete[] list;
 				}
 				break;
@@ -1366,8 +1320,7 @@ bool CSGInterface::a_get_distance_matrix()
 	DREAL* dmatrix=NULL;
 	distance->get_distance_matrix_real(num_vec1, num_vec2, dmatrix);
 
-	CSGInterfaceMatrix im(dmatrix, num_vec1, num_vec2);
-	set_matrix(im);
+	set_real_matrix(dmatrix, num_vec1, num_vec2);
 	delete[] dmatrix;
 
 	return true;
@@ -1387,8 +1340,7 @@ bool CSGInterface::a_get_kernel_matrix()
 	DREAL* kmatrix=NULL;
 	kernel->get_kernel_matrix_real(num_vec1, num_vec2, kmatrix);
 
-	CSGInterfaceMatrix im(kmatrix, num_vec1, num_vec2);
-	set_matrix(im);
+	set_real_matrix(kmatrix, num_vec1, num_vec2);
 	delete[] kmatrix;
 
 	return true;
@@ -1415,12 +1367,10 @@ bool CSGInterface::a_set_custom_kernel()
 	if (kernel->get_kernel_type()!=K_CUSTOM)
 		SG_SERROR("Not a custom kernel.\n");
 
-	CSGInterfaceMatrix im(SGIDT_DREAL);
-	get_matrix(im);
 	DREAL* kmatrix=NULL;
-	UINT num_feat=0;
-	UINT num_vec=0;
-	im.get(kmatrix, num_feat, num_vec);
+	INT num_feat=0;
+	INT num_vec=0;
+	get_real_matrix(kmatrix, num_feat, num_vec);
 
 	INT tlen=0;
 	CHAR* type=get_string(tlen);
@@ -1476,12 +1426,10 @@ bool CSGInterface::a_set_WD_position_weights()
 		SG_SERROR("Unsupported kernel.\n");
 
 	bool success=false;
-	CSGInterfaceMatrix im(SGIDT_DREAL);
-	get_matrix(im);
 	DREAL* weights=NULL;
-	UINT dim=0;
-	UINT len=0;
-	im.get(weights, dim, len);
+	INT dim=0;
+	INT len=0;
+	get_real_matrix(weights, dim, len);
 
 	if (ktype==K_WEIGHTEDDEGREE)
 	{
@@ -1567,19 +1515,17 @@ bool CSGInterface::a_set_subkernel_weights()
 		SG_SERROR("No kernel.\n");
 
 	bool success=false;
-	CSGInterfaceMatrix im(SGIDT_DREAL);
-	get_matrix(im);
 	DREAL* weights=NULL;
-	UINT dim=0;
-	UINT len=0;
-	im.get(weights, dim, len);
+	INT dim=0;
+	INT len=0;
+	get_real_matrix(weights, dim, len);
 
 	EKernelType ktype=kernel->get_kernel_type();
 	if (ktype==K_WEIGHTEDDEGREE)
 	{
 		CWeightedDegreeStringKernel* k=
 			(CWeightedDegreeStringKernel*) kernel;
-		UINT degree=k->get_degree();
+		INT degree=k->get_degree();
 		if (dim!=degree || len<1)
 			SG_SERROR("Dimension mismatch (should be de(seq_length | 1) x degree)\n");
 
@@ -1592,7 +1538,7 @@ bool CSGInterface::a_set_subkernel_weights()
 	{
 		CWeightedDegreePositionStringKernel* k=
 			(CWeightedDegreePositionStringKernel*) kernel;
-		UINT degree=k->get_degree();
+		INT degree=k->get_degree();
 		if (dim!=degree || len<1)
 			SG_SERROR("Dimension mismatch (should be de(seq_length | 1) x degree)\n");
 
@@ -1603,7 +1549,7 @@ bool CSGInterface::a_set_subkernel_weights()
 	}
 	else // all other kernels
 	{
-		UINT num_subkernels=kernel->get_num_subkernels();
+		INT num_subkernels=kernel->get_num_subkernels();
 		if (dim!=1 || len!=num_subkernels)
 			SG_SERROR("Dimension mismatch (should be 1 x num_subkernels)\n");
 
@@ -1626,12 +1572,10 @@ bool CSGInterface::a_set_subkernel_weights_combined()
 		SG_SERROR("Only works for combined kernels.\n");
 
 	bool success=false;
-	CSGInterfaceMatrix im(SGIDT_DREAL);
-	get_matrix(im);
 	DREAL* weights=NULL;
-	UINT dim=0;
-	UINT len=0;
-	im.get(weights, dim, len);
+	INT dim=0;
+	INT len=0;
+	get_real_matrix(weights, dim, len);
 
 	INT idx=get_int();
 	SG_DEBUG("using kernel_idx=%i\n", idx);
@@ -1645,7 +1589,7 @@ bool CSGInterface::a_set_subkernel_weights_combined()
 	{
 		CWeightedDegreeStringKernel* k=
 			(CWeightedDegreeStringKernel*) kernel;
-		UINT degree=k->get_degree();
+		INT degree=k->get_degree();
 		if (dim!=degree || len<1)
 			SG_SERROR("Dimension mismatch (should be de(seq_length | 1) x degree)\n");
 
@@ -1658,7 +1602,7 @@ bool CSGInterface::a_set_subkernel_weights_combined()
 	{
 		CWeightedDegreePositionStringKernel* k=
 			(CWeightedDegreePositionStringKernel*) kernel;
-		UINT degree=k->get_degree();
+		INT degree=k->get_degree();
 		if (dim!=degree || len<1)
 			SG_SERROR("Dimension mismatch (should be de(seq_length | 1) x degree)\n");
 
@@ -1669,7 +1613,7 @@ bool CSGInterface::a_set_subkernel_weights_combined()
 	}
 	else // all other kernels
 	{
-		UINT num_subkernels=kernel->get_num_subkernels();
+		INT num_subkernels=kernel->get_num_subkernels();
 		if (dim!=1 || len!=num_subkernels)
 			SG_SERROR("Dimension mismatch (should be 1 x num_subkernels)\n");
 
@@ -1696,18 +1640,16 @@ bool CSGInterface::a_set_last_subkernel_weights()
 		SG_SERROR("No last kernel.\n");
 
 	bool success=false;
-	CSGInterfaceMatrix im(SGIDT_DREAL);
-	get_matrix(im);
 	DREAL* weights=NULL;
-	UINT dim=0;
-	UINT len=0;
-	im.get(weights, dim, len);
+	INT dim=0;
+	INT len=0;
+	get_real_matrix(weights, dim, len);
 
 	EKernelType ktype=kernel->get_kernel_type();
 	if (ktype==K_WEIGHTEDDEGREE)
 	{
 		CWeightedDegreeStringKernel* k=(CWeightedDegreeStringKernel*) kernel;
-		if (dim!=(UINT) k->get_degree() || len<1)
+		if (dim!=k->get_degree() || len<1)
 			SG_SERROR("Dimension mismatch (should be de(seq_length | 1) x degree)\n");
 
 		if (len==1)
@@ -1719,7 +1661,7 @@ bool CSGInterface::a_set_last_subkernel_weights()
 	{
 		CWeightedDegreePositionStringKernel* k=
 			(CWeightedDegreePositionStringKernel*) kernel;
-		if (dim!=(UINT) k->get_degree() || len<1)
+		if (dim!=k->get_degree() || len<1)
 			SG_SERROR("Dimension mismatch (should be de(seq_length | 1) x degree)\n");
 
 		if (len==1)
@@ -1729,7 +1671,7 @@ bool CSGInterface::a_set_last_subkernel_weights()
 	}
 	else // all other kernels
 	{
-		UINT num_subkernels=kernel->get_num_subkernels();
+		INT num_subkernels=kernel->get_num_subkernels();
 		if (dim!=1 || len!=num_subkernels)
 			SG_SERROR("Dimension mismatch (should be 1 x num_subkernels)\n");
 
@@ -1769,8 +1711,7 @@ bool CSGInterface::a_get_SPEC_consensus()
 	delete[] sv_idx;
 	delete[] sv_weight;
 
-	CSGInterfaceVector iv(consensus, num_feat);
-	set_vector(iv);
+	set_char_vector(consensus, num_feat);
 	delete[] consensus;
 
 	return true;
@@ -1822,8 +1763,7 @@ bool CSGInterface::a_get_SPEC_scoring()
 	delete[] sv_idx;
 	delete[] sv_weight;
 
-	CSGInterfaceMatrix im(position_weights, num_sym, num_feat);
-	set_matrix(im);
+	set_real_matrix(position_weights, num_sym, num_feat);
 	delete[] position_weights;
 
 	return true;
@@ -1858,8 +1798,7 @@ bool CSGInterface::a_get_WD_consensus()
 	delete[] sv_idx;
 	delete[] sv_weight;
 
-	CSGInterfaceVector iv(consensus, num_feat);
-	set_vector(iv);
+	set_char_vector(consensus, num_feat);
 	delete[] consensus;
 
 	return true;
@@ -1871,12 +1810,10 @@ bool CSGInterface::a_compute_POIM_WD()
 		return false;
 
 	INT max_order=get_int();
-	CSGInterfaceMatrix im(SGIDT_DREAL);
-	get_matrix(im);
 	DREAL* distribution=NULL;
-	UINT num_dfeat=0;
-	UINT num_dvec=0;
-	im.get(distribution, num_dfeat, num_dvec);
+	INT num_dfeat=0;
+	INT num_dvec=0;
+	get_real_matrix(distribution, num_dfeat, num_dvec);
 
 	if (!distribution)
 		SG_SERROR("Wrong distribution.\n");
@@ -1895,7 +1832,7 @@ bool CSGInterface::a_compute_POIM_WD()
 	seqlen=sfeat->get_max_vector_length();
 	num_sym=(INT) sfeat->get_num_symbols();
 
-	if (num_dvec!=(UINT) seqlen || num_dfeat!=(UINT) num_sym)
+	if (num_dvec!=seqlen || num_dfeat!=num_sym)
 	{
 		SG_SERROR("distribution should have (seqlen x num_sym) elements"
 				"(seqlen: %d vs. %d symbols: %d vs. %d)\n", seqlen,
@@ -1931,8 +1868,7 @@ bool CSGInterface::a_compute_POIM_WD()
 	delete[] sv_idx;
 	delete[] sv_weight;
 
-	im.set(position_weights, num_sym, seqlen);
-	set_matrix(im);
+	set_real_matrix(position_weights, num_sym, seqlen);
 	delete[] position_weights;
 
 	return true;
@@ -1977,8 +1913,7 @@ bool CSGInterface::a_get_WD_scoring()
 	delete[] sv_idx;
 	delete[] sv_weight;
 
-	CSGInterfaceMatrix im(position_weights, num_sym, num_feat);
-	set_matrix(im);
+	set_real_matrix(position_weights, num_sym, num_feat);
 	delete[] position_weights;
 
 	return true;
@@ -2004,19 +1939,17 @@ bool CSGInterface::a_get_WD_position_weights()
 		SG_SERROR("Wrong subkernel type.\n");
 
 	INT len=0;
-	DREAL* position_weights;
+	const DREAL* position_weights;
 
 	if (kernel->get_kernel_type()==K_WEIGHTEDDEGREE)
 		position_weights=((CWeightedDegreeStringKernel*) kernel)->get_position_weights(len);
 	else
 		position_weights=((CWeightedDegreePositionStringKernel*) kernel)->get_position_weights(len);
 
-	CSGInterfaceVector iv(SGIDT_DREAL);
 	if (position_weights==NULL)
-		iv.set(position_weights, 0);
+		set_real_vector(position_weights, 0);
 	else
-		iv.set(position_weights, (UINT) len);
-	set_vector(iv);
+		set_real_vector(position_weights, len);
 
 	return true;
 }
@@ -2053,8 +1986,7 @@ bool CSGInterface::a_get_last_subkernel_weights()
 		ASSERT(weights);
 		for (INT i=0; i<num_weights; i++)
 			weights[i]=w[i];
-		CSGInterfaceVector iv(weights, num_weights);
-		set_vector(iv);
+		set_real_vector(weights, num_weights);
 		delete[] weights;
 
 		return true;
@@ -2073,8 +2005,7 @@ bool CSGInterface::a_get_last_subkernel_weights()
 	if (len==0)
 		len=1;
 
-	CSGInterfaceMatrix im(weights, degree, len);
-	set_matrix(im);
+	set_real_matrix(weights, degree, len);
 
 	return true;
 }
@@ -2139,8 +2070,7 @@ bool CSGInterface::a_compute_by_subkernels()
 			k->compute_by_tree(i, &result[i*num_feat]);
 	}
 
-	CSGInterfaceMatrix im(result, num_feat, num_vec);
-	set_matrix(im);
+	set_real_matrix(result, num_feat, num_vec);
 	delete[] result;
 
 	return true;
@@ -2191,8 +2121,7 @@ bool CSGInterface::a_get_kernel_optimization()
 			delete[] sv_idx;
 			delete[] sv_weight;
 
-			CSGInterfaceMatrix im(position_weights, num_sym, num_feat);
-			set_matrix(im);
+			set_real_matrix(position_weights, num_sym, num_feat);
 			delete[] position_weights;
 
 			return true;
@@ -2206,8 +2135,7 @@ bool CSGInterface::a_get_kernel_optimization()
 			DREAL* weights;
 			k->get_dictionary(len, weights);
 
-			CSGInterfaceVector iv(weights, len);
-			set_vector(iv);
+			set_real_vector(weights, len);
 			delete[] weights;
 
 			return true;
@@ -2223,8 +2151,7 @@ bool CSGInterface::a_get_kernel_optimization()
 			ASSERT(weights);
 			for (INT i=0; i<len; i++)
 				weights[i]=w[i];
-			CSGInterfaceVector iv(weights, len);
-			set_vector(iv);
+			set_real_vector(weights, len);
 			delete[] weights;
 
 			return true;
@@ -2240,8 +2167,7 @@ bool CSGInterface::a_get_kernel_optimization()
 			ASSERT(weights);
 			for (INT i=0; i<len; i++)
 				weights[i]=w[i];
-			CSGInterfaceVector iv(weights, len);
-			set_vector(iv);
+			set_real_vector(weights, len);
 			delete[] weights;
 			return true;
 		}
@@ -2260,8 +2186,7 @@ bool CSGInterface::a_plugin_estimate_classify_example()
 	INT idx=get_int();
 	DREAL result=gui->guipluginestimate.classify_example(idx);
 
-	CSGInterfaceVector iv(&result, 1);
-	set_vector(iv);
+	set_real_vector(&result, 1);
 	return true;
 }
 
@@ -2283,8 +2208,7 @@ bool CSGInterface::a_plugin_estimate_classify()
 		result[i]=labels->get_label(i);
 	delete labels;
 
-	CSGInterfaceVector iv(result, num_vec);
-	set_vector(iv);
+	set_real_vector(result, num_vec);
 	delete[] result;
 
 	return true;
@@ -2295,12 +2219,10 @@ bool CSGInterface::a_set_plugin_estimate()
 	if (m_nlhs!=0 || m_nrhs!=3)
 		return false;
 
-	CSGInterfaceMatrix im(SGIDT_DREAL);
-	get_matrix(im);
 	DREAL* emission_probs=NULL;
-	UINT num_probs=0;
-	UINT num_vec=0;
-	im.get(emission_probs, num_probs, num_vec);
+	INT num_probs=0;
+	INT num_vec=0;
+	get_real_matrix(emission_probs, num_probs, num_vec);
 
 	if (num_vec!=2)
 		SG_SERROR("Need at least 1 set of positive and 1 set of negative params.\n");
@@ -2308,15 +2230,13 @@ bool CSGInterface::a_set_plugin_estimate()
 	DREAL* pos_params=emission_probs;
 	DREAL* neg_params=&(emission_probs[num_probs]);
 
-	CSGInterfaceVector iv(SGIDT_DREAL);
-	get_vector(iv);
 	DREAL* model_sizes=NULL;
-	UINT len=0;
-	iv.get(model_sizes, len);
+	INT len=0;
+	get_real_vector(model_sizes, len);
 
 	INT seq_length=(INT) model_sizes[0];
 	INT num_symbols=(INT) model_sizes[1];
-	if (num_probs!=(UINT) seq_length*num_symbols)
+	if (num_probs!=seq_length*num_symbols)
 		SG_SERROR("Mismatch in number of emission probs and sequence length * number of symbols.\n");
 
 	gui->guipluginestimate.get_estimator()->set_model_params(
@@ -2350,15 +2270,13 @@ bool CSGInterface::a_get_plugin_estimate()
 	for (INT i=0; i<num_params; i++)
 		result[i+num_params]=neg_params[i];
 
-	CSGInterfaceMatrix im(result, num_params, 2);
-	set_matrix(im);
+	set_real_matrix(result, num_params, 2);
 	delete[] result;
 
 	DREAL model_sizes[2];
 	model_sizes[0]=(DREAL) seq_length;
 	model_sizes[1]=(DREAL) num_symbols;
-	CSGInterfaceVector iv(model_sizes, 2);
-	set_vector(iv);
+	set_real_vector(model_sizes, 2);
 
 	return true;
 }
@@ -2384,8 +2302,7 @@ bool CSGInterface::a_classify()
 		result[i]=labels->get_label(i);
 	delete labels;
 
-	CSGInterfaceVector iv(result, num_vec);
-	set_vector(iv);
+	set_real_vector(result, num_vec);
 	delete[] result;
 
 	return true;
@@ -2402,8 +2319,7 @@ bool CSGInterface::a_classify_example()
 	if (!gui->guiclassifier.classify_example(idx, result))
 		SG_SERROR("Classify_example failed.\n");
 
-	CSGInterfaceVector iv(&result, 1);
-	set_vector(iv);
+	set_real_vector(&result, 1);
 
 	return true;
 }
@@ -2423,11 +2339,9 @@ bool CSGInterface::a_get_classifier()
 	if (!gui->guiclassifier.get_trained_classifier(weights, rows, cols, bias, brows, bcols))
 		return false;
 
-	CSGInterfaceMatrix im(bias, brows, bcols);
-	set_matrix(im);
+	set_real_matrix(bias, brows, bcols);
 	delete[] bias;
-	im.set(weights, rows, cols);
-	set_matrix(im);
+	set_real_matrix(weights, rows, cols);
 	delete[] weights;
 
 	return true;
@@ -2445,12 +2359,10 @@ bool CSGInterface::a_set_svm()
 
 	DREAL bias=get_real();
 
-	CSGInterfaceMatrix im(SGIDT_DREAL);
-	get_matrix(im);
 	DREAL* alphas=NULL;
-	UINT num_feat_alphas=0;
-	UINT num_vec_alphas=0;
-	im.get(alphas, num_feat_alphas, num_vec_alphas);
+	INT num_feat_alphas=0;
+	INT num_vec_alphas=0;
+	get_real_matrix(alphas, num_feat_alphas, num_vec_alphas);
 
 	if (!alphas)
 		SG_SERROR("No proper alphas given.\n");
@@ -2484,8 +2396,7 @@ bool CSGInterface::a_get_svm_objective()
 		SG_SERROR("No SVM set.\n");
 
 	DREAL objective=svm->get_objective();
-	CSGInterfaceVector iv(&objective, 1);
-	set_vector(iv);
+	set_real_vector(&objective, 1);
 
 	return true;
 }
@@ -2529,8 +2440,7 @@ bool CSGInterface::a_relative_entropy()
 	delete[] p;
 	delete[] q;
 
-	CSGInterfaceVector iv(entropy, pos_N);
-	set_vector(iv);
+	set_real_vector(entropy, pos_N);
 	delete[] entropy;
 
 	return true;
@@ -2562,8 +2472,7 @@ bool CSGInterface::a_entropy()
 	}
 	delete[] p;
 
-	CSGInterfaceVector iv(entropy, N);
-	set_vector(iv);
+	set_real_vector(entropy, N);
 	delete[] entropy;
 
 	return true;
@@ -2617,8 +2526,7 @@ bool CSGInterface::do_hmm_classify(bool linear, bool one_class)
 		result[i]=labels->get_label(i);
 	delete labels;
 
-	CSGInterfaceVector iv(result, num_vec);
-	set_vector(iv);
+	set_real_vector(result, num_vec);
 	delete[] result;
 
 	return true;
@@ -2647,8 +2555,7 @@ bool CSGInterface::do_hmm_classify_example(bool one_class)
 	else
 		result=gui->guihmm.classify_example(idx);
 
-	CSGInterfaceVector iv(&result, 1);
-	set_vector(iv);
+	set_real_vector(&result, 1);
 
 	return true;
 }
@@ -2663,8 +2570,7 @@ bool CSGInterface::a_hmm_likelihood()
 		SG_SERROR("No HMM.\n");
 
 	DREAL likelihood=h->model_probability();
-	CSGInterfaceVector iv(&likelihood, 1);
-	set_vector(iv);
+	set_real_vector(&likelihood, 1);
 
 	return true;
 }
@@ -2697,11 +2603,9 @@ bool CSGInterface::a_get_viterbi_path()
 	DREAL likelihood=0;
 	DREAL* path=(DREAL*) h->get_path(dim, likelihood);
 
-	CSGInterfaceVector iv(path, num_feat);
-	set_vector(iv);
+	set_real_vector(path, num_feat);
 	delete[] path;
-	iv.set(&likelihood, 1);
-	set_vector(iv);
+	set_real_vector(&likelihood, 1);
 
 	return true;
 }
@@ -2715,35 +2619,27 @@ bool CSGInterface::a_append_hmm()
 	if (!old_h)
 		SG_SERROR("No current HMM set.\n");
 
-	CSGInterfaceMatrix im_p(SGIDT_DREAL);
-	get_matrix(im_p);
 	DREAL* p=NULL;
-	UINT M_p=0;
-	UINT N_p=0;
-	im_p.get(p, M_p, N_p);
+	INT M_p=0;
+	INT N_p=0;
+	get_real_matrix(p, M_p, N_p);
 
-	CSGInterfaceMatrix im_q(SGIDT_DREAL);
-	get_matrix(im_q);
 	DREAL* q=NULL;
-	UINT M_q=0;
-	UINT N_q=0;
-	im_q.get(q, M_q, N_q);
+	INT M_q=0;
+	INT N_q=0;
+	get_real_matrix(q, M_q, N_q);
 
-	CSGInterfaceMatrix im_a(SGIDT_DREAL);
-	get_matrix(im_a);
 	DREAL* a=NULL;
-	UINT M_a=0;
-	UINT N_a=0;
-	im_a.get(a, M_a, N_a);
-	UINT N=N_a;
+	INT M_a=0;
+	INT N_a=0;
+	get_real_matrix(a, M_a, N_a);
+	INT N=N_a;
 
-	CSGInterfaceMatrix im_b(SGIDT_DREAL);
-	get_matrix(im_b);
 	DREAL* b=NULL;
-	UINT M_b=0;
-	UINT N_b=0;
-	im_b.get(b, M_b, N_b);
-	UINT M=N_b;
+	INT M_b=0;
+	INT N_b=0;
+	get_real_matrix(b, M_b, N_b);
+	INT M=N_b;
 
 	SG_DEBUG("p:(%d,%d) q:(%d,%d) a:(%d,%d) b(%d,%d)\n",
 		N_p, M_p, N_q, M_q, N_a, M_a, N_b, M_b);
@@ -2753,7 +2649,7 @@ bool CSGInterface::a_append_hmm()
 
 	CHMM* h=new CHMM(N, M, NULL, gui->guihmm.get_pseudo());
 	ASSERT(h);
-	UINT i,j;
+	INT i,j;
 
 	for (i=0; i<N; i++)
 	{
@@ -2780,35 +2676,27 @@ bool CSGInterface::a_set_hmm()
 	if (m_nlhs!=0 || m_nrhs!=5)
 		return false;
 
-	CSGInterfaceMatrix im_p(SGIDT_DREAL);
-	get_matrix(im_p);
 	DREAL* p=NULL;
-	UINT M_p=0;
-	UINT N_p=0;
-	im_p.get(p, M_p, N_p);
+	INT M_p=0;
+	INT N_p=0;
+	get_real_matrix(p, M_p, N_p);
 
-	CSGInterfaceMatrix im_q(SGIDT_DREAL);
-	get_matrix(im_q);
 	DREAL* q=NULL;
-	UINT M_q=0;
-	UINT N_q=0;
-	im_q.get(q, M_q, N_q);
+	INT M_q=0;
+	INT N_q=0;
+	get_real_matrix(q, M_q, N_q);
 
-	CSGInterfaceMatrix im_a(SGIDT_DREAL);
-	get_matrix(im_a);
 	DREAL* a=NULL;
-	UINT M_a=0;
-	UINT N_a=0;
-	im_a.get(a, M_a, N_a);
-	UINT N=N_a;
+	INT M_a=0;
+	INT N_a=0;
+	get_real_matrix(a, M_a, N_a);
+	INT N=N_a;
 
-	CSGInterfaceMatrix im_b(SGIDT_DREAL);
-	get_matrix(im_b);
 	DREAL* b=NULL;
-	UINT M_b=0;
-	UINT N_b=0;
-	im_b.get(b, M_b, N_b);
-	UINT M=N_b;
+	INT M_b=0;
+	INT N_b=0;
+	get_real_matrix(b, M_b, N_b);
+	INT M=N_b;
 
 	SG_DEBUG("p:(%d,%d) q:(%d,%d) a:(%d,%d) b(%d,%d)\n",
 		N_p, M_p, N_q, M_q, N_a, M_a, N_b, M_b);
@@ -2818,7 +2706,7 @@ bool CSGInterface::a_set_hmm()
 
 	CHMM* h=new CHMM(N, M, NULL, gui->guihmm.get_pseudo());
 	ASSERT(h);
-	UINT i,j;
+	INT i,j;
 
 	for (i=0; i<N; i++)
 	{
@@ -2867,11 +2755,9 @@ bool CSGInterface::a_get_hmm()
 		q[i]=h->get_q(i);
 	}
 
-	CSGInterfaceVector iv(p, N);
-	set_vector(iv);
+	set_real_vector(p, N);
 	delete[] p;
-	iv.set(q, N);
-	set_vector(iv);
+	set_real_vector(q, N);
 	delete[] q;
 
 	DREAL* a=new DREAL[N*N];
@@ -2879,8 +2765,7 @@ bool CSGInterface::a_get_hmm()
 	for (i=0; i<N; i++)
 		for (j=0; j<N; j++)
 			a[i+j*N]=h->get_a(i, j);
-	CSGInterfaceMatrix im(a, N, N);
-	set_matrix(im);
+	set_real_matrix(a, N, N);
 	delete[] a;
 
 	DREAL* b=new DREAL[N*M];
@@ -2888,8 +2773,7 @@ bool CSGInterface::a_get_hmm()
 	for (i=0; i<N; i++)
 		for (j=0; j<M; j++)
 			b[i+j*N]=h->get_b(i, j);
-	im.set(b, N, M);
-	set_matrix(im);
+	set_real_matrix(b, N, M);
 	delete[] b;
 
 	return true;
@@ -2957,8 +2841,8 @@ bool CSGInterface::a_test()
 */
 
 
-	CSGInterfaceStringList isl(SGIDT_CHAR);
-	get_string_list(isl);
+//	CSGInterfaceStringList isl(SGIDT_CHAR);
+//	get_string_list(isl);
 //	SG_PRINT("Got it\n");
 //	const T_STRING<CHAR>* list=NULL;
 //	UINT num_str=0;
@@ -2966,7 +2850,7 @@ bool CSGInterface::a_test()
 //	SG_PRINT("num %d\n", num_str);
 //	for (UINT i=0; i<num_str; i++)
 //		SG_PRINT("string: %s", list[i].string);
-	set_string_list(isl);
+//	set_string_list(isl);
 //	delete[] list;
 
 	return true;
