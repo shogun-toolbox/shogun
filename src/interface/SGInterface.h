@@ -5,11 +5,6 @@
 
 #if !defined(HAVE_SWIG)
 
-#include "interface/SGInterfaceDataType.h"
-#include "interface/SGInterfaceVector.h"
-#include "interface/SGInterfaceMatrix.h"
-#include "interface/SGInterfaceStringList.h"
-
 #include "lib/common.h"
 #include "base/SGObject.h"
 #include "features/StringFeatures.h"
