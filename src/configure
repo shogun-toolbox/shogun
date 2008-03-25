@@ -2341,8 +2341,18 @@ EOF
 			echores "yes"
 			SWIGFLAGS="-w473 -c++ -python"
 		else
-			echores "no"
-			die "python/numpy developer files missing"
+			# add -ldl and -lutil for some self compiled python versions as
+			# they for some reason are not automgically pulled in
+			LINKFLAGS="-lutil -ldl $LINKFLAGS"
+			POSTLINKFLAGS="-lutil -ldl $POSTLINKFLAGS"
+			if cc_check
+			then
+				echores "yes"
+				SWIGFLAGS="-w473 -c++ -python"
+			else
+				echores "no"
+				die "python/numpy developer files missing"
+			fi
 		fi
 	fi
 
