@@ -29,18 +29,6 @@ class CMatlabInterface : public CSGInterface
 
 		virtual CHAR* get_string(INT& len);
 
-		virtual void get_vector(CSGInterfaceVector& iv);
-		virtual void set_vector(CSGInterfaceVector& iv);
-
-		virtual void get_matrix(CSGInterfaceMatrix& im);
-		virtual void set_matrix(CSGInterfaceMatrix& im);
-
-		virtual void get_sparsematrix(CSGInterfaceMatrix& im);
-		virtual void set_sparsematrix(CSGInterfaceMatrix& im);
-
-		virtual void get_string_list(CSGInterfaceStringList& isl);
-		virtual void set_string_list(CSGInterfaceStringList& isl);
-
 		virtual void get_byte_vector(BYTE*& vector, INT& len);
 		virtual void get_char_vector(CHAR*& vector, INT& len);
 		virtual void get_int_vector(INT*& vector, INT& len);
@@ -65,8 +53,11 @@ class CMatlabInterface : public CSGInterface
 		virtual void get_short_sparsematrix(TSparse<SHORT>*& matrix, INT& num_feat, INT& num_vec);
 		virtual void get_word_sparsematrix(TSparse<WORD>*& matrix, INT& num_feat, INT& num_vec);
 
-		virtual void get_string_list(T_STRING<CHAR>*& strings, INT& num_str);
-		virtual void get_string_list(T_STRING<WORD>*& strings, INT& num_str);
+		virtual void get_byte_string_list(T_STRING<BYTE>*& strings, INT& num_str, INT& max_string_len);
+		virtual void get_char_string_list(T_STRING<CHAR>*& strings, INT& num_str, INT& max_string_len);
+		virtual void get_int_string_list(T_STRING<INT>*& strings, INT& num_str, INT& max_string_len);
+		virtual void get_short_string_list(T_STRING<SHORT>*& strings, INT& num_str, INT& max_string_len);
+		virtual void get_word_string_list(T_STRING<WORD>*& strings, INT& num_str, INT& max_string_len);
 
 		/** set functions - to pass data from shogun to the target interface */
 		virtual void create_return_values(INT num_val);
@@ -102,18 +93,27 @@ class CMatlabInterface : public CSGInterface
 	private:
 		const mxArray* get_arg_increment();
 		void set_arg_increment(mxArray* arg);
-		bool is_int(const mxArray* mx);
+/*
+bool is_byte(const mxArray* mx)
+{
+	return mxIsClass(mx, "uint8");
+}
 
-		/* quirky: argument matrix is necessary to determine type */
-		template <class T> void get_sparsematrix_t(
-			TSparse<T>*& matrix, const mxArray* mx_mat,
-			CSGInterfaceMatrix& im);
-		template <class T> void set_sparsematrix_t(
-			TSparse<T>* matrix, const mxArray* mx_mat,
-			CSGInterfaceMatrix& im);
-		template <class T> void get_string_list_t(
-			T_STRING<T>* strings, const mxArray* mx_str,
-			CSGInterfaceStringList& isl);
+bool is_short(const mxArray* mx)
+{
+	return mxIsClass(mx, "int16");
+}
+
+bool is_word(const mxArray* mx)
+{
+	return mxIsClass(mx, "uint16");
+}
+
+bool is_int(const mxArray* mx)
+{
+	return mxIsClass(mx, "int32");
+}
+*/
 
 	private:
 		mxArray** m_lhs;

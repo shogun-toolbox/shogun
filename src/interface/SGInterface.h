@@ -171,23 +171,11 @@ class CSGInterface : public CSGObject
 		virtual DREAL get_real_from_string();
 		virtual bool get_bool_from_string();
 
-		virtual void get_vector(CSGInterfaceVector& iv)=0;
-		virtual void set_vector(CSGInterfaceVector& iv)=0;
-
-		virtual void get_matrix(CSGInterfaceMatrix& im)=0;
-		virtual void set_matrix(CSGInterfaceMatrix& im)=0;
-
-		virtual void get_sparsematrix(CSGInterfaceMatrix& im)=0;
-		virtual void set_sparsematrix(CSGInterfaceMatrix& im)=0;
-
-		virtual void get_string_list(CSGInterfaceStringList& isl)=0;
-		virtual void set_string_list(CSGInterfaceStringList& isl)=0;
-
 		virtual void get_byte_vector(BYTE*& vector, INT& len)=0;
 		virtual void get_char_vector(CHAR*& vector, INT& len)=0;
 		virtual void get_int_vector(INT*& vector, INT& len)=0;
-		virtual void get_shortreal_vector(SHORTREAL*& vector, INT& len)=0;
 		virtual void get_real_vector(DREAL*& vector, INT& len)=0;
+		virtual void get_shortreal_vector(SHORTREAL*& vector, INT& len)=0;
 		virtual void get_short_vector(SHORT*& vector, INT& len)=0;
 		virtual void get_word_vector(WORD*& vector, INT& len)=0;
 
@@ -210,8 +198,11 @@ class CSGInterface : public CSGObject
 		virtual void get_word_sparsematrix(TSparse<WORD>*& matrix, INT& num_feat, INT& num_vec)=0;
 
 
-		virtual void get_string_list(T_STRING<CHAR>*& strings, INT& num_str)=0;
-		virtual void get_string_list(T_STRING<WORD>*& strings, INT& num_str)=0;
+		virtual void get_byte_string_list(T_STRING<BYTE>*& strings, INT& num_str, INT& max_string_len)=0;
+		virtual void get_char_string_list(T_STRING<CHAR>*& strings, INT& num_str, INT& max_string_len)=0;
+		virtual void get_int_string_list(T_STRING<INT>*& strings, INT& num_str, INT& max_string_len)=0;
+		virtual void get_short_string_list(T_STRING<SHORT>*& strings, INT& num_str, INT& max_string_len)=0;
+		virtual void get_word_string_list(T_STRING<WORD>*& strings, INT& num_str, INT& max_string_len)=0;
 
 
 		/** set functions - to pass data from shogun to the target interface */
