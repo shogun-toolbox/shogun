@@ -191,18 +191,19 @@ void CMatlabInterface::function_name(TSparse<sg_type>*& matrix, INT& num_feat, I
 	ASSERT(offset==nzmax); 																\
 }
 
+GET_SPARSEMATRIX(get_real_sparsematrix, "double", DREAL, double, "Double Precision")
+/*  future versions might support types other than DREAL
 GET_SPARSEMATRIX(get_byte_sparsematrix, "uint8", BYTE, BYTE, "Byte")
 GET_SPARSEMATRIX(get_char_sparsematrix, "char", CHAR, mxChar, "Char")
 GET_SPARSEMATRIX(get_int_sparsematrix, "int32", INT, int, "Integer")
 GET_SPARSEMATRIX(get_short_sparsematrix, "int16", SHORT, short, "Short")
 GET_SPARSEMATRIX(get_shortreal_sparsematrix, "single", SHORTREAL, float, "Single Precision")
-GET_SPARSEMATRIX(get_real_sparsematrix, "double", DREAL, double, "Double Precision")
-GET_SPARSEMATRIX(get_word_sparsematrix, "uint16", WORD, unsigned short, "Word")
+GET_SPARSEMATRIX(get_word_sparsematrix, "uint16", WORD, unsigned short, "Word")*/
 #undef GET_SPARSEMATRIX
 
 
 #define GET_STRINGLIST(function_name, mx_type, sg_type, if_type, error_string)		\
-void CMatlabInterface::get_string_list(T_STRING<sg_type>*& strings, INT& num_str, INT& max_string_len) 	\
+void CMatlabInterface::function_name(T_STRING<sg_type>*& strings, INT& num_str, INT& max_string_len) 	\
 { 																						\
 	const mxArray* mx_str=get_arg_increment();											\
 	if (!mx_str)																		\
@@ -282,6 +283,7 @@ GET_STRINGLIST(get_char_string_list, "char", CHAR, mxChar, "Char")
 GET_STRINGLIST(get_int_string_list, "int32", INT, int, "Integer")
 GET_STRINGLIST(get_short_string_list, "int16", SHORT, short, "Short")
 GET_STRINGLIST(get_word_string_list, "uint16", WORD, unsigned short, "Word")
+#undef GET_STRINGLIST
 
 
 /** set functions - to pass data from shogun to the target interface */
@@ -289,514 +291,139 @@ void CMatlabInterface::create_return_values(INT num_val)
 {
 }
 
-void CMatlabInterface::set_byte_vector(const BYTE* vector, INT len)
-{
-	if (!vector)
-		SG_ERROR("Given vector is invalid\n");
-
-	mxArray* mx_vec=mxCreateNumericMatrix(1, len, mxINT8_CLASS, mxREAL);
-	if (!mx_vec)
-		SG_ERROR("Couldn't create Byte Vector of length %d\n", len);
-
-	BYTE* data=(BYTE*) mxGetData(mx_vec);
-
-	SG_DEBUG("BYTE vector has %d elements.\n", len);
-	for (INT i=0; i<len; i++)
-		data[i]=vector[i];
-
-	set_arg_increment(mx_vec);
+#define SET_VECTOR(function_name, mx_type, sg_type, if_type, error_string) \
+void CMatlabInterface::function_name(const sg_type* vector, INT len)		\
+{																			\
+	if (!vector)															\
+		SG_ERROR("Given vector is invalid\n");								\
+																			\
+	mxArray* mx_vec=mxCreateNumericMatrix(1, len, mx_type, mxREAL);			\
+	if (!mx_vec)															\
+		SG_ERROR("Couldn't create " error_string " Vector of length %d\n", len);		\
+																			\
+	if_type* data=(if_type*) mxGetData(mx_vec);								\
+																			\
+	for (INT i=0; i<len; i++)												\
+		data[i]=vector[i];													\
+																			\
+	set_arg_increment(mx_vec);												\
 }
 
-void CMatlabInterface::set_char_vector(const CHAR* vector, INT len)
-{
-	if (!vector)
-		SG_ERROR("Given vector is invalid\n");
+SET_VECTOR(set_byte_vector, mxUINT8_CLASS, BYTE, BYTE, "Byte")
+SET_VECTOR(set_char_vector, mxCHAR_CLASS, CHAR, mxChar, "Char")
+SET_VECTOR(set_int_vector, mxINT32_CLASS, INT, int, "Integer")
+SET_VECTOR(set_short_vector, mxINT16_CLASS, SHORT, short, "Short")
+SET_VECTOR(set_shortreal_vector, mxSINGLE_CLASS, SHORTREAL, float, "Single Precision")
+SET_VECTOR(set_real_vector, mxDOUBLE_CLASS, DREAL, double, "Double Precision")
+SET_VECTOR(set_word_vector, mxUINT16_CLASS, WORD, unsigned short, "Word")
+#undef SET_VECTOR
 
-	mxArray* mx_vec=mxCreateNumericMatrix(1, len, mxCHAR_CLASS, mxREAL);
-	if (!mx_vec)
-		SG_ERROR("Couldn't create Char Vector of length %d\n", len);
 
-	CHAR* data=(CHAR*) mxGetData(mx_vec);
-
-	SG_DEBUG("CHAR vector has %d elements.\n", len);
-	for (INT i=0; i<len; i++)
-		data[i]=vector[i];
-
-	set_arg_increment(mx_vec);
+#define SET_MATRIX(function_name, mx_type, sg_type, if_type, error_string)	\
+void CMatlabInterface::function_name(const sg_type* matrix, INT num_feat, INT num_vec) \
+{ 																				\
+	if (!matrix) 																\
+		SG_ERROR("Given matrix is invalid\n");									\
+ 																				\
+	mxArray* mx_mat=mxCreateNumericMatrix(num_feat, num_vec, mx_type, mxREAL);	\
+	if (!mx_mat) 																\
+		SG_ERROR("Couldn't create Byte Matrix of %d rows and %d cols\n", num_feat, num_vec); \
+ 																				\
+	if_type* data=(if_type*) mxGetData(mx_mat); 								\
+ 																				\
+	for (INT i=0; i<num_vec; i++) 												\
+		for (INT j=0; j<num_feat; j++) 											\
+			data[i*num_feat+j]=matrix[i*num_feat+j]; 							\
+ 																				\
+	set_arg_increment(mx_mat); 													\
 }
 
-void CMatlabInterface::set_int_vector(const INT* vector, INT len)
-{
-	if (!vector)
-		SG_ERROR("Given vector is invalid\n");
+SET_MATRIX(set_byte_matrix, mxUINT8_CLASS, BYTE, BYTE, "Byte")
+SET_MATRIX(set_char_matrix, mxCHAR_CLASS, CHAR, mxChar, "Char")
+SET_MATRIX(set_int_matrix, mxINT32_CLASS, INT, int, "Integer")
+SET_MATRIX(set_short_matrix, mxINT16_CLASS, SHORT, short, "Short")
+SET_MATRIX(set_shortreal_matrix, mxSINGLE_CLASS, SHORTREAL, float, "Single Precision")
+SET_MATRIX(set_real_matrix, mxDOUBLE_CLASS, DREAL, double, "Double Precision")
+SET_MATRIX(set_word_matrix, mxUINT16_CLASS, WORD, unsigned short, "Word")
+#undef SET_MATRIX
 
-	mxArray* mx_vec=mxCreateNumericMatrix(1, len, mxINT32_CLASS, mxREAL);
-	if (!mx_vec)
-		SG_ERROR("Couldn't create Integer Vector of length %d\n", len);
-
-	INT* data=(INT*) mxGetData(mx_vec);
-
-	SG_DEBUG("INT vector has %d elements.\n", len);
-	for (INT i=0; i<len; i++)
-		data[i]=vector[i];
-
-	set_arg_increment(mx_vec);
+#define SET_SPARSEMATRIX(function_name, mx_type, sg_type, if_type, error_string)	\
+void CMatlabInterface::function_name(const TSparse<sg_type>* matrix, INT num_feat, INT num_vec) \
+{																			\
+	if (!matrix)															\
+		SG_ERROR("Given matrix is invalid\n");								\
+																			\
+	mxArray* mx_mat=mxCreateSparse(num_feat, num_vec, num_feat*num_vec, mxREAL); \
+	if (!mx_mat)															\
+		SG_ERROR("Couldn't create Sparse Matrix of %d rows and %d cols.\n", num_feat, num_vec); \
+																			\
+	if_type* data=(if_type*) mxGetData(mx_mat);									\
+																			\
+	mwIndex* ir=mxGetIr(mx_mat);											\
+	mwIndex* jc=mxGetJc(mx_mat);											\
+	LONG offset=0;															\
+	for (INT i=0; i<num_vec; i++)											\
+	{																		\
+		INT len=matrix[i].num_feat_entries;									\
+		jc[i]=offset;														\
+		for (INT j=0; j<len; j++)											\
+		{																	\
+			data[offset]=matrix[i].features[j].entry;						\
+			ir[offset]=matrix[i].features[j].feat_index;					\
+			offset++;														\
+		}																	\
+	}																		\
+	jc[num_vec]=offset;														\
+ 																			\
+	set_arg_increment(mx_mat);												\
 }
 
-void CMatlabInterface::set_shortreal_vector(const SHORTREAL* vector, INT len)
-{
-	if (!vector)
-		SG_ERROR("Given vector is invalid\n");
+SET_SPARSEMATRIX(set_real_sparsematrix, mxDOUBLE_CLASS, DREAL, double, "Double Precision")
 
-	mxArray* mx_vec=mxCreateNumericMatrix(1, len, mxSINGLE_CLASS, mxREAL);
-	if (!mx_vec)
-		SG_ERROR("Couldn't create Single Precision Vector of length %d\n", len);
+/* future version might support this
+SET_SPARSEMATRIX(set_byte_sparsematrix, mxUINT8_CLASS, BYTE, BYTE, "Byte")
+SET_SPARSEMATRIX(set_char_sparsematrix, mxCHAR_CLASS, CHAR, mxChar, "Char")
+SET_SPARSEMATRIX(set_int_sparsematrix, mxINT32_CLASS, INT, int, "Integer")
+SET_SPARSEMATRIX(set_short_sparsematrix, mxINT16_CLASS, SHORT, short, "Short")
+SET_SPARSEMATRIX(set_shortreal_sparsematrix, mxSINGLE_CLASS, SHORTREAL, float, "Single Precision")
+SET_SPARSEMATRIX(set_word_sparsematrix, mxUINT16_CLASS, WORD, unsigned short, "Word")*/
+#undef SET_SPARSEMATRIX
 
-	SHORTREAL* data=(SHORTREAL*) mxGetData(mx_vec);
-
-	SG_DEBUG("SHORTREAL vector has %d elements.\n", len);
-	for (INT i=0; i<len; i++)
-		data[i]=vector[i];
-
-	set_arg_increment(mx_vec);
+#define SET_STRINGLIST(function_name, mx_type, sg_type, if_type, error_string)		\
+void CMatlabInterface::function_name(const T_STRING<sg_type>* strings, INT num_str)	\
+{																					\
+	if (!strings)																	\
+		SG_ERROR("Given strings are invalid.\n");									\
+																					\
+	mxArray* mx_str= mxCreateCellMatrix(num_str, 1);								\
+	if (!mx_str)																	\
+		SG_ERROR("Couldn't create Cell Array of %d strings.\n", num_str);			\
+																					\
+	for (INT i=0; i<num_str; i++)													\
+	{																				\
+		INT len=strings[i].length;													\
+		if (len>0)																	\
+		{																			\
+			mxArray* str=mxCreateNumericMatrix(1, len, mx_type, mxREAL);			\
+			if (!str)																\
+				SG_ERROR("Couldn't create " error_string " String %d of length %d\n", i, len);		\
+																					\
+			if_type* data=(if_type*) mxGetData(str);								\
+																					\
+			for (INT j=0; j<len; j++)												\
+				data[j]=strings[i].string[j];										\
+		}																			\
+	}																				\
+																					\
+	set_arg_increment(mx_str);														\
 }
 
-void CMatlabInterface::set_real_vector(const DREAL* vector, INT len)
-{
-	if (!vector)
-		SG_ERROR("Given vector is invalid\n");
-
-	mxArray* mx_vec=mxCreateNumericMatrix(1, len, mxDOUBLE_CLASS, mxREAL);
-	if (!mx_vec)
-		SG_ERROR("Couldn't create Double Precision Vector of length %d\n", len);
-
-	DREAL* data=(DREAL*) mxGetData(mx_vec);
-
-	SG_DEBUG("DREAL vector has %d elements.\n", len);
-	for (INT i=0; i<len; i++)
-		data[i]=vector[i];
-
-	set_arg_increment(mx_vec);
-}
-
-void CMatlabInterface::set_short_vector(const SHORT* vector, INT len)
-{
-	if (!vector)
-		SG_ERROR("Given vector is invalid\n");
-
-	mxArray* mx_vec=mxCreateNumericMatrix(1, len, mxINT16_CLASS, mxREAL);
-	if (!mx_vec)
-		SG_ERROR("Couldn't create Short Vector of length %d\n", len);
-
-	SHORT* data=(SHORT*) mxGetData(mx_vec);
-
-	SG_DEBUG("SHORT vector has %d elements.\n", len);
-	for (INT i=0; i<len; i++)
-		data[i]=vector[i];
-
-	set_arg_increment(mx_vec);
-}
-
-void CMatlabInterface::set_word_vector(const WORD* vector, INT len)
-{
-	if (!vector)
-		SG_ERROR("Given vector is invalid\n");
-
-	mxArray* mx_vec=mxCreateNumericMatrix(1, len, mxUINT16_CLASS, mxREAL);
-	if (!mx_vec)
-		SG_ERROR("Couldn't create Word Vector of length %d\n", len);
-
-	WORD* data=(WORD*) mxGetData(mx_vec);
-
-	SG_DEBUG("WORD vector has %d elements.\n", len);
-	for (INT i=0; i<len; i++)
-		data[i]=vector[i];
-
-	set_arg_increment(mx_vec);
-}
-
-
-void CMatlabInterface::set_byte_matrix(const BYTE* matrix, INT num_feat, INT num_vec)
-{
-	if (!matrix)
-		SG_ERROR("Given matrix is invalid\n");
-
-	mxArray* mx_mat=mxCreateNumericMatrix(num_feat, num_vec, mxINT8_CLASS, mxREAL);
-	if (!mx_mat)
-		SG_ERROR("Couldn't create Byte Matrix of %d rows and %d cols\n", num_feat, num_vec);
-
-	BYTE* data=(BYTE*) mxGetData(mx_mat);
-
-	SG_DEBUG("dense BYTE matrix has %d rows, %d cols\n", num_feat, num_vec);
-	for (INT i=0; i<num_vec; i++)
-		for (INT j=0; j<num_feat; j++)
-			data[i*num_feat+j]=matrix[i*num_feat+j];
-
-	set_arg_increment(mx_mat);
-}
-
-void CMatlabInterface::set_char_matrix(const CHAR* matrix, INT num_feat, INT num_vec)
-{
-	if (!matrix)
-		SG_ERROR("Given matrix is invalid\n");
-
-	mxArray* mx_mat=mxCreateNumericMatrix(num_feat, num_vec, mxCHAR_CLASS, mxREAL);
-	if (!mx_mat)
-		SG_ERROR("Couldn't create Char Matrix of %d rows and %d cols\n", num_feat, num_vec);
-
-	CHAR* data=(CHAR*) mxGetData(mx_mat);
-
-	SG_DEBUG("dense CHAR matrix has %d rows, %d cols\n", num_feat, num_vec);
-	for (INT i=0; i<num_vec; i++)
-		for (INT j=0; j<num_feat; j++)
-			data[i*num_feat+j]=matrix[i*num_feat+j];
-
-	set_arg_increment(mx_mat);
-}
-
-void CMatlabInterface::set_int_matrix(const INT* matrix, INT num_feat, INT num_vec)
-{
-	if (!matrix)
-		SG_ERROR("Given matrix is invalid\n");
-
-	mxArray* mx_mat=mxCreateNumericMatrix(num_feat, num_vec, mxINT32_CLASS, mxREAL);
-	if (!mx_mat)
-		SG_ERROR("Couldn't create Integer Matrix of %d rows and %d cols\n", num_feat, num_vec);
-
-	INT* data=(INT*) mxGetData(mx_mat);
-
-	SG_DEBUG("dense INT matrix has %d rows, %d cols\n", num_feat, num_vec);
-	for (INT i=0; i<num_vec; i++)
-		for (INT j=0; j<num_feat; j++)
-			data[i*num_feat+j]=matrix[i*num_feat+j];
-
-	set_arg_increment(mx_mat);
-}
-
-void CMatlabInterface::set_shortreal_matrix(const SHORTREAL* matrix, INT num_feat, INT num_vec)
-{
-	if (!matrix)
-		SG_ERROR("Given matrix is invalid\n");
-
-	mxArray* mx_mat=mxCreateNumericMatrix(num_feat, num_vec, mxSINGLE_CLASS, mxREAL);
-	if (!mx_mat)
-		SG_ERROR("Couldn't create Single Precision Matrix of %d rows and %d cols\n", num_feat, num_vec);
-
-	SHORTREAL* data=(SHORTREAL*) mxGetData(mx_mat);
-
-	SG_DEBUG("dense SHORTREAL matrix has %d rows, %d cols\n", num_feat, num_vec);
-	for (INT i=0; i<num_vec; i++)
-		for (INT j=0; j<num_feat; j++)
-			data[i*num_feat+j]=matrix[i*num_feat+j];
-
-	set_arg_increment(mx_mat);
-}
-
-void CMatlabInterface::set_real_matrix(const DREAL* matrix, INT num_feat, INT num_vec)
-{
-	if (!matrix)
-		SG_ERROR("Given matrix is invalid\n");
-
-	mxArray* mx_mat=mxCreateNumericMatrix(num_feat, num_vec, mxDOUBLE_CLASS, mxREAL);
-	if (!mx_mat)
-		SG_ERROR("Couldn't create Double Precision Matrix of %d rows and %d cols\n", num_feat, num_vec);
-
-	DREAL* data=(DREAL*) mxGetData(mx_mat);
-
-	SG_DEBUG("dense DREAL matrix has %d rows, %d cols\n", num_feat, num_vec);
-	for (INT i=0; i<num_vec; i++)
-		for (INT j=0; j<num_feat; j++)
-			data[i*num_feat+j]=matrix[i*num_feat+j];
-
-	set_arg_increment(mx_mat);
-}
-
-void CMatlabInterface::set_short_matrix(const SHORT* matrix, INT num_feat, INT num_vec)
-{
-	if (!matrix)
-		SG_ERROR("Given matrix is invalid\n");
-
-	mxArray* mx_mat=mxCreateNumericMatrix(num_feat, num_vec, mxINT16_CLASS, mxREAL);
-	if (!mx_mat)
-		SG_ERROR("Couldn't create Short Matrix of %d rows and %d cols\n", num_feat, num_vec);
-
-	SHORT* data=(SHORT*) mxGetData(mx_mat);
-
-	SG_DEBUG("dense SHORT matrix has %d rows, %d cols\n", num_feat, num_vec);
-	for (INT i=0; i<num_vec; i++)
-		for (INT j=0; j<num_feat; j++)
-			data[i*num_feat+j]=matrix[i*num_feat+j];
-
-	set_arg_increment(mx_mat);
-}
-
-void CMatlabInterface::set_word_matrix(const WORD* matrix, INT num_feat, INT num_vec)
-{
-	if (!matrix)
-		SG_ERROR("Given matrix is invalid\n");
-
-	mxArray* mx_mat=mxCreateNumericMatrix(num_feat, num_vec, mxUINT16_CLASS, mxREAL);
-	if (!mx_mat)
-		SG_ERROR("Couldn't create Word Matrix of %d rows and %d cols\n", num_feat, num_vec);
-
-	WORD* data=(WORD*) mxGetData(mx_mat);
-
-	SG_DEBUG("dense WORD matrix has %d rows, %d cols\n", num_feat, num_vec);
-	for (INT i=0; i<num_vec; i++)
-		for (INT j=0; j<num_feat; j++)
-			data[i*num_feat+j]=matrix[i*num_feat+j];
-
-	set_arg_increment(mx_mat);
-}
-
-void CMatlabInterface::set_byte_sparsematrix(const TSparse<BYTE>* matrix, INT num_feat, INT num_vec)
-{
-	if (!matrix)
-		SG_ERROR("Given matrix is invalid\n");
-
-	mxArray* mx_mat=mxCreateSparse(num_feat, num_vec, num_feat*num_vec, mxREAL);
-	if (!mx_mat)
-		SG_ERROR("Couldn't create Sparse Matrix of %d rows and %d cols.\n", num_feat, num_vec);
-
-	BYTE* data=(BYTE*) mxGetData(mx_mat);
-
-	SG_DEBUG("sparse BYTE matrix has %d rows, %d cols\n", num_feat, num_vec);
-	mwIndex* ir=mxGetIr(mx_mat);
-	mwIndex* jc=mxGetJc(mx_mat);
-	LONG offset=0;
-	for (INT i=0; i<num_vec; i++)
-	{
-		INT len=matrix[i].num_feat_entries;
-		jc[i]=offset;
-		for (INT j=0; j<len; j++)
-		{
-			data[offset]=matrix[i].features[j].entry;
-			ir[offset]=matrix[i].features[j].feat_index;
-			offset++;
-		}
-	}
-	jc[num_vec]=offset;
-
-	set_arg_increment(mx_mat);
-}
-
-void CMatlabInterface::set_char_sparsematrix(const TSparse<CHAR>* matrix, INT num_feat, INT num_vec)
-{
-	if (!matrix)
-		SG_ERROR("Given matrix is invalid\n");
-
-	mxArray* mx_mat=mxCreateSparse(num_feat, num_vec, num_feat*num_vec, mxREAL);
-	if (!mx_mat)
-		SG_ERROR("Couldn't create Sparse Matrix of %d rows and %d cols.\n", num_feat, num_vec);
-
-	CHAR* data=(CHAR*) mxGetData(mx_mat);
-
-	SG_DEBUG("sparse CHAR matrix has %d rows, %d cols\n", num_feat, num_vec);
-	mwIndex* ir=mxGetIr(mx_mat);
-	mwIndex* jc=mxGetJc(mx_mat);
-	LONG offset=0;
-	for (INT i=0; i<num_vec; i++)
-	{
-		INT len=matrix[i].num_feat_entries;
-		jc[i]=offset;
-		for (INT j=0; j<len; j++)
-		{
-			data[offset]=matrix[i].features[j].entry;
-			ir[offset]=matrix[i].features[j].feat_index;
-			offset++;
-		}
-	}
-	jc[num_vec]=offset;
-
-	set_arg_increment(mx_mat);
-}
-
-void CMatlabInterface::set_int_sparsematrix(const TSparse<INT>* matrix, INT num_feat, INT num_vec)
-{
-	if (!matrix)
-		SG_ERROR("Given matrix is invalid\n");
-
-	mxArray* mx_mat=mxCreateSparse(num_feat, num_vec, num_feat*num_vec, mxREAL);
-	if (!mx_mat)
-		SG_ERROR("Couldn't create Sparse Matrix of %d rows and %d cols.\n", num_feat, num_vec);
-
-	INT* data=(INT*) mxGetData(mx_mat);
-
-	SG_DEBUG("sparse INT matrix has %d rows, %d cols\n", num_feat, num_vec);
-	mwIndex* ir=mxGetIr(mx_mat);
-	mwIndex* jc=mxGetJc(mx_mat);
-	LONG offset=0;
-	for (INT i=0; i<num_vec; i++)
-	{
-		INT len=matrix[i].num_feat_entries;
-		jc[i]=offset;
-		for (INT j=0; j<len; j++)
-		{
-			data[offset]=matrix[i].features[j].entry;
-			ir[offset]=matrix[i].features[j].feat_index;
-			offset++;
-		}
-	}
-	jc[num_vec]=offset;
-
-	set_arg_increment(mx_mat);
-}
-
-void CMatlabInterface::set_shortreal_sparsematrix(const TSparse<SHORTREAL>* matrix, INT num_feat, INT num_vec)
-{
-	if (!matrix)
-		SG_ERROR("Given matrix is invalid\n");
-
-	mxArray* mx_mat=mxCreateSparse(num_feat, num_vec, num_feat*num_vec, mxREAL);
-	if (!mx_mat)
-		SG_ERROR("Couldn't create Sparse Matrix of %d rows and %d cols.\n", num_feat, num_vec);
-
-	SHORTREAL* data=(SHORTREAL*) mxGetData(mx_mat);
-
-	SG_DEBUG("sparse SHORTREAL matrix has %d rows, %d cols\n", num_feat, num_vec);
-	mwIndex* ir=mxGetIr(mx_mat);
-	mwIndex* jc=mxGetJc(mx_mat);
-	LONG offset=0;
-	for (INT i=0; i<num_vec; i++)
-	{
-		INT len=matrix[i].num_feat_entries;
-		jc[i]=offset;
-		for (INT j=0; j<len; j++)
-		{
-			data[offset]=matrix[i].features[j].entry;
-			ir[offset]=matrix[i].features[j].feat_index;
-			offset++;
-		}
-	}
-	jc[num_vec]=offset;
-
-	set_arg_increment(mx_mat);
-}
-
-void CMatlabInterface::set_real_sparsematrix(const TSparse<DREAL>* matrix, INT num_feat, INT num_vec)
-{
-	if (!matrix)
-		SG_ERROR("Given matrix is invalid\n");
-
-	mxArray* mx_mat=mxCreateSparse(num_feat, num_vec, num_feat*num_vec, mxREAL);
-	if (!mx_mat)
-		SG_ERROR("Couldn't create Sparse Matrix of %d rows and %d cols.\n", num_feat, num_vec);
-
-	DREAL* data=(DREAL*) mxGetData(mx_mat);
-
-	SG_DEBUG("sparse DREAL matrix has %d rows, %d cols\n", num_feat, num_vec);
-	mwIndex* ir=mxGetIr(mx_mat);
-	mwIndex* jc=mxGetJc(mx_mat);
-	LONG offset=0;
-	for (INT i=0; i<num_vec; i++)
-	{
-		INT len=matrix[i].num_feat_entries;
-		jc[i]=offset;
-		for (INT j=0; j<len; j++)
-		{
-			data[offset]=matrix[i].features[j].entry;
-			ir[offset]=matrix[i].features[j].feat_index;
-			offset++;
-		}
-	}
-	jc[num_vec]=offset;
-
-	set_arg_increment(mx_mat);
-}
-
-void CMatlabInterface::set_short_sparsematrix(const TSparse<SHORT>* matrix, INT num_feat, INT num_vec)
-{
-	if (!matrix)
-		SG_ERROR("Given matrix is invalid\n");
-
-	mxArray* mx_mat=mxCreateSparse(num_feat, num_vec, num_feat*num_vec, mxREAL);
-	if (!mx_mat)
-		SG_ERROR("Couldn't create Sparse Matrix of %d rows and %d cols.\n", num_feat, num_vec);
-
-	SHORT* data=(SHORT*) mxGetData(mx_mat);
-
-	SG_DEBUG("sparse SHORT matrix has %d rows, %d cols\n", num_feat, num_vec);
-	mwIndex* ir=mxGetIr(mx_mat);
-	mwIndex* jc=mxGetJc(mx_mat);
-	LONG offset=0;
-	for (INT i=0; i<num_vec; i++)
-	{
-		INT len=matrix[i].num_feat_entries;
-		jc[i]=offset;
-		for (INT j=0; j<len; j++)
-		{
-			data[offset]=matrix[i].features[j].entry;
-			ir[offset]=matrix[i].features[j].feat_index;
-			offset++;
-		}
-	}
-	jc[num_vec]=offset;
-
-	set_arg_increment(mx_mat);
-}
-
-void CMatlabInterface::set_word_sparsematrix(const TSparse<WORD>* matrix, INT num_feat, INT num_vec)
-{
-	if (!matrix)
-		SG_ERROR("Given matrix is invalid\n");
-
-	mxArray* mx_mat=mxCreateSparse(num_feat, num_vec, num_feat*num_vec, mxREAL);
-	if (!mx_mat)
-		SG_ERROR("Couldn't create Sparse Matrix of %d rows and %d cols.\n", num_feat, num_vec);
-
-	WORD* data=(WORD*) mxGetData(mx_mat);
-
-	SG_DEBUG("sparse WORD matrix has %d rows, %d cols\n", num_feat, num_vec);
-	mwIndex* ir=mxGetIr(mx_mat);
-	mwIndex* jc=mxGetJc(mx_mat);
-	LONG offset=0;
-	for (INT i=0; i<num_vec; i++)
-	{
-		INT len=matrix[i].num_feat_entries;
-		jc[i]=offset;
-		for (INT j=0; j<len; j++)
-		{
-			data[offset]=matrix[i].features[j].entry;
-			ir[offset]=matrix[i].features[j].feat_index;
-			offset++;
-		}
-	}
-	jc[num_vec]=offset;
-
-	set_arg_increment(mx_mat);
-}
-
-void CMatlabInterface::set_string_list(const T_STRING<CHAR>* strings, INT num_str)
-{
-	if (!strings)
-		SG_ERROR("Given strings are invalid.\n");
-
-	const CHAR* list[num_str];
-	for (INT i=0; i<num_str; i++)
-		list[i]=strings[i].string;
-
-	mxArray* mx_str=mxCreateCharMatrixFromStrings(num_str, list);
-	if (!mx_str)
-		SG_ERROR("Couldn't create String Matrix of %d strings.\n", num_str);
-
-	set_arg_increment(mx_str);
-}
-
-void CMatlabInterface::set_string_list(const T_STRING<WORD>* strings, INT num_str)
-{
-	if (!strings)
-		SG_ERROR("Given strings are invalid.\n");
-
-	const CHAR* list[num_str];
-	for (INT i=0; i<num_str; i++)
-		list[i]=(CHAR*) strings[i].string;
-
-	mxArray* mx_str=mxCreateCharMatrixFromStrings(num_str, list);
-	if (!mx_str)
-		SG_ERROR("Couldn't create String Matrix of %d strings.\n", num_str);
-
-	set_arg_increment(mx_str);
-}
+SET_STRINGLIST(set_byte_string_list, mxUINT8_CLASS, BYTE, BYTE, "Byte")
+SET_STRINGLIST(set_char_string_list, mxCHAR_CLASS, CHAR, mxChar, "Char")
+SET_STRINGLIST(set_int_string_list, mxINT32_CLASS, INT, int, "Integer")
+SET_STRINGLIST(set_short_string_list, mxINT16_CLASS, SHORT, short, "Short")
+SET_STRINGLIST(set_word_string_list, mxUINT16_CLASS, WORD, unsigned short, "Word")
+#undef SET_STRINGLIST
 
 void CMatlabInterface::submit_return_values()
 {
