@@ -31,6 +31,7 @@ void CMatlabInterface::parse_args(INT num_args, INT num_default_args)
 IFType CMatlabInterface::get_argument_type()
 {
 	const mxArray* arg=m_rhs[m_rhs_counter];
+	ASSERT(arg);
 
 	if (mxIsSparse(arg))
 	{
@@ -52,7 +53,7 @@ IFType CMatlabInterface::get_argument_type()
 			return UNDEFINED;
 	}
 
-	else if (mxIsUint8(arg) || mxIsUint8(mxGetCell(arg, 0)))
+	else if (mxIsUint8(arg))
 		return DENSE_BYTE;
 
 	else if (mxIsChar(arg))
@@ -62,7 +63,8 @@ IFType CMatlabInterface::get_argument_type()
 		else
 			return DENSE_CHAR;
 	}
-	else if (mxIsChar(mxGetCell(arg, 0)))
+
+	else if (mxIsCell(arg) && mxGetCell(arg, 0) && mxIsChar(mxGetCell(arg, 0)))
 	{
 		const mxArray* cell=mxGetCell(arg, 0);
 		if (mxGetM(cell)==1 && mxGetN(cell)==1)
@@ -71,15 +73,15 @@ IFType CMatlabInterface::get_argument_type()
 			return DENSE_CHAR;
 	}
 
-	else if (mxIsInt32(arg) || mxIsInt32(mxGetCell(arg, 0)))
+	else if (mxIsInt32(arg))
 		return DENSE_INT;
-	else if (mxIsDouble(arg) || mxIsDouble(mxGetCell(arg, 0)))
+	else if (mxIsDouble(arg))
 		return DENSE_REAL;
-	else if (mxIsInt16(arg) || mxIsInt16(mxGetCell(arg, 0)))
+	else if (mxIsInt16(arg))
 		return DENSE_SHORT;
-	else if (mxIsSingle(arg) || mxIsSingle(mxGetCell(arg, 0)))
+	else if (mxIsSingle(arg))
 		return DENSE_SHORTREAL;
-	else if (mxIsUint16(arg) || mxIsUint16(mxGetCell(arg, 0)))
+	else if (mxIsUint16(arg))
 		return DENSE_WORD;
 
 	return UNDEFINED;

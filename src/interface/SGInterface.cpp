@@ -21,7 +21,13 @@
 #include "kernel/SparseLinearKernel.h"
 #include "kernel/CombinedKernel.h"
 #include "kernel/CustomKernel.h"
-
+#include "features/ByteFeatures.h"
+#include "features/CharFeatures.h"
+#include "features/IntFeatures.h"
+#include "features/RealFeatures.h"
+#include "features/ShortFeatures.h"
+#include "features/ShortRealFeatures.h"
+#include "features/WordFeatures.h"
 
 CSGInterface* interface=NULL;
 extern CTextGUI* gui;
@@ -817,143 +823,66 @@ bool CSGInterface::a_get_features()
 	switch (feat->get_feature_class())
 	{
 		case C_SIMPLE:
+		{
+			INT num_feat=0;
+			INT num_vec=0;
+
 			switch (feat->get_feature_type())
 			{
+				case F_BYTE:
+				{
+					BYTE* fmatrix=((CByteFeatures *) feat)->get_feature_matrix(num_feat, num_vec);
+					set_byte_matrix(fmatrix, num_feat, num_vec);
+					break;
+				}
+
+				case F_CHAR:
+				{
+					CHAR* fmatrix=((CCharFeatures *) feat)->get_feature_matrix(num_feat, num_vec);
+					set_char_matrix(fmatrix, num_feat, num_vec);
+					break;
+				}
+
 				case F_DREAL:
 				{
-					CRealFeatures* realfeat=(CRealFeatures*) feat;
-					INT num_feat=realfeat->get_num_features();
-					INT num_vec=realfeat->get_num_vectors();
-					DREAL* result=new DREAL[num_feat*num_vec];
-					ASSERT(result);
+					DREAL* fmatrix=((CRealFeatures *) feat)->get_feature_matrix(num_feat, num_vec);
+					set_real_matrix(fmatrix, num_feat, num_vec);
+					break;
+				}
 
-					for (INT i=0; i<num_vec; i++)
-					{
-						INT num_vfeat=0;
-						bool free_vec=true;
-						DREAL* vec=realfeat->get_feature_vector(
-							i, num_vfeat, free_vec);
-						ASSERT(num_vfeat==num_feat);
+				case F_INT:
+				{
+					INT* fmatrix=((CIntFeatures *) feat)->get_feature_matrix(num_feat, num_vec);
+					set_int_matrix(fmatrix, num_feat, num_vec);
+					break;
+				}
 
-						for (INT j=0; j<num_vfeat; j++)
-							result[num_feat*i+j]=vec[j];
-						realfeat->free_feature_vector(vec, i, free_vec);
-					}
+				case F_SHORT:
+				{
+					SHORT* fmatrix=((CShortFeatures *) feat)->get_feature_matrix(num_feat, num_vec);
+					set_short_matrix(fmatrix, num_feat, num_vec);
+					break;
+				}
 
-					set_real_matrix(result, num_feat, num_vec);
-					delete[] result;
-
+				case F_SHORTREAL:
+				{
+					SHORTREAL* fmatrix=((CShortRealFeatures *) feat)->get_feature_matrix(num_feat, num_vec);
+					set_shortreal_matrix(fmatrix, num_feat, num_vec);
 					break;
 				}
 
 				case F_WORD:
 				{
-					CWordFeatures* wordfeat=(CWordFeatures*) feat;
-					INT num_feat=wordfeat->get_num_features();
-					INT num_vec=wordfeat->get_num_vectors();
-					WORD* result=new WORD[num_feat*num_vec];
-					ASSERT(result);
-
-					for (INT i=0; i<num_vec; i++)
-					{
-						INT num_vfeat=0;
-						bool free_vec=true;
-						WORD* vec=wordfeat->get_feature_vector(i, num_vfeat, free_vec);
-						ASSERT(num_vfeat==num_feat);
-
-						for (INT j=0; j<num_vfeat; j++)
-							result[num_feat*i+j]=vec[j];
-						wordfeat->free_feature_vector(vec, i, free_vec);
-					}
-
-					set_word_matrix(result, num_feat, num_vec);
-					delete[] result;
-
+					WORD* fmatrix=((CWordFeatures *) feat)->get_feature_matrix(num_feat, num_vec);
+					set_word_matrix(fmatrix, num_feat, num_vec);
 					break;
 				}
-				
-				case F_SHORT:
-				{
-					CShortFeatures* shortfeat=(CShortFeatures*) feat;
-					INT num_feat=shortfeat->get_num_features();
-					INT num_vec=shortfeat->get_num_vectors();
-					SHORT* result=new SHORT[num_feat*num_vec];
-					ASSERT(result);
 
-					for (INT i=0; i<num_vec; i++)
-					{
-						INT num_vfeat=0;
-						bool free_vec=true;
-						SHORT* vec=shortfeat->get_feature_vector(i, num_vfeat, free_vec);
-						ASSERT(num_vfeat==num_feat);
-
-						for (INT j=0; j<num_vfeat; j++)
-							result[num_feat*i+j]=vec[j];
-						shortfeat->free_feature_vector(vec, i, free_vec);
-					}
-
-					set_short_matrix(result, num_feat, num_vec);
-					delete[] result;
-
-					break;
-				}
-				
-				case F_CHAR:
-				{
-					CCharFeatures* charfeat=(CCharFeatures*) feat;
-					INT num_feat=charfeat->get_num_features();
-					INT num_vec=charfeat->get_num_vectors();
-					CHAR* result=new CHAR[num_feat*num_vec];
-					ASSERT(result);
-
-					for (INT i=0; i<num_vec; i++)
-					{
-						INT num_vfeat=0;
-						bool free_vec=true;
-						CHAR* vec=charfeat->get_feature_vector(i, num_vfeat, free_vec);
-						ASSERT(num_vfeat==num_feat);
-
-						for (INT j=0; j<num_vfeat; j++)
-							result[num_feat*i+j]=vec[j];
-						charfeat->free_feature_vector(vec, i, free_vec);
-					}
-
-					set_char_matrix(result, num_feat, num_vec);
-					delete[] result;
-
-					break;
-				}
-				
-				case F_BYTE:
-				{
-					CByteFeatures* bytefeat=(CByteFeatures*) feat;
-					INT num_feat=bytefeat->get_num_features();
-					INT num_vec=bytefeat->get_num_vectors();
-					BYTE* result=new BYTE[num_feat*num_vec];
-					ASSERT(result);
-
-					for (INT i=0; i<num_vec; i++)
-					{
-						INT num_vfeat=0;
-						bool free_vec=true;
-						BYTE* vec=bytefeat->get_feature_vector(i, num_vfeat, free_vec);
-						ASSERT(num_vfeat==num_feat);
-
-						for (INT j=0; j<num_vfeat; j++)
-							result[num_feat*i+j]=vec[j];
-						bytefeat->free_feature_vector(vec, i, free_vec);
-					}
-
-					set_byte_matrix(result, num_feat, num_vec);
-					delete[] result;
-
-					break;
-				}
-				
 				default:
 					SG_SERROR("%s not implemented.\n", feat->get_feature_type());
 			}
-		break;
+			break;
+		}
 
 		case C_SPARSE:
 			switch (feat->get_feature_type())
@@ -1108,6 +1037,54 @@ bool CSGInterface::do_set_features(bool add)
 			feat=new CRealFeatures(0);
 			ASSERT(feat);
 			((CRealFeatures*) feat)->
+				set_feature_matrix(fmatrix, num_feat, num_vec);
+			break;
+		}
+
+		case DENSE_INT:
+		{
+			INT* fmatrix=NULL;
+			get_int_matrix(fmatrix, num_feat, num_vec);
+
+			feat=new CIntFeatures(0);
+			ASSERT(feat);
+			((CIntFeatures*) feat)->
+				set_feature_matrix(fmatrix, num_feat, num_vec);
+			break;
+		}
+
+		case DENSE_SHORT:
+		{
+			SHORT* fmatrix=NULL;
+			get_short_matrix(fmatrix, num_feat, num_vec);
+
+			feat=new CShortFeatures(0);
+			ASSERT(feat);
+			((CShortFeatures*) feat)->
+				set_feature_matrix(fmatrix, num_feat, num_vec);
+			break;
+		}
+
+		case DENSE_WORD:
+		{
+			WORD* fmatrix=NULL;
+			get_word_matrix(fmatrix, num_feat, num_vec);
+
+			feat=new CWordFeatures(0);
+			ASSERT(feat);
+			((CWordFeatures*) feat)->
+				set_feature_matrix(fmatrix, num_feat, num_vec);
+			break;
+		}
+
+		case DENSE_SHORTREAL:
+		{
+			SHORTREAL* fmatrix=NULL;
+			get_shortreal_matrix(fmatrix, num_feat, num_vec);
+
+			feat=new CShortRealFeatures(0);
+			ASSERT(feat);
+			((CShortRealFeatures*) feat)->
 				set_feature_matrix(fmatrix, num_feat, num_vec);
 			break;
 		}
