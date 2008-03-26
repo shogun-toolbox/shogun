@@ -1169,7 +1169,7 @@ template<> inline EFeatureType CSparseFeatures<DREAL>::get_feature_type()
  */
 template<> inline EFeatureType CSparseFeatures<SHORTREAL>::get_feature_type()
 {
-	return F_SREAL;
+	return F_SHORTREAL;
 }
 
 /** get feature type the LONGREAL feature can deal with
@@ -1178,6 +1178,6 @@ template<> inline EFeatureType CSparseFeatures<SHORTREAL>::get_feature_type()
  */
 template<> inline EFeatureType CSparseFeatures<LONGREAL>::get_feature_type()
 {
-	return F_LREAL;
+	return F_LONGREAL;
 }
 #endif /* _SPARSEFEATURES__H__ */

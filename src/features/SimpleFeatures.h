@@ -181,15 +181,15 @@ template <class ST> class CSimpleFeatures: public CFeatures
 		 * @param d1 dimension 1 of matrix
 		 * @param d2 dimension 2 of matrix
 		 */
-		void get_fm(DREAL** dst, INT* d1, INT* d2)
+		void get_fm(ST** dst, INT* d1, INT* d2)
 		{
 			ASSERT(feature_matrix);
 
 			LONG num=num_features*num_vectors;
 			*d1=num_features;
 			*d2=num_vectors;
-			*dst=(DREAL*) malloc(sizeof(DREAL)*num);
-			memcpy(*dst, feature_matrix, num * sizeof(DREAL));
+			*dst=(ST*) malloc(sizeof(ST)*num);
+			memcpy(*dst, feature_matrix, num * sizeof(ST));
 		}
 
 		/** get the pointer to the feature matrix
@@ -396,6 +396,15 @@ template <class ST> class CSimpleFeatures: public CFeatures
 template<> inline EFeatureType CSimpleFeatures<DREAL>::get_feature_type()
 {
 	return F_DREAL;
+}
+
+/** get feature type the SHORTREAL feature can deal with
+ *
+ * @return feature type SHORTREAL
+ */
+template<> inline EFeatureType CSimpleFeatures<SHORTREAL>::get_feature_type()
+{
+	return F_SHORTREAL;
 }
 
 /** get feature type the SHORT feature can deal with

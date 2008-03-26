@@ -8,17 +8,17 @@
  * Copyright (C) 2008 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "features/RealFeatures.h"
+#include "features/ShortRealFeatures.h"
 #include "lib/File.h"
 
-bool CRealFeatures::load(CHAR* fname)
+bool CShortRealFeatures::load(CHAR* fname)
 {
 	bool status=false;
 	num_vectors=1;
     num_features=0;
 	CFile f(fname, 'r', F_SHORTREAL);
 	LONG numf=0 ;
-	feature_matrix=f.load_real_data(NULL, numf);
+	feature_matrix=f.load_shortreal_data(NULL, numf);
 	num_features=numf;
 
 
@@ -31,7 +31,7 @@ bool CRealFeatures::load(CHAR* fname)
 	return status;
 }
 
-bool CRealFeatures::save(CHAR* fname)
+bool CShortRealFeatures::save(CHAR* fname)
 {
 	INT len;
 	bool free;
@@ -47,7 +47,7 @@ bool CRealFeatures::save(CHAR* fname)
 			SG_PRINT( ".");
 
 		fv=get_feature_vector(i, len, free);
-		f.save_real_data(fv, len);
+		f.save_shortreal_data(fv, len);
 		free_feature_vector(fv, i, free) ;
 	}
 

@@ -82,10 +82,27 @@ DREAL* CFile::load_real_data(DREAL* target, LONG& num)
 	return target;
 }
 
+SHORTREAL* CFile::load_shortreal_data(SHORTREAL* target, LONG& num)
+{
+	ASSERT(expected_type==F_SHORTREAL);
+	CSimpleFile<SHORTREAL> f(filename, file);
+	target=f.load(target, num);
+	status=(target!=NULL);
+	return target;
+}
+
 bool CFile::save_real_data(DREAL* src, LONG num)
 {
 	ASSERT(expected_type==F_DREAL);
 	CSimpleFile<DREAL> f(filename, file);
+	status=f.save(src, num);
+	return status;
+}
+
+bool CFile::save_shortreal_data(SHORTREAL* src, LONG num)
+{
+	ASSERT(expected_type==F_SHORTREAL);
+	CSimpleFile<SHORTREAL> f(filename, file);
 	status=f.save(src, num);
 	return status;
 }

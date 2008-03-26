@@ -19,7 +19,7 @@ bool CIntFeatures::load(CHAR* fname)
     num_features=0;
 	CFile f(fname, 'r', F_INT);
 	LONG numf=0 ;
-	feature_matrix=f.load_real_data(NULL, numf);
+	feature_matrix=f.load_int_data(NULL, numf);
 	num_features=numf;
 
 
@@ -48,7 +48,7 @@ bool CIntFeatures::save(CHAR* fname)
 			SG_PRINT( ".");
 
 		fv=get_feature_vector(i, len, free);
-		f.save_real_data(fv, len);
+		f.save_int_data(fv, len);
 		free_feature_vector(fv, i, free) ;
 	}
 

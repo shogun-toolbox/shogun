@@ -4,7 +4,6 @@
 
 #ifdef HAVE_PYTHON
 %include "lib/python_typemaps.i"
-%apply (ST* IN_ARRAY2, INT DIM1, INT DIM2) {(ST* src, INT num_feat, INT num_vec)};
 #endif
 
 %include "features/SimpleFeatures.h" 

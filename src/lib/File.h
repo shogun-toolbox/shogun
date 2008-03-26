@@ -69,6 +69,14 @@ public:
 	 */
 	DREAL*  load_real_data(DREAL* target, LONG& num);
 
+	/** load shortreal data
+	 *
+	 * @param target loaded data
+	 * @param num number of data elements
+	 * @return loaded data
+	 */
+	SHORTREAL*  load_shortreal_data(SHORTREAL* target, LONG& num);
+
 	/** load char data
 	 *
 	 * @param target loaded data
@@ -116,6 +124,14 @@ public:
 	 * @return whether operation was successful
 	 */
 	bool save_real_data(DREAL* src, LONG num);
+
+	/** save shortreal data
+	 *
+	 * @param src data to save
+	 * @param num number of data elements
+	 * @return whether operation was successful
+	 */
+	bool save_shortreal_data(SHORTREAL* src, LONG num);
 
 	/** save char data
 	 *

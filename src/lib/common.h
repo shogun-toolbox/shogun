@@ -253,9 +253,9 @@ enum EFeatureType
 	F_UINT = 60,
 	F_LONG = 70,
 	F_ULONG = 80,
-	F_SREAL = 90,
+	F_SHORTREAL = 90,
 	F_DREAL = 100,
-	F_LREAL = 110,
+	F_LONGREAL = 110,
 	F_ANY = 1000
 };
 

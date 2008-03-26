@@ -12,28 +12,27 @@
 #define _SHORTREALFEATURES__H__
 
 #include "features/SimpleFeatures.h"
-#include "features/CharFeatures.h"
 #include "lib/common.h"
 
 /** class RealFeatures */
-class CRealFeatures: public CSimpleFeatures<SHORTREAL>
+class CShortRealFeatures: public CSimpleFeatures<SHORTREAL>
 {
 	public:
 		/** constructor
 		 *
 		 * @param size cache size
 		 */
-		CRealFeatures(INT size=0) : CSimpleFeatures<SHORTREAL>(size) {}
+		CShortRealFeatures(INT size=0) : CSimpleFeatures<SHORTREAL>(size) {}
 
 		/** copy constructor */
-		CRealFeatures(const CRealFeatures & orig) :
+		CShortRealFeatures(const CShortRealFeatures & orig) :
 			CSimpleFeatures<SHORTREAL>(orig) {}
 
 		/** constructor
 		 *
 		 * @param fname filename to load features from
 		 */
-		CRealFeatures(CHAR* fname) : CSimpleFeatures<SHORTREAL>(fname)
+		CShortRealFeatures(CHAR* fname) : CSimpleFeatures<SHORTREAL>(fname)
 		{
 			load(fname);
 		}
