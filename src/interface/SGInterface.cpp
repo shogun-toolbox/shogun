@@ -885,48 +885,27 @@ bool CSGInterface::a_get_features()
 		}
 
 		case C_SPARSE:
+		{
 			switch (feat->get_feature_type())
 			{
 				case F_DREAL:
 				{
 					LONG nnz=((CSparseFeatures<DREAL>*) feat)->
 						get_num_nonzero_entries();
-					INT num_vec=feat->get_num_vectors();
-					INT num_feat=
-						((CSparseFeatures<DREAL>*) feat)->get_num_features();
+					INT num_feat=0;
+					INT num_vec=0;
+					TSparse<DREAL>* fmatrix=((CSparseFeatures<DREAL>*) feat)->get_sparse_feature_matrix(num_feat, num_vec);
+					SG_DEBUG("sparse matrix has %d feats, %d vecs and %d nnz elemements\n", num_feat, num_vec, nnz);
 
-					SG_DEBUG("sparse matrix has %d rows, %d cols and %d nnz elemements\n", num_feat, num_vec, nnz);
-
-					TSparse<DREAL>* result=new TSparse<DREAL>[num_vec];
-					ASSERT(result);
-
-					for (INT i=0; i<num_vec; i++)
-					{
-						INT len=0;
-						bool dofree=false;
-						TSparseEntry<DREAL>* vec=
-							((CSparseFeatures<DREAL>*) feat)->
-								get_sparse_feature_vector(i, len, dofree);
-						result[i].features=new TSparseEntry<DREAL>[len];
-
-						for (INT j=0; j<len; j++)
-						{
-							result[i].features[j].entry=vec[j].entry;
-							result[i].features[j].feat_index=vec[j].feat_index;
-						}
-						((CSparseFeatures<DREAL>*) feat)->
-							free_feature_vector(vec, len, dofree);
-					}
-
-					set_real_sparsematrix(result, num_feat, num_vec);
-					delete[] result;
+					set_real_sparsematrix(fmatrix, num_feat, num_vec, nnz);
+					break;
 				}
-				break;
 
 				default:
 					SG_NOTIMPLEMENTED;
 			}
-		break;
+			break;
+		}
 
 		case C_STRING:
 		{
