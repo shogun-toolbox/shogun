@@ -102,27 +102,6 @@ class CMatlabInterface : public CSGInterface
 	private:
 		const mxArray* get_arg_increment();
 		void set_arg_increment(mxArray* arg);
-/*
-bool is_byte(const mxArray* mx)
-{
-	return mxIsClass(mx, "uint8");
-}
-
-bool is_short(const mxArray* mx)
-{
-	return mxIsClass(mx, "int16");
-}
-
-bool is_word(const mxArray* mx)
-{
-	return mxIsClass(mx, "uint16");
-}
-
-bool is_int(const mxArray* mx)
-{
-	return mxIsClass(mx, "int32");
-}
-*/
 
 	private:
 		mxArray** m_lhs;

@@ -1083,61 +1083,79 @@ bool CSGInterface::do_set_features(bool add)
 	}
 
 	CFeatures* feat=NULL;
-/*
 	INT num_feat=0;
 	INT num_vec=0;
 
-	if (is_sparse() && is_numeric())
-		DREAL* fmatrix=NULL;
-		get_real_sparsematrix(fmatrix, num_feat, num_vec);
-
-		feat=new CSparseFeatures<DREAL)(0);
-		ASSERT(feat);
-		((CSparseFeatures<DREAL>*) feat)->
-			set_sparse_feature_matrix(fmatrix, num_feat, num_vec);
-	}
-	else if (is_double())
+	switch (get_argument_type())
 	{
-		DREAL* fmatrix=NULL;
-		get_real_matrix(fmatrix, num_feat, num_vec);
-
-		feat=new CRealFeatures(0);
-		ASSERT(feat);
-		((CRealFeatures*) feat)->
-			set_feature_matrix(fmatrix, num_feat, num_vec);
-	}
-	else if (is_char())
-	{
-		if (m_nrhs!=4)
-			SG_SERROR("Please specify alphabet / type!\n");
-
-		INT alen=0;
-		//FIXME:  problem -> arg4 defines arg3!!!
-		CHAR* alphabet_str=get_string(alen, 4);
-		
-		if (strmatch(alphabet_str, alen, "DNABINFILE"))
+		case SPARSE_REAL:
 		{
-			CHAR* fname=get_string();
-			ASSERT(fname);
+			TSparse<DREAL>* fmatrix=NULL;
+			get_real_sparsematrix(fmatrix, num_feat, num_vec);
 
-			feat=new CStringFeatures<BYTE>(DNA);
+			feat=new CSparseFeatures<DREAL>(0);
 			ASSERT(feat);
-			if (!((CStringFeatures<BYTE>*) feat)->load_dna_file(fname))
+			((CSparseFeatures<DREAL>*) feat)->
+				set_sparse_feature_matrix(fmatrix, num_feat, num_vec);
+			break;
+		}
+
+		case DENSE_REAL:
+		{
+			DREAL* fmatrix=NULL;
+			get_real_matrix(fmatrix, num_feat, num_vec);
+
+			feat=new CRealFeatures(0);
+			ASSERT(feat);
+			((CRealFeatures*) feat)->
+				set_feature_matrix(fmatrix, num_feat, num_vec);
+			break;
+		}
+
+		case SINGLE_STRING:
+		{
+			if (m_nrhs!=4)
+				SG_ERROR("Please specify alphabet!\n");
+
+			INT fname_len=0;
+			CHAR* fname=get_string(fname_len);
+			ASSERT(fname);
+			INT alphabet_len=0;
+			CHAR* alphabet_str=get_string(alphabet_len);
+			ASSERT(alphabet_str);
+
+			if (strmatch(alphabet_str, alphabet_len, "DNABINFILE"))
 			{
+				feat=new CStringFeatures<BYTE>(DNA);
+				ASSERT(feat);
+				if (!((CStringFeatures<BYTE>*) feat)->load_dna_file(fname))
+				{
+					delete alphabet_str;
+					delete fname;
+					delete feat;
+					SG_ERROR("Couldn't load DNA features from file.\n");
+				}
+
 				delete alphabet_str;
 				delete fname;
-				delete feat;
-				SG_SERROR("Couldn't load DNA features from file.\n");
 			}
 
-			delete fname;
+			break;
 		}
-		else
+
+		case DENSE_CHAR:
 		{
-			CAlphabet* alphabet=new CAlphabet(alphabet_str, alen);
-			ASSERT(alphabet);
+			if (m_nrhs!=4)
+				SG_SERROR("Please specify alphabet!\n");
+
 			T_STRING<CHAR>* fmatrix=NULL;
-			get_string_list(fmatrix, num_feat, num_vec);
+			get_char_string_list(fmatrix, num_feat, num_vec);
+
+			INT alphabet_len=0;
+			CHAR* alphabet_str=get_string(alphabet_len);
+			CAlphabet* alphabet=new CAlphabet(alphabet_str, alphabet_len);
+			ASSERT(alphabet);
+			delete alphabet_str;
 
 			INT maxlen=0;
 			for (INT i=0; i<num_vec; i++)
@@ -1148,143 +1166,50 @@ bool CSGInterface::do_set_features(bool add)
 			if (!((CStringFeatures<CHAR>*) feat)->
 				set_features(fmatrix, num_vec, maxlen))
 			{
-				delete alphabet_str;
 				delete alphabet;
 				delete feat;
 				SG_SERROR("Couldn't set string features.\n");
 			}
 
 			delete alphabet;
+			break;
 		}
 
-		delete alphabet_str;
-	}
-	else if (is_byte())
-	{
-		if (m_nrhs!=4)
-			SG_SERROR("Please specify alphabet!\n");
-
-		INT alen=0;
-		CHAR* alphabet_str=get_string(alen);
-		ASSERT(alphabet_str);
-		CAlphabet* alphabet=new CAlphabet(alphabet_str, alen);
-		ASSERT(alphabet);
-		delete alphabet_str;
-
-		T_STRING<BYTE>* fmatrix=NULL;
-		get_string_list(fmatrix, num_feat, num_vec);
-
-		INT maxlen=0;
-		for (INT i=0; i<num_vec; i++)
-			maxlen=CMath::max(maxlen, fmatrix[i].length);
-
-		feat=new CStringFeatures<BYTE>(alphabet);
-		ASSERT(feat);
-		if (!((CStringFeatures<BYTE>*) feat)->set_features(fmatrix, num_vec, maxlen))
+		case DENSE_BYTE:
 		{
-			delete alphabet;
-			delete feat;
-			SG_SERROR("Couldnt set byte string features.\n");
-			f=NULL;
-		}
-	}
+			if (m_nrhs!=4)
+				SG_SERROR("Please specify alphabet!\n");
 
-/// eh?
-			else if (mxIsCell(mx_feat))
+			T_STRING<BYTE>* fmatrix=NULL;
+			get_byte_string_list(fmatrix, num_feat, num_vec);
+
+			INT alphabet_len=0;
+			CHAR* alphabet_str=get_string(alphabet_len);
+			ASSERT(alphabet_str);
+			CAlphabet* alphabet=new CAlphabet(alphabet_str, alphabet_len);
+			ASSERT(alphabet);
+			delete alphabet_str;
+
+			INT maxlen=0;
+			for (INT i=0; i<num_vec; i++)
+				maxlen=CMath::max(maxlen, fmatrix[i].length);
+
+			feat=new CStringFeatures<BYTE>(alphabet);
+			ASSERT(feat);
+			if (!((CStringFeatures<BYTE>*) feat)->set_features(fmatrix, num_vec, maxlen))
 			{
-				int num_vec=mxGetNumberOfElements(mx_feat);
-
-				ASSERT(num_vec>=1 && mxGetCell(mx_feat, 0));
-
-
-				if (mxIsChar(mxGetCell(mx_feat, 0)))
-				{
-					if (nrhs==4)
-					{
-						INT len=0;
-						CHAR* al = CGUIMatlab::get_mxString(vals[3], len);
-						CAlphabet* alpha = new CAlphabet(al, len);
-						T_STRING<CHAR>* sc=new T_STRING<CHAR>[num_vec];
-						ASSERT(alpha);
-						ASSERT(sc);
-
-						int maxlen=0;
-
-						for (int i=0; i<num_vec; i++)
-						{
-							mxArray* e=mxGetCell(mx_feat, i);
-							ASSERT(e && mxIsChar(e));
-							sc[i].string=get_mxString(e, len);
-
-							if (sc[i].string)
-							{
-								sc[i].length=len;
-								maxlen=CMath::max(maxlen, sc[i].length);
-							}
-							else
-							{
-								SG_WARNING( "string with index %d has zero length\n", i+1);
-								sc[i].length=0;
-							}
-						}
-
-						f= new CStringFeatures<CHAR>(alpha);
-						ASSERT(f);
-
-						if (!((CStringFeatures<CHAR>*) f)->set_features(sc, num_vec, maxlen))
-						{
-							delete f;
-							f=NULL;
-						}
-					}
-					else
-						SG_SERROR( "please specify alphabet!\n");
-				}
-				else if (mxIsClass(mxGetCell(mx_feat, 0), "uint8") || mxIsClass(mxGetCell(mx_feat, 0), "int8"))
-				{
-					if (nrhs==4)
-					{
-						INT len=0;
-						CHAR* al = CGUIMatlab::get_mxString(vals[3], len);
-						CAlphabet* alpha = new CAlphabet(al, len);
-						T_STRING<BYTE>* sc=new T_STRING<BYTE>[num_vec];
-						ASSERT(alpha);
-
-						int maxlen=0;
-
-						for (int i=0; i<num_vec; i++)
-						{
-							mxArray* e=mxGetCell(mx_feat, i);
-							ASSERT(e && (mxIsClass(e, "uint8") || mxIsClass(e, "int8")));
-							INT _len=0;
-							sc[i].string=get_mxBytes(e, _len);
-							if (sc[i].string)
-							{
-								sc[i].length=_len;
-								maxlen=CMath::max(maxlen, sc[i].length);
-							}
-							else
-							{
-								SG_WARNING( "string with index %d has zero length\n", i+1);
-								sc[i].length=0;
-							}
-						}
-
-						f= new CStringFeatures<BYTE>(alpha);
-						ASSERT(f);
-
-						if (!((CStringFeatures<BYTE>*) f)->set_features(sc, num_vec, maxlen))
-						{
-							delete f;
-							f=NULL;
-						}
-					}
-					else
-						SG_SERROR( "please specify alphabet!\n");
-				}
-
+				delete alphabet;
+				delete feat;
+				SG_ERROR("Couldnt set byte string features.\n");
 			}
-*/
+
+			delete alphabet;
+			break;
+		}
+
+		default:
+			SG_ERROR("Wrong argument type.\n");
+	}
 
 	if (strmatch(target, tlen, "TRAIN"))
 	{
