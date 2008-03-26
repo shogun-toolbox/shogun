@@ -53,15 +53,16 @@ IFType CMatlabInterface::get_argument_type()
 			return UNDEFINED;
 	}
 
-	else if (mxIsUint8(arg))
-		return DENSE_BYTE;
+	else if (mxIsUint8(arg) ||
+		(mxIsCell(arg) && mxGetCell(arg, 0) && mxIsUint8(mxGetCell(arg, 0))))
+		return STRING_BYTE;
 
 	else if (mxIsChar(arg))
 	{
 		if (mxGetM(arg)==1 && mxGetN(arg)==1)
 			return SINGLE_STRING;
 		else
-			return DENSE_CHAR;
+			return STRING_CHAR;
 	}
 
 	else if (mxIsCell(arg) && mxGetCell(arg, 0) && mxIsChar(mxGetCell(arg, 0)))
@@ -70,7 +71,7 @@ IFType CMatlabInterface::get_argument_type()
 		if (mxGetM(cell)==1 && mxGetN(cell)==1)
 			return SINGLE_STRING;
 		else
-			return DENSE_CHAR;
+			return STRING_CHAR;
 	}
 
 	else if (mxIsInt32(arg))
@@ -466,7 +467,7 @@ void CMatlabInterface::function_name(const T_STRING<sg_type>* strings, INT num_s
 																					\
 			for (INT j=0; j<len; j++)												\
 				data[j]=strings[i].string[j];										\
-			mxSetCell(str, i);														\
+			mxSetCell(mx_str, i, str);														\
 		}																			\
 	}																				\
 																					\

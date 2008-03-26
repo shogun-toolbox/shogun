@@ -879,7 +879,7 @@ bool CSGInterface::a_get_features()
 				}
 
 				default:
-					SG_SERROR("%s not implemented.\n", feat->get_feature_type());
+					SG_NOTIMPLEMENTED;
 			}
 			break;
 		}
@@ -924,62 +924,45 @@ bool CSGInterface::a_get_features()
 				break;
 
 				default:
-					SG_SERROR("not implemented\n");
+					SG_NOTIMPLEMENTED;
 			}
 		break;
 
 		case C_STRING:
+		{
+			INT num_str=0;
+			INT max_str_len=0;
 			switch (feat->get_feature_type())
 			{
+				case F_BYTE:
+				{
+					T_STRING<BYTE>* fmatrix=((CStringFeatures<BYTE>*) feat)->get_features(num_str, max_str_len);
+					set_byte_string_list(fmatrix, num_str);
+					break;
+				}
+
 				case F_CHAR:
 				{
-					INT num_vec=feat->get_num_vectors();
-					T_STRING<CHAR>* list=new T_STRING<CHAR>[num_vec];
-					for (INT i=0; i<num_vec; i++)
-					{
-						INT len=0;
-						CHAR* vec=((CStringFeatures<CHAR>*) feat)->
-							get_feature_vector(i, len);
-
-						if (len>0)
-							list[i].string=vec;
-						else
-							list[i].string=NULL;
-					}
-
-					set_char_string_list(list, num_vec);
-					delete[] list;
+					T_STRING<CHAR>* fmatrix=((CStringFeatures<CHAR>*) feat)->get_features(num_str, max_str_len);
+					set_char_string_list(fmatrix, num_str);
+					break;
 				}
-				break;
 
 				case F_WORD:
 				{
-					INT num_vec=feat->get_num_vectors();
-					T_STRING<WORD>* list=new T_STRING<WORD>[num_vec];
-					for (INT i=0; i<num_vec; i++)
-					{
-						INT len=0;
-						WORD* vec=((CStringFeatures<WORD>*) feat)->
-							get_feature_vector(i, len);
-
-						if (len>0)
-							list[i].string=vec;
-						else
-							list[i].string=NULL;
-					}
-
-					set_word_string_list(list, num_vec);
-					delete[] list;
+					T_STRING<WORD>* fmatrix=((CStringFeatures<WORD>*) feat)->get_features(num_str, max_str_len);
+					set_word_string_list(fmatrix, num_str);
+					break;
 				}
-				break;
 
 				default:
-					SG_SERROR("not implemented\n");
+					SG_NOTIMPLEMENTED;
 			}
-		break;
+			break;
+		}
 
 		default:
-			SG_SERROR( "not implemented\n");
+			SG_NOTIMPLEMENTED;
 	}
 
 	return true;
@@ -1120,7 +1103,7 @@ bool CSGInterface::do_set_features(bool add)
 			break;
 		}
 
-		case DENSE_CHAR:
+		case STRING_CHAR:
 		{
 			if (m_nrhs!=4)
 				SG_SERROR("Please specify alphabet!\n");
@@ -1152,13 +1135,15 @@ bool CSGInterface::do_set_features(bool add)
 			break;
 		}
 
-		case DENSE_BYTE:
+		case STRING_BYTE:
 		{
 			if (m_nrhs!=4)
 				SG_SERROR("Please specify alphabet!\n");
 
+			INT num_str=0;
+			INT max_str_len=0;
 			T_STRING<BYTE>* fmatrix=NULL;
-			get_byte_string_list(fmatrix, num_feat, num_vec);
+			get_byte_string_list(fmatrix, num_str, max_str_len);
 
 			INT alphabet_len=0;
 			CHAR* alphabet_str=get_string(alphabet_len);
@@ -1167,13 +1152,9 @@ bool CSGInterface::do_set_features(bool add)
 			ASSERT(alphabet);
 			delete alphabet_str;
 
-			INT maxlen=0;
-			for (INT i=0; i<num_vec; i++)
-				maxlen=CMath::max(maxlen, fmatrix[i].length);
-
 			feat=new CStringFeatures<BYTE>(alphabet);
 			ASSERT(feat);
-			if (!((CStringFeatures<BYTE>*) feat)->set_features(fmatrix, num_vec, maxlen))
+			if (!((CStringFeatures<BYTE>*) feat)->set_features(fmatrix, num_str, max_str_len))
 			{
 				delete alphabet;
 				delete feat;

@@ -40,6 +40,7 @@ class CIO;
 #define SG_WARNING(x...) CSGObject::io.message(M_WARN,x)
 #define SG_ERROR(x...) CSGObject::io.message(M_ERROR,x)
 #define SG_PRINT(x...) CSGObject::io.message(M_MESSAGEONLY,x)
+#define SG_NOTIMPLEMENTED CSGObject::io.not_implemented()
 
 #define SG_PROGRESS(x...) CSGObject::io.progress(x)
 #define SG_ABS_PROGRESS(x...) CSGObject::io.absolute_progress(x)
@@ -54,6 +55,7 @@ extern CIO* sg_io;
 #define SG_SPRINT(x...) sg_io->message(M_MESSAGEONLY,x)
 #define SG_SPROGRESS(x...) sg_io->progress(x)
 #define SG_SABS_PROGRESS(x...) sg_io->absolute_progress(x)
+#define SG_SNOTIMPLEMENTED sg_io->not_implemented()
 #else
 extern CIO sg_io;
 // printf like function using the global sg_io object
@@ -64,6 +66,7 @@ extern CIO sg_io;
 #define SG_SPRINT(x...) sg_io.message(M_MESSAGEONLY,x)
 #define SG_SPROGRESS(x...) sg_io.progress(x)
 #define SG_SABS_PROGRESS(x...) sg_io.absolute_progress(x)
+#define SG_SNOTIMPLEMENTED sg_io.not_implemented()
 #endif
 
 #define ASSERT(x) { if (!(x)) SG_SERROR("assertion %s failed in file %s line %d\n",#x, __FILE__, __LINE__);}
