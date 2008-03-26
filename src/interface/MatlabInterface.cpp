@@ -412,7 +412,7 @@ void CMatlabInterface::function_name(const TSparse<sg_type>* matrix, INT num_fea
 	if (!mx_mat)															\
 		SG_ERROR("Couldn't create Sparse Matrix of %d rows and %d cols.\n", num_feat, num_vec); \
 																			\
-	if_type* data=(if_type*) mxGetPr(mx_mat);								\
+	if_type* data=(if_type*) mxGetData(mx_mat);								\
 																			\
 	mwIndex* ir=mxGetIr(mx_mat);											\
 	mwIndex* jc=mxGetJc(mx_mat);											\

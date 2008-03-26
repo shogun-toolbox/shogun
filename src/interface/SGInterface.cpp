@@ -231,6 +231,11 @@ static CSGInterfaceMethod sg_methods[]=
 		(CHAR*) USAGE_O(N_CLASSIFY, "result")
 	},
 	{
+		(CHAR*) N_SVM_CLASSIFY,
+		(&CSGInterface::a_classify),
+		(CHAR*) USAGE_O(N_SVM_CLASSIFY, "result")
+	},
+	{
 		(CHAR*) N_CLASSIFY_EXAMPLE,
 		(&CSGInterface::a_classify_example),
 		(CHAR*) USAGE_IO(N_CLASSIFY_EXAMPLE, "feature_vector_index", "result")
@@ -398,7 +403,7 @@ bool CSGInterface::a_translate_string()
 			case 'c': obs[i]=1; break;
 			case 'g': obs[i]=2; break;
 			case 't': obs[i]=3; break;
-			default: SG_SERROR("Wrong letter in string.\n");
+			default: SG_ERROR("Wrong letter in string.\n");
 		}
 	}
 
@@ -442,7 +447,7 @@ bool CSGInterface::a_best_path_2struct()
 	if (m_nlhs!=3 || m_nrhs!=12)
 		return false;
 
-	SG_SERROR("Sorry, this parameter list is awful!\n");
+	SG_ERROR("Sorry, this parameter list is awful!\n");
 	
 	return true;
 }
@@ -452,7 +457,7 @@ bool CSGInterface::a_best_path_trans()
 	if (!(m_nlhs==3 && (m_nrhs==15 || m_nrhs==17)))
 		return false;
 
-	SG_SERROR("Sorry, this parameter list is awful!\n");
+	SG_ERROR("Sorry, this parameter list is awful!\n");
 	
 	return true;
 }
@@ -462,7 +467,7 @@ bool CSGInterface::a_best_path_trans_deriv()
 	if (!((m_nlhs==5 && m_nrhs==14) || (m_nlhs==6 && m_nrhs==16)))
 		return false;
 
-	SG_SERROR("Sorry, this parameter list is awful!\n");
+	SG_ERROR("Sorry, this parameter list is awful!\n");
 
 	return true;
 }
@@ -488,11 +493,11 @@ bool CSGInterface::a_best_path_no_b()
 	get_real_matrix(a, M_a, N_a);
 
 	if (M_p!=1 || N_q!=N_p || M_q!=1 || N_a!=N_p || M_a!=N_p)
-		SG_SERROR("Model matrices not matching in size.\n");
+		SG_ERROR("Model matrices not matching in size.\n");
 
 	INT max_iter=get_int();
 	if (max_iter<1)
-		SG_SERROR("max_iter < 1.\n");
+		SG_ERROR("max_iter < 1.\n");
 
 	CDynProg* h=new CDynProg();
 	ASSERT(h);
@@ -540,11 +545,11 @@ bool CSGInterface::a_best_path_trans_simple()
 	get_real_matrix(seq, M_seq, N_seq);
 
 	if (M_p!=1 || N_q!=N_p || M_q!=1 || N_a_trans!=3 || M_seq!=N_p)
-		SG_SERROR("Model matrices not matching in size.\n");
+		SG_ERROR("Model matrices not matching in size.\n");
 
 	INT nbest=get_int();
 	if (nbest<1)
-		SG_SERROR("nbest < 1.\n");
+		SG_ERROR("nbest < 1.\n");
 
 	CDynProg* h=new CDynProg();
 	ASSERT(h);
@@ -593,15 +598,15 @@ bool CSGInterface::a_best_path_no_b_trans()
 	get_real_matrix(a_trans, M_a_trans, N_a_trans);
 
 	if (M_p!=1 || N_q!=N_p || M_q!=1 || N_a_trans!=3)
-		SG_SERROR("Model matrices not matching in size.\n");
+		SG_ERROR("Model matrices not matching in size.\n");
 
 	INT max_iter=get_int();
 	if (max_iter<1)
-		SG_SERROR("max_iter < 1.\n");
+		SG_ERROR("max_iter < 1.\n");
 
 	INT nbest=get_int();
 	if (nbest<1)
-		SG_SERROR("nbest < 1.\n");
+		SG_ERROR("nbest < 1.\n");
 
 	CDynProg* h=new CDynProg();
 	ASSERT(h);
@@ -650,7 +655,7 @@ bool CSGInterface::a_set_labels()
 	if (!strmatch(target, tlen, "TRAIN") && !strmatch(target, tlen, "TEST"))
 	{
 		delete target;
-		SG_SERROR("Unknown target, neither TRAIN nor TEST.\n");
+		SG_ERROR("Unknown target, neither TRAIN nor TEST.\n");
 	}
 
 	DREAL* lab=NULL;
@@ -663,13 +668,18 @@ bool CSGInterface::a_set_labels()
 	for (INT i=0; i<len; i++)
 	{
 		if (!labels->set_label(i, lab[i]))
-			SG_SERROR("Couldn't set label %d (of %d): %f.\n", i, len, lab[i]);
+			SG_ERROR("Couldn't set label %d (of %d): %f.\n", i, len, lab[i]);
 	}
 
 	if (strmatch(target, tlen, "TRAIN"))
 		gui->guilabels.set_train_labels(labels);
-	else
+	else if (strmatch(target, tlen, "TEST"))
 		gui->guilabels.set_test_labels(labels);
+	else
+	{
+		delete[] target;
+		SG_ERROR("Unknown target, neither TRAIN nor TEST.\n");
+	}
 	delete[] target;
 
 	return true;
@@ -691,12 +701,12 @@ bool CSGInterface::a_get_labels()
 	else
 	{
 		delete[] target;
-		SG_SERROR("Unknown target, neither TRAIN nor TEST.\n");
+		SG_ERROR("Unknown target, neither TRAIN nor TEST.\n");
 	}
 	delete[] target;
 
 	if (!labels)
-		SG_SERROR("No labels.\n");
+		SG_ERROR("No labels.\n");
 
 	INT num_labels=labels->get_num_labels();
 	DREAL* lab=new DREAL[num_labels];
@@ -720,7 +730,7 @@ bool CSGInterface::a_obtain_from_position_list()
 	if (!strmatch(target, tlen, "TRAIN") && !strmatch(target, tlen, "TEST"))
 	{
 		delete[] target;
-		SG_SERROR("Unknown target, neither TRAIN nor TEST.\n");
+		SG_ERROR("Unknown target, neither TRAIN nor TEST.\n");
 	}
 
 	INT winsize=get_int();
@@ -754,17 +764,17 @@ bool CSGInterface::a_obtain_from_position_list()
 	delete[] target;
 
 	if (!features)
-		SG_SERROR("No features.\n");
+		SG_ERROR("No features.\n");
 
 	if (features->get_feature_class()==C_COMBINED)
 	{
 		features=((CCombinedFeatures*) features)->get_last_feature_obj();
 		if (!features)
-			SG_SERROR("No features from combined.\n");
+			SG_ERROR("No features from combined.\n");
 	}
 
 	if (features->get_feature_class()!=C_STRING)
-		SG_SERROR("No string features.\n");
+		SG_ERROR("No string features.\n");
 
 	bool success=false;
 	switch (features->get_feature_type())
@@ -794,7 +804,7 @@ bool CSGInterface::a_obtain_from_position_list()
 			break;
 		}
 		default:
-			SG_SERROR("Unsupported string features type.\n");
+			SG_ERROR("Unsupported string features type.\n");
 	}
 
 	return success;
@@ -816,7 +826,7 @@ bool CSGInterface::a_get_features()
 	else
 	{
 		delete[] target;
-		SG_SERROR("Unknown target, neither TRAIN nor TEST.\n");
+		SG_ERROR("Unknown target, neither TRAIN nor TEST.\n");
 	}
 	delete[] target;
 
@@ -895,7 +905,7 @@ bool CSGInterface::a_get_features()
 					INT num_feat=0;
 					INT num_vec=0;
 					TSparse<DREAL>* fmatrix=((CSparseFeatures<DREAL>*) feat)->get_sparse_feature_matrix(num_feat, num_vec);
-					SG_DEBUG("sparse matrix has %d feats, %d vecs and %d nnz elemements\n", num_feat, num_vec, nnz);
+					SG_PRINT("sparse matrix has %d feats, %d vecs and %d nnz elemements\n", num_feat, num_vec, nnz);
 
 					set_real_sparsematrix(fmatrix, num_feat, num_vec, nnz);
 					break;
@@ -970,7 +980,7 @@ bool CSGInterface::do_set_features(bool add)
 	if (!strmatch(target, tlen, "TRAIN") && !strmatch(target, tlen, "TEST"))
 	{
 		delete[] target;
-		SG_SERROR("Unknown target, neither TRAIN nor TEST.\n");
+		SG_ERROR("Unknown target, neither TRAIN nor TEST.\n");
 	}
 
 	CFeatures* feat=NULL;
@@ -1085,39 +1095,38 @@ bool CSGInterface::do_set_features(bool add)
 		case STRING_CHAR:
 		{
 			if (m_nrhs!=4)
-				SG_SERROR("Please specify alphabet!\n");
+				SG_ERROR("Please specify alphabet!\n");
 
+			INT num_str=0;
+			INT max_str_len=0;
 			T_STRING<CHAR>* fmatrix=NULL;
-			get_char_string_list(fmatrix, num_feat, num_vec);
+			get_char_string_list(fmatrix, num_str, max_str_len);
 
 			INT alphabet_len=0;
 			CHAR* alphabet_str=get_string(alphabet_len);
+			ASSERT(alphabet_str);
 			CAlphabet* alphabet=new CAlphabet(alphabet_str, alphabet_len);
 			ASSERT(alphabet);
-			delete alphabet_str;
-
-			INT maxlen=0;
-			for (INT i=0; i<num_vec; i++)
-				maxlen=CMath::max(maxlen, fmatrix[i].length);
+			delete[] alphabet_str;
 
 			feat=new CStringFeatures<CHAR>(alphabet);
 			ASSERT(feat);
-			if (!((CStringFeatures<CHAR>*) feat)->
-				set_features(fmatrix, num_vec, maxlen))
+			if (!((CStringFeatures<CHAR>*) feat)->set_features(fmatrix, num_str, max_str_len))
 			{
 				delete alphabet;
 				delete feat;
-				SG_SERROR("Couldn't set string features.\n");
+				SG_ERROR("Couldnt set byte string features.\n");
 			}
 
 			delete alphabet;
+
 			break;
 		}
 
 		case STRING_BYTE:
 		{
 			if (m_nrhs!=4)
-				SG_SERROR("Please specify alphabet!\n");
+				SG_ERROR("Please specify alphabet!\n");
 
 			INT num_str=0;
 			INT max_str_len=0;
@@ -1129,7 +1138,7 @@ bool CSGInterface::do_set_features(bool add)
 			ASSERT(alphabet_str);
 			CAlphabet* alphabet=new CAlphabet(alphabet_str, alphabet_len);
 			ASSERT(alphabet);
-			delete alphabet_str;
+			delete[] alphabet_str;
 
 			feat=new CStringFeatures<BYTE>(alphabet);
 			ASSERT(feat);
@@ -1175,7 +1184,7 @@ bool CSGInterface::a_get_distance_matrix()
 
 	CDistance* distance=gui->guidistance.get_distance();
 	if (!distance || !distance->get_rhs() || !distance->get_lhs())
-		SG_SERROR("No distance defined.\n");
+		SG_ERROR("No distance defined.\n");
 
 	INT num_vec1=distance->get_lhs()->get_num_vectors();
 	INT num_vec2=distance->get_rhs()->get_num_vectors();
@@ -1195,7 +1204,7 @@ bool CSGInterface::a_get_kernel_matrix()
 
 	CKernel* kernel=gui->guikernel.get_kernel();
 	if (!kernel || !kernel->get_rhs() || !kernel->get_lhs())
-		SG_SERROR("No kernel defined.\n");
+		SG_ERROR("No kernel defined.\n");
 
 	INT num_vec1=kernel->get_lhs()->get_num_vectors();
 	INT num_vec2=kernel->get_rhs()->get_num_vectors();
@@ -1215,7 +1224,7 @@ bool CSGInterface::a_set_custom_kernel()
 
 	CCustomKernel* kernel=(CCustomKernel*) gui->guikernel.get_kernel();
 	if (!kernel)
-		SG_SERROR("No kernel defined.\n");
+		SG_ERROR("No kernel defined.\n");
 
 	if (kernel->get_kernel_type()==K_COMBINED)
 	{
@@ -1223,11 +1232,11 @@ bool CSGInterface::a_set_custom_kernel()
 		kernel=(CCustomKernel*) ((CCombinedKernel*) kernel)->
 			get_last_kernel();
 		if (!kernel)
-			SG_SERROR("No last kernel defined.\n");
+			SG_ERROR("No last kernel defined.\n");
 	}
 
 	if (kernel->get_kernel_type()!=K_CUSTOM)
-		SG_SERROR("Not a custom kernel.\n");
+		SG_ERROR("Not a custom kernel.\n");
 
 	DREAL* kmatrix=NULL;
 	INT num_feat=0;
@@ -1240,7 +1249,7 @@ bool CSGInterface::a_set_custom_kernel()
 	if (!strmatch(type, tlen, "DIAG") && !strmatch(type, tlen, "FULL"))
 	{
 		delete[] type;
-		SG_SERROR("Undefined type, not DIAG, FULL or FULL2DIAG.\n");
+		SG_ERROR("Undefined type, not DIAG, FULL or FULL2DIAG.\n");
 	}
 
 	bool source_is_diag=false;
@@ -1275,17 +1284,17 @@ bool CSGInterface::a_set_WD_position_weights()
 
 	CKernel* kernel=gui->guikernel.get_kernel();
 	if (!kernel)
-		SG_SERROR("No kernel.\n");
+		SG_ERROR("No kernel.\n");
 	if (kernel->get_kernel_type()!=K_COMBINED)
-		SG_SERROR("Only works for combined kernels.\n");
+		SG_ERROR("Only works for combined kernels.\n");
 
 	kernel=((CCombinedKernel*) kernel)->get_last_kernel();
 	if (!kernel)
-		SG_SERROR("No last kernel.\n");
+		SG_ERROR("No last kernel.\n");
 
 	EKernelType ktype=kernel->get_kernel_type();
 	if (ktype!=K_WEIGHTEDDEGREE && ktype!=K_WEIGHTEDDEGREEPOS)
-		SG_SERROR("Unsupported kernel.\n");
+		SG_ERROR("Unsupported kernel.\n");
 
 	bool success=false;
 	DREAL* weights=NULL;
@@ -1299,7 +1308,7 @@ bool CSGInterface::a_set_WD_position_weights()
 			(CWeightedDegreeStringKernel*) kernel;
 
 		if (dim!=1 & len>0)
-			SG_SERROR("Dimension mismatch (should be 1 x seq_length or 0x0\n");
+			SG_ERROR("Dimension mismatch (should be 1 x seq_length or 0x0\n");
 
 		success=k->set_position_weights(weights, len);
 	}
@@ -1317,13 +1326,13 @@ bool CSGInterface::a_set_WD_position_weights()
 			if (!target)
 			{
 				delete[] weights;
-				SG_SERROR("Couldn't find second argument to method.\n");
+				SG_ERROR("Couldn't find second argument to method.\n");
 			}
 
 			if (!strmatch(target, tlen, "TRAIN") && !strmatch(target, tlen, "TEST"))
 			{
 				delete[] target;
-				SG_SERROR("Second argument none of TRAIN or TEST.\n");
+				SG_ERROR("Second argument none of TRAIN or TEST.\n");
 			}
 
 			if (strmatch(target, tlen, "TEST"))
@@ -1333,7 +1342,7 @@ bool CSGInterface::a_set_WD_position_weights()
 		if (dim!=1 & len>0)
 		{
 			delete[] target;
-			SG_SERROR("Dimension mismatch (should be 1 x seq_length or 0x0\n");
+			SG_ERROR("Dimension mismatch (should be 1 x seq_length or 0x0\n");
 		}
 
 		if (dim==0 & len==0)
@@ -1374,7 +1383,7 @@ bool CSGInterface::a_set_subkernel_weights()
 
 	CKernel* kernel=gui->guikernel.get_kernel();
 	if (!kernel)
-		SG_SERROR("No kernel.\n");
+		SG_ERROR("No kernel.\n");
 
 	bool success=false;
 	DREAL* weights=NULL;
@@ -1389,7 +1398,7 @@ bool CSGInterface::a_set_subkernel_weights()
 			(CWeightedDegreeStringKernel*) kernel;
 		INT degree=k->get_degree();
 		if (dim!=degree || len<1)
-			SG_SERROR("Dimension mismatch (should be de(seq_length | 1) x degree)\n");
+			SG_ERROR("Dimension mismatch (should be de(seq_length | 1) x degree)\n");
 
 		if (len==1)
 			len=0;
@@ -1402,7 +1411,7 @@ bool CSGInterface::a_set_subkernel_weights()
 			(CWeightedDegreePositionStringKernel*) kernel;
 		INT degree=k->get_degree();
 		if (dim!=degree || len<1)
-			SG_SERROR("Dimension mismatch (should be de(seq_length | 1) x degree)\n");
+			SG_ERROR("Dimension mismatch (should be de(seq_length | 1) x degree)\n");
 
 		if (len==1)
 			len=0;
@@ -1413,7 +1422,7 @@ bool CSGInterface::a_set_subkernel_weights()
 	{
 		INT num_subkernels=kernel->get_num_subkernels();
 		if (dim!=1 || len!=num_subkernels)
-			SG_SERROR("Dimension mismatch (should be 1 x num_subkernels)\n");
+			SG_ERROR("Dimension mismatch (should be 1 x num_subkernels)\n");
 
 		kernel->set_subkernel_weights(weights, len);
 		success=true;
@@ -1429,9 +1438,9 @@ bool CSGInterface::a_set_subkernel_weights_combined()
 
 	CKernel* kernel=gui->guikernel.get_kernel();
 	if (!kernel)
-		SG_SERROR("No kernel.\n");
+		SG_ERROR("No kernel.\n");
 	if (kernel->get_kernel_type()!=K_COMBINED)
-		SG_SERROR("Only works for combined kernels.\n");
+		SG_ERROR("Only works for combined kernels.\n");
 
 	bool success=false;
 	DREAL* weights=NULL;
@@ -1444,7 +1453,7 @@ bool CSGInterface::a_set_subkernel_weights_combined()
 
 	kernel=((CCombinedKernel*) kernel)->get_kernel(idx);
 	if (!kernel)
-		SG_SERROR("No subkernel at idx %d.\n", idx);
+		SG_ERROR("No subkernel at idx %d.\n", idx);
 
 	EKernelType ktype=kernel->get_kernel_type();
 	if (ktype==K_WEIGHTEDDEGREE)
@@ -1453,7 +1462,7 @@ bool CSGInterface::a_set_subkernel_weights_combined()
 			(CWeightedDegreeStringKernel*) kernel;
 		INT degree=k->get_degree();
 		if (dim!=degree || len<1)
-			SG_SERROR("Dimension mismatch (should be de(seq_length | 1) x degree)\n");
+			SG_ERROR("Dimension mismatch (should be de(seq_length | 1) x degree)\n");
 
 		if (len==1)
 			len=0;
@@ -1466,7 +1475,7 @@ bool CSGInterface::a_set_subkernel_weights_combined()
 			(CWeightedDegreePositionStringKernel*) kernel;
 		INT degree=k->get_degree();
 		if (dim!=degree || len<1)
-			SG_SERROR("Dimension mismatch (should be de(seq_length | 1) x degree)\n");
+			SG_ERROR("Dimension mismatch (should be de(seq_length | 1) x degree)\n");
 
 		if (len==1)
 			len=0;
@@ -1477,7 +1486,7 @@ bool CSGInterface::a_set_subkernel_weights_combined()
 	{
 		INT num_subkernels=kernel->get_num_subkernels();
 		if (dim!=1 || len!=num_subkernels)
-			SG_SERROR("Dimension mismatch (should be 1 x num_subkernels)\n");
+			SG_ERROR("Dimension mismatch (should be 1 x num_subkernels)\n");
 
 		kernel->set_subkernel_weights(weights, len);
 		success=true;
@@ -1493,13 +1502,13 @@ bool CSGInterface::a_set_last_subkernel_weights()
 
 	CKernel* kernel=gui->guikernel.get_kernel();
 	if (!kernel)
-		SG_SERROR("No kernel.\n");
+		SG_ERROR("No kernel.\n");
 	if (kernel->get_kernel_type()!=K_COMBINED)
-		SG_SERROR("Only works for Combined kernels.\n");
+		SG_ERROR("Only works for Combined kernels.\n");
 
 	kernel=((CCombinedKernel*) kernel)->get_last_kernel();
 	if (!kernel)
-		SG_SERROR("No last kernel.\n");
+		SG_ERROR("No last kernel.\n");
 
 	bool success=false;
 	DREAL* weights=NULL;
@@ -1512,7 +1521,7 @@ bool CSGInterface::a_set_last_subkernel_weights()
 	{
 		CWeightedDegreeStringKernel* k=(CWeightedDegreeStringKernel*) kernel;
 		if (dim!=k->get_degree() || len<1)
-			SG_SERROR("Dimension mismatch (should be de(seq_length | 1) x degree)\n");
+			SG_ERROR("Dimension mismatch (should be de(seq_length | 1) x degree)\n");
 
 		if (len==1)
 			len=0;
@@ -1524,7 +1533,7 @@ bool CSGInterface::a_set_last_subkernel_weights()
 		CWeightedDegreePositionStringKernel* k=
 			(CWeightedDegreePositionStringKernel*) kernel;
 		if (dim!=k->get_degree() || len<1)
-			SG_SERROR("Dimension mismatch (should be de(seq_length | 1) x degree)\n");
+			SG_ERROR("Dimension mismatch (should be de(seq_length | 1) x degree)\n");
 
 		if (len==1)
 			len=0;
@@ -1535,7 +1544,7 @@ bool CSGInterface::a_set_last_subkernel_weights()
 	{
 		INT num_subkernels=kernel->get_num_subkernels();
 		if (dim!=1 || len!=num_subkernels)
-			SG_SERROR("Dimension mismatch (should be 1 x num_subkernels)\n");
+			SG_ERROR("Dimension mismatch (should be 1 x num_subkernels)\n");
 
 		kernel->set_subkernel_weights(weights, len);
 		success=true;
@@ -1551,9 +1560,9 @@ bool CSGInterface::a_get_SPEC_consensus()
 
 	CKernel* kernel=gui->guikernel.get_kernel();
 	if (!kernel)
-		SG_SERROR("No kernel.\n");
+		SG_ERROR("No kernel.\n");
 	if (kernel->get_kernel_type()!=K_COMMWORDSTRING)
-		SG_SERROR("Only works for CommWordString kernels.\n");
+		SG_ERROR("Only works for CommWordString kernels.\n");
 
 	CSVM* svm=(CSVM*) gui->guiclassifier.get_classifier();
 	ASSERT(svm);
@@ -1587,11 +1596,11 @@ bool CSGInterface::a_get_SPEC_scoring()
 	INT max_order=get_int();
 	CKernel* kernel=gui->guikernel.get_kernel();
 	if (!kernel)
-		SG_SERROR("No kernel.\n");
+		SG_ERROR("No kernel.\n");
 
 	EKernelType ktype=kernel->get_kernel_type();
 	if (ktype!=K_COMMWORDSTRING && ktype!=K_WEIGHTEDCOMMWORDSTRING)
-		SG_SERROR("Only works for (Weighted) CommWordString kernels.\n");
+		SG_ERROR("Only works for (Weighted) CommWordString kernels.\n");
 
 	CSVM* svm=(CSVM*) gui->guiclassifier.get_classifier();
 	ASSERT(svm);
@@ -1638,9 +1647,9 @@ bool CSGInterface::a_get_WD_consensus()
 
 	CKernel* kernel=gui->guikernel.get_kernel();
 	if (!kernel)
-		SG_SERROR("No kernel.\n");
+		SG_ERROR("No kernel.\n");
 	if (kernel->get_kernel_type()!=K_WEIGHTEDDEGREEPOS)
-		SG_SERROR("Only works for Weighted Degree Position kernels.\n");
+		SG_ERROR("Only works for Weighted Degree Position kernels.\n");
 
 	CSVM* svm=(CSVM*) gui->guiclassifier.get_classifier();
 	ASSERT(svm);
@@ -1678,13 +1687,13 @@ bool CSGInterface::a_compute_POIM_WD()
 	get_real_matrix(distribution, num_dfeat, num_dvec);
 
 	if (!distribution)
-		SG_SERROR("Wrong distribution.\n");
+		SG_ERROR("Wrong distribution.\n");
 
 	CKernel* kernel=gui->guikernel.get_kernel();
 	if (!kernel)
-		SG_SERROR("No Kernel.\n");
+		SG_ERROR("No Kernel.\n");
 	if (kernel->get_kernel_type()!=K_WEIGHTEDDEGREEPOS)
-		SG_SERROR("Only works for Weighted Degree Position kernels.\n");
+		SG_ERROR("Only works for Weighted Degree Position kernels.\n");
 
 	INT seqlen=0;
 	INT num_sym=0;
@@ -1696,7 +1705,7 @@ bool CSGInterface::a_compute_POIM_WD()
 
 	if (num_dvec!=seqlen || num_dfeat!=num_sym)
 	{
-		SG_SERROR("distribution should have (seqlen x num_sym) elements"
+		SG_ERROR("distribution should have (seqlen x num_sym) elements"
 				"(seqlen: %d vs. %d symbols: %d vs. %d)\n", seqlen,
 				num_dvec, num_sym, num_dfeat);
 	}
@@ -1745,9 +1754,9 @@ bool CSGInterface::a_get_WD_scoring()
 
 	CKernel* kernel=gui->guikernel.get_kernel();
 	if (!kernel)
-		SG_SERROR("No kernel.\n");
+		SG_ERROR("No kernel.\n");
 	if (kernel->get_kernel_type()!=K_WEIGHTEDDEGREEPOS)
-		SG_SERROR("Only works for Weighted Degree Position kernels.\n");
+		SG_ERROR("Only works for Weighted Degree Position kernels.\n");
 
 	CSVM* svm=(CSVM*) gui->guiclassifier.get_classifier();
 	ASSERT(svm);
@@ -1788,17 +1797,17 @@ bool CSGInterface::a_get_WD_position_weights()
 
 	CKernel* kernel=gui->guikernel.get_kernel();
 	if (!kernel)
-		SG_SERROR("No kernel.\n");
+		SG_ERROR("No kernel.\n");
 	if (kernel->get_kernel_type()!=K_COMBINED)
-		SG_SERROR("Only works for Combined kernels.\n");
+		SG_ERROR("Only works for Combined kernels.\n");
 
 	kernel=((CCombinedKernel*) kernel)->get_last_kernel();
 	if (!kernel)
-		SG_SERROR("Couldn't find last kernel.\n");
+		SG_ERROR("Couldn't find last kernel.\n");
 
 	if (kernel->get_kernel_type()!=K_WEIGHTEDDEGREE &&
 		kernel->get_kernel_type()!=K_WEIGHTEDDEGREEPOS)
-		SG_SERROR("Wrong subkernel type.\n");
+		SG_ERROR("Wrong subkernel type.\n");
 
 	INT len=0;
 	const DREAL* position_weights;
@@ -1824,13 +1833,13 @@ bool CSGInterface::a_get_last_subkernel_weights()
 	CKernel* kernel=gui->guikernel.get_kernel();
 	EKernelType ktype=kernel->get_kernel_type();
 	if (!kernel)
-		SG_SERROR("No kernel.\n");
+		SG_ERROR("No kernel.\n");
 	if (ktype!=K_COMBINED)
-		SG_SERROR("Only works for Combined kernels.\n");
+		SG_ERROR("Only works for Combined kernels.\n");
 
 	kernel=((CCombinedKernel*) kernel)->get_last_kernel();
 	if (!kernel)
-		SG_SERROR("Couldn't find last kernel.\n");
+		SG_ERROR("Couldn't find last kernel.\n");
 
 	INT degree=0;
 	INT len=0;
@@ -1862,7 +1871,7 @@ bool CSGInterface::a_get_last_subkernel_weights()
 		weights=((CWeightedDegreePositionStringKernel*) kernel)->
 			get_degree_weights(degree, len);
 	else
-		SG_SERROR("Only works for Weighted Degree (Position) kernels.\n");
+		SG_ERROR("Only works for Weighted Degree (Position) kernels.\n");
 
 	if (len==0)
 		len=1;
@@ -1879,9 +1888,9 @@ bool CSGInterface::a_compute_by_subkernels()
 
 	CKernel* kernel=gui->guikernel.get_kernel();
 	if (!kernel)
-		SG_SERROR("No kernel.\n");
+		SG_ERROR("No kernel.\n");
 	if (!kernel->get_rhs())
-		SG_SERROR("No rhs.\n");
+		SG_ERROR("No rhs.\n");
 
 	INT num_vec=kernel->get_rhs()->get_num_vectors();
 	INT degree=0;
@@ -1894,7 +1903,7 @@ bool CSGInterface::a_compute_by_subkernels()
 		CWeightedDegreeStringKernel* k=(CWeightedDegreeStringKernel*) kernel;
 		k->get_degree_weights(degree, len);
 		if (!k->is_tree_initialized())
-			SG_SERROR("Kernel optimization not initialized.\n");
+			SG_ERROR("Kernel optimization not initialized.\n");
 	}
 	else if (ktype==K_WEIGHTEDDEGREEPOS)
 	{
@@ -1902,10 +1911,10 @@ bool CSGInterface::a_compute_by_subkernels()
 			(CWeightedDegreePositionStringKernel*) kernel;
 		k->get_degree_weights(degree, len);
 		if (!k->is_tree_initialized())
-			SG_SERROR("Kernel optimization not initialized.\n");
+			SG_ERROR("Kernel optimization not initialized.\n");
 	}
 	else
-		SG_SERROR("Only works for Weighted Degree (Position) kernels.\n");
+		SG_ERROR("Only works for Weighted Degree (Position) kernels.\n");
 
 	if (len==0)
 		len=1;
@@ -1945,14 +1954,14 @@ bool CSGInterface::a_get_kernel_optimization()
 
 	CKernel* kernel=gui->guikernel.get_kernel();
 	if (!kernel)
-		SG_SERROR("No kernel defined.\n");
+		SG_ERROR("No kernel defined.\n");
 
 	switch (kernel->get_kernel_type())
 	{
 		case K_WEIGHTEDDEGREEPOS:
 		{
 			if (m_nrhs!=2)
-				SG_SERROR("parameter missing\n");
+				SG_ERROR("parameter missing\n");
 
 			INT max_order=get_int();
 			if ((max_order<1) || (max_order>12))
@@ -1964,7 +1973,7 @@ bool CSGInterface::a_get_kernel_optimization()
 			CWeightedDegreePositionStringKernel* k=(CWeightedDegreePositionStringKernel*) kernel;
 			CSVM* svm=(CSVM*) gui->guiclassifier.get_classifier();
 			if (!svm)
-				SG_SERROR("No SVM defined.\n");
+				SG_ERROR("No SVM defined.\n");
 
 			INT num_suppvec=svm->get_num_support_vectors();
 			INT* sv_idx=new INT[num_suppvec];
@@ -2034,7 +2043,7 @@ bool CSGInterface::a_get_kernel_optimization()
 			return true;
 		}
 		default:
-			SG_SERROR("Unsupported kernel %s.\n", kernel->get_name());
+			SG_ERROR("Unsupported kernel %s.\n", kernel->get_name());
 	}
 
 	return true;
@@ -2059,7 +2068,7 @@ bool CSGInterface::a_plugin_estimate_classify()
 
 	CFeatures* feat=gui->guifeatures.get_test_features();
 	if (!feat)
-		SG_SERROR("No features found.\n");
+		SG_ERROR("No features found.\n");
 
 	INT num_vec=feat->get_num_vectors();
 	DREAL* result=new DREAL[num_vec];
@@ -2087,7 +2096,7 @@ bool CSGInterface::a_set_plugin_estimate()
 	get_real_matrix(emission_probs, num_probs, num_vec);
 
 	if (num_vec!=2)
-		SG_SERROR("Need at least 1 set of positive and 1 set of negative params.\n");
+		SG_ERROR("Need at least 1 set of positive and 1 set of negative params.\n");
 
 	DREAL* pos_params=emission_probs;
 	DREAL* neg_params=&(emission_probs[num_probs]);
@@ -2099,7 +2108,7 @@ bool CSGInterface::a_set_plugin_estimate()
 	INT seq_length=(INT) model_sizes[0];
 	INT num_symbols=(INT) model_sizes[1];
 	if (num_probs!=seq_length*num_symbols)
-		SG_SERROR("Mismatch in number of emission probs and sequence length * number of symbols.\n");
+		SG_ERROR("Mismatch in number of emission probs and sequence length * number of symbols.\n");
 
 	gui->guipluginestimate.get_estimator()->set_model_params(
 		pos_params, neg_params, seq_length, num_symbols);
@@ -2150,12 +2159,12 @@ bool CSGInterface::a_classify()
 
 	CFeatures* feat=gui->guifeatures.get_test_features();
 	if (!feat)
-		SG_SERROR("No features found.\n");
+		SG_ERROR("No features found.\n");
 
 	INT num_vec=feat->get_num_vectors();
 	CLabels* labels=gui->guiclassifier.classify();
 	if (!labels)
-		SG_SERROR("Classify failed\n");
+		SG_ERROR("Classify failed\n");
 
 	DREAL* result=new DREAL[num_vec];
 	ASSERT(result);
@@ -2179,7 +2188,7 @@ bool CSGInterface::a_classify_example()
 	DREAL result=0;
 
 	if (!gui->guiclassifier.classify_example(idx, result))
-		SG_SERROR("Classify_example failed.\n");
+		SG_ERROR("Classify_example failed.\n");
 
 	set_real_vector(&result, 1);
 
@@ -2227,13 +2236,13 @@ bool CSGInterface::a_set_svm()
 	get_real_matrix(alphas, num_feat_alphas, num_vec_alphas);
 
 	if (!alphas)
-		SG_SERROR("No proper alphas given.\n");
+		SG_ERROR("No proper alphas given.\n");
 	if (num_vec_alphas!=2)
-		SG_SERROR("Not 2 vectors in alphas.\n");
+		SG_ERROR("Not 2 vectors in alphas.\n");
 
 	CSVM* svm=(CSVM*) gui->guiclassifier.get_classifier();
 	if (!svm)
-		SG_SERROR("No SVM object available.\n");
+		SG_ERROR("No SVM object available.\n");
 
 	svm->create_new_model(num_feat_alphas);
 	svm->set_bias(bias);
@@ -2255,7 +2264,7 @@ bool CSGInterface::a_get_svm_objective()
 
 	CSVM* svm=(CSVM*) gui->guiclassifier.get_classifier();
 	if (!svm)
-		SG_SERROR("No SVM set.\n");
+		SG_ERROR("No SVM set.\n");
 
 	DREAL objective=svm->get_objective();
 	set_real_vector(&objective, 1);
@@ -2272,7 +2281,7 @@ bool CSGInterface::a_relative_entropy()
 	CHMM* neg=gui->guihmm.get_neg();
 	if (!pos || !neg)
 		//return false;
-		SG_SERROR("Set pos and neg HMM first!\n");
+		SG_ERROR("Set pos and neg HMM first!\n");
 
 	INT pos_N=pos->get_N();
 	INT neg_N=neg->get_N();
@@ -2280,7 +2289,7 @@ bool CSGInterface::a_relative_entropy()
 	INT neg_M=neg->get_M();
 	if (pos_M!=neg_M || pos_N!=neg_N)
 		//return false;
-		SG_SERROR("Pos and neg HMM's differ in number of emissions or states.\n");
+		SG_ERROR("Pos and neg HMM's differ in number of emissions or states.\n");
 
 	DREAL* p=new DREAL[pos_M];
 	ASSERT(p);
@@ -2316,7 +2325,7 @@ bool CSGInterface::a_entropy()
 	CHMM* current=gui->guihmm.get_current();
 	if (!current)
 		//return false;
-		SG_SERROR("Create HMM first!\n");
+		SG_ERROR("Create HMM first!\n");
 
 	INT N=current->get_N();
 	INT M=current->get_M();
@@ -2429,7 +2438,7 @@ bool CSGInterface::a_hmm_likelihood()
 
 	CHMM* h=gui->guihmm.get_current();
 	if (!h)
-		SG_SERROR("No HMM.\n");
+		SG_ERROR("No HMM.\n");
 
 	DREAL likelihood=h->model_probability();
 	set_real_vector(&likelihood, 1);
@@ -2479,7 +2488,7 @@ bool CSGInterface::a_append_hmm()
 
 	CHMM* old_h=gui->guihmm.get_current();
 	if (!old_h)
-		SG_SERROR("No current HMM set.\n");
+		SG_ERROR("No current HMM set.\n");
 
 	DREAL* p=NULL;
 	INT M_p=0;
@@ -2507,7 +2516,7 @@ bool CSGInterface::a_append_hmm()
 		N_p, M_p, N_q, M_q, N_a, M_a, N_b, M_b);
 	if (N_p!=N || M_p!=1 || N_q!=N || M_q!=1 ||
 		N_a!=N || M_a!=N || N_b!=M || M_b!=N)
-		SG_SERROR("Model matrices not matching in size.\n");
+		SG_ERROR("Model matrices not matching in size.\n");
 
 	CHMM* h=new CHMM(N, M, NULL, gui->guihmm.get_pseudo());
 	ASSERT(h);
@@ -2564,7 +2573,7 @@ bool CSGInterface::a_set_hmm()
 		N_p, M_p, N_q, M_q, N_a, M_a, N_b, M_b);
 	if (N_p!=N || M_p!=1 || N_q!=N || M_q!=1 ||
 		N_a!=N || M_a!=N || N_b!=M || M_b!=N)
-		SG_SERROR("Model matrices not matching in size.\n");
+		SG_ERROR("Model matrices not matching in size.\n");
 
 	CHMM* h=new CHMM(N, M, NULL, gui->guihmm.get_pseudo());
 	ASSERT(h);
@@ -2761,7 +2770,7 @@ bool CSGInterface::handle()
 	if (!gui)
 		gui=new CTextGUI(0, NULL);
 	if (!gui)
-		SG_SERROR("GUI could not be initialized.\n");
+		SG_ERROR("GUI could not be initialized.\n");
 
 	CHAR* action=NULL;
 	try
@@ -2770,10 +2779,10 @@ bool CSGInterface::handle()
 	}
 	catch (ShogunException e)
 	{
-		SG_SERROR("String expected as first argument: %s\n", e.get_exception_string());
+		SG_ERROR("String expected as first argument: %s\n", e.get_exception_string());
 	}
 
-	SG_PRINT("action: %s, nlhs %d, nrhs %d\n", action, m_nlhs, m_nrhs);
+	//SG_PRINT("action: %s, nlhs %d, nrhs %d\n", action, m_nlhs, m_nrhs);
 	INT i=0;
 	while (sg_methods[i].action)
 	{
@@ -2781,7 +2790,7 @@ bool CSGInterface::handle()
 		{
 			SG_DEBUG("found method %s\n", sg_methods[i].action);
 			if (!(interface->*(sg_methods[i].method))())
-				SG_SERROR("Usage: %s\n", sg_methods[i].usage);
+				SG_ERROR("Usage: %s\n", sg_methods[i].usage);
 			else
 			{
 				success=true;
@@ -2794,13 +2803,10 @@ bool CSGInterface::handle()
 	// FIXME: invoke old interface
 	if(!success && strmatch(action, len, N_SEND_COMMAND))
 	{
-		//parse_args(2, 0);
 		CHAR* cmd=interface->get_string(len);
-		SG_PRINT("cmd:%s\n", cmd);
 		gui->parse_line(cmd);
 
 		delete[] cmd;
-		delete gui;
 		success=true;
 	}
 
