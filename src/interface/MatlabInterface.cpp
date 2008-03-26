@@ -403,12 +403,12 @@ SET_MATRIX(set_word_matrix, mxUINT16_CLASS, WORD, unsigned short, "Word")
 #undef SET_MATRIX
 
 #define SET_SPARSEMATRIX(function_name, mx_type, sg_type, if_type, error_string)	\
-void CMatlabInterface::function_name(const TSparse<sg_type>* matrix, INT num_feat, INT num_vec) \
+void CMatlabInterface::function_name(const TSparse<sg_type>* matrix, INT num_feat, INT num_vec, LONG nnz) \
 {																			\
 	if (!matrix)															\
 		SG_ERROR("Given matrix is invalid\n");								\
 																			\
-	mxArray* mx_mat=mxCreateSparse(num_feat, num_vec, num_feat*num_vec, mxREAL); \
+	mxArray* mx_mat=mxCreateSparse(num_feat, num_vec, nnz, mxREAL); \
 	if (!mx_mat)															\
 		SG_ERROR("Couldn't create Sparse Matrix of %d rows and %d cols.\n", num_feat, num_vec); \
 																			\

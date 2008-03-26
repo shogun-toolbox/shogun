@@ -80,7 +80,7 @@ class CMatlabInterface : public CSGInterface
 		virtual void set_short_matrix(const SHORT* matrix, INT num_feat, INT num_vec);
 		virtual void set_word_matrix(const WORD* matrix, INT num_feat, INT num_vec);
 
-		virtual void set_real_sparsematrix(const TSparse<DREAL>* matrix, INT num_feat, INT num_vec);
+		virtual void set_real_sparsematrix(const TSparse<DREAL>* matrix, INT num_feat, INT num_vec, LONG nnz);
 
 		/*  future versions might support types other than DREAL
 		
