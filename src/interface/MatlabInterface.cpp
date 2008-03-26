@@ -466,6 +466,7 @@ void CMatlabInterface::function_name(const T_STRING<sg_type>* strings, INT num_s
 																					\
 			for (INT j=0; j<len; j++)												\
 				data[j]=strings[i].string[j];										\
+			mxSetCell(str, i);														\
 		}																			\
 	}																				\
 																					\
