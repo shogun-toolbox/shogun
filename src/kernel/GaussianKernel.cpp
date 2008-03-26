@@ -62,7 +62,7 @@ DREAL CGaussianKernel::compute(INT idx_a, INT idx_b)
 
 	DREAL result=0;
 	for (INT i=0; i<alen; i++)
-		result+=(avec[i]-bvec[i])*(avec[i]-bvec[i]);
+		result+=CMath::sq(avec[i]-bvec[i]);
 
 	result=exp(-result/width);
 
