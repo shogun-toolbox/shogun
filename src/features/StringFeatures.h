@@ -651,6 +651,19 @@ template <class ST> class CStringFeatures: public CFeatures
 			return false;
 		}
 
+		/** get_features 
+		 *
+		 * @param num_str number of strings (returned)
+		 * @param maximal string length (returned)
+		 * @return string features
+		 */
+		virtual T_STRING<ST>* get_features(INT& num_str, INT& max_str_len)
+		{
+			num_str=num_vectors;
+			max_str_len=max_string_length;
+			return features;
+		}
+
 		/** save features to file
 		 *
 		 * @param dest filename to save to
