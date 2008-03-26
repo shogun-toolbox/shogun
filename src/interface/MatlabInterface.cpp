@@ -301,8 +301,8 @@ void CMatlabInterface::function_name(T_STRING<sg_type>*& strings, INT& num_str, 
 	else if (mxIsClass(mx_str, mx_type))												\
 	{																					\
 		if_type* data=(if_type*) mxGetData(mx_str);										\
-		INT len=mxGetN(mx_str); 														\
-		num_str=mxGetM(mx_str); 														\
+		num_str=mxGetN(mx_str); 														\
+		INT len=mxGetM(mx_str); 														\
 		strings=new T_STRING<sg_type>[num_str]; 										\
 		ASSERT(strings); 																\
 																						\
@@ -315,7 +315,7 @@ void CMatlabInterface::function_name(T_STRING<sg_type>*& strings, INT& num_str, 
 				ASSERT(strings[i].string); 												\
 				INT j; 																	\
 				for (j=0; j<len; j++) 													\
-					strings[i].string[j]=data[i+j*num_str]; 							\
+					strings[i].string[j]=data[j+i*len]; 								\
 				strings[i].string[j]='\0'; 												\
 			} 																			\
 			else 																		\
