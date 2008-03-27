@@ -179,7 +179,11 @@ void COctaveInterface::get_word_matrix(WORD*& matrix, INT& num_feat, INT& num_ve
 {
 }
 
+void COctaveInterface::get_real_sparsematrix(TSparse<DREAL>*& matrix, INT& num_feat, INT& num_vec)
+{
+}
 
+/*
 void COctaveInterface::get_byte_sparsematrix(TSparse<BYTE>*& matrix, INT& num_feat, INT& num_vec)
 {
 }
@@ -196,9 +200,6 @@ void COctaveInterface::get_shortreal_sparsematrix(TSparse<SHORTREAL>*& matrix, I
 {
 }
 
-void COctaveInterface::get_real_sparsematrix(TSparse<DREAL>*& matrix, INT& num_feat, INT& num_vec)
-{
-}
 
 void COctaveInterface::get_short_sparsematrix(TSparse<SHORT>*& matrix, INT& num_feat, INT& num_vec)
 {
@@ -206,14 +207,25 @@ void COctaveInterface::get_short_sparsematrix(TSparse<SHORT>*& matrix, INT& num_
 
 void COctaveInterface::get_word_sparsematrix(TSparse<WORD>*& matrix, INT& num_feat, INT& num_vec)
 {
-}
+}*/
 
-
-void COctaveInterface::get_string_list(T_STRING<CHAR>*& strings, INT& num_str)
+void COctaveInterface::get_byte_string_list(T_STRING<BYTE>*& strings, INT& num_str, INT& max_string_len)
 {
 }
 
-void COctaveInterface::get_string_list(T_STRING<WORD>*& strings, INT& num_str)
+void COctaveInterface::get_char_string_list(T_STRING<CHAR>*& strings, INT& num_str, INT& max_string_len)
+{
+}
+
+void COctaveInterface::get_int_string_list(T_STRING<INT>*& strings, INT& num_str, INT& max_string_len)
+{
+}
+
+void COctaveInterface::get_short_string_list(T_STRING<SHORT>*& strings, INT& num_str, INT& max_string_len)
+{
+}
+
+void COctaveInterface::get_word_string_list(T_STRING<WORD>*& strings, INT& num_str, INT& max_string_len)
 {
 }
 
@@ -279,7 +291,11 @@ void COctaveInterface::set_word_matrix(const WORD* matrix, INT num_feat, INT num
 {
 }
 
-void COctaveInterface::set_byte_sparsematrix(const TSparse<BYTE>* matrix, INT num_feat, INT num_vec)
+void COctaveInterface::set_real_sparsematrix(const TSparse<DREAL>* matrix, INT num_feat, INT num_vec, LONG nnz)
+{
+}
+
+/*void COctaveInterface::set_byte_sparsematrix(const TSparse<BYTE>* matrix, INT num_feat, INT num_vec)
 {
 }
 
@@ -295,9 +311,6 @@ void COctaveInterface::set_shortreal_sparsematrix(const TSparse<SHORTREAL>* matr
 {
 }
 
-void COctaveInterface::set_real_sparsematrix(const TSparse<DREAL>* matrix, INT num_feat, INT num_vec)
-{
-}
 
 void COctaveInterface::set_short_sparsematrix(const TSparse<SHORT>* matrix, INT num_feat, INT num_vec)
 {
@@ -305,14 +318,25 @@ void COctaveInterface::set_short_sparsematrix(const TSparse<SHORT>* matrix, INT 
 
 void COctaveInterface::set_word_sparsematrix(const TSparse<WORD>* matrix, INT num_feat, INT num_vec)
 {
-}
+}*/
 
-
-void COctaveInterface::set_string_list(const T_STRING<CHAR>* strings, INT num_str)
+void COctaveInterface::set_byte_string_list(const T_STRING<BYTE>* strings, INT num_str)
 {
 }
 
-void COctaveInterface::set_string_list(const T_STRING<WORD>* strings, INT num_str)
+void COctaveInterface::set_char_string_list(const T_STRING<CHAR>* strings, INT num_str)
+{
+}
+
+void COctaveInterface::set_int_string_list(const T_STRING<INT>* strings, INT num_str)
+{
+}
+
+void COctaveInterface::set_short_string_list(const T_STRING<SHORT>* strings, INT num_str)
+{
+}
+
+void COctaveInterface::set_word_string_list(const T_STRING<WORD>* strings, INT num_str)
 {
 }
 
