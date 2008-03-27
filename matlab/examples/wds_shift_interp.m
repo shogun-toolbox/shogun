@@ -1,3 +1,4 @@
+addpath('tools')
 rand('seed',17);
 %sequence lengths, number of sequences
 len=100;

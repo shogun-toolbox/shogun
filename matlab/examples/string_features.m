@@ -9,12 +9,12 @@ f=sg('get_features', 'TRAIN')
 
 
 sg('set_features', 'TRAIN', dat, 'DNA');
-sg('from_position_list','TRAIN', 5,[0,1,2,5,15,25,30,36]);
+sg('from_position_list','TRAIN', 5, int32([0,1,2,5,15,25,30,36]));
 
 f=sg('get_features', 'TRAIN')
 
 sg('set_features', 'TEST', dat, 'DNA');
-sg('from_position_list','TEST', 5,[0,1,2,5,15,25,30,36]);
+sg('from_position_list','TEST', 5, int32([0,1,2,5,15,25,30,36]));
 
 ft=sg('get_features', 'TEST')
 
@@ -38,7 +38,7 @@ km=sg('get_kernel_matrix')
 sg('send_command','clean_features TRAIN');
 sg('send_command','clean_features TEST');
 sg('set_features', 'TRAIN', dat, 'DNA');
-sg('from_position_list','TRAIN', 5, [0,1,2,5,15,25,30]+5);
+sg('from_position_list','TRAIN', 5, int32([0,1,2,5,15,25,30]+5));
 sg('set_features', 'TRAIN', dat, 'DNA');
-sg('from_position_list','TRAIN', 5, [0,1,2,5,15,25]+9);
+sg('from_position_list','TRAIN', 5, int32([0,1,2,5,15,25]+9));
 sg('send_command','clean_features TRAIN');

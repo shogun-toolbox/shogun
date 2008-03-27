@@ -2,14 +2,13 @@ C=1
 degree=1;
 epsilon=1e-5;
 
-x=[zeros(1,10000), ones(1,10000), 2*ones(1,10000), 3*ones(1,10000)];
+x=[zeros(1,40000), ones(1,40000), 2*ones(1,40000), 3*ones(1,40000)];
 y=[-ones(1,200), ones(1,200)];
 x=x(randperm(length(x)));
 y=y(randperm(length(y)));
 
-traindat=uint8(reshape(x,100,400));
+traindat=uint8(reshape(x,400,400));
 trainlab=y;
-
 testdat=traindat;
 
 sg('send_command', 'loglevel ALL');

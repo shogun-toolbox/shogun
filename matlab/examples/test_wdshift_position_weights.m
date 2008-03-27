@@ -11,11 +11,11 @@ cache=10;
 acgt='ACGT';
 rand('state',1);
 traindat=acgt(ceil(4*rand(len,num)));
-trainw=rand(size(traindat)) ;
+trainw=rand(size(traindat(1:len)));
 trainlab=[-ones(1,num/2),ones(1,num/2)];
 
 testdat=acgt(ceil(4*rand(len,num_test)));
-testw=rand(size(testdat)) ;
+testw=rand(size(testdat(1:len)));
 testlab=[-ones(1,num/2),ones(1,num_test/2)];
 
 x=ceil(linspace(1,shift,len));

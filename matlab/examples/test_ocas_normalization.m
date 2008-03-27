@@ -38,18 +38,19 @@ sg('send_command', 'init_kernel TRAIN');
 x=sg('get_subkernel_weights');
 
 sg('send_command', sprintf( 'set_kernel WEIGHTEDDEGREE CHAR %i %i %i %i %i %i %i', cache, order, max_mismatch, 0, mkl_stepsize, block, single_degree) );
-sg('set_subkernel_weights',x(1:order));
 sg('send_command', 'init_kernel TRAIN');
+sg('set_subkernel_weights',x(1:order));
 kmu=sg('get_kernel_matrix');
 
 sg('send_command', sprintf( 'set_kernel WEIGHTEDDEGREE CHAR %i %i %i %i %i %i %i', cache, order, max_mismatch, normalize, mkl_stepsize, block, single_degree) );
-sg('set_subkernel_weights',x(1:order));
 sg('send_command', 'init_kernel TRAIN');
+sg('set_subkernel_weights',x(1:order));
 km=sg('get_kernel_matrix');
 
 sg('send_command', 'new_svm LIGHT');
 sg('send_command', sprintf('c %f',C));
 tic;
+% this is only necessary for svm_train not to choke on positive definites
 sg('send_command', 'svm_train');
 tim_lo=toc;
 

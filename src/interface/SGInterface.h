@@ -80,6 +80,8 @@ class CSGInterface : public CSGObject
 		bool a_set_custom_kernel();
 		/** set WD position weights */
 		bool a_set_WD_position_weights();
+		/** get subkernel weights */
+		bool a_get_subkernel_weights();
 		/** set subkernel weights */
 		bool a_set_subkernel_weights();
 		/** set subkernel weights combined */
@@ -261,7 +263,7 @@ class CSGInterface : public CSGObject
 		/// str is a string of length len (not 0 terminated)
 		static bool strmatch(CHAR* str, UINT len, const CHAR* cmd)
 		{
-			return (len>=strlen(cmd)
+			return (len==strlen(cmd)
 					&& !strncmp(str, cmd, strlen(cmd)));
 		}
 

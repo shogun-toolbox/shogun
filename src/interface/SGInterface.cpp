@@ -146,6 +146,11 @@ static CSGInterfaceMethod sg_methods[]=
 		(CHAR*) USAGE_I(N_SET_WD_POS_WEIGHTS, "W[, 'TRAIN|TEST']")
 	},
 	{
+		(CHAR*) N_GET_SUBKERNEL_WEIGHTS,
+		(&CSGInterface::a_get_subkernel_weights),
+		(CHAR*) USAGE_O(N_GET_SUBKERNEL_WEIGHTS, "W")
+	},
+	{
 		(CHAR*) N_SET_SUBKERNEL_WEIGHTS,
 		(&CSGInterface::a_set_subkernel_weights),
 		(CHAR*) USAGE_I(N_SET_SUBKERNEL_WEIGHTS, "W")
@@ -1206,12 +1211,12 @@ bool CSGInterface::a_get_kernel_matrix()
 	if (!kernel || !kernel->get_rhs() || !kernel->get_lhs())
 		SG_ERROR("No kernel defined.\n");
 
-	INT num_vec1=kernel->get_lhs()->get_num_vectors();
-	INT num_vec2=kernel->get_rhs()->get_num_vectors();
+	INT m=kernel->get_lhs()->get_num_vectors();
+	INT n=kernel->get_rhs()->get_num_vectors();
 	DREAL* kmatrix=NULL;
-	kernel->get_kernel_matrix_real(num_vec1, num_vec2, kmatrix);
+	kmatrix=kernel->get_kernel_matrix_real(m, n, kmatrix);
 
-	set_real_matrix(kmatrix, num_vec1, num_vec2);
+	set_real_matrix(kmatrix, m, n);
 	delete[] kmatrix;
 
 	return true;
@@ -1285,16 +1290,17 @@ bool CSGInterface::a_set_WD_position_weights()
 	CKernel* kernel=gui->guikernel.get_kernel();
 	if (!kernel)
 		SG_ERROR("No kernel.\n");
-	if (kernel->get_kernel_type()!=K_COMBINED)
-		SG_ERROR("Only works for combined kernels.\n");
 
-	kernel=((CCombinedKernel*) kernel)->get_last_kernel();
-	if (!kernel)
-		SG_ERROR("No last kernel.\n");
+	if (kernel->get_kernel_type()==K_COMBINED)
+	{
+		kernel=((CCombinedKernel*) kernel)->get_last_kernel();
+		if (!kernel)
+			SG_ERROR("No last kernel.\n");
 
-	EKernelType ktype=kernel->get_kernel_type();
-	if (ktype!=K_WEIGHTEDDEGREE && ktype!=K_WEIGHTEDDEGREEPOS)
-		SG_ERROR("Unsupported kernel.\n");
+		EKernelType ktype=kernel->get_kernel_type();
+		if (ktype!=K_WEIGHTEDDEGREE && ktype!=K_WEIGHTEDDEGREEPOS)
+			SG_ERROR("Unsupported kernel.\n");
+	}
 
 	bool success=false;
 	DREAL* weights=NULL;
@@ -1302,7 +1308,7 @@ bool CSGInterface::a_set_WD_position_weights()
 	INT len=0;
 	get_real_matrix(weights, dim, len);
 
-	if (ktype==K_WEIGHTEDDEGREE)
+	if (kernel->get_kernel_type()==K_WEIGHTEDDEGREE)
 	{
 		CWeightedDegreeStringKernel* k=
 			(CWeightedDegreeStringKernel*) kernel;
@@ -1339,13 +1345,13 @@ bool CSGInterface::a_set_WD_position_weights()
 				is_train=false;
 		}
 
-		if (dim!=1 & len>0)
+		if (dim!=1 && len>0)
 		{
 			delete[] target;
 			SG_ERROR("Dimension mismatch (should be 1 x seq_length or 0x0\n");
 		}
 
-		if (dim==0 & len==0)
+		if (dim==0 && len==0)
 		{
 			if (m_nlhs==3)
 			{
@@ -1374,6 +1380,50 @@ bool CSGInterface::a_set_WD_position_weights()
 	}
 
 	return success;
+}
+
+bool CSGInterface::a_get_subkernel_weights()
+{
+	if (m_nlhs!=1 || m_nrhs!=1)
+		return false;
+
+	CKernel *kernel=gui->guikernel.get_kernel();
+	if (!kernel)
+		SG_ERROR("Invalid kernel.\n");
+
+	EKernelType ktype=kernel->get_kernel_type();
+	const DREAL* weights=NULL;
+
+	if (ktype==K_COMBINED)
+	{
+		INT num_weights=-1;
+		weights=((CCombinedKernel *) kernel)->get_subkernel_weights(num_weights);
+
+		set_real_matrix(weights, 1, num_weights);
+		return true;
+	}
+
+	INT degree=-1;
+	INT length=-1;
+
+	if (ktype==K_WEIGHTEDDEGREE)
+	{
+		weights=((CWeightedDegreeStringKernel *) kernel)->
+			get_degree_weights(degree, length);
+	}
+	else if (ktype==K_WEIGHTEDDEGREEPOS)
+	{
+		weights=((CWeightedDegreePositionStringKernel *) kernel)->
+			get_degree_weights(degree, length);
+	}
+	else
+		SG_ERROR("Setting subkernel weights not supported on this kernel.\n");
+
+	if (length==0)
+		length=1;
+
+	set_real_matrix(weights, degree, length);
+	return true;
 }
 
 bool CSGInterface::a_set_subkernel_weights()
@@ -1798,16 +1848,17 @@ bool CSGInterface::a_get_WD_position_weights()
 	CKernel* kernel=gui->guikernel.get_kernel();
 	if (!kernel)
 		SG_ERROR("No kernel.\n");
-	if (kernel->get_kernel_type()!=K_COMBINED)
-		SG_ERROR("Only works for Combined kernels.\n");
 
-	kernel=((CCombinedKernel*) kernel)->get_last_kernel();
-	if (!kernel)
-		SG_ERROR("Couldn't find last kernel.\n");
+	if (kernel->get_kernel_type()==K_COMBINED)
+	{
+		kernel=((CCombinedKernel*) kernel)->get_last_kernel();
+		if (!kernel)
+			SG_ERROR("Couldn't find last kernel.\n");
 
-	if (kernel->get_kernel_type()!=K_WEIGHTEDDEGREE &&
-		kernel->get_kernel_type()!=K_WEIGHTEDDEGREEPOS)
-		SG_ERROR("Wrong subkernel type.\n");
+		EKernelType ktype=kernel->get_kernel_type();
+		if (ktype!=K_WEIGHTEDDEGREE && ktype!=K_WEIGHTEDDEGREEPOS)
+			SG_ERROR("Wrong subkernel type.\n");
+	}
 
 	INT len=0;
 	const DREAL* position_weights;
@@ -2782,7 +2833,7 @@ bool CSGInterface::handle()
 		SG_ERROR("String expected as first argument: %s\n", e.get_exception_string());
 	}
 
-	//SG_PRINT("action: %s, nlhs %d, nrhs %d\n", action, m_nlhs, m_nrhs);
+	SG_DEBUG("action: %s, nlhs %d, nrhs %d\n", action, m_nlhs, m_nrhs);
 	INT i=0;
 	while (sg_methods[i].action)
 	{

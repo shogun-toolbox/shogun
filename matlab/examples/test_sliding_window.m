@@ -9,12 +9,12 @@ f=sg('get_features', 'TRAIN')
 
 
 sg('set_features', 'TRAIN', dat, 'DNA');
-sg('from_position_list','TRAIN', 5,[0,1,2,5,15,25,30,36]);
+sg('from_position_list','TRAIN', 5, int32([0,1,2,5,15,25,30,36]));
 
 f=sg('get_features', 'TRAIN')
 
 sg('set_features', 'TEST', dat, 'DNA');
-sg('from_position_list','TEST', 5,[0,1,2,5,15,25,30,36]);
+sg('from_position_list','TEST', 5, int32([0,1,2,5,15,25,30,36]));
 
 ft=sg('get_features', 'TEST')
 
@@ -38,9 +38,9 @@ km=sg('get_kernel_matrix')
 sg('send_command','clean_features TRAIN');
 sg('send_command','clean_features TEST');
 sg('set_features', 'TRAIN', dat, 'DNA');
-sg('from_position_list','TRAIN', 5, [0,1,2,5,15,25,30]+5);
+sg('from_position_list','TRAIN', 5, int32([0,1,2,5,15,25,30]+5));
 sg('set_features', 'TRAIN', dat, 'DNA');
-sg('from_position_list','TRAIN', 5, [0,1,2,5,15,25]+9);
+sg('from_position_list','TRAIN', 5, int32([0,1,2,5,15,25]+9));
 sg('send_command','clean_features TRAIN');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -102,7 +102,7 @@ f1=sg('get_features','TEST');
 sg('set_features', 'TEST', testdat', 'DNA');
 sg('send_command', sprintf('convert TEST STRING CHAR STRING WORD %i %i', order, order-1));
 %sg('send_command', sprintf('slide_window TEST 50 1 %d', order-1));
-sg('from_position_list','TEST', len, 0:(total_test_len-len-order+1), order-1);
+sg('from_position_list','TEST', len, int32(0:(total_test_len-len-order+1)), order-1);
 sg('set_labels', 'TEST', testlab);
 sg('send_command', 'init_kernel TEST');
 out=sg('svm_classify');

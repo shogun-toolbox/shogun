@@ -58,7 +58,8 @@ fprintf('accuracy: %f                                                           
 consensus=sg('get_SPEC_consensus');
 [b,alphas]=sg('get_svm');
 sg('send_command', 'delete_kernel_optimization');
-sg('set_features', 'TEST', [consensus traindat(:,1) traindat(:,end-1) traindat(:,end)], 'DNA');
+consensus
+sg('set_features', 'TEST', [consensus traindat(:,1)' traindat(:,end-1)' traindat(:,end)'], 'DNA');
 sg('send_command', sprintf('convert TEST STRING CHAR STRING WORD %i %i', order, order-1));
 sg('send_command', 'attach_preproc TEST') ;
 sg('send_command', 'init_kernel TEST');

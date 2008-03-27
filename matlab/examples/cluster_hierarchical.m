@@ -9,7 +9,7 @@ traindat=traindat(:,i);
 
 sg('send_command', 'loglevel ALL');
 sg('set_features', 'TRAIN', traindat);
-sg('send_command', 'set_distance NORMSQUARED REAL')
+sg('send_command', 'set_distance EUCLIDIAN REAL')
 sg('send_command', 'init_distance TRAIN');
 sg('send_command', 'new_classifier HIERARCHICAL');
 tic

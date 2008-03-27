@@ -20,7 +20,7 @@ sg('set_features', 'TRAIN', traindat);
 sg('set_labels', 'TRAIN', trainlab);
 sg('send_command', 'set_kernel GAUSSIAN REAL 100');
 sg('send_command', 'init_kernel TRAIN');
-sg('send_command', 'new_svm GPBT');
+sg('send_command', 'new_svm GPBTSVM');
 sg('send_command','svm_epsilon 1e-6')
 sg('send_command', 'c 2');
 tic;

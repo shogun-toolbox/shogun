@@ -7,7 +7,7 @@ trainlab=[ones(1,num) 2*ones(1,num) 3*ones(1,num) 4*ones(1,num)];
 
 sg('send_command', 'loglevel ALL');
 sg('set_features', 'TRAIN', traindat);
-sg('send_command', 'set_distance NORMSQUARED REAL')
+sg('send_command', 'set_distance EUCLIDIAN REAL')
 sg('send_command', 'init_distance TRAIN');
 sg('send_command', 'new_classifier KMEANS');
 sg('send_command', sprintf('train_classifier %d %d',k, iter));

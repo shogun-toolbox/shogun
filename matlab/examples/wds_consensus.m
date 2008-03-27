@@ -50,7 +50,7 @@ x(x=='G')=3;
 x(x=='T')=4;
 acgt(floor(median(x')))
 
-sg('set_features', 'TEST', [ consensus  traindat(:,end)], 'DNA');
+sg('set_features', 'TEST', [ consensus  traindat(:,end)'], 'DNA');
 sg('send_command', 'init_kernel TEST');
 [b,alphas]=sg('get_svm');
 out=sg('svm_classify')-b;

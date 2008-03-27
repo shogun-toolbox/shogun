@@ -262,7 +262,7 @@ void CMatlabInterface::function_name(T_STRING<sg_type>*& strings, INT& num_str, 
 { 																						\
 	const mxArray* mx_str=get_arg_increment();											\
 	if (!mx_str)																		\
-		SG_ERROR("Expected Stringlist as argument (none given)\n");						\
+		SG_ERROR("Expected Stringlist as argument (none given).\n");					\
 																						\
 	if (mxIsCell(mx_str))																\
 	{																					\
@@ -275,8 +275,8 @@ void CMatlabInterface::function_name(T_STRING<sg_type>*& strings, INT& num_str, 
 		for (int i=0; i<num_str; i++)													\
 		{																				\
 			mxArray* str=mxGetCell(mx_str, i);											\
-			if (!str || !mxIsClass(str, mx_type) || !mxGetM(str)==1)							\
-				SG_ERROR("Expected String of type " error_string " as argument %d\n", m_rhs_counter); \
+			if (!str || !mxIsClass(str, mx_type) || !mxGetM(str)==1)					\
+				SG_ERROR("Expected String of type " error_string " as argument %d.\n", m_rhs_counter); \
 																						\
 			INT len=mxGetN(str);														\
 			if (len>0) 																	\
@@ -293,7 +293,7 @@ void CMatlabInterface::function_name(T_STRING<sg_type>*& strings, INT& num_str, 
 			}																			\
 			else																		\
 			{																			\
-				SG_WARNING( "string with index %d has zero length\n", i+1);				\
+				SG_WARNING( "string with index %d has zero length.\n", i+1);			\
 				strings[i].length=0;													\
 				strings[i].string=NULL;													\
 			}																			\
@@ -321,7 +321,7 @@ void CMatlabInterface::function_name(T_STRING<sg_type>*& strings, INT& num_str, 
 			} 																			\
 			else 																		\
 			{ 																			\
-				SG_WARNING( "string with index %d has zero length\n", i+1); 			\
+				SG_WARNING( "string with index %d has zero length.\n", i+1); 			\
 				strings[i].length=0; 													\
 				strings[i].string=NULL; 												\
 			} 																			\
@@ -329,7 +329,7 @@ void CMatlabInterface::function_name(T_STRING<sg_type>*& strings, INT& num_str, 
 		max_string_len=len;																\
 	}																					\
 	else																				\
-		SG_ERROR("Expected String, got class %s as argument %d\n",						\
+		SG_ERROR("Expected String, got class %s as argument %d.\n",						\
 			mxGetClassName(mx_str), m_rhs_counter);										\
 }
 
@@ -350,11 +350,11 @@ void CMatlabInterface::create_return_values(INT num_val)
 void CMatlabInterface::function_name(const sg_type* vector, INT len)		\
 {																			\
 	if (!vector)															\
-		SG_ERROR("Given vector is invalid\n");								\
+		SG_ERROR("Given vector is invalid.\n");								\
 																			\
 	mxArray* mx_vec=mxCreateNumericMatrix(1, len, mx_type, mxREAL);			\
 	if (!mx_vec)															\
-		SG_ERROR("Couldn't create " error_string " Vector of length %d\n", len);		\
+		SG_ERROR("Couldn't create " error_string " Vector of length %d.\n", len);		\
 																			\
 	if_type* data=(if_type*) mxGetData(mx_vec);								\
 																			\
@@ -378,11 +378,11 @@ SET_VECTOR(set_word_vector, mxUINT16_CLASS, WORD, unsigned short, "Word")
 void CMatlabInterface::function_name(const sg_type* matrix, INT num_feat, INT num_vec) \
 { 																				\
 	if (!matrix) 																\
-		SG_ERROR("Given matrix is invalid\n");									\
+		SG_ERROR("Given matrix is invalid.\n");									\
  																				\
 	mxArray* mx_mat=mxCreateNumericMatrix(num_feat, num_vec, mx_type, mxREAL);	\
 	if (!mx_mat) 																\
-		SG_ERROR("Couldn't create " error_string " Matrix of %d rows and %d cols\n", num_feat, num_vec); \
+		SG_ERROR("Couldn't create " error_string " Matrix of %d rows and %d cols.\n", num_feat, num_vec); \
  																				\
 	if_type* data=(if_type*) mxGetData(mx_mat); 								\
  																				\
@@ -406,7 +406,7 @@ SET_MATRIX(set_word_matrix, mxUINT16_CLASS, WORD, unsigned short, "Word")
 void CMatlabInterface::function_name(const TSparse<sg_type>* matrix, INT num_feat, INT num_vec, LONG nnz) \
 {																			\
 	if (!matrix)															\
-		SG_ERROR("Given matrix is invalid\n");								\
+		SG_ERROR("Given matrix is invalid.\n");								\
 																			\
 	mxArray* mx_mat=mxCreateSparse(num_feat, num_vec, nnz, mxREAL);			\
 	if (!mx_mat)															\
@@ -461,13 +461,13 @@ void CMatlabInterface::function_name(const T_STRING<sg_type>* strings, INT num_s
 		{																			\
 			mxArray* str=mxCreateNumericMatrix(1, len, mx_type, mxREAL);			\
 			if (!str)																\
-				SG_ERROR("Couldn't create " error_string " String %d of length %d\n", i, len);		\
+				SG_ERROR("Couldn't create " error_string " String %d of length %d.\n", i, len);		\
 																					\
 			if_type* data=(if_type*) mxGetData(str);								\
 																					\
 			for (INT j=0; j<len; j++)												\
 				data[j]=strings[i].string[j];										\
-			mxSetCell(mx_str, i, str);														\
+			mxSetCell(mx_str, i, str);												\
 		}																			\
 	}																				\
 																					\

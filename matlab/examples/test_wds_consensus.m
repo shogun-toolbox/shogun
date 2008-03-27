@@ -44,7 +44,7 @@ c(c=='T')=4;
 simpleconsensus=acgt(floor(median(c')))';
 simpleconsensus'
 
-sg('set_features', 'TEST', [ consensus simpleconsensus traindat(:,end-20) traindat(:,end)], 'DNA');
+sg('set_features', 'TEST', [ consensus simpleconsensus' traindat(:,end-20)' traindat(:,end)'], 'DNA');
 sg('send_command', 'init_kernel TEST');
 out=sg('svm_classify');
 [b,alphas]=sg('get_svm');
