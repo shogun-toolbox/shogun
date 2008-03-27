@@ -247,9 +247,8 @@ void CSVRLight::svr_learn()
 	INT* label;
 	INT* docs;
 
-	CLabels* lab= CClassifier::get_labels();
-	ASSERT(lab!=NULL);
-	INT totdoc=lab->get_num_labels();
+	ASSERT(labels);
+	INT totdoc=labels->get_num_labels();
 	num_vectors=totdoc;
 	
 	// set up regression problem in standard form
@@ -261,10 +260,10 @@ void CSVRLight::svr_learn()
 	  docs[i]=i;
 	  j=2*totdoc-1-i;
 	  label[i]=+1;
-	  c[i]=lab->get_label(i);
+	  c[i]=labels->get_label(i);
 	  docs[j]=j;
 	  label[j]=-1;
-	  c[j]=lab->get_label(i);
+	  c[j]=labels->get_label(i);
   }
   totdoc*=2;
 

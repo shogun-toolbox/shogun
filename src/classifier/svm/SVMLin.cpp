@@ -34,11 +34,11 @@ CSVMLin::~CSVMLin()
 
 bool CSVMLin::train()
 {
-	ASSERT(get_labels());
+	ASSERT(labels);
 	ASSERT(get_features());
 
 	INT num_train_labels=0;
-	DREAL* train_labels=get_labels()->get_labels(num_train_labels);
+	DREAL* train_labels=labels->get_labels(num_train_labels);
 	INT num_feat=features->get_num_features();
 	INT num_vec=features->get_num_vectors();
 

@@ -120,16 +120,16 @@ bool CWDSVMOcas::train()
 {
 	SG_INFO("C=%f, epsilon=%f, bufsize=%d\n", get_C1(), get_epsilon(), bufsize);
 
-	ASSERT(get_labels());
+	ASSERT(labels);
 	ASSERT(get_features());
-	ASSERT(get_labels()->is_two_class_labeling());
+	ASSERT(labels->is_two_class_labeling());
 	CAlphabet* alphabet=get_features()->get_alphabet();
 	ASSERT(alphabet && alphabet->get_alphabet()==RAWDNA);
 
 	alphabet_size=alphabet->get_num_symbols();
 	string_length=features->get_num_vectors();
 	INT num_train_labels=0;
-	lab=get_labels()->get_labels(num_train_labels);
+	lab=labels->get_labels(num_train_labels);
 
 	w_dim_single_char=set_wd_weights();
 	CMath::display_vector(wd_weights, degree, "wd_weights");

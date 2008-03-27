@@ -112,7 +112,7 @@ CLabels* CMultiClassSVM::classify_one_vs_one(CLabels* result)
 			SG_INFO("num_svms:%d svm[%d]=0x%0X\n", m_num_svms, i, m_svms[i]);
 			ASSERT(m_svms[i]);
 			m_svms[i]->set_kernel(get_kernel());
-			m_svms[i]->set_labels(get_labels());
+			m_svms[i]->set_labels(labels);
 			outputs[i]=m_svms[i]->classify();
 		}
 

@@ -27,14 +27,13 @@ CCPLEXSVM::~CCPLEXSVM()
 bool CCPLEXSVM::train()
 {
 	bool result = false;
-	CLabels* lab = CKernelMachine::get_labels();
 	CCplex cplex;
 
 	if (cplex.init(E_QP))
 	{
 		INT n,m;
 		INT num_label=0;
-		DREAL* y = lab->get_labels(num_label);
+		DREAL* y = labels->get_labels(num_label);
 		DREAL* H = kernel->get_kernel_matrix_real(m, n, NULL);
 		ASSERT(n>0 && n==m && n==num_label);
 		DREAL* alphas=new DREAL[n];
@@ -60,8 +59,8 @@ bool CCPLEXSVM::train()
 		{
 			if (alphas[i]>0)
 			{
-				//set_alpha(j, alphas[i]*lab->get_label(i)/etas[1]);
-				set_alpha(j, alphas[i]*lab->get_label(i));
+				//set_alpha(j, alphas[i]*labels->get_label(i)/etas[1]);
+				set_alpha(j, alphas[i]*labels->get_label(i));
 				set_support_vector(j, i);
 				j++;
 			}

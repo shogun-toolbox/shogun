@@ -338,7 +338,7 @@ DREAL CSubGradientLPM::compute_min_subgradient(INT num_feat, INT num_vec, INT nu
 
 		//CMath::display_vector(grad_w, num_feat+1, "grad_w");
 
-		solver->setup_subgradientlpm_QP(C1, get_labels(), get_features(), idx_bound, num_bound,
+		solver->setup_subgradientlpm_QP(C1, labels, get_features(), idx_bound, num_bound,
 				w_zero, zero_idx,
 				grad_w, num_feat+1,
 				use_bias);
@@ -555,11 +555,11 @@ bool CSubGradientLPM::train()
 {
 	lpmtim=0;
 	SG_INFO("C=%f epsilon=%f\n", C1, epsilon);
-	ASSERT(get_labels());
+	ASSERT(labels);
 	ASSERT(get_features());
 
 	INT num_iterations=0;
-	INT num_train_labels=get_labels()->get_num_labels();
+	INT num_train_labels=labels->get_num_labels();
 	INT num_feat=features->get_num_features();
 	INT num_vec=features->get_num_vectors();
 

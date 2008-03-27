@@ -302,9 +302,8 @@ bool CSVMLight::setup_auc_maximization()
 	
 	// get the original labels
 	INT num=0;
-	CLabels* lab = get_labels();
-	ASSERT(lab!=NULL);
-	INT* int_labels=lab->get_int_labels(num);
+	ASSERT(labels);
+	INT* int_labels=labels->get_int_labels(num);
 	ASSERT(get_kernel()->get_rhs()->get_num_vectors() == num) ;
 	
 	// count positive and negative
@@ -400,10 +399,10 @@ bool CSVMLight::train()
         SG_ERROR( "SVM_light can not proceed without initialized kernel!\n");
         return false ;
     }
-	ASSERT(get_labels() && get_labels()->get_num_labels());
-	ASSERT(get_labels()->is_two_class_labeling());
+	ASSERT(labels && labels->get_num_labels());
+	ASSERT(labels->is_two_class_labeling());
     ASSERT(get_kernel()->get_lhs()->get_num_vectors()
-            == get_labels()->get_num_labels());
+            == labels->get_num_labels());
 
 	// MKL stuff
 	buffer_num = new DREAL[get_kernel()->get_rhs()->get_num_vectors()] ;
@@ -580,9 +579,8 @@ void CSVMLight::svm_learn()
 	INT iterations;
 	INT trainpos=0, trainneg=0 ;
 	INT totdoc=0;
-	CLabels* lab=CKernelMachine::get_labels();
-	ASSERT(lab!=NULL);
-	INT* label=lab->get_int_labels(totdoc);
+	ASSERT(labels);
+	INT* label=labels->get_int_labels(totdoc);
 	ASSERT(label!=NULL);
 	INT* docs=new INT[totdoc];
 	delete[] W;

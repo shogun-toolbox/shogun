@@ -29,12 +29,12 @@ CPerceptron::~CPerceptron()
 
 bool CPerceptron::train()
 {
-	ASSERT(get_labels());
+	ASSERT(labels);
 	ASSERT(get_features());
 	bool converged=false;
 	INT iter=0;
 	INT num_train_labels=0;
-	INT* train_labels=get_labels()->get_int_labels(num_train_labels);
+	INT* train_labels=labels->get_int_labels(num_train_labels);
 	INT num_feat=features->get_num_features();
 	INT num_vec=features->get_num_vectors();
 

@@ -23,8 +23,8 @@ CKernelPerceptron::~CKernelPerceptron()
 
 bool CKernelPerceptron::train()
 {
-	ASSERT(CKernelMachine::get_labels());
-	//CLabels* train_labels=CKernelMachine::get_labels()->get_int_labels(num_train_labels);
+	ASSERT(labels);
+	//CLabels* train_labels=labels->get_int_labels(num_train_labels);
 
 //
 //# compute output activation y = f(w x)

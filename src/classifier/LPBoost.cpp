@@ -77,7 +77,7 @@ DREAL CLPBoost::find_max_violator(INT& max_dim)
 		for (INT j=0; j<sfeat[i].num_feat_entries; j++)
 		{
 			INT idx=sfeat[i].features[j].feat_index;
-			DREAL v=u[idx]*get_labels()->get_label(idx)*sfeat[i].features[j].entry;
+			DREAL v=u[idx]*labels->get_label(idx)*sfeat[i].features[j].entry;
 			valplus+=v;
 			valminus-=v;
 		}
@@ -101,9 +101,9 @@ DREAL CLPBoost::find_max_violator(INT& max_dim)
 
 bool CLPBoost::train()
 {
-	ASSERT(get_labels());
+	ASSERT(labels);
 	ASSERT(get_features());
-	INT num_train_labels=get_labels()->get_num_labels();
+	INT num_train_labels=labels->get_num_labels();
 	INT num_feat=features->get_num_features();
 	INT num_vec=features->get_num_vectors();
 
@@ -147,7 +147,7 @@ bool CLPBoost::train()
 
 		TSparseEntry<DREAL>* h=sfeat[max_dim].features;
 		INT len=sfeat[max_dim].num_feat_entries;
-		solver.add_lpboost_constraint(factor, h, len, num_vec, get_labels());
+		solver.add_lpboost_constraint(factor, h, len, num_vec, labels);
 		solver.optimize(u);
 		//CMath::display_vector(u, num_vec, "u");
 		num_hypothesis++;

@@ -553,11 +553,11 @@ bool CSubGradientSVM::train()
 {
 	tim=0;
 	SG_INFO("C=%f epsilon=%f\n", C1, epsilon);
-	ASSERT(get_labels());
+	ASSERT(labels);
 	ASSERT(get_features());
 
 	INT num_iterations=0;
-	INT num_train_labels=get_labels()->get_num_labels();
+	INT num_train_labels=labels->get_num_labels();
 	INT num_feat=features->get_num_features();
 	INT num_vec=features->get_num_vectors();
 

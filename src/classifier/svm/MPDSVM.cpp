@@ -27,15 +27,13 @@ CMPDSVM::~CMPDSVM()
 
 bool CMPDSVM::train()
 {
-	CLabels* lab = CKernelMachine::get_labels();
-
 	//const DREAL nu=0.32;
 	const DREAL alpha_eps=1e-12;
 	const DREAL eps=get_epsilon();
 	const long int maxiter = 1L<<30;
 	//const bool nustop=false;
 	//const int k=2;
-	const int n=lab->get_num_labels();
+	const int n=labels->get_num_labels();
 	//const DREAL d = 1.0/n/nu; //NUSVC
 	const DREAL d = get_C1(); //CSVC
 	const DREAL primaleps=eps;
@@ -70,9 +68,9 @@ bool CMPDSVM::train()
 	for (int i=0; i<n; i++)
 	{
 		alphas[i]=0;
-		F[i]=lab->get_label(i);
+		F[i]=labels->get_label(i);
 		//F[i+n]=-1;
-		hessres[i]=lab->get_label(i);
+		hessres[i]=labels->get_label(i);
 		//hessres[i+n]=-1;
 		//dalphas[i]=F[i+n]*etas[1]; //NUSVC
 		dalphas[i]=-1; //CSVC
@@ -133,7 +131,7 @@ bool CMPDSVM::train()
 			{
 				obj-=alphas[i];
 				for (int j=0; j<n; j++)
-					obj+=0.5*lab->get_label(i)*lab->get_label(j)*alphas[i]*alphas[j]*kernel->kernel(i,j);
+					obj+=0.5*labels->get_label(i)*labels->get_label(j)*alphas[i]*alphas[j]*kernel->kernel(i,j);
 			}
 
 			SG_DEBUG( "obj:%f pviol:%f dviol:%f maxpidx:%d iter:%d\n", obj, maxpviol, maxdviol, maxpidx, niter);
@@ -230,8 +228,8 @@ bool CMPDSVM::train()
 	{
 		if (alphas[i]>0)
 		{
-			//set_alpha(j, alphas[i]*lab->get_label(i)/etas[1]);
-			set_alpha(j, alphas[i]*lab->get_label(i));
+			//set_alpha(j, alphas[i]*labels->get_label(i)/etas[1]);
+			set_alpha(j, alphas[i]*labels->get_label(i));
 			set_support_vector(j, i);
 			j++;
 		}

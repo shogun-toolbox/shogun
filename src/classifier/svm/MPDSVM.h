@@ -48,8 +48,7 @@ class CMPDSVM : public CSVM
 		 */
 		inline DREAL compute_H(int i, int j)
 		{
-			CLabels* l = CKernelMachine::get_labels();
-			return l->get_label(i)*l->get_label(j)*kernel->kernel(i,j);
+			return labels->get_label(i)*labels->get_label(j)*kernel->kernel(i,j);
 		}
 
 		/** lock kernel row

@@ -29,8 +29,8 @@ CGNPPSVM::~CGNPPSVM()
 bool CGNPPSVM::train()
 {
 
-	ASSERT(get_labels() && get_labels()->get_num_labels());
-	INT num_data = get_labels()->get_num_labels();
+	ASSERT(labels && labels->get_num_labels());
+	INT num_data = labels->get_num_labels();
 	SG_INFO( "%d trainlabels\n", num_data);
 
 	DREAL* vector_y = new double[num_data];

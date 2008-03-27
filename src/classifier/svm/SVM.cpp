@@ -415,19 +415,15 @@ DREAL CSVM::classify_example(INT num)
 
 DREAL CSVM::compute_objective()
 {
-	CLabels* lab=CKernelMachine::get_labels();
 	INT n=get_num_support_vectors();
 	CKernel* k=CKernelMachine::get_kernel();
 
-	if (lab && k)
+	if (labels && k)
 	{
-		ASSERT(lab);
-		ASSERT(k);
-
 		objective=0;
 		for (int i=0; i<n; i++)
 		{
-			objective-=get_alpha(i)*lab->get_label(i);
+			objective-=get_alpha(i)*labels->get_label(i);
 			for (int j=0; j<n; j++)
 				objective+=0.5*get_alpha(i)*get_alpha(j)*k->kernel(i,j);
 		}

@@ -124,11 +124,11 @@ CSVMSGD::~CSVMSGD()
 bool CSVMSGD::train()
 {
 	// allocate memory for w and initialize everyting w and bias with 0
-	ASSERT(get_labels());
+	ASSERT(labels);
 	ASSERT(get_features());
-	ASSERT(get_labels()->is_two_class_labeling());
+	ASSERT(labels->is_two_class_labeling());
 
-	INT num_train_labels=get_labels()->get_num_labels();
+	INT num_train_labels=labels->get_num_labels();
 	w_dim=features->get_num_features();
 	INT num_vec=features->get_num_vectors();
 

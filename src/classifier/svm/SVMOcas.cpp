@@ -45,12 +45,12 @@ bool CSVMOcas::train()
 {
 	SG_INFO("C=%f, epsilon=%f, bufsize=%d\n", get_C1(), get_epsilon(), bufsize);
 
-	ASSERT(get_labels());
+	ASSERT(labels);
 	ASSERT(get_features());
-	ASSERT(get_labels()->is_two_class_labeling());
+	ASSERT(labels->is_two_class_labeling());
 
 	INT num_train_labels=0;
-	lab=get_labels()->get_labels(num_train_labels);
+	lab=labels->get_labels(num_train_labels);
 	w_dim=features->get_num_features();
 	INT num_vec=features->get_num_vectors();
 

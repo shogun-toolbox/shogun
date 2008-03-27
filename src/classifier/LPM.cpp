@@ -28,9 +28,9 @@ CLPM::~CLPM()
 
 bool CLPM::train()
 {
-	ASSERT(get_labels());
+	ASSERT(labels);
 	ASSERT(get_features());
-	INT num_train_labels=get_labels()->get_num_labels();
+	INT num_train_labels=labels->get_num_labels();
 	INT num_feat=features->get_num_features();
 	INT num_vec=features->get_num_vectors();
 
@@ -48,7 +48,7 @@ bool CLPM::train()
 	CCplex solver;
 	solver.init(E_LINEAR);
 	SG_INFO("C=%f\n", C1);
-	solver.setup_lpm(C1, get_features(), get_labels(), get_bias_enabled());
+	solver.setup_lpm(C1, get_features(), labels, get_bias_enabled());
 	if (get_max_train_time()>0)
 		solver.set_time_limit(get_max_train_time());
 	bool result=solver.optimize(params);
@@ -67,6 +67,7 @@ bool CLPM::train()
 	CMath::display_vector(&params[1+w_dim],w_dim, "w-");
 #endif
 	delete[] params;
+
 	return result;
 }
 #endif

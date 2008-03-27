@@ -28,9 +28,9 @@ bool CLibSVMMultiClass::train()
 {
 	struct svm_node* x_space;
 
-	ASSERT(get_labels() && get_labels()->get_num_labels());
-	INT num_classes = get_labels()->get_num_classes();
-	problem.l=get_labels()->get_num_labels();
+	ASSERT(labels && labels->get_num_labels());
+	INT num_classes = labels->get_num_classes();
+	problem.l=labels->get_num_labels();
 	SG_INFO( "%d trainlabels, %d classes\n", problem.l, num_classes);
 
 	problem.y=new double[problem.l];
@@ -43,7 +43,7 @@ bool CLibSVMMultiClass::train()
 
 	for (int i=0; i<problem.l; i++)
 	{
-		problem.y[i]=get_labels()->get_label(i);
+		problem.y[i]=labels->get_label(i);
 		problem.x[i]=&x_space[2*i];
 		x_space[2*i].index=i;
 		x_space[2*i+1].index=-1;

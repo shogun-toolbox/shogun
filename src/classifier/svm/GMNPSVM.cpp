@@ -32,9 +32,9 @@ CGMNPSVM::~CGMNPSVM()
 
 bool CGMNPSVM::train()
 {
-	ASSERT(get_labels() && get_labels()->get_num_labels());
-	INT num_data = get_labels()->get_num_labels();
-	INT num_classes = get_labels()->get_num_classes();
+	ASSERT(labels && labels->get_num_labels());
+	INT num_data = labels->get_num_labels();
+	INT num_classes = labels->get_num_classes();
 	INT num_virtual_data= num_data*(num_classes-1);
 
 	SG_INFO( "%d trainlabels, %d classes\n", num_data, num_classes);
@@ -43,7 +43,7 @@ bool CGMNPSVM::train()
 	ASSERT(vector_y);
 
 	for (int i=0; i<num_data; i++)
-		vector_y[i]= get_labels()->get_label(i)+1;
+		vector_y[i]= labels->get_label(i)+1;
 
 	ASSERT(get_kernel());
 
