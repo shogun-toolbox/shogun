@@ -97,15 +97,12 @@ template <class ST> class CSparseFeatures: public CFeatures
 		 *
 		 */
 		void free_sparse_feature_matrix()
-		{
-			if (sparse_feature_matrix)
-			{
-				clean_tsparse(sparse_feature_matrix, num_vectors);
-				sparse_feature_matrix = NULL;
-				num_vectors=0;
-				num_features=0;
-			}
-		}
+        {
+            clean_tsparse(sparse_feature_matrix, num_vectors);
+            sparse_feature_matrix = NULL;
+            num_vectors=0;
+            num_features=0;
+        }
 
 		/** free sparse feature matrix and cache
 		 *
@@ -113,11 +110,8 @@ template <class ST> class CSparseFeatures: public CFeatures
 		void free_sparse_features()
 		{
 			free_sparse_feature_matrix();
-			if (feature_cache)
-			{
-				delete feature_cache;
-				feature_cache = NULL;
-			}
+            delete feature_cache;
+            feature_cache = NULL;
 		}
 
 		/** duplicate feature object

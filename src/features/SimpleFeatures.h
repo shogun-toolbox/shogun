@@ -96,14 +96,10 @@ template <class ST> class CSimpleFeatures: public CFeatures
 		 */
 		void free_feature_matrix()
 		{
-			if (feature_matrix)
-			{
-				SG_DEBUG( "free_feature_matrix in (0x%p)\n", this);
-				delete[] feature_matrix;
-				feature_matrix = NULL;
-				num_vectors=0;
-				num_features=0;
-			}
+            delete[] feature_matrix;
+            feature_matrix = NULL;
+            num_vectors=0;
+            num_features=0;
 		}
 
 		/** free feature matrix and cache
@@ -112,11 +108,8 @@ template <class ST> class CSimpleFeatures: public CFeatures
 		void free_features()
 		{
 			free_feature_matrix();
-			if (feature_cache)
-			{
-				delete feature_cache;
-				feature_cache = NULL;
-			}
+            delete feature_cache;
+            feature_cache = NULL;
 		}
 
 		/** get feature vector

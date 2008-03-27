@@ -14,6 +14,8 @@
 %apply (INT* IN_ARRAY1, INT DIM1) {(INT* svs, INT d)};
 #endif //HAVE_PYTHON
 
+%newobject classify(CLabels* result);
+
 %include "classifier/svm/SVM.h"
 
 #ifdef USE_SVMLIGHT

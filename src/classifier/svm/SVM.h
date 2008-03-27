@@ -387,10 +387,10 @@ class CSVM : public CKernelMachine
 
 		/** classify SVM
 		 *
-		 * @param labels classified labels
+		 * @param result classified labels
 		 * @return classified labels
 		 */
-		virtual CLabels* classify(CLabels* labels=NULL);
+		virtual CLabels* classify(CLabels* result=NULL);
 
 		/** classify one example
 		 *
