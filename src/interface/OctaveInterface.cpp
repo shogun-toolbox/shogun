@@ -10,6 +10,7 @@
 
 #include <octave/config.h>
 
+#include <octave/ov.h>
 #include <octave/defun-dld.h>
 #include <octave/error.h>
 #include <octave/oct-obj.h>
@@ -40,6 +41,57 @@ void COctaveInterface::parse_args(INT num_args, INT num_default_args)
 /// get type of current argument (does not increment argument counter)
 IFType COctaveInterface::get_argument_type()
 {
+	octave_value arg=m_rhs(m_rhs_counter);
+
+	if (arg.is_sparse_type())
+	{
+		if (arg.is_uint8_type())
+			return SPARSE_BYTE;
+		else if (arg.is_char_matrix())
+			return SPARSE_CHAR;
+		else if (arg.is_int32_type())
+			return SPARSE_INT;
+		else if (arg.is_double_type())
+			return SPARSE_REAL;
+		else if (arg.is_int16_type())
+			return SPARSE_SHORT;
+		else if (arg.is_single_type())
+			return SPARSE_SHORTREAL;
+		else if (arg.is_uint16_type())
+			return SPARSE_WORD;
+		else
+			return UNDEFINED;
+	}
+	else if (arg.is_matrix_type())
+	{
+		if (arg.is_uint32_type())
+			return DENSE_INT;
+		else if (arg.is_double_type())
+			return DENSE_REAL;
+		else if (arg.is_int16_type())
+			return DENSE_SHORT;
+		else if (arg.is_single_type())
+			return DENSE_SHORTREAL;
+		else if (arg.is_uint16_type())
+			return DENSE_WORD;
+	}
+	else if (arg.is_char_matrix())
+	{
+		if (arg.rows()==1)
+			return SINGLE_STRING;
+		else
+			return STRING_CHAR;
+	}
+	else if (arg.is_cell())// && mxGetCell(arg, 0) && mxIsChar(mxGetCell(arg, 0)))
+	{
+		//const mxArray* cell=mxGetCell(arg, 0);
+		//if (mxGetM(cell)==1 && mxGetN(cell)==1)
+		//	return SINGLE_STRING;
+		//else
+		//	return STRING_CHAR;
+	}
+
+
 	return UNDEFINED;
 }
 
@@ -137,47 +189,32 @@ void COctaveInterface::get_word_vector(WORD*& vec, INT& len)
 	len=0;
 }
 
+	/*if (!mat_feat.is_matrix_type() || !mat_feat.type_checker())						\
+		SG_ERROR("Expected " error_string " Matrix as argument %d\n", m_rhs_counter); \*/
 
-void COctaveInterface::get_byte_matrix(BYTE*& matrix, INT& num_feat, INT& num_vec)
-{
+#define GET_MATRIX(function_name, type_checker, sg_type, if_type, error_string)		\
+void COctaveInterface::function_name(sg_type*& matrix, INT& num_feat, INT& num_vec) \
+{																					\
+	const octave_value mat_feat=get_arg_increment();								\
+																					\
+	Matrix m = mat_feat.matrix_value();												\
+	num_vec = m.cols();																\
+	num_feat = m.rows();															\
+	matrix=new sg_type[num_vec*num_feat];											\
+	ASSERT(matrix);																	\
+																					\
+	for (INT i=0; i<num_vec; i++)													\
+		for (INT j=0; j<num_feat; j++)												\
+			matrix[i*num_feat+j]= (sg_type) m(j,i);									\
 }
-
-void COctaveInterface::get_char_matrix(CHAR*& matrix, INT& num_feat, INT& num_vec)
-{
-}
-
-void COctaveInterface::get_int_matrix(INT*& matrix, INT& num_feat, INT& num_vec)
-{
-}
-
-void COctaveInterface::get_shortreal_matrix(SHORTREAL*& matrix, INT& num_feat, INT& num_vec)
-{
-}
-
-void COctaveInterface::get_real_matrix(DREAL*& matrix, INT& num_feat, INT& num_vec)
-{
-	const octave_value mat_feat=get_arg_increment();
-	if (!mat_feat.is_real_matrix())
-		SG_ERROR("Expected Double Matrix as argument %d\n", m_rhs_counter);
-
-	Matrix m = mat_feat.matrix_value();
-	num_vec = m.cols();
-	num_feat = m.rows();
-	matrix=new DREAL[num_vec*num_feat];
-	ASSERT(matrix);
-
-	for (INT i=0; i<num_vec; i++)
-		for (INT j=0; j<num_feat; j++)
-			matrix[i*num_feat+j]= (double) m(j,i);
-}
-
-void COctaveInterface::get_short_matrix(SHORT*& matrix, INT& num_feat, INT& num_vec)
-{
-}
-
-void COctaveInterface::get_word_matrix(WORD*& matrix, INT& num_feat, INT& num_vec)
-{
-}
+GET_MATRIX(get_byte_matrix, is_uint8_type, BYTE, BYTE, "Byte")
+GET_MATRIX(get_char_matrix, is_char_matrix, CHAR, CHAR, "Char")
+GET_MATRIX(get_int_matrix, is_int32_type, INT, INT, "Integer")
+GET_MATRIX(get_short_matrix, is_int16_type, SHORT, SHORT, "Short")
+GET_MATRIX(get_shortreal_matrix, is_single_type, SHORTREAL, SHORTREAL, "Single Precision")
+GET_MATRIX(get_real_matrix, is_double_type, DREAL, DREAL, "Double Precision")
+GET_MATRIX(get_word_matrix, is_int16_type, WORD, WORD, "Word")
+#undef GET_MATRIX
 
 void COctaveInterface::get_real_sparsematrix(TSparse<DREAL>*& matrix, INT& num_feat, INT& num_vec)
 {
@@ -263,33 +300,27 @@ void COctaveInterface::set_word_vector(const WORD* vec, INT len)
 {
 }
 
-
-void COctaveInterface::set_byte_matrix(const BYTE* matrix, INT num_feat, INT num_vec)
-{
+#define SET_MATRIX(function_name, oct_type, sg_type, if_type, error_string)		\
+void COctaveInterface::function_name(const sg_type* matrix, INT num_feat, INT num_vec) \
+{																				\
+	oct_type mat=oct_type(dim_vector(num_feat, num_vec));						\
+																				\
+	for (INT i=0; i<num_vec; i++)												\
+	{																			\
+		for (INT j=0; j<num_feat; j++)											\
+			mat(j,i) = (if_type) matrix[j+i*num_feat];							\
+	}																			\
+																				\
+	set_arg_increment(mat);														\
 }
-
-void COctaveInterface::set_char_matrix(const CHAR* matrix, INT num_feat, INT num_vec)
-{
-}
-
-void COctaveInterface::set_int_matrix(const INT* matrix, INT num_feat, INT num_vec)
-{
-}
-
-void COctaveInterface::set_shortreal_matrix(const SHORTREAL* matrix, INT num_feat, INT num_vec)
-{
-}
-
-void COctaveInterface::set_real_matrix(const DREAL* matrix, INT num_feat, INT num_vec)
-{
-}
-
-void COctaveInterface::set_short_matrix(const SHORT* matrix, INT num_feat, INT num_vec)
-{
-}
-void COctaveInterface::set_word_matrix(const WORD* matrix, INT num_feat, INT num_vec)
-{
-}
+SET_MATRIX(set_byte_matrix, uint8NDArray, BYTE, BYTE, "Byte")
+SET_MATRIX(set_char_matrix, charMatrix, CHAR, CHAR, "Char")
+SET_MATRIX(set_int_matrix, int32NDArray, INT, INT, "Integer")
+SET_MATRIX(set_short_matrix, int16NDArray, SHORT, SHORT, "Short")
+SET_MATRIX(set_shortreal_matrix, Matrix, SHORTREAL, SHORTREAL, "Single Precision")
+SET_MATRIX(set_real_matrix, Matrix, DREAL, DREAL, "Double Precision")
+SET_MATRIX(set_word_matrix, uint16NDArray, WORD, WORD, "Word")
+#undef SET_MATRIX
 
 void COctaveInterface::set_real_sparsematrix(const TSparse<DREAL>* matrix, INT num_feat, INT num_vec, LONG nnz)
 {

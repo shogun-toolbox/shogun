@@ -68,7 +68,7 @@ IFType CMatlabInterface::get_argument_type()
 	else if (mxIsCell(arg) && mxGetCell(arg, 0) && mxIsChar(mxGetCell(arg, 0)))
 	{
 		const mxArray* cell=mxGetCell(arg, 0);
-		if (mxGetM(cell)==1 && mxGetN(cell)==1)
+		if (mxGetM(cell)==1 && mxGetN(arg)==1)
 			return SINGLE_STRING;
 		else
 			return STRING_CHAR;

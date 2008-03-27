@@ -2255,10 +2255,10 @@ EOF
 
 		if darwin
 		then
-			LINKFLAGS="-bundle -Wl,-flat_namespace -L`octave-config -p OCTLIBDIR` -loctinterp -loctave $LINKFLAGS"
+			LINKFLAGS="-bundle -Wl,-flat_namespace -L`octave-config -p OCTLIBDIR` -loctinterp -loctave -lcruft $LINKFLAGS"
 		else
 			OCTLIBDIR=`octave-config -p OCTLIBDIR`
-			LINKFLAGS="-shared -L $OCTLIBDIR -loctinterp -loctave $LINKFLAGS"
+			LINKFLAGS="-shared -L $OCTLIBDIR -loctinterp -loctave -lcruft $LINKFLAGS"
 		fi
 		TARGET="sg.oct"
 		INCLUDES="$INCLUDES -I`octave-config -p OCTINCLUDEDIR` -I`octave-config -p INCLUDEDIR`"
