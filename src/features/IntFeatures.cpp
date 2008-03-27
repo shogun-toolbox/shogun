@@ -19,6 +19,7 @@ bool CIntFeatures::load(CHAR* fname)
     num_features=0;
 	CFile f(fname, 'r', F_INT);
 	LONG numf=0 ;
+	free_feature_matrix();
 	feature_matrix=f.load_int_data(NULL, numf);
 	num_features=numf;
 

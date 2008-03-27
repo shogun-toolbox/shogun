@@ -69,6 +69,7 @@ template <class ST> class CSparseFeatures: public CFeatures
 	{
 		if (orig.sparse_feature_matrix)
 		{
+			free_sparse_feature_matrix();
 			sparse_feature_matrix=new TSparse<ST>[num_vectors];
 			memcpy(sparse_feature_matrix, orig.sparse_feature_matrix, sizeof(TSparse<ST>)*num_vectors);
 			for (INT i=0; i< num_vectors; i++)
@@ -89,9 +90,34 @@ template <class ST> class CSparseFeatures: public CFeatures
 
 		virtual ~CSparseFeatures()
 		{
-			clean_tsparse(sparse_feature_matrix, num_vectors);
+			free_sparse_features();
+		}
 
-			delete feature_cache;
+		/** free sparse feature matrix
+		 *
+		 */
+		void free_sparse_feature_matrix()
+		{
+			if (sparse_feature_matrix)
+			{
+				clean_tsparse(sparse_feature_matrix, num_vectors);
+				sparse_feature_matrix = NULL;
+				num_vectors=0;
+				num_features=0;
+			}
+		}
+
+		/** free sparse feature matrix and cache
+		 *
+		 */
+		void free_sparse_features()
+		{
+			free_sparse_feature_matrix();
+			if (feature_cache)
+			{
+				delete feature_cache;
+				feature_cache = NULL;
+			}
 		}
 
 		/** duplicate feature object
@@ -488,6 +514,8 @@ template <class ST> class CSparseFeatures: public CFeatures
 		 */
 		virtual void set_sparse_feature_matrix(TSparse<ST>* sfm, INT num_feat, INT num_vec)
 		{
+			free_sparse_feature_matrix();
+
 			sparse_feature_matrix=sfm;
 			num_features=num_feat;
 			num_vectors=num_vec;
@@ -567,6 +595,7 @@ template <class ST> class CSparseFeatures: public CFeatures
 
 				if (num_vec>0)
 				{
+					free_sparse_feature_matrix();
 					sparse_feature_matrix=new TSparse<ST>[num_vec];
 
 					if (sparse_feature_matrix)
@@ -894,6 +923,7 @@ template <class ST> class CSparseFeatures: public CFeatures
 
 				lab=new CLabels(num_vectors);
 				ASSERT(lab);
+				free_sparse_feature_matrix();
 				sparse_feature_matrix=new TSparse<ST>[num_vectors];
 				ASSERT(sparse_feature_matrix);
 
@@ -1067,6 +1097,8 @@ template <class ST> class CSparseFeatures: public CFeatures
 			len=0;
 			return NULL;
 		}
+
+	protected:
 
 		/// total number of vectors
 		INT num_vectors;

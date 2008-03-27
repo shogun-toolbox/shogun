@@ -18,6 +18,7 @@ bool CShortRealFeatures::load(CHAR* fname)
     num_features=0;
 	CFile f(fname, 'r', F_SHORTREAL);
 	LONG numf=0 ;
+	free_feature_matrix();
 	feature_matrix=f.load_shortreal_data(NULL, numf);
 	num_features=numf;
 

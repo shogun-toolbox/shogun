@@ -51,6 +51,7 @@ bool CCharFeatures::load(CHAR* fname)
 	LONG linelen=0;
 
 	CFile f(fname, 'r', F_CHAR);
+	free_feature_matrix();
 	feature_matrix=f.load_char_data(NULL, length);
 
     if (f.is_ok())

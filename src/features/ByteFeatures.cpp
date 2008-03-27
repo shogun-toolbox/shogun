@@ -51,6 +51,7 @@ bool CByteFeatures::load(CHAR* fname)
 	LONG linelen=0;
 
 	CFile f(fname, 'r', F_BYTE);
+	free_feature_matrix();
 	feature_matrix=f.load_byte_data(NULL, length);
 
     if (f.is_ok())

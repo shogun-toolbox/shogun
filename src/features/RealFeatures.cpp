@@ -19,6 +19,7 @@ bool CRealFeatures::load(CHAR* fname)
     num_features=0;
 	CFile f(fname, 'r', F_DREAL);
 	LONG numf=0 ;
+	free_feature_matrix();
 	feature_matrix=f.load_real_data(NULL, numf);
 	num_features=numf;
 
@@ -67,7 +68,7 @@ bool CRealFeatures::Align_char_features(CCharFeatures* cf, CCharFeatures* Ref, D
 	num_features = Ref->get_num_vectors();
 
 	INT len=num_vectors*num_features;
-	delete[] feature_matrix;
+	free_feature_matrix();
 	feature_matrix=new DREAL[len];
 	ASSERT(feature_matrix);
 

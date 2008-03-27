@@ -35,7 +35,7 @@ bool CShortFeatures::obtain_from_char_features(CCharFeatures* cf, INT start, INT
 	ASSERT(alpha);
 
 	INT len=num_vectors*num_features;
-	delete[] feature_matrix;
+	free_feature_matrix();
 	feature_matrix=new SHORT[len];
 	ASSERT(feature_matrix);
 

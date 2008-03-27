@@ -81,6 +81,7 @@ DREAL* CRealFileFeatures::load_feature_matrix()
 	delete[] feature_matrix;
 
 	SG_INFO( "allocating feature matrix of size %.2fM\n", sizeof(double)*num_features*num_vectors/1024.0/1024.0);
+	free_feature_matrix();
 	feature_matrix=new DREAL[num_features*num_vectors];
 
 	SG_INFO( "loading... be patient.\n");

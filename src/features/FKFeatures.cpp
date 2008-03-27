@@ -129,8 +129,7 @@ void CFKFeatures::set_models(CHMM* p, CHMM* n)
 	neg=n;
 	set_num_vectors(0);
 
-	delete[] feature_matrix  ;
-	feature_matrix=NULL ;
+	free_feature_matrix();
 
 	SG_INFO( "pos_feat=[%i,%i,%i,%i],neg_feat=[%i,%i,%i,%i]\n", pos->get_N(), pos->get_N(), pos->get_N()*pos->get_N(), pos->get_N()*pos->get_M(), neg->get_N(), neg->get_N(), neg->get_N()*neg->get_N(), neg->get_N()*neg->get_M()) ;
 
@@ -213,7 +212,7 @@ DREAL* CFKFeatures::set_feature_matrix()
 	ASSERT(num_vectors);
 
 	SG_INFO( "allocating FK feature cache of size %.2fM\n", sizeof(double)*num_features*num_vectors/1024.0/1024.0);
-	delete[] feature_matrix;
+	free_feature_matrix();
 	feature_matrix=new DREAL[num_features*num_vectors];
 
 	SG_INFO( "calculating FK feature matrix\n");

@@ -47,6 +47,7 @@ template <class ST> class CSimpleFeatures: public CFeatures
 		{
 			if (orig.feature_matrix)
 			{
+				free_feature_matrix();
 				feature_matrix=new ST(num_vectors*num_features);
 				memcpy(feature_matrix, orig.feature_matrix, sizeof(double)*num_vectors*num_features);
 			}
@@ -87,8 +88,35 @@ template <class ST> class CSimpleFeatures: public CFeatures
 		virtual ~CSimpleFeatures()
 		{
 			SG_DEBUG("deleting simplefeatures (0x%p)\n", this);
-			delete[] feature_matrix;
-			delete feature_cache;
+			free_features();
+		}
+
+		/** free feature matrix
+		 *
+		 */
+		void free_feature_matrix()
+		{
+			if (feature_matrix)
+			{
+				SG_DEBUG( "free_feature_matrix in (0x%p)\n", this);
+				delete[] feature_matrix;
+				feature_matrix = NULL;
+				num_vectors=0;
+				num_features=0;
+			}
+		}
+
+		/** free feature matrix and cache
+		 *
+		 */
+		void free_features()
+		{
+			free_feature_matrix();
+			if (feature_cache)
+			{
+				delete feature_cache;
+				feature_cache = NULL;
+			}
 		}
 
 		/** get feature vector
@@ -218,6 +246,7 @@ template <class ST> class CSimpleFeatures: public CFeatures
 		 */
 		virtual void set_feature_matrix(ST* fm, INT num_feat, INT num_vec)
 		{
+			free_feature_matrix();
 			feature_matrix=fm;
 			num_features=num_feat;
 			num_vectors=num_vec;
@@ -234,7 +263,7 @@ template <class ST> class CSimpleFeatures: public CFeatures
 		 */
 		virtual void copy_feature_matrix(ST* src, INT num_feat, INT num_vec)
 		{
-			delete[] feature_matrix;
+			free_feature_matrix();
 			feature_matrix=new ST[((LONG) num_feat)*num_vec];
 			ASSERT(feature_matrix);
 			memcpy(feature_matrix, src, (sizeof(ST)*((LONG) num_feat)*num_vec));
