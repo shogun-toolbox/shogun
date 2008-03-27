@@ -189,13 +189,13 @@ void COctaveInterface::get_word_vector(WORD*& vec, INT& len)
 	len=0;
 }
 
-	/*if (!mat_feat.is_matrix_type() || !mat_feat.type_checker())						\
-		SG_ERROR("Expected " error_string " Matrix as argument %d\n", m_rhs_counter); \*/
 
 #define GET_MATRIX(function_name, type_checker, sg_type, if_type, error_string)		\
 void COctaveInterface::function_name(sg_type*& matrix, INT& num_feat, INT& num_vec) \
 {																					\
 	const octave_value mat_feat=get_arg_increment();								\
+	if (!mat_feat.is_matrix_type() || !mat_feat.type_checker())						\
+		SG_ERROR("Expected " error_string " Matrix as argument %d\n", m_rhs_counter); \
 																					\
 	Matrix m = mat_feat.matrix_value();												\
 	num_vec = m.cols();																\

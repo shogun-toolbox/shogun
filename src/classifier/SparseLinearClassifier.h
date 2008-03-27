@@ -84,13 +84,13 @@ class CSparseLinearClassifier : public CClassifier
 		 *
 		 * @param feat features to set
 		 */
-		inline void set_features(CSparseFeatures<DREAL>* feat) { features=feat; }
+		inline void set_features(CSparseFeatures<DREAL>* feat) { SG_REF(feat); features=feat; }
 
 		/** get features
 		 *
 		 * @return features
 		 */
-		inline CSparseFeatures<DREAL>* get_features() { return features; }
+		inline CSparseFeatures<DREAL>* get_features() { SG_REF(features); return features; }
 
 	protected:
 		/** dimension of w */

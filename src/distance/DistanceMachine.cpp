@@ -16,4 +16,5 @@ CDistanceMachine::CDistanceMachine():CClassifier(),distance(NULL)
 
 CDistanceMachine::~CDistanceMachine()
 {
+	SG_UNREF(distance);
 }

@@ -111,14 +111,16 @@ CSVMSGD::CSVMSGD(DREAL C, CSparseFeatures<DREAL>* traindat, CLabels* trainlab) :
 	use_regularized_bias(false)
 {
 	w=NULL;
-	CSparseLinearClassifier::features=traindat;
-	CClassifier::labels=trainlab;
+	set_features(traindat);
+	set_labels(trainlab);
 }
 
 CSVMSGD::~CSVMSGD()
 {
 	delete[] w;
 	w=NULL;
+
+	SG_UNREF(features);
 }
 
 bool CSVMSGD::train()

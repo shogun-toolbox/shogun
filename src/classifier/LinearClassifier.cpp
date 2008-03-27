@@ -16,6 +16,7 @@ CLinearClassifier::CLinearClassifier() : CClassifier(), w_dim(0), w(NULL), bias(
 
 CLinearClassifier::~CLinearClassifier()
 {
+	SG_UNREF(features);
 }
 
 bool CLinearClassifier::load(FILE* srcfile)

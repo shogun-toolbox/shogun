@@ -27,8 +27,8 @@ CLibLinear::CLibLinear(LIBLINEAR_LOSS l) : CSparseLinearClassifier()
 CLibLinear::CLibLinear(DREAL C, CSparseFeatures<DREAL>* traindat, CLabels* trainlab)
  : CSparseLinearClassifier(), C1(C), C2(C), use_bias(true), epsilon(1e-5)
 {
-	CSparseLinearClassifier::features=traindat;
-	CClassifier::labels=trainlab;
+	set_features(traindat);
+	set_labels(trainlab);
 	loss=LR;
 }
 

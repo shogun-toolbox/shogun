@@ -32,8 +32,8 @@ CSVMOcas::CSVMOcas(DREAL C, CSparseFeatures<DREAL>* traindat, CLabels* trainlab)
 	w=NULL;
 	old_w=NULL;
 	method=SVM_OCAS;
-	CSparseLinearClassifier::features=traindat;
-	CClassifier::labels=trainlab;
+	set_features(traindat);
+	set_labels(trainlab);
 }
 
 

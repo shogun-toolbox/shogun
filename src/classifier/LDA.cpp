@@ -24,8 +24,8 @@ CLDA::CLDA(DREAL gamma) : CLinearClassifier(), m_gamma(gamma)
 
 CLDA::CLDA(DREAL gamma, CRealFeatures* traindat, CLabels* trainlab) : CLinearClassifier(), m_gamma(gamma)
 {
-	CLinearClassifier::features=traindat;
-	CClassifier::labels=trainlab;
+	set_features(traindat);
+	set_labels(trainlab);
 }
 
 

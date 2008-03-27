@@ -17,6 +17,7 @@ CSparseLinearClassifier::CSparseLinearClassifier() : CClassifier(), w_dim(0), w(
 CSparseLinearClassifier::~CSparseLinearClassifier()
 {
     delete[] w;
+	SG_UNREF(features);
 }
 
 CLabels* CSparseLinearClassifier::classify(CLabels* output)

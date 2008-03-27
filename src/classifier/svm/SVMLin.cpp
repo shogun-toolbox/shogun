@@ -23,8 +23,8 @@ CSVMLin::CSVMLin() : CSparseLinearClassifier(), C1(1), C2(1), epsilon(1e-5), use
 CSVMLin::CSVMLin(DREAL C, CSparseFeatures<DREAL>* traindat, CLabels* trainlab) 
 	: CSparseLinearClassifier(), C1(C), C2(C), epsilon(1e-5), use_bias(true)
 {
-	CSparseLinearClassifier::features=traindat;
-	CClassifier::labels=trainlab;
+	set_features(traindat);
+	set_labels(trainlab);
 }
 
 
