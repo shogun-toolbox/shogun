@@ -31,7 +31,12 @@ class CDistanceMachine : public CClassifier
 		 *
 		 * @param d distance to set
 		 */
-		inline void set_distance(CDistance* d) { SG_REF(d); distance=d; }
+		inline void set_distance(CDistance* d)
+		{
+			SG_UNREF(distance);
+			SG_REF(d);
+			distance=d;
+		}
 
 		/** get distance
 		 *

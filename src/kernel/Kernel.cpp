@@ -326,6 +326,11 @@ bool CKernel::init(CFeatures* l, CFeatures* r)
 	ASSERT(l->get_feature_class() == r->get_feature_class());
 	ASSERT(l->get_feature_type() == r->get_feature_type());
 
+	//remove references to previous features
+    SG_UNREF(lhs);
+    if (lhs!=rhs)
+        SG_UNREF(rhs);
+
     //increase reference counts
     SG_REF(l);
     if (l!=r)

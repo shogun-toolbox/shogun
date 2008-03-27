@@ -107,7 +107,12 @@ class CLinearClassifier : public CClassifier
 		 *
 		 * @param feat features to set
 		 */
-		virtual inline void set_features(CRealFeatures* feat) { SG_REF(feat); features=feat; }
+		virtual inline void set_features(CRealFeatures* feat)
+		{
+			SG_REF(features);
+			SG_REF(feat);
+			features=feat;
+		}
 
 		/** get features
 		 *

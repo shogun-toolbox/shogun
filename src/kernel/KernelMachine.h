@@ -35,6 +35,7 @@ class CKernelMachine : public CClassifier
 		 */
 		inline void set_kernel(CKernel* k)
 		{
+			SG_UNREF(kernel);
 			SG_REF(k);
 			kernel=k;
 		}

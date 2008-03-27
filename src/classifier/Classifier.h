@@ -68,7 +68,12 @@ class CClassifier : public CSGObject
 		 *
 		 * @param lab labels
 		 */
-		virtual inline void set_labels(CLabels* lab) { SG_REF(lab); labels=lab; }
+		virtual inline void set_labels(CLabels* lab)
+		{
+			SG_UNREF(labels);
+			SG_REF(lab);
+			labels=lab;
+		}
 
 		/** get labels
 		 *
