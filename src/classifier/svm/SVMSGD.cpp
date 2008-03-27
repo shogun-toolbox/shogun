@@ -119,8 +119,6 @@ CSVMSGD::~CSVMSGD()
 {
 	delete[] w;
 	w=NULL;
-
-	SG_UNREF(features);
 }
 
 bool CSVMSGD::train()
