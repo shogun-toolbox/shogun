@@ -118,6 +118,9 @@ CWeightedDegreePositionStringKernel::~CWeightedDegreePositionStringKernel()
 	delete[] weights ;
 	weights=NULL ;
 
+	delete[] block_weights ;
+	block_weights=NULL ;
+
 	delete[] position_weights ;
 	position_weights=NULL ;
 
@@ -229,6 +232,9 @@ void CWeightedDegreePositionStringKernel::cleanup()
 {
 	SG_DEBUG( "deleting CWeightedDegreePositionStringKernel optimization\n");
 	delete_optimization();
+
+	delete[] block_weights;
+	block_weights=NULL;
 
 	tries.destroy() ;
 	poim_tries.destroy() ;

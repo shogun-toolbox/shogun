@@ -99,6 +99,9 @@ CWeightedDegreeStringKernel::~CWeightedDegreeStringKernel()
 	delete[] weights;
 	weights=NULL;
 
+	delete[] block_weights ;
+	block_weights=NULL ;
+
 	delete[] position_weights ;
 	position_weights=NULL ;
 
