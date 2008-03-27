@@ -36,7 +36,7 @@ CLDA::~CLDA()
 bool CLDA::train()
 {
 	ASSERT(labels);
-	ASSERT(get_features());
+	ASSERT(features);
 	INT num_train_labels=0;
 	INT* train_labels=labels->get_int_labels(num_train_labels);
 	ASSERT(train_labels);

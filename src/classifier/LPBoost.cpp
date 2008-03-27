@@ -44,7 +44,7 @@ bool CLPBoost::init(INT num_vec)
 
 	dim=new CDynamicArray<INT>(100000);
 
-	sfeat= get_features()->get_transposed(num_sfeat, num_svec);
+	sfeat= features->get_transposed(num_sfeat, num_svec);
 
 	if (sfeat)
 		return true;
@@ -57,7 +57,7 @@ void CLPBoost::cleanup()
 	delete[] u;
 	u=NULL;
 
-	get_features()->clean_tsparse(sfeat, num_svec);
+	features->clean_tsparse(sfeat, num_svec);
 	sfeat=NULL;
 
 	delete dim;
@@ -102,7 +102,7 @@ DREAL CLPBoost::find_max_violator(INT& max_dim)
 bool CLPBoost::train()
 {
 	ASSERT(labels);
-	ASSERT(get_features());
+	ASSERT(features);
 	INT num_train_labels=labels->get_num_labels();
 	INT num_feat=features->get_num_features();
 	INT num_vec=features->get_num_vectors();

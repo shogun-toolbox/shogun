@@ -39,11 +39,10 @@ CKMeans::~CKMeans()
 
 bool CKMeans::train()
 {
-	ASSERT(CDistanceMachine::get_distance());
-	ASSERT(get_distance());
-	ASSERT(get_distance()->get_feature_type() == F_DREAL);
-	ASSERT(get_distance()->get_distance_type() == D_EUCLIDIAN);
-	CRealFeatures* lhs = (CRealFeatures*) get_distance()->get_lhs();
+	ASSERT(distance);
+	ASSERT(distance->get_feature_type() == F_DREAL);
+	ASSERT(distance->get_distance_type() == D_EUCLIDIAN);
+	CRealFeatures* lhs = (CRealFeatures*) distance->get_lhs();
 	ASSERT(lhs);
 	INT num=lhs->get_num_vectors();
 
@@ -155,8 +154,8 @@ void CKMeans::sqdist(double * x, CRealFeatures* y, double *z,
 
 void CKMeans::clustknb(bool use_old_mus, double *mus_start)
 {
-	ASSERT(get_distance() && get_distance()->get_feature_type() == F_DREAL);
-	CRealFeatures* lhs = (CRealFeatures*) get_distance()->get_lhs();
+	ASSERT(distance && distance->get_feature_type() == F_DREAL);
+	CRealFeatures* lhs = (CRealFeatures*) distance->get_lhs();
 	ASSERT(lhs && lhs->get_num_features()>0 && lhs->get_num_vectors()>0);
 	
 	int XSize=lhs->get_num_vectors();

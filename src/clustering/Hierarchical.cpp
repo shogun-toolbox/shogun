@@ -36,10 +36,8 @@ CHierarchical::~CHierarchical()
 
 bool CHierarchical::train()
 {
-	CDistance* d=CDistanceMachine::get_distance();
-	ASSERT(d);
-
-	CFeatures* lhs = d->get_lhs();
+	ASSERT(distance);
+	CFeatures* lhs = distance->get_lhs();
 	ASSERT(lhs);
 
 	INT num=lhs->get_num_vectors();
@@ -69,7 +67,7 @@ bool CHierarchical::train()
 	{
 		for (INT j=i+1; j<num; j++)
 		{
-			distances[offs]=d->distance(i,j);
+			distances[offs]=distance->distance(i,j);
 			index[offs].idx1=i;
 			index[offs].idx2=j;
 			offs++;					//offs=i*(i+1)/2+j

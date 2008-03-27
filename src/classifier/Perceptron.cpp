@@ -30,7 +30,7 @@ CPerceptron::~CPerceptron()
 bool CPerceptron::train()
 {
 	ASSERT(labels);
-	ASSERT(get_features());
+	ASSERT(features);
 	bool converged=false;
 	INT iter=0;
 	INT num_train_labels=0;
