@@ -86,17 +86,15 @@ CLabels* CMultiClassSVM::classify_one_vs_one(CLabels* result)
 	ASSERT(m_num_svms==m_num_classes*(m_num_classes-1)/2);
 
 
-	if (!CKernelMachine::get_kernel())
+	if (!kernel)
 	{
 		SG_ERROR( "SVM can not proceed without kernel!\n");
 		return false ;
 	}
 
-	if ( (CKernelMachine::get_kernel()) &&
-		 (CKernelMachine::get_kernel())->get_rhs() &&
-		 (CKernelMachine::get_kernel())->get_rhs()->get_num_vectors())
+	if ( kernel && kernel->get_rhs() && kernel->get_rhs()->get_num_vectors())
 	{
-		INT num_vectors=get_kernel()->get_rhs()->get_num_vectors();
+		INT num_vectors=kernel->get_rhs()->get_num_vectors();
 
 		if (!result)
 			result=new CLabels(num_vectors);
@@ -111,7 +109,7 @@ CLabels* CMultiClassSVM::classify_one_vs_one(CLabels* result)
 		{
 			SG_INFO("num_svms:%d svm[%d]=0x%0X\n", m_num_svms, i, m_svms[i]);
 			ASSERT(m_svms[i]);
-			m_svms[i]->set_kernel(get_kernel());
+			m_svms[i]->set_kernel(kernel);
 			m_svms[i]->set_labels(labels);
 			outputs[i]=m_svms[i]->classify();
 		}
@@ -162,17 +160,15 @@ CLabels* CMultiClassSVM::classify_one_vs_rest(CLabels* result)
 {
 	ASSERT(m_num_svms>0);
 
-	if (!CKernelMachine::get_kernel())
+	if (!kernel)
 	{
 		SG_ERROR( "SVM can not proceed without kernel!\n");
 		return false ;
 	}
 
-	if ( (CKernelMachine::get_kernel()) &&
-		 (CKernelMachine::get_kernel())->get_rhs() &&
-		 (CKernelMachine::get_kernel())->get_rhs()->get_num_vectors())
+	if ( kernel && kernel->get_rhs() && kernel->get_rhs()->get_num_vectors())
 	{
-		INT num_vectors=get_kernel()->get_rhs()->get_num_vectors();
+		INT num_vectors=kernel->get_rhs()->get_num_vectors();
 
 		if (!result)
 			result=new CLabels(num_vectors);
@@ -186,7 +182,7 @@ CLabels* CMultiClassSVM::classify_one_vs_rest(CLabels* result)
 		for (INT i=0; i<m_num_svms; i++)
 		{
 			ASSERT(m_svms[i]);
-			m_svms[i]->set_kernel(get_kernel());
+			m_svms[i]->set_kernel(kernel);
 			m_svms[i]->set_labels(get_labels());
 			outputs[i]=m_svms[i]->classify();
 		}

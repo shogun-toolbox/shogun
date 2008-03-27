@@ -41,12 +41,12 @@ bool CKRR::train()
   delete[] alpha;
   
   ASSERT(labels);
-  ASSERT(get_kernel() && get_kernel()->get_lhs());
+  ASSERT(kernel && kernel->get_lhs());
 
   // Get kernel matrix
   INT m = 0;
   INT n = 0;
-  DREAL *K = get_kernel()->get_kernel_matrix_real(m, n, NULL);
+  DREAL *K = kernel->get_kernel_matrix_real(m, n, NULL);
   ASSERT(K && m > 0 && n > 0);
   
   for(int i = 0; i < n; i++)
@@ -79,12 +79,12 @@ CLabels* CKRR::classify(CLabels* output)
   if (labels)
 	{
 	  ASSERT(output == NULL);
-	  ASSERT(CKernelMachine::get_kernel());
+	  ASSERT(kernel);
 
 	  // Get kernel matrix
 	  INT m = 0;
 	  INT n = 0;
-	  DREAL *K = get_kernel()->get_kernel_matrix_real(m, n, NULL);
+	  DREAL *K = kernel->get_kernel_matrix_real(m, n, NULL);
 	  ASSERT(K && m > 0 && n > 0);
 	  DREAL *Yh = new DREAL[n];
 
@@ -107,13 +107,13 @@ CLabels* CKRR::classify(CLabels* output)
 
 DREAL CKRR::classify_example(INT num)
 {
-  ASSERT(CKernelMachine::get_kernel());
+  ASSERT(kernel);
 
   // Get kernel matrix
   INT m = 0;
   INT n = 0;
   // TODO: use get_kernel_column instead of computing the whole matrix!
-  DREAL *K = get_kernel()->get_kernel_matrix_real(m, n, NULL);
+  DREAL *K = kernel->get_kernel_matrix_real(m, n, NULL);
   ASSERT(K && m > 0 && n > 0);
   DREAL Yh;
   

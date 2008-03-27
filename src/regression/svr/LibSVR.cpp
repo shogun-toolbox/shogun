@@ -60,7 +60,7 @@ bool CLibSVR::train()
 	int weights_label[2]={-1,+1};
 	double weights[2]={1.0,get_C2()/get_C1()};
 
-	ASSERT(get_kernel());
+	ASSERT(kernel);
 
 	param.svm_type=EPSILON_SVR; // epsilon SVR
 	param.kernel_type = LINEAR;
@@ -68,8 +68,8 @@ bool CLibSVR::train()
 	param.gamma = 0;	// 1/k
 	param.coef0 = 0;
 	param.nu = 0.5;
-	param.kernel=get_kernel();
-	param.cache_size = get_kernel()->get_cache_size();
+	param.kernel=kernel;
+	param.cache_size = kernel->get_cache_size();
 	param.C = get_C1();
 	param.eps = epsilon;
 	param.p = tube_epsilon;

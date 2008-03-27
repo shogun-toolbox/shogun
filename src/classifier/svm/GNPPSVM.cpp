@@ -47,7 +47,7 @@ bool CGNPPSVM::train()
 			SG_ERROR("label unknown (%f)\n", get_labels()->get_label(i));
 	}
 
-	ASSERT(get_kernel());
+	ASSERT(kernel);
 
 	DREAL C = get_C1();
 	INT tmax = 1000000000;
@@ -62,7 +62,7 @@ bool CGNPPSVM::train()
 	ASSERT(diagK);
 
 	for(INT i = 0; i < num_data; i++ ) {
-		diagK[i] = 2*get_kernel()->kernel(i,i) + reg_const;
+		diagK[i] = 2*kernel->kernel(i,i) + reg_const;
 	}
 
 	DREAL* alpha = new DREAL[num_data];
@@ -78,7 +78,7 @@ bool CGNPPSVM::train()
 	INT verb = 0;
 	DREAL aHa11, aHa22;
 
-	CGNPPLib npp(vector_y,get_kernel(),num_data, reg_const);
+	CGNPPLib npp(vector_y,kernel,num_data, reg_const);
 
 	npp.gnpp_imdm(diagK, vector_c, vector_y, num_data, 
 			tmax, tolabs, tolrel, thlb, alpha, &t, &aHa11, &aHa22, 

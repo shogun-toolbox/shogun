@@ -94,36 +94,36 @@ bool CSVRLight::train()
 	learn_parm->rho=1.0;
 	learn_parm->xa_depth=0;
 
-	if (!CKernelMachine::get_kernel())
+	if (!kernel)
 	{
-		SG_ERROR( "SVM_light can not proceed without kernel!\n");
+		SG_ERROR( "SVR_light can not proceed without kernel!\n");
 		return false ;
 	}
 
 	if (weight_epsilon<=0)
 		weight_epsilon=1e-2 ;
-	if (get_kernel()->has_property(KP_LINADD) && get_linadd_enabled())
-		get_kernel()->clear_normal();
+	if (kernel->has_property(KP_LINADD) && get_linadd_enabled())
+		kernel->clear_normal();
 
 	// output some info
 	SG_DEBUG( "qpsize = %i\n", learn_parm->svm_maxqpsize) ;
 	SG_DEBUG( "epsilon = %1.1e\n", learn_parm->epsilon_crit) ;
 	SG_DEBUG( "weight_epsilon = %1.1e\n", weight_epsilon) ;
 	SG_DEBUG( "C_mkl = %1.1e\n", C_mkl) ;
-	SG_DEBUG( "get_kernel()->has_property(KP_LINADD) = %i\n", get_kernel()->has_property(KP_LINADD)) ;
-	SG_DEBUG( "get_kernel()->has_property(KP_KERNCOMBINATION) = %i\n", get_kernel()->has_property(KP_KERNCOMBINATION)) ;
+	SG_DEBUG( "kernel->has_property(KP_LINADD) = %i\n", kernel->has_property(KP_LINADD)) ;
+	SG_DEBUG( "kernel->has_property(KP_KERNCOMBINATION) = %i\n", kernel->has_property(KP_KERNCOMBINATION)) ;
 	SG_DEBUG( "get_mkl_enabled() = %i\n", get_mkl_enabled()) ;
 	SG_DEBUG( "get_linadd_enabled() = %i\n", get_linadd_enabled()) ;
-	SG_DEBUG( "get_kernel()->get_num_subkernels() = %i\n", get_kernel()->get_num_subkernels()) ;
-	SG_DEBUG( "estimated time: %1.1f minutes\n", 5e-11*pow(get_kernel()->get_num_subkernels(),2.22)*pow(get_kernel()->get_rhs()->get_num_vectors(),1.68)*pow(CMath::log2(1/weight_epsilon),2.52)/60) ;
+	SG_DEBUG( "kernel->get_num_subkernels() = %i\n", kernel->get_num_subkernels()) ;
+	SG_DEBUG( "estimated time: %1.1f minutes\n", 5e-11*pow(kernel->get_num_subkernels(),2.22)*pow(kernel->get_rhs()->get_num_vectors(),1.68)*pow(CMath::log2(1/weight_epsilon),2.52)/60) ;
 
-	use_kernel_cache = !(use_precomputed_subkernels || (get_kernel()->get_kernel_type() == K_CUSTOM) ||
-						 (get_linadd_enabled() && get_kernel()->has_property(KP_LINADD)) ||
-						 get_kernel()->get_precompute_matrix() || 
-						 get_kernel()->get_precompute_subkernel_matrix()) ;
+	use_kernel_cache = !(use_precomputed_subkernels || (kernel->get_kernel_type() == K_CUSTOM) ||
+						 (get_linadd_enabled() && kernel->has_property(KP_LINADD)) ||
+						 kernel->get_precompute_matrix() || 
+						 kernel->get_precompute_subkernel_matrix()) ;
 
-	SG_DEBUG( "get_kernel()->get_precompute_matrix() = %i\n", get_kernel()->get_precompute_matrix()) ;
-	SG_DEBUG( "get_kernel()->get_precompute_subkernel_matrix() = %i\n", get_kernel()->get_precompute_subkernel_matrix()) ;
+	SG_DEBUG( "kernel->get_precompute_matrix() = %i\n", kernel->get_precompute_matrix()) ;
+	SG_DEBUG( "kernel->get_precompute_subkernel_matrix() = %i\n", kernel->get_precompute_subkernel_matrix()) ;
 	SG_DEBUG( "use_kernel_cache = %i\n", use_kernel_cache) ;
 
 #ifdef USE_CPLEX
@@ -147,13 +147,12 @@ bool CSVRLight::train()
 
 	if (use_precomputed_subkernels)
 	{
-		INT num = get_kernel()->get_rhs()->get_num_vectors() ;
-		INT num_kernels = get_kernel()->get_num_subkernels() ;
+		INT num = kernel->get_rhs()->get_num_vectors() ;
+		INT num_kernels = kernel->get_num_subkernels() ;
 		num_precomputed_subkernels=num_kernels ;
 		precomputed_subkernels=new SHORTREAL*[num_precomputed_subkernels] ;
-		CKernel* k = get_kernel() ;
 		INT num_weights = -1;
-		const DREAL* w   = k->get_subkernel_weights(num_weights);
+		const DREAL* w   = kernel->get_subkernel_weights(num_weights);
 
 		DREAL* w_backup = new DREAL[num_kernels] ;
 		DREAL* w1 = new DREAL[num_kernels] ;
@@ -175,7 +174,7 @@ bool CSVRLight::train()
 		for (INT n=0; n<num_precomputed_subkernels; n++)
 		{
 			w1[n]=1.0 ;
-			k->set_subkernel_weights(w1, num_weights) ;
+			kernel->set_subkernel_weights(w1, num_weights) ;
 
 			SHORTREAL * matrix = precomputed_subkernels[n] ;
 			
@@ -185,7 +184,7 @@ bool CSVRLight::train()
 				SG_PROGRESS(i*i,0,num*num);
 				
 				for (INT j=0; j<=i; j++)
-					matrix[i*(i+1)/2+j] = k->kernel(i,j) ;
+					matrix[i*(i+1)/2+j] = kernel->kernel(i,j) ;
 
 			}
 			SG_PROGRESS(num*num,0,num*num);
@@ -194,7 +193,7 @@ bool CSVRLight::train()
 		}
 
 		// restore old weights
-		k->set_subkernel_weights(w_backup,num_weights) ;
+		kernel->set_subkernel_weights(w_backup,num_weights) ;
 		
 		delete[] w_backup ;
 		delete[] w1 ;
@@ -226,8 +225,8 @@ bool CSVRLight::train()
 		precomputed_subkernels=NULL ;
 	}
 
-	if (get_kernel()->has_property(KP_LINADD) && get_linadd_enabled())
-		get_kernel()->clear_normal() ;
+	if (kernel->has_property(KP_LINADD) && get_linadd_enabled())
+		kernel->clear_normal() ;
 
 	return true ;
 }
@@ -272,18 +271,18 @@ void CSVRLight::svr_learn()
   buffer_numcols = NULL;
 
   //prepare kernel cache for regression (i.e. cachelines are twice of current size)
-  get_kernel()->resize_kernel_cache( get_kernel()->get_cache_size(), true);
+  kernel->resize_kernel_cache( kernel->get_cache_size(), true);
 
-  if ( get_kernel()->has_property(KP_KERNCOMBINATION) && get_mkl_enabled() &&
-		  (!((CCombinedKernel*)get_kernel())->get_append_subkernel_weights()) 
+  if ( kernel->has_property(KP_KERNCOMBINATION) && get_mkl_enabled() &&
+		  (!((CCombinedKernel*)kernel)->get_append_subkernel_weights()) 
 	 )
   {
-	  CCombinedKernel* k      = (CCombinedKernel*) get_kernel();
+	  CCombinedKernel* k      = (CCombinedKernel*) kernel;
 	  CKernel* kn = k->get_first_kernel();
 
 	  while (kn)
 	  {
-		  kn->resize_kernel_cache( get_kernel()->get_cache_size(), true);
+		  kn->resize_kernel_cache( kernel->get_cache_size(), true);
 		  kn = k->get_next_kernel(kn) ;
 	  }
   }
@@ -304,10 +303,10 @@ void CSVRLight::svr_learn()
 	count = 0 ;
 	num_rows=0 ;
 
-	if (get_kernel()->has_property(KP_KERNCOMBINATION))
+	if (kernel->has_property(KP_KERNCOMBINATION))
 	{
-		W = new DREAL[totdoc*get_kernel()->get_num_subkernels()];
-		for (i=0; i<totdoc*get_kernel()->get_num_subkernels(); i++)
+		W = new DREAL[totdoc*kernel->get_num_subkernels()];
+		for (i=0; i<totdoc*kernel->get_num_subkernels(); i++)
 			W[i]=0;
 	}
 
@@ -339,7 +338,7 @@ void CSVRLight::svr_learn()
 	model->alpha[0]=0;
 	model->totdoc=totdoc;
 
-	model->kernel=CKernelMachine::get_kernel();
+	model->kernel=kernel;
 
 	model->sv_num=1;
 	model->loo_error=-1;
@@ -439,7 +438,7 @@ double CSVRLight::compute_objective_function(double *a, double *lin, double *c,
   {
 	  check+=a[i]*eps-a[i]*label[i]*c[i];
 	  for(INT j=0;j<totdoc;j++)
-		  check+= 0.5*a[i]*label[i]*a[j]*label[j]*get_kernel()->kernel(regression_fix_index(i),regression_fix_index(j));
+		  check+= 0.5*a[i]*label[i]*a[j]*label[j]*kernel->kernel(regression_fix_index(i),regression_fix_index(j));
 
   }
 
@@ -457,8 +456,8 @@ void CSVRLight::update_linear_component_mkl(INT* docs, INT* label,
 {
 	INT num         = totdoc;
 	INT num_weights = -1;
-	INT num_kernels = get_kernel()->get_num_subkernels() ;
-	const DREAL* w  = get_kernel()->get_subkernel_weights(num_weights);
+	INT num_kernels = kernel->get_num_subkernels() ;
+	const DREAL* w  = kernel->get_subkernel_weights(num_weights);
 
 	ASSERT(num_weights==num_kernels) ;
 	DREAL* sumw = new DREAL[num_kernels];
@@ -489,10 +488,10 @@ void CSVRLight::update_linear_component_mkl(INT* docs, INT* label,
 			}
 		}
 	} 
-	else if ((get_kernel()->get_kernel_type()==K_COMBINED) && 
-			 (!((CCombinedKernel*)get_kernel())->get_append_subkernel_weights()))// for combined kernel
+	else if ((kernel->get_kernel_type()==K_COMBINED) && 
+			 (!((CCombinedKernel*)kernel)->get_append_subkernel_weights()))// for combined kernel
 	{
-		CCombinedKernel* k      = (CCombinedKernel*) get_kernel();
+		CCombinedKernel* k      = (CCombinedKernel*) kernel;
 		CKernel* kn = k->get_first_kernel() ;
 		INT n = 0, i, j ;
 		
@@ -513,8 +512,6 @@ void CSVRLight::update_linear_component_mkl(INT* docs, INT* label,
 	}
 	else // hope the kernel is fast ...
 	{
-		CKernel* k= get_kernel();
-
 		DREAL* w_backup = new DREAL[num_kernels] ;
 		DREAL* w1 = new DREAL[num_kernels] ;
 		
@@ -527,21 +524,21 @@ void CSVRLight::update_linear_component_mkl(INT* docs, INT* label,
 		for (INT n=0; n<num_kernels; n++)
 		{
 			w1[n]=1.0 ;
-			k->set_subkernel_weights(w1, num_weights) ;
+			kernel->set_subkernel_weights(w1, num_weights) ;
 		
 			for(INT i=0;i<num;i++) 
 			{
 				if(a[i] != a_old[i]) 
 				{
 					for(INT j=0;j<num;j++) 
-						W[j*num_kernels+n]+=(a[i]-a_old[i])*k->kernel(regression_fix_index(i),regression_fix_index(j))*(double)label[i];
+						W[j*num_kernels+n]+=(a[i]-a_old[i])*kernel->kernel(regression_fix_index(i),regression_fix_index(j))*(double)label[i];
 				}
 			}
 			w1[n]=0.0 ;
 		}
 
 		// restore old weights
-		k->set_subkernel_weights(w_backup,num_weights) ;
+		kernel->set_subkernel_weights(w_backup,num_weights) ;
 		
 		delete[] w_backup ;
 		delete[] w1 ;
@@ -778,7 +775,7 @@ void CSVRLight::update_linear_component_mkl(INT* docs, INT* label,
 				}
 
 				// set weights, store new rho and compute new w gap
-				get_kernel()->set_subkernel_weights(x, num_kernels) ;
+				kernel->set_subkernel_weights(x, num_kernels) ;
 				rho = -x[2*num_kernels] ;
 				w_gap = CMath::abs(1-rho/mkl_objective) ;
 				
@@ -791,7 +788,7 @@ void CSVRLight::update_linear_component_mkl(INT* docs, INT* label,
 	}
 #endif
 	
-	const DREAL* w_new   = get_kernel()->get_subkernel_weights(num_weights);
+	const DREAL* w_new   = kernel->get_subkernel_weights(num_weights);
 	// update lin
 #ifdef HAVE_LAPACK
 	cblas_dgemv(CblasColMajor,
@@ -830,11 +827,10 @@ void CSVRLight::update_linear_component_mkl_linadd(INT* docs, INT* label,
 {
 	// kernel with LP_LINADD property is assumed to have 
 	// compute_by_subkernel functions
-	CKernel* k      = get_kernel();
 	INT num         = totdoc;
 	INT num_weights = -1;
-	INT num_kernels = k->get_num_subkernels() ;
-	const DREAL* w   = k->get_subkernel_weights(num_weights);
+	INT num_kernels = kernel->get_num_subkernels() ;
+	const DREAL* w   = kernel->get_subkernel_weights(num_weights);
 	
 	ASSERT(num_weights==num_kernels) ;
 	DREAL* sumw = new DREAL[num_kernels];
@@ -849,22 +845,22 @@ void CSVRLight::update_linear_component_mkl_linadd(INT* docs, INT* label,
 			w1[i]=1.0 ; 
 		}
 		// set the kernel weights
-		k->set_subkernel_weights(w1, num_weights) ;
+		kernel->set_subkernel_weights(w1, num_weights) ;
 		
 		// create normal update (with changed alphas only)
-		k->clear_normal();
+		kernel->clear_normal();
 		for(INT ii=0, i=0;(i=working2dnum[ii])>=0;ii++) {
 			if(a[i] != a_old[i]) {
-				k->add_to_normal(regression_fix_index(docs[i]), (a[i]-a_old[i])*(double)label[i]);
+				kernel->add_to_normal(regression_fix_index(docs[i]), (a[i]-a_old[i])*(double)label[i]);
 			}
 		}
 		
 		// determine contributions of different kernels
 		for (int i=0; i<num; i++)
-			k->compute_by_subkernel(i,&W[i*num_kernels]) ;
+			kernel->compute_by_subkernel(i,&W[i*num_kernels]) ;
 
 		// restore old weights
-		k->set_subkernel_weights(w_backup,num_weights) ;
+		kernel->set_subkernel_weights(w_backup,num_weights) ;
 		
 		delete[] w_backup ;
 		delete[] w1 ;
@@ -1093,7 +1089,7 @@ void CSVRLight::update_linear_component_mkl_linadd(INT* docs, INT* label,
 				}
 
 				// set weights, store new rho and compute new w gap
-				k->set_subkernel_weights(x, num_kernels) ;
+				kernel->set_subkernel_weights(x, num_kernels) ;
 				rho = -x[2*num_kernels] ;
 				w_gap = CMath::abs(1-rho/mkl_objective) ;
 				
@@ -1162,21 +1158,21 @@ void CSVRLight::update_linear_component(INT* docs, INT* label,
 {
 	register INT i=0,ii=0,j=0,jj=0;
 
-	if (get_kernel()->has_property(KP_LINADD) && get_linadd_enabled()) 
+	if (kernel->has_property(KP_LINADD) && get_linadd_enabled()) 
 	{
-		if (get_kernel()->has_property(KP_KERNCOMBINATION) && get_mkl_enabled() ) 
+		if (kernel->has_property(KP_KERNCOMBINATION) && get_mkl_enabled() ) 
 		{
 			update_linear_component_mkl_linadd(docs, label, active2dnum, a, a_old, working2dnum, 
 											   totdoc,	lin, aicache, c) ;
 		}
 		else
 		{
-			get_kernel()->clear_normal();
+			kernel->clear_normal();
 
 			INT num_working=0;
 			for(ii=0;(i=working2dnum[ii])>=0;ii++) {
 				if(a[i] != a_old[i]) {
-					get_kernel()->add_to_normal(regression_fix_index(docs[i]), (a[i]-a_old[i])*(double)label[i]);
+					kernel->add_to_normal(regression_fix_index(docs[i]), (a[i]-a_old[i])*(double)label[i]);
 					num_working++;
 				}
 			}
@@ -1186,7 +1182,7 @@ void CSVRLight::update_linear_component(INT* docs, INT* label,
 				if (parallel.get_num_threads() < 2)
 				{
 					for(jj=0;(j=active2dnum[jj])>=0;jj++) {
-						lin[j]+=get_kernel()->compute_optimized(regression_fix_index(docs[j]));
+						lin[j]+=kernel->compute_optimized(regression_fix_index(docs[j]));
 					}
 				}
 #ifndef WIN32
@@ -1203,7 +1199,7 @@ void CSVRLight::update_linear_component(INT* docs, INT* label,
 
 					for (INT t=0; t<parallel.get_num_threads()-1; t++)
 					{
-						params[t].kernel = get_kernel() ;
+						params[t].kernel = kernel ;
 						params[t].lin = lin ;
 						params[t].docs = docs ;
 						params[t].active2dnum=active2dnum ;
@@ -1217,7 +1213,7 @@ void CSVRLight::update_linear_component(INT* docs, INT* label,
 					}
 
 					for(jj=params[parallel.get_num_threads()-2].end;(j=active2dnum[jj])>=0;jj++) {
-						lin[j]+=get_kernel()->compute_optimized(regression_fix_index(docs[j]));
+						lin[j]+=kernel->compute_optimized(regression_fix_index(docs[j]));
 					}
 					void* ret;
 					for (INT t=0; t<parallel.get_num_threads()-1; t++)
@@ -1229,7 +1225,7 @@ void CSVRLight::update_linear_component(INT* docs, INT* label,
 	}
 	else 
 	{
-		if (get_kernel()->has_property(KP_KERNCOMBINATION) && get_mkl_enabled() ) 
+		if (kernel->has_property(KP_KERNCOMBINATION) && get_mkl_enabled() ) 
 		{
 			update_linear_component_mkl(docs, label, active2dnum, a, a_old, working2dnum, 
 										totdoc,	lin, aicache, c) ;
@@ -1237,7 +1233,7 @@ void CSVRLight::update_linear_component(INT* docs, INT* label,
 		else {
 			for(jj=0;(i=working2dnum[jj])>=0;jj++) {
 				if(a[i] != a_old[i]) {
-					CKernelMachine::get_kernel()->get_kernel_row(i,active2dnum,aicache);
+					kernel->get_kernel_row(i,active2dnum,aicache);
 					for(ii=0;(j=active2dnum[ii])>=0;ii++)
 						lin[j]+=(a[i]-a_old[i])*aicache[j]*(double)label[i];
 				}
@@ -1267,14 +1263,14 @@ void CSVRLight::reactivate_inactive_examples(INT* label,
   register double *a_old,dist;
   double ex_c,target;
 
-  if (get_kernel()->has_property(KP_LINADD) && get_linadd_enabled()) { /* special linear case */
+  if (kernel->has_property(KP_LINADD) && get_linadd_enabled()) { /* special linear case */
 	  a_old=shrink_state->last_a;    
 
-	  get_kernel()->clear_normal();
+	  kernel->clear_normal();
 	  INT num_modified=0;
 	  for(i=0;i<totdoc;i++) {
 		  if(a[i] != a_old[i]) {
-			  get_kernel()->add_to_normal(regression_fix_index(docs[i]), ((a[i]-a_old[i])*(double)label[i]));
+			  kernel->add_to_normal(regression_fix_index(docs[i]), ((a[i]-a_old[i])*(double)label[i]));
 			  a_old[i]=a[i];
 			  num_modified++;
 		  }
@@ -1284,7 +1280,7 @@ void CSVRLight::reactivate_inactive_examples(INT* label,
 	  {
 		  for(i=0;i<totdoc;i++) {
 			  if(!shrink_state->active[i]) {
-				  lin[i]=shrink_state->last_lin[i]+get_kernel()->compute_optimized(regression_fix_index(docs[i]));
+				  lin[i]=shrink_state->last_lin[i]+kernel->compute_optimized(regression_fix_index(docs[i]));
 			  }
 			  shrink_state->last_lin[i]=lin[i];
 		  }
@@ -1310,7 +1306,7 @@ void CSVRLight::reactivate_inactive_examples(INT* label,
 		  compute_index(changed,totdoc,changed2dnum);
 
 		  for(ii=0;(i=changed2dnum[ii])>=0;ii++) {
-			  CKernelMachine::get_kernel()->get_kernel_row(i,inactive2dnum,aicache);
+			  CKernelMachine::kernel->get_kernel_row(i,inactive2dnum,aicache);
 			  for(jj=0;(j=inactive2dnum[jj])>=0;jj++)
 				  lin[j]+=(a[i]-a_old[i])*aicache[j]*(double)label[i];
 		  }

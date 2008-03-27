@@ -591,15 +591,15 @@ protected:
 				   CMath::swap(i,j) ;
 			   DREAL sum=0 ;
 			   INT num_weights=-1 ;
-			   //INT num = get_kernel()->get_rhs()->get_num_vectors() ;
-			   const DREAL * w = CKernelMachine::get_kernel()->get_subkernel_weights(num_weights) ;
+			   //INT num = kernel->get_rhs()->get_num_vectors() ;
+			   const DREAL * w = kernel->get_subkernel_weights(num_weights) ;
 			   for (INT n=0; n<num_precomputed_subkernels; n++)
 				   if (w[n]!=0)
 					   sum += w[n]*precomputed_subkernels[n][i*(i+1)/2+j] ;
 			   return sum ;
 		   }
 		   else
-			   return CKernelMachine::get_kernel()->kernel(i, j) ;
+			   return kernel->kernel(i, j) ;
 	   }
 
 	/** helper for compute kernel

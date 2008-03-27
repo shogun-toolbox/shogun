@@ -200,7 +200,7 @@ bool CSVM::save(FILE* modelfl)
 	SG_INFO( "Writing model file...");
 	fprintf(modelfl,"%%SVM\n");
 	fprintf(modelfl,"numsv=%d;\n", get_num_support_vectors());
-	fprintf(modelfl,"kernel='%s';\n", CKernelMachine::get_kernel()->get_name());
+	fprintf(modelfl,"kernel='%s';\n", kernel->get_name());
 	fprintf(modelfl,"b=%+10.16e;\n",get_bias());
 
 	fprintf(modelfl, "alphas=\[\n");
@@ -219,7 +219,7 @@ bool CSVM::init_kernel_optimization()
 {
 	INT num_sv=get_num_support_vectors();
 
-	if (get_kernel() && get_kernel()->has_property(KP_LINADD) && num_sv>0)
+	if (kernel && kernel->has_property(KP_LINADD) && num_sv>0)
 	{
 		INT * sv_idx    = new INT[num_sv] ;
 		DREAL* sv_weight = new DREAL[num_sv] ;
@@ -276,17 +276,15 @@ void* CSVM::classify_example_helper(void* p)
 
 CLabels* CSVM::classify(CLabels* result)
 {
-	if (!CKernelMachine::get_kernel())
+	if (!kernel)
 	{
 		SG_ERROR( "SVM can not proceed without kernel!\n");
 		return false ;
 	}
 
-	if ( (CKernelMachine::get_kernel()) &&
-		 (CKernelMachine::get_kernel())->get_rhs() &&
-		 (CKernelMachine::get_kernel())->get_rhs()->get_num_vectors())
+	if ( kernel && kernel->get_rhs() && kernel->get_rhs()->get_num_vectors())
 	{
-		INT num_vectors=get_kernel()->get_rhs()->get_num_vectors();
+		INT num_vectors=kernel->get_rhs()->get_num_vectors();
 
 		if (!result)
 			result=new CLabels(num_vectors);
@@ -294,7 +292,7 @@ CLabels* CSVM::classify(CLabels* result)
 		ASSERT(result);
 		SG_DEBUG( "computing output on %d test examples\n", num_vectors);
 
-		if (CKernelMachine::get_kernel()->has_property(KP_BATCHEVALUATION) &&
+		if (kernel->has_property(KP_BATCHEVALUATION) &&
 				get_batch_computation_enabled())
 		{
 			ASSERT(get_num_support_vectors()>0);
@@ -320,7 +318,7 @@ CLabels* CSVM::classify(CLabels* result)
 				sv_weight[i] = get_alpha(i) ;
 			}
 
-			CKernelMachine::get_kernel()->compute_batch(num_vectors, idx,
+			kernel->compute_batch(num_vectors, idx,
 					output, get_num_support_vectors(), sv_idx, sv_weight);
 
 			for (INT i=0; i<num_vectors; i++)
@@ -394,19 +392,18 @@ CLabels* CSVM::classify(CLabels* result)
 
 DREAL CSVM::classify_example(INT num)
 {
-	ASSERT(CKernelMachine::get_kernel());
+	ASSERT(kernel);
 
-	if (CKernelMachine::get_kernel()->has_property(KP_LINADD) &&
-			(CKernelMachine::get_kernel()->get_is_initialized()))
+	if (kernel->has_property(KP_LINADD) && (kernel->get_is_initialized()))
 	{
-		DREAL dist = CKernelMachine::get_kernel()->compute_optimized(num);
+		DREAL dist = kernel->compute_optimized(num);
 		return (dist+get_bias());
 	}
 	else
 	{
 		DREAL dist=0;
 		for(INT i=0; i<get_num_support_vectors(); i++)
-			dist+=get_kernel()->kernel(get_support_vector(i), num)*get_alpha(i);
+			dist+=kernel->kernel(get_support_vector(i), num)*get_alpha(i);
 
 		return (dist+get_bias());
 	}
@@ -416,16 +413,15 @@ DREAL CSVM::classify_example(INT num)
 DREAL CSVM::compute_objective()
 {
 	INT n=get_num_support_vectors();
-	CKernel* k=CKernelMachine::get_kernel();
 
-	if (labels && k)
+	if (labels && kernel)
 	{
 		objective=0;
 		for (int i=0; i<n; i++)
 		{
 			objective-=get_alpha(i)*labels->get_label(i);
 			for (int j=0; j<n; j++)
-				objective+=0.5*get_alpha(i)*get_alpha(j)*k->kernel(i,j);
+				objective+=0.5*get_alpha(i)*get_alpha(j)*kernel->kernel(i,j);
 		}
 	}
 	else

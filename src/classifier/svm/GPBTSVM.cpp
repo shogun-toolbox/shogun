@@ -31,13 +31,13 @@ bool CGPBTSVM::train()
 	double     *solution;                     /* store the solution found       */
 	QPproblem  prob;                          /* object containing the solvers  */
 
-	ASSERT(get_kernel());
+	ASSERT(kernel);
 	ASSERT(labels && labels->get_num_labels());
 	ASSERT(labels->is_two_class_labeling());
 
 	int num_lab = 0;
 	int* lab=get_labels()->get_int_labels(num_lab);
-	prob.KER=new sKernel(get_kernel(), num_lab);
+	prob.KER=new sKernel(kernel, num_lab);
 	prob.y=lab;
 	ASSERT(prob.KER);
 	prob.ell=get_labels()->get_num_labels();
@@ -45,7 +45,7 @@ bool CGPBTSVM::train()
 
 	//  /*** set options defaults ***/
 	prob.delta = epsilon;
-	prob.maxmw = get_kernel()->get_cache_size();
+	prob.maxmw = kernel->get_cache_size();
 	prob.verbosity       = 0;
 	prob.preprocess_size = -1;
 	prob.projection_projector = -1;

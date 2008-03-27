@@ -304,7 +304,7 @@ bool CSVMLight::setup_auc_maximization()
 	INT num=0;
 	ASSERT(labels);
 	INT* int_labels=labels->get_int_labels(num);
-	ASSERT(get_kernel()->get_rhs()->get_num_vectors() == num) ;
+	ASSERT(kernel->get_rhs()->get_num_vectors() == num) ;
 	
 	// count positive and negative
 	INT num_pos = 0 ;
@@ -353,7 +353,7 @@ bool CSVMLight::setup_auc_maximization()
 	f->set_feature_matrix(features_auc, 2, num_auc) ;
 
 	// create AUC kernel and attach the features
-	CAUCKernel* k= new CAUCKernel(10, get_kernel()) ;
+	CAUCKernel* k= new CAUCKernel(10, kernel) ;
 	kernel->init(f,f);
 
 	set_kernel(k) ;
@@ -394,18 +394,18 @@ bool CSVMLight::train()
 	learn_parm->rho=1.0;
 	learn_parm->xa_depth=0;
 
-    if (!CKernelMachine::get_kernel() || !CKernelMachine::get_kernel()->get_lhs())
+    if (!kernel || !kernel->get_lhs())
     {
         SG_ERROR( "SVM_light can not proceed without initialized kernel!\n");
         return false ;
     }
 	ASSERT(labels && labels->get_num_labels());
 	ASSERT(labels->is_two_class_labeling());
-    ASSERT(get_kernel()->get_lhs()->get_num_vectors()
+    ASSERT(kernel->get_lhs()->get_num_vectors()
             == labels->get_num_labels());
 
 	// MKL stuff
-	buffer_num = new DREAL[get_kernel()->get_rhs()->get_num_vectors()] ;
+	buffer_num = new DREAL[kernel->get_rhs()->get_num_vectors()] ;
 	delete[] buffer_numcols ;
 	buffer_numcols = NULL ;
 
@@ -413,8 +413,8 @@ bool CSVMLight::train()
 		weight_epsilon=1e-2 ;
 
 	// in case of LINADD enabled kernels cleanup!
-	if (get_kernel()->has_property(KP_LINADD) && get_linadd_enabled())
-		get_kernel()->clear_normal() ;
+	if (kernel->has_property(KP_LINADD) && get_linadd_enabled())
+		kernel->clear_normal() ;
 
 	// output some info
 	SG_DEBUG( "threads = %i\n", parallel.get_num_threads()) ;
@@ -422,31 +422,31 @@ bool CSVMLight::train()
 	SG_DEBUG( "epsilon = %1.1e\n", learn_parm->epsilon_crit) ;
 	SG_DEBUG( "weight_epsilon = %1.1e\n", weight_epsilon) ;
 	SG_DEBUG( "C_mkl = %1.1e\n", C_mkl) ;
-	SG_DEBUG( "get_kernel()->has_property(KP_LINADD) = %i\n", get_kernel()->has_property(KP_LINADD)) ;
-	SG_DEBUG( "get_kernel()->has_property(KP_KERNCOMBINATION) = %i\n", get_kernel()->has_property(KP_KERNCOMBINATION)) ;
-	SG_DEBUG( "get_kernel()->has_property(KP_BATCHEVALUATION) = %i\n", get_kernel()->has_property(KP_BATCHEVALUATION)) ;
-	SG_DEBUG( "get_kernel()->get_optimization_type() = %s\n", get_kernel()->get_optimization_type()==FASTBUTMEMHUNGRY ? "FASTBUTMEMHUNGRY" : "SLOWBUTMEMEFFICIENT" ) ;
+	SG_DEBUG( "kernel->has_property(KP_LINADD) = %i\n", kernel->has_property(KP_LINADD)) ;
+	SG_DEBUG( "kernel->has_property(KP_KERNCOMBINATION) = %i\n", kernel->has_property(KP_KERNCOMBINATION)) ;
+	SG_DEBUG( "kernel->has_property(KP_BATCHEVALUATION) = %i\n", kernel->has_property(KP_BATCHEVALUATION)) ;
+	SG_DEBUG( "kernel->get_optimization_type() = %s\n", kernel->get_optimization_type()==FASTBUTMEMHUNGRY ? "FASTBUTMEMHUNGRY" : "SLOWBUTMEMEFFICIENT" ) ;
 	SG_DEBUG( "get_mkl_enabled() = %i\n", get_mkl_enabled()) ;
 	SG_DEBUG( "get_linadd_enabled() = %i\n", get_linadd_enabled()) ;
 	SG_DEBUG( "get_batch_computation_enabled() = %i\n", get_batch_computation_enabled()) ;
-	SG_DEBUG( "get_kernel()->get_num_subkernels() = %i\n", get_kernel()->get_num_subkernels()) ;
-	SG_DEBUG( "estimated time: %1.1f minutes\n", 5e-11*pow(get_kernel()->get_num_subkernels(),2.22)*pow(get_kernel()->get_rhs()->get_num_vectors(),1.68)*pow(CMath::log2(1/weight_epsilon),2.52)/60) ;
+	SG_DEBUG( "kernel->get_num_subkernels() = %i\n", kernel->get_num_subkernels()) ;
+	SG_DEBUG( "estimated time: %1.1f minutes\n", 5e-11*pow(kernel->get_num_subkernels(),2.22)*pow(kernel->get_rhs()->get_num_vectors(),1.68)*pow(CMath::log2(1/weight_epsilon),2.52)/60) ;
 
-	use_kernel_cache = !(use_precomputed_subkernels || (get_kernel()->get_kernel_type() == K_CUSTOM) ||
-						 (get_linadd_enabled() && get_kernel()->has_property(KP_LINADD)) ||
-						 get_kernel()->get_precompute_matrix() || 
-						 get_kernel()->get_precompute_subkernel_matrix()) ;
+	use_kernel_cache = !(use_precomputed_subkernels || (kernel->get_kernel_type() == K_CUSTOM) ||
+						 (get_linadd_enabled() && kernel->has_property(KP_LINADD)) ||
+						 kernel->get_precompute_matrix() || 
+						 kernel->get_precompute_subkernel_matrix()) ;
 
-	SG_DEBUG( "get_kernel()->get_precompute_matrix() = %i\n", get_kernel()->get_precompute_matrix()) ;
-	SG_DEBUG( "get_kernel()->get_precompute_subkernel_matrix() = %i\n", get_kernel()->get_precompute_subkernel_matrix()) ;
+	SG_DEBUG( "kernel->get_precompute_matrix() = %i\n", kernel->get_precompute_matrix()) ;
+	SG_DEBUG( "kernel->get_precompute_subkernel_matrix() = %i\n", kernel->get_precompute_subkernel_matrix()) ;
 	SG_DEBUG( "use_kernel_cache = %i\n", use_kernel_cache) ;
 
 	if (use_kernel_cache)
 	{
 		// allocate kernel cache but clean up beforehand
-		CKernelMachine::get_kernel()->kernel_cache_cleanup();
-		CKernelMachine::get_kernel()->kernel_cache_init(get_kernel()->get_cache_size());
-		CKernelMachine::get_kernel()->kernel_cache_reset_lru();
+		kernel->kernel_cache_cleanup();
+		kernel->kernel_cache_init(kernel->get_cache_size());
+		kernel->kernel_cache_reset_lru();
 	}
 
 #ifdef USE_CPLEX
@@ -470,13 +470,12 @@ bool CSVMLight::train()
 
 	if (use_precomputed_subkernels)
 	{
-		INT num = get_kernel()->get_rhs()->get_num_vectors() ;
-		INT num_kernels = get_kernel()->get_num_subkernels() ;
+		INT num = kernel->get_rhs()->get_num_vectors() ;
+		INT num_kernels = kernel->get_num_subkernels() ;
 		num_precomputed_subkernels=num_kernels ;
 		precomputed_subkernels=new SHORTREAL*[num_precomputed_subkernels] ;
-		CKernel* k = get_kernel() ;
 		INT num_weights = -1;
-		const DREAL* w   = k->get_subkernel_weights(num_weights);
+		const DREAL* w   = kernel->get_subkernel_weights(num_weights);
 
 		DREAL* w_backup = new DREAL[num_kernels] ;
 		DREAL* w1 = new DREAL[num_kernels] ;
@@ -498,7 +497,7 @@ bool CSVMLight::train()
 		for (INT n=0; n<num_precomputed_subkernels; n++)
 		{
 			w1[n]=1.0 ;
-			k->set_subkernel_weights(w1, num_weights) ;
+			kernel->set_subkernel_weights(w1, num_weights) ;
 
 			SHORTREAL * matrix = precomputed_subkernels[n] ;
 			
@@ -508,7 +507,7 @@ bool CSVMLight::train()
 				SG_PROGRESS(i*i,0,num*num);
 				
 				for (INT j=0; j<=i; j++)
-					matrix[i*(i+1)/2+j] = k->kernel(i,j) ;
+					matrix[i*(i+1)/2+j] = kernel->kernel(i,j) ;
 
 			}
 			SG_PROGRESS(num*num,0,num*num);
@@ -517,7 +516,7 @@ bool CSVMLight::train()
 		}
 
 		// restore old weights
-		k->set_subkernel_weights(w_backup,num_weights) ;
+		kernel->set_subkernel_weights(w_backup,num_weights) ;
 		
 		delete[] w_backup ;
 		delete[] w1 ;
@@ -550,14 +549,14 @@ bool CSVMLight::train()
 	}
 
 	// in case of LINADD enabled kernels cleanup!
-	if (get_kernel()->has_property(KP_LINADD) && get_linadd_enabled())
+	if (kernel->has_property(KP_LINADD) && get_linadd_enabled())
 	{
-		get_kernel()->clear_normal() ;
-		get_kernel()->delete_optimization() ;
+		kernel->clear_normal() ;
+		kernel->delete_optimization() ;
 	}
 
 	if (use_kernel_cache)
-		get_kernel()->kernel_cache_cleanup();
+		kernel->kernel_cache_cleanup();
 	
 	return true ;
 }
@@ -590,10 +589,10 @@ void CSVMLight::svm_learn()
 	count = 0 ;
 	num_rows=0 ;
 
-	if (get_kernel()->has_property(KP_KERNCOMBINATION))
+	if (kernel->has_property(KP_KERNCOMBINATION))
 	{
-		W = new DREAL[totdoc*get_kernel()->get_num_subkernels()];
-		for (i=0; i<totdoc*get_kernel()->get_num_subkernels(); i++)
+		W = new DREAL[totdoc*kernel->get_num_subkernels()];
+		for (i=0; i<totdoc*kernel->get_num_subkernels(); i++)
 			W[i]=0;
 	}
 
@@ -643,7 +642,7 @@ void CSVMLight::svm_learn()
 	model->alpha[0]=0;
 	model->totdoc=totdoc;
 
-	model->kernel=CKernelMachine::get_kernel();
+	model->kernel=kernel;
 
 	model->sv_num=1;
 	model->loo_error=-1;
@@ -704,11 +703,11 @@ void CSVMLight::svm_learn()
 
 	if (use_kernel_cache)
 	{
-		if ( get_kernel()->has_property(KP_KERNCOMBINATION) && get_mkl_enabled() &&
-				(!((CCombinedKernel*)get_kernel())->get_append_subkernel_weights()) 
+		if ( kernel->has_property(KP_KERNCOMBINATION) && get_mkl_enabled() &&
+				(!((CCombinedKernel*)kernel)->get_append_subkernel_weights()) 
 		   )
 		{
-			CCombinedKernel* k      = (CCombinedKernel*) get_kernel();
+			CCombinedKernel* k      = (CCombinedKernel*) kernel;
 			CKernel* kn = k->get_first_kernel();
 
 			while (kn)
@@ -730,13 +729,13 @@ void CSVMLight::svm_learn()
 		{
 			for(i=0;i<totdoc;i++)     /* fill kernel cache with unbounded SV */
 				if((alpha[i]>0) && (alpha[i]<learn_parm->svm_cost[i]) 
-						&& (get_kernel()->kernel_cache_space_available())) 
-					get_kernel()->cache_kernel_row(i);
+						&& (kernel->kernel_cache_space_available())) 
+					kernel->cache_kernel_row(i);
 
 			for(i=0;i<totdoc;i++)     /* fill rest of kernel cache with bounded SV */
 				if((alpha[i]==learn_parm->svm_cost[i]) 
-						&& (get_kernel()->kernel_cache_space_available())) 
-					get_kernel()->cache_kernel_row(i);
+						&& (kernel->kernel_cache_space_available())) 
+					kernel->cache_kernel_row(i);
 		}
 	}
     (void)compute_index(index,totdoc,index2dnum);
@@ -854,7 +853,7 @@ INT CSVMLight::optimize_to_convergence(INT* docs, INT* label, INT totdoc,
   QP qp;            /* buffer for one quadratic program */
 
   epsilon_crit_org=learn_parm->epsilon_crit; /* save org */
-  if(get_kernel()->has_property(KP_LINADD) && get_linadd_enabled()) {
+  if(kernel->has_property(KP_LINADD) && get_linadd_enabled()) {
 	  learn_parm->epsilon_crit=2.0;
       /* caching makes no sense for linear kernel */
   } 
@@ -890,7 +889,7 @@ INT CSVMLight::optimize_to_convergence(INT* docs, INT* label, INT totdoc,
   worstmaxdiff=1e-10;
   terminate=0;
   
-  CKernelMachine::get_kernel()->set_time(iteration);  /* for lru cache */
+  kernel->set_time(iteration);  /* for lru cache */
 
   for(i=0;i<totdoc;i++) {    /* various inits */
     chosen[i]=0;
@@ -915,7 +914,7 @@ INT CSVMLight::optimize_to_convergence(INT* docs, INT* label, INT totdoc,
 
 	  	  
 	  if(use_kernel_cache) 
-		  CKernelMachine::get_kernel()->set_time(iteration);  /* for lru cache */
+		  kernel->set_time(iteration);  /* for lru cache */
 	  
 	  if(verbosity>=2) t0=get_runtime();
 	  if(verbosity>=3) {
@@ -982,7 +981,8 @@ INT CSVMLight::optimize_to_convergence(INT* docs, INT* label, INT totdoc,
 		  if(iteration % 101)
 		  {
 			  already_chosen=0;
-			  if(CMath::min(learn_parm->svm_newvarsinqp, learn_parm->svm_maxqpsize-choosenum)>=4 && (!(get_kernel()->has_property(KP_LINADD) && get_linadd_enabled())))
+			  if(CMath::min(learn_parm->svm_newvarsinqp, learn_parm->svm_maxqpsize-choosenum)>=4 &&
+					  (!(kernel->has_property(KP_LINADD) && get_linadd_enabled())))
 			  {
 				  /* select part of the working set from cache */
 				  already_chosen=select_next_qp_subproblem_grad(
@@ -1025,11 +1025,11 @@ INT CSVMLight::optimize_to_convergence(INT* docs, INT* label, INT totdoc,
 	  {
 		  // in case of MKL w/o linadd cache each kernel independently
 		  // else if linadd is disabled cache single kernel
-		  if ( get_kernel()->has_property(KP_KERNCOMBINATION) && get_mkl_enabled() &&
-				  (!((CCombinedKernel*)get_kernel())->get_append_subkernel_weights()) 
+		  if ( kernel->has_property(KP_KERNCOMBINATION) && get_mkl_enabled() &&
+				  (!((CCombinedKernel*)kernel)->get_append_subkernel_weights()) 
 			 )
 		  {
-			  CCombinedKernel* k      = (CCombinedKernel*) get_kernel();
+			  CCombinedKernel* k      = (CCombinedKernel*) kernel;
 			  CKernel* kn = k->get_first_kernel();
 
 			  while (kn)
@@ -1039,7 +1039,7 @@ INT CSVMLight::optimize_to_convergence(INT* docs, INT* label, INT totdoc,
 			  }
 		  }
 		  else
-			  CKernelMachine::get_kernel()->cache_multiple_kernel_rows(working2dnum, choosenum); 
+			  kernel->cache_multiple_kernel_rows(working2dnum, choosenum); 
 	  }
 	  
 	  if(verbosity>=2) t2=get_runtime();
@@ -1090,7 +1090,7 @@ INT CSVMLight::optimize_to_convergence(INT* docs, INT* label, INT totdoc,
 	  }
 	  
 	  noshrink= (get_shrinking_enabled()) ? 0 : 1;
-	  if ((!get_mkl_enabled()) && (!retrain) && (inactivenum>0) && ((!learn_parm->skip_final_opt_check) || (get_kernel()->has_property(KP_LINADD) && get_linadd_enabled()))) { 
+	  if ((!get_mkl_enabled()) && (!retrain) && (inactivenum>0) && ((!learn_parm->skip_final_opt_check) || (kernel->has_property(KP_LINADD) && get_linadd_enabled()))) { 
 		  t1=get_runtime();
 		  SG_DEBUG( "reactivating inactive examples\n");
 
@@ -1116,7 +1116,7 @@ INT CSVMLight::optimize_to_convergence(INT* docs, INT* label, INT totdoc,
 		      retrain=1;
 		  }
 		  timing_profile->time_shrink+=get_runtime()-t1;
-		  if (((verbosity>=1) && (!(get_kernel()->has_property(KP_LINADD) && get_linadd_enabled())))
+		  if (((verbosity>=1) && (!(kernel->has_property(KP_LINADD) && get_linadd_enabled())))
 		     || (verbosity>=2)) {
 		      SG_INFO( "done.\n");
 		      SG_INFO( "Number of inactive variables = %ld\n",inactivenum);
@@ -1150,11 +1150,11 @@ INT CSVMLight::optimize_to_convergence(INT* docs, INT* label, INT totdoc,
 
 		  inactivenum=totdoc-activenum;
 
-		  if (use_kernel_cache && (supvecnum>get_kernel()->get_max_elems_cache()) 
-				  && ((get_kernel()->get_activenum_cache()-activenum)>CMath::max((INT)(activenum/10),(INT) 500))) {
+		  if (use_kernel_cache && (supvecnum>kernel->get_max_elems_cache()) 
+				  && ((kernel->get_activenum_cache()-activenum)>CMath::max((INT)(activenum/10),(INT) 500))) {
 
-			  get_kernel()->kernel_cache_shrink(totdoc, CMath::min((INT) (get_kernel()->get_activenum_cache()-activenum),
-						  (INT) (get_kernel()->get_activenum_cache()-supvecnum)),
+			  kernel->kernel_cache_shrink(totdoc, CMath::min((INT) (kernel->get_activenum_cache()-activenum),
+						  (INT) (kernel->get_activenum_cache()-supvecnum)),
 					  shrink_state->active); 
 		  }
 	  }
@@ -1229,7 +1229,7 @@ double CSVMLight::compute_objective_function(double *a, double *lin, double *c, 
   {
 	  check+=a[i]*eps-a[i]*label[i];
 	  for(INT j=0;j<totdoc;j++)
-		  check+= 0.5*a[i]*label[i]*a[j]*label[j]*get_kernel()->kernel(i,j);
+		  check+= 0.5*a[i]*label[i]*a[j]*label[j]*kernel->kernel(i,j);
   }
 
   SG_INFO("CLASSIFICATION OBJECTIVE %f vs. CHECK %f (diff %f)\n", criterion, check, criterion-check);
@@ -1375,7 +1375,7 @@ void CSVMLight::compute_matrices_for_optimization_parallel(INT* docs, INT* label
 		//SG_DEBUG( "\nkernel-step size: %i\n", step) ;
 		for (INT t=0; t<parallel.get_num_threads()-1; t++)
 		{
-			params[t].kernel = CKernelMachine::get_kernel() ;
+			params[t].kernel = kernel;
 			params[t].start = t*step;
 			params[t].end = (t+1)*step;
 			params[t].KI=KI ;
@@ -1384,7 +1384,7 @@ void CSVMLight::compute_matrices_for_optimization_parallel(INT* docs, INT* label
 			pthread_create(&threads[t], NULL, CSVMLight::compute_kernel_helper, (void*)&params[t]);
 		}
 		for (i=params[parallel.get_num_threads()-2].end; i<Knum; i++)
-			Kval[i]=CKernelMachine::get_kernel()->kernel(KI[i],KJ[i]) ;
+			Kval[i]=kernel->kernel(KI[i],KJ[i]) ;
 
 		for (INT t=0; t<parallel.get_num_threads()-1; t++)
 			pthread_join(threads[t], NULL);
@@ -1645,7 +1645,7 @@ INT CSVMLight::check_optimality(INT* label,
   INT i,ii,retrain;
   double dist,ex_c,target;
 
-  if (get_kernel()->has_property(KP_LINADD) && get_linadd_enabled())
+  if (kernel->has_property(KP_LINADD) && get_linadd_enabled())
 	  learn_parm->epsilon_shrink=-learn_parm->epsilon_crit+epsilon_crit_org;
   else
 	  learn_parm->epsilon_shrink=learn_parm->epsilon_shrink*0.7+(*maxdiff)*0.3; 
@@ -1702,10 +1702,10 @@ void CSVMLight::update_linear_component_mkl(INT* docs, INT* label,
 											INT totdoc,
 											double *lin, DREAL *aicache)
 {
-	INT num         = get_kernel()->get_rhs()->get_num_vectors() ;
+	INT num         = kernel->get_rhs()->get_num_vectors() ;
 	INT num_weights = -1;
-	INT num_kernels = get_kernel()->get_num_subkernels() ;
-	const DREAL* w   = get_kernel()->get_subkernel_weights(num_weights);
+	INT num_kernels = kernel->get_num_subkernels() ;
+	const DREAL* w   = kernel->get_subkernel_weights(num_weights);
 
 	ASSERT(num_weights==num_kernels) ;
 	DREAL* sumw = new DREAL[num_kernels];
@@ -1730,10 +1730,10 @@ void CSVMLight::update_linear_component_mkl(INT* docs, INT* label,
 			}
 		}
 	} 
-	else if ((get_kernel()->get_kernel_type()==K_COMBINED) && 
-			 (!((CCombinedKernel*)get_kernel())->get_append_subkernel_weights()))// for combined kernel
+	else if ((kernel->get_kernel_type()==K_COMBINED) && 
+			 (!((CCombinedKernel*)kernel)->get_append_subkernel_weights()))// for combined kernel
 	{
-		CCombinedKernel* k      = (CCombinedKernel*) get_kernel();
+		CCombinedKernel* k      = (CCombinedKernel*) kernel;
 		CKernel* kn = k->get_first_kernel() ;
 		INT n = 0, i, j ;
 		
@@ -1754,7 +1754,6 @@ void CSVMLight::update_linear_component_mkl(INT* docs, INT* label,
 	}
 	else // hope the kernel is fast ...
 	{
-		CKernel* k = get_kernel();
 		DREAL* w_backup = new DREAL[num_kernels] ;
 		DREAL* w1 = new DREAL[num_kernels] ;
 		
@@ -1767,21 +1766,21 @@ void CSVMLight::update_linear_component_mkl(INT* docs, INT* label,
 		for (INT n=0; n<num_kernels; n++)
 		{
 			w1[n]=1.0 ;
-			k->set_subkernel_weights(w1, num_weights) ;
+			kernel->set_subkernel_weights(w1, num_weights) ;
 		
 			for(INT i=0;i<num;i++) 
 			{
 				if(a[i] != a_old[i]) 
 				{
 					for(INT j=0;j<num;j++) 
-						W[j*num_kernels+n]+=(a[i]-a_old[i])*k->kernel(i,j)*(double)label[i];
+						W[j*num_kernels+n]+=(a[i]-a_old[i])*kernel->kernel(i,j)*(double)label[i];
 				}
 			}
 			w1[n]=0.0 ;
 		}
 
 		// restore old weights
-		k->set_subkernel_weights(w_backup,num_weights) ;
+		kernel->set_subkernel_weights(w_backup,num_weights) ;
 		
 		delete[] w_backup ;
 		delete[] w1 ;
@@ -2016,7 +2015,7 @@ void CSVMLight::update_linear_component_mkl(INT* docs, INT* label,
 				}
 
 				// set weights, store new rho and compute new w gap
-				get_kernel()->set_subkernel_weights(x, num_kernels) ;
+				kernel->set_subkernel_weights(x, num_kernels) ;
 				rho = -x[2*num_kernels] ;
 				w_gap = CMath::abs(1-rho/mkl_objective) ;
 				
@@ -2067,11 +2066,10 @@ void CSVMLight::update_linear_component_mkl_linadd(INT* docs, INT* label,
 {
 	// kernel with LP_LINADD property is assumed to have 
 	// compute_by_subkernel functions
-	CKernel* k      = get_kernel();
-	INT num         = k->get_rhs()->get_num_vectors() ;
+	INT num         = kernel->get_rhs()->get_num_vectors() ;
 	INT num_weights = -1;
-	INT num_kernels = k->get_num_subkernels() ;
-	const DREAL* w   = k->get_subkernel_weights(num_weights);
+	INT num_kernels = kernel->get_num_subkernels() ;
+	const DREAL* w   = kernel->get_subkernel_weights(num_weights);
 	
 	ASSERT(num_weights==num_kernels) ;
 	DREAL* sumw = new DREAL[num_kernels];
@@ -2086,13 +2084,13 @@ void CSVMLight::update_linear_component_mkl_linadd(INT* docs, INT* label,
 			w1[i]=1.0 ; 
 		}
 		// set the kernel weights
-		k->set_subkernel_weights(w1, num_weights) ;
+		kernel->set_subkernel_weights(w1, num_weights) ;
 		
 		// create normal update (with changed alphas only)
-		k->clear_normal();
+		kernel->clear_normal();
 		for(INT ii=0, i=0;(i=working2dnum[ii])>=0;ii++) {
 			if(a[i] != a_old[i]) {
-				k->add_to_normal(docs[i], (a[i]-a_old[i])*(double)label[i]);
+				kernel->add_to_normal(docs[i], (a[i]-a_old[i])*(double)label[i]);
 			}
 		}
 
@@ -2100,7 +2098,7 @@ void CSVMLight::update_linear_component_mkl_linadd(INT* docs, INT* label,
 		{
 			// determine contributions of different kernels
 			for (int i=0; i<num; i++)
-				k->compute_by_subkernel(i,&W[i*num_kernels]);
+				kernel->compute_by_subkernel(i,&W[i*num_kernels]);
 		}
 #ifndef WIN32
 		else
@@ -2111,7 +2109,7 @@ void CSVMLight::update_linear_component_mkl_linadd(INT* docs, INT* label,
 
 			for (INT t=0; t<parallel.get_num_threads()-1; t++)
 			{
-				params[t].kernel = k;
+				params[t].kernel = kernel;
 				params[t].W = W;
 				params[t].start = t*step;
 				params[t].end = (t+1)*step;
@@ -2119,7 +2117,7 @@ void CSVMLight::update_linear_component_mkl_linadd(INT* docs, INT* label,
 			}
 
 			for (int i=params[parallel.get_num_threads()-2].end; i<num; i++)
-				k->compute_by_subkernel(i,&W[i*num_kernels]);
+				kernel->compute_by_subkernel(i,&W[i*num_kernels]);
 
 			for (INT t=0; t<parallel.get_num_threads()-1; t++)
 				pthread_join(threads[t], NULL);
@@ -2127,7 +2125,7 @@ void CSVMLight::update_linear_component_mkl_linadd(INT* docs, INT* label,
 #endif
 
 		// restore old weights
-		k->set_subkernel_weights(w_backup,num_weights);
+		kernel->set_subkernel_weights(w_backup,num_weights);
 		
 		delete[] w_backup;
 		delete[] w1;
@@ -2359,7 +2357,7 @@ void CSVMLight::update_linear_component_mkl_linadd(INT* docs, INT* label,
 				}
 
 				// set weights, store new rho and compute new w gap
-				k->set_subkernel_weights(x, num_kernels) ;
+				kernel->set_subkernel_weights(x, num_kernels) ;
 				rho = -x[2*num_kernels] ;
 				w_gap = CMath::abs(1-rho/mkl_objective) ;
 				
@@ -2414,21 +2412,21 @@ void CSVMLight::update_linear_component(INT* docs, INT* label,
 {
 	register INT i=0,ii=0,j=0,jj=0;
 
-	if (get_kernel()->has_property(KP_LINADD) && get_linadd_enabled()) 
+	if (kernel->has_property(KP_LINADD) && get_linadd_enabled()) 
 	{
-		if (get_kernel()->has_property(KP_KERNCOMBINATION) && get_mkl_enabled() ) 
+		if (kernel->has_property(KP_KERNCOMBINATION) && get_mkl_enabled() ) 
 		{
 			update_linear_component_mkl_linadd(docs, label, active2dnum, a, a_old, working2dnum, 
 											   totdoc,	lin, aicache) ;
 		}
 		else
 		{
-			get_kernel()->clear_normal();
+			kernel->clear_normal();
 
 			INT num_working=0;
 			for(ii=0;(i=working2dnum[ii])>=0;ii++) {
 				if(a[i] != a_old[i]) {
-					get_kernel()->add_to_normal(docs[i], (a[i]-a_old[i])*(double)label[i]);
+					kernel->add_to_normal(docs[i], (a[i]-a_old[i])*(double)label[i]);
 					num_working++;
 				}
 			}
@@ -2438,7 +2436,7 @@ void CSVMLight::update_linear_component(INT* docs, INT* label,
 				if (parallel.get_num_threads() < 2)
 				{
 					for(jj=0;(j=active2dnum[jj])>=0;jj++) {
-						lin[j]+=get_kernel()->compute_optimized(docs[j]);
+						lin[j]+=kernel->compute_optimized(docs[j]);
 					}
 				}
 #ifndef WIN32
@@ -2455,7 +2453,7 @@ void CSVMLight::update_linear_component(INT* docs, INT* label,
 
 					for (INT t=0; t<parallel.get_num_threads()-1; t++)
 					{
-						params[t].kernel = get_kernel() ;
+						params[t].kernel = kernel ;
 						params[t].lin = lin ;
 						params[t].docs = docs ;
 						params[t].active2dnum=active2dnum ;
@@ -2467,7 +2465,7 @@ void CSVMLight::update_linear_component(INT* docs, INT* label,
 					}
 
 					for(jj=params[parallel.get_num_threads()-2].end;(j=active2dnum[jj])>=0;jj++) {
-						lin[j]+=get_kernel()->compute_optimized(docs[j]);
+						lin[j]+=kernel->compute_optimized(docs[j]);
 					}
 					void* ret;
 					for (INT t=0; t<parallel.get_num_threads()-1; t++)
@@ -2479,7 +2477,7 @@ void CSVMLight::update_linear_component(INT* docs, INT* label,
 	}
 	else 
 	{
-		if (get_kernel()->has_property(KP_KERNCOMBINATION) && get_mkl_enabled() ) 
+		if (kernel->has_property(KP_KERNCOMBINATION) && get_mkl_enabled() ) 
 		{
 			update_linear_component_mkl(docs, label, active2dnum, a, a_old, working2dnum, 
 										totdoc,	lin, aicache) ;
@@ -2487,7 +2485,7 @@ void CSVMLight::update_linear_component(INT* docs, INT* label,
 		else {
 			for(jj=0;(i=working2dnum[jj])>=0;jj++) {
 				if(a[i] != a_old[i]) {
-					CKernelMachine::get_kernel()->get_kernel_row(i,active2dnum,aicache);
+					kernel->get_kernel_row(i,active2dnum,aicache);
 					for(ii=0;(j=active2dnum[ii])>=0;ii++)
 						lin[j]+=(a[i]-a_old[i])*aicache[j]*(double)label[i];
 				}
@@ -2526,7 +2524,7 @@ INT CSVMLight::select_next_qp_subproblem_grad(INT* label,
 		if(cache_only) 
 		{
 			if (use_kernel_cache)
-				valid=(get_kernel()->kernel_cache_check(j));
+				valid=(kernel->kernel_cache_check(j));
 			else 
 				valid = 1 ;
 		}
@@ -2552,7 +2550,7 @@ INT CSVMLight::select_next_qp_subproblem_grad(INT* label,
 		working2dnum[inum+choosenum]=i;
 		choosenum+=1;
 		if (use_kernel_cache)
-			CKernelMachine::get_kernel()->kernel_cache_touch(i); 
+			kernel->kernel_cache_touch(i); 
         /* make sure it does not get kicked */
 		/* out of cache */
 	}
@@ -2563,7 +2561,7 @@ INT CSVMLight::select_next_qp_subproblem_grad(INT* label,
 		if(cache_only) 
 		{
 			if (use_kernel_cache)
-				valid=(get_kernel()->kernel_cache_check(j));
+				valid=(kernel->kernel_cache_check(j));
 			else
 				valid = 1 ;
 		}
@@ -2590,7 +2588,7 @@ INT CSVMLight::select_next_qp_subproblem_grad(INT* label,
 		working2dnum[inum+choosenum]=i;
 		choosenum+=1;
 		if (use_kernel_cache)
-			CKernelMachine::get_kernel()->kernel_cache_touch(i); /* make sure it does not get kicked */
+			kernel->kernel_cache_touch(i); /* make sure it does not get kicked */
 		/* out of cache */
 	} 
 	working2dnum[inum+choosenum]=-1; /* complete index */
@@ -2640,7 +2638,7 @@ INT CSVMLight::select_next_qp_subproblem_rand(INT* label,
     working2dnum[inum+choosenum]=i;
     choosenum+=1;
 	if (use_kernel_cache)
-		CKernelMachine::get_kernel()->kernel_cache_touch(i); /* make sure it does not get kicked */
+		kernel->kernel_cache_touch(i); /* make sure it does not get kicked */
                                         /* out of cache */
   }
 
@@ -2665,7 +2663,7 @@ INT CSVMLight::select_next_qp_subproblem_rand(INT* label,
     working2dnum[inum+choosenum]=i;
     choosenum+=1;
 	if (use_kernel_cache)
-		CKernelMachine::get_kernel()->kernel_cache_touch(i); /* make sure it does not get kicked */
+		kernel->kernel_cache_touch(i); /* make sure it does not get kicked */
                                         /* out of cache */
   } 
   working2dnum[inum+choosenum]=-1; /* complete index */
@@ -2779,7 +2777,7 @@ INT CSVMLight::shrink_problem(SHRINK_STATE *shrink_state,
 		  SG_INFO( " Shrinking...");
 	  }
 
-	  if (!(get_kernel()->has_property(KP_LINADD) && get_linadd_enabled())) { /*  non-linear case save alphas */
+	  if (!(kernel->has_property(KP_LINADD) && get_linadd_enabled())) { /*  non-linear case save alphas */
 	 
 		  a_old=new double[totdoc];
 		  shrink_state->a_history[shrink_state->deactnum]=a_old;
@@ -2798,7 +2796,7 @@ INT CSVMLight::shrink_problem(SHRINK_STATE *shrink_state,
 	  }
 	  activenum=compute_index(shrink_state->active,totdoc,active2dnum);
 	  shrink_state->deactnum++;
-	  if(get_kernel()->has_property(KP_LINADD) && get_linadd_enabled())
+	  if(kernel->has_property(KP_LINADD) && get_linadd_enabled())
 		  shrink_state->deactnum=0;
 
 	  if(verbosity>=2) {
@@ -2889,18 +2887,18 @@ void CSVMLight::reactivate_inactive_examples(INT* label,
   register double *a_old,dist;
   double ex_c,target;
 
-  if (get_kernel()->has_property(KP_LINADD) && get_linadd_enabled()) { /* special linear case */
+  if (kernel->has_property(KP_LINADD) && get_linadd_enabled()) { /* special linear case */
 	  a_old=shrink_state->last_a;    
 
-	  if (!use_batch_computation || !get_kernel()->has_property(KP_BATCHEVALUATION))
+	  if (!use_batch_computation || !kernel->has_property(KP_BATCHEVALUATION))
 	  {
 		  SG_DEBUG( " clear normal - linadd\n");
-		  get_kernel()->clear_normal();
+		  kernel->clear_normal();
 
 		  INT num_modified=0;
 		  for(i=0;i<totdoc;i++) {
 			  if(a[i] != a_old[i]) {
-				  get_kernel()->add_to_normal(docs[i], ((a[i]-a_old[i])*(double)label[i]));
+				  kernel->add_to_normal(docs[i], ((a[i]-a_old[i])*(double)label[i]));
 				  a_old[i]=a[i];
 				  num_modified++;
 			  }
@@ -2913,7 +2911,7 @@ void CSVMLight::reactivate_inactive_examples(INT* label,
 			  if (num_threads < 2)
 			  {
 				  S_THREAD_PARAM_REACTIVATE_LINADD params;
-				  params.kernel=get_kernel();
+				  params.kernel=kernel;
 				  params.lin=lin;
 				  params.last_lin=shrink_state->last_lin;
 				  params.docs=docs;
@@ -2931,7 +2929,7 @@ void CSVMLight::reactivate_inactive_examples(INT* label,
 
 				  for (t=0; t<num_threads-1; t++)
 				  {
-					  params[t].kernel=get_kernel();
+					  params[t].kernel=kernel;
 					  params[t].lin=lin;
 					  params[t].last_lin=shrink_state->last_lin;
 					  params[t].docs=docs;
@@ -2941,7 +2939,7 @@ void CSVMLight::reactivate_inactive_examples(INT* label,
 					  pthread_create(&threads[t], NULL, CSVMLight::reactivate_inactive_examples_linadd_helper, (void*)&params[t]);
 				  }
 
-				  params[t].kernel=get_kernel();
+				  params[t].kernel=kernel;
 				  params[t].lin=lin;
 				  params[t].last_lin=shrink_state->last_lin;
 				  params[t].docs=docs;
@@ -3000,7 +2998,7 @@ void CSVMLight::reactivate_inactive_examples(INT* label,
 				  ASSERT(dest);
 				  memset(dest, 0, sizeof(DREAL)*num_inactive);
 
-				  get_kernel()->compute_batch(num_inactive, inactive_idx, dest, num_suppvec, idx, alphas);
+				  kernel->compute_batch(num_inactive, inactive_idx, dest, num_suppvec, idx, alphas);
 
 				  j=0;
 				  for(i=0;i<totdoc;i++) {
@@ -3023,7 +3021,7 @@ void CSVMLight::reactivate_inactive_examples(INT* label,
 		  delete[] idx;
 	  }
 
-	  get_kernel()->delete_optimization();
+	  kernel->delete_optimization();
   }
   else 
   {
@@ -3052,7 +3050,7 @@ void CSVMLight::reactivate_inactive_examples(INT* label,
 		  if (num_threads < 2)
 		  {
 			  for(ii=0;(i=changed2dnum[ii])>=0;ii++) {
-				  CKernelMachine::get_kernel()->get_kernel_row(i,inactive2dnum,aicache);
+				  kernel->get_kernel_row(i,inactive2dnum,aicache);
 				  for(jj=0;(j=inactive2dnum[jj])>=0;jj++)
 					  lin[j]+=(a[i]-a_old[i])*aicache[j]*(double)label[i];
 			  }
@@ -3082,7 +3080,7 @@ void CSVMLight::reactivate_inactive_examples(INT* label,
 				  INT thr;
 				  for (thr=0; thr<num_threads-1; thr++)
 				  {
-					  params[thr].kernel=get_kernel();
+					  params[thr].kernel=kernel;
 					  params[thr].lin=&tmp_lin[thr*totdoc];
 					  params[thr].aicache=&tmp_aicache[thr*totdoc];
 					  params[thr].a=a;
@@ -3095,7 +3093,7 @@ void CSVMLight::reactivate_inactive_examples(INT* label,
 					  pthread_create(&threads[thr], NULL, CSVMLight::reactivate_inactive_examples_vanilla_helper, (void*)&params[thr]);
 				  }
 
-				  params[thr].kernel=get_kernel();
+				  params[thr].kernel=kernel;
 				  params[thr].lin=&tmp_lin[thr*totdoc];
 				  params[thr].aicache=&tmp_aicache[thr*totdoc];
 				  params[thr].a=a;
@@ -3163,7 +3161,7 @@ void CSVMLight::reactivate_inactive_examples(INT* label,
     }
   }
 
-  if (!(get_kernel()->has_property(KP_LINADD) && get_linadd_enabled())) { /* update history for non-linear */
+  if (!(kernel->has_property(KP_LINADD) && get_linadd_enabled())) { /* update history for non-linear */
 	  for(i=0;i<totdoc;i++) {
 		  (shrink_state->a_history[shrink_state->deactnum-1])[i]=a[i];
 	  }

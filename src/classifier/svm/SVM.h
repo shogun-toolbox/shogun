@@ -417,7 +417,7 @@ class CSVM : public CKernelMachine
 
 	protected:
 		/// an SVM is defined by support vectors, their coefficients alpha
-		/// and the bias b ( + CKernelMachine::get_kernel())
+		/// and the bias b ( + CKernelMachine::kernel)
 		struct TModel
 		{
 			/** bias b */

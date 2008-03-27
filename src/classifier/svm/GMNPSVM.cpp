@@ -45,7 +45,7 @@ bool CGMNPSVM::train()
 	for (int i=0; i<num_data; i++)
 		vector_y[i]= labels->get_label(i)+1;
 
-	ASSERT(get_kernel());
+	ASSERT(kernel);
 
 	DREAL C = get_C1();
 	INT tmax = 1000000000;
@@ -69,7 +69,7 @@ bool CGMNPSVM::train()
 	DREAL* History = NULL;
 	INT verb = 0;
 
-	CGMNPLib mnp(vector_y,get_kernel(),num_data, num_virtual_data, num_classes, reg_const);
+	CGMNPLib mnp(vector_y,kernel,num_data, num_virtual_data, num_classes, reg_const);
 
 	mnp.gmnp_imdm(vector_c, num_virtual_data, tmax,
 			tolabs, tolrel, thlb, alpha, &t, &History, verb );

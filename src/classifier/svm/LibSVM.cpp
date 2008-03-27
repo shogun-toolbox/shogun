@@ -54,8 +54,8 @@ bool CLibSVM::train()
 	int weights_label[2]={-1,+1};
 	double weights[2]={1.0,get_C2()/get_C1()};
 
-	ASSERT(get_kernel() && get_kernel()->get_lhs());
-    ASSERT(get_kernel()->get_lhs()->get_num_vectors() == problem.l);
+	ASSERT(kernel && kernel->get_lhs());
+    ASSERT(kernel->get_lhs()->get_num_vectors() == problem.l);
 
 	param.svm_type=C_SVC; // C SVM
 	param.kernel_type = LINEAR;
@@ -63,8 +63,8 @@ bool CLibSVM::train()
 	param.gamma = 0;	// 1/k
 	param.coef0 = 0;
 	param.nu = 0.5;
-	param.kernel=get_kernel();
-	param.cache_size = get_kernel()->get_cache_size();
+	param.kernel=kernel;
+	param.cache_size = kernel->get_cache_size();
 	param.C = get_C1();
 	param.eps = epsilon;
 	param.p = 0.1;

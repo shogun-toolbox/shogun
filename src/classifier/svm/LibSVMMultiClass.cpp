@@ -49,7 +49,7 @@ bool CLibSVMMultiClass::train()
 		x_space[2*i+1].index=-1;
 	}
 
-	ASSERT(get_kernel());
+	ASSERT(kernel);
 
 	param.svm_type=C_SVC; // C SVM
 	param.kernel_type = LINEAR;
@@ -57,8 +57,8 @@ bool CLibSVMMultiClass::train()
 	param.gamma = 0;	// 1/k
 	param.coef0 = 0;
 	param.nu = 0.5;
-	param.kernel=get_kernel();
-	param.cache_size = get_kernel()->get_cache_size();
+	param.kernel=kernel;
+	param.cache_size = kernel->get_cache_size();
 	param.C = get_C1();
 	param.eps = epsilon;
 	param.p = 0.1;
