@@ -67,6 +67,9 @@ void ssl_train(struct data *Data,
 		default:
 			SG_SERROR("Algorithm unspecified");
 	}
+
+	delete[] Subset->vec;
+    delete[] Subset;
 	return;
 } 
 int CGLS(const struct data *Data, 

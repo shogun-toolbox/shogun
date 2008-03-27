@@ -94,5 +94,6 @@ bool CSVMLin::train()
 
 	delete[] Data.C;
 	delete[] train_labels;
+	delete[] Outputs.vec;
 	return true;
 }

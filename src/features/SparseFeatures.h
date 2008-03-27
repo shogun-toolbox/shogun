@@ -561,6 +561,7 @@ template <class ST> class CSparseFeatures: public CFeatures
 		 */
 		virtual bool set_full_feature_matrix(ST* ffm, INT num_feat, INT num_vec)
 		{
+			free_sparse_feature_matrix();
 			bool result=true;
 			num_features=num_feat;
 			num_vectors=num_vec;
@@ -589,7 +590,6 @@ template <class ST> class CSparseFeatures: public CFeatures
 
 				if (num_vec>0)
 				{
-					free_sparse_feature_matrix();
 					sparse_feature_matrix=new TSparse<ST>[num_vec];
 
 					if (sparse_feature_matrix)

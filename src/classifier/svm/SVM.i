@@ -4,6 +4,8 @@
 
 %include "lib/common.i"
 
+%newobject classify;
+
 #ifdef HAVE_PYTHON
 %include "lib/python_typemaps.i"
 %feature("autodoc", "get_support_vectors(self) -> [] of int") get_support_vectors;
@@ -14,7 +16,6 @@
 %apply (INT* IN_ARRAY1, INT DIM1) {(INT* svs, INT d)};
 #endif //HAVE_PYTHON
 
-%newobject classify(CLabels* result);
 
 %include "classifier/svm/SVM.h"
 

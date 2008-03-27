@@ -2,6 +2,7 @@
  #include "classifier/svm/MultiClassSVM.h"
 %}
 
+%newobject classify;
 %rename(MultiClassSVM) CMultiClassSVM;
 
 %include "classifier/svm/MultiClassSVM.h"

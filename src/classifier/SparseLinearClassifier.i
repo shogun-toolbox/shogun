@@ -1,6 +1,8 @@
 %{
  #include "classifier/SparseLinearClassifier.h"
 %}
+
+%newobject classify;
 %rename(SparseLinearClassifier) CSparseLinearClassifier;
 
 #ifdef HAVE_PYTHON

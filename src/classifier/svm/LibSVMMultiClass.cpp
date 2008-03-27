@@ -158,6 +158,7 @@ bool CLibSVMMultiClass::train()
 
 		CSVM::set_objective(model->objective);
 
+		delete[] offsets;
 		delete[] problem.x;
 		delete[] problem.y;
 		delete[] x_space;

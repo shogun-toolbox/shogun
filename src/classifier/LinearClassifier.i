@@ -1,6 +1,8 @@
 %{
  #include "classifier/LinearClassifier.h" 
 %}
+
+%newobject classify;
 %rename(LinearClassifier) CLinearClassifier;
 
 #ifdef HAVE_PYTHON

@@ -82,6 +82,8 @@ INT CLabels::get_num_classes()
 	for (INT i=0; i<n; i++)
 		num_classes=CMath::max(num_classes,lab[i]);
 
+	delete[] lab;
+
 	return num_classes+1;
 }
 

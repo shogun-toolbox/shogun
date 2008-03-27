@@ -46,7 +46,7 @@ class CSparseLinearClassifier : public CClassifier
 			ASSERT(dst_w && dst_dims);
 			ASSERT(w && w_dim>0);
 			*dst_dims=w_dim;
-			*dst_w=new DREAL[*dst_dims];
+			*dst_w=(DREAL*) malloc(sizeof(DREAL) * (*dst_dims));
 			ASSERT(*dst_w);
 			memcpy(*dst_w, w, sizeof(DREAL) * (*dst_dims));
 		}

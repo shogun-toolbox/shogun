@@ -1367,6 +1367,7 @@ double QPproblem::gpdtsolve(double *solution)
   free(stloc);
   free(st);
   free(sp_h);
+  free(sp_hloc);
   free(sp_y);
   free(sp_D);
   free(sp_alpha);

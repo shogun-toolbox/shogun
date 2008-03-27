@@ -274,7 +274,7 @@ void* CSVM::classify_example_helper(void* p)
 	return NULL;
 }
 
-CLabels* CSVM::classify(CLabels* result)
+CLabels* CSVM::classify(CLabels* lab)
 {
 	if (!kernel)
 	{
@@ -286,10 +286,10 @@ CLabels* CSVM::classify(CLabels* result)
 	{
 		INT num_vectors=kernel->get_rhs()->get_num_vectors();
 
-		if (!result)
-			result=new CLabels(num_vectors);
+		if (!lab)
+			lab=new CLabels(num_vectors);
 
-		ASSERT(result);
+		ASSERT(lab);
 		SG_DEBUG( "computing output on %d test examples\n", num_vectors);
 
 		if (kernel->has_property(KP_BATCHEVALUATION) &&
@@ -322,7 +322,7 @@ CLabels* CSVM::classify(CLabels* result)
 					output, get_num_support_vectors(), sv_idx, sv_weight);
 
 			for (INT i=0; i<num_vectors; i++)
-				result->set_label(i, get_bias()+output[i]);
+				lab->set_label(i, get_bias()+output[i]);
 
 			delete[] sv_idx ;
 			delete[] sv_weight ;
@@ -338,7 +338,7 @@ CLabels* CSVM::classify(CLabels* result)
 			{
 				S_THREAD_PARAM params;
 				params.svm=this;
-				params.result=result;
+				params.result=lab;
 				params.start=0;
 				params.end=num_vectors;
 				params.verbose=true;
@@ -356,7 +356,7 @@ CLabels* CSVM::classify(CLabels* result)
 				for (t=0; t<num_threads-1; t++)
 				{
 					params[t].svm = this;
-					params[t].result = result;
+					params[t].result = lab;
 					params[t].start = t*step;
 					params[t].end = (t+1)*step;
 					params[t].verbose = false;
@@ -365,7 +365,7 @@ CLabels* CSVM::classify(CLabels* result)
 				}
 
 				params[t].svm = this;
-				params[t].result = result;
+				params[t].result = lab;
 				params[t].start = t*step;
 				params[t].end = num_vectors;
 				params[t].verbose = true;
@@ -387,7 +387,7 @@ CLabels* CSVM::classify(CLabels* result)
 	else 
 		return NULL;
 
-	return result;
+	return lab;
 }
 
 DREAL CSVM::classify_example(INT num)

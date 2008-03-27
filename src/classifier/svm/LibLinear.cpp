@@ -114,6 +114,8 @@ bool CLibLinear::train()
 		delete fun_obj;
 	}
 
+    delete[] prob.y;
+
 	return true;
 }
 #endif //HAVE_LAPACK

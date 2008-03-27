@@ -242,6 +242,7 @@ bool CMPDSVM::train()
 	delete[] dalphas;
 	delete[] hessres;
 	delete[] F;
+	delete kernel_cache;
 
 	return true;
 }
