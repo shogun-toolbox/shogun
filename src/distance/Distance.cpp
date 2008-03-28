@@ -74,8 +74,8 @@ bool CDistance::load(CHAR* fname)
 bool CDistance::save(CHAR* fname)
 {
 	INT i=0;
-	INT num_left=get_lhs()->get_num_vectors();
-	INT num_right=get_rhs()->get_num_vectors();
+	INT num_left=lhs->get_num_vectors();
+	INT num_right=rhs->get_num_vectors();
 	KERNELCACHE_IDX num_total=num_left*num_right;
 
 	CFile f(fname, 'w', F_DREAL);
@@ -104,24 +104,26 @@ bool CDistance::save(CHAR* fname)
 
 void CDistance::remove_lhs()
 { 
+	SG_UNREF(lhs);
 	lhs = NULL;
 }
 
 /// takes all necessary steps if the rhs is removed from kernel
 void CDistance::remove_rhs()
 {
+	SG_UNREF(rhs);
 	rhs = NULL;
 }
 
 
 void CDistance::do_precompute_matrix()
 {
-	INT num_left=get_lhs()->get_num_vectors();
-	INT num_right=get_rhs()->get_num_vectors();
+	INT num_left=lhs->get_num_vectors();
+	INT num_right=rhs->get_num_vectors();
 	SG_INFO( "precomputing distance matrix (%ix%i)\n", num_left, num_right) ;
 
 	ASSERT(num_left == num_right) ;
-	ASSERT(get_lhs()==get_rhs()) ;
+	ASSERT(lhs==rhs) ;
 	INT num=num_left ;
 	
 	delete[] precomputed_matrix ;
@@ -144,8 +146,8 @@ void CDistance::get_distance_matrix(DREAL** dst, INT* m, INT* n)
 	ASSERT(dst && m && n);
 
 	DREAL* result = NULL;
-	CFeatures* f1 = get_lhs();
-	CFeatures* f2 = get_rhs();
+	CFeatures* f1 = lhs;
+	CFeatures* f2 = rhs;
 
 	if (f1 && f2)
 	{
@@ -209,8 +211,8 @@ void CDistance::get_distance_matrix(DREAL** dst, INT* m, INT* n)
 SHORTREAL* CDistance::get_distance_matrix_shortreal(int &num_vec1, int &num_vec2, SHORTREAL* target)
 {
 	SHORTREAL* result = NULL;
-	CFeatures* f1 = get_lhs();
-	CFeatures* f2 = get_rhs();
+	CFeatures* f1 = lhs;
+	CFeatures* f2 = rhs;
 
 	if (f1 && f2)
 	{
@@ -279,8 +281,8 @@ SHORTREAL* CDistance::get_distance_matrix_shortreal(int &num_vec1, int &num_vec2
 DREAL* CDistance::get_distance_matrix_real(int &num_vec1, int &num_vec2, DREAL* target)
 {
 	DREAL* result = NULL;
-	CFeatures* f1 = get_lhs();
-	CFeatures* f2 = get_rhs();
+	CFeatures* f1 = lhs;
+	CFeatures* f2 = rhs;
 
 	if (f1 && f2)
 	{

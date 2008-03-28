@@ -23,9 +23,10 @@ CKernelMachine::~CKernelMachine()
 
 CLabels* CKernelMachine::classify(CLabels* output)
 {
-	if (kernel && kernel->get_rhs())
+	if (kernel && kernel->has_features())
 	{
-		INT num= kernel->get_rhs()->get_num_vectors();
+		CFeatures* f=kernel->get_rhs();
+		INT num= f->get_num_vectors();
 		ASSERT(num>0);
 
 		if (!output)
@@ -34,6 +35,8 @@ CLabels* CKernelMachine::classify(CLabels* output)
 		ASSERT(output && output->get_num_labels() == num);
 		for (INT i=0; i<num; i++)
 			output->set_label(i, classify_example(i));
+
+		SG_UNREF(f);
 
 		return output;
 	}

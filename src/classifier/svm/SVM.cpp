@@ -282,9 +282,9 @@ CLabels* CSVM::classify(CLabels* lab)
 		return false ;
 	}
 
-	if ( kernel && kernel->get_rhs() && kernel->get_rhs()->get_num_vectors())
+	if ( kernel && kernel->get_num_vec_rhs()>0 )
 	{
-		INT num_vectors=kernel->get_rhs()->get_num_vectors();
+		INT num_vectors=kernel->get_num_vec_rhs();
 
 		if (!lab)
 			lab=new CLabels(num_vectors);

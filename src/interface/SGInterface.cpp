@@ -835,6 +835,8 @@ bool CSGInterface::a_get_features()
 	}
 	delete[] target;
 
+	ASSERT(feat);
+
 	switch (feat->get_feature_class())
 	{
 		case C_SIMPLE:

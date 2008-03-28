@@ -302,8 +302,8 @@ bool CCombinedKernel::delete_optimization()
 
 void CCombinedKernel::compute_batch(INT num_vec, INT* vec_idx, DREAL* result, INT num_suppvec, INT* IDX, DREAL* weights, DREAL factor)
 {
-	ASSERT(get_rhs());
-	ASSERT(num_vec<=get_rhs()->get_num_vectors())
+	ASSERT(rhs);
+	ASSERT(num_vec<=rhs->get_num_vectors())
 	ASSERT(num_vec>0);
 	ASSERT(vec_idx);
 	ASSERT(result);

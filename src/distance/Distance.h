@@ -154,13 +154,13 @@ class CDistance : public CSGObject
 		 *
 		 * @return left-hand side features
 		 */
-		inline CFeatures* get_lhs() { return lhs; };
+		inline CFeatures* get_lhs() { SG_REF(lhs); return lhs; };
 
 		/** get right-hand side features used in distance matrix
 		 *
 		 * @return right-hand side features
 		 */
-		inline CFeatures* get_rhs() { return rhs; };
+		inline CFeatures* get_rhs() { SG_REF(rhs); return rhs; };
 
 		/// takes all necessary steps if the lhs is removed from distance matrix
 		virtual void remove_lhs();

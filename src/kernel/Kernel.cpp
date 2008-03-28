@@ -94,8 +94,8 @@ void CKernel::get_kernel_matrix(DREAL** dst, INT* m, INT* n)
 	ASSERT(dst && m && n);
 
 	DREAL* result = NULL;
-	CFeatures* f1 = get_lhs();
-	CFeatures* f2 = get_rhs();
+	CFeatures* f1 = lhs;
+	CFeatures* f2 = rhs;
 
 	if (f1 && f2)
 	{
@@ -160,8 +160,8 @@ SHORTREAL* CKernel::get_kernel_matrix_shortreal(int &num_vec1, int &num_vec2,
 		SHORTREAL* target)
 {
 	SHORTREAL* result = NULL;
-	CFeatures* f1 = get_lhs();
-	CFeatures* f2 = get_rhs();
+	CFeatures* f1 = lhs;
+	CFeatures* f2 = rhs;
 
 	if (f1 && f2)
 	{
@@ -231,8 +231,8 @@ SHORTREAL* CKernel::get_kernel_matrix_shortreal(int &num_vec1, int &num_vec2,
 DREAL* CKernel::get_kernel_matrix_real(int &num_vec1, int &num_vec2, DREAL* target)
 {
 	DREAL* result = NULL;
-	CFeatures* f1 = get_lhs();
-	CFeatures* f2 = get_rhs();
+	CFeatures* f1 = lhs;
+	CFeatures* f2 = rhs;
 
 	if (f1 && f2)
 	{
@@ -351,7 +351,7 @@ bool CKernel::init(CFeatures* l, CFeatures* r)
 void CKernel::kernel_cache_init(INT buffsize, bool regression_hack)
 {
 	INT i;
-	INT totdoc=get_lhs()->get_num_vectors();
+	INT totdoc=lhs->get_num_vectors();
 	ULONG buffer_size=0;
 
 	//in regression the additional constraints are made by doubling the training data
@@ -417,7 +417,7 @@ void CKernel::get_kernel_row(INT docnum, INT *active2dnum, DREAL *buffer, bool f
 
 		if (full_line)
 		{
-			for(j=0;j<get_lhs()->get_num_vectors();j++)
+			for(j=0;j<lhs->get_num_vectors();j++)
 			{
 				if(kernel_cache.totdoc2active[j] >= 0)
 					buffer[j]=kernel_cache.buffer[start+kernel_cache.totdoc2active[j]];
@@ -440,7 +440,7 @@ void CKernel::get_kernel_row(INT docnum, INT *active2dnum, DREAL *buffer, bool f
 	{
 		if (full_line)
 		{
-			for(j=0;j<get_lhs()->get_num_vectors();j++)
+			for(j=0;j<lhs->get_num_vectors();j++)
 				buffer[j]=(KERNELCACHE_ELEM) kernel(docnum, j);
 		}
 		else
@@ -534,7 +534,7 @@ void CKernel::cache_multiple_kernel_rows(INT* rows, INT num_rows)
 		pthread_t threads[parallel.get_num_threads()-1];
 		S_KTHREAD_PARAM params[parallel.get_num_threads()-1];
 		INT num_threads=parallel.get_num_threads()-1;
-		INT num_vec=get_lhs()->get_num_vectors();
+		INT num_vec=lhs->get_num_vectors();
 		ASSERT(num_vec>0);
 		BYTE* needs_computation=new BYTE[num_vec];
 		ASSERT(needs_computation);
@@ -774,8 +774,8 @@ bool CKernel::load(CHAR* fname)
 bool CKernel::save(CHAR* fname)
 {
 	INT i=0;
-	INT num_left=get_lhs()->get_num_vectors();
-	INT num_right=get_rhs()->get_num_vectors();
+	INT num_left=lhs->get_num_vectors();
+	INT num_right=rhs->get_num_vectors();
 	KERNELCACHE_IDX num_total=num_left*num_right;
 
 	CFile f(fname, 'w', F_DREAL);
@@ -809,6 +809,7 @@ void CKernel::remove_lhs()
 		cache_reset();
 #endif //USE_SVMLIGHT
 
+	SG_UNREF(lhs);
 	lhs = NULL;
 }
 
@@ -819,6 +820,8 @@ void CKernel::remove_rhs()
 	if (rhs)
 		cache_reset();
 #endif //USE_SVMLIGHT
+
+	SG_UNREF(rhs);
 	rhs = NULL;
 }
 
@@ -1042,12 +1045,12 @@ void CKernel::set_subkernel_weights(DREAL* weights, INT num_weights)
 
 void CKernel::do_precompute_matrix()
 {
-	INT num_left=get_lhs()->get_num_vectors();
-	INT num_right=get_rhs()->get_num_vectors();
+	INT num_left=lhs->get_num_vectors();
+	INT num_right=rhs->get_num_vectors();
 	SG_INFO( "precomputing kernel matrix (%ix%i)\n", num_left, num_right) ;
 
 	ASSERT(num_left == num_right) ;
-	ASSERT(get_lhs()==get_rhs()) ;
+	ASSERT(lhs==rhs) ;
 	INT num=num_left ;
 	
 	delete[] precomputed_matrix ;

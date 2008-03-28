@@ -55,6 +55,7 @@ bool CKMeans::train()
 
 	clustknb(false, NULL);
 	delete[] Weights;
+	SG_UNREF(lhs);
 
 	return true;
 }

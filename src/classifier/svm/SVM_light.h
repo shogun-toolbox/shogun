@@ -591,7 +591,6 @@ protected:
 				   CMath::swap(i,j) ;
 			   DREAL sum=0 ;
 			   INT num_weights=-1 ;
-			   //INT num = kernel->get_rhs()->get_num_vectors() ;
 			   const DREAL * w = kernel->get_subkernel_weights(num_weights) ;
 			   for (INT n=0; n<num_precomputed_subkernels; n++)
 				   if (w[n]!=0)

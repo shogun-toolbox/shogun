@@ -873,29 +873,37 @@ void* CWeightedDegreeStringKernel::compute_batch_helper(void* p)
 	DREAL factor=params->factor;
 	INT* vec_idx=params->vec_idx;
 
+	CStringFeatures<CHAR>* rhs_feat=((CStringFeatures<CHAR>*) wd->get_rhs());
+	CStringFeatures<CHAR>* lhs_feat=((CStringFeatures<CHAR>*) wd->get_lhs());
+	CAlphabet* alpha=lhs_feat->get_alphabet();
+
 	for (INT i=params->start; i<params->end; i++)
 	{
 		INT len=0;
-		CHAR* char_vec=((CStringFeatures<CHAR>*) wd->get_rhs())->get_feature_vector(vec_idx[i], len);
+		CHAR* char_vec=rhs_feat->get_feature_vector(vec_idx[i], len);
 		for (INT k=j; k<CMath::min(len,j+wd->get_degree()); k++)
-			vec[k]=((CStringFeatures<CHAR>*) wd->get_lhs())->get_alphabet()->remap_to_bin(char_vec[k]);
+			vec[k]=alpha->remap_to_bin(char_vec[k]);
 
 		ASSERT(tries!=NULL) ;
 		result[i] += factor*tries->compute_by_tree_helper(vec, len, j, j, j, weights, (length!=0))/wd->get_normalization_const();
 	}
+
+	SG_UNREF(alpha);
+	SG_UNREF(lhs_feat);
+	SG_UNREF(rhs_feat);
 
 	return NULL;
 }
 
 void CWeightedDegreeStringKernel::compute_batch(INT num_vec, INT* vec_idx, DREAL* result, INT num_suppvec, INT* IDX, DREAL* alphas, DREAL factor)
 {
-	ASSERT(get_rhs());
-    ASSERT(num_vec<=get_rhs()->get_num_vectors());
+	ASSERT(rhs);
+    ASSERT(num_vec<=rhs->get_num_vectors());
 	ASSERT(num_vec>0);
 	ASSERT(vec_idx);
 	ASSERT(result);
 
-	INT num_feat=((CStringFeatures<CHAR>*) get_rhs())->get_max_vector_length();
+	INT num_feat=((CStringFeatures<CHAR>*) rhs)->get_max_vector_length();
 	ASSERT(num_feat>0);
 	INT num_threads=parallel.get_num_threads();
 	ASSERT(num_threads>0);

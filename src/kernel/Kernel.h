@@ -162,13 +162,46 @@ class CKernel : public CSGObject
 		 *
 		 * @return features of left-hand side
 		 */
-		inline CFeatures* get_lhs() { return lhs; }
+		inline CFeatures* get_lhs() { SG_REF(lhs); return lhs; }
 
 		/** get right-hand side of features used in kernel
 		 *
 		 * @return features of right-hand side
 		 */
-		inline CFeatures* get_rhs() { return rhs; }
+		inline CFeatures* get_rhs() { SG_REF(rhs); return rhs; }
+
+		/** get number of vectors of lhs features
+		 *
+		 * @return number of vectors of left-hand side
+		 */
+		inline INT get_num_vec_lhs()
+		{
+			if (!lhs)
+				return 0;
+			else
+				return lhs->get_num_vectors();
+		}
+
+		/** get number of vectors of rhs features
+		 *
+		 * @return number of vectors of right-hand side
+		 */
+		inline INT get_num_vec_rhs()
+		{
+			if (!rhs)
+				return 0;
+			else
+				return rhs->get_num_vectors();
+		}
+
+		/** test whether features have been assigned to lhs and rhs
+		 *
+		 * @return true if features are assigned
+		 */
+		inline bool has_features()
+		{
+			return lhs && rhs;
+		}
 
 		/** remove lhs from kernel */
 		virtual void remove_lhs();

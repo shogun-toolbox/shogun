@@ -37,8 +37,8 @@ SHORTREAL* CCustomKernel::get_kernel_matrix_shortreal(INT &num_vec1, INT &num_ve
 		return CKernel::get_kernel_matrix_shortreal(num_vec1, num_vec2, target);
 	else
 	{
-		CFeatures* f1 = get_lhs();
-		CFeatures* f2 = get_rhs();
+		CFeatures* f1 = lhs;
+		CFeatures* f2 = rhs;
 		if (f1 && f2)
 		{
 			num_vec1=f1->get_num_vectors();

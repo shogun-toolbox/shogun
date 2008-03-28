@@ -41,7 +41,7 @@ bool CKRR::train()
   delete[] alpha;
   
   ASSERT(labels);
-  ASSERT(kernel && kernel->get_lhs());
+  ASSERT(kernel && kernel->has_features());
 
   // Get kernel matrix
   INT m = 0;

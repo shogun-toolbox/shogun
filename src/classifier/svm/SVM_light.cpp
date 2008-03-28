@@ -304,7 +304,7 @@ bool CSVMLight::setup_auc_maximization()
 	INT num=0;
 	ASSERT(labels);
 	INT* int_labels=labels->get_int_labels(num);
-	ASSERT(kernel->get_rhs()->get_num_vectors() == num) ;
+	ASSERT(kernel->get_num_vec_rhs() == num) ;
 	
 	// count positive and negative
 	INT num_pos = 0 ;
@@ -394,18 +394,17 @@ bool CSVMLight::train()
 	learn_parm->rho=1.0;
 	learn_parm->xa_depth=0;
 
-    if (!kernel || !kernel->get_lhs())
+    if (!kernel || !kernel->has_features())
     {
         SG_ERROR( "SVM_light can not proceed without initialized kernel!\n");
         return false ;
     }
 	ASSERT(labels && labels->get_num_labels());
 	ASSERT(labels->is_two_class_labeling());
-    ASSERT(kernel->get_lhs()->get_num_vectors()
-            == labels->get_num_labels());
+    ASSERT(kernel->get_num_vec_lhs() == labels->get_num_labels());
 
 	// MKL stuff
-	buffer_num = new DREAL[kernel->get_rhs()->get_num_vectors()] ;
+	buffer_num = new DREAL[kernel->get_num_vec_rhs()];
 	delete[] buffer_numcols ;
 	buffer_numcols = NULL ;
 
@@ -430,7 +429,7 @@ bool CSVMLight::train()
 	SG_DEBUG( "get_linadd_enabled() = %i\n", get_linadd_enabled()) ;
 	SG_DEBUG( "get_batch_computation_enabled() = %i\n", get_batch_computation_enabled()) ;
 	SG_DEBUG( "kernel->get_num_subkernels() = %i\n", kernel->get_num_subkernels()) ;
-	SG_DEBUG( "estimated time: %1.1f minutes\n", 5e-11*pow(kernel->get_num_subkernels(),2.22)*pow(kernel->get_rhs()->get_num_vectors(),1.68)*pow(CMath::log2(1/weight_epsilon),2.52)/60) ;
+	SG_DEBUG( "estimated time: %1.1f minutes\n", 5e-11*pow(kernel->get_num_subkernels(),2.22)*pow(kernel->get_num_vec_rhs(),1.68)*pow(CMath::log2(1/weight_epsilon),2.52)/60) ;
 
 	use_kernel_cache = !(use_precomputed_subkernels || (kernel->get_kernel_type() == K_CUSTOM) ||
 						 (get_linadd_enabled() && kernel->has_property(KP_LINADD)) ||
@@ -470,7 +469,7 @@ bool CSVMLight::train()
 
 	if (use_precomputed_subkernels)
 	{
-		INT num = kernel->get_rhs()->get_num_vectors() ;
+		INT num = kernel->get_num_vec_rhs();
 		INT num_kernels = kernel->get_num_subkernels() ;
 		num_precomputed_subkernels=num_kernels ;
 		precomputed_subkernels=new SHORTREAL*[num_precomputed_subkernels] ;
@@ -1702,7 +1701,7 @@ void CSVMLight::update_linear_component_mkl(INT* docs, INT* label,
 											INT totdoc,
 											double *lin, DREAL *aicache)
 {
-	INT num         = kernel->get_rhs()->get_num_vectors() ;
+	INT num = kernel->get_num_vec_rhs();
 	INT num_weights = -1;
 	INT num_kernels = kernel->get_num_subkernels() ;
 	const DREAL* w   = kernel->get_subkernel_weights(num_weights);
@@ -2066,7 +2065,7 @@ void CSVMLight::update_linear_component_mkl_linadd(INT* docs, INT* label,
 {
 	// kernel with LP_LINADD property is assumed to have 
 	// compute_by_subkernel functions
-	INT num         = kernel->get_rhs()->get_num_vectors() ;
+	INT num = kernel->get_num_vec_rhs();
 	INT num_weights = -1;
 	INT num_kernels = kernel->get_num_subkernels() ;
 	const DREAL* w   = kernel->get_subkernel_weights(num_weights);

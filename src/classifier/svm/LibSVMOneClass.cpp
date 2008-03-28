@@ -29,7 +29,7 @@ CLibSVMOneClass::~CLibSVMOneClass()
 
 bool CLibSVMOneClass::train()
 {
-	problem.l = kernel->get_lhs()->get_num_vectors();
+	problem.l = kernel->get_num_vec_lhs();
 	
 	struct svm_node* x_space;
 	SG_INFO( "%d train data points\n", problem.l);

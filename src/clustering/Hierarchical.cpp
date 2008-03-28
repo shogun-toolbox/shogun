@@ -132,6 +132,7 @@ bool CHierarchical::train()
 	ASSERT(table_size>0);
 	delete[] distances;
 	delete[] index;
+	SG_UNREF(lhs)
 
 	return true;
 }
