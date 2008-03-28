@@ -32,6 +32,9 @@ enum IFType
 
 	STRING_BYTE,
 	STRING_CHAR,
+	STRING_INT,
+	STRING_SHORT,
+	STRING_WORD,
 };
 
 class CSGInterface : public CSGObject
