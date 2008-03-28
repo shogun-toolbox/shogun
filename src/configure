@@ -91,7 +91,6 @@ TARGET="shogun"
 
 # stuff needed for autodetections (definitely needs cleanup)
 TMPLOG="configure.log"
-rm -f "$TMPLOG"
 TMPMAK="./configure-$RANDOM-$$-makefile"
 TMPC="./configure-$RANDOM-$$.c"
 TMPCPP="./configure-$RANDOM-$$.cpp"
@@ -572,6 +571,9 @@ EOF
     exit 0
   fi
 done # for parm in ...
+
+# remove stale log
+rm -f "$TMPLOG"
 
 # 1st pass checking for vital options
 _install=install
