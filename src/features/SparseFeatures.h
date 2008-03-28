@@ -567,9 +567,6 @@ template <class ST> class CSparseFeatures: public CFeatures
 			num_vectors=num_vec;
 
 			SG_INFO( "converting dense feature matrix to sparse one\n");
-			num_feat=num_features;
-			num_vec=num_vectors;
-
 			INT* num_feat_entries=new int[num_vectors];
 			ASSERT(num_feat_entries);
 
@@ -880,6 +877,7 @@ template <class ST> class CSparseFeatures: public CFeatures
 
 			if (f)
 			{
+				free_sparse_feature_matrix();
 				num_vectors=0;
 				num_features=0;
 
@@ -917,7 +915,6 @@ template <class ST> class CSparseFeatures: public CFeatures
 
 				lab=new CLabels(num_vectors);
 				ASSERT(lab);
-				free_sparse_feature_matrix();
 				sparse_feature_matrix=new TSparse<ST>[num_vectors];
 				ASSERT(sparse_feature_matrix);
 
