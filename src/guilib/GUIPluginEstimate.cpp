@@ -29,7 +29,10 @@ CGUIPluginEstimate::~CGUIPluginEstimate()
 bool CGUIPluginEstimate::new_estimator(CHAR* param)
 {
 	delete estimator;
-	estimator=new CPluginEstimate();
+	param=CIO::skip_spaces(param);
+	sscanf(param, "%le %le", &pos_pseudo, &neg_pseudo);
+
+	estimator=new CPluginEstimate(pos_pseudo, neg_pseudo);
     return false;
 }
 
@@ -46,11 +49,10 @@ bool CGUIPluginEstimate::train(CHAR* param)
 		{
 			ASSERT(trainfeatures->get_feature_type()==F_WORD);
 
-			param=CIO::skip_spaces(param);
-			sscanf(param, "%le %le", &pos_pseudo, &neg_pseudo);
-
+			estimator->set_features(trainfeatures);
+			estimator->set_labels(trainlabels);
 			if (estimator)
-				result=estimator->train(trainfeatures, trainlabels, pos_pseudo, neg_pseudo);
+				result=estimator->train();
 			else
 				SG_ERROR( "no estimator available\n");
 		}
@@ -125,10 +127,10 @@ bool CGUIPluginEstimate::test(CHAR* param)
 	}
 
 	SG_INFO( "starting estimator testing\n") ;
-	estimator->set_testfeatures((CStringFeatures<WORD>*) testfeatures);
-	DREAL* output=estimator->test();
-
+	estimator->set_features((CStringFeatures<WORD>*) testfeatures);
 	INT len=0;
+	DREAL* output=estimator->classify()->get_labels(len);
+
 	INT total=	testfeatures->get_num_vectors();
 	INT* label= testlabels->get_int_labels(len);
 
@@ -176,7 +178,7 @@ CLabels* CGUIPluginEstimate::classify(CLabels* output)
 		return 0;
 	}
 
-	estimator->set_testfeatures((CStringFeatures<WORD>*) testfeatures);
+	estimator->set_features((CStringFeatures<WORD>*) testfeatures);
 
 	return estimator->classify(output);
 }
@@ -197,7 +199,7 @@ DREAL CGUIPluginEstimate::classify_example(INT idx)
 		return 0;
 	}
 
-	estimator->set_testfeatures((CStringFeatures<WORD>*) testfeatures);
+	estimator->set_features((CStringFeatures<WORD>*) testfeatures);
 
 	return estimator->classify_example(idx);
 }
