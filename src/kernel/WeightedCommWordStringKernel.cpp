@@ -34,6 +34,7 @@ CWeightedCommWordStringKernel::CWeightedCommWordStringKernel(
 
 CWeightedCommWordStringKernel::~CWeightedCommWordStringKernel()
 {
+	delete[] weights;
 }
 
 bool CWeightedCommWordStringKernel::init(CFeatures* l, CFeatures* r)

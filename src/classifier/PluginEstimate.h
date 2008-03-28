@@ -11,44 +11,47 @@
 #ifndef _PLUGINESTIMATE_H___
 #define _PLUGINESTIMATE_H___
 
-#include "base/SGObject.h"
+#include "classifier/Classifier.h"
 #include "features/StringFeatures.h"
 #include "features/Labels.h"
 #include "distributions/hmm/LinearHMM.h"
 
 /** class PluginEstimate */
-class CPluginEstimate: public CSGObject
+class CPluginEstimate: public CClassifier
 {
 	public:
-		/** default constructor */
-		CPluginEstimate();
-		~CPluginEstimate();
+		/** default constructor
+		 * @param pos_pseudo pseudo for positive model
+		 * @param neg_pseudo pseudo for negative model
+		 */
+		CPluginEstimate(DREAL pos_pseudo=1e-10, DREAL neg_pseudo=1e-10);
+		virtual ~CPluginEstimate();
 
 		/** train the estimate
 		 *
-		 * @param features features to train
-		 * @param labels features' labels
-		 * @param pos_pseudo pseudo for positive model
-		 * @param neg_pseudo pseudo for negative model
 		 * @return if training was successful
 		 */
-		bool train(CStringFeatures<WORD>* features, CLabels* labels,
-			DREAL pos_pseudo=1e-10, DREAL neg_pseudo=1e-10);
-
-		/** test the estimate
-		 *
-		 * @return test result
-		 */
-		DREAL* test();
-
-		/** set test features
-		 *
-		 * @param f features for test
-		 */
-		void set_testfeatures(CStringFeatures<WORD>* f) { test_features=f; }
+		bool train();
 
 		/// classify all test features
 		CLabels* classify(CLabels* output=NULL);
+
+		/** set features
+		 *
+		 * @param feat features to set
+		 */
+		virtual inline void set_features(CStringFeatures<WORD>* feat)
+		{
+			SG_UNREF(features);
+			SG_REF(feat);
+			features=feat;
+		}
+
+		/** get features
+		 *
+		 * @return features
+		 */
+		virtual CStringFeatures<WORD>* get_features() { SG_REF(features); return features; }
 
 		/// classify the test feature vector indexed by idx
 		DREAL classify_example(INT idx);
@@ -175,11 +178,17 @@ class CPluginEstimate: public CSGObject
 		}
 
 	protected:
+		/** pseudo count for positive class */
+		DREAL m_pos_pseudo;
+		/** pseudo count for negative class */
+		DREAL m_neg_pseudo;
+
 		/** positive model */
 		CLinearHMM* pos_model;
 		/** negative model */
 		CLinearHMM* neg_model;
-		/** test features */
-		CStringFeatures<WORD>* test_features;
+
+		/** features */
+		CStringFeatures<WORD>* features;
 };
 #endif

@@ -16,7 +16,9 @@
 #include "classifier/PluginEstimate.h"
 
 
-CPluginEstimate::CPluginEstimate() : CSGObject(), pos_model(NULL), neg_model(NULL), test_features(NULL)
+CPluginEstimate::CPluginEstimate(DREAL pos_pseudo, DREAL neg_pseudo) :
+	CClassifier(), m_pos_pseudo(NULL), m_neg_pseudo(NULL), pos_model(NULL),
+	neg_model(NULL), features(NULL)
 {
 }
 
@@ -24,10 +26,15 @@ CPluginEstimate::~CPluginEstimate()
 {
 	delete pos_model;
 	delete neg_model;
+
+	SG_UNREF(features);
 }
 
-bool CPluginEstimate::train(CStringFeatures<WORD>* features, CLabels* labels, DREAL pos_pseudo_count, DREAL neg_pseudo_count)
+bool CPluginEstimate::train()
 {
+	ASSERT(labels);
+	ASSERT(features);
+
 	delete pos_model;
 	delete neg_model;
 
@@ -50,9 +57,9 @@ bool CPluginEstimate::train(CStringFeatures<WORD>* features, CLabels* labels, DR
 			neg_indizes[neg_idx++]=i;
 	}
 
-	SG_INFO( "training using pseudos %f and %f\n", pos_pseudo_count, neg_pseudo_count);
-	pos_model->train(pos_indizes, pos_idx, pos_pseudo_count);
-	neg_model->train(neg_indizes, neg_idx, neg_pseudo_count);
+	SG_INFO( "training using pseudos %f and %f\n", m_pos_pseudo, m_neg_pseudo);
+	pos_model->train(pos_indizes, pos_idx, m_pos_pseudo);
+	neg_model->train(neg_indizes, neg_idx, m_neg_pseudo);
 
 	delete[] pos_indizes;
 	delete[] neg_indizes;
@@ -60,36 +67,15 @@ bool CPluginEstimate::train(CStringFeatures<WORD>* features, CLabels* labels, DR
 	return true;
 }
 
-DREAL* CPluginEstimate::test()
-{
-	CStringFeatures<WORD>* features=test_features;
-	ASSERT(features);
-
-	if ((!pos_model) || (!neg_model))
-	  {
-       SG_ERROR( "model(s) not assigned\n");
-	    return NULL ;
-	  } ;
-
-	DREAL* result=new DREAL[features->get_num_vectors()];
-	ASSERT(result);
-
-	for (INT vec=0; vec<features->get_num_vectors(); vec++)
-		result[vec]=classify_example(vec);
-
-	return result;
-}
-
 CLabels* CPluginEstimate::classify(CLabels* result)
 {
-	CStringFeatures<WORD>* features=test_features;
-
 	ASSERT(features);
 
 	if (!result)
 		result=new CLabels(features->get_num_vectors());
 
 	ASSERT(result);
+	ASSERT(result->get_num_labels() == features->get_num_vectors());
 
 	for (INT vec=0; vec<features->get_num_vectors(); vec++)
 		result->set_label(vec, classify_example(vec));
@@ -99,15 +85,13 @@ CLabels* CPluginEstimate::classify(CLabels* result)
 
 DREAL CPluginEstimate::classify_example(INT idx)
 {
-	INT len;
+	ASSERT(features);
 
-	WORD* vector=((CStringFeatures<WORD>*) test_features)->get_feature_vector(idx, len);
+	INT len;
+	WORD* vector=features->get_feature_vector(idx, len);
 
 	if ((!pos_model) || (!neg_model))
-	  {
-       SG_ERROR( "model(s) not assigned\n");
-	    return NAN;
-	  } ;
+		SG_ERROR( "model(s) not assigned\n");
 	  
 	DREAL result=pos_model->get_log_likelihood_example(vector, len) - neg_model->get_log_likelihood_example(vector, len);
 	return result;

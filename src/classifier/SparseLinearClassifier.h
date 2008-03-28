@@ -86,7 +86,7 @@ class CSparseLinearClassifier : public CClassifier
 		 */
 		inline void set_features(CSparseFeatures<DREAL>* feat)
 		{
-			SG_REF(features);
+			SG_UNREF(features);
 			SG_REF(feat);
 			features=feat;
 		}

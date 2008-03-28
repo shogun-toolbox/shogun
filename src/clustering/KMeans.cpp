@@ -35,6 +35,8 @@ CKMeans::CKMeans(INT k_, CDistance* d): max_iter(10000), k(k_), dimensions(0), R
 
 CKMeans::~CKMeans()
 {
+	delete[] R;
+	delete[] mus;
 }
 
 bool CKMeans::train()
@@ -47,6 +49,7 @@ bool CKMeans::train()
 	INT num=lhs->get_num_vectors();
 
 	Weights=new DREAL[num];
+	ASSERT(Weights);
 	for (INT i=0; i<num; i++)
 		Weights[i]=1.0;
 

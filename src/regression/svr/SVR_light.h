@@ -33,8 +33,6 @@ class CSVRLight:public CSVMLight
 		 * @param lab labels
 		 */
 		CSVRLight(DREAL C, DREAL epsilon, CKernel* k, CLabels* lab);
-		virtual ~CSVRLight() {};
-
 		/** train regression
 		 *
 		 * @return if training was successful

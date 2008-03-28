@@ -148,6 +148,8 @@ CLabels* CMultiClassSVM::classify_one_vs_one(CLabels* result)
 			result->set_label(v, winner);
 		}
 
+		delete[] votes;
+
 		for (INT i=0; i<m_num_svms; i++)
 			delete outputs[i];
 		delete[] outputs;

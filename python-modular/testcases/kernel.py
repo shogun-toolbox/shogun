@@ -124,15 +124,16 @@ def _kernel_pie (indata):
 	fun=eval('util.get_feats_'+indata['feature_class'])
 	feats=fun(indata)
 	labels=Labels(double(indata['classifier_labels']))
-	pie.train(feats['train'], labels)
+	pie.set_labels(labels)
+	pie.set_features(feats['train'])
+	pie.train()
 
 	fun=eval(indata['name']+'Kernel')
 	kernel=fun(feats['train'], feats['train'], pie)
 	km_train=max(abs(indata['km_train']-kernel.get_kernel_matrix()).flat)
 
 	kernel.init(feats['train'], feats['test'])
-	pie.set_testfeatures(feats['test'])
-	pie.test()
+	pie.set_features(feats['test'])
 	km_test=max(abs(indata['km_test']-kernel.get_kernel_matrix()).flat)
 	classified=max(abs(
 		pie.classify().get_labels()-indata['classifier_classified']))

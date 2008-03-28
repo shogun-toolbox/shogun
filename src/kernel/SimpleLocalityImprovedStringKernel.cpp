@@ -17,7 +17,7 @@
 CSimpleLocalityImprovedStringKernel::CSimpleLocalityImprovedStringKernel(
 	INT size, INT l, INT id, INT od)
 	: CStringKernel<CHAR>(size), length(l), inner_degree(id), outer_degree(od),
-	match(NULL), pyramid_weights(NULL)
+	pyramid_weights(NULL)
 {
 }
 
@@ -25,7 +25,7 @@ CSimpleLocalityImprovedStringKernel::CSimpleLocalityImprovedStringKernel(
 	CStringFeatures<CHAR>* l, CStringFeatures<CHAR>* r,
 	INT len, INT id, INT od)
 	: CStringKernel<CHAR>(10), length(len), inner_degree(id), outer_degree(od),
-	match(NULL), pyramid_weights(NULL)
+	pyramid_weights(NULL)
 {
 	init(l, r);
 }
@@ -42,8 +42,8 @@ bool CSimpleLocalityImprovedStringKernel::init(CFeatures* l, CFeatures* r)
 	if (!result)
 		return false;
 	INT num_features = ((CStringFeatures<CHAR>*) l)->get_max_vector_length();
-	match = new CHAR[num_features];
 	pyramid_weights = new DREAL[num_features];
+	ASSERT(pyramid_weights);
 	SG_INFO("initializing pyramid weights: size=%ld length=%i\n",
 		num_features, length);
 
@@ -80,14 +80,11 @@ bool CSimpleLocalityImprovedStringKernel::init(CFeatures* l, CFeatures* r)
 	for (j = 0; j < pyra_len; j++)
 		pyramid_weights[j] /= PYRAL_pot;
 	}
-	return match;
+	return true;
 }
 
 void CSimpleLocalityImprovedStringKernel::cleanup()
 {
-	delete[] match;
-	match = NULL;
-
 	delete[] pyramid_weights;
 	pyramid_weights = NULL;
 }
@@ -104,7 +101,7 @@ bool CSimpleLocalityImprovedStringKernel::save_init(FILE* dest)
 
 DREAL CSimpleLocalityImprovedStringKernel::dot_pyr (const CHAR* const x1,
 	     const CHAR* const x2, const INT NOF_NTS, const INT NTWIDTH,
-	     const INT DEGREE1, const INT DEGREE2, CHAR *stage1, DREAL *pyra)
+	     const INT DEGREE1, const INT DEGREE2, DREAL *pyra)
 {
 	const INT PYRAL = 2*NTWIDTH-1; // total window length
 	INT pyra_len, pyra_len2;
@@ -146,18 +143,18 @@ DREAL CSimpleLocalityImprovedStringKernel::dot_pyr (const CHAR* const x1,
 	register INT conv;
 	register INT i;
 	register INT j;
-	for (i = 0; i < NOF_NTS; i++)
-		stage1[i] = (x1[i] == x2[i]);
 
 	sum = 0.0;
 	conv = 0;
 	for (j = 0; j < PYRAL; j++)
-	conv += stage1[j];
+		conv += (x1[j] == x2[j]) ? 1 : 0;
+
 	for (i = 0; i < NOF_NTS-PYRAL+1; i++)
 	{
 		register DREAL pot2;
 		if (i>0)
-			conv += stage1[i+PYRAL-1]-stage1[i-1];
+			conv += ((x1[i+PYRAL-1] == x2[i+PYRAL-1]) ? 1 : 0 ) - 
+				((x1[i-1] == x2[i-1]) ? 1 : 0);
 		{ /* potencing of conv -- double is faster*/
 		register DREAL conv2 = conv;
 		pot2 = (DEGREE1_1) ? 1.0 : conv2;
@@ -201,8 +198,7 @@ DREAL CSimpleLocalityImprovedStringKernel::compute(INT idx_a, INT idx_b)
 
 	DREAL dpt;
 
-	dpt = dot_pyr (avec, bvec, alen, length, inner_degree, outer_degree,
-		match, pyramid_weights);
+	dpt = dot_pyr(avec, bvec, alen, length, inner_degree, outer_degree, pyramid_weights);
 	dpt = dpt / pow((double)alen, (double)outer_degree);
 	return (DREAL) dpt;
 }

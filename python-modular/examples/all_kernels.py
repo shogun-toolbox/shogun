@@ -739,15 +739,15 @@ def plugin_estimate ():
 	pie=PluginEstimate()
 	lab=rand(feats_train.get_num_vectors()).round()*2-1
 	labels=Labels(array(lab))
-
-	pie.train(feats_train, labels)
+	pie.set_labels(labels)
+	pie.set_features(feats_train)
+	pie.train()
 
 	kernel=HistogramWordKernel(feats_train, feats_train, pie)
 	km_train=kernel.get_kernel_matrix()
 
 	kernel.init(feats_train, feats_test)
-	pie.set_testfeatures(feats_test)
-	pie.test()
+	pie.set_features(feats_test)
 	pie.classify().get_labels()
 	km_test=kernel.get_kernel_matrix()
 

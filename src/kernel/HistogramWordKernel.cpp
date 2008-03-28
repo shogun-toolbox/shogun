@@ -183,7 +183,7 @@ bool CHistogramWordKernel::init(CFeatures* p_l, CFeatures* p_r)
 					}
 					else
 					{
-						variance[idx]             += CMath::sq(estimate->log_derivative_pos_obsolete(vec[j], j)
+						variance[idx] += CMath::sq(estimate->log_derivative_pos_obsolete(vec[j], j)
 								-mean[idx])/num_vectors;
 						variance[idx+num_params] += CMath::sq(estimate->log_derivative_neg_obsolete(vec[j], j)
 								-mean[idx+num_params])/num_vectors;

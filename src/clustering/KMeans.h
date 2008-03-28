@@ -203,6 +203,7 @@ class CKMeans : public CDistanceMachine
 		/// centers of the clusters (size dimensions x k)
 		DREAL* mus;
 
+	private:
 		/// weighting over the train data
 		DREAL* Weights;
 };

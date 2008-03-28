@@ -15,13 +15,13 @@
 #include "features/SparseFeatures.h"
 
 CSparseEuclidianDistance::CSparseEuclidianDistance()
-: CSparseDistance<DREAL>()
+: CSparseDistance<DREAL>(), sq_lhs(NULL), sq_rhs(NULL)
 {
 }
 
 CSparseEuclidianDistance::CSparseEuclidianDistance(
 	CSparseFeatures<DREAL>* l, CSparseFeatures<DREAL>* r)
-: CSparseDistance<DREAL>()
+: CSparseDistance<DREAL>(), sq_lhs(NULL), sq_rhs(NULL)
 {
 	init(l, r);
 }
@@ -35,9 +35,12 @@ bool CSparseEuclidianDistance::init(CFeatures* l, CFeatures* r)
 {
 	CSparseDistance<DREAL>::init(l, r);
 
+	cleanup();
+
 	sq_lhs= new DREAL[lhs->get_num_vectors()];
 	ASSERT(sq_lhs);
 	sq_lhs=((CSparseFeatures<DREAL>*) lhs)->compute_squared(sq_lhs);
+
 	if (lhs==rhs)
 		sq_rhs=sq_lhs;
 	else

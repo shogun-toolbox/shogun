@@ -109,7 +109,7 @@ class CLinearClassifier : public CClassifier
 		 */
 		virtual inline void set_features(CRealFeatures* feat)
 		{
-			SG_REF(features);
+			SG_UNREF(features);
 			SG_REF(feat);
 			features=feat;
 		}

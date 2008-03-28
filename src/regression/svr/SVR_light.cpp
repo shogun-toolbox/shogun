@@ -56,12 +56,10 @@ struct S_THREAD_PARAM
 CSVRLight::CSVRLight(DREAL C, DREAL eps, CKernel* k, CLabels* lab) : CSVMLight(C, k, lab)
 {
 	set_tube_epsilon(eps);
-	init();
 }
 
 CSVRLight::CSVRLight() : CSVMLight()
 {
-    init();
 }
 
 bool CSVRLight::train()

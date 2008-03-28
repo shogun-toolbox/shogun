@@ -94,14 +94,12 @@ class CSimpleLocalityImprovedStringKernel: public CStringKernel<CHAR>
 		 * @param NTWIDTH NT width
 		 * @param DEGREE1 degree 1
 		 * @param DEGREE2 degree 2
-		 * @param stage1 stage 1
 		 * @param pyra pyramid
 		 * @return dot product of pyramid (?)
 		 */
 		DREAL dot_pyr (const CHAR* const x1, const CHAR* const x2,
 				const INT NOF_NTS, const INT NTWIDTH,
-				const INT DEGREE1, const INT DEGREE2, CHAR *stage1,
-				DREAL *pyra);
+				const INT DEGREE1, const INT DEGREE2, DREAL *pyra);
 
 	protected:
 		/** compute kernel function for features a and b
@@ -121,8 +119,6 @@ class CSimpleLocalityImprovedStringKernel: public CStringKernel<CHAR>
 		INT inner_degree;
 		/** outer degree */
 		INT outer_degree;
-		/** match */
-		CHAR* match;
 		/** pyramid weights */
 		DREAL *pyramid_weights;
 };

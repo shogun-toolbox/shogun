@@ -98,8 +98,6 @@ class CLocalityImprovedStringKernel: public CStringKernel<CHAR>
 		INT inner_degree;
 		/** outer degree */
 		INT outer_degree;
-		/** match */
-		CHAR* match;
 };
 
 #endif /* _LOCALITYIMPROVEDSTRINGKERNEL_H__ */

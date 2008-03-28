@@ -126,6 +126,11 @@ void CLocalAlignmentStringKernel::cleanup()
 {
 	delete[] scaled_blosum;
 	scaled_blosum=NULL;
+
+	free(isAA);
+	isAA=NULL;
+	free(aaIndex);
+	aaIndex=NULL;
 }
 
 /* LogSum - default log funciotion. fast, but not exact */
@@ -384,10 +389,13 @@ DREAL CLocalAlignmentStringKernel::compute(INT idx_x, INT idx_y)
       aay[j++] = aaIndex[toupper(y[i])-'A'];
   ly = j;
 
+
   /* Compute the pair HMM score */
-  return(LAkernelcompute(aax,aay,lx,ly));
+  DREAL result=LAkernelcompute(aax,aay,lx,ly);
 
   /* Release memory */
   free(aax);
   free(aay);
+
+  return result;
 }

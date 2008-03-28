@@ -32,6 +32,9 @@ CHierarchical::CHierarchical(INT merges_, CDistance* d): merges(merges_), dimens
 
 CHierarchical::~CHierarchical()
 {
+	delete[] merge_distance;
+	delete[] assignment;
+	delete[] pairs;
 }
 
 bool CHierarchical::train()
@@ -45,14 +48,17 @@ bool CHierarchical::train()
 
 	const INT num_pairs=num*(num-1)/2;
 
+	delete[] merge_distance;
 	merge_distance=new DREAL[num];
 	ASSERT(merge_distance);
 	CMath::fill_vector(merge_distance, num, -1.0);
 
+	delete[] assignment;
 	assignment=new INT[num];
 	ASSERT(assignment);
 	CMath::range_fill_vector(assignment, num);
 
+	delete[] pairs;
 	pairs=new INT[2*num];
 	ASSERT(pairs);
 	CMath::fill_vector(pairs, 2*num, -1);
