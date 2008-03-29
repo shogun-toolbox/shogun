@@ -170,36 +170,15 @@ void CRInterface::get_word_matrix(WORD*& matrix, INT& num_feat, INT& num_vec)
 }
 
 
-void CRInterface::get_byte_sparsematrix(TSparse<BYTE>*& matrix, INT& num_feat, INT& num_vec)
-{
-}
-
-void CRInterface::get_char_sparsematrix(TSparse<CHAR>*& matrix, INT& num_feat, INT& num_vec)
-{
-}
-
-void CRInterface::get_int_sparsematrix(TSparse<INT>*& matrix, INT& num_feat, INT& num_vec)
-{
-}
-
-void CRInterface::get_shortreal_sparsematrix(TSparse<SHORTREAL>*& matrix, INT& num_feat, INT& num_vec)
-{
-}
-
 void CRInterface::get_real_sparsematrix(TSparse<DREAL>*& matrix, INT& num_feat, INT& num_vec)
 {
 }
 
-void CRInterface::get_short_sparsematrix(TSparse<SHORT>*& matrix, INT& num_feat, INT& num_vec)
+void CRInterface::get_byte_string_list(T_STRING<BYTE>*& strings, INT& num_str, INT& max_string_len)
 {
 }
 
-void CRInterface::get_word_sparsematrix(TSparse<WORD>*& matrix, INT& num_feat, INT& num_vec)
-{
-}
-
-
-void CRInterface::get_string_list(T_STRING<CHAR>*& strings, INT& num_str)
+void CRInterface::get_char_string_list(T_STRING<CHAR>*& strings, INT& num_str, INT& max_string_len)
 {
 	SEXP strs=get_arg_increment();
 	if (strs == R_NilValue || TYPEOF(CAR(strs)) != STRSXP || length(CAR(strs))>=1)
@@ -230,7 +209,15 @@ void CRInterface::get_string_list(T_STRING<CHAR>*& strings, INT& num_str)
 	}
 }
 
-void CRInterface::get_string_list(T_STRING<WORD>*& strings, INT& num_str)
+void CRInterface::get_int_string_list(T_STRING<INT>*& strings, INT& num_str, INT& max_string_len)
+{
+}
+
+void CRInterface::get_short_string_list(T_STRING<SHORT>*& strings, INT& num_str, INT& max_string_len)
+{
+}
+
+void CRInterface::get_word_string_list(T_STRING<WORD>*& strings, INT& num_str, INT& max_string_len)
 {
 	SEXP strs=get_arg_increment();
 	if (strs == R_NilValue || TYPEOF(CAR(strs)) != STRSXP || length(CAR(strs))>=1)
@@ -313,6 +300,17 @@ void CRInterface::set_shortreal_matrix(const SHORTREAL* matrix, INT num_feat, IN
 
 void CRInterface::set_real_matrix(const DREAL* matrix, INT num_feat, INT num_vec)
 {
+	SEXP feat=NULL;
+	PROTECT( feat = allocMatrix(REALSXP, num_feat, num_vec) );
+
+	for (INT i=0; i<num_vec; i++)
+	{
+		for (INT j=0; j<num_feat; j++)
+			REAL(feat)[i*num_feat+j]=(double) matrix[i*num_feat+j];
+	}
+
+	UNPROTECT(1);
+	set_arg_increment(feat);															\
 }
 
 void CRInterface::set_short_matrix(const SHORT* matrix, INT num_feat, INT num_vec)
@@ -323,40 +321,27 @@ void CRInterface::set_word_matrix(const WORD* matrix, INT num_feat, INT num_vec)
 {
 }
 
-
-void CRInterface::set_byte_sparsematrix(const TSparse<BYTE>* matrix, INT num_feat, INT num_vec)
+void CRInterface::set_real_sparsematrix(const TSparse<DREAL>* matrix, INT num_feat, INT num_vec, LONG nnz)
 {
 }
 
-void CRInterface::set_char_sparsematrix(const TSparse<CHAR>* matrix, INT num_feat, INT num_vec)
+void CRInterface::set_byte_string_list(const T_STRING<BYTE>* strings, INT num_str)
 {
 }
 
-void CRInterface::set_int_sparsematrix(const TSparse<INT>* matrix, INT num_feat, INT num_vec)
+void CRInterface::set_char_string_list(const T_STRING<CHAR>* strings, INT num_str)
 {
 }
 
-void CRInterface::set_shortreal_sparsematrix(const TSparse<SHORTREAL>* matrix, INT num_feat, INT num_vec)
+void CRInterface::set_int_string_list(const T_STRING<INT>* strings, INT num_str)
 {
 }
 
-void CRInterface::set_real_sparsematrix(const TSparse<DREAL>* matrix, INT num_feat, INT num_vec)
+void CRInterface::set_short_string_list(const T_STRING<SHORT>* strings, INT num_str)
 {
 }
 
-void CRInterface::set_short_sparsematrix(const TSparse<SHORT>* matrix, INT num_feat, INT num_vec)
-{
-}
-
-void CRInterface::set_word_sparsematrix(const TSparse<WORD>* matrix, INT num_feat, INT num_vec)
-{
-}
-
-void CRInterface::set_string_list(const T_STRING<CHAR>* strings, INT num_str)
-{
-}
-
-void CRInterface::set_string_list(const T_STRING<WORD>* strings, INT num_str)
+void CRInterface::set_word_string_list(const T_STRING<WORD>* strings, INT num_str)
 {
 }
 
