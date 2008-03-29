@@ -45,12 +45,7 @@ IFType COctaveInterface::get_argument_type()
 	octave_value arg=m_rhs(m_rhs_counter);
 
 	if (arg.is_char_matrix())
-	{
-		if (arg.rows()==1)
-			return SINGLE_STRING;
-		else
-			return STRING_CHAR;
-	}
+		return STRING_CHAR;
 	else if (arg.is_uint8_type() && arg.is_matrix_type())
 		return STRING_BYTE;
 
@@ -93,12 +88,7 @@ IFType COctaveInterface::get_argument_type()
 		if (c.nelem()>0)
 		{
 			if (c.elem(0).is_char_matrix() && c.elem(0).rows()==1)
-			{
-				if (c.nelem()==1)
-					return SINGLE_STRING;
-				else
-					return STRING_CHAR;
-			}
+				return STRING_CHAR;
 			else if (c.elem(0).is_uint8_type() && c.elem(0).rows()==1)
 				return STRING_BYTE;
 			else if (c.elem(0).is_int32_type() && c.elem(0).rows()==1)

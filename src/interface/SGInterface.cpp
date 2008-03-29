@@ -1068,37 +1068,6 @@ bool CSGInterface::do_set_features(bool add)
 			break;
 		}
 
-		case SINGLE_STRING:
-		{
-			if (m_nrhs!=4)
-				SG_ERROR("Please specify alphabet!\n");
-
-			INT fname_len=0;
-			CHAR* fname=get_string(fname_len);
-			ASSERT(fname);
-			INT alphabet_len=0;
-			CHAR* alphabet_str=get_string(alphabet_len);
-			ASSERT(alphabet_str);
-
-			if (strmatch(alphabet_str, alphabet_len, "DNABINFILE"))
-			{
-				feat=new CStringFeatures<BYTE>(DNA);
-				ASSERT(feat);
-				if (!((CStringFeatures<BYTE>*) feat)->load_dna_file(fname))
-				{
-					delete alphabet_str;
-					delete fname;
-					delete feat;
-					SG_ERROR("Couldn't load DNA features from file.\n");
-				}
-
-				delete alphabet_str;
-				delete fname;
-			}
-
-			break;
-		}
-
 		case STRING_CHAR:
 		{
 			if (m_nrhs!=4)
@@ -1112,21 +1081,38 @@ bool CSGInterface::do_set_features(bool add)
 			INT alphabet_len=0;
 			CHAR* alphabet_str=get_string(alphabet_len);
 			ASSERT(alphabet_str);
-			CAlphabet* alphabet=new CAlphabet(alphabet_str, alphabet_len);
-			ASSERT(alphabet);
-			delete[] alphabet_str;
 
-			feat=new CStringFeatures<CHAR>(alphabet);
-			ASSERT(feat);
-			if (!((CStringFeatures<CHAR>*) feat)->set_features(fmatrix, num_str, max_str_len))
+			if (strmatch(alphabet_str, alphabet_len, "DNABINFILE"))
 			{
-				delete alphabet;
-				delete feat;
-				SG_ERROR("Couldnt set byte string features.\n");
+				delete[] alphabet_str;
+
+				ASSERT(fmatrix[0].string);
+				feat=new CStringFeatures<BYTE>(DNA);
+				ASSERT(feat);
+
+				if (!((CStringFeatures<BYTE>*) feat)->load_dna_file(fmatrix[0].string))
+				{
+					delete feat;
+					SG_ERROR("Couldn't load DNA features from file.\n");
+				}
 			}
+			else
+			{
+				CAlphabet* alphabet=new CAlphabet(alphabet_str, alphabet_len);
+				ASSERT(alphabet);
+				delete[] alphabet_str;
 
-			delete alphabet;
+				feat=new CStringFeatures<CHAR>(alphabet);
+				ASSERT(feat);
+				if (!((CStringFeatures<CHAR>*) feat)->set_features(fmatrix, num_str, max_str_len))
+				{
+					delete alphabet;
+					delete feat;
+					SG_ERROR("Couldnt set byte string features.\n");
+				}
 
+				delete alphabet;
+			}
 			break;
 		}
 

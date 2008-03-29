@@ -56,24 +56,10 @@ IFType CMatlabInterface::get_argument_type()
 	else if (mxIsUint8(arg) ||
 		(mxIsCell(arg) && mxGetCell(arg, 0) && mxIsUint8(mxGetCell(arg, 0))))
 		return STRING_BYTE;
-
 	else if (mxIsChar(arg))
-	{
-		if (mxGetM(arg)==1 && mxGetN(arg)==1)
-			return SINGLE_STRING;
-		else
-			return STRING_CHAR;
-	}
-
+		return STRING_CHAR;
 	else if (mxIsCell(arg) && mxGetCell(arg, 0) && mxIsChar(mxGetCell(arg, 0)))
-	{
-		const mxArray* cell=mxGetCell(arg, 0);
-		if (mxGetM(cell)==1 && mxGetN(arg)==1)
-			return SINGLE_STRING;
-		else
-			return STRING_CHAR;
-	}
-
+		return STRING_CHAR;
 	else if (mxIsInt32(arg))
 		return DENSE_INT;
 	else if (mxIsDouble(arg))
