@@ -1,6 +1,6 @@
 #include "lib/config.h"
 
-#if defined(HAVE_OCTAVE) && !defined(HAVE_SWIG)            
+#if defined(HAVE_OCTAVE) && !defined(HAVE_SWIG)
 
 #include "interface/OctaveInterface.h"
 #include "interface/SGInterface.h"

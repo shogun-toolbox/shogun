@@ -1147,7 +1147,7 @@ bool CSGInterface::do_set_features(bool add)
 		}
 
 		default:
-			SG_ERROR("Wrong argument type.\n");
+			SG_ERROR("Wrong argument type %d.\n", get_argument_type());
 	}
 
 	if (strmatch(target, tlen, "TRAIN"))
@@ -1886,19 +1886,10 @@ bool CSGInterface::a_get_last_subkernel_weights()
 	if (ktype==K_COMBINED)
 	{
 		INT num_weights=0;
-		const DREAL* w=
+		const DREAL* weights=
 			((CCombinedKernel*) kernel)->get_subkernel_weights(num_weights);
-		// a bit silly to copy everything, but compiler does not
-		// allow non-const when func is declared working with const
-		// arg, like CSGInterfaceVector(const DREAL* weights, ...);
-		// this here is where it bites the other way round...
-		DREAL* weights=new DREAL[num_weights];
-		ASSERT(weights);
-		for (INT i=0; i<num_weights; i++)
-			weights[i]=w[i];
-		set_real_vector(weights, num_weights);
-		delete[] weights;
 
+		set_real_vector(weights, num_weights);
 		return true;
 	}
 
@@ -2046,39 +2037,24 @@ bool CSGInterface::a_get_kernel_optimization()
 			k->get_dictionary(len, weights);
 
 			set_real_vector(weights, len);
-			delete[] weights;
-
 			return true;
 		}
 		case K_LINEAR:
 		{
 			CLinearKernel* k=(CLinearKernel*) kernel;
 			INT len=0;
-			const DREAL* w=k->get_normal(len);
+			const DREAL* weights=k->get_normal(len);
 
-			// see get_last_subkernel_weights
-			DREAL* weights=new DREAL[len];
-			ASSERT(weights);
-			for (INT i=0; i<len; i++)
-				weights[i]=w[i];
 			set_real_vector(weights, len);
-			delete[] weights;
-
 			return true;
 		}
 		case K_SPARSELINEAR:
 		{
 			CSparseLinearKernel* k=(CSparseLinearKernel*) kernel;
 			INT len=0;
-			const DREAL* w=k->get_normal(len);
+			const DREAL* weights=k->get_normal(len);
 
-			// see get_last_subkernel_weights
-			DREAL* weights=new DREAL[len];
-			ASSERT(weights);
-			for (INT i=0; i<len; i++)
-				weights[i]=w[i];
 			set_real_vector(weights, len);
-			delete[] weights;
 			return true;
 		}
 		default:
