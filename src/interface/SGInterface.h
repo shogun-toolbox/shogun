@@ -200,7 +200,6 @@ class CSGInterface : public CSGObject
 		virtual void get_short_sparsematrix(TSparse<SHORT>*& matrix, INT& num_feat, INT& num_vec)=0;
 		virtual void get_word_sparsematrix(TSparse<WORD>*& matrix, INT& num_feat, INT& num_vec)=0; */
 
-
 		virtual void get_byte_string_list(T_STRING<BYTE>*& strings, INT& num_str, INT& max_string_len)=0;
 		virtual void get_char_string_list(T_STRING<CHAR>*& strings, INT& num_str, INT& max_string_len)=0;
 		virtual void get_int_string_list(T_STRING<INT>*& strings, INT& num_str, INT& max_string_len)=0;
@@ -217,13 +216,13 @@ class CSGInterface : public CSGObject
 		virtual void set_bool(bool scalar)=0;
 		*/
 
-		virtual void set_byte_vector(const BYTE* vec, INT len)=0;
-		virtual void set_char_vector(const CHAR* vec, INT len)=0;
-		virtual void set_int_vector(const INT* vec, INT len)=0;
-		virtual void set_shortreal_vector(const SHORTREAL* vec, INT len)=0;
-		virtual void set_real_vector(const DREAL* vec, INT len)=0;
-		virtual void set_short_vector(const SHORT* vec, INT len)=0;
-		virtual void set_word_vector(const WORD* vec, INT len)=0;
+		virtual void set_byte_vector(const BYTE* vector, INT len)=0;
+		virtual void set_char_vector(const CHAR* vector, INT len)=0;
+		virtual void set_int_vector(const INT* vector, INT len)=0;
+		virtual void set_shortreal_vector(const SHORTREAL* vector, INT len)=0;
+		virtual void set_real_vector(const DREAL* vector, INT len)=0;
+		virtual void set_short_vector(const SHORT* vector, INT len)=0;
+		virtual void set_word_vector(const WORD* vector, INT len)=0;
 
 
 		virtual void set_byte_matrix(const BYTE* matrix, INT num_feat, INT num_vec)=0;
