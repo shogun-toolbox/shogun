@@ -78,11 +78,11 @@ IFType CMatlabInterface::get_argument_type()
 				return STRING_BYTE;
 			if (mxIsChar(cell))
 				return STRING_CHAR;
-			if (mxIsInt32(arg))
+			if (mxIsInt32(cell))
 				return STRING_INT;
-			if (mxIsInt16(arg))
+			if (mxIsInt16(cell))
 				return STRING_SHORT;
-			if (mxIsUint16(arg))
+			if (mxIsUint16(cell))
 				return STRING_WORD;
 		}
 	}
