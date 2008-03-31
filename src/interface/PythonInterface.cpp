@@ -26,6 +26,8 @@ CPythonInterface::CPythonInterface(PyObject* self, PyObject* args) : CSGInterfac
 	m_nlhs=0;
 	Py_INCREF(Py_None);
 	m_lhs=Py_None;
+
+	import_libnumarray();
 }
 
 CPythonInterface::~CPythonInterface()
@@ -41,6 +43,47 @@ void CPythonInterface::parse_args(INT num_args, INT num_default_args)
 /// get type of current argument (does not increment argument counter)
 IFType CPythonInterface::get_argument_type()
 {
+	PyArrayObject* arg=(PyArrayObject*) PyTuple_GET_ITEM(m_rhs, m_rhs_counter);
+	ASSERT(arg);
+
+	if (!PyArray_Check(arg))
+		return UNDEFINED;
+
+	if (PyArray_TYPE(arg)==NPY_STRING)
+		return STRING_CHAR;
+	if (PyArray_TYPE(arg)==NPY_UBYTE)
+		return STRING_BYTE;
+
+	if (PyArray_TYPE(arg)==NPY_INT)
+		return DENSE_INT;
+	if (PyArray_TYPE(arg)==NPY_DOUBLE)
+		return DENSE_REAL;
+	if (PyArray_TYPE(arg)==NPY_SHORT)
+		return DENSE_SHORT;
+	if (PyArray_TYPE(arg)==NPY_FLOAT)
+		return DENSE_SHORTREAL;
+	if (PyArray_TYPE(arg)==NPY_USHORT)
+		return DENSE_WORD;
+
+	if (PyList_Check(arg) && PyList_Size((PyObject *) arg)>0)
+	{
+		PyArrayObject *item=
+			(PyArrayObject *) PyList_GetItem((PyObject *) arg, 0);
+		if (PyArray_Check(item) && item->nd==1)
+		{
+			if (PyArray_TYPE(item)==NPY_STRING)
+				return STRING_CHAR;
+			if (PyArray_TYPE(item)==NPY_UBYTE)
+				return STRING_BYTE;
+			if (PyArray_TYPE(item)==NPY_INT)
+				return STRING_INT;
+			if (PyArray_TYPE(item)==NPY_DOUBLE)
+				return STRING_SHORT;
+			if (PyArray_TYPE(item)==NPY_USHORT)
+				return STRING_WORD;
+		}
+	}
+
 	return UNDEFINED;
 }
 
@@ -281,32 +324,6 @@ void CPythonInterface::submit_return_values()
 {
 }
 
-PyObject* sg(PyObject* self, PyObject* args);
-void exitsg(void);
-
-static PyMethodDef sg_pythonmethods[] = {
-    {(char*) "sg",  sg, METH_VARARGS, (char*) "Shogun."},
-    {NULL, NULL, 0, NULL}        /* Sentinel */
-};
-
-PyMODINIT_FUNC initsg(void)
-{
-	// initialize python interpreter
-	Py_Initialize();
-
-	// initialize threading (just in case it is needed)
-	PyEval_InitThreads();
-
-	// initialize textgui
-	//gui=new CTextGUI(0, NULL) ;
-
-    // callback to cleanup at exit
-	Py_AtExit(exitsg);
-
-	// initialize callbacks
-    Py_InitModule((char*) "sg", sg_pythonmethods);
-}
-
 PyObject* sg(PyObject* self, PyObject* args)
 {
 	delete interface;
@@ -331,4 +348,28 @@ void exitsg(void)
 	SG_SINFO( "quitting...\n");
 	//delete gui;
 }
+
+static PyMethodDef sg_pythonmethods[] = {
+    {(char*) "sg",  sg, METH_VARARGS, (char*) "Shogun."},
+    {NULL, NULL, 0, NULL}        /* Sentinel */
+};
+
+PyMODINIT_FUNC initsg(void)
+{
+	// initialize python interpreter
+	Py_Initialize();
+
+	// initialize threading (just in case it is needed)
+	PyEval_InitThreads();
+
+	// initialize textgui
+	//gui=new CTextGUI(0, NULL) ;
+
+    // callback to cleanup at exit
+	Py_AtExit(exitsg);
+
+	// initialize callbacks
+    Py_InitModule((char*) "sg", sg_pythonmethods);
+}
+
 #endif // HAVE_PYTHON && !HAVE_SWIG
