@@ -37,39 +37,55 @@ IFType CMatlabInterface::get_argument_type()
 	{
 		if (mxIsUint8(arg))
 			return SPARSE_BYTE;
-		else if (mxIsChar(arg))
+		if (mxIsChar(arg))
 			return SPARSE_CHAR;
-		else if (mxIsInt32(arg))
+		if (mxIsInt32(arg))
 			return SPARSE_INT;
-		else if (mxIsDouble(arg))
+		if (mxIsDouble(arg))
 			return SPARSE_REAL;
-		else if (mxIsInt16(arg))
+		if (mxIsInt16(arg))
 			return SPARSE_SHORT;
-		else if (mxIsSingle(arg))
+		if (mxIsSingle(arg))
 			return SPARSE_SHORTREAL;
-		else if (mxIsUint16(arg))
+		if (mxIsUint16(arg))
 			return SPARSE_WORD;
-		else
-			return UNDEFINED;
+
+		return UNDEFINED;
 	}
 
-	else if (mxIsUint8(arg) ||
-		(mxIsCell(arg) && mxGetCell(arg, 0) && mxIsUint8(mxGetCell(arg, 0))))
-		return STRING_BYTE;
-	else if (mxIsChar(arg))
-		return STRING_CHAR;
-	else if (mxIsCell(arg) && mxGetCell(arg, 0) && mxIsChar(mxGetCell(arg, 0)))
-		return STRING_CHAR;
-	else if (mxIsInt32(arg))
+	if (mxIsInt32(arg))
 		return DENSE_INT;
-	else if (mxIsDouble(arg))
+	if (mxIsDouble(arg))
 		return DENSE_REAL;
-	else if (mxIsInt16(arg))
+	if (mxIsInt16(arg))
 		return DENSE_SHORT;
-	else if (mxIsSingle(arg))
+	if (mxIsSingle(arg))
 		return DENSE_SHORTREAL;
-	else if (mxIsUint16(arg))
+	if (mxIsUint16(arg))
 		return DENSE_WORD;
+
+	if (mxIsChar(arg))
+		return STRING_CHAR;
+	if (mxIsUint8(arg))
+		return STRING_BYTE;
+
+	if (mxIsCell(arg))
+	{
+		const mxArray* cell=mxGetCell(arg, 0);
+		if (cell && mxGetM(cell)==1)
+		{
+			if (mxIsUint8(cell))
+				return STRING_BYTE;
+			if (mxIsChar(cell))
+				return STRING_CHAR;
+			if (mxIsInt32(arg))
+				return STRING_INT;
+			if (mxIsInt16(arg))
+				return STRING_SHORT;
+			if (mxIsUint16(arg))
+				return STRING_WORD;
+		}
+	}
 
 	return UNDEFINED;
 }
