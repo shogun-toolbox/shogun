@@ -95,8 +95,8 @@ class CRInterface : public CSGInterface
 
 		void set_arg_increment(SEXP arg)
 		{
-			ASSERT(m_lhs_counter>=0 && m_lhs_counter<m_nlhs);
-			m_lhs=CDR(m_lhs);
+			//ASSERT(m_lhs_counter>=0 && m_lhs_counter<m_nlhs);
+			//m_lhs=CDR(m_lhs);
 			// somehow set value in m_lhs
 			m_lhs=arg;
 			m_lhs_counter++;

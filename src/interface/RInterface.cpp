@@ -38,6 +38,17 @@ void CRInterface::parse_args(INT num_args, INT num_default_args)
 /// get type of current argument (does not increment argument counter)
 IFType CRInterface::get_argument_type()
 {
+	SEXP arg=CADR(m_rhs);
+
+	switch (TYPEOF(arg))
+	{
+		case INTSXP:
+			return DENSE_INT;
+		case REALSXP:
+			return DENSE_REAL;
+		case STRSXP:
+			return STRING_CHAR;
+	};
 	return UNDEFINED;
 }
 
@@ -73,6 +84,7 @@ bool CRInterface::get_bool()
 CHAR* CRInterface::get_string(INT& len)
 {
 	SEXP s=get_arg_increment();
+	SG_PRINT("type(%d)=%d\n", m_rhs_counter, TYPEOF(s));
 	if (s == R_NilValue || TYPEOF(CAR(s)) != STRSXP || length(CAR(s))!=1)
 		SG_ERROR("Expected String as argument %d\n", m_rhs_counter);
 
@@ -147,7 +159,7 @@ void CRInterface::get_shortreal_matrix(SHORTREAL*& matrix, INT& num_feat, INT& n
 
 void CRInterface::get_real_matrix(DREAL*& matrix, INT& num_feat, INT& num_vec)
 {
-	SEXP feat=get_arg_increment();
+	SEXP feat=CAR(get_arg_increment());
 	if( TYPEOF(feat) != REALSXP && TYPEOF(feat) != INTSXP )
 		SG_ERROR("Expected Double Matrix as argument %d\n", m_rhs_counter);
 
@@ -181,7 +193,8 @@ void CRInterface::get_byte_string_list(T_STRING<BYTE>*& strings, INT& num_str, I
 void CRInterface::get_char_string_list(T_STRING<CHAR>*& strings, INT& num_str, INT& max_string_len)
 {
 	SEXP strs=get_arg_increment();
-	if (strs == R_NilValue || TYPEOF(CAR(strs)) != STRSXP || length(CAR(strs))>=1)
+	//SG_PRINT("len(strs): %d\n", length(CAR(strs))); || length(CAR(strs))>=1
+	if (strs == R_NilValue || TYPEOF(CAR(strs)) != STRSXP)
 		SG_ERROR("Expected String List as argument %d\n", m_rhs_counter);
 
 	num_str=length(CAR(strs));

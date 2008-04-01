@@ -817,8 +817,8 @@ bool CSGInterface::a_obtain_from_position_list()
 
 bool CSGInterface::a_get_features()
 {
-	if (m_nlhs!=1 || m_nrhs!=2)
-		return false;
+	/*if (m_nlhs!=1 || m_nrhs!=2)
+		return false;*/
 
 	INT tlen=0;
 	CHAR* target=get_string(tlen);
