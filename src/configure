@@ -2502,7 +2502,14 @@ EOF
 		echocheck "SWIG"
 		if swig -version >/dev/null 2>&1
 		then
-			echores "`swig -version 2>&1 | grep Version | cut -f 3 -d ' '`"
+			if [ `swig -version 2>&1 | grep Version | cut -f 3 -d ' ' | cut -f 2 -d '.'` -ge 4 ] || \
+				[ `swig -version 2>&1 | grep Version | cut -f 3 -d ' ' | cut -f 3 -d '.'` -ge 29 ]
+			then
+				echores "`swig -version 2>&1 | grep Version | cut -f 3 -d ' '`"
+			else
+				echores "`swig -version 2>&1 | grep Version | cut -f 3 -d ' '` ... too old version 1.3.29 or later required"
+				die "swig outdated"
+			fi
 		else
 			echores "no"
 			die "cannot find swig executable in path"
