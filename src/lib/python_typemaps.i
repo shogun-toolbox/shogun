@@ -140,12 +140,14 @@ PyObject* make_contiguous(PyObject* ary, int* is_new_object,
     if (!array)
     {
         PyErr_SetString(PyExc_TypeError, "Object did convert to Empty object - not an Array ?");
+        *is_new_object=0;
         return NULL;
     }
 
     if (!is_array(array))
     {
         PyErr_SetString(PyExc_TypeError, "Object not an Array");
+        *is_new_object=0;
         return NULL;
     }
 
@@ -155,6 +157,7 @@ PyObject* make_contiguous(PyObject* ary, int* is_new_object,
                 "expected a %dd-array, received a %dd-array", dims, array_dimensions(array));
         if (*is_new_object)
             Py_DECREF(array);
+        *is_new_object=0;
         return NULL;
     }
 
@@ -170,6 +173,7 @@ PyObject* make_contiguous(PyObject* ary, int* is_new_object,
                 desired_type, actual_type);
         if (*is_new_object)
             Py_DECREF(array);
+        *is_new_object=0;
         return NULL;
     }
 
