@@ -28,6 +28,7 @@ CPythonInterface::CPythonInterface(PyObject* self, PyObject* args) : CSGInterfac
 	m_lhs=Py_None;
 
 	import_libnumarray();
+	import_array();
 }
 
 CPythonInterface::~CPythonInterface()
@@ -498,7 +499,6 @@ void CPythonInterface::submit_return_values()
 {
 }
 
-
 PyObject* sg(PyObject* self, PyObject* args)
 {
 	delete interface;
@@ -507,7 +507,7 @@ PyObject* sg(PyObject* self, PyObject* args)
 	try
 	{
 		if (!interface->handle())
-			SG_ERROR("interface currently does not handle this command\n");
+			SG_ERROR("interface currently does not handle this command.\n");
 	}
 	catch (ShogunException e)
 	{
