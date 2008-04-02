@@ -186,10 +186,10 @@ template <class ST> class CSparseFeatures: public CFeatures
 		TSparseEntry<ST>* get_sparse_feature_vector(INT num, INT& len, bool& vfree)
 		{
 			ASSERT(num<num_vectors);
-			len= sparse_feature_matrix[num].num_feat_entries;
 
 			if (sparse_feature_matrix)
 			{
+				len= sparse_feature_matrix[num].num_feat_entries;
 				vfree=false ;
 				return sparse_feature_matrix[num].features;
 			} 
