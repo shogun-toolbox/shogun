@@ -495,10 +495,6 @@ SET_STRINGLIST(set_word_string_list, NPY_USHORT, WORD, unsigned short, "Word")
 #undef SET_STRINGLIST
 
 
-void CPythonInterface::submit_return_values()
-{
-}
-
 PyObject* sg(PyObject* self, PyObject* args)
 {
 	delete interface;

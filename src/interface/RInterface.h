@@ -51,7 +51,7 @@ class CRInterface : public CSGInterface
 		virtual void get_word_string_list(T_STRING<WORD>*& strings, INT& num_str, INT& max_string_len);
 
 		/** set functions - to pass data from shogun to the target interface */
-		virtual void create_return_values(INT num_val);
+		virtual bool create_return_values(INT num_val);
 		virtual void set_byte_vector(const BYTE* vec, INT len);
 		virtual void set_char_vector(const CHAR* vec, INT len);
 		virtual void set_int_vector(const INT* vec, INT len);
@@ -76,10 +76,10 @@ class CRInterface : public CSGInterface
 		virtual void set_short_string_list(const T_STRING<SHORT>* strings, INT num_str);
 		virtual void set_word_string_list(const T_STRING<WORD>* strings, INT num_str);
 
-		virtual void submit_return_values();
-
 		inline SEXP get_return_values()
 		{
+			if (m_nlhs>0)
+				UNPROTECT(1);
 			return m_lhs;
 		}
 
@@ -95,10 +95,8 @@ class CRInterface : public CSGInterface
 
 		void set_arg_increment(SEXP arg)
 		{
-			//ASSERT(m_lhs_counter>=0 && m_lhs_counter<m_nlhs);
-			//m_lhs=CDR(m_lhs);
-			// somehow set value in m_lhs
-			m_lhs=arg;
+			ASSERT(m_lhs_counter>=0 && m_lhs_counter<m_nlhs);
+			SET_VECTOR_ELT(m_lhs, m_lhs_counter, arg);
 			m_lhs_counter++;
 		}
 

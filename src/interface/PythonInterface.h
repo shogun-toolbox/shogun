@@ -58,8 +58,6 @@ class CPythonInterface : public CSGInterface
 
 
 		/** set functions - to pass data from shogun to the target interface */
-		virtual void create_return_values(INT num_val);
-
 		virtual void set_byte_vector(const BYTE* vector, INT len);
 		virtual void set_char_vector(const CHAR* vector, INT len);
 		virtual void set_int_vector(const INT* vector, INT len);
@@ -84,7 +82,10 @@ class CPythonInterface : public CSGInterface
 		virtual void set_short_string_list(const T_STRING<SHORT>* strings, INT num_str);
 		virtual void set_word_string_list(const T_STRING<WORD>* strings, INT num_str);
 
-		virtual void submit_return_values();
+		virtual bool create_return_values(INT num)
+		{
+			return m_nlhs==num;
+		}
 
 		inline PyObject* get_return_values()
 		{

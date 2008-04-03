@@ -358,7 +358,7 @@ CSGInterface::~CSGInterface()
 
 bool CSGInterface::a_crc()
 {
-	if (m_nlhs!=1 || m_nrhs!=2)
+	if (m_nrhs!=2 || !create_return_values(1))
 		return false;
 
 	INT slen=0;
@@ -380,7 +380,7 @@ bool CSGInterface::a_crc()
 
 bool CSGInterface::a_translate_string()
 {
-	if (m_nlhs!=1 || m_nrhs!=4)
+	if (m_nrhs!=4 || !create_return_values(1))
 		return false;
 
 	DREAL* string=NULL;
@@ -449,7 +449,7 @@ bool CSGInterface::a_translate_string()
 
 bool CSGInterface::a_best_path_2struct()
 {
-	if (m_nlhs!=3 || m_nrhs!=12)
+	if (m_nrhs!=12 || !create_return_values(3))
 		return false;
 
 	SG_ERROR("Sorry, this parameter list is awful!\n");
@@ -459,7 +459,7 @@ bool CSGInterface::a_best_path_2struct()
 
 bool CSGInterface::a_best_path_trans()
 {
-	if (!(m_nlhs==3 && (m_nrhs==15 || m_nrhs==17)))
+	if ((m_nrhs==15 || m_nrhs==17) || !create_return_values(3))
 		return false;
 
 	SG_ERROR("Sorry, this parameter list is awful!\n");
@@ -469,7 +469,7 @@ bool CSGInterface::a_best_path_trans()
 
 bool CSGInterface::a_best_path_trans_deriv()
 {
-	if (!((m_nlhs==5 && m_nrhs==14) || (m_nlhs==6 && m_nrhs==16)))
+	if (!((m_nrhs==14 && create_return_values(5)) || (m_nrhs==16 && create_return_values(6))))
 		return false;
 
 	SG_ERROR("Sorry, this parameter list is awful!\n");
@@ -479,7 +479,7 @@ bool CSGInterface::a_best_path_trans_deriv()
 
 bool CSGInterface::a_best_path_no_b()
 {
-	if (m_nlhs!=2 || m_nrhs!=5)
+	if (m_nrhs!=5 || !create_return_values(2))
 		return false;
 
 	DREAL* p=NULL;
@@ -526,7 +526,7 @@ bool CSGInterface::a_best_path_no_b()
 
 bool CSGInterface::a_best_path_trans_simple()
 {
-	if (m_nlhs!=2 || m_nrhs!=6)
+	if (m_nrhs!=6 || !create_return_values(2))
 		return false;
 
 	DREAL* p=NULL;
@@ -584,7 +584,7 @@ bool CSGInterface::a_best_path_trans_simple()
 
 bool CSGInterface::a_best_path_no_b_trans()
 {
-	if (m_nlhs!=2 || m_nrhs!=6)
+	if (m_nrhs!=6 || !create_return_values(2))
 		return false;
 
 	DREAL* p=NULL;
@@ -641,7 +641,7 @@ bool CSGInterface::a_best_path_no_b_trans()
 
 bool CSGInterface::a_get_version()
 {
-	if (m_nlhs!=1 || m_nrhs!=1)
+	if (m_nrhs!=1 || !create_return_values(1))
 		return false;
 
 	DREAL* ver=(DREAL*) version.get_version_revision();
@@ -652,7 +652,7 @@ bool CSGInterface::a_get_version()
 
 bool CSGInterface::a_set_labels()
 {
-	if (m_nlhs!=0 || m_nrhs!=3)
+	if (m_nrhs!=3 || !create_return_values(0))
 		return false;
 
 	INT tlen=0;
@@ -692,7 +692,7 @@ bool CSGInterface::a_set_labels()
 
 bool CSGInterface::a_get_labels()
 {
-	if (m_nlhs!=1 || m_nrhs!=2)
+	if (m_nrhs!=2 || !create_return_values(1))
 		return false;
 
 	INT tlen=0;
@@ -727,7 +727,7 @@ bool CSGInterface::a_get_labels()
 
 bool CSGInterface::a_obtain_from_position_list()
 {
-	if (m_nlhs!=0 || (m_nrhs!=4 && m_nrhs!=5))
+	if ((m_nrhs!=4 && m_nrhs!=5) || !create_return_values(0))
 		return false;
 
 	INT tlen=0;
@@ -817,8 +817,8 @@ bool CSGInterface::a_obtain_from_position_list()
 
 bool CSGInterface::a_get_features()
 {
-	/*if (m_nlhs!=1 || m_nrhs!=2)
-		return false;*/
+	if (m_nrhs!=2 || !create_return_values(1))
+		return false;
 
 	INT tlen=0;
 	CHAR* target=get_string(tlen);
@@ -966,7 +966,7 @@ bool CSGInterface::a_get_features()
 
 bool CSGInterface::a_add_features()
 {
-	if (m_nlhs!=0 || (m_nrhs!=3 && m_nrhs!=4))
+	if ((m_nrhs!=3 && m_nrhs!=4) || !create_return_values(0))
 		return false;
 
 	return do_set_features(true);
@@ -974,7 +974,7 @@ bool CSGInterface::a_add_features()
 
 bool CSGInterface::a_set_features()
 {
-	if (m_nlhs!=0 || (m_nrhs!=3 && m_nrhs!=4))
+	if ((m_nrhs!=3 && m_nrhs!=4) || !create_return_values(0))
 		return false;
 
 	return do_set_features(false);
@@ -1172,7 +1172,7 @@ bool CSGInterface::do_set_features(bool add)
 
 bool CSGInterface::a_get_distance_matrix()
 {
-	if (m_nlhs!=1 || m_nrhs!=1)
+	if (m_nrhs!=1 || !create_return_values(1))
 		return false;
 
 	CDistance* distance=gui->guidistance.get_distance();
@@ -1192,7 +1192,7 @@ bool CSGInterface::a_get_distance_matrix()
 
 bool CSGInterface::a_get_kernel_matrix()
 {
-	if (m_nlhs!=1 || m_nrhs!=1)
+	if (m_nrhs!=1 || !create_return_values(1))
 		return false;
 
 	CKernel* kernel=gui->guikernel.get_kernel();
@@ -1212,7 +1212,7 @@ bool CSGInterface::a_get_kernel_matrix()
 
 bool CSGInterface::a_set_custom_kernel()
 {
-	if (m_nlhs!=0 || m_nrhs!=3)
+	if (m_nrhs!=3 || !create_return_values(0))
 		return false;
 
 	CCustomKernel* kernel=(CCustomKernel*) gui->guikernel.get_kernel();
@@ -1272,7 +1272,7 @@ bool CSGInterface::a_set_custom_kernel()
 
 bool CSGInterface::a_set_WD_position_weights()
 {
-	if (m_nlhs!=0 || m_nrhs<2 || m_nrhs>3)
+	if (m_nrhs<2 || m_nrhs>3 || !create_return_values(0))
 		return false;
 
 	CKernel* kernel=gui->guikernel.get_kernel();
@@ -1341,7 +1341,7 @@ bool CSGInterface::a_set_WD_position_weights()
 
 		if (dim==0 && len==0)
 		{
-			if (m_nlhs==3)
+			if (create_return_values(3))
 			{
 				if (is_train)
 					success=k->delete_position_weights_lhs();
@@ -1353,7 +1353,7 @@ bool CSGInterface::a_set_WD_position_weights()
 		}
 		else
 		{
-			if (m_nlhs==3)
+			if (create_return_values(3))
 			{
 				if (is_train)
 					success=k->set_position_weights_lhs(weights, dim, len);
@@ -1372,7 +1372,7 @@ bool CSGInterface::a_set_WD_position_weights()
 
 bool CSGInterface::a_get_subkernel_weights()
 {
-	if (m_nlhs!=1 || m_nrhs!=1)
+	if (m_nrhs!=1 || !create_return_values(1))
 		return false;
 
 	CKernel *kernel=gui->guikernel.get_kernel();
@@ -1416,7 +1416,7 @@ bool CSGInterface::a_get_subkernel_weights()
 
 bool CSGInterface::a_set_subkernel_weights()
 {
-	if (m_nlhs!=0 || m_nrhs!=2)
+	if (m_nrhs!=2 || !create_return_values(0))
 		return false;
 
 	CKernel* kernel=gui->guikernel.get_kernel();
@@ -1471,7 +1471,7 @@ bool CSGInterface::a_set_subkernel_weights()
 
 bool CSGInterface::a_set_subkernel_weights_combined()
 {
-	if (m_nlhs!=0 || m_nrhs!=3)
+	if (m_nrhs!=3 || !create_return_values(0))
 		return false;
 
 	CKernel* kernel=gui->guikernel.get_kernel();
@@ -1535,7 +1535,7 @@ bool CSGInterface::a_set_subkernel_weights_combined()
 
 bool CSGInterface::a_set_last_subkernel_weights()
 {
-	if (m_nlhs!=0 || m_nrhs!=2)
+	if (m_nrhs!=2 || !create_return_values(0))
 		return false;
 
 	CKernel* kernel=gui->guikernel.get_kernel();
@@ -1593,7 +1593,7 @@ bool CSGInterface::a_set_last_subkernel_weights()
 
 bool CSGInterface::a_get_SPEC_consensus()
 {
-	if (m_nlhs!=1 || m_nrhs!=1)
+	if (m_nrhs!=1 || !create_return_values(1))
 		return false;
 
 	CKernel* kernel=gui->guikernel.get_kernel();
@@ -1628,7 +1628,7 @@ bool CSGInterface::a_get_SPEC_consensus()
 
 bool CSGInterface::a_get_SPEC_scoring()
 {
-	if (m_nlhs!=1 || m_nrhs!=2)
+	if (m_nrhs!=2 || !create_return_values(1))
 		return false;
 
 	INT max_order=get_int();
@@ -1680,7 +1680,7 @@ bool CSGInterface::a_get_SPEC_scoring()
 
 bool CSGInterface::a_get_WD_consensus()
 {
-	if (m_nlhs!=1 || m_nrhs!=1)
+	if (m_nrhs!=1 || !create_return_values(1))
 		return false;
 
 	CKernel* kernel=gui->guikernel.get_kernel();
@@ -1715,7 +1715,7 @@ bool CSGInterface::a_get_WD_consensus()
 
 bool CSGInterface::a_compute_POIM_WD()
 {
-	if (m_nlhs!=1 || m_nrhs!=3)
+	if (m_nrhs!=3 || !create_return_values(1))
 		return false;
 
 	INT max_order=get_int();
@@ -1785,7 +1785,7 @@ bool CSGInterface::a_compute_POIM_WD()
 
 bool CSGInterface::a_get_WD_scoring()
 {
-	if (m_nlhs!=1 || m_nrhs!=2)
+	if (m_nrhs!=2 || !create_return_values(1))
 		return false;
 
 	INT max_order=get_int();
@@ -1830,7 +1830,7 @@ bool CSGInterface::a_get_WD_scoring()
 
 bool CSGInterface::a_get_WD_position_weights()
 {
-	if (m_nlhs!=1 || m_nrhs!=1)
+	if (m_nrhs!=1 || !create_return_values(1))
 		return false;
 
 	CKernel* kernel=gui->guikernel.get_kernel();
@@ -1866,7 +1866,7 @@ bool CSGInterface::a_get_WD_position_weights()
 
 bool CSGInterface::a_get_last_subkernel_weights()
 {
-	if (m_nlhs!=1 || m_nrhs!=1)
+	if (m_nrhs!=1 || !create_return_values(1))
 		return false;
 
 	CKernel* kernel=gui->guikernel.get_kernel();
@@ -1913,7 +1913,7 @@ bool CSGInterface::a_get_last_subkernel_weights()
 
 bool CSGInterface::a_compute_by_subkernels()
 {
-	if (m_nlhs!=1 || m_nrhs!=1)
+	if (m_nrhs!=1 || !create_return_values(1))
 		return false;
 
 	CKernel* kernel=gui->guikernel.get_kernel();
@@ -1979,7 +1979,7 @@ bool CSGInterface::a_compute_by_subkernels()
 
 bool CSGInterface::a_get_kernel_optimization()
 {
-	if (m_nlhs!=1 || m_nrhs<1)
+	if (m_nrhs<1 || !create_return_values(1))
 		return false;
 
 	CKernel* kernel=gui->guikernel.get_kernel();
@@ -2066,7 +2066,7 @@ bool CSGInterface::a_get_kernel_optimization()
 
 bool CSGInterface::a_plugin_estimate_classify_example()
 {
-	if (m_nlhs!=1 || m_nrhs!=2)
+	if (m_nrhs!=2 || !create_return_values(1))
 		return false;
 
 	INT idx=get_int();
@@ -2078,7 +2078,7 @@ bool CSGInterface::a_plugin_estimate_classify_example()
 
 bool CSGInterface::a_plugin_estimate_classify()
 {
-	if (m_nlhs!=1 || m_nrhs!=1)
+	if (m_nrhs!=1 || !create_return_values(1))
 		return false;
 
 	CFeatures* feat=gui->guifeatures.get_test_features();
@@ -2102,7 +2102,7 @@ bool CSGInterface::a_plugin_estimate_classify()
 
 bool CSGInterface::a_set_plugin_estimate()
 {
-	if (m_nlhs!=0 || m_nrhs!=3)
+	if (m_nrhs!=3 || !create_return_values(0))
 		return false;
 
 	DREAL* emission_probs=NULL;
@@ -2133,7 +2133,7 @@ bool CSGInterface::a_set_plugin_estimate()
 
 bool CSGInterface::a_get_plugin_estimate()
 {
-	if (m_nlhs!=2 || m_nrhs!=1)
+	if (m_nrhs!=1 || !create_return_values(2))
 		return false;
 
 	DREAL* pos_params=NULL;
@@ -2169,7 +2169,7 @@ bool CSGInterface::a_get_plugin_estimate()
 
 bool CSGInterface::a_classify()
 {
-	if (m_nlhs!=1 || m_nrhs!=1)
+	if (m_nrhs!=1 || !create_return_values(1))
 		return false;
 
 	CFeatures* feat=gui->guifeatures.get_test_features();
@@ -2196,7 +2196,7 @@ bool CSGInterface::a_classify()
 
 bool CSGInterface::a_classify_example()
 {
-	if (m_nlhs!=1 || m_nrhs!=2)
+	if (m_nrhs!=2 || !create_return_values(1))
 		return false;
 
 	INT idx=get_int();
@@ -2212,7 +2212,7 @@ bool CSGInterface::a_classify_example()
 
 bool CSGInterface::a_get_classifier()
 {
-	if (m_nlhs!=2 || m_nrhs!=1)
+	if (m_nrhs!=1 || !create_return_values(2))
 		return false;
 
 	DREAL* bias=NULL;
@@ -2240,7 +2240,7 @@ bool CSGInterface::a_get_svm()
 
 bool CSGInterface::a_set_svm()
 {
-	if (m_nlhs!=0 || m_nrhs!=3)
+	if (m_nrhs!=3 || !create_return_values(0))
 		return false;
 
 	DREAL bias=get_real();
@@ -2274,7 +2274,7 @@ bool CSGInterface::a_set_svm()
 
 bool CSGInterface::a_get_svm_objective()
 {
-	if (m_nlhs!=1 || m_nrhs!=1)
+	if (m_nrhs!=1 || !create_return_values(1))
 		return false;
 
 	CSVM* svm=(CSVM*) gui->guiclassifier.get_classifier();
@@ -2289,7 +2289,7 @@ bool CSGInterface::a_get_svm_objective()
 
 bool CSGInterface::a_relative_entropy()
 {
-	if (m_nlhs!=1 || m_nrhs!=1)
+	if (m_nrhs!=1 || !create_return_values(1))
 		return false;
 
 	CHMM* pos=gui->guihmm.get_pos();
@@ -2334,7 +2334,7 @@ bool CSGInterface::a_relative_entropy()
 
 bool CSGInterface::a_entropy()
 {
-	if (m_nlhs!=1 || m_nrhs!=1)
+	if (m_nrhs!=1 || !create_return_values(1))
 		return false;
 
 	CHMM* current=gui->guihmm.get_current();
@@ -2381,7 +2381,7 @@ bool CSGInterface::a_one_class_linear_hmm_classify()
 
 bool CSGInterface::do_hmm_classify(bool linear, bool one_class)
 {
-	if (m_nlhs!=1 || m_nrhs>1)
+	if (m_nrhs>1 || !create_return_values(1))
 		return false;
 
 	CFeatures* feat=gui->guifeatures.get_test_features();
@@ -2430,7 +2430,7 @@ bool CSGInterface::a_hmm_classify_example()
 
 bool CSGInterface::do_hmm_classify_example(bool one_class)
 {
-	if (m_nlhs!=1 || m_nrhs!=2)
+	if (m_nrhs!=2 || !create_return_values(1))
 		return false;
 
 	INT idx=get_int();
@@ -2448,7 +2448,7 @@ bool CSGInterface::do_hmm_classify_example(bool one_class)
 
 bool CSGInterface::a_hmm_likelihood()
 {
-	if (m_nlhs!=1 || m_nrhs!=1)
+	if (m_nrhs!=1 || !create_return_values(1))
 		return false;
 
 	CHMM* h=gui->guihmm.get_current();
@@ -2463,7 +2463,7 @@ bool CSGInterface::a_hmm_likelihood()
 
 bool CSGInterface::a_get_viterbi_path()
 {
-	if (m_nlhs!=2 || m_nrhs!=2)
+	if (m_nrhs!=2 || !create_return_values(2))
 		return false;
 
 	INT dim=get_int();
@@ -2498,7 +2498,7 @@ bool CSGInterface::a_get_viterbi_path()
 
 bool CSGInterface::a_append_hmm()
 {
-	if (m_nlhs!=0 || m_nrhs!=5)
+	if (m_nrhs!=5 || !create_return_values(0))
 		return false;
 
 	CHMM* old_h=gui->guihmm.get_current();
@@ -2559,7 +2559,7 @@ bool CSGInterface::a_append_hmm()
 
 bool CSGInterface::a_set_hmm()
 {
-	if (m_nlhs!=0 || m_nrhs!=5)
+	if (m_nrhs!=5 || !create_return_values(0))
 		return false;
 
 	DREAL* p=NULL;
@@ -2619,7 +2619,7 @@ bool CSGInterface::a_set_hmm()
 
 bool CSGInterface::a_get_hmm()
 {
-	if (m_nlhs!=4 || m_nrhs!=1)
+	if (m_nrhs!=1 || !create_return_values(4))
 		return false;
 
 	CHMM* h=gui->guihmm.get_current();
@@ -2667,7 +2667,7 @@ bool CSGInterface::a_get_hmm()
 
 bool CSGInterface::a_help()
 {
-	if (m_nrhs!=1 || m_nlhs!=0)
+	if (m_nrhs!=1 || !create_return_values(0))
 		return false;
 
 	gui->print_help();
@@ -2678,7 +2678,7 @@ bool CSGInterface::a_help()
 bool CSGInterface::a_test()
 {
 	SG_PRINT("entering test method\n");
-	if (m_nlhs!=1 || m_nrhs!=2)
+	if (m_nrhs!=2 || !create_return_values(1))
 		return false;
 
 /*
@@ -2797,7 +2797,7 @@ bool CSGInterface::handle()
 		SG_ERROR("String expected as first argument: %s\n", e.get_exception_string());
 	}
 
-	SG_DEBUG("action: %s, nlhs %d, nrhs %d\n", action, m_nlhs, m_nrhs);
+	SG_DEBUG("action: %s, nrhs %d\n", action, m_nrhs);
 	INT i=0;
 	while (sg_methods[i].action)
 	{
@@ -2816,7 +2816,7 @@ bool CSGInterface::handle()
 	}
 
 	// FIXME: invoke old interface
-	if(!success && strmatch(action, len, N_SEND_COMMAND))
+	if (!success && strmatch(action, len, N_SEND_COMMAND))
 	{
 		CHAR* cmd=interface->get_string(len);
 		gui->parse_line(cmd);

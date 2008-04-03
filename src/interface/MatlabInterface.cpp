@@ -344,10 +344,6 @@ GET_STRINGLIST(get_word_string_list, "uint16", WORD, unsigned short, "Word")
 
 
 /** set functions - to pass data from shogun to the target interface */
-void CMatlabInterface::create_return_values(INT num_val)
-{
-}
-
 #define SET_VECTOR(function_name, mx_type, sg_type, if_type, error_string) \
 void CMatlabInterface::function_name(const sg_type* vector, INT len)		\
 {																			\
@@ -482,10 +478,6 @@ SET_STRINGLIST(set_int_string_list, mxINT32_CLASS, INT, int, "Integer")
 SET_STRINGLIST(set_short_string_list, mxINT16_CLASS, SHORT, short, "Short")
 SET_STRINGLIST(set_word_string_list, mxUINT16_CLASS, WORD, unsigned short, "Word")
 #undef SET_STRINGLIST
-
-void CMatlabInterface::submit_return_values()
-{
-}
 
 ////////////////////////////////////////////////////////////////////
 

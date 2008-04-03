@@ -425,10 +425,6 @@ SET_STRINGLIST(set_short_string_list, int16NDArray, SHORT, SHORT, "Short")
 SET_STRINGLIST(set_word_string_list, uint16NDArray, WORD, WORD, "Word")
 #undef SET_STRINGLIST
 
-void COctaveInterface::submit_return_values()
-{
-}
-
 DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 {
 	delete interface;

@@ -20,7 +20,9 @@ extern CSGInterface* interface;
 CRInterface::CRInterface(SEXP prhs) : CSGInterface()
 {
 	m_nlhs=0;
-	m_nrhs=length(prhs);
+	m_nrhs=length(prhs)-1;
+	if (m_nrhs<0)
+		m_nrhs=0;
 	m_lhs=R_NilValue;
 	m_rhs=prhs;
 }
@@ -84,7 +86,6 @@ bool CRInterface::get_bool()
 CHAR* CRInterface::get_string(INT& len)
 {
 	SEXP s=get_arg_increment();
-	SG_PRINT("type(%d)=%d\n", m_rhs_counter, TYPEOF(s));
 	if (s == R_NilValue || TYPEOF(CAR(s)) != STRSXP || length(CAR(s))!=1)
 		SG_ERROR("Expected String as argument %d\n", m_rhs_counter);
 
@@ -262,8 +263,14 @@ void CRInterface::get_word_string_list(T_STRING<WORD>*& strings, INT& num_str, I
 }
 
 /** set functions - to pass data from shogun to the target interface */
-void CRInterface::create_return_values(INT num_val)
+bool CRInterface::create_return_values(INT num)
 {
+	if (num<=0)
+		return true;
+
+	PROTECT(m_lhs=allocVector(VECSXP, num));
+	m_nlhs=num;
+	return length(m_lhs) == num;
 }
 
 void CRInterface::set_byte_vector(const BYTE* vec, INT len)
@@ -355,10 +362,6 @@ void CRInterface::set_short_string_list(const T_STRING<SHORT>* strings, INT num_
 }
 
 void CRInterface::set_word_string_list(const T_STRING<WORD>* strings, INT num_str)
-{
-}
-
-void CRInterface::submit_return_values()
 {
 }
 

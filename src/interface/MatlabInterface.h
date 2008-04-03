@@ -97,7 +97,10 @@ class CMatlabInterface : public CSGInterface
 		virtual void set_short_string_list(const T_STRING<SHORT>* strings, INT num_str);
 		virtual void set_word_string_list(const T_STRING<WORD>* strings, INT num_str);
 
-		virtual void submit_return_values();
+		virtual bool create_return_values(INT num)
+		{
+			return m_nlhs==num;
+		}
 
 	private:
 		const mxArray* get_arg_increment();

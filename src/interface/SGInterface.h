@@ -208,7 +208,7 @@ class CSGInterface : public CSGObject
 
 
 		/** set functions - to pass data from shogun to the target interface */
-		virtual void create_return_values(INT num_val)=0;
+		virtual bool create_return_values(INT num_val)=0;
 
 		/* TODO
 		virtual void set_int(INT scalar)=0;
@@ -251,9 +251,6 @@ class CSGInterface : public CSGObject
 		virtual void set_short_string_list(const T_STRING<SHORT>* strings, INT num_str)=0;
 		virtual void set_word_string_list(const T_STRING<WORD>* strings, INT num_str)=0;
 
-
-		virtual void submit_return_values()=0;
-
 		/// general interface handler
 		bool handle();
 
@@ -277,12 +274,6 @@ class CSGInterface : public CSGObject
 			return get_string(len);
 		}
 
-	protected:
-		INT m_lhs_counter;
-		INT m_rhs_counter;
-		INT m_nlhs;
-		INT m_nrhs;
-
 	private:
 		/** helper function for hmm classify */
 		bool do_hmm_classify(bool linear=false, bool one_class=false);
@@ -290,6 +281,13 @@ class CSGInterface : public CSGObject
 		bool do_hmm_classify_example(bool one_class=false);
 		/** helper function for add/set features */
 		bool do_set_features(bool add=false);
+
+	protected:
+		INT m_lhs_counter;
+		INT m_rhs_counter;
+		INT m_nlhs;
+		INT m_nrhs;
+
 };
 
 typedef bool (CSGInterface::*CSGInterfacePtr)();
