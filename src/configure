@@ -2061,30 +2061,14 @@ int main(int argc, char** argv)
 }
 EOF
 		echocheck "Lapack/Atlas support"
-		if cc_check -llapack-3 -lblas-3
+		if cc_check -llapack_atlas -lblas
 		then
 			echores "yes"
 			HAVE_LAPACK='#define HAVE_LAPACK 1'
 			DEFINES="$DEFINES -DHAVE_LAPACK"
-			LINKFLAGS="$LINKFLAGS -llapack-3 -lblas-3"
+			LINKFLAGS="$LINKFLAGS -llapack_atlas -lblas"
 		else
-			if cc_check -llapack -lblas
-			then
-				echores "yes"
-				HAVE_LAPACK='#define HAVE_LAPACK 1'
-				DEFINES="$DEFINES -DHAVE_LAPACK"
-				LINKFLAGS="$LINKFLAGS -llapack -lblas"
-			else
-				if cc_check -llapack_atlas -lblas
-				then
-					echores "yes"
-					HAVE_LAPACK='#define HAVE_LAPACK 1'
-					DEFINES="$DEFINES -DHAVE_LAPACK"
-					LINKFLAGS="$LINKFLAGS -llapack_atlas -lblas"
-				else
-					echores "no"
-				fi
-			fi
+			echores "no"
 		fi
 	fi
 
