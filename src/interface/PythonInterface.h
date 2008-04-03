@@ -84,7 +84,14 @@ class CPythonInterface : public CSGInterface
 
 		virtual bool create_return_values(INT num)
 		{
-			return m_nlhs==num;
+			if (num<=0)
+				return true;
+
+			m_lhs=PyTuple_New(num);
+			ASSERT(m_lhs);
+
+			m_nlhs=num;
+			return PyTuple_GET_SIZE(m_lhs)==num;
 		}
 
 		inline PyObject* get_return_values()

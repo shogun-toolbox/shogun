@@ -341,9 +341,6 @@ GET_STRINGLIST(get_word_string_list, NPY_USHORT, WORD, unsigned short, "Word")
 
 
 /** set functions - to pass data from shogun to the target interface */
-void CPythonInterface::create_return_values(INT num_val)
-{
-}
 
 #define SET_VECTOR(function_name, py_type, sg_type, if_type, error_string)	\
 void CPythonInterface::function_name(const sg_type* vector, INT len)		\
