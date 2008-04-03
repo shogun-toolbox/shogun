@@ -1,18 +1,16 @@
 #include "lib/config.h"
 
-#if defined(HAVE_PYTHON) && !defined(HAVE_SWIG)            
-
-#include "interface/PythonInterface.h"
-#include "interface/SGInterface.h"
+#if defined(HAVE_PYTHON) && !defined(HAVE_SWIG)
 
 #include "lib/ShogunException.h"
 #include "lib/io.h"
 #include "lib/python.h"
 
+#include "interface/SGInterface.h"
+#include "interface/PythonInterface.h"
+
 extern "C" {
-#include <object.h>
-#include <../../numarray/numpy/libnumarray.h>
-#include <numpy/ndarrayobject.h>
+#include <numpy/arrayobject.h>
 }
 
 extern CSGInterface* interface;
@@ -26,9 +24,6 @@ CPythonInterface::CPythonInterface(PyObject* self, PyObject* args) : CSGInterfac
 	m_nlhs=0;
 	Py_INCREF(Py_None);
 	m_lhs=Py_None;
-
-	import_libnumarray();
-	import_array();
 }
 
 CPythonInterface::~CPythonInterface()
@@ -341,17 +336,16 @@ GET_STRINGLIST(get_word_string_list, NPY_USHORT, WORD, unsigned short, "Word")
 
 
 /** set functions - to pass data from shogun to the target interface */
-
 #define SET_VECTOR(function_name, py_type, sg_type, if_type, error_string)	\
 void CPythonInterface::function_name(const sg_type* vector, INT len)		\
 {																			\
-	if (!vector)															\
+	if (!vector || len<1)															\
 		SG_ERROR("Given vector is invalid.\n");								\
 																			\
 	npy_intp* dims=new npy_intp[len];										\
 	ASSERT(dims);															\
 	PyObject* py_vec=PyArray_SimpleNew(1, dims, py_type);					\
-	if (!PyArray_Check(py_vec))												\
+	if (!py_vec || !PyArray_Check(py_vec))												\
 		SG_ERROR("Couldn't create " error_string " Vector of length %d.\n",	\
 			len);															\
 																			\
@@ -376,13 +370,13 @@ SET_VECTOR(set_word_vector, NPY_USHORT, WORD, unsigned short, "Word")
 #define SET_MATRIX(function_name, py_type, sg_type, if_type, error_string)	\
 void CPythonInterface::function_name(const sg_type* matrix, INT num_feat, INT num_vec)	\
 { 																			\
-	if (!matrix) 															\
+	if (!matrix || num_feat<1 || num_vec<1) 															\
 		SG_ERROR("Given matrix is invalid.\n");								\
  																			\
 	npy_intp* dims=new npy_intp[num_vec];									\
 	ASSERT(dims);															\
 	PyObject* py_mat=PyArray_SimpleNew(num_feat, dims, py_type);			\
-	if (!PyArray_Check(py_mat)) 											\
+	if (!py_mat || !PyArray_Check(py_mat)) 											\
 		SG_ERROR("Couldn't create " error_string " Matrix of %d rows and %d cols.\n",	\
 			num_feat, num_vec);												\
  																			\
@@ -400,9 +394,33 @@ SET_MATRIX(set_char_matrix, NPY_CHAR, CHAR, char, "Char")
 SET_MATRIX(set_int_matrix, NPY_INT, INT, int, "Integer")
 SET_MATRIX(set_short_matrix, NPY_SHORT, SHORT, short, "Short")
 SET_MATRIX(set_shortreal_matrix, NPY_FLOAT, SHORTREAL, float, "Single Precision")
-SET_MATRIX(set_real_matrix, NPY_DOUBLE, DREAL, double, "Double Precision")
+//SET_MATRIX(set_real_matrix, NPY_DOUBLE, DREAL, double, "Double Precision")
 SET_MATRIX(set_word_matrix, NPY_USHORT, WORD, unsigned short, "Word")
 #undef SET_MATRIX
+
+void CPythonInterface::set_real_matrix(const DREAL* matrix, INT num_feat, INT num_vec)
+{ 																			
+	if (!matrix || num_feat<1 || num_vec<1) 															
+		SG_ERROR("Given matrix is invalid.\n");								
+ 																			
+	npy_intp* dims=new npy_intp[num_feat];									
+	ASSERT(dims);															
+	for (INT i=0; i<num_feat; i++)
+		dims[i]=num_vec;
+
+	PyObject* py_mat=PyArray_SimpleNew(num_feat, dims, NPY_DOUBLE);			
+	if (!py_mat || !PyArray_Check(py_mat)) 											
+		SG_ERROR("Couldn't create doub prec Matrix of %d rows and %d cols.\n",	
+			num_feat, num_vec);												
+ 																			
+	double* data=(double*) ((PyArrayObject *) py_mat)->data; 				
+ 																			
+	for (INT i=0; i<num_vec; i++) 											
+		for (INT j=0; j<num_feat; j++) 										
+			data[i*num_feat+j]=matrix[i*num_feat+j]; 						
+ 																			
+	set_arg_increment(py_mat); 												
+}
 
 #define SET_SPARSEMATRIX(function_name, py_type, sg_type, if_type, error_string)	\
 void CPythonInterface::function_name(const TSparse<sg_type>* matrix, INT num_feat, INT num_vec, LONG nnz)	\
@@ -454,11 +472,11 @@ SET_SPARSEMATRIX(set_word_sparsematrix, mxUINT16_CLASS, WORD, unsigned short, "W
 #define SET_STRINGLIST(function_name, py_type, sg_type, if_type, error_string)	\
 void CPythonInterface::function_name(const T_STRING<sg_type>* strings, INT num_str)	\
 {																				\
-	if (!strings)																\
+	if (!strings || num_str<1)																\
 		SG_ERROR("Given strings are invalid.\n");								\
 																				\
 	PyObject* py_str=PyList_New(num_str);										\
-	if (!PyArray_Check(py_str)) 												\
+	if (!py_str || !PyArray_Check(py_str)) 												\
 		SG_ERROR("Couldn't create Cell Array of %d strings.\n", num_str);		\
 																				\
 	for (INT i=0; i<num_str; i++)												\
@@ -490,6 +508,19 @@ SET_STRINGLIST(set_int_string_list, NPY_INT, INT, int, "Integer")
 SET_STRINGLIST(set_short_string_list, NPY_SHORT, SHORT, short, "Short")
 SET_STRINGLIST(set_word_string_list, NPY_USHORT, WORD, unsigned short, "Word")
 #undef SET_STRINGLIST
+
+
+bool CPythonInterface::create_return_values(INT num)
+{
+	if (num<=0)
+		return true;
+
+	m_lhs=PyTuple_New(num);
+	ASSERT(m_lhs);
+
+	m_nlhs=num;
+	return PyTuple_GET_SIZE(m_lhs)==num;
+}
 
 
 PyObject* sg(PyObject* self, PyObject* args)
@@ -538,6 +569,7 @@ PyMODINIT_FUNC initsg(void)
 
 	// initialize callbacks
     Py_InitModule((char*) "sg", sg_pythonmethods);
+	import_array();
 }
 
 #endif // HAVE_PYTHON && !HAVE_SWIG

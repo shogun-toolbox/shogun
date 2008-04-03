@@ -9,9 +9,7 @@
 #include "lib/python.h"
 
 extern "C" {
-#include <object.h>
-#include <../../numarray/numpy/libnumarray.h>
-#include <numpy/ndarrayobject.h>
+#include <numpy/arrayobject.h>
 }
 
 class CPythonInterface : public CSGInterface
@@ -82,17 +80,7 @@ class CPythonInterface : public CSGInterface
 		virtual void set_short_string_list(const T_STRING<SHORT>* strings, INT num_str);
 		virtual void set_word_string_list(const T_STRING<WORD>* strings, INT num_str);
 
-		virtual bool create_return_values(INT num)
-		{
-			if (num<=0)
-				return true;
-
-			m_lhs=PyTuple_New(num);
-			ASSERT(m_lhs);
-
-			m_nlhs=num;
-			return PyTuple_GET_SIZE(m_lhs)==num;
-		}
+		virtual bool create_return_values(INT num);
 
 		inline PyObject* get_return_values()
 		{
