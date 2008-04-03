@@ -115,6 +115,17 @@ void CRInterface::get_int_vector(INT*& vec, INT& len)
 {
 	vec=NULL;
 	len=0;
+
+	SEXP rvec=CAR(get_arg_increment());
+	if( TYPEOF(rvec) != INTSXP )
+		SG_ERROR("Expected Integer Vector as argument %d\n", m_rhs_counter);
+
+	len = length(rvec);
+	vec=new INT[len];
+	ASSERT(vec);
+
+	for (INT i=0; i<len; i++)
+		vec[i]= (INT) INTEGER(rvec)[i];
 }
 
 void CRInterface::get_shortreal_vector(SHORTREAL*& vec, INT& len)
@@ -125,8 +136,16 @@ void CRInterface::get_shortreal_vector(SHORTREAL*& vec, INT& len)
 
 void CRInterface::get_real_vector(DREAL*& vec, INT& len)
 {
-	vec=NULL;
-	len=0;
+	SEXP rvec=CAR(get_arg_increment());
+	if( TYPEOF(rvec) != REALSXP && TYPEOF(rvec) != INTSXP )
+		SG_ERROR("Expected Double Vector as argument %d\n", m_rhs_counter);
+
+	len = length(rvec);
+	vec=new DREAL[len];
+	ASSERT(vec);
+
+	for (INT i=0; i<len; i++)
+		vec[i]= (DREAL) REAL(rvec)[i];
 }
 
 void CRInterface::get_short_vector(SHORT*& vec, INT& len)
@@ -233,33 +252,6 @@ void CRInterface::get_short_string_list(T_STRING<SHORT>*& strings, INT& num_str,
 
 void CRInterface::get_word_string_list(T_STRING<WORD>*& strings, INT& num_str, INT& max_string_len)
 {
-	SEXP strs=get_arg_increment();
-	if (strs == R_NilValue || TYPEOF(CAR(strs)) != STRSXP || length(CAR(strs))>=1)
-		SG_ERROR("Expected String List as argument %d\n", m_rhs_counter);
-
-	num_str=length(CAR(strs));
-	strings=new T_STRING<WORD>[num_str];
-	ASSERT(strings);
-
-	for (int i=0; i<num_str; i++)
-	{
-		SEXPREC* s= STRING_ELT(strs,i);
-		CHAR* c= (CHAR*) CHAR(s);
-		int len=LENGTH(s);
-
-		if (len && c)
-		{
-			WORD* dst=new WORD[len];
-			strings[i].string=(WORD*) memcpy(dst, c, len*sizeof(CHAR));
-			strings[i].length=len;
-		}
-		else
-		{
-			SG_WARNING( "string with index %d has zero length\n", i+1);
-			strings[i].string=0;
-			strings[i].length=0;
-		}
-	}
 }
 
 /** set functions - to pass data from shogun to the target interface */
@@ -283,6 +275,14 @@ void CRInterface::set_char_vector(const CHAR* vec, INT len)
 
 void CRInterface::set_int_vector(const INT* vec, INT len)
 {
+	SEXP feat=NULL;
+	PROTECT( feat = allocVector(INTSXP, len) );
+
+	for (INT i=0; i<len; i++)
+		INTEGER(feat)[i]=(int) vec[i];
+
+	UNPROTECT(1);
+	set_arg_increment(feat);
 }
 
 void CRInterface::set_shortreal_vector(const SHORTREAL* vec, INT len)
@@ -291,6 +291,14 @@ void CRInterface::set_shortreal_vector(const SHORTREAL* vec, INT len)
 
 void CRInterface::set_real_vector(const DREAL* vec, INT len)
 {
+	SEXP feat=NULL;
+	PROTECT( feat = allocVector(REALSXP, len) );
+
+	for (INT i=0; i<len; i++)
+		REAL(feat)[i]=(double) vec[i];
+
+	UNPROTECT(1);
+	set_arg_increment(feat);
 }
 
 void CRInterface::set_short_vector(const SHORT* vec, INT len)
@@ -312,6 +320,17 @@ void CRInterface::set_char_matrix(const CHAR* matrix, INT num_feat, INT num_vec)
 
 void CRInterface::set_int_matrix(const INT* matrix, INT num_feat, INT num_vec)
 {
+	SEXP feat=NULL;
+	PROTECT( feat = allocMatrix(INTSXP, num_feat, num_vec) );
+
+	for (INT i=0; i<num_vec; i++)
+	{
+		for (INT j=0; j<num_feat; j++)
+			INTEGER(feat)[i*num_feat+j]=(int) matrix[i*num_feat+j];
+	}
+
+	UNPROTECT(1);
+	set_arg_increment(feat);
 }
 
 void CRInterface::set_shortreal_matrix(const SHORTREAL* matrix, INT num_feat, INT num_vec)
@@ -330,7 +349,7 @@ void CRInterface::set_real_matrix(const DREAL* matrix, INT num_feat, INT num_vec
 	}
 
 	UNPROTECT(1);
-	set_arg_increment(feat);															\
+	set_arg_increment(feat);
 }
 
 void CRInterface::set_short_matrix(const SHORT* matrix, INT num_feat, INT num_vec)
@@ -343,14 +362,30 @@ void CRInterface::set_word_matrix(const WORD* matrix, INT num_feat, INT num_vec)
 
 void CRInterface::set_real_sparsematrix(const TSparse<DREAL>* matrix, INT num_feat, INT num_vec, LONG nnz)
 {
+	// R does not support sparse matrices yet
 }
 
 void CRInterface::set_byte_string_list(const T_STRING<BYTE>* strings, INT num_str)
 {
 }
-
+ //this function will fail for strings containing 0, unclear how to do 'raw'
+ //strings in R
 void CRInterface::set_char_string_list(const T_STRING<CHAR>* strings, INT num_str)
 {
+	if (!strings)
+		SG_ERROR("Given strings are invalid.\n");
+
+	SEXP feat=NULL;
+	PROTECT( feat = allocVector(STRSXP, num_str) );
+
+	for (INT i=0; i<num_str; i++)
+	{
+		INT len=strings[i].length;
+		if (len>0)
+			SET_STRING_ELT(feat, i, mkChar(strings[i].string));
+	}
+	UNPROTECT(1);
+	set_arg_increment(feat);
 }
 
 void CRInterface::set_int_string_list(const T_STRING<INT>* strings, INT num_str)
