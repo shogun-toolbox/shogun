@@ -2527,11 +2527,13 @@ bool CSGInterface::a_append_hmm()
 	get_real_matrix(b, M_b, N_b);
 	INT M=N_b;
 
-	SG_DEBUG("p:(%d,%d) q:(%d,%d) a:(%d,%d) b(%d,%d)\n",
-		N_p, M_p, N_q, M_q, N_a, M_a, N_b, M_b);
 	if (N_p!=N || M_p!=1 || N_q!=N || M_q!=1 ||
 		N_a!=N || M_a!=N || N_b!=M || M_b!=N)
-		SG_ERROR("Model matrices not matching in size.\n");
+	{
+		SG_ERROR("Model matrices not matching in size.\n"
+				"p:(%d,%d) q:(%d,%d) a:(%d,%d) b(%d,%d)\n",
+				N_p, M_p, N_q, M_q, N_a, M_a, N_b, M_b);
+	}
 
 	CHMM* h=new CHMM(N, M, NULL, gui->guihmm.get_pseudo());
 	ASSERT(h);
@@ -2584,11 +2586,13 @@ bool CSGInterface::a_set_hmm()
 	get_real_matrix(b, M_b, N_b);
 	INT M=N_b;
 
-	SG_DEBUG("p:(%d,%d) q:(%d,%d) a:(%d,%d) b(%d,%d)\n",
-		N_p, M_p, N_q, M_q, N_a, M_a, N_b, M_b);
 	if (N_p!=N || M_p!=1 || N_q!=N || M_q!=1 ||
 		N_a!=N || M_a!=N || N_b!=M || M_b!=N)
-		SG_ERROR("Model matrices not matching in size.\n");
+	{
+		SG_ERROR("Model matrices not matching in size.\n"
+				"p:(%d,%d) q:(%d,%d) a:(%d,%d) b(%d,%d)\n",
+				N_p, M_p, N_q, M_q, N_a, M_a, N_b, M_b);
+	}
 
 	CHMM* h=new CHMM(N, M, NULL, gui->guihmm.get_pseudo());
 	ASSERT(h);

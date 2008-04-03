@@ -1,3 +1,4 @@
+
 C <- 1000;
 dims <- 2;
 num <- 50;
@@ -5,6 +6,10 @@ num <- 50;
 require(graphics)
 require(lattice)
 library("sg")
+
+#uncomment if make install does not work and comment the library("sg") line above
+#dyn.load('sg.so')
+#sg <- function(...) .External("sg",...,PACKAGE="sg")
 
 newplot <- get(getOption('device'))
 
@@ -40,7 +45,10 @@ trySVM <- function(c, kernel="POLY REAL 50 3 1", wireframe=FALSE) {
   
   z <- t(matrix(out, 100, 100))
   
-  svs <- sg("get_svm")$SV+1
+  svm <- sg("get_svm")
+  b=svm[[1]]
+  svs=svm[[2]][,2]+1
+
   
   if (wireframe == TRUE)
   {
@@ -51,7 +59,7 @@ trySVM <- function(c, kernel="POLY REAL 50 3 1", wireframe=FALSE) {
  {
     image(x1,x2,z,col=topo.colors(1000))
     contour(x1,x2,z,add=T)
-    cat(length(svs), "svs:", svs, "\n")
+	cat(length(svs), "svs:", svs, "\n")
 
     posSVs <- traindat[,trainlab==+1 & (1:ncol(traindat) %in% svs)]
     negSVs <- traindat[,trainlab==-1 & (1:ncol(traindat) %in% svs)]

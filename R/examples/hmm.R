@@ -1,6 +1,10 @@
-library(graph)
-library(Rgraphviz)
-library(sg)
+#library(graph)
+#library(Rgraphviz)
+#library(sg)
+
+#uncomment if make install does not work and comment the library("sg") line above
+dyn.load('sg.so')
+sg <- function(...) .External("sg",...,PACKAGE="sg")
 
 cube=list(NULL,NULL,NULL)
 num=vector(mode='numeric',length=18)+100
@@ -27,7 +31,7 @@ sg('send_command','convert TRAIN STRING CHAR STRING WORD 1')
 #train 10 HMM models 
 liks=vector(mode='numeric', length=10)-Inf
 models=vector(mode='pairlist', length=10)
-for (i in 1:10)
+for (i in 1:2)
 {
 	sg('send_command','new_hmm 3 6')
 	sg('send_command','bw')
@@ -37,18 +41,22 @@ for (i in 1:10)
 
 #choose the most likely model and compute viterbi path
 h=models[[which(liks==max(liks))]]
-sg('set_hmm',h)
+p=h[[1]]
+q=h[[2]]
+a=h[[3]]
+b=h[[4]]
+sg('set_hmm',t(p),t(q),a,b)
 sg('set_features','TEST',x,'CUBE')
 sg('send_command','convert TEST STRING CHAR STRING WORD 1')
 path=sg('get_viterbi_path',0)
 
-p=exp(h$p)
-q=exp(h$q)
-a=exp(h$a)
-b=exp(h$b)
+p=exp(p)
+q=exp(q)
+a=exp(a)
+b=exp(b)
 
 y=c(vector(mode='numeric', length(cube[[1]])),vector(mode='numeric', length(cube[[2]]))+1, vector(mode='numeric', length(cube[[2]]))+2)
 matplot(1:length(y), y-0.01,type='l',col='red')
-matplot(1:length(path$path), path$path,type='l',col='blue',add=T)
-g=new("graphAM",a>1e-6,edgemode = "directed")
-plot(g, "neato")
+matplot(1:length(path[[1]]), path[[1]],type='l',col='blue',add=T)
+#g=new("graphAM",a>1e-6,edgemode = "directed")
+#plot(g, "neato")

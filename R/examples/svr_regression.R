@@ -1,6 +1,10 @@
 require(graphics)
 library("sg")
 
+#uncomment if make install does not work and comment the library("sg") line above
+#dyn.load('sg.so')
+#sg <- function(...) .External("sg",...,PACKAGE="sg")
+
 traindat <- matrix(1:1000+runif(1000),1,1000)/10
 trainlab <- sin(traindat)
 testdat <- (matrix(1:1000,1,1000)-1+runif(1000))/10
@@ -19,4 +23,4 @@ sg("set_labels", "TEST", testlab)
 sg("send_command", "init_kernel TEST")
 out <- sg("svm_classify")
 plot(traindat,trainlab, type = "o", pch="x", col="red");
-matplot(testdat,out, type = "o", pch="o", col="black",add=T)
+matplot(testdat,t(matrix(out)), type = "o", pch="o", col="black",add=T)
