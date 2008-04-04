@@ -82,8 +82,15 @@ class CPythonInterface : public CSGInterface
 
 		virtual bool create_return_values(INT num);
 
-		inline PyObject* get_return_values()
+		PyObject* get_return_values()
 		{
+            if (m_nlhs==1)
+            {
+                PyObject* retval=PyTuple_GET_ITEM(m_lhs, 0);
+                Py_INCREF(retval);
+                Py_DECREF(m_lhs);
+                m_lhs=retval;
+            }
 			return m_lhs;
 		}
 
@@ -104,6 +111,7 @@ class CPythonInterface : public CSGInterface
 		{
 			ASSERT(m_lhs_counter>=0 && m_lhs_counter<m_nlhs);
 			ASSERT(m_lhs);
+            //Py_INCREF(arg);
 			PyTuple_SET_ITEM(m_lhs, m_lhs_counter, arg);
 			m_lhs_counter++;
 		}

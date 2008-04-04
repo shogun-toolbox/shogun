@@ -247,6 +247,7 @@ void COctaveInterface::get_real_sparsematrix(TSparse<DREAL>*& matrix, INT& num_f
 #define GET_STRINGLIST(function_name, oct_type_check, oct_type, oct_converter, sg_type, if_type, error_string)		\
 void COctaveInterface::function_name(T_STRING<sg_type>*& strings, INT& num_str, INT& max_string_len) \
 {																					\
+	max_string_len=0;														\
 	octave_value arg=get_arg_increment();											\
 	if (arg.is_cell())																\
 	{																				\
