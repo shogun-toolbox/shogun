@@ -63,7 +63,6 @@ class CMatlabInterface : public CSGInterface
 		virtual void get_word_string_list(T_STRING<WORD>*& strings, INT& num_str, INT& max_string_len);
 
 		/** set functions - to pass data from shogun to the target interface */
-		virtual void create_return_values(INT num_val);
 		virtual void set_byte_vector(const BYTE* vec, INT len);
 		virtual void set_char_vector(const CHAR* vec, INT len);
 		virtual void set_int_vector(const INT* vec, INT len);

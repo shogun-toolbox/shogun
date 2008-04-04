@@ -37,16 +37,16 @@ colorbar
 
 pidx=find(trainlab>0);
 pidx=setdiff(pidx, svidx);
-plot(traindat(1,pidx), traindat(2,pidx), 'k+','MarkerSize',10);
+plot(traindat(1,pidx), traindat(2,pidx), 'k*','MarkerSize',3);
 
 nidx=find(trainlab<0);
 nidx=setdiff(nidx, svidx);
-plot(traindat(1,nidx), traindat(2,nidx), 'k.','MarkerSize',10);
+plot(traindat(1,nidx), traindat(2,nidx), 'k.','MarkerSize',3);
 
 pidx=find(trainlab>0);
 pidx=intersect(pidx, svidx);
-plot(traindat(1,pidx), traindat(2,pidx), 'r+','MarkerSize',10);
+plot(traindat(1,pidx), traindat(2,pidx), 'r*','MarkerSize',3);
 
 nidx=find(trainlab<0);
 nidx=intersect(nidx, svidx);
-plot(traindat(1,nidx), traindat(2,nidx), 'b.','MarkerSize',10);
+plot(traindat(1,nidx), traindat(2,nidx), 'b.','MarkerSize',3);

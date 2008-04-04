@@ -324,11 +324,6 @@ GET_STRINGLIST(get_short_string_list, is_matrix_type() && arg.is_int16_type, int
 GET_STRINGLIST(get_word_string_list, is_matrix_type() && arg.is_uint16_type, uint16NDArray, uint16_array_value, WORD, WORD, "Word")
 #undef GET_STRINGLIST
 
-/** set functions - to pass data from shogun to the target interface */
-void COctaveInterface::create_return_values(INT num_val)
-{
-}
-
 #define SET_VECTOR(function_name, oct_type, sg_type, if_type, error_string)		\
 void COctaveInterface::function_name(const sg_type* vec, INT len)				\
 {																				\

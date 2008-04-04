@@ -214,6 +214,10 @@ class CSGInterface : public CSGObject
 		virtual void set_int(INT scalar)=0;
 		virtual void set_real(DREAL scalar)=0;
 		virtual void set_bool(bool scalar)=0;
+
+		// use set/get_vector for 1d matrices, get/set_int for scalars
+		// testen mit alter shogun version ob selbe ergebnisse
+		// valgrind
 		*/
 
 		virtual void set_byte_vector(const BYTE* vector, INT len)=0;
@@ -265,7 +269,7 @@ class CSGInterface : public CSGObject
 		}
 
 		/// get action name, like 'send_command', 'get_svm' etc
-		inline CHAR* get_action(INT &len)
+		CHAR* get_action(INT &len)
 		{
 			ASSERT(m_rhs_counter==0);
 			if (m_nrhs<=0)

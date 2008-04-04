@@ -76,18 +76,7 @@ class CRInterface : public CSGInterface
 		virtual void set_short_string_list(const T_STRING<SHORT>* strings, INT num_str);
 		virtual void set_word_string_list(const T_STRING<WORD>* strings, INT num_str);
 
-		inline SEXP get_return_values()
-		{
-			if (m_nlhs>0)
-				UNPROTECT(1);
-			if (m_nlhs==1)
-			{
-				SEXP arg=VECTOR_ELT(m_lhs, 0);
-				SET_VECTOR_ELT(m_lhs, m_lhs_counter, R_NilValue);
-				return arg;
-			}
-			return m_lhs;
-		}
+		SEXP get_return_values();
 
 	private:
 		const SEXP get_arg_increment()

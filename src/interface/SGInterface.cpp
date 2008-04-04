@@ -2565,14 +2565,12 @@ bool CSGInterface::a_set_hmm()
 		return false;
 
 	DREAL* p=NULL;
-	INT M_p=0;
 	INT N_p=0;
-	get_real_matrix(p, M_p, N_p);
+	get_real_vector(p, N_p);
 
 	DREAL* q=NULL;
-	INT M_q=0;
 	INT N_q=0;
-	get_real_matrix(q, M_q, N_q);
+	get_real_vector(q, N_q);
 
 	DREAL* a=NULL;
 	INT M_a=0;
@@ -2586,12 +2584,11 @@ bool CSGInterface::a_set_hmm()
 	get_real_matrix(b, M_b, N_b);
 	INT M=N_b;
 
-	if (N_p!=N || M_p!=1 || N_q!=N || M_q!=1 ||
-		N_a!=N || M_a!=N || N_b!=M || M_b!=N)
+	if (N_p!=N || N_q!=N || N_a!=N || M_a!=N || N_b!=M || M_b!=N)
 	{
 		SG_ERROR("Model matrices not matching in size.\n"
-				"p:(%d,%d) q:(%d,%d) a:(%d,%d) b(%d,%d)\n",
-				N_p, M_p, N_q, M_q, N_a, M_a, N_b, M_b);
+				"p:(%d) q:(%d) a:(%d,%d) b(%d,%d)\n",
+				N_p, N_q, N_a, M_a, N_b, M_b);
 	}
 
 	CHMM* h=new CHMM(N, M, NULL, gui->guihmm.get_pseudo());

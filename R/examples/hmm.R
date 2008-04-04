@@ -1,10 +1,10 @@
-#library(graph)
-#library(Rgraphviz)
-#library(sg)
+library(graph)
+library(Rgraphviz)
+library(sg)
 
 #uncomment if make install does not work and comment the library("sg") line above
-dyn.load('sg.so')
-sg <- function(...) .External("sg",...,PACKAGE="sg")
+#dyn.load('sg.so')
+#sg <- function(...) .External("sg",...,PACKAGE="sg")
 
 cube=list(NULL,NULL,NULL)
 num=vector(mode='numeric',length=18)+100
@@ -15,7 +15,7 @@ num[10]=0;
 num[11]=0;
 num[12]=0;
 
-for (c in 1:3)
+for (c in 1:10)
 {
 	for (i in 1:6)
 		cube[[c]] <- c(cube[[c]], vector(mode='numeric',length=num[(c-1)*6+i])+i)
@@ -45,7 +45,7 @@ p=h[[1]]
 q=h[[2]]
 a=h[[3]]
 b=h[[4]]
-sg('set_hmm',t(p),t(q),a,b)
+sg('set_hmm',p,q,a,b)
 sg('set_features','TEST',x,'CUBE')
 sg('send_command','convert TEST STRING CHAR STRING WORD 1')
 path=sg('get_viterbi_path',0)
@@ -58,5 +58,5 @@ b=exp(b)
 y=c(vector(mode='numeric', length(cube[[1]])),vector(mode='numeric', length(cube[[2]]))+1, vector(mode='numeric', length(cube[[2]]))+2)
 matplot(1:length(y), y-0.01,type='l',col='red')
 matplot(1:length(path[[1]]), path[[1]],type='l',col='blue',add=T)
-#g=new("graphAM",a>1e-6,edgemode = "directed")
-#plot(g, "neato")
+g=new("graphAM",a>1e-6,edgemode = "directed")
+plot(g, "neato")

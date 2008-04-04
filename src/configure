@@ -2042,7 +2042,7 @@ EOF
 			LINKFLAGS="$LINKFLAGS -lmindy"
 			echores "yes"
 		else
-			echores "no"
+			echores "no - never mind"
 		fi
 	fi
 
