@@ -124,12 +124,12 @@ class CKMeans : public CDistanceMachine
 			num=k;
 		}
 
-		/** get radi (swig compatible)
+		/** get radiuses (swig compatible)
 		 *
-		 * @param radi current radi are stored in here
-		 * @param num number of radi is stored in here
+		 * @param radiuses current radiuses are stored in here
+		 * @param num number of radiuses is stored in here
 		 */
-		inline void get_radi(DREAL** radi, INT* num)
+		inline void get_radiuses(DREAL** radi, INT* num)
 		{
 			size_t sz=sizeof(*R)*k;
 			*radi= (DREAL*) malloc(sz);
@@ -139,13 +139,13 @@ class CKMeans : public CDistanceMachine
 			*num=k;
 		}
 
-		/** get centers (swig compatible)
+		/** get cluster centers (swig compatible)
 		 *
-		 * @param centers current centers are stored in here
+		 * @param centers current cluster centers are stored in here
 		 * @param dim dimensions are stored in here
 		 * @param num number of centers is stored in here
 		 */
-		inline void get_centers(DREAL** centers, INT* dim, INT* num)
+		inline void get_cluster_centers(DREAL** centers, INT* dim, INT* num)
 		{
 			size_t sz=sizeof(*mus)*dimensions*k;
 			*centers= (DREAL*) malloc(sz);

@@ -529,21 +529,21 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<CHAR>
 		 * @param max_degree maximum degree
 		 * @param num_feat number of features
 		 * @param num_sym number of symbols
-		 * @param result result
+		 * @param w_result w
 		 * @param num_suppvec number of support vectors
 		 * @param IDX IDX
 		 * @param alphas alphas
 		 * @return w
 		 */
 		DREAL* extract_w( INT max_degree, INT& num_feat, INT& num_sym,
-			DREAL* result, INT num_suppvec, INT* IDX, DREAL* alphas);
+			DREAL* w_result, INT num_suppvec, INT* IDX, DREAL* alphas);
 
 		/** compute POIM
 		 *
 		 * @param max_degree maximum degree
 		 * @param num_feat number of features
 		 * @param num_sym number of symbols
-		 * @param result result
+		 * @param poim_result poim
 		 * @param num_suppvec number of support vectors
 		 * @param IDX IDX
 		 * @param alphas alphas
@@ -551,7 +551,7 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<CHAR>
 		 * @return computed POIMs
 		 */
 		DREAL* compute_POIM( INT max_degree, INT& num_feat, INT& num_sym,
-			DREAL* result, INT num_suppvec, INT* IDX, DREAL* alphas, DREAL* distrib );
+			DREAL* poim_result, INT num_suppvec, INT* IDX, DREAL* alphas, DREAL* distrib );
 
 		void prepare_POIM2(DREAL* distrib, INT num_sym, INT num_feat) ;		
 		void compute_POIM2(INT max_degree, CSVM* svm) ;

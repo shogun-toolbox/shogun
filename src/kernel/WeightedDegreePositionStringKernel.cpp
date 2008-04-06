@@ -1635,7 +1635,7 @@ CHAR* CWeightedDegreePositionStringKernel::compute_consensus(INT &num_feat, INT 
 }
 
 
-DREAL* CWeightedDegreePositionStringKernel::extract_w( INT max_degree, INT& num_feat, INT& num_sym, DREAL* result, INT num_suppvec, INT* IDX, DREAL* alphas )
+DREAL* CWeightedDegreePositionStringKernel::extract_w( INT max_degree, INT& num_feat, INT& num_sym, DREAL* w_result, INT num_suppvec, INT* IDX, DREAL* alphas )
 {
   delete_optimization();
   use_poim_tries=true;
@@ -1671,16 +1671,16 @@ DREAL* CWeightedDegreePositionStringKernel::extract_w( INT max_degree, INT& num_
   }
   // --- allocate memory
   const INT bigTabSize = offset;
-  result = new DREAL[ bigTabSize ];
-  ASSERT( result != NULL );
+  w_result = new DREAL[ bigTabSize ];
+  ASSERT( w_result != NULL );
   for( i = 0; i < bigTabSize; ++i ) {
-    result[i] = 0;
+    w_result[i] = 0;
   }
   // --- set pointers for tables
   subs = new DREAL*[ max_degree ];
   ASSERT( subs != NULL );
   for( k = 0; k < max_degree; ++k ) {
-    subs[k] = &result[ offsets[k] ];
+    subs[k] = &w_result[ offsets[k] ];
   }
   delete[] offsets;
 
@@ -1694,10 +1694,10 @@ DREAL* CWeightedDegreePositionStringKernel::extract_w( INT max_degree, INT& num_
   num_sym = bigTabSize;
   use_poim_tries=false;
   poim_tries.delete_trees(false);
-  return result;
+  return w_result;
 }
 
-DREAL* CWeightedDegreePositionStringKernel::compute_POIM( INT max_degree, INT& num_feat, INT& num_sym, DREAL* result, INT num_suppvec, INT* IDX, DREAL* alphas, DREAL* distrib )
+DREAL* CWeightedDegreePositionStringKernel::compute_POIM( INT max_degree, INT& num_feat, INT& num_sym, DREAL* poim_result, INT num_suppvec, INT* IDX, DREAL* alphas, DREAL* distrib )
 {
   delete_optimization();
   use_poim_tries=true;
@@ -1771,16 +1771,16 @@ DREAL* CWeightedDegreePositionStringKernel::compute_POIM( INT max_degree, INT& n
   }
   // --- allocate memory
   const INT bigTabSize = offset;
-  result = new DREAL[ bigTabSize ];
-  ASSERT( result != NULL );
+  poim_result = new DREAL[ bigTabSize ];
+  ASSERT( poim_result != NULL );
   for( i = 0; i < bigTabSize; ++i ) {
-    result[i] = 0;
+    poim_result[i] = 0;
   }
   // --- set pointers for tables
   subs = new DREAL*[ max_degree ];
   ASSERT( subs != NULL );
   for( k = 0; k < max_degree; ++k ) {
-    subs[k] = &result[ offsets[k] ];
+    subs[k] = &poim_result[ offsets[k] ];
   }
   delete[] offsets;
 
@@ -1828,7 +1828,7 @@ DREAL* CWeightedDegreePositionStringKernel::compute_POIM( INT max_degree, INT& n
   use_poim_tries=false;
   poim_tries.delete_trees(false);
   
-  return result;
+  return poim_result;
 }
 
 

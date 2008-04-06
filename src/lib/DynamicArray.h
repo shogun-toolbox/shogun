@@ -11,6 +11,11 @@
 #ifndef _DYNARRAY_H_
 #define _DYNARRAY_H_
 
+/* workaround compile bug in R-modular interface */
+#if defined(HAVE_R) && !defined(ScalarReal)
+#define ScalarReal      Rf_ScalarReal
+#endif
+
 #include "lib/common.h"
 #include "lib/Mathematics.h"
 #include "base/SGObject.h"

@@ -10,6 +10,7 @@ EXT_SRC_CPP=cpp
 EXT_SRC_SWIG=i
 EXT_SRC_SWIG=_wrap.cxx
 EXT_INP_SWIG=i
+EXT_IF_SWIG=.py
 EXT_OBJ_SWIG=_wrap.cxx.o
 EXT_LIB_SWIG=so
 EXT_DOXY=.doxy
@@ -298,6 +299,7 @@ check_python()
 	if $PYTHON -V >/dev/null 2>&1
 	then
 		echores "`$PYTHON -V 2>&1 | grep Python | cut -f 2 -d ' '`"
+		EXT_IF_SWIG='.py'
 	else
 		echores "python not detected (required)"
 	fi
@@ -2348,6 +2350,7 @@ EOF
 		if ( echo 'version; quit()' | R --no-save ) >/dev/null 2>&1 
 		then
 			echores "`echo 'version; quit()' | R  --no-save 2>&1 | grep version\.string | cut -f 4 -d ' '`"
+			EXT_IF_SWIG='.R'
 		else
 			echores "no"
 			die "cannot find R executable in path"
@@ -2631,6 +2634,7 @@ USE_SWIG 		= ${USE_SWIG}
 USE_DOXYGEN 	= ${USE_DOXYGEN}
 SWIGFLAGS		= ${SWIGFLAGS}
 EXT_INP_SWIG	= ${EXT_INP_SWIG}
+EXT_IF_SWIG		= ${EXT_IF_SWIG}
 EXT_SRC_SWIG	= ${EXT_SRC_SWIG}
 EXT_OBJ_SWIG	= ${EXT_OBJ_SWIG}
 EXT_LIB_SWIG	= ${EXT_LIB_SWIG}

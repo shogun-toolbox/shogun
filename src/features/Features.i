@@ -7,6 +7,9 @@
 %{
 #define SWIG_FILE_WITH_INIT
 #include "features/Features.h" 
+#ifdef HAVE_R
+#include <Rdefines.h>
+#endif
 %}
 
 #ifdef HAVE_DOXYGEN

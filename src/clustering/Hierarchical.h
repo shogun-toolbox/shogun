@@ -102,12 +102,12 @@ class CHierarchical : public CDistanceMachine
 			num=table_size;
 		}
 
-		/** get merge distance (swig compatible)
+		/** get merge distances (swig compatible)
 		 *
-		 * @param dist current merge distance is stored in here
+		 * @param dist current merge distances is stored in here
 		 * @param num number of merge distances is stored in here
 		 */
-		inline void get_merge_distance(DREAL** dist, INT* num)
+		inline void get_merge_distances(DREAL** dist, INT* num)
 		{
 			size_t sz=sizeof(*merge_distance)*merges;
 			*dist=(DREAL*) malloc(sz);
@@ -130,13 +130,13 @@ class CHierarchical : public CDistanceMachine
 			num=table_size;
 		}
 
-		/** get pairs (swig compatible)
+		/** get cluster pairs (swig compatible)
 		 *
 		 * @param tuples current pairs are stored in here
 		 * @param rows number of rows is stored in here
 		 * @param num number of pairs is stored in here
 		 */
-		inline void get_pairs(INT** tuples, INT* rows, INT* num)
+		inline void get_cluster_pairs(INT** tuples, INT* rows, INT* num)
 		{
 			*rows=2;
 			size_t sz=sizeof(*pairs)*(*rows)*merges;

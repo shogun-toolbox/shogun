@@ -118,17 +118,17 @@ template <class ST> class CSimpleFeatures: public CFeatures
 		 *
 		 * @param num index of feature vector
 		 * @param len length is returned by reference
-		 * @param free whether returned vector must be freed by
+		 * @param do_free whether returned vector must be freed by
 		 * caller via free_feature_vector
 		 * @return feature vector
 		 */
-		ST* get_feature_vector(INT num, INT& len, bool& free)
+		ST* get_feature_vector(INT num, INT& len, bool& dofree)
 		{
 			len=num_features;
 
 			if (feature_matrix)
 			{
-				free=false ;
+				dofree=false;
 				return &feature_matrix[num*num_features];
 			} 
 			else
@@ -136,7 +136,7 @@ template <class ST> class CSimpleFeatures: public CFeatures
 				SG_DEBUG( "compute feature!!!\n") ;
 
 				ST* feat=NULL;
-				free=false;
+				dofree=false;
 
 				if (feature_cache)
 				{
@@ -151,7 +151,7 @@ template <class ST> class CSimpleFeatures: public CFeatures
 				}
 
 				if (!feat)
-					free=true;
+					dofree=true;
 				feat=compute_feature_vector(num, len, feat);
 
 
@@ -184,14 +184,14 @@ template <class ST> class CSimpleFeatures: public CFeatures
 		 *
 		 * @param feat_vec feature vector to free
 		 * @param num index in feature cache
-		 * @param free if vector should be really deleted
+		 * @param dofree if vector should be really deleted
 		 */
-		void free_feature_vector(ST* feat_vec, INT num, bool free)
+		void free_feature_vector(ST* feat_vec, INT num, bool dofree)
 		{
 			if (feature_cache)
 				feature_cache->unlock_entry(num);
 
-			if (free)
+			if (dofree)
 				delete[] feat_vec ;
 		}
 

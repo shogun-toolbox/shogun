@@ -21,8 +21,8 @@ REPLACEMENTS=[
 ]
 
 class Scrub:
-	def __init__ (self, input):
-		self.infile=input+'.py'
+	def __init__ (self, extension, input):
+		self.infile=input+extension
 		self.outfile=self.infile+'.new'
 
 	def run (self):
@@ -41,6 +41,6 @@ class Scrub:
 
 
 if __name__=='__main__':
-	offset=sys.argv[1].find('_wrap.cxx')
-	scrubby=Scrub(sys.argv[1][:offset])
+	offset=sys.argv[2].find('_wrap.cxx')
+	scrubby=Scrub(sys.argv[1], sys.argv[2][0:offset])
 	scrubby.run()

@@ -79,6 +79,11 @@ fprintf('sequence:\n');
 for i = 1:length(s),
     fprintf('\tcube: %dx%d\n',f(i), s(i));
 end
+for i= 1:size(a,2),
+    fprintf('Distribution: Cube %d:', i);
+    fprintf('%f ', [sum(a{i}==1),sum(a{i}==2),sum(a{i}==3),sum(a{i}==4),sum(a{i}==5),sum(a{i}==6)]/length(a{i}));
+    fprintf('\n');
+end
 
 %plot the segmentation
 truepath=[];
