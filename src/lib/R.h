@@ -8,6 +8,8 @@ extern "C" {
 #include <Rinternals.h>
 #include <Rdefines.h>
 #include <R_ext/Rdynload.h>
+#include <Rembedded.h>
+#include <Rinterface.h>
 }
 
 #endif //__R_H__

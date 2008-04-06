@@ -16,14 +16,8 @@
 
 #ifndef HAVE_SWIG
 #include <stdio.h>
-#include "guilib/GUIHMM.h"
-#include "guilib/GUIKernel.h"
-#include "guilib/GUIPreProc.h"
-#include "guilib/GUIFeatures.h"
 #include "gui/GUI.h"
 #include "lib/Signal.h"
-
-#include "guilib/GUIDistance.h"
 
 class CTextGUI: public CGUI
 {
@@ -54,4 +48,4 @@ protected:
 	bool echo;
 };
 #endif //HAVE_SWIG
-#endif
+#endif //__TEXT_GUI__H

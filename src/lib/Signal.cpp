@@ -19,7 +19,9 @@
 
 #include "lib/io.h"
 #include "lib/Signal.h"
-#if defined(HAVE_OCTAVE)
+#if defined(HAVE_MATLAB)
+#include "lib/matlab.h"
+#elif defined(HAVE_OCTAVE)
 #include "lib/octave.h"
 #elif defined(HAVE_PYTHON)
 #include "lib/python.h"
@@ -55,7 +57,7 @@ void CSignal::handler(int signal)
 		{
 			unset_handler();
 #if defined(HAVE_MATLAB)
-			SG_SERROR("sg stopped by SIGINT\n");
+			mexErrMsgTxt("sg stopped by SIGINT\n");
 #elif defined(HAVE_OCTAVE)
 			SG_PRINT("sg stopped by SIGINT\n");
 			BEGIN_INTERRUPT_IMMEDIATELY_IN_FOREIGN_CODE;
@@ -66,8 +68,7 @@ void CSignal::handler(int signal)
 			PyErr_SetInterrupt();
 			PyErr_CheckSignals();
 #elif defined(HAVE_R)
-			SG_PRINT("sg stopped by SIGINT\n");
-			Rf_endEmbeddedR(0);
+			R_Suicide((char*) "sg stopped by SIGINT\n");
 #endif
 
 		}

@@ -54,4 +54,4 @@ class CGUI : public CSGObject
   char** argv ;
 } ;
 #endif //HAVE_SWIG
-#endif
+#endif //__GUI__H

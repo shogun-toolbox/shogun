@@ -39,7 +39,6 @@ void CPythonInterface::parse_args(INT num_args, INT num_default_args)
 /// get type of current argument (does not increment argument counter)
 IFType CPythonInterface::get_argument_type()
 {
-	SG_PRINT("num args: %d ctr: %d\n", PyTuple_GET_SIZE(m_rhs), m_rhs_counter);
 	PyObject* arg= PyTuple_GetItem(m_rhs, m_rhs_counter);
 	ASSERT(arg);
 
@@ -510,7 +509,7 @@ PyObject* sg(PyObject* self, PyObject* args)
 	try
 	{
 		if (!interface->handle())
-			SG_ERROR("interface currently does not handle this command.\n");
+			SG_ERROR("Unknown command.\n");
 	}
 	catch (ShogunException e)
 	{

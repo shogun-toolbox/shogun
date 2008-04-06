@@ -101,7 +101,12 @@ void CIO::message(EMessageType prio, const CHAR *fmt, ... ) const
 #ifndef CYGWIN
 				CSignal::unset_handler();
 #endif
-				mexErrMsgTxt(str);
+#ifdef WIN32
+				mexPrintf("%s", str);
+#else
+				fprintf(target, "%s", str);
+#endif
+				throw ShogunException(str);
 				break;
 			default:
 				break;
@@ -151,6 +156,7 @@ void CIO::message(EMessageType prio, const CHAR *fmt, ... ) const
 			case M_CRITICAL:
 			case M_ALERT:
 			case M_EMERGENCY:
+				CSignal::unset_handler();
 				fprintf(target, "%s", message_strings[p]);
 				fprintf(target, "%s\n", str);
 				PyErr_SetString(PyExc_RuntimeError,str);

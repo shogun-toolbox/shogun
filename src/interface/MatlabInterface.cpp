@@ -6,6 +6,7 @@
 
 #include "interface/MatlabInterface.h"
 #include "interface/SGInterface.h"
+#include "lib/ShogunException.h"
 
 extern CSGInterface* interface;
 
@@ -510,7 +511,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 	try
 	{
 		if (!interface->handle())
-			SG_ERROR("interface currently does not handle this command\n");
+			SG_ERROR("Unknown command.\n");
 	}
 	catch (ShogunException e)
 	{

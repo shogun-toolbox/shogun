@@ -470,7 +470,7 @@ SEXP sg(SEXP args)
 	try
 	{
 		if (!interface->handle())
-			SG_ERROR("interface currently does not handle this command\n");
+			SG_ERROR("Unknown command.\n");
 	}
 	catch (ShogunException e)
 	{

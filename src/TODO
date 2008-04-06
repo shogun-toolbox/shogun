@@ -1,40 +1,43 @@
 TODO
 
+- TextInterface that does get/set_matrx/vector etc via file io
+- General Signal handling
+- R swig interface
 - merge all the WeightedDegree* kernel core routines into a single class, which
  the current WD/WDS char/string impl. can make use of
-- move translate* functions from stringfeatures/charfeatures/dynprog/matlab.cpp into alphabet!
-- R wrapper
-- error checks/exception modell w/ python-swig-objects (fabio example)
-- doc-strings w/ python-swig-objects (fabio example, rbf,svmlight,realfeat)
 - memory inplace mit Py_INCREF ? or copy w/ python-swig-objects
 - move svmlight structs  (MODEL...) inside CSVMLight class (again!, if it works with swig somehow)
-- kerthi,olivier Lin-SVM implementieren, chunking ???
-- LPM implementieren
 - Commstring kernel mit suffixtrie impl.
-- sg design document.
-- clean up get_kernel matrix (in Kernel.cpp / GUIMatlab.cpp)
 - remove use_precompute hack -> make it a temporary precomputed kernel
 - don't use List for preprocs/combined features -> use DYNARRAY!!!
 - SVMs linadd mpi implementation
 - CommWordString /CommWordUlongKernel optimierung mit unique sort
-- suffix tree ala leslie als extra classe...
 - generisches object mit set/get funktionen multiple classifiers/features/distributions/etc, make them interact via lists/indizes of who works with whom
-- create generic Distribution class which combines all density related stuff HMM/gaussians/linear hmm ... this would
-  allow for using PluginEstimate with *any* distribution and clean all the hmm_test hacks
 - create a one class classifier to avoid hacky one_class_hmm_test
 - put things (== estimator/svm/hmm/features/kernel...) in some kind of list to be able to use/select them/many
   for certain purposes
-- make unified testing possible, e.g. set_classifier XXX ; calc_output ; get_results etc.
 - no standardized File IO (there needs to be some header parsing stuff/ little/big endian conversion...)
   atm, lots of things just use fopen/read/close...
 - tcp/ip io fixen
-- type (INT/LONG etc) fixes, clear policy
 - fix linear HMM to be equiv. with MMs
-- testsuite
 - deal with remove_lhs/rhs in kernel cleanup() function
 
 DONE
 
+- suffix tree ala leslie als extra classe... - won't -> too slow
+- error checks/exception modell w/ python-swig-objects (fabio example)
+- sg design document.
+- R wrapper
+- doc-strings w/ python-swig-objects (fabio example, rbf,svmlight,realfeat)
+- kerthi,olivier Lin-SVM implementieren, chunking ??? -> SVMLin
+- LPM implementieren
+- clean up get_kernel matrix (in Kernel.cpp / GUIMatlab.cpp)
+- create generic Distribution class which combines all density related stuff HMM/gaussians/linear hmm ... this would
+  allow for using PluginEstimate with *any* distribution and clean all the hmm_test hacks
+- make unified testing possible, e.g. set_classifier XXX ; calc_output ; get_results etc.
+- testsuite
+- type (INT/LONG etc) fixes, clear policy
+- move translate* functions from stringfeatures/charfeatures/dynprog/matlab.cpp into alphabet!
 - convert each and every object to be fully functional w/ swig/python
 	* fabio classifier
 	* soeren string
