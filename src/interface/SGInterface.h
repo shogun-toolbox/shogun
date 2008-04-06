@@ -157,7 +157,6 @@ class CSGInterface : public CSGObject
 		bool a_test();
 
 		/** get functions - to pass data from the target interface to shogun */
-		virtual void parse_args(INT num_args, INT num_default_args)=0;
 
 		/// get type of current argument (does not increment argument counter)
 		virtual IFType get_argument_type()=0;
@@ -210,12 +209,11 @@ class CSGInterface : public CSGObject
 		/** set functions - to pass data from shogun to the target interface */
 		virtual bool create_return_values(INT num_val)=0;
 
-		/* TODO
 		virtual void set_int(INT scalar)=0;
 		virtual void set_real(DREAL scalar)=0;
 		virtual void set_bool(bool scalar)=0;
 
-		// get/set_int for scalars
+		/* TODO
 		// testen mit alter shogun version ob selbe ergebnisse
 		// valgrind
 		*/

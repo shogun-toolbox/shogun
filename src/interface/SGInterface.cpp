@@ -373,7 +373,7 @@ bool CSGInterface::a_crc()
 
 	INT val=CMath::crc32(bstring, slen);
 	delete[] bstring;
-	set_int_vector(&val, 1);
+	set_int(val);
 
 	return true;
 }
@@ -515,7 +515,7 @@ bool CSGInterface::a_best_path_no_b()
 	DREAL prob=h->best_path_no_b(max_iter, best_iter, path);
 	delete h;
 
-	set_real_vector(&prob, 1);
+	set_real(prob);
 	set_int_vector(path, best_iter+1);
 	delete[] path;
 
@@ -638,8 +638,7 @@ bool CSGInterface::a_get_version()
 	if (m_nrhs!=1 || !create_return_values(1))
 		return false;
 
-	DREAL* ver=(DREAL*) version.get_version_revision();
-	set_real_vector(ver, 1);
+	set_int(version.get_version_revision());
 
 	return true;
 }
@@ -2199,7 +2198,7 @@ bool CSGInterface::a_classify_example()
 	if (!gui->guiclassifier.classify_example(idx, result))
 		SG_ERROR("Classify_example failed.\n");
 
-	set_real_vector(&result, 1);
+	set_real(result);
 
 	return true;
 }
@@ -2275,8 +2274,7 @@ bool CSGInterface::a_get_svm_objective()
 	if (!svm)
 		SG_ERROR("No SVM set.\n");
 
-	DREAL objective=svm->get_objective();
-	set_real_vector(&objective, 1);
+	set_real(svm->get_objective());
 
 	return true;
 }
@@ -2435,7 +2433,7 @@ bool CSGInterface::do_hmm_classify_example(bool one_class)
 	else
 		result=gui->guihmm.classify_example(idx);
 
-	set_real_vector(&result, 1);
+	set_real(result);
 
 	return true;
 }
@@ -2450,7 +2448,7 @@ bool CSGInterface::a_hmm_likelihood()
 		SG_ERROR("No HMM.\n");
 
 	DREAL likelihood=h->model_probability();
-	set_real_vector(&likelihood, 1);
+	set_real(likelihood);
 
 	return true;
 }
@@ -2485,7 +2483,7 @@ bool CSGInterface::a_get_viterbi_path()
 
 	set_real_vector(path, num_feat);
 	delete[] path;
-	set_real_vector(&likelihood, 1);
+	set_real(likelihood);
 
 	return true;
 }

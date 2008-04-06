@@ -31,9 +31,6 @@ CPythonInterface::~CPythonInterface()
 }
 
 /** get functions - to pass data from the target interface to shogun */
-void CPythonInterface::parse_args(INT num_args, INT num_default_args)
-{
-}
 
 
 /// get type of current argument (does not increment argument counter)
@@ -342,6 +339,36 @@ GET_STRINGLIST(get_word_string_list, NPY_USHORT, WORD, unsigned short, 0, "Word"
 
 
 /** set functions - to pass data from shogun to the target interface */
+
+void CPythonInterface::set_int(INT scalar)
+{
+	PyObject* o=Py_BuildValue("i", scalar);
+	if (!o)
+		SG_ERROR("Could not build an integer.\n");
+
+	set_arg_increment(o);
+}
+
+void CPythonInterface::set_real(DREAL scalar)
+{
+	PyObject* o=Py_BuildValue("d", scalar);
+	if (!o)
+		SG_ERROR("Could not build a double.\n");
+
+	set_arg_increment(o);
+}
+
+void CPythonInterface::set_bool(bool scalar)
+{
+	// bool does not exist in Py_BuildValue, using byte instead
+	PyObject* o=Py_BuildValue("b", scalar);
+	if (!o)
+		SG_ERROR("Could not build a bool.\n");
+
+	set_arg_increment(o);
+}
+
+
 #define SET_VECTOR(function_name, py_type, sg_type, if_type, error_string)	\
 void CPythonInterface::function_name(const sg_type* vector, INT len)		\
 {																			\

@@ -49,6 +49,8 @@ trySVM <- function(c, kernel="POLY REAL 50 3 1", wireframe=FALSE) {
   b=svm[[1]]
   svs=svm[[2]][,2]+1
 
+  objective <- sg('get_svm_objective')
+  print(objective)
   
   if (wireframe == TRUE)
   {

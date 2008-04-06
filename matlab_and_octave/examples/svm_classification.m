@@ -26,6 +26,8 @@ sg('set_features', 'TEST', testdat);
 sg('send_command', 'init_kernel TEST');
 out=sg('svm_classify');
 
+objective=sg('get_svm_objective')
+
 figure(1)
 clf
 out=reshape(out,50,50);

@@ -27,9 +27,6 @@ CRInterface::~CRInterface()
 }
 
 /** get functions - to pass data from the target interface to shogun */
-void CRInterface::parse_args(INT num_args, INT num_default_args)
-{
-}
 
 
 /// get type of current argument (does not increment argument counter)
@@ -291,6 +288,26 @@ SEXP CRInterface::get_return_values()
 	}
 	return m_lhs;
 }
+
+
+/** set functions - to pass data from shogun to the target interface */
+
+void CRInterface::set_int(INT scalar)
+{
+	set_arg_increment(ScalarInteger(scalar));
+}
+
+void CRInterface::set_real(DREAL scalar)
+{
+	set_arg_increment(ScalarReal(scalar));
+}
+
+void CRInterface::set_bool(bool scalar)
+{
+	set_arg_increment(ScalarLogical(scalar));
+}
+
+
 
 void CRInterface::set_byte_vector(const BYTE* vec, INT len)
 {

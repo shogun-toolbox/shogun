@@ -24,9 +24,6 @@ COctaveInterface::~COctaveInterface()
 }
 
 /** get functions - to pass data from the target interface to shogun */
-void COctaveInterface::parse_args(INT num_args, INT num_default_args)
-{
-}
 
 
 /// get type of current argument (does not increment argument counter)
@@ -314,6 +311,28 @@ GET_STRINGLIST(get_int_string_list, is_matrix_type() && arg.is_int32_type, int32
 GET_STRINGLIST(get_short_string_list, is_matrix_type() && arg.is_int16_type, int16NDArray, int16_array_value, SHORT, SHORT, "Short")
 GET_STRINGLIST(get_word_string_list, is_matrix_type() && arg.is_uint16_type, uint16NDArray, uint16_array_value, WORD, WORD, "Word")
 #undef GET_STRINGLIST
+
+
+/** set functions - to pass data from shogun to Octave */
+
+void COctaveInterface::set_int(INT scalar)
+{
+	octave_value o(scalar);
+	set_arg_increment(o);
+}
+
+void COctaveInterface::set_real(DREAL scalar)
+{
+	octave_value o(scalar);
+	set_arg_increment(o);
+}
+
+void COctaveInterface::set_bool(bool scalar)
+{
+	octave_value o(scalar);
+	set_arg_increment(o);
+}
+
 
 #define SET_VECTOR(function_name, oct_type, sg_type, if_type, error_string)		\
 void COctaveInterface::function_name(const sg_type* vec, INT len)				\

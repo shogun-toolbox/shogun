@@ -16,14 +16,16 @@ sg('send_command', 'init_kernel TRAIN')
 sg('send_command', 'new_svm LIBSVM')
 sg('send_command', 'c 100')
 sg('send_command', 'train_classifier')
-[bias, alphas]=sg('get_svm');
+[bias, alphas]=sg('get_svm')
 print bias
 print alphas
 figure()
 
+print "objective: %f" % sg('get_svm_objective')
+
 x1=linspace(1.2*min(features),1.2*max(features), 50)
 x2=linspace(1.2*min(features),1.2*max(features), 50)
-x,y=meshgrid(x1,x2);
+x,y=meshgrid(x1,x2)
 testfeatures=array((ravel(x), ravel(y)))
 
 sg('set_features', "TEST", testfeatures)

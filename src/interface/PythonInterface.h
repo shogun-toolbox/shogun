@@ -19,7 +19,6 @@ class CPythonInterface : public CSGInterface
 		~CPythonInterface();
 
 		/** get functions - to pass data from the target interface to shogun */
-		virtual void parse_args(INT num_args, INT num_default_args);
 
 		/// get type of current argument (does not increment argument counter)
 		virtual IFType get_argument_type();
@@ -56,6 +55,10 @@ class CPythonInterface : public CSGInterface
 
 
 		/** set functions - to pass data from shogun to the target interface */
+		virtual void set_int(INT scalar);
+		virtual void set_real(DREAL scalar);
+		virtual void set_bool(bool scalar);
+
 		virtual void set_byte_vector(const BYTE* vector, INT len);
 		virtual void set_char_vector(const CHAR* vector, INT len);
 		virtual void set_int_vector(const INT* vector, INT len);

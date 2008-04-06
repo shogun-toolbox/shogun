@@ -15,7 +15,6 @@ class CRInterface : public CSGInterface
 		~CRInterface();
 
 		/** get functions - to pass data from the target interface to shogun */
-		virtual void parse_args(INT num_args, INT num_default_args);
 
 		/// get type of current argument (does not increment argument counter)
 		virtual IFType get_argument_type();
@@ -51,6 +50,10 @@ class CRInterface : public CSGInterface
 		virtual void get_word_string_list(T_STRING<WORD>*& strings, INT& num_str, INT& max_string_len);
 
 		/** set functions - to pass data from shogun to the target interface */
+		virtual void set_int(INT scalar);
+		virtual void set_real(DREAL scalar);
+		virtual void set_bool(bool scalar);
+
 		virtual bool create_return_values(INT num_val);
 		virtual void set_byte_vector(const BYTE* vec, INT len);
 		virtual void set_char_vector(const CHAR* vec, INT len);

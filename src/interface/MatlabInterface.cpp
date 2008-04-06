@@ -23,10 +23,6 @@ CMatlabInterface::~CMatlabInterface()
 }
 
 /** get functions - to pass data from the target interface to shogun */
-void CMatlabInterface::parse_args(INT num_args, INT num_default_args)
-{
-}
-
 
 /// get type of current argument (does not increment argument counter)
 IFType CMatlabInterface::get_argument_type()
@@ -345,6 +341,44 @@ GET_STRINGLIST(get_word_string_list, "uint16", WORD, unsigned short, "Word")
 
 
 /** set functions - to pass data from shogun to the target interface */
+
+void CMatlabInterface::set_int(INT scalar)
+{
+	mxArray* o=mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);
+	if (!o)
+		SG_ERROR("Couldn't create Integer.\n");
+
+	int* data=(int*) mxGetData(o);
+	data[0]=scalar;
+
+	set_arg_increment(o);
+}
+
+void CMatlabInterface::set_real(DREAL scalar)
+{
+	mxArray* o=mxCreateNumericMatrix(1, 1, mxDOUBLE_CLASS, mxREAL);
+	if (!o)
+		SG_ERROR("Couldn't create Double.\n");
+
+	double* data=(double*) mxGetData(o);
+	data[0]=scalar;
+
+	set_arg_increment(o);
+}
+
+void CMatlabInterface::set_bool(bool scalar)
+{
+	mxArray* o=mxCreateLogicalMatrix(1, 1);
+	if (!o)
+		SG_ERROR("Couldn't create Logical.\n");
+
+	bool* data=(bool*) mxGetData(o);
+	data[0]=scalar;
+
+	set_arg_increment(o);
+}
+
+
 #define SET_VECTOR(function_name, mx_type, sg_type, if_type, error_string) \
 void CMatlabInterface::function_name(const sg_type* vector, INT len)		\
 {																			\
