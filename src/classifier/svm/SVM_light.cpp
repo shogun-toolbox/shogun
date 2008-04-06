@@ -521,6 +521,21 @@ bool CSVMLight::train()
 		delete[] w1 ;
 
 	}
+	else if (use_kernel_cache)
+	{
+		INT num_kernels = kernel->get_num_subkernels() ;
+		for (INT i=0; i<num_kernels; i++)
+		{
+			SG_PRINT("initing kernel cache for kernel %d\n", i);
+			CKernel* k=((CCombinedKernel*) kernel)->get_kernel(i);
+
+			// allocate kernel cache but clean up beforehand
+			k->kernel_cache_cleanup();
+			k->kernel_cache_init(k->get_cache_size());
+			k->kernel_cache_reset_lru();
+		}
+
+	}
 
 	// train the svm
 	svm_learn();

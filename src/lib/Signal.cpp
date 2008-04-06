@@ -19,6 +19,13 @@
 
 #include "lib/io.h"
 #include "lib/Signal.h"
+#if defined(HAVE_OCTAVE)
+#include "lib/octave.h"
+#elif defined(HAVE_PYTHON)
+#include "lib/python.h"
+#elif defined(HAVE_R)
+#include "lib/R.h"
+#endif
 
 
 int CSignal::signals[NUMTRAPPEDSIGS]={SIGINT, SIGURG};
@@ -47,7 +54,22 @@ void CSignal::handler(int signal)
 		if (answer == 'I')
 		{
 			unset_handler();
+#if defined(HAVE_MATLAB)
 			SG_SERROR("sg stopped by SIGINT\n");
+#elif defined(HAVE_OCTAVE)
+			SG_PRINT("sg stopped by SIGINT\n");
+			BEGIN_INTERRUPT_IMMEDIATELY_IN_FOREIGN_CODE;
+			octave_throw_interrupt_exception();
+			END_INTERRUPT_IMMEDIATELY_IN_FOREIGN_CODE;
+#elif defined(HAVE_PYTHON)
+			SG_PRINT("sg stopped by SIGINT\n");
+			PyErr_SetInterrupt();
+			PyErr_CheckSignals();
+#elif defined(HAVE_R)
+			SG_PRINT("sg stopped by SIGINT\n");
+			Rf_endEmbeddedR(0);
+#endif
+
 		}
 		else if (answer == 'P')
 			cancel_computation=true;

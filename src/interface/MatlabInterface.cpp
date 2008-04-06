@@ -503,16 +503,18 @@ void CMatlabInterface::set_arg_increment(mxArray* mx_arg)
 
 ////////////////////////////////////////////////////////////////////
 
-void obsolete_mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[]);
-
 void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 {
 	delete interface;
 	interface=new CMatlabInterface(nlhs, plhs, nrhs, prhs);
-	if (!interface->handle())
+	try
 	{
-		SG_WARNING("falling back to obsolete interface\n");
-		obsolete_mexFunction(nlhs, plhs, nrhs, prhs);
+		if (!interface->handle())
+			SG_ERROR("interface currently does not handle this command\n");
+	}
+	catch (ShogunException e)
+	{
+		return;
 	}
 }
 #endif // HAVE_MATLAB && !HAVE_SWIG

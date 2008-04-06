@@ -7,13 +7,8 @@
 
 #include "lib/ShogunException.h"
 #include "lib/io.h"
+#include "lib/R.h"
 
-extern "C" {
-#include <R.h>
-#include <Rinternals.h>
-#include <Rdefines.h>
-#include <R_ext/Rdynload.h>
-}
 
 extern CSGInterface* interface;
 
