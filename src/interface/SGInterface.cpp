@@ -483,21 +483,19 @@ bool CSGInterface::a_best_path_no_b()
 		return false;
 
 	DREAL* p=NULL;
-	INT M_p=0;
 	INT N_p=0;
-	get_real_matrix(p, M_p, N_p);
+	get_real_vector(p, N_p);
 
 	DREAL* q=NULL;
-	INT M_q=0;
 	INT N_q=0;
-	get_real_matrix(q, M_q, N_q);
+	get_real_vector(q, N_q);
 
 	DREAL* a=NULL;
 	INT M_a=0;
 	INT N_a=0;
 	get_real_matrix(a, M_a, N_a);
 
-	if (M_p!=1 || N_q!=N_p || M_q!=1 || N_a!=N_p || M_a!=N_p)
+	if (N_q!=N_p || N_a!=N_p || M_a!=N_p)
 		SG_ERROR("Model matrices not matching in size.\n");
 
 	INT max_iter=get_int();
@@ -530,14 +528,12 @@ bool CSGInterface::a_best_path_trans_simple()
 		return false;
 
 	DREAL* p=NULL;
-	INT M_p=0;
 	INT N_p=0;
-	get_real_matrix(p, M_p, N_p);
+	get_real_vector(p, N_p);
 
 	DREAL* q=NULL;
-	INT M_q=0;
 	INT N_q=0;
-	get_real_matrix(q, M_q, N_q);
+	get_real_vector(q, N_q);
 
 	DREAL* a_trans=NULL;
 	INT M_a_trans=0;
@@ -549,7 +545,7 @@ bool CSGInterface::a_best_path_trans_simple()
 	INT N_seq=0;
 	get_real_matrix(seq, M_seq, N_seq);
 
-	if (M_p!=1 || N_q!=N_p || M_q!=1 || N_a_trans!=3 || M_seq!=N_p)
+	if (N_q!=N_p || N_a_trans!=3 || M_seq!=N_p)
 		SG_ERROR("Model matrices not matching in size.\n");
 
 	INT nbest=get_int();
@@ -588,21 +584,19 @@ bool CSGInterface::a_best_path_no_b_trans()
 		return false;
 
 	DREAL* p=NULL;
-	INT M_p=0;
 	INT N_p=0;
-	get_real_matrix(p, M_p, N_p);
+	get_real_vector(p, N_p);
 
 	DREAL* q=NULL;
-	INT M_q=0;
 	INT N_q=0;
-	get_real_matrix(q, M_q, N_q);
+	get_real_vector(q, N_q);
 
 	DREAL* a_trans=NULL;
 	INT M_a_trans=0;
 	INT N_a_trans=0;
 	get_real_matrix(a_trans, M_a_trans, N_a_trans);
 
-	if (M_p!=1 || N_q!=N_p || M_q!=1 || N_a_trans!=3)
+	if (N_q!=N_p || N_a_trans!=3)
 		SG_ERROR("Model matrices not matching in size.\n");
 
 	INT max_iter=get_int();
@@ -1179,12 +1173,12 @@ bool CSGInterface::a_get_distance_matrix()
 	if (!distance || !distance->get_rhs() || !distance->get_lhs())
 		SG_ERROR("No distance defined.\n");
 
-	INT num_vec1=distance->get_lhs()->get_num_vectors();
-	INT num_vec2=distance->get_rhs()->get_num_vectors();
+	INT num_vec_lhs=0;
+	INT num_vec_rhs=0;
 	DREAL* dmatrix=NULL;
-	distance->get_distance_matrix_real(num_vec1, num_vec2, dmatrix);
+	distance->get_distance_matrix_real(num_vec_lhs, num_vec_rhs, dmatrix);
 
-	set_real_matrix(dmatrix, num_vec1, num_vec2);
+	set_real_matrix(dmatrix, num_vec_lhs, num_vec_rhs);
 	delete[] dmatrix;
 
 	return true;
@@ -1199,12 +1193,12 @@ bool CSGInterface::a_get_kernel_matrix()
 	if (!kernel || !kernel->get_rhs() || !kernel->get_lhs())
 		SG_ERROR("No kernel defined.\n");
 
-	INT m=kernel->get_lhs()->get_num_vectors();
-	INT n=kernel->get_rhs()->get_num_vectors();
+	INT num_vec_lhs=0;
+	INT num_vec_rhs=0;
 	DREAL* kmatrix=NULL;
-	kmatrix=kernel->get_kernel_matrix_real(m, n, kmatrix);
+	kmatrix=kernel->get_kernel_matrix_real(num_vec_lhs, num_vec_rhs, kmatrix);
 
-	set_real_matrix(kmatrix, m, n);
+	set_real_matrix(kmatrix, num_vec_lhs, num_vec_rhs);
 	delete[] kmatrix;
 
 	return true;
@@ -1387,7 +1381,7 @@ bool CSGInterface::a_get_subkernel_weights()
 		INT num_weights=-1;
 		weights=((CCombinedKernel *) kernel)->get_subkernel_weights(num_weights);
 
-		set_real_matrix(weights, 1, num_weights);
+		set_real_vector(weights, num_weights);
 		return true;
 	}
 
@@ -2506,14 +2500,12 @@ bool CSGInterface::a_append_hmm()
 		SG_ERROR("No current HMM set.\n");
 
 	DREAL* p=NULL;
-	INT M_p=0;
 	INT N_p=0;
-	get_real_matrix(p, M_p, N_p);
+	get_real_vector(p, N_p);
 
 	DREAL* q=NULL;
-	INT M_q=0;
 	INT N_q=0;
-	get_real_matrix(q, M_q, N_q);
+	get_real_vector(q, N_q);
 
 	DREAL* a=NULL;
 	INT M_a=0;
@@ -2527,12 +2519,11 @@ bool CSGInterface::a_append_hmm()
 	get_real_matrix(b, M_b, N_b);
 	INT M=N_b;
 
-	if (N_p!=N || M_p!=1 || N_q!=N || M_q!=1 ||
-		N_a!=N || M_a!=N || N_b!=M || M_b!=N)
+	if (N_p!=N || N_q!=N || N_a!=N || M_a!=N || N_b!=M || M_b!=N)
 	{
 		SG_ERROR("Model matrices not matching in size.\n"
-				"p:(%d,%d) q:(%d,%d) a:(%d,%d) b(%d,%d)\n",
-				N_p, M_p, N_q, M_q, N_a, M_a, N_b, M_b);
+				"p:(%d) q:(%d) a:(%d,%d) b(%d,%d)\n",
+				N_p, N_q, N_a, M_a, N_b, M_b);
 	}
 
 	CHMM* h=new CHMM(N, M, NULL, gui->guihmm.get_pseudo());

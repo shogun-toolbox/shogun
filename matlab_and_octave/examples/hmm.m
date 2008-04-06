@@ -79,11 +79,6 @@ fprintf('sequence:\n');
 for i = 1:length(s),
     fprintf('\tcube: %dx%d\n',f(i), s(i));
 end
-for i= 1:size(a,2),
-    fprintf('Distribution: Cube %d:', i);
-    fprintf('%f ', histc(a{i},1:6)/length(a{i}));
-    fprintf('\n');
-end
 
 %plot the segmentation
 truepath=[];

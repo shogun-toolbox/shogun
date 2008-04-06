@@ -215,7 +215,7 @@ class CSGInterface : public CSGObject
 		virtual void set_real(DREAL scalar)=0;
 		virtual void set_bool(bool scalar)=0;
 
-		// use set/get_vector for 1d matrices, get/set_int for scalars
+		// get/set_int for scalars
 		// testen mit alter shogun version ob selbe ergebnisse
 		// valgrind
 		*/
