@@ -227,7 +227,7 @@ bool CGUIKernel::init_kernel(CHAR* param)
 				}
 				else
 				{
-					SG_ERROR( "kernel can not process this feature type\n");
+					SG_ERROR( "kernel can not process this feature type: train %d %d, test %d %d.\n", gui->guifeatures.get_train_features()->get_feature_class(), gui->guifeatures.get_train_features()->get_feature_type(), gui->guifeatures.get_test_features()->get_feature_class(), gui->guifeatures.get_test_features()->get_feature_type());
 					return false ;
 				}
 			}

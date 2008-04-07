@@ -296,7 +296,7 @@ CDistance* CGUIDistance::create_distance(CHAR* param)
 			else
 				SG_ERROR( "Minkowski-Distance expects REAL as data type \n") ;
 		}
-		else if (strcmp(dist_type,"MANHATTEN")==0)
+		else if (strcmp(dist_type,"MANHATTAN")==0)
 		{	
 			if (strcmp(data_type,"REAL")==0)
 			{

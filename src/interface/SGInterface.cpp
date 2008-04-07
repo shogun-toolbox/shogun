@@ -1175,7 +1175,7 @@ bool CSGInterface::a_get_distance_matrix()
 	INT num_vec_lhs=0;
 	INT num_vec_rhs=0;
 	DREAL* dmatrix=NULL;
-	distance->get_distance_matrix_real(num_vec_lhs, num_vec_rhs, dmatrix);
+	dmatrix=distance->get_distance_matrix_real(num_vec_lhs, num_vec_rhs, dmatrix);
 
 	set_real_matrix(dmatrix, num_vec_lhs, num_vec_rhs);
 	delete[] dmatrix;
