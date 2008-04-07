@@ -127,6 +127,34 @@ class CLinearKernel: public CSimpleKernel<DREAL>
 			}
 		}
 
+		/** get normal vector (swig compatible)
+		 *
+		 * @param dst_w store w in this argument
+		 * @param dst_dims dimension of w
+		 */
+		inline void get_w(DREAL** dst_w, INT* dst_dims)
+		{
+			ASSERT(lhs && normal);
+			INT len = ((CRealFeatures*) lhs)->get_num_features();
+			ASSERT(dst_w && dst_dims);
+			*dst_dims=len;
+			*dst_w=(DREAL*) malloc(sizeof(DREAL)*(*dst_dims));
+			ASSERT(*dst_w);
+			memcpy(*dst_w, normal, sizeof(DREAL) * (*dst_dims));
+		}
+
+		/** set normal vector (swig compatible)
+		 *
+		 * @param src_w new w
+		 * @param src_w_dim dimension of new w - must fit dim of lhs
+		 */
+		inline void set_w(DREAL* src_w, INT src_w_dim)
+		{
+			ASSERT(lhs && src_w_dim==((CRealFeatures*) lhs)->get_num_features());
+			clear_normal();
+			memcpy(normal, src_w, sizeof(DREAL) * src_w_dim);
+		}
+
 	protected:
 		/** compute kernel function for features a and b
 		 * idx_{a,b} denote the index of the feature vectors

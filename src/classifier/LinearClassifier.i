@@ -9,6 +9,7 @@
 %include "lib/python_typemaps.i"
 %feature("autodoc", "get_w(self) -> [] of float") get_w;
 %apply (DREAL** ARGOUT1, INT* DIM1) {(DREAL** dst_w, INT* dst_dims)};
+%apply (DREAL* IN_ARRAY1, INT DIM1) {(DREAL* src_w, INT src_w_dim)};
 #endif
 
 %include "classifier/LinearClassifier.h" 
