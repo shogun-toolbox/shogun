@@ -2052,7 +2052,7 @@ EOF
 	then
 cat > $TMPC << EOF
 #include <cblas.h>
-int dpotrf_(char *uplo, integer *n, doublereal *a, integer * lda, integer *info);
+int dpotrf(char* uplo, int* n, double* a, int* lda, int* info);
 
 int main(int argc, char** argv)
 { 
@@ -2079,7 +2079,7 @@ EOF
 
 cat > $TMPC << EOF
 #include <cblas.h>
-int dpotrf_(char *uplo, integer *n, doublereal *a, integer * lda, integer *info);
+int dpotrf(char* uplo, int* n, double* a, int* lda, int* info);
 
 int main(int argc, char** argv)
 { 
@@ -2130,7 +2130,7 @@ EOF
 
 cat > $TMPC << EOF
 #include <cblas.h>
-int dpotrf_(char *uplo, integer *n, doublereal *a, integer * lda, integer *info);
+int dpotrf_(char* uplo, int* n, double* a, int* lda, int* info);
 int main(int argc, char** argv)
 { 
 	char uplo = 'U';
