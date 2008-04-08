@@ -57,7 +57,7 @@ bool CKRR::train()
   alpha = get_labels()->get_labels(numlabels);
   ASSERT(alpha && numlabels == n);
   
-  dposv('U', n, 1, K, n, alpha, n);
+  clapack_dposv(CblasRowMajor,CblasUpper, n, 1, K, n, alpha, n);
   
   delete[] K;
 
@@ -89,7 +89,10 @@ CLabels* CKRR::classify(CLabels* output)
 	  DREAL *Yh = new DREAL[n];
 
 	  // predict
-	  dgemv('T', m, n, 1.0, K, m, alpha, 1, 0.0, Yh, 1);
+      // K is symmetric, CblasColMajor is same as CblasRowMajor 
+      // and used that way in the origin call:
+      // dgemv('T', m, n, 1.0, K, m, alpha, 1, 0.0, Yh, 1);
+      cblas_dgemv(CblasColMajor, CblasTrans, m, n, 1.0, K, m, alpha, 1, 0.0, Yh, 1);
 	  
 	  delete[] K;
 

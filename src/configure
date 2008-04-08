@@ -49,7 +49,7 @@ _hmmparallel=no
 _largefile=yes
 _doxygen=auto
 _swig=no 
-_lapack=auto
+_atlas=auto
 _bigstates=yes
 _hmmcache=yes
 _debug=no
@@ -544,7 +544,7 @@ Optional features:
 
   --disable-treemem             disable more efficient treemem support and use malloc's for each node instead [enabled]
   --disable-largefile           disable large file support (64bit file acces routines) [enabled]
-  --disable-lapack    	        disable blas and lapack math routines and use built in ones (slower!) [auto]
+  --disable-atlas    	        disable atlas (fast blas and lapack math routines) and use built in ones (slower!) [auto]
   --disable-cplex    	        disable code using CPLEX  [auto]
   --disable-bigstates	        disable big (16bit) state [enabled]
   --disable-hmmcache 	        disable HMM cache [enabled]
@@ -655,8 +655,8 @@ for ac_option do
   --disable-swig-python)_swig=no ; _python=no ;;
   --enable-doxygen)		_doxygen=yes ;;
   --disable-doxygen)	_doxygen=no ;;
-  --disable-lapack)		_lapack=no	;;
-  --enable-lapack)		_lapack=yes	;;
+  --disable-atlas)		_atlas=no	;;
+  --enable-atlas)		_atlas=yes	;;
   --disable-cplex)		_cplex=no	;;
   --enable-cplex)		_cplex=yes	;;
   --disable-doxygen)	_doxygen=no	;;
@@ -2048,8 +2048,56 @@ EOF
 		fi
 	fi
 
-	if test "$_lapack" = yes || test "$_lapack" = auto
+	if test "$_atlas" = yes || test "$_atlas" = auto
 	then
+cat > $TMPC << EOF
+#include <cblas.h>
+#include <clapack.h>
+int main(int argc, char** argv)
+{ 
+	int info=0;
+	int skip=argc;
+	int n=argc; double* a=0; double* v1=0; double* v2=0;
+	dpotrf(uplo, &n, a, 1, &info);
+	int r = cblas_ddot(n, v1, skip, v2, skip);
+	return 0;
+}
+EOF
+		echocheck "ACML support"
+		if cc_check -lacml -lcblas
+		then
+			echores "yes"
+			HAVE_ACML='#define HAVE_ACML 1'
+			HAVE_LAPACK='#define HAVE_LAPACK 1'
+			DEFINES="$DEFINES -DHAVE_ACML -DHAVE_LAPACK"
+			LINKFLAGS="$LINKFLAGS -lacml -lcblas"
+		else
+			echores "no"
+
+cat > $TMPC << EOF
+#include <cblas.h>
+#include <clapack.h>
+int main(int argc, char** argv)
+{ 
+	int info=0;
+	int skip=argc;
+	int n=argc; double* a=0; double* v1=0; double* v2=0;
+	dpotrf(uplo, &n, a, 1, &info);
+	int r = cblas_ddot(n, v1, skip, v2, skip);
+	return 0;
+}
+EOF
+			echocheck "MKL support"
+			if cc_check -lmkl -lguide -lmkl_lapack64
+			then
+				echores "yes"
+				HAVE_ACML='#define HAVE_MKL 1'
+				HAVE_LAPACK='#define HAVE_LAPACK 1'
+				DEFINES="$DEFINES -DHAVE_MKL -DHAVE_LAPACK"
+				LINKFLAGS="$LINKFLAGS -lmkl -lguide -lmkl_lapack64"
+			else
+				echores "no"
+
 cat > $TMPC << EOF
 #include <cblas.h>
 #include <clapack.h>
@@ -2062,15 +2110,18 @@ int main(int argc, char** argv)
 	return 0;
 }
 EOF
-		echocheck "Lapack/Atlas support"
-		if cc_check -llapack_atlas -lblas
-		then
-			echores "yes"
-			HAVE_LAPACK='#define HAVE_LAPACK 1'
-			DEFINES="$DEFINES -DHAVE_LAPACK"
-			LINKFLAGS="$LINKFLAGS -llapack_atlas -llapack -lblas"
-		else
-			echores "no"
+				echocheck "Atlas support"
+				if cc_check -llapack_atlas -lblas
+				then
+					echores "yes"
+					HAVE_ATLAS='#define HAVE_ATLAS 1'
+					HAVE_LAPACK='#define HAVE_LAPACK 1'
+					DEFINES="$DEFINES -DHAVE_ATLAS -DHAVE_LAPACK"
+					LINKFLAGS="$LINKFLAGS -llapack_atlas -llapack -lblas"
+				else
+					echores "no"
+				fi
+			fi
 		fi
 	fi
 
@@ -2711,6 +2762,9 @@ $HAVE_LARGEFILE
 $HAVE_SWIG
 $HAVE_DOXYGEN
 $HAVE_LAPACK
+$HAVE_ATLAS
+$HAVE_ACML
+$HAVE_MKL
 $HAVE_POWL
 $HAVE_SQRTL
 $HAVE_LOG2

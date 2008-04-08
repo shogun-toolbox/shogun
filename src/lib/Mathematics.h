@@ -30,7 +30,7 @@
 #ifdef HAVE_LAPACK
 extern "C" {
 #include <cblas.h>
-#ifndef DARWIN
+#ifdef HAVE_ATLAS
 #include <clapack.h>
 #endif
 }
@@ -309,7 +309,7 @@ class CMath : public CSGObject
 		}
 
 		//y := alpha*A*x + beta*y,   or   y := alpha*A'*x + beta*y,
-		static inline void dgemv(double alpha, const double *A, int rows, int cols, const enum CBLAS_TRANSPOSE transposeA,
+		static inline void dgemv(double alpha, const double *A, int rows, int cols, const CBLAS_TRANSPOSE transposeA,
 				const double* X, double beta, double* Y)
 		{
 			cblas_dgemv(CblasColMajor, transposeA,

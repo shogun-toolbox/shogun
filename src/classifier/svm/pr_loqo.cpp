@@ -25,7 +25,7 @@
 #include <stdio.h>
 #ifdef HAVE_LAPACK
 extern "C" {
-#ifndef DARWIN
+#ifdef HAVE_ATLAS
 #include <clapack.h>
 #endif
 }

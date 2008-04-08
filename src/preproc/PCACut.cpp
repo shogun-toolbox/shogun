@@ -136,8 +136,6 @@ bool CPCACut::init(CFeatures* f)
 		int info;
 		int ord= (int) num_features;
 		int lda= (int) num_features;
-		int lwork=3*num_features ;
-		double* work=new double[lwork] ;
 		double* eigenvalues=new double[num_features] ;
 		//#endif
 
@@ -145,9 +143,7 @@ bool CPCACut::init(CFeatures* f)
 			eigenvalues[i]=0;
 
 		// lapack sym matrix eigenvalues+vectors
-		dsyev_(&V, &U, &ord, cov, &lda, eigenvalues, work, &lwork, &info) ;
-
-		delete[] work;
+		wrap_dsyev(V, U, ord, cov, lda, eigenvalues, &info);
 
 		num_dim=0;
 		for (i=0; i<num_features; i++)

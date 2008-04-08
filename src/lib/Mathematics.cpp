@@ -23,23 +23,6 @@
 #include <stdlib.h>
 #include <math.h>
 
-//#if defined(HAVE_LAPACK) && defined(DARWIN)
-//int clapack_dpotrf(const enum CBLAS_ORDER Order, const enum CBLAS_UPLO Uplo,
-//			                   const int N, double *A, const int LDA)
-//{
-//	ASSERT(Order==CblasColMajor);
-//        //call dgemm ( 'T', 'T', alpha, B, ldb, A, lda, beta, C, ldc )
-//	char uplo = 'U';
-//	__CLPK_integer info=0;
-//	__CLPK_integer n=N;
-//	__CLPK_integer lda=LDA;
-//
-//	if (Uplo==CblasLower)
-//		uplo='L';
-//	dpotrf_(&uplo, &n, A, &lda, &info);
-//	return info;
-//}
-//#endif
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -455,16 +438,8 @@ DREAL* CMath::pinv(DREAL* matrix, INT rows, INT cols, DREAL* target)
 	ASSERT(u);
 	double* vt=new double[n*n];
 	ASSERT(vt);
-	int lwork=-1;
-	double work1;
 
-	dgesvd_(&jobu, &jobvt, &m, &n, matrix, &lda, s, u, &ldu, vt, &ldvt, &work1, &lwork, &info);
-	ASSERT(info == 0);
-	ASSERT(work1>0);
-	lwork=(int) work1;
-	double* work=new double[lwork];
-	ASSERT(work);
-	dgesvd_(&jobu, &jobvt, &m, &n, matrix, &lda, s, u, &ldu, vt, &ldvt, work, &lwork, &info);
+    wrap_dgesvd(jobu, jobvt, m, n, matrix, lda, s, u, ldu, vt, ldvt, &info);
 	ASSERT(info == 0);
 
 	for (INT i=0; i<n; i++)
@@ -477,7 +452,6 @@ DREAL* CMath::pinv(DREAL* matrix, INT rows, INT cols, DREAL* target)
 
 	delete[] u;
 	delete[] vt;
-	delete[] work;
 	delete[] s;
 
 	return target;
