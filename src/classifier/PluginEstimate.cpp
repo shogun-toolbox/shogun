@@ -17,7 +17,7 @@
 
 
 CPluginEstimate::CPluginEstimate(DREAL pos_pseudo, DREAL neg_pseudo) :
-	CClassifier(), m_pos_pseudo(NULL), m_neg_pseudo(NULL), pos_model(NULL),
+	CClassifier(), m_pos_pseudo(1e-10), m_neg_pseudo(1e-10), pos_model(NULL),
 	neg_model(NULL), features(NULL)
 {
 }

@@ -2256,7 +2256,13 @@ EOF
 		echocheck "Octave"
 		if echo version | octave >/dev/null 2>&1
 		then
-			echores "`echo version | octave | grep ans | cut -f 3- -d ' '`"
+			VERSION="`echo version | octave | grep ans | cut -f 3- -d ' '`"
+			if [ `echo "$VERSION" | cut -f 1 -d '.'` -ge 3 ]
+			then
+				echores "$VERSION"
+			else
+				die "$VERSION - too old, at least octave version 3.0 required"
+			fi
 		else
 			echores "no"
 			die "could not find octave in path / octave crashed"
