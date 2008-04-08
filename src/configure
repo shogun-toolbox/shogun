@@ -544,7 +544,7 @@ Optional features:
 
   --disable-treemem             disable more efficient treemem support and use malloc's for each node instead [enabled]
   --disable-largefile           disable large file support (64bit file acces routines) [enabled]
-  --disable-atlas    	        disable atlas (fast blas and lapack math routines) and use built in ones (slower!) [auto]
+  --disable-lapack    	        disable lapack (fast blas and lapack math routines) and use built in ones (slower!) [auto]
   --disable-cplex    	        disable code using CPLEX  [auto]
   --disable-bigstates	        disable big (16bit) state [enabled]
   --disable-hmmcache 	        disable HMM cache [enabled]
@@ -2118,13 +2118,13 @@ int main(int argc, char** argv)
 }
 EOF
 					echocheck "Atlas support"
-					if cc_check -llapack_atlas -llapack -lblas
+					if cc_check -llapack_atlas -llapack -lcblas
 					then
 						echores "yes"
 						HAVE_ATLAS='#define HAVE_ATLAS 1'
 						HAVE_LAPACK='#define HAVE_LAPACK 1'
 						DEFINES="$DEFINES -DHAVE_ATLAS -DHAVE_LAPACK"
-						LINKFLAGS="$LINKFLAGS -llapack_atlas -llapack -lblas"
+						LINKFLAGS="$LINKFLAGS -llapack_atlas -llapack -lcblas"
 					else
 						echores "no"
 
