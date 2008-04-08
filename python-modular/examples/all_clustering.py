@@ -29,8 +29,8 @@ def kmeans ():
 	kmeans.train()
 
 	distance.init(feats_train, feats_test)
-	kmeans.get_centers()
-	kmeans.get_radi()
+	kmeans.get_cluster_centers()
+	kmeans.get_radiuses()
 
 def hierarchical ():
 	print 'Hierarchical'
@@ -47,8 +47,8 @@ def hierarchical ():
 	hierarchical.train()
 
 	distance.init(feats_train, feats_test)
-	hierarchical.get_merge_distance()
-	hierarchical.get_pairs()
+	hierarchical.get_merge_distances()
+	hierarchical.get_cluster_pairs()
 
 ###########################################################################
 # call functions
