@@ -290,7 +290,6 @@ def do_batch_linadd ():
 def perceptron ():
 	print 'Perceptron'
 
-	size_cache=10
 	num_feats=14
 	num_trainvec=10
 
@@ -309,7 +308,6 @@ def perceptron ():
 def knn ():
 	print 'KNN'
 
-	size_cache=10
 	num_feats=14
 	num_trainvec=10
 
@@ -331,7 +329,6 @@ def knn ():
 def lda ():
 	print 'LDA'
 
-	size_cache=10
 	num_feats=14
 	num_trainvec=10
 

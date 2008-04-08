@@ -47,12 +47,12 @@ def log_plus_one ():
 	sg('send_command', 'add_preproc LOGPLUSONE')
 	sg('send_command', 'set_kernel CHI2 REAL %d %f' % (size_cache, width))
 
-	sg('set_features', 'TRAIN', traindata);
+	sg('set_features', 'TRAIN', traindata)
 	sg('send_command', 'attach_preproc TRAIN')
 	sg('send_command', 'init_kernel TRAIN')
 	km=sg('get_kernel_matrix')
 
-	sg('set_features', 'TEST', testdata);
+	sg('set_features', 'TEST', testdata)
 	sg('send_command', 'attach_preproc TEST')
 	sg('send_command', 'init_kernel TEST')
 	km=sg('get_kernel_matrix')
@@ -69,12 +69,12 @@ def norm_one ():
 	sg('send_command', 'add_preproc NORMONE')
 	sg('send_command', 'set_kernel CHI2 REAL %d %f' % (size_cache, width))
 
-	sg('set_features', 'TRAIN', traindata);
+	sg('set_features', 'TRAIN', traindata)
 	sg('send_command', 'attach_preproc TRAIN')
 	sg('send_command', 'init_kernel TRAIN')
 	km=sg('get_kernel_matrix')
 
-	sg('set_features', 'TEST', testdata);
+	sg('set_features', 'TEST', testdata)
 	sg('send_command', 'attach_preproc TEST')
 	sg('send_command', 'init_kernel TEST')
 	km=sg('get_kernel_matrix')
@@ -92,12 +92,12 @@ def prune_var_sub_mean ():
 	sg('send_command', 'add_preproc PRUNEVARSUBMEAN %d' % divide_by_std)
 	sg('send_command', 'set_kernel CHI2 REAL %d %f' % (size_cache, width))
 
-	sg('set_features', 'TRAIN', traindata);
+	sg('set_features', 'TRAIN', traindata)
 	sg('send_command', 'attach_preproc TRAIN')
 	sg('send_command', 'init_kernel TRAIN')
 	km=sg('get_kernel_matrix')
 
-	sg('set_features', 'TEST', testdata);
+	sg('set_features', 'TEST', testdata)
 	sg('send_command', 'attach_preproc TEST')
 	sg('send_command', 'init_kernel TEST')
 	km=sg('get_kernel_matrix')
@@ -119,12 +119,12 @@ def sort_word ():
 	sg('send_command', 'add_preproc SORTWORD')
 	sg('send_command', 'set_kernel LINEAR WORD %d %f' % (size_cache, scale))
 
-	sg('set_features', 'TRAIN', traindata);
+	sg('set_features', 'TRAIN', traindata)
 	sg('send_command', 'attach_preproc TRAIN')
 	sg('send_command', 'init_kernel TRAIN')
 	km=sg('get_kernel_matrix')
 
-	sg('set_features', 'TEST', testdata);
+	sg('set_features', 'TEST', testdata)
 	sg('send_command', 'attach_preproc TEST')
 	sg('send_command', 'init_kernel TEST')
 	km=sg('get_kernel_matrix')

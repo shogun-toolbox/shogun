@@ -8,40 +8,6 @@ from numpy import byte, ubyte, ushort, double, int, ones, zeros, sum, floor, arr
 from numpy.random import randint, rand, seed, permutation
 from sg import sg
 
-def get_cubes (num=2):
-	leng=50
-	rep=5
-	weight=1
-
-	sequence=[]
-
-	for i in xrange(num):
-		# generate a sequence with characters 1-6 drawn from 3 loaded cubes
-		loaded=[]
-		for j in xrange(3):
-			draw=[x*ones((1, ceil(leng*rand())), int)[0] \
-				for x in xrange(1, 7)]
-			loaded.append(permutation(concatenate(draw)))
-
-		draws=[]
-		for j in xrange(len(loaded)):
-			data=ones((1, ceil(rep*rand())), int)
-			draws=concatenate((j*data[0], draws))
-		draws=permutation(draws)
-
-		seq=[]
-		for j in xrange(len(draws)):
-			len_loaded=len(loaded[draws[j]])
-			weighted=int(ceil(
-				((1-weight)*rand()+weight)*len_loaded))
-			perm=permutation(len_loaded)
-			shuffled=[str(loaded[draws[j]][x]) for x in perm[:weighted]]
-			seq=concatenate((seq, shuffled))
-
-		sequence.append(''.join(seq))
-
-	return {'train':sequence, 'test':sequence}
-
 
 def get_dna ():
 	acgt=array(['A', 'C', 'G','T'])
@@ -78,8 +44,8 @@ def linear_byte ():
 	traindata=randint(0, maxint, (num_feats, 11)).astype(byte)
 	testdata=randint(0, maxint, (num_feats, 17)).astype(byte)
 
-	sg('set_features', 'TRAIN', traindata, 'RAWBYTE');
-	sg('set_features', 'TEST', testdata, 'RAWBYTE');
+	sg('set_features', 'TRAIN', traindata, 'RAWBYTE')
+	sg('set_features', 'TEST', testdata, 'RAWBYTE')
 	sg('send_command', 'set_kernel LINEAR BYTE 10')
 	sg('send_command', 'init_kernel TRAIN')
 	km=sg('get_kernel_matrix')
@@ -100,8 +66,8 @@ def chi2 ():
 	width=1.4
 	size_cache=10
 
-	sg('set_features', 'TRAIN', traindata);
-	sg('set_features', 'TEST', testdata);
+	sg('set_features', 'TRAIN', traindata)
+	sg('set_features', 'TEST', testdata)
 	sg('send_command', 'set_kernel CHI2 REAL %d %f' % (size_cache, width))
 	sg('send_command', 'init_kernel TRAIN')
 	km=sg('get_kernel_matrix')
@@ -118,8 +84,8 @@ def const ():
 	c=23.
 	size_cache=10
 
-	sg('set_features', 'TRAIN', traindata);
-	sg('set_features', 'TEST', testdata);
+	sg('set_features', 'TRAIN', traindata)
+	sg('set_features', 'TEST', testdata)
 	sg('send_command', 'set_kernel CONST REAL %d %f' % (size_cache, c))
 	sg('send_command', 'init_kernel TRAIN')
 	km=sg('get_kernel_matrix')
@@ -136,8 +102,8 @@ def diag ():
 	diag=23.
 	size_cache=10
 
-	sg('set_features', 'TRAIN', traindata);
-	sg('set_features', 'TEST', testdata);
+	sg('set_features', 'TRAIN', traindata)
+	sg('set_features', 'TEST', testdata)
 	sg('send_command', 'set_kernel DIAG REAL %d %f' % (size_cache, diag))
 	sg('send_command', 'init_kernel TRAIN')
 	km=sg('get_kernel_matrix')
@@ -154,8 +120,8 @@ def gaussian ():
 	width=1.9
 	size_cache=10
 
-	sg('set_features', 'TRAIN', traindata);
-	sg('set_features', 'TEST', testdata);
+	sg('set_features', 'TRAIN', traindata)
+	sg('set_features', 'TEST', testdata)
 	sg('send_command', 'set_kernel GAUSSIAN REAL %d %f' % (size_cache, width))
 	sg('send_command', 'init_kernel TRAIN')
 	km=sg('get_kernel_matrix')
@@ -174,8 +140,8 @@ def gaussian_shift ():
 	shift_step=1
 	size_cache=10
 
-	sg('set_features', 'TRAIN', traindata);
-	sg('set_features', 'TEST', testdata);
+	sg('set_features', 'TRAIN', traindata)
+	sg('set_features', 'TEST', testdata)
 	sg('send_command', 'set_kernel GAUSSIANSHIFT REAL %d %f %d %d' % (size_cache, width, max_shift, shift_step))
 	sg('send_command', 'init_kernel TRAIN')
 	km=sg('get_kernel_matrix')
@@ -192,8 +158,8 @@ def linear ():
 	scale=1.2
 	size_cache=10
 
-	sg('set_features', 'TRAIN', traindata);
-	sg('set_features', 'TEST', testdata);
+	sg('set_features', 'TRAIN', traindata)
+	sg('set_features', 'TEST', testdata)
 	sg('send_command', 'set_kernel LINEAR REAL %d %f' % (size_cache, scale))
 	sg('send_command', 'init_kernel TRAIN')
 	km=sg('get_kernel_matrix')
@@ -212,8 +178,8 @@ def poly ():
 	use_normalization=True
 	size_cache=10
 
-	sg('set_features', 'TRAIN', traindata);
-	sg('set_features', 'TEST', testdata);
+	sg('set_features', 'TRAIN', traindata)
+	sg('set_features', 'TEST', testdata)
 	sg('send_command', 'set_kernel POLY REAL %d %d %d %d' % (size_cache, degree, inhomogene, use_normalization))
 	sg('send_command', 'init_kernel TRAIN')
 	km=sg('get_kernel_matrix')
@@ -231,8 +197,8 @@ def sigmoid ():
 	coef0=1.3
 	size_cache=10
 
-	sg('set_features', 'TRAIN', traindata);
-	sg('set_features', 'TEST', testdata);
+	sg('set_features', 'TRAIN', traindata)
+	sg('set_features', 'TEST', testdata)
 	sg('send_command', 'set_kernel SIGMOID REAL %d %f %f' % (size_cache, gamma, coef0))
 	sg('send_command', 'init_kernel TRAIN')
 	km=sg('get_kernel_matrix')
@@ -254,8 +220,8 @@ def linear_word ():
 	size_cache=10
 	scale=1.4
 
-	sg('set_features', 'TRAIN', traindata);
-	sg('set_features', 'TEST', testdata);
+	sg('set_features', 'TRAIN', traindata)
+	sg('set_features', 'TEST', testdata)
 	sg('send_command', 'set_kernel LINEAR WORD %d %f' % (size_cache, scale))
 	sg('send_command', 'init_kernel TRAIN')
 	km=sg('get_kernel_matrix')
@@ -275,8 +241,8 @@ def poly_match_word ():
 	inhomogene=True
 	normalize=True
 
-	sg('set_features', 'TRAIN', traindata);
-	sg('set_features', 'TEST', testdata);
+	sg('set_features', 'TRAIN', traindata)
+	sg('set_features', 'TEST', testdata)
 	sg('send_command', 'set_kernel POLYMATCH WORD %d %d %d %d' % (size_cache, degree, inhomogene, normalize))
 	sg('send_command', 'init_kernel TRAIN')
 	km=sg('get_kernel_matrix')
@@ -295,8 +261,8 @@ def fixed_degree_string ():
 	size_cache=10
 	degree=3
 
-	sg('set_features', 'TRAIN', data['train'], 'DNA');
-	sg('set_features', 'TEST', data['test'], 'DNA');
+	sg('set_features', 'TRAIN', data['train'], 'DNA')
+	sg('set_features', 'TEST', data['test'], 'DNA')
 	sg('send_command', 'set_kernel FIXEDDEGREE CHAR %d %d' % (size_cache, degree))
 	sg('send_command', 'init_kernel TRAIN')
 	km=sg('get_kernel_matrix')
@@ -310,8 +276,8 @@ def linear_string ():
 	data=get_dna()
 	size_cache=10
 
-	sg('set_features', 'TRAIN', data['train'], 'DNA');
-	sg('set_features', 'TEST', data['test'], 'DNA');
+	sg('set_features', 'TRAIN', data['train'], 'DNA')
+	sg('set_features', 'TEST', data['test'], 'DNA')
 	sg('send_command', 'set_kernel LINEAR CHAR %d' % (size_cache))
 	sg('send_command', 'init_kernel TRAIN')
 	km=sg('get_kernel_matrix')
@@ -325,8 +291,8 @@ def local_alignment_string():
 	data=get_dna()
 	size_cache=10
 
-	sg('set_features', 'TRAIN', data['train'], 'DNA');
-	sg('set_features', 'TEST', data['test'], 'DNA');
+	sg('set_features', 'TRAIN', data['train'], 'DNA')
+	sg('set_features', 'TEST', data['test'], 'DNA')
 	sg('send_command', 'set_kernel LOCALALIGNMENT CHAR %d' % (size_cache))
 	sg('send_command', 'init_kernel TRAIN')
 	km=sg('get_kernel_matrix')
@@ -342,8 +308,8 @@ def poly_match_string ():
 	degree=3
 	inhomogene=False
 
-	sg('set_features', 'TRAIN', data['train'], 'DNA');
-	sg('set_features', 'TEST', data['test'], 'DNA');
+	sg('set_features', 'TRAIN', data['train'], 'DNA')
+	sg('set_features', 'TEST', data['test'], 'DNA')
 	sg('send_command', 'set_kernel POLYMATCH CHAR %d %d %d' % (size_cache, degree, inhomogene))
 	sg('send_command', 'init_kernel TRAIN')
 	km=sg('get_kernel_matrix')
@@ -358,8 +324,8 @@ def weighted_degree_string ():
 	size_cache=10
 	degree=20
 
-	sg('set_features', 'TRAIN', data['train'], 'DNA');
-	sg('set_features', 'TEST', data['test'], 'DNA');
+	sg('set_features', 'TRAIN', data['train'], 'DNA')
+	sg('set_features', 'TEST', data['test'], 'DNA')
 	sg('send_command', 'set_kernel WEIGHTEDDEGREE CHAR %d %d' % (size_cache, degree))
 	sg('send_command', 'init_kernel TRAIN')
 	km=sg('get_kernel_matrix')
@@ -374,8 +340,8 @@ def weighted_degree_position_string ():
 	size_cache=10
 	degree=20
 
-	sg('set_features', 'TRAIN', data['train'], 'DNA');
-	sg('set_features', 'TEST', data['test'], 'DNA');
+	sg('set_features', 'TRAIN', data['train'], 'DNA')
+	sg('set_features', 'TEST', data['test'], 'DNA')
 	sg('send_command', 'set_kernel WEIGHTEDDEGREEPOS CHAR %d %d' % (size_cache, degree))
 	sg('send_command', 'init_kernel TRAIN')
 	km=sg('get_kernel_matrix')
@@ -392,8 +358,8 @@ def locality_improved_string ():
 	inner_degree=5
 	outer_degree=inner_degree+2
 
-	sg('set_features', 'TRAIN', data['train'], 'DNA');
-	sg('set_features', 'TEST', data['test'], 'DNA');
+	sg('set_features', 'TRAIN', data['train'], 'DNA')
+	sg('set_features', 'TEST', data['test'], 'DNA')
 	sg('send_command', 'set_kernel LIK CHAR %d %d %d %d' % (size_cache, length, inner_degree, outer_degree))
 	sg('send_command', 'init_kernel TRAIN')
 	km=sg('get_kernel_matrix')
@@ -410,8 +376,8 @@ def simple_locality_improved_string ():
 	inner_degree=5
 	outer_degree=inner_degree+2
 
-	sg('set_features', 'TRAIN', data['train'], 'DNA');
-	sg('set_features', 'TEST', data['test'], 'DNA');
+	sg('set_features', 'TRAIN', data['train'], 'DNA')
+	sg('set_features', 'TEST', data['test'], 'DNA')
 	sg('send_command', 'set_kernel SLIK CHAR %d %d %d %d' % (size_cache, length, inner_degree, outer_degree))
 	sg('send_command', 'init_kernel TRAIN')
 	km=sg('get_kernel_matrix')
@@ -517,8 +483,8 @@ def distance ():
 	width=1.7
 	size_cache=10
 
-	sg('set_features', 'TRAIN', traindata);
-	sg('set_features', 'TEST', testdata);
+	sg('set_features', 'TRAIN', traindata)
+	sg('set_features', 'TEST', testdata)
 	sg('send_command', 'set_distance EUCLIDIAN REAL')
 	sg('send_command', 'set_kernel DISTANCE %d %f' % (size_cache, width))
 	sg('send_command', 'init_kernel TRAIN')
@@ -538,14 +504,14 @@ def combined ():
 
 	sg('send_command', 'set_kernel COMBINED %d' % (size_cache))
 	sg('send_command', 'add_kernel 1 LINEAR REAL %d' % (size_cache))
-	sg('add_features', 'TRAIN', traindata);
-	sg('add_features', 'TEST', testdata);
+	sg('add_features', 'TRAIN', traindata)
+	sg('add_features', 'TEST', testdata)
 	sg('send_command', 'add_kernel 1 GAUSSIAN REAL %d 1' % (size_cache))
-	sg('add_features', 'TRAIN', traindata);
-	sg('add_features', 'TEST', testdata);
+	sg('add_features', 'TRAIN', traindata)
+	sg('add_features', 'TEST', testdata)
 	sg('send_command', 'add_kernel 1 POLY REAL %d 3 0' % (size_cache))
-	sg('add_features', 'TRAIN', traindata);
-	sg('add_features', 'TEST', testdata);
+	sg('add_features', 'TRAIN', traindata)
+	sg('add_features', 'TEST', testdata)
 
 	sg('send_command', 'init_kernel TRAIN')
 	km=sg('get_kernel_matrix')

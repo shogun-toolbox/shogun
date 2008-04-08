@@ -43,11 +43,11 @@ def euclidian_distance ():
 
 	sg('send_command', 'set_distance EUCLIDIAN REAL')
 
-	sg('set_features', 'TRAIN', traindata);
+	sg('set_features', 'TRAIN', traindata)
 	sg('send_command', 'init_distance TRAIN')
 	dm=sg('get_distance_matrix')
 
-	sg('set_features', 'TEST', testdata);
+	sg('set_features', 'TEST', testdata)
 	sg('send_command', 'init_distance TEST')
 	dm=sg('get_distance_matrix')
 
@@ -60,11 +60,11 @@ def canberra_metric ():
 
 	sg('send_command', 'set_distance CANBERRA REAL')
 
-	sg('set_features', 'TRAIN', traindata);
+	sg('set_features', 'TRAIN', traindata)
 	sg('send_command', 'init_distance TRAIN')
 	dm=sg('get_distance_matrix')
 
-	sg('set_features', 'TEST', testdata);
+	sg('set_features', 'TEST', testdata)
 	sg('send_command', 'init_distance TEST')
 	dm=sg('get_distance_matrix')
 
@@ -77,11 +77,11 @@ def chebyshew_metric ():
 
 	sg('send_command', 'set_distance CHEBYSHEW REAL')
 
-	sg('set_features', 'TRAIN', traindata);
+	sg('set_features', 'TRAIN', traindata)
 	sg('send_command', 'init_distance TRAIN')
 	dm=sg('get_distance_matrix')
 
-	sg('set_features', 'TEST', testdata);
+	sg('set_features', 'TEST', testdata)
 	sg('send_command', 'init_distance TEST')
 	dm=sg('get_distance_matrix')
 
@@ -94,11 +94,11 @@ def geodesic_metric ():
 
 	sg('send_command', 'set_distance GEODESIC REAL')
 
-	sg('set_features', 'TRAIN', traindata);
+	sg('set_features', 'TRAIN', traindata)
 	sg('send_command', 'init_distance TRAIN')
 	dm=sg('get_distance_matrix')
 
-	sg('set_features', 'TEST', testdata);
+	sg('set_features', 'TEST', testdata)
 	sg('send_command', 'init_distance TEST')
 	dm=sg('get_distance_matrix')
 
@@ -111,11 +111,11 @@ def jensen_metric ():
 
 	sg('send_command', 'set_distance JENSEN REAL')
 
-	sg('set_features', 'TRAIN', traindata);
+	sg('set_features', 'TRAIN', traindata)
 	sg('send_command', 'init_distance TRAIN')
 	dm=sg('get_distance_matrix')
 
-	sg('set_features', 'TEST', testdata);
+	sg('set_features', 'TEST', testdata)
 	sg('send_command', 'init_distance TEST')
 	dm=sg('get_distance_matrix')
 
@@ -128,11 +128,11 @@ def manhattan_metric ():
 
 	sg('send_command', 'set_distance MANHATTAN REAL')
 
-	sg('set_features', 'TRAIN', traindata);
+	sg('set_features', 'TRAIN', traindata)
 	sg('send_command', 'init_distance TRAIN')
 	dm=sg('get_distance_matrix')
 
-	sg('set_features', 'TEST', testdata);
+	sg('set_features', 'TEST', testdata)
 	sg('send_command', 'init_distance TEST')
 	dm=sg('get_distance_matrix')
 
@@ -146,11 +146,11 @@ def minkowski_metric ():
 
 	sg('send_command', 'set_distance MINKOWSKI REAL %d' % k)
 
-	sg('set_features', 'TRAIN', traindata);
+	sg('set_features', 'TRAIN', traindata)
 	sg('send_command', 'init_distance TRAIN')
 	dm=sg('get_distance_matrix')
 
-	sg('set_features', 'TEST', testdata);
+	sg('set_features', 'TEST', testdata)
 	sg('send_command', 'init_distance TEST')
 	dm=sg('get_distance_matrix')
 
