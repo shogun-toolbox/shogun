@@ -2219,9 +2219,7 @@ bool CSGInterface::a_get_classifier()
 		return false;
 
 	set_real_matrix(bias, brows, bcols);
-	delete[] bias;
 	set_real_matrix(weights, rows, cols);
-	delete[] weights;
 
 	return true;
 }
