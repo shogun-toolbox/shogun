@@ -3,6 +3,7 @@
 #if defined(HAVE_MATLAB) && !defined(HAVE_SWIG)
 
 #include <mexversion.c>
+#include "lib/matlab.h"
 
 #include "interface/MatlabInterface.h"
 #include "interface/SGInterface.h"
@@ -116,7 +117,7 @@ bool CMatlabInterface::get_bool()
 	if (!mxIsLogicalScalar(b))
 		SG_ERROR("Expected Scalar Boolean as argument %d\n", m_rhs_counter);
 
-	return *mxGetLogicals(b)==0;
+	return mxIsLogicalScalarTrue(b);
 }
 
 
