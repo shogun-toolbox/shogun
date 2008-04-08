@@ -1,3 +1,22 @@
+2008-04-XX  Soeren Sonnenburg <debian@nn7.de>
+
+	* SHOGUN Release version 0.6.0
+	* This release contains several major enhancements:
+		- The static R,octave,matlab,python interfaces have been rewritten from
+		scratch simplifying future extensions. They now use the same syntax and
+		support the same set of shogun commands.
+		- Toy examples describing the use of kernels, classifier,
+		distributions, features, distances, regression and preprocessors
+		for the static python, R, octave and matlab interface have been added.
+		- Support for ACML and Intel MKL
+	* New methods:
+		- POIMs for python-modular interface
+	* Bugfixes:
+		- Fixed memory leaks in Classifiers, Kernels, Distributions
+		- Fixed severale delete[]/free mismatches
+		- Fixed reading and writing of svm light format
+		- Enable ctrl-c support in octave
+
 2008-02-19  Soeren Sonnenburg <debian@nn7.de>
 
 	* SHOGUN Release version 0.5.1
