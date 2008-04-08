@@ -15,6 +15,7 @@
 
 #include "lib/common.h"
 #include "lib/io.h"
+#include "lib/lapack.h"
 #include "base/SGObject.h"
 #include "base/Parallel.h"
 
@@ -26,16 +27,6 @@
 #include <sys/types.h>
 #include <sys/time.h>
 #include <time.h>
-
-#ifdef HAVE_LAPACK
-extern "C" {
-#include <cblas.h>
-#ifdef HAVE_ATLAS
-#include <clapack.h>
-#endif
-}
-
-#endif
 
 //define finite for win32
 #ifdef _WIN32
