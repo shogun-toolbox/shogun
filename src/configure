@@ -49,7 +49,7 @@ _hmmparallel=no
 _largefile=yes
 _doxygen=auto
 _swig=no 
-_atlas=auto
+_lapack=auto
 _bigstates=yes
 _hmmcache=yes
 _debug=no
@@ -655,8 +655,8 @@ for ac_option do
   --disable-swig-python)_swig=no ; _python=no ;;
   --enable-doxygen)		_doxygen=yes ;;
   --disable-doxygen)	_doxygen=no ;;
-  --disable-atlas)		_atlas=no	;;
-  --enable-atlas)		_atlas=yes	;;
+  --disable-lapack)		_lapack=no	;;
+  --enable-lapack)		_lapack=yes	;;
   --disable-cplex)		_cplex=no	;;
   --enable-cplex)		_cplex=yes	;;
   --disable-doxygen)	_doxygen=no	;;
@@ -2048,17 +2048,20 @@ EOF
 		fi
 	fi
 
-	if test "$_atlas" = yes || test "$_atlas" = auto
+	if test "$_lapack" = yes || test "$_lapack" = auto
 	then
 cat > $TMPC << EOF
 #include <cblas.h>
-#include <clapack.h>
+int dpotrf_(char *uplo, integer *n, doublereal *a, integer * lda, integer *info);
+
 int main(int argc, char** argv)
 { 
+	char uplo = 'U';
 	int info=0;
 	int skip=argc;
 	int n=argc; double* a=0; double* v1=0; double* v2=0;
-	dpotrf(uplo, &n, a, 1, &info);
+	int lda=1;
+	dpotrf(uplo, &n, a, lda, &info);
 	int r = cblas_ddot(n, v1, skip, v2, skip);
 	return 0;
 }
@@ -2076,13 +2079,16 @@ EOF
 
 cat > $TMPC << EOF
 #include <cblas.h>
-#include <clapack.h>
+int dpotrf_(char *uplo, integer *n, doublereal *a, integer * lda, integer *info);
+
 int main(int argc, char** argv)
 { 
+	char uplo = 'U';
 	int info=0;
 	int skip=argc;
 	int n=argc; double* a=0; double* v1=0; double* v2=0;
-	dpotrf(uplo, &n, a, 1, &info);
+	int lda=1;
+	dpotrf(&uplo, &n, a, &lda, &info);
 	int r = cblas_ddot(n, v1, skip, v2, skip);
 	return 0;
 }
@@ -2101,6 +2107,7 @@ EOF
 cat > $TMPC << EOF
 #include <cblas.h>
 #include <clapack.h>
+
 int main(int argc, char** argv)
 { 
 	int skip=argc;
@@ -2110,16 +2117,43 @@ int main(int argc, char** argv)
 	return 0;
 }
 EOF
-				echocheck "Atlas support"
-				if cc_check -llapack_atlas -lblas
-				then
-					echores "yes"
-					HAVE_ATLAS='#define HAVE_ATLAS 1'
-					HAVE_LAPACK='#define HAVE_LAPACK 1'
-					DEFINES="$DEFINES -DHAVE_ATLAS -DHAVE_LAPACK"
-					LINKFLAGS="$LINKFLAGS -llapack_atlas -llapack -lblas"
-				else
-					echores "no"
+					echocheck "Atlas support"
+					if cc_check -llapack_atlas -llapack -lblas
+					then
+						echores "yes"
+						HAVE_ATLAS='#define HAVE_ATLAS 1'
+						HAVE_LAPACK='#define HAVE_LAPACK 1'
+						DEFINES="$DEFINES -DHAVE_ATLAS -DHAVE_LAPACK"
+						LINKFLAGS="$LINKFLAGS -llapack_atlas -llapack -lblas"
+					else
+						echores "no"
+
+cat > $TMPC << EOF
+#include <cblas.h>
+int dpotrf_(char *uplo, integer *n, doublereal *a, integer * lda, integer *info);
+int main(int argc, char** argv)
+{ 
+	char uplo = 'U';
+	int info=0;
+	int skip=argc;
+	int n=argc; double* a=0; double* v1=0; double* v2=0;
+	dpotrf_(uplo, &n, a, 1, &info);
+	int r = cblas_ddot(n, v1, skip, v2, skip);
+	return 0;
+}
+EOF
+						echocheck "Vanilla lapack and blas support"
+						if cc_check -llapack -lblas
+						then
+							echores "yes"
+							HAVE_LAPACK='#define HAVE_LAPACK 1'
+							DEFINES="$DEFINES -DHAVE_LAPACK -DHAVE_LAPACK"
+							LINKFLAGS="$LINKFLAGS -llapack -lblas"
+						else
+
+
+						echores "no"
+					fi
 				fi
 			fi
 		fi
@@ -2475,53 +2509,58 @@ EOF
 		if echo quit | cplex >/dev/null 2>&1
 		then
 			CPLEXVER=`echo quit | cplex 2>&1 | grep ^ILOG | cut -d ' ' -f 3 | tr -d ','`
-			echores "$CPLEXVER"
-
-			echocheck "CPLEX developer files"
-			CPLEXLINKFLAGS="-lcplex"
-			CPLEXINCLUDES=""
-
-			if linux
+			if [ -z "$CPLEXVER" ]
 			then
-				CPLEXVER=`echo $CPLEXVER | cut -f 1 -d '.'``echo $CPLEXVER | cut -f 2 -d '.' | cut -c 1`
-				CPLEXPATH=`env | grep ^ILOG_LICENSE_FILE | cut -f 2 -d '=' | sed 's/ilog.*$/ilog/'`/cplex$CPLEXVER
-				if x86
-				then
-					for cpx_path in "$CPLEXPATH/lib/i86_linux2_glibc2.3_gcc3.2/static_pic" "$CPLEXPATH/lib/x86_RHEL3.0_3.2/static_pic" "$CPLEXPATH/lib/x86_rhel4.0_3.4/static_pic"
-					do
-						if test -d $cpx_path
-						then
-							CPLEXLINKFLAGS="-L$cpx_path -lcplex"
-							CPLEXINCLUDES="-I$CPLEXPATH/include"
-							break
-						fi
-					done
-				elif x86_64
-				then
-					for cpx_path in "$CPLEXPATH/lib/x86-64_RHEL3.0_3.2/static_pic" "$CPLEXPATH/lib/x86-64_rhel4.0_3.4/static_pic"
-					do
-						if test -d $cpx_path
-						then
-							CPLEXLINKFLAGS="-L$cpx_path -lcplex"
-							CPLEXINCLUDES="-I$CPLEXPATH/include"
-							break
-						fi
-					done
-				fi
-
-				if cc_check $CPLEXINCLUDES $CPLEXLINKFLAGS
-				then
-					echores "yes"
-					USE_CPLEX='#define USE_CPLEX 1'
-					DEFINES="$DEFINES -DUSE_CPLEX"
-					INCLUDES="$INCLUDES $CPLEXINCLUDES"
-					LINKFLAGS="$LINKFLAGS $CPLEXLINKFLAGS"
-					POSTLINKFLAGS="$POSTLINKFLAGS $CPLEXLINKFLAGS"
-				else
-					echores "no"
-				fi
+				echores "no"
 			else
-				die "non supported CPLEX architecture"
+				echores "$CPLEXVER"
+
+				echocheck "CPLEX developer files"
+				CPLEXLINKFLAGS="-lcplex"
+				CPLEXINCLUDES=""
+
+				if linux
+				then
+					CPLEXVER=`echo $CPLEXVER | cut -f 1 -d '.'``echo $CPLEXVER | cut -f 2 -d '.' | cut -c 1`
+					CPLEXPATH=`env | grep ^ILOG_LICENSE_FILE | cut -f 2 -d '=' | sed 's/ilog.*$/ilog/'`/cplex$CPLEXVER
+					if x86
+					then
+						for cpx_path in "$CPLEXPATH/lib/i86_linux2_glibc2.3_gcc3.2/static_pic" "$CPLEXPATH/lib/x86_RHEL3.0_3.2/static_pic" "$CPLEXPATH/lib/x86_rhel4.0_3.4/static_pic"
+						do
+							if test -d $cpx_path
+							then
+								CPLEXLINKFLAGS="-L$cpx_path -lcplex"
+								CPLEXINCLUDES="-I$CPLEXPATH/include"
+								break
+							fi
+						done
+					elif x86_64
+					then
+						for cpx_path in "$CPLEXPATH/lib/x86-64_RHEL3.0_3.2/static_pic" "$CPLEXPATH/lib/x86-64_rhel4.0_3.4/static_pic"
+						do
+							if test -d $cpx_path
+							then
+								CPLEXLINKFLAGS="-L$cpx_path -lcplex"
+								CPLEXINCLUDES="-I$CPLEXPATH/include"
+								break
+							fi
+						done
+					fi
+
+					if cc_check $CPLEXINCLUDES $CPLEXLINKFLAGS
+					then
+						echores "yes"
+						USE_CPLEX='#define USE_CPLEX 1'
+						DEFINES="$DEFINES -DUSE_CPLEX"
+						INCLUDES="$INCLUDES $CPLEXINCLUDES"
+						LINKFLAGS="$LINKFLAGS $CPLEXLINKFLAGS"
+						POSTLINKFLAGS="$POSTLINKFLAGS $CPLEXLINKFLAGS"
+					else
+						echores "no"
+					fi
+				else
+					die "non supported CPLEX architecture"
+				fi
 			fi
 		else
 			echores "no"
