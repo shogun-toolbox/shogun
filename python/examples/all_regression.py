@@ -19,7 +19,6 @@ def svr_light ():
 	C=0.017
 	epsilon=1e-5
 	tube_epsilon=1e-2
-	use_bias=0
 	num_feats=13
 	num_trainvec=11
 
@@ -49,7 +48,6 @@ def libsvr ():
 	C=0.017
 	epsilon=1e-5
 	tube_epsilon=1e-2
-	use_bias=0
 	num_feats=13
 	num_trainvec=11
 
@@ -77,9 +75,6 @@ def libsvr ():
 
 def krr ():
 	print 'KRR'
-
-	return
-	# most stuff not implemented
 
 	size_cache=10
 	width=2.1

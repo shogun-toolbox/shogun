@@ -52,7 +52,7 @@ def euclidian_distance ():
 	dm=sg('get_distance_matrix')
 
 def canberra_metric ():
-	print 'CanberaMetric'
+	print 'CanberraMetric'
 
 	num_feats=10
 	traindata=rand(num_feats, 11)

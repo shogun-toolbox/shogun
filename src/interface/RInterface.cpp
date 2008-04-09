@@ -241,7 +241,7 @@ void CRInterface::get_char_string_list(T_STRING<CHAR>*& strings, INT& num_str, I
 			strings[i].string=(CHAR*) memcpy(dst, c, len*sizeof(CHAR));
 			strings[i].string[len]='\0';
 			strings[i].length=len;
-			max_string_len=CMath::max(max_string_len, len);						\
+			max_string_len=CMath::max(max_string_len, len);
 		}
 		else
 		{

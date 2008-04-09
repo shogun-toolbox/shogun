@@ -25,7 +25,7 @@ dm=sg('get_distance_matrix');
 
 
 % Canberra Metric
-disp('CanberaMetric');
+disp('CanberraMetric');
 sg('send_command', 'set_distance CANBERRA REAL');
 
 sg('set_features', 'TRAIN', traindata_real);
