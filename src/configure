@@ -2117,16 +2117,16 @@ int main(int argc, char** argv)
 	return 0;
 }
 EOF
-					echocheck "Atlas support"
-					if cc_check -llapack_atlas -llapack -lcblas
-					then
-						echores "yes"
-						HAVE_ATLAS='#define HAVE_ATLAS 1'
-						HAVE_LAPACK='#define HAVE_LAPACK 1'
-						DEFINES="$DEFINES -DHAVE_ATLAS -DHAVE_LAPACK"
-						LINKFLAGS="$LINKFLAGS -llapack_atlas -llapack -lcblas"
-					else
-						echores "no"
+				echocheck "Atlas support"
+				if cc_check -llapack_atlas -llapack -lcblas
+				then
+					echores "yes"
+					HAVE_ATLAS='#define HAVE_ATLAS 1'
+					HAVE_LAPACK='#define HAVE_LAPACK 1'
+					DEFINES="$DEFINES -DHAVE_ATLAS -DHAVE_LAPACK"
+					LINKFLAGS="$LINKFLAGS -llapack_atlas -llapack -lcblas"
+				else
+					echores "no"
 
 cat > $TMPC << EOF
 #include <cblas.h>
@@ -2142,7 +2142,14 @@ int main(int argc, char** argv)
 	return 0;
 }
 EOF
-						echocheck "Vanilla lapack and blas support"
+					echocheck "Vanilla lapack and blas support"
+					if cc_check -llapack -lcblas
+					then
+						echores "yes"
+						HAVE_LAPACK='#define HAVE_LAPACK 1'
+						DEFINES="$DEFINES -DHAVE_LAPACK -DHAVE_LAPACK"
+						LINKFLAGS="$LINKFLAGS -llapack -lcblas"
+					else
 						if cc_check -llapack -lblas
 						then
 							echores "yes"
@@ -2150,9 +2157,8 @@ EOF
 							DEFINES="$DEFINES -DHAVE_LAPACK -DHAVE_LAPACK"
 							LINKFLAGS="$LINKFLAGS -llapack -lblas"
 						else
-
-
-						echores "no"
+							echores "no"
+						fi
 					fi
 				fi
 			fi
