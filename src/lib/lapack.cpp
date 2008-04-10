@@ -25,8 +25,8 @@
 
 #else
 
-#define DSYEV dsyev_
-#define DGESVD dgesvd_
+#define DSYEV dsyev
+#define DGESVD dgesvd
 int clapack_dpotrf(const CBLAS_ORDER Order, const CBLAS_UPLO Uplo,
 		const int N, double *A, const int LDA)
 {

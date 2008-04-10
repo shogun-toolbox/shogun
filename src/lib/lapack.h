@@ -19,7 +19,11 @@
 
 #ifdef HAVE_LAPACK
 extern "C" {
+#ifdef HAVE_MKL
+#include <mkl_cblas.h>
+#else
 #include <cblas.h>
+#endif
 #ifdef HAVE_ATLAS
 #include <clapack.h>
 #endif
@@ -40,6 +44,16 @@ extern "C" {
 			int* lwork, int* info);
 }
 #else //NON_ATLAS libs
+#ifdef HAVE_ACML
+#include <acml.h>
+#endif
+#ifdef HAVE_MKL
+#include <mkl_lapack.h>
+#endif
+#ifdef DARWIN
+
+#endif 
+
 int clapack_dpotrf(const CBLAS_ORDER Order, const CBLAS_UPLO Uplo,
 		const int N, double *A, const int lda);
 int clapack_dposv(const CBLAS_ORDER Order, const CBLAS_UPLO Uplo,

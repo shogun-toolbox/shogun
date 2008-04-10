@@ -2052,7 +2052,7 @@ EOF
 	then
 cat > $TMPC << EOF
 #include <cblas.h>
-int dpotrf(char* uplo, int* n, double* a, int* lda, int* info);
+void dpotrf(char uplo, int n, double *a, int lda, int *info);
 
 int main(int argc, char** argv)
 { 
@@ -2061,25 +2061,25 @@ int main(int argc, char** argv)
 	int skip=argc;
 	int n=argc; double* a=0; double* v1=0; double* v2=0;
 	int lda=1;
-	dpotrf(uplo, &n, a, lda, &info);
+	dpotrf(uplo, n, a, lda, &info);
 	int r = cblas_ddot(n, v1, skip, v2, skip);
 	return 0;
 }
 EOF
 		echocheck "ACML support"
-		if cc_check -lacml -lcblas
+		if cc_check -lacml -lcblas -lgfortran
 		then
 			echores "yes"
 			HAVE_ACML='#define HAVE_ACML 1'
 			HAVE_LAPACK='#define HAVE_LAPACK 1'
 			DEFINES="$DEFINES -DHAVE_ACML -DHAVE_LAPACK"
-			LINKFLAGS="$LINKFLAGS -lacml -lcblas"
+			LINKFLAGS="$LINKFLAGS -lacml -lcblas -lgfortran"
 		else
 			echores "no"
 
 cat > $TMPC << EOF
-#include <cblas.h>
-int dpotrf(char* uplo, int* n, double* a, int* lda, int* info);
+#include <mkl_cblas.h>
+void dpotrf(char* uplo, int* n, double* a, int* lda, int* info);
 
 int main(int argc, char** argv)
 { 
@@ -2097,7 +2097,7 @@ EOF
 			if cc_check -lmkl -lguide -lmkl_lapack64
 			then
 				echores "yes"
-				HAVE_ACML='#define HAVE_MKL 1'
+				HAVE_MKL='#define HAVE_MKL 1'
 				HAVE_LAPACK='#define HAVE_LAPACK 1'
 				DEFINES="$DEFINES -DHAVE_MKL -DHAVE_LAPACK"
 				LINKFLAGS="$LINKFLAGS -lmkl -lguide -lmkl_lapack64"
@@ -2589,14 +2589,14 @@ EOF
 	if test "$_swig" = yes
 	then
 		echocheck "SWIG"
-		if swig -version >/dev/null 2>&1
+		if ${SWIG} -version >/dev/null 2>&1
 		then
-			if [ `swig -version 2>&1 | grep Version | cut -f 3 -d ' ' | cut -f 2 -d '.'` -ge 4 ] || \
-				[ `swig -version 2>&1 | grep Version | cut -f 3 -d ' ' | cut -f 3 -d '.'` -ge 29 ]
+			if [ `${SWIG} -version 2>&1 | grep Version | cut -f 3 -d ' ' | cut -f 2 -d '.'` -ge 4 ] || \
+				[ `${SWIG} -version 2>&1 | grep Version | cut -f 3 -d ' ' | cut -f 3 -d '.'` -ge 29 ]
 			then
-				echores "`swig -version 2>&1 | grep Version | cut -f 3 -d ' '`"
+				echores "`${SWIG} -version 2>&1 | grep Version | cut -f 3 -d ' '`"
 			else
-				echores "`swig -version 2>&1 | grep Version | cut -f 3 -d ' '` ... too old version 1.3.29 or later required"
+				echores "`${SWIG} -version 2>&1 | grep Version | cut -f 3 -d ' '` ... too old version 1.3.29 or later required"
 				die "swig outdated"
 			fi
 		else
