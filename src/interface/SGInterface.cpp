@@ -2598,6 +2598,9 @@ bool CSGInterface::a_set_hmm()
 		for (j=0; j<M; j++)
 			current->set_b(i,j, b[i+j*N]);
 
+	CStringFeatures<WORD>* sf = ((CStringFeatures<WORD>*) (gui->guifeatures.get_train_features()));
+	current->set_observations(sf);
+
 	return true;
 }
 

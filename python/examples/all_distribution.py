@@ -139,7 +139,6 @@ def hmm ():
 
 	sg('send_command', 'new_hmm %d %d' % (N, M))
 	sg('set_hmm', hmm[0], hmm[1], hmm[2], hmm[3])
-	sg('set_features','TRAIN', sequence,'CUBE')
 	likelihood=sg('hmm_likelihood')
 
 ###########################################################################
