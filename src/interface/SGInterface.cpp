@@ -2445,6 +2445,7 @@ bool CSGInterface::a_hmm_likelihood()
 	if (!h)
 		SG_ERROR("No HMM.\n");
 
+	SG_PRINT("mod parm %d\n", h->get_num_model_parameters());
 	DREAL likelihood=h->model_probability();
 	set_real(likelihood);
 
@@ -2578,29 +2579,25 @@ bool CSGInterface::a_set_hmm()
 				N_p, N_q, N_a, M_a, N_b, M_b);
 	}
 
-	CHMM* h=new CHMM(N, M, NULL, gui->guihmm.get_pseudo());
-	ASSERT(h);
+	CHMM* current=gui->guihmm.get_current();
+	if (!current)
+		SG_ERROR("Need a previously created HMM.\n");
+
 	INT i,j;
 
 	for (i=0; i<N; i++)
 	{
-		h->set_p(i, p[i]);
-		h->set_q(i, q[i]);
+		current->set_p(i, p[i]);
+		current->set_q(i, q[i]);
 	}
 
 	for (i=0; i<N; i++)
 		for (j=0; j<N; j++)
-			h->set_a(i,j, a[i+j*N]);
+			current->set_a(i,j, a[i+j*N]);
 
 	for (i=0; i<N; i++)
 		for (j=0; j<M; j++)
-			h->set_b(i,j, b[i+j*N]);
-
-	CHMM* current=gui->guihmm.get_current();
-	if (current)
-		delete current;
-
-	gui->guihmm.set_current(h);
+			current->set_b(i,j, b[i+j*N]);
 
 	return true;
 }

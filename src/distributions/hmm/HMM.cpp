@@ -1218,11 +1218,11 @@ DREAL CHMM::best_path(INT dimension)
 #endif // NOVIT
 
 #ifndef USE_HMMPARALLEL
-DREAL CHMM::model_probability_comp() 
+DREAL CHMM::model_probability_comp()
 {
 	//for faster calculation cache model probability
 	mod_prob=0 ;
-	for (INT dim=0; dim<p_observations->get_num_vectors(); dim++)		//sum in log space
+	for (INT dim=0; dim<p_observations->get_num_vectors(); dim++) //sum in log space
 		mod_prob+=forward(p_observations->get_vector_length(dim), 0, dim);
 
 	mod_prob_updated=true;
@@ -5460,7 +5460,7 @@ void CHMM::set_observation_nocache(CStringFeatures<WORD>* obs)
 
 	if (obs)
 		if (obs->get_num_symbols() > M)
-			SG_ERROR( "number of symbols in obsevation (%d) larger than M (%d)\n", obs->get_num_symbols(), M);
+			SG_ERROR( "number of symbols in observation (%d) larger than M (%d)\n", obs->get_num_symbols(), M);
 
 	if (!reused_caches)
 	{
@@ -5511,9 +5511,12 @@ void CHMM::set_observations(CStringFeatures<WORD>* obs, CHMM* lambda)
 	SG_DEBUG("M: %d\n", M);
 
 	if (obs)
-		if (obs->get_num_symbols() > M) {
+	{
+		if (obs->get_num_symbols() > M)
+		{
 			SG_ERROR( "number of symbols in observation (%d) larger than M (%d)\n", obs->get_num_symbols(), M);
 		}
+	}
 
 	if (!reused_caches)
 	{

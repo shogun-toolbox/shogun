@@ -94,7 +94,7 @@ sg('send_command', 'bw');
 
 sg('send_command', sprintf('new_hmm %d %d', N, M));
 sg('set_hmm', p, q, a, b);
-sg('set_features','TRAIN', sequence,'CUBE');
+sg('send_command', 'loglevel ALL');
 likelihood=sg('hmm_likelihood')
 
 
