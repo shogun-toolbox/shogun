@@ -15,12 +15,6 @@
 #include "features/Features.h"
 #include "features/RealFeatures.h"
 
-#ifdef HAVE_LAPACK
-extern "C" {
-#include <cblas.h>
-}
-#endif
-
 CGeodesicMetric::CGeodesicMetric()
 : CSimpleDistance<DREAL>()
 {

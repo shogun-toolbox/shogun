@@ -12,6 +12,7 @@
 #ifdef USE_SVMLIGHT
 
 #include "lib/io.h"
+#include "lib/lapack.h"
 #include "lib/Signal.h"
 #include "lib/python.h"
 #include "lib/Mathematics.h"
@@ -22,13 +23,6 @@
 
 #include <unistd.h>
 
-
-#ifdef HAVE_LAPACK
-extern "C" {
-#include <cblas.h>
-}
-#endif
-
 #ifdef USE_CPLEX
 extern "C" {
 #include <ilcplex/cplex.h>
@@ -36,8 +30,6 @@ extern "C" {
 #endif
 
 #include "base/Parallel.h"
-
-#include <unistd.h>
 
 #ifndef WIN32
 #include <pthread.h>

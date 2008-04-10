@@ -11,15 +11,10 @@
 #include "lib/config.h"
 #include "lib/common.h"
 #include "lib/io.h"
+#include "lib/lapack.h"
 #include "kernel/SigmoidKernel.h"
 #include "features/Features.h"
 #include "features/RealFeatures.h"
-
-#ifdef HAVE_LAPACK
-extern "C" {
-#include <cblas.h>
-}
-#endif
 
 CSigmoidKernel::CSigmoidKernel(INT size, DREAL g, DREAL c)
 : CSimpleKernel<DREAL>(size),gamma(g), coef0(c)

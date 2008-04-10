@@ -16,10 +16,6 @@
 #include <stdlib.h>
 
 #ifdef HAVE_LAPACK
-extern "C" {
-#include <cblas.h>
-}
-
 #include "lib/lapack.h"
 
 #include "lib/common.h"

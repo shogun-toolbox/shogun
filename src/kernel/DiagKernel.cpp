@@ -10,12 +10,6 @@
 
 #include "lib/config.h"
 
-#ifdef HAVE_LAPACK
-extern "C" {
-#include <cblas.h>
-}
-#endif
-
 #include "lib/common.h"
 #include "kernel/DiagKernel.h"
 #include "lib/io.h"
