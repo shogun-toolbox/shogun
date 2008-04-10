@@ -213,11 +213,6 @@ class CSGInterface : public CSGObject
 		virtual void set_real(DREAL scalar)=0;
 		virtual void set_bool(bool scalar)=0;
 
-		/* TODO
-		// testen mit alter shogun version ob selbe ergebnisse
-		// valgrind
-		*/
-
 		virtual void set_byte_vector(const BYTE* vector, INT len)=0;
 		virtual void set_char_vector(const CHAR* vector, INT len)=0;
 		virtual void set_int_vector(const INT* vector, INT len)=0;

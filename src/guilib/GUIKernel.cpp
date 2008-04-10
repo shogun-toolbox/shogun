@@ -1029,7 +1029,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				for (INT ii=center; ii<length; ii++)
 					shift[ii] = (int)floor(((DREAL)(ii-center))/step) ;
 
-				for (INT ii=center; ii>=0; ii--)
+				for (INT ii=center-1; ii>=0; ii--)
 					shift[ii] = (int)floor(((DREAL)(center-ii))/step) ;
 
 				for (INT ii=0; ii<length; ii++)

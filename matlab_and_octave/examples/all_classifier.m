@@ -197,10 +197,11 @@ sg('send_command', sprintf('svm_epsilon %f', epsilon));
 sg('send_command', sprintf('c %f', C));
 sg('send_command', sprintf('svm_use_bias %d', use_bias));
 sg('send_command', sprintf('svm_max_train_time %d', max_train_time));
-sg('send_command', 'svm_train');
+% sometimes does not terminate
+%sg('send_command', 'svm_train');
 
-sg('set_features', 'TEST', sparse(testdata_real));
-result=sg('svm_classify');
+%sg('set_features', 'TEST', sparse(testdata_real));
+%result=sg('svm_classify');
 
 % SVMOcas
 disp('SVMOcas');

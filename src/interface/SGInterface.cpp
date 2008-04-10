@@ -2445,7 +2445,6 @@ bool CSGInterface::a_hmm_likelihood()
 	if (!h)
 		SG_ERROR("No HMM.\n");
 
-	SG_PRINT("mod parm %d\n", h->get_num_model_parameters());
 	DREAL likelihood=h->model_probability();
 	set_real(likelihood);
 
