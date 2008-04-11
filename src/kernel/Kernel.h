@@ -373,10 +373,10 @@ class CKernel : public CSGObject
 
 		/** add vector*factor to 'virtual' normal vector
 		 *
-		 * @param idx index
+		 * @param vector_idx index
 		 * @param weight weight
 		 */
-		virtual void add_to_normal(INT idx, DREAL weight);
+		virtual void add_to_normal(INT vector_idx, DREAL weight);
 
 		/** get optimization type
 		 *
@@ -423,7 +423,7 @@ class CKernel : public CSGObject
 		 * @param idx index to compute
 		 * @return optimized value at given index
 		 */
-		virtual DREAL compute_optimized(INT idx);
+		virtual DREAL compute_optimized(INT vector_idx);
 
 		/** computes output for a batch of examples in an optimized fashion
 		 * (favorable if kernel supports it, i.e. has KP_BATCHEVALUATION.  to
@@ -458,7 +458,7 @@ class CKernel : public CSGObject
 		 * @param idx index
 		 * @param subkernel_contrib subkernel contribution
 		 */
-		virtual void compute_by_subkernel(INT idx, DREAL * subkernel_contrib);
+		virtual void compute_by_subkernel(INT vector_idx, DREAL * subkernel_contrib);
 
 		/** get subkernel weights
 		 *

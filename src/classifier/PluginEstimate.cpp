@@ -83,12 +83,12 @@ CLabels* CPluginEstimate::classify(CLabels* result)
 	return result;
 }
 
-DREAL CPluginEstimate::classify_example(INT idx)
+DREAL CPluginEstimate::classify_example(INT vec_idx)
 {
 	ASSERT(features);
 
 	INT len;
-	WORD* vector=features->get_feature_vector(idx, len);
+	WORD* vector=features->get_feature_vector(vec_idx, len);
 
 	if ((!pos_model) || (!neg_model))
 		SG_ERROR( "model(s) not assigned\n");

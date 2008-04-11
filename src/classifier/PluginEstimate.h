@@ -53,8 +53,8 @@ class CPluginEstimate: public CClassifier
 		 */
 		virtual CStringFeatures<WORD>* get_features() { SG_REF(features); return features; }
 
-		/// classify the test feature vector indexed by idx
-		DREAL classify_example(INT idx);
+		/// classify the test feature vector indexed by vec_idx
+		DREAL classify_example(INT vec_idx);
 
 		/** obsolete posterior log odds
 		 *

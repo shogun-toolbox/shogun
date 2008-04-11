@@ -30,10 +30,10 @@ class CSparseLinearClassifier : public CClassifier
 		 */
 		virtual CLabels* classify(CLabels* output=NULL);
 
-		/// get output for example "idx"
-		virtual inline DREAL classify_example(INT idx)
+		/// get output for example "vec_idx"
+		virtual inline DREAL classify_example(INT vec_idx)
 		{
-			return features->dense_dot(1.0, idx, w, w_dim, bias);
+			return features->dense_dot(1.0, vec_idx, w, w_dim, bias);
 		}
 
 		/** get w

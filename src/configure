@@ -12,6 +12,7 @@ EXT_SRC_SWIG=_wrap.cxx
 EXT_INP_SWIG=i
 EXT_IF_SWIG=.py
 EXT_OBJ_SWIG=_wrap.cxx.o
+PRE_LIB_SWIG=_
 EXT_LIB_SWIG=so
 EXT_DOXY=.doxy
 EXT_SWIG_DOXY=_doxygen.i
@@ -299,7 +300,6 @@ check_python()
 	if $PYTHON -V >/dev/null 2>&1
 	then
 		echores "`$PYTHON -V 2>&1 | grep Python | cut -f 2 -d ' '`"
-		EXT_IF_SWIG='.py'
 	else
 		echores "python not detected (required)"
 	fi
@@ -518,7 +518,7 @@ Usage: $0 [OPTIONS]...
 Configuration:
   --interface=INTERFACE         configure shogun for interface
                                 cmdline, python-modular, python, R, R-modular
-								octave, matlab or libshogun
+								octave, octave-modular, matlab or libshogun
   -h, -help, --help             display this help and exit
 
 Installation directories:
@@ -745,6 +745,10 @@ elif test "$_interface" = "octave"; then
 	echo "Enabling Octave interface"
 	_octave=yes
 	_swig=no
+elif test "$_interface" = "octave-modular"; then
+	echo "Enabling modular Octave interface"
+	_octave=yes
+	_swig=yes
 elif test "$_interface" = "matlab"; then
 	_matlab=yes
 	echo "Enabling Matlab(tm) interface"
@@ -2335,6 +2339,10 @@ DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 	octave_value_list plhs;
 }
 EOF
+		EXT_IF_SWIG='stop'
+		PRE_LIB_SWIG=
+		EXT_LIB_SWIG=oct
+		SWIGFLAGS="-w473 -c++ -octave"
 		HAVE_OCTAVE='#define HAVE_OCTAVE 1'
 		DEFINES="$DEFINES -DHAVE_OCTAVE"
 
@@ -2377,6 +2385,7 @@ EOF
 			die "python numpy package missing"
 		fi
 
+		EXT_IF_SWIG='.py'
 		HAVE_PYTHON='#define HAVE_PYTHON 1'
 		DEFINES="$DEFINES -DHAVE_PYTHON"
 		test -n "$_pyinclude" && _pyinclude="-I$_pyinclude"
@@ -2739,6 +2748,7 @@ EXT_INP_SWIG	= ${EXT_INP_SWIG}
 EXT_IF_SWIG		= ${EXT_IF_SWIG}
 EXT_SRC_SWIG	= ${EXT_SRC_SWIG}
 EXT_OBJ_SWIG	= ${EXT_OBJ_SWIG}
+PRE_LIB_SWIG	= ${PRE_LIB_SWIG}
 EXT_LIB_SWIG	= ${EXT_LIB_SWIG}
 EXT_SRC_HEADER	= ${EXT_SRC_HEADER}
 EXT_SRC_C 		= ${EXT_SRC_C}

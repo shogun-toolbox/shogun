@@ -999,7 +999,7 @@ bool CKernel::delete_optimization()
 	return false;
 }
 
-DREAL CKernel::compute_optimized(INT idx)
+DREAL CKernel::compute_optimized(INT vector_idx)
 {
    SG_ERROR( "kernel does not support linadd optimization\n");
 	return 0;
@@ -1010,7 +1010,7 @@ void CKernel::compute_batch(INT num_vec, INT* vec_idx, DREAL* target, INT num_su
    SG_ERROR( "kernel does not support batch computation\n");
 }
 
-void CKernel::add_to_normal(INT idx, DREAL weight)
+void CKernel::add_to_normal(INT vector_idx, DREAL weight)
 {
    SG_ERROR( "kernel does not support linadd optimization, add_to_normal not implemented\n");
 }
@@ -1025,7 +1025,7 @@ INT CKernel::get_num_subkernels()
 	return 1;
 }
 
-void CKernel::compute_by_subkernel(INT idx, DREAL * subkernel_contrib)
+void CKernel::compute_by_subkernel(INT vector_idx, DREAL * subkernel_contrib)
 {
    SG_ERROR( "kernel compute_by_subkernel not implemented\n");
 }

@@ -57,8 +57,8 @@ class CKNN : public CDistanceMachine
 		 */
 		virtual CLabels* classify(CLabels* output=NULL);
 
-		/// get output for example "idx"
-		virtual DREAL classify_example(INT idx)
+		/// get output for example "vec_idx"
+		virtual DREAL classify_example(INT vec_idx)
 		{
 			SG_ERROR( "for performance reasons use classify() instead of classify_example\n");
 			return 0;

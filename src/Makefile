@@ -1,7 +1,7 @@
 # include config options
 #
 #
-.SUFFIXES: .c .c.o .cpp .cpp.o .h .i .so _wrap.cxx _wrap.cxx.o
+.SUFFIXES: .c .c.o .cpp .cpp.o .h .i .so .oct _wrap.cxx _wrap.cxx.o
 
 ifeq (GNU,$(shell make --version 2>&1 | grep GNU >/dev/null && echo GNU))
 MAKE=make
@@ -74,7 +74,7 @@ SWIGDOCFILES 	= $(patsubst %.$(EXT_INP_SWIG),%$(EXT_SWIG_DOXY), $(shell find $(S
 else
 SWIGDOCFILES 	= 
 endif
-SWIGLIBFILES 	= $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -exec grep -le '^%module' {} \; | sed 's=/\([^/]*\.\)$(EXT_INP_SWIG)=/_\1$(EXT_LIB_SWIG)=')
+SWIGLIBFILES 	= $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -exec grep -le '^%module' {} \; | sed 's=/\([^/]*\.\)$(EXT_INP_SWIG)=/$(PRE_LIB_SWIG)\1$(EXT_LIB_SWIG)=')
 SWIGPYFILES 	= $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -exec grep -le '^%module' {} \; | sed 's=/\([^/]*\.\)$(EXT_INP_SWIG)=/\1py=')
 TAR:=../shogun-$(shell date +%Y-%m-%d).tar
 
@@ -144,7 +144,7 @@ swigdocclean:
 	rm -rf $(shell find -name doxygen_xml -o -name "*_doxygen.i" 2>/dev/null) 
 
 clean: swigclean swigdocclean
-	rm -f $(shell find . -name "*.cpp.o" -o -name "*.c.o" -o -name "*.so" -o -name "*.dll" -o -name "*~" -o -name ".#*" 2>/dev/null) sg.oct sg.mex* shogun shogun.exe gmon.out .depend configure.log .cpuinfo ./configure-* $(shell find . -type f -name '*.py*' ! -name '__*.py' ! -name '.*.py' | grep -v svn) $(shell find . -type f -name '*.R')
+	rm -f $(shell find . -name "*.cpp.o" -o -name "*.c.o" -o -name "*.so" -o -name "*.dll" -o -name "*~" -o -name ".#*" 2>/dev/null) sg.mex* shogun shogun.exe gmon.out .depend configure.log .cpuinfo ./configure-* $(shell find . -type f -name '*.py*' ! -name '__*.py' ! -name '.*.py' | grep -v svn) $(shell find . -type f -name '*.R') $(shell find . -type f -name '*.oct')
 
 
 dist:	distclean
@@ -226,7 +226,7 @@ endif
 	find $(SRCDIR) -mindepth 2 -name "*.$(EXT_INP_SWIG)" -o \
 		-name "*.h" -o -name "*.$(EXT_SRC_CPP)" -o -name "*.$(EXT_SRC_CPP)" | \
 		cut -c 3- | \
-		$(PYTHON) .generate_link_dependencies.py $(EXT_LIB_SWIG) >>.depend
+		$(PYTHON) .generate_link_dependencies.py "$(PRE_LIB_SWIG)" "$(EXT_LIB_SWIG)" >>.depend
 
 .depend:	.config lib/versionstring.h
 ifeq (makedepend,$(MAKEDEPEND))
@@ -243,7 +243,7 @@ endif
 	find $(SRCDIR) -mindepth 2 -name "*.$(EXT_INP_SWIG)" -o \
 		-name "*.h" -o -name "*.$(EXT_SRC_CPP)" -o -name "*.$(EXT_SRC_CPP)" | \
 		cut -c 3- | \
-		$(PYTHON) .generate_link_dependencies.py $(EXT_LIB_SWIG) >>.depend
+		$(PYTHON) .generate_link_dependencies.py "$(PRE_LIB_SWIG)" "$(EXT_LIB_SWIG)" >>.depend
 
 lib/versionstring.h:	$(SVNEntries)
 		sh .version.sh > $@
@@ -273,7 +273,7 @@ $(TARGET): $(OBJFILES) $(SRCFILES) $(HEADERFILES)
 	#removeconfighunk
 endif
 
-_%.${EXT_LIB_SWIG}:	%$(EXT_OBJ_SWIG)
+$(PRE_LIB_SWIG)%.${EXT_LIB_SWIG}:	%$(EXT_OBJ_SWIG)
 	$(LINK) $(LINKFLAGS) -o $@ $^ $(POSTLINKFLAGS)
 
 %${EXT_OBJ_SWIG}:	%$(EXT_SRC_SWIG)

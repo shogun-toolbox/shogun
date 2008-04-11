@@ -42,5 +42,7 @@ class Scrub:
 
 if __name__=='__main__':
 	offset=sys.argv[2].find('_wrap.cxx')
+	if sys.argv[1] == 'stop':
+		sys.exit(0)
 	scrubby=Scrub(sys.argv[1], sys.argv[2][0:offset])
 	scrubby.run()

@@ -19,7 +19,7 @@ class CSGObject;
 class CIO;
 
 // define reference counter macros
-#ifdef HAVE_SWIG
+#if defined(HAVE_SWIG) && defined(HAVE_PYTHON)
 #define SG_REF(x) { if (x) x->ref(); }
 #define SG_UNREF(x) { if (x) x->unref(); } 
 #else

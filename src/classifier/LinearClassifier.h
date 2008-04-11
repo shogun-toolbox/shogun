@@ -26,14 +26,14 @@ class CLinearClassifier : public CClassifier
 		CLinearClassifier();
 		virtual ~CLinearClassifier();
 
-		/// get output for example "idx"
-		virtual inline DREAL classify_example(INT idx)
+		/// get output for example "vec_idx"
+		virtual inline DREAL classify_example(INT vec_idx)
 		{
 			INT vlen;
 			bool vfree;
-			double* vec=features->get_feature_vector(idx, vlen, vfree);
+			double* vec=features->get_feature_vector(vec_idx, vlen, vfree);
 			DREAL result=CMath::dot(w,vec,vlen);
-			features->free_feature_vector(vec, idx, vfree);
+			features->free_feature_vector(vec, vec_idx, vfree);
 
 			return result+bias;
 		}
