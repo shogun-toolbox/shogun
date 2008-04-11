@@ -2477,9 +2477,9 @@ bool CSGInterface::a_get_viterbi_path()
 
 	SG_DEBUG( "computing viterbi path for vector %d (length %d)\n", dim, num_feat);
 	DREAL likelihood=0;
-	DREAL* path=(DREAL*) h->get_path(dim, likelihood);
+	T_STATES* path=h->get_path(dim, likelihood);
 
-	set_real_vector(path, num_feat);
+	set_word_vector(path, num_feat);
 	delete[] path;
 	set_real(likelihood);
 

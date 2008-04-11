@@ -308,101 +308,58 @@ void CRInterface::set_bool(bool scalar)
 }
 
 
-
-void CRInterface::set_byte_vector(const BYTE* vec, INT len)
-{
-}
-
 void CRInterface::set_char_vector(const CHAR* vec, INT len)
 {
 }
 
-void CRInterface::set_int_vector(const INT* vec, INT len)
-{
-	SEXP feat=NULL;
-	PROTECT( feat = allocVector(INTSXP, len) );
-
-	for (INT i=0; i<len; i++)
-		INTEGER(feat)[i]=(int) vec[i];
-
-	UNPROTECT(1);
-	set_arg_increment(feat);
+#undef SET_VECTOR
+#define SET_VECTOR(function_name, r_type, r_cast, sg_type, if_type, error_string) \
+void CRInterface::function_name(const sg_type* vec, INT len)	\
+{																\
+	SEXP feat=NULL;												\
+	PROTECT( feat = allocVector(r_type, len) );					\
+																\
+	for (INT i=0; i<len; i++)									\
+		r_cast(feat)[i]=(if_type) vec[i];						\
+																\
+	UNPROTECT(1);												\
+	set_arg_increment(feat);									\
 }
 
-void CRInterface::set_shortreal_vector(const SHORTREAL* vec, INT len)
-{
-}
-
-void CRInterface::set_real_vector(const DREAL* vec, INT len)
-{
-	SEXP feat=NULL;
-	PROTECT( feat = allocVector(REALSXP, len) );
-
-	for (INT i=0; i<len; i++)
-		REAL(feat)[i]=(double) vec[i];
-
-	UNPROTECT(1);
-	set_arg_increment(feat);
-}
-
-void CRInterface::set_short_vector(const SHORT* vec, INT len)
-{
-}
-
-void CRInterface::set_word_vector(const WORD* vec, INT len)
-{
-}
-
-
-void CRInterface::set_byte_matrix(const BYTE* matrix, INT num_feat, INT num_vec)
-{
-}
+SET_VECTOR(set_byte_vector, INTSXP, INTEGER, BYTE, int, "Byte")
+SET_VECTOR(set_int_vector, INTSXP, INTEGER, INT, int, "Integer")
+SET_VECTOR(set_short_vector, INTSXP, INTEGER, SHORT, int, "Short")
+SET_VECTOR(set_shortreal_vector, REALSXP, REAL, SHORTREAL, float, "Single Precision")
+SET_VECTOR(set_real_vector, REALSXP, REAL, DREAL, double, "Double Precision")
+SET_VECTOR(set_word_vector, INTSXP, INTEGER, WORD, int, "Word")
+#undef SET_VECTOR
 
 void CRInterface::set_char_matrix(const CHAR* matrix, INT num_feat, INT num_vec)
 {
 }
 
-void CRInterface::set_int_matrix(const INT* matrix, INT num_feat, INT num_vec)
-{
-	SEXP feat=NULL;
-	PROTECT( feat = allocMatrix(INTSXP, num_feat, num_vec) );
-
-	for (INT i=0; i<num_vec; i++)
-	{
-		for (INT j=0; j<num_feat; j++)
-			INTEGER(feat)[i*num_feat+j]=(int) matrix[i*num_feat+j];
-	}
-
-	UNPROTECT(1);
-	set_arg_increment(feat);
+#define SET_MATRIX(function_name, r_type, r_cast, sg_type, if_type, error_string) \
+void CRInterface::function_name(const sg_type* matrix, INT num_feat, INT num_vec) \
+{																			\
+	SEXP feat=NULL;															\
+	PROTECT( feat = allocMatrix(r_type, num_feat, num_vec) );				\
+																			\
+	for (INT i=0; i<num_vec; i++)											\
+	{																		\
+		for (INT j=0; j<num_feat; j++)										\
+			r_cast(feat)[i*num_feat+j]=(if_type) matrix[i*num_feat+j];		\
+	}																		\
+																			\
+	UNPROTECT(1);															\
+	set_arg_increment(feat);												\
 }
-
-void CRInterface::set_shortreal_matrix(const SHORTREAL* matrix, INT num_feat, INT num_vec)
-{
-}
-
-void CRInterface::set_real_matrix(const DREAL* matrix, INT num_feat, INT num_vec)
-{
-	SEXP feat=NULL;
-	PROTECT( feat = allocMatrix(REALSXP, num_feat, num_vec) );
-
-	for (INT i=0; i<num_vec; i++)
-	{
-		for (INT j=0; j<num_feat; j++)
-			REAL(feat)[i*num_feat+j]=(double) matrix[i*num_feat+j];
-	}
-
-	UNPROTECT(1);
-	set_arg_increment(feat);
-}
-
-void CRInterface::set_short_matrix(const SHORT* matrix, INT num_feat, INT num_vec)
-{
-}
-
-void CRInterface::set_word_matrix(const WORD* matrix, INT num_feat, INT num_vec)
-{
-}
+SET_MATRIX(set_byte_matrix, INTSXP, INTEGER, BYTE, int, "Byte")
+SET_MATRIX(set_int_matrix, INTSXP, INTEGER, INT, int, "Integer")
+SET_MATRIX(set_short_matrix, INTSXP, INTEGER, SHORT, int, "Short")
+SET_MATRIX(set_shortreal_matrix, REALSXP, REAL, SHORTREAL, float, "Single Precision")
+SET_MATRIX(set_real_matrix, REALSXP, REAL, DREAL, double, "Double Precision")
+SET_MATRIX(set_word_matrix, INTSXP, INTEGER, WORD, int, "Word")
+#undef SET_MATRIX
 
 void CRInterface::set_real_sparsematrix(const TSparse<DREAL>* matrix, INT num_feat, INT num_vec, LONG nnz)
 {

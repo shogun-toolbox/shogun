@@ -39,7 +39,7 @@ end
 
 % take the most likely one
 [v,idx]=max([hmms.lik]);
-sg('set_hmm', hmms(idx).p,hmms(idx).q,hmms(idx).a,hmms(idx).b);
+ sg('set_hmm', hmms(idx).p,hmms(idx).q,hmms(idx).a,hmms(idx).b);
 
 % compute viterbi path
 sg('set_features','TEST',sequence,'CUBE');
