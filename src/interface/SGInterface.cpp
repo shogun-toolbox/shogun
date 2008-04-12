@@ -41,6 +41,21 @@ static CSGInterfaceMethod sg_methods[]=
 {
 	{ (CHAR*) "Features", NULL, NULL },
 	{
+		(CHAR*) N_LOAD_FEATURES,
+		(&CSGInterface::a_load_features),
+		(CHAR*) USAGE_I(N_LOAD_FEATURES, "'filename, fclass, type, target[, size[, comp_features]]'")
+	},
+	{
+		(CHAR*) N_SAVE_FEATURES,
+		(&CSGInterface::a_save_features),
+		(CHAR*) USAGE_I(N_SAVE_FEATURES, "'filename, type, target'")
+	},
+	{
+		(CHAR*) N_CLEAN_FEATURES,
+		(&CSGInterface::a_clean_features),
+		(CHAR*) USAGE_I(N_CLEAN_FEATURES, "'TRAIN|TEST'")
+	},
+	{
 		(CHAR*) N_GET_FEATURES,
 		(&CSGInterface::a_get_features),
 		(CHAR*) USAGE_IO(N_GET_FEATURES, "'TRAIN|TEST'", "features")
@@ -48,25 +63,62 @@ static CSGInterfaceMethod sg_methods[]=
 	{
 		(CHAR*) N_ADD_FEATURES,
 		(&CSGInterface::a_add_features),
-		(CHAR*) USAGE_O(N_ADD_FEATURES,
+		(CHAR*) USAGE_I(N_ADD_FEATURES,
 			"'TRAIN|TEST', features[, DNABINFILE|<ALPHABET>]")
 	},
 	{
 		(CHAR*) N_SET_FEATURES,
 		(&CSGInterface::a_set_features),
-		(CHAR*) USAGE_O(N_SET_FEATURES,
+		(CHAR*) USAGE_I(N_SET_FEATURES,
 			"'TRAIN|TEST', features[, DNABINFILE|<ALPHABET>]")
+	},
+	{
+		(CHAR*) N_SET_REF_FEAT,
+		(&CSGInterface::a_set_reference_features),
+		(CHAR*) USAGE_I(N_SET_REF_FEAT, "'TRAIN|TEST'")
+	},
+	{
+		(CHAR*) N_CONVERT,
+		(&CSGInterface::a_convert),
+		(CHAR*) USAGE_I(N_CONVERT, "'TRAIN|TEST', from_class, from_type, to_class, to_type'")
 	},
 	{
 		(CHAR*) N_FROM_POSITION_LIST,
 		(&CSGInterface::a_obtain_from_position_list),
 		(CHAR*) USAGE_I(N_FROM_POSITION_LIST, "'TRAIN|TEST', winsize, shift[, skip]")
 	},
-	{ (CHAR*) "Kernel & Distances", NULL, NULL },
 	{
-		(CHAR*) N_GET_DISTANCE_MATRIX,
-		(&CSGInterface::a_get_distance_matrix),
-		(CHAR*) USAGE_O(N_GET_DISTANCE_MATRIX, "D")
+		(CHAR*) N_SLIDE_WINDOW,
+		(&CSGInterface::a_obtain_by_sliding_window),
+		(CHAR*) USAGE_I(N_SLIDE_WINDOW, "'TRAIN|TEST, winsize, shift[, skip]'")
+	},
+	{
+		(CHAR*) N_RESHAPE,
+		(&CSGInterface::a_reshape),
+		(CHAR*) USAGE_I(N_RESHAPE, "'TRAIN|TEST, num_feat, num_vec'")
+	},
+	{
+		(CHAR*) N_LOAD_LABELS,
+		(&CSGInterface::a_load_labels),
+		(CHAR*) USAGE_I(N_LOAD_LABELS, "'filename, TRAIN|TARGET'")
+	},
+	{
+		(CHAR*) N_SET_LABELS,
+		(&CSGInterface::a_set_labels),
+		(CHAR*) USAGE_I(N_SET_LABELS, "'TRAIN|TEST', labels")
+	},
+	{
+		(CHAR*) N_GET_LABELS,
+		(&CSGInterface::a_get_labels),
+		(CHAR*) USAGE_IO(N_GET_LABELS, "'TRAIN|TEST'", "labels")
+	},
+
+
+	{ (CHAR*) "Kernel & Distance", NULL, NULL },
+	{
+		(CHAR*) N_INIT_KERNEL,
+		(&CSGInterface::a_init_kernel),
+		(CHAR*) USAGE_I(N_INIT_KERNEL, "'TRAIN|TEST'")
 	},
 	{
 		(CHAR*) N_GET_KERNEL_MATRIX,
@@ -119,21 +171,33 @@ static CSGInterfaceMethod sg_methods[]=
 		(CHAR*) USAGE_O(N_COMPUTE_BY_SUBKERNELS, "W")
 	},
 	{
+		(CHAR*) N_INIT_KERNEL_OPTIMIZATION,
+		(&CSGInterface::a_init_kernel_optimization),
+		(CHAR*) USAGE(N_INIT_KERNEL_OPTIMIZATION)
+	},
+	{
 		(CHAR*) N_GET_KERNEL_OPTIMIZATION,
 		(&CSGInterface::a_get_kernel_optimization),
 		(CHAR*) USAGE_O(N_GET_KERNEL_OPTIMIZATION, "W")
 	},
-	{ (CHAR*) "SVM", NULL, NULL },
 	{
-		(CHAR*) N_SET_LABELS,
-		(&CSGInterface::a_set_labels),
-		(CHAR*) USAGE_I(N_SET_LABELS, "'TRAIN|TEST', labels")
+		(CHAR*) N_DELETE_KERNEL_OPTIMIZATION,
+		(&CSGInterface::a_delete_kernel_optimization),
+		(CHAR*) USAGE(N_DELETE_KERNEL_OPTIMIZATION)
 	},
 	{
-		(CHAR*) N_GET_LABELS,
-		(&CSGInterface::a_get_labels),
-		(CHAR*) USAGE_IO(N_GET_LABELS, "'TRAIN|TEST'", "labels")
+		(CHAR*) N_INIT_DISTANCE,
+		(&CSGInterface::a_init_distance),
+		(CHAR*) USAGE_I(N_INIT_DISTANCE, "'TRAIN|TEST'")
 	},
+	{
+		(CHAR*) N_GET_DISTANCE_MATRIX,
+		(&CSGInterface::a_get_distance_matrix),
+		(CHAR*) USAGE_O(N_GET_DISTANCE_MATRIX, "D")
+	},
+
+
+	{ (CHAR*) "SVM & Classifier", NULL, NULL },
 	{
 		(CHAR*) N_CLASSIFY,
 		(&CSGInterface::a_classify),
@@ -160,6 +224,21 @@ static CSGInterfaceMethod sg_methods[]=
 		(CHAR*) USAGE_O(N_GET_CLASSIFIER, "bias, weights")
 	},
 	{
+		(CHAR*) N_NEW_SVM,
+		(&CSGInterface::a_new_classifier),
+		(CHAR*) USAGE_I(N_NEW_SVM, "'LIBSVM_ONECLASS|LIBSVM_MULTICLASS|LIBSVM|SVMLIGHT|LIGHT|SVMLIN|GPBTSVM|MPDSVM|GNPPSVM|GMNPSVM|SUBGRADIENTSVM|WDSVMOCAS|SVMOCAS|SVMSGD|SVMBMRM|SVMPERF|SVRLIGHT|LIBSVR|KERNELPERCEPTRON|PERCEPTRON|LIBLINEAR_LR|LIBLINEAR_L2|LDA|LPM|LPBOOST|SUBGRADIENTLPM|KNN|KMEANS|HIERARCHICAL'")
+	},
+	{
+		(CHAR*) N_NEW_CLASSIFIER,
+		(&CSGInterface::a_new_classifier),
+		(CHAR*) USAGE_I(N_NEW_CLASSIFIER, "'LIBSVM_ONECLASS|LIBSVM_MULTICLASS|LIBSVM|SVMLIGHT|LIGHT|SVMLIN|GPBTSVM|MPDSVM|GNPPSVM|GMNPSVM|SUBGRADIENTSVM|WDSVMOCAS|SVMOCAS|SVMSGD|SVMBMRM|SVMPERF|SVRLIGHT|LIBSVR|KERNELPERCEPTRON|PERCEPTRON|LIBLINEAR_LR|LIBLINEAR_L2|LDA|LPM|LPBOOST|SUBGRADIENTLPM|KNN|KMEANS|HIERARCHICAL'")
+	},
+	{
+		(CHAR*) N_LOAD_SVM,
+		(&CSGInterface::a_load_classifier),
+		(CHAR*) USAGE_O(N_LOAD_SVM, "'filename, type'")
+	},
+	{
 		(CHAR*) N_GET_SVM,
 		(&CSGInterface::a_get_svm),
 		(CHAR*) USAGE_O(N_GET_SVM, "bias, alphas")
@@ -174,7 +253,27 @@ static CSGInterfaceMethod sg_methods[]=
 		(&CSGInterface::a_get_svm_objective),
 		(CHAR*) USAGE_O(N_GET_SVM_OBJECTIVE, "objective")
 	},
+
+
+	{ (CHAR*) "Preprocessors", NULL, NULL },
+	{
+		(CHAR*) N_LOAD_PREPROC,
+		(&CSGInterface::a_load_preproc),
+		(CHAR*) USAGE_I(N_LOAD_PREPROC, "'filename'")
+	},
+
+
 	{ (CHAR*) "HMM", NULL, NULL },
+	{
+		(CHAR*) N_NEW_HMM,
+		(&CSGInterface::a_new_hmm),
+		(CHAR*) USAGE_I(N_NEW_HMM, "'N, M'")
+	},
+	{
+		(CHAR*) N_LOAD_HMM,
+		(&CSGInterface::a_load_hmm),
+		(CHAR*) USAGE_I(N_LOAD_HMM, "'filename'")
+	},
 	{
 		(CHAR*) N_GET_HMM,
 		(&CSGInterface::a_get_hmm),
@@ -274,6 +373,21 @@ static CSGInterfaceMethod sg_methods[]=
 			"p, q, a_trans, max_iter, nbest", "prob, path")
 	},
 	{
+		(CHAR*) N_NEW_PLUGIN_ESTIMATOR,
+		(&CSGInterface::a_new_plugin_estimator),
+		(CHAR*) USAGE_I(N_NEW_PLUGIN_ESTIMATOR, "'pos_pseudo, neg_pseudo'")
+	},
+	{
+		(CHAR*) N_TRAIN_ESTIMATOR,
+		(&CSGInterface::a_train_estimator),
+		(CHAR*) USAGE(N_TRAIN_ESTIMATOR)
+	},
+	{
+		(CHAR*) N_TEST_ESTIMATOR,
+		(&CSGInterface::a_test_estimator),
+		(CHAR*) USAGE(N_TEST_ESTIMATOR)
+	},
+	{
 		(CHAR*) N_PLUGIN_ESTIMATE_CLASSIFY_EXAMPLE,
 		(&CSGInterface::a_plugin_estimate_classify_example),
 		(CHAR*) USAGE_IO(N_PLUGIN_ESTIMATE_CLASSIFY_EXAMPLE, "feature_vector_index", "result")
@@ -293,6 +407,8 @@ static CSGInterfaceMethod sg_methods[]=
 		(&CSGInterface::a_get_plugin_estimate),
 		(CHAR*) USAGE_O(N_GET_PLUGIN_ESTIMATE, "emission_probs, model_sizes")
 	},
+
+
 	{ (CHAR*) "POIM", NULL, NULL },
 	{
 		(CHAR*) N_COMPUTE_POIM_WD,
@@ -319,6 +435,8 @@ static CSGInterfaceMethod sg_methods[]=
 		(&CSGInterface::a_get_WD_scoring),
 		(CHAR*) USAGE_IO(N_GET_WD_SCORING, "max_order", "W")
 	},
+
+
 	{ (CHAR*) "Utility", NULL, NULL },
 	{
 		(CHAR*) N_CRC,
@@ -358,456 +476,21 @@ CSGInterface::~CSGInterface()
 // actions
 ////////////////////////////////////////////////////////////////////////////
 
-bool CSGInterface::a_crc()
+/* Features */
+
+bool CSGInterface::a_load_features()
 {
-	if (m_nrhs!=2 || !create_return_values(1))
-		return false;
-
-	INT slen=0;
-	CHAR* string=get_string(slen);
-	ASSERT(string);
-	BYTE* bstring=new BYTE[slen];
-	ASSERT(bstring);
-
-	for (INT i=0; i<slen; i++)
-		bstring[i]=string[i];
-	delete[] string;
-
-	INT val=CMath::crc32(bstring, slen);
-	delete[] bstring;
-	set_int(val);
-
-	return true;
+	return send_command(N_LOAD_FEATURES);
 }
 
-bool CSGInterface::a_translate_string()
+bool CSGInterface::a_save_features()
 {
-	if (m_nrhs!=4 || !create_return_values(1))
-		return false;
-
-	DREAL* string=NULL;
-	INT len;
-	get_real_vector(string, len);
-
-	INT order=get_int();
-	INT start=get_int();
-
-	const INT max_val=2; /* DNA->2bits */
-	INT i,j;
-
-	WORD* obs=new WORD[len];
-	ASSERT(obs);
-
-	for (i=0; i<len; i++)
-	{
-		switch ((CHAR) string[i])
-		{
-			case 'A': obs[i]=0; break;
-			case 'C': obs[i]=1; break;
-			case 'G': obs[i]=2; break;
-			case 'T': obs[i]=3; break;
-			case 'a': obs[i]=0; break;
-			case 'c': obs[i]=1; break;
-			case 'g': obs[i]=2; break;
-			case 't': obs[i]=3; break;
-			default: SG_ERROR("Wrong letter in string.\n");
-		}
-	}
-
-	//convert interval of size T
-	for (i=len-1; i>=order-1; i--)
-	{
-		WORD value=0;
-		for (j=i; j>=i-order+1; j--)
-			value=(value>>max_val) | ((obs[j])<<(max_val*(order-1)));
-		
-		obs[i]=(WORD) value;
-	}
-	
-	for (i=order-2;i>=0;i--)
-	{
-		WORD value=0;
-		for (j=i; j>=i-order+1; j--)
-		{
-			value= (value >> max_val);
-			if (j>=0)
-				value|=(obs[j]) << (max_val * (order-1));
-		}
-		obs[i]=value;
-	}
-
-	DREAL* real_obs=new DREAL[len];
-	ASSERT(real_obs);
-
-	for (i=start; i<len; i++)
-		real_obs[i-start]=(DREAL) obs[i];
-	delete[] obs;
-
-	set_real_vector(real_obs, len);
-	delete[] real_obs;
-
-	return true;
+	return send_command(N_SAVE_FEATURES);
 }
 
-bool CSGInterface::a_best_path_2struct()
+bool CSGInterface::a_clean_features()
 {
-	if (m_nrhs!=12 || !create_return_values(3))
-		return false;
-
-	SG_ERROR("Sorry, this parameter list is awful!\n");
-	
-	return true;
-}
-
-bool CSGInterface::a_best_path_trans()
-{
-	if ((m_nrhs==15 || m_nrhs==17) || !create_return_values(3))
-		return false;
-
-	SG_ERROR("Sorry, this parameter list is awful!\n");
-	
-	return true;
-}
-
-bool CSGInterface::a_best_path_trans_deriv()
-{
-	if (!((m_nrhs==14 && create_return_values(5)) || (m_nrhs==16 && create_return_values(6))))
-		return false;
-
-	SG_ERROR("Sorry, this parameter list is awful!\n");
-
-	return true;
-}
-
-bool CSGInterface::a_best_path_no_b()
-{
-	if (m_nrhs!=5 || !create_return_values(2))
-		return false;
-
-	DREAL* p=NULL;
-	INT N_p=0;
-	get_real_vector(p, N_p);
-
-	DREAL* q=NULL;
-	INT N_q=0;
-	get_real_vector(q, N_q);
-
-	DREAL* a=NULL;
-	INT M_a=0;
-	INT N_a=0;
-	get_real_matrix(a, M_a, N_a);
-
-	if (N_q!=N_p || N_a!=N_p || M_a!=N_p)
-		SG_ERROR("Model matrices not matching in size.\n");
-
-	INT max_iter=get_int();
-	if (max_iter<1)
-		SG_ERROR("max_iter < 1.\n");
-
-	CDynProg* h=new CDynProg();
-	ASSERT(h);
-	h->set_N(N_p);
-	h->set_p_vector(p, N_p);
-	h->set_q_vector(q, N_p);
-	h->set_a(a, N_p, N_p);
-
-	INT* path=new INT[max_iter];
-	ASSERT(path);
-	INT best_iter=0;
-	DREAL prob=h->best_path_no_b(max_iter, best_iter, path);
-	delete h;
-
-	set_real(prob);
-	set_int_vector(path, best_iter+1);
-	delete[] path;
-
-	return true;
-}
-
-bool CSGInterface::a_best_path_trans_simple()
-{
-	if (m_nrhs!=6 || !create_return_values(2))
-		return false;
-
-	DREAL* p=NULL;
-	INT N_p=0;
-	get_real_vector(p, N_p);
-
-	DREAL* q=NULL;
-	INT N_q=0;
-	get_real_vector(q, N_q);
-
-	DREAL* a_trans=NULL;
-	INT M_a_trans=0;
-	INT N_a_trans=0;
-	get_real_matrix(a_trans, M_a_trans, N_a_trans);
-
-	DREAL* seq=NULL;
-	INT M_seq=0;
-	INT N_seq=0;
-	get_real_matrix(seq, M_seq, N_seq);
-
-	if (N_q!=N_p || N_a_trans!=3 || M_seq!=N_p)
-		SG_ERROR("Model matrices not matching in size.\n");
-
-	INT nbest=get_int();
-	if (nbest<1)
-		SG_ERROR("nbest < 1.\n");
-
-	CDynProg* h=new CDynProg();
-	ASSERT(h);
-	h->set_N(N_p);
-	h->set_p_vector(p, N_p);
-	h->set_q_vector(q, N_p);
-	h->set_a_trans_matrix(a_trans, M_a_trans, 3);
-
-	INT* path=new INT[N_seq*nbest];
-	ASSERT(path);
-	memset(path, -1, N_seq*nbest*sizeof(INT));
-	DREAL* prob=new DREAL[nbest];
-	ASSERT(prob);
-
-	h->best_path_trans_simple(seq, N_seq, nbest, prob, path);
-	delete h;
-
-	set_real_vector(prob, nbest);
-	delete[] prob;
-
-	set_int_matrix(path, nbest, N_seq);
-	delete[] path;
-
-	return true;
-}
-
-
-bool CSGInterface::a_best_path_no_b_trans()
-{
-	if (m_nrhs!=6 || !create_return_values(2))
-		return false;
-
-	DREAL* p=NULL;
-	INT N_p=0;
-	get_real_vector(p, N_p);
-
-	DREAL* q=NULL;
-	INT N_q=0;
-	get_real_vector(q, N_q);
-
-	DREAL* a_trans=NULL;
-	INT M_a_trans=0;
-	INT N_a_trans=0;
-	get_real_matrix(a_trans, M_a_trans, N_a_trans);
-
-	if (N_q!=N_p || N_a_trans!=3)
-		SG_ERROR("Model matrices not matching in size.\n");
-
-	INT max_iter=get_int();
-	if (max_iter<1)
-		SG_ERROR("max_iter < 1.\n");
-
-	INT nbest=get_int();
-	if (nbest<1)
-		SG_ERROR("nbest < 1.\n");
-
-	CDynProg* h=new CDynProg();
-	ASSERT(h);
-	h->set_N(N_p);
-	h->set_p_vector(p, N_p);
-	h->set_q_vector(q, N_p);
-	h->set_a_trans_matrix(a_trans, M_a_trans, 3);
-
-	INT* path=new INT[(max_iter+1)*nbest];
-	ASSERT(path);
-	memset(path, -1, (max_iter+1)*nbest*sizeof(INT));
-	INT max_best_iter=0;
-	DREAL* prob=new DREAL[nbest];
-	ASSERT(prob);
-
-	h->best_path_no_b_trans(max_iter, max_best_iter, nbest, prob, path);
-	delete h;
-
-	set_real_vector(prob, nbest);
-	delete[] prob;
-
-	set_int_matrix(path, nbest, max_best_iter+1);
-	delete[] path;
-
-	return true;
-}
-
-bool CSGInterface::a_get_version()
-{
-	if (m_nrhs!=1 || !create_return_values(1))
-		return false;
-
-	set_int(version.get_version_revision());
-
-	return true;
-}
-
-bool CSGInterface::a_set_labels()
-{
-	if (m_nrhs!=3 || !create_return_values(0))
-		return false;
-
-	INT tlen=0;
-	CHAR* target=get_string(tlen);
-	if (!strmatch(target, tlen, "TRAIN") && !strmatch(target, tlen, "TEST"))
-	{
-		delete target;
-		SG_ERROR("Unknown target, neither TRAIN nor TEST.\n");
-	}
-
-	DREAL* lab=NULL;
-	INT len=0;
-	get_real_vector(lab, len);
-
-	CLabels* labels=new CLabels(len);
-	SG_INFO("num labels: %d\n", labels->get_num_labels());
-
-	for (INT i=0; i<len; i++)
-	{
-		if (!labels->set_label(i, lab[i]))
-			SG_ERROR("Couldn't set label %d (of %d): %f.\n", i, len, lab[i]);
-	}
-
-	if (strmatch(target, tlen, "TRAIN"))
-		gui->guilabels.set_train_labels(labels);
-	else if (strmatch(target, tlen, "TEST"))
-		gui->guilabels.set_test_labels(labels);
-	else
-	{
-		delete[] target;
-		SG_ERROR("Unknown target, neither TRAIN nor TEST.\n");
-	}
-	delete[] target;
-
-	return true;
-}
-
-bool CSGInterface::a_get_labels()
-{
-	if (m_nrhs!=2 || !create_return_values(1))
-		return false;
-
-	INT tlen=0;
-	CHAR* target=get_string(tlen);
-	CLabels* labels=NULL;
-
-	if (strmatch(target, tlen, "TRAIN"))
-		labels=gui->guilabels.get_train_labels();
-	else if (strmatch(target, tlen, "TEST"))
-		labels=gui->guilabels.get_test_labels();
-	else
-	{
-		delete[] target;
-		SG_ERROR("Unknown target, neither TRAIN nor TEST.\n");
-	}
-	delete[] target;
-
-	if (!labels)
-		SG_ERROR("No labels.\n");
-
-	INT num_labels=labels->get_num_labels();
-	DREAL* lab=new DREAL[num_labels];
-
-	for (INT i=0; i<num_labels ; i++)
-		lab[i]=labels->get_label(i);
-
-	set_real_vector(lab, num_labels);
-	delete[] lab;
-
-	return true;
-}
-
-bool CSGInterface::a_obtain_from_position_list()
-{
-	if ((m_nrhs!=4 && m_nrhs!=5) || !create_return_values(0))
-		return false;
-
-	INT tlen=0;
-	CHAR* target=get_string(tlen);
-	if (!strmatch(target, tlen, "TRAIN") && !strmatch(target, tlen, "TEST"))
-	{
-		delete[] target;
-		SG_ERROR("Unknown target, neither TRAIN nor TEST.\n");
-	}
-
-	INT winsize=get_int();
-
-	INT* shifts=NULL;
-	INT num_shift=0;
-	get_int_vector(shifts, num_shift);
-
-	INT skip=0;
-	if (m_nrhs==5)
-		skip=get_int();
-
-	SG_DEBUG("winsize: %d num_shifts: %d skip: %d\n", winsize, num_shift, skip);
-
-	CDynamicArray<INT> positions(num_shift+1);
-
-	for (INT i=0; i<num_shift; i++)
-		positions.set_element(shifts[i], i);
-
-	CFeatures* features=NULL;
-	if (strmatch(target, tlen, "TRAIN"))
-	{
-		gui->guifeatures.invalidate_train();
-		features=gui->guifeatures.get_train_features();
-	}
-	else
-	{
-		gui->guifeatures.invalidate_test();
-		features=gui->guifeatures.get_test_features();
-	}
-	delete[] target;
-
-	if (!features)
-		SG_ERROR("No features.\n");
-
-	if (features->get_feature_class()==C_COMBINED)
-	{
-		features=((CCombinedFeatures*) features)->get_last_feature_obj();
-		if (!features)
-			SG_ERROR("No features from combined.\n");
-	}
-
-	if (features->get_feature_class()!=C_STRING)
-		SG_ERROR("No string features.\n");
-
-	bool success=false;
-	switch (features->get_feature_type())
-	{
-		case F_CHAR:
-		{
-			success=(((CStringFeatures<CHAR>*) features)->
-				obtain_by_position_list(winsize, &positions, skip)>0);
-			break;
-		}
-		case F_BYTE:
-		{
-			success=(((CStringFeatures<BYTE>*) features)->
-				obtain_by_position_list(winsize, &positions, skip)>0);
-			break;
-		}
-		case F_WORD:
-		{
-			success=(((CStringFeatures<WORD>*) features)->
-				obtain_by_position_list(winsize, &positions, skip)>0);
-			break;
-		}
-		case F_ULONG:
-		{
-			success=(((CStringFeatures<ULONG>*) features)->
-				obtain_by_position_list(winsize, &positions, skip)>0);
-			break;
-		}
-		default:
-			SG_ERROR("Unsupported string features type.\n");
-	}
-
-	return success;
+	return send_command(N_CLEAN_FEATURES);
 }
 
 bool CSGInterface::a_get_features()
@@ -1165,24 +848,202 @@ bool CSGInterface::do_set_features(bool add)
 	return true;
 }
 
-bool CSGInterface::a_get_distance_matrix()
+bool CSGInterface::a_set_reference_features()
 {
-	if (m_nrhs!=1 || !create_return_values(1))
+	return send_command(N_SET_REF_FEAT);
+}
+
+bool CSGInterface::a_convert()
+{
+	return send_command(N_CONVERT);
+}
+
+bool CSGInterface::a_obtain_from_position_list()
+{
+	if ((m_nrhs!=4 && m_nrhs!=5) || !create_return_values(0))
 		return false;
 
-	CDistance* distance=gui->guidistance.get_distance();
-	if (!distance || !distance->get_rhs() || !distance->get_lhs())
-		SG_ERROR("No distance defined.\n");
+	INT tlen=0;
+	CHAR* target=get_string(tlen);
+	if (!strmatch(target, tlen, "TRAIN") && !strmatch(target, tlen, "TEST"))
+	{
+		delete[] target;
+		SG_ERROR("Unknown target, neither TRAIN nor TEST.\n");
+	}
 
-	INT num_vec_lhs=0;
-	INT num_vec_rhs=0;
-	DREAL* dmatrix=NULL;
-	dmatrix=distance->get_distance_matrix_real(num_vec_lhs, num_vec_rhs, dmatrix);
+	INT winsize=get_int();
 
-	set_real_matrix(dmatrix, num_vec_lhs, num_vec_rhs);
-	delete[] dmatrix;
+	INT* shifts=NULL;
+	INT num_shift=0;
+	get_int_vector(shifts, num_shift);
+
+	INT skip=0;
+	if (m_nrhs==5)
+		skip=get_int();
+
+	SG_DEBUG("winsize: %d num_shifts: %d skip: %d\n", winsize, num_shift, skip);
+
+	CDynamicArray<INT> positions(num_shift+1);
+
+	for (INT i=0; i<num_shift; i++)
+		positions.set_element(shifts[i], i);
+
+	CFeatures* features=NULL;
+	if (strmatch(target, tlen, "TRAIN"))
+	{
+		gui->guifeatures.invalidate_train();
+		features=gui->guifeatures.get_train_features();
+	}
+	else
+	{
+		gui->guifeatures.invalidate_test();
+		features=gui->guifeatures.get_test_features();
+	}
+	delete[] target;
+
+	if (!features)
+		SG_ERROR("No features.\n");
+
+	if (features->get_feature_class()==C_COMBINED)
+	{
+		features=((CCombinedFeatures*) features)->get_last_feature_obj();
+		if (!features)
+			SG_ERROR("No features from combined.\n");
+	}
+
+	if (features->get_feature_class()!=C_STRING)
+		SG_ERROR("No string features.\n");
+
+	bool success=false;
+	switch (features->get_feature_type())
+	{
+		case F_CHAR:
+		{
+			success=(((CStringFeatures<CHAR>*) features)->
+				obtain_by_position_list(winsize, &positions, skip)>0);
+			break;
+		}
+		case F_BYTE:
+		{
+			success=(((CStringFeatures<BYTE>*) features)->
+				obtain_by_position_list(winsize, &positions, skip)>0);
+			break;
+		}
+		case F_WORD:
+		{
+			success=(((CStringFeatures<WORD>*) features)->
+				obtain_by_position_list(winsize, &positions, skip)>0);
+			break;
+		}
+		case F_ULONG:
+		{
+			success=(((CStringFeatures<ULONG>*) features)->
+				obtain_by_position_list(winsize, &positions, skip)>0);
+			break;
+		}
+		default:
+			SG_ERROR("Unsupported string features type.\n");
+	}
+
+	return success;
+}
+
+bool CSGInterface::a_obtain_by_sliding_window()
+{
+	return send_command(N_SLIDE_WINDOW);
+}
+
+bool CSGInterface::a_reshape()
+{
+	return send_command(N_RESHAPE);
+}
+
+bool CSGInterface::a_load_labels()
+{
+	return send_command(N_LOAD_LABELS);
+}
+
+bool CSGInterface::a_set_labels()
+{
+	if (m_nrhs!=3 || !create_return_values(0))
+		return false;
+
+	INT tlen=0;
+	CHAR* target=get_string(tlen);
+	if (!strmatch(target, tlen, "TRAIN") && !strmatch(target, tlen, "TEST"))
+	{
+		delete target;
+		SG_ERROR("Unknown target, neither TRAIN nor TEST.\n");
+	}
+
+	DREAL* lab=NULL;
+	INT len=0;
+	get_real_vector(lab, len);
+
+	CLabels* labels=new CLabels(len);
+	SG_INFO("num labels: %d\n", labels->get_num_labels());
+
+	for (INT i=0; i<len; i++)
+	{
+		if (!labels->set_label(i, lab[i]))
+			SG_ERROR("Couldn't set label %d (of %d): %f.\n", i, len, lab[i]);
+	}
+
+	if (strmatch(target, tlen, "TRAIN"))
+		gui->guilabels.set_train_labels(labels);
+	else if (strmatch(target, tlen, "TEST"))
+		gui->guilabels.set_test_labels(labels);
+	else
+	{
+		delete[] target;
+		SG_ERROR("Unknown target, neither TRAIN nor TEST.\n");
+	}
+	delete[] target;
 
 	return true;
+}
+
+bool CSGInterface::a_get_labels()
+{
+	if (m_nrhs!=2 || !create_return_values(1))
+		return false;
+
+	INT tlen=0;
+	CHAR* target=get_string(tlen);
+	CLabels* labels=NULL;
+
+	if (strmatch(target, tlen, "TRAIN"))
+		labels=gui->guilabels.get_train_labels();
+	else if (strmatch(target, tlen, "TEST"))
+		labels=gui->guilabels.get_test_labels();
+	else
+	{
+		delete[] target;
+		SG_ERROR("Unknown target, neither TRAIN nor TEST.\n");
+	}
+	delete[] target;
+
+	if (!labels)
+		SG_ERROR("No labels.\n");
+
+	INT num_labels=labels->get_num_labels();
+	DREAL* lab=new DREAL[num_labels];
+
+	for (INT i=0; i<num_labels ; i++)
+		lab[i]=labels->get_label(i);
+
+	set_real_vector(lab, num_labels);
+	delete[] lab;
+
+	return true;
+}
+
+
+/** Kernel & Distances */
+
+bool CSGInterface::a_init_kernel()
+{
+	return send_command(N_INIT_KERNEL);
 }
 
 bool CSGInterface::a_get_kernel_matrix()
@@ -1586,6 +1447,280 @@ bool CSGInterface::a_set_last_subkernel_weights()
 	return success;
 }
 
+bool CSGInterface::a_get_WD_position_weights()
+{
+	if (m_nrhs!=1 || !create_return_values(1))
+		return false;
+
+	CKernel* kernel=gui->guikernel.get_kernel();
+	if (!kernel)
+		SG_ERROR("No kernel.\n");
+
+	if (kernel->get_kernel_type()==K_COMBINED)
+	{
+		kernel=((CCombinedKernel*) kernel)->get_last_kernel();
+		if (!kernel)
+			SG_ERROR("Couldn't find last kernel.\n");
+
+		EKernelType ktype=kernel->get_kernel_type();
+		if (ktype!=K_WEIGHTEDDEGREE && ktype!=K_WEIGHTEDDEGREEPOS)
+			SG_ERROR("Wrong subkernel type.\n");
+	}
+
+	INT len=0;
+	const DREAL* position_weights;
+
+	if (kernel->get_kernel_type()==K_WEIGHTEDDEGREE)
+		position_weights=((CWeightedDegreeStringKernel*) kernel)->get_position_weights(len);
+	else
+		position_weights=((CWeightedDegreePositionStringKernel*) kernel)->get_position_weights(len);
+
+	if (position_weights==NULL)
+		set_real_vector(position_weights, 0);
+	else
+		set_real_vector(position_weights, len);
+
+	return true;
+}
+
+bool CSGInterface::a_get_last_subkernel_weights()
+{
+	if (m_nrhs!=1 || !create_return_values(1))
+		return false;
+
+	CKernel* kernel=gui->guikernel.get_kernel();
+	EKernelType ktype=kernel->get_kernel_type();
+	if (!kernel)
+		SG_ERROR("No kernel.\n");
+	if (ktype!=K_COMBINED)
+		SG_ERROR("Only works for Combined kernels.\n");
+
+	kernel=((CCombinedKernel*) kernel)->get_last_kernel();
+	if (!kernel)
+		SG_ERROR("Couldn't find last kernel.\n");
+
+	INT degree=0;
+	INT len=0;
+
+	if (ktype==K_COMBINED)
+	{
+		INT num_weights=0;
+		const DREAL* weights=
+			((CCombinedKernel*) kernel)->get_subkernel_weights(num_weights);
+
+		set_real_vector(weights, num_weights);
+		return true;
+	}
+
+	DREAL* weights=NULL;
+	if (ktype==K_WEIGHTEDDEGREE)
+		weights=((CWeightedDegreeStringKernel*) kernel)->
+			get_degree_weights(degree, len);
+	else if (ktype==K_WEIGHTEDDEGREEPOS)
+		weights=((CWeightedDegreePositionStringKernel*) kernel)->
+			get_degree_weights(degree, len);
+	else
+		SG_ERROR("Only works for Weighted Degree (Position) kernels.\n");
+
+	if (len==0)
+		len=1;
+
+	set_real_matrix(weights, degree, len);
+
+	return true;
+}
+
+bool CSGInterface::a_compute_by_subkernels()
+{
+	if (m_nrhs!=1 || !create_return_values(1))
+		return false;
+
+	CKernel* kernel=gui->guikernel.get_kernel();
+	if (!kernel)
+		SG_ERROR("No kernel.\n");
+	if (!kernel->get_rhs())
+		SG_ERROR("No rhs.\n");
+
+	INT num_vec=kernel->get_rhs()->get_num_vectors();
+	INT degree=0;
+	INT len=0;
+	EKernelType ktype=kernel->get_kernel_type();
+
+	// it would be nice to have a common base class for the WD kernels
+	if (ktype==K_WEIGHTEDDEGREE)
+	{
+		CWeightedDegreeStringKernel* k=(CWeightedDegreeStringKernel*) kernel;
+		k->get_degree_weights(degree, len);
+		if (!k->is_tree_initialized())
+			SG_ERROR("Kernel optimization not initialized.\n");
+	}
+	else if (ktype==K_WEIGHTEDDEGREEPOS)
+	{
+		CWeightedDegreePositionStringKernel* k=
+			(CWeightedDegreePositionStringKernel*) kernel;
+		k->get_degree_weights(degree, len);
+		if (!k->is_tree_initialized())
+			SG_ERROR("Kernel optimization not initialized.\n");
+	}
+	else
+		SG_ERROR("Only works for Weighted Degree (Position) kernels.\n");
+
+	if (len==0)
+		len=1;
+
+	INT num_feat=degree*len;
+	INT num=num_feat*num_vec;
+	DREAL* result=new DREAL[num];
+	ASSERT(result);
+
+	for (INT i=0; i<num; i++)
+		result[i]=0;
+
+	if (ktype==K_WEIGHTEDDEGREE)
+	{
+		CWeightedDegreeStringKernel* k=(CWeightedDegreeStringKernel*) kernel;
+		for (INT i=0; i<num_vec; i++)
+			k->compute_by_tree(i, &result[i*num_feat]);
+	}
+	else
+	{
+		CWeightedDegreePositionStringKernel* k=
+			(CWeightedDegreePositionStringKernel*) kernel;
+		for (INT i=0; i<num_vec; i++)
+			k->compute_by_tree(i, &result[i*num_feat]);
+	}
+
+	set_real_matrix(result, num_feat, num_vec);
+	delete[] result;
+
+	return true;
+}
+
+bool CSGInterface::a_init_kernel_optimization()
+{
+	return send_command(N_INIT_KERNEL_OPTIMIZATION);
+}
+
+bool CSGInterface::a_get_kernel_optimization()
+{
+	if (m_nrhs<1 || !create_return_values(1))
+		return false;
+
+	CKernel* kernel=gui->guikernel.get_kernel();
+	if (!kernel)
+		SG_ERROR("No kernel defined.\n");
+
+	switch (kernel->get_kernel_type())
+	{
+		case K_WEIGHTEDDEGREEPOS:
+		{
+			if (m_nrhs!=2)
+				SG_ERROR("parameter missing\n");
+
+			INT max_order=get_int();
+			if ((max_order<1) || (max_order>12))
+			{
+				SG_WARNING( "max_order out of range 1..12 (%d). setting to 1\n", max_order);
+				max_order=1;
+			}
+
+			CWeightedDegreePositionStringKernel* k=(CWeightedDegreePositionStringKernel*) kernel;
+			CSVM* svm=(CSVM*) gui->guiclassifier.get_classifier();
+			if (!svm)
+				SG_ERROR("No SVM defined.\n");
+
+			INT num_suppvec=svm->get_num_support_vectors();
+			INT* sv_idx=new INT[num_suppvec];
+			DREAL* sv_weight=new DREAL[num_suppvec];
+			INT num_feat=0;
+			INT num_sym=0;
+
+			for (INT i=0; i<num_suppvec; i++)
+			{
+				sv_idx[i]=svm->get_support_vector(i);
+				sv_weight[i]=svm->get_alpha(i);
+			}
+
+			DREAL* position_weights=k->extract_w(max_order, num_feat,
+				num_sym, NULL, num_suppvec, sv_idx, sv_weight);
+			delete[] sv_idx;
+			delete[] sv_weight;
+
+			set_real_matrix(position_weights, num_sym, num_feat);
+			delete[] position_weights;
+
+			return true;
+		}
+
+		case K_COMMWORDSTRING:
+		case K_WEIGHTEDCOMMWORDSTRING:
+		{
+			CCommWordStringKernel* k=(CCommWordStringKernel*) kernel;
+			INT len=0;
+			DREAL* weights;
+			k->get_dictionary(len, weights);
+
+			set_real_vector(weights, len);
+			return true;
+		}
+		case K_LINEAR:
+		{
+			CLinearKernel* k=(CLinearKernel*) kernel;
+			INT len=0;
+			const DREAL* weights=k->get_normal(len);
+
+			set_real_vector(weights, len);
+			return true;
+		}
+		case K_SPARSELINEAR:
+		{
+			CSparseLinearKernel* k=(CSparseLinearKernel*) kernel;
+			INT len=0;
+			const DREAL* weights=k->get_normal(len);
+
+			set_real_vector(weights, len);
+			return true;
+		}
+		default:
+			SG_ERROR("Unsupported kernel %s.\n", kernel->get_name());
+	}
+
+	return true;
+}
+
+bool CSGInterface::a_delete_kernel_optimization()
+{
+	return send_command(N_DELETE_KERNEL_OPTIMIZATION);
+}
+
+bool CSGInterface::a_init_distance()
+{
+	return send_command(N_INIT_DISTANCE);
+}
+
+bool CSGInterface::a_get_distance_matrix()
+{
+	if (m_nrhs!=1 || !create_return_values(1))
+		return false;
+
+	CDistance* distance=gui->guidistance.get_distance();
+	if (!distance || !distance->get_rhs() || !distance->get_lhs())
+		SG_ERROR("No distance defined.\n");
+
+	INT num_vec_lhs=0;
+	INT num_vec_rhs=0;
+	DREAL* dmatrix=NULL;
+	dmatrix=distance->get_distance_matrix_real(num_vec_lhs, num_vec_rhs, dmatrix);
+
+	set_real_matrix(dmatrix, num_vec_lhs, num_vec_rhs);
+	delete[] dmatrix;
+
+	return true;
+}
+
+
+/* POIM */
+
 bool CSGInterface::a_get_SPEC_consensus()
 {
 	if (m_nrhs!=1 || !create_return_values(1))
@@ -1823,240 +1958,160 @@ bool CSGInterface::a_get_WD_scoring()
 	return true;
 }
 
-bool CSGInterface::a_get_WD_position_weights()
+
+/* Classifier */
+
+bool CSGInterface::a_classify()
 {
 	if (m_nrhs!=1 || !create_return_values(1))
 		return false;
 
-	CKernel* kernel=gui->guikernel.get_kernel();
-	if (!kernel)
-		SG_ERROR("No kernel.\n");
+	CFeatures* feat=gui->guifeatures.get_test_features();
+	if (!feat)
+		SG_ERROR("No features found.\n");
 
-	if (kernel->get_kernel_type()==K_COMBINED)
-	{
-		kernel=((CCombinedKernel*) kernel)->get_last_kernel();
-		if (!kernel)
-			SG_ERROR("Couldn't find last kernel.\n");
+	INT num_vec=feat->get_num_vectors();
+	CLabels* labels=gui->guiclassifier.classify();
+	if (!labels)
+		SG_ERROR("Classify failed\n");
 
-		EKernelType ktype=kernel->get_kernel_type();
-		if (ktype!=K_WEIGHTEDDEGREE && ktype!=K_WEIGHTEDDEGREEPOS)
-			SG_ERROR("Wrong subkernel type.\n");
-	}
-
-	INT len=0;
-	const DREAL* position_weights;
-
-	if (kernel->get_kernel_type()==K_WEIGHTEDDEGREE)
-		position_weights=((CWeightedDegreeStringKernel*) kernel)->get_position_weights(len);
-	else
-		position_weights=((CWeightedDegreePositionStringKernel*) kernel)->get_position_weights(len);
-
-	if (position_weights==NULL)
-		set_real_vector(position_weights, 0);
-	else
-		set_real_vector(position_weights, len);
-
-	return true;
-}
-
-bool CSGInterface::a_get_last_subkernel_weights()
-{
-	if (m_nrhs!=1 || !create_return_values(1))
-		return false;
-
-	CKernel* kernel=gui->guikernel.get_kernel();
-	EKernelType ktype=kernel->get_kernel_type();
-	if (!kernel)
-		SG_ERROR("No kernel.\n");
-	if (ktype!=K_COMBINED)
-		SG_ERROR("Only works for Combined kernels.\n");
-
-	kernel=((CCombinedKernel*) kernel)->get_last_kernel();
-	if (!kernel)
-		SG_ERROR("Couldn't find last kernel.\n");
-
-	INT degree=0;
-	INT len=0;
-
-	if (ktype==K_COMBINED)
-	{
-		INT num_weights=0;
-		const DREAL* weights=
-			((CCombinedKernel*) kernel)->get_subkernel_weights(num_weights);
-
-		set_real_vector(weights, num_weights);
-		return true;
-	}
-
-	DREAL* weights=NULL;
-	if (ktype==K_WEIGHTEDDEGREE)
-		weights=((CWeightedDegreeStringKernel*) kernel)->
-			get_degree_weights(degree, len);
-	else if (ktype==K_WEIGHTEDDEGREEPOS)
-		weights=((CWeightedDegreePositionStringKernel*) kernel)->
-			get_degree_weights(degree, len);
-	else
-		SG_ERROR("Only works for Weighted Degree (Position) kernels.\n");
-
-	if (len==0)
-		len=1;
-
-	set_real_matrix(weights, degree, len);
-
-	return true;
-}
-
-bool CSGInterface::a_compute_by_subkernels()
-{
-	if (m_nrhs!=1 || !create_return_values(1))
-		return false;
-
-	CKernel* kernel=gui->guikernel.get_kernel();
-	if (!kernel)
-		SG_ERROR("No kernel.\n");
-	if (!kernel->get_rhs())
-		SG_ERROR("No rhs.\n");
-
-	INT num_vec=kernel->get_rhs()->get_num_vectors();
-	INT degree=0;
-	INT len=0;
-	EKernelType ktype=kernel->get_kernel_type();
-
-	// it would be nice to have a common base class for the WD kernels
-	if (ktype==K_WEIGHTEDDEGREE)
-	{
-		CWeightedDegreeStringKernel* k=(CWeightedDegreeStringKernel*) kernel;
-		k->get_degree_weights(degree, len);
-		if (!k->is_tree_initialized())
-			SG_ERROR("Kernel optimization not initialized.\n");
-	}
-	else if (ktype==K_WEIGHTEDDEGREEPOS)
-	{
-		CWeightedDegreePositionStringKernel* k=
-			(CWeightedDegreePositionStringKernel*) kernel;
-		k->get_degree_weights(degree, len);
-		if (!k->is_tree_initialized())
-			SG_ERROR("Kernel optimization not initialized.\n");
-	}
-	else
-		SG_ERROR("Only works for Weighted Degree (Position) kernels.\n");
-
-	if (len==0)
-		len=1;
-
-	INT num_feat=degree*len;
-	INT num=num_feat*num_vec;
-	DREAL* result=new DREAL[num];
+	DREAL* result=new DREAL[num_vec];
 	ASSERT(result);
 
-	for (INT i=0; i<num; i++)
-		result[i]=0;
+	for (INT i=0; i<num_vec; i++)
+		result[i]=labels->get_label(i);
+	delete labels;
 
-	if (ktype==K_WEIGHTEDDEGREE)
-	{
-		CWeightedDegreeStringKernel* k=(CWeightedDegreeStringKernel*) kernel;
-		for (INT i=0; i<num_vec; i++)
-			k->compute_by_tree(i, &result[i*num_feat]);
-	}
-	else
-	{
-		CWeightedDegreePositionStringKernel* k=
-			(CWeightedDegreePositionStringKernel*) kernel;
-		for (INT i=0; i<num_vec; i++)
-			k->compute_by_tree(i, &result[i*num_feat]);
-	}
-
-	set_real_matrix(result, num_feat, num_vec);
+	set_real_vector(result, num_vec);
 	delete[] result;
 
 	return true;
 }
 
-bool CSGInterface::a_get_kernel_optimization()
+bool CSGInterface::a_classify_example()
 {
-	if (m_nrhs<1 || !create_return_values(1))
+	if (m_nrhs!=2 || !create_return_values(1))
 		return false;
 
-	CKernel* kernel=gui->guikernel.get_kernel();
-	if (!kernel)
-		SG_ERROR("No kernel defined.\n");
+	INT idx=get_int();
+	DREAL result=0;
 
-	switch (kernel->get_kernel_type())
+	if (!gui->guiclassifier.classify_example(idx, result))
+		SG_ERROR("Classify_example failed.\n");
+
+	set_real(result);
+
+	return true;
+}
+
+bool CSGInterface::a_get_classifier()
+{
+	if (m_nrhs!=1 || !create_return_values(2))
+		return false;
+
+	DREAL* bias=NULL;
+	DREAL* weights=NULL;
+	INT rows=0;
+	INT cols=0;
+	INT brows=0;
+	INT bcols=0;
+
+	if (!gui->guiclassifier.get_trained_classifier(weights, rows, cols, bias, brows, bcols))
+		return false;
+
+	set_real_matrix(bias, brows, bcols);
+	set_real_matrix(weights, rows, cols);
+
+	return true;
+}
+
+bool CSGInterface::a_new_classifier()
+{
+	return send_command(N_NEW_CLASSIFIER);
+}
+
+bool CSGInterface::a_load_classifier()
+{
+	return send_command(N_LOAD_SVM); // FIXME: N_LOAD_CLASSIFIER
+}
+
+bool CSGInterface::a_get_svm()
+{
+	return a_get_classifier();
+}
+
+bool CSGInterface::a_set_svm()
+{
+	if (m_nrhs!=3 || !create_return_values(0))
+		return false;
+
+	DREAL bias=get_real();
+
+	DREAL* alphas=NULL;
+	INT num_feat_alphas=0;
+	INT num_vec_alphas=0;
+	get_real_matrix(alphas, num_feat_alphas, num_vec_alphas);
+
+	if (!alphas)
+		SG_ERROR("No proper alphas given.\n");
+	if (num_vec_alphas!=2)
+		SG_ERROR("Not 2 vectors in alphas.\n");
+
+	CSVM* svm=(CSVM*) gui->guiclassifier.get_classifier();
+	if (!svm)
+		SG_ERROR("No SVM object available.\n");
+
+	svm->create_new_model(num_feat_alphas);
+	svm->set_bias(bias);
+
+	INT num_support_vectors=svm->get_num_support_vectors();
+	for (INT i=0; i<num_support_vectors; i++)
 	{
-		case K_WEIGHTEDDEGREEPOS:
-		{
-			if (m_nrhs!=2)
-				SG_ERROR("parameter missing\n");
-
-			INT max_order=get_int();
-			if ((max_order<1) || (max_order>12))
-			{
-				SG_WARNING( "max_order out of range 1..12 (%d). setting to 1\n", max_order);
-				max_order=1;
-			}
-
-			CWeightedDegreePositionStringKernel* k=(CWeightedDegreePositionStringKernel*) kernel;
-			CSVM* svm=(CSVM*) gui->guiclassifier.get_classifier();
-			if (!svm)
-				SG_ERROR("No SVM defined.\n");
-
-			INT num_suppvec=svm->get_num_support_vectors();
-			INT* sv_idx=new INT[num_suppvec];
-			DREAL* sv_weight=new DREAL[num_suppvec];
-			INT num_feat=0;
-			INT num_sym=0;
-
-			for (INT i=0; i<num_suppvec; i++)
-			{
-				sv_idx[i]=svm->get_support_vector(i);
-				sv_weight[i]=svm->get_alpha(i);
-			}
-
-			DREAL* position_weights=k->extract_w(max_order, num_feat,
-				num_sym, NULL, num_suppvec, sv_idx, sv_weight);
-			delete[] sv_idx;
-			delete[] sv_weight;
-
-			set_real_matrix(position_weights, num_sym, num_feat);
-			delete[] position_weights;
-
-			return true;
-		}
-
-		case K_COMMWORDSTRING:
-		case K_WEIGHTEDCOMMWORDSTRING:
-		{
-			CCommWordStringKernel* k=(CCommWordStringKernel*) kernel;
-			INT len=0;
-			DREAL* weights;
-			k->get_dictionary(len, weights);
-
-			set_real_vector(weights, len);
-			return true;
-		}
-		case K_LINEAR:
-		{
-			CLinearKernel* k=(CLinearKernel*) kernel;
-			INT len=0;
-			const DREAL* weights=k->get_normal(len);
-
-			set_real_vector(weights, len);
-			return true;
-		}
-		case K_SPARSELINEAR:
-		{
-			CSparseLinearKernel* k=(CSparseLinearKernel*) kernel;
-			INT len=0;
-			const DREAL* weights=k->get_normal(len);
-
-			set_real_vector(weights, len);
-			return true;
-		}
-		default:
-			SG_ERROR("Unsupported kernel %s.\n", kernel->get_name());
+		svm->set_alpha(i, alphas[i]);
+		svm->set_support_vector(i, (INT) alphas[i+num_support_vectors]);
 	}
 
 	return true;
+}
+
+bool CSGInterface::a_get_svm_objective()
+{
+	if (m_nrhs!=1 || !create_return_values(1))
+		return false;
+
+	CSVM* svm=(CSVM*) gui->guiclassifier.get_classifier();
+	if (!svm)
+		SG_ERROR("No SVM set.\n");
+
+	set_real(svm->get_objective());
+
+	return true;
+}
+
+
+/* Preproc */
+
+bool CSGInterface::a_load_preproc()
+{
+	return send_command(N_LOAD_PREPROC);
+}
+
+
+/* HMM */
+
+bool CSGInterface::a_new_plugin_estimator()
+{
+	return send_command(N_NEW_PLUGIN_ESTIMATOR);
+}
+
+bool CSGInterface::a_train_estimator()
+{
+	return send_command(N_TRAIN_ESTIMATOR);
+}
+
+bool CSGInterface::a_test_estimator()
+{
+	return send_command(N_TEST_ESTIMATOR);
 }
 
 bool CSGInterface::a_plugin_estimate_classify_example()
@@ -2162,122 +2217,6 @@ bool CSGInterface::a_get_plugin_estimate()
 	return true;
 }
 
-bool CSGInterface::a_classify()
-{
-	if (m_nrhs!=1 || !create_return_values(1))
-		return false;
-
-	CFeatures* feat=gui->guifeatures.get_test_features();
-	if (!feat)
-		SG_ERROR("No features found.\n");
-
-	INT num_vec=feat->get_num_vectors();
-	CLabels* labels=gui->guiclassifier.classify();
-	if (!labels)
-		SG_ERROR("Classify failed\n");
-
-	DREAL* result=new DREAL[num_vec];
-	ASSERT(result);
-
-	for (INT i=0; i<num_vec; i++)
-		result[i]=labels->get_label(i);
-	delete labels;
-
-	set_real_vector(result, num_vec);
-	delete[] result;
-
-	return true;
-}
-
-bool CSGInterface::a_classify_example()
-{
-	if (m_nrhs!=2 || !create_return_values(1))
-		return false;
-
-	INT idx=get_int();
-	DREAL result=0;
-
-	if (!gui->guiclassifier.classify_example(idx, result))
-		SG_ERROR("Classify_example failed.\n");
-
-	set_real(result);
-
-	return true;
-}
-
-bool CSGInterface::a_get_classifier()
-{
-	if (m_nrhs!=1 || !create_return_values(2))
-		return false;
-
-	DREAL* bias=NULL;
-	DREAL* weights=NULL;
-	INT rows=0;
-	INT cols=0;
-	INT brows=0;
-	INT bcols=0;
-
-	if (!gui->guiclassifier.get_trained_classifier(weights, rows, cols, bias, brows, bcols))
-		return false;
-
-	set_real_matrix(bias, brows, bcols);
-	set_real_matrix(weights, rows, cols);
-
-	return true;
-}
-
-bool CSGInterface::a_get_svm()
-{
-	return a_get_classifier();
-}
-
-bool CSGInterface::a_set_svm()
-{
-	if (m_nrhs!=3 || !create_return_values(0))
-		return false;
-
-	DREAL bias=get_real();
-
-	DREAL* alphas=NULL;
-	INT num_feat_alphas=0;
-	INT num_vec_alphas=0;
-	get_real_matrix(alphas, num_feat_alphas, num_vec_alphas);
-
-	if (!alphas)
-		SG_ERROR("No proper alphas given.\n");
-	if (num_vec_alphas!=2)
-		SG_ERROR("Not 2 vectors in alphas.\n");
-
-	CSVM* svm=(CSVM*) gui->guiclassifier.get_classifier();
-	if (!svm)
-		SG_ERROR("No SVM object available.\n");
-
-	svm->create_new_model(num_feat_alphas);
-	svm->set_bias(bias);
-
-	INT num_support_vectors=svm->get_num_support_vectors();
-	for (INT i=0; i<num_support_vectors; i++)
-	{
-		svm->set_alpha(i, alphas[i]);
-		svm->set_support_vector(i, (INT) alphas[i+num_support_vectors]);
-	}
-
-	return true;
-}
-
-bool CSGInterface::a_get_svm_objective()
-{
-	if (m_nrhs!=1 || !create_return_values(1))
-		return false;
-
-	CSVM* svm=(CSVM*) gui->guiclassifier.get_classifier();
-	if (!svm)
-		SG_ERROR("No SVM set.\n");
-
-	set_real(svm->get_objective());
-
-	return true;
-}
 
 bool CSGInterface::a_relative_entropy()
 {
@@ -2548,6 +2487,16 @@ bool CSGInterface::a_append_hmm()
 	return true;
 }
 
+bool CSGInterface::a_new_hmm()
+{
+	return send_command(N_NEW_HMM);
+}
+
+bool CSGInterface::a_load_hmm()
+{
+	return send_command(N_LOAD_HMM);
+}
+
 bool CSGInterface::a_set_hmm()
 {
 	if (m_nrhs!=5 || !create_return_values(0))
@@ -2654,6 +2603,294 @@ bool CSGInterface::a_get_hmm()
 	return true;
 }
 
+bool CSGInterface::a_best_path_2struct()
+{
+	if (m_nrhs!=12 || !create_return_values(3))
+		return false;
+
+	SG_ERROR("Sorry, this parameter list is awful!\n");
+	
+	return true;
+}
+
+bool CSGInterface::a_best_path_trans()
+{
+	if ((m_nrhs==15 || m_nrhs==17) || !create_return_values(3))
+		return false;
+
+	SG_ERROR("Sorry, this parameter list is awful!\n");
+	
+	return true;
+}
+
+bool CSGInterface::a_best_path_trans_deriv()
+{
+	if (!((m_nrhs==14 && create_return_values(5)) || (m_nrhs==16 && create_return_values(6))))
+		return false;
+
+	SG_ERROR("Sorry, this parameter list is awful!\n");
+
+	return true;
+}
+
+bool CSGInterface::a_best_path_no_b()
+{
+	if (m_nrhs!=5 || !create_return_values(2))
+		return false;
+
+	DREAL* p=NULL;
+	INT N_p=0;
+	get_real_vector(p, N_p);
+
+	DREAL* q=NULL;
+	INT N_q=0;
+	get_real_vector(q, N_q);
+
+	DREAL* a=NULL;
+	INT M_a=0;
+	INT N_a=0;
+	get_real_matrix(a, M_a, N_a);
+
+	if (N_q!=N_p || N_a!=N_p || M_a!=N_p)
+		SG_ERROR("Model matrices not matching in size.\n");
+
+	INT max_iter=get_int();
+	if (max_iter<1)
+		SG_ERROR("max_iter < 1.\n");
+
+	CDynProg* h=new CDynProg();
+	ASSERT(h);
+	h->set_N(N_p);
+	h->set_p_vector(p, N_p);
+	h->set_q_vector(q, N_p);
+	h->set_a(a, N_p, N_p);
+
+	INT* path=new INT[max_iter];
+	ASSERT(path);
+	INT best_iter=0;
+	DREAL prob=h->best_path_no_b(max_iter, best_iter, path);
+	delete h;
+
+	set_real(prob);
+	set_int_vector(path, best_iter+1);
+	delete[] path;
+
+	return true;
+}
+
+bool CSGInterface::a_best_path_trans_simple()
+{
+	if (m_nrhs!=6 || !create_return_values(2))
+		return false;
+
+	DREAL* p=NULL;
+	INT N_p=0;
+	get_real_vector(p, N_p);
+
+	DREAL* q=NULL;
+	INT N_q=0;
+	get_real_vector(q, N_q);
+
+	DREAL* a_trans=NULL;
+	INT M_a_trans=0;
+	INT N_a_trans=0;
+	get_real_matrix(a_trans, M_a_trans, N_a_trans);
+
+	DREAL* seq=NULL;
+	INT M_seq=0;
+	INT N_seq=0;
+	get_real_matrix(seq, M_seq, N_seq);
+
+	if (N_q!=N_p || N_a_trans!=3 || M_seq!=N_p)
+		SG_ERROR("Model matrices not matching in size.\n");
+
+	INT nbest=get_int();
+	if (nbest<1)
+		SG_ERROR("nbest < 1.\n");
+
+	CDynProg* h=new CDynProg();
+	ASSERT(h);
+	h->set_N(N_p);
+	h->set_p_vector(p, N_p);
+	h->set_q_vector(q, N_p);
+	h->set_a_trans_matrix(a_trans, M_a_trans, 3);
+
+	INT* path=new INT[N_seq*nbest];
+	ASSERT(path);
+	memset(path, -1, N_seq*nbest*sizeof(INT));
+	DREAL* prob=new DREAL[nbest];
+	ASSERT(prob);
+
+	h->best_path_trans_simple(seq, N_seq, nbest, prob, path);
+	delete h;
+
+	set_real_vector(prob, nbest);
+	delete[] prob;
+
+	set_int_matrix(path, nbest, N_seq);
+	delete[] path;
+
+	return true;
+}
+
+
+bool CSGInterface::a_best_path_no_b_trans()
+{
+	if (m_nrhs!=6 || !create_return_values(2))
+		return false;
+
+	DREAL* p=NULL;
+	INT N_p=0;
+	get_real_vector(p, N_p);
+
+	DREAL* q=NULL;
+	INT N_q=0;
+	get_real_vector(q, N_q);
+
+	DREAL* a_trans=NULL;
+	INT M_a_trans=0;
+	INT N_a_trans=0;
+	get_real_matrix(a_trans, M_a_trans, N_a_trans);
+
+	if (N_q!=N_p || N_a_trans!=3)
+		SG_ERROR("Model matrices not matching in size.\n");
+
+	INT max_iter=get_int();
+	if (max_iter<1)
+		SG_ERROR("max_iter < 1.\n");
+
+	INT nbest=get_int();
+	if (nbest<1)
+		SG_ERROR("nbest < 1.\n");
+
+	CDynProg* h=new CDynProg();
+	ASSERT(h);
+	h->set_N(N_p);
+	h->set_p_vector(p, N_p);
+	h->set_q_vector(q, N_p);
+	h->set_a_trans_matrix(a_trans, M_a_trans, 3);
+
+	INT* path=new INT[(max_iter+1)*nbest];
+	ASSERT(path);
+	memset(path, -1, (max_iter+1)*nbest*sizeof(INT));
+	INT max_best_iter=0;
+	DREAL* prob=new DREAL[nbest];
+	ASSERT(prob);
+
+	h->best_path_no_b_trans(max_iter, max_best_iter, nbest, prob, path);
+	delete h;
+
+	set_real_vector(prob, nbest);
+	delete[] prob;
+
+	set_int_matrix(path, nbest, max_best_iter+1);
+	delete[] path;
+
+	return true;
+}
+
+
+bool CSGInterface::a_crc()
+{
+	if (m_nrhs!=2 || !create_return_values(1))
+		return false;
+
+	INT slen=0;
+	CHAR* string=get_string(slen);
+	ASSERT(string);
+	BYTE* bstring=new BYTE[slen];
+	ASSERT(bstring);
+
+	for (INT i=0; i<slen; i++)
+		bstring[i]=string[i];
+	delete[] string;
+
+	INT val=CMath::crc32(bstring, slen);
+	delete[] bstring;
+	set_int(val);
+
+	return true;
+}
+
+bool CSGInterface::a_translate_string()
+{
+	if (m_nrhs!=4 || !create_return_values(1))
+		return false;
+
+	DREAL* string=NULL;
+	INT len;
+	get_real_vector(string, len);
+
+	INT order=get_int();
+	INT start=get_int();
+
+	const INT max_val=2; /* DNA->2bits */
+	INT i,j;
+
+	WORD* obs=new WORD[len];
+	ASSERT(obs);
+
+	for (i=0; i<len; i++)
+	{
+		switch ((CHAR) string[i])
+		{
+			case 'A': obs[i]=0; break;
+			case 'C': obs[i]=1; break;
+			case 'G': obs[i]=2; break;
+			case 'T': obs[i]=3; break;
+			case 'a': obs[i]=0; break;
+			case 'c': obs[i]=1; break;
+			case 'g': obs[i]=2; break;
+			case 't': obs[i]=3; break;
+			default: SG_ERROR("Wrong letter in string.\n");
+		}
+	}
+
+	//convert interval of size T
+	for (i=len-1; i>=order-1; i--)
+	{
+		WORD value=0;
+		for (j=i; j>=i-order+1; j--)
+			value=(value>>max_val) | ((obs[j])<<(max_val*(order-1)));
+		
+		obs[i]=(WORD) value;
+	}
+	
+	for (i=order-2;i>=0;i--)
+	{
+		WORD value=0;
+		for (j=i; j>=i-order+1; j--)
+		{
+			value= (value >> max_val);
+			if (j>=0)
+				value|=(obs[j]) << (max_val * (order-1));
+		}
+		obs[i]=value;
+	}
+
+	DREAL* real_obs=new DREAL[len];
+	ASSERT(real_obs);
+
+	for (i=start; i<len; i++)
+		real_obs[i-start]=(DREAL) obs[i];
+	delete[] obs;
+
+	set_real_vector(real_obs, len);
+	delete[] real_obs;
+
+	return true;
+}
+
+bool CSGInterface::a_get_version()
+{
+	if (m_nrhs!=1 || !create_return_values(1))
+		return false;
+
+	set_int(version.get_version_revision());
+
+	return true;
+}
+
 bool CSGInterface::a_help()
 {
 	if ((m_nrhs!=1 && m_nrhs!=2) || !create_return_values(0))
@@ -2707,7 +2944,7 @@ bool CSGInterface::a_help()
 		if (!found)
 			SG_PRINT("Could not find help for command %s.\n", command);
 
-		delete command;
+		delete[] command;
 	}
 
 
@@ -2716,6 +2953,25 @@ bool CSGInterface::a_help()
 	return true;
 }
 
+bool CSGInterface::send_command(const CHAR* cmd)
+{
+	INT len_args=0;
+	CHAR* args=interface->get_string(len_args);
+	INT len_line=strlen(cmd)+len_args+2;
+	CHAR* line=new CHAR[len_line];
+
+	*line='\0';
+	strncat(line, cmd, len_line);
+	strncat(line, " \0", len_line);
+	strncat(line, args, len_line);
+
+	bool success=gui->parse_line(line);
+
+	delete[] args;
+	delete[] line;
+
+	return success;
+}
 
 ////////////////////////////////////////////////////////////////////////////
 // simple get helper

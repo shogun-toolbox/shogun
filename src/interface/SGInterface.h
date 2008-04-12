@@ -43,38 +43,37 @@ class CSGInterface : public CSGObject
 		~CSGInterface();
 
 		/* actions */
-		/** calculate CRC sum */
-		bool a_crc();
-		/** translater string */
-		bool a_translate_string();
-		/** best path 2struct */
-		bool a_best_path_2struct();
-		/** best path trans */
-		bool a_best_path_trans();
-		/** best path trans deriv */
-		bool a_best_path_trans_deriv();
-		/** best path no b */
-		bool a_best_path_no_b();
-		/** best path trans simple */
-		bool a_best_path_trans_simple();
-		/** best path no b trans */
-		bool a_best_path_no_b_trans();
-		/** get version */
-		bool a_get_version();
-		/** set labels */
-		bool a_set_labels();
-		/** get labels */
-		bool a_get_labels();
-		/** obtain from position list */
-		bool a_obtain_from_position_list();
+		/** load features from file */
+		bool a_load_features();
+		/** save features to file */
+		bool a_save_features();
+		/** clean/clear features */
+		bool a_clean_features();
 		/** get features */
 		bool a_get_features();
 		/** add features */
 		bool a_add_features();
 		/** set features */
 		bool a_set_features();
-		/** get distance matrix */
-		bool a_get_distance_matrix();
+		/** set reference features */
+		bool a_set_reference_features();
+		/** convert features */
+		bool a_convert();
+		/** obtain from position list */
+		bool a_obtain_from_position_list();
+		/** obtain by sliding window */
+		bool a_obtain_by_sliding_window();
+		/** reshape features */
+		bool a_reshape();
+		/** load labels from file */
+		bool a_load_labels();
+		/** set labels */
+		bool a_set_labels();
+		/** get labels */
+		bool a_get_labels();
+
+		/** initialize kernel */
+		bool a_init_kernel();
 		/** get kernel matrix */
 		bool a_get_kernel_matrix();
 		/** set custom kernel */
@@ -89,6 +88,23 @@ class CSGInterface : public CSGObject
 		bool a_set_subkernel_weights_combined();
 		/** set last subkernel weights */
 		bool a_set_last_subkernel_weights();
+		/** get WD position weights */
+		bool a_get_WD_position_weights();
+		/** get last subkernel weights */
+		bool a_get_last_subkernel_weights();
+		/** compute by subkernels */
+		bool a_compute_by_subkernels();
+		/** initialize kernel optimization */
+		bool a_init_kernel_optimization();
+		/** get kernel optimization */
+		bool a_get_kernel_optimization();
+		/** delete kernel optimization */
+		bool a_delete_kernel_optimization();
+		/** init distance */
+		bool a_init_distance();
+		/** get distance matrix */
+		bool a_get_distance_matrix();
+
 		/** get SPEC consensus */
 		bool a_get_SPEC_consensus();
 		/** get SPEC scoring */
@@ -99,38 +115,31 @@ class CSGInterface : public CSGObject
 		bool a_compute_POIM_WD();
 		/** get WD scoring */
 		bool a_get_WD_scoring();
-		/** get WD position weights */
-		bool a_get_WD_position_weights();
-		/** get last subkernel weights */
-		bool a_get_last_subkernel_weights();
-		/** compute by subkernels */
-		bool a_compute_by_subkernels();
-		/** get kernel optimization */
-		bool a_get_kernel_optimization();
-		/** plugin estimate classify one example */
-		bool a_plugin_estimate_classify_example();
-		/** plugin estimate classify */
-		bool a_plugin_estimate_classify();
-		/** set plugin estimate */
-		bool a_set_plugin_estimate();
-		/** get plugin estimate */
-		bool a_get_plugin_estimate();
+
+		/** create new SVM/classifier */
+		bool a_new_classifier();
+		/** load SVM/classifier */
+		bool a_load_classifier();
+		/** get SVM */
+		bool a_get_svm();
+		/** set SVM */
+		bool a_set_svm();
 		/** classify */
 		bool a_classify();
 		/** classify example */
 		bool a_classify_example();
 		/** get classifier */
 		bool a_get_classifier();
-		/** get SVM */
-		bool a_get_svm();
-		/** set SVM */
-		bool a_set_svm();
 		/** get SVM objective */
 		bool a_get_svm_objective();
-		/** compute HMM relative entropy */
-		bool a_relative_entropy();
-		/** compute HMM entropy */
-		bool a_entropy();
+
+		/** load preproc from file */
+		bool a_load_preproc();
+
+		/** create new HMM */
+		bool a_new_hmm();
+		/** load HMM from file */
+		bool a_load_hmm();
 		/** HMM classify */
 		bool a_hmm_classify();
 		/** HMM classify for a single example */
@@ -145,12 +154,49 @@ class CSGInterface : public CSGObject
 		bool a_hmm_likelihood();
 		/** get HMM's Viterbi Path */
 		bool a_get_viterbi_path();
-		/** get HMM */
-		bool a_get_hmm();
 		/** append HMM */
 		bool a_append_hmm();
 		/** set HMM */
 		bool a_set_hmm();
+		/** get HMM */
+		bool a_get_hmm();
+		/** compute HMM relative entropy */
+		bool a_relative_entropy();
+		/** compute HMM entropy */
+		bool a_entropy();
+		/** create new plugin estimator */
+		bool a_new_plugin_estimator();
+		/** train plugin estimator */
+		bool a_train_estimator();
+		/** test plugin estimator */
+		bool a_test_estimator();
+		/** plugin estimate classify one example */
+		bool a_plugin_estimate_classify_example();
+		/** plugin estimate classify */
+		bool a_plugin_estimate_classify();
+		/** set plugin estimate */
+		bool a_set_plugin_estimate();
+		/** get plugin estimate */
+		bool a_get_plugin_estimate();
+		/** best path 2struct */
+		bool a_best_path_2struct();
+		/** best path trans */
+		bool a_best_path_trans();
+		/** best path trans deriv */
+		bool a_best_path_trans_deriv();
+		/** best path no b */
+		bool a_best_path_no_b();
+		/** best path trans simple */
+		bool a_best_path_trans_simple();
+		/** best path no b trans */
+		bool a_best_path_no_b_trans();
+
+		/** calculate CRC sum */
+		bool a_crc();
+		/** translater string */
+		bool a_translate_string();
+		/** get version */
+		bool a_get_version();
 		/** issue help message */
 		bool a_help();
 
@@ -259,7 +305,7 @@ class CSGInterface : public CSGObject
 					&& !strncmp(str, cmd, strlen(cmd)));
 		}
 
-		/// get action name, like 'send_command', 'get_svm' etc
+		/// get action name like 'get_svm', 'new_hmm'
 		CHAR* get_action(INT &len)
 		{
 			ASSERT(m_rhs_counter==0);
@@ -276,6 +322,8 @@ class CSGInterface : public CSGObject
 		bool do_hmm_classify_example(bool one_class=false);
 		/** helper function for add/set features */
 		bool do_set_features(bool add=false);
+		/** temp command to invoke send_command in old interface */
+		bool send_command(const CHAR* cmd);
 
 	protected:
 		INT m_lhs_counter;
