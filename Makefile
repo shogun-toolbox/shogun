@@ -111,7 +111,7 @@ svn-tag-release: src/lib/versionstring.h
 	sed -i "s/^Date:.*$$/Date: `date +%Y-%m-%d`/" R/sg/DESCRIPTION
 	sed -i "s/^SHOGUN:=.*$$/SHOGUN:=sg_$(MAINVERSION)-1.tar.gz/" R/Makefile
 	sed -i 's/VERSION_RELEASE "svn/VERSION_RELEASE "v$(MAINVERSION)/' src/lib/versionstring.h
-	sed -i "s/PROJECT_NUMBER         = .*/PROJECT_NUMBER         = v$(MAINVERSION)/" doc/doxygen/Doxyfile
+	sed -i "s/PROJECT_NUMBER         = .*/PROJECT_NUMBER         = v$(MAINVERSION)/" doc/Doxyfile
 	svn ci -m "Preparing for new Release shogun_$(MAINVERSION)"
 	-cd .. && svn --force rm releases/shogun_$(MAINVERSION)
 	-cd .. && svn commit releases -m "clean old tag"
