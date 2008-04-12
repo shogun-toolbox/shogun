@@ -1,0 +1,120 @@
+/*! \page methods Methods
+  \section featrep_sec Feature Representations
+  \subsection simplefeat_sec Simple Features (Matrices)
+  Supported Types
+  \li CHAR
+  \li BYTE
+  \li SHORT
+  \li WORD
+  \li INT
+  \li UINT
+  \li LONG
+  \li ULONG
+  \li SHORTREAL
+  \li DOUBLEREAL
+  \li LONGREALREAL
+  \subsection sparsefeat_sec Sparse Features
+  Supported Types
+  \li CHAR
+  \li BYTE
+  \li SHORT
+  \li WORD
+  \li INT
+  \li UINT
+  \li LONG
+  \li ULONG
+  \li SHORTREAL
+  \li DOUBLEREAL
+  \li LONGREALREAL
+  \subsection stringfeat_sec String Features
+  \li CHAR
+  \li BYTE
+  \li SHORT
+  \li WORD
+  \li INT
+  \li UINT
+  \li LONG
+  \li ULONG
+  \section preproc_sec Preprocessors
+  \li NormOne
+  \li LogPlusOne
+  \li PCACut
+  \li PruneVarSubMean
+  \li Sort
+  \section classifiers_sec Classifiers
+  \subsection linclassi_sec Linear Classifiers
+  \li Perceptron
+  \li LDA
+  \li LPM
+  \li LPBoost
+  \li SVMPerf
+  \li LibLinear
+  \li SVMLin
+  \li SVMOcas
+  \li SubgradientSVM,SubgradientLPM
+  \subsection kernclassi_sec Kernel Methods
+  \subsubsection svmclassi_sec Support Vector Machines
+  \li SVMLight
+  \li LibSVM
+  \li MPDSVM
+  \li GPDTSVM
+  \subsection distmachine_sec Distance Machines
+  \li KNN
+  \subsection otherclassi_sec Other Classifiers
+  \li k-Neighreast Neigbor
+  \section regression_sec Regression
+  \subsection Support Vector Regression
+  \li SVRLight
+  \li LibSVR
+  \subsection other_regress Others
+  \li Kernel Ridge Regression
+  \section distrib_sec Distributions
+  \li Hidden Markov Models
+  \li Histogram
+  \li Linear HMM
+  \section cluster_sec Clustering
+  \li Hierarchical
+  \li k-means
+  \section mkl_sec Multiple Kernel Learning
+  \li for Support Vector Regression
+  \li for Support Vector Classification
+  \section kernels_sec Kernels
+  \li AUC
+  \li Chi2
+  \li Spectrum
+  \li Const Kernel
+  \li User defined CustomKernel
+  \li Diagonal Kernel
+  \li Kernel from Distance
+  \li Fixed Degree StringKernel
+  \li Gaussian
+  \li Gaussian Shift Kernel
+  \li Histogram Kernel
+  \li Linear
+  \li Local Alignment StringKernel
+  \li Locality Improved StringKernel
+  \li Polynomial Kernel
+  \li Salzberg Kernel
+  \li Sigmoid Kernel
+  \li Weighted Spectrum Kernel
+  \li Weighted Degree Kernels
+  \li Match Kernel
+  \section dist_sec Distances
+  \li Canberra
+  \li Chebyshew
+  \li Euclidian
+  \li Geodesic
+  \li Hamming
+  \li Jensen
+  \li Manhatten
+  \li Minkowski
+  \li Euclidean
+  \section eval_sec Evaluation
+  \subsection perf_sec Performance Measures
+  \li Accuracy
+  \li Test Error
+  \li Balanced Error (BAL)
+  \li ROC
+  \li PRC
+*/
+

@@ -1,0 +1,15 @@
+/*!
+\page faq Frequently Asked Questions
+
+\li Q:Do I need CPLEX to use multiple kernel learning?
+A: Yes, you will need cplex if you want to learn the weights in front of
+the kernels. However a plain combination of features/kernels will work
+without cplex.  We would love to get rid of the cplex dependency, but don't have
+the time to work on this (but maybe someone else...).
+
+\li Q:Why does shogun not compile under windows?
+A: It requires cygwin and the dependencies need to be compiled manually. As none
+one of us use windows, and things (in external dependencies) break frequently,
+feel free to submit patches. If your are looking for a win32 port, there is
+none, but we take patches :-)
+*/

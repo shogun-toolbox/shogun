@@ -1,0 +1,33 @@
+/*! \page screenshots Screenshots
+  \subsubsection oct_interf Octave Interface
+
+  Examples for octave can be found in the octave/examples directory.
+
+  \image html OctaveDemo.png "Screenshot of the static octave interface (see http://www.octave.org)"
+
+  \subsubsection mat_interf Matlab Interface
+  Examples for matlab can be found in the matlab/examples directory.
+
+  \image html MatlabDemo.png "Screenshot of the static matlab interface (see http://www.mathworks.com)"
+  
+  \subsubsection py_interf Python Interface
+  Examples for python can be found in the python/examples directory.
+
+  \image html PythonDemo.png "Screenshot of the static python interface (see http://www.python.org)"
+
+  \subsubsection r_interf R Interface
+  Examples for R can be found in the R/examples directory.
+
+  \image html RDemo.png "Screenshot of the static R interface (see http://www.r-project.org)."
+
+  \subsection mod_interf Modular Interfaces
+  In contrast to the static interfaces, the modular interfaces allow multiple
+  objects of the same kind. Thus they are well suited for complex applications
+  requiring e.g. multiple classifiers. Currently the only supported modular
+  interface uses python as a front-end.
+
+  \subsubsection py_mod_interf Python-Modular Interface
+  Examples for python-modular can be found in the python-modular/examples directory.
+
+  \image html PythonDemo.png "Screenshot of the python-modular interface (see http://www.python.org)"
+*/

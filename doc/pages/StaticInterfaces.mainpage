@@ -155,7 +155,7 @@ The following kernels are implemented in SHOGUN:
 \li Diagonal Kernel
 \li Kernel from Distance
 \li Fixed Degree StringKernel
-\li Gaussian \f$ k(x,x')=e^{-\frac{||x-x'||^2}{sigma}} \f$
+\li Gaussian \f$ k(x,x')=e^{-\frac{||x-x'||^2}{\sigma}} \f$
 
 To work with a gaussian kernel on real values one issues:
 \verbatim sg('set_kernel GAUSSIAN TYPE CACHESIZE SIGMA')\endverbatim
@@ -285,30 +285,30 @@ Let us discuss an example:
 
 \verbinclude svm_classification.m
 
-   \li sg('set_features', 'TRAIN', traindat)** registers the training samples which
+   \li sg('set_features', 'TRAIN', traindat) registers the training samples which
    reside in traindat.
 
-   \li sg('set_labels', 'TRAIN', trainlab)** registers the training labels.
+   \li sg('set_labels', 'TRAIN', trainlab) registers the training labels.
 
    \li sg('set_kernel GAUSSIAN REAL 100 1.0') creates a new
-   gaussian kernel for reals with cache size 100Mb and width = 2**sigma^2.
+   gaussian kernel for reals with cache size 100Mb and width = 1.
 
-   \li sg('init_kernel TRAIN')** attaches the data to the
+   \li sg('init_kernel TRAIN') attaches the data to the
    kernel and does some initialization.
 
-   \li sg('new_svm LIGHT')** creates a new SVM object inside
+   \li sg('new_svm LIGHT') creates a new SVM object inside
    the SHOGUN core.
 
-   \li sg('c 20.0')** sets the C value of the new SVM to 20.0.
+   \li sg('c 20.0') sets the C value of the new SVM to 20.0.
 
-   \li sg('svm_train')** starts the training on the samples.
+   \li sg('svm_train') starts the training on the samples.
 
-   \li sg('TEST', testdat)** registers the test samples
+   \li sg('TEST', testdat) registers the test samples
 
-   \li. sg('init_kernel TEST')** attaches the data to the
+   \li. sg('init_kernel TEST') attaches the data to the
    kernel.
 
-   \li. out=sg('svm_classify')** gives you the classification result as a
+   \li. out=sg('svm_classify') gives you the classification result as a
    vector.
 
 

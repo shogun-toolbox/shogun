@@ -1,0 +1,6 @@
+/*! \page modularinterfaces Modular Interfaces
+The modular interfaces are very flexible in nature, as they allow an arbitrary
+number of objects potentially interacting together. We recommend to use these
+interfaces as they can be elegantly used. Click the Class Index tab above to
+get the full reference documentation.
+*/
