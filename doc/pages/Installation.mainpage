@@ -1,56 +1,76 @@
-/*! \page install Installation
-
-Installation
-============
-
+/*! \page installation Installation
 Currently SHOGUN has been confirmed to be /fully functional/ on PowerPC,
 i386 and AMD64 Linux (tested on debian/ubuntu and gentoo).  We also managed
 to compile SHOGUN on MacOSX and via cygwin on WIN32 platforms. However some
-manual tweakings of configuration files might be necessary (see below).
+manual tweakings of configuration files might be necessary.
 
-Binary Packages
----------------
+\section from_package From a Package
+SHOGUN is currently pre-packaged for debian (see http://www.debian.org)
 
-For Debian and Ubuntu Linux we provide binary packages downloadable from
-http://www.fml.tuebingen.mpg.de/raetsch/projects/shogun/download .
+Depending on the interface you want to use install the package
 
-Either install them via dpkg -i <package.deb> and manually take care of the
-(probably many) missing dependencies or put this line in
-/etc/apt/sources.list::
+\verbatim
+shogun-octave - for the static octave interface
+shogun-python - for the static python interface
+shogun-python-modular - for the modular python interface
+shogun-r - for the r interface
+shogun-readline - for the command-line interface.\endverbatim
 
-	deb http://www.fml.tuebingen.mpg.de/raetsch/projects/shogun/ debian/
-	deb-src http://www.fml.tuebingen.mpg.de/raetsch/projects/shogun/ debian/
+\section from_source Installing SHOGUN from Source
 
-Installing from Source
-----------------------
+Download SHOGUN from http://www.shogun-toolbox.org, aswell as its requirements.
 
-Download the (.tar.gz) source code from 
-http://www.fml.tuebingen.mpg.de/raetsch/projects/shogun/download .
+\subsection requirements Requirements
 
-Extract the source in a directory of your choice via::
-	tar xzf <source.tar.gz>
+SHOGUN requires the standard linux utils like bash, grep, test, sed, cut, ldd,
+uname gcc g++ and cat python (debian package: python2.3 or python2.4 or
+python2.5) for the ./configure to work.
 
-Compiling SHOGUN
-~~~~~~~~~~~~~~~~
+Optionally you will need atlas and lapack (debian packages lapack3-dev, 
+atlas3-headers atlas3-base-dev or atlas3-altivec-dev atlas3-sse2-dev)
+installed. Note that atlas/lapack is only supported under linux (high
+performance computing should be done under linux only anyway). In case
+atlas/lapack is unavailable, don't worry most of shogun will work without, though
+slightly slower versions are used.
 
-To compile shogun enter the "shogun-<ver>/src" directory. From there you
-need to call:: ./configure <options>
+\li To compile the R interface you need to have the R developer files 
+(debian package r-base-dev) installed.
 
-Configure Options::
+\li To compile the octave interface you need to have the octave developer files 
+(debian package octave2.1-headers or octave2.9-headers) installed.
 
-  --help						show the list of configure options
-  --enable-python				enable python (shogun can be called
-		  						from within python) support [disabled]
-  --enable-matlab				enable matlab (shogun can be called
-		  						from within matlab) support [disabled]
-  --enable-octave				enable octave (shogun can be called
-		  						from within octave) support [disabled]
-  --enable-R				    enable R      (shogun can be called
-		  						from within R)      support [disabled]
-  --enable-cplex				enable code using CPLEX  [disabled]
-  --enable-shortrealkernelcache enable kernelcache to use 4-byte-floating-point
-  								values instead of 8-byte-doubles [disabled]
-  --disable-lapack				disable blas and lapack math routines and
-  								use built in ones (slower!) [enabled]
+\li To compile the python interface you need to have numpy version 1.x installed 
+(debian package python-numpy and python-numpy-ext) installed.
+
+\section compiling_shogun: Compiling SHOGUN
+
+\subsection most_platforms: General
+On most platforms (Linux,MacOSX,cygwin) it is sufficient to issue
+
+\verbatim
+./configure --interface=<interface>
+make \endverbatim
+
+where <interface> is one of the following
+
+\li octave -- for octave (see http://www.octave.org)
+
+\li matlab -- for matlab (see http://www.mathworks.com)
+
+\li python or python-modular -- for python (see http://www.python.org)
+
+\li R -- for R (see http://www.r-project.org).
+
+
+Just running 
+\verbatim ./configure\endverbatim
+will configure for a stand-a-lone version.
+
+Call
+\verbatim./configure --help \endverbatim
+to get a list of additional options.
+
+If this does not work for you, consult the INSTALL file for platform specific
+build instructions.
 
 */

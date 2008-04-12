@@ -1,10 +1,11 @@
-Help topics:
+/*! \page tutorial Tutorial
+  \section using_sec Using SHOGUN
 
-introduction -- Introduction to SHOGUN
-interfaces -- Description of the Interfaces
-classifier -- Classifiers such as Support Vector Machines
-distributions -- Distributions such as Hidden Markov Models
+  There is currently no step by step user documentation. However for each of the interfaces
+  a large number of examples is available which can be found in the <interface>/examples directory.
+  For example python/examples python-modular/examples etc.
 
-Type "help" followed by a topic name for documentation overview.
-Type "help" followed by command name for full documentation.
+  Note that we always keep the python-modular examples complete and up-to-date
+  and also perform regression tests using a test-suite.
 
+*/

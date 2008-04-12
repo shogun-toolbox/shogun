@@ -1,4 +1,4 @@
-/*! \page page1 Static Interfaces
+/*! \page staticinterfaces Static Interfaces
   Leading text.
   \section sec An example section
   This page contains the subsections \ref subsection1 and \ref subsection2.
@@ -322,8 +322,4 @@ This small example has a few SHOGUN commands which will be discussed now.
    vector.
 
 
-*/
-
-/*! \page page2 Another page
-  Even more info.
 */

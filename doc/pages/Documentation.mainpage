@@ -29,137 +29,16 @@
   feature object allowing for on-the-fly pre-processing.
 
   SHOGUN is implemented in C++ and interfaces to Matlab(tm), R, Octave and
-  Python.
-
-
-Interfaces
-==========
-
-SHOGUN comes as a stand-a-lone program accepting input via command-line or
-from a *script* file, where standard file IO is used to read in /write out
-data (optionally even tcp/ip). More importantly, it interfaces to
-established matrix and statistics packages, such as Matlab(tm), Octave, R
-and Python.
-
-  \section install_sec Installation
-  \subsection from_package From a Package
-  SHOGUN is currently pre-packaged for debian (see http://www.debian.org)
+  Python \ref interfaces "(see Interfaces)".
   
-  Depending on the interface you want to use install the package
-  
-  \verbatim
-  shogun-octave - for the static octave interface
-  shogun-python - for the static python interface
-  shogun-python-modular - for the modular python interface
-  shogun-r - for the r interface
-  shogun-readline - for the command-line interface.\endverbatim
+  \li \ref installation
+  \li \ref screenshots
+  \li \ref tutorial
+  \li \ref methods "Implemented Methods"
+  \li \ref interfaces
+  \li \ref faq
+  \li \ref authors
 
-  \subsection from_source Installing SHOGUN from Source
-
-  Download SHOGUN from http://www.shogun-toolbox.org, aswell as its requirements.
-
-  \subsubsection requirements Requirements
-
-  SHOGUN requires the standard linux utils like bash, grep, test, sed, cut, ldd,
-  uname gcc g++ and cat python (debian package: python2.3 or python2.4 or
-  python2.5) for the ./configure to work.
-
-  Optionally you will need atlas and lapack (debian packages lapack3-dev, 
-  atlas3-headers atlas3-base-dev or atlas3-altivec-dev atlas3-sse2-dev)
-  installed. Note that atlas/lapack is only supported under linux (high
-  performance computing should be done under linux only anyway). In case
-  atlas/lapack is unavailable, don't worry shogun will work without, though
-  slightly slower versions are used.
-
-  \li To compile the R interface you need to have the R developer files 
-  (debian package r-base-dev) installed.
-
-  \li To compile the octave interface you need to have the octave developer files 
-  (debian package octave2.1-headers or octave2.9-headers) installed.
-
-  \li To compile the python interface you need to have numpy version 1.x installed 
-  (debian package python-numpy and python-numpy-ext) installed.
-
-  \subsection compiling_shogun: Compiling SHOGUN
-
-  \subsubsection most_platforms: General
-  On most platforms (Linux,MacOSX,cygwin) it is sufficient to issue
-
-  \verbatim
-  ./configure --interface=<interface>
-  make \endverbatim
-  
-  where <interface> is one of the following
-  
-  \li octave -- for octave (see http://www.octave.org)
-
-  \li matlab -- for matlab (see http://www.mathworks.com)
-
-  \li python or python-modular -- for python (see http://www.python.org)
-
-  \li R -- for R (see http://www.r-project.org).
-
-
-  Just running 
-  \verbatim ./configure\endverbatim
-  will configure for a stand-a-lone version.
-  
-  Call
-  \verbatim./configure --help \endverbatim
-  to get a list of additional options.
-  
-  If this does not work for you, consult the INSTALL file for platform specific
-  build instructions.
-
-  \section using_sec Using SHOGUN
-
-  There is currently no step by step user documentation. However for each of the interfaces
-  a large number of examples is available which can be found in the <interface>/examples directory.
-  For example octave/examples python-modular/examples etc.
-
-  Note that we always keep the python-modular examples complete and up-to-date
-  and also perform regression tests using a test-suite.
-
-  \subsection static_interf Static Interfaces
-
-  The static interfaces are cross language compatible, i.e. the syntax for
-  calling shogun from python,R,matlab,octave is the same (with minor
-		  exceptions). However currently only a singly object of each type is
-  supported (e.g. only a single SVM classifier). In case you are dealing with
-  more complex models it is suggested to use the object oriented, very flexible
-  python-modular interface.  Also note that currently the Matlab Interface is
-  the best supported static interface.
-
-  \subsubsection oct_interf Octave Interface
-
-  Examples for octave can be found in the octave/examples directory.
-
-  \image html OctaveDemo.png "Screenshot of the static octave interface (see http://www.octave.org)"
-
-  \subsubsection mat_interf Matlab Interface
-  Examples for matlab can be found in the matlab/examples directory.
-
-  \image html MatlabDemo.png "Screenshot of the static matlab interface (see http://www.mathworks.com)"
-  
-  \subsubsection py_interf Python Interface
-  Examples for python can be found in the python/examples directory.
-
-  \image html PythonDemo.png "Screenshot of the static python interface (see http://www.python.org)"
-
-  \subsubsection r_interf R Interface
-  Examples for R can be found in the R/examples directory.
-
-  \image html RDemo.png "Screenshot of the static R interface (see http://www.r-project.org)."
-
-  \subsection mod_interf Modular Interfaces
-  In contrast to the static interfaces, the modular interfaces allow multiple
-  objects of the same kind. Thus they are well suited for complex applications
-  requiring e.g. multiple classifiers. Currently the only supported modular
-  interface uses python as a front-end.
-
-  \subsubsection py_mod_interf Python-Modular Interface
-  Examples for python-modular can be found in the python-modular/examples directory.
-
-  \image html PythonDemo.png "Screenshot of the python-modular interface (see http://www.python.org)"
-
- */
+  Sincerely,
+  the shogun-authors.
+*/
