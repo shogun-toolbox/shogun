@@ -31,13 +31,14 @@
   SHOGUN is implemented in C++ and interfaces to Matlab(tm), R, Octave and
   Python \ref interfaces "(see Interfaces)".
   
-  \li \ref installation
-  \li \ref screenshots
-  \li \ref tutorial
-  \li \ref methods "Implemented Methods"
-  \li \ref interfaces
-  \li \ref faq
-  \li \ref authors
+  \li \subpage installation
+  \li \subpage screenshots
+  \li \subpage tutorial
+  \li \subpage methods "Implemented Methods"
+  \li \subpage interfaces
+  \li \subpage faq
+  \li \subpage authors
+  \li \subpage license
 
   Sincerely,
   the shogun-authors.

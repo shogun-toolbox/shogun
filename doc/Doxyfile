@@ -91,14 +91,14 @@ ABBREVIATE_BRIEF       =
 # Doxygen will generate a detailed section even if there is only a brief 
 # description.
 
-ALWAYS_DETAILED_SEC    = NO
+ALWAYS_DETAILED_SEC    = YES
 
 # If the INLINE_INHERITED_MEMB tag is set to YES, doxygen will show all 
 # inherited members of a class in the documentation of that class as if those 
 # members were ordinary class members. Constructors, destructors and assignment 
 # operators of the base classes will not be shown.
 
-INLINE_INHERITED_MEMB  = NO
+INLINE_INHERITED_MEMB  = YES
 
 # If the FULL_PATH_NAMES tag is set to YES then Doxygen will prepend the full 
 # path before files name in the file list and in the header files. If set 
@@ -171,7 +171,7 @@ INHERIT_DOCS           = YES
 # a new page for each member. If set to NO, the documentation of a member will 
 # be part of the file/class/namespace that contains it.
 
-SEPARATE_MEMBER_PAGES  = YES
+SEPARATE_MEMBER_PAGES  = NO
 
 # The TAB_SIZE tag can be used to set the number of spaces in a tab. 
 # Doxygen uses this value to replace tabs by spaces in code fragments.
@@ -554,7 +554,7 @@ EXCLUDE_SYMBOLS        =
 # directories that contain example code fragments that are included (see 
 # the \include command).
 
-EXAMPLE_PATH           = 
+EXAMPLE_PATH           = ../src ../matlab_and_octave/examples/graphical
 
 # If the value of the EXAMPLE_PATH tag contains directories, you can use the 
 # EXAMPLE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp 
@@ -773,7 +773,7 @@ BINARY_TOC             = NO
 # The TOC_EXPAND flag can be set to YES to add extra items for group members 
 # to the contents of the HTML help documentation and to the tree view.
 
-TOC_EXPAND             = NO
+TOC_EXPAND             = YES
 
 # The DISABLE_INDEX tag can be used to turn on/off the condensed index at 
 # top of each HTML page. The value NO (the default) enables the index and 
@@ -793,7 +793,7 @@ ENUM_VALUES_PER_LINE   = 4
 # Netscape 6.0+, Internet explorer 5.0+, or Konqueror). Windows users are 
 # probably better off using the HTML help feature.
 
-GENERATE_TREEVIEW      = NO
+GENERATE_TREEVIEW      = YES
 
 # If the treeview is enabled (see GENERATE_TREEVIEW) then this tag can be 
 # used to set the initial width (in pixels) of the frame in which the tree 

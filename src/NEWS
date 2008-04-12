@@ -8,6 +8,7 @@
 		- Toy examples describing the use of kernels, classifier,
 		distributions, features, distances, regression and preprocessors
 		for the static python, R, octave and matlab interface have been added.
+		- Improved user documentation
 		- Support for ACML and Intel MKL
 	* New methods:
 		- POIMs for python-modular interface
