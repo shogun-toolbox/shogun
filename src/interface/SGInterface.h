@@ -153,8 +153,6 @@ class CSGInterface : public CSGObject
 		bool a_set_hmm();
 		/** issue help message */
 		bool a_help();
-		/** test function */
-		bool a_test();
 
 		/** get functions - to pass data from the target interface to shogun */
 

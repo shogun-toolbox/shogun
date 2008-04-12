@@ -39,75 +39,7 @@ extern CTextGUI* gui;
 
 static CSGInterfaceMethod sg_methods[]=
 {
-	{
-		(CHAR*) N_CRC,
-		(&CSGInterface::a_crc),
-		(CHAR*) USAGE_IO(N_CRC, "string", "crc32")
-	},
-	{
-		(CHAR*) N_TRANSLATE_STRING,
-		(&CSGInterface::a_translate_string),
-		(CHAR*) USAGE_IO(N_TRANSLATE_STRING,
-			"string, order, start", "translation")
-	},
-	{
-		(CHAR*) N_BEST_PATH_2STRUCT,
-		(&CSGInterface::a_best_path_2struct),
-		(CHAR*) USAGE_IO(N_BEST_PATH_2STRUCT,
-			"p, q, a_trans, seq, pos, genestr, penalties, penalty_info, nbest, dict_weights, segment_sum_weights",
-			"prob, path, pos")
-	},
-	{
-		(CHAR*) N_BEST_PATH_TRANS,
-		(&CSGInterface::a_best_path_trans),
-		(CHAR*) USAGE_IO(N_BEST_PATH_TRANS,
-			"p, q, a_trans, seq, pos, orf_info, genestr, penalties, state_signals, penalty_info, nbest, dict_weights, use_orf, mod_words [, segment_loss, segmend_ids_mask]",
-			"prob, path, pos")
-	},
-	{
-		(CHAR*) N_BEST_PATH_TRANS_DERIV,
-		(&CSGInterface::a_best_path_trans_deriv),
-		(CHAR*) USAGE_IO(N_BEST_PATH_TRANS_DERIV,
-			"my_path, my_pos, p, q, a_trans, seq, pos, genestr, penalties, state_signals, penalty_info, dict_weights, mod_words [, segment_loss, segmend_ids_mask]",
-			"p_deriv, q_deriv, a_deriv, penalties_deriv, my_scores, my_loss")
-	},
-	{
-		(CHAR*) N_BEST_PATH_NO_B,
-		(&CSGInterface::a_best_path_no_b),
-		(CHAR*) USAGE_IO(N_BEST_PATH_NO_B, "p, q, a, max_iter", "prob, path")
-	},
-	{
-		(CHAR*) N_BEST_PATH_TRANS_SIMPLE,
-		(&CSGInterface::a_best_path_trans_simple),
-		(CHAR*) USAGE_IO(N_BEST_PATH_TRANS_SIMPLE,
-			"p, q, a_trans, seq, nbest", "prob, path")
-	},
-	{
-		(CHAR*) N_BEST_PATH_NO_B_TRANS,
-		(&CSGInterface::a_best_path_no_b_trans),
-		(CHAR*) USAGE_IO(N_BEST_PATH_NO_B_TRANS,
-			"p, q, a_trans, max_iter, nbest", "prob, path")
-	},
-	{
-		(CHAR*) N_GET_VERSION,
-		(&CSGInterface::a_get_version),
-		(CHAR*) USAGE_O(N_GET_VERSION, "version")
-	},
-	{
-		(CHAR*) N_SET_LABELS,
-		(&CSGInterface::a_set_labels),
-		(CHAR*) USAGE_I(N_SET_LABELS, "'TRAIN|TEST', labels")
-	},
-	{
-		(CHAR*) N_GET_LABELS,
-		(&CSGInterface::a_get_labels),
-		(CHAR*) USAGE_IO(N_GET_LABELS, "'TRAIN|TEST'", "labels")
-	},
-	{
-		(CHAR*) N_FROM_POSITION_LIST,
-		(&CSGInterface::a_obtain_from_position_list),
-		(CHAR*) USAGE_I(N_FROM_POSITION_LIST, "'TRAIN|TEST', winsize, shift[, skip]")
-	},
+	{ (CHAR*) "Features", NULL, NULL },
 	{
 		(CHAR*) N_GET_FEATURES,
 		(&CSGInterface::a_get_features),
@@ -125,6 +57,12 @@ static CSGInterfaceMethod sg_methods[]=
 		(CHAR*) USAGE_O(N_SET_FEATURES,
 			"'TRAIN|TEST', features[, DNABINFILE|<ALPHABET>]")
 	},
+	{
+		(CHAR*) N_FROM_POSITION_LIST,
+		(&CSGInterface::a_obtain_from_position_list),
+		(CHAR*) USAGE_I(N_FROM_POSITION_LIST, "'TRAIN|TEST', winsize, shift[, skip]")
+	},
+	{ (CHAR*) "Kernel & Distances", NULL, NULL },
 	{
 		(CHAR*) N_GET_DISTANCE_MATRIX,
 		(&CSGInterface::a_get_distance_matrix),
@@ -166,31 +104,6 @@ static CSGInterfaceMethod sg_methods[]=
 		(CHAR*) USAGE_I(N_SET_LAST_SUBKERNEL_WEIGHTS, "W")
 	},
 	{
-		(CHAR*) N_GET_SPEC_CONSENSUS,
-		(&CSGInterface::a_get_SPEC_consensus),
-		(CHAR*) USAGE_O(N_GET_SPEC_CONSENSUS, "W")
-	},
-	{
-		(CHAR*) N_GET_SPEC_SCORING,
-		(&CSGInterface::a_get_SPEC_scoring),
-		(CHAR*) USAGE_IO(N_GET_SPEC_SCORING, "max_order", "W")
-	},
-	{
-		(CHAR*) N_GET_WD_CONSENSUS,
-		(&CSGInterface::a_get_WD_consensus),
-		(CHAR*) USAGE_O(N_GET_WD_CONSENSUS, "W")
-	},
-	{
-		(CHAR*) N_COMPUTE_POIM_WD,
-		(&CSGInterface::a_compute_POIM_WD),
-		(CHAR*) USAGE_IO(N_COMPUTE_POIM_WD, "max_order, distribution", "W")
-	},
-	{
-		(CHAR*) N_GET_WD_SCORING,
-		(&CSGInterface::a_get_WD_scoring),
-		(CHAR*) USAGE_IO(N_GET_WD_SCORING, "max_order", "W")
-	},
-	{
 		(CHAR*) N_GET_WD_POS_WEIGHTS,
 		(&CSGInterface::a_get_WD_position_weights),
 		(CHAR*) USAGE_O(N_GET_WD_POS_WEIGHTS, "W")
@@ -210,25 +123,16 @@ static CSGInterfaceMethod sg_methods[]=
 		(&CSGInterface::a_get_kernel_optimization),
 		(CHAR*) USAGE_O(N_GET_KERNEL_OPTIMIZATION, "W")
 	},
+	{ (CHAR*) "SVM", NULL, NULL },
 	{
-		(CHAR*) N_PLUGIN_ESTIMATE_CLASSIFY_EXAMPLE,
-		(&CSGInterface::a_plugin_estimate_classify_example),
-		(CHAR*) USAGE_IO(N_PLUGIN_ESTIMATE_CLASSIFY_EXAMPLE, "feature_vector_index", "result")
+		(CHAR*) N_SET_LABELS,
+		(&CSGInterface::a_set_labels),
+		(CHAR*) USAGE_I(N_SET_LABELS, "'TRAIN|TEST', labels")
 	},
 	{
-		(CHAR*) N_PLUGIN_ESTIMATE_CLASSIFY,
-		(&CSGInterface::a_plugin_estimate_classify),
-		(CHAR*) USAGE_O(N_PLUGIN_ESTIMATE_CLASSIFY, "result")
-	},
-	{
-		(CHAR*) N_SET_PLUGIN_ESTIMATE,
-		(&CSGInterface::a_set_plugin_estimate),
-		(CHAR*) USAGE_I(N_SET_PLUGIN_ESTIMATE, "emission_probs, model_sizes")
-	},
-	{
-		(CHAR*) N_GET_PLUGIN_ESTIMATE,
-		(&CSGInterface::a_get_plugin_estimate),
-		(CHAR*) USAGE_O(N_GET_PLUGIN_ESTIMATE, "emission_probs, model_sizes")
+		(CHAR*) N_GET_LABELS,
+		(&CSGInterface::a_get_labels),
+		(CHAR*) USAGE_IO(N_GET_LABELS, "'TRAIN|TEST'", "labels")
 	},
 	{
 		(CHAR*) N_CLASSIFY,
@@ -270,15 +174,21 @@ static CSGInterfaceMethod sg_methods[]=
 		(&CSGInterface::a_get_svm_objective),
 		(CHAR*) USAGE_O(N_GET_SVM_OBJECTIVE, "objective")
 	},
+	{ (CHAR*) "HMM", NULL, NULL },
 	{
-		(CHAR*) N_RELATIVE_ENTROPY,
-		(&CSGInterface::a_relative_entropy),
-		(CHAR*) USAGE_O(N_RELATIVE_ENTROPY, "result")
+		(CHAR*) N_GET_HMM,
+		(&CSGInterface::a_get_hmm),
+		(CHAR*) USAGE_O(N_GET_HMM, "p, q, a, b")
 	},
 	{
-		(CHAR*) N_ENTROPY,
-		(&CSGInterface::a_entropy),
-		(CHAR*) USAGE_O(N_ENTROPY, "result")
+		(CHAR*) N_APPEND_HMM,
+		(&CSGInterface::a_append_hmm),
+		(CHAR*) USAGE_I(N_APPEND_HMM, "p, q, a, b")
+	},
+	{
+		(CHAR*) N_SET_HMM,
+		(&CSGInterface::a_set_hmm),
+		(CHAR*) USAGE_I(N_SET_HMM, "p, q, a, b")
 	},
 	{
 		(CHAR*) N_HMM_CLASSIFY,
@@ -303,7 +213,8 @@ static CSGInterfaceMethod sg_methods[]=
 	{
 		(CHAR*) N_HMM_CLASSIFY_EXAMPLE,
 		(&CSGInterface::a_hmm_classify_example),
-		(CHAR*) USAGE_IO(N_HMM_CLASSIFY_EXAMPLE, "feature_vector_index", "result")},
+		(CHAR*) USAGE_IO(N_HMM_CLASSIFY_EXAMPLE, "feature_vector_index", "result")
+	},
 	{
 		(CHAR*) N_HMM_LIKELIHOOD,
 		(&CSGInterface::a_hmm_likelihood),
@@ -315,29 +226,120 @@ static CSGInterfaceMethod sg_methods[]=
 		(CHAR*) USAGE_IO(N_GET_VITERBI_PATH, "dim", "path, likelihood")
 	},
 	{
-		(CHAR*) N_GET_HMM,
-		(&CSGInterface::a_get_hmm),
-		(CHAR*) USAGE_O(N_GET_HMM, "p, q, a, b")
+		(CHAR*) N_RELATIVE_ENTROPY,
+		(&CSGInterface::a_relative_entropy),
+		(CHAR*) USAGE_O(N_RELATIVE_ENTROPY, "result")
 	},
 	{
-		(CHAR*) N_APPEND_HMM,
-		(&CSGInterface::a_append_hmm),
-		(CHAR*) USAGE_I(N_APPEND_HMM, "p, q, a, b")
+		(CHAR*) N_ENTROPY,
+		(&CSGInterface::a_entropy),
+		(CHAR*) USAGE_O(N_ENTROPY, "result")
 	},
 	{
-		(CHAR*) N_SET_HMM,
-		(&CSGInterface::a_set_hmm),
-		(CHAR*) USAGE_I(N_SET_HMM, "p, q, a, b")
+		(CHAR*) N_BEST_PATH_2STRUCT,
+		(&CSGInterface::a_best_path_2struct),
+		(CHAR*) USAGE_IO(N_BEST_PATH_2STRUCT,
+			"p, q, a_trans, seq, pos, genestr, penalties, penalty_info, nbest, dict_weights, segment_sum_weights",
+			"prob, path, pos")
+	},
+	{
+		(CHAR*) N_BEST_PATH_TRANS,
+		(&CSGInterface::a_best_path_trans),
+		(CHAR*) USAGE_IO(N_BEST_PATH_TRANS,
+			"p, q, a_trans, seq, pos, orf_info, genestr, penalties, state_signals, penalty_info, nbest, dict_weights, use_orf, mod_words [, segment_loss, segmend_ids_mask]",
+			"prob, path, pos")
+	},
+	{
+		(CHAR*) N_BEST_PATH_TRANS_DERIV,
+		(&CSGInterface::a_best_path_trans_deriv),
+		(CHAR*) USAGE_IO(N_BEST_PATH_TRANS_DERIV,
+			"my_path, my_pos, p, q, a_trans, seq, pos, genestr, penalties, state_signals, penalty_info, dict_weights, mod_words [, segment_loss, segmend_ids_mask]",
+			"p_deriv, q_deriv, a_deriv, penalties_deriv, my_scores, my_loss")
+	},
+	{
+		(CHAR*) N_BEST_PATH_NO_B,
+		(&CSGInterface::a_best_path_no_b),
+		(CHAR*) USAGE_IO(N_BEST_PATH_NO_B, "p, q, a, max_iter", "prob, path")
+	},
+	{
+		(CHAR*) N_BEST_PATH_TRANS_SIMPLE,
+		(&CSGInterface::a_best_path_trans_simple),
+		(CHAR*) USAGE_IO(N_BEST_PATH_TRANS_SIMPLE,
+			"p, q, a_trans, seq, nbest", "prob, path")
+	},
+	{
+		(CHAR*) N_BEST_PATH_NO_B_TRANS,
+		(&CSGInterface::a_best_path_no_b_trans),
+		(CHAR*) USAGE_IO(N_BEST_PATH_NO_B_TRANS,
+			"p, q, a_trans, max_iter, nbest", "prob, path")
+	},
+	{
+		(CHAR*) N_PLUGIN_ESTIMATE_CLASSIFY_EXAMPLE,
+		(&CSGInterface::a_plugin_estimate_classify_example),
+		(CHAR*) USAGE_IO(N_PLUGIN_ESTIMATE_CLASSIFY_EXAMPLE, "feature_vector_index", "result")
+	},
+	{
+		(CHAR*) N_PLUGIN_ESTIMATE_CLASSIFY,
+		(&CSGInterface::a_plugin_estimate_classify),
+		(CHAR*) USAGE_O(N_PLUGIN_ESTIMATE_CLASSIFY, "result")
+	},
+	{
+		(CHAR*) N_SET_PLUGIN_ESTIMATE,
+		(&CSGInterface::a_set_plugin_estimate),
+		(CHAR*) USAGE_I(N_SET_PLUGIN_ESTIMATE, "emission_probs, model_sizes")
+	},
+	{
+		(CHAR*) N_GET_PLUGIN_ESTIMATE,
+		(&CSGInterface::a_get_plugin_estimate),
+		(CHAR*) USAGE_O(N_GET_PLUGIN_ESTIMATE, "emission_probs, model_sizes")
+	},
+	{ (CHAR*) "POIM", NULL, NULL },
+	{
+		(CHAR*) N_COMPUTE_POIM_WD,
+		(&CSGInterface::a_compute_POIM_WD),
+		(CHAR*) USAGE_IO(N_COMPUTE_POIM_WD, "max_order, distribution", "W")
+	},
+	{
+		(CHAR*) N_GET_SPEC_CONSENSUS,
+		(&CSGInterface::a_get_SPEC_consensus),
+		(CHAR*) USAGE_O(N_GET_SPEC_CONSENSUS, "W")
+	},
+	{
+		(CHAR*) N_GET_SPEC_SCORING,
+		(&CSGInterface::a_get_SPEC_scoring),
+		(CHAR*) USAGE_IO(N_GET_SPEC_SCORING, "max_order", "W")
+	},
+	{
+		(CHAR*) N_GET_WD_CONSENSUS,
+		(&CSGInterface::a_get_WD_consensus),
+		(CHAR*) USAGE_O(N_GET_WD_CONSENSUS, "W")
+	},
+	{
+		(CHAR*) N_GET_WD_SCORING,
+		(&CSGInterface::a_get_WD_scoring),
+		(CHAR*) USAGE_IO(N_GET_WD_SCORING, "max_order", "W")
+	},
+	{ (CHAR*) "Utility", NULL, NULL },
+	{
+		(CHAR*) N_CRC,
+		(&CSGInterface::a_crc),
+		(CHAR*) USAGE_IO(N_CRC, "string", "crc32")
+	},
+	{
+		(CHAR*) N_GET_VERSION,
+		(&CSGInterface::a_get_version),
+		(CHAR*) USAGE_O(N_GET_VERSION, "version")
+	},
+	{
+		(CHAR*) N_TRANSLATE_STRING,
+		(&CSGInterface::a_translate_string),
+		(CHAR*) USAGE_IO(N_TRANSLATE_STRING,
+			"string, order, start", "translation")
 	},
 	{
 		(CHAR*) N_HELP,
 		(&CSGInterface::a_help),
 		(CHAR*) USAGE(N_HELP)
-	},
-	{
-		(CHAR*) "test",
-		(&CSGInterface::a_test),
-		(CHAR*) USAGE_I("test", "arg")
 	},
 	{NULL, NULL, NULL}        /* Sentinel */
 };
@@ -2654,77 +2656,62 @@ bool CSGInterface::a_get_hmm()
 
 bool CSGInterface::a_help()
 {
-	if (m_nrhs!=1 || !create_return_values(0))
+	if ((m_nrhs!=1 && m_nrhs!=2) || !create_return_values(0))
 		return false;
 
-	gui->print_help();
+	INT i=0;
 
-	return true;
-}
-
-bool CSGInterface::a_test()
-{
-	SG_PRINT("entering test method\n");
-	if (m_nrhs!=2 || !create_return_values(1))
-		return false;
-
-/*
-	CSGInterfaceVector iv(SGIDT_CHAR);
-	get_vector(iv);
-//	const DREAL *vector=NULL;
-//	INT len=0;
-//	iv.get(vector, len);
-//	for (INT i=0; i<len; i++) SG_PRINT("data %d: %f\n", i, vector[i]);
-	set_vector(iv);
-*/
-
-/*
-	CSGInterfaceMatrix im(SGIDT_CHAR);
-	get_matrix(im);
-//	const DREAL* matrix=NULL;
-//	UINT m=0;
-//	UINT n=0;;
-//	im.get(matrix, m, n);
-//	for (UINT i=0; i<m; i++)
-//		for (UINT j=0; j<n; j++)
-//			SG_PRINT("data %d, %d, %f\n", i, j, matrix[i*n+j]);
-	set_matrix(im);
-*/
-
-
-/*
-	CSGInterfaceMatrix im(SGIDT_SPARSEDREAL);
-	get_sparsematrix(im);
-	const TSparse<DREAL>* matrix=NULL;
-	UINT num_feat=0;
-	UINT num_vec=0;
-	im.get(matrix, num_feat, num_vec);
-	//SG_PRINT("M %d, N %d\n", num_feat, num_vec);
-	//for (UINT i=0; i<num_vec; i++)
-	//	for (UINT j=0; j<num_feat; j++)
-	//		SG_PRINT("data %d, %d, %d\n", i, j, matrix[i].features[j].entry);
-	set_sparsematrix(im);
-
-	for (UINT i=0; i<num_vec; i++)
+	SG_PRINT("\n");
+	if (m_nrhs==1) // all commands' help
 	{
-		if (matrix[i].features)
-			delete[] matrix[i].features;
+		SG_PRINT("Help listing of all commands:\n");
+		while (sg_methods[i].action)
+		{
+			bool is_group_dummy=false;
+			if (!sg_methods[i].method && !sg_methods[i].usage)
+				is_group_dummy=true;
+
+			if (is_group_dummy)
+				SG_PRINT("\n");
+
+			SG_PRINT("%s\n", sg_methods[i].action);
+
+			if (is_group_dummy)
+			{
+				for (UINT j=0; j<strlen(sg_methods[i].action); j++)
+					SG_PRINT("-");
+				SG_PRINT("\n");
+			}
+
+			i++;
+		}
 	}
-	delete[] matrix;
-*/
+	else // m_nrhs == 2 -> single command's help
+	{
+		bool found=false;
+		INT clen=0;
+		CHAR* command=get_string(clen);
+
+		while (sg_methods[i].action)
+		{
+			if (strmatch(sg_methods[i].action, clen, command))
+			{
+				SG_PRINT("Help for %s\n\t\t%s\n",
+					sg_methods[i].action, sg_methods[i].usage);
+				found=true;
+				break;
+			}
+			i++;
+		}
+
+		if (!found)
+			SG_PRINT("Could not find help for command %s.\n", command);
+
+		delete command;
+	}
 
 
-//	CSGInterfaceStringList isl(SGIDT_CHAR);
-//	get_string_list(isl);
-//	SG_PRINT("Got it\n");
-//	const T_STRING<CHAR>* list=NULL;
-//	UINT num_str=0;
-//	isl.get(list, num_str);
-//	SG_PRINT("num %d\n", num_str);
-//	for (UINT i=0; i<num_str; i++)
-//		SG_PRINT("string: %s", list[i].string);
-//	set_string_list(isl);
-//	delete[] list;
+	SG_PRINT("\n");
 
 	return true;
 }
