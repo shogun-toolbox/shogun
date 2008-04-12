@@ -1,10 +1,8 @@
-LICENSE
-=======
-
+/*! \page install Installation
   Except for the files classifier/svm/Optimizer.{cpp,h},
   classifier/svm/SVM_light.{cpp,h}, regression/svr/SVR_light.{cpp,h}
   and the kernel caching functions in kernel/Kernel.{cpp,h}
   which are (C) Torsten Joachims and follow a different
   licensing scheme (cf. LICENSE.SVMLight) SHOGUN is licensed under the GPL
   version 3 or any later version (cf. LICENSE).
-
+*/

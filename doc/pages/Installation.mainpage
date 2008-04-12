@@ -1,3 +1,4 @@
+/*! \page install Installation
 
 Installation
 ============
@@ -52,3 +53,4 @@ Configure Options::
   --disable-lapack				disable blas and lapack math routines and
   								use built in ones (slower!) [enabled]
 
+*/

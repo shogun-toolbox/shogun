@@ -20,7 +20,21 @@
 
 class CClassifier;
 
-/** class KernelMachine */
+/** A generic KernelMachine interface
+ *
+ * A kernel machine is defined as
+ *  \f[
+ * 		f({\bf x})=\sum_{i=0}^{N-1} \alpha_i k({\bf x}, {\bf x_i})+b
+ * 	\f]
+ *
+ * where \f$N$\f$ is the number of training examples
+ * \f$\alpha_i\f$ are the weights assigned to each training example
+ * \f$k(x,x')\$ is the kernel 
+ * and \f$b\f$ the bias.
+ *
+ * Using an a-priori choosen kernel, the \f$\alpha_i\f$ and bias are determined
+ * in a training procedure.
+ */
 class CKernelMachine : public CClassifier
 {
 	public:
