@@ -21,5 +21,4 @@ When you have got all these, a simple
 
 should suffice. Beware, the generation will take a few minutes!
 
-You will find the manual in manual/manual.{html,pdf,tex} and the developer
-documentation in doxygen/{latex,html}/.
+You will find the user and developer documentation in the html directory.

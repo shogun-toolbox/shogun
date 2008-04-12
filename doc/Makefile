@@ -1,17 +1,9 @@
-.PHONY: all doc clean distclean doxygen manual 
+.PHONY: doc clean distclean
 
-all:	doc
-
-doc:	doxygen manual
-
-manual: 
-	make -C manual
-
-doxygen:
-	cd doxygen && doxygen
+doc:
+	doxygen
 
 distclean: clean
 
 clean: 
-	rm -rf doxygen/html doxygen/latex
-	make -C manual clean
+	rm -rf html
