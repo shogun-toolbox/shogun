@@ -1,6 +1,6 @@
 Package: sg
-Version: 0.5.1
-Date: 2008-02-19
+Version: 0.6.0
+Date: 2008-04-13
 Title: The SHOGUN Machine Learning Toolbox
 Author: Soeren Sonnenburg, Gunnar Raetsch, Fabio De Bona
 Maintainer: Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
