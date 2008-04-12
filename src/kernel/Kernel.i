@@ -12,16 +12,17 @@
 %include "kernel/Kernel_doxygen.i"
 #endif
 
+%include "lib/common.i"
+
 #ifdef HAVE_PYTHON
 %init %{
 	  import_array();
 %}
-
-%include "lib/common.i"
-%include "lib/python_typemaps.i"
 %feature("autodoc", "get_kernel_matrix(self) -> numpy 2dim array of float") get_kernel_matrix;
-%apply (DREAL** ARGOUT2, INT* DIM1, INT* DIM2) {(DREAL** dst, INT* m, INT* n)};
+%include "lib/python_typemaps.i"
 #endif
+
+%apply (DREAL** ARGOUT2, INT* DIM1, INT* DIM2) {(DREAL** dst, INT* m, INT* n)};
 
 %feature("director") CKernel;
 %rename(Kernel) CKernel;

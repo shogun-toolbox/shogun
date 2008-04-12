@@ -1,32 +1,37 @@
 /*! \page staticinterfaces Static Interfaces
-  Leading text.
-  \section sec An example section
-  This page contains the subsections \ref subsection1 and \ref subsection2.
-  For more info see page \ref page2.
-  \subsection subsection1 The first subsection
-  Text.
-  \subsection subsection2 The second subsection
-  More text.
 
-R Interface
-----------------
+As mentioned before SHOGUN interfaces to several programming languages and
+toolkits such as Matlab(tm), R, Python, Octave. The following sections shall
+give you an overview over the commands of SHOGUN. For the static interfaces we
+tried to preserve the syntax of the commands in a consistent manner through all
+the different languages. However as in some cases this was not possible we
+document the subtle differences of syntax and semantic in the respective
+toolkit.
+
+\section staticrinterf_sec R Interface
 
 To fire up SHOGUN in R make sure that you have SHOGUN correctly installed in
 R. You can check this by typing ( let ">" be the R prompt )::
 
-   > library()
+\verbatim
+  > library()
+\endverbatim
 
 inside of R, this command should list all R packages that have been
 installed on your system.
 You should have an entry like::
 
-   sg                      The shogun package provides Hidden markov model
+\verbatim
+  > sg                     The shogun package provides Hidden markov model
                            and Support Vector Machine algorithms for gene
                            finding and other tasks.
+\endverbatim
 
 After you made sure that SHOGUN is installed correctly you can start it via::
 
-   > library("sg")
+\verbatim
+  library("sg")
+\endverbatim
 
 you will see some informations of the SHOGUN core.
 After this command R and SHOGUN are ready to receive your commands.
@@ -34,24 +39,16 @@ After this command R and SHOGUN are ready to receive your commands.
 In general all commands in SHOGUN are issued using the function sg(...).
 To invoke the SHOGUN command help one types::
 
-   > sg("send_command","help")
+\verbatim
+  sg("send_command","help")
+\endverbatim
 
 and then a help text appears giving a short description of all commands.
 
-
-
-Notes
-~~~~~
-
-As mentioned above SHOGUN interfaces to several programming languages and
-toolkits such as Matlab(tm), R, Python, Octave. The following sections shall
-give you an overview over the commands of SHOGUN. We tried to preserve the
-syntax of the commands in a consistent manner through all the different
-languages. However as in some cases this was not possible we document
-the subtle differences of syntax and semantic in the respective toolkit.
-
-Commands
-========
+\subsection rinterfcommands Commands
+\paragraph rinterfnotes Note
+\verbatim
+\endverbatim
 
 send_command
 ------------
