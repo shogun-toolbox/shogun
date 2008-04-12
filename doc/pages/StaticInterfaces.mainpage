@@ -8,7 +8,36 @@ the different languages. However as in some cases this was not possible we
 document the subtle differences of syntax and semantic in the respective
 toolkit.
 
-\section staticrinterf_sec R Interface
+\section staticifoverview_sec Overview of Static Interfaces & Testing the Installation
+
+\subsection staticoctaveinterf_sec Static Matlab and Octave Interface
+
+Since octave is nowadays up to par with matlab a single documentation for both
+interfaces is sufficient and will be based on octave (matlab can be used
+synonymously).
+
+To start SHOGUN in octave, start octave and check if it is correctly installed by
+by typing ( let ">" be the octave prompt )
+
+\verbatim
+  sg('help')
+\endverbatim
+
+inside of octave. This should show you some help text.
+
+\subsection staticpythoninterf_sec Static Python Interface
+
+To start SHOGUN in python, start python and check if it is correctly installed by
+by typing ( let ">" be the python prompt )
+
+\verbatim
+  from sg import sg
+  sg('help')
+\endverbatim
+
+inside of python. This should show you some help text.
+
+\subsection staticrinterf_sec Static R Interface
 
 To fire up SHOGUN in R make sure that you have SHOGUN correctly installed in
 R. You can check this by typing ( let ">" be the R prompt )::
@@ -22,68 +51,55 @@ installed on your system.
 You should have an entry like::
 
 \verbatim
-  > sg                     The shogun package provides Hidden markov model
-                           and Support Vector Machine algorithms for gene
-                           finding and other tasks.
+  sg                     The SHOGUN Machine Learning Toolbox
 \endverbatim
 
 After you made sure that SHOGUN is installed correctly you can start it via::
 
 \verbatim
-  library("sg")
+  > library(sg)
 \endverbatim
 
-you will see some informations of the SHOGUN core.
+you will see some informations of the SHOGUN core (compile options etc).
 After this command R and SHOGUN are ready to receive your commands.
 
 In general all commands in SHOGUN are issued using the function sg(...).
 To invoke the SHOGUN command help one types::
 
 \verbatim
-  sg("send_command","help")
+  > sg('help')
 \endverbatim
 
 and then a help text appears giving a short description of all commands.
 
-\subsection rinterfcommands Commands
-\paragraph rinterfnotes Note
+
+\section staticifcmds Static Interface Commands
+
+\arg help "Gives you a help text."
+
+\arg loglevel "has the additional options ALL, WARN, ERROR"
+
+  \li ALL: verbose logging output (useful for debugging).
+
+  \li WARN: less logging output (useful for error search).
+
+  \li ERROR:  only logging output on critical errors.
+
+For example
 \verbatim
+  > sg("loglevel ALL")
 \endverbatim
+gives you a list of instructions.
 
-send_command
-------------
+\arg clean_features "Deletes the features which we assigned before in the actual SHOGUN session."
 
-Currently send_command supports the following options:
+\arg clean_kernels "Deletes the kernels which we assigned before in the actual SHOGUN session."
 
-   1. help: Gives you a help text.
+\arg new_svm "Creates a new SVM instance."
 
-   2. loglevel: has the additional options ALL, WARN, ERROR. 
+\arg init_kernel "Initializes the kernel"
 
-      i. ALL: verbose logging output (useful for debugging).
-
-      ii. WARN: less logging output (useful for error search).
-
-      iii. ERROR:  only logging output on critical errors.
-
-      For example::
-
-         sg("send_command","loglevel ALL")
-
-      gives you a very verbose description of all the things happening in the
-      SHGOGUN core.
-
-   3. clean_features: Deletes the features which we assigned before in the
-      actual SHOGUN session.
-
-   4. clean_kernels: Deletes the kernels which we assigned before in the
-      actual SHOGUN session.
-
-   5. new_svm: Creates a new SVM instance.
-
-   6. init_kernel: Initializes the kernel
-
-   7. svm_train: Starts the training of the SVM on the assigned features and
-      kernels.
+\arg svm_train "Starts the training of the SVM on the assigned features and kernels."
 
 set_features and set_labels
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
