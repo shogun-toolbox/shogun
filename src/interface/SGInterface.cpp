@@ -2922,6 +2922,7 @@ bool CSGInterface::a_help()
 
 			i++;
 		}
+		SG_PRINT("\n\nUse sg('help', 'command') to see the usage pattern of a single command, e.g.\n\n\tsg('help', 'classify')\n\nto see the usage patern of the command 'classify'.\n");
 	}
 	else // m_nrhs == 2 -> single command's help
 	{
