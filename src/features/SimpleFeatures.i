@@ -6,6 +6,10 @@
 %include "lib/python_typemaps.i"
 #endif
 
+#ifdef HAVE_OCTAVE
+%include "lib/octave_typemaps.i"
+#endif
+
 %include "features/SimpleFeatures.h" 
 
 %template(SimpleRealFeatures) CSimpleFeatures<DREAL>;

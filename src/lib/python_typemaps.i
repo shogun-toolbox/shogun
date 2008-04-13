@@ -3,11 +3,11 @@
 #ifndef SWIG_FILE_WITH_INIT
 #  define NO_IMPORT_ARRAY
 #endif
-#include "lib/io.h"
 #include <stdio.h>
-#include <numpy/arrayobject.h>
 
+#include "lib/io.h"
 #include "lib/common.h"
+#include "lib/python.h"
 
 /* The following code originally appeared in enthought/kiva/agg/src/numeric.i,
  * author unknown.  It was translated from C++ to C by John Hunter.  Bill

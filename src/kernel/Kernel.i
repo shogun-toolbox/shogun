@@ -19,7 +19,10 @@
 	  import_array();
 %}
 %feature("autodoc", "get_kernel_matrix(self) -> numpy 2dim array of float") get_kernel_matrix;
-%include "lib/python_typemaps.i"
+#endif
+
+#ifdef HAVE_OCTAVE
+%include "lib/octave_typemaps.i"
 #endif
 
 %apply (DREAL** ARGOUT2, INT* DIM1, INT* DIM2) {(DREAL** dst, INT* m, INT* n)};

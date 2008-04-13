@@ -31,6 +31,13 @@ class CLabels : public CSGObject
 
 		/** constructor
 		 *
+		 * @param labels labels to set
+		 * @param len number of labels
+		 */
+		CLabels(DREAL* labels, INT len);
+
+		/** constructor
+		 *
 		 * @param fname filename to load labels from
 		 */
 		CLabels(CHAR* fname);

@@ -5,8 +5,13 @@
 
 #ifdef HAVE_PYTHON
 %include "lib/python_typemaps.i"
-%apply (DREAL* IN_ARRAY1, INT DIM1) {(DREAL* p_weights, INT d)};
 #endif
+
+#ifdef HAVE_OCTAVE
+%include "lib/octave_typemaps.i"
+#endif
+
+%apply (DREAL* IN_ARRAY1, INT DIM1) {(DREAL* p_weights, INT d)};
 
 %rename(WeightedDegreeStringKernel) CWeightedDegreeStringKernel;
 

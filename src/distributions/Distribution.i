@@ -11,6 +11,8 @@
 %rename(Distribution) CDistribution;
 %feature("autodoc","0");
 
+%include "lib/common.i"
+
 #ifdef HAVE_DOXYGEN
 %include "distributions/Distribution_doxygen.i"
 #endif
@@ -20,14 +22,15 @@
 %init %{
 	import_array();
 %}
-
-%include "lib/common.i"
-%include "lib/python_typemaps.i"
-
 %feature("autodoc", "get_log_likelihood(self) -> numpy 1dim array of float") get_log_likelihood;
-%apply (DREAL** ARGOUT1, INT* DIM1) {(DREAL** dst, INT* num)};
+%include "lib/python_typemaps.i"
 #endif
 
+#ifdef HAVE_OCTAVE
+%include "lib/octave_typemaps.i"
+#endif
+
+%apply (DREAL** ARGOUT1, INT* DIM1) {(DREAL** dst, INT* num)};
 
 %include "lib/ShogunException.i"
 %include "lib/io.i"

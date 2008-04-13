@@ -7,9 +7,13 @@
 
 #ifdef HAVE_PYTHON
 %include "lib/python_typemaps.i"
+#endif
+
+#ifdef HAVE_OCTAVE
+%include "lib/octave_typemaps.i"
+#endif
 
 %apply (CHAR* IN_ARRAY2, INT DIM1, INT DIM2) {(CHAR* src, INT num_feat, INT num_vec)};
-#endif
 
 %include "features/SimpleFeatures.i"
 %include "features/CharFeatures.h"

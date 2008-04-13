@@ -4,8 +4,13 @@
 
 #ifdef HAVE_PYTHON
 %include "lib/python_typemaps.i"
-
 %feature("autodoc", "get_str(self) -> numpy 1dim array of str\n\nUse this instead of get_string() which is not nicely wrapped") get_str;
+#endif
+
+#ifdef HAVE_OCTAVE
+%include "lib/octave_typemaps.i"
+#endif
+
 %apply (ST** ARGOUT1, INT* DIM1) {(ST** dst, INT* len)};
 %apply (CHAR** ARGOUT1, INT* DIM1) {(CHAR** dst, INT* len)};
 %apply (BYTE** ARGOUT1, INT* DIM1) {(BYTE** dst, INT* len)};
@@ -15,7 +20,6 @@
 %apply (UINT** ARGOUT1, INT* DIM1) {(UINT** dst, INT* len)};
 %apply (LONG** ARGOUT1, INT* DIM1) {(LONG** dst, INT* len)};
 %apply (ULONG** ARGOUT1, INT* DIM1) {(ULONG** dst, INT* len)};
-#endif
 
 %include "features/StringFeatures.h"
 

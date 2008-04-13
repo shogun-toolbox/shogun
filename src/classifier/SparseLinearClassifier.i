@@ -8,8 +8,13 @@
 #ifdef HAVE_PYTHON
 %include "lib/python_typemaps.i"
 %feature("autodoc", "get_w(self) -> [] of float") get_w;
-%apply (DREAL** ARGOUT1, INT* DIM1) {(DREAL** dst_w, INT* dst_dims)};
 #endif
+
+#ifdef HAVE_OCTAVE
+%include "lib/octave_typemaps.i"
+#endif
+
+%apply (DREAL** ARGOUT1, INT* DIM1) {(DREAL** dst_w, INT* dst_dims)};
 
 %include "classifier/SparseLinearClassifier.h"
 %include "classifier/svm/SVMLin.i"

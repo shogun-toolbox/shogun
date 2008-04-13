@@ -6,6 +6,7 @@
 #undef _POSIX_C_SOURCE
 extern "C" {
 #include <Python.h>
+#include <numpy/arrayobject.h>
 }
 
 #endif //__PYTHON_H__

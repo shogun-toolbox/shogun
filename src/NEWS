@@ -1,5 +1,12 @@
 2008-04-XX  Soeren Sonnenburg <debian@nn7.de>
 
+	* SHOGUN Release version 0.6.1
+		- Now fully support octave-modular thanks to the swig team!
+	* Bugfixes:
+		- Include missing files in documentation.
+
+2008-04-12  Soeren Sonnenburg <debian@nn7.de>
+
 	* SHOGUN Release version 0.6.0
 	* This release contains several major enhancements:
 		- The static R,octave,matlab,python interfaces have been rewritten from

@@ -30,6 +30,14 @@ CLabels::CLabels(INT num_lab) : CSGObject(), num_labels(num_lab)
 		labels[i]=0;
 }
 
+CLabels::CLabels(DREAL* p_labels, INT len) : CSGObject()
+{
+	labels = NULL;
+	num_labels = 0;
+
+    set_labels(p_labels, len);
+}
+
 CLabels::CLabels(CHAR* fname) : CSGObject()
 {
 	num_labels=0;

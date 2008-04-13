@@ -7,6 +7,8 @@
 #define SWIG_FILE_WITH_INIT
 %}
 
+%include "lib/common.i"
+
 #ifdef HAVE_DOXYGEN
 %include "clustering/Clustering_doxygen.i"
 #endif
@@ -15,9 +17,11 @@
 %init %{
 	  import_array();
 %}
-
-%include "lib/common.i"
 %include "lib/python_typemaps.i"
+#endif
+
+#ifdef HAVE_OCTAVE
+%include "lib/octave_typemaps.i"
 #endif
 
 %feature("autodoc","0");

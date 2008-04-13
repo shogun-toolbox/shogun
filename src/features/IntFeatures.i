@@ -5,10 +5,15 @@
 
 #ifdef HAVE_PYTHON
 %include "lib/python_typemaps.i"
-%apply (INT* IN_ARRAY2, INT DIM1, INT DIM2) {(INT* src, INT num_feat, INT num_vec)};
 %feature("autodoc", "get_fm(self) -> numpy 1dim array of float") get_fm;
-%apply (INT** ARGOUT2, INT* DIM1, INT* DIM2) {(INT** dst, INT* d1, INT* d2)};
 #endif
+
+#ifdef HAVE_OCTAVE
+%include "lib/octave_typemaps.i"
+#endif
+
+%apply (INT* IN_ARRAY2, INT DIM1, INT DIM2) {(INT* src, INT num_feat, INT num_vec)};
+%apply (INT** ARGOUT2, INT* DIM1, INT* DIM2) {(INT** dst, INT* d1, INT* d2)};
 
 %include "features/SimpleFeatures.i"
 %include "features/IntFeatures.h"
