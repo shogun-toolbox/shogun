@@ -654,7 +654,7 @@ template <class ST> class CStringFeatures: public CFeatures
 		/** get_features 
 		 *
 		 * @param num_str number of strings (returned)
-		 * @param maximal string length (returned)
+		 * @param max_str_len maximal string length (returned)
 		 * @return string features
 		 */
 		virtual T_STRING<ST>* get_features(INT& num_str, INT& max_str_len)

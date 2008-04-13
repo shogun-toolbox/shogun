@@ -336,6 +336,7 @@ class CKernel : public CSGObject
 
 		/** check if row at given index is cached
 		 *
+		 * @param cacheidx index in cache
 		 * @return if row at given index is cached
 		 */
 		inline INT kernel_cache_check(INT cacheidx)
@@ -420,7 +421,7 @@ class CKernel : public CSGObject
 
 		/** compute optimized
 		 *
-		 * @param idx index to compute
+		 * @param vector_idx index to compute
 		 * @return optimized value at given index
 		 */
 		virtual DREAL compute_optimized(INT vector_idx);
@@ -455,7 +456,7 @@ class CKernel : public CSGObject
 
 		/** compute by subkernel
 		 *
-		 * @param idx index
+		 * @param vector_idx index
 		 * @param subkernel_contrib subkernel contribution
 		 */
 		virtual void compute_by_subkernel(INT vector_idx, DREAL * subkernel_contrib);

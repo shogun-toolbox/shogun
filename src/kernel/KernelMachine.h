@@ -27,7 +27,7 @@ class CClassifier;
  * 		f({\bf x})=\sum_{i=0}^{N-1} \alpha_i k({\bf x}, {\bf x_i})+b
  * 	\f]
  *
- * where \f$N$\f$ is the number of training examples
+ * where \f$N\f$ is the number of training examples
  * \f$\alpha_i\f$ are the weights assigned to each training example
  * \f$k(x,x')\$ is the kernel 
  * and \f$b\f$ the bias.

@@ -126,16 +126,16 @@ class CKMeans : public CDistanceMachine
 
 		/** get radiuses (swig compatible)
 		 *
-		 * @param radiuses current radiuses are stored in here
+		 * @param radii current radiuses are stored in here
 		 * @param num number of radiuses is stored in here
 		 */
-		inline void get_radiuses(DREAL** radi, INT* num)
+		inline void get_radiuses(DREAL** radii, INT* num)
 		{
 			size_t sz=sizeof(*R)*k;
-			*radi= (DREAL*) malloc(sz);
-			ASSERT(*radi);
+			*radii= (DREAL*) malloc(sz);
+			ASSERT(*radii);
 
-			memcpy(*radi, R, sz);
+			memcpy(*radii, R, sz);
 			*num=k;
 		}
 

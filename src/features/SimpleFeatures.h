@@ -118,7 +118,7 @@ template <class ST> class CSimpleFeatures: public CFeatures
 		 *
 		 * @param num index of feature vector
 		 * @param len length is returned by reference
-		 * @param do_free whether returned vector must be freed by
+		 * @param dofree whether returned vector must be freed by
 		 * caller via free_feature_vector
 		 * @return feature vector
 		 */
