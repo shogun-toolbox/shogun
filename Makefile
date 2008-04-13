@@ -104,6 +104,7 @@ $(DESTDIR)/src/lib/versionstring.h: src/lib/versionstring.h
 
 	# remove top level makefile from distribution
 	rm -f $(DESTDIR)/src/.authors
+	rm -rf $(DESTDIR)/R/sg/src
 	cp -f src/lib/versionstring.h $(DESTDIR)/src/lib/
 
 svn-tag-release: src/lib/versionstring.h
