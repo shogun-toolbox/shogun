@@ -4,10 +4,16 @@
 
 #ifdef HAVE_PYTHON
 %feature("autodoc", "get_radi(self) -> numpy 1dim array of float") get_radi;
-%apply (DREAL** ARGOUT1, INT* DIM1) {(DREAL** radi, INT* num)};
 %feature("autodoc", "get_centers(self) -> numpy 2dim array of float") get_centers;
-%apply (DREAL** ARGOUT2, INT* DIM1, INT* DIM2) {(DREAL** centers, INT* dim, INT* num)};
+%include "lib/python_typemaps.i"
 #endif
+
+#ifdef HAVE_OCTAVE
+%include "lib/octave_typemaps.i"
+#endif
+
+%apply (DREAL** ARGOUT1, INT* DIM1) {(DREAL** radii, INT* num)};
+%apply (DREAL** ARGOUT2, INT* DIM1, INT* DIM2) {(DREAL** centers, INT* dim, INT* num)};
 
 %rename(KMeans) CKMeans;
 

@@ -19,6 +19,7 @@
 	  import_array();
 %}
 %feature("autodoc", "get_kernel_matrix(self) -> numpy 2dim array of float") get_kernel_matrix;
+%include "lib/python_typemaps.i"
 #endif
 
 #ifdef HAVE_OCTAVE
