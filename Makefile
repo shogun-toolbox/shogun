@@ -1,10 +1,25 @@
-# You can execute
+# Usage scenarios
 #
-# make release COMPRESS=gzip EXTRAVERSION=+svn20061202
+# * To make a release (and tag it) run (run make distclean before!)
 #
-# to use gzip instead of bzip2 and to append an extra version string.
+#       make svn-tag-release  
+#       make release
+#       make update-webpage
+#
+# * To create a debian .orig.tar.gz run
+#
+#       make vanilla-package DEBIAN=yes
+#
+# * To create a snapshot run
+#
+#       make vanilla-package SNAPSHOT=yes
 # 
-# the following additional options may be set
+# * To sign/md5sum the created tarballs and copy them to the webpage
+#
+#       make update-webpage
+#
+#
+# The following additional options may be set
 #
 # DEBIAN=yes   						-> use debian naming scheme shogun_0.1.1+svn1337.orig.tar.gz
 # SVMLIGHT=no						-> remove svm light
@@ -14,13 +29,20 @@
 # EXTRAVERSION=+svn20061202			-> extra version string
 # RELEASENAME=shogun-3.0.0+extra	-> use different releasename, here shogun-3.0.0+extra
 #
-# for example make DEBIAN=yes SNAPSHOT=yes
+# * For example to use gzip instead of bzip2 and to append an extra version
+# string.
+#       make release COMPRESS=gzip EXTRAVERSION=+svn20061202
+#
+# * To create a debian snapshot package
+#
+#      make DEBIAN=yes SNAPSHOT=yes
 #
 
 DEBIAN := no
 SVMLIGHT := yes
 COMPRESS := bzip2
 MAINVERSION := $(shell awk '/Release/{print $$5;exit}' src/NEWS)
+VERSIONBASE := $(shell echo $(MAINVERSION) | cut -f 1-2 -d '.')
 EXTRAVERSION := 
 RELEASENAME := shogun-$(MAINVERSION)$(EXTRAVERSION)
 SVNVERSION = $(shell svn info | grep Revision: | cut -d ' ' -f 2)
@@ -56,16 +78,6 @@ endif
 all: doc release matlab python octave R
 endif
 
-package-from-release:
-	rm -rf $(DESTDIR)
-	mkdir $(DESTDIR)
-	find ./ -regextype posix-egrep  ! -regex '(.*svn.*|.*\.o$$|.*wrap.*|.*\.so$$|.*\.mat$$|.*\.pyc$$|.*\.log$$)' \
-		| xargs tar --no-recursion -cf - | tar -C $(DESTDIR) -xf - 
-	if test ! $(SVMLIGHT) = yes; then $(REMOVE_SVMLIGHT); fi
-	tar -c -f $(DESTDIR).tar -C .. $(RELEASENAME)
-	rm -f $(DESTDIR).tar.bz2 $(DESTDIR).tar.gz
-	$(COMPRESS) -9 $(DESTDIR).tar
-
 
 .PHONY: doc release matlab python octave R vanilla-package r-package
 
@@ -76,17 +88,10 @@ grep -rl USE_SVMLIGHT $(DESTDIR)| xargs --no-run-if-empty sed -i '/\#ifdef USE_S
 sed -i '/^ \* EXCEPT FOR THE KERNEL CACHING FUNCTIONS WHICH ARE (W) THORSTEN JOACHIMS/,/ \* this program is free software/c\ * This program is free software; you can redistribute it and/or modify' $(DESTDIR)/src/kernel/Kernel.cpp $(DESTDIR)/src/kernel/Kernel.h ; \
 sed -i '/^SVMlight:$$/,/^$$/c\\' $(DESTDIR)/src/LICENSE
 
-src/lib/versionstring.h:
-	rm -f src/ChangeLog
-	make -C src ChangeLog
-	make -C src lib/versionstring.h
-
 # We assume that a release is always created from a SVN working copy.
 
 release: src/lib/versionstring.h $(DESTDIR)/src/lib/versionstring.h vanilla-package r-package
 	rm -rf $(DESTDIR)
-
-
 
 vanilla-package: src/lib/versionstring.h $(DESTDIR)/src/lib/versionstring.h
 	tar -c -f $(DESTDIR).tar -C .. $(RELEASENAME)
@@ -95,17 +100,31 @@ vanilla-package: src/lib/versionstring.h $(DESTDIR)/src/lib/versionstring.h
 
 # build R-package
 r-package:	src/lib/versionstring.h $(DESTDIR)/src/lib/versionstring.h
-	cd $(DESTDIR)/R && ( make package || true ) && cp *.tar.gz ../../
+	-make -C $(DESTDIR)/R package
+	cp $(DESTDIR)/R/*.tar.gz ../
 
-$(DESTDIR)/src/lib/versionstring.h: src/lib/versionstring.h
+package-from-release:
 	rm -rf $(DESTDIR)
-	svn export . $(DESTDIR)
+	mkdir $(DESTDIR)
+	find ./ -regextype posix-egrep  ! -regex '(.*svn.*|.*\.o$$|.*wrap.*|.*\.so$$|.*\.mat$$|.*\.pyc$$|.*\.log$$)' \
+		| xargs tar --no-recursion -cf - | tar -C $(DESTDIR) -xf - 
 	if test ! $(SVMLIGHT) = yes; then $(REMOVE_SVMLIGHT); fi
+	tar -c -f $(DESTDIR).tar -C .. $(RELEASENAME)
+	rm -f $(DESTDIR).tar.bz2 $(DESTDIR).tar.gz
+	$(COMPRESS) -9 $(DESTDIR).tar
 
-	# remove top level makefile from distribution
-	rm -f $(DESTDIR)/src/.authors
-	rm -rf $(DESTDIR)/R/sg/src
-	cp -f src/lib/versionstring.h $(DESTDIR)/src/lib/
+update-webpage: 
+	md5sum $(DESTDIR).tar.bz2 >$(DESTDIR).md5sum
+	md5sum ../sg_$(MAINVERSION).tar.gz >../sg_$(MAINVERSION).md5sum
+	gpg --sign $(DESTDIR).tar.bz2
+	gpg --sign ../sg_$(MAINVERSION).tar.gz
+
+	ssh vserver mkdir -p /pub/shogun-ftp/releases/$(VERSIONBASE)/sources \
+		/pub/shogun-ftp/releases/$(VERSIONBASE)/Rsources
+	scp ../sg_$(MAINVERSION).tar.gz ../sg_$(MAINVERSION).tar.gz.gpg \
+		../sg_$(MAINVERSION).md5sum vserver:/pub/shogun-ftp/releases/$(VERSIONBASE)/Rsources/
+	scp $(DESTDIR).tar.bz2 $(DESTDIR).tar.bz2.gpg $(DESTDIR).md5sum \
+		../sg_$(MAINVERSION).md5sum vserver:/pub/shogun-ftp/releases/$(VERSIONBASE)/sources/
 
 svn-tag-release: src/lib/versionstring.h
 	sed -i "s/^Version.*$$/Version: $(MAINVERSION)/" R/sg/DESCRIPTION
@@ -121,6 +140,21 @@ svn-tag-release: src/lib/versionstring.h
 	sed -i "s| lib/versionstring.h||" ../releases/shogun_$(MAINVERSION)/src/Makefile
 	cd ../releases && svn add shogun_$(MAINVERSION)/src/lib/versionstring.h
 	cd ../releases && svn ci -m "Tagging shogun_$(MAINVERSION) release"
+
+src/lib/versionstring.h:
+	rm -f src/ChangeLog
+	make -C src ChangeLog
+	make -C src lib/versionstring.h
+
+$(DESTDIR)/src/lib/versionstring.h: src/lib/versionstring.h
+	rm -rf $(DESTDIR)
+	svn export . $(DESTDIR)
+	if test ! $(SVMLIGHT) = yes; then $(REMOVE_SVMLIGHT); fi
+
+	# remove top level makefile from distribution
+	rm -f $(DESTDIR)/src/.authors
+	rm -rf $(DESTDIR)/R/sg/src
+	cp -f src/lib/versionstring.h $(DESTDIR)/src/lib/
 
 svn-ignores: .svn_ignores
 	find . -name .svn -prune -o -type d -exec svn propset svn:ignore -F .svn_ignores {} \;
