@@ -29,7 +29,7 @@
 
 /* One dimensional input arrays */
 %define TYPEMAP_IN1(oct_type_check, oct_type, oct_converter, sg_type, if_type, error_string)
-%typemap(in) (sg_type* IN_ARRAY1, INT DIM1)
+%typemap(in) (sg_type* IN_ARRAY1, INT DIM1) (oct_type m)
 {
     const octave_value mat_feat=$input;
     if (!mat_feat.is_matrix_type() || !mat_feat.oct_type_check() || mat_feat.rows()!=1)
@@ -38,9 +38,11 @@
         SWIG_fail;
     }
 
-    oct_type m = mat_feat.oct_converter();
+    m = mat_feat.oct_converter();
     $1 = (sg_type*) m.fortran_vec();
     $2 = m.cols();
+}
+%typemap(freearg) (type* IN_ARRAY1, INT DIM1) {
 }
 %enddef
 
@@ -56,7 +58,7 @@ TYPEMAP_IN1(is_uint16_type, uint16NDArray, uint16_array_value, WORD, WORD, "Word
 
 
 %define TYPEMAP_IN2(oct_type_check, oct_type, oct_converter, sg_type, if_type, error_string)
-%typemap(in) (sg_type* IN_ARRAY2, INT DIM1, INT DIM2)
+%typemap(in) (sg_type* IN_ARRAY2, INT DIM1, INT DIM2) (oct_type m)
 {
     const octave_value mat_feat=$input;
     if (!mat_feat.is_matrix_type() || !mat_feat.oct_type_check())
@@ -65,11 +67,13 @@ TYPEMAP_IN1(is_uint16_type, uint16NDArray, uint16_array_value, WORD, WORD, "Word
         SWIG_fail;
     }
 
-    oct_type m = mat_feat.oct_converter();
+    m = mat_feat.oct_converter();
 
     $1 = (sg_type*) m.fortran_vec();
     $2 = m.rows();
     $3 = m.cols();
+}
+%typemap(freearg) (type* IN_ARRAY2, INT DIM1, INT DIM2) {
 }
 %enddef
 
