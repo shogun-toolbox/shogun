@@ -1061,7 +1061,7 @@ void CMath::qsort_index(T1* output, T2* index, UINT size)
 		}
 		return;
 	}
-	T1 split=output[(size*rand())/(RAND_MAX+1)];
+	T1 split=output[((ULONG) size*rand())/(RAND_MAX+1)];
 
 	INT left=0;
 	INT right=size-1;
@@ -1102,7 +1102,7 @@ void CMath::qsort_backward_index(T1* output, T2* index, INT size)
 		return;
 	}
 
-	T1 split=output[(size*rand())/(RAND_MAX+1)];
+	T1 split=output[((ULONG) size*rand())/(RAND_MAX+1)];
 
 	INT left=0;
 	INT right=size-1;
