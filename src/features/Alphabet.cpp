@@ -38,7 +38,7 @@ CAlphabet::CAlphabet(CHAR* al, INT len) : CSGObject()
 		alpha = ALPHANUM;
 	else if (len>=(INT) strlen("CUBE") && !strncmp(al, "CUBE", strlen("CUBE")))
 		alpha = CUBE;
-	else if (len>=(INT) strlen("BYTE") && !strncmp(al, "BYTE", strlen("BYTE")) || 
+	else if ((len>=(INT) strlen("BYTE") && !strncmp(al, "BYTE", strlen("BYTE"))) || 
 			(len>=(INT) strlen("RAW") && !strncmp(al, "RAW", strlen("RAW"))))
 		alpha = RAWBYTE;
 	else if (len>=(INT) strlen("IUPAC_NUCLEIC_ACID") && !strncmp(al, "IUPAC_NUCLEIC_ACID", strlen("IUPAC_NUCLEIC_ACID")))

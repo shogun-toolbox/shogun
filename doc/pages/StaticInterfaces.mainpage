@@ -7,7 +7,7 @@ static interfaces we tried to preserve the syntax of the commands in a
 consistent manner through all the different languages. However as in some cases
 this was not possible and we document the subtle differences of syntax and semantic
 in the respective toolkit. Instead of reading through all this, we suggest to have a look at
-the large number of examples available in the <interface>/examples directory.
+the large number of examples available in the \b interface / examples directory.
 For example R/examples or python/examples etc.
 
 <b>Overview of Static Interfaces & Testing the Installation</b>

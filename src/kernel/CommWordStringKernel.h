@@ -172,14 +172,23 @@ class CCommWordStringKernel: public CStringKernel<WORD>
 			INT* IDX, DREAL* alphas);
 
 
+		/** set_use_dict_diagonal_optimization
+		 *
+		 * @param flag enable diagonal optimization
+		 */
 		void set_use_dict_diagonal_optimization(bool flag)
-			{
-				use_dict_diagonal_optimization=flag ;
-			}
+		{
+			use_dict_diagonal_optimization=flag;
+		}
+
+		/** get.use.dict.diagonal.optimization
+		 *
+		 * @return true if diagonal optimization is on
+		 */
 		bool get_use_dict_diagonal_optimization()
-			{
-				return use_dict_diagonal_optimization ;
-			}
+		{
+			return use_dict_diagonal_optimization;
+		}
 		
 	protected:
 		/** compute kernel function for features a and b
@@ -196,10 +205,12 @@ class CCommWordStringKernel: public CStringKernel<WORD>
 		}
 
 		/** helper for compute
+		 * template arguments:
+		 * do_sort if sorting shall be performed
+		 * left_equal_right if lhs==rhs
 		 *
 		 * @param idx_a index a
 		 * @param idx_b index b
-		 * @param do_sort if sorting shall be performed
 		 * @return computed value
 		 */
 		template<bool do_sort, bool left_equal_right>
@@ -252,9 +263,10 @@ class CCommWordStringKernel: public CStringKernel<WORD>
 		/** if kernel is initialized */
 		bool initialized;
 
-		/** dictionary size */
+		/** size of dictionary (number of possible strings) */
 		INT dictionary_size;
-		/** dictionary weights */
+		/** dictionary weights - array to hold counters for all possible
+		 * strings */
 		DREAL* dictionary_weights;
 
 		/** if sign shall be used */
@@ -262,8 +274,10 @@ class CCommWordStringKernel: public CStringKernel<WORD>
 		/** type of normalization */
 		ENormalizationType normalization;
 
-		bool use_dict_diagonal_optimization ;
-		WORD* dict_diagonal_optimization ;
+		/** whether diagonal optimization shall be used */
+		bool use_dict_diagonal_optimization;
+		/** array to hold counters for all strings */
+		INT* dict_diagonal_optimization;
 };
 
 #endif /* _COMMWORDSTRINGKERNEL_H__ */

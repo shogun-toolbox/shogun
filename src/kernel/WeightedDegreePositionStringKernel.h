@@ -553,13 +553,32 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<CHAR>
 		DREAL* compute_POIM( INT max_degree, INT& num_feat, INT& num_sym,
 			DREAL* poim_result, INT num_suppvec, INT* IDX, DREAL* alphas, DREAL* distrib );
 
-		void prepare_POIM2(DREAL* distrib, INT num_sym, INT num_feat) ;		
-		void compute_POIM2(INT max_degree, CSVM* svm) ;
-		void get_POIM2(DREAL** poim, INT* result_len) ;
-		void cleanup_POIM2() ;
-		
-		
+		/** prepare POIM2
+		 *
+		 * @param num_feat number of features
+		 * @param num_sym number of symbols
+		 * @param distrib distribution
+		 */
+		void prepare_POIM2(DREAL* distrib, INT num_sym, INT num_feat);		
 
+		/** compute POIM2
+		 *
+		 * @param max_degree maximum degree
+		 * @param svm SVM
+		 */
+
+		void compute_POIM2(INT max_degree, CSVM* svm);
+
+		/** get POIM2
+		 *
+		 * @param poim POIMs (returned)
+		 * @param result_len (returned)
+		 */
+		void get_POIM2(DREAL** poim, INT* result_len);
+
+		/// cleanup POIM2
+		void cleanup_POIM2();
+		
 	protected:
 		/** create emtpy tries */
 		void create_empty_tries();
@@ -709,9 +728,16 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<CHAR>
 		bool use_poim_tries;
 
 		/** temporary memory for the interface to the poim functions */ 
-		DREAL *m_poim_distrib, *m_poim ;
+		DREAL* m_poim_distrib;
 		/** temporary memory for the interface to the poim functions */ 
-		INT m_poim_num_sym, m_poim_num_feat, m_poim_result_len ;
+		DREAL* m_poim;
+
+		/** number of symbols */
+		INT m_poim_num_sym;
+		/** length of string (==num_feat) */
+		INT m_poim_num_feat;
+		/** total size of poim array */
+		INT m_poim_result_len;
 		
 };
 #endif /* _WEIGHTEDDEGREEPOSITIONSTRINGKERNEL_H__ */

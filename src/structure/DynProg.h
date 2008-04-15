@@ -550,11 +550,17 @@ public:
 	
 	/** create array of precomputed content svm values
 	 * Jonas
-	 * @param genestr
-	 * @param pos from 
-	 * @param pos to
+	 * @param wordstr wordst
+	 * @param pos pos
+	 * @param num_cand_pos num_cand_pos
+	 * @param genestr_len genestr_len
+	 * @param dictionary_weights dictionary_weights
+	 * @param dict_len dict_len
 	 */
-	void precompute_content_values(WORD*** wordstr, const INT *pos,const INT num_cand_pos, const INT genestr_len,DREAL *dictionary_weights,INT dict_len);
+	void precompute_content_values(WORD*** wordstr, const INT *pos,
+			const INT num_cand_pos, const INT genestr_len,
+			DREAL *dictionary_weights, INT dict_len);
+
 	/** create word string from char* 
 	 * Jonas
 	 */
@@ -582,6 +588,12 @@ public:
 		return transition_matrix_a_deriv.element(line_,column); // look also best_path()!
 	}
 
+	/** access function for precomputed svm values
+	 *
+	 * @param i i
+	 * @param j j
+	 * @return value at (i,j)
+	 */
 	inline DREAL get_precomputed_svm_value(INT i, INT j) const
 	{
 		return m_precomputed_svm_values.get_element(i,j);

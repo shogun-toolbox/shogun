@@ -33,8 +33,10 @@ class CWordFeatures: public CSimpleFeatures<WORD>
 		/** constructor
 		 *
 		 * @param fname filename to load features from
+		 * @param num_sym number of symbols
 		 */
-		CWordFeatures(CHAR* fname, INT num_symbols=1<<16);
+		CWordFeatures(CHAR* fname, INT num_sym = (1<<16));
+		//CWordFeatures(CHAR* fname, INT num_sym=);
 
 		virtual ~CWordFeatures();
 

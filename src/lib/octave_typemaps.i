@@ -1,3 +1,16 @@
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This code is inspired by the python numpy.i typemaps, from John Hunter
+ * and Bill Spotz.
+ *
+ * Written (W) 2008 Soeren Sonnenburg
+ * Copyright (C) 2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ */
+
 %{
 #include "lib/common.h"
 #include "lib/octave.h"

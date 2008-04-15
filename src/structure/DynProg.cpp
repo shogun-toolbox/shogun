@@ -777,7 +777,7 @@ void CDynProg::best_path_call(INT nbest, bool use_orf)
 
 	m_call=1 ;
 
-	assert(nbest==1|nbest==2) ;
+	assert(nbest==1 || nbest==2);
 	assert(m_genestr.get_dim2()==1) ;
 	
 	if (nbest==1)
@@ -1937,10 +1937,12 @@ void CDynProg::find_svm_values_till_pos(WORD*** wordstr,  const INT *pos,  INT t
 			{
 				double normalization_factor = 1.0;
 				if (my_num_unique_words[s] > 0)
+				{
 					if (sign_words_array[s])
 						normalization_factor = sqrt((double)my_num_unique_words[s]);
 					else
 						normalization_factor = (double)my_num_unique_words[s];
+				}
 
 				if (j==0)
 					svs.svm_values[offset+s]=0 ;

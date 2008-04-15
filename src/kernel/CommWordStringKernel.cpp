@@ -126,9 +126,8 @@ bool CCommWordStringKernel::init(CFeatures* l, CFeatures* r)
 
 	if (use_dict_diagonal_optimization)
 	{
-	    //fprintf(stderr, "use_dict_diagonal_optimization\n") ;
 		delete[] dict_diagonal_optimization ;
-		dict_diagonal_optimization = new WORD[INT(((CStringFeatures<WORD>*)l)->get_num_symbols())] ;
+		dict_diagonal_optimization = new INT[INT(((CStringFeatures<WORD>*)l)->get_num_symbols())];
 		ASSERT(dict_diagonal_optimization) ;
 		ASSERT(((CStringFeatures<WORD>*)l)->get_num_symbols() == ((CStringFeatures<WORD>*)r)->get_num_symbols()) ;
 	}
@@ -214,15 +213,15 @@ DREAL CCommWordStringKernel::compute_helper(INT idx_a, INT idx_b)
 	
 	if (left_equal_right)
 	{
-		ASSERT((idx_a==idx_b) && (l==r))
-		ASSERT(sizeof(WORD)<=sizeof(DREAL)) ;
-		ASSERT((1<<(sizeof(WORD)*8)) > alen) ;
+		ASSERT((idx_a==idx_b) && (l==r));
+		ASSERT(sizeof(WORD)<=sizeof(DREAL));
+		ASSERT((1<<(sizeof(WORD)*8)) > alen);
 
-		INT num_symbols=l->get_num_symbols() ;
-		ASSERT(num_symbols <= dictionary_size) ;
+		INT num_symbols=l->get_num_symbols();
+		ASSERT(num_symbols <= dictionary_size);
 		
-		WORD* dic = dict_diagonal_optimization ;
-		memset(dic, 0, num_symbols*sizeof(WORD)) ;
+		INT* dic = dict_diagonal_optimization;
+		memset(dic, 0, num_symbols*sizeof(INT));
 
 		for (INT i=0; i<alen; i++)
 			dic[av[i]]++ ;
@@ -230,13 +229,19 @@ DREAL CCommWordStringKernel::compute_helper(INT idx_a, INT idx_b)
 		if (use_sign)
 		{
 			for (INT i=0; i<l->get_num_symbols(); i++)
+			{
 				if (dic[i]!=0)
-					result += 1 ;
+					result += 1;
+			}
 		}
 		else
+		{
 			for (INT i=0; i<num_symbols; i++)
+			{
 				if (dic[i]!=0)
-					result+=dic[i]*dic[i] ;
+					result+=dic[i]*dic[i];
+			}
+		}
 	}
 	else
 	{

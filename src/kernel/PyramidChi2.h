@@ -5,7 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 2008 Alexander Binder
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 2008 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef PYRAMIDCHI2_H_
@@ -16,9 +16,9 @@
 #include "features/Features.h"
 #include "features/RealFeatures.h"
 
-//pyramid classifier over Chi2 matched histograms
 //TODO: port to CCombinedKernel (if it is the appropriate) as the pyramid is a weighted linear combination of kernels
 
+///Pyramid Kernel over Chi2 matched histograms
 class CPyramidChi2 : public CSimpleKernel<DREAL>
 {
 public:

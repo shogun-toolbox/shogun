@@ -42,7 +42,7 @@ slightly slower versions are used.
 \li To compile the python interface you need to have numpy version 1.x installed 
 (debian package python-numpy and python-numpy-ext) installed.
 
-\section compiling_shogun: Compiling SHOGUN
+\section compiling_shogun Compiling SHOGUN
 
 \subsection most_platforms: General
 On most platforms (Linux,MacOSX,cygwin) it is sufficient to issue
@@ -51,7 +51,7 @@ On most platforms (Linux,MacOSX,cygwin) it is sufficient to issue
 ./configure --interface=<interface>
 make \endverbatim
 
-where <interface> is one of the following
+where \b interface is one of the following
 
 \li octave -- for octave (see http://www.octave.org)
 

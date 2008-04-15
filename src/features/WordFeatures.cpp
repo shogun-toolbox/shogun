@@ -13,7 +13,9 @@
 #include "features/CharFeatures.h"
 #include "lib/File.h"
 
-CWordFeatures::CWordFeatures(INT size, INT num_sym) : CSimpleFeatures<WORD>(size), num_symbols(num_sym),original_num_symbols(num_sym),order(0),symbol_mask_table(NULL)
+CWordFeatures::CWordFeatures(INT size, INT num_sym) :
+	CSimpleFeatures<WORD>(size), num_symbols(num_sym),
+	original_num_symbols(num_sym), order(0), symbol_mask_table(NULL)
 {
 }
 
@@ -21,7 +23,9 @@ CWordFeatures::CWordFeatures(const CWordFeatures & orig) : CSimpleFeatures<WORD>
 {
 }
 
-CWordFeatures::CWordFeatures(CHAR* fname, INT num_sym) : CSimpleFeatures<WORD>(fname), num_symbols(num_sym),original_num_symbols(num_sym),order(0),symbol_mask_table(NULL)
+CWordFeatures::CWordFeatures(CHAR* fname, INT num_sym) :
+	CSimpleFeatures<WORD>(fname), num_symbols(num_sym),
+	original_num_symbols(num_sym), order(0), symbol_mask_table(NULL)
 {
 }
 

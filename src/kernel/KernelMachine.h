@@ -29,7 +29,7 @@ class CClassifier;
  *
  * where \f$N\f$ is the number of training examples
  * \f$\alpha_i\f$ are the weights assigned to each training example
- * \f$k(x,x')\$ is the kernel 
+ * \f$k(x,x')\f$ is the kernel 
  * and \f$b\f$ the bias.
  *
  * Using an a-priori choosen kernel, the \f$\alpha_i\f$ and bias are determined
@@ -41,6 +41,7 @@ class CKernelMachine : public CClassifier
 		/** default constructor */
 		CKernelMachine();
 
+		/** destructor */
 		virtual ~CKernelMachine();
 
 		/** set kernel

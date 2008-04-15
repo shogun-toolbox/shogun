@@ -2,7 +2,7 @@
   \section using_sec Using SHOGUN
 
   There is currently no step by step user documentation. However for each of the interfaces
-  a large number of examples is available which can be found in the <interface>/examples directory.
+  a large number of examples is available which can be found in the \b interface / examples directory.
   For example python/examples python-modular/examples etc.
 
   Note that we always keep the python-modular examples complete and up-to-date
