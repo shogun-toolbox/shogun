@@ -163,6 +163,14 @@ install: $(OBJFILES) $(SRCFILES) $(SWIGSRCFILES) $(SWIGDOCFILES) $(SWIGLIBFILES)
 	echo '__all__= [' > "$(DESTDIR)$(PYDIR)/shogun/__init__.py"
 	for i in $(SWIGPYFILES) ; do echo $$i | sed -e 's=.*/="=' -e 's/\.py/", /' >>$(DESTDIR)$(PYDIR)/shogun/__init__.py; done
 	echo ']' >> "$(DESTDIR)$(PYDIR)/shogun/__init__.py"
+# Octave + Swig
+else
+ifeq (octave-modular,$(INTERFACE))
+install: $(OBJFILES) $(SRCFILES) $(SWIGSRCFILES) $(SWIGDOCFILES) $(SWIGLIBFILES)
+	install -d -m755 "$(DESTDIR)$(OCTDIR)/shogun"
+	install -m644 $(SWIGLIBFILES) "$(DESTDIR)$(OCTDIR)/shogun"
+	echo '%Initialize shogun by loading all of its modules' > "$(DESTDIR)$(OCTDIR)/shogun/init_shogun.m"
+	for i in $(SWIGLIBFILES) ; do echo $$i | sed -e 's=.*/==' -e 's/\.oct//' >>$(DESTDIR)$(OCTDIR)/shogun/init_shogun.m; done
 # Standalone
 else
 ifeq (cmdline,$(INTERFACE))
@@ -208,6 +216,7 @@ endif #libshogun
 endif #R
 endif #python
 endif #octave
+endif #octave+swig
 endif #python+swig
 
 dep:	depend

@@ -1,5 +1,8 @@
 TODO
 
+- cmdline help pretty print (ansi escapes)
+- cmdline help remove missing send_command legacy
+- cmdline help more verbose and somehow integrate with doxygen
 - TextInterface that does get/set_matrx/vector etc via file io
 - General Signal handling
 - R swig interface
