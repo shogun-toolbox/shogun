@@ -2,13 +2,10 @@
 #include "kernel/WeightedDegreePositionStringKernel.h"
 %}
 
-#ifdef HAVE_PYTHON
-%include "lib/python_typemaps.i"
-%feature("autodoc", "get_POIM2(self) -> [] of float") get_POIM2;
-#endif
+%include "lib/swig_typemaps.i"
 
-#ifdef HAVE_OCTAVE
-%include "lib/octave_typemaps.i"
+#ifdef HAVE_PYTHON
+%feature("autodoc", "get_POIM2(self) -> [] of float") get_POIM2;
 #endif
 
 %apply (DREAL* IN_ARRAY2, INT DIM1, INT DIM2) {(DREAL* weights, INT d, INT len)};

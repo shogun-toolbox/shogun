@@ -7,8 +7,7 @@
 
 #include "lib/ShogunException.h"
 #include "lib/io.h"
-#include "lib/R.h"
-
+#include "lib/r.h"
 
 extern CSGInterface* interface;
 

@@ -1,3 +1,5 @@
+#include "lib/config.h"
+
 #ifdef HAVE_OCTAVE
 
 #ifndef __OCTAVE_H__

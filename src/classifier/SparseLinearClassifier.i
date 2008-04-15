@@ -5,13 +5,10 @@
 %newobject classify;
 %rename(SparseLinearClassifier) CSparseLinearClassifier;
 
-#ifdef HAVE_PYTHON
-%include "lib/python_typemaps.i"
-%feature("autodoc", "get_w(self) -> [] of float") get_w;
-#endif
+%include "lib/swig_typemaps.i"
 
-#ifdef HAVE_OCTAVE
-%include "lib/octave_typemaps.i"
+#ifdef HAVE_PYTHON
+%feature("autodoc", "get_w(self) -> [] of float") get_w;
 #endif
 
 %apply (DREAL** ARGOUT1, INT* DIM1) {(DREAL** dst_w, INT* dst_dims)};

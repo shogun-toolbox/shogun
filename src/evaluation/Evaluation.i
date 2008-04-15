@@ -8,6 +8,7 @@
 %}
 
 %include "lib/common.i"
+%include "lib/swig_typemaps.i"
 
 #ifdef HAVE_DOXYGEN
 %include "evaluation/Evaluation_doxygen.i"
@@ -17,11 +18,6 @@
 %init %{
 	  import_array();
 %}
-%include "lib/python_typemaps.i"
-#endif
-
-#ifdef HAVE_OCTAVE
-%include "lib/octave_typemaps.i"
 #endif
 
 %feature("autodoc","0");

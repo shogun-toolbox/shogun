@@ -1,5 +1,6 @@
-#ifdef HAVE_MATLAB
+#include "lib/config.h"
 
+#ifdef HAVE_MATLAB
 #include <mex.h>
 
 //use compatibility mode w/ matlab <7.x

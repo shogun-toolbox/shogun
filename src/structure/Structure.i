@@ -7,18 +7,15 @@
 %include "structure/Structure_doxygen.i"
 #endif
 
+%include "lib/common.i"
+%include "lib/swig_typemaps.i"
+
 #ifdef HAVE_PYTHON
 %init %{
 	  import_array();
 %}
-%include "lib/python_typemaps.i"
 #endif
 
-#ifdef HAVE_OCTAVE
-%include "lib/octave_typemaps.i"
-#endif
-
-%include "lib/common.i"
 %include "lib/ShogunException.i"
 %include "lib/io.i" 
 %include "base/Version.i"

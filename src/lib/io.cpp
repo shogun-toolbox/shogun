@@ -10,22 +10,11 @@
  */
 
 #include "lib/config.h"
-
-#ifdef HAVE_OCTAVE
-#include <octave/config.h>
-#include <octave/error.h>
-#include <octave/lo-error.h>
-#endif
-
 #include "lib/matlab.h"
-
-#ifdef HAVE_R
-#include <R.h>
-#include <Rinternals.h>
-#include <R_ext/RS.h>
-#endif
-
+#include "lib/octave.h"
+#include "lib/r.h"
 #include "lib/python.h"
+
 #include "lib/io.h"
 #include "lib/ShogunException.h"
 #include "lib/Signal.h"

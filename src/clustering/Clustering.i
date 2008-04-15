@@ -17,12 +17,9 @@
 %init %{
 	  import_array();
 %}
-%include "lib/python_typemaps.i"
 #endif
 
-#ifdef HAVE_OCTAVE
-%include "lib/octave_typemaps.i"
-#endif
+%include "lib/swig_typemaps.i"
 
 %feature("autodoc","0");
 

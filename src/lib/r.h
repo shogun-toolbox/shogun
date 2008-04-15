@@ -1,3 +1,5 @@
+#include "lib/config.h"
+
 #ifdef HAVE_R
 
 #ifndef __R_H__
@@ -10,6 +12,7 @@ extern "C" {
 #include <R_ext/Rdynload.h>
 #include <Rembedded.h>
 #include <Rinterface.h>
+#include <R_ext/RS.h>
 }
 
 #endif //__R_H__

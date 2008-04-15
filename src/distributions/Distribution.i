@@ -12,6 +12,7 @@
 %feature("autodoc","0");
 
 %include "lib/common.i"
+%include "lib/swig_typemaps.i"
 
 #ifdef HAVE_DOXYGEN
 %include "distributions/Distribution_doxygen.i"
@@ -23,11 +24,6 @@
 	import_array();
 %}
 %feature("autodoc", "get_log_likelihood(self) -> numpy 1dim array of float") get_log_likelihood;
-%include "lib/python_typemaps.i"
-#endif
-
-#ifdef HAVE_OCTAVE
-%include "lib/octave_typemaps.i"
 #endif
 
 %apply (DREAL** ARGOUT1, INT* DIM1) {(DREAL** dst, INT* num)};

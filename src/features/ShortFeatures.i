@@ -2,13 +2,7 @@
  #include "features/ShortFeatures.h"
 %}
 
-#ifdef HAVE_PYTHON
-%include "lib/python_typemaps.i"
-#endif
-
-#ifdef HAVE_OCTAVE
-%include "lib/octave_typemaps.i"
-#endif
+%include "lib/swig_typemaps.i"
 
 %apply (SHORT* IN_ARRAY2, INT DIM1, INT DIM2) {(SHORT* src, INT num_feat, INT num_vec)};
 

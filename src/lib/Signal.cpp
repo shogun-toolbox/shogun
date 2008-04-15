@@ -19,16 +19,10 @@
 
 #include "lib/io.h"
 #include "lib/Signal.h"
-#if defined(HAVE_MATLAB)
 #include "lib/matlab.h"
-#elif defined(HAVE_OCTAVE)
 #include "lib/octave.h"
-#elif defined(HAVE_PYTHON)
 #include "lib/python.h"
-#elif defined(HAVE_R)
-#include "lib/R.h"
-#endif
-
+#include "lib/r.h"
 
 int CSignal::signals[NUMTRAPPEDSIGS]={SIGINT, SIGURG};
 struct sigaction CSignal::oldsigaction[NUMTRAPPEDSIGS];

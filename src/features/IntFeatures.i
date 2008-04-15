@@ -3,13 +3,10 @@
 #include "features/IntFeatures.h"
 %}
 
-#ifdef HAVE_PYTHON
-%include "lib/python_typemaps.i"
-%feature("autodoc", "get_fm(self) -> numpy 1dim array of float") get_fm;
-#endif
+%include "lib/swig_typemaps.i"
 
-#ifdef HAVE_OCTAVE
-%include "lib/octave_typemaps.i"
+#ifdef HAVE_PYTHON
+%feature("autodoc", "get_fm(self) -> numpy 1dim array of float") get_fm;
 #endif
 
 %apply (INT* IN_ARRAY2, INT DIM1, INT DIM2) {(INT* src, INT num_feat, INT num_vec)};

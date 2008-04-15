@@ -2,13 +2,7 @@
     #include "features/SimpleFeatures.h" 
 %}
 
-#ifdef HAVE_PYTHON
-%include "lib/python_typemaps.i"
-#endif
-
-#ifdef HAVE_OCTAVE
-%include "lib/octave_typemaps.i"
-#endif
+%include "lib/swig_typemaps.i"
 
 %include "features/SimpleFeatures.h" 
 

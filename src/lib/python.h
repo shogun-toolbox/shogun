@@ -1,5 +1,6 @@
-#ifdef HAVE_PYTHON
+#include "lib/config.h"
 
+#ifdef HAVE_PYTHON
 #ifndef __PYTHON_H__
 #define __PYTHON_H__
 

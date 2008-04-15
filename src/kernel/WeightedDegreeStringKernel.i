@@ -3,13 +3,7 @@
 #include "kernel/WeightedDegreeStringKernel.h"
 %}
 
-#ifdef HAVE_PYTHON
-%include "lib/python_typemaps.i"
-#endif
-
-#ifdef HAVE_OCTAVE
-%include "lib/octave_typemaps.i"
-#endif
+%include "lib/swig_typemaps.i"
 
 %apply (DREAL* IN_ARRAY1, INT DIM1) {(DREAL* p_weights, INT d)};
 

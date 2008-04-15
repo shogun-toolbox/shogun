@@ -6,15 +6,12 @@
 
 %newobject classify;
 
+%include "lib/swig_typemaps.i"
+
 #ifdef HAVE_PYTHON
-%include "lib/python_typemaps.i"
 %feature("autodoc", "get_support_vectors(self) -> [] of int") get_support_vectors;
 %feature("autodoc", "get_alphas(self) -> [] of float") get_alphas;
 #endif //HAVE_PYTHON
-
-#ifdef HAVE_OCTAVE
-%include "lib/octave_typemaps.i"
-#endif
 
 %apply (INT** ARGOUT1, INT* DIM1) {(INT** svs, INT* num)};
 %apply (DREAL** ARGOUT1, INT* DIM1) {(DREAL** alphas, INT* d1)};

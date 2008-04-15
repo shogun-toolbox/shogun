@@ -2456,6 +2456,7 @@ EOF
 		if ( echo 'version; quit()' | R --no-save ) >/dev/null 2>&1 
 		then
 			echores "`echo 'version; quit()' | R  --no-save 2>&1 | grep version\.string | cut -f 4 -d ' '`"
+			PRE_LIB_SWIG=
 			EXT_IF_SWIG='.R'
 		else
 			echores "no"

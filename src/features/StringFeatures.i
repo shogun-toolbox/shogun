@@ -2,13 +2,10 @@
  #include "features/StringFeatures.h"
 %}
 
-#ifdef HAVE_PYTHON
-%include "lib/python_typemaps.i"
-%feature("autodoc", "get_str(self) -> numpy 1dim array of str\n\nUse this instead of get_string() which is not nicely wrapped") get_str;
-#endif
+%include "lib/swig_typemaps.i"
 
-#ifdef HAVE_OCTAVE
-%include "lib/octave_typemaps.i"
+#ifdef HAVE_PYTHON
+%feature("autodoc", "get_str(self) -> numpy 1dim array of str\n\nUse this instead of get_string() which is not nicely wrapped") get_str;
 #endif
 
 %apply (ST** ARGOUT1, INT* DIM1) {(ST** dst, INT* len)};
