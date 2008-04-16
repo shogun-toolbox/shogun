@@ -13,10 +13,6 @@
 %apply (DREAL* IN_ARRAY1, INT DIM1) {(DREAL* labels, INT len)};
 %apply (DREAL** ARGOUT1, INT* DIM1) {(DREAL** labels, INT* len)};
 
-%ignore CLabels::CLabels();
-%ignore CLabels::CLabels(INT num_labels);
-%ignore CLabels::CLabels(CHAR* fname);
-
 %rename(Labels) CLabels;
 
 %include "features/Labels.h"

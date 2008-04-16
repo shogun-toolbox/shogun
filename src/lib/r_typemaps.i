@@ -42,6 +42,12 @@
 
 /* One dimensional input arrays */
 %define TYPEMAP_IN1(r_type, r_cast, sg_type, error_string)
+%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER)
+    (sg_type* IN_ARRAY1, INT DIM1)
+{
+    $1 = (TYPEOF($input) == r_type) ? 1 : 0;
+}
+
 %typemap(in) (sg_type* IN_ARRAY1, INT DIM1) (SEXP rvec)
 {
     rvec=$input;
@@ -63,6 +69,12 @@ TYPEMAP_IN1(REALSXP, REAL, DREAL, "Double Precision")
 #undef TYPEMAP_IN1
 
 %define TYPEMAP_IN2(r_type, r_cast, sg_type, error_string)
+%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER)
+        (sg_type* IN_ARRAY2, INT DIM1, INT DIM2)
+{
+    $1 = (TYPEOF($input) == r_type) ? 1 : 0;
+}
+
 %typemap(in) (sg_type* IN_ARRAY2, INT DIM1, INT DIM2) (SEXP feat)
 {
     feat=$input;

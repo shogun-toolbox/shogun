@@ -239,6 +239,15 @@ int require_dimensions(PyObject* ary, int exact_dimensions) {
 
 /* One dimensional input arrays */
 %define TYPEMAP_IN1(type,typecode)
+%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER)
+        (type* IN_ARRAY1, INT DIM1)
+{
+    $1 = (
+            ($input && PyList_Check($input) && PyList_Size($input)>0) ||
+            (is_array($input) && array_dimensions($input)==1 && array_type($input) == typecode)
+         ) ? 1 : 0;
+}
+
 %typemap(in) (type* IN_ARRAY1, INT DIM1)
              (PyObject* array=NULL, int is_new_object)
 {
@@ -273,8 +282,15 @@ TYPEMAP_IN1(PyObject,      NPY_OBJECT)
 
  /* Two dimensional input arrays */
 %define TYPEMAP_IN2(type,typecode)
-  %typemap(in) (type* IN_ARRAY2, INT DIM1, INT DIM2)
-               (PyObject* array=NULL, int is_new_object)
+%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER)
+        (type* IN_ARRAY2, INT DIM1, INT DIM2)
+{
+    $1 = (is_array($input) && array_dimensions($input)==2 &&
+            array_type($input) == typecode) ? 1 : 0;
+}
+
+%typemap(in) (type* IN_ARRAY2, INT DIM1, INT DIM2)
+            (PyObject* array=NULL, int is_new_object)
 {
     array = make_contiguous($input, &is_new_object, 2,typecode);
     if (!array)

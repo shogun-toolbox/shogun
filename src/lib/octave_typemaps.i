@@ -42,6 +42,14 @@
 
 /* One dimensional input arrays */
 %define TYPEMAP_IN1(oct_type_check, oct_type, oct_converter, sg_type, if_type, error_string)
+%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER)
+        (sg_type* IN_ARRAY1, INT DIM1)
+{
+    const octave_value m=$input;
+
+    $1 = (m.is_matrix_type() && m.oct_type_check() && m.rows()==1) ? 1 : 0;
+}
+
 %typemap(in) (sg_type* IN_ARRAY1, INT DIM1) (oct_type m)
 {
     const octave_value mat_feat=$input;
@@ -71,6 +79,13 @@ TYPEMAP_IN1(is_uint16_type, uint16NDArray, uint16_array_value, WORD, WORD, "Word
 
 
 %define TYPEMAP_IN2(oct_type_check, oct_type, oct_converter, sg_type, if_type, error_string)
+%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER)
+        (sg_type* IN_ARRAY2, INT DIM1, INT DIM2)
+{
+    const octave_value m=$input;
+    $1 = (m.is_matrix_type() && m.oct_type_check()) ? 1 : 0;
+}
+
 %typemap(in) (sg_type* IN_ARRAY2, INT DIM1, INT DIM2) (oct_type m)
 {
     const octave_value mat_feat=$input;
