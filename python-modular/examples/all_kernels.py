@@ -545,7 +545,7 @@ def weighted_comm_word_string ():
 	data=get_dna()
 	order=3
 	gap=0
-	reverse=False
+	reverse=True
 
 	charfeat=StringCharFeatures(DNA)
 	charfeat.set_string_features(data['train'])
