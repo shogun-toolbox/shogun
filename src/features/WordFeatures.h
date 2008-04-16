@@ -37,8 +37,9 @@ class CWordFeatures: public CSimpleFeatures<WORD>
 		 * @param num_feat number of features
 		 * @param num_vec number of vectors
 		 */
-		inline CRealFeatures(WORD* src, INT num_feat, INT num_vec):
-            CSimpleFeatures<WORD>(0), num_symbols=(1<<16)
+		inline CWordFeatures(WORD* src, INT num_feat, INT num_vec):
+            CSimpleFeatures<WORD>(0), num_symbols(1<<16),
+			original_num_symbols(1<<16), order(0), symbol_mask_table(NULL)
 		{
 			CSimpleFeatures<WORD>::copy_feature_matrix(src, num_feat, num_vec);
 		}

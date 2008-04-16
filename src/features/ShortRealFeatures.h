@@ -35,7 +35,7 @@ class CShortRealFeatures: public CSimpleFeatures<SHORTREAL>
 		 * @param num_feat number of features
 		 * @param num_vec number of vectors
 		 */
-        inline CRealFeatures(SHORTREAL* src, INT num_feat, INT num_vec) :
+        inline CShortRealFeatures(SHORTREAL* src, INT num_feat, INT num_vec) :
             CSimpleFeatures<SHORTREAL>(0)
 		{
 			CSimpleFeatures<SHORTREAL>::copy_feature_matrix(src, num_feat, num_vec);

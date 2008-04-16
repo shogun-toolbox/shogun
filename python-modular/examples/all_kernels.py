@@ -80,9 +80,12 @@ def linear_byte ():
 	
 	num_feats=11
 	data=randint(0, maxint, (num_feats, 11)).astype(ubyte)
-	feats_train=ByteFeatures(data, RAWBYTE)
+	feats_train=ByteFeatures(RAWBYTE)
+	feats_train.copy_feature_matrix(data)
+
 	data=randint(0, maxint, (num_feats, 17)).astype(ubyte)
-	feats_test=ByteFeatures(data, RAWBYTE)
+	feats_test=ByteFeatures(RAWBYTE)
+	feats_test.copy_feature_matrix(data)
 	
 	kernel=LinearByteKernel(feats_train, feats_train)
 

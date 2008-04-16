@@ -56,8 +56,10 @@ def get_feats_simple (indata):
 
 	if indata['feature_type']=='Byte' or indata['feature_type']=='Char':
 		alphabet=eval(indata['alphabet'])
-		ftrain=eval(indata['feature_type']+"Features(data_train, alphabet)")
-		ftest=eval(indata['feature_type']+"Features(data_test, alphabet)")
+		ftrain=eval(indata['feature_type']+"Features(alphabet)")
+		ftest=eval(indata['feature_type']+"Features(alphabet)")
+		ftrain.copy_feature_matrix(data_train)
+		ftest.copy_feature_matrix(data_test)
 	else:
 		ftrain=eval(indata['feature_type']+"Features(data_train)")
 		ftest=eval(indata['feature_type']+"Features(data_test)")
