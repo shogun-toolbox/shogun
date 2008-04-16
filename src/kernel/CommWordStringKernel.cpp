@@ -217,7 +217,7 @@ DREAL CCommWordStringKernel::compute_helper(INT idx_a, INT idx_b)
 		ASSERT(sizeof(WORD)<=sizeof(DREAL));
 		ASSERT((1<<(sizeof(WORD)*8)) > alen);
 
-		INT num_symbols=l->get_num_symbols();
+		INT num_symbols=(INT) l->get_num_symbols();
 		ASSERT(num_symbols <= dictionary_size);
 		
 		INT* dic = dict_diagonal_optimization;
@@ -228,7 +228,7 @@ DREAL CCommWordStringKernel::compute_helper(INT idx_a, INT idx_b)
 
 		if (use_sign)
 		{
-			for (INT i=0; i<l->get_num_symbols(); i++)
+			for (INT i=0; i<(INT) l->get_num_symbols(); i++)
 			{
 				if (dic[i]!=0)
 					result += 1;

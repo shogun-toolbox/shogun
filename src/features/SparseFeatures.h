@@ -987,7 +987,7 @@ template <class ST> class CSparseFeatures: public CFeatures
 								{
 									data[j]='\0';
 
-									feat[d].feat_index=(ST) atoi((const char*) start)-1;
+									feat[d].feat_index=(INT) atoi((const char*) start)-1;
 									num_features=CMath::max(num_features, feat[d].feat_index+1);
 
 									j++;

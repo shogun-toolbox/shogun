@@ -114,11 +114,11 @@ bool CHistogramWordKernel::init(CFeatures* p_l, CFeatures* p_r)
 	if (!initialized)
 	{
 		INT num_vectors=l->get_num_vectors();
-		num_symbols=l->get_num_symbols();
+		num_symbols=(INT) l->get_num_symbols();
 		INT llen=l->get_vector_length(0);
 		INT rlen=r->get_vector_length(0);
-		num_params=llen*l->get_num_symbols();
-		num_params2=llen*l->get_num_symbols()+rlen*r->get_num_symbols();
+		num_params=llen*((INT) l->get_num_symbols());
+		num_params2=llen*((INT) l->get_num_symbols())+rlen*((INT) r->get_num_symbols());
 
 		if ((!estimate) || (!estimate->check_models()))
 		{
