@@ -15,11 +15,4 @@
 %include "features/SimpleFeatures.i"
 %include "features/ShortRealFeatures.h"
 
-#ifdef HAVE_PYTHON
-%pythoncode %{
-  class ShortRealFeatures(CShortRealFeatures):
-     def __init__(self,p1):
-        CShortRealFeatures.__init__(self,0)
-        self.copy_feature_matrix(p1)
-%}
-#endif
+%rename(ShortRealFeatures) CShortRealFeatures;

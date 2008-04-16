@@ -31,6 +31,18 @@ class CRealFeatures: public CSimpleFeatures<DREAL>
 		CRealFeatures(const CRealFeatures & orig) :
 			CSimpleFeatures<DREAL>(orig) {}
 
+        /** constructor that copies feature matrix from
+         * pointer num_feat,num_vec pair
+		 *
+		 * @param src feature matrix to copy
+		 * @param num_feat number of features
+		 * @param num_vec number of vectors
+		 */
+		inline CRealFeatures(DREAL* src, INT num_feat, INT num_vec): CSimpleFeatures<DREAL>(0)
+		{
+			CSimpleFeatures<DREAL>::copy_feature_matrix(src, num_feat, num_vec);
+		}
+
 		/** constructor
 		 *
 		 * @param fname filename to load features from

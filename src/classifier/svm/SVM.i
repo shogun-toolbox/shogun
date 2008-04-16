@@ -18,6 +18,9 @@
 %apply (DREAL* IN_ARRAY1, INT DIM1) {(DREAL* alphas, INT d)};
 %apply (INT* IN_ARRAY1, INT DIM1) {(INT* svs, INT d)};
 
+#ifndef HAVE_PYTHON
+%rename(SVM) CSVM;
+#endif
 
 %include "classifier/svm/SVM.h"
 

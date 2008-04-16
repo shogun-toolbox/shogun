@@ -28,6 +28,18 @@ class CIntFeatures: public CSimpleFeatures<INT>
 		CIntFeatures(const CIntFeatures & orig) :
 			CSimpleFeatures<INT>(orig) {}
 
+        /** constructor that copies feature matrix from
+         * pointer num_feat,num_vec pair
+		 *
+		 * @param src feature matrix to copy
+		 * @param num_feat number of features
+		 * @param num_vec number of vectors
+		 */
+		inline CIntFeatures(INT* src, INT num_feat, INT num_vec): CSimpleFeatures<INT>(0)
+		{
+			CSimpleFeatures<INT>::copy_feature_matrix(src, num_feat, num_vec);
+		}
+
 		/** constructor
 		 *
 		 * @param fname filename to load features from

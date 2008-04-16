@@ -30,13 +30,25 @@ class CWordFeatures: public CSimpleFeatures<WORD>
 		/** copy constructor */
 		CWordFeatures(const CWordFeatures & orig);
 
+        /** constructor that copies feature matrix from
+         * pointer num_feat,num_vec pair
+		 *
+		 * @param src feature matrix to copy
+		 * @param num_feat number of features
+		 * @param num_vec number of vectors
+		 */
+		inline CRealFeatures(WORD* src, INT num_feat, INT num_vec):
+            CSimpleFeatures<WORD>(0), num_symbols=(1<<16)
+		{
+			CSimpleFeatures<WORD>::copy_feature_matrix(src, num_feat, num_vec);
+		}
+
 		/** constructor
 		 *
 		 * @param fname filename to load features from
 		 * @param num_sym number of symbols
 		 */
 		CWordFeatures(CHAR* fname, INT num_sym = (1<<16));
-		//CWordFeatures(CHAR* fname, INT num_sym=);
 
 		virtual ~CWordFeatures();
 

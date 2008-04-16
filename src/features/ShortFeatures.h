@@ -29,6 +29,18 @@ class CShortFeatures: public CSimpleFeatures<SHORT>
 		/** copy constructor */
 		CShortFeatures(const CShortFeatures & orig);
 
+        /** constructor that copies feature matrix from
+         * pointer num_feat,num_vec pair
+		 *
+		 * @param src feature matrix to copy
+		 * @param num_feat number of features
+		 * @param num_vec number of vectors
+		 */
+		inline CShortFeatures(SHORT* src, INT num_feat, INT num_vec): CSimpleFeatures<SHORT>(0)
+		{
+			CSimpleFeatures<SHORT>::copy_feature_matrix(src, num_feat, num_vec);
+		}
+
 		/** constructor
 		 *
 		 * @param fname filename to load features from

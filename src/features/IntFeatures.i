@@ -12,14 +12,7 @@
 %apply (INT* IN_ARRAY2, INT DIM1, INT DIM2) {(INT* src, INT num_feat, INT num_vec)};
 %apply (INT** ARGOUT2, INT* DIM1, INT* DIM2) {(INT** dst, INT* d1, INT* d2)};
 
+%rename(IntFeatures) CIntFeatures;
+
 %include "features/SimpleFeatures.i"
 %include "features/IntFeatures.h"
-
-#ifdef HAVE_PYTHON
-%pythoncode %{
-  class IntFeatures(CIntFeatures):
-     def __init__(self,p1):
-        CIntFeatures.__init__(self,0)
-        self.copy_feature_matrix(p1)
-%}
-#endif

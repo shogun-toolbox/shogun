@@ -28,6 +28,19 @@ class CShortRealFeatures: public CSimpleFeatures<SHORTREAL>
 		CShortRealFeatures(const CShortRealFeatures & orig) :
 			CSimpleFeatures<SHORTREAL>(orig) {}
 
+        /** constructor that copies feature matrix from
+         * pointer num_feat,num_vec pair
+		 *
+		 * @param src feature matrix to copy
+		 * @param num_feat number of features
+		 * @param num_vec number of vectors
+		 */
+        inline CRealFeatures(SHORTREAL* src, INT num_feat, INT num_vec) :
+            CSimpleFeatures<SHORTREAL>(0)
+		{
+			CSimpleFeatures<SHORTREAL>::copy_feature_matrix(src, num_feat, num_vec);
+		}
+
 		/** constructor
 		 *
 		 * @param fname filename to load features from
