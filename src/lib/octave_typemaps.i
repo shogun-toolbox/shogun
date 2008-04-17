@@ -209,18 +209,21 @@ TYPEMAP_ARGOUT2(uint16NDArray, WORD, WORD, "Word")
 
 /* input typemap for CStringFeatures<CHAR> etc */
 %define GET_STRINGLIST(oct_type_check, oct_type, oct_converter, sg_type, if_type, error_string)
-%typemap(in) (T_STRING<sg_type>* strings, INT num_strings, INT max_string_len)
+%typemap(in) (T_STRING<sg_type>* strings, INT num_strings, INT max_len)
 {
-    max_string_len=0;
+    INT max_len=0;
+    INT num_strings=0;
+    T_STRING<sg_type>* strings=NULL;
+
     octave_value arg=$input;
     if (arg.is_cell())
     {
         Cell c = arg.cell_value();
-        num_str=c.nelem();
-        ASSERT(num_str>=1);
-        strings=new T_STRING<sg_type>[num_str];
+        num_strings=c.nelem();
+        ASSERT(num_strings>=1);
+        strings=new T_STRING<sg_type>[num_strings];
 
-        for (int i=0; i<num_str; i++)
+        for (int i=0; i<num_strings; i++)
         {
             if (!c.elem(i).oct_type_check() || !c.elem(i).rows()==1)
             {
@@ -239,7 +242,7 @@ TYPEMAP_ARGOUT2(uint16NDArray, WORD, WORD, "Word")
                 for (j=0; j<len; j++)
                     strings[i].string[j]=str(0,j);
                 strings[i].string[j]='\0';
-                max_string_len=CMath::max(max_string_len, len);
+                max_len=CMath::max(max_len, len);
             }
             else
             {
@@ -252,12 +255,12 @@ TYPEMAP_ARGOUT2(uint16NDArray, WORD, WORD, "Word")
     else if (arg.oct_type_check())
     {
         oct_type data=arg.oct_converter();
-        num_str=data.cols(); 
+        num_strings=data.cols(); 
         INT len=data.rows();
-        strings=new T_STRING<sg_type>[num_str];
+        strings=new T_STRING<sg_type>[num_strings];
         ASSERT(strings);
 
-        for (INT i=0; i<num_str; i++)
+        for (INT i=0; i<num_strings; i++)
         { 
             if (len>0) 
             { 
@@ -276,7 +279,7 @@ TYPEMAP_ARGOUT2(uint16NDArray, WORD, WORD, "Word")
                 strings[i].string=NULL;
             }
         }
-        max_string_len=len;
+        max_len=len;
     }
     else
     {

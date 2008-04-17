@@ -599,7 +599,7 @@ TYPEMAP_ARGOUT2(PyObject,      NPY_OBJECT)
         INT size=PyList_Size(list);
         T_STRING<CHAR>* strings=new T_STRING<CHAR>[size];
 
-        int max_len=0;
+        INT max_len=0;
 
         for (int i=0; i<size; i++)
         {

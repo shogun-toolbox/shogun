@@ -170,7 +170,7 @@ install: $(OBJFILES) $(SRCFILES) $(SWIGSRCFILES) $(SWIGDOCFILES) $(SWIGLIBFILES)
 	install -d -m755 "$(DESTDIR)$(OCTDIR)/shogun"
 	install -m644 $(SWIGLIBFILES) "$(DESTDIR)$(OCTDIR)/shogun"
 	echo '%Initialize shogun by loading all of its modules' > "$(DESTDIR)$(OCTDIR)/shogun/init_shogun.m"
-	for i in $(SWIGLIBFILES) ; do echo $$i | sed -e 's=.*/==' -e 's/\.oct//' >>$(DESTDIR)$(OCTDIR)/shogun/init_shogun.m; done
+	for i in $(SWIGLIBFILES) ; do echo $$i | sed -e 's=.*/==' -e 's/\.oct/;/' >>$(DESTDIR)$(OCTDIR)/shogun/init_shogun.m; done
 # Standalone
 else
 ifeq (cmdline,$(INTERFACE))

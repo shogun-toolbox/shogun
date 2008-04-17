@@ -1,7 +1,4 @@
-addpath features
-addpath classifier
-addpath kernel
-
+%Regression; %uncomment to get a nice crasher :(
 Features;
 Classifier;
 Kernel;
@@ -18,9 +15,8 @@ testdata_real=[randn(2,num)-dist, randn(2,num)+dist];
 trainlab=[-ones(1,num), ones(1,num)];
 testlab=[-ones(1,num), ones(1,num)];
 
-feats_train=CRealFeatures();
-feats_train.copy_feature_matrix(traindata_real);
-feats_test=CRealFeatures();
+feats_train=RealFeatures(traindata_real);
+feats_test=RealFeatures(testdata_real);
 feats_test.copy_feature_matrix(testdata_real);
 kernel=GaussianKernel(feats_train, feats_train, width);
 

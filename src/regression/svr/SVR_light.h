@@ -19,7 +19,7 @@
 
 #ifdef USE_SVMLIGHT
 /** class SVRLight */
-class CSVRLight:public CSVMLight
+class CSVRLight: public CSVMLight
 {
 	public:
 		/** default constructor */

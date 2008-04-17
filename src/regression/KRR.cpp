@@ -54,7 +54,7 @@ bool CKRR::train()
 
   // Get labels
   INT numlabels = 0;
-  alpha = get_labels()->get_labels(numlabels);
+  alpha = labels->get_labels(numlabels);
   ASSERT(alpha && numlabels == n);
   
   clapack_dposv(CblasRowMajor,CblasUpper, n, 1, K, n, alpha, n);
