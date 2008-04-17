@@ -72,8 +72,16 @@ class CSGInterface : public CSGObject
 		/** get labels */
 		bool a_get_labels();
 
+		/** set kernel */
+		bool a_set_kernel();
 		/** initialize kernel */
 		bool a_init_kernel();
+		/** save kernel to file */
+		bool a_save_kernel();
+		/** load kernel init from file */
+		bool a_load_kernel_init();
+		/** save kernel init to file */
+		bool a_save_kernel_init();
 		/** get kernel matrix */
 		bool a_get_kernel_matrix();
 		/** set custom kernel */
@@ -100,6 +108,10 @@ class CSGInterface : public CSGObject
 		bool a_get_kernel_optimization();
 		/** delete kernel optimization */
 		bool a_delete_kernel_optimization();
+		/** set kernel optimization type */
+		bool a_set_kernel_optimization_type();
+		/** set distance */
+		bool a_set_distance();
 		/** init distance */
 		bool a_init_distance();
 		/** get distance matrix */
@@ -132,14 +144,24 @@ class CSGInterface : public CSGObject
 		bool a_get_classifier();
 		/** get SVM objective */
 		bool a_get_svm_objective();
+		/** do AUC maximization */
+		bool a_do_auc_maximization();
+		/** set perceptron parameters */
+		bool a_set_perceptron_parameters();
+		/** train classifier/SVM */
+		bool a_train_classifier();
 
 		/** load preproc from file */
 		bool a_load_preproc();
+		/** save preproc to file */
+		bool a_save_preproc();
 
 		/** create new HMM */
 		bool a_new_hmm();
 		/** load HMM from file */
 		bool a_load_hmm();
+		/** save HMM to file */
+		bool a_save_hmm();
 		/** HMM classify */
 		bool a_hmm_classify();
 		/** HMM classify for a single example */
@@ -150,16 +172,46 @@ class CSGInterface : public CSGObject
 		bool a_one_class_hmm_classify();
 		/** HMM classify for a single 1-class example */
 		bool a_one_class_hmm_classify_example();
-		/** get HMM's likelihood */
+		/** output HMM */
+		bool a_output_hmm();
+		/** output HMM defined */
+		bool a_output_hmm_defined();
+		/** get HMM likelihood */
 		bool a_hmm_likelihood();
+		/** likelihood */
+		bool a_likelihood();
+		/** save HMM likelihoods to file */
+		bool a_save_likelihood();
 		/** get HMM's Viterbi Path */
 		bool a_get_viterbi_path();
+		/** train viterbi defined */
+		bool a_viterbi_train_defined();
+		/** train viterbi */
+		bool a_viterbi_train();
+		/** train baum welch */
+		bool a_baum_welch_train();
+		/** train baum welch trans */
+		bool a_baum_welch_trans_train();
+		/** linear train */
+		bool a_linear_train();
+		/** save path to file */
+		bool a_save_path();
 		/** append HMM */
 		bool a_append_hmm();
 		/** set HMM */
 		bool a_set_hmm();
+		/** set HMM as */
+		bool a_set_hmm_as();
 		/** get HMM */
 		bool a_get_hmm();
+		/** set chop value */
+		bool a_set_chop();
+		/** set pseudo value */
+		bool a_set_pseudo();
+		/** load definitions from file */
+		bool a_load_definitions();
+		/** convergence criteria */
+		bool a_convergence_criteria();
 		/** compute HMM relative entropy */
 		bool a_relative_entropy();
 		/** compute HMM entropy */
@@ -178,6 +230,8 @@ class CSGInterface : public CSGObject
 		bool a_set_plugin_estimate();
 		/** get plugin estimate */
 		bool a_get_plugin_estimate();
+		/** best path */
+		bool a_best_path();
 		/** best path 2struct */
 		bool a_best_path_2struct();
 		/** best path trans */
@@ -193,8 +247,20 @@ class CSGInterface : public CSGObject
 
 		/** calculate CRC sum */
 		bool a_crc();
-		/** translater string */
+		/** send command to operating system */
+		bool a_system();
+		/** exit/quit shogun/interface */
+		bool a_exit();
+		/** execute script from file */
+		bool a_exec();
+		/** set output target */
+		bool a_set_output();
+		/** set threshold */
+		bool a_set_threshold();
+		/** translate string */
 		bool a_translate_string();
+		/** clear Shogun */
+		bool a_clear();
 		/** get version */
 		bool a_get_version();
 		/** issue help message */

@@ -114,11 +114,31 @@ static CSGInterfaceMethod sg_methods[]=
 	},
 
 
-	{ (CHAR*) "Kernel & Distance", NULL, NULL },
+	{ (CHAR*) "Kernel", NULL, NULL },
+	{
+		(CHAR*) N_SET_KERNEL,
+		(&CSGInterface::a_set_kernel),
+		(CHAR*) USAGE_I(N_SET_KERNEL, "'type, size[, kernel-specific parameters]'")
+	},
 	{
 		(CHAR*) N_INIT_KERNEL,
 		(&CSGInterface::a_init_kernel),
 		(CHAR*) USAGE_I(N_INIT_KERNEL, "'TRAIN|TEST'")
+	},
+	{
+		(CHAR*) N_SAVE_KERNEL,
+		(&CSGInterface::a_save_kernel),
+		(CHAR*) USAGE_I(N_SAVE_KERNEL, "'filename'")
+	},
+	{
+		(CHAR*) N_LOAD_KERNEL_INIT,
+		(&CSGInterface::a_load_kernel_init),
+		(CHAR*) USAGE_I(N_LOAD_KERNEL_INIT, "'filename'")
+	},
+	{
+		(CHAR*) N_SAVE_KERNEL_INIT,
+		(&CSGInterface::a_save_kernel_init),
+		(CHAR*) USAGE_I(N_SAVE_KERNEL_INIT, "'filename'")
 	},
 	{
 		(CHAR*) N_GET_KERNEL_MATRIX,
@@ -186,6 +206,19 @@ static CSGInterfaceMethod sg_methods[]=
 		(CHAR*) USAGE(N_DELETE_KERNEL_OPTIMIZATION)
 	},
 	{
+		(CHAR*) N_SET_KERNEL_OPTIMIZATION_TYPE,
+		(&CSGInterface::a_set_kernel_optimization_type),
+		(CHAR*) USAGE_I(N_SET_KERNEL_OPTIMIZATION_TYPE, "'FASTBUTMEMHUNGRY|SLOWBUTMEMEFFICIENT'")
+	},
+
+
+	{ (CHAR*) "Distance", NULL, NULL },
+	{
+		(CHAR*) N_SET_DISTANCE,
+		(&CSGInterface::a_set_distance),
+		(CHAR*) USAGE_I(N_SET_DISTANCE, "'type, data type[, distance-specific parameters]'")
+	},
+	{
 		(CHAR*) N_INIT_DISTANCE,
 		(&CSGInterface::a_init_distance),
 		(CHAR*) USAGE_I(N_INIT_DISTANCE, "'TRAIN|TEST'")
@@ -197,7 +230,7 @@ static CSGInterfaceMethod sg_methods[]=
 	},
 
 
-	{ (CHAR*) "SVM & Classifier", NULL, NULL },
+	{ (CHAR*) "SVM & Other Classifier", NULL, NULL },
 	{
 		(CHAR*) N_CLASSIFY,
 		(&CSGInterface::a_classify),
@@ -253,6 +286,26 @@ static CSGInterfaceMethod sg_methods[]=
 		(&CSGInterface::a_get_svm_objective),
 		(CHAR*) USAGE_O(N_GET_SVM_OBJECTIVE, "objective")
 	},
+	{
+		(CHAR*) N_DO_AUC_MAXIMIZATION,
+		(&CSGInterface::a_do_auc_maximization),
+		(CHAR*) USAGE_I(N_DO_AUC_MAXIMIZATION, "'auc'")
+	},
+	{
+		(CHAR*) N_SET_PERCEPTRON_PARAMETERS,
+		(&CSGInterface::a_set_perceptron_parameters),
+		(CHAR*) USAGE_I(N_SET_PERCEPTRON_PARAMETERS, "'learnrate, maxiter'")
+	},
+	{
+		(CHAR*) N_TRAIN_CLASSIFIER,
+		(&CSGInterface::a_train_classifier),
+		(CHAR*) USAGE(N_TRAIN_CLASSIFIER)
+	},
+	{
+		(CHAR*) N_SVM_TRAIN,
+		(&CSGInterface::a_train_classifier),
+		(CHAR*) USAGE(N_SVM_TRAIN)
+	},
 
 
 	{ (CHAR*) "Preprocessors", NULL, NULL },
@@ -260,6 +313,11 @@ static CSGInterfaceMethod sg_methods[]=
 		(CHAR*) N_LOAD_PREPROC,
 		(&CSGInterface::a_load_preproc),
 		(CHAR*) USAGE_I(N_LOAD_PREPROC, "'filename'")
+	},
+	{
+		(CHAR*) N_SAVE_PREPROC,
+		(&CSGInterface::a_save_preproc),
+		(CHAR*) USAGE_I(N_SAVE_PREPROC, "'filename'")
 	},
 
 
@@ -275,6 +333,11 @@ static CSGInterfaceMethod sg_methods[]=
 		(CHAR*) USAGE_I(N_LOAD_HMM, "'filename'")
 	},
 	{
+		(CHAR*) N_SAVE_HMM,
+		(&CSGInterface::a_save_hmm),
+		(CHAR*) USAGE_I(N_SAVE_HMM, "'filename[, save_binary]'")
+	},
+	{
 		(CHAR*) N_GET_HMM,
 		(&CSGInterface::a_get_hmm),
 		(CHAR*) USAGE_O(N_GET_HMM, "p, q, a, b")
@@ -288,6 +351,26 @@ static CSGInterfaceMethod sg_methods[]=
 		(CHAR*) N_SET_HMM,
 		(&CSGInterface::a_set_hmm),
 		(CHAR*) USAGE_I(N_SET_HMM, "p, q, a, b")
+	},
+	{
+		(CHAR*) N_SET_HMM_AS,
+		(&CSGInterface::a_set_hmm_as),
+		(CHAR*) USAGE_I(N_SET_HMM_AS, "'POS|NEG|TEST'")
+	},
+	{
+		(CHAR*) N_CHOP,
+		(&CSGInterface::a_set_chop),
+		(CHAR*) USAGE_I(N_CHOP, "'chop'")
+	},
+	{
+		(CHAR*) N_PSEUDO,
+		(&CSGInterface::a_set_pseudo),
+		(CHAR*) USAGE_I(N_PSEUDO, "'pseudo'")
+	},
+	{
+		(CHAR*) N_LOAD_DEFINITIONS,
+		(&CSGInterface::a_load_definitions),
+		(CHAR*) USAGE_I(N_LOAD_DEFINITIONS, "'filename, init'")
 	},
 	{
 		(CHAR*) N_HMM_CLASSIFY,
@@ -315,14 +398,69 @@ static CSGInterfaceMethod sg_methods[]=
 		(CHAR*) USAGE_IO(N_HMM_CLASSIFY_EXAMPLE, "feature_vector_index", "result")
 	},
 	{
+		(CHAR*) N_OUTPUT_HMM,
+		(&CSGInterface::a_output_hmm),
+		(CHAR*) USAGE(N_OUTPUT_HMM)
+	},
+	{
+		(CHAR*) N_OUTPUT_HMM_DEFINED,
+		(&CSGInterface::a_output_hmm_defined),
+		(CHAR*) USAGE(N_OUTPUT_HMM_DEFINED)
+	},
+	{
 		(CHAR*) N_HMM_LIKELIHOOD,
 		(&CSGInterface::a_hmm_likelihood),
 		(CHAR*) USAGE_O(N_HMM_LIKELIHOOD, "likelihood")
 	},
 	{
+		(CHAR*) N_LIKELIHOOD,
+		(&CSGInterface::a_likelihood),
+		(CHAR*) USAGE(N_LIKELIHOOD)
+	},
+	{
+		(CHAR*) N_SAVE_LIKELIHOOD,
+		(&CSGInterface::a_save_likelihood),
+		(CHAR*) USAGE_I(N_SAVE_LIKELIHOOD, "'filename[, save_binary]'")
+	},
+	{
 		(CHAR*) N_GET_VITERBI_PATH,
 		(&CSGInterface::a_get_viterbi_path),
 		(CHAR*) USAGE_IO(N_GET_VITERBI_PATH, "dim", "path, likelihood")
+	},
+	{
+		(CHAR*) N_VITERBI_TRAIN_DEFINED,
+		(&CSGInterface::a_viterbi_train_defined),
+		(CHAR*) USAGE(N_VITERBI_TRAIN_DEFINED)
+	},
+	{
+		(CHAR*) N_VITERBI_TRAIN,
+		(&CSGInterface::a_viterbi_train),
+		(CHAR*) USAGE(N_VITERBI_TRAIN)
+	},
+	{
+		(CHAR*) N_BAUM_WELCH_TRAIN,
+		(&CSGInterface::a_baum_welch_train),
+		(CHAR*) USAGE(N_BAUM_WELCH_TRAIN)
+	},
+	{
+		(CHAR*) N_BAUM_WELCH_TRANS_TRAIN,
+		(&CSGInterface::a_baum_welch_trans_train),
+		(CHAR*) USAGE(N_BAUM_WELCH_TRANS_TRAIN)
+	},
+	{
+		(CHAR*) N_LINEAR_TRAIN,
+		(&CSGInterface::a_linear_train),
+		(CHAR*) USAGE(N_LINEAR_TRAIN)
+	},
+	{
+		(CHAR*) N_SAVE_PATH,
+		(&CSGInterface::a_save_path),
+		(CHAR*) USAGE_I(N_SAVE_PATH, "'filename[, save_binary]'")
+	},
+	{
+		(CHAR*) N_CONVERGENCE_CRITERIA,
+		(&CSGInterface::a_convergence_criteria),
+		(CHAR*) USAGE_I(N_CONVERGENCE_CRITERIA, "'j, f'")
 	},
 	{
 		(CHAR*) N_RELATIVE_ENTROPY,
@@ -333,6 +471,11 @@ static CSGInterfaceMethod sg_methods[]=
 		(CHAR*) N_ENTROPY,
 		(&CSGInterface::a_entropy),
 		(CHAR*) USAGE_O(N_ENTROPY, "result")
+	},
+	{
+		(CHAR*) N_BEST_PATH,
+		(&CSGInterface::a_best_path),
+		(CHAR*) USAGE_I(N_BEST_PATH, "'from, to'")
 	},
 	{
 		(CHAR*) N_BEST_PATH_2STRUCT,
@@ -444,15 +587,50 @@ static CSGInterfaceMethod sg_methods[]=
 		(CHAR*) USAGE_IO(N_CRC, "string", "crc32")
 	},
 	{
-		(CHAR*) N_GET_VERSION,
-		(&CSGInterface::a_get_version),
-		(CHAR*) USAGE_O(N_GET_VERSION, "version")
+		(CHAR*) N_SYSTEM,
+		(&CSGInterface::a_system),
+		(CHAR*) USAGE_I(N_SYSTEM, "'command'")
+	},
+	{
+		(CHAR*) N_EXIT,
+		(&CSGInterface::a_exit),
+		(CHAR*) USAGE(N_EXIT)
+	},
+	{
+		(CHAR*) N_QUIT,
+		(&CSGInterface::a_exit),
+		(CHAR*) USAGE(N_QUIT)
+	},
+	{
+		(CHAR*) N_EXEC,
+		(&CSGInterface::a_exec),
+		(CHAR*) USAGE_I(N_EXEC, "'filename'")
+	},
+	{
+		(CHAR*) N_SET_OUTPUT,
+		(&CSGInterface::a_set_output),
+		(CHAR*) USAGE_I(N_SET_OUTPUT, "'STDERR|STDOUT|filename'")
+	},
+	{
+		(CHAR*) N_SET_THRESHOLD,
+		(&CSGInterface::a_set_threshold),
+		(CHAR*) USAGE_I(N_SET_THRESHOLD, "'threshold'")
 	},
 	{
 		(CHAR*) N_TRANSLATE_STRING,
 		(&CSGInterface::a_translate_string),
 		(CHAR*) USAGE_IO(N_TRANSLATE_STRING,
 			"string, order, start", "translation")
+	},
+	{
+		(CHAR*) N_CLEAR,
+		(&CSGInterface::a_clear),
+		(CHAR*) USAGE(N_CLEAR)
+	},
+	{
+		(CHAR*) N_GET_VERSION,
+		(&CSGInterface::a_get_version),
+		(CHAR*) USAGE_O(N_GET_VERSION, "version")
 	},
 	{
 		(CHAR*) N_HELP,
@@ -1046,6 +1224,21 @@ bool CSGInterface::a_init_kernel()
 	return send_command(N_INIT_KERNEL);
 }
 
+bool CSGInterface::a_save_kernel()
+{
+	return send_command(N_SAVE_KERNEL);
+}
+
+bool CSGInterface::a_load_kernel_init()
+{
+	return send_command(N_LOAD_KERNEL_INIT);
+}
+
+bool CSGInterface::a_save_kernel_init()
+{
+	return send_command(N_SAVE_KERNEL_INIT);
+}
+
 bool CSGInterface::a_get_kernel_matrix()
 {
 	if (m_nrhs!=1 || !create_return_values(1))
@@ -1064,6 +1257,11 @@ bool CSGInterface::a_get_kernel_matrix()
 	delete[] kmatrix;
 
 	return true;
+}
+
+bool CSGInterface::a_set_kernel()
+{
+	return send_command(N_SET_KERNEL);
 }
 
 bool CSGInterface::a_set_custom_kernel()
@@ -1693,6 +1891,16 @@ bool CSGInterface::a_delete_kernel_optimization()
 	return send_command(N_DELETE_KERNEL_OPTIMIZATION);
 }
 
+bool CSGInterface::a_set_kernel_optimization_type()
+{
+	return send_command(N_SET_KERNEL_OPTIMIZATION_TYPE);
+}
+
+bool CSGInterface::a_set_distance()
+{
+	return send_command(N_SET_DISTANCE);
+}
+
 bool CSGInterface::a_init_distance()
 {
 	return send_command(N_INIT_DISTANCE);
@@ -2088,12 +2296,32 @@ bool CSGInterface::a_get_svm_objective()
 	return true;
 }
 
+bool CSGInterface::a_do_auc_maximization()
+{
+	return send_command(N_DO_AUC_MAXIMIZATION);
+}
+
+bool CSGInterface::a_set_perceptron_parameters()
+{
+	return send_command(N_SET_PERCEPTRON_PARAMETERS);
+}
+
+bool CSGInterface::a_train_classifier()
+{
+	return send_command(N_TRAIN_CLASSIFIER);
+}
+
 
 /* Preproc */
 
 bool CSGInterface::a_load_preproc()
 {
 	return send_command(N_LOAD_PREPROC);
+}
+
+bool CSGInterface::a_save_preproc()
+{
+	return send_command(N_SAVE_PREPROC);
 }
 
 
@@ -2217,6 +2445,10 @@ bool CSGInterface::a_get_plugin_estimate()
 	return true;
 }
 
+bool CSGInterface::a_convergence_criteria()
+{
+	return send_command(N_CONVERGENCE_CRITERIA);
+}
 
 bool CSGInterface::a_relative_entropy()
 {
@@ -2377,6 +2609,16 @@ bool CSGInterface::do_hmm_classify_example(bool one_class)
 	return true;
 }
 
+bool CSGInterface::a_output_hmm()
+{
+	return send_command(N_OUTPUT_HMM);
+}
+
+bool CSGInterface::a_output_hmm_defined()
+{
+	return send_command(N_OUTPUT_HMM_DEFINED);
+}
+
 bool CSGInterface::a_hmm_likelihood()
 {
 	if (m_nrhs!=1 || !create_return_values(1))
@@ -2390,6 +2632,16 @@ bool CSGInterface::a_hmm_likelihood()
 	set_real(likelihood);
 
 	return true;
+}
+
+bool CSGInterface::a_likelihood()
+{
+	return send_command(N_LIKELIHOOD);
+}
+
+bool CSGInterface::a_save_likelihood()
+{
+	return send_command(N_SAVE_LIKELIHOOD);
 }
 
 bool CSGInterface::a_get_viterbi_path()
@@ -2425,6 +2677,36 @@ bool CSGInterface::a_get_viterbi_path()
 	set_real(likelihood);
 
 	return true;
+}
+
+bool CSGInterface::a_viterbi_train()
+{
+	return send_command(N_VITERBI_TRAIN);
+}
+
+bool CSGInterface::a_viterbi_train_defined()
+{
+	return send_command(N_VITERBI_TRAIN_DEFINED);
+}
+
+bool CSGInterface::a_baum_welch_train()
+{
+	return send_command(N_BAUM_WELCH_TRAIN);
+}
+
+bool CSGInterface::a_baum_welch_trans_train()
+{
+	return send_command(N_BAUM_WELCH_TRANS_TRAIN);
+}
+
+bool CSGInterface::a_linear_train()
+{
+	return send_command(N_LINEAR_TRAIN);
+}
+
+bool CSGInterface::a_save_path()
+{
+	return send_command(N_SAVE_PATH);
 }
 
 bool CSGInterface::a_append_hmm()
@@ -2497,6 +2779,11 @@ bool CSGInterface::a_load_hmm()
 	return send_command(N_LOAD_HMM);
 }
 
+bool CSGInterface::a_save_hmm()
+{
+	return send_command(N_SAVE_HMM);
+}
+
 bool CSGInterface::a_set_hmm()
 {
 	if (m_nrhs!=5 || !create_return_values(0))
@@ -2555,6 +2842,26 @@ bool CSGInterface::a_set_hmm()
 	return true;
 }
 
+bool CSGInterface::a_set_hmm_as()
+{
+	return send_command(N_SET_HMM_AS);
+}
+
+bool CSGInterface::a_set_chop()
+{
+	return send_command(N_CHOP);
+}
+
+bool CSGInterface::a_set_pseudo()
+{
+	return send_command(N_PSEUDO);
+}
+
+bool CSGInterface::a_load_definitions()
+{
+	return send_command(N_LOAD_DEFINITIONS);
+}
+
 bool CSGInterface::a_get_hmm()
 {
 	if (m_nrhs!=1 || !create_return_values(4))
@@ -2601,6 +2908,11 @@ bool CSGInterface::a_get_hmm()
 	delete[] b;
 
 	return true;
+}
+
+bool CSGInterface::a_best_path()
+{
+	return send_command(N_BEST_PATH);
 }
 
 bool CSGInterface::a_best_path_2struct()
@@ -2812,6 +3124,31 @@ bool CSGInterface::a_crc()
 	return true;
 }
 
+bool CSGInterface::a_system()
+{
+	return send_command(N_SYSTEM);
+}
+
+bool CSGInterface::a_exit()
+{
+	exit(0);
+}
+
+bool CSGInterface::a_exec()
+{
+	return send_command(N_EXEC);
+}
+
+bool CSGInterface::a_set_output()
+{
+	return send_command(N_SET_OUTPUT);
+}
+
+bool CSGInterface::a_set_threshold()
+{
+	return send_command(N_SET_THRESHOLD);
+}
+
 bool CSGInterface::a_translate_string()
 {
 	if (m_nrhs!=4 || !create_return_values(1))
@@ -2879,6 +3216,11 @@ bool CSGInterface::a_translate_string()
 	delete[] real_obs;
 
 	return true;
+}
+
+bool CSGInterface::a_clear()
+{
+	return send_command(N_CLEAR);
 }
 
 bool CSGInterface::a_get_version()
