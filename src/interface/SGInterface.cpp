@@ -121,9 +121,19 @@ static CSGInterfaceMethod sg_methods[]=
 		(CHAR*) USAGE_I(N_SET_KERNEL, "'type, size[, kernel-specific parameters]'")
 	},
 	{
+		(CHAR*) N_ADD_KERNEL,
+		(&CSGInterface::a_add_kernel),
+		(CHAR*) USAGE_I(N_ADD_KERNEL, "'weight, kernel-specific parameters'")
+	},
+	{
 		(CHAR*) N_INIT_KERNEL,
 		(&CSGInterface::a_init_kernel),
 		(CHAR*) USAGE_I(N_INIT_KERNEL, "'TRAIN|TEST'")
+	},
+	{
+		(CHAR*) N_CLEAN_KERNEL,
+		(&CSGInterface::a_clean_kernel),
+		(CHAR*) USAGE(N_CLEAN_KERNEL)
 	},
 	{
 		(CHAR*) N_SAVE_KERNEL,
@@ -210,6 +220,13 @@ static CSGInterfaceMethod sg_methods[]=
 		(&CSGInterface::a_set_kernel_optimization_type),
 		(CHAR*) USAGE_I(N_SET_KERNEL_OPTIMIZATION_TYPE, "'FASTBUTMEMHUNGRY|SLOWBUTMEMEFFICIENT'")
 	},
+#ifdef USE_SVMLIGHT
+	{
+		(CHAR*) N_RESIZE_KERNEL_CACHE,
+		(&CSGInterface::a_resize_kernel_cache),
+		(CHAR*) USAGE_I(N_RESIZE_KERNEL_CACHE, "'size'")
+	},
+#endif //USE_SVMLIGHT
 
 
 	{ (CHAR*) "Distance", NULL, NULL },
@@ -306,9 +323,24 @@ static CSGInterfaceMethod sg_methods[]=
 		(&CSGInterface::a_train_classifier),
 		(CHAR*) USAGE(N_SVM_TRAIN)
 	},
+	{
+		(CHAR*) N_SVM_TEST,
+		(&CSGInterface::a_test_svm),
+		(CHAR*) USAGE(N_SVM_TEST)
+	},
 
 
 	{ (CHAR*) "Preprocessors", NULL, NULL },
+	{
+		(CHAR*) N_ADD_PREPROC,
+		(&CSGInterface::a_add_preproc),
+		(CHAR*) USAGE_I(N_ADD_PREPROC, "'preproc[, preproc-specific parameters]'")
+	},
+	{
+		(CHAR*) N_DEL_PREPROC,
+		(&CSGInterface::a_del_preproc),
+		(CHAR*) USAGE(N_DEL_PREPROC)
+	},
 	{
 		(CHAR*) N_LOAD_PREPROC,
 		(&CSGInterface::a_load_preproc),
@@ -318,6 +350,16 @@ static CSGInterfaceMethod sg_methods[]=
 		(CHAR*) N_SAVE_PREPROC,
 		(&CSGInterface::a_save_preproc),
 		(CHAR*) USAGE_I(N_SAVE_PREPROC, "'filename'")
+	},
+	{
+		(CHAR*) N_ATTACH_PREPROC,
+		(&CSGInterface::a_attach_preproc),
+		(CHAR*) USAGE_I(N_ATTACH_PREPROC, "'TRAIN|TEST, force'")
+	},
+	{
+		(CHAR*) N_CLEAN_PREPROC,
+		(&CSGInterface::a_clean_preproc),
+		(CHAR*) USAGE(N_CLEAN_PREPROC)
 	},
 
 
@@ -378,9 +420,19 @@ static CSGInterfaceMethod sg_methods[]=
 		(CHAR*) USAGE_O(N_HMM_CLASSIFY, "result")
 	},
 	{
+		(CHAR*) N_HMM_TEST,
+		(&CSGInterface::a_hmm_test),
+		(CHAR*) USAGE_I(N_HMM_TEST, "'output name[, ROC filename[, neglinear[, poslinear]]]'")
+	},
+	{
 		(CHAR*) N_ONE_CLASS_LINEAR_HMM_CLASSIFY,
 		(&CSGInterface::a_one_class_linear_hmm_classify),
 		(CHAR*) USAGE_O(N_ONE_CLASS_LINEAR_HMM_CLASSIFY, "result")
+	},
+	{
+		(CHAR*) N_ONE_CLASS_HMM_TEST,
+		(&CSGInterface::a_one_class_hmm_test),
+		(CHAR*) USAGE_I(N_ONE_CLASS_HMM_TEST, "'output name[, ROC filename[, linear]]'")
 	},
 	{
 		(CHAR*) N_ONE_CLASS_HMM_CLASSIFY,
@@ -461,6 +513,21 @@ static CSGInterfaceMethod sg_methods[]=
 		(CHAR*) N_CONVERGENCE_CRITERIA,
 		(&CSGInterface::a_convergence_criteria),
 		(CHAR*) USAGE_I(N_CONVERGENCE_CRITERIA, "'j, f'")
+	},
+	{
+		(CHAR*) N_NORMALIZE,
+		(&CSGInterface::a_normalize),
+		(CHAR*) USAGE_I(N_NORMALIZE, "'[keep_dead_states]'")
+	},
+	{
+		(CHAR*) N_ADD_STATES,
+		(&CSGInterface::a_add_states),
+		(CHAR*) USAGE_I(N_ADD_STATES, "'states, value'")
+	},
+	{
+		(CHAR*) N_PERMUTATION_ENTROPY,
+		(&CSGInterface::a_permutation_entropy),
+		(CHAR*) USAGE_I(N_PERMUTATION_ENTROPY, "'width, seqnum'")
 	},
 	{
 		(CHAR*) N_RELATIVE_ENTROPY,
@@ -1217,11 +1284,26 @@ bool CSGInterface::a_get_labels()
 }
 
 
-/** Kernel & Distances */
+/** Kernel */
+
+bool CSGInterface::a_set_kernel()
+{
+	return send_command(N_SET_KERNEL);
+}
+
+bool CSGInterface::a_add_kernel()
+{
+	return send_command(N_ADD_KERNEL);
+}
 
 bool CSGInterface::a_init_kernel()
 {
 	return send_command(N_INIT_KERNEL);
+}
+
+bool CSGInterface::a_clean_kernel()
+{
+	return send_command(N_CLEAN_KERNEL);
 }
 
 bool CSGInterface::a_save_kernel()
@@ -1257,11 +1339,6 @@ bool CSGInterface::a_get_kernel_matrix()
 	delete[] kmatrix;
 
 	return true;
-}
-
-bool CSGInterface::a_set_kernel()
-{
-	return send_command(N_SET_KERNEL);
 }
 
 bool CSGInterface::a_set_custom_kernel()
@@ -1896,6 +1973,16 @@ bool CSGInterface::a_set_kernel_optimization_type()
 	return send_command(N_SET_KERNEL_OPTIMIZATION_TYPE);
 }
 
+#ifdef USE_SVMLIGHT
+bool CSGInterface::a_resize_kernel_cache()
+{
+	return send_command(N_RESIZE_KERNEL_CACHE);
+}
+#endif //USE_SVMLIGHT
+
+
+/** Distance */
+
 bool CSGInterface::a_set_distance()
 {
 	return send_command(N_SET_DISTANCE);
@@ -2311,8 +2398,23 @@ bool CSGInterface::a_train_classifier()
 	return send_command(N_TRAIN_CLASSIFIER);
 }
 
+bool CSGInterface::a_test_svm()
+{
+	return send_command(N_SVM_TEST);
+}
+
 
 /* Preproc */
+
+bool CSGInterface::a_add_preproc()
+{
+	return send_command(N_ADD_PREPROC);
+}
+
+bool CSGInterface::a_del_preproc()
+{
+	return send_command(N_DEL_PREPROC);
+}
 
 bool CSGInterface::a_load_preproc()
 {
@@ -2322,6 +2424,16 @@ bool CSGInterface::a_load_preproc()
 bool CSGInterface::a_save_preproc()
 {
 	return send_command(N_SAVE_PREPROC);
+}
+
+bool CSGInterface::a_attach_preproc()
+{
+	return send_command(N_ATTACH_PREPROC);
+}
+
+bool CSGInterface::a_clean_preproc()
+{
+	return send_command(N_CLEAN_PREPROC);
 }
 
 
@@ -2450,6 +2562,21 @@ bool CSGInterface::a_convergence_criteria()
 	return send_command(N_CONVERGENCE_CRITERIA);
 }
 
+bool CSGInterface::a_normalize()
+{
+	return send_command(N_NORMALIZE);
+}
+
+bool CSGInterface::a_add_states()
+{
+	return send_command(N_ADD_STATES);
+}
+
+bool CSGInterface::a_permutation_entropy()
+{
+	return send_command(N_PERMUTATION_ENTROPY);
+}
+
 bool CSGInterface::a_relative_entropy()
 {
 	if (m_nrhs!=1 || !create_return_values(1))
@@ -2530,6 +2657,16 @@ bool CSGInterface::a_entropy()
 bool CSGInterface::a_hmm_classify()
 {
 	return do_hmm_classify(false, false);
+}
+
+bool CSGInterface::a_hmm_test()
+{
+	return send_command(N_HMM_TEST);
+}
+
+bool CSGInterface::a_one_class_hmm_test()
+{
+	return send_command(N_ONE_CLASS_HMM_TEST);
 }
 
 bool CSGInterface::a_one_class_hmm_classify()

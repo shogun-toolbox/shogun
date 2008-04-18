@@ -47,7 +47,7 @@ class CSGInterface : public CSGObject
 		bool a_load_features();
 		/** save features to file */
 		bool a_save_features();
-		/** clean/clear features */
+		/** clear/clean features */
 		bool a_clean_features();
 		/** get features */
 		bool a_get_features();
@@ -74,8 +74,12 @@ class CSGInterface : public CSGObject
 
 		/** set kernel */
 		bool a_set_kernel();
+		/** add kernel (to e.g. CombinedKernel) */
+		bool a_add_kernel();
 		/** initialize kernel */
 		bool a_init_kernel();
+		/** clear/clean kernel */
+		bool a_clean_kernel();
 		/** save kernel to file */
 		bool a_save_kernel();
 		/** load kernel init from file */
@@ -110,6 +114,11 @@ class CSGInterface : public CSGObject
 		bool a_delete_kernel_optimization();
 		/** set kernel optimization type */
 		bool a_set_kernel_optimization_type();
+#ifdef USE_SVMLIGHT
+		bool a_resize_kernel_cache();
+#endif //USE_SVMLIGHT
+
+
 		/** set distance */
 		bool a_set_distance();
 		/** init distance */
@@ -150,11 +159,21 @@ class CSGInterface : public CSGObject
 		bool a_set_perceptron_parameters();
 		/** train classifier/SVM */
 		bool a_train_classifier();
+		/** test SVM */
+		bool a_test_svm();
 
+		/** add preproc */
+		bool a_add_preproc();
+		/** delete preproc */
+		bool a_del_preproc();
 		/** load preproc from file */
 		bool a_load_preproc();
 		/** save preproc to file */
 		bool a_save_preproc();
+		/** attach preproc to test/train */
+		bool a_attach_preproc();
+		/** clear/clean preproc */
+		bool a_clean_preproc();
 
 		/** create new HMM */
 		bool a_new_hmm();
@@ -164,12 +183,16 @@ class CSGInterface : public CSGObject
 		bool a_save_hmm();
 		/** HMM classify */
 		bool a_hmm_classify();
+		/** HMM test */
+		bool a_hmm_test();
 		/** HMM classify for a single example */
 		bool a_hmm_classify_example();
 		/** LinearHMM classify for 1-class examples */
 		bool a_one_class_linear_hmm_classify();
 		/** HMM classify for 1-class examples */
 		bool a_one_class_hmm_classify();
+		/** One Class HMM test */
+		bool a_one_class_hmm_test();
 		/** HMM classify for a single 1-class example */
 		bool a_one_class_hmm_classify_example();
 		/** output HMM */
@@ -212,6 +235,12 @@ class CSGInterface : public CSGObject
 		bool a_load_definitions();
 		/** convergence criteria */
 		bool a_convergence_criteria();
+		/** normalize HMM */
+		bool a_normalize();
+		/** add HMM states */
+		bool a_add_states();
+		/** permutation entropy */
+		bool a_permutation_entropy();
 		/** compute HMM relative entropy */
 		bool a_relative_entropy();
 		/** compute HMM entropy */
