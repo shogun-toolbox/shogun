@@ -42,74 +42,74 @@ static CSGInterfaceMethod sg_methods[]=
 	{ (CHAR*) "Features", NULL, NULL },
 	{
 		(CHAR*) N_LOAD_FEATURES,
-		(&CSGInterface::a_load_features),
+		(&CSGInterface::cmd_load_features),
 		(CHAR*) USAGE_I(N_LOAD_FEATURES, "'filename, fclass, type, target[, size[, comp_features]]'")
 	},
 	{
 		(CHAR*) N_SAVE_FEATURES,
-		(&CSGInterface::a_save_features),
+		(&CSGInterface::cmd_save_features),
 		(CHAR*) USAGE_I(N_SAVE_FEATURES, "'filename, type, target'")
 	},
 	{
 		(CHAR*) N_CLEAN_FEATURES,
-		(&CSGInterface::a_clean_features),
+		(&CSGInterface::cmd_clean_features),
 		(CHAR*) USAGE_I(N_CLEAN_FEATURES, "'TRAIN|TEST'")
 	},
 	{
 		(CHAR*) N_GET_FEATURES,
-		(&CSGInterface::a_get_features),
+		(&CSGInterface::cmd_get_features),
 		(CHAR*) USAGE_IO(N_GET_FEATURES, "'TRAIN|TEST'", "features")
 	},
 	{
 		(CHAR*) N_ADD_FEATURES,
-		(&CSGInterface::a_add_features),
+		(&CSGInterface::cmd_add_features),
 		(CHAR*) USAGE_I(N_ADD_FEATURES,
 			"'TRAIN|TEST', features[, DNABINFILE|<ALPHABET>]")
 	},
 	{
 		(CHAR*) N_SET_FEATURES,
-		(&CSGInterface::a_set_features),
+		(&CSGInterface::cmd_set_features),
 		(CHAR*) USAGE_I(N_SET_FEATURES,
 			"'TRAIN|TEST', features[, DNABINFILE|<ALPHABET>]")
 	},
 	{
 		(CHAR*) N_SET_REF_FEAT,
-		(&CSGInterface::a_set_reference_features),
+		(&CSGInterface::cmd_set_reference_features),
 		(CHAR*) USAGE_I(N_SET_REF_FEAT, "'TRAIN|TEST'")
 	},
 	{
 		(CHAR*) N_CONVERT,
-		(&CSGInterface::a_convert),
+		(&CSGInterface::cmd_convert),
 		(CHAR*) USAGE_I(N_CONVERT, "'TRAIN|TEST', from_class, from_type, to_class, to_type'")
 	},
 	{
 		(CHAR*) N_FROM_POSITION_LIST,
-		(&CSGInterface::a_obtain_from_position_list),
+		(&CSGInterface::cmd_obtain_from_position_list),
 		(CHAR*) USAGE_I(N_FROM_POSITION_LIST, "'TRAIN|TEST', winsize, shift[, skip]")
 	},
 	{
 		(CHAR*) N_SLIDE_WINDOW,
-		(&CSGInterface::a_obtain_by_sliding_window),
+		(&CSGInterface::cmd_obtain_by_sliding_window),
 		(CHAR*) USAGE_I(N_SLIDE_WINDOW, "'TRAIN|TEST, winsize, shift[, skip]'")
 	},
 	{
 		(CHAR*) N_RESHAPE,
-		(&CSGInterface::a_reshape),
+		(&CSGInterface::cmd_reshape),
 		(CHAR*) USAGE_I(N_RESHAPE, "'TRAIN|TEST, num_feat, num_vec'")
 	},
 	{
 		(CHAR*) N_LOAD_LABELS,
-		(&CSGInterface::a_load_labels),
+		(&CSGInterface::cmd_load_labels),
 		(CHAR*) USAGE_I(N_LOAD_LABELS, "'filename, TRAIN|TARGET'")
 	},
 	{
 		(CHAR*) N_SET_LABELS,
-		(&CSGInterface::a_set_labels),
+		(&CSGInterface::cmd_set_labels),
 		(CHAR*) USAGE_I(N_SET_LABELS, "'TRAIN|TEST', labels")
 	},
 	{
 		(CHAR*) N_GET_LABELS,
-		(&CSGInterface::a_get_labels),
+		(&CSGInterface::cmd_get_labels),
 		(CHAR*) USAGE_IO(N_GET_LABELS, "'TRAIN|TEST'", "labels")
 	},
 
@@ -117,113 +117,113 @@ static CSGInterfaceMethod sg_methods[]=
 	{ (CHAR*) "Kernel", NULL, NULL },
 	{
 		(CHAR*) N_SET_KERNEL,
-		(&CSGInterface::a_set_kernel),
+		(&CSGInterface::cmd_set_kernel),
 		(CHAR*) USAGE_I(N_SET_KERNEL, "'type, size[, kernel-specific parameters]'")
 	},
 	{
 		(CHAR*) N_ADD_KERNEL,
-		(&CSGInterface::a_add_kernel),
+		(&CSGInterface::cmd_add_kernel),
 		(CHAR*) USAGE_I(N_ADD_KERNEL, "'weight, kernel-specific parameters'")
 	},
 	{
 		(CHAR*) N_INIT_KERNEL,
-		(&CSGInterface::a_init_kernel),
+		(&CSGInterface::cmd_init_kernel),
 		(CHAR*) USAGE_I(N_INIT_KERNEL, "'TRAIN|TEST'")
 	},
 	{
 		(CHAR*) N_CLEAN_KERNEL,
-		(&CSGInterface::a_clean_kernel),
+		(&CSGInterface::cmd_clean_kernel),
 		(CHAR*) USAGE(N_CLEAN_KERNEL)
 	},
 	{
 		(CHAR*) N_SAVE_KERNEL,
-		(&CSGInterface::a_save_kernel),
+		(&CSGInterface::cmd_save_kernel),
 		(CHAR*) USAGE_I(N_SAVE_KERNEL, "'filename'")
 	},
 	{
 		(CHAR*) N_LOAD_KERNEL_INIT,
-		(&CSGInterface::a_load_kernel_init),
+		(&CSGInterface::cmd_load_kernel_init),
 		(CHAR*) USAGE_I(N_LOAD_KERNEL_INIT, "'filename'")
 	},
 	{
 		(CHAR*) N_SAVE_KERNEL_INIT,
-		(&CSGInterface::a_save_kernel_init),
+		(&CSGInterface::cmd_save_kernel_init),
 		(CHAR*) USAGE_I(N_SAVE_KERNEL_INIT, "'filename'")
 	},
 	{
 		(CHAR*) N_GET_KERNEL_MATRIX,
-		(&CSGInterface::a_get_kernel_matrix),
+		(&CSGInterface::cmd_get_kernel_matrix),
 		(CHAR*) USAGE_O(N_GET_KERNEL_MATRIX, "K")
 	},
 	{
 		(CHAR*) N_SET_CUSTOM_KERNEL,
-		(&CSGInterface::a_set_custom_kernel),
+		(&CSGInterface::cmd_set_custom_kernel),
 		(CHAR*) USAGE_I(N_SET_CUSTOM_KERNEL, "kernelmatrix, 'DIAG|FULL|FULL2DIAG'")
 	},
 	{
 		(CHAR*) N_SET_WD_POS_WEIGHTS,
-		(&CSGInterface::a_set_WD_position_weights),
+		(&CSGInterface::cmd_set_WD_position_weights),
 		(CHAR*) USAGE_I(N_SET_WD_POS_WEIGHTS, "W[, 'TRAIN|TEST']")
 	},
 	{
 		(CHAR*) N_GET_SUBKERNEL_WEIGHTS,
-		(&CSGInterface::a_get_subkernel_weights),
+		(&CSGInterface::cmd_get_subkernel_weights),
 		(CHAR*) USAGE_O(N_GET_SUBKERNEL_WEIGHTS, "W")
 	},
 	{
 		(CHAR*) N_SET_SUBKERNEL_WEIGHTS,
-		(&CSGInterface::a_set_subkernel_weights),
+		(&CSGInterface::cmd_set_subkernel_weights),
 		(CHAR*) USAGE_I(N_SET_SUBKERNEL_WEIGHTS, "W")
 	},
 	{
 		(CHAR*) N_SET_SUBKERNEL_WEIGHTS_COMBINED,
-		(&CSGInterface::a_set_subkernel_weights_combined),
+		(&CSGInterface::cmd_set_subkernel_weights_combined),
 		(CHAR*) USAGE_I(N_SET_SUBKERNEL_WEIGHTS_COMBINED, "W, idx")
 	},
 	{
 		(CHAR*) N_SET_LAST_SUBKERNEL_WEIGHTS,
-		(&CSGInterface::a_set_last_subkernel_weights),
+		(&CSGInterface::cmd_set_last_subkernel_weights),
 		(CHAR*) USAGE_I(N_SET_LAST_SUBKERNEL_WEIGHTS, "W")
 	},
 	{
 		(CHAR*) N_GET_WD_POS_WEIGHTS,
-		(&CSGInterface::a_get_WD_position_weights),
+		(&CSGInterface::cmd_get_WD_position_weights),
 		(CHAR*) USAGE_O(N_GET_WD_POS_WEIGHTS, "W")
 	},
 	{
 		(CHAR*) N_GET_LAST_SUBKERNEL_WEIGHTS,
-		(&CSGInterface::a_get_last_subkernel_weights),
+		(&CSGInterface::cmd_get_last_subkernel_weights),
 		(CHAR*) USAGE_O(N_GET_LAST_SUBKERNEL_WEIGHTS, "W")
 	},
 	{
 		(CHAR*) N_COMPUTE_BY_SUBKERNELS,
-		(&CSGInterface::a_compute_by_subkernels),
+		(&CSGInterface::cmd_compute_by_subkernels),
 		(CHAR*) USAGE_O(N_COMPUTE_BY_SUBKERNELS, "W")
 	},
 	{
 		(CHAR*) N_INIT_KERNEL_OPTIMIZATION,
-		(&CSGInterface::a_init_kernel_optimization),
+		(&CSGInterface::cmd_init_kernel_optimization),
 		(CHAR*) USAGE(N_INIT_KERNEL_OPTIMIZATION)
 	},
 	{
 		(CHAR*) N_GET_KERNEL_OPTIMIZATION,
-		(&CSGInterface::a_get_kernel_optimization),
+		(&CSGInterface::cmd_get_kernel_optimization),
 		(CHAR*) USAGE_O(N_GET_KERNEL_OPTIMIZATION, "W")
 	},
 	{
 		(CHAR*) N_DELETE_KERNEL_OPTIMIZATION,
-		(&CSGInterface::a_delete_kernel_optimization),
+		(&CSGInterface::cmd_delete_kernel_optimization),
 		(CHAR*) USAGE(N_DELETE_KERNEL_OPTIMIZATION)
 	},
 	{
 		(CHAR*) N_SET_KERNEL_OPTIMIZATION_TYPE,
-		(&CSGInterface::a_set_kernel_optimization_type),
+		(&CSGInterface::cmd_set_kernel_optimization_type),
 		(CHAR*) USAGE_I(N_SET_KERNEL_OPTIMIZATION_TYPE, "'FASTBUTMEMHUNGRY|SLOWBUTMEMEFFICIENT'")
 	},
 #ifdef USE_SVMLIGHT
 	{
 		(CHAR*) N_RESIZE_KERNEL_CACHE,
-		(&CSGInterface::a_resize_kernel_cache),
+		(&CSGInterface::cmd_resize_kernel_cache),
 		(CHAR*) USAGE_I(N_RESIZE_KERNEL_CACHE, "'size'")
 	},
 #endif //USE_SVMLIGHT
@@ -232,17 +232,17 @@ static CSGInterfaceMethod sg_methods[]=
 	{ (CHAR*) "Distance", NULL, NULL },
 	{
 		(CHAR*) N_SET_DISTANCE,
-		(&CSGInterface::a_set_distance),
+		(&CSGInterface::cmd_set_distance),
 		(CHAR*) USAGE_I(N_SET_DISTANCE, "'type, data type[, distance-specific parameters]'")
 	},
 	{
 		(CHAR*) N_INIT_DISTANCE,
-		(&CSGInterface::a_init_distance),
+		(&CSGInterface::cmd_init_distance),
 		(CHAR*) USAGE_I(N_INIT_DISTANCE, "'TRAIN|TEST'")
 	},
 	{
 		(CHAR*) N_GET_DISTANCE_MATRIX,
-		(&CSGInterface::a_get_distance_matrix),
+		(&CSGInterface::cmd_get_distance_matrix),
 		(CHAR*) USAGE_O(N_GET_DISTANCE_MATRIX, "D")
 	},
 
@@ -250,157 +250,157 @@ static CSGInterfaceMethod sg_methods[]=
 	{ (CHAR*) "SVM & Other Classifier", NULL, NULL },
 	{
 		(CHAR*) N_CLASSIFY,
-		(&CSGInterface::a_classify),
+		(&CSGInterface::cmd_classify),
 		(CHAR*) USAGE_O(N_CLASSIFY, "result")
 	},
 	{
 		(CHAR*) N_SVM_CLASSIFY,
-		(&CSGInterface::a_classify),
+		(&CSGInterface::cmd_classify),
 		(CHAR*) USAGE_O(N_SVM_CLASSIFY, "result")
 	},
 	{
 		(CHAR*) N_CLASSIFY_EXAMPLE,
-		(&CSGInterface::a_classify_example),
+		(&CSGInterface::cmd_classify_example),
 		(CHAR*) USAGE_IO(N_CLASSIFY_EXAMPLE, "feature_vector_index", "result")
 	},
 	{
 		(CHAR*) N_SVM_CLASSIFY_EXAMPLE,
-		(&CSGInterface::a_classify_example),
+		(&CSGInterface::cmd_classify_example),
 		(CHAR*) USAGE_IO(N_SVM_CLASSIFY_EXAMPLE, "feature_vector_index", "result")
 	},
 	{
 		(CHAR*) N_GET_CLASSIFIER,
-		(&CSGInterface::a_get_classifier),
+		(&CSGInterface::cmd_get_classifier),
 		(CHAR*) USAGE_O(N_GET_CLASSIFIER, "bias, weights")
 	},
 	{
 		(CHAR*) N_NEW_SVM,
-		(&CSGInterface::a_new_classifier),
+		(&CSGInterface::cmd_new_classifier),
 		(CHAR*) USAGE_I(N_NEW_SVM, "'LIBSVM_ONECLASS|LIBSVM_MULTICLASS|LIBSVM|SVMLIGHT|LIGHT|SVMLIN|GPBTSVM|MPDSVM|GNPPSVM|GMNPSVM|SUBGRADIENTSVM|WDSVMOCAS|SVMOCAS|SVMSGD|SVMBMRM|SVMPERF|SVRLIGHT|LIBSVR|KERNELPERCEPTRON|PERCEPTRON|LIBLINEAR_LR|LIBLINEAR_L2|LDA|LPM|LPBOOST|SUBGRADIENTLPM|KNN|KMEANS|HIERARCHICAL'")
 	},
 	{
 		(CHAR*) N_NEW_CLASSIFIER,
-		(&CSGInterface::a_new_classifier),
+		(&CSGInterface::cmd_new_classifier),
 		(CHAR*) USAGE_I(N_NEW_CLASSIFIER, "'LIBSVM_ONECLASS|LIBSVM_MULTICLASS|LIBSVM|SVMLIGHT|LIGHT|SVMLIN|GPBTSVM|MPDSVM|GNPPSVM|GMNPSVM|SUBGRADIENTSVM|WDSVMOCAS|SVMOCAS|SVMSGD|SVMBMRM|SVMPERF|SVRLIGHT|LIBSVR|KERNELPERCEPTRON|PERCEPTRON|LIBLINEAR_LR|LIBLINEAR_L2|LDA|LPM|LPBOOST|SUBGRADIENTLPM|KNN|KMEANS|HIERARCHICAL'")
 	},
 	{
 		(CHAR*) N_LOAD_SVM,
-		(&CSGInterface::a_load_classifier),
+		(&CSGInterface::cmd_load_classifier),
 		(CHAR*) USAGE_O(N_LOAD_SVM, "'filename, type'")
 	},
 	{
 		(CHAR*) N_GET_SVM,
-		(&CSGInterface::a_get_svm),
+		(&CSGInterface::cmd_get_svm),
 		(CHAR*) USAGE_O(N_GET_SVM, "bias, alphas")
 	},
 	{
 		(CHAR*) N_SET_SVM,
-		(&CSGInterface::a_set_svm),
+		(&CSGInterface::cmd_set_svm),
 		(CHAR*) USAGE_I(N_SET_SVM, "bias, alphas")
 	},
 	{
 		(CHAR*) N_GET_SVM_OBJECTIVE,
-		(&CSGInterface::a_get_svm_objective),
+		(&CSGInterface::cmd_get_svm_objective),
 		(CHAR*) USAGE_O(N_GET_SVM_OBJECTIVE, "objective")
 	},
 	{
 		(CHAR*) N_DO_AUC_MAXIMIZATION,
-		(&CSGInterface::a_do_auc_maximization),
+		(&CSGInterface::cmd_do_auc_maximization),
 		(CHAR*) USAGE_I(N_DO_AUC_MAXIMIZATION, "'auc'")
 	},
 	{
 		(CHAR*) N_SET_PERCEPTRON_PARAMETERS,
-		(&CSGInterface::a_set_perceptron_parameters),
+		(&CSGInterface::cmd_set_perceptron_parameters),
 		(CHAR*) USAGE_I(N_SET_PERCEPTRON_PARAMETERS, "'learnrate, maxiter'")
 	},
 	{
 		(CHAR*) N_TRAIN_CLASSIFIER,
-		(&CSGInterface::a_train_classifier),
+		(&CSGInterface::cmd_train_classifier),
 		(CHAR*) USAGE(N_TRAIN_CLASSIFIER)
 	},
 	{
 		(CHAR*) N_SVM_TRAIN,
-		(&CSGInterface::a_train_classifier),
+		(&CSGInterface::cmd_train_classifier),
 		(CHAR*) USAGE(N_SVM_TRAIN)
 	},
 	{
 		(CHAR*) N_SVM_TEST,
-		(&CSGInterface::a_test_svm),
+		(&CSGInterface::cmd_test_svm),
 		(CHAR*) USAGE(N_SVM_TEST)
 	},
 	{
 		(CHAR*) N_SVMQPSIZE,
-		(&CSGInterface::a_set_svm_qpsize),
+		(&CSGInterface::cmd_set_svm_qpsize),
 		(CHAR*) USAGE_I(N_SVMQPSIZE, "'size'")
 	},
 	{
 		(CHAR*) N_SVMMAXQPSIZE,
-		(&CSGInterface::a_set_svm_max_qpsize),
+		(&CSGInterface::cmd_set_svm_max_qpsize),
 		(CHAR*) USAGE_I(N_SVMMAXQPSIZE, "'size'")
 	},
 	{
 		(CHAR*) N_SVMBUFSIZE,
-		(&CSGInterface::a_set_svm_bufsize),
+		(&CSGInterface::cmd_set_svm_bufsize),
 		(CHAR*) USAGE_I(N_SVMBUFSIZE, "'size'")
 	},
 	{
 		(CHAR*) N_C,
-		(&CSGInterface::a_set_svm_C),
+		(&CSGInterface::cmd_set_svm_C),
 		(CHAR*) USAGE_I(N_C, "'C1, C2'")
 	},
 	{
 		(CHAR*) N_SVM_EPSILON,
-		(&CSGInterface::a_set_svm_epsilon),
+		(&CSGInterface::cmd_set_svm_epsilon),
 		(CHAR*) USAGE_I(N_SVM_EPSILON, "'epsilon'")
 	},
 	{
 		(CHAR*) N_SVR_TUBE_EPSILON,
-		(&CSGInterface::a_set_svr_tube_epsilon),
+		(&CSGInterface::cmd_set_svr_tube_epsilon),
 		(CHAR*) USAGE_I(N_SVR_TUBE_EPSILON, "'tube_epsilon'")
 	},
 	{
 		(CHAR*) N_SVM_ONE_CLASS_NU,
-		(&CSGInterface::a_set_svm_one_class_nu),
+		(&CSGInterface::cmd_set_svm_one_class_nu),
 		(CHAR*) USAGE_I(N_SVM_ONE_CLASS_NU, "'nu'")
 	},
 	{
 		(CHAR*) N_MKL_PARAMETERS,
-		(&CSGInterface::a_set_svm_mkl_parameters),
+		(&CSGInterface::cmd_set_svm_mkl_parameters),
 		(CHAR*) USAGE_I(N_MKL_PARAMETERS, "'weight_epsilon, C_MKL'")
 	},
 	{
 		(CHAR*) N_SVM_MAX_TRAIN_TIME,
-		(&CSGInterface::a_set_max_train_time),
+		(&CSGInterface::cmd_set_max_train_time),
 		(CHAR*) USAGE_I(N_SVM_MAX_TRAIN_TIME, "'max_train_time'")
 	},
 	{
 		(CHAR*) N_USE_PRECOMPUTE,
-		(&CSGInterface::a_set_svm_precompute_enabled),
+		(&CSGInterface::cmd_set_svm_precompute_enabled),
 		(CHAR*) USAGE_I(N_USE_PRECOMPUTE, "'enable_precompute'")
 	},
 	{
 		(CHAR*) N_USE_MKL,
-		(&CSGInterface::a_set_svm_mkl_enabled),
+		(&CSGInterface::cmd_set_svm_mkl_enabled),
 		(CHAR*) USAGE_I(N_USE_MKL, "'enable_mkl'")
 	},
 	{
 		(CHAR*) N_USE_SHRINKING,
-		(&CSGInterface::a_set_svm_shrinking_enabled),
+		(&CSGInterface::cmd_set_svm_shrinking_enabled),
 		(CHAR*) USAGE_I(N_USE_SHRINKING, "'enable_shrinking'")
 	},
 	{
 		(CHAR*) N_USE_BATCH_COMPUTATION,
-		(&CSGInterface::a_set_svm_batch_computation_enabled),
+		(&CSGInterface::cmd_set_svm_batch_computation_enabled),
 		(CHAR*) USAGE_I(N_USE_BATCH_COMPUTATION, "'enable_batch_computation'")
 	},
 	{
 		(CHAR*) N_USE_LINADD,
-		(&CSGInterface::a_set_svm_linadd_enabled),
+		(&CSGInterface::cmd_set_svm_linadd_enabled),
 		(CHAR*) USAGE_I(N_USE_LINADD, "'enable_linadd'")
 	},
 	{
 		(CHAR*) N_SVM_USE_BIAS,
-		(&CSGInterface::a_set_svm_bias_enabled),
+		(&CSGInterface::cmd_set_svm_bias_enabled),
 		(CHAR*) USAGE_I(N_SVM_USE_BIAS, "'enable_bias'")
 	},
 
@@ -408,32 +408,32 @@ static CSGInterfaceMethod sg_methods[]=
 	{ (CHAR*) "Preprocessors", NULL, NULL },
 	{
 		(CHAR*) N_ADD_PREPROC,
-		(&CSGInterface::a_add_preproc),
+		(&CSGInterface::cmd_add_preproc),
 		(CHAR*) USAGE_I(N_ADD_PREPROC, "'preproc[, preproc-specific parameters]'")
 	},
 	{
 		(CHAR*) N_DEL_PREPROC,
-		(&CSGInterface::a_del_preproc),
+		(&CSGInterface::cmd_del_preproc),
 		(CHAR*) USAGE(N_DEL_PREPROC)
 	},
 	{
 		(CHAR*) N_LOAD_PREPROC,
-		(&CSGInterface::a_load_preproc),
+		(&CSGInterface::cmd_load_preproc),
 		(CHAR*) USAGE_I(N_LOAD_PREPROC, "'filename'")
 	},
 	{
 		(CHAR*) N_SAVE_PREPROC,
-		(&CSGInterface::a_save_preproc),
+		(&CSGInterface::cmd_save_preproc),
 		(CHAR*) USAGE_I(N_SAVE_PREPROC, "'filename'")
 	},
 	{
 		(CHAR*) N_ATTACH_PREPROC,
-		(&CSGInterface::a_attach_preproc),
+		(&CSGInterface::cmd_attach_preproc),
 		(CHAR*) USAGE_I(N_ATTACH_PREPROC, "'TRAIN|TEST, force'")
 	},
 	{
 		(CHAR*) N_CLEAN_PREPROC,
-		(&CSGInterface::a_clean_preproc),
+		(&CSGInterface::cmd_clean_preproc),
 		(CHAR*) USAGE(N_CLEAN_PREPROC)
 	},
 
@@ -441,255 +441,255 @@ static CSGInterfaceMethod sg_methods[]=
 	{ (CHAR*) "HMM", NULL, NULL },
 	{
 		(CHAR*) N_NEW_HMM,
-		(&CSGInterface::a_new_hmm),
+		(&CSGInterface::cmd_new_hmm),
 		(CHAR*) USAGE_I(N_NEW_HMM, "'N, M'")
 	},
 	{
 		(CHAR*) N_LOAD_HMM,
-		(&CSGInterface::a_load_hmm),
+		(&CSGInterface::cmd_load_hmm),
 		(CHAR*) USAGE_I(N_LOAD_HMM, "'filename'")
 	},
 	{
 		(CHAR*) N_SAVE_HMM,
-		(&CSGInterface::a_save_hmm),
+		(&CSGInterface::cmd_save_hmm),
 		(CHAR*) USAGE_I(N_SAVE_HMM, "'filename[, save_binary]'")
 	},
 	{
 		(CHAR*) N_GET_HMM,
-		(&CSGInterface::a_get_hmm),
+		(&CSGInterface::cmd_get_hmm),
 		(CHAR*) USAGE_O(N_GET_HMM, "p, q, a, b")
 	},
 	{
 		(CHAR*) N_APPEND_HMM,
-		(&CSGInterface::a_append_hmm),
+		(&CSGInterface::cmd_append_hmm),
 		(CHAR*) USAGE_I(N_APPEND_HMM, "p, q, a, b")
 	},
 	{
 		(CHAR*) N_SET_HMM,
-		(&CSGInterface::a_set_hmm),
+		(&CSGInterface::cmd_set_hmm),
 		(CHAR*) USAGE_I(N_SET_HMM, "p, q, a, b")
 	},
 	{
 		(CHAR*) N_SET_HMM_AS,
-		(&CSGInterface::a_set_hmm_as),
+		(&CSGInterface::cmd_set_hmm_as),
 		(CHAR*) USAGE_I(N_SET_HMM_AS, "'POS|NEG|TEST'")
 	},
 	{
 		(CHAR*) N_CHOP,
-		(&CSGInterface::a_set_chop),
+		(&CSGInterface::cmd_set_chop),
 		(CHAR*) USAGE_I(N_CHOP, "'chop'")
 	},
 	{
 		(CHAR*) N_PSEUDO,
-		(&CSGInterface::a_set_pseudo),
+		(&CSGInterface::cmd_set_pseudo),
 		(CHAR*) USAGE_I(N_PSEUDO, "'pseudo'")
 	},
 	{
 		(CHAR*) N_LOAD_DEFINITIONS,
-		(&CSGInterface::a_load_definitions),
+		(&CSGInterface::cmd_load_definitions),
 		(CHAR*) USAGE_I(N_LOAD_DEFINITIONS, "'filename, init'")
 	},
 	{
 		(CHAR*) N_HMM_CLASSIFY,
-		(&CSGInterface::a_hmm_classify),
+		(&CSGInterface::cmd_hmm_classify),
 		(CHAR*) USAGE_O(N_HMM_CLASSIFY, "result")
 	},
 	{
 		(CHAR*) N_HMM_TEST,
-		(&CSGInterface::a_hmm_test),
+		(&CSGInterface::cmd_hmm_test),
 		(CHAR*) USAGE_I(N_HMM_TEST, "'output name[, ROC filename[, neglinear[, poslinear]]]'")
 	},
 	{
 		(CHAR*) N_ONE_CLASS_LINEAR_HMM_CLASSIFY,
-		(&CSGInterface::a_one_class_linear_hmm_classify),
+		(&CSGInterface::cmd_one_class_linear_hmm_classify),
 		(CHAR*) USAGE_O(N_ONE_CLASS_LINEAR_HMM_CLASSIFY, "result")
 	},
 	{
 		(CHAR*) N_ONE_CLASS_HMM_TEST,
-		(&CSGInterface::a_one_class_hmm_test),
+		(&CSGInterface::cmd_one_class_hmm_test),
 		(CHAR*) USAGE_I(N_ONE_CLASS_HMM_TEST, "'output name[, ROC filename[, linear]]'")
 	},
 	{
 		(CHAR*) N_ONE_CLASS_HMM_CLASSIFY,
-		(&CSGInterface::a_one_class_hmm_classify),
+		(&CSGInterface::cmd_one_class_hmm_classify),
 		(CHAR*) USAGE_O(N_ONE_CLASS_HMM_CLASSIFY, "result")
 	},
 	{
 		(CHAR*) N_ONE_CLASS_HMM_CLASSIFY_EXAMPLE,
-		(&CSGInterface::a_one_class_hmm_classify_example),
+		(&CSGInterface::cmd_one_class_hmm_classify_example),
 		(CHAR*) USAGE_IO(N_ONE_CLASS_HMM_CLASSIFY_EXAMPLE, "feature_vector_inde", "result")
 	},
 	{
 		(CHAR*) N_HMM_CLASSIFY_EXAMPLE,
-		(&CSGInterface::a_hmm_classify_example),
+		(&CSGInterface::cmd_hmm_classify_example),
 		(CHAR*) USAGE_IO(N_HMM_CLASSIFY_EXAMPLE, "feature_vector_index", "result")
 	},
 	{
 		(CHAR*) N_OUTPUT_HMM,
-		(&CSGInterface::a_output_hmm),
+		(&CSGInterface::cmd_output_hmm),
 		(CHAR*) USAGE(N_OUTPUT_HMM)
 	},
 	{
 		(CHAR*) N_OUTPUT_HMM_DEFINED,
-		(&CSGInterface::a_output_hmm_defined),
+		(&CSGInterface::cmd_output_hmm_defined),
 		(CHAR*) USAGE(N_OUTPUT_HMM_DEFINED)
 	},
 	{
 		(CHAR*) N_HMM_LIKELIHOOD,
-		(&CSGInterface::a_hmm_likelihood),
+		(&CSGInterface::cmd_hmm_likelihood),
 		(CHAR*) USAGE_O(N_HMM_LIKELIHOOD, "likelihood")
 	},
 	{
 		(CHAR*) N_LIKELIHOOD,
-		(&CSGInterface::a_likelihood),
+		(&CSGInterface::cmd_likelihood),
 		(CHAR*) USAGE(N_LIKELIHOOD)
 	},
 	{
 		(CHAR*) N_SAVE_LIKELIHOOD,
-		(&CSGInterface::a_save_likelihood),
+		(&CSGInterface::cmd_save_likelihood),
 		(CHAR*) USAGE_I(N_SAVE_LIKELIHOOD, "'filename[, save_binary]'")
 	},
 	{
 		(CHAR*) N_GET_VITERBI_PATH,
-		(&CSGInterface::a_get_viterbi_path),
+		(&CSGInterface::cmd_get_viterbi_path),
 		(CHAR*) USAGE_IO(N_GET_VITERBI_PATH, "dim", "path, likelihood")
 	},
 	{
 		(CHAR*) N_VITERBI_TRAIN_DEFINED,
-		(&CSGInterface::a_viterbi_train_defined),
+		(&CSGInterface::cmd_viterbi_train_defined),
 		(CHAR*) USAGE(N_VITERBI_TRAIN_DEFINED)
 	},
 	{
 		(CHAR*) N_VITERBI_TRAIN,
-		(&CSGInterface::a_viterbi_train),
+		(&CSGInterface::cmd_viterbi_train),
 		(CHAR*) USAGE(N_VITERBI_TRAIN)
 	},
 	{
 		(CHAR*) N_BAUM_WELCH_TRAIN,
-		(&CSGInterface::a_baum_welch_train),
+		(&CSGInterface::cmd_baum_welch_train),
 		(CHAR*) USAGE(N_BAUM_WELCH_TRAIN)
 	},
 	{
 		(CHAR*) N_BAUM_WELCH_TRANS_TRAIN,
-		(&CSGInterface::a_baum_welch_trans_train),
+		(&CSGInterface::cmd_baum_welch_trans_train),
 		(CHAR*) USAGE(N_BAUM_WELCH_TRANS_TRAIN)
 	},
 	{
 		(CHAR*) N_LINEAR_TRAIN,
-		(&CSGInterface::a_linear_train),
+		(&CSGInterface::cmd_linear_train),
 		(CHAR*) USAGE(N_LINEAR_TRAIN)
 	},
 	{
 		(CHAR*) N_SAVE_PATH,
-		(&CSGInterface::a_save_path),
+		(&CSGInterface::cmd_save_path),
 		(CHAR*) USAGE_I(N_SAVE_PATH, "'filename[, save_binary]'")
 	},
 	{
 		(CHAR*) N_CONVERGENCE_CRITERIA,
-		(&CSGInterface::a_convergence_criteria),
+		(&CSGInterface::cmd_convergence_criteria),
 		(CHAR*) USAGE_I(N_CONVERGENCE_CRITERIA, "'j, f'")
 	},
 	{
 		(CHAR*) N_NORMALIZE,
-		(&CSGInterface::a_normalize),
+		(&CSGInterface::cmd_normalize),
 		(CHAR*) USAGE_I(N_NORMALIZE, "'[keep_dead_states]'")
 	},
 	{
 		(CHAR*) N_ADD_STATES,
-		(&CSGInterface::a_add_states),
+		(&CSGInterface::cmd_add_states),
 		(CHAR*) USAGE_I(N_ADD_STATES, "'states, value'")
 	},
 	{
 		(CHAR*) N_PERMUTATION_ENTROPY,
-		(&CSGInterface::a_permutation_entropy),
+		(&CSGInterface::cmd_permutation_entropy),
 		(CHAR*) USAGE_I(N_PERMUTATION_ENTROPY, "'width, seqnum'")
 	},
 	{
 		(CHAR*) N_RELATIVE_ENTROPY,
-		(&CSGInterface::a_relative_entropy),
+		(&CSGInterface::cmd_relative_entropy),
 		(CHAR*) USAGE_O(N_RELATIVE_ENTROPY, "result")
 	},
 	{
 		(CHAR*) N_ENTROPY,
-		(&CSGInterface::a_entropy),
+		(&CSGInterface::cmd_entropy),
 		(CHAR*) USAGE_O(N_ENTROPY, "result")
 	},
 	{
 		(CHAR*) N_BEST_PATH,
-		(&CSGInterface::a_best_path),
+		(&CSGInterface::cmd_best_path),
 		(CHAR*) USAGE_I(N_BEST_PATH, "'from, to'")
 	},
 	{
 		(CHAR*) N_BEST_PATH_2STRUCT,
-		(&CSGInterface::a_best_path_2struct),
+		(&CSGInterface::cmd_best_path_2struct),
 		(CHAR*) USAGE_IO(N_BEST_PATH_2STRUCT,
-			"p, q, a_trans, seq, pos, genestr, penalties, penalty_info, nbest, dict_weights, segment_sum_weights",
+			"p, q, cmd_trans, seq, pos, genestr, penalties, penalty_info, nbest, dict_weights, segment_sum_weights",
 			"prob, path, pos")
 	},
 	{
 		(CHAR*) N_BEST_PATH_TRANS,
-		(&CSGInterface::a_best_path_trans),
+		(&CSGInterface::cmd_best_path_trans),
 		(CHAR*) USAGE_IO(N_BEST_PATH_TRANS,
-			"p, q, a_trans, seq, pos, orf_info, genestr, penalties, state_signals, penalty_info, nbest, dict_weights, use_orf, mod_words [, segment_loss, segmend_ids_mask]",
+			"p, q, cmd_trans, seq, pos, orf_info, genestr, penalties, state_signals, penalty_info, nbest, dict_weights, use_orf, mod_words [, segment_loss, segmend_ids_mask]",
 			"prob, path, pos")
 	},
 	{
 		(CHAR*) N_BEST_PATH_TRANS_DERIV,
-		(&CSGInterface::a_best_path_trans_deriv),
+		(&CSGInterface::cmd_best_path_trans_deriv),
 		(CHAR*) USAGE_IO(N_BEST_PATH_TRANS_DERIV,
-			"my_path, my_pos, p, q, a_trans, seq, pos, genestr, penalties, state_signals, penalty_info, dict_weights, mod_words [, segment_loss, segmend_ids_mask]",
-			"p_deriv, q_deriv, a_deriv, penalties_deriv, my_scores, my_loss")
+			"my_path, my_pos, p, q, cmd_trans, seq, pos, genestr, penalties, state_signals, penalty_info, dict_weights, mod_words [, segment_loss, segmend_ids_mask]",
+			"p_deriv, q_deriv, cmd_deriv, penalties_deriv, my_scores, my_loss")
 	},
 	{
 		(CHAR*) N_BEST_PATH_NO_B,
-		(&CSGInterface::a_best_path_no_b),
+		(&CSGInterface::cmd_best_path_no_b),
 		(CHAR*) USAGE_IO(N_BEST_PATH_NO_B, "p, q, a, max_iter", "prob, path")
 	},
 	{
 		(CHAR*) N_BEST_PATH_TRANS_SIMPLE,
-		(&CSGInterface::a_best_path_trans_simple),
+		(&CSGInterface::cmd_best_path_trans_simple),
 		(CHAR*) USAGE_IO(N_BEST_PATH_TRANS_SIMPLE,
-			"p, q, a_trans, seq, nbest", "prob, path")
+			"p, q, cmd_trans, seq, nbest", "prob, path")
 	},
 	{
 		(CHAR*) N_BEST_PATH_NO_B_TRANS,
-		(&CSGInterface::a_best_path_no_b_trans),
+		(&CSGInterface::cmd_best_path_no_b_trans),
 		(CHAR*) USAGE_IO(N_BEST_PATH_NO_B_TRANS,
-			"p, q, a_trans, max_iter, nbest", "prob, path")
+			"p, q, cmd_trans, max_iter, nbest", "prob, path")
 	},
 	{
 		(CHAR*) N_NEW_PLUGIN_ESTIMATOR,
-		(&CSGInterface::a_new_plugin_estimator),
+		(&CSGInterface::cmd_new_plugin_estimator),
 		(CHAR*) USAGE_I(N_NEW_PLUGIN_ESTIMATOR, "'pos_pseudo, neg_pseudo'")
 	},
 	{
 		(CHAR*) N_TRAIN_ESTIMATOR,
-		(&CSGInterface::a_train_estimator),
+		(&CSGInterface::cmd_train_estimator),
 		(CHAR*) USAGE(N_TRAIN_ESTIMATOR)
 	},
 	{
 		(CHAR*) N_TEST_ESTIMATOR,
-		(&CSGInterface::a_test_estimator),
+		(&CSGInterface::cmd_test_estimator),
 		(CHAR*) USAGE(N_TEST_ESTIMATOR)
 	},
 	{
 		(CHAR*) N_PLUGIN_ESTIMATE_CLASSIFY_EXAMPLE,
-		(&CSGInterface::a_plugin_estimate_classify_example),
+		(&CSGInterface::cmd_plugin_estimate_classify_example),
 		(CHAR*) USAGE_IO(N_PLUGIN_ESTIMATE_CLASSIFY_EXAMPLE, "feature_vector_index", "result")
 	},
 	{
 		(CHAR*) N_PLUGIN_ESTIMATE_CLASSIFY,
-		(&CSGInterface::a_plugin_estimate_classify),
+		(&CSGInterface::cmd_plugin_estimate_classify),
 		(CHAR*) USAGE_O(N_PLUGIN_ESTIMATE_CLASSIFY, "result")
 	},
 	{
 		(CHAR*) N_SET_PLUGIN_ESTIMATE,
-		(&CSGInterface::a_set_plugin_estimate),
+		(&CSGInterface::cmd_set_plugin_estimate),
 		(CHAR*) USAGE_I(N_SET_PLUGIN_ESTIMATE, "emission_probs, model_sizes")
 	},
 	{
 		(CHAR*) N_GET_PLUGIN_ESTIMATE,
-		(&CSGInterface::a_get_plugin_estimate),
+		(&CSGInterface::cmd_get_plugin_estimate),
 		(CHAR*) USAGE_O(N_GET_PLUGIN_ESTIMATE, "emission_probs, model_sizes")
 	},
 
@@ -697,27 +697,27 @@ static CSGInterfaceMethod sg_methods[]=
 	{ (CHAR*) "POIM", NULL, NULL },
 	{
 		(CHAR*) N_COMPUTE_POIM_WD,
-		(&CSGInterface::a_compute_POIM_WD),
+		(&CSGInterface::cmd_compute_POIM_WD),
 		(CHAR*) USAGE_IO(N_COMPUTE_POIM_WD, "max_order, distribution", "W")
 	},
 	{
 		(CHAR*) N_GET_SPEC_CONSENSUS,
-		(&CSGInterface::a_get_SPEC_consensus),
+		(&CSGInterface::cmd_get_SPEC_consensus),
 		(CHAR*) USAGE_O(N_GET_SPEC_CONSENSUS, "W")
 	},
 	{
 		(CHAR*) N_GET_SPEC_SCORING,
-		(&CSGInterface::a_get_SPEC_scoring),
+		(&CSGInterface::cmd_get_SPEC_scoring),
 		(CHAR*) USAGE_IO(N_GET_SPEC_SCORING, "max_order", "W")
 	},
 	{
 		(CHAR*) N_GET_WD_CONSENSUS,
-		(&CSGInterface::a_get_WD_consensus),
+		(&CSGInterface::cmd_get_WD_consensus),
 		(CHAR*) USAGE_O(N_GET_WD_CONSENSUS, "W")
 	},
 	{
 		(CHAR*) N_GET_WD_SCORING,
-		(&CSGInterface::a_get_WD_scoring),
+		(&CSGInterface::cmd_get_WD_scoring),
 		(CHAR*) USAGE_IO(N_GET_WD_SCORING, "max_order", "W")
 	},
 
@@ -725,83 +725,83 @@ static CSGInterfaceMethod sg_methods[]=
 	{ (CHAR*) "Utility", NULL, NULL },
 	{
 		(CHAR*) N_CRC,
-		(&CSGInterface::a_crc),
+		(&CSGInterface::cmd_crc),
 		(CHAR*) USAGE_IO(N_CRC, "string", "crc32")
 	},
 	{
 		(CHAR*) N_SYSTEM,
-		(&CSGInterface::a_system),
-		(CHAR*) USAGE_I(N_SYSTEM, "'command'")
+		(&CSGInterface::cmd_system),
+		(CHAR*) USAGE_I(N_SYSTEM, "'system command'")
 	},
 	{
 		(CHAR*) N_EXIT,
-		(&CSGInterface::a_exit),
+		(&CSGInterface::cmd_exit),
 		(CHAR*) USAGE(N_EXIT)
 	},
 	{
 		(CHAR*) N_QUIT,
-		(&CSGInterface::a_exit),
+		(&CSGInterface::cmd_exit),
 		(CHAR*) USAGE(N_QUIT)
 	},
 	{
 		(CHAR*) N_EXEC,
-		(&CSGInterface::a_exec),
+		(&CSGInterface::cmd_exec),
 		(CHAR*) USAGE_I(N_EXEC, "'filename'")
 	},
 	{
 		(CHAR*) N_SET_OUTPUT,
-		(&CSGInterface::a_set_output),
+		(&CSGInterface::cmd_set_output),
 		(CHAR*) USAGE_I(N_SET_OUTPUT, "'STDERR|STDOUT|filename'")
 	},
 	{
 		(CHAR*) N_SET_THRESHOLD,
-		(&CSGInterface::a_set_threshold),
+		(&CSGInterface::cmd_set_threshold),
 		(CHAR*) USAGE_I(N_SET_THRESHOLD, "'threshold'")
 	},
 	{
 		(CHAR*) N_THREADS,
-		(&CSGInterface::a_set_num_threads),
+		(&CSGInterface::cmd_set_num_threads),
 		(CHAR*) USAGE_I(N_THREADS, "'num_threads'")
 	},
 	{
 		(CHAR*) N_TRANSLATE_STRING,
-		(&CSGInterface::a_translate_string),
+		(&CSGInterface::cmd_translate_string),
 		(CHAR*) USAGE_IO(N_TRANSLATE_STRING,
 			"string, order, start", "translation")
 	},
 	{
 		(CHAR*) N_CLEAR,
-		(&CSGInterface::a_clear),
+		(&CSGInterface::cmd_clear),
 		(CHAR*) USAGE(N_CLEAR)
 	},
 	{
 		(CHAR*) N_TIC,
-		(&CSGInterface::a_tic),
+		(&CSGInterface::cmd_tic),
 		(CHAR*) USAGE(N_TIC)
 	},
 	{
 		(CHAR*) N_TOC,
-		(&CSGInterface::a_toc),
+		(&CSGInterface::cmd_toc),
 		(CHAR*) USAGE(N_TOC)
 	},
 	{
 		(CHAR*) N_ECHO,
-		(&CSGInterface::a_echo),
+		(&CSGInterface::cmd_echo),
 		(CHAR*) USAGE_I(N_ECHO, "'level'")
 	},
 	{
 		(CHAR*) N_LOGLEVEL,
-		(&CSGInterface::a_loglevel),
+		(&CSGInterface::cmd_loglevel),
 		(CHAR*) USAGE_I(N_LOGLEVEL, "'ALL|INFO|WARN|ERROR'")
 	},
 	{
 		(CHAR*) N_GET_VERSION,
-		(&CSGInterface::a_get_version),
+		(&CSGInterface::cmd_get_version),
 		(CHAR*) USAGE_O(N_GET_VERSION, "version")
 	},
 	{
 		(CHAR*) N_HELP,
-		(&CSGInterface::a_help),
+		(&CSGInterface::cmd_help),
 		(CHAR*) USAGE(N_HELP)
 	},
 	{NULL, NULL, NULL}        /* Sentinel */
@@ -818,27 +818,27 @@ CSGInterface::~CSGInterface()
 }
 
 ////////////////////////////////////////////////////////////////////////////
-// actions
+// commands
 ////////////////////////////////////////////////////////////////////////////
 
 /* Features */
 
-bool CSGInterface::a_load_features()
+bool CSGInterface::cmd_load_features()
 {
 	return send_command(N_LOAD_FEATURES);
 }
 
-bool CSGInterface::a_save_features()
+bool CSGInterface::cmd_save_features()
 {
 	return send_command(N_SAVE_FEATURES);
 }
 
-bool CSGInterface::a_clean_features()
+bool CSGInterface::cmd_clean_features()
 {
 	return send_command(N_CLEAN_FEATURES);
 }
 
-bool CSGInterface::a_get_features()
+bool CSGInterface::cmd_get_features()
 {
 	if (m_nrhs!=2 || !create_return_values(1))
 		return false;
@@ -987,7 +987,7 @@ bool CSGInterface::a_get_features()
 	return true;
 }
 
-bool CSGInterface::a_add_features()
+bool CSGInterface::cmd_add_features()
 {
 	if ((m_nrhs!=3 && m_nrhs!=4) || !create_return_values(0))
 		return false;
@@ -995,7 +995,7 @@ bool CSGInterface::a_add_features()
 	return do_set_features(true);
 }
 
-bool CSGInterface::a_set_features()
+bool CSGInterface::cmd_set_features()
 {
 	if ((m_nrhs!=3 && m_nrhs!=4) || !create_return_values(0))
 		return false;
@@ -1193,17 +1193,17 @@ bool CSGInterface::do_set_features(bool add)
 	return true;
 }
 
-bool CSGInterface::a_set_reference_features()
+bool CSGInterface::cmd_set_reference_features()
 {
 	return send_command(N_SET_REF_FEAT);
 }
 
-bool CSGInterface::a_convert()
+bool CSGInterface::cmd_convert()
 {
 	return send_command(N_CONVERT);
 }
 
-bool CSGInterface::a_obtain_from_position_list()
+bool CSGInterface::cmd_obtain_from_position_list()
 {
 	if ((m_nrhs!=4 && m_nrhs!=5) || !create_return_values(0))
 		return false;
@@ -1293,22 +1293,22 @@ bool CSGInterface::a_obtain_from_position_list()
 	return success;
 }
 
-bool CSGInterface::a_obtain_by_sliding_window()
+bool CSGInterface::cmd_obtain_by_sliding_window()
 {
 	return send_command(N_SLIDE_WINDOW);
 }
 
-bool CSGInterface::a_reshape()
+bool CSGInterface::cmd_reshape()
 {
 	return send_command(N_RESHAPE);
 }
 
-bool CSGInterface::a_load_labels()
+bool CSGInterface::cmd_load_labels()
 {
 	return send_command(N_LOAD_LABELS);
 }
 
-bool CSGInterface::a_set_labels()
+bool CSGInterface::cmd_set_labels()
 {
 	if (m_nrhs!=3 || !create_return_values(0))
 		return false;
@@ -1348,7 +1348,7 @@ bool CSGInterface::a_set_labels()
 	return true;
 }
 
-bool CSGInterface::a_get_labels()
+bool CSGInterface::cmd_get_labels()
 {
 	if (m_nrhs!=2 || !create_return_values(1))
 		return false;
@@ -1386,42 +1386,42 @@ bool CSGInterface::a_get_labels()
 
 /** Kernel */
 
-bool CSGInterface::a_set_kernel()
+bool CSGInterface::cmd_set_kernel()
 {
 	return send_command(N_SET_KERNEL);
 }
 
-bool CSGInterface::a_add_kernel()
+bool CSGInterface::cmd_add_kernel()
 {
 	return send_command(N_ADD_KERNEL);
 }
 
-bool CSGInterface::a_init_kernel()
+bool CSGInterface::cmd_init_kernel()
 {
 	return send_command(N_INIT_KERNEL);
 }
 
-bool CSGInterface::a_clean_kernel()
+bool CSGInterface::cmd_clean_kernel()
 {
 	return send_command(N_CLEAN_KERNEL);
 }
 
-bool CSGInterface::a_save_kernel()
+bool CSGInterface::cmd_save_kernel()
 {
 	return send_command(N_SAVE_KERNEL);
 }
 
-bool CSGInterface::a_load_kernel_init()
+bool CSGInterface::cmd_load_kernel_init()
 {
 	return send_command(N_LOAD_KERNEL_INIT);
 }
 
-bool CSGInterface::a_save_kernel_init()
+bool CSGInterface::cmd_save_kernel_init()
 {
 	return send_command(N_SAVE_KERNEL_INIT);
 }
 
-bool CSGInterface::a_get_kernel_matrix()
+bool CSGInterface::cmd_get_kernel_matrix()
 {
 	if (m_nrhs!=1 || !create_return_values(1))
 		return false;
@@ -1441,7 +1441,7 @@ bool CSGInterface::a_get_kernel_matrix()
 	return true;
 }
 
-bool CSGInterface::a_set_custom_kernel()
+bool CSGInterface::cmd_set_custom_kernel()
 {
 	if (m_nrhs!=3 || !create_return_values(0))
 		return false;
@@ -1501,7 +1501,7 @@ bool CSGInterface::a_set_custom_kernel()
 	return success;
 }
 
-bool CSGInterface::a_set_WD_position_weights()
+bool CSGInterface::cmd_set_WD_position_weights()
 {
 	if (m_nrhs<2 || m_nrhs>3 || !create_return_values(0))
 		return false;
@@ -1601,7 +1601,7 @@ bool CSGInterface::a_set_WD_position_weights()
 	return success;
 }
 
-bool CSGInterface::a_get_subkernel_weights()
+bool CSGInterface::cmd_get_subkernel_weights()
 {
 	if (m_nrhs!=1 || !create_return_values(1))
 		return false;
@@ -1645,7 +1645,7 @@ bool CSGInterface::a_get_subkernel_weights()
 	return true;
 }
 
-bool CSGInterface::a_set_subkernel_weights()
+bool CSGInterface::cmd_set_subkernel_weights()
 {
 	if (m_nrhs!=2 || !create_return_values(0))
 		return false;
@@ -1700,7 +1700,7 @@ bool CSGInterface::a_set_subkernel_weights()
 	return success;
 }
 
-bool CSGInterface::a_set_subkernel_weights_combined()
+bool CSGInterface::cmd_set_subkernel_weights_combined()
 {
 	if (m_nrhs!=3 || !create_return_values(0))
 		return false;
@@ -1764,7 +1764,7 @@ bool CSGInterface::a_set_subkernel_weights_combined()
 	return success;
 }
 
-bool CSGInterface::a_set_last_subkernel_weights()
+bool CSGInterface::cmd_set_last_subkernel_weights()
 {
 	if (m_nrhs!=2 || !create_return_values(0))
 		return false;
@@ -1822,7 +1822,7 @@ bool CSGInterface::a_set_last_subkernel_weights()
 	return success;
 }
 
-bool CSGInterface::a_get_WD_position_weights()
+bool CSGInterface::cmd_get_WD_position_weights()
 {
 	if (m_nrhs!=1 || !create_return_values(1))
 		return false;
@@ -1858,7 +1858,7 @@ bool CSGInterface::a_get_WD_position_weights()
 	return true;
 }
 
-bool CSGInterface::a_get_last_subkernel_weights()
+bool CSGInterface::cmd_get_last_subkernel_weights()
 {
 	if (m_nrhs!=1 || !create_return_values(1))
 		return false;
@@ -1905,7 +1905,7 @@ bool CSGInterface::a_get_last_subkernel_weights()
 	return true;
 }
 
-bool CSGInterface::a_compute_by_subkernels()
+bool CSGInterface::cmd_compute_by_subkernels()
 {
 	if (m_nrhs!=1 || !create_return_values(1))
 		return false;
@@ -1971,12 +1971,12 @@ bool CSGInterface::a_compute_by_subkernels()
 	return true;
 }
 
-bool CSGInterface::a_init_kernel_optimization()
+bool CSGInterface::cmd_init_kernel_optimization()
 {
 	return send_command(N_INIT_KERNEL_OPTIMIZATION);
 }
 
-bool CSGInterface::a_get_kernel_optimization()
+bool CSGInterface::cmd_get_kernel_optimization()
 {
 	if (m_nrhs<1 || !create_return_values(1))
 		return false;
@@ -2063,18 +2063,18 @@ bool CSGInterface::a_get_kernel_optimization()
 	return true;
 }
 
-bool CSGInterface::a_delete_kernel_optimization()
+bool CSGInterface::cmd_delete_kernel_optimization()
 {
 	return send_command(N_DELETE_KERNEL_OPTIMIZATION);
 }
 
-bool CSGInterface::a_set_kernel_optimization_type()
+bool CSGInterface::cmd_set_kernel_optimization_type()
 {
 	return send_command(N_SET_KERNEL_OPTIMIZATION_TYPE);
 }
 
 #ifdef USE_SVMLIGHT
-bool CSGInterface::a_resize_kernel_cache()
+bool CSGInterface::cmd_resize_kernel_cache()
 {
 	return send_command(N_RESIZE_KERNEL_CACHE);
 }
@@ -2083,17 +2083,17 @@ bool CSGInterface::a_resize_kernel_cache()
 
 /** Distance */
 
-bool CSGInterface::a_set_distance()
+bool CSGInterface::cmd_set_distance()
 {
 	return send_command(N_SET_DISTANCE);
 }
 
-bool CSGInterface::a_init_distance()
+bool CSGInterface::cmd_init_distance()
 {
 	return send_command(N_INIT_DISTANCE);
 }
 
-bool CSGInterface::a_get_distance_matrix()
+bool CSGInterface::cmd_get_distance_matrix()
 {
 	if (m_nrhs!=1 || !create_return_values(1))
 		return false;
@@ -2116,7 +2116,7 @@ bool CSGInterface::a_get_distance_matrix()
 
 /* POIM */
 
-bool CSGInterface::a_get_SPEC_consensus()
+bool CSGInterface::cmd_get_SPEC_consensus()
 {
 	if (m_nrhs!=1 || !create_return_values(1))
 		return false;
@@ -2151,7 +2151,7 @@ bool CSGInterface::a_get_SPEC_consensus()
 	return true;
 }
 
-bool CSGInterface::a_get_SPEC_scoring()
+bool CSGInterface::cmd_get_SPEC_scoring()
 {
 	if (m_nrhs!=2 || !create_return_values(1))
 		return false;
@@ -2203,7 +2203,7 @@ bool CSGInterface::a_get_SPEC_scoring()
 	return true;
 }
 
-bool CSGInterface::a_get_WD_consensus()
+bool CSGInterface::cmd_get_WD_consensus()
 {
 	if (m_nrhs!=1 || !create_return_values(1))
 		return false;
@@ -2238,7 +2238,7 @@ bool CSGInterface::a_get_WD_consensus()
 	return true;
 }
 
-bool CSGInterface::a_compute_POIM_WD()
+bool CSGInterface::cmd_compute_POIM_WD()
 {
 	if (m_nrhs!=3 || !create_return_values(1))
 		return false;
@@ -2308,7 +2308,7 @@ bool CSGInterface::a_compute_POIM_WD()
 	return true;
 }
 
-bool CSGInterface::a_get_WD_scoring()
+bool CSGInterface::cmd_get_WD_scoring()
 {
 	if (m_nrhs!=2 || !create_return_values(1))
 		return false;
@@ -2356,7 +2356,7 @@ bool CSGInterface::a_get_WD_scoring()
 
 /* Classifier */
 
-bool CSGInterface::a_classify()
+bool CSGInterface::cmd_classify()
 {
 	if (m_nrhs!=1 || !create_return_values(1))
 		return false;
@@ -2383,7 +2383,7 @@ bool CSGInterface::a_classify()
 	return true;
 }
 
-bool CSGInterface::a_classify_example()
+bool CSGInterface::cmd_classify_example()
 {
 	if (m_nrhs!=2 || !create_return_values(1))
 		return false;
@@ -2399,7 +2399,7 @@ bool CSGInterface::a_classify_example()
 	return true;
 }
 
-bool CSGInterface::a_get_classifier()
+bool CSGInterface::cmd_get_classifier()
 {
 	if (m_nrhs!=1 || !create_return_values(2))
 		return false;
@@ -2420,22 +2420,22 @@ bool CSGInterface::a_get_classifier()
 	return true;
 }
 
-bool CSGInterface::a_new_classifier()
+bool CSGInterface::cmd_new_classifier()
 {
 	return send_command(N_NEW_CLASSIFIER);
 }
 
-bool CSGInterface::a_load_classifier()
+bool CSGInterface::cmd_load_classifier()
 {
 	return send_command(N_LOAD_SVM); // FIXME: N_LOAD_CLASSIFIER
 }
 
-bool CSGInterface::a_get_svm()
+bool CSGInterface::cmd_get_svm()
 {
-	return a_get_classifier();
+	return cmd_get_classifier();
 }
 
-bool CSGInterface::a_set_svm()
+bool CSGInterface::cmd_set_svm()
 {
 	if (m_nrhs!=3 || !create_return_values(0))
 		return false;
@@ -2469,7 +2469,7 @@ bool CSGInterface::a_set_svm()
 	return true;
 }
 
-bool CSGInterface::a_get_svm_objective()
+bool CSGInterface::cmd_get_svm_objective()
 {
 	if (m_nrhs!=1 || !create_return_values(1))
 		return false;
@@ -2483,97 +2483,97 @@ bool CSGInterface::a_get_svm_objective()
 	return true;
 }
 
-bool CSGInterface::a_do_auc_maximization()
+bool CSGInterface::cmd_do_auc_maximization()
 {
 	return send_command(N_DO_AUC_MAXIMIZATION);
 }
 
-bool CSGInterface::a_set_perceptron_parameters()
+bool CSGInterface::cmd_set_perceptron_parameters()
 {
 	return send_command(N_SET_PERCEPTRON_PARAMETERS);
 }
 
-bool CSGInterface::a_train_classifier()
+bool CSGInterface::cmd_train_classifier()
 {
 	return send_command(N_TRAIN_CLASSIFIER);
 }
 
-bool CSGInterface::a_test_svm()
+bool CSGInterface::cmd_test_svm()
 {
 	return send_command(N_SVM_TEST);
 }
 
-bool CSGInterface::a_set_svm_qpsize()
+bool CSGInterface::cmd_set_svm_qpsize()
 {
 	return send_command(N_SVMQPSIZE);
 }
 
-bool CSGInterface::a_set_svm_max_qpsize()
+bool CSGInterface::cmd_set_svm_max_qpsize()
 {
 	return send_command(N_SVMMAXQPSIZE);
 }
 
-bool CSGInterface::a_set_svm_bufsize()
+bool CSGInterface::cmd_set_svm_bufsize()
 {
 	return send_command(N_SVMBUFSIZE);
 }
 
-bool CSGInterface::a_set_svm_C()
+bool CSGInterface::cmd_set_svm_C()
 {
 	return send_command(N_C);
 }
 
-bool CSGInterface::a_set_svm_epsilon()
+bool CSGInterface::cmd_set_svm_epsilon()
 {
 	return send_command(N_SVM_EPSILON);
 }
 
-bool CSGInterface::a_set_svr_tube_epsilon()
+bool CSGInterface::cmd_set_svr_tube_epsilon()
 {
 	return send_command(N_SVR_TUBE_EPSILON);
 }
 
-bool CSGInterface::a_set_svm_one_class_nu()
+bool CSGInterface::cmd_set_svm_one_class_nu()
 {
 	return send_command(N_SVM_ONE_CLASS_NU);
 }
 
-bool CSGInterface::a_set_svm_mkl_parameters()
+bool CSGInterface::cmd_set_svm_mkl_parameters()
 {
 	return send_command(N_MKL_PARAMETERS);
 }
 
-bool CSGInterface::a_set_max_train_time()
+bool CSGInterface::cmd_set_max_train_time()
 {
 	return send_command(N_SVM_MAX_TRAIN_TIME);
 }
 
-bool CSGInterface::a_set_svm_precompute_enabled()
+bool CSGInterface::cmd_set_svm_precompute_enabled()
 {
 	return send_command(N_USE_PRECOMPUTE);
 }
 
-bool CSGInterface::a_set_svm_mkl_enabled()
+bool CSGInterface::cmd_set_svm_mkl_enabled()
 {
 	return send_command(N_USE_MKL);
 }
 
-bool CSGInterface::a_set_svm_shrinking_enabled()
+bool CSGInterface::cmd_set_svm_shrinking_enabled()
 {
 	return send_command(N_USE_SHRINKING);
 }
 
-bool CSGInterface::a_set_svm_batch_computation_enabled()
+bool CSGInterface::cmd_set_svm_batch_computation_enabled()
 {
 	return send_command(N_USE_BATCH_COMPUTATION);
 }
 
-bool CSGInterface::a_set_svm_linadd_enabled()
+bool CSGInterface::cmd_set_svm_linadd_enabled()
 {
 	return send_command(N_USE_LINADD);
 }
 
-bool CSGInterface::a_set_svm_bias_enabled()
+bool CSGInterface::cmd_set_svm_bias_enabled()
 {
 	return send_command(N_SVM_USE_BIAS);
 }
@@ -2581,32 +2581,32 @@ bool CSGInterface::a_set_svm_bias_enabled()
 
 /* Preproc */
 
-bool CSGInterface::a_add_preproc()
+bool CSGInterface::cmd_add_preproc()
 {
 	return send_command(N_ADD_PREPROC);
 }
 
-bool CSGInterface::a_del_preproc()
+bool CSGInterface::cmd_del_preproc()
 {
 	return send_command(N_DEL_PREPROC);
 }
 
-bool CSGInterface::a_load_preproc()
+bool CSGInterface::cmd_load_preproc()
 {
 	return send_command(N_LOAD_PREPROC);
 }
 
-bool CSGInterface::a_save_preproc()
+bool CSGInterface::cmd_save_preproc()
 {
 	return send_command(N_SAVE_PREPROC);
 }
 
-bool CSGInterface::a_attach_preproc()
+bool CSGInterface::cmd_attach_preproc()
 {
 	return send_command(N_ATTACH_PREPROC);
 }
 
-bool CSGInterface::a_clean_preproc()
+bool CSGInterface::cmd_clean_preproc()
 {
 	return send_command(N_CLEAN_PREPROC);
 }
@@ -2614,22 +2614,22 @@ bool CSGInterface::a_clean_preproc()
 
 /* HMM */
 
-bool CSGInterface::a_new_plugin_estimator()
+bool CSGInterface::cmd_new_plugin_estimator()
 {
 	return send_command(N_NEW_PLUGIN_ESTIMATOR);
 }
 
-bool CSGInterface::a_train_estimator()
+bool CSGInterface::cmd_train_estimator()
 {
 	return send_command(N_TRAIN_ESTIMATOR);
 }
 
-bool CSGInterface::a_test_estimator()
+bool CSGInterface::cmd_test_estimator()
 {
 	return send_command(N_TEST_ESTIMATOR);
 }
 
-bool CSGInterface::a_plugin_estimate_classify_example()
+bool CSGInterface::cmd_plugin_estimate_classify_example()
 {
 	if (m_nrhs!=2 || !create_return_values(1))
 		return false;
@@ -2641,7 +2641,7 @@ bool CSGInterface::a_plugin_estimate_classify_example()
 	return true;
 }
 
-bool CSGInterface::a_plugin_estimate_classify()
+bool CSGInterface::cmd_plugin_estimate_classify()
 {
 	if (m_nrhs!=1 || !create_return_values(1))
 		return false;
@@ -2665,7 +2665,7 @@ bool CSGInterface::a_plugin_estimate_classify()
 	return true;
 }
 
-bool CSGInterface::a_set_plugin_estimate()
+bool CSGInterface::cmd_set_plugin_estimate()
 {
 	if (m_nrhs!=3 || !create_return_values(0))
 		return false;
@@ -2696,7 +2696,7 @@ bool CSGInterface::a_set_plugin_estimate()
 	return true;
 }
 
-bool CSGInterface::a_get_plugin_estimate()
+bool CSGInterface::cmd_get_plugin_estimate()
 {
 	if (m_nrhs!=1 || !create_return_values(2))
 		return false;
@@ -2732,27 +2732,27 @@ bool CSGInterface::a_get_plugin_estimate()
 	return true;
 }
 
-bool CSGInterface::a_convergence_criteria()
+bool CSGInterface::cmd_convergence_criteria()
 {
 	return send_command(N_CONVERGENCE_CRITERIA);
 }
 
-bool CSGInterface::a_normalize()
+bool CSGInterface::cmd_normalize()
 {
 	return send_command(N_NORMALIZE);
 }
 
-bool CSGInterface::a_add_states()
+bool CSGInterface::cmd_add_states()
 {
 	return send_command(N_ADD_STATES);
 }
 
-bool CSGInterface::a_permutation_entropy()
+bool CSGInterface::cmd_permutation_entropy()
 {
 	return send_command(N_PERMUTATION_ENTROPY);
 }
 
-bool CSGInterface::a_relative_entropy()
+bool CSGInterface::cmd_relative_entropy()
 {
 	if (m_nrhs!=1 || !create_return_values(1))
 		return false;
@@ -2797,7 +2797,7 @@ bool CSGInterface::a_relative_entropy()
 	return true;
 }
 
-bool CSGInterface::a_entropy()
+bool CSGInterface::cmd_entropy()
 {
 	if (m_nrhs!=1 || !create_return_values(1))
 		return false;
@@ -2829,27 +2829,27 @@ bool CSGInterface::a_entropy()
 	return true;
 }
 
-bool CSGInterface::a_hmm_classify()
+bool CSGInterface::cmd_hmm_classify()
 {
 	return do_hmm_classify(false, false);
 }
 
-bool CSGInterface::a_hmm_test()
+bool CSGInterface::cmd_hmm_test()
 {
 	return send_command(N_HMM_TEST);
 }
 
-bool CSGInterface::a_one_class_hmm_test()
+bool CSGInterface::cmd_one_class_hmm_test()
 {
 	return send_command(N_ONE_CLASS_HMM_TEST);
 }
 
-bool CSGInterface::a_one_class_hmm_classify()
+bool CSGInterface::cmd_one_class_hmm_classify()
 {
 	return do_hmm_classify(false, true);
 }
 
-bool CSGInterface::a_one_class_linear_hmm_classify()
+bool CSGInterface::cmd_one_class_linear_hmm_classify()
 {
 	return do_hmm_classify(true, true);
 }
@@ -2893,12 +2893,12 @@ bool CSGInterface::do_hmm_classify(bool linear, bool one_class)
 	return true;
 }
 
-bool CSGInterface::a_one_class_hmm_classify_example()
+bool CSGInterface::cmd_one_class_hmm_classify_example()
 {
 	return do_hmm_classify_example(true);
 }
 
-bool CSGInterface::a_hmm_classify_example()
+bool CSGInterface::cmd_hmm_classify_example()
 {
 	return do_hmm_classify_example(false);
 }
@@ -2921,17 +2921,17 @@ bool CSGInterface::do_hmm_classify_example(bool one_class)
 	return true;
 }
 
-bool CSGInterface::a_output_hmm()
+bool CSGInterface::cmd_output_hmm()
 {
 	return send_command(N_OUTPUT_HMM);
 }
 
-bool CSGInterface::a_output_hmm_defined()
+bool CSGInterface::cmd_output_hmm_defined()
 {
 	return send_command(N_OUTPUT_HMM_DEFINED);
 }
 
-bool CSGInterface::a_hmm_likelihood()
+bool CSGInterface::cmd_hmm_likelihood()
 {
 	if (m_nrhs!=1 || !create_return_values(1))
 		return false;
@@ -2946,17 +2946,17 @@ bool CSGInterface::a_hmm_likelihood()
 	return true;
 }
 
-bool CSGInterface::a_likelihood()
+bool CSGInterface::cmd_likelihood()
 {
 	return send_command(N_LIKELIHOOD);
 }
 
-bool CSGInterface::a_save_likelihood()
+bool CSGInterface::cmd_save_likelihood()
 {
 	return send_command(N_SAVE_LIKELIHOOD);
 }
 
-bool CSGInterface::a_get_viterbi_path()
+bool CSGInterface::cmd_get_viterbi_path()
 {
 	if (m_nrhs!=2 || !create_return_values(2))
 		return false;
@@ -2991,37 +2991,37 @@ bool CSGInterface::a_get_viterbi_path()
 	return true;
 }
 
-bool CSGInterface::a_viterbi_train()
+bool CSGInterface::cmd_viterbi_train()
 {
 	return send_command(N_VITERBI_TRAIN);
 }
 
-bool CSGInterface::a_viterbi_train_defined()
+bool CSGInterface::cmd_viterbi_train_defined()
 {
 	return send_command(N_VITERBI_TRAIN_DEFINED);
 }
 
-bool CSGInterface::a_baum_welch_train()
+bool CSGInterface::cmd_baum_welch_train()
 {
 	return send_command(N_BAUM_WELCH_TRAIN);
 }
 
-bool CSGInterface::a_baum_welch_trans_train()
+bool CSGInterface::cmd_baum_welch_trans_train()
 {
 	return send_command(N_BAUM_WELCH_TRANS_TRAIN);
 }
 
-bool CSGInterface::a_linear_train()
+bool CSGInterface::cmd_linear_train()
 {
 	return send_command(N_LINEAR_TRAIN);
 }
 
-bool CSGInterface::a_save_path()
+bool CSGInterface::cmd_save_path()
 {
 	return send_command(N_SAVE_PATH);
 }
 
-bool CSGInterface::a_append_hmm()
+bool CSGInterface::cmd_append_hmm()
 {
 	if (m_nrhs!=5 || !create_return_values(0))
 		return false;
@@ -3081,22 +3081,22 @@ bool CSGInterface::a_append_hmm()
 	return true;
 }
 
-bool CSGInterface::a_new_hmm()
+bool CSGInterface::cmd_new_hmm()
 {
 	return send_command(N_NEW_HMM);
 }
 
-bool CSGInterface::a_load_hmm()
+bool CSGInterface::cmd_load_hmm()
 {
 	return send_command(N_LOAD_HMM);
 }
 
-bool CSGInterface::a_save_hmm()
+bool CSGInterface::cmd_save_hmm()
 {
 	return send_command(N_SAVE_HMM);
 }
 
-bool CSGInterface::a_set_hmm()
+bool CSGInterface::cmd_set_hmm()
 {
 	if (m_nrhs!=5 || !create_return_values(0))
 		return false;
@@ -3154,27 +3154,27 @@ bool CSGInterface::a_set_hmm()
 	return true;
 }
 
-bool CSGInterface::a_set_hmm_as()
+bool CSGInterface::cmd_set_hmm_as()
 {
 	return send_command(N_SET_HMM_AS);
 }
 
-bool CSGInterface::a_set_chop()
+bool CSGInterface::cmd_set_chop()
 {
 	return send_command(N_CHOP);
 }
 
-bool CSGInterface::a_set_pseudo()
+bool CSGInterface::cmd_set_pseudo()
 {
 	return send_command(N_PSEUDO);
 }
 
-bool CSGInterface::a_load_definitions()
+bool CSGInterface::cmd_load_definitions()
 {
 	return send_command(N_LOAD_DEFINITIONS);
 }
 
-bool CSGInterface::a_get_hmm()
+bool CSGInterface::cmd_get_hmm()
 {
 	if (m_nrhs!=1 || !create_return_values(4))
 		return false;
@@ -3222,12 +3222,12 @@ bool CSGInterface::a_get_hmm()
 	return true;
 }
 
-bool CSGInterface::a_best_path()
+bool CSGInterface::cmd_best_path()
 {
 	return send_command(N_BEST_PATH);
 }
 
-bool CSGInterface::a_best_path_2struct()
+bool CSGInterface::cmd_best_path_2struct()
 {
 	if (m_nrhs!=12 || !create_return_values(3))
 		return false;
@@ -3237,7 +3237,7 @@ bool CSGInterface::a_best_path_2struct()
 	return true;
 }
 
-bool CSGInterface::a_best_path_trans()
+bool CSGInterface::cmd_best_path_trans()
 {
 	if ((m_nrhs==15 || m_nrhs==17) || !create_return_values(3))
 		return false;
@@ -3247,7 +3247,7 @@ bool CSGInterface::a_best_path_trans()
 	return true;
 }
 
-bool CSGInterface::a_best_path_trans_deriv()
+bool CSGInterface::cmd_best_path_trans_deriv()
 {
 	if (!((m_nrhs==14 && create_return_values(5)) || (m_nrhs==16 && create_return_values(6))))
 		return false;
@@ -3257,7 +3257,7 @@ bool CSGInterface::a_best_path_trans_deriv()
 	return true;
 }
 
-bool CSGInterface::a_best_path_no_b()
+bool CSGInterface::cmd_best_path_no_b()
 {
 	if (m_nrhs!=5 || !create_return_values(2))
 		return false;
@@ -3302,7 +3302,7 @@ bool CSGInterface::a_best_path_no_b()
 	return true;
 }
 
-bool CSGInterface::a_best_path_trans_simple()
+bool CSGInterface::cmd_best_path_trans_simple()
 {
 	if (m_nrhs!=6 || !create_return_values(2))
 		return false;
@@ -3315,17 +3315,17 @@ bool CSGInterface::a_best_path_trans_simple()
 	INT N_q=0;
 	get_real_vector(q, N_q);
 
-	DREAL* a_trans=NULL;
-	INT M_a_trans=0;
-	INT N_a_trans=0;
-	get_real_matrix(a_trans, M_a_trans, N_a_trans);
+	DREAL* cmd_trans=NULL;
+	INT M_cmd_trans=0;
+	INT N_cmd_trans=0;
+	get_real_matrix(cmd_trans, M_cmd_trans, N_cmd_trans);
 
 	DREAL* seq=NULL;
 	INT M_seq=0;
 	INT N_seq=0;
 	get_real_matrix(seq, M_seq, N_seq);
 
-	if (N_q!=N_p || N_a_trans!=3 || M_seq!=N_p)
+	if (N_q!=N_p || N_cmd_trans!=3 || M_seq!=N_p)
 		SG_ERROR("Model matrices not matching in size.\n");
 
 	INT nbest=get_int();
@@ -3337,7 +3337,7 @@ bool CSGInterface::a_best_path_trans_simple()
 	h->set_N(N_p);
 	h->set_p_vector(p, N_p);
 	h->set_q_vector(q, N_p);
-	h->set_a_trans_matrix(a_trans, M_a_trans, 3);
+	h->set_a_trans_matrix(cmd_trans, M_cmd_trans, 3);
 
 	INT* path=new INT[N_seq*nbest];
 	ASSERT(path);
@@ -3358,7 +3358,7 @@ bool CSGInterface::a_best_path_trans_simple()
 }
 
 
-bool CSGInterface::a_best_path_no_b_trans()
+bool CSGInterface::cmd_best_path_no_b_trans()
 {
 	if (m_nrhs!=6 || !create_return_values(2))
 		return false;
@@ -3371,12 +3371,12 @@ bool CSGInterface::a_best_path_no_b_trans()
 	INT N_q=0;
 	get_real_vector(q, N_q);
 
-	DREAL* a_trans=NULL;
-	INT M_a_trans=0;
-	INT N_a_trans=0;
-	get_real_matrix(a_trans, M_a_trans, N_a_trans);
+	DREAL* cmd_trans=NULL;
+	INT M_cmd_trans=0;
+	INT N_cmd_trans=0;
+	get_real_matrix(cmd_trans, M_cmd_trans, N_cmd_trans);
 
-	if (N_q!=N_p || N_a_trans!=3)
+	if (N_q!=N_p || N_cmd_trans!=3)
 		SG_ERROR("Model matrices not matching in size.\n");
 
 	INT max_iter=get_int();
@@ -3392,7 +3392,7 @@ bool CSGInterface::a_best_path_no_b_trans()
 	h->set_N(N_p);
 	h->set_p_vector(p, N_p);
 	h->set_q_vector(q, N_p);
-	h->set_a_trans_matrix(a_trans, M_a_trans, 3);
+	h->set_a_trans_matrix(cmd_trans, M_cmd_trans, 3);
 
 	INT* path=new INT[(max_iter+1)*nbest];
 	ASSERT(path);
@@ -3414,7 +3414,7 @@ bool CSGInterface::a_best_path_no_b_trans()
 }
 
 
-bool CSGInterface::a_crc()
+bool CSGInterface::cmd_crc()
 {
 	if (m_nrhs!=2 || !create_return_values(1))
 		return false;
@@ -3436,37 +3436,37 @@ bool CSGInterface::a_crc()
 	return true;
 }
 
-bool CSGInterface::a_system()
+bool CSGInterface::cmd_system()
 {
 	return send_command(N_SYSTEM);
 }
 
-bool CSGInterface::a_exit()
+bool CSGInterface::cmd_exit()
 {
 	exit(0);
 }
 
-bool CSGInterface::a_exec()
+bool CSGInterface::cmd_exec()
 {
 	return send_command(N_EXEC);
 }
 
-bool CSGInterface::a_set_output()
+bool CSGInterface::cmd_set_output()
 {
 	return send_command(N_SET_OUTPUT);
 }
 
-bool CSGInterface::a_set_threshold()
+bool CSGInterface::cmd_set_threshold()
 {
 	return send_command(N_SET_THRESHOLD);
 }
 
-bool CSGInterface::a_set_num_threads()
+bool CSGInterface::cmd_set_num_threads()
 {
 	return send_command(N_THREADS);
 }
 
-bool CSGInterface::a_translate_string()
+bool CSGInterface::cmd_translate_string()
 {
 	if (m_nrhs!=4 || !create_return_values(1))
 		return false;
@@ -3535,34 +3535,34 @@ bool CSGInterface::a_translate_string()
 	return true;
 }
 
-bool CSGInterface::a_clear()
+bool CSGInterface::cmd_clear()
 {
 	return send_command(N_CLEAR);
 }
 
-bool CSGInterface::a_tic()
+bool CSGInterface::cmd_tic()
 {
 	gui->guitime.start();
 	return true;
 }
 
-bool CSGInterface::a_toc()
+bool CSGInterface::cmd_toc()
 {
 	gui->guitime.stop();
 	return true;
 }
 
-bool CSGInterface::a_echo()
+bool CSGInterface::cmd_echo()
 {
 	return send_command(N_ECHO);
 }
 
-bool CSGInterface::a_loglevel()
+bool CSGInterface::cmd_loglevel()
 {
 	return send_command(N_LOGLEVEL);
 }
 
-bool CSGInterface::a_get_version()
+bool CSGInterface::cmd_get_version()
 {
 	if (m_nrhs!=1 || !create_return_values(1))
 		return false;
@@ -3572,7 +3572,7 @@ bool CSGInterface::a_get_version()
 	return true;
 }
 
-bool CSGInterface::a_help()
+bool CSGInterface::cmd_help()
 {
 	if ((m_nrhs!=1 && m_nrhs!=2) || !create_return_values(0))
 		return false;
@@ -3583,7 +3583,7 @@ bool CSGInterface::a_help()
 	if (m_nrhs==1) // all commands' help
 	{
 		SG_PRINT("Help listing of all commands:\n");
-		while (sg_methods[i].action)
+		while (sg_methods[i].command)
 		{
 			bool is_group_dummy=false;
 			if (!sg_methods[i].method && !sg_methods[i].usage)
@@ -3592,11 +3592,11 @@ bool CSGInterface::a_help()
 			if (is_group_dummy)
 				SG_PRINT("\n");
 
-			SG_PRINT("%s\n", sg_methods[i].action);
+			SG_PRINT("%s\n", sg_methods[i].command);
 
 			if (is_group_dummy)
 			{
-				for (UINT j=0; j<strlen(sg_methods[i].action); j++)
+				for (UINT j=0; j<strlen(sg_methods[i].command); j++)
 					SG_PRINT("-");
 				SG_PRINT("\n");
 			}
@@ -3611,12 +3611,12 @@ bool CSGInterface::a_help()
 		INT clen=0;
 		CHAR* command=get_string(clen);
 
-		while (sg_methods[i].action)
+		while (sg_methods[i].command)
 		{
-			if (strmatch(sg_methods[i].action, clen, command))
+			if (strmatch(sg_methods[i].command, clen, command))
 			{
 				SG_PRINT("Help for %s\n\t\t%s\n",
-					sg_methods[i].action, sg_methods[i].usage);
+					sg_methods[i].command, sg_methods[i].usage);
 				found=true;
 				break;
 			}
@@ -3699,23 +3699,23 @@ bool CSGInterface::handle()
 	if (!gui)
 		SG_ERROR("GUI could not be initialized.\n");
 
-	CHAR* action=NULL;
+	CHAR* command=NULL;
 	try
 	{
-		action=interface->get_action(len);
+		command=interface->get_command(len);
 	}
 	catch (ShogunException e)
 	{
 		SG_ERROR("String expected as first argument: %s\n", e.get_exception_string());
 	}
 
-	SG_DEBUG("action: %s, nrhs %d\n", action, m_nrhs);
+	SG_DEBUG("command: %s, nrhs %d\n", command, m_nrhs);
 	INT i=0;
-	while (sg_methods[i].action)
+	while (sg_methods[i].command)
 	{
-		if (strmatch(action, len, sg_methods[i].action))
+		if (strmatch(command, len, sg_methods[i].command))
 		{
-			SG_DEBUG("found method %s\n", sg_methods[i].action);
+			SG_DEBUG("found method %s\n", sg_methods[i].command);
 			if (!(interface->*(sg_methods[i].method))())
 				SG_ERROR("Usage: %s\n", sg_methods[i].usage);
 			else
@@ -3728,7 +3728,7 @@ bool CSGInterface::handle()
 	}
 
 	// FIXME: invoke old interface
-	if (!success && strmatch(action, len, N_SEND_COMMAND))
+	if (!success && strmatch(command, len, N_SEND_COMMAND))
 	{
 		CHAR* cmd=interface->get_string(len);
 		gui->parse_line(cmd);
@@ -3741,7 +3741,7 @@ bool CSGInterface::handle()
 	CSignal::unset_handler();
 #endif
 
-	delete[] action;
+	delete[] command;
 	return success;
 }
 

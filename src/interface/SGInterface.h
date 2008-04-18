@@ -42,298 +42,298 @@ class CSGInterface : public CSGObject
 		CSGInterface();
 		~CSGInterface();
 
-		/* actions */
+		/* commands */
 		/** load features from file */
-		bool a_load_features();
+		bool cmd_load_features();
 		/** save features to file */
-		bool a_save_features();
+		bool cmd_save_features();
 		/** clear/clean features */
-		bool a_clean_features();
+		bool cmd_clean_features();
 		/** get features */
-		bool a_get_features();
+		bool cmd_get_features();
 		/** add features */
-		bool a_add_features();
+		bool cmd_add_features();
 		/** set features */
-		bool a_set_features();
+		bool cmd_set_features();
 		/** set reference features */
-		bool a_set_reference_features();
+		bool cmd_set_reference_features();
 		/** convert features */
-		bool a_convert();
+		bool cmd_convert();
 		/** obtain from position list */
-		bool a_obtain_from_position_list();
+		bool cmd_obtain_from_position_list();
 		/** obtain by sliding window */
-		bool a_obtain_by_sliding_window();
+		bool cmd_obtain_by_sliding_window();
 		/** reshape features */
-		bool a_reshape();
+		bool cmd_reshape();
 		/** load labels from file */
-		bool a_load_labels();
+		bool cmd_load_labels();
 		/** set labels */
-		bool a_set_labels();
+		bool cmd_set_labels();
 		/** get labels */
-		bool a_get_labels();
+		bool cmd_get_labels();
 
 		/** set kernel */
-		bool a_set_kernel();
+		bool cmd_set_kernel();
 		/** add kernel (to e.g. CombinedKernel) */
-		bool a_add_kernel();
+		bool cmd_add_kernel();
 		/** initialize kernel */
-		bool a_init_kernel();
+		bool cmd_init_kernel();
 		/** clear/clean kernel */
-		bool a_clean_kernel();
+		bool cmd_clean_kernel();
 		/** save kernel to file */
-		bool a_save_kernel();
+		bool cmd_save_kernel();
 		/** load kernel init from file */
-		bool a_load_kernel_init();
+		bool cmd_load_kernel_init();
 		/** save kernel init to file */
-		bool a_save_kernel_init();
+		bool cmd_save_kernel_init();
 		/** get kernel matrix */
-		bool a_get_kernel_matrix();
+		bool cmd_get_kernel_matrix();
 		/** set custom kernel */
-		bool a_set_custom_kernel();
+		bool cmd_set_custom_kernel();
 		/** set WD position weights */
-		bool a_set_WD_position_weights();
+		bool cmd_set_WD_position_weights();
 		/** get subkernel weights */
-		bool a_get_subkernel_weights();
+		bool cmd_get_subkernel_weights();
 		/** set subkernel weights */
-		bool a_set_subkernel_weights();
+		bool cmd_set_subkernel_weights();
 		/** set subkernel weights combined */
-		bool a_set_subkernel_weights_combined();
+		bool cmd_set_subkernel_weights_combined();
 		/** set last subkernel weights */
-		bool a_set_last_subkernel_weights();
+		bool cmd_set_last_subkernel_weights();
 		/** get WD position weights */
-		bool a_get_WD_position_weights();
+		bool cmd_get_WD_position_weights();
 		/** get last subkernel weights */
-		bool a_get_last_subkernel_weights();
+		bool cmd_get_last_subkernel_weights();
 		/** compute by subkernels */
-		bool a_compute_by_subkernels();
+		bool cmd_compute_by_subkernels();
 		/** initialize kernel optimization */
-		bool a_init_kernel_optimization();
+		bool cmd_init_kernel_optimization();
 		/** get kernel optimization */
-		bool a_get_kernel_optimization();
+		bool cmd_get_kernel_optimization();
 		/** delete kernel optimization */
-		bool a_delete_kernel_optimization();
+		bool cmd_delete_kernel_optimization();
 		/** set kernel optimization type */
-		bool a_set_kernel_optimization_type();
+		bool cmd_set_kernel_optimization_type();
 #ifdef USE_SVMLIGHT
-		bool a_resize_kernel_cache();
+		bool cmd_resize_kernel_cache();
 #endif //USE_SVMLIGHT
 
 
 		/** set distance */
-		bool a_set_distance();
+		bool cmd_set_distance();
 		/** init distance */
-		bool a_init_distance();
+		bool cmd_init_distance();
 		/** get distance matrix */
-		bool a_get_distance_matrix();
+		bool cmd_get_distance_matrix();
 
 		/** get SPEC consensus */
-		bool a_get_SPEC_consensus();
+		bool cmd_get_SPEC_consensus();
 		/** get SPEC scoring */
-		bool a_get_SPEC_scoring();
+		bool cmd_get_SPEC_scoring();
 		/** get WD consensus */
-		bool a_get_WD_consensus();
+		bool cmd_get_WD_consensus();
 		/** compute POIM WD */
-		bool a_compute_POIM_WD();
+		bool cmd_compute_POIM_WD();
 		/** get WD scoring */
-		bool a_get_WD_scoring();
+		bool cmd_get_WD_scoring();
 
 		/** create new SVM/classifier */
-		bool a_new_classifier();
+		bool cmd_new_classifier();
 		/** load SVM/classifier */
-		bool a_load_classifier();
+		bool cmd_load_classifier();
 		/** get SVM */
-		bool a_get_svm();
+		bool cmd_get_svm();
 		/** set SVM */
-		bool a_set_svm();
+		bool cmd_set_svm();
 		/** classify */
-		bool a_classify();
+		bool cmd_classify();
 		/** classify example */
-		bool a_classify_example();
+		bool cmd_classify_example();
 		/** get classifier */
-		bool a_get_classifier();
+		bool cmd_get_classifier();
 		/** get SVM objective */
-		bool a_get_svm_objective();
+		bool cmd_get_svm_objective();
 		/** do AUC maximization */
-		bool a_do_auc_maximization();
+		bool cmd_do_auc_maximization();
 		/** set perceptron parameters */
-		bool a_set_perceptron_parameters();
+		bool cmd_set_perceptron_parameters();
 		/** train classifier/SVM */
-		bool a_train_classifier();
+		bool cmd_train_classifier();
 		/** test SVM */
-		bool a_test_svm();
+		bool cmd_test_svm();
 		/** set SVM qpsize */
-		bool a_set_svm_qpsize();
+		bool cmd_set_svm_qpsize();
 		/** set SVM max qpsize */
-		bool a_set_svm_max_qpsize();
+		bool cmd_set_svm_max_qpsize();
 		/** set SVM bufsize */
-		bool a_set_svm_bufsize();
+		bool cmd_set_svm_bufsize();
 		/** set SVM C */
-		bool a_set_svm_C();
+		bool cmd_set_svm_C();
 		/** set SVM epsilon */
-		bool a_set_svm_epsilon();
+		bool cmd_set_svm_epsilon();
 		/** set SVR tube epsilon */
-		bool a_set_svr_tube_epsilon();
+		bool cmd_set_svr_tube_epsilon();
 		/** set SVM OneClass nu */
-		bool a_set_svm_one_class_nu();
+		bool cmd_set_svm_one_class_nu();
 		/** set SVM MKL parameters */
-		bool a_set_svm_mkl_parameters();
+		bool cmd_set_svm_mkl_parameters();
 		/** set max train time */
-		bool a_set_max_train_time();
+		bool cmd_set_max_train_time();
 		/** set SVM precompute enabled */
-		bool a_set_svm_precompute_enabled();
+		bool cmd_set_svm_precompute_enabled();
 		/** set SVM MKL enabled */
-		bool a_set_svm_mkl_enabled();
+		bool cmd_set_svm_mkl_enabled();
 		/** set SVM shrinking enabled */
-		bool a_set_svm_shrinking_enabled();
+		bool cmd_set_svm_shrinking_enabled();
 		/** set SVM batch computation enabled */
-		bool a_set_svm_batch_computation_enabled();
+		bool cmd_set_svm_batch_computation_enabled();
 		/** set SVM linadd enabled */
-		bool a_set_svm_linadd_enabled();
+		bool cmd_set_svm_linadd_enabled();
 		/** set SVM bias enabled */
-		bool a_set_svm_bias_enabled();
+		bool cmd_set_svm_bias_enabled();
 
 		/** add preproc */
-		bool a_add_preproc();
+		bool cmd_add_preproc();
 		/** delete preproc */
-		bool a_del_preproc();
+		bool cmd_del_preproc();
 		/** load preproc from file */
-		bool a_load_preproc();
+		bool cmd_load_preproc();
 		/** save preproc to file */
-		bool a_save_preproc();
+		bool cmd_save_preproc();
 		/** attach preproc to test/train */
-		bool a_attach_preproc();
+		bool cmd_attach_preproc();
 		/** clear/clean preproc */
-		bool a_clean_preproc();
+		bool cmd_clean_preproc();
 
 		/** create new HMM */
-		bool a_new_hmm();
+		bool cmd_new_hmm();
 		/** load HMM from file */
-		bool a_load_hmm();
+		bool cmd_load_hmm();
 		/** save HMM to file */
-		bool a_save_hmm();
+		bool cmd_save_hmm();
 		/** HMM classify */
-		bool a_hmm_classify();
+		bool cmd_hmm_classify();
 		/** HMM test */
-		bool a_hmm_test();
+		bool cmd_hmm_test();
 		/** HMM classify for a single example */
-		bool a_hmm_classify_example();
+		bool cmd_hmm_classify_example();
 		/** LinearHMM classify for 1-class examples */
-		bool a_one_class_linear_hmm_classify();
+		bool cmd_one_class_linear_hmm_classify();
 		/** HMM classify for 1-class examples */
-		bool a_one_class_hmm_classify();
+		bool cmd_one_class_hmm_classify();
 		/** One Class HMM test */
-		bool a_one_class_hmm_test();
+		bool cmd_one_class_hmm_test();
 		/** HMM classify for a single 1-class example */
-		bool a_one_class_hmm_classify_example();
+		bool cmd_one_class_hmm_classify_example();
 		/** output HMM */
-		bool a_output_hmm();
+		bool cmd_output_hmm();
 		/** output HMM defined */
-		bool a_output_hmm_defined();
+		bool cmd_output_hmm_defined();
 		/** get HMM likelihood */
-		bool a_hmm_likelihood();
+		bool cmd_hmm_likelihood();
 		/** likelihood */
-		bool a_likelihood();
+		bool cmd_likelihood();
 		/** save HMM likelihoods to file */
-		bool a_save_likelihood();
+		bool cmd_save_likelihood();
 		/** get HMM's Viterbi Path */
-		bool a_get_viterbi_path();
+		bool cmd_get_viterbi_path();
 		/** train viterbi defined */
-		bool a_viterbi_train_defined();
+		bool cmd_viterbi_train_defined();
 		/** train viterbi */
-		bool a_viterbi_train();
+		bool cmd_viterbi_train();
 		/** train baum welch */
-		bool a_baum_welch_train();
+		bool cmd_baum_welch_train();
 		/** train baum welch trans */
-		bool a_baum_welch_trans_train();
+		bool cmd_baum_welch_trans_train();
 		/** linear train */
-		bool a_linear_train();
+		bool cmd_linear_train();
 		/** save path to file */
-		bool a_save_path();
+		bool cmd_save_path();
 		/** append HMM */
-		bool a_append_hmm();
+		bool cmd_append_hmm();
 		/** set HMM */
-		bool a_set_hmm();
+		bool cmd_set_hmm();
 		/** set HMM as */
-		bool a_set_hmm_as();
+		bool cmd_set_hmm_as();
 		/** get HMM */
-		bool a_get_hmm();
+		bool cmd_get_hmm();
 		/** set chop value */
-		bool a_set_chop();
+		bool cmd_set_chop();
 		/** set pseudo value */
-		bool a_set_pseudo();
+		bool cmd_set_pseudo();
 		/** load definitions from file */
-		bool a_load_definitions();
+		bool cmd_load_definitions();
 		/** convergence criteria */
-		bool a_convergence_criteria();
+		bool cmd_convergence_criteria();
 		/** normalize HMM */
-		bool a_normalize();
+		bool cmd_normalize();
 		/** add HMM states */
-		bool a_add_states();
+		bool cmd_add_states();
 		/** permutation entropy */
-		bool a_permutation_entropy();
+		bool cmd_permutation_entropy();
 		/** compute HMM relative entropy */
-		bool a_relative_entropy();
+		bool cmd_relative_entropy();
 		/** compute HMM entropy */
-		bool a_entropy();
+		bool cmd_entropy();
 		/** create new plugin estimator */
-		bool a_new_plugin_estimator();
+		bool cmd_new_plugin_estimator();
 		/** train plugin estimator */
-		bool a_train_estimator();
+		bool cmd_train_estimator();
 		/** test plugin estimator */
-		bool a_test_estimator();
+		bool cmd_test_estimator();
 		/** plugin estimate classify one example */
-		bool a_plugin_estimate_classify_example();
+		bool cmd_plugin_estimate_classify_example();
 		/** plugin estimate classify */
-		bool a_plugin_estimate_classify();
+		bool cmd_plugin_estimate_classify();
 		/** set plugin estimate */
-		bool a_set_plugin_estimate();
+		bool cmd_set_plugin_estimate();
 		/** get plugin estimate */
-		bool a_get_plugin_estimate();
+		bool cmd_get_plugin_estimate();
 		/** best path */
-		bool a_best_path();
+		bool cmd_best_path();
 		/** best path 2struct */
-		bool a_best_path_2struct();
+		bool cmd_best_path_2struct();
 		/** best path trans */
-		bool a_best_path_trans();
+		bool cmd_best_path_trans();
 		/** best path trans deriv */
-		bool a_best_path_trans_deriv();
+		bool cmd_best_path_trans_deriv();
 		/** best path no b */
-		bool a_best_path_no_b();
+		bool cmd_best_path_no_b();
 		/** best path trans simple */
-		bool a_best_path_trans_simple();
+		bool cmd_best_path_trans_simple();
 		/** best path no b trans */
-		bool a_best_path_no_b_trans();
+		bool cmd_best_path_no_b_trans();
 
 		/** calculate CRC sum */
-		bool a_crc();
+		bool cmd_crc();
 		/** send command to operating system */
-		bool a_system();
+		bool cmd_system();
 		/** exit/quit shogun/interface */
-		bool a_exit();
+		bool cmd_exit();
 		/** execute script from file */
-		bool a_exec();
+		bool cmd_exec();
 		/** set output target */
-		bool a_set_output();
+		bool cmd_set_output();
 		/** set threshold */
-		bool a_set_threshold();
+		bool cmd_set_threshold();
 		/** set number of threads */
-		bool a_set_num_threads();
+		bool cmd_set_num_threads();
 		/** translate string */
-		bool a_translate_string();
+		bool cmd_translate_string();
 		/** clear Shogun */
-		bool a_clear();
+		bool cmd_clear();
 		/** start timer */
-		bool a_tic();
+		bool cmd_tic();
 		/** stop timer */
-		bool a_toc();
+		bool cmd_toc();
 		/** echo */
-		bool a_echo();
+		bool cmd_echo();
 		/** set loglevel */
-		bool a_loglevel();
+		bool cmd_loglevel();
 		/** get version */
-		bool a_get_version();
+		bool cmd_get_version();
 		/** issue help message */
-		bool a_help();
+		bool cmd_help();
 
 		/** get functions - to pass data from the target interface to shogun */
 
@@ -440,8 +440,8 @@ class CSGInterface : public CSGObject
 					&& !strncmp(str, cmd, strlen(cmd)));
 		}
 
-		/// get action name like 'get_svm', 'new_hmm'
-		CHAR* get_action(INT &len)
+		/// get command name like 'get_svm', 'new_hmm'
+		CHAR* get_command(INT &len)
 		{
 			ASSERT(m_rhs_counter==0);
 			if (m_nrhs<=0)
@@ -471,7 +471,7 @@ class CSGInterface : public CSGObject
 typedef bool (CSGInterface::*CSGInterfacePtr)();
 
 typedef struct {
-	CHAR* action;
+	CHAR* command;
 	CSGInterfacePtr method;
 	CHAR* usage;
 } CSGInterfaceMethod;
