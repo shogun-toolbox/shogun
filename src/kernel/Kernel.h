@@ -248,7 +248,7 @@ class CKernel : public CSGObject
 		{
 			cache_size = size;
 #ifdef USE_SVMLIGHT
-			cache_reset():
+			cache_reset();
 #endif //USE_SVMLIGHT
 		}
 
