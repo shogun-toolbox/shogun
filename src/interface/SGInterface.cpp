@@ -731,7 +731,7 @@ static CSGInterfaceMethod sg_methods[]=
 	{
 		(CHAR*) N_SYSTEM,
 		(&CSGInterface::cmd_system),
-		(CHAR*) USAGE_I(N_SYSTEM, "'system command'")
+		(CHAR*) USAGE_I(N_SYSTEM, "'system_command'")
 	},
 	{
 		(CHAR*) N_EXIT,
@@ -3582,19 +3582,19 @@ bool CSGInterface::cmd_help()
 	SG_PRINT("\n");
 	if (m_nrhs==1) // all commands' help
 	{
-		SG_PRINT("Help listing of all commands:\n");
+		SG_PRINT("Listing of all commands:\n");
 		while (sg_methods[i].command)
 		{
-			bool is_group_dummy=false;
+			bool is_group_item=false;
 			if (!sg_methods[i].method && !sg_methods[i].usage)
-				is_group_dummy=true;
+				is_group_item=true;
 
-			if (is_group_dummy)
+			if (is_group_item)
 				SG_PRINT("\n");
 
 			SG_PRINT("%s\n", sg_methods[i].command);
 
-			if (is_group_dummy)
+			if (is_group_item)
 			{
 				for (UINT j=0; j<strlen(sg_methods[i].command); j++)
 					SG_PRINT("-");
@@ -3605,21 +3605,42 @@ bool CSGInterface::cmd_help()
 		}
 		SG_PRINT("\n\nUse sg('help', 'command') to see the usage pattern of a single command, e.g.\n\n\tsg('help', 'classify')\n\nto see the usage pattern of the command 'classify'.\n");
 	}
-	else // m_nrhs == 2 -> single command's help
+	else // m_nrhs == 2 -> single command or group help
 	{
 		bool found=false;
+		bool in_group=false;
 		INT clen=0;
 		CHAR* command=get_string(clen);
 
 		while (sg_methods[i].command)
 		{
-			if (strmatch(sg_methods[i].command, clen, command))
+			if (in_group)
 			{
-				SG_PRINT("Help for %s\n\t\t%s\n",
-					sg_methods[i].command, sg_methods[i].usage);
-				found=true;
-				break;
+				if (sg_methods[i].usage) // display group item
+					SG_PRINT("\t%s\n", sg_methods[i].command);
+					//SG_PRINT("\t%s: %s\n", sg_methods[i].command, sg_methods[i].usage);
+				else // next group -> end
+					break;
 			}
+			else
+			{
+				found=strmatch(sg_methods[i].command, clen, command);
+				if (found)
+				{
+					if (sg_methods[i].usage)
+					{
+						SG_PRINT("Usage for %s\n\n\t%s\n",
+							sg_methods[i].command, sg_methods[i].usage);
+						break;
+					}
+					else // group item
+					{
+						SG_PRINT("Commands in group %s\n\n", sg_methods[i].command);
+						in_group=true;
+					}
+				}
+			}
+
 			i++;
 		}
 
