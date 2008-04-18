@@ -244,7 +244,13 @@ class CKernel : public CSGObject
 		 *
 		 * @param size of kernel cache
 		 */
-		inline void set_cache_size(INT size) { cache_size = size; }
+		inline void set_cache_size(INT size)
+		{
+			cache_size = size;
+#ifdef USE_SVMLIGHT
+			cache_reset():
+#endif //USE_SVMLIGHT
+		}
 
 		/** return the size of the kernel cache
 		 *
