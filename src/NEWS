@@ -1,7 +1,11 @@
-2008-04-XX  Soeren Sonnenburg <debian@nn7.de>
+2008-04-19  Soeren Sonnenburg <debian@nn7.de>
 
 	* SHOGUN Release version 0.6.1
 		- Now fully support octave-modular thanks to the swig team!
+		- All python-modular examples describing the use of kernels,
+		classifier, distributions, features, distances, regression and
+		preprocessors have been ported to octave-modular.
+		- Minor documentation updates.
 	* Bugfixes:
 		- Include missing files in documentation.
 
