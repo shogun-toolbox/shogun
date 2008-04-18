@@ -2,7 +2,7 @@
 "The `Distance` module gathers all distances available in the SHOGUN toolkit."
 %enddef
 
-%module(docstring=DOCSTR,directors="1") Distance
+%module(docstring=DOCSTR) Distance
 %{
 #define SWIG_FILE_WITH_INIT
 #include "distance/Distance.h"
@@ -24,7 +24,6 @@
 
 %apply (DREAL** ARGOUT2, INT* DIM1, INT* DIM2) {(DREAL** dst, INT* m, INT* n)};
 
-%feature("director") CDistance;
 %rename(Distance) CDistance;
 %feature("autodoc","0");
 

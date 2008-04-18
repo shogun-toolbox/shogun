@@ -2,7 +2,7 @@
 "The `Regression` module gathers all regression methods available in the SHOGUN toolkit."
 %enddef
 
-%module(docstring=REGRESSION_DOCSTR, directors="1") Regression
+%module(docstring=REGRESSION_DOCSTR) Regression
 %{
  #define SWIG_FILE_WITH_INIT
 %}
@@ -17,7 +17,6 @@
 %}
 #endif
 
-%feature("director");
 %feature("autodoc","0");
 
 %include "lib/common.i"

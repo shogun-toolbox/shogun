@@ -2,12 +2,11 @@
 "The `PreProc` module gathers all preprocessors available in the SHOGUN toolkit."
 %enddef
 
-%module(docstring=DOCSTR,directors="1") PreProc
+%module(docstring=DOCSTR) PreProc
 %{
 #include "preproc/PreProc.h"
 %}
 
-%feature("director") CPreProc;
 %rename(PreProc) CPreProc;
 %feature("autodoc","0");
 

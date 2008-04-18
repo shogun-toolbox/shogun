@@ -2,12 +2,11 @@
 "The `Distribution` module gathers all distributions available in the SHOGUN toolkit."
 %enddef
 
-%module(docstring=DOCSTR,directors="1") Distribution
+%module(docstring=DOCSTR) Distribution
 %{
 #define SWIG_FILE_WITH_INIT
 #include "distributions/Distribution.h"
 %}
-%feature("director") CDistribution;
 %rename(Distribution) CDistribution;
 %feature("autodoc","0");
 

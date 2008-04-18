@@ -2,7 +2,7 @@
 "The `Features` module gathers all Feature objects available in the SHOGUN toolkit."
 %enddef
 
-%module(docstring=DOCSTR,directors="1") Features
+%module(docstring=DOCSTR) Features
 
 %{
 #define SWIG_FILE_WITH_INIT
@@ -22,7 +22,6 @@
 %}
 #endif
 
-%feature("director") CFeatures;
 %rename(Features) CFeatures;
 %feature("autodoc","0");
 

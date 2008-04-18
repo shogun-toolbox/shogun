@@ -2,7 +2,7 @@
 "The `Clustering` module gathers all clustering methods available in the SHOGUN toolkit."
 %enddef
 
-%module(docstring=DOCSTR,directors="1") Clustering
+%module(docstring=DOCSTR) Clustering
 %{
 #define SWIG_FILE_WITH_INIT
 %}

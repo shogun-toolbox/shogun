@@ -1,18 +1,4 @@
 init_shogun
-%Regression;
-%Distance;
-%Classifier;
-%Features;
-%Kernel;
-%
-%Structure;
-%Clustering;
-%Library;
-%PreProc;
-%Evaluation;
-%Features;
-%Distribution;
-
 
 num=40;
 len=3;
@@ -51,7 +37,7 @@ kernel=WeightedDegreeStringKernel(feats_train, feats_train, degree);
 C=0.017;
 epsilon=1e-5;
 tube_epsilon=1e-2;
-num_threads=1;
+num_threads=3;
 lab=round(rand(1,feats_train.get_num_vectors()))*2-1;
 labels=Labels(lab);
 
@@ -75,7 +61,7 @@ kernel=GaussianKernel(feats_train, feats_train, width);
 C=0.017;
 epsilon=1e-5;
 tube_epsilon=1e-2;
-num_threads=1;
+num_threads=2;
 lab=round(rand(1,feats_train.get_num_vectors()))*2-1;
 labels=Labels(lab);
 
@@ -99,7 +85,7 @@ kernel=GaussianKernel(feats_train, feats_train, width);
 C=0.017;
 epsilon=1e-5;
 tube_epsilon=1e-2;
-num_threads=1;
+num_threads=2;
 lab=round(rand(1,feats_train.get_num_vectors()))*2-1;
 labels=Labels(lab);
 
@@ -170,7 +156,7 @@ kernel=GaussianKernel(feats_train, feats_train, width);
 C=0.017;
 epsilon=1e-5;
 tube_epsilon=1e-2;
-num_threads=1;
+num_threads=4;
 
 svm=LibSVMOneClass(C, kernel);
 svm.set_epsilon(epsilon);

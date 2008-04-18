@@ -24,7 +24,7 @@ kernel=GaussianKernel(feats_train, feats_train, width);
 C=0.017;
 epsilon=1e-5;
 tube_epsilon=1e-2;
-num_threads=1;
+num_threads=3;
 lab=round(rand(1,feats_train.get_num_vectors()))*2-1;
 labels=Labels(lab);
 
@@ -47,7 +47,7 @@ kernel=GaussianKernel(feats_train, feats_train, width);
 C=0.017;
 epsilon=1e-5;
 tube_epsilon=1e-2;
-num_threads=1;
+num_threads=3;
 lab=round(rand(1,feats_train.get_num_vectors()))*2-1;
 labels=Labels(lab);
 

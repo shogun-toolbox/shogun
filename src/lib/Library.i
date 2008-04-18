@@ -2,7 +2,7 @@
 "The `Library` module gathers all miscellaneous Objects in the SHOGUN toolkit."
 %enddef
 
-%module(docstring=DOCSTR,directors="1") Library
+%module(docstring=DOCSTR) Library
 %feature("autodoc","0");
 
 #ifdef HAVE_DOXYGEN

@@ -2,7 +2,7 @@
 "The `Evaluation` module is a collection of classes like PerformanceMeasures for the SHOGUN toolkit."
 %enddef
 
-%module(docstring=DOCSTR,directors="1") Evaluation
+%module(docstring=DOCSTR) Evaluation
 %{
 #define SWIG_FILE_WITH_INIT
 %}

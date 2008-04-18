@@ -2,7 +2,7 @@
 "The `Classifier` module gathers all classifiers available in the SHOGUN toolkit."
 %enddef
 
-%module(docstring=DOCSTR, directors="1") Classifier
+%module(docstring=DOCSTR) Classifier
 %{
  #define SWIG_FILE_WITH_INIT
  #include "features/Labels.h" 
@@ -20,7 +20,6 @@
 #endif
 
 %newobject CClassifier::classify(CLabels* output);
-%feature("director");
 %feature("autodoc","0");
 %rename(Classifier) CClassifier;
 
