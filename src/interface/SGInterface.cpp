@@ -328,6 +328,81 @@ static CSGInterfaceMethod sg_methods[]=
 		(&CSGInterface::a_test_svm),
 		(CHAR*) USAGE(N_SVM_TEST)
 	},
+	{
+		(CHAR*) N_SVMQPSIZE,
+		(&CSGInterface::a_set_svm_qpsize),
+		(CHAR*) USAGE_I(N_SVMQPSIZE, "'size'")
+	},
+	{
+		(CHAR*) N_SVMMAXQPSIZE,
+		(&CSGInterface::a_set_svm_max_qpsize),
+		(CHAR*) USAGE_I(N_SVMMAXQPSIZE, "'size'")
+	},
+	{
+		(CHAR*) N_SVMBUFSIZE,
+		(&CSGInterface::a_set_svm_bufsize),
+		(CHAR*) USAGE_I(N_SVMBUFSIZE, "'size'")
+	},
+	{
+		(CHAR*) N_C,
+		(&CSGInterface::a_set_svm_C),
+		(CHAR*) USAGE_I(N_C, "'C1, C2'")
+	},
+	{
+		(CHAR*) N_SVM_EPSILON,
+		(&CSGInterface::a_set_svm_epsilon),
+		(CHAR*) USAGE_I(N_SVM_EPSILON, "'epsilon'")
+	},
+	{
+		(CHAR*) N_SVR_TUBE_EPSILON,
+		(&CSGInterface::a_set_svr_tube_epsilon),
+		(CHAR*) USAGE_I(N_SVR_TUBE_EPSILON, "'tube_epsilon'")
+	},
+	{
+		(CHAR*) N_SVM_ONE_CLASS_NU,
+		(&CSGInterface::a_set_svm_one_class_nu),
+		(CHAR*) USAGE_I(N_SVM_ONE_CLASS_NU, "'nu'")
+	},
+	{
+		(CHAR*) N_MKL_PARAMETERS,
+		(&CSGInterface::a_set_svm_mkl_parameters),
+		(CHAR*) USAGE_I(N_MKL_PARAMETERS, "'weight_epsilon, C_MKL'")
+	},
+	{
+		(CHAR*) N_SVM_MAX_TRAIN_TIME,
+		(&CSGInterface::a_set_max_train_time),
+		(CHAR*) USAGE_I(N_SVM_MAX_TRAIN_TIME, "'max_train_time'")
+	},
+	{
+		(CHAR*) N_USE_PRECOMPUTE,
+		(&CSGInterface::a_set_svm_precompute_enabled),
+		(CHAR*) USAGE_I(N_USE_PRECOMPUTE, "'enable_precompute'")
+	},
+	{
+		(CHAR*) N_USE_MKL,
+		(&CSGInterface::a_set_svm_mkl_enabled),
+		(CHAR*) USAGE_I(N_USE_MKL, "'enable_mkl'")
+	},
+	{
+		(CHAR*) N_USE_SHRINKING,
+		(&CSGInterface::a_set_svm_shrinking_enabled),
+		(CHAR*) USAGE_I(N_USE_SHRINKING, "'enable_shrinking'")
+	},
+	{
+		(CHAR*) N_USE_BATCH_COMPUTATION,
+		(&CSGInterface::a_set_svm_batch_computation_enabled),
+		(CHAR*) USAGE_I(N_USE_BATCH_COMPUTATION, "'enable_batch_computation'")
+	},
+	{
+		(CHAR*) N_USE_LINADD,
+		(&CSGInterface::a_set_svm_linadd_enabled),
+		(CHAR*) USAGE_I(N_USE_LINADD, "'enable_linadd'")
+	},
+	{
+		(CHAR*) N_SVM_USE_BIAS,
+		(&CSGInterface::a_set_svm_bias_enabled),
+		(CHAR*) USAGE_I(N_SVM_USE_BIAS, "'enable_bias'")
+	},
 
 
 	{ (CHAR*) "Preprocessors", NULL, NULL },
@@ -684,6 +759,11 @@ static CSGInterfaceMethod sg_methods[]=
 		(CHAR*) USAGE_I(N_SET_THRESHOLD, "'threshold'")
 	},
 	{
+		(CHAR*) N_THREADS,
+		(&CSGInterface::a_set_num_threads),
+		(CHAR*) USAGE_I(N_THREADS, "'num_threads'")
+	},
+	{
 		(CHAR*) N_TRANSLATE_STRING,
 		(&CSGInterface::a_translate_string),
 		(CHAR*) USAGE_IO(N_TRANSLATE_STRING,
@@ -693,6 +773,26 @@ static CSGInterfaceMethod sg_methods[]=
 		(CHAR*) N_CLEAR,
 		(&CSGInterface::a_clear),
 		(CHAR*) USAGE(N_CLEAR)
+	},
+	{
+		(CHAR*) N_TIC,
+		(&CSGInterface::a_tic),
+		(CHAR*) USAGE(N_TIC)
+	},
+	{
+		(CHAR*) N_TOC,
+		(&CSGInterface::a_toc),
+		(CHAR*) USAGE(N_TOC)
+	},
+	{
+		(CHAR*) N_ECHO,
+		(&CSGInterface::a_echo),
+		(CHAR*) USAGE_I(N_ECHO, "'level'")
+	},
+	{
+		(CHAR*) N_LOGLEVEL,
+		(&CSGInterface::a_loglevel),
+		(CHAR*) USAGE_I(N_LOGLEVEL, "'ALL|INFO|WARN|ERROR'")
 	},
 	{
 		(CHAR*) N_GET_VERSION,
@@ -2403,6 +2503,81 @@ bool CSGInterface::a_test_svm()
 	return send_command(N_SVM_TEST);
 }
 
+bool CSGInterface::a_set_svm_qpsize()
+{
+	return send_command(N_SVMQPSIZE);
+}
+
+bool CSGInterface::a_set_svm_max_qpsize()
+{
+	return send_command(N_SVMMAXQPSIZE);
+}
+
+bool CSGInterface::a_set_svm_bufsize()
+{
+	return send_command(N_SVMBUFSIZE);
+}
+
+bool CSGInterface::a_set_svm_C()
+{
+	return send_command(N_C);
+}
+
+bool CSGInterface::a_set_svm_epsilon()
+{
+	return send_command(N_SVM_EPSILON);
+}
+
+bool CSGInterface::a_set_svr_tube_epsilon()
+{
+	return send_command(N_SVR_TUBE_EPSILON);
+}
+
+bool CSGInterface::a_set_svm_one_class_nu()
+{
+	return send_command(N_SVM_ONE_CLASS_NU);
+}
+
+bool CSGInterface::a_set_svm_mkl_parameters()
+{
+	return send_command(N_MKL_PARAMETERS);
+}
+
+bool CSGInterface::a_set_max_train_time()
+{
+	return send_command(N_SVM_MAX_TRAIN_TIME);
+}
+
+bool CSGInterface::a_set_svm_precompute_enabled()
+{
+	return send_command(N_USE_PRECOMPUTE);
+}
+
+bool CSGInterface::a_set_svm_mkl_enabled()
+{
+	return send_command(N_USE_MKL);
+}
+
+bool CSGInterface::a_set_svm_shrinking_enabled()
+{
+	return send_command(N_USE_SHRINKING);
+}
+
+bool CSGInterface::a_set_svm_batch_computation_enabled()
+{
+	return send_command(N_USE_BATCH_COMPUTATION);
+}
+
+bool CSGInterface::a_set_svm_linadd_enabled()
+{
+	return send_command(N_USE_LINADD);
+}
+
+bool CSGInterface::a_set_svm_bias_enabled()
+{
+	return send_command(N_SVM_USE_BIAS);
+}
+
 
 /* Preproc */
 
@@ -3286,6 +3461,11 @@ bool CSGInterface::a_set_threshold()
 	return send_command(N_SET_THRESHOLD);
 }
 
+bool CSGInterface::a_set_num_threads()
+{
+	return send_command(N_THREADS);
+}
+
 bool CSGInterface::a_translate_string()
 {
 	if (m_nrhs!=4 || !create_return_values(1))
@@ -3358,6 +3538,28 @@ bool CSGInterface::a_translate_string()
 bool CSGInterface::a_clear()
 {
 	return send_command(N_CLEAR);
+}
+
+bool CSGInterface::a_tic()
+{
+	gui->guitime.start();
+	return true;
+}
+
+bool CSGInterface::a_toc()
+{
+	gui->guitime.stop();
+	return true;
+}
+
+bool CSGInterface::a_echo()
+{
+	return send_command(N_ECHO);
+}
+
+bool CSGInterface::a_loglevel()
+{
+	return send_command(N_LOGLEVEL);
 }
 
 bool CSGInterface::a_get_version()

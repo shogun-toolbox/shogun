@@ -161,6 +161,36 @@ class CSGInterface : public CSGObject
 		bool a_train_classifier();
 		/** test SVM */
 		bool a_test_svm();
+		/** set SVM qpsize */
+		bool a_set_svm_qpsize();
+		/** set SVM max qpsize */
+		bool a_set_svm_max_qpsize();
+		/** set SVM bufsize */
+		bool a_set_svm_bufsize();
+		/** set SVM C */
+		bool a_set_svm_C();
+		/** set SVM epsilon */
+		bool a_set_svm_epsilon();
+		/** set SVR tube epsilon */
+		bool a_set_svr_tube_epsilon();
+		/** set SVM OneClass nu */
+		bool a_set_svm_one_class_nu();
+		/** set SVM MKL parameters */
+		bool a_set_svm_mkl_parameters();
+		/** set max train time */
+		bool a_set_max_train_time();
+		/** set SVM precompute enabled */
+		bool a_set_svm_precompute_enabled();
+		/** set SVM MKL enabled */
+		bool a_set_svm_mkl_enabled();
+		/** set SVM shrinking enabled */
+		bool a_set_svm_shrinking_enabled();
+		/** set SVM batch computation enabled */
+		bool a_set_svm_batch_computation_enabled();
+		/** set SVM linadd enabled */
+		bool a_set_svm_linadd_enabled();
+		/** set SVM bias enabled */
+		bool a_set_svm_bias_enabled();
 
 		/** add preproc */
 		bool a_add_preproc();
@@ -286,10 +316,20 @@ class CSGInterface : public CSGObject
 		bool a_set_output();
 		/** set threshold */
 		bool a_set_threshold();
+		/** set number of threads */
+		bool a_set_num_threads();
 		/** translate string */
 		bool a_translate_string();
 		/** clear Shogun */
 		bool a_clear();
+		/** start timer */
+		bool a_tic();
+		/** stop timer */
+		bool a_toc();
+		/** echo */
+		bool a_echo();
+		/** set loglevel */
+		bool a_loglevel();
 		/** get version */
 		bool a_get_version();
 		/** issue help message */
