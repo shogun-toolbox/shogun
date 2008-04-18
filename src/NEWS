@@ -6,6 +6,10 @@
 		classifier, distributions, features, distances, regression and
 		preprocessors have been ported to octave-modular.
 		- Minor documentation updates.
+		- Unconditionally disable swig director. This reduces wrapper code size
+		and compile time and also speeds up calls to virtual functions *a lot*.
+		Expect big speed improvements if you were using the python-modular
+		interface.
 	* Bugfixes:
 		- Include missing files in documentation.
 
