@@ -22,6 +22,7 @@ kernel=GaussianKernel(feats_train, feats_train, width);
 
 labels=Labels(trainlab);
 svm=LibSVM(C, kernel, labels);
+svm.parallel.set_num_threads(8);
 svm.set_epsilon(epsilon);
 svm.train();
 kernel.init(feats_train, feats_test);

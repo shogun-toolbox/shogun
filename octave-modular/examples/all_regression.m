@@ -24,7 +24,7 @@ kernel=GaussianKernel(feats_train, feats_train, width);
 C=0.017;
 epsilon=1e-5;
 tube_epsilon=1e-2;
-num_threads=3;
+num_threads=1;
 lab=round(rand(1,feats_train.get_num_vectors()))*2-1;
 labels=Labels(lab);
 
@@ -34,7 +34,7 @@ svr.parallel.set_num_threads(num_threads);
 svr.train();
 
 kernel.init(feats_train, feats_test);
-%svr.classify().get_labels();
+svr.classify().get_labels();
 
 %% libsvm based support vector regression
 disp('LibSVR')
@@ -57,8 +57,7 @@ svr.parallel.set_num_threads(num_threads);
 svr.train();
 
 kernel.init(feats_train, feats_test);
-l=svr.club();
-%.get_labels();
+out=svr.classify().get_labels();
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% misc

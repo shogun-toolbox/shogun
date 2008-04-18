@@ -1,8 +1,18 @@
-%init_shogun
-Distance;
-Classifier;
-Features;
-Kernel;
+init_shogun
+%Regression;
+%Distance;
+%Classifier;
+%Features;
+%Kernel;
+%
+%Structure;
+%Clustering;
+%Library;
+%PreProc;
+%Evaluation;
+%Features;
+%Distribution;
+
 
 num=40;
 len=3;
@@ -52,7 +62,7 @@ svm.parallel.set_num_threads(num_threads);
 svm.train();
 
 kernel.init(feats_train, feats_test);
-%svm.classify().get_labels();
+svm.classify().get_labels();
 
 % libsvm
 disp('LibSVM')
@@ -65,7 +75,7 @@ kernel=GaussianKernel(feats_train, feats_train, width);
 C=0.017;
 epsilon=1e-5;
 tube_epsilon=1e-2;
-num_threads=2;
+num_threads=1;
 lab=round(rand(1,feats_train.get_num_vectors()))*2-1;
 labels=Labels(lab);
 
@@ -76,7 +86,7 @@ svm.parallel.set_num_threads(num_threads);
 svm.train();
 
 kernel.init(feats_train, feats_test);
-%svm.classify().get_labels();
+svm.classify().get_labels();
 
 % gpbtsvm
 disp('GPBTSVM')
@@ -89,7 +99,7 @@ kernel=GaussianKernel(feats_train, feats_train, width);
 C=0.017;
 epsilon=1e-5;
 tube_epsilon=1e-2;
-num_threads=8;
+num_threads=1;
 lab=round(rand(1,feats_train.get_num_vectors()))*2-1;
 labels=Labels(lab);
 
@@ -100,7 +110,7 @@ svm.parallel.set_num_threads(num_threads);
 svm.train();
 
 kernel.init(feats_train, feats_test);
-%svm.classify().get_labels();
+svm.classify().get_labels();
 
 % mpdsvm
 disp('MPDSVM')
@@ -124,7 +134,7 @@ svm.parallel.set_num_threads(num_threads);
 svm.train();
 
 kernel.init(feats_train, feats_test);
-%svm.classify().get_labels();
+svm.classify().get_labels();
 
 % libsvmmulticlass
 disp('LibSVMMultiClass')
@@ -147,7 +157,7 @@ svm.parallel.set_num_threads(num_threads);
 svm.train();
 
 kernel.init(feats_train, feats_test);
-%svm.classify().get_labels();
+svm.classify().get_labels();
 
 % libsvm oneclass
 disp('LibSVMOneClass')
@@ -169,7 +179,7 @@ svm.parallel.set_num_threads(num_threads);
 svm.train();
 
 kernel.init(feats_train, feats_test);
-%svm.classify().get_labels();
+svm.classify().get_labels();
 
 % gmnpsvm
 disp('GMNPSVM')
@@ -192,7 +202,7 @@ svm.parallel.set_num_threads(num_threads);
 svm.train();
 
 kernel.init(feats_train, feats_test);
-%svm.classify().get_labels();
+svm.classify().get_labels();
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % run with batch or linadd on LibSVM
@@ -227,10 +237,10 @@ kernel.init(feats_train, feats_test);
 fprintf('LibSVM Objective: %f num_sv: %d', svm.get_objective(), svm.get_num_support_vectors())
 svm.set_batch_computation_enabled(false);
 svm.set_linadd_enabled(false);
-%svm.classify().get_labels();
+svm.classify().get_labels();
 
 svm.set_batch_computation_enabled(true);
-%svm.classify().get_labels();
+svm.classify().get_labels();
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % linear SVMs
@@ -261,7 +271,7 @@ svm.set_max_train_time(max_train_time);
 svm.train();
 
 svm.set_features(feats_test);
-%svm.classify().get_labels();
+svm.classify().get_labels();
 
 % svm ocas
 disp('SVMOcas')
@@ -286,7 +296,7 @@ svm.set_bias_enabled(false);
 svm.train();
 
 svm.set_features(feats_test);
-%svm.classify().get_labels();
+svm.classify().get_labels();
 
 % sgd
 disp('SVMSGD')
@@ -309,7 +319,7 @@ svm.io.set_loglevel(0);
 svm.train();
 
 svm.set_features(feats_test);
-%svm.classify().get_labels();
+svm.classify().get_labels();
 
 % liblinear
 disp('LibLinear')
@@ -334,7 +344,7 @@ svm.set_bias_enabled(true);
 svm.train();
 
 svm.set_features(feats_test);
-%svm.classify().get_labels();
+svm.classify().get_labels();
 
 % svm lin
 disp('SVMLin')
@@ -361,7 +371,7 @@ svm.train();
 svm.set_features(feats_test);
 svm.get_bias();
 svm.get_w();
-%svm.classify().get_labels();
+svm.classify().get_labels();
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % misc classifiers
@@ -386,7 +396,7 @@ perceptron.parallel.set_num_threads(num_threads);
 perceptron.train();
 
 perceptron.set_features(feats_test);
-%perceptron.classify().get_labels();
+perceptron.classify().get_labels();
 
 % knn
 disp('KNN')
@@ -405,7 +415,7 @@ knn.parallel.set_num_threads(num_threads);
 knn.train();
 
 distance.init(feats_train, feats_test);
-%knn.classify().get_labels();
+knn.classify().get_labels();
 
 % lda
 disp('LDA')
@@ -425,4 +435,4 @@ lda.train();
 lda.get_bias();
 lda.get_w();
 lda.set_features(feats_test);
-%lda.classify().get_labels();
+lda.classify().get_labels();
