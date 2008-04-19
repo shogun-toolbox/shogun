@@ -12,6 +12,8 @@
 		interface.
 	* Bugfixes:
 		- Include missing files in documentation.
+		- The 'send_command' legacy is no longer necessary.
+		- Improved cmdline help, categorized in topic sg('help', 'topic')
 
 2008-04-12  Soeren Sonnenburg <debian@nn7.de>
 

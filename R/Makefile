@@ -2,7 +2,7 @@
 # Makefile for automated Shogun-R package generation
 #
 #
-SHOGUN:=sg_0.6.0-1.tar.gz
+SHOGUN:=sg_0.6.1-1.tar.gz
 CFGOPTS:=
 
 package: $(SHOGUN)

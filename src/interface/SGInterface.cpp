@@ -3582,7 +3582,8 @@ bool CSGInterface::cmd_help()
 	SG_PRINT("\n");
 	if (m_nrhs==1) // all commands' help
 	{
-		SG_PRINT("Listing of all commands:\n");
+		SG_PRINT("Help is available for the following topics.\n"
+				 "-------------------------------------------\n\n");
 		while (sg_methods[i].command)
 		{
 			bool is_group_item=false;
@@ -3590,20 +3591,14 @@ bool CSGInterface::cmd_help()
 				is_group_item=true;
 
 			if (is_group_item)
-				SG_PRINT("\n");
-
-			SG_PRINT("%s\n", sg_methods[i].command);
-
-			if (is_group_item)
 			{
-				for (UINT j=0; j<strlen(sg_methods[i].command); j++)
-					SG_PRINT("-");
-				SG_PRINT("\n");
+				SG_PRINT("%s\n", sg_methods[i].command);
 			}
 
 			i++;
 		}
-		SG_PRINT("\n\nUse sg('help', 'command') to see the usage pattern of a single command, e.g.\n\n\tsg('help', 'classify')\n\nto see the usage pattern of the command 'classify'.\n");
+		SG_PRINT("\n\nUse sg('help', 'topic') to see the list of commands in this group, e.g.\n\n"
+				"\tsg('help', 'Features')\n\nto see the list of commands for the 'Features' group.\n");
 	}
 	else // m_nrhs == 2 -> single command or group help
 	{
@@ -3646,6 +3641,11 @@ bool CSGInterface::cmd_help()
 
 		if (!found)
 			SG_PRINT("Could not find help for command %s.\n", command);
+		else if (in_group)
+		{
+			SG_PRINT("\n\nUse sg('help', 'command') to see the usage pattern of a single command, e.g.\n\n"
+					"\tsg('help', 'classify')\n\nto see the usage pattern of the command 'classify'.\n");
+		}
 
 		delete[] command;
 	}

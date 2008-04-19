@@ -136,16 +136,21 @@ targets:
 	@egrep '^[a-z]+:' Makefile | grep -v '\.o:' | sed -e 's/:.*//g' -e 's/out//g' -e 's/end//g' -e 's/^/     /g' | sort | uniq
 
 distclean: clean
-		rm -f .config tags lib/config.h lib/versionstring.h
+		@rm -f .config tags lib/config.h
 swigclean:
-	rm -f $(shell find -name "*_wrap.h" -o -name "*_wrap.cxx.o" -o -name "*_wrap.cxx" 2>/dev/null) 
+	@rm -f $(shell find -name "*_wrap.h" -o -name "*_wrap.cxx.o" -o -name "*_wrap.cxx" 2>/dev/null) 
 
 swigdocclean:
-	rm -rf $(shell find -name doxygen_xml -o -name "*_doxygen.i" 2>/dev/null) 
+	@rm -rf $(shell find -name doxygen_xml -o -name "*_doxygen.i" 2>/dev/null) 
 
 clean: swigclean swigdocclean
-	rm -f $(shell find . -name "*.cpp.o" -o -name "*.c.o" -o -name "*.so" -o -name "*.dll" -o -name "*~" -o -name ".#*" 2>/dev/null) sg.mex* shogun shogun.exe gmon.out .depend configure.log .cpuinfo ./configure-* $(shell find . -type f -name '*.py*' ! -name '__*.py' ! -name '.*.py' | grep -v svn) $(shell find . -type f -name '*.R') $(shell find . -type f -name '*.oct')
-
+	@rm -f $(shell find . -name "*.cpp.o" -o -name "*.c.o" -o -name "*.so" -o -name "*.dll" -o -name "*~" -o -name ".#*" 2>/dev/null)
+	@rm -f $(shell find . -type f -name '*.py*' ! -name '__*.py' ! -name '.*.py' | grep -v svn)
+	@rm -f $(shell find . -type f -name '*.R')
+	@rm -f $(shell find . -type f -name '*.oct')
+	@rm -f $(shell find . -type f -name '*.swp')
+	@rm -f $(shell find . -type f -name 'octave-core')
+	@rm -f sg.mex* shogun shogun.exe gmon.out .depend configure.log .cpuinfo ./configure-* cplex.log
 
 dist:	distclean
 	rm -f $(TAR).gz
@@ -220,7 +225,7 @@ endif #octave+swig
 endif #python+swig
 
 dep:	depend
-depend:		.config lib/versionstring.h
+depend:		.config
 ifeq (makedepend,$(MAKEDEPEND))
 	-$(MAKEDEPEND) $(DEFINES) $(INCLUDES) \
 		$(shell find $(SRCDIR) -mindepth 2 -name "*.$(EXT_SRC_CPP)" ) $(MAKEDEPENDOPTS) | \
@@ -237,7 +242,7 @@ endif
 		cut -c 3- | \
 		$(PYTHON) .generate_link_dependencies.py "$(PRE_LIB_SWIG)" "$(EXT_LIB_SWIG)" >>.depend
 
-.depend:	.config lib/versionstring.h
+.depend:	.config
 ifeq (makedepend,$(MAKEDEPEND))
 	-$(MAKEDEPEND) $(DEFINES) $(INCLUDES) \
 		$(shell find $(SRCDIR) -mindepth 2 -name "*.$(EXT_SRC_CPP)" ) $(MAKEDEPENDOPTS) | \
@@ -272,7 +277,7 @@ endif
 ChangeLog:
 		-@svn2cl --group-by-day --authors=.authors 2>/dev/null
 
-$(OBJFILES): .config .depend lib/versionstring.h ChangeLog
+$(OBJFILES): .config .depend ChangeLog
 
 ifeq (yes,$(USE_SWIG))
 $(TARGET): $(OBJFILES) $(SRCFILES) $(HEADERFILES) $(SWIGSRCFILES) $(SWIGDOCFILES) $(SWIGLIBFILES) 

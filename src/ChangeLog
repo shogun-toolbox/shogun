@@ -1,3 +1,214 @@
+2008-04-18  Sebastian Henschel <shogun@kodeaffe.de>
+
+	* interface/SGInterface.cpp: interface:
+	  - Extended help command to list commands in groups.
+	* interface/SGInterface.cpp, interface/SGInterface.h: interface:
+	  - Renamed all 'action' to 'command', incl. relating names
+	* interface/SGInterface.cpp, interface/SGInterface.h: interface:
+	  - Added remaining commands to make send_command obsolete.
+
+2008-04-18  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* NEWS: update news
+	* kernel/Kernel.h: type : -> ;
+	* kernel/Kernel.h: resize cache fix, thanks Christian Widmer
+	* classifier/Classifier.i, clustering/Clustering.i,
+	  distance/Distance.i, distributions/Distribution.i,
+	  evaluation/Evaluation.i, features/Features.i, kernel/Kernel.i,
+	  lib/Library.i, preproc/PreProc.i, regression/Regression.i:
+	  Disable director in all swig files. This has big impact on
+	  
+	  a) speed
+	  b) wrapper code size
+	  c) inheritance.
+	  
+	  Good news first, every virtual function should be *much faster*
+	  now, as the
+	  call is not anymore rerouted via the director wrapper to python
+	  and then from
+	  there to the correct c++ function. Furthermore the wrapper code
+	  size decreases
+	  a lot, the inheritance chain is shorter and compile times are
+	  reduced.
+	  
+	  The sad news is that virtual functions that *were overloaded via
+	  python code*
+	  will not be used from inside the C++ code (not sure if anyone
+	  expected this to
+	  work - so it might not actually be that bad).
+	* NEWS: further preps for the release
+
+2008-04-18  Sebastian Henschel <shogun@kodeaffe.de>
+
+	* interface/SGInterface.cpp, interface/SGInterface.h: interface:
+	  - Added a few more commands to make send_command obsolete in the
+	  near future.
+
+2008-04-17  Sebastian Henschel <shogun@kodeaffe.de>
+
+	* interface/SGInterface.cpp, interface/SGInterface.h: interface:
+	  - Added a bunch of commands to make send_command obsolete in the
+	  near future.
+
+2008-04-17  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* Makefile, clustering/Hierarchical.i, lib/octave_typemaps.i,
+	  lib/python_typemaps.i, regression/KRR.cpp,
+	  regression/svr/SVR_light.h: - fix a memory leak in KRR
+	  - add forgotten typemap in Hierarchical
+	  - add semicolon on make install for octave-modular
+	  - add the same examples we have for python-modular to
+	  octave-modular: there
+	  seems to be still a bug leading to infinity recursions for
+	  virtual functions in
+	  the octave swig wrapper ... to be debugged
+
+2008-04-16  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* features/SparseFeatures.h, kernel/CommWordStringKernel.cpp,
+	  kernel/HistogramWordKernel.cpp,
+	  kernel/LocalityImprovedStringKernel.cpp,
+	  kernel/SalzbergWordKernel.cpp: fix a couple of compile warnings
+	  on 64bit arch
+	* features/ShortRealFeatures.h, features/WordFeatures.h: - compile
+	  fix
+	  - fix crasher due to united variable in wordfeatures
+	  - adjust python examples/testsuite to match new syntax
+	* classifier/svm/SVM.i, features/ByteFeatures.i,
+	  features/CharFeatures.i, features/IntFeatures.h,
+	  features/IntFeatures.i, features/RealFeatures.h,
+	  features/RealFeatures.i, features/ShortFeatures.h,
+	  features/ShortFeatures.i, features/ShortRealFeatures.h,
+	  features/ShortRealFeatures.i, features/SimpleFeatures.i,
+	  features/WordFeatures.h, features/WordFeatures.i: * get rid of
+	  most %pythoncode extensions, which brings the following
+	  incompatible changes:
+	  - Byte/Char features have to be created like stringfeatures, i.e.
+	  bf=ByteFeatures(alphabet)
+	  bf.copy_feature_matrix(array(...))
+	  * only the convenience function for SVM remains (for the python
+	  interface), in
+	  case we later do some define magic we might do
+	  a) magic multi argument typemaps, e.g. ByteFeatures(alphabet,
+	  feat)
+	  b) functions with multiple numpy arrays... e.g. SVM(svs, alphas,
+	  b)
+	  with CSVM(INT* svs, INT num_svs, DREAL* alphas, INT num_alpha,
+	  DREAL b)
+	* features/Labels.i, lib/octave_typemaps.i, lib/python_typemaps.i,
+	  lib/r_typemaps.i: - resolved conflict, for multiple same name
+	  (but with different type) functions
+	  - we won't need the elstupido %pythoncode class derivation stuff
+	  :-)
+
+2008-04-15  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* classifier/LinearClassifier.i,
+	  classifier/SparseLinearClassifier.i, classifier/svm/SVM.i,
+	  clustering/Clustering.i, clustering/KMeans.i, configure,
+	  distance/Distance.i, distributions/Distribution.i,
+	  evaluation/Evaluation.i, features/Alphabet.i,
+	  features/ByteFeatures.i, features/CharFeatures.i,
+	  features/IntFeatures.i, features/Labels.i,
+	  features/RealFeatures.i, features/ShortFeatures.i,
+	  features/ShortRealFeatures.i, features/SimpleFeatures.i,
+	  features/StringFeatures.i, features/WordFeatures.i,
+	  interface/RInterface.cpp, kernel/CustomKernel.i, kernel/Kernel.i,
+	  kernel/LinearKernel.i,
+	  kernel/WeightedDegreePositionStringKernel.i,
+	  kernel/WeightedDegreeStringKernel.i, lib/R.h, lib/Signal.cpp,
+	  lib/io.cpp, lib/matlab.h, lib/octave.h, lib/python.h, lib/r.h,
+	  lib/r_typemaps.i, lib/swig_typemaps.i, structure/Structure.i: -
+	  wrap all typemaps in lib/swig_typemaps.i (that include
+	  python_typemaps.i etc...)
+	  - only ever use include lib/r.h when including R files
+	  - R does not need a prefix for .so files, e.g. Kernel.R and
+	  Kernel.so is the swig output
+	  - add python swig support (including typemaps for i/o of vectors
+	  and matrices),
+	  while it should fully work it does not, guessing:
+	  
+	  a) debian's R 2.7-prerelease is too new
+	  b) swig R wrapper support is far from mature
+	  c) subtleties of the R swig/interface or R even, e.g. the test
+	  works via R < ../R-modular/examples/first_shot.R
+	  but crashes when pasted in interactive mode. as long as the R
+	  swig
+	  maintainer does not respond this has 0 chance to improve in the
+	  future.
+	* Makefile, TODO, interface/SGInterface.cpp: - add make install for
+	  octave-modular
+	  - fix typo in usage help
+	  - update todo list
+	* lib/Mathematics.h: fix another compile warning
+	* features/Alphabet.cpp, features/WordFeatures.cpp,
+	  features/WordFeatures.h, kernel/CommWordStringKernel.cpp,
+	  kernel/CommWordStringKernel.h, kernel/KernelMachine.cpp,
+	  kernel/KernelMachine.h, kernel/PyramidChi2.h,
+	  kernel/WeightedDegreePositionStringKernel.h,
+	  lib/octave_typemaps.i, structure/DynProg.cpp,
+	  structure/DynProg.h: - fix a large number of gcc4.3 compile
+	  warnings
+	  - add missing documentation
+	  - add copyright header to octave_typemaps.i
+
+2008-04-14  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* lib/octave_typemaps.i: force variable to be in the outer context
+	  for IN1/IN2 octave typemaps. they
+	  might have been deallocated (as they were local variables)
+	  before.
+	* ChangeLog: - bugfix in R package building
+	  - add a make update-webpage to simplify the release mechanism
+	* base/SGObject.h, base/SGObject.i, clustering/KMeans.i,
+	  features/Labels.i, kernel/Kernel.i: - add forgotten includes for
+	  python_typemap and variable renaming
+	  - use ref counting for octave interface too
+	  - ignore all further constructors when creating Labels(lab), this
+	  seems to please typemaps (as in they are now applied)
+
+2008-04-13  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* NEWS, classifier/LinearClassifier.i,
+	  classifier/SparseLinearClassifier.i, classifier/svm/SVM.i,
+	  clustering/Clustering.i, distance/Distance.i,
+	  distributions/Distribution.i, evaluation/Evaluation.i,
+	  features/Alphabet.i, features/ByteFeatures.i,
+	  features/CharFeatures.i, features/IntFeatures.i,
+	  features/Labels.cpp, features/Labels.h, features/Labels.i,
+	  features/RealFeatures.i, features/ShortFeatures.i,
+	  features/ShortRealFeatures.i, features/SimpleFeatures.i,
+	  features/StringFeatures.i, features/WordFeatures.i,
+	  kernel/CustomKernel.i, kernel/Kernel.i, kernel/LinearKernel.i,
+	  kernel/WeightedDegreePositionStringKernel.i,
+	  kernel/WeightedDegreeStringKernel.i, lib/octave_typemaps.i,
+	  lib/python.h, lib/python_typemaps.i, structure/Structure.i:
+	  increadibly, swig for octave is basically working for everything,
+	  vectors,
+	  matrices and strings (in and out...)... thanks to the swig team
+	  and
+	  especially Xavier Delacour for the help... needs swig from svn to
+	  work
+
+2008-04-13  Sebastian Henschel <shogun@kodeaffe.de>
+
+	* interface/SGInterface.cpp: interface:
+	  - Updated help command to give the user a hint how to invoke help
+	  for a single
+	  command.
+
+2008-04-13  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* clustering/KMeans.h, features/SimpleFeatures.h,
+	  features/StringFeatures.h, kernel/Kernel.h,
+	  kernel/KernelMachine.h: fixed a few doxygen documentation
+	  warnings
+
+2008-04-12  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* COPYRIGHT, LICENSE, LICENSE.SVMlight, NEWS: - lots more of
+	  documentation
+
 2008-04-12  Sebastian Henschel <shogun@kodeaffe.de>
 
 	* interface/SGInterface.cpp, interface/SGInterface.h: interface:
