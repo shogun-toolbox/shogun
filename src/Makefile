@@ -268,7 +268,7 @@ doc:	lib/versionstring.h
 
 ifeq (python-modular,$(INTERFACE))
 tests:
-		cd ../$(INTERFACE)/testcases && ( PYTHON=$(PYTHON) PYTHONPATH="$(DESTDIR)$(PYDIR)/shogun" ./test_all.sh	)
+		cd ../$(INTERFACE)/testcases && ( PYTHON=$(PYTHON) PYTHONPATH="$(DESTDIR)$(PYDIR)" ./test_all.sh	)
 else
 tests:
 		cd ../$(INTERFACE)/testcases && ./test_all.sh
