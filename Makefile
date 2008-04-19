@@ -119,12 +119,21 @@ update-webpage:
 	gpg --sign $(DESTDIR).tar.bz2
 	gpg --sign ../sg_$(MAINVERSION).tar.gz
 
-	ssh vserver mkdir -p /pub/shogun-ftp/releases/$(VERSIONBASE)/sources \
+	ssh vserver mkdir -m 0755 -p /pub/shogun-ftp/releases/$(VERSIONBASE)/sources \
 		/pub/shogun-ftp/releases/$(VERSIONBASE)/Rsources
 	scp ../sg_$(MAINVERSION).tar.gz ../sg_$(MAINVERSION).tar.gz.gpg \
 		../sg_$(MAINVERSION).md5sum vserver:/pub/shogun-ftp/releases/$(VERSIONBASE)/Rsources/
 	scp $(DESTDIR).tar.bz2 $(DESTDIR).tar.bz2.gpg $(DESTDIR).md5sum \
 		../sg_$(MAINVERSION).md5sum vserver:/pub/shogun-ftp/releases/$(VERSIONBASE)/sources/
+	ssh vserver chmod 644 /pub/shogun-ftp/releases/$(VERSIONBASE)/sources/*.* \
+		/pub/shogun-ftp/releases/$(VERSIONBASE)/Rsources/*.*
+	
+	rm -rf doc/html
+	make -C doc
+	ssh vserver rm -f /pub/shogun/doc/*.*
+	cd doc/html && tar --exclude='*.map' --exclude='*.md5' -cjf - . | ssh vserver tar -C /pub/shogun/doc/ -xjvf -
+	ssh vserver chmod 644 /pub/shogun/doc/*.*
+	rm -rf doc/html
 
 svn-tag-release: src/lib/versionstring.h
 	sed -i "s/^Version.*$$/Version: $(MAINVERSION)/" R/sg/DESCRIPTION
