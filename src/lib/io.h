@@ -178,7 +178,7 @@ class CIO
 				sg_io->enable_progress();
 #else
 			if (&sg_io!=this)
-				sg_io.disable_progress();
+				sg_io.enable_progress();
 #endif
 		}
 

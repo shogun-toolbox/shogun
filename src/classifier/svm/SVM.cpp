@@ -292,6 +292,9 @@ CLabels* CSVM::classify(CLabels* lab)
 		ASSERT(lab);
 		SG_DEBUG( "computing output on %d test examples\n", num_vectors);
 
+		if (this->io.get_show_progress()) this->io.enable_progress();
+		else this->io.disable_progress();
+
 		if (kernel->has_property(KP_BATCHEVALUATION) &&
 				get_batch_computation_enabled())
 		{
