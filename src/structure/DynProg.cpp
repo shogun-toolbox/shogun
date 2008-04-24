@@ -891,11 +891,16 @@ void CDynProg::best_path_get_scores(DREAL **scores, INT *m)
 
 	if (m_step==9)
 	{
-		*scores=m_scores.get_array() ;
+		*scores=(DREAL*) malloc(m_scores.get_dim1()*sizeof(DREAL));
+		ASSERT(*scores);
+		memcpy(*scores, m_scores.get_array(), m_scores.get_dim1()*sizeof(DREAL));
 		*m=m_scores.get_dim1() ;
-	} else
+	}
+	else
 	{
-		*scores=m_my_scores.get_array() ;
+		*scores=(DREAL*) malloc(m_my_scores.get_dim1()*sizeof(DREAL));
+		ASSERT(*scores);
+		memcpy(*scores, m_my_scores.get_array(), m_my_scores.get_dim1()*sizeof(DREAL));
 		*m=m_my_scores.get_dim1() ;
 	}
 
@@ -907,7 +912,9 @@ void CDynProg::best_path_get_states(INT **states, INT *m, INT *n)
 	if (m_step!=10)
 		SG_ERROR( "please call best_path_get_score first\n") ;
 	
-	*states=m_states.get_array() ;
+	*states=(INT*) malloc(m_states.get_dim1()*m_states.get_dim2()*sizeof(INT));
+	ASSERT(*states);
+	memcpy(*states, m_states.get_array(), m_states.get_dim1()*m_states.get_dim2()*sizeof(INT));
 	*m=m_states.get_dim1() ;
 	*n=m_states.get_dim2() ;
 
@@ -921,7 +928,9 @@ void CDynProg::best_path_get_positions(INT **positions, INT *m, INT *n)
 	if (m_call==3)
 		SG_ERROR( "no position information for best_path_simple\n") ;
 	
-	*positions=m_positions.get_array() ;
+	*positions=(INT*) malloc(m_positions.get_dim1()*m_positions.get_dim2()*sizeof(INT));
+	ASSERT(*positions);
+	memcpy(*positions, m_positions.get_array(), m_positions.get_dim1()*m_positions.get_dim2()*sizeof(INT));
 	*m=m_positions.get_dim1() ;
 	*n=m_positions.get_dim2() ;
 }
@@ -929,7 +938,9 @@ void CDynProg::best_path_get_positions(INT **positions, INT *m, INT *n)
 void CDynProg::best_path_get_losses(DREAL** losses, INT* seq_len)
 {
 	ASSERT(losses && seq_len);
-	*losses=m_my_losses.get_array();
+	*losses=(DREAL*) malloc(m_my_losses.get_dim1()*sizeof(DREAL));
+	ASSERT(*losses);
+	memcpy(*losses, m_my_losses.get_array(), m_my_losses.get_dim1()*sizeof(DREAL));
 	*seq_len=m_my_losses.get_dim1();
 }
 
