@@ -116,7 +116,7 @@ DREAL COctaveInterface::get_real()
 bool COctaveInterface::get_bool()
 {
 	const octave_value b=get_arg_increment();
-	if (b.is_scalar_type())
+	if (b.is_bool_scalar())
 		SG_ERROR("Expected Scalar Boolean as argument %d\n", m_rhs_counter);
 
 	return b.bool_value();
