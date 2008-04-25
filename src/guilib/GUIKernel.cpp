@@ -70,23 +70,593 @@ CKernel* CGUIKernel::get_kernel()
 	return kernel;
 }
 
-bool CGUIKernel::set_kernel(CHAR* param)
+#ifdef HAVE_MINDY
+CKernel* CGUIKernel::create_mindygram(INT size, CHAR* meas_str, CHAR* norm_str, DREAL width, CHAR* param_str)
 {
-	CKernel* k=create_kernel(param);
+	CKernel* kern=new CMindyGramKernel(size, meast_str, width);
+	if (!kern)
+		SG_ERROR("Couldn't create MindyGramKernel with size %d, meas_str %s, width %f.\n", size, meas_str, width);
+	else
+		SG_DEBUG("created MindyGramKernel (%p) with size %d, meas_str %s, width %f.\n", kern, size, meas_str, width);
 
-	if (kernel && k)
-		delete kernel;
+	ENormalizationType normalization=get_normalization_from_str(norm_str);
+	kern->set_norm(normalization);
+	kern->set_param(param_str);
 
-	if (k)
+	return kern;
+}
+#endif
+
+CKernel* CGUIKernel::create_diag(INT size, DREAL diag)
+{
+	CKernel* kern=new CDiagKernel(size, diag);
+	if (!kern)
+		SG_ERROR("Couldn't create DiagKernel with size %d, diag %f.\n", size, diag);
+	else
+		SG_DEBUG("created DiagKernel (%p) with size %d, diag %f.\n", kern, size, diag);
+
+	return kern;
+}
+
+CKernel* CGUIKernel::create_const(INT size, DREAL c)
+{
+	CKernel* kern=new CConstKernel(c);
+	if (!kern)
+		SG_ERROR("Couldn't create ConstKernel with c %f.\n", c);
+	else
+		SG_DEBUG("created ConstKernel (%p) with c %f.\n", kern, c);
+
+	kern->set_cache_size(size);
+
+	return kern;
+}
+
+CKernel* CGUIKernel::create_custom()
+{
+	CKernel* kern=new CCustomKernel();
+	if (!kern)
+		SG_ERROR("Couldn't create CustomKernel.\n");
+	else
+		SG_DEBUG("created CustomKernel (%p).\n", kern);
+
+	return kern;
+}
+
+
+CKernel* CGUIKernel::create_gaussianshift(
+	INT size, DREAL width, INT max_shift, INT shift_step)
+{
+	CKernel* kern=new CGaussianShiftKernel(size, width, max_shift, shift_step);
+	if (!kern)
+		SG_ERROR("Couldn't create GaussianShiftKernel with size %d, width %f, max_shift %d, shift_step %d.\n", size, width, max_shift, shift_step);
+	else
+		SG_DEBUG("created GaussianShiftKernel (%p) with size %d, width %f, max_shift %d, shift_step %d.\n", kern, size, width, max_shift, shift_step);
+
+	return kern;
+}
+
+CKernel* CGUIKernel::create_sparsegaussian(INT size, DREAL width)
+{
+	CKernel* kern=new CSparseGaussianKernel(size, width);
+	if (!kern)
+		SG_ERROR("Couldn't create GaussianKernel with size %d, width %f.\n", size, width);
+	else
+		SG_DEBUG("created GaussianKernel (%p) with size %d, width %f.\n", kern, size, width);
+
+	return kern;
+}
+
+CKernel* CGUIKernel::create_gaussian(INT size, DREAL width)
+{
+	CKernel* kern=new CGaussianKernel(size, width);
+	if (!kern)
+		SG_ERROR("Couldn't create GaussianKernel with size %d, width %f.\n", size, width);
+	else
+		SG_DEBUG("created GaussianKernel (%p) with size %d, width %f.\n", kern, size, width);
+
+	return kern;
+}
+
+CKernel* CGUIKernel::create_sigmoid(INT size, DREAL gamma, DREAL coef0)
+{
+	CKernel* kern=new CSigmoidKernel(size, gamma, coef0);
+	if (!kern)
+		SG_ERROR("Couldn't create SigmoidKernel with size %d, gamma %f, coef0 %f.\n", size, gamma, coef0);
+	else
+		SG_DEBUG("created SigmoidKernel (%p) with size %d, gamma %f, coef0 %f.\n", kern, size, gamma, coef0);
+
+	return kern;
+}
+
+CKernel* CGUIKernel::create_sparsepoly(
+	INT size, INT degree, bool inhomogene, bool normalize)
+{
+	CKernel* kern=new CSparsePolyKernel(size, degree, inhomogene, normalize);
+	if (!kern)
+		SG_ERROR("Couldn't create SparsePolyKernel with size %d, degree %d, inhomoegene %d, normalize %d.\n", size, degree, inhomogene, normalize);
+	else
+		SG_DEBUG("created SparsePolyKernel with size %d, degree %d, inhomoegene %d, normalize %d.\n", kern, size, degree, inhomogene, normalize);
+
+	return kern;
+}
+
+CKernel* CGUIKernel::create_poly(
+	INT size, INT degree, bool inhomogene, bool normalize)
+{
+	CKernel* kern=new CPolyKernel(size, degree, inhomogene, normalize);
+	if (!kern)
+		SG_ERROR("Couldn't create PolyKernel with size %d, degree %d, inhomoegene %d, normalize %d.\n", size, degree, inhomogene, normalize);
+	else
+		SG_DEBUG("created PolyKernel (%p) with size %d, degree %d, inhomoegene %d, normalize %d.\n", kern, size, degree, inhomogene, normalize);
+
+	return kern;
+}
+
+CKernel* CGUIKernel::create_localityimprovedstring(
+	INT size, INT length, INT inner_degree, INT outer_degree,
+	EKernelType ktype)
+{
+	CKernel* kern=NULL;
+
+	if (ktype==K_SIMPLELOCALITYIMPROVED)
 	{
-		kernel=k;
-		return true;
+		kern=new CSimpleLocalityImprovedStringKernel(
+			size, length, inner_degree, outer_degree);
+	}
+	else if (ktype==K_LOCALITYIMPROVED)
+	{
+		kern=new CLocalityImprovedStringKernel(
+			size, length, inner_degree, outer_degree);
+	}
+
+	if (!kern)
+		SG_ERROR("Couldn't create (Simple)LocalityImprovedStringKernel with size %d, length %d, inner_degree %d, outer_degree %d.\n", size, length, inner_degree, outer_degree);
+	else
+		SG_DEBUG("created (Simple)LocalityImprovedStringKernel with size %d, length %d, inner_degree %d, outer_degree %d.\n", kern, size, length, inner_degree, outer_degree);
+
+	return kern;
+}
+
+CKernel* CGUIKernel::create_weighteddegreestring(
+	INT size, INT order, INT max_mismatch, bool use_normalization,
+	INT mkl_stepsize, bool block_computation, INT single_degree)
+{
+	DREAL* weights=get_weights(order, max_mismatch);
+
+	INT i=0;
+	if (single_degree>=0)
+	{
+		ASSERT(single_degree<order);
+		for (i=0; i<order; i++)
+		{
+			if (i!=single_degree)
+				weights[i]=0;
+			else
+				weights[i]=1;
+		}
+	}
+
+	CKernel* kern=new CWeightedDegreeStringKernel(weights, order);
+	if (!kern)
+		SG_ERROR("Couldn't create WeightedDegreeStringKernel with size %d, order %d, max_mismatch %d, use_normalization %d, mkl_stepsize %d, block_computation %d, single_degree %f.\n", size, order, max_mismatch, use_normalization, mkl_stepsize, block_computation, single_degree);
+	else
+		SG_DEBUG("created WeightedDegreeStringKernel (%p) with size %d, order %d, max_mismatch %d, use_normalization %d, mkl_stepsize %d, block_computation %d, single_degree %f.\n", kern, size, order, max_mismatch, use_normalization, mkl_stepsize, block_computation, single_degree);
+
+	((CWeightedDegreeStringKernel*) kern)->
+		set_use_normalization(use_normalization);
+	((CWeightedDegreeStringKernel*) kern)->
+		set_use_block_computation(block_computation);
+	((CWeightedDegreeStringKernel*) kern)->set_max_mismatch(max_mismatch);
+	((CWeightedDegreeStringKernel*) kern)->set_mkl_stepsize(mkl_stepsize);
+	((CWeightedDegreeStringKernel*) kern)->set_which_degree(single_degree);
+
+	delete[] weights;
+	return kern;
+}
+
+CKernel* CGUIKernel::create_weighteddegreepositionstring(
+	INT size, INT order, INT max_mismatch, INT length, INT center,
+	DREAL step)
+{
+	INT i=0;
+	INT* shifts=new INT[length];
+	ASSERT(shifts);
+
+	for (i=center; i<length; i++)
+		shifts[i]=(int) floor(((DREAL) (i-center))/step);
+
+	for (i=center-1; i>=0; i--)
+		shifts[i]=(int) floor(((DREAL) (center-i))/step);
+
+	for (i=0; i<length; i++)
+	{
+		if (shifts[i]>length)
+			shifts[i]=length;
+	}
+
+	for (i=0; i<length; i++)
+		SG_INFO( "shift[%i]=%i\n", i, shifts[i]);
+
+	DREAL* weights=get_weights(order, max_mismatch);
+
+	CKernel* kern=new CWeightedDegreePositionStringKernel(size, weights, order, max_mismatch, shifts, length);
+	if (!kern)
+		SG_ERROR("Couldn't create WeightedDegreePositionStringKernel with size %d, order %d, max_mismatch %d, length %d, center %d, step %f.\n", size, order, max_mismatch, length, center, step);
+	else
+		SG_DEBUG("created WeightedDegreePositionStringKernel with size %d, order %d, max_mismatch %d, length %d, center %d, step %f.\n", kern, size, order, max_mismatch, length, center, step);
+
+	delete[] weights;
+	delete[] shifts;
+	return kern;
+}
+
+CKernel* CGUIKernel::create_weighteddegreepositionstring3(
+	INT size, INT order, INT max_mismatch, INT* shifts, INT length,
+	INT mkl_stepsize, DREAL* position_weights)
+{
+	DREAL* weights=get_weights(order, max_mismatch);
+
+	CKernel* kern=new CWeightedDegreePositionStringKernel(size, weights, order, max_mismatch, shifts, length, false, mkl_stepsize);
+	if (!kern)
+		SG_ERROR("Couldn't create WeightedDegreePositionStringKernel with size %d, order %d, max_mismatch %d, length %d and position_weights (MKL stepsize: %d).\n", size, order, max_mismatch, length, mkl_stepsize);
+	else
+		SG_DEBUG("created WeightedDegreePositionStringKernel (%p) with size %d, order %d, max_mismatch %d, length %d and position_weights (MKL stepsize: %d).\n", kern, size, order, max_mismatch, length, mkl_stepsize);
+
+	((CWeightedDegreePositionStringKernel*) kern)->
+		set_position_weights(position_weights, length);
+
+	delete[] weights;
+	return kern;
+}
+
+CKernel* CGUIKernel::create_weighteddegreepositionstring2(
+	INT size, INT order, INT max_mismatch, INT* shifts, INT length,
+	bool use_normalization)
+{
+	DREAL* weights=get_weights(order, max_mismatch);
+
+	CKernel* kern=new CWeightedDegreePositionStringKernel(size, weights, order, max_mismatch, shifts, length, use_normalization);
+	if (!kern)
+		SG_ERROR("Couldn't create WeightedDegreePositionStringKernel with size %d, order %d, max_mismatch %d, length %d, use_normalization %d.\n", size, order, max_mismatch, length, use_normalization);
+	else
+		SG_DEBUG("created WeightedDegreePositionStringKernel (%p) with size %d, order %d, max_mismatch %d, length %d, use_normalization %d.\n", kern, size, order, max_mismatch, length, use_normalization);
+
+	delete[] weights;
+	return kern;
+}
+
+DREAL* CGUIKernel::get_weights(INT order, INT max_mismatch)
+{
+	DREAL *weights=new DREAL[order*(1+max_mismatch)];
+	ASSERT(weights);
+	DREAL sum=0;
+	INT i=0;
+
+	for (i=0; i<order; i++)
+	{
+		weights[i]=order-i;
+		sum+=weights[i];
+	}
+	for (i=0; i<order; i++)
+		weights[i]/=sum;
+	
+	for (i=0; i<order; i++)
+	{
+		for (INT j=1; j<=max_mismatch; j++)
+		{
+			if (j<i+1)
+			{
+				INT nk=CMath::nchoosek(i+1, j);
+				weights[i+j*order]=weights[i]/(nk*pow(3, j));
+			}
+			else
+				weights[i+j*order]=0;
+		}
+	}
+
+	return weights;
+}
+
+
+CKernel* CGUIKernel::create_localalignmentstring(INT size)
+{
+	CKernel* kern=new CLocalAlignmentStringKernel(size);
+	if (!kern)
+		SG_ERROR("Couldn't create LocalAlignmentStringKernel with size %d.\n", size);
+	else
+		SG_DEBUG("created LocalAlignmentStringKernel (%p) with size %d.\n", kern, size);
+
+	return kern;
+}
+
+CKernel* CGUIKernel::create_fixeddegreestring(INT size, INT d)
+{
+	CKernel* kern=new CFixedDegreeStringKernel(size, d);
+	if (!kern)
+		SG_ERROR("Couldn't create FixedDegreeStringKernel with size %d and d %d.\n", size, d);
+	else
+		SG_DEBUG("created FixedDegreeStringKernel (%p) with size %d and d %d.\n", kern, size, d);
+
+	return kern;
+}
+
+CKernel* CGUIKernel::create_chi2(INT size, DREAL width)
+{
+	CKernel* kern=new CChi2Kernel(size, width);
+	if (!kern)
+		SG_ERROR("Couldn't create Chi2Kernel with size %d and width %f.\n", size, width);
+	else
+		SG_DEBUG("created Chi2Kernel (%p) with size %d and width %f.\n", kern, size, width);
+
+	return kern;
+}
+
+CKernel* CGUIKernel::create_commstring(
+	INT size, bool use_sign, CHAR* norm_str, EKernelType ktype)
+{
+	ENormalizationType normalization=get_normalization_from_str(norm_str);
+
+	CKernel* kern=NULL;
+	if (ktype==K_COMMULONGSTRING)
+		kern=new CCommUlongStringKernel(size, use_sign, normalization);
+	else if (ktype==K_COMMWORDSTRING)
+		kern=new CCommWordStringKernel(size, use_sign, normalization);
+	else if (ktype==K_WEIGHTEDCOMMWORDSTRING)
+		kern=new CWeightedCommWordStringKernel(size, use_sign, normalization);
+
+	if (!kern)
+		SG_ERROR("Couldn't create WeightedCommWord/CommWord/CommUlongStringKernel with size %d, use_sign  %d and normalization %d.\n", size, use_sign, normalization);
+	else
+		SG_DEBUG("created WeightedCommWord/CommWord/CommUlongStringKernel (%p) with size %d, use_sign  %d and normalization %d.\n", kern, size, use_sign, normalization);
+
+	return kern;
+}
+
+ENormalizationType CGUIKernel::get_normalization_from_str(CHAR* str)
+{
+	ENormalizationType norm=FULL_NORMALIZATION;
+
+	if (strncmp(str, "NO", 2)==0)
+	{
+		norm=NO_NORMALIZATION;
+		SG_INFO("Using no normalization.\n");
+	}
+	else if (strncmp(str, "SQRT", 4)==0)
+	{
+		norm=SQRT_NORMALIZATION;
+		SG_INFO("Using sqrt normalization.\n");
+	}
+	else if (strncmp(str, "SQRTLEN", 7)==0)
+	{
+		norm=SQRTLEN_NORMALIZATION;
+		SG_INFO("Using sqrt-len normalization.\n");
+	}
+	else if (strncmp(str, "LEN", 3)==0)
+	{
+		norm=LEN_NORMALIZATION;
+		SG_INFO("Using len normalization.\n");
+	}
+	else if (strncmp(str, "SQLEN", 5)==0)
+	{
+		norm=SQLEN_NORMALIZATION;
+		SG_INFO("Using squared len normalization.\n");
+	}
+	else if (strncmp(str, "FULL", 4)==0)
+	{
+		norm=FULL_NORMALIZATION;
+		SG_INFO("Using full normalization.\n");
 	}
 	else
 	{
-		SG_ERROR( "kernel creation failed.\n");
-		return false;
+		norm=FULL_NORMALIZATION;
+		SG_INFO("Using default full normalization.\n");
 	}
+
+	return norm;
+}
+
+CKernel* CGUIKernel::create_wordmatch(INT size, INT d)
+{
+	CKernel* kern=new CWordMatchKernel(size, d);
+	if (!kern)
+		SG_ERROR("Couldn't create WordMatchKernel with size %d and d %d.\n", size, d);
+	else
+		SG_DEBUG("created WordMatchKernel (%p) with size %d and d %d.\n", kern, size, d);
+
+	return kern;
+}
+
+CKernel* CGUIKernel::create_polymatchstring(
+	INT size, INT degree, bool inhomogene, bool normalize)
+{
+	CKernel* kern=new CPolyMatchStringKernel(size, degree, inhomogene, normalize);
+	if (!kern)
+		SG_ERROR("Couldn't create PolyMatchStringKernel with size %d, degree %d, inhomogene %d, normalize %d.\n", size, degree, inhomogene, normalize);
+	else
+		SG_DEBUG("created PolyMatchStringKernel (%p) with size %d, degree %d, inhomogene %d, normalize %d.\n", kern, size, degree, inhomogene, normalize);
+
+	return kern;
+}
+
+CKernel* CGUIKernel::create_polymatchword(
+	INT size, INT degree, bool inhomogene, bool normalize)
+{
+	CKernel* kern=new CPolyMatchWordKernel(size, degree, inhomogene, normalize);
+	if (!kern)
+		SG_ERROR("Couldn't create PolyMatchWordKernel with size %d, degree %d, inhomogene %d, normalize %d.\n", size, degree, inhomogene, normalize);
+	else
+		SG_DEBUG("created PolyMatchWordKernel (%p) with size %d, degree %d, inhomogene %d, normalize %d.\n", kern, size, degree, inhomogene, normalize);
+
+	return kern;
+}
+
+CKernel* CGUIKernel::create_salzbergword(INT size)
+{
+
+	SG_INFO("Getting estimator.\n");
+	CPluginEstimate* estimator=gui->guipluginestimate.get_estimator();
+	if (!estimator)
+		SG_ERROR("No estimator set.\n");
+
+	CKernel* kern=new CSalzbergWordKernel(size, estimator);
+	if (!kern)
+		SG_ERROR("Couldn't create HistogramWord with size %d.\n", size);
+	else
+		SG_DEBUG("created HistogramWord (%p) with size %d.\n", kern, size);
+
+	// prior stuff
+	SG_INFO("Getting labels.\n");
+	CLabels* train_labels=gui->guilabels.get_train_labels();
+	if (!train_labels)
+	{
+		SG_INFO("Assign train labels first!\n");
+		return NULL;
+	}
+
+	INT num_pos=0, num_neg=0;
+	for (INT i=0; i<train_labels->get_num_labels(); i++)
+	{
+		if (train_labels->get_int_label(i)==1)
+			num_pos++;
+		if (train_labels->get_int_label(i)==-1)
+			num_neg++;
+	}
+	SG_INFO("priors: pos=%1.3f (%i)  neg=%1.3f (%i)\n",
+		(DREAL) num_pos/(num_pos+num_neg), num_pos,
+		(DREAL) num_neg/(num_pos+num_neg), num_neg);
+
+	((CSalzbergWordKernel*) kern)->set_prior_probs(
+		(DREAL)num_pos/(num_pos+num_neg),
+		(DREAL)num_neg/(num_pos+num_neg));
+
+	return kern;
+}
+
+CKernel* CGUIKernel::create_histogramword(INT size)
+{
+	SG_INFO("Getting estimator.\n");
+	CPluginEstimate* estimator=gui->guipluginestimate.get_estimator();
+	if (!estimator)
+		SG_ERROR("No estimator set.\n");
+
+	CKernel* kern=new CHistogramWordKernel(size, estimator);
+	if (!kern)
+		SG_ERROR("Couldn't create HistogramWord with size %d.\n", size);
+	else
+		SG_DEBUG("created HistogramWord (%p) with size %d.\n", kern, size);
+
+	return kern;
+}
+
+CKernel* CGUIKernel::create_linearbyte(INT size, DREAL scale)
+{
+	CKernel* kern=NULL;
+	if (scale==-1)
+		kern=new CLinearByteKernel(size, true);
+	else
+		kern=new CLinearByteKernel(size, false, scale);
+
+	if (!kern)
+		SG_ERROR("Couldn't create LinearByteKernel with size %d and scale %f.\n", size, scale);
+	else
+		SG_DEBUG("created LinearByteKernel (%p) with size %d and scale %f.\n", kern, size, scale);
+
+	return kern;
+}
+
+CKernel* CGUIKernel::create_linearword(INT size, DREAL scale)
+{
+	CKernel* kern=NULL;
+	if (scale==-1)
+		kern=new CLinearWordKernel(size, true);
+	else
+		kern=new CLinearWordKernel(size, false, scale);
+
+	if (!kern)
+		SG_ERROR("Couldn't create LinearWordKernel with size %d and scale %f.\n", size, scale);
+	else
+		SG_DEBUG("created LinearWordKernel (%p) with size %d and scale %f.\n", kern, size, scale);
+
+	return kern;
+}
+
+CKernel* CGUIKernel::create_linearstring(INT size, DREAL scale)
+{
+	CKernel* kern=NULL;
+	if (scale==-1)
+		kern=new CLinearStringKernel(size, true);
+	else
+		kern=new CLinearStringKernel(size, false, scale);
+
+	if (!kern)
+		SG_ERROR("Couldn't create LinearStringKernel with size %d and scale %f.\n", size, scale);
+	else
+		SG_DEBUG("created LinearStringKernel (%p) with size %d and scale %f.\n", kern, size, scale);
+
+	return kern;
+}
+
+CKernel* CGUIKernel::create_linear(INT size, DREAL scale)
+{
+	CKernel* kern=new CLinearKernel(size, scale);
+	if (!kern)
+		SG_ERROR("Couldn't create LinearKernel with size %d and scale %f.\n", size, scale);
+	else
+		SG_DEBUG("created LinearKernel (%p) with size %d and scale %f.\n", kern, size, scale);
+
+	return kern;
+}
+
+CKernel* CGUIKernel::create_sparselinear(INT size, DREAL scale)
+{
+	CKernel* kern=new CSparseLinearKernel(size, scale);
+	if (!kern)
+		SG_ERROR("Couldn't create SparseLinearKernel with size %d and scale %f.\n", size, scale);
+	else
+		SG_DEBUG("created SparseLinearKernel (%p) with size %d and scale %f.\n", kern, size, scale);
+
+	return kern;
+}
+
+CKernel* CGUIKernel::create_distance(INT size, DREAL width)
+{
+	CDistance* dist=gui->guidistance.get_distance();
+	if (!dist)
+		SG_ERROR("No distance set for DistanceKernel.\n");
+
+	CKernel* kern=new CDistanceKernel(size, width, dist);
+	if (!kern)
+		SG_ERROR("Couldn't create DistanceKernel with size %d and width %f.\n", size, width);
+	else
+		SG_DEBUG("created DistanceKernel (%p) with size %d and width %f.\n", kern, size, width);
+
+	return kern;
+}
+
+CKernel* CGUIKernel::create_combined(
+	INT size, bool append_subkernel_weights)
+{
+	CKernel* kern=new CCombinedKernel(size, append_subkernel_weights);
+	if (!kern)
+		SG_ERROR("Couldn't create CombinedKernel with size %d and append_subkernel_weights %d.\n", size, append_subkernel_weights);
+	else
+		SG_DEBUG("created CombinedKernel (%p) with size %d and append_subkernel_weights %d.\n", kern, size, append_subkernel_weights);
+
+	return kern;
+}
+
+bool CGUIKernel::set_kernel(CKernel* kern)
+{
+	if (kern)
+	{
+		delete kernel;
+		kernel=kern;
+		SG_DEBUG("set new kernel (%p).\n", kern);
+
+		return true;
+	}
+	else
+		return false;
 }
 
 bool CGUIKernel::load_kernel_init(CHAR* param)
@@ -310,1083 +880,29 @@ bool CGUIKernel::save_kernel(CHAR* param)
 	return result;
 }
 
-CKernel* CGUIKernel::create_kernel(CHAR* param)
+bool CGUIKernel::add_kernel(CKernel* kern, DREAL weight)
 {
-	INT size=100;
-	CHAR kern_type[1024]="";
-	CHAR data_type[1024]="";
-	param=CIO::skip_spaces(param);
-	CKernel* k=NULL;
-	INT append_subkernel_weights = 0 ;
+	if (!kern)
+		SG_ERROR("Given kernel to add is invalid.\n");
 
-	//note the different args COMBINED <cachesize>
-	if (sscanf(param, "%s %d %i", kern_type, &size, &append_subkernel_weights) == 3)
-	{
-		if (strcmp(kern_type,"COMBINED")==0)
-		{
-			delete k;
-			k= new CCombinedKernel(size, append_subkernel_weights!=0);
-			if (kernel)
-				SG_INFO( "CombinedKernel created\n");
-			return k;
-		}
-		else if(strcmp(kern_type,"DISTANCE")==0)
-                {
-			double width = 1.0;
-                        delete k;
-			
-			CDistance* dist = gui->guidistance.get_distance();
-			
-			if(dist)
-			{
-				sscanf(param,"%s %d %lf",kern_type,&size,&width);
-				k = new CDistanceKernel(size,width,dist);
-				SG_INFO("DistanceKernel created");				
-				return k;
-			}
-			else
-			{
-				SG_ERROR("no distance set for DistanceKernel");
-			}
-
-		} 
-		else
-			SG_ERROR( "in this format I only expect Combined kernels\n") ;
-	} 
-	else if (sscanf(param, "%s %d", kern_type, &size) == 2)
-	{
-		if (strcmp(kern_type,"COMBINED")==0)
-		{
-			delete k;
-			k= new CCombinedKernel(size,false);
-			if (kernel)
-				SG_INFO( "CombinedKernel created\n");
-			return k;
-		} else
-			SG_ERROR( "in this format I only expect Combined kernels\n") ;
-	} 
-	//compared with <KERNTYPE> <DATATYPE> <CACHESIZE>
-	else if (sscanf(param, "%s %s %d", kern_type, data_type, &size) >= 2)
-	{
-		if (strcmp(kern_type,"LINEAR")==0)
-		{
-			if (strcmp(data_type,"BYTE")==0)
-			{
-				double scale = -1 ;
-				sscanf(param, "%s %s %d %le", kern_type, data_type, &size, &scale);
-				delete k;
-				if (scale==-1)
-					k=new CLinearByteKernel(size, true);
-				else
-					k=new CLinearByteKernel(size, false, scale);
-				return k;
-			}
-			else if (strcmp(data_type,"WORD")==0)
-			{
-				double scale = -1 ;
-				sscanf(param, "%s %s %d %le", kern_type, data_type, &size, &scale);
-				delete k;
-				if (scale==-1)
-					k=new CLinearWordKernel(size, true);
-				else
-					k=new CLinearWordKernel(size, false, scale);
-				return k;
-			}
-			else if (strcmp(data_type,"CHAR")==0)
-			{
-				double scale = -1 ;
-				sscanf(param, "%s %s %d %le", kern_type, data_type, &size, &scale);
-				delete k;
-				if (scale==-1)
-					k=new CLinearStringKernel(size, true);
-				else
-					k=new CLinearStringKernel(size, false, scale);
-				return k;
-			}
-			else if (strcmp(data_type,"REAL")==0)
-			{
-				double scale = 0;
-				sscanf(param, "%s %s %d %le", kern_type, data_type, &size, &scale);
-				delete k;
-				k=new CLinearKernel(size, scale);
-				return k;
-			}
-			else if (strcmp(data_type,"SPARSEREAL")==0)
-			{
-				double scale = 0;
-				sscanf(param, "%s %s %d %le", kern_type, data_type, &size, &scale);
-				delete k;
-				k=new CSparseLinearKernel(size, scale);
-				return k;
-			}
-		}
-		else if (strcmp(kern_type,"HISTOGRAM")==0)
-		{
-			if (strcmp(data_type,"WORD")==0)
-			{
-				sscanf(param, "%s %s %d", kern_type, data_type, &size);
-				if (k)
-				  {
-				    SG_INFO( "destroying old k\n") ;
-				    delete k;
-				  } ;
-
-				SG_INFO( "getting estimator\n") ;
-				CPluginEstimate* estimator=gui->guipluginestimate.get_estimator();
-
-				if (estimator)
-					k=new CHistogramWordKernel(size, estimator);
-				else
-					SG_ERROR( "no estimator set\n");
-
-				if (k)
-				{
-					SG_INFO( "HistogramKernel created\n");
-					return k;
-				}
-			}
-		}
-		else if (strcmp(kern_type,"SALZBERG")==0)
-		{
-			if (strcmp(data_type,"WORD")==0)
-			{
-				sscanf(param, "%s %s %d", kern_type, data_type, &size);
-				if (k)
-				{
-				    SG_INFO( "destroying old k\n") ;
-				    delete k;
-				  } ;
-
-				SG_INFO( "getting estimator\n") ;
-				CPluginEstimate* estimator=gui->guipluginestimate.get_estimator();
-
-				SG_INFO( "getting labels\n") ;
-				CLabels * train_labels = gui->guilabels.get_train_labels() ;
-				if (!train_labels)
-				{
-					SG_INFO( "assign train labels first!\n") ;
-					return NULL ;
-				} ;
-				
-				INT num_pos=0, num_neg=0;
-				
-				for (INT i=0; i<train_labels->get_num_labels(); i++)
-				{
-					if (train_labels->get_int_label(i)==1) num_pos++ ;
-					if (train_labels->get_int_label(i)==-1) num_neg++ ;
-				}				
-				SG_INFO( "priors: pos=%1.3f (%i)  neg=%1.3f (%i)\n", 
-							 (DREAL) num_pos/(num_pos+num_neg), num_pos,
-							 (DREAL) num_neg/(num_pos+num_neg), num_neg) ;
-				
-				if (estimator)
-					k=new CSalzbergWordKernel(size, estimator);
-				else
-					SG_ERROR( "no estimator set\n");
-				
-				((CSalzbergWordKernel*)k)->set_prior_probs((DREAL)num_pos/(num_pos+num_neg), 
-																(DREAL)num_neg/(num_pos+num_neg)) ;
-				
-				if (k)
-				{
-					SG_INFO( "SalzbergKernel created\n");
-					return k;
-				}
-			}
-		}
-		else if (strcmp(kern_type,"POLYMATCH")==0)
-		{
-			if (strcmp(data_type,"WORD")==0)
-			{
-				INT inhomogene=0;
-				INT degree=2;
-				INT normalize=1;
-
-				sscanf(param, "%s %s %d %d %d %d", kern_type, data_type, &size, &degree, &inhomogene, &normalize);
-				delete k;
-				k=new CPolyMatchWordKernel(size, degree, inhomogene==1, normalize==1);
-
-				if (k)
-				{
-					SG_INFO( "PolyMatchWordKernel created\n");
-					return k;
-				}
-			}
-			else if (strcmp(data_type,"CHAR")==0)
-			{
-				INT inhomogene=0;
-				INT degree=2;
-				INT normalize=1;
-
-				sscanf(param, "%s %s %d %d %d %d", kern_type, data_type, &size, &degree, &inhomogene, &normalize);
-				delete k;
-				k=new CPolyMatchStringKernel(size, degree, inhomogene==1, normalize==1);
-
-				if (k)
-				{
-					SG_INFO( "PolyMatchStringKernel created\n");
-					return k;
-				}
-			}
-		}
-		else if (strcmp(kern_type,"MATCH")==0)
-		{
-			if (strcmp(data_type,"WORD")==0)
-			{
-				delete k;
-				INT d=3;
-				sscanf(param, "%s %s %d %d", kern_type, data_type, &size, &d);
-				k=new CWordMatchKernel(size, d);
-
-				if (k)
-				{
-					SG_INFO( "MatchKernel created\n");
-					return k;
-				}
-			}
-		}
-		else if (strcmp(kern_type,"WEIGHTEDCOMMSTRING")==0 || strcmp(kern_type,"COMMSTRING")==0)
-		{
-			if (strcmp(data_type,"WORD")==0)
-			{
-				delete k;
-				INT use_sign = 0 ;
-				char normalization_str[100]="" ;
-				ENormalizationType normalization = FULL_NORMALIZATION ;
-				
-				sscanf(param, "%s %s %d %d %s", kern_type, data_type, &size, &use_sign, normalization_str);
-				if (strlen(normalization_str)==0)
-				{
-					normalization = FULL_NORMALIZATION ;
-					SG_INFO( "using full normalization\n") ;
-				}
-				else if (strcmp(normalization_str, "NO")==0)
-				{
-					normalization = NO_NORMALIZATION ;
-					SG_INFO( "using no normalization\n") ;
-				}
-				else if (strcmp(normalization_str, "SQRT")==0)
-				{
-					normalization = SQRT_NORMALIZATION ;
-					SG_INFO( "using sqrt normalization\n") ;
-				}
-				else if (strcmp(normalization_str, "SQRTLEN")==0)
-				{
-					normalization = SQRTLEN_NORMALIZATION ;
-					SG_INFO( "using sqrt-len normalization\n") ;
-				}
-				else if (strcmp(normalization_str, "LEN")==0)
-				{
-					normalization = LEN_NORMALIZATION ;
-					SG_INFO( "using len normalization\n") ;
-				}
-				else if (strcmp(normalization_str, "SQLEN")==0)
-				{
-					normalization = SQLEN_NORMALIZATION ;
-					SG_INFO( "using squared len normalization\n") ;
-				}
-				else if (strcmp(normalization_str, "FULL")==0)
-				{
-					normalization = FULL_NORMALIZATION ;
-					SG_INFO( "using full normalization\n") ;
-				}
-				else 
-				{
-					SG_ERROR( "unknow normalization: %s\n", normalization_str) ;
-					return NULL ;
-				}
-
-				if (strcmp(kern_type,"WEIGHTEDCOMMSTRING")==0)
-				{
-					k=new CWeightedCommWordStringKernel(size, use_sign==1, normalization);
-
-					if (k)
-					{
-						if (use_sign)
-							SG_INFO( "WeightedCommWordStringKernel with sign(count) created\n");
-						else
-							SG_INFO( "WeightedCommWordStringKernel with count created\n");
-						return k;
-					}
-				}
-				else
-				{
-					k=new CCommWordStringKernel(size, use_sign==1, normalization);
-
-					if (k)
-					{
-						if (use_sign)
-							SG_INFO( "CommWordStringKernel with sign(count) created\n");
-						else
-							SG_INFO( "CommWordStringKernel with count created\n");
-						return k;
-					}
-				}
-			}
-			else if (strcmp(data_type,"ULONG")==0)
-			{
-				delete k;
-				INT use_sign = 0 ;
-				char normalization_str[100]="" ;
-				ENormalizationType normalization = FULL_NORMALIZATION ;
-				
-				sscanf(param, "%s %s %d %d %s", kern_type, data_type, &size, &use_sign, normalization_str);
-				if (strlen(normalization_str)==0)
-				{
-					normalization = FULL_NORMALIZATION ;
-					SG_INFO( "using full normalization\n") ;
-				}
-				else if (strcmp(normalization_str, "NO")==0)
-				{
-					normalization = NO_NORMALIZATION ;
-					SG_INFO( "using no normalization\n") ;
-				}
-				else if (strcmp(normalization_str, "SQRT")==0)
-				{
-					normalization = SQRT_NORMALIZATION ;
-					SG_INFO( "using sqrt normalization\n") ;
-				}
-				else if (strcmp(normalization_str, "SQRTLEN")==0)
-				{
-					normalization = SQRTLEN_NORMALIZATION ;
-					SG_INFO( "using sqrt-len normalization\n") ;
-				}
-				else if (strcmp(normalization_str, "LEN")==0)
-				{
-					normalization = LEN_NORMALIZATION ;
-					SG_INFO( "using len normalization\n") ;
-				}
-				else if (strcmp(normalization_str, "SQLEN")==0)
-				{
-					normalization = SQLEN_NORMALIZATION ;
-					SG_INFO( "using squared len normalization\n") ;
-				}
-				else if (strcmp(normalization_str, "FULL")==0)
-				{
-					normalization = FULL_NORMALIZATION ;
-					SG_INFO( "using full normalization\n") ;
-				}
-				else 
-				{
-					SG_ERROR( "unknow normalization: %s\n", normalization_str) ;
-					return NULL ;
-				}
-
-				k=new CCommUlongStringKernel(size, use_sign, normalization);
-				
-				if (k)
-				{
-					if (use_sign)
-						SG_INFO( "CommUlongStringKernel with sign(count) created\n");
-					else
-						SG_INFO( "CommUlongStringKernel with count created\n");
-					return k;
-				}
-			}
-		}
-		else if (strcmp(kern_type,"CHI2")==0)
-		{
-			if (strcmp(data_type,"REAL")==0)
-			{
-				double width=1;
-
-				sscanf(param, "%s %s %d %lf", kern_type, data_type, &size, &width);
-				delete k;
-				k=new CChi2Kernel(size, width);
-
-				if (k)
-				{
-					SG_INFO( "Chi2Kernel created\n");
-					return k;
-				}
-			}
-		}
-		else if (strcmp(kern_type,"FIXEDDEGREE")==0)
-		{
-			if (strcmp(data_type,"CHAR")==0)
-			{
-				INT d=3;
-
-				sscanf(param, "%s %s %d %d", kern_type, data_type, &size, &d);
-				delete k;
-				k=new CFixedDegreeStringKernel(size, d);
-
-				if (k)
-				{
-					SG_INFO( "FixedDegreeStringKernel created\n");
-					return k;
-				}
-			}
-		}
-		else if (strcmp(kern_type,"LOCALALIGNMENT")==0)
-		{
-			if (strcmp(data_type,"CHAR")==0)
-			{
-				sscanf(param, "%s %s %d", kern_type, data_type, &size);
-				delete k;
-				k=new CLocalAlignmentStringKernel(size);
-
-				if (k)
-				{
-					SG_INFO( "LocalAlignmentStringKernel created\n");
-					return k;
-				}
-			}
-		}
-		else if (strcmp(kern_type,"WEIGHTEDDEGREEPOS2")==0)
-		{
-			if ((strcmp(data_type,"CHAR")==0) || (strcmp(data_type,"STRING")==0))
-			{
-				INT d=3;
-				INT max_mismatch = 0 ;
-				INT i=0;
-				INT length = 0 ;
-				char * rest = new char[strlen(param)] ;
-				char * rest2 = new char[strlen(param)] ;
-				
-				sscanf(param, "%s %s %d %d %d %d %[0-9 .+-]", 
-					   kern_type, data_type, &size, &d, &max_mismatch, 
-					   &length, rest);
-
-				INT *shift = new INT[length] ;
-				for (i=0; i<length; i++)
-				{
-					int args = sscanf(rest, "%i %[0-9 .+-]", &shift[i], rest2) ;
-					if (((args!=2) && (i<length-1)) || (args<1))
-					{
-						SG_ERROR( "failed to read list at position %i\n", i) ;
-						return false ;
-					} ;
-					if (shift[i]>length)
-					{
-						SG_ERROR( "shift longer than sequence: %i \n", shift[i]) ;
-						return false ;
-					} ;
-					strcpy(rest,rest2) ;
-				}
-				
-				DREAL* weights=new DREAL[d*(1+max_mismatch)];
-				DREAL sum=0;
-
-				for (i=0; i<d; i++)
-				{
-					weights[i]=d-i;
-					sum+=weights[i];
-				}
-				for (i=0; i<d; i++)
-					weights[i]/=sum;
-				
-				for (i=0; i<d; i++)
-				{
-					for (INT j=1; j<=max_mismatch; j++)
-					{
-						if (j<i+1)
-						{
-							INT nk=CMath::nchoosek(i+1, j) ;
-							weights[i+j*d]=weights[i]/(nk*pow(3,j)) ;
-						}
-						else
-							weights[i+j*d]= 0;
-					} ;
-				} ;
-
-
-				delete k;
-
-				k=new CWeightedDegreePositionStringKernel(size, weights,
-					d, max_mismatch, shift, length, true);
-				delete[] shift ;
-				delete[] weights ;
-
-				if (k)
-				{
-					SG_INFO( "WeightedDegreePositionStringKernel(%d,.,%d,%d,.,%d) created\n",size, d, max_mismatch, length);
-					return k;
-				}
-			}
-		}
-		else if (strcmp(kern_type,"WEIGHTEDDEGREEPOS2_NONORM")==0)
-		{
-			if ((strcmp(data_type,"CHAR")==0) || (strcmp(data_type,"STRING")==0))
-			{
-				INT d=3;
-				INT max_mismatch = 0 ;
-				INT i=0;
-				INT length = 0 ;
-				char * rest = new char[strlen(param)] ;
-				char * rest2 = new char[strlen(param)] ;
-				
-				sscanf(param, "%s %s %d %d %d %d %[0-9 .+-]", 
-					   kern_type, data_type, &size, &d, &max_mismatch, 
-					   &length, rest);
-
-				INT *shift = new INT[length] ;
-				for (i=0; i<length; i++)
-				{
-					int args = sscanf(rest, "%i %[0-9 .+-]", &shift[i], rest2) ;
-					if (((args!=2) && (i<length-1)) || (args<1))
-					{
-						SG_ERROR( "failed to read list at position %i\n", i) ;
-						return false ;
-					} ;
-					if (shift[i]>length)
-					{
-						SG_ERROR( "shift longer than sequence: %i \n", shift[i]) ;
-						return false ;
-					} ;
-					strcpy(rest,rest2) ;
-				}
-				
-				DREAL* weights=new DREAL[d*(1+max_mismatch)];
-				DREAL sum=0;
-
-				for (i=0; i<d; i++)
-				{
-					weights[i]=d-i;
-					sum+=weights[i];
-				}
-				for (i=0; i<d; i++)
-					weights[i]/=sum;
-				
-				for (i=0; i<d; i++)
-				{
-					for (INT j=1; j<=max_mismatch; j++)
-					{
-						if (j<i+1)
-						{
-							INT nk=CMath::nchoosek(i+1, j) ;
-							weights[i+j*d]=weights[i]/(nk*pow(3,j)) ;
-						}
-						else
-							weights[i+j*d]= 0;
-					} ;
-				} ;
-
-
-				delete k;
-
-				k=new CWeightedDegreePositionStringKernel(size, weights,
-					d, max_mismatch, shift, length, false);
-				delete[] shift ;
-				delete[] weights ;
-
-				if (k)
-				{
-					SG_INFO( "WeightedDegreePositionStringKernel(%d,.,%d,%d,.,%d) w/o NORMALIZATION created\n",size, d, max_mismatch, length);
-					return k;
-				}
-			}
-		}
-		else if (strcmp(kern_type,"WEIGHTEDDEGREEPOS3")==0)
-		{
-			if ((strcmp(data_type,"CHAR")==0) || (strcmp(data_type,"STRING")==0))
-			{
-				INT d=3;
-				INT max_mismatch = 0 ;
-				INT i=0;
-				INT length = 0 ;
-				INT mkl_stepsize = 1 ;
-				
-				char * rest = new char[strlen(param)] ;
-				char * rest2 = new char[strlen(param)] ;
-				
-				sscanf(param, "%s %s %d %d %d %d %d %[0-9 .+-]", 
-					   kern_type, data_type, &size, &d, &max_mismatch, 
-					   &length, &mkl_stepsize, rest);
-				
-				INT *shift = new INT[length] ;
-				for (i=0; i<length; i++)
-				{
-					*rest2 = '\0';
-					int args = sscanf(rest, "%i %[0-9 .+-]", &shift[i], rest2) ;
-					if (((args!=2) && (i<length-1)) || (args<1))
-					{
-						SG_ERROR( "failed to read shift list at position %i\n", i) ;
-						return false ;
-					} ;
-					if (shift[i]>length)
-					{
-						SG_ERROR( "shift longer than sequence: %i \n", shift[i]) ;
-						return false ;
-					} ;
-					strcpy(rest,rest2) ;
-				}
-				
-				DREAL *position_weights = new DREAL[length] ;
-				for (INT ii=0; ii<length; ii++)
-					position_weights[ii]=1.0/length ;
-				if (strlen(rest)>0)
-				{
-					for (i=0; i<length; i++)
-					{
-						fprintf(stderr, "%i %s\n", i, rest) ;
-						
-						int args = sscanf(rest, "%le %[0-9 .+-]", &position_weights[i], rest2) ;
-						if (((args!=2) && (i<length-1)) || (args<1))
-						{
-							if (i>0)
-							{
-								SG_ERROR( "failed to read weight list at position %i\n", i) ;
-								return false ;
-							}
-							else break ;
-						} ;
-						if (position_weights[i]<0)
-						{
-							SG_ERROR( "no negative weights allowed: %1.1le \n", position_weights[i]) ;
-							return false ;
-						} ;
-						strcpy(rest,rest2) ;
-					}
-				}
-				
-				DREAL* weights=new DREAL[d*(1+max_mismatch)];
-				DREAL sum=0;
-
-				for (i=0; i<d; i++)
-				{
-					weights[i]=d-i;
-					sum+=weights[i];
-				}
-				for (i=0; i<d; i++)
-					weights[i]/=sum;
-				
-				for (i=0; i<d; i++)
-				{
-					for (INT j=1; j<=max_mismatch; j++)
-					{
-						if (j<i+1)
-						{
-							INT nk=CMath::nchoosek(i+1, j) ;
-							weights[i+j*d]=weights[i]/(nk*pow(3,j)) ;
-						}
-						else
-							weights[i+j*d]= 0;
-					} ;
-				} ;
-				
-				
-				delete k;
-
-				k=new CWeightedDegreePositionStringKernel(size,
-					weights, d, max_mismatch, shift, length,
-					false, mkl_stepsize);
-				((CWeightedDegreePositionStringKernel*)k)->set_position_weights(position_weights, length);
-
-				delete[] shift ;
-				delete[] weights ;
-				delete[] position_weights ;
-				
-				if (k)
-				{
-					SG_INFO( "WeightedDegreePositionStringKernel(%d,.,%d,%d,.,%d,%d) created\n",size, d, max_mismatch, length,mkl_stepsize);
-					return k;
-				}
-			}
-		}
-		else if (strcmp(kern_type,"WEIGHTEDDEGREEPOS")==0)
-		{
-			if ((strcmp(data_type,"CHAR")==0) || (strcmp(data_type,"STRING")==0))
-			{
-				INT d=3;
-				INT max_mismatch = 0 ;
-				INT i=0;
-				INT length = 0 ;
-				INT center = 0 ;
-				DREAL step = 0 ;
-
-				sscanf(param, "%s %s %d %d %d %d %d %le", 
-					   kern_type, data_type, &size, &d, &max_mismatch, 
-					   &length, &center, &step);
-				SG_INFO( "step = %le\n") ;
-				
-				DREAL* weights=new DREAL[d*(1+max_mismatch)];
-				DREAL sum=0;
-
-				for (i=0; i<d; i++)
-				{
-					weights[i]=d-i;
-					sum+=weights[i];
-				}
-				for (i=0; i<d; i++)
-					weights[i]/=sum;
-				
-				for (i=0; i<d; i++)
-				{
-					for (INT j=1; j<=max_mismatch; j++)
-					{
-						if (j<i+1)
-						{
-							INT nk=CMath::nchoosek(i+1, j) ;
-							weights[i+j*d]=weights[i]/(nk*pow(3,j)) ;
-						}
-						else
-							weights[i+j*d]= 0;
-					} ;
-				} ;
-				
-				INT *shift = new INT[length] ;
-				for (INT ii=center; ii<length; ii++)
-					shift[ii] = (int)floor(((DREAL)(ii-center))/step) ;
-
-				for (INT ii=center-1; ii>=0; ii--)
-					shift[ii] = (int)floor(((DREAL)(center-ii))/step) ;
-
-				for (INT ii=0; ii<length; ii++)
-					if (shift[ii]>length)
-						shift[ii]=length ;
-
-				for (INT ii=0; ii<length; ii++)
-				  SG_INFO( "shift[%i]=%i\n", ii, shift[ii]) ;
-				
-				delete k;
-
-				k=new CWeightedDegreePositionStringKernel(size, weights, d, max_mismatch, shift, length);
-
-				delete[] shift ;
-				delete[] weights ;
-				
-				if (k)
-				{
-					SG_INFO( "WeightedDegreePositionStringKernel(%d,.,%d,%d,.,%d) created\n",size, d, max_mismatch, length);
-					return k;
-				}
-			}
-		}
-		else if (strcmp(kern_type,"WEIGHTEDDEGREE")==0)
-		{
-			if ((strcmp(data_type,"CHAR")==0) || (strcmp(data_type,"STRING")==0))
-			{
-				INT use_normalization=1;
-				INT d=3;
-				INT max_mismatch = 0;
-				INT i=0;
-				INT mkl_stepsize = 1 ;
-				INT block_computation = 1;
-				INT single_degree = -1;
-
-				sscanf(param, "%s %s %d %d %d %d %d %d %d", kern_type, data_type, &size, &d, &max_mismatch, &use_normalization, &mkl_stepsize, &block_computation, &single_degree);
-				DREAL* weights=new DREAL[d*(1+max_mismatch)];
-				DREAL sum=0;
-
-				for (i=0; i<d; i++)
-				{
-					weights[i]=d-i;
-					sum+=weights[i];
-				}
-				for (i=0; i<d; i++)
-					weights[i]/=sum;
-				
-				for (i=0; i<d; i++)
-				{
-					for (INT j=1; j<=max_mismatch; j++)
-					{
-						if (j<i+1)
-						{
-							INT nk=CMath::nchoosek(i+1, j);
-							weights[i+j*d]=weights[i]/(nk*pow(3,j));
-						}
-						else
-							weights[i+j*d]= 0;
-						
-					}
-				}
-
-				if (single_degree>=0)
-				{
-					ASSERT(single_degree<d);
-					for (i=0; i<d; i++)
-					{
-						if (i!=single_degree)
-							weights[i]=0;
-						else
-							weights[i]=1;
-					}
-				}
-
-				delete k;
-				k=new CWeightedDegreeStringKernel(weights, d);
-				delete[] weights ;
-				
-				if (k)
-				{
-					((CWeightedDegreeStringKernel*) k)->set_use_normalization(use_normalization==1);
-					((CWeightedDegreeStringKernel*) k)->set_use_block_computation(block_computation==1);
-					((CWeightedDegreeStringKernel*) k)->set_max_mismatch(max_mismatch);
-					((CWeightedDegreeStringKernel*) k)->set_mkl_stepsize(mkl_stepsize);
-					((CWeightedDegreeStringKernel*) k)->set_which_degree(single_degree);
-					SG_INFO( "WeightedDegreeStringKernel created\n");
-					return k;
-				}
-			}
-		}
-		else if (strcmp(kern_type,"SLIK")==0)
-		{
-			if (strcmp(data_type,"CHAR")==0)
-			{
-				INT l=3;
-				INT d1=3;
-				INT d2=1;
-				sscanf(param, "%s %s %d %d %d %d", kern_type, data_type, &size, &l, &d1, &d2);
-				delete k;
-				k=new CSimpleLocalityImprovedStringKernel(size, l, d1, d2);
-				if (k)
-				{
-					SG_INFO( "SimpleLocalityImprovedStringKernel created\n");
-					return k;
-				}
-			}
-		}
-		else if (strcmp(kern_type,"LIK")==0)
-		{
-			if (strcmp(data_type,"CHAR")==0)
-			{
-				INT l=3;
-				INT d1=3;
-				INT d2=1;
-				sscanf(param, "%s %s %d %d %d %d", kern_type, data_type, &size, &l, &d1, &d2);
-				delete k;
-				k=new CLocalityImprovedStringKernel(size, l, d1, d2);
-				if (k)
-				{
-					SG_INFO( "LocalityImprovedStringKernel created\n");
-					return k;
-				}
-			}
-		}
-		else if (strcmp(kern_type,"POLY")==0)
-		{
-			if (strcmp(data_type,"REAL")==0)
-			{
-				INT inhomogene=0;
-				INT degree=2;
-				INT normalize=1;
-
-				sscanf(param, "%s %s %d %d %d %d", kern_type, data_type, &size, &degree, &inhomogene, &normalize);
-				delete k;
-				k=new CPolyKernel(size, degree, inhomogene==1, normalize==1);
-
-				if (k)
-				{
-					SG_INFO( "Polynomial Kernel created\n");
-					return k;
-				}
-			}
-			else if (strcmp(data_type,"SPARSEREAL")==0)
-			{
-				INT inhomogene=0;
-				INT degree=2;
-				INT normalize=1;
-
-				sscanf(param, "%s %s %d %d %d %d", kern_type, data_type, &size, &degree, &inhomogene, &normalize);
-				delete k;
-				k=new CSparsePolyKernel(size, degree, inhomogene==1, normalize==1);
-
-				if (k)
-				{
-					SG_INFO( "Sparse Polynomial Kernel created\n");
-					return k;
-				}
-			}
-		}
-		else if (strcmp(kern_type,"SIGMOID")==0) // tanh
-		{
-			if (strcmp(data_type,"REAL")==0)
-			{
-				double gamma=0.01;
-				double coef0=0;
-
-				sscanf(param, "%s %s %d %lf %lf", kern_type, data_type, &size, &gamma, &coef0);
-				delete k;
-				k=new CSigmoidKernel(size, gamma, coef0);
-				if (k)
-				{
-					SG_INFO( "Sigmoid Kernel created\n");
-					return k;
-				}
-			}
-		}
-		else if (strcmp(kern_type,"GAUSSIAN")==0) // RBF
-		{
-			if (strcmp(data_type,"REAL")==0)
-			{
-				double width=1;
-
-				sscanf(param, "%s %s %d %lf", kern_type, data_type, &size, &width);
-				delete k;
-				k=new CGaussianKernel(size, width);
-				if (k)
-				{
-					SG_INFO( "Gaussian Kernel created\n");
-					return k;
-				}
-			}
-			else if (strcmp(data_type,"SPARSEREAL")==0)
-			{
-				double width=1;
-
-				sscanf(param, "%s %s %d %lf", kern_type, data_type, &size, &width);
-				delete k;
-				k=new CSparseGaussianKernel(size, width);
-				if (k)
-				{
-					SG_INFO( "Sparse Gaussian Kernel created\n");
-					return k;
-				}
-			}
-		}
-		else if (strcmp(kern_type,"GAUSSIANSHIFT")==0) // RBF
-		{
-			if (strcmp(data_type,"REAL")==0)
-			{
-				double width=1;
-				INT max_shift=0 ;
-				INT shift_step=1 ;
-
-				sscanf(param, "%s %s %d %lf %i %i", kern_type, data_type, &size, &width, &max_shift, &shift_step);
-				delete k;
-				k=new CGaussianShiftKernel(size, width, max_shift, shift_step);
-				if (k)
-				{
-					SG_INFO( "GaussianShift Kernel created\n");
-					return k;
-				}
-			}
-		}
-		else if (strcmp(kern_type,"CUSTOM")==0)
-		{
-			delete k;
-			k = new CCustomKernel();
-			if (k)
-			{
-				SG_INFO( "Custom Kernel created\n");
-				return k;
-			}
-		}
-		else if (strcmp(kern_type,"CONST")==0)
-		{
-			delete k;
-			DREAL val=0;
-			sscanf(param, "%s %s %d %lf", kern_type, data_type, &size, &val);
-			k = new CConstKernel(val);
-			if (k)
-			{
-				SG_INFO( "Const Kernel created\n");
-				return k;
-			}
-		}
-		else if (strcmp(kern_type,"DIAG")==0)
-		{
-			DREAL diag=1.0;
-
-			sscanf(param, "%s %s %d %lf", kern_type, data_type, &size, &diag);
-			delete k;
-			k = new CDiagKernel(size, diag);
-			if (k)
-			{
-				SG_INFO( "Diag Kernel created\n");
-				return k;
-			}
-		}
-#ifdef HAVE_MINDY
-		else if (strcmp(kern_type,"MINDYGRAM")==0)
-                {
-                        delete k;
-                        char norm_str[256]="";
-                        char param_str[256]="";
-                        char meas_str[256]="";
-                        float width;
-
-                        ENormalizationType normalization = FULL_NORMALIZATION ;
-
-                        sscanf(param, "%s %s %d %255s %255s %f %255s", kern_type, data_type, &size, meas_str, norm_str, &width, param_str);
-                        if (strlen(norm_str)==0)
-                        {
-                                normalization = FULL_NORMALIZATION ;
-                                SG_INFO( "using full normalization (default)\n") ;
-                        }
-                        else if (strcmp(norm_str, "NO")==0)
-                        {
-                                normalization = NO_NORMALIZATION ;
-                                SG_INFO( "using no normalization\n") ;
-                        }
-                        else if (strcmp(norm_str, "SQRT")==0)
-                        {
-                                normalization = SQRT_NORMALIZATION ;
-                                SG_INFO( "using sqrt normalization\n") ;
-                        }
-                        else if (strcmp(norm_str, "FULL")==0)
-                        {
-                                normalization = FULL_NORMALIZATION ;
-                                SG_INFO( "using full normalization\n") ;
-                        }
-                        else
-                        {
-                                SG_ERROR( "unknow normalization: %s\n", norm_str) ;
-                                return NULL ;
-                        }
-
-                        CMindyGramKernel* mk = new CMindyGramKernel(size, meas_str, width);
-                        if (!mk) {
-                        	SG_ERROR("could not allocate kernel object");
-                        }
-                        mk->set_norm(normalization);
-                        mk->set_param(param_str);
-                        
-                        return mk;
-		}
-#endif
-		else
-			io.not_implemented();
-	}
-	else 
-		SG_ERROR( "see help for params!\n");
-
-	io.not_implemented();
-	return NULL;
-}
-
-bool CGUIKernel::add_kernel(CHAR* param)
-{
 	if ((kernel==NULL) || (kernel && kernel->get_kernel_type()!=K_COMBINED))
 	{
 		delete kernel;
-		kernel= new CCombinedKernel(20,false);
-		ASSERT(kernel);
+		kernel= new CCombinedKernel(20, false);
 	}
 
-	if (kernel)
-	{
-		CHAR *newparam=new CHAR[strlen(param)] ;
-		double weight=1 ;
-		
-		int ret = sscanf(param, "%le %[a-zA-Z _*/+-0-9]", &weight, newparam) ;
-		//fprintf(stderr,"ret=%i  weight=%le  rest=%s\n", ret, weight, newparam) ;
-		
-		if (ret!=2)
-		{
-			SG_ERROR( "add_kernel <weight> <kernel-parameters>\n");
-			delete[] newparam ;
-			return false ;
-		}
+	if (!kernel)
+		SG_ERROR("Combined kernel object could not be created.\n");
 
-		CKernel* k=create_kernel(newparam);
-		ASSERT(k);
-		k->set_combined_kernel_weight(weight) ;
-		
-		bool bret = ((CCombinedKernel*) kernel)->append_kernel(k) ;
-		if (bret)
-			((CCombinedKernel*) kernel)->list_kernels();
-		else
-			SG_ERROR( "appending kernel failed\n");
+	kern->set_combined_kernel_weight(weight);
 
-		delete[] newparam ;
-		return bret;
-	}
+	bool success=((CCombinedKernel*) kernel)->append_kernel(kern);
+	if (success)
+		((CCombinedKernel*) kernel)->list_kernels();
 	else
-		SG_ERROR( "combined kernel object could not be created\n");
+		SG_ERROR("Adding of kernel failed.\n");
 
-	return false;
+	return success;
 }
 
 bool CGUIKernel::clean_kernel(CHAR* param)

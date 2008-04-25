@@ -489,7 +489,8 @@ bool CTextGUI::parse_line(CHAR* p_input)
 	} 
 	else if (!strncmp(p_input, N_SET_KERNEL, strlen(N_SET_KERNEL)))
 	{
-		guikernel.set_kernel(p_input+strlen(N_SET_KERNEL));
+		//guikernel.set_kernel(p_input+strlen(N_SET_KERNEL));
+		guikernel.set_kernel(NULL);
 	} 
 	else if (!strncmp(p_input, N_SET_DISTANCE, strlen(N_SET_DISTANCE)))
 	{
@@ -497,7 +498,8 @@ bool CTextGUI::parse_line(CHAR* p_input)
 	}
 	else if (!strncmp(p_input, N_ADD_KERNEL, strlen(N_ADD_KERNEL)))
 	{
-		guikernel.add_kernel(p_input+strlen(N_ADD_KERNEL));
+		//guikernel.add_kernel(p_input+strlen(N_ADD_KERNEL));
+		guikernel.add_kernel(NULL, 0);
 	} 
 	else if (!strncmp(p_input, N_CLEAN_KERNEL, strlen(N_CLEAN_KERNEL)))
 	{

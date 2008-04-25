@@ -9,6 +9,7 @@
 #include "base/SGObject.h"
 #include "features/StringFeatures.h"
 #include "features/SparseFeatures.h"
+#include "kernel/Kernel.h"
 
 enum IFType
 {
@@ -334,6 +335,8 @@ class CSGInterface : public CSGObject
 		bool cmd_get_version();
 		/** issue help message */
 		bool cmd_help();
+		/** wrapper for compatibility send_command */
+		bool cmd_send_command();
 
 		/** get functions - to pass data from the target interface to shogun */
 
@@ -345,9 +348,6 @@ class CSGInterface : public CSGObject
 		virtual bool get_bool()=0;
 
 		virtual CHAR* get_string(INT& len)=0;
-		virtual INT get_int_from_string();
-		virtual DREAL get_real_from_string();
-		virtual bool get_bool_from_string();
 
 		virtual void get_byte_vector(BYTE*& vector, INT& len)=0;
 		virtual void get_char_vector(CHAR*& vector, INT& len)=0;
@@ -436,8 +436,8 @@ class CSGInterface : public CSGObject
 		/// str is a string of length len (not 0 terminated)
 		static bool strmatch(CHAR* str, UINT len, const CHAR* cmd)
 		{
-			return (len==strlen(cmd)
-					&& !strncmp(str, cmd, strlen(cmd)));
+			UINT len_cmd=strlen(cmd);
+			return (len==len_cmd && !strncmp(str, cmd, len_cmd));
 		}
 
 		/// get command name like 'get_svm', 'new_hmm'
@@ -459,12 +459,27 @@ class CSGInterface : public CSGObject
 		bool do_set_features(bool add=false);
 		/** temp command to invoke send_command in old interface */
 		bool send_command(const CHAR* cmd);
+		/** helper function to create a kernel */
+		CKernel* create_kernel();
+
+		/** legacy-related stuff - anybody has a better idea? */
+		CHAR* get_str_from_str_or_direct(INT& len);
+		INT get_int_from_int_or_str();
+		DREAL get_real_from_real_or_str();
+		bool get_bool_from_bool_or_str();
+		void get_int_vector_from_int_vector_or_str(INT* vector, INT& len);
+		void get_real_vector_from_real_vector_or_str(DREAL* vector, INT& len);
+		CHAR* get_str_from_str(INT& len);
+		INT get_num_args_in_str();
+
 
 	protected:
 		INT m_lhs_counter;
 		INT m_rhs_counter;
 		INT m_nlhs;
 		INT m_nrhs;
+
+		CHAR* m_legacy_strptr;
 
 };
 

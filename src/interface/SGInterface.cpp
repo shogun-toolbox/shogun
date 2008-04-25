@@ -804,12 +804,17 @@ static CSGInterfaceMethod sg_methods[]=
 		(&CSGInterface::cmd_help),
 		(CHAR*) USAGE(N_HELP)
 	},
+	{
+		(CHAR*) N_SEND_COMMAND,
+		(&CSGInterface::cmd_send_command),
+		NULL
+	},
 	{NULL, NULL, NULL}        /* Sentinel */
 };
 
 
 CSGInterface::CSGInterface()
- : m_lhs_counter(0), m_rhs_counter(0), m_nlhs(0), m_nrhs(0)
+ : m_lhs_counter(0), m_rhs_counter(0), m_nlhs(0), m_nrhs(0), m_legacy_strptr(NULL)
 {
 }
 
@@ -1388,12 +1393,414 @@ bool CSGInterface::cmd_get_labels()
 
 bool CSGInterface::cmd_set_kernel()
 {
-	return send_command(N_SET_KERNEL);
+	if (m_nrhs<3 || !create_return_values(0))
+		return false;
+
+	CKernel* kernel=create_kernel();
+	return gui->guikernel.set_kernel(kernel);
 }
 
 bool CSGInterface::cmd_add_kernel()
 {
-	return send_command(N_ADD_KERNEL);
+	if (m_nrhs<4 || !create_return_values(0))
+		return false;
+
+	DREAL weight=get_real_from_real_or_str();
+	CKernel* kernel=create_kernel();
+
+	return gui->guikernel.add_kernel(kernel, weight);
+}
+
+CKernel* CSGInterface::create_kernel()
+{
+	CKernel* kernel=NULL;
+	INT len=0;
+	CHAR* type=get_str_from_str_or_direct(len);
+
+	if (strmatch(type, 8, "COMBINED"))
+	{
+		INT size=get_int_from_int_or_str();
+		bool append_subkernel_weights=get_bool_from_bool_or_str();
+
+		kernel=gui->guikernel.create_combined(size, append_subkernel_weights);
+	}
+	else if (strmatch(type, 8, "DISTANCE"))
+	{
+		INT size=get_int_from_int_or_str();
+		DREAL width=get_real_from_real_or_str();
+
+		kernel=gui->guikernel.create_distance(size, width);
+	}
+	else if (strmatch(type, 6, "LINEAR"))
+	{
+		CHAR* dtype=get_str_from_str_or_direct(len);
+		INT size=get_int_from_int_or_str();
+		DREAL scale=get_real_from_real_or_str();
+
+		if (strmatch(dtype, 4, "BYTE"))
+			kernel=gui->guikernel.create_linearbyte(size, scale);
+		else if (strmatch(dtype, 4, "WORD"))
+			kernel=gui->guikernel.create_linearword(size, scale);
+		else if (strmatch(dtype, 4, "CHAR"))
+			kernel=gui->guikernel.create_linearstring(size, scale);
+		else if (strmatch(dtype, 4, "REAL"))
+			kernel=gui->guikernel.create_linear(size, scale);
+		else if (strmatch(dtype, 10, "SPARSEREAL"))
+			kernel=gui->guikernel.create_sparselinear(size, scale);
+
+		delete[] dtype;
+	}
+	else if (strmatch(type, 9, "HISTOGRAM"))
+	{
+		CHAR* dtype=get_str_from_str_or_direct(len);
+		if (strmatch(dtype, 4, "WORD"))
+		{
+			INT size=get_int_from_int_or_str();
+			kernel=gui->guikernel.create_histogramword(size);
+		}
+
+		delete[] dtype;
+	}
+	else if (strmatch(type, 8, "SALZBERG"))
+	{
+		CHAR* dtype=get_str_from_str_or_direct(len);
+		if (strmatch(dtype, 4, "WORD"))
+		{
+			INT size=get_int_from_int_or_str();
+			kernel=gui->guikernel.create_salzbergword(size);
+		}
+
+		delete[] dtype;
+	}
+	else if (strmatch(type, 9, "POLYMATCH"))
+	{
+		CHAR* dtype=get_str_from_str_or_direct(len);
+		INT size=get_int_from_int_or_str();
+		INT degree=get_int_from_int_or_str();
+		bool inhomogene=get_bool_from_bool_or_str();
+		bool normalize=get_bool_from_bool_or_str();
+
+		if (strmatch(dtype, 4, "WORD"))
+		{
+			kernel=gui->guikernel.create_polymatchword(
+				size, degree, inhomogene, normalize);
+		}
+		else if (strmatch(dtype, 4, "CHAR"))
+		{
+			kernel=gui->guikernel.create_polymatchstring(
+				size, degree, inhomogene, normalize);
+		}
+
+		delete[] dtype;
+	}
+	else if (strmatch(type, 5, "MATCH"))
+	{
+		CHAR* dtype=get_str_from_str_or_direct(len);
+		if (strmatch(dtype, 4, "WORD"))
+		{
+			INT size=get_int_from_int_or_str();
+			INT d=get_int_from_int_or_str();
+
+			kernel=gui->guikernel.create_wordmatch(size, d);
+		}
+
+		delete[] dtype;
+	}
+	else if (strmatch(type, 18, "WEIGHTEDCOMMSTRING") || strmatch(type, 10, "COMMSTRING"))
+	{
+		CHAR* dtype=get_str_from_str_or_direct(len);
+		INT size=get_int_from_int_or_str();
+		bool use_sign=get_bool_from_bool_or_str();
+		CHAR* norm_str=get_str_from_str_or_direct(len);
+
+		if (strmatch(dtype, 4, "WORD"))
+		{
+			if (strmatch(type, 18, "WEIGHTEDCOMMSTRING"))
+			{
+				kernel=gui->guikernel.create_commstring(
+					size, use_sign, norm_str, K_WEIGHTEDCOMMWORDSTRING);
+			}
+			else if (strmatch(type, 10, "COMMSTRING"))
+			{
+				kernel=gui->guikernel.create_commstring(
+					size, use_sign, norm_str, K_COMMWORDSTRING);
+			}
+		}
+		else if (strmatch(dtype, 5, "ULONG"))
+		{
+			SG_PRINT("ULONG\n");
+			kernel=gui->guikernel.create_commstring(
+				size, use_sign, norm_str, K_COMMULONGSTRING);
+		}
+
+		delete[] dtype;
+		delete[] norm_str;
+	}
+	else if (strmatch(type, 4, "CHI2"))
+	{
+		CHAR* dtype=get_str_from_str_or_direct(len);
+		if (strmatch(dtype, 4, "REAL"))
+		{
+			INT size=get_int_from_int_or_str();
+			DREAL width=get_real_from_real_or_str();
+
+			kernel=gui->guikernel.create_chi2(size, width);
+		}
+
+		delete[] dtype;
+	}
+	else if (strmatch(type, 11, "FIXEDDEGREE"))
+	{
+		CHAR* dtype=get_str_from_str_or_direct(len);
+		if (strmatch(dtype, 4, "CHAR"))
+		{
+			INT size=get_int_from_int_or_str();
+			INT d=get_int_from_int_or_str();
+
+			kernel=gui->guikernel.create_fixeddegreestring(size, d);
+		}
+	}
+	else if (strmatch(type, 14, "LOCALALIGNMENT"))
+	{
+		CHAR* dtype=get_str_from_str_or_direct(len);
+		if (strmatch(dtype, 4, "CHAR"))
+		{
+			INT size=get_int_from_int_or_str();
+
+			kernel=gui->guikernel.create_localalignmentstring(size);
+		}
+
+		delete[] dtype;
+	}
+	else if (strmatch(type, 18, "WEIGHTEDDEGREEPOS2"))
+	{
+		CHAR* dtype=get_str_from_str_or_direct(len);
+		if (strmatch(dtype, 4, "CHAR") || strmatch(dtype, 6, "STRING"))
+		{
+			INT size=get_int_from_int_or_str();
+			INT order=get_int_from_int_or_str();
+			INT max_mismatch=get_int_from_int_or_str();
+			INT length=get_int_from_int_or_str();
+			INT* shifts=NULL;
+			INT veclen=0;
+			get_int_vector_from_int_vector_or_str(shifts, veclen);
+			bool use_normalization=true;
+
+			if (veclen!=length)
+				SG_ERROR("Given number of shifts does not match actual number.\n");
+
+			if (strmatch(type, 25, "WEIGHTEDDEGREEPOS2_NONORM"))
+				use_normalization=false;
+
+			kernel=gui->guikernel.create_weighteddegreepositionstring2(
+				size, order, max_mismatch, shifts, length,
+				use_normalization);
+
+			delete[] shifts;
+		}
+
+		delete[] dtype;
+	}
+	else if (strmatch(type, 18, "WEIGHTEDDEGREEPOS3"))
+	{
+		CHAR* dtype=get_str_from_str_or_direct(len);
+		if (strmatch(dtype, 4, "CHAR") || strmatch(dtype, 6, "STRING"))
+		{
+			INT size=get_int_from_int_or_str();
+			INT order=get_int_from_int_or_str();
+			INT max_mismatch=get_int_from_int_or_str();
+			INT length=get_int_from_int_or_str();
+			INT mkl_stepsize=1;
+			INT veclen=length;
+
+			INT* shifts=NULL;
+			get_int_vector_from_int_vector_or_str(shifts, veclen);
+			if (veclen!=length)
+				SG_ERROR("Given number of shifts does not match actual number.\n");
+
+			// what is that supposed to accomplish right before getting the actual values?
+			DREAL* position_weights=new DREAL[length];
+			for (INT i=0; i<length; i++)
+				position_weights[i]=1.0/length;
+			get_real_vector_from_real_vector_or_str(position_weights, veclen);
+			if (veclen!=length)
+				SG_ERROR("Given number of position weights does not match actual number.\n");
+
+			kernel=gui->guikernel.create_weighteddegreepositionstring3(
+				size, order, max_mismatch, shifts, length,
+				mkl_stepsize, position_weights);
+
+			delete[] position_weights;
+		}
+
+		delete[] dtype;
+	}
+	else if (strmatch(type, 17, "WEIGHTEDDEGREEPOS"))
+	{
+		CHAR* dtype=get_str_from_str_or_direct(len);
+		if (strmatch(dtype, 4, "CHAR") || strmatch(dtype, 6, "STRING"))
+		{
+			INT size=get_int_from_int_or_str();
+			INT order=get_int_from_int_or_str();
+			INT max_mismatch=get_int_from_int_or_str();
+			INT length=get_int_from_int_or_str();
+			INT center=get_int_from_int_or_str();
+			DREAL step=get_real_from_real_or_str();
+
+			kernel=gui->guikernel.create_weighteddegreepositionstring(
+				size, order, max_mismatch, length, center, step);
+		}
+
+		delete[] dtype;
+	}
+	else if (strmatch(type, 14, "WEIGHTEDDEGREE"))
+	{
+		CHAR* dtype=get_str_from_str_or_direct(len);
+		if (strmatch(dtype, 4, "CHAR") || strmatch(dtype, 6, "STRING"))
+		{
+			INT size=get_int_from_int_or_str();
+			INT order=get_int_from_int_or_str();
+			INT max_mismatch=get_int_from_int_or_str();
+			bool use_normalization=get_bool_from_bool_or_str();
+			INT mkl_stepsize=get_int_from_int_or_str();
+			bool block_computation=get_int_from_int_or_str();
+			INT single_degree=get_int_from_int_or_str();
+
+			kernel=gui->guikernel.create_weighteddegreestring(
+				size, order, max_mismatch, use_normalization,
+				mkl_stepsize, block_computation, single_degree);
+		}
+
+		delete[] dtype;
+	}
+	else if (strmatch(type, 4, "SLIK") || strmatch(type, 3, "LIK"))
+	{
+		CHAR* dtype=get_str_from_str_or_direct(len);
+		if (strmatch(dtype, 4, "CHAR"))
+		{
+			INT size=get_int_from_int_or_str();
+			INT length=get_int_from_int_or_str();
+			INT inner_degree=get_int_from_int_or_str();
+			INT outer_degree=get_int_from_int_or_str();
+
+			if (strmatch(type, 4, "SLIK"))
+			{
+				kernel=gui->guikernel.create_localityimprovedstring(
+					size, length, inner_degree, outer_degree,
+					K_SIMPLELOCALITYIMPROVED);
+			}
+			else
+			{
+				kernel=gui->guikernel.create_localityimprovedstring(
+					size, length, inner_degree, outer_degree,
+					K_LOCALITYIMPROVED);
+			}
+		}
+
+		delete[] dtype;
+	}
+	else if (strmatch(type, 4, "POLY"))
+	{
+		CHAR* dtype=get_str_from_str_or_direct(len);
+		INT size=get_int_from_int_or_str();
+		bool inhomogene=get_bool_from_bool_or_str();
+		INT degree=get_int_from_int_or_str();
+		bool normalize=get_bool_from_bool_or_str();
+
+		if (strmatch(dtype, 4, "REAL"))
+		{
+			kernel=gui->guikernel.create_poly(
+				size, degree, inhomogene, normalize);
+		}
+		else if (strmatch(dtype, 10, "SPARSEREAL"))
+		{
+			kernel=gui->guikernel.create_sparsepoly(
+				size, degree, inhomogene, normalize);
+		}
+
+		delete[] dtype;
+	}
+	else if (strmatch(type, 7, "SIGMOID"))
+	{
+		CHAR* dtype=get_str_from_str_or_direct(len);
+		if (strmatch(dtype, 4, "REAL"))
+		{
+			INT size=get_int_from_int_or_str();
+			DREAL gamma=get_real_from_real_or_str();
+			DREAL coef0=get_real_from_real_or_str();
+
+			kernel=gui->guikernel.create_sigmoid(size, gamma, coef0);
+		}
+
+		delete[] dtype;
+	}
+	else if (strmatch(type, 8, "GAUSSIAN")) // RBF
+	{
+		CHAR* dtype=get_str_from_str_or_direct(len);
+		INT size=get_int_from_int_or_str();
+		DREAL width=get_real_from_real_or_str();
+
+		if (strmatch(dtype, 4, "REAL"))
+			kernel=gui->guikernel.create_gaussian(size, width);
+		else if (strmatch(dtype, 10, "SPARSEREAL"))
+			kernel=gui->guikernel.create_sparsegaussian(size, width);
+
+		delete[] dtype;
+	}
+	else if (strmatch(type, 13, "GAUSSIANSHIFT")) // RBF
+	{
+		CHAR* dtype=get_str_from_str_or_direct(len);
+		if (strmatch(dtype, 4, "REAL"))
+		{
+			INT size=get_int_from_int_or_str();
+			DREAL width=get_real_from_real_or_str();
+			INT max_shift=get_int_from_int_or_str();
+			INT shift_step=get_int_from_int_or_str();
+
+			kernel=gui->guikernel.create_gaussianshift(
+				size, width, max_shift, shift_step);
+		}
+
+		delete[] dtype;
+	}
+	else if (strmatch(type, 6, "CUSTOM"))
+	{
+		kernel=gui->guikernel.create_custom();
+	}
+	else if (strmatch(type, 5, "CONST"))
+	{
+		INT size=get_int_from_int_or_str();
+		DREAL c=get_real_from_real_or_str();
+
+		kernel=gui->guikernel.create_const(size, c);
+	}
+	else if (strmatch(type, 4, "DIAG"))
+	{
+		INT size=get_int_from_int_or_str();
+		DREAL diag=get_real_from_real_or_str();
+
+		kernel=gui->guikernel.create_diag(size, diag);
+	}
+
+#ifdef HAVE_MINDY
+	else if (strmatch(type, 9, "MINDYGRAM"))
+	{
+		INT size=get_int_from_int_or_str();
+		CHAR* meas_str=get_str_from_str_or_direct(len);
+		CHAR* norm_str=get_str_from_str_or_direct(len);
+		DREAL width=get_real_from_real_or_str();
+		CHAR* param_str=get_str_from_str_or_direct(len);
+
+		kernel=gui->guikernel.create_mindygram(
+			size, meas_str, norm_str, width, param_str);
+	}
+#endif
+
+	else
+		io.not_implemented();
+
+	delete[] type;
+	return kernel;
 }
 
 bool CSGInterface::cmd_init_kernel()
@@ -2422,7 +2829,15 @@ bool CSGInterface::cmd_get_classifier()
 
 bool CSGInterface::cmd_new_classifier()
 {
-	return send_command(N_NEW_CLASSIFIER);
+	if (m_nrhs!=2 || !create_return_values(0))
+		return false;
+
+	INT len=0;
+	CHAR* name=get_string(len);
+	bool success=gui->guiclassifier.new_classifier(name);
+	
+	delete[] name;
+	return success;
 }
 
 bool CSGInterface::cmd_load_classifier()
@@ -3614,7 +4029,7 @@ bool CSGInterface::cmd_help()
 				if (sg_methods[i].usage) // display group item
 					SG_PRINT("\t%s\n", sg_methods[i].command);
 					//SG_PRINT("\t%s: %s\n", sg_methods[i].command, sg_methods[i].usage);
-				else // next group -> end
+				else // next group reached -> end
 					break;
 			}
 			else
@@ -3622,13 +4037,13 @@ bool CSGInterface::cmd_help()
 				found=strmatch(sg_methods[i].command, clen, command);
 				if (found)
 				{
-					if (sg_methods[i].usage)
+					if (sg_methods[i].usage) // found item
 					{
 						SG_PRINT("Usage for %s\n\n\t%s\n",
 							sg_methods[i].command, sg_methods[i].usage);
 						break;
 					}
-					else // group item
+					else // found group item
 					{
 						SG_PRINT("Commands in group %s\n\n", sg_methods[i].command);
 						in_group=true;
@@ -3656,6 +4071,50 @@ bool CSGInterface::cmd_help()
 	return true;
 }
 
+bool CSGInterface::cmd_send_command()
+{
+	INT len=0;
+	CHAR* arg=get_string(len);
+	SG_DEBUG("legacy: arg == %s\n", arg);
+	m_legacy_strptr=arg;
+
+	if (!strmatch(arg, strlen(N_SET_KERNEL), N_SET_KERNEL) &&
+		!strmatch(arg, strlen(N_ADD_KERNEL), N_ADD_KERNEL))
+	{
+		SG_DEBUG("invoking old TextGUI...\n");
+		return gui->parse_line(arg);
+	}
+
+	CHAR* command=get_str_from_str(len);
+
+	INT i=0;
+	bool success=false;
+	while (sg_methods[i].command)
+	{
+		if (strmatch(command, len, sg_methods[i].command))
+		{
+			SG_DEBUG("legacy: found command %s\n", sg_methods[i].command);
+			// fix-up m_nrhs; +1 to include command
+			m_nrhs=get_num_args_in_str()+1;
+
+			if (!(interface->*(sg_methods[i].method))())
+				SG_ERROR("Usage: %s\n", sg_methods[i].usage);
+			else
+			{
+				success=true;
+				break;
+			}
+		}
+
+		i++;
+	}
+
+	delete[] command;
+	delete[] arg;
+	return success;
+}
+
+// FIXME make this unnecessary:
 bool CSGInterface::send_command(const CHAR* cmd)
 {
 	INT len_args=0;
@@ -3677,30 +4136,164 @@ bool CSGInterface::send_command(const CHAR* cmd)
 }
 
 ////////////////////////////////////////////////////////////////////////////
-// simple get helper
+// legacy-related methods
 ////////////////////////////////////////////////////////////////////////////
 
-INT CSGInterface::get_int_from_string()
+CHAR* CSGInterface::get_str_from_str_or_direct(INT& len)
 {
-	INT len=0;
-	CHAR* str=get_string(len);
-	return strtol(str, NULL, 10);
+	if (m_legacy_strptr)
+		return get_str_from_str(len);
+	else
+		return get_string(len);
 }
 
-DREAL CSGInterface::get_real_from_string()
+INT CSGInterface::get_int_from_int_or_str()
 {
-	INT len=0;
-	CHAR* str=get_string(len);
-	return strtod(str, NULL);
+	if (m_legacy_strptr)
+	{
+		INT len=0;
+		CHAR* str=get_str_from_str(len);
+		INT val=strtol(str, NULL, 10);
+
+		delete[] str;
+		return val;
+	}
+	else
+		return get_int();
 }
 
-bool CSGInterface::get_bool_from_string()
+DREAL CSGInterface::get_real_from_real_or_str()
 {
-	INT len=0;
-	CHAR* str=get_string(len);
-	return strtol(str, NULL, 10)!=0;
+	if (m_legacy_strptr)
+	{
+		INT len=0;
+		CHAR* str=get_str_from_str(len);
+		DREAL val=strtod(str, NULL);
+
+		delete[] str;
+		return val;
+	}
+	else
+		return get_real();
 }
 
+bool CSGInterface::get_bool_from_bool_or_str()
+{
+	if (m_legacy_strptr)
+	{
+		INT len=0;
+		CHAR* str=get_str_from_str(len);
+		bool val=strtol(str, NULL, 10)!=0;
+
+		delete[] str;
+		return val;
+	}
+	else
+		return get_bool();
+}
+
+void CSGInterface::get_int_vector_from_int_vector_or_str(INT* vector, INT& len)
+{
+	if (m_legacy_strptr)
+	{
+		if (len<=0) // assumes that vector is last part of string
+		{
+			len=get_num_args_in_str();
+			if (len==0)
+			{
+				vector=NULL;
+				return;
+			}
+		}
+
+		vector=new INT[len];
+		ASSERT(vector);
+		CHAR* str=NULL;
+		INT slen=0;
+		for (INT i=0; i<len; i++)
+		{
+			str=get_str_from_str(slen);
+			vector[i]=strtol(str, NULL, 10);
+			SG_PRINT("vec[%d]: %d\n", i, vector[i]);
+			delete[] str;
+		}
+	}
+	else
+		get_int_vector(vector, len);
+}
+
+void CSGInterface::get_real_vector_from_real_vector_or_str(DREAL* vector, INT& len)
+{
+	if (m_legacy_strptr)
+	{
+		if (len<=0) // assumes that vector is last part of string
+		{
+			len=get_num_args_in_str();
+			if (len==0)
+			{
+				vector=NULL;
+				return;
+			}
+		}
+
+		vector=new DREAL[len];
+		ASSERT(vector);
+		CHAR* str=NULL;
+		INT slen=0;
+		for (INT i=0; i<len; i++)
+		{
+			str=get_str_from_str(slen);
+			vector[i]=strtod(str, NULL);
+			SG_PRINT("vec[%d]: %f\n", i, vector[i]);
+			delete[] str;
+		}
+	}
+	else
+		get_real_vector(vector, len);
+}
+
+CHAR* CSGInterface::get_str_from_str(INT& len)
+{
+	if (!m_legacy_strptr)
+		return NULL;
+
+	INT i=0;
+	while (m_legacy_strptr[i]!='\0' && m_legacy_strptr[i]!=' ')
+		i++;
+
+	len=i;
+	CHAR* str=new CHAR[len+1];
+	ASSERT(str);
+
+	for (i=0; i<len; i++)
+		str[i]=m_legacy_strptr[i];
+	str[len]='\0';
+
+	// move legacy strptr
+	m_legacy_strptr=m_legacy_strptr+len+1;
+
+	return str;
+}
+
+INT CSGInterface::get_num_args_in_str()
+{
+	if (!m_legacy_strptr)
+		return 0;
+
+	INT i=0;
+	INT num_seperator=0;
+	while (m_legacy_strptr[i]!='\0')
+	{
+		if (m_legacy_strptr[i]==' ')
+			num_seperator++;
+		i++;
+	}
+
+	if (i>0)
+		return num_seperator+1;
+	else
+		return 0;
+}
 
 ////////////////////////////////////////////////////////////////////////////
 // handler
@@ -3736,9 +4329,12 @@ bool CSGInterface::handle()
 	{
 		if (strmatch(command, len, sg_methods[i].command))
 		{
-			SG_DEBUG("found method %s\n", sg_methods[i].command);
+			SG_DEBUG("found command %s\n", sg_methods[i].command);
 			if (!(interface->*(sg_methods[i].method))())
-				SG_ERROR("Usage: %s\n", sg_methods[i].usage);
+				if (sg_methods[i].usage)
+					SG_ERROR("Usage: %s.\n", sg_methods[i].usage);
+				else
+					SG_ERROR("Wrong Usage of %s.\n", command);
 			else
 			{
 				success=true;
@@ -3746,16 +4342,6 @@ bool CSGInterface::handle()
 			}
 		}
 		i++;
-	}
-
-	// FIXME: invoke old interface
-	if (!success && strmatch(command, len, N_SEND_COMMAND))
-	{
-		CHAR* cmd=interface->get_string(len);
-		gui->parse_line(cmd);
-
-		delete[] cmd;
-		success=true;
 	}
 
 #ifndef WIN32
