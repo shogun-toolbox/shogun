@@ -517,7 +517,7 @@ Usage: $0 [OPTIONS]...
 
 Configuration:
   --interface=INTERFACE         configure shogun for interface
-                                cmdline, python-modular, python, R, R-modular
+                                cmdline, python-modular, python, r, r-modular
 								octave, octave-modular, matlab or libshogun
   -h, -help, --help             display this help and exit
 
@@ -733,11 +733,11 @@ elif test "$_interface" = "python"; then
 	echo "Enabling python interface"
 	_python=yes
 	_swig=no
-elif test "$_interface" = "R"; then
+elif test "$_interface" = "r"; then
 	echo "Enabling R interface"
 	_R=yes
 	_swig=no
-elif test "$_interface" = "R-modular"; then
+elif test "$_interface" = "r-modular"; then
 	echo "Enabling modular R interface"
 	_R=yes
 	_swig=yes

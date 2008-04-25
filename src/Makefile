@@ -31,9 +31,9 @@ just-do-it:
 	@echo for python interface: 
 	@echo "              ./configure --interface=python"
 	@echo for R interface: 
-	@echo "              ./configure --interface=R"
+	@echo "              ./configure --interface=r"
 	@echo for object oriented R interface: 
-	@echo "              ./configure --interface=R-modular"
+	@echo "              ./configure --interface=r-modular"
 	@echo for octave interface: 
 	@echo "              ./configure --interface=octave"
 	@echo for matlab interface: 
@@ -194,7 +194,7 @@ ifeq (python,$(INTERFACE))
 install: $(TARGET)
 	install -d -m755 $(DESTDIR)$(PYDIR)
 	install -m755 $(TARGET) $(DESTDIR)$(PYDIR)
-# R, R-modular and matlab are done separately
+# r, r-modular and matlab are done separately
 else
 ifeq (libshogun,$(INTERFACE))
 install: $(TARGET)
@@ -208,7 +208,7 @@ install: $(TARGET)
 		-exec sh -c "install -m644 {}/*.h -t $(DESTDIR)$(INCDIR)/shogun/{}" \;
 else
 install: 
-	@echo "The R, R-modular and matlab interface need to be installed"
+	@echo "The r, r-modular and matlab interface need to be installed"
 	@echo "using a different mechanism:"
 	@echo
 	@echo "R - dyn.load('sg.so')"
