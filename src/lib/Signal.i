@@ -3,5 +3,6 @@
 %}
 
 %rename(Signal) CSignal;
+%ignore NUMTRAPPEDSIGS;
 
 %include "lib/Signal.h" 

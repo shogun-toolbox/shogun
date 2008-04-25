@@ -45,13 +45,13 @@
 %typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER)
     (sg_type* IN_ARRAY1, INT DIM1)
 {
-    $1 = (TYPEOF($input) == r_type) ? 1 : 0;
+    $1 = (TYPEOF($input) == r_type && Rf_ncols($input)==1 ) ? 1 : 0;
 }
 
 %typemap(in) (sg_type* IN_ARRAY1, INT DIM1) (SEXP rvec)
 {
     rvec=$input;
-    if (TYPEOF(rvec) != r_type)
+    if (TYPEOF(rvec) != r_type || Rf_ncols(rvec)!=1)
     {
         /*SG_ERROR("Expected Double Vector as argument %d\n", m_rhs_counter);*/
         SWIG_fail;
@@ -72,21 +72,22 @@ TYPEMAP_IN1(REALSXP, REAL, DREAL, "Double Precision")
 %typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER)
         (sg_type* IN_ARRAY2, INT DIM1, INT DIM2)
 {
+
     $1 = (TYPEOF($input) == r_type) ? 1 : 0;
+    printf("typecheck IN2 %d\n", $1);
 }
 
-%typemap(in) (sg_type* IN_ARRAY2, INT DIM1, INT DIM2) (SEXP feat)
+%typemap(in) (sg_type* IN_ARRAY2, INT DIM1, INT DIM2)
 {
-    feat=$input;
-    if( TYPEOF(feat) != r_type)
+    if( TYPEOF($input) != r_type)
     {
         /*SG_ERROR("Expected Double Matrix as argument %d\n", m_rhs_counter);*/
         SWIG_fail;
     }
 
-    $1 = (sg_type*) r_cast(feat);
-    $2 = Rf_nrows(feat);
-    $3 = Rf_ncols(feat);
+    $1 = (sg_type*) r_cast($input);
+    $2 = Rf_nrows($input);
+    $3 = Rf_ncols($input);
 }
 %typemap(freearg) (type* IN_ARRAY2, INT DIM1, INT DIM2) {
 }

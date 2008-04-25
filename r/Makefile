@@ -27,7 +27,7 @@ sg/src:
 	find ./sg/src -type d -name .svn -exec rm -rf {} \; 2>/dev/null || true
 	cd sg/src && $(RM) .config .depend
 	sed -i -e 's/#removeconfighunk/rm -f .config/' \
-		-e '/#runconfigurehunkstart/,/#runconfigurehunkend/c\	./configure --interface=R $(CFGOPTS) && make\n\texit 0' \
+		-e '/#runconfigurehunkstart/,/#runconfigurehunkend/c\	./configure --interface=r $(CFGOPTS) && make\n\texit 0' \
 		sg/src/Makefile
 	-cd ../src && cp -a $(DOCFILES) ../R/sg/inst/doc/
 

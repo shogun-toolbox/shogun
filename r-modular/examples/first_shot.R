@@ -1,20 +1,21 @@
+# note shogun is 0 based, R is 1 based
 dyn.load('features/Features.so')
 source("features/Features.R")
 cacheMetaData(1)
 
 x=c(1.0, 2.0, 3.0)
 lab <- Labels(x)
-sprintf('labels: %f', lab$get_labels()[0])
-sprintf('lab: %d', lab$get_num_labels())
+print(sprintf('labels: %f', lab$get_labels(lab)[1]))
+print(sprintf('lab: %d', lab$get_num_labels()))
 
 
-#lab <- lab$set_label(0, 17.0)
-#sprintf('lab: %f', lab$get_label(0))
+lab$set_label(lab, 0, 17.0)
+print(sprintf('lab: %f', lab$get_label(lab, 0)))
 
 dyn.load('kernel/Kernel.so')
 source("kernel/Kernel.R")
 cacheMetaData(1)
 
 k <- GaussianKernel(10, 1.0)
-sprintf('weight: %f', k$get_combined_kernel_weight())
+print(sprintf('weight: %f', k$get_combined_kernel_weight()))
 
