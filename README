@@ -14,11 +14,11 @@ the static interfaces and for octave, python and R for the modular interfaces:
 
 matlab_and_octave
 python
-R
+r
 
 python-modular - quite mature
 octave-modular - beta quality
-R-modular - highly experimental
+r-modular - highly experimental
 libshogun - currently experimental
 
 Visit src/README for further information.

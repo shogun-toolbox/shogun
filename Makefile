@@ -75,11 +75,11 @@ else
 ifeq ($(SNAPSHOT),yes)
 RELEASENAME := $(RELEASENAME)+svn$(SVNVERSION)
 endif
-all: doc release matlab python octave R
+all: doc release matlab python octave r
 endif
 
 
-.PHONY: doc release matlab python octave R vanilla-package r-package
+.PHONY: doc release matlab python octave r vanilla-package r-package
 
 DESTDIR := ../$(RELEASENAME)
 REMOVE_SVMLIGHT := rm -f $(DESTDIR)/src/classifier/svm/SVM_light.* $(DESTDIR)/src/classifier/svm/Optimizer.* $(DESTDIR)/src/regression/svr/SVR_light.* $(DESTDIR)/src/LICENSE.SVMlight; \
@@ -98,10 +98,10 @@ vanilla-package: src/lib/versionstring.h $(DESTDIR)/src/lib/versionstring.h
 	rm -f $(DESTDIR).tar.bz2 $(DESTDIR).tar.gz
 	$(COMPRESS) -9 $(DESTDIR).tar
 
-# build R-package
+# build r-package
 r-package:	src/lib/versionstring.h $(DESTDIR)/src/lib/versionstring.h
-	-make -C $(DESTDIR)/R package
-	cp $(DESTDIR)/R/*.tar.gz ../
+	-make -C $(DESTDIR)/r package
+	cp $(DESTDIR)/r/*.tar.gz ../
 
 package-from-release:
 	rm -rf $(DESTDIR)
@@ -136,9 +136,9 @@ update-webpage:
 	rm -rf doc/html
 
 svn-tag-release: src/lib/versionstring.h
-	sed -i "s/^Version.*$$/Version: $(MAINVERSION)/" R/sg/DESCRIPTION
-	sed -i "s/^Date:.*$$/Date: `date +%Y-%m-%d`/" R/sg/DESCRIPTION
-	sed -i "s/^SHOGUN:=.*$$/SHOGUN:=sg_$(MAINVERSION)-1.tar.gz/" R/Makefile
+	sed -i "s/^Version.*$$/Version: $(MAINVERSION)/" r/sg/DESCRIPTION
+	sed -i "s/^Date:.*$$/Date: `date +%Y-%m-%d`/" r/sg/DESCRIPTION
+	sed -i "s/^SHOGUN:=.*$$/SHOGUN:=sg_$(MAINVERSION)-1.tar.gz/" r/Makefile
 	sed -i 's/VERSION_RELEASE "svn/VERSION_RELEASE "v$(MAINVERSION)/' src/lib/versionstring.h
 	sed -i "s/PROJECT_NUMBER         = .*/PROJECT_NUMBER         = v$(MAINVERSION)/" doc/Doxyfile
 	svn ci -m "Preparing for new Release shogun_$(MAINVERSION)"
@@ -162,7 +162,7 @@ $(DESTDIR)/src/lib/versionstring.h: src/lib/versionstring.h
 
 	# remove top level makefile from distribution
 	rm -f $(DESTDIR)/src/.authors
-	rm -rf $(DESTDIR)/R/sg/src
+	rm -rf $(DESTDIR)/r/sg/src
 	cp -f src/lib/versionstring.h $(DESTDIR)/src/lib/
 
 svn-ignores: .svn_ignores
