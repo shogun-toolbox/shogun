@@ -1,3 +1,13 @@
+2008-05-XX  Soeren Sonnenburg <debian@nn7.de>
+
+	* SHOGUN Release version 0.6.2
+		- Now fully support r-modular thanks to the swig team!
+		- All python-modular examples describing the use of kernels,
+		classifier, distributions, features, distances, regression and
+		preprocessors have been ported to r-modular.
+		- The 'send_command' legacy is no longer necessary, numbers can be used
+		as such and don't have to be given as string
+
 2008-04-19  Soeren Sonnenburg <debian@nn7.de>
 
 	* SHOGUN Release version 0.6.1

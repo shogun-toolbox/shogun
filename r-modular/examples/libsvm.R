@@ -18,10 +18,8 @@ testdata_real <- matrix(c(rnorm(2*num)-dist,rnorm(2*num)+dist),2,2*num)
 trainlab <- c(rep(-1,num), rep(1,num))
 testlab <- c(rep(-1,num), rep(1,num))
 
-feats_train <- RealFeatures()
-feats_train$copy_feature_matrix(feats_train, traindata_real)
-feats_test <- RealFeatures()
-feats_test$copy_feature_matrix(feats_test, testdata_real)
+feats_train <- RealFeatures(traindata_real)
+feats_test <- RealFeatures(testdata_real)
 kernel <- GaussianKernel(feats_train, feats_train, width)
 
 labels <- Labels(trainlab)

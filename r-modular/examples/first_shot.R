@@ -9,8 +9,8 @@ print(sprintf('labels: %f', lab$get_labels(lab)[1]))
 print(sprintf('lab: %d', lab$get_num_labels()))
 
 
-lab$set_label(lab, 0, 17.0)
-print(sprintf('lab: %f', lab$get_label(lab, 0)))
+lab$set_label(lab, integer(0), 17)
+print(sprintf('lab: %f', lab$get_label(lab, integer(0))))
 
 dyn.load('kernel/Kernel.so')
 source("kernel/Kernel.R")
