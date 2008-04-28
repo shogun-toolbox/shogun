@@ -31,351 +31,352 @@ CGUIFeatures::~CGUIFeatures()
 
 void CGUIFeatures::invalidate_train()
 {
-	CKernel *k = gui->guikernel.get_kernel() ;
+	CKernel *k = gui->guikernel.get_kernel();
 	if (k)
-		k->remove_lhs() ;
+		k->remove_lhs();
 }
 
 void CGUIFeatures::invalidate_test()
 {
-	CKernel *k = gui->guikernel.get_kernel() ;
+	CKernel *k = gui->guikernel.get_kernel();
 	if (k)
 		k->remove_rhs() ;
 }
 
-bool CGUIFeatures::load(CHAR* param)
-{
-	param=CIO::skip_spaces(param);
-	CHAR filename[1024]="";
-	CHAR target[1024]="";
-	CHAR type[1024]="";
-	CHAR fclass[1024]="";
-	bool result=false;
-	INT comp_features=0;
-	INT size=100;
-
-	if ((sscanf(param, "%s %s %s %s %d  %d", filename, fclass, type, target, &size, &comp_features))>=4)
-	{
-		CFeatures** f_ptr=NULL;
-
-		if (strcmp(target,"TRAIN")==0)
-		{
-			f_ptr=&train_features;
-			invalidate_train() ;
-		}
-		else if (strcmp(target,"TEST")==0)
-		{
-			f_ptr=&test_features;
-			invalidate_test() ;
-		}
-		else
-		{
-			SG_ERROR( "see help for parameters\n");
-			return false;
-		}
-
-		delete (*f_ptr);
-		*f_ptr=NULL;
-
-		if (strcmp(fclass, "SIMPLE")==0)
-		{
-			if (strcmp(type,"REAL")==0)
-			{
-				*f_ptr=new CRealFeatures(filename);
-				//SG_DEBUG( "opening file...\n");
-				//*f_ptr=new CRealFileFeatures(size, filename);
-
-				//if (comp_features)
-				//((CRealFileFeatures*) *f_ptr)->load_feature_matrix() ;
-			}
-			else if (strcmp(type, "BYTE")==0)
-			{
-				///FIXME make CHAR type configurable... it is DNA by default
-				*f_ptr=new CByteFeatures(DNA, filename);
-			}
-			else if (strcmp(type, "CHAR")==0)
-			{
-				///FIXME make CHAR type configurable... it is DNA by default
-				*f_ptr=new CCharFeatures(DNA, filename);
-			}
-			else if (strcmp(type, "SHORT")==0)
-			{
-				*f_ptr=new CShortFeatures(filename);
-			}
-			else
-			{
-				SG_ERROR( "unknown type\n");
-				return false;
-			}
-		}
-		else if (strcmp(fclass, "SPARSE")==0)
-		{
-			io.not_implemented();
-		}
-		else if (strcmp(fclass, "STRING")==0)
-		{
-			if (strcmp(type,"REAL")==0)
-			{
-				*f_ptr=new CStringFeatures<DREAL>(filename);
-			}
-			else if (strcmp(type, "BYTE")==0)
-			{
-				///FIXME make CHAR type configurable... it is DNA by default
-				*f_ptr=new CStringFeatures<BYTE>(filename, DNA);
-			}
-			else if (strcmp(type, "CHAR")==0)
-			{
-				///FIXME make CHAR type configurable... it is DNA by default
-				*f_ptr=new CStringFeatures<CHAR>(filename, DNA);
-			}
-			else if (strcmp(type, "SHORT")==0)
-			{
-				*f_ptr=new CStringFeatures<SHORT>(filename);
-			}
-			else if (strcmp(type, "WORD")==0)
-			{
-				*f_ptr=new CStringFeatures<WORD>(filename);
-			}
-			else if (strcmp(type, "ULONG")==0)
-			{
-				*f_ptr=new CStringFeatures<ULONG>(filename);
-			}
-			else
-			{
-				SG_ERROR( "unknown type\n");
-				return false;
-			}
-		}
-
-	} else
-		SG_ERROR( "see help for params\n");
-
-	return result;
-}
-
-bool CGUIFeatures::save(CHAR* param)
+bool CGUIFeatures::load(
+	CHAR* filename, CHAR* fclass, CHAR* type, CHAR* target, INT size,
+	INT comp_features)
 {
 	bool result=false;
-	param=CIO::skip_spaces(param);
-	CHAR fname[1024]="";
-	CHAR target[1024]="";
-	CHAR type[1024]="";
+	CFeatures** f_ptr=NULL;
 
-	if ((sscanf(param, "%s %s %s", fname, type, target))==3)
+	if (strncmp(target, "TRAIN", 5)==0)
 	{
-
-		CFeatures** f_ptr=NULL;
-
-		if (strcmp(target,"TRAIN")==0)
-		{
-			f_ptr=&train_features;
-		}
-		else if (strcmp(target,"TEST")==0)
-		{
-			f_ptr=&test_features;
-		}
-		else
-		{
-			SG_ERROR( "see help for parameters\n");
-			return false;
-		}
-
-		if (*f_ptr)
-		{
-			if (strcmp(type,"REAL")==0)
-			{
-				result= ((CRealFeatures*) (*f_ptr))->save(fname);
-			}
-			else if (strcmp(type, "BYTE")==0)
-			{
-				result= ((CByteFeatures*) (*f_ptr))->save(fname);
-			}
-			else if (strcmp(type, "CHAR")==0)
-			{
-				result= ((CCharFeatures*) (*f_ptr))->save(fname);
-			}
-			else if (strcmp(type, "SHORT")==0)
-			{
-				result= ((CShortFeatures*) (*f_ptr))->save(fname);
-			}
-			else if (strcmp(type, "WORD")==0)
-			{
-				result= ((CWordFeatures*) (*f_ptr))->save(fname);
-			}
-			else
-			{
-				SG_ERROR( "unknown type\n");
-				return false;
-			}
-
-			if (!result)
-				SG_ERROR( "writing to file %s failed!\n", fname);
-			else
-			{
-				SG_INFO( "successfully written features into \"%s\" !\n", fname);
-				result=true;
-			}
-
-		} else
-			SG_ERROR( "set features first\n");
-
-	} else
-		SG_ERROR( "see help for params\n");
-
-	return result;
-}
-
-bool CGUIFeatures::clean(CHAR* param)
-{
-	param=CIO::skip_spaces(param);
-	CHAR target[1024]="";
-
-	if ((sscanf(param, "%s", target))==1)
+		f_ptr=&train_features;
+		invalidate_train();
+	}
+	else if (strncmp(target, "TEST", 4)==0)
 	{
-		if (strcmp(target,"TRAIN")==0)
-			set_train_features(NULL);
-		else if (strcmp(target,"TEST")==0)
-			set_test_features(NULL);
-		else
-		{
-			SG_ERROR( "see help for parameters\n");
-			return false;
-		}
-		return true;
-
-	} else
-		SG_ERROR( "see help for params\n");
-
-	return false ;
-}
-
-bool CGUIFeatures::slide_window(CHAR* param)
-{
-	param=CIO::skip_spaces(param);
-	INT shift=-1;
-	INT winsize=-1;
-	INT skip=0;
-	CHAR target[1024]="";
-
-	if ((sscanf(param, "%s %d %d %d", target, &winsize, &shift, &skip))>=3)
-	{
-		ASSERT(winsize>0);
-		ASSERT(shift>0);
-
-		CFeatures* features=NULL;
-
-		if (strcmp(target,"TRAIN")==0)
-		{
-			invalidate_train();
-			features=train_features;
-		}
-		else if (strcmp(target,"TEST")==0)
-		{
-			invalidate_test();
-			features=test_features;
-		}
-		else
-		{
-			SG_ERROR( "see help for parameters\n");
-			return false;
-		}
-
-		if (((CFeatures*) features)->get_feature_class() == C_COMBINED)
-		{
-			features=((CCombinedFeatures*) features)->get_last_feature_obj();
-			ASSERT(features);
-		}
-
-		ASSERT(features);
-		ASSERT(((CFeatures*) features)->get_feature_class() == C_STRING);
-
-		switch (features->get_feature_type())
-		{
-			case F_CHAR:
-				return ( ((CStringFeatures<CHAR>*) features)->obtain_by_sliding_window(winsize, shift, skip) > 0);
-			case F_BYTE:
-				return ( ((CStringFeatures<BYTE>*) features)->obtain_by_sliding_window(winsize, shift, skip) > 0);
-			case F_WORD:
-				return ( ((CStringFeatures<WORD>*) features)->obtain_by_sliding_window(winsize, shift, skip) > 0);
-			case F_ULONG:
-				return ( ((CStringFeatures<ULONG>*) features)->obtain_by_sliding_window(winsize, shift, skip) > 0);
-			default:
-				SG_SERROR("unsupported string features type\n");
-				return false;
-		}
+		f_ptr=&test_features;
+		invalidate_test();
 	}
 	else
-		SG_ERROR( "see help for params\n");
+	{
+		SG_ERROR("See help for parameters.\n");
+		return false;
+	}
+
+	delete (*f_ptr);
+	*f_ptr=NULL;
+
+	if (strncmp(fclass, "SIMPLE", 6)==0)
+	{
+		if (strncmp(type, "REAL", 4)==0)
+		{
+			*f_ptr=new CRealFeatures(filename);
+			//SG_DEBUG( "opening file...\n");
+			//*f_ptr=new CRealFileFeatures(size, filename);
+
+			//if (comp_features)
+			//((CRealFileFeatures*) *f_ptr)->load_feature_matrix() ;
+		}
+		else if (strncmp(type, "BYTE", 4)==0)
+		{
+			///FIXME make CHAR type configurable... it is DNA by default
+			*f_ptr=new CByteFeatures(DNA, filename);
+		}
+		else if (strncmp(type, "CHAR", 4)==0)
+		{
+			///FIXME make CHAR type configurable... it is DNA by default
+			*f_ptr=new CCharFeatures(DNA, filename);
+		}
+		else if (strncmp(type, "SHORT", 5)==0)
+		{
+			*f_ptr=new CShortFeatures(filename);
+		}
+		else
+		{
+			SG_ERROR("Unknown type.\n");
+			return false;
+		}
+	}
+	else if (strncmp(fclass, "SPARSE", 6)==0)
+	{
+		io.not_implemented();
+	}
+	else if (strncmp(fclass, "STRING", 6)==0)
+	{
+		if (strncmp(type, "REAL", 4)==0)
+		{
+			*f_ptr=new CStringFeatures<DREAL>(filename);
+		}
+		else if (strncmp(type, "BYTE", 4)==0)
+		{
+			///FIXME make CHAR type configurable... it is DNA by default
+			*f_ptr=new CStringFeatures<BYTE>(filename, DNA);
+		}
+		else if (strncmp(type, "CHAR", 4)==0)
+		{
+			///FIXME make CHAR type configurable... it is DNA by default
+			*f_ptr=new CStringFeatures<CHAR>(filename, DNA);
+		}
+		else if (strncmp(type, "SHORT", 5)==0)
+		{
+			*f_ptr=new CStringFeatures<SHORT>(filename);
+		}
+		else if (strncmp(type, "WORD", 4)==0)
+		{
+			*f_ptr=new CStringFeatures<WORD>(filename);
+		}
+		else if (strncmp(type, "ULONG", 5)==0)
+		{
+			*f_ptr=new CStringFeatures<ULONG>(filename);
+		}
+		else
+		{
+			SG_ERROR("Unknown type.\n");
+			return false;
+		}
+	}
+
+	return result;
+}
+
+bool CGUIFeatures::save(CHAR* filename, CHAR* type, CHAR* target)
+{
+	bool result=false;
+
+	CFeatures** f_ptr=NULL;
+
+	if (strncmp(target, "TRAIN", 5)==0)
+	{
+		f_ptr=&train_features;
+	}
+	else if (strncmp(target, "TEST", 4)==0)
+	{
+		f_ptr=&test_features;
+	}
+	else
+	{
+		SG_ERROR("See help for parameters.\n");
+		return false;
+	}
+
+	if (*f_ptr)
+	{
+		if (strncmp(type, "REAL", 4)==0)
+		{
+			result= ((CRealFeatures*) (*f_ptr))->save(filename);
+		}
+		else if (strncmp(type, "BYTE", 4)==0)
+		{
+			result= ((CByteFeatures*) (*f_ptr))->save(filename);
+		}
+		else if (strncmp(type, "CHAR", 4)==0)
+		{
+			result= ((CCharFeatures*) (*f_ptr))->save(filename);
+		}
+		else if (strncmp(type, "SHORT", 5)==0)
+		{
+			result= ((CShortFeatures*) (*f_ptr))->save(filename);
+		}
+		else if (strncmp(type, "WORD", 4)==0)
+		{
+			result= ((CWordFeatures*) (*f_ptr))->save(filename);
+		}
+		else
+		{
+			SG_ERROR("Unknown type.\n");
+			return false;
+		}
+
+		if (!result)
+			SG_ERROR("Writing to file %s failed!\n", filename);
+		else
+		{
+			SG_INFO( "Successfully written features into \"%s\" !\n", filename);
+			result=true;
+		}
+
+	} else
+		SG_ERROR("Set features first.\n");
+
+	return result;
+}
+
+bool CGUIFeatures::clean(CHAR* target)
+{
+	if (strncmp(target, "TRAIN", 5)==0)
+		set_train_features(NULL);
+	else if (strncmp(target, "TEST", 4)==0)
+		set_test_features(NULL);
+	else
+	{
+		SG_ERROR("See help for parameters.\n");
+		return false;
+	}
+	return true;
+}
+
+bool CGUIFeatures::obtain_by_sliding_window(
+	CHAR* target, INT winsize, INT shift, INT skip)
+{
+	ASSERT(winsize>0);
+	ASSERT(shift>0);
+
+	CFeatures* features=NULL;
+
+	if (strncmp(target, "TRAIN", 5)==0)
+	{
+		invalidate_train();
+		features=train_features;
+	}
+	else if (strncmp(target, "TEST", 4)==0)
+	{
+		invalidate_test();
+		features=test_features;
+	}
+	else
+	{
+		SG_ERROR("Invalid target %s.\n", target);
+		return false;
+	}
+
+	if (((CFeatures*) features)->get_feature_class()==C_COMBINED)
+	{
+		features=((CCombinedFeatures*) features)->get_last_feature_obj();
+		ASSERT(features);
+	}
+
+	ASSERT(features);
+	ASSERT(((CFeatures*) features)->get_feature_class()==C_STRING);
+
+	switch (features->get_feature_type())
+	{
+		case F_CHAR:
+			return ( ((CStringFeatures<CHAR>*) features)->obtain_by_sliding_window(winsize, shift, skip)>0);
+		case F_BYTE:
+			return ( ((CStringFeatures<BYTE>*) features)->obtain_by_sliding_window(winsize, shift, skip)>0);
+		case F_WORD:
+			return ( ((CStringFeatures<WORD>*) features)->obtain_by_sliding_window(winsize, shift, skip)>0);
+		case F_ULONG:
+			return ( ((CStringFeatures<ULONG>*) features)->obtain_by_sliding_window(winsize, shift, skip)>0);
+		default:
+			SG_SERROR("Unsupported string features type.\n");
+			return false;
+	}
 
 	return false;
 }
 
-bool CGUIFeatures::reshape(CHAR* param)
+bool CGUIFeatures::reshape(CHAR* target, INT num_feat, INT num_vec)
 {
-	bool result=false;
-	INT num_feat=0;
-	INT num_vec=0;
-	CHAR target[1024]="";
-
 	CFeatures** f_ptr=NULL;
 
-	param=CIO::skip_spaces(param);
-	if ((sscanf(param, "%s %d %d", target, &num_feat, &num_vec))==3)
+	if (strncmp(target, "TRAIN", 5)==0)
 	{
-		if (strcmp(target,"TRAIN")==0)
-		{
-			f_ptr=&train_features;
-			invalidate_train() ;
-		}
-		else if (strcmp(target,"TEST")==0)
-		{
-			f_ptr=&test_features;
-			invalidate_test() ;
-		}
+		f_ptr=&train_features;
+		invalidate_train();
+	}
+	else if (strncmp(target, "TEST", 4)==0)
+	{
+		f_ptr=&test_features;
+		invalidate_test();
 	}
 	else
-		SG_ERROR( "see help for params\n");
+	{
+		SG_ERROR("Invalid target %s\n", target);
+		return false;
+	}
 
+	bool result=false;
 	if (f_ptr)
 	{
 		SG_INFO( "reshape data to %d x %d\n", num_feat, num_vec);
 		result=(*f_ptr)->reshape(num_feat, num_vec);
 
 		if (!result)
-			SG_ERROR( "reshaping failed");
+			SG_ERROR("Reshaping failed.\n");
 	}
 
 	return result;
 }
 
-CSparseFeatures<DREAL>* CGUIFeatures::convert_simple_real_to_sparse_real(CRealFeatures* src, CHAR* param)
+CFeatures* CGUIFeatures::get_convert_features(CHAR* target)
 {
-	if (src)
-	{
-		if ( (src->get_feature_class()) == C_SIMPLE)
-		{
-			if ( (src->get_feature_type()) == F_DREAL)
-			{
-				//create sparse features with 0 cache
-				SG_INFO( "attempting to convert dense feature matrix to a sparse one\n");
-				CSparseFeatures<DREAL>* target=new CSparseFeatures<DREAL>(0);
-				INT num_f=0;
-				INT num_v=0;
-				DREAL* feats=src->get_feature_matrix(num_f, num_v);
-				if (target->set_full_feature_matrix(feats, num_f, num_v))
-					return target;
+	CFeatures* features;
 
-				delete target;
-			}
-		}
+	if (strncmp(target, "TEST", 4)==0)
+		features=get_test_features();
+	else if (strncmp(target, "TRAIN", 5)==0)
+		features=get_train_features();
+	else
+		return NULL;
+
+	if (features->get_feature_class()==C_COMBINED)
+		features=((CCombinedFeatures*) features)->get_last_feature_obj();
+
+	return features;
+}
+
+bool CGUIFeatures::set_convert_features(CFeatures* features, CHAR* target)
+{
+	CFeatures* features_prev;
+
+	if (strncmp(target, "TEST", 4)==0)
+		features_prev=get_test_features();
+	else if (strncmp(target, "TRAIN", 5)==0)
+		features_prev=get_train_features();
+	else
+		return false;
+
+	// in case of combined features delete current (==last) feature obj
+	// pointer from list (feature object got deleted already above)
+	// and append *f_ptr which holds the newly created feature object
+	if (features_prev->get_feature_class()==C_COMBINED)
+	{
+		CCombinedFeatures* combined=(CCombinedFeatures*) features_prev;
+		combined->delete_feature_obj();
+		combined->append_feature_obj(features);
+		combined->list_feature_objs();
 	}
+	else // set features to new test/train features
+	{
+		if (strncmp(target, "TEST", 4)==0)
+			set_test_features(features);
+		else
+			set_train_features(features);
+	}
+
+	return true;
+}
+
+CSparseFeatures<DREAL>* CGUIFeatures::convert_simple_real_to_sparse_real(CRealFeatures* src)
+{
+	if (src &&
+		src->get_feature_class()==C_SIMPLE &&
+		src->get_feature_type()==F_DREAL)
+	{
+		//create sparse features with 0 cache
+		SG_INFO("Attempting to convert dense feature matrix to a sparse one.\n");
+		CSparseFeatures<DREAL>* target=new CSparseFeatures<DREAL>(0);
+		INT num_f=0;
+		INT num_v=0;
+		DREAL* feats=src->get_feature_matrix(num_f, num_v);
+		if (target->set_full_feature_matrix(feats, num_f, num_v))
+			return target;
+
+		delete target;
+	}
+	else
+		SG_ERROR("No SIMPLE DREAL features available.\n");
 
 	return NULL;
 }
 
-CStringFeatures<CHAR>* CGUIFeatures::convert_simple_char_to_string_char(CCharFeatures* src, CHAR* param)
+CStringFeatures<CHAR>* CGUIFeatures::convert_simple_char_to_string_char(CCharFeatures* src)
 {
-	if ( (src) && ( (src->get_feature_class()) == C_SIMPLE) )
+	if (src && src->get_feature_class()==C_SIMPLE)
 	{
 		INT num_vec=src->get_num_vectors();
 		T_STRING<CHAR>* strings=new T_STRING<CHAR>[num_vec];
@@ -385,7 +386,7 @@ CStringFeatures<CHAR>* CGUIFeatures::convert_simple_char_to_string_char(CCharFea
 		{
 			bool to_free=false;
 			INT len=0;
-			CHAR* str= src->get_feature_vector(i, len, to_free);
+			CHAR* str=src->get_feature_vector(i, len, to_free);
 			strings[i].length=len ;
 			for (int j=0; j<len; j++)
 				if (str[j]==0)
@@ -404,58 +405,70 @@ CStringFeatures<CHAR>* CGUIFeatures::convert_simple_char_to_string_char(CCharFea
 			src->free_feature_vector(str, i, to_free);
 		}
 
-		CStringFeatures<CHAR>* target= new CStringFeatures<CHAR>(new CAlphabet(src->get_alphabet()));
+		CStringFeatures<CHAR>* target=new CStringFeatures<CHAR>(
+			new CAlphabet(src->get_alphabet()));
 		ASSERT(target);
 		target->set_features(strings, num_vec, max_len);
 		return target;
 	}
 	else
-		SG_ERROR( "no features of class/type SIMPLE/CHAR available\n");
+		SG_ERROR("No features of class/type SIMPLE/CHAR available.\n");
 
 	return NULL;
 }
 
-CRealFeatures* CGUIFeatures::convert_simple_word_to_simple_salzberg(CWordFeatures* src, CHAR* param)
+CRealFeatures* CGUIFeatures::convert_simple_word_to_simple_salzberg(CWordFeatures* src)
 {
 	CPluginEstimate* pie=gui->guipluginestimate.get_estimator();
-	ASSERT(src->get_feature_type()==F_WORD && src->get_feature_class()==C_SIMPLE);
-	ASSERT(pie);
 
-	CRealFeatures* target=new CRealFeatures(0);
-	ASSERT(target);
-
-	INT num_feat=src->get_num_features();
-	INT num_vec=src->get_num_vectors();
-	DREAL* fm=new DREAL[num_vec*num_feat];
-
-	if (fm)
+	if (src &&
+		src->get_feature_type()==F_WORD &&
+		src->get_feature_class()==C_SIMPLE &&
+		pie)
 	{
-		for (INT i=0; i<num_vec; i++)
+		CRealFeatures* target=new CRealFeatures(0);
+		ASSERT(target);
+
+		INT num_feat=src->get_num_features();
+		INT num_vec=src->get_num_vectors();
+		DREAL* fm=new DREAL[num_vec*num_feat];
+
+		if (fm)
 		{
-			INT len=0;
-			bool to_free=false;
-			WORD* vec = src->get_feature_vector(i, len, to_free);
-			ASSERT(num_feat==len);
+			for (INT i=0; i<num_vec; i++)
+			{
+				INT len=0;
+				bool to_free=false;
+				WORD* vec = src->get_feature_vector(i, len, to_free);
+				ASSERT(num_feat==len);
 
-			for (INT j=0; j<num_feat; j++)
-				fm[i*num_feat+j]=pie->get_parameterwise_log_odds(vec[j], j);
+				for (INT j=0; j<num_feat; j++)
+					fm[i*num_feat+j]=
+						pie->get_parameterwise_log_odds(vec[j], j);
 
-			src->free_feature_vector(vec, i, to_free);
+				src->free_feature_vector(vec, i, to_free);
+			}
+			target->set_feature_matrix(fm, num_feat, num_vec);
+
 		}
-		target->set_feature_matrix(fm, num_feat, num_vec);
-
+		return target;
 	}
-	return target;
+	else
+		SG_ERROR("No SIMPLE WORD features or PluginEstimator available.\n");
+
+	return NULL;
 }
 
 
-CTOPFeatures* CGUIFeatures::convert_string_word_to_simple_top(CStringFeatures<WORD>* src, CHAR* param)
+CTOPFeatures* CGUIFeatures::convert_string_word_to_simple_top(CStringFeatures<WORD>* src)
 {
-	CTOPFeatures* tf = NULL;
+	CTOPFeatures* tf=NULL;
 
-	if (src && src->get_feature_class() == C_SIMPLE && src->get_feature_type() == F_WORD)
+	if (src &&
+		src->get_feature_class()==C_SIMPLE &&
+		src->get_feature_type()==F_WORD)
 	{
-		SG_INFO( "converting to TOP features\n");
+		SG_INFO("Converting to TOP features.\n");
 
 		if (gui->guihmm.get_pos() && gui->guihmm.get_neg())
 		{
@@ -465,39 +478,44 @@ CTOPFeatures* CGUIFeatures::convert_string_word_to_simple_top(CStringFeatures<WO
 			bool neglinear=false;
 			bool poslinear=false;
 
-			tf = new CTOPFeatures(0, gui->guihmm.get_pos(), gui->guihmm.get_neg(), neglinear, poslinear);		     
+			tf=new CTOPFeatures(
+				0, gui->guihmm.get_pos(), gui->guihmm.get_neg(),
+				neglinear, poslinear);
 			ASSERT(tf && tf->set_feature_matrix());
 		}
 		else
-			SG_ERROR( "HMMs not correctly assigned!\n");
+			SG_ERROR("HMMs not correctly assigned!\n");
 	}
-	else 
-		io.not_implemented();
+	else
+		SG_ERROR("No SIMPLE WORD features available.\n");
 
 	return tf;
 }
 
-CFKFeatures* CGUIFeatures::convert_string_word_to_simple_fk(CStringFeatures<WORD>* src, CHAR* param)
+CFKFeatures* CGUIFeatures::convert_string_word_to_simple_fk(CStringFeatures<WORD>* src)
 {
-	CFKFeatures* fkf = NULL;
+	CFKFeatures* fkf=NULL;
 
-	SG_INFO( "converting to FK features\n");
+	SG_INFO("Converting to FK features.\n");
 
 	if (gui->guihmm.get_pos() && gui->guihmm.get_neg())
 	{
+		CStringFeatures<WORD>* old_obs_pos=
+			gui->guihmm.get_pos()->get_observations();
+		CStringFeatures<WORD>* old_obs_neg=
+			gui->guihmm.get_neg()->get_observations();
 
-		CStringFeatures<WORD>* old_obs_pos=gui->guihmm.get_pos()->get_observations();
-		CStringFeatures<WORD>* old_obs_neg=gui->guihmm.get_neg()->get_observations();
-
-		CStringFeatures<WORD>* string_feat = src;
+		CStringFeatures<WORD>* string_feat=src;
 		gui->guihmm.get_pos()->set_observations(string_feat);
 		gui->guihmm.get_neg()->set_observations(string_feat);
 
-		fkf = new CFKFeatures(0, gui->guihmm.get_pos(), gui->guihmm.get_neg());//, neglinear, poslinear);		     
+		fkf=new CFKFeatures(
+			0, gui->guihmm.get_pos(), gui->guihmm.get_neg());
+			//, neglinear, poslinear);
 		if (train_features)
 			fkf->set_opt_a(((CFKFeatures*) train_features)->get_weight_a());
 		else
-			SG_ERROR( "need train features to set optimal a\n");
+			SG_ERROR("Need train features to set optimal a.\n");
 
 		ASSERT(fkf->set_feature_matrix());
 
@@ -505,341 +523,139 @@ CFKFeatures* CGUIFeatures::convert_string_word_to_simple_fk(CStringFeatures<WORD
 		gui->guihmm.get_neg()->set_observations(old_obs_neg);
 	}
 	else
-		SG_ERROR( "HMMs not correctly assigned!\n");
+		SG_ERROR("HMMs not correctly assigned!\n");
 
 	return fkf;
 }
 
 
-CRealFeatures* CGUIFeatures::convert_sparse_real_to_simple_real(CSparseFeatures<DREAL>* src, CHAR* param)
+CRealFeatures* CGUIFeatures::convert_sparse_real_to_simple_real(CSparseFeatures<DREAL>* src)
 {
-
-	if (src)
-	{
-		if ( src->get_feature_class() == C_SPARSE)
-		{
-			if ( src->get_feature_type() == F_DREAL)
-			{
-				//create dense features with 0 cache
-				SG_INFO( "attempting to convert sparse feature matrix to a dense one\n");
-				CRealFeatures* rf = new CRealFeatures(0);
-				ASSERT(rf);
-				INT num_f=0;
-				INT num_v=0;
-				DREAL* feats=src->get_full_feature_matrix(num_f, num_v);
-				rf->set_feature_matrix(feats, num_f, num_v);
-				return rf;
-			}
-		}
-		else
-			SG_ERROR( "no sparse features available\n");
-
-	}
-
-	SG_ERROR( "conversion failed");
-	return NULL;
-}
-
-CWordFeatures* CGUIFeatures::convert_simple_char_to_simple_word(CCharFeatures* src, CHAR* param)
-{
-	CHAR target[1024]="";
-	CHAR from_class[1024]="";
-	CHAR from_type[1024]="";
-	CHAR to_class[1024]="";
-	CHAR to_type[1024]="";
-	INT order=1;
-	INT start=0;
-	INT gap = 0 ;
-	
-	param=CIO::skip_spaces(param);
-	if ((sscanf(param, "%s %s %s %s %s %d %d %d", target, from_class, from_type, to_class, to_type, &order, &start, &gap))<6)
-	{
-		SG_ERROR( "see help for params (target, from_class, from_type, to_class, to_type, order, start, gap)\n");
-		return NULL;
-	}
-
-	if ( (src) && (src->get_feature_class() == C_SIMPLE)  && (src->get_feature_type() == F_CHAR) )
+	if (src &&
+		src->get_feature_class()==C_SPARSE &&
+		src->get_feature_type() == F_DREAL)
 	{
 		//create dense features with 0 cache
-		SG_INFO( "converting CHAR features to WORD ones\n");
-
-		CWordFeatures* wf = new CWordFeatures(0);
-
-		if ( (wf) && (wf->obtain_from_char_features(src, start, order, gap)))
-		{
-			SG_INFO( "conversion successful\n");
-			return wf;
-		}
-
-		delete wf;
-	}
-	else
-		SG_ERROR( "no CHAR features available\n");
-
-	SG_ERROR( "conversion failed\n");
-	return NULL;
-}
-
-CShortFeatures* CGUIFeatures::convert_simple_char_to_simple_short(CCharFeatures* src, CHAR* param)
-{
-	CHAR target[1024]="";
-	CHAR from_class[1024]="";
-	CHAR from_type[1024]="";
-	CHAR to_class[1024]="";
-	CHAR to_type[1024]="";
-	INT order=1;
-	INT start=0;
-	INT gap=0 ;
-
-	param=CIO::skip_spaces(param);
-	if ((sscanf(param, "%s %s %s %s %s %d %d %d", target, from_class, from_type, to_class, to_type, &order, &start, &gap))<6)
-		SG_ERROR( "see help for params (target, from_class, from_type, to_class, to_type, order, start, gap)\n");
-	
-	if (src)
-	{
-		if ( (src->get_feature_class() == C_SIMPLE)  && (src->get_feature_type() == F_CHAR) )
-		{
-			//create dense features with 0 cache
-			SG_INFO( "converting CHAR features to WORD ones\n");
-
-			CShortFeatures* sf = new CShortFeatures(0);
-
-			if (sf)
-			{
-				if (sf->obtain_from_char_features(src, start, order, gap))
-				{
-					SG_INFO( "conversion successful\n");
-					return sf;
-				}
-
-				delete sf;
-			}
-		}
-		else
-			SG_ERROR( "no CHAR features available\n");
-
-	}
-
-	SG_ERROR( "conversion failed\n");
-	return NULL;
-}
-
-
-
-CRealFeatures* CGUIFeatures::convert_simple_char_to_simple_align(CCharFeatures* src, CHAR* param)
-{
-	CHAR target[1024]="";
-	DREAL gapCost=1;
-	CHAR from_class[1024]="";
-	CHAR from_type[1024]="";
-	CHAR to_class[1024]="";
-	CHAR to_type[1024]="";
-
-	param=CIO::skip_spaces(param);
-	if ((sscanf(param, "%s %s %s %s %s %le", target, from_class, from_type, to_class, to_type, &gapCost))!=6)
-		SG_ERROR( "see help for params\n");
-
-	if ( src &&  (src->get_feature_class() == C_SIMPLE)  && (src->get_feature_type() == F_CHAR) )
-	{
-		//create dense features with 0 cache
-		SG_INFO( "converting CHAR features to REAL ones\n");
-
+		SG_INFO("Attempting to convert sparse feature matrix to a dense one.\n");
 		CRealFeatures* rf=new CRealFeatures(0);
 		if (rf)
 		{
-			SG_INFO( "start aligment with gapCost=%1.2f\n", gapCost);
-			rf->Align_char_features(src, (CCharFeatures*)ref_features, gapCost);
-			SG_INFO( "conversion successful\n");
+			INT num_f=0;
+			INT num_v=0;
+			DREAL* feats=src->get_full_feature_matrix(num_f, num_v);
+			rf->set_feature_matrix(feats, num_f, num_v);
 			return rf;
 		}
 	}
 	else
-		SG_ERROR( "no CHAR features available\n");
+		SG_ERROR("No SPARSE REAL features available.\n");
 
-	SG_ERROR( "conversion failed\n");
 	return NULL;
 }
 
-bool CGUIFeatures::set_ref_features(CHAR* param)
+CWordFeatures* CGUIFeatures::convert_simple_char_to_simple_word(
+	CCharFeatures* src, INT order, INT start, INT gap)
 {
-	CHAR target[1024]="";
-
-	param=CIO::skip_spaces(param);
-	if ((sscanf(param, "%s", target))==1)
+	if (src &&
+		src->get_feature_class()==C_SIMPLE &&
+		src->get_feature_type()==F_CHAR)
 	{
-		if (strcmp(target,"TRAIN")==0)
-		{
-			delete ref_features ;
-			ref_features = train_features ;
-			train_features = NULL ;
-			invalidate_train() ;
-			return true ;
-		}
-		else if (strcmp(target,"TEST")==0)
-		{
-			delete ref_features ;
-			ref_features = test_features ;
-			test_features = NULL ;
-			invalidate_test() ;
-			return true ;
-		}	  
-	}
-	SG_ERROR( "see help for params (%s)\n", target);
-	return false ;
-} ;
+		//create dense features with 0 cache
+		SG_INFO("Converting CHAR features to WORD ones.\n");
 
-
-bool CGUIFeatures::convert(CHAR* param)
-{
-	CHAR target[1024]="";
-	CHAR from_class[1024]="";
-	CHAR from_type[1024]="";
-	CHAR to_class[1024]="";
-	CHAR to_type[1024]="";
-	CFeatures* result = NULL;
-
-	CFeatures** f_ptr=NULL;
-	CCombinedFeatures* f_combined=NULL;
-
-	param=CIO::skip_spaces(param);
-	if ((sscanf(param, "%s %s %s %s %s", target, from_class, from_type, to_class, to_type))>=5)
-	{
-		if (strcmp(target,"TRAIN")==0)
+		CWordFeatures* wf=new CWordFeatures(0);
+		if (wf)
 		{
-			f_ptr=&train_features;
-			invalidate_train() ;
-		}
-		else if (strcmp(target,"TEST")==0)
-		{
-			f_ptr=&test_features;
-			invalidate_test() ;
+			if (wf->obtain_from_char_features(src, start, order, gap))
+			{
+				SG_INFO("Conversion was successful.\n");
+				return wf;
+			}
+
+			delete wf;
 		}
 	}
 	else
-		SG_ERROR( "see help for params\n");
+		SG_ERROR("No SIMPLE CHAR features available.\n");
 
-	if (f_ptr)
+	SG_ERROR("Conversion failed.\n");
+	return NULL;
+}
+
+CShortFeatures* CGUIFeatures::convert_simple_char_to_simple_short(CCharFeatures* src, INT order, INT start, INT gap)
+{
+	if (src &&
+		src->get_feature_class()==C_SIMPLE &&
+		src->get_feature_type()==F_CHAR)
 	{
-		if ( (*f_ptr)->get_feature_class() == C_COMBINED)
-		{
-			f_combined= (CCombinedFeatures*) (*f_ptr);
-			ASSERT(f_combined);
+		//create dense features with 0 cache
+		SG_INFO("Converting CHAR features to WORD ones.\n");
 
-			*f_ptr=f_combined->get_last_feature_obj();
-		}
-
-		if (strcmp(from_class, "SIMPLE")==0)
+		CShortFeatures* sf=new CShortFeatures(0);
+		if (sf)
 		{
-			if (strcmp(from_type, "REAL")==0)
+			if (sf->obtain_from_char_features(src, start, order, gap))
 			{
-				if (strcmp(to_class, "SPARSE")==0 && strcmp(to_type,"REAL")==0)
-					result = convert_simple_real_to_sparse_real(((CRealFeatures*) (*f_ptr)), param);
-				else
-					io.not_implemented();
+				SG_INFO("Conversion was successful.\n");
+				return sf;
 			}
-			else if (strcmp(from_type, "CHAR")==0)
-			{
-				if (strcmp(to_class, "STRING")==0 && strcmp(to_type,"CHAR")==0)
-					result = convert_simple_char_to_string_char(((CCharFeatures*) (*f_ptr)), param);
-				else if (strcmp(to_class, "SIMPLE")==0 && strcmp(to_type,"WORD")==0)
-					result = convert_simple_char_to_simple_word(((CCharFeatures*) (*f_ptr)), param);
-				else if (strcmp(to_class, "SIMPLE")==0 && strcmp(to_type,"SHORT")==0)
-					result = convert_simple_char_to_simple_short(((CCharFeatures*) (*f_ptr)), param);
-				else if (strcmp(to_class, "SIMPLE")==0 && strcmp(to_type,"ALIGN")==0)
-					result = convert_simple_char_to_simple_align(((CCharFeatures*) (*f_ptr)), param);
-				else
-					io.not_implemented();
-			}
-			else if (strcmp(from_type, "WORD")==0)
-			{
-				if (strcmp(to_class, "SIMPLE")==0 && strcmp(to_type,"SALZBERG")==0)
-					result = convert_simple_word_to_simple_salzberg(((CWordFeatures*) (*f_ptr)), param);
-				else
-					io.not_implemented();
-			}
-			else
-				io.not_implemented();
-		}
-		else if (strcmp(from_class, "SPARSE")==0)
-		{
-			if (strcmp(from_type, "REAL")==0)
-			{
-				if (strcmp(to_class, "SIMPLE")==0 && strcmp(to_type,"REAL")==0)
-					result = convert_sparse_real_to_simple_real(((CSparseFeatures<DREAL>*) (*f_ptr)), param);
-				else
-					io.not_implemented();
-			}
-			else
-				io.not_implemented();
-		}
-		else if (strcmp(from_class, "STRING")==0)
-		{
-			if (strcmp(from_type, "CHAR")==0)
-			{
-				if (strcmp(to_class, "STRING")==0 && strcmp(to_type,"WORD")==0)
-					result = convert_string_char_to_string_generic<CHAR,WORD>(((CStringFeatures<CHAR>*) (*f_ptr)), param);
-				else if (strcmp(to_class, "STRING")==0 && strcmp(to_type,"ULONG")==0)
-					result = convert_string_char_to_string_generic<CHAR,ULONG>(((CStringFeatures<CHAR>*) (*f_ptr)), param);
-#ifdef HAVE_MINDY
-				else if (strcmp(to_class, "MINDYGRAM")==0 && strcmp(to_type,"ULONG")==0)
-					result = convert_string_char_to_mindy_grams<CHAR>(((CStringFeatures<CHAR>*) (*f_ptr)), param);
-#endif
-				else
-					io.not_implemented();
-			}
-			else if (strcmp(from_type, "BYTE")==0)
-			{
-				if (strcmp(to_class, "STRING")==0 && strcmp(to_type,"WORD")==0)
-					result = convert_string_char_to_string_generic<BYTE,WORD>(((CStringFeatures<BYTE>*) (*f_ptr)), param);
-				else if (strcmp(to_class, "STRING")==0 && strcmp(to_type,"ULONG")==0)
-					result = convert_string_char_to_string_generic<BYTE,ULONG>(((CStringFeatures<BYTE>*) (*f_ptr)), param);
-#ifdef HAVE_MINDY
-				else if (strcmp(to_class, "MINDYGRAM")==0 && strcmp(to_type,"ULONG")==0)
-					result = convert_string_char_to_mindy_grams<BYTE>(((CStringFeatures<BYTE>*) (*f_ptr)), param);
-#endif
-				else
-					io.not_implemented();
-			}
-			else if (strcmp(from_type, "WORD")==0)
-			{
-				if (strcmp(to_class, "SIMPLE")==0 && strcmp(to_type,"TOP")==0)
-					result = convert_string_word_to_simple_top(((CStringFeatures<WORD>*) (*f_ptr)), param);
-				else 
-					io.not_implemented();
-			}
-			else if (strcmp(to_class, "SIMPLE")==0 && strcmp(to_type,"FK")==0)
-				result = convert_string_word_to_simple_fk(((CStringFeatures<WORD>*) (*f_ptr)), param);
-			else 
-				SG_ERROR( "see help for parameters\n");
-		}
-		else
-			SG_ERROR( "see help for parameters\n");
 
-		if (result)
-		{
-			SG_INFO( "conversion successful\n");
-
-			delete (*f_ptr);
-			(*f_ptr)=result;
-
-			// in case of combined features delete current (==last) feature obj
-			// pointer from list (feature object got deleted already above)
-			// and append *f_ptr which holds the newly created feature object
-			if (f_combined)
-			{
-				f_combined->delete_feature_obj();
-				f_combined->append_feature_obj(*f_ptr);
-				*f_ptr=f_combined;
-				f_combined->list_feature_objs();
-			}
+			delete sf;
 		}
-		else
-			SG_ERROR( "conversion failed\n");
 	}
 	else
-		SG_ERROR( "no \"%s\" features available\n", target);
+		SG_ERROR("No SIMPLE CHAR features available.\n");
 
-	return (result!=NULL);
+	SG_ERROR("Conversion failed.\n");
+	return NULL;
+}
+
+CRealFeatures* CGUIFeatures::convert_simple_char_to_simple_align(CCharFeatures* src, DREAL gap_cost)
+{
+	if (src &&
+		src->get_feature_class()==C_SIMPLE &&
+		src->get_feature_type()==F_CHAR)
+	{
+		//create dense features with 0 cache
+		SG_INFO("Converting CHAR features to REAL ones.\n");
+
+		CRealFeatures* rf=new CRealFeatures(0);
+		if (rf)
+		{
+			SG_INFO("Start aligment with gapCost=%1.2f.\n", gap_cost);
+			rf->Align_char_features(
+				src, (CCharFeatures*) ref_features, gap_cost);
+			SG_INFO("Conversion was successful.\n");
+			return rf;
+		}
+	}
+	else
+		SG_ERROR("No SIMPLE CHAR features available.\n");
+
+	SG_ERROR("Conversion failed.\n");
+	return NULL;
+}
+
+bool CGUIFeatures::set_reference_features(CHAR* target)
+{
+	if (strncmp(target, "TRAIN", 5)==0)
+	{
+		delete ref_features;
+		ref_features=train_features;
+		train_features=NULL;
+		invalidate_train();
+		return true;
+	}
+	else if (strncmp(target, "TEST", 4)==0)
+	{
+		delete ref_features;
+		ref_features=test_features;
+		test_features=NULL;
+		invalidate_test();
+		return true;
+	}
+
+	return false;
 }
 
 void CGUIFeatures::add_train_features(CFeatures* f)

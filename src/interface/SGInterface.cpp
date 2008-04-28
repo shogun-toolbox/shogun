@@ -80,7 +80,7 @@ static CSGInterfaceMethod sg_methods[]=
 	{
 		(CHAR*) N_CONVERT,
 		(&CSGInterface::cmd_convert),
-		(CHAR*) USAGE_I(N_CONVERT, "'TRAIN|TEST', from_class, from_type, to_class, to_type'")
+		(CHAR*) USAGE_I(N_CONVERT, "'TRAIN|TEST', from_class, from_type, to_class, to_type[, order, start, gap, reversed]'")
 	},
 	{
 		(CHAR*) N_FROM_POSITION_LIST,
@@ -830,17 +830,57 @@ CSGInterface::~CSGInterface()
 
 bool CSGInterface::cmd_load_features()
 {
-	return send_command(N_LOAD_FEATURES);
+	if (m_nrhs<8 || !create_return_values(0))
+		return false;
+
+	INT len=0;
+	CHAR* filename=get_str_from_str_or_direct(len);
+	CHAR* fclass=get_str_from_str_or_direct(len);
+	CHAR* type=get_str_from_str_or_direct(len);
+	CHAR* target=get_str_from_str_or_direct(len);
+	INT size=get_int_from_int_or_str();
+	INT comp_features=get_int_from_int_or_str();
+
+	bool success=gui->guifeatures.load(
+		filename, fclass, type, target, size, comp_features);
+
+	delete[] filename;
+	delete[] fclass;
+	delete[] type;
+	delete[] target;
+	return success;
 }
 
 bool CSGInterface::cmd_save_features()
 {
-	return send_command(N_SAVE_FEATURES);
+	if (m_nrhs<5 || !create_return_values(0))
+		return false;
+
+	INT len=0;
+	CHAR* filename=get_str_from_str_or_direct(len);
+	CHAR* type=get_str_from_str_or_direct(len);
+	CHAR* target=get_str_from_str_or_direct(len);
+
+	bool success=gui->guifeatures.save(filename, type, target);
+
+	delete[] filename;
+	delete[] type;
+	delete[] target;
+	return success;
 }
 
 bool CSGInterface::cmd_clean_features()
 {
-	return send_command(N_CLEAN_FEATURES);
+	if (m_nrhs<3 || !create_return_values(0))
+		return false;
+
+	INT len=0;
+	CHAR* target=get_str_from_str_or_direct(len);
+
+	bool success=gui->guifeatures.clean(target);
+
+	delete[] target;
+	return success;
 }
 
 bool CSGInterface::cmd_get_features()
@@ -1200,12 +1240,267 @@ bool CSGInterface::do_set_features(bool add)
 
 bool CSGInterface::cmd_set_reference_features()
 {
-	return send_command(N_SET_REF_FEAT);
+	if (m_nrhs<3 || !create_return_values(0))
+		return false;
+
+	INT len=0;
+	CHAR* target=get_str_from_str_or_direct(len);
+
+	bool success=gui->guifeatures.set_reference_features(target);
+
+	delete[] target;
+	return success;
 }
 
 bool CSGInterface::cmd_convert()
 {
-	return send_command(N_CONVERT);
+	if (m_nrhs<7 || !create_return_values(0))
+		return false;
+
+	INT len=0;
+	CHAR* target=get_str_from_str_or_direct(len);
+	CFeatures* features=gui->guifeatures.get_convert_features(target);
+	if (!features)
+	{
+		delete[] target;
+		SG_ERROR("No \"%s\" features available.\n", target);
+	}
+
+	CHAR* from_class=get_str_from_str_or_direct(len);
+	CHAR* from_type=get_str_from_str_or_direct(len);
+	CHAR* to_class=get_str_from_str_or_direct(len);
+	CHAR* to_type=get_str_from_str_or_direct(len);
+
+	CFeatures* result=NULL;
+	if (strmatch(from_class, 6, "SIMPLE"))
+	{
+		if (strmatch(from_type, 4, "REAL"))
+		{
+			if (strmatch(to_class, 6, "SPARSE")==0 &&
+				strmatch(to_type, 4, "REAL"))
+			{
+				result=gui->guifeatures.convert_simple_real_to_sparse_real(
+					((CRealFeatures*) features));
+			}
+			else
+				io.not_implemented();
+		} // from_type REAL
+
+		else if (strmatch(from_type, 4, "CHAR"))
+		{
+			if (strmatch(to_class, 6, "STRING") &&
+				strmatch(to_type, 4, "CHAR"))
+			{
+				result=gui->guifeatures.convert_simple_char_to_string_char(
+					((CCharFeatures*) features));
+			}
+			else if (strmatch(to_class, 6, "SIMPLE"))
+			{
+				if ((strmatch(to_type, 4, "WORD") ||
+					strmatch(to_type, 5, "SHORT")) && m_nrhs==10)
+				{
+					INT order=get_int_from_int_or_str();
+					INT start=get_int_from_int_or_str();
+					INT gap=get_int_from_int_or_str();
+
+					if (strmatch(to_type, 4, "WORD"))
+					{
+						result=gui->guifeatures.convert_simple_char_to_simple_word(
+							(CCharFeatures*) features, order, start,
+							gap);
+					}
+					else if (strmatch(to_type, 5, "SHORT"))
+					{
+						result=gui->guifeatures.convert_simple_char_to_simple_short(
+							(CCharFeatures*) features, order, start,
+							gap);
+					}
+					else
+						io.not_implemented();
+				}
+				else if (strmatch(to_type, 5, "ALIGN") && m_nrhs==8)
+				{
+					DREAL gap_cost=get_real_from_real_or_str();
+					result=gui->guifeatures.convert_simple_char_to_simple_align(
+						(CCharFeatures*) features, gap_cost);
+				}
+				else
+					io.not_implemented();
+			}
+			else
+				io.not_implemented();
+		} // from_type CHAR
+
+		else if (strmatch(from_type, 4, "WORD"))
+		{
+			if (strmatch(to_class, 6, "SIMPLE") &&
+				strmatch(to_type, 8, "SALZBERG"))
+			{
+				result=gui->guifeatures.convert_simple_word_to_simple_salzberg(
+					(CWordFeatures*) features);
+			}
+			else
+				io.not_implemented();
+		} // from_type WORD
+
+		else
+			io.not_implemented();
+	} // from_class SIMPLE
+
+	else if (strmatch(from_class, 6, "SPARSE"))
+	{
+		if (strmatch(from_type, 4, "REAL"))
+		{
+			if (strmatch(to_class, 6, "SIMPLE") &&
+				strmatch(to_type, 4, "REAL"))
+			{
+				result=gui->guifeatures.convert_sparse_real_to_simple_real(
+					(CSparseFeatures<DREAL>*) features);
+			}
+			else
+				io.not_implemented();
+		} // from_type REAL
+		else
+			io.not_implemented();
+	} // from_class SPARSE
+
+	else if (strmatch(from_class, 6, "STRING"))
+	{
+		if (strmatch(from_type, 4, "CHAR"))
+		{
+			if (strmatch(to_class, 6, "STRING") && m_nrhs==10)
+			{
+				INT order=get_int_from_int_or_str();
+				INT start=get_int_from_int_or_str();
+				INT gap=get_int_from_int_or_str();
+				CHAR* rev=get_str_from_str_or_direct(len);
+
+				if (strmatch(to_type, 4, "WORD"))
+				{
+					result=gui->guifeatures.convert_string_char_to_string_generic<CHAR,WORD>(
+						(CStringFeatures<CHAR>*) features, order, start,
+						gap, rev[0]);
+				}
+				else if (strmatch(to_type, 5, "ULONG"))
+				{
+					result=gui->guifeatures.convert_string_char_to_string_generic<CHAR,ULONG>(
+					(CStringFeatures<CHAR>*) features, order, start,
+						gap, rev[0]);
+				}
+				else
+					io.not_implemented();
+
+				delete[] rev;
+			}
+#ifdef HAVE_MINDY
+			else if (strmatch(to_class, 9, "MINDYGRAM") &&
+				strmatch(to_type, 5, "ULONG") &&
+				m_nrhs==11)
+			{
+				CHAR* alph=get_str_from_str_or_direct(len);
+				CHAR* embed=get_str_from_str_or_direct(len);
+				INT nlen=get_int_from_int_or_str(len);
+				CHAR* delim=get_str_from_str_or_direct(len);
+				DREAL maxv=get_real_from_real_or_str(len);
+
+				result=gui->guifeatures.convert_string_char_to_mindy_grams<CHAR>(
+					(CStringFeatures<BYTE>*) features, alph, embed,
+					nlen, delim, maxv);
+
+				delete[] alph;
+				delete[] embed;
+				delete[] delim;
+			}
+#endif
+			else
+				io.not_implemented();
+		} // from_type CHAR
+
+		else if (strmatch(from_type, 4, "BYTE"))
+		{
+			if (strmatch(to_class, 6, "STRING") && m_nrhs==10)
+			{
+				INT order=get_int_from_int_or_str();
+				INT start=get_int_from_int_or_str();
+				INT gap=get_int_from_int_or_str();
+				CHAR* rev=get_str_from_str_or_direct(len);
+
+				if (strmatch(to_type, 4, "WORD"))
+				{
+					result=gui->guifeatures.convert_string_char_to_string_generic<BYTE,WORD>(
+						(CStringFeatures<BYTE>*) features, order, start,
+						gap, rev[0]);
+				}
+				else if (strmatch(to_type, 5, "ULONG"))
+				{
+					result=gui->guifeatures.convert_string_char_to_string_generic<BYTE,ULONG>(
+						(CStringFeatures<BYTE>*) features, order, start,
+						gap, rev[0]);
+				}
+				else
+					io.not_implemented();
+
+				delete[] rev;
+			}
+#ifdef HAVE_MINDY
+			else if (strmatch(to_class, 9, "MINDYGRAM") &&
+				strmatch(to_type, 5, "ULONG") &&
+				m_nrhs==11)
+			{
+				CHAR* alph=get_str_from_str_or_direct(len);
+				CHAR* embed=get_str_from_str_or_direct(len);
+				INT nlen=get_int_from_int_or_str(len);
+				CHAR* delim=get_str_from_str_or_direct(len);
+				DREAL maxv=get_real_from_real_or_str(len);
+
+				result=gui->guifeatures.convert_string_char_to_mindy_grams<BYTE>(
+					(CStringFeatures<BYTE>*) features, alph, embed,
+					nlen, delim, maxv);
+
+				delete[] alph;
+				delete[] embed;
+				delete[] delim;
+			}
+#endif
+			else
+				io.not_implemented();
+		} // from_type BYTE
+
+		else if (strmatch(from_type, 4, "WORD"))
+		{
+			if (strmatch(to_class, 6, "SIMPLE") &&
+				strmatch(to_type, 3, "TOP"))
+			{
+				result=gui->guifeatures.convert_string_word_to_simple_top(
+					(CStringFeatures<WORD>*) features);
+			}
+			else 
+				io.not_implemented();
+		} // from_type WORD
+
+		else if (strmatch(to_class, 6, "SIMPLE") &&
+			strmatch(to_type, 2, "FK"))
+		{
+			result=gui->guifeatures.convert_string_word_to_simple_fk(
+				(CStringFeatures<WORD>*) features);
+		} // to_type FK
+
+		else
+			io.not_implemented();
+
+	} // from_class STRING
+
+	if (result && gui->guifeatures.set_convert_features(result, target))
+		SG_INFO("Conversion was successful.\n");
+	else
+		SG_ERROR("Conversion failed.\n");
+
+	delete[] target;
+	delete[] from_class;
+	delete[] from_type;
+	delete[] to_class;
+	delete[] to_type;
+	return (result!=NULL);
 }
 
 bool CSGInterface::cmd_obtain_from_position_list()
@@ -1300,12 +1595,35 @@ bool CSGInterface::cmd_obtain_from_position_list()
 
 bool CSGInterface::cmd_obtain_by_sliding_window()
 {
-	return send_command(N_SLIDE_WINDOW);
+	if (m_nrhs<5 || !create_return_values(0))
+		return false;
+
+	INT len=0;
+	CHAR* target=get_str_from_str_or_direct(len);
+	INT winsize=get_int_from_int_or_str();
+	INT shift=get_int_from_int_or_str();
+	INT skip=get_int_from_int_or_str();
+
+	bool success=gui->guifeatures.obtain_by_sliding_window(target, winsize, shift, skip);
+
+	delete[] target;
+	return success;
 }
 
 bool CSGInterface::cmd_reshape()
 {
-	return send_command(N_RESHAPE);
+	if (m_nrhs<4 || !create_return_values(0))
+		return false;
+
+	INT len=0;
+	CHAR* target=get_str_from_str_or_direct(len);
+	INT num_feat=get_int_from_int_or_str();
+	INT num_vec=get_int_from_int_or_str();
+
+	bool success=gui->guifeatures.reshape(target, num_feat, num_vec);
+
+	delete[] target;
+	return success;
 }
 
 bool CSGInterface::cmd_load_labels()
@@ -1393,7 +1711,7 @@ bool CSGInterface::cmd_get_labels()
 
 bool CSGInterface::cmd_set_kernel()
 {
-	if (m_nrhs<3 || !create_return_values(0))
+	if (m_nrhs<2 || !create_return_values(0))
 		return false;
 
 	CKernel* kernel=create_kernel();
@@ -1402,7 +1720,7 @@ bool CSGInterface::cmd_set_kernel()
 
 bool CSGInterface::cmd_add_kernel()
 {
-	if (m_nrhs<4 || !create_return_values(0))
+	if (m_nrhs<3 || !create_return_values(0))
 		return false;
 
 	DREAL weight=get_real_from_real_or_str();
@@ -1419,6 +1737,8 @@ CKernel* CSGInterface::create_kernel()
 
 	if (strmatch(type, 8, "COMBINED"))
 	{
+		if (m_nrhs<3) return false;
+
 		INT size=get_int_from_int_or_str();
 		bool append_subkernel_weights=get_bool_from_bool_or_str();
 
@@ -1426,6 +1746,8 @@ CKernel* CSGInterface::create_kernel()
 	}
 	else if (strmatch(type, 8, "DISTANCE"))
 	{
+		if (m_nrhs<4) return false;
+
 		INT size=get_int_from_int_or_str();
 		DREAL width=get_real_from_real_or_str();
 
@@ -1433,6 +1755,8 @@ CKernel* CSGInterface::create_kernel()
 	}
 	else if (strmatch(type, 6, "LINEAR"))
 	{
+		if (m_nrhs<4) return false;
+
 		CHAR* dtype=get_str_from_str_or_direct(len);
 		INT size=get_int_from_int_or_str();
 		DREAL scale=get_real_from_real_or_str();
@@ -1452,6 +1776,8 @@ CKernel* CSGInterface::create_kernel()
 	}
 	else if (strmatch(type, 9, "HISTOGRAM"))
 	{
+		if (m_nrhs<4) return false;
+
 		CHAR* dtype=get_str_from_str_or_direct(len);
 		if (strmatch(dtype, 4, "WORD"))
 		{
@@ -1463,6 +1789,8 @@ CKernel* CSGInterface::create_kernel()
 	}
 	else if (strmatch(type, 8, "SALZBERG"))
 	{
+		if (m_nrhs<4) return false;
+
 		CHAR* dtype=get_str_from_str_or_direct(len);
 		if (strmatch(dtype, 4, "WORD"))
 		{
@@ -1474,6 +1802,8 @@ CKernel* CSGInterface::create_kernel()
 	}
 	else if (strmatch(type, 9, "POLYMATCH"))
 	{
+		if (m_nrhs<4) return false;
+
 		CHAR* dtype=get_str_from_str_or_direct(len);
 		INT size=get_int_from_int_or_str();
 		INT degree=get_int_from_int_or_str();
@@ -1495,6 +1825,8 @@ CKernel* CSGInterface::create_kernel()
 	}
 	else if (strmatch(type, 5, "MATCH"))
 	{
+		if (m_nrhs<5) return false;
+
 		CHAR* dtype=get_str_from_str_or_direct(len);
 		if (strmatch(dtype, 4, "WORD"))
 		{
@@ -1508,6 +1840,8 @@ CKernel* CSGInterface::create_kernel()
 	}
 	else if (strmatch(type, 18, "WEIGHTEDCOMMSTRING") || strmatch(type, 10, "COMMSTRING"))
 	{
+		if (m_nrhs<6) return false;
+
 		CHAR* dtype=get_str_from_str_or_direct(len);
 		INT size=get_int_from_int_or_str();
 		bool use_sign=get_bool_from_bool_or_str();
@@ -1538,6 +1872,8 @@ CKernel* CSGInterface::create_kernel()
 	}
 	else if (strmatch(type, 4, "CHI2"))
 	{
+		if (m_nrhs<5) return false;
+
 		CHAR* dtype=get_str_from_str_or_direct(len);
 		if (strmatch(dtype, 4, "REAL"))
 		{
@@ -1551,6 +1887,8 @@ CKernel* CSGInterface::create_kernel()
 	}
 	else if (strmatch(type, 11, "FIXEDDEGREE"))
 	{
+		if (m_nrhs<5) return false;
+
 		CHAR* dtype=get_str_from_str_or_direct(len);
 		if (strmatch(dtype, 4, "CHAR"))
 		{
@@ -1562,6 +1900,8 @@ CKernel* CSGInterface::create_kernel()
 	}
 	else if (strmatch(type, 14, "LOCALALIGNMENT"))
 	{
+		if (m_nrhs<4) return false;
+
 		CHAR* dtype=get_str_from_str_or_direct(len);
 		if (strmatch(dtype, 4, "CHAR"))
 		{
@@ -1574,6 +1914,8 @@ CKernel* CSGInterface::create_kernel()
 	}
 	else if (strmatch(type, 18, "WEIGHTEDDEGREEPOS2"))
 	{
+		if (m_nrhs<5) return false;
+
 		CHAR* dtype=get_str_from_str_or_direct(len);
 		if (strmatch(dtype, 4, "CHAR") || strmatch(dtype, 6, "STRING"))
 		{
@@ -1603,6 +1945,8 @@ CKernel* CSGInterface::create_kernel()
 	}
 	else if (strmatch(type, 18, "WEIGHTEDDEGREEPOS3"))
 	{
+		if (m_nrhs<5) return false;
+
 		CHAR* dtype=get_str_from_str_or_direct(len);
 		if (strmatch(dtype, 4, "CHAR") || strmatch(dtype, 6, "STRING"))
 		{
@@ -1637,6 +1981,8 @@ CKernel* CSGInterface::create_kernel()
 	}
 	else if (strmatch(type, 17, "WEIGHTEDDEGREEPOS"))
 	{
+		if (m_nrhs<5) return false;
+
 		CHAR* dtype=get_str_from_str_or_direct(len);
 		if (strmatch(dtype, 4, "CHAR") || strmatch(dtype, 6, "STRING"))
 		{
@@ -1655,6 +2001,8 @@ CKernel* CSGInterface::create_kernel()
 	}
 	else if (strmatch(type, 14, "WEIGHTEDDEGREE"))
 	{
+		if (m_nrhs<5) return false;
+
 		CHAR* dtype=get_str_from_str_or_direct(len);
 		if (strmatch(dtype, 4, "CHAR") || strmatch(dtype, 6, "STRING"))
 		{
@@ -1675,6 +2023,8 @@ CKernel* CSGInterface::create_kernel()
 	}
 	else if (strmatch(type, 4, "SLIK") || strmatch(type, 3, "LIK"))
 	{
+		if (m_nrhs<7) return false;
+
 		CHAR* dtype=get_str_from_str_or_direct(len);
 		if (strmatch(dtype, 4, "CHAR"))
 		{
@@ -1701,6 +2051,8 @@ CKernel* CSGInterface::create_kernel()
 	}
 	else if (strmatch(type, 4, "POLY"))
 	{
+		if (m_nrhs<7) return false;
+
 		CHAR* dtype=get_str_from_str_or_direct(len);
 		INT size=get_int_from_int_or_str();
 		bool inhomogene=get_bool_from_bool_or_str();
@@ -1722,6 +2074,8 @@ CKernel* CSGInterface::create_kernel()
 	}
 	else if (strmatch(type, 7, "SIGMOID"))
 	{
+		if (m_nrhs<6) return false;
+
 		CHAR* dtype=get_str_from_str_or_direct(len);
 		if (strmatch(dtype, 4, "REAL"))
 		{
@@ -1736,6 +2090,8 @@ CKernel* CSGInterface::create_kernel()
 	}
 	else if (strmatch(type, 8, "GAUSSIAN")) // RBF
 	{
+		if (m_nrhs<5) return false;
+
 		CHAR* dtype=get_str_from_str_or_direct(len);
 		INT size=get_int_from_int_or_str();
 		DREAL width=get_real_from_real_or_str();
@@ -1749,6 +2105,8 @@ CKernel* CSGInterface::create_kernel()
 	}
 	else if (strmatch(type, 13, "GAUSSIANSHIFT")) // RBF
 	{
+		if (m_nrhs<7) return false;
+
 		CHAR* dtype=get_str_from_str_or_direct(len);
 		if (strmatch(dtype, 4, "REAL"))
 		{
@@ -1769,6 +2127,8 @@ CKernel* CSGInterface::create_kernel()
 	}
 	else if (strmatch(type, 5, "CONST"))
 	{
+		if (m_nrhs<4) return false;
+
 		INT size=get_int_from_int_or_str();
 		DREAL c=get_real_from_real_or_str();
 
@@ -1776,6 +2136,8 @@ CKernel* CSGInterface::create_kernel()
 	}
 	else if (strmatch(type, 4, "DIAG"))
 	{
+		if (m_nrhs<4) return false;
+
 		INT size=get_int_from_int_or_str();
 		DREAL diag=get_real_from_real_or_str();
 
@@ -1785,6 +2147,8 @@ CKernel* CSGInterface::create_kernel()
 #ifdef HAVE_MINDY
 	else if (strmatch(type, 9, "MINDYGRAM"))
 	{
+		if (m_nrhs<7) return false;
+
 		INT size=get_int_from_int_or_str();
 		CHAR* meas_str=get_str_from_str_or_direct(len);
 		CHAR* norm_str=get_str_from_str_or_direct(len);
@@ -1800,6 +2164,7 @@ CKernel* CSGInterface::create_kernel()
 		io.not_implemented();
 
 	delete[] type;
+	SG_DEBUG("created kernel: %p\n", kernel);
 	return kernel;
 }
 
@@ -4079,7 +4444,13 @@ bool CSGInterface::cmd_send_command()
 	m_legacy_strptr=arg;
 
 	if (!strmatch(arg, strlen(N_SET_KERNEL), N_SET_KERNEL) &&
-		!strmatch(arg, strlen(N_ADD_KERNEL), N_ADD_KERNEL))
+		!strmatch(arg, strlen(N_ADD_KERNEL), N_ADD_KERNEL) &&
+		!strmatch(arg, strlen(N_SLIDE_WINDOW), N_SLIDE_WINDOW) &&
+		!strmatch(arg, strlen(N_RESHAPE), N_RESHAPE) &&
+		!strmatch(arg, strlen(N_LOAD_FEATURES), N_LOAD_FEATURES) &&
+		!strmatch(arg, strlen(N_SAVE_FEATURES), N_SAVE_FEATURES) &&
+		!strmatch(arg, strlen(N_CLEAN_FEATURES), N_CLEAN_FEATURES) &&
+		!strmatch(arg, strlen(N_CONVERT), N_CONVERT))
 	{
 		SG_DEBUG("invoking old TextGUI...\n");
 		return gui->parse_line(arg);

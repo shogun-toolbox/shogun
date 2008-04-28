@@ -263,31 +263,31 @@ bool CTextGUI::parse_line(CHAR* p_input)
 	} 
 	else if (!strncmp(p_input, N_LOAD_FEATURES, strlen(N_LOAD_FEATURES)))
 	{
-		guifeatures.load(p_input+strlen(N_LOAD_FEATURES));
+		//guifeatures.load(p_input+strlen(N_LOAD_FEATURES));
 	} 
 	else if (!strncmp(p_input, N_SAVE_FEATURES, strlen(N_SAVE_FEATURES)))
 	{
-		guifeatures.save(p_input+strlen(N_SAVE_FEATURES));
+		//guifeatures.save(p_input+strlen(N_SAVE_FEATURES));
 	} 
 	else if (!strncmp(p_input, N_CLEAN_FEATURES, strlen(N_CLEAN_FEATURES)))
 	{
-		guifeatures.clean(p_input+strlen(N_CLEAN_FEATURES));
+		//guifeatures.clean(p_input+strlen(N_CLEAN_FEATURES));
 	} 
 	else if (!strncmp(p_input, N_SLIDE_WINDOW, strlen(N_SLIDE_WINDOW)))
 	{
-		guifeatures.slide_window(p_input+strlen(N_SLIDE_WINDOW));
+		//guifeatures.slide_window(p_input+strlen(N_SLIDE_WINDOW));
 	} 
 	else if (!strncmp(p_input, N_RESHAPE, strlen(N_RESHAPE)))
 	{
-		guifeatures.reshape(p_input+strlen(N_RESHAPE));
+		//guifeatures.reshape(p_input+strlen(N_RESHAPE));
 	} 
 	else if (!strncmp(p_input, N_SET_REF_FEAT, strlen(N_SET_REF_FEAT)))
 	{
-		guifeatures.set_ref_features(p_input+strlen(N_SET_REF_FEAT));
+		//guifeatures.set_ref_features(p_input+strlen(N_SET_REF_FEAT));
 	} 
 	else if (!strncmp(p_input, N_CONVERT, strlen(N_CONVERT)))
 	{
-		guifeatures.convert(p_input+strlen(N_CONVERT));
+		//guifeatures.convert(p_input+strlen(N_CONVERT));
 	} 
 	else if (!strncmp(p_input, N_LOAD_SVM, strlen(N_LOAD_SVM)))
 	{

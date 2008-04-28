@@ -48,127 +48,109 @@ class CGUIFeatures : public CSGObject
 		inline CFeatures *get_train_features() { return train_features; }
 		inline CFeatures *get_test_features() { return test_features; }
 
-		inline bool set_train_features(CFeatures* f) 
+		inline bool set_train_features(CFeatures* f)
 		{ 
 			invalidate_train();
-			delete train_features; 
-			train_features=f; 
+			delete train_features;
+			train_features=f;
 			return true;
 		}
 
-		inline bool set_test_features(CFeatures* f) 
+		inline bool set_test_features(CFeatures* f)
 		{ 
 			invalidate_test();
-			delete test_features; 
-			test_features=f; 
+			delete test_features;
+			test_features=f;
 			return true;
 		}
 
 		void add_train_features(CFeatures* f);
 		void add_test_features(CFeatures* f);
 
-		void invalidate_train() ;
-		void invalidate_test() ;
-		
+		void invalidate_train();
+		void invalidate_test();
 
-		bool load(CHAR* param);
-		bool save(CHAR* param);
-		bool clean(CHAR* param);
-		bool slide_window(CHAR* param);
+		/** load features from file */
+		bool load(CHAR* filename, CHAR* fclass, CHAR* type,
+			CHAR* target, INT size, INT comp_features);
+		/** save features to file */
+		bool save(CHAR* filename, CHAR* type, CHAR* target);
+		/** clean/r features */
+		bool clean(CHAR* target);
+		/** obtain feature buy sliding window */
+		bool obtain_by_sliding_window(CHAR* target, INT winsize, INT shift, INT skip);
+		/** reshape target feature matrix */
+		bool reshape(CHAR* target, INT num_feat, INT num_vec);
 
-		bool reshape(CHAR* param);
+		/** get features for target to convert */
+		CFeatures* get_convert_features(CHAR* target);
+		/** set convert(ed) features for target */
+		bool set_convert_features(CFeatures* features, CHAR* target);
 
-		bool convert(CHAR* param);
+		/* convert features from one class/type to another */
+		CSparseFeatures<DREAL>* convert_simple_real_to_sparse_real(CRealFeatures* src);
+		CStringFeatures<CHAR>* convert_simple_char_to_string_char(CCharFeatures* src);
+		CWordFeatures* convert_simple_char_to_simple_word(
+			CCharFeatures* src, INT order=1, INT start=0, INT gap=0);
+		CShortFeatures* convert_simple_char_to_simple_short(CCharFeatures* src, INT order=1, INT start=0, INT gap=0);
+		CRealFeatures* convert_simple_char_to_simple_align(CCharFeatures* src, DREAL gap_cost=0);
+		CRealFeatures* convert_simple_word_to_simple_salzberg(CWordFeatures* src);
 
-		CSparseFeatures<DREAL>* convert_simple_real_to_sparse_real(CRealFeatures* src, CHAR* param);
-		CStringFeatures<CHAR>* convert_simple_char_to_string_char(CCharFeatures* src, CHAR* param);
-		CWordFeatures* convert_simple_char_to_simple_word(CCharFeatures* src, CHAR* param);
-		CShortFeatures* convert_simple_char_to_simple_short(CCharFeatures* src, CHAR* param);
-		CRealFeatures* convert_simple_char_to_simple_align(CCharFeatures* src,CHAR* param);
-		CRealFeatures* convert_simple_word_to_simple_salzberg(CWordFeatures* src, CHAR* param);
+		CStringFeatures<WORD>* convert_string_char_to_string_word(CStringFeatures<CHAR>* src);
+		CStringFeatures<ULONG>* convert_string_char_to_string_ulong(CStringFeatures<CHAR>* src);
+		CTOPFeatures* convert_string_word_to_simple_top(CStringFeatures<WORD>* src);
+		CFKFeatures* convert_string_word_to_simple_fk(CStringFeatures<WORD>* src);
 
-		CStringFeatures<WORD>* convert_string_char_to_string_word(CStringFeatures<CHAR>* src, CHAR* param);
-		CStringFeatures<ULONG>* convert_string_char_to_string_ulong(CStringFeatures<CHAR>* src, CHAR* param);
-		CStringFeatures<WORD>* convert_string_byte_to_string_word(CStringFeatures<BYTE>* src, CHAR* param);
-		CStringFeatures<ULONG>* convert_string_byte_to_string_ulong(CStringFeatures<BYTE>* src, CHAR* param);
-		CTOPFeatures* convert_string_word_to_simple_top(CStringFeatures<WORD>* src, CHAR* param);
-		CFKFeatures* convert_string_word_to_simple_fk(CStringFeatures<WORD>* src, CHAR* param);
+		CRealFeatures* convert_sparse_real_to_simple_real(CSparseFeatures<DREAL>* src);
 
-		CRealFeatures* convert_sparse_real_to_simple_real(CSparseFeatures<DREAL>* src, CHAR* param);
-
-
-		template <class CT, class ST> 
-		CStringFeatures<ST>* convert_string_char_to_string_generic(CStringFeatures<CT>* src, CHAR* param)
+		template <class CT, class ST>
+		CStringFeatures<ST>* convert_string_char_to_string_generic(CStringFeatures<CT>* src, INT order=1, INT start=0, INT gap=0, CHAR rev='f')
 		{
-			CHAR target[1024]="";
-			CHAR from_class[1024]="";
-			CHAR from_type[1024]="";
-			CHAR to_class[1024]="";
-			CHAR to_type[1024]="";
-			INT order=1;
-			INT start=0;
-			CHAR rev='f';
-			INT gap = 0 ;
-
-			param=io.skip_spaces(param);
-
-			if ((sscanf(param, "%s %s %s %s %s %d %d %d %c", target, from_class, from_type, to_class, to_type, &order, &start, &gap, &rev))<6)
-			{
-				SG_ERROR( "see help for params (target, from_class, from_type, to_class, to_type, order, start, gap, reversed)\n");
-				return NULL;
-			}
-
-			if ( (src) && ( (src->get_feature_class()) == C_STRING) )
+			if (src && src->get_feature_class()==C_STRING)
 			{
 				//create dense features with 0 cache
-				SG_INFO( "converting CT STRING features to ST STRING ones (order=%i)\n",order);
+				SG_INFO("Converting CT STRING features to ST STRING ones (order=%i).\n",order);
 
 				CStringFeatures<ST>* sf=new CStringFeatures<ST>(new CAlphabet(src->get_alphabet()));
 				if (sf && sf->obtain_from_char_features(src, start, order, gap, rev=='r'))
 				{
-					SG_INFO( "conversion successful\n");
+					SG_INFO("Conversion was successful.\n");
 					return sf;
 				}
 
 				delete sf;
 			}
 			else
-				SG_ERROR( "no features of class/type STRING/CT available\n");
+				SG_ERROR("No features of class/type STRING/CT available.\n");
 
 			return NULL;
 		}
 
 #ifdef HAVE_MINDY
-
 		template <class CT>
-		CMindyGramFeatures* convert_string_char_to_mindy_grams(CStringFeatures<CT> *src, CHAR* param)
+		CMindyGramFeatures* convert_string_char_to_mindy_grams(
+			CStringFeatures<CT> *src, CHAR* alph, CHAR* embed,
+			INT nlen, CHAR* delim, DREAL maxv)
 		{
-			CHAR alph[256]="", embed[256]="", delim[256]="%20";
-			INT nlen = 0;
-			float maxv;
-
-			if (!src || !param) {
-				SG_ERROR( "invalid arguments: \"%s\"\n",param);
+			if (!src || !aplh || !embed || !delim) {
+				SG_ERROR("Invalid arguments.\n");
 				return NULL;
 			}
 
-			if (sscanf(param, "%*s %*s %*s %*s %*s %255s %255s %d %255s %f", 
-						alph, embed, &nlen, delim, &maxv) < 5) {
-				SG_ERROR( "too few arguments\n");
-				return NULL;
-			}
+			SG_INFO("Converting string to Mindy features "
+					"(a: %s, e: %s, n: %d, d: '%s', m: %f)\n",
+					alph, embed, nlen, delim, maxv);
 
-			SG_INFO( "Converting string to Mindy features "
-					"(a: %s, e: %s, n: %d, d: '%s', m: %f)\n", alph, embed, nlen, delim, maxv);                
-
-			CMindyGramFeatures* mgf = new CMindyGramFeatures(alph, embed, delim, nlen);
+			CMindyGramFeatures* mgf=new CMindyGramFeatures(
+				alph, embed, delim, nlen);
 			mgf->import_features(src);
 			mgf->trim_max(maxv);
 			return mgf;
 		}
 #endif
 
-		bool set_ref_features(CHAR* param) ;
+		/** set reference features from target */
+		bool set_reference_features(CHAR* target);
 
 	protected:
 		CGUI* gui;
