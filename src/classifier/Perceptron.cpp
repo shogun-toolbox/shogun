@@ -53,6 +53,7 @@ bool CPerceptron::train()
 		w[i]=1.0/num_feat;
 
 	//loop till we either get everything classified right or reach max_iter
+
 	while (!converged && iter<max_iter)
 	{
 		converged=true;
@@ -78,6 +79,7 @@ bool CPerceptron::train()
 
 		iter++;
 	}
+
 	if (converged)
 		SG_INFO( "perceptron algorithm converged after %d iterations\n", iter);
 	else
@@ -86,5 +88,5 @@ bool CPerceptron::train()
 	delete[] output;
 	delete[] train_labels;
 
-	return false;
+	return converged;
 }
