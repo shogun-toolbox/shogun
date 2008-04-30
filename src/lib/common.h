@@ -234,6 +234,17 @@ enum ERegressionType
 	RT_LIBSVM = 20
 };
 
+enum EPreProcType
+{
+	P_UNKNOWN=0,
+	P_NORMONE=10,
+	P_LOGPLUSONE=20,
+	P_SORTWORDSTRING=30,
+	P_SORTULONGSTRING=40,
+	P_SORTWORD=50,
+	P_PRUNEVARSUBMEAN=60
+};
+
 enum EKernelProperty
 {
 	KP_NONE = 0,
