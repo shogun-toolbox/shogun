@@ -15,7 +15,6 @@ dist <- 2
 # Explicit examples on how to use the different classifiers
 
 acgt <- c('A', 'C', 'G', 'T')
-trainlab <- c(rep(1,num/2),rep(-1,num/2))
 traindata_dna <- list()
 testdata_dna <- list()
 for (i in 1:num)
