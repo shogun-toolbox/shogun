@@ -74,7 +74,6 @@ TYPEMAP_IN1(REALSXP, REAL, DREAL, "Double Precision")
 {
 
     $1 = (TYPEOF($input) == r_type) ? 1 : 0;
-    printf("typecheck IN2 %d\n", $1);
 }
 
 %typemap(in) (sg_type* IN_ARRAY2, INT DIM1, INT DIM2)
@@ -179,3 +178,52 @@ TYPEMAP_ARGOUT2(REALSXP, REAL, SHORTREAL, float, "Single Precision")
 TYPEMAP_ARGOUT2(REALSXP, REAL, DREAL, double, "Double Precision")
 TYPEMAP_ARGOUT2(INTSXP, INTEGER, WORD, int, "Word")
 #undef TYPEMAP_ARGOUT2
+
+/* input typemap for CStringFeatures<CHAR> etc */
+%define GET_STRINGLIST(r_type, sg_type, if_type, error_string)
+%typemap(in) (T_STRING<sg_type>* strings, INT num_strings, INT max_len)
+{
+    INT max_len=0;
+    INT num_strings=0;
+    T_STRING<sg_type>* strs=NULL;
+
+    if ($input == R_NilValue || TYPEOF($input) != STRSXP)
+    {
+        /* SG_ERROR("Expected String List as argument %d\n", m_rhs_counter);*/
+        SWIG_fail;
+    }
+
+    num_strings=Rf_length($input);
+    ASSERT(num_strings>=1);
+    strs=new T_STRING<sg_type>[num_strings];
+
+    for (int i=0; i<num_strings; i++)
+    {
+        SEXPREC* s= STRING_ELT($input,i);
+        sg_type* c= (sg_type*) if_type(s);
+        int len=LENGTH(s);
+
+        if (len>0) 
+        { 
+			sg_type* dst=new sg_type[len+1];
+            /*ASSERT(strs[i].string);*/
+			strs[i].string=(sg_type*) memcpy(dst, c, len*sizeof(sg_type));
+            strs[i].string[len]='\0'; /* zero terminate */
+            strs[i].length=len;
+            max_len=CMath::max(max_len, len);
+        }
+        else
+        {
+            /*SG_WARNING( "string with index %d has zero length.\n", i+1);*/
+            strs[i].length=0;
+            strs[i].string=NULL;
+        }
+    }
+    $1 = strs;
+    $2 = num_strings;
+    $3 = max_len;
+}
+%enddef
+
+GET_STRINGLIST(STRSXP, CHAR, CHAR, "Char")
+#undef GET_STRINGLIST

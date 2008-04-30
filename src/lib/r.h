@@ -13,6 +13,7 @@ extern "C" {
 #include <Rembedded.h>
 #include <Rinterface.h>
 #include <R_ext/RS.h>
+#include <R_ext/Error.h>
 }
 
 #endif //__R_H__

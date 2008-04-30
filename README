@@ -1,10 +1,10 @@
 Explanation of directory content
 ================================
 
-README - this file
+README   - this file
 Makefile - to create release archives
-src - shogun source code
-doc - documentation (to be build using doxygen)
+src      - shogun source code
+doc      - documentation (to be build using doxygen)
 
 testsuite - the shogun test suite
 
@@ -12,13 +12,18 @@ testsuite - the shogun test suite
 The following directories contain interfaces to matlab, octave, python and R for
 the static interfaces and for octave, python and R for the modular interfaces:
 
-matlab_and_octave
-python
-r
-
-python-modular - quite mature
-octave-modular - beta quality
-r-modular - highly experimental
-libshogun - currently experimental
++==================+===========================================================+
+|    interface     |     status                                                |
++==================+===========================================================+
+|matlab_and_octave | mature (no known problems)                                |
+|python            | mature (no known problems)                                |
+|r                 | mature (no known problems)                                |
++------------------+-----------------------------------------------------------+
+|python-modular    | mature (no known problems)                                |
+|octave-modular    | quite mature (no known problems but very new)             |
+|r-modular         | beta quality (leaking memory)                             |
+|libshogun         | currently experimental (no known problems, but interface  |
+|                  | subject to change)                                        |
++==================+===========================================================+
 
 Visit src/README for further information.

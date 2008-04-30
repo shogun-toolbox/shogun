@@ -15,7 +15,7 @@ num[10]=0;
 num[11]=0;
 num[12]=0;
 
-for (c in 1:10)
+for (c in 1:3)
 {
 	for (i in 1:6)
 		cube[[c]] <- c(cube[[c]], vector(mode='numeric',length=num[(c-1)*6+i])+i)

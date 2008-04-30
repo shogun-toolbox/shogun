@@ -1,5 +1,6 @@
 dyn.load('features/Features.so')
 dyn.load('distributions/Distribution.so')
+source('lib/Library.R')
 source('features/Features.R')
 source('distributions/Distribution.R')
 cacheMetaData(1)
@@ -12,25 +13,31 @@ weight=0.3
 # Explicit examples on how to use distributions
 
 # generate some random DNA =;-]
-acgt='ACGT'
+#acgt='ACGT'
+acgt <- c('A', 'C', 'G', 'T')
 trainlab_dna=c(rep(1,num/2),rep(-1,num/2))
-traindata_dna=matrix(acgt[ceiling(4*runif(leng*num))], leng, num)
-testdata_dna=matrix(acgt[ceiling(4*runif(leng*num))], leng, num)
+traindata_dna=list()
+testdata_dna=list()
+for (i in 1:num)
+{
+	traindata_dna[i]=paste(acgt[ceiling(4*runif(leng))], sep="", collapse="")
+	testdata_dna[i]=paste(acgt[ceiling(4*runif(leng))], sep="", collapse="")
+}
 
 cube <- list(NULL, NULL, NULL)
-num <- vector(mode='numeric',length=18)+100
-num[1] <- 0;
-num[2] <- 0;
-num[3] <- 0;
-num[10] <- 0;
-num[11] <- 0;
-num[12] <- 0;
+numrep <- vector(mode='numeric',length=18)+100
+numrep[1] <- 0;
+numrep[2] <- 0;
+numrep[3] <- 0;
+numrep[10] <- 0;
+numrep[11] <- 0;
+numrep[12] <- 0;
 
 for (c in 1:3)
 {
 	for (i in 1:6)
 	{
-		cube[[c]] <- c(cube[[c]], vector(mode='numeric',length=num[(c-1)*6+i])+i)
+		cube[[c]] <- c(cube[[c]], vector(mode='numeric',length=numrep[(c-1)*6+i])+i)
 	}
 	cube[[c]] <- sample(cube[[c]],300,replace=TRUE);
 }
@@ -45,17 +52,18 @@ cubesequence <- paste(cube, sep="", collapse="")
 # Histogram
 print('Histogram')
 
-order=3
-gap=0
-reverse=false
+order=as.integer(3)
+start=as.integer(order-1)
+gap=as.integer(0)
+reverse=FALSE
 
-charfeat=StringCharFeatures(DNA)
-charfeat$set_string_features(traindata_dna)
+charfeat=StringCharFeatures("DNA")
+charfeat$set_string_features(charfeat, traindata_dna)
 feats=StringWordFeatures(charfeat$get_alphabet())
-feats$obtain_from_char(charfeat, order-1, order, gap, reverse)
+feats$obtain_from_char(feats, charfeat, start, order, gap, reverse)
 preproc=SortWordString()
-preproc$init(feats)
-feats$add_preproc(preproc)
+preproc$init(preproc, feats)
+feats$add_preproc(feats, preproc)
 feats$apply_preproc()
 
 histo=Histogram(feats)
@@ -79,9 +87,9 @@ print('LinearHMM')
 
 order=3
 gap=0
-reverse=false
+reverse=FALSE
 
-charfeat=StringCharFeatures(DNA)
+charfeat=StringCharFeatures("DNA")
 charfeat$set_string_features(traindata_dna)
 feats=StringWordFeatures(charfeat$get_alphabet())
 feats$obtain_from_char(charfeat, order-1, order, gap, reverse)
@@ -114,10 +122,10 @@ M=6
 pseudo=1e-1
 order=1
 gap=0
-reverse=false
+reverse=FALSE
 num_examples=2
-charfeat=StringCharFeatures(CUBE)
-charfeat$set_string_features(cubesequence)
+charfeat=StringCharFeatures("CUBE")
+charfeat$set_string_features(charfeat, cubesequence)
 feats=StringWordFeatures(charfeat$get_alphabet())
 feats$obtain_from_char(charfeat, order-1, order, gap, reverse)
 preproc=SortWordString()
