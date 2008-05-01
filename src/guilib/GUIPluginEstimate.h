@@ -29,10 +29,13 @@ public:
 	CGUIPluginEstimate(CGUI* g);
 	~CGUIPluginEstimate();
 
-	bool new_estimator(CHAR* param);
-	bool train(CHAR* param);
+	/** create new estimator */
+	bool new_estimator(DREAL pos, DREAL neg);
+	/** train estimator */
+	bool train();
 	bool marginalized_train(CHAR* param);
-	bool test(CHAR* param);
+	/** test estimator */
+	bool test(CHAR* filename_out, CHAR* filename_roc);
 	bool load(CHAR* param);
 	bool save(CHAR* param);
 

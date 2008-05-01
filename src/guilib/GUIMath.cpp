@@ -19,12 +19,11 @@ CGUIMath::CGUIMath(CGUI* g) : CSGObject(), gui(g), threshold(0.0)
 {
 }
 
-void CGUIMath::set_threshold(CHAR* param)
+void CGUIMath::set_threshold(DREAL value)
 {
-	param=CIO::skip_spaces(param);
-	SG_INFO( "old threshold: %f", threshold);
-	sscanf(param,"%le", &threshold);
-	SG_INFO( " new threshold: %f\n", threshold);
+	SG_INFO("Old threshold: %f.\n", threshold);
+	threshold=value;
+	SG_INFO("New threshold: %f.\n", threshold);
 }
 
 void CGUIMath::evaluate_results(DREAL* output, INT* label, INT total, FILE* outputfile, FILE* rocfile)

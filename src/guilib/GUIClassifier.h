@@ -27,10 +27,11 @@ public:
 	~CGUIClassifier();
 
 	bool new_classifier(CHAR* param);
-	bool set_max_train_time(CHAR* param);
-	bool train(CHAR* param);
-	bool test(CHAR* param);
-	bool load(CHAR* param);
+	/** set maximum train time */
+	bool set_max_train_time(DREAL max);
+	bool test(CHAR* filename_out=NULL, CHAR* filename_roc=NULL);
+	/** load classifier from file */
+	bool load(CHAR* filename, CHAR* type);
 	bool save(CHAR* param);
 	CLabels* classify(CLabels* output=NULL);
 	CLabels* classify_kernelmachine(CLabels* output=NULL);
@@ -52,31 +53,38 @@ public:
 	bool get_clustering(DREAL* &weights, INT& rows, INT& cols,
 			DREAL*& bias, INT& brows, INT& bcols);
 
-	/// perceptron learnrate maxiter
-	bool set_perceptron_parameters(CHAR* param);
+	/// perceptron learnrate & maxiter
+	bool set_perceptron_parameters(DREAL lernrate, INT maxiter);
 
 	/// SVM functions
-	bool set_svm_C(CHAR* param);
-	bool set_svm_qpsize(CHAR* param);
-	bool set_svm_bufsize(CHAR* param);
-	bool set_svm_max_qpsize(CHAR* param);
-	bool set_svm_mkl_enabled(CHAR* param);
-	bool set_svm_shrinking_enabled(CHAR* param);
-	bool set_svm_one_class_nu(CHAR* param);
-	bool set_svm_batch_computation_enabled(CHAR* param);
-	bool set_do_auc_maximization(CHAR* param);
-	bool set_svm_linadd_enabled(CHAR* param);
-	bool set_svm_bias_enabled(CHAR* param);
-	bool set_svm_epsilon(CHAR* param);
-	bool set_svr_tube_epsilon(CHAR* param);
-	bool set_svm_mkl_parameters(CHAR* param) ;
-	bool set_svm_precompute_enabled(CHAR* param) ;
-	bool train_svm(CHAR* param);
-	bool train_knn(CHAR* param);
-	bool train_clustering(CHAR* param);
-	bool train_linear(CHAR* param);
-	bool train_sparse_linear(CHAR* param);
-	bool train_wdocas(CHAR* param);
+	bool set_svm_C(DREAL C1, DREAL C2);
+	bool set_svm_bufsize(INT bufsize);
+	bool set_svm_qpsize(INT qpsize);
+	bool set_svm_max_qpsize(INT max_qpsize);
+	bool set_svm_mkl_enabled(bool enabled);
+	bool set_svm_shrinking_enabled(bool enabled);
+	bool set_svm_one_class_nu(DREAL nu);
+	bool set_svm_batch_computation_enabled(bool enabled);
+	bool set_do_auc_maximization(bool do_auc);
+	bool set_svm_linadd_enabled(bool enabled);
+	bool set_svm_bias_enabled(bool enabled);
+	bool set_svm_epsilon(DREAL epsilon);
+	bool set_svr_tube_epsilon(DREAL tube_epsilon);
+	bool set_svm_mkl_parameters(DREAL weight_epsilon, DREAL C_mkl);
+	bool set_svm_precompute_enabled(INT precompute);
+
+	/** train SVM */
+	bool train_svm();
+	/** train K-nearest-neighbour */
+	bool train_knn(INT k=3);
+	/** train clustering */
+	bool train_clustering(INT k=3, INT max_iter=1000);
+	/** train linear classifier */
+	bool train_linear();
+	/** train sparse linear classifier */
+	bool train_sparse_linear();
+	/** train WD OCAS */
+	bool train_wdocas();
 
  protected:
 	CGUI* gui;

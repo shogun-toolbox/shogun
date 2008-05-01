@@ -215,7 +215,7 @@ bool CTextGUI::parse_line(CHAR* p_input)
 
 	if (!strncmp(p_input, N_NEW_HMM, strlen(N_NEW_HMM)))
 	{
-		guihmm.new_hmm(p_input+strlen(N_NEW_HMM));
+		//guihmm.new_hmm(p_input+strlen(N_NEW_HMM));
 	} 
 	else if (!strncmp(p_input, N_NEW_SVM, strlen(N_NEW_SVM)))
 	{
@@ -231,7 +231,7 @@ bool CTextGUI::parse_line(CHAR* p_input)
 	} 
 	else if (!strncmp(p_input, N_NEW_PLUGIN_ESTIMATOR, strlen(N_NEW_PLUGIN_ESTIMATOR)))
 	{
-		guipluginestimate.new_estimator(p_input+strlen(N_NEW_PLUGIN_ESTIMATOR));
+		//guipluginestimate.new_estimator(p_input+strlen(N_NEW_PLUGIN_ESTIMATOR));
 	} 
 	else if (!strncmp(p_input, N_TRAIN_KNN, strlen(N_TRAIN_KNN)))
 	{
@@ -243,23 +243,23 @@ bool CTextGUI::parse_line(CHAR* p_input)
 	} 
 	else if (!strncmp(p_input, N_TRAIN_ESTIMATOR, strlen(N_TRAIN_ESTIMATOR)))
 	{
-		guipluginestimate.train(p_input+strlen(N_TRAIN_ESTIMATOR));
+		//guipluginestimate.train(p_input+strlen(N_TRAIN_ESTIMATOR));
 	} 
 	else if (!strncmp(p_input, N_TEST_ESTIMATOR, strlen(N_TEST_ESTIMATOR)))
 	{
-		guipluginestimate.test(p_input+strlen(N_TEST_ESTIMATOR));
+		//guipluginestimate.test(p_input+strlen(N_TEST_ESTIMATOR));
 	} 
 	else if (!strncmp(p_input, N_LOAD_HMM, strlen(N_LOAD_HMM)))
 	{
-		guihmm.load(p_input+strlen(N_LOAD_HMM));
+		//guihmm.load(p_input+strlen(N_LOAD_HMM));
 	} 
 	else if (!strncmp(p_input, N_LOAD_PREPROC, strlen(N_LOAD_PREPROC)))
 	{
-		guipreproc.load(p_input+strlen(N_LOAD_PREPROC)) ;
+		//guipreproc.load(p_input+strlen(N_LOAD_PREPROC)) ;
 	} 
 	else if (!strncmp(p_input, N_LOAD_LABELS, strlen(N_LOAD_LABELS)))
 	{
-		guilabels.load(p_input+strlen(N_LOAD_LABELS));
+		//guilabels.load(p_input+strlen(N_LOAD_LABELS));
 	} 
 	else if (!strncmp(p_input, N_LOAD_FEATURES, strlen(N_LOAD_FEATURES)))
 	{
@@ -291,35 +291,35 @@ bool CTextGUI::parse_line(CHAR* p_input)
 	} 
 	else if (!strncmp(p_input, N_LOAD_SVM, strlen(N_LOAD_SVM)))
 	{
-		guiclassifier.load(p_input+strlen(N_LOAD_SVM));
+		//guiclassifier.load(p_input+strlen(N_LOAD_SVM));
 	} 
 	else if (!strncmp(p_input, N_DELETE_KERNEL_OPTIMIZATION, strlen(N_DELETE_KERNEL_OPTIMIZATION)))
 	{
-		guikernel.delete_kernel_optimization(p_input+strlen(N_DELETE_KERNEL_OPTIMIZATION));
+		//guikernel.delete_kernel_optimization(p_input+strlen(N_DELETE_KERNEL_OPTIMIZATION));
 	} 
 	else if (!strncmp(p_input, N_INIT_KERNEL_OPTIMIZATION, strlen(N_INIT_KERNEL_OPTIMIZATION)))
 	{
-		guikernel.init_kernel_optimization(p_input+strlen(N_INIT_KERNEL_OPTIMIZATION));
+		//guikernel.init_kernel_optimization(p_input+strlen(N_INIT_KERNEL_OPTIMIZATION));
 	} 
 	else if (!strncmp(p_input, N_INIT_KERNEL, strlen(N_INIT_KERNEL)))
 	{
-		guikernel.init_kernel(p_input+strlen(N_INIT_KERNEL));
+		//guikernel.init_kernel(p_input+strlen(N_INIT_KERNEL));
 	}
 	else if (!strncmp(p_input, N_INIT_DISTANCE, strlen(N_INIT_DISTANCE)))
 	{
-		guidistance.init_distance(p_input+strlen(N_INIT_DISTANCE));
+		//guidistance.init_distance(p_input+strlen(N_INIT_DISTANCE));
 	} 
 	else if (!strncmp(p_input, N_LOAD_KERNEL_INIT, strlen(N_LOAD_KERNEL_INIT)))
 	{
-		guikernel.load_kernel_init(p_input+strlen(N_LOAD_KERNEL_INIT));
+		//guikernel.load_kernel_init(p_input+strlen(N_LOAD_KERNEL_INIT));
 	} 
 	else if (!strncmp(p_input, N_SET_HMM_AS, strlen(N_SET_HMM_AS)))
 	{
-		guihmm.set_hmm_as(p_input+strlen(N_SET_HMM_AS));
+		//guihmm.set_hmm_as(p_input+strlen(N_SET_HMM_AS));
 	}
 	else if (!strncmp(p_input, N_CHOP, strlen(N_CHOP)))
 	{
-		guihmm.chop(p_input+strlen(N_CHOP));
+		//guihmm.chop(p_input+strlen(N_CHOP));
 	} 
 	else if (!strncmp(p_input, N_SAVE_LIKELIHOOD, strlen(N_SAVE_LIKELIHOOD)))
 	{
@@ -327,15 +327,15 @@ bool CTextGUI::parse_line(CHAR* p_input)
 	}
 	else if (!strncmp(p_input, N_SAVE_PATH, strlen(N_SAVE_PATH)))
 	{
-		guihmm.save_path(p_input+strlen(N_SAVE_PATH));
+		//guihmm.save_path(p_input+strlen(N_SAVE_PATH));
 	}
 	else if (!strncmp(p_input, N_SAVE_HMM, strlen(N_SAVE_HMM)))
 	{
-		guihmm.save(p_input+strlen(N_SAVE_HMM)) ;
+		//guihmm.save(p_input+strlen(N_SAVE_HMM)) ;
 	} 
 	else if (!strncmp(p_input, N_SAVE_PREPROC, strlen(N_SAVE_PREPROC)))
 	{
-		guipreproc.save(p_input+strlen(N_SAVE_PREPROC)) ;
+		//guipreproc.save(p_input+strlen(N_SAVE_PREPROC)) ;
 	} 
 	else if (!strncmp(p_input, N_SAVE_SVM, strlen(N_SAVE_SVM)))
 	{
@@ -343,15 +343,15 @@ bool CTextGUI::parse_line(CHAR* p_input)
 	} 
 	else if (!strncmp(p_input, N_SAVE_KERNEL_INIT, strlen(N_SAVE_KERNEL_INIT)))
 	{
-		guikernel.save_kernel_init(p_input+strlen(N_SAVE_KERNEL_INIT)) ;
+		//guikernel.save_kernel_init(p_input+strlen(N_SAVE_KERNEL_INIT)) ;
 	} 
 	else if (!strncmp(p_input, N_LOAD_DEFINITIONS, strlen(N_LOAD_DEFINITIONS)))
 	{
-		guihmm.load_defs(p_input+strlen(N_LOAD_DEFINITIONS));
+		//guihmm.load_defs(p_input+strlen(N_LOAD_DEFINITIONS));
 	} 
 	else if (!strncmp(p_input, N_SAVE_KERNEL, strlen(N_SAVE_KERNEL)))
 	{
-		guikernel.save_kernel(p_input+strlen(N_SAVE_KERNEL));
+		//guikernel.save_kernel(p_input+strlen(N_SAVE_KERNEL));
 	} 
 	else if (!strncmp(p_input, N_CLEAR, strlen(N_CLEAR)))
 	{
@@ -362,23 +362,23 @@ bool CTextGUI::parse_line(CHAR* p_input)
 	} 
 	else if (!strncmp(p_input, N_PSEUDO, strlen(N_PSEUDO)))
 	{
-		guihmm.set_pseudo(p_input+strlen(N_PSEUDO));
+		//guihmm.set_pseudo(p_input+strlen(N_PSEUDO));
 	} 
 	else if (!strncmp(p_input, N_SET_THRESHOLD, strlen(N_SET_THRESHOLD)))
 	{
-		guimath.set_threshold(p_input+strlen(N_SET_THRESHOLD));
+		//guimath.set_threshold(p_input+strlen(N_SET_THRESHOLD));
 	} 
 	else if (!strncmp(p_input, N_CONVERGENCE_CRITERIA, strlen(N_CONVERGENCE_CRITERIA)))
 	{
-		guihmm.convergence_criteria(p_input+strlen(N_CONVERGENCE_CRITERIA)) ;
+		//guihmm.convergence_criteria(p_input+strlen(N_CONVERGENCE_CRITERIA)) ;
 	} 
 	else if (!strncmp(p_input, N_VITERBI_TRAIN_DEFINED, strlen(N_VITERBI_TRAIN_DEFINED)))
 	{
-		guihmm.viterbi_train_defined(p_input+strlen(N_VITERBI_TRAIN_DEFINED));
+		//guihmm.viterbi_train_defined(p_input+strlen(N_VITERBI_TRAIN_DEFINED));
 	} 
 	else if (!strncmp(p_input, N_VITERBI_TRAIN, strlen(N_VITERBI_TRAIN)))
 	{
-		guihmm.viterbi_train(p_input+strlen(N_VITERBI_TRAIN));
+		//guihmm.viterbi_train(p_input+strlen(N_VITERBI_TRAIN));
 	}
 	else if (!strncmp(p_input, N_BAUM_WELCH_TRAIN_DEFINED, strlen(N_BAUM_WELCH_TRAIN_DEFINED)))
 	{
@@ -386,27 +386,27 @@ bool CTextGUI::parse_line(CHAR* p_input)
 	} 
 	else if (!strncmp(p_input, N_BAUM_WELCH_TRANS_TRAIN, strlen(N_BAUM_WELCH_TRANS_TRAIN)))
 	{
-		guihmm.baum_welch_trans_train(p_input+strlen(N_BAUM_WELCH_TRANS_TRAIN));
+		//guihmm.baum_welch_trans_train(p_input+strlen(N_BAUM_WELCH_TRANS_TRAIN));
 	} 
 	else if (!strncmp(p_input, N_BAUM_WELCH_TRAIN, strlen(N_BAUM_WELCH_TRAIN)))
 	{
-		guihmm.baum_welch_train(p_input+strlen(N_BAUM_WELCH_TRAIN));
+		//guihmm.baum_welch_train(p_input+strlen(N_BAUM_WELCH_TRAIN));
 	} 
 	else if (!strncmp(p_input, N_BEST_PATH, strlen(N_BEST_PATH)))
 	{
-		guihmm.best_path(p_input+strlen(N_BEST_PATH));
+		//guihmm.best_path(p_input+strlen(N_BEST_PATH));
 	} 
 	else if (!strncmp(p_input, N_LIKELIHOOD, strlen(N_LIKELIHOOD)))
 	{
-		guihmm.likelihood(p_input+strlen(N_LIKELIHOOD));
+		//guihmm.likelihood(p_input+strlen(N_LIKELIHOOD));
 	} 
 	else if (!strncmp(p_input, N_OUTPUT_HMM_DEFINED, strlen(N_OUTPUT_HMM_DEFINED)))
 	{
-		guihmm.output_hmm_defined(p_input+strlen(N_OUTPUT_HMM_DEFINED));
+		//guihmm.output_hmm_defined(p_input+strlen(N_OUTPUT_HMM_DEFINED));
 	} 
 	else if (!strncmp(p_input, N_OUTPUT_HMM, strlen(N_OUTPUT_HMM)))
 	{
-		guihmm.output_hmm(p_input+strlen(N_OUTPUT_HMM));
+		//guihmm.output_hmm(p_input+strlen(N_OUTPUT_HMM));
 	} 
 	else if (!strncmp(p_input, N_SET_OUTPUT, strlen(N_SET_OUTPUT)))
 	{
@@ -465,36 +465,36 @@ bool CTextGUI::parse_line(CHAR* p_input)
 	} 
 	else if (!strncmp(p_input, N_LINEAR_TRAIN, strlen(N_LINEAR_TRAIN)))
 	{
-		guihmm.linear_train(p_input+strlen(N_LINEAR_TRAIN));
+		//guihmm.linear_train(p_input+strlen(N_LINEAR_TRAIN));
 	} 
 	else if (!strncmp(p_input, N_DO_AUC_MAXIMIZATION, strlen(N_DO_AUC_MAXIMIZATION)))
 	{
-		guiclassifier.set_do_auc_maximization(p_input+strlen(N_DO_AUC_MAXIMIZATION));
+		//guiclassifier.set_do_auc_maximization(p_input+strlen(N_DO_AUC_MAXIMIZATION));
 	} 
 	else if (!strncmp(p_input, N_TRAIN_CLASSIFIER, strlen(N_TRAIN_CLASSIFIER)))
 	{
-		guiclassifier.train(p_input+strlen(N_TRAIN_CLASSIFIER));
+		//guiclassifier.train(p_input+strlen(N_TRAIN_CLASSIFIER));
 	} 
 	else if (!strncmp(p_input, N_SET_PERCEPTRON_PARAMETERS, strlen(N_SET_PERCEPTRON_PARAMETERS)))
 	{
-		guiclassifier.set_perceptron_parameters(p_input+strlen(N_SET_PERCEPTRON_PARAMETERS));
+		//guiclassifier.set_perceptron_parameters(p_input+strlen(N_SET_PERCEPTRON_PARAMETERS));
 	} 
 	else if (!strncmp(p_input, N_SVM_TRAIN, strlen(N_SVM_TRAIN)))
 	{
-		guiclassifier.train(p_input+strlen(N_SVM_TRAIN));
+		//guiclassifier.train(p_input+strlen(N_SVM_TRAIN));
 	} 
 	else if (!strncmp(p_input, N_SET_KERNEL_OPTIMIZATION_TYPE, strlen(N_SET_KERNEL_OPTIMIZATION_TYPE)))
 	{
-		guikernel.set_optimization_type(p_input+strlen(N_SET_KERNEL_OPTIMIZATION_TYPE));
+		//guikernel.set_optimization_type(p_input+strlen(N_SET_KERNEL_OPTIMIZATION_TYPE));
 	} 
 	else if (!strncmp(p_input, N_SET_KERNEL, strlen(N_SET_KERNEL)))
 	{
 		//guikernel.set_kernel(p_input+strlen(N_SET_KERNEL));
-		guikernel.set_kernel(NULL);
+		//guikernel.set_kernel(NULL);
 	} 
 	else if (!strncmp(p_input, N_SET_DISTANCE, strlen(N_SET_DISTANCE)))
 	{
-		guidistance.set_distance(p_input+strlen(N_SET_DISTANCE));
+		//guidistance.set_distance(p_input+strlen(N_SET_DISTANCE));
 	}
 	else if (!strncmp(p_input, N_ADD_KERNEL, strlen(N_ADD_KERNEL)))
 	{
@@ -503,37 +503,37 @@ bool CTextGUI::parse_line(CHAR* p_input)
 	} 
 	else if (!strncmp(p_input, N_CLEAN_KERNEL, strlen(N_CLEAN_KERNEL)))
 	{
-		guikernel.clean_kernel(p_input+strlen(N_CLEAN_KERNEL));
+		//guikernel.clean_kernel(p_input+strlen(N_CLEAN_KERNEL));
 	} 
 #ifdef USE_SVMLIGHT
 	else if (!strncmp(p_input, N_RESIZE_KERNEL_CACHE, strlen(N_RESIZE_KERNEL_CACHE)))
 	{
-		guikernel.resize_kernel_cache(p_input+strlen(N_RESIZE_KERNEL_CACHE));
+		//guikernel.resize_kernel_cache(p_input+strlen(N_RESIZE_KERNEL_CACHE));
 	} 
 #endif //USE_SVMLIGHT
 	else if (!strncmp(p_input, N_DEL_PREPROC, strlen(N_DEL_PREPROC)))
 	{
-		guipreproc.del_preproc(p_input+strlen(N_DEL_PREPROC));
+		//guipreproc.del_preproc(p_input+strlen(N_DEL_PREPROC));
 	} 
 	else if (!strncmp(p_input, N_ADD_PREPROC, strlen(N_ADD_PREPROC)))
 	{
-		guipreproc.add_preproc(p_input+strlen(N_ADD_PREPROC));
+		//guipreproc.add_preproc(p_input+strlen(N_ADD_PREPROC));
 	} 
 	else if (!strncmp(p_input, N_ATTACH_PREPROC, strlen(N_ATTACH_PREPROC)))
 	{
-		guipreproc.attach_preproc(p_input+strlen(N_ATTACH_PREPROC));
+		//guipreproc.attach_preproc(p_input+strlen(N_ATTACH_PREPROC));
 	} 
 	else if (!strncmp(p_input, N_CLEAN_PREPROC, strlen(N_CLEAN_PREPROC)))
 	{
-		guipreproc.clean_preproc(p_input+strlen(N_CLEAN_PREPROC));
+		//guipreproc.clean_preproc(p_input+strlen(N_CLEAN_PREPROC));
 	} 
 	else if (!strncmp(p_input, N_SVM_TEST, strlen(N_SVM_TEST)))
 	{
-		guiclassifier.test(p_input+strlen(N_SVM_TEST));
+		//guiclassifier.test(p_input+strlen(N_SVM_TEST));
 	} 
 	else if (!strncmp(p_input, N_ONE_CLASS_HMM_TEST, strlen(N_ONE_CLASS_HMM_TEST)))
 	{
-		guihmm.one_class_test(p_input+strlen(N_ONE_CLASS_HMM_TEST));
+		//guihmm.one_class_test(p_input+strlen(N_ONE_CLASS_HMM_TEST));
 	} 
 	else if (!strncmp(p_input, N_HMM_CLASSIFY, strlen(N_HMM_CLASSIFY)))
 	{
@@ -541,11 +541,11 @@ bool CTextGUI::parse_line(CHAR* p_input)
 	}
 	else if (!strncmp(p_input, N_HMM_TEST, strlen(N_HMM_TEST)))
 	{
-		guihmm.hmm_test(p_input+strlen(N_HMM_TEST));
+		//guihmm.hmm_test(p_input+strlen(N_HMM_TEST));
 	}
 	else if (!strncmp(p_input, N_NORMALIZE, strlen(N_NORMALIZE)))
 	{
-		guihmm.normalize(p_input+strlen(N_NORMALIZE));
+		//guihmm.normalize(p_input+strlen(N_NORMALIZE));
 	} 
 	else if (!strncmp(p_input, N_RELATIVE_ENTROPY, strlen(N_RELATIVE_ENTROPY)))
 	{
@@ -557,7 +557,7 @@ bool CTextGUI::parse_line(CHAR* p_input)
 	} 
 	else if (!strncmp(p_input, N_PERMUTATION_ENTROPY, strlen(N_PERMUTATION_ENTROPY)))
 	{
-		guihmm.permutation_entropy(p_input+strlen(N_PERMUTATION_ENTROPY));
+		//guihmm.permutation_entropy(p_input+strlen(N_PERMUTATION_ENTROPY));
 	} 
 	else if (!strncmp(p_input, N_APPEND_HMM, strlen(N_APPEND_HMM)))
 	{
@@ -565,23 +565,23 @@ bool CTextGUI::parse_line(CHAR* p_input)
 	} 
 	else if (!strncmp(p_input, N_ADD_STATES, strlen(N_ADD_STATES)))
 	{
-		guihmm.add_states(p_input+strlen(N_ADD_STATES));
+		//guihmm.add_states(p_input+strlen(N_ADD_STATES));
 	} 
 	else if (!strncmp(p_input, N_C, strlen(N_C)))
 	{
-		guiclassifier.set_svm_C(p_input+strlen(N_C));
+		//guiclassifier.set_svm_C(p_input+strlen(N_C));
 	} 
 	else if (!strncmp(p_input, N_SVMQPSIZE, strlen(N_SVMQPSIZE)))
 	{
-		guiclassifier.set_svm_qpsize(p_input+strlen(N_SVMQPSIZE));
+		//guiclassifier.set_svm_qpsize(p_input+strlen(N_SVMQPSIZE));
 	} 
 	else if (!strncmp(p_input, N_SVMBUFSIZE, strlen(N_SVMBUFSIZE)))
 	{
-		guiclassifier.set_svm_bufsize(p_input+strlen(N_SVMBUFSIZE));
+		//guiclassifier.set_svm_bufsize(p_input+strlen(N_SVMBUFSIZE));
 	} 
 	else if (!strncmp(p_input, N_SVMMAXQPSIZE, strlen(N_SVMMAXQPSIZE)))
 	{
-		guiclassifier.set_svm_max_qpsize(p_input+strlen(N_SVMMAXQPSIZE));
+		//guiclassifier.set_svm_max_qpsize(p_input+strlen(N_SVMMAXQPSIZE));
 	} 
 	else if (!strncmp(p_input, N_THREADS, strlen(N_THREADS)))
 	{
@@ -599,47 +599,47 @@ bool CTextGUI::parse_line(CHAR* p_input)
 	} 
 	else if (!strncmp(p_input, N_USE_PRECOMPUTE, strlen(N_USE_PRECOMPUTE)))
 	{
-		guiclassifier.set_svm_precompute_enabled(p_input+strlen(N_USE_PRECOMPUTE));
+		//guiclassifier.set_svm_precompute_enabled(p_input+strlen(N_USE_PRECOMPUTE));
 	} 
 	else if (!strncmp(p_input, N_USE_MKL, strlen(N_USE_MKL)))
 	{
-		guiclassifier.set_svm_mkl_enabled(p_input+strlen(N_USE_MKL));
+		//guiclassifier.set_svm_mkl_enabled(p_input+strlen(N_USE_MKL));
 	} 
 	else if (!strncmp(p_input, N_USE_SHRINKING, strlen(N_USE_SHRINKING)))
 	{
-		guiclassifier.set_svm_shrinking_enabled(p_input+strlen(N_USE_SHRINKING));
+		//guiclassifier.set_svm_shrinking_enabled(p_input+strlen(N_USE_SHRINKING));
 	} 
 	else if (!strncmp(p_input, N_USE_BATCH_COMPUTATION, strlen(N_USE_BATCH_COMPUTATION)))
 	{
-		guiclassifier.set_svm_batch_computation_enabled(p_input+strlen(N_USE_BATCH_COMPUTATION));
+		//guiclassifier.set_svm_batch_computation_enabled(p_input+strlen(N_USE_BATCH_COMPUTATION));
 	} 
 	else if (!strncmp(p_input, N_USE_LINADD, strlen(N_USE_LINADD)))
 	{
-		guiclassifier.set_svm_linadd_enabled(p_input+strlen(N_USE_LINADD));
+		//guiclassifier.set_svm_linadd_enabled(p_input+strlen(N_USE_LINADD));
 	} 
 	else if (!strncmp(p_input, N_SVM_EPSILON, strlen(N_SVM_EPSILON)))
 	{
-		guiclassifier.set_svm_epsilon(p_input+strlen(N_SVM_EPSILON));
+		//guiclassifier.set_svm_epsilon(p_input+strlen(N_SVM_EPSILON));
 	} 
 	else if (!strncmp(p_input, N_SVM_MAX_TRAIN_TIME, strlen(N_SVM_MAX_TRAIN_TIME)))
 	{
-		guiclassifier.set_max_train_time(p_input+strlen(N_SVM_MAX_TRAIN_TIME));
+		//guiclassifier.set_max_train_time(p_input+strlen(N_SVM_MAX_TRAIN_TIME));
 	} 
 	else if (!strncmp(p_input, N_SVR_TUBE_EPSILON, strlen(N_SVR_TUBE_EPSILON)))
 	{
-		guiclassifier.set_svr_tube_epsilon(p_input+strlen(N_SVR_TUBE_EPSILON));
+		//guiclassifier.set_svr_tube_epsilon(p_input+strlen(N_SVR_TUBE_EPSILON));
 	} 
 	else if (!strncmp(p_input, N_SVM_USE_BIAS, strlen(N_SVM_USE_BIAS)))
 	{
-		guiclassifier.set_svm_bias_enabled(p_input+strlen(N_SVM_USE_BIAS));
+		//guiclassifier.set_svm_bias_enabled(p_input+strlen(N_SVM_USE_BIAS));
 	} 
 	else if (!strncmp(p_input, N_SVM_ONE_CLASS_NU, strlen(N_SVM_ONE_CLASS_NU)))
 	{
-		guiclassifier.set_svm_one_class_nu(p_input+strlen(N_SVM_ONE_CLASS_NU));
+		//guiclassifier.set_svm_one_class_nu(p_input+strlen(N_SVM_ONE_CLASS_NU));
 	} 
 	else if (!strncmp(p_input, N_MKL_PARAMETERS, strlen(N_MKL_PARAMETERS)))
 	{
-		guiclassifier.set_svm_mkl_parameters(p_input+strlen(N_MKL_PARAMETERS));
+		//guiclassifier.set_svm_mkl_parameters(p_input+strlen(N_MKL_PARAMETERS));
 	} 
 	else if (!strncmp(p_input, N_TIC, strlen(N_TIC)))
 	{

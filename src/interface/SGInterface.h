@@ -154,14 +154,14 @@ class CSGInterface : public CSGObject
 		bool cmd_get_classifier();
 		/** get SVM objective */
 		bool cmd_get_svm_objective();
-		/** do AUC maximization */
-		bool cmd_do_auc_maximization();
-		/** set perceptron parameters */
-		bool cmd_set_perceptron_parameters();
 		/** train classifier/SVM */
 		bool cmd_train_classifier();
 		/** test SVM */
 		bool cmd_test_svm();
+		/** do AUC maximization */
+		bool cmd_do_auc_maximization();
+		/** set perceptron parameters */
+		bool cmd_set_perceptron_parameters();
 		/** set SVM qpsize */
 		bool cmd_set_svm_qpsize();
 		/** set SVM max qpsize */
@@ -430,6 +430,9 @@ class CSGInterface : public CSGObject
 		/// general interface handler
 		bool handle();
 
+		/// print the shogun prompt
+		void print_prompt();
+
 	protected:
 		/// return true if str starts with cmd
 		/// cmd is a 0 terminated string const
@@ -440,7 +443,7 @@ class CSGInterface : public CSGObject
 			return (len==len_cmd && !strncmp(str, cmd, len_cmd));
 		}
 
-		/// get command name like 'get_svm', 'new_hmm'
+		/// get command name like 'get_svm', 'new_hmm', etc.
 		CHAR* get_command(INT &len)
 		{
 			ASSERT(m_rhs_counter==0);
@@ -457,12 +460,10 @@ class CSGInterface : public CSGObject
 		bool do_hmm_classify_example(bool one_class=false);
 		/** helper function for add/set features */
 		bool do_set_features(bool add=false);
-		/** temp command to invoke send_command in old interface */
-		bool send_command(const CHAR* cmd);
 		/** helper function to create a kernel */
 		CKernel* create_kernel();
 
-		/** legacy-related stuff - anybody has a better idea? */
+		/** legacy-related stuff - anybody got a better idea? */
 		CHAR* get_str_from_str_or_direct(INT& len);
 		INT get_int_from_int_or_str();
 		DREAL get_real_from_real_or_str();
@@ -472,6 +473,9 @@ class CSGInterface : public CSGObject
 		CHAR* get_str_from_str(INT& len);
 		INT get_num_args_in_str();
 
+		/// get line from user/stdin/file input
+		/// @return true at EOF
+		CHAR* get_line(FILE* infile=stdin, bool show_prompt=true);
 
 	protected:
 		INT m_lhs_counter;
@@ -479,8 +483,12 @@ class CSGInterface : public CSGObject
 		INT m_nlhs;
 		INT m_nrhs;
 
-		CHAR* m_legacy_strptr;
+		// related to cmd_exec and cmd_echo
+		FILE* file_out;
+		CHAR input[10000];
+		bool echo;
 
+		CHAR* m_legacy_strptr;
 };
 
 typedef bool (CSGInterface::*CSGInterfacePtr)();

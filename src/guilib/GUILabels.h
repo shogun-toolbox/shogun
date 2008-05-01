@@ -33,7 +33,8 @@ class CGUILabels : public CSGObject
 		bool set_train_labels(CLabels* lab) { delete train_labels; train_labels=lab; return true;}
 		bool set_test_labels(CLabels* lab) { delete test_labels; test_labels=lab; return true;}
 
-		bool load(CHAR* param);
+		/** load labels from file */
+		bool load(CHAR* filename, CHAR* target);
 		bool save(CHAR* param);
 
 	protected:

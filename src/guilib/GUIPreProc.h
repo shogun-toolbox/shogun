@@ -28,18 +28,30 @@ class CGUIPreProc : public CSGObject
 		CGUIPreProc(CGUI*);
 		~CGUIPreProc();
 
-		bool add_preproc(CHAR* param);
-		bool del_preproc(CHAR* param);
-		bool clean_preproc(CHAR* param);
+		/** create generic PreProc */
+		CPreProc* create_generic(EPreProcType type);
+		/** create preproc PruneVarSubMean */
+		CPreProc* create_prunevarsubmean(bool divide_by_std);
+		/** create preproc PCACUT */
+		CPreProc* create_pcacut(bool do_whitening, DREAL threshold);
 
-		bool load(CHAR* param);
-		bool save(CHAR* param);
+		/** add new preproc to list */
+		bool add_preproc(CPreProc* preproc);
+		/** delete last preproc in list */
+		bool del_preproc();
+		/** clean all preprocs from list */
+		bool clean_preproc();
+
+		/** load preproc from file */
+		bool load(CHAR* filename);
+		/** save preproc to file */
+		bool save(CHAR* filename, INT num_preprocs);
 
 		/** attach preprocessor to TRAIN/TEST feature obj.
 		 *  it will also preprocess train/test data
 		 *  when a feature matrix is available
 		 */
-		bool attach_preproc(CHAR* param);
+		bool attach_preproc(CHAR* target, bool do_force=false);
 
 	protected:
 		bool preprocess_features(CFeatures* trainfeat, CFeatures* testfeat, bool force);

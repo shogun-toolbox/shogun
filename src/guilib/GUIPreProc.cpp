@@ -51,92 +51,88 @@ CGUIPreProc::~CGUIPreProc()
 	delete attached_preprocs_lists;
 }
 
+CPreProc* CGUIPreProc::create_prunevarsubmean(bool divide_by_std)
+{
+	CPreProc* preproc=new CPruneVarSubMean(divide_by_std);
 
-bool CGUIPreProc::add_preproc(CHAR* param)
+	if (preproc)
+		SG_INFO("PRUNEVARSUBMEAN created (%p), divide_by_std %d", preproc, divide_by_std);
+	else
+		SG_ERROR("Could not create preproc PRUNEVARSUBMEAN, divide_by_std %d", divide_by_std);
+
+	return preproc;
+}
+
+CPreProc* CGUIPreProc::create_pcacut(bool do_whitening, DREAL threshold)
+{
+	CPreProc* preproc=new CPCACut(do_whitening, threshold);
+
+	if (preproc)
+		SG_INFO("PCACUT created (%p), do_whitening %i threshold %e", preproc, do_whitening, threshold);
+	else
+		SG_ERROR("Could not create preproc PCACUT, do_whitening %i threshold %e", do_whitening, threshold);
+
+	return preproc;
+}
+
+CPreProc* CGUIPreProc::create_generic(EPreProcType type)
 {
 	CPreProc* preproc=NULL;
 
-	param=io.skip_spaces(param);
-#ifdef HAVE_LAPACK
-	if (strncmp(param,"PCACUT",6)==0)
+	switch (type)
 	{
-		INT do_whitening=0; 
-		double thresh=1e-6 ;
-		sscanf(param+6, "%i %le", &do_whitening, &thresh) ;
-		SG_INFO( "PCACUT parameters: do_whitening=%i thresh=%e", do_whitening, thresh) ;
-		preproc=new CPCACut(do_whitening, thresh);
-	}
-	else 
-#endif
-	if (strncmp(param,"NORMONE",7)==0)
-	{
-		preproc=new CNormOne();
-	}
-	else if (strncmp(param,"LOGPLUSONE",10)==0)
-	{
-		preproc=new CLogPlusOne();
-	}
-	else if (strncmp(param,"SORTWORDSTRING",14)==0)
-	{
-		preproc=new CSortWordString();
-	}
-	else if (strncmp(param,"SORTULONGSTRING",15)==0)
-	{
-		preproc=new CSortUlongString();
-	}
-	else if (strncmp(param,"SORTWORD",8)==0)
-	{
-		preproc=new CSortWord();
-	}
-	else if (strncmp(param,"PRUNEVARSUBMEAN",15)==0)
-	{
-		INT divide_by_std=0; 
-		sscanf(param+15, "%i", &divide_by_std);
-
-		if (divide_by_std)
-			SG_INFO( "normalizing VARIANCE\n");
-		else
-			SG_WARNING( "NOT normalizing VARIANCE\n");
-
-		preproc=new CPruneVarSubMean(divide_by_std==1);
-	}
-	else 
-	{
-		io.not_implemented();
-		return false;
+		case P_NORMONE:
+			preproc=new CNormOne(); break;
+		case P_LOGPLUSONE:
+			preproc=new CLogPlusOne(); break;
+		case P_SORTWORDSTRING:
+			preproc=new CSortWordString(); break;
+		case P_SORTULONGSTRING:
+			preproc=new CSortUlongString(); break;
+		case P_SORTWORD:
+			preproc=new CSortWord(); break;
+		default:
+			SG_ERROR("Unknown PreProc type %d\n", type);
 	}
 
+	if (preproc)
+		SG_INFO("Preproc of type %d created (%p).\n", type, preproc);
+	else
+		SG_ERROR("Could not create preproc of type %d.\n", type);
+
+	return preproc;
+}
+
+bool CGUIPreProc::add_preproc(CPreProc* preproc)
+{
 	preprocs->get_last_element();
 	return preprocs->append_element(preproc);
 }
 
-bool CGUIPreProc::clean_preproc(CHAR* param)
+bool CGUIPreProc::clean_preproc()
 {
 	delete preprocs;
 	preprocs=new CList<CPreProc*>(true);
 	return (preprocs!=NULL);
 }
 
-bool CGUIPreProc::del_preproc(CHAR* param)
+bool CGUIPreProc::del_preproc()
 {
-	SG_INFO( "deleting preproc %i/(%i)\n", preprocs->get_num_elements()-1, preprocs->get_num_elements());
+	SG_INFO("Deleting preproc %i/(%i).\n", preprocs->get_num_elements()-1, preprocs->get_num_elements());
 
+	CPreProc* preproc=preprocs->delete_element();
+	if (preproc)
+		delete preproc;
 
-	CPreProc* p=preprocs->delete_element();
-	if (p)
-		delete p;
-	return (p!=NULL);
+	return (preproc!=NULL);
 }
 
-bool CGUIPreProc::load(CHAR* param)
+bool CGUIPreProc::load(CHAR* filename)
 {
 	bool result=false;
-
-	param=io.skip_spaces(param);
-
 	CPreProc* preproc=NULL;
 
-	FILE* file=fopen(param, "r");
+	FILE* file=fopen(filename, "r");
 	CHAR id[5]="UDEF";
 
 	if (file)
@@ -159,18 +155,18 @@ bool CGUIPreProc::load(CHAR* param)
 			preproc=new CPruneVarSubMean();
 		}
 		else
-			SG_ERROR( "unrecognized file\n");
+			SG_ERROR("Unrecognized file %s.\n", filename);
 
 		if (preproc && preproc->load_init_data(file))
 		{
-			printf("file successfully read\n");
+			printf("File %s successfully read.\n", filename);
 			result=true;
 		}
 
 		fclose(file);
 	}
 	else
-		SG_ERROR( "opening file %s failed\n", param);
+		SG_ERROR("Opening file %s failed\n", filename);
 
 	if (result)
 	{
@@ -181,24 +177,25 @@ bool CGUIPreProc::load(CHAR* param)
 	return result;
 }
 
-bool CGUIPreProc::save(CHAR* param)
+bool CGUIPreProc::save(CHAR* filename, INT num_preprocs)
 {
-	CHAR fname[1024];
-	INT num=preprocs->get_num_elements()-1;
-	bool result=false; param=io.skip_spaces(param);
-	sscanf(param, "%s %i", fname, &num);
-	CPreProc* preproc= preprocs->get_last_element();
+	bool result=false;
+	CPreProc* preproc=preprocs->get_last_element();
 
-	if (num>=0 && (num < preprocs->get_num_elements()) && preproc)
+	INT num=preprocs->get_num_elements()-1;
+	if (num_preprocs>=0)
+		num=num_preprocs;
+
+	if (num>=0 && num<preprocs->get_num_elements() && preproc)
 	{
-		FILE* file=fopen(fname, "w");
+		FILE* file=fopen(filename, "w");
 	
 		fwrite(preproc->get_id(), sizeof(char), 4, file);
-		if ((!file) ||	(!preproc->save_init_data(file)))
-			printf("writing to file %s failed!\n", param);
+		if (!file || !preproc->save_init_data(file))
+			printf("Writing to file %s failed!\n", filename);
 		else
 		{
-			printf("successfully written preproc init data into \"%s\" !\n", param);
+			SG_INFO("Successfully written preproc init data into %s!\n", filename);
 			result=true;
 		}
 
@@ -206,94 +203,82 @@ bool CGUIPreProc::save(CHAR* param)
 			fclose(file);
 	}
 	else
-		SG_ERROR( "create preproc first\n");
+		SG_ERROR("Create at least one preproc first.\n");
 
 	return result;
 }
 
-bool CGUIPreProc::attach_preproc(CHAR* param)
+bool CGUIPreProc::attach_preproc(CHAR* target, bool do_force)
 {
 	bool result=false;
-	param=io.skip_spaces(param);
-	CHAR target[1024]="";
-	INT force=0;
 
-	if ((sscanf(param, "%s %d", target, &force))>=1)
+	if (strncmp(target, "TRAIN", 5)==0)
 	{
-		if ( strcmp(target, "TRAIN")==0 || strcmp(target, "TEST")==0 )
+		CFeatures* f = gui->guifeatures.get_train_features();
+		if (f->get_feature_class()==C_COMBINED)
+			f=((CCombinedFeatures*)f)->get_last_feature_obj();
+
+		preprocess_features(f, NULL, do_force);
+		gui->guifeatures.invalidate_train();
+		result=true;
+	}
+	else if (strncmp(target, "TEST", 4)==0)
+	{
+		CFeatures* f_test=gui->guifeatures.get_test_features();
+		CFeatures* f_train=gui->guifeatures.get_train_features();
+		EFeatureClass fclass_train=f_train->get_feature_class();
+		EFeatureClass fclass_test=f_test->get_feature_class();
+
+		if (fclass_train==fclass_test)
 		{
-			if (strcmp(target,"TRAIN")==0)
+			if (fclass_train==C_COMBINED)
 			{
-				CFeatures* f = gui->guifeatures.get_train_features();
-				if (f->get_feature_class()==C_COMBINED)
-					f=((CCombinedFeatures*)f)->get_last_feature_obj();
-
-				preprocess_features(f, NULL, force==1);
-				gui->guifeatures.invalidate_train();
-				result=true;
-			}
-			else if (strcmp(target,"TEST")==0)
-			{
-				CFeatures* f_test = gui->guifeatures.get_test_features();
-				CFeatures* f_train  = gui->guifeatures.get_train_features();
-
-				if (f_train->get_feature_class() == f_test->get_feature_class())
+				if (((CCombinedFeatures*) f_train)->check_feature_obj_compatibility((CCombinedFeatures*) f_test))
 				{
-					if (f_train->get_feature_class() == C_COMBINED)
+					//preprocess the last test feature obj
+					CFeatures* te_feat=((CCombinedFeatures*) f_test)->get_first_feature_obj();
+					CFeatures* tr_feat=((CCombinedFeatures*) f_train)->get_first_feature_obj();
+
+					INT num_combined=((CCombinedFeatures*) f_test)->get_num_feature_obj();
+					ASSERT(((CCombinedFeatures*) f_train)->get_num_feature_obj() == num_combined);
+
+					if (!(num_combined && tr_feat && te_feat))
+						SG_ERROR("One of the combined features has no sub-features ?!\n");
+
+					SG_INFO("BEGIN PREPROCESSING COMBINED FEATURES (%d sub-featureobjects).\n", num_combined);
+					
+					int n=0;
+					while (n<num_combined && tr_feat && te_feat)
 					{
-						if (((CCombinedFeatures*) f_train)->check_feature_obj_compatibility((CCombinedFeatures*) f_test) )
-						{
-							//preprocess the last test feature obj
-							CFeatures* te_feat = ((CCombinedFeatures*) f_test)->get_first_feature_obj();
-							CFeatures* tr_feat = ((CCombinedFeatures*) f_train)->get_first_feature_obj();
-
-							INT num_combined= ((CCombinedFeatures*) f_test)->get_num_feature_obj();
-							ASSERT(((CCombinedFeatures*) f_train)->get_num_feature_obj() == num_combined);
-
-							if (!(num_combined && tr_feat && te_feat))
-								SG_ERROR( "one of the combined features has no sub-features ?!\n");
-
-							SG_INFO( "BEGIN PREPROCESSING COMBINED FEATURES (%d sub-featureobjects)\n", num_combined);
-							
-							int n=0;
-							while (n<num_combined && tr_feat && te_feat)
-							{
-								// and preprocess using that one 
-								SG_INFO( "TRAIN ");
-								tr_feat->list_feature_obj();
-								SG_INFO( "TEST ");
-								te_feat->list_feature_obj();
-								preprocess_features(tr_feat, te_feat, force);
-
-								tr_feat = ((CCombinedFeatures*) f_train)->get_next_feature_obj();
-								te_feat = ((CCombinedFeatures*) f_test)->get_next_feature_obj();
-								n++;
-							}
-							ASSERT(n==num_combined);
-							result=true;
-							SG_INFO( "END PREPROCESSING COMBINED FEATURES\n");
-						}
-						else
-							SG_ERROR( "combined features not compatible\n");
+						// and preprocess using that one 
+						SG_INFO("TRAIN ");
+						tr_feat->list_feature_obj();
+						SG_INFO("TEST ");
+						te_feat->list_feature_obj();
+						preprocess_features(tr_feat, te_feat, do_force);
+						tr_feat=((CCombinedFeatures*) f_train)->get_next_feature_obj();
+						te_feat=((CCombinedFeatures*) f_test)->get_next_feature_obj();
+						n++;
 					}
-					else
-					{
-						preprocess_features(f_train, f_test, force==1);
-						gui->guifeatures.invalidate_test();
-						result=true;
-					}
+					ASSERT(n==num_combined);
+					result=true;
+					SG_INFO( "END PREPROCESSING COMBINED FEATURES\n");
 				}
 				else
-					SG_ERROR( "features not compatible\n");
+					SG_ERROR( "combined features not compatible\n");
 			}
 			else
-				SG_ERROR( "see help for parameters\n");
+			{
+				preprocess_features(f_train, f_test, do_force);
+				gui->guifeatures.invalidate_test();
+				result=true;
+			}
 		}
 		else
-			SG_ERROR( "features not correctly assigned!\n");
+			SG_ERROR("Features not compatible.\n");
 	}
 	else
-		SG_ERROR( "see help for parameters\n");
+		SG_ERROR("Features not correctly assigned!\n");
 
 	/// when successful add preprocs to attached_preprocs list (for removal later)
 	/// and clean the current preproc list

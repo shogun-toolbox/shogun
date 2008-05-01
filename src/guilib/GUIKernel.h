@@ -37,27 +37,27 @@ class CGUIKernel : public CSGObject
 	bool add_kernel(CKernel* kern, DREAL weight=1);
 
 	/** initialize kernel */
-	bool init_kernel(CHAR* param);
+	bool init_kernel(CHAR* target);
 	/** initialize kernel  optimization */
-	bool init_kernel_optimization(CHAR* param);
+	bool init_kernel_optimization();
 	/** delete kernel */
 	bool del_kernel(CHAR* param);
 	/** delete kernel optimization */
-	bool delete_kernel_optimization(CHAR* param);
+	bool delete_kernel_optimization();
 	/** load kernel initialization from file */
-	bool load_kernel_init(CHAR* param);
+	bool load_kernel_init(CHAR* filename);
 	/** save kernel initialization to file */
-	bool save_kernel_init(CHAR* param);
+	bool save_kernel_init(CHAR* filename);
 	/** save kernel (matrix) to file */
-	bool save_kernel(CHAR* param);
-	/** clean kernel */
-	bool clean_kernel(CHAR* param);
+	bool save_kernel(CHAR* filename);
+	/** clean/r kernel */
+	bool clean_kernel();
 #ifdef USE_SVMLIGHT
 	/** resize kernel cache */
-	bool resize_kernel_cache(CHAR* param);
+	bool resize_kernel_cache(INT size);
 #endif //USE_SVMLIGHT
 	/** set optimization type */
-	bool set_optimization_type(CHAR* param);
+	bool set_optimization_type(CHAR* opt_type);
 
 	/** check if kernel is initialized */
 	bool is_initialized() { return initialized; }

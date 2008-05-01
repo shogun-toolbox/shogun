@@ -27,39 +27,62 @@ public:
 	CGUIHMM(CGUI *);
 	~CGUIHMM();
 
-	bool new_hmm(CHAR* param);
-	bool load(CHAR* param);
-	bool save(CHAR* param);
-	
+	/** create new HMM */
+	bool new_hmm(INT n, INT m);
+	/** load HMM from file */
+	bool load(CHAR* filename);
+	/** save HMM to file */
+	bool save(CHAR* filename, bool is_binary=false);
+
 	bool set_num_hmm_tables(CHAR* param) ;
-	bool baum_welch_train(CHAR* param);
-	bool baum_welch_trans_train(CHAR* param);
+	/** train Baum-Welch */
+	bool baum_welch_train();
+	/** train Baum-Welch trans */
+	bool baum_welch_trans_train();
 	bool baum_welch_train_defined(CHAR* param);
-	bool viterbi_train_defined(CHAR* param);
-	bool viterbi_train(CHAR* param);
-	bool linear_train(CHAR* param);
+	/** train Viterbi defined */
+	bool viterbi_train_defined();
+	/** train Viterbi */
+	bool viterbi_train();
+	bool linear_train(CHAR align='l');
 	bool linear_train_from_file(CHAR* param);
-	bool one_class_test(CHAR* param);
-	bool hmm_test(CHAR* param);
+	/** test HMM ONE_CLASS */
+	bool one_class_test(
+		CHAR* filename_out, CHAR* filename_roc, bool is_linear);
+	/** test HMM */
+	bool hmm_test(
+		CHAR* filename_out, CHAR* filename_roc,
+		bool is_pos_linear, bool is_neg_linear);
 	bool hmm_classify(CHAR* param);
 	bool append_model(CHAR* param);
-	bool add_states(CHAR* param);
-	bool set_hmm_as(CHAR* param);
-	bool set_pseudo(CHAR* param) ;
-	bool convergence_criteria(CHAR* param) ;
-	bool output_hmm(CHAR* param);
-	bool output_hmm_defined(CHAR* param);
-	bool best_path(CHAR* param);
-	bool normalize(CHAR* param);
-	bool save_path(CHAR* param);
-	bool save_likelihood(CHAR* param);
-	bool load_defs(CHAR* param);
+	/** add states to HMM */
+	bool add_states(INT num_states=1, DREAL value=0);
+	/** set HMM as POS/NEG/TEST */
+	bool set_hmm_as(CHAR* target);
+	/** set HMM pseudo */
+	bool set_pseudo(DREAL pseudo);
+	/** set convergence criteria */
+	bool convergence_criteria(INT num_iterations=100, DREAL epsilon=0.001);
+	/** output HMM */
+	bool output_hmm();
+	/** output HMM defined */
+	bool output_hmm_defined();
+	/** print best path */
+	bool best_path(INT from=0, INT to=100);
+	bool normalize(bool keep_dead_states=false);
+	bool save_path(CHAR* filename, bool is_binary=false);
+	/** save HMM likelihood  to file */
+	bool save_likelihood(CHAR* filename, bool is_binary=false);
+	bool load_definitions(CHAR* filename, bool do_init=false);
 	bool set_max_dim(CHAR* param);
-	bool likelihood(CHAR* param);
-	bool chop(CHAR* param);
+	/** HMM likelihood */
+	bool likelihood();
+	/** chop HMM */
+	bool chop(DREAL value);
 	bool relative_entropy(CHAR* param);
 	bool entropy(CHAR* param);
-	bool permutation_entropy(CHAR* param);
+	/** define permutation entropy */
+	bool permutation_entropy(INT width=0, INT seq_num=-1);
 	inline CHMM* get_pos() { return pos; }
 	inline CHMM* get_neg() { return neg; }
 	inline CHMM* get_test() { return test; }

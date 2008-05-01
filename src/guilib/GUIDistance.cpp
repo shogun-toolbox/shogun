@@ -62,23 +62,18 @@ CDistance* CGUIDistance::get_distance()
 	return distance;
 }
 
-bool CGUIDistance::set_distance(CHAR* param)
+bool CGUIDistance::set_distance(CDistance* dist)
 {
-	CDistance* d=create_distance(param);
-
-	if (distance && d)
-		delete distance;
-
-	if (d)
+	if (dist)
 	{
-		distance=d;
+		delete distance;
+		distance=dist;
+		SG_DEBUG("set new distance (%p).\n", dist);
+
 		return true;
 	}
 	else
-	{
-		SG_ERROR( "distance creation failed.\n");
 		return false;
-	}
 }
 
 bool CGUIDistance::load_distance_init(CHAR* param)
@@ -143,101 +138,72 @@ bool CGUIDistance::save_distance_init(CHAR* param)
 }
 
 
-bool CGUIDistance::init_distance(CHAR* param)
+bool CGUIDistance::init_distance(CHAR* target)
 {
-	CHAR target[1024]="";
-	bool do_init=false;
-
-	SG_INFO( "CGUIDistance::init_distance start");
+	SG_DEBUG("init_distance start\n.");
 
 	if (!distance)
-	{
-		SG_ERROR( "no distance available\n") ;
-		return false ;
-	} ;
+		SG_ERROR("No distance available.\n");
 
-	SG_INFO( "CGUIDistance::init_distance before set_precompute");
 	distance->set_precompute_matrix(false);
-	SG_INFO( "CGUIDistance::init_distance after set_precompute");
+	EFeatureClass d_fclass=distance->get_feature_class();
+	EFeatureType d_ftype=distance->get_feature_type();
 
-	if ((sscanf(param, "%s", target))==1)
+	if (!strncmp(target, "TRAIN", 5))
 	{
-		SG_INFO( "CGUIDistance::init_distance 1 if");
-		if (!strncmp(target, "TRAIN", 5))
+		CFeatures* train=gui->guifeatures.get_train_features();
+		if (train)
 		{
-			SG_INFO( "CGUIDistance::init_distance 2 if");
-			do_init=true;
-			if (gui->guifeatures.get_train_features())
+			EFeatureClass fclass=train->get_feature_class();
+			EFeatureType ftype=train->get_feature_type();
+			if ((d_fclass==fclass || d_fclass==C_ANY || fclass==C_ANY) &&
+				(d_ftype==ftype || d_ftype==F_ANY || ftype==F_ANY))
+			
 			{
-				if ( (distance->get_feature_class() == gui->guifeatures.get_train_features()->get_feature_class() 
-							|| gui->guifeatures.get_train_features()->get_feature_class() == C_ANY 
-							|| distance->get_feature_class() == C_ANY ) &&
-						(distance->get_feature_type() == gui->guifeatures.get_train_features()->get_feature_type() 
-						 || gui->guifeatures.get_train_features()->get_feature_type() == F_ANY 
-						 || distance->get_feature_type() == F_ANY) )
-				{
-					distance->init(gui->guifeatures.get_train_features(), gui->guifeatures.get_train_features());
-					initialized=true;
-				}
-				else
-				{
-					SG_ERROR( "distance can not process this feature type\n");
-					return false ;
-				}
+				distance->init(train, train);
+				initialized=true;
 			}
 			else
-				SG_ERROR( "assign train features first\n");
-		}
-		else if (!strncmp(target, "TEST", 5))
-		{
-			if (gui->guifeatures.get_train_features() && gui->guifeatures.get_test_features())
-			{
-				if ( (distance->get_feature_class() == gui->guifeatures.get_train_features()->get_feature_class() 
-							|| gui->guifeatures.get_train_features()->get_feature_class() == C_ANY 
-							|| distance->get_feature_class() == C_ANY ) &&
-						(distance->get_feature_class() == gui->guifeatures.get_test_features()->get_feature_class() 
-						 || gui->guifeatures.get_test_features()->get_feature_class() == C_ANY 
-						 || distance->get_feature_class() == C_ANY ) &&
-						(distance->get_feature_type() == gui->guifeatures.get_train_features()->get_feature_type() 
-						 || gui->guifeatures.get_train_features()->get_feature_type() == F_ANY 
-						 || distance->get_feature_type() == F_ANY ) &&
-						(distance->get_feature_type() == gui->guifeatures.get_test_features()->get_feature_type() 
-						 || gui->guifeatures.get_test_features()->get_feature_type() == F_ANY 
-						 || distance->get_feature_type() == F_ANY ) )
-				{
-					if (!initialized)
-					{
-						SG_ERROR( "distance not initialized for training examples\n") ;
-						return false ;
-					}
-					else
-					{
-						SG_INFO( "initialising distance with TEST DATA, train: %d test %d\n",gui->guifeatures.get_train_features(), gui->guifeatures.get_test_features() );
-						// lhs -> always train_features; rhs -> always test_features
-						distance->init(gui->guifeatures.get_train_features(), gui->guifeatures.get_test_features());
-
-					} ;
-				}
-				else
-				{
-					SG_ERROR( "distance can not process this feature type\n");
-					return false ;
-				}
-			}
-			else
-				SG_ERROR( "assign train and test features first\n");
-
+				SG_ERROR("Distance can not process this train feature type: %d %d.\n", fclass, ftype);
 		}
 		else
-			io.not_implemented();
+			SG_ERROR("Assign train features first.\n");
 	}
-	else 
+	else if (!strncmp(target, "TEST", 4))
 	{
-		SG_ERROR( "see help for params\n");
+		CFeatures* train=gui->guifeatures.get_train_features();
+		CFeatures* test=gui->guifeatures.get_test_features();
+		if (test)
+		{
+			EFeatureClass fclass=test->get_feature_class();
+			EFeatureType ftype=test->get_feature_type();
+			if ((d_fclass==fclass || d_fclass==C_ANY || fclass==C_ANY) &&
+				(d_ftype==ftype || d_ftype==F_ANY || ftype==F_ANY))
+			
+			{
+				if (!initialized)
+					SG_ERROR("Distance not initialized with training examples.\n");
+				else
+				{
+					SG_INFO("Initialising distance with TEST DATA, train: %p test %p\n", train, test);
+					// lhs -> always train_features; rhs -> always test_features
+					distance->init(train, test);
+				}
+			}
+			else
+				SG_ERROR("Distance can not process this test feature type: %d %d.\n", fclass, ftype);
+		}
+		else
+			SG_ERROR("Assign train and test features first.\n");
+	}
+	else
+	{
+		io.not_implemented();
 		return false;
 	}
 
 	return true;
+
 }
 
 bool CGUIDistance::save_distance(CHAR* param)
@@ -265,179 +231,67 @@ bool CGUIDistance::save_distance(CHAR* param)
 	return result;
 }
 
-CDistance* CGUIDistance::create_distance(CHAR* param)
+CDistance* CGUIDistance::create_generic(EDistanceType type)
 {
-	CHAR dist_type[1024]="";
-	CHAR data_type[1024]="";
-	param=CIO::skip_spaces(param);
-	CDistance* d=NULL;
+	CDistance* dist=NULL;
 
-	//note the different args COMBINED <cachesize>
-
-	if (sscanf(param, "%s %s", dist_type, data_type) == 2)
+	switch (type)
 	{
-		if (strcmp(dist_type,"MINKOWSKI")==0)
-		{
-			if (strcmp(data_type,"REAL")==0)
-			{
-				DREAL p = 1 ;
-				if(sscanf(param, "%s %s %lf", dist_type, data_type,&p)==3)
-				{
-					delete d;
-					d= new CMinkowskiMetric(p);
-					if (d)
-						SG_INFO( "Minkowski-Distance created\n");
-					return d;
-				}
-				else
-					SG_ERROR( "processing expects 'string string floating-point number' for Minkowski-Distance \n") ;
+		case D_MANHATTAN:
+			dist=new CManhattanMetric(); break;
+		case D_MANHATTANWORD:
+			dist=new CManhattanWordDistance(); break;
+		case D_CANBERRA:
+			dist=new CCanberraMetric(); break;
+		case D_CANBERRAWORD:
+			dist=new CCanberraWordDistance(); break;
+		case D_CHEBYSHEW:
+			dist=new CChebyshewMetric(); break;
+		case D_GEODESIC:
+			dist=new CGeodesicMetric(); break;
+		case D_JENSEN:
+			dist=new CJensenMetric(); break;
+		case D_EUCLIDIAN:
+			dist=new CEuclidianDistance(); break;
+		case D_SPARSEEUCLIDIAN:
+			dist=new CSparseEuclidianDistance(); break;
+		default:
+			SG_ERROR("Unknown metric/distance type %d given to create generic distance/metric.\n", type);
+	}
 
-			}
-			else
-				SG_ERROR( "Minkowski-Distance expects REAL as data type \n") ;
-		}
-		else if (strcmp(dist_type,"MANHATTAN")==0)
-		{	
-			if (strcmp(data_type,"REAL")==0)
-			{
-				delete d;
-				d= new CManhattanMetric();
-				if (d)
-					SG_INFO( "Manhattan-Distance created\n");
-				return d;
-			}
-			else if (strcmp(data_type,"WORD")==0)
-			{
+	if (dist)
+		SG_INFO("Metric/Distance of type %d created (%p).\n", type, dist);
+	else
+		SG_ERROR("Failed creating metric of type %d.\n", type);
 
-				delete d;
-				d=new CManhattanWordDistance();
-
-				if (d)
-				{
-					SG_INFO( "ManhattanWordDistance created\n");
-					return d;
-				}
-			}
-			else
-				SG_ERROR( "Manhattan-Distance expects REAL or WORD as data type \n") ;
-		}
-		else if (strcmp(dist_type,"HAMMING")==0)
-		{
-			if (strcmp(data_type,"WORD")==0)
-			{
-				INT use_sign = 0 ;
-
-
-				sscanf(param, "%s %s %d", dist_type, data_type, &use_sign);
-				delete d;
-				d=new CHammingWordDistance(use_sign==1);
-
-				if (d)
-				{
-					if (use_sign)
-						SG_INFO( "HammingWordDistance with sign(count) created\n");
-					else
-						SG_INFO( "HammingWordDistance with count created\n");
-					return d;
-				}
-			}
-		}
-		else if (strcmp(dist_type,"CANBERRA")==0)
-		{
-			if (strcmp(data_type,"REAL")==0)
-			{
-				delete d;
-				d= new CCanberraMetric();
-				if (d)
-					SG_INFO( "CANBERRA-Distance created\n");
-				return d;
-			}
-			else if (strcmp(data_type,"WORD")==0)
-			{
-				delete d;
-				d=new CCanberraWordDistance();
-				if(d)
-				{
-					SG_INFO("CanberraWordDistance created");
-					return d;
-				}
-			}
-			else
-				SG_ERROR( "Canberra-Distance expects REAL as data type \n") ;
-
-		}
-		else if (strcmp(dist_type,"CHEBYSHEW")==0)
-		{
-			if (strcmp(data_type,"REAL")==0)
-			{
-				delete d;
-				d= new CChebyshewMetric();
-				if (d)
-					SG_INFO( "Chebyshew-Distance created\n");
-				return d;
-			}
-			else
-				SG_ERROR( "Chebyshew-Distance expects REAL as data type \n") ;
-
-		} 
-		else if (strcmp(dist_type,"GEODESIC")==0)
-		{
-			if (strcmp(data_type,"REAL")==0)
-			{
-				delete d;
-				d= new CGeodesicMetric();
-				if (d)
-					SG_INFO( "Geodesic-Distance created\n");
-				return d;
-			}
-			else
-				SG_ERROR( "Geodesic-Distance expects REAL as data type \n") ;
-
-		}
-		else if (strcmp(dist_type,"JENSEN")==0)
-		{
-			if (strcmp(data_type,"REAL")==0)
-			{
-				delete d;
-				d= new CJensenMetric();
-				if (d)
-					SG_INFO( "Jensen-Distance created\n");
-				return d;
-			}
-			else
-				SG_ERROR( "Jense-Distance expects REAL as data type \n") ;
-		}
-		else if (strcmp(dist_type,"EUCLIDIAN")==0)
-		{
-			if (strcmp(data_type,"REAL")==0)
-			{
-				delete d;
-				d= new CEuclidianDistance();
-				if (d)
-					SG_INFO( "Euclidian-Distance created\n");
-				return d;
-			}
-			else if (strcmp(data_type,"SPARSEREAL")==0)
-			{
-				delete d;
-				d= new CSparseEuclidianDistance();
-				if (d)
-					SG_INFO( "SparseEuclidian-Distance created\n");
-				return d;
-			}
-			else
-				SG_ERROR( "Euclidian-Distance expects REAL or SPARSEREAL as data type \n") ;
-
-		}
-		else
-			SG_ERROR( "in this format only CANBERRA, CHEBYSHEW, GEODESIC, JENSEN, MANHATTEN, MINKOWSKI, EUCLIDIAN, SPARSEEUCLIDIAN is accepted \n") ;
-	} 
-	else 
-		SG_ERROR( "see help for params!\n");
-
-	io.not_implemented();
-	return NULL;
+	return dist;
 }
+
+CDistance* CGUIDistance::create_minkowski(DREAL k)
+{
+	CDistance* dist=new CMinkowskiMetric(k);
+	if (dist)
+		SG_INFO("Minkowski Metric created (%p), k %f.\n", dist, k);
+	else
+		SG_ERROR("Failed Creating Minkowski Metric, k %f.\n", k);
+
+	return dist;
+}
+
+CDistance* CGUIDistance::create_hammingword(bool use_sign)
+{
+	CDistance* dist=new CHammingWordDistance(use_sign);
+	if (dist)
+	{
+		SG_INFO("HammingWord distance created (%p), use sign %d.\n",
+			dist, use_sign);
+	}
+	else
+		SG_ERROR("Failed Creating HammingWord distance, use sign %d.\n", use_sign);
+
+	return dist;
+}
+
 
 bool CGUIDistance::clean_distance(CHAR* param)
 {

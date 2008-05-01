@@ -659,225 +659,182 @@ bool CGUIKernel::set_kernel(CKernel* kern)
 		return false;
 }
 
-bool CGUIKernel::load_kernel_init(CHAR* param)
+bool CGUIKernel::load_kernel_init(CHAR* filename)
 {
 	bool result=false;
-	CHAR filename[1024]="";
-
 	if (kernel)
 	{
-		if ((sscanf(param, "%s", filename))==1)
-		{
-			FILE* file=fopen(filename, "r");
-			if ((!file) || (!kernel->load_init(file)))
-				SG_ERROR( "reading from file %s failed!\n", filename);
-			else
-			{
-				SG_INFO( "successfully read kernel init data from \"%s\" !\n", filename);
-				initialized=true;
-				result=true;
-			}
-
-			if (file)
-				fclose(file);
-		}
+		FILE* file=fopen(filename, "r");
+		if (!file || !kernel->load_init(file))
+			SG_ERROR("Reading from file %s failed!\n", filename);
 		else
-			SG_ERROR( "see help for params\n");
+		{
+			SG_INFO("Successfully read kernel init data from %s!\n", filename);
+			initialized=true;
+			result=true;
+		}
+
+		if (file)
+			fclose(file);
 	}
 	else
-		SG_ERROR( "no kernel set!\n");
+		SG_ERROR("No kernel set!\n");
+
 	return result;
 }
 
-bool CGUIKernel::save_kernel_init(CHAR* param)
+bool CGUIKernel::save_kernel_init(CHAR* filename)
 {
 	bool result=false;
-	CHAR filename[1024]="";
 
 	if (kernel)
 	{
-		if ((sscanf(param, "%s", filename))==1)
-		{
-			FILE* file=fopen(filename, "w");
-			if (!file)
-				SG_ERROR( "fname: %s\n", filename);
-			if ((!file) || (!kernel->save_init(file)))
-				SG_ERROR( "writing to file %s failed!\n", filename);
-			else
-			{
-				SG_INFO( "successfully written kernel init data into \"%s\" !\n", filename);
-				result=true;
-			}
-
-			if (file)
-				fclose(file);
-		}
+		FILE* file=fopen(filename, "w");
+		if (!file || !kernel->save_init(file))
+			SG_ERROR("Writing to file %s failed!\n", filename);
 		else
-			SG_ERROR( "see help for params\n");
+		{
+			SG_INFO("Successfully written kernel init data into %s!\n", filename);
+			result=true;
+		}
+
+		if (file)
+			fclose(file);
 	}
 	else
-		SG_ERROR( "no kernel set!\n");
+		SG_ERROR("No kernel set!\n");
+
 	return result;
 }
 
-bool CGUIKernel::init_kernel_optimization(CHAR* param)
+bool CGUIKernel::init_kernel_optimization()
 {
-
 	kernel->set_precompute_matrix(false, false);
 
-	if (gui->guiclassifier.get_classifier()!=NULL)
+	CSVM* svm=(CSVM*) gui->guiclassifier.get_classifier();
+	if (svm)
 	{
-		CSVM* svm=(CSVM*) gui->guiclassifier.get_classifier();
 		if (kernel->has_property(KP_LINADD))
 		{
-			INT * sv_idx    = new INT[svm->get_num_support_vectors()] ;
-			DREAL* sv_weight = new DREAL[svm->get_num_support_vectors()] ;
+			INT num_sv=svm->get_num_support_vectors();
+			INT* sv_idx=new INT[num_sv];
+			DREAL* sv_weight=new DREAL[num_sv];
 			
-			for(INT i=0; i<svm->get_num_support_vectors(); i++)
+			for (INT i=0; i<num_sv; i++)
 			{
-				sv_idx[i]    = svm->get_support_vector(i) ;
-				sv_weight[i] = svm->get_alpha(i) ;
+				sv_idx[i]=svm->get_support_vector(i);
+				sv_weight[i]=svm->get_alpha(i);
 			}
 
-			bool ret = kernel->init_optimization(svm->get_num_support_vectors(), sv_idx, sv_weight) ;
-			
-			delete[] sv_idx ;
-			delete[] sv_weight ;
+			bool ret=kernel->init_optimization(num_sv, sv_idx, sv_weight);
+
+			delete[] sv_idx;
+			delete[] sv_weight;
 
 			if (!ret)
-				SG_ERROR( "initialization of kernel optimization failed\n") ;
-			return ret ;
+				SG_ERROR("Initialization of kernel optimization failed\n");
+			return ret;
 		}
+	}
+	else
+		SG_ERROR("Create SVM first!\n");
 
+	return false;
+}
+
+bool CGUIKernel::delete_kernel_optimization()
+{
+	if (kernel && kernel->has_property(KP_LINADD) && kernel->get_is_initialized())
+		kernel->delete_optimization();
+
+	return true;
+}
+
+
+bool CGUIKernel::init_kernel(CHAR* target)
+{
+	if (!kernel)
+	{
+		SG_ERROR("No kernel available.\n");
+		return false;
+	}
+
+	kernel->set_precompute_matrix(false, false);
+	EFeatureClass k_fclass=kernel->get_feature_class();
+	EFeatureType k_ftype=kernel->get_feature_type();
+
+	if (!strncmp(target, "TRAIN", 5))
+	{
+		CFeatures* train=gui->guifeatures.get_train_features();
+		if (train)
+		{
+			EFeatureClass fclass=train->get_feature_class();
+			EFeatureType ftype=train->get_feature_type();
+			if ((k_fclass==fclass || k_fclass==C_ANY || fclass==C_ANY) &&
+				(k_ftype==ftype || k_ftype==F_ANY || ftype==F_ANY))
+			
+			{
+				kernel->init(train, train);
+				initialized=true;
+			}
+			else
+				SG_ERROR("Kernel can not process this train feature type: %d %d.\n", fclass, ftype);
+		}
+		else
+			SG_ERROR("Assign train features first.\n");
+	}
+	else if (!strncmp(target, "TEST", 4))
+	{
+		CFeatures* train=gui->guifeatures.get_train_features();
+		CFeatures* test=gui->guifeatures.get_test_features();
+		if (test)
+		{
+			EFeatureClass fclass=test->get_feature_class();
+			EFeatureType ftype=test->get_feature_type();
+			if ((k_fclass==fclass || k_fclass==C_ANY || fclass==C_ANY) &&
+				(k_ftype==ftype || k_ftype==F_ANY || ftype==F_ANY))
+			
+			{
+				if (!initialized)
+					SG_ERROR("Kernel not initialized with training examples.\n");
+				else
+				{
+					SG_INFO("Initialising kernel with TEST DATA, train: %p test %p\n", train, test);
+					// lhs -> always train_features; rhs -> always test_features
+					kernel->init(train, test);
+				}
+			}
+			else
+				SG_ERROR("Kernel can not process this test feature type: %d %d.\n", fclass, ftype);
+		}
+		else
+			SG_ERROR("Assign train and test features first.\n");
 	}
 	else
 	{
-		SG_ERROR( "create SVM first\n");
-		return false ;
-	}
-	return true ;
-}
-
-bool CGUIKernel::delete_kernel_optimization(CHAR* param)
-{
-	if (kernel && kernel->has_property(KP_LINADD) && kernel->get_is_initialized())
-		kernel->delete_optimization() ;
-
-	return true ;
-}
-
-
-bool CGUIKernel::init_kernel(CHAR* param)
-{
-	CHAR target[1024]="";
-
-	if (!kernel)
-	{
-		SG_ERROR( "no kernel available\n") ;
-		return false ;
-	} ;
-
-	kernel->set_precompute_matrix(false, false);
-
-	if ((sscanf(param, "%s", target))==1)
-	{
-		if (!strncmp(target, "TRAIN", 5))
-		{
-			if (gui->guifeatures.get_train_features())
-			{
-				if ( (kernel->get_feature_class() == gui->guifeatures.get_train_features()->get_feature_class() 
-							|| gui->guifeatures.get_train_features()->get_feature_class() == C_ANY 
-							|| kernel->get_feature_class() == C_ANY ) &&
-						(kernel->get_feature_type() == gui->guifeatures.get_train_features()->get_feature_type() 
-						 || gui->guifeatures.get_train_features()->get_feature_type() == F_ANY 
-						 || kernel->get_feature_type() == F_ANY) )
-				{
-					kernel->init(gui->guifeatures.get_train_features(), gui->guifeatures.get_train_features());
-					initialized=true;
-				}
-				else
-				{
-					SG_ERROR( "kernel can not process this feature type: train %d %d, test %d %d.\n", gui->guifeatures.get_train_features()->get_feature_class(), gui->guifeatures.get_train_features()->get_feature_type(), gui->guifeatures.get_test_features()->get_feature_class(), gui->guifeatures.get_test_features()->get_feature_type());
-					return false ;
-				}
-			}
-			else
-				SG_ERROR( "assign train features first\n");
-		}
-		else if (!strncmp(target, "TEST", 5))
-		{
-			if (gui->guifeatures.get_train_features() && gui->guifeatures.get_test_features())
-			{
-				if ( (kernel->get_feature_class() == gui->guifeatures.get_train_features()->get_feature_class() 
-							|| gui->guifeatures.get_train_features()->get_feature_class() == C_ANY 
-							|| kernel->get_feature_class() == C_ANY ) &&
-						(kernel->get_feature_class() == gui->guifeatures.get_test_features()->get_feature_class() 
-							|| gui->guifeatures.get_test_features()->get_feature_class() == C_ANY 
-							|| kernel->get_feature_class() == C_ANY ) &&
-						(kernel->get_feature_type() == gui->guifeatures.get_train_features()->get_feature_type() 
-						 || gui->guifeatures.get_train_features()->get_feature_type() == F_ANY 
-						 || kernel->get_feature_type() == F_ANY ) &&
-						(kernel->get_feature_type() == gui->guifeatures.get_test_features()->get_feature_type() 
-						 || gui->guifeatures.get_test_features()->get_feature_type() == F_ANY 
-						 || kernel->get_feature_type() == F_ANY ) )
-				{
-					if (!initialized)
-					{
-						SG_ERROR( "kernel not initialized for training examples\n") ;
-						return false ;
-					}
-					else
-					{
-						SG_INFO( "initialising kernel with TEST DATA, train: %p test %p\n",gui->guifeatures.get_train_features(), gui->guifeatures.get_test_features() );
-						// lhs -> always train_features; rhs -> always test_features
-						kernel->init(gui->guifeatures.get_train_features(), gui->guifeatures.get_test_features());
-					} ;
-				}
-				else
-				{
-					SG_ERROR( "kernel can not process this feature type\n");
-					return false ;
-				}
-			}
-			else
-				SG_ERROR( "assign train and test features first\n");
-
-		}
-		else
-			io.not_implemented();
-	}
-	else 
-	{
-		SG_ERROR( "see help for params\n");
+		io.not_implemented();
 		return false;
 	}
 
 	return true;
 }
 
-bool CGUIKernel::save_kernel(CHAR* param)
+bool CGUIKernel::save_kernel(CHAR* filename)
 {
-	bool result=false;
-	CHAR filename[1024]="";
-
 	if (kernel && initialized)
 	{
-		if ((sscanf(param, "%s", filename))==1)
-		{
-			if (!kernel->save(filename))
-				SG_ERROR( "writing to file %s failed!\n", filename);
-			else
-			{
-				SG_INFO( "successfully written kernel to \"%s\" !\n", filename);
-				result=true;
-			}
-		}
+		if (!kernel->save(filename))
+			SG_ERROR("Writing to file %s failed!\n", filename);
 		else
-			SG_ERROR( "see help for params\n");
+		{
+			SG_INFO("Successfully written kernel to \"%s\" !\n", filename);
+			return true;
+		}
 	}
 	else
-		SG_ERROR( "no kernel set / kernel not initialized!\n");
-	return result;
+		SG_ERROR("No kernel set / kernel not initialized!\n");
+
+	return false;
 }
 
 bool CGUIKernel::add_kernel(CKernel* kern, DREAL weight)
@@ -905,57 +862,49 @@ bool CGUIKernel::add_kernel(CKernel* kern, DREAL weight)
 	return success;
 }
 
-bool CGUIKernel::clean_kernel(CHAR* param)
+bool CGUIKernel::clean_kernel()
 {
 	delete kernel;
-	kernel = NULL;
+	kernel=NULL;
 	return true;
 }
 
 #ifdef USE_SVMLIGHT
-bool CGUIKernel::resize_kernel_cache(CHAR* param)
+bool CGUIKernel::resize_kernel_cache(INT size)
 {
-	if (kernel!=NULL) 
-	{
-		INT size = 10 ;
-		sscanf(param, "%d", &size);
-		kernel->resize_kernel_cache(size) ;
-		return true ;
-	}
-	SG_ERROR( "no kernel available\n") ;
-	return false;
+	if (!kernel)
+		SG_ERROR("No kernel available.\n");
+
+	kernel->resize_kernel_cache(size);
+	return true;
 }
 #endif //USE_SVMLIGHT
 
-bool CGUIKernel::set_optimization_type(CHAR* param)
+bool CGUIKernel::set_optimization_type(CHAR* opt_type)
 {
 	EOptimizationType opt=SLOWBUTMEMEFFICIENT;
-	char opt_type[1024];
-	param=CIO::skip_spaces(param);
+	if (!kernel)
+		SG_ERROR("No kernel available.\n");
 
-	if (kernel!=NULL) 
+	if (strncmp(opt_type, "FASTBUTMEMHUNGRY", 16)==0)
 	{
-		if (sscanf(param, "%s", opt_type)==1)
-		{
-			if (strcmp(opt_type,"FASTBUTMEMHUNGRY")==0)
-			{
-				SG_INFO("FAST METHOD selected\n");
-				opt=FASTBUTMEMHUNGRY;
-				kernel->set_optimization_type(opt);
-				return true;
-			}
-			else if (strcmp(opt_type,"SLOWBUTMEMEFFICIENT")==0)
-			{
-				SG_INFO("MEMORY EFFICIENT METHOD selected\n");
-				opt=SLOWBUTMEMEFFICIENT;
-				kernel->set_optimization_type(opt);
-				return true;
-			}
-			else
-				SG_ERROR( "option missing\n");
-		}
+		SG_INFO("FAST METHOD selected\n");
+		opt=FASTBUTMEMHUNGRY;
+		kernel->set_optimization_type(opt);
+
+		return true;
 	}
-	SG_ERROR( "no kernel available\n") ;
+	else if (strncmp(opt_type,"SLOWBUTMEMEFFICIENT", 19)==0)
+	{
+		SG_INFO("MEMORY EFFICIENT METHOD selected\n");
+		opt=SLOWBUTMEMEFFICIENT;
+		kernel->set_optimization_type(opt);
+
+		return true;
+	}
+	else
+		SG_ERROR("Wrong kernel optimization type.\n");
+
 	return false;
 }
 

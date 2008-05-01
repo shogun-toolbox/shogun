@@ -26,124 +26,96 @@ CGUIPluginEstimate::~CGUIPluginEstimate()
 	delete estimator;
 }
 
-bool CGUIPluginEstimate::new_estimator(CHAR* param)
+bool CGUIPluginEstimate::new_estimator(DREAL pos, DREAL neg)
 {
 	delete estimator;
-	param=CIO::skip_spaces(param);
-	sscanf(param, "%le %le", &pos_pseudo, &neg_pseudo);
+	estimator=new CPluginEstimate(pos, neg);
 
-	estimator=new CPluginEstimate(pos_pseudo, neg_pseudo);
-    return false;
+	if (!estimator)
+		SG_ERROR("Could not create new plugin estimator, pos_pseudo %f, neg_pseudo %f\n", pos_pseudo, neg_pseudo);
+	else
+		SG_INFO("Created new plugin estimator (%p), pos_pseudo %f, neg_pseudo %f\n", estimator, pos_pseudo, neg_pseudo);
+
+	return true;
 }
 
-bool CGUIPluginEstimate::train(CHAR* param)
+bool CGUIPluginEstimate::train()
 {
 	CLabels* trainlabels=gui->guilabels.get_train_labels();
 	CStringFeatures<WORD>* trainfeatures=(CStringFeatures<WORD>*) gui->guifeatures.get_train_features();
-
 	bool result=false;
 
-	if (trainlabels)
-	{
-		if (trainfeatures)
-		{
-			ASSERT(trainfeatures->get_feature_type()==F_WORD);
+	if (!trainlabels)
+		SG_ERROR("No labels available.\n");
 
-			estimator->set_features(trainfeatures);
-			estimator->set_labels(trainlabels);
-			if (estimator)
-				result=estimator->train();
-			else
-				SG_ERROR( "no estimator available\n");
-		}
-		else
-			SG_ERROR( "no features available\n") ;
-	}
+	if (!trainfeatures)
+		SG_ERROR("No features available.\n");
+
+	ASSERT(trainfeatures->get_feature_type()==F_WORD);
+
+	estimator->set_features(trainfeatures);
+	estimator->set_labels(trainlabels);
+	if (estimator)
+		result=estimator->train();
 	else
-		SG_ERROR( "no labels available\n") ;
+		SG_ERROR("No estimator available.\n");
 
 	return result;
 }
 
-bool CGUIPluginEstimate::test(CHAR* param)
+bool CGUIPluginEstimate::test(CHAR* filename_out, CHAR* filename_roc)
 {
-	CHAR outputname[1024];
-	CHAR rocfname[1024];
-	FILE* outputfile=stdout;
-	FILE* rocfile=NULL;
-	INT numargs=-1;
-
-	param=CIO::skip_spaces(param);
-
-	numargs=sscanf(param, "%s %s", outputname, rocfname);
-
-	if (numargs>=1)
-	{
-		outputfile=fopen(outputname, "w");
-
-		if (!outputfile)
-		{
-			SG_ERROR( "could not open %s\n",outputname);
-			return false;
-		}
-
-		if (numargs==2) 
-		{
-			rocfile=fopen(rocfname, "w");
-
-			if (!rocfile)
-			{
-				SG_ERROR( "could not open %s\n",rocfname);
-				return false;
-			}
-		}
-	}
-
-	CLabels* testlabels=gui->guilabels.get_test_labels();
-	CFeatures* testfeatures=gui->guifeatures.get_test_features();
+	FILE* file_out=stdout;
+	FILE* file_roc=NULL;
 
 	if (!estimator)
-	{
-		SG_ERROR( "no estimator available\n") ;
-		return false ;
-	}
+		SG_ERROR("No estimator available.\n");
 
 	if (!estimator->check_models())
-	{
-		SG_ERROR( "no models assigned\n") ;
-		return false ;
-	}
+		SG_ERROR("No models assigned.\n");
 
-	if (!testfeatures || testfeatures->get_feature_class()!=C_SIMPLE || testfeatures->get_feature_type()!=F_WORD)
-	{
-		SG_ERROR( "no test features of type WORD available\n") ;
-		return false ;
-	}
-
+	CLabels* testlabels=gui->guilabels.get_test_labels();
 	if (!testlabels)
+		SG_ERROR("No test labels available.\n");
+
+	CFeatures* testfeatures=gui->guifeatures.get_test_features();
+	if (!testfeatures || testfeatures->get_feature_class()!=C_SIMPLE ||
+		testfeatures->get_feature_type()!=F_WORD)
+		SG_ERROR("No test features of type WORD available.\n");
+
+	if (filename_out)
 	{
-		SG_ERROR( "no test labels available\n") ;
-		return false ;
+		file_out=fopen(filename_out, "w");
+
+		if (!file_out)
+			SG_ERROR("Could not open file %s.\n", filename_out);
+
+		if (filename_roc)
+		{
+			file_roc=fopen(filename_roc, "w");
+			if (!file_roc)
+				SG_ERROR("Could not open ROC file %s\n", filename_roc);
+		}
 	}
 
-	SG_INFO( "starting estimator testing\n") ;
+	SG_INFO("Starting estimator testing.\n");
 	estimator->set_features((CStringFeatures<WORD>*) testfeatures);
 	INT len=0;
 	DREAL* output=estimator->classify()->get_labels(len);
 
-	INT total=	testfeatures->get_num_vectors();
-	INT* label= testlabels->get_int_labels(len);
+	INT total=testfeatures->get_num_vectors();
+	INT* label=testlabels->get_int_labels(len);
 
-	SG_DEBUG( "out !!! %ld %ld\n", total, len);
+	SG_DEBUG("out !!! %ld %ld.\n", total, len);
 	ASSERT(label);
 	ASSERT(len==total);
 
-	gui->guimath.evaluate_results(output, label, total, outputfile, rocfile);
+	gui->guimath.evaluate_results(output, label, total, file_out, file_roc);
 
-	if (rocfile)
-		fclose(rocfile);
-	if ((outputfile) && (outputfile!=stdout))
-		fclose(outputfile);
+	if (file_roc)
+		fclose(file_roc);
+	if (file_out && file_out!=stdout)
+		fclose(file_out);
 
 	delete[] output;
 	delete[] label;

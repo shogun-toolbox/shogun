@@ -19,7 +19,7 @@
 #include "distance/Distance.h"
 #include "features/Features.h"
 
-class CGUI ;
+class CGUI;
 
 class CGUIDistance : public CSGObject
 {
@@ -27,10 +27,20 @@ class CGUIDistance : public CSGObject
 	CGUIDistance(CGUI*);
 	~CGUIDistance();
 
+	/** get current distance */
 	CDistance* get_distance();
-	bool set_distance(CHAR* param);
-	CDistance* create_distance(CHAR* params);
-	bool init_distance(CHAR* param);
+	/** set new distance */
+	bool set_distance(CDistance* dist);
+
+	/** create generic distance given by type */
+	CDistance* create_generic(EDistanceType type);
+	/** create Minkowski Metric */
+	CDistance* create_minkowski(DREAL k=3);
+	/** create HammingWord Distance */
+	CDistance* create_hammingword(bool use_sign=false);
+
+	/** initialize distance */
+	bool init_distance(CHAR* target);
 	bool load_distance_init(CHAR* param);
 	bool save_distance_init(CHAR* param);
 	bool save_distance(CHAR* param);

@@ -814,7 +814,7 @@ static CSGInterfaceMethod sg_methods[]=
 
 
 CSGInterface::CSGInterface()
- : m_lhs_counter(0), m_rhs_counter(0), m_nlhs(0), m_nrhs(0), m_legacy_strptr(NULL)
+ : m_lhs_counter(0), m_rhs_counter(0), m_nlhs(0), m_nrhs(0), echo(true), m_legacy_strptr(NULL)
 {
 }
 
@@ -871,7 +871,7 @@ bool CSGInterface::cmd_save_features()
 
 bool CSGInterface::cmd_clean_features()
 {
-	if (m_nrhs<3 || !create_return_values(0))
+	if (m_nrhs<2 || !create_return_values(0))
 		return false;
 
 	INT len=0;
@@ -980,7 +980,7 @@ bool CSGInterface::cmd_get_features()
 					INT num_feat=0;
 					INT num_vec=0;
 					TSparse<DREAL>* fmatrix=((CSparseFeatures<DREAL>*) feat)->get_sparse_feature_matrix(num_feat, num_vec);
-					SG_PRINT("sparse matrix has %d feats, %d vecs and %d nnz elemements\n", num_feat, num_vec, nnz);
+					SG_INFO("sparse matrix has %d feats, %d vecs and %d nnz elemements\n", num_feat, num_vec, nnz);
 
 					set_real_sparsematrix(fmatrix, num_feat, num_vec, nnz);
 					break;
@@ -1254,7 +1254,7 @@ bool CSGInterface::cmd_set_reference_features()
 
 bool CSGInterface::cmd_convert()
 {
-	if (m_nrhs<7 || !create_return_values(0))
+	if (m_nrhs<5 || !create_return_values(0))
 		return false;
 
 	INT len=0;
@@ -1368,29 +1368,51 @@ bool CSGInterface::cmd_convert()
 	{
 		if (strmatch(from_type, 4, "CHAR"))
 		{
-			if (strmatch(to_class, 6, "STRING") && m_nrhs==10)
+			if (strmatch(to_class, 6, "STRING"))
 			{
-				INT order=get_int_from_int_or_str();
-				INT start=get_int_from_int_or_str();
-				INT gap=get_int_from_int_or_str();
-				CHAR* rev=get_str_from_str_or_direct(len);
+				INT order=1;
+				INT start=0;
+				INT gap=0;
+				CHAR rev='f';
+
+				if (m_nrhs>6)
+				{
+					order=get_int_from_int_or_str();
+
+					if (m_nrhs>7)
+					{
+						start=get_int_from_int_or_str();
+
+						if (m_nrhs>8)
+						{
+							gap=get_int_from_int_or_str();
+
+							if (m_nrhs>9)
+							{
+								CHAR* rev_str=get_str_from_str_or_direct(len);
+								if (rev_str)
+									rev=rev_str[0];
+
+								delete[] rev_str;
+							}
+						}
+					}
+				}
 
 				if (strmatch(to_type, 4, "WORD"))
 				{
 					result=gui->guifeatures.convert_string_char_to_string_generic<CHAR,WORD>(
 						(CStringFeatures<CHAR>*) features, order, start,
-						gap, rev[0]);
+						gap, rev);
 				}
 				else if (strmatch(to_type, 5, "ULONG"))
 				{
 					result=gui->guifeatures.convert_string_char_to_string_generic<CHAR,ULONG>(
 					(CStringFeatures<CHAR>*) features, order, start,
-						gap, rev[0]);
+						gap, rev);
 				}
 				else
 					io.not_implemented();
-
-				delete[] rev;
 			}
 #ifdef HAVE_MINDY
 			else if (strmatch(to_class, 9, "MINDYGRAM") &&
@@ -1418,29 +1440,51 @@ bool CSGInterface::cmd_convert()
 
 		else if (strmatch(from_type, 4, "BYTE"))
 		{
-			if (strmatch(to_class, 6, "STRING") && m_nrhs==10)
+			if (strmatch(to_class, 6, "STRING"))
 			{
-				INT order=get_int_from_int_or_str();
-				INT start=get_int_from_int_or_str();
-				INT gap=get_int_from_int_or_str();
-				CHAR* rev=get_str_from_str_or_direct(len);
+				INT order=1;
+				INT start=0;
+				INT gap=0;
+				CHAR rev='f';
+
+				if (m_nrhs>6)
+				{
+					order=get_int_from_int_or_str();
+
+					if (m_nrhs>7)
+					{
+						start=get_int_from_int_or_str();
+
+						if (m_nrhs>8)
+						{
+							gap=get_int_from_int_or_str();
+
+							if (m_nrhs>9)
+							{
+								CHAR* rev_str=get_str_from_str_or_direct(len);
+								if (rev_str)
+									rev=rev_str[0];
+
+								delete[] rev_str;
+							}
+						}
+					}
+				}
 
 				if (strmatch(to_type, 4, "WORD"))
 				{
 					result=gui->guifeatures.convert_string_char_to_string_generic<BYTE,WORD>(
 						(CStringFeatures<BYTE>*) features, order, start,
-						gap, rev[0]);
+						gap, rev);
 				}
 				else if (strmatch(to_type, 5, "ULONG"))
 				{
 					result=gui->guifeatures.convert_string_char_to_string_generic<BYTE,ULONG>(
 						(CStringFeatures<BYTE>*) features, order, start,
-						gap, rev[0]);
+						gap, rev);
 				}
 				else
 					io.not_implemented();
-
-				delete[] rev;
 			}
 #ifdef HAVE_MINDY
 			else if (strmatch(to_class, 9, "MINDYGRAM") &&
@@ -1595,14 +1639,17 @@ bool CSGInterface::cmd_obtain_from_position_list()
 
 bool CSGInterface::cmd_obtain_by_sliding_window()
 {
-	if (m_nrhs<5 || !create_return_values(0))
+	if (m_nrhs<4 || !create_return_values(0))
 		return false;
 
 	INT len=0;
 	CHAR* target=get_str_from_str_or_direct(len);
 	INT winsize=get_int_from_int_or_str();
 	INT shift=get_int_from_int_or_str();
-	INT skip=get_int_from_int_or_str();
+	INT skip=0;
+
+	if (m_nrhs>5)
+		skip=get_int_from_int_or_str();
 
 	bool success=gui->guifeatures.obtain_by_sliding_window(target, winsize, shift, skip);
 
@@ -1628,7 +1675,18 @@ bool CSGInterface::cmd_reshape()
 
 bool CSGInterface::cmd_load_labels()
 {
-	return send_command(N_LOAD_LABELS);
+	if (m_nrhs<4 || !create_return_values(0))
+		return false;
+
+	INT len=0;
+	CHAR* filename=get_str_from_str_or_direct(len);
+	CHAR* target=get_str_from_str_or_direct(len);
+
+	bool success=gui->guilabels.load(filename, target);
+
+	delete[] filename;
+	delete[] target;
+	return success;
 }
 
 bool CSGInterface::cmd_set_labels()
@@ -1640,7 +1698,7 @@ bool CSGInterface::cmd_set_labels()
 	CHAR* target=get_string(tlen);
 	if (!strmatch(target, tlen, "TRAIN") && !strmatch(target, tlen, "TEST"))
 	{
-		delete target;
+		delete[] target;
 		SG_ERROR("Unknown target, neither TRAIN nor TEST.\n");
 	}
 
@@ -1717,13 +1775,14 @@ bool CSGInterface::cmd_set_kernel()
 	CKernel* kernel=create_kernel();
 	return gui->guikernel.set_kernel(kernel);
 }
-
 bool CSGInterface::cmd_add_kernel()
 {
 	if (m_nrhs<3 || !create_return_values(0))
 		return false;
 
 	DREAL weight=get_real_from_real_or_str();
+	// adjust m_nrhs to play well with checks in create_kernel
+	m_nrhs--;
 	CKernel* kernel=create_kernel();
 
 	return gui->guikernel.add_kernel(kernel, weight);
@@ -1737,16 +1796,21 @@ CKernel* CSGInterface::create_kernel()
 
 	if (strmatch(type, 8, "COMBINED"))
 	{
-		if (m_nrhs<3) return false;
+		if (m_nrhs<3)
+			return false;
 
 		INT size=get_int_from_int_or_str();
-		bool append_subkernel_weights=get_bool_from_bool_or_str();
+
+		bool append_subkernel_weights=false;
+		if (m_nrhs==4)
+			append_subkernel_weights=get_bool_from_bool_or_str();
 
 		kernel=gui->guikernel.create_combined(size, append_subkernel_weights);
 	}
 	else if (strmatch(type, 8, "DISTANCE"))
 	{
-		if (m_nrhs<4) return false;
+		if (m_nrhs<4)
+			return false;
 
 		INT size=get_int_from_int_or_str();
 		DREAL width=get_real_from_real_or_str();
@@ -1755,11 +1819,15 @@ CKernel* CSGInterface::create_kernel()
 	}
 	else if (strmatch(type, 6, "LINEAR"))
 	{
-		if (m_nrhs<4) return false;
+		if (m_nrhs<4)
+			return false;
 
 		CHAR* dtype=get_str_from_str_or_direct(len);
 		INT size=get_int_from_int_or_str();
-		DREAL scale=get_real_from_real_or_str();
+
+		DREAL scale=1.4;
+		if (m_nrhs==5)
+			scale=get_real_from_real_or_str();
 
 		if (strmatch(dtype, 4, "BYTE"))
 			kernel=gui->guikernel.create_linearbyte(size, scale);
@@ -1776,7 +1844,8 @@ CKernel* CSGInterface::create_kernel()
 	}
 	else if (strmatch(type, 9, "HISTOGRAM"))
 	{
-		if (m_nrhs<4) return false;
+		if (m_nrhs<4)
+			return false;
 
 		CHAR* dtype=get_str_from_str_or_direct(len);
 		if (strmatch(dtype, 4, "WORD"))
@@ -1789,7 +1858,8 @@ CKernel* CSGInterface::create_kernel()
 	}
 	else if (strmatch(type, 8, "SALZBERG"))
 	{
-		if (m_nrhs<4) return false;
+		if (m_nrhs<4)
+			return false;
 
 		CHAR* dtype=get_str_from_str_or_direct(len);
 		if (strmatch(dtype, 4, "WORD"))
@@ -1802,13 +1872,25 @@ CKernel* CSGInterface::create_kernel()
 	}
 	else if (strmatch(type, 9, "POLYMATCH"))
 	{
-		if (m_nrhs<4) return false;
+		if (m_nrhs<4)
+			return false;
 
 		CHAR* dtype=get_str_from_str_or_direct(len);
 		INT size=get_int_from_int_or_str();
-		INT degree=get_int_from_int_or_str();
-		bool inhomogene=get_bool_from_bool_or_str();
-		bool normalize=get_bool_from_bool_or_str();
+
+		INT degree=3;
+		bool inhomogene=false;
+		bool normalize=true;
+		if (m_nrhs>4)
+		{
+			degree=get_int_from_int_or_str();
+			if (m_nrhs>5)
+			{
+				inhomogene=get_bool_from_bool_or_str();
+				if (m_nrhs>6)
+					normalize=get_bool_from_bool_or_str();
+			}
+		}
 
 		if (strmatch(dtype, 4, "WORD"))
 		{
@@ -1825,7 +1907,8 @@ CKernel* CSGInterface::create_kernel()
 	}
 	else if (strmatch(type, 5, "MATCH"))
 	{
-		if (m_nrhs<5) return false;
+		if (m_nrhs<5)
+			return false;
 
 		CHAR* dtype=get_str_from_str_or_direct(len);
 		if (strmatch(dtype, 4, "WORD"))
@@ -1840,7 +1923,8 @@ CKernel* CSGInterface::create_kernel()
 	}
 	else if (strmatch(type, 18, "WEIGHTEDCOMMSTRING") || strmatch(type, 10, "COMMSTRING"))
 	{
-		if (m_nrhs<6) return false;
+		if (m_nrhs<6)
+			return false;
 
 		CHAR* dtype=get_str_from_str_or_direct(len);
 		INT size=get_int_from_int_or_str();
@@ -1862,7 +1946,6 @@ CKernel* CSGInterface::create_kernel()
 		}
 		else if (strmatch(dtype, 5, "ULONG"))
 		{
-			SG_PRINT("ULONG\n");
 			kernel=gui->guikernel.create_commstring(
 				size, use_sign, norm_str, K_COMMULONGSTRING);
 		}
@@ -1872,7 +1955,8 @@ CKernel* CSGInterface::create_kernel()
 	}
 	else if (strmatch(type, 4, "CHI2"))
 	{
-		if (m_nrhs<5) return false;
+		if (m_nrhs<5)
+			return false;
 
 		CHAR* dtype=get_str_from_str_or_direct(len);
 		if (strmatch(dtype, 4, "REAL"))
@@ -1887,7 +1971,8 @@ CKernel* CSGInterface::create_kernel()
 	}
 	else if (strmatch(type, 11, "FIXEDDEGREE"))
 	{
-		if (m_nrhs<5) return false;
+		if (m_nrhs<5)
+			return false;
 
 		CHAR* dtype=get_str_from_str_or_direct(len);
 		if (strmatch(dtype, 4, "CHAR"))
@@ -1900,7 +1985,8 @@ CKernel* CSGInterface::create_kernel()
 	}
 	else if (strmatch(type, 14, "LOCALALIGNMENT"))
 	{
-		if (m_nrhs<4) return false;
+		if (m_nrhs<4)
+			return false;
 
 		CHAR* dtype=get_str_from_str_or_direct(len);
 		if (strmatch(dtype, 4, "CHAR"))
@@ -1914,22 +2000,38 @@ CKernel* CSGInterface::create_kernel()
 	}
 	else if (strmatch(type, 18, "WEIGHTEDDEGREEPOS2"))
 	{
-		if (m_nrhs<5) return false;
+		if (m_nrhs<4)
+			return false;
 
 		CHAR* dtype=get_str_from_str_or_direct(len);
 		if (strmatch(dtype, 4, "CHAR") || strmatch(dtype, 6, "STRING"))
 		{
 			INT size=get_int_from_int_or_str();
-			INT order=get_int_from_int_or_str();
-			INT max_mismatch=get_int_from_int_or_str();
-			INT length=get_int_from_int_or_str();
+			INT order=3;
+			INT max_mismatch=1;
+			INT length=0;
 			INT* shifts=NULL;
-			INT veclen=0;
-			get_int_vector_from_int_vector_or_str(shifts, veclen);
 			bool use_normalization=true;
+			INT veclen=0;
 
-			if (veclen!=length)
-				SG_ERROR("Given number of shifts does not match actual number.\n");
+			if (m_nrhs>4)
+			{
+				order=get_int_from_int_or_str();
+
+				if (m_nrhs>5)
+				{
+					max_mismatch=get_int_from_int_or_str();
+
+					if (m_nrhs>7)
+					{
+						get_int_vector_from_int_vector_or_str(shifts, veclen);
+						length=get_int_from_int_or_str();
+
+						if (veclen!=length)
+							SG_ERROR("Given number of shifts does not match actual number.\n");
+					}
+				}
+			}
 
 			if (strmatch(type, 25, "WEIGHTEDDEGREEPOS2_NONORM"))
 				use_normalization=false;
@@ -1945,30 +2047,55 @@ CKernel* CSGInterface::create_kernel()
 	}
 	else if (strmatch(type, 18, "WEIGHTEDDEGREEPOS3"))
 	{
-		if (m_nrhs<5) return false;
+		if (m_nrhs<5)
+			return false;
 
 		CHAR* dtype=get_str_from_str_or_direct(len);
 		if (strmatch(dtype, 4, "CHAR") || strmatch(dtype, 6, "STRING"))
 		{
 			INT size=get_int_from_int_or_str();
-			INT order=get_int_from_int_or_str();
-			INT max_mismatch=get_int_from_int_or_str();
-			INT length=get_int_from_int_or_str();
+			INT order=3;
+			INT max_mismatch=1;
+			INT length=0;
 			INT mkl_stepsize=1;
 			INT veclen=length;
-
 			INT* shifts=NULL;
-			get_int_vector_from_int_vector_or_str(shifts, veclen);
-			if (veclen!=length)
-				SG_ERROR("Given number of shifts does not match actual number.\n");
+			DREAL* position_weights=NULL;
 
-			// what is that supposed to accomplish right before getting the actual values?
-			DREAL* position_weights=new DREAL[length];
-			for (INT i=0; i<length; i++)
-				position_weights[i]=1.0/length;
-			get_real_vector_from_real_vector_or_str(position_weights, veclen);
-			if (veclen!=length)
-				SG_ERROR("Given number of position weights does not match actual number.\n");
+			if (m_nrhs>4)
+			{
+				order=get_int_from_int_or_str();
+
+				if (m_nrhs>5)
+				{
+					max_mismatch=get_int_from_int_or_str();
+
+					if (m_nrhs>7)
+					{
+						get_int_vector_from_int_vector_or_str(shifts, veclen);
+						length=get_int_from_int_or_str();
+						if (veclen!=length)
+							SG_ERROR("Given number of shifts does not match actual number.\n");
+
+						if (m_nrhs>8+length)
+						{
+							mkl_stepsize=get_int_from_int_or_str();
+
+							if (m_nrhs>9+length)
+							{
+								// what is that supposed to accomplish right before getting the actual values?
+								position_weights=new DREAL[length];
+								for (INT i=0; i<length; i++)
+									position_weights[i]=1.0/length;
+
+								get_real_vector_from_real_vector_or_str(position_weights, veclen);
+								if (veclen!=length)
+									SG_ERROR("Given number of position weights does not match actual number.\n");
+							}
+						}
+					}
+				}
+			}
 
 			kernel=gui->guikernel.create_weighteddegreepositionstring3(
 				size, order, max_mismatch, shifts, length,
@@ -1981,17 +2108,41 @@ CKernel* CSGInterface::create_kernel()
 	}
 	else if (strmatch(type, 17, "WEIGHTEDDEGREEPOS"))
 	{
-		if (m_nrhs<5) return false;
+		if (m_nrhs<4)
+			return false;
 
 		CHAR* dtype=get_str_from_str_or_direct(len);
 		if (strmatch(dtype, 4, "CHAR") || strmatch(dtype, 6, "STRING"))
 		{
 			INT size=get_int_from_int_or_str();
-			INT order=get_int_from_int_or_str();
-			INT max_mismatch=get_int_from_int_or_str();
-			INT length=get_int_from_int_or_str();
-			INT center=get_int_from_int_or_str();
-			DREAL step=get_real_from_real_or_str();
+			INT order=3;
+			INT max_mismatch=1;
+			INT length=0;
+			INT center=0;
+			DREAL step=1;
+
+			if (m_nrhs>4)
+			{
+				order=get_int_from_int_or_str();
+
+				if (m_nrhs>5)
+				{
+					max_mismatch=get_int_from_int_or_str();
+
+					if (m_nrhs>6)
+					{
+						length=get_int_from_int_or_str();
+
+						if (m_nrhs>7)
+						{
+							center=get_int_from_int_or_str();
+
+							if (m_nrhs>8)
+								step=get_real_from_real_or_str();
+						}
+					}
+				}
+			}
 
 			kernel=gui->guikernel.create_weighteddegreepositionstring(
 				size, order, max_mismatch, length, center, step);
@@ -2001,18 +2152,47 @@ CKernel* CSGInterface::create_kernel()
 	}
 	else if (strmatch(type, 14, "WEIGHTEDDEGREE"))
 	{
-		if (m_nrhs<5) return false;
+		if (m_nrhs<4)
+			return false;
 
 		CHAR* dtype=get_str_from_str_or_direct(len);
 		if (strmatch(dtype, 4, "CHAR") || strmatch(dtype, 6, "STRING"))
 		{
 			INT size=get_int_from_int_or_str();
-			INT order=get_int_from_int_or_str();
-			INT max_mismatch=get_int_from_int_or_str();
-			bool use_normalization=get_bool_from_bool_or_str();
-			INT mkl_stepsize=get_int_from_int_or_str();
-			bool block_computation=get_int_from_int_or_str();
-			INT single_degree=get_int_from_int_or_str();
+			INT order=3;
+			INT max_mismatch=1;
+			bool use_normalization=true;
+			INT mkl_stepsize=1;
+			bool block_computation=true;
+			INT single_degree=-1;
+
+			if (m_nrhs>4)
+			{
+				order=get_int_from_int_or_str();
+
+				if (m_nrhs>5)
+				{
+					max_mismatch=get_int_from_int_or_str();
+
+					if (m_nrhs>6)
+					{
+						use_normalization=get_bool_from_bool_or_str();
+
+						if (m_nrhs>7)
+						{
+							mkl_stepsize=get_int_from_int_or_str();
+
+							if (m_nrhs>8)
+							{
+								block_computation=get_int_from_int_or_str();
+
+								if (m_nrhs>9)
+									single_degree=get_int_from_int_or_str();
+							}
+						}
+					}
+				}
+			}
 
 			kernel=gui->guikernel.create_weighteddegreestring(
 				size, order, max_mismatch, use_normalization,
@@ -2023,15 +2203,29 @@ CKernel* CSGInterface::create_kernel()
 	}
 	else if (strmatch(type, 4, "SLIK") || strmatch(type, 3, "LIK"))
 	{
-		if (m_nrhs<7) return false;
+		if (m_nrhs<4)
+			return false;
 
 		CHAR* dtype=get_str_from_str_or_direct(len);
 		if (strmatch(dtype, 4, "CHAR"))
 		{
 			INT size=get_int_from_int_or_str();
-			INT length=get_int_from_int_or_str();
-			INT inner_degree=get_int_from_int_or_str();
-			INT outer_degree=get_int_from_int_or_str();
+			INT length=3;
+			INT inner_degree=3;
+			INT outer_degree=1;
+
+			if (m_nrhs>4)
+			{
+				length=get_int_from_int_or_str();
+
+				if (m_nrhs>5)
+				{
+					inner_degree=get_int_from_int_or_str();
+
+					if (m_nrhs>6)
+						outer_degree=get_int_from_int_or_str();
+				}
+			}
 
 			if (strmatch(type, 4, "SLIK"))
 			{
@@ -2051,13 +2245,27 @@ CKernel* CSGInterface::create_kernel()
 	}
 	else if (strmatch(type, 4, "POLY"))
 	{
-		if (m_nrhs<7) return false;
+		if (m_nrhs<4)
+			return false;
 
 		CHAR* dtype=get_str_from_str_or_direct(len);
 		INT size=get_int_from_int_or_str();
-		bool inhomogene=get_bool_from_bool_or_str();
-		INT degree=get_int_from_int_or_str();
-		bool normalize=get_bool_from_bool_or_str();
+		bool inhomogene=false;
+		INT degree=2;
+		bool normalize=true;
+
+		if (m_nrhs>4)
+		{
+			inhomogene=get_bool_from_bool_or_str();
+
+			if (m_nrhs>5)
+			{
+				degree=get_int_from_int_or_str();
+
+				if (m_nrhs>6)
+					normalize=get_bool_from_bool_or_str();
+			}
+		}
 
 		if (strmatch(dtype, 4, "REAL"))
 		{
@@ -2074,7 +2282,8 @@ CKernel* CSGInterface::create_kernel()
 	}
 	else if (strmatch(type, 7, "SIGMOID"))
 	{
-		if (m_nrhs<6) return false;
+		if (m_nrhs<6)
+			return false;
 
 		CHAR* dtype=get_str_from_str_or_direct(len);
 		if (strmatch(dtype, 4, "REAL"))
@@ -2090,7 +2299,8 @@ CKernel* CSGInterface::create_kernel()
 	}
 	else if (strmatch(type, 8, "GAUSSIAN")) // RBF
 	{
-		if (m_nrhs<5) return false;
+		if (m_nrhs<5)
+			return false;
 
 		CHAR* dtype=get_str_from_str_or_direct(len);
 		INT size=get_int_from_int_or_str();
@@ -2105,7 +2315,8 @@ CKernel* CSGInterface::create_kernel()
 	}
 	else if (strmatch(type, 13, "GAUSSIANSHIFT")) // RBF
 	{
-		if (m_nrhs<7) return false;
+		if (m_nrhs<7)
+			return false;
 
 		CHAR* dtype=get_str_from_str_or_direct(len);
 		if (strmatch(dtype, 4, "REAL"))
@@ -2127,7 +2338,8 @@ CKernel* CSGInterface::create_kernel()
 	}
 	else if (strmatch(type, 5, "CONST"))
 	{
-		if (m_nrhs<4) return false;
+		if (m_nrhs<4)
+			return false;
 
 		INT size=get_int_from_int_or_str();
 		DREAL c=get_real_from_real_or_str();
@@ -2136,7 +2348,8 @@ CKernel* CSGInterface::create_kernel()
 	}
 	else if (strmatch(type, 4, "DIAG"))
 	{
-		if (m_nrhs<4) return false;
+		if (m_nrhs<4)
+			return false;
 
 		INT size=get_int_from_int_or_str();
 		DREAL diag=get_real_from_real_or_str();
@@ -2147,7 +2360,8 @@ CKernel* CSGInterface::create_kernel()
 #ifdef HAVE_MINDY
 	else if (strmatch(type, 9, "MINDYGRAM"))
 	{
-		if (m_nrhs<7) return false;
+		if (m_nrhs<7)
+			return false;
 
 		INT size=get_int_from_int_or_str();
 		CHAR* meas_str=get_str_from_str_or_direct(len);
@@ -2170,27 +2384,66 @@ CKernel* CSGInterface::create_kernel()
 
 bool CSGInterface::cmd_init_kernel()
 {
-	return send_command(N_INIT_KERNEL);
+	if (m_nrhs<2 || !create_return_values(0))
+		return false;
+
+	INT len=0;
+	CHAR* target=get_str_from_str_or_direct(len);
+
+	bool success=gui->guikernel.init_kernel(target);
+
+	delete[] target;
+	return success;
 }
 
 bool CSGInterface::cmd_clean_kernel()
 {
-	return send_command(N_CLEAN_KERNEL);
+	if (m_nrhs<1 || !create_return_values(0))
+		return false;
+
+	return gui->guikernel.clean_kernel();
 }
 
 bool CSGInterface::cmd_save_kernel()
 {
-	return send_command(N_SAVE_KERNEL);
+	if (m_nrhs<2 || !create_return_values(0))
+		return false;
+
+	INT len=0;
+	CHAR* filename=get_str_from_str_or_direct(len);
+
+	bool success=gui->guikernel.save_kernel(filename);
+
+	delete[] filename;
+	return success;
 }
 
 bool CSGInterface::cmd_load_kernel_init()
 {
-	return send_command(N_LOAD_KERNEL_INIT);
+	if (m_nrhs<2 || !create_return_values(0))
+		return false;
+
+	INT len=0;
+	CHAR* filename=get_str_from_str_or_direct(len);
+
+	bool success=gui->guikernel.load_kernel_init(filename);
+
+	delete[] filename;
+	return success;
 }
 
 bool CSGInterface::cmd_save_kernel_init()
 {
-	return send_command(N_SAVE_KERNEL_INIT);
+	if (m_nrhs<2 || !create_return_values(0))
+		return false;
+
+	INT len=0;
+	CHAR* filename=get_str_from_str_or_direct(len);
+
+	bool success=gui->guikernel.save_kernel_init(filename);
+
+	delete[] filename;
+	return success;
 }
 
 bool CSGInterface::cmd_get_kernel_matrix()
@@ -2745,7 +2998,10 @@ bool CSGInterface::cmd_compute_by_subkernels()
 
 bool CSGInterface::cmd_init_kernel_optimization()
 {
-	return send_command(N_INIT_KERNEL_OPTIMIZATION);
+	if (m_nrhs<1 || !create_return_values(0))
+		return false;
+
+	return gui->guikernel.init_kernel_optimization();
 }
 
 bool CSGInterface::cmd_get_kernel_optimization()
@@ -2837,18 +3093,34 @@ bool CSGInterface::cmd_get_kernel_optimization()
 
 bool CSGInterface::cmd_delete_kernel_optimization()
 {
-	return send_command(N_DELETE_KERNEL_OPTIMIZATION);
+	if (m_nrhs<1 || !create_return_values(0))
+		return false;
+
+	return gui->guikernel.delete_kernel_optimization();
 }
 
 bool CSGInterface::cmd_set_kernel_optimization_type()
 {
-	return send_command(N_SET_KERNEL_OPTIMIZATION_TYPE);
+	if (m_nrhs<2 || !create_return_values(0))
+		return false;
+
+	INT len=0;
+	CHAR* opt_type=get_str_from_str_or_direct(len);
+
+	bool success=gui->guikernel.set_optimization_type(opt_type);
+
+	delete[] opt_type;
+	return success;
 }
 
 #ifdef USE_SVMLIGHT
 bool CSGInterface::cmd_resize_kernel_cache()
 {
-	return send_command(N_RESIZE_KERNEL_CACHE);
+	if (m_nrhs<2 || !create_return_values(0))
+		return false;
+
+	INT size=get_int_from_int_or_str();
+	return gui->guikernel.resize_kernel_cache(size);
 }
 #endif //USE_SVMLIGHT
 
@@ -2857,12 +3129,80 @@ bool CSGInterface::cmd_resize_kernel_cache()
 
 bool CSGInterface::cmd_set_distance()
 {
-	return send_command(N_SET_DISTANCE);
+	if (m_nrhs<3 || !create_return_values(0))
+		return false;
+
+	CDistance* distance=NULL;
+	INT len=0;
+	CHAR* type=get_str_from_str_or_direct(len);
+	CHAR* dtype=get_str_from_str_or_direct(len);
+
+	if (strmatch(type, 9, "MINKOWSKI") && m_nrhs==4)
+	{
+		DREAL k=get_real_from_real_or_str();
+		distance=gui->guidistance.create_minkowski(k);
+	}
+	else if (strmatch(type, 9, "MANHATTAN"))
+	{
+		if (strmatch(dtype, 4, "REAL"))
+			distance=gui->guidistance.create_generic(D_MANHATTAN);
+		else if (strmatch(dtype, 4, "WORD"))
+			distance=gui->guidistance.create_generic(D_MANHATTANWORD);
+	}
+	else if (strmatch(type, 7, "HAMMING") && strmatch(dtype, 4, "WORD"))
+	{
+		bool use_sign=false;
+		if (m_nrhs==5)
+			use_sign=get_bool_from_bool_or_str(); // optional
+
+		distance=gui->guidistance.create_hammingword(use_sign);
+	}
+	else if (strmatch(type, 8, "CANBERRA"))
+	{
+		if (strmatch(dtype, 4, "REAL"))
+			distance=gui->guidistance.create_generic(D_CANBERRA);
+		else if (strmatch(dtype, 4, "WORD"))
+			distance=gui->guidistance.create_generic(D_CANBERRAWORD);
+	}
+	else if (strmatch(type, 9, "CHEBYSHEW") && strmatch(dtype, 4, "REAL"))
+	{
+		distance=gui->guidistance.create_generic(D_CHEBYSHEW);
+	}
+	else if (strmatch(type, 8, "GEODESIC") && strmatch(dtype, 4, "REAL"))
+	{
+		distance=gui->guidistance.create_generic(D_GEODESIC);
+	}
+	else if (strmatch(type, 6, "JENSEN") && strmatch(dtype, 4, "REAL"))
+	{
+		distance=gui->guidistance.create_generic(D_JENSEN);
+	}
+	else if (strmatch(type, 9, "EUCLIDIAN"))
+	{
+		if (strmatch(dtype, 4, "REAL"))
+			distance=gui->guidistance.create_generic(D_EUCLIDIAN);
+		else if (strmatch(dtype, 10, "SPARSEREAL"))
+			distance=gui->guidistance.create_generic(D_SPARSEEUCLIDIAN);
+	}
+	else
+		io.not_implemented();
+
+	delete[] type;
+	delete[] dtype;
+	return gui->guidistance.set_distance(distance);
 }
 
 bool CSGInterface::cmd_init_distance()
 {
-	return send_command(N_INIT_DISTANCE);
+	if (m_nrhs<2 || !create_return_values(0))
+		return false;
+
+	INT len=0;
+	CHAR* target=get_str_from_str_or_direct(len);
+
+	bool success=gui->guidistance.init_distance(target);
+
+	delete[] target;
+	return success;
 }
 
 bool CSGInterface::cmd_get_distance_matrix()
@@ -3198,16 +3538,27 @@ bool CSGInterface::cmd_new_classifier()
 		return false;
 
 	INT len=0;
-	CHAR* name=get_string(len);
+	CHAR* name=get_str_from_str_or_direct(len);
 	bool success=gui->guiclassifier.new_classifier(name);
-	
+
 	delete[] name;
 	return success;
 }
 
 bool CSGInterface::cmd_load_classifier()
 {
-	return send_command(N_LOAD_SVM); // FIXME: N_LOAD_CLASSIFIER
+	if (m_nrhs<3 || !create_return_values(0))
+		return false;
+
+	INT len=0;
+	CHAR* filename=get_str_from_str_or_direct(len);
+	CHAR* type=get_str_from_str_or_direct(len);
+
+	bool success=gui->guiclassifier.load(filename, type);
+
+	delete[] filename;
+	delete[] type;
+	return success;
 }
 
 bool CSGInterface::cmd_get_svm()
@@ -3263,99 +3614,280 @@ bool CSGInterface::cmd_get_svm_objective()
 	return true;
 }
 
-bool CSGInterface::cmd_do_auc_maximization()
-{
-	return send_command(N_DO_AUC_MAXIMIZATION);
-}
-
-bool CSGInterface::cmd_set_perceptron_parameters()
-{
-	return send_command(N_SET_PERCEPTRON_PARAMETERS);
-}
-
 bool CSGInterface::cmd_train_classifier()
 {
-	return send_command(N_TRAIN_CLASSIFIER);
+	if (m_nrhs<1 || !create_return_values(0))
+		return false;
+
+	CClassifier* classifier=gui->guiclassifier.get_classifier();
+	if (!classifier)
+		SG_ERROR("No classifier available.\n");
+
+	EClassifierType type=classifier->get_classifier_type();
+	switch (type)
+	{
+		case CT_LIGHT:
+		case CT_LIBSVM:
+		case CT_MPD:
+		case CT_GPBT:
+		case CT_CPLEXSVM:
+		case CT_GMNPSVM:
+		case CT_GNPPSVM:
+		case CT_KERNELPERCEPTRON:
+		case CT_LIBSVR:
+		case CT_LIBSVMMULTICLASS:
+		case CT_LIBSVMONECLASS:
+		case CT_SVRLIGHT:
+		case CT_KRR:
+			return gui->guiclassifier.train_svm();
+
+		case CT_KNN:
+		{
+			if (m_nrhs<2)
+				return false;
+
+			INT k=get_int_from_int_or_str();
+
+			return gui->guiclassifier.train_knn(k);
+		}
+
+		case CT_KMEANS:
+		{
+			if (m_nrhs<3)
+				return false;
+
+			INT k=get_int_from_int_or_str();
+			INT max_iter=get_int_from_int_or_str();
+
+			return gui->guiclassifier.train_clustering(k, max_iter);
+		}
+
+		case CT_HIERARCHICAL:
+		{
+			if (m_nrhs<2)
+				return false;
+
+			INT merges=get_int_from_int_or_str();
+
+			return gui->guiclassifier.train_clustering(merges);
+		}
+
+		case CT_PERCEPTRON:
+		case CT_LDA:
+			return gui->guiclassifier.train_linear();
+
+		case CT_SVMLIN:
+		case CT_SVMPERF:
+		case CT_SUBGRADIENTSVM:
+		case CT_SVMOCAS:
+		case CT_SVMSGD:
+		case CT_LPM:
+		case CT_LPBOOST:
+		case CT_SUBGRADIENTLPM:
+		case CT_LIBLINEAR:
+			return gui->guiclassifier.train_sparse_linear();
+
+		case CT_WDSVMOCAS:
+			return gui->guiclassifier.train_wdocas();
+
+		default:
+			SG_ERROR("Unknown classifier type %d.\n", type);
+	}
+
+	return false;
 }
 
 bool CSGInterface::cmd_test_svm()
 {
-	return send_command(N_SVM_TEST);
+	if (m_nrhs<1 || !create_return_values(0))
+		return false;
+
+	INT len=0;
+	CHAR* filename_out=get_str_from_str_or_direct(len);
+	CHAR* filename_roc=get_str_from_str_or_direct(len);
+
+	bool success=gui->guiclassifier.test(filename_out, filename_roc);
+
+	delete[] filename_out;
+	delete[] filename_roc;
+	return success;
+}
+
+bool CSGInterface::cmd_do_auc_maximization()
+{
+	if (m_nrhs!=2 || !create_return_values(0))
+		return false;
+
+	bool do_auc=get_bool_from_bool_or_str();
+
+	return gui->guiclassifier.set_do_auc_maximization(do_auc);
+}
+
+bool CSGInterface::cmd_set_perceptron_parameters()
+{
+	if (m_nrhs!=3 || !create_return_values(0))
+		return false;
+
+	DREAL lernrate=get_real_from_real_or_str();
+	INT maxiter=get_int_from_int_or_str();
+
+	return gui->guiclassifier.set_perceptron_parameters(lernrate, maxiter);
 }
 
 bool CSGInterface::cmd_set_svm_qpsize()
 {
-	return send_command(N_SVMQPSIZE);
+	if (m_nrhs!=2 || !create_return_values(0))
+		return false;
+
+	INT qpsize=get_int_from_int_or_str();
+
+	return gui->guiclassifier.set_svm_qpsize(qpsize);
 }
 
 bool CSGInterface::cmd_set_svm_max_qpsize()
 {
-	return send_command(N_SVMMAXQPSIZE);
+	if (m_nrhs!=2 || !create_return_values(0))
+		return false;
+
+	INT max_qpsize=get_int_from_int_or_str();
+
+	return gui->guiclassifier.set_svm_max_qpsize(max_qpsize);
 }
 
 bool CSGInterface::cmd_set_svm_bufsize()
 {
-	return send_command(N_SVMBUFSIZE);
+	if (m_nrhs!=2 || !create_return_values(0))
+		return false;
+
+	INT bufsize=get_int_from_int_or_str();
+
+	return gui->guiclassifier.set_svm_bufsize(bufsize);
 }
 
 bool CSGInterface::cmd_set_svm_C()
 {
-	return send_command(N_C);
+	if (m_nrhs<2 || !create_return_values(0))
+		return false;
+
+	DREAL C1=get_real_from_real_or_str();
+	DREAL C2=0;
+
+	if (m_nrhs==3)
+		C2=get_real_from_real_or_str();
+
+	return gui->guiclassifier.set_svm_C(C1, C2);
 }
 
 bool CSGInterface::cmd_set_svm_epsilon()
 {
-	return send_command(N_SVM_EPSILON);
+	if (m_nrhs!=2 || !create_return_values(0))
+		return false;
+
+	DREAL epsilon=get_real_from_real_or_str();
+
+	return gui->guiclassifier.set_svm_epsilon(epsilon);
 }
 
 bool CSGInterface::cmd_set_svr_tube_epsilon()
 {
-	return send_command(N_SVR_TUBE_EPSILON);
+	if (m_nrhs!=2 || !create_return_values(0))
+		return false;
+
+	DREAL tube_epsilon=get_real_from_real_or_str();
+
+	return gui->guiclassifier.set_svr_tube_epsilon(tube_epsilon);
 }
 
 bool CSGInterface::cmd_set_svm_one_class_nu()
 {
-	return send_command(N_SVM_ONE_CLASS_NU);
+	if (m_nrhs!=2 || !create_return_values(0))
+		return false;
+
+	DREAL nu=get_real_from_real_or_str();
+
+	return gui->guiclassifier.set_svm_one_class_nu(nu);
 }
 
 bool CSGInterface::cmd_set_svm_mkl_parameters()
 {
-	return send_command(N_MKL_PARAMETERS);
+	if (m_nrhs!=3 || !create_return_values(0))
+		return false;
+
+	DREAL weight_epsilon=get_real_from_real_or_str();
+	DREAL C_mkl=get_real_from_real_or_str();
+
+	return gui->guiclassifier.set_svm_mkl_parameters(weight_epsilon, C_mkl);
 }
 
 bool CSGInterface::cmd_set_max_train_time()
 {
-	return send_command(N_SVM_MAX_TRAIN_TIME);
+	if (m_nrhs!=2 || !create_return_values(0))
+		return false;
+
+	DREAL max_train_time=get_real_from_real_or_str();
+
+	return gui->guiclassifier.set_max_train_time(max_train_time);
 }
 
 bool CSGInterface::cmd_set_svm_precompute_enabled()
 {
-	return send_command(N_USE_PRECOMPUTE);
+	if (m_nrhs!=2 || !create_return_values(0))
+		return false;
+
+	INT precompute=get_int_from_int_or_str();
+
+	return gui->guiclassifier.set_svm_precompute_enabled(precompute);
 }
 
 bool CSGInterface::cmd_set_svm_mkl_enabled()
 {
-	return send_command(N_USE_MKL);
+	if (m_nrhs!=2 || !create_return_values(0))
+		return false;
+
+	bool mkl_enabled=get_bool_from_bool_or_str();
+
+	return gui->guiclassifier.set_svm_mkl_enabled(mkl_enabled);
 }
 
 bool CSGInterface::cmd_set_svm_shrinking_enabled()
 {
-	return send_command(N_USE_SHRINKING);
+	if (m_nrhs!=2 || !create_return_values(0))
+		return false;
+
+	bool shrinking_enabled=get_bool_from_bool_or_str();
+
+	return gui->guiclassifier.set_svm_shrinking_enabled(shrinking_enabled);
 }
 
 bool CSGInterface::cmd_set_svm_batch_computation_enabled()
 {
-	return send_command(N_USE_BATCH_COMPUTATION);
+	if (m_nrhs!=2 || !create_return_values(0))
+		return false;
+
+	bool batch_computation_enabled=get_bool_from_bool_or_str();
+
+	return gui->guiclassifier.set_svm_batch_computation_enabled(
+		batch_computation_enabled);
 }
 
 bool CSGInterface::cmd_set_svm_linadd_enabled()
 {
-	return send_command(N_USE_LINADD);
+	if (m_nrhs!=2 || !create_return_values(0))
+		return false;
+
+	bool linadd_enabled=get_bool_from_bool_or_str();
+
+	return gui->guiclassifier.set_svm_linadd_enabled(linadd_enabled);
 }
 
 bool CSGInterface::cmd_set_svm_bias_enabled()
 {
-	return send_command(N_SVM_USE_BIAS);
+	if (m_nrhs!=2 || !create_return_values(0))
+		return false;
+
+	bool bias_enabled=get_bool_from_bool_or_str();
+
+	return gui->guiclassifier.set_svm_bias_enabled(bias_enabled);
 }
 
 
@@ -3363,32 +3895,109 @@ bool CSGInterface::cmd_set_svm_bias_enabled()
 
 bool CSGInterface::cmd_add_preproc()
 {
-	return send_command(N_ADD_PREPROC);
+	if (m_nrhs<2 || !create_return_values(0))
+		return false;
+
+	INT len=0;
+	CHAR* type=get_str_from_str_or_direct(len);
+	CPreProc* preproc=NULL;
+
+	if (strmatch(type, 7, "NORMONE"))
+		preproc=gui->guipreproc.create_generic(P_NORMONE);
+	else if (strmatch(type, 10, "LOGPLUSONE"))
+		preproc=gui->guipreproc.create_generic(P_LOGPLUSONE);
+	else if (strmatch(type, 14, "SORTWORDSTRING"))
+		preproc=gui->guipreproc.create_generic(P_SORTWORDSTRING);
+	else if (strmatch(type, 15, "SORTULONGSTRING"))
+		preproc=gui->guipreproc.create_generic(P_SORTULONGSTRING);
+	else if (strmatch(type, 8, "SORTWORD"))
+		preproc=gui->guipreproc.create_generic(P_SORTWORD);
+
+	else if (strmatch(type, 15, "PRUNEVARSUBMEAN"))
+	{
+		bool divide_by_std=get_bool_from_bool_or_str();
+
+		preproc=gui->guipreproc.create_prunevarsubmean(divide_by_std);
+	}
+
+#ifdef HAVE_LAPACK
+	else if (strmatch(type, 6, "PCACUT") && m_nrhs==4)
+	{
+		bool do_whitening=get_bool_from_bool_or_str();
+		DREAL threshold=get_real_from_real_or_str();
+
+		preproc=gui->guipreproc.create_pcacut(do_whitening, threshold);
+	}
+#endif
+
+	else
+		io.not_implemented();
+
+	delete[] type;
+	return gui->guipreproc.add_preproc(preproc);
 }
 
 bool CSGInterface::cmd_del_preproc()
 {
-	return send_command(N_DEL_PREPROC);
+	if (m_nrhs!=1 || !create_return_values(0))
+		return false;
+
+	return gui->guipreproc.del_preproc();
 }
 
 bool CSGInterface::cmd_load_preproc()
 {
-	return send_command(N_LOAD_PREPROC);
+	if (m_nrhs!=2 || !create_return_values(0))
+		return false;
+
+	INT len=0;
+	CHAR* filename=get_str_from_str_or_direct(len);
+
+	bool success=gui->guipreproc.load(filename);
+
+	delete[] filename;
+	return success;
 }
 
 bool CSGInterface::cmd_save_preproc()
 {
-	return send_command(N_SAVE_PREPROC);
+	if (m_nrhs<2 || !create_return_values(0))
+		return false;
+
+	INT len=0;
+	CHAR* filename=get_str_from_str_or_direct(len);
+	INT num_preprocs=get_int_from_int_or_str();
+
+	bool success=gui->guipreproc.save(filename, num_preprocs);
+
+	delete[] filename;
+	return success;
 }
 
 bool CSGInterface::cmd_attach_preproc()
 {
-	return send_command(N_ATTACH_PREPROC);
+	if (m_nrhs<2 || !create_return_values(0))
+		return false;
+
+	INT len=0;
+	CHAR* target=get_str_from_str_or_direct(len);
+
+	bool do_force=false;
+	if (m_nrhs==3)
+		do_force=get_bool_from_bool_or_str();
+
+	bool success=gui->guipreproc.attach_preproc(target, do_force);
+
+	delete[] target;
+	return success;
 }
 
 bool CSGInterface::cmd_clean_preproc()
 {
-	return send_command(N_CLEAN_PREPROC);
+	if (m_nrhs!=1 || !create_return_values(0))
+		return false;
+
+	return gui->guipreproc.clean_preproc();
 }
 
 
@@ -3396,17 +4005,37 @@ bool CSGInterface::cmd_clean_preproc()
 
 bool CSGInterface::cmd_new_plugin_estimator()
 {
-	return send_command(N_NEW_PLUGIN_ESTIMATOR);
+	if (m_nrhs<2 || !create_return_values(0))
+		return false;
+
+	DREAL pos_pseudo=get_real_from_real_or_str();
+	DREAL neg_pseudo=get_real_from_real_or_str();
+
+	return gui->guipluginestimate.new_estimator(pos_pseudo, neg_pseudo);
 }
 
 bool CSGInterface::cmd_train_estimator()
 {
-	return send_command(N_TRAIN_ESTIMATOR);
+	if (m_nrhs!=1 || !create_return_values(0))
+		return false;
+
+	return gui->guipluginestimate.train();
 }
 
 bool CSGInterface::cmd_test_estimator()
 {
-	return send_command(N_TEST_ESTIMATOR);
+	if (m_nrhs<1 || !create_return_values(0))
+		return false;
+
+	INT len=0;
+	CHAR* filename_out=get_str_from_str_or_direct(len);
+	CHAR* filename_roc=get_str_from_str_or_direct(len);
+
+	bool success=gui->guipluginestimate.test(filename_out, filename_roc);
+
+	delete[] filename_out;
+	delete[] filename_roc;
+	return success;
 }
 
 bool CSGInterface::cmd_plugin_estimate_classify_example()
@@ -3514,22 +4143,45 @@ bool CSGInterface::cmd_get_plugin_estimate()
 
 bool CSGInterface::cmd_convergence_criteria()
 {
-	return send_command(N_CONVERGENCE_CRITERIA);
+	if (m_nrhs<3 || !create_return_values(0))
+		return false;
+
+	INT num_iterations=get_int_from_int_or_str();
+	DREAL epsilon=get_real_from_real_or_str();
+
+	return gui->guihmm.convergence_criteria(num_iterations, epsilon);
 }
 
 bool CSGInterface::cmd_normalize()
 {
-	return send_command(N_NORMALIZE);
+	if (m_nrhs<2 || !create_return_values(0))
+		return false;
+
+	bool keep_dead_states=get_bool_from_bool_or_str();
+
+	return gui->guihmm.normalize(keep_dead_states);
 }
 
 bool CSGInterface::cmd_add_states()
 {
-	return send_command(N_ADD_STATES);
+	if (m_nrhs<3 || !create_return_values(0))
+		return false;
+
+	INT num_states=get_int_from_int_or_str();
+	DREAL value=get_real_from_real_or_str();
+
+	return gui->guihmm.add_states(num_states, value);
 }
 
 bool CSGInterface::cmd_permutation_entropy()
 {
-	return send_command(N_PERMUTATION_ENTROPY);
+	if (m_nrhs<3 || !create_return_values(0))
+		return false;
+
+	INT width=get_int_from_int_or_str();
+	INT seq_num=get_int_from_int_or_str();
+
+	return gui->guihmm.permutation_entropy(width, seq_num);
 }
 
 bool CSGInterface::cmd_relative_entropy()
@@ -3616,12 +4268,39 @@ bool CSGInterface::cmd_hmm_classify()
 
 bool CSGInterface::cmd_hmm_test()
 {
-	return send_command(N_HMM_TEST);
+	if (m_nrhs<1 || !create_return_values(0))
+		return false;
+
+	INT len=0;
+	CHAR* filename_out=get_str_from_str_or_direct(len);
+	CHAR* filename_roc=get_str_from_str_or_direct(len);
+	bool pos_is_linear=get_bool_from_bool_or_str();
+	bool neg_is_linear=get_bool_from_bool_or_str();
+
+	bool success=gui->guihmm.hmm_test(
+		filename_out, filename_roc, pos_is_linear, neg_is_linear);
+
+	delete[] filename_out;
+	delete[] filename_roc;
+	return success;
 }
 
 bool CSGInterface::cmd_one_class_hmm_test()
 {
-	return send_command(N_ONE_CLASS_HMM_TEST);
+	if (m_nrhs<1 || !create_return_values(0))
+		return false;
+
+	INT len=0;
+	CHAR* filename_out=get_str_from_str_or_direct(len);
+	CHAR* filename_roc=get_str_from_str_or_direct(len);
+	bool is_linear=get_bool_from_bool_or_str();
+
+	bool success=gui->guihmm.one_class_test(
+		filename_out, filename_roc, is_linear);
+
+	delete[] filename_out;
+	delete[] filename_roc;
+	return success;
 }
 
 bool CSGInterface::cmd_one_class_hmm_classify()
@@ -3703,12 +4382,18 @@ bool CSGInterface::do_hmm_classify_example(bool one_class)
 
 bool CSGInterface::cmd_output_hmm()
 {
-	return send_command(N_OUTPUT_HMM);
+	if (m_nrhs!=1 || !create_return_values(0))
+		return false;
+
+	return gui->guihmm.output_hmm();
 }
 
 bool CSGInterface::cmd_output_hmm_defined()
 {
-	return send_command(N_OUTPUT_HMM_DEFINED);
+	if (m_nrhs!=1 || !create_return_values(0))
+		return false;
+
+	return gui->guihmm.output_hmm_defined();
 }
 
 bool CSGInterface::cmd_hmm_likelihood()
@@ -3728,12 +4413,28 @@ bool CSGInterface::cmd_hmm_likelihood()
 
 bool CSGInterface::cmd_likelihood()
 {
-	return send_command(N_LIKELIHOOD);
+	if (m_nrhs!=1 || !create_return_values(0))
+		return false;
+
+	return gui->guihmm.likelihood();
 }
 
 bool CSGInterface::cmd_save_likelihood()
 {
-	return send_command(N_SAVE_LIKELIHOOD);
+	if (m_nrhs<2 || !create_return_values(0))
+		return false;
+
+	INT len=0;
+	CHAR* filename=get_str_from_str_or_direct(len);
+
+	bool is_binary=false;
+	if (m_nrhs==3)
+		is_binary=get_bool_from_bool_or_str();
+
+	bool success=gui->guihmm.save_likelihood(filename, is_binary);
+
+	delete[] filename;
+	return success;
 }
 
 bool CSGInterface::cmd_get_viterbi_path()
@@ -3773,32 +4474,71 @@ bool CSGInterface::cmd_get_viterbi_path()
 
 bool CSGInterface::cmd_viterbi_train()
 {
-	return send_command(N_VITERBI_TRAIN);
+	if (m_nrhs!=1 || !create_return_values(0))
+		return false;
+
+	return gui->guihmm.viterbi_train();
 }
 
 bool CSGInterface::cmd_viterbi_train_defined()
 {
-	return send_command(N_VITERBI_TRAIN_DEFINED);
+	if (m_nrhs!=1 || !create_return_values(0))
+		return false;
+
+	return gui->guihmm.viterbi_train_defined();
 }
 
 bool CSGInterface::cmd_baum_welch_train()
 {
-	return send_command(N_BAUM_WELCH_TRAIN);
+	if (m_nrhs!=1 || !create_return_values(0))
+		return false;
+
+	return gui->guihmm.baum_welch_train();
 }
 
 bool CSGInterface::cmd_baum_welch_trans_train()
 {
-	return send_command(N_BAUM_WELCH_TRANS_TRAIN);
+	if (m_nrhs!=1 || !create_return_values(0))
+		return false;
+
+	return gui->guihmm.baum_welch_trans_train();
 }
 
 bool CSGInterface::cmd_linear_train()
 {
-	return send_command(N_LINEAR_TRAIN);
+	if (m_nrhs<1 || !create_return_values(0))
+		return false;
+
+	if (m_nrhs==2)
+	{
+		INT len=0;
+		CHAR* align=get_str_from_str_or_direct(len);
+
+		bool success=gui->guihmm.linear_train(align[0]);
+
+		delete[] align;
+		return success;
+	}
+	else
+		return gui->guihmm.linear_train();
 }
 
 bool CSGInterface::cmd_save_path()
 {
-	return send_command(N_SAVE_PATH);
+	if (m_nrhs<2 || !create_return_values(0))
+		return false;
+
+	INT len=0;
+	CHAR* filename=get_str_from_str_or_direct(len);
+
+	bool is_binary=false;
+	if (m_nrhs==3)
+		is_binary=get_bool_from_bool_or_str();
+
+	bool success=gui->guihmm.save_path(filename, is_binary);
+
+	delete[] filename;
+	return success;
 }
 
 bool CSGInterface::cmd_append_hmm()
@@ -3863,17 +4603,45 @@ bool CSGInterface::cmd_append_hmm()
 
 bool CSGInterface::cmd_new_hmm()
 {
-	return send_command(N_NEW_HMM);
+	if (m_nrhs!=3 || !create_return_values(0))
+		return false;
+
+	INT n=get_int_from_int_or_str();
+	INT m=get_int_from_int_or_str();
+
+	return gui->guihmm.new_hmm(n, m);
 }
 
 bool CSGInterface::cmd_load_hmm()
 {
-	return send_command(N_LOAD_HMM);
+	if (m_nrhs!=2 || !create_return_values(0))
+		return false;
+
+	INT len=0;
+	CHAR* filename=get_str_from_str_or_direct(len);
+
+	bool success=gui->guihmm.load(filename);
+
+	delete[] filename;
+	return success;
 }
 
 bool CSGInterface::cmd_save_hmm()
 {
-	return send_command(N_SAVE_HMM);
+	if (m_nrhs<2 || !create_return_values(0))
+		return false;
+
+	INT len=0;
+	CHAR* filename=get_str_from_str_or_direct(len);
+
+	bool is_binary=false;
+	if (m_nrhs==3)
+		is_binary=get_bool_from_bool_or_str();
+
+	bool success=gui->guihmm.save(filename, is_binary);
+
+	delete[] filename;
+	return success;
 }
 
 bool CSGInterface::cmd_set_hmm()
@@ -3936,22 +4704,52 @@ bool CSGInterface::cmd_set_hmm()
 
 bool CSGInterface::cmd_set_hmm_as()
 {
-	return send_command(N_SET_HMM_AS);
+	if (m_nrhs!=2 || !create_return_values(0))
+		return false;
+
+	INT len=0;
+	CHAR* target=get_str_from_str_or_direct(len);
+
+	bool success=gui->guihmm.set_hmm_as(target);
+
+	delete[] target;
+	return success;
 }
 
 bool CSGInterface::cmd_set_chop()
 {
-	return send_command(N_CHOP);
+	if (m_nrhs!=2 || !create_return_values(0))
+		return false;
+
+	DREAL value=get_real_from_real_or_str();
+	return gui->guihmm.chop(value);
 }
 
 bool CSGInterface::cmd_set_pseudo()
 {
-	return send_command(N_PSEUDO);
+	if (m_nrhs!=2 || !create_return_values(0))
+		return false;
+
+	DREAL value=get_real_from_real_or_str();
+	return gui->guihmm.set_pseudo(value);
 }
 
 bool CSGInterface::cmd_load_definitions()
 {
-	return send_command(N_LOAD_DEFINITIONS);
+	if (m_nrhs<2 || !create_return_values(0))
+		return false;
+
+	INT len=0;
+	CHAR* filename=get_str_from_str_or_direct(len);
+
+	bool do_init=false;
+	if (m_nrhs==3)
+		do_init=get_bool_from_bool_or_str();
+
+	bool success=gui->guihmm.load_definitions(filename, do_init);
+
+	delete[] filename;
+	return success;
 }
 
 bool CSGInterface::cmd_get_hmm()
@@ -4004,7 +4802,13 @@ bool CSGInterface::cmd_get_hmm()
 
 bool CSGInterface::cmd_best_path()
 {
-	return send_command(N_BEST_PATH);
+	if (m_nrhs!=3 || !create_return_values(0))
+		return false;
+
+	INT from=get_int_from_int_or_str();
+	INT to=get_int_from_int_or_str();
+
+	return gui->guihmm.best_path(from, to);
 }
 
 bool CSGInterface::cmd_best_path_2struct()
@@ -4013,7 +4817,7 @@ bool CSGInterface::cmd_best_path_2struct()
 		return false;
 
 	SG_ERROR("Sorry, this parameter list is awful!\n");
-	
+
 	return true;
 }
 
@@ -4023,7 +4827,7 @@ bool CSGInterface::cmd_best_path_trans()
 		return false;
 
 	SG_ERROR("Sorry, this parameter list is awful!\n");
-	
+
 	return true;
 }
 
@@ -4218,7 +5022,16 @@ bool CSGInterface::cmd_crc()
 
 bool CSGInterface::cmd_system()
 {
-	return send_command(N_SYSTEM);
+	if (m_nrhs<2 || !create_return_values(0))
+		return false;
+
+	INT len=0;
+	CHAR* cmd=get_str_from_str_or_direct(len);
+
+	INT success=system(cmd);
+
+	delete[] cmd;
+	return (success==0);
 }
 
 bool CSGInterface::cmd_exit()
@@ -4228,22 +5041,81 @@ bool CSGInterface::cmd_exit()
 
 bool CSGInterface::cmd_exec()
 {
-	return send_command(N_EXEC);
+	if (m_nrhs<2 || !create_return_values(0))
+		return false;
+
+	INT len=0;
+	CHAR* filename=get_str_from_str_or_direct(len);
+	FILE* file=fopen(filename, "r");
+	if (!file)
+	{
+		delete[] filename;
+		SG_ERROR("Error opening file: %s.", filename);
+	}
+
+	while (!feof(file))
+	{
+		// FIXME: somehow put read line into m_nrhs
+		//CHAR* line=get_line(file, false);
+		if (!handle())
+			break;
+	}
+
+	fclose(file);
+	return true;
 }
 
 bool CSGInterface::cmd_set_output()
 {
-	return send_command(N_SET_OUTPUT);
+	if (m_nrhs<2 || !create_return_values(0))
+		return false;
+
+	INT len=0;
+	CHAR* filename=get_str_from_str_or_direct(len);
+
+	if (file_out)
+		fclose(file_out);
+	file_out=NULL;
+
+	SG_INFO("Setting output file to: %s.\n", filename);
+
+	if (strmatch(filename, 6, "STDERR"))
+		io.set_target(stderr);
+	else if (strmatch(filename, 6, "STDOUT"))
+		io.set_target(stdout);
+	else
+	{
+		file_out=fopen(filename, "w");
+		if (!file_out)
+			SG_ERROR("Error opening output file %s.\n", filename);
+		io.set_target(file_out);
+	}
+
+	return true;
 }
 
 bool CSGInterface::cmd_set_threshold()
 {
-	return send_command(N_SET_THRESHOLD);
+	if (m_nrhs!=2 || !create_return_values(0))
+		return false;
+
+	DREAL value=get_real_from_real_or_str();
+
+	gui->guimath.set_threshold(value);
+	return true;
 }
 
 bool CSGInterface::cmd_set_num_threads()
 {
-	return send_command(N_THREADS);
+	if (m_nrhs!=2 || !create_return_values(0))
+		return false;
+
+	INT num_threads=get_int_from_int_or_str();
+
+	parallel.set_num_threads(num_threads);
+	SG_INFO("Set number of threads to %d.\n", num_threads);
+
+	return true;
 }
 
 bool CSGInterface::cmd_translate_string()
@@ -4317,7 +5189,16 @@ bool CSGInterface::cmd_translate_string()
 
 bool CSGInterface::cmd_clear()
 {
-	return send_command(N_CLEAR);
+	//FIXME: must be done for each interface type
+	/*
+	char ** _argv=gui->argv;
+	INT _argc=gui->argc;
+	delete gui;
+	gui=new CTextGUI(_argc, _argv);
+	*/
+
+	io.not_implemented();
+	return false;
 }
 
 bool CSGInterface::cmd_tic()
@@ -4334,12 +5215,50 @@ bool CSGInterface::cmd_toc()
 
 bool CSGInterface::cmd_echo()
 {
-	return send_command(N_ECHO);
+	if (m_nrhs<2 || !create_return_values(0))
+		return false;
+
+	INT len=0;
+	CHAR* level=get_str_from_str_or_direct(len);
+
+	if (strmatch(level, 3, "OFF"))
+	{
+		echo=false;
+		SG_INFO("Echo is off.\n");
+	}
+	else
+	{
+		echo=true;
+		SG_INFO("Echo is on.\n");
+	}
+
+	delete[] level;
+	return true;
 }
 
 bool CSGInterface::cmd_loglevel()
 {
-	return send_command(N_LOGLEVEL);
+	if (m_nrhs<2 || !create_return_values(0))
+		return false;
+
+	INT len=0;
+	CHAR* level=get_str_from_str_or_direct(len);
+
+	if (strmatch(level, 3, "ALL"))
+		io.set_loglevel(M_DEBUG);
+	else if (strmatch(level, 4, "INFO"))
+		io.set_loglevel(M_INFO);
+	else if (strmatch(level, 4, "WARN"))
+		io.set_loglevel(M_WARN);
+	else if (strmatch(level, 5, "ERROR"))
+		io.set_loglevel(M_ERROR);
+	else
+		SG_ERROR("Unknown loglevel %s.\n", level);
+
+	SG_INFO("Loglevel set to %s.\n", level);
+
+	delete[] level;
+	return true;
 }
 
 bool CSGInterface::cmd_get_version()
@@ -4443,23 +5362,10 @@ bool CSGInterface::cmd_send_command()
 	SG_DEBUG("legacy: arg == %s\n", arg);
 	m_legacy_strptr=arg;
 
-	if (!strmatch(arg, strlen(N_SET_KERNEL), N_SET_KERNEL) &&
-		!strmatch(arg, strlen(N_ADD_KERNEL), N_ADD_KERNEL) &&
-		!strmatch(arg, strlen(N_SLIDE_WINDOW), N_SLIDE_WINDOW) &&
-		!strmatch(arg, strlen(N_RESHAPE), N_RESHAPE) &&
-		!strmatch(arg, strlen(N_LOAD_FEATURES), N_LOAD_FEATURES) &&
-		!strmatch(arg, strlen(N_SAVE_FEATURES), N_SAVE_FEATURES) &&
-		!strmatch(arg, strlen(N_CLEAN_FEATURES), N_CLEAN_FEATURES) &&
-		!strmatch(arg, strlen(N_CONVERT), N_CONVERT))
-	{
-		SG_DEBUG("invoking old TextGUI...\n");
-		return gui->parse_line(arg);
-	}
-
 	CHAR* command=get_str_from_str(len);
-
 	INT i=0;
 	bool success=false;
+
 	while (sg_methods[i].command)
 	{
 		if (strmatch(command, len, sg_methods[i].command))
@@ -4485,25 +5391,9 @@ bool CSGInterface::cmd_send_command()
 	return success;
 }
 
-// FIXME make this unnecessary:
-bool CSGInterface::send_command(const CHAR* cmd)
+void CSGInterface::print_prompt()
 {
-	INT len_args=0;
-	CHAR* args=interface->get_string(len_args);
-	INT len_line=strlen(cmd)+len_args+2;
-	CHAR* line=new CHAR[len_line];
-
-	*line='\0';
-	strncat(line, cmd, len_line);
-	strncat(line, " \0", len_line);
-	strncat(line, args, len_line);
-
-	bool success=gui->parse_line(line);
-
-	delete[] args;
-	delete[] line;
-
-	return success;
+	SG_PRINT("\033[1;34mshogun\033[0m >> ");
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -4585,7 +5475,7 @@ void CSGInterface::get_int_vector_from_int_vector_or_str(INT* vector, INT& len)
 		{
 			str=get_str_from_str(slen);
 			vector[i]=strtol(str, NULL, 10);
-			SG_PRINT("vec[%d]: %d\n", i, vector[i]);
+			SG_DEBUG("vec[%d]: %d\n", i, vector[i]);
 			delete[] str;
 		}
 	}
@@ -4615,7 +5505,7 @@ void CSGInterface::get_real_vector_from_real_vector_or_str(DREAL* vector, INT& l
 		{
 			str=get_str_from_str(slen);
 			vector[i]=strtod(str, NULL);
-			SG_PRINT("vec[%d]: %f\n", i, vector[i]);
+			SG_DEBUG("vec[%d]: %f\n", i, vector[i]);
 			delete[] str;
 		}
 	}
@@ -4636,12 +5526,16 @@ CHAR* CSGInterface::get_str_from_str(INT& len)
 	CHAR* str=new CHAR[len+1];
 	ASSERT(str);
 
+
 	for (i=0; i<len; i++)
 		str[i]=m_legacy_strptr[i];
 	str[len]='\0';
 
 	// move legacy strptr
-	m_legacy_strptr=m_legacy_strptr+len+1;
+	if (m_legacy_strptr[len]=='\0')
+		m_legacy_strptr=NULL;
+	else
+		m_legacy_strptr=m_legacy_strptr+len+1;
 
 	return str;
 }
@@ -4664,6 +5558,45 @@ INT CSGInterface::get_num_args_in_str()
 		return num_seperator+1;
 	else
 		return 0;
+}
+
+CHAR* CSGInterface::get_line(FILE* infile, bool interactive_mode)
+{
+	char* in=NULL;
+	memset(input, 0, sizeof(input));
+
+	if (feof(infile))
+		return NULL;
+
+#ifdef HAVE_READLINE
+	if (interactive_mode)
+	{
+		in=readline("\033[1;34mshogun\033[0m >> ");
+		if (in)
+		{
+			strncpy(input, in, sizeof(input));
+			add_history(in);
+			free(in);
+		}
+	}
+	else
+	{
+		if ( (fgets(input, sizeof(input), infile)==NULL) || (!strlen(input)) )
+			return NULL;
+		in=input;
+	}
+#else
+	if (interactive_mode)
+		print_prompt();
+	if ( (fgets(input, sizeof(input), infile)==NULL) || (!strlen(input)) )
+		return NULL;
+	in=input;
+#endif
+
+	if (in==NULL || (!strlen(input)))
+		return NULL;
+	else
+		return input;
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -4705,7 +5638,7 @@ bool CSGInterface::handle()
 				if (sg_methods[i].usage)
 					SG_ERROR("Usage: %s.\n", sg_methods[i].usage);
 				else
-					SG_ERROR("Wrong Usage of %s.\n", command);
+					SG_ERROR("Wrong usage of %s.\n", command);
 			else
 			{
 				success=true;

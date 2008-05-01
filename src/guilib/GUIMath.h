@@ -24,7 +24,7 @@ public:
 	void evaluate_results(DREAL* output, INT* label, INT total, FILE* outputfile=NULL, FILE* rocfile=NULL);
 	void current_results(DREAL* output, INT* label, INT total, FILE* outputfile=NULL);
 
-	void set_threshold(CHAR* input);
+	void set_threshold(DREAL value);
 protected:
 	CGUI* gui;
 	DREAL threshold;

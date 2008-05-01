@@ -77,8 +77,8 @@ class CGUIFeatures : public CSGObject
 		bool save(CHAR* filename, CHAR* type, CHAR* target);
 		/** clean/r features */
 		bool clean(CHAR* target);
-		/** obtain feature buy sliding window */
-		bool obtain_by_sliding_window(CHAR* target, INT winsize, INT shift, INT skip);
+		/** obtain feature by sliding window */
+		bool obtain_by_sliding_window(CHAR* target, INT winsize, INT shift, INT skip=0);
 		/** reshape target feature matrix */
 		bool reshape(CHAR* target, INT num_feat, INT num_vec);
 

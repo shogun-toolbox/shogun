@@ -28,45 +28,34 @@ CGUILabels::~CGUILabels()
 	delete test_labels;
 }
 
-bool CGUILabels::load(CHAR* param)
+bool CGUILabels::load(CHAR* filename, CHAR* target)
 {
-	param=CIO::skip_spaces(param);
-	CHAR filename[1024]="";
-	CHAR target[1024]="";
+	CLabels* labels=NULL;
 
-	if ((sscanf(param, "%s %s", filename, target))==2)
+	if (strncmp(target, "TEST", 4)==0)
+		labels=test_labels;
+	else if (strncmp(target, "TRAIN", 5)==0)
+		labels=train_labels;
+	else
+		SG_ERROR("Invalid target %s.\n", target);
+
+	if (labels)
 	{
-		CLabels** f_ptr=NULL;
+		delete (labels);
+		labels=new CLabels(filename);
 
-		if (strcmp(target,"TRAIN")==0)
+		if (labels)
 		{
-			f_ptr=&train_labels;
-		}
-		else if (strcmp(target,"TEST")==0)
-		{
-			f_ptr=&test_labels;
+			if (strncmp(target, "TEST", 4)==0)
+				set_test_labels(labels);
+			else
+				set_train_labels(labels);
+
+			return true;
 		}
 		else
-		{
-			SG_ERROR( "see help for parameters\n");
-			return false;
-		}
-
-		if (f_ptr)
-		{
-			delete (*f_ptr);
-			*f_ptr=new CLabels(filename);
-
-			CLabels* label=*f_ptr;
-
-			if (label)
-				return true;
-			else
-				SG_ERROR( "loading labels failed\n");
-		}
+			SG_ERROR("Loading labels failed.\n");
 	}
-	else
-		SG_ERROR( "see help for params\n");
 
 	return false;
 }
