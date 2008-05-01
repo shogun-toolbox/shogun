@@ -61,7 +61,7 @@ for kk = 1:size(radius_star,1)
 
   % train MKL
 
-  sg('send_command','clean_kernels');
+  sg('send_command','clean_kernel');
   sg('send_command','clean_features TRAIN');
   sg('add_features','TRAIN', train_x);       % set a trainingset for every SVM
   sg('add_features','TRAIN', train_x);
