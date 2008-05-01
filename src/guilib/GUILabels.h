@@ -19,12 +19,12 @@
 #include "base/SGObject.h"
 #include "features/Labels.h"
 
-class CGUI;
+class CSGInterface;
 
 class CGUILabels : public CSGObject
 {
 	public:
-		CGUILabels(CGUI *);
+		CGUILabels(CSGInterface* interface);
 		~CGUILabels();
 
 		CLabels *get_train_labels() { return train_labels; }
@@ -38,7 +38,7 @@ class CGUILabels : public CSGObject
 		bool save(CHAR* param);
 
 	protected:
-		CGUI* gui;
+		CSGInterface* ui;
 		CLabels *train_labels;
 		CLabels *test_labels;
 };

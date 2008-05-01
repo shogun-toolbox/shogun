@@ -12,12 +12,17 @@
 #include "lib/config.h"
 
 #ifndef HAVE_SWIG
-#include "guilib/GUIPluginEstimate.h"
-#include "features/StringFeatures.h"
 #include "lib/io.h"
-#include "gui/GUI.h"
 
-CGUIPluginEstimate::CGUIPluginEstimate(CGUI* g) : CSGObject(), gui(g), estimator(NULL),pos_pseudo(1e-10), neg_pseudo(1e-10)
+#include "interface/SGInterface.h"
+#include "guilib/GUIPluginEstimate.h"
+
+#include "features/StringFeatures.h"
+
+
+CGUIPluginEstimate::CGUIPluginEstimate(CSGInterface* ui_)
+: CSGObject(), ui(ui_), estimator(NULL),
+	pos_pseudo(1e-10), neg_pseudo(1e-10)
 {
 }
 
@@ -41,8 +46,8 @@ bool CGUIPluginEstimate::new_estimator(DREAL pos, DREAL neg)
 
 bool CGUIPluginEstimate::train()
 {
-	CLabels* trainlabels=gui->guilabels.get_train_labels();
-	CStringFeatures<WORD>* trainfeatures=(CStringFeatures<WORD>*) gui->guifeatures.get_train_features();
+	CLabels* trainlabels=ui->ui_labels.get_train_labels();
+	CStringFeatures<WORD>* trainfeatures=(CStringFeatures<WORD>*) ui->ui_features.get_train_features();
 	bool result=false;
 
 	if (!trainlabels)
@@ -74,11 +79,11 @@ bool CGUIPluginEstimate::test(CHAR* filename_out, CHAR* filename_roc)
 	if (!estimator->check_models())
 		SG_ERROR("No models assigned.\n");
 
-	CLabels* testlabels=gui->guilabels.get_test_labels();
+	CLabels* testlabels=ui->ui_labels.get_test_labels();
 	if (!testlabels)
 		SG_ERROR("No test labels available.\n");
 
-	CFeatures* testfeatures=gui->guifeatures.get_test_features();
+	CFeatures* testfeatures=ui->ui_features.get_test_features();
 	if (!testfeatures || testfeatures->get_feature_class()!=C_SIMPLE ||
 		testfeatures->get_feature_type()!=F_WORD)
 		SG_ERROR("No test features of type WORD available.\n");
@@ -110,7 +115,7 @@ bool CGUIPluginEstimate::test(CHAR* filename_out, CHAR* filename_roc)
 	ASSERT(label);
 	ASSERT(len==total);
 
-	gui->guimath.evaluate_results(output, label, total, file_out, file_roc);
+	ui->ui_math.evaluate_results(output, label, total, file_out, file_roc);
 
 	if (file_roc)
 		fclose(file_roc);
@@ -136,7 +141,7 @@ bool CGUIPluginEstimate::save(CHAR* param)
 
 CLabels* CGUIPluginEstimate::classify(CLabels* output)
 {
-	CFeatures* testfeatures=gui->guifeatures.get_test_features();
+	CFeatures* testfeatures=ui->ui_features.get_test_features();
 
 	if (!estimator)
 	{
@@ -157,7 +162,7 @@ CLabels* CGUIPluginEstimate::classify(CLabels* output)
 
 DREAL CGUIPluginEstimate::classify_example(INT idx)
 {
-	CFeatures* testfeatures=gui->guifeatures.get_test_features();
+	CFeatures* testfeatures=ui->ui_features.get_test_features();
 
 	if (!estimator)
 	{

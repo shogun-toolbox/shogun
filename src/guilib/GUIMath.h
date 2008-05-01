@@ -15,19 +15,21 @@
 
 #ifndef HAVE_SWIG
 #include "base/SGObject.h"
-class CGUI;
+
+class CSGInterface;
 
 class CGUIMath : public CSGObject
 {
-public:
-	CGUIMath(CGUI *);
-	void evaluate_results(DREAL* output, INT* label, INT total, FILE* outputfile=NULL, FILE* rocfile=NULL);
-	void current_results(DREAL* output, INT* label, INT total, FILE* outputfile=NULL);
+	public:
+		CGUIMath(CSGInterface* interface);
+		void evaluate_results(DREAL* output, INT* label, INT total, FILE* outputfile=NULL, FILE* rocfile=NULL);
+		void current_results(DREAL* output, INT* label, INT total, FILE* outputfile=NULL);
 
-	void set_threshold(DREAL value);
-protected:
-	CGUI* gui;
-	DREAL threshold;
+		void set_threshold(DREAL value);
+
+	protected:
+		CSGInterface* ui;
+		DREAL threshold;
 };
 #endif //HAVE_SWIG
 #endif

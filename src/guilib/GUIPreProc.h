@@ -20,12 +20,12 @@
 #include "preproc/PreProc.h"
 #include "lib/List.h"
 
-class CGUI;
+class CSGInterface;
 
 class CGUIPreProc : public CSGObject
 {
 	public:
-		CGUIPreProc(CGUI*);
+		CGUIPreProc(CSGInterface* interface);
 		~CGUIPreProc();
 
 		/** create generic PreProc */
@@ -59,7 +59,7 @@ class CGUIPreProc : public CSGObject
 
 		CList<CList<CPreProc*>*>* attached_preprocs_lists;
 		CList<CPreProc*>* preprocs;
-		CGUI* gui ;
+		CSGInterface* ui;
 };
 #endif //HAVE_SWIG
 #endif

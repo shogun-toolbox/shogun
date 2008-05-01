@@ -31,7 +31,7 @@
 #include "features/CombinedFeatures.h"
 #include "features/MindyGramFeatures.h"
 
-class CGUI;
+class CSGInterface;
 
 class CGUIFeatures : public CSGObject
 {
@@ -42,7 +42,7 @@ class CGUIFeatures : public CSGObject
 	};
 
 	public:
-		CGUIFeatures(CGUI *);
+		CGUIFeatures(CSGInterface* interface);
 		~CGUIFeatures();
 
 		inline CFeatures *get_train_features() { return train_features; }
@@ -153,7 +153,7 @@ class CGUIFeatures : public CSGObject
 		bool set_reference_features(CHAR* target);
 
 	protected:
-		CGUI* gui;
+		CSGInterface* ui;
 		CFeatures *train_features;
 		CFeatures *test_features;
 		CFeatures *ref_features;

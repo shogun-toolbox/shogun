@@ -12,8 +12,12 @@
 #include "lib/config.h"
 
 #ifndef HAVE_SWIG
+#include "lib/io.h"
+#include "lib/config.h"
+
 #include "guilib/GUIPreProc.h"
-#include "gui/GUI.h"
+#include "interface/SGInterface.h"
+
 #include "preproc/LogPlusOne.h"
 #include "preproc/NormOne.h"
 #include "preproc/PruneVarSubMean.h"
@@ -32,14 +36,12 @@
 #include "features/SparseFeatures.h"
 #include "features/CombinedFeatures.h"
 #include "features/Features.h"
-#include "lib/io.h"
-#include "lib/config.h"
 
 #include <string.h>
 #include <stdio.h>
 
-CGUIPreProc::CGUIPreProc(CGUI * gui_)
-  : CSGObject(), gui(gui_)
+CGUIPreProc::CGUIPreProc(CSGInterface* ui_)
+  : CSGObject(), ui(ui_)
 {
 	preprocs=new CList<CPreProc*>(true);
 	attached_preprocs_lists=new CList<CList<CPreProc*>*>(true);
@@ -214,18 +216,18 @@ bool CGUIPreProc::attach_preproc(CHAR* target, bool do_force)
 
 	if (strncmp(target, "TRAIN", 5)==0)
 	{
-		CFeatures* f = gui->guifeatures.get_train_features();
+		CFeatures* f = ui->ui_features.get_train_features();
 		if (f->get_feature_class()==C_COMBINED)
 			f=((CCombinedFeatures*)f)->get_last_feature_obj();
 
 		preprocess_features(f, NULL, do_force);
-		gui->guifeatures.invalidate_train();
+		ui->ui_features.invalidate_train();
 		result=true;
 	}
 	else if (strncmp(target, "TEST", 4)==0)
 	{
-		CFeatures* f_test=gui->guifeatures.get_test_features();
-		CFeatures* f_train=gui->guifeatures.get_train_features();
+		CFeatures* f_test=ui->ui_features.get_test_features();
+		CFeatures* f_train=ui->ui_features.get_train_features();
 		EFeatureClass fclass_train=f_train->get_feature_class();
 		EFeatureClass fclass_test=f_test->get_feature_class();
 
@@ -270,7 +272,7 @@ bool CGUIPreProc::attach_preproc(CHAR* target, bool do_force)
 			else
 			{
 				preprocess_features(f_train, f_test, do_force);
-				gui->guifeatures.invalidate_test();
+				ui->ui_features.invalidate_test();
 				result=true;
 			}
 		}

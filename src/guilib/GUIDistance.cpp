@@ -12,8 +12,11 @@
 #include "lib/config.h"
 
 #ifndef HAVE_SWIG
+#include <string.h>
 
-#include "gui/GUI.h"
+#include "lib/io.h"
+
+#include "interface/SGInterface.h"
 #include "guilib/GUIDistance.h"
 
 #include "distance/Distance.h"
@@ -42,11 +45,8 @@
 #include "features/RealFeatures.h"
 #include "features/Features.h"
 
-#include "lib/io.h"
 
-#include <string.h>
-
-CGUIDistance::CGUIDistance(CGUI * gui_): CSGObject(), gui(gui_)
+CGUIDistance::CGUIDistance(CSGInterface* ui_): CSGObject(), ui(ui_)
 {
 	distance=NULL;
 	initialized=false;
@@ -151,7 +151,7 @@ bool CGUIDistance::init_distance(CHAR* target)
 
 	if (!strncmp(target, "TRAIN", 5))
 	{
-		CFeatures* train=gui->guifeatures.get_train_features();
+		CFeatures* train=ui->ui_features.get_train_features();
 		if (train)
 		{
 			EFeatureClass fclass=train->get_feature_class();
@@ -171,8 +171,8 @@ bool CGUIDistance::init_distance(CHAR* target)
 	}
 	else if (!strncmp(target, "TEST", 4))
 	{
-		CFeatures* train=gui->guifeatures.get_train_features();
-		CFeatures* test=gui->guifeatures.get_test_features();
+		CFeatures* train=ui->ui_features.get_train_features();
+		CFeatures* test=ui->ui_features.get_test_features();
 		if (test)
 		{
 			EFeatureClass fclass=test->get_feature_class();

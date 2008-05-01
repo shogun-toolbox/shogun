@@ -11,16 +11,24 @@
 
 extern CSGInterface* interface;
 
-COctaveInterface::COctaveInterface(octave_value_list prhs, INT nlhs) : CSGInterface()
+COctaveInterface::COctaveInterface(octave_value_list prhs, INT nlhs)
+: CSGInterface()
 {
-	m_nlhs=nlhs;
-	m_nrhs=prhs.length();
-	m_lhs=octave_value_list();
-	m_rhs=prhs;
+	reset(prhs, nlhs);
 }
 
 COctaveInterface::~COctaveInterface()
 {
+}
+
+void COctaveInterface::reset(octave_value_list prhs, INT nlhs)
+{
+	CSGInterface::reset();
+
+	m_nlhs=nlhs;
+	m_nrhs=prhs.length();
+	m_lhs=octave_value_list();
+	m_rhs=prhs;
 }
 
 /** get functions - to pass data from the target interface to shogun */
@@ -432,8 +440,13 @@ SET_STRINGLIST(set_word_string_list, uint16NDArray, WORD, WORD, "Word")
 
 DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 {
-	delete interface;
-	interface=new COctaveInterface(prhs, nlhs);
+	if (!interface)
+	{
+		interface=new COctaveInterface(prhs, nlhs);
+		ASSERT(interface);
+	}
+	else
+		((COctaveInterface*) interface)->reset(prhs, nlhs);
 
 	try
 	{

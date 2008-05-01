@@ -19,12 +19,12 @@
 #include "distance/Distance.h"
 #include "features/Features.h"
 
-class CGUI;
+class CSGInterface;
 
 class CGUIDistance : public CSGObject
 {
  public:
-	CGUIDistance(CGUI*);
+	CGUIDistance(CSGInterface* interface);
 	~CGUIDistance();
 
 	/** get current distance */
@@ -47,11 +47,11 @@ class CGUIDistance : public CSGObject
 
 	bool clean_distance(CHAR* param);
 
-	bool is_initialized() { return initialized ; } ;
+	bool is_initialized() { return initialized; }
 
  protected:
 	CDistance* distance;
-	CGUI* gui ;
+	CSGInterface* ui;
 	bool initialized;
 };
 #endif //HAVE_SWIG

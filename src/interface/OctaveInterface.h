@@ -21,6 +21,9 @@ class COctaveInterface : public CSGInterface
 		COctaveInterface(octave_value_list prhs, INT nlhs);
 		~COctaveInterface();
 
+		/// reset to clean state
+		virtual void reset(octave_value_list prhs, INT nlhs);
+
 		/** get functions - to pass data from the target interface to shogun */
 
 		/// get type of current argument (does not increment argument counter)

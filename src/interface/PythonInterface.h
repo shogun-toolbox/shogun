@@ -18,6 +18,9 @@ class CPythonInterface : public CSGInterface
 		CPythonInterface(PyObject* self, PyObject* args);
 		~CPythonInterface();
 
+		/// reset to clean state
+		virtual void reset(PyObject* self, PyObject* args);
+
 		/** get functions - to pass data from the target interface to shogun */
 
 		/// get type of current argument (does not increment argument counter)

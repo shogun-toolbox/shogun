@@ -11,17 +11,28 @@
 
 extern CSGInterface* interface;
 
-CMatlabInterface::CMatlabInterface(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[]) : CSGInterface()
+CMatlabInterface::CMatlabInterface(
+	int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
+: CSGInterface()
 {
+	reset(nlhs, plhs, nrhs, prhs);
+}
+
+CMatlabInterface::~CMatlabInterface()
+{
+}
+
+void CMatlabInterface::reset(
+	int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
+{
+	CSGInterface::reset();
+
 	m_nlhs=nlhs;
 	m_nrhs=nrhs;
 	m_lhs=plhs;
 	m_rhs=prhs;
 }
 
-CMatlabInterface::~CMatlabInterface()
-{
-}
 
 /** get functions - to pass data from the target interface to shogun */
 
@@ -541,8 +552,14 @@ void CMatlabInterface::set_arg_increment(mxArray* mx_arg)
 
 void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 {
-	delete interface;
-	interface=new CMatlabInterface(nlhs, plhs, nrhs, prhs);
+	if (!interface)
+	{
+		interface=new CMatlabInterface(nlhs, plhs, nrhs, prhs);
+		ASSERT(interface);
+	}
+	else
+		((CMatlabInterface*) interface)->reset(nlhs, plhs, nrhs, prhs);
+
 	try
 	{
 		if (!interface->handle())

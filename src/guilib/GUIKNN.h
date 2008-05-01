@@ -19,25 +19,24 @@
 #include "classifier/KNN.h"
 #include "features/Labels.h"
 
-class CGUI;
+class CSGInterface;
 
 class CGUIKNN : public CSGObject
 {
+	public:
+		CGUIKNN(CSGInterface* interface);
+		~CGUIKNN();
 
-public:
-	CGUIKNN(CGUI* g);
-	~CGUIKNN();
+		bool new_knn(CHAR* param);
+		bool train(CHAR* param);
+		bool test(CHAR* param);
+		bool load(CHAR* param);
+		bool save(CHAR* param);
 
-	bool new_knn(CHAR* param);
-	bool train(CHAR* param);
-	bool test(CHAR* param);
-	bool load(CHAR* param);
-	bool save(CHAR* param);
-
- protected:
-	CGUI* gui;
-	CKNN* knn;
-	int k;
+	protected:
+		CSGInterface* ui;
+		CKNN* knn;
+		int k;
 };
 #endif //HAVE_SWIG
 #endif

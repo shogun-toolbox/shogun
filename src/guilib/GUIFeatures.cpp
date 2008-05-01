@@ -13,12 +13,14 @@
 
 #ifndef HAVE_SWIG
 
-#include "guilib/GUIFeatures.h"
-#include "gui/GUI.h"
 #include "lib/io.h"
 
-	CGUIFeatures::CGUIFeatures(CGUI * gui_)
-: CSGObject(), gui(gui_), train_features(NULL), test_features(NULL), ref_features(NULL)
+#include "guilib/GUIFeatures.h"
+#include "interface/SGInterface.h"
+
+
+CGUIFeatures::CGUIFeatures(CSGInterface* ui_)
+: CSGObject(), ui(ui_), train_features(NULL), test_features(NULL), ref_features(NULL)
 {
 }
 
@@ -31,14 +33,14 @@ CGUIFeatures::~CGUIFeatures()
 
 void CGUIFeatures::invalidate_train()
 {
-	CKernel *k = gui->guikernel.get_kernel();
+	CKernel *k = ui->ui_kernel.get_kernel();
 	if (k)
 		k->remove_lhs();
 }
 
 void CGUIFeatures::invalidate_test()
 {
-	CKernel *k = gui->guikernel.get_kernel();
+	CKernel *k = ui->ui_kernel.get_kernel();
 	if (k)
 		k->remove_rhs() ;
 }
@@ -419,7 +421,7 @@ CStringFeatures<CHAR>* CGUIFeatures::convert_simple_char_to_string_char(CCharFea
 
 CRealFeatures* CGUIFeatures::convert_simple_word_to_simple_salzberg(CWordFeatures* src)
 {
-	CPluginEstimate* pie=gui->guipluginestimate.get_estimator();
+	CPluginEstimate* pie=ui->ui_pluginestimate.get_estimator();
 
 	if (src &&
 		src->get_feature_type()==F_WORD &&
@@ -470,16 +472,16 @@ CTOPFeatures* CGUIFeatures::convert_string_word_to_simple_top(CStringFeatures<WO
 	{
 		SG_INFO("Converting to TOP features.\n");
 
-		if (gui->guihmm.get_pos() && gui->guihmm.get_neg())
+		if (ui->ui_hmm.get_pos() && ui->ui_hmm.get_neg())
 		{
-			gui->guihmm.get_pos()->set_observations(src);
-			gui->guihmm.get_neg()->set_observations(src);
+			ui->ui_hmm.get_pos()->set_observations(src);
+			ui->ui_hmm.get_neg()->set_observations(src);
 
 			bool neglinear=false;
 			bool poslinear=false;
 
 			tf=new CTOPFeatures(
-				0, gui->guihmm.get_pos(), gui->guihmm.get_neg(),
+				0, ui->ui_hmm.get_pos(), ui->ui_hmm.get_neg(),
 				neglinear, poslinear);
 			ASSERT(tf && tf->set_feature_matrix());
 		}
@@ -498,19 +500,19 @@ CFKFeatures* CGUIFeatures::convert_string_word_to_simple_fk(CStringFeatures<WORD
 
 	SG_INFO("Converting to FK features.\n");
 
-	if (gui->guihmm.get_pos() && gui->guihmm.get_neg())
+	if (ui->ui_hmm.get_pos() && ui->ui_hmm.get_neg())
 	{
 		CStringFeatures<WORD>* old_obs_pos=
-			gui->guihmm.get_pos()->get_observations();
+			ui->ui_hmm.get_pos()->get_observations();
 		CStringFeatures<WORD>* old_obs_neg=
-			gui->guihmm.get_neg()->get_observations();
+			ui->ui_hmm.get_neg()->get_observations();
 
 		CStringFeatures<WORD>* string_feat=src;
-		gui->guihmm.get_pos()->set_observations(string_feat);
-		gui->guihmm.get_neg()->set_observations(string_feat);
+		ui->ui_hmm.get_pos()->set_observations(string_feat);
+		ui->ui_hmm.get_neg()->set_observations(string_feat);
 
 		fkf=new CFKFeatures(
-			0, gui->guihmm.get_pos(), gui->guihmm.get_neg());
+			0, ui->ui_hmm.get_pos(), ui->ui_hmm.get_neg());
 			//, neglinear, poslinear);
 		if (train_features)
 			fkf->set_opt_a(((CFKFeatures*) train_features)->get_weight_a());
@@ -519,8 +521,8 @@ CFKFeatures* CGUIFeatures::convert_string_word_to_simple_fk(CStringFeatures<WORD
 
 		ASSERT(fkf->set_feature_matrix());
 
-		gui->guihmm.get_pos()->set_observations(old_obs_pos);
-		gui->guihmm.get_neg()->set_observations(old_obs_neg);
+		ui->ui_hmm.get_pos()->set_observations(old_obs_pos);
+		ui->ui_hmm.get_neg()->set_observations(old_obs_neg);
 	}
 	else
 		SG_ERROR("HMMs not correctly assigned!\n");

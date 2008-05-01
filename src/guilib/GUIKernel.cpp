@@ -12,9 +12,14 @@
 #include "lib/config.h"
 
 #ifndef HAVE_SWIG
-#include "gui/GUI.h"
+#include <string.h>
+
+#include "lib/io.h"
+
+#include "interface/SGInterface.h"
 #include "guilib/GUIKernel.h"
 #include "guilib/GUIPluginEstimate.h"
+
 #include "kernel/Kernel.h"
 #include "kernel/CombinedKernel.h"
 #include "kernel/Chi2Kernel.h"
@@ -49,12 +54,9 @@
 #include "kernel/MindyGramKernel.h"
 #include "kernel/DistanceKernel.h"
 #include "classifier/svm/SVM.h"
-#include "lib/io.h"
-#include "gui/GUI.h"
 
-#include <string.h>
 
-CGUIKernel::CGUIKernel(CGUI * gui_): CSGObject(), gui(gui_)
+CGUIKernel::CGUIKernel(CSGInterface* ui_): CSGObject(), ui(ui_)
 {
 	kernel=NULL;
 	initialized=false;
@@ -494,7 +496,7 @@ CKernel* CGUIKernel::create_salzbergword(INT size)
 {
 
 	SG_INFO("Getting estimator.\n");
-	CPluginEstimate* estimator=gui->guipluginestimate.get_estimator();
+	CPluginEstimate* estimator=ui->ui_pluginestimate.get_estimator();
 	if (!estimator)
 		SG_ERROR("No estimator set.\n");
 
@@ -506,7 +508,7 @@ CKernel* CGUIKernel::create_salzbergword(INT size)
 
 	// prior stuff
 	SG_INFO("Getting labels.\n");
-	CLabels* train_labels=gui->guilabels.get_train_labels();
+	CLabels* train_labels=ui->ui_labels.get_train_labels();
 	if (!train_labels)
 	{
 		SG_INFO("Assign train labels first!\n");
@@ -535,7 +537,7 @@ CKernel* CGUIKernel::create_salzbergword(INT size)
 CKernel* CGUIKernel::create_histogramword(INT size)
 {
 	SG_INFO("Getting estimator.\n");
-	CPluginEstimate* estimator=gui->guipluginestimate.get_estimator();
+	CPluginEstimate* estimator=ui->ui_pluginestimate.get_estimator();
 	if (!estimator)
 		SG_ERROR("No estimator set.\n");
 
@@ -620,7 +622,7 @@ CKernel* CGUIKernel::create_sparselinear(INT size, DREAL scale)
 
 CKernel* CGUIKernel::create_distance(INT size, DREAL width)
 {
-	CDistance* dist=gui->guidistance.get_distance();
+	CDistance* dist=ui->ui_distance.get_distance();
 	if (!dist)
 		SG_ERROR("No distance set for DistanceKernel.\n");
 
@@ -649,6 +651,7 @@ bool CGUIKernel::set_kernel(CKernel* kern)
 {
 	if (kern)
 	{
+		SG_DEBUG("deleting old kernel (%p).\n", kernel);
 		delete kernel;
 		kernel=kern;
 		SG_DEBUG("set new kernel (%p).\n", kern);
@@ -711,7 +714,7 @@ bool CGUIKernel::init_kernel_optimization()
 {
 	kernel->set_precompute_matrix(false, false);
 
-	CSVM* svm=(CSVM*) gui->guiclassifier.get_classifier();
+	CSVM* svm=(CSVM*) ui->ui_classifier.get_classifier();
 	if (svm)
 	{
 		if (kernel->has_property(KP_LINADD))
@@ -765,7 +768,7 @@ bool CGUIKernel::init_kernel(CHAR* target)
 
 	if (!strncmp(target, "TRAIN", 5))
 	{
-		CFeatures* train=gui->guifeatures.get_train_features();
+		CFeatures* train=ui->ui_features.get_train_features();
 		if (train)
 		{
 			EFeatureClass fclass=train->get_feature_class();
@@ -785,8 +788,8 @@ bool CGUIKernel::init_kernel(CHAR* target)
 	}
 	else if (!strncmp(target, "TEST", 4))
 	{
-		CFeatures* train=gui->guifeatures.get_train_features();
-		CFeatures* test=gui->guifeatures.get_test_features();
+		CFeatures* train=ui->ui_features.get_train_features();
+		CFeatures* test=ui->ui_features.get_test_features();
 		if (test)
 		{
 			EFeatureClass fclass=test->get_feature_class();

@@ -14,6 +14,9 @@ class CRInterface : public CSGInterface
 		CRInterface(SEXP prhs);
 		~CRInterface();
 
+		/// reset to clean state
+		virtual void reset(SEXP prhs);
+
 		/** get functions - to pass data from the target interface to shogun */
 
 		/// get type of current argument (does not increment argument counter)

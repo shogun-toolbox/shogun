@@ -12,8 +12,9 @@
 
 #ifndef HAVE_SWIG
 #include "guilib/GUITime.h"
+#include "interface/SGInterface.h"
 
-CGUITime::CGUITime(CGUI* g) : CSGObject(), gui(g)
+CGUITime::CGUITime(CSGInterface* ui_) : CSGObject(), ui(ui_)
 {
 	time=new CTime();
 	ASSERT(time);

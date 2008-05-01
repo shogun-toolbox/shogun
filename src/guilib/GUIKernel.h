@@ -18,13 +18,13 @@
 #include "base/SGObject.h"
 #include "kernel/Kernel.h"
 
-class CGUI ;
+class CSGInterface;
 
 class CGUIKernel : public CSGObject
 {
  public:
  	/** constructor */
-	CGUIKernel(CGUI*);
+	CGUIKernel(CSGInterface* interface);
 
 	/** destructor */
 	~CGUIKernel();
@@ -152,7 +152,7 @@ class CGUIKernel : public CSGObject
 
  protected:
 	CKernel* kernel;
-	CGUI* gui ;
+	CSGInterface* ui;
 	bool initialized;
 
  private:

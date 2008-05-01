@@ -11,11 +11,13 @@
 #include "lib/config.h"
 
 #ifndef HAVE_SWIG
-#include "lib/Mathematics.h"
-#include "guilib/GUIMath.h"
 #include "lib/io.h"
+#include "lib/Mathematics.h"
 
-CGUIMath::CGUIMath(CGUI* g) : CSGObject(), gui(g), threshold(0.0)
+#include "guilib/GUIMath.h"
+#include "interface/SGInterface.h"
+
+CGUIMath::CGUIMath(CSGInterface* ui_) : CSGObject(), ui(ui_), threshold(0.0)
 {
 }
 

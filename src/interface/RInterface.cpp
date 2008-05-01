@@ -13,6 +13,17 @@ extern CSGInterface* interface;
 
 CRInterface::CRInterface(SEXP prhs) : CSGInterface()
 {
+	reset(prhs);
+}
+
+CRInterface::~CRInterface()
+{
+}
+
+void CRInterface::reset(SEXP prhs)
+{
+	CSGInterface::reset();
+
 	m_nlhs=0;
 	m_nrhs=length(prhs)-1;
 	if (m_nrhs<0)
@@ -21,9 +32,6 @@ CRInterface::CRInterface(SEXP prhs) : CSGInterface()
 	m_rhs=prhs;
 }
 
-CRInterface::~CRInterface()
-{
-}
 
 /** get functions - to pass data from the target interface to shogun */
 
@@ -437,8 +445,13 @@ SEXP sg(SEXP args)
 	 * it consists of "sg", "func" and additional arguments.
 	 * */
 
-	delete interface;
-	interface=new CRInterface(args);
+	if (!interface)
+	{
+		interface=new CRInterface(args);
+		ASSERT(interface);
+	}
+	else
+		((CRInterface*) interface)->reset(args);
 
 	try
 	{

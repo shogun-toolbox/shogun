@@ -13,15 +13,19 @@
 
 #ifndef HAVE_SWIG
 #include <unistd.h>
+
 #include "lib/common.h"
+
 #include "guilib/GUIHMM.h"
-#include "gui/GUI.h"
+#include "interface/SGInterface.h"
+
 #include "features/StringFeatures.h"
 #include "features/Labels.h"
 
-#define TMP_DIR "/tmp/" 
+#define TMP_DIR "/tmp/"
 
-CGUIHMM::CGUIHMM(CGUI * gui_): CSGObject(), gui(gui_)
+
+CGUIHMM::CGUIHMM(CSGInterface* ui_): CSGObject(), ui(ui_)
 {
 	working=NULL;
 
@@ -48,7 +52,7 @@ bool CGUIHMM::new_hmm(INT n, INT m)
 
 bool CGUIHMM::baum_welch_train()
 {
-	CFeatures* trainfeatures=gui->guifeatures.get_train_features();
+	CFeatures* trainfeatures=ui->ui_features.get_train_features();
 	if (!trainfeatures)
 		SG_ERROR("Assign train features first.\n");
 	if (trainfeatures->get_feature_type()!=F_WORD ||
@@ -68,7 +72,7 @@ bool CGUIHMM::baum_welch_train()
 
 bool CGUIHMM::baum_welch_trans_train()
 {
-	CFeatures* trainfeatures=gui->guifeatures.get_train_features();
+	CFeatures* trainfeatures=ui->ui_features.get_train_features();
 	if (!trainfeatures)
 		SG_ERROR("Assign train features first.\n");
 	if (trainfeatures->get_feature_type()!=F_WORD ||
@@ -127,14 +131,14 @@ bool CGUIHMM::linear_train(CHAR align)
 	if (!working)
 		SG_ERROR("Create HMM first.\n");
 
-	CFeatures* trainfeatures=gui->guifeatures.get_train_features();
+	CFeatures* trainfeatures=ui->ui_features.get_train_features();
 	if (!trainfeatures)
 		SG_ERROR("Assign train features first.\n");
 	if (trainfeatures->get_feature_type()!=F_WORD ||
 		trainfeatures->get_feature_class()!=C_STRING)
 		SG_ERROR("Features must be STRING of type WORD.\n");
 
-	working->set_observations((CStringFeatures<WORD>*) gui->guifeatures.get_train_features());
+	working->set_observations((CStringFeatures<WORD>*) ui->ui_features.get_train_features());
 
 	bool right_align=false;
 	if (align=='r')
@@ -175,13 +179,13 @@ bool CGUIHMM::one_class_test(
 	if (!working)
 		SG_ERROR("No HMM defined!\n");
 
-	if (gui->guifeatures.get_test_features())
+	if (ui->ui_features.get_test_features())
 		SG_ERROR("Assign posttest and negtest observations first!\n");
 
-	CStringFeatures<WORD>* obs= (CStringFeatures<WORD>*) gui->guifeatures.get_test_features();
+	CStringFeatures<WORD>* obs= (CStringFeatures<WORD>*) ui->ui_features.get_test_features();
 	working->set_observations(obs);
 	CStringFeatures<WORD>* old_test=working->get_observations();
-	CLabels* lab=gui->guilabels.get_test_labels();
+	CLabels* lab=ui->ui_labels.get_test_labels();
 	INT total=obs->get_num_vectors();
 	ASSERT(lab && total==lab->get_num_labels());
 	DREAL* output=new DREAL[total];
@@ -193,7 +197,7 @@ bool CGUIHMM::one_class_test(
 		label[dim]= lab->get_int_label(dim);
 	}
 
-	gui->guimath.evaluate_results(output, label, total, file_out, file_roc);
+	ui->ui_math.evaluate_results(output, label, total, file_out, file_roc);
 	working->set_observations(old_test);
 	result=true;
 
@@ -248,10 +252,10 @@ bool CGUIHMM::hmm_classify(CHAR* param)
 
 	if (pos && neg)
 	{
-		if (gui->guifeatures.get_test_features())
+		if (ui->ui_features.get_test_features())
 		{
-			CStringFeatures<WORD>* o= (CStringFeatures<WORD>*) gui->guifeatures.get_test_features();
-			CLabels* lab= gui->guilabels.get_test_labels();
+			CStringFeatures<WORD>* o= (CStringFeatures<WORD>*) ui->ui_features.get_test_features();
+			CLabels* lab= ui->ui_labels.get_test_labels();
 
 			//CStringFeatures<WORD>* old_pos=pos->get_observations();
 			//CStringFeatures<WORD>* old_neg=neg->get_observations();
@@ -274,7 +278,7 @@ bool CGUIHMM::hmm_classify(CHAR* param)
 				label[dim]= lab->get_int_label(dim);
 			}
 
-			gui->guimath.evaluate_results(output, label, total, outputfile);
+			ui->ui_math.evaluate_results(output, label, total, outputfile);
 
 			delete[] output;
 			delete[] label;
@@ -322,12 +326,12 @@ bool CGUIHMM::hmm_test(
 	if (!(pos && neg))
 		SG_ERROR("Assign positive and negative models first!\n");
 
-	if (!gui->guifeatures.get_test_features())
+	if (!ui->ui_features.get_test_features())
 		SG_ERROR("Assign test features first!\n");
 
-	CStringFeatures<WORD>* o=(CStringFeatures<WORD>*) gui->guifeatures.get_test_features();
+	CStringFeatures<WORD>* o=(CStringFeatures<WORD>*) ui->ui_features.get_test_features();
 	ASSERT(o);
-	CLabels* lab=gui->guilabels.get_test_labels();
+	CLabels* lab=ui->ui_labels.get_test_labels();
 	CStringFeatures<WORD>* old_pos=pos->get_observations();
 	CStringFeatures<WORD>* old_neg=neg->get_observations();
 	pos->set_observations(o);
@@ -348,7 +352,7 @@ bool CGUIHMM::hmm_test(
 		//fprintf(file_output, "%+d: %f - %f = %f\n", label[dim], pos->model_probability(dim), neg->model_probability(dim), output[dim]);
 	}
 
-	gui->guimath.evaluate_results(output, label, total, file_output, file_roc);
+	ui->ui_math.evaluate_results(output, label, total, file_output, file_roc);
 
 	delete[] output;
 	delete[] label;
@@ -368,7 +372,7 @@ bool CGUIHMM::hmm_test(
 
 CLabels* CGUIHMM::classify(CLabels* result)
 {
-	CStringFeatures<WORD>* obs= (CStringFeatures<WORD>*) gui->guifeatures.get_test_features();
+	CStringFeatures<WORD>* obs= (CStringFeatures<WORD>*) ui->ui_features.get_test_features();
 	INT num_vec=obs->get_num_vectors();
 
 	if (!result)
@@ -391,7 +395,7 @@ CLabels* CGUIHMM::classify(CLabels* result)
 
 DREAL CGUIHMM::classify_example(INT idx)
 {
-	CStringFeatures<WORD>* obs= (CStringFeatures<WORD>*) gui->guifeatures.get_test_features();
+	CStringFeatures<WORD>* obs= (CStringFeatures<WORD>*) ui->ui_features.get_test_features();
 
 	//CStringFeatures<WORD>* old_pos=pos->get_observations();
 	//CStringFeatures<WORD>* old_neg=neg->get_observations();
@@ -408,7 +412,7 @@ DREAL CGUIHMM::classify_example(INT idx)
 
 CLabels* CGUIHMM::one_class_classify(CLabels* result)
 {
-	CStringFeatures<WORD>* obs= (CStringFeatures<WORD>*) gui->guifeatures.get_test_features();
+	CStringFeatures<WORD>* obs= (CStringFeatures<WORD>*) ui->ui_features.get_test_features();
 	INT num_vec=obs->get_num_vectors();
 
 	if (!result)
@@ -431,7 +435,7 @@ CLabels* CGUIHMM::one_class_classify(CLabels* result)
 
 CLabels* CGUIHMM::linear_one_class_classify(CLabels* result)
 {
-	CStringFeatures<WORD>* obs= (CStringFeatures<WORD>*) gui->guifeatures.get_test_features();
+	CStringFeatures<WORD>* obs= (CStringFeatures<WORD>*) ui->ui_features.get_test_features();
 	INT num_vec=obs->get_num_vectors();
 
 	if (!result)
@@ -454,7 +458,7 @@ CLabels* CGUIHMM::linear_one_class_classify(CLabels* result)
 
 DREAL CGUIHMM::one_class_classify_example(INT idx)
 {
-	CStringFeatures<WORD>* obs= (CStringFeatures<WORD>*) gui->guifeatures.get_test_features();
+	CStringFeatures<WORD>* obs= (CStringFeatures<WORD>*) ui->ui_features.get_test_features();
 
 	//CStringFeatures<WORD>* old_pos=pos->get_observations();
 
@@ -710,7 +714,7 @@ bool CGUIHMM::save_path(CHAR* filename, bool is_binary)
 		//_train()/	result=working->save_model_bin(file);
 		//else
 		CStringFeatures<WORD>* obs=
-			(CStringFeatures<WORD>*) gui->guifeatures.get_test_features();
+			(CStringFeatures<WORD>*) ui->ui_features.get_test_features();
 
 		ASSERT(obs);
 		working->set_observations(obs);

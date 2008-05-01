@@ -14,8 +14,13 @@
 class CMatlabInterface : public CSGInterface
 {
 	public:
-		CMatlabInterface(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[]);
+		CMatlabInterface(
+			int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]);
 		~CMatlabInterface();
+
+		/// reset to clean state
+		virtual void reset(
+			int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]);
 
 		/** get functions - to pass data from the target interface to shogun */
 

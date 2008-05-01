@@ -18,19 +18,19 @@
 #include "base/SGObject.h"
 #include "lib/Time.h"
 
-class CGUI;
+class CSGInterface;
 
 class CGUITime : public CSGObject
 {
 	public:
-		CGUITime(CGUI *);
+		CGUITime(CSGInterface* interface);
 		~CGUITime();
 
 		void start();
 		void stop();
 
 	protected:
-		CGUI* gui;
+		CSGInterface* ui;
 		CTime* time;
 };
 #endif //HAVE_SWIG

@@ -20,36 +20,36 @@
 #include "classifier/PluginEstimate.h"
 #include "features/Labels.h"
 
-class CGUI;
+class CSGInterface;
 
 class CGUIPluginEstimate : public CSGObject
 {
 
-public:
-	CGUIPluginEstimate(CGUI* g);
-	~CGUIPluginEstimate();
+	public:
+		CGUIPluginEstimate(CSGInterface* interface);
+		~CGUIPluginEstimate();
 
-	/** create new estimator */
-	bool new_estimator(DREAL pos, DREAL neg);
-	/** train estimator */
-	bool train();
-	bool marginalized_train(CHAR* param);
-	/** test estimator */
-	bool test(CHAR* filename_out, CHAR* filename_roc);
-	bool load(CHAR* param);
-	bool save(CHAR* param);
+		/** create new estimator */
+		bool new_estimator(DREAL pos, DREAL neg);
+		/** train estimator */
+		bool train();
+		bool marginalized_train(CHAR* param);
+		/** test estimator */
+		bool test(CHAR* filename_out, CHAR* filename_roc);
+		bool load(CHAR* param);
+		bool save(CHAR* param);
 
-	inline CPluginEstimate* get_estimator() { return estimator; }
+		inline CPluginEstimate* get_estimator() { return estimator; }
 
-	CLabels* classify(CLabels* output=NULL);
-	DREAL classify_example(INT idx);
+		CLabels* classify(CLabels* output=NULL);
+		DREAL classify_example(INT idx);
 
- protected:
-	CGUI* gui;
+	protected:
+		CSGInterface* ui;
 
-	CPluginEstimate* estimator;
-	DREAL pos_pseudo;
-	DREAL neg_pseudo;
+		CPluginEstimate* estimator;
+		DREAL pos_pseudo;
+		DREAL neg_pseudo;
 };
 #endif //HAVE_SWIG
 #endif

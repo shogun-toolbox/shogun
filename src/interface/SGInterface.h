@@ -11,6 +11,18 @@
 #include "features/SparseFeatures.h"
 #include "kernel/Kernel.h"
 
+#include "guilib/GUIClassifier.h"
+#include "guilib/GUIDistance.h"
+#include "guilib/GUIFeatures.h"
+#include "guilib/GUIHMM.h"
+#include "guilib/GUIKNN.h"
+#include "guilib/GUIKernel.h"
+#include "guilib/GUILabels.h"
+#include "guilib/GUIMath.h"
+#include "guilib/GUIPluginEstimate.h"
+#include "guilib/GUIPreProc.h"
+#include "guilib/GUITime.h"
+
 enum IFType
 {
 	UNDEFINED,
@@ -38,10 +50,12 @@ enum IFType
 
 class CSGInterface : public CSGObject
 {
-
 	public:
 		CSGInterface();
 		~CSGInterface();
+
+		/// reset to clean state
+		virtual void reset();
 
 		/* commands */
 		/** load features from file */
@@ -432,6 +446,19 @@ class CSGInterface : public CSGObject
 
 		/// print the shogun prompt
 		void print_prompt();
+
+		/** ui lib */
+		CGUIClassifier ui_classifier;
+		CGUIHMM ui_hmm;
+		CGUIPluginEstimate ui_pluginestimate;
+		CGUIKNN ui_knn;
+		CGUIKernel ui_kernel;
+		CGUIPreProc ui_preproc;
+		CGUIFeatures ui_features;
+		CGUILabels ui_labels;
+		CGUIMath ui_math;
+		CGUITime ui_time;
+		CGUIDistance ui_distance;
 
 	protected:
 		/// return true if str starts with cmd

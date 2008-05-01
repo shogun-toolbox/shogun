@@ -11,14 +11,19 @@
 #include "lib/config.h"
 
 #ifndef HAVE_SWIG
-#include "guilib/GUILabels.h"
-#include "features/Labels.h"
-#include "lib/io.h"
-
 #include <string.h>
 
-CGUILabels::CGUILabels(CGUI * gui_)
-: CSGObject(), gui(gui_), train_labels(NULL), test_labels(NULL)
+#include "lib/io.h"
+
+#include "guilib/GUILabels.h"
+#include "interface/SGInterface.h"
+
+#include "features/Labels.h"
+
+
+
+CGUILabels::CGUILabels(CSGInterface* ui_)
+: CSGObject(), ui(ui_), train_labels(NULL), test_labels(NULL)
 {
 }
 

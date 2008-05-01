@@ -17,6 +17,17 @@ extern CSGInterface* interface;
 
 CPythonInterface::CPythonInterface(PyObject* self, PyObject* args) : CSGInterface()
 {
+	reset(self, args);
+}
+
+CPythonInterface::~CPythonInterface()
+{
+}
+
+void CPythonInterface::reset(PyObject* self, PyObject* args)
+{
+	CSGInterface::reset();
+
 	ASSERT(PyTuple_Check(args));
 	m_rhs=args;
 	m_nrhs=PyTuple_GET_SIZE(args);
@@ -26,9 +37,6 @@ CPythonInterface::CPythonInterface(PyObject* self, PyObject* args) : CSGInterfac
 	m_lhs=Py_None;
 }
 
-CPythonInterface::~CPythonInterface()
-{
-}
 
 /** get functions - to pass data from the target interface to shogun */
 
@@ -530,8 +538,14 @@ bool CPythonInterface::create_return_values(INT num)
 
 PyObject* sg(PyObject* self, PyObject* args)
 {
-	delete interface;
-	interface=new CPythonInterface(self, args);
+	if (!interface)
+	{
+		interface=new CPythonInterface(self, args);
+		ASSERT(interface);
+	}
+	else
+		((CPythonInterface*) interface)->reset(self, args);
+
 
 	try
 	{
@@ -548,8 +562,7 @@ PyObject* sg(PyObject* self, PyObject* args)
 
 void exitsg(void)
 {
-	SG_SINFO( "quitting...\n");
-	//delete gui;
+	SG_SINFO("Quitting...\n");
 }
 
 static PyMethodDef sg_pythonmethods[] = {
@@ -564,9 +577,6 @@ PyMODINIT_FUNC initsg(void)
 
 	// initialize threading (just in case it is needed)
 	PyEval_InitThreads();
-
-	// initialize textgui
-	//gui=new CTextGUI(0, NULL) ;
 
     // callback to cleanup at exit
 	Py_AtExit(exitsg);
