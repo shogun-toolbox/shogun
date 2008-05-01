@@ -270,6 +270,8 @@ result=sg('svm_classify');
 % Perceptron
 disp('Perceptron');
 
+trainlab_one=[ones(1,num) -ones(1,num)];
+traindata_real=[randn(2,num)-dist, randn(2,num)+dist];
 sg('set_features', 'TRAIN', traindata_real);
 sg('set_labels', 'TRAIN', trainlab_one);
 sg('send_command', 'new_classifier PERCEPTRON');
@@ -285,8 +287,8 @@ sg('set_features', 'TRAIN', traindata_real);
 sg('set_labels', 'TRAIN', trainlab_one);
 sg('send_command', 'set_distance EUCLIDIAN REAL');
 sg('send_command', 'init_distance TRAIN');
-sg('send_command', 'new_knn');
-sg('send_command', 'train_knn');
+sg('send_command', 'new_classifier KNN');
+sg('send_command', 'train_classifier 3');
 
 sg('set_features', 'TEST', testdata_real);
 sg('send_command', 'init_distance TEST');
