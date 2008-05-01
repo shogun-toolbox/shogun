@@ -43,10 +43,9 @@ else
 end
 
 for kk = 1:length(f)   % Big loop
-  
 	% data generation
 
-	train_x = 0:((4*pi)/(no_obs-1)):4*pi;
+	train_x = [0:((4*pi)/(no_obs-1)):4*pi];
 	trend = 2 * train_x* ((pi)/(max(train_x)-min(train_x)));
 	wave1 = sin(train_x);
 	wave2 = sin(f(kk)*train_x);
@@ -64,7 +63,7 @@ for kk = 1:length(f)   % Big loop
 	sg('send_command', sprintf('svm_epsilon %f',svm_eps));
 	sg('send_command', sprintf('svr_tube_epsilon %f',svm_tube));
 	sg('send_command', 'clean_features TRAIN' );
-	sg('send_command', 'clean_kernels' );
+	sg('send_command', 'clean_kernel' );
 
 	sg('set_labels', 'TRAIN', train_y);               % set labels
 	sg('add_features','TRAIN', train_x);              % add features for every basic SVM
