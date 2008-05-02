@@ -38,7 +38,7 @@ for kk = 4    % big loop for the different learning problems
   
   % data generation
 
-  train_x = 1:(((10*2*pi)-1)/(no_obs-1)):10*2*pi;
+  train_x = [1:(((10*2*pi)-1)/(no_obs-1)):10*2*pi];
   train_y = sin(f(kk)*train_x);
 		
   kernels={};
@@ -52,7 +52,7 @@ for kk = 4    % big loop for the different learning problems
   sg('send_command', sprintf('svm_epsilon %f',svm_eps));
   sg('send_command', sprintf('svr_tube_epsilon %f',svr_tube_eps));
   sg('send_command', 'clean_features TRAIN' );
-  sg('send_command', 'clean_kernels');
+  sg('send_command', 'clean_kernel');
   sg('set_labels', 'TRAIN', train_y);               % set labels
   sg('add_features','TRAIN', train_x);              % add features for every SVR
   sg('add_features','TRAIN', train_x);

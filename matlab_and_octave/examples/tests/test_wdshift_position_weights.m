@@ -24,7 +24,7 @@ shifts = sprintf( '%i ', x(end:-1:1) );
 sg('send_command', 'loglevel ALL');
 sg('send_command','clean_features TRAIN');
 sg('send_command','clean_features TEST');
-sg('send_command','clean_kernels');
+sg('send_command','clean_kernel');
 sg('send_command', 'use_linadd 0' );                  % important--other cases not implemented
 sg('send_command', 'use_batch_computation 0');        % important--other cases not implemented
 

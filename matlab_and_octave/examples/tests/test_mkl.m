@@ -28,7 +28,7 @@ kmtest{5}=eye(numtrain,numtrain);
 
 sg('send_command', 'new_svm LIGHT');
 sg('send_command', 'clean_features TRAIN');
-sg('send_command', 'clean_kernels') ;
+sg('send_command', 'clean_kernel') ;
 
 sg('set_labels', 'TRAIN', trainlab);
 sg('set_features','TRAIN', traindat);
@@ -37,7 +37,7 @@ sg('send_command', 'init_kernel TRAIN');
 kmcool=sg('get_kernel_matrix');
 
 sg('send_command', 'clean_features TRAIN');
-sg('send_command', 'clean_kernels') ;
+sg('send_command', 'clean_kernel') ;
 sg('add_features','TRAIN', traindat);
 sg('add_features','TRAIN', traindat);
 sg('add_features','TRAIN', traindat);
@@ -70,7 +70,7 @@ sg('send_command', 'svm_train');
 ws=sg('get_subkernel_weights');
 
 sg('send_command', 'clean_features TEST');
-sg('send_command', 'clean_kernels') ;
+sg('send_command', 'clean_kernel') ;
 sg('send_command', sprintf('set_kernel COMBINED %d', cache_size));
 sg('send_command', sprintf('add_kernel 1 GAUSSIAN REAL %d %f', cache_size, W1));
 sg('send_command', sprintf('add_kernel 1 GAUSSIAN REAL %d %f', cache_size, W2));

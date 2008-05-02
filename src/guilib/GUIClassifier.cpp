@@ -96,7 +96,7 @@ CGUIClassifier::~CGUIClassifier()
 	delete classifier;
 }
 
-bool CGUIClassifier::new_classifier(CHAR* name)
+bool CGUIClassifier::new_classifier(CHAR* name, INT d, INT from_d)
 {
 	if (strcmp(name,"LIBSVM_ONECLASS")==0)
 	{
@@ -277,12 +277,6 @@ bool CGUIClassifier::new_classifier(CHAR* name)
 	{
 		delete classifier;
 		classifier= new CWDSVMOcas(SVM_OCAS);
-
-		CHAR* args=&name[strlen("WDSVMOCAS")];
-		args=CIO::skip_spaces(args);
-		INT d=6;
-		INT from_d=40;
-		sscanf(args, "%d %d", &d, &from_d);
 
 		((CWDSVMOcas*) classifier)->set_degree(d, from_d);
 		((CWDSVMOcas*) classifier)->set_C(svm_C1, svm_C2);
@@ -911,32 +905,20 @@ CLabels* CGUIClassifier::classify_kernelmachine(CLabels* output)
 	ui->ui_kernel.get_kernel()->set_precompute_matrix(false,false);
 
 	if (!classifier)
-	{
-		SG_ERROR("no kernelmachine available\n") ;
-		return NULL;
-	}
+		SG_ERROR("No kernelmachine available.\n");
 	if (!trainfeatures)
-	{
-		SG_ERROR("no training features available\n") ;
-		return NULL;
-	}
-
+		SG_ERROR("No training features available.\n");
 	if (!testfeatures)
-	{
-		SG_ERROR("no test features available\n") ;
-		return NULL;
-	}
-
+		SG_ERROR("No test features available.\n");
 	if (!ui->ui_kernel.is_initialized())
-	{
-		SG_ERROR("kernel not initialized\n") ;
-		return NULL;
-	}
-	  
-	((CKernelMachine*) classifier)->set_kernel(ui->ui_kernel.get_kernel()) ;
+		SG_ERROR("Kernel not initialized.\n");
+
+	CKernelMachine* km=(CKernelMachine*) classifier;
+	km->set_kernel(ui->ui_kernel.get_kernel());
 	ui->ui_kernel.get_kernel()->set_precompute_matrix(false,false);
-	((CKernelMachine*) classifier)->set_batch_computation_enabled(svm_use_batch_computation);
-	SG_INFO("starting kernel machine testing\n") ;
+	km->set_batch_computation_enabled(svm_use_batch_computation);
+
+	SG_INFO("Starting kernel machine testing.\n");
 	return classifier->classify(output);
 }
 

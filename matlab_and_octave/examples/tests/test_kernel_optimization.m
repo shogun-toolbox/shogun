@@ -44,7 +44,5 @@ sg('send_command', 'delete_kernel_optimization');
 valerr2=mean(testlab~=sign(out2));
 errs(i)=max(abs(out-out2))
 if (max(abs(out-out2)) > 1e-6)
-	disp error
-asdfasdfasdf
 end
 end

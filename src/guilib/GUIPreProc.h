@@ -31,7 +31,7 @@ class CGUIPreProc : public CSGObject
 		/** create generic PreProc */
 		CPreProc* create_generic(EPreProcType type);
 		/** create preproc PruneVarSubMean */
-		CPreProc* create_prunevarsubmean(bool divide_by_std);
+		CPreProc* create_prunevarsubmean(bool divide_by_std=false);
 		/** create preproc PCACUT */
 		CPreProc* create_pcacut(bool do_whitening, DREAL threshold);
 

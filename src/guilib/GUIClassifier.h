@@ -26,7 +26,7 @@ class CGUIClassifier : public CSGObject
 		~CGUIClassifier();
 
 		/** create new classifier */
-		bool new_classifier(CHAR* name);
+		bool new_classifier(CHAR* name, INT d=6, INT from_d=40);
 		/** set maximum train time */
 		bool set_max_train_time(DREAL max);
 		/** test classifier */

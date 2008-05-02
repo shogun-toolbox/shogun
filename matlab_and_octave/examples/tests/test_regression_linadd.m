@@ -20,7 +20,7 @@ sg('send_command', 'use_precompute 0') ;
 sg('send_command', 'mkl_parameters 1e-5 0') ;
 sg('send_command', 'svm_epsilon 1e-5') ;
 sg('send_command', 'clean_features TRAIN') ;
-sg('send_command', 'clean_kernels') ;
+sg('send_command', 'clean_kernel') ;
 
 sg('set_features', 'TRAIN', traindat, 'DNA');
 sg('set_labels', 'TRAIN', trainlab);

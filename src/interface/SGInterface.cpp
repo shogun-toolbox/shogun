@@ -1304,7 +1304,7 @@ bool CSGInterface::cmd_convert()
 	{
 		if (strmatch(from_type, 4, "REAL"))
 		{
-			if (strmatch(to_class, 6, "SPARSE")==0 &&
+			if (strmatch(to_class, 6, "SPARSE") &&
 				strmatch(to_type, 4, "REAL"))
 			{
 				result=ui_features.convert_simple_real_to_sparse_real(
@@ -1825,34 +1825,34 @@ CKernel* CSGInterface::create_kernel()
 	if (strmatch(type, 8, "COMBINED"))
 	{
 		if (m_nrhs<3)
-			return false;
+			return NULL;
 
 		INT size=get_int_from_int_or_str();
-
 		bool append_subkernel_weights=false;
-		if (m_nrhs==4)
+		if (m_nrhs>3)
 			append_subkernel_weights=get_bool_from_bool_or_str();
 
 		kernel=ui_kernel.create_combined(size, append_subkernel_weights);
 	}
 	else if (strmatch(type, 8, "DISTANCE"))
 	{
-		if (m_nrhs<4)
-			return false;
+		if (m_nrhs<3)
+			return NULL;
 
 		INT size=get_int_from_int_or_str();
-		DREAL width=get_real_from_real_or_str();
+		DREAL width=1;
+		if (m_nrhs>3)
+			width=get_real_from_real_or_str();
 
 		kernel=ui_kernel.create_distance(size, width);
 	}
 	else if (strmatch(type, 6, "LINEAR"))
 	{
 		if (m_nrhs<4)
-			return false;
+			return NULL;
 
 		CHAR* dtype=get_str_from_str_or_direct(len);
 		INT size=get_int_from_int_or_str();
-
 		DREAL scale=1.4;
 		if (m_nrhs==5)
 			scale=get_real_from_real_or_str();
@@ -1873,7 +1873,7 @@ CKernel* CSGInterface::create_kernel()
 	else if (strmatch(type, 9, "HISTOGRAM"))
 	{
 		if (m_nrhs<4)
-			return false;
+			return NULL;
 
 		CHAR* dtype=get_str_from_str_or_direct(len);
 		if (strmatch(dtype, 4, "WORD"))
@@ -1887,7 +1887,7 @@ CKernel* CSGInterface::create_kernel()
 	else if (strmatch(type, 8, "SALZBERG"))
 	{
 		if (m_nrhs<4)
-			return false;
+			return NULL;
 
 		CHAR* dtype=get_str_from_str_or_direct(len);
 		if (strmatch(dtype, 4, "WORD"))
@@ -1901,14 +1901,14 @@ CKernel* CSGInterface::create_kernel()
 	else if (strmatch(type, 9, "POLYMATCH"))
 	{
 		if (m_nrhs<4)
-			return false;
+			return NULL;
 
 		CHAR* dtype=get_str_from_str_or_direct(len);
 		INT size=get_int_from_int_or_str();
-
 		INT degree=3;
 		bool inhomogene=false;
 		bool normalize=true;
+
 		if (m_nrhs>4)
 		{
 			degree=get_int_from_int_or_str();
@@ -1935,14 +1935,17 @@ CKernel* CSGInterface::create_kernel()
 	}
 	else if (strmatch(type, 5, "MATCH"))
 	{
-		if (m_nrhs<5)
-			return false;
+		if (m_nrhs<4)
+			return NULL;
 
 		CHAR* dtype=get_str_from_str_or_direct(len);
 		if (strmatch(dtype, 4, "WORD"))
 		{
 			INT size=get_int_from_int_or_str();
-			INT d=get_int_from_int_or_str();
+			INT d=3;
+
+			if (m_nrhs>4)
+				d=get_int_from_int_or_str();
 
 			kernel=ui_kernel.create_wordmatch(size, d);
 		}
@@ -1951,13 +1954,18 @@ CKernel* CSGInterface::create_kernel()
 	}
 	else if (strmatch(type, 18, "WEIGHTEDCOMMSTRING") || strmatch(type, 10, "COMMSTRING"))
 	{
-		if (m_nrhs<6)
-			return false;
-
 		CHAR* dtype=get_str_from_str_or_direct(len);
 		INT size=get_int_from_int_or_str();
-		bool use_sign=get_bool_from_bool_or_str();
-		CHAR* norm_str=get_str_from_str_or_direct(len);
+		bool use_sign=false;
+		CHAR* norm_str=NULL;
+
+		if (m_nrhs>4)
+		{
+			 use_sign=get_bool_from_bool_or_str();
+
+			 if (m_nrhs>5)
+				norm_str=get_str_from_str_or_direct(len);
+		}
 
 		if (strmatch(dtype, 4, "WORD"))
 		{
@@ -1983,14 +1991,17 @@ CKernel* CSGInterface::create_kernel()
 	}
 	else if (strmatch(type, 4, "CHI2"))
 	{
-		if (m_nrhs<5)
-			return false;
+		if (m_nrhs<4)
+			return NULL;
 
 		CHAR* dtype=get_str_from_str_or_direct(len);
 		if (strmatch(dtype, 4, "REAL"))
 		{
 			INT size=get_int_from_int_or_str();
-			DREAL width=get_real_from_real_or_str();
+			DREAL width=1;
+
+			if (m_nrhs>4)
+				width=get_real_from_real_or_str();
 
 			kernel=ui_kernel.create_chi2(size, width);
 		}
@@ -1999,14 +2010,16 @@ CKernel* CSGInterface::create_kernel()
 	}
 	else if (strmatch(type, 11, "FIXEDDEGREE"))
 	{
-		if (m_nrhs<5)
-			return false;
+		if (m_nrhs<4)
+			return NULL;
 
 		CHAR* dtype=get_str_from_str_or_direct(len);
 		if (strmatch(dtype, 4, "CHAR"))
 		{
 			INT size=get_int_from_int_or_str();
-			INT d=get_int_from_int_or_str();
+			INT d=3;
+			if (m_nrhs>4)
+				d=get_int_from_int_or_str();
 
 			kernel=ui_kernel.create_fixeddegreestring(size, d);
 		}
@@ -2014,7 +2027,7 @@ CKernel* CSGInterface::create_kernel()
 	else if (strmatch(type, 14, "LOCALALIGNMENT"))
 	{
 		if (m_nrhs<4)
-			return false;
+			return NULL;
 
 		CHAR* dtype=get_str_from_str_or_direct(len);
 		if (strmatch(dtype, 4, "CHAR"))
@@ -2029,7 +2042,7 @@ CKernel* CSGInterface::create_kernel()
 	else if (strmatch(type, 18, "WEIGHTEDDEGREEPOS2"))
 	{
 		if (m_nrhs<4)
-			return false;
+			return NULL;
 
 		CHAR* dtype=get_str_from_str_or_direct(len);
 		if (strmatch(dtype, 4, "CHAR") || strmatch(dtype, 6, "STRING"))
@@ -2040,7 +2053,6 @@ CKernel* CSGInterface::create_kernel()
 			INT length=0;
 			INT* shifts=NULL;
 			bool use_normalization=true;
-			INT veclen=0;
 
 			if (m_nrhs>4)
 			{
@@ -2052,11 +2064,8 @@ CKernel* CSGInterface::create_kernel()
 
 					if (m_nrhs>7)
 					{
-						get_int_vector_from_int_vector_or_str(shifts, veclen);
 						length=get_int_from_int_or_str();
-
-						if (veclen!=length)
-							SG_ERROR("Given number of shifts does not match actual number.\n");
+						get_int_vector_from_int_vector_or_str(shifts, length);
 					}
 				}
 			}
@@ -2075,8 +2084,8 @@ CKernel* CSGInterface::create_kernel()
 	}
 	else if (strmatch(type, 18, "WEIGHTEDDEGREEPOS3"))
 	{
-		if (m_nrhs<5)
-			return false;
+		if (m_nrhs<4)
+			return NULL;
 
 		CHAR* dtype=get_str_from_str_or_direct(len);
 		if (strmatch(dtype, 4, "CHAR") || strmatch(dtype, 6, "STRING"))
@@ -2086,7 +2095,6 @@ CKernel* CSGInterface::create_kernel()
 			INT max_mismatch=1;
 			INT length=0;
 			INT mkl_stepsize=1;
-			INT veclen=length;
 			INT* shifts=NULL;
 			DREAL* position_weights=NULL;
 
@@ -2100,26 +2108,17 @@ CKernel* CSGInterface::create_kernel()
 
 					if (m_nrhs>7)
 					{
-						get_int_vector_from_int_vector_or_str(shifts, veclen);
 						length=get_int_from_int_or_str();
-						if (veclen!=length)
-							SG_ERROR("Given number of shifts does not match actual number.\n");
-
-						if (m_nrhs>8+length)
+						mkl_stepsize=get_int_from_int_or_str();
+						get_int_vector_from_int_vector_or_str(shifts, length);
+						if (m_nrhs>9+length)
 						{
-							mkl_stepsize=get_int_from_int_or_str();
+							// what is that supposed to accomplish right before getting the actual values?
+							position_weights=new DREAL[length];
+							for (INT i=0; i<length; i++)
+								position_weights[i]=1.0/length;
 
-							if (m_nrhs>9+length)
-							{
-								// what is that supposed to accomplish right before getting the actual values?
-								position_weights=new DREAL[length];
-								for (INT i=0; i<length; i++)
-									position_weights[i]=1.0/length;
-
-								get_real_vector_from_real_vector_or_str(position_weights, veclen);
-								if (veclen!=length)
-									SG_ERROR("Given number of position weights does not match actual number.\n");
-							}
+							get_real_vector_from_real_vector_or_str(position_weights, length);
 						}
 					}
 				}
@@ -2137,7 +2136,7 @@ CKernel* CSGInterface::create_kernel()
 	else if (strmatch(type, 17, "WEIGHTEDDEGREEPOS"))
 	{
 		if (m_nrhs<4)
-			return false;
+			return NULL;
 
 		CHAR* dtype=get_str_from_str_or_direct(len);
 		if (strmatch(dtype, 4, "CHAR") || strmatch(dtype, 6, "STRING"))
@@ -2181,7 +2180,7 @@ CKernel* CSGInterface::create_kernel()
 	else if (strmatch(type, 14, "WEIGHTEDDEGREE"))
 	{
 		if (m_nrhs<4)
-			return false;
+			return NULL;
 
 		CHAR* dtype=get_str_from_str_or_direct(len);
 		if (strmatch(dtype, 4, "CHAR") || strmatch(dtype, 6, "STRING"))
@@ -2232,7 +2231,7 @@ CKernel* CSGInterface::create_kernel()
 	else if (strmatch(type, 4, "SLIK") || strmatch(type, 3, "LIK"))
 	{
 		if (m_nrhs<4)
-			return false;
+			return NULL;
 
 		CHAR* dtype=get_str_from_str_or_direct(len);
 		if (strmatch(dtype, 4, "CHAR"))
@@ -2274,7 +2273,7 @@ CKernel* CSGInterface::create_kernel()
 	else if (strmatch(type, 4, "POLY"))
 	{
 		if (m_nrhs<4)
-			return false;
+			return NULL;
 
 		CHAR* dtype=get_str_from_str_or_direct(len);
 		INT size=get_int_from_int_or_str();
@@ -2310,15 +2309,23 @@ CKernel* CSGInterface::create_kernel()
 	}
 	else if (strmatch(type, 7, "SIGMOID"))
 	{
-		if (m_nrhs<6)
-			return false;
+		if (m_nrhs<4)
+			return NULL;
 
 		CHAR* dtype=get_str_from_str_or_direct(len);
 		if (strmatch(dtype, 4, "REAL"))
 		{
 			INT size=get_int_from_int_or_str();
-			DREAL gamma=get_real_from_real_or_str();
-			DREAL coef0=get_real_from_real_or_str();
+			DREAL gamma=0.01;
+			DREAL coef0=0;
+
+			if (m_nrhs>4)
+			{
+				gamma=get_real_from_real_or_str();
+
+				if (m_nrhs>5)
+					coef0=get_real_from_real_or_str();
+			}
 
 			kernel=ui_kernel.create_sigmoid(size, gamma, coef0);
 		}
@@ -2327,12 +2334,14 @@ CKernel* CSGInterface::create_kernel()
 	}
 	else if (strmatch(type, 8, "GAUSSIAN")) // RBF
 	{
-		if (m_nrhs<5)
-			return false;
+		if (m_nrhs<4)
+			return NULL;
 
 		CHAR* dtype=get_str_from_str_or_direct(len);
 		INT size=get_int_from_int_or_str();
-		DREAL width=get_real_from_real_or_str();
+		DREAL width=1;
+		if (m_nrhs>4)
+			width=get_real_from_real_or_str();
 
 		if (strmatch(dtype, 4, "REAL"))
 			kernel=ui_kernel.create_gaussian(size, width);
@@ -2344,7 +2353,7 @@ CKernel* CSGInterface::create_kernel()
 	else if (strmatch(type, 13, "GAUSSIANSHIFT")) // RBF
 	{
 		if (m_nrhs<7)
-			return false;
+			return NULL;
 
 		CHAR* dtype=get_str_from_str_or_direct(len);
 		if (strmatch(dtype, 4, "REAL"))
@@ -2366,21 +2375,25 @@ CKernel* CSGInterface::create_kernel()
 	}
 	else if (strmatch(type, 5, "CONST"))
 	{
-		if (m_nrhs<4)
-			return false;
+		if (m_nrhs<3)
+			return NULL;
 
 		INT size=get_int_from_int_or_str();
-		DREAL c=get_real_from_real_or_str();
+		DREAL c=1;
+		if (m_nrhs>3)
+			c=get_real_from_real_or_str();
 
 		kernel=ui_kernel.create_const(size, c);
 	}
 	else if (strmatch(type, 4, "DIAG"))
 	{
-		if (m_nrhs<4)
-			return false;
+		if (m_nrhs<3)
+			return NULL;
 
 		INT size=get_int_from_int_or_str();
-		DREAL diag=get_real_from_real_or_str();
+		DREAL diag=1;
+		if (m_nrhs>3)
+			diag=get_real_from_real_or_str();
 
 		kernel=ui_kernel.create_diag(size, diag);
 	}
@@ -2389,7 +2402,7 @@ CKernel* CSGInterface::create_kernel()
 	else if (strmatch(type, 9, "MINDYGRAM"))
 	{
 		if (m_nrhs<7)
-			return false;
+			return NULL;
 
 		INT size=get_int_from_int_or_str();
 		CHAR* meas_str=get_str_from_str_or_direct(len);
@@ -2523,7 +2536,9 @@ bool CSGInterface::cmd_set_custom_kernel()
 	INT tlen=0;
 	CHAR* type=get_string(tlen);
 
-	if (!strmatch(type, tlen, "DIAG") && !strmatch(type, tlen, "FULL"))
+	if (!strmatch(type, tlen, "DIAG") &&
+		!strmatch(type, tlen, "FULL") &&
+		!strmatch(type, tlen, "FULL2DIAG"))
 	{
 		delete[] type;
 		SG_ERROR("Undefined type, not DIAG, FULL or FULL2DIAG.\n");
@@ -3562,12 +3577,23 @@ bool CSGInterface::cmd_get_classifier()
 
 bool CSGInterface::cmd_new_classifier()
 {
-	if (m_nrhs!=2 || !create_return_values(0))
+	if (m_nrhs<2 || !create_return_values(0))
 		return false;
 
 	INT len=0;
 	CHAR* name=get_str_from_str_or_direct(len);
-	bool success=ui_classifier.new_classifier(name);
+	INT d=6;
+	INT from_d=40;
+
+	if (m_nrhs>2)
+	{
+		d=get_int_from_int_or_str();
+
+		if (m_nrhs>3)
+			from_d=get_int_from_int_or_str();
+	}
+
+	bool success=ui_classifier.new_classifier(name, d, from_d);
 
 	delete[] name;
 	return success;
@@ -3943,7 +3969,9 @@ bool CSGInterface::cmd_add_preproc()
 
 	else if (strmatch(type, 15, "PRUNEVARSUBMEAN"))
 	{
-		bool divide_by_std=get_bool_from_bool_or_str();
+		bool divide_by_std=false;
+		if (m_nrhs==3)
+			divide_by_std=get_bool_from_bool_or_str();
 
 		preproc=ui_preproc.create_prunevarsubmean(divide_by_std);
 	}
@@ -5272,7 +5300,7 @@ bool CSGInterface::cmd_loglevel()
 	INT len=0;
 	CHAR* level=get_str_from_str_or_direct(len);
 
-	if (strmatch(level, 3, "ALL"))
+	if (strmatch(level, 3, "ALL") || strmatch(level, 5, "DEBUG"))
 		io.set_loglevel(M_DEBUG);
 	else if (strmatch(level, 4, "INFO"))
 		io.set_loglevel(M_INFO);
@@ -5414,6 +5442,9 @@ bool CSGInterface::cmd_send_command()
 		i++;
 	}
 
+	if (!success)
+		SG_ERROR("Non-supported legacy command %s.\n", command);
+
 	delete[] command;
 	delete[] arg;
 	return success;
@@ -5481,7 +5512,7 @@ bool CSGInterface::get_bool_from_bool_or_str()
 		return get_bool();
 }
 
-void CSGInterface::get_int_vector_from_int_vector_or_str(INT* vector, INT& len)
+void CSGInterface::get_int_vector_from_int_vector_or_str(INT*& vector, INT& len)
 {
 	if (m_legacy_strptr)
 	{
@@ -5503,7 +5534,7 @@ void CSGInterface::get_int_vector_from_int_vector_or_str(INT* vector, INT& len)
 		{
 			str=get_str_from_str(slen);
 			vector[i]=strtol(str, NULL, 10);
-			SG_DEBUG("vec[%d]: %d\n", i, vector[i]);
+			//SG_DEBUG("vec[%d]: %d\n", i, vector[i]);
 			delete[] str;
 		}
 	}
@@ -5511,7 +5542,7 @@ void CSGInterface::get_int_vector_from_int_vector_or_str(INT* vector, INT& len)
 		get_int_vector(vector, len);
 }
 
-void CSGInterface::get_real_vector_from_real_vector_or_str(DREAL* vector, INT& len)
+void CSGInterface::get_real_vector_from_real_vector_or_str(DREAL*& vector, INT& len)
 {
 	if (m_legacy_strptr)
 	{
@@ -5533,7 +5564,7 @@ void CSGInterface::get_real_vector_from_real_vector_or_str(DREAL* vector, INT& l
 		{
 			str=get_str_from_str(slen);
 			vector[i]=strtod(str, NULL);
-			SG_DEBUG("vec[%d]: %f\n", i, vector[i]);
+			//SG_DEBUG("vec[%d]: %f\n", i, vector[i]);
 			delete[] str;
 		}
 	}
@@ -5583,7 +5614,12 @@ INT CSGInterface::get_num_args_in_str()
 	}
 
 	if (i>0)
-		return num_seperator+1;
+	{
+		if (m_legacy_strptr[i-1]==' ') // trailing whitespace
+			return num_seperator;
+		else
+			return num_seperator+1;
+	}
 	else
 		return 0;
 }
@@ -5661,7 +5697,7 @@ bool CSGInterface::handle()
 				if (sg_methods[i].usage)
 					SG_ERROR("Usage: %s.\n", sg_methods[i].usage);
 				else
-					SG_ERROR("Non-supported legacy command %s.\n", command);
+					SG_ERROR("Non-supported command %s.\n", command);
 			else
 			{
 				success=true;

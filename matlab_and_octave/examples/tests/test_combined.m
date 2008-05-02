@@ -6,7 +6,8 @@ LT=sign(rand(1,1000)-0.5);
 
 sg('send_command', 'clean_features TRAIN');
 sg('send_command', 'clean_features TEST');
-sg('send_command', 'clean_kernels');
+sg('loglevel', 'ALL')
+sg('send_command', 'clean_kernel');
 
 sg('set_labels', 'TRAIN', LT);
 sg('add_features', 'TRAIN', XT1);

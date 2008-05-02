@@ -22,9 +22,9 @@ rand('state',0);
 f = [0.1:0.2:5];   % values for the different frequencies
 no_obs = 1000;     % number of observations
 kk=4;
-traindat = 1:(((10*2*pi)-1)/(no_obs-1)):10*2*pi;
+traindat = [1:(((10*2*pi)-1)/(no_obs-1)):10*2*pi];
 trainlab = sin(f(kk)*traindat);
-testdat = 1:(((10*2*pi)-1)/(no_obs-1)):10*2*pi;
+testdat = [1:(((10*2*pi)-1)/(no_obs-1)):10*2*pi];
 testlab = sin(f(kk)*traindat);
 
 sg('send_command', 'new_svm LIBSVR');

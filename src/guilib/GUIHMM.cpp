@@ -596,7 +596,7 @@ bool CGUIHMM::set_hmm_as(CHAR* target)
 	else
 		SG_ERROR("Target POS|NEG|TEST is missing.\n");
 
-	return false;
+	return true;
 }
 
 bool CGUIHMM::load(CHAR* filename)

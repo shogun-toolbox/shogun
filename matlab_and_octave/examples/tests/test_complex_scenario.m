@@ -33,7 +33,7 @@ sg('send_command', 'loglevel ALL');
 sg('send_command','clean_features TRAIN');
 sg('send_command','clean_features TEST');
 sg('send_command', 'threads 4');
-sg('send_command','clean_kernels');
+sg('send_command','clean_kernel');
 sg('send_command', 'use_linadd 1' );
 sg('send_command', 'use_batch_computation 1');
 

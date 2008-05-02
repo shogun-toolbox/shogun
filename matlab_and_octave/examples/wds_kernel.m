@@ -43,17 +43,16 @@ end
 %testdat=testdat(1:5,:) ;
 %len=5 ;
 traindat(end,end)='A' ;
-traindat'
-input('key to continue')
+%traindat'
+%input('key to continue')
 
 %train svm
 sg('send_command', 'use_linadd 1' );
 sg('send_command', 'use_batch_computation 1');
-sg('send_command', 'loglevel ALL');
 sg('set_features', 'TRAIN', traindat,'DNA');
 sg('set_labels', 'TRAIN', trainlab);
 %sg('send_command', sprintf( 'set_kernel WEIGHTEDDEGREEPOS2 CHAR 10 %i %i %i %s', order, max_mismatch, len, shifts ) );
-sg('send_command', sprintf( 'set_kernel WEIGHTEDDEGREEPOS3 CHAR 10 %i %i %i 1 %s', order, max_mismatch, len, shifts ) );
+sg('send_command', sprintf( 'set_kernel WEIGHTEDDEGREEPOS3 CHAR 10 %i %i %i 1 %s', order, max_mismatch, len, shifts));
 %sg('send_command', sprintf( 'set_kernel WEIGHTEDDEGREE CHAR %i %i %i %i %i %i %i', cache, order, max_mismatch, normalize, mkl_stepsize, block, single_degree) );
 %sg('set_WD_position_weights', ones(1,100)/100) ;
 sg('send_command', 'init_kernel TRAIN');
@@ -75,7 +74,7 @@ sg('send_command', 'init_kernel TEST');
   sg('send_command', 'delete_kernel_optimization');
   out1=sg('svm_classify');
   fprintf('accuracy: %f                                                                                         \n', mean(sign(out1)==testlab))
-  
+
   sg('send_command', 'set_kernel_optimization_type SLOWBUTMEMEFFICIENT') ;
   sg('send_command', 'use_batch_computation 1');
   sg('send_command', 'delete_kernel_optimization');

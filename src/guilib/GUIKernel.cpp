@@ -304,8 +304,11 @@ CKernel* CGUIKernel::create_weighteddegreepositionstring3(
 	else
 		SG_DEBUG("created WeightedDegreePositionStringKernel (%p) with size %d, order %d, max_mismatch %d, length %d and position_weights (MKL stepsize: %d).\n", kern, size, order, max_mismatch, length, mkl_stepsize);
 
-	((CWeightedDegreePositionStringKernel*) kern)->
-		set_position_weights(position_weights, length);
+	if (position_weights)
+	{
+		((CWeightedDegreePositionStringKernel*) kern)->
+			set_position_weights(position_weights, length);
+	}
 
 	delete[] weights;
 	return kern;
@@ -416,6 +419,9 @@ CKernel* CGUIKernel::create_commstring(
 
 ENormalizationType CGUIKernel::get_normalization_from_str(CHAR* str)
 {
+	if (!str)
+		return FULL_NORMALIZATION;
+
 	ENormalizationType norm=FULL_NORMALIZATION;
 
 	if (strncmp(str, "NO", 2)==0)
