@@ -298,7 +298,7 @@ void CMatlabInterface::function_name(T_STRING<sg_type>*& strings, INT& num_str, 
 				ASSERT(strings[i].string); 												\
 				INT j; 																	\
 				for (j=0; j<len; j++) 													\
-					strings[i].string[j]=data[j]; 										\
+					strings[i].string[j]= (sg_type) data[j]; 							\
 				strings[i].string[j]='\0'; 												\
 				max_string_len=CMath::max(max_string_len, len);							\
 			}																			\
@@ -327,7 +327,7 @@ void CMatlabInterface::function_name(T_STRING<sg_type>*& strings, INT& num_str, 
 				ASSERT(strings[i].string); 												\
 				INT j; 																	\
 				for (j=0; j<len; j++) 													\
-					strings[i].string[j]=data[j+i*len]; 								\
+					strings[i].string[j]=(sg_type) data[j+i*len]; 						\
 				strings[i].string[j]='\0'; 												\
 			} 																			\
 			else 																		\
