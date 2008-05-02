@@ -4,6 +4,7 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <ctype.h>
 
 #include "interface/SGInterface.h"
 #include "lib/ShogunException.h"
@@ -5482,14 +5483,11 @@ void CSGInterface::get_int_vector_from_int_vector_or_str(INT*& vector, INT& len)
 {
 	if (m_legacy_strptr)
 	{
-		if (len<=0) // assumes that vector is last part of string
+		len=get_vector_len_from_str(len);
+		if (len==0)
 		{
-			len=get_num_args_in_str();
-			if (len==0)
-			{
-				vector=NULL;
-				return;
-			}
+			vector=NULL;
+			return;
 		}
 
 		vector=new INT[len];
@@ -5512,14 +5510,11 @@ void CSGInterface::get_real_vector_from_real_vector_or_str(DREAL*& vector, INT& 
 {
 	if (m_legacy_strptr)
 	{
-		if (len<=0) // assumes that vector is last part of string
+		len=get_vector_len_from_str(len);
+		if (len==0)
 		{
-			len=get_num_args_in_str();
-			if (len==0)
-			{
-				vector=NULL;
-				return;
-			}
+			vector=NULL;
+			return;
 		}
 
 		vector=new DREAL[len];
@@ -5538,19 +5533,35 @@ void CSGInterface::get_real_vector_from_real_vector_or_str(DREAL*& vector, INT& 
 		get_real_vector(vector, len);
 }
 
+INT CSGInterface::get_vector_len_from_str(INT expected_len)
+{
+	INT num_args=get_num_args_in_str();
+
+	if (expected_len==0 || num_args==expected_len)
+		return num_args;
+	else if (num_args==2*expected_len)
+	{
+		// special case for position_weights; a bit shaky...
+		return expected_len;
+	}
+	else
+		SG_ERROR("Expected vector length %d does not match actual length %d.\n", expected_len, num_args);
+
+	return 0;
+}
+
 CHAR* CSGInterface::get_str_from_str(INT& len)
 {
 	if (!m_legacy_strptr)
 		return NULL;
 
 	INT i=0;
-	while (m_legacy_strptr[i]!='\0' && m_legacy_strptr[i]!=' ')
+	while (m_legacy_strptr[i]!='\0' && !isspace(m_legacy_strptr[i]))
 		i++;
 
 	len=i;
 	CHAR* str=new CHAR[len+1];
 	ASSERT(str);
-
 
 	for (i=0; i<len; i++)
 		str[i]=m_legacy_strptr[i];
@@ -5560,7 +5571,10 @@ CHAR* CSGInterface::get_str_from_str(INT& len)
 	if (m_legacy_strptr[len]=='\0')
 		m_legacy_strptr=NULL;
 	else
-		m_legacy_strptr=m_legacy_strptr+len+1;
+	{
+		m_legacy_strptr=m_legacy_strptr+len;
+		m_legacy_strptr=CIO::skip_spaces(m_legacy_strptr);
+	}
 
 	return str;
 }
@@ -5570,24 +5584,23 @@ INT CSGInterface::get_num_args_in_str()
 	if (!m_legacy_strptr)
 		return 0;
 
+	INT count=0;
 	INT i=0;
-	INT num_seperator=0;
+	bool in_arg=false;
 	while (m_legacy_strptr[i]!='\0')
 	{
-		if (m_legacy_strptr[i]==' ')
-			num_seperator++;
+		if (!isspace(m_legacy_strptr[i]) && !in_arg)
+		{
+			count++;
+			in_arg=true;
+		}
+		else if (isspace(m_legacy_strptr[i]) && in_arg)
+			in_arg=false;
+
 		i++;
 	}
 
-	if (i>0)
-	{
-		if (m_legacy_strptr[i-1]==' ') // trailing whitespace
-			return num_seperator;
-		else
-			return num_seperator+1;
-	}
-	else
-		return 0;
+	return count;
 }
 
 CHAR* CSGInterface::get_line(FILE* infile, bool interactive_mode)

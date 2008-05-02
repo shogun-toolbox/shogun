@@ -497,6 +497,7 @@ class CSGInterface : public CSGObject
 		bool get_bool_from_bool_or_str();
 		void get_int_vector_from_int_vector_or_str(INT*& vector, INT& len);
 		void get_real_vector_from_real_vector_or_str(DREAL*& vector, INT& len);
+		INT get_vector_len_from_str(INT expected_len=0);
 		CHAR* get_str_from_str(INT& len);
 		INT get_num_args_in_str();
 
