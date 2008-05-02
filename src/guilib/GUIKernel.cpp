@@ -304,11 +304,15 @@ CKernel* CGUIKernel::create_weighteddegreepositionstring3(
 	else
 		SG_DEBUG("created WeightedDegreePositionStringKernel (%p) with size %d, order %d, max_mismatch %d, length %d and position_weights (MKL stepsize: %d).\n", kern, size, order, max_mismatch, length, mkl_stepsize);
 
-	if (position_weights)
+	if (!position_weights)
 	{
-		((CWeightedDegreePositionStringKernel*) kern)->
-			set_position_weights(position_weights, length);
+		position_weights=new DREAL[length];
+		ASSERT(position_weights);
+		for (INT i=0; i<length; i++)
+			position_weights[i]=1.0/length;
 	}
+	((CWeightedDegreePositionStringKernel*) kern)->
+		set_position_weights(position_weights, length);
 
 	delete[] weights;
 	return kern;

@@ -2041,35 +2041,20 @@ CKernel* CSGInterface::create_kernel()
 	}
 	else if (strmatch(type, 18, "WEIGHTEDDEGREEPOS2"))
 	{
-		if (m_nrhs<4)
+		if (m_nrhs<7)
 			return NULL;
 
 		CHAR* dtype=get_str_from_str_or_direct(len);
 		if (strmatch(dtype, 4, "CHAR") || strmatch(dtype, 6, "STRING"))
 		{
 			INT size=get_int_from_int_or_str();
-			INT order=3;
-			INT max_mismatch=1;
-			INT length=0;
+			INT order=get_int_from_int_or_str();
+			INT max_mismatch=get_int_from_int_or_str();
+			INT length=get_int_from_int_or_str();
 			INT* shifts=NULL;
+			get_int_vector_from_int_vector_or_str(shifts, length);
+
 			bool use_normalization=true;
-
-			if (m_nrhs>4)
-			{
-				order=get_int_from_int_or_str();
-
-				if (m_nrhs>5)
-				{
-					max_mismatch=get_int_from_int_or_str();
-
-					if (m_nrhs>7)
-					{
-						length=get_int_from_int_or_str();
-						get_int_vector_from_int_vector_or_str(shifts, length);
-					}
-				}
-			}
-
 			if (strmatch(type, 25, "WEIGHTEDDEGREEPOS2_NONORM"))
 				use_normalization=false;
 
@@ -2084,44 +2069,25 @@ CKernel* CSGInterface::create_kernel()
 	}
 	else if (strmatch(type, 18, "WEIGHTEDDEGREEPOS3"))
 	{
-		if (m_nrhs<4)
+		if (m_nrhs<7)
 			return NULL;
 
 		CHAR* dtype=get_str_from_str_or_direct(len);
 		if (strmatch(dtype, 4, "CHAR") || strmatch(dtype, 6, "STRING"))
 		{
 			INT size=get_int_from_int_or_str();
-			INT order=3;
-			INT max_mismatch=1;
-			INT length=0;
-			INT mkl_stepsize=1;
+			INT order=get_int_from_int_or_str();
+			INT max_mismatch=get_int_from_int_or_str();
+			INT length=get_int_from_int_or_str();
+			INT mkl_stepsize=get_int_from_int_or_str();
 			INT* shifts=NULL;
+			get_int_vector_from_int_vector_or_str(shifts, length);
+
 			DREAL* position_weights=NULL;
-
-			if (m_nrhs>4)
+			if (m_nrhs>9+length)
 			{
-				order=get_int_from_int_or_str();
-
-				if (m_nrhs>5)
-				{
-					max_mismatch=get_int_from_int_or_str();
-
-					if (m_nrhs>7)
-					{
-						length=get_int_from_int_or_str();
-						mkl_stepsize=get_int_from_int_or_str();
-						get_int_vector_from_int_vector_or_str(shifts, length);
-						if (m_nrhs>9+length)
-						{
-							// what is that supposed to accomplish right before getting the actual values?
-							position_weights=new DREAL[length];
-							for (INT i=0; i<length; i++)
-								position_weights[i]=1.0/length;
-
-							get_real_vector_from_real_vector_or_str(position_weights, length);
-						}
-					}
-				}
+				get_real_vector_from_real_vector_or_str(
+					position_weights, length);
 			}
 
 			kernel=ui_kernel.create_weighteddegreepositionstring3(
