@@ -3790,7 +3790,7 @@ bool CSGInterface::cmd_set_svm_C()
 		return false;
 
 	DREAL C1=get_real_from_real_or_str();
-	DREAL C2=0;
+	DREAL C2=C1;
 
 	if (m_nrhs==3)
 		C2=get_real_from_real_or_str();
