@@ -104,6 +104,8 @@ dm_test=distance.get_distance_matrix();
 % minkowski metric
 disp('MinkowskiMetric')
 
+k=3
+
 feats_train=RealFeatures(traindata_real);
 feats_test=RealFeatures(testdata_real);
 

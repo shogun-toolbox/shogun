@@ -76,6 +76,8 @@ SWIGDOCFILES 	=
 endif
 SWIGLIBFILES 	= $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -exec grep -le '^%module' {} \; | sed 's=/\([^/]*\.\)$(EXT_INP_SWIG)=/$(PRE_LIB_SWIG)\1$(EXT_LIB_SWIG)=')
 SWIGPYFILES 	= $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -exec grep -le '^%module' {} \; | sed 's=/\([^/]*\.\)$(EXT_INP_SWIG)=/\1py=')
+SWIGRFILES 	= $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -exec grep -le '^%module' {} \; | sed 's=/\([^/]*\.\)$(EXT_INP_SWIG)=/\1R=')
+SWIGRDATAFILES 	= $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -exec grep -le '^%module' {} \; | sed 's=/\([^/]*\.\)$(EXT_INP_SWIG)=/\1RData=')
 TAR:=../shogun-$(shell date +%Y-%m-%d).tar
 
 .PHONY: config swig swigclean just-do-it all out clean end condor purif profile dep depend targets warn2err err2warn ctags depgen buildout buildend dist
@@ -266,6 +268,9 @@ doc:	lib/versionstring.h
 		-@sed -i "s/PROJECT_NUMBER         = .*/PROJECT_NUMBER         = `sed -n 's/^#define VERSION_RELEASE "\(.*\)_"/\1/p' $@`/" ../doc/Doxyfile
 		cd ../doc && make
 
+r-precompile: RFILES
+	find ./ -name '*.R' -exec echo "f='{}'; fdata=file.path(dirname(f), paste(strsplit(basename(f),'.',fixed = TRUE)[[1]][1],'.RData', sep='')); source(f); save(list=ls(all=TRUE),file=fdata, compress=TRUE); q(save='no')" | R \;
+
 ifeq (python-modular,$(INTERFACE))
 tests:
 		cd ../$(INTERFACE)/testcases && ( PYTHON=$(PYTHON) PYTHONPATH="$(DESTDIR)$(PYDIR)" ./test_all.sh	)
@@ -280,12 +285,19 @@ ChangeLog:
 $(OBJFILES): .config .depend lib/versionstring.h ChangeLog
 
 ifeq (yes,$(USE_SWIG))
+ifeq (r-modular,$(INTERFACE))
+$(TARGET): $(OBJFILES) $(SRCFILES) $(HEADERFILES) $(SWIGSRCFILES) $(SWIGDOCFILES) $(SWIGLIBFILES) $(SWIGRDATAFILES)
+%.R: $(PRE_LIB_SWIG)%.${EXT_LIB_SWIG}
+%.RData: %.R
+	echo 'f="$<"; fdata="$@"; source(f); save(list=ls(all=TRUE),file=fdata, compress=TRUE); q(save="no")' | R --no-save
+else #r-modular
 $(TARGET): $(OBJFILES) $(SRCFILES) $(HEADERFILES) $(SWIGSRCFILES) $(SWIGDOCFILES) $(SWIGLIBFILES) 
+endif #r-modular
 else
 $(TARGET): $(OBJFILES) $(SRCFILES) $(HEADERFILES)
 	$(LINK) $(shell find $(SRCDIR) -mindepth 2 -name "*.$(EXT_OBJ_CPP)" -o -name "*.$(EXT_OBJ_C)" 2>/dev/null) $(LINKFLAGS) -o $@ $(POSTLINKFLAGS)
 	#removeconfighunk
-endif
+endif #swig
 
 $(PRE_LIB_SWIG)%.${EXT_LIB_SWIG}:	%$(EXT_OBJ_SWIG)
 	$(LINK) $(LINKFLAGS) -o $@ $^ $(POSTLINKFLAGS)
@@ -312,3 +324,4 @@ endif
 
 %.$(EXT_OBJ_C):	%.$(EXT_SRC_C)
 	$(COMP_C) $(COMPFLAGS_C) -c $(INCLUDES) -o $@ $<
+
