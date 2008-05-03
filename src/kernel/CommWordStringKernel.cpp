@@ -430,7 +430,7 @@ bool CCommWordStringKernel::init_optimization(INT count, INT *IDX, DREAL * weigh
 		add_to_normal(IDX[i], weights[i]);
 	}
 
-	SG_PRINT( "Done.         \n");
+	//SG_PRINT( "Done.         \n");
 	
 	set_is_initialized(true);
 	return true;
