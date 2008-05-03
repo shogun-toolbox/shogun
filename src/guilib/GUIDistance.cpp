@@ -151,7 +151,7 @@ bool CGUIDistance::init_distance(CHAR* target)
 
 	if (!strncmp(target, "TRAIN", 5))
 	{
-		CFeatures* train=ui->ui_features.get_train_features();
+		CFeatures* train=ui->ui_features->get_train_features();
 		if (train)
 		{
 			EFeatureClass fclass=train->get_feature_class();
@@ -171,8 +171,8 @@ bool CGUIDistance::init_distance(CHAR* target)
 	}
 	else if (!strncmp(target, "TEST", 4))
 	{
-		CFeatures* train=ui->ui_features.get_train_features();
-		CFeatures* test=ui->ui_features.get_test_features();
+		CFeatures* train=ui->ui_features->get_train_features();
+		CFeatures* test=ui->ui_features->get_test_features();
 		if (test)
 		{
 			EFeatureClass fclass=test->get_feature_class();

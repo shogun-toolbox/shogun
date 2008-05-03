@@ -46,8 +46,9 @@ bool CGUIPluginEstimate::new_estimator(DREAL pos, DREAL neg)
 
 bool CGUIPluginEstimate::train()
 {
-	CLabels* trainlabels=ui->ui_labels.get_train_labels();
-	CStringFeatures<WORD>* trainfeatures=(CStringFeatures<WORD>*) ui->ui_features.get_train_features();
+	CLabels* trainlabels=ui->ui_labels->get_train_labels();
+	CStringFeatures<WORD>* trainfeatures=(CStringFeatures<WORD>*) ui->
+		ui_features->get_train_features();
 	bool result=false;
 
 	if (!trainlabels)
@@ -79,11 +80,11 @@ bool CGUIPluginEstimate::test(CHAR* filename_out, CHAR* filename_roc)
 	if (!estimator->check_models())
 		SG_ERROR("No models assigned.\n");
 
-	CLabels* testlabels=ui->ui_labels.get_test_labels();
+	CLabels* testlabels=ui->ui_labels->get_test_labels();
 	if (!testlabels)
 		SG_ERROR("No test labels available.\n");
 
-	CFeatures* testfeatures=ui->ui_features.get_test_features();
+	CFeatures* testfeatures=ui->ui_features->get_test_features();
 	if (!testfeatures || testfeatures->get_feature_class()!=C_SIMPLE ||
 		testfeatures->get_feature_type()!=F_WORD)
 		SG_ERROR("No test features of type WORD available.\n");
@@ -115,7 +116,7 @@ bool CGUIPluginEstimate::test(CHAR* filename_out, CHAR* filename_roc)
 	ASSERT(label);
 	ASSERT(len==total);
 
-	ui->ui_math.evaluate_results(output, label, total, file_out, file_roc);
+	ui->ui_math->evaluate_results(output, label, total, file_out, file_roc);
 
 	if (file_roc)
 		fclose(file_roc);
@@ -141,7 +142,7 @@ bool CGUIPluginEstimate::save(CHAR* param)
 
 CLabels* CGUIPluginEstimate::classify(CLabels* output)
 {
-	CFeatures* testfeatures=ui->ui_features.get_test_features();
+	CFeatures* testfeatures=ui->ui_features->get_test_features();
 
 	if (!estimator)
 	{
@@ -162,7 +163,7 @@ CLabels* CGUIPluginEstimate::classify(CLabels* output)
 
 DREAL CGUIPluginEstimate::classify_example(INT idx)
 {
-	CFeatures* testfeatures=ui->ui_features.get_test_features();
+	CFeatures* testfeatures=ui->ui_features->get_test_features();
 
 	if (!estimator)
 	{

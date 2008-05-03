@@ -329,11 +329,11 @@ bool CGUIClassifier::train_svm()
 	
 	CLabels* trainlabels=NULL;
 	if(!oneclass)
-		trainlabels=ui->ui_labels.get_train_labels();
+		trainlabels=ui->ui_labels->get_train_labels();
 	else
 		SG_INFO("Training one class svm.\n");
 
-	CKernel* kernel=ui->ui_kernel.get_kernel();
+	CKernel* kernel=ui->ui_kernel->get_kernel();
 
 	if (!svm)
 		SG_ERROR("No SVM available.\n");
@@ -344,7 +344,7 @@ bool CGUIClassifier::train_svm()
 	if (!trainlabels && !oneclass)
 		SG_ERROR("No trainlabels available.\n");
 
-	if (!ui->ui_kernel.is_initialized() || !kernel->get_lhs())
+	if (!ui->ui_kernel->is_initialized() || !kernel->get_lhs())
 		SG_ERROR("Kernel not initialized.\n");
 
 	INT num_vec=kernel->get_lhs()->get_num_vectors();
@@ -387,7 +387,7 @@ bool CGUIClassifier::train_svm()
 bool CGUIClassifier::train_clustering(INT k, INT max_iter)
 {
 	bool result=false;
-	CDistance* distance=ui->ui_distance.get_distance();
+	CDistance* distance=ui->ui_distance->get_distance();
 
 	if (!distance)
 		SG_ERROR("No distance available\n");
@@ -419,8 +419,8 @@ bool CGUIClassifier::train_clustering(INT k, INT max_iter)
 
 bool CGUIClassifier::train_knn(INT k)
 {
-	CLabels* trainlabels=ui->ui_labels.get_train_labels();
-	CDistance* distance=ui->ui_distance.get_distance();
+	CLabels* trainlabels=ui->ui_labels->get_train_labels();
+	CDistance* distance=ui->ui_distance->get_distance();
 
 	bool result=false;
 
@@ -444,8 +444,8 @@ bool CGUIClassifier::train_knn(INT k)
 
 bool CGUIClassifier::train_linear()
 {
-	CFeatures* trainfeatures=ui->ui_features.get_train_features();
-	CLabels* trainlabels=ui->ui_labels.get_train_labels();
+	CFeatures* trainfeatures=ui->ui_features->get_train_features();
+	CLabels* trainlabels=ui->ui_labels->get_train_labels();
 
 	bool result=false;
 
@@ -473,8 +473,8 @@ bool CGUIClassifier::train_linear()
 
 bool CGUIClassifier::train_wdocas()
 {
-	CFeatures* trainfeatures=ui->ui_features.get_train_features();
-	CLabels* trainlabels=ui->ui_labels.get_train_labels();
+	CFeatures* trainfeatures=ui->ui_features->get_train_features();
+	CLabels* trainlabels=ui->ui_labels->get_train_labels();
 
 	bool result=false;
 
@@ -497,8 +497,8 @@ bool CGUIClassifier::train_wdocas()
 
 bool CGUIClassifier::train_sparse_linear()
 {
-	CFeatures* trainfeatures=ui->ui_features.get_train_features();
-	CLabels* trainlabels=ui->ui_labels.get_train_labels();
+	CFeatures* trainfeatures=ui->ui_features->get_train_features();
+	CLabels* trainlabels=ui->ui_labels->get_train_labels();
 
 	bool result=false;
 
@@ -539,9 +539,9 @@ bool CGUIClassifier::test(CHAR* filename_out, CHAR* filename_roc)
 		}
 	}
 
-	CLabels* testlabels=ui->ui_labels.get_test_labels();
-	CFeatures* trainfeatures=ui->ui_features.get_train_features();
-	CFeatures* testfeatures=ui->ui_features.get_test_features();
+	CLabels* testlabels=ui->ui_labels->get_test_labels();
+	CFeatures* trainfeatures=ui->ui_features->get_train_features();
+	CFeatures* testfeatures=ui->ui_features->get_test_features();
 	SG_DEBUG("I:training: %ld examples each %ld features\n", ((CRealFeatures*) trainfeatures)->get_num_vectors(), ((CRealFeatures*) trainfeatures)->get_num_features());
 	SG_DEBUG("I:testing: %ld examples each %ld features\n", ((CRealFeatures*) testfeatures)->get_num_vectors(), ((CRealFeatures*) testfeatures)->get_num_features());
 
@@ -553,13 +553,13 @@ bool CGUIClassifier::test(CHAR* filename_out, CHAR* filename_roc)
 		SG_ERROR("No test features available.\n");
 	if (!testlabels)
 		SG_ERROR("No test labels available.\n");
-	if (!ui->ui_kernel.is_initialized())
+	if (!ui->ui_kernel->is_initialized())
 		SG_ERROR("Kernel not initialized.\n");
 
 	SG_INFO("Starting svm testing.\n");
 	((CKernelMachine*) classifier)->set_labels(testlabels);
-	((CKernelMachine*) classifier)->set_kernel(ui->ui_kernel.get_kernel());
-	ui->ui_kernel.get_kernel()->set_precompute_matrix(false,false);
+	((CKernelMachine*) classifier)->set_kernel(ui->ui_kernel->get_kernel());
+	ui->ui_kernel->get_kernel()->set_precompute_matrix(false,false);
 	((CKernelMachine*) classifier)->set_batch_computation_enabled(svm_use_batch_computation);
 
 	CLabels* predictions= classifier->classify();
@@ -573,7 +573,7 @@ bool CGUIClassifier::test(CHAR* filename_out, CHAR* filename_roc)
 	SG_DEBUG("len:%d total:%d\n", len, total);
 	ASSERT(len==total);
 
-	ui->ui_math.evaluate_results(output, label, total, file_out, file_roc);
+	ui->ui_math->evaluate_results(output, label, total, file_out, file_roc);
 
 	if (file_roc)
 		fclose(file_roc);
@@ -900,9 +900,9 @@ CLabels* CGUIClassifier::classify(CLabels* output)
 
 CLabels* CGUIClassifier::classify_kernelmachine(CLabels* output)
 {
-	CFeatures* trainfeatures=ui->ui_features.get_train_features();
-	CFeatures* testfeatures=ui->ui_features.get_test_features();
-	ui->ui_kernel.get_kernel()->set_precompute_matrix(false,false);
+	CFeatures* trainfeatures=ui->ui_features->get_train_features();
+	CFeatures* testfeatures=ui->ui_features->get_test_features();
+	ui->ui_kernel->get_kernel()->set_precompute_matrix(false,false);
 
 	if (!classifier)
 		SG_ERROR("No kernelmachine available.\n");
@@ -910,12 +910,12 @@ CLabels* CGUIClassifier::classify_kernelmachine(CLabels* output)
 		SG_ERROR("No training features available.\n");
 	if (!testfeatures)
 		SG_ERROR("No test features available.\n");
-	if (!ui->ui_kernel.is_initialized())
+	if (!ui->ui_kernel->is_initialized())
 		SG_ERROR("Kernel not initialized.\n");
 
 	CKernelMachine* km=(CKernelMachine*) classifier;
-	km->set_kernel(ui->ui_kernel.get_kernel());
-	ui->ui_kernel.get_kernel()->set_precompute_matrix(false,false);
+	km->set_kernel(ui->ui_kernel->get_kernel());
+	ui->ui_kernel->get_kernel()->set_precompute_matrix(false,false);
 	km->set_batch_computation_enabled(svm_use_batch_computation);
 
 	SG_INFO("Starting kernel machine testing.\n");
@@ -976,7 +976,7 @@ bool CGUIClassifier::get_trained_classifier(DREAL* &weights, INT &rows, INT &col
 bool CGUIClassifier::get_svm(DREAL* &weights, INT& rows, INT& cols,
 		DREAL*& bias, INT& brows, INT& bcols)
 {
-	CSVM* svm=(CSVM*) ui->ui_classifier.get_classifier();
+	CSVM* svm=(CSVM*) classifier;
 
 	if (svm)
 	{
@@ -1004,14 +1004,14 @@ bool CGUIClassifier::get_svm(DREAL* &weights, INT& rows, INT& cols,
 bool CGUIClassifier::get_clustering(DREAL* &centers, INT& rows, INT& cols,
 		DREAL*& radi, INT& brows, INT& bcols)
 {
-    if (!ui->ui_classifier.get_classifier())
+    if (!classifier)
         return false;
 
     switch (classifier->get_classifier_type())
     {
         case CT_KMEANS:
             {
-                CKMeans* clustering=(CKMeans*) ui->ui_classifier.get_classifier();
+                CKMeans* clustering=(CKMeans*) classifier;
 
                 bcols=1;
                 clustering->get_radi(radi, brows);
@@ -1022,7 +1022,7 @@ bool CGUIClassifier::get_clustering(DREAL* &centers, INT& rows, INT& cols,
             }
         case CT_HIERARCHICAL:
             {
-                CHierarchical* clustering=(CHierarchical*) ui->ui_classifier.get_classifier();
+                CHierarchical* clustering=(CHierarchical*) classifier;
 
 				INT* a=NULL;
 				bcols=1;
@@ -1057,7 +1057,7 @@ bool CGUIClassifier::get_clustering(DREAL* &centers, INT& rows, INT& cols,
 bool CGUIClassifier::get_linear(DREAL* &weights, INT& rows, INT& cols,
 		DREAL*& bias, INT& brows, INT& bcols)
 {
-	CLinearClassifier* linear=(CLinearClassifier*) ui->ui_classifier.get_classifier();
+	CLinearClassifier* linear=(CLinearClassifier*) classifier;
 
 	if (!linear)
 		return false;
@@ -1075,7 +1075,7 @@ bool CGUIClassifier::get_linear(DREAL* &weights, INT& rows, INT& cols,
 bool CGUIClassifier::get_sparse_linear(DREAL* &weights, INT& rows, INT& cols,
 		DREAL*& bias, INT& brows, INT& bcols)
 {
-	CSparseLinearClassifier* linear=(CSparseLinearClassifier*) ui->ui_classifier.get_classifier();
+	CSparseLinearClassifier* linear=(CSparseLinearClassifier*) classifier;
 
 	if (!linear)
 		return false;
@@ -1093,9 +1093,9 @@ bool CGUIClassifier::get_sparse_linear(DREAL* &weights, INT& rows, INT& cols,
 
 CLabels* CGUIClassifier::classify_distancemachine(CLabels* output)
 {
-	CFeatures* trainfeatures=ui->ui_features.get_train_features();
-	CFeatures* testfeatures=ui->ui_features.get_test_features();
-	ui->ui_distance.get_distance()->set_precompute_matrix(false);
+	CFeatures* trainfeatures=ui->ui_features->get_train_features();
+	CFeatures* testfeatures=ui->ui_features->get_test_features();
+	ui->ui_distance->get_distance()->set_precompute_matrix(false);
 
 	if (!classifier)
 	{
@@ -1114,14 +1114,15 @@ CLabels* CGUIClassifier::classify_distancemachine(CLabels* output)
 		return NULL;
 	}
 
-	if (!ui->ui_distance.is_initialized())
+	if (!ui->ui_distance->is_initialized())
 	{
 		SG_ERROR("distance not initialized\n") ;
 		return NULL;
 	}
 	  
-	((CDistanceMachine*) classifier)->set_distance(ui->ui_distance.get_distance()) ;
-	ui->ui_distance.get_distance()->set_precompute_matrix(false);
+	((CDistanceMachine*) classifier)->set_distance(
+		ui->ui_distance->get_distance());
+	ui->ui_distance->get_distance()->set_precompute_matrix(false);
 	SG_INFO("starting distance machine testing\n") ;
 	return classifier->classify(output);
 }
@@ -1129,7 +1130,7 @@ CLabels* CGUIClassifier::classify_distancemachine(CLabels* output)
 
 CLabels* CGUIClassifier::classify_linear(CLabels* output)
 {
-	CFeatures* testfeatures=ui->ui_features.get_test_features();
+	CFeatures* testfeatures=ui->ui_features->get_test_features();
 
 	if (!classifier)
 	{
@@ -1155,7 +1156,7 @@ CLabels* CGUIClassifier::classify_linear(CLabels* output)
 
 CLabels* CGUIClassifier::classify_byte_linear(CLabels* output)
 {
-	CFeatures* testfeatures=ui->ui_features.get_test_features();
+	CFeatures* testfeatures=ui->ui_features->get_test_features();
 
 	if (!classifier)
 	{
@@ -1181,7 +1182,7 @@ CLabels* CGUIClassifier::classify_byte_linear(CLabels* output)
 
 CLabels* CGUIClassifier::classify_sparse_linear(CLabels* output)
 {
-	CFeatures* testfeatures=ui->ui_features.get_test_features();
+	CFeatures* testfeatures=ui->ui_features->get_test_features();
 
 	if (!classifier)
 	{
@@ -1207,9 +1208,9 @@ CLabels* CGUIClassifier::classify_sparse_linear(CLabels* output)
 
 bool CGUIClassifier::classify_example(INT idx, DREAL &result)
 {
-	CFeatures* trainfeatures=ui->ui_features.get_train_features();
-	CFeatures* testfeatures=ui->ui_features.get_test_features();
-	ui->ui_kernel.get_kernel()->set_precompute_matrix(false,false);
+	CFeatures* trainfeatures=ui->ui_features->get_train_features();
+	CFeatures* testfeatures=ui->ui_features->get_test_features();
+	ui->ui_kernel->get_kernel()->set_precompute_matrix(false,false);
 
 	if (!classifier)
 	{
@@ -1228,13 +1229,14 @@ bool CGUIClassifier::classify_example(INT idx, DREAL &result)
 		return false;
 	}
 
-	if (!ui->ui_kernel.is_initialized())
+	if (!ui->ui_kernel->is_initialized())
 	{
 		SG_ERROR("kernel not initialized\n") ;
 		return false;
 	}
 
-	((CKernelMachine*) classifier)->set_kernel(ui->ui_kernel.get_kernel()) ;
+	((CKernelMachine*) classifier)->set_kernel(
+		ui->ui_kernel->get_kernel());
 
 	result=classifier->classify_example(idx);
 	return true ;

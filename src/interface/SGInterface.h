@@ -448,17 +448,17 @@ class CSGInterface : public CSGObject
 		void print_prompt();
 
 		/** ui lib */
-		CGUIClassifier ui_classifier;
-		CGUIHMM ui_hmm;
-		CGUIPluginEstimate ui_pluginestimate;
-		CGUIKNN ui_knn;
-		CGUIKernel ui_kernel;
-		CGUIPreProc ui_preproc;
-		CGUIFeatures ui_features;
-		CGUILabels ui_labels;
-		CGUIMath ui_math;
-		CGUITime ui_time;
-		CGUIDistance ui_distance;
+		CGUIClassifier* ui_classifier;
+		CGUIDistance* ui_distance;
+		CGUIFeatures* ui_features;
+		CGUIHMM* ui_hmm;
+		CGUIKernel* ui_kernel;
+		CGUIKNN* ui_knn;
+		CGUILabels* ui_labels;
+		CGUIMath* ui_math;
+		CGUIPluginEstimate* ui_pluginestimate;
+		CGUIPreProc* ui_preproc;
+		CGUITime* ui_time;
 
 	protected:
 		/* return true if str starts with cmd

@@ -506,7 +506,7 @@ CKernel* CGUIKernel::create_salzbergword(INT size)
 {
 
 	SG_INFO("Getting estimator.\n");
-	CPluginEstimate* estimator=ui->ui_pluginestimate.get_estimator();
+	CPluginEstimate* estimator=ui->ui_pluginestimate->get_estimator();
 	if (!estimator)
 		SG_ERROR("No estimator set.\n");
 
@@ -518,7 +518,7 @@ CKernel* CGUIKernel::create_salzbergword(INT size)
 
 	// prior stuff
 	SG_INFO("Getting labels.\n");
-	CLabels* train_labels=ui->ui_labels.get_train_labels();
+	CLabels* train_labels=ui->ui_labels->get_train_labels();
 	if (!train_labels)
 	{
 		SG_INFO("Assign train labels first!\n");
@@ -547,7 +547,7 @@ CKernel* CGUIKernel::create_salzbergword(INT size)
 CKernel* CGUIKernel::create_histogramword(INT size)
 {
 	SG_INFO("Getting estimator.\n");
-	CPluginEstimate* estimator=ui->ui_pluginestimate.get_estimator();
+	CPluginEstimate* estimator=ui->ui_pluginestimate->get_estimator();
 	if (!estimator)
 		SG_ERROR("No estimator set.\n");
 
@@ -632,7 +632,7 @@ CKernel* CGUIKernel::create_sparselinear(INT size, DREAL scale)
 
 CKernel* CGUIKernel::create_distance(INT size, DREAL width)
 {
-	CDistance* dist=ui->ui_distance.get_distance();
+	CDistance* dist=ui->ui_distance->get_distance();
 	if (!dist)
 		SG_ERROR("No distance set for DistanceKernel.\n");
 
@@ -724,7 +724,7 @@ bool CGUIKernel::init_kernel_optimization()
 {
 	kernel->set_precompute_matrix(false, false);
 
-	CSVM* svm=(CSVM*) ui->ui_classifier.get_classifier();
+	CSVM* svm=(CSVM*) ui->ui_classifier->get_classifier();
 	if (svm)
 	{
 		if (kernel->has_property(KP_LINADD))
@@ -778,7 +778,7 @@ bool CGUIKernel::init_kernel(CHAR* target)
 
 	if (!strncmp(target, "TRAIN", 5))
 	{
-		CFeatures* train=ui->ui_features.get_train_features();
+		CFeatures* train=ui->ui_features->get_train_features();
 		if (train)
 		{
 			EFeatureClass fclass=train->get_feature_class();
@@ -798,8 +798,8 @@ bool CGUIKernel::init_kernel(CHAR* target)
 	}
 	else if (!strncmp(target, "TEST", 4))
 	{
-		CFeatures* train=ui->ui_features.get_train_features();
-		CFeatures* test=ui->ui_features.get_test_features();
+		CFeatures* train=ui->ui_features->get_train_features();
+		CFeatures* test=ui->ui_features->get_test_features();
 		if (test)
 		{
 			EFeatureClass fclass=test->get_feature_class();

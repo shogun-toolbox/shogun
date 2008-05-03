@@ -33,8 +33,8 @@ bool CGUIKNN::new_knn(CHAR* param)
 
 bool CGUIKNN::train(CHAR* param)
 {
-	CLabels* trainlabels=ui->ui_labels.get_train_labels();
-	CDistance* distance=ui->ui_distance.get_distance();
+	CLabels* trainlabels=ui->ui_labels->get_train_labels();
+	CDistance* distance=ui->ui_distance->get_distance();
 
 	bool result=false;
 
@@ -99,8 +99,8 @@ bool CGUIKNN::test(CHAR* param)
 		}
 	}
 
-	CLabels* testlabels=ui->ui_labels.get_test_labels();
-	CDistance* distance=ui->ui_distance.get_distance();
+	CLabels* testlabels=ui->ui_labels->get_test_labels();
+	CDistance* distance=ui->ui_distance->get_distance();
 
 	if (!knn)
 	{
@@ -130,7 +130,7 @@ bool CGUIKNN::test(CHAR* param)
 	INT* label= testlabels->get_int_labels(len);
 	ASSERT(label);
 
-	ui->ui_math.evaluate_results(output, label, len, outputfile, rocfile);
+	ui->ui_math->evaluate_results(output, label, len, outputfile, rocfile);
 
 	if (rocfile)
 		fclose(rocfile);

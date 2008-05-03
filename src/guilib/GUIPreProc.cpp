@@ -216,18 +216,18 @@ bool CGUIPreProc::attach_preproc(CHAR* target, bool do_force)
 
 	if (strncmp(target, "TRAIN", 5)==0)
 	{
-		CFeatures* f = ui->ui_features.get_train_features();
+		CFeatures* f=ui->ui_features->get_train_features();
 		if (f->get_feature_class()==C_COMBINED)
 			f=((CCombinedFeatures*)f)->get_last_feature_obj();
 
 		preprocess_features(f, NULL, do_force);
-		ui->ui_features.invalidate_train();
+		ui->ui_features->invalidate_train();
 		result=true;
 	}
 	else if (strncmp(target, "TEST", 4)==0)
 	{
-		CFeatures* f_test=ui->ui_features.get_test_features();
-		CFeatures* f_train=ui->ui_features.get_train_features();
+		CFeatures* f_test=ui->ui_features->get_test_features();
+		CFeatures* f_train=ui->ui_features->get_train_features();
 		EFeatureClass fclass_train=f_train->get_feature_class();
 		EFeatureClass fclass_test=f_test->get_feature_class();
 
@@ -272,7 +272,7 @@ bool CGUIPreProc::attach_preproc(CHAR* target, bool do_force)
 			else
 			{
 				preprocess_features(f_train, f_test, do_force);
-				ui->ui_features.invalidate_test();
+				ui->ui_features->invalidate_test();
 				result=true;
 			}
 		}
