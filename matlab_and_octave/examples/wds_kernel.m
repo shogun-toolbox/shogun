@@ -19,6 +19,9 @@ single_degree=-1;
 x=shift*rand(1,len);
 %x(:)=0;
 shifts = sprintf( '%i ', floor(x(end:-1:1)) );
+%shifts = '1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20   21 22 23 24 25 %26 7 8 9  4 ';
+%shifts = sprintf('%s 23', shifts);
+posweights = sprintf( '%f ', floor(x(end:-1:1)) );
 
 %generate some toy data
 acgt='ACGT';
@@ -51,9 +54,12 @@ sg('send_command', 'use_linadd 1' );
 sg('send_command', 'use_batch_computation 1');
 sg('set_features', 'TRAIN', traindat,'DNA');
 sg('set_labels', 'TRAIN', trainlab);
+%sg('loglevel', 'ALL');
 %sg('send_command', sprintf( 'set_kernel WEIGHTEDDEGREEPOS2 CHAR 10 %i %i %i %s', order, max_mismatch, len, shifts ) );
 sg('send_command', sprintf( 'set_kernel WEIGHTEDDEGREEPOS3 CHAR 10 %i %i %i 1 %s', order, max_mismatch, len, shifts));
+%sg('send_command', sprintf( 'set_kernel WEIGHTEDDEGREEPOS3 CHAR 10 %i %i %i 1 %s %s', order, max_mismatch, len, shifts, posweights));
 %sg('send_command', sprintf( 'set_kernel WEIGHTEDDEGREE CHAR %i %i %i %i %i %i %i', cache, order, max_mismatch, normalize, mkl_stepsize, block, single_degree) );
+%sg('send_command', sprintf( 'set_kernel WEIGHTEDDEGREE CHAR %i %i', cache, order));
 %sg('set_WD_position_weights', ones(1,100)/100) ;
 sg('send_command', 'init_kernel TRAIN');
 sg('send_command', 'new_svm LIGHT');
@@ -66,6 +72,11 @@ sg('send_command', 'svm_train');
 %w(3)=1 ;
 %sg('set_subkernel_weights',w) ;
 
+%z=cell(); z{10}='';
+%for i=1:10;
+%	z{i}=traindat(:,i)';
+%end
+%sg('set_features', 'TEST', z,'DNA');
 sg('set_features', 'TEST', testdat,'DNA');
 sg('set_labels', 'TEST', testlab);
 sg('send_command', 'init_kernel TEST');
@@ -78,6 +89,7 @@ sg('send_command', 'init_kernel TEST');
   sg('send_command', 'set_kernel_optimization_type SLOWBUTMEMEFFICIENT') ;
   sg('send_command', 'use_batch_computation 1');
   sg('send_command', 'delete_kernel_optimization');
+  sg('send_command', 'svm_train')
   out2=sg('svm_classify');
   fprintf('accuracy: %f                                                                                         \n', mean(sign(out2)==testlab))
 

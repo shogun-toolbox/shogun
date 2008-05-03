@@ -752,7 +752,7 @@ bool CGUIKernel::init_kernel_optimization()
 	else
 		SG_ERROR("Create SVM first!\n");
 
-	return false;
+	return true;
 }
 
 bool CGUIKernel::delete_kernel_optimization()

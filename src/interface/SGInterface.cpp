@@ -921,9 +921,9 @@ bool CSGInterface::cmd_get_features()
 	CHAR* target=get_string(tlen);
 	CFeatures* feat=NULL;
 
-	if (strmatch(target, tlen, "TRAIN"))
+	if (strmatch(target, "TRAIN"))
 		feat=ui_features.get_train_features();
-	else if (strmatch(target, tlen, "TEST"))
+	else if (strmatch(target, "TEST"))
 		feat=ui_features.get_test_features();
 	else
 	{
@@ -1081,7 +1081,7 @@ bool CSGInterface::do_set_features(bool add)
 {
 	INT tlen=0;
 	CHAR* target=get_string(tlen);
-	if (!strmatch(target, tlen, "TRAIN") && !strmatch(target, tlen, "TEST"))
+	if (!strmatch(target, "TRAIN") && !strmatch(target, "TEST"))
 	{
 		delete[] target;
 		SG_ERROR("Unknown target, neither TRAIN nor TEST.\n");
@@ -1179,7 +1179,7 @@ bool CSGInterface::do_set_features(bool add)
 			CHAR* alphabet_str=get_string(alphabet_len);
 			ASSERT(alphabet_str);
 
-			if (strmatch(alphabet_str, alphabet_len, "DNABINFILE"))
+			if (strmatch(alphabet_str, "DNABINFILE"))
 			{
 				delete[] alphabet_str;
 
@@ -1247,7 +1247,7 @@ bool CSGInterface::do_set_features(bool add)
 			SG_ERROR("Wrong argument type %d.\n", get_argument_type());
 	}
 
-	if (strmatch(target, tlen, "TRAIN"))
+	if (strmatch(target, "TRAIN"))
 	{
 		if (add)
 			ui_features.add_train_features(feat);
@@ -1301,12 +1301,12 @@ bool CSGInterface::cmd_convert()
 	CHAR* to_type=get_str_from_str_or_direct(len);
 
 	CFeatures* result=NULL;
-	if (strmatch(from_class, 6, "SIMPLE"))
+	if (strmatch(from_class, "SIMPLE"))
 	{
-		if (strmatch(from_type, 4, "REAL"))
+		if (strmatch(from_type, "REAL"))
 		{
-			if (strmatch(to_class, 6, "SPARSE") &&
-				strmatch(to_type, 4, "REAL"))
+			if (strmatch(to_class, "SPARSE") &&
+				strmatch(to_type, "REAL"))
 			{
 				result=ui_features.convert_simple_real_to_sparse_real(
 					((CRealFeatures*) features));
@@ -1315,30 +1315,30 @@ bool CSGInterface::cmd_convert()
 				io.not_implemented();
 		} // from_type REAL
 
-		else if (strmatch(from_type, 4, "CHAR"))
+		else if (strmatch(from_type, "CHAR"))
 		{
-			if (strmatch(to_class, 6, "STRING") &&
-				strmatch(to_type, 4, "CHAR"))
+			if (strmatch(to_class, "STRING") &&
+				strmatch(to_type, "CHAR"))
 			{
 				result=ui_features.convert_simple_char_to_string_char(
 					((CCharFeatures*) features));
 			}
-			else if (strmatch(to_class, 6, "SIMPLE"))
+			else if (strmatch(to_class, "SIMPLE"))
 			{
-				if ((strmatch(to_type, 4, "WORD") ||
-					strmatch(to_type, 5, "SHORT")) && m_nrhs==10)
+				if ((strmatch(to_type, "WORD") ||
+					strmatch(to_type, "SHORT")) && m_nrhs==10)
 				{
 					INT order=get_int_from_int_or_str();
 					INT start=get_int_from_int_or_str();
 					INT gap=get_int_from_int_or_str();
 
-					if (strmatch(to_type, 4, "WORD"))
+					if (strmatch(to_type, "WORD"))
 					{
 						result=ui_features.convert_simple_char_to_simple_word(
 							(CCharFeatures*) features, order, start,
 							gap);
 					}
-					else if (strmatch(to_type, 5, "SHORT"))
+					else if (strmatch(to_type, "SHORT"))
 					{
 						result=ui_features.convert_simple_char_to_simple_short(
 							(CCharFeatures*) features, order, start,
@@ -1347,7 +1347,7 @@ bool CSGInterface::cmd_convert()
 					else
 						io.not_implemented();
 				}
-				else if (strmatch(to_type, 5, "ALIGN") && m_nrhs==8)
+				else if (strmatch(to_type, "ALIGN") && m_nrhs==8)
 				{
 					DREAL gap_cost=get_real_from_real_or_str();
 					result=ui_features.convert_simple_char_to_simple_align(
@@ -1360,10 +1360,10 @@ bool CSGInterface::cmd_convert()
 				io.not_implemented();
 		} // from_type CHAR
 
-		else if (strmatch(from_type, 4, "WORD"))
+		else if (strmatch(from_type, "WORD"))
 		{
-			if (strmatch(to_class, 6, "SIMPLE") &&
-				strmatch(to_type, 8, "SALZBERG"))
+			if (strmatch(to_class, "SIMPLE") &&
+				strmatch(to_type, "SALZBERG"))
 			{
 				result=ui_features.convert_simple_word_to_simple_salzberg(
 					(CWordFeatures*) features);
@@ -1376,12 +1376,12 @@ bool CSGInterface::cmd_convert()
 			io.not_implemented();
 	} // from_class SIMPLE
 
-	else if (strmatch(from_class, 6, "SPARSE"))
+	else if (strmatch(from_class, "SPARSE"))
 	{
-		if (strmatch(from_type, 4, "REAL"))
+		if (strmatch(from_type, "REAL"))
 		{
-			if (strmatch(to_class, 6, "SIMPLE") &&
-				strmatch(to_type, 4, "REAL"))
+			if (strmatch(to_class, "SIMPLE") &&
+				strmatch(to_type, "REAL"))
 			{
 				result=ui_features.convert_sparse_real_to_simple_real(
 					(CSparseFeatures<DREAL>*) features);
@@ -1393,11 +1393,11 @@ bool CSGInterface::cmd_convert()
 			io.not_implemented();
 	} // from_class SPARSE
 
-	else if (strmatch(from_class, 6, "STRING"))
+	else if (strmatch(from_class, "STRING"))
 	{
-		if (strmatch(from_type, 4, "CHAR"))
+		if (strmatch(from_type, "CHAR"))
 		{
-			if (strmatch(to_class, 6, "STRING"))
+			if (strmatch(to_class, "STRING"))
 			{
 				INT order=1;
 				INT start=0;
@@ -1428,13 +1428,13 @@ bool CSGInterface::cmd_convert()
 					}
 				}
 
-				if (strmatch(to_type, 4, "WORD"))
+				if (strmatch(to_type, "WORD"))
 				{
 					result=ui_features.convert_string_char_to_string_generic<CHAR,WORD>(
 						(CStringFeatures<CHAR>*) features, order, start,
 						gap, rev);
 				}
-				else if (strmatch(to_type, 5, "ULONG"))
+				else if (strmatch(to_type, "ULONG"))
 				{
 					result=ui_features.convert_string_char_to_string_generic<CHAR,ULONG>(
 					(CStringFeatures<CHAR>*) features, order, start,
@@ -1444,8 +1444,8 @@ bool CSGInterface::cmd_convert()
 					io.not_implemented();
 			}
 #ifdef HAVE_MINDY
-			else if (strmatch(to_class, 9, "MINDYGRAM") &&
-				strmatch(to_type, 5, "ULONG") &&
+			else if (strmatch(to_class, "MINDYGRAM") &&
+				strmatch(to_type, "ULONG") &&
 				m_nrhs==11)
 			{
 				CHAR* alph=get_str_from_str_or_direct(len);
@@ -1467,9 +1467,9 @@ bool CSGInterface::cmd_convert()
 				io.not_implemented();
 		} // from_type CHAR
 
-		else if (strmatch(from_type, 4, "BYTE"))
+		else if (strmatch(from_type, "BYTE"))
 		{
-			if (strmatch(to_class, 6, "STRING"))
+			if (strmatch(to_class, "STRING"))
 			{
 				INT order=1;
 				INT start=0;
@@ -1500,13 +1500,13 @@ bool CSGInterface::cmd_convert()
 					}
 				}
 
-				if (strmatch(to_type, 4, "WORD"))
+				if (strmatch(to_type, "WORD"))
 				{
 					result=ui_features.convert_string_char_to_string_generic<BYTE,WORD>(
 						(CStringFeatures<BYTE>*) features, order, start,
 						gap, rev);
 				}
-				else if (strmatch(to_type, 5, "ULONG"))
+				else if (strmatch(to_type, "ULONG"))
 				{
 					result=ui_features.convert_string_char_to_string_generic<BYTE,ULONG>(
 						(CStringFeatures<BYTE>*) features, order, start,
@@ -1516,8 +1516,8 @@ bool CSGInterface::cmd_convert()
 					io.not_implemented();
 			}
 #ifdef HAVE_MINDY
-			else if (strmatch(to_class, 9, "MINDYGRAM") &&
-				strmatch(to_type, 5, "ULONG") &&
+			else if (strmatch(to_class, "MINDYGRAM") &&
+				strmatch(to_type, "ULONG") &&
 				m_nrhs==11)
 			{
 				CHAR* alph=get_str_from_str_or_direct(len);
@@ -1539,10 +1539,9 @@ bool CSGInterface::cmd_convert()
 				io.not_implemented();
 		} // from_type BYTE
 
-		else if (strmatch(from_type, 4, "WORD"))
+		else if (strmatch(from_type, "WORD"))
 		{
-			if (strmatch(to_class, 6, "SIMPLE") &&
-				strmatch(to_type, 3, "TOP"))
+			if (strmatch(to_class, "SIMPLE") && strmatch(to_type, "TOP"))
 			{
 				result=ui_features.convert_string_word_to_simple_top(
 					(CStringFeatures<WORD>*) features);
@@ -1551,8 +1550,7 @@ bool CSGInterface::cmd_convert()
 				io.not_implemented();
 		} // from_type WORD
 
-		else if (strmatch(to_class, 6, "SIMPLE") &&
-			strmatch(to_type, 2, "FK"))
+		else if (strmatch(to_class, "SIMPLE") && strmatch(to_type, "FK"))
 		{
 			result=ui_features.convert_string_word_to_simple_fk(
 				(CStringFeatures<WORD>*) features);
@@ -1583,7 +1581,7 @@ bool CSGInterface::cmd_obtain_from_position_list()
 
 	INT tlen=0;
 	CHAR* target=get_string(tlen);
-	if (!strmatch(target, tlen, "TRAIN") && !strmatch(target, tlen, "TEST"))
+	if (!strmatch(target, "TRAIN") && !strmatch(target, "TEST"))
 	{
 		delete[] target;
 		SG_ERROR("Unknown target, neither TRAIN nor TEST.\n");
@@ -1607,7 +1605,7 @@ bool CSGInterface::cmd_obtain_from_position_list()
 		positions.set_element(shifts[i], i);
 
 	CFeatures* features=NULL;
-	if (strmatch(target, tlen, "TRAIN"))
+	if (strmatch(target, "TRAIN"))
 	{
 		ui_features.invalidate_train();
 		features=ui_features.get_train_features();
@@ -1725,7 +1723,7 @@ bool CSGInterface::cmd_set_labels()
 
 	INT tlen=0;
 	CHAR* target=get_string(tlen);
-	if (!strmatch(target, tlen, "TRAIN") && !strmatch(target, tlen, "TEST"))
+	if (!strmatch(target, "TRAIN") && !strmatch(target, "TEST"))
 	{
 		delete[] target;
 		SG_ERROR("Unknown target, neither TRAIN nor TEST.\n");
@@ -1744,9 +1742,9 @@ bool CSGInterface::cmd_set_labels()
 			SG_ERROR("Couldn't set label %d (of %d): %f.\n", i, len, lab[i]);
 	}
 
-	if (strmatch(target, tlen, "TRAIN"))
+	if (strmatch(target, "TRAIN"))
 		ui_labels.set_train_labels(labels);
-	else if (strmatch(target, tlen, "TEST"))
+	else if (strmatch(target, "TEST"))
 		ui_labels.set_test_labels(labels);
 	else
 	{
@@ -1767,9 +1765,9 @@ bool CSGInterface::cmd_get_labels()
 	CHAR* target=get_string(tlen);
 	CLabels* labels=NULL;
 
-	if (strmatch(target, tlen, "TRAIN"))
+	if (strmatch(target, "TRAIN"))
 		labels=ui_labels.get_train_labels();
-	else if (strmatch(target, tlen, "TEST"))
+	else if (strmatch(target, "TEST"))
 		labels=ui_labels.get_test_labels();
 	else
 	{
@@ -1823,7 +1821,7 @@ CKernel* CSGInterface::create_kernel()
 	INT len=0;
 	CHAR* type=get_str_from_str_or_direct(len);
 
-	if (strmatch(type, 8, "COMBINED"))
+	if (strmatch(type, "COMBINED"))
 	{
 		if (m_nrhs<3)
 			return NULL;
@@ -1835,7 +1833,7 @@ CKernel* CSGInterface::create_kernel()
 
 		kernel=ui_kernel.create_combined(size, append_subkernel_weights);
 	}
-	else if (strmatch(type, 8, "DISTANCE"))
+	else if (strmatch(type, "DISTANCE"))
 	{
 		if (m_nrhs<3)
 			return NULL;
@@ -1847,7 +1845,7 @@ CKernel* CSGInterface::create_kernel()
 
 		kernel=ui_kernel.create_distance(size, width);
 	}
-	else if (strmatch(type, 6, "LINEAR"))
+	else if (strmatch(type, "LINEAR"))
 	{
 		if (m_nrhs<4)
 			return NULL;
@@ -1858,26 +1856,26 @@ CKernel* CSGInterface::create_kernel()
 		if (m_nrhs==5)
 			scale=get_real_from_real_or_str();
 
-		if (strmatch(dtype, 4, "BYTE"))
+		if (strmatch(dtype, "BYTE"))
 			kernel=ui_kernel.create_linearbyte(size, scale);
-		else if (strmatch(dtype, 4, "WORD"))
+		else if (strmatch(dtype, "WORD"))
 			kernel=ui_kernel.create_linearword(size, scale);
-		else if (strmatch(dtype, 4, "CHAR"))
+		else if (strmatch(dtype, "CHAR"))
 			kernel=ui_kernel.create_linearstring(size, scale);
-		else if (strmatch(dtype, 4, "REAL"))
+		else if (strmatch(dtype, "REAL"))
 			kernel=ui_kernel.create_linear(size, scale);
-		else if (strmatch(dtype, 10, "SPARSEREAL"))
+		else if (strmatch(dtype, "SPARSEREAL"))
 			kernel=ui_kernel.create_sparselinear(size, scale);
 
 		delete[] dtype;
 	}
-	else if (strmatch(type, 9, "HISTOGRAM"))
+	else if (strmatch(type, "HISTOGRAM"))
 	{
 		if (m_nrhs<4)
 			return NULL;
 
 		CHAR* dtype=get_str_from_str_or_direct(len);
-		if (strmatch(dtype, 4, "WORD"))
+		if (strmatch(dtype, "WORD"))
 		{
 			INT size=get_int_from_int_or_str();
 			kernel=ui_kernel.create_histogramword(size);
@@ -1885,13 +1883,13 @@ CKernel* CSGInterface::create_kernel()
 
 		delete[] dtype;
 	}
-	else if (strmatch(type, 8, "SALZBERG"))
+	else if (strmatch(type, "SALZBERG"))
 	{
 		if (m_nrhs<4)
 			return NULL;
 
 		CHAR* dtype=get_str_from_str_or_direct(len);
-		if (strmatch(dtype, 4, "WORD"))
+		if (strmatch(dtype, "WORD"))
 		{
 			INT size=get_int_from_int_or_str();
 			kernel=ui_kernel.create_salzbergword(size);
@@ -1899,7 +1897,7 @@ CKernel* CSGInterface::create_kernel()
 
 		delete[] dtype;
 	}
-	else if (strmatch(type, 9, "POLYMATCH"))
+	else if (strmatch(type, "POLYMATCH"))
 	{
 		if (m_nrhs<4)
 			return NULL;
@@ -1921,12 +1919,12 @@ CKernel* CSGInterface::create_kernel()
 			}
 		}
 
-		if (strmatch(dtype, 4, "WORD"))
+		if (strmatch(dtype, "WORD"))
 		{
 			kernel=ui_kernel.create_polymatchword(
 				size, degree, inhomogene, normalize);
 		}
-		else if (strmatch(dtype, 4, "CHAR"))
+		else if (strmatch(dtype, "CHAR"))
 		{
 			kernel=ui_kernel.create_polymatchstring(
 				size, degree, inhomogene, normalize);
@@ -1934,13 +1932,13 @@ CKernel* CSGInterface::create_kernel()
 
 		delete[] dtype;
 	}
-	else if (strmatch(type, 5, "MATCH"))
+	else if (strmatch(type, "MATCH"))
 	{
 		if (m_nrhs<4)
 			return NULL;
 
 		CHAR* dtype=get_str_from_str_or_direct(len);
-		if (strmatch(dtype, 4, "WORD"))
+		if (strmatch(dtype, "WORD"))
 		{
 			INT size=get_int_from_int_or_str();
 			INT d=3;
@@ -1953,7 +1951,7 @@ CKernel* CSGInterface::create_kernel()
 
 		delete[] dtype;
 	}
-	else if (strmatch(type, 18, "WEIGHTEDCOMMSTRING") || strmatch(type, 10, "COMMSTRING"))
+	else if (strmatch(type, "WEIGHTEDCOMMSTRING") || strmatch(type, "COMMSTRING"))
 	{
 		CHAR* dtype=get_str_from_str_or_direct(len);
 		INT size=get_int_from_int_or_str();
@@ -1968,20 +1966,20 @@ CKernel* CSGInterface::create_kernel()
 				norm_str=get_str_from_str_or_direct(len);
 		}
 
-		if (strmatch(dtype, 4, "WORD"))
+		if (strmatch(dtype, "WORD"))
 		{
-			if (strmatch(type, 18, "WEIGHTEDCOMMSTRING"))
+			if (strmatch(type, "WEIGHTEDCOMMSTRING"))
 			{
 				kernel=ui_kernel.create_commstring(
 					size, use_sign, norm_str, K_WEIGHTEDCOMMWORDSTRING);
 			}
-			else if (strmatch(type, 10, "COMMSTRING"))
+			else if (strmatch(type, "COMMSTRING"))
 			{
 				kernel=ui_kernel.create_commstring(
 					size, use_sign, norm_str, K_COMMWORDSTRING);
 			}
 		}
-		else if (strmatch(dtype, 5, "ULONG"))
+		else if (strmatch(dtype, "ULONG"))
 		{
 			kernel=ui_kernel.create_commstring(
 				size, use_sign, norm_str, K_COMMULONGSTRING);
@@ -1990,13 +1988,13 @@ CKernel* CSGInterface::create_kernel()
 		delete[] dtype;
 		delete[] norm_str;
 	}
-	else if (strmatch(type, 4, "CHI2"))
+	else if (strmatch(type, "CHI2"))
 	{
 		if (m_nrhs<4)
 			return NULL;
 
 		CHAR* dtype=get_str_from_str_or_direct(len);
-		if (strmatch(dtype, 4, "REAL"))
+		if (strmatch(dtype, "REAL"))
 		{
 			INT size=get_int_from_int_or_str();
 			DREAL width=1;
@@ -2009,13 +2007,13 @@ CKernel* CSGInterface::create_kernel()
 
 		delete[] dtype;
 	}
-	else if (strmatch(type, 11, "FIXEDDEGREE"))
+	else if (strmatch(type, "FIXEDDEGREE"))
 	{
 		if (m_nrhs<4)
 			return NULL;
 
 		CHAR* dtype=get_str_from_str_or_direct(len);
-		if (strmatch(dtype, 4, "CHAR"))
+		if (strmatch(dtype, "CHAR"))
 		{
 			INT size=get_int_from_int_or_str();
 			INT d=3;
@@ -2025,13 +2023,13 @@ CKernel* CSGInterface::create_kernel()
 			kernel=ui_kernel.create_fixeddegreestring(size, d);
 		}
 	}
-	else if (strmatch(type, 14, "LOCALALIGNMENT"))
+	else if (strmatch(type, "LOCALALIGNMENT"))
 	{
 		if (m_nrhs<4)
 			return NULL;
 
 		CHAR* dtype=get_str_from_str_or_direct(len);
-		if (strmatch(dtype, 4, "CHAR"))
+		if (strmatch(dtype, "CHAR"))
 		{
 			INT size=get_int_from_int_or_str();
 
@@ -2040,13 +2038,13 @@ CKernel* CSGInterface::create_kernel()
 
 		delete[] dtype;
 	}
-	else if (strmatch(type, 18, "WEIGHTEDDEGREEPOS2"))
+	else if (strmatch(type, "WEIGHTEDDEGREEPOS2"))
 	{
 		if (m_nrhs<7)
 			return NULL;
 
 		CHAR* dtype=get_str_from_str_or_direct(len);
-		if (strmatch(dtype, 4, "CHAR") || strmatch(dtype, 6, "STRING"))
+		if (strmatch(dtype, "CHAR") || strmatch(dtype, "STRING"))
 		{
 			INT size=get_int_from_int_or_str();
 			INT order=get_int_from_int_or_str();
@@ -2056,7 +2054,7 @@ CKernel* CSGInterface::create_kernel()
 			get_int_vector_from_int_vector_or_str(shifts, length);
 
 			bool use_normalization=true;
-			if (strmatch(type, 25, "WEIGHTEDDEGREEPOS2_NONORM"))
+			if (strmatch(type, "WEIGHTEDDEGREEPOS2_NONORM"))
 				use_normalization=false;
 
 			kernel=ui_kernel.create_weighteddegreepositionstring2(
@@ -2068,13 +2066,13 @@ CKernel* CSGInterface::create_kernel()
 
 		delete[] dtype;
 	}
-	else if (strmatch(type, 18, "WEIGHTEDDEGREEPOS3"))
+	else if (strmatch(type, "WEIGHTEDDEGREEPOS3"))
 	{
 		if (m_nrhs<7)
 			return NULL;
 
 		CHAR* dtype=get_str_from_str_or_direct(len);
-		if (strmatch(dtype, 4, "CHAR") || strmatch(dtype, 6, "STRING"))
+		if (strmatch(dtype, "CHAR") || strmatch(dtype, "STRING"))
 		{
 			INT size=get_int_from_int_or_str();
 			INT order=get_int_from_int_or_str();
@@ -2100,13 +2098,13 @@ CKernel* CSGInterface::create_kernel()
 
 		delete[] dtype;
 	}
-	else if (strmatch(type, 17, "WEIGHTEDDEGREEPOS"))
+	else if (strmatch(type, "WEIGHTEDDEGREEPOS"))
 	{
 		if (m_nrhs<4)
 			return NULL;
 
 		CHAR* dtype=get_str_from_str_or_direct(len);
-		if (strmatch(dtype, 4, "CHAR") || strmatch(dtype, 6, "STRING"))
+		if (strmatch(dtype, "CHAR") || strmatch(dtype, "STRING"))
 		{
 			INT size=get_int_from_int_or_str();
 			INT order=3;
@@ -2144,13 +2142,13 @@ CKernel* CSGInterface::create_kernel()
 
 		delete[] dtype;
 	}
-	else if (strmatch(type, 14, "WEIGHTEDDEGREE"))
+	else if (strmatch(type, "WEIGHTEDDEGREE"))
 	{
 		if (m_nrhs<4)
 			return NULL;
 
 		CHAR* dtype=get_str_from_str_or_direct(len);
-		if (strmatch(dtype, 4, "CHAR") || strmatch(dtype, 6, "STRING"))
+		if (strmatch(dtype, "CHAR") || strmatch(dtype, "STRING"))
 		{
 			INT size=get_int_from_int_or_str();
 			INT order=3;
@@ -2195,13 +2193,13 @@ CKernel* CSGInterface::create_kernel()
 
 		delete[] dtype;
 	}
-	else if (strmatch(type, 4, "SLIK") || strmatch(type, 3, "LIK"))
+	else if (strmatch(type, "SLIK") || strmatch(type, "LIK"))
 	{
 		if (m_nrhs<4)
 			return NULL;
 
 		CHAR* dtype=get_str_from_str_or_direct(len);
-		if (strmatch(dtype, 4, "CHAR"))
+		if (strmatch(dtype, "CHAR"))
 		{
 			INT size=get_int_from_int_or_str();
 			INT length=3;
@@ -2221,7 +2219,7 @@ CKernel* CSGInterface::create_kernel()
 				}
 			}
 
-			if (strmatch(type, 4, "SLIK"))
+			if (strmatch(type, "SLIK"))
 			{
 				kernel=ui_kernel.create_localityimprovedstring(
 					size, length, inner_degree, outer_degree,
@@ -2237,7 +2235,7 @@ CKernel* CSGInterface::create_kernel()
 
 		delete[] dtype;
 	}
-	else if (strmatch(type, 4, "POLY"))
+	else if (strmatch(type, "POLY"))
 	{
 		if (m_nrhs<4)
 			return NULL;
@@ -2261,12 +2259,12 @@ CKernel* CSGInterface::create_kernel()
 			}
 		}
 
-		if (strmatch(dtype, 4, "REAL"))
+		if (strmatch(dtype, "REAL"))
 		{
 			kernel=ui_kernel.create_poly(
 				size, degree, inhomogene, normalize);
 		}
-		else if (strmatch(dtype, 10, "SPARSEREAL"))
+		else if (strmatch(dtype, "SPARSEREAL"))
 		{
 			kernel=ui_kernel.create_sparsepoly(
 				size, degree, inhomogene, normalize);
@@ -2274,13 +2272,13 @@ CKernel* CSGInterface::create_kernel()
 
 		delete[] dtype;
 	}
-	else if (strmatch(type, 7, "SIGMOID"))
+	else if (strmatch(type, "SIGMOID"))
 	{
 		if (m_nrhs<4)
 			return NULL;
 
 		CHAR* dtype=get_str_from_str_or_direct(len);
-		if (strmatch(dtype, 4, "REAL"))
+		if (strmatch(dtype, "REAL"))
 		{
 			INT size=get_int_from_int_or_str();
 			DREAL gamma=0.01;
@@ -2299,7 +2297,7 @@ CKernel* CSGInterface::create_kernel()
 
 		delete[] dtype;
 	}
-	else if (strmatch(type, 8, "GAUSSIAN")) // RBF
+	else if (strmatch(type, "GAUSSIAN")) // RBF
 	{
 		if (m_nrhs<4)
 			return NULL;
@@ -2310,20 +2308,20 @@ CKernel* CSGInterface::create_kernel()
 		if (m_nrhs>4)
 			width=get_real_from_real_or_str();
 
-		if (strmatch(dtype, 4, "REAL"))
+		if (strmatch(dtype, "REAL"))
 			kernel=ui_kernel.create_gaussian(size, width);
-		else if (strmatch(dtype, 10, "SPARSEREAL"))
+		else if (strmatch(dtype, "SPARSEREAL"))
 			kernel=ui_kernel.create_sparsegaussian(size, width);
 
 		delete[] dtype;
 	}
-	else if (strmatch(type, 13, "GAUSSIANSHIFT")) // RBF
+	else if (strmatch(type, "GAUSSIANSHIFT")) // RBF
 	{
 		if (m_nrhs<7)
 			return NULL;
 
 		CHAR* dtype=get_str_from_str_or_direct(len);
-		if (strmatch(dtype, 4, "REAL"))
+		if (strmatch(dtype, "REAL"))
 		{
 			INT size=get_int_from_int_or_str();
 			DREAL width=get_real_from_real_or_str();
@@ -2336,11 +2334,11 @@ CKernel* CSGInterface::create_kernel()
 
 		delete[] dtype;
 	}
-	else if (strmatch(type, 6, "CUSTOM"))
+	else if (strmatch(type, "CUSTOM"))
 	{
 		kernel=ui_kernel.create_custom();
 	}
-	else if (strmatch(type, 5, "CONST"))
+	else if (strmatch(type, "CONST"))
 	{
 		if (m_nrhs<3)
 			return NULL;
@@ -2352,7 +2350,7 @@ CKernel* CSGInterface::create_kernel()
 
 		kernel=ui_kernel.create_const(size, c);
 	}
-	else if (strmatch(type, 4, "DIAG"))
+	else if (strmatch(type, "DIAG"))
 	{
 		if (m_nrhs<3)
 			return NULL;
@@ -2366,7 +2364,7 @@ CKernel* CSGInterface::create_kernel()
 	}
 
 #ifdef HAVE_MINDY
-	else if (strmatch(type, 9, "MINDYGRAM"))
+	else if (strmatch(type, "MINDYGRAM"))
 	{
 		if (m_nrhs<7)
 			return NULL;
@@ -2503,9 +2501,9 @@ bool CSGInterface::cmd_set_custom_kernel()
 	INT tlen=0;
 	CHAR* type=get_string(tlen);
 
-	if (!strmatch(type, tlen, "DIAG") &&
-		!strmatch(type, tlen, "FULL") &&
-		!strmatch(type, tlen, "FULL2DIAG"))
+	if (!strmatch(type, "DIAG") &&
+		!strmatch(type, "FULL") &&
+		!strmatch(type, "FULL2DIAG"))
 	{
 		delete[] type;
 		SG_ERROR("Undefined type, not DIAG, FULL or FULL2DIAG.\n");
@@ -2513,9 +2511,9 @@ bool CSGInterface::cmd_set_custom_kernel()
 
 	bool source_is_diag=false;
 	bool dest_is_diag=false;
-	if (strmatch(type, tlen, "FULL2DIAG"))
+	if (strmatch(type, "FULL2DIAG"))
 		dest_is_diag=true;
-	else if (strmatch(type, tlen, "DIAG"))
+	else if (strmatch(type, "DIAG"))
 	{
 		source_is_diag=true;
 		dest_is_diag=true;
@@ -2589,13 +2587,13 @@ bool CSGInterface::cmd_set_WD_position_weights()
 				SG_ERROR("Couldn't find second argument to method.\n");
 			}
 
-			if (!strmatch(target, tlen, "TRAIN") && !strmatch(target, tlen, "TEST"))
+			if (!strmatch(target, "TRAIN") && !strmatch(target, "TEST"))
 			{
 				delete[] target;
 				SG_ERROR("Second argument none of TRAIN or TEST.\n");
 			}
 
-			if (strmatch(target, tlen, "TEST"))
+			if (strmatch(target, "TEST"))
 				is_train=false;
 		}
 
@@ -3147,19 +3145,19 @@ bool CSGInterface::cmd_set_distance()
 	CHAR* type=get_str_from_str_or_direct(len);
 	CHAR* dtype=get_str_from_str_or_direct(len);
 
-	if (strmatch(type, 9, "MINKOWSKI") && m_nrhs==4)
+	if (strmatch(type, "MINKOWSKI") && m_nrhs==4)
 	{
 		DREAL k=get_real_from_real_or_str();
 		distance=ui_distance.create_minkowski(k);
 	}
-	else if (strmatch(type, 9, "MANHATTAN"))
+	else if (strmatch(type, "MANHATTAN"))
 	{
-		if (strmatch(dtype, 4, "REAL"))
+		if (strmatch(dtype, "REAL"))
 			distance=ui_distance.create_generic(D_MANHATTAN);
-		else if (strmatch(dtype, 4, "WORD"))
+		else if (strmatch(dtype, "WORD"))
 			distance=ui_distance.create_generic(D_MANHATTANWORD);
 	}
-	else if (strmatch(type, 7, "HAMMING") && strmatch(dtype, 4, "WORD"))
+	else if (strmatch(type, "HAMMING") && strmatch(dtype, "WORD"))
 	{
 		bool use_sign=false;
 		if (m_nrhs==5)
@@ -3167,30 +3165,30 @@ bool CSGInterface::cmd_set_distance()
 
 		distance=ui_distance.create_hammingword(use_sign);
 	}
-	else if (strmatch(type, 8, "CANBERRA"))
+	else if (strmatch(type, "CANBERRA"))
 	{
-		if (strmatch(dtype, 4, "REAL"))
+		if (strmatch(dtype, "REAL"))
 			distance=ui_distance.create_generic(D_CANBERRA);
-		else if (strmatch(dtype, 4, "WORD"))
+		else if (strmatch(dtype, "WORD"))
 			distance=ui_distance.create_generic(D_CANBERRAWORD);
 	}
-	else if (strmatch(type, 9, "CHEBYSHEW") && strmatch(dtype, 4, "REAL"))
+	else if (strmatch(type, "CHEBYSHEW") && strmatch(dtype, "REAL"))
 	{
 		distance=ui_distance.create_generic(D_CHEBYSHEW);
 	}
-	else if (strmatch(type, 8, "GEODESIC") && strmatch(dtype, 4, "REAL"))
+	else if (strmatch(type, "GEODESIC") && strmatch(dtype, "REAL"))
 	{
 		distance=ui_distance.create_generic(D_GEODESIC);
 	}
-	else if (strmatch(type, 6, "JENSEN") && strmatch(dtype, 4, "REAL"))
+	else if (strmatch(type, "JENSEN") && strmatch(dtype, "REAL"))
 	{
 		distance=ui_distance.create_generic(D_JENSEN);
 	}
-	else if (strmatch(type, 9, "EUCLIDIAN"))
+	else if (strmatch(type, "EUCLIDIAN"))
 	{
-		if (strmatch(dtype, 4, "REAL"))
+		if (strmatch(dtype, "REAL"))
 			distance=ui_distance.create_generic(D_EUCLIDIAN);
-		else if (strmatch(dtype, 10, "SPARSEREAL"))
+		else if (strmatch(dtype, "SPARSEREAL"))
 			distance=ui_distance.create_generic(D_SPARSEEUCLIDIAN);
 	}
 	else
@@ -3923,18 +3921,18 @@ bool CSGInterface::cmd_add_preproc()
 	CHAR* type=get_str_from_str_or_direct(len);
 	CPreProc* preproc=NULL;
 
-	if (strmatch(type, 7, "NORMONE"))
+	if (strmatch(type, "NORMONE"))
 		preproc=ui_preproc.create_generic(P_NORMONE);
-	else if (strmatch(type, 10, "LOGPLUSONE"))
+	else if (strmatch(type, "LOGPLUSONE"))
 		preproc=ui_preproc.create_generic(P_LOGPLUSONE);
-	else if (strmatch(type, 14, "SORTWORDSTRING"))
+	else if (strmatch(type, "SORTWORDSTRING"))
 		preproc=ui_preproc.create_generic(P_SORTWORDSTRING);
-	else if (strmatch(type, 15, "SORTULONGSTRING"))
+	else if (strmatch(type, "SORTULONGSTRING"))
 		preproc=ui_preproc.create_generic(P_SORTULONGSTRING);
-	else if (strmatch(type, 8, "SORTWORD"))
+	else if (strmatch(type, "SORTWORD"))
 		preproc=ui_preproc.create_generic(P_SORTWORD);
 
-	else if (strmatch(type, 15, "PRUNEVARSUBMEAN"))
+	else if (strmatch(type, "PRUNEVARSUBMEAN"))
 	{
 		bool divide_by_std=false;
 		if (m_nrhs==3)
@@ -3944,7 +3942,7 @@ bool CSGInterface::cmd_add_preproc()
 	}
 
 #ifdef HAVE_LAPACK
-	else if (strmatch(type, 6, "PCACUT") && m_nrhs==4)
+	else if (strmatch(type, "PCACUT") && m_nrhs==4)
 	{
 		bool do_whitening=get_bool_from_bool_or_str();
 		DREAL threshold=get_real_from_real_or_str();
@@ -5073,7 +5071,7 @@ bool CSGInterface::cmd_exec()
 	if (!file)
 	{
 		delete[] filename;
-		SG_ERROR("Error opening file: %s.", filename);
+		SG_ERROR("Error opening file: %s.\n", filename);
 	}
 
 	while (!feof(file))
@@ -5102,9 +5100,9 @@ bool CSGInterface::cmd_set_output()
 
 	SG_INFO("Setting output file to: %s.\n", filename);
 
-	if (strmatch(filename, 6, "STDERR"))
+	if (strmatch(filename, "STDERR"))
 		io.set_target(stderr);
-	else if (strmatch(filename, 6, "STDOUT"))
+	else if (strmatch(filename, "STDOUT"))
 		io.set_target(stdout);
 	else
 	{
@@ -5244,7 +5242,7 @@ bool CSGInterface::cmd_echo()
 	INT len=0;
 	CHAR* level=get_str_from_str_or_direct(len);
 
-	if (strmatch(level, 3, "OFF"))
+	if (strmatch(level, "OFF"))
 	{
 		echo=false;
 		SG_INFO("Echo is off.\n");
@@ -5267,13 +5265,13 @@ bool CSGInterface::cmd_loglevel()
 	INT len=0;
 	CHAR* level=get_str_from_str_or_direct(len);
 
-	if (strmatch(level, 3, "ALL") || strmatch(level, 5, "DEBUG"))
+	if (strmatch(level, "ALL") || strmatch(level, "DEBUG"))
 		io.set_loglevel(M_DEBUG);
-	else if (strmatch(level, 4, "INFO"))
+	else if (strmatch(level, "INFO"))
 		io.set_loglevel(M_INFO);
-	else if (strmatch(level, 4, "WARN"))
+	else if (strmatch(level, "WARN"))
 		io.set_loglevel(M_WARN);
-	else if (strmatch(level, 5, "ERROR"))
+	else if (strmatch(level, "ERROR"))
 		io.set_loglevel(M_ERROR);
 	else
 		SG_ERROR("Unknown loglevel %s.\n", level);
@@ -5341,7 +5339,7 @@ bool CSGInterface::cmd_help()
 			}
 			else
 			{
-				found=strmatch(sg_methods[i].command, clen, command);
+				found=strmatch(sg_methods[i].command, command);
 				if (found)
 				{
 					if (sg_methods[i].usage) // found item
@@ -5380,9 +5378,11 @@ bool CSGInterface::cmd_help()
 
 bool CSGInterface::cmd_send_command()
 {
+	//SG_WARNING("ATTENTION: You are using a legacy command. Please consider using the new syntax as given by the help command!\n");
+
 	INT len=0;
 	CHAR* arg=get_string(len);
-	SG_DEBUG("legacy: arg == %s\n", arg);
+	//SG_DEBUG("legacy: arg == %s\n", arg);
 	m_legacy_strptr=arg;
 
 	CHAR* command=get_str_from_str(len);
@@ -5391,7 +5391,7 @@ bool CSGInterface::cmd_send_command()
 
 	while (sg_methods[i].command)
 	{
-		if (strmatch(command, len, sg_methods[i].command))
+		if (strmatch(command, sg_methods[i].command))
 		{
 			SG_DEBUG("legacy: found command %s\n", sg_methods[i].command);
 			// fix-up m_nrhs; +1 to include command
@@ -5669,7 +5669,7 @@ bool CSGInterface::handle()
 	INT i=0;
 	while (sg_methods[i].command)
 	{
-		if (strmatch(command, len, sg_methods[i].command))
+		if (strmatch(command, sg_methods[i].command))
 		{
 			SG_DEBUG("found command %s\n", sg_methods[i].command);
 			if (!(interface->*(sg_methods[i].method))())

@@ -63,10 +63,7 @@ bool CGUIFeatures::load(
 		invalidate_test();
 	}
 	else
-	{
-		SG_ERROR("See help for parameters.\n");
-		return false;
-	}
+		SG_ERROR("Unknown target %s, neither TRAIN nor TEST.\n", target);
 
 	delete (*f_ptr);
 	*f_ptr=NULL;
@@ -159,10 +156,7 @@ bool CGUIFeatures::save(CHAR* filename, CHAR* type, CHAR* target)
 		f_ptr=&test_features;
 	}
 	else
-	{
-		SG_ERROR("See help for parameters.\n");
-		return false;
-	}
+		SG_ERROR("Unknown target %s, neither TRAIN nor TEST.\n", target);
 
 	if (*f_ptr)
 	{
@@ -213,10 +207,8 @@ bool CGUIFeatures::clean(CHAR* target)
 	else if (strncmp(target, "TEST", 4)==0)
 		set_test_features(NULL);
 	else
-	{
-		SG_ERROR("See help for parameters.\n");
-		return false;
-	}
+		SG_ERROR("Unknown target %s, neither TRAIN nor TEST.\n", target);
+
 	return true;
 }
 

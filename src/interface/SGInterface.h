@@ -461,13 +461,23 @@ class CSGInterface : public CSGObject
 		CGUIDistance ui_distance;
 
 	protected:
-		/// return true if str starts with cmd
-		/// cmd is a 0 terminated string const
-		/// str is a string of length len (not 0 terminated)
-		static bool strmatch(CHAR* str, UINT len, const CHAR* cmd)
+		/* return true if str starts with cmd
+		 *
+		 * @param str string to look in, not necessarily 0-terminated
+		 * @param cmd 0-terminated string const
+		 * @param len number of CHAR to compare, length of cmd if not given
+		 *
+		 */
+		static bool strmatch(CHAR* str, const CHAR* cmd, INT len=-1)
 		{
-			UINT len_cmd=strlen(cmd);
-			return (len==len_cmd && !strncmp(str, cmd, len_cmd));
+			if (len==-1)
+			{
+				len=strlen(cmd);
+				if (strlen(str)!=(size_t) len) // match exact length
+					return false;
+			}
+
+			return (strncmp(str, cmd, len)==0);
 		}
 
 		/// get command name like 'get_svm', 'new_hmm', etc.
