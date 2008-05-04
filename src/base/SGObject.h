@@ -33,7 +33,8 @@ public:
     {
     }
 
-#ifdef HAVE_SWIG 
+#ifdef HAVE_SWIG
+#ifndef HAVE_R
 	inline CSGObject() : refcount(0)
 	{
 	}
@@ -75,6 +76,16 @@ public:
 
 private:
 	INT refcount;
+#else //HAVE_R
+	inline CSGObject()
+	{
+	}
+
+	inline CSGObject(const CSGObject& orig)
+		: parallel(orig.parallel), io(orig.io)
+	{
+	}
+#endif
 
 public:
 	CParallel parallel;

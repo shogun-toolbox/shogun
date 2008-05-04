@@ -96,7 +96,7 @@ class CCommWordStringKernel: public CStringKernel<WORD>
 		 * @return if initializing was successful
 		 */
 		virtual bool init_optimization(INT count, INT *IDX,
-			DREAL * weights);
+			DREAL* weights);
 
 		/** delete optimization
 		 *
@@ -201,20 +201,24 @@ class CCommWordStringKernel: public CStringKernel<WORD>
 		 */
 		inline virtual DREAL compute(INT idx_a, INT idx_b)
 		{
-			return compute_helper<false,false>(idx_a, idx_b);
+			return compute_helper(idx_a, idx_b, false);
 		}
 
 		/** helper for compute
-		 * template arguments:
-		 * do_sort if sorting shall be performed
-		 * left_equal_right if lhs==rhs
 		 *
 		 * @param idx_a index a
 		 * @param idx_b index b
+		 * @param do_sort if sorting shall be performed
 		 * @return computed value
 		 */
-		template<bool do_sort, bool left_equal_right>
-			DREAL compute_helper(INT idx_a, INT idx_b);
+		virtual DREAL compute_helper(INT idx_a, INT idx_b, bool do_sort);
+
+		/** helper to compute only diagonal normalization for training
+		 *
+		 * @param idx_a index a
+		 * @return unnormalized diagonal value
+		 */
+		virtual DREAL compute_diag(INT idx_a);
 
 		/** normalize weight
 		 *
