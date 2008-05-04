@@ -1,7 +1,9 @@
 dyn.load('features/Features.so')
 dyn.load('distance/Distance.so')
+dyn.load('preproc/PreProc.so')
 source('features/Features.R')
 source('distance/Distance.R')
+source('preproc/PreProc.R')
 cacheMetaData(1)
 
 len <- 17
@@ -15,9 +17,11 @@ traindata_dna <- list()
 testdata_dna <- list()
 for (i in 1:num)
 {
-	traindata_dna[i] <- paste(acgt[ceiling(4*runif(len))], sep <- "", collapse <- "")
-	testdata_dna[i] <- paste(acgt[ceiling(4*runif(len))], sep <- "", collapse <- "")
+	traindata_dna[i] <- paste(acgt[ceiling(4*runif(len))], sep="", collapse="")
+	testdata_dna[i] <- paste(acgt[ceiling(4*runif(len))], sep="", collapse="")
 }
+traindata_dna=c(traindata_dna,recursive=TRUE)
+testdata_dna=c(testdata_dna,recursive=TRUE)
 
 trainlab <- c(rep(-1,num/2), rep(1,num/2))
 testlab <- c(rep(-1,num/2), rep(1,num/2))
@@ -145,92 +149,92 @@ dm_test <- distance$get_distance_matrix()
 ###########################################################################
 # complex string features
 ############################################################################
-#
-## canberra word distance
-#print('CanberraWordDistance')
-#
-#order <- 3
-#gap <- 0
-#reverse <- FALSE
-#
-#charfeat <- StringCharFeatures(DNA)
-#charfeat$set_string_features(traindata_dna)
-#feats_train <- StringWordFeatures(charfeat$get_alphabet())
-#feats_train$obtain_from_char(charfeat, order-1, order, gap, reverse)
-#preproc <- SortWordString()
-#preproc$init(feats_train)
-#feats_train$add_preproc(preproc)
-#feats_train$apply_preproc()
-#
-#charfeat <- StringCharFeatures(DNA)
-#charfeat$set_string_features(testdata_dna)
-#feats_test <- StringWordFeatures(charfeat$get_alphabet())
-#feats_test$obtain_from_char(charfeat, order-1, order, gap, reverse)
-#feats_test$add_preproc(preproc)
-#feats_test$apply_preproc()
-#
-#distance <- CanberraWordDistance(feats_train, feats_train)
-#
-#dm_train <- distance$get_distance_matrix()
-#distance$init(distance, feats_train, feats_test)
-#dm_test <- distance$get_distance_matrix()
-#
-## hamming word distance
-#print('HammingWordDistance')
-#
-#order <- 3
-#gap <- 0
-#reverse <- FALSE
-#
-#charfeat <- StringCharFeatures(DNA)
-#charfeat$set_string_features(traindata_dna)
-#feats_train <- StringWordFeatures(charfeat$get_alphabet())
-#feats_train$obtain_from_char(charfeat, order-1, order, gap, reverse)
-#preproc <- SortWordString()
-#preproc$init(feats_train)
-#feats_train$add_preproc(preproc)
-#feats_train$apply_preproc()
-#
-#charfeat <- StringCharFeatures(DNA)
-#charfeat$set_string_features(testdata_dna)
-#feats_test <- StringWordFeatures(charfeat$get_alphabet())
-#feats_test$obtain_from_char(charfeat, order-1, order, gap, reverse)
-#feats_test$add_preproc(preproc)
-#feats_test$apply_preproc()
-#
-#use_sign <- FALSE
-#
-#distance <- HammingWordDistance(feats_train, feats_train, use_sign)
-#
-#dm_train <- distance$get_distance_matrix()
-#distance$init(distance, feats_train, feats_test)
-#dm_test <- distance$get_distance_matrix()
-#
-## manhattan word distance
-#print('ManhattanWordDistance')
-#
-#order <- 3
-#gap <- 0
-#reverse <- FALSE
-#
-#charfeat <- StringCharFeatures(DNA)
-#charfeat$set_string_features(traindata_dna)
-#feats_train <- StringWordFeatures(charfeat$get_alphabet())
-#feats_train$obtain_from_char(charfeat, order-1, order, gap, reverse)
-#preproc <- SortWordString()
-#preproc$init(feats_train)
-#feats_train$add_preproc(preproc)
-#feats_train$apply_preproc()
-#
-#charfeat <- StringCharFeatures(DNA)
-#charfeat$set_string_features(testdata_dna)
-#feats_test <- StringWordFeatures(charfeat$get_alphabet())
-#feats_test$obtain_from_char(charfeat, order-1, order, gap, reverse)
-#feats_test$add_preproc(preproc)
-#feats_test$apply_preproc()
-#
-#distance <- ManhattanWordDistance(feats_train, feats_train)
-#
-#dm_train <- distance$get_distance_matrix()
-#distance$init(distance, feats_train, feats_test)
-#dm_test <- distance$get_distance_matrix()
+
+# canberra word distance
+print('CanberraWordDistance')
+
+order <- 3
+gap <- 0
+reverse <- FALSE
+
+charfeat <- StringCharFeatures("DNA")
+charfeat$set_string_features(charfeat, traindata_dna)
+feats_train <- StringWordFeatures(charfeat$get_alphabet())
+feats_train$obtain_from_char(feats_train, charfeat, order-1, order, gap, reverse)
+preproc <- SortWordString()
+preproc$init(preproc, feats_train)
+feats_train$add_preproc(feats_train, preproc)
+feats_train$apply_preproc(feats_train)
+
+charfeat <- StringCharFeatures("DNA")
+charfeat$set_string_features(charfeat, testdata_dna)
+feats_test <- StringWordFeatures(charfeat$get_alphabet())
+feats_test$obtain_from_char(feats_test, charfeat, order-1, order, gap, reverse)
+feats_test$add_preproc(feats_test, preproc)
+feats_test$apply_preproc(feats_test)
+
+distance <- CanberraWordDistance(feats_train, feats_train)
+
+dm_train <- distance$get_distance_matrix()
+distance$init(distance, feats_train, feats_test)
+dm_test <- distance$get_distance_matrix()
+
+# hamming word distance
+print('HammingWordDistance')
+
+order <- 3
+gap <- 0
+reverse <- FALSE
+
+charfeat <- StringCharFeatures("DNA")
+charfeat$set_string_features(charfeat, traindata_dna)
+feats_train <- StringWordFeatures(charfeat$get_alphabet())
+feats_train$obtain_from_char(feats_train, charfeat, order-1, order, gap, reverse)
+preproc <- SortWordString()
+preproc$init(preproc, feats_train)
+feats_train$add_preproc(feats_train, preproc)
+feats_train$apply_preproc(feats_train)
+
+charfeat <- StringCharFeatures("DNA")
+charfeat$set_string_features(charfeat, testdata_dna)
+feats_test <- StringWordFeatures(charfeat$get_alphabet())
+feats_test$obtain_from_char(feats_test, charfeat, order-1, order, gap, reverse)
+feats_test$add_preproc(feats_test, preproc)
+feats_test$apply_preproc(feats_test)
+
+use_sign <- FALSE
+
+distance <- HammingWordDistance(feats_train, feats_train, use_sign)
+
+dm_train <- distance$get_distance_matrix()
+distance$init(distance, feats_train, feats_test)
+dm_test <- distance$get_distance_matrix()
+
+# manhattan word distance
+print('ManhattanWordDistance')
+
+order <- 3
+gap <- 0
+reverse <- FALSE
+
+charfeat <- StringCharFeatures("DNA")
+charfeat$set_string_features(charfeat, traindata_dna)
+feats_train <- StringWordFeatures(charfeat$get_alphabet())
+feats_train$obtain_from_char(feats_train, charfeat, order-1, order, gap, reverse)
+preproc <- SortWordString()
+preproc$init(preproc, feats_train)
+feats_train$add_preproc(feats_train, preproc)
+feats_train$apply_preproc(feats_train)
+
+charfeat <- StringCharFeatures("DNA")
+charfeat$set_string_features(charfeat, testdata_dna)
+feats_test <- StringWordFeatures(charfeat$get_alphabet())
+feats_test$obtain_from_char(feats_test, charfeat, order-1, order, gap, reverse)
+feats_test$add_preproc(feats_test, preproc)
+feats_test$apply_preproc(feats_test)
+
+distance <- ManhattanWordDistance(feats_train, feats_train)
+
+dm_train <- distance$get_distance_matrix()
+distance$init(distance, feats_train, feats_test)
+dm_test <- distance$get_distance_matrix()

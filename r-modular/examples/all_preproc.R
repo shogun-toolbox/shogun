@@ -23,9 +23,12 @@ traindata_dna <- list()
 testdata_dna <- list()
 for (i in 1:num)
 {
-	traindata_dna[i] <- paste(acgt[ceiling(4*runif(len))], sep <- "", collapse <- "")
-	testdata_dna[i] <- paste(acgt[ceiling(4*runif(len))], sep <- "", collapse <- "")
+	traindata_dna[i] <- paste(acgt[ceiling(4*runif(len))], sep="", collapse="")
+	testdata_dna[i] <- paste(acgt[ceiling(4*runif(len))], sep="", collapse="")
 }
+
+traindata_dna=c(traindata_dna,recursive=TRUE)
+testdata_dna=c(testdata_dna,recursive=TRUE)
 
 traindata_real <- matrix(c(rnorm(num)-dist,rnorm(num)+dist),2,num)
 testdata_real <- matrix(c(rnorm(num)-dist,rnorm(num)+dist),2,num)
@@ -97,11 +100,11 @@ km_train <- kernel$get_kernel_matrix()
 kernel$init(kernel, feats_train, feats_test)
 km_test <- kernel$get_kernel_matrix()
 
-############################################################################
-## word features
-############################################################################
-#
-##LinearWord
+###########################################################################
+# word features
+###########################################################################
+
+#LinearWord - unsigned 16bit type not supported by R
 #print('LinearWord')
 #
 #feats_train <- WordFeatures(traindata_word)
@@ -109,87 +112,87 @@ km_test <- kernel$get_kernel_matrix()
 #
 #preproc <- SortWord()
 #preproc$init(preproc, feats_train)
-#feats_train$add_preproc(preproc)
+#feats_train$add_preproc(feats_train, preproc)
 #feats_train$apply_preproc(feats_train)
-#feats_test$add_preproc(preproc)
-#feats_test$apply_preproc(feats_trest)
+#feats_test$add_preproc(feats_test, preproc)
+#feats_test$apply_preproc(feats_test)
 #
-#do_rescale <- true
+#do_rescale <- TRUE
 #scale <- 1.4
 #
 #kernel <- LinearWordKernel(feats_train, feats_train, do_rescale, scale)
 #
 #km_train <- kernel$get_kernel_matrix()
-#kernel$init(feats_train, feats_test)
+#kernel$init(kernel, feats_train, feats_test)
 #km_test <- kernel$get_kernel_matrix()
-#
-############################################################################
-## complex string features
-############################################################################
-#
-##CommWordString
-#print('CommWordString')
-#
-#order <- 3
-#gap <- 0
-#reverse <- false
-#
-#charfeat <- StringCharFeatures(DNA)
-#charfeat$set_string_features(traindata_dna)
-#feats_train <- StringWordFeatures(charfeat$get_alphabet())
-#feats_train$obtain_from_char(charfeat, order-1, order, gap, reverse)
-#preproc <- SortWordString()
-#preproc$init(preproc, feats_train)
-#feats_train$add_preproc(preproc)
-#feats_train$apply_preproc(feats_train)
-#
-#charfeat <- StringCharFeatures(DNA)
-#charfeat$set_string_features(testdata_dna)
-#feats_test <- StringWordFeatures(charfeat$get_alphabet())
-#feats_test$obtain_from_char(charfeat, order-1, order, gap, reverse)
-#feats_test$add_preproc(preproc)
-#feats_test$apply_preproc(feats_trest)
-#
-#use_sign <- false
-#normalization <- FULL_NORMALIZATION
-#
-#kernel <- CommWordStringKernel(
-#	feats_train, feats_train, use_sign, normalization)
-#
-#km_train <- kernel$get_kernel_matrix()
-#kernel$init(feats_train, feats_test)
-#km_test <- kernel$get_kernel_matrix()
-#
-##CommUlongString
-#print('CommUlongString')
-#
-#order <- 3
-#gap <- 0
-#reverse <- false
-#
-#charfeat <- StringCharFeatures(DNA)
-#charfeat$set_string_features(traindata_dna)
-#feats_train <- StringUlongFeatures(charfeat$get_alphabet())
-#feats_train$obtain_from_char(charfeat, order-1, order, gap, reverse)
-#
-#charfeat <- StringCharFeatures(DNA)
-#charfeat$set_string_features(testdata_dna)
-#feats_test <- StringUlongFeatures(charfeat$get_alphabet())
-#feats_test$obtain_from_char(charfeat, order-1, order, gap, reverse)
-#
-#preproc <- SortUlongString()
-#preproc$init(preproc, feats_train)
-#feats_train$add_preproc(preproc)
-#feats_train$apply_preproc(feats_train)
-#feats_test$add_preproc(preproc)
-#feats_test$apply_preproc(feats_test)
-#
-#use_sign <- false
-#normalization <- FULL_NORMALIZATION
-#
-#kernel <- CommUlongStringKernel(
-#	feats_train, feats_train, use_sign, normalization)
-#
-#km_train <- kernel$get_kernel_matrix()
-#kernel$init(feats_train, feats_test)
-#km_test <- kernel$get_kernel_matrix()
+
+###########################################################################
+# complex string features
+###########################################################################
+
+#CommWordString
+print('CommWordString')
+
+order <- 3
+gap <- 0
+reverse <- FALSE
+
+charfeat <- StringCharFeatures("DNA")
+charfeat$set_string_features(charfeat, traindata_dna)
+feats_train <- StringWordFeatures(charfeat$get_alphabet())
+feats_train$obtain_from_char(feats_train, charfeat, order-1, order, gap, reverse)
+preproc <- SortWordString()
+preproc$init(preproc, feats_train)
+feats_train$add_preproc(feats_train, preproc)
+feats_train$apply_preproc(feats_train)
+
+charfeat <- StringCharFeatures("DNA")
+charfeat$set_string_features(charfeat, testdata_dna)
+feats_test <- StringWordFeatures(charfeat$get_alphabet())
+feats_test$obtain_from_char(feats_test, charfeat, order-1, order, gap, reverse)
+feats_test$add_preproc(feats_test, preproc)
+feats_test$apply_preproc(feats_test)
+
+use_sign <- FALSE
+normalization <- "FULL_NORMALIZATION"
+
+kernel <- CommWordStringKernel(
+	feats_train, feats_train, use_sign, normalization)
+
+km_train <- kernel$get_kernel_matrix()
+kernel$init(kernel, feats_train, feats_test)
+km_test <- kernel$get_kernel_matrix()
+
+#CommUlongString
+print('CommUlongString')
+
+order <- 3
+gap <- 0
+reverse <- FALSE
+
+charfeat <- StringCharFeatures("DNA")
+charfeat$set_string_features(charfeat, traindata_dna)
+feats_train <- StringUlongFeatures(charfeat$get_alphabet())
+feats_train$obtain_from_char(feats_train, charfeat, order-1, order, gap, reverse)
+
+charfeat <- StringCharFeatures("DNA")
+charfeat$set_string_features(charfeat, testdata_dna)
+feats_test <- StringUlongFeatures(charfeat$get_alphabet())
+feats_test$obtain_from_char(feats_test, charfeat, order-1, order, gap, reverse)
+
+preproc <- SortUlongString()
+preproc$init(preproc, feats_train)
+feats_train$add_preproc(feats_train, preproc)
+feats_train$apply_preproc(feats_train)
+feats_test$add_preproc(feats_test, preproc)
+feats_test$apply_preproc(feats_test)
+
+use_sign <- FALSE
+normalization <- "FULL_NORMALIZATION"
+
+kernel <- CommUlongStringKernel(
+	feats_train, feats_train, use_sign, normalization)
+
+km_train <- kernel$get_kernel_matrix()
+kernel$init(kernel, feats_train, feats_test)
+km_test <- kernel$get_kernel_matrix()
