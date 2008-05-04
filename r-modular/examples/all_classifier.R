@@ -19,9 +19,12 @@ traindata_dna <- list()
 testdata_dna <- list()
 for (i in 1:num)
 {
-	traindata_dna[i] <- paste(acgt[ceiling(4*runif(len))], sep <- "", collapse <- "")
-	testdata_dna[i] <- paste(acgt[ceiling(4*runif(len))], sep <- "", collapse <- "")
+	traindata_dna[i] <- paste(acgt[ceiling(4*runif(len))], sep="", collapse="")
+	testdata_dna[i] <- paste(acgt[ceiling(4*runif(len))], sep="", collapse="")
 }
+
+traindata_dna=c(traindata_dna,recursive=TRUE)
+testdata_dna=c(testdata_dna,recursive=TRUE)
 
 trainlab <- c(rep(-1,num/2), rep(1,num/2))
 testlab <- c(rep(-1,num/2), rep(1,num/2))
@@ -34,30 +37,31 @@ testdata_real <- matrix(c(rnorm(num)-dist,rnorm(num)+dist),2,num)
 ###########################################################################
 
 # svm light
-#print('SVMLight')
-#
-#feats_train <- StringCharFeatures(DNA)
-#feats_train.set_string_features(traindata_dna)
-#feats_test <- StringCharFeatures(DNA)
-#feats_test.set_string_features(testdata_dna)
-#degree <- 20
-#
-#kernel <- WeightedDegreeStringKernel(feats_train, feats_train, degree)
-#
-#C <- 0.017
-#epsilon <- 1e-5
-#tube_epsilon <- 1e-2
-#num_threads <- as.integer(3)
-#labels <- Labels(trainlab)
-#
-#svm <- SVMLight(C, kernel, labels)
-#svm.set_epsilon(epsilon)
-#svm.set_tube_epsilon(tube_epsilon)
-#svm.parallel.set_num_threads(num_threads)
-#svm.train()
-#
-#kernel.init(feats_train, feats_test)
-#svm.classify().get_labels()
+print('SVMLight')
+
+feats_train <- StringCharFeatures("DNA")
+feats_train$set_string_features(feats_train, traindata_dna)
+feats_test <- StringCharFeatures("DNA")
+feats_test$set_string_features(feats_test, testdata_dna)
+degree <- 20
+
+kernel <- WeightedDegreeStringKernel(feats_train, feats_train, degree)
+
+C <- 0.017
+epsilon <- 1e-5
+tube_epsilon <- 1e-2
+num_threads <- as.integer(3)
+labels <- Labels(trainlab)
+
+svm <- SVMLight(C, kernel, labels)
+svm$set_epsilon(svm, epsilon)
+svm$set_tube_epsilon(svm, tube_epsilon)
+svm$parallel$set_num_threads(svm$parallel, num_threads)
+svm$train()
+
+kernel$init(kernel, feats_train, feats_test)
+lab <- svm$classify(svm)
+out <- lab$get_labels(lab)
 
 # libsvm
 print('LibSVM')
@@ -207,37 +211,39 @@ out <- lab$get_labels(lab)
 ###########################################################################
 
 # batch & linadd
-#print('LibSVM batch')
-#
-#feats_train <- StringCharFeatures(DNA)
-#feats_train.set_string_features(traindata_dna)
-#feats_test <- StringCharFeatures(DNA)
-#feats_test.set_string_features(testdata_dna)
-#degree <- 20
-#
-#kernel <- WeightedDegreeStringKernel(feats_train, feats_train, degree)
-#
-#C <- 0.017
-#epsilon <- 1e-5
-#tube_epsilon <- 1e-2
-#num_threads <- 2
-#labels <- Labels(trainlab)
-#
-#svm <- LibSVM(C, kernel, labels)
-#svm.set_epsilon(epsilon)
-#svm.set_tube_epsilon(tube_epsilon)
-#svm.parallel.set_num_threads(num_threads)
-#svm.train()
-#
-#kernel.init(feats_train, feats_test)
-#
-#fprintf('LibSVM Objective: #f num_sv: #d', svm.get_objective(), svm.get_num_support_vectors())
-#svm.set_batch_computation_enabled(FALSE)
-#svm.set_linadd_enabled(FALSE)
-#svm.classify().get_labels()
-#
-#svm.set_batch_computation_enabled(TRUE)
-#svm.classify().get_labels()
+print('LibSVM batch')
+
+feats_train <- StringCharFeatures("DNA")
+feats_train$set_string_features(feats_train, traindata_dna)
+feats_test <- StringCharFeatures("DNA")
+feats_test$set_string_features(feats_test, testdata_dna)
+degree <- 20
+
+kernel <- WeightedDegreeStringKernel(feats_train, feats_train, degree)
+
+C <- 0.017
+epsilon <- 1e-5
+tube_epsilon <- 1e-2
+num_threads <- 2
+labels <- Labels(trainlab)
+
+svm <- LibSVM(C, kernel, labels)
+svm$set_epsilon(svm, epsilon)
+svm$set_tube_epsilon(svm, tube_epsilon)
+svm$parallel$set_num_threads(svm$parallel, num_threads)
+svm$train()
+
+kernel$init(kernel, feats_train, feats_test)
+
+print(sprintf('LibSVM Objective: %f num_sv: %d', svm$get_objective(), svm$get_num_support_vectors()))
+svm$set_batch_computation_enabled(svm, FALSE)
+svm$set_linadd_enabled(svm, FALSE)
+lab <- svm$classify(svm)
+out <- lab$get_labels(lab)
+
+svm$set_batch_computation_enabled(svm, TRUE)
+lab <- svm$classify(svm)
+out <- lab$get_labels(lab)
 
 ###########################################################################
 # linear SVMs
