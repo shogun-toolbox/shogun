@@ -1,9 +1,9 @@
 %generate some toy data
 acgt='ACGT';
 dat={acgt([1*ones(1,10) 2*ones(1,10) 3*ones(1,10) 4*ones(1,10) 1])};
-sg('send_command', 'loglevel ALL');
+sg('loglevel', 'ALL');
 sg('set_features', 'TRAIN', dat, 'DNA');
-sg('send_command', 'slide_window TRAIN 5 1');
+sg('slide_window', 'TRAIN', 5, 1);
 
 f=sg('get_features', 'TRAIN')
 
@@ -31,17 +31,17 @@ normalize=1;
 mkl_stepsize=1;
 block=0;
 single_degree=-1;
-sg('send_command', sprintf( 'set_kernel WEIGHTEDDEGREE STRING %i %i %i %i %i %i %i', cache, order, max_mismatch, normalize, mkl_stepsize, block, single_degree) );
-sg('send_command','init_kernel TRAIN')
+sg('set_kernel', 'WEIGHTEDDEGREE', 'STRING', cache, order, max_mismatch, normalize, mkl_stepsize, block, single_degree);
+sg('init_kernel', 'TRAIN');
 km=sg('get_kernel_matrix')
 
-sg('send_command','clean_features TRAIN');
-sg('send_command','clean_features TEST');
+sg('clean_features', 'TRAIN');
+sg('clean_features', 'TEST');
 sg('set_features', 'TRAIN', dat, 'DNA');
 sg('from_position_list','TRAIN', 5, int32([0,1,2,5,15,25,30]+5));
 sg('set_features', 'TRAIN', dat, 'DNA');
 sg('from_position_list','TRAIN', 5, int32([0,1,2,5,15,25]+9));
-sg('send_command','clean_features TRAIN');
+sg('clean_features', 'TRAIN');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 rand('seed',17);
@@ -66,45 +66,45 @@ for i=order:(total_test_len-len+1),
 end
 
 %train svm
-sg('send_command', 'use_linadd 1' );
+sg('use_linadd', 1);
 sg('set_features', 'TRAIN', traindat, 'DNA');
 sg('set_labels', 'TRAIN', trainlab);
 
-sg('send_command', sprintf('convert TRAIN STRING CHAR STRING WORD %i %i', order, order-1));
-sg('send_command', 'add_preproc SORTWORDSTRING') ;
-sg('send_command', 'attach_preproc TRAIN') ;
-sg('send_command', sprintf('set_kernel COMMSTRING WORD %d %d %s',cache, use_sign, normalization));
+sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1);
+sg('add_preproc', 'SORTWORDSTRING');
+sg('attach_preproc', 'TRAIN');
+sg('set_kernel', 'COMMSTRING', 'WORD', cache, use_sign, normalization);
 
-sg('send_command', 'init_kernel TRAIN');
-sg('send_command', 'new_svm LIGHT');
-sg('send_command', sprintf('c %f',C));
-sg('send_command', 'svm_train');
-sg('send_command', 'init_kernel_optimization');
+sg('init_kernel', 'TRAIN');
+sg('new_svm', 'LIGHT');
+sg('c',C);
+sg('svm_train');
+sg('init_kernel_optimization');
 
 %evaluate svm on test data
 sg('set_features', 'TEST', testdat1, 'DNA');
-sg('send_command', sprintf('convert TEST STRING CHAR STRING WORD %i %i', order, order-1));
-sg('send_command', 'attach_preproc TEST') ;
+sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1);
+sg('attach_preproc', 'TEST');
 sg('set_labels', 'TEST', testlab);
-sg('send_command', 'init_kernel TEST');
+sg('init_kernel', 'TEST');
 out2=sg('svm_classify');
 f2=sg('get_features','TEST');
 
 %evaluate svm on test data
 sg('set_features', 'TEST', testdat1, 'DNA');
-sg('send_command', sprintf('convert TEST STRING CHAR STRING WORD %i %i', order, order-1));
+sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1);
 sg('set_labels', 'TEST', testlab);
-sg('send_command', 'init_kernel TEST');
+sg('init_kernel', 'TEST');
 out1=sg('svm_classify');
 f1=sg('get_features','TEST');
 
 %evaluate svm on test data
 sg('set_features', 'TEST', testdat', 'DNA');
-sg('send_command', sprintf('convert TEST STRING CHAR STRING WORD %i %i', order, order-1));
-%sg('send_command', sprintf('slide_window TEST 50 1 %d', order-1));
+sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1);
+%sg('slide_window', 'TEST', 50, 1, order-1);
 sg('from_position_list','TEST', len, int32(0:(total_test_len-len-order+1)), order-1);
 sg('set_labels', 'TEST', testlab);
-sg('send_command', 'init_kernel TEST');
+sg('init_kernel', 'TEST');
 out=sg('svm_classify');
 f=sg('get_features','TEST');
 

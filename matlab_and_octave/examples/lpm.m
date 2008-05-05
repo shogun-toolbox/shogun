@@ -11,11 +11,11 @@ trainlab=[-ones(1,num/2), ones(1,num/2) ];
 
 sg('set_features', 'TRAIN', traindat);
 sg('set_labels', 'TRAIN', trainlab);
-sg('send_command', sprintf('c %f', C));
-sg('send_command', 'svm_use_bias 1');
-sg('send_command', 'new_classifier LPM');
+sg('c', C);
+sg('svm_use_bias', 1);
+sg('new_classifier', 'LPM');
 tic;
-sg('send_command', 'train_classifier');
+sg('train_classifier');
 timelpm=toc
 
 [b,W]=sg('get_classifier');

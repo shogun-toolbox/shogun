@@ -10,14 +10,14 @@ traindat=sparse(traindat/scale);
 trainlab=[-ones(1,num/2), +ones(1,num/2) ];
 
 
-sg('send_command', 'loglevel ALL');
+sg('loglevel', 'ALL');
 sg('set_features', 'TRAIN', traindat);
 sg('set_labels', 'TRAIN', trainlab);
-sg('send_command', sprintf('c %f', C));
-sg('send_command', 'svm_use_bias 0');
-sg('send_command', 'new_classifier SVMSGD');
+sg('c', C);
+sg('svm_use_bias', 0);
+sg('new_classifier', 'SVMSGD');
 tic;
-sg('send_command', 'train_classifier');
+sg('train_classifier');
 timesgd=toc
 
 [b,W]=sg('get_classifier');

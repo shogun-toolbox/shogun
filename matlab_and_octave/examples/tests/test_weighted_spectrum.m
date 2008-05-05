@@ -30,7 +30,7 @@ end
 testdat=acgt(ceil(4*rand(len,num_test)));
 testlab=ones(1,num_test);
 
-sg('send_command', 'loglevel ALL');
+sg('loglevel', 'ALL');
 
 %%% spec
 weights=(order:-1:1);
@@ -38,21 +38,21 @@ weights=weights/sum(weights);
 km=zeros(size(traindat,2));
 for o=1:order,
 	sg('set_features', 'TRAIN', traindat, 'DNA');
-	sg('send_command', sprintf('convert TRAIN STRING CHAR STRING WORD %i %i', o, order-1));
-	sg('send_command', 'add_preproc SORTWORDSTRING') ;
-	sg('send_command', 'attach_preproc TRAIN') ;
-	sg('send_command', sprintf('set_kernel COMMSTRING WORD %d %d %s',cache, use_sign, normalization));
-	sg('send_command', 'init_kernel TRAIN');
+	sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'WORD', o, order-1);
+	sg('add_preproc', 'SORTWORDSTRING');
+	sg('attach_preproc', 'TRAIN');
+	sg('set_kernel', 'COMMSTRING', 'WORD', cache, use_sign, normalization);
+	sg('init_kernel', 'TRAIN');
 	km=km+weights(o)*sg('get_kernel_matrix');
 end
 
 %%% wdspec
 sg('set_features', 'TRAIN', traindat, 'DNA');
-sg('send_command', sprintf('convert TRAIN STRING CHAR STRING WORD %i %i 0 r', order, order-1));
-sg('send_command', 'add_preproc SORTWORDSTRING') ;
-sg('send_command', 'attach_preproc TRAIN') ;
-sg('send_command', sprintf('set_kernel WEIGHTEDCOMMSTRING WORD %d %d %s',cache, use_sign, normalization));
-sg('send_command', 'init_kernel TRAIN');
+sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, 0, 'r');
+sg('add_preproc', 'SORTWORDSTRING');
+sg('attach_preproc', 'TRAIN');
+sg('set_kernel', 'WEIGHTEDCOMMSTRING', 'WORD',cache, use_sign, normalization);
+sg('init_kernel', 'TRAIN');
 
 wkm=sg('get_kernel_matrix');
 
@@ -62,48 +62,48 @@ idx=order:size(traindat,1);
 sum(traindat(idx,1)=='A')^2 + sum(traindat(idx,1)=='C')^2 + sum(traindat(idx,1)=='G')^2 + sum(traindat(idx,1)=='T')^2
 
 %%% svm linadd off
-sg('send_command', 'use_linadd 0' );
+sg('use_linadd',  0);
 sg('set_features', 'TRAIN', traindat, 'DNA');
 sg('set_labels', 'TRAIN', trainlab);
 
-sg('send_command', sprintf('convert TRAIN STRING CHAR STRING WORD %i %i 0 r', order, order-1));
-sg('send_command', 'add_preproc SORTWORDSTRING') ;
-sg('send_command', 'attach_preproc TRAIN') ;
-sg('send_command', sprintf('set_kernel WEIGHTEDCOMMSTRING WORD %d %d %s',cache, use_sign, normalization));
+sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, 0, 'r');
+sg('add_preproc', 'SORTWORDSTRING');
+sg('attach_preproc', 'TRAIN');
+sg('set_kernel', 'WEIGHTEDCOMMSTRING', 'WORD', cache, use_sign, normalization);
 
-sg('send_command', 'init_kernel TRAIN');
-sg('send_command', 'new_svm LIGHT');
-sg('send_command', sprintf('c %f',C));
-sg('send_command', 'svm_train');
+sg('init_kernel', 'TRAIN');
+sg('new_svm', 'LIGHT');
+sg('c', C);
+sg('svm_train');
 
 sg('set_features', 'TEST', testdat, 'DNA');
-sg('send_command', sprintf('convert TEST STRING CHAR STRING WORD %i %i 0 r', order, order-1));
-sg('send_command', 'attach_preproc TEST') ;
+sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, 0, 'r');
+sg('attach_preproc', 'TEST');
 sg('set_labels', 'TEST', testlab);
-sg('send_command', 'init_kernel TEST');
+sg('init_kernel', 'TEST');
 out=sg('svm_classify');
 
 %%% svm linadd on
-sg('send_command', 'use_linadd 1' );
+sg('use_linadd', 1);
 sg('set_features', 'TRAIN', traindat, 'DNA');
 sg('set_labels', 'TRAIN', trainlab);
 
-sg('send_command', sprintf('convert TRAIN STRING CHAR STRING WORD %i %i 0 r', order, order-1));
-sg('send_command', 'add_preproc SORTWORDSTRING') ;
-sg('send_command', 'attach_preproc TRAIN') ;
-sg('send_command', sprintf('set_kernel WEIGHTEDCOMMSTRING WORD %d %d %s',cache, use_sign, normalization));
+sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, 0, 'r');
+sg('add_preproc', 'SORTWORDSTRING');
+sg('attach_preproc', 'TRAIN');
+sg('set_kernel', 'WEIGHTEDCOMMSTRING', 'WORD', cache, use_sign, normalization);
 
-sg('send_command', 'init_kernel TRAIN');
-sg('send_command', 'new_svm LIGHT');
-sg('send_command', sprintf('c %f',C));
-sg('send_command', 'svm_train');
-sg('send_command', 'init_kernel_optimization');
+sg('init_kernel', 'TRAIN');
+sg('new_svm', 'LIGHT');
+sg('c', C);
+sg('svm_train');
+sg('init_kernel_optimization');
 
 sg('set_features', 'TEST', testdat, 'DNA');
-sg('send_command', sprintf('convert TEST STRING CHAR STRING WORD %i %i 0 r', order, order-1));
-sg('send_command', 'attach_preproc TEST') ;
+sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, 0, 'r');
+sg('attach_preproc', 'TEST');
 sg('set_labels', 'TEST', testlab);
-sg('send_command', 'init_kernel TEST');
+sg('init_kernel', 'TEST');
 out_linadd=sg('svm_classify');
 
 max(abs(out_linadd-out))

@@ -14,31 +14,31 @@ testdat(1:10)=traindat(1:10);
 
 sg('set_features', 'TRAIN', traindat);
 sg('set_labels', 'TRAIN', trainlab);
-sg('send_command', 'set_kernel GAUSSIAN REAL 50 10');
-sg('send_command', 'init_kernel TRAIN');
+sg('set_kernel', 'GAUSSIAN', 'REAL', 50, 10);
+sg('init_kernel', 'TRAIN');
 kt=sg('get_kernel_matrix');
-sg('send_command', 'new_svm LIGHT');
-sg('send_command', sprintf('c %f',C));
-sg('send_command', sprintf('svm_epsilon %f',svm_eps));
-tic; sg('send_command', 'svm_train'); toc;
+sg('new_svm', 'LIGHT');
+sg('c', C);
+sg('svm_epsilon', svm_eps);
+tic; sg('svm_train'); toc;
 [b, alphas]=sg('get_svm');
 sg('set_features', 'TEST', testdat);
 sg('set_labels', 'TEST', testlab);
-sg('send_command', 'init_kernel TEST');
+sg('init_kernel', 'TEST');
 kte=sg('get_kernel_matrix');
 out=sg('svm_classify');
 valerr=mean(testlab~=sign(out));
 
 
-sg('send_command', 'set_kernel CUSTOM ANY 50');
+sg('set_kernel', 'CUSTOM', 'ANY', 50);
 sg('set_custom_kernel',kt,'FULL2DIAG');
-sg('send_command', 'init_kernel TRAIN');
+sg('init_kernel', 'TRAIN');
 kt2=sg('get_kernel_matrix');
 abs(kt-kt2)<1e-6
 max(abs(kt(:)-kt2(:)))
 
 sg('set_custom_kernel',kte,'FULL');
-sg('send_command', 'init_kernel TEST');
+sg('init_kernel', 'TEST');
 kte2=sg('get_kernel_matrix');
 abs(kte-kte2)<1e-6
 max(abs(kte(:)-kte2(:)))

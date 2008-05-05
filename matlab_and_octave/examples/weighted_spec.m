@@ -26,7 +26,7 @@ for i=1:length(idx),
 	traindat(aa+aas(i),idx(i))='A';
 end
 
-sg('send_command', 'loglevel ALL');
+sg('loglevel', 'ALL');
 
 %%% spec
 weights=(order:-1:1);
@@ -34,21 +34,21 @@ weights=weights/sum(weights);
 km=zeros(size(traindat,2));
 for o=1:order,
 	sg('set_features', 'TRAIN', traindat, 'DNA');
-	sg('send_command', sprintf('convert TRAIN STRING CHAR STRING WORD %i %i', o, order-1));
-	sg('send_command', 'add_preproc SORTWORDSTRING') ;
-	sg('send_command', 'attach_preproc TRAIN') ;
-	sg('send_command', sprintf('set_kernel COMMSTRING WORD %d %d %s',cache, use_sign, normalization));
-	sg('send_command', 'init_kernel TRAIN');
+	sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'WORD', o, order-1);
+	sg('add_preproc', 'SORTWORDSTRING');
+	sg('attach_preproc', 'TRAIN');
+	sg('set_kernel', 'COMMSTRING', 'WORD',cache, use_sign, normalization);
+	sg('init_kernel', 'TRAIN');
 	km=km+weights(o)*sg('get_kernel_matrix');
 end
 
 %%% wdspec
 sg('set_features', 'TRAIN', traindat, 'DNA');
-sg('send_command', sprintf('convert TRAIN STRING CHAR STRING WORD %i %i 0 r', order, order-1));
-sg('send_command', 'add_preproc SORTWORDSTRING') ;
-sg('send_command', 'attach_preproc TRAIN') ;
-sg('send_command', sprintf('set_kernel WEIGHTEDCOMMSTRING WORD %d %d %s',cache, use_sign, normalization));
-sg('send_command', 'init_kernel TRAIN');
+sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, 0, 'r');
+sg('add_preproc', 'SORTWORDSTRING');
+sg('attach_preproc', 'TRAIN');
+sg('set_kernel', 'WEIGHTEDCOMMSTRING', 'WORD', cache, use_sign, normalization);
+sg('init_kernel', 'TRAIN');
 
 wkm=sg('get_kernel_matrix');
 

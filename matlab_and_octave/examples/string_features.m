@@ -1,9 +1,9 @@
 %generate some toy data
 acgt='ACGT';
 dat={acgt([1*ones(1,10) 2*ones(1,10) 3*ones(1,10) 4*ones(1,10) 1])};
-sg('send_command', 'loglevel ALL');
+sg('loglevel', 'ALL');
 sg('set_features', 'TRAIN', dat, 'DNA');
-sg('send_command', 'slide_window TRAIN 5 1');
+sg('slide_window', 'TRAIN', 5, 1);
 
 f=sg('get_features', 'TRAIN')
 
@@ -31,14 +31,14 @@ normalize=1;
 mkl_stepsize=1;
 block=0;
 single_degree=-1;
-sg('send_command', sprintf( 'set_kernel WEIGHTEDDEGREE STRING %i %i %i %i %i %i %i', cache, order, max_mismatch, normalize, mkl_stepsize, block, single_degree) );
-sg('send_command','init_kernel TRAIN')
+sg('set_kernel', 'WEIGHTEDDEGREE', 'STRING', cache, order, max_mismatch, normalize, mkl_stepsize, block, single_degree);
+sg('init_kernel', 'TRAIN');
 km=sg('get_kernel_matrix')
 
-sg('send_command','clean_features TRAIN');
-sg('send_command','clean_features TEST');
+sg('clean_features', 'TRAIN');
+sg('clean_features', 'TEST');
 sg('set_features', 'TRAIN', dat, 'DNA');
 sg('from_position_list','TRAIN', 5, int32([0,1,2,5,15,25,30]+5));
 sg('set_features', 'TRAIN', dat, 'DNA');
 sg('from_position_list','TRAIN', 5, int32([0,1,2,5,15,25]+9));
-sg('send_command','clean_features TRAIN');
+sg('clean_features', 'TRAIN');

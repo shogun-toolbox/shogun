@@ -14,7 +14,7 @@ cache=10;
 single_degree=-1;
 x=shift*ones(1,len);
 x(:)=0;
-shifts = sprintf( '%i ', x(end:-1:1) );
+shifts = int32(x(end:-1:1));
 
 
 %generate some toy data
@@ -25,14 +25,14 @@ traindat'
 input('key to continue')
 
 %train svm
-sg('send_command', 'loglevel INFO' );
+sg('loglevel', 'INFO' );
 sg('set_features', 'TRAIN', traindat,'DNA');
 sg('set_labels', 'TRAIN', trainlab);
-sg('send_command', sprintf( 'set_kernel WEIGHTEDDEGREEPOS2 CHAR 10 %i %i %i %s', order, max_mismatch, len, shifts ) );
-sg('send_command', 'init_kernel TRAIN');
-sg('send_command', 'new_svm LIGHT');
-sg('send_command', sprintf('c %f',C));
-sg('send_command', 'svm_train');
+sg('set_kernel', 'WEIGHTEDDEGREEPOS2', 'CHAR', 10', order, max_mismatch, len, shifts);
+sg('init_kernel', 'TRAIN');
+sg('new_svm', 'LIGHT');
+sg('c', C);
+sg('svm_train');
 consensus=sg('get_WD_consensus');
 consensus'
 
@@ -45,7 +45,7 @@ simpleconsensus=acgt(floor(median(c')))';
 simpleconsensus'
 
 sg('set_features', 'TEST', [ consensus simpleconsensus' traindat(:,end-20)' traindat(:,end)'], 'DNA');
-sg('send_command', 'init_kernel TEST');
+sg('init_kernel', 'TEST');
 out=sg('svm_classify');
 [b,alphas]=sg('get_svm');
 sprintf('%5f\n', out'-b)
@@ -66,7 +66,7 @@ end
 kmers=acgt(kmers);
 
 sg('set_features', 'TEST', kmers, 'DNA');
-sg('send_command', 'init_kernel TEST');
+sg('init_kernel', 'TEST');
 out=sg('svm_classify');
 [b,alphas]=sg('get_svm');
 out=out-b;

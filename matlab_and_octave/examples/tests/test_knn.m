@@ -1,7 +1,7 @@
 num=1000;
 dim=100;
 
-sg('send_command', 'loglevel ALL');
+sg('loglevel', 'ALL');
 rand('state',sum(100*clock));
 traindat=[rand(dim,num/2)-0.05, rand(dim,num/2)+0.05];
 trainlab=[-ones(1,num/2), ones(1,num/2) ];
@@ -12,10 +12,10 @@ testlab=[-ones(1,num/2), ones(1,num/2) ];
 
 sg('set_features', 'TRAIN', traindat);
 sg('set_labels', 'TRAIN', trainlab);
-sg('send_command', 'set_distance MINKOWSKI REAL 3.0');
-sg('send_command', 'init_distance TRAIN');
-sg('send_command', 'new_classifier KNN');
-sg('send_command', 'train_classifier 2');
+sg('set_distance', 'MINKOWSKI', 'REAL', 3.0);
+sg('init_distance', 'TRAIN');
+sg('new_classifier', 'KNN');
+sg('train_classifier', 2);
 
 sg('set_features', 'TEST', testdat);
 sg('set_labels', 'TEST', testlab);

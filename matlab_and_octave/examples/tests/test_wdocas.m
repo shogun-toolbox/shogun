@@ -11,14 +11,14 @@ traindat=uint8(reshape(x,400,400));
 trainlab=y;
 testdat=traindat;
 
-sg('send_command', 'loglevel ALL');
+sg('loglevel', 'ALL');
 sg('set_features', 'TRAIN', traindat, 'RAWDNA');
 sg('set_labels', 'TRAIN', trainlab);
-sg('send_command', sprintf('c %f', C));
-sg('send_command', sprintf('svm_epsilon %f', epsilon));
-sg('send_command', 'svm_use_bias 0');
-sg('send_command', sprintf('new_classifier WDSVMOCAS %d %d', degree, degree));
-sg('send_command', 'train_classifier');
+sg('c', C);
+sg('svm_epsilon', epsilon);
+sg('svm_use_bias', 0);
+sg('new_classifier', 'WDSVMOCAS', degree, degree);
+sg('train_classifier');
 sg('set_features', 'TEST', testdat, 'RAWDNA');
 out=sg('classify');
 
@@ -50,14 +50,14 @@ end
 traindat=sparse(dat);
 testdat=traindat;
 
-sg('send_command', 'loglevel ALL');
+sg('loglevel', 'ALL');
 sg('set_features', 'TRAIN', traindat);
 sg('set_labels', 'TRAIN', trainlab);
-sg('send_command', sprintf('c %f', C));
-sg('send_command', sprintf('svm_epsilon %f', epsilon));
-sg('send_command', 'svm_use_bias 0');
-sg('send_command', 'new_classifier SVMOCAS');
-sg('send_command', 'train_classifier');
+sg('c', C);
+sg('svm_epsilon', epsilon);
+sg('svm_use_bias', 0);
+sg('new_classifier', 'SVMOCAS');
+sg('train_classifier');
 sg('set_features', 'TEST', testdat);
 out_ref=sg('classify');
 max(abs(out-out_ref))

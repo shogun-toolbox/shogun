@@ -26,11 +26,11 @@ f = [0.1:0.2:5];   % values for the different frequencies
 no_obs = 1000;     % number of observations
 
 if debug
-	sg('send_command', 'loglevel ALL');
-	sg('send_command', 'echo ON');
+	sg('loglevel', 'ALL');
+	sg('echo', 'ON');
 else
-	sg('send_command', 'loglevel ERROR');
-	sg('send_command', 'echo OFF');
+	sg('loglevel', 'ERROR');
+	sg('echo', 'OFF');
 end
 
 %for kk = 1:length(f)    % big loop for the different learning problems
@@ -44,31 +44,31 @@ for kk = 4    % big loop for the different learning problems
   kernels={};
 
   % initialize MKL-SVR
-  sg('send_command', 'new_svm SVRLIGHT');
-  sg('send_command', 'use_mkl 1');                      
-  sg('send_command', 'use_precompute 0');
-  sg('send_command', sprintf('mkl_parameters %f 0', mkl_eps));
-  sg('send_command', sprintf('c %f',C));                
-  sg('send_command', sprintf('svm_epsilon %f',svm_eps));
-  sg('send_command', sprintf('svr_tube_epsilon %f',svr_tube_eps));
-  sg('send_command', 'clean_features TRAIN' );
-  sg('send_command', 'clean_kernel');
+  sg('new_svm', 'SVRLIGHT');
+  sg('use_mkl', 1);
+  sg('use_precompute', 0);
+  sg('mkl_parameters', mkl_eps, 0);
+  sg('c', C);
+  sg('svm_epsilon', svm_eps);
+  sg('svr_tube_epsilon', svr_tube_eps);
+  sg('clean_features', 'TRAIN');
+  sg('clean_kernel');
   sg('set_labels', 'TRAIN', train_y);               % set labels
   sg('add_features','TRAIN', train_x);              % add features for every SVR
   sg('add_features','TRAIN', train_x);
   sg('add_features','TRAIN', train_x);
   sg('add_features','TRAIN', train_x);
   sg('add_features','TRAIN', train_x);
-  sg('send_command', 'set_kernel COMBINED 0');
-  sg('send_command', sprintf('add_kernel 1 GAUSSIAN REAL %d %f', cache_size, rbf_width(1)));
-  sg('send_command', sprintf('add_kernel 1 GAUSSIAN REAL %d %f', cache_size, rbf_width(2)));
-  sg('send_command', sprintf('add_kernel 1 GAUSSIAN REAL %d %f', cache_size, rbf_width(3)));
-  sg('send_command', sprintf('add_kernel 1 GAUSSIAN REAL %d %f', cache_size, rbf_width(4)));
-  sg('send_command', sprintf('add_kernel 1 GAUSSIAN REAL %d %f', cache_size, rbf_width(5)));
-  
-  sg('send_command', 'init_kernel TRAIN');
-  sg('send_command', 'svm_train');
-	 
+  sg('set_kernel', 'COMBINED', 0);
+  sg('add_kernel', 1, 'GAUSSIAN', 'REAL', cache_size, rbf_width(1));
+  sg('add_kernel', 1, 'GAUSSIAN', 'REAL', cache_size, rbf_width(2));
+  sg('add_kernel', 1, 'GAUSSIAN', 'REAL', cache_size, rbf_width(3));
+  sg('add_kernel', 1, 'GAUSSIAN', 'REAL', cache_size, rbf_width(4));
+  sg('add_kernel', 1, 'GAUSSIAN', 'REAL', cache_size, rbf_width(5));
+
+  sg('init_kernel', 'TRAIN');
+  sg('svm_train');
+
   weights(kk,:) = sg('get_subkernel_weights') ;
   fprintf('frequency: %02.2f   rbf-kernel-weights:  %02.2f %02.2f %02.2f %02.2f %02.2f           \n', f(kk), weights(kk,:))
 end

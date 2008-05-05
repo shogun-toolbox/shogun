@@ -82,21 +82,21 @@ otherwise
 	error('unknown dataset')
 end
 
-sg('send_command', 'loglevel ALL');
+sg('loglevel', 'ALL');
 
 %%%%SUBGRADIENT%%%
 if run_subgradientsvm,
 	sg('set_features', 'TRAIN', traindat);
 
 	sg('set_labels', 'TRAIN', trainlab);
-	sg('send_command', sprintf('c %f', C));
-	sg('send_command', sprintf('svm_epsilon %10.10f', epsilon));
-	%sg('send_command', 'new_classifier SVMLIN');
-	sg('send_command', 'svm_qpsize 100');
-	sg('send_command', 'svm_max_qpsize 1000');
-	sg('send_command', 'new_classifier SUBGRADIENTSVM');
+	sg('c', C);
+	sg('svm_epsilon', epsilon);
+	%sg('new_classifier', 'SVMLIN');
+	sg('svm_qpsize', 100);
+	sg('svm_max_qpsize', 1000);
+	sg('new_classifier', 'SUBGRADIENTSVM');
 	tic;
-	sg('send_command', 'train_classifier');
+	sg('train_classifier');
 	timesubgradsvm=toc
 
 	sg('set_features', 'TEST', traindat);
@@ -110,19 +110,19 @@ end
 if run_svmlight,
 	sg('set_features', 'TRAIN', traindat);
 	sg('set_labels', 'TRAIN', trainlab);
-	sg('send_command', sprintf('c %f', C));
-	sg('send_command', 'set_kernel LINEAR SPARSEREAL 10 1.0');
-	sg('send_command', 'init_kernel TRAIN');
-	sg('send_command', 'svm_qpsize 42');
-	sg('send_command', sprintf('svm_epsilon %10.10f', epsilon));
-	sg('send_command', 'new_classifier SVMLIGHT');
+	sg('c', C);
+	sg('set_kernel', 'LINEAR', 'SPARSEREAL', 10, 1.0);
+	sg('init_kernel', 'TRAIN');
+	sg('svm_qpsize', 42);
+	sg('svm_epsilon', epsilon);
+	sg('new_classifier', 'SVMLIGHT');
 	tic;
-	sg('send_command', 'train_classifier');
+	sg('train_classifier');
 	timelight=toc
 
-	sg('send_command', 'init_kernel_optimization');
+	sg('init_kernel_optimization');
 	sg('set_features', 'TEST', traindat);
-	sg('send_command', 'init_kernel TEST');
+	sg('init_kernel', 'TEST');
 	obj_light=sg('get_svm_objective')
 	trainout_reflight=sg('classify');
 	trainerr_reflight=mean(trainlab~=sign(trainout_reflight))
@@ -136,19 +136,19 @@ end
 if run_gpbtsvm,
 	sg('set_features', 'TRAIN', traindat);
 	sg('set_labels', 'TRAIN', trainlab);
-	sg('send_command', sprintf('c %f', C));
-	sg('send_command', 'set_kernel LINEAR SPARSEREAL 10 1.0');
-	sg('send_command', 'init_kernel TRAIN');
-	sg('send_command', 'svm_qpsize 500');
-	sg('send_command', sprintf('svm_epsilon %10.10f', epsilon));
-	sg('send_command', 'new_classifier GPBTSVM');
+	sg('c', C);
+	sg('set_kernel', 'LINEAR', 'SPARSEREAL', 10, 1.0);
+	sg('init_kernel', 'TRAIN');
+	sg('svm_qpsize', 500);
+	sg('svm_epsilon', epsilon);
+	sg('new_classifier', 'GPBTSVM');
 	tic;
-	sg('send_command', 'train_classifier');
+	sg('train_classifier');
 	timegpbt=toc
 
-	sg('send_command', 'init_kernel_optimization');
+	sg('init_kernel_optimization');
 	sg('set_features', 'TEST', traindat);
-	sg('send_command', 'init_kernel TEST');
+	sg('init_kernel', 'TEST');
 	obj_gpbt=sg('get_svm_objective')
 	trainout_refgpbt=sg('classify');
 	trainerr_refgpbt=mean(trainlab~=sign(trainout_refgpbt))
@@ -163,18 +163,18 @@ end
 if run_libsvm,
 	sg('set_features', 'TRAIN', traindat);
 	sg('set_labels', 'TRAIN', trainlab);
-	sg('send_command', sprintf('c %f', C));
-	sg('send_command', 'set_kernel LINEAR SPARSEREAL 1000 1.0');
-	sg('send_command', 'init_kernel TRAIN');
-	sg('send_command', sprintf('svm_epsilon %10.10f', epsilon));
-	sg('send_command', 'new_classifier LIBSVM');
+	sg('c', C);
+	sg('set_kernel', 'LINEAR', 'SPARSEREAL', 1000, 1.0);
+	sg('init_kernel', 'TRAIN');
+	sg('svm_epsilon', epsilon);
+	sg('new_classifier', 'LIBSVM');
 	tic;
-	sg('send_command', 'train_classifier');
+	sg('train_classifier');
 	timelibsvm=toc
 
-	sg('send_command', 'init_kernel_optimization');
+	sg('init_kernel_optimization');
 	sg('set_features', 'TEST', traindat);
-	sg('send_command', 'init_kernel TEST');
+	sg('init_kernel', 'TEST');
 	obj_libsvm=sg('get_svm_objective')
 	trainout_reflibsvm=sg('classify');
 	trainerr_reflibsvm=mean(trainlab~=sign(trainout_reflibsvm))

@@ -30,8 +30,8 @@ rbf_width = [0.01 0.1 1 10 100];     % different width for the five used rbf ker
 %%%% Great loop: train MKL for every data set (the different distances between the stars)
 %%%%
 
-sg('send_command','loglevel ERROR');
-sg('send_command','echo OFF');
+sg('loglevel', 'ERROR');
+sg('echo', 'OFF');
 
 
 for kk = 1:size(radius_star,1)
@@ -61,57 +61,57 @@ for kk = 1:size(radius_star,1)
 
   % train MKL
 
-  sg('send_command','clean_kernel');
-  sg('send_command','clean_features TRAIN');
+  sg('clean_kernel');
+  sg('clean_features', 'TRAIN');
   sg('add_features','TRAIN', train_x);       % set a trainingset for every SVM
   sg('add_features','TRAIN', train_x);
   sg('add_features','TRAIN', train_x);
   sg('add_features','TRAIN', train_x);
   sg('add_features','TRAIN', train_x);
   sg('set_labels','TRAIN', train_y);         % set the labels
-  sg('send_command', 'new_svm LIGHT');
-  sg('send_command', 'use_linadd 0');
-  sg('send_command', 'use_mkl 1');
-  sg('send_command', 'use_precompute 0');
-  sg('send_command', sprintf('mkl_parameters %f 0', mkl_eps));
-  sg('send_command', sprintf('svm_epsilon %f', svm_eps));
-  sg('send_command', 'set_kernel COMBINED 0');
-  sg('send_command', sprintf('add_kernel 1 GAUSSIAN REAL %d %f', cache_size, rbf_width(1) ));
-  sg('send_command', sprintf('add_kernel 1 GAUSSIAN REAL %d %f', cache_size, rbf_width(2) ));
-  sg('send_command', sprintf('add_kernel 1 GAUSSIAN REAL %d %f', cache_size, rbf_width(3) ));
-  sg('send_command', sprintf('add_kernel 1 GAUSSIAN REAL %d %f', cache_size, rbf_width(4) ));
-  sg('send_command', sprintf('add_kernel 1 GAUSSIAN REAL %d %f', cache_size, rbf_width(5) ));
-  sg('send_command', sprintf('c %1.2e', C)) ;
-  sg('send_command', 'init_kernel TRAIN');
-  sg('send_command', 'svm_train');
+  sg('new_svm', 'LIGHT');
+  sg('use_linadd', 0);
+  sg('use_mkl', 1);
+  sg('use_precompute', 0);
+  sg('mkl_parameters', mkl_eps, 0);
+  sg('svm_epsilon', svm_eps);
+  sg('set_kernel', 'COMBINED', 0);
+  sg('add_kernel', 1, 'GAUSSIAN', 'REAL', cache_size, rbf_width(1));
+  sg('add_kernel', 1, 'GAUSSIAN', 'REAL', cache_size, rbf_width(2));
+  sg('add_kernel', 1, 'GAUSSIAN', 'REAL', cache_size, rbf_width(3));
+  sg('add_kernel', 1, 'GAUSSIAN', 'REAL', cache_size, rbf_width(4));
+  sg('add_kernel', 1, 'GAUSSIAN', 'REAL', cache_size, rbf_width(5));
+  sg('c', C);
+  sg('init_kernel', 'TRAIN');
+  sg('svm_train');
   [b,alphas]=sg('get_svm') ;
   w(kk,:) = sg('get_subkernel_weights');
 
   % calculate train error
 
-  sg('send_command','clean_features TEST');
+  sg('clean_features', 'TEST');
   sg('add_features','TEST',train_x);
   sg('add_features','TEST',train_x);
   sg('add_features','TEST',train_x);
   sg('add_features','TEST',train_x);
   sg('add_features','TEST',train_x);
   sg('set_labels','TEST', train_y);
-  sg('send_command', 'init_kernel TEST');
-  sg('send_command', 'set_threshold 0');
+  sg('init_kernel', 'TEST');
+  sg('set_threshold', 0);
   result.trainout(kk,:)=sg('svm_classify');
   result.trainerr(kk)  = mean(train_y~=sign(result.trainout(kk,:)));  
 
   % calculate test error
 
-  sg('send_command', 'clean_features TEST');
+  sg('clean_features', 'TEST');
   sg('add_features','TEST',test_x);
   sg('add_features','TEST',test_x);
   sg('add_features','TEST',test_x);
   sg('add_features','TEST',test_x);
   sg('add_features','TEST',test_x);
   sg('set_labels','TEST',test_y);
-  sg('send_command', 'init_kernel TEST');
-  sg('send_command', 'set_threshold 0');
+  sg('init_kernel', 'TEST');
+  sg('set_threshold', 0);
   result.testout(kk,:)=sg('svm_classify');
   result.testerr(kk)  = mean(test_y~=sign(result.testout(kk,:)));    
 	 

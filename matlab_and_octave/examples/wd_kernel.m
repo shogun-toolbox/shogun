@@ -34,40 +34,40 @@ traindat'
 input('key to continue')
 
 %train svm
-sg('send_command', 'use_linadd 1' );
-sg('send_command', 'use_batch_computation 0');
-sg('send_command', 'loglevel ALL');
+sg('use_linadd', 1);
+sg('use_batch_computation', 0);
+sg('loglevel', 'ALL');
 sg('set_features', 'TRAIN', traindat, 'DNA');
 sg('set_labels', 'TRAIN', trainlab);
-sg('send_command', sprintf( 'set_kernel WEIGHTEDDEGREE CHAR %i %i %i %i %i %i %i', cache, order, max_mismatch, normalize, mkl_stepsize, block, single_degree) );
+sg('set_kernel', 'WEIGHTEDDEGREE', 'CHAR', cache, order, max_mismatch, normalize, mkl_stepsize, block, single_degree);
 %sg('set_WD_position_weights', ones(1,100)/100) ;
-sg('send_command', 'init_kernel TRAIN');
+sg('init_kernel', 'TRAIN');
 %sg('set_WD_position_weights', ones(1,200)/200) ;
-sg('send_command', 'new_svm LIGHT');
-sg('send_command', sprintf('c %f',C));
-tic;sg('send_command', 'svm_train');toc;
+sg('new_svm', 'LIGHT');
+sg('c',C);
+tic;sg('svm_train');toc;
 
 %evaluate svm on test data
 sg('set_features', 'TEST', testdat, 'DNA');
 sg('set_labels', 'TEST', testlab);
-sg('send_command', 'init_kernel TEST');
-%sg('send_command', 'init_kernel_optimization');
-%sg('send_command', 'delete_kernel_optimization');
+sg('init_kernel', 'TEST');
+%sg('init_kernel_optimization');
+%sg('delete_kernel_optimization');
 
-sg('send_command', 'use_batch_computation 0');
-sg('send_command', 'delete_kernel_optimization');
+sg('use_batch_computation', 0);
+sg('delete_kernel_optimization');
 out1=sg('svm_classify');
 fprintf('accuracy: %f                                                                                         \n', mean(sign(out1)==testlab))
 
-sg('send_command', 'init_kernel TEST');
-sg('send_command', 'use_batch_computation 1');
+sg('init_kernel', 'TEST');
+sg('use_batch_computation', 1);
 out2=sg('svm_classify');
 fprintf('accuracy: %f                                                                                         \n', mean(sign(out2)==testlab))
 
 
-sg('send_command', 'use_batch_computation 0');
-tic;sg('send_command', 'init_kernel_optimization');toc;
-%sg('send_command', 'delete_kernel_optimization');
+sg('use_batch_computation', 0);
+tic;sg('init_kernel_optimization');toc;
+%sg('delete_kernel_optimization');
 
 tic;out3=sg('svm_classify');toc;
 fprintf('accuracy: %f                                                                                         \n', mean(sign(out3)==testlab))

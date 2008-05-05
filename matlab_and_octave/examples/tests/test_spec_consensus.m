@@ -30,39 +30,39 @@ traindat'
 input('key to continue')
 
 %train svm
-sg('send_command', 'use_linadd 1' );
+sg('use_linadd', 1);
 sg('set_features', 'TRAIN', traindat, 'DNA');
 sg('set_labels', 'TRAIN', trainlab);
 
-sg('send_command', sprintf('convert TRAIN STRING CHAR STRING WORD %i %i', order, order-1));
-sg('send_command', 'add_preproc SORTWORDSTRING') ;
-sg('send_command', 'attach_preproc TRAIN') ;
-sg('send_command', sprintf('set_kernel COMMSTRING WORD %d %d %s',cache, use_sign, normalization));
+sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1);
+sg('add_preproc', 'SORTWORDSTRING');
+sg('attach_preproc', 'TRAIN');
+sg('set_kernel', 'COMMSTRING', 'WORD', cache, use_sign, normalization);
 
-sg('send_command', 'init_kernel TRAIN');
-sg('send_command', 'new_svm LIGHT');
-sg('send_command', sprintf('c %f',C));
-sg('send_command', 'svm_train');
-sg('send_command', 'init_kernel_optimization');
+sg('init_kernel', 'TRAIN');
+sg('new_svm', 'LIGHT');
+sg('c', C);
+sg('svm_train');
+sg('init_kernel_optimization');
 
 %evaluate svm on train data
 sg('set_features', 'TEST', traindat, 'DNA');
-sg('send_command', sprintf('convert TEST STRING CHAR STRING WORD %i %i', order, order-1));
-sg('send_command', 'attach_preproc TEST') ;
+sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1);
+sg('attach_preproc', 'TEST');
 sg('set_labels', 'TEST', trainlab);
-sg('send_command', 'init_kernel TEST');
+sg('init_kernel', 'TEST');
 out=sg('svm_classify');
 fprintf('accuracy: %f                                                                                         \n', mean(sign(out)==trainlab))
 
 
 consensus=sg('get_SPEC_consensus');
 [b,alphas]=sg('get_svm');
-sg('send_command', 'delete_kernel_optimization');
+sg('delete_kernel_optimization');
 consensus
 sg('set_features', 'TEST', [consensus traindat(:,1)' traindat(:,end-1)' traindat(:,end)'], 'DNA');
-sg('send_command', sprintf('convert TEST STRING CHAR STRING WORD %i %i', order, order-1));
-sg('send_command', 'attach_preproc TEST') ;
-sg('send_command', 'init_kernel TEST');
+sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1);
+sg('attach_preproc', 'TEST');
+sg('init_kernel', 'TEST');
 out=sg('svm_classify');
 consensus'
 out-b
@@ -83,9 +83,9 @@ end
 kmers=acgt(kmers);
 
 sg('set_features', 'TEST', kmers, 'DNA');
-sg('send_command', sprintf('convert TEST STRING CHAR STRING WORD %i %i', order, order-1));
-sg('send_command', 'attach_preproc TEST') ;
-sg('send_command', 'init_kernel TEST');
+sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1);
+sg('attach_preproc', 'TEST');
+sg('init_kernel', 'TEST');
 out=sg('svm_classify');
 [b,alphas]=sg('get_svm');
 out=out-b;

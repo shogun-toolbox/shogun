@@ -30,23 +30,23 @@ traindat'
 input('key to continue')
 
 %train svm
-sg('send_command', 'loglevel ALL');
+sg('loglevel', 'ALL');
 sg('set_features', 'TRAIN', traindat, 'DNA');
 sg('set_labels', 'TRAIN', trainlab);
-sg('send_command', sprintf( 'set_kernel SLIK CHAR %i %i %i %i %i %i %i', cache, l, d1, d2) );
-sg('send_command', 'init_kernel TRAIN');
-sg('send_command', 'new_svm LIBSVM');
-sg('send_command', sprintf('c %f',C));
-tic;sg('send_command', 'svm_train');toc;
+sg('set_kernel', 'SLIK', 'CHAR', cache, l, d1, d2);
+sg('init_kernel', 'TRAIN');
+sg('new_svm', 'LIBSVM');
+sg('c', C);
+tic;sg('svm_train');toc;
 
 %evaluate svm on test data
 sg('set_features', 'TEST', testdat, 'DNA');
 sg('set_labels', 'TEST', testlab);
-sg('send_command', 'init_kernel TEST');
+sg('init_kernel', 'TEST');
 out1=sg('svm_classify');
 fprintf('accuracy: %f                                                                                         \n', mean(sign(out1)==testlab))
 
-sg('send_command', 'init_kernel TEST');
+sg('init_kernel', 'TEST');
 out2=sg('svm_classify');
 fprintf('accuracy: %f                                                                                         \n', mean(sign(out2)==testlab))
 

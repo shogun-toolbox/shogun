@@ -3,7 +3,7 @@ rand('state',12345);
 for i=1:1000,
 num=ceil(1500*rand);
 dims=ceil(1000*rand);
-sg('send_command', 'loglevel ALL');
+sg('loglevel', 'ALL');
 dist=rand;
 traindat=[rand(dims,num)-dist rand(dims,num)+dist];
 trainlab=sin(sum(traindat,1));
@@ -18,36 +18,36 @@ testlab=testlab(:,p);
 
 sg('set_features', 'TRAIN', traindat);
 sg('set_labels', 'TRAIN', trainlab);
-sg('send_command', 'set_kernel GAUSSIAN REAL 10');
-sg('send_command', 'init_kernel TRAIN');
-sg('send_command', 'new_svm LIBSVR');
-sg('send_command', 'c 2');
-sg('send_command', 'svr_tube_epsilon 0.1');
+sg('set_kernel', 'GAUSSIAN', 'REAL', 10);
+sg('init_kernel', 'TRAIN');
+sg('new_svm', 'LIBSVR');
+sg('c', 2);
+sg('svr_tube_epsilon', 0.1);
 tic;
-sg('send_command', 'svm_train');
+sg('svm_train');
 time_libsvm(i)=toc
 [b2, alphas2]=sg('get_svm');
 o2=sg('get_svm_objective');
 sg('set_features', 'TEST', testdat);
 sg('set_labels', 'TEST', testlab);
-sg('send_command', 'init_kernel TEST');
+sg('init_kernel', 'TEST');
 out2=sg('svm_classify');
 valerr2=mean(testlab~=sign(out2));
 
 sg('set_features', 'TRAIN', traindat);
 sg('set_labels', 'TRAIN', trainlab);
-sg('send_command', 'set_kernel GAUSSIAN REAL 10');
-sg('send_command', 'init_kernel TRAIN');
-sg('send_command', 'new_svm SVRLIGHT');
-sg('send_command', 'c 2');
+sg('set_kernel', 'GAUSSIAN', 'REAL', 10);
+sg('init_kernel', 'TRAIN');
+sg('new_svm', 'SVRLIGHT');
+sg('c', 2);
 tic;
-sg('send_command', 'svm_train');
+sg('svm_train');
 time_light(i)=toc
 [b3, alphas3]=sg('get_svm');
 o3=sg('get_svm_objective');
 sg('set_features', 'TEST', testdat);
 sg('set_labels', 'TEST', testlab);
-sg('send_command', 'init_kernel TEST');
+sg('init_kernel', 'TEST');
 out3=sg('svm_classify');
 valerr3=mean(testlab~=sign(out3));
 

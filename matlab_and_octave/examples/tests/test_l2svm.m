@@ -16,15 +16,15 @@ dim=size(traindat,1);
 %traindat=sparse([randn(dim,num/2)-dist, randn(dim,num/2)+dist]);
 %trainlab=[ones(1,num/2), -ones(1,num/2) ];
 
-sg('send_command', 'loglevel ALL');
+sg('loglevel', 'ALL');
 sg('set_features', 'TRAIN', traindat);
 sg('set_labels', 'TRAIN', trainlab);
-sg('send_command', sprintf('c %f', C));
-sg('send_command', sprintf('svm_epsilon %f', epsilon));
-sg('send_command', sprintf('svm_use_bias %d', use_bias));
-sg('send_command', 'new_classifier LIBLINEAR_L2');
+sg('c', C;
+sg('svm_epsilon', epsilon);
+sg('svm_use_bias', use_bias);
+sg('new_classifier', 'LIBLINEAR_L2');
 tic;
-sg('send_command', 'train_classifier');
+sg('train_classifier');
 time_liblinear=toc
 
 [b1,W1]=sg('get_classifier');
@@ -37,15 +37,15 @@ b1
 W1';
 obj1=sum(W1.^2)+C*sum(max(1-trainlab.*(W1'*traindat-b1)).^2)
 
-sg('send_command', 'loglevel ALL');
+sg('loglevel', 'ALL');
 sg('set_features', 'TRAIN', traindat);
 sg('set_labels', 'TRAIN', trainlab);
-sg('send_command', sprintf('c %f', C));
-sg('send_command', sprintf('svm_epsilon %f', epsilon));
-sg('send_command', sprintf('svm_use_bias %d', use_bias));
-sg('send_command', 'new_classifier SVMLIN');
+sg('c', C);
+sg('svm_epsilon', epsilon);
+sg('svm_use_bias', use_bias);
+sg('new_classifier', 'SVMLIN');
 tic;
-sg('send_command', 'train_classifier');
+sg('train_classifier');
 time_svmlin=toc
 %
 [b2,W2]=sg('get_classifier');
@@ -61,62 +61,62 @@ obj2=sum(W2.^2)+C*sum(max(1-trainlab.*(W2'*traindat+b2)).^2)
 %trainout(1:10);
 %trainout2(1:10);
 %
-%%sg('send_command', 'loglevel ERROR');
+%%sg('loglevel', 'ERROR');
 %%sg('set_features', 'TRAIN', traindat);
 %%sg('set_labels', 'TRAIN', trainlab+1/2);
-%%sg('send_command', sprintf('c %f', C));
-%%sg('send_command', 'svm_use_bias 1');
-%%sg('send_command', 'new_classifier GMNPSVM');
-%%sg('send_command', 'set_kernel LINEAR SPARSEREAL 10 1.0');
-%%sg('send_command', 'init_kernel TRAIN');
+%%sg('c', C);
+%%sg('svm_use_bias', 1);
+%%sg('new_classifier', 'GMNPSVM');
+%%sg('set_kernel', 'LINEAR', 'SPARSEREAL', 10, 1.0);
+%%sg('init_kernel', 'TRAIN');
 %%tic;
-%%sg('send_command', 'train_classifier');
+%%sg('train_classifier');
 %%timeliblinear=toc
 %%
 %%%[b3,W3]=sg('get_classifier');
 %%
 %%sg('set_features', 'TEST', traindat);
-%%sg('send_command', 'init_kernel TEST');
+%%sg('init_kernel', 'TEST');
 %%trainout3=sg('classify')*2-1;
 %%trainerr3=mean(trainlab~=sign(trainout3))
-sg('send_command', 'loglevel ERROR');
+sg('loglevel', 'ERROR');
 sg('set_features', 'TRAIN', traindat);
 sg('set_labels', 'TRAIN', trainlab);
-sg('send_command', sprintf('c %f', C));
-sg('send_command', 'svm_use_bias 1');
-sg('send_command', 'svm_qpsize 500');
-sg('send_command', 'new_classifier GPBTSVM');
-sg('send_command', 'set_kernel LINEAR SPARSEREAL 200 1.0');
-sg('send_command', 'init_kernel TRAIN');
+sg('c', C);
+sg('svm_use_bias', 1);
+sg('svm_qpsize', 500);
+sg('new_classifier', 'GPBTSVM');
+sg('set_kernel', 'LINEAR', 'SPARSEREAL', 200, 1.0);
+sg('init_kernel', 'TRAIN');
 tic;
-sg('send_command', 'train_classifier');
+sg('train_classifier');
 time_gpbt=toc
 [b_gpbt,W_gpbt]=sg('get_classifier');
 
-sg('send_command', 'loglevel ERROR');
+sg('loglevel', 'ERROR');
 sg('set_features', 'TRAIN', traindat);
 sg('set_labels', 'TRAIN', trainlab);
-sg('send_command', sprintf('c %f', C));
-sg('send_command', 'svm_use_bias 1');
-sg('send_command', 'svm_qpsize 42');
-sg('send_command', 'new_classifier LIGHT');
-sg('send_command', 'set_kernel LINEAR SPARSEREAL 200 1.0');
-sg('send_command', 'init_kernel TRAIN');
+sg('c', C);
+sg('svm_use_bias', 1);
+sg('svm_qpsize', 42);
+sg('new_classifier', 'LIGHT');
+sg('set_kernel', 'LINEAR SPARSEREAL', 200, 1.0);
+sg('init_kernel', 'TRAIN');
 tic;
-sg('send_command', 'train_classifier');
+sg('train_classifier');
 time_light=toc
 [b_light,W_light]=sg('get_classifier');
 
-sg('send_command', 'loglevel ERROR');
+sg('loglevel', 'ERROR');
 sg('set_features', 'TRAIN', traindat);
 sg('set_labels', 'TRAIN', trainlab);
-sg('send_command', sprintf('c %f', C));
-sg('send_command', 'svm_use_bias 1');
-sg('send_command', 'new_classifier LIBSVM');
-sg('send_command', 'set_kernel LINEAR SPARSEREAL 10 1.0');
-sg('send_command', 'init_kernel TRAIN');
+sg('c', C);
+sg('svm_use_bias', 1);
+sg('new_classifier', 'LIBSVM');
+sg('set_kernel', 'LINEAR', 'SPARSEREAL', 10, 1.0);
+sg('init_kernel', 'TRAIN');
 tic;
-sg('send_command', 'train_classifier');
+sg('train_classifier');
 time_libsvm=toc
 [b_libsvm,W_libsvm]=sg('get_classifier');
 

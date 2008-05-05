@@ -12,30 +12,30 @@ trainlab=[ -ones(1,num/2) ones(1,num/2) ];
 valdat=[ (rand(dims,numval/2)-0.1) (rand(dims,numval/2)+0.1) ];
 vallab=[ -ones(1,numval/2) ones(1,numval/2) ];
 
-sg('send_command', 'loglevel ALL');
+sg('loglevel', 'ALL');
 
-sg('send_command', 'use_mkl 0') ;
-sg('send_command', 'use_linadd 1') ;
-sg('send_command', 'use_precompute 0') ;
-sg('send_command', 'mkl_parameters 1e-5 0') ;
-sg('send_command', sprintf('svm_epsilon %f', svm_eps)) ;
-sg('send_command', 'clean_features TRAIN') ;
-sg('send_command', 'clean_kernel') ;
+sg('use_mkl', 0);
+sg('use_linadd', 1);
+sg('use_precompute', 0);
+sg('mkl_parameters', 1e-5, 0);
+sg('svm_epsilon', svm_eps);
+sg('clean_features', 'TRAIN');
+sg('clean_kernel') ;
 
 sg('set_features', 'TRAIN', traindat);
 sg('set_labels', 'TRAIN', trainlab);
-sg('send_command', 'set_kernel LINEAR REAL 10 1.0'); %die 1.0 entspricht scaling
-sg('send_command', 'init_kernel TRAIN');
-sg('send_command', 'new_svm LIGHT');
-sg('send_command', sprintf('c %f', C));
-sg('send_command', 'svm_train');
+sg('set_kernel', 'LINEAR', 'REAL', 10, 1.0); %die 1.0 entspricht scaling
+sg('init_kernel', 'TRAIN');
+sg('new_svm', 'LIGHT');
+sg('c', C);
+sg('svm_train');
 [b, alpha_tmp]=sg('get_svm');
-sg('send_command', 'init_kernel_optimization') ;
+sg('init_kernel_optimization');
 
 sg('set_features', 'TEST', valdat);
 sg('set_labels', 'TEST', vallab);
-sg('send_command', 'init_kernel TEST');
-sg('send_command', 'init_kernel_optimization');
+sg('init_kernel', 'TEST');
+sg('init_kernel_optimization');
 w=sg('get_kernel_optimization');
 
 
