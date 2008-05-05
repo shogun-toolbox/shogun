@@ -824,10 +824,7 @@ bool CGUIKernel::init_kernel(CHAR* target)
 			SG_ERROR("Assign train and test features first.\n");
 	}
 	else
-	{
-		io.not_implemented();
-		return false;
-	}
+		SG_ERROR("Unknown target %s.\n", target);
 
 	return true;
 }
