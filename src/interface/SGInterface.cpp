@@ -55,12 +55,13 @@ static CSGInterfaceMethod sg_methods[]=
 	{
 		(CHAR*) N_LOAD_FEATURES,
 		(&CSGInterface::cmd_load_features),
-		(CHAR*) USAGE_I(N_LOAD_FEATURES, "'filename, fclass, type, target[, size[, comp_features]]'")
+		(CHAR*) USAGE_I(N_LOAD_FEATURES,
+			"filename, feature_class, type, target[, size[, comp_features]]")
 	},
 	{
 		(CHAR*) N_SAVE_FEATURES,
 		(&CSGInterface::cmd_save_features),
-		(CHAR*) USAGE_I(N_SAVE_FEATURES, "'filename, type, target'")
+		(CHAR*) USAGE_I(N_SAVE_FEATURES, "filename, type, target")
 	},
 	{
 		(CHAR*) N_CLEAN_FEATURES,
@@ -92,7 +93,7 @@ static CSGInterfaceMethod sg_methods[]=
 	{
 		(CHAR*) N_CONVERT,
 		(&CSGInterface::cmd_convert),
-		(CHAR*) USAGE_I(N_CONVERT, "'TRAIN|TEST', from_class, from_type, to_class, to_type[, order, start, gap, reversed]'")
+		(CHAR*) USAGE_I(N_CONVERT, "'TRAIN|TEST', from_class, from_type, to_class, to_type[, order, start, gap, reversed]")
 	},
 	{
 		(CHAR*) N_FROM_POSITION_LIST,
@@ -102,17 +103,17 @@ static CSGInterfaceMethod sg_methods[]=
 	{
 		(CHAR*) N_SLIDE_WINDOW,
 		(&CSGInterface::cmd_obtain_by_sliding_window),
-		(CHAR*) USAGE_I(N_SLIDE_WINDOW, "'TRAIN|TEST, winsize, shift[, skip]'")
+		(CHAR*) USAGE_I(N_SLIDE_WINDOW, "'TRAIN|TEST', winsize, shift[, skip]")
 	},
 	{
 		(CHAR*) N_RESHAPE,
 		(&CSGInterface::cmd_reshape),
-		(CHAR*) USAGE_I(N_RESHAPE, "'TRAIN|TEST, num_feat, num_vec'")
+		(CHAR*) USAGE_I(N_RESHAPE, "'TRAIN|TEST', num_feat, num_vec")
 	},
 	{
 		(CHAR*) N_LOAD_LABELS,
 		(&CSGInterface::cmd_load_labels),
-		(CHAR*) USAGE_I(N_LOAD_LABELS, "'filename, TRAIN|TARGET'")
+		(CHAR*) USAGE_I(N_LOAD_LABELS, "filename, 'TRAIN|TARGET'")
 	},
 	{
 		(CHAR*) N_SET_LABELS,
@@ -130,12 +131,12 @@ static CSGInterfaceMethod sg_methods[]=
 	{
 		(CHAR*) N_SET_KERNEL,
 		(&CSGInterface::cmd_set_kernel),
-		(CHAR*) USAGE_I(N_SET_KERNEL, "'type, size[, kernel-specific parameters]'")
+		(CHAR*) USAGE_I(N_SET_KERNEL, "type, size[, kernel-specific parameters]")
 	},
 	{
 		(CHAR*) N_ADD_KERNEL,
 		(&CSGInterface::cmd_add_kernel),
-		(CHAR*) USAGE_I(N_ADD_KERNEL, "'weight, kernel-specific parameters'")
+		(CHAR*) USAGE_I(N_ADD_KERNEL, "weight, kernel-specific parameters")
 	},
 	{
 		(CHAR*) N_INIT_KERNEL,
@@ -150,17 +151,17 @@ static CSGInterfaceMethod sg_methods[]=
 	{
 		(CHAR*) N_SAVE_KERNEL,
 		(&CSGInterface::cmd_save_kernel),
-		(CHAR*) USAGE_I(N_SAVE_KERNEL, "'filename'")
+		(CHAR*) USAGE_I(N_SAVE_KERNEL, "filename")
 	},
 	{
 		(CHAR*) N_LOAD_KERNEL_INIT,
 		(&CSGInterface::cmd_load_kernel_init),
-		(CHAR*) USAGE_I(N_LOAD_KERNEL_INIT, "'filename'")
+		(CHAR*) USAGE_I(N_LOAD_KERNEL_INIT, "filename")
 	},
 	{
 		(CHAR*) N_SAVE_KERNEL_INIT,
 		(&CSGInterface::cmd_save_kernel_init),
-		(CHAR*) USAGE_I(N_SAVE_KERNEL_INIT, "'filename'")
+		(CHAR*) USAGE_I(N_SAVE_KERNEL_INIT, "filename")
 	},
 	{
 		(CHAR*) N_GET_KERNEL_MATRIX,
@@ -236,7 +237,7 @@ static CSGInterfaceMethod sg_methods[]=
 	{
 		(CHAR*) N_RESIZE_KERNEL_CACHE,
 		(&CSGInterface::cmd_resize_kernel_cache),
-		(CHAR*) USAGE_I(N_RESIZE_KERNEL_CACHE, "'size'")
+		(CHAR*) USAGE_I(N_RESIZE_KERNEL_CACHE, "size")
 	},
 #endif //USE_SVMLIGHT
 
@@ -245,7 +246,7 @@ static CSGInterfaceMethod sg_methods[]=
 	{
 		(CHAR*) N_SET_DISTANCE,
 		(&CSGInterface::cmd_set_distance),
-		(CHAR*) USAGE_I(N_SET_DISTANCE, "'type, data type[, distance-specific parameters]'")
+		(CHAR*) USAGE_I(N_SET_DISTANCE, "type, data type[, distance-specific parameters]")
 	},
 	{
 		(CHAR*) N_INIT_DISTANCE,
@@ -298,7 +299,7 @@ static CSGInterfaceMethod sg_methods[]=
 	{
 		(CHAR*) N_LOAD_SVM,
 		(&CSGInterface::cmd_load_classifier),
-		(CHAR*) USAGE_O(N_LOAD_SVM, "'filename, type'")
+		(CHAR*) USAGE_O(N_LOAD_SVM, "filename, type")
 	},
 	{
 		(CHAR*) N_GET_SVM,
@@ -323,7 +324,7 @@ static CSGInterfaceMethod sg_methods[]=
 	{
 		(CHAR*) N_SET_PERCEPTRON_PARAMETERS,
 		(&CSGInterface::cmd_set_perceptron_parameters),
-		(CHAR*) USAGE_I(N_SET_PERCEPTRON_PARAMETERS, "'learnrate, maxiter'")
+		(CHAR*) USAGE_I(N_SET_PERCEPTRON_PARAMETERS, "learnrate, maxiter")
 	},
 	{
 		(CHAR*) N_TRAIN_CLASSIFIER,
@@ -343,77 +344,77 @@ static CSGInterfaceMethod sg_methods[]=
 	{
 		(CHAR*) N_SVMQPSIZE,
 		(&CSGInterface::cmd_set_svm_qpsize),
-		(CHAR*) USAGE_I(N_SVMQPSIZE, "'size'")
+		(CHAR*) USAGE_I(N_SVMQPSIZE, "size")
 	},
 	{
 		(CHAR*) N_SVMMAXQPSIZE,
 		(&CSGInterface::cmd_set_svm_max_qpsize),
-		(CHAR*) USAGE_I(N_SVMMAXQPSIZE, "'size'")
+		(CHAR*) USAGE_I(N_SVMMAXQPSIZE, "size")
 	},
 	{
 		(CHAR*) N_SVMBUFSIZE,
 		(&CSGInterface::cmd_set_svm_bufsize),
-		(CHAR*) USAGE_I(N_SVMBUFSIZE, "'size'")
+		(CHAR*) USAGE_I(N_SVMBUFSIZE, "size")
 	},
 	{
 		(CHAR*) N_C,
 		(&CSGInterface::cmd_set_svm_C),
-		(CHAR*) USAGE_I(N_C, "'C1, C2'")
+		(CHAR*) USAGE_I(N_C, "C1, C2")
 	},
 	{
 		(CHAR*) N_SVM_EPSILON,
 		(&CSGInterface::cmd_set_svm_epsilon),
-		(CHAR*) USAGE_I(N_SVM_EPSILON, "'epsilon'")
+		(CHAR*) USAGE_I(N_SVM_EPSILON, "epsilon")
 	},
 	{
 		(CHAR*) N_SVR_TUBE_EPSILON,
 		(&CSGInterface::cmd_set_svr_tube_epsilon),
-		(CHAR*) USAGE_I(N_SVR_TUBE_EPSILON, "'tube_epsilon'")
+		(CHAR*) USAGE_I(N_SVR_TUBE_EPSILON, "tube_epsilon")
 	},
 	{
 		(CHAR*) N_SVM_ONE_CLASS_NU,
 		(&CSGInterface::cmd_set_svm_one_class_nu),
-		(CHAR*) USAGE_I(N_SVM_ONE_CLASS_NU, "'nu'")
+		(CHAR*) USAGE_I(N_SVM_ONE_CLASS_NU, "nu")
 	},
 	{
 		(CHAR*) N_MKL_PARAMETERS,
 		(&CSGInterface::cmd_set_svm_mkl_parameters),
-		(CHAR*) USAGE_I(N_MKL_PARAMETERS, "'weight_epsilon, C_MKL'")
+		(CHAR*) USAGE_I(N_MKL_PARAMETERS, "weight_epsilon, C_MKL")
 	},
 	{
 		(CHAR*) N_SVM_MAX_TRAIN_TIME,
 		(&CSGInterface::cmd_set_max_train_time),
-		(CHAR*) USAGE_I(N_SVM_MAX_TRAIN_TIME, "'max_train_time'")
+		(CHAR*) USAGE_I(N_SVM_MAX_TRAIN_TIME, "max_train_time")
 	},
 	{
 		(CHAR*) N_USE_PRECOMPUTE,
 		(&CSGInterface::cmd_set_svm_precompute_enabled),
-		(CHAR*) USAGE_I(N_USE_PRECOMPUTE, "'enable_precompute'")
+		(CHAR*) USAGE_I(N_USE_PRECOMPUTE, "enable_precompute")
 	},
 	{
 		(CHAR*) N_USE_MKL,
 		(&CSGInterface::cmd_set_svm_mkl_enabled),
-		(CHAR*) USAGE_I(N_USE_MKL, "'enable_mkl'")
+		(CHAR*) USAGE_I(N_USE_MKL, "enable_mkl")
 	},
 	{
 		(CHAR*) N_USE_SHRINKING,
 		(&CSGInterface::cmd_set_svm_shrinking_enabled),
-		(CHAR*) USAGE_I(N_USE_SHRINKING, "'enable_shrinking'")
+		(CHAR*) USAGE_I(N_USE_SHRINKING, "enable_shrinking")
 	},
 	{
 		(CHAR*) N_USE_BATCH_COMPUTATION,
 		(&CSGInterface::cmd_set_svm_batch_computation_enabled),
-		(CHAR*) USAGE_I(N_USE_BATCH_COMPUTATION, "'enable_batch_computation'")
+		(CHAR*) USAGE_I(N_USE_BATCH_COMPUTATION, "enable_batch_computation")
 	},
 	{
 		(CHAR*) N_USE_LINADD,
 		(&CSGInterface::cmd_set_svm_linadd_enabled),
-		(CHAR*) USAGE_I(N_USE_LINADD, "'enable_linadd'")
+		(CHAR*) USAGE_I(N_USE_LINADD, "enable_linadd")
 	},
 	{
 		(CHAR*) N_SVM_USE_BIAS,
 		(&CSGInterface::cmd_set_svm_bias_enabled),
-		(CHAR*) USAGE_I(N_SVM_USE_BIAS, "'enable_bias'")
+		(CHAR*) USAGE_I(N_SVM_USE_BIAS, "enable_bias")
 	},
 
 
@@ -421,7 +422,7 @@ static CSGInterfaceMethod sg_methods[]=
 	{
 		(CHAR*) N_ADD_PREPROC,
 		(&CSGInterface::cmd_add_preproc),
-		(CHAR*) USAGE_I(N_ADD_PREPROC, "'preproc[, preproc-specific parameters]'")
+		(CHAR*) USAGE_I(N_ADD_PREPROC, "preproc[, preproc-specific parameters]")
 	},
 	{
 		(CHAR*) N_DEL_PREPROC,
@@ -431,17 +432,17 @@ static CSGInterfaceMethod sg_methods[]=
 	{
 		(CHAR*) N_LOAD_PREPROC,
 		(&CSGInterface::cmd_load_preproc),
-		(CHAR*) USAGE_I(N_LOAD_PREPROC, "'filename'")
+		(CHAR*) USAGE_I(N_LOAD_PREPROC, "filename")
 	},
 	{
 		(CHAR*) N_SAVE_PREPROC,
 		(&CSGInterface::cmd_save_preproc),
-		(CHAR*) USAGE_I(N_SAVE_PREPROC, "'filename'")
+		(CHAR*) USAGE_I(N_SAVE_PREPROC, "filename")
 	},
 	{
 		(CHAR*) N_ATTACH_PREPROC,
 		(&CSGInterface::cmd_attach_preproc),
-		(CHAR*) USAGE_I(N_ATTACH_PREPROC, "'TRAIN|TEST, force'")
+		(CHAR*) USAGE_I(N_ATTACH_PREPROC, "'TRAIN|TEST', force")
 	},
 	{
 		(CHAR*) N_CLEAN_PREPROC,
@@ -454,17 +455,17 @@ static CSGInterfaceMethod sg_methods[]=
 	{
 		(CHAR*) N_NEW_HMM,
 		(&CSGInterface::cmd_new_hmm),
-		(CHAR*) USAGE_I(N_NEW_HMM, "'N, M'")
+		(CHAR*) USAGE_I(N_NEW_HMM, "N, M")
 	},
 	{
 		(CHAR*) N_LOAD_HMM,
 		(&CSGInterface::cmd_load_hmm),
-		(CHAR*) USAGE_I(N_LOAD_HMM, "'filename'")
+		(CHAR*) USAGE_I(N_LOAD_HMM, "filename")
 	},
 	{
 		(CHAR*) N_SAVE_HMM,
 		(&CSGInterface::cmd_save_hmm),
-		(CHAR*) USAGE_I(N_SAVE_HMM, "'filename[, save_binary]'")
+		(CHAR*) USAGE_I(N_SAVE_HMM, "filename[, save_binary]")
 	},
 	{
 		(CHAR*) N_GET_HMM,
@@ -484,22 +485,22 @@ static CSGInterfaceMethod sg_methods[]=
 	{
 		(CHAR*) N_SET_HMM_AS,
 		(&CSGInterface::cmd_set_hmm_as),
-		(CHAR*) USAGE_I(N_SET_HMM_AS, "'POS|NEG|TEST'")
+		(CHAR*) USAGE_I(N_SET_HMM_AS, "POS|NEG|TEST")
 	},
 	{
 		(CHAR*) N_CHOP,
 		(&CSGInterface::cmd_set_chop),
-		(CHAR*) USAGE_I(N_CHOP, "'chop'")
+		(CHAR*) USAGE_I(N_CHOP, "chop")
 	},
 	{
 		(CHAR*) N_PSEUDO,
 		(&CSGInterface::cmd_set_pseudo),
-		(CHAR*) USAGE_I(N_PSEUDO, "'pseudo'")
+		(CHAR*) USAGE_I(N_PSEUDO, "pseudo")
 	},
 	{
 		(CHAR*) N_LOAD_DEFINITIONS,
 		(&CSGInterface::cmd_load_definitions),
-		(CHAR*) USAGE_I(N_LOAD_DEFINITIONS, "'filename, init'")
+		(CHAR*) USAGE_I(N_LOAD_DEFINITIONS, "filename, init")
 	},
 	{
 		(CHAR*) N_HMM_CLASSIFY,
@@ -509,7 +510,7 @@ static CSGInterfaceMethod sg_methods[]=
 	{
 		(CHAR*) N_HMM_TEST,
 		(&CSGInterface::cmd_hmm_test),
-		(CHAR*) USAGE_I(N_HMM_TEST, "'output name[, ROC filename[, neglinear[, poslinear]]]'")
+		(CHAR*) USAGE_I(N_HMM_TEST, "output name[, ROC filename[, neglinear[, poslinear]]]")
 	},
 	{
 		(CHAR*) N_ONE_CLASS_LINEAR_HMM_CLASSIFY,
@@ -519,7 +520,7 @@ static CSGInterfaceMethod sg_methods[]=
 	{
 		(CHAR*) N_ONE_CLASS_HMM_TEST,
 		(&CSGInterface::cmd_one_class_hmm_test),
-		(CHAR*) USAGE_I(N_ONE_CLASS_HMM_TEST, "'output name[, ROC filename[, linear]]'")
+		(CHAR*) USAGE_I(N_ONE_CLASS_HMM_TEST, "output name[, ROC filename[, linear]]")
 	},
 	{
 		(CHAR*) N_ONE_CLASS_HMM_CLASSIFY,
@@ -529,7 +530,7 @@ static CSGInterfaceMethod sg_methods[]=
 	{
 		(CHAR*) N_ONE_CLASS_HMM_CLASSIFY_EXAMPLE,
 		(&CSGInterface::cmd_one_class_hmm_classify_example),
-		(CHAR*) USAGE_IO(N_ONE_CLASS_HMM_CLASSIFY_EXAMPLE, "feature_vector_inde", "result")
+		(CHAR*) USAGE_IO(N_ONE_CLASS_HMM_CLASSIFY_EXAMPLE, "feature_vector_index", "result")
 	},
 	{
 		(CHAR*) N_HMM_CLASSIFY_EXAMPLE,
@@ -559,7 +560,7 @@ static CSGInterfaceMethod sg_methods[]=
 	{
 		(CHAR*) N_SAVE_LIKELIHOOD,
 		(&CSGInterface::cmd_save_likelihood),
-		(CHAR*) USAGE_I(N_SAVE_LIKELIHOOD, "'filename[, save_binary]'")
+		(CHAR*) USAGE_I(N_SAVE_LIKELIHOOD, "filename[, save_binary]")
 	},
 	{
 		(CHAR*) N_GET_VITERBI_PATH,
@@ -594,27 +595,27 @@ static CSGInterfaceMethod sg_methods[]=
 	{
 		(CHAR*) N_SAVE_PATH,
 		(&CSGInterface::cmd_save_path),
-		(CHAR*) USAGE_I(N_SAVE_PATH, "'filename[, save_binary]'")
+		(CHAR*) USAGE_I(N_SAVE_PATH, "filename[, save_binary]")
 	},
 	{
 		(CHAR*) N_CONVERGENCE_CRITERIA,
 		(&CSGInterface::cmd_convergence_criteria),
-		(CHAR*) USAGE_I(N_CONVERGENCE_CRITERIA, "'j, f'")
+		(CHAR*) USAGE_I(N_CONVERGENCE_CRITERIA, "num_iterations, epsilon")
 	},
 	{
 		(CHAR*) N_NORMALIZE,
 		(&CSGInterface::cmd_normalize),
-		(CHAR*) USAGE_I(N_NORMALIZE, "'[keep_dead_states]'")
+		(CHAR*) USAGE_I(N_NORMALIZE, "[keep_dead_states]")
 	},
 	{
 		(CHAR*) N_ADD_STATES,
 		(&CSGInterface::cmd_add_states),
-		(CHAR*) USAGE_I(N_ADD_STATES, "'states, value'")
+		(CHAR*) USAGE_I(N_ADD_STATES, "states, value")
 	},
 	{
 		(CHAR*) N_PERMUTATION_ENTROPY,
 		(&CSGInterface::cmd_permutation_entropy),
-		(CHAR*) USAGE_I(N_PERMUTATION_ENTROPY, "'width, seqnum'")
+		(CHAR*) USAGE_I(N_PERMUTATION_ENTROPY, "width, seqnum")
 	},
 	{
 		(CHAR*) N_RELATIVE_ENTROPY,
@@ -629,7 +630,7 @@ static CSGInterfaceMethod sg_methods[]=
 	{
 		(CHAR*) N_BEST_PATH,
 		(&CSGInterface::cmd_best_path),
-		(CHAR*) USAGE_I(N_BEST_PATH, "'from, to'")
+		(CHAR*) USAGE_I(N_BEST_PATH, "from, to")
 	},
 	{
 		(CHAR*) N_BEST_PATH_2STRUCT,
@@ -672,7 +673,7 @@ static CSGInterfaceMethod sg_methods[]=
 	{
 		(CHAR*) N_NEW_PLUGIN_ESTIMATOR,
 		(&CSGInterface::cmd_new_plugin_estimator),
-		(CHAR*) USAGE_I(N_NEW_PLUGIN_ESTIMATOR, "'pos_pseudo, neg_pseudo'")
+		(CHAR*) USAGE_I(N_NEW_PLUGIN_ESTIMATOR, "pos_pseudo, neg_pseudo")
 	},
 	{
 		(CHAR*) N_TRAIN_ESTIMATOR,
@@ -743,7 +744,7 @@ static CSGInterfaceMethod sg_methods[]=
 	{
 		(CHAR*) N_SYSTEM,
 		(&CSGInterface::cmd_system),
-		(CHAR*) USAGE_I(N_SYSTEM, "'system_command'")
+		(CHAR*) USAGE_I(N_SYSTEM, "system_command")
 	},
 	{
 		(CHAR*) N_EXIT,
@@ -758,22 +759,22 @@ static CSGInterfaceMethod sg_methods[]=
 	{
 		(CHAR*) N_EXEC,
 		(&CSGInterface::cmd_exec),
-		(CHAR*) USAGE_I(N_EXEC, "'filename'")
+		(CHAR*) USAGE_I(N_EXEC, "filename")
 	},
 	{
 		(CHAR*) N_SET_OUTPUT,
 		(&CSGInterface::cmd_set_output),
-		(CHAR*) USAGE_I(N_SET_OUTPUT, "'STDERR|STDOUT|filename'")
+		(CHAR*) USAGE_I(N_SET_OUTPUT, "'STDERR'|'STDOUT'|filename")
 	},
 	{
 		(CHAR*) N_SET_THRESHOLD,
 		(&CSGInterface::cmd_set_threshold),
-		(CHAR*) USAGE_I(N_SET_THRESHOLD, "'threshold'")
+		(CHAR*) USAGE_I(N_SET_THRESHOLD, "threshold")
 	},
 	{
 		(CHAR*) N_THREADS,
 		(&CSGInterface::cmd_set_num_threads),
-		(CHAR*) USAGE_I(N_THREADS, "'num_threads'")
+		(CHAR*) USAGE_I(N_THREADS, "num_threads")
 	},
 	{
 		(CHAR*) N_TRANSLATE_STRING,
@@ -799,12 +800,12 @@ static CSGInterfaceMethod sg_methods[]=
 	{
 		(CHAR*) N_ECHO,
 		(&CSGInterface::cmd_echo),
-		(CHAR*) USAGE_I(N_ECHO, "'level'")
+		(CHAR*) USAGE_I(N_ECHO, "level")
 	},
 	{
 		(CHAR*) N_LOGLEVEL,
 		(&CSGInterface::cmd_loglevel),
-		(CHAR*) USAGE_I(N_LOGLEVEL, "'ALL|INFO|WARN|ERROR'")
+		(CHAR*) USAGE_I(N_LOGLEVEL, "ALL|DEBUG|INFO|WARN|ERROR")
 	},
 	{
 		(CHAR*) N_GET_VERSION,
@@ -5096,10 +5097,8 @@ bool CSGInterface::cmd_exec()
 
 	while (!feof(file))
 	{
-		// FIXME: somehow put read line into m_nrhs
-		//CHAR* line=get_line(file, false);
-		if (!handle())
-			break;
+		// FIXME: interpret lines as input
+		break;
 	}
 
 	fclose(file);
@@ -5413,7 +5412,7 @@ bool CSGInterface::cmd_help()
 
 bool CSGInterface::cmd_send_command()
 {
-	//SG_WARNING("ATTENTION: You are using a legacy command. Please consider using the new syntax as given by the help command!\n");
+	SG_WARNING("ATTENTION: You are using a legacy command. Please consider using the new syntax as given by the help command!\n");
 
 	INT len=0;
 	CHAR* arg=get_string(len);
