@@ -1,12 +1,16 @@
 2008-05-XX  Soeren Sonnenburg <debian@nn7.de>
 
 	* SHOGUN Release version 0.6.2
-		- Now fully support r-modular thanks to the swig team!
+		- Experimental support for r-modular thanks to the swig team!
 		- All python-modular examples describing the use of kernels,
 		classifier, distributions, features, distances, regression and
-		preprocessors have been ported to r-modular.
+		preprocessors have been ported to r-modular (requires swig from svn).
 		- The 'send_command' legacy is no longer necessary, numbers can be used
-		as such and don't have to be given as string
+		as such and don't have to be given as strings. All examples for
+		r,python,octave,matlab have been converted to the new syntax.
+	* Bugfixes:
+		- The weighted spectrum kernel is now working again.
+		- Fix the testsuite to reliably check methods that use random().
 
 2008-04-19  Soeren Sonnenburg <debian@nn7.de>
 

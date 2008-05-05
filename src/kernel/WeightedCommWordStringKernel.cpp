@@ -15,7 +15,7 @@
 
 CWeightedCommWordStringKernel::CWeightedCommWordStringKernel(
 	INT size, bool us, ENormalizationType n)
-	: CCommWordStringKernel(size, us, n), weights(NULL)
+	: CCommWordStringKernel(size, us, n), degree(0), weights(NULL)
 {
 	init_dictionary(1<<(sizeof(WORD)*9));
 	ASSERT(us == false);
@@ -24,7 +24,7 @@ CWeightedCommWordStringKernel::CWeightedCommWordStringKernel(
 CWeightedCommWordStringKernel::CWeightedCommWordStringKernel(
 	CStringFeatures<WORD>* l, CStringFeatures<WORD>* r,
 	bool us, ENormalizationType n, INT size)
-	: CCommWordStringKernel(size, us, n), weights(NULL)
+	: CCommWordStringKernel(size, us, n), degree(0), weights(NULL)
 {
 	init_dictionary(1<<(sizeof(WORD)*9));
 	ASSERT(us == false);
@@ -72,6 +72,17 @@ bool CWeightedCommWordStringKernel::set_wd_weights()
 		weights[i]/=sum;
 
 	return weights!=NULL;
+}
+
+bool CWeightedCommWordStringKernel::set_weights(DREAL* w, INT d)
+{
+	ASSERT(d==degree);
+	delete[] weights;
+	weights=new DREAL[degree];
+	ASSERT(weights);
+	for (INT i=0; i<degree; i++)
+		weights[i]=w[i];
+	return true;
 }
   
 DREAL CWeightedCommWordStringKernel::compute_helper(INT idx_a, INT idx_b, bool do_sort)

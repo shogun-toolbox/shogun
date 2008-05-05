@@ -81,6 +81,14 @@ class CWeightedCommWordStringKernel: public CCommWordStringKernel
 		 */
 		bool set_wd_weights();
 
+		/** set custom weights (swig compatible)
+		 *
+		 * @param w weights
+		 * @param d degree (must match number of weights)
+		 * @return if setting was successful
+		 */
+		bool set_weights(DREAL* w, INT d);
+
 		/** return what type of kernel we are
 		 *
 		 * @return kernel type WEIGHTEDCOMMWORDSTRING
