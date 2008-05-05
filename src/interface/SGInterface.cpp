@@ -2064,7 +2064,8 @@ CKernel* CSGInterface::create_kernel()
 
 		delete[] dtype;
 	}
-	else if (strmatch(type, "WEIGHTEDDEGREEPOS2"))
+	else if (strmatch(type, "WEIGHTEDDEGREEPOS2") ||
+		strmatch(type, "WEIGHTEDDEGREEPOS2_NONORM"))
 	{
 		if (m_nrhs<7)
 			return NULL;
