@@ -46,6 +46,7 @@
 #include "classifier/svm/LibSVMMultiClass.h"
 
 #include "regression/svr/LibSVR.h"
+#include "regression/KRR.h"
 
 #include "classifier/svm/LibLinear.h"
 #include "classifier/svm/MPDSVM.h"
@@ -89,6 +90,9 @@ CGUIClassifier::CGUIClassifier(CSGInterface* ui_) : CSGObject(), ui(ui_)
 	svm_use_precompute_subkernel = false ;
 	svm_use_precompute_subkernel_light = false ;
 	svm_do_auc_maximization = false ;
+
+	// KRR parameters
+	krr_tau=1;
 }
 
 CGUIClassifier::~CGUIClassifier()
@@ -159,6 +163,13 @@ bool CGUIClassifier::new_classifier(CHAR* name, INT d, INT from_d)
 		delete classifier;
 		classifier= new CLibSVR();
 		SG_INFO("created SVRlibsvm object\n") ;
+	}
+	else if (strcmp(name, "KRR")==0)
+	{
+		delete classifier;
+		classifier=new CKRR(krr_tau, ui->ui_kernel->get_kernel(),
+			ui->ui_labels->get_train_labels());
+		SG_INFO("created KRR object\n");
 	}
 	else if (strcmp(name,"KERNELPERCEPTRON")==0)
 	{
@@ -315,7 +326,7 @@ bool CGUIClassifier::new_classifier(CHAR* name, INT d, INT from_d)
 	}
 	else
 	{
-		SG_ERROR("unknown classifier \"%s\"\n", name);
+		SG_ERROR("Unknown classifier %s.\n", name);
 		return false;
 	}
 

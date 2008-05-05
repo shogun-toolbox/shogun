@@ -74,6 +74,9 @@ class CGUIClassifier : public CSGObject
 		bool set_svm_mkl_parameters(DREAL weight_epsilon, DREAL C_mkl);
 		bool set_svm_precompute_enabled(INT precompute);
 
+		/** set KRR's tau */
+		bool set_krr_tau(DREAL tau=1) { krr_tau=tau; return true; }
+
 		/** train SVM */
 		bool train_svm();
 		/** train K-nearest-neighbour */
@@ -105,6 +108,7 @@ class CGUIClassifier : public CSGObject
 		double svm_C1;
 		double svm_C2;
 		double svm_C_mkl;
+		double krr_tau;
 		bool svm_use_bias;
 		bool svm_use_mkl;
 		bool svm_use_batch_computation;

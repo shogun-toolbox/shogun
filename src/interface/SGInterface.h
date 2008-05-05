@@ -184,7 +184,7 @@ class CSGInterface : public CSGObject
 		bool cmd_set_svm_bufsize();
 		/** set SVM C */
 		bool cmd_set_svm_C();
-		/** set SVM epsilon */
+		/** set svm epsilon */
 		bool cmd_set_svm_epsilon();
 		/** set SVR tube epsilon */
 		bool cmd_set_svr_tube_epsilon();
@@ -206,6 +206,8 @@ class CSGInterface : public CSGObject
 		bool cmd_set_svm_linadd_enabled();
 		/** set SVM bias enabled */
 		bool cmd_set_svm_bias_enabled();
+		/** set krr tau */
+		bool cmd_set_krr_tau();
 
 		/** add preproc */
 		bool cmd_add_preproc();

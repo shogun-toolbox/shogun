@@ -416,6 +416,11 @@ static CSGInterfaceMethod sg_methods[]=
 		(&CSGInterface::cmd_set_svm_bias_enabled),
 		(CHAR*) USAGE_I(N_SVM_USE_BIAS, "enable_bias")
 	},
+	{
+		(CHAR*) N_KRR_TAU,
+		(&CSGInterface::cmd_set_krr_tau),
+		(CHAR*) USAGE_I(N_KRR_TAU, "tau")
+	},
 
 
 	{ (CHAR*) "Preprocessors", NULL, NULL },
@@ -2361,27 +2366,39 @@ CKernel* CSGInterface::create_kernel()
 	}
 	else if (strmatch(type, "CONST"))
 	{
-		if (m_nrhs<3)
+		if (m_nrhs<4)
 			return NULL;
 
-		INT size=get_int_from_int_or_str();
-		DREAL c=1;
-		if (m_nrhs>3)
-			c=get_real_from_real_or_str();
+		CHAR* dtype=get_str_from_str_or_direct(len);
+		if (strmatch(dtype, "REAL"))
+		{
+			INT size=get_int_from_int_or_str();
+			DREAL c=1;
+			if (m_nrhs>4)
+				c=get_real_from_real_or_str();
 
-		kernel=ui_kernel->create_const(size, c);
+			kernel=ui_kernel->create_const(size, c);
+		}
+
+		delete[] dtype;
 	}
 	else if (strmatch(type, "DIAG"))
 	{
-		if (m_nrhs<3)
+		if (m_nrhs<4)
 			return NULL;
 
-		INT size=get_int_from_int_or_str();
-		DREAL diag=1;
-		if (m_nrhs>3)
-			diag=get_real_from_real_or_str();
+		CHAR* dtype=get_str_from_str_or_direct(len);
+		if (strmatch(dtype, "REAL"))
+		{
+			INT size=get_int_from_int_or_str();
+			DREAL diag=1;
+			if (m_nrhs>4)
+				diag=get_real_from_real_or_str();
 
-		kernel=ui_kernel->create_diag(size, diag);
+			kernel=ui_kernel->create_diag(size, diag);
+		}
+
+		delete[] dtype;
 	}
 
 #ifdef HAVE_MINDY
@@ -3928,6 +3945,16 @@ bool CSGInterface::cmd_set_svm_bias_enabled()
 	bool bias_enabled=get_bool_from_bool_or_str();
 
 	return ui_classifier->set_svm_bias_enabled(bias_enabled);
+}
+
+bool CSGInterface::cmd_set_krr_tau()
+{
+	if (m_nrhs!=2 || !create_return_values(0))
+		return false;
+
+	DREAL tau=get_real_from_real_or_str();
+
+	return ui_classifier->set_krr_tau(tau);
 }
 
 
@@ -5723,6 +5750,9 @@ bool CSGInterface::handle()
 #ifndef WIN32
 	CSignal::unset_handler();
 #endif
+
+	if (!success)
+		SG_WARNING("Unknown command %s.\n", command);
 
 	delete[] command;
 	return success;

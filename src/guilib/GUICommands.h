@@ -184,4 +184,5 @@
 #define N_SET_REF_FEAT					"set_ref_features"
 #define N_TIC							"tic"
 #define N_TOC							"toc"
+#define N_KRR_TAU						"krr_tau"
 #endif
