@@ -47,24 +47,24 @@ def svm_light ():
 	degree=20
 	C=0.017
 	epsilon=1e-5
-	use_bias=0
+	use_bias=False
 	num_feats=14
 	num_trainvec=11
 	labels=sign(rand(1, num_trainvec)-0.5)[0]
 
 	sg('set_features', 'TRAIN', data['train'], 'DNA')
-	sg('send_command', 'set_kernel WEIGHTEDDEGREE CHAR %d %d' % (size_cache, degree))
-	sg('send_command', 'init_kernel TRAIN')
+	sg('set_kernel', 'WEIGHTEDDEGREE', 'CHAR', size_cache, degree)
+	sg('init_kernel', 'TRAIN')
 
 	sg('set_labels', 'TRAIN', labels)
-	sg('send_command', 'new_svm LIGHT')
-	sg('send_command', 'svm_epsilon %f' % epsilon)
-	sg('send_command', 'c %f' % C)
-	sg('send_command', 'svm_use_bias %d' % use_bias)
-	sg('send_command', 'svm_train')
+	sg('new_svm', 'LIGHT')
+	sg('svm_epsilon', epsilon)
+	sg('c', C)
+	sg('svm_use_bias', use_bias)
+	sg('svm_train')
 
 	sg('set_features', 'TEST', data['test'], 'DNA')
-	sg('send_command', 'init_kernel TEST')
+	sg('init_kernel', 'TEST')
 	result=sg('svm_classify')
 
 def libsvm ():
@@ -74,7 +74,7 @@ def libsvm ():
 	width=2.1
 	C=0.017
 	epsilon=1e-5
-	use_bias=0
+	use_bias=False
 	num_feats=11
 	num_trainvec=12
 
@@ -83,18 +83,18 @@ def libsvm ():
 	testdata=get_clouds(2, num_feats, 17)
 
 	sg('set_features', 'TRAIN', traindata)
-	sg('send_command', 'set_kernel GAUSSIAN REAL %d %f' % (size_cache, width))
-	sg('send_command', 'init_kernel TRAIN')
+	sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width)
+	sg('init_kernel', 'TRAIN')
 
 	sg('set_labels', 'TRAIN', trainlab)
-	sg('send_command', 'new_svm LIBSVM')
-	sg('send_command', 'svm_epsilon %f' % epsilon)
-	sg('send_command', 'c %f' % C)
-	sg('send_command', 'svm_use_bias %d' % use_bias)
-	sg('send_command', 'svm_train')
+	sg('new_svm', 'LIBSVM')
+	sg('svm_epsilon', epsilon)
+	sg('c', C)
+	sg('svm_use_bias', use_bias)
+	sg('svm_train')
 
 	sg('set_features', 'TEST', testdata)
-	sg('send_command', 'init_kernel TEST')
+	sg('init_kernel', 'TEST')
 	result=sg('svm_classify')
 
 def gpbtsvm ():
@@ -104,7 +104,7 @@ def gpbtsvm ():
 	width=2.1
 	C=0.017
 	epsilon=1e-5
-	use_bias=0
+	use_bias=False
 	num_feats=9
 	num_trainvec=11
 
@@ -113,18 +113,18 @@ def gpbtsvm ():
 	testdata=get_clouds(2, num_feats, 16)
 
 	sg('set_features', 'TRAIN', traindata)
-	sg('send_command', 'set_kernel GAUSSIAN REAL %d %f' % (size_cache, width))
-	sg('send_command', 'init_kernel TRAIN')
+	sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width)
+	sg('init_kernel', 'TRAIN')
 
 	sg('set_labels', 'TRAIN', trainlab)
-	sg('send_command', 'new_svm GPBTSVM')
-	sg('send_command', 'svm_epsilon %f' % epsilon)
-	sg('send_command', 'c %f' % C)
-	sg('send_command', 'svm_use_bias %d' % use_bias)
-	sg('send_command', 'svm_train')
+	sg('new_svm', 'GPBTSVM')
+	sg('svm_epsilon', epsilon)
+	sg('c', C)
+	sg('svm_use_bias', use_bias)
+	sg('svm_train')
 
 	sg('set_features', 'TEST', testdata)
-	sg('send_command', 'init_kernel TEST')
+	sg('init_kernel', 'TEST')
 	result=sg('svm_classify')
 
 def mpdsvm ():
@@ -134,7 +134,7 @@ def mpdsvm ():
 	width=2.1
 	C=0.017
 	epsilon=1e-5
-	use_bias=0
+	use_bias=False
 	num_feats=13
 	num_trainvec=11
 
@@ -143,18 +143,18 @@ def mpdsvm ():
 	testdata=get_clouds(2, num_feats, 18)
 
 	sg('set_features', 'TRAIN', traindata)
-	sg('send_command', 'set_kernel GAUSSIAN REAL %d %f' % (size_cache, width))
-	sg('send_command', 'init_kernel TRAIN')
+	sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width)
+	sg('init_kernel', 'TRAIN')
 
 	sg('set_labels', 'TRAIN', trainlab)
-	sg('send_command', 'new_svm MPDSVM')
-	sg('send_command', 'svm_epsilon %f' % epsilon)
-	sg('send_command', 'c %f' % C)
-	sg('send_command', 'svm_use_bias %d' % use_bias)
-	sg('send_command', 'svm_train')
+	sg('new_svm', 'MPDSVM')
+	sg('svm_epsilon', epsilon)
+	sg('c', C)
+	sg('svm_use_bias', use_bias)
+	sg('svm_train')
 
 	sg('set_features', 'TEST', testdata)
-	sg('send_command', 'init_kernel TEST')
+	sg('init_kernel', 'TEST')
 	result=sg('svm_classify')
 
 def libsvm_multiclass ():
@@ -162,9 +162,9 @@ def libsvm_multiclass ():
 
 	size_cache=10
 	width=2.1
-	C=10
+	C=10.
 	epsilon=1e-5
-	use_bias=0
+	use_bias=False
 	num_feats=9
 	num_trainvec=11
 
@@ -173,18 +173,18 @@ def libsvm_multiclass ():
 	testdata=get_clouds(2, num_feats, 23)
 
 	sg('set_features', 'TRAIN', traindata)
-	sg('send_command', 'set_kernel GAUSSIAN REAL %d %f' % (size_cache, width))
-	sg('send_command', 'init_kernel TRAIN')
+	sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width)
+	sg('init_kernel', 'TRAIN')
 
 	sg('set_labels', 'TRAIN', trainlab)
-	sg('send_command', 'new_svm LIBSVM_MULTICLASS')
-	sg('send_command', 'svm_epsilon %f' % epsilon)
-	sg('send_command', 'c %f' % C)
-	sg('send_command', 'svm_use_bias %d' % use_bias)
-	sg('send_command', 'svm_train')
+	sg('new_svm', 'LIBSVM_MULTICLASS')
+	sg('svm_epsilon', epsilon)
+	sg('c', C)
+	sg('svm_use_bias', use_bias)
+	sg('svm_train')
 
 	sg('set_features', 'TEST', testdata)
-	sg('send_command', 'init_kernel TEST')
+	sg('init_kernel', 'TEST')
 	result=sg('svm_classify')
 
 def libsvm_oneclass ():
@@ -192,9 +192,9 @@ def libsvm_oneclass ():
 
 	size_cache=10
 	width=2.1
-	C=10
+	C=10.
 	epsilon=1e-5
-	use_bias=0
+	use_bias=False
 	num_feats=9
 	num_trainvec=11
 
@@ -202,17 +202,17 @@ def libsvm_oneclass ():
 	testdata=get_clouds(2, num_feats, 23)
 
 	sg('set_features', 'TRAIN', traindata)
-	sg('send_command', 'set_kernel GAUSSIAN REAL %d %f' % (size_cache, width))
-	sg('send_command', 'init_kernel TRAIN')
+	sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width)
+	sg('init_kernel', 'TRAIN')
 
-	sg('send_command', 'new_svm LIBSVM_ONECLASS')
-	sg('send_command', 'svm_epsilon %f' % epsilon)
-	sg('send_command', 'c %f' % C)
-	sg('send_command', 'svm_use_bias %d' % use_bias)
-	sg('send_command', 'svm_train')
+	sg('new_svm', 'LIBSVM_ONECLASS')
+	sg('svm_epsilon', epsilon)
+	sg('c', C)
+	sg('svm_use_bias', use_bias)
+	sg('svm_train')
 
 	sg('set_features', 'TEST', testdata)
-	sg('send_command', 'init_kernel TEST')
+	sg('init_kernel', 'TEST')
 	result=sg('svm_classify')
 
 def gmnpsvm ():
@@ -222,7 +222,7 @@ def gmnpsvm ():
 	width=2.1
 	C=0.017
 	epsilon=1e-5
-	use_bias=0
+	use_bias=False
 	num_feats=32
 	num_trainvec=12
 
@@ -231,18 +231,18 @@ def gmnpsvm ():
 	testdata=get_clouds(2, num_feats, 18)
 
 	sg('set_features', 'TRAIN', traindata)
-	sg('send_command', 'set_kernel GAUSSIAN REAL %d %f' % (size_cache, width))
-	sg('send_command', 'init_kernel TRAIN')
+	sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width)
+	sg('init_kernel', 'TRAIN')
 
 	sg('set_labels', 'TRAIN', trainlab)
-	sg('send_command', 'new_svm GMNPSVM')
-	sg('send_command', 'svm_epsilon %f' % epsilon)
-	sg('send_command', 'c %f' % C)
-	sg('send_command', 'svm_use_bias %d' % use_bias)
-	sg('send_command', 'svm_train')
+	sg('new_svm', 'GMNPSVM')
+	sg('svm_epsilon', epsilon)
+	sg('c', C)
+	sg('svm_use_bias', use_bias)
+	sg('svm_train')
 
 	sg('set_features', 'TEST', testdata)
-	sg('send_command', 'init_kernel TEST')
+	sg('init_kernel', 'TEST')
 	result=sg('svm_classify')
 
 ###########################################################################
@@ -256,7 +256,7 @@ def do_batch_linadd ():
 	width=2.1
 	C=0.017
 	epsilon=1e-5
-	use_bias=0
+	use_bias=False
 	num_feats=11
 	num_trainvec=12
 
@@ -265,22 +265,22 @@ def do_batch_linadd ():
 	testdata=get_clouds(2, num_feats, 17)
 
 	sg('set_features', 'TRAIN', traindata)
-	sg('send_command', 'set_kernel GAUSSIAN REAL %d %f' % (size_cache, width))
-	sg('send_command', 'init_kernel TRAIN')
+	sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width)
+	sg('init_kernel', 'TRAIN')
 
 	sg('set_labels', 'TRAIN', trainlab)
-	sg('send_command', 'new_svm LIBSVM')
-	sg('send_command', 'svm_epsilon %f' % epsilon)
-	sg('send_command', 'c %f' % C)
-	sg('send_command', 'svm_use_bias %d' % use_bias)
-	sg('send_command', 'svm_train')
+	sg('new_svm', 'LIBSVM')
+	sg('svm_epsilon', epsilon)
+	sg('c', C)
+	sg('svm_use_bias', use_bias)
+	sg('svm_train')
 
 	sg('set_features', 'TEST', testdata)
-	sg('send_command', 'init_kernel TEST')
+	sg('init_kernel', 'TEST')
 
 	objective=sg('get_svm_objective')
-	sg('send_command', 'use_batch_computation 1')
-	sg('send_command', 'use_linadd 1')
+	sg('use_batch_computation', True)
+	sg('use_linadd', True)
 	result=sg('svm_classify')
 
 ###########################################################################
@@ -299,8 +299,8 @@ def perceptron ():
 
 	sg('set_features', 'TRAIN', traindata)
 	sg('set_labels', 'TRAIN', trainlab)
-	sg('send_command', 'new_classifier PERCEPTRON')
-	sg('send_command', 'train_classifier')
+	sg('new_classifier', 'PERCEPTRON')
+	sg('train_classifier')
 
 	sg('set_features', 'TEST', testdata)
 	result=sg('classify')
@@ -310,6 +310,7 @@ def knn ():
 
 	num_feats=14
 	num_trainvec=10
+	k=3
 
 	trainlab=sign(rand(1, num_trainvec*2)-0.5)[0]
 	traindata=get_clouds(2, num_feats, num_trainvec)
@@ -317,13 +318,13 @@ def knn ():
 
 	sg('set_features', 'TRAIN', traindata)
 	sg('set_labels', 'TRAIN', trainlab)
-	sg('send_command', 'set_distance EUCLIDIAN REAL')
-	sg('send_command', 'init_distance TRAIN')
-	sg('send_command', 'new_knn')
-	sg('send_command', 'train_knn')
+	sg('set_distance', 'EUCLIDIAN', 'REAL')
+	sg('init_distance', 'TRAIN')
+	sg('new_classifier', 'KNN')
+	sg('train_classifier', k)
 
 	sg('set_features', 'TEST', testdata)
-	sg('send_command', 'init_distance TEST')
+	sg('init_distance', 'TEST')
 	result=sg('classify')
 
 def lda ():
@@ -338,8 +339,8 @@ def lda ():
 
 	sg('set_features', 'TRAIN', traindata)
 	sg('set_labels', 'TRAIN', trainlab)
-	sg('send_command', 'new_classifier LDA')
-	sg('send_command', 'train_classifier')
+	sg('new_classifier', 'LDA')
+	sg('train_classifier')
 
 	sg('set_features', 'TEST', testdata)
 	result=sg('classify')

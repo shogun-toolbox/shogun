@@ -2,24 +2,25 @@ from sg import sg
 from MLab import *
 from numpy import *
 
-num=100;
-sg('send_command', 'loglevel ALL')
+num=100
+weight=1.
+sg('loglevel', 'ALL')
 labels=concatenate((-ones([1,num]), ones([1,num])),1)[0]
 features=concatenate((randn(2,num)-1,randn(2,num)+1),1)
 
-sg('send_command', 'c 10')
-sg('send_command', 'new_svm LIGHT')
-sg('send_command', 'use_mkl 1')
+sg('c', 10.)
+sg('new_svm', 'LIGHT')
+sg('use_mkl', True)
 
-sg('set_labels', "TRAIN", labels)
-sg('add_features', "TRAIN", features)
-sg('add_features', "TRAIN", features)
-sg('add_features', "TRAIN", features)
+sg('set_labels', 'TRAIN', labels)
+sg('add_features', 'TRAIN', features)
+sg('add_features', 'TRAIN', features)
+sg('add_features', 'TRAIN', features)
 
-sg('send_command', 'set_kernel COMBINED 100')
-sg('send_command', 'add_kernel 1 GAUSSIAN REAL 100 100')
-sg('send_command', 'add_kernel 1 GAUSSIAN REAL 100 10')
-sg('send_command', 'add_kernel 1 GAUSSIAN REAL 100 1')
-sg('send_command', 'init_kernel TRAIN')
-sg('send_command', 'svm_train')
+sg('set_kernel', 'COMBINED', 100)
+sg('add_kernel', weight, 'GAUSSIAN', 'REAL', 100, 100.)
+sg('add_kernel', weight, 'GAUSSIAN', 'REAL', 100, 10.)
+sg('add_kernel', weight, 'GAUSSIAN', 'REAL', 100, 1.)
+sg('init_kernel', 'TRAIN')
+sg('svm_train')
 [bias, alphas]=sg('get_svm');

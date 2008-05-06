@@ -44,17 +44,17 @@ def log_plus_one ():
 	width=1.4
 	size_cache=10
 
-	sg('send_command', 'add_preproc LOGPLUSONE')
-	sg('send_command', 'set_kernel CHI2 REAL %d %f' % (size_cache, width))
+	sg('add_preproc', 'LOGPLUSONE')
+	sg('set_kernel', 'CHI2', 'REAL', size_cache, width)
 
 	sg('set_features', 'TRAIN', traindata)
-	sg('send_command', 'attach_preproc TRAIN')
-	sg('send_command', 'init_kernel TRAIN')
+	sg('attach_preproc', 'TRAIN')
+	sg('init_kernel', 'TRAIN')
 	km=sg('get_kernel_matrix')
 
 	sg('set_features', 'TEST', testdata)
-	sg('send_command', 'attach_preproc TEST')
-	sg('send_command', 'init_kernel TEST')
+	sg('attach_preproc', 'TEST')
+	sg('init_kernel', 'TEST')
 	km=sg('get_kernel_matrix')
 
 def norm_one ():
@@ -66,17 +66,17 @@ def norm_one ():
 	width=1.4
 	size_cache=10
 
-	sg('send_command', 'add_preproc NORMONE')
-	sg('send_command', 'set_kernel CHI2 REAL %d %f' % (size_cache, width))
+	sg('add_preproc', 'NORMONE')
+	sg('set_kernel', 'CHI2', 'REAL', size_cache, width)
 
 	sg('set_features', 'TRAIN', traindata)
-	sg('send_command', 'attach_preproc TRAIN')
-	sg('send_command', 'init_kernel TRAIN')
+	sg('attach_preproc', 'TRAIN')
+	sg('init_kernel', 'TRAIN')
 	km=sg('get_kernel_matrix')
 
 	sg('set_features', 'TEST', testdata)
-	sg('send_command', 'attach_preproc TEST')
-	sg('send_command', 'init_kernel TEST')
+	sg('attach_preproc', 'TEST')
+	sg('init_kernel', 'TEST')
 	km=sg('get_kernel_matrix')
 
 def prune_var_sub_mean ():
@@ -87,19 +87,19 @@ def prune_var_sub_mean ():
 	testdata=rand(num_feats, 17)
 	width=1.4
 	size_cache=10
-	divide_by_std=1
+	divide_by_std=True
 
-	sg('send_command', 'add_preproc PRUNEVARSUBMEAN %d' % divide_by_std)
-	sg('send_command', 'set_kernel CHI2 REAL %d %f' % (size_cache, width))
+	sg('add_preproc', 'PRUNEVARSUBMEAN', divide_by_std)
+	sg('set_kernel', 'CHI2', 'REAL', size_cache, width)
 
 	sg('set_features', 'TRAIN', traindata)
-	sg('send_command', 'attach_preproc TRAIN')
-	sg('send_command', 'init_kernel TRAIN')
+	sg('attach_preproc', 'TRAIN')
+	sg('init_kernel', 'TRAIN')
 	km=sg('get_kernel_matrix')
 
 	sg('set_features', 'TEST', testdata)
-	sg('send_command', 'attach_preproc TEST')
-	sg('send_command', 'init_kernel TEST')
+	sg('attach_preproc', 'TEST')
+	sg('init_kernel', 'TEST')
 	km=sg('get_kernel_matrix')
 
 ###########################################################################
@@ -116,17 +116,17 @@ def sort_word ():
 	size_cache=10
 	scale=1.4
 
-	sg('send_command', 'add_preproc SORTWORD')
-	sg('send_command', 'set_kernel LINEAR WORD %d %f' % (size_cache, scale))
+	sg('add_preproc', 'SORTWORD')
+	sg('set_kernel', 'LINEAR', 'WORD', size_cache, scale)
 
 	sg('set_features', 'TRAIN', traindata)
-	sg('send_command', 'attach_preproc TRAIN')
-	sg('send_command', 'init_kernel TRAIN')
+	sg('attach_preproc', 'TRAIN')
+	sg('init_kernel', 'TRAIN')
 	km=sg('get_kernel_matrix')
 
 	sg('set_features', 'TEST', testdata)
-	sg('send_command', 'attach_preproc TEST')
-	sg('send_command', 'init_kernel TEST')
+	sg('attach_preproc', 'TEST')
+	sg('init_kernel', 'TEST')
 	km=sg('get_kernel_matrix')
 
 ###########################################################################
@@ -144,20 +144,20 @@ def sort_word_string ():
 	use_sign=False
 	normalization='FULL'
 
-	sg('send_command', 'add_preproc SORTWORDSTRING')
+	sg('add_preproc', 'SORTWORDSTRING')
 	sg('set_features', 'TRAIN', data['train'], 'DNA')
-	sg('send_command', 'convert TRAIN STRING CHAR STRING WORD %d %d %d %c' % (order, order-1, gap, reverse))
-	sg('send_command', 'attach_preproc TRAIN')
+	sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, gap, reverse)
+	sg('attach_preproc', 'TRAIN')
 
 	sg('set_features', 'TEST', data['test'], 'DNA')
-	sg('send_command', 'convert TEST STRING CHAR STRING WORD %d %d %d %c' % (order, order-1, gap, reverse))
-	sg('send_command', 'attach_preproc TEST')
+	sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, gap, reverse)
+	sg('attach_preproc', 'TEST')
 
-	sg('send_command', 'set_kernel COMMSTRING WORD %d %d %s' % (size_cache, use_sign, normalization))
-	sg('send_command', 'init_kernel TRAIN')
+	sg('set_kernel', 'COMMSTRING', 'WORD', size_cache, use_sign, normalization)
+	sg('init_kernel', 'TRAIN')
 	km=sg('get_kernel_matrix')
 
-	sg('send_command', 'init_kernel TEST')
+	sg('init_kernel', 'TEST')
 	km=sg('get_kernel_matrix')
 
 def sort_ulong_string ():
@@ -171,20 +171,20 @@ def sort_ulong_string ():
 	use_sign=False
 	normalization='FULL'
 
-	sg('send_command', 'add_preproc SORTULONGSTRING')
+	sg('add_preproc', 'SORTULONGSTRING')
 	sg('set_features', 'TRAIN', data['train'], 'DNA')
-	sg('send_command', 'convert TRAIN STRING CHAR STRING ULONG %d %d %d %c' % (order, order-1, gap, reverse))
-	sg('send_command', 'attach_preproc TRAIN')
+	sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'ULONG', order, order-1, gap, reverse)
+	sg('attach_preproc', 'TRAIN')
 
 	sg('set_features', 'TEST', data['test'], 'DNA')
-	sg('send_command', 'convert TEST STRING CHAR STRING ULONG %d %d %d %c' % (order, order-1, gap, reverse))
-	sg('send_command', 'attach_preproc TEST')
+	sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'ULONG', order, order-1, gap, reverse)
+	sg('attach_preproc', 'TEST')
 
-	sg('send_command', 'set_kernel COMMSTRING ULONG %d %d %s' % (size_cache, use_sign, normalization))
-	sg('send_command', 'init_kernel TRAIN')
+	sg('set_kernel', 'COMMSTRING', 'ULONG', size_cache, use_sign, normalization)
+	sg('init_kernel', 'TRAIN')
 	km=sg('get_kernel_matrix')
 
-	sg('send_command', 'init_kernel TEST')
+	sg('init_kernel', 'TEST')
 	km=sg('get_kernel_matrix')
 
 ###########################################################################

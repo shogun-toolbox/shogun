@@ -76,14 +76,14 @@ def histogram ():
 	gap=0
 	reverse='n' # bit silly to not use boolean, set 'r' to yield true
 
-#	sg('send_command', 'new_distribution HISTOGRAM')
-	sg('send_command', 'add_preproc SORTWORDSTRING')
+#	sg('new_distribution', 'HISTOGRAM')
+	sg('add_preproc', 'SORTWORDSTRING')
 
 	sg('set_features', 'TRAIN', data['train'], 'DNA')
-	sg('send_command', 'convert TRAIN STRING CHAR STRING WORD %d %d %d %c' % (order, order-1, gap, reverse))
-	sg('send_command', 'attach_preproc TRAIN')
+	sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, gap, reverse)
+	sg('attach_preproc', 'TRAIN')
 
-#	sg('send_command', 'train_distribution')
+#	sg('train_distribution')
 #	histo=sg('get_histogram')
 
 #	num_examples=11
@@ -103,14 +103,14 @@ def linear_hmm ():
 	gap=0
 	reverse='n' # bit silly to not use boolean, set 'r' to yield true
 
-#	sg('send_command', 'new_distribution LinearHMM')
-	sg('send_command', 'add_preproc SORTWORDSTRING')
+#	sg('new_distribution', 'LinearHMM')
+	sg('add_preproc', 'SORTWORDSTRING')
 
 	sg('set_features', 'TRAIN', data['train'], 'DNA')
-	sg('send_command', 'convert TRAIN STRING CHAR STRING WORD %d %d %d %c' % (order, order-1, gap, reverse))
-	sg('send_command', 'attach_preproc TRAIN')
+	sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, gap, reverse)
+	sg('attach_preproc', 'TRAIN')
 
-#	sg('send_command', 'train_distribution')
+#	sg('train_distribution')
 #	histo=sg('get_histogram')
 
 #	num_examples=11
@@ -127,17 +127,18 @@ def hmm ():
 
 	N=3
 	M=6
+	order=1
 	hmms=list()
 	liks=list()
 	sequence=get_cubes()
 
-	sg('send_command', 'new_hmm %d %d' % (N, M))
+	sg('new_hmm',N, M)
 	sg('set_features', 'TRAIN', sequence, 'CUBE')
-	sg('send_command', 'convert TRAIN STRING CHAR STRING WORD 1')
-	sg('send_command', 'bw')
+	sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'WORD', order)
+	sg('bw')
 	hmm=sg('get_hmm')
 
-	sg('send_command', 'new_hmm %d %d' % (N, M))
+	sg('new_hmm', N, M)
 	sg('set_hmm', hmm[0], hmm[1], hmm[2], hmm[3])
 	likelihood=sg('hmm_likelihood')
 

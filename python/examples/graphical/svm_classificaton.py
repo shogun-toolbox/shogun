@@ -5,17 +5,17 @@ from numpy import ravel,array
 from numpy.random import randn
 import numpy
 
-num=200;
-sg('send_command', 'loglevel ALL')
+num=200
+sg('loglevel', 'ALL')
 features=concatenate((randn(2,num)-1,randn(2,num)+1),1)
 labels=concatenate((-ones([1,num]), ones([1,num])),1)[0]
-sg('set_features', "TRAIN", features)
-sg('set_labels', "TRAIN", labels)
-sg('send_command', 'set_kernel GAUSSIAN REAL 10 1')
-sg('send_command', 'init_kernel TRAIN')
-sg('send_command', 'new_svm LIBSVM')
-sg('send_command', 'c 100')
-sg('send_command', 'train_classifier')
+sg('set_features', 'TRAIN', features)
+sg('set_labels', 'TRAIN', labels)
+sg('set_kernel', 'GAUSSIAN', 'REAL', 10, 1.)
+sg('init_kernel', 'TRAIN')
+sg('new_svm', 'LIBSVM')
+sg('c', 100.)
+sg('train_classifier')
 [bias, alphas]=sg('get_svm')
 print bias
 print alphas
@@ -28,8 +28,8 @@ x2=linspace(1.2*min(features),1.2*max(features), 50)
 x,y=meshgrid(x1,x2)
 testfeatures=array((ravel(x), ravel(y)))
 
-sg('set_features', "TEST", testfeatures)
-sg('send_command', 'init_kernel TEST')
+sg('set_features', 'TEST', testfeatures)
+sg('init_kernel', 'TEST')
 z=sg('svm_classify')
 
 z.resize((50,50))

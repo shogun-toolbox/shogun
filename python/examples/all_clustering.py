@@ -26,10 +26,10 @@ def kmeans ():
 
 	sg('set_features', 'TRAIN', traindata)
 	sg('set_labels', 'TRAIN', trainlab)
-	sg('send_command', 'set_distance EUCLIDIAN REAL')
-	sg('send_command', 'init_distance TRAIN')
-	sg('send_command', 'new_classifier KMEANS')
-	sg('send_command', 'train_classifier %d %d' % (k, iter))
+	sg('set_distance', 'EUCLIDIAN', 'REAL')
+	sg('init_distance', 'TRAIN')
+	sg('new_classifier', 'KMEANS')
+	sg('train_classifier', k, iter)
 
 	[radi, centers]=sg('get_classifier')
 
@@ -45,10 +45,10 @@ def hierarchical ():
 	traindata=get_clouds(merges, num_feats, num_trainvec)
 
 	sg('set_features', 'TRAIN', traindata)
-	sg('send_command', 'set_distance EUCLIDIAN REAL')
-	sg('send_command', 'init_distance TRAIN')
-	sg('send_command', 'new_classifier HIERARCHICAL')
-	sg('send_command', 'train_classifier %d' % merges)
+	sg('set_distance', 'EUCLIDIAN', 'REAL')
+	sg('init_distance', 'TRAIN')
+	sg('new_classifier', 'HIERARCHICAL')
+	sg('train_classifier', merges)
 
 	[merge_distance, pairs]=sg('get_classifier')
 

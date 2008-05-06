@@ -27,17 +27,17 @@ def svr_light ():
 	testdata=rand(num_feats, 17)
 
 	sg('set_features', 'TRAIN', traindata)
-	sg('send_command', 'set_kernel GAUSSIAN REAL %d %f' % (size_cache, width))
-	sg('send_command', 'init_kernel TRAIN')
+	sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width)
+	sg('init_kernel', 'TRAIN')
 
 	sg('set_labels', 'TRAIN', trainlab)
-	sg('send_command', 'new_svm SVRLIGHT')
-	sg('send_command', 'svr_tube_epsilon %f' % tube_epsilon)
-	sg('send_command', 'c %f' % C)
-	sg('send_command', 'svm_train')
+	sg('new_svm', 'SVRLIGHT')
+	sg('svr_tube_epsilon', tube_epsilon)
+	sg('c', C)
+	sg('svm_train')
 
 	sg('set_features', 'TEST', testdata)
-	sg('send_command', 'init_kernel TEST')
+	sg('init_kernel', 'TEST')
 	result=sg('svm_classify')
 
 def libsvr ():
@@ -56,23 +56,24 @@ def libsvr ():
 	testdata=rand(num_feats, 17)
 
 	sg('set_features', 'TRAIN', traindata)
-	sg('send_command', 'set_kernel GAUSSIAN REAL %d %f' % (size_cache, width))
-	sg('send_command', 'init_kernel TRAIN')
+	sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width)
+	sg('init_kernel', 'TRAIN')
 
 	sg('set_labels', 'TRAIN', trainlab)
-	sg('send_command', 'new_svm LIBSVR')
-	sg('send_command', 'svr_tube_epsilon %f' % tube_epsilon)
-	sg('send_command', 'c %f' % C)
-	sg('send_command', 'svm_train')
+	sg('new_svm', 'LIBSVR')
+	sg('svr_tube_epsilon', tube_epsilon)
+	sg('c', C)
+	sg('svm_train')
 
 	sg('set_features', 'TEST', testdata)
-	sg('send_command', 'init_kernel TEST')
+	sg('init_kernel', 'TEST')
 	result=sg('svm_classify')
 
 ###########################################################################
 # misc
 ###########################################################################
 
+# broken...
 def krr ():
 	print 'KRR'
 
@@ -83,26 +84,24 @@ def krr ():
 	num_feats=13
 	num_trainvec=11
 
-	trainlab=sign(rand(1, num_trainvec*2)-0.5)[0]
+	trainlab=sign(rand(1, num_trainvec)-0.5)[0]
 	traindata=rand(num_feats, num_trainvec)
 	testdata=rand(num_feats, 17)
 
 	sg('set_features', 'TRAIN', traindata)
-	sg('send_command', 'set_kernel GAUSSIAN REAL %d %f' % (size_cache, width))
-	sg('send_command', 'init_kernel TRAIN')
+	sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width)
+	sg('init_kernel', 'TRAIN')
 
 	sg('set_labels', 'TRAIN', trainlab)
 
-	return
-
-	sg('send_command', 'new_svm KRR')
-	sg('send_command', 'set_tau %f' % tau)
-	sg('send_command', 'c %f' % C)
-	sg('send_command', 'svm_train')
+	sg('new_svm', 'KRR')
+	sg('krr_tau', tau)
+	sg('c', C)
+#	sg('svm_train')
 
 	sg('set_features', 'TEST', testdata)
-	sg('send_command', 'init_kernel TEST')
-	result=sg('svm_classify')
+	sg('init_kernel', 'TEST')
+#	result=sg('svm_classify')
 
 ###########################################################################
 # call functions
