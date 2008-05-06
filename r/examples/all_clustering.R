@@ -21,12 +21,12 @@ print('KMeans')
 k <- 3
 iter <- 1000
 
-dump <- sg('send_command', 'set_distance EUCLIDIAN REAL')
+dump <- sg('set_distance', 'EUCLIDIAN', 'REAL')
 dump <- sg('set_features', 'TRAIN', traindat)
 dump <- sg('set_labels', 'TRAIN', trainlab)
-dump <- sg('send_command', 'init_distance TRAIN')
-dump <- sg('send_command', 'new_classifier KMEANS')
-dump <- sg('send_command', paste('train_classifier', k, iter))
+dump <- sg('init_distance', 'TRAIN')
+dump <- sg('new_classifier', 'KMEANS')
+dump <- sg('train_classifier', k, iter)
 
 result <- sg('get_classifier')
 radi <- result[[1]]
@@ -39,10 +39,10 @@ print('Hierarchical')
 merges=3
 
 dump <- sg('set_features', 'TRAIN', traindat)
-dump <- sg('send_command', 'set_distance EUCLIDIAN REAL')
-dump <- sg('send_command', 'init_distance TRAIN')
-dump <- sg('send_command', 'new_classifier HIERARCHICAL')
-dump <- sg('send_command', paste('train_classifier', merges))
+dump <- sg('set_distance', 'EUCLIDIAN', 'REAL')
+dump <- sg('init_distance', 'TRAIN')
+dump <- sg('new_classifier', 'HIERARCHICAL')
+dump <- sg('train_classifier', merges)
 
 result <- sg('get_classifier')
 merge_distances <- result[[1]]

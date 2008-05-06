@@ -26,17 +26,17 @@ trainlab <- c(rep(-1,num),rep(1,num))
 print('SVRLight')
 
 dump <- sg('set_features', 'TRAIN', traindat)
-dump <- sg('send_command', paste('set_kernel GAUSSIAN REAL', size_cache, width))
-dump <- sg('send_command', 'init_kernel TRAIN')
+dump <- sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width)
+dump <- sg('init_kernel', 'TRAIN')
 
 dump <- sg('set_labels', 'TRAIN', trainlab)
-dump <- sg('send_command', 'new_svm SVRLIGHT')
-dump <- sg('send_command', paste('svr_tube_epsilon', tube_epsilon))
-dump <- sg('send_command', paste('c', C))
-dump <- sg('send_command', 'svm_train')
+dump <- sg('new_svm', 'SVRLIGHT')
+dump <- sg('svr_tube_epsilon', tube_epsilon)
+dump <- sg('c', C)
+dump <- sg('svm_train')
 
 dump <- sg('set_features', 'TEST', testdat)
-dump <- sg('send_command', 'init_kernel TEST')
+dump <- sg('init_kernel', 'TEST')
 result <- sg('svm_classify')
 
 
@@ -44,17 +44,17 @@ result <- sg('svm_classify')
 print('LibSVR')
 
 dump <- sg('set_features', 'TRAIN', traindat)
-dump <- sg('send_command', paste('set_kernel GAUSSIAN REAL', size_cache, width))
-dump <- sg('send_command', 'init_kernel TRAIN')
+dump <- sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width)
+dump <- sg('init_kernel', 'TRAIN')
 
 dump <- sg('set_labels', 'TRAIN', trainlab)
-dump <- sg('send_command', 'new_svm LIBSVR')
-dump <- sg('send_command', paste('svr_tube_epsilon', tube_epsilon))
-dump <- sg('send_command', paste('c', C))
-dump <- sg('send_command', 'svm_train')
+dump <- sg('new_svm', 'LIBSVR')
+dump <- sg('svr_tube_epsilon', tube_epsilon)
+dump <- sg('c', C)
+dump <- sg('svm_train')
 
 dump <- sg('set_features', 'TEST', testdat)
-dump <- sg('send_command', 'init_kernel TEST')
+dump <- sg('init_kernel', 'TEST')
 result <- sg('svm_classify')
 
 
@@ -62,24 +62,24 @@ result <- sg('svm_classify')
 # misc
 #
 
-# KRR
+# KRR - broken
 print('KRR')
 
 tau <- 1e-6
 
 dump <- sg('set_features', 'TRAIN', traindat)
-dump <- sg('send_command', paste('set_kernel GAUSSIAN REAL', size_cache, width))
-dump <- sg('send_command', 'init_kernel TRAIN')
+dump <- sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width)
+dump <- sg('init_kernel', 'TRAIN')
 
 dump <- sg('set_labels', 'TRAIN', trainlab)
 
-#sg('send_command', 'new_svm KRR')
-#sg('send_command', 'set_tau %f' % tau)
-#sg('send_command', 'c %f' % C)
-#sg('send_command', 'svm_train')
+dump <- sg('new_svm', 'KRR')
+dump <- sg('krr_tau', tau)
+dump <- sg('c', C)
+dump <- #sg('svm_train')
 
-#sg('set_features', 'TEST', testdat)
-#sg('send_command', 'init_kernel TEST')
+dump <- sg('set_features', 'TEST', testdat)
+dump <- sg('init_kernel', 'TEST')
 #result <- sg('svm_classify')
 
 

@@ -12,7 +12,7 @@ num <- 30
 size_cache <- 10
 C <- 10
 epsilon <- 1e-5
-use_bias <- 1
+use_bias <- TRUE
 
 traindat_real <- matrix(c(rnorm(len*num)-1,rnorm(len*num)+1), len, 2*num)
 testdat_real <- matrix(c(rnorm(len*num)-1,rnorm(len*num)+1), len, 2*num)
@@ -47,19 +47,18 @@ testdat_dna <- getDNA(len, num+7)
 degree <- 20
 
 dump <- sg('set_features', 'TRAIN', traindat_dna, 'DNA')
-dump <- sg('send_command', paste('set_kernel WEIGHTEDDEGREE CHAR', size_cache, degree))
-dump <- sg('send_command', 'init_kernel TRAIN')
+dump <- sg('set_kernel',  'WEIGHTEDDEGREE', 'CHAR', size_cache, degree)
+dump <- sg('init_kernel', 'TRAIN')
 
 dump <- sg('set_labels', 'TRAIN', trainlab_dna)
-dump <- sg('send_command', 'new_svm LIGHT')
-dump <- sg('send_command', paste('svm_epsilon', epsilon))
-dump <- sg('send_command', paste('c', C))
-dump <- sg('send_command', paste('svm_use_bias', use_bias))
-dump <- sg('send_command', 'svm_train')
+dump <- sg('new_svm', 'LIGHT')
+dump <- sg('svm_epsilon', epsilon)
+dump <- sg('c', C)
+dump <- sg('svm_use_bias', use_bias)
+dump <- sg('svm_train')
 
 dump <- sg('set_features', 'TEST', testdat_dna, 'DNA')
-dump <- sg('send_command', 'init_kernel TEST')
-# segfaults
+dump <- sg('init_kernel', 'TEST')
 result <- sg('svm_classify')
 
 
@@ -69,18 +68,18 @@ print('LibSVM')
 width <- 2.1
 
 dump <- sg('set_features', 'TRAIN', traindat_real)
-dump <- sg('send_command', paste('set_kernel GAUSSIAN REAL', size_cache, width))
-dump <- sg('send_command', 'init_kernel TRAIN')
+dump <- sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width)
+dump <- sg('init_kernel', 'TRAIN')
 
 dump <- sg('set_labels', 'TRAIN', trainlab_one)
-dump <- sg('send_command', 'new_svm LIBSVM')
-dump <- sg('send_command', paste('svm_epsilon', epsilon))
-dump <- sg('send_command', paste('c', C))
-dump <- sg('send_command', paste('svm_use_bias', use_bias))
-dump <- sg('send_command', 'svm_train')
+dump <- sg('new_svm', 'LIBSVM')
+dump <- sg('svm_epsilon', epsilon)
+dump <- sg('c', C)
+dump <- sg('svm_use_bias', use_bias)
+dump <- sg('svm_train')
 
 dump <- sg('set_features', 'TEST', testdat_real)
-dump <- sg('send_command', 'init_kernel TEST')
+dump <- sg('init_kernel', 'TEST')
 result <- sg('svm_classify')
 
 
@@ -88,18 +87,18 @@ result <- sg('svm_classify')
 print('GPBTSVM')
 
 dump <- sg('set_features', 'TRAIN', traindat_real)
-dump <- sg('send_command', paste('set_kernel GAUSSIAN REAL', size_cache, width))
-dump <- sg('send_command', 'init_kernel TRAIN')
+dump <- sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width)
+dump <- sg('init_kernel', 'TRAIN')
 
 dump <- sg('set_labels', 'TRAIN', trainlab_one)
-dump <- sg('send_command', 'new_svm GPBTSVM')
-dump <- sg('send_command', paste('svm_epsilon', epsilon))
-dump <- sg('send_command', paste('c', C))
-dump <- sg('send_command', paste('svm_use_bias', use_bias))
-dump <- sg('send_command', 'svm_train')
+dump <- sg('new_svm', 'GPBTSVM')
+dump <- sg('svm_epsilon', epsilon)
+dump <- sg('c', C)
+dump <- sg('svm_use_bias', use_bias)
+dump <- sg('svm_train')
 
 dump <- sg('set_features', 'TEST', testdat_real)
-dump <- sg('send_command', 'init_kernel TEST')
+dump <- sg('init_kernel', 'TEST')
 result <- sg('svm_classify')
 
 
@@ -107,18 +106,18 @@ result <- sg('svm_classify')
 print('MPDSVM')
 
 dump <- sg('set_features', 'TRAIN', traindat_real)
-dump <- sg('send_command', paste('set_kernel GAUSSIAN REAL', size_cache, width))
-dump <- sg('send_command', 'init_kernel TRAIN')
+dump <- sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width)
+dump <- sg('init_kernel', 'TRAIN')
 
 dump <- sg('set_labels', 'TRAIN', trainlab_one)
-dump <- sg('send_command', 'new_svm MPDSVM')
-dump <- sg('send_command', paste('svm_epsilon', epsilon))
-dump <- sg('send_command', paste('c', C))
-dump <- sg('send_command', paste('svm_use_bias', use_bias))
-dump <- sg('send_command', 'svm_train')
+dump <- sg('new_svm', 'MPDSVM')
+dump <- sg('svm_epsilon', epsilon)
+dump <- sg('c', C)
+dump <- sg('svm_use_bias', use_bias)
+dump <- sg('svm_train')
 
 dump <- sg('set_features', 'TEST', testdat_real)
-dump <- sg('send_command', 'init_kernel TEST')
+dump <- sg('init_kernel', 'TEST')
 result <- sg('svm_classify')
 
 
@@ -126,18 +125,18 @@ result <- sg('svm_classify')
 print('LibSVMMultiClass')
 
 dump <- sg('set_features', 'TRAIN', traindat_real)
-dump <- sg('send_command', paste('set_kernel GAUSSIAN REAL', size_cache, width))
-dump <- sg('send_command', 'init_kernel TRAIN')
+dump <- sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width)
+dump <- sg('init_kernel', 'TRAIN')
 
 dump <- sg('set_labels', 'TRAIN', trainlab_multi)
-dump <- sg('send_command', 'new_svm LIBSVM_MULTICLASS')
-dump <- sg('send_command', paste('svm_epsilon', epsilon))
-dump <- sg('send_command', paste('c', C))
-dump <- sg('send_command', paste('svm_use_bias', use_bias))
-dump <- sg('send_command', 'svm_train')
+dump <- sg('new_svm', 'LIBSVM_MULTICLASS')
+dump <- sg('svm_epsilon', epsilon)
+dump <- sg('c', C)
+dump <- sg('svm_use_bias', use_bias)
+dump <- sg('svm_train')
 
 dump <- sg('set_features', 'TEST', testdat_real)
-dump <- sg('send_command', 'init_kernel TEST')
+dump <- sg('init_kernel', 'TEST')
 result <- sg('svm_classify')
 
 
@@ -145,18 +144,18 @@ result <- sg('svm_classify')
 print('LibSVMOneClass')
 
 dump <- sg('set_features', 'TRAIN', traindat_real)
-dump <- sg('send_command', paste('set_kernel GAUSSIAN REAL', size_cache, width))
-dump <- sg('send_command', 'init_kernel TRAIN')
+dump <- sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width)
+dump <- sg('init_kernel', 'TRAIN')
 
 dump <- sg('set_labels', 'TRAIN', trainlab_one)
-dump <- sg('send_command', 'new_svm LIBSVM_ONECLASS')
-dump <- sg('send_command', paste('svm_epsilon', epsilon))
-dump <- sg('send_command', paste('c', C))
-dump <- sg('send_command', paste('svm_use_bias', use_bias))
-dump <- sg('send_command', 'svm_train')
+dump <- sg('new_svm', 'LIBSVM_ONECLASS')
+dump <- sg('svm_epsilon', epsilon)
+dump <- sg('c', C)
+dump <- sg('svm_use_bias', use_bias)
+dump <- sg('svm_train')
 
 dump <- sg('set_features', 'TEST', testdat_real)
-dump <- sg('send_command', 'init_kernel TEST')
+dump <- sg('init_kernel', 'TEST')
 result <- sg('svm_classify')
 
 
@@ -164,18 +163,18 @@ result <- sg('svm_classify')
 print('GMNPSVM')
 
 dump <- sg('set_features', 'TRAIN', traindat_real)
-dump <- sg('send_command', paste('set_kernel GAUSSIAN REAL', size_cache, width))
-dump <- sg('send_command', 'init_kernel TRAIN')
+dump <- sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width)
+dump <- sg('init_kernel', 'TRAIN')
 
 dump <- sg('set_labels', 'TRAIN', trainlab_one)
-dump <- sg('send_command', 'new_svm GMNPSVM')
-dump <- sg('send_command', paste('svm_epsilon', epsilon))
-dump <- sg('send_command', paste('c', C))
-dump <- sg('send_command', paste('svm_use_bias', use_bias))
-dump <- sg('send_command', 'svm_train')
+dump <- sg('new_svm', 'GMNPSVM')
+dump <- sg('svm_epsilon', epsilon)
+dump <- sg('c', C)
+dump <- sg('svm_use_bias', use_bias)
+dump <- sg('svm_train')
 
 dump <- sg('set_features', 'TEST', testdat_real)
-dump <- sg('send_command', 'init_kernel TEST')
+dump <- sg('init_kernel', 'TEST')
 result <- sg('svm_classify')
 
 
@@ -187,22 +186,22 @@ result <- sg('svm_classify')
 print('LibSVM batch')
 
 dump <- sg('set_features', 'TRAIN', traindat_real)
-dump <- sg('send_command', paste('set_kernel GAUSSIAN REAL', size_cache, width))
-dump <- sg('send_command', 'init_kernel TRAIN')
+dump <- sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width)
+dump <- sg('init_kernel', 'TRAIN')
 
 dump <- sg('set_labels', 'TRAIN', trainlab_one)
-dump <- sg('send_command', 'new_svm LIBSVM')
-dump <- sg('send_command', paste('svm_epsilon', epsilon))
-dump <- sg('send_command', paste('c', C))
-dump <- sg('send_command', paste('svm_use_bias', use_bias))
-dump <- sg('send_command', 'svm_train')
+dump <- sg('new_svm', 'LIBSVM')
+dump <- sg('svm_epsilon', epsilon)
+dump <- sg('c', C)
+dump <- sg('svm_use_bias', use_bias)
+dump <- sg('svm_train')
 
 dump <- sg('set_features', 'TEST', testdat_real)
-dump <- sg('send_command', 'init_kernel TEST')
+dump <- sg('init_kernel', 'TEST')
 
 objective <- sg('get_svm_objective')
-dump <- sg('send_command', 'use_batch_computation 1')
-dump <- sg('send_command', 'use_linadd 1')
+dump <- sg('use_batch_computation', TRUE)
+dump <- sg('use_linadd', TRUE)
 result <- sg('svm_classify')
 
 
@@ -215,8 +214,8 @@ print('Perceptron')
 
 dump <- sg('set_features', 'TRAIN', traindat_real)
 dump <- sg('set_labels', 'TRAIN', trainlab_one)
-dump <- sg('send_command', 'new_classifier PERCEPTRON')
-dump <- sg('send_command', 'train_classifier')
+dump <- sg('new_classifier', 'PERCEPTRON')
+dump <- sg('train_classifier')
 
 dump <- sg('set_features', 'TEST', testdat_real)
 result <- sg('classify')
@@ -224,16 +223,17 @@ result <- sg('classify')
 
 # KNN
 print('KNN')
+k <- 3
 
 dump <- sg('set_features', 'TRAIN', traindat_real)
 dump <- sg('set_labels', 'TRAIN', trainlab_one)
-dump <- sg('send_command', 'set_distance EUCLIDIAN REAL')
-dump <- sg('send_command', 'init_distance TRAIN')
-dump <- sg('send_command', 'new_knn')
-dump <- sg('send_command', 'train_knn')
+dump <- sg('set_distance', 'EUCLIDIAN', 'REAL')
+dump <- sg('init_distance', 'TRAIN')
+dump <- sg('new_classifier', 'KNN')
+dump <- sg('train_classifier', k)
 
 dump <- sg('set_features', 'TEST', testdat_real)
-dump <- sg('send_command', 'init_distance TEST')
+dump <- sg('init_distance', 'TEST')
 result <- sg('classify')
 
 
@@ -242,8 +242,8 @@ print('LDA')
 
 dump <- sg('set_features', 'TRAIN', traindat_real)
 dump <- sg('set_labels', 'TRAIN', trainlab_one)
-dump <- sg('send_command', 'new_classifier LDA')
-dump <- sg('send_command', 'train_classifier')
+dump <- sg('new_classifier', 'LDA')
+dump <- sg('train_classifier')
 
 dump <- sg('set_features', 'TEST', testdat_real)
 result <- sg('classify')

@@ -23,52 +23,52 @@ width <- 1.4
 # LogPlusOne
 print('LogPlusOne')
 
-dump <- sg('send_command', 'add_preproc LOGPLUSONE')
-dump <- sg('send_command', paste('set_kernel CHI2 REAL', size_cache, width))
+dump <- sg('add_preproc', 'LOGPLUSONE')
+dump <- sg('set_kernel', 'CHI2', 'REAL', size_cache, width)
 
 dump <- sg('set_features', 'TRAIN', traindat_real)
-dump <- sg('send_command', 'attach_preproc TRAIN')
-dump <- sg('send_command', 'init_kernel TRAIN')
+dump <- sg('attach_preproc', 'TRAIN')
+dump <- sg('init_kernel', 'TRAIN')
 km <- sg('get_kernel_matrix')
 
 dump <- sg('set_features', 'TEST', testdat_real)
-dump <- sg('send_command', 'attach_preproc TEST')
-dump <- sg('send_command', 'init_kernel TEST')
+dump <- sg('attach_preproc', 'TEST')
+dump <- sg('init_kernel', 'TEST')
 km <- sg('get_kernel_matrix')
 
 
 # NormOne
 print('NormOne')
 
-dump <- sg('send_command', 'add_preproc NORMONE')
-dump <- sg('send_command', paste('set_kernel CHI2 REAL', size_cache, width))
+dump <- sg('add_preproc', 'NORMONE')
+dump <- sg('set_kernel', 'CHI2', 'REAL', size_cache, width)
 
 dump <- sg('set_features', 'TRAIN', traindat_real)
-dump <- sg('send_command', 'attach_preproc TRAIN')
-dump <- sg('send_command', 'init_kernel TRAIN')
+dump <- sg('attach_preproc', 'TRAIN')
+dump <- sg('init_kernel', 'TRAIN')
 km <- sg('get_kernel_matrix')
 
 dump <- sg('set_features', 'TEST', testdat_real)
-dump <- sg('send_command', 'attach_preproc TEST')
-dump <- sg('send_command', 'init_kernel TEST')
+dump <- sg('attach_preproc', 'TEST')
+dump <- sg('init_kernel', 'TEST')
 km <- sg('get_kernel_matrix')
 
 
 # PruneVarSubMean
 print('PruneVarSubMean')
 
-divide_by_std <- 1
-dump <- sg('send_command', paste('add_preproc PRUNEVARSUBMEAN', divide_by_std))
-dump <- sg('send_command', paste('set_kernel CHI2 REAL', size_cache, width))
+divide_by_std <- TRUE
+dump <- sg('add_preproc', 'PRUNEVARSUBMEAN', divide_by_std)
+dump <- sg('set_kernel', 'CHI2', 'REAL', size_cache, width)
 
 dump <- sg('set_features', 'TRAIN', traindat_real)
-dump <- sg('send_command', 'attach_preproc TRAIN')
-dump <- sg('send_command', 'init_kernel TRAIN')
+dump <- sg('attach_preproc', 'TRAIN')
+dump <- sg('init_kernel', 'TRAIN')
 km <- sg('get_kernel_matrix')
 
 dump <- sg('set_features', 'TEST', testdat_real)
-dump <- sg('send_command', 'attach_preproc TEST')
-dump <- sg('send_command', 'init_kernel TEST')
+dump <- sg('attach_preproc', 'TEST')
+dump <- sg('init_kernel', 'TEST')
 km <- sg('get_kernel_matrix')
 
 
@@ -95,47 +95,47 @@ testdat_dna <- getDNA(len, num+7)
 order <- 3
 gap <- 0
 reverse <- 'n' # bit silly to not use boolean, set 'r' to yield true
-use_sign <- 0
+use_sign <- FALSE
 normalization <- 'FULL'
 
 
 # Comm Word String
 print('CommWordString')
 
-dump <- sg('send_command', 'add_preproc SORTWORDSTRING')
+dump <- sg('add_preproc', 'SORTWORDSTRING')
 dump <- sg('set_features', 'TRAIN', traindat_dna, 'DNA')
-dump <- sg('send_command', paste('convert TRAIN STRING CHAR STRING WORD', order, order-1, gap, reverse))
-dump <- sg('send_command', 'attach_preproc TRAIN')
+dump <- sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, gap, reverse)
+dump <- sg('attach_preproc', 'TRAIN')
 
 dump <- sg('set_features', 'TEST', testdat_dna, 'DNA')
-dump <- sg('send_command', paste('convert TEST STRING CHAR STRING WORD', order, order-1, gap, reverse))
-dump <- sg('send_command', 'attach_preproc TEST')
+dump <- sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, gap, reverse)
+dump <- sg('attach_preproc', 'TEST')
 
-dump <- sg('send_command', paste('set_kernel COMMSTRING WORD', size_cache, use_sign, normalization))
-dump <- sg('send_command', 'init_kernel TRAIN')
+dump <- sg('set_kernel', 'COMMSTRING', 'WORD', size_cache, use_sign, normalization)
+dump <- sg('init_kernel', 'TRAIN')
 km <- sg('get_kernel_matrix')
 
-dump <- sg('send_command', 'init_kernel TEST')
+dump <- sg('init_kernel', 'TEST')
 km <- sg('get_kernel_matrix')
 
 
 # Comm Ulong String
 print('CommUlongString')
 
-dump <- sg('send_command', 'add_preproc SORTULONGSTRING')
+dump <- sg('add_preproc', 'SORTULONGSTRING')
 dump <- sg('set_features', 'TRAIN', traindat_dna, 'DNA')
-dump <- sg('send_command', paste('convert TRAIN STRING CHAR STRING ULONG', order, order-1, gap, reverse))
-dump <- sg('send_command', 'attach_preproc TRAIN')
+dump <- sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'ULONG', order, order-1, gap, reverse)
+dump <- sg('attach_preproc', 'TRAIN')
 
 dump <- sg('set_features', 'TEST', testdat_dna, 'DNA')
-dump <- sg('send_command', paste('convert TEST STRING CHAR STRING ULONG', order, order-1, gap, reverse))
-dump <- sg('send_command', 'attach_preproc TEST')
+dump <- sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'ULONG', order, order-1, gap, reverse)
+dump <- sg('attach_preproc', 'TEST')
 
-dump <- sg('send_command', paste('set_kernel COMMSTRING ULONG', size_cache, use_sign, normalization))
-dump <- sg('send_command', 'init_kernel TRAIN')
+dump <- sg('set_kernel', 'COMMSTRING', 'ULONG', size_cache, use_sign, normalization)
+dump <- sg('init_kernel', 'TRAIN')
 km <- sg('get_kernel_matrix')
 
-dump <- sg('send_command', 'init_kernel TEST')
+dump <- sg('init_kernel', 'TEST')
 km <- sg('get_kernel_matrix')
 
 

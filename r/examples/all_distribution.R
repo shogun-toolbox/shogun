@@ -37,14 +37,14 @@ testdat_dna <- getDNA(len, num+7)
 # Histogram
 print('Histogram')
 
-#	sg('send_command', 'new_distribution HISTOGRAM')
-dump <- sg('send_command', 'add_preproc SORTWORDSTRING')
+#	sg('new_distribution', 'HISTOGRAM')
+dump <- sg('add_preproc', 'SORTWORDSTRING')
 
 dump <- sg('set_features', 'TRAIN', traindat_dna, 'DNA')
-dump <- sg('send_command', paste('convert TRAIN STRING CHAR STRING WORD', order, order-1, gap, reverse))
-dump <- sg('send_command', 'attach_preproc TRAIN')
+dump <- sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, gap, reverse)
+dump <- sg('attach_preproc', 'TRAIN')
 
-#	sg('send_command', 'train_distribution')
+#	sg('train_distribution')
 #	histo=sg('get_histogram')
 
 #	num_examples=11
@@ -60,14 +60,14 @@ dump <- sg('send_command', 'attach_preproc TRAIN')
 # Linear HMM
 print('LinearHMM')
 
-#	sg('send_command', 'new_distribution LinearHMM')
-dump <- sg('send_command', 'add_preproc SORTWORDSTRING')
+#	sg('new_distribution', 'LinearHMM')
+dump <- sg('add_preproc', 'SORTWORDSTRING')
 
 dump <- sg('set_features', 'TRAIN', traindat_dna, 'DNA')
-dump <- sg('send_command', paste('convert TRAIN STRING CHAR STRING WORD', order, order-1, gap, reverse))
-dump <- sg('send_command', 'attach_preproc TRAIN')
+dump <- sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, gap, reverse)
+dump <- sg('attach_preproc', 'TRAIN')
 
-#	sg('send_command', 'train_distribution')
+#	sg('train_distribution')
 #	histo=sg('get_histogram')
 
 #	num_examples=11
@@ -85,6 +85,7 @@ print('HMM')
 
 N <- 3
 M <- 6
+order <- 1
 hmms <- c()
 liks <- c()
 
@@ -110,13 +111,13 @@ cube <- c(cube[[1]], cube[[2]], cube[[3]])
 cube <- paste(cube, sep="", collapse="")
 
 dump <- sg('set_features', 'TRAIN', cube, 'CUBE')
-dump <- sg('send_command', 'convert TRAIN STRING CHAR STRING WORD 1')
+dump <- sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'WORD', order)
 
-dump <- sg('send_command', paste('new_hmm', N, M))
-dump <- sg('send_command', 'bw')
+dump <- sg('new_hmm', N, M)
+dump <- sg('bw')
 hmm <- sg('get_hmm')
 
-dump <- sg('send_command', paste('new_hmm', N, M))
+dump <- sg('new_hmm', N, M)
 dump <- sg('set_hmm', hmm[[1]], hmm[[2]], hmm[[3]], hmm[[4]])
 likelihood <- sg('hmm_likelihood')
 

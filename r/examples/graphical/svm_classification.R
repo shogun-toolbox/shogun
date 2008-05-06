@@ -5,7 +5,7 @@ num <- 50;
 
 require(graphics)
 require(lattice)
-library("sg")
+library('sg')
 
 #uncomment if make install does not work and comment the library("sg") line above
 #dyn.load('sg.so')
@@ -22,36 +22,36 @@ meshgrid <- function(a,b) {
 
 #set.seed(17)
 
-trySVM <- function(c, kernel="POLY REAL 50 3 1", wireframe=FALSE) {
+trySVM <- function(c, ktype, dtype, size_cache, wireframe=FALSE) {
 
-  sg("set_features", "TRAIN", traindat)
-  sg("set_labels", "TRAIN", trainlab)
-  sg("send_command", paste("set_kernel", kernel))
-  sg("send_command", "init_kernel TRAIN")
-  sg("send_command", "new_svm LIBSVM")
-  sg("send_command", paste("c", c))
-  
-  sg("send_command", "svm_train")
-  
+  sg('set_features', 'TRAIN', traindat)
+  sg('set_labels', 'TRAIN', trainlab)
+  sg('set_kernel', ktype, dtype, size_cache)
+  sg('init_kernel', 'TRAIN')
+  sg('new_svm', 'LIBSVM')
+  sg('c', c)
+
+  sg('svm_train')
+
   x1 <- (-49:+50)/10
   x2 <- (-49:+50)/10
   testdat <- meshgrid(x1,x2)
 
   testdat <- t(matrix(c(testdat$x, testdat$y),10000,2))
-  
-  sg("set_features", "TEST", testdat)
-  sg("send_command", "init_kernel TEST")
-  out <- sg("svm_classify")
-  
+
+  sg('set_features', 'TEST', testdat)
+  sg('init_kernel', 'TEST')
+  out <- sg('svm_classify')
+
   z <- t(matrix(out, 100, 100))
-  
-  svm <- sg("get_svm")
+
+  svm <- sg('get_svm')
   b=svm[[1]]
   svs=svm[[2]][,2]+1
 
   objective <- sg('get_svm_objective')
   print(objective)
-  
+
   if (wireframe == TRUE)
   {
 #for some reason plots only when done interactively
@@ -61,7 +61,7 @@ trySVM <- function(c, kernel="POLY REAL 50 3 1", wireframe=FALSE) {
  {
     image(x1,x2,z,col=topo.colors(1000))
     contour(x1,x2,z,add=T)
-	cat(length(svs), "svs:", svs, "\n")
+    cat(length(svs), 'svs:', svs, "\n")
 
     posSVs <- traindat[,trainlab==+1 & (1:ncol(traindat) %in% svs)]
     negSVs <- traindat[,trainlab==-1 & (1:ncol(traindat) %in% svs)]
@@ -82,8 +82,8 @@ traindat <- matrix(c(rnorm(dims*num)-1,rnorm(dims*num)+1),dims,2*num)
 trainlab <- c(rep(-1,num),rep(1,num))
 
 graphics.off()
-trySVM(C)
+trySVM(C, 'SIGMOID', 'REAL', 50)
 newplot()
-trySVM(C, kernel="LINEAR REAL 100 1.0")
+trySVM(C, 'LINEAR', 'REAL', 100)
 newplot()
-trySVM(C, kernel="GAUSSIAN REAL 40 1.0")
+trySVM(C, 'GAUSSIAN', 'REAL', 40)

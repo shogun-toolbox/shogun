@@ -6,6 +6,7 @@ library(sg)
 #dyn.load('sg.so')
 #sg <- function(...) .External("sg",...,PACKAGE="sg")
 
+order <- 1
 cube=list(NULL,NULL,NULL)
 num=vector(mode='numeric',length=18)+100
 num[1]=0;
@@ -26,15 +27,15 @@ x <- c(cube[[1]],cube[[2]],cube[[3]])
 x <- paste(x,sep="",collapse="")
 
 sg('set_features','TRAIN',x,'CUBE')
-sg('send_command','convert TRAIN STRING CHAR STRING WORD 1')
+sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'WORD', order)
 
 #train 10 HMM models 
 liks=vector(mode='numeric', length=10)-Inf
 models=vector(mode='pairlist', length=10)
 for (i in 1:2)
 {
-	sg('send_command','new_hmm 3 6')
-	sg('send_command','bw')
+	sg('new_hmm', 3, 6)
+	sg('bw')
 	liks[[i]] <- sg('hmm_likelihood')
 	models[[i]] <- sg('get_hmm')
 }
@@ -47,7 +48,7 @@ a=h[[3]]
 b=h[[4]]
 sg('set_hmm',p,q,a,b)
 sg('set_features','TEST',x,'CUBE')
-sg('send_command','convert TEST STRING CHAR STRING WORD 1')
+sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'WORD', order)
 path=sg('get_viterbi_path',0)
 
 p=exp(p)
