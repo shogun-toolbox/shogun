@@ -17,7 +17,7 @@ REPLACEMENTS=[
 	[' SHORT', ' int'],
 	[' WORD', ' int'],
 	[' CHAR', ' str'],
-	['-> C', '-> '],
+	['-> CFeatures', '-> Features'],
 ]
 
 class Scrub:
