@@ -125,10 +125,14 @@ DREAL CMatlabInterface::get_real()
 bool CMatlabInterface::get_bool()
 {
 	const mxArray* b=get_arg_increment();
-	if (!mxIsLogicalScalar(b))
+	if (mxIsLogicalScalar(b))
+		return mxIsLogicalScalarTrue(b);
+	else if (mxIsNumeric(b))
+		return (mxGetScalar(b)!=0);
+	else
 		SG_ERROR("Expected Scalar Boolean as argument %d\n", m_rhs_counter);
 
-	return mxIsLogicalScalarTrue(b);
+	return false;
 }
 
 
