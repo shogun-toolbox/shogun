@@ -329,12 +329,12 @@ static CSGInterfaceMethod sg_methods[]=
 	{
 		(CHAR*) N_TRAIN_CLASSIFIER,
 		(&CSGInterface::cmd_train_classifier),
-		(CHAR*) USAGE(N_TRAIN_CLASSIFIER)
+		(CHAR*) USAGE_I(N_TRAIN_CLASSIFIER, "[classifier-specific parameters]")
 	},
 	{
 		(CHAR*) N_SVM_TRAIN,
 		(&CSGInterface::cmd_train_classifier),
-		(CHAR*) USAGE(N_SVM_TRAIN)
+		(CHAR*) USAGE_I(N_SVM_TRAIN, "[classifier-specific parameters]")
 	},
 	{
 		(CHAR*) N_SVM_TEST,
@@ -2269,17 +2269,17 @@ CKernel* CSGInterface::create_kernel()
 
 		CHAR* dtype=get_str_from_str_or_direct(len);
 		INT size=get_int_from_int_or_str();
-		bool inhomogene=false;
 		INT degree=2;
+		bool inhomogene=false;
 		bool normalize=true;
 
 		if (m_nrhs>4)
 		{
-			inhomogene=get_bool_from_bool_or_str();
+			degree=get_int_from_int_or_str();
 
 			if (m_nrhs>5)
 			{
-				degree=get_int_from_int_or_str();
+				inhomogene=get_bool_from_bool_or_str();
 
 				if (m_nrhs>6)
 					normalize=get_bool_from_bool_or_str();
