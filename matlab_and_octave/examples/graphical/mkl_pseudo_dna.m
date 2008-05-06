@@ -66,7 +66,7 @@ sg('svm_train');
 
 % compute test output and evaluate
 sg('set_features', 'TEST', XV, 'DNA');
-sg('init_kernel', TEST);
+sg('init_kernel', 'TEST');
 out = sg('svm_classify');
 betas=sg('get_subkernel_weights');
 acc=mean(LV==sign(out));

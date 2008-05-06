@@ -71,7 +71,7 @@ ws=sg('get_subkernel_weights');
 
 sg('clean_features', 'TEST');
 sg('clean_kernel');
-sg(('set_kernel', 'COMBINED', cache_size);
+sg('set_kernel', 'COMBINED', cache_size);
 sg('add_kernel', 1, 'GAUSSIAN', 'REAL', cache_size, W1);
 sg('add_kernel', 1, 'GAUSSIAN', 'REAL', cache_size, W2);
 sg('add_kernel', 1, 'GAUSSIAN', 'REAL', cache_size, W3);
