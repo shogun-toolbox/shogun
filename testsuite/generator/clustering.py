@@ -59,17 +59,17 @@ def _run (name, first_arg):
 	distance=dfun(feats['train'], feats['train'], *params['dargs'])
 
 	fun=eval('clustering.'+name)
-	clust=fun(params[first_arg], distance)
-	clust.train()
+	clustering=fun(params[first_arg], distance)
+	clustering.train()
 
 	distance.init(feats['train'], feats['test'])
 
 	if name=='KMeans':
-		params['radi']=clust.get_radi()
-		params['centers']=clust.get_centers()
+		params['radi']=clustering.get_radiuses()
+		params['centers']=clustering.get_cluster_centers()
 	elif name=='Hierarchical':
-		params['merge_distance']=clust.get_merge_distance()
-		params['pairs']=clust.get_pairs()
+		params['merge_distance']=clustering.get_merge_distances()
+		params['pairs']=clustering.get_cluster_pairs()
 
 	outdata=_get_outdata(name, params)
 	fileop.write(C_CLUSTERING, outdata)

@@ -21,8 +21,11 @@ def get_simple (ftype, data, alphabet=library.DNA, sparse=False):
 	"""
 
 	if ftype=='Byte' or ftype=='Char':
-		train=eval('features.'+ftype+"Features(data['train'], alphabet)")
-		test=eval('features.'+ftype+"Features(data['test'], alphabet)")
+		train=eval('features.'+ftype+'Features(alphabet)')
+		test=eval('features.'+ftype+'Features(alphabet)')
+		train.copy_feature_matrix(data['train'])
+		test.copy_feature_matrix(data['test'])
+
 	else:
 		train=eval('features.'+ftype+"Features(data['train'])")
 		test=eval('features.'+ftype+"Features(data['test'])")

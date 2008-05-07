@@ -174,13 +174,14 @@ def _compute_pie (name, feats, data):
 	fun=eval('kernel.'+name+'Kernel')
 
 	lab, labels=dataop.get_labels(feats['train'].get_num_vectors())
-	pie.train(feats['train'], labels)
+	pie.set_labels(labels)
+	pie.set_features(feats['train'])
+	pie.train()
 	kern=fun(feats['train'], feats['train'], pie)
 	km_train=kern.get_kernel_matrix()
 
 	kern.init(feats['train'], feats['test'])
-	pie.set_testfeatures(feats['test'])
-	pie.test()
+	pie.set_features(feats['test'])
 	km_test=kern.get_kernel_matrix()
 	classified=pie.classify().get_labels()
 
