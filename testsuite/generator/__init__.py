@@ -9,7 +9,11 @@ Copyright (C) 2007-2008 Fraunhofer Institute FIRST and Max-Planck-Society
 """
 
 import sys
+import os
+from shogun.Library import Math_init_random
+from dataop import INIT_RANDOM
 from fileop import clean_dir_outdata
+
 MODULES=['classifier', 'clustering', 'distance', 'distribution', 'kernel', \
 	'regression', 'preproc']
 
@@ -19,23 +23,37 @@ def run (argv):
 	argument list.
 	"""
 
-	clean_dir_outdata()
+	# init random in Shogun to be constant
+	Math_init_random(INIT_RANDOM)
 
-	if len(argv)<2:
-		for mod in MODULES:
-			__import__(mod, globals(), locals());
-			module=eval(mod)
+	arglen=len(argv)
+	if arglen==2: # run given module
+		if argv[1]=='clear':
+			clean_dir_outdata()
+		else:
+			__import__(argv[1], globals(), locals());
+			module=eval(argv[1])
 			module.run()
 	else:
-		argv=argv[1:]
-		for mod in argv:
-			try:
-				__import__(mod, globals(), locals());
-				module=eval(mod)
-				module.run()
-			except ImportError:
+		# run given modules by calling self again, one by one
+		# this is due to an issue somewhere with classifiers (atm) and
+		# 'static randomness'
+
+		if arglen==1:
+			command=argv[0]
+			mods=MODULES
+		else:
+			command=argv.pop(0)
+			mods=argv
+
+		for mod in mods:
+			if not mod in MODULES:
 				mods=', '.join(MODULES)
 				msg="Unknown module: %s\nTry one of these: %s\n"%(mod, mods)
 				sys.stderr.write(msg)
 				sys.exit(1)
+
+			ret=os.system('%s %s' % (command, mod))
+			if ret!=0:
+				sys.exit(ret)
 
