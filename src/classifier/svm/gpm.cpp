@@ -73,6 +73,7 @@
 #include <string.h>
 #include <math.h>
 #include "classifier/svm/gpdt.h"
+#include "lib/io.h"
 
 #define maxvpm           30000  /* max number of method iterations allowed  */
 #define maxprojections   200
@@ -412,7 +413,7 @@ int gvpm(int Projector, int n, float *vecA, double *b, double c, double e,
       } // stopping rule based on the norm of d_k
   }
 
-  printf("GVPM exits after maxvpm = %d iterations.\n", maxvpm);
+  SG_SWARNING("GVPM exits after maxvpm = %d iterations.\n", maxvpm);
 
 Clean:
 
@@ -748,7 +749,7 @@ int FletcherAlg2A(int Projector, int n, float *vecA, double *b, double c,
       }
   }
 
-  printf("\nDai-Fletcher method exits after maxvpm = %d iterations.\n", maxvpm);
+  SG_SWARNING("Dai-Fletcher method exits after maxvpm = %d iterations.\n", maxvpm);
 
 Clean:
 
@@ -969,7 +970,7 @@ int ProjectDai(int n, int *a, double b, double *c, double l, double u,
 
   lam_ext = lambda;
   if (iter >= maxprojections)
-      printf("  error: Projector exits after max iterations: %d\n", iter);
+      SG_SERROR("Projector exits after max iterations: %d\n", iter);
 
   return (iter);
 }
@@ -1180,7 +1181,7 @@ int Pardalos(int n, int *iy, double e,   double *qk,
       else if ((a[i]<=xmin) && (xmax<=b[i]))
           x[i] = xx;
       else
-          printf("\nWarning: inner solver troubles...\n");
+          SG_SWARNING("Inner solver troubles...\n");
   }
 
   for (i = 0; i < n; i++)
