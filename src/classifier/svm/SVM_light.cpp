@@ -519,16 +519,12 @@ bool CSVMLight::train()
 				CKernel* k=((CCombinedKernel*) kernel)->get_kernel(i);
 
 				// allocate kernel cache but clean up beforehand
-				k->kernel_cache_cleanup();
-				k->kernel_cache_init(k->get_cache_size());
-				k->kernel_cache_reset_lru();
+				k->resize_kernel_cache(k->get_cache_size());
 			}
 		}
-
-		kernel->kernel_cache_cleanup();
-		kernel->kernel_cache_init(kernel->get_cache_size());
-		kernel->kernel_cache_reset_lru();
 	}
+
+	kernel->resize_kernel_cache(kernel->get_cache_size());
 
 	// train the svm
 	svm_learn();
