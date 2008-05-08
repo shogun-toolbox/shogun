@@ -317,7 +317,7 @@ protected:
 	bool is_free(int i) { return alpha_status[i] == FREE; }
 	void swap_index(int i, int j);
 	void reconstruct_gradient();
-	virtual int select_working_set(int &i, int &j);
+	virtual int select_working_set(int &i, int &j, double &gap);
 	virtual double calculate_rho();
 	virtual void do_shrinking();
 private:
@@ -427,18 +427,21 @@ void Solver::Solve(int p_l, const QMatrix& p_Q, const double *p_p, const schar *
 		}
 
 		int i,j;
-		if(select_working_set(i,j)!=0)
+		double gap;
+		if(select_working_set(i,j, gap)!=0)
 		{
 			// reconstruct the whole gradient
 			reconstruct_gradient();
 			// reset active set size and check
 			active_size = l;
 			//SG_SINFO("*");
-			if(select_working_set(i,j)!=0)
+			if(select_working_set(i,j, gap)!=0)
 				break;
 			else
 				counter = 1;	// do shrinking next iteration
 		}
+
+		SG_SABS_PROGRESS(gap, -CMath::log10(gap), -CMath::log10(1), -CMath::log10(eps), 6);
 		
 		++iter;
 
@@ -617,7 +620,7 @@ void Solver::Solve(int p_l, const QMatrix& p_Q, const double *p_p, const schar *
 }
 
 // return 1 if already optimal, return 0 otherwise
-int Solver::select_working_set(int &out_i, int &out_j)
+int Solver::select_working_set(int &out_i, int &out_j, double &gap)
 {
 	// return i,j such that
 	// i: maximizes -y_i * grad(f)_i, i in I_up(\alpha)
@@ -708,7 +711,8 @@ int Solver::select_working_set(int &out_i, int &out_j)
 		}
 	}
 
-	if(Gmax+Gmax2 < eps)
+	gap=Gmax+Gmax2;
+	if(gap < eps)
 		return 1;
 
 	out_i = Gmax_idx;
@@ -869,14 +873,14 @@ public:
 	}
 private:
 	SolutionInfo *si;
-	int select_working_set(int &i, int &j);
+	int select_working_set(int &i, int &j, double &gap);
 	double calculate_rho();
 	bool be_shrunken(int i, double Gmax1, double Gmax2, double Gmax3, double Gmax4);
 	void do_shrinking();
 };
 
 // return 1 if already optimal, return 0 otherwise
-int Solver_NU::select_working_set(int &out_i, int &out_j)
+int Solver_NU::select_working_set(int &out_i, int &out_j, double &gap)
 {
 	// return i,j such that y_i = y_j and
 	// i: maximizes -y_i * grad(f)_i, i in I_up(\alpha)
@@ -976,7 +980,8 @@ int Solver_NU::select_working_set(int &out_i, int &out_j)
 		}
 	}
 
-	if(max(Gmaxp+Gmaxp2,Gmaxn+Gmaxn2) < eps)
+	gap=max(Gmaxp+Gmaxp2,Gmaxn+Gmaxn2);
+	if(gap < eps)
  		return 1;
 
 	if (y[Gmin_idx] == +1)
