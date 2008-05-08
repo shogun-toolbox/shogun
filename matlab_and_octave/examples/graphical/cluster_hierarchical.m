@@ -11,12 +11,12 @@ sg('loglevel', 'ALL');
 sg('set_features', 'TRAIN', traindat);
 sg('set_distance', 'EUCLIDIAN', 'REAL')
 sg('init_distance', 'TRAIN');
-sg('new_classifier', 'HIERARCHICAL');
+sg('new_clustering', 'HIERARCHICAL');
 tic
-sg('train_classifier', k);
+sg('train_clustering', k);
 toc
 
-[assignments,pairs]=sg('get_classifier');
+[assignments,pairs]=sg('get_clustering');
 
 figure()
 clf

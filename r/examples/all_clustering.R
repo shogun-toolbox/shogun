@@ -25,10 +25,10 @@ dump <- sg('set_distance', 'EUCLIDIAN', 'REAL')
 dump <- sg('set_features', 'TRAIN', traindat)
 dump <- sg('set_labels', 'TRAIN', trainlab)
 dump <- sg('init_distance', 'TRAIN')
-dump <- sg('new_classifier', 'KMEANS')
-dump <- sg('train_classifier', k, iter)
+dump <- sg('new_clustering', 'KMEANS')
+dump <- sg('train_clustering', k, iter)
 
-result <- sg('get_classifier')
+result <- sg('get_clustering')
 radi <- result[[1]]
 centers <- result[[2]]
 
@@ -41,9 +41,9 @@ merges=3
 dump <- sg('set_features', 'TRAIN', traindat)
 dump <- sg('set_distance', 'EUCLIDIAN', 'REAL')
 dump <- sg('init_distance', 'TRAIN')
-dump <- sg('new_classifier', 'HIERARCHICAL')
-dump <- sg('train_classifier', merges)
+dump <- sg('new_clustering', 'HIERARCHICAL')
+dump <- sg('train_clustering', merges)
 
-result <- sg('get_classifier')
+result <- sg('get_clustering')
 merge_distances <- result[[1]]
 pairs <- result[[2]]

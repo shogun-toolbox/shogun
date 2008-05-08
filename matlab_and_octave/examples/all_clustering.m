@@ -17,9 +17,9 @@ sg('set_features', 'TRAIN', traindata);
 sg('set_labels', 'TRAIN', trainlab);
 sg('set_distance', 'EUCLIDIAN', 'REAL');
 sg('init_distance', 'TRAIN');
-sg('new_classifier', 'KMEANS');
-sg('train_classifier', k, iter);
-[radi, centers]=sg('get_classifier');
+sg('new_clustering', 'KMEANS');
+sg('train_clustering', k, iter);
+[radi, centers]=sg('get_clustering');
 
 
 % Hierarchical
@@ -36,7 +36,7 @@ traindata=traindata(:,i);
 sg('set_features', 'TRAIN', traindata);
 sg('set_distance', 'EUCLIDIAN', 'REAL');
 sg('init_distance', 'TRAIN');
-sg('new_classifier', 'HIERARCHICAL');
-sg('train_classifier', merges);
+sg('new_clustering', 'HIERARCHICAL');
+sg('train_clustering', merges);
 
-[merge_distance, pairs]=sg('get_classifier');
+[merge_distance, pairs]=sg('get_clustering');
