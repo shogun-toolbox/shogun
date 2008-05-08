@@ -27,15 +27,15 @@ sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width);
 sg('init_kernel', 'TRAIN');
 
 sg('set_labels', 'TRAIN', trainlab);
-sg('new_svm', 'SVRLIGHT');
+sg('new_regression', 'SVRLIGHT');
 sg('svr_tube_epsilon', tube_epsilon);
 sg('c', C);
-sg('svm_train');
+sg('train_regression');
 
 sg('set_features', 'TEST', testdata);
 sg('set_labels', 'TEST', testlab);
 sg('init_kernel', 'TEST');
-result=sg('svm_classify');
+result=sg('classify');
 
 
 % LibSVR
@@ -46,22 +46,22 @@ sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width);
 sg('init_kernel', 'TRAIN');
 
 sg('set_labels', 'TRAIN', trainlab);
-sg('new_svm', 'LIBSVR');
+sg('new_regression', 'LIBSVR');
 sg('svr_tube_epsilon', tube_epsilon);
 sg('c', C);
-sg('svm_train');
+sg('train_regression');
 
 sg('set_features', 'TEST', testdata);
 sg('set_labels', 'TEST', testlab);
 sg('init_kernel', 'TEST');
-result=sg('svm_classify');
+result=sg('classify');
 
 
 %
 % misc
 %
 
-% KRR broken
+% KRR
 disp('KRR');
 
 sg('set_features', 'TRAIN', traindata);
@@ -69,13 +69,13 @@ sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width);
 sg('init_kernel', 'TRAIN');
 
 sg('set_labels', 'TRAIN', trainlab);
-sg('new_svm', 'KRR');
+sg('new_regression', 'KRR');
 tau=1.2;
 sg('krr_tau', tau);
 sg('c', C);
-%sg('svm_train');
+sg('train_regression');
 
-%sg('set_features', 'TEST', testdata);
-%sg('init_kernel', 'TEST');
-%result=sg('svm_classify');
+sg('set_features', 'TEST', testdata);
+sg('init_kernel', 'TEST');
+result=sg('classify');
 

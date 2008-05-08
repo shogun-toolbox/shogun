@@ -30,14 +30,14 @@ dump <- sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width)
 dump <- sg('init_kernel', 'TRAIN')
 
 dump <- sg('set_labels', 'TRAIN', trainlab)
-dump <- sg('new_svm', 'SVRLIGHT')
+dump <- sg('new_regression', 'SVRLIGHT')
 dump <- sg('svr_tube_epsilon', tube_epsilon)
 dump <- sg('c', C)
-dump <- sg('svm_train')
+dump <- sg('train_regression')
 
 dump <- sg('set_features', 'TEST', testdat)
 dump <- sg('init_kernel', 'TEST')
-result <- sg('svm_classify')
+result <- sg('classify')
 
 
 # LibSVR
@@ -48,21 +48,21 @@ dump <- sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width)
 dump <- sg('init_kernel', 'TRAIN')
 
 dump <- sg('set_labels', 'TRAIN', trainlab)
-dump <- sg('new_svm', 'LIBSVR')
+dump <- sg('new_regression', 'LIBSVR')
 dump <- sg('svr_tube_epsilon', tube_epsilon)
 dump <- sg('c', C)
-dump <- sg('svm_train')
+dump <- sg('train_regression')
 
 dump <- sg('set_features', 'TEST', testdat)
 dump <- sg('init_kernel', 'TEST')
-result <- sg('svm_classify')
+result <- sg('classify')
 
 
 #
 # misc
 #
 
-# KRR - broken
+# KRR
 print('KRR')
 
 tau <- 1e-6
@@ -73,13 +73,13 @@ dump <- sg('init_kernel', 'TRAIN')
 
 dump <- sg('set_labels', 'TRAIN', trainlab)
 
-dump <- sg('new_svm', 'KRR')
+dump <- sg('new_regression', 'KRR')
 dump <- sg('krr_tau', tau)
 dump <- sg('c', C)
-dump <- #sg('svm_train')
+dump <- sg('train_regression')
 
 dump <- sg('set_features', 'TEST', testdat)
 dump <- sg('init_kernel', 'TEST')
-#result <- sg('svm_classify')
+result <- sg('classify')
 
 

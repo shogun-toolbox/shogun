@@ -31,14 +31,14 @@ def svr_light ():
 	sg('init_kernel', 'TRAIN')
 
 	sg('set_labels', 'TRAIN', trainlab)
-	sg('new_svm', 'SVRLIGHT')
+	sg('new_regression', 'SVRLIGHT')
 	sg('svr_tube_epsilon', tube_epsilon)
 	sg('c', C)
-	sg('svm_train')
+	sg('train_regression')
 
 	sg('set_features', 'TEST', testdata)
 	sg('init_kernel', 'TEST')
-	result=sg('svm_classify')
+	result=sg('classify')
 
 def libsvr ():
 	print 'LibSVR'
@@ -60,20 +60,19 @@ def libsvr ():
 	sg('init_kernel', 'TRAIN')
 
 	sg('set_labels', 'TRAIN', trainlab)
-	sg('new_svm', 'LIBSVR')
+	sg('new_regression', 'LIBSVR')
 	sg('svr_tube_epsilon', tube_epsilon)
 	sg('c', C)
-	sg('svm_train')
+	sg('train_regression')
 
 	sg('set_features', 'TEST', testdata)
 	sg('init_kernel', 'TEST')
-	result=sg('svm_classify')
+	result=sg('classify')
 
 ###########################################################################
 # misc
 ###########################################################################
 
-# broken...
 def krr ():
 	print 'KRR'
 
@@ -94,14 +93,14 @@ def krr ():
 
 	sg('set_labels', 'TRAIN', trainlab)
 
-	sg('new_svm', 'KRR')
+	sg('new_regression', 'KRR')
 	sg('krr_tau', tau)
 	sg('c', C)
-#	sg('svm_train')
+	sg('train_regression')
 
 	sg('set_features', 'TEST', testdata)
 	sg('init_kernel', 'TEST')
-#	result=sg('svm_classify')
+	result=sg('classify')
 
 ###########################################################################
 # call functions
