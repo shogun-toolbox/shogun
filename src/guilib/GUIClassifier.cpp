@@ -169,7 +169,7 @@ bool CGUIClassifier::new_classifier(CHAR* name, INT d, INT from_d)
 		delete classifier;
 		classifier=new CKRR(krr_tau, ui->ui_kernel->get_kernel(),
 			ui->ui_labels->get_train_labels());
-		SG_INFO("created KRR object\n");
+		SG_INFO("created KRR object %p\n", classifier);
 	}
 	else if (strcmp(name,"KERNELPERCEPTRON")==0)
 	{
@@ -336,30 +336,25 @@ bool CGUIClassifier::new_classifier(CHAR* name, INT d, INT from_d)
 bool CGUIClassifier::train_svm()
 {
 	CSVM* svm= (CSVM*) classifier;
+	if (!svm)
+		SG_ERROR("No SVM available.\n");
+
 	bool oneclass=(svm->get_classifier_type()==CT_LIBSVMONECLASS);
-	
 	CLabels* trainlabels=NULL;
 	if(!oneclass)
 		trainlabels=ui->ui_labels->get_train_labels();
 	else
 		SG_INFO("Training one class svm.\n");
-
-	CKernel* kernel=ui->ui_kernel->get_kernel();
-
-	if (!svm)
-		SG_ERROR("No SVM available.\n");
-
-	if (!kernel)
-		SG_ERROR("No kernel available.\n");
-
 	if (!trainlabels && !oneclass)
 		SG_ERROR("No trainlabels available.\n");
 
+	CKernel* kernel=ui->ui_kernel->get_kernel();
+	if (!kernel)
+		SG_ERROR("No kernel available.\n");
 	if (!ui->ui_kernel->is_initialized() || !kernel->get_lhs())
 		SG_ERROR("Kernel not initialized.\n");
 
 	INT num_vec=kernel->get_lhs()->get_num_vectors();
-
 	if (!oneclass && trainlabels->get_num_labels() != num_vec)
 		SG_ERROR("Number of train labels (%d) and training vectors (%d) differs!\n", trainlabels->get_num_labels(), num_vec);
 
@@ -390,8 +385,8 @@ bool CGUIClassifier::train_svm()
 #endif //USE_SVMLIGHT
 
 	bool result=svm->train();
-
 	kernel->set_precompute_matrix(false,false);
+
 	return result;
 }
 

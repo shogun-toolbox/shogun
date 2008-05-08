@@ -3696,8 +3696,10 @@ bool CSGInterface::cmd_train_classifier()
 		case CT_LIBSVMMULTICLASS:
 		case CT_LIBSVMONECLASS:
 		case CT_SVRLIGHT:
-		case CT_KRR:
 			return ui_classifier->train_svm();
+
+		case CT_KRR:
+			return ui_classifier->get_classifier()->train();
 
 		case CT_KNN:
 		{

@@ -61,7 +61,7 @@ bool CKRR::train()
   
   delete[] K;
 
-  return false;
+  return true;
 }
 
 bool CKRR::load(FILE* srcfile)
