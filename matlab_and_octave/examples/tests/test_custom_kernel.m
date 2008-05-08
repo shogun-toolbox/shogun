@@ -20,13 +20,13 @@ kt=sg('get_kernel_matrix');
 sg('new_svm', 'LIGHT');
 sg('c', C);
 sg('svm_epsilon', svm_eps);
-tic; sg('svm_train'); toc;
+tic; sg('train_classifier'); toc;
 [b, alphas]=sg('get_svm');
 sg('set_features', 'TEST', testdat);
 sg('set_labels', 'TEST', testlab);
 sg('init_kernel', 'TEST');
 kte=sg('get_kernel_matrix');
-out=sg('svm_classify');
+out=sg('classify');
 valerr=mean(testlab~=sign(out));
 
 

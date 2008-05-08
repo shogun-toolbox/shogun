@@ -61,11 +61,11 @@ def svm_light ():
 	sg('svm_epsilon', epsilon)
 	sg('c', C)
 	sg('svm_use_bias', use_bias)
-	sg('svm_train')
+	sg('train_classifier')
 
 	sg('set_features', 'TEST', data['test'], 'DNA')
 	sg('init_kernel', 'TEST')
-	result=sg('svm_classify')
+	result=sg('classify')
 
 def libsvm ():
 	print 'LibSVM'
@@ -91,11 +91,11 @@ def libsvm ():
 	sg('svm_epsilon', epsilon)
 	sg('c', C)
 	sg('svm_use_bias', use_bias)
-	sg('svm_train')
+	sg('train_classifier')
 
 	sg('set_features', 'TEST', testdata)
 	sg('init_kernel', 'TEST')
-	result=sg('svm_classify')
+	result=sg('classify')
 
 def gpbtsvm ():
 	print 'GPBTSVM'
@@ -121,11 +121,11 @@ def gpbtsvm ():
 	sg('svm_epsilon', epsilon)
 	sg('c', C)
 	sg('svm_use_bias', use_bias)
-	sg('svm_train')
+	sg('train_classifier')
 
 	sg('set_features', 'TEST', testdata)
 	sg('init_kernel', 'TEST')
-	result=sg('svm_classify')
+	result=sg('classify')
 
 def mpdsvm ():
 	print 'MPDSVM'
@@ -151,11 +151,11 @@ def mpdsvm ():
 	sg('svm_epsilon', epsilon)
 	sg('c', C)
 	sg('svm_use_bias', use_bias)
-	sg('svm_train')
+	sg('train_classifier')
 
 	sg('set_features', 'TEST', testdata)
 	sg('init_kernel', 'TEST')
-	result=sg('svm_classify')
+	result=sg('classify')
 
 def libsvm_multiclass ():
 	print 'LibSVMMultiClass'
@@ -181,11 +181,11 @@ def libsvm_multiclass ():
 	sg('svm_epsilon', epsilon)
 	sg('c', C)
 	sg('svm_use_bias', use_bias)
-	sg('svm_train')
+	sg('train_classifier')
 
 	sg('set_features', 'TEST', testdata)
 	sg('init_kernel', 'TEST')
-	result=sg('svm_classify')
+	result=sg('classify')
 
 def libsvm_oneclass ():
 	print 'LibSVMOneClass'
@@ -209,11 +209,11 @@ def libsvm_oneclass ():
 	sg('svm_epsilon', epsilon)
 	sg('c', C)
 	sg('svm_use_bias', use_bias)
-	sg('svm_train')
+	sg('train_classifier')
 
 	sg('set_features', 'TEST', testdata)
 	sg('init_kernel', 'TEST')
-	result=sg('svm_classify')
+	result=sg('classify')
 
 def gmnpsvm ():
 	print 'GMNPSVM'
@@ -239,11 +239,11 @@ def gmnpsvm ():
 	sg('svm_epsilon', epsilon)
 	sg('c', C)
 	sg('svm_use_bias', use_bias)
-	sg('svm_train')
+	sg('train_classifier')
 
 	sg('set_features', 'TEST', testdata)
 	sg('init_kernel', 'TEST')
-	result=sg('svm_classify')
+	result=sg('classify')
 
 ###########################################################################
 # run with batch or linadd on LibSVM
@@ -273,7 +273,7 @@ def do_batch_linadd ():
 	sg('svm_epsilon', epsilon)
 	sg('c', C)
 	sg('svm_use_bias', use_bias)
-	sg('svm_train')
+	sg('train_classifier')
 
 	sg('set_features', 'TEST', testdata)
 	sg('init_kernel', 'TEST')
@@ -281,7 +281,7 @@ def do_batch_linadd ():
 	objective=sg('get_svm_objective')
 	sg('use_batch_computation', True)
 	sg('use_linadd', True)
-	result=sg('svm_classify')
+	result=sg('classify')
 
 ###########################################################################
 # misc classifiers

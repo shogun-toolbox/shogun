@@ -30,7 +30,7 @@ testfeatures=array((ravel(x), ravel(y)))
 
 sg('set_features', 'TEST', testfeatures)
 sg('init_kernel', 'TEST')
-z=sg('svm_classify')
+z=sg('classify')
 
 z.resize((50,50))
 #pcolor(x, y, z, shading='flat') #for non-smooth visualization

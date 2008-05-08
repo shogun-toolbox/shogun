@@ -45,7 +45,7 @@ sg('set_WD_position_weights', trainw, 'TEST') ;
 % train the svm
 sg('new_svm', 'LIGHT');
 sg('c',C);
-tic; sg('svm_train'); t=toc
+tic; sg('train_classifier'); t=toc
 [b, alphas]=sg('get_svm');
 
 % set features and initialize
@@ -56,7 +56,7 @@ sg('init_kernel', 'TEST');
 sg('set_WD_position_weights', testw, 'TEST') ;
 
 % classify
-outopt=sg('svm_classify');
+outopt=sg('classify');
 tout=toc
 
 

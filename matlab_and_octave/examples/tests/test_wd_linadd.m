@@ -39,7 +39,7 @@ sg('set_kernel', 'WEIGHTEDDEGREE', 'CHAR', 10, ORDER, MISMATCH);
 sg('init_kernel', 'TRAIN');
 sg('new_svm', 'LIGHT');
 sg('c', C);
-tic;sg('svm_train');train_time=toc
+tic;sg('train_classifier');train_time=toc
 
 [b, alpha_tmp]=sg('get_svm');
 tic;sg('init_kernel_optimization') ;opt_time=toc
@@ -47,6 +47,6 @@ tic;sg('init_kernel_optimization') ;opt_time=toc
 sg('set_features', 'TEST', valdat, 'DNA');
 sg('init_kernel', 'TEST');
 
-tic;out=sg('svm_classify');val_time=toc
+tic;out=sg('classify');val_time=toc
 valerr=mean(vallab~=sign(out));
 valerr

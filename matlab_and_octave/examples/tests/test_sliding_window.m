@@ -78,7 +78,7 @@ sg('set_kernel', 'COMMSTRING', 'WORD', cache, use_sign, normalization);
 sg('init_kernel', 'TRAIN');
 sg('new_svm', 'LIGHT');
 sg('c',C);
-sg('svm_train');
+sg('train_classifier');
 sg('init_kernel_optimization');
 
 %evaluate svm on test data
@@ -87,7 +87,7 @@ sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1);
 sg('attach_preproc', 'TEST');
 sg('set_labels', 'TEST', testlab);
 sg('init_kernel', 'TEST');
-out2=sg('svm_classify');
+out2=sg('classify');
 f2=sg('get_features','TEST');
 
 %evaluate svm on test data
@@ -95,7 +95,7 @@ sg('set_features', 'TEST', testdat1, 'DNA');
 sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1);
 sg('set_labels', 'TEST', testlab);
 sg('init_kernel', 'TEST');
-out1=sg('svm_classify');
+out1=sg('classify');
 f1=sg('get_features','TEST');
 
 %evaluate svm on test data
@@ -105,7 +105,7 @@ sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1);
 sg('from_position_list','TEST', len, int32(0:(total_test_len-len-order+1)), order-1);
 sg('set_labels', 'TEST', testlab);
 sg('init_kernel', 'TEST');
-out=sg('svm_classify');
+out=sg('classify');
 f=sg('get_features','TEST');
 
 max(abs(out(:)-out1(:)))

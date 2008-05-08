@@ -37,7 +37,7 @@ sg('set_kernel', 'WEIGHTEDDEGREEPOS2', 'CHAR', 10, order, max_mismatch, len, shi
 sg('init_kernel', 'TRAIN');
 sg('new_svm', 'LIGHT');
 sg('c',C);
-sg('svm_train');
+sg('train_classifier');
 consensus=sg('get_WD_consensus');
 scores=sg('get_WD_scoring',1);
 imagesc(reshape(scores,[4,length(scores)/4]))
@@ -53,5 +53,5 @@ acgt(floor(median(x')))
 sg('set_features', 'TEST', [ consensus  traindat(:,end)'], 'DNA');
 sg('init_kernel', 'TEST');
 [b,alphas]=sg('get_svm');
-out=sg('svm_classify')-b;
+out=sg('classify')-b;
 out'

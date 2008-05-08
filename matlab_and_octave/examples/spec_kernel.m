@@ -51,7 +51,7 @@ sg('set_kernel', 'COMMSTRING', 'WORD', cache, use_sign, normalization);
 sg('init_kernel', 'TRAIN');
 sg('new_svm', 'LIGHT');
 sg('c', C);
-sg('svm_train');
+sg('train_classifier');
 sg('init_kernel_optimization');
 
 %evaluate svm on train data
@@ -60,7 +60,7 @@ sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1);
 sg('attach_preproc', 'TEST');
 sg('set_labels', 'TEST', trainlab);
 sg('init_kernel', 'TEST');
-out=sg('svm_classify');
+out=sg('classify');
 fprintf('accuracy: %f                                                                                         \n', mean(sign(out)==trainlab))
 
 %evaluate svm on test data
@@ -69,5 +69,5 @@ sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1);
 sg('attach_preproc', 'TEST');
 sg('set_labels', 'TEST', testlab);
 sg('init_kernel', 'TEST');
-out=sg('svm_classify');
+out=sg('classify');
 fprintf('accuracy: %f                                                                                         \n', mean(sign(out)==testlab))

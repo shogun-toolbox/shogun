@@ -12,7 +12,7 @@ testdat=[linspace(-10,traindat(1),30) traindat linspace(traindat(end),traindat(e
 testlab=[sin(testdat)];
 
 sg('loglevel', 'ALL');
-sg('new_svm', 'LIBSVR');
+sg('new_regression', 'LIBSVR');
 sg('set_features', 'TRAIN', traindat);
 sg('set_labels', 'TRAIN', trainlab);
 sg('set_kernel', 'GAUSSIAN', 'REAL', 50, 10);
@@ -20,14 +20,14 @@ sg('init_kernel', 'TRAIN');
 sg('c', C);
 sg('svm_epsilon', svm_eps);
 sg('svr_tube_epsilon', svm_tube);
-tic; sg('svm_train'); toc;
+tic; sg('train_regression'); toc;
 [b, alphas]=sg('get_svm');
 sg('set_features', 'TEST', testdat);
 sg('set_labels', 'TEST', testlab);
 sg('init_kernel', 'TEST');
-out=sg('svm_classify');
+out=sg('classify');
 
-sg('new_svm', 'SVRLIGHT');
+sg('new_regression', 'SVRLIGHT');
 sg('set_features', 'TRAIN', traindat);
 sg('set_labels', 'TRAIN', trainlab);
 sg('set_kernel', 'GAUSSIAN', 'REAL', 50, 10);
@@ -35,12 +35,12 @@ sg('init_kernel', 'TRAIN');
 sg('c', C);
 sg('svm_epsilon', svm_eps);
 sg('svr_tube_epsilon', svm_tube);
-tic; sg('svm_train'); toc;
+tic; sg('train_regression'); toc;
 [b2, alphas2]=sg('get_svm');
 sg('set_features', 'TEST', testdat);
 sg('set_labels', 'TEST', testlab);
 sg('init_kernel', 'TEST');
-out2=sg('svm_classify');
+out2=sg('classify');
 
 %clf
 %plot(traindat,trainlab,'b-')

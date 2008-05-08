@@ -44,7 +44,7 @@ for kk = 4    % big loop for the different learning problems
   kernels={};
 
   % initialize MKL-SVR
-  sg('new_svm', 'SVRLIGHT');
+  sg('new_regression', 'SVRLIGHT');
   sg('use_mkl', 1);
   sg('use_precompute', 0);
   sg('mkl_parameters', mkl_eps, 0);
@@ -67,7 +67,7 @@ for kk = 4    % big loop for the different learning problems
   sg('add_kernel', 1, 'GAUSSIAN', 'REAL', cache_size, rbf_width(5));
 
   sg('init_kernel', 'TRAIN');
-  sg('svm_train');
+  sg('train_regression');
 
   weights(kk,:) = sg('get_subkernel_weights') ;
   fprintf('frequency: %02.2f   rbf-kernel-weights:  %02.2f %02.2f %02.2f %02.2f %02.2f           \n', f(kk), weights(kk,:))

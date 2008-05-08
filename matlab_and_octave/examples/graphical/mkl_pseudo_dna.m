@@ -62,12 +62,12 @@ beta=beta/sum(beta(:));
 sg('set_subkernel_weights',beta);
 
 % compute optimal alphas / betas
-sg('svm_train');
+sg('train_classifier');
 
 % compute test output and evaluate
 sg('set_features', 'TEST', XV, 'DNA');
 sg('init_kernel', 'TEST');
-out = sg('svm_classify');
+out = sg('classify');
 betas=sg('get_subkernel_weights');
 acc=mean(LV==sign(out));
 fprintf('accuracy: %f\n', acc)

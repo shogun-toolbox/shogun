@@ -63,7 +63,7 @@ sg('set_kernel', 'WEIGHTEDDEGREEPOS3', 'CHAR', 10, order, max_mismatch, len, 1, 
 sg('init_kernel', 'TRAIN');
 sg('new_svm', 'LIGHT');
 sg('c',C);
-sg('svm_train');
+sg('train_classifier');
 
 %w=sg('get_subkernel_weights') ;
 %w(1:3)=1 ;
@@ -82,20 +82,20 @@ sg('init_kernel', 'TEST');
 
   sg('use_batch_computation', 0);
   sg('delete_kernel_optimization');
-  out1=sg('svm_classify');
+  out1=sg('classify');
   fprintf('accuracy: %f                                                                                         \n', mean(sign(out1)==testlab))
 
   sg('set_kernel_optimization_type', 'SLOWBUTMEMEFFICIENT');
   sg('use_batch_computation', 1);
   sg('delete_kernel_optimization');
-  sg('svm_train')
-  out2=sg('svm_classify');
+  sg('train_classifier')
+  out2=sg('classify');
   fprintf('accuracy: %f                                                                                         \n', mean(sign(out2)==testlab))
 
   sg('set_kernel_optimization_type', 'FASTBUTMEMHUNGRY');
   sg('use_batch_computation', 1);
   sg('delete_kernel_optimization');
-  out3=sg('svm_classify');
+  out3=sg('classify');
   fprintf('accuracy: %f                                                                                         \n', mean(sign(out3)==testlab))
 
 sg('set_kernel_optimization_type', 'SLOWBUTMEMEFFICIENT');
@@ -103,14 +103,14 @@ sg('set_kernel_optimization_type', 'SLOWBUTMEMEFFICIENT');
 sg('use_batch_computation', 0);
 tic;sg('init_kernel_optimization');toc;
 %sg('delete_kernel_optimization');
-tic;out4=sg('svm_classify');toc;
+tic;out4=sg('classify');toc;
 fprintf('accuracy: %f                                                                                         \n', mean(sign(out4)==testlab))
 
 sg('set_kernel_optimization_type', 'FASTBUTMEMHUNGRY');
 sg('use_batch_computation', 0);
 tic;sg('init_kernel_optimization');toc;
 %sg('delete_kernel_optimization');
-tic;out5=sg('svm_classify');toc;
+tic;out5=sg('classify');toc;
 fprintf('accuracy: %f                                                                                         \n', mean(sign(out5)==testlab))
 
 
@@ -126,12 +126,12 @@ return
 sg('set_features', 'TEST', traindat,'DNA');
 sg('set_labels', 'TEST', trainlab);
 sg('init_kernel', 'TEST');
-out=sg('svm_classify');
+out=sg('classify');
 fprintf('accuracy: %f                                                                                         \n', mean(sign(out)==trainlab))
 
 %evaluate svm on test data
 sg('set_features', 'TEST', testdat,'DNA');
 sg('set_labels', 'TEST', testlab);
 sg('init_kernel', 'TEST');
-out=sg('svm_classify');
+out=sg('classify');
 fprintf('accuracy: %f                                                                                         \n', mean(sign(out)==testlab))

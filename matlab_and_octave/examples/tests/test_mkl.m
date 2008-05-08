@@ -65,7 +65,7 @@ sg('use_precompute', 0);
 sg('mkl_parameters', mkl_eps, 0);
 sg('c', C);
 sg('svm_epsilon', svm_eps);
-sg('svm_train');
+sg('train_classifier');
 [b, alphas]=sg('get_svm');
 ws=sg('get_subkernel_weights');
 
@@ -93,5 +93,5 @@ sg('add_features','TEST', testdat);
 sg('add_features','TEST', testdat);
 sg('set_labels', 'TEST', testlab);
 sg('init_kernel', 'TEST');
-out=sg('svm_classify');
+out=sg('classify');
 mean(sign(out)~=testlab)

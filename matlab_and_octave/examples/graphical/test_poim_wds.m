@@ -62,7 +62,7 @@ sg( 'set_kernel', 'WEIGHTEDDEGREEPOS2_NONORM', 'CHAR', 10, order, max_mismatch, 
 sg( 'init_kernel', 'TRAIN' );
 sg( 'new_svm', 'LIGHT' );
 sg( 'c', C);
-sg( 'svm_train' );
+sg( 'train_classifier' );
 
 
 % === test
@@ -73,7 +73,7 @@ if( 0 )
   sg( 'set_features', 'TEST', T, 'DNA' );
   sg( 'set_labels', 'TEST', ones(1,size(T,2)) );
   sg( 'init_kernel', 'TEST' );
-  out = sg( 'svm_classify' )
+  out = sg( 'classify' )
 end;
 
 
@@ -81,7 +81,7 @@ end;
 % sg( 'set_features', 'TEST', testdat, 'DNA' );
 % sg( 'set_labels', 'TEST', testlab );
 % sg( 'init_kernel', 'TEST' );
-% out = sg( 'svm_classify' );
+% out = sg( 'classify' );
 % fprintf( 'accuracy: %f\n', mean(sign(out)==testlab) );
 
 
@@ -183,7 +183,7 @@ P = prod( P, 2 );
 sg( 'set_features', 'TEST', T, 'DNA' );
 sg( 'set_labels', 'TEST', ones(1,N) );
 sg( 'init_kernel', 'TEST' );
-out = sg( 'svm_classify' );
+out = sg( 'classify' );
 
 
 % === compute true POIMs

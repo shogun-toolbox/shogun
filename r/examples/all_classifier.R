@@ -55,11 +55,11 @@ dump <- sg('new_svm', 'LIGHT')
 dump <- sg('svm_epsilon', epsilon)
 dump <- sg('c', C)
 dump <- sg('svm_use_bias', use_bias)
-dump <- sg('svm_train')
+dump <- sg('train_classifier')
 
 dump <- sg('set_features', 'TEST', testdat_dna, 'DNA')
 dump <- sg('init_kernel', 'TEST')
-result <- sg('svm_classify')
+result <- sg('classify')
 
 
 # LibSVM
@@ -76,11 +76,11 @@ dump <- sg('new_svm', 'LIBSVM')
 dump <- sg('svm_epsilon', epsilon)
 dump <- sg('c', C)
 dump <- sg('svm_use_bias', use_bias)
-dump <- sg('svm_train')
+dump <- sg('train_classifier')
 
 dump <- sg('set_features', 'TEST', testdat_real)
 dump <- sg('init_kernel', 'TEST')
-result <- sg('svm_classify')
+result <- sg('classify')
 
 
 # GPBTSVM
@@ -95,11 +95,11 @@ dump <- sg('new_svm', 'GPBTSVM')
 dump <- sg('svm_epsilon', epsilon)
 dump <- sg('c', C)
 dump <- sg('svm_use_bias', use_bias)
-dump <- sg('svm_train')
+dump <- sg('train_classifier')
 
 dump <- sg('set_features', 'TEST', testdat_real)
 dump <- sg('init_kernel', 'TEST')
-result <- sg('svm_classify')
+result <- sg('classify')
 
 
 # MPDSVM
@@ -114,11 +114,11 @@ dump <- sg('new_svm', 'MPDSVM')
 dump <- sg('svm_epsilon', epsilon)
 dump <- sg('c', C)
 dump <- sg('svm_use_bias', use_bias)
-dump <- sg('svm_train')
+dump <- sg('train_classifier')
 
 dump <- sg('set_features', 'TEST', testdat_real)
 dump <- sg('init_kernel', 'TEST')
-result <- sg('svm_classify')
+result <- sg('classify')
 
 
 # LibSVM MultiClass
@@ -133,11 +133,11 @@ dump <- sg('new_svm', 'LIBSVM_MULTICLASS')
 dump <- sg('svm_epsilon', epsilon)
 dump <- sg('c', C)
 dump <- sg('svm_use_bias', use_bias)
-dump <- sg('svm_train')
+dump <- sg('train_classifier')
 
 dump <- sg('set_features', 'TEST', testdat_real)
 dump <- sg('init_kernel', 'TEST')
-result <- sg('svm_classify')
+result <- sg('classify')
 
 
 # LibSVMOneClass
@@ -152,11 +152,11 @@ dump <- sg('new_svm', 'LIBSVM_ONECLASS')
 dump <- sg('svm_epsilon', epsilon)
 dump <- sg('c', C)
 dump <- sg('svm_use_bias', use_bias)
-dump <- sg('svm_train')
+dump <- sg('train_classifier')
 
 dump <- sg('set_features', 'TEST', testdat_real)
 dump <- sg('init_kernel', 'TEST')
-result <- sg('svm_classify')
+result <- sg('classify')
 
 
 # GMNPSVM
@@ -171,11 +171,11 @@ dump <- sg('new_svm', 'GMNPSVM')
 dump <- sg('svm_epsilon', epsilon)
 dump <- sg('c', C)
 dump <- sg('svm_use_bias', use_bias)
-dump <- sg('svm_train')
+dump <- sg('train_classifier')
 
 dump <- sg('set_features', 'TEST', testdat_real)
 dump <- sg('init_kernel', 'TEST')
-result <- sg('svm_classify')
+result <- sg('classify')
 
 
 #
@@ -194,7 +194,7 @@ dump <- sg('new_svm', 'LIBSVM')
 dump <- sg('svm_epsilon', epsilon)
 dump <- sg('c', C)
 dump <- sg('svm_use_bias', use_bias)
-dump <- sg('svm_train')
+dump <- sg('train_classifier')
 
 dump <- sg('set_features', 'TEST', testdat_real)
 dump <- sg('init_kernel', 'TEST')
@@ -202,7 +202,7 @@ dump <- sg('init_kernel', 'TEST')
 objective <- sg('get_svm_objective')
 dump <- sg('use_batch_computation', TRUE)
 dump <- sg('use_linadd', TRUE)
-result <- sg('svm_classify')
+result <- sg('classify')
 
 
 #

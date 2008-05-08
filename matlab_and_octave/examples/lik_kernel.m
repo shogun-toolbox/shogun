@@ -37,21 +37,21 @@ sg('set_kernel', 'SLIK', 'CHAR', cache, l, d1, d2);
 sg('init_kernel', 'TRAIN');
 sg('new_svm', 'LIBSVM');
 sg('c', C);
-tic;sg('svm_train');toc;
+tic;sg('train_classifier');toc;
 
 %evaluate svm on test data
 sg('set_features', 'TEST', testdat, 'DNA');
 sg('set_labels', 'TEST', testlab);
 sg('init_kernel', 'TEST');
-out1=sg('svm_classify');
+out1=sg('classify');
 fprintf('accuracy: %f                                                                                         \n', mean(sign(out1)==testlab))
 
 sg('init_kernel', 'TEST');
-out2=sg('svm_classify');
+out2=sg('classify');
 fprintf('accuracy: %f                                                                                         \n', mean(sign(out2)==testlab))
 
 
-tic;out3=sg('svm_classify');toc;
+tic;out3=sg('classify');toc;
 fprintf('accuracy: %f                                                                                         \n', mean(sign(out3)==testlab))
 
 max(abs(out1-out2))

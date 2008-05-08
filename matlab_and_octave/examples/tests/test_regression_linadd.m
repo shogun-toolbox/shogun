@@ -11,7 +11,7 @@ trainlab=[-ones(1,20) ones(1,20)];
 testdat=[acgt([4*ones(5,10) 3*ones(5,10) 2*ones(5,10) 1*ones(5,10)])];
 testlab=[ones(1,20) -ones(1,20)];
 
-sg('new_svm', 'SVRLIGHT');
+sg('new_regression', 'SVRLIGHT');
 
 sg('use_mkl', 0);
 sg('use_linadd', 1);
@@ -29,9 +29,9 @@ sg('init_kernel', 'TRAIN');
 sg('c', C);
 sg('svm_epsilon', svm_eps);
 sg('svr_tube_epsilon', svm_tube);
-tic; sg('svm_train'); toc;
+tic; sg('train_regression'); toc;
 [b, alphas]=sg('get_svm');
 sg('set_features', 'TEST', testdat, 'DNA');
 sg('set_labels', 'TEST', testlab);
 sg('init_kernel', 'TEST');
-out=sg('svm_classify');
+out=sg('classify');

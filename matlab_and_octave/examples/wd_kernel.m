@@ -45,7 +45,7 @@ sg('init_kernel', 'TRAIN');
 %sg('set_WD_position_weights', ones(1,200)/200) ;
 sg('new_svm', 'LIGHT');
 sg('c',C);
-tic;sg('svm_train');toc;
+tic;sg('train_classifier');toc;
 
 %evaluate svm on test data
 sg('set_features', 'TEST', testdat, 'DNA');
@@ -56,12 +56,12 @@ sg('init_kernel', 'TEST');
 
 sg('use_batch_computation', 0);
 sg('delete_kernel_optimization');
-out1=sg('svm_classify');
+out1=sg('classify');
 fprintf('accuracy: %f                                                                                         \n', mean(sign(out1)==testlab))
 
 sg('init_kernel', 'TEST');
 sg('use_batch_computation', 1);
-out2=sg('svm_classify');
+out2=sg('classify');
 fprintf('accuracy: %f                                                                                         \n', mean(sign(out2)==testlab))
 
 
@@ -69,7 +69,7 @@ sg('use_batch_computation', 0);
 tic;sg('init_kernel_optimization');toc;
 %sg('delete_kernel_optimization');
 
-tic;out3=sg('svm_classify');toc;
+tic;out3=sg('classify');toc;
 fprintf('accuracy: %f                                                                                         \n', mean(sign(out3)==testlab))
 
 max(abs(out1-out2))

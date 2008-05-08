@@ -13,7 +13,7 @@ sg('new_svm', 'GNPPSVM');
 sg('svm_epsilon', 1e-10);
 sg('c', 2000000);
 tic;
-sg('svm_train');
+sg('train_classifier');
 toc
 
 [npp_b npp_alpha]=sg('get_svm');
@@ -24,7 +24,7 @@ ma=max(traindat,2)+0.2;
 testdat=[x(:),y(:)]';
 sg('set_features', 'TEST', testdat);
 sg('init_kernel', 'TEST');
-npp_out=sg('svm_classify');
+npp_out=sg('classify');
 [npp_b npp_alpha]=sg('get_svm');
 
 sg('loglevel', 'ALL');
@@ -37,7 +37,7 @@ sg('new_svm', 'LIBSVM');
 sg('svm_epsilon', 1e-10);
 sg('c', 2000000);
 tic;
-sg('svm_train');
+sg('train_classifier');
 toc
 
 mi=min(traindat,2)-0.2;
@@ -46,7 +46,7 @@ ma=max(traindat,2)+0.2;
 testdat=[x(:),y(:)]';
 sg('set_features', 'TEST', testdat);
 sg('init_kernel', 'TEST');
-lib_out=sg('svm_classify');
+lib_out=sg('classify');
 [lib_b lib_alpha]=sg('get_svm');
 
 figure(1)

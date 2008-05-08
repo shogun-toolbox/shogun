@@ -74,14 +74,14 @@ sg('set_kernel', 'WEIGHTEDCOMMSTRING', 'WORD', cache, use_sign, normalization);
 sg('init_kernel', 'TRAIN');
 sg('new_svm', 'LIGHT');
 sg('c', C);
-sg('svm_train');
+sg('train_classifier');
 
 sg('set_features', 'TEST', testdat, 'DNA');
 sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, 0, 'r');
 sg('attach_preproc', 'TEST');
 sg('set_labels', 'TEST', testlab);
 sg('init_kernel', 'TEST');
-out=sg('svm_classify');
+out=sg('classify');
 
 %%% svm linadd on
 sg('use_linadd', 1);
@@ -96,7 +96,7 @@ sg('set_kernel', 'WEIGHTEDCOMMSTRING', 'WORD', cache, use_sign, normalization);
 sg('init_kernel', 'TRAIN');
 sg('new_svm', 'LIGHT');
 sg('c', C);
-sg('svm_train');
+sg('train_classifier');
 sg('init_kernel_optimization');
 
 sg('set_features', 'TEST', testdat, 'DNA');
@@ -104,6 +104,6 @@ sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, 0, 'r'
 sg('attach_preproc', 'TEST');
 sg('set_labels', 'TEST', testlab);
 sg('init_kernel', 'TEST');
-out_linadd=sg('svm_classify');
+out_linadd=sg('classify');
 
 max(abs(out_linadd-out))

@@ -15,19 +15,19 @@ sg('init_kernel', 'TRAIN');
 sg('new_svm', 'LIBSVM_ONECLASS');
 sg('svm_one_class_nu', 0.1);
 sg('svm_epsilon', 1e-6);
-sg('svm_train');
+sg('train_classifier');
 [b, alphas]=sg('get_svm');
 o=sg('get_svm_objective');
 
 sg('set_features', 'TEST', traindat);
 sg('init_kernel', 'TEST');
-train_out=sg('svm_classify');
+train_out=sg('classify');
 
 thresh=min(train_out)-0.01; %set wildly guessed threshold
 
 sg('set_features', 'TEST', testdat);
 sg('init_kernel', 'TEST');
-out=sg('svm_classify');
+out=sg('classify');
 err=mean(sign(thresh-out)==testlab)
 
 mean(out(testlab>0))

@@ -10,7 +10,7 @@ sg('init_kernel', 'TRAIN');
 sg('new_svm', 'LIBSVM');
 sg('svm_epsilon', 1e-3)
 sg('c', 20);
-sg('svm_train');
+sg('train_classifier');
 
 [b,alphas]=sg('get_svm');
 svidx=alphas(:,2)+1;
@@ -21,7 +21,7 @@ ma=[max(traindat(1,:))+0.2, max(traindat(2,:))+0.2];
 testdat=[x(:),y(:)]';
 sg('set_features', 'TEST', testdat);
 sg('init_kernel', 'TEST');
-out=sg('svm_classify');
+out=sg('classify');
 
 figure(1)
 clf

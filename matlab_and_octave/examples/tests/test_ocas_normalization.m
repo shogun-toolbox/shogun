@@ -50,14 +50,14 @@ km=sg('get_kernel_matrix');
 sg('new_svm', 'LIGHT');
 sg('c', C);
 tic;
-% this is only necessary for svm_train not to choke on positive definites
-sg('svm_train');
+% this is only necessary for train_classifier not to choke on positive definites
+sg('train_classifier');
 tim_lo=toc;
 
 %evaluate svm on test data
 sg('set_features', 'TEST', testdat, 'DNA');
 sg('init_kernel', 'TEST');
-out_ref=sg('svm_classify');
+out_ref=sg('classify');
 prc_ref=calcrfcscore(out_ref, testlab);
 roc_ref=calcrocscore(out_ref, testlab);
 
@@ -83,12 +83,12 @@ sg('c', C);
 sg('svm_epsilon', epsilon);
 sg('new_svm', 'WDSVMOCAS', order, from_order);
 tic;
-sg('svm_train');
+sg('train_classifier');
 tim_lo=toc;
 
 %evaluate svm on test data
 sg('set_features', 'TEST', testdat, 'RAWDNA');
-out=sg('svm_classify');
+out=sg('classify');
 prc=calcrfcscore(out, testlab);
 roc=calcrocscore(out, testlab);
 

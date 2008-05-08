@@ -7,14 +7,14 @@ sg('set_features', 'TRAIN', traindat);
 sg('set_labels', 'TRAIN', trainlab);
 sg('set_kernel', 'GAUSSIAN', 'REAL', 10, 0.1);
 sg('init_kernel', 'TRAIN');
-sg('new_svm', 'LIBSVR');
+sg('new_regression', 'LIBSVR');
 sg('c', 0.1);
 sg('svr_tube_epsilon', 0.2);
-sg('svm_train');
+sg('train_regression');
 sg('set_features', 'TEST', testdat);
 sg('set_labels', 'TEST', testlab);
 sg('init_kernel', 'TEST');
-out=sg('svm_classify');
+out=sg('classify');
 err=mean((testlab-out).^2);
 
 figure(1)

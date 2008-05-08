@@ -31,7 +31,7 @@ trySVM <- function(c, ktype, dtype, size_cache, wireframe=FALSE) {
   sg('new_svm', 'LIBSVM')
   sg('c', c)
 
-  sg('svm_train')
+  sg('train_classifier')
 
   x1 <- (-49:+50)/10
   x2 <- (-49:+50)/10
@@ -41,7 +41,7 @@ trySVM <- function(c, ktype, dtype, size_cache, wireframe=FALSE) {
 
   sg('set_features', 'TEST', testdat)
   sg('init_kernel', 'TEST')
-  out <- sg('svm_classify')
+  out <- sg('classify')
 
   z <- t(matrix(out, 100, 100))
 

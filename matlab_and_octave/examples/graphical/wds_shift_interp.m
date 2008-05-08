@@ -78,13 +78,13 @@ sg('set_kernel', 'WEIGHTEDDEGREEPOS2', 'CHAR', 10, order, max_mismatch, len, shi
 sg('init_kernel', 'TRAIN');
 sg('new_svm', 'LIGHT');
 sg('c', C);
-sg('svm_train');
+sg('train_classifier');
 
 %evaluate svm on train data
 sg('set_features', 'TEST', traindat,'DNA');
 sg('set_labels', 'TEST', trainlab);
 sg('init_kernel', 'TEST');
-out=sg('svm_classify');
+out=sg('classify');
 fprintf('accuracy: %f roc: %f                                                                                        \n', mean(sign(out)==trainlab), calcrocscore(out,trainlab))
 
 
@@ -92,7 +92,7 @@ fprintf('accuracy: %f roc: %f                                                   
 sg('set_features', 'TEST', testdat,'DNA');
 sg('set_labels', 'TEST', testlab);
 sg('init_kernel', 'TEST');
-out=sg('svm_classify');
+out=sg('classify');
 fprintf('accuracy: %f roc: %f                                                                                        \n', mean(sign(out)==testlab), calcrocscore(out,testlab))
 
 W=sg('get_WD_scoring', max_order);

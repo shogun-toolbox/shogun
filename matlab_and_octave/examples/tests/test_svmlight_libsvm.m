@@ -24,14 +24,14 @@ sg('new_svm', 'GPBTSVM');
 sg('svm_epsilon', 1e-6);
 sg('c', 2);
 tic;
-sg('svm_train');
+sg('train_classifier');
 time_gpbt(i)=toc
 [b, alphas]=sg('get_svm');
 o=sg('get_svm_objective');
 sg('set_features', 'TEST', testdat);
 sg('set_labels', 'TEST', testlab);
 sg('init_kernel', 'TEST');
-out=sg('svm_classify');
+out=sg('classify');
 valerr=mean(testlab~=sign(out));
 
 sg('set_features', 'TRAIN', traindat);
@@ -42,14 +42,14 @@ sg('new_svm', 'LIBSVM');
 sg('svm_epsilon', 1e-6);
 sg('c', 2);
 tic
-sg('svm_train');
+sg('train_classifier');
 time_libsvm(i)=toc
 [b2, alphas2]=sg('get_svm');
 o2=sg('get_svm_objective');
 sg('set_features', 'TEST', testdat);
 sg('set_labels', 'TEST', testlab);
 sg('init_kernel', 'TEST');
-out2=sg('svm_classify');
+out2=sg('classify');
 valerr2=mean(testlab~=sign(out2));
 
 sg('set_features', 'TRAIN', traindat);
@@ -60,7 +60,7 @@ sg('new_svm', 'LIGHT');
 sg('svm_epsilon', 1e-6);
 sg('c', 2);
 tic;
-sg('svm_train');
+sg('train_classifier');
 time_light(i)=toc
 [b3, alphas3]=sg('get_svm');
 o3=sg('get_svm_objective');
@@ -68,7 +68,7 @@ sg('set_features', 'TEST', testdat);
 sg('set_labels', 'TEST', testlab);
 sg('init_kernel', 'TEST');
 
-out3=sg('svm_classify');
+out3=sg('classify');
 valerr3=mean(testlab~=sign(out3));
 
 errs12(i)=max(abs(out-out2))

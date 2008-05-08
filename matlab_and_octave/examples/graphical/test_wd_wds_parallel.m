@@ -55,7 +55,7 @@ sg('set_kernel', 'WEIGHTEDDEGREEPOS2', 'CHAR', 10, order, max_mismatch, len, shi
 sg('init_kernel', 'TRAIN');
 sg('new_svm', 'LIGHT');
 sg('c', C);
-sg('svm_train');
+sg('train_classifier');
 
 %evaluate svm on test data using 4 threads vanilla kernel eval
 sg('threads', 4);
@@ -63,7 +63,7 @@ sg('delete_kernel_optimization');
 sg('set_features', 'TEST', testdat,'DNA');
 sg('set_labels', 'TEST', testlab);
 sg('init_kernel', 'TEST');
-out1=sg('svm_classify');
+out1=sg('classify');
 fprintf('accuracy: %f                                                                                         \n', mean(sign(out1)==testlab))
 
 %evaluate svm on test data using 4 threads linadd kernel eval
@@ -72,7 +72,7 @@ sg('init_kernel_optimization');
 sg('set_features', 'TEST', testdat,'DNA');
 sg('set_labels', 'TEST', testlab);
 sg('init_kernel', TEST);
-out2=sg('svm_classify');
+out2=sg('classify');
 fprintf('accuracy: %f                                                                                         \n', mean(sign(out2)==testlab))
 
 %evaluate svm on test data using 4 threads batch kernel eval
@@ -81,7 +81,7 @@ sg('use_batch_computation', 1);
 sg('set_features', 'TEST', testdat,'DNA');
 sg('set_labels', 'TEST', testlab);
 sg('init_kernel', 'TEST');
-out3=sg('svm_classify');
+out3=sg('classify');
 fprintf('accuracy: %f                                                                                         \n', mean(sign(out3)==testlab))
 
 %evaluate svm on test data using 1 thread vanilla kernel eval
@@ -90,7 +90,7 @@ sg('delete_kernel_optimization');
 sg('set_features', 'TEST', testdat,'DNA');
 sg('set_labels', 'TEST', testlab);
 sg('init_kernel', 'TEST');
-out4=sg('svm_classify');
+out4=sg('classify');
 fprintf('accuracy: %f                                                                                         \n', mean(sign(out1)==testlab))
 
 %evaluate svm on test data using 1 threads linadd kernel eval
@@ -99,7 +99,7 @@ sg('init_kernel_optimization');
 sg('set_features', 'TEST', testdat,'DNA');
 sg('set_labels', 'TEST', testlab);
 sg('init_kernel', 'TEST');
-out5=sg('svm_classify');
+out5=sg('classify');
 fprintf('accuracy: %f                                                                                         \n', mean(sign(out2)==testlab))
 
 %evaluate svm on test data using 1 threads batch kernel eval
@@ -108,7 +108,7 @@ sg('use_batch_computation', 1);
 sg('set_features', 'TEST', testdat,'DNA');
 sg('set_labels', 'TEST', testlab);
 sg('init_kernel', 'TEST');
-out6=sg('svm_classify');
+out6=sg('classify');
 fprintf('accuracy: %f                                                                                         \n', mean(sign(out3)==testlab))
 max(abs(out1-out2))
 max(abs(out1-out3))

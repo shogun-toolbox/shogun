@@ -27,8 +27,8 @@ trainlab = sin(f(kk)*traindat);
 testdat = [1:(((10*2*pi)-1)/(no_obs-1)):10*2*pi];
 testlab = sin(f(kk)*traindat);
 
-sg('new_svm', 'LIBSVR');
-%sg('new_svm', 'SVRLIGHT');
+sg('new_regression', 'LIBSVR');
+%sg('new_regression', 'SVRLIGHT');
 sg('clean_features', 'TRAIN');
 sg('set_features','TRAIN', traindat);
 sg('set_labels', 'TRAIN', trainlab);
@@ -102,9 +102,9 @@ tic
 for ii=1:100,
 	% find most violated constraints
 	% 1. compute optimal alphas
-	sg('new_svm', 'LIBSVR');
-	%sg('new_svm', 'SVRLIGHT');
-	sg('svm_train');
+	sg('new_regression', 'LIBSVR');
+	%sg('new_regression', 'SVRLIGHT');
+	sg('train_regression');
 	betas=sg('get_subkernel_weights') ;
 	[b,alpha_idx]=sg('get_svm') ;
 	alpha_svmlight{ii}=alpha_idx;
@@ -113,9 +113,9 @@ for ii=1:100,
 	obj_svmlight(ii)=sg('get_svm_objective');
 
 
-	%sg('new_svm', 'LIBSVR');
-	sg('new_svm', 'SVRLIGHT');
-	sg('svm_train');
+	%sg('new_regression', 'LIBSVR');
+	sg('new_regression', 'SVRLIGHT');
+	sg('train_regression');
 	betas=sg('get_subkernel_weights') ;
 	[b,alpha_idx]=sg('get_svm') ;
 	alpha_libsvm{ii}=alpha_idx;
@@ -183,7 +183,7 @@ sg('add_features','TEST', testdat);
 sg('add_features','TEST', testdat);
 sg('set_labels', 'TEST', testlab);
 sg('init_kernel', 'TEST');
-out2=sg('svm_classify');
+out2=sg('classify');
 
 sum(abs(testlab-out2))
 sum((testlab-out2).^2)

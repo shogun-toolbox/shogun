@@ -27,7 +27,7 @@ C          = 1;
 cache_size = 50;
 mkl_eps    = 1e-4;
 svm_eps    = 1e-4;
-svm_tube   = 0.01;
+svr_tube   = 0.01;
 debug = 0;
 
 % data
@@ -55,13 +55,13 @@ for kk = 1:length(f)   % Big loop
 
 	kernels={};
 
-	sg('new_svm', 'SVRLIGHT');
+	sg('new_regression', 'SVRLIGHT');
 	sg('use_mkl', 1);
 	sg('use_precompute', 0); % precompute every SINGLE kernel!
 	sg('mkl_parameters', mkl_eps, 0);
 	sg('c', C);
 	sg('svm_epsilon',svm_eps);
-	sg('svr_tube_epsilon',svm_tube);
+	sg('svr_tube_epsilon',svr_tube);
 	sg('clean_features', 'TRAIN');
 	sg('clean_kernel');
 
@@ -88,7 +88,7 @@ for kk = 1:length(f)   % Big loop
 	sg('add_kernel', 1, 'GAUSSIAN', 'REAL', cache_size, rbf_width(9));
 	sg('add_kernel', 1, 'GAUSSIAN', 'REAL', cache_size, rbf_width(10));
 	sg('init_kernel', 'TRAIN') ;
-	sg('svm_train');
+	sg('train_regression');
 
 	weights(kk,:) = sg('get_subkernel_weights') ;
 	fprintf('frequency: %02.2f   rbf-kernel-weights:  %02.2f %02.2f %02.2f %02.2f %02.2f %02.2f %02.2f %02.2f %02.2f %02.2f           \n', f(kk), weights(kk,:))

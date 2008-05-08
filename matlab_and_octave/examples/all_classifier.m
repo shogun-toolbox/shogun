@@ -39,11 +39,11 @@ sg('new_svm', 'LIGHT');
 sg('svm_epsilon', epsilon);
 sg('c', C);
 sg('svm_use_bias', use_bias);
-sg('svm_train');
+sg('train_classifier');
 
 sg('set_features', 'TEST', testdata_dna, 'DNA');
 sg('init_kernel', 'TEST');
-result=sg('svm_classify');
+result=sg('classify');
 
 
 % LibSVM
@@ -58,11 +58,11 @@ sg('new_svm', 'LIBSVM');
 sg('svm_epsilon', epsilon);
 sg('c', C);
 sg('svm_use_bias', use_bias);
-sg('svm_train');
+sg('train_classifier');
 
 sg('set_features', 'TEST', testdata_real);
 sg('init_kernel', 'TEST');
-result=sg('svm_classify');
+result=sg('classify');
 
 
 % GPBTSVM
@@ -77,11 +77,11 @@ sg('new_svm', 'GPBTSVM');
 sg('svm_epsilon', epsilon);
 sg('c', C);
 sg('svm_use_bias', use_bias);
-sg('svm_train');
+sg('train_classifier');
 
 sg('set_features', 'TEST', testdata_real);
 sg('init_kernel', 'TEST');
-result=sg('svm_classify');
+result=sg('classify');
 
 % MPDSVM
 disp('MPDSVM');
@@ -95,11 +95,11 @@ sg('new_svm', 'MPDSVM');
 sg('svm_epsilon', epsilon);
 sg('c', C);
 sg('svm_use_bias', use_bias);
-sg('svm_train');
+sg('train_classifier');
 
 sg('set_features', 'TEST', testdata_real);
 sg('init_kernel', 'TEST');
-result=sg('svm_classify');
+result=sg('classify');
 
 
 % LibSVM MultiClass
@@ -114,11 +114,11 @@ sg('new_svm', 'LIBSVM_MULTICLASS');
 sg('svm_epsilon', epsilon);
 sg('c', C);
 sg('svm_use_bias', use_bias);
-sg('svm_train');
+sg('train_classifier');
 
 sg('set_features', 'TEST', testdata_real);
 sg('init_kernel', 'TEST');
-result=sg('svm_classify');
+result=sg('classify');
 
 
 % LibSVM OneClass
@@ -132,11 +132,11 @@ sg('new_svm', 'LIBSVM_ONECLASS');
 sg('svm_epsilon', epsilon);
 sg('c', C);
 sg('svm_use_bias', use_bias);
-sg('svm_train');
+sg('train_classifier');
 
 sg('set_features', 'TEST', testdata_real);
 sg('init_kernel', 'TEST');
-result=sg('svm_classify');
+result=sg('classify');
 
 
 % GMNPSVM
@@ -151,11 +151,11 @@ sg('new_svm', 'GMNPSVM');
 sg('svm_epsilon', epsilon);
 sg('c', C);
 sg('svm_use_bias', use_bias);
-sg('svm_train');
+sg('train_classifier');
 
 sg('set_features', 'TEST', testdata_real);
 sg('init_kernel', 'TEST');
-result=sg('svm_classify');
+result=sg('classify');
 
 
 % run with batch or linadd on LibSVM;
@@ -170,16 +170,16 @@ sg('new_svm', 'LIBSVM');
 sg('svm_epsilon', epsilon);
 sg('c', C);
 sg('svm_use_bias', use_bias);
-sg('svm_train');
+sg('train_classifier');
 
 sg('set_features', 'TEST', testdata_real);
 sg('init_kernel', 'TEST');
-result=sg('svm_classify');
+result=sg('classify');
 
 objective=sg('get_svm_objective');
 sg('use_batch_computation', 1);
 sg('use_linadd', 1);
-result=sg('svm_classify');
+result=sg('classify');
 
 
 %
@@ -198,10 +198,10 @@ sg('c', C);
 sg('svm_use_bias', use_bias);
 sg('svm_max_train_time', max_train_time);
 % sometimes does not terminate
-%sg('svm_train');
+%sg('train_classifier');
 
 %sg('set_features', 'TEST', sparse(testdata_real));
-%result=sg('svm_classify');
+%result=sg('classify');
 
 % SVMOcas
 disp('SVMOcas');
@@ -213,10 +213,10 @@ sg('svm_epsilon', epsilon);
 sg('c', C);
 sg('svm_use_bias', use_bias);
 sg('svm_max_train_time', max_train_time);
-sg('svm_train');
+sg('train_classifier');
 
 sg('set_features', 'TEST', sparse(testdata_real));
-result=sg('svm_classify');
+result=sg('classify');
 
 % SVMSGD
 disp('SVMSGD');
@@ -228,10 +228,10 @@ sg('svm_epsilon', epsilon);
 sg('c', C);
 sg('svm_use_bias', use_bias);
 sg('svm_max_train_time', max_train_time);
-sg('svm_train');
+sg('train_classifier');
 
 sg('set_features', 'TEST', sparse(testdata_real));
-result=sg('svm_classify');
+result=sg('classify');
 
 % LibLinear
 disp('LibLinear');
@@ -243,10 +243,10 @@ sg('svm_epsilon', epsilon);
 sg('c', C);
 sg('svm_use_bias', use_bias);
 sg('svm_max_train_time', max_train_time);
-sg('svm_train');
+sg('train_classifier');
 
 sg('set_features', 'TEST', sparse(testdata_real));
-result=sg('svm_classify');
+result=sg('classify');
 
 % SVMLin
 disp('SVMLin');
@@ -258,10 +258,10 @@ sg('svm_epsilon', epsilon);
 sg('c', C);
 sg('svm_use_bias', use_bias);
 sg('svm_max_train_time', max_train_time);
-sg('svm_train');
+sg('train_classifier');
 
 sg('set_features', 'TEST', sparse(testdata_real));
-result=sg('svm_classify');
+result=sg('classify');
 
 
 %

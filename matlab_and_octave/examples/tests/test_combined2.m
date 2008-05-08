@@ -30,7 +30,7 @@ sg('add_kernel', 3, 'POLY', 'REAL', 50, 3, 0);
 sg('init_kernel', 'TRAIN');
 sg('c', 5);
 sg('new_svm', 'LIGHT');
-sg('svm_train');
+sg('train_classifier');
 trKs=sg('get_kernel_matrix') ;
 
 

@@ -40,12 +40,12 @@ sg('init_kernel', 'TRAIN');
 kt=sg('get_kernel_matrix');
 sg('new_svm', 'LIGHT');
 sg('c', C);
-tic; sg('svm_train'); t=toc
+tic; sg('train_classifier'); t=toc
 [b, alphas]=sg('get_svm');
 
 tic;
 sg('init_kernel', 'TEST');
-outopt=sg('svm_classify');
+outopt=sg('classify');
 tout=toc
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -71,11 +71,11 @@ sg('init_kernel', 'TRAIN');
 ktref=sg('get_kernel_matrix');
 sg('new_svm', 'LIGHT');
 sg('c', C);
-tic; sg('svm_train'); tref=toc
+tic; sg('train_classifier'); tref=toc
 [bref, alphasref]=sg('get_svm');
 tic;
 sg('init_kernel', 'TEST');
-outoptref=sg('svm_classify');
+outoptref=sg('classify');
 toutref=toc
 
 outopt(1:10)

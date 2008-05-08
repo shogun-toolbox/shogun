@@ -18,7 +18,7 @@ sg('new_svm', 'LIBSVM_MULTICLASS');
 %sg('new_svm', 'GMNP');
 sg('svm_epsilon', 1e-5)
 sg('c', 10);
-sg('svm_train');
+sg('train_classifier');
 
 mi=min(traindat')-2;
 ma=max(traindat')+2;
@@ -26,7 +26,7 @@ ma=max(traindat')+2;
 testdat=[x(:),y(:)]';
 sg('set_features', 'TEST', testdat);
 sg('init_kernel', 'TEST');
-out=sg('svm_classify');
+out=sg('classify');
 
 figure(1)
 clf
@@ -46,7 +46,7 @@ sg('init_kernel', 'TRAIN');
 sg('new_svm', 'GMNPSVM');
 sg('svm_epsilon', 1e-5);
 sg('c', 10);
-sg('svm_train');
+sg('train_classifier');
 
 mi=min(traindat')-2;
 ma=max(traindat')+2;
@@ -54,7 +54,7 @@ ma=max(traindat')+2;
 testdat=[x(:),y(:)]';
 sg('set_features', 'TEST', testdat);
 sg('init_kernel', 'TEST');
-out2=sg('svm_classify');
+out2=sg('classify');
 
 figure(2)
 clf

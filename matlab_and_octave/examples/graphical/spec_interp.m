@@ -53,7 +53,7 @@ sg('set_kernel', 'WEIGHTEDCOMMSTRING', 'WORD',cache, use_sign, normalization);
 sg('init_kernel', 'TRAIN');
 sg('new_svm', 'LIGHT');
 sg('c',C);
-sg('svm_train');
+sg('train_classifier');
 sg('init_kernel_optimization');
 
 %evaluate svm on train data
@@ -63,7 +63,7 @@ sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, 0, 'r'
 sg('attach_preproc', 'TEST') ;
 sg('set_labels', 'TEST', trainlab);
 sg('init_kernel', 'TEST');
-out=sg('svm_classify');
+out=sg('classify');
 fprintf('accuracy: %f                                                                                         \n', mean(sign(out)==trainlab))
 W=sg('get_SPEC_scoring', max_order);
 

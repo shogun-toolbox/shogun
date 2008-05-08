@@ -32,7 +32,7 @@ sg('set_kernel', 'WEIGHTEDDEGREEPOS2', 'CHAR', 10', order, max_mismatch, len, sh
 sg('init_kernel', 'TRAIN');
 sg('new_svm', 'LIGHT');
 sg('c', C);
-sg('svm_train');
+sg('train_classifier');
 consensus=sg('get_WD_consensus');
 consensus'
 
@@ -46,7 +46,7 @@ simpleconsensus'
 
 sg('set_features', 'TEST', [ consensus simpleconsensus' traindat(:,end-20)' traindat(:,end)'], 'DNA');
 sg('init_kernel', 'TEST');
-out=sg('svm_classify');
+out=sg('classify');
 [b,alphas]=sg('get_svm');
 sprintf('%5f\n', out'-b)
 
@@ -67,7 +67,7 @@ kmers=acgt(kmers);
 
 sg('set_features', 'TEST', kmers, 'DNA');
 sg('init_kernel', 'TEST');
-out=sg('svm_classify');
+out=sg('classify');
 [b,alphas]=sg('get_svm');
 out=out-b;
 [v,i]=max(out);
