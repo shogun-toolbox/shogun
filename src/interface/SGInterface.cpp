@@ -835,7 +835,7 @@ static CSGInterfaceMethod sg_methods[]=
 	{
 		(CHAR*) N_LOGLEVEL,
 		(&CSGInterface::cmd_loglevel),
-		(CHAR*) USAGE_I(N_LOGLEVEL, "ALL|DEBUG|INFO|WARN|ERROR")
+		(CHAR*) USAGE_I(N_LOGLEVEL, "'ALL|DEBUG|INFO|WARN|ERROR'")
 	},
 	{
 		(CHAR*) N_GET_VERSION,
