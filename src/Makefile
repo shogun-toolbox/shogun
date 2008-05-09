@@ -271,12 +271,18 @@ doc:	lib/versionstring.h
 r-precompile: RFILES
 	find ./ -name '*.R' -exec echo "f='{}'; fdata=file.path(dirname(f), paste(strsplit(basename(f),'.',fixed = TRUE)[[1]][1],'.RData', sep='')); source(f); save(list=ls(all=TRUE),file=fdata, compress=TRUE); q(save='no')" | R \;
 
+tests: run-testsuite check-examples
+
 ifeq (python-modular,$(INTERFACE))
-tests:
+run-testsuite:
 		cd ../$(INTERFACE)/testcases && ( PYTHON=$(PYTHON) PYTHONPATH="$(DESTDIR)$(PYDIR)" ./test_all.sh	)
+check-examples:
+		cd ../$(INTERFACE) && ( PYTHON=$(PYTHON) PYTHONPATH="$(DESTDIR)$(PYDIR)" ./check_examples.sh	)
 else
-tests:
+run-testsuite:
 		cd ../$(INTERFACE)/testcases && ./test_all.sh
+check-examples:
+		cd ../$(INTERFACE) && ./check_examples.sh
 endif
 
 ChangeLog:
