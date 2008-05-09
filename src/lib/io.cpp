@@ -381,6 +381,20 @@ CHAR* CIO::skip_spaces(CHAR* str)
 		return str;
 }
 
+CHAR* CIO::skip_blanks(CHAR* str)
+{
+	INT i=0;
+
+	if (str)
+	{
+		for (i=0; isblank(str[i]); i++);
+
+		return &str[i];
+	}
+	else
+		return str;
+}
+
 EMessageType CIO::get_loglevel() const
 {
 	return loglevel;

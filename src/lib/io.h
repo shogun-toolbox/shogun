@@ -146,6 +146,13 @@ class CIO
 		 */
 		static CHAR* skip_spaces(CHAR* str);
 
+		/** skip leading spaces + tabs
+		 *
+		 * @param str string in which to look for blanks
+		 * @return string after after skipping leading blanks
+		 */
+		static CHAR* skip_blanks(CHAR* str);
+
 		/** get target
 		 *
 		 * @return file descriptor for target
