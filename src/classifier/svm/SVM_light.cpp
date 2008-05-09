@@ -512,7 +512,6 @@ bool CSVMLight::train()
 
 		while (kn)
 		{
-			SG_PRINT("initing %p\n", kn);
 			// allocate kernel cache but clean up beforehand
 			kn->resize_kernel_cache(kn->get_cache_size());
 			kn = ((CCombinedKernel*) kernel)->get_next_kernel(kn) ;
