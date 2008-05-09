@@ -54,12 +54,11 @@ CIO::CIO(const CIO& orig) : target(orig.get_target()), last_progress_time(0),
 
 void CIO::message(EMessageType prio, const CHAR *fmt, ... ) const
 {
-#if defined(HAVE_MATLAB) || defined(HAVE_PYTHON) || defined(HAVE_OCTAVE) || defined(HAVE_R)
 	char str[4096];
-    va_list list;
-    va_start(list,fmt);
+	va_list list;
+	va_start(list,fmt);
 	vsnprintf(str, sizeof(str), fmt, list);
-    va_end(list);
+	va_end(list);
 
 	int p=get_prio_string(prio);
 	if (p>=0)
@@ -87,7 +86,7 @@ void CIO::message(EMessageType prio, const CHAR *fmt, ... ) const
 			case M_CRITICAL:
 			case M_ALERT:
 			case M_EMERGENCY:
-#ifndef CYGWIN
+#ifndef WIN32
 				CSignal::unset_handler();
 #endif
 #ifdef WIN32
@@ -119,7 +118,9 @@ void CIO::message(EMessageType prio, const CHAR *fmt, ... ) const
 			case M_CRITICAL:
 			case M_ALERT:
 			case M_EMERGENCY:
+#ifndef WIN32
 				CSignal::unset_handler();
+#endif
 				error("%s", str);
 				throw ShogunException(str);
 				break;
@@ -145,7 +146,9 @@ void CIO::message(EMessageType prio, const CHAR *fmt, ... ) const
 			case M_CRITICAL:
 			case M_ALERT:
 			case M_EMERGENCY:
+#ifndef WIN32
 				CSignal::unset_handler();
+#endif
 				fprintf(target, "%s", message_strings[p]);
 				fprintf(target, "%s\n", str);
 				PyErr_SetString(PyExc_RuntimeError,str);
@@ -173,6 +176,9 @@ void CIO::message(EMessageType prio, const CHAR *fmt, ... ) const
 			case M_CRITICAL:
 			case M_ALERT:
 			case M_EMERGENCY:
+#ifndef WIN32
+				CSignal::unset_handler();
+#endif
 				throw ShogunException(str);
 				break;
 			default:
@@ -194,7 +200,36 @@ void CIO::message(EMessageType prio, const CHAR *fmt, ... ) const
 			case M_CRITICAL:
 			case M_ALERT:
 			case M_EMERGENCY:
+#ifndef WIN32
+				CSignal::unset_handler();
+#endif
 				error("%s", str);
+				throw ShogunException(str);
+				break;
+			default:
+				break;
+		}
+
+#elif defined(HAVE_CMDLINE)
+		switch (prio)
+		{
+			case M_DEBUG:
+			case M_INFO:
+			case M_NOTICE:
+			case M_MESSAGEONLY:
+			case M_WARN:
+				fprintf(target, "%s", message_strings[p]);
+				fprintf(target, "%s", str);
+				break;
+			case M_ERROR:
+			case M_CRITICAL:
+			case M_ALERT:
+			case M_EMERGENCY:
+#ifndef WIN32
+				CSignal::unset_handler();
+#endif
+				fprintf(target, "%s", message_strings[p]);
+				fprintf(target, "%s", str);
 				throw ShogunException(str);
 				break;
 			default:
@@ -204,7 +239,8 @@ void CIO::message(EMessageType prio, const CHAR *fmt, ... ) const
 #endif
 		fflush(target);
 	}
-#else
+
+/*
 	int p=get_prio_string(prio);
 	if (p>=0)
 	{
@@ -215,7 +251,7 @@ void CIO::message(EMessageType prio, const CHAR *fmt, ... ) const
 		va_end(list);
 		fflush(target);
 	}
-#endif
+	*/
 }
 
 void CIO::buffered_message(EMessageType prio, const CHAR *fmt, ... ) const

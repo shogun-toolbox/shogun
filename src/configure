@@ -724,6 +724,7 @@ fi
 
 if test "$_interface" = "cmdline"; then
 	echo "Enabling cmdline interface"
+	_cmdline=yes
 	_swig=no
 elif test "$_interface" = "python-modular"; then
 	echo "Enabling modular python interface"
@@ -2294,7 +2295,6 @@ EOF
 		fi
 	fi
 
-
 	if test "$_octave" = yes
 	then
 		echocheck "Octave"
@@ -2720,6 +2720,12 @@ EOF
 		TARGET=libshogun.so
 		POSTLINKFLAGS="$POSTLINKFLAGS -shared -fPIC"
 	fi
+
+	if test "$_cmdline" = yes
+	then
+		HAVE_CMDLINE='#define HAVE_CMDLINE 1'
+		DEFINES="$DEFINES -DHAVE_CMDLINE"
+	fi
 }
 
 #write the actual config
@@ -2820,6 +2826,7 @@ $HAVE_PYTHON
 $HAVE_MATLAB
 $HAVE_R
 $HAVE_OCTAVE
+$HAVE_CMDLINE
 $HAVE_LARGEFILE
 $HAVE_SWIG
 $HAVE_DOXYGEN

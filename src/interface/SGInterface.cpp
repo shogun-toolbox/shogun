@@ -5745,14 +5745,7 @@ bool CSGInterface::handle()
 #endif
 
 	CHAR* command=NULL;
-	try
-	{
-		command=interface->get_command(len);
-	}
-	catch (ShogunException e)
-	{
-		SG_ERROR("String expected as first argument: %s\n", e.get_exception_string());
-	}
+	command=interface->get_command(len);
 
 	SG_DEBUG("command: %s, nrhs %d\n", command, m_nrhs);
 	INT i=0;
