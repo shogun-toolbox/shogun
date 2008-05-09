@@ -2,9 +2,10 @@
 
 #if !defined(HAVE_SWIG)
 
-#include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <string>
+using namespace std;
 
 #include "interface/SGInterface.h"
 #include "lib/ShogunException.h"
@@ -5122,12 +5123,22 @@ bool CSGInterface::cmd_system()
 	if (m_nrhs<2 || !create_return_values(0))
 		return false;
 
+	string command;
 	INT len=0;
 	CHAR* cmd=get_str_from_str_or_direct(len);
-
-	INT success=system(cmd);
-
+	command.append(cmd);
 	delete[] cmd;
+
+	while (m_rhs_counter<m_nrhs)
+	{
+		command.append(" ");
+		CHAR* arg=get_str_from_str_or_direct(len);
+		command.append(arg);
+		delete[] arg;
+	}
+
+	INT success=system(command.c_str());
+
 	return (success==0);
 }
 
