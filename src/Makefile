@@ -279,10 +279,17 @@ run-testsuite:
 check-examples:
 		cd ../$(INTERFACE) && ( PYTHON=$(PYTHON) PYTHONPATH="$(DESTDIR)$(PYDIR)" ./check_examples.sh	)
 else
+ifeq (r,$(INTERFACE))
 run-testsuite:
-		cd ../$(INTERFACE)/testcases && ./test_all.sh
+		cd ../$(INTERFACE)/testcases && ( R_LIBS="$(DESTDIR)/usr/lib/R/site-library" ./test_all.sh	)
+check-examples:
+		cd ../$(INTERFACE) && ( R_LIBS="$(DESTDIR)/usr/lib/R/site-library" ./check_examples.sh	)
+else
+run-testsuite:
+		cd ../$(INTERFACE)/testcases && test -e ./test_all.sh && ./test_all.sh
 check-examples:
 		cd ../$(INTERFACE) && ./check_examples.sh
+endif
 endif
 
 ChangeLog:

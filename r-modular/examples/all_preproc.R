@@ -1,10 +1,17 @@
 dyn.load('features/Features.so')
 dyn.load('preproc/PreProc.so')
 dyn.load('kernel/Kernel.so')
-source('features/Features.R')
-source('preproc/PreProc.R')
-source('kernel/Kernel.R')
+load('features/Features.RData')
 cacheMetaData(1)
+load('preproc/PreProc.RData')
+cacheMetaData(1)
+load('kernel/Kernel.RData')
+cacheMetaData(1)
+
+#source('features/Features.R')
+#source('preproc/PreProc.R')
+#source('kernel/Kernel.R')
+#cacheMetaData(1)
 
 num <- 50; #number of example
 len <- 10; #number of dimensions

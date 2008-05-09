@@ -1,7 +1,10 @@
 # note shogun is 0 based, R is 1 based
 dyn.load('features/Features.so')
-source("features/Features.R")
+load('features/Features.RData')
 cacheMetaData(1)
+
+#source("features/Features.R")
+#cacheMetaData(1)
 
 x=c(1.0, 2.0, 3.0)
 lab <- Labels(x)

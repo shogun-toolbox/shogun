@@ -1,10 +1,17 @@
 dyn.load('features/Features.so')
 dyn.load('kernel/Kernel.so')
 dyn.load('regression/Regression.so')
-source('kernel/Kernel.R')
-source('features/Features.R')
-source('regression/Regression.R')
+load('features/Features.RData')
 cacheMetaData(1)
+load('kernel/Kernel.RData')
+cacheMetaData(1)
+load('regression/Regression.RData')
+cacheMetaData(1)
+
+#source('kernel/Kernel.R')
+#source('features/Features.R')
+#source('regression/Regression.R')
+#cacheMetaData(1)
 
 num <- 50 #number of example
 len <- 10 #number of dimensions

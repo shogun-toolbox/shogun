@@ -93,7 +93,7 @@ num_examples=feats.get_num_vectors();
 num_param=hmm.get_num_model_parameters();
 for i=0:(num_examples-1),
 	for j=0:(num_param-1),
-		histo.get_log_derivative(j, i);
+		hmm.get_log_derivative(j, i);
 	end
 end
 
@@ -127,7 +127,7 @@ num_examples=feats.get_num_vectors();
 num_param=hmm.get_num_model_parameters();
 for i=0:(num_examples-1),
 	for j=0:(num_param-1),
-		histo.get_log_derivative(j, i);
+		hmm.get_log_derivative(j, i);
 	end
 end
 

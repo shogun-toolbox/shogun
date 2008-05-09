@@ -1,10 +1,17 @@
 dyn.load('features/Features.so')
 dyn.load('distance/Distance.so')
 dyn.load('preproc/PreProc.so')
-source('features/Features.R')
-source('distance/Distance.R')
-source('preproc/PreProc.R')
+load('features/Features.RData')
 cacheMetaData(1)
+load('distance/Distance.RData')
+cacheMetaData(1)
+load('preproc/PreProc.RData')
+cacheMetaData(1)
+
+#source('features/Features.R')
+#source('distance/Distance.R')
+#source('preproc/PreProc.R')
+#cacheMetaData(1)
 
 len <- 17
 num <- 42

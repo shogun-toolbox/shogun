@@ -30,8 +30,8 @@ testdat=acgt(ceil(4*rand(len,num_test)));
 testlab=[-ones(1,num_test/2),ones(1,num_test/2)];
 testdat(aa,testlab==1)='A';
 
-traindat'
-input('key to continue')
+%traindat'
+%input('key to continue')
 
 %train svm
 sg('use_linadd', 1);

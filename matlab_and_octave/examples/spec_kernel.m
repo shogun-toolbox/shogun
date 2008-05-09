@@ -35,8 +35,8 @@ for i=1:length(idx),
 	testdat(aa+aas(i),idx(i))='A';
 end
 
-traindat'
-input('key to continue')
+%traindat'
+%input('key to continue')
 
 %train svm
 sg('use_linadd', 1);
