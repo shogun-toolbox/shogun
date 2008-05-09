@@ -506,21 +506,16 @@ bool CSVMLight::train()
 
 	}
 
-	if (use_kernel_cache)
+	if (kernel->get_kernel_type() == K_COMBINED)
 	{
-		if ( kernel->has_property(KP_KERNCOMBINATION) && get_mkl_enabled() &&
-				(!((CCombinedKernel*)kernel)->get_append_subkernel_weights()) 
-		   )
-		{
-			INT num_kernels = kernel->get_num_subkernels() ;
-			for (INT i=0; i<num_kernels; i++)
-			{
-				SG_PRINT("initing kernel cache for kernel %d\n", i);
-				CKernel* k=((CCombinedKernel*) kernel)->get_kernel(i);
+		CKernel* kn = ((CCombinedKernel*)kernel)->get_first_kernel();
 
-				// allocate kernel cache but clean up beforehand
-				k->resize_kernel_cache(k->get_cache_size());
-			}
+		while (kn)
+		{
+			SG_PRINT("initing %p\n", kn);
+			// allocate kernel cache but clean up beforehand
+			kn->resize_kernel_cache(kn->get_cache_size());
+			kn = ((CCombinedKernel*) kernel)->get_next_kernel(kn) ;
 		}
 	}
 
