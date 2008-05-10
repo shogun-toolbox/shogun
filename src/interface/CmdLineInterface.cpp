@@ -17,25 +17,60 @@ using namespace std;
 extern CSGInterface* interface;
 
 CCmdLineInterface::CCmdLineInterface()
-: CSGInterface()
+: CSGInterface(), m_lhs(NULL), m_rhs(NULL)
 {
 	reset();
 }
 
 CCmdLineInterface::~CCmdLineInterface()
 {
+	delete m_rhs;
 }
 
-void CCmdLineInterface::reset()
+void CCmdLineInterface::reset(const CHAR* line)
 {
 	CSGInterface::reset();
 
-	m_nlhs=0;
-	m_nrhs=0; //length(prhs)-1;
-	if (m_nrhs<0)
-		m_nrhs=0;
-	m_lhs=NULL;
-	m_rhs=NULL;
+	if (!line)
+		return;
+
+	CHAR* pos_sep=NULL;
+	CHAR delim_equal[]="=";
+
+	// split lhs from rhs
+	pos_sep=strstr(line, delim_equal);
+	if (pos_sep)
+	{
+		//FIXME
+		m_lhs=NULL;
+		m_rhs=NULL;
+		io.not_implemented();
+	}
+	else
+	{
+		m_lhs=NULL;
+
+		CHAR delim_space[]=" ";
+		CHAR* element=strtok((CHAR*) line, delim_space);
+		if (element)
+		{
+			m_rhs=new CDynamicArray<CHAR*>();
+			m_rhs->append_element(element);
+			m_nrhs++;
+			while ((element=strtok(NULL, delim_space)))
+			{
+				m_rhs->append_element(element);
+				m_nrhs++;
+			}
+		}
+		else
+			m_rhs=NULL;
+	}
+
+/*
+	for (INT i=0; i<m_rhs->get_num_elements(); i++)
+		SG_PRINT("element rhs %i %s\n", i, m_rhs->get_element(i));
+*/
 }
 
 
@@ -50,71 +85,62 @@ IFType CCmdLineInterface::get_argument_type()
 
 INT CCmdLineInterface::get_int()
 {
-	return 0;
-/*
-	void* i=get_arg_increment();
-
-	if (i == R_NilValue || nrows(CAR(i))!=1 || ncols(CAR(i))!=1)
+	const CHAR* i=get_arg_increment();
+	if (!i)
 		SG_ERROR("Expected Scalar Integer as argument %d\n", m_rhs_counter);
 
-	if (TYPEOF(CAR(i)) == XP)
-	{
-		double d=REAL(CAR(i))[0];
-		if (d-CMath::floor(d)!=0)
-			SG_ERROR("Expected Integer as argument %d\n", m_rhs_counter);
-		return (INT) d;
-	}
-
-	if (TYPEOF(CAR(i)) != INTSXP)
+	INT value=-1;
+	INT num=sscanf(i, "%d", &value);
+	if (num!=1)
 		SG_ERROR("Expected Scalar Integer as argument %d\n", m_rhs_counter);
 
-	return INTEGER(CAR(i))[0];
-	*/
+	return value;
 }
 
 DREAL CCmdLineInterface::get_real()
 {
-	return 0;
-/*
-	void* f=get_arg_increment();
-	if (f == R_NilValue || TYPEOF(CAR(f)) != XP || nrows(CAR(f))!=1 || ncols(CAR(f))!=1)
-		SG_ERROR("Expected Scalar Float as argument %d\n", m_rhs_counter);
+	const CHAR* r=get_arg_increment();
+	if (!r)
+		SG_ERROR("Expected Scalar Real as argument %d\n", m_rhs_counter);
 
-	return REAL(CAR(f))[0];
-	*/
+	DREAL value=-1;
+	INT num=sscanf(r, "%lf", &value);
+	if (num!=1)
+		SG_ERROR("Expected Scalar Real as argument %d\n", m_rhs_counter);
+
+	return value;
 }
 
 bool CCmdLineInterface::get_bool()
 {
-	return false;
-/*
-	void* b=get_arg_increment();
-	if (b == R_NilValue || TYPEOF(CAR(b)) != LGLSXP || nrows(CAR(b))!=1 || ncols(CAR(b))!=1)
-		SG_ERROR("Expected Scalar Boolean as argument %d\n", m_rhs_counter);
+	const CHAR* b=get_arg_increment();
+	if (!b)
+		SG_ERROR("Expected Scalar Bool as argument %d\n", m_rhs_counter);
 
-	return INTEGER(CAR(b))[0] != 0;
-	*/
+	INT value=-1;
+	INT num=sscanf(r, "%i", &value);
+	if (num!=1)
+		SG_ERROR("Expected Scalar Bool as argument %d\n", m_rhs_counter);
+
+	return (value!=0);
 }
 
 
 CHAR* CCmdLineInterface::get_string(INT& len)
 {
-	return NULL;
+	const CHAR* s=get_arg_increment();
+	if (!s)
+		SG_ERROR("Expected 1 String as argument %d.\n", m_rhs_counter);
 
-/*
-	void* s=get_arg_increment();
-	if (s == R_NilValue || TYPEOF(CAR(s)) != STRSXP || length(CAR(s))!=1)
-		SG_ERROR("Expected String as argument %d\n", m_rhs_counter);
-
-	void*REC* rstr= STRING_ELT(CAR(s),0);
-	const CHAR* str= CHAR(rstr);
-	len=LENGTH(rstr);
+	len=strlen(s);
 	ASSERT(len>0);
-	CHAR* res=new CHAR[len+1];
-	memcpy(res, str, len*sizeof(CHAR));
-	res[len]='\0';
-	return res;
-	*/
+
+	CHAR* result=new CHAR[len+1];
+	memcpy(result, s, len*sizeof(CHAR));
+	result[len]='\0';
+	//SG_PRINT("str %s\n", result);
+
+	return result;
 }
 
 void CCmdLineInterface::get_byte_vector(BYTE*& vec, INT& len)
@@ -333,11 +359,11 @@ void CCmdLineInterface::get_word_string_list(T_STRING<WORD>*& strings, INT& num_
 /** set functions - to pass data from shogun to the target interface */
 bool CCmdLineInterface::create_return_values(INT num)
 {
-	return false;
-/*
 	if (num<=0)
 		return true;
 
+	return false;
+/*
 	PROTECT(m_lhs=allocVector(VECSXP, num));
 	m_nlhs=num;
 	return length(m_lhs) == num;
@@ -522,6 +548,28 @@ void CCmdLineInterface::set_word_string_list(const T_STRING<WORD>* strings, INT 
 }
 
 
+bool CCmdLineInterface::skip_line(const CHAR* line)
+{
+	if (!line)
+		return true;
+
+	if (line[0]=='\n' ||
+		(line[0]=='\r' && line[1]=='\n') ||
+		int(line[0])==0)
+	{
+		return true;
+	}
+
+	//SG_PRINT("ascii(0) %d, %c\n", int(line[0]), line[0]);
+
+	CHAR* skipped=CIO::skip_blanks((CHAR*) line);
+	if (skipped[0]=='#' || skipped[0]=='%')
+		return true;
+
+	return false;
+}
+
+
 int main(int argc, char* argv[])
 {
 	if (argc!=2)
@@ -538,10 +586,12 @@ int main(int argc, char* argv[])
 	while (getline(cmdfile, line))
 	{
 		SG_PRINT("%s\n", line.c_str());
-		/*
+		if (((CCmdLineInterface*) interface)->skip_line(line.c_str()))
+			continue;
+
+		((CCmdLineInterface*) interface)->reset(line.c_str());
 		if (!interface->handle())
 			SG_ERROR("Unknown command.\n");
-		*/
 	}
 
 	delete interface;

@@ -13,7 +13,7 @@ class CCmdLineInterface : public CSGInterface
 		~CCmdLineInterface();
 
 		/// reset to clean state
-		virtual void reset();
+		virtual void reset(const CHAR* line=NULL);
 
 		/** get functions - to pass data from the target interface to shogun */
 
@@ -82,14 +82,17 @@ class CCmdLineInterface : public CSGInterface
 
 		void* get_return_values();
 
+		/** determine if given line is a comment or empty */
+		bool skip_line(const CHAR* line=NULL);
+
 	private:
-		const void* get_arg_increment()
+		const CHAR* get_arg_increment()
 		{
 			ASSERT(m_rhs_counter>=0 && m_rhs_counter<m_nrhs+1); // +1 for action
-			//m_rhs=CDR(m_rhs);
+			CHAR* element=m_rhs->get_element(m_rhs_counter);
 			m_rhs_counter++;
 
-			return m_rhs;
+			return element;
 		}
 
 		void set_arg_increment(void* arg)
@@ -101,7 +104,7 @@ class CCmdLineInterface : public CSGInterface
 
 	private:
 		void* m_lhs;
-		void* m_rhs;
+		CDynamicArray<CHAR*>* m_rhs;
 };
 #endif // HAVE_CMDLINE
 #endif // __CMDLINEINTERFACE__H_
