@@ -19,7 +19,21 @@
 #include "features/Features.h"
 #include "features/CombinedFeatures.h"
 
-/** kernel Combined */
+/** The Combined kernel is used to combine a number of kernels into a single
+ * CombinedKernel object by linear combination. It keeps pointers to the added
+ * sub-kernels \f$k_m({\bf x}, {\bf x'})\f$ and for each sub-kernel - a kernel
+ * specific weight \f$\beta_m\f$.
+ *
+ * It is especially useful to combine kernels working on different domains and
+ * to combine kernels looking at independent features.
+ *
+ * It is defined as:
+ *
+ * \f[
+ *     k_{combined}({\bf x}, {\bf x'}) = \sum_{m=0}^M \beta_m k_m({\bf x}, {\bf x'})
+ * \f]
+ *
+ */
 class CCombinedKernel : public CKernel
 {
 	public:

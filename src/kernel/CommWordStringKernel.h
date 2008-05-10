@@ -16,7 +16,30 @@
 #include "lib/Mathematics.h"
 #include "kernel/StringKernel.h"
 
-/** kernel CommWordString */
+/** The CommWordString kernel may be used to compute the spectrum kernel [
+ * from strings that have been mapped into unsigned 16bit integers. These 16bit
+ * integers correspond to k-mers. To applicable in this kernel they need to be
+ * sorted (e.g. via the SortWordString pre-processor).
+ *
+ * It basically uses the algorithm in the unix "comm" command (hence the name)
+ * to compute:
+ *
+ * \f[
+ * k({\bf x},({\bf x'})= \Phi_k({\bf x})\cdot \Phi_k({\bf x'})
+ * \f]
+ *
+ * where \f$\Phi_k\f$ maps a sequence \f${\bf x}\f$ that consists of letters in
+ * \f$\Sigma\f$ to a feature vector of size \f$|\Sigma|^k\f$. In this feature
+ * vector each entry denotes how often the k-mer appears in that \f${\bf x}\f$.
+ *
+ * Note that this representation is especially tuned to small alphabets
+ * (like the 2-bit alphabet DNA), for which it enables spectrum kernels
+ * of order 8.
+ *
+ * For this kernel the linadd speedups are quite efficiently implemented using
+ * direct maps.
+ *
+ */
 class CCommWordStringKernel: public CStringKernel<WORD>
 {
 	public:

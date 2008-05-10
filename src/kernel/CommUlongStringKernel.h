@@ -17,7 +17,29 @@
 #include "lib/DynamicArray.h"
 #include "kernel/StringKernel.h"
 
-/** kernel CommUlongString */
+/** The CommUlongString kernel may be used to compute the spectrum kernel [
+ * from strings that have been mapped into unsigned 64bit integers. These 64bit
+ * integers correspond to k-mers. To applicable in this kernel they need to be
+ * sorted (e.g. via the SortUlongString pre-processor).
+ *
+ * It basically uses the algorithm in the unix "comm" command (hence the name)
+ * to compute:
+ *
+ * \f[
+ * k({\bf x},({\bf x'})= \Phi_k({\bf x})\cdot \Phi_k({\bf x'})
+ * \f]
+ *
+ * where \f$\Phi_k\f$ maps a sequence \f${\bf x}\f$ that consists of letters in
+ * \f$\Sigma\f$ to a feature vector of size \f$|\Sigma|^k\f$. In this feature
+ * vector each entry denotes how often the k-mer appears in that \f${\bf x}\f$.
+ *
+ * Note that this representation enables spectrum kernels of order 8 for 8bit
+ * alphabets (like binaries) and order 32 for 2-bit alphabets like DNA.
+ *
+ * For this kernel the linadd speedups are implemented (though there is room for
+ * improvement here when a whole set of sequences is ADDed) using sorted lists.
+ *
+ */
 class CCommUlongStringKernel: public CStringKernel<ULONG>
 {
 	public:

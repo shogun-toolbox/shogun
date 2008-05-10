@@ -16,7 +16,12 @@
 #include "kernel/Kernel.h"
 #include "features/Features.h"
 
-/** kernel Const */
+/** Constant Kernel
+ *
+ * A ``kernel'' that simply returns a single constant, i.e.
+ * \f$k({\bf x}, {\bf x'})= c\f$
+ *
+ */
 class CConstKernel: public CKernel
 {
 	public:

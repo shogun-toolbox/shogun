@@ -14,7 +14,12 @@
 #include "lib/common.h"
 #include "kernel/Kernel.h"
 
-/** kernel Diag */
+/** Diagonal Kernel
+ *
+ * A kernel that returns zero for all non-diagonal elements and a single
+ * constant otherwise, i.e.\f$k({\bf x_i}, {\bf x_j})= \delta_{ij} c\f$
+ *
+ */
 class CDiagKernel: public CKernel
 {
 	public:

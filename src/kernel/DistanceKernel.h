@@ -18,7 +18,12 @@
 #include "kernel/Kernel.h"
 #include "distance/Distance.h"
 
-/** kernel Distance */
+/** The Distance kernel takes a distance as input and computes
+ *
+ * \f[
+ *     k({\bf x}, {\bf x'}) = e^{-\frac{dist({\bf x}, {\bf x'})}{width}}
+ * \f]
+ */
 class CDistanceKernel: public CKernel
 {
 	public:

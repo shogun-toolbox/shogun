@@ -16,7 +16,16 @@
 #include "features/Features.h"
 #include "features/RealFeatures.h"
 
-/** kernel Chi2 */
+/** The Chi2 kernel operating on realvalued vectors computes
+ * the chi-squared distance between sets of histograms. It
+ * is a very useful distance in image recognition (used to detect objects).
+ *
+ * It is defined as
+ * \f[
+ * k({\bf x},({\bf x'})= e^{-\frac{1}{width} \sum_{i=0}^{l}\frac{(x_i-x'_i)^2}{(x_i+x'_i)}}
+ * \f]
+ *
+ * */
 class CChi2Kernel: public CSimpleKernel<DREAL>
 {
 	public:

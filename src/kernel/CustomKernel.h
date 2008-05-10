@@ -16,7 +16,13 @@
 #include "kernel/Kernel.h"
 #include "features/Features.h"
 
-/** kernel Custom */
+/** Custom Kernel
+ *
+ * This kernel allows for custom user provided kernel matrices. For squared
+ * training matrices it allows to store only the upper triangle of the kernel
+ * to save memory. Also note that values are stored as 32bit floats.
+ *
+ */
 class CCustomKernel: public CKernel
 {
 	public:
