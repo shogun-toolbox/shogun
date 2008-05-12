@@ -2,10 +2,6 @@
 
 #if defined(HAVE_CMDLINE)
 
-#include <string>
-#include <fstream>
-using namespace std;
-
 #include "interface/CmdLineInterface.h"
 #include "interface/SGInterface.h"
 
@@ -13,7 +9,18 @@ using namespace std;
 #include "lib/io.h"
 #include "lib/SimpleFile.h"
 
+#ifdef HAVE_READLINE
+#include <readline/readline.h>
+#include <readline/history.h>
+#endif
 
+#ifndef WIN32
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#endif
+
+const INT READLINE_BUFFER_SIZE = 10000;
 extern CSGInterface* interface;
 
 CCmdLineInterface::CCmdLineInterface()
@@ -569,8 +576,152 @@ bool CCmdLineInterface::skip_line(const CHAR* line)
 	return false;
 }
 
+void CCmdLineInterface::print_prompt()
+{
+	SG_PRINT( "\033[1;34mshogun\033[0m >> ");
+	//SG_PRINT("shogun >> ");
+}
+
+CHAR* CCmdLineInterface::get_line(FILE* infile, bool interactive_mode)
+{
+	char* in=NULL;
+	memset(input, 0, sizeof(input));
+
+	if (feof(infile))
+		return NULL;
+
+#ifdef HAVE_READLINE
+	if (interactive_mode)
+	{
+		in=readline("\033[1;34mshogun\033[0m >> ");
+		if (in)
+		{
+			strncpy(input, in, sizeof(input));
+			add_history(in);
+			free(in);
+		}
+	}
+	else
+	{
+		if ( (fgets(input, sizeof(input), infile)==NULL) || (!strlen(input)) )
+			return NULL;
+		in=input;
+	}
+#else
+	if (interactive_mode)
+		print_prompt();
+	if ( (fgets(input, sizeof(input), infile)==NULL) || (!strlen(input)) )
+		return NULL;
+	in=input;
+#endif
+
+	if (in==NULL || (!strlen(input)))
+		return NULL;
+	else
+		return input;
+}
+
+bool CCmdLineInterface::parse_line(CHAR* line)
+{
+	if (!line)
+		return false;
+	
+	if (skip_line(line))
+		return true;
+	else
+	{
+		((CCmdLineInterface*) interface)->reset(line);
+		return interface->handle();
+	}
+}
 
 int main(int argc, char* argv[])
+{	
+	interface=new CCmdLineInterface();
+
+	CCmdLineInterface* intf=(CCmdLineInterface*) interface;
+
+	// interactive
+	if (argc<=1)
+	{
+		while (intf->parse_line(intf->get_line()));
+		delete interface;
+		return 0;
+	}
+
+	// help
+	if ( argc>2 || ((argc==2) && 
+				( !strcmp(argv[1], "-h") || !strcmp(argv[1], "/?") || !strcmp(argv[1], "--help")) )
+	   )
+	{
+		SG_SPRINT("\n\n");
+		SG_SPRINT("usage: shogun [ -h | --help | /? | -i | filename ]\n\n");
+		SG_SPRINT("if no options are given shogun enters interactive mode\n");
+		SG_SPRINT("if filename is specified the commands will be read and executed from file\n");
+		SG_SPRINT("if -i is specified shogun will listen on port 7367 from file\n");
+		SG_SPRINT("==hex(sg), *dangerous* as commands from any source are accepted\n\n");
+		delete interface;
+		return 1;
+	}
+
+#ifndef CYGWIN
+	// from tcp
+	if ( argc==2 && !strcmp(argv[1], "-i"))
+	{
+		int s=socket(AF_INET, SOCK_STREAM, 0);
+		struct sockaddr_in sa;
+		sa.sin_family=AF_INET;
+		sa.sin_port=htons(7367);
+		sa.sin_addr.s_addr=INADDR_ANY;
+		bzero(&(sa.sin_zero), 8);
+
+		bind(s, (sockaddr*) (&sa), sizeof(sockaddr_in));
+		listen(s, 1);
+		int s2=accept(s, NULL, NULL);
+		SG_SINFO( "accepting connection\n");
+
+		CHAR input[READLINE_BUFFER_SIZE];
+		do
+		{
+			bzero(input, sizeof(input));
+			int length=read(s2, input, sizeof(input));
+			if (length>0 && length<(int) sizeof(input))
+				input[length]='\0';
+			else
+			{
+				SG_SERROR( "error reading cmdline\n");
+				return 1;
+			}
+		}
+		while (intf->parse_line(input));
+		delete interface;
+		return 0;
+	}
+#endif
+
+	// from file
+	if (argc==2)
+	{
+		FILE* file=fopen(argv[1], "r");
+
+		if (!file)
+		{
+			SG_SERROR( "error opening/reading file: \"%s\"",argv[1]);
+			delete interface;
+			return 1;
+		}
+		else
+		{
+			while(!feof(file) && intf->parse_line(intf->get_line(file, false)));
+			fclose(file);
+			delete interface;
+			return 0;
+
+		}
+	}
+}
+
+/*int main(int argc, char* argv[])
 {
 	if (argc!=2)
 		SG_ERROR("Need a command filename as argument.\n");
@@ -597,6 +748,6 @@ int main(int argc, char* argv[])
 	delete interface;
 	cmdfile.close();
 	return 0;
-}
+}*/
 
 #endif // HAVE_CMDLINE

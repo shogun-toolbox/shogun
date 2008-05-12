@@ -85,6 +85,15 @@ class CCmdLineInterface : public CSGInterface
 		/** determine if given line is a comment or empty */
 		bool skip_line(const CHAR* line=NULL);
 
+		/// get line from file or stdin or...
+		CHAR* get_line(FILE* infile=stdin, bool interactive_mode=true);
+
+		/// parse a single line
+		bool parse_line(CHAR* line);
+
+		/// print interactive prompt
+		void print_prompt();
+
 	private:
 		const CHAR* get_arg_increment()
 		{
