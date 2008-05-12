@@ -26,17 +26,7 @@
 #include "features/ShortRealFeatures.h"
 #include "features/WordFeatures.h"
 
-#ifndef WIN32
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <netinet/in.h>
-#endif
-
-#ifdef HAVE_READLINE
-#include <readline/readline.h>
-#include <readline/history.h>
-#endif
-
+#include <ctype.h>
 
 CSGInterface* interface=NULL;
 
@@ -5118,24 +5108,24 @@ bool CSGInterface::cmd_system()
 	if (m_nrhs<2 || !create_return_values(0))
 		return false;
 
-	//string command;
-	//INT len=0;
-	//CHAR* cmd=get_str_from_str_or_direct(len);
-	//command.append(cmd);
-	//delete[] cmd;
+	INT len=0;
+	CHAR* command=new CHAR[10000];
+	memset(command, 0, sizeof(CHAR)*10000);
+	CHAR* cmd=get_str_from_str_or_direct(len);
+	strncat(command, cmd, 10000);
+	delete[] cmd;
 
-	//while (m_rhs_counter<m_nrhs)
-	//{
-	//	command.append(" ");
-	//	CHAR* arg=get_str_from_str_or_direct(len);
-	//	command.append(arg);
-	//	delete[] arg;
-	//}
+	while (m_rhs_counter<m_nrhs)
+	{
+		strncat(command, " ", 10000);
+		CHAR* arg=get_str_from_str_or_direct(len);
+		strncat(command, arg, 10000);
+		delete[] arg;
+	}
 
-	//INT success=system(command.c_str());
+	INT success=system(command);
 
-	//return (success==0);
-	return true;
+	return (success==0);
 }
 
 bool CSGInterface::cmd_exit()
@@ -5370,7 +5360,7 @@ bool CSGInterface::cmd_loglevel()
 	else if (strmatch(level, "ERROR"))
 		io.set_loglevel(M_ERROR);
 	else
-		SG_ERROR("Unknown loglevel %s.\n", level);
+		SG_ERROR("Unknown loglevel '%s'.\n", level);
 
 	SG_INFO("Loglevel set to %s.\n", level);
 
@@ -5697,45 +5687,6 @@ INT CSGInterface::get_num_args_in_str()
 	}
 
 	return count;
-}
-
-CHAR* CSGInterface::get_line(FILE* infile, bool interactive_mode)
-{
-	char* in=NULL;
-	memset(input, 0, sizeof(input));
-
-	if (feof(infile))
-		return NULL;
-
-#ifdef HAVE_READLINE
-	if (interactive_mode)
-	{
-		in=readline("\033[1;34mshogun\033[0m >> ");
-		if (in)
-		{
-			strncpy(input, in, sizeof(input));
-			add_history(in);
-			free(in);
-		}
-	}
-	else
-	{
-		if ( (fgets(input, sizeof(input), infile)==NULL) || (!strlen(input)) )
-			return NULL;
-		in=input;
-	}
-#else
-	if (interactive_mode)
-		print_prompt();
-	if ( (fgets(input, sizeof(input), infile)==NULL) || (!strlen(input)) )
-		return NULL;
-	in=input;
-#endif
-
-	if (in==NULL || (!strlen(input)))
-		return NULL;
-	else
-		return input;
 }
 
 ////////////////////////////////////////////////////////////////////////////

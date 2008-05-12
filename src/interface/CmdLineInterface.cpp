@@ -57,7 +57,7 @@ void CCmdLineInterface::reset(const CHAR* line)
 	{
 		m_lhs=NULL;
 
-		CHAR delim_space[]=" ";
+		CHAR delim_space[]=" \t\n";
 		CHAR* element=strtok((CHAR*) line, delim_space);
 		if (element)
 		{
@@ -603,19 +603,19 @@ CHAR* CCmdLineInterface::get_line(FILE* infile, bool interactive_mode)
 	}
 	else
 	{
-		if ( (fgets(input, sizeof(input), infile)==NULL) || (!strlen(input)) )
+		if (fgets(input, sizeof(input), infile)==NULL)
 			return NULL;
 		in=input;
 	}
 #else
 	if (interactive_mode)
 		print_prompt();
-	if ( (fgets(input, sizeof(input), infile)==NULL) || (!strlen(input)) )
+	if (fgets(input, sizeof(input), infile)==NULL)
 		return NULL;
 	in=input;
 #endif
 
-	if (in==NULL || (!strlen(input)))
+	if (in==NULL)
 		return NULL;
 	else
 		return input;
@@ -644,7 +644,22 @@ int main(int argc, char* argv[])
 	// interactive
 	if (argc<=1)
 	{
-		while (intf->parse_line(intf->get_line()));
+		while (true)
+		{
+			CHAR* l=intf->get_line();
+
+			if (!l)
+				break;
+
+			try
+			{
+				intf->parse_line(l);
+			}
+			catch (ShogunException e)
+			{
+			}
+
+		}
 		delete interface;
 		return 0;
 	}
