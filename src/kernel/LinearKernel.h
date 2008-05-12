@@ -15,7 +15,11 @@
 #include "kernel/SimpleKernel.h"
 #include "features/RealFeatures.h"
 
-/** kernel Linear */
+/** Computes the standard linear kernel on dense real valued features
+ * \f[
+ * k({\bf x},{\bf x'})= \frac{1}{scale}\Phi_k({\bf x})\cdot \Phi_k({\bf x'})
+ * \f]
+ */
 class CLinearKernel: public CSimpleKernel<DREAL>
 {
 	public:

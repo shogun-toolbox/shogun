@@ -14,7 +14,18 @@
 #include "lib/common.h"
 #include "kernel/StringKernel.h"
 
-/** kernel FixedDegreeString */
+/** The FixedDegree String kernel takes as input two strings of same size
+ * and counts the number of matches of length d.
+ *
+ * \f[
+ *     k({\bf x}, {\bf x'}) = \sum_{i=0}^{l-d} I({\bf x}_{i,i+1,\dots,i+d-1} = {\bf x'}_{i,i+1,\dots,i+d-1})
+ * \f]
+ *
+ * Note that additional normalisation is applied, i.e.
+ * \f[
+ *     k'({\bf x}, {\bf x'})=\frac{k({\bf x}, {\bf x'})}{\sqrt{k({\bf x}, {\bf x})k({\bf x'}, {\bf x'})}}
+ * \f]
+ */
 class CFixedDegreeStringKernel: public CStringKernel<CHAR>
 {
 	public:

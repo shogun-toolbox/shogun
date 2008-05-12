@@ -105,9 +105,9 @@ DREAL CFixedDegreeStringKernel::compute(INT idx_a, INT idx_b)
 	// can only deal with strings of same length
 	ASSERT(alen==blen);
 
-	DREAL sqrt = initialized? sqrtdiag_lhs[idx_a]*sqrtdiag_rhs[idx_b] : 1;
+	DREAL sqrt = initialized ? (sqrtdiag_lhs[idx_a]*sqrtdiag_rhs[idx_b]) : 1.0;
 	LONG sum = 0;
-	for (INT i = 0; i<alen-degree; i++)
+	for (INT i = 0; i<alen-degree+1; i++)
 	{
 		bool match = true;
 

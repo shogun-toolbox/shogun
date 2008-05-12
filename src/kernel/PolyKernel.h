@@ -15,7 +15,16 @@
 #include "kernel/SimpleKernel.h"
 #include "features/RealFeatures.h"
 
-/** kernel Poly */
+/** Computes the standard polynomial kernel on dense real valued features
+ * \f[
+ * k({\bf x},{\bf x'})= (\Phi_k({\bf x})\cdot \Phi_k({\bf x'})+c)^d
+ * \f]
+ *
+ * Note that additional normalisation is applied, i.e.
+ * \f[
+ *     k'({\bf x}, {\bf x'})=\frac{k({\bf x}, {\bf x'})}{\sqrt{k({\bf x}, {\bf x})k({\bf x'}, {\bf x'})}}
+ * \f]
+ */
 class CPolyKernel: public CSimpleKernel<DREAL>
 {
 	public:

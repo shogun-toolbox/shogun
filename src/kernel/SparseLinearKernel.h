@@ -15,7 +15,11 @@
 #include "kernel/SparseKernel.h"
 #include "features/SparseFeatures.h"
 
-/** kernel SparseLinear */
+/** Computes the standard linear kernel on sparse real valued features
+ * \f[
+ * k({\bf x},{\bf x'})= \frac{1}{scale}\Phi_k({\bf x})\cdot \Phi_k({\bf x'})
+ * \f]
+ */
 class CSparseLinearKernel: public CSparseKernel<DREAL>
 {
 	public:

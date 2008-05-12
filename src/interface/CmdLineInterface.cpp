@@ -118,7 +118,7 @@ bool CCmdLineInterface::get_bool()
 		SG_ERROR("Expected Scalar Bool as argument %d\n", m_rhs_counter);
 
 	INT value=-1;
-	INT num=sscanf(r, "%i", &value);
+	INT num=sscanf(b, "%i", &value);
 	if (num!=1)
 		SG_ERROR("Expected Scalar Bool as argument %d\n", m_rhs_counter);
 
