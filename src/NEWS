@@ -8,9 +8,14 @@
 		- The 'send_command' legacy is no longer necessary, numbers can be used
 		as such and don't have to be given as strings. All examples for
 		r,python,octave,matlab have been converted to the new syntax.
+		- Resurrected the command line interface. Basic functionionality,
+		like training a classifier on strings/real valued (sparse) features
+		was restored. Readline completion was added.
+		- Documentation updates.
 	* Bugfixes:
 		- The weighted spectrum kernel is now working again.
 		- Fix the testsuite to reliably check methods that use random().
+		- Off-by-one bug fix in FixedDegreeStringKernel.
 
 2008-04-19  Soeren Sonnenburg <debian@nn7.de>
 

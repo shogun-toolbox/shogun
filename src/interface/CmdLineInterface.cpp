@@ -22,6 +22,7 @@
 
 const INT READLINE_BUFFER_SIZE = 10000;
 extern CSGInterface* interface;
+extern CSGInterfaceMethod sg_methods[];
 
 CCmdLineInterface::CCmdLineInterface()
 : CSGInterface(), m_lhs(NULL), m_rhs(NULL)
@@ -98,38 +99,64 @@ void CCmdLineInterface::reset(const CHAR* line)
  */
 IFType CCmdLineInterface::get_argument_type()
 {
+	const INT len=1024;
+	IFType argtype=UNDEFINED;
 	const CHAR* filename=m_rhs->get_element(m_rhs_counter);
+
+	// read the first 1024 of the file and heuristically decide about its
+	// content
 	FILE* fh=fopen((CHAR*) filename, "r");
 	if (!fh)
 		SG_ERROR("Could not find file %s.\n", filename);
 
-	INT len=1024;
-	CHAR* chunk=new CHAR[len];
-	fread(chunk, sizeof(CHAR), len, fh);
+	CHAR* chunk=new CHAR[len+1];
+	ASSERT(chunk);
+	memset(chunk, 0, sizeof(CHAR)*(len+1));
+	INT nread=fread(chunk, sizeof(CHAR), len, fh);
 	fclose(fh);
-	if (!chunk)
+	if (nread<=0)
 		SG_ERROR("Could not read data from %s.\n");
 
-	CHAR* signature=new CHAR[len];
-	INT num=sscanf(chunk, "### %s\n", signature);
-	delete[] chunk;
-	if (num!=1 || !signature)
+	CHAR* signature=new CHAR[len+1];
+	ASSERT(signature);
+	INT num=sscanf(chunk, "### SHOGUN V0 %s\n", signature);
+
+	// if file has valid shogun signature use it to determine file type
+	if (num==1)
 	{
+		SG_DEBUG("read signature: %s\n", signature);
+
+		if (strncmp(signature, "STRING_CHAR", 11)==0)
+			argtype=STRING_CHAR;
+		else if (strncmp(signature, "STRING_BYTE", 11)==0)
+			argtype=STRING_BYTE;
+		else
+			argtype=UNDEFINED;
+
 		delete[] signature;
-		SG_ERROR("Could not find signature in file %s.\n", filename);
+		delete[] chunk;
+		return argtype;
+	}
+	delete[] signature;
+
+	SG_DEBUG("Could not find signature in file %s guessing file type.\n", filename);
+	
+	if (strspn(chunk, "0123456789.e+- \t\n")==nread)
+	{
+		argtype=DENSE_REAL;
+		SG_DEBUG("Guessing DENSE_REAL\n");
+	}
+	else if (strspn(chunk, "0123456789:.e+- \t\n")==nread)
+	{
+		argtype=SPARSE_REAL;
+		SG_DEBUG("Guessing SPARSE_REAL\n");
+	}
+	else
+	{
+		argtype=STRING_CHAR;
+		SG_DEBUG("Guessing STRING_CHAR\n");
 	}
 
-	SG_DEBUG("read signature: %s\n", signature);
-
-	IFType argtype=UNDEFINED;
-	if (strncmp(signature, "STRING_CHAR", 11)==0)
-		argtype=STRING_CHAR;
-	else if (strncmp(signature, "STRING_BYTE", 11)==0)
-		argtype=STRING_BYTE;
-	else
-		argtype=UNDEFINED;
-
-	delete signature;
 	return argtype;
 }
 
@@ -592,6 +619,7 @@ void CCmdLineInterface::print_prompt()
 	//SG_PRINT("shogun >> ");
 }
 
+
 CHAR* CCmdLineInterface::get_line(FILE* infile, bool interactive_mode)
 {
 	char* in=NULL;
@@ -645,8 +673,65 @@ bool CCmdLineInterface::parse_line(CHAR* line)
 	}
 }
 
+#ifdef HAVE_READLINE
+char* command_generator(const char *text, int state)
+{
+	static int list_index, len;
+	char *name;
+
+	/* If this is a new word to complete, initialize now.  This
+	 *      includes saving the length of TEXT for efficiency, and
+	 *           initializing the index variable to 0. */
+	if (!state)
+	{
+		list_index = 0;
+		len = strlen (text);
+	}
+
+	/* Return the next name which partially matches from the
+	 *      command list. */
+	while ((name = sg_methods[list_index].command))
+	{
+		list_index++;
+
+		if (strncmp (name, text, len) == 0)
+			return (strdup(name));
+	}
+
+	/* If no names matched, then return NULL. */
+	return NULL;
+}
+
+/* Attempt to complete on the contents of TEXT.  START and END
+ * bound the region of rl_line_buffer that contains the word to
+ * complete.  TEXT is the word to complete.  We can use the entire
+ * contents of rl_line_buffer in case we want to do some simple
+ * parsing.  Returnthe array of matches, or NULL if there aren't
+ * any. */
+char** shogun_completion (const char *text, int start, int end)
+{
+	char **matches;
+
+	matches = (char **)NULL;
+
+	/* If this word is at the start of the line, then it is a command
+	 *      to complete.  Otherwise it is the name of a file in the
+	 *      current
+	 *           directory. */
+	if (start == 0)
+		matches = rl_completion_matches (text, command_generator);
+
+	return (matches);
+}
+#endif //HAVE_READLINE
+
 int main(int argc, char* argv[])
 {	
+#ifdef HAVE_READLINE
+	rl_readline_name = "shogun";
+	rl_attempted_completion_function = shogun_completion;
+#endif //HAVE_READLINE
+
 	interface=new CCmdLineInterface();
 
 	CCmdLineInterface* intf=(CCmdLineInterface*) interface;
@@ -665,10 +750,7 @@ int main(int argc, char* argv[])
 			{
 				intf->parse_line(l);
 			}
-			catch (ShogunException e)
-			{
-			}
-
+			catch (ShogunException e) { }
 		}
 		delete interface;
 		return 0;

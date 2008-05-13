@@ -35,7 +35,7 @@ CSGInterface* interface=NULL;
 #define USAGE_O(method, out) "[" out "]=sg('" method "')"
 #define USAGE_IO(method, in, out) "[" out "]=sg('" method "', " in ")"
 
-static CSGInterfaceMethod sg_methods[]=
+CSGInterfaceMethod sg_methods[]=
 {
 	{ (CHAR*) "Features", NULL, NULL },
 	{
