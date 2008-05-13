@@ -112,7 +112,7 @@ IFType CCmdLineInterface::get_argument_type()
 	CHAR* chunk=new CHAR[len+1];
 	ASSERT(chunk);
 	memset(chunk, 0, sizeof(CHAR)*(len+1));
-	INT nread=fread(chunk, sizeof(CHAR), len, fh);
+	size_t nread=fread(chunk, sizeof(CHAR), len, fh);
 	fclose(fh);
 	if (nread<=0)
 		SG_ERROR("Could not read data from %s.\n");
