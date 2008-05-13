@@ -83,10 +83,54 @@ void CCmdLineInterface::reset(const CHAR* line)
 
 /** get functions - to pass data from the target interface to shogun */
 
-
+/** determine argument type
+ *
+ * a signature is read from a data file. this signature contains the argument
+ * type.
+ *
+ * currently, the signature must be in the beginning of the file,
+ * consists of a line starting with 3 hash signs, 1 space and then
+ * the argument type. e.g.:
+ *
+ * ### STRING_CHAR
+ * ACGTGCAAAAGC
+ * AGTCDTCD
+ */
 IFType CCmdLineInterface::get_argument_type()
 {
-	return UNDEFINED;
+	const CHAR* filename=m_rhs->get_element(m_rhs_counter);
+	FILE* fh=fopen((CHAR*) filename, "r");
+	if (!fh)
+		SG_ERROR("Could not find file %s.\n", filename);
+
+	INT len=1024;
+	CHAR* chunk=new CHAR[len];
+	fread(chunk, sizeof(CHAR), len, fh);
+	fclose(fh);
+	if (!chunk)
+		SG_ERROR("Could not read data from %s.\n");
+
+	CHAR* signature=new CHAR[len];
+	INT num=sscanf(chunk, "### %s\n", signature);
+	delete[] chunk;
+	if (num!=1 || !signature)
+	{
+		delete[] signature;
+		SG_ERROR("Could not find signature in file %s.\n", filename);
+	}
+
+	SG_DEBUG("read signature: %s\n", signature);
+
+	IFType argtype=UNDEFINED;
+	if (strncmp(signature, "STRING_CHAR", 11)==0)
+		argtype=STRING_CHAR;
+	else if (strncmp(signature, "STRING_BYTE", 11)==0)
+		argtype=STRING_BYTE;
+	else
+		argtype=UNDEFINED;
+
+	delete signature;
+	return argtype;
 }
 
 
@@ -294,74 +338,40 @@ void CCmdLineInterface::get_real_sparsematrix(TSparse<DREAL>*& matrix, INT& num_
 	num_vec=0;
 }
 
-void CCmdLineInterface::get_byte_string_list(T_STRING<BYTE>*& strings, INT& num_str, INT& max_string_len)
-{
-	strings=NULL;
-	num_str=0;
-	max_string_len=0;
+
+// FIXME: find a way not to copy matrix without leaks
+#define GET_STRING_LIST(function_name, dtype)								\
+void CCmdLineInterface::function_name(										\
+	T_STRING<dtype>*& strings, INT& num_str, INT& max_string_len)			\
+{																			\
+	const CHAR* filename=get_arg_increment();								\
+	ASSERT(filename);														\
+																			\
+	T_STRING<dtype>* fmatrix=NULL;											\
+	CStringFeatures<dtype>* sf=												\
+		new CStringFeatures<dtype>((CHAR*) filename);						\
+	ASSERT(sf);																\
+	fmatrix=sf->get_features(num_str, max_string_len);						\
+																			\
+	strings=new T_STRING<dtype>[num_str];									\
+	ASSERT(strings);														\
+	for (INT i=0; i<num_str; i++)											\
+	{																		\
+		strings[i].string=new dtype[fmatrix[i].length];						\
+		ASSERT(strings[i].string);											\
+		memcpy(strings[i].string, fmatrix[i].string, fmatrix[i].length);	\
+		strings[i].length=fmatrix[i].length;								\
+	}																		\
+																			\
+	delete sf;																\
 }
+GET_STRING_LIST(get_byte_string_list, BYTE)
+GET_STRING_LIST(get_char_string_list, CHAR)
+GET_STRING_LIST(get_int_string_list, INT)
+GET_STRING_LIST(get_short_string_list, SHORT)
+GET_STRING_LIST(get_word_string_list, WORD)
+#undef GET_STRING_LIST
 
-void CCmdLineInterface::get_char_string_list(T_STRING<CHAR>*& strings, INT& num_str, INT& max_string_len)
-{
-	strings=NULL;
-	num_str=0;
-	max_string_len=0;
-	/*
-	void* strs=get_arg_increment();
-
-	if (strs == R_NilValue || TYPEOF(CAR(strs)) != STRSXP)
-		SG_ERROR("Expected String List as argument %d\n", m_rhs_counter);
-	strs=CAR(strs);
-
-	max_string_len=0;
-	num_str=length(strs);
-	strings=new T_STRING<CHAR>[num_str];
-	ASSERT(strings);
-
-	for (int i=0; i<num_str; i++)
-	{
-		void*REC* s= STRING_ELT(strs,i);
-		CHAR* c= (CHAR*) CHAR(s);
-		int len=LENGTH(s);
-
-		if (len && c)
-		{
-			CHAR* dst=new CHAR[len+1];
-			strings[i].string=(CHAR*) memcpy(dst, c, len*sizeof(CHAR));
-			strings[i].string[len]='\0';
-			strings[i].length=len;
-			max_string_len=CMath::max(max_string_len, len);
-		}
-		else
-		{
-			SG_WARNING( "string with index %d has zero length\n", i+1);
-			strings[i].string=0;
-			strings[i].length=0;
-		}
-	}
-	*/
-}
-
-void CCmdLineInterface::get_int_string_list(T_STRING<INT>*& strings, INT& num_str, INT& max_string_len)
-{
-	strings=NULL;
-	num_str=0;
-	max_string_len=0;
-}
-
-void CCmdLineInterface::get_short_string_list(T_STRING<SHORT>*& strings, INT& num_str, INT& max_string_len)
-{
-	strings=NULL;
-	num_str=0;
-	max_string_len=0;
-}
-
-void CCmdLineInterface::get_word_string_list(T_STRING<WORD>*& strings, INT& num_str, INT& max_string_len)
-{
-	strings=NULL;
-	num_str=0;
-	max_string_len=0;
-}
 
 /** set functions - to pass data from shogun to the target interface */
 bool CCmdLineInterface::create_return_values(INT num)
