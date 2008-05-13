@@ -13,6 +13,13 @@
 #include "lib/File.h"
 #include "lib/SimpleFile.h"
 
+CFile::CFile(FILE* f)
+{
+	file=f;
+	filename=NULL;
+	expected_type=F_UNKNOWN;
+}
+
 CFile::CFile(CHAR* fname, CHAR rw, EFeatureType typ, CHAR file_fourcc[4]) : CSGObject()
 {
 	status=false;

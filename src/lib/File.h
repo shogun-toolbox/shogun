@@ -34,6 +34,7 @@ public:
 	/// and the file is treated as if it has a header/[typeheader,data]+
 	/// else a the files header will be checked to contain the specified
 	/// fourcc (e.g. 'RFEA')
+	CFile(FILE* f);
 	CFile(CHAR* fname, CHAR rw, EFeatureType type, CHAR fourcc[4]=NULL);
 	~CFile();
 
@@ -173,6 +174,32 @@ public:
 	{
 		return status;
 	}
+
+
+	/** read sparse real valued features in svm light format
+	 * e.g. -1 1:10.0 2:100.2 1000:1.3 
+	 * with -1 == (optional) label
+	 * and dim 1    - value  10.0
+	 *     dim 2    - value 100.2
+	 *     dim 1000 - value   1.3
+	 */
+	bool read_real_valued_sparse(TSparse<DREAL>*& matrix, INT& num_feat, INT& num_vec);
+
+	/** read dense real valued features, simple ascii format
+	 * e.g. 1.0 1.1 0.2 
+	 *      2.3 3.5 5
+	 *
+	 *  a matrix that consists of 3 vectors with each of 2d
+	 *  */
+	bool read_real_valued_dense(DREAL*& matrix, INT& num_feat, INT& num_vec);
+
+	/** read char string features, simple ascii format
+	 * e.g. foo bar 
+	 *      ACGTACGTATCT
+	 *
+	 *  two strings 
+	 *  */
+	bool read_char_valued_strings(T_STRING<CHAR>*& strings, INT& num_str, INT& max_string_len);
 
 protected:
 	/** read header
