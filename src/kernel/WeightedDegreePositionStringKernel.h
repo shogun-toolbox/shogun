@@ -137,6 +137,8 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<CHAR>
 		inline virtual DREAL compute_optimized(INT idx)
 		{ 
 			ASSERT(get_is_initialized());
+			ASSERT(alphabet);
+			ASSERT(alphabet->get_alphabet() == DNA || alphabet->get_alphabet() == RNA);
 			return compute_by_tree(idx);
 		}
 
@@ -738,6 +740,8 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<CHAR>
 		INT m_poim_num_feat;
 		/** total size of poim array */
 		INT m_poim_result_len;
-		
+
+		/** alphabet of features */
+		CAlphabet* alphabet;
 };
 #endif /* _WEIGHTEDDEGREEPOSITIONSTRINGKERNEL_H__ */

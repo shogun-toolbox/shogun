@@ -55,7 +55,7 @@ CWeightedDegreePositionStringKernel::CWeightedDegreePositionStringKernel(
 	  block_weights_external(NULL), block_weights(NULL), type(E_EXTERNAL),
 	  tries(d), poim_tries(d), tree_initialized(false), use_poim_tries(false),
 	  m_poim_distrib(NULL), m_poim(NULL), m_poim_num_sym(0), m_poim_num_feat(0), 
-	  m_poim_result_len(0)
+	  m_poim_result_len(0), alphabet(NULL)
 {
 	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
 	set_wd_weights();
@@ -73,7 +73,7 @@ CWeightedDegreePositionStringKernel::CWeightedDegreePositionStringKernel(
 	  block_weights_external(NULL), block_weights(NULL), type(E_EXTERNAL),
 	  tries(d), poim_tries(d), tree_initialized(false), use_poim_tries(false),
 	  m_poim_distrib(NULL), m_poim(NULL), m_poim_num_sym(0), m_poim_num_feat(0), 
-	  m_poim_result_len(0)
+	  m_poim_result_len(0), alphabet(NULL)
 {
 	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
 
@@ -97,7 +97,7 @@ CWeightedDegreePositionStringKernel::CWeightedDegreePositionStringKernel(
 	  block_weights_external(NULL), block_weights(NULL), type(E_EXTERNAL),
 	  tries(d), poim_tries(d), tree_initialized(false), use_poim_tries(false),
 	  m_poim_distrib(NULL), m_poim(NULL), m_poim_num_sym(0), m_poim_num_feat(0), 
-	  m_poim_result_len(0)
+	  m_poim_result_len(0), alphabet(NULL)
 {
 	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
 	set_wd_weights();
@@ -206,10 +206,14 @@ bool CWeightedDegreePositionStringKernel::init(CFeatures* l, CFeatures* r)
 	SG_DEBUG( "lhs_changed: %i\n", lhs_changed) ;
 	SG_DEBUG( "rhs_changed: %i\n", rhs_changed) ;
 
-	ASSERT(((((CStringFeatures<CHAR>*) l)->get_alphabet()->get_alphabet()==DNA) || 
-				(((CStringFeatures<CHAR>*) l)->get_alphabet()->get_alphabet()==RNA)));
-	ASSERT(((((CStringFeatures<CHAR>*) r)->get_alphabet()->get_alphabet()==DNA) || 
-				(((CStringFeatures<CHAR>*) r)->get_alphabet()->get_alphabet()==RNA)));
+	delete alphabet;
+	alphabet= new CAlphabet(((CStringFeatures<CHAR>*) l)->get_alphabet());
+	CAlphabet* ralphabet=((CStringFeatures<CHAR>*) r)->get_alphabet();
+	if (!((alphabet->get_alphabet()==DNA) || (alphabet->get_alphabet()==RNA)))
+		properties &= ((ULONG) (-1)) ^ (KP_LINADD | KP_BATCHEVALUATION);
+
+	ASSERT(ralphabet->get_alphabet()==alphabet->get_alphabet());
+	SG_UNREF(ralphabet);
 
 	if (lhs_changed) 
 	{
@@ -245,6 +249,9 @@ void CWeightedDegreePositionStringKernel::cleanup()
 	seq_length = 0;
 	initialized = false;
 	tree_initialized = false;
+
+	delete alphabet;
+	alphabet=NULL;
 }
 
 bool CWeightedDegreePositionStringKernel::load_init(FILE* src)
@@ -641,13 +648,16 @@ void CWeightedDegreePositionStringKernel::add_example_to_tree(INT idx, DREAL alp
 	ASSERT(position_weights_lhs==NULL) ;
 	ASSERT(position_weights_rhs==NULL) ;
 
+	ASSERT(alphabet);
+	ASSERT(alphabet->get_alphabet() == DNA || alphabet->get_alphabet() == RNA);
+
 	INT len ;
 	CHAR* char_vec=((CStringFeatures<CHAR>*) lhs)->get_feature_vector(idx, len);
 	ASSERT(max_mismatch==0) ;
 	INT *vec = new INT[len] ;
 
 	for (INT i=0; i<len; i++)
-		vec[i]=((CStringFeatures<CHAR>*) lhs)->get_alphabet()->remap_to_bin(char_vec[i]);
+		vec[i]=alphabet->remap_to_bin(char_vec[i]);
 
 	if (opt_type==FASTBUTMEMHUNGRY)
 	{
@@ -690,6 +700,9 @@ void CWeightedDegreePositionStringKernel::add_example_to_single_tree(INT idx, DR
 	ASSERT(position_weights_lhs==NULL) ;
 	ASSERT(position_weights_rhs==NULL) ;
 
+	ASSERT(alphabet);
+	ASSERT(alphabet->get_alphabet() == DNA || alphabet->get_alphabet() == RNA);
+
 	INT len ;
 	CHAR* char_vec=((CStringFeatures<CHAR>*) lhs)->get_feature_vector(idx, len);
 	ASSERT(max_mismatch==0) ;
@@ -708,7 +721,7 @@ void CWeightedDegreePositionStringKernel::add_example_to_single_tree(INT idx, DR
 		SG_ERROR( "unknown optimization type\n");
 	}
 	for (INT i=CMath::max(0,tree_num-max_shift); i<CMath::min(len,tree_num+degree+max_shift); i++)
-		vec[i]=((CStringFeatures<CHAR>*) lhs)->get_alphabet()->remap_to_bin(char_vec[i]);
+		vec[i]=alphabet->remap_to_bin(char_vec[i]);
 
 	for (INT s=max_s; s>=0; s--)
 	{
@@ -739,6 +752,9 @@ DREAL CWeightedDegreePositionStringKernel::compute_by_tree(INT idx)
 	ASSERT(position_weights_lhs==NULL) ;
 	ASSERT(position_weights_rhs==NULL) ;
 
+	ASSERT(alphabet);
+	ASSERT(alphabet->get_alphabet() == DNA || alphabet->get_alphabet() == RNA);
+
 	DREAL sum = 0 ;
 	INT len ;
 	CHAR* char_vec=((CStringFeatures<CHAR>*) rhs)->get_feature_vector(idx, len);
@@ -746,7 +762,7 @@ DREAL CWeightedDegreePositionStringKernel::compute_by_tree(INT idx)
 	INT *vec = new INT[len] ;
 
 	for (INT i=0; i<len; i++)
-		vec[i]=((CStringFeatures<CHAR>*) lhs)->get_alphabet()->remap_to_bin(char_vec[i]);
+		vec[i]=alphabet->remap_to_bin(char_vec[i]);
 
 	for (INT i=0; i<len; i++)
 		sum += tries.compute_by_tree_helper(vec, len, i, i, i, weights, (length!=0)) ;
@@ -773,13 +789,16 @@ void CWeightedDegreePositionStringKernel::compute_by_tree(INT idx, DREAL* LevelC
 	ASSERT(position_weights_lhs==NULL) ;
 	ASSERT(position_weights_rhs==NULL) ;
 
+	ASSERT(alphabet);
+	ASSERT(alphabet->get_alphabet() == DNA || alphabet->get_alphabet() == RNA);
+
 	INT len ;
 	CHAR* char_vec=((CStringFeatures<CHAR>*) rhs)->get_feature_vector(idx, len);
 	ASSERT(max_mismatch==0) ;
 	INT *vec = new INT[len] ;
 
 	for (INT i=0; i<len; i++)
-		vec[i]=((CStringFeatures<CHAR>*) lhs)->get_alphabet()->remap_to_bin(char_vec[i]);
+		vec[i]=alphabet->remap_to_bin(char_vec[i]);
 
 	for (INT i=0; i<len; i++)
 		tries.compute_by_tree_helper(vec, len, i, i, i, LevelContrib, 1.0/normalization_const, mkl_stepsize, weights, (length!=0)) ;
@@ -1221,13 +1240,12 @@ void* CWeightedDegreePositionStringKernel::compute_batch_helper(void* p)
 		INT len=0;
 		CStringFeatures<CHAR>* rhs_feat=((CStringFeatures<CHAR>*) wd->get_rhs());
 		CStringFeatures<CHAR>* lhs_feat=((CStringFeatures<CHAR>*) wd->get_lhs());
-		CAlphabet* alpha=lhs_feat->get_alphabet();
+		CAlphabet* alpha=wd->alphabet;
 
 		CHAR* char_vec=rhs_feat->get_feature_vector(vec_idx[i], len);
 		for (INT k=CMath::max(0,j-max_shift); k<CMath::min(len,j+wd->get_degree()+max_shift); k++)
 			vec[k]=alpha->remap_to_bin(char_vec[k]);
 
-		SG_UNREF(alpha);
 		SG_UNREF(lhs_feat);
 		SG_UNREF(rhs_feat);
 
@@ -1251,6 +1269,9 @@ void* CWeightedDegreePositionStringKernel::compute_batch_helper(void* p)
 
 void CWeightedDegreePositionStringKernel::compute_batch(INT num_vec, INT* vec_idx, DREAL* result, INT num_suppvec, INT* IDX, DREAL* alphas, DREAL factor)
 {
+	ASSERT(alphabet);
+	ASSERT(alphabet->get_alphabet() == DNA || alphabet->get_alphabet() == RNA);
+
 	ASSERT(position_weights_lhs==NULL) ;
 	ASSERT(position_weights_rhs==NULL) ;
 
@@ -1363,7 +1384,9 @@ DREAL* CWeightedDegreePositionStringKernel::compute_scoring(INT max_degree, INT&
 
 	num_feat=((CStringFeatures<CHAR>*) rhs)->get_max_vector_length();
 	ASSERT(num_feat>0);
-	ASSERT(((CStringFeatures<CHAR>*) rhs)->get_alphabet()->get_alphabet() == DNA);
+	ASSERT(alphabet);
+	ASSERT(alphabet->get_alphabet() == DNA || alphabet->get_alphabet() == RNA);
+
 	num_sym=4; //for now works only w/ DNA
 
 	ASSERT(max_degree>0);
@@ -1524,7 +1547,8 @@ CHAR* CWeightedDegreePositionStringKernel::compute_consensus(INT &num_feat, INT 
 	ASSERT(!tries.get_use_compact_terminal_nodes());
 	num_feat=((CStringFeatures<CHAR>*) rhs)->get_max_vector_length();
 	ASSERT(num_feat>0);
-	ASSERT(((CStringFeatures<CHAR>*) rhs)->get_alphabet()->get_alphabet() == DNA);
+	ASSERT(alphabet);
+	ASSERT(alphabet->get_alphabet() == DNA || alphabet->get_alphabet() == RNA);
 
 	//consensus
 	CHAR* result= new CHAR[num_feat];
@@ -1646,7 +1670,7 @@ DREAL* CWeightedDegreePositionStringKernel::extract_w( INT max_degree, INT& num_
   ASSERT( position_weights_rhs == NULL );
   num_feat=((CStringFeatures<CHAR>*) rhs)->get_max_vector_length();
   ASSERT( num_feat > 0 );
-  ASSERT( ((CStringFeatures<CHAR>*) rhs)->get_alphabet()->get_alphabet() == DNA );
+  ASSERT( alphabet->get_alphabet() == DNA );
   ASSERT( max_degree > 0 );
 
   // === general variables
@@ -1708,7 +1732,7 @@ DREAL* CWeightedDegreePositionStringKernel::compute_POIM( INT max_degree, INT& n
   ASSERT( position_weights_rhs == NULL );
   num_feat=((CStringFeatures<CHAR>*) rhs)->get_max_vector_length();
   ASSERT( num_feat > 0 );
-  ASSERT( ((CStringFeatures<CHAR>*) rhs)->get_alphabet()->get_alphabet() == DNA );
+  ASSERT( alphabet->get_alphabet() == DNA );
   ASSERT( max_degree != 0 );
   ASSERT( distrib != NULL );
 

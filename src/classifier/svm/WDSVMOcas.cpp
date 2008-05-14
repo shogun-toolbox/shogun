@@ -202,6 +202,8 @@ bool CWDSVMOcas::train()
 	delete[] lab;
 	lab=NULL;
 
+	SG_UNREF(alphabet);
+
 	return true;
 }
 

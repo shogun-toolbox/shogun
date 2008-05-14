@@ -46,7 +46,7 @@ CWeightedDegreeStringKernel::CWeightedDegreeStringKernel (
 	use_normalization(true),block_computation(true), 
 	normalization_const(1.0), num_block_weights_external(0),
 	block_weights_external(NULL), block_weights(NULL), type(type_),
-	which_degree(-1), tries(NULL), tree_initialized(false)
+	which_degree(-1), tries(NULL), tree_initialized(false), alphabet(NULL)
 {
 	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
 	lhs=NULL;
@@ -64,7 +64,7 @@ CWeightedDegreeStringKernel::CWeightedDegreeStringKernel (
 	use_normalization(true), block_computation(true),
 	normalization_const(1.0), num_block_weights_external(0),
 	block_weights_external(NULL), block_weights(NULL), type(E_EXTERNAL),
-	which_degree(-1), tries(NULL), tree_initialized(false)
+	which_degree(-1), tries(NULL), tree_initialized(false), alphabet(NULL)
 {
 	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
 	lhs=NULL;
@@ -84,7 +84,7 @@ CWeightedDegreeStringKernel::CWeightedDegreeStringKernel(
 	use_normalization(true), block_computation(true),
 	normalization_const(1.0), num_block_weights_external(0),
 	block_weights_external(NULL), block_weights(NULL), type(E_WD),
-	which_degree(-1), tries(NULL), tree_initialized(false)
+	which_degree(-1), tries(NULL), tree_initialized(false), alphabet(NULL)
 {
 	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
 
@@ -159,10 +159,14 @@ bool CWeightedDegreeStringKernel::init(CFeatures* l, CFeatures* r)
 	SG_DEBUG("lhs_changed: %i\n", lhs_changed);
 	SG_DEBUG("rhs_changed: %i\n", rhs_changed);
 
-	ASSERT(((((CStringFeatures<CHAR>*) l)->get_alphabet()->get_alphabet()==DNA) || 
-				 (((CStringFeatures<CHAR>*) l)->get_alphabet()->get_alphabet()==RNA)));
-	ASSERT(((((CStringFeatures<CHAR>*) r)->get_alphabet()->get_alphabet()==DNA) || 
-				 (((CStringFeatures<CHAR>*) r)->get_alphabet()->get_alphabet()==RNA)));
+	delete alphabet;
+	alphabet=new CAlphabet(((CStringFeatures<CHAR>*) l)->get_alphabet());
+	CAlphabet* ralphabet=((CStringFeatures<CHAR>*) r)->get_alphabet();
+	if (!((alphabet->get_alphabet()==DNA) || (alphabet->get_alphabet()==RNA)))
+		properties &= ((ULONG) (-1)) ^ (KP_LINADD | KP_BATCHEVALUATION);
+
+	ASSERT(ralphabet->get_alphabet()==alphabet->get_alphabet());
+	SG_UNREF(ralphabet);
 
 	if (tries!=NULL) {
 		tries->delete_trees(max_mismatch==0);
@@ -207,6 +211,9 @@ void CWeightedDegreeStringKernel::cleanup()
 	seq_length=0;
 	initialized=false;
 	tree_initialized = false;
+
+	delete alphabet;
+	alphabet=NULL;
 }
 
 bool CWeightedDegreeStringKernel::load_init(FILE* src)
@@ -404,13 +411,16 @@ DREAL CWeightedDegreeStringKernel::compute(INT idx_a, INT idx_b)
 
 void CWeightedDegreeStringKernel::add_example_to_tree(INT idx, DREAL alpha)
 {
+	ASSERT(alphabet);
+	ASSERT(alphabet->get_alphabet() == DNA || alphabet->get_alphabet() == RNA);
+
 	INT len ;
 	CHAR* char_vec=((CStringFeatures<CHAR>*) lhs)->get_feature_vector(idx, len);
 	ASSERT(max_mismatch==0) ;
 	INT *vec = new INT[len] ;
 
 	for (INT i=0; i<len; i++)
-		vec[i]=((CStringFeatures<CHAR>*) lhs)->get_alphabet()->remap_to_bin(char_vec[i]);
+		vec[i]=alphabet->remap_to_bin(char_vec[i]);
 	
 	if (length == 0 || max_mismatch > 0)
 	{
@@ -444,13 +454,16 @@ void CWeightedDegreeStringKernel::add_example_to_tree(INT idx, DREAL alpha)
 
 void CWeightedDegreeStringKernel::add_example_to_single_tree(INT idx, DREAL alpha, INT tree_num) 
 {
+	ASSERT(alphabet);
+	ASSERT(alphabet->get_alphabet() == DNA || alphabet->get_alphabet() == RNA);
+
 	INT len ;
 	CHAR* char_vec=((CStringFeatures<CHAR>*) lhs)->get_feature_vector(idx, len);
 	ASSERT(max_mismatch==0) ;
 	INT *vec = new INT[len] ;
 
 	for (INT i=tree_num; i<tree_num+degree && i<len; i++)
-		vec[i]=((CStringFeatures<CHAR>*) lhs)->get_alphabet()->remap_to_bin(char_vec[i]);
+		vec[i]=alphabet->remap_to_bin(char_vec[i]);
 	
 	if (length == 0 || max_mismatch > 0)
 	{
@@ -476,13 +489,16 @@ void CWeightedDegreeStringKernel::add_example_to_single_tree(INT idx, DREAL alph
 
 void CWeightedDegreeStringKernel::add_example_to_tree_mismatch(INT idx, DREAL alpha)
 {
+	ASSERT(alphabet);
+	ASSERT(alphabet->get_alphabet() == DNA || alphabet->get_alphabet() == RNA);
+
 	INT len ;
 	CHAR* char_vec=((CStringFeatures<CHAR>*) lhs)->get_feature_vector(idx, len);
 	
 	INT *vec = new INT[len] ;
 	
 	for (INT i=0; i<len; i++)
-		vec[i]=((CStringFeatures<CHAR>*) lhs)->get_alphabet()->remap_to_bin(char_vec[i]);
+		vec[i]=alphabet->remap_to_bin(char_vec[i]);
 	
 	/*for (INT q=0; q<40; q++)
 	  fprintf(stderr, "w[%i]=%f\n", q,weights[q]) ;*/
@@ -504,13 +520,16 @@ void CWeightedDegreeStringKernel::add_example_to_tree_mismatch(INT idx, DREAL al
 
 void CWeightedDegreeStringKernel::add_example_to_single_tree_mismatch(INT idx, DREAL alpha, INT tree_num)
 {
+	ASSERT(alphabet);
+	ASSERT(alphabet->get_alphabet() == DNA || alphabet->get_alphabet() == RNA);
+
 	INT len ;
 	CHAR* char_vec=((CStringFeatures<CHAR>*) lhs)->get_feature_vector(idx, len);
 
 	INT *vec = new INT[len] ;
 
 	for (INT i=tree_num; i<len && i<tree_num+degree; i++)
-		vec[i]=((CStringFeatures<CHAR>*) lhs)->get_alphabet()->remap_to_bin(char_vec[i]);
+		vec[i]=alphabet->remap_to_bin(char_vec[i]);
 
 	DREAL alpha_pw = alpha ;
 	/*if (position_weights!=NULL)
@@ -526,13 +545,16 @@ void CWeightedDegreeStringKernel::add_example_to_single_tree_mismatch(INT idx, D
 
 DREAL CWeightedDegreeStringKernel::compute_by_tree(INT idx)
 {
+	ASSERT(alphabet);
+	ASSERT(alphabet->get_alphabet() == DNA || alphabet->get_alphabet() == RNA);
+
 	INT len ;
 	CHAR* char_vec=((CStringFeatures<CHAR>*) rhs)->get_feature_vector(idx, len);
 	ASSERT(char_vec && len>0);
 	INT *vec = new INT[len] ;
 	
 	for (INT i=0; i<len; i++)
-		vec[i]=((CStringFeatures<CHAR>*) lhs)->get_alphabet()->remap_to_bin(char_vec[i]);
+		vec[i]=alphabet->remap_to_bin(char_vec[i]);
 
 	DREAL sum=0 ;
 	ASSERT(tries!=NULL) ;
@@ -546,13 +568,16 @@ DREAL CWeightedDegreeStringKernel::compute_by_tree(INT idx)
 
 void CWeightedDegreeStringKernel::compute_by_tree(INT idx, DREAL* LevelContrib)
 {
+	ASSERT(alphabet);
+	ASSERT(alphabet->get_alphabet() == DNA || alphabet->get_alphabet() == RNA);
+
 	INT len ;
 	CHAR* char_vec=((CStringFeatures<CHAR>*) rhs)->get_feature_vector(idx, len);
 
 	INT *vec = new INT[len] ;
 
 	for (INT i=0; i<len; i++)
-		vec[i]=((CStringFeatures<CHAR>*) lhs)->get_alphabet()->remap_to_bin(char_vec[i]);
+		vec[i]=alphabet->remap_to_bin(char_vec[i]);
 
 	ASSERT(tries!=NULL) ;
 	for (INT i=0; i<len; i++)
@@ -875,7 +900,7 @@ void* CWeightedDegreeStringKernel::compute_batch_helper(void* p)
 
 	CStringFeatures<CHAR>* rhs_feat=((CStringFeatures<CHAR>*) wd->get_rhs());
 	CStringFeatures<CHAR>* lhs_feat=((CStringFeatures<CHAR>*) wd->get_lhs());
-	CAlphabet* alpha=lhs_feat->get_alphabet();
+	CAlphabet* alpha=wd->alphabet;
 
 	for (INT i=params->start; i<params->end; i++)
 	{
@@ -888,7 +913,6 @@ void* CWeightedDegreeStringKernel::compute_batch_helper(void* p)
 		result[i] += factor*tries->compute_by_tree_helper(vec, len, j, j, j, weights, (length!=0))/wd->get_normalization_const();
 	}
 
-	SG_UNREF(alpha);
 	SG_UNREF(lhs_feat);
 	SG_UNREF(rhs_feat);
 
@@ -897,6 +921,9 @@ void* CWeightedDegreeStringKernel::compute_batch_helper(void* p)
 
 void CWeightedDegreeStringKernel::compute_batch(INT num_vec, INT* vec_idx, DREAL* result, INT num_suppvec, INT* IDX, DREAL* alphas, DREAL factor)
 {
+	ASSERT(alphabet);
+	ASSERT(alphabet->get_alphabet() == DNA || alphabet->get_alphabet() == RNA);
+
 	ASSERT(rhs);
     ASSERT(num_vec<=rhs->get_num_vectors());
 	ASSERT(num_vec>0);

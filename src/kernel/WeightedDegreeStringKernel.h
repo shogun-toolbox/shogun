@@ -682,6 +682,9 @@ class CWeightedDegreeStringKernel: public CStringKernel<CHAR>
 
 		/** if tree is initialized */
 		bool tree_initialized;
+
+		/** alphabet of features */
+		CAlphabet* alphabet;
 };
 
 #endif /* _WEIGHTEDDEGREESTRINGKERNEL_H__ */

@@ -613,6 +613,8 @@ DREAL* CCommWordStringKernel::compute_scoring(INT max_degree, INT& num_feat,
 	for (INT i=1; i<num_feat; i++)
 		memcpy(&target[num_sym*i], target, num_sym*sizeof(DREAL));
 
+	SG_UNREF(alpha);
+
 	return target;
 }
 
@@ -721,5 +723,6 @@ CHAR* CCommWordStringKernel::compute_consensus(INT &result_len, INT num_suppvec,
 
 	delete[] bt;
 	delete[] score;
+	SG_UNREF(alpha);
 	return result;
 }
