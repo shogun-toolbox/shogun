@@ -49,7 +49,7 @@ extern "C" {
 # define MAXSHRINK 50000
 
 /** model */
-typedef struct model {
+struct MODEL {
 /** sv num */
 INT    sv_num;
 /** at upper bound */
@@ -81,7 +81,7 @@ double xa_error;
 double xa_recall;
 /** xi/alpha estimates */
 double xa_precision;
-} MODEL;
+};
 
 /** the type used for storing feature ids */
 typedef INT FNUM;
@@ -90,7 +90,7 @@ typedef INT FNUM;
 typedef double FVAL;  
 
 /** learning parameters */
-typedef struct learn_parm {
+struct LEARN_PARM {
   /** selects between regression and classification */
   INT   type;
   /** upper bound C on alphas */
@@ -167,10 +167,10 @@ typedef struct learn_parm {
   double svm_unlabbound;
   /** individual upper bounds for each var */
   double *svm_cost;
-} LEARN_PARM;
+};
 
 /** timing profile */
-typedef struct timing_profile {
+struct TIMING {
   /** time kernel */
   INT   time_kernel;
   /** time opti */
@@ -185,11 +185,12 @@ typedef struct timing_profile {
   INT   time_check;
   /** time select */
   INT   time_select;
-} TIMING;
+};
 
 
 /** shrink state */
-typedef struct shrink_state {
+struct SHRINK_STATE
+{
   /** active */
   INT   *active;
   /** inactive since */
@@ -204,7 +205,7 @@ typedef struct shrink_state {
   double *last_a;
   /** for shrinking with linear kernel */
   double *last_lin;
-} SHRINK_STATE;
+};
 
 /** class SVMlight */
 class CSVMLight:public CSVM
