@@ -899,7 +899,6 @@ void* CWeightedDegreeStringKernel::compute_batch_helper(void* p)
 	INT* vec_idx=params->vec_idx;
 
 	CStringFeatures<CHAR>* rhs_feat=((CStringFeatures<CHAR>*) wd->get_rhs());
-	//CStringFeatures<CHAR>* lhs_feat=((CStringFeatures<CHAR>*) wd->get_lhs());
 	CAlphabet* alpha=wd->alphabet;
 
 	for (INT i=params->start; i<params->end; i++)
@@ -913,7 +912,6 @@ void* CWeightedDegreeStringKernel::compute_batch_helper(void* p)
 		result[i] += factor*tries->compute_by_tree_helper(vec, len, j, j, j, weights, (length!=0))/wd->get_normalization_const();
 	}
 
-	//SG_UNREF(lhs_feat);
 	SG_UNREF(rhs_feat);
 
 	return NULL;
