@@ -130,33 +130,34 @@ IFType CCmdLineInterface::get_argument_type()
 			argtype=STRING_CHAR;
 		else if (strncmp(signature, "STRING_BYTE", 11)==0)
 			argtype=STRING_BYTE;
-		else
-			argtype=UNDEFINED;
-
-		delete[] signature;
-		delete[] chunk;
-		return argtype;
-	}
-	delete[] signature;
-
-	SG_DEBUG("Could not find signature in file %s guessing file type.\n", filename);
-	
-	if (strspn(chunk, "0123456789.e+- \t\n")==nread)
-	{
-		argtype=DENSE_REAL;
-		SG_DEBUG("Guessing DENSE_REAL\n");
-	}
-	else if (strspn(chunk, "0123456789:.e+- \t\n")==nread)
-	{
-		argtype=SPARSE_REAL;
-		SG_DEBUG("Guessing SPARSE_REAL\n");
+		else if (strncmp(signature, "DENSE_REAL", 10)==0)
+			argtype=DENSE_REAL;
+		else if (strncmp(signature, "SPARSE_REAL", 11)==0)
+			argtype=SPARSE_REAL;
 	}
 	else
 	{
-		argtype=STRING_CHAR;
-		SG_DEBUG("Guessing STRING_CHAR\n");
+		SG_DEBUG("could not find signature in file %s guessing file type.\n", filename);
+		
+		if (strspn(chunk, "0123456789.e+- \t\n")==nread)
+		{
+			argtype=DENSE_REAL;
+			SG_DEBUG("guessing DENSE_REAL\n");
+		}
+		else if (strspn(chunk, "0123456789:.e+- \t\n")==nread)
+		{
+			argtype=SPARSE_REAL;
+			SG_DEBUG("guessing SPARSE_REAL\n");
+		}
+		else
+		{
+			argtype=STRING_CHAR;
+			SG_DEBUG("guessing STRING_CHAR\n");
+		}
 	}
 
+	delete[] signature;
+	delete[] chunk;
 	return argtype;
 }
 
@@ -321,26 +322,16 @@ void CCmdLineInterface::get_shortreal_matrix(SHORTREAL*& matrix, INT& num_feat, 
 
 void CCmdLineInterface::get_real_matrix(DREAL*& matrix, INT& num_feat, INT& num_vec)
 {
-	matrix=NULL;
-	num_feat=0;
-	num_vec=0;
+	const CHAR* filename=get_arg_increment();
+	if (!filename)
+		SG_ERROR("No filename given to read REAL matrix.\n");
 
-/*
-	void* feat=CAR(get_arg_increment());
-	if( TYPEOF(feat) != XP && TYPEOF(feat) != INTSXP )
-		SG_ERROR("Expected Double Matrix as argument %d\n", m_rhs_counter);
+	CFile f((CHAR*) filename, 'r', F_DREAL);
+	if (!f.is_ok())
+		SG_ERROR("Could not open file %s to read REAL matrix.\n", filename);
 
-	num_vec = ncols(feat);
-	num_feat = nrows(feat);
-	matrix=new DREAL[num_vec*num_feat];
-	ASSERT(matrix);
-
-	for (INT i=0; i<num_vec; i++)
-	{
-		for (INT j=0; j<num_feat; j++)
-			matrix[i*num_feat+j]= (DREAL) REAL(feat)[i*num_feat+j];
-	}
-	*/
+	if (!f.read_real_valued_dense(matrix, num_feat, num_vec))
+		SG_ERROR("Could not read REAL data from %s.\n", filename);
 }
 
 void CCmdLineInterface::get_short_matrix(SHORT*& matrix, INT& num_feat, INT& num_vec)

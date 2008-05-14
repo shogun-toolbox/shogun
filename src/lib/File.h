@@ -16,7 +16,12 @@
 #include <stdarg.h>
 
 #include "lib/common.h"
+#include "lib/DynamicArray.h"
 #include "base/SGObject.h"
+#include "features/SparseFeatures.h"
+
+template <class ST> struct T_STRING;
+
 
 /// A file consists of a header
 /// then an alternation of a type header and data
@@ -212,6 +217,10 @@ protected:
 	 * @return whether operation was successful
 	 */
 	bool write_header();
+
+private:
+	/** helper function to read_*valued_* */
+	template <class T> void append_item(CDynamicArray<T>* items, CHAR* ptr_data, CHAR* ptr_item);
 
 protected:
 	/** file object */
