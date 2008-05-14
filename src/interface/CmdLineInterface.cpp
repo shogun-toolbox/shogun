@@ -121,7 +121,7 @@ void CCmdLineInterface::reset(const CHAR* line)
  * consists of a line starting with 3 hash signs, 1 space and then
  * the argument type. e.g.:
  *
- * ### STRING_CHAR
+ * ### SHOGUN V0 STRING_CHAR
  * ACGTGCAAAAGC
  * AGTCDTCD
  */
@@ -245,7 +245,6 @@ CHAR* CCmdLineInterface::get_string(INT& len)
 	CHAR* result=new CHAR[len+1];
 	memcpy(result, s, len*sizeof(CHAR));
 	result[len]='\0';
-	//SG_PRINT("str %s\n", result);
 
 	return result;
 }
@@ -381,14 +380,14 @@ void CCmdLineInterface::get_real_sparsematrix(TSparse<DREAL>*& matrix, INT& num_
 {
 	const CHAR* filename=get_arg_increment();
 	if (!filename)
-		SG_ERROR("No filename given to read REAL matrix.\n");
+		SG_ERROR("No filename given to read SPARSE REAL matrix.\n");
 
 	CFile f((CHAR*) filename, 'r', F_DREAL);
 	if (!f.is_ok())
-		SG_ERROR("Could not open file %s to read REAL matrix.\n", filename);
+		SG_ERROR("Could not open file %s to read SPARSE REAL matrix.\n", filename);
 
 	if (!f.read_real_valued_sparse(matrix, num_feat, num_vec))
-		SG_ERROR("Could not read REAL data from %s.\n", filename);
+		SG_ERROR("Could not read SPARSE REAL data from %s.\n", filename);
 }
 
 
@@ -403,14 +402,19 @@ void CCmdLineInterface::get_char_string_list(T_STRING<CHAR>*& strings, INT& num_
 {
 	const CHAR* filename=get_arg_increment();
 	if (!filename)
-		SG_ERROR("No filename given to read REAL matrix.\n");
+		SG_ERROR("No filename given to read CHAR string list.\n");
 
-	CFile f((CHAR*) filename, 'r', F_DREAL);
+	CFile f((CHAR*) filename, 'r', F_CHAR);
 	if (!f.is_ok())
-		SG_ERROR("Could not open file %s to read REAL matrix.\n", filename);
+		SG_ERROR("Could not open file %s to read CHAR string list.\n", filename);
 
 	if (!f.read_char_valued_strings(strings, num_str, max_string_len))
-		SG_ERROR("Could not read REAL data from %s.\n", filename);
+		SG_ERROR("Could not read CHAR data from %s.\n", filename);
+
+/*
+	for (INT i=0; i<num_str; i++)
+		SG_PRINT("%s\n", strings[i].string);
+*/
 }
 
 void CCmdLineInterface::get_int_string_list(T_STRING<INT>*& strings, INT& num_str, INT& max_string_len)
@@ -580,6 +584,16 @@ SET_MATRIX(set_word_matrix, INTSXP, INTEGER, WORD, int, "Word")
 
 void CCmdLineInterface::set_real_sparsematrix(const TSparse<DREAL>* matrix, INT num_feat, INT num_vec, LONG nnz)
 {
+	const CHAR* filename=set_arg_increment();
+	if (!filename)
+		SG_ERROR("No filename given to write SPARSE REAL matrix.\n");
+
+	CFile f((CHAR*) filename, 'w', F_DREAL);
+	if (!f.is_ok())
+		SG_ERROR("Could not open file %s to write SPARSE REAL matrix.\n", filename);
+
+	if (!f.write_real_valued_sparse(matrix, num_feat, num_vec))
+		SG_ERROR("Could not write SPARSE REAL data to %s.\n", filename);
 }
 
 void CCmdLineInterface::set_byte_string_list(const T_STRING<BYTE>* strings, INT num_str)
@@ -588,22 +602,16 @@ void CCmdLineInterface::set_byte_string_list(const T_STRING<BYTE>* strings, INT 
 
 void CCmdLineInterface::set_char_string_list(const T_STRING<CHAR>* strings, INT num_str)
 {
-/*
-	if (!strings)
-		SG_ERROR("Given strings are invalid.\n");
+	const CHAR* filename=set_arg_increment();
+	if (!filename)
+		SG_ERROR("No filename given to write CHAR string list.\n");
 
-	void* feat=NULL;
-	PROTECT( feat = allocVector(STRSXP, num_str) );
+	CFile f((CHAR*) filename, 'w', F_CHAR);
+	if (!f.is_ok())
+		SG_ERROR("Could not open file %s to write CHAR string list.\n", filename);
 
-	for (INT i=0; i<num_str; i++)
-	{
-		INT len=strings[i].length;
-		if (len>0)
-			SET_STRING_ELT(feat, i, mkChar(strings[i].string));
-	}
-	UNPROTECT(1);
-	set_arg_increment(feat);
-	*/
+	if (!f.write_char_valued_strings(strings, num_str))
+		SG_ERROR("Could not write CHAR data to %s.\n", filename);
 }
 
 void CCmdLineInterface::set_int_string_list(const T_STRING<INT>* strings, INT num_str)

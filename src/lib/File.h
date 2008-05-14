@@ -188,6 +188,7 @@ public:
 	 *     dim 1000 - value   1.3
 	 */
 	bool read_real_valued_sparse(TSparse<DREAL>*& matrix, INT& num_feat, INT& num_vec);
+	bool write_real_valued_sparse(const TSparse<DREAL>* matrix, INT num_feat, INT num_vec);
 
 	/** read dense real valued features, simple ascii format
 	 * e.g. 1.0 1.1 0.2 
@@ -199,12 +200,13 @@ public:
 	bool write_real_valued_dense(const DREAL* matrix, INT num_feat, INT num_vec);
 
 	/** read char string features, simple ascii format
-	 * e.g. foo bar 
+	 * e.g. foo bar
 	 *      ACGTACGTATCT
 	 *
-	 *  two strings 
+	 *  two strings
 	 *  */
 	bool read_char_valued_strings(T_STRING<CHAR>*& strings, INT& num_str, INT& max_string_len);
+	bool write_char_valued_strings(const T_STRING<CHAR>* strings, INT num_str);
 
 protected:
 	/** read header

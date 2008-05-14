@@ -324,23 +324,22 @@ bool CFile::read_real_valued_dense(DREAL*& matrix, INT& num_feat, INT& num_vec)
 
 bool CFile::write_real_valued_dense(const DREAL* matrix, INT num_feat, INT num_vec)
 {
-	if (file && matrix)
-	{
-		for (INT j=0; j<num_vec; j++)
-		{
-			for (INT i=0; i<num_feat; i++)
-			{
-				DREAL v=matrix[num_feat*j+i];
-				if (i==num_feat-1)
-					fprintf(file, "%f\n", v);
-				else
-					fprintf(file, "%f ", v);
-			}
-		}
+	if (!(file && matrix))
+		SG_ERROR("File or matrix invalid.\n");
 
-		return true;
+	for (INT j=0; j<num_vec; j++)
+	{
+		for (INT i=0; i<num_feat; i++)
+		{
+			DREAL v=matrix[num_feat*j+i];
+			if (i==num_feat-1)
+				fprintf(file, "%f\n", v);
+			else
+				fprintf(file, "%f ", v);
+		}
 	}
-	return false;
+
+	return true;
 }
 
 bool CFile::read_real_valued_sparse(TSparse<DREAL>*& matrix, INT& num_feat, INT& num_vec)
@@ -511,6 +510,29 @@ bool CFile::read_real_valued_sparse(TSparse<DREAL>*& matrix, INT& num_feat, INT&
 	return true;
 }
 
+bool CFile::write_real_valued_sparse(const TSparse<DREAL>* matrix, INT num_feat, INT num_vec)
+{
+	if (!(file && matrix))
+		SG_ERROR("File or matrix invalid.\n");
+
+	for (INT i=0; i<num_vec; i++)
+	{
+		INT len=matrix[i].num_feat_entries;
+		for (INT j=0; j<len; j++)
+		{
+			INT idx=matrix[i].features[j].feat_index;
+			DREAL val=matrix[i].features[j].entry;
+			if (i==len-1)
+				fprintf(file, "%d:%f\n", idx, val);
+			else
+				fprintf(file, "%d:%f ", idx, val);
+		}
+	}
+
+	return true;
+}
+
+
 bool CFile::read_char_valued_strings(T_STRING<CHAR>*& strings, INT& num_str, INT& max_string_len)
 {
 	bool result=false;
@@ -579,9 +601,15 @@ bool CFile::read_char_valued_strings(T_STRING<CHAR>*& strings, INT& num_str, INT
 					strings[lines].length=len;
 					strings[lines].string=new CHAR[len];
 					ASSERT(strings[lines].string);
+					//memset(strings[lines].string, 0, len);
 
+					//SG_PRINT("dummy ");
 					for (INT j=0; j<len; j++)
+					{
 						strings[lines].string[j]=dummy[old_sz+j];
+						//SG_PRINT("%c, ", (CHAR) dummy[old_sz+j]);
+					}
+					//SG_PRINT("\n");
 
 					//CMath::display_vector(strings[lines].string, len);
 					old_sz=i+1;
@@ -598,3 +626,16 @@ bool CFile::read_char_valued_strings(T_STRING<CHAR>*& strings, INT& num_str, INT
 
 	return result;
 }
+
+bool CFile::write_char_valued_strings(const T_STRING<CHAR>* strings, INT num_str)
+{
+	if (!(file && strings))
+		SG_ERROR("File or strings invalid.\n");
+
+	for (INT i=0; i<num_str; i++)
+		fprintf(file, "%s\n", strings[i].string);
+
+	return true;
+}
+
+
