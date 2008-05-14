@@ -44,7 +44,7 @@ void CCmdLineInterface::reset(const CHAR* line)
 
 	CHAR* element=NULL;
 	CHAR delim_equal[]="=";
-	CHAR delim_lhs[]=", \t";
+	CHAR delim_lhs[]="=, \t";
 	CHAR delim_rhs[]=" \t\n";
 
 	delete m_lhs;
@@ -53,27 +53,28 @@ void CCmdLineInterface::reset(const CHAR* line)
 	m_rhs=NULL;
 
 	// split lhs from rhs
-	if (strstr(line, delim_equal))
+	CHAR* equal_sign=strstr(line, delim_equal);
+	if (equal_sign)
+	//if (strstr(line, delim_equal))
 	{
 #ifdef DEBUG_CMDLINEIF
 		SG_PRINT("has lhs!\n");
 #endif
 		element=strtok((CHAR*) line, delim_lhs);
-
-		if (element && !strstr(element, delim_equal))
+		if (element)
 		{
 			m_lhs=new CDynamicArray<CHAR*>();
 			m_lhs->append_element(element);
 			m_nlhs++;
 			while ((element=strtok(NULL, delim_lhs)))
 			{
-				if (strstr(element, delim_equal))
+				if (element>equal_sign) // on rhs now
 					break;
+
 				m_lhs->append_element(element);
 				m_nlhs++;
 			}
 		}
-		element=strtok(NULL, delim_rhs);
 	}
 	else
 		element=strtok((CHAR*) line, delim_rhs);
@@ -91,7 +92,6 @@ void CCmdLineInterface::reset(const CHAR* line)
 	}
 	else
 		m_rhs=NULL;
-
 
 #ifdef DEBUG_CMDLINEIF
 	SG_PRINT("nlhs=%d nrhs=%d\n", m_nlhs, m_nrhs);

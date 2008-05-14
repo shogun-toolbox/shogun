@@ -487,7 +487,7 @@ class CSGInterface : public CSGObject
 		{
 			ASSERT(m_rhs_counter==0);
 			if (m_nrhs<=0)
-				SG_SERROR("No input arguments supplied.");
+				SG_SERROR("No input arguments supplied.\n");
 
 			return get_string(len);
 		}
