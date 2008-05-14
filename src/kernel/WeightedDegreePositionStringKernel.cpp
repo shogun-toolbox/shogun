@@ -1239,14 +1239,14 @@ void* CWeightedDegreePositionStringKernel::compute_batch_helper(void* p)
 	{
 		INT len=0;
 		CStringFeatures<CHAR>* rhs_feat=((CStringFeatures<CHAR>*) wd->get_rhs());
-		CStringFeatures<CHAR>* lhs_feat=((CStringFeatures<CHAR>*) wd->get_lhs());
+		//CStringFeatures<CHAR>* lhs_feat=((CStringFeatures<CHAR>*) wd->get_lhs());
 		CAlphabet* alpha=wd->alphabet;
 
 		CHAR* char_vec=rhs_feat->get_feature_vector(vec_idx[i], len);
 		for (INT k=CMath::max(0,j-max_shift); k<CMath::min(len,j+wd->get_degree()+max_shift); k++)
 			vec[k]=alpha->remap_to_bin(char_vec[k]);
 
-		SG_UNREF(lhs_feat);
+		//SG_UNREF(lhs_feat);
 		SG_UNREF(rhs_feat);
 
 		result[i] += factor*tries->compute_by_tree_helper(vec, len, j, j, j, weights, (length!=0))/wd->normalization_const ;
