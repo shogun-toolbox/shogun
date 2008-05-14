@@ -18,10 +18,9 @@
 #include "lib/common.h"
 #include "lib/DynamicArray.h"
 #include "base/SGObject.h"
-#include "features/SparseFeatures.h"
 
 template <class ST> struct T_STRING;
-
+template <class ST> struct TSparse;
 
 /// A file consists of a header
 /// then an alternation of a type header and data
@@ -197,6 +196,7 @@ public:
 	 *  a matrix that consists of 3 vectors with each of 2d
 	 *  */
 	bool read_real_valued_dense(DREAL*& matrix, INT& num_feat, INT& num_vec);
+	bool write_real_valued_dense(const DREAL* matrix, INT num_feat, INT num_vec);
 
 	/** read char string features, simple ascii format
 	 * e.g. foo bar 

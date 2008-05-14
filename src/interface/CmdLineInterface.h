@@ -104,15 +104,17 @@ class CCmdLineInterface : public CSGInterface
 			return element;
 		}
 
-		void set_arg_increment(void* arg)
+		const CHAR* set_arg_increment()
 		{
-			ASSERT(m_lhs_counter>=0 && m_lhs_counter<m_nlhs);
-			//SET_VECTOR_ELT(m_lhs, m_lhs_counter, arg);
+			ASSERT(m_lhs_counter>=0 && m_lhs_counter<m_nlhs+1); // +1 for action
+			CHAR* element=m_lhs->get_element(m_lhs_counter);
 			m_lhs_counter++;
+
+			return element;
 		}
 
 	private:
-		void* m_lhs;
+		CDynamicArray<CHAR*>* m_lhs;
 		CDynamicArray<CHAR*>* m_rhs;
 };
 #endif // HAVE_CMDLINE

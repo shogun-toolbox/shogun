@@ -42,43 +42,71 @@ void CCmdLineInterface::reset(const CHAR* line)
 	if (!line)
 		return;
 
-	CHAR* pos_sep=NULL;
+	CHAR* element=NULL;
 	CHAR delim_equal[]="=";
+	CHAR delim_lhs[]=", \t";
+	CHAR delim_rhs[]=" \t\n";
+
+	delete m_lhs;
+	m_lhs=NULL;
+	delete m_rhs;
+	m_rhs=NULL;
 
 	// split lhs from rhs
-	pos_sep=strstr(line, delim_equal);
-	if (pos_sep)
+	if (strstr(line, delim_equal))
 	{
-		//FIXME
-		m_lhs=NULL;
-		m_rhs=NULL;
-		io.not_implemented();
-	}
-	else
-	{
-		m_lhs=NULL;
+#ifdef DEBUG_CMDLINEIF
+		SG_PRINT("has lhs!\n");
+#endif
+		element=strtok((CHAR*) line, delim_lhs);
 
-		CHAR delim_space[]=" \t\n";
-		CHAR* element=strtok((CHAR*) line, delim_space);
-		if (element)
+		if (element && !strstr(element, delim_equal))
 		{
-			m_rhs=new CDynamicArray<CHAR*>();
-			m_rhs->append_element(element);
-			m_nrhs++;
-			while ((element=strtok(NULL, delim_space)))
+			m_lhs=new CDynamicArray<CHAR*>();
+			m_lhs->append_element(element);
+			m_nlhs++;
+			while ((element=strtok(NULL, delim_lhs)))
 			{
-				m_rhs->append_element(element);
-				m_nrhs++;
+				if (strstr(element, delim_equal))
+					break;
+				m_lhs->append_element(element);
+				m_nlhs++;
 			}
 		}
-		else
-			m_rhs=NULL;
+		element=strtok(NULL, delim_rhs);
+	}
+	else
+		element=strtok((CHAR*) line, delim_rhs);
+
+	if (element)
+	{
+		m_rhs=new CDynamicArray<CHAR*>();
+		m_rhs->append_element(element);
+		m_nrhs++;
+		while ((element=strtok(NULL, delim_rhs)))
+		{
+			m_rhs->append_element(element);
+			m_nrhs++;
+		}
+	}
+	else
+		m_rhs=NULL;
+
+
+#ifdef DEBUG_CMDLINEIF
+	SG_PRINT("nlhs=%d nrhs=%d\n", m_nlhs, m_nrhs);
+	if (m_lhs)
+	{
+		for (INT i=0; i<m_lhs->get_num_elements(); i++)
+			SG_PRINT("element lhs %i %s\n", i, m_lhs->get_element(i));
 	}
 
-/*
-	for (INT i=0; i<m_rhs->get_num_elements(); i++)
-		SG_PRINT("element rhs %i %s\n", i, m_rhs->get_element(i));
-*/
+	if (m_rhs)
+	{
+		for (INT i=0; i<m_rhs->get_num_elements(); i++)
+			SG_PRINT("element rhs %i %s\n", i, m_rhs->get_element(i));
+	}
+#endif
 }
 
 
@@ -351,75 +379,73 @@ void CCmdLineInterface::get_word_matrix(WORD*& matrix, INT& num_feat, INT& num_v
 
 void CCmdLineInterface::get_real_sparsematrix(TSparse<DREAL>*& matrix, INT& num_feat, INT& num_vec)
 {
-	matrix=NULL;
-	num_feat=0;
-	num_vec=0;
+	const CHAR* filename=get_arg_increment();
+	if (!filename)
+		SG_ERROR("No filename given to read REAL matrix.\n");
+
+	CFile f((CHAR*) filename, 'r', F_DREAL);
+	if (!f.is_ok())
+		SG_ERROR("Could not open file %s to read REAL matrix.\n", filename);
+
+	if (!f.read_real_valued_sparse(matrix, num_feat, num_vec))
+		SG_ERROR("Could not read REAL data from %s.\n", filename);
 }
 
 
-// FIXME: find a way not to copy matrix without leaks
-#define GET_STRING_LIST(function_name, dtype)								\
-void CCmdLineInterface::function_name(										\
-	T_STRING<dtype>*& strings, INT& num_str, INT& max_string_len)			\
-{																			\
-	const CHAR* filename=get_arg_increment();								\
-	ASSERT(filename);														\
-																			\
-	T_STRING<dtype>* fmatrix=NULL;											\
-	CStringFeatures<dtype>* sf=												\
-		new CStringFeatures<dtype>((CHAR*) filename);						\
-	ASSERT(sf);																\
-	fmatrix=sf->get_features(num_str, max_string_len);						\
-																			\
-	strings=new T_STRING<dtype>[num_str];									\
-	ASSERT(strings);														\
-	for (INT i=0; i<num_str; i++)											\
-	{																		\
-		strings[i].string=new dtype[fmatrix[i].length];						\
-		ASSERT(strings[i].string);											\
-		memcpy(strings[i].string, fmatrix[i].string, fmatrix[i].length);	\
-		strings[i].length=fmatrix[i].length;								\
-	}																		\
-																			\
-	delete sf;																\
+void CCmdLineInterface::get_byte_string_list(T_STRING<BYTE>*& strings, INT& num_str, INT& max_string_len)
+{
+	strings=NULL;
+	num_str=0;
+	max_string_len=0;
 }
-GET_STRING_LIST(get_byte_string_list, BYTE)
-GET_STRING_LIST(get_char_string_list, CHAR)
-GET_STRING_LIST(get_int_string_list, INT)
-GET_STRING_LIST(get_short_string_list, SHORT)
-GET_STRING_LIST(get_word_string_list, WORD)
-#undef GET_STRING_LIST
 
+void CCmdLineInterface::get_char_string_list(T_STRING<CHAR>*& strings, INT& num_str, INT& max_string_len)
+{
+	const CHAR* filename=get_arg_increment();
+	if (!filename)
+		SG_ERROR("No filename given to read REAL matrix.\n");
+
+	CFile f((CHAR*) filename, 'r', F_DREAL);
+	if (!f.is_ok())
+		SG_ERROR("Could not open file %s to read REAL matrix.\n", filename);
+
+	if (!f.read_char_valued_strings(strings, num_str, max_string_len))
+		SG_ERROR("Could not read REAL data from %s.\n", filename);
+}
+
+void CCmdLineInterface::get_int_string_list(T_STRING<INT>*& strings, INT& num_str, INT& max_string_len)
+{
+	strings=NULL;
+	num_str=0;
+	max_string_len=0;
+}
+
+void CCmdLineInterface::get_short_string_list(T_STRING<SHORT>*& strings, INT& num_str, INT& max_string_len)
+{
+	strings=NULL;
+	num_str=0;
+	max_string_len=0;
+}
+
+void CCmdLineInterface::get_word_string_list(T_STRING<WORD>*& strings, INT& num_str, INT& max_string_len)
+{
+	strings=NULL;
+	num_str=0;
+	max_string_len=0;
+}
 
 /** set functions - to pass data from shogun to the target interface */
 bool CCmdLineInterface::create_return_values(INT num)
 {
-	if (num<=0)
+	if (num==m_nlhs)
 		return true;
 
 	return false;
-/*
-	PROTECT(m_lhs=allocVector(VECSXP, num));
-	m_nlhs=num;
-	return length(m_lhs) == num;
-	*/
 }
 
 void* CCmdLineInterface::get_return_values()
 {
 	return NULL;
-/*
-	if (m_nlhs>0)
-		UNPROTECT(1);
-
-	if (m_nlhs==1)
-	{
-		void* arg=VECTOR_ELT(m_lhs, 0);
-		SET_VECTOR_ELT(m_lhs, m_lhs_counter, R_NilValue);
-		return arg;
-	}
-	return m_lhs;
-	*/
 }
 
 
@@ -511,6 +537,16 @@ void CCmdLineInterface::set_shortreal_matrix(const SHORTREAL* matrix, INT num_fe
 }
 void CCmdLineInterface::set_real_matrix(const DREAL* matrix, INT num_feat, INT num_vec)
 {
+	const CHAR* filename=set_arg_increment();
+	if (!filename)
+		SG_ERROR("No filename given to write REAL matrix.\n");
+
+	CFile f((CHAR*) filename, 'w', F_DREAL);
+	if (!f.is_ok())
+		SG_ERROR("Could not open file %s to write REAL matrix.\n", filename);
+
+	if (!f.write_real_valued_dense(matrix, num_feat, num_vec))
+		SG_ERROR("Could not write REAL data to %s.\n", filename);
 }
 void CCmdLineInterface::set_word_matrix(const WORD* matrix, INT num_feat, INT num_vec)
 {
@@ -818,34 +854,4 @@ int main(int argc, char* argv[])
 		}
 	}
 }
-
-/*int main(int argc, char* argv[])
-{
-	if (argc!=2)
-		SG_ERROR("Need a command filename as argument.\n");
-
-	ifstream cmdfile(argv[1]);
-	if (!cmdfile.is_open())
-		SG_ERROR("Could not open command file %s.\n", argv[1]);
-
-	interface=new CCmdLineInterface();
-	ASSERT(interface);
-
-	string line;
-	while (getline(cmdfile, line))
-	{
-		SG_PRINT("%s\n", line.c_str());
-		if (((CCmdLineInterface*) interface)->skip_line(line.c_str()))
-			continue;
-
-		((CCmdLineInterface*) interface)->reset(line.c_str());
-		if (!interface->handle())
-			SG_ERROR("Unknown command.\n");
-	}
-
-	delete interface;
-	cmdfile.close();
-	return 0;
-}*/
-
 #endif // HAVE_CMDLINE

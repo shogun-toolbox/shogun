@@ -19,7 +19,7 @@
 #include "base/SGObject.h"
 #include "features/Features.h"
 
-class CSVM ;
+class CSVM;
 
 /** class Kernel */
 class CKernel : public CSGObject
