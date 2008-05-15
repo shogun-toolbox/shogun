@@ -61,6 +61,7 @@ template <class ST> class CStringFeatures: public CFeatures
 			symbol_mask_table(NULL)
 		{
 			alphabet=new CAlphabet(alpha);
+			SG_REF(alphabet);
 			ASSERT(alphabet);
 			num_symbols=alphabet->get_num_symbols();
 			original_num_symbols=num_symbols;
@@ -96,6 +97,7 @@ template <class ST> class CStringFeatures: public CFeatures
 			ASSERT(orig.single_string == NULL); //not implemented
 
 			alphabet=new CAlphabet(orig.alphabet);
+			SG_REF(alphabet);
 
 			if (orig.features)
 			{
@@ -131,6 +133,7 @@ template <class ST> class CStringFeatures: public CFeatures
 			order(0), selected_vector(0), symbol_mask_table(NULL)
 		{
 			alphabet=new CAlphabet(alpha);
+			SG_REF(alphabet);
 			num_symbols=alphabet->get_num_symbols();
 			original_num_symbols=num_symbols;
 			load(fname);
@@ -140,7 +143,11 @@ template <class ST> class CStringFeatures: public CFeatures
 		{
 			cleanup();
 
+#ifdef HAVE_SWIG
+			SG_UNREF(alphabet);
+#else
 			delete alphabet;
+#endif
 		}
 
 		/** cleanup string features */
