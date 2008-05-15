@@ -517,15 +517,15 @@ bool CFile::write_real_valued_sparse(const TSparse<DREAL>* matrix, INT num_feat,
 
 	for (INT i=0; i<num_vec; i++)
 	{
+		TSparseEntry<DREAL>* vec = matrix[i].features;
 		INT len=matrix[i].num_feat_entries;
+
 		for (INT j=0; j<len; j++)
 		{
-			INT idx=matrix[i].features[j].feat_index;
-			DREAL val=matrix[i].features[j].entry;
-			if (i==len-1)
-				fprintf(file, "%d:%f\n", idx, val);
+			if (j<len-1)
+				fprintf(file, "%d:%f ", (INT) vec[j].feat_index+1, (double) vec[j].entry);
 			else
-				fprintf(file, "%d:%f ", idx, val);
+				fprintf(file, "%d:%f\n", (INT) vec[j].feat_index+1, (double) vec[j].entry);
 		}
 	}
 
@@ -539,8 +539,10 @@ bool CFile::read_char_valued_strings(T_STRING<CHAR>*& strings, INT& num_str, INT
 
 	size_t blocksize=1024*1024;
 	size_t required_blocksize=0;
-	BYTE* dummy=new BYTE[blocksize];
+	CHAR* dummy=new CHAR[blocksize];
 	ASSERT(dummy);
+	CHAR* overflow=NULL;
+	INT overflow_len=0;
 
 	if (file)
 	{
@@ -557,7 +559,7 @@ bool CFile::read_char_valued_strings(T_STRING<CHAR>*& strings, INT& num_str, INT
 
 		while (sz == blocksize)
 		{
-			sz=fread(dummy, sizeof(BYTE), blocksize, file);
+			sz=fread(dummy, sizeof(CHAR), blocksize, file);
 			bool contains_cr=false;
 			for (size_t i=0; i<sz; i++)
 			{
@@ -574,10 +576,13 @@ bool CFile::read_char_valued_strings(T_STRING<CHAR>*& strings, INT& num_str, INT
 		}
 
 		SG_INFO("found %d strings\n", num_str);
+		SG_DEBUG("block_size=%d\n", required_blocksize);
 		delete[] dummy;
 		blocksize=required_blocksize;
-		dummy = new BYTE[blocksize];
+		dummy = new CHAR[blocksize];
 		ASSERT(dummy);
+		overflow = new CHAR[blocksize];
+		ASSERT(overflow);
 
 		strings=new T_STRING<CHAR>[num_str];
 		ASSERT(strings);
@@ -585,28 +590,34 @@ bool CFile::read_char_valued_strings(T_STRING<CHAR>*& strings, INT& num_str, INT
 		rewind(file);
 		sz=blocksize;
 		INT lines=0;
+		size_t old_sz=0;
 		while (sz == blocksize)
 		{
-			sz=fread(dummy, sizeof(BYTE), blocksize, file);
+			sz=fread(dummy, sizeof(CHAR), blocksize, file);
 
-			size_t old_sz=0;
+			old_sz=0;
 			for (size_t i=0; i<sz; i++)
 			{
 				if (dummy[i]=='\n' || (i==sz-1 && sz<blocksize))
 				{
 					INT len=i-old_sz;
 					//SG_PRINT("i:%d len:%d old_sz:%d\n", i, len, old_sz);
-					max_string_len=CMath::max(max_string_len, len);
+					max_string_len=CMath::max(max_string_len, len+overflow_len);
 
-					strings[lines].length=len;
-					strings[lines].string=new CHAR[len];
+					strings[lines].length=len+overflow_len;
+					strings[lines].string=new CHAR[len+overflow_len];
 					ASSERT(strings[lines].string);
 					//memset(strings[lines].string, 0, len);
 
 					//SG_PRINT("dummy ");
+					for (INT j=0; j<overflow_len; j++)
+					{
+						strings[lines].string[j]=overflow[j];
+						//SG_PRINT("%c, ", (CHAR) dummy[j]);
+					}
 					for (INT j=0; j<len; j++)
 					{
-						strings[lines].string[j]=dummy[old_sz+j];
+						strings[lines].string[j+overflow_len]=dummy[old_sz+j];
 						//SG_PRINT("%c, ", (CHAR) dummy[old_sz+j]);
 					}
 					//SG_PRINT("\n");
@@ -614,15 +625,24 @@ bool CFile::read_char_valued_strings(T_STRING<CHAR>*& strings, INT& num_str, INT
 					//CMath::display_vector(strings[lines].string, len);
 					old_sz=i+1;
 					lines++;
-					SG_PROGRESS(lines, 0, num_str, 1, "LOADING:\t");
+					//SG_PROGRESS(lines, 0, num_str, 1, "LOADING:\t");
 				}
 			}
+
+			for (size_t i=old_sz; i<sz; i++)
+				overflow[i-old_sz]=dummy[i];
+
+			overflow_len=sz-old_sz;
+			//SG_PRINT("old_sz=%d sz=%d line=%d overflow=%d ov=%d\n", old_sz, sz, lines, overflow_len, sz-old_sz);
 		}
 		result=true;
 		SG_INFO("file successfully read\n");
+		SG_INFO("max_string_length=%d\n", max_string_len);
+		SG_INFO("num_strings=%d\n", num_str);
 	}
 
 	delete[] dummy;
+	delete[] overflow;
 
 	return result;
 }
@@ -633,7 +653,11 @@ bool CFile::write_char_valued_strings(const T_STRING<CHAR>* strings, INT num_str
 		SG_ERROR("File or strings invalid.\n");
 
 	for (INT i=0; i<num_str; i++)
-		fprintf(file, "%s\n", strings[i].string);
+	{
+		INT len = strings[i].length;
+		fwrite(strings[i].string, sizeof(CHAR), len, file);
+		fprintf(file, "\n");
+	}
 
 	return true;
 }

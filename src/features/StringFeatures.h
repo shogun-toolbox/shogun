@@ -435,6 +435,8 @@ template <class ST> class CStringFeatures: public CFeatures
 			size_t required_blocksize=0;
 			BYTE* dummy=new BYTE[blocksize];
 			ASSERT(dummy);
+			BYTE* overflow=NULL;
+			INT overflow_len=0;
 
 			num_symbols=4;
 			cleanup();
@@ -450,6 +452,7 @@ template <class ST> class CStringFeatures: public CFeatures
 				max_string_length=0;
 
 				SG_INFO("counting line numbers in file %s\n", fname);
+				SG_DEBUG("block_size=%d\n", required_blocksize);
 				size_t sz=blocksize;
 				size_t block_offs=0;
 				size_t old_block_offs=0;
@@ -480,6 +483,8 @@ template <class ST> class CStringFeatures: public CFeatures
 				blocksize=required_blocksize;
 				dummy = new BYTE[blocksize];
 				ASSERT(dummy);
+				overflow = new BYTE[blocksize];
+				ASSERT(overflow);
 
 				features=new T_STRING<ST>[num_vectors];
 				ASSERT(features);
@@ -498,7 +503,7 @@ template <class ST> class CStringFeatures: public CFeatures
 						{
 							INT len=i-old_sz;
 							//SG_PRINT("i:%d len:%d old_sz:%d\n", i, len, old_sz);
-							max_string_length=CMath::max(max_string_length, len);
+							max_string_length=CMath::max(max_string_length, len+overflow_len);
 
 							features[lines].length=len;
 							features[lines].string=new ST[len];
@@ -506,13 +511,17 @@ template <class ST> class CStringFeatures: public CFeatures
 
 							if (remap_to_bin)
 							{
+								for (INT j=0; j<overflow_len; j++)
+									features[lines].string[j]=alpha->remap_to_bin(overflow[j]);
 								for (INT j=0; j<len; j++)
-									features[lines].string[j]=alpha->remap_to_bin(dummy[old_sz+j]);
+									features[lines].string[j+overflow_len]=alpha->remap_to_bin(dummy[old_sz+j]);
 							}
 							else
 							{
+								for (INT j=0; j<overflow_len; j++)
+									features[lines].string[j]=overflow[j];
 								for (INT j=0; j<len; j++)
-									features[lines].string[j]=dummy[old_sz+j];
+									features[lines].string[j+overflow_len]=dummy[old_sz+j];
 							}
 
 							//CMath::display_vector(features[lines].string, len);
@@ -521,9 +530,15 @@ template <class ST> class CStringFeatures: public CFeatures
 							SG_PROGRESS(lines, 0, num_vectors, 1, "LOADING:\t");
 						}
 					}
+					for (size_t i=old_sz; i<sz; i++)
+						overflow[i-old_sz]=dummy[i];
+
+					overflow_len=sz-old_sz;
 				}
 				result=true;
 				SG_INFO("file successfully read\n");
+				SG_INFO("max_string_length=%d\n", max_string_length);
+				SG_INFO("num_strings=%d\n", num_vectors);
 			}
 
 			fclose(f);
