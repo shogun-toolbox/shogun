@@ -1,11 +1,14 @@
 TODO
 
+- proper ascii file reading / writing file format
+- serialization
+- memory handling (overload new and throw proper exception)
+- examples for cmdline interface, use static data repository for cmdline/R/python/octave + r/octave/python-modular interfaces
+- lots of documentation
+- simple model selection / cross validation
 - cmdline help pretty print (ansi escapes)
-- cmdline help remove missing send_command legacy
 - cmdline help more verbose and somehow integrate with doxygen
-- TextInterface that does get/set_matrx/vector etc via file io
 - General Signal handling
-- R swig interface
 - merge all the WeightedDegree* kernel core routines into a single class, which
  the current WD/WDS char/string impl. can make use of
 - memory inplace mit Py_INCREF ? or copy w/ python-swig-objects
@@ -27,6 +30,9 @@ TODO
 
 DONE
 
+- R swig interface
+- TextInterface that does get/set_matrx/vector etc via file io
+- cmdline help remove missing send_command legacy
 - suffix tree ala leslie als extra classe... - won't -> too slow
 - error checks/exception modell w/ python-swig-objects (fabio example)
 - sg design document.
