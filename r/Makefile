@@ -29,7 +29,7 @@ sg/src:
 	sed -i -e 's/#removeconfighunk/rm -f .config/' \
 		-e '/#runconfigurehunkstart/,/#runconfigurehunkend/c\	./configure --interface=r $(CFGOPTS) && make\n\texit 0' \
 		sg/src/Makefile
-	-cd ../src && cp -a $(DOCFILES) ../R/sg/inst/doc/
+	-cd ../src && cp -a $(DOCFILES) ../r/sg/inst/doc/
 
 clean: 
 	rm -rf sg/src sg.Rcheck
