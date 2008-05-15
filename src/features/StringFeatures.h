@@ -555,13 +555,17 @@ template <class ST> class CStringFeatures: public CFeatures
 			delete alpha;
 			delete[] dummy;
 
+#ifdef HAVE_SWIG
+			SG_UNREF(alphabet);
+#else
 			delete alphabet;
+#endif
 			if (remap_to_bin)
 				alphabet = new CAlphabet(RAWDNA);
 			else
 				alphabet = new CAlphabet(DNA);
 			ASSERT(alphabet);
-
+			SG_REF(alphabet);
 
 			return result;
 		}
@@ -663,8 +667,13 @@ template <class ST> class CStringFeatures: public CFeatures
 				{
 					cleanup();
 
+#ifdef HAVE_SWIG
+					SG_UNREF(alphabet);
+#else
 					delete alphabet;
+#endif
 					alphabet=alpha;
+					SG_REF(alphabet);
 
 					this->features=p_features;
 					this->num_vectors=p_num_vectors;
