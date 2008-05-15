@@ -882,11 +882,20 @@ int main(int argc, char* argv[])
 		}
 		else
 		{
-			while(!feof(file) && intf->parse_line(intf->get_line(file, false)));
+			try
+			{
+				while(!feof(file) && intf->parse_line(intf->get_line(file, false)));
+			}
+			catch (ShogunException e)
+			{
+				fclose(file);
+				delete interface;
+				return 1;
+			}
+
 			fclose(file);
 			delete interface;
 			return 0;
-
 		}
 	}
 }

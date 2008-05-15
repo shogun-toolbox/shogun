@@ -4,12 +4,12 @@ set_features TEST data/fm_test_real.dat
 set_labels TRAIN data/label_train.dat
 set_labels TEST data/label_test.dat
 
-set_kernel GAUSSIAN REAL 10 123.456
+set_kernel GAUSSIAN REAL 10 12.34
 init_kernel TRAIN
 km_train.txt = get_kernel_matrix
 
 new_classifier LIBSVM
-c 1.2
+c 10
 train_classifier
 
 init_kernel TEST

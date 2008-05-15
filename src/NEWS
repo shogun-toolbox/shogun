@@ -16,6 +16,9 @@
 		- The weighted spectrum kernel is now working again.
 		- Fix the testsuite to reliably check methods that use random().
 		- Off-by-one bug fix in FixedDegreeStringKernel.
+		- Fix reading strings from file, when strings don't have the same length.
+		- Fix massive slowdown in modular interfaces for WD based kernels (it
+		is 5-30 times faster now).
 
 2008-04-19  Soeren Sonnenburg <debian@nn7.de>
 
