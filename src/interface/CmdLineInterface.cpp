@@ -44,7 +44,7 @@ void CCmdLineInterface::reset(const CHAR* line)
 
 	CHAR* element=NULL;
 	CHAR delim_equal[]="=";
-	CHAR delim_lhs[]="=, \t";
+	CHAR delim_lhs[]="=, \t\n";
 	CHAR delim_rhs[]=" \t\n";
 
 	delete m_lhs;
@@ -292,18 +292,36 @@ void CCmdLineInterface::get_real_vector(DREAL*& vec, INT& len)
 {
 	vec=NULL;
 	len=0;
-/*
-	void* rvec=CAR(get_arg_increment());
-	if( TYPEOF(rvec) != XP && TYPEOF(rvec) != INTSXP )
-		SG_ERROR("Expected Double Vector as argument %d\n", m_rhs_counter);
 
-	len=LENGTH(rvec);
-	vec=new DREAL[len];
-	ASSERT(vec);
+	const CHAR* filename=get_arg_increment();
+	if (!filename)
+		SG_ERROR("No filename given to read REAL matrix.\n");
 
-	for (INT i=0; i<len; i++)
-		vec[i]= (DREAL) REAL(rvec)[i];
-		*/
+	CFile f((CHAR*) filename, 'r', F_DREAL);
+	if (!f.is_ok())
+		SG_ERROR("Could not open file %s to read REAL matrix.\n", filename);
+
+	INT num_feat=0;
+	INT num_vec=0;
+
+	if (!f.read_real_valued_dense(vec, num_feat, num_vec))
+		SG_ERROR("Could not read REAL data from %s.\n", filename);
+
+	if ((num_feat==1) || (num_vec==1))
+	{
+		if (num_feat==1)
+			len=num_vec;
+		else
+			len=num_feat;
+	}
+	else
+	{
+		delete[] vec;
+		vec=NULL;
+		len=0;
+		SG_ERROR("Could not read REAL vector from file %s (shape %dx%d found but vector expected).\n", filename, num_vec, num_feat);
+	}
+
 }
 
 void CCmdLineInterface::get_short_vector(SHORT*& vec, INT& len)
@@ -493,6 +511,16 @@ void CCmdLineInterface::set_shortreal_vector(const SHORTREAL* vec, INT len)
 
 void CCmdLineInterface::set_real_vector(const DREAL* vec, INT len)
 {
+	const CHAR* filename=set_arg_increment();
+	if (!filename)
+		SG_ERROR("No filename given to write REAL vector.\n");
+
+	CFile f((CHAR*) filename, 'w', F_DREAL);
+	if (!f.is_ok())
+		SG_ERROR("Could not open file %s to write REAL vector.\n", filename);
+
+	if (!f.write_real_valued_dense(vec, len, 1))
+		SG_ERROR("Could not write REAL data to %s.\n", filename);
 }
 
 void CCmdLineInterface::set_word_vector(const WORD* vec, INT len)

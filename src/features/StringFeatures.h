@@ -524,6 +524,9 @@ template <class ST> class CStringFeatures: public CFeatures
 									features[lines].string[j+overflow_len]=dummy[old_sz+j];
 							}
 
+							// clear overflow
+							overflow_len=0;
+
 							//CMath::display_vector(features[lines].string, len);
 							old_sz=i+1;
 							lines++;

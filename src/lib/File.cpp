@@ -601,31 +601,24 @@ bool CFile::read_char_valued_strings(T_STRING<CHAR>*& strings, INT& num_str, INT
 				if (dummy[i]=='\n' || (i==sz-1 && sz<blocksize))
 				{
 					INT len=i-old_sz;
-					//SG_PRINT("i:%d len:%d old_sz:%d\n", i, len, old_sz);
 					max_string_len=CMath::max(max_string_len, len+overflow_len);
 
 					strings[lines].length=len+overflow_len;
 					strings[lines].string=new CHAR[len+overflow_len];
 					ASSERT(strings[lines].string);
-					//memset(strings[lines].string, 0, len);
 
-					//SG_PRINT("dummy ");
 					for (INT j=0; j<overflow_len; j++)
-					{
 						strings[lines].string[j]=overflow[j];
-						//SG_PRINT("%c, ", (CHAR) dummy[j]);
-					}
 					for (INT j=0; j<len; j++)
-					{
 						strings[lines].string[j+overflow_len]=dummy[old_sz+j];
-						//SG_PRINT("%c, ", (CHAR) dummy[old_sz+j]);
-					}
-					//SG_PRINT("\n");
+
+					// clear overflow
+					overflow_len=0;
 
 					//CMath::display_vector(strings[lines].string, len);
 					old_sz=i+1;
 					lines++;
-					//SG_PROGRESS(lines, 0, num_str, 1, "LOADING:\t");
+					SG_PROGRESS(lines, 0, num_str, 1, "LOADING:\t");
 				}
 			}
 
@@ -633,7 +626,6 @@ bool CFile::read_char_valued_strings(T_STRING<CHAR>*& strings, INT& num_str, INT
 				overflow[i-old_sz]=dummy[i];
 
 			overflow_len=sz-old_sz;
-			//SG_PRINT("old_sz=%d sz=%d line=%d overflow=%d ov=%d\n", old_sz, sz, lines, overflow_len, sz-old_sz);
 		}
 		result=true;
 		SG_INFO("file successfully read\n");
