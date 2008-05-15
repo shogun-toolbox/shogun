@@ -312,13 +312,13 @@ bool CFile::read_real_valued_dense(DREAL*& matrix, INT& num_feat, INT& num_vec)
 		for (INT j=0; j<num_feat; j++)
 		{
 			CHAR* item=items->get_element(i*num_feat+j);
-			matrix[j*num_vec+i]=atof(item);
+			matrix[i*num_feat+j]=atof(item);
 			delete[] item;
 		}
 	}
 	delete items;
 
-	//CMath::display_matrix(matrix, num_vec, num_feat);
+	//CMath::display_matrix(matrix, num_feat, num_vec);
 	return true;
 }
 
