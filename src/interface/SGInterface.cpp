@@ -5731,7 +5731,7 @@ bool CSGInterface::handle()
 #endif
 
 	if (!success)
-		SG_WARNING("Unknown command %s.\n", command);
+		SG_ERROR("Unknown command %s.\n", command);
 
 	delete[] command;
 	return success;

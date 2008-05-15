@@ -443,7 +443,7 @@ bool CFile::read_real_valued_sparse(TSparse<DREAL>*& matrix, INT& num_feat, INT&
 					{
 						if (data[j]==':')
 						{
-							j=0; //file without label
+							j=-1; //file without label
 							break;
 						}
 
