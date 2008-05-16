@@ -566,7 +566,10 @@ int pr_loqo(int n, int m, double c[], double h_x[], double a[], double b[],
       
       /* and do it */
       if (!solve_reduced(n, m, h_x, h_y, a, delta_x, delta_y, c_x, c_y, workspace, PREDICTOR))
-	  	  return status=INCONSISTENT;
+	  {
+	  	  status=INCONSISTENT;
+		  goto exit_optimizer;
+	  }
       
       for (i=0; i<n; i++) {
 	/* backsubstitution */
@@ -634,6 +637,8 @@ int pr_loqo(int n, int m, double c[], double h_x[], double a[], double b[],
 	y[i] += alfa * delta_y[i];
     }
   }
+
+exit_optimizer: 
   if ((status == 1) && (verb >= STATUS)) {
 	  SG_SDEBUG("----------------------------------------------------------------------------------\n");
 	  SG_SDEBUG("optimization converged\n");
