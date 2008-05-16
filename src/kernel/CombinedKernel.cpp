@@ -101,6 +101,7 @@ bool CCombinedKernel::init(CFeatures* l, CFeatures* r)
 		{
 			while ( result && lf && rf && k )
 			{
+				SG_DEBUG( "Initializing 0x%p - \"%s\"\n", this, k->get_name());
 				result=k->init(lf,rf);
 
 				lf=((CCombinedFeatures*) l)->get_next_feature_obj(lfc) ;
@@ -112,8 +113,8 @@ bool CCombinedKernel::init(CFeatures* l, CFeatures* r)
 		{
 			while ( result && lf && k )
 			{
+				SG_DEBUG( "Initializing 0x%p - \"%s\"\n", this, k->get_name());
 				result=k->init(lf,rf);
-
 
 				lf=((CCombinedFeatures*) l)->get_next_feature_obj(lfc) ;
 				k=get_next_kernel(current) ;

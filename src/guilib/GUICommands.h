@@ -166,6 +166,7 @@
 #define N_LIKELIHOOD					"likelihood"
 #define N_ALPHABET						"alphabet"
 #define N_USE_BATCH_COMPUTATION			"use_batch_computation"
+#define N_USE_DIAGONAL_SPEEDUP			"use_diagonal_speedup"
 #define N_USE_MKL						"use_mkl"
 #define N_USE_SHRINKING					"use_shrinking"
 #define N_USE_LINADD					"use_linadd"

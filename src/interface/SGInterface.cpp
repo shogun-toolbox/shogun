@@ -215,6 +215,11 @@ CSGInterfaceMethod sg_methods[]=
 		(CHAR*) USAGE(N_DELETE_KERNEL_OPTIMIZATION)
 	},
 	{
+		(CHAR*) N_USE_DIAGONAL_SPEEDUP,
+		(&CSGInterface::cmd_use_diagonal_speedup),
+		(CHAR*) USAGE_I(N_USE_DIAGONAL_SPEEDUP, "'0|1'")
+	},
+	{
 		(CHAR*) N_SET_KERNEL_OPTIMIZATION_TYPE,
 		(&CSGInterface::cmd_set_kernel_optimization_type),
 		(CHAR*) USAGE_I(N_SET_KERNEL_OPTIMIZATION_TYPE, "'FASTBUTMEMHUNGRY|SLOWBUTMEMEFFICIENT'")
@@ -3155,6 +3160,35 @@ bool CSGInterface::cmd_delete_kernel_optimization()
 		return false;
 
 	return ui_kernel->delete_kernel_optimization();
+}
+
+bool CSGInterface::cmd_use_diagonal_speedup()
+{
+	if (m_nrhs<2 || !create_return_values(0))
+		return false;
+
+	bool speedup=get_bool();
+
+	CKernel* kernel=ui_kernel->get_kernel();
+	if (!kernel)
+		SG_ERROR("No kernel defined.\n");
+
+	if (kernel->get_kernel_type()==K_COMBINED)
+	{
+		SG_DEBUG("Identified combined kernel.\n");
+		kernel=((CCombinedKernel*) kernel)->get_last_kernel();
+		if (!kernel)
+			SG_ERROR("No last kernel defined.\n");
+	}
+
+	if (kernel->get_kernel_type()!=K_COMMWORDSTRING)
+		SG_ERROR("Currently only commwordstring kernel supports diagonal speedup\n");
+
+	((CCommWordStringKernel*) kernel)->set_use_dict_diagonal_optimization(speedup);
+
+	SG_INFO("Diagonal speedup %s.\n", speedup ? "enabled" : "disabled");
+
+	return true;
 }
 
 bool CSGInterface::cmd_set_kernel_optimization_type()

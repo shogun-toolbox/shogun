@@ -127,6 +127,8 @@ class CSGInterface : public CSGObject
 		bool cmd_get_kernel_optimization();
 		/** delete kernel optimization */
 		bool cmd_delete_kernel_optimization();
+		/** set diagonal speedup */
+		bool cmd_use_diagonal_speedup();
 		/** set kernel optimization type */
 		bool cmd_set_kernel_optimization_type();
 #ifdef USE_SVMLIGHT
