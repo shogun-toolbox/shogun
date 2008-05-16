@@ -1,5 +1,6 @@
 TODO
 
+- create a libshogun with the core functionality and let other interfaces make use of it (?)
 - further cmdline/readline completion improvements
 - proper ascii file reading / writing file format
 - serialization
