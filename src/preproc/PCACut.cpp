@@ -110,7 +110,7 @@ bool CPCACut::init(CFeatures* f)
 			((CRealFeatures*) f)->free_feature_vector(vec, i, free) ;
 		}
 
-		SG_PRINT( "done.           \n");
+		SG_INFO( "done.           \n");
 
 		for (i=0; i<num_features; i++)
 			for (j=0; j<num_features; j++)

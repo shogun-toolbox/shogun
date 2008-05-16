@@ -261,7 +261,7 @@ bool CWeightedDegreeStringKernel::init_optimization(INT count, INT* IDX, DREAL* 
 	}
 	
 	if (tree_num<0)
-		SG_PRINT( "done.           \n");
+		SG_INFO( "done.           \n");
 
 	//tries.compact_nodes(NO_CHILD, 0, weights) ;
 

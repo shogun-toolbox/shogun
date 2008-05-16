@@ -195,14 +195,14 @@ DREAL* CTOPFeatures::set_feature_matrix()
 	for (INT x=0; x<num_vectors; x++)
 	{
 		if (!(x % (num_vectors/10+1)))
-			SG_PRINT( "%02d%%.", (int) (100.0*x/num_vectors));
+			SG_DEBUG( "%02d%%.", (int) (100.0*x/num_vectors));
 		else if (!(x % (num_vectors/200+1)))
-			SG_PRINT( ".");
+			SG_DEBUG( ".");
 
 		compute_feature_vector(&feature_matrix[x*num_features], x, len);
 	}
 
-	SG_PRINT( ".done.\n");
+	SG_INFO( "done.\n");
 
 	num_vectors=get_num_vectors() ;
 	num_features=get_num_features() ;

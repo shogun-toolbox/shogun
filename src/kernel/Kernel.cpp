@@ -148,7 +148,7 @@ void CKernel::get_kernel_matrix(DREAL** dst, INT* m, INT* n)
 			}
 		}
 
-		SG_PRINT( "done.           \n");
+		SG_INFO( "done.           \n");
 	}
 	else
       SG_ERROR( "no features assigned to kernel\n");
@@ -220,7 +220,7 @@ SHORTREAL* CKernel::get_kernel_matrix_shortreal(int &num_vec1, int &num_vec2,
 			}
 		}
 
-		SG_PRINT( "done.           \n");
+		SG_INFO( "done.           \n");
 	}
 	else
       SG_ERROR( "no features assigned to kernel\n");
@@ -291,7 +291,7 @@ DREAL* CKernel::get_kernel_matrix_real(int &num_vec1, int &num_vec2, DREAL* targ
 			}
 		}
 
-		SG_PRINT( "done.           \n");
+		SG_INFO( "done.           \n");
 	}
 	else
       SG_ERROR( "no features assigned to kernel\n");
