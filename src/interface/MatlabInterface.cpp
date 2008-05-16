@@ -571,7 +571,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 	}
 	catch (ShogunException e)
 	{
-		return;
+		mexErrMsgTxt("Command Failed.");
 	}
 }
 #endif // HAVE_MATLAB && !HAVE_SWIG
