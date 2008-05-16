@@ -2,7 +2,9 @@
 #
 # * To make a release (and tag it) run (run make distclean before!)
 #
+#		(cd trunk/src;  rm ChangeLog ; make ChangeLog ; svn ci -m "updated changelog")
 #       make svn-tag-release  
+#       (cd releases/shogun_0.6.2)
 #       make release
 #       make update-webpage
 #
@@ -133,6 +135,7 @@ update-webpage:
 	ssh vserver rm -f /pub/shogun/doc/*.*
 	cd doc/html && tar --exclude='*.map' --exclude='*.md5' -cjf - . | ssh vserver tar -C /pub/shogun/doc/ -xjvf -
 	ssh vserver chmod 644 /pub/shogun/doc/*.*
+	ssh vserver ./bin/shogun_doc_install.sh
 	rm -rf doc/html
 
 svn-tag-release: src/lib/versionstring.h

@@ -1,5 +1,6 @@
 TODO
 
+- further cmdline/readline completion improvements
 - proper ascii file reading / writing file format
 - serialization
 - memory handling (overload new and throw proper exception)
