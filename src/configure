@@ -1371,10 +1371,13 @@ cat > $TMPC << EOF
 int main(void) { return 0; }
 EOF
   if test "$_cpudetection" = no ; then
-    if test "$proc" = "k8" -o "$proc" = "opteron" -o "$proc" = "athlon64" -o "$proc" = "athlon-fx" ; then
+	cc_check -march=native && proc=native
+    if test "$proc" = "k8" -o "$proc" = "opteron" \
+		-o "$proc" = "athlon64" -o "$proc" = "athlon-fx" ; then
       cc_check -march=$proc $cpuopt=$proc || proc=athlon-xp
     fi
-    if test "$proc" = "athlon-xp" || test "$proc" = "athlon-4" || test "$proc" = "athlon-tbird"; then
+    if test "$proc" = "athlon-xp" || test "$proc" = "athlon-4" \
+		|| test "$proc" = "athlon-tbird"; then
       cc_check -march=$proc $cpuopt=$proc || proc=athlon
     fi
     if test "$proc" = "k6-3" || test "$proc" = "k6-2"; then
@@ -1389,7 +1392,7 @@ EOF
 	fi
       fi
     fi
-    if test "$proc" = "pentium4" || test "$proc" = "pentium-m" || test "$proc" = "pentium3" || test "$proc" = "pentium2" || test "$proc" = "athlon" || test "$proc" = "c3-2"; then
+    if test "$proc" = "pentium4" || test "$proc" = "pentium-m" || test "$proc" = "pentium3" || test "$proc" = "pentium2" || test "$proc" = "athlon" || test "$proc" = "c3-2" || test "$proc" = "geode"; then
       cc_check -march=$proc $cpuopt=$proc  || proc=i686
     fi
     if test "$proc" = "i686" || test "$proc" = "pentium-mmx" || test "$proc" = "winchip-c6" || test "$proc" = "winchip2"; then
