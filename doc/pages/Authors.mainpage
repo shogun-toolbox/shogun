@@ -8,7 +8,10 @@ SHOGUN is mainly developed by
 
 We acknowledge support from
 
-Fabio De Bona, Christian Gehl, Christoph Lampert, Alexander Zien, Konrad Rieck,
-Mikio Braun, Torsten Werner, Vojtech Franc, Jonas Behr, Andre Noll, Alexander
-Binder, Jochen Garcke, Yaroslav Halchenko
+Alexander Binder, Alexander Zien, Andre Noll, Cheng Soon Ong, Christian Gehl,
+Christoph Lampert, Fabio De Bona, Jonas Behr, Konrad Rieck, Mikio Braun,
+Torsten Werner, Vojtech Franc, Yaroslav Halchenko, 
 */
+
+//:r !cat ../../src/.authors | cut -f 2 -d ':' | cut -f 1 -d '<' | sort -u | grep -v 'Gunnar Raetsch' | grep -v 'Sonnenburg' | grep -v Henschel | sed 's/ $/,/g' | tr '\012' ' '
+
