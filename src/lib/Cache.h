@@ -18,7 +18,7 @@
 
 #include <stdlib.h>
 
-/** template clas Cache */
+/** template class Cache */
 template<class T> class CCache : public CSGObject
 {
 	/** cache entry */

@@ -27,6 +27,8 @@ CMPDSVM::~CMPDSVM()
 
 bool CMPDSVM::train()
 {
+	ASSERT(labels);
+	ASSERT(kernel && kernel->has_features());
 	//const DREAL nu=0.32;
 	const DREAL alpha_eps=1e-12;
 	const DREAL eps=get_epsilon();
@@ -34,6 +36,7 @@ bool CMPDSVM::train()
 	//const bool nustop=false;
 	//const int k=2;
 	const int n=labels->get_num_labels();
+	ASSERT(n>0);
 	//const DREAL d = 1.0/n/nu; //NUSVC
 	const DREAL d = get_C1(); //CSVC
 	const DREAL primaleps=eps;
@@ -154,6 +157,7 @@ bool CMPDSVM::train()
 		}
 
 
+		ASSERT(maxpidx>=0 && maxpidx<n);
 		// hessian updates
 		hstep=-hessres[maxpidx]/compute_H(maxpidx,maxpidx);
 		//hstep[0]=-hessres[maxpidx]/(compute_H(maxpidx,maxpidx)+hessreg);
