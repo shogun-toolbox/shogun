@@ -4,8 +4,9 @@ TODO
 - further cmdline/readline completion improvements
 - proper ascii file reading / writing file format
 - serialization
-- memory handling (overload new and throw proper exception)
-- examples for cmdline interface, use static data repository for cmdline/R/python/octave + r/octave/python-modular interfaces
++ memory handling (overload new and throw proper exception)
++ examples for cmdline interface, use static data repository for cmdline/R/python/octave + r/octave/python-modular interfaces
++ cleanup guilib/SGInterface
 - lots of documentation
 - simple model selection / cross validation
 - cmdline help pretty print (ansi escapes)
