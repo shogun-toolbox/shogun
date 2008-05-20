@@ -656,6 +656,11 @@ CSGInterfaceMethod sg_methods[]=
 			"prob, path, pos")
 	},
 	{
+		(CHAR*) N_SET_PLIF_STRUCT,
+		(&CSGInterface::cmd_set_plif_struct),
+		(CHAR*) USAGE_I(N_SET_PLIF_STRUCT, "id, name, limits, penalties, transform, min_value, max_value, use_cache, use_svm")
+	},
+	{
 		(CHAR*) N_BEST_PATH_TRANS,
 		(&CSGInterface::cmd_best_path_trans),
 		(CHAR*) USAGE_IO(N_BEST_PATH_TRANS,
@@ -4903,14 +4908,188 @@ bool CSGInterface::cmd_best_path_2struct()
 
 	return true;
 }
+bool CSGInterface::cmd_set_plif_struct()
+{
+	INT Nid
+	INT ids;
+	get_int_array(id,Nid);
 
+	INT Nname;
+	CHAR** names;
+	get_char_matrix(name, Nname);//?? für jeden plif einen namen; char_matrix???
+
+	INT Nlimits;
+	INT Mlimits;
+	DREAL* all_limits; 
+	get_real_matrix(all_limits,Nlimits,Mlimits);
+
+	INT Npenalties;
+	INT Mpenalties;
+	DREAL* all_penalties;
+	get_real_matrix(all_penalties, Npenaties, Mpenalties);
+
+	INT Ntransform;
+	CHAR** all_transform;
+	get_char_matrix(all_transform, N_transform);//???
+
+	INT Nmin;
+	DREAL* min_values;
+	get_real_array(min_values,Nmin);
+
+	INT Nmax;
+	DREAL* max_values;
+	get_real_array(max_values,Nmax);
+
+	INT Ncache;
+	bool* all_use_cache;
+	get_bool_vector(all_use_cache,Ncache);
+
+	INT Nsvm;
+	bool* all_use_svm;
+	get_bool_vector(all_use_svm,Nsvm);
+
+	INT Ncalc;
+	bool* all_do_calc;
+	get_bool_vector(all_do_calc,Ncache);
+
+	ASSERT(Ncalc==Nsvm)
+	ASSERT(Ncalc==Ncache)
+	ASSERT(Ncalc==Ntransform)
+	ASSERT(Ncalc==Nmin)
+	ASSERT(Ncalc==Nmax)
+	ASSERT(Ncalc==Npenalties)
+	ASSERT(Ncalc==Nlimits)
+	ASSERT(Ncalc==Nname)
+	ASSERT(Ncalc==Nid)
+	ASSERT(Mlimits==Mpenalties)
+
+	INT N = Ncalc;
+	INT M = Mlimits; 	
+
+	CPlif** PEN = new CPlif*[N] ;
+	for (INT i=0; i<N; i++)	
+	{
+		PEN[i]=new CPlif() ;
+	}
+	for (INT i=0; i<N; i++)
+	{
+		DREAL* limits = new DREAL[M];
+		DREAL* penalties = new DREAL[M];
+		for (INT k=0; k<M; k++)
+		{
+			limits[k] = all_limits[i][k];
+			penalties[k] = all_penalties[i][k];
+		}
+		INT id = ids[i];
+
+		PEN[id]->set_id(id);
+		PEN[id]->set_name(names[i]);
+		PEN[id]->set_min_value(min_values[i]);
+		PEN[id]->set_max_value(max_values[i]);
+		PEN[id]->set_use_cache(all_use_cache[i]);
+		PEN[id]->set_use_svm(all_use_svm[i]);
+		PEN[id]->set_plif(M,limits,penalties);
+		PEN[id]->set_do_calc(all_do_calc[i]);
+		if (!PEN[id]->set_transform_type(all_transform[i]))
+		{
+			SG_SERROR( "transform type not recognized ('%s')\n", transform_str) ;
+			delete[] PEN;
+			return false;
+		}
+				
+	}
+	return true;
+}
 bool CSGInterface::cmd_best_path_trans()
 {
-	if ((m_nrhs==15 || m_nrhs==17) || !create_return_values(3))
+	if ((m_nrhs!=15 && m_nrhs!=17) || !create_return_values(3))
 		return false;
 
 	SG_ERROR("Sorry, this parameter list is awful!\n");
 
+	// transitions from initial state (#states x 1)
+	INT Np;
+	DREAL* p;
+	get_double_vector(p, Np);
+
+	// transitions to end state (#states x 1)
+	INT Nq;
+	DREAL* q;
+	get_double_vector(q, Nq);
+	ASSERT(Nq==N);
+
+	// links for transitions (#transitions x 4)
+	INT Na_trans
+	INT Ma_trans;
+	DREAL* a_trans;
+	get_real_matrix(a_trans, Na_trans, Ma_trans);
+
+	// feature matrix (#states x #feature_positions x #max_features_per_positon)
+	INT Nfeat;
+	INT Mfeat;
+	DREAL* features;
+	get_real_matrix(features, Nfeat, Mfeat);
+	
+	// all feature positions (1 x #feature_positions)
+	INT Nall_pos;
+	INT* all_pos;
+	get_int_vector(all_pos, Nall_pos);
+
+	// ORF info (#states x 2)
+	INT Norf;
+	INT Morf;
+	DREAL* orf_info;
+	get_real_matrix(orf_info,Norf,Morf);
+	
+	// DNA sequence 
+	INT Nseq;
+	char* seq;
+	get_char_vector(seq,Nseq);
+
+	// transition pointers 
+	// link transitions to length, content, frame (and tiling)
+	// plifs (#states x #states x 3 or 4)
+	ASSERT(Na_trans==3 || Na_trans==4);
+	INT Ntp;
+	INT Mtp;
+	INT Qtp;
+	INT* transition_pointers;
+	//get???
+
+	// links: states -> signal plifs (#states x 2)
+	INT Nst;
+	INT Mst;
+	INT* state_signals;
+	gen_int_matrix(state_signals,Nst,Mst);
+	
+	// penalty array
+	// array of plifs (1 x #contents+#lengths_plifs+#signals+#other_plifs)
+	INT Nplif;
+	INT M_plif;
+	//CPlif ** PEN = read_penalty_struct_from_cell(mx_penalty_info, P) ;
+
+	// number of best paths
+	INT nbest;
+	get_int(nbest);	
+
+	// SVM weight vectors for the different contents (#contents x sum_{orders i}(4^i))
+	INT Ncw;
+	INT Mcw;
+	DREAL content_weights;
+	get_real_matrix(content_weights,Ncw,Mcw);
+
+	// bool-> determines if orf information should be used
+	bool use_orf;
+	get_bool(use_orf);
+
+	// determines for which contents which orf should be used (#contents x 2)
+	INT Nmod;
+	INT Mmod;
+	INT* mod_words;
+	get_int_matrix(mod_words, Nmod,Mmod); 
+
+	// loss matrix (#segment
+	//
 	return true;
 }
 
