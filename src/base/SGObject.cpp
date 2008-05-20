@@ -1,5 +1,4 @@
 #include "base/SGObject.h"
-#include "lib/new.h"
 #include "lib/io.h"
 #include "lib/Mathematics.h"
 #include "base/Parallel.h"

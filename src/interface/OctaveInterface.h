@@ -4,16 +4,10 @@
 #include "lib/config.h"
 
 #if defined(HAVE_OCTAVE) && !defined(HAVE_SWIG)            
+
 #include "interface/SGInterface.h"
-
-#include <octave/config.h>
-
-#include <octave/defun-dld.h>
-#include <octave/error.h>
-#include <octave/oct-obj.h>
-#include <octave/pager.h>
-#include <octave/symtab.h>
-#include <octave/variables.h>
+#include "lib/memory.h"
+#include "lib/octave.h"
 
 class COctaveInterface : public CSGInterface
 {

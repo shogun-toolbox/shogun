@@ -8,6 +8,7 @@
 #include "lib/ShogunException.h"
 #include "lib/io.h"
 #include "lib/octave.h"
+#include "lib/memory.h"
 
 extern CSGInterface* interface;
 

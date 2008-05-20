@@ -33,6 +33,7 @@
  * Shogun specific adjustments (w) 2006-2008 Soeren Sonnenburg
  */
 
+#include "lib/memory.h"
 #include "classifier/svm/SVM_libsvm.h"
 #include "kernel/Kernel.h"
 #include "lib/io.h"

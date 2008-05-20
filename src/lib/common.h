@@ -18,6 +18,7 @@
 #include <stdlib.h> 
 #include <stdio.h> 
 #include "lib/config.h"
+#include "lib/memory.h"
 
 #ifdef SUNOS
 #define bool int
