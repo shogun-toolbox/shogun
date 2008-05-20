@@ -5148,6 +5148,7 @@ bool CSGInterface::cmd_best_path_trans()
 	INT N = Np;		// number of states
 	INT M = Nall_pos;	// number of candidate positions
 	INT nbest;
+	INT genestr_num = 1; //FIXME
 	INT nother;
 	if (Nnbest==2)
 	{
@@ -5282,16 +5283,16 @@ bool CSGInterface::cmd_best_path_trans()
 		delete[] zeros ;
 	}
 	
-	h->best_path_trans(seq, M, pos, orf_info,
-					   PEN_matrix, PEN_state_signal, Qfeat, 
-					   seq, L, genestr_num,
-					   nbest, nother, p_prob, my_path, my_pos, 
-					   content_weights, dict_weigths_num*D, use_orf) ;
+	//h->best_path_trans(seq, M, all_pos, orf_info,
+	//				   PEN_matrix, PEN_state_signal, Qfeat, 
+	//				   seq, Nseq, genestr_num,
+	//				   nbest, nother, p_prob, my_path, my_pos, 
+	//				   content_weights, Ncw*Mcw, use_orf) ;
 
 	// clean up 
 	delete_penalty_struct(PEN, Nplif) ;
 	delete[] PEN_matrix ;
-	delete[] pos ;
+	delete[] all_pos ;
 	delete[] orf_info ;
 	delete h ;
 	//mxFree(seq) ;
@@ -5314,8 +5315,8 @@ bool CSGInterface::cmd_best_path_trans()
 	//retvals[1]=mx_my_path ;
 	//retvals[2]=mx_my_pos ;
 	set_real_vector(p_prob,nbest+nother);
-	set_real_matrix(d_my_path);
-	set_real_matrix(d_my_pos);
+	set_real_matrix(d_my_path, 1, 1); //FIXME
+	set_real_matrix(d_my_pos, 1, 1);  //FIXME
 
 	delete[] my_path ;
 	delete[] my_pos ;
