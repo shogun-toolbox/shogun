@@ -652,7 +652,7 @@ CSGInterfaceMethod sg_methods[]=
 		(CHAR*) N_BEST_PATH_2STRUCT,
 		(&CSGInterface::cmd_best_path_2struct),
 		(CHAR*) USAGE_IO(N_BEST_PATH_2STRUCT,
-			"p, q, cmd_trans, seq, pos, genestr, penalties, penalty_info, nbest, dict_weights, segment_sum_weights",
+			"p, q, cmd_trans, seq, pos, genestr, penalties, penalty_info, nbest, content_weights, segment_sum_weights",
 			"prob, path, pos")
 	},
 	{
@@ -4915,8 +4915,9 @@ bool CSGInterface::cmd_set_plif_struct()
 	get_int_array(id,Nid);
 
 	INT Nname;
-	CHAR** names;
-	get_char_matrix(name, Nname);//?? für jeden plif einen namen; char_matrix???
+	INT Mname;
+	T_STRING<CHAR>* names;
+	get_char_string_list(names, Nname,Mname);
 
 	INT Nlimits;
 	INT Mlimits;
@@ -4929,8 +4930,9 @@ bool CSGInterface::cmd_set_plif_struct()
 	get_real_matrix(all_penalties, Npenaties, Mpenalties);
 
 	INT Ntransform;
-	CHAR** all_transform;
-	get_char_matrix(all_transform, N_transform);//???
+	INT Mtransform;
+	T_STRING<CHAR>* all_transform;
+	get_char_string_list(all_transform, N_transform,M_transform);
 
 	INT Nmin;
 	DREAL* min_values;
@@ -5007,90 +5009,300 @@ bool CSGInterface::cmd_best_path_trans()
 
 	SG_ERROR("Sorry, this parameter list is awful!\n");
 
+	// ARG 1
 	// transitions from initial state (#states x 1)
 	INT Np;
 	DREAL* p;
 	get_double_vector(p, Np);
 
+	// ARG 2
 	// transitions to end state (#states x 1)
 	INT Nq;
 	DREAL* q;
 	get_double_vector(q, Nq);
 	ASSERT(Nq==N);
 
+	// ARG 3
 	// links for transitions (#transitions x 4)
 	INT Na_trans
 	INT Ma_trans;
 	DREAL* a_trans;
 	get_real_matrix(a_trans, Na_trans, Ma_trans);
 
+	// ARG 4
 	// feature matrix (#states x #feature_positions x #max_features_per_positon)
 	INT Nfeat;
 	INT Mfeat;
+	INT Qfeat;
 	DREAL* features;
-	get_real_matrix(features, Nfeat, Mfeat);
+	//3D get_real_matrix(features, Nfeat, Mfeat, Qfeat);
 	
+	// ARG 5
 	// all feature positions (1 x #feature_positions)
 	INT Nall_pos;
 	INT* all_pos;
 	get_int_vector(all_pos, Nall_pos);
 
+	// ARG 6
 	// ORF info (#states x 2)
 	INT Norf;
 	INT Morf;
-	DREAL* orf_info;
-	get_real_matrix(orf_info,Norf,Morf);
+	INT* orf_info;
+	get_int_matrix(orf_info,Norf,Morf);
 	
+	// ARG 7
 	// DNA sequence 
 	INT Nseq;
 	char* seq;
 	get_char_vector(seq,Nseq);
 
+	// ARG 8
 	// transition pointers 
 	// link transitions to length, content, frame (and tiling)
 	// plifs (#states x #states x 3 or 4)
-	ASSERT(Na_trans==3 || Na_trans==4);
 	INT Ntp;
 	INT Mtp;
-	INT Qtp;
+	INT Qtransition_pointers;
 	INT* transition_pointers;
-	//get???
+	//get??? 3D int array
 
+	// ARG 9
 	// links: states -> signal plifs (#states x 2)
 	INT Nst;
 	INT Mst;
 	INT* state_signals;
 	gen_int_matrix(state_signals,Nst,Mst);
 	
+	// ARG 10
 	// penalty array
 	// array of plifs (1 x #contents+#lengths_plifs+#signals+#other_plifs)
 	INT Nplif;
 	INT M_plif;
 	//CPlif ** PEN = read_penalty_struct_from_cell(mx_penalty_info, P) ;
 
+	// ARG 11
 	// number of best paths
-	INT nbest;
-	get_int(nbest);	
+	INT Nnbest;
+	INT all_nbest;
+	get_int_vector(nbest);	
 
+	// ARG 12
 	// SVM weight vectors for the different contents (#contents x sum_{orders i}(4^i))
 	INT Ncw;
 	INT Mcw;
 	DREAL content_weights;
 	get_real_matrix(content_weights,Ncw,Mcw);
 
+	// ARG 13
 	// bool-> determines if orf information should be used
 	bool use_orf;
 	get_bool(use_orf);
 
+	// ARG 14
 	// determines for which contents which orf should be used (#contents x 2)
 	INT Nmod;
 	INT Mmod;
 	INT* mod_words;
 	get_int_matrix(mod_words, Nmod,Mmod); 
 
-	// loss matrix (#segment
-	//
+	// ARG 15
+	// loss matrix (#segment x 2*#segments)
+	// one (#segment x #segments)-matrix for segment loss 
+	// and one for nucleotide loss
+	INT Nloss;
+	INT Mloss;
+	DEAL* loss;
+	gen_int_matrix(loss,Nloss,Mloss);
+
+	// ARG 16
+	// segment path (2 x #feature_positions)
+	// masking/weighting of loss for specific 
+	// regions of the true path
+	INT Nseg_path;
+	INT Mseg_path;
+	DREAL* seg_path;
+	get_real_matrix(seg_path,Nseg_path,Mseg_path)
+
+	
+	INT N = Np;		// number of states
+	INT M = Nall_pos;	// number of candidate positions
+	INT nbest;
+	INT nother;
+	if (Nnbest==2)
+	{
+		nbest = all_nbest[0];
+		nother = all_nbest[1];
+	}
+	else if (Nnbest==1)
+	{
+		nbest = all_nbest[0];
+		nother = 0;
+	}	
+	delete[] all_nbest;
+	
+	/////////////////////////////////////////////////////////////////////////////////
+	// check input
+	/////////////////////////////////////////////////////////////////////////////////
+	ASSERT(N==Nq);	
+	ASSERT(Na_trans==3 || Na_trans==4);
+
+
+	//CPlif ** PEN = read_penalty_struct_from_cell(mx_penalty_info, P) ;
+	//   jetzt: -> set_plit_struct
+	
+	CPlifBase **PEN_matrix = new CPlifBase*[N*N] ;
+	CArray3<double> penalties(transition_pointers, N, N, penalties_dim3, false, false) ;
+	
+	for (INT i=0; i<N; i++)
+	{
+		for (INT j=0; j<N; j++)
+		{
+			CPlifArray * plif_array = new CPlifArray() ;
+			CPlif * plif = NULL ;
+			plif_array->clear() ;
+			for (INT k=0; k<Qtransition_pointers; k++)
+			{
+				if (penalties.element(i,j,k)==0)
+					continue ;
+				INT id = (INT) penalties.element(i,j,k)-1 ;
+				if ((id<0 || id>=Nplif) && (id!=-1))
+				{
+					SG_ERROR( "id out of range\n") ;
+					delete_penalty_struct(PEN, Nplif) ;
+					return false ;
+				}
+				plif = PEN[id] ;
+				plif_array->add_plif(plif) ;
+			}
+			if (plif_array->get_num_plifs()==0)
+			{
+				delete plif_array ;
+				PEN_matrix[i+j*N] = NULL ;
+			}
+			else if (plif_array->get_num_plifs()==1)
+			{
+				delete plif_array ;
+				ASSERT(plif!=NULL) ;
+				PEN_matrix[i+j*N] = plif ;
+			}
+			else
+				PEN_matrix[i+j*N] = plif_array ;
+		}
+	}
+
+	CPlifBase **PEN_state_signal = new CPlifBase*[Qfeat*N] ;
+	for (INT i=0; i<N*Qfeat; i++)
+	{
+		INT id = (INT) state_signals[i]-1 ;
+		if ((id<0 || id>=Nplif) && (id!=-1))
+		{
+			SG_ERROR( "id out of range\n") ;
+			delete_penalty_struct(PEN, Nplif) ;
+			return false ;
+		}
+		if (id==-1)
+			PEN_state_signal[i]=NULL ;
+		else
+			PEN_state_signal[i]=PEN[id] ;
+	}
+
+	
+	CDynProg* h=new CDynProg();
+	h->set_N(N) ;
+	h->set_p_vector(p, N) ;
+	h->set_q_vector(q, N) ;
+	if (seg_path!=NULL)
+	{
+		h->set_a_trans_matrix(a_trans, Ma_trans, Na_trans) ;
+	}
+	else
+	{
+		h->set_a_trans_matrix(a_trans, Ma_trans, 3) ; // segment_id = 0 
+	}
+	INT* mod_words_array=new INT[Mmod*Nmod] ;
+	for (INT i=0; i<Mmod; i++)
+	{
+		for (INT j=0; j<Nmod; j++)
+		{
+			mod_words_array[i*j] = mod_words[i][j] ;
+		}
+	}
+	h->init_mod_words_array(mod_words_array, Mmod, Nmod) ;
+
+	if (!h->check_svm_arrays())
+	{
+		SG_ERROR( "svm arrays inconsistent\n") ;
+		delete_penalty_struct(PEN, Nplif) ;
+		return false ;
+	}
+	
+	INT *my_path = new INT[M*(nbest+nother)] ;
+	memset(my_path, -1, M*(nother+nbest)*sizeof(INT)) ;
+	INT *my_pos = new INT[M*(nbest+nother)] ;
+	memset(my_pos, -1, M*(nbest+nother)*sizeof(INT)) ;
+	
+	//mxArray* mx_prob = mxCreateDoubleMatrix(1, (nbest+nother), mxREAL);
+	//double* p_prob = mxGetPr(mx_prob);
+	DREAL* p_prob = new DREAL[nbest+nother];
+
+	if (mx_segment_ids_mask!=NULL)
+	{
+		h->best_path_set_segment_loss(loss, Mloss, Nloss) ;
+		h->best_path_set_segment_ids_mask(seg_path, Mseg_path, Nseg_path) ;
+		delete[] ibuffer ;
+	}
+	else
+	{
+		DREAL zero2[2] = {0.0, 0.0} ;
+		h->best_path_set_segment_loss(zero2, 2, 1) ;
+		//fprintf(stderr, "M=%i\n", M) ;
+		INT *zeros = new INT[2*M] ;
+		for (INT i=0; i<2*M; i++)
+			zeros[i]=0 ;
+		h->best_path_set_segment_ids_mask(zeros, 2, M) ;
+		delete[] zeros ;
+	}
+	
+	h->best_path_trans(seq, M, pos, orf_info,
+					   PEN_matrix, PEN_state_signal, seq_third_dimension, 
+					   seq, L, genestr_num,
+					   nbest, nother, p_prob, my_path, my_pos, 
+					   content_weights, dict_weigths_num*D, use_orf) ;
+
+	// clean up 
+	delete_penalty_struct(PEN, Nplif) ;
+	delete[] PEN_matrix ;
+	delete[] pos ;
+	delete[] orf_info ;
+	delete h ;
+	//mxFree(seq) ;
+
+	// transcribe result
+	//mxArray* mx_my_path=mxCreateDoubleMatrix((nbest+nother), M, mxREAL);
+	DREAL* d_my_path=DREAL[nbest+nother][M];
+	//mxArray* mx_my_pos=mxCreateDoubleMatrix((nbest+nother), M, mxREAL);
+	DREAL* d_my_pos=DREAL[nbest+nother][M];
+	
+	for (INT k=0; k<(nbest+nother); k++)
+	{
+		for (INT i=0; i<M; i++)
+		{
+			d_my_path[i*(nbest+nother)+k] = my_path[i+k*M] ;
+			d_my_pos[i*(nbest+nother)+k] = my_pos[i+k*M] ;
+		}
+	}
+	//retvals[0]=mx_prob ;
+	//retvals[1]=mx_my_path ;
+	//retvals[2]=mx_my_pos ;
+	set_real_vector(p_prob,nbest+nother);
+	set_real_matrix(d_my_path);
+	set_real_matrix(d_my_pos);
+
+	delete[] my_path ;
+	delete[] my_pos ;
+
 	return true;
+
 }
 
 bool CSGInterface::cmd_best_path_trans_deriv()
