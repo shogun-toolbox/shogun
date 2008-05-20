@@ -311,7 +311,7 @@ class CSGInterface : public CSGObject
 		/** best path 2struct */
 		bool cmd_best_path_2struct();
 		/** cmd set plif struct */
-		bool cmd_best_path_struct();
+		bool cmd_set_plif_struct();
 		/** best path trans */
 		bool cmd_best_path_trans();
 		/** best path trans deriv */
@@ -367,6 +367,7 @@ class CSGInterface : public CSGObject
 
 		virtual CHAR* get_string(INT& len)=0;
 
+		virtual void get_bool_vector(bool*& vector, INT& len);
 		virtual void get_byte_vector(BYTE*& vector, INT& len)=0;
 		virtual void get_char_vector(CHAR*& vector, INT& len)=0;
 		virtual void get_int_vector(INT*& vector, INT& len)=0;

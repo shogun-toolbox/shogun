@@ -6,7 +6,6 @@
 #include "lib/ShogunException.h"
 #include "lib/Mathematics.h"
 #include "lib/Signal.h"
-#include "structure/DynProg.h"
 #include "guilib/GUICommands.h"
 
 #include "classifier/svm/SVM.h"
@@ -25,6 +24,11 @@
 #include "features/ShortFeatures.h"
 #include "features/ShortRealFeatures.h"
 #include "features/WordFeatures.h"
+
+#include "structure/Plif.h"
+#include "structure/PlifArray.h"
+#include "structure/PlifBase.h"
+#include "structure/DynProg.h"
 
 #include <ctype.h>
 
@@ -4908,11 +4912,26 @@ bool CSGInterface::cmd_best_path_2struct()
 
 	return true;
 }
+
+void CSGInterface::get_bool_vector(bool*& vector, INT& len)
+{
+	INT* int_vector;
+	get_int_vector(int_vector, len);
+
+	ASSERT(len>0);
+	vector= new bool[len];
+
+	for (INT i=0; i<len; i++)
+		vector[i]= (int_vector[i]!=0);
+
+	delete[] int_vector;
+}
+
 bool CSGInterface::cmd_set_plif_struct()
 {
-	INT Nid
-	INT ids;
-	get_int_array(id,Nid);
+	INT Nid;
+	INT* ids;
+	get_int_vector(ids,Nid);
 
 	INT Nname;
 	INT Mname;
@@ -4922,25 +4941,25 @@ bool CSGInterface::cmd_set_plif_struct()
 	INT Nlimits;
 	INT Mlimits;
 	DREAL* all_limits; 
-	get_real_matrix(all_limits,Nlimits,Mlimits);
+	get_real_matrix(all_limits, Nlimits, Mlimits);
 
 	INT Npenalties;
 	INT Mpenalties;
 	DREAL* all_penalties;
-	get_real_matrix(all_penalties, Npenaties, Mpenalties);
+	get_real_matrix(all_penalties, Npenalties, Mpenalties);
 
 	INT Ntransform;
 	INT Mtransform;
 	T_STRING<CHAR>* all_transform;
-	get_char_string_list(all_transform, N_transform,M_transform);
+	get_char_string_list(all_transform, Ntransform, Mtransform);
 
 	INT Nmin;
 	DREAL* min_values;
-	get_real_array(min_values,Nmin);
+	get_real_vector(min_values,Nmin);
 
 	INT Nmax;
 	DREAL* max_values;
-	get_real_array(max_values,Nmax);
+	get_real_vector(max_values,Nmax);
 
 	INT Ncache;
 	bool* all_use_cache;
@@ -4954,16 +4973,16 @@ bool CSGInterface::cmd_set_plif_struct()
 	bool* all_do_calc;
 	get_bool_vector(all_do_calc,Ncache);
 
-	ASSERT(Ncalc==Nsvm)
-	ASSERT(Ncalc==Ncache)
-	ASSERT(Ncalc==Ntransform)
-	ASSERT(Ncalc==Nmin)
-	ASSERT(Ncalc==Nmax)
-	ASSERT(Ncalc==Npenalties)
-	ASSERT(Ncalc==Nlimits)
-	ASSERT(Ncalc==Nname)
-	ASSERT(Ncalc==Nid)
-	ASSERT(Mlimits==Mpenalties)
+	ASSERT(Ncalc==Nsvm);
+	ASSERT(Ncalc==Ncache);
+	ASSERT(Ncalc==Ntransform);
+	ASSERT(Ncalc==Nmin);
+	ASSERT(Ncalc==Nmax);
+	ASSERT(Ncalc==Npenalties);
+	ASSERT(Ncalc==Nlimits);
+	ASSERT(Ncalc==Nname);
+	ASSERT(Ncalc==Nid);
+	ASSERT(Mlimits==Mpenalties);
 
 	INT N = Ncalc;
 	INT M = Mlimits; 	
@@ -4973,28 +4992,31 @@ bool CSGInterface::cmd_set_plif_struct()
 	{
 		PEN[i]=new CPlif() ;
 	}
+
 	for (INT i=0; i<N; i++)
 	{
 		DREAL* limits = new DREAL[M];
 		DREAL* penalties = new DREAL[M];
 		for (INT k=0; k<M; k++)
 		{
-			limits[k] = all_limits[i][k];
-			penalties[k] = all_penalties[i][k];
+			limits[k] = all_limits[i*M+k];
+			penalties[k] = all_penalties[i*M+k];
 		}
 		INT id = ids[i];
 
 		PEN[id]->set_id(id);
-		PEN[id]->set_name(names[i]);
+
+		PEN[id]->set_name(get_zero_terminated_string_copy(names[i]));
 		PEN[id]->set_min_value(min_values[i]);
 		PEN[id]->set_max_value(max_values[i]);
 		PEN[id]->set_use_cache(all_use_cache[i]);
 		PEN[id]->set_use_svm(all_use_svm[i]);
 		PEN[id]->set_plif(M,limits,penalties);
-		PEN[id]->set_do_calc(all_do_calc[i]);
-		if (!PEN[id]->set_transform_type(all_transform[i]))
+		//PEN[id]->set_do_calc(all_do_calc[i]); //JONAS FIX
+		CHAR* transform_str=get_zero_terminated_string_copy(all_transform[i]);
+		if (!PEN[id]->set_transform_type(transform_str))
 		{
-			SG_SERROR( "transform type not recognized ('%s')\n", transform_str) ;
+			SG_ERROR( "transform type not recognized ('%s')\n", transform_str) ;
 			delete[] PEN;
 			return false;
 		}
@@ -5013,18 +5035,18 @@ bool CSGInterface::cmd_best_path_trans()
 	// transitions from initial state (#states x 1)
 	INT Np;
 	DREAL* p;
-	get_double_vector(p, Np);
+	get_real_vector(p, Np);
 
 	// ARG 2
 	// transitions to end state (#states x 1)
 	INT Nq;
 	DREAL* q;
-	get_double_vector(q, Nq);
-	ASSERT(Nq==N);
+	get_real_vector(q, Nq);
+	ASSERT(Nq==Np);
 
 	// ARG 3
 	// links for transitions (#transitions x 4)
-	INT Na_trans
+	INT Na_trans;
 	INT Ma_trans;
 	DREAL* a_trans;
 	get_real_matrix(a_trans, Na_trans, Ma_trans);
@@ -5071,7 +5093,7 @@ bool CSGInterface::cmd_best_path_trans()
 	INT Nst;
 	INT Mst;
 	INT* state_signals;
-	gen_int_matrix(state_signals,Nst,Mst);
+	get_int_matrix(state_signals,Nst,Mst);
 	
 	// ARG 10
 	// penalty array
@@ -5083,20 +5105,19 @@ bool CSGInterface::cmd_best_path_trans()
 	// ARG 11
 	// number of best paths
 	INT Nnbest;
-	INT all_nbest;
-	get_int_vector(nbest);	
+	INT* all_nbest;
+	get_int_vector(all_nbest, Nnbest);	
 
 	// ARG 12
 	// SVM weight vectors for the different contents (#contents x sum_{orders i}(4^i))
 	INT Ncw;
 	INT Mcw;
-	DREAL content_weights;
-	get_real_matrix(content_weights,Ncw,Mcw);
+	DREAL* content_weights;
+	get_real_matrix(content_weights, Ncw, Mcw);
 
 	// ARG 13
 	// bool-> determines if orf information should be used
-	bool use_orf;
-	get_bool(use_orf);
+	bool use_orf = get_bool();
 
 	// ARG 14
 	// determines for which contents which orf should be used (#contents x 2)
@@ -5111,8 +5132,8 @@ bool CSGInterface::cmd_best_path_trans()
 	// and one for nucleotide loss
 	INT Nloss;
 	INT Mloss;
-	DEAL* loss;
-	gen_int_matrix(loss,Nloss,Mloss);
+	DREAL* loss;
+	get_real_matrix(loss, Nloss,Mloss);
 
 	// ARG 16
 	// segment path (2 x #feature_positions)
@@ -5120,8 +5141,8 @@ bool CSGInterface::cmd_best_path_trans()
 	// regions of the true path
 	INT Nseg_path;
 	INT Mseg_path;
-	DREAL* seg_path;
-	get_real_matrix(seg_path,Nseg_path,Mseg_path)
+	INT* seg_path;
+	get_int_matrix(seg_path,Nseg_path,Mseg_path);
 
 	
 	INT N = Np;		// number of states
@@ -5149,16 +5170,17 @@ bool CSGInterface::cmd_best_path_trans()
 
 	//CPlif ** PEN = read_penalty_struct_from_cell(mx_penalty_info, P) ;
 	//   jetzt: -> set_plit_struct
+	CPlif** PEN; //FIXME
 	
 	CPlifBase **PEN_matrix = new CPlifBase*[N*N] ;
-	CArray3<double> penalties(transition_pointers, N, N, penalties_dim3, false, false) ;
+	CArray3<INT> penalties(transition_pointers, N, N, Qtransition_pointers, false, false) ;
 	
 	for (INT i=0; i<N; i++)
 	{
 		for (INT j=0; j<N; j++)
 		{
-			CPlifArray * plif_array = new CPlifArray() ;
-			CPlif * plif = NULL ;
+			CPlifArray* plif_array = new CPlifArray() ;
+			CPlif* plif = NULL ;
 			plif_array->clear() ;
 			for (INT k=0; k<Qtransition_pointers; k++)
 			{
@@ -5223,9 +5245,7 @@ bool CSGInterface::cmd_best_path_trans()
 	for (INT i=0; i<Mmod; i++)
 	{
 		for (INT j=0; j<Nmod; j++)
-		{
-			mod_words_array[i*j] = mod_words[i][j] ;
-		}
+			mod_words_array[i*j] = mod_words[i*Nmod+j];
 	}
 	h->init_mod_words_array(mod_words_array, Mmod, Nmod) ;
 
@@ -5245,11 +5265,10 @@ bool CSGInterface::cmd_best_path_trans()
 	//double* p_prob = mxGetPr(mx_prob);
 	DREAL* p_prob = new DREAL[nbest+nother];
 
-	if (mx_segment_ids_mask!=NULL)
+	if (seg_path!=NULL)
 	{
 		h->best_path_set_segment_loss(loss, Mloss, Nloss) ;
 		h->best_path_set_segment_ids_mask(seg_path, Mseg_path, Nseg_path) ;
-		delete[] ibuffer ;
 	}
 	else
 	{
@@ -5264,7 +5283,7 @@ bool CSGInterface::cmd_best_path_trans()
 	}
 	
 	h->best_path_trans(seq, M, pos, orf_info,
-					   PEN_matrix, PEN_state_signal, seq_third_dimension, 
+					   PEN_matrix, PEN_state_signal, Qfeat, 
 					   seq, L, genestr_num,
 					   nbest, nother, p_prob, my_path, my_pos, 
 					   content_weights, dict_weigths_num*D, use_orf) ;
@@ -5279,9 +5298,9 @@ bool CSGInterface::cmd_best_path_trans()
 
 	// transcribe result
 	//mxArray* mx_my_path=mxCreateDoubleMatrix((nbest+nother), M, mxREAL);
-	DREAL* d_my_path=DREAL[nbest+nother][M];
+	DREAL* d_my_path= new DREAL[(nbest+nother)*M];
 	//mxArray* mx_my_pos=mxCreateDoubleMatrix((nbest+nother), M, mxREAL);
-	DREAL* d_my_pos=DREAL[nbest+nother][M];
+	DREAL* d_my_pos= new DREAL[(nbest+nother)*M];
 	
 	for (INT k=0; k<(nbest+nother); k++)
 	{
