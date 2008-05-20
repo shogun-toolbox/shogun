@@ -22,6 +22,7 @@
 #include "guilib/GUIPluginEstimate.h"
 #include "guilib/GUIPreProc.h"
 #include "guilib/GUITime.h"
+#include "guilib/GUIStructure.h"
 
 enum IFType
 {
@@ -464,6 +465,7 @@ class CSGInterface : public CSGObject
 		CGUIPluginEstimate* ui_pluginestimate;
 		CGUIPreProc* ui_preproc;
 		CGUITime* ui_time;
+		CGUIStructure* ui_structure;
 
 	protected:
 		/* return true if str starts with cmd

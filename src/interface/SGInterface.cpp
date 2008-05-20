@@ -863,7 +863,8 @@ CSGInterface::CSGInterface()
 	ui_math(new CGUIMath(this)),
 	ui_pluginestimate(new CGUIPluginEstimate(this)),
 	ui_preproc(new CGUIPreProc(this)),
-	ui_time(new CGUITime(this))
+	ui_time(new CGUITime(this)),
+	ui_structure(new CGUIStructure(this))
 {
 	reset();
 }
@@ -879,6 +880,7 @@ CSGInterface::~CSGInterface()
 	delete ui_features;
 	delete ui_labels;
 	delete ui_math;
+	delete ui_structure;
 	delete ui_time;
 	delete ui_distance;
 
@@ -4929,47 +4931,47 @@ void CSGInterface::get_bool_vector(bool*& vector, INT& len)
 
 bool CSGInterface::cmd_set_plif_struct()
 {
-	INT Nid;
+	INT Nid=0;
 	INT* ids;
 	get_int_vector(ids,Nid);
 
-	INT Nname;
-	INT Mname;
+	INT Nname=0;
+	INT Mname=0;
 	T_STRING<CHAR>* names;
 	get_char_string_list(names, Nname,Mname);
 
-	INT Nlimits;
-	INT Mlimits;
+	INT Nlimits=0;
+	INT Mlimits=0;
 	DREAL* all_limits; 
 	get_real_matrix(all_limits, Nlimits, Mlimits);
 
-	INT Npenalties;
-	INT Mpenalties;
+	INT Npenalties=0;
+	INT Mpenalties=0;
 	DREAL* all_penalties;
 	get_real_matrix(all_penalties, Npenalties, Mpenalties);
 
-	INT Ntransform;
-	INT Mtransform;
+	INT Ntransform=0;
+	INT Mtransform=0;
 	T_STRING<CHAR>* all_transform;
 	get_char_string_list(all_transform, Ntransform, Mtransform);
 
-	INT Nmin;
+	INT Nmin=0;
 	DREAL* min_values;
 	get_real_vector(min_values,Nmin);
 
-	INT Nmax;
+	INT Nmax=0;
 	DREAL* max_values;
 	get_real_vector(max_values,Nmax);
 
-	INT Ncache;
+	INT Ncache=0;
 	bool* all_use_cache;
 	get_bool_vector(all_use_cache,Ncache);
 
-	INT Nsvm;
+	INT Nsvm=0;
 	bool* all_use_svm;
 	get_bool_vector(all_use_svm,Nsvm);
 
-	INT Ncalc;
+	INT Ncalc=0;
 	bool* all_do_calc;
 	get_bool_vector(all_do_calc,Ncache);
 
@@ -4987,43 +4989,11 @@ bool CSGInterface::cmd_set_plif_struct()
 	INT N = Ncalc;
 	INT M = Mlimits; 	
 
-	CPlif** PEN = new CPlif*[N] ;
-	for (INT i=0; i<N; i++)	
-	{
-		PEN[i]=new CPlif() ;
-	}
-
-	for (INT i=0; i<N; i++)
-	{
-		DREAL* limits = new DREAL[M];
-		DREAL* penalties = new DREAL[M];
-		for (INT k=0; k<M; k++)
-		{
-			limits[k] = all_limits[i*M+k];
-			penalties[k] = all_penalties[i*M+k];
-		}
-		INT id = ids[i];
-
-		PEN[id]->set_id(id);
-
-		PEN[id]->set_name(get_zero_terminated_string_copy(names[i]));
-		PEN[id]->set_min_value(min_values[i]);
-		PEN[id]->set_max_value(max_values[i]);
-		PEN[id]->set_use_cache(all_use_cache[i]);
-		PEN[id]->set_use_svm(all_use_svm[i]);
-		PEN[id]->set_plif(M,limits,penalties);
-		//PEN[id]->set_do_calc(all_do_calc[i]); //JONAS FIX
-		CHAR* transform_str=get_zero_terminated_string_copy(all_transform[i]);
-		if (!PEN[id]->set_transform_type(transform_str))
-		{
-			SG_ERROR( "transform type not recognized ('%s')\n", transform_str) ;
-			delete[] PEN;
-			return false;
-		}
-				
-	}
-	return true;
+	return ui_structure->set_plif_struct(N, M, all_limits, all_penalties, ids,
+			names, min_values, max_values, all_use_cache, all_use_svm,
+			all_transform);
 }
+
 bool CSGInterface::cmd_best_path_trans()
 {
 	if ((m_nrhs!=15 && m_nrhs!=17) || !create_return_values(3))
@@ -5033,48 +5003,48 @@ bool CSGInterface::cmd_best_path_trans()
 
 	// ARG 1
 	// transitions from initial state (#states x 1)
-	INT Np;
+	INT Np=0;
 	DREAL* p;
 	get_real_vector(p, Np);
 
 	// ARG 2
 	// transitions to end state (#states x 1)
-	INT Nq;
+	INT Nq=0;
 	DREAL* q;
 	get_real_vector(q, Nq);
 	ASSERT(Nq==Np);
 
 	// ARG 3
 	// links for transitions (#transitions x 4)
-	INT Na_trans;
-	INT Ma_trans;
+	INT Na_trans=0;
+	INT Ma_trans=0;
 	DREAL* a_trans;
 	get_real_matrix(a_trans, Na_trans, Ma_trans);
 
 	// ARG 4
 	// feature matrix (#states x #feature_positions x #max_features_per_positon)
-	INT Nfeat;
-	INT Mfeat;
-	INT Qfeat;
+	INT Nfeat=0;
+	INT Mfeat=0;
+	INT Qfeat=0;
 	DREAL* features;
 	//3D get_real_matrix(features, Nfeat, Mfeat, Qfeat);
 	
 	// ARG 5
 	// all feature positions (1 x #feature_positions)
-	INT Nall_pos;
+	INT Nall_pos=0;
 	INT* all_pos;
 	get_int_vector(all_pos, Nall_pos);
 
 	// ARG 6
 	// ORF info (#states x 2)
-	INT Norf;
-	INT Morf;
+	INT Norf=0;
+	INT Morf=0;
 	INT* orf_info;
 	get_int_matrix(orf_info,Norf,Morf);
 	
 	// ARG 7
 	// DNA sequence 
-	INT Nseq;
+	INT Nseq=0;
 	char* seq;
 	get_char_vector(seq,Nseq);
 
@@ -5082,29 +5052,29 @@ bool CSGInterface::cmd_best_path_trans()
 	// transition pointers 
 	// link transitions to length, content, frame (and tiling)
 	// plifs (#states x #states x 3 or 4)
-	INT Ntp;
-	INT Mtp;
+	INT Ntp=0;
+	INT Mtp=0;
 	INT Qtransition_pointers;
 	INT* transition_pointers;
 	//get??? 3D int array
 
 	// ARG 9
 	// links: states -> signal plifs (#states x 2)
-	INT Nst;
-	INT Mst;
+	INT Nst=0;
+	INT Mst=0;
 	INT* state_signals;
 	get_int_matrix(state_signals,Nst,Mst);
 	
 	// ARG 10
 	// penalty array
 	// array of plifs (1 x #contents+#lengths_plifs+#signals+#other_plifs)
-	INT Nplif;
+	INT Nplif=0;
 	INT M_plif;
 	//CPlif ** PEN = read_penalty_struct_from_cell(mx_penalty_info, P) ;
 
 	// ARG 11
 	// number of best paths
-	INT Nnbest;
+	INT Nnbest=0;
 	INT* all_nbest;
 	get_int_vector(all_nbest, Nnbest);	
 
@@ -5168,10 +5138,8 @@ bool CSGInterface::cmd_best_path_trans()
 	ASSERT(N==Nq);	
 	ASSERT(Na_trans==3 || Na_trans==4);
 
-
-	//CPlif ** PEN = read_penalty_struct_from_cell(mx_penalty_info, P) ;
-	//   jetzt: -> set_plit_struct
-	CPlif** PEN; //FIXME
+	CPlif** PEN=ui_structure->get_PEN();
+	ASSERT(PEN);
 	
 	CPlifBase **PEN_matrix = new CPlifBase*[N*N] ;
 	CArray3<INT> penalties(transition_pointers, N, N, Qtransition_pointers, false, false) ;
