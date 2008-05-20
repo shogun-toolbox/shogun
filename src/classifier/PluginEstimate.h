@@ -123,8 +123,8 @@ class CPluginEstimate: public CClassifier
 
 			seq_length = pos_model->get_sequence_length();
 			num_symbols = pos_model->get_num_symbols();
-			ASSERT(pos_model->get_num_model_parameters() == neg_model->get_num_model_parameters());
-			ASSERT(pos_model->get_num_symbols() == neg_model->get_num_symbols());
+			ASSERT(pos_model->get_num_model_parameters()==neg_model->get_num_model_parameters());
+			ASSERT(pos_model->get_num_symbols()==neg_model->get_num_symbols());
 			return true;
 		}
 
@@ -138,22 +138,14 @@ class CPluginEstimate: public CClassifier
 		{
 			INT num_params;
 
-			if (pos_model)
-				delete pos_model;
-
-			pos_model = new CLinearHMM(seq_length, num_symbols);
-
-			if (neg_model)
-				delete neg_model;
-
-			neg_model = new CLinearHMM(seq_length, num_symbols);
-
-			ASSERT(pos_model);
-			ASSERT(neg_model);
+			delete pos_model;
+			pos_model=new CLinearHMM(seq_length, num_symbols);
+			delete neg_model;
+			neg_model=new CLinearHMM(seq_length, num_symbols);
 
 			num_params=pos_model->get_num_model_parameters();
-			ASSERT(seq_length*num_symbols == num_params);
-			ASSERT(num_params == neg_model->get_num_model_parameters());
+			ASSERT(seq_length*num_symbols==num_params);
+			ASSERT(num_params==neg_model->get_num_model_parameters());
 
 			pos_model->set_log_transition_probs(pos_params, num_params);
 			neg_model->set_log_transition_probs(neg_params, num_params);

@@ -262,7 +262,6 @@ CKernel* CGUIKernel::create_weighteddegreepositionstring(
 {
 	INT i=0;
 	INT* shifts=new INT[length];
-	ASSERT(shifts);
 
 	for (i=center; i<length; i++)
 		shifts[i]=(int) floor(((DREAL) (i-center))/step);
@@ -307,7 +306,6 @@ CKernel* CGUIKernel::create_weighteddegreepositionstring3(
 	if (!position_weights)
 	{
 		position_weights=new DREAL[length];
-		ASSERT(position_weights);
 		for (INT i=0; i<length; i++)
 			position_weights[i]=1.0/length;
 	}
@@ -337,7 +335,6 @@ CKernel* CGUIKernel::create_weighteddegreepositionstring2(
 DREAL* CGUIKernel::get_weights(INT order, INT max_mismatch)
 {
 	DREAL *weights=new DREAL[order*(1+max_mismatch)];
-	ASSERT(weights);
 	DREAL sum=0;
 	INT i=0;
 

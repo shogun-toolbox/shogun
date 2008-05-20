@@ -57,7 +57,6 @@ DREAL CGaussianKernel::compute(INT idx_a, INT idx_b)
 
 	DREAL* avec=((CRealFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
 	DREAL* bvec=((CRealFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
-
 	ASSERT(alen==blen);
 
 	DREAL result=0;

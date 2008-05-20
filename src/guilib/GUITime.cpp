@@ -17,7 +17,6 @@
 CGUITime::CGUITime(CSGInterface* ui_) : CSGObject(), ui(ui_)
 {
 	time=new CTime();
-	ASSERT(time);
 }
 
 CGUITime::~CGUITime()

@@ -181,9 +181,7 @@ SHORTREAL* CKernel::get_kernel_matrix_shortreal(int &num_vec1, int &num_vec2,
 		else
 			result=new SHORTREAL[total_num];
 
-		ASSERT(result);
-
-		if ( (f1 == f2) && (num_vec1 == num_vec2) )
+		if (f1==f2 && num_vec1==num_vec2)
 		{
 			for (int i=0; i<num_vec1; i++)
 			{
@@ -252,9 +250,7 @@ DREAL* CKernel::get_kernel_matrix_real(int &num_vec1, int &num_vec2, DREAL* targ
 		else
 			result=new DREAL[total_num];
 
-		ASSERT(result);
-
-		if ( (f1 == f2) && (num_vec1 == num_vec2) )
+		if (f1==f2 && num_vec1==num_vec2)
 		{
 			for (int i=0; i<num_vec1; i++)
 			{
@@ -323,8 +319,8 @@ bool CKernel::init(CFeatures* l, CFeatures* r)
 	ASSERT(r);
 
 	//make sure features are compatible
-	ASSERT(l->get_feature_class() == r->get_feature_class());
-	ASSERT(l->get_feature_type() == r->get_feature_type());
+	ASSERT(l->get_feature_class()==r->get_feature_class());
+	ASSERT(l->get_feature_type()==r->get_feature_type());
 
 	//remove references to previous features
     SG_UNREF(lhs);
@@ -537,8 +533,7 @@ void CKernel::cache_multiple_kernel_rows(INT* rows, INT num_rows)
 		INT num_vec=lhs->get_num_vectors();
 		ASSERT(num_vec>0);
 		BYTE* needs_computation=new BYTE[num_vec];
-		ASSERT(needs_computation);
-		memset(needs_computation,0,sizeof(BYTE)*num_vec);
+		memset(needs_computation, 0, sizeof(BYTE)*num_vec);
 		INT step=0;
 		INT num=0;
 		INT end=0;
@@ -1049,13 +1044,12 @@ void CKernel::do_precompute_matrix()
 	INT num_right=rhs->get_num_vectors();
 	SG_INFO( "precomputing kernel matrix (%ix%i)\n", num_left, num_right) ;
 
-	ASSERT(num_left == num_right) ;
-	ASSERT(lhs==rhs) ;
-	INT num=num_left ;
+	ASSERT(num_left==num_right);
+	ASSERT(lhs==rhs);
+	INT num=num_left;
 	
-	delete[] precomputed_matrix ;
-	precomputed_matrix=new SHORTREAL[num*(num+1)/2] ;
-	ASSERT(precomputed_matrix!=NULL) ;
+	delete[] precomputed_matrix;
+	precomputed_matrix=new SHORTREAL[num*(num+1)/2];
 
 	for (INT i=0; i<num; i++)
 	{
@@ -1084,12 +1078,10 @@ void CKernel::init_sqrt_diag(DREAL *v, INT num)
 
 bool CKernel::init_optimization_svm(CSVM * svm)
 {
-	INT num_suppvec = svm->get_num_support_vectors();
-	INT* sv_idx    = new INT[num_suppvec];
-	ASSERT(sv_idx);
-	DREAL* sv_weight = new DREAL[num_suppvec];
-	ASSERT(sv_weight);
-	
+	INT num_suppvec=svm->get_num_support_vectors();
+	INT* sv_idx=new INT[num_suppvec];
+	DREAL* sv_weight=new DREAL[num_suppvec];
+
 	for (INT i=0; i<num_suppvec; i++)
 	{
 		sv_idx[i]    = svm->get_support_vector(i);
@@ -1097,9 +1089,8 @@ bool CKernel::init_optimization_svm(CSVM * svm)
 	}
 	bool ret = init_optimization(num_suppvec, sv_idx, sv_weight);
 
-	delete[] sv_idx ;
-	delete[] sv_weight ;
-
-	return ret ;
+	delete[] sv_idx;
+	delete[] sv_weight;
+	return ret;
 }
 

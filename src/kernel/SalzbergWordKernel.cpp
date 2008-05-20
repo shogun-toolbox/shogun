@@ -45,49 +45,46 @@ bool CSalzbergWordKernel::init(CFeatures* p_l, CFeatures* p_r)
 {
 	bool status=CStringKernel<WORD>::init(p_l,p_r);
 	CStringFeatures<WORD>* l=(CStringFeatures<WORD>*) p_l;
-	CStringFeatures<WORD>* r=(CStringFeatures<WORD>*) p_r;
 	ASSERT(l);
+	CStringFeatures<WORD>* r=(CStringFeatures<WORD>*) p_r;
 	ASSERT(r);
 
 	INT i;
 	initialized=false;
 
-	if (sqrtdiag_lhs != sqrtdiag_rhs)
+	if (sqrtdiag_lhs!=sqrtdiag_rhs)
 		delete[] sqrtdiag_rhs;
-	sqrtdiag_rhs=NULL ;
+	sqrtdiag_rhs=NULL;
 	delete[] sqrtdiag_lhs;
-	sqrtdiag_lhs=NULL ;
+	sqrtdiag_lhs=NULL;
 	if (ld_mean_lhs!=ld_mean_rhs)
-		delete[] ld_mean_rhs ;
-	ld_mean_rhs=NULL ;
-	delete[] ld_mean_lhs ;
-	ld_mean_lhs=NULL ;
+		delete[] ld_mean_rhs;
+	ld_mean_rhs=NULL;
+	delete[] ld_mean_lhs;
+	ld_mean_lhs=NULL;
 
-	sqrtdiag_lhs= new DREAL[l->get_num_vectors()];
-	ld_mean_lhs = new DREAL[l->get_num_vectors()];
+	sqrtdiag_lhs=new DREAL[l->get_num_vectors()];
+	ld_mean_lhs=new DREAL[l->get_num_vectors()];
 
 	for (i=0; i<l->get_num_vectors(); i++)
 		sqrtdiag_lhs[i]=1;
 
 	if (l==r)
 	{
-		sqrtdiag_rhs = sqrtdiag_lhs;
-		ld_mean_rhs  = ld_mean_lhs ;
+		sqrtdiag_rhs=sqrtdiag_lhs;
+		ld_mean_rhs=ld_mean_lhs;
 	}
 	else
 	{
-		sqrtdiag_rhs= new DREAL[r->get_num_vectors()];
+		sqrtdiag_rhs=new DREAL[r->get_num_vectors()];
 		for (i=0; i<r->get_num_vectors(); i++)
 			sqrtdiag_rhs[i]=1;
 
-		ld_mean_rhs = new DREAL[r->get_num_vectors()];
+		ld_mean_rhs=new DREAL[r->get_num_vectors()];
 	}
 
-	DREAL *l_ld_mean_lhs = ld_mean_lhs ;
-	DREAL *l_ld_mean_rhs = ld_mean_rhs ;
-
-	ASSERT(sqrtdiag_lhs);
-	ASSERT(sqrtdiag_rhs);
+	DREAL* l_ld_mean_lhs=ld_mean_lhs;
+	DREAL* l_ld_mean_rhs=ld_mean_rhs;
 
 	//from our knowledge first normalize variance to 1 and then norm=1 does the job
 	if (!initialized)

@@ -37,10 +37,6 @@ bool CLibSVMMultiClass::train()
 	problem.x=new struct svm_node*[problem.l];
 	x_space=new struct svm_node[2*problem.l];
 
-	ASSERT(problem.y);
-	ASSERT(problem.x);
-	ASSERT(x_space);
-
 	for (int i=0; i<problem.l; i++)
 	{
 		problem.y[i]=labels->get_label(i);
@@ -80,13 +76,12 @@ bool CLibSVMMultiClass::train()
 	if (model)
 	{
 		ASSERT(model->nr_class==num_classes);
-		ASSERT( (model->l==0) || (model->l > 0 && model->SV && model->sv_coef) );
+		ASSERT((model->l==0) || (model->l>0 && model->SV && model->sv_coef));
 		create_multiclass_svm(num_classes);
 
 		INT* offsets=new INT[num_classes];
-		ASSERT(offsets);
 		offsets[0]=0;
-		
+
 		for (INT i=1; i<num_classes; i++)
 			offsets[i] = offsets[i-1]+model->nSV[i-1];
 

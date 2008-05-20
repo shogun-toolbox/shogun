@@ -44,7 +44,7 @@ bool CPluginEstimate::train()
 	INT* pos_indizes=new INT[((CStringFeatures<WORD>*) features)->get_num_vectors()];
 	INT* neg_indizes=new INT[((CStringFeatures<WORD>*) features)->get_num_vectors()];
 
-	ASSERT(labels->get_num_labels() == features->get_num_vectors());
+	ASSERT(labels->get_num_labels()==features->get_num_vectors());
 
 	INT pos_idx=0;
 	INT neg_idx=0;
@@ -73,9 +73,7 @@ CLabels* CPluginEstimate::classify(CLabels* result)
 
 	if (!result)
 		result=new CLabels(features->get_num_vectors());
-
-	ASSERT(result);
-	ASSERT(result->get_num_labels() == features->get_num_vectors());
+	ASSERT(result->get_num_labels()==features->get_num_vectors());
 
 	for (INT vec=0; vec<features->get_num_vectors(); vec++)
 		result->set_label(vec, classify_example(vec));

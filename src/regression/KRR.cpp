@@ -18,50 +18,49 @@
 
 CKRR::CKRR() : CKernelMachine()
 {
-  alpha = NULL;
-  tau = 1e-6;
+	alpha=NULL;
+	tau=1e-6;
 }
 
 CKRR::CKRR(DREAL t, CKernel* k, CLabels* lab)
 {
-  tau = t;
-  set_labels(lab);
-  set_kernel(k);
-  alpha = NULL;
+	tau=t;
+	set_labels(lab);
+	set_kernel(k);
+	alpha=NULL;
 }
 
 
 CKRR::~CKRR()
 {
-  delete[] alpha;
+	delete[] alpha;
 }
 
 bool CKRR::train()
 {
-  delete[] alpha;
-  
-  ASSERT(labels);
-  ASSERT(kernel && kernel->has_features());
+	delete[] alpha;
 
-  // Get kernel matrix
-  INT m = 0;
-  INT n = 0;
-  DREAL *K = kernel->get_kernel_matrix_real(m, n, NULL);
-  ASSERT(K && m > 0 && n > 0);
-  
-  for(int i = 0; i < n; i++)
-	K[i + i*n] += tau;
+	ASSERT(labels);
+	ASSERT(kernel && kernel->has_features());
 
-  // Get labels
-  INT numlabels = 0;
-  alpha = labels->get_labels(numlabels);
-  ASSERT(alpha && numlabels == n);
-  
-  clapack_dposv(CblasRowMajor,CblasUpper, n, 1, K, n, alpha, n);
-  
-  delete[] K;
+	// Get kernel matrix
+	INT m=0;
+	INT n=0;
+	DREAL *K = kernel->get_kernel_matrix_real(m, n, NULL);
+	ASSERT(K && m>0 && n>0);
 
-  return true;
+	for(int i=0; i < n; i++)
+		K[i+i*n]+=tau;
+
+	// Get labels
+	INT numlabels=0;
+	alpha=labels->get_labels(numlabels);
+	ASSERT(alpha && numlabels==n);
+
+	clapack_dposv(CblasRowMajor,CblasUpper, n, 1, K, n, alpha, n);
+
+	delete[] K;
+	return true;
 }
 
 bool CKRR::load(FILE* srcfile)
@@ -76,56 +75,54 @@ bool CKRR::save(FILE* dstfile)
 
 CLabels* CKRR::classify(CLabels* output)
 {
-  if (labels)
+	if (labels)
 	{
-	  ASSERT(output == NULL);
-	  ASSERT(kernel);
+		ASSERT(output==NULL);
+		ASSERT(kernel);
 
-	  // Get kernel matrix
-	  INT m = 0;
-	  INT n = 0;
-	  DREAL *K = kernel->get_kernel_matrix_real(m, n, NULL);
-	  ASSERT(K && m > 0 && n > 0);
-	  DREAL *Yh = new DREAL[n];
+		// Get kernel matrix
+		INT m=0;
+		INT n=0;
+		DREAL* K=kernel->get_kernel_matrix_real(m, n, NULL);
+		ASSERT(K && m>0 && n>0);
+		DREAL* Yh=new DREAL[n];
 
-	  // predict
-      // K is symmetric, CblasColMajor is same as CblasRowMajor 
-      // and used that way in the origin call:
-      // dgemv('T', m, n, 1.0, K, m, alpha, 1, 0.0, Yh, 1);
-      cblas_dgemv(CblasColMajor, CblasTrans, m, n, 1.0, K, m, alpha, 1, 0.0, Yh, 1);
-	  
-	  delete[] K;
+		// predict
+		// K is symmetric, CblasColMajor is same as CblasRowMajor 
+		// and used that way in the origin call:
+		// dgemv('T', m, n, 1.0, K, m, alpha, 1, 0.0, Yh, 1);
+		cblas_dgemv(CblasColMajor, CblasTrans, m, n, 1.0, K, m, alpha, 1, 0.0, Yh, 1);
 
-	  output=new CLabels(n);
+		delete[] K;
 
-	  output->set_labels(Yh, n);
+		output=new CLabels(n);
+		output->set_labels(Yh, n);
 
-	  delete[] Yh;
-	  
-	  return output;
+		delete[] Yh;
+
+		return output;
 	}
-  
-  return NULL;
+
+	return NULL;
 }
 
 DREAL CKRR::classify_example(INT num)
 {
-  ASSERT(kernel);
+	ASSERT(kernel);
 
-  // Get kernel matrix
-  INT m = 0;
-  INT n = 0;
-  // TODO: use get_kernel_column instead of computing the whole matrix!
-  DREAL *K = kernel->get_kernel_matrix_real(m, n, NULL);
-  ASSERT(K && m > 0 && n > 0);
-  DREAL Yh;
-  
-  // predict
-  Yh = CMath::dot(K + m*num, alpha, m);
-  
-  delete[] K;
+	// Get kernel matrix
+	INT m=0;
+	INT n=0;
+	// TODO: use get_kernel_column instead of computing the whole matrix!
+	DREAL* K=kernel->get_kernel_matrix_real(m, n, NULL);
+	ASSERT(K && m>0 && n>0);
+	DREAL Yh;
 
-  return Yh;
+	// predict
+	Yh = CMath::dot(K + m*num, alpha, m);
+
+	delete[] K;
+	return Yh;
 }
 
 #endif

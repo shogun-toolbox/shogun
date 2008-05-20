@@ -144,7 +144,6 @@ template <class ST> class CSparseFeatures: public CFeatures
 			{
 				len=num_features;
 				fv=new ST[num_features];
-				ASSERT(fv);
 
 				for (i=0; i<num_features; i++)
 					fv[i]=0;
@@ -446,8 +445,7 @@ template <class ST> class CSparseFeatures: public CFeatures
 			num_vec=num_features;
 
 			INT* hist=new INT[num_features];
-			ASSERT(hist);
-			memset(hist,0,sizeof(INT)*num_features);
+			memset(hist, 0, sizeof(INT)*num_features);
 
 			// count how lengths of future feature vectors
 			for (INT v=0; v<num_vectors; v++)
@@ -463,9 +461,7 @@ template <class ST> class CSparseFeatures: public CFeatures
 			}
 
 			// allocate room for future feature vectors
-			TSparse<ST>* sfm = new TSparse<ST>[num_vec];
-			ASSERT(sfm);
-
+			TSparse<ST>* sfm=new TSparse<ST>[num_vec];
 			for (INT v=0; v<num_vec; v++)
 			{
 				sfm[v].features= new TSparseEntry<ST>[hist[v]];
@@ -566,9 +562,8 @@ template <class ST> class CSparseFeatures: public CFeatures
 			num_features=num_feat;
 			num_vectors=num_vec;
 
-			SG_INFO( "converting dense feature matrix to sparse one\n");
+			SG_INFO("converting dense feature matrix to sparse one\n");
 			INT* num_feat_entries=new int[num_vectors];
-			ASSERT(num_feat_entries);
 
 			if (num_feat_entries)
 			{
@@ -774,9 +769,10 @@ template <class ST> class CSparseFeatures: public CFeatures
 		 */
 		DREAL* compute_squared(DREAL* sq)
 		{
-			INT len=0;;
+			ASSERT(sq);
+
+			INT len=0;
 			bool do_free=false;
-			ASSERT(sq!=NULL);
 
 			for (INT i=0; i<this->get_num_vectors(); i++)
 			{
@@ -809,13 +805,13 @@ template <class ST> class CSparseFeatures: public CFeatures
 			INT i,j;
 			INT alen, blen;
 			bool afree, bfree;
-			ASSERT(lhs!=NULL);
-			ASSERT(rhs!=NULL);
+			ASSERT(lhs);
+			ASSERT(rhs);
 
 			TSparseEntry<DREAL>* avec=lhs->get_sparse_feature_vector(idx_a, alen, afree);
 			TSparseEntry<DREAL>* bvec=rhs->get_sparse_feature_vector(idx_b, blen, bfree);
-			ASSERT(avec!=NULL);
-			ASSERT(bvec!=NULL);
+			ASSERT(avec);
+			ASSERT(bvec);
 
 			DREAL result=sq_lhs[idx_a]+sq_rhs[idx_b];
 
@@ -872,7 +868,6 @@ template <class ST> class CSparseFeatures: public CFeatures
 			size_t blocksize=1024*1024;
 			size_t required_blocksize=blocksize;
 			BYTE* dummy=new BYTE[blocksize];
-			ASSERT(dummy);
 			FILE* f=fopen(fname, "ro");
 
 			if (f)
@@ -911,12 +906,9 @@ template <class ST> class CSparseFeatures: public CFeatures
 				delete[] dummy;
 				blocksize=required_blocksize;
 				dummy = new BYTE[blocksize+1]; //allow setting of '\0' at EOL
-				ASSERT(dummy);
 
 				lab=new CLabels(num_vectors);
-				ASSERT(lab);
 				sparse_feature_matrix=new TSparse<ST>[num_vectors];
-				ASSERT(sparse_feature_matrix);
 
 				rewind(f);
 				sz=blocksize;
@@ -964,8 +956,6 @@ template <class ST> class CSparseFeatures: public CFeatures
 							}
 
 							TSparseEntry<ST>* feat=new TSparseEntry<ST>[dims];
-							ASSERT(feat);
-
 							INT j=0;
 							for (; j<len; j++)
 							{

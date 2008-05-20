@@ -419,9 +419,7 @@ double CMath::entropy(DREAL* p, INT len)
 DREAL* CMath::pinv(DREAL* matrix, INT rows, INT cols, DREAL* target)
 {
 	if (!target)
-		target= new DREAL[rows*cols];
-
-	ASSERT(target);
+		target=new DREAL[rows*cols];
 
 	char jobu='A';
 	char jobvt='A';
@@ -433,14 +431,11 @@ DREAL* CMath::pinv(DREAL* matrix, INT rows, INT cols, DREAL* target)
 	int info=-1;
 	int lsize=CMath::min(m,n);
 	double* s=new double[lsize];
-	ASSERT(s);
 	double* u=new double[m*m];
-	ASSERT(u);
 	double* vt=new double[n*n];
-	ASSERT(vt);
 
-    wrap_dgesvd(jobu, jobvt, m, n, matrix, lda, s, u, ldu, vt, ldvt, &info);
-	ASSERT(info == 0);
+	wrap_dgesvd(jobu, jobvt, m, n, matrix, lda, s, u, ldu, vt, ldvt, &info);
+	ASSERT(info==0);
 
 	for (INT i=0; i<n; i++)
 	{

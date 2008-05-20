@@ -237,10 +237,7 @@ bool CGUIFeatures::obtain_by_sliding_window(
 	}
 
 	if (((CFeatures*) features)->get_feature_class()==C_COMBINED)
-	{
 		features=((CCombinedFeatures*) features)->get_last_feature_obj();
-		ASSERT(features);
-	}
 
 	ASSERT(features);
 	ASSERT(((CFeatures*) features)->get_feature_class()==C_STRING);
@@ -401,7 +398,6 @@ CStringFeatures<CHAR>* CGUIFeatures::convert_simple_char_to_string_char(CCharFea
 
 		CStringFeatures<CHAR>* target=new CStringFeatures<CHAR>(
 			new CAlphabet(src->get_alphabet()));
-		ASSERT(target);
 		target->set_features(strings, num_vec, max_len);
 		return target;
 	}
@@ -421,8 +417,6 @@ CRealFeatures* CGUIFeatures::convert_simple_word_to_simple_salzberg(CWordFeature
 		pie)
 	{
 		CRealFeatures* target=new CRealFeatures(0);
-		ASSERT(target);
-
 		INT num_feat=src->get_num_features();
 		INT num_vec=src->get_num_vectors();
 		DREAL* fm=new DREAL[num_vec*num_feat];
@@ -475,7 +469,7 @@ CTOPFeatures* CGUIFeatures::convert_string_word_to_simple_top(CStringFeatures<WO
 			tf=new CTOPFeatures(
 				0, ui->ui_hmm->get_pos(), ui->ui_hmm->get_neg(),
 				neglinear, poslinear);
-			ASSERT(tf && tf->set_feature_matrix());
+			ASSERT(tf->set_feature_matrix());
 		}
 		else
 			SG_ERROR("HMMs not correctly assigned!\n");
@@ -654,62 +648,47 @@ bool CGUIFeatures::set_reference_features(CHAR* target)
 
 void CGUIFeatures::add_train_features(CFeatures* f)
 {
-	invalidate_train() ;
+	ASSERT(f);
+	invalidate_train();
 
 	if (!train_features)
+		train_features=new CCombinedFeatures();
+
+	if (train_features->get_feature_class()!=C_COMBINED)
 	{
-		train_features= new CCombinedFeatures();
-		ASSERT(train_features);
+		CFeatures* first_elem=train_features;
+		train_features=new CCombinedFeatures();
+		((CCombinedFeatures*) train_features)->append_feature_obj(first_elem);
+		((CCombinedFeatures*) train_features)->list_feature_objs();
 	}
 
-	if (train_features)
-	{
-		if (train_features->get_feature_class()!=C_COMBINED)
-		{
-			CFeatures* first_elem = train_features ;
-			train_features= new CCombinedFeatures();
-			((CCombinedFeatures*) train_features)->append_feature_obj(first_elem) ;
-			((CCombinedFeatures*) train_features)->list_feature_objs();
-		}
-
-		ASSERT(f);
-		bool result = ((CCombinedFeatures*) train_features)->append_feature_obj(f);
-		if (result)
-			((CCombinedFeatures*) train_features)->list_feature_objs();
-		else
-			SG_ERROR( "appending feature object failed\n");
-	}
+	bool result=((CCombinedFeatures*) train_features)->append_feature_obj(f);
+	if (result)
+		((CCombinedFeatures*) train_features)->list_feature_objs();
+	else
+		SG_ERROR("appending feature object failed\n");
 }
 
 void CGUIFeatures::add_test_features(CFeatures* f)
 {
-	invalidate_test() ;
+	ASSERT(f);
+	invalidate_test();
 
 	if (!test_features)
+		test_features=new CCombinedFeatures();
+
+	if (test_features->get_feature_class()!=C_COMBINED)
 	{
-		test_features= new CCombinedFeatures();
-		ASSERT(test_features);
+		CFeatures* first_elem=test_features;
+		test_features=new CCombinedFeatures();
+		((CCombinedFeatures*) test_features)->append_feature_obj(first_elem);
+		((CCombinedFeatures*) test_features)->list_feature_objs();
 	}
 
-	if (test_features)
-	{
-		if (test_features->get_feature_class()!=C_COMBINED)
-		{
-			CFeatures * first_elem = test_features ;
-			test_features= new CCombinedFeatures();
-			((CCombinedFeatures*)test_features)->append_feature_obj(first_elem) ;
-			((CCombinedFeatures*) test_features)->list_feature_objs();	
-		}
-
-		ASSERT(f);
-		bool result=((CCombinedFeatures*) test_features)->append_feature_obj(f);
-
-		if (result)
-			((CCombinedFeatures*) test_features)->list_feature_objs();
-		else
-			SG_ERROR( "appending feature object failed\n");
-	}
+	bool result=((CCombinedFeatures*) test_features)->append_feature_obj(f);
+	if (result)
+		((CCombinedFeatures*) test_features)->list_feature_objs();
 	else
-		SG_ERROR( "combined feature object could not be created\n");
+		SG_ERROR("appending feature object failed\n");
 }
 #endif

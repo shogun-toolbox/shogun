@@ -25,8 +25,9 @@ CSortWordString::~CSortWordString()
 /// initialize preprocessor from features
 bool CSortWordString::init(CFeatures* f)
 {
-	ASSERT(f->get_feature_class() == C_STRING);
-	ASSERT(f->get_feature_type() == F_WORD);
+	ASSERT(f->get_feature_class()==C_STRING);
+	ASSERT(f->get_feature_type()==F_WORD);
+
 	return true;
 }
 

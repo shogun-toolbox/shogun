@@ -51,11 +51,8 @@ bool CWordFeatures::obtain_from_char_features(CCharFeatures* cf, INT start, INT 
 	INT len=num_vectors*num_features;
 	delete[] feature_matrix;
 	feature_matrix=new WORD[len];
-	ASSERT(feature_matrix);
-
-	INT num_cf_feat;
-	INT num_cf_vec;
-
+	INT num_cf_feat=0;
+	INT num_cf_vec=0;
 	CHAR* fm=cf->get_feature_matrix(num_cf_feat, num_cf_vec);
 
 	ASSERT(num_cf_vec==num_vectors);
@@ -103,7 +100,7 @@ bool CWordFeatures::obtain_from_char_features(CCharFeatures* cf, INT start, INT 
 	if (start+gap!=0)
 	{
 		// condensing feature matrix ... 
-		ASSERT(start+gap>=0) ;
+		ASSERT(start+gap>=0);
 		for (INT line=0; line<num_vectors; line++)
 			for (INT j=0; j<num_features-start-gap; j++)
 				feature_matrix[line*(num_features-(start+gap))+j]=feature_matrix[line*num_features+j] ;
@@ -136,7 +133,7 @@ bool CWordFeatures::obtain_from_char_features(CCharFeatures* cf, INT start, INT 
 
 void CWordFeatures::translate_from_single_order(WORD* obs, INT sequence_length, INT start, INT p_order, INT max_val, INT gap)
 {
-	ASSERT(gap>=0) ;
+	ASSERT(gap>=0);
 	
 	const INT start_gap = (p_order - gap)/2 ;
 	const INT end_gap = start_gap + gap ;

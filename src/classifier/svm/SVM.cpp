@@ -288,8 +288,6 @@ CLabels* CSVM::classify(CLabels* lab)
 
 		if (!lab)
 			lab=new CLabels(num_vectors);
-
-		ASSERT(lab);
 		SG_DEBUG( "computing output on %d test examples\n", num_vectors);
 
 		if (this->io.get_show_progress())
@@ -301,16 +299,10 @@ CLabels* CSVM::classify(CLabels* lab)
 				get_batch_computation_enabled())
 		{
 			ASSERT(get_num_support_vectors()>0);
-			INT * sv_idx    = new INT[get_num_support_vectors()] ;
-			DREAL* sv_weight = new DREAL[get_num_support_vectors()] ;
-			INT* idx = new INT[num_vectors];
-			DREAL* output = new DREAL[num_vectors];
-
-			ASSERT(sv_idx);
-			ASSERT(sv_weight);
-
-			ASSERT(idx);
-			ASSERT(output);
+			INT* sv_idx=new INT[get_num_support_vectors()];
+			DREAL* sv_weight=new DREAL[get_num_support_vectors()];
+			INT* idx=new INT[num_vectors];
+			DREAL* output=new DREAL[num_vectors];
 			memset(output, 0, sizeof(DREAL)*num_vectors);
 
 			//compute output for all vectors v[0]...v[num_vectors-1]

@@ -25,8 +25,9 @@ CSortUlongString::~CSortUlongString()
 /// initialize preprocessor from features
 bool CSortUlongString::init(CFeatures* f)
 {
-	ASSERT(f->get_feature_class() == C_STRING);
-	ASSERT(f->get_feature_type() == F_ULONG);
+	ASSERT(f->get_feature_class()==C_STRING);
+	ASSERT(f->get_feature_type()==F_ULONG);
+
 	return true;
 }
 

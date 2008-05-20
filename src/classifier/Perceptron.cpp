@@ -42,10 +42,7 @@ bool CPerceptron::train()
 	delete[] w;
 	w_dim=num_feat;
 	w=new DREAL[num_feat];
-	ASSERT(w);
-
 	DREAL* output=new DREAL[num_vec];
-	ASSERT(output);
 
 	//start with uniform w, bias=0
 	bias=0;

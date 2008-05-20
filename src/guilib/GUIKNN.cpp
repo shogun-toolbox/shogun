@@ -127,7 +127,7 @@ bool CGUIKNN::test(CHAR* param)
 	INT len=0;
 	CLabels* outlab=knn->classify(NULL);
 	DREAL* output=outlab->get_labels(len);
-	INT* label= testlabels->get_int_labels(len);
+	INT* label=testlabels->get_int_labels(len);
 	ASSERT(label);
 
 	ui->ui_math->evaluate_results(output, label, len, outputfile, rocfile);

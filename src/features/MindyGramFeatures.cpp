@@ -30,14 +30,14 @@
  */
 CMindyGramFeatures::~CMindyGramFeatures()
 {
-    SG_DEBUG( "Destroying Mindy gram features\n");
-    /* Destroy gram vectors */
-    for (INT i = 0; i < num_vectors; i++)
-        gram_destroy(vectors[i]);
-    free(vectors);
+	SG_DEBUG( "Destroying Mindy gram features\n");
+	/* Destroy gram vectors */
+	for (INT i = 0; i < num_vectors; i++)
+		gram_destroy(vectors[i]);
+	free(vectors);
 
-    /* Destroy configuration */
-    micfg_destroy(cfg);
+	/* Destroy configuration */
+	micfg_destroy(cfg);
 }
 
 /**
@@ -45,7 +45,7 @@ CMindyGramFeatures::~CMindyGramFeatures()
  */
 CFeatures *CMindyGramFeatures::duplicate() const
 {
-    return new CMindyGramFeatures(*this);
+	return new CMindyGramFeatures(*this);
 }
 
 /**
@@ -55,10 +55,10 @@ CFeatures *CMindyGramFeatures::duplicate() const
  */
 gram_t *CMindyGramFeatures::get_feature_vector(INT i)
 {
-    ASSERT(vectors != NULL);
-    ASSERT(i >= 0 && i < num_vectors);
+	ASSERT(vectors);
+	ASSERT(i>=0 && i<num_vectors);
 
-    return vectors[i];
+	return vectors[i];
 }
 
 /**
@@ -67,14 +67,14 @@ gram_t *CMindyGramFeatures::get_feature_vector(INT i)
  */
 void CMindyGramFeatures::set_feature_vector(INT i, gram_t * g)
 {
-    ASSERT(vectors != NULL);
-    ASSERT(i >= 0 && i < num_vectors);
+	ASSERT(vectors);
+	ASSERT(i>=0 && i<num_vectors);
 
-    /* Destroy previous gram */
-    if (vectors[i])
-        gram_destroy(vectors[i]);
+	/* Destroy previous gram */
+	if (vectors[i])
+		gram_destroy(vectors[i]);
 
-    vectors[i] = g;
+	vectors[i] = g;
 }
 
 /**
@@ -86,10 +86,10 @@ void CMindyGramFeatures::set_feature_vector(INT i, gram_t * g)
  */
 ULONG CMindyGramFeatures::get_feature(INT i, INT j)
 {
-    ASSERT(vectors && i < num_vectors);
-    ASSERT(j < (signed) vectors[i]->num);
+	ASSERT(vectors && i<num_vectors);
+	ASSERT(j<(signed) vectors[i]->num);
 
-    return vectors[i]->gram[j];
+	return vectors[i]->gram[j];
 }
 
 /**
@@ -99,8 +99,8 @@ ULONG CMindyGramFeatures::get_feature(INT i, INT j)
  */
 INT CMindyGramFeatures::get_vector_length(INT i)
 {
-    ASSERT(vectors && i < num_vectors);
-    return vectors[i]->num;
+	ASSERT(vectors && i<num_vectors);
+	return vectors[i]->num;
 }
 
 /**
@@ -109,8 +109,8 @@ INT CMindyGramFeatures::get_vector_length(INT i)
  */
 void CMindyGramFeatures::trim_max(double max)
 {
-    for (INT i = 0; i < num_vectors; i++)
-        gram_trim_max(vectors[i], max);
+	for (INT i = 0; i < num_vectors; i++)
+		gram_trim_max(vectors[i], max);
 } 
 
 /**
@@ -120,41 +120,41 @@ void CMindyGramFeatures::trim_max(double max)
  */
 bool CMindyGramFeatures::load(CHAR * fname)
 {
-    SG_INFO( "Loading strings from %s\n", fname);
-    LONG len = 0;
-    CHAR *s, *t;
+	SG_INFO( "Loading strings from %s\n", fname);
+	LONG len = 0;
+	CHAR *s, *t;
 
-    CFile f(fname, 'r', F_CHAR);
-    CHAR *data = f.load_char_data(NULL, len);
+	CFile f(fname, 'r', F_CHAR);
+	CHAR *data = f.load_char_data(NULL, len);
 
-    if (!f.is_ok()) {
-        SG_ERROR( "Reading file failed\n");
-        return false;
-    }
+	if (!f.is_ok()) {
+		SG_ERROR( "Reading file failed\n");
+		return false;
+	}
 
-    /* Count strings terminated by \n */
-    num_vectors = 0;
-    for (LONG i = 0; i < len; i++)
-        if (data[i] == '\n')
-            SG_INFO( "File contains %ld string vectors\n",
-                num_vectors);
+	/* Count strings terminated by \n */
+	num_vectors = 0;
+	for (LONG i = 0; i < len; i++)
+		if (data[i] == '\n')
+			SG_INFO( "File contains %ld string vectors\n",
+					num_vectors);
 
-    vectors = (gram_t **) calloc(num_vectors, sizeof(gram_t *));
-    if (!vectors) {
-        SG_ERROR( "Could not allocate memory\n");
-        return false;
-    }
+	vectors = (gram_t **) calloc(num_vectors, sizeof(gram_t *));
+	if (!vectors) {
+		SG_ERROR( "Could not allocate memory\n");
+		return false;
+	}
 
-    /* Extract grams from strings */
-    t = s = data;
-    for (LONG i = 0; i < num_vectors; i++, t++) {
-        if (*t != '\n')
-            continue;
+	/* Extract grams from strings */
+	t = s = data;
+	for (LONG i = 0; i < num_vectors; i++, t++) {
+		if (*t != '\n')
+			continue;
 
-        vectors[i] = gram_extract(cfg, (byte_t *) s, t - s);
-        s = t + 1;
-    }
+		vectors[i] = gram_extract(cfg, (byte_t *) s, t - s);
+		s = t + 1;
+	}
 
-    return true;
+	return true;
 }
 #endif

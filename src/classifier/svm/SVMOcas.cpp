@@ -59,26 +59,17 @@ bool CSVMOcas::train()
 
 	delete[] w;
 	w=new DREAL[w_dim];
-	ASSERT(w);
 	memset(w, 0, w_dim*sizeof(DREAL));
 
 	delete[] old_w;
 	old_w=new DREAL[w_dim];
-	ASSERT(old_w);
 	memset(old_w, 0, w_dim*sizeof(DREAL));
 	bias=0;
 
-	tmp_a_buf = new DREAL[w_dim];
-	ASSERT(tmp_a_buf);
-
-	cp_value = new DREAL*[bufsize];
-	ASSERT(cp_value);
-
-	cp_index = new uint32_t*[bufsize];
-	ASSERT(cp_index);
-
-	cp_nz_dims = new uint32_t[bufsize];
-	ASSERT(cp_nz_dims);
+	tmp_a_buf=new DREAL[w_dim];
+	cp_value=new DREAL*[bufsize];
+	cp_index=new uint32_t*[bufsize];
+	cp_nz_dims=new uint32_t[bufsize];
 
 	double TolAbs=0;
 	double QPBound=0;
@@ -203,10 +194,8 @@ void CSVMOcas::add_new_cut( double *new_col_H,
 	c_nzd[nSel] = nz_dims;
 	if(nz_dims > 0)
 	{
-		c_idx[nSel] = new uint32_t[nz_dims];
-		ASSERT(c_idx[nSel]);
-		c_val[nSel] = new double[nz_dims];
-		ASSERT(c_val[nSel]);
+		c_idx[nSel]=new uint32_t[nz_dims];
+		c_val[nSel]=new double[nz_dims];
 
 		uint32_t idx=0;
 		for(j=0; j < nDim; j++ )

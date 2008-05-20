@@ -126,8 +126,6 @@ bool CLinearByteKernel::init_optimization(INT num_suppvec, INT* sv_idx, DREAL* a
 	ASSERT(num_feat);
 
 	normal=new DREAL[num_feat];
-	ASSERT(normal);
-
 	for (INT i=0; i<num_feat; i++)
 		normal[i]=0;
 

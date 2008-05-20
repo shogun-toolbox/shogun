@@ -205,11 +205,11 @@ INT CFile::parse_next_header(EFeatureType &type)
 
 bool CFile::read_header()
 {
-    ASSERT(file!=NULL);
-    UINT intlen=0;
-    UINT endian=0;
-    UINT file_fourcc=0;
-    UINT doublelen=0;
+	ASSERT(file);
+	UINT intlen=0;
+	UINT endian=0;
+	UINT file_fourcc=0;
+	UINT doublelen=0;
 
 	if ( (fread(&intlen, sizeof(BYTE), 1, file)==1) &&
 			(fread(&doublelen, sizeof(BYTE), 1, file)==1) &&
@@ -269,7 +269,6 @@ bool CFile::read_real_valued_dense(DREAL*& matrix, INT& num_feat, INT& num_vec)
 	CHAR* ptr_item=NULL;
 	CHAR* ptr_data=data;
 	CDynamicArray<CHAR*>* items=new CDynamicArray<CHAR*>();
-	ASSERT(items);
 
 	while (*ptr_data)
 	{
@@ -306,7 +305,6 @@ bool CFile::read_real_valued_dense(DREAL*& matrix, INT& num_feat, INT& num_vec)
 
 	// now copy data into matrix
 	matrix=new DREAL[num_vec*num_feat];
-	ASSERT(matrix);
 	for (INT i=0; i<num_vec; i++)
 	{
 		for (INT j=0; j<num_feat; j++)
@@ -347,7 +345,6 @@ bool CFile::read_real_valued_sparse(TSparse<DREAL>*& matrix, INT& num_feat, INT&
 	size_t blocksize=1024*1024;
 	size_t required_blocksize=blocksize;
 	BYTE* dummy=new BYTE[blocksize];
-	ASSERT(dummy);
 
 	if (file)
 	{
@@ -384,10 +381,7 @@ bool CFile::read_real_valued_sparse(TSparse<DREAL>*& matrix, INT& num_feat, INT&
 		delete[] dummy;
 		blocksize=required_blocksize;
 		dummy = new BYTE[blocksize+1]; //allow setting of '\0' at EOL
-		ASSERT(dummy);
-
 		matrix=new TSparse<DREAL>[num_vec];
-		ASSERT(matrix);
 
 		rewind(file);
 		sz=blocksize;
@@ -435,7 +429,6 @@ bool CFile::read_real_valued_sparse(TSparse<DREAL>*& matrix, INT& num_feat, INT&
 					}
 
 					TSparseEntry<DREAL>* feat=new TSparseEntry<DREAL>[dims];
-					ASSERT(feat);
 
 					//skip label part
 					size_t j=0;
@@ -540,7 +533,6 @@ bool CFile::read_char_valued_strings(T_STRING<CHAR>*& strings, INT& num_str, INT
 	size_t blocksize=1024*1024;
 	size_t required_blocksize=0;
 	CHAR* dummy=new CHAR[blocksize];
-	ASSERT(dummy);
 	CHAR* overflow=NULL;
 	INT overflow_len=0;
 
@@ -579,13 +571,9 @@ bool CFile::read_char_valued_strings(T_STRING<CHAR>*& strings, INT& num_str, INT
 		SG_DEBUG("block_size=%d\n", required_blocksize);
 		delete[] dummy;
 		blocksize=required_blocksize;
-		dummy = new CHAR[blocksize];
-		ASSERT(dummy);
-		overflow = new CHAR[blocksize];
-		ASSERT(overflow);
-
+		dummy=new CHAR[blocksize];
+		overflow=new CHAR[blocksize];
 		strings=new T_STRING<CHAR>[num_str];
-		ASSERT(strings);
 
 		rewind(file);
 		sz=blocksize;
@@ -605,7 +593,6 @@ bool CFile::read_char_valued_strings(T_STRING<CHAR>*& strings, INT& num_str, INT
 
 					strings[lines].length=len+overflow_len;
 					strings[lines].string=new CHAR[len+overflow_len];
-					ASSERT(strings[lines].string);
 
 					for (INT j=0; j<overflow_len; j++)
 						strings[lines].string[j]=overflow[j];

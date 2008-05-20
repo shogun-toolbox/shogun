@@ -85,7 +85,6 @@ CLabels* CMultiClassSVM::classify_one_vs_one(CLabels* result)
 	ASSERT(m_num_svms>0);
 	ASSERT(m_num_svms==m_num_classes*(m_num_classes-1)/2);
 
-
 	if (!kernel)
 	{
 		SG_ERROR( "SVM can not proceed without kernel!\n");
@@ -99,11 +98,8 @@ CLabels* CMultiClassSVM::classify_one_vs_one(CLabels* result)
 		if (!result)
 			result=new CLabels(num_vectors);
 
-		ASSERT(num_vectors == result->get_num_labels());
-
-		ASSERT(result);
+		ASSERT(num_vectors==result->get_num_labels());
 		CLabels** outputs=new CLabels*[m_num_svms];
-		ASSERT(outputs);
 
 		for (INT i=0; i<m_num_svms; i++)
 		{
@@ -115,8 +111,6 @@ CLabels* CMultiClassSVM::classify_one_vs_one(CLabels* result)
 		}
 
 		INT* votes=new INT[m_num_classes];
-		ASSERT(votes);
-
 		for (INT v=0; v<num_vectors; v++)
 		{
 			INT s=0;
@@ -175,11 +169,8 @@ CLabels* CMultiClassSVM::classify_one_vs_rest(CLabels* result)
 		if (!result)
 			result=new CLabels(num_vectors);
 
-		ASSERT(num_vectors == result->get_num_labels());
-
-		ASSERT(result);
+		ASSERT(num_vectors==result->get_num_labels());
 		CLabels** outputs=new CLabels*[m_num_svms];
-		ASSERT(outputs);
 
 		for (INT i=0; i<m_num_svms; i++)
 		{
@@ -232,8 +223,6 @@ DREAL CMultiClassSVM::classify_example_one_vs_rest(INT num)
 {
 	ASSERT(m_num_svms>0);
 	DREAL* outputs=new DREAL[m_num_svms];
-	ASSERT(outputs);
-
 	INT winner=0;
 	DREAL max_out=m_svms[0]->classify_example(num);
 
@@ -257,8 +246,6 @@ DREAL CMultiClassSVM::classify_example_one_vs_one(INT num)
 	ASSERT(m_num_svms==m_num_classes*(m_num_classes-1)/2);
 
 	INT* votes=new INT[m_num_classes];
-	ASSERT(votes);
-
 	INT s=0;
 
 	for (INT i=0; i<m_num_classes; i++)

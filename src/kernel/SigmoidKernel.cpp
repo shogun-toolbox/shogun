@@ -60,7 +60,6 @@ DREAL CSigmoidKernel::compute(INT idx_a, INT idx_b)
 
 	double* avec=((CRealFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
 	double* bvec=((CRealFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
-
 	ASSERT(alen==blen);
 
 #ifndef HAVE_LAPACK

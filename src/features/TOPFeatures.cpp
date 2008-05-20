@@ -48,7 +48,7 @@ CTOPFeatures::~CTOPFeatures()
 
 void CTOPFeatures::set_models(CHMM* p, CHMM* n)
 {
-	ASSERT(p!=NULL && n!=NULL);
+	ASSERT(p && n);
 	SG_REF(p);
 	SG_REF(n);
 

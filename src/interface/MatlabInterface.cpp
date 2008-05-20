@@ -150,7 +150,6 @@ CHAR* CMatlabInterface::get_string(INT& len)
 		string=new CHAR[len+1];
 	else
 		string=new CHAR[len];
-	ASSERT(string);
 	mxChar* c=mxGetChars(s);
 	ASSERT(c);
 	for (INT i=0; i<len; i++)
@@ -172,7 +171,6 @@ void CMatlabInterface::function_name(sg_type*& vector, INT& len)	\
 																	\
 	len=mxGetNumberOfElements(mx_vec); 								\
 	vector=new sg_type[len];										\
-	ASSERT(vector);													\
 	if_type* data=(if_type*) mxGetData(mx_vec);						\
 																	\
 	for (INT i=0; i<len; i++)										\
@@ -199,7 +197,6 @@ void CMatlabInterface::function_name(sg_type*& matrix, INT& num_feat, INT& num_v
 	num_vec=mxGetN(mx_mat); 													\
 	num_feat=mxGetM(mx_mat); 													\
 	matrix=new sg_type[num_vec*num_feat]; 										\
-	ASSERT(matrix); 															\
 	if_type* data=(if_type*) mxGetData(mx_mat); 								\
  																				\
 	for (INT i=0; i<num_vec; i++) 												\
@@ -230,7 +227,6 @@ void CMatlabInterface::function_name(TSparse<sg_type>*& matrix, INT& num_feat, I
 	num_vec=mxGetN(mx_mat); 															\
 	num_feat=mxGetM(mx_mat); 															\
 	matrix=new TSparse<sg_type>[num_vec]; 												\
-	ASSERT(matrix); 																	\
 	if_type* data=(if_type*) mxGetData(mx_mat); 										\
  																						\
 	LONG nzmax=mxGetNzmax(mx_mat); 														\
@@ -246,7 +242,6 @@ void CMatlabInterface::function_name(TSparse<sg_type>*& matrix, INT& num_feat, I
 		if (len>0) 																		\
 		{ 																				\
 			matrix[i].features=new TSparseEntry<sg_type>[len]; 							\
-			ASSERT(matrix[i].features); 												\
  																						\
 			for (INT j=0; j<len; j++) 													\
 			{ 																			\
@@ -285,8 +280,6 @@ void CMatlabInterface::function_name(T_STRING<sg_type>*& strings, INT& num_str, 
 		ASSERT(num_str>=1);																\
 																						\
 		strings=new T_STRING<sg_type>[num_str];											\
-		ASSERT(strings);																\
-																						\
 		for (int i=0; i<num_str; i++)													\
 		{																				\
 			mxArray* str=mxGetCell(mx_str, i);											\
@@ -299,7 +292,6 @@ void CMatlabInterface::function_name(T_STRING<sg_type>*& strings, INT& num_str, 
 				if_type* data=(if_type*) mxGetData(str);								\
 				strings[i].length=len; /* all must have same length in matlab */ 		\
 				strings[i].string=new sg_type[len+1]; /* not zero terminated in matlab */ \
-				ASSERT(strings[i].string); 												\
 				INT j; 																	\
 				for (j=0; j<len; j++) 													\
 					strings[i].string[j]= (sg_type) data[j]; 							\
@@ -320,7 +312,6 @@ void CMatlabInterface::function_name(T_STRING<sg_type>*& strings, INT& num_str, 
 		num_str=mxGetN(mx_str); 														\
 		INT len=mxGetM(mx_str); 														\
 		strings=new T_STRING<sg_type>[num_str]; 										\
-		ASSERT(strings); 																\
 																						\
 		for (INT i=0; i<num_str; i++) 													\
 		{ 																				\
@@ -328,7 +319,6 @@ void CMatlabInterface::function_name(T_STRING<sg_type>*& strings, INT& num_str, 
 			{ 																			\
 				strings[i].length=len; /* all must have same length in matlab */ 		\
 				strings[i].string=new sg_type[len+1]; /* not zero terminated in matlab */ \
-				ASSERT(strings[i].string); 												\
 				INT j; 																	\
 				for (j=0; j<len; j++) 													\
 					strings[i].string[j]=(sg_type) data[j+i*len]; 						\
@@ -557,10 +547,7 @@ void CMatlabInterface::set_arg_increment(mxArray* mx_arg)
 void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 {
 	if (!interface)
-	{
 		interface=new CMatlabInterface(nlhs, plhs, nrhs, prhs);
-		ASSERT(interface);
-	}
 	else
 		((CMatlabInterface*) interface)->reset(nlhs, plhs, nrhs, prhs);
 

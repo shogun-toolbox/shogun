@@ -56,8 +56,8 @@ bool CHistogramWordKernel::init(CFeatures* p_l, CFeatures* p_r)
 	bool status=CStringKernel<WORD>::init(p_l,p_r);
 	CStringFeatures<WORD>* l=(CStringFeatures<WORD>*) p_l;
 	CStringFeatures<WORD>* r=(CStringFeatures<WORD>*) p_r;
-	ASSERT(l) ;
-	ASSERT(r) ;
+	ASSERT(l);
+	ASSERT(r);
 
 	SG_DEBUG( "init: lhs: %ld   rhs: %ld\n", l, r) ;
 	INT i;
@@ -88,27 +88,24 @@ bool CHistogramWordKernel::init(CFeatures* p_l, CFeatures* p_r)
 
 	if (l==r)
 	{
-		sqrtdiag_rhs = sqrtdiag_lhs;
-		ld_mean_rhs  = ld_mean_lhs ;
-		plo_rhs      = plo_lhs ;
+		sqrtdiag_rhs=sqrtdiag_lhs;
+		ld_mean_rhs=ld_mean_lhs;
+		plo_rhs=plo_lhs;
 	}
 	else
 	{
-		sqrtdiag_rhs= new DREAL[r->get_num_vectors()];
+		sqrtdiag_rhs=new DREAL[r->get_num_vectors()];
 		for (i=0; i<r->get_num_vectors(); i++)
 			sqrtdiag_rhs[i]=1;
 
-		ld_mean_rhs = new DREAL[r->get_num_vectors()];
-		plo_rhs = new DREAL[r->get_num_vectors()];
+		ld_mean_rhs=new DREAL[r->get_num_vectors()];
+		plo_rhs=new DREAL[r->get_num_vectors()];
 	}
 
-	DREAL *l_plo_lhs = plo_lhs ;
-	DREAL *l_plo_rhs = plo_rhs ;
-	DREAL *l_ld_mean_lhs = ld_mean_lhs ;
-	DREAL *l_ld_mean_rhs = ld_mean_rhs ;
-
-	ASSERT(sqrtdiag_lhs);
-	ASSERT(sqrtdiag_rhs);
+	DREAL* l_plo_lhs=plo_lhs;
+	DREAL* l_plo_rhs=plo_rhs;
+	DREAL* l_ld_mean_lhs=ld_mean_lhs;
+	DREAL* l_ld_mean_rhs=ld_mean_rhs;
 
 	//from our knowledge first normalize variance to 1 and then norm=1 does the job
 	if (!initialized)
@@ -134,12 +131,10 @@ bool CHistogramWordKernel::init(CFeatures* p_l, CFeatures* p_r)
 		//add 1 as we have the 'bias' also in this vector
 		num_params2++;
 
-		delete[] variance;
 		delete[] mean;
-		mean= new DREAL[num_params2];
-		ASSERT(mean);
-		variance= new DREAL[num_params2];
-		ASSERT(variance);
+		mean=new DREAL[num_params2];
+		delete[] variance;
+		variance=new DREAL[num_params2];
 
 		for (i=0; i<num_params2; i++)
 		{
@@ -394,7 +389,6 @@ DREAL CHistogramWordKernel::compute_slow(INT idx_a, INT idx_b)
 	INT alen, blen;
 	WORD* avec=((CStringFeatures<WORD>*) lhs)->get_feature_vector(idx_a, alen);
 	WORD* bvec=((CStringFeatures<WORD>*) rhs)->get_feature_vector(idx_b, blen);
-
 	// can only deal with strings of same length
 	ASSERT(alen==blen);
 

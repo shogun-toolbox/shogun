@@ -86,7 +86,6 @@ CLabels* CWDSVMOcas::classify(CLabels* output)
 		if (!output)
 			output=new CLabels(num);
 
-		ASSERT(output);
 		for (INT i=0; i<num; i++)
 			output->set_label(i, classify_example(i));
 
@@ -101,10 +100,8 @@ INT CWDSVMOcas::set_wd_weights()
 	ASSERT(degree>0 && degree<=8);
 	delete[] wd_weights;
 	wd_weights=new SHORTREAL[degree];
-	ASSERT(wd_weights);
 	delete[] w_offsets;
 	w_offsets=new INT[degree];
-	ASSERT(w_offsets);
 	INT w_dim_single_c=0;
 
 	for (INT i=0; i<degree; i++)
@@ -145,22 +142,18 @@ bool CWDSVMOcas::train()
 
 	delete[] w;
 	w=new SHORTREAL[w_dim];
-	ASSERT(w);
 	memset(w, 0, w_dim*sizeof(SHORTREAL));
 
 	delete[] old_w;
 	old_w=new SHORTREAL[w_dim];
-	ASSERT(old_w);
 	memset(old_w, 0, w_dim*sizeof(SHORTREAL));
 	bias=0;
 
 	cuts=new SHORTREAL*[bufsize];
-	ASSERT(cuts);
 	memset(cuts, 0, sizeof(*cuts)*bufsize);
 
 /////speed tests/////
 	/*double* tmp = new double[num_vec];
-	ASSERT(tmp);
 	double start=CTime::get_curtime();
 	CMath::random_vector(w, w_dim, (SHORTREAL) 0, (SHORTREAL) 1000);
 	compute_output(tmp, this);
@@ -263,8 +256,6 @@ void* CWDSVMOcas::add_new_cut_helper( void* ptr)
 	//memset(new_a, 0, sizeof(SHORTREAL)*nDim);
 
 	INT* val=new INT[cut_length];
-	ASSERT(val);
-
 	for (INT j=start; j<end; j++)
 	{
 		INT offs=o->w_dim_single_char*j;
@@ -304,10 +295,8 @@ void CWDSVMOcas::add_new_cut( double *new_col_H,
 
 	uint32_t i;
 	wdocas_thread_params_add* params_add=new wdocas_thread_params_add[o->parallel.get_num_threads()];
-	ASSERT(params_add);
-	pthread_t* threads = new pthread_t[o->parallel.get_num_threads()];
-	ASSERT(threads);
-	SHORTREAL* new_a = new SHORTREAL[nDim];
+	pthread_t* threads=new pthread_t[o->parallel.get_num_threads()];
+	SHORTREAL* new_a=new SHORTREAL[nDim];
 	memset(new_a, 0, sizeof(SHORTREAL)*nDim);
 
 	INT t;
@@ -479,15 +468,10 @@ void CWDSVMOcas::compute_output( double *output, void* ptr )
 	CWDSVMOcas* o = (CWDSVMOcas*) ptr;
 	INT nData=o->num_vec;
 	wdocas_thread_params_output* params_output=new wdocas_thread_params_output[o->parallel.get_num_threads()];
-	ASSERT(params_output);
 	pthread_t* threads = new pthread_t[o->parallel.get_num_threads()];
-	ASSERT(threads);
-
 
 	SHORTREAL* out=new SHORTREAL[nData];
-	ASSERT(out);
 	INT* val=new INT[nData];
-	ASSERT(val);
 	memset(out, 0, sizeof(SHORTREAL)*nData);
 
 	INT t;

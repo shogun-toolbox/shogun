@@ -62,13 +62,11 @@ DREAL CLocalityImprovedStringKernel::compute(INT idx_a, INT idx_b)
 
 	CHAR* avec = ((CStringFeatures<CHAR>*) lhs)->get_feature_vector(idx_a, alen);
 	CHAR* bvec = ((CStringFeatures<CHAR>*) rhs)->get_feature_vector(idx_b, blen);
-
 	// can only deal with strings of same length
-	ASSERT(alen == blen && alen>0);
+	ASSERT(alen==blen && alen>0);
 
 	INT i,t;
-
-	DREAL* match = new DREAL[alen];
+	DREAL* match=new DREAL[alen];
 
 	// initialize match table 1 -> match;  0 -> no match
 	for (i = 0; i<alen; i++)

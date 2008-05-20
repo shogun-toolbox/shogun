@@ -287,15 +287,15 @@ CHMM::CHMM(INT p_N, double* p, double* q, int num_trans, double* a_trans)
 			start_idx++;
 			
 			if (start_idx>1 && start_idx<num_trans)
-				ASSERT(a_trans[start_idx+num_trans-1] <= a_trans[start_idx+num_trans]);
+				ASSERT(a_trans[start_idx+num_trans-1]<=a_trans[start_idx+num_trans]);
 		}
 		
 		if (start_idx>1 && start_idx<num_trans)
-			ASSERT(a_trans[start_idx+num_trans-1] <= a_trans[start_idx+num_trans]);
+			ASSERT(a_trans[start_idx+num_trans-1]<=a_trans[start_idx+num_trans]);
 		
 		INT len=start_idx-old_start_idx;
 		ASSERT(len>=0);
-		
+
 		trans_list_forward_cnt[j] = 0 ;
 		
 		if (len>0)
@@ -309,20 +309,20 @@ CHMM::CHMM(INT p_N, double* p, double* q, int num_trans, double* a_trans)
 			trans_list_forward_val[j] = NULL;
 		}
 	}
-	
+
 	for (INT i=0; i<num_trans; i++)
 	{
 		INT from = (INT)a_trans[i+num_trans] ;
 		INT to   = (INT)a_trans[i] ;
 		DREAL val = a_trans[i+num_trans*2] ;
 		
-		ASSERT(from>=0 && from<N) ;
-		ASSERT(to>=0 && to<N) ;
-		
+		ASSERT(from>=0 && from<N);
+		ASSERT(to>=0 && to<N);
+
 		trans_list_forward[from][trans_list_forward_cnt[from]]=to ;
 		trans_list_forward_val[from][trans_list_forward_cnt[from]]=val ;
 		trans_list_forward_cnt[from]++ ;
-		//ASSERT(trans_list_forward_cnt[from]<3000) ;
+		//ASSERT(trans_list_forward_cnt[from]<3000);
 	} ;
 	
 	transition_matrix_a=NULL ;
@@ -5346,7 +5346,6 @@ bool CHMM::linear_train(bool right_align)
 		INT histsize=(get_M()*get_N());
 		INT* hist=new INT[histsize];
 		INT* startendhist=new INT[get_N()];
-
 		INT i,dim;
 
 		ASSERT(p_observations->get_max_vector_length()<=get_N());
@@ -5365,7 +5364,6 @@ bool CHMM::linear_train(bool right_align)
 				WORD* obs=p_observations->get_feature_vector(dim, len);
 
 				ASSERT(len<=get_N());
-
 				startendhist[(get_N()-len)]++;
 
 				for (i=0;i<len;i++)
@@ -5425,7 +5423,7 @@ bool CHMM::linear_train(bool right_align)
 						set_a(i,j, 0);
 				}
 			}
-			ASSERT(total==0) ;
+			ASSERT(total==0);
 		}
 
 		for (i=0;i<get_N();i++)

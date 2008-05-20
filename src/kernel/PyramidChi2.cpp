@@ -166,7 +166,6 @@ DREAL CPyramidChi2::compute(INT idx_a, INT idx_b)
 	DREAL* bvec=
 			((CRealFeatures*) rhs)->get_feature_vector(idx_b,
 					blen, bfree);
-
 	ASSERT(alen==blen);
 
 	INT dims=0;
@@ -174,7 +173,7 @@ DREAL CPyramidChi2::compute(INT idx_a, INT idx_b)
 	{
 		dims+=(INT)CMath::pow(4, pyramidlevels[levelind])*numbinsinhistogram;
 	}
-	ASSERT(dims ==alen);
+	ASSERT(dims==alen);
 
 	//the actual computation - a weighted sum over chi2
 	DREAL result=0;

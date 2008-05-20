@@ -69,8 +69,8 @@ class CMPDSVM : public CSVM
 			if (!line)
 			{
 				line=kernel_cache->set_entry(i);
-				CLabels* l = CKernelMachine::get_labels();
 				ASSERT(line);
+				CLabels* l=CKernelMachine::get_labels();
 				ASSERT(l);
 
 				for (int j=0; j<l->get_num_labels(); j++)

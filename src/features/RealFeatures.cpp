@@ -64,21 +64,18 @@ bool CRealFeatures::Align_char_features(CCharFeatures* cf, CCharFeatures* Ref, D
 {
 	ASSERT(cf);
 
-	num_vectors  = cf->get_num_vectors();
-	num_features = Ref->get_num_vectors();
+	num_vectors=cf->get_num_vectors();
+	num_features=Ref->get_num_vectors();
 
 	INT len=num_vectors*num_features;
 	free_feature_matrix();
 	feature_matrix=new DREAL[len];
-	ASSERT(feature_matrix);
-
-	INT num_cf_feat;
-	INT num_cf_vec;
-	INT num_ref_feat;
-	INT num_ref_vec;
-
-	CHAR* fm_cf  = cf->get_feature_matrix(num_cf_feat, num_cf_vec);
-	CHAR* fm_ref = Ref->get_feature_matrix(num_ref_feat, num_ref_vec);
+	INT num_cf_feat=0;
+	INT num_cf_vec=0;
+	INT num_ref_feat=0;
+	INT num_ref_vec=0;
+	CHAR* fm_cf=cf->get_feature_matrix(num_cf_feat, num_cf_vec);
+	CHAR* fm_ref=Ref->get_feature_matrix(num_ref_feat, num_ref_vec);
 
 	ASSERT(num_cf_vec==num_vectors);
 	ASSERT(num_ref_vec==num_features);

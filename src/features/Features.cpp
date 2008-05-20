@@ -23,7 +23,6 @@ CFeatures::CFeatures(INT size) : CSGObject(), cache_size(size), preproc(NULL), n
 CFeatures::CFeatures(const CFeatures& orig) : CSGObject(orig), preproc(orig.preproc), num_preproc(orig.num_preproc), preprocessed(orig.preprocessed)
 {
 	preprocessed=new bool[orig.num_preproc];
-	ASSERT(preprocessed);
 	memcpy(preprocessed, orig.preprocessed, sizeof(bool)*orig.num_preproc);
 }
 

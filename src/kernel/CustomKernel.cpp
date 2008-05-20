@@ -59,8 +59,8 @@ bool CCustomKernel::init(CFeatures* l, CFeatures* r)
 
 	SG_DEBUG( "num_vec_lhs: %d vs num_rows %d\n", l->get_num_vectors(), num_rows);
 	SG_DEBUG( "num_vec_rhs: %d vs num_cols %d\n", r->get_num_vectors(), num_cols);
-	ASSERT(l->get_num_vectors() == num_rows);
-	ASSERT(r->get_num_vectors() == num_cols);
+	ASSERT(l->get_num_vectors()==num_rows);
+	ASSERT(r->get_num_vectors()==num_cols);
 	return true;
 }
 
@@ -87,7 +87,7 @@ bool CCustomKernel::save_init(FILE* dest)
 bool CCustomKernel::set_triangle_kernel_matrix_from_triangle(const DREAL* km, int len)
 {
 	ASSERT(km);
-	ASSERT(len > 0);
+	ASSERT(len>0);
 
 	INT cols = (INT) floor(-0.5 + CMath::sqrt(0.25+2*len));
 	if (cols*(cols+1)/2 != len)
@@ -119,7 +119,7 @@ bool CCustomKernel::set_triangle_kernel_matrix_from_triangle(const DREAL* km, in
 
 bool CCustomKernel::set_triangle_kernel_matrix_from_full(const DREAL* km, INT rows, INT cols)
 {
-	ASSERT(rows == cols);
+	ASSERT(rows==cols);
 
 	cleanup();
 	SG_DEBUG( "using custom kernel of size %dx%d\n", cols,cols);

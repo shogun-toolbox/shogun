@@ -138,7 +138,7 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<CHAR>
 		{ 
 			ASSERT(get_is_initialized());
 			ASSERT(alphabet);
-			ASSERT(alphabet->get_alphabet() == DNA || alphabet->get_alphabet() == RNA);
+			ASSERT(alphabet->get_alphabet()==DNA || alphabet->get_alphabet()==RNA);
 			return compute_by_tree(idx);
 		}
 

@@ -61,7 +61,7 @@ CAlphabet::CAlphabet(CAlphabet* a) : CSGObject()
 {
 	ASSERT(a);
 	set_alphabet(a->get_alphabet());
-    copy_histogram(a);
+	copy_histogram(a);
 }
 
 CAlphabet::~CAlphabet()

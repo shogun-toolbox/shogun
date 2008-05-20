@@ -7,8 +7,8 @@ template <>
 void CTrie<POIMTrie>::POIMs_extract_W_helper( const INT nodeIdx, const int depth, const INT offset, const INT y0,
 				    DREAL* const* const W, const INT K )
 {
-	ASSERT( nodeIdx != NO_CHILD );
-	ASSERT( depth < K );
+	ASSERT(nodeIdx!=NO_CHILD);
+	ASSERT(depth<K);
 	DREAL* const W_kiy = & W[ depth ][ offset + y0 ];
 	POIMTrie* const node = &TreeMem[ nodeIdx ];
 	INT sym;
@@ -18,7 +18,7 @@ void CTrie<POIMTrie>::POIMs_extract_W_helper( const INT nodeIdx, const int depth
 		const INT offset1 = offset * NUM_SYMS;
 		for( sym = 0; sym < NUM_SYMS; ++sym )
 		{
-			ASSERT( W_kiy[ sym ] == 0 );
+			ASSERT(W_kiy[sym]==0);
 			const INT childIdx = node->children[ sym ];
 			if( childIdx != NO_CHILD )
 			{
@@ -34,10 +34,10 @@ void CTrie<POIMTrie>::POIMs_extract_W_helper( const INT nodeIdx, const int depth
 	}
 	else
 	{
-		ASSERT( depth == degree-1 );
+		ASSERT(depth==degree-1);
 		for( sym = 0; sym < NUM_SYMS; ++sym )
 		{
-			ASSERT( W_kiy[ sym ] == 0 );
+			ASSERT(W_kiy[sym]==0);
 			W_kiy[ sym ] = node->child_weights[ sym ];
 		}
 	}
@@ -46,8 +46,8 @@ void CTrie<POIMTrie>::POIMs_extract_W_helper( const INT nodeIdx, const int depth
 template <>
 void CTrie<POIMTrie>::POIMs_extract_W( DREAL* const* const W, const INT K )
 {
-  ASSERT( degree >= 1 );
-  ASSERT( K >= 1 );
+  ASSERT(degree>=1);
+  ASSERT(K>=1);
   const INT N = length;
   INT i;
   for( i = 0; i < N; ++i ) {
@@ -61,8 +61,8 @@ void CTrie<POIMTrie>::POIMs_calc_SLR_helper1( const DREAL* const distrib, const 
 				    const INT nodeIdx, INT left_tries_idx[4], const int depth, INT const lastSym,
 				    DREAL* S, DREAL* L, DREAL* R )
 {
-  ASSERT( depth == degree-1 );
-  ASSERT( nodeIdx != NO_CHILD );
+  ASSERT(depth==degree-1);
+  ASSERT(nodeIdx!=NO_CHILD);
 
   const DREAL* const distribLeft  = & distrib[ (i-1)     * NUM_SYMS ];
   POIMTrie* const node = &TreeMem[ nodeIdx ];
@@ -95,7 +95,7 @@ void CTrie<POIMTrie>::POIMs_calc_SLR_helper1( const DREAL* const distrib, const 
 	  {
 		  POIMTrie* nodeLeft = &TreeMem[left_tries_idx[symLeft]];
 
-		  ASSERT( nodeLeft );
+		  ASSERT(nodeLeft);
 		  const DREAL w2 = nodeLeft->child_weights[ lastSym ];
 		  const DREAL pLeft = distribLeft[ symLeft ];
 		  const DREAL incr2 = pLeft * w2;
@@ -120,8 +120,8 @@ void CTrie<POIMTrie>::POIMs_calc_SLR_helper2( const DREAL* const distrib, const 
 				    const INT nodeIdx, INT left_tries_idx[4], const int depth,
 				    DREAL* S, DREAL* L, DREAL* R )
 {
-  ASSERT( 0 <= depth && depth <= degree-2 );
-  ASSERT( nodeIdx != NO_CHILD );
+  ASSERT(0<=depth && depth<=degree-2);
+  ASSERT(nodeIdx!=NO_CHILD);
 
   const DREAL* const distribLeft  = & distrib[ (i-1)     * NUM_SYMS ];
   POIMTrie* const node = &TreeMem[ nodeIdx ];
@@ -178,7 +178,7 @@ void CTrie<POIMTrie>::POIMs_calc_SLR_helper2( const DREAL* const distrib, const 
 	  if (left_tries_idx[symLeft] != NO_CHILD)
 	  {
 		  const POIMTrie* nodeLeft = &TreeMem[left_tries_idx[symLeft]];
-		  ASSERT( nodeLeft);
+		  ASSERT(nodeLeft);
 		  const DREAL pLeft = distribLeft[ symLeft ];
 
 		  node->S += pLeft * nodeLeft->S;
@@ -232,7 +232,7 @@ void CTrie<POIMTrie>::POIMs_precalc_SLR( const DREAL* const distrib )
 		return;
 	}
 
-	ASSERT( degree >= 2 );
+	ASSERT(degree>=2);
 	const INT N = length;
 	DREAL dummy;
 	INT symLeft;
@@ -245,7 +245,7 @@ void CTrie<POIMTrie>::POIMs_precalc_SLR( const DREAL* const distrib )
 		POIMs_calc_SLR_helper2( distrib, i, trees[i], leftSubtrees, 0, &dummy, &dummy, &dummy );
 
 		const POIMTrie* const node = &TreeMem[ trees[i] ];
-		ASSERT(trees[i] != NO_CHILD);
+		ASSERT(trees[i]!=NO_CHILD);
 
 		for(symLeft = 0; symLeft < NUM_SYMS; ++symLeft )
 			leftSubtrees[ symLeft ] = node->children[ symLeft ];
@@ -256,7 +256,7 @@ template <>
 void CTrie<POIMTrie>::POIMs_get_SLR( const INT parentIdx, const INT sym, const int depth,
 			   DREAL* S, DREAL* L, DREAL* R )
 {
-  ASSERT( parentIdx != NO_CHILD );
+  ASSERT(parentIdx!=NO_CHILD);
   const POIMTrie* const parent = &TreeMem[ parentIdx ];
   if( depth < degree ) {
     const INT nodeIdx = parent->children[ sym ];
@@ -265,7 +265,7 @@ void CTrie<POIMTrie>::POIMs_get_SLR( const INT parentIdx, const INT sym, const i
     *L = node->L;
     *R = node->R;
   } else {
-    ASSERT( depth == degree );
+    ASSERT(depth==degree);
     const DREAL w = parent->child_weights[ sym ];
     *S = w;
     *L = w;
@@ -279,8 +279,8 @@ void CTrie<POIMTrie>::POIMs_add_SLR_helper2( DREAL* const* const poims, const in
 {
 	//printf( "i=%d, d=%d, y=%d:  w=%.3f \n", i, k, y, valW );
 	const INT nk = nofsKmers[ k ];
-	ASSERT( 1 <= k && k <= K );
-	ASSERT( 0 <= y && y < nk );
+	ASSERT(1<=k && k<=K);
+	ASSERT(0<=y && y<nk);
 	INT z;
 	INT j;
 
@@ -306,7 +306,7 @@ void CTrie<POIMTrie>::POIMs_add_SLR_helper2( DREAL* const* const poims, const in
 					printf( "k=%d, nk=%d,  r=%d, nr=%d,  nz=%d \n", k, nk, r, nr, nz );
 					printf( "  j=%d, y=%d, z=%d \n", j, y, z );
 				}
-				ASSERT( 0 <= z && z < nz );
+				ASSERT(0<=z && z<nz);
 				poim[ z ] += valL - valW;
 				++z;
 			}
@@ -323,7 +323,7 @@ void CTrie<POIMTrie>::POIMs_add_SLR_helper2( DREAL* const* const poims, const in
 			DREAL* const poim = & poims[ k+l-1 ][ (i-l)*nz ];
 			z = y;
 			for( j = 0; j < nl; ++j ) {
-				ASSERT( 0 <= z && z < nz );
+				ASSERT(0<=z && z<nz);
 				poim[ z ] += valR - valW;
 				z += nk;
 			}
@@ -335,8 +335,8 @@ template <>
 void CTrie<POIMTrie>::POIMs_add_SLR_helper1( const INT nodeIdx, const int depth, const INT i, const INT y0,
 				   DREAL* const* const poims, const INT K, const INT debug )
 {
-	ASSERT( nodeIdx != NO_CHILD );
-	ASSERT( depth < K );
+	ASSERT(nodeIdx!=NO_CHILD);
+	ASSERT(depth<K);
 	POIMTrie* const node = &TreeMem[ nodeIdx ];
 	INT sym;
 	if( depth < degree-1 )
@@ -359,7 +359,7 @@ void CTrie<POIMTrie>::POIMs_add_SLR_helper1( const INT nodeIdx, const int depth,
 		}
 		else
 		{
-			ASSERT( depth == K-1 );
+			ASSERT(depth==K-1);
 			for( sym = 0; sym < NUM_SYMS; ++sym )
 			{
 				const INT childIdx = node->children[ sym ];
@@ -374,7 +374,7 @@ void CTrie<POIMTrie>::POIMs_add_SLR_helper1( const INT nodeIdx, const int depth,
 	}
 	else
 	{
-		ASSERT( depth == degree-1 );
+		ASSERT(depth==degree-1);
 		for( sym = 0; sym < NUM_SYMS; ++sym )
 		{
 			const DREAL w = node->child_weights[ sym ];
@@ -389,8 +389,8 @@ void CTrie<POIMTrie>::POIMs_add_SLR_helper1( const INT nodeIdx, const int depth,
 template <>
 void CTrie<POIMTrie>::POIMs_add_SLR( DREAL* const* const poims, const INT K, const INT debug )
 {
-  ASSERT( degree >= 1 );
-  ASSERT( K >= 1 );
+  ASSERT(degree>=1);
+  ASSERT(K>=1);
   {
     const int m = ( degree > K ) ? degree : K;
     nofsKmers = new INT[ m+1 ];

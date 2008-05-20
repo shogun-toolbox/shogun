@@ -83,7 +83,7 @@ bool CSVMLin::train()
 			Data.C[i]=Options.Cn;
 	}
 	ssl_train(&Data, &Options, &Weights, &Outputs);
-	ASSERT(Weights.vec && Weights.d == num_feat+1);
+	ASSERT(Weights.vec && Weights.d==num_feat+1);
 
 	DREAL sgn=train_labels[0];
 	for (INT i=0; i<num_feat+1; i++)

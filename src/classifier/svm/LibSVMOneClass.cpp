@@ -29,17 +29,15 @@ CLibSVMOneClass::~CLibSVMOneClass()
 
 bool CLibSVMOneClass::train()
 {
-	problem.l = kernel->get_num_vec_lhs();
-	
+	ASSERT(kernel);
+	problem.l=kernel->get_num_vec_lhs();
+
 	struct svm_node* x_space;
-	SG_INFO( "%d train data points\n", problem.l);
+	SG_INFO("%d train data points\n", problem.l);
 
 	problem.y=NULL;
 	problem.x=new struct svm_node*[problem.l];
 	x_space=new struct svm_node[2*problem.l];
-
-	ASSERT(problem.x);
-	ASSERT(x_space);
 
 	for (int i=0; i<problem.l; i++)
 	{
@@ -50,8 +48,7 @@ bool CLibSVMOneClass::train()
 
 	int weights_label[2]={-1,+1};
 	double weights[2]={1.0,get_C2()/get_C1()};
-	
-	ASSERT(kernel);
+
 
 	param.svm_type=ONE_CLASS; // C SVM
 	param.kernel_type = LINEAR;
@@ -82,7 +79,7 @@ bool CLibSVMOneClass::train()
 	if (model)
 	{
 		ASSERT(model->nr_class==2);
-		ASSERT( (model->l==0) || (model->l > 0 && model->SV && model->sv_coef && model->sv_coef[0]) );
+		ASSERT((model->l==0) || (model->l>0 && model->SV && model->sv_coef && model->sv_coef[0]));
 
 		int num_sv=model->l;
 

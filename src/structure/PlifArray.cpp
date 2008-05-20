@@ -30,15 +30,15 @@ CPlifArray::~CPlifArray()
 {
 }
 
-void CPlifArray::add_plif(CPlifBase* new_plif) 
+void CPlifArray::add_plif(CPlifBase* new_plif)
 {
-	ASSERT(new_plif!=NULL) ;
+	ASSERT(new_plif);
 	m_array.append_element(new_plif) ;
 	
 	min_value = -1e6 ;
 	for (INT i=0; i<m_array.get_num_elements(); i++)
 	{
-		ASSERT(m_array[i]!=NULL)
+		ASSERT(m_array[i]);
 		if (!m_array[i]->uses_svm_values())
 			min_value = CMath::max(min_value, m_array[i]->get_min_value()) ;
 	}

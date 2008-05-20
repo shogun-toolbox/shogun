@@ -65,9 +65,9 @@ template<class T> class CCache : public CSGObject
 		lookup_table=new TEntry[num_entries];
 		cache_table=new TEntry*[nr_cache_lines];
 
-		ASSERT(cache_block != NULL);
-		ASSERT(lookup_table != NULL);
-		ASSERT(cache_table != NULL);
+		ASSERT(cache_block);
+		ASSERT(lookup_table);
+		ASSERT(cache_table);
 
 		LONG i;
 		for (i=0; i<nr_cache_lines; i++)

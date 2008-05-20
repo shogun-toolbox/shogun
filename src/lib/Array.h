@@ -173,7 +173,7 @@ template <class T> class CArray : public CSGObject
 		 */
 		inline const T& get_element(INT index) const
 		{
-			ARRAY_ASSERT((array != NULL) && (index >= 0) && (index < array_size));
+			ARRAY_ASSERT(array && (index>=0) && (index<array_size));
 			INCREMENT_ARRAY_STATISTICS_VALUE(get_element);
 			return array[index];
 		}
@@ -186,7 +186,7 @@ template <class T> class CArray : public CSGObject
 		 */
 		inline bool set_element(const T& p_element, INT index)
 		{
-			ARRAY_ASSERT((array != NULL) && (index >= 0) && (index < array_size));
+			ARRAY_ASSERT(array && (index>=0) && (index<array_size));
 			INCREMENT_ARRAY_STATISTICS_VALUE(set_element);
 			array[index]=p_element;
 			return true;
@@ -210,9 +210,9 @@ template <class T> class CArray : public CSGObject
 		 */
 		inline T& element(INT index)
 		{
-			ARRAY_ASSERT(array != NULL);
-			ARRAY_ASSERT(index >= 0);
-			ARRAY_ASSERT(index < array_size);
+			ARRAY_ASSERT(array);
+			ARRAY_ASSERT(index>=0);
+			ARRAY_ASSERT(index<array_size);
 			INCREMENT_ARRAY_STATISTICS_VALUE(element);
 			return array[index];
 		}
@@ -225,7 +225,7 @@ template <class T> class CArray : public CSGObject
 		 */
 		inline T& element(T* p_array, INT index)
 		{
-			ARRAY_ASSERT((array != NULL) && (index >= 0) && (index < array_size));
+			ARRAY_ASSERT(array && (index>=0) && (index<array_size));
 			ARRAY_ASSERT(array == p_array);
 			INCREMENT_ARRAY_STATISTICS_VALUE(array_element);
 			return p_array[index];

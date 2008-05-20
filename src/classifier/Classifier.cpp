@@ -29,7 +29,6 @@ CLabels* CClassifier::classify(CLabels* output)
 		if (!output)
 			output=new CLabels(num);
 
-		ASSERT(output);
 		for (INT i=0; i<num; i++)
 			output->set_label(i, classify_example(i));
 

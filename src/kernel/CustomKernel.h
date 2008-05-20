@@ -134,8 +134,8 @@ class CCustomKernel: public CKernel
 		 */
 		inline virtual DREAL compute(INT row, INT col)
 		{
-			ASSERT(row < num_rows);
-			ASSERT(col < num_cols);
+			ASSERT(row<num_rows);
+			ASSERT(col<num_cols);
 			ASSERT(kmatrix);
 
 			if (upper_diagonal)

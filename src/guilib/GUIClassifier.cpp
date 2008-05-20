@@ -572,10 +572,10 @@ bool CGUIClassifier::test(CHAR* filename_out, CHAR* filename_roc)
 
 	INT len=0;
 	DREAL* output= predictions->get_labels(len);
-	INT total=	testfeatures->get_num_vectors();
-	INT* label= testlabels->get_int_labels(len);
-
+	INT total=testfeatures->get_num_vectors();
+	INT* label=testlabels->get_int_labels(len);
 	ASSERT(label);
+
 	SG_DEBUG("len:%d total:%d\n", len, total);
 	ASSERT(len==total);
 
@@ -1010,54 +1010,55 @@ bool CGUIClassifier::get_svm(DREAL* &weights, INT& rows, INT& cols,
 bool CGUIClassifier::get_clustering(DREAL* &centers, INT& rows, INT& cols,
 		DREAL*& radi, INT& brows, INT& bcols)
 {
-    if (!classifier)
-        return false;
+	if (!classifier)
+		return false;
 
-    switch (classifier->get_classifier_type())
-    {
-        case CT_KMEANS:
-            {
-                CKMeans* clustering=(CKMeans*) classifier;
+	switch (classifier->get_classifier_type())
+	{
+		case CT_KMEANS:
+		{
+			CKMeans* clustering=(CKMeans*) classifier;
 
-                bcols=1;
-                clustering->get_radi(radi, brows);
+			bcols=1;
+			clustering->get_radi(radi, brows);
 
-                cols=1;
-                clustering->get_centers(centers, rows, cols);
-                break;
-            }
-        case CT_HIERARCHICAL:
-            {
-                CHierarchical* clustering=(CHierarchical*) classifier;
+			cols=1;
+			clustering->get_centers(centers, rows, cols);
+			break;
+		}
 
-				INT* a=NULL;
-				bcols=1;
-                clustering->get_assignment(a, brows);
-				radi = new DREAL[brows*bcols];
-				for (INT i=0; i<brows*bcols; i++)
-					radi[i]=a[i];
+		case CT_HIERARCHICAL:
+		{
+			CHierarchical* clustering=(CHierarchical*) classifier;
 
-				DREAL* d=NULL;
-                clustering->get_merge_distance(d, cols);
+			INT* a=NULL;
+			bcols=1;
+			clustering->get_assignment(a, brows);
+			radi = new DREAL[brows*bcols];
+			for (INT i=0; i<brows*bcols; i++)
+				radi[i]=a[i];
 
-				INT* c=NULL;
-                clustering->get_pairs(c, rows, cols);
-				rows=rows+1;
-				centers=new DREAL[rows*cols];//FIXME memleak
-				ASSERT(centers);
-				for (INT i=0; i<cols; i++)
-				{
-					centers[3*i]=c[2*i]; 
-					centers[3*i+1]=c[2*i+1]; 
-					centers[3*i+2]=d[i]; 
-				}
-                break;
-            }
-        default:
-            SG_ERROR("internal error - unknown clustering type\n");
-    }
+			DREAL* d=NULL;
+			clustering->get_merge_distance(d, cols);
 
-    return true;
+			INT* c=NULL;
+			clustering->get_pairs(c, rows, cols);
+			rows=rows+1;
+			centers=new DREAL[rows*cols];//FIXME memleak
+			for (INT i=0; i<cols; i++)
+			{
+				centers[3*i]=c[2*i];
+				centers[3*i+1]=c[2*i+1];
+				centers[3*i+2]=d[i];
+			}
+			break;
+		}
+
+		default:
+			SG_ERROR("internal error - unknown clustering type\n");
+	}
+
+	return true;
 }
 
 bool CGUIClassifier::get_linear(DREAL* &weights, INT& rows, INT& cols,

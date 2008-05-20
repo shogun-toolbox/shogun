@@ -40,18 +40,15 @@ CGNPPLib::CGNPPLib(DREAL* vector_y, CKernel* kernel, INT num_data, DREAL reg_con
   Cache_Size = CMath::min(Cache_Size, (LONG) num_data);
 
   SG_INFO("using %d kernel cache lines\n", Cache_Size);
-  ASSERT(Cache_Size > 2);
+  ASSERT(Cache_Size>2);
 
   /* allocates memory for kernel cache */
   kernel_columns = new DREAL*[Cache_Size];
-  ASSERT(kernel_columns);
   cache_index = new DREAL[Cache_Size];
-  ASSERT(cache_index);
 
   for(INT i = 0; i < Cache_Size; i++ ) 
   {
     kernel_columns[i] = new DREAL[num_data];
-    ASSERT(kernel_columns[i]);
     cache_index[i] = -2;
   }
   first_kernel_inx = 0;

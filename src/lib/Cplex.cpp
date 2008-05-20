@@ -95,23 +95,13 @@ bool CCplex::setup_subgradientlpm_QP(DREAL C, CLabels* labels, CSparseFeatures<D
 
 	// setup LP part
 	DREAL* lb=new DREAL[num_variables];
-	ASSERT(lb);
 	DREAL* ub=new DREAL[num_variables];
-	ASSERT(ub);
 	DREAL* obj=new DREAL[num_variables];
-	ASSERT(obj);
-
 	char* sense = new char[num_dim];
-	ASSERT(sense);
-
 	int* cmatbeg=new int[num_variables];
-	ASSERT(cmatbeg);
 	int* cmatcnt=new int[num_variables];
-	ASSERT(cmatcnt);
 	int* cmatind=new int[cmatsize];
-	ASSERT(cmatind);
 	double* cmatval=new double[cmatsize];
-	ASSERT(cmatval);
 
 	for (INT i=0; i<num_variables; i++)
 	{
@@ -222,14 +212,10 @@ bool CCplex::setup_subgradientlpm_QP(DREAL C, CLabels* labels, CSparseFeatures<D
 
 	//// setup QP part (diagonal matrix 1 for v, 0 for x...)
 	int* qmatbeg=new int[num_variables];
-	ASSERT(qmatbeg);
 	int* qmatcnt=new int[num_variables];
-	ASSERT(qmatcnt);
 	int* qmatind=new int[num_variables];
-	ASSERT(qmatind);
 	double* qmatval=new double[num_variables];
-	ASSERT(qmatval);
-	
+
 	DREAL diag=2.0;
 
 	for (INT i=0; i<num_variables; i++)
@@ -276,12 +262,9 @@ bool CCplex::setup_lpboost(DREAL C, INT num_cols)
 	if (status)
 		SG_ERROR( "Failure to select dual lp optimization, error %d.\n", status);
 
-	double* obj= new double[num_cols];
-	ASSERT(obj);
-	double* lb= new double[num_cols];
-	ASSERT(lb);
-	double* ub= new double[num_cols];
-	ASSERT(ub);
+	double* obj=new double[num_cols];
+	double* lb=new double[num_cols];
+	double* ub=new double[num_cols];
 
 	for (INT i=0; i<num_cols; i++)
 	{
@@ -344,25 +327,17 @@ bool CCplex::setup_lpm(DREAL C, CSparseFeatures<DREAL>* x, CLabels* y, bool use_
 	INT num_constraints=num_vec; 
 
 	DREAL* lb=new DREAL[num_dims];
-	ASSERT(lb);
 	DREAL* ub=new DREAL[num_dims];
-	ASSERT(ub);
 	DREAL* f=new DREAL[num_dims];
-	ASSERT(f);
 	DREAL* b=new DREAL[num_dims];
-	ASSERT(b);
 
 	//number of non zero entries in A (b,w+,w-,xi)
 	LONG amatsize=((LONG) num_vec)+nnz+nnz+num_vec; 
 
 	int* amatbeg=new int[num_dims];
-	ASSERT(amatbeg);
 	int* amatcnt=new int[num_dims];
-	ASSERT(amatcnt);
 	int* amatind=new int[amatsize];
-	ASSERT(amatind);
 	double* amatval= new double[amatsize];
-	ASSERT(amatval);
 
 	for (INT i=0; i<num_dims; i++)
 	{
@@ -397,8 +372,7 @@ bool CCplex::setup_lpm(DREAL C, CSparseFeatures<DREAL>* x, CLabels* y, bool use_
 	for (INT i=0; i<num_constraints; i++)
 		b[i]=-1;
 
-	char* sense = new char[num_constraints];
-	ASSERT(sense);
+	char* sense=new char[num_constraints];
 	memset(sense,'L',sizeof(char)*num_constraints);
 
 	//construct A
@@ -564,10 +538,8 @@ bool CCplex::setup_lp(DREAL* objective, DREAL* constraints_mat, INT rows, INT co
 		DREAL dummy=0;
 		rhs=&dummy;
 		sense=new char[rows];
-		ASSERT(sense);
 		memset(sense,'L',sizeof(char)*rows);
 		constraints_mat=new DREAL[cols];
-		ASSERT(constraints_mat);
 		memset(constraints_mat, 0, sizeof(DREAL)*cols);
 
 		result=dense_to_cplex_sparse(constraints_mat, 0, cols, qmatbeg, qmatcnt, qmatind, qmatval);
@@ -579,7 +551,6 @@ bool CCplex::setup_lp(DREAL* objective, DREAL* constraints_mat, INT rows, INT co
 	else
 	{
 		sense=new char[rows];
-		ASSERT(sense);
 		memset(sense,'L',sizeof(char)*rows);
 		result=dense_to_cplex_sparse(constraints_mat, rows, cols, qmatbeg, qmatcnt, qmatind, qmatval);
 		result = CPXcopylp(env, lp, cols, rows, CPX_MIN, 

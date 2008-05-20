@@ -63,9 +63,6 @@ bool CSparsePolyKernel::init(CFeatures* l, CFeatures* r)
 				sqrtdiag_rhs[i]=1;
 		}
 
-		ASSERT(sqrtdiag_lhs);
-		ASSERT(sqrtdiag_rhs);
-
 		this->lhs=(CSparseFeatures<DREAL>*) l;
 		this->rhs=(CSparseFeatures<DREAL>*) l;
 

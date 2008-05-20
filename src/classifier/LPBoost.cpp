@@ -38,7 +38,6 @@ CLPBoost::~CLPBoost()
 bool CLPBoost::init(INT num_vec)
 {
 	u=new DREAL[num_vec];
-	ASSERT(u);
 	for (INT i=0; i<num_vec; i++)
 		u[i]=1.0/num_vec;
 
@@ -112,7 +111,6 @@ bool CLPBoost::train()
 	w=new DREAL[num_feat];
 	memset(w,0,sizeof(DREAL)*num_feat);
 	w_dim=num_feat;
-	ASSERT(w);
 
 	CCplex solver;
 	solver.init(E_LINEAR);
@@ -120,8 +118,7 @@ bool CLPBoost::train()
 	solver.setup_lpboost(C1, num_vec);
 	SG_PRINT("finished setting up lpboost\n");
 
-	DREAL result = init(num_vec);
-
+	DREAL result=init(num_vec);
 	ASSERT(result);
 
 	INT num_hypothesis=0;

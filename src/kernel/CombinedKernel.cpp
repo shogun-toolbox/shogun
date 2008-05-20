@@ -76,10 +76,10 @@ CCombinedKernel::~CCombinedKernel()
 bool CCombinedKernel::init(CFeatures* l, CFeatures* r)
 {
 	CKernel::init(l,r);
-	ASSERT(l->get_feature_class() == C_COMBINED);
-	ASSERT(r->get_feature_class() == C_COMBINED);
-	ASSERT(l->get_feature_type() == F_UNKNOWN);
-	ASSERT(r->get_feature_type() == F_UNKNOWN);
+	ASSERT(l->get_feature_class()==C_COMBINED);
+	ASSERT(r->get_feature_class()==C_COMBINED);
+	ASSERT(l->get_feature_type()==F_UNKNOWN);
+	ASSERT(r->get_feature_type()==F_UNKNOWN);
 
 	CFeatures* lf=NULL;
 	CFeatures* rf=NULL;
@@ -430,8 +430,8 @@ void CCombinedKernel::emulate_compute_batch(CKernel* k, INT num_vec, INT* vec_id
 	}
 	else
 	{
-		ASSERT(IDX!=NULL || num_suppvec==0) ;
-		ASSERT(weights!=NULL || num_suppvec==0) ;
+		ASSERT(IDX!=NULL || num_suppvec==0);
+		ASSERT(weights!=NULL || num_suppvec==0);
 
 		if (k->get_combined_kernel_weight()!=0)
 		{ // compute the usual way for any non-optimized kernel
@@ -515,8 +515,8 @@ DREAL CCombinedKernel::compute_optimized(INT idx)
 		}
 		else
 		{
-			ASSERT(sv_idx!=NULL || sv_count==0) ;
-			ASSERT(sv_weight!=NULL || sv_count==0) ;
+			ASSERT(sv_idx!=NULL || sv_count==0);
+			ASSERT(sv_weight!=NULL || sv_count==0);
 
 			if (k->get_combined_kernel_weight()!=0)
 			{ // compute the usual way for any non-optimized kernel
@@ -611,7 +611,7 @@ const DREAL* CCombinedKernel::get_subkernel_weights(INT& num_weights)
 		{
 			INT num = -1 ;
 			const DREAL *w = k->get_subkernel_weights(num);
-			ASSERT(num==k->get_num_subkernels()) ;
+			ASSERT(num==k->get_num_subkernels());
 			for (INT j=0; j<num; j++)
 				subkernel_weights_buffer[i+j]=w[j] ;
 			k = get_next_kernel(current);

@@ -28,54 +28,45 @@ CGNPPSVM::~CGNPPSVM()
 
 bool CGNPPSVM::train()
 {
-
+	ASSERT(kernel);
 	ASSERT(labels && labels->get_num_labels());
-	INT num_data = labels->get_num_labels();
-	SG_INFO( "%d trainlabels\n", num_data);
+
+	INT num_data=labels->get_num_labels();
+	SG_INFO("%d trainlabels\n", num_data);
 
 	DREAL* vector_y = new double[num_data];
-	ASSERT(vector_y);
-
-
 	for (int i=0; i<num_data; i++)
 	{
-		if (get_labels()->get_label(i) == +1)
-			vector_y[i]= 1;
-		else if (get_labels()->get_label(i) == -1)
-			vector_y[i]= 2;
+		if (get_labels()->get_label(i)==+1)
+			vector_y[i]=1;
+		else if (get_labels()->get_label(i)==-1)
+			vector_y[i]=2;
 		else
 			SG_ERROR("label unknown (%f)\n", get_labels()->get_label(i));
 	}
 
-	ASSERT(kernel);
-
-	DREAL C = get_C1();
-	INT tmax = 1000000000;
-	DREAL tolabs = 0;
-	DREAL tolrel = epsilon;
+	DREAL C=get_C1();
+	INT tmax=1000000000;
+	DREAL tolabs=0;
+	DREAL tolrel=epsilon;
 
 	DREAL reg_const=0;
-	if( C!=0 )
-		reg_const = 1/C; 
+	if (C!=0)
+		reg_const=1/C;
 
-	DREAL* diagK = new DREAL[num_data];
-	ASSERT(diagK);
-
-	for(INT i = 0; i < num_data; i++ ) {
-		diagK[i] = 2*kernel->kernel(i,i) + reg_const;
+	DREAL* diagK=new DREAL[num_data];
+	for(INT i=0; i<num_data; i++) {
+		diagK[i]=2*kernel->kernel(i,i)+reg_const;
 	}
 
-	DREAL* alpha = new DREAL[num_data];
-	ASSERT(alpha);
-	DREAL* vector_c = new DREAL[num_data];
-	ASSERT(vector_c);
+	DREAL* alpha=new DREAL[num_data];
+	DREAL* vector_c=new DREAL[num_data];
+	memset(vector_c, 0, num_data*sizeof(DREAL));
 
-	memset(vector_c,0,num_data*sizeof(DREAL));
-
-	DREAL thlb = 10000000000.0;
-	INT t = 0;
-	DREAL* History = NULL;
-	INT verb = 0;
+	DREAL thlb=10000000000.0;
+	INT t=0;
+	DREAL* History=NULL;
+	INT verb=0;
 	DREAL aHa11, aHa22;
 
 	CGNPPLib npp(vector_y,kernel,num_data, reg_const);

@@ -138,7 +138,6 @@ IFType CCmdLineInterface::get_argument_type()
 		SG_ERROR("Could not find file %s.\n", filename);
 
 	CHAR* chunk=new CHAR[len+1];
-	ASSERT(chunk);
 	memset(chunk, 0, sizeof(CHAR)*(len+1));
 	size_t nread=fread(chunk, sizeof(CHAR), len, fh);
 	fclose(fh);
@@ -146,7 +145,6 @@ IFType CCmdLineInterface::get_argument_type()
 		SG_ERROR("Could not read data from %s.\n");
 
 	CHAR* signature=new CHAR[len+1];
-	ASSERT(signature);
 	INT num=sscanf(chunk, "### SHOGUN V0 %s\n", signature);
 
 	// if file has valid shogun signature use it to determine file type

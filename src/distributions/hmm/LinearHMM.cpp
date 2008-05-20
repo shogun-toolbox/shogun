@@ -39,8 +39,7 @@ bool CLinearHMM::train()
 {
 	delete[] transition_probs;
 	delete[] log_transition_probs;
-	INT* int_transition_probs = new INT[num_params];
-	ASSERT(int_transition_probs);
+	INT* int_transition_probs=new INT[num_params];
 
 	INT vec;
 	INT i;
@@ -60,11 +59,8 @@ bool CLinearHMM::train()
 	}
 
 	//trade memory for speed
-	transition_probs= new DREAL[num_params];
-	log_transition_probs= new DREAL[num_params];
-
-	ASSERT(transition_probs);
-	ASSERT(log_transition_probs);
+	transition_probs=new DREAL[num_params];
+	log_transition_probs=new DREAL[num_params];
 
 	for (i=0;i<sequence_length;i++)
 	{
@@ -90,9 +86,7 @@ bool CLinearHMM::train(const INT* indizes, INT num_indizes, DREAL pseudo)
 {
 	delete[] transition_probs;
 	delete[] log_transition_probs;
-	INT* int_transition_probs = new INT[num_params];
-	ASSERT(int_transition_probs);
-
+	INT* int_transition_probs=new INT[num_params];
 	INT vec;
 	INT i;
 
@@ -113,11 +107,8 @@ bool CLinearHMM::train(const INT* indizes, INT num_indizes, DREAL pseudo)
 	}
 
 	//trade memory for speed
-	transition_probs= new DREAL[num_params];
-	log_transition_probs= new DREAL[num_params];
-
-	ASSERT(transition_probs);
-	ASSERT(log_transition_probs);
+	transition_probs=new DREAL[num_params];
+	log_transition_probs=new DREAL[num_params];
 
 	for (i=0;i<sequence_length;i++)
 	{
@@ -203,15 +194,11 @@ bool CLinearHMM::set_transition_probs(const DREAL* src, INT num)
 	if (num!=-1)
 		ASSERT(num==num_params);
 
-	if (!log_transition_probs) {
-		log_transition_probs = new DREAL[num_params];
-		ASSERT(log_transition_probs);
-	}
+	if (!log_transition_probs)
+		log_transition_probs=new DREAL[num_params];
 
-	if (!transition_probs) {
-		transition_probs = new DREAL[num_params];
-		ASSERT(transition_probs);
-	}
+	if (!transition_probs)
+		transition_probs=new DREAL[num_params];
 
 	for (INT i=0; i<num_params; i++)
 	{
@@ -237,15 +224,11 @@ bool CLinearHMM::set_log_transition_probs(const DREAL* src, INT num)
 	if (num!=-1)
 		ASSERT(num==num_params);
 
-	if (!log_transition_probs) {
-		log_transition_probs = new DREAL[num_params];
-		ASSERT(log_transition_probs);
-	}
+	if (!log_transition_probs)
+		log_transition_probs=new DREAL[num_params];
 
-	if (!transition_probs) {
-		transition_probs = new DREAL[num_params];
-		ASSERT(transition_probs);
-	}
+	if (!transition_probs)
+		transition_probs=new DREAL[num_params];
 
 	for (INT i=0; i< num_params; i++)
 	{

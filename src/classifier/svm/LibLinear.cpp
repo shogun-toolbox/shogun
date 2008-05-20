@@ -55,9 +55,7 @@ bool CLibLinear::train()
 		w=new DREAL[num_feat+1];
 	else
 		w=new DREAL[num_feat+0];
-
 	w_dim=num_feat;
-	ASSERT(w);
 
 	problem prob;
 	if (use_bias)
@@ -74,8 +72,6 @@ bool CLibLinear::train()
 	prob.x=sfeat;
 	prob.y=new int[prob.l];
 	prob.use_bias=use_bias;
-
-	ASSERT(prob.y);
 
 	for (int i=0; i<prob.l; i++)
 		prob.y[i]=labels->get_int_label(i);

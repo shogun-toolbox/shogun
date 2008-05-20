@@ -19,14 +19,11 @@
 CHistogram::CHistogram()
 {
 	hist=new DREAL[1<<16];
-	ASSERT(hist);
 }
 
 CHistogram::CHistogram(CStringFeatures<WORD> *f)
 {
 	hist=new DREAL[1<<16];
-	ASSERT(hist);
-
 	features=f;
 }
 
@@ -126,8 +123,6 @@ bool CHistogram::set_histogram(DREAL* src, INT num)
 
 	delete[] hist;
 	hist=new DREAL[num];
-	ASSERT(hist);
-
 	for (INT i=0; i<num; i++) {
 		hist[i]=src[i];
 	}

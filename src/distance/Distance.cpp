@@ -54,8 +54,8 @@ bool CDistance::init(CFeatures* l, CFeatures* r)
 	ASSERT(r);
 
 	//make sure features are compatible
-	ASSERT(l->get_feature_class() == r->get_feature_class());
-	ASSERT(l->get_feature_type() == r->get_feature_type());
+	ASSERT(l->get_feature_class()==r->get_feature_class());
+	ASSERT(l->get_feature_type()==r->get_feature_type());
 
 	lhs=l;
 	rhs=r;
@@ -122,13 +122,12 @@ void CDistance::do_precompute_matrix()
 	INT num_right=rhs->get_num_vectors();
 	SG_INFO( "precomputing distance matrix (%ix%i)\n", num_left, num_right) ;
 
-	ASSERT(num_left == num_right) ;
-	ASSERT(lhs==rhs) ;
-	INT num=num_left ;
+	ASSERT(num_left==num_right);
+	ASSERT(lhs==rhs);
+	INT num=num_left;
 	
-	delete[] precomputed_matrix ;
-	precomputed_matrix=new SHORTREAL[num*(num+1)/2] ;
-	ASSERT(precomputed_matrix!=NULL) ;
+	delete[] precomputed_matrix;
+	precomputed_matrix=new SHORTREAL[num*(num+1)/2];
 
 	for (INT i=0; i<num; i++)
 	{
@@ -156,11 +155,11 @@ void CDistance::get_distance_matrix(DREAL** dst, INT* m, INT* n)
 		*m=num_vec1;
 		*n=num_vec2;
 
-		LONG total_num = num_vec1 * num_vec2;
-		INT num_done = 0;
-		SG_DEBUG( "returning distance matrix of size %dx%d\n", num_vec1, num_vec2);
+		LONG total_num=num_vec1*num_vec2;
+		INT num_done=0;
+		SG_DEBUG("returning distance matrix of size %dx%d\n", num_vec1, num_vec2);
 
-		result= (DREAL*) malloc(total_num*sizeof(DREAL));
+		result=(DREAL*) malloc(total_num*sizeof(DREAL));
 		ASSERT(result);
 
 		if ( (f1 == f2) && (num_vec1 == num_vec2) )
@@ -216,22 +215,20 @@ SHORTREAL* CDistance::get_distance_matrix_shortreal(int &num_vec1, int &num_vec2
 
 	if (f1 && f2)
 	{
-		if (target && (num_vec1!=f1->get_num_vectors() || num_vec2!=f2->get_num_vectors()) )
-         SG_ERROR( "distance matrix does not fit into target\n");
+		if (target && (num_vec1!=f1->get_num_vectors() || num_vec2!=f2->get_num_vectors()))
+			SG_ERROR("distance matrix does not fit into target\n");
 
 		num_vec1=f1->get_num_vectors();
 		num_vec2=f2->get_num_vectors();
-		LONG total_num = num_vec1 * num_vec2;
-		int num_done = 0;
+		LONG total_num=num_vec1*num_vec2;
+		int num_done=0;
 
-		SG_DEBUG( "returning distance matrix of size %dx%d\n", num_vec1, num_vec2);
+		SG_DEBUG("returning distance matrix of size %dx%d\n", num_vec1, num_vec2);
 
 		if (target)
 			result=target;
 		else
 			result=new SHORTREAL[total_num];
-
-		ASSERT(result);
 
 		if ( (f1 == f2) && (num_vec1 == num_vec2) )
 		{
@@ -286,22 +283,20 @@ DREAL* CDistance::get_distance_matrix_real(int &num_vec1, int &num_vec2, DREAL* 
 
 	if (f1 && f2)
 	{
-		if (target && (num_vec1!=f1->get_num_vectors() || num_vec2!=f2->get_num_vectors()) )
-         SG_ERROR( "distance matrix does not fit into target\n");
+		if (target && (num_vec1!=f1->get_num_vectors() || num_vec2!=f2->get_num_vectors()))
+			SG_ERROR("distance matrix does not fit into target\n");
 
 		num_vec1=f1->get_num_vectors();
 		num_vec2=f2->get_num_vectors();
-		LONG total_num = num_vec1 * num_vec2;
-		int num_done = 0;
+		LONG total_num=num_vec1*num_vec2;
+		int num_done=0;
 
-		SG_DEBUG( "returning distance matrix of size %dx%d\n", num_vec1, num_vec2);
+		SG_DEBUG("returning distance matrix of size %dx%d\n", num_vec1, num_vec2);
 
 		if (target)
 			result=target;
 		else
 			result=new DREAL[total_num];
-
-		ASSERT(result);
 
 		if ( (f1 == f2) && (num_vec1 == num_vec2) )
 		{

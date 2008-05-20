@@ -90,13 +90,11 @@ INT CQPBSVMLib::solve_qp(DREAL* result, INT len)
 	INT status = -1;
 	ASSERT(len==m_dim);
 	DREAL* Nabla=new DREAL[m_dim];
-	ASSERT(Nabla);
 	for (INT i=0; i<m_dim; i++)
 		Nabla[i]=m_f[i];
 
 	delete[] m_diag_H;
-	m_diag_H= new DREAL[m_dim];
-	ASSERT(m_diag_H);
+	m_diag_H=new DREAL[m_dim];
 
 	for (INT i=0; i<m_dim; i++)
 		m_diag_H[i]=m_H[i*m_dim+i];
@@ -180,8 +178,7 @@ INT CQPBSVMLib::qpbsvm_sca(DREAL *x,
   t = 0;
 
   History_size = (m_tmax < HISTORY_BUF ) ? m_tmax+1 : HISTORY_BUF;
-  History = new DREAL[History_size*2];
-  ASSERT(History);
+  History=new DREAL[History_size*2];
   memset(History, 0, sizeof(DREAL)*History_size*2);
 
   /* compute Q_P and Q_D */
@@ -262,9 +259,8 @@ INT CQPBSVMLib::qpbsvm_sca(DREAL *x,
       History[INDEX(1,t,2)] = Q_D;
     }
     else {
-      tmp_ptr = new DREAL[(History_size+HISTORY_BUF)*2];
-      ASSERT(tmp_ptr);
-	  memset(tmp_ptr, 0, sizeof(DREAL)*(History_size+HISTORY_BUF)*2);
+      tmp_ptr=new DREAL[(History_size+HISTORY_BUF)*2];
+      memset(tmp_ptr, 0, sizeof(DREAL)*(History_size+HISTORY_BUF)*2);
 
       for( i = 0; i < History_size; i++ ) {
         tmp_ptr[INDEX(0,i,2)] = History[INDEX(0,i,2)];
@@ -328,8 +324,7 @@ INT CQPBSVMLib::qpbsvm_scas(DREAL *x,
   t = 0;
 
   History_size = (m_tmax < HISTORY_BUF ) ? m_tmax+1 : HISTORY_BUF;
-  History = new DREAL[History_size*2];
-  ASSERT(History);
+  History=new DREAL[History_size*2];
   memset(History, 0, sizeof(DREAL)*History_size*2);
 
   /* compute Q_P and Q_D */
@@ -422,9 +417,8 @@ INT CQPBSVMLib::qpbsvm_scas(DREAL *x,
       History[INDEX(1,t,2)] = Q_D;
     }
     else {
-      tmp_ptr = new DREAL[(History_size+HISTORY_BUF)*2];
-      ASSERT(tmp_ptr);
-	  memset(tmp_ptr, 0, (History_size+HISTORY_BUF)*2*sizeof(DREAL));
+      tmp_ptr=new DREAL[(History_size+HISTORY_BUF)*2];
+      memset(tmp_ptr, 0, (History_size+HISTORY_BUF)*2*sizeof(DREAL));
       for( i = 0; i < History_size; i++ ) {
         tmp_ptr[INDEX(0,i,2)] = History[INDEX(0,i,2)];
         tmp_ptr[INDEX(1,i,2)] = History[INDEX(1,i,2)];
@@ -512,8 +506,7 @@ INT CQPBSVMLib::qpbsvm_scamv(DREAL *x,
     }
   }
 
-  History = new DREAL[(t+1)*2];
-  ASSERT(History);
+  History=new DREAL[(t+1)*2];
   memset(History, 0, sizeof(DREAL)*(t+1)*2);
 
   fval = 0;
@@ -549,10 +542,6 @@ INT CQPBSVMLib::qpbsvm_prloqo(DREAL *x,
 	DREAL* primal=new DREAL[3*m_dim];
 	DREAL* dual=new DREAL[1+2*m_dim];
 	DREAL* a=new DREAL[m_dim];
-	ASSERT(lb);
-	ASSERT(ub);
-	ASSERT(primal);
-	ASSERT(dual);
 
 	for (INT i=0; i<m_dim; i++)
 	{
@@ -656,9 +645,6 @@ INT CQPBSVMLib::qpbsvm_cplex(DREAL *x,
 {
 	DREAL* lb=new DREAL[m_dim];
 	DREAL* ub=new DREAL[m_dim];
-
-	ASSERT(lb);
-	ASSERT(ub);
 
 	for (INT i=0; i<m_dim; i++)
 	{

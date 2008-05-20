@@ -92,14 +92,11 @@ CGMNPLib::CGMNPLib(DREAL* vector_y, CKernel* kernel, INT num_data, INT num_virt_
 
   /* allocates memory for kernel cache */
   kernel_columns = new DREAL*[Cache_Size];
-  ASSERT(kernel_columns);
   cache_index = new DREAL[Cache_Size];
-  ASSERT(cache_index);
 
   for(INT i = 0; i < Cache_Size; i++ ) 
   {
     kernel_columns[i] = new DREAL[num_data];
-    ASSERT(kernel_columns[i]);
     cache_index[i] = -2;
   }
   first_kernel_inx = 0;
@@ -109,12 +106,10 @@ CGMNPLib::CGMNPLib(DREAL* vector_y, CKernel* kernel, INT num_data, INT num_virt_
   for(INT i = 0; i < 3; i++ )
   {
     virt_columns[i] = new DREAL[num_virt_data];
-	ASSERT(virt_columns[i]);
   }
   first_virt_inx = 0;
 
   diag_H = new DREAL[num_virt_data];
-  ASSERT(diag_H);
 
   for(INT i = 0; i < num_virt_data; i++ )
 	  diag_H[i] = kernel_fce(i,i);

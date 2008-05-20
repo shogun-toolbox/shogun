@@ -46,9 +46,7 @@ bool CLDA::train()
 	ASSERT(num_vec==num_train_labels);
 
 	INT* classidx_neg=new INT[num_vec];
-	ASSERT(classidx_neg);
 	INT* classidx_pos=new INT[num_vec];
-	ASSERT(classidx_pos);
 
 	INT i=0;
 	INT j=0;
@@ -75,22 +73,16 @@ bool CLDA::train()
 
 	delete[] w;
 	w=new DREAL[num_feat];
-	ASSERT(w);
 	w_dim=num_feat;
 
 	DREAL* mean_neg=new DREAL[num_feat];
-	ASSERT(mean_neg);
 	memset(mean_neg,0,num_feat*sizeof(DREAL));
 
 	DREAL* mean_pos=new DREAL[num_feat];
-	ASSERT(mean_pos);
 	memset(mean_pos,0,num_feat*sizeof(DREAL));
 
 	DREAL* scatter=new DREAL[num_feat*num_feat];
-	ASSERT(scatter);
-
 	DREAL* buffer=new DREAL[num_feat*CMath::max(num_neg, num_pos)];
-	ASSERT(buffer);
 
 	//mean neg
 	for (i=0; i<num_neg; i++)

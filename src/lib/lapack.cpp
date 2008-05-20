@@ -98,11 +98,10 @@ void wrap_dsyev(char jobz, char uplo, int n, double *a, int lda, double *w, int 
 	int lwork=-1;
 	double work1;
 	DSYEV(&jobz, &uplo, &n, a, &lda, w, &work1, &lwork, info);
-	ASSERT(*info == 0);
+	ASSERT(*info==0);
 	ASSERT(work1>0);
 	lwork=(int) work1;
 	double* work=new double[lwork];
-	ASSERT(work);
 	DSYEV(&jobz, &uplo, &n, a, &lda, w, work, &lwork, info);
 	delete[] work;
 #endif
@@ -118,11 +117,10 @@ void wrap_dgesvd(char jobu, char jobvt, int m, int n, double *a, int lda, double
 	int lwork=-1;
 	double work1;
 	DGESVD(&jobu, &jobvt, &m, &n, a, &lda, sing, u, &ldu, vt, &ldvt, &work1, &lwork, info);
-	ASSERT(*info == 0);
+	ASSERT(*info==0);
 	ASSERT(work1>0);
 	lwork=(int) work1;
 	double* work=new double[lwork];
-	ASSERT(work);
 	DGESVD(&jobu, &jobvt, &m, &n, a, &lda, sing, u, &ldu, vt, &ldvt, work, &lwork, info);
 	delete[] work;
 #endif

@@ -170,7 +170,7 @@ class CCombinedKernel : public CKernel
 		 */
 		inline CKernel* get_next_kernel(const CKernel* current)
 		{
-			ASSERT(kernel_list->get_current_element()==current) ;
+			ASSERT(kernel_list->get_current_element()==current);
 			return kernel_list->get_next_element();
 		}
 

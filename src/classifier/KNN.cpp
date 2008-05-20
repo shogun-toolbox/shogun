@@ -35,9 +35,8 @@ CKNN::~CKNN()
 bool CKNN::train()
 {
 	ASSERT(labels);
-	
-	train_labels=labels->get_int_labels(num_train_labels);
 
+	train_labels=labels->get_int_labels(num_train_labels);
 	ASSERT(train_labels);
 	ASSERT(num_train_labels>0);
 
@@ -69,7 +68,6 @@ CLabels* CKNN::classify(CLabels* output)
 	ASSERT(labels->get_num_labels());
 
 	INT num_lab=labels->get_num_labels();
-	
 	ASSERT(k<=num_lab);
 
 	//distances to train data and working buffer of train_labels

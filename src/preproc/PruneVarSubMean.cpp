@@ -32,22 +32,22 @@ bool CPruneVarSubMean::init(CFeatures* p_f)
 {
 	if (!initialized)
 	{
-		ASSERT(p_f->get_feature_class() == C_SIMPLE);
-		ASSERT(p_f->get_feature_type() == F_DREAL);
+		ASSERT(p_f->get_feature_class()==C_SIMPLE);
+		ASSERT(p_f->get_feature_type()==F_DREAL);
 
-		CRealFeatures *f=(CRealFeatures*) p_f ;
-		INT num_examples=f->get_num_vectors() ;
-		INT num_features=((CRealFeatures*)f)->get_num_features() ;
+		CRealFeatures *f=(CRealFeatures*) p_f;
+		INT num_examples=f->get_num_vectors();
+		INT num_features=((CRealFeatures*)f)->get_num_features();
 
 		delete[] mean;
 		delete[] idx;
-		delete[] std; 
+		delete[] std;
 		mean=NULL;
 		idx=NULL;
 		std=NULL;
 
-		mean=new double[num_features] ;
-		double* var=new double[num_features] ;
+		mean=new double[num_features];
+		double* var=new double[num_features];
 		INT i,j;
 
 		for (i=0; i<num_features; i++)
@@ -145,7 +145,7 @@ DREAL* CPruneVarSubMean::apply_to_feature_matrix(CFeatures* f)
 	INT num_features=0;
 	DREAL* m=((CRealFeatures*) f)->get_feature_matrix(num_features, num_vectors);
 
-	SG_INFO( "get Feature matrix: %ix%i\n", num_vectors, num_features) ;
+	SG_INFO( "get Feature matrix: %ix%i\n", num_vectors, num_features);
 	SG_INFO( "Preprocessing feature matrix\n");
 	for (INT vec=0; vec<num_vectors; vec++)
 	{
@@ -209,9 +209,8 @@ bool CPruneVarSubMean::load_init_data(FILE* src)
 	bool result=false;
 	INT divide=0;
 
-
-	ASSERT(fread(&divide, sizeof(int), 1, src)==1) ;
-	ASSERT(fread(&num_idx, sizeof(int), 1, src)==1) ;
+	ASSERT(fread(&divide, sizeof(int), 1, src)==1);
+	ASSERT(fread(&num_idx, sizeof(int), 1, src)==1);
 	SG_INFO( "divide:%d num_idx:%d\n", divide, num_idx);
 	delete[] mean;
 	delete[] idx;
@@ -220,9 +219,10 @@ bool CPruneVarSubMean::load_init_data(FILE* src)
 	mean=new DREAL[num_idx];
 	std=new DREAL[num_idx];
 	ASSERT (mean!=NULL && idx!=NULL && std!=NULL);
-	ASSERT(fread(idx, sizeof(int), num_idx, src)==(UINT) num_idx) ;
-	ASSERT(fread(mean, sizeof(DREAL), num_idx, src)==(UINT) num_idx) ;
-	ASSERT(fread(std, sizeof(DREAL), num_idx, src)==(UINT) num_idx) ;
+	ASSERT(fread(idx, sizeof(int), num_idx, src)==(UINT) num_idx);
+	ASSERT(fread(mean, sizeof(DREAL), num_idx, src)==(UINT) num_idx);
+	ASSERT(fread(std, sizeof(DREAL), num_idx, src)==(UINT) num_idx);
+
 	result=true;
 	divide_by_std=(divide==1);
 	initialized=true;

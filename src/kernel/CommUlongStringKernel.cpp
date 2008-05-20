@@ -77,13 +77,11 @@ bool CCommUlongStringKernel::init(CFeatures* l, CFeatures* r)
 	INT i;
 
 	initialized=false;
-	if (sqrtdiag_lhs != sqrtdiag_rhs)
-	  delete[] sqrtdiag_rhs;
+	if (sqrtdiag_lhs!=sqrtdiag_rhs)
+		delete[] sqrtdiag_rhs;
 	sqrtdiag_rhs=NULL;
 	delete[] sqrtdiag_lhs;
-	sqrtdiag_lhs=NULL;
-
-	sqrtdiag_lhs= new DREAL[lhs->get_num_vectors()];
+	sqrtdiag_lhs=new DREAL[lhs->get_num_vectors()];
 
 	for (i=0; i<lhs->get_num_vectors(); i++)
 		sqrtdiag_lhs[i]=1;
@@ -92,13 +90,10 @@ bool CCommUlongStringKernel::init(CFeatures* l, CFeatures* r)
 		sqrtdiag_rhs=sqrtdiag_lhs;
 	else
 	{
-		sqrtdiag_rhs= new DREAL[rhs->get_num_vectors()];
+		sqrtdiag_rhs=new DREAL[rhs->get_num_vectors()];
 		for (i=0; i<rhs->get_num_vectors(); i++)
 			sqrtdiag_rhs[i]=1;
 	}
-
-	ASSERT(sqrtdiag_lhs);
-	ASSERT(sqrtdiag_rhs);
 
 	this->lhs=(CStringFeatures<ULONG>*) l;
 	this->rhs=(CStringFeatures<ULONG>*) l;

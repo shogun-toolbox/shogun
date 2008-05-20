@@ -115,9 +115,7 @@ CHAR* CPythonInterface::get_string(INT& len)
 	CHAR* str=PyString_AS_STRING(s);
 	ASSERT(str && len>0);
 
-	CHAR* cstr = new CHAR[len+1];
-	ASSERT(cstr);
-
+	CHAR* cstr=new CHAR[len+1];
 	memcpy(cstr, str, len+1);
 	cstr[len]='\0';
 
@@ -137,7 +135,6 @@ void CPythonInterface::function_name(sg_type*& vector, INT& len)			\
 																			\
 	len=py_vec->dimensions[0]; 												\
 	vector=new sg_type[len];												\
-	ASSERT(vector);															\
 	if_type* data=(if_type*) py_vec->data;									\
 																			\
 	for (INT i=0; i<len; i++)												\
@@ -168,8 +165,6 @@ void CPythonInterface::function_name(sg_type*& matrix, INT& num_feat, INT& num_v
 	num_feat=py_mat->dimensions[0]; 										\
 	num_vec=py_mat->dimensions[1]; 											\
 	matrix=new sg_type[num_vec*num_feat]; 									\
-	ASSERT(matrix); 														\
-																			\
 	char* data=py_mat->data; 												\
 	npy_intp* strides= py_mat->strides; 									\
 	npy_intp d2_offs=0;														\
@@ -213,7 +208,6 @@ void CPythonInterface::function_name(TSparse<sg_type>*& matrix, INT& num_feat, I
 	num_vec=py_mat->dimensions[0]; 											\
 	num_feat=py_mat->nd; 													\
 	matrix=new TSparse<sg_type>[num_vec]; 									\
-	ASSERT(matrix); 														\
 	if_type* data=(if_type*) py_mat->data; 									\
  																			\
 	LONG nzmax=mxGetNzmax(mx_mat); 											\
@@ -229,8 +223,6 @@ void CPythonInterface::function_name(TSparse<sg_type>*& matrix, INT& num_feat, I
 		if (len>0) 															\
 		{ 																	\
 			matrix[i].features=new TSparseEntry<sg_type>[len]; 				\
-			ASSERT(matrix[i].features); 									\
- 																			\
 			for (INT j=0; j<len; j++) 										\
 			{ 																\
 				matrix[i].features[j].entry=data[offset]; 					\
@@ -260,7 +252,7 @@ GET_SPARSEMATRIX(get_word_sparsematrix, "uint16", WORD, unsigned short, "Word")*
 void CPythonInterface::function_name(T_STRING<sg_type>*& strings, INT& num_str, INT& max_string_len)	\
 { 																			\
 	max_string_len=0;														\
-	const PyObject* py_str= get_arg_increment();									\
+	const PyObject* py_str= get_arg_increment();							\
 	if (!py_str)															\
 		SG_ERROR("Expected Stringlist as argument (none given).\n");		\
 																			\
@@ -269,7 +261,7 @@ void CPythonInterface::function_name(T_STRING<sg_type>*& strings, INT& num_str, 
 		if (!is_char_str)													\
 			SG_ERROR("Only Character Strings supported.\n");				\
 																			\
-        num_str=PyList_Size((PyObject*) py_str);										\
+		num_str=PyList_Size((PyObject*) py_str);							\
 		ASSERT(num_str>=1);													\
 																			\
 		strings=new T_STRING<sg_type>[num_str];								\
@@ -277,30 +269,30 @@ void CPythonInterface::function_name(T_STRING<sg_type>*& strings, INT& num_str, 
 																			\
 		for (int i=0; i<num_str; i++)										\
 		{																	\
-            PyObject *o = PyList_GetItem((PyObject*) py_str,i);				\
-            if (PyString_Check(o))											\
-            {																\
-                INT len=PyString_Size(o);									\
-                const sg_type* str= (const sg_type*) PyString_AsString(o);	\
+			PyObject *o = PyList_GetItem((PyObject*) py_str,i);				\
+			if (PyString_Check(o))											\
+			{																\
+				INT len=PyString_Size(o);									\
+				const sg_type* str= (const sg_type*) PyString_AsString(o);	\
 																			\
-                strings[i].length=len;										\
-                strings[i].string=NULL;										\
+				strings[i].length=len;										\
+				strings[i].string=NULL;										\
 				max_string_len=CMath::max(max_string_len, len);				\
 																			\
-                if (len>0)													\
-                {															\
-                    strings[i].string=new sg_type[len+1];					\
-                    memcpy(strings[i].string, str, len);					\
+				if (len>0)													\
+				{															\
+					strings[i].string=new sg_type[len+1];					\
+					memcpy(strings[i].string, str, len);					\
 					strings[i].string[len]='\0';							\
-                }															\
-            }																\
-            else															\
-            {																\
-                for (INT j=0; j<i; j++)										\
-                    delete[] strings[i].string;								\
-                delete[] strings;											\
-                SG_ERROR("All elements in list must be strings, error in line %d.\n", i);\
-            }																\
+				}															\
+			}																\
+			else															\
+			{																\
+				for (INT j=0; j<i; j++)										\
+					delete[] strings[i].string;								\
+				delete[] strings;											\
+				SG_ERROR("All elements in list must be strings, error in line %d.\n", i);\
+			}																\
 		}																	\
 	}																		\
 	else if (PyArray_TYPE(py_str)==py_type && ((PyArrayObject*) py_str)->nd==2)	\
@@ -310,7 +302,6 @@ void CPythonInterface::function_name(T_STRING<sg_type>*& strings, INT& num_str, 
 		num_str=py_array_str->dimensions[0]; 								\
 		INT len=py_array_str->dimensions[1]; 								\
 		strings=new T_STRING<sg_type>[num_str]; 							\
-		ASSERT(strings); 													\
 																			\
 		for (INT i=0; i<num_str; i++) 										\
 		{ 																	\
@@ -318,7 +309,6 @@ void CPythonInterface::function_name(T_STRING<sg_type>*& strings, INT& num_str, 
 			{ 																\
 				strings[i].length=len; /* all must have same length*/		\
 				strings[i].string=new sg_type[len+1]; /* not zero terminated */	\
-				ASSERT(strings[i].string); 									\
 				INT j; 														\
 				for (j=0; j<len; j++) 										\
 					strings[i].string[j]=data[j+i*len]; 					\
@@ -539,13 +529,9 @@ bool CPythonInterface::create_return_values(INT num)
 PyObject* sg(PyObject* self, PyObject* args)
 {
 	if (!interface)
-	{
 		interface=new CPythonInterface(self, args);
-		ASSERT(interface);
-	}
 	else
 		((CPythonInterface*) interface)->reset(self, args);
-
 
 	try
 	{

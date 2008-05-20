@@ -39,7 +39,6 @@ bool CCPLEXSVM::train()
 		DREAL* alphas=new DREAL[n];
 		DREAL* lb=new DREAL[n];
 		DREAL* ub=new DREAL[n];
-		ASSERT(lb && ub);
 
 		//hessian y'y.*K
 		for (int i=0; i<n; i++)

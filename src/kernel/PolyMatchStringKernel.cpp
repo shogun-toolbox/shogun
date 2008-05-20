@@ -37,32 +37,27 @@ CPolyMatchStringKernel::~CPolyMatchStringKernel()
 
 bool CPolyMatchStringKernel::init(CFeatures* l, CFeatures* r)
 {
-	bool result = CStringKernel<CHAR>::init(l, r);
+	bool result=CStringKernel<CHAR>::init(l, r);
 
-	initialized = false;
+	initialized=false;
 
-	if (sqrtdiag_lhs != sqrtdiag_rhs)
+	if (sqrtdiag_lhs!=sqrtdiag_rhs)
 		delete[] sqrtdiag_rhs;
-	sqrtdiag_rhs = NULL;
+	sqrtdiag_rhs=NULL;
 	delete[] sqrtdiag_lhs;
-	sqrtdiag_lhs = NULL;
+	sqrtdiag_lhs=NULL;
 
 	if (use_normalization)
 	{
-		sqrtdiag_lhs = new DREAL[lhs->get_num_vectors()];
+		sqrtdiag_lhs=new DREAL[lhs->get_num_vectors()];
 
 		if (l==r)
-			sqrtdiag_rhs = sqrtdiag_lhs;
+			sqrtdiag_rhs=sqrtdiag_lhs;
 		else
-		{
-			sqrtdiag_rhs = new DREAL[rhs->get_num_vectors()];
-		}
+			sqrtdiag_rhs=new DREAL[rhs->get_num_vectors()];
 
-		ASSERT(sqrtdiag_lhs);
-		ASSERT(sqrtdiag_rhs);
-
-		this->lhs = (CStringFeatures<CHAR>*) l;
-		this->rhs = (CStringFeatures<CHAR>*) l;
+		this->lhs=(CStringFeatures<CHAR>*) l;
+		this->rhs=(CStringFeatures<CHAR>*) l;
 
 		CKernel::init_sqrt_diag(sqrtdiag_lhs, lhs->get_num_vectors());
 
@@ -70,17 +65,17 @@ bool CPolyMatchStringKernel::init(CFeatures* l, CFeatures* r)
 		// compute also the normalization for rhs
 		if (sqrtdiag_lhs!=sqrtdiag_rhs)
 		{
-			this->lhs = (CStringFeatures<CHAR>*) r;
-			this->rhs = (CStringFeatures<CHAR>*) r;
+			this->lhs=(CStringFeatures<CHAR>*) r;
+			this->rhs=(CStringFeatures<CHAR>*) r;
 
 			CKernel::init_sqrt_diag(sqrtdiag_rhs, rhs->get_num_vectors());
 		}
 	}
 
-	this->lhs = (CStringFeatures<CHAR>*) l;
-	this->rhs = (CStringFeatures<CHAR>*) r;
+	this->lhs=(CStringFeatures<CHAR>*) l;
+	this->rhs=(CStringFeatures<CHAR>*) r;
 
-	initialized = true;
+	initialized=true;
 	return result;
 }
 

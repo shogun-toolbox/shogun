@@ -228,17 +228,11 @@ DREAL CLocalAlignmentStringKernel::LAkernelcompute(int* aaX, int* aaY, /* Implem
   /* Each array stores two successive columns of the (nX+1)x(nY+1) table used in dynamic programming */
   cl = nY+1;           /* each column stores the positions in the aaY sequence, plus a position at zero */
 
-  logM = new int[2*cl];
-  logX = new int[2*cl];
-  logY = new int[2*cl];
-  logX2 = new int[2*cl];
-  logY2 = new int[2*cl];
-  ASSERT(logM);
-  ASSERT(logX);
-  ASSERT(logY);
-  ASSERT(logX2);
-  ASSERT(logY2);
-
+  logM=new int[2*cl];
+  logX=new int[2*cl];
+  logY=new int[2*cl];
+  logX2=new int[2*cl];
+  logY2=new int[2*cl];
 
   /************************************************/
   /* First iteration : initialization of column 0 */

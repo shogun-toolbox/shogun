@@ -53,8 +53,8 @@ class CKernel : public CSGObject
 			if (idx_a < 0 || idx_b <0)
 				return 0;
 
-			ASSERT(lhs!=NULL);
-			ASSERT(rhs!=NULL);
+			ASSERT(lhs);
+			ASSERT(rhs);
 
 			if (lhs==rhs)
 			{

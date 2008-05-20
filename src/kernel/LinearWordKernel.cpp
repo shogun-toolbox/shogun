@@ -103,8 +103,8 @@ DREAL CLinearWordKernel::compute(INT idx_a, INT idx_b)
 
 	WORD* avec=((CWordFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
 	WORD* bvec=((CWordFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
-
 	ASSERT(alen==blen);
+
 	double sum=0;
 	for (LONG i=0; i<alen; i++)
 		sum+=((LONG) avec[i])*((LONG) bvec[i]);
@@ -126,8 +126,6 @@ bool CLinearWordKernel::init_optimization(INT num_suppvec, INT* sv_idx, DREAL* a
 	ASSERT(num_feat);
 
 	normal=new DREAL[num_feat];
-	ASSERT(normal);
-
 	for (INT i=0; i<num_feat; i++)
 		normal[i]=0;
 

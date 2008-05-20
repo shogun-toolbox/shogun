@@ -260,10 +260,10 @@ bool CMindyGramKernel::init(CFeatures* l, CFeatures* r)
     INT i;
 
     /* Assert correct types of features */
-    ASSERT(l->get_feature_class() == C_MINDYGRAM);
-    ASSERT(r->get_feature_class() == C_MINDYGRAM);
-    ASSERT(l->get_feature_type() == F_ULONG);
-    ASSERT(r->get_feature_type() == F_ULONG);
+    ASSERT(l->get_feature_class()== C_MINDYGRAM);
+    ASSERT(r->get_feature_class()==C_MINDYGRAM);
+    ASSERT(l->get_feature_type()==F_ULONG);
+    ASSERT(r->get_feature_type()==F_ULONG);
 
     /* Clean diagonals */
     if (sdiag_lhs != sdiag_rhs)
@@ -285,9 +285,6 @@ bool CMindyGramKernel::init(CFeatures* l, CFeatures* r)
         for (i = 0; i<rhs->get_num_vectors(); i++)
             sdiag_rhs[i]=1;
     }
-
-    ASSERT(sdiag_lhs);
-    ASSERT(sdiag_rhs);
 
     this->lhs=(CMindyGramFeatures *) l;
     this->rhs=(CMindyGramFeatures *) l;

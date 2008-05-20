@@ -41,8 +41,7 @@ bool CCommWordStringKernel::init_dictionary(INT size)
 {
 	dictionary_size= size;
 	delete[] dictionary_weights;
-	dictionary_weights = new DREAL[size];
-	ASSERT(dictionary_weights);
+	dictionary_weights=new DREAL[size];
 	SG_DEBUG( "using dictionary of %d words\n", size);
 	clear_normal();
 
@@ -98,13 +97,11 @@ bool CCommWordStringKernel::init(CFeatures* l, CFeatures* r)
 	initialized = false;
 	INT i;
 
-	if (sqrtdiag_lhs != sqrtdiag_rhs)
-	  delete[] sqrtdiag_rhs;
+	if (sqrtdiag_lhs!=sqrtdiag_rhs)
+		delete[] sqrtdiag_rhs;
 	sqrtdiag_rhs=NULL;
 	delete[] sqrtdiag_lhs;
-	sqrtdiag_lhs=NULL;
-
-	sqrtdiag_lhs= new DREAL[lhs->get_num_vectors()];
+	sqrtdiag_lhs=new DREAL[lhs->get_num_vectors()];
 
 	for (i=0; i<lhs->get_num_vectors(); i++)
 		sqrtdiag_lhs[i]=1;
@@ -113,13 +110,10 @@ bool CCommWordStringKernel::init(CFeatures* l, CFeatures* r)
 		sqrtdiag_rhs=sqrtdiag_lhs;
 	else
 	{
-		sqrtdiag_rhs= new DREAL[rhs->get_num_vectors()];
+		sqrtdiag_rhs=new DREAL[rhs->get_num_vectors()];
 		for (i=0; i<rhs->get_num_vectors(); i++)
 			sqrtdiag_rhs[i]=1;
 	}
-
-	ASSERT(sqrtdiag_lhs);
-	ASSERT(sqrtdiag_rhs);
 
 	this->lhs=(CStringFeatures<WORD>*) l;
 	this->rhs=(CStringFeatures<WORD>*) l;
@@ -127,8 +121,7 @@ bool CCommWordStringKernel::init(CFeatures* l, CFeatures* r)
 	if (use_dict_diagonal_optimization)
 	{
 		delete[] dict_diagonal_optimization ;
-		dict_diagonal_optimization = new INT[INT(((CStringFeatures<WORD>*)l)->get_num_symbols())];
-		ASSERT(dict_diagonal_optimization) ;
+		dict_diagonal_optimization=new INT[INT(((CStringFeatures<WORD>*)l)->get_num_symbols())];
 		ASSERT(((CStringFeatures<WORD>*)l)->get_num_symbols() == ((CStringFeatures<WORD>*)r)->get_num_symbols()) ;
 	}
 
@@ -213,7 +206,7 @@ DREAL CCommWordStringKernel::compute_diag(INT idx_a)
 	ASSERT((1<<(sizeof(WORD)*8)) > alen);
 
 	INT num_symbols=(INT) l->get_num_symbols();
-	ASSERT(num_symbols <= dictionary_size);
+	ASSERT(num_symbols<=dictionary_size);
 
 	INT* dic = dict_diagonal_optimization;
 	memset(dic, 0, num_symbols*sizeof(INT));
@@ -257,8 +250,7 @@ DREAL CCommWordStringKernel::compute_helper(INT idx_a, INT idx_b, bool do_sort)
 	{
 		if (alen>0)
 		{
-			avec= new WORD[alen];
-			ASSERT(avec);
+			avec=new WORD[alen];
 			memcpy(avec, av, sizeof(WORD)*alen);
 			CMath::radix_sort(avec, alen);
 		}
@@ -267,8 +259,7 @@ DREAL CCommWordStringKernel::compute_helper(INT idx_a, INT idx_b, bool do_sort)
 
 		if (blen>0)
 		{
-			bvec= new WORD[blen];
-			ASSERT(bvec);
+			bvec=new WORD[blen];
 			memcpy(bvec, bv, sizeof(WORD)*blen);
 			CMath::radix_sort(bvec, blen);
 		}
@@ -520,9 +511,6 @@ DREAL* CCommWordStringKernel::compute_scoring(INT max_degree, INT& num_feat,
 
 	if (!target)
 		target=new DREAL[num_feat*num_sym];
-
-	ASSERT(target);
-
 	memset(target, 0, num_feat*num_sym*sizeof(DREAL));
 
 	if (do_init)
@@ -642,11 +630,8 @@ CHAR* CCommWordStringKernel::compute_consensus(INT &result_len, INT num_suppvec,
 	init_optimization(num_suppvec, IDX, alphas);
 
 	CHAR* result=new CHAR[result_len];
-	ASSERT(result);
 	INT* bt=new INT[total_len];
-	ASSERT(bt);
 	DREAL* score=new DREAL[total_len];
-	ASSERT(score);
 
 	for (LONG i=0; i<total_len; i++)
 	{

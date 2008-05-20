@@ -433,7 +433,6 @@ void CSubGradientLPM::init(INT num_vec, INT num_feat)
 	// alloc normal and bias inited with 0
 	delete[] w;
 	w=new DREAL[num_feat];
-	ASSERT(w);
 	for (INT i=0; i<num_feat; i++)
 		w[i]=1.0;
 	//CMath::random_vector(w, num_feat, -1.0, 1.0);
@@ -443,69 +442,53 @@ void CSubGradientLPM::init(INT num_vec, INT num_feat)
 	set_w(w, num_feat);
 
 	w_pos=new INT[num_feat];
-	ASSERT(w_pos);
 	memset(w_pos,0,sizeof(INT)*num_feat);
-	
+
 	w_zero=new INT[num_feat];
-	ASSERT(w_zero);
 	memset(w_zero,0,sizeof(INT)*num_feat);
-	
+
 	w_neg=new INT[num_feat];
-	ASSERT(w_neg);
 	memset(w_neg,0,sizeof(INT)*num_feat);
 
 	grad_w=new DREAL[num_feat+1];
-	ASSERT(grad_w);
 	memset(grad_w,0,sizeof(DREAL)*(num_feat+1));
 
 	sum_CXy_active=new DREAL[num_feat];
-	ASSERT(sum_CXy_active);
 	memset(sum_CXy_active,0,sizeof(DREAL)*num_feat);
 
 	sum_Cy_active=0;
 
-	proj= new DREAL[num_vec];
-	ASSERT(proj);
+	proj=new DREAL[num_vec];
 	memset(proj,0,sizeof(DREAL)*num_vec);
 
 	tmp_proj=new DREAL[num_vec];
-	ASSERT(proj);
 	memset(proj,0,sizeof(DREAL)*num_vec);
 
-	tmp_proj_idx= new INT[num_vec];
-	ASSERT(tmp_proj_idx);
+	tmp_proj_idx=new INT[num_vec];
 	memset(tmp_proj_idx,0,sizeof(INT)*num_vec);
 
-	grad_proj= new DREAL[num_vec];
-	ASSERT(grad_proj);
+	grad_proj=new DREAL[num_vec];
 	memset(grad_proj,0,sizeof(DREAL)*num_vec);
 
-	hinge_point= new DREAL[num_vec+num_feat];
-	ASSERT(hinge_point);
+	hinge_point=new DREAL[num_vec+num_feat];
 	memset(hinge_point,0,sizeof(DREAL)*(num_vec+num_feat));
 
-	hinge_idx= new INT[num_vec+num_feat];
-	ASSERT(hinge_idx);
+	hinge_idx=new INT[num_vec+num_feat];
 	memset(hinge_idx,0,sizeof(INT)*(num_vec+num_feat));
 
 	active=new BYTE[num_vec];
-	ASSERT(active);
 	memset(active,0,sizeof(BYTE)*num_vec);
 
 	old_active=new BYTE[num_vec];
-	ASSERT(old_active);
 	memset(old_active,0,sizeof(BYTE)*num_vec);
 
 	idx_bound=new INT[num_vec];
-	ASSERT(idx_bound);
 	memset(idx_bound,0,sizeof(INT)*num_vec);
 
 	idx_active=new INT[num_vec];
-	ASSERT(idx_active);
 	memset(idx_active,0,sizeof(INT)*num_vec);
 
 	beta=new DREAL[num_feat+1+num_feat+num_vec];
-	ASSERT(beta);
 	memset(beta,0,sizeof(DREAL)*num_feat+1+num_feat+num_vec);
 
 	solver=new CCplex();

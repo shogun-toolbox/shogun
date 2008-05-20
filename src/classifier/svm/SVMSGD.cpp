@@ -137,7 +137,6 @@ bool CSVMSGD::train()
 
 	delete[] w;
 	w=new DREAL[w_dim];
-	ASSERT(w);
 	memset(w, 0, w_dim*sizeof(DREAL));
 	bias=0;
 
@@ -210,7 +209,6 @@ void CSVMSGD::calibrate()
 	ASSERT(c_dim>0);
 
 	DREAL* c=new DREAL[c_dim];
-	ASSERT(c);
 	memset(c, 0, c_dim*sizeof(DREAL));
 
 	SG_INFO("Estimating sparsity and bscale num_vec=%d num_feat=%d.\n", num_vec, c_dim);

@@ -157,8 +157,7 @@ bool CSVRLight::train()
         // allocating memory 
 		for (INT n=0; n<num_precomputed_subkernels; n++)
 		{
-			precomputed_subkernels[n]=new SHORTREAL[num*(num+1)/2] ;
-			ASSERT(precomputed_subkernels[n]!=NULL) ;
+			precomputed_subkernels[n]=new SHORTREAL[num*(num+1)/2];
 		}
 		
 		for (INT n=0; n<num_precomputed_subkernels; n++)
@@ -449,23 +448,23 @@ void CSVRLight::update_linear_component_mkl(INT* docs, INT* label,
 	INT num_kernels = kernel->get_num_subkernels() ;
 	const DREAL* w  = kernel->get_subkernel_weights(num_weights);
 
-	ASSERT(num_weights==num_kernels) ;
-	DREAL* sumw = new DREAL[num_kernels];
+	ASSERT(num_weights==num_kernels);
+	DREAL* sumw=new DREAL[num_kernels];
 
 	if (use_precomputed_subkernels) // everything is already precomputed
 	{
-		ASSERT(precomputed_subkernels!=NULL) ;
+		ASSERT(precomputed_subkernels);
 		for (INT n=0; n<num_kernels; n++)
 		{
-			ASSERT(precomputed_subkernels[n]!=NULL) ;
-			SHORTREAL * matrix = precomputed_subkernels[n] ;
-			for(INT ii=0;ii<num;ii++) 
+			ASSERT(precomputed_subkernels[n]);
+			SHORTREAL * matrix = precomputed_subkernels[n];
+			for(INT ii=0;ii<num;ii++)
 			{
-				if(a[ii] != a_old[ii]) 
+				if(a[ii] != a_old[ii])
 				{
 					INT i=regression_fix_index(ii);
 
-					for(INT jj=0;jj<num;jj++) 
+					for(INT jj=0;jj<num;jj++)
 					{
 						INT j=regression_fix_index(jj);
 
@@ -822,11 +821,11 @@ void CSVRLight::update_linear_component_mkl_linadd(INT* docs, INT* label,
 	INT num_kernels = kernel->get_num_subkernels() ;
 	const DREAL* w   = kernel->get_subkernel_weights(num_weights);
 	
-	ASSERT(num_weights==num_kernels) ;
-	DREAL* sumw = new DREAL[num_kernels];
+	ASSERT(num_weights==num_kernels);
+	DREAL* sumw=new DREAL[num_kernels];
 	{
-		DREAL* w_backup = new DREAL[num_kernels] ;
-		DREAL* w1 = new DREAL[num_kernels] ;
+		DREAL* w_backup=new DREAL[num_kernels];
+		DREAL* w1=new DREAL[num_kernels];
 
 		// backup and set to one
 		for (INT i=0; i<num_kernels; i++)

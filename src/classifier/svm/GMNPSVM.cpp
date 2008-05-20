@@ -32,7 +32,9 @@ CGMNPSVM::~CGMNPSVM()
 
 bool CGMNPSVM::train()
 {
+	ASSERT(kernel);
 	ASSERT(labels && labels->get_num_labels());
+
 	INT num_data = labels->get_num_labels();
 	INT num_classes = labels->get_num_classes();
 	INT num_virtual_data= num_data*(num_classes-1);
@@ -40,12 +42,8 @@ bool CGMNPSVM::train()
 	SG_INFO( "%d trainlabels, %d classes\n", num_data, num_classes);
 
 	DREAL* vector_y = new double[num_data];
-	ASSERT(vector_y);
-
 	for (int i=0; i<num_data; i++)
 		vector_y[i]= labels->get_label(i)+1;
-
-	ASSERT(kernel);
 
 	DREAL C = get_C1();
 	INT tmax = 1000000000;
@@ -54,15 +52,12 @@ bool CGMNPSVM::train()
 
 	DREAL reg_const=0;
 	if( C!=0 )
-		reg_const = 1/(2*C); 
+		reg_const = 1/(2*C);
 
 
 	DREAL* alpha = new DREAL[num_virtual_data];
-	ASSERT(alpha);
 	DREAL* vector_c = new DREAL[num_virtual_data];
-	ASSERT(vector_c);
-
-	memset(vector_c,0,num_virtual_data*sizeof(DREAL));
+	memset(vector_c, 0, num_virtual_data*sizeof(DREAL));
 
 	DREAL thlb = 10000000000.0;
 	INT t = 0;

@@ -242,7 +242,7 @@ bool CGUIPreProc::attach_preproc(CHAR* target, bool do_force)
 					CFeatures* tr_feat=((CCombinedFeatures*) f_train)->get_first_feature_obj();
 
 					INT num_combined=((CCombinedFeatures*) f_test)->get_num_feature_obj();
-					ASSERT(((CCombinedFeatures*) f_train)->get_num_feature_obj() == num_combined);
+					ASSERT(((CCombinedFeatures*) f_train)->get_num_feature_obj()==num_combined);
 
 					if (!(num_combined && tr_feat && te_feat))
 						SG_ERROR("One of the combined features has no sub-features ?!\n");

@@ -132,7 +132,7 @@ class CKMeans : public CDistanceMachine
 		inline void get_radiuses(DREAL** radii, INT* num)
 		{
 			size_t sz=sizeof(*R)*k;
-			*radii= (DREAL*) malloc(sz);
+			*radii=(DREAL*) malloc(sz);
 			ASSERT(*radii);
 
 			memcpy(*radii, R, sz);
@@ -148,7 +148,7 @@ class CKMeans : public CDistanceMachine
 		inline void get_cluster_centers(DREAL** centers, INT* dim, INT* num)
 		{
 			size_t sz=sizeof(*mus)*dimensions*k;
-			*centers= (DREAL*) malloc(sz);
+			*centers=(DREAL*) malloc(sz);
 			ASSERT(*centers);
 
 			memcpy(*centers, mus, sz);

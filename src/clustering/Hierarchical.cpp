@@ -40,7 +40,7 @@ CHierarchical::~CHierarchical()
 bool CHierarchical::train()
 {
 	ASSERT(distance);
-	CFeatures* lhs = distance->get_lhs();
+	CFeatures* lhs=distance->get_lhs();
 	ASSERT(lhs);
 
 	INT num=lhs->get_num_vectors();
@@ -50,23 +50,18 @@ bool CHierarchical::train()
 
 	delete[] merge_distance;
 	merge_distance=new DREAL[num];
-	ASSERT(merge_distance);
 	CMath::fill_vector(merge_distance, num, -1.0);
 
 	delete[] assignment;
 	assignment=new INT[num];
-	ASSERT(assignment);
 	CMath::range_fill_vector(assignment, num);
 
 	delete[] pairs;
 	pairs=new INT[2*num];
-	ASSERT(pairs);
 	CMath::fill_vector(pairs, 2*num, -1);
 
 	pair* index=new pair[num_pairs];
-	ASSERT(index);
 	DREAL* distances=new DREAL[num_pairs];
-	ASSERT(distances);
 
 	INT offs=0;
 	for (INT i=0; i<num; i++)

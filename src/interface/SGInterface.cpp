@@ -1141,7 +1141,6 @@ bool CSGInterface::do_set_features(bool add)
 			get_real_sparsematrix(fmatrix, num_feat, num_vec);
 
 			feat=new CSparseFeatures<DREAL>(0);
-			ASSERT(feat);
 			((CSparseFeatures<DREAL>*) feat)->
 				set_sparse_feature_matrix(fmatrix, num_feat, num_vec);
 			break;
@@ -1153,7 +1152,6 @@ bool CSGInterface::do_set_features(bool add)
 			get_real_matrix(fmatrix, num_feat, num_vec);
 
 			feat=new CRealFeatures(0);
-			ASSERT(feat);
 			((CRealFeatures*) feat)->
 				set_feature_matrix(fmatrix, num_feat, num_vec);
 			break;
@@ -1165,7 +1163,6 @@ bool CSGInterface::do_set_features(bool add)
 			get_int_matrix(fmatrix, num_feat, num_vec);
 
 			feat=new CIntFeatures(0);
-			ASSERT(feat);
 			((CIntFeatures*) feat)->
 				set_feature_matrix(fmatrix, num_feat, num_vec);
 			break;
@@ -1177,7 +1174,6 @@ bool CSGInterface::do_set_features(bool add)
 			get_short_matrix(fmatrix, num_feat, num_vec);
 
 			feat=new CShortFeatures(0);
-			ASSERT(feat);
 			((CShortFeatures*) feat)->
 				set_feature_matrix(fmatrix, num_feat, num_vec);
 			break;
@@ -1189,7 +1185,6 @@ bool CSGInterface::do_set_features(bool add)
 			get_word_matrix(fmatrix, num_feat, num_vec);
 
 			feat=new CWordFeatures(0);
-			ASSERT(feat);
 			((CWordFeatures*) feat)->
 				set_feature_matrix(fmatrix, num_feat, num_vec);
 			break;
@@ -1201,7 +1196,6 @@ bool CSGInterface::do_set_features(bool add)
 			get_shortreal_matrix(fmatrix, num_feat, num_vec);
 
 			feat=new CShortRealFeatures(0);
-			ASSERT(feat);
 			((CShortRealFeatures*) feat)->
 				set_feature_matrix(fmatrix, num_feat, num_vec);
 			break;
@@ -1227,7 +1221,6 @@ bool CSGInterface::do_set_features(bool add)
 
 				ASSERT(fmatrix[0].string);
 				feat=new CStringFeatures<BYTE>(DNA);
-				ASSERT(feat);
 
 				if (!((CStringFeatures<BYTE>*) feat)->load_dna_file(fmatrix[0].string))
 				{
@@ -1238,11 +1231,9 @@ bool CSGInterface::do_set_features(bool add)
 			else
 			{
 				CAlphabet* alphabet=new CAlphabet(alphabet_str, alphabet_len);
-				ASSERT(alphabet);
 				delete[] alphabet_str;
 
 				feat=new CStringFeatures<CHAR>(alphabet);
-				ASSERT(feat);
 				if (!((CStringFeatures<CHAR>*) feat)->set_features(fmatrix, num_str, max_str_len))
 				{
 					delete alphabet;
@@ -1269,11 +1260,9 @@ bool CSGInterface::do_set_features(bool add)
 			CHAR* alphabet_str=get_string(alphabet_len);
 			ASSERT(alphabet_str);
 			CAlphabet* alphabet=new CAlphabet(alphabet_str, alphabet_len);
-			ASSERT(alphabet);
 			delete[] alphabet_str;
 
 			feat=new CStringFeatures<BYTE>(alphabet);
-			ASSERT(feat);
 			if (!((CStringFeatures<BYTE>*) feat)->set_features(fmatrix, num_str, max_str_len))
 			{
 				delete alphabet;
@@ -3034,7 +3023,6 @@ bool CSGInterface::cmd_compute_by_subkernels()
 	INT num_feat=degree*len;
 	INT num=num_feat*num_vec;
 	DREAL* result=new DREAL[num];
-	ASSERT(result);
 
 	for (INT i=0; i<num; i++)
 		result[i]=0;
@@ -3481,9 +3469,7 @@ bool CSGInterface::cmd_compute_POIM_WD()
 		ASSERT(svm);
 		INT num_suppvec=svm->get_num_support_vectors();
 		INT* sv_idx=new INT[num_suppvec];
-		ASSERT(sv_idx);
 		DREAL* sv_weight=new DREAL[num_suppvec];
-		ASSERT(sv_weight);
 
 		for (INT i=0; i<num_suppvec; i++)
 		{
@@ -3575,8 +3561,6 @@ bool CSGInterface::cmd_classify()
 		SG_ERROR("Classify failed\n");
 
 	DREAL* result=new DREAL[num_vec];
-	ASSERT(result);
-
 	for (INT i=0; i<num_vec; i++)
 		result[i]=labels->get_label(i);
 	delete labels;
@@ -4178,8 +4162,6 @@ bool CSGInterface::cmd_plugin_estimate_classify()
 
 	INT num_vec=feat->get_num_vectors();
 	DREAL* result=new DREAL[num_vec];
-	ASSERT(result);
-
 	CLabels* labels=ui_pluginestimate->classify();
 	for (INT i=0; i<num_vec; i++)
 		result[i]=labels->get_label(i);
@@ -4240,8 +4222,6 @@ bool CSGInterface::cmd_get_plugin_estimate()
 	num_params=seq_length*num_symbols;
 
 	DREAL* result=new DREAL[num_params*2];
-	ASSERT(result);
-
 	for (INT i=0; i<num_params; i++)
 		result[i]=pos_params[i];
 	for (INT i=0; i<num_params; i++)
@@ -4321,11 +4301,8 @@ bool CSGInterface::cmd_relative_entropy()
 		SG_ERROR("Pos and neg HMM's differ in number of emissions or states.\n");
 
 	DREAL* p=new DREAL[pos_M];
-	ASSERT(p);
 	DREAL* q=new DREAL[neg_M];
-	ASSERT(q);
 	DREAL* entropy=new DREAL[pos_N];
-	ASSERT(entropy);
 
 	for (INT i=0; i<pos_N; i++)
 	{
@@ -4359,9 +4336,7 @@ bool CSGInterface::cmd_entropy()
 	INT N=current->get_N();
 	INT M=current->get_M();
 	DREAL* p=new DREAL[M];
-	ASSERT(p);
 	DREAL* entropy=new DREAL[N];
-	ASSERT(entropy);
 
 	for (INT i=0; i<N; i++)
 	{
@@ -4457,8 +4432,6 @@ bool CSGInterface::do_hmm_classify(bool linear, bool one_class)
 		return false;
 
 	DREAL* result=new DREAL[num_vec];
-	ASSERT(result);
-
 	for (INT i=0; i<num_vec; i++)
 		result[i]=labels->get_label(i);
 	delete labels;
@@ -4695,7 +4668,6 @@ bool CSGInterface::cmd_append_hmm()
 	}
 
 	CHMM* h=new CHMM(N, M, NULL, ui_hmm->get_pseudo());
-	ASSERT(h);
 	INT i,j;
 
 	for (i=0; i<N; i++)
@@ -4883,9 +4855,7 @@ bool CSGInterface::cmd_get_hmm()
 	INT i=0;
 	INT j=0;
 	DREAL* p=new DREAL[N];
-	ASSERT(p);
 	DREAL* q=new DREAL[N];
-	ASSERT(q);
 
 	for (i=0; i<N; i++)
 	{
@@ -4899,7 +4869,6 @@ bool CSGInterface::cmd_get_hmm()
 	delete[] q;
 
 	DREAL* a=new DREAL[N*N];
-	ASSERT(a);
 	for (i=0; i<N; i++)
 		for (j=0; j<N; j++)
 			a[i+j*N]=h->get_a(i, j);
@@ -4907,7 +4876,6 @@ bool CSGInterface::cmd_get_hmm()
 	delete[] a;
 
 	DREAL* b=new DREAL[N*M];
-	ASSERT(b);
 	for (i=0; i<N; i++)
 		for (j=0; j<M; j++)
 			b[i+j*N]=h->get_b(i, j);
@@ -4984,14 +4952,12 @@ bool CSGInterface::cmd_best_path_no_b()
 		SG_ERROR("max_iter < 1.\n");
 
 	CDynProg* h=new CDynProg();
-	ASSERT(h);
 	h->set_N(N_p);
 	h->set_p_vector(p, N_p);
 	h->set_q_vector(q, N_p);
 	h->set_a(a, N_p, N_p);
 
 	INT* path=new INT[max_iter];
-	ASSERT(path);
 	INT best_iter=0;
 	DREAL prob=h->best_path_no_b(max_iter, best_iter, path);
 	delete h;
@@ -5034,17 +5000,14 @@ bool CSGInterface::cmd_best_path_trans_simple()
 		SG_ERROR("nbest < 1.\n");
 
 	CDynProg* h=new CDynProg();
-	ASSERT(h);
 	h->set_N(N_p);
 	h->set_p_vector(p, N_p);
 	h->set_q_vector(q, N_p);
 	h->set_a_trans_matrix(cmd_trans, M_cmd_trans, 3);
 
 	INT* path=new INT[N_seq*nbest];
-	ASSERT(path);
 	memset(path, -1, N_seq*nbest*sizeof(INT));
 	DREAL* prob=new DREAL[nbest];
-	ASSERT(prob);
 
 	h->best_path_trans_simple(seq, N_seq, nbest, prob, path);
 	delete h;
@@ -5089,18 +5052,15 @@ bool CSGInterface::cmd_best_path_no_b_trans()
 		SG_ERROR("nbest < 1.\n");
 
 	CDynProg* h=new CDynProg();
-	ASSERT(h);
 	h->set_N(N_p);
 	h->set_p_vector(p, N_p);
 	h->set_q_vector(q, N_p);
 	h->set_a_trans_matrix(cmd_trans, M_cmd_trans, 3);
 
 	INT* path=new INT[(max_iter+1)*nbest];
-	ASSERT(path);
 	memset(path, -1, (max_iter+1)*nbest*sizeof(INT));
 	INT max_best_iter=0;
 	DREAL* prob=new DREAL[nbest];
-	ASSERT(prob);
 
 	h->best_path_no_b_trans(max_iter, max_best_iter, nbest, prob, path);
 	delete h;
@@ -5124,7 +5084,6 @@ bool CSGInterface::cmd_crc()
 	CHAR* string=get_string(slen);
 	ASSERT(string);
 	BYTE* bstring=new BYTE[slen];
-	ASSERT(bstring);
 
 	for (INT i=0; i<slen; i++)
 		bstring[i]=string[i];
@@ -5258,9 +5217,7 @@ bool CSGInterface::cmd_translate_string()
 
 	const INT max_val=2; /* DNA->2bits */
 	INT i,j;
-
 	WORD* obs=new WORD[len];
-	ASSERT(obs);
 
 	for (i=0; i<len; i++)
 	{
@@ -5301,8 +5258,6 @@ bool CSGInterface::cmd_translate_string()
 	}
 
 	DREAL* real_obs=new DREAL[len];
-	ASSERT(real_obs);
-
 	for (i=start; i<len; i++)
 		real_obs[i-start]=(DREAL) obs[i];
 	delete[] obs;
@@ -5611,7 +5566,6 @@ void CSGInterface::get_int_vector_from_int_vector_or_str(INT*& vector, INT& len)
 		}
 
 		vector=new INT[len];
-		ASSERT(vector);
 		CHAR* str=NULL;
 		INT slen=0;
 		for (INT i=0; i<len; i++)
@@ -5638,7 +5592,6 @@ void CSGInterface::get_real_vector_from_real_vector_or_str(DREAL*& vector, INT& 
 		}
 
 		vector=new DREAL[len];
-		ASSERT(vector);
 		CHAR* str=NULL;
 		INT slen=0;
 		for (INT i=0; i<len; i++)
@@ -5681,8 +5634,6 @@ CHAR* CSGInterface::get_str_from_str(INT& len)
 
 	len=i;
 	CHAR* str=new CHAR[len+1];
-	ASSERT(str);
-
 	for (i=0; i<len; i++)
 		str[i]=m_legacy_strptr[i];
 	str[len]='\0';

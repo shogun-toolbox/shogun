@@ -38,11 +38,9 @@ bool CLPM::train()
 	delete[] w;
 	w=new DREAL[num_feat];
 	w_dim=num_feat;
-	ASSERT(w);
 
 	INT num_params=1+2*num_feat+num_vec; //b,w+,w-,xi
 	DREAL* params=new DREAL[num_params];
-	ASSERT(params);
 	memset(params,0,sizeof(DREAL)*num_params);
 
 	CCplex solver;

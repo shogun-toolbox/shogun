@@ -342,8 +342,8 @@ bool CGUIHMM::hmm_test(
 	neg->set_observations(o);
 	INT total=o->get_num_vectors();
 	ASSERT(lab && total==lab->get_num_labels());
-	DREAL* output = new DREAL[total];
-	INT* label= new INT[total];
+	DREAL* output=new DREAL[total];
+	INT* label=new INT[total];
 
 	SG_INFO("Testing using neg %s hmm vs. pos %s hmm\n", is_neg_linear ? "linear" : "", is_pos_linear ? "linear" : "");
 
@@ -378,17 +378,17 @@ CLabels* CGUIHMM::classify(CLabels* result)
 {
 	CStringFeatures<WORD>* obs= (CStringFeatures<WORD>*) ui->
 		ui_features->get_test_features();
+	ASSERT(obs);
 	INT num_vec=obs->get_num_vectors();
-
-	if (!result)
-		result=new CLabels(num_vec);
 
 	//CStringFeatures<WORD>* old_pos=pos->get_observations();
 	//CStringFeatures<WORD>* old_neg=neg->get_observations();
 
-	ASSERT(obs!=NULL);
 	pos->set_observations(obs);
 	neg->set_observations(obs);
+
+	if (!result)
+		result=new CLabels(num_vec);
 
 	for (INT i=0; i<num_vec; i++)
 		result->set_label(i, pos->model_probability(i) - neg->model_probability(i));
@@ -402,11 +402,11 @@ DREAL CGUIHMM::classify_example(INT idx)
 {
 	CStringFeatures<WORD>* obs= (CStringFeatures<WORD>*) ui->
 		ui_features->get_test_features();
+	ASSERT(obs);
 
 	//CStringFeatures<WORD>* old_pos=pos->get_observations();
 	//CStringFeatures<WORD>* old_neg=neg->get_observations();
 
-	ASSERT(obs!=NULL);
 	pos->set_observations(obs);
 	neg->set_observations(obs);
 
@@ -418,20 +418,18 @@ DREAL CGUIHMM::classify_example(INT idx)
 
 CLabels* CGUIHMM::one_class_classify(CLabels* result)
 {
+	ASSERT(working);
+
 	CStringFeatures<WORD>* obs= (CStringFeatures<WORD>*) ui->
 		ui_features->get_test_features();
+	ASSERT(obs);
 	INT num_vec=obs->get_num_vectors();
+
+	//CStringFeatures<WORD>* old_pos=working->get_observations();
+	working->set_observations(obs);
 
 	if (!result)
 		result=new CLabels(num_vec);
-
-	ASSERT(working);
-
-	//CStringFeatures<WORD>* old_pos=working->get_observations();
-
-	ASSERT(obs!=NULL);
-	working->set_observations(obs);
-
 
 	for (INT i=0; i<num_vec; i++)
 		result->set_label(i, working->model_probability(i));
@@ -442,19 +440,18 @@ CLabels* CGUIHMM::one_class_classify(CLabels* result)
 
 CLabels* CGUIHMM::linear_one_class_classify(CLabels* result)
 {
+	ASSERT(working);
+
 	CStringFeatures<WORD>* obs= (CStringFeatures<WORD>*) ui->
 		ui_features->get_test_features();
+	ASSERT(obs);
 	INT num_vec=obs->get_num_vectors();
+
+	//CStringFeatures<WORD>* old_pos=working->get_observations();
+	working->set_observations(obs);
 
 	if (!result)
 		result=new CLabels(num_vec);
-
-	//CStringFeatures<WORD>* old_pos=working->get_observations();
-
-	ASSERT(obs!=NULL);
-	working->set_observations(obs);
-
-	ASSERT(working);
 
 	for (INT i=0; i<num_vec; i++)
 		result->set_label(i, working->linear_model_probability(i));
@@ -466,16 +463,17 @@ CLabels* CGUIHMM::linear_one_class_classify(CLabels* result)
 
 DREAL CGUIHMM::one_class_classify_example(INT idx)
 {
+	ASSERT(working);
+
 	CStringFeatures<WORD>* obs= (CStringFeatures<WORD>*) ui->
 		ui_features->get_test_features();
+	ASSERT(obs);
 
 	//CStringFeatures<WORD>* old_pos=pos->get_observations();
 
-	ASSERT(obs!=NULL);
 	pos->set_observations(obs);
 	neg->set_observations(obs);
 
-	ASSERT(working);
 	DREAL result=working->model_probability(idx);
 	//working->set_observations(old_pos);
 	return result;
@@ -507,7 +505,7 @@ bool CGUIHMM::append_model(CHAR* param)
 
 					DREAL* cur_o=new DREAL[h->get_M()];
 					DREAL* app_o=new DREAL[h->get_M()];
-					ASSERT(cur_o != NULL && app_o != NULL);
+					ASSERT(cur_o && app_o);
 
 					SG_DEBUG( "h %d , M: %d\n", h, h->get_M());
 
@@ -724,7 +722,6 @@ bool CGUIHMM::save_path(CHAR* filename, bool is_binary)
 		//else
 		CStringFeatures<WORD>* obs=(CStringFeatures<WORD>*) ui->
 			ui_features->get_test_features();
-
 		ASSERT(obs);
 		working->set_observations(obs);
 

@@ -172,8 +172,8 @@ class CAlphabet : public CSGObject
 		inline void get_hist(LONG** h, INT* len)
 		{
 			INT hist_size=(1 << (sizeof(BYTE)*8));
-			ASSERT(h && len)
-				*h=(LONG*) malloc(sizeof(LONG)*hist_size);
+			ASSERT(h && len);
+			*h=(LONG*) malloc(sizeof(LONG)*hist_size);
 			ASSERT(*h);
 			*len=hist_size;
 			ASSERT(*len);

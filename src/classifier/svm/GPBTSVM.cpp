@@ -39,7 +39,6 @@ bool CGPBTSVM::train()
 	int* lab=get_labels()->get_int_labels(num_lab);
 	prob.KER=new sKernel(kernel, num_lab);
 	prob.y=lab;
-	ASSERT(prob.KER);
 	prob.ell=get_labels()->get_num_labels();
 	SG_INFO( "%d trainlabels\n", prob.ell);
 

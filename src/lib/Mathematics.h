@@ -346,7 +346,7 @@ class CMath : public CSGObject
 		static inline INT random(INT min_value, INT max_value)
 		{
 			INT ret = min_value + (INT) ((max_value-min_value+1) * (random() / (RAND_MAX+1.0)));
-			ASSERT(ret >= min_value && ret<=max_value);
+			ASSERT(ret>=min_value && ret<=max_value);
 			return ret ;
 		}
 
@@ -356,7 +356,7 @@ class CMath : public CSGObject
 
 			if (ret<min_value || ret>max_value)
 				SG_SPRINT("min_value:%10.10f value: %10.10f max_value:%10.10f", min_value, ret, max_value);
-			ASSERT(ret >= min_value && ret<=max_value);
+			ASSERT(ret>=min_value && ret<=max_value);
 			return ret;
 		}
 
@@ -366,7 +366,7 @@ class CMath : public CSGObject
 
 			if (ret<min_value || ret>max_value)
 				SG_SPRINT("min_value:%10.10f value: %10.10f max_value:%10.10f", min_value, ret, max_value);
-			ASSERT(ret >= min_value && ret<=max_value);
+			ASSERT(ret>=min_value && ret<=max_value);
 			return ret;
 		}
 

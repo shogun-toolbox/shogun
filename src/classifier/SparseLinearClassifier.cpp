@@ -26,12 +26,12 @@ CLabels* CSparseLinearClassifier::classify(CLabels* output)
 	{
 		INT num=features->get_num_vectors();
 		ASSERT(num>0);
-		ASSERT(w_dim == features->get_num_features());
+		ASSERT(w_dim==features->get_num_features());
 
 		if (!output)
 			output=new CLabels(num);
+		ASSERT(output->get_num_labels()==num);
 
-		ASSERT(output && output->get_num_labels() == num);
 		for (INT i=0; i<num; i++)
 			output->set_label(i, classify_example(i));
 

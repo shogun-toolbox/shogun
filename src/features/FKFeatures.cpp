@@ -87,8 +87,6 @@ double CFKFeatures::set_opt_a(double a)
 		SG_INFO( "estimating a.\n");
 		pos_prob=new double[pos->get_observations()->get_num_vectors()];
 		neg_prob=new double[pos->get_observations()->get_num_vectors()];
-		ASSERT(pos_prob!=NULL);
-		ASSERT(neg_prob!=NULL);
 		for (INT i=0; i<pos->get_observations()->get_num_vectors(); i++)
 		{
 			pos_prob[i]=pos->model_probability(i) ;
@@ -121,7 +119,7 @@ double CFKFeatures::set_opt_a(double a)
 
 void CFKFeatures::set_models(CHMM* p, CHMM* n)
 {
-	ASSERT(p!=NULL && n!=NULL);
+	ASSERT(p && n);
 	SG_REF(p);
 	SG_REF(n);
 

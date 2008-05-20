@@ -37,16 +37,14 @@ bool CSparseEuclidianDistance::init(CFeatures* l, CFeatures* r)
 
 	cleanup();
 
-	sq_lhs= new DREAL[lhs->get_num_vectors()];
-	ASSERT(sq_lhs);
+	sq_lhs=new DREAL[lhs->get_num_vectors()];
 	sq_lhs=((CSparseFeatures<DREAL>*) lhs)->compute_squared(sq_lhs);
 
 	if (lhs==rhs)
 		sq_rhs=sq_lhs;
 	else
 	{
-		sq_rhs= new DREAL[rhs->get_num_vectors()];
-		ASSERT(sq_rhs);
+		sq_rhs=new DREAL[rhs->get_num_vectors()];
 		sq_rhs=((CSparseFeatures<DREAL>*) rhs)->compute_squared(sq_rhs);
 	}
 

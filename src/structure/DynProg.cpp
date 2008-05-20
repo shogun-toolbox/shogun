@@ -191,7 +191,7 @@ void CDynProg::set_N(INT p_N)
 
 void CDynProg::set_p_vector(DREAL *p, INT p_N) 
 {
-	ASSERT(p_N==N) ;
+	ASSERT(p_N==N);
 	//m_orf_info.resize_array(p_N,2) ;
 	//m_PEN.resize_array(p_N,p_N) ;
 
@@ -200,22 +200,22 @@ void CDynProg::set_p_vector(DREAL *p, INT p_N)
 
 void CDynProg::set_q_vector(DREAL *q, INT q_N) 
 {
-	ASSERT(q_N==N) ;
+	ASSERT(q_N==N);
 	end_state_distribution_q.set_array(q, q_N, true, true) ;
 }
 
 void CDynProg::set_a(DREAL *a, INT p_M, INT p_N) 
 {
-	ASSERT(p_N==N) ;
-	ASSERT(p_M==p_N) ;
+	ASSERT(p_N==N);
+	ASSERT(p_M==p_N);
 	transition_matrix_a.set_array(a, p_N, p_N, true, true) ;
 	transition_matrix_a_deriv.resize_array(p_N, p_N) ;
 }
 
 void CDynProg::set_a_id(INT *a, INT p_M, INT p_N) 
 {
-	ASSERT(p_N==N) ;
-	ASSERT(p_M==p_N) ;
+	ASSERT(p_N==N);
+	ASSERT(p_M==p_N);
 	transition_matrix_a_id.set_array(a, p_N, p_N, true, true) ;
 	max_a_id = 0 ;
 	for (INT i=0; i<p_N; i++)
@@ -225,7 +225,7 @@ void CDynProg::set_a_id(INT *a, INT p_M, INT p_N)
 
 void CDynProg::set_a_trans_matrix(DREAL *a_trans, INT num_trans, INT p_N) 
 {
-	ASSERT((p_N==3) || (p_N==4)) ;
+	ASSERT((p_N==3) || (p_N==4));
 
 	delete[] trans_list_forward ;
 	delete[] trans_list_forward_cnt ;
@@ -294,8 +294,8 @@ void CDynProg::set_a_trans_matrix(DREAL *a_trans, INT num_trans, INT p_N)
 			id = (INT)a_trans[i+num_trans*3] ;
 		//SG_DEBUG( "id=%i\n", id) ;
 			
-		ASSERT(to_state>=0 && to_state<N) ;
-		ASSERT(from_state>=0 && from_state<N) ;
+		ASSERT(to_state>=0 && to_state<N);
+		ASSERT(from_state>=0 && from_state<N);
 		
 		trans_list_forward[to_state][trans_list_forward_cnt[to_state]]=from_state ;
 		trans_list_forward_val[to_state][trans_list_forward_cnt[to_state]]=val ;
@@ -339,7 +339,7 @@ void CDynProg::init_word_degree_array(INT * p_word_degree_array, INT num_elem)
 	svm_arrays_clean=false ;
 
 	word_degree.resize_array(num_degrees) ;
-	ASSERT(num_degrees==num_elem) ;
+	ASSERT(num_degrees==num_elem);
 
 	for (INT i=0; i<num_degrees; i++)
 		word_degree[i]=p_word_degree_array[i] ;
@@ -352,7 +352,7 @@ void CDynProg::init_cum_num_words_array(INT * p_cum_num_words_array, INT num_ele
 
 	cum_num_words.resize_array(num_degrees+1) ;
 	cum_num_words_array=cum_num_words.get_array() ;
-	ASSERT(num_degrees+1==num_elem) ;
+	ASSERT(num_degrees+1==num_elem);
 
 	for (INT i=0; i<num_degrees+1; i++)
 		cum_num_words[i]=p_cum_num_words_array[i] ;
@@ -364,7 +364,7 @@ void CDynProg::init_num_words_array(INT * p_num_words_array, INT num_elem)
 
 	num_words.resize_array(num_degrees) ;
 	num_words_array=num_words.get_array() ;
-	ASSERT(num_degrees==num_elem) ;
+	ASSERT(num_degrees==num_elem);
 
 	for (INT i=0; i<num_degrees; i++)
 		num_words[i]=p_num_words_array[i] ;
@@ -377,8 +377,8 @@ void CDynProg::init_mod_words_array(INT * p_mod_words_array, INT num_elem, INT n
 {
 	svm_arrays_clean=false ;
 
-	ASSERT(num_svms==num_elem) ;
-	ASSERT(num_columns==2) ;
+	ASSERT(num_svms==num_elem);
+	ASSERT(num_columns==2);
 
 	mod_words.set_array(p_mod_words_array, num_elem, 2, true, true) ;
 	mod_words_array = mod_words.get_array() ;
@@ -393,7 +393,7 @@ void CDynProg::init_sign_words_array(bool* p_sign_words_array, INT num_elem)
 {
 	svm_arrays_clean=false ;
 
-	ASSERT(num_svms==num_elem) ;
+	ASSERT(num_svms==num_elem);
 
 	sign_words.set_array(p_sign_words_array, num_elem, true, true) ;
 	sign_words_array = sign_words.get_array() ;
@@ -403,7 +403,7 @@ void CDynProg::init_string_words_array(INT* p_string_words_array, INT num_elem)
 {
 	svm_arrays_clean=false ;
 
-	ASSERT(num_svms==num_elem) ;
+	ASSERT(num_svms==num_elem);
 
 	string_words.set_array(p_string_words_array, num_elem, true, true) ;
 	string_words_array = string_words.get_array() ;
@@ -431,7 +431,7 @@ void CDynProg::create_word_string(const CHAR* genestr, INT genestr_num, INT gene
 					case 'g': wordstr[k][j][i]=2 ; break ;
 					case 'T':
 					case 't': wordstr[k][j][i]=3 ; break ;
-					default: ASSERT(0) ;
+					default: ASSERT(0);
 					}
 				translate_from_single_order(wordstr[k][j], genestr_len, word_degree[j]-1, word_degree[j]) ;
 			}
@@ -550,9 +550,9 @@ void CDynProg::best_path_set_seq(DREAL *seq, INT p_N, INT seq_len)
 		return ;
 	} ;
 
-	ASSERT(p_N==N) ;
-	ASSERT(initial_state_distribution_p.get_dim1()==N) ;
-	ASSERT(end_state_distribution_q.get_dim1()==N) ;	
+	ASSERT(p_N==N);
+	ASSERT(initial_state_distribution_p.get_dim1()==N);
+	ASSERT(end_state_distribution_q.get_dim1()==N);
 	
 	m_seq.set_array(seq, N, seq_len, 1, true, true) ;
 	this->N=N ;
@@ -569,9 +569,9 @@ void CDynProg::best_path_set_seq3d(DREAL *seq, INT p_N, INT seq_len, INT max_num
 		return ;
 	} ;
 
-	ASSERT(p_N==N) ;
-	ASSERT(initial_state_distribution_p.get_dim1()==N) ;
-	ASSERT(end_state_distribution_q.get_dim1()==N) ;	
+	ASSERT(p_N==N);
+	ASSERT(initial_state_distribution_p.get_dim1()==N);
+	ASSERT(end_state_distribution_q.get_dim1()==N);
 	
 	m_seq.set_array(seq, N, seq_len, max_num_signals, true, true) ;
 	this->N=N ;

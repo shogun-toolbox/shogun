@@ -26,8 +26,9 @@ CLogPlusOne::~CLogPlusOne()
 /// initialize preprocessor from features
 bool CLogPlusOne::init(CFeatures* f)
 {
-	ASSERT(f->get_feature_class() == C_SIMPLE);
-	ASSERT(f->get_feature_type() == F_DREAL);
+	ASSERT(f->get_feature_class()==C_SIMPLE);
+	ASSERT(f->get_feature_type()==F_DREAL);
+
 	return true;
 }
 

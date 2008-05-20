@@ -142,9 +142,7 @@ CHAR* COctaveInterface::get_string(INT& len)
 	len=std_str.length();
 	ASSERT(str && len>0);
 
-	CHAR* cstr = new CHAR[len+1];
-	ASSERT(cstr);
-
+	CHAR* cstr=new CHAR[len+1];
 	memcpy(cstr, str, len+1);
 	cstr[len]='\0';
 
@@ -161,7 +159,6 @@ void COctaveInterface::function_name(sg_type*& vec, INT& len)						\
 	oct_type m = mat_feat.oct_converter();											\
 	len = m.cols();																	\
 	vec=new sg_type[len];															\
-	ASSERT(vec);																	\
 																					\
 	for (INT i=0; i<len; i++)														\
 			vec[i]= (sg_type) m(i);													\
@@ -187,7 +184,6 @@ void COctaveInterface::function_name(sg_type*& matrix, INT& num_feat, INT& num_v
 	num_vec = m.cols();																\
 	num_feat = m.rows();															\
 	matrix=new sg_type[num_vec*num_feat];											\
-	ASSERT(matrix);																	\
 																					\
 	for (INT i=0; i<num_vec; i++)													\
 		for (INT j=0; j<num_feat; j++)												\
@@ -225,7 +221,6 @@ void COctaveInterface::get_real_sparsematrix(TSparse<DREAL>*& matrix, INT& num_f
 		if (len>0)
 		{
 			matrix[i].features=new TSparseEntry<DREAL>[len];
-			ASSERT(matrix[i].features);
 
 			for (INT j=0; j<len; j++)
 			{
@@ -263,7 +258,6 @@ void COctaveInterface::function_name(T_STRING<sg_type>*& strings, INT& num_str, 
 			{ 																		\
 				strings[i].length=len; /* all must have same length in octave */ 	\
 				strings[i].string=new sg_type[len+1]; /* not zero terminated in octave */ \
-				ASSERT(strings[i].string); 											\
 				INT j; 																\
 				for (j=0; j<len; j++) 												\
 					strings[i].string[j]=str(0,j); 									\
@@ -284,7 +278,6 @@ void COctaveInterface::function_name(T_STRING<sg_type>*& strings, INT& num_str, 
 		num_str=data.cols(); 														\
 		INT len=data.rows(); 														\
 		strings=new T_STRING<sg_type>[num_str]; 									\
-		ASSERT(strings); 															\
 																					\
 		for (INT i=0; i<num_str; i++) 												\
 		{ 																			\
@@ -292,7 +285,6 @@ void COctaveInterface::function_name(T_STRING<sg_type>*& strings, INT& num_str, 
 			{ 																		\
 				strings[i].length=len; /* all must have same length in octave */ 	\
 				strings[i].string=new sg_type[len+1]; /* not zero terminated in octave */ \
-				ASSERT(strings[i].string); 											\
 				INT j; 																\
 				for (j=0; j<len; j++) 												\
 					strings[i].string[j]=data(j,i);									\
@@ -442,10 +434,7 @@ SET_STRINGLIST(set_word_string_list, uint16NDArray, WORD, WORD, "Word")
 DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 {
 	if (!interface)
-	{
 		interface=new COctaveInterface(prhs, nlhs);
-		ASSERT(interface);
-	}
 	else
 		((COctaveInterface*) interface)->reset(prhs, nlhs);
 

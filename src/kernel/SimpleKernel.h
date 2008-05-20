@@ -49,8 +49,8 @@ template <class ST> class CSimpleKernel : public CKernel
 		{
 			CKernel::init(l,r);
 
-			ASSERT(l->get_feature_class() == C_SIMPLE);
-			ASSERT(r->get_feature_class() == C_SIMPLE);
+			ASSERT(l->get_feature_class()==C_SIMPLE);
+			ASSERT(r->get_feature_class()==C_SIMPLE);
 			ASSERT(l->get_feature_type()==this->get_feature_type());
 			ASSERT(r->get_feature_type()==this->get_feature_type());
 

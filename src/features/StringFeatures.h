@@ -62,7 +62,6 @@ template <class ST> class CStringFeatures: public CFeatures
 		{
 			alphabet=new CAlphabet(alpha);
 			SG_REF(alphabet);
-			ASSERT(alphabet);
 			num_symbols=alphabet->get_num_symbols();
 			original_num_symbols=num_symbols;
 		}
@@ -79,7 +78,6 @@ template <class ST> class CStringFeatures: public CFeatures
 	{
 		ASSERT(alpha);
 		alphabet=new CAlphabet(alpha);
-		ASSERT(alphabet);
 		num_symbols=alphabet->get_num_symbols();
 		original_num_symbols=num_symbols;
 	}
@@ -102,12 +100,11 @@ template <class ST> class CStringFeatures: public CFeatures
 			if (orig.features)
 			{
 				features=new T_STRING<ST>[orig.num_vectors];
-				ASSERT(features);
 
 				for (INT i=0; i<num_vectors; i++)
 				{
 					features[i].string=new ST[orig.features[i].length];
-					ASSERT(features[i].string!=NULL);
+					ASSERT(features[i].string);
 					features[i].length=orig.features[i].length;
 					memcpy(features[i].string, orig.features[i].string, sizeof(ST)*orig.features[i].length); 
 				}
@@ -210,7 +207,7 @@ template <class ST> class CStringFeatures: public CFeatures
 		 */
 		void select_feature_vector(INT num)
 		{
-			ASSERT(features!=NULL);
+			ASSERT(features);
 			ASSERT(num<num_vectors);
 
 			selected_vector=num;
@@ -223,7 +220,7 @@ template <class ST> class CStringFeatures: public CFeatures
 		 */
 		void get_string(ST** dst, INT* len)
 		{
-			ASSERT(features!=NULL);
+			ASSERT(features);
 			ASSERT(selected_vector<num_vectors);
 
 			*len=features[selected_vector].length;
@@ -239,7 +236,7 @@ template <class ST> class CStringFeatures: public CFeatures
 		 */
 		virtual ST* get_feature_vector(INT num, INT& len)
 		{
-			ASSERT(features!=NULL);
+			ASSERT(features);
 			ASSERT(num<num_vectors);
 
 			len=features[num].length;
@@ -254,7 +251,7 @@ template <class ST> class CStringFeatures: public CFeatures
 		 */
 		virtual void set_feature_vector(INT num, ST* string, INT len)
 		{
-			ASSERT(features!=NULL);
+			ASSERT(features);
 			ASSERT(num<num_vectors);
 
 			features[num].length=len ;
@@ -270,7 +267,7 @@ template <class ST> class CStringFeatures: public CFeatures
 		virtual ST inline get_feature(INT vec_num, INT feat_num)
 		{
 			ASSERT(features && vec_num<num_vectors);
-			ASSERT(feat_num < features[vec_num].length);
+			ASSERT(feat_num<features[vec_num].length);
 
 			return features[vec_num].string[feat_num];
 		}
@@ -409,7 +406,6 @@ template <class ST> class CStringFeatures: public CFeatures
 
 					features[lines].length=columns;
 					features[lines].string=new ST[columns];
-					ASSERT(features[lines].string);
 
 					max_string_length=CMath::max(max_string_length,columns);
 
@@ -441,7 +437,6 @@ template <class ST> class CStringFeatures: public CFeatures
 			size_t blocksize=1024*1024;
 			size_t required_blocksize=0;
 			BYTE* dummy=new BYTE[blocksize];
-			ASSERT(dummy);
 			BYTE* overflow=NULL;
 			INT overflow_len=0;
 
@@ -449,7 +444,6 @@ template <class ST> class CStringFeatures: public CFeatures
 			cleanup();
 
 			CAlphabet* alpha=new CAlphabet(DNA);
-			ASSERT(alpha);
 
 			FILE* f=fopen(fname, "ro");
 
@@ -489,12 +483,8 @@ template <class ST> class CStringFeatures: public CFeatures
 				delete[] dummy;
 				blocksize=required_blocksize;
 				dummy = new BYTE[blocksize];
-				ASSERT(dummy);
 				overflow = new BYTE[blocksize];
-				ASSERT(overflow);
-
 				features=new T_STRING<ST>[num_vectors];
-				ASSERT(features);
 
 				rewind(f);
 				sz=blocksize;
@@ -514,7 +504,6 @@ template <class ST> class CStringFeatures: public CFeatures
 
 							features[lines].length=len;
 							features[lines].string=new ST[len];
-							ASSERT(features[lines].string);
 
 							if (remap_to_bin)
 							{
@@ -564,7 +553,6 @@ template <class ST> class CStringFeatures: public CFeatures
 				alphabet = new CAlphabet(RAWDNA);
 			else
 				alphabet = new CAlphabet(DNA);
-			ASSERT(alphabet);
 			SG_REF(alphabet);
 
 			return result;
@@ -615,7 +603,6 @@ template <class ST> class CStringFeatures: public CFeatures
 						if (f)
 						{
 							ST* str=new ST[filesize];
-							ASSERT(str);
 							SG_DEBUG("%s:%ld\n", fname, (long int) filesize);
 							fread(str, sizeof(ST), filesize, f);
 							strings[num].string=str;
@@ -654,7 +641,6 @@ template <class ST> class CStringFeatures: public CFeatures
 			if (p_features)
 			{
 				CAlphabet* alpha=new CAlphabet(alphabet);
-				ASSERT(alpha);
 
 				//compute histogram for char/byte
 				for (INT i=0; i<p_num_vectors; i++)
@@ -756,7 +742,7 @@ template <class ST> class CStringFeatures: public CFeatures
 			ASSERT(window_size>0);
 			ASSERT(num_vectors==1 || single_string);
 			ASSERT(max_string_length>=window_size ||
-					( single_string && length_of_single_string>=window_size));
+					(single_string && length_of_single_string>=window_size));
 
 			//in case we are dealing with a single remapped string
 			//allow remapping
@@ -799,7 +785,7 @@ template <class ST> class CStringFeatures: public CFeatures
 			ASSERT(window_size>0);
 			ASSERT(num_vectors==1 || single_string);
 			ASSERT(max_string_length>=window_size ||
-					( single_string && length_of_single_string>=window_size));
+					(single_string && length_of_single_string>=window_size));
 
 			num_vectors= positions->get_num_elements();
 			ASSERT(num_vectors>0);
@@ -818,8 +804,6 @@ template <class ST> class CStringFeatures: public CFeatures
 			}
 
 			T_STRING<ST>* f=new T_STRING<ST>[num_vectors];
-			ASSERT(f);
-
 			for (INT i=0; i<num_vectors; i++)
 			{
 				INT p=positions->get_element(i);
@@ -841,6 +825,7 @@ template <class ST> class CStringFeatures: public CFeatures
 					return -1;
 				}
 			}
+
 			delete[] features;
 			features=f;
 			selected_vector=0;
@@ -887,8 +872,6 @@ template <class ST> class CStringFeatures: public CFeatures
 				ASSERT(num_vectors>0);
 				max_string_length=sf->get_max_vector_length()-start;
 				features=new T_STRING<ST>[num_vectors];
-				ASSERT(features);
-
 				CAlphabet* alpha=sf->get_alphabet();
 				ASSERT(alpha->get_num_symbols_in_histogram() > 0);
 
@@ -901,7 +884,6 @@ template <class ST> class CStringFeatures: public CFeatures
 
 					features[i].string=new ST[len];
 					features[i].length=len;
-					ASSERT(features[i].string);
 
 					ST* str=features[i].string;
 					for (INT j=0; j<len; j++)
@@ -1058,10 +1040,10 @@ template <class ST> class CStringFeatures: public CFeatures
 		 */
 		void translate_from_single_order(ST* obs, INT sequence_length, INT start, INT p_order, INT max_val, INT gap)
 		{
-			ASSERT(gap>=0) ;
+			ASSERT(gap>=0);
 
-			const INT start_gap = (p_order - gap)/2 ;
-			const INT end_gap = start_gap + gap ;
+			const INT start_gap=(p_order-gap)/2;
+			const INT end_gap=start_gap+gap;
 
 			INT i,j;
 			ST value=0;
@@ -1125,10 +1107,10 @@ template <class ST> class CStringFeatures: public CFeatures
 		 */
 		void translate_from_single_order_reversed(ST* obs, INT sequence_length, INT start, INT p_order, INT max_val, INT gap)
 		{
-			ASSERT(gap>=0) ;
+			ASSERT(gap>=0);
 
-			const INT start_gap = (p_order - gap)/2 ;
-			const INT end_gap = start_gap + gap ;
+			const INT start_gap=(p_order-gap)/2;
+			const INT end_gap=start_gap+gap;
 
 			INT i,j;
 			ST value=0;

@@ -26,7 +26,6 @@ CLibSVM::~CLibSVM()
 
 bool CLibSVM::train()
 {
-
 	struct svm_node* x_space;
 
 	ASSERT(labels && labels->get_num_labels());
@@ -38,10 +37,6 @@ bool CLibSVM::train()
 	problem.y=new double[problem.l];
 	problem.x=new struct svm_node*[problem.l];
 	x_space=new struct svm_node[2*problem.l];
-
-	ASSERT(problem.y);
-	ASSERT(problem.x);
-	ASSERT(x_space);
 
 	for (int i=0; i<problem.l; i++)
 	{
@@ -55,7 +50,7 @@ bool CLibSVM::train()
 	double weights[2]={1.0,get_C2()/get_C1()};
 
 	ASSERT(kernel && kernel->has_features());
-    ASSERT(kernel->get_num_vec_lhs() == problem.l);
+    ASSERT(kernel->get_num_vec_lhs()==problem.l);
 
 	param.svm_type=C_SVC; // C SVM
 	param.kernel_type = LINEAR;
@@ -86,7 +81,7 @@ bool CLibSVM::train()
 	if (model)
 	{
 		ASSERT(model->nr_class==2);
-		ASSERT( (model->l==0) || (model->l > 0 && model->SV && model->sv_coef && model->sv_coef[0]) );
+		ASSERT((model->l==0) || (model->l>0 && model->SV && model->sv_coef && model->sv_coef[0]));
 
 		int num_sv=model->l;
 

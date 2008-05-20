@@ -296,7 +296,7 @@ bool CSVMLight::setup_auc_maximization()
 	INT num=0;
 	ASSERT(labels);
 	INT* int_labels=labels->get_int_labels(num);
-	ASSERT(kernel->get_num_vec_rhs() == num) ;
+	ASSERT(kernel->get_num_vec_rhs()==num);
 	
 	// count positive and negative
 	INT num_pos = 0 ;
@@ -332,7 +332,7 @@ bool CSVMLight::setup_auc_maximization()
 						labels_auc[n] = -1 ;
 					}
 					n++ ;
-					ASSERT(n<=num_auc) ;
+					ASSERT(n<=num_auc);
 				}
 
 	// create label object and attach it to svm
@@ -393,7 +393,7 @@ bool CSVMLight::train()
     }
 	ASSERT(labels && labels->get_num_labels());
 	ASSERT(labels->is_two_class_labeling());
-    ASSERT(kernel->get_num_vec_lhs() == labels->get_num_labels());
+	ASSERT(kernel->get_num_vec_lhs()==labels->get_num_labels());
 
 	// MKL stuff
 	buffer_num = new DREAL[kernel->get_num_vec_rhs()];
@@ -472,11 +472,8 @@ bool CSVMLight::train()
 
         // allocating memory 
 		for (INT n=0; n<num_precomputed_subkernels; n++)
-		{
-			precomputed_subkernels[n]=new SHORTREAL[num*(num+1)/2] ;
-			ASSERT(precomputed_subkernels[n]!=NULL) ;
-		}
-		
+			precomputed_subkernels[n]=new SHORTREAL[num*(num+1)/2];
+
 		for (INT n=0; n<num_precomputed_subkernels; n++)
 		{
 			w1[n]=1.0 ;
@@ -577,7 +574,7 @@ void CSVMLight::svm_learn()
 	INT totdoc=0;
 	ASSERT(labels);
 	INT* label=labels->get_int_labels(totdoc);
-	ASSERT(label!=NULL);
+	ASSERT(label);
 	INT* docs=new INT[totdoc];
 	delete[] W;
 	W=NULL;
@@ -1346,7 +1343,7 @@ void CSVMLight::compute_matrices_for_optimization_parallel(INT* docs, INT* label
 			qp->opt_g0[i]=lin[key[i]];
 		}
 
-		ASSERT(parallel.get_num_threads()>1) ;
+		ASSERT(parallel.get_num_threads()>1);
 		INT *KI=new INT[varnum*varnum] ;
 		INT *KJ=new INT[varnum*varnum] ;
 		INT Knum=0 ;
@@ -1364,7 +1361,7 @@ void CSVMLight::compute_matrices_for_optimization_parallel(INT* docs, INT* label
 				Knum++ ;
 			}
 		}
-		ASSERT(Knum<=varnum*(varnum+1)/2) ;
+		ASSERT(Knum<=varnum*(varnum+1)/2);
 
 		pthread_t threads[parallel.get_num_threads()-1];
 		S_THREAD_PARAM_KERNEL params[parallel.get_num_threads()-1];
@@ -1704,15 +1701,15 @@ void CSVMLight::update_linear_component_mkl(INT* docs, INT* label,
 	INT num_kernels = kernel->get_num_subkernels() ;
 	const DREAL* w   = kernel->get_subkernel_weights(num_weights);
 
-	ASSERT(num_weights==num_kernels) ;
-	DREAL* sumw = new DREAL[num_kernels];
+	ASSERT(num_weights==num_kernels);
+	DREAL* sumw=new DREAL[num_kernels];
 
 	if (use_precomputed_subkernels) // everything is already precomputed
 	{
-		ASSERT(precomputed_subkernels!=NULL) ;
+		ASSERT(precomputed_subkernels);
 		for (INT n=0; n<num_kernels; n++)
 		{
-			ASSERT(precomputed_subkernels[n]!=NULL) ;
+			ASSERT(precomputed_subkernels[n]);
 			SHORTREAL * matrix = precomputed_subkernels[n] ;
 			for(INT i=0;i<num;i++) 
 			{
@@ -2068,7 +2065,7 @@ void CSVMLight::update_linear_component_mkl_linadd(INT* docs, INT* label,
 	INT num_kernels = kernel->get_num_subkernels() ;
 	const DREAL* w   = kernel->get_subkernel_weights(num_weights);
 	
-	ASSERT(num_weights==num_kernels) ;
+	ASSERT(num_weights==num_kernels);
 	DREAL* sumw = new DREAL[num_kernels];
 	{
 		DREAL* w_backup = new DREAL[num_kernels] ;
@@ -2959,9 +2956,6 @@ void CSVMLight::reactivate_inactive_examples(INT* label,
 		  INT *idx = new INT[totdoc] ;
 		  INT num_suppvec=0 ;
 
-		  ASSERT(alphas);
-		  ASSERT(idx);
-
 		  for (i=0; i<totdoc; i++)
 		  {
 			  if(a[i] != a_old[i]) 
@@ -2977,7 +2971,6 @@ void CSVMLight::reactivate_inactive_examples(INT* label,
 		  {
 			  INT num_inactive=0;
 			  INT* inactive_idx=new INT[totdoc]; // infact we only need a subset 
-			  ASSERT(inactive_idx);
 
 			  j=0;
 			  for(i=0;i<totdoc;i++) 
@@ -2992,7 +2985,6 @@ void CSVMLight::reactivate_inactive_examples(INT* label,
 			  if (num_inactive>0)
 			  {
 				  DREAL* dest = new DREAL[num_inactive];
-				  ASSERT(dest);
 				  memset(dest, 0, sizeof(DREAL)*num_inactive);
 
 				  kernel->compute_batch(num_inactive, inactive_idx, dest, num_suppvec, idx, alphas);
@@ -3068,10 +3060,8 @@ void CSVMLight::reactivate_inactive_examples(INT* label,
 
 				  // alloc num_threads many tmp buffers
 				  DREAL* tmp_lin=new DREAL[totdoc*num_threads];
-				  DREAL* tmp_aicache=new DREAL[totdoc*num_threads];
-				  ASSERT(tmp_lin);
-				  ASSERT(tmp_aicache);
 				  memset(tmp_lin, 0, sizeof(DREAL)*((size_t) totdoc)*num_threads);
+				  DREAL* tmp_aicache=new DREAL[totdoc*num_threads];
 				  memset(tmp_aicache, 0, sizeof(DREAL)*((size_t) totdoc)*num_threads);
 
 				  INT thr;

@@ -42,8 +42,8 @@ bool CPCACut::init(CFeatures* f)
 {
 	if (!initialized)
 	{
-		ASSERT(f->get_feature_class() == C_SIMPLE);
-		ASSERT(f->get_feature_type() == F_DREAL);
+		ASSERT(f->get_feature_class()==C_SIMPLE);
+		ASSERT(f->get_feature_type()==F_DREAL);
 
 		SG_INFO("calling CPCACut::init\n") ;
 		INT num_vectors=((CRealFeatures*)f)->get_num_vectors() ;
@@ -79,9 +79,8 @@ bool CPCACut::init(CFeatures* f)
 		for (j=0; j<num_features; j++)
 			mean[j]/=num_vectors;
 
-		SG_INFO("done.\nComputing covariance matrix... of size %.2f M\n", num_features*num_features/1024.0/1024.0) ;
-		double *cov=new double[num_features*num_features] ;
-		ASSERT(cov!=NULL) ;
+		SG_INFO("done.\nComputing covariance matrix... of size %.2f M\n", num_features*num_features/1024.0/1024.0);
+		double *cov=new double[num_features*num_features];
 
 		for (j=0; j<num_features*num_features; j++)
 			cov[j]=0.0 ;
@@ -152,10 +151,9 @@ bool CPCACut::init(CFeatures* f)
 		SG_INFO("Done\nReducing from %i to %i features..", num_features, num_dim) ;
 
 		delete[] T;
-		T=new DREAL[num_dim*num_features] ;
+		T=new DREAL[num_dim*num_features];
 		num_old_dim=num_features;
 
-		ASSERT(T!=NULL) ;
 		if (do_whitening)
 		{
 			INT offs=0 ;

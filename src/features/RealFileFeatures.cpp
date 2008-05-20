@@ -19,7 +19,7 @@ CRealFileFeatures::CRealFileFeatures(INT size, CHAR* fname) : CRealFeatures(size
 {
 	working_file=fopen(fname, "r");
 	working_filename=strdup(fname);
-	ASSERT(working_file!=NULL);
+	ASSERT(working_file);
 	intlen=0;
 	doublelen=0;
 	endian=0;
@@ -31,7 +31,7 @@ CRealFileFeatures::CRealFileFeatures(INT size, CHAR* fname) : CRealFeatures(size
 
 CRealFileFeatures::CRealFileFeatures(INT size, FILE* file) : CRealFeatures(size), working_file(file), working_filename(NULL)
 {
-	ASSERT(working_file!=NULL);
+	ASSERT(working_file);
 	intlen=0;
 	doublelen=0;
 	endian=0;
@@ -67,16 +67,15 @@ DREAL* CRealFileFeatures::compute_feature_vector(INT num, INT &len, DREAL* targe
 	DREAL* featurevector=target;
 	if (!featurevector)
 		featurevector=new DREAL[num_features];
-	ASSERT(featurevector!=NULL);
-	ASSERT(working_file!=NULL);
+	ASSERT(working_file);
 	fseek(working_file, filepos+num_features*doublelen*num, SEEK_SET);
-	ASSERT(fread(featurevector, doublelen, num_features, working_file) == (size_t) num_features);
+	ASSERT(fread(featurevector, doublelen, num_features, working_file)==(size_t) num_features);
 	return featurevector;
 }
 
 DREAL* CRealFileFeatures::load_feature_matrix()
 {
-	ASSERT(working_file!=NULL);
+	ASSERT(working_file);
 	fseek(working_file, filepos, SEEK_SET);
 	delete[] feature_matrix;
 
@@ -93,7 +92,7 @@ DREAL* CRealFileFeatures::load_feature_matrix()
 		else if (!(i % (num_vectors/200+1)))
 			SG_PRINT( ".");
 
-		ASSERT(fread(&feature_matrix[num_features*i], doublelen, num_features, working_file)== (size_t) num_features) ;
+		ASSERT(fread(&feature_matrix[num_features*i], doublelen, num_features, working_file)==(size_t) num_features);
 	}
 	SG_INFO( "done.\n");
 
@@ -110,7 +109,7 @@ INT CRealFileFeatures::get_label(INT idx)
 
 bool CRealFileFeatures::load_base_data()
 {
-	ASSERT(working_file!=NULL);
+	ASSERT(working_file);
 	UINT num_vec=0;
 	UINT num_feat=0;
 
@@ -127,8 +126,7 @@ bool CRealFileFeatures::load_base_data()
 	set_num_features(num_feat);
 	fseek(working_file, filepos+num_features*num_vectors*doublelen, SEEK_SET);
 	delete[] labels;
-	labels= new int[num_vec];
-	ASSERT(labels!=NULL);
+	labels=new int[num_vec];
 	ASSERT(fread(labels, intlen, num_vec, working_file) == num_vec);
 	return true;
 }

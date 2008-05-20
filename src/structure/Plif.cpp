@@ -282,7 +282,7 @@ void delete_penalty_struct(CPlif** PEN, INT P)
 
 DREAL CPlif::lookup_penalty_svm(DREAL p_value, DREAL *d_values) const
 {	
-	ASSERT(use_svm>0) ;
+	ASSERT(use_svm>0);
 	DREAL d_value=d_values[use_svm-1] ;
 #ifdef PLIF_DEBUG
 	SG_PRINT("%s.lookup_penalty_svm(%f)\n", get_name(), d_value) ;
@@ -486,7 +486,7 @@ void CPlif::penalty_add_derivative(DREAL p_value, DREAL* svm_values)
 
 void CPlif::penalty_add_derivative_svm(DREAL p_value, DREAL *d_values) 
 {	
-	ASSERT(use_svm>0) ;
+	ASSERT(use_svm>0);
 	DREAL d_value=d_values[use_svm-1] ;
 	
 	switch (transform)

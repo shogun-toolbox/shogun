@@ -24,8 +24,6 @@ CLabels::CLabels() : CSGObject()
 CLabels::CLabels(INT num_lab) : CSGObject(), num_labels(num_lab)
 {
 	labels=new DREAL[num_lab];
-	ASSERT(labels);
-
 	for (INT i=0; i<num_lab; i++)
 		labels[i]=0;
 }
@@ -56,14 +54,13 @@ CLabels::~CLabels()
 void CLabels::set_labels(DREAL* p_labels, INT len)
 {
 	ASSERT(len>0);
-	num_labels = len;
+	num_labels=len;
 
 	delete[] labels;
-	labels = new DREAL[len];
-	ASSERT(labels);
+	labels=new DREAL[len];
 
 	for (INT i=0; i<len; i++)
-		labels[i] = p_labels[i];
+		labels[i]=p_labels[i];
 }
 
 bool CLabels::is_two_class_labeling()

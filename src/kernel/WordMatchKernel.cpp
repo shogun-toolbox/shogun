@@ -82,8 +82,8 @@ DREAL CWordMatchKernel::compute(INT idx_a, INT idx_b)
 
   WORD* avec=((CWordFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
   WORD* bvec=((CWordFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
-
   ASSERT(alen==blen);
+
   double sum=0;
   for (INT i=0; i<alen; i++)
 	  sum+= (avec[i]==bvec[i]) ? 1 : 0;

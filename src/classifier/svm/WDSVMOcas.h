@@ -151,8 +151,8 @@ class CWDSVMOcas : public CClassifier
 
 			INT len=0;
 			DREAL sum=0;
-			BYTE* vec = features->get_feature_vector(num, len);
-			ASSERT(len == string_length);
+			BYTE* vec=features->get_feature_vector(num, len);
+			ASSERT(len==string_length);
 
 			for (INT j=0; j<string_length; j++)
 			{

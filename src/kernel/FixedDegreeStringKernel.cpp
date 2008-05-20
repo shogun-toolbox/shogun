@@ -38,23 +38,19 @@ bool CFixedDegreeStringKernel::init(CFeatures* l, CFeatures* r)
 	bool result = CStringKernel<CHAR>::init(l, r);
 	initialized = false;
 
-	if (sqrtdiag_lhs != sqrtdiag_rhs)
+	if (sqrtdiag_lhs!=sqrtdiag_rhs)
 		delete[] sqrtdiag_rhs;
-	sqrtdiag_rhs = NULL;
+	sqrtdiag_rhs=NULL;
 	delete[] sqrtdiag_lhs;
-	sqrtdiag_lhs = new DREAL[lhs->get_num_vectors()];
-	ASSERT(sqrtdiag_lhs);
+	sqrtdiag_lhs=new DREAL[lhs->get_num_vectors()];
 
 	if (l==r)
-		sqrtdiag_rhs = sqrtdiag_lhs;
+		sqrtdiag_rhs=sqrtdiag_lhs;
 	else
-	{
-		sqrtdiag_rhs = new DREAL[rhs->get_num_vectors()];
-		ASSERT(sqrtdiag_rhs);
-	}
+		sqrtdiag_rhs=new DREAL[rhs->get_num_vectors()];
 
-	this->lhs = (CStringFeatures<CHAR>*) l;
-	this->rhs = (CStringFeatures<CHAR>*) l;
+	this->lhs=(CStringFeatures<CHAR>*) l;
+	this->rhs=(CStringFeatures<CHAR>*) l;
 
 	CKernel::init_sqrt_diag(sqrtdiag_lhs, lhs->get_num_vectors());
 	// if lhs is different from rhs (train/test data)
@@ -101,7 +97,6 @@ DREAL CFixedDegreeStringKernel::compute(INT idx_a, INT idx_b)
 
 	CHAR* avec = ((CStringFeatures<CHAR>*) lhs)->get_feature_vector(idx_a, alen);
 	CHAR* bvec = ((CStringFeatures<CHAR>*) rhs)->get_feature_vector(idx_b, blen);
-
 	// can only deal with strings of same length
 	ASSERT(alen==blen);
 
