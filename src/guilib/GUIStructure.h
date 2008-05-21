@@ -40,6 +40,14 @@ class CGUIStructure : public CSGObject
 		{
 			return m_PEN;
 		}
+		inline INT get_num_plifs()
+		{
+			return m_N;
+		}
+		inline INT get_num_limits()
+		{
+			return m_M;
+		}
 	protected:
 		CSGInterface* ui;
 		CPlif** m_PEN;

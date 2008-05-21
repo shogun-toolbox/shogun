@@ -33,7 +33,7 @@ bool CGUIStructure::set_plif_struct(INT N, INT M, DREAL* all_limits,
 	// cleanup 
 	for (INT i=0; i<m_N; i++)	
 		delete[] m_PEN[i];
-	delete m_PEN;
+	delete[] m_PEN;
 	m_PEN=NULL;
 	m_N=0;
 

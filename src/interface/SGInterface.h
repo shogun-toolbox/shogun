@@ -313,6 +313,8 @@ class CSGInterface : public CSGObject
 		bool cmd_best_path_2struct();
 		/** cmd set plif struct */
 		bool cmd_set_plif_struct();
+		/** cmd get plif struct */
+		bool cmd_get_plif_struct();
 		/** best path trans */
 		bool cmd_best_path_trans();
 		/** best path trans deriv */

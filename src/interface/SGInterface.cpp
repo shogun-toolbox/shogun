@@ -665,6 +665,12 @@ CSGInterfaceMethod sg_methods[]=
 		(CHAR*) USAGE_I(N_SET_PLIF_STRUCT, "id, name, limits, penalties, transform, min_value, max_value, use_cache, use_svm")
 	},
 	{
+		(CHAR*) N_GET_PLIF_STRUCT,
+		(&CSGInterface::cmd_get_plif_struct),
+		(CHAR*) USAGE_O(N_GET_PLIF_STRUCT, "id, name, limits, penalties, transform, min_value, max_value, use_cache, use_svm")
+	},
+
+	{
 		(CHAR*) N_BEST_PATH_TRANS,
 		(&CSGInterface::cmd_best_path_trans),
 		(CHAR*) USAGE_IO(N_BEST_PATH_TRANS,
@@ -4993,6 +4999,55 @@ bool CSGInterface::cmd_set_plif_struct()
 			names, min_values, max_values, all_use_cache, all_use_svm,
 			all_transform);
 }
+bool CSGInterface::cmd_get_plif_struct()
+{
+	CPlif** PEN = ui_structure->get_PEN();
+	INT N = ui_structure->get_num_plifs();
+	INT M = ui_structure->get_num_limits();
+
+	
+	INT* ids = new INT[N];
+	INT* max_values = new INT[N];
+	INT* min_values = new INT[N];
+	T_STRING<CHAR>* names = new T_STRING<CHAR>[N];
+	T_STRING<CHAR>* all_transform = new T_STRING<CHAR>[N];
+	DREAL** all_limits = new DREAL[N][M];
+	DREAL** all_penalties = new DREAL[N][M];
+	bool* all_use_cache = new bool[N];
+	bool* all_use_svm = new bool[N];
+	bool* all_do_calc = new bool[N];
+	for (INT i=0;i<N;i++)
+	{
+		ids[i]=PEN[i]->get_id();
+		names[i].string = PEN[i]->get_name();
+		names[i].length = strlen(PEN[i]->get_name());
+		INT* limits = PEN[i]->get_limits();
+		INT* penalties = PEN[i]->get_penalties();
+		for (INT j=0;j<M;j++)
+		{
+			all_limits[i][j]=limits[j];
+			all_penalties[i][j]=limits[j];
+		}
+		all_transform[i].string = PEN[i]->get_transform_string();		
+		all_transform[i].length = strlen(PEN[i]->get_transform_string());		
+		min_values[i]=PEN[i]->get_min_value();
+		max_values[i]=PEN[i]->get_max_value();
+		all_use_cache[i]=PEN[i]->get_use_cache();
+		all_use_svm[i]=PEN[i]->get_use_svm();
+		all_do_calc[i]=PEN[i]->get_do_calc();
+		
+	}
+	set_int_vector(ids,N);
+	set_char_string_list(names, N,M);
+	set_real_matrix(all_limits, N, M);
+	set_real_matrix(all_penalties, N, M);
+	set_char_string_list(all_transform, N, M);
+	set_real_vector(min_values,N);
+	set_real_vector(max_values,N);
+	set_bool_vector(all_use_cache,N);
+	set_bool_vector(all_use_svm,N);
+	set_bool_vector(all_do_calc,N);
+}
 
 bool CSGInterface::cmd_best_path_trans()
 {
@@ -5045,7 +5100,7 @@ bool CSGInterface::cmd_best_path_trans()
 	// ARG 7
 	// DNA sequence 
 	INT Nseq=0;
-	char* seq;
+	char* seq=NULL;
 	get_char_vector(seq,Nseq);
 
 	// ARG 8
@@ -5069,7 +5124,7 @@ bool CSGInterface::cmd_best_path_trans()
 	// penalty array
 	// array of plifs (1 x #contents+#lengths_plifs+#signals+#other_plifs)
 	INT Nplif=0;
-	INT M_plif;
+	INT M_plif=0;
 	//CPlif ** PEN = read_penalty_struct_from_cell(mx_penalty_info, P) ;
 
 	// ARG 11
@@ -5080,8 +5135,8 @@ bool CSGInterface::cmd_best_path_trans()
 
 	// ARG 12
 	// SVM weight vectors for the different contents (#contents x sum_{orders i}(4^i))
-	INT Ncw;
-	INT Mcw;
+	INT Ncw=0;
+	INT Mcw=0;
 	DREAL* content_weights;
 	get_real_matrix(content_weights, Ncw, Mcw);
 
@@ -5091,8 +5146,8 @@ bool CSGInterface::cmd_best_path_trans()
 
 	// ARG 14
 	// determines for which contents which orf should be used (#contents x 2)
-	INT Nmod;
-	INT Mmod;
+	INT Nmod=0;
+	INT Mmod=0;
 	INT* mod_words;
 	get_int_matrix(mod_words, Nmod,Mmod); 
 
@@ -5100,8 +5155,8 @@ bool CSGInterface::cmd_best_path_trans()
 	// loss matrix (#segment x 2*#segments)
 	// one (#segment x #segments)-matrix for segment loss 
 	// and one for nucleotide loss
-	INT Nloss;
-	INT Mloss;
+	INT Nloss=0;
+	INT Mloss=0;
 	DREAL* loss;
 	get_real_matrix(loss, Nloss,Mloss);
 
@@ -5109,8 +5164,8 @@ bool CSGInterface::cmd_best_path_trans()
 	// segment path (2 x #feature_positions)
 	// masking/weighting of loss for specific 
 	// regions of the true path
-	INT Nseg_path;
-	INT Mseg_path;
+	INT Nseg_path=0;
+	INT Mseg_path=0;
 	INT* seg_path;
 	get_int_matrix(seg_path,Nseg_path,Mseg_path);
 
