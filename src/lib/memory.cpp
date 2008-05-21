@@ -8,9 +8,11 @@
  * Copyright (C) 2008 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
+#include <stdio.h>
+
 #include "lib/ShogunException.h"
 #include "lib/memory.h"
-#include <stdio.h>
+
 
 void* operator new(size_t size) throw (std::bad_alloc)
 {
@@ -24,7 +26,7 @@ void* operator new(size_t size) throw (std::bad_alloc)
 		if (written<buf_len)
 			throw ShogunException(buf);
 		else
-			throw ShogunException("Out of memory error using new().\n");
+			throw ShogunException("Out of memory error using new.\n");
 	}
 
 	return p;
