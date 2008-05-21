@@ -546,19 +546,23 @@ void CMatlabInterface::set_arg_increment(mxArray* mx_arg)
 
 void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 {
-	if (!interface)
-		interface=new CMatlabInterface(nlhs, plhs, nrhs, prhs);
-	else
-		((CMatlabInterface*) interface)->reset(nlhs, plhs, nrhs, prhs);
-
 	try
 	{
+		if (!interface)
+			interface=new CMatlabInterface(nlhs, plhs, nrhs, prhs);
+		else
+			((CMatlabInterface*) interface)->reset(nlhs, plhs, nrhs, prhs);
+
 		if (!interface->handle())
 			SG_ERROR("Unknown command.\n");
 	}
+	catch (std::bad_alloc)
+	{
+		mexErrMsgTxt("Out of memory error.\n");
+	}
 	catch (ShogunException e)
 	{
-		mexErrMsgTxt("Command Failed.");
+		mexErrMsgTxt(e.get_exception_string());
 	}
 }
 #endif // HAVE_MATLAB && !HAVE_SWIG

@@ -793,108 +793,118 @@ int main(int argc, char* argv[])
 	rl_attempted_completion_function = shogun_completion;
 #endif //HAVE_READLINE
 
-	interface=new CCmdLineInterface();
-
-	CCmdLineInterface* intf=(CCmdLineInterface*) interface;
-
-	// interactive
-	if (argc<=1)
+	try
 	{
-		while (true)
+		interface=new CCmdLineInterface();
+		CCmdLineInterface* intf=(CCmdLineInterface*) interface;
+
+		// interactive
+		if (argc<=1)
 		{
-			CHAR* l=intf->get_line();
-
-			if (!l)
-				break;
-
-			try
+			while (true)
 			{
-				intf->parse_line(l);
-			}
-			catch (ShogunException e) { }
-		}
-		delete interface;
-		return 0;
-	}
+				CHAR* line=intf->get_line();
 
-	// help
-	if ( argc>2 || ((argc==2) && 
-				( !strcmp(argv[1], "-h") || !strcmp(argv[1], "/?") || !strcmp(argv[1], "--help")) )
-	   )
-	{
-		SG_SPRINT("\n\n");
-		SG_SPRINT("usage: shogun [ -h | --help | /? | -i | filename ]\n\n");
-		SG_SPRINT("if no options are given shogun enters interactive mode\n");
-		SG_SPRINT("if filename is specified the commands will be read and executed from file\n");
-		SG_SPRINT("if -i is specified shogun will listen on port 7367 from file\n");
-		SG_SPRINT("==hex(sg), *dangerous* as commands from any source are accepted\n\n");
-		delete interface;
-		return 1;
-	}
+				if (!line)
+					break;
 
-#ifndef CYGWIN
-	// from tcp
-	if ( argc==2 && !strcmp(argv[1], "-i"))
-	{
-		int s=socket(AF_INET, SOCK_STREAM, 0);
-		struct sockaddr_in sa;
-		sa.sin_family=AF_INET;
-		sa.sin_port=htons(7367);
-		sa.sin_addr.s_addr=INADDR_ANY;
-		bzero(&(sa.sin_zero), 8);
-
-		bind(s, (sockaddr*) (&sa), sizeof(sockaddr_in));
-		listen(s, 1);
-		int s2=accept(s, NULL, NULL);
-		SG_SINFO( "accepting connection\n");
-
-		CHAR input[READLINE_BUFFER_SIZE];
-		do
-		{
-			bzero(input, sizeof(input));
-			int length=read(s2, input, sizeof(input));
-			if (length>0 && length<(int) sizeof(input))
-				input[length]='\0';
-			else
-			{
-				SG_SERROR( "error reading cmdline\n");
-				return 1;
-			}
-		}
-		while (intf->parse_line(input));
-		delete interface;
-		return 0;
-	}
-#endif
-
-	// from file
-	if (argc==2)
-	{
-		FILE* file=fopen(argv[1], "r");
-
-		if (!file)
-		{
-			SG_SERROR( "error opening/reading file: \"%s\"",argv[1]);
-			delete interface;
-			return 1;
-		}
-		else
-		{
-			try
-			{
-				while(!feof(file) && intf->parse_line(intf->get_line(file, false)));
-			}
-			catch (ShogunException e)
-			{
-				fclose(file);
-				delete interface;
-				return 1;
+				intf->parse_line(line);
 			}
 
-			fclose(file);
 			delete interface;
 			return 0;
 		}
+
+		// help
+		if ( argc>2 || ((argc==2) && 
+					( !strcmp(argv[1], "-h") || !strcmp(argv[1], "/?") || !strcmp(argv[1], "--help")) )
+		   )
+		{
+			SG_SPRINT("\n\n");
+			SG_SPRINT("usage: shogun [ -h | --help | /? | -i | filename ]\n\n");
+			SG_SPRINT("if no options are given shogun enters interactive mode\n");
+			SG_SPRINT("if filename is specified the commands will be read and executed from file\n");
+			SG_SPRINT("if -i is specified shogun will listen on port 7367 from file\n");
+			SG_SPRINT("==hex(sg), *dangerous* as commands from any source are accepted\n\n");
+
+			delete interface;
+			return 1;
+		}
+
+#ifndef CYGWIN
+		// from tcp
+		if ( argc==2 && !strcmp(argv[1], "-i"))
+		{
+			int s=socket(AF_INET, SOCK_STREAM, 0);
+			struct sockaddr_in sa;
+			sa.sin_family=AF_INET;
+			sa.sin_port=htons(7367);
+			sa.sin_addr.s_addr=INADDR_ANY;
+			bzero(&(sa.sin_zero), 8);
+
+			bind(s, (sockaddr*) (&sa), sizeof(sockaddr_in));
+			listen(s, 1);
+			int s2=accept(s, NULL, NULL);
+			SG_SINFO( "accepting connection\n");
+
+			CHAR input[READLINE_BUFFER_SIZE];
+			do
+			{
+				bzero(input, sizeof(input));
+				int length=read(s2, input, sizeof(input));
+				if (length>0 && length<(int) sizeof(input))
+					input[length]='\0';
+				else
+				{
+					SG_SERROR( "error reading cmdline\n");
+					return 1;
+				}
+			}
+			while (intf->parse_line(input));
+			delete interface;
+			return 0;
+		}
+#endif
+
+		// from file
+		if (argc==2)
+		{
+			FILE* file=fopen(argv[1], "r");
+
+			if (!file)
+			{
+				SG_SERROR( "error opening/reading file: \"%s\"",argv[1]);
+				delete interface;
+				return 1;
+			}
+			else
+			{
+				try
+				{
+					while(!feof(file) && intf->parse_line(intf->get_line(file, false)));
+				}
+				catch (ShogunException e)
+				{
+					fclose(file);
+					delete interface;
+					return 1;
+				}
+
+				fclose(file);
+				delete interface;
+				return 0;
+			}
+		}
+
 	}
+	catch (std::bad_alloc)
+	{
+		SG_PRINT("Out of memory error.\n");
+	}
+	catch (ShogunException e)
+	{
+		SG_PRINT("%s", e.get_exception_string());
+	}
+
 }
 #endif // HAVE_CMDLINE

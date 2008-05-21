@@ -433,21 +433,27 @@ SET_STRINGLIST(set_word_string_list, uint16NDArray, WORD, WORD, "Word")
 
 DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 {
-	if (!interface)
-		interface=new COctaveInterface(prhs, nlhs);
-	else
-		((COctaveInterface*) interface)->reset(prhs, nlhs);
-
 	try
 	{
+		if (!interface)
+			interface=new COctaveInterface(prhs, nlhs);
+		else
+			((COctaveInterface*) interface)->reset(prhs, nlhs);
+
 		if (!interface->handle())
 			SG_ERROR("Unknown command.\n");
+
+		return ((COctaveInterface*) interface)->get_return_values();
+	}
+	catch (std::bad_alloc)
+	{
+		SG_PRINT("Out of memory error.\n");
+		return octave_value_list();
 	}
 	catch (ShogunException e)
 	{
+		SG_PRINT("%s", e.get_exception_string());
 		return octave_value_list();
 	}
-
-	return ((COctaveInterface*) interface)->get_return_values();
 }
 #endif // HAVE_OCTAVE && !HAVE_SWIG

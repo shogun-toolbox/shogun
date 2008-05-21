@@ -528,18 +528,24 @@ bool CPythonInterface::create_return_values(INT num)
 
 PyObject* sg(PyObject* self, PyObject* args)
 {
-	if (!interface)
-		interface=new CPythonInterface(self, args);
-	else
-		((CPythonInterface*) interface)->reset(self, args);
-
 	try
 	{
+		if (!interface)
+			interface=new CPythonInterface(self, args);
+		else
+			((CPythonInterface*) interface)->reset(self, args);
+
 		if (!interface->handle())
 			SG_ERROR("Unknown command.\n");
 	}
+	catch (std::bad_alloc)
+	{
+		SG_PRINT("Out of memory error.\n");
+		return NULL;
+	}
 	catch (ShogunException e)
 	{
+		SG_PRINT("%s", e.get_exception_string());
 		return NULL;
 	}
 

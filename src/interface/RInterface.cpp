@@ -445,21 +445,27 @@ SEXP sg(SEXP args)
 	 * it consists of "sg", "func" and additional arguments.
 	 * */
 
-	if (!interface)
-	{
-		interface=new CRInterface(args);
-		ASSERT(interface);
-	}
-	else
-		((CRInterface*) interface)->reset(args);
-
 	try
 	{
+		if (!interface)
+		{
+			interface=new CRInterface(args);
+			ASSERT(interface);
+		}
+		else
+			((CRInterface*) interface)->reset(args);
+
 		if (!interface->handle())
 			SG_ERROR("Unknown command.\n");
 	}
+	catch (std::bad_alloc)
+	{
+		SG_PRINT("Out of memory error.\n");
+		return R_NilValue;
+	}
 	catch (ShogunException e)
 	{
+		SG_PRINT("%s", e.get_exception_string());
 		return R_NilValue;
 	}
 
