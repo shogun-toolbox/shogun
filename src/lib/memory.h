@@ -14,7 +14,6 @@
 #include <stdlib.h>
 #include <new>
 
-//void* operator new(size_t size);
 void* operator new(size_t size) throw (std::bad_alloc);
 void operator delete(void *p);
 

@@ -12,47 +12,49 @@
 #include "lib/memory.h"
 #include <stdio.h>
 
-//void* operator new(size_t size)
 void* operator new(size_t size) throw (std::bad_alloc)
 {
-	//void *p=malloc(900000000*size);
 	void *p=malloc(size);
 	if (!p)
 	{
-		size_t buf_len=128;
+		const size_t buf_len=128;
 		char buf[buf_len];
 		size_t written=snprintf(buf, buf_len,
-			"Out of memory error, tried to allocate %d bytes.\n", size);
-		if (written==buf_len)
+			"Out of memory error, tried to allocate %lld bytes using new().\n", (unsigned long long int) size);
+		if (written<buf_len)
 			throw ShogunException(buf);
 		else
-			throw ShogunException("Out of memory error.\n");
+			throw ShogunException("Out of memory error using new().\n");
 	}
 
-	//printf("Overloaded new, created object of size %d at %p.\n", size, p);
 	return p;
 }
 
 void operator delete(void *p)
 {
-	//printf("Free in overloaded delete at %p.\n", p);
 	free(p);
 }
 
-/*
 void* operator new[](size_t size)
 {
 	void *p=malloc(size);
-	if (!p)
-		throw ShogunException("Assertion failed for new.\n");
 
-	printf("Overloaded new[], created object of size %d at %p.\n", size, p);
+	if (!p)
+	{
+		const size_t buf_len=128;
+		char buf[buf_len];
+		size_t written=snprintf(buf, buf_len,
+			"Out of memory error, tried to allocate %lld bytes using new[].\n", (unsigned long long int) size);
+		if (written<buf_len)
+			throw ShogunException(buf);
+		else
+			throw ShogunException("Out of memory error using new[].\n");
+	}
+
 	return p;
 }
 
 void operator delete[](void *p)
 {
-	printf("Free in overloaded delete[] at %p.\n", p);
 	free(p);
 }
-*/
