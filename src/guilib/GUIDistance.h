@@ -45,8 +45,6 @@ class CGUIDistance : public CSGObject
 	bool save_distance_init(CHAR* param);
 	bool save_distance(CHAR* param);
 
-	bool clean_distance(CHAR* param);
-
 	bool is_initialized() { return initialized; }
 
  protected:

@@ -61,6 +61,7 @@
 #define N_SET_FEATURES						"set_features"
 #define N_FROM_POSITION_LIST				"from_position_list"
 #define N_ADD_FEATURES						"add_features"
+#define N_DEL_LAST_FEATURES					"del_last_features"
 #define N_SET_LABELS						"set_labels"
 #define N_SET_PREPROC_INIT					"set_preproc_init"
 #define N_SET_HMM_DEFS						"set_hmm_defs"
@@ -82,7 +83,6 @@
 #define N_NEW_HMM						"new_hmm"
 #define N_NEW_SVM						"new_svm"
 #define N_NEW_CLASSIFIER				"new_classifier"
-#define N_NEW_KNN						"new_knn"
 #define N_NEW_PLUGIN_ESTIMATOR			"new_plugin_estimator"
 #define N_NEW_REGRESSION				"new_regression"
 #define N_NEW_CLUSTERING				"new_clustering"
@@ -92,8 +92,6 @@
 #define N_TRAIN_CLUSTERING				"train_clustering"
 #define N_SET_PERCEPTRON_PARAMETERS		"set_perceptron_parameters"
 #define N_TEST_ESTIMATOR				"test_estimator"
-#define N_TRAIN_KNN						"train_knn"
-#define N_TEST_KNN						"test_knn"
 #define N_LOAD_PREPROC					"load_preproc"
 #define N_SAVE_PREPROC					"save_preproc"
 #define N_LOAD_HMM						"load_hmm"
@@ -118,6 +116,7 @@
 #define N_SET_KERNEL					"set_kernel"
 #define N_SET_DISTANCE					"set_distance"
 #define N_ADD_KERNEL					"add_kernel"
+#define N_DEL_LAST_KERNEL				"del_last_kernel"
 #define N_CLEAN_KERNEL					"clean_kernel"
 
 #ifdef USE_SVMLIGHT
@@ -164,7 +163,6 @@
 #define N_BAUM_WELCH_TRANS_TRAIN		"bw_trans"
 #define N_BAUM_WELCH_TRAIN_DEFINED		"bw_def"
 #define N_LIKELIHOOD					"likelihood"
-#define N_ALPHABET						"alphabet"
 #define N_USE_BATCH_COMPUTATION			"use_batch_computation"
 #define N_USE_DIAGONAL_SPEEDUP			"use_diagonal_speedup"
 #define N_USE_MKL						"use_mkl"
@@ -180,7 +178,6 @@
 #define N_SYSTEM						"!"
 #define N_COMMENT1						'#'
 #define N_COMMENT2						'%'
-#define N_SET_MAX_DIM					"max_dim"
 #define N_SET_THRESHOLD					"set_threshold"
 #define N_SVM_TRAIN						"svm_train"
 #define N_SVM_TEST						"svm_test"

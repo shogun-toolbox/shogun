@@ -764,10 +764,7 @@ bool CGUIKernel::delete_kernel_optimization()
 bool CGUIKernel::init_kernel(CHAR* target)
 {
 	if (!kernel)
-	{
 		SG_ERROR("No kernel available.\n");
-		return false;
-	}
 
 	kernel->set_precompute_matrix(false, false);
 	EFeatureClass k_fclass=kernel->get_feature_class();
@@ -869,6 +866,24 @@ bool CGUIKernel::add_kernel(CKernel* kern, DREAL weight)
 	return success;
 }
 
+
+bool CGUIKernel::del_last_kernel()
+{
+	if (!kernel)
+		SG_ERROR("No kernel available.\n");
+
+	if (kernel->get_kernel_type()!=K_COMBINED)
+		SG_ERROR("Need a combined kernel for deleting the last kernel in it.\n");
+
+	CKernel* last=((CCombinedKernel*) kernel)->get_last_kernel();
+	if (last)
+		return ((CCombinedKernel*) kernel)->delete_kernel();
+	else
+		SG_ERROR("No kernel available to delete.\n");
+
+	return false;
+}
+
 bool CGUIKernel::clean_kernel()
 {
 	delete kernel;
@@ -912,11 +927,6 @@ bool CGUIKernel::set_optimization_type(CHAR* opt_type)
 	else
 		SG_ERROR("Wrong kernel optimization type.\n");
 
-	return false;
-}
-
-bool CGUIKernel::del_kernel(CHAR* param)
-{
 	return false;
 }
 #endif

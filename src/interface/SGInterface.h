@@ -15,7 +15,6 @@
 #include "guilib/GUIDistance.h"
 #include "guilib/GUIFeatures.h"
 #include "guilib/GUIHMM.h"
-#include "guilib/GUIKNN.h"
 #include "guilib/GUIKernel.h"
 #include "guilib/GUILabels.h"
 #include "guilib/GUIMath.h"
@@ -72,6 +71,8 @@ class CSGInterface : public CSGObject
 		bool cmd_set_features();
 		/** set reference features */
 		bool cmd_set_reference_features();
+		/** del last features from combined features */
+		bool cmd_del_last_features();
 		/** convert features */
 		bool cmd_convert();
 		/** obtain from position list */
@@ -91,6 +92,8 @@ class CSGInterface : public CSGObject
 		bool cmd_set_kernel();
 		/** add kernel (to e.g. CombinedKernel) */
 		bool cmd_add_kernel();
+		/** delete last kernel from combined kernel */
+		bool cmd_del_last_kernel();
 		/** initialize kernel */
 		bool cmd_init_kernel();
 		/** clear/clean kernel */
@@ -262,6 +265,8 @@ class CSGInterface : public CSGObject
 		bool cmd_viterbi_train();
 		/** train baum welch */
 		bool cmd_baum_welch_train();
+		/** train defined baum welch */
+		bool cmd_baum_welch_train_defined();
 		/** train baum welch trans */
 		bool cmd_baum_welch_trans_train();
 		/** linear train */
@@ -457,7 +462,6 @@ class CSGInterface : public CSGObject
 		CGUIFeatures* ui_features;
 		CGUIHMM* ui_hmm;
 		CGUIKernel* ui_kernel;
-		CGUIKNN* ui_knn;
 		CGUILabels* ui_labels;
 		CGUIMath* ui_math;
 		CGUIPluginEstimate* ui_pluginestimate;

@@ -39,7 +39,7 @@ class CGUIHMM : public CSGObject
 		bool baum_welch_train();
 		/** train Baum-Welch trans */
 		bool baum_welch_trans_train();
-		bool baum_welch_train_defined(CHAR* param);
+		bool baum_welch_train_defined();
 		/** train Viterbi defined */
 		bool viterbi_train_defined();
 		/** train Viterbi */
@@ -80,8 +80,8 @@ class CGUIHMM : public CSGObject
 		bool likelihood();
 		/** chop HMM */
 		bool chop(DREAL value);
-		bool relative_entropy(CHAR* param);
-		bool entropy(CHAR* param);
+		bool relative_entropy(DREAL*& values, INT& len);
+		bool entropy(DREAL*& values, INT& len);
 		/** define permutation entropy */
 		bool permutation_entropy(INT width=0, INT seq_num=-1);
 		inline CHMM* get_pos() { return pos; }

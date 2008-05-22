@@ -689,6 +689,41 @@ void CGUIFeatures::add_test_features(CFeatures* f)
 	if (result)
 		((CCombinedFeatures*) test_features)->list_feature_objs();
 	else
-		SG_ERROR("appending feature object failed\n");
+		SG_ERROR("Appending feature object failed.\n");
 }
+
+bool CGUIFeatures::del_last_features(CHAR* target)
+{
+	CCombinedFeatures* cf=NULL;
+	if (strncmp(target, "TRAIN", 5)==0)
+	{
+		if (!train_features)
+			SG_ERROR("No train features available.\n");
+		if (train_features->get_feature_class()!=C_COMBINED)
+			SG_ERROR("Train features are not combined features.\n");
+
+		cf=(CCombinedFeatures*) train_features;
+	}
+	else if (strncmp(target, "TEST", 4)==0)
+	{
+		if (!test_features)
+			SG_ERROR("No test features available.\n");
+		if (test_features->get_feature_class()!=C_COMBINED)
+			SG_ERROR("Test features are not combined features.\n");
+
+		cf=(CCombinedFeatures*) test_features;
+	}
+	else
+		SG_ERROR("Unknown target %s, neither TRAIN nor TEST.\n", target);
+
+	CFeatures* last=cf->get_last_feature_obj();
+	if (last)
+		return cf->delete_feature_obj();
+	else
+		SG_ERROR("No features available to delete.\n");
+
+	return false;
+}
+
+
 #endif

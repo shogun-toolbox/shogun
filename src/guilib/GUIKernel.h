@@ -35,13 +35,13 @@ class CGUIKernel : public CSGObject
 	bool set_kernel(CKernel* kern);
 	/** add kernel to a Combined kernel, creating one if necessary */
 	bool add_kernel(CKernel* kern, DREAL weight=1);
+	/** delete last kernel in combined kernel */
+	bool del_last_kernel();
 
 	/** initialize kernel */
 	bool init_kernel(CHAR* target);
 	/** initialize kernel  optimization */
 	bool init_kernel_optimization();
-	/** delete kernel */
-	bool del_kernel(CHAR* param);
 	/** delete kernel optimization */
 	bool delete_kernel_optimization();
 	/** load kernel initialization from file */

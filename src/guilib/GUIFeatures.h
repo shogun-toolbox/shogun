@@ -67,6 +67,9 @@ class CGUIFeatures : public CSGObject
 		void add_train_features(CFeatures* f);
 		void add_test_features(CFeatures* f);
 
+		/** delete last features from combined features */
+		bool del_last_features(CHAR* target);
+
 		void invalidate_train();
 		void invalidate_test();
 

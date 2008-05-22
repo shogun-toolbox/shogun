@@ -292,11 +292,4 @@ CDistance* CGUIDistance::create_hammingword(bool use_sign)
 	return dist;
 }
 
-
-bool CGUIDistance::clean_distance(CHAR* param)
-{
-	delete distance;
-	distance = NULL;
-	return true;
-}
 #endif

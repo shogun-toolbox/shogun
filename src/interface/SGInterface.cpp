@@ -77,6 +77,11 @@ CSGInterfaceMethod sg_methods[]=
 		(CHAR*) USAGE_I(N_SET_REF_FEAT, "'TRAIN|TEST'")
 	},
 	{
+		(CHAR*) N_DEL_LAST_FEATURES,
+		(&CSGInterface::cmd_del_last_features),
+		(CHAR*) USAGE_I(N_DEL_LAST_FEATURES, "'TRAIN|TEST'")
+	},
+	{
 		(CHAR*) N_CONVERT,
 		(&CSGInterface::cmd_convert),
 		(CHAR*) USAGE_I(N_CONVERT, "'TRAIN|TEST', from_class, from_type, to_class, to_type[, order, start, gap, reversed]")
@@ -123,6 +128,11 @@ CSGInterfaceMethod sg_methods[]=
 		(CHAR*) N_ADD_KERNEL,
 		(&CSGInterface::cmd_add_kernel),
 		(CHAR*) USAGE_I(N_ADD_KERNEL, "weight, kernel-specific parameters")
+	},
+	{
+		(CHAR*) N_DEL_LAST_KERNEL,
+		(&CSGInterface::cmd_del_last_kernel),
+		(CHAR*) USAGE(N_DEL_LAST_KERNEL)
 	},
 	{
 		(CHAR*) N_INIT_KERNEL,
@@ -604,6 +614,11 @@ CSGInterfaceMethod sg_methods[]=
 		(CHAR*) USAGE(N_BAUM_WELCH_TRAIN)
 	},
 	{
+		(CHAR*) N_BAUM_WELCH_TRAIN_DEFINED,
+		(&CSGInterface::cmd_baum_welch_train_defined),
+		(CHAR*) USAGE(N_BAUM_WELCH_TRAIN_DEFINED)
+	},
+	{
 		(CHAR*) N_BAUM_WELCH_TRANS_TRAIN,
 		(&CSGInterface::cmd_baum_welch_trans_train),
 		(CHAR*) USAGE(N_BAUM_WELCH_TRANS_TRAIN)
@@ -854,7 +869,6 @@ CSGInterface::CSGInterface()
 	ui_features(new CGUIFeatures(this)),
 	ui_hmm(new CGUIHMM(this)),
 	ui_kernel(new CGUIKernel(this)),
-	ui_knn(new CGUIKNN(this)),
 	ui_labels(new CGUILabels(this)),
 	ui_math(new CGUIMath(this)),
 	ui_pluginestimate(new CGUIPluginEstimate(this)),
@@ -869,7 +883,6 @@ CSGInterface::~CSGInterface()
 	delete ui_classifier;
 	delete ui_hmm;
 	delete ui_pluginestimate;
-	delete ui_knn;
 	delete ui_kernel;
 	delete ui_preproc;
 	delete ui_features;
@@ -1307,6 +1320,19 @@ bool CSGInterface::cmd_set_reference_features()
 	CHAR* target=get_str_from_str_or_direct(len);
 
 	bool success=ui_features->set_reference_features(target);
+
+	delete[] target;
+	return success;
+}
+
+bool CSGInterface::cmd_del_last_features()
+{
+	if (m_nrhs<2 || !create_return_values(0))
+		return false;
+
+	INT len=0;
+	CHAR* target=get_str_from_str_or_direct(len);
+	bool success=ui_features->del_last_features(target);
 
 	delete[] target;
 	return success;
@@ -1833,6 +1859,7 @@ bool CSGInterface::cmd_set_kernel()
 	CKernel* kernel=create_kernel();
 	return ui_kernel->set_kernel(kernel);
 }
+
 bool CSGInterface::cmd_add_kernel()
 {
 	if (m_nrhs<3 || !create_return_values(0))
@@ -1844,6 +1871,14 @@ bool CSGInterface::cmd_add_kernel()
 	CKernel* kernel=create_kernel();
 
 	return ui_kernel->add_kernel(kernel, weight);
+}
+
+bool CSGInterface::cmd_del_last_kernel()
+{
+	if (m_nrhs<1 || !create_return_values(0))
+		return false;
+
+	return ui_kernel->del_last_kernel();
 }
 
 CKernel* CSGInterface::create_kernel()
@@ -4286,40 +4321,15 @@ bool CSGInterface::cmd_relative_entropy()
 	if (m_nrhs!=1 || !create_return_values(1))
 		return false;
 
-	CHMM* pos=ui_hmm->get_pos();
-	CHMM* neg=ui_hmm->get_neg();
-	if (!pos || !neg)
-		//return false;
-		SG_ERROR("Set pos and neg HMM first!\n");
+	DREAL* entropy=NULL;
+	INT len=0;
+	bool success=ui_hmm->relative_entropy(entropy, len);
+	if (!success)
+		return false;
 
-	INT pos_N=pos->get_N();
-	INT neg_N=neg->get_N();
-	INT pos_M=pos->get_M();
-	INT neg_M=neg->get_M();
-	if (pos_M!=neg_M || pos_N!=neg_N)
-		//return false;
-		SG_ERROR("Pos and neg HMM's differ in number of emissions or states.\n");
+	set_real_vector(entropy, len);
 
-	DREAL* p=new DREAL[pos_M];
-	DREAL* q=new DREAL[neg_M];
-	DREAL* entropy=new DREAL[pos_N];
-
-	for (INT i=0; i<pos_N; i++)
-	{
-		for (INT j=0; j<pos_M; j++)
-		{
-			p[j]=pos->get_b(i, j);
-			q[j]=neg->get_b(i, j);
-		}
-
-		entropy[i]=CMath::relative_entropy(p, q, pos_M);
-	}
-	delete[] p;
-	delete[] q;
-
-	set_real_vector(entropy, pos_N);
 	delete[] entropy;
-
 	return true;
 }
 
@@ -4328,28 +4338,15 @@ bool CSGInterface::cmd_entropy()
 	if (m_nrhs!=1 || !create_return_values(1))
 		return false;
 
-	CHMM* current=ui_hmm->get_current();
-	if (!current)
-		//return false;
-		SG_ERROR("Create HMM first!\n");
+	DREAL* entropy=NULL;
+	INT len=0;
+	bool success=ui_hmm->entropy(entropy, len);
+	if (!success)
+		return false;
 
-	INT N=current->get_N();
-	INT M=current->get_M();
-	DREAL* p=new DREAL[M];
-	DREAL* entropy=new DREAL[N];
+	set_real_vector(entropy, len);
 
-	for (INT i=0; i<N; i++)
-	{
-		for (INT j=0; j<M; j++)
-			p[j]=current->get_b(i, j);
-
-		entropy[i]=CMath::entropy(p, M);
-	}
-	delete[] p;
-
-	set_real_vector(entropy, N);
 	delete[] entropy;
-
 	return true;
 }
 
@@ -4585,6 +4582,15 @@ bool CSGInterface::cmd_baum_welch_train()
 
 	return ui_hmm->baum_welch_train();
 }
+
+bool CSGInterface::cmd_baum_welch_train_defined()
+{
+	if (m_nrhs!=1 || !create_return_values(0))
+		return false;
+
+	return ui_hmm->baum_welch_train_defined();
+}
+
 
 bool CSGInterface::cmd_baum_welch_trans_train()
 {
@@ -5281,8 +5287,6 @@ bool CSGInterface::cmd_clear()
 	ui_hmm=new CGUIHMM(this);
 	delete ui_kernel;
 	ui_kernel=new CGUIKernel(this);
-	delete ui_knn;
-	ui_knn=new CGUIKNN(this);
 	delete ui_labels;
 	ui_labels=new CGUILabels(this);
 	delete ui_math;

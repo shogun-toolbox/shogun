@@ -52,6 +52,9 @@ bool CGUIHMM::new_hmm(INT n, INT m)
 
 bool CGUIHMM::baum_welch_train()
 {
+	if (!working)
+		SG_ERROR("Create HMM first.\n");
+
 	CFeatures* trainfeatures=ui->ui_features->get_train_features();
 	if (!trainfeatures)
 		SG_ERROR("Assign train features first.\n");
@@ -62,16 +65,17 @@ bool CGUIHMM::baum_welch_train()
 	CStringFeatures<WORD>* sf=(CStringFeatures<WORD>*) trainfeatures;
 	SG_DEBUG("Stringfeatures have %ld orig_symbols %ld symbols %d order %ld max_symbols\n",  (LONG) sf->get_original_num_symbols(), (LONG) sf->get_num_symbols(), sf->get_order(), (LONG) sf->get_max_num_symbols());
 
-	if (!working)
-		SG_ERROR("Create HMM first.\n");
-
 	working->set_observations(sf);
+
 	return working->baum_welch_viterbi_train(BW_NORMAL);
 }
 
 
 bool CGUIHMM::baum_welch_trans_train()
 {
+	if (!working)
+		SG_ERROR("Create HMM first.\n");
+
 	CFeatures* trainfeatures=ui->ui_features->get_train_features();
 	if (!trainfeatures)
 		SG_ERROR("Assign train features first.\n");
@@ -79,36 +83,26 @@ bool CGUIHMM::baum_welch_trans_train()
 		trainfeatures->get_feature_class()!=C_STRING)
 		SG_ERROR("Features must be STRING of type WORD.\n");
 
-	if (!working)
-		SG_ERROR("Create HMM first.\n");
-
 	working->set_observations((CStringFeatures<WORD>*) trainfeatures);
+
 	return working->baum_welch_viterbi_train(BW_TRANS);
 }
 
 
-bool CGUIHMM::baum_welch_train_defined(CHAR* param)
+bool CGUIHMM::baum_welch_train_defined()
 {
-	if (working)
-	{
-		if (working->get_observations())
-		{
-			return working->baum_welch_viterbi_train(BW_DEFINED);
-		}
-		else
-			SG_ERROR( "assign observation first\n");
-	}
-	else
-		SG_ERROR( "create model first\n");
+	if (!working)
+		SG_ERROR("Create HMM first.\n");
+	if (!working->get_observations())
+		SG_ERROR("Assign observation first.\n");
 
-	return false;
+	return working->baum_welch_viterbi_train(BW_DEFINED);
 }
 
 bool CGUIHMM::viterbi_train()
 {
 	if (!working)
 		SG_ERROR("Create HMM first.\n");
-
 	if (!working->get_observations())
 		SG_ERROR("Assign observation first.\n");
 
@@ -119,7 +113,6 @@ bool CGUIHMM::viterbi_train_defined()
 {
 	if (!working)
 		SG_ERROR("Create HMM first.\n");
-
 	if (!working->get_observations())
 		SG_ERROR("Assign observation first.\n");
 
@@ -804,65 +797,64 @@ bool CGUIHMM::normalize(bool keep_dead_states)
 	return true;
 }
 
-bool CGUIHMM::relative_entropy(CHAR* param)
+bool CGUIHMM::relative_entropy(DREAL*& values, INT& len)
 {
-	if (pos && neg) 
+	if (!pos || !neg)
+		SG_ERROR("Set pos and neg HMM first!\n");
+
+	INT pos_N=pos->get_N();
+	INT neg_N=neg->get_N();
+	INT pos_M=pos->get_M();
+	INT neg_M=neg->get_M();
+	if (pos_M!=neg_M || pos_N!=neg_N)
+		SG_ERROR("Pos and neg HMM's differ in number of emissions or states.\n");
+
+	DREAL* p=new DREAL[pos_M];
+	DREAL* q=new DREAL[neg_M];
+
+	delete[] values;
+	values=new DREAL[pos_N];
+
+	for (INT i=0; i<pos_N; i++)
 	{
-		if ( (pos->get_M() == neg->get_M()) && (pos->get_N() == neg->get_N()) )
+		for (INT j=0; j<pos_M; j++)
 		{
-			double* _entropy=new double[pos->get_N()];
-			double* p=new double[pos->get_M()];
-			double* q=new double[pos->get_M()];
-
-			for (INT i=0; i<pos->get_N(); i++)
-			{
-				for (INT j=0; j<pos->get_M(); j++)
-				{
-					p[j]=pos->get_b(i,j);
-					q[j]=neg->get_b(i,j);
-				}
-
-				_entropy[i]=CMath::relative_entropy(p, q, pos->get_M());
-				SG_PRINT( "%f ", _entropy[i]);
-			}
-			SG_PRINT( "\n");
-			delete[] p;
-			delete[] q;
-			delete[] _entropy;
+			p[j]=pos->get_b(i, j);
+			q[j]=neg->get_b(i, j);
 		}
-		else
-			SG_ERROR( "pos and neg hmm's differ in number of emissions or states\n");
+
+		values[i]=CMath::relative_entropy(p, q, pos_M);
 	}
-	else
-		SG_ERROR( "set pos and neg hmm first\n");
-	return false;
+	delete[] p;
+	delete[] q;
+
+	len=pos_N;
+	return true;
 }
 
-bool CGUIHMM::entropy(CHAR* param)
+bool CGUIHMM::entropy(DREAL*& values, INT& len)
 {
-	if (pos) 
+	if (!working)
+		SG_ERROR("Create HMM first!\n");
+
+	INT n=working->get_N();
+	INT m=working->get_M();
+	DREAL* p=new DREAL[m];
+
+	delete[] values;
+	values=new DREAL[n];
+
+	for (INT i=0; i<n; i++)
 	{
-		double* _entropy=new double[pos->get_N()];
-		double* p=new double[pos->get_M()];
+		for (INT j=0; j<m; j++)
+			p[j]=working->get_b(i, j);
 
-		for (INT i=0; i<pos->get_N(); i++)
-		{
-			for (INT j=0; j<pos->get_M(); j++)
-			{
-				p[j]=pos->get_b(i,j);
-			}
-
-			_entropy[i]=CMath::entropy(p, pos->get_M());
-			SG_PRINT( "%f ", _entropy[i]);
-		}
-		SG_PRINT( "\n");
-
-		delete[] p;
-		delete[] _entropy;
+		values[i]=CMath::entropy(p, m);
 	}
-	else
-		SG_ERROR( "set pos hmm first\n");
-	return false;
+	delete[] p;
+
+	len=m;
+	return true;
 }
 
 bool CGUIHMM::permutation_entropy(INT width, INT seq_num)
