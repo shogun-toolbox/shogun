@@ -4,7 +4,6 @@ TODO
 - further cmdline/readline completion improvements
 - proper ascii file reading / writing file format
 - serialization
-+ memory handling (overload new and throw proper exception)
 + examples for cmdline interface, use static data repository for cmdline/R/python/octave + r/octave/python-modular interfaces
 + cleanup guilib/SGInterface
 - lots of documentation
@@ -33,6 +32,7 @@ TODO
 
 DONE
 
+- memory handling (overload new and throw proper exception)
 - R swig interface
 - TextInterface that does get/set_matrx/vector etc via file io
 - cmdline help remove missing send_command legacy

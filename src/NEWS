@@ -1,3 +1,10 @@
+2008-??-??  Soeren Sonnenburg <debian@nn7.de>
+
+	* SHOGUN Release version 0.6.3
+	* This release contains several cleanups and bugfixes:
+		- Fail nicely in out of memory situations.
+	* Bugfixes:
+
 2008-05-15  Soeren Sonnenburg <debian@nn7.de>
 
 	* SHOGUN Release version 0.6.2
