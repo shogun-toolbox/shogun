@@ -6,6 +6,9 @@
 #if defined(HAVE_CMDLINE)
 #include "interface/SGInterface.h"
 
+#define CMDLINE_COMMENT0 "#"
+#define CMDLINE_COMMENT1 "%"
+
 class CCmdLineInterface : public CSGInterface
 {
 	public:

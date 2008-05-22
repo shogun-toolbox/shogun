@@ -668,7 +668,7 @@ bool CCmdLineInterface::skip_line(const CHAR* line)
 	//SG_PRINT("ascii(0) %d, %c\n", int(line[0]), line[0]);
 
 	CHAR* skipped=CIO::skip_blanks((CHAR*) line);
-	if (skipped[0]=='#' || skipped[0]=='%')
+	if (skipped[0]==CMDLINE_COMMENT0 || skipped[0]==CMDLINE_COMMENT1)
 		return true;
 
 	return false;

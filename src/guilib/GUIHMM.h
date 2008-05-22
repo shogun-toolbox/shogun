@@ -54,7 +54,8 @@ class CGUIHMM : public CSGObject
 				CHAR* filename_out, CHAR* filename_roc,
 				bool is_pos_linear, bool is_neg_linear);
 		bool hmm_classify(CHAR* param);
-		bool append_model(CHAR* param);
+		/** append HMM/model for CmdlineInterface */
+		bool append_model(CHAR* filename, INT base1=-1, INT base2=-1);
 		/** add states to HMM */
 		bool add_states(INT num_states=1, DREAL value=0);
 		/** set HMM as POS/NEG/TEST */

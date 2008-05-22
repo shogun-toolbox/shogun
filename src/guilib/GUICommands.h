@@ -159,6 +159,7 @@
 #define N_DO_AUC_MAXIMIZATION			"do_auc_maximization"
 #define N_ADD_STATES					"add_states"
 #define N_APPEND_HMM					"append_hmm"
+#define N_APPEND_MODEL					"append_model"
 #define N_BAUM_WELCH_TRAIN				"bw"
 #define N_BAUM_WELCH_TRANS_TRAIN		"bw_trans"
 #define N_BAUM_WELCH_TRAIN_DEFINED		"bw_def"
@@ -176,8 +177,6 @@
 #define N_EXIT							"exit"
 #define N_HELP							"help"
 #define N_SYSTEM						"!"
-#define N_COMMENT1						'#'
-#define N_COMMENT2						'%'
 #define N_SET_THRESHOLD					"set_threshold"
 #define N_SVM_TRAIN						"svm_train"
 #define N_SVM_TEST						"svm_test"

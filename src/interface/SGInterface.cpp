@@ -509,6 +509,11 @@ CSGInterfaceMethod sg_methods[]=
 		(CHAR*) USAGE_I(N_APPEND_HMM, "p, q, a, b")
 	},
 	{
+		(CHAR*) N_APPEND_MODEL,
+		(&CSGInterface::cmd_append_model),
+		(CHAR*) USAGE_I(N_APPEND_MODEL, "'filename'[, base1, base2]")
+	},
+	{
 		(CHAR*) N_SET_HMM,
 		(&CSGInterface::cmd_set_hmm),
 		(CHAR*) USAGE_I(N_SET_HMM, "p, q, a, b")
@@ -4694,6 +4699,29 @@ bool CSGInterface::cmd_append_hmm()
 	delete h;
 
 	return true;
+}
+
+bool CSGInterface::cmd_append_model()
+{
+	if (m_nrhs<2 || !create_return_values(0))
+		return false;
+	if (m_nrhs>2 && m_nrhs!=4)
+		return false;
+
+	INT len=0;
+	CHAR* filename=get_str_from_str_or_direct(len);
+	INT base1=-1;
+	INT base2=-1;
+	if (m_nrhs>2)
+	{
+		base1=get_int_from_int_or_str();
+		base2=get_int_from_int_or_str();
+	}
+
+	bool success=ui_hmm->append_model(filename, base1, base2);
+
+	delete[] filename;
+	return success;
 }
 
 bool CSGInterface::cmd_new_hmm()

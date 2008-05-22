@@ -275,6 +275,8 @@ class CSGInterface : public CSGObject
 		bool cmd_save_path();
 		/** append HMM */
 		bool cmd_append_hmm();
+		/** append model (like HMM, but for CmdlineInterface */
+		bool cmd_append_model();
 		/** set HMM */
 		bool cmd_set_hmm();
 		/** set HMM as */

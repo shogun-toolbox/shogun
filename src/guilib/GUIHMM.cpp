@@ -472,73 +472,58 @@ DREAL CGUIHMM::one_class_classify_example(INT idx)
 	return result;
 }
 
-bool CGUIHMM::append_model(CHAR* param)
+bool CGUIHMM::append_model(CHAR* filename, INT base1, INT base2)
 {
-	if (working)
+	if (!working)
+		SG_ERROR("Create HMM first.\n");
+	if (!filename)
+		SG_ERROR("Invalid filename.\n");
+
+	FILE* model_file=fopen(filename, "r");
+	if (!model_file)
+		SG_ERROR("Opening file %s failed.\n", filename);
+
+	CHMM* h=new CHMM(model_file,PSEUDO);
+	if (!h || !h->get_status())
 	{
-		CHAR fname[1024]; 
-		INT base1=0;
-		INT base2=2;
-		param=CIO::skip_spaces(param);
+		delete h;
+		fclose(model_file);
+		SG_ERROR("Reading file %s failed.\n", filename);
+	}
 
-		INT num_param=sscanf(param, "%s %i %i", fname, &base1, &base2);
+	fclose(model_file);
+	SG_INFO("File %s successfully read.\n", filename);
 
-		if (num_param==3 || num_param==1)
+	SG_DEBUG("h %d , M: %d\n", h, h->get_M());
+	if (base1!=-1 && base2!=-1)
+	{
+		DREAL* cur_o=new DREAL[h->get_M()];
+		DREAL* app_o=new DREAL[h->get_M()];
+
+		for (INT i=0; i<h->get_M(); i++)
 		{
-			FILE* model_file=fopen(fname, "r");
-
-			if (model_file)
-			{
-
-				CHMM* h=new CHMM(model_file,PSEUDO);
-				if (h && h->get_status())
-				{
-					printf("file successfully read\n");
-					fclose(model_file);
-
-					DREAL* cur_o=new DREAL[h->get_M()];
-					DREAL* app_o=new DREAL[h->get_M()];
-					ASSERT(cur_o && app_o);
-
-					SG_DEBUG( "h %d , M: %d\n", h, h->get_M());
-
-					for (INT i=0; i<h->get_M(); i++)
-					{
-						if (i==base1)
-							cur_o[i]=0;
-						else
-							cur_o[i]=-1000;
-
-						if (i==base2)
-							app_o[i]=0;
-						else
-							app_o[i]=-1000;
-					}
-
-					if (num_param==3)
-						working->append_model(h, cur_o, app_o);
-					else
-						working->append_model(h);
-
-					delete[] cur_o;
-					delete[] app_o;
-					SG_INFO( "new model has %i states\n", working->get_N());
-					delete h;
-				}
-				else
-					SG_ERROR( "reading file %s failed\n", fname);
-			}
+			if (i==base1)
+				cur_o[i]=0;
 			else
-				SG_ERROR( "opening file %s failed\n", fname);
+				cur_o[i]=-1000;
+
+			if (i==base2)
+				app_o[i]=0;
+			else
+				app_o[i]=-1000;
 		}
-		else
-			SG_ERROR( "see help for parameters\n", fname);
+
+		working->append_model(h, cur_o, app_o);
+
+		delete[] cur_o;
+		delete[] app_o;
 	}
 	else
-		SG_ERROR( "create model first\n");
+		working->append_model(h);
 
-
-	return false;
+	delete h;
+	SG_INFO("New model has %i states.\n", working->get_N());
+	return true;
 }
 
 bool CGUIHMM::add_states(INT num_states, DREAL value)
