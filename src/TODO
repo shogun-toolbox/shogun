@@ -1,5 +1,7 @@
 TODO
 
+- fix io::message to also through an exception when loglevel is higher than ERROR!
+- remove requirement to assign features to custom kernel (automatically create dummy features that match the size)
 - create a libshogun with the core functionality and let other interfaces make use of it (?)
 - further cmdline/readline completion improvements
 - proper ascii file reading / writing file format
