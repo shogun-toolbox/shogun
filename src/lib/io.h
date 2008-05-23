@@ -229,13 +229,13 @@ class CIO
 		static int filter(CONST_DIRENT_T* d);
 
 	protected:
-		/** get index into levels array
+		/** get message intro
 		 *
 		 * @param prio message priority
-		 * @return index into levels array or -1 if message could
-		 *         not to be printed
+		 * @return message intro or NULL if message is not to be
+		 *         printed
 		 */
-		int get_prio_string(EMessageType prio) const;
+		const CHAR* get_msg_intro(EMessageType prio) const;
 
 	protected:
 		/** target file */

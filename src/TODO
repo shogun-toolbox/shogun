@@ -2,7 +2,6 @@ TODO
 
 - bugfix: LDA and KRR seem to fail when lapack is available but not atlas
 - make examples and test-suite run nicely when svmlight is not available
-- fix io::message to also through an exception when loglevel is higher than ERROR!
 - remove requirement to assign features to custom kernel (automatically create dummy features that match the size)
 - create a libshogun with the core functionality and let other interfaces make use of it (?)
 - further cmdline/readline completion improvements
@@ -70,6 +69,7 @@ ALMOST DONE
 
 DONE
 
+- fix io::message to also through an exception when loglevel is higher than ERROR!
 - R swig interface
 - TextInterface that does get/set_matrx/vector etc via file io
 - cmdline help remove missing send_command legacy

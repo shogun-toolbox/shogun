@@ -54,217 +54,90 @@ CIO::CIO(const CIO& orig) : target(orig.get_target()), last_progress_time(0),
 
 void CIO::message(EMessageType prio, const CHAR *fmt, ... ) const
 {
-	char str[4096];
+	const CHAR* msg_intro=get_msg_intro(prio);
+	if (!msg_intro)
+		return;
+
+	CHAR str[4096];
 	va_list list;
 	va_start(list,fmt);
 	vsnprintf(str, sizeof(str), fmt, list);
 	va_end(list);
 
-	int p=get_prio_string(prio);
-	if (p>=0)
+	switch (prio)
 	{
-#ifdef HAVE_MATLAB
-		switch (prio)
-		{
-			case M_DEBUG:
-			case M_INFO:
-			case M_NOTICE:
-			case M_MESSAGEONLY:
-				fprintf(target, "%s", message_strings[p]);
-#ifdef WIN32
-				mexPrintf("%s", str);
-#else
-				fprintf(target, "%s", str);
-#endif
-				break;
-
-			case M_WARN:
-				mexWarnMsgTxt(str);
-				break;
-
-			case M_ERROR:
-			case M_CRITICAL:
-			case M_ALERT:
-			case M_EMERGENCY:
-#ifndef WIN32
-				CSignal::unset_handler();
-#endif
-#ifdef WIN32
-				mexPrintf("%s", str);
-#else
-				fprintf(target, "%s", str);
-#endif
-				throw ShogunException(str);
-				break;
-			default:
-				break;
-		}
-#elif defined(HAVE_OCTAVE)
-		switch (prio)
-		{
-			case M_DEBUG:
-			case M_INFO:
-			case M_NOTICE:
-			case M_MESSAGEONLY:
-				fprintf(target, "%s", message_strings[p]);
-				fprintf(target, "%s", str);
-				break;
-
-			case M_WARN:
-				::warning(str);
-				break;
-
-			case M_ERROR:
-			case M_CRITICAL:
-			case M_ALERT:
-			case M_EMERGENCY:
-#ifndef WIN32
-				CSignal::unset_handler();
-#endif
-				error("%s", str);
-				throw ShogunException(str);
-				break;
-			default:
-				break;
-		}
-#elif defined(HAVE_PYTHON) && !defined(HAVE_SWIG)
-		switch (prio)
-		{
-			case M_DEBUG:
-			case M_INFO:
-			case M_NOTICE:
-			case M_MESSAGEONLY:
-				fprintf(target, "%s", message_strings[p]);
-				fprintf(target, "%s", str);
-				break;
-
-			case M_WARN:
-				PyErr_Warn(NULL, str);
-				break;
-
-			case M_ERROR:
-			case M_CRITICAL:
-			case M_ALERT:
-			case M_EMERGENCY:
-#ifndef WIN32
-				CSignal::unset_handler();
-#endif
-				fprintf(target, "%s", message_strings[p]);
-				fprintf(target, "%s\n", str);
-				PyErr_SetString(PyExc_RuntimeError,str);
-				throw ShogunException(str);
-				break;
-			default:
-				break;
-		}
-#elif defined(HAVE_PYTHON) && defined(HAVE_SWIG)
-		switch (prio)
-		{
-			case M_DEBUG:
-			case M_INFO:
-			case M_NOTICE:
-			case M_MESSAGEONLY:
-				fprintf(target, "%s", message_strings[p]);
-				fprintf(target, "%s", str);
-				break;
-
-			case M_WARN:
-				PyErr_Warn(NULL, str);
-				break;
-
-			case M_ERROR:
-			case M_CRITICAL:
-			case M_ALERT:
-			case M_EMERGENCY:
-#ifndef WIN32
-				CSignal::unset_handler();
-#endif
-				throw ShogunException(str);
-				break;
-			default:
-				break;
-		}
-
+		case M_DEBUG:
+		case M_INFO:
+		case M_NOTICE:
+		case M_MESSAGEONLY:
+#if defined(WIN32) && defined(HAVE_MATLAB)
+			fprintf(target, "%s", msg_intro);
+			mexPrintf("%s", str);
 #elif defined(HAVE_R)
-		switch (prio)
-		{
-			case M_DEBUG:
-			case M_INFO:
-			case M_NOTICE:
-			case M_MESSAGEONLY:
-			case M_WARN:
-				Rprintf((char*) "%s",message_strings[p]);
-				Rprintf((char*) "%s",str);
-				break;
-			case M_ERROR:
-			case M_CRITICAL:
-			case M_ALERT:
-			case M_EMERGENCY:
-#ifndef WIN32
-				CSignal::unset_handler();
+			Rprintf((char*) "%s", msg_intro);
+			Rprintf((char*) "%s", str);
+#else
+			fprintf(target, "%s", msg_intro);
+			fprintf(target, "%s", str);
 #endif
-				error("%s", str);
-				throw ShogunException(str);
-				break;
-			default:
-				break;
-		}
+			break;
 
-#elif defined(HAVE_CMDLINE)
-		switch (prio)
-		{
-			case M_DEBUG:
-			case M_INFO:
-			case M_NOTICE:
-			case M_MESSAGEONLY:
-			case M_WARN:
-				fprintf(target, "%s", message_strings[p]);
-				fprintf(target, "%s", str);
-				break;
-			case M_ERROR:
-			case M_CRITICAL:
-			case M_ALERT:
-			case M_EMERGENCY:
-#ifndef WIN32
-				CSignal::unset_handler();
+		case M_WARN:
+#if defined(HAVE_MATLAB)
+			mexWarnMsgTxt(str);
+#elif defined(HAVE_OCTAVE)
+			::warning(str);
+#elif defined(HAVE_PYTHON) // no check for swig necessary
+			PyErr_Warn(NULL, str);
+#elif defined(HAVE_R)
+			Rprintf((char*) "%s", msg_intro);
+			Rprintf((char*) "%s", str);
+#else
+			fprintf(target, "%s", msg_intro);
+			fprintf(target, "%s", str);
 #endif
-				fprintf(target, "%s", message_strings[p]);
-				fprintf(target, "%s", str);
-				throw ShogunException(str);
-				break;
-			default:
-				break;
-		}
+			break;
 
+		case M_ERROR:
+		case M_CRITICAL:
+		case M_ALERT:
+		case M_EMERGENCY:
+#ifndef WIN32
+			CSignal::unset_handler();
 #endif
-		fflush(target);
+#if defined(WIN32) && defined(HAVE_MATLAB)
+			mexPrintf("%s", str);
+#elif defined(HAVE_OCTAVE)
+			error("%s", str);
+#elif defined(HAVE_PYTHON) && !defined(HAVE_SWIG)
+			PyErr_SetString(PyExc_RuntimeError, str);
+#elif defined(HAVE_PYTHON) && defined(HAVE_SWIG)
+			// nop
+#elif defined(HAVE_R)
+			error("%s", str);
+#else
+			fprintf(target, "%s", str);
+#endif
+			throw ShogunException(str);
+			break;
+		default:
+			break;
 	}
 
-/*
-	int p=get_prio_string(prio);
-	if (p>=0)
-	{
-		fprintf(target, "%s", message_strings[p]);
-		va_list list;
-		va_start(list,fmt);
-		vfprintf(target,fmt,list);
-		va_end(list);
-		fflush(target);
-	}
-	*/
+	fflush(target);
 }
 
 void CIO::buffered_message(EMessageType prio, const CHAR *fmt, ... ) const
 {
-	int p=get_prio_string(prio);
-	if (p>=0)
-	{
-		fprintf(target, "%s", message_strings[p]);
-		va_list list;
-		va_start(list,fmt);
-		vfprintf(target,fmt,list);
-		va_end(list);
-	}
+	const CHAR* msg_intro=get_msg_intro(prio);
+	if (!msg_intro)
+		return;
+
+	fprintf(target, "%s", msg_intro);
+	va_list list;
+	va_start(list,fmt);
+	vfprintf(target,fmt,list);
+	va_end(list);
 }
 
 void CIO::progress(DREAL current_val, DREAL min_val, DREAL max_val, INT decimals, const char* prefix)
@@ -415,31 +288,20 @@ void CIO::set_target(FILE* t)
 	target=t;
 }
 
-
-int CIO::get_prio_string(EMessageType prio) const
+const CHAR* CIO::get_msg_intro(EMessageType prio) const
 {
-	int i=0;
-	int idx=-1;
-
-	while (i<NUM_LOG_LEVELS)
+	for (INT i=NUM_LOG_LEVELS-1; i>=0; i--)
 	{
-		if (levels[i]==loglevel)
-		{
-			while (i<NUM_LOG_LEVELS)
-			{
-				if (levels[i]==prio)
-				{
-					idx=i;
-					break;
-				}
-				i++;
-			}
-			break;
-		}
-		i++;
+		// ignore msg if prio's level is under loglevel,
+		// but not if prio's level higher than M_WARN
+		if (levels[i]<loglevel && prio<=M_WARN)
+			return NULL;
+
+		if (levels[i]==prio)
+			return message_strings[i];
 	}
 
-	return idx;
+	return NULL;
 }
 
 CHAR* CIO::concat_filename(const CHAR* filename)
