@@ -846,7 +846,7 @@ CSGInterfaceMethod sg_methods[]=
 	{
 		(CHAR*) N_LOGLEVEL,
 		(&CSGInterface::cmd_loglevel),
-		(CHAR*) USAGE_I(N_LOGLEVEL, "'ALL|DEBUG|INFO|WARN|ERROR'")
+		(CHAR*) USAGE_I(N_LOGLEVEL, "'ALL|DEBUG|INFO|NOTICE|WARN|ERROR|CRITICAL|ALERT|EMERGENCY'")
 	},
 	{
 		(CHAR*) N_GET_VERSION,
@@ -5376,10 +5376,18 @@ bool CSGInterface::cmd_loglevel()
 		io.set_loglevel(M_DEBUG);
 	else if (strmatch(level, "INFO"))
 		io.set_loglevel(M_INFO);
+	else if (strmatch(level, "NOTICE"))
+		io.set_loglevel(M_NOTICE);
 	else if (strmatch(level, "WARN"))
 		io.set_loglevel(M_WARN);
 	else if (strmatch(level, "ERROR"))
 		io.set_loglevel(M_ERROR);
+	else if (strmatch(level, "CRITICAL"))
+		io.set_loglevel(M_CRITICAL);
+	else if (strmatch(level, "ALERT"))
+		io.set_loglevel(M_ALERT);
+	else if (strmatch(level, "EMERGENCY"))
+		io.set_loglevel(M_EMERGENCY);
 	else
 		SG_ERROR("Unknown loglevel '%s'.\n", level);
 
