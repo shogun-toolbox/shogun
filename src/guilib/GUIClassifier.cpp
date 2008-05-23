@@ -164,6 +164,7 @@ bool CGUIClassifier::new_classifier(CHAR* name, INT d, INT from_d)
 		classifier= new CLibSVR();
 		SG_INFO("created SVRlibsvm object\n") ;
 	}
+#ifdef HAVE_LAPACK
 	else if (strcmp(name, "KRR")==0)
 	{
 		delete classifier;
@@ -171,6 +172,7 @@ bool CGUIClassifier::new_classifier(CHAR* name, INT d, INT from_d)
 			ui->ui_labels->get_train_labels());
 		SG_INFO("created KRR object %p\n", classifier);
 	}
+#endif //HAVE_LAPACK
 	else if (strcmp(name,"KERNELPERCEPTRON")==0)
 	{
 		delete classifier;
