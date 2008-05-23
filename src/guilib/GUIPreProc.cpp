@@ -67,6 +67,7 @@ CPreProc* CGUIPreProc::create_prunevarsubmean(bool divide_by_std)
 
 CPreProc* CGUIPreProc::create_pcacut(bool do_whitening, DREAL threshold)
 {
+#ifdef HAVE_LAPACK
 	CPreProc* preproc=new CPCACut(do_whitening, threshold);
 
 	if (preproc)
@@ -75,6 +76,10 @@ CPreProc* CGUIPreProc::create_pcacut(bool do_whitening, DREAL threshold)
 		SG_ERROR("Could not create preproc PCACUT, do_whitening %i threshold %e", do_whitening, threshold);
 
 	return preproc;
+#else //HAVE_LAPACK
+	SG_ERROR("Could not create preproc PCACUT - lapack not available at compile time\n");
+	return NULL;
+#endif //HAVE_LAPACK
 }
 
 CPreProc* CGUIPreProc::create_generic(EPreProcType type)
