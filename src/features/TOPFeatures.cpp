@@ -202,7 +202,7 @@ DREAL* CTOPFeatures::set_feature_matrix()
 		compute_feature_vector(&feature_matrix[x*num_features], x, len);
 	}
 
-	SG_INFO( "done.\n");
+	SG_DONE();
 
 	num_vectors=get_num_vectors() ;
 	num_features=get_num_features() ;

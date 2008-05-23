@@ -177,7 +177,7 @@ bool CSVRLight::train()
 
 			}
 			SG_PROGRESS(num*num,0,num*num);
-			SG_INFO( "\ndone.\n") ;
+			SG_DONE();
 			w1[n]=0.0 ;
 		}
 
@@ -368,7 +368,7 @@ void CSVRLight::svr_learn()
 
 
 	if(verbosity>=1) {
-		SG_INFO( "done. (%ld iterations)\n",iterations);
+		SG_DONE("(%ld iterations)\n",iterations);
 		SG_INFO( "Optimization finished (maxdiff=%.8f).\n",maxdiff);
 		SG_INFO( "obj = %.16f, rho = %.16f\n",get_objective(),model->b);
 

@@ -137,7 +137,7 @@ void CDistance::do_precompute_matrix()
 	}
 
 	SG_PROGRESS(num*num,0,num*num);
-	SG_INFO( "\ndone.\n") ;
+	SG_DONE();
 }
 
 void CDistance::get_distance_matrix(DREAL** dst, INT* m, INT* n)
@@ -199,7 +199,7 @@ void CDistance::get_distance_matrix(DREAL** dst, INT* m, INT* n)
 			}
 		}
 
-		SG_INFO( "done.           \n");
+		SG_DONE();
 	}
 	else
       SG_ERROR( "no features assigned to distance\n");
@@ -267,7 +267,7 @@ SHORTREAL* CDistance::get_distance_matrix_shortreal(int &num_vec1, int &num_vec2
 			}
 		}
 
-		SG_INFO( "done.           \n");
+		SG_DONE();
 	}
 	else
       SG_ERROR( "no features assigned to distance\n");
@@ -335,7 +335,7 @@ DREAL* CDistance::get_distance_matrix_real(int &num_vec1, int &num_vec2, DREAL* 
 			}
 		}
 
-		SG_INFO( "done.           \n");
+		SG_DONE();
 	}
 	else
       SG_ERROR( "no features assigned to distance\n");

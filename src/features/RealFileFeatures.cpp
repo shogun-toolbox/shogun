@@ -94,7 +94,7 @@ DREAL* CRealFileFeatures::load_feature_matrix()
 
 		ASSERT(fread(&feature_matrix[num_features*i], doublelen, num_features, working_file)==(size_t) num_features);
 	}
-	SG_INFO( "done.\n");
+	SG_DONE();
 
 	return feature_matrix;
 }

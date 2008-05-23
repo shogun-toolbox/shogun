@@ -211,7 +211,7 @@ bool CSVM::save(FILE* modelfl)
 
 	fprintf(modelfl, "];\n");
 
-	SG_INFO( "done\n");
+	SG_DONE();
 	return true ;
 } 
 
@@ -379,7 +379,7 @@ CLabels* CSVM::classify(CLabels* lab)
 			SG_INFO( "prematurely stopped.           \n");
 		else
 #endif
-			SG_INFO( "done.           \n");
+			SG_DONE();
 	}
 	else 
 		return NULL;

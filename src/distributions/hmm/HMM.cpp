@@ -4289,7 +4289,7 @@ bool CHMM::save_path(FILE* file)
 	      fprintf(file,"%d", PATH(dim)[p_observations->get_vector_length(dim)-1]);
 	      fprintf(file,"\n\n") ;
 	    }
-	  SG_INFO("done\n") ;
+	  SG_DONE();
 	  result=true;
 	}
 
@@ -5588,7 +5588,7 @@ void CHMM::set_observations(CStringFeatures<WORD>* obs, CHMM* lambda)
 #else // no USE_HMMPARALLEL_STRUCTURES 
 			SG_INFO( "allocating mem of size %.2f Megabytes (%d*%d) for path-table ....", ((float)max_T)*N*sizeof(T_STATES)/(1024*1024), max_T, N);
 			if ((states_per_observation_psi=new T_STATES[max_T*N]) != NULL)
-				SG_DEBUG( "done.\n") ;
+				SG_DONE();
 			else
 				SG_ERROR( "failed.\n") ;
 

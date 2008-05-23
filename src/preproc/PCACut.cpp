@@ -79,7 +79,7 @@ bool CPCACut::init(CFeatures* f)
 		for (j=0; j<num_features; j++)
 			mean[j]/=num_vectors;
 
-		SG_INFO("done.\nComputing covariance matrix... of size %.2f M\n", num_features*num_features/1024.0/1024.0);
+		SG_DONE("Computing covariance matrix... of size %.2f M\n", num_features*num_features/1024.0/1024.0);
 		double *cov=new double[num_features*num_features];
 
 		for (j=0; j<num_features*num_features; j++)
@@ -109,13 +109,13 @@ bool CPCACut::init(CFeatures* f)
 			((CRealFeatures*) f)->free_feature_vector(vec, i, free) ;
 		}
 
-		SG_INFO( "done.           \n");
+		SG_DONE();
 
 		for (i=0; i<num_features; i++)
 			for (j=0; j<num_features; j++)
 				cov[i*num_features+j]/=num_vectors ;
 
-		SG_INFO("done\n") ;
+		SG_DONE();
 
 		SG_INFO("Computing Eigenvalues ... ") ;
 		char V='V';

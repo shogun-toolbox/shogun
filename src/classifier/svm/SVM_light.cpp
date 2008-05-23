@@ -491,7 +491,7 @@ bool CSVMLight::train()
 
 			}
 			SG_PROGRESS(num*num,0,num*num);
-			SG_INFO( "\ndone.\n") ;
+			SG_DONE();
 			w1[n]=0.0 ;
 		}
 
@@ -746,9 +746,8 @@ void CSVMLight::svm_learn()
     delete[] aicache;
     delete[] alpha;
 
-    if(verbosity>=1) {
-		SG_INFO("done.\n");
-    }   
+    if(verbosity>=1)
+		SG_DONE();
   } 
 		SG_DEBUG( "%d totdoc %d pos %d neg\n", totdoc, trainpos, trainneg);
 		SG_DEBUG( "Optimizing...\n");
@@ -763,7 +762,7 @@ void CSVMLight::svm_learn()
 
 	if(verbosity>=1) {
 		if(verbosity==1)
-			SG_INFO( "done. (%ld iterations)\n",iterations);
+			SG_DONE("(%ld iterations)", iterations);
 
 		misclassified=0;
 		for(i=0;(i<totdoc);i++) { /* get final statistic */
@@ -1093,7 +1092,7 @@ INT CSVMLight::optimize_to_convergence(INT* docs, INT* label, INT totdoc,
 									   docs,aicache,
 									   maxdiff);
 		  reactivated=true;
-		  SG_DEBUG( "done reactivating inactive examples (maxdiff:%8f eps_crit:%8f orig_eps:%8f)\n", *maxdiff, learn_parm->epsilon_crit, epsilon_crit_org);
+		  SG_DEBUG("done reactivating inactive examples (maxdiff:%8f eps_crit:%8f orig_eps:%8f)\n", *maxdiff, learn_parm->epsilon_crit, epsilon_crit_org);
 		  /* Update to new active variables. */
 		  activenum=compute_index(shrink_state->active,totdoc,active2dnum);
 		  inactivenum=totdoc-activenum;
@@ -1112,8 +1111,7 @@ INT CSVMLight::optimize_to_convergence(INT* docs, INT* label, INT totdoc,
 		  timing_profile->time_shrink+=get_runtime()-t1;
 		  if (((verbosity>=1) && (!(kernel->has_property(KP_LINADD) && get_linadd_enabled())))
 		     || (verbosity>=2)) {
-		      SG_INFO( "done.\n");
-		      SG_INFO( "Number of inactive variables = %ld\n",inactivenum);
+		      SG_DONE("Number of inactive variables = %ld\n", inactivenum);
 		  }		  
 	  }
 	  
@@ -1299,7 +1297,7 @@ void CSVMLight::optimize_svm(INT* docs, INT* label,
             learn_parm->svm_maxqpsize); /* the threshold for free. otherwise */
                                    		/* b is calculated in calculate_model. */
     if(verbosity>=3) {         
-     SG_DEBUG( "done\n");
+     SG_DONE();
     }
 
     for(i=0;i<varnum;i++)
@@ -1430,7 +1428,7 @@ void CSVMLight::compute_matrices_for_optimization_parallel(INT* docs, INT* label
 		}
 
 		if(verbosity>=3) {
-			SG_DEBUG( "done\n");
+			SG_DONE();
 		}
 	}
 #endif
@@ -1505,7 +1503,7 @@ void CSVMLight::compute_matrices_for_optimization(INT* docs, INT* label,
   }
   
   if(verbosity>=3) {
-	  SG_DEBUG( "done\n");
+	  SG_DONE();
   }
 }
 
@@ -1622,7 +1620,7 @@ INT CSVMLight::calculate_svm_model(INT* docs, INT *label,
   }
 
   if(verbosity>=3) {
-   SG_DEBUG( "done\n");
+   SG_DONE();
   }
 
   return(model->sv_num-1); /* have to substract one, since element 0 is empty*/
@@ -2794,8 +2792,7 @@ INT CSVMLight::shrink_problem(SHRINK_STATE *shrink_state,
 		  shrink_state->deactnum=0;
 
 	  if(verbosity>=2) {
-		  SG_INFO( "done.\n");
-		  SG_INFO( " Number of inactive variables = %ld\n",totdoc-activenum);
+		  SG_DONE("Number of inactive variables = %ld\n", totdoc-activenum);
 	  }
   }
   return(activenum);

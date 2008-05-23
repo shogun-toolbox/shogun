@@ -299,7 +299,7 @@ bool CWeightedDegreePositionStringKernel::init_optimization(INT p_count, INT * I
 	}
 
 	if (tree_num<0)
-		SG_DEBUG( "done.           \n");
+		SG_DONE();
 
 	set_is_initialized(true) ;
 	return true ;
