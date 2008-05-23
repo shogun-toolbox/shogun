@@ -8,7 +8,6 @@ TODO
 - proper ascii file reading / writing file format
 - serialization
 + examples for cmdline interface, use static data repository for cmdline/R/python/octave + r/octave/python-modular interfaces
-+ cleanup guilib/SGInterface
 - lots of documentation
 - simple model selection / cross validation
 - cmdline help pretty print (ansi escapes)
@@ -33,9 +32,43 @@ TODO
 - fix linear HMM to be equiv. with MMs
 - deal with remove_lhs/rhs in kernel cleanup() function
 
-DONE
+
+
+ALMOST DONE
+
+- cleanup guilib/SGInterface; remaining issues:
+	* CGUIClassifier::save/load, CGUIDistance::load/save_distance_init,
+	  CGUIDistance::save/load_distance, CGUILabels::save/load,
+	  CGUIPluginEstimate::load/save
+	*  CGUIHMM::hmm_classify
+	  man koennte das in cmd_hmm_classify aufnehmen... wobei eigentlich
+	  der sauberere weg waere dass classifier die einen output erzeugen ein
+	  label object generieren und das label object dann eine load/save
+	  function hat die ascii vectoren rausschreibt.
+	* CGUIMath
+	  nur set_threshold von N_SET_THRESHOLD genutzt. aber wozu ist das gut?
+	  das soll bei hmm_classify ne threshold setzen ab, fuer: 
+	  hmm output + threshold 
+	  (vierschiebt sozusagen den bias - kannst dich ja bei den performance
+	  measures noch dran erinnern)
+	  es gibt in GUIMath auch evaluate_results/current_results, die aber
+	  scheinbar nicht genutzt werden.
+	* nicht implementierte kommands aus GUICommands
+	  N_GET_KERNEL_INIT, N_GET_PREPROC_INIT, N_GET_HMM_DEFS,
+	  N_MODEL_PROB_NO_B_TRANS, N_SET_KERNEL_INIT,
+	  N_SET_PREPROC_INIT, N_SET_HMM_DEFS
+	  ich erinner mich nicht mehr das war '99 ich glaub das waren die
+	  const_a/const_b etc funktionen - wenn wir das jemals
+	  wieder brauchen kann das noch gemacht werden.
 
 - memory handling (overload new and throw proper exception)
+	* not working for octave yet, due to redefinition problems with compiler/
+	linker
+
+
+
+DONE
+
 - R swig interface
 - TextInterface that does get/set_matrx/vector etc via file io
 - cmdline help remove missing send_command legacy
