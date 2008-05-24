@@ -88,7 +88,7 @@ CGMNPLib::CGMNPLib(DREAL* vector_y, CKernel* kernel, INT num_data, INT num_virt_
   Cache_Size = CMath::min(Cache_Size, (LONG) num_data);
 
   SG_INFO("using %d kernel cache lines\n", Cache_Size);
-  ASSERT(Cache_Size > 2);
+  ASSERT(Cache_Size>=2);
 
   /* allocates memory for kernel cache */
   kernel_columns = new DREAL*[Cache_Size];
