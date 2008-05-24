@@ -1,5 +1,7 @@
 TODO
 
+- general framework for features to do x <- a*x + b or  x <- x^t x + b etc (would allow linear
+methods to work on both: sparse, dense, realvalued and i.e. WD or even certain combined features)
 - bugfix: LDA and KRR seem to fail when lapack is available but not atlas
 - make examples and test-suite run nicely when svmlight is not available
 - remove requirement to assign features to custom kernel (automatically create dummy features that match the size)
