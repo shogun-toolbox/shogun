@@ -762,7 +762,10 @@ void CSVMLight::svm_learn()
 
 	if(verbosity>=1) {
 		if(verbosity==1)
-			SG_DONE("(%ld iterations)", iterations);
+		{
+			SG_DONE();
+			SG_DEBUG("(%ld iterations)", iterations);
+		}
 
 		misclassified=0;
 		for(i=0;(i<totdoc);i++) { /* get final statistic */
@@ -1111,8 +1114,9 @@ INT CSVMLight::optimize_to_convergence(INT* docs, INT* label, INT totdoc,
 		  timing_profile->time_shrink+=get_runtime()-t1;
 		  if (((verbosity>=1) && (!(kernel->has_property(KP_LINADD) && get_linadd_enabled())))
 		     || (verbosity>=2)) {
-		      SG_DONE("Number of inactive variables = %ld\n", inactivenum);
-		  }		  
+		      SG_DONE();
+		      SG_DEBUG("Number of inactive variables = %ld\n", inactivenum);
+		  }
 	  }
 	  
 	  if((!retrain) && (learn_parm->epsilon_crit>(*maxdiff))) 
@@ -2792,7 +2796,8 @@ INT CSVMLight::shrink_problem(SHRINK_STATE *shrink_state,
 		  shrink_state->deactnum=0;
 
 	  if(verbosity>=2) {
-		  SG_DONE("Number of inactive variables = %ld\n", totdoc-activenum);
+		  SG_DONE();
+		  SG_DEBUG("Number of inactive variables = %ld\n", totdoc-activenum);
 	  }
   }
   return(activenum);

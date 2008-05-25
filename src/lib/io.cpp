@@ -240,6 +240,14 @@ void CIO::absolute_progress(DREAL current_val, DREAL val, DREAL min_val, DREAL m
     fflush(target);
 }
 
+void CIO::done()
+{
+	if (!show_progress)
+		return;
+
+	message(M_INFO, "done.\n");
+}
+
 CHAR* CIO::skip_spaces(CHAR* str)
 {
 	INT i=0;

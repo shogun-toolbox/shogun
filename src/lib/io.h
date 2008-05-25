@@ -44,7 +44,7 @@ class CIO;
 
 #define SG_PROGRESS(x...) CSGObject::io.progress(x)
 #define SG_ABS_PROGRESS(x...) CSGObject::io.absolute_progress(x)
-#define SG_DONE(x...) CSGObject::io.message(M_INFO, "done.\n" x)
+#define SG_DONE() CSGObject::io.done()
 
 #ifndef HAVE_SWIG
 extern CIO* sg_io;
@@ -56,7 +56,7 @@ extern CIO* sg_io;
 #define SG_SPRINT(x...) sg_io->message(M_MESSAGEONLY,x)
 #define SG_SPROGRESS(x...) sg_io->progress(x)
 #define SG_SABS_PROGRESS(x...) sg_io->absolute_progress(x)
-#define SG_SDONE(x...) sg_io->message(M_INFO, "done.\n" x)
+#define SG_SDONE() sg_io->done()
 #define SG_SNOTIMPLEMENTED sg_io->not_implemented()
 #else
 extern CIO sg_io;
@@ -68,7 +68,7 @@ extern CIO sg_io;
 #define SG_SPRINT(x...) sg_io.message(M_MESSAGEONLY,x)
 #define SG_SPROGRESS(x...) sg_io.progress(x)
 #define SG_SABS_PROGRESS(x...) sg_io.absolute_progress(x)
-#define SG_SDONE(x...) sg_io.message(M_INFO, "done.\n" x)
+#define SG_SDONE() sg_io.done()
 #define SG_SNOTIMPLEMENTED sg_io.not_implemented()
 #endif
 
@@ -128,6 +128,12 @@ class CIO
 		 * @param prefix message prefix
 		 */
 		void absolute_progress(DREAL current_val, DREAL val, DREAL min_val=0.0, DREAL max_val=1.0, INT decimals=1, const char* prefix="PROGRESS:\t");
+
+		/** print 'done' with priority INFO,
+		 * but only if progress bar is enabled
+		 *
+		 */
+		void done();
 
 		/** print error message 'not implemented' */
 		inline void not_implemented() const

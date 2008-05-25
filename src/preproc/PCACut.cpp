@@ -79,7 +79,8 @@ bool CPCACut::init(CFeatures* f)
 		for (j=0; j<num_features; j++)
 			mean[j]/=num_vectors;
 
-		SG_DONE("Computing covariance matrix... of size %.2f M\n", num_features*num_features/1024.0/1024.0);
+		SG_DONE();
+		SG_DEBUG("Computing covariance matrix... of size %.2f M\n", num_features*num_features/1024.0/1024.0);
 		double *cov=new double[num_features*num_features];
 
 		for (j=0; j<num_features*num_features; j++)
