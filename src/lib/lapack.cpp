@@ -18,15 +18,19 @@
 #include "lib/common.h"
 #include "lib/io.h"
 
-#ifdef HAVE_ATLAS
-
-#define DSYEV dsyev_
-#define DGESVD dgesvd_
-
-#else
-
+#if defined(HAVE_MKL) || defined(HAVE_ACML) || defined(DARWIN)
 #define DSYEV dsyev
 #define DGESVD dgesvd
+#define DPOSV dposv
+#define DPOTRF dpotrf
+#else
+#define DSYEV dsyev_
+#define DGESVD dgesvd_
+#define DPOSV dposv_
+#define DPOTRF dpotrf_
+#endif
+
+#ifndef HAVE_ATLAS
 int clapack_dpotrf(const CBLAS_ORDER Order, const CBLAS_UPLO Uplo,
 		const int N, double *A, const int LDA)
 {
@@ -40,15 +44,16 @@ int clapack_dpotrf(const CBLAS_ORDER Order, const CBLAS_UPLO Uplo,
 	else
 		if (Uplo==CblasLower)
 			uplo='L';
-#if defined(HAVE_MKL) || defined(DARWIN)
+#ifdef HAVE_ACML
+	DPOTRF(uplo, N, A, LDA, &info);
+#else
 	int n=N;
 	int lda=LDA;
-	dpotrf(&uplo, &n, A, &lda, &info);
-#elif defined(HAVE_ACML)
-	dpotrf(uplo, N, A, LDA, &info);
+	DPOTRF(&uplo, &n, A, &lda, &info);
 #endif
 	return info;
 }
+#undef DPOTRF
 
 /* DPOSV computes the solution to a real system of linear equations
  * A * X = B,
@@ -69,17 +74,18 @@ int clapack_dposv(const CBLAS_ORDER Order, const CBLAS_UPLO Uplo,
 	else
 		if (Uplo==CblasLower)
 			uplo='L';
-#if defined(HAVE_MKL) || defined(DARWIN)
+#ifdef HAVE_ACML
+	DPOSV(uplo,N,NRHS,A,lda,B,ldb,&info);
+#else
 	int n=N;
 	int nrhs=NRHS;
 	int LDA=lda;
 	int LDB=ldb;
-	dposv(&uplo, &n, &nrhs, A, &LDA, B, &LDB, &info);
-#elif defined(HAVE_ACML)
-	dposv(uplo,N,NRHS,A,lda,B,ldb,&info);
+	DPOSV(&uplo, &n, &nrhs, A, &LDA, B, &LDB, &info);
 #endif
 	return info;
 }
+#undef DPOSV
 #endif //HAVE_ATLAS
 
 /*
@@ -93,8 +99,8 @@ int clapack_dposv(const CBLAS_ORDER Order, const CBLAS_UPLO Uplo,
 void wrap_dsyev(char jobz, char uplo, int n, double *a, int lda, double *w, int *info)
 {
 #ifdef HAVE_ACML
-	dsyev(jobz, uplo, n, a, lda, w, info);
-#elif defined(HAVE_ATLAS) || defined(HAVE_MKL) || defined(DARWIN)
+	DSYEV(jobz, uplo, n, a, lda, w, info);
+#else
 	int lwork=-1;
 	double work1;
 	DSYEV(&jobz, &uplo, &n, a, &lda, w, &work1, &lwork, info);
@@ -112,8 +118,8 @@ void wrap_dgesvd(char jobu, char jobvt, int m, int n, double *a, int lda, double
 		double *u, int ldu, double *vt, int ldvt, int *info)
 {
 #ifdef HAVE_ACML
-	dgesvd(jobu, jobvt, m, n, a, lda, sing, u, ldu, vt, ldvt, info);
-#elif defined(HAVE_ATLAS) || defined(HAVE_MKL) || defined(DARWIN)
+	DGESVD(jobu, jobvt, m, n, a, lda, sing, u, ldu, vt, ldvt, info);
+#else
 	int lwork=-1;
 	double work1;
 	DGESVD(&jobu, &jobvt, &m, &n, a, &lda, sing, u, &ldu, vt, &ldvt, &work1, &lwork, info);

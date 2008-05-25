@@ -18,16 +18,30 @@
 #include "lib/common.h"
 
 #ifdef HAVE_LAPACK
+
 extern "C" {
+
 #ifdef HAVE_MKL
 #include <mkl_cblas.h>
+#include <mkl_lapack.h>
 #else
 #include <cblas.h>
 #endif
+
+#ifdef HAVE_ACML
+#include <acml.h>
+#endif
+
 #ifdef HAVE_ATLAS
 #include <clapack.h>
+#else
+// ACML and MKL do not provide clapack_* routines
+int clapack_dpotrf(const CBLAS_ORDER Order, const CBLAS_UPLO Uplo,
+		const int N, double *A, const int lda);
+int clapack_dposv(const CBLAS_ORDER Order, const CBLAS_UPLO Uplo,
+		const int N, const int NRHS, double *A, const int lda,
+		double *B, const int ldb);
 #endif
-}
 
 void wrap_dsyev(char jobz, char uplo, int n, double *a, int lda, 
 		double *w, int *info);
@@ -35,30 +49,16 @@ void wrap_dgesvd(char jobu, char jobvt, int m, int n, double *a, int lda,
 		double *sing, double *u, int ldu, double *vt, int ldvt, 
 		int *info);
 
-#ifdef HAVE_ATLAS
-// ATLAS does not provide a header file for the lapack routines
-extern "C" {
-	int dsyev_(char*, char*, int*, double*, int*, double*, double*, int*, int*);
-	int dgesvd_(char* jobu, char* jobvt, int* m, int* n, double* a, int* lda,
-			double* s, double* u, int* ldu, double* vt, int* ldvt, double* work,
-			int* lwork, int* info);
+// only MKL and ACML provide a header file for the lapack routines
+#if !defined(HAVE_ACML) && !defined(HAVE_MKL)
+int dsyev_(char*, char*, int*, double*, int*, double*, double*, int*, int*);
+int dgesvd_(char* jobu, char* jobvt, int* m, int* n, double* a, int* lda,
+		double* s, double* u, int* ldu, double* vt, int* ldvt, double* work,
+		int* lwork, int* info);
+int dposv_(const char *uplo, const int *n, const int *nrhs, double *a, const int *lda, double *b, const int *ldb, int *info);
+int dpotrf_(const char *uplo, int *n, double *a, int * lda, int *info);
+#endif
 }
-#else //NON_ATLAS libs
-#ifdef HAVE_ACML
-#include <acml.h>
-#endif
-#ifdef HAVE_MKL
-#include <mkl_lapack.h>
-#endif
-#ifdef DARWIN
 
-#endif 
-
-int clapack_dpotrf(const CBLAS_ORDER Order, const CBLAS_UPLO Uplo,
-		const int N, double *A, const int lda);
-int clapack_dposv(const CBLAS_ORDER Order, const CBLAS_UPLO Uplo,
-		const int N, const int NRHS, double *A, const int lda,
-		double *B, const int ldb);
-#endif // NON_ATLAS libs
 #endif //HAVE_LAPACK
 #endif //_LAPACK_H__

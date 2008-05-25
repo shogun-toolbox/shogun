@@ -25,7 +25,7 @@
 
 /* Given a PyObject, return a string describing its type.
  */
-char* typecode_string(PyObject* py_obj) {
+const char* typecode_string(PyObject* py_obj) {
   if (py_obj == NULL          ) return "C NULL value";
   if (PyCallable_Check(py_obj)) return "callable"    ;
   if (PyString_Check(  py_obj)) return "string"      ;
@@ -61,14 +61,14 @@ enum NPY_TYPES {    NPY_BOOL=0,
                     NPY_USERDEF=256 
  */
 
-char* typecode_string(int typecode) {
-  char* type_names[24] = {"bool","byte","unsigned byte","short",
+const char* typecode_string(int typecode) {
+  const char* type_names[24] = {"bool","byte","unsigned byte","short",
 			  "unsigned short","int","unsigned int","long",
               "unsigned long","long long", "unsigned long long",
 			  "float","double","long double",
               "complex float","complex double","complex long double",
 			  "object","string","unicode","void","ntype","notype","char"};
-  char* user_def="user defined";
+  const char* user_def="user defined";
 
   if (typecode>24)
       return user_def;
@@ -96,16 +96,16 @@ PyArrayObject* obj_to_array_no_conversion(PyObject* input, int typecode)
         ary = (PyArrayObject*) input;
     }
     else if is_array(input) {
-      char* desired_type = typecode_string(typecode);
-      char* actual_type = typecode_string(array_type(input));
+      const char* desired_type = typecode_string(typecode);
+      const char* actual_type = typecode_string(array_type(input));
       PyErr_Format(PyExc_TypeError, 
 		   "Array of type '%s' required.  Array of type '%s' given", 
 		   desired_type, actual_type);
       ary = NULL;
     }
     else {
-      char * desired_type = typecode_string(typecode);
-      char * actual_type = typecode_string(input);
+      const char* desired_type = typecode_string(typecode);
+      const char* actual_type = typecode_string(input);
       PyErr_Format(PyExc_TypeError, 
 		   "Array of type '%s' required.  Array of type '%s' given", 
 		   desired_type, actual_type);
@@ -166,8 +166,8 @@ PyObject* make_contiguous(PyObject* ary, int* is_new_object,
         !(typecode==NPY_LONG && NPY_BITSOF_INT == NPY_BITSOF_LONG 
             && NPY_BITSOF_INT==32 && array_type(array)==NPY_INT))
     {
-        char* desired_type = typecode_string(typecode);
-        char* actual_type = typecode_string(array_type(array));
+        const char* desired_type = typecode_string(typecode);
+        const char* actual_type = typecode_string(array_type(array));
         PyErr_Format(PyExc_TypeError, 
                 "Array of type '%s' required.  Array of type '%s' given", 
                 desired_type, actual_type);
