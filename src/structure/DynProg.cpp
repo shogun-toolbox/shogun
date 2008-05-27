@@ -844,8 +844,8 @@ void CDynProg::best_path_call(INT nbest, bool use_orf)
 
 	m_call=1 ;
 
-	assert(nbest==1|nbest==2) ;
-	assert(m_genestr.get_dim2()==1) ;
+	ASSERT(nbest==1||nbest==2) ;
+	ASSERT(m_genestr.get_dim2()==1) ;
 	
 	if (nbest==1)
 		best_path_trans<1,false,false>(m_seq.get_array(), m_seq.get_dim2(), m_pos.get_array(), 

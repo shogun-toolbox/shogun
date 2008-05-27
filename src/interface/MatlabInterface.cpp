@@ -290,8 +290,10 @@ void CMatlabInterface::function_name(T_STRING<sg_type>*& strings, INT& num_str, 
 		for (int i=0; i<num_str; i++)													\
 		{																				\
 			mxArray* str=mxGetCell(mx_str, i);											\
+			if (!str)					\
+				SG_ERROR("argument empty");		\
 			if (!str || !mxIsClass(str, mx_type) || !mxGetM(str)==1)					\
-				SG_ERROR("Expected String of type " error_string " as argument %d.\n", m_rhs_counter); \
+				SG_ERROR("Expected String of type " error_string " as argument %d.  M:%i N:%i\n", m_rhs_counter,mxGetM(str),mxGetN(str)); \
 																						\
 			INT len=mxGetN(str);														\
 			if (len>0) 																	\

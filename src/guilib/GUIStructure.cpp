@@ -28,11 +28,12 @@ CGUIStructure::~CGUIStructure()
 bool CGUIStructure::set_plif_struct(INT N, INT M, DREAL* all_limits,
 				DREAL* all_penalties, INT* ids, T_STRING<CHAR>* names,
 				DREAL* min_values, DREAL* max_values, bool* all_use_cache,
-				bool* all_use_svm, T_STRING<CHAR>* all_transform)
+				INT* all_use_svm, T_STRING<CHAR>* all_transform)
 {
 	// cleanup 
+	//SG_PRINT("set_plif_struct, N:%i\n",N);
 	for (INT i=0; i<m_N; i++)	
-		delete[] m_PEN[i];
+		delete m_PEN[i];
 	delete[] m_PEN;
 	m_PEN=NULL;
 	m_N=0;
@@ -54,7 +55,8 @@ bool CGUIStructure::set_plif_struct(INT N, INT M, DREAL* all_limits,
 			penalties[k] = all_penalties[i*M+k];
 		}
 		INT id = ids[i];
-
+		if (id>=N)
+			SG_ERROR("plif id (%i)  exceeds array length (%i)\n",id,N);
 		m_PEN[id]->set_id(id);
 
 		m_PEN[id]->set_name(get_zero_terminated_string_copy(names[i]));

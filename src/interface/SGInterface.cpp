@@ -4950,64 +4950,83 @@ void CSGInterface::set_bool_vector(bool*& vector, INT& len)
 }
 bool CSGInterface::cmd_set_plif_struct()
 {
+	// ARG 2 
 	INT Nid=0;
 	INT* ids;
 	get_int_vector(ids,Nid);
 
+	// ARG 3
 	INT Nname=0;
 	INT Mname=0;
 	T_STRING<CHAR>* names;
 	get_char_string_list(names, Nname,Mname);
 
+	// ARG 4
 	INT Nlimits=0;
 	INT Mlimits=0;
 	DREAL* all_limits; 
-	get_real_matrix(all_limits, Nlimits, Mlimits);
+	get_real_matrix(all_limits, Mlimits, Nlimits);
 
+	// ARG 5
 	INT Npenalties=0;
 	INT Mpenalties=0;
 	DREAL* all_penalties;
-	get_real_matrix(all_penalties, Npenalties, Mpenalties);
+	get_real_matrix(all_penalties, Mpenalties, Npenalties);
 
+	// ARG 6
 	INT Ntransform=0;
 	INT Mtransform=0;
 	T_STRING<CHAR>* all_transform;
 	get_char_string_list(all_transform, Ntransform, Mtransform);
 
+	// ARG 7
 	INT Nmin=0;
 	DREAL* min_values;
 	get_real_vector(min_values,Nmin);
 
+	// ARG 8
 	INT Nmax=0;
 	DREAL* max_values;
 	get_real_vector(max_values,Nmax);
 
+	// ARG 9
 	INT Ncache=0;
 	bool* all_use_cache;
 	get_bool_vector(all_use_cache,Ncache);
 
+	// ARG 10
 	INT Nsvm=0;
-	bool* all_use_svm;
-	get_bool_vector(all_use_svm,Nsvm);
+	INT* all_use_svm;
+	get_int_vector(all_use_svm,Nsvm);
 
+	// ARG 11
 	INT Ncalc=0;
 	bool* all_do_calc;
-	get_bool_vector(all_do_calc,Ncache);
+	get_bool_vector(all_do_calc,Ncalc);
 
-	ASSERT(Ncalc==Nsvm);
-	ASSERT(Ncalc==Ncache);
-	ASSERT(Ncalc==Ntransform);
-	ASSERT(Ncalc==Nmin);
-	ASSERT(Ncalc==Nmax);
-	ASSERT(Ncalc==Npenalties);
-	ASSERT(Ncalc==Nlimits);
-	ASSERT(Ncalc==Nname);
-	ASSERT(Ncalc==Nid);
-	ASSERT(Mlimits==Mpenalties);
+	if (Ncalc!=Nsvm)
+		SG_ERROR("Ncalc!=Nsvm, Ncalc:%i, Nsvm:%i\n",Ncalc,Nsvm);
+	if (Ncalc!=Ncache)
+		SG_ERROR("Ncalc!=Ncache, Ncalc:%i, Ncache:%i\n",Ncalc,Ncache);
+	if (Ncalc!=Ntransform)
+		SG_ERROR("Ncalc!=Ntransform, Ncalc:%i, Ntransform:%i\n",Ncalc,Ntransform);
+	if (Ncalc!=Nmin)
+		SG_ERROR("Ncalc!=Nmin, Ncalc:%i, Nmin:%i\n",Ncalc,Nmin);
+	if (Ncalc!=Nmax)
+		SG_ERROR("Ncalc!=Nmax, Ncalc:%i, Nmax:%i\n",Ncalc,Nmax);
+	if (Ncalc!=Npenalties)
+		SG_ERROR("Ncalc!=Npenalties, Ncalc:%i, Npenalties:%i\n",Ncalc,Npenalties);
+	if (Ncalc!=Nlimits)
+		SG_ERROR("Ncalc!=Nlimits, Ncalc:%i, Nlimits:%i\n",Ncalc,Nlimits);
+	if (Ncalc!=Nname)
+		SG_ERROR("Ncalc!=Nname, Ncalc:%i, Nname:%i\n",Ncalc,Nname);
+	if (Ncalc!=Nid)
+		SG_ERROR("Ncalc!=Nid, Ncalc:%i, Nid:%i\n",Ncalc,Nid);
+	if (Mlimits!=Mpenalties)
+		SG_ERROR("Mlimits!=Mpenalties, Mlimits:%i, Mpenalties:%i\n",Mlimits,Mpenalties);
 
 	INT N = Ncalc;
 	INT M = Mlimits; 	
-
 	return ui_structure->set_plif_struct(N, M, all_limits, all_penalties, ids,
 			names, min_values, max_values, all_use_cache, all_use_svm,
 			all_transform);
@@ -5027,7 +5046,7 @@ bool CSGInterface::cmd_get_plif_struct()
 	DREAL* all_limits = new DREAL[N*M];
 	DREAL* all_penalties = new DREAL[N*M];
 	bool* all_use_cache = new bool[N];
-	bool* all_use_svm = new bool[N];
+	INT* all_use_svm = new INT[N];
 	bool* all_do_calc = new bool[N];
 	for (INT i=0;i<N;i++)
 	{
@@ -5052,13 +5071,13 @@ bool CSGInterface::cmd_get_plif_struct()
 	}
 	set_int_vector(ids,N);
 	set_char_string_list(names, N);
-	set_real_matrix(all_limits, N, M);
-	set_real_matrix(all_penalties, N, M);
+	set_real_matrix(all_limits, M, N);
+	set_real_matrix(all_penalties, M, N);
 	set_char_string_list(all_transform, N);
 	set_real_vector(min_values,N);
 	set_real_vector(max_values,N);
 	set_bool_vector(all_use_cache,N);
-	set_bool_vector(all_use_svm,N);
+	set_int_vector(all_use_svm,N);
 	set_bool_vector(all_do_calc,N);
 	
 	return true;
