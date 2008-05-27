@@ -371,6 +371,7 @@ class CSGInterface : public CSGObject
 		virtual CHAR* get_string(INT& len)=0;
 
 		virtual void get_bool_vector(bool*& vector, INT& len);
+		virtual void set_bool_vector(bool*& vector, INT& len);
 		virtual void get_byte_vector(BYTE*& vector, INT& len)=0;
 		virtual void get_char_vector(CHAR*& vector, INT& len)=0;
 		virtual void get_int_vector(INT*& vector, INT& len)=0;

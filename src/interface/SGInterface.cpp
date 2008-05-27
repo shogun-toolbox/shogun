@@ -4935,6 +4935,19 @@ void CSGInterface::get_bool_vector(bool*& vector, INT& len)
 	delete[] int_vector;
 }
 
+void CSGInterface::set_bool_vector(bool*& vector, INT& len)
+{
+	INT* int_vector = new INT[len];
+	for (INT i=0;i<len;i++)
+	{
+		if (vector[i])
+			int_vector[i]=1;
+		else
+			int_vector[i]=0;
+	}
+	set_int_vector(int_vector,len);
+	delete[] int_vector;
+}
 bool CSGInterface::cmd_set_plif_struct()
 {
 	INT Nid=0;
@@ -5007,12 +5020,12 @@ bool CSGInterface::cmd_get_plif_struct()
 
 	
 	INT* ids = new INT[N];
-	INT* max_values = new INT[N];
-	INT* min_values = new INT[N];
+	DREAL* max_values = new DREAL[N];
+	DREAL* min_values = new DREAL[N];
 	T_STRING<CHAR>* names = new T_STRING<CHAR>[N];
 	T_STRING<CHAR>* all_transform = new T_STRING<CHAR>[N];
-	DREAL** all_limits = new DREAL[N][M];
-	DREAL** all_penalties = new DREAL[N][M];
+	DREAL* all_limits = new DREAL[N*M];
+	DREAL* all_penalties = new DREAL[N*M];
 	bool* all_use_cache = new bool[N];
 	bool* all_use_svm = new bool[N];
 	bool* all_do_calc = new bool[N];
@@ -5021,15 +5034,15 @@ bool CSGInterface::cmd_get_plif_struct()
 		ids[i]=PEN[i]->get_id();
 		names[i].string = PEN[i]->get_name();
 		names[i].length = strlen(PEN[i]->get_name());
-		INT* limits = PEN[i]->get_limits();
-		INT* penalties = PEN[i]->get_penalties();
+		DREAL* limits = PEN[i]->get_plif_limits();
+		DREAL* penalties = PEN[i]->get_plif_penalties();
 		for (INT j=0;j<M;j++)
 		{
-			all_limits[i][j]=limits[j];
-			all_penalties[i][j]=limits[j];
+			all_limits[i*M+j]=limits[j];
+			all_penalties[i*M+j]=penalties[j];
 		}
-		all_transform[i].string = PEN[i]->get_transform_string();		
-		all_transform[i].length = strlen(PEN[i]->get_transform_string());		
+		all_transform[i].string = PEN[i]->get_transform_type();		
+		all_transform[i].length = strlen(PEN[i]->get_transform_type());		
 		min_values[i]=PEN[i]->get_min_value();
 		max_values[i]=PEN[i]->get_max_value();
 		all_use_cache[i]=PEN[i]->get_use_cache();
@@ -5038,15 +5051,17 @@ bool CSGInterface::cmd_get_plif_struct()
 		
 	}
 	set_int_vector(ids,N);
-	set_char_string_list(names, N,M);
+	set_char_string_list(names, N);
 	set_real_matrix(all_limits, N, M);
 	set_real_matrix(all_penalties, N, M);
-	set_char_string_list(all_transform, N, M);
+	set_char_string_list(all_transform, N);
 	set_real_vector(min_values,N);
 	set_real_vector(max_values,N);
 	set_bool_vector(all_use_cache,N);
 	set_bool_vector(all_use_svm,N);
 	set_bool_vector(all_do_calc,N);
+	
+	return true;
 }
 
 bool CSGInterface::cmd_best_path_trans()
@@ -5291,19 +5306,33 @@ bool CSGInterface::cmd_best_path_trans()
 
 	if (seg_path!=NULL)
 	{
+		INT *segment_ids = new INT[M] ;
+		DREAL *segment_mask = new DREAL[M] ;
+		for (INT i=0; i<M; i++)
+		{
+		        segment_ids[i] = (INT)seg_path[2*i] ;
+		        segment_mask[i] = seg_path[2*i+1] ;
+		}
 		h->best_path_set_segment_loss(loss, Mloss, Nloss) ;
-		h->best_path_set_segment_ids_mask(seg_path, Mseg_path, Nseg_path) ;
+		h->best_path_set_segment_ids_mask(segment_ids, segment_mask, Nseg_path) ;
+		delete[] segment_ids;
+		delete[] segment_mask;
 	}
 	else
 	{
 		DREAL zero2[2] = {0.0, 0.0} ;
 		h->best_path_set_segment_loss(zero2, 2, 1) ;
 		//fprintf(stderr, "M=%i\n", M) ;
-		INT *zeros = new INT[2*M] ;
-		for (INT i=0; i<2*M; i++)
-			zeros[i]=0 ;
-		h->best_path_set_segment_ids_mask(zeros, 2, M) ;
-		delete[] zeros ;
+		INT *izeros = new INT[M] ;
+		DREAL *dzeros = new DREAL[M] ;
+		for (INT i=0; i<M; i++)
+		{
+			izeros[i]=0 ;
+			dzeros[i]=0.0 ;
+		}
+		h->best_path_set_segment_ids_mask(izeros, dzeros, M) ;
+		delete[] izeros ;
+		delete[] dzeros ;
 	}
 	
 	//h->best_path_trans(seq, M, all_pos, orf_info,

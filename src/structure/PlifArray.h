@@ -96,6 +96,7 @@ class CPlifArray: public CPlifBase
 		 */
 		virtual INT get_max_id() const;
 
+		void get_used_svms(INT* num_svms, INT* svm_ids);
 	protected:
 		/** plif array */
 		CDynamicArray<CPlifBase*> m_array;

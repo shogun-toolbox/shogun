@@ -74,6 +74,12 @@ class CPlifBase : public CSGObject
 		 */
 		virtual DREAL get_min_value() const = 0;
 
+		/** get SVM_ids and number of SVMs used
+		 *
+		 * abstract base method
+		 */
+		virtual void get_used_svms(INT* num_svms, INT* svm_ids) = 0;
+
 		/** if plif uses SVM values
 		 *
 		 * abstract base method
