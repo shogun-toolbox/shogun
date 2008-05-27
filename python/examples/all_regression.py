@@ -31,7 +31,12 @@ def svr_light ():
 	sg('init_kernel', 'TRAIN')
 
 	sg('set_labels', 'TRAIN', trainlab)
-	sg('new_regression', 'SVRLIGHT')
+
+	try:
+		sg('new_regression', 'SVRLIGHT')
+	except RuntimeError:
+		return
+
 	sg('svr_tube_epsilon', tube_epsilon)
 	sg('c', C)
 	sg('train_regression')

@@ -57,7 +57,12 @@ def svm_light ():
 	sg('init_kernel', 'TRAIN')
 
 	sg('set_labels', 'TRAIN', labels)
-	sg('new_svm', 'LIGHT')
+
+	try:
+		sg('new_svm', 'LIGHT')
+	except RuntimeError:
+		return
+
 	sg('svm_epsilon', epsilon)
 	sg('c', C)
 	sg('svm_use_bias', use_bias)

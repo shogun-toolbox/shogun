@@ -9,7 +9,7 @@ labels=concatenate((-ones([1,num]), ones([1,num])),1)[0]
 features=concatenate((randn(2,num)-1,randn(2,num)+1),1)
 
 sg('c', 10.)
-sg('new_svm', 'LIGHT')
+sg('new_svm', 'LIBSVM')
 sg('use_mkl', True)
 
 sg('set_labels', 'TRAIN', labels)

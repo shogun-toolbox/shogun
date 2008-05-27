@@ -31,7 +31,14 @@ svm = SVMLin(C, feat, lab)
 svm.train()
 
 lk=LinearKernel(densefeat,densefeat, 1.0)
-svmlight = SVMLight(C, lk, lab)
+
+try:
+	svmlight = SVMLight(C, lk, lab)
+except NameError:
+	print 'No SVMLight support available'
+	import sys
+	sys.exit(1)
+
 svmlight.train()
 
 x1_min=min(1.2*feat_neg[0,:])

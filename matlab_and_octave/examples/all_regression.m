@@ -20,22 +20,28 @@ testdata=[randn(2,num+7)-dist, randn(2,num+7)+dist, randn(2,num+7)+dist*[ones(1,
 %
 
 % SVR Light
-disp('SVRLight');
+try
+	sg('new_regression', 'SVRLIGHT');
 
-sg('set_features', 'TRAIN', traindata);
-sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width);
-sg('init_kernel', 'TRAIN');
+	disp('SVRLight');
 
-sg('set_labels', 'TRAIN', trainlab);
-sg('new_regression', 'SVRLIGHT');
-sg('svr_tube_epsilon', tube_epsilon);
-sg('c', C);
-sg('train_regression');
+	sg('set_features', 'TRAIN', traindata);
+	sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width);
+	sg('init_kernel', 'TRAIN');
 
-sg('set_features', 'TEST', testdata);
-sg('set_labels', 'TEST', testlab);
-sg('init_kernel', 'TEST');
-result=sg('classify');
+	sg('set_labels', 'TRAIN', trainlab);
+
+	sg('svr_tube_epsilon', tube_epsilon);
+	sg('c', C);
+	sg('train_regression');
+
+	sg('set_features', 'TEST', testdata);
+	sg('set_labels', 'TEST', testlab);
+	sg('init_kernel', 'TEST');
+	result=sg('classify');
+catch
+	disp('No support for SVRLight available.')
+end
 
 
 % LibSVR

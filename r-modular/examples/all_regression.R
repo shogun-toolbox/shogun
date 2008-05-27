@@ -27,28 +27,33 @@ testdata_real <- matrix(c(rnorm(2*num)-dist,rnorm(2*num)+dist),2,2*num)
 ###########################################################################
 
 # libsvm based support vector regression
-print('SVRLight')
+dosvrlight <- function()
+{
+	print('SVRLight')
 
-feats_train <- RealFeatures(traindata_real)
-feats_test <- RealFeatures(testdata_real)
-width <- 2.1;
-kernel <- GaussianKernel(feats_train, feats_train, width)
+	feats_train <- RealFeatures(traindata_real)
+	feats_test <- RealFeatures(testdata_real)
+	width <- 2.1;
+	kernel <- GaussianKernel(feats_train, feats_train, width)
 
-C <- 0.017
-epsilon <- 1e-5
-tube_epsilon <- 1e-2
-num_threads <- as.integer(3)
-lab <- round(runif(feats_train$get_num_vectors()))*2-1
-labels <- Labels(lab)
+	C <- 0.017
+	epsilon <- 1e-5
+	tube_epsilon <- 1e-2
+	num_threads <- as.integer(3)
+	lab <- round(runif(feats_train$get_num_vectors()))*2-1
+	labels <- Labels(lab)
 
-svr <- SVRLight(C, epsilon, kernel, labels)
-svr$set_tube_epsilon(svr, tube_epsilon)
-svr$parallel$set_num_threads(svr$parallel, num_threads)
-svr$train()
+	svr <- SVRLight(C, epsilon, kernel, labels)
+	svr$set_tube_epsilon(svr, tube_epsilon)
+	svr$parallel$set_num_threads(svr$parallel, num_threads)
+	svr$train()
 
-kernel$init(kernel, feats_train, feats_test)
-outlab <- svr$classify(svr)
-out <- outlab$get_labels(outlab)
+	kernel$init(kernel, feats_train, feats_test)
+	outlab <- svr$classify(svr)
+	out <- outlab$get_labels(outlab)
+}
+try(dosvrlight())
+
 
 # libsvm based support vector regression
 print('LibSVR')

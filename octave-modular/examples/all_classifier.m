@@ -24,31 +24,36 @@ testdata_word=uint16(rand(len, num)*maxval);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % svm light
-disp('SVMLight')
+if exist('SVMLight')
+	disp('SVMLight')
 
-feats_train=StringCharFeatures(DNA);
-feats_train.set_string_features(traindata_dna);
-feats_test=StringCharFeatures(DNA);
-feats_test.set_string_features(testdata_dna);
-degree=20;
+	feats_train=StringCharFeatures(DNA);
+	feats_train.set_string_features(traindata_dna);
+	feats_test=StringCharFeatures(DNA);
+	feats_test.set_string_features(testdata_dna);
+	degree=20;
 
-kernel=WeightedDegreeStringKernel(feats_train, feats_train, degree);
+	kernel=WeightedDegreeStringKernel(feats_train, feats_train, degree);
 
-C=0.017;
-epsilon=1e-5;
-tube_epsilon=1e-2;
-num_threads=3;
-lab=round(rand(1,feats_train.get_num_vectors()))*2-1;
-labels=Labels(lab);
+	C=0.017;
+	epsilon=1e-5;
+	tube_epsilon=1e-2;
+	num_threads=3;
+	lab=round(rand(1,feats_train.get_num_vectors()))*2-1;
+	labels=Labels(lab);
 
-svm=SVMLight(C, kernel, labels);
-svm.set_epsilon(epsilon);
-svm.set_tube_epsilon(tube_epsilon);
-svm.parallel.set_num_threads(num_threads);
-svm.train();
+	svm=SVMLight(C, kernel, labels);
+	svm.set_epsilon(epsilon);
+	svm.set_tube_epsilon(tube_epsilon);
+	svm.parallel.set_num_threads(num_threads);
+	svm.train();
 
-kernel.init(feats_train, feats_test);
-svm.classify().get_labels();
+	kernel.init(feats_train, feats_test);
+	svm.classify().get_labels();
+else
+	disp('No support for SVMLight available.')
+end
+
 
 % libsvm
 disp('LibSVM')
@@ -109,7 +114,7 @@ kernel=GaussianKernel(feats_train, feats_train, width);
 C=0.017;
 epsilon=1e-5;
 tube_epsilon=1e-2;
-num_threads=1
+num_threads=1;
 lab=round(rand(1,feats_train.get_num_vectors()))*2-1;
 labels=Labels(lab);
 
@@ -301,7 +306,7 @@ lab=round(rand(1,feats_test.get_num_vectors()))*2-1;
 labels=Labels(lab);
 
 svm=SVMSGD(C, feats_test, labels);
-svm.io.set_loglevel(0);
+%svm.io.set_loglevel(0);
 svm.train();
 
 svm.set_features(feats_test);

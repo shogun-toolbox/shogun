@@ -46,31 +46,36 @@ testdata_real <- matrix(c(rnorm(num)-dist,rnorm(num)+dist),2,num)
 ###########################################################################
 
 # svm light
-print('SVMLight')
+dosvmlight <- function()
+{
+	print('SVMLight')
 
-feats_train <- StringCharFeatures("DNA")
-feats_train$set_string_features(feats_train, traindata_dna)
-feats_test <- StringCharFeatures("DNA")
-feats_test$set_string_features(feats_test, testdata_dna)
-degree <- 20
+	feats_train <- StringCharFeatures("DNA")
+	feats_train$set_string_features(feats_train, traindata_dna)
+	feats_test <- StringCharFeatures("DNA")
+	feats_test$set_string_features(feats_test, testdata_dna)
+	degree <- 20
 
-kernel <- WeightedDegreeStringKernel(feats_train, feats_train, degree)
+	kernel <- WeightedDegreeStringKernel(feats_train, feats_train, degree)
 
-C <- 0.017
-epsilon <- 1e-5
-tube_epsilon <- 1e-2
-num_threads <- as.integer(3)
-labels <- Labels(trainlab)
+	C <- 0.017
+	epsilon <- 1e-5
+	tube_epsilon <- 1e-2
+	num_threads <- as.integer(3)
+	labels <- Labels(trainlab)
 
-svm <- SVMLight(C, kernel, labels)
-svm$set_epsilon(svm, epsilon)
-svm$set_tube_epsilon(svm, tube_epsilon)
-svm$parallel$set_num_threads(svm$parallel, num_threads)
-svm$train()
+	svm <- SVMLight(C, kernel, labels)
+	svm$set_epsilon(svm, epsilon)
+	svm$set_tube_epsilon(svm, tube_epsilon)
+	svm$parallel$set_num_threads(svm$parallel, num_threads)
+	svm$train()
 
-kernel$init(kernel, feats_train, feats_test)
-lab <- svm$classify(svm)
-out <- lab$get_labels(lab)
+	kernel$init(kernel, feats_train, feats_test)
+	lab <- svm$classify(svm)
+	out <- lab$get_labels(lab)
+}
+try(dosvmlight())
+
 
 # libsvm
 print('LibSVM')

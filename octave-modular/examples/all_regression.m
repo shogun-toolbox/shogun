@@ -14,27 +14,31 @@ testdata_real=[randn(len,num+7)-dist, randn(len,num+7)+dist];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % libsvm based support vector regression
-disp('SVRLight')
+if exist('SVRLight')
+	disp('SVRLight')
 
-feats_train=RealFeatures(traindata_real);
-feats_test=RealFeatures(testdata_real);
-width=2.1;
-kernel=GaussianKernel(feats_train, feats_train, width);
+	feats_train=RealFeatures(traindata_real);
+	feats_test=RealFeatures(testdata_real);
+	width=2.1;
+	kernel=GaussianKernel(feats_train, feats_train, width);
 
-C=0.017;
-epsilon=1e-5;
-tube_epsilon=1e-2;
-num_threads=3;
-lab=round(rand(1,feats_train.get_num_vectors()))*2-1;
-labels=Labels(lab);
+	C=0.017;
+	epsilon=1e-5;
+	tube_epsilon=1e-2;
+	num_threads=3;
+	lab=round(rand(1,feats_train.get_num_vectors()))*2-1;
+	labels=Labels(lab);
 
-svr=SVRLight(C, epsilon, kernel, labels);
-svr.set_tube_epsilon(tube_epsilon);
-svr.parallel.set_num_threads(num_threads);
-svr.train();
+	svr=SVRLight(C, epsilon, kernel, labels);
+	svr.set_tube_epsilon(tube_epsilon);
+	svr.parallel.set_num_threads(num_threads);
+	svr.train();
 
-kernel.init(feats_train, feats_test);
-svr.classify().get_labels();
+	kernel.init(feats_train, feats_test);
+	svr.classify().get_labels();
+else
+	disp('No support for SVRLight available.')
+end
 
 %% libsvm based support vector regression
 disp('LibSVR')

@@ -27,23 +27,29 @@ testdata_dna=acgt(ceil(4*rand(len,num)));
 %
 
 % SVMLight
-disp('SVMLight');
+try
+	sg('new_svm', 'LIGHT');
 
-degree=20;
-sg('set_features', 'TRAIN', traindata_dna, 'DNA');
-sg('set_kernel', 'WEIGHTEDDEGREE', 'CHAR', size_cache, degree);
-sg('init_kernel', 'TRAIN');
+	disp('SVMLight');
 
-sg('set_labels', 'TRAIN', trainlab_dna);
-sg('new_svm', 'LIGHT');
-sg('svm_epsilon', epsilon);
-sg('c', C);
-sg('svm_use_bias', use_bias);
-sg('train_classifier');
+	degree=20;
+	sg('set_features', 'TRAIN', traindata_dna, 'DNA');
+	sg('set_kernel', 'WEIGHTEDDEGREE', 'CHAR', size_cache, degree);
+	sg('init_kernel', 'TRAIN');
 
-sg('set_features', 'TEST', testdata_dna, 'DNA');
-sg('init_kernel', 'TEST');
-result=sg('classify');
+	sg('set_labels', 'TRAIN', trainlab_dna);
+
+	sg('svm_epsilon', epsilon);
+	sg('c', C);
+	sg('svm_use_bias', use_bias);
+	sg('train_classifier');
+
+	sg('set_features', 'TEST', testdata_dna, 'DNA');
+	sg('init_kernel', 'TEST');
+	result=sg('classify');
+catch
+	disp('No support for SVMLight available.')
+end
 
 
 % LibSVM

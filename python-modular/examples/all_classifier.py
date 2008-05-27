@@ -61,7 +61,12 @@ def svm_light ():
 	lab=rand(feats_train.get_num_vectors()).round()*2-1
 	labels=Labels(array(lab))
 
-	svm=SVMLight(C, kernel, labels)
+	try:
+		svm=SVMLight(C, kernel, labels)
+	except NameError:
+		print 'No support for SVMLight available.'
+		return
+
 	svm.set_epsilon(epsilon)
 	svm.set_tube_epsilon(tube_epsilon)
 	svm.parallel.set_num_threads(num_threads)
@@ -261,8 +266,8 @@ def do_batch_linadd ():
 
 	kernel.init(feats_train, feats_test)
 
-	print 'LibSVM Objective: %f num_sv: %d' % \
-		(svm.get_objective(), svm.get_num_support_vectors())
+	#print 'LibSVM Objective: %f num_sv: %d' % \
+	#	(svm.get_objective(), svm.get_num_support_vectors())
 	svm.set_batch_computation_enabled(False)
 	svm.set_linadd_enabled(False)
 	svm.classify().get_labels()
@@ -352,7 +357,7 @@ def svmsgd ():
 	labels=Labels(array(lab))
 
 	svm=SVMSGD(C, feats_test, labels)
-	svm.io.set_loglevel(0)
+	#svm.io.set_loglevel(0)
 	svm.train()
 
 	svm.set_features(feats_test)

@@ -24,9 +24,6 @@ trainlab_multi <- c(rep(0,num/2), rep(1,num/2), rep(2,num/2), rep(3,num/2))
 # kernel-based SVMs
 #
 
-# SVM Light
-print('SVMLight')
-
 getDNA <- function(len, num) {
 	acgt <- c('A', 'C', 'G', 'T')
 	data <- c()
@@ -46,20 +43,28 @@ testdat_dna <- getDNA(len, num+7)
 
 degree <- 20
 
-dump <- sg('set_features', 'TRAIN', traindat_dna, 'DNA')
-dump <- sg('set_kernel',  'WEIGHTEDDEGREE', 'CHAR', size_cache, degree)
-dump <- sg('init_kernel', 'TRAIN')
+# SVM Light
+dosvmlight <- function()
+{
+	print('SVMLight')
 
-dump <- sg('set_labels', 'TRAIN', trainlab_dna)
-dump <- sg('new_svm', 'LIGHT')
-dump <- sg('svm_epsilon', epsilon)
-dump <- sg('c', C)
-dump <- sg('svm_use_bias', use_bias)
-dump <- sg('train_classifier')
+	dump <- sg('set_features', 'TRAIN', traindat_dna, 'DNA')
+	dump <- sg('set_kernel',  'WEIGHTEDDEGREE', 'CHAR', size_cache, degree)
+	dump <- sg('init_kernel', 'TRAIN')
 
-dump <- sg('set_features', 'TEST', testdat_dna, 'DNA')
-dump <- sg('init_kernel', 'TEST')
-result <- sg('classify')
+	dump <- sg('set_labels', 'TRAIN', trainlab_dna)
+
+	dump <- sg('new_svm', 'LIGHT')
+	dump <- sg('svm_epsilon', epsilon)
+	dump <- sg('c', C)
+	dump <- sg('svm_use_bias', use_bias)
+	dump <- sg('train_classifier')
+
+	dump <- sg('set_features', 'TEST', testdat_dna, 'DNA')
+	dump <- sg('init_kernel', 'TEST')
+	result <- sg('classify')
+}
+try(dosvmlight())
 
 
 # LibSVM

@@ -29,7 +29,7 @@ for i in range(num_svms):
 	trainlabList[i] = Labels(concatenate((-ones(num_dat), ones(num_dat))))
 	trainlabsList[i] = concatenate((-ones(num_dat), ones(num_dat)))
 	kernelList[i] = GaussianKernel(trainfeatList[i], trainfeatList[i], width)
-	svmList[i] = SVMLight(10, kernelList[i], trainlabList[i])
+	svmList[i] = LibSVM(10, kernelList[i], trainlabList[i])
 
 for i in range(num_svms):
 	print "Training svm nr. %d" % (i)

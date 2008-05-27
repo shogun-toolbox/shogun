@@ -23,22 +23,26 @@ trainlab <- c(rep(-1,num),rep(1,num))
 #
 
 # SVR Light
-print('SVRLight')
+dosvrlight <- function()
+{
+	print('SVRLight')
 
-dump <- sg('set_features', 'TRAIN', traindat)
-dump <- sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width)
-dump <- sg('init_kernel', 'TRAIN')
+	dump <- sg('set_features', 'TRAIN', traindat)
+	dump <- sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width)
+	dump <- sg('init_kernel', 'TRAIN')
 
-dump <- sg('set_labels', 'TRAIN', trainlab)
-dump <- sg('new_regression', 'SVRLIGHT')
-dump <- sg('svr_tube_epsilon', tube_epsilon)
-dump <- sg('c', C)
-dump <- sg('train_regression')
+	dump <- sg('set_labels', 'TRAIN', trainlab)
 
-dump <- sg('set_features', 'TEST', testdat)
-dump <- sg('init_kernel', 'TEST')
-result <- sg('classify')
+	dump <- sg('new_regression', 'SVRLIGHT')
+	dump <- sg('svr_tube_epsilon', tube_epsilon)
+	dump <- sg('c', C)
+	dump <- sg('train_regression')
 
+	dump <- sg('set_features', 'TEST', testdat)
+	dump <- sg('init_kernel', 'TEST')
+	result <- sg('classify')
+}
+try(dosvrlight())
 
 # LibSVR
 print('LibSVR')

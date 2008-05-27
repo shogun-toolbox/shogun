@@ -31,7 +31,12 @@ def svr_light ():
 	lab=rand(feats_train.get_num_vectors()).round()*2-1
 	labels=Labels(array(lab))
 
-	svr=SVRLight(C, epsilon, kernel, labels)
+	try:
+		svr=SVRLight(C, epsilon, kernel, labels)
+	except NameError:
+		print 'No support for SVRLight available.'
+		return
+
 	svr.set_tube_epsilon(tube_epsilon)
 	svr.parallel.set_num_threads(num_threads)
 	svr.train()
