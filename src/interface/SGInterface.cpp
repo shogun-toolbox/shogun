@@ -669,7 +669,11 @@ CSGInterfaceMethod sg_methods[]=
 		(&CSGInterface::cmd_get_plif_struct),
 		(CHAR*) USAGE_O(N_GET_PLIF_STRUCT, "id, name, limits, penalties, transform, min_value, max_value, use_cache, use_svm")
 	},
-
+	{
+		(CHAR*) N_PRECOMPUTE_CONTENT_SVMS,
+		(&CSGInterface::cmd_precompute_content_svms),
+		(CHAR*) USAGE_O(N_PRECOMPUTE_CONTENT_SVMS, "sequence, position_list, weights")
+	},
 	{
 		(CHAR*) N_BEST_PATH_TRANS,
 		(&CSGInterface::cmd_best_path_trans),
@@ -5082,7 +5086,35 @@ bool CSGInterface::cmd_get_plif_struct()
 	
 	return true;
 }
+bool CSGInterface::cmd_precompute_content_svms()
+{
+	CPlif** PEN = ui_structure->get_PEN();
+	if (!PEN)
+		SG_ERROR("no plif_array found, use set_plif_struct first\n");
 
+	INT Nseq=0;
+	CHAR* seq;
+	seq = get_string(Nseq);
+
+	INT Npos=0;
+	INT* pos;
+	get_int_vector(pos,Npos);
+
+	INT Nweights=0;
+	INT Mweights=0;
+	DREAL* weights;
+	get_real_matrix(weights, Nweights, Mweights);
+
+
+	CDynProg* h=new CDynProg(Nweights/* = num_svms */);
+	WORD** wordstr[Nweights];
+	h->init_content_svm_value_array(Npos);
+	h->create_word_string(seq, (INT) 1, Nseq, wordstr);
+	h->precompute_content_values(wordstr, pos, Npos, Nseq, weights, Nweights*Mweights);
+	
+	SG_PRINT("precompute 1\n");	
+	ui_structure->set_dyn_prog(h);
+}
 bool CSGInterface::cmd_best_path_trans()
 {
 	if ((m_nrhs!=15 && m_nrhs!=17) || !create_return_values(3))

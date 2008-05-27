@@ -315,6 +315,8 @@ class CSGInterface : public CSGObject
 		bool cmd_set_plif_struct();
 		/** cmd get plif struct */
 		bool cmd_get_plif_struct();
+		/** cmd precompute content svms */
+		bool cmd_precompute_content_svms();
 		/** best path trans */
 		bool cmd_best_path_trans();
 		/** best path trans deriv */

@@ -48,9 +48,19 @@ class CGUIStructure : public CSGObject
 		{
 			return m_M;
 		}
+		inline bool set_dyn_prog(CDynProg* h)
+		{
+			delete m_dp;
+			m_dp = h;
+		}
+		inline CDynProg* get_dyn_prog()
+		{
+			return m_dp;
+		}
 	protected:
 		CSGInterface* ui;
 		CPlif** m_PEN;
+		CDynProg* m_dp;
 		INT m_N;
 		INT m_M;
 };

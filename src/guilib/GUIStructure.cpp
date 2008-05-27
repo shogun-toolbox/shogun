@@ -17,7 +17,7 @@
 #include "guilib/GUIStructure.h"
 
 
-CGUIStructure::CGUIStructure(CSGInterface* ui_) : ui(ui_), m_PEN(NULL), m_N(0), m_M(0)
+CGUIStructure::CGUIStructure(CSGInterface* ui_) : ui(ui_), m_PEN(NULL), m_N(0), m_M(0), m_dp(NULL)
 {
 }
 
