@@ -11,6 +11,7 @@
 #include "distributions/hmm/GHMM.h"
 
 CGHMM::CGHMM()
+: CDistribution()
 {
 }
 

@@ -30,6 +30,7 @@ bool CSignal::active=false;
 bool CSignal::cancel_computation=false;
 
 CSignal::CSignal()
+: CSGObject()
 {
 }
 

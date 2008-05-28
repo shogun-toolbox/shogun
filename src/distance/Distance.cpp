@@ -27,15 +27,15 @@
 #include <pthread.h>
 #endif
 
-CDistance::CDistance() 
-: CSGObject(), precomputed_matrix(NULL), precompute_matrix(false), 
+CDistance::CDistance()
+: CSGObject(), precomputed_matrix(NULL), precompute_matrix(false),
 	lhs(NULL), rhs(NULL)
 {
 }
 
 		
 CDistance::CDistance(CFeatures* p_lhs, CFeatures* p_rhs)
-:  precomputed_matrix(NULL), precompute_matrix(false), 
+: CSGObject(), precomputed_matrix(NULL), precompute_matrix(false),
 	lhs(NULL), rhs(NULL)
 {
 	init(p_lhs, p_rhs);
@@ -43,8 +43,8 @@ CDistance::CDistance(CFeatures* p_lhs, CFeatures* p_rhs)
 
 CDistance::~CDistance()
 {
-	delete[] precomputed_matrix ;
-	precomputed_matrix=NULL ;
+	delete[] precomputed_matrix;
+	precomputed_matrix=NULL;
 }
 
 bool CDistance::init(CFeatures* l, CFeatures* r)

@@ -28,7 +28,7 @@ CPolyMatchWordKernel::CPolyMatchWordKernel(
 	init(l, r);
 }
 
-CPolyMatchWordKernel::~CPolyMatchWordKernel() 
+CPolyMatchWordKernel::~CPolyMatchWordKernel()
 {
 	cleanup();
 }

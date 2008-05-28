@@ -15,7 +15,7 @@
 
 CWeightedCommWordStringKernel::CWeightedCommWordStringKernel(
 	INT size, bool us, ENormalizationType n)
-	: CCommWordStringKernel(size, us, n), degree(0), weights(NULL)
+: CCommWordStringKernel(size, us, n), degree(0), weights(NULL)
 {
 	init_dictionary(1<<(sizeof(WORD)*9));
 	ASSERT(us==false);
@@ -24,7 +24,7 @@ CWeightedCommWordStringKernel::CWeightedCommWordStringKernel(
 CWeightedCommWordStringKernel::CWeightedCommWordStringKernel(
 	CStringFeatures<WORD>* l, CStringFeatures<WORD>* r,
 	bool us, ENormalizationType n, INT size)
-	: CCommWordStringKernel(size, us, n), degree(0), weights(NULL)
+: CCommWordStringKernel(size, us, n), degree(0), weights(NULL)
 {
 	init_dictionary(1<<(sizeof(WORD)*9));
 	ASSERT(us==false);

@@ -14,7 +14,8 @@
 #include "features/StringFeatures.h"
 #include "lib/io.h"
 
-CLinearHMM::CLinearHMM(CStringFeatures<WORD>* f) : CDistribution(), transition_probs(NULL), log_transition_probs(NULL)
+CLinearHMM::CLinearHMM(CStringFeatures<WORD>* f)
+: CDistribution(), transition_probs(NULL), log_transition_probs(NULL)
 {
 	features=f;
 	sequence_length = f->get_vector_length(0);
@@ -22,7 +23,8 @@ CLinearHMM::CLinearHMM(CStringFeatures<WORD>* f) : CDistribution(), transition_p
 	num_params      = sequence_length*num_symbols;
 }
 
-CLinearHMM::CLinearHMM(INT p_num_features, INT p_num_symbols) : CDistribution(), transition_probs(NULL), log_transition_probs(NULL)
+CLinearHMM::CLinearHMM(INT p_num_features, INT p_num_symbols)
+: CDistribution(), transition_probs(NULL), log_transition_probs(NULL)
 {
 	sequence_length = p_num_features;
 	num_symbols     = p_num_symbols;

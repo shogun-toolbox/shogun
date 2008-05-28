@@ -35,28 +35,30 @@ extern "C" {
 #include <pthread.h>
 #endif
 
-struct S_THREAD_PARAM 
+struct S_THREAD_PARAM
 {
-	DREAL * lin ;
+	DREAL* lin;
 	INT start, end;
-	INT * active2dnum ;
-	INT * docs ;
-	CKernel* kernel ;
-    INT num_vectors ;
-}  ;
+	INT* active2dnum;
+	INT* docs;
+	CKernel* kernel;
+    INT num_vectors;
+};
 
-CSVRLight::CSVRLight(DREAL C, DREAL eps, CKernel* k, CLabels* lab) : CSVMLight(C, k, lab)
+CSVRLight::CSVRLight(DREAL C, DREAL eps, CKernel* k, CLabels* lab)
+: CSVMLight(C, k, lab)
 {
 	set_tube_epsilon(eps);
 }
 
-CSVRLight::CSVRLight() : CSVMLight()
+CSVRLight::CSVRLight()
+: CSVMLight()
 {
 }
 
 bool CSVRLight::train()
 {
-	//certain setup params	
+	//certain setup params
 	verbosity=1;
 	init_margin=0.15;
 	init_iter=500;

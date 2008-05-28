@@ -14,7 +14,8 @@
 #include "features/StringFeatures.h"
 #include "lib/Mathematics.h"
 
-CSortWordString::CSortWordString() : CStringPreProc<WORD>("SortWordString", "STWS") 
+CSortWordString::CSortWordString()
+: CStringPreProc<WORD>("SortWordString", "STWS") 
 {
 }
 

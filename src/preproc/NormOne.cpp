@@ -14,7 +14,8 @@
 #include "features/Features.h"
 #include "features/RealFeatures.h"
 
-CNormOne::CNormOne() : CSimplePreProc<DREAL>("NormOne", "NRM1")
+CNormOne::CNormOne()
+: CSimplePreProc<DREAL>("NormOne", "NRM1")
 {
 }
 

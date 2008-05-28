@@ -99,14 +99,15 @@ double dloss(double z)
 
 
 
-CSVMSGD::CSVMSGD(double C) : CSparseLinearClassifier(), t(1), C1(C), C2(C),
+CSVMSGD::CSVMSGD(double C)
+: CSparseLinearClassifier(), t(1), C1(C), C2(C),
 	wscale(1), bscale(1), epochs(5), skip(1000), count(1000), use_bias(true),
 	use_regularized_bias(false)
 {
 }
 
-CSVMSGD::CSVMSGD(DREAL C, CSparseFeatures<DREAL>* traindat, CLabels* trainlab) :
-	CSparseLinearClassifier(), t(1), C1(C), C2(C), wscale(1), bscale(1),
+CSVMSGD::CSVMSGD(DREAL C, CSparseFeatures<DREAL>* traindat, CLabels* trainlab)
+: CSparseLinearClassifier(), t(1), C1(C), C2(C), wscale(1), bscale(1),
 	epochs(5), skip(1000), count(1000), use_bias(true),
 	use_regularized_bias(false)
 {

@@ -79,7 +79,7 @@ template <class T> class CArray : public CSGObject
 		 * @param initial_size initial size of array
 		 */
 		CArray(INT initial_size = 1)
-			: CSGObject(), free_array(true), name(NULL)
+		: CSGObject(), free_array(true), name(NULL)
 		{
 			INIT_ARRAY_STATISTICS;
 			array_size = initial_size;
@@ -95,8 +95,8 @@ template <class T> class CArray : public CSGObject
 		 * @param p_copy_array if array must be copied
 		 */
 		CArray(T* p_array, INT p_array_size, bool p_free_array=true,
-				bool p_copy_array=false)
-			: CSGObject(), array(NULL), free_array(false), name(NULL)
+			bool p_copy_array=false)
+		: CSGObject(), array(NULL), free_array(false), name(NULL)
 		{
 			INIT_ARRAY_STATISTICS;
 			set_array(p_array, p_array_size, p_free_array, p_copy_array);
@@ -108,7 +108,7 @@ template <class T> class CArray : public CSGObject
 		 * @param p_array_size size of another array
 		 */
 		CArray(const T* p_array, INT p_array_size)
-			: CSGObject(), array(NULL), free_array(false), name(NULL)
+		: CSGObject(), array(NULL), free_array(false), name(NULL)
 		{
 			INIT_ARRAY_STATISTICS;
 			set_array(p_array, p_array_size);
@@ -117,7 +117,7 @@ template <class T> class CArray : public CSGObject
 		~CArray()
 		{
 			SG_DEBUG( "destroying CArray array '%s' of size %i\n",
-					name? name : "unnamed", array_size);
+				name? name : "unnamed", array_size);
 			PRINT_ARRAY_STATISTICS;
 			if (free_array)
 				free(array);

@@ -13,7 +13,8 @@
 #include "features/StringFeatures.h"
 #include "lib/io.h"
 
-CFKFeatures::CFKFeatures(INT size, CHMM* p, CHMM* n) : CRealFeatures(size)
+CFKFeatures::CFKFeatures(INT size, CHMM* p, CHMM* n)
+: CRealFeatures(size)
 {
 	pos_prob=NULL;
 	neg_prob=NULL;
@@ -21,8 +22,8 @@ CFKFeatures::CFKFeatures(INT size, CHMM* p, CHMM* n) : CRealFeatures(size)
 	set_models(p,n);
 }
 
- CFKFeatures::CFKFeatures(const CFKFeatures &orig): 
-	CRealFeatures(orig), pos(orig.pos), neg(orig.neg), weight_a(orig.weight_a)
+CFKFeatures::CFKFeatures(const CFKFeatures &orig)
+: CRealFeatures(orig), pos(orig.pos), neg(orig.neg), weight_a(orig.weight_a)
 { 
 }
 

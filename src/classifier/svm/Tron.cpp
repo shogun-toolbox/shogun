@@ -10,6 +10,7 @@
 #include "classifier/svm/Tron.h"
 
 CTron::CTron(const function *f, double e, int it)
+: CSGObject()
 {
 	this->fun_obj=const_cast<function *>(f);
 	this->eps=e;

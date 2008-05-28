@@ -15,7 +15,8 @@ extern "C" {
 
 extern CSGInterface* interface;
 
-CPythonInterface::CPythonInterface(PyObject* self, PyObject* args) : CSGInterface()
+CPythonInterface::CPythonInterface(PyObject* self, PyObject* args)
+: CSGInterface()
 {
 	reset(self, args);
 }

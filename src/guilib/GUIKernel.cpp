@@ -56,7 +56,8 @@
 #include "classifier/svm/SVM.h"
 
 
-CGUIKernel::CGUIKernel(CSGInterface* ui_): CSGObject(), ui(ui_)
+CGUIKernel::CGUIKernel(CSGInterface* ui_)
+: CSGObject(), ui(ui_)
 {
 	kernel=NULL;
 	initialized=false;

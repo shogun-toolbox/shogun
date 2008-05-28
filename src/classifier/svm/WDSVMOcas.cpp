@@ -42,7 +42,8 @@ struct wdocas_thread_params_add
 	uint32_t cut_length;
 };
 
-CWDSVMOcas::CWDSVMOcas(E_SVM_TYPE type) : CClassifier(), use_bias(false), bufsize(3000), C1(1), C2(1),
+CWDSVMOcas::CWDSVMOcas(E_SVM_TYPE type)
+: CClassifier(), use_bias(false), bufsize(3000), C1(1), C2(1),
 	epsilon(1e-3), method(type)
 {
 	w=NULL;
@@ -54,9 +55,9 @@ CWDSVMOcas::CWDSVMOcas(E_SVM_TYPE type) : CClassifier(), use_bias(false), bufsiz
 	normalization_const=1.0;
 }
 
-CWDSVMOcas::CWDSVMOcas(DREAL C, INT d, INT from_d, CStringFeatures<BYTE>* traindat, CLabels* trainlab) 
-: CClassifier(), use_bias(false), bufsize(3000), C1(C), C2(C), epsilon(1e-3), degree(d),
-	from_degree(from_d)
+CWDSVMOcas::CWDSVMOcas(DREAL C, INT d, INT from_d, CStringFeatures<BYTE>* traindat, CLabels* trainlab)
+: CClassifier(), use_bias(false), bufsize(3000), C1(C), C2(C), epsilon(1e-3),
+	degree(d), from_degree(from_d)
 {
 	w=NULL;
 	old_w=NULL;

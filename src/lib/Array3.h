@@ -24,8 +24,9 @@ template <class T> class CArray3: public CArray<T>
 	public:
 		/** default constructor */
 		CArray3()
-			: CArray<T>(1), dim1_size(1), dim2_size(1), dim3_size(1)
-		{}
+		: CArray<T>(1), dim1_size(1), dim2_size(1), dim3_size(1)
+		{
+		}
 
 		/** constructor
 		 *
@@ -34,8 +35,9 @@ template <class T> class CArray3: public CArray<T>
 		 * @param dim3 dimension 3
 		 */
 		CArray3(INT dim1, INT dim2, INT dim3)
-			: CArray<T>(dim1*dim2*dim3), dim1_size(dim1), dim2_size(dim2), dim3_size(dim3)
-		{}
+		: CArray<T>(dim1*dim2*dim3), dim1_size(dim1), dim2_size(dim2), dim3_size(dim3)
+		{
+		}
 
 		/** constructor
 		 *
@@ -46,10 +48,12 @@ template <class T> class CArray3: public CArray<T>
 		 * @param p_free_array if array must be freed
 		 * @param p_copy_array if array must be copied
 		 */
-		CArray3(T* p_array, INT dim1, INT dim2, INT dim3, bool p_free_array=true, bool p_copy_array=false)
-			: CArray<T>(p_array, dim1*dim2*dim3, p_free_array, p_copy_array),
+		CArray3(T* p_array, INT dim1, INT dim2, INT dim3,
+			bool p_free_array=true, bool p_copy_array=false)
+		: CArray<T>(p_array, dim1*dim2*dim3, p_free_array, p_copy_array),
 			dim1_size(dim1), dim2_size(dim2), dim3_size(dim3)
-		{}
+		{
+		}
 
 
 		/** constructor
@@ -60,9 +64,10 @@ template <class T> class CArray3: public CArray<T>
 		 * @param dim3 dimension 3
 		 */
 		CArray3(const T* p_array, INT dim1, INT dim2, INT dim3)
-			: CArray<T>(p_array, dim1*dim2*dim3),
+		: CArray<T>(p_array, dim1*dim2*dim3),
 			dim1_size(dim1), dim2_size(dim2), dim3_size(dim3)
-		{}
+		{
+		}
 
 		~CArray3() {}
 

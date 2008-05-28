@@ -23,9 +23,8 @@
 #include <mindy.h>
 
 // MindyGramFeatures
-class CMindyGramFeatures:public CFeatures
+class CMindyGramFeatures : public CFeatures
 {
-
     public:
 		/**
 		 * Constructor for word features extracted from string features
@@ -34,37 +33,38 @@ class CMindyGramFeatures:public CFeatures
 		 * @param delim Escaped string of delimiters, e.g. '%20.,'
 		 * @param nlen  K-gram length, 0 = word mode
 		 */
-		CMindyGramFeatures(CHAR *aname, CHAR *embed, CHAR *delim, BYTE nlen) : CFeatures(0)
+		CMindyGramFeatures(CHAR *aname, CHAR *embed, CHAR *delim, BYTE nlen)
+		: CFeatures(0)
 		{
 			ASSERT(aname && embed && delim);
 
 			/* Allocate and generate gram configuration (words) */
-			SG_DEBUG( "Initializing Mindy gram features\n");    
+			SG_DEBUG( "Initializing Mindy gram features\n");
 			if (nlen == 0)
-			   cfg = micfg_words(alph_get_type(aname), delim);
-			else 
-			   cfg = micfg_ngrams(alph_get_type(aname), (byte_t) nlen);
+				cfg = micfg_words(alph_get_type(aname), delim);
+			else
+				cfg = micfg_ngrams(alph_get_type(aname), (byte_t) nlen);
 
-                        /* Set delimiters */                        
-                        if (strlen(delim) > 0) 
-                            micfg_set_delim(cfg, delim);
-                        
-                        /* Set embedding */
-                        if (!strcasecmp(embed, "freq"))
-                            micfg_set_embed(cfg, ME_FREQ);			
-                        else if (!strcasecmp(embed, "count"))
-                            micfg_set_embed(cfg, ME_COUNT);			
-                        else if (!strcasecmp(embed, "bin"))
-                            micfg_set_embed(cfg, ME_BIN);			
-                        else
-                            SG_ERROR("Unknown embedding mode '%s'", embed);
+			/* Set delimiters */
+			if (strlen(delim) > 0)
+				micfg_set_delim(cfg, delim);
+			
+			/* Set embedding */
+			if (!strcasecmp(embed, "freq"))
+				micfg_set_embed(cfg, ME_FREQ);
+			else if (!strcasecmp(embed, "count"))
+				micfg_set_embed(cfg, ME_COUNT);
+			else if (!strcasecmp(embed, "bin"))
+				micfg_set_embed(cfg, ME_BIN);
+			else
+				SG_ERROR("Unknown embedding mode '%s'", embed);
 
-                        if (nlen == 0) 
-                           SG_INFO("Mindy in word mode (d: '%s', a: %s, e: %s)\n", 
-                                   delim, aname, micfg_get_embed(cfg->embed));
-                        else  
-                           SG_INFO("Mindy in n-gram mode (n: '%d', a: %s, e: %s)\n", 
-                                   nlen, aname, micfg_get_embed(cfg->embed));
+			if (nlen == 0)
+			   SG_INFO("Mindy in word mode (d: '%s', a: %s, e: %s)\n",
+					   delim, aname, micfg_get_embed(cfg->embed));
+			else  
+			   SG_INFO("Mindy in n-gram mode (n: '%d', a: %s, e: %s)\n",
+					   nlen, aname, micfg_get_embed(cfg->embed));
 		}
 
 		/**

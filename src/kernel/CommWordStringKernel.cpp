@@ -15,9 +15,9 @@
 
 CCommWordStringKernel::CCommWordStringKernel(
 	INT size, bool s, ENormalizationType n)
-	: CStringKernel<WORD>(size), sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL),
+: CStringKernel<WORD>(size), sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL),
 	initialized(false), dictionary_size(0), dictionary_weights(NULL),
-	  use_sign(s), normalization(n), use_dict_diagonal_optimization(false), dict_diagonal_optimization(NULL)
+	use_sign(s), normalization(n), use_dict_diagonal_optimization(false), dict_diagonal_optimization(NULL)
 {
 	properties |= KP_LINADD;
 	init_dictionary(1<<(sizeof(WORD)*8));
@@ -26,9 +26,9 @@ CCommWordStringKernel::CCommWordStringKernel(
 CCommWordStringKernel::CCommWordStringKernel(
 	CStringFeatures<WORD>* l, CStringFeatures<WORD>* r,
 	bool s, ENormalizationType n, INT size)
-	: CStringKernel<WORD>(size), sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL),
+: CStringKernel<WORD>(size), sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL),
 	initialized(false), dictionary_size(0), dictionary_weights(NULL),
-	  use_sign(s), normalization(n), use_dict_diagonal_optimization(false), dict_diagonal_optimization(NULL)
+	use_sign(s), normalization(n), use_dict_diagonal_optimization(false), dict_diagonal_optimization(NULL)
 {
 	properties |= KP_LINADD;
 

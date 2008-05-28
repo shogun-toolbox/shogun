@@ -41,7 +41,7 @@
 #include <stdio.h>
 
 CGUIPreProc::CGUIPreProc(CSGInterface* ui_)
-  : CSGObject(), ui(ui_)
+: CSGObject(), ui(ui_)
 {
 	preprocs=new CList<CPreProc*>(true);
 	attached_preprocs_lists=new CList<CList<CPreProc*>*>(true);

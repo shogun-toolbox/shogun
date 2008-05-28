@@ -65,11 +65,12 @@
 double sparsity=0;
 
 CQPBSVMLib::CQPBSVMLib(DREAL* H, INT n, DREAL* f, INT m, DREAL UB)
+: CSGObject()
 {
 	ASSERT(H && n>0);
 	m_H=H;
 	m_dim = n;
-	m_diag_H=NULL; 
+	m_diag_H=NULL;
 
 	m_f=f;
 	m_UB=UB;

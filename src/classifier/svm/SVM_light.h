@@ -208,7 +208,7 @@ struct SHRINK_STATE
 };
 
 /** class SVMlight */
-class CSVMLight:public CSVM
+class CSVMLight : public CSVM
 {
  public:
   /** default constructor */

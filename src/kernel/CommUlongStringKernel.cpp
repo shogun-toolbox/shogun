@@ -15,7 +15,7 @@
 
 CCommUlongStringKernel::CCommUlongStringKernel(
 	INT size, bool us, ENormalizationType n)
-	: CStringKernel<ULONG>(size), sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL),
+: CStringKernel<ULONG>(size), sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL),
 	initialized(false), use_sign(us), normalization(n)
 {
 	properties |= KP_LINADD;
@@ -25,7 +25,7 @@ CCommUlongStringKernel::CCommUlongStringKernel(
 CCommUlongStringKernel::CCommUlongStringKernel(
 	CStringFeatures<ULONG>* l, CStringFeatures<ULONG>* r, bool us,
 	ENormalizationType n, INT size)
-	: CStringKernel<ULONG>(size), sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL),
+: CStringKernel<ULONG>(size), sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL),
 	initialized(false), use_sign(us), normalization(n)
 {
 	properties |= KP_LINADD;
@@ -33,13 +33,13 @@ CCommUlongStringKernel::CCommUlongStringKernel(
 	init(l,r);
 }
 
-CCommUlongStringKernel::~CCommUlongStringKernel() 
+CCommUlongStringKernel::~CCommUlongStringKernel()
 {
 	cleanup();
 }
 
-void CCommUlongStringKernel::remove_lhs() 
-{ 
+void CCommUlongStringKernel::remove_lhs()
+{
 	delete_optimization();
 
 #ifdef SVMLIGHT

@@ -46,7 +46,8 @@
 #include "features/Features.h"
 
 
-CGUIDistance::CGUIDistance(CSGInterface* ui_): CSGObject(), ui(ui_)
+CGUIDistance::CGUIDistance(CSGInterface* ui_)
+: CSGObject(), ui(ui_)
 {
 	distance=NULL;
 	initialized=false;

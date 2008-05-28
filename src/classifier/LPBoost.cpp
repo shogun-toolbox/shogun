@@ -20,7 +20,8 @@
 #include "lib/Signal.h"
 #include "lib/Time.h"
 
-CLPBoost::CLPBoost() : CSparseLinearClassifier(), C1(1), C2(1), use_bias(true), epsilon(1e-3)
+CLPBoost::CLPBoost()
+: CSparseLinearClassifier(), C1(1), C2(1), use_bias(true), epsilon(1e-3)
 {
 	u=NULL;
 	dim=NULL;

@@ -16,7 +16,7 @@
 #include "lib/common.h"
 
 /** class CharFeatures */
-class CCharFeatures: public CSimpleFeatures<CHAR>
+class CCharFeatures : public CSimpleFeatures<CHAR>
 {
 	public:
 		/** constructor

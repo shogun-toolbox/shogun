@@ -36,7 +36,7 @@ CHammingWordDistance::CHammingWordDistance(
 	init(l, r);
 }
 
-CHammingWordDistance::~CHammingWordDistance() 
+CHammingWordDistance::~CHammingWordDistance()
 {
 	cleanup();
 

@@ -34,15 +34,16 @@ template <class T> class CDynamicArray : public CSGObject
 		 *
 		 * @param p_resize_granularity resize granularity
 		 */
-		CDynamicArray(INT p_resize_granularity = 128) : CSGObject()
+		CDynamicArray(INT p_resize_granularity=128)
+		: CSGObject()
 		{
-			this->resize_granularity = p_resize_granularity;
+			this->resize_granularity=p_resize_granularity;
 
-			array = (T*) calloc(p_resize_granularity, sizeof(T));
+			array=(T*) calloc(p_resize_granularity, sizeof(T));
 			ASSERT(array);
 
-			num_elements = p_resize_granularity;
-			last_element_idx = -1;
+			num_elements=p_resize_granularity;
+			last_element_idx=-1;
 		}
 
 		~CDynamicArray() { free(array); }

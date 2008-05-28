@@ -13,11 +13,13 @@
 #include "lib/common.h"
 #include "lib/Mathematics.h"
 
-CMPDSVM::CMPDSVM() : CSVM()
+CMPDSVM::CMPDSVM()
+: CSVM()
 {
 }
 
-CMPDSVM::CMPDSVM(DREAL C, CKernel* k, CLabels* lab) : CSVM(C, k, lab)
+CMPDSVM::CMPDSVM(DREAL C, CKernel* k, CLabels* lab)
+: CSVM(C, k, lab)
 {
 }
 

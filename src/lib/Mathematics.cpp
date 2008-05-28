@@ -51,7 +51,8 @@ DREAL* CMath::logtable = NULL;
 CHAR* CMath::rand_state = NULL;
 UINT CMath::seed = 0;
 
-CMath::CMath() : CSGObject()
+CMath::CMath()
+: CSGObject()
 {
 #ifndef HAVE_SWIG
 	CSGObject::version.print_version();

@@ -16,13 +16,15 @@
 #include "lib/lapack.h"
 #include "lib/Mathematics.h"
 
-CKRR::CKRR() : CKernelMachine()
+CKRR::CKRR()
+: CKernelMachine()
 {
 	alpha=NULL;
 	tau=1e-6;
 }
 
 CKRR::CKRR(DREAL t, CKernel* k, CLabels* lab)
+: CKernelMachine()
 {
 	tau=t;
 	set_labels(lab);

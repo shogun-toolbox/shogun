@@ -40,7 +40,7 @@
  * direct maps.
  *
  */
-class CCommWordStringKernel: public CStringKernel<WORD>
+class CCommWordStringKernel : public CStringKernel<WORD>
 {
 	public:
 		/** constructor

@@ -15,7 +15,8 @@
 #include "lib/Mathematics.h"
 #include "features/WordFeatures.h"
 
-CSortWord::CSortWord() : CSimplePreProc<WORD>("SortWord", "SRTW")
+CSortWord::CSortWord()
+: CSimplePreProc<WORD>("SortWord", "SRTW")
 {
 }
 

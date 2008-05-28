@@ -15,12 +15,12 @@
 #include "lib/io.h"
 
 CChi2Kernel::CChi2Kernel(INT size, DREAL w)
-	: CSimpleKernel<DREAL>(size), width(w)
+: CSimpleKernel<DREAL>(size), width(w)
 {
 }
 
 CChi2Kernel::CChi2Kernel(CRealFeatures* l, CRealFeatures* r, DREAL w, INT size)
-	: CSimpleKernel<DREAL>(size), width(w)
+: CSimpleKernel<DREAL>(size), width(w)
 {
 	init(l,r);
 }

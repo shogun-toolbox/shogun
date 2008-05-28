@@ -21,9 +21,10 @@
 //#define PLIFARRAY_DEBUG
 
 CPlifArray::CPlifArray()
+: CPlifBase()
 {
-	min_value = -1e6 ;
-	max_value = 1e6 ;
+	min_value=-1e6;
+	max_value=1e6;
 }
 
 CPlifArray::~CPlifArray()

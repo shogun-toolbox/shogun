@@ -11,6 +11,7 @@
 #include "classifier/svm/Tron.h"
 
 l2_lr_fun::l2_lr_fun(const problem *p, double Cp, double Cn)
+: function()
 {
 	int i;
 	int l=p->l;
@@ -142,6 +143,7 @@ void l2_lr_fun::XTv(double *v, double *res_XTv)
 }
 
 l2loss_svm_fun::l2loss_svm_fun(const problem *p, double Cp, double Cn)
+: function()
 {
 	int i;
 	int l=p->l;

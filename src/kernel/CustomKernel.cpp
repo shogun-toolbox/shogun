@@ -14,12 +14,12 @@
 #include "lib/io.h"
 
 CCustomKernel::CCustomKernel()
-	: CKernel(10),kmatrix(NULL),num_rows(0),num_cols(0),upper_diagonal(false)
+: CKernel(10), kmatrix(NULL), num_rows(0), num_cols(0), upper_diagonal(false)
 {
 }
 
 CCustomKernel::CCustomKernel(CFeatures* l, CFeatures* r)
-	: CKernel(10),kmatrix(NULL),num_rows(0),num_cols(0),upper_diagonal(false)
+: CKernel(10), kmatrix(NULL), num_rows(0), num_cols(0), upper_diagonal(false)
 {
 	num_rows=l->get_num_vectors();
 	num_cols=r->get_num_vectors();

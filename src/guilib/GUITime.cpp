@@ -14,7 +14,8 @@
 #include "guilib/GUITime.h"
 #include "interface/SGInterface.h"
 
-CGUITime::CGUITime(CSGInterface* ui_) : CSGObject(), ui(ui_)
+CGUITime::CGUITime(CSGInterface* ui_)
+: CSGObject(), ui(ui_)
 {
 	time=new CTime();
 }

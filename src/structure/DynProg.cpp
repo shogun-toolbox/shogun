@@ -76,93 +76,96 @@ static INT string_words_default[16] = {0,0,0,0,0,0,0,0,
 									   1,1,1,1,1,1,1,1} ; // which string should be used
 
 CDynProg::CDynProg(INT p_num_svms /*= 8 */)
-	: CSGObject(),transition_matrix_a_id(1,1), transition_matrix_a(1,1),
+: CSGObject(), transition_matrix_a_id(1,1), transition_matrix_a(1,1),
 	transition_matrix_a_deriv(1,1), initial_state_distribution_p(1),
 	initial_state_distribution_p_deriv(1), end_state_distribution_q(1),
 	end_state_distribution_q_deriv(1), dict_weights(1,1),
 	dict_weights_array(dict_weights.get_array()),
 
-	  // multi svm
-	  num_degrees(4), 
-	  num_svms(p_num_svms), 
-	  num_strings(1),
-	  word_degree(word_degree_default, num_degrees, true, true),
-	  cum_num_words(cum_num_words_default, num_degrees+1, true, true),
-	  cum_num_words_array(cum_num_words.get_array()),
-	  num_words(num_words_default, num_degrees, true, true),
-	  num_words_array(num_words.get_array()),
-	  mod_words(mod_words_default, num_svms, 2, true, true),
-	  mod_words_array(mod_words.get_array()),
-	  sign_words(sign_words_default, num_svms, true, true),
-	  sign_words_array(sign_words.get_array()),
-	  string_words(string_words_default, num_svms, true, true),
-	  string_words_array(string_words.get_array()),
-//	  word_used(num_degrees, num_words[num_degrees-1], num_strings),
-//	  word_used_array(word_used.get_array()),
-//	  svm_values_unnormalized(num_degrees, num_svms),
-	  svm_pos_start(num_degrees),
-	  num_unique_words(num_degrees),
-	  svm_arrays_clean(true),
+	// multi svm
+	num_degrees(4),
+	num_svms(p_num_svms),
+	num_strings(1),
+	word_degree(word_degree_default, num_degrees, true, true),
+	cum_num_words(cum_num_words_default, num_degrees+1, true, true),
+	cum_num_words_array(cum_num_words.get_array()),
+	num_words(num_words_default, num_degrees, true, true),
+	num_words_array(num_words.get_array()),
+	mod_words(mod_words_default, num_svms, 2, true, true),
+	mod_words_array(mod_words.get_array()),
+	sign_words(sign_words_default, num_svms, true, true),
+	sign_words_array(sign_words.get_array()),
+	string_words(string_words_default, num_svms, true, true),
+	string_words_array(string_words.get_array()),
+//	word_used(num_degrees, num_words[num_degrees-1], num_strings),
+//	word_used_array(word_used.get_array()),
+//	svm_values_unnormalized(num_degrees, num_svms),
+	svm_pos_start(num_degrees),
+	num_unique_words(num_degrees),
+	svm_arrays_clean(true),
 
-	  // single svm
-	  num_svms_single(1),
-	  word_degree_single(1),
-	  num_words_single(4), 
-	  word_used_single(num_words_single),
-	  svm_value_unnormalized_single(num_svms_single),
-	  num_unique_words_single(0),
+	// single svm
+	num_svms_single(1),
+	word_degree_single(1),
+	num_words_single(4),
+	word_used_single(num_words_single),
+	svm_value_unnormalized_single(num_svms_single),
+	num_unique_words_single(0),
 
- 
-	  max_a_id(0), m_seq(1,1,1), m_pos(1), m_orf_info(1,2), 
-      m_segment_sum_weights(1,1), m_plif_list(1), 
-	  m_PEN(1,1), m_PEN_state_signals(1,1), 
-	  m_genestr(1,1), m_dict_weights(1,1), m_segment_loss(1,1,2), 
-      m_segment_ids_mask(1,1),
-	  m_scores(1), m_states(1,1), m_positions(1,1),
-	  m_precomputed_svm_values(1,1) //by Jonas
-
+	max_a_id(0), m_seq(1,1,1), m_pos(1), m_orf_info(1,2),
+	m_segment_sum_weights(1,1), m_plif_list(1),
+	m_PEN(1,1), m_PEN_state_signals(1,1),
+	m_genestr(1,1), m_dict_weights(1,1), m_segment_loss(1,1,2),
+	m_segment_ids_mask(1,1),
+	m_scores(1), m_states(1,1), m_positions(1,1),
+	m_precomputed_svm_values(1,1) //by Jonas
 {
-	trans_list_forward = NULL ;
-	trans_list_forward_cnt = NULL ;
-	trans_list_forward_val = NULL ;
-	trans_list_forward_id = NULL ;
-	trans_list_len = 0 ;
+	trans_list_forward=NULL;
+	trans_list_forward_cnt=NULL;
+	trans_list_forward_val=NULL;
+	trans_list_forward_id=NULL;
+	trans_list_len=0;
 
-	mem_initialized = true ;
+	mem_initialized=true;
 
 	this->N=1;
-	m_step=0 ;
+	m_step=0;
 
 #ifdef ARRAY_STATISTICS
-	word_degree.set_name("word_degree") ;
+	word_degree.set_name("word_degree");
 #endif
-
 }
 
 CDynProg::~CDynProg()
 {
 	if (trans_list_forward_cnt)
-	  delete[] trans_list_forward_cnt ;
+		delete[] trans_list_forward_cnt;
 	if (trans_list_forward)
 	{
-	    for (INT i=0; i<trans_list_len; i++)
+		for (INT i=0; i<trans_list_len; i++)
+		{
 			if (trans_list_forward[i])
-				delete[] trans_list_forward[i] ;
-	    delete[] trans_list_forward ;
+				delete[] trans_list_forward[i];
+		}
+		delete[] trans_list_forward;
 	}
 	if (trans_list_forward_val)
 	{
-	    for (INT i=0; i<trans_list_len; i++)
+		for (INT i=0; i<trans_list_len; i++)
+		{
 			if (trans_list_forward_val[i])
-				delete[] trans_list_forward_val[i] ;
-	    delete[] trans_list_forward_val ;
+				delete[] trans_list_forward_val[i];
+		}
+		delete[] trans_list_forward_val;
 	}
 	if (trans_list_forward_id)
 	{
-	    for (INT i=0; i<trans_list_len; i++)
+		for (INT i=0; i<trans_list_len; i++)
+		{
 			if (trans_list_forward_id[i])
-				delete[] trans_list_forward_id[i] ;
-	    delete[] trans_list_forward_id ;
+				delete[] trans_list_forward_id[i];
+		}
+		delete[] trans_list_forward_id;
 	}
 }
 

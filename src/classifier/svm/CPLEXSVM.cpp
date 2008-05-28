@@ -10,6 +10,7 @@
 
 #include "classifier/svm/CPLEXSVM.h"
 #include "lib/common.h"
+
 #ifdef USE_CPLEX
 #include "lib/io.h"
 #include "lib/Mathematics.h"
@@ -17,6 +18,7 @@
 #include "features/Labels.h"
 
 CCPLEXSVM::CCPLEXSVM()
+: CSVM()
 {
 }
 

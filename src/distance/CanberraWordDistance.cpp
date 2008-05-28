@@ -16,7 +16,7 @@
 #include "lib/io.h"
 
 CCanberraWordDistance::CCanberraWordDistance()
-	: CStringDistance<WORD>()
+: CStringDistance<WORD>()
 {
 	SG_DEBUG("CCanberraWordDistance created");
 	dictionary_size= 1<<(sizeof(WORD)*8);
@@ -25,7 +25,7 @@ CCanberraWordDistance::CCanberraWordDistance()
 }
 
 CCanberraWordDistance::CCanberraWordDistance(CStringFeatures<WORD>* l, CStringFeatures<WORD>* r)
-	: CStringDistance<WORD>()
+: CStringDistance<WORD>()
 {
 	SG_DEBUG("CCanberraWordDistance created");
 	dictionary_size= 1<<(sizeof(WORD)*8);
@@ -35,7 +35,7 @@ CCanberraWordDistance::CCanberraWordDistance(CStringFeatures<WORD>* l, CStringFe
 	init(l, r);
 }
 
-CCanberraWordDistance::~CCanberraWordDistance() 
+CCanberraWordDistance::~CCanberraWordDistance()
 {
 	cleanup();
 

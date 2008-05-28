@@ -27,7 +27,8 @@ template <class T> class CSimpleFile : public CSGObject
 		 * @param fname filename
 		 * @param f file descriptor
 		 */
-		CSimpleFile(CHAR* fname, FILE* f) : CSGObject()
+		CSimpleFile(CHAR* fname, FILE* f)
+		: CSGObject()
 		{
 			file=f;
 			filename=strdup(fname);

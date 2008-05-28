@@ -34,13 +34,13 @@ template <class ST> class CSimpleFeatures: public CFeatures
 		 *
 		 * @param size cache size
 		 */
-		CSimpleFeatures(INT size=0) :
-			CFeatures(size), num_vectors(0), num_features(0),
+		CSimpleFeatures(INT size=0)
+		: CFeatures(size), num_vectors(0), num_features(0),
 			feature_matrix(NULL), feature_cache(NULL) {}
 
 		/** copy constructor */
-		CSimpleFeatures(const CSimpleFeatures & orig) :
-			CFeatures(orig), num_vectors(orig.num_vectors),
+		CSimpleFeatures(const CSimpleFeatures & orig)
+		: CFeatures(orig), num_vectors(orig.num_vectors),
 			num_features(orig.num_features),
 			feature_matrix(orig.feature_matrix),
 			feature_cache(orig.feature_cache)
@@ -59,8 +59,8 @@ template <class ST> class CSimpleFeatures: public CFeatures
 		 * @param num_feat number of features in matrix
 		 * @param num_vec number of vectors in matrix
 		 */
-		CSimpleFeatures(ST* fm, INT num_feat, INT num_vec) :
-			CFeatures(0), num_vectors(0), num_features(0),
+		CSimpleFeatures(ST* fm, INT num_feat, INT num_vec)
+		: CFeatures(0), num_vectors(0), num_features(0),
 			feature_matrix(NULL), feature_cache(NULL)
 		{
 			set_feature_matrix(fm, num_feat, num_vec);
@@ -72,8 +72,8 @@ template <class ST> class CSimpleFeatures: public CFeatures
 		 *
 		 * @param fname filename to load features from
 		 */
-		CSimpleFeatures(CHAR* fname) :
-			CFeatures(fname), num_vectors(0), num_features(0),
+		CSimpleFeatures(CHAR* fname)
+		: CFeatures(fname), num_vectors(0), num_features(0),
 			feature_matrix(NULL), feature_cache(NULL) {}
 
 		/** duplicate feature object

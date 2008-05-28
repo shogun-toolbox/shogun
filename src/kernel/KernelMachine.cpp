@@ -10,14 +10,14 @@
 
 #include "kernel/KernelMachine.h"
 
-CKernelMachine::CKernelMachine() : CClassifier(), kernel(NULL),
-	use_batch_computation(true), use_linadd(true)
+CKernelMachine::CKernelMachine()
+: CClassifier(), kernel(NULL), use_batch_computation(true), use_linadd(true)
 {
 }
 
 CKernelMachine::~CKernelMachine()
 {
-    SG_UNREF(kernel);
+	SG_UNREF(kernel);
 }
 
 CLabels* CKernelMachine::classify(CLabels* output)

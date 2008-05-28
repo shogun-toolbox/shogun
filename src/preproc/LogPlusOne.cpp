@@ -14,7 +14,8 @@
 #include "features/RealFeatures.h"
 #include "lib/Mathematics.h"
 
-CLogPlusOne::CLogPlusOne() : CSimplePreProc<DREAL>("LogPlusOne", "LG+1")
+CLogPlusOne::CLogPlusOne()
+: CSimplePreProc<DREAL>("LogPlusOne", "LG+1")
 {
 }
 

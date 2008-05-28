@@ -20,7 +20,7 @@
 #include "base/SGObject.h"
 
 // sentinel is 0xFFFFFFFC or float -2
-#define NO_CHILD ((INT)-1073741824) 
+#define NO_CHILD ((INT)-1073741824)
 
 #define WEIGHTS_IN_TRIE 
 //#define TRIE_CHECK_EVERYTHING
@@ -586,46 +586,49 @@ class CTrie : public CSGObject
 
 	template <class Trie>
 	CTrie<Trie>::CTrie(INT d, bool p_use_compact_terminal_nodes)
-: CSGObject(), degree(d), position_weights(NULL), use_compact_terminal_nodes(p_use_compact_terminal_nodes), weights_in_tree(true) 
-{
-	TreeMemPtrMax=1024*1024/sizeof(Trie) ;
-	TreeMemPtr=0 ;
-	TreeMem = (Trie*)malloc(TreeMemPtrMax*sizeof(Trie)) ;
+	: CSGObject(), degree(d), position_weights(NULL),
+		use_compact_terminal_nodes(p_use_compact_terminal_nodes),
+		weights_in_tree(true)
+	{
+		TreeMemPtrMax=1024*1024/sizeof(Trie);
+		TreeMemPtr=0;
+		TreeMem=(Trie*)malloc(TreeMemPtrMax*sizeof(Trie));
 
-	length = 0;
-	trees=NULL;
-	tree_initialized=false ;
+		length=0;
+		trees=NULL;
+		tree_initialized=false;
 
-	NUM_SYMS=4;
-} ;
+		NUM_SYMS=4;
+	}
 
 	template <class Trie>
 	CTrie<Trie>::CTrie(const CTrie & to_copy)
-: CSGObject(to_copy), degree(to_copy.degree), position_weights(NULL), use_compact_terminal_nodes(to_copy.use_compact_terminal_nodes)
-{
-	if (to_copy.position_weights!=NULL)
+	: CSGObject(to_copy), degree(to_copy.degree), position_weights(NULL),
+		use_compact_terminal_nodes(to_copy.use_compact_terminal_nodes)
 	{
-		position_weights = to_copy.position_weights ;
-		/*new DREAL[to_copy.length] ;
-		  for (INT i=0; i<to_copy.length; i++)
-		  position_weights[i]=to_copy.position_weights[i] ;*/
+		if (to_copy.position_weights!=NULL)
+		{
+			position_weights = to_copy.position_weights;
+			/*new DREAL[to_copy.length];
+			  for (INT i=0; i<to_copy.length; i++)
+			  position_weights[i]=to_copy.position_weights[i]; */
+		}
+		else
+			position_weights=NULL;
+
+		TreeMemPtrMax=to_copy.TreeMemPtrMax;
+		TreeMemPtr=to_copy.TreeMemPtr;
+		TreeMem=(Trie*)malloc(TreeMemPtrMax*sizeof(Trie));
+		memcpy(TreeMem, to_copy.TreeMem, TreeMemPtrMax*sizeof(Trie));
+
+		length=to_copy.length;
+		trees=new INT[length];
+		for (INT i=0; i<length; i++)
+			trees[i]=to_copy.trees[i];
+		tree_initialized=to_copy.tree_initialized;
+
+		NUM_SYMS=4;
 	}
-	else
-		position_weights=NULL ;
-
-	TreeMemPtrMax=to_copy.TreeMemPtrMax ;
-	TreeMemPtr=to_copy.TreeMemPtr ;
-	TreeMem = (Trie*)malloc(TreeMemPtrMax*sizeof(Trie)) ;
-	memcpy(TreeMem, to_copy.TreeMem, TreeMemPtrMax*sizeof(Trie)) ;
-
-	length = to_copy.length ;
-	trees=new INT[length] ;		
-	for (INT i=0; i<length; i++)
-		trees[i]=to_copy.trees[i] ;
-	tree_initialized=to_copy.tree_initialized ;
-
-	NUM_SYMS=4;
-}
 
 	template <class Trie>
 const CTrie<Trie> &CTrie<Trie>::operator=(const CTrie<Trie> & to_copy)

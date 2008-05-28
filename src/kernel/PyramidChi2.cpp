@@ -16,18 +16,18 @@
 #include "lib/io.h"
 
 CPyramidChi2::CPyramidChi2(INT size, DREAL width2, INT* pyramidlevels2,INT
-		numlevels2, INT  numbinsinhistogram2, DREAL* weights2, INT numweights2)
+	numlevels2, INT  numbinsinhistogram2, DREAL* weights2, INT numweights2)
 : CSimpleKernel<DREAL>(size), width(width2), pyramidlevels(NULL),
 	numlevels(numlevels2), weights(NULL), numweights(numweights2)
 {
 	pyramidlevels=new INT[numlevels];
-	for(INT i=0; i<numlevels;++i )
+	for(INT i=0; i<numlevels; ++i)
 		pyramidlevels[i]=pyramidlevels2[i];
 	
 	numbinsinhistogram=numbinsinhistogram2;
 	
 	weights=new DREAL[numweights];
-	for(INT i=0; i<numweights;++i )
+	for(INT i=0; i<numweights; ++i)
 		weights[i]=weights2[i];
 	
 	if (!sanitycheck_weak())
@@ -42,12 +42,11 @@ void CPyramidChi2::cleanup()
 	numweights=-1;
 	numbinsinhistogram=-1;
 	//sanitycheckbit=false;
-	
+
 	delete[] pyramidlevels;
 	pyramidlevels=NULL;
 	delete[] weights;
 	weights=NULL;
-
 }
 
 bool CPyramidChi2::init(CFeatures* l, CFeatures* r)

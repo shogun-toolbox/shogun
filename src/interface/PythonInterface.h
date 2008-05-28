@@ -3,7 +3,7 @@
 
 #include "lib/config.h"
 
-#if defined(HAVE_PYTHON) && !defined(HAVE_SWIG)            
+#if defined(HAVE_PYTHON) && !defined(HAVE_SWIG)
 #include "interface/SGInterface.h"
 
 #include "lib/python.h"

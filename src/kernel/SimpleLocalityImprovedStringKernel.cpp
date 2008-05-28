@@ -16,7 +16,7 @@
 
 CSimpleLocalityImprovedStringKernel::CSimpleLocalityImprovedStringKernel(
 	INT size, INT l, INT id, INT od)
-	: CStringKernel<CHAR>(size), length(l), inner_degree(id), outer_degree(od),
+: CStringKernel<CHAR>(size), length(l), inner_degree(id), outer_degree(od),
 	pyramid_weights(NULL)
 {
 }
@@ -24,7 +24,7 @@ CSimpleLocalityImprovedStringKernel::CSimpleLocalityImprovedStringKernel(
 CSimpleLocalityImprovedStringKernel::CSimpleLocalityImprovedStringKernel(
 	CStringFeatures<CHAR>* l, CStringFeatures<CHAR>* r,
 	INT len, INT id, INT od)
-	: CStringKernel<CHAR>(10), length(len), inner_degree(id), outer_degree(od),
+: CStringKernel<CHAR>(10), length(len), inner_degree(id), outer_degree(od),
 	pyramid_weights(NULL)
 {
 	init(l, r);

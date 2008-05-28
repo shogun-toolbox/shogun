@@ -93,7 +93,7 @@ const int CLocalAlignmentStringKernel::blosum[] = {
 int CLocalAlignmentStringKernel::logsum_lookup[LOGSUM_TBL];
 
 CLocalAlignmentStringKernel::CLocalAlignmentStringKernel(INT size)
-	: CStringKernel<CHAR>(size), initialized(false)
+: CStringKernel<CHAR>(size), initialized(false)
 {
 	scaled_blosum=new int[sizeof(blosum)];
 	init_logsum();
@@ -102,7 +102,7 @@ CLocalAlignmentStringKernel::CLocalAlignmentStringKernel(INT size)
 
 CLocalAlignmentStringKernel::CLocalAlignmentStringKernel(
 	CStringFeatures<CHAR>* l, CStringFeatures<CHAR>* r)
-	: CStringKernel<CHAR>(10), initialized(false)
+: CStringKernel<CHAR>(10), initialized(false)
 {
 	scaled_blosum=new int[sizeof(blosum)];
 	init_logsum();

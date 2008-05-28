@@ -12,27 +12,32 @@
 #include "lib/common.h"
 #include "lib/File.h"
 
-CByteFeatures::CByteFeatures(E_ALPHABET a, INT size) : CSimpleFeatures<BYTE>(size)
+CByteFeatures::CByteFeatures(E_ALPHABET a, INT size)
+: CSimpleFeatures<BYTE>(size)
 {
 	alphabet=new CAlphabet(a);
 }
 
-CByteFeatures::CByteFeatures(CAlphabet* a, INT size) : CSimpleFeatures<BYTE>(size)
+CByteFeatures::CByteFeatures(CAlphabet* a, INT size)
+: CSimpleFeatures<BYTE>(size)
 {
 	alphabet=a;
 }
 
-CByteFeatures::CByteFeatures(const CByteFeatures & orig) : CSimpleFeatures<BYTE>(orig)
+CByteFeatures::CByteFeatures(const CByteFeatures & orig)
+: CSimpleFeatures<BYTE>(orig)
 {
 	alphabet=orig.alphabet;
 }
 
-CByteFeatures::CByteFeatures(E_ALPHABET a, BYTE* fm, INT num_feat, INT num_vec) : CSimpleFeatures<BYTE>(fm, num_feat, num_vec)
+CByteFeatures::CByteFeatures(E_ALPHABET a, BYTE* fm, INT num_feat, INT num_vec)
+: CSimpleFeatures<BYTE>(fm, num_feat, num_vec)
 {
 	alphabet=new CAlphabet(a);
 }
 
-CByteFeatures::CByteFeatures(E_ALPHABET a, CHAR* fname) : CSimpleFeatures<BYTE>(fname)
+CByteFeatures::CByteFeatures(E_ALPHABET a, CHAR* fname)
+: CSimpleFeatures<BYTE>(fname)
 {
 	alphabet=new CAlphabet(a);
 	load(fname);

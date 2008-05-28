@@ -16,9 +16,9 @@
 #include "classifier/PluginEstimate.h"
 
 
-CPluginEstimate::CPluginEstimate(DREAL pos_pseudo, DREAL neg_pseudo) :
-	CClassifier(), m_pos_pseudo(1e-10), m_neg_pseudo(1e-10), pos_model(NULL),
-	neg_model(NULL), features(NULL)
+CPluginEstimate::CPluginEstimate(DREAL pos_pseudo, DREAL neg_pseudo)
+: CClassifier(), m_pos_pseudo(1e-10), m_neg_pseudo(1e-10),
+	pos_model(NULL), neg_model(NULL), features(NULL)
 {
 }
 

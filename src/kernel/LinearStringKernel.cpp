@@ -15,14 +15,14 @@
 #include "features/StringFeatures.h"
 
 CLinearStringKernel::CLinearStringKernel(INT size, bool dr, DREAL s)
-	: CStringKernel<CHAR>(size), scale(s), do_rescale(dr),
+: CStringKernel<CHAR>(size), scale(s), do_rescale(dr),
 	initialized(false), normal(NULL)
 {
 }
 
 CLinearStringKernel::CLinearStringKernel(
 	CStringFeatures<CHAR>* l, CStringFeatures<CHAR>* r, bool dr, DREAL s)
-	: CStringKernel<CHAR>(10), scale(s), do_rescale(dr),
+: CStringKernel<CHAR>(10), scale(s), do_rescale(dr),
 	initialized(false), normal(NULL)
 {
 	init(l, r);

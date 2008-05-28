@@ -18,11 +18,13 @@
 #define KDELTA(A,B) (A==B)
 #define KDELTA4(A1,A2,A3,A4) ((A1==A2)||(A1==A3)||(A1==A4)||(A2==A3)||(A2==A4)||(A3==A4))
 
-CGMNPSVM::CGMNPSVM() : CMultiClassSVM(ONE_VS_REST)
+CGMNPSVM::CGMNPSVM()
+: CMultiClassSVM(ONE_VS_REST)
 {
 }
 
-CGMNPSVM::CGMNPSVM(DREAL C, CKernel* k, CLabels* lab) : CMultiClassSVM(ONE_VS_REST, C, k, lab)
+CGMNPSVM::CGMNPSVM(DREAL C, CKernel* k, CLabels* lab)
+: CMultiClassSVM(ONE_VS_REST, C, k, lab)
 {
 }
 

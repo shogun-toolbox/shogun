@@ -15,24 +15,24 @@
 #include "features/ByteFeatures.h"
 
 CLinearByteKernel::CLinearByteKernel(INT size, bool dr, DREAL s)
-	: CSimpleKernel<BYTE>(size), scale(s), do_rescale(dr), initialized(false),
+: CSimpleKernel<BYTE>(size), scale(s), do_rescale(dr), initialized(false),
 	normal(NULL)
 {
 }
 
 CLinearByteKernel::CLinearByteKernel(
 	CByteFeatures* l, CByteFeatures* r, bool dr, DREAL s)
-	: CSimpleKernel<BYTE>(10), scale(s), do_rescale(dr), initialized(false),
+: CSimpleKernel<BYTE>(10), scale(s), do_rescale(dr), initialized(false),
 	normal(NULL)
 {
 	init(l, r);
 }
 
-CLinearByteKernel::~CLinearByteKernel() 
+CLinearByteKernel::~CLinearByteKernel()
 {
 	cleanup();
 }
-  
+
 bool CLinearByteKernel::init(CFeatures* l, CFeatures* r)
 {
 	CSimpleKernel<BYTE>::init(l, r);

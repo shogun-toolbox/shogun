@@ -131,13 +131,15 @@ void* CSVMLight::update_linear_component_mkl_linadd_helper(void* p)
 	return NULL ;
 }
 
-CSVMLight::CSVMLight() : CSVM()
+CSVMLight::CSVMLight()
+: CSVM()
 {
 	init();
 	set_kernel(NULL);
 }
 
-CSVMLight::CSVMLight(DREAL C, CKernel* k, CLabels* lab) : CSVM(C, k, lab)
+CSVMLight::CSVMLight(DREAL C, CKernel* k, CLabels* lab)
+: CSVM(C, k, lab)
 {
 	init();
 }

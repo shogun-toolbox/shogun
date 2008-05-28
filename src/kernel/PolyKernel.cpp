@@ -15,14 +15,14 @@
 #include "features/RealFeatures.h"
 
 CPolyKernel::CPolyKernel(INT size, INT d, bool i, bool un)
-	: CSimpleKernel<DREAL>(size), degree(d), inhomogene(i),
+: CSimpleKernel<DREAL>(size), degree(d), inhomogene(i),
 	use_normalization(un), sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL),
 	initialized(false)
 {
 }
 
 CPolyKernel::CPolyKernel(CRealFeatures* l, CRealFeatures* r, INT d, bool i, bool un, INT size)
-	: CSimpleKernel<DREAL>(size),degree(d),inhomogene(i), use_normalization(un),
+: CSimpleKernel<DREAL>(size),degree(d),inhomogene(i), use_normalization(un),
 	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false)
 {
 	init(l,r);

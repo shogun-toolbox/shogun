@@ -120,6 +120,7 @@ void help_message(void)
 /*** Class constructor                                                      ***/
 /******************************************************************************/
 QPproblem::QPproblem()
+: CSGObject()
 {
   /*** set problem defaults ***/
   maxmw                = 40;

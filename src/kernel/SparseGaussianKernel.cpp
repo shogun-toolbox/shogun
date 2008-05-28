@@ -14,13 +14,13 @@
 #include "features/Features.h"
 #include "features/SparseFeatures.h"
 
-	CSparseGaussianKernel::CSparseGaussianKernel(INT size, double w)
+CSparseGaussianKernel::CSparseGaussianKernel(INT size, double w)
 : CSparseKernel<DREAL>(size), width(w), sq_lhs(NULL), sq_rhs(NULL)
 {
 }
 
 CSparseGaussianKernel::CSparseGaussianKernel(
-		CSparseFeatures<DREAL>* l, CSparseFeatures<DREAL>* r, double w)
+	CSparseFeatures<DREAL>* l, CSparseFeatures<DREAL>* r, double w)
 : CSparseKernel<DREAL>(10), width(w), sq_lhs(NULL), sq_rhs(NULL)
 {
 	init(l, r);

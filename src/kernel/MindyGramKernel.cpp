@@ -38,65 +38,68 @@ param_spec_t p_map[] = {
  * @param meas Similarity measure to use
  * @param w Kernel width
  */
-CMindyGramKernel::CMindyGramKernel(INT ch, CHAR *meas, DREAL w) : CKernel(ch)
+CMindyGramKernel::CMindyGramKernel(INT ch, CHAR *meas, DREAL w)
+: CKernel(ch)
 {
-    /* Init attributes */
-    sdiag_lhs = NULL;
-    sdiag_rhs = NULL;
-    initialized = false;
-    measure = meas;
-    norm = NO_NORMALIZATION;
-    width = w;
-    cache = 0;
-    
-    /* Check for similarity coefficients */
-    simcof = sico_get_type(measure);
+	/* Init attributes */
+	sdiag_lhs=NULL;
+	sdiag_rhs=NULL;
+	initialized=false;
+	measure=meas;
+	norm=NO_NORMALIZATION;
+	width=w;
+	cache=0;
+	
+	/* Check for similarity coefficients */
+	simcof=sico_get_type(measure);
 
-    /* Create similarity measure */
-    SG_INFO( "Initializing Mindy kernel\n");
-    if (simcof == SC_NONE)
-        kernel = sm_create(sm_get_type(measure));
-    else
-        kernel = sm_create(ST_MINKERN);
+	/* Create similarity measure */
+	SG_INFO("Initializing Mindy kernel.\n");
+	if (simcof==SC_NONE)
+		kernel=sm_create(sm_get_type(measure));
+	else
+		kernel=sm_create(ST_MINKERN);
    
-    SG_INFO( "Mindy similarity measure: %s (using %s)\n", 
-	     measure, sm_get_descr(kernel->type));
+	SG_INFO("Mindy similarity measure: %s (using %s).\n",
+		measure, sm_get_descr(kernel->type));
 
-    /* Initialize optimization */
-    if (kernel->type == ST_LINEAR) {
-	SG_INFO( "Optimization supported\n");
-        properties |= KP_LINADD;
-    }
+	/* Initialize optimization */
+	if (kernel->type == ST_LINEAR)
+	{
+		SG_INFO("Optimization supported.\n");
+		properties |= KP_LINADD;
+	}
 
-    normal = NULL;
-    clear_normal();
+	normal=NULL;
+	clear_normal();
 }
 
 CMindyGramKernel::CMindyGramKernel(
 	CFeatures* l, CFeatures* r, CHAR *m, DREAL w)
-	: CKernel(10), sdiag_lhs(NULL), sdiag_rhs(NULL), initialized(false),
-		measure(m), norm(NO_NORMALIZATION), width(w)
+: CKernel(10), sdiag_lhs(NULL), sdiag_rhs(NULL), initialized(false),
+	measure(m), norm(NO_NORMALIZATION), width(w)
 {
 	/* Check for similarity coefficients */
-	simcof = sico_get_type(measure);
+	simcof=sico_get_type(measure);
 
 	/* Create similarity measure */
-	SG_INFO( "Initializing Mindy kernel\n");
-	if (simcof == SC_NONE)
-		kernel = sm_create(sm_get_type(measure));
+	SG_INFO("Initializing Mindy kernel.\n");
+	if (simcof==SC_NONE)
+		kernel=sm_create(sm_get_type(measure));
 	else
-		kernel = sm_create(ST_MINKERN);
+		kernel=sm_create(ST_MINKERN);
    
-	SG_INFO( "Mindy similarity measure: %s (using %s)\n", 
+	SG_INFO("Mindy similarity measure: %s (using %s).\n",
 		 measure, sm_get_descr(kernel->type));
 
 	/* Initialize optimization */
-	if (kernel->type == ST_LINEAR) {
-	SG_INFO( "Optimization supported\n");
+	if (kernel->type == ST_LINEAR)
+	{
+		SG_INFO("Optimization supported.\n");
 		properties |= KP_LINADD;
 	}
 
-	normal = NULL;
+	normal=NULL;
 	clear_normal();
 
 	init(l, r);

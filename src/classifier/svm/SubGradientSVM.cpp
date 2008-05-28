@@ -24,13 +24,15 @@
 extern double sparsity;
 double tim;
 
-CSubGradientSVM::CSubGradientSVM() : CSparseLinearClassifier(), C1(1), C2(1), epsilon(1e-5), qpsize(42), qpsize_max(2000), use_bias(false), delta_active(0), delta_bound(0)
+CSubGradientSVM::CSubGradientSVM()
+: CSparseLinearClassifier(), C1(1), C2(1), epsilon(1e-5), qpsize(42),
+	qpsize_max(2000), use_bias(false), delta_active(0), delta_bound(0)
 {
 }
 
-CSubGradientSVM::CSubGradientSVM(DREAL C, CSparseFeatures<DREAL>* traindat, CLabels* trainlab) 
-: CSparseLinearClassifier(), C1(C), C2(C), epsilon(1e-5), qpsize(42), qpsize_max(2000),
-	use_bias(false), delta_active(0), delta_bound(0)
+CSubGradientSVM::CSubGradientSVM(DREAL C, CSparseFeatures<DREAL>* traindat, CLabels* trainlab)
+: CSparseLinearClassifier(), C1(C), C2(C), epsilon(1e-5), qpsize(42),
+	qpsize_max(2000), use_bias(false), delta_active(0), delta_bound(0)
 {
 	set_features(traindat);
 	set_labels(trainlab);

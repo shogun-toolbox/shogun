@@ -15,18 +15,24 @@
 
 #include <string.h>
 
-CFeatures::CFeatures(INT size) : CSGObject(), cache_size(size), preproc(NULL), num_preproc(0), preprocessed(NULL) 
+CFeatures::CFeatures(INT size)
+: CSGObject(), cache_size(size), preproc(NULL), num_preproc(0),
+	preprocessed(NULL)
 {
 	SG_INFO("Feature object created (%p)\n",this);
 }
 
-CFeatures::CFeatures(const CFeatures& orig) : CSGObject(orig), preproc(orig.preproc), num_preproc(orig.num_preproc), preprocessed(orig.preprocessed)
+CFeatures::CFeatures(const CFeatures& orig)
+: CSGObject(orig), preproc(orig.preproc),
+	num_preproc(orig.num_preproc), preprocessed(orig.preprocessed)
 {
 	preprocessed=new bool[orig.num_preproc];
 	memcpy(preprocessed, orig.preprocessed, sizeof(bool)*orig.num_preproc);
 }
 
-CFeatures::CFeatures(CHAR* fname) : cache_size(0), preproc(NULL), num_preproc(0), preprocessed(false)
+CFeatures::CFeatures(CHAR* fname)
+: CSGObject(), cache_size(0), preproc(NULL), num_preproc(0),
+	preprocessed(false)
 {
 	load(fname);
 	SG_INFO("Feature object loaded (%p)\n",this) ;

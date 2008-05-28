@@ -11,12 +11,14 @@
 #include "regression/svr/LibSVR.h"
 #include "lib/io.h"
 
-CLibSVR::CLibSVR() : CSVM()
+CLibSVR::CLibSVR()
+: CSVM()
 {
 	model=NULL;
 }
 
 CLibSVR::CLibSVR(DREAL C, DREAL eps, CKernel* k, CLabels* lab)
+: CSVM()
 {
 	model=NULL;
 

@@ -17,7 +17,8 @@
 #include "guilib/GUIMath.h"
 #include "interface/SGInterface.h"
 
-CGUIMath::CGUIMath(CSGInterface* ui_) : CSGObject(), ui(ui_), threshold(0.0)
+CGUIMath::CGUIMath(CSGInterface* ui_)
+: CSGObject(), ui(ui_), threshold(0.0)
 {
 }
 

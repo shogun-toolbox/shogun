@@ -22,18 +22,19 @@
 //#define PLIF_DEBUG
 
 CPlif::CPlif(INT l)
+: CPlifBase()
 {
-	limits=NULL ;
-	penalties=NULL ;
-	cum_derivatives=NULL ;
-	id=-1 ;
-	transform = T_LINEAR ;
-	name = NULL ;
-	max_value=0 ;
-	min_value=0 ;
-	cache=NULL ;
-	use_svm=0 ;
-	use_cache=false ;
+	limits=NULL;
+	penalties=NULL;
+	cum_derivatives=NULL;
+	id=-1;
+	transform=T_LINEAR;
+	name=NULL;
+	max_value=0;
+	min_value=0;
+	cache=NULL;
+	use_svm=0;
+	use_cache=false;
 	len=0;
 
 	if (l>0)
@@ -42,14 +43,14 @@ CPlif::CPlif(INT l)
 
 CPlif::~CPlif()
 {
-	delete[] limits ;
-	delete[] penalties ;
-	delete[] name ;
-	delete[] cache ;
-	delete[] cum_derivatives ; 
+	delete[] limits;
+	delete[] penalties;
+	delete[] name;
+	delete[] cache;
+	delete[] cum_derivatives;
 }
 
-bool CPlif::set_transform_type(const char *type_str) 
+bool CPlif::set_transform_type(const char *type_str)
 {
 	delete[] cache ;
 	cache=NULL ;

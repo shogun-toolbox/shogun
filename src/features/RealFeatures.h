@@ -18,7 +18,7 @@
 #include "lib/common.h"
 
 /** class RealFeatures */
-class CRealFeatures: public CSimpleFeatures<DREAL>
+class CRealFeatures : public CSimpleFeatures<DREAL>
 {
 	public:
 		/** constructor

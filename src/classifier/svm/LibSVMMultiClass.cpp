@@ -11,11 +11,13 @@
 #include "classifier/svm/LibSVMMultiClass.h"
 #include "lib/io.h"
 
-CLibSVMMultiClass::CLibSVMMultiClass() : CMultiClassSVM(ONE_VS_ONE), model(NULL)
+CLibSVMMultiClass::CLibSVMMultiClass()
+: CMultiClassSVM(ONE_VS_ONE), model(NULL)
 {
 }
 
-CLibSVMMultiClass::CLibSVMMultiClass(DREAL C, CKernel* k, CLabels* lab) : CMultiClassSVM(ONE_VS_ONE, C, k, lab), model(NULL)
+CLibSVMMultiClass::CLibSVMMultiClass(DREAL C, CKernel* k, CLabels* lab)
+: CMultiClassSVM(ONE_VS_ONE, C, k, lab), model(NULL)
 {
 }
 

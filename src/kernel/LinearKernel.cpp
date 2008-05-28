@@ -15,14 +15,14 @@
 #include "kernel/LinearKernel.h"
 
 CLinearKernel::CLinearKernel(INT size, DREAL s)
-	: CSimpleKernel<DREAL>(size), scale(s), initialized(false),
+: CSimpleKernel<DREAL>(size), scale(s), initialized(false),
 	normal(NULL), normal_length(0)
 {
 	properties |= KP_LINADD;
 }
 
 CLinearKernel::CLinearKernel(CRealFeatures* l, CRealFeatures* r, DREAL s, INT size)
-	: CSimpleKernel<DREAL>(size), scale(s), initialized(false),
+: CSimpleKernel<DREAL>(size), scale(s), initialized(false),
 	normal(NULL), normal_length(0)
 {
 	properties |= KP_LINADD;
@@ -33,7 +33,7 @@ CLinearKernel::~CLinearKernel()
 {
 	cleanup();
 }
-  
+
 bool CLinearKernel::init(CFeatures* l, CFeatures* r)
 {
 	CSimpleKernel<DREAL>::init(l, r);

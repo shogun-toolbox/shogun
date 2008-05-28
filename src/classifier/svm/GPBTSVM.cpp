@@ -13,11 +13,13 @@
 #include "classifier/svm/gpdtsolve.h"
 #include "lib/io.h"
 
-CGPBTSVM::CGPBTSVM() : CSVM(), model(NULL)
+CGPBTSVM::CGPBTSVM()
+: CSVM(), model(NULL)
 {
 }
 
-CGPBTSVM::CGPBTSVM(DREAL C, CKernel* k, CLabels* lab) : CSVM(C, k, lab), model(NULL)
+CGPBTSVM::CGPBTSVM(DREAL C, CKernel* k, CLabels* lab)
+: CSVM(C, k, lab), model(NULL)
 {
 }
 

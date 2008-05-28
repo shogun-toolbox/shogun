@@ -46,16 +46,16 @@ template <class Trie> struct S_THREAD_PARAM
 
 CWeightedDegreePositionStringKernel::CWeightedDegreePositionStringKernel(
 	INT size, INT d, INT mm, bool un, INT mkls)
-	: CStringKernel<CHAR>(size), weights(NULL), position_weights(NULL),
-	  position_weights_lhs(NULL), position_weights_rhs(NULL),
-	  weights_buffer(NULL), mkl_stepsize(mkls), degree(d), length(0),
-	  max_mismatch(mm), seq_length(0), shift(NULL), shift_len(0),
-	  initialized(false), use_normalization(un),
-	  normalization_const(1.0), num_block_weights_external(0),
-	  block_weights_external(NULL), block_weights(NULL), type(E_EXTERNAL),
-	  tries(d), poim_tries(d), tree_initialized(false), use_poim_tries(false),
-	  m_poim_distrib(NULL), m_poim(NULL), m_poim_num_sym(0), m_poim_num_feat(0), 
-	  m_poim_result_len(0), alphabet(NULL)
+: CStringKernel<CHAR>(size), weights(NULL), position_weights(NULL),
+	position_weights_lhs(NULL), position_weights_rhs(NULL),
+	weights_buffer(NULL), mkl_stepsize(mkls), degree(d), length(0),
+	max_mismatch(mm), seq_length(0), shift(NULL), shift_len(0),
+	initialized(false), use_normalization(un),
+	normalization_const(1.0), num_block_weights_external(0),
+	block_weights_external(NULL), block_weights(NULL), type(E_EXTERNAL),
+	tries(d), poim_tries(d), tree_initialized(false), use_poim_tries(false),
+	m_poim_distrib(NULL), m_poim(NULL), m_poim_num_sym(0), m_poim_num_feat(0),
+	m_poim_result_len(0), alphabet(NULL)
 {
 	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
 	set_wd_weights();
@@ -64,16 +64,16 @@ CWeightedDegreePositionStringKernel::CWeightedDegreePositionStringKernel(
 
 CWeightedDegreePositionStringKernel::CWeightedDegreePositionStringKernel(
 	INT size, DREAL* w, INT d, INT mm, INT* s, INT sl, bool un, INT mkls)
-	: CStringKernel<CHAR>(size), weights(NULL), position_weights(NULL),
-	  position_weights_lhs(NULL), position_weights_rhs(NULL),
-	  weights_buffer(NULL), mkl_stepsize(mkls), degree(d), length(0),
-	  max_mismatch(mm), seq_length(0), shift(NULL), shift_len(0),
-	  initialized(false), use_normalization(un),
-	  normalization_const(1.0), num_block_weights_external(0),
-	  block_weights_external(NULL), block_weights(NULL), type(E_EXTERNAL),
-	  tries(d), poim_tries(d), tree_initialized(false), use_poim_tries(false),
-	  m_poim_distrib(NULL), m_poim(NULL), m_poim_num_sym(0), m_poim_num_feat(0), 
-	  m_poim_result_len(0), alphabet(NULL)
+: CStringKernel<CHAR>(size), weights(NULL), position_weights(NULL),
+	position_weights_lhs(NULL), position_weights_rhs(NULL),
+	weights_buffer(NULL), mkl_stepsize(mkls), degree(d), length(0),
+	max_mismatch(mm), seq_length(0), shift(NULL), shift_len(0),
+	initialized(false), use_normalization(un),
+	normalization_const(1.0), num_block_weights_external(0),
+	block_weights_external(NULL), block_weights(NULL), type(E_EXTERNAL),
+	tries(d), poim_tries(d), tree_initialized(false), use_poim_tries(false),
+	m_poim_distrib(NULL), m_poim(NULL), m_poim_num_sym(0), m_poim_num_feat(0),
+	m_poim_result_len(0), alphabet(NULL)
 {
 	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
 
@@ -86,16 +86,16 @@ CWeightedDegreePositionStringKernel::CWeightedDegreePositionStringKernel(
 
 CWeightedDegreePositionStringKernel::CWeightedDegreePositionStringKernel(
 	CStringFeatures<CHAR>* l, CStringFeatures<CHAR>* r, INT d)
-	: CStringKernel<CHAR>(10), weights(NULL), position_weights(NULL),
-	  position_weights_lhs(NULL), position_weights_rhs(NULL),
-	  weights_buffer(NULL), mkl_stepsize(1), degree(d), length(0),
-	  max_mismatch(0), seq_length(0), shift(NULL), shift_len(0),
-	  initialized(false), use_normalization(true),
-	  normalization_const(1.0), num_block_weights_external(0),
-	  block_weights_external(NULL), block_weights(NULL), type(E_EXTERNAL),
-	  tries(d), poim_tries(d), tree_initialized(false), use_poim_tries(false),
-	  m_poim_distrib(NULL), m_poim(NULL), m_poim_num_sym(0), m_poim_num_feat(0), 
-	  m_poim_result_len(0), alphabet(NULL)
+: CStringKernel<CHAR>(10), weights(NULL), position_weights(NULL),
+	position_weights_lhs(NULL), position_weights_rhs(NULL),
+	weights_buffer(NULL), mkl_stepsize(1), degree(d), length(0),
+	max_mismatch(0), seq_length(0), shift(NULL), shift_len(0),
+	initialized(false), use_normalization(true),
+	normalization_const(1.0), num_block_weights_external(0),
+	block_weights_external(NULL), block_weights(NULL), type(E_EXTERNAL),
+	tries(d), poim_tries(d), tree_initialized(false), use_poim_tries(false),
+	m_poim_distrib(NULL), m_poim(NULL), m_poim_num_sym(0), m_poim_num_feat(0),
+	m_poim_result_len(0), alphabet(NULL)
 {
 	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
 	set_wd_weights();
@@ -105,36 +105,35 @@ CWeightedDegreePositionStringKernel::CWeightedDegreePositionStringKernel(
 }
 
 
-CWeightedDegreePositionStringKernel::~CWeightedDegreePositionStringKernel() 
+CWeightedDegreePositionStringKernel::~CWeightedDegreePositionStringKernel()
 {
 	cleanup();
-	cleanup_POIM2() ;
+	cleanup_POIM2();
 
 	delete[] shift;
-	shift = NULL;
+	shift=NULL;
 
-	delete[] weights ;
+	delete[] weights;
 	weights=NULL ;
 
-	delete[] block_weights ;
-	block_weights=NULL ;
+	delete[] block_weights;
+	block_weights=NULL;
 
-	delete[] position_weights ;
-	position_weights=NULL ;
+	delete[] position_weights;
+	position_weights=NULL;
 
-	delete[] position_weights_lhs ;
-	position_weights_lhs=NULL ;
+	delete[] position_weights_lhs;
+	position_weights_lhs=NULL;
 
-	delete[] position_weights_rhs ;
-	position_weights_rhs=NULL ;
+	delete[] position_weights_rhs;
+	position_weights_rhs=NULL;
 
-	delete[] weights_buffer ;
-	weights_buffer = NULL ;
-	
+	delete[] weights_buffer;
+	weights_buffer=NULL;
 }
 
-void CWeightedDegreePositionStringKernel::remove_lhs() 
-{ 
+void CWeightedDegreePositionStringKernel::remove_lhs()
+{
 	SG_DEBUG( "deleting CWeightedDegreePositionStringKernel optimization\n");
 	delete_optimization();
 

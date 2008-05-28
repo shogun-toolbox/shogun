@@ -25,7 +25,8 @@
 #define TMP_DIR "/tmp/"
 
 
-CGUIHMM::CGUIHMM(CSGInterface* ui_): CSGObject(), ui(ui_)
+CGUIHMM::CGUIHMM(CSGInterface* ui_)
+: CSGObject(), ui(ui_)
 {
 	working=NULL;
 

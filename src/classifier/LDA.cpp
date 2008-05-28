@@ -18,11 +18,13 @@
 #include "lib/Mathematics.h"
 #include "lib/lapack.h"
 
-CLDA::CLDA(DREAL gamma) : CLinearClassifier(), m_gamma(gamma)
+CLDA::CLDA(DREAL gamma)
+: CLinearClassifier(), m_gamma(gamma)
 {
 }
 
-CLDA::CLDA(DREAL gamma, CRealFeatures* traindat, CLabels* trainlab) : CLinearClassifier(), m_gamma(gamma)
+CLDA::CLDA(DREAL gamma, CRealFeatures* traindat, CLabels* trainlab)
+: CLinearClassifier(), m_gamma(gamma)
 {
 	set_features(traindat);
 	set_labels(trainlab);

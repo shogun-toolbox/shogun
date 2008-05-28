@@ -20,7 +20,8 @@
 
 
 CGUIFeatures::CGUIFeatures(CSGInterface* ui_)
-: CSGObject(), ui(ui_), train_features(NULL), test_features(NULL), ref_features(NULL)
+: CSGObject(), ui(ui_), train_features(NULL), test_features(NULL),
+	ref_features(NULL)
 {
 }
 

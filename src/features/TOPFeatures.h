@@ -42,7 +42,7 @@ struct T_HMM_INDIZES
 };
 
 /** class TOPFeatures */
-class CTOPFeatures: public CRealFeatures
+class CTOPFeatures : public CRealFeatures
 {
 	public:
 		/** constructor

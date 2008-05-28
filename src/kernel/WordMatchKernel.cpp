@@ -15,14 +15,14 @@
 #include "features/WordFeatures.h"
 
 CWordMatchKernel::CWordMatchKernel(INT size, INT d, bool dr, DREAL s)
-	: CSimpleKernel<WORD>(size),scale(s),do_rescale(dr), initialized(false),
+: CSimpleKernel<WORD>(size),scale(s),do_rescale(dr), initialized(false),
 	degree(d)
 {
 }
 
 CWordMatchKernel::CWordMatchKernel(
 	CWordFeatures* l, CWordFeatures* r, INT d, bool dr, DREAL s)
-	: CSimpleKernel<WORD>(10), scale(s), do_rescale(dr), initialized(false),
+: CSimpleKernel<WORD>(10), scale(s), do_rescale(dr), initialized(false),
 	degree(d)
 {
 	init(l, r);

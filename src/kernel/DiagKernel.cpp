@@ -15,12 +15,12 @@
 #include "lib/io.h"
 
 CDiagKernel::CDiagKernel(INT size, DREAL d)
-	: CKernel(size), diag(d)
+: CKernel(size), diag(d)
 {
 }
 
 CDiagKernel::CDiagKernel(CFeatures* l, CFeatures* r, DREAL d)
-	: CKernel(10), diag(d)
+: CKernel(10), diag(d)
 {
 	init(l, r);
 }

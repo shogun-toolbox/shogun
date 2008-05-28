@@ -17,11 +17,13 @@
 
 
 CHistogram::CHistogram()
+: CDistribution()
 {
 	hist=new DREAL[1<<16];
 }
 
 CHistogram::CHistogram(CStringFeatures<WORD> *f)
+: CDistribution()
 {
 	hist=new DREAL[1<<16];
 	features=f;

@@ -10,7 +10,8 @@
 
 #include "distance/DistanceMachine.h"
 
-CDistanceMachine::CDistanceMachine():CClassifier(),distance(NULL)
+CDistanceMachine::CDistanceMachine()
+: CClassifier(), distance(NULL)
 {
 }
 

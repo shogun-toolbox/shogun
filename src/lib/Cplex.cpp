@@ -18,7 +18,8 @@
 #include "lib/Signal.h"
 #include "lib/Mathematics.h"
 
-CCplex::CCplex() : CSGObject(), env(NULL), lp(NULL), lp_initialized(false)
+CCplex::CCplex()
+: CSGObject(), env(NULL), lp(NULL), lp_initialized(false)
 {
 }
 

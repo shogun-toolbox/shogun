@@ -47,15 +47,15 @@ template <class T> struct T_STRING
 /** template class StringFeatures
  * StringFeatures do not yet support PREPROCS
  */
-template <class ST> class CStringFeatures: public CFeatures
+template <class ST> class CStringFeatures : public CFeatures
 {
 	public:
 		/** constructor
 		 *
 		 * @param alpha alphabet (type) to use for string features
 		 */
-		CStringFeatures(E_ALPHABET alpha) :
-			CFeatures(0), num_vectors(0), features(NULL),
+		CStringFeatures(E_ALPHABET alpha)
+		: CFeatures(0), num_vectors(0), features(NULL),
 			single_string(NULL),length_of_single_string(0),
 			max_string_length(0), order(0), selected_vector(0),
 			symbol_mask_table(NULL)
@@ -70,8 +70,8 @@ template <class ST> class CStringFeatures: public CFeatures
 		 *
 		 * @param alpha alphabet to use for string features
 		 */
-		CStringFeatures(CAlphabet* alpha) :
-			CFeatures(0), num_vectors(0), features(NULL),
+		CStringFeatures(CAlphabet* alpha)
+		: CFeatures(0), num_vectors(0), features(NULL),
 			single_string(NULL),length_of_single_string(0),
 			max_string_length(0), order(0), selected_vector(0),
 			symbol_mask_table(NULL)
@@ -83,8 +83,8 @@ template <class ST> class CStringFeatures: public CFeatures
 	}
 
 		/** copy constructor */
-		CStringFeatures(const CStringFeatures & orig) :
-			CFeatures(orig), num_vectors(orig.num_vectors),
+		CStringFeatures(const CStringFeatures & orig)
+		: CFeatures(orig), num_vectors(orig.num_vectors),
 			single_string(orig.single_string),
 			length_of_single_string(orig.length_of_single_string),
 			max_string_length(orig.max_string_length),
@@ -123,8 +123,8 @@ template <class ST> class CStringFeatures: public CFeatures
 		 * @param fname filename to load features from
 		 * @param alpha alphabet (type) to use for string features
 		 */
-		CStringFeatures(char* fname, E_ALPHABET alpha=DNA) :
-			CFeatures(fname), num_vectors(0),
+		CStringFeatures(char* fname, E_ALPHABET alpha=DNA)
+		: CFeatures(fname), num_vectors(0),
 			features(NULL), single_string(NULL),
 			length_of_single_string(0), max_string_length(0),
 			order(0), selected_vector(0), symbol_mask_table(NULL)

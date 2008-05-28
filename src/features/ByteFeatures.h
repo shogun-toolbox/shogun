@@ -17,7 +17,7 @@
 #include "lib/common.h"
 
 /** class ByteFeatures */
-class CByteFeatures: public CSimpleFeatures<BYTE>
+class CByteFeatures : public CSimpleFeatures<BYTE>
 {
 	public:
 		/** constructor

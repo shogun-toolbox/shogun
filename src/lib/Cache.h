@@ -43,7 +43,8 @@ template<class T> class CCache : public CSGObject
 	 * @param obj_size object size
 	 * @param num_entries number of cached objects
 	 */
-	CCache(LONG cache_size, LONG obj_size, LONG num_entries) : CSGObject()
+	CCache(LONG cache_size, LONG obj_size, LONG num_entries)
+	: CSGObject()
 	{
 		if (cache_size==0 || obj_size==0 || num_entries==0)
 		{

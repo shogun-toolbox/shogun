@@ -22,13 +22,15 @@
 
 
 CFile::CFile(FILE* f)
+: CSGObject()
 {
 	file=f;
 	filename=NULL;
 	expected_type=F_UNKNOWN;
 }
 
-CFile::CFile(CHAR* fname, CHAR rw, EFeatureType typ, CHAR file_fourcc[4]) : CSGObject()
+CFile::CFile(CHAR* fname, CHAR rw, EFeatureType typ, CHAR file_fourcc[4])
+: CSGObject()
 {
 	status=false;
 	task=rw;

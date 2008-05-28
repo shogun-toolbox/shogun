@@ -14,11 +14,13 @@
 
 #define INDEX(ROW,COL,DIM) (((COL)*(DIM))+(ROW)) 
 
-CGNPPSVM::CGNPPSVM() : CSVM()
+CGNPPSVM::CGNPPSVM()
+: CSVM()
 {
 }
 
-CGNPPSVM::CGNPPSVM(DREAL C, CKernel* k, CLabels* lab) : CSVM(C, k, lab)
+CGNPPSVM::CGNPPSVM(DREAL C, CKernel* k, CLabels* lab)
+: CSVM(C, k, lab)
 {
 }
 

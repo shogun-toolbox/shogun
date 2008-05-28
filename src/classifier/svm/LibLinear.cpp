@@ -16,7 +16,8 @@
 #include "classifier/svm/Tron.h"
 #include "features/SparseFeatures.h"
 
-CLibLinear::CLibLinear(LIBLINEAR_LOSS l) : CSparseLinearClassifier()
+CLibLinear::CLibLinear(LIBLINEAR_LOSS l)
+: CSparseLinearClassifier()
 {
 	loss=l;
 	use_bias=false;
@@ -25,7 +26,7 @@ CLibLinear::CLibLinear(LIBLINEAR_LOSS l) : CSparseLinearClassifier()
 }
 
 CLibLinear::CLibLinear(DREAL C, CSparseFeatures<DREAL>* traindat, CLabels* trainlab)
- : CSparseLinearClassifier(), C1(C), C2(C), use_bias(true), epsilon(1e-5)
+: CSparseLinearClassifier(), C1(C), C2(C), use_bias(true), epsilon(1e-5)
 {
 	set_features(traindat);
 	set_labels(trainlab);

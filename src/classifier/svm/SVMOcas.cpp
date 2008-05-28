@@ -19,15 +19,17 @@
 #include "features/SparseFeatures.h"
 #include "features/Labels.h"
 
-CSVMOcas::CSVMOcas(E_SVM_TYPE type) : CSparseLinearClassifier(), use_bias(false), bufsize(3000), C1(1), C2(1),
+CSVMOcas::CSVMOcas(E_SVM_TYPE type)
+: CSparseLinearClassifier(), use_bias(false), bufsize(3000), C1(1), C2(1),
 	epsilon(1e-3), method(type)
 {
 	w=NULL;
 	old_w=NULL;
 }
 
-CSVMOcas::CSVMOcas(DREAL C, CSparseFeatures<DREAL>* traindat, CLabels* trainlab) 
-: CSparseLinearClassifier(), use_bias(false), bufsize(3000), C1(C), C2(C), epsilon(1e-3)
+CSVMOcas::CSVMOcas(DREAL C, CSparseFeatures<DREAL>* traindat, CLabels* trainlab)
+: CSparseLinearClassifier(), use_bias(false), bufsize(3000), C1(C), C2(C),
+	epsilon(1e-3)
 {
 	w=NULL;
 	old_w=NULL;

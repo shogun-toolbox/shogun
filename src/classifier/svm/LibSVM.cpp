@@ -11,11 +11,13 @@
 #include "classifier/svm/LibSVM.h"
 #include "lib/io.h"
 
-CLibSVM::CLibSVM() : CSVM(), model(NULL)
+CLibSVM::CLibSVM()
+: CSVM(), model(NULL)
 {
 }
 
-CLibSVM::CLibSVM(DREAL C, CKernel* k, CLabels* lab) : CSVM(C, k, lab), model(NULL)
+CLibSVM::CLibSVM(DREAL C, CKernel* k, CLabels* lab)
+: CSVM(C, k, lab), model(NULL)
 {
 }
 

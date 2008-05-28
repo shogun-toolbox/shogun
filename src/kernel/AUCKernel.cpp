@@ -15,12 +15,12 @@
 #include "lib/io.h"
 
 CAUCKernel::CAUCKernel(INT size, CKernel* s)
-	: CSimpleKernel<WORD>(size),subkernel(s)
+: CSimpleKernel<WORD>(size), subkernel(s)
 {
 }
 
 CAUCKernel::CAUCKernel(CWordFeatures* l, CWordFeatures* r, CKernel* s)
-	: CSimpleKernel<WORD>(10),subkernel(s)
+: CSimpleKernel<WORD>(10), subkernel(s)
 {
 	init(l, r);
 }

@@ -38,8 +38,8 @@ struct S_THREAD_PARAM
 };
 
 CCombinedKernel::CCombinedKernel(INT size, bool asw)
-	: CKernel(size), sv_count(0), sv_idx(NULL), sv_weight(NULL),
-	  subkernel_weights_buffer(NULL), append_subkernel_weights(asw)
+: CKernel(size), sv_count(0), sv_idx(NULL), sv_weight(NULL),
+	subkernel_weights_buffer(NULL), append_subkernel_weights(asw)
 {
 	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
 	kernel_list=new CList<CKernel*>(true);
@@ -49,8 +49,8 @@ CCombinedKernel::CCombinedKernel(INT size, bool asw)
 }
 
 CCombinedKernel::CCombinedKernel(CCombinedFeatures *l, CCombinedFeatures *r, bool asw)
-	: CKernel(10), sv_count(0), sv_idx(NULL), sv_weight(NULL),
-		subkernel_weights_buffer(NULL), append_subkernel_weights(asw)
+: CKernel(10), sv_count(0), sv_idx(NULL), sv_weight(NULL),
+	subkernel_weights_buffer(NULL), append_subkernel_weights(asw)
 {
 	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
 	kernel_list=new CList<CKernel*>(true);
@@ -62,15 +62,15 @@ CCombinedKernel::CCombinedKernel(CCombinedFeatures *l, CCombinedFeatures *r, boo
 	init(l, r);
 }
 
-CCombinedKernel::~CCombinedKernel() 
+CCombinedKernel::~CCombinedKernel()
 {
-	delete[] subkernel_weights_buffer ;
-	subkernel_weights_buffer=NULL ;
+	delete[] subkernel_weights_buffer;
+	subkernel_weights_buffer=NULL;
 	
 	cleanup();
 	delete kernel_list;
 
-	SG_INFO("Combined kernel deleted (%p)\n", this);
+	SG_INFO("Combined kernel deleted (%p).\n", this);
 }
 
 bool CCombinedKernel::init(CFeatures* l, CFeatures* r)

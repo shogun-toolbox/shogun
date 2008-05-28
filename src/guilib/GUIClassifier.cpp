@@ -60,7 +60,8 @@
 #include "classifier/svm/SVMSGD.h"
 #include "classifier/svm/WDSVMOcas.h"
 
-CGUIClassifier::CGUIClassifier(CSGInterface* ui_) : CSGObject(), ui(ui_)
+CGUIClassifier::CGUIClassifier(CSGInterface* ui_)
+: CSGObject(), ui(ui_)
 {
 	classifier=NULL;
 	max_train_time=0;

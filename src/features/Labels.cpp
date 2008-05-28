@@ -15,20 +15,23 @@
 #include "lib/io.h"
 #include "lib/Mathematics.h"
 
-CLabels::CLabels() : CSGObject()
+CLabels::CLabels()
+: CSGObject()
 {
 	labels = NULL;
 	num_labels = 0;
 }
 
-CLabels::CLabels(INT num_lab) : CSGObject(), num_labels(num_lab)
+CLabels::CLabels(INT num_lab)
+: CSGObject(), num_labels(num_lab)
 {
 	labels=new DREAL[num_lab];
 	for (INT i=0; i<num_lab; i++)
 		labels[i]=0;
 }
 
-CLabels::CLabels(DREAL* p_labels, INT len) : CSGObject()
+CLabels::CLabels(DREAL* p_labels, INT len)
+: CSGObject()
 {
 	labels = NULL;
 	num_labels = 0;
@@ -36,7 +39,8 @@ CLabels::CLabels(DREAL* p_labels, INT len) : CSGObject()
     set_labels(p_labels, len);
 }
 
-CLabels::CLabels(CHAR* fname) : CSGObject()
+CLabels::CLabels(CHAR* fname)
+: CSGObject()
 {
 	num_labels=0;
 	labels=NULL;

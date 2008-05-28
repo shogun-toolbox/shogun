@@ -13,12 +13,13 @@
 #include "features/Features.h"
 #include "lib/io.h"
 
-CConstKernel::CConstKernel(DREAL c) : CKernel(0), const_value(c)
+CConstKernel::CConstKernel(DREAL c)
+: CKernel(0), const_value(c)
 {
 }
 
 CConstKernel::CConstKernel(CFeatures* l, CFeatures* r, DREAL c)
-	: CKernel(0), const_value(c)
+: CKernel(0), const_value(c)
 {
 	init(l, r);
 }

@@ -13,6 +13,7 @@
 #include "lib/Mathematics.h"
 
 CKernelPerceptron::CKernelPerceptron()
+: CKernelMachine()
 {
 }
 

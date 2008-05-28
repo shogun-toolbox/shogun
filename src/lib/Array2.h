@@ -27,8 +27,9 @@ template <class T> class CArray2: public CArray<T>
 		 * @param dim2 dimension 2
 		 */
 		CArray2(INT dim1, INT dim2)
-			: CArray<T>(dim1*dim2), dim1_size(dim1), dim2_size(dim2)
-		{}
+		: CArray<T>(dim1*dim2), dim1_size(dim1), dim2_size(dim2)
+		{
+		}
 
 		/** constructor
 		 *
@@ -39,9 +40,10 @@ template <class T> class CArray2: public CArray<T>
 		 * @param p_copy_array if array must be copied
 		 */
 		CArray2(T* p_array, INT dim1, INT dim2, bool p_free_array=true, bool p_copy_array=false)
-			: CArray<T>(p_array, dim1*dim2, p_free_array, p_copy_array),
+		: CArray<T>(p_array, dim1*dim2, p_free_array, p_copy_array),
 			dim1_size(dim1), dim2_size(dim2)
-		{}
+		{
+		}
 
 		/** constructor
 		 *
@@ -50,9 +52,9 @@ template <class T> class CArray2: public CArray<T>
 		 * @param dim2 dimension 2
 		 */
 		CArray2(const T* p_array, INT dim1, INT dim2)
-			: CArray<T>(p_array, dim1*dim2),
-			dim1_size(dim1), dim2_size(dim2)
-		{}
+		: CArray<T>(p_array, dim1*dim2), dim1_size(dim1), dim2_size(dim2)
+		{
+		}
 
 		~CArray2() {}
 

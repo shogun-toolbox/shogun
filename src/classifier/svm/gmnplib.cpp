@@ -75,7 +75,8 @@ gmnplib.c: Library of solvers for Generalized Minimal Norm Problem (GMNP).
 #define KDELTA(A,B) (A==B)
 #define KDELTA4(A1,A2,A3,A4) ((A1==A2)||(A1==A3)||(A1==A4)||(A2==A3)||(A2==A4)||(A3==A4))
 
-CGMNPLib::CGMNPLib(DREAL* vector_y, CKernel* kernel, INT num_data, INT num_virt_data, INT num_classes, DREAL reg_const) : CSGObject()
+CGMNPLib::CGMNPLib(DREAL* vector_y, CKernel* kernel, INT num_data, INT num_virt_data, INT num_classes, DREAL reg_const)
+: CSGObject()
 {
   m_num_classes=num_classes;
   m_num_virt_data=num_virt_data;

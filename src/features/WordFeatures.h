@@ -17,7 +17,7 @@
 #include "lib/common.h"
 
 /** class WordFeatures */
-class CWordFeatures: public CSimpleFeatures<WORD>
+class CWordFeatures : public CSimpleFeatures<WORD>
 {
 	public:
 		/** constructor

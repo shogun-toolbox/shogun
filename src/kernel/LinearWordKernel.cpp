@@ -15,14 +15,14 @@
 #include "features/WordFeatures.h"
 
 CLinearWordKernel::CLinearWordKernel(INT size, bool dr, DREAL s)
-	: CSimpleKernel<WORD>(size), scale(s), do_rescale(dr), initialized(false),
+: CSimpleKernel<WORD>(size), scale(s), do_rescale(dr), initialized(false),
 	normal(NULL)
 {
 }
 
 CLinearWordKernel::CLinearWordKernel(
 	CWordFeatures* l, CWordFeatures* r, bool dr, DREAL s)
-	: CSimpleKernel<WORD>(10), scale(s), do_rescale(dr), initialized(false),
+: CSimpleKernel<WORD>(10), scale(s), do_rescale(dr), initialized(false),
 	normal(NULL)
 {
 	init(l, r);

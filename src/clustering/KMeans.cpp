@@ -24,11 +24,15 @@
 
 #define PAR_THRESH  10
 
-CKMeans::CKMeans(): max_iter(10000), k(3), dimensions(0), R(NULL), mus(NULL), Weights(NULL)
+CKMeans::CKMeans()
+: CDistanceMachine(), max_iter(10000), k(3), dimensions(0), R(NULL),
+	mus(NULL), Weights(NULL)
 {
 }
 
-CKMeans::CKMeans(INT k_, CDistance* d): max_iter(10000), k(k_), dimensions(0), R(NULL), mus(NULL), Weights(NULL)
+CKMeans::CKMeans(INT k_, CDistance* d)
+: CDistanceMachine(), max_iter(10000), k(k_), dimensions(0), R(NULL),
+	mus(NULL), Weights(NULL)
 {
 	set_distance(d);
 }

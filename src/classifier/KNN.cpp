@@ -14,12 +14,13 @@
 #include "features/Labels.h"
 #include "lib/Mathematics.h"
 
-CKNN::CKNN(): k(3), num_classes(0), num_train_labels(0), train_labels(NULL)
+CKNN::CKNN()
+: CDistanceMachine(), k(3), num_classes(0), num_train_labels(0), train_labels(NULL)
 {
 }
 
 CKNN::CKNN(INT k_, CDistance* d, CLabels* trainlab)
- : k(k_), num_classes(0), train_labels(NULL)
+: CDistanceMachine(), k(k_), num_classes(0), train_labels(NULL)
 {
     set_distance(d);
     set_labels(trainlab);

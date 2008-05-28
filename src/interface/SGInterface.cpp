@@ -868,7 +868,7 @@ CSGInterfaceMethod sg_methods[]=
 
 
 CSGInterface::CSGInterface()
- : CSGObject(),
+: CSGObject(),
 	ui_classifier(new CGUIClassifier(this)),
 	ui_distance(new CGUIDistance(this)),
 	ui_features(new CGUIFeatures(this)),

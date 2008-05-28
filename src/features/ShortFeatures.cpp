@@ -12,15 +12,18 @@
 #include "features/ShortFeatures.h"
 #include "features/CharFeatures.h"
 
-CShortFeatures::CShortFeatures(INT size) : CSimpleFeatures<SHORT>(size)
+CShortFeatures::CShortFeatures(INT size)
+: CSimpleFeatures<SHORT>(size)
 {
 }
 
-CShortFeatures::CShortFeatures(const CShortFeatures & orig) : CSimpleFeatures<SHORT>(orig)
+CShortFeatures::CShortFeatures(const CShortFeatures & orig)
+: CSimpleFeatures<SHORT>(orig)
 {
 }
 
-CShortFeatures::CShortFeatures(CHAR* fname) : CSimpleFeatures<SHORT>(fname)
+CShortFeatures::CShortFeatures(CHAR* fname)
+: CSimpleFeatures<SHORT>(fname)
 {
 }
 

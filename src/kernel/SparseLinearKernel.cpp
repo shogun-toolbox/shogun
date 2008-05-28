@@ -16,7 +16,7 @@
 #include "kernel/SparseKernel.h"
 
 CSparseLinearKernel::CSparseLinearKernel(INT size, DREAL s)
-	: CSparseKernel<DREAL>(size), scale(s), initialized(false), normal(NULL),
+: CSparseKernel<DREAL>(size), scale(s), initialized(false), normal(NULL),
 	normal_length(0)
 {
 	properties |= KP_LINADD;
@@ -24,18 +24,18 @@ CSparseLinearKernel::CSparseLinearKernel(INT size, DREAL s)
 
 CSparseLinearKernel::CSparseLinearKernel(
 	CSparseFeatures<DREAL>* l, CSparseFeatures<DREAL>* r, DREAL s, INT size)
-	: CSparseKernel<DREAL>(size), scale(s), initialized(false), normal(NULL),
+: CSparseKernel<DREAL>(size), scale(s), initialized(false), normal(NULL),
 	normal_length(0)
 {
 	properties |= KP_LINADD;
 	init(l,r);
 }
 
-CSparseLinearKernel::~CSparseLinearKernel() 
+CSparseLinearKernel::~CSparseLinearKernel()
 {
 	cleanup();
 }
-  
+
 bool CSparseLinearKernel::init(CFeatures* l, CFeatures* r)
 {
 	CSparseKernel<DREAL>::init(l, r);

@@ -29,7 +29,8 @@
 #define INDEX(ROW,COL,DIM) ((COL*DIM)+ROW)
 
 
-CGNPPLib::CGNPPLib(DREAL* vector_y, CKernel* kernel, INT num_data, DREAL reg_const) : CSGObject()
+CGNPPLib::CGNPPLib(DREAL* vector_y, CKernel* kernel, INT num_data, DREAL reg_const)
+: CSGObject()
 {
   m_reg_const = reg_const;
   m_num_data = num_data;

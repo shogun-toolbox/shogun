@@ -19,12 +19,14 @@
 #include <pthread.h>
 #endif
 
-CHierarchical::CHierarchical(): merges(3), dimensions(0), assignment(NULL),
+CHierarchical::CHierarchical()
+: CDistanceMachine(), merges(3), dimensions(0), assignment(NULL),
 	table_size(0), pairs(NULL), merge_distance(NULL)
 {
 }
 
-CHierarchical::CHierarchical(INT merges_, CDistance* d): merges(merges_), dimensions(0), assignment(NULL),
+CHierarchical::CHierarchical(INT merges_, CDistance* d)
+: CDistanceMachine(), merges(merges_), dimensions(0), assignment(NULL),
 	table_size(0), pairs(NULL), merge_distance(NULL)
 {
 	set_distance(d);

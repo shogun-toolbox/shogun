@@ -14,7 +14,8 @@
 #include "features/StringFeatures.h"
 #include "lib/Mathematics.h"
 
-CSortUlongString::CSortUlongString() : CStringPreProc<ULONG>("SortUlongString", "STUS") 
+CSortUlongString::CSortUlongString()
+: CStringPreProc<ULONG>("SortUlongString", "STUS")
 {
 }
 

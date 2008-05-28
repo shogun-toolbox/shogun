@@ -17,7 +17,7 @@
 #include "lib/common.h"
 
 /** class ShortFeatures */
-class CShortFeatures: public CSimpleFeatures<SHORT>
+class CShortFeatures : public CSimpleFeatures<SHORT>
 {
 	public:
 		/** constructor

@@ -11,7 +11,8 @@
 
 extern CSGInterface* interface;
 
-CRInterface::CRInterface(SEXP prhs) : CSGInterface()
+CRInterface::CRInterface(SEXP prhs)
+: CSGInterface()
 {
 	reset(prhs);
 }

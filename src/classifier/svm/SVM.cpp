@@ -21,7 +21,7 @@
 #include <pthread.h>
 #endif
 
-struct S_THREAD_PARAM 
+struct S_THREAD_PARAM
 {
 	CSVM* svm;
 	CLabels* result;
@@ -30,12 +30,14 @@ struct S_THREAD_PARAM
 	bool verbose;
 };
 
-CSVM::CSVM(INT num_sv) : CKernelMachine()
+CSVM::CSVM(INT num_sv)
+: CKernelMachine()
 {
 	set_defaults(num_sv);
 }
 
-CSVM::CSVM(DREAL C, CKernel* k, CLabels* lab) : CKernelMachine()
+CSVM::CSVM(DREAL C, CKernel* k, CLabels* lab)
+: CKernelMachine()
 {
 	set_defaults();
 	set_C(C,C);
@@ -45,10 +47,10 @@ CSVM::CSVM(DREAL C, CKernel* k, CLabels* lab) : CKernelMachine()
 
 CSVM::~CSVM()
 {
-  delete[] svm_model.alpha ;
-  delete[] svm_model.svs ;
+	delete[] svm_model.alpha;
+	delete[] svm_model.svs;
 
-  SG_DEBUG( "SVM object destroyed\n") ;
+	SG_DEBUG("SVM object destroyed\n");
 }
 
 void CSVM::set_defaults(INT num_sv)

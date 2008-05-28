@@ -54,39 +54,47 @@ template <class ST> struct TSparse
 };
 
 /** template class SparseFeatures */
-template <class ST> class CSparseFeatures: public CFeatures
+template <class ST> class CSparseFeatures : public CFeatures
 {
 	public:
 		/** constructor
 		 *
 		 * @param size cache size
 		 */
-		CSparseFeatures(INT size=0) : CFeatures(size), num_vectors(0), num_features(0), sparse_feature_matrix(NULL), feature_cache(NULL) {}
+		CSparseFeatures(INT size=0)
+		: CFeatures(size), num_vectors(0), num_features(0),
+			sparse_feature_matrix(NULL), feature_cache(NULL)
+		{}
 
 		/** copy constructor */
-		CSparseFeatures(const CSparseFeatures & orig) :
-			CFeatures(orig), num_vectors(orig.num_vectors), num_features(orig.num_features), sparse_feature_matrix(orig.sparse_feature_matrix), feature_cache(orig.feature_cache)
-	{
-		if (orig.sparse_feature_matrix)
+		CSparseFeatures(const CSparseFeatures & orig)
+		: CFeatures(orig), num_vectors(orig.num_vectors),
+			num_features(orig.num_features),
+			sparse_feature_matrix(orig.sparse_feature_matrix),
+			feature_cache(orig.feature_cache)
 		{
-			free_sparse_feature_matrix();
-			sparse_feature_matrix=new TSparse<ST>[num_vectors];
-			memcpy(sparse_feature_matrix, orig.sparse_feature_matrix, sizeof(TSparse<ST>)*num_vectors);
-			for (INT i=0; i< num_vectors; i++)
+			if (orig.sparse_feature_matrix)
 			{
-				sparse_feature_matrix[i].features=new TSparseEntry<ST>[sparse_feature_matrix[i].num_feat_entries];
-				memcpy(sparse_feature_matrix[i].features, orig.sparse_feature_matrix[i].features, sizeof(TSparseEntry<ST>)*sparse_feature_matrix[i].num_feat_entries);
+				free_sparse_feature_matrix();
+				sparse_feature_matrix=new TSparse<ST>[num_vectors];
+				memcpy(sparse_feature_matrix, orig.sparse_feature_matrix, sizeof(TSparse<ST>)*num_vectors);
+				for (INT i=0; i< num_vectors; i++)
+				{
+					sparse_feature_matrix[i].features=new TSparseEntry<ST>[sparse_feature_matrix[i].num_feat_entries];
+					memcpy(sparse_feature_matrix[i].features, orig.sparse_feature_matrix[i].features, sizeof(TSparseEntry<ST>)*sparse_feature_matrix[i].num_feat_entries);
 
+				}
 			}
 		}
-	}
 
 		/** constructor
 		 *
 		 * @param fname filename to load features from
 		 */
-		CSparseFeatures(CHAR* fname) :
-			CFeatures(fname), num_vectors(0), num_features(0), sparse_feature_matrix(NULL), feature_cache(NULL) {}
+		CSparseFeatures(CHAR* fname)
+		: CFeatures(fname), num_vectors(0), num_features(0),
+			sparse_feature_matrix(NULL), feature_cache(NULL)
+		{}
 
 		virtual ~CSparseFeatures()
 		{

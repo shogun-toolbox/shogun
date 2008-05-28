@@ -26,7 +26,7 @@ CHistogramWordKernel::CHistogramWordKernel(INT size, CPluginEstimate* pie)
 }
 
 CHistogramWordKernel::CHistogramWordKernel(
-		CStringFeatures<WORD>* l, CStringFeatures<WORD>* r, CPluginEstimate* pie)
+	CStringFeatures<WORD>* l, CStringFeatures<WORD>* r, CPluginEstimate* pie)
 : CStringKernel<WORD>(10), estimate(pie), mean(NULL), variance(NULL),
 	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL),
 	ld_mean_lhs(NULL), ld_mean_rhs(NULL),

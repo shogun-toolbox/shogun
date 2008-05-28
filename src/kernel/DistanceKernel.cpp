@@ -15,13 +15,13 @@
 #include "kernel/DistanceKernel.h"
 #include "features/RealFeatures.h"
 
-	CDistanceKernel::CDistanceKernel(INT size, DREAL w ,CDistance* d)
+CDistanceKernel::CDistanceKernel(INT size, DREAL w ,CDistance* d)
 : CKernel(size), distance(d), width(w)
 {
 }
 
 CDistanceKernel::CDistanceKernel(
-		CFeatures *l, CFeatures *r, DREAL w , CDistance* d)
+	CFeatures *l, CFeatures *r, DREAL w , CDistance* d)
 : CKernel(10), distance(d), width(w)
 {
 	init(l, r);

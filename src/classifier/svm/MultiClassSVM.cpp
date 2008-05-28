@@ -12,11 +12,13 @@
 #include "lib/io.h"
 #include "classifier/svm/MultiClassSVM.h"
 
-CMultiClassSVM::CMultiClassSVM(EMultiClassSVM type) : CSVM(0), multiclass_type(type), m_num_svms(0), m_svms(NULL)
+CMultiClassSVM::CMultiClassSVM(EMultiClassSVM type)
+: CSVM(0), multiclass_type(type), m_num_svms(0), m_svms(NULL)
 {
 }
 
-CMultiClassSVM::CMultiClassSVM(EMultiClassSVM type, DREAL C, CKernel* k, CLabels* lab) : CSVM(C, k, lab), multiclass_type(type), m_num_svms(0), m_svms(NULL)
+CMultiClassSVM::CMultiClassSVM(EMultiClassSVM type, DREAL C, CKernel* k, CLabels* lab)
+: CSVM(C, k, lab), multiclass_type(type), m_num_svms(0), m_svms(NULL)
 {
 }
 

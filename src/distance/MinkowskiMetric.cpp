@@ -16,12 +16,12 @@
 #include "features/RealFeatures.h"
 
 CMinkowskiMetric::CMinkowskiMetric(DREAL k_)
-: CSimpleDistance<DREAL>(),k(k_)
+: CSimpleDistance<DREAL>(), k(k_)
 {
 }
 
 CMinkowskiMetric::CMinkowskiMetric(CRealFeatures* l, CRealFeatures* r, DREAL k_)
-: CSimpleDistance<DREAL>(),k(k_)
+: CSimpleDistance<DREAL>(), k(k_)
 {
 	init(l, r);
 }

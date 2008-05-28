@@ -34,7 +34,7 @@
 #endif
 
 CKernel::CKernel(INT size)
-	: CSGObject(), kernel_matrix(NULL), precomputed_matrix(NULL),
+: CSGObject(), kernel_matrix(NULL), precomputed_matrix(NULL),
 	precompute_subkernel_matrix(false), precompute_matrix(false), lhs(NULL),
 	rhs(NULL), combined_kernel_weight(1), optimization_initialized(false),
 	opt_type(FASTBUTMEMHUNGRY), properties(KP_NONE)
@@ -46,14 +46,14 @@ CKernel::CKernel(INT size)
 #ifdef USE_SVMLIGHT
 	memset(&kernel_cache, 0x0, sizeof(KERNEL_CACHE));
 #endif //USE_SVMLIGHT
-	if (get_is_initialized()) 
-      SG_ERROR( "COptimizableKernel still initialized on destruction");
+	if (get_is_initialized())
+		SG_ERROR( "COptimizableKernel still initialized on destruction");
 }
 
-		
+
 CKernel::CKernel(CFeatures* p_lhs, CFeatures* p_rhs, INT size)
-  : CSGObject(), kernel_matrix(NULL), precomputed_matrix(NULL),
-	precompute_subkernel_matrix(false), precompute_matrix(false), 
+: CSGObject(), kernel_matrix(NULL), precomputed_matrix(NULL),
+	precompute_subkernel_matrix(false), precompute_matrix(false),
 	lhs(NULL), rhs(NULL), combined_kernel_weight(1), optimization_initialized(false),
 	opt_type(FASTBUTMEMHUNGRY), properties(KP_NONE)
 {
@@ -64,29 +64,29 @@ CKernel::CKernel(CFeatures* p_lhs, CFeatures* p_rhs, INT size)
 #ifdef USE_SVMLIGHT
 	memset(&kernel_cache, 0x0, sizeof(KERNEL_CACHE));
 #endif //USE_SVMLIGHT
-	if (get_is_initialized()) 
-      SG_ERROR( "COptimizableKernel still initialized on destruction");
+	if (get_is_initialized())
+		SG_ERROR("Kernel initialized on construction.\n");
 
 	init(p_lhs, p_rhs);
 }
 
 CKernel::~CKernel()
 {
-	if (get_is_initialized()) 
-      SG_ERROR( "COptimizableKernel still initialized on destruction");
+	if (get_is_initialized())
+		SG_ERROR("Kernel still initialized on destruction.\n");
 
-    SG_UNREF(lhs);
-    if (lhs!=rhs)
-        SG_UNREF(rhs);
+	SG_UNREF(lhs);
+	if (lhs!=rhs)
+		SG_UNREF(rhs);
 
 #ifdef USE_SVMLIGHT
 	kernel_cache_cleanup();
 #endif //USE_SVMLIGHT
 
-	delete[] precomputed_matrix ;
-	precomputed_matrix=NULL ;
+	delete[] precomputed_matrix;
+	precomputed_matrix=NULL;
 
-	SG_INFO("Kernel deleted (%p)\n", this);
+	SG_INFO("Kernel deleted (%p).\n", this);
 }
 
 void CKernel::get_kernel_matrix(DREAL** dst, INT* m, INT* n)
