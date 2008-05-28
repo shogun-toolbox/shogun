@@ -275,20 +275,20 @@ tests: run-testsuite check-examples
 
 ifeq (python-modular,$(INTERFACE))
 run-testsuite:
-		cd ../$(INTERFACE)/testcases && ( PYTHON=$(PYTHON) PYTHONPATH="$(DESTDIR)$(PYDIR)" ./test_all.sh	)
+		cd ../testsuite/$(INTERFACE) && ( PYTHON=$(PYTHON) PYTHONPATH="$(DESTDIR)$(PYDIR)" ./test_all.sh	)
 check-examples:
-		cd ../$(INTERFACE) && ( PYTHON=$(PYTHON) PYTHONPATH="$(DESTDIR)$(PYDIR)" ./check_examples.sh	)
+		cd ../examples/$(INTERFACE) && ( PYTHON=$(PYTHON) PYTHONPATH="$(DESTDIR)$(PYDIR)" ./check.sh	)
 else
 ifeq (r,$(INTERFACE))
 run-testsuite:
-		cd ../$(INTERFACE)/testcases && ( R_LIBS="$(DESTDIR)/usr/lib/R/site-library" ./test_all.sh	)
+		cd ../testsuite/$(INTERFACE) && ( R_LIBS="$(DESTDIR)/usr/lib/R/site-library" ./test_all.sh	)
 check-examples:
-		cd ../$(INTERFACE) && ( R_LIBS="$(DESTDIR)/usr/lib/R/site-library" ./check_examples.sh	)
+		cd ../examples/$(INTERFACE) && ( R_LIBS="$(DESTDIR)/usr/lib/R/site-library" ./check.sh	)
 else
 run-testsuite:
-		cd ../$(INTERFACE)/testcases && test -e ./test_all.sh && ./test_all.sh
+		cd ../testsuite/$(INTERFACE) && test -e ./test_all.sh && ./test_all.sh
 check-examples:
-		cd ../$(INTERFACE) && ./check_examples.sh
+		cd ../examples/$(INTERFACE) && ./check.sh
 endif
 endif
 
