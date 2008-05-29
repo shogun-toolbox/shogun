@@ -672,7 +672,12 @@ CSGInterfaceMethod sg_methods[]=
 	{
 		(CHAR*) N_PRECOMPUTE_CONTENT_SVMS,
 		(&CSGInterface::cmd_precompute_content_svms),
-		(CHAR*) USAGE_O(N_PRECOMPUTE_CONTENT_SVMS, "sequence, position_list, weights")
+		(CHAR*) USAGE_I(N_PRECOMPUTE_CONTENT_SVMS, "sequence, position_list, weights")
+	},
+	{
+		(CHAR*) N_COMPUTE_PLIF_MATRIX,
+		(&CSGInterface::cmd_compute_plif_matrix),
+		(CHAR*) USAGE_I(N_COMPUTE_PLIF_MATRIX, "transition_pointers")
 	},
 	{
 		(CHAR*) N_BEST_PATH_TRANS,
@@ -5114,6 +5119,29 @@ bool CSGInterface::cmd_precompute_content_svms()
 	
 	SG_PRINT("precompute 1\n");	
 	ui_structure->set_dyn_prog(h);
+}
+bool CSGInterface::cmd_compute_plif_matrix()
+{
+	CPlif** PEN = ui_structure->get_PEN();
+	if (!PEN)
+		SG_ERROR("no plif_array found, use set_plif_struct first\n");
+	
+	CDynProg* h = ui_structure->get_dyn_prog();
+	if (!h)
+		SG_ERROR("no DynProg object found, use precompute_content_svms first\n");
+
+	// transition pointers 
+	// link transitions to length, content, frame (and tiling)
+	// plifs (#states x #states x 3 or 4)
+	INT numDim=0;
+	INT* Dim=0;
+	DREAL* penalties_array;
+	get_real_ndarray(penalties_array,Dim,numDim);
+
+	ASSERT(numDim==3);
+	ASSERT(Dim[0]==Dim[1]);
+
+	ASSERT(ui_structure->compute_plif_matrix(penalties_array, Dim, numDim));	
 }
 bool CSGInterface::cmd_best_path_trans()
 {

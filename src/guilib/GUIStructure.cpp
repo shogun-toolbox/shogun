@@ -17,7 +17,7 @@
 #include "guilib/GUIStructure.h"
 
 
-CGUIStructure::CGUIStructure(CSGInterface* ui_) : ui(ui_), m_PEN(NULL), m_dp(NULL), m_N(0), m_M(0)
+CGUIStructure::CGUIStructure(CSGInterface* ui_) : ui(ui_), m_PEN(NULL), m_num_plifs(0), m_num_limits(0), m_num_states(0), m_dp(NULL), m_plif_matrix(NULL)
 {
 }
 
@@ -32,15 +32,14 @@ bool CGUIStructure::set_plif_struct(INT N, INT M, DREAL* all_limits,
 {
 	// cleanup 
 	//SG_PRINT("set_plif_struct, N:%i\n",N);
-	for (INT i=0; i<m_N; i++)	
+	for (INT i=0; i<m_num_plifs; i++)	
 		delete m_PEN[i];
 	delete[] m_PEN;
 	m_PEN=NULL;
-	m_N=0;
 
 	// init values
-	m_N=N;
-	m_M=M;
+	m_num_plifs=N;
+	m_num_limits=M;
 	m_PEN = new CPlif*[N] ;
 	for (INT i=0; i<N; i++)	
 		m_PEN[i]=new CPlif() ;
@@ -72,12 +71,68 @@ bool CGUIStructure::set_plif_struct(INT N, INT M, DREAL* all_limits,
 			SG_ERROR( "transform type not recognized ('%s')\n", transform_str) ;
 			delete[] m_PEN;
 			m_PEN=NULL;
-			m_N=0;
-			m_M=0;
+			m_num_plifs=0;
+			m_num_limits=0;
 			return false;
 		}
 	}
 
+	return true;
+}
+bool CGUIStructure::compute_plif_matrix(DREAL* penalties_array, INT* Dim, INT numDims)
+{
+	CPlif** PEN = get_PEN();
+	INT num_states = Dim[0];
+        if (!set_num_states(Dim[0]))
+		return false;
+        INT num_plifs = get_num_plifs();
+
+	SG_PRINT("num_states: %i \n",num_states);
+	SG_PRINT("dim3: %i \n",Dim[2]);
+
+        CPlifBase **PEN_matrix = new CPlifBase*[num_states*num_states] ;
+        CArray3<DREAL> penalties(penalties_array, num_states, num_states, Dim[2], false, false) ;
+
+        for (INT i=0; i<num_states; i++)
+        {
+                for (INT j=0; j<num_states; j++)
+                {
+			SG_PRINT(" %.2f ",penalties.get_element(i,j,1));
+                        CPlifArray * plif_array = new CPlifArray() ;
+                        CPlif * plif = NULL ;
+                        plif_array->clear() ;
+                        for (INT k=0; k<Dim[2]; k++)
+                        {
+                                if (penalties.element(i,j,k)==0)
+                                        continue ;
+                                INT id = (INT) penalties.element(i,j,k)-1 ;
+                                if ((id<0 || id>=num_plifs) && (id!=-1))
+                                {
+                                        SG_ERROR( "id out of range\n") ;
+                                        delete_penalty_struct(PEN, num_plifs) ;
+                                        return false ;
+                                }
+                                plif = PEN[id] ;
+                                plif_array->add_plif(plif) ;
+                        }
+                        if (plif_array->get_num_plifs()==0)
+                        {
+                                delete plif_array ;
+                                PEN_matrix[i+j*num_states] = NULL ;
+                        }
+                        else if (plif_array->get_num_plifs()==1)
+                        {
+                                delete plif_array ;
+                                ASSERT(plif!=NULL) ;
+                                PEN_matrix[i+j*num_states] = plif ;
+                        }
+                        else
+                                PEN_matrix[i+j*num_states] = plif_array ;
+                }
+		SG_PRINT("\n");
+        }
+	if (!set_plif_matrix(PEN_matrix))
+		return false;
 	return true;
 }
 #endif

@@ -36,23 +36,53 @@ class CGUIStructure : public CSGObject
 				DREAL* min_values, DREAL* max_values, bool* all_use_cache,
 				INT* all_use_svm, T_STRING<CHAR>* all_transform);
 
+		bool compute_plif_matrix(DREAL* penalties_array, INT* Dim, INT numDims);
+
 		inline CPlif** get_PEN()
 		{
 			return m_PEN;
 		}
 		inline INT get_num_plifs()
 		{
-			return m_N;
+			return m_num_plifs;
 		}
 		inline INT get_num_limits()
 		{
-			return m_M;
+			return m_num_limits;
+		}
+		inline bool set_num_states(INT num)
+		{
+			if (!m_num_states || m_num_states==0)
+			{
+				m_num_states = num; 
+				return true;
+			}
+			else
+				return false;
+		}
+		inline bool set_plif_matrix(CPlifBase** pm)
+		{
+			if (!m_plif_matrix)
+			{
+				m_plif_matrix = pm; 
+				return true;
+			}
+			else
+				return false;
+		}
+		inline  CPlifBase** get_plif_matrix()
+		{
+			return m_plif_matrix;
+		}
+		inline INT get_num_states()
+		{
+			return m_num_states;
 		}
 		inline bool set_dyn_prog(CDynProg* h)
 		{
 			delete m_dp;
 			m_dp = h;
-			return true; //FIXME
+			return true;
 		}
 		inline CDynProg* get_dyn_prog()
 		{
@@ -61,9 +91,11 @@ class CGUIStructure : public CSGObject
 	protected:
 		CSGInterface* ui;
 		CPlif** m_PEN;
+		INT m_num_plifs;
+		INT m_num_limits;
+		INT m_num_states;
 		CDynProg* m_dp;
-		INT m_N;
-		INT m_M;
+		CPlifBase** m_plif_matrix;
 };
 #endif //HAVE_SWIG
 #endif

@@ -311,12 +311,44 @@ class CSGInterface : public CSGObject
 		bool cmd_best_path();
 		/** best path 2struct */
 		bool cmd_best_path_2struct();
-		/** cmd set plif struct */
+		/** 
+ 		 * -assemble plif struct from a bunch of 
+ 		 *  arrays of the same length corresponding
+ 		 *  to the fields of the plif-struct-array
+ 		 */
 		bool cmd_set_plif_struct();
-		/** cmd get plif struct */
+		/** 
+		 * -get plif struct as a bunch 
+		 *  of arrays of the same length
+		 * -each array corresponding to one
+		 *  field of the struct
+		 */
 		bool cmd_get_plif_struct();
-		/** cmd precompute content svms */
+		/** 
+		 * -precompute content svms 
+		 *  and save the outputs 
+		 *  in a matrix with dim nof contents times 
+		 *  nof feature positions 
+		 *
+		 * -the SVM score for a specific segment can be
+		 *  calculated by subtraction the 
+		 *  the start and end position entries 
+		 *  from the row corresponding to the segment 
+		 *  type
+		 */
 		bool cmd_precompute_content_svms();
+		/** 
+ 		 * -compute the matrix that links 
+ 		 *  the plif ids to the transitions
+ 		 *
+ 		 * -the matrix has dimensions nof states 
+ 		 *  times nof states times nof feature types
+ 		 *
+ 		 * - feature types are for example 
+ 		 *   signal features, length features,
+ 		 *   content features and tiling features
+ 		 */
+		bool cmd_compute_plif_matrix();
 		/** best path trans */
 		bool cmd_best_path_trans();
 		/** best path trans deriv */

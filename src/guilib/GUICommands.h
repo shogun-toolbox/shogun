@@ -55,6 +55,7 @@
 #define N_SET_PLIF_STRUCT				"set_plif_struct"
 #define N_GET_PLIF_STRUCT				"get_plif_struct"
 #define N_PRECOMPUTE_CONTENT_SVMS				"precompute_content_svms"
+#define N_COMPUTE_PLIF_MATRIX				"compute_plif_matrix"
 #define N_BEST_PATH_2STRUCT					"best_path_2struct"
 #define N_BEST_PATH_TRANS_SIMPLE			"best_path_trans_simple"
 #define N_BEST_PATH_NO_B					"best_path_no_b"
