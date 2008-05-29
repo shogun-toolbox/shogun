@@ -2615,6 +2615,8 @@ bool CSGInterface::cmd_set_custom_kernel()
 		success=kernel->set_full_kernel_matrix_from_full(
 			kmatrix, num_feat, num_vec);
 
+	delete[] kmatrix;
+
 	return success;
 }
 
