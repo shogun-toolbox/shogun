@@ -49,6 +49,14 @@ class CMatlabInterface : public CSGInterface
 		virtual void get_short_matrix(SHORT*& matrix, INT& num_feat, INT& num_vec);
 		virtual void get_word_matrix(WORD*& matrix, INT& num_feat, INT& num_vec);
 
+		virtual void get_byte_ndarray(BYTE*& array, INT*& dims, INT& num_dims);
+		virtual void get_char_ndarray(CHAR*& array, INT*& dims, INT& num_dims);
+		virtual void get_int_ndarray(INT*& array, INT*& dims, INT& num_dims);
+		virtual void get_shortreal_ndarray(SHORTREAL*& array, INT*& dims, INT& num_dims);
+		virtual void get_real_ndarray(DREAL*& array, INT*& dims, INT& num_dims);
+		virtual void get_short_ndarray(SHORT*& array, INT*& dims, INT& num_dims);
+		virtual void get_word_ndarray(WORD*& array, INT*& dims, INT& num_dims);
+
 		virtual void get_real_sparsematrix(TSparse<DREAL>*& matrix, INT& num_feat, INT& num_vec);
 
 		/*  future versions might support types other than DREAL

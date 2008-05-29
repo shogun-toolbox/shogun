@@ -114,7 +114,7 @@ class CPlif: public CPlifBase
 		 *
 		 * @return type_str type (string)
 		 */
-		char* get_transform_type()
+		const char* get_transform_type()
 		{
 			if (transform== T_LINEAR)
 				return "linear";

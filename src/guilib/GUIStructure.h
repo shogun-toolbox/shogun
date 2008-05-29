@@ -52,6 +52,7 @@ class CGUIStructure : public CSGObject
 		{
 			delete m_dp;
 			m_dp = h;
+			return true; //FIXME
 		}
 		inline CDynProg* get_dyn_prog()
 		{

@@ -5064,7 +5064,7 @@ bool CSGInterface::cmd_get_plif_struct()
 			all_limits[i*M+j]=limits[j];
 			all_penalties[i*M+j]=penalties[j];
 		}
-		all_transform[i].string = PEN[i]->get_transform_type();		
+		all_transform[i].string = (CHAR*) PEN[i]->get_transform_type();		 //FIXME
 		all_transform[i].length = strlen(PEN[i]->get_transform_type());		
 		min_values[i]=PEN[i]->get_min_value();
 		max_values[i]=PEN[i]->get_max_value();
