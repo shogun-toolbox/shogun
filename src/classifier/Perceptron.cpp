@@ -79,9 +79,9 @@ bool CPerceptron::train()
 	}
 
 	if (converged)
-		SG_INFO( "perceptron algorithm converged after %d iterations\n", iter);
+		SG_INFO("Perceptron algorithm converged after %d iterations.\n", iter);
 	else
-		SG_INFO( "perceptron algorithm did not converge after %d iterations\n", max_iter);
+		SG_WARNING("Perceptron algorithm did not converge after %d iterations.\n", max_iter);
 
 	delete[] output;
 	delete[] train_labels;
