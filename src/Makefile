@@ -149,6 +149,7 @@ clean: swigclean swigdocclean
 	@rm -f $(shell find . -name "*.cpp.o" -o -name "*.c.o" -o -name "*.so" -o -name "*.dll" -o -name "*~" -o -name ".#*" 2>/dev/null)
 	@rm -f $(shell find . -type f -name '*.py*' ! -name '__*.py' ! -name '.*.py' | grep -v svn)
 	@rm -f $(shell find . -type f -name '*.R')
+	@rm -f $(shell find . -type f -name '*.RData')
 	@rm -f $(shell find . -type f -name '*.oct')
 	@rm -f $(shell find . -type f -name '*.swp')
 	@rm -f $(shell find . -type f -name 'octave-core')
