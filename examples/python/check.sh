@@ -10,9 +10,9 @@ do
 	echo -n "running $e .."
 	if ${PYTHON} "$e" >/dev/null 2>&1
 	then
-		echo " passed"
+		echo " OK"
 	else
-		echo " failed"
+		echo " ERROR"
 	fi
 done
 )

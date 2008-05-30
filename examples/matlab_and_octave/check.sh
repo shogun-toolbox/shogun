@@ -12,7 +12,7 @@ function errormsg
 	exit 1
 }
 
-if [ "$INTERFACE" = "matlab" ]
+if [ "${INTERFACE}" = "matlab" ]
 then
 	errormsg "matlab is not capable of setting proper exit codes try octave!"
 fi
@@ -22,15 +22,14 @@ then
 	errormsg "octave is not the configured interface!"
 fi
 
-( cd ../../src
-for e in ../examples/matlab_and_octave/*.m
+
+for e in *.m
 do
 	echo -n "running $e .."
 	if cat "$e" | ${INTERFACE} >/dev/null 2>&1
 	then
-		echo " passed"
+		echo " OK"
 	else
-		echo " failed"
+		echo " ERROR"
 	fi
 done
-)
