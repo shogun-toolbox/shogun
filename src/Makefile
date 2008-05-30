@@ -230,8 +230,8 @@ install: $(OBJFILES) $(SRCFILES) $(SWIGSRCFILES) $(SWIGDOCFILES) $(SWIGLIBFILES)
 	install -d -m755 $(DESTDIR)$(RDIR)/shogun/Meta
 	install -d -m755 $(DESTDIR)$(RDIR)/shogun/R
 	install -m755 ../examples/r-modular/*.R $(DESTDIR)$(RDIR)/shogun/demo
-	install -m755 $(shell find ./ -name '*.so') $(DESTDIR)$(RDIR)/shogun/libs
-	install -m755 $(shell find ./ -name '*.RData') $(DESTDIR)$(RDIR)/shogun/R
+	install -m755 */*.so $(DESTDIR)$(RDIR)/shogun/libs
+	install -m755 */*.RData $(DESTDIR)$(RDIR)/shogun/R
 	./.r-install.sh $(DESTDIR)$(RDIR) shogun
 else #matlab is done separately
 install: 
