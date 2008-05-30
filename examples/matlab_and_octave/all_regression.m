@@ -4,15 +4,12 @@ size_cache=10;
 width=2.1;
 C=0.017;
 tube_epsilon=1e-2;
-len=42;
-num=20;
-dist=2.3;
 
-trainlab=[ones(1,num*2) -ones(1,num*2)];
-testlab=[ones(1,num*2) -ones(1,num*2)];
-
-traindata=[randn(2,num)-dist, randn(2,num)+dist, randn(2,num)+dist*[ones(1,num); zeros(1,num)], randn(2,num)+dist*[zeros(1,num); ones(1,num)]];
-testdata=[randn(2,num+7)-dist, randn(2,num+7)+dist, randn(2,num+7)+dist*[ones(1,num+7); zeros(1,num+7)], randn(2,num+7)+dist*[zeros(1,num+7); ones(1,num+7)]];
+addpath('tools');
+label_train=load_matrix('../data/label_train_oneclass.dat');
+label_test=label_train;
+fm_train=load_matrix('../data/fm_train_real.dat');
+fm_test=load_matrix('../data/fm_test_real.dat');
 
 
 %
@@ -21,22 +18,20 @@ testdata=[randn(2,num+7)-dist, randn(2,num+7)+dist, randn(2,num+7)+dist*[ones(1,
 
 % SVR Light
 try
-	sg('new_regression', 'SVRLIGHT');
-
 	disp('SVRLight');
 
-	sg('set_features', 'TRAIN', traindata);
 	sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width);
-	sg('init_kernel', 'TRAIN');
-
-	sg('set_labels', 'TRAIN', trainlab);
-
+	sg('set_features', 'TRAIN', fm_train);
+	sg('set_labels', 'TRAIN', label_train);
+	sg('new_regression', 'SVRLIGHT');
 	sg('svr_tube_epsilon', tube_epsilon);
 	sg('c', C);
+
+	sg('init_kernel', 'TRAIN');
 	sg('train_regression');
 
-	sg('set_features', 'TEST', testdata);
-	sg('set_labels', 'TEST', testlab);
+	sg('set_features', 'TEST', fm_test);
+	sg('set_labels', 'TEST', label_test);
 	sg('init_kernel', 'TEST');
 	result=sg('classify');
 catch
@@ -47,18 +42,18 @@ end
 % LibSVR
 disp('LibSVR');
 
-sg('set_features', 'TRAIN', traindata);
+sg('set_features', 'TRAIN', fm_train);
 sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width);
-sg('init_kernel', 'TRAIN');
-
-sg('set_labels', 'TRAIN', trainlab);
+sg('set_labels', 'TRAIN', label_train);
 sg('new_regression', 'LIBSVR');
 sg('svr_tube_epsilon', tube_epsilon);
 sg('c', C);
+
+sg('init_kernel', 'TRAIN');
 sg('train_regression');
 
-sg('set_features', 'TEST', testdata);
-sg('set_labels', 'TEST', testlab);
+sg('set_features', 'TEST', fm_test);
+sg('set_labels', 'TEST', label_test);
 sg('init_kernel', 'TEST');
 result=sg('classify');
 
@@ -70,18 +65,19 @@ result=sg('classify');
 % KRR
 disp('KRR');
 
-sg('set_features', 'TRAIN', traindata);
-sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width);
-sg('init_kernel', 'TRAIN');
-
-sg('set_labels', 'TRAIN', trainlab);
-sg('new_regression', 'KRR');
 tau=1.2;
+
+sg('set_features', 'TRAIN', fm_train);
+sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width);
+sg('set_labels', 'TRAIN', label_train);
+sg('new_regression', 'KRR');
 sg('krr_tau', tau);
 sg('c', C);
+
+sg('init_kernel', 'TRAIN');
 sg('train_regression');
 
-sg('set_features', 'TEST', testdata);
+sg('set_features', 'TEST', fm_test);
 sg('init_kernel', 'TEST');
 result=sg('classify');
 

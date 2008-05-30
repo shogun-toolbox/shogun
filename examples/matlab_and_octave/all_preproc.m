@@ -1,18 +1,21 @@
 % Explicit examples on how to use the different preprocs
 
-num=20;
-len=42;
 size_cache=10;
-width=1.4;
-dist=3.3;
+
+addpath('tools');
+fm_train_real=load_matrix('../data/fm_train_real.dat');
+fm_test_real=load_matrix('../data/fm_test_real.dat');
+fm_train_word=load_matrix('../data/fm_train_word.dat');
+fm_test_word=load_matrix('../data/fm_test_word.dat');
+fm_train_dna=load_matrix('../data/fm_train_dna.dat');
+fm_test_dna=load_matrix('../data/fm_test_dna.dat');
+
 
 %
 % real features
 %
 
-traindata_real=[randn(2,num)-dist, randn(2,num)+dist, randn(2,num)+dist*[ones(1,num); zeros(1,num)], randn(2,num)+dist*[zeros(1,num); ones(1,num)]];
-testdata_real=[randn(2,num+7)-dist, randn(2,num+7)+dist, randn(2,num+7)+dist*[ones(1,num+7); zeros(1,num+7)], randn(2,num+7)+dist*[zeros(1,num+7); ones(1,num+7)]];
-
+width=1.4;
 
 % LogPlusOne
 disp('LogPlusOne');
@@ -20,12 +23,12 @@ disp('LogPlusOne');
 sg('add_preproc', 'LOGPLUSONE');
 sg('set_kernel', 'CHI2', 'REAL', size_cache, width);
 
-sg('set_features', 'TRAIN', traindata_real);
+sg('set_features', 'TRAIN', fm_train_real);
 sg('attach_preproc', 'TRAIN');
 sg('init_kernel', 'TRAIN');
 km=sg('get_kernel_matrix');
 
-sg('set_features', 'TEST', testdata_real);
+sg('set_features', 'TEST', fm_test_real);
 sg('attach_preproc', 'TEST');
 sg('init_kernel', 'TEST');
 km=sg('get_kernel_matrix');
@@ -36,12 +39,12 @@ disp('NormOne');
 sg('add_preproc', 'NORMONE');
 sg('set_kernel', 'CHI2', 'REAL', size_cache, width);
 
-sg('set_features', 'TRAIN', traindata_real);
+sg('set_features', 'TRAIN', fm_train_real);
 sg('attach_preproc', 'TRAIN');
 sg('init_kernel', 'TRAIN');
 km=sg('get_kernel_matrix');
 
-sg('set_features', 'TEST', testdata_real);
+sg('set_features', 'TEST', fm_test_real);
 sg('attach_preproc', 'TEST');
 sg('init_kernel', 'TEST');
 km=sg('get_kernel_matrix');
@@ -55,12 +58,12 @@ divide_by_std=1;
 sg('add_preproc', 'PRUNEVARSUBMEAN', divide_by_std);
 sg('set_kernel', 'CHI2', 'REAL', size_cache, width);
 
-sg('set_features', 'TRAIN', traindata_real);
+sg('set_features', 'TRAIN', fm_train_real);
 sg('attach_preproc', 'TRAIN');
 sg('init_kernel', 'TRAIN');
 km=sg('get_kernel_matrix');
 
-sg('set_features', 'TEST', testdata_real);
+sg('set_features', 'TEST', fm_test_real);
 sg('attach_preproc', 'TEST');
 sg('init_kernel', 'TEST');
 km=sg('get_kernel_matrix');
@@ -69,9 +72,6 @@ km=sg('get_kernel_matrix');
 % word features;
 %
 
-maxval=2^16-1;
-traindata_word=uint16(rand(len, num)*maxval);
-testdata_word=uint16(rand(len, num)*maxval);
 
 % LinearWord
 disp('LinearWord');
@@ -81,12 +81,12 @@ scale=1.4;
 sg('add_preproc', 'SORTWORD');
 sg('set_kernel', 'LINEAR', 'WORD', size_cache, scale);
 
-sg('set_features', 'TRAIN', traindata_word);
+sg('set_features', 'TRAIN', uint16(fm_train_word));
 sg('attach_preproc', 'TRAIN');
 sg('init_kernel', 'TRAIN');
 km=sg('get_kernel_matrix');
 
-sg('set_features', 'TEST', testdata_word);
+sg('set_features', 'TEST', uint16(fm_test_word));
 sg('attach_preproc', 'TEST');
 sg('init_kernel', 'TEST');
 km=sg('get_kernel_matrix');
@@ -102,10 +102,6 @@ reverse='n'; % bit silly to not use boolean, set 'r' to yield true
 use_sign=0;
 normalization='FULL';
 
-acgt='ACGT';
-trainlab_dna=[ones(1,num/2) -ones(1,num/2)];
-traindata_dna=acgt(ceil(4*rand(len,num)));
-testdata_dna=acgt(ceil(4*rand(len,num)));
 
 % SortWordString
 disp('CommWordString');
@@ -113,13 +109,13 @@ disp('CommWordString');
 sg('add_preproc', 'SORTWORDSTRING');
 sg('set_kernel', 'COMMSTRING', 'WORD', size_cache, use_sign, normalization);
 
-sg('set_features', 'TRAIN', traindata_dna, 'DNA');
+sg('set_features', 'TRAIN', fm_train_dna, 'DNA');
 sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, gap, reverse);
 sg('attach_preproc', 'TRAIN');
 sg('init_kernel', 'TRAIN');
 km=sg('get_kernel_matrix');
 
-sg('set_features', 'TEST', testdata_dna, 'DNA');
+sg('set_features', 'TEST', fm_test_dna, 'DNA');
 sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, gap, reverse);
 sg('attach_preproc', 'TEST');
 sg('init_kernel', 'TEST');
@@ -132,13 +128,13 @@ disp('CommUlongString');
 sg('add_preproc', 'SORTULONGSTRING');
 sg('set_kernel', 'COMMSTRING', 'ULONG', size_cache, use_sign, normalization);
 
-sg('set_features', 'TRAIN', traindata_dna, 'DNA');
+sg('set_features', 'TRAIN', fm_train_dna, 'DNA');
 sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'ULONG', order, order-1, gap, reverse);
 sg('attach_preproc', 'TRAIN');
 sg('init_kernel', 'TRAIN');
 km=sg('get_kernel_matrix');
 
-sg('set_features', 'TEST', testdata_dna, 'DNA');
+sg('set_features', 'TEST', fm_test_dna, 'DNA');
 sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'ULONG', order, order-1, gap, reverse);
 sg('attach_preproc', 'TEST');
 sg('init_kernel', 'TEST');

@@ -1,13 +1,14 @@
 % Explicit examples on how to use the different kernels
 
 size_cache=10;
-num=20;
-len=33;
-dist=2.1;
 
+addpath('tools');
+fm_train_real=load_matrix('../data/fm_train_real.dat');
+fm_test_real=load_matrix('../data/fm_test_real.dat');
+label_train_dna=load_matrix('../data/label_train_dna.dat');
+fm_train_dna=load_matrix('../data/fm_train_dna.dat');
+fm_test_dna=load_matrix('../data/fm_test_dna.dat');
 
-traindata_real=[randn(2,num)-dist, randn(2,num)+dist, randn(2,num)+dist*[ones(1,num); zeros(1,num)], randn(2,num)+dist*[zeros(1,num); ones(1,num)]];
-testdata_real=[randn(2,num+7)-dist, randn(2,num+7)+dist, randn(2,num+7)+dist*[ones(1,num+7); zeros(1,num+7)], randn(2,num+7)+dist*[zeros(1,num+7); ones(1,num+7)]];
 
 %
 % byte features
@@ -18,11 +19,11 @@ disp('LinearByte');
 
 %sg('set_kernel', 'LINEAR', 'BYTE', size_cache);
 
-%sg('set_features', 'TRAIN', int8(traindata_real), 'RAWBYTE');
+%sg('set_features', 'TRAIN', int8(fm_train_real), 'RAWBYTE');
 %sg('init_kernel', 'TRAIN');
 %km=sg('get_kernel_matrix');
 
-%sg('set_features', 'TEST', int8(testdata_real), 'RAWBYTE');
+%sg('set_features', 'TEST', int8(fm_test_real), 'RAWBYTE');
 %sg('init_kernel', 'TEST');
 %km=sg('get_kernel_matrix');
 
@@ -38,11 +39,11 @@ disp('Chi2');
 
 sg('set_kernel', 'CHI2', 'REAL', size_cache, width);
 
-sg('set_features', 'TRAIN', traindata_real);
+sg('set_features', 'TRAIN', fm_train_real);
 sg('init_kernel', 'TRAIN');
 km=sg('get_kernel_matrix');
 
-sg('set_features', 'TEST', testdata_real);
+sg('set_features', 'TEST', fm_test_real);
 sg('init_kernel', 'TEST');
 km=sg('get_kernel_matrix');
 
@@ -54,11 +55,11 @@ c=23;
 
 sg('set_kernel', 'CONST', 'REAL', size_cache, c);
 
-sg('set_features', 'TRAIN', traindata_real);
+sg('set_features', 'TRAIN', fm_train_real);
 sg('init_kernel', 'TRAIN');
 km=sg('get_kernel_matrix');
 
-sg('set_features', 'TEST', testdata_real);
+sg('set_features', 'TEST', fm_test_real);
 sg('init_kernel', 'TEST');
 km=sg('get_kernel_matrix');
 
@@ -70,11 +71,11 @@ diag=23.;
 
 sg('set_kernel', 'DIAG', 'REAL', size_cache, diag);
 
-sg('set_features', 'TRAIN', traindata_real);
+sg('set_features', 'TRAIN', fm_train_real);
 sg('init_kernel', 'TRAIN');
 km=sg('get_kernel_matrix');
 
-sg('set_features', 'TEST', testdata_real);
+sg('set_features', 'TEST', fm_test_real);
 sg('init_kernel', 'TEST');
 km=sg('get_kernel_matrix');
 
@@ -84,11 +85,11 @@ disp('Gaussian');
 
 sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width);
 
-sg('set_features', 'TRAIN', traindata_real);
+sg('set_features', 'TRAIN', fm_train_real);
 sg('init_kernel', 'TRAIN');
 km=sg('get_kernel_matrix');
 
-sg('set_features', 'TEST', testdata_real);
+sg('set_features', 'TEST', fm_test_real);
 sg('init_kernel', 'TEST');
 km=sg('get_kernel_matrix');
 
@@ -101,11 +102,11 @@ shift_step=1;
 
 sg('set_kernel', 'GAUSSIANSHIFT', 'REAL', size_cache, width, max_shift, shift_step);
 
-sg('set_features', 'TRAIN', traindata_real);
+sg('set_features', 'TRAIN', fm_train_real);
 sg('init_kernel', 'TRAIN');
 km=sg('get_kernel_matrix');
 
-sg('set_features', 'TEST', testdata_real);
+sg('set_features', 'TEST', fm_test_real);
 sg('init_kernel', 'TEST');
 km=sg('get_kernel_matrix');
 
@@ -117,11 +118,11 @@ scale=1.2;
 
 sg('set_kernel', 'LINEAR', 'REAL', size_cache, scale);
 
-sg('set_features', 'TRAIN', traindata_real);
+sg('set_features', 'TRAIN', fm_train_real);
 sg('init_kernel', 'TRAIN');
 km=sg('get_kernel_matrix');
 
-sg('set_features', 'TEST', testdata_real);
+sg('set_features', 'TEST', fm_test_real);
 sg('init_kernel', 'TEST');
 km=sg('get_kernel_matrix');
 
@@ -135,11 +136,11 @@ use_normalization=1;
 
 sg('set_kernel', 'POLY', 'REAL', size_cache, degree, inhomogene, use_normalization);
 
-sg('set_features', 'TRAIN', traindata_real);
+sg('set_features', 'TRAIN', fm_train_real);
 sg('init_kernel', 'TRAIN');
 km=sg('get_kernel_matrix');
 
-sg('set_features', 'TEST', testdata_real);
+sg('set_features', 'TEST', fm_test_real);
 sg('init_kernel', 'TEST');
 km=sg('get_kernel_matrix');
 
@@ -152,11 +153,11 @@ coef0=1.3;
 
 sg('set_kernel', 'SIGMOID', 'REAL', size_cache, gamma, coef0);
 
-sg('set_features', 'TRAIN', traindata_real);
+sg('set_features', 'TRAIN', fm_train_real);
 sg('init_kernel', 'TRAIN');
 km=sg('get_kernel_matrix');
 
-sg('set_features', 'TEST', testdata_real);
+sg('set_features', 'TEST', fm_test_real);
 sg('init_kernel', 'TEST');
 km=sg('get_kernel_matrix');
 
@@ -172,11 +173,11 @@ width=1.3;
 
 sg('set_kernel', 'GAUSSIAN', 'SPARSEREAL', size_cache, width);
 
-sg('set_features', 'TRAIN', sparse(traindata_real));
+sg('set_features', 'TRAIN', sparse(fm_train_real));
 sg('init_kernel', 'TRAIN');
 km=sg('get_kernel_matrix');
 
-sg('set_features', 'TEST', sparse(testdata_real));
+sg('set_features', 'TEST', sparse(fm_test_real));
 sg('init_kernel', 'TEST');
 km=sg('get_kernel_matrix');
 
@@ -188,11 +189,11 @@ scale=1.3;
 
 sg('set_kernel', 'LINEAR', 'SPARSEREAL', size_cache, scale);
 
-sg('set_features', 'TRAIN', sparse(traindata_real));
+sg('set_features', 'TRAIN', sparse(fm_train_real));
 sg('init_kernel', 'TRAIN');
 km=sg('get_kernel_matrix');
 
-sg('set_features', 'TEST', sparse(testdata_real));
+sg('set_features', 'TEST', sparse(fm_test_real));
 sg('init_kernel', 'TEST');
 km=sg('get_kernel_matrix');
 
@@ -206,11 +207,11 @@ use_normalization=1;
 
 sg('set_kernel', 'POLY', 'SPARSEREAL', size_cache, degree, inhomogene, use_normalization);
 
-sg('set_features', 'TRAIN', sparse(traindata_real));
+sg('set_features', 'TRAIN', sparse(fm_train_real));
 sg('init_kernel', 'TRAIN');
 km=sg('get_kernel_matrix');
 
-sg('set_features', 'TEST', sparse(testdata_real));
+sg('set_features', 'TEST', sparse(fm_test_real));
 sg('init_kernel', 'TEST');
 km=sg('get_kernel_matrix');
 
@@ -228,11 +229,11 @@ scale=1.4;
 
 sg('set_kernel', 'LINEAR', 'WORD', size_cache, scale);
 
-sg('set_features', 'TRAIN', uint16(traindata_real*maxval));
+sg('set_features', 'TRAIN', uint16(fm_train_real*maxval));
 sg('init_kernel', 'TRAIN');
 km=sg('get_kernel_matrix');
 
-sg('set_features', 'TEST', uint16(testdata_real*maxval));
+sg('set_features', 'TEST', uint16(fm_test_real*maxval));
 sg('init_kernel', 'TEST');
 km=sg('get_kernel_matrix');
 
@@ -246,22 +247,17 @@ normalize=1;
 
 sg('set_kernel', 'POLYMATCH', 'WORD', size_cache, degree, inhomogene, normalize);
 
-sg('set_features', 'TRAIN', uint16(traindata_real*maxval));
+sg('set_features', 'TRAIN', uint16(fm_train_real*maxval));
 sg('init_kernel', 'TRAIN');
 km=sg('get_kernel_matrix');
 
-sg('set_features', 'TEST', uint16(testdata_real*maxval));
+sg('set_features', 'TEST', uint16(fm_test_real*maxval));
 sg('init_kernel', 'TEST');
 km=sg('get_kernel_matrix');
 
 %
 % string features
 %
-
-acgt='ACGT';
-trainlab_dna=[ones(1,num/2) -ones(1,num/2)];
-traindata_dna=acgt(ceil(4*rand(len,num)));
-testdata_dna=acgt(ceil(4*rand(len,num)));
 
 % Fixed Degree String
 disp('FixedDegreeString');
@@ -270,11 +266,11 @@ degree=3;
 
 sg('set_kernel', 'FIXEDDEGREE', 'CHAR', size_cache, degree);
 
-sg('set_features', 'TRAIN', traindata_dna, 'DNA');
+sg('set_features', 'TRAIN', fm_train_dna, 'DNA');
 sg('init_kernel', 'TRAIN');
 km=sg('get_kernel_matrix');
 
-sg('set_features', 'TEST', testdata_dna, 'DNA');
+sg('set_features', 'TEST', fm_test_dna, 'DNA');
 sg('init_kernel', 'TEST');
 km=sg('get_kernel_matrix');
 
@@ -284,11 +280,11 @@ disp('LinearString');
 
 sg('set_kernel', 'LINEAR', 'CHAR', size_cache);
 
-sg('set_features', 'TRAIN', traindata_dna, 'DNA');
+sg('set_features', 'TRAIN', fm_train_dna, 'DNA');
 sg('init_kernel', 'TRAIN');
 km=sg('get_kernel_matrix');
 
-sg('set_features', 'TEST', testdata_dna, 'DNA');
+sg('set_features', 'TEST', fm_test_dna, 'DNA');
 sg('init_kernel', 'TEST');
 km=sg('get_kernel_matrix');
 
@@ -298,11 +294,11 @@ disp('LocalAlignmentString');
 
 sg('set_kernel', 'LOCALALIGNMENT', 'CHAR', size_cache);
 
-sg('set_features', 'TRAIN', traindata_dna, 'DNA');
+sg('set_features', 'TRAIN', fm_train_dna, 'DNA');
 sg('init_kernel', 'TRAIN');
 km=sg('get_kernel_matrix');
 
-sg('set_features', 'TEST', testdata_dna, 'DNA');
+sg('set_features', 'TEST', fm_test_dna, 'DNA');
 sg('init_kernel', 'TEST');
 km=sg('get_kernel_matrix');
 
@@ -315,11 +311,11 @@ inhomogene=0;
 
 sg('set_kernel', 'POLYMATCH', 'CHAR', size_cache, degree, inhomogene);
 
-sg('set_features', 'TRAIN', traindata_dna, 'DNA');
+sg('set_features', 'TRAIN', fm_train_dna, 'DNA');
 sg('init_kernel', 'TRAIN');
 km=sg('get_kernel_matrix');
 
-sg('set_features', 'TEST', testdata_dna, 'DNA');
+sg('set_features', 'TEST', fm_test_dna, 'DNA');
 sg('init_kernel', 'TEST');
 km=sg('get_kernel_matrix');
 
@@ -331,11 +327,11 @@ degree=20;
 
 sg('set_kernel', 'WEIGHTEDDEGREE', 'CHAR', size_cache, degree);
 
-sg('set_features', 'TRAIN', traindata_dna, 'DNA');
+sg('set_features', 'TRAIN', fm_train_dna, 'DNA');
 sg('init_kernel', 'TRAIN');
 km=sg('get_kernel_matrix');
 
-sg('set_features', 'TEST', testdata_dna, 'DNA');
+sg('set_features', 'TEST', fm_test_dna, 'DNA');
 sg('init_kernel', 'TEST');
 km=sg('get_kernel_matrix');
 
@@ -347,11 +343,11 @@ degree=20;
 
 sg('set_kernel', 'WEIGHTEDDEGREEPOS', 'CHAR', size_cache, degree);
 
-sg('set_features', 'TRAIN', traindata_dna, 'DNA');
+sg('set_features', 'TRAIN', fm_train_dna, 'DNA');
 sg('init_kernel', 'TRAIN');
 km=sg('get_kernel_matrix');
 
-sg('set_features', 'TEST', testdata_dna, 'DNA');
+sg('set_features', 'TEST', fm_test_dna, 'DNA');
 sg('init_kernel', 'TEST');
 km=sg('get_kernel_matrix');
 
@@ -364,11 +360,11 @@ outer_degree=inner_degree+2;
 
 sg('set_kernel', 'LIK', 'CHAR', size_cache, length, inner_degree, outer_degree);
 
-sg('set_features', 'TRAIN', traindata_dna, 'DNA');
+sg('set_features', 'TRAIN', fm_train_dna, 'DNA');
 sg('init_kernel', 'TRAIN');
 km=sg('get_kernel_matrix');
 
-sg('set_features', 'TEST', testdata_dna, 'DNA');
+sg('set_features', 'TEST', fm_test_dna, 'DNA');
 sg('init_kernel', 'TEST');
 km=sg('get_kernel_matrix');
 
@@ -381,11 +377,11 @@ outer_degree=inner_degree+2;
 
 sg('set_kernel', 'SLIK', 'CHAR', size_cache, length, inner_degree, outer_degree);
 
-sg('set_features', 'TRAIN', traindata_dna, 'DNA');
+sg('set_features', 'TRAIN', fm_train_dna, 'DNA');
 sg('init_kernel', 'TRAIN');
 km=sg('get_kernel_matrix');
 
-sg('set_features', 'TEST', testdata_dna, 'DNA');
+sg('set_features', 'TEST', fm_test_dna, 'DNA');
 sg('init_kernel', 'TEST');
 km=sg('get_kernel_matrix');
 
@@ -406,13 +402,13 @@ disp('CommWordString');
 sg('add_preproc', 'SORTWORDSTRING');
 sg('set_kernel', 'COMMSTRING', 'WORD', size_cache, use_sign, normalization);
 
-sg('set_features', 'TRAIN', traindata_dna, 'DNA');
+sg('set_features', 'TRAIN', fm_train_dna, 'DNA');
 sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, gap, reverse);
 sg('attach_preproc', 'TRAIN');
 sg('init_kernel', 'TRAIN');
 km=sg('get_kernel_matrix');
 
-sg('set_features', 'TEST', testdata_dna, 'DNA');
+sg('set_features', 'TEST', fm_test_dna, 'DNA');
 sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, gap, reverse);
 sg('attach_preproc', 'TEST');
 sg('init_kernel', 'TEST');
@@ -425,13 +421,13 @@ disp('WeightedCommWordString');
 sg('add_preproc', 'SORTWORDSTRING');
 sg('set_kernel', 'WEIGHTEDCOMMSTRING', 'WORD', size_cache, use_sign, normalization);
 
-sg('set_features', 'TRAIN', traindata_dna, 'DNA');
+sg('set_features', 'TRAIN', fm_train_dna, 'DNA');
 sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, gap, reverse);
 sg('attach_preproc', 'TRAIN');
 sg('init_kernel', 'TRAIN');
 km=sg('get_kernel_matrix');
 
-sg('set_features', 'TEST', testdata_dna, 'DNA');
+sg('set_features', 'TEST', fm_test_dna, 'DNA');
 sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, gap, reverse);
 sg('attach_preproc', 'TEST');
 sg('init_kernel', 'TEST');
@@ -444,13 +440,13 @@ disp('CommUlongString');
 sg('add_preproc', 'SORTULONGSTRING');
 sg('set_kernel', 'COMMSTRING', 'ULONG', size_cache, use_sign, normalization);
 
-sg('set_features', 'TRAIN', traindata_dna, 'DNA');
+sg('set_features', 'TRAIN', fm_train_dna, 'DNA');
 sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'ULONG', order, order-1, gap, reverse);
 sg('attach_preproc', 'TRAIN');
 sg('init_kernel', 'TRAIN');
 km=sg('get_kernel_matrix');
 
-sg('set_features', 'TEST', testdata_dna, 'DNA');
+sg('set_features', 'TEST', fm_test_dna, 'DNA');
 sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'ULONG', order, order-1, gap, reverse);
 sg('attach_preproc', 'TEST');
 sg('init_kernel', 'TEST');
@@ -468,11 +464,11 @@ width=1.7;
 sg('set_distance', 'EUCLIDIAN', 'REAL');
 sg('set_kernel', 'DISTANCE', size_cache, width);
 
-sg('set_features', 'TRAIN', traindata_real);
+sg('set_features', 'TRAIN', fm_train_real);
 sg('init_kernel', 'TRAIN');
 km=sg('get_kernel_matrix');
 
-sg('set_features', 'TEST', testdata_real);
+sg('set_features', 'TEST', fm_test_real);
 sg('init_kernel', 'TEST');
 km=sg('get_kernel_matrix');
 
@@ -483,16 +479,16 @@ disp('Combined');
 sg('set_kernel', 'COMBINED', size_cache);
 
 sg('add_kernel', 1, 'LINEAR', 'REAL', size_cache);
-sg('add_features', 'TRAIN', traindata_real);
-sg('add_features', 'TEST', testdata_real);
+sg('add_features', 'TRAIN', fm_train_real);
+sg('add_features', 'TEST', fm_test_real);
 
 sg('add_kernel', 1, 'GAUSSIAN', 'REAL', size_cache, 1);
-sg('add_features', 'TRAIN', traindata_real);
-sg('add_features', 'TEST', testdata_real);
+sg('add_features', 'TRAIN', fm_train_real);
+sg('add_features', 'TEST', fm_test_real);
 
 sg('add_kernel', 1, 'POLY', 'REAL', size_cache, 3, 0);
-sg('add_features', 'TRAIN', traindata_real);
-sg('add_features', 'TEST', testdata_real);
+sg('add_features', 'TRAIN', fm_train_real);
+sg('add_features', 'TEST', fm_test_real);
 
 sg('init_kernel', 'TRAIN');
 km=sg('get_kernel_matrix');
@@ -504,16 +500,16 @@ km=sg('get_kernel_matrix');
 % Plugin Estimate
 disp('PluginEstimate w/ HistogramWord');
 
-sg('set_features', 'TRAIN', traindata_dna, 'DNA');
+sg('set_features', 'TRAIN', fm_train_dna, 'DNA');
 sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, gap, reverse);
 
-sg('set_features', 'TEST', testdata_dna, 'DNA');
+sg('set_features', 'TEST', fm_test_dna, 'DNA');
 sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, gap, reverse);
 
 pseudo_pos=1e-1;
 pseudo_neg=1e-1;
 sg('new_plugin_estimator', pseudo_pos, pseudo_neg);
-sg('set_labels', 'TRAIN', trainlab_dna);
+sg('set_labels', 'TRAIN', label_train_dna);
 sg('train_estimator');
 
 sg('set_kernel', 'HISTOGRAM', 'WORD', size_cache);

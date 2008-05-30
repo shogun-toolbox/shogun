@@ -9,10 +9,9 @@ num=12;
 len=23;
 reverse='n'; % bit silly to not use boolean, set 'r' to yield true
 
-acgt='ACGT';
-trainlab_dna=[ones(1,num/2) -ones(1,num/2)];
-traindata_dna=acgt(ceil(4*rand(len,num)));
-testdata_dna=acgt(ceil(4*rand(len,num)));
+addpath('tools');
+fm_train_dna=load_matrix('../data/fm_train_dna.dat');
+
 
 % Histogram
 disp('Histogram');
@@ -20,7 +19,7 @@ disp('Histogram');
 %sg('new_distribution', 'HISTOGRAM');
 sg('add_preproc', 'SORTWORDSTRING');
 
-sg('set_features', 'TRAIN', traindata_dna, 'DNA');
+sg('set_features', 'TRAIN', fm_train_dna, 'DNA');
 sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, gap, reverse);
 sg('attach_preproc', 'TRAIN');
 
@@ -43,7 +42,7 @@ disp('LinearHMM');
 %sg('new_distribution', 'LinearHMM');
 sg('add_preproc', 'SORTWORDSTRING');
 
-sg('set_features', 'TRAIN', traindata_dna, 'DNA');
+sg('set_features', 'TRAIN', fm_train_dna, 'DNA');
 sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, gap, reverse);
 sg('attach_preproc', 'TRAIN');
 
@@ -94,6 +93,6 @@ sg('bw');
 
 sg('new_hmm', N, M);
 sg('set_hmm', p, q, a, b);
-likelihood=sg('hmm_likelihood')
+likelihood=sg('hmm_likelihood');
 
 
