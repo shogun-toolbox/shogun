@@ -159,9 +159,8 @@ dist:	distclean
 	rm -f $(TAR).gz
 	tar -cvf $(TAR) -C ../../ shogun/src && gzip -9 $(TAR)
 
-# installer for swig-python, python, standalone(readline), octave
-# matlab and R packages are installed using a different mechanism
-#  ( R CMD INSTALL sg and cp :-) 
+# installer for swig-python, python, standalone(readline), octave, octave-modular, r, r-modular
+# matlab is installed using a different mechanism
 #
 # Python + Swig
 ifeq (python-modular,$(INTERFACE))
@@ -211,6 +210,7 @@ install: $(TARGET)
 		-exec sh -c "install -m644 {}/*.h -t $(DESTDIR)$(INCDIR)/shogun/{}" \;
 # r
 else
+ifeq (r,$(INTERFACE))
 install: $(TARGET)
 	install -d -m755 $(DESTDIR)$(RDIR)/sg/demo
 	install -d -m755 $(DESTDIR)$(RDIR)/sg/doc
@@ -220,8 +220,20 @@ install: $(TARGET)
 	install -m755 $(TARGET) $(DESTDIR)$(RDIR)/sg/libs
 	install -m755 ../examples/r/*.R ../examples/r/graphical/*.R $(DESTDIR)$(RDIR)/sg/demo
 	./.r-install.sh $(DESTDIR)$(RDIR) sg
-ifeq (r,$(INTERFACE))
-else #matlab are done separately
+# r-modular
+else
+ifeq (r-modular,$(INTERFACE))
+install: $(OBJFILES) $(SRCFILES) $(SWIGSRCFILES) $(SWIGDOCFILES) $(SWIGLIBFILES)
+	install -d -m755 $(DESTDIR)$(RDIR)/shogun/demo
+	install -d -m755 $(DESTDIR)$(RDIR)/shogun/doc
+	install -d -m755 $(DESTDIR)$(RDIR)/shogun/libs
+	install -d -m755 $(DESTDIR)$(RDIR)/shogun/Meta
+	install -d -m755 $(DESTDIR)$(RDIR)/shogun/R
+	install -m755 ../examples/r-modular/*.R $(DESTDIR)$(RDIR)/shogun/demo
+	install -m755 $(shell find ./ -name '*.so') $(DESTDIR)$(RDIR)/shogun/libs
+	install -m755 $(shell find ./ -name '*.RData') $(DESTDIR)$(RDIR)/shogun/R
+	./.r-install.sh $(DESTDIR)$(RDIR) shogun
+else #matlab is done separately
 install: 
 	@echo "The matlab interface needs to be installed"
 	@echo "using a different mechanism:"
@@ -229,6 +241,7 @@ install:
 	@echo " just copy the sg.mex* to a <dir> of your choice"
 	@echo " and addpath <dir>"
 	@echo
+endif #r-modular
 endif #r
 endif #libshogun
 endif #R
@@ -348,4 +361,3 @@ endif
 
 %.$(EXT_OBJ_C):	%.$(EXT_SRC_C)
 	$(COMP_C) $(COMPFLAGS_C) -c $(INCLUDES) -o $@ $<
-
