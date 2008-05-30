@@ -1,34 +1,34 @@
-% This script should enable you to rerun the experiment in the
-% paper that we labeled with "christmas star".
-%
-% The task is to classify two star-shaped classes that share the
-% midpoint. The difficulty of the learning problem depends on the 
-% distance between the classes, which is varied
-% 
-% Our model selection leads to a choice of C = 0.5. The model 
-% selection is not repeated inside this script.
+# This script should enable you to rerun the experiment in the
+# paper that we labeled with "christmas star".
+#
+# The task is to classify two star-shaped classes that share the
+# midpoint. The difficulty of the learning problem depends on the 
+# distance between the classes, which is varied
+# 
+# Our model selection leads to a choice of C = 0.5. The model 
+# selection is not repeated inside this script.
 
 
-% Preliminary settings:
+# Preliminary settings:
 
-C = 0.5;         % SVM Parameter
-cache_size = 50; % cache per kernel in MB
-svm_eps=1e-3;   % svm epsilon
-mkl_eps=1e-3;   % mkl epsilon
+C = 0.5;         # SVM Parameter
+cache_size = 50; # cache per kernel in MB
+svm_eps=1e-3;   # svm epsilon
+mkl_eps=1e-3;   # mkl epsilon
 
-no_obs = 2000;   % number of observations / data points (sum for train and test and both classes)
-k_star = 20;     % number of "leaves" of the stars
-alpha = 0.3;     % noise level of the data
+no_obs = 2000;   # number of observations / data points (sum for train and test and both classes)
+k_star = 20;     # number of "leaves" of the stars
+alpha = 0.3;     # noise level of the data
 
-radius_star(:,1) = [4.1:0.2:10]';    % increasing radius of the 1.class
-radius_star(:,2) = 4*ones(length(radius_star(:,1)),1);   % fixed radius 2.class
-                                     % distanz between the classes: diff(radius_star(:,1)-radius_star(:,2))
-rbf_width = [0.01 0.1 1 10 100];     % different width for the five used rbf kernels
+radius_star(:,1) = [4.1:0.2:10];    # increasing radius of the 1.class
+radius_star(:,2) = 4*ones(length(radius_star(:,1)),1);   # fixed radius 2.class
+                                     # distanz between the classes: diff(radius_star(:,1)-radius_star(:,2))
+rbf_width = [0.01 0.1 1 10 100];     # different width for the five used rbf kernels
 
 
-%%%%
-%%%% Great loop: train MKL for every data set (the different distances between the stars)
-%%%%
+####
+#### Great loop: train MKL for every data set (the different distances between the stars)
+####
 
 sg('send_command','loglevel ERROR');
 sg('send_command','echo OFF');
@@ -36,15 +36,15 @@ sg('send_command','echo OFF');
 
 for kk = 1:size(radius_star,1)
   
-  % data generation
+  # data generation
   fprintf('MKL for radius %+02.2f                                                      \n', radius_star(kk,1))
 
   dummy(1,:) = rand(1,4*no_obs);
   noise = alpha*randn(1,4*no_obs);
 
-  dummy(2,:) = sin(k_star*pi*dummy(1,:)) + noise;         % sine
-  dummy(2,1:2*no_obs) = dummy(2,1:2*no_obs)+ radius_star(kk,1);         % distanz shift: first class
-  dummy(2,(2*no_obs+1):end) = dummy(2,(2*no_obs+1):end)+ radius_star(kk,2); % distanz shift: second class   
+  dummy(2,:) = sin(k_star*pi*dummy(1,:)) + noise;         # sine
+  dummy(2,1:2*no_obs) = dummy(2,1:2*no_obs)+ radius_star(kk,1);         # distanz shift: first class
+  dummy(2,(2*no_obs+1):end) = dummy(2,(2*no_obs+1):end)+ radius_star(kk,2); # distanz shift: second class   
 
   dummy(1,: ) = 2*pi*dummy(1,:);        
 
@@ -59,16 +59,16 @@ for kk = 1:size(radius_star,1)
 
   clear dummy x;
 
-  % train MKL
+  # train MKL
 
   sg('send_command','clean_kernels');
   sg('send_command','clean_features TRAIN');
-  sg('add_features','TRAIN', train_x);       % set a trainingset for every SVM
+  sg('add_features','TRAIN', train_x);       # set a trainingset for every SVM
   sg('add_features','TRAIN', train_x);
   sg('add_features','TRAIN', train_x);
   sg('add_features','TRAIN', train_x);
   sg('add_features','TRAIN', train_x);
-  sg('set_labels','TRAIN', train_y);         % set the labels
+  sg('set_labels','TRAIN', train_y);         # set the labels
   sg('send_command', 'new_svm LIGHT');
   sg('send_command', 'use_linadd 0');
   sg('send_command', 'use_mkl 1');
@@ -87,7 +87,7 @@ for kk = 1:size(radius_star,1)
   [b,alphas]=sg('get_svm') ;
   w(kk,:) = sg('get_subkernel_weights');
 
-  % calculate train error
+  # calculate train error
 
   sg('send_command','clean_features TEST');
   sg('add_features','TEST',train_x);
@@ -101,7 +101,7 @@ for kk = 1:size(radius_star,1)
   result.trainout(kk,:)=sg('svm_classify');
   result.trainerr(kk)  = mean(train_y~=sign(result.trainout(kk,:)));  
 
-  % calculate test error
+  # calculate test error
 
   sg('send_command', 'clean_features TEST');
   sg('add_features','TEST',test_x);

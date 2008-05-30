@@ -1,29 +1,29 @@
-% This script should enable you to rerun the experiment in the
-% paper that we labeled "sine".
-%
-% In this regression task a sine wave is to be learned.
-% We vary the frequency of the wave. 
+# This script should enable you to rerun the experiment in the
+# paper that we labeled "sine".
+#
+# In this regression task a sine wave is to be learned.
+# We vary the frequency of the wave. 
 
-% Preliminary settings:
+# Preliminary settings:
 
-% Parameter for the SVMs.
-C          = 10;        % obtained via model selection (not included in the script)
+# Parameter for the SVMs.
+C          = 10;        # obtained via model selection (not included in the script)
 cache_size = 10;
-mkl_eps  = 1e-3;  % threshold for precision
+mkl_eps  = 1e-3;  # threshold for precision
 svm_eps    = 1e-3;
 svr_tube_eps   = 1e-2;
 debug = 0;
 
-% Kernel width for the 5 "basic" SVMs
+# Kernel width for the 5 "basic" SVMs
 rbf_width(1) = 0.005;
 rbf_width(2) = 0.05;
 rbf_width(3) = 0.5;
 rbf_width(4) = 1;
 rbf_width(5) = 10;
 
-% data
-f = [0.1:0.2:5];   % values for the different frequencies
-no_obs = 1000;     % number of observations
+# data
+f = [0.1:0.2:5];   # values for the different frequencies
+no_obs = 1000;     # number of observations
 
 if debug
       sg('send_command', 'loglevel ALL');
@@ -33,7 +33,7 @@ else
       sg('send_command', 'echo OFF');
 end
 
-for kk = 1:length(f)    % big loop for the different learning problems
+for kk = 1:length(f)    # big loop for the different learning problems
   
   % data generation
 
@@ -52,8 +52,8 @@ for kk = 1:length(f)    % big loop for the different learning problems
   sg('send_command', sprintf('svr_tube_epsilon %f',svr_tube_eps));
   sg('send_command', 'clean_features TRAIN' );
   sg('send_command', 'clean_kernels');
-  sg('set_labels', 'TRAIN', train_y);               % set labels
-  sg('add_features','TRAIN', train_x);              % add features for every SVR
+  sg('set_labels', 'TRAIN', train_y);               # set labels
+  sg('add_features','TRAIN', train_x);              # add features for every SVR
   sg('add_features','TRAIN', train_x);
   sg('add_features','TRAIN', train_x);
   sg('add_features','TRAIN', train_x);

@@ -35,13 +35,13 @@ debug = 0
 
 # data
 f <- c(0:20)  # parameter that varies the frequency of the second sine wave
-no_obs = 1000    # number of observations
 
-send_command("loglevel ALL");
-send_command("echo ON");
+#sg('loglevel', 'ALL');
+sg('echo', 'ON');
 
 weights = array(dim=c(21,10))
 
+no_obs = 1000    # number of observations
 stepsize = (4*pi)/(no_obs-1)
 train_x = c(0:(no_obs-1))
 for (i in c(1:no_obs)) {
@@ -50,51 +50,54 @@ for (i in c(1:no_obs)) {
 
 trend = 2 * train_x* ((pi)/(max(train_x)-min(train_x)))
 wave1 = sin(train_x)
-wave2 = sin(f[kk]*train_x)
+wave2 = sin(f[1]*train_x)
 train_y = trend + wave1 + wave2
 
 for (kk in c(1:length(f))) {  #Big loop
-  
-  #data generation
+
+   #data generation
    wave1 = sin(train_x)
    wave2 = sin(f[kk]*train_x)
    train_y = trend + wave1 + wave2
 
   #MKL learning
-   send_command("new_svm SVRLIGHT")
-   send_command("use_mkl 1")                      
-   send_command("use_precompute 0")      #precompute every SINGLE kernel!
-   send_command(sprintf("mkl_parameters %f 0",mkl_eps))
-   send_command(sprintf("c %f",C))                
-   send_command(sprintf("svm_epsilon %f",svm_eps))
-   send_command(sprintf("svr_tube_epsilon %f",svm_tube))
-   send_command("clean_features TRAIN" )
-   send_command("clean_kernels" )
+   sg('new_svm', 'SVRLIGHT')
+   sg('use_mkl', TRUE)
+   sg('use_precompute', 0)      #precompute every SINGLE kernel!
+   sg('mkl_parameters', mkl_eps, 0)
+   sg('c', C)
+   sg('svm_epsilon', svm_eps)
+   sg('svr_tube_epsilon', svm_tube)
+   sg('clean_features', 'TRAIN')
+   sg('clean_kernel')
 
-   set_labels("TRAIN", train_y)              #set labels
-   add_features("TRAIN", train_x)             #add features for every basic SVM
-   add_features("TRAIN", train_x)
-   add_features("TRAIN", train_x)
-   add_features("TRAIN", train_x)
-   add_features("TRAIN", train_x)
-   add_features("TRAIN", train_x)            
-   add_features("TRAIN", train_x)
-   add_features("TRAIN", train_x)
-   add_features("TRAIN", train_x)
-   add_features("TRAIN", train_x)
-   send_command("set_kernel COMBINED 0")
-   send_command(sprintf("add_kernel 1 GAUSSIAN REAL %d %f", cache_size, rbf_width[1]))
-   send_command(sprintf("add_kernel 1 GAUSSIAN REAL %d %f", cache_size, rbf_width[2]))
-   send_command(sprintf("add_kernel 1 GAUSSIAN REAL %d %f", cache_size, rbf_width[3]))
-   send_command(sprintf("add_kernel 1 GAUSSIAN REAL %d %f", cache_size, rbf_width[4]))
-   send_command(sprintf("add_kernel 1 GAUSSIAN REAL %d %f", cache_size, rbf_width[5]))
-   send_command(sprintf("add_kernel 1 GAUSSIAN REAL %d %f", cache_size, rbf_width[6]))
-   send_command(sprintf("add_kernel 1 GAUSSIAN REAL %d %f", cache_size, rbf_width[7]))
-   send_command(sprintf("add_kernel 1 GAUSSIAN REAL %d %f", cache_size, rbf_width[8]))
-   send_command(sprintf("add_kernel 1 GAUSSIAN REAL %d %f", cache_size, rbf_width[9]))
-   send_command(sprintf("add_kernel 1 GAUSSIAN REAL %d %f", cache_size, rbf_width[10]))
-   send_command("init_kernel TRAIN") 
-   send_command("svm_train")
+#print(train_x)
+#sg('loglevel', 'ALL');
+
+   sg('set_labels', 'TRAIN', train_y)              #set labels
+   sg('add_features', 'TRAIN', train_x)             #add features for every basic SVM
+   sg('add_features', 'TRAIN', train_x)
+   sg('add_features', 'TRAIN', train_x)
+   sg('add_features', 'TRAIN', train_x)
+   sg('add_features', 'TRAIN', train_x)
+   sg('add_features', 'TRAIN', train_x)
+   sg('add_features', 'TRAIN', train_x)
+   sg('add_features', 'TRAIN', train_x)
+   sg('add_features', 'TRAIN', train_x)
+   sg('add_features', 'TRAIN', train_x)
+   sg('set_kernel', 'COMBINED', 0)
+   sg('add_kernel', 1, 'GAUSSIAN', 'REAL', cache_size, rbf_width[1])
+   sg('add_kernel', 1, 'GAUSSIAN', 'REAL', cache_size, rbf_width[2])
+   sg('add_kernel', 1, 'GAUSSIAN', 'REAL', cache_size, rbf_width[3])
+   sg('add_kernel', 1, 'GAUSSIAN', 'REAL', cache_size, rbf_width[4])
+   sg('add_kernel', 1, 'GAUSSIAN', 'REAL', cache_size, rbf_width[5])
+   sg('add_kernel', 1, 'GAUSSIAN', 'REAL', cache_size, rbf_width[6])
+   sg('add_kernel', 1, 'GAUSSIAN', 'REAL', cache_size, rbf_width[7])
+   sg('add_kernel', 1, 'GAUSSIAN', 'REAL', cache_size, rbf_width[8])
+   sg('add_kernel', 1, 'GAUSSIAN', 'REAL', cache_size, rbf_width[9])
+   sg('add_kernel', 1, 'GAUSSIAN', 'REAL', cache_size, rbf_width[10])
+   sg('init_kernel', 'TRAIN')
+   sg('train_classifier')
 
    weights[kk,] = get_subkernel_weights()
    cat("frequency:", f[kk], " rbf-kernel-weights: ", weights[kk,], "\n")
