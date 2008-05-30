@@ -30,10 +30,10 @@
 
 CSGInterface* interface=NULL;
 
-#define USAGE(method) "sg('" method "')"
-#define USAGE_I(method, in) "sg('" method "', " in ")"
-#define USAGE_O(method, out) "[" out "]=sg('" method "')"
-#define USAGE_IO(method, in, out) "[" out "]=sg('" method "', " in ")"
+#define USAGE(method) "sg('\033[1;31m" method "\033[0m')"
+#define USAGE_I(method, in) "sg('\033[1;31m" method "\033[0m', " in ")"
+#define USAGE_O(method, out) "[" out "]=sg('\033[1;31m" method "\033[0m')"
+#define USAGE_IO(method, in, out) "[" out "]=sg('\033[1;31m" method "\033[0m', " in ")"
 
 CSGInterfaceMethod sg_methods[]=
 {
@@ -5455,13 +5455,13 @@ bool CSGInterface::cmd_help()
 
 			if (is_group_item)
 			{
-				SG_PRINT("%s\n", sg_methods[i].command);
+				SG_PRINT("\033[1;31m%s\033[0m\n", sg_methods[i].command);
 			}
 
 			i++;
 		}
-		SG_PRINT("\n\nUse sg('help', 'topic') to see the list of commands in this group, e.g.\n\n"
-				"\tsg('help', 'Features')\n\nto see the list of commands for the 'Features' group.\n");
+		SG_PRINT("\n\nUse sg('\033[1;31mhelp\033[0m', '\033[1;31mtopic\033[0m') to see the list of commands in this group, e.g.\n\n"
+				"\tsg('\033[1;31mhelp\033[0m', '\033[1;31mFeatures\033[0m')\n\nto see the list of commands for the 'Features' group.\n");
 	}
 	else // m_nrhs == 2 -> single command or group help
 	{
@@ -5475,7 +5475,7 @@ bool CSGInterface::cmd_help()
 			if (in_group)
 			{
 				if (sg_methods[i].usage) // display group item
-					SG_PRINT("\t%s\n", sg_methods[i].command);
+					SG_PRINT("\t\033[1;31m%s\033[0m\n", sg_methods[i].command);
 					//SG_PRINT("\t%s: %s\n", sg_methods[i].command, sg_methods[i].usage);
 				else // next group reached -> end
 					break;
@@ -5487,13 +5487,13 @@ bool CSGInterface::cmd_help()
 				{
 					if (sg_methods[i].usage) // found item
 					{
-						SG_PRINT("Usage for %s\n\n\t%s\n",
+						SG_PRINT("Usage for \033[1;31m%s\033[0m\n\n\t%s\n",
 							sg_methods[i].command, sg_methods[i].usage);
 						break;
 					}
 					else // found group item
 					{
-						SG_PRINT("Commands in group %s\n\n", sg_methods[i].command);
+						SG_PRINT("Commands in group \033[1;31m%s\033[0m\n\n", sg_methods[i].command);
 						in_group=true;
 					}
 				}
@@ -5506,8 +5506,8 @@ bool CSGInterface::cmd_help()
 			SG_PRINT("Could not find help for command %s.\n", command);
 		else if (in_group)
 		{
-			SG_PRINT("\n\nUse sg('help', 'command') to see the usage pattern of a single command, e.g.\n\n"
-					"\tsg('help', 'classify')\n\nto see the usage pattern of the command 'classify'.\n");
+			SG_PRINT("\n\nUse sg('\033[1;31mhelp\033[0m', '\033[1;31mcommand\033[0m') to see the usage pattern of a single command, e.g.\n\n"
+					"\tsg('\033[1;31mhelp\033[0m', '\033[1;31mclassify\033[0m')\n\nto see the usage pattern of the command 'classify'.\n");
 		}
 
 		delete[] command;
