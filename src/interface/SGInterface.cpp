@@ -849,6 +849,11 @@ CSGInterfaceMethod sg_methods[]=
 		(CHAR*) USAGE_I(N_LOGLEVEL, "'ALL|DEBUG|INFO|NOTICE|WARN|ERROR|CRITICAL|ALERT|EMERGENCY'")
 	},
 	{
+		(CHAR*) N_PROGRESS,
+		(&CSGInterface::cmd_progress),
+		(CHAR*) USAGE_I(N_PROGRESS, "'ON|OFF'")
+	},
+	{
 		(CHAR*) N_GET_VERSION,
 		(&CSGInterface::cmd_get_version),
 		(CHAR*) USAGE_O(N_GET_VERSION, "version")
@@ -5396,6 +5401,27 @@ bool CSGInterface::cmd_loglevel()
 	SG_INFO("Loglevel set to %s.\n", level);
 
 	delete[] level;
+	return true;
+}
+
+bool CSGInterface::cmd_progress()
+{
+	if (m_nrhs<2 || !create_return_values(0))
+		return false;
+
+	INT len=0;
+	CHAR* progress=get_str_from_str_or_direct(len);
+
+	if (strmatch(progress, "ON"))
+		io.enable_progress();
+	else if (strmatch(progress, "OFF"))
+		io.disable_progress();
+	else
+		SG_ERROR("arguments to progress are be ON|OFF - found '%s'.\n", progress);
+
+	SG_INFO("Progress set to %s.\n", progress);
+
+	delete[] progress;
 	return true;
 }
 

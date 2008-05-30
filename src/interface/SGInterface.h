@@ -356,6 +356,8 @@ class CSGInterface : public CSGObject
 		bool cmd_echo();
 		/** set loglevel */
 		bool cmd_loglevel();
+		/** set progress */
+		bool cmd_progress();
 		/** get version */
 		bool cmd_get_version();
 		/** issue help message */
