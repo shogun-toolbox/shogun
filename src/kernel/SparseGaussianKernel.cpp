@@ -59,6 +59,8 @@ void CSparseGaussianKernel::cleanup()
 
 	delete[] sq_lhs;
 	sq_lhs = NULL;
+
+	CKernel::cleanup();
 }
 
 bool CSparseGaussianKernel::load_init(FILE* src)

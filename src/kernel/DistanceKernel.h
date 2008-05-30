@@ -54,9 +54,6 @@ class CDistanceKernel: public CKernel
 		 */
 		virtual bool init(CFeatures* l, CFeatures* r);
 
-		/** clean up kernel */
-		virtual void cleanup();
-
 		/** return what type of kernel we are
 		 *
 		 * @return kernel type DISTANCE

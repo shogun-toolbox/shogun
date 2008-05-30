@@ -40,10 +40,6 @@ bool CLocalityImprovedStringKernel::init(CFeatures* l, CFeatures* r)
 	return CStringKernel<CHAR>::init(l,r);
 }
 
-void CLocalityImprovedStringKernel::cleanup()
-{
-}
-
 bool CLocalityImprovedStringKernel::load_init(FILE* src)
 {
 	return false;

@@ -79,6 +79,8 @@ void CFixedDegreeStringKernel::cleanup()
 	sqrtdiag_lhs = NULL;
 
 	initialized = false;
+
+	CKernel::cleanup();
 }
 
 bool CFixedDegreeStringKernel::load_init(FILE* src)

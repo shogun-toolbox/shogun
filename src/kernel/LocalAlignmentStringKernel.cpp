@@ -131,6 +131,8 @@ void CLocalAlignmentStringKernel::cleanup()
 	isAA=NULL;
 	free(aaIndex);
 	aaIndex=NULL;
+
+	CKernel::cleanup();
 }
 
 /* LogSum - default log funciotion. fast, but not exact */

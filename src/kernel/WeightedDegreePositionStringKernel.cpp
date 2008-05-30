@@ -248,6 +248,8 @@ void CWeightedDegreePositionStringKernel::cleanup()
 
 	delete alphabet;
 	alphabet=NULL;
+
+	CKernel::cleanup();
 }
 
 bool CWeightedDegreePositionStringKernel::load_init(FILE* src)

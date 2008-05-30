@@ -40,9 +40,6 @@ class CDiagKernel: public CKernel
 
 		virtual ~CDiagKernel();
 
-		/** clean up kernel */
-		virtual void cleanup();
-
 		/** load kernel init_data
 		 *
 		 * @param src file to load from

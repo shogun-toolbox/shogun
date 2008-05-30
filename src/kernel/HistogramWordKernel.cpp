@@ -329,6 +329,8 @@ void CHistogramWordKernel::cleanup()
 	num_symbols=0;
 	sum_m2_s2=0;
 	initialized = false;
+
+	CKernel::cleanup();
 }
 
 bool CHistogramWordKernel::load_init(FILE* src)

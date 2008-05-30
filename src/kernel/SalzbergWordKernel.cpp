@@ -285,6 +285,8 @@ void CSalzbergWordKernel::cleanup()
 
 	delete[] ld_mean_lhs ;
 	ld_mean_lhs=NULL;
+
+	CKernel::cleanup();
 }
 
 bool CSalzbergWordKernel::load_init(FILE* src)

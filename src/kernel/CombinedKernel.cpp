@@ -192,6 +192,8 @@ void CCombinedKernel::cleanup()
 	}
 
 	delete_optimization();
+
+	CKernel::cleanup();
 }
 
 void CCombinedKernel::list_kernels()

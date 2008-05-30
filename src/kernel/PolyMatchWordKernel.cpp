@@ -114,6 +114,8 @@ void CPolyMatchWordKernel::cleanup()
 	sqrtdiag_lhs=NULL;
 
 	initialized=false;
+
+	CKernel::cleanup();
 }
 
 bool CPolyMatchWordKernel::load_init(FILE* src)

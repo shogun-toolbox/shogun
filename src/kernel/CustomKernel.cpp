@@ -71,6 +71,8 @@ void CCustomKernel::cleanup()
 	upper_diagonal=false;
 	num_cols=0;
 	num_rows=0;
+
+	CKernel::cleanup();
 }
 
 bool CCustomKernel::load_init(FILE* src)

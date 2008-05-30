@@ -87,6 +87,8 @@ void CSimpleLocalityImprovedStringKernel::cleanup()
 {
 	delete[] pyramid_weights;
 	pyramid_weights = NULL;
+
+	CKernel::cleanup();
 }
 
 bool CSimpleLocalityImprovedStringKernel::load_init(FILE* src)

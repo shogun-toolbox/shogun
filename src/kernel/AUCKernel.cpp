@@ -36,11 +36,6 @@ bool CAUCKernel::init(CFeatures* l, CFeatures* r)
 	return true;
 }
 
-
-void CAUCKernel::cleanup()
-{
-}
-
 bool CAUCKernel::load_init(FILE* src)
 {
 	return false;

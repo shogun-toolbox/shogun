@@ -29,10 +29,6 @@ CDiagKernel::~CDiagKernel()
 {
 }
 
-void CDiagKernel::cleanup()
-{
-}
-
 bool CDiagKernel::load_init(FILE* src)
 {
 	return false;

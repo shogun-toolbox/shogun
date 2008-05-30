@@ -122,9 +122,11 @@ class CKernel : public CSGObject
 
 		/** clean up your kernel
 		 *
-		 * abstract base method
+		 * base method only removes lhs and rhs
+		 * overload to add further cleanup but make sure CKernel::cleanup() is
+		 * called
 		 */
-		virtual void cleanup()=0;
+		virtual void cleanup();
 
 		/** load the kernel matrix
 		 *

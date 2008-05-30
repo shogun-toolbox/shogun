@@ -147,6 +147,8 @@ void CCommUlongStringKernel::cleanup()
 
 	delete[] sqrtdiag_lhs;
 	sqrtdiag_lhs=NULL;
+
+	CKernel::cleanup();
 }
 
 bool CCommUlongStringKernel::load_init(FILE* src)

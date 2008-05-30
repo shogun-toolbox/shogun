@@ -64,6 +64,8 @@ void CSparseLinearKernel::init_rescale()
 void CSparseLinearKernel::cleanup()
 {
 	delete_optimization();
+
+	CKernel::cleanup();
 }
 
 bool CSparseLinearKernel::load_init(FILE* src)

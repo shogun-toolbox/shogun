@@ -64,6 +64,8 @@ void CLinearByteKernel::init_rescale()
 void CLinearByteKernel::cleanup()
 {
 	delete_optimization();
+
+	CKernel::cleanup();
 }
 
 bool CLinearByteKernel::load_init(FILE* src)

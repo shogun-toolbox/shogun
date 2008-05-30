@@ -200,7 +200,8 @@ void CMindyGramKernel::cleanup()
 {
     delete_optimization();
     clear_normal();
-    remove_lhs();
+
+	CKernel::cleanup();
 }
 
 /**

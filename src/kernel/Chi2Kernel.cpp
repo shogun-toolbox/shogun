@@ -36,10 +36,6 @@ bool CChi2Kernel::init(CFeatures* l, CFeatures* r)
 	return result;
 }
 
-void CChi2Kernel::cleanup()
-{
-}
-
 bool CChi2Kernel::load_init(FILE* src)
 {
 	return false;

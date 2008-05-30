@@ -36,10 +36,6 @@ bool CGaussianKernel::init(CFeatures* l, CFeatures* r)
 	return true;
 }
 
-void CGaussianKernel::cleanup()
-{
-}
-
 bool CGaussianKernel::load_init(FILE* src)
 {
 	return false;

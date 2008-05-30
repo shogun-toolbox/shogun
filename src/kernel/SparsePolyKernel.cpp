@@ -112,6 +112,8 @@ void CSparsePolyKernel::cleanup()
 	sqrtdiag_lhs=NULL;
 
 	initialized=false;
+
+	CKernel::cleanup();
 }
 
 bool CSparsePolyKernel::load_init(FILE* src)

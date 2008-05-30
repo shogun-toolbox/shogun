@@ -47,6 +47,8 @@ void CPyramidChi2::cleanup()
 	pyramidlevels=NULL;
 	delete[] weights;
 	weights=NULL;
+
+	CKernel::cleanup();
 }
 
 bool CPyramidChi2::init(CFeatures* l, CFeatures* r)

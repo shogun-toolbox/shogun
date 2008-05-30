@@ -111,6 +111,7 @@ void CPolyKernel::cleanup()
 	sqrtdiag_lhs=NULL;
 
 	initialized=false;
+	CKernel::cleanup();
 }
 
 bool CPolyKernel::load_init(FILE* src)

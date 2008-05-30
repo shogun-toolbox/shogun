@@ -89,6 +89,8 @@ void CPolyMatchStringKernel::cleanup()
 	sqrtdiag_lhs = NULL;
 
 	initialized = false;
+
+	CKernel::cleanup();
 }
 
 bool CPolyMatchStringKernel::load_init(FILE *src)

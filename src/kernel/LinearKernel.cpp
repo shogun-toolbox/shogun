@@ -62,6 +62,8 @@ void CLinearKernel::init_rescale()
 void CLinearKernel::cleanup()
 {
 	delete_optimization();
+
+	CKernel::cleanup();
 }
 
 bool CLinearKernel::load_init(FILE* src)

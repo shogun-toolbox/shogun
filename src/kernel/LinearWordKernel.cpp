@@ -64,6 +64,8 @@ void CLinearWordKernel::init_rescale()
 void CLinearWordKernel::cleanup()
 {
 	delete_optimization();
+
+	CKernel::cleanup();
 }
 
 bool CLinearWordKernel::load_init(FILE* src)

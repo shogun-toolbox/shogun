@@ -212,6 +212,8 @@ void CWeightedDegreeStringKernel::cleanup()
 
 	delete alphabet;
 	alphabet=NULL;
+
+	CKernel::cleanup();
 }
 
 bool CWeightedDegreeStringKernel::load_init(FILE* src)

@@ -61,10 +61,6 @@ void CWordMatchKernel::init_rescale()
 	initialized=true;
 }
 
-void CWordMatchKernel::cleanup()
-{
-}
-
 bool CWordMatchKernel::load_init(FILE* src)
 {
 	return false;

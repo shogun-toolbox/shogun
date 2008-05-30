@@ -180,6 +180,8 @@ void CCommWordStringKernel::cleanup()
 
 	delete[] sqrtdiag_lhs;
 	sqrtdiag_lhs=NULL;
+
+	CKernel::cleanup();
 }
 
 bool CCommWordStringKernel::load_init(FILE* src)

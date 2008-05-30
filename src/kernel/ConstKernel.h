@@ -41,9 +41,6 @@ class CConstKernel: public CKernel
 
 		virtual ~CConstKernel();
 
-		/** clean up kernel */
-		inline virtual void cleanup() {}
-
 		/** initialize kernel
 		 *
 		 * @param l features of left-hand side

@@ -63,6 +63,8 @@ void CLinearStringKernel::init_rescale()
 void CLinearStringKernel::cleanup()
 {
 	delete_optimization();
+
+	CKernel::cleanup();
 }
 
 bool CLinearStringKernel::load_init(FILE *src)

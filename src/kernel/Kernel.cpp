@@ -341,6 +341,12 @@ bool CKernel::init(CFeatures* l, CFeatures* r)
 	return true;
 }
 
+void CKernel::cleanup()
+{
+	remove_lhs();
+	remove_rhs();
+}
+
 #ifdef USE_SVMLIGHT
 /****************************** Cache handling *******************************/
 
