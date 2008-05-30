@@ -197,7 +197,7 @@ ifeq (python,$(INTERFACE))
 install: $(TARGET)
 	install -d -m755 $(DESTDIR)$(PYDIR)
 	install -m755 $(TARGET) $(DESTDIR)$(PYDIR)
-# r, r-modular and matlab are done separately
+# libshogun
 else
 ifeq (libshogun,$(INTERFACE))
 install: $(TARGET)
@@ -209,17 +209,27 @@ install: $(TARGET)
 		-exec install -d -m755 "$(DESTDIR)$(INCDIR)/shogun/"\{\} \;
 	find ./ -mindepth 1 -type d ! \( -wholename '*.svn*' -o -name '*wrap*' \) \
 		-exec sh -c "install -m644 {}/*.h -t $(DESTDIR)$(INCDIR)/shogun/{}" \;
+# r
 else
+install: $(TARGET)
+	install -d -m755 $(DESTDIR)$(RDIR)/sg/demo
+	install -d -m755 $(DESTDIR)$(RDIR)/sg/doc
+	install -d -m755 $(DESTDIR)$(RDIR)/sg/libs
+	install -d -m755 $(DESTDIR)$(RDIR)/sg/Meta
+	install -d -m755 $(DESTDIR)$(RDIR)/sg/R
+	install -m755 $(TARGET) $(DESTDIR)$(RDIR)/sg/libs
+	install -m755 ../examples/r/*.R ../examples/r/graphical/*.R $(DESTDIR)$(RDIR)/sg/demo
+	./.r-install.sh $(DESTDIR)$(RDIR) sg
+ifeq (r,$(INTERFACE))
+else #matlab are done separately
 install: 
-	@echo "The r, r-modular and matlab interface need to be installed"
+	@echo "The matlab interface needs to be installed"
 	@echo "using a different mechanism:"
 	@echo
-	@echo "R - dyn.load('sg.so')"
-	@echo "  - do make -C ../R install"
+	@echo " just copy the sg.mex* to a <dir> of your choice"
+	@echo " and addpath <dir>"
 	@echo
-	@echo "matlab - just copy the sg.mex* to a <dir> of your choice"
-	@echo "         and addpath <dir>"
-	@echo
+endif #r
 endif #libshogun
 endif #R
 endif #python

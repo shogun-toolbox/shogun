@@ -532,6 +532,10 @@ Installation directories:
   --confdir=DIR                 use this prefix for installing configuration files
                                 [same as datadir]
   --libdir=DIR                  use this prefix for object code libraries [PREFIX/lib]
+  --incdir=DIR                  use this prefix for include files [PREFIX/include]
+  --pydir=DIR                   use this prefix for python files [PREFIX/auto-detected]
+  --octdir=DIR                  use this prefix for octave files [PREFIX/auto-detected]
+  --rdir=DIR                    use this prefix for r files [PREFIX/auto-detected]
 
 Optional features:
   --enable-mindy                enable mindy library support (for more efficient n-gram, word-in-a-bag kernel implementations) [auto]
@@ -704,6 +708,9 @@ for ac_option do
 	;;
   --octdir=*)
     _octdir=$(mangle_homedir_tilde "`echo $ac_option | cut -d '=' -f 2`")
+    ;;
+  --rdir=*)
+    _rdir=$(mangle_homedir_tilde "`echo $ac_option | cut -d '=' -f 2`")
     ;;
 
   *)
@@ -2459,6 +2466,7 @@ EOF
 		if ( echo 'version; quit()' | R --no-save ) >/dev/null 2>&1 
 		then
 			echores "`echo 'version; quit()' | R  --no-save 2>&1 | grep version\.string | cut -f 4 -d ' '`"
+			test -n "$_rdir" || _rdir=`echo '.libPaths()[1]' | R --no-save 2>/dev/null | grep '^\[1\]' | cut -f 2 -d '"'`
 			PRE_LIB_SWIG=
 			EXT_IF_SWIG='.R'
 		else
@@ -2794,6 +2802,7 @@ INCDIR			= ${_incdir}
 LIBDIR			= ${_libdir}
 PYDIR			= ${_libdir}/${_pydir}
 OCTDIR			= ${_octdir}
+RDIR			= ${_rdir}
 EOF
 }
 
