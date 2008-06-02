@@ -1,17 +1,14 @@
 init_shogun
 
-num=12;
-leng=50;
-rep=5;
-weight=0.3;
 
 % Explicit examples on how to use distributions
 
-% generate some random DNA =;-]
-acgt='ACGT';
-trainlab_dna=[ones(1,num/2) -ones(1,num/2)];
-traindata_dna=acgt(ceil(4*rand(leng,num)));
-testdata_dna=acgt(ceil(4*rand(leng,num)));
+addpath('tools');
+fm_train_dna=load_matrix('../data/fm_train_dna.dat');
+
+leng=50;
+rep=5;
+weight=0.3;
 
 % generate a sequence with characters 1-6 drawn from 3 loaded cubes
 for i = 1:3,
@@ -44,7 +41,7 @@ gap=0;
 reverse=false;
 
 charfeat=StringCharFeatures(DNA);
-charfeat.set_string_features(traindata_dna);
+charfeat.set_string_features(fm_train_dna);
 feats=StringWordFeatures(charfeat.get_alphabet());
 feats.obtain_from_char(charfeat, order-1, order, gap, reverse);
 preproc=SortWordString();
@@ -76,7 +73,7 @@ gap=0;
 reverse=false;
 
 charfeat=StringCharFeatures(DNA);
-charfeat.set_string_features(traindata_dna);
+charfeat.set_string_features(fm_train_dna);
 feats=StringWordFeatures(charfeat.get_alphabet());
 feats.obtain_from_char(charfeat, order-1, order, gap, reverse);
 preproc=SortWordString();
@@ -121,6 +118,8 @@ feats.apply_preproc();
 
 hmm=HMM(feats, N, M, pseudo);
 hmm.train();
+% cheating, but enum BaumWelchViterbiType does not seem available
+BW_NORMAL=0;
 hmm.baum_welch_viterbi_train(BW_NORMAL);
 
 num_examples=feats.get_num_vectors();

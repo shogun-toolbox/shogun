@@ -1,27 +1,22 @@
 init_shogun
 
-num=12;
-leng=50;
-rep=5;
-weight=0.3;
-dist=1.2;
-
 % Explicit examples on how to use the different kernels
 
-traindata_real=[randn(leng,num)-dist, randn(leng,num)+dist];
-testdata_real=[randn(leng,num+7)-dist, randn(leng,num+7)+dist];
+addpath('tools');
+fm_train_real=load_matrix('../data/fm_train_real.dat');
+fm_test_real=load_matrix('../data/fm_test_real.dat');
+label_train_dna=load_matrix('../data/label_train_dna.dat');
+fm_train_dna=load_matrix('../data/fm_train_dna.dat');
+fm_test_dna=load_matrix('../data/fm_test_dna.dat');
+fm_train_word=load_matrix('../data/fm_train_word.dat');
+fm_test_word=load_matrix('../data/fm_test_word.dat');
+fm_train_byte=load_matrix('../data/fm_train_byte.dat');
+fm_test_byte=load_matrix('../data/fm_test_byte.dat');
 
-traindata_byte=uint8(256*[rand(leng,2*num)]);
-testdata_byte=uint8(256*[rand(leng,3*num)]);
 
-traindata_word=uint16((2^16)*[rand(leng,2*num)]);
-testdata_word=uint16((2^16)*[rand(leng,3*num)]);
-
-% generate some random DNA =;-]
-acgt='ACGT';
-trainlab_dna=[ones(1,num/2) -ones(1,num/2)];
-traindata_dna=acgt(ceil(4*rand(leng,num)));
-testdata_dna=acgt(ceil(4*rand(leng,num)));
+leng=28;
+rep=5;
+weight=0.3;
 
 % generate a sequence with characters 1-6 drawn from 3 loaded cubes
 for i = 1:3,
@@ -46,21 +41,20 @@ end
 % byte features
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% linear byte
-disp('LinearByte')
+% linear byte - b0rked?
+%disp('LinearByte')
 
-num_feats=11;
-feats_train=ByteFeatures(RAWBYTE);
-feats_train.copy_feature_matrix(traindata_byte);
+%feats_train=ByteFeatures(RAWBYTE);
+%feats_train.copy_feature_matrix(fm_train_byte);
 
-feats_test=ByteFeatures(RAWBYTE);
-feats_test.copy_feature_matrix(testdata_byte);
+%feats_test=ByteFeatures(RAWBYTE);
+%feats_test.copy_feature_matrix(fm_test_byte);
 
-kernel=LinearByteKernel(feats_train, feats_train);
+%kernel=LinearByteKernel(feats_train, feats_train);
 
-km_train=kernel.get_kernel_matrix();
-kernel.init(feats_train, feats_test);
-km_test=kernel.get_kernel_matrix();
+%km_train=kernel.get_kernel_matrix();
+%kernel.init(feats_train, feats_test);
+%km_test=kernel.get_kernel_matrix();
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % real features
@@ -69,8 +63,8 @@ km_test=kernel.get_kernel_matrix();
 % chi2
 disp('Chi2')
 
-feats_train=RealFeatures(traindata_real);
-feats_test=RealFeatures(testdata_real);
+feats_train=RealFeatures(fm_train_real);
+feats_test=RealFeatures(fm_test_real);
 width=1.4;
 size_cache=10;
 
@@ -83,8 +77,8 @@ km_test=kernel.get_kernel_matrix();
 % const
 disp('Const')
 
-feats_train=RealFeatures(traindata_real);
-feats_test=RealFeatures(testdata_real);
+feats_train=RealFeatures(fm_train_real);
+feats_test=RealFeatures(fm_test_real);
 c=23.;
 
 kernel=ConstKernel(feats_train, feats_train, c);
@@ -96,8 +90,8 @@ km_test=kernel.get_kernel_matrix();
 % diag
 disp('Diag')
 
-feats_train=RealFeatures(traindata_real);
-feats_test=RealFeatures(testdata_real);
+feats_train=RealFeatures(fm_train_real);
+feats_test=RealFeatures(fm_test_real);
 diag=23.;
 
 kernel=DiagKernel(feats_train, feats_train, diag);
@@ -109,8 +103,8 @@ km_test=kernel.get_kernel_matrix();
 % gaussian
 disp('Gaussian')
 
-feats_train=RealFeatures(traindata_real);
-feats_test=RealFeatures(testdata_real);
+feats_train=RealFeatures(fm_train_real);
+feats_test=RealFeatures(fm_test_real);
 width=1.9;
 
 kernel=GaussianKernel(feats_train, feats_train, width);
@@ -122,8 +116,8 @@ km_test=kernel.get_kernel_matrix();
 % gaussian_shift
 disp('GaussianShift')
 
-feats_train=RealFeatures(traindata_real);
-feats_test=RealFeatures(testdata_real);
+feats_train=RealFeatures(fm_train_real);
+feats_test=RealFeatures(fm_test_real);
 width=1.8;
 max_shift=2;
 shift_step=1;
@@ -138,8 +132,8 @@ km_test=kernel.get_kernel_matrix();
 % linear
 disp('Linear')
 
-feats_train=RealFeatures(traindata_real);
-feats_test=RealFeatures(testdata_real);
+feats_train=RealFeatures(fm_train_real);
+feats_test=RealFeatures(fm_test_real);
 scale=1.2;
 
 kernel=LinearKernel(feats_train, feats_train, scale);
@@ -151,8 +145,8 @@ km_test=kernel.get_kernel_matrix();
 % poly
 disp('Poly')
 
-feats_train=RealFeatures(traindata_real);
-feats_test=RealFeatures(testdata_real);
+feats_train=RealFeatures(fm_train_real);
+feats_test=RealFeatures(fm_test_real);
 degree=4;
 inhomogene=false;
 use_normalization=true;
@@ -167,8 +161,8 @@ km_test=kernel.get_kernel_matrix();
 % sigmoid
 disp('Sigmoid')
 
-feats_train=RealFeatures(traindata_real);
-feats_test=RealFeatures(testdata_real);
+feats_train=RealFeatures(fm_train_real);
+feats_test=RealFeatures(fm_test_real);
 size_cache=10;
 gamma=1.2;
 coef0=1.3;
@@ -183,13 +177,13 @@ km_test=kernel.get_kernel_matrix();
 % sparse real features
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% sparse_gaussian
+% sparse_gaussian - b0rked?
 disp('SparseGaussian')
 
-feat=RealFeatures(traindata_real);
+feat=RealFeatures(fm_train_real);
 feats_train=SparseRealFeatures();
 feats_train.obtain_from_simple(feat);
-feat=RealFeatures(testdata_real);
+feat=RealFeatures(fm_test_real);
 feats_test=SparseRealFeatures();
 feats_test.obtain_from_simple(feat);
 width=1.1;
@@ -203,10 +197,10 @@ km_test=kernel.get_kernel_matrix();
 % sparse_linear
 disp('SparseLinear')
 
-feat=RealFeatures(traindata_real);
+feat=RealFeatures(fm_train_real);
 feats_train=SparseRealFeatures();
 feats_train.obtain_from_simple(feat);
-feat=RealFeatures(testdata_real);
+feat=RealFeatures(fm_test_real);
 feats_test=SparseRealFeatures();
 feats_test.obtain_from_simple(feat);
 scale=1.1;
@@ -220,10 +214,10 @@ km_test=kernel.get_kernel_matrix();
 % sparse_poly
 disp('SparsePoly')
 
-feat=RealFeatures(traindata_real);
+feat=RealFeatures(fm_train_real);
 feats_train=SparseRealFeatures();
 feats_train.obtain_from_simple(feat);
-feat=RealFeatures(testdata_real);
+feat=RealFeatures(fm_test_real);
 feats_test=SparseRealFeatures();
 feats_test.obtain_from_simple(feat);
 size_cache=10;
@@ -245,8 +239,8 @@ km_test=kernel.get_kernel_matrix();
 % linear_word
 disp('LinearWord')
 
-feats_train=WordFeatures(traindata_word);
-feats_test=WordFeatures(testdata_word);
+feats_train=WordFeatures(uint16(fm_train_word));
+feats_test=WordFeatures(uint16(fm_test_word));
 do_rescale=true;
 scale=1.4;
 
@@ -259,8 +253,8 @@ km_test=kernel.get_kernel_matrix();
 % poly_match_word
 disp('PolyMatchWord')
 
-feats_train=WordFeatures(traindata_word);
-feats_test=WordFeatures(testdata_word);
+feats_train=WordFeatures(uint16(fm_train_word));
+feats_test=WordFeatures(uint16(fm_test_word));
 degree=2;
 inhomogene=true;
 
@@ -273,8 +267,8 @@ km_test=kernel.get_kernel_matrix();
 % word_match
 disp('WordMatch')
 
-feats_train=WordFeatures(traindata_word);
-feats_test=WordFeatures(testdata_word);
+feats_train=WordFeatures(uint16(fm_train_word));
+feats_test=WordFeatures(uint16(fm_test_word));
 degree=3;
 do_rescale=true;
 scale=1.4;
@@ -293,9 +287,9 @@ km_test=kernel.get_kernel_matrix();
 disp('FixedDegreeString')
 
 feats_train=StringCharFeatures(DNA);
-feats_train.set_string_features(traindata_dna);
+feats_train.set_string_features(fm_train_dna);
 feats_test=StringCharFeatures(DNA);
-feats_test.set_string_features(testdata_dna);
+feats_test.set_string_features(fm_test_dna);
 degree=3;
 
 kernel=FixedDegreeStringKernel(feats_train, feats_train, degree);
@@ -308,9 +302,9 @@ km_test=kernel.get_kernel_matrix();
 disp('LinearString')
 
 feats_train=StringCharFeatures(DNA);
-feats_train.set_string_features(traindata_dna);
+feats_train.set_string_features(fm_train_dna);
 feats_test=StringCharFeatures(DNA);
-feats_test.set_string_features(testdata_dna);
+feats_test.set_string_features(fm_test_dna);
 
 kernel=LinearStringKernel(feats_train, feats_train);
 
@@ -322,9 +316,9 @@ km_test=kernel.get_kernel_matrix();
 disp('LocalAlignmentString')
 
 feats_train=StringCharFeatures(DNA);
-feats_train.set_string_features(traindata_dna);
+feats_train.set_string_features(fm_train_dna);
 feats_test=StringCharFeatures(DNA);
-feats_test.set_string_features(testdata_dna);
+feats_test.set_string_features(fm_test_dna);
 
 kernel=LocalAlignmentStringKernel(feats_train, feats_train);
 
@@ -336,9 +330,9 @@ km_test=kernel.get_kernel_matrix();
 disp('PolyMatchString')
 
 feats_train=StringCharFeatures(DNA);
-feats_train.set_string_features(traindata_dna);
+feats_train.set_string_features(fm_train_dna);
 feats_test=StringCharFeatures(DNA);
-feats_test.set_string_features(testdata_dna);
+feats_test.set_string_features(fm_test_dna);
 degree=3;
 inhomogene=false;
 
@@ -352,9 +346,9 @@ km_test=kernel.get_kernel_matrix();
 disp('SimpleLocalityImprovedString')
 
 feats_train=StringCharFeatures(DNA);
-feats_train.set_string_features(traindata_dna);
+feats_train.set_string_features(fm_train_dna);
 feats_test=StringCharFeatures(DNA);
-feats_test.set_string_features(testdata_dna);
+feats_test.set_string_features(fm_test_dna);
 l=5;
 inner_degree=5;
 outer_degree=7;
@@ -370,9 +364,9 @@ km_test=kernel.get_kernel_matrix();
 disp('WeightedDegreeString')
 
 feats_train=StringCharFeatures(DNA);
-feats_train.set_string_features(traindata_dna);
+feats_train.set_string_features(fm_train_dna);
 feats_test=StringCharFeatures(DNA);
-feats_test.set_string_features(testdata_dna);
+feats_test.set_string_features(fm_test_dna);
 degree=20;
 
 kernel=WeightedDegreeStringKernel(feats_train, feats_train, degree);
@@ -389,14 +383,14 @@ km_test=kernel.get_kernel_matrix();
 disp('WeightedDegreePositionString')
 
 feats_train=StringCharFeatures(DNA);
-feats_train.set_string_features(traindata_dna);
+feats_train.set_string_features(fm_train_dna);
 feats_test=StringCharFeatures(DNA);
-feats_test.set_string_features(testdata_dna);
+feats_test.set_string_features(fm_test_dna);
 degree=20;
 
 kernel=WeightedDegreePositionStringKernel(feats_train, feats_train, degree);
 
-%kernel.set_shifts(zeros(len(traindata_dna[0]), dtype=int));
+%kernel.set_shifts(zeros(len(fm_train_dna[0]), dtype=int));
 
 km_train=kernel.get_kernel_matrix();
 kernel.init(feats_train, feats_test);
@@ -406,9 +400,9 @@ km_test=kernel.get_kernel_matrix();
 disp('LocalityImprovedString')
 
 feats_train=StringCharFeatures(DNA);
-feats_train.set_string_features(traindata_dna);
+feats_train.set_string_features(fm_train_dna);
 feats_test=StringCharFeatures(DNA);
-feats_test.set_string_features(testdata_dna);
+feats_test.set_string_features(fm_test_dna);
 l=5;
 inner_degree=5;
 outer_degree=7;
@@ -432,7 +426,7 @@ gap=0;
 reverse=false;
 
 charfeat=StringCharFeatures(DNA);
-charfeat.set_string_features(traindata_dna);
+charfeat.set_string_features(fm_train_dna);
 feats_train=StringWordFeatures(charfeat.get_alphabet());
 feats_train.obtain_from_char(charfeat, order-1, order, gap, reverse);
 preproc=SortWordString();
@@ -441,7 +435,7 @@ feats_train.add_preproc(preproc);
 feats_train.apply_preproc();
 
 charfeat=StringCharFeatures(DNA);
-charfeat.set_string_features(testdata_dna);
+charfeat.set_string_features(fm_test_dna);
 feats_test=StringWordFeatures(charfeat.get_alphabet());
 feats_test.obtain_from_char(charfeat, order-1, order, gap, reverse);
 feats_test.add_preproc(preproc);
@@ -465,7 +459,7 @@ gap=0;
 reverse=true;
 
 charfeat=StringCharFeatures(DNA);
-charfeat.set_string_features(traindata_dna);
+charfeat.set_string_features(fm_train_dna);
 feats_train=StringWordFeatures(charfeat.get_alphabet());
 feats_train.obtain_from_char(charfeat, order-1, order, gap, reverse);
 preproc=SortWordString();
@@ -474,7 +468,7 @@ feats_train.add_preproc(preproc);
 feats_train.apply_preproc();
 
 charfeat=StringCharFeatures(DNA);
-charfeat.set_string_features(testdata_dna);
+charfeat.set_string_features(fm_test_dna);
 feats_test=StringWordFeatures(charfeat.get_alphabet());
 feats_test.obtain_from_char(charfeat, order-1, order, gap, reverse);
 feats_test.add_preproc(preproc);
@@ -498,7 +492,7 @@ gap=0;
 reverse=false;
 
 charfeat=StringCharFeatures(DNA);
-charfeat.set_string_features(traindata_dna);
+charfeat.set_string_features(fm_train_dna);
 feats_train=StringUlongFeatures(charfeat.get_alphabet());
 feats_train.obtain_from_char(charfeat, order-1, order, gap, reverse);
 preproc=SortUlongString();
@@ -508,7 +502,7 @@ feats_train.apply_preproc();
 
 
 charfeat=StringCharFeatures(DNA);
-charfeat.set_string_features(testdata_dna);
+charfeat.set_string_features(fm_test_dna);
 feats_test=StringUlongFeatures(charfeat.get_alphabet());
 feats_test.obtain_from_char(charfeat, order-1, order, gap, reverse);
 feats_test.add_preproc(preproc);
@@ -552,11 +546,8 @@ km_test=kernel.get_kernel_matrix();
 % distance
 disp('Distance')
 
-num_feats=10;
-data=rand(num_feats, 9);
-feats_train=RealFeatures(data);
-data=rand(num_feats, 19);
-feats_test=RealFeatures(data);
+feats_train=RealFeatures(fm_train_real);
+feats_test=RealFeatures(fm_test_real);
 width=1.7;
 distance=EuclidianDistance();
 
@@ -569,11 +560,8 @@ km_test=kernel.get_kernel_matrix();
 % auc
 disp('AUC')
 
-num_feats=23;
-data=rand(num_feats, 11);
-feats_train=RealFeatures(data);
-data=rand(num_feats, 19);
-feats_test=RealFeatures(data);
+feats_train=RealFeatures(fm_train_real);
+feats_test=RealFeatures(fm_test_real);
 width=1.7;
 subkernel=GaussianKernel(feats_train, feats_test, width);
 
@@ -599,18 +587,18 @@ feats_train=CombinedFeatures();
 feats_test=CombinedFeatures();
 
 subkfeats_train=StringCharFeatures(DNA);
-subkfeats_train.set_string_features(traindata_dna);
+subkfeats_train.set_string_features(fm_train_dna);
 subkfeats_test=StringCharFeatures(DNA);
-subkfeats_test.set_string_features(testdata_dna);
+subkfeats_test.set_string_features(fm_test_dna);
 subkernel=LinearStringKernel(10);
 feats_train.append_feature_obj(subkfeats_train);
 feats_test.append_feature_obj(subkfeats_test);
 kernel.append_kernel(subkernel);
 
 subkfeats_train=StringCharFeatures(DNA);
-subkfeats_train.set_string_features(traindata_dna);
+subkfeats_train.set_string_features(fm_train_dna);
 subkfeats_test=StringCharFeatures(DNA);
-subkfeats_test.set_string_features(testdata_dna);
+subkfeats_test.set_string_features(fm_test_dna);
 degree=3;
 subkernel=FixedDegreeStringKernel(10, degree);
 feats_train.append_feature_obj(subkfeats_train);
@@ -618,9 +606,9 @@ feats_test.append_feature_obj(subkfeats_test);
 kernel.append_kernel(subkernel);
 
 subkfeats_train=StringCharFeatures(DNA);
-subkfeats_train.set_string_features(traindata_dna);
+subkfeats_train.set_string_features(fm_train_dna);
 subkfeats_test=StringCharFeatures(DNA);
-subkfeats_test.set_string_features(testdata_dna);
+subkfeats_test.set_string_features(fm_test_dna);
 subkernel=LocalAlignmentStringKernel(10);
 feats_train.append_feature_obj(subkfeats_train);
 feats_test.append_feature_obj(subkfeats_test);
@@ -639,18 +627,17 @@ gap=0;
 reverse=false;
 
 charfeat=StringCharFeatures(DNA);
-charfeat.set_string_features(traindata_dna);
+charfeat.set_string_features(fm_train_dna);
 feats_train=StringWordFeatures(charfeat.get_alphabet());
 feats_train.obtain_from_char(charfeat, order-1, order, gap, reverse);
 
 charfeat=StringCharFeatures(DNA);
-charfeat.set_string_features(testdata_dna);
+charfeat.set_string_features(fm_test_dna);
 feats_test=StringWordFeatures(charfeat.get_alphabet());
 feats_test.obtain_from_char(charfeat, order-1, order, gap, reverse);
 
 pie=PluginEstimate();
-lab=round(rand(1, feats_train.get_num_vectors()))*2-1;
-labels=Labels(lab);
+labels=Labels(label_train_dna);
 pie.set_labels(labels);
 pie.set_features(feats_train);
 pie.train();
@@ -689,6 +676,8 @@ wordfeats_test.obtain_from_char(charfeat, order-1, order, gap, reverse);
 wordfeats_test.add_preproc(preproc);
 wordfeats_test.apply_preproc();
 
+% cheating, BW_NORMAL is somehow not available
+BW_NORMAL=0;
 pos=HMM(wordfeats_train, N, M, pseudo);
 pos.train();
 pos.baum_welch_viterbi_train(BW_NORMAL);

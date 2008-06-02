@@ -1,13 +1,11 @@
 init_shogun
 
-num=50; %number of example
-len=10; %number of dimensions
-dist=1.5;
-
 % Explicit examples on how to use regressions
 
-traindata_real=[randn(len,num)-dist, randn(len,num)+dist];
-testdata_real=[randn(len,num+7)-dist, randn(len,num+7)+dist];
+addpath('tools');
+label_train=load_matrix('../data/label_train_oneclass.dat');
+fm_train=load_matrix('../data/fm_train_real.dat');
+fm_test=load_matrix('../data/fm_test_real.dat');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % svm-based
@@ -17,8 +15,8 @@ testdata_real=[randn(len,num+7)-dist, randn(len,num+7)+dist];
 if exist('SVRLight')
 	disp('SVRLight')
 
-	feats_train=RealFeatures(traindata_real);
-	feats_test=RealFeatures(testdata_real);
+	feats_train=RealFeatures(fm_train);
+	feats_test=RealFeatures(fm_test);
 	width=2.1;
 	kernel=GaussianKernel(feats_train, feats_train, width);
 
@@ -26,8 +24,7 @@ if exist('SVRLight')
 	epsilon=1e-5;
 	tube_epsilon=1e-2;
 	num_threads=3;
-	lab=round(rand(1,feats_train.get_num_vectors()))*2-1;
-	labels=Labels(lab);
+	labels=Labels(label_train);
 
 	svr=SVRLight(C, epsilon, kernel, labels);
 	svr.set_tube_epsilon(tube_epsilon);
@@ -43,8 +40,8 @@ end
 %% libsvm based support vector regression
 disp('LibSVR')
 
-feats_train=RealFeatures(traindata_real);
-feats_test=RealFeatures(testdata_real);
+feats_train=RealFeatures(fm_train);
+feats_test=RealFeatures(fm_test);
 width=2.1;
 kernel=GaussianKernel(feats_train, feats_train, width);
 
@@ -52,8 +49,7 @@ C=0.017;
 epsilon=1e-5;
 tube_epsilon=1e-2;
 num_threads=3;
-lab=round(rand(1,feats_train.get_num_vectors()))*2-1;
-labels=Labels(lab);
+labels=Labels(label_train);
 
 svr=LibSVR(C, epsilon, kernel, labels);
 svr.set_tube_epsilon(tube_epsilon);
@@ -70,16 +66,15 @@ out=svr.classify().get_labels();
 % kernel ridge regression
 disp('KRR')
 
-feats_train=RealFeatures(traindata_real);
-feats_test=RealFeatures(testdata_real);
+feats_train=RealFeatures(fm_train);
+feats_test=RealFeatures(fm_test);
 width=0.8;
 kernel=GaussianKernel(feats_train, feats_train, width);
 
 C=0.42;
 tau=1e-6;
 num_threads=1;
-lab=round(rand(1, feats_train.get_num_vectors()))*2-1;
-labels=Labels(lab);
+labels=Labels(label_train);
 
 krr=KRR(tau, kernel, labels);
 krr.parallel.set_num_threads(num_threads);

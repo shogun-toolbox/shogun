@@ -1,17 +1,15 @@
 init_shogun
 
-len=17;
-num=42;
-dist=2.3;
 
 % Explicit examples on how to use the different distances
-traindata_real=[randn(2,num)-dist, randn(2,num)+dist];
-testdata_real=[randn(2,num+7)-dist, randn(2,num+7)+dist];
 
-acgt='ACGT';
-trainlab_dna=[ones(1,num/2) -ones(1,num/2)];
-traindata_dna=acgt(ceil(4*rand(len,num)));
-testdata_dna=acgt(ceil(4*rand(len,num)));
+addpath('tools');
+fm_train_real=load_matrix('../data/fm_train_real.dat');
+fm_test_real=load_matrix('../data/fm_test_real.dat');
+fm_train_dna=load_matrix('../data/fm_train_dna.dat');
+fm_test_dna=load_matrix('../data/fm_test_dna.dat');
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % real features
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -19,8 +17,8 @@ testdata_dna=acgt(ceil(4*rand(len,num)));
 % euclidian distance
 disp('EuclidianDistance')
 
-feats_train=RealFeatures(traindata_real);
-feats_test=RealFeatures(testdata_real);
+feats_train=RealFeatures(fm_train_real);
+feats_test=RealFeatures(fm_test_real);
 
 distance=EuclidianDistance(feats_train, feats_train);
 
@@ -31,8 +29,8 @@ dm_test=distance.get_distance_matrix();
 % norm squared distance
 disp('EuclidianDistance - NormSquared')
 
-feats_train=RealFeatures(traindata_real);
-feats_test=RealFeatures(testdata_real);
+feats_train=RealFeatures(fm_train_real);
+feats_test=RealFeatures(fm_test_real);
 
 distance=EuclidianDistance(feats_train, feats_train);
 distance.set_disable_sqrt(true);
@@ -44,8 +42,8 @@ dm_test=distance.get_distance_matrix();
 % canberra metric
 disp('CanberaMetric')
 
-feats_train=RealFeatures(traindata_real);
-feats_test=RealFeatures(testdata_real);
+feats_train=RealFeatures(fm_train_real);
+feats_test=RealFeatures(fm_test_real);
 
 distance=CanberraMetric(feats_train, feats_train);
 
@@ -56,8 +54,8 @@ dm_test=distance.get_distance_matrix();
 % chebyshew metric
 disp('ChebyshewMetric')
 
-feats_train=RealFeatures(traindata_real);
-feats_test=RealFeatures(testdata_real);
+feats_train=RealFeatures(fm_train_real);
+feats_test=RealFeatures(fm_test_real);
 
 distance=ChebyshewMetric(feats_train, feats_train);
 
@@ -68,8 +66,8 @@ dm_test=distance.get_distance_matrix();
 % geodesic metric
 disp('GeodesicMetric')
 
-feats_train=RealFeatures(traindata_real);
-feats_test=RealFeatures(testdata_real);
+feats_train=RealFeatures(fm_train_real);
+feats_test=RealFeatures(fm_test_real);
 
 distance=GeodesicMetric(feats_train, feats_train);
 
@@ -80,8 +78,8 @@ dm_test=distance.get_distance_matrix();
 % jensen metric
 disp('JensenMetric')
 
-feats_train=RealFeatures(traindata_real);
-feats_test=RealFeatures(testdata_real);
+feats_train=RealFeatures(fm_train_real);
+feats_test=RealFeatures(fm_test_real);
 
 distance=JensenMetric(feats_train, feats_train);
 
@@ -92,8 +90,8 @@ dm_test=distance.get_distance_matrix();
 % manhattan metric
 disp('ManhattanMetric')
 
-feats_train=RealFeatures(traindata_real);
-feats_test=RealFeatures(testdata_real);
+feats_train=RealFeatures(fm_train_real);
+feats_test=RealFeatures(fm_test_real);
 
 distance=ManhattanMetric(feats_train, feats_train);
 
@@ -104,10 +102,10 @@ dm_test=distance.get_distance_matrix();
 % minkowski metric
 disp('MinkowskiMetric')
 
-k=3
+k=3;
 
-feats_train=RealFeatures(traindata_real);
-feats_test=RealFeatures(testdata_real);
+feats_train=RealFeatures(fm_train_real);
+feats_test=RealFeatures(fm_test_real);
 
 distance=MinkowskiMetric(feats_train, feats_train, k);
 
@@ -118,10 +116,10 @@ dm_test=distance.get_distance_matrix();
 % sparse euclidian distance
 disp('SparseEuclidianDistance')
 
-realfeat=RealFeatures(traindata_real);
+realfeat=RealFeatures(fm_train_real);
 feats_train=SparseRealFeatures();
 feats_train.obtain_from_simple(realfeat);
-realfeat=RealFeatures(testdata_real);
+realfeat=RealFeatures(fm_test_real);
 feats_test=SparseRealFeatures();
 feats_test.obtain_from_simple(realfeat);
 
@@ -144,7 +142,7 @@ gap=0;
 reverse=false;
 
 charfeat=StringCharFeatures(DNA);
-charfeat.set_string_features(traindata_dna);
+charfeat.set_string_features(fm_train_dna);
 feats_train=StringWordFeatures(charfeat.get_alphabet());
 feats_train.obtain_from_char(charfeat, order-1, order, gap, reverse);
 preproc=SortWordString();
@@ -153,7 +151,7 @@ feats_train.add_preproc(preproc);
 feats_train.apply_preproc();
 
 charfeat=StringCharFeatures(DNA);
-charfeat.set_string_features(testdata_dna);
+charfeat.set_string_features(fm_test_dna);
 feats_test=StringWordFeatures(charfeat.get_alphabet());
 feats_test.obtain_from_char(charfeat, order-1, order, gap, reverse);
 feats_test.add_preproc(preproc);
@@ -173,7 +171,7 @@ gap=0;
 reverse=false;
 
 charfeat=StringCharFeatures(DNA);
-charfeat.set_string_features(traindata_dna);
+charfeat.set_string_features(fm_train_dna);
 feats_train=StringWordFeatures(charfeat.get_alphabet());
 feats_train.obtain_from_char(charfeat, order-1, order, gap, reverse);
 preproc=SortWordString();
@@ -182,13 +180,13 @@ feats_train.add_preproc(preproc);
 feats_train.apply_preproc();
 
 charfeat=StringCharFeatures(DNA);
-charfeat.set_string_features(testdata_dna);
+charfeat.set_string_features(fm_test_dna);
 feats_test=StringWordFeatures(charfeat.get_alphabet());
 feats_test.obtain_from_char(charfeat, order-1, order, gap, reverse);
 feats_test.add_preproc(preproc);
 feats_test.apply_preproc();
 
-use_sign=false
+use_sign=false;
 
 distance=HammingWordDistance(feats_train, feats_train, use_sign);
 
@@ -204,7 +202,7 @@ gap=0;
 reverse=false;
 
 charfeat=StringCharFeatures(DNA);
-charfeat.set_string_features(traindata_dna);
+charfeat.set_string_features(fm_train_dna);
 feats_train=StringWordFeatures(charfeat.get_alphabet());
 feats_train.obtain_from_char(charfeat, order-1, order, gap, reverse);
 preproc=SortWordString();
@@ -213,7 +211,7 @@ feats_train.add_preproc(preproc);
 feats_train.apply_preproc();
 
 charfeat=StringCharFeatures(DNA);
-charfeat.set_string_features(testdata_dna);
+charfeat.set_string_features(fm_test_dna);
 feats_test=StringWordFeatures(charfeat.get_alphabet());
 feats_test.obtain_from_char(charfeat, order-1, order, gap, reverse);
 feats_test.add_preproc(preproc);

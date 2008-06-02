@@ -1,23 +1,17 @@
 init_shogun
 
-num=40;
-len=3;
-dist=2;
-
 % Explicit examples on how to use the different classifiers
 
-acgt='ACGT';
-trainlab_dna=[ones(1,num/2) -ones(1,num/2)];
-traindata_dna=acgt(ceil(4*rand(len,num)));
-testdata_dna=acgt(ceil(4*rand(len,num)));
-trainlab_multi=[zeros(1,num/4) ones(1,num/4) 2*ones(1,num/4) 3*ones(1,num/4)];
+addpath('tools');
+label_train_oneclass=load_matrix('../data/label_train_oneclass.dat');
+label_train_multiclass=load_matrix('../data/label_train_multiclass.dat');
+fm_train_real=load_matrix('../data/fm_train_real.dat');
+fm_test_real=load_matrix('../data/fm_test_real.dat');
 
-traindata_real=[randn(2,num)-dist, randn(2,num)+dist];
-testdata_real=[randn(2,num+7)-dist, randn(2,num+7)+dist];
+label_train_dna=load_matrix('../data/label_train_dna.dat');
+fm_train_dna=load_matrix('../data/fm_train_dna.dat');
+fm_test_dna=load_matrix('../data/fm_test_dna.dat');
 
-maxval=2^16-1;
-traindata_word=uint16(rand(len, num)*maxval);
-testdata_word=uint16(rand(len, num)*maxval);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % kernel-based SVMs
@@ -28,9 +22,9 @@ if exist('SVMLight')
 	disp('SVMLight')
 
 	feats_train=StringCharFeatures(DNA);
-	feats_train.set_string_features(traindata_dna);
+	feats_train.set_string_features(fm_train_dna);
 	feats_test=StringCharFeatures(DNA);
-	feats_test.set_string_features(testdata_dna);
+	feats_test.set_string_features(fm_test_dna);
 	degree=20;
 
 	kernel=WeightedDegreeStringKernel(feats_train, feats_train, degree);
@@ -39,8 +33,7 @@ if exist('SVMLight')
 	epsilon=1e-5;
 	tube_epsilon=1e-2;
 	num_threads=3;
-	lab=round(rand(1,feats_train.get_num_vectors()))*2-1;
-	labels=Labels(lab);
+	labels=Labels(label_train_dna);
 
 	svm=SVMLight(C, kernel, labels);
 	svm.set_epsilon(epsilon);
@@ -58,8 +51,8 @@ end
 % libsvm
 disp('LibSVM')
 
-feats_train=RealFeatures(traindata_real);
-feats_test=RealFeatures(testdata_real);
+feats_train=RealFeatures(fm_train_real);
+feats_test=RealFeatures(fm_test_real);
 width=2.1;
 kernel=GaussianKernel(feats_train, feats_train, width);
 
@@ -67,8 +60,7 @@ C=0.017;
 epsilon=1e-5;
 tube_epsilon=1e-2;
 num_threads=2;
-lab=round(rand(1,feats_train.get_num_vectors()))*2-1;
-labels=Labels(lab);
+labels=Labels(label_train_oneclass);
 
 svm=LibSVM(C, kernel, labels);
 svm.set_epsilon(epsilon);
@@ -82,8 +74,8 @@ svm.classify().get_labels();
 % gpbtsvm
 disp('GPBTSVM')
 
-feats_train=RealFeatures(traindata_real);
-feats_test=RealFeatures(testdata_real);
+feats_train=RealFeatures(fm_train_real);
+feats_test=RealFeatures(fm_test_real);
 width=2.1;
 kernel=GaussianKernel(feats_train, feats_train, width);
 
@@ -91,8 +83,7 @@ C=0.017;
 epsilon=1e-5;
 tube_epsilon=1e-2;
 num_threads=2;
-lab=round(rand(1,feats_train.get_num_vectors()))*2-1;
-labels=Labels(lab);
+labels=Labels(label_train_oneclass);
 
 svm=GPBTSVM(C, kernel, labels);
 svm.set_epsilon(epsilon);
@@ -106,8 +97,8 @@ svm.classify().get_labels();
 % mpdsvm
 disp('MPDSVM')
 
-feats_train=RealFeatures(traindata_real);
-feats_test=RealFeatures(testdata_real);
+feats_train=RealFeatures(fm_train_real);
+feats_test=RealFeatures(fm_test_real);
 width=2.1;
 kernel=GaussianKernel(feats_train, feats_train, width);
 
@@ -115,8 +106,7 @@ C=0.017;
 epsilon=1e-5;
 tube_epsilon=1e-2;
 num_threads=1;
-lab=round(rand(1,feats_train.get_num_vectors()))*2-1;
-labels=Labels(lab);
+labels=Labels(label_train_oneclass);
 
 svm=MPDSVM(C, kernel, labels);
 svm.set_epsilon(epsilon);
@@ -130,8 +120,8 @@ svm.classify().get_labels();
 % libsvmmulticlass
 disp('LibSVMMultiClass')
 
-feats_train=RealFeatures(traindata_real);
-feats_test=RealFeatures(testdata_real);
+feats_train=RealFeatures(fm_train_real);
+feats_test=RealFeatures(fm_test_real);
 width=2.1;
 kernel=GaussianKernel(feats_train, feats_train, width);
 
@@ -139,7 +129,7 @@ C=0.017;
 epsilon=1e-5;
 tube_epsilon=1e-2;
 num_threads=8;
-labels=Labels(trainlab_multi);
+labels=Labels(label_train_multiclass);
 
 svm=LibSVMMultiClass(C, kernel, labels);
 svm.set_epsilon(epsilon);
@@ -153,8 +143,8 @@ svm.classify().get_labels();
 % libsvm oneclass
 disp('LibSVMOneClass')
 
-feats_train=RealFeatures(traindata_real);
-feats_test=RealFeatures(testdata_real);
+feats_train=RealFeatures(fm_train_real);
+feats_test=RealFeatures(fm_test_real);
 width=2.1;
 kernel=GaussianKernel(feats_train, feats_train, width);
 
@@ -175,8 +165,8 @@ svm.classify().get_labels();
 % gmnpsvm
 disp('GMNPSVM')
 
-feats_train=RealFeatures(traindata_real);
-feats_test=RealFeatures(testdata_real);
+feats_train=RealFeatures(fm_train_real);
+feats_test=RealFeatures(fm_test_real);
 width=2.1;
 kernel=GaussianKernel(feats_train, feats_train, width);
 
@@ -184,7 +174,7 @@ C=0.017;
 epsilon=1e-5;
 tube_epsilon=1e-2;
 num_threads=1;
-labels=Labels(trainlab_multi);
+labels=Labels(label_train_multiclass);
 
 svm=GMNPSVM(C, kernel, labels);
 svm.set_epsilon(epsilon);
@@ -203,9 +193,9 @@ svm.classify().get_labels();
 disp('LibSVM batch')
 
 feats_train=StringCharFeatures(DNA);
-feats_train.set_string_features(traindata_dna);
+feats_train.set_string_features(fm_train_dna);
 feats_test=StringCharFeatures(DNA);
-feats_test.set_string_features(testdata_dna);
+feats_test.set_string_features(fm_test_dna);
 degree=20;
 
 kernel=WeightedDegreeStringKernel(feats_train, feats_train, degree);
@@ -214,8 +204,7 @@ C=0.017;
 epsilon=1e-5;
 tube_epsilon=1e-2;
 num_threads=2;
-lab=round(rand(1,feats_train.get_num_vectors()))*2-1;
-labels=Labels(lab);
+labels=Labels(label_train_dna);
 
 svm=LibSVM(C, kernel, labels);
 svm.set_epsilon(epsilon);
@@ -225,7 +214,7 @@ svm.train();
 
 kernel.init(feats_train, feats_test);
 
-fprintf('LibSVM Objective: %f num_sv: %d', svm.get_objective(), svm.get_num_support_vectors())
+%fprintf('LibSVM Objective: %f num_sv: %d', svm.get_objective(), svm.get_num_support_vectors())
 svm.set_batch_computation_enabled(false);
 svm.set_linadd_enabled(false);
 svm.classify().get_labels();
@@ -240,10 +229,10 @@ svm.classify().get_labels();
 % subgradient based svm
 disp('SubGradientSVM')
 
-realfeat=RealFeatures(traindata_real);
+realfeat=RealFeatures(fm_train_real);
 feats_train=SparseRealFeatures();
 feats_train.obtain_from_simple(realfeat);
-realfeat=RealFeatures(testdata_real);
+realfeat=RealFeatures(fm_test_real);
 feats_test=SparseRealFeatures();
 feats_test.obtain_from_simple(realfeat);
 
@@ -251,8 +240,7 @@ C=0.42;
 epsilon=1e-3;
 num_threads=1;
 max_train_time=1.;
-lab=round(rand(1, feats_train.get_num_vectors()))*2-1;
-labels=Labels(lab);
+labels=Labels(label_train_oneclass);
 
 svm=SubGradientSVM(C, feats_train, labels);
 svm.set_epsilon(epsilon);
@@ -267,18 +255,17 @@ svm.classify().get_labels();
 % svm ocas
 disp('SVMOcas')
 
-realfeat=RealFeatures(traindata_real);
+realfeat=RealFeatures(fm_train_real);
 feats_train=SparseRealFeatures();
 feats_train.obtain_from_simple(realfeat);
-realfeat=RealFeatures(testdata_real);
+realfeat=RealFeatures(fm_test_real);
 feats_test=SparseRealFeatures();
 feats_test.obtain_from_simple(realfeat);
 
 C=0.42;
 epsilon=1e-5;
 num_threads=1;
-lab=round(rand(1, feats_train.get_num_vectors()))*2-1;
-labels=Labels(lab);
+labels=Labels(label_train_oneclass);
 
 svm=SVMOcas(C, feats_train, labels);
 svm.set_epsilon(epsilon);
@@ -292,20 +279,19 @@ svm.classify().get_labels();
 % sgd
 disp('SVMSGD')
 
-realfeat=RealFeatures(traindata_real);
+realfeat=RealFeatures(fm_train_real);
 feats_train=SparseRealFeatures();
 feats_train.obtain_from_simple(realfeat);
-realfeat=RealFeatures(testdata_real);
+realfeat=RealFeatures(fm_test_real);
 feats_test=SparseRealFeatures();
 feats_test.obtain_from_simple(realfeat);
 
 C=0.42;
 epsilon=1e-5;
 num_threads=1;
-lab=round(rand(1,feats_test.get_num_vectors()))*2-1;
-labels=Labels(lab);
+labels=Labels(label_train_oneclass);
 
-svm=SVMSGD(C, feats_test, labels);
+svm=SVMSGD(C, feats_train, labels);
 %svm.io.set_loglevel(0);
 svm.train();
 
@@ -315,18 +301,17 @@ svm.classify().get_labels();
 % liblinear
 disp('LibLinear')
 
-realfeat=RealFeatures(traindata_real);
+realfeat=RealFeatures(fm_train_real);
 feats_train=SparseRealFeatures();
 feats_train.obtain_from_simple(realfeat);
-realfeat=RealFeatures(testdata_real);
+realfeat=RealFeatures(fm_test_real);
 feats_test=SparseRealFeatures();
 feats_test.obtain_from_simple(realfeat);
 
 C=0.42;
 epsilon=1e-5;
 num_threads=1;
-lab=round(rand(1,feats_train.get_num_vectors()))*2-1;
-labels=Labels(lab);
+labels=Labels(label_train_oneclass);
 
 svm=LibLinear(C, feats_train, labels);
 svm.set_epsilon(epsilon);
@@ -340,18 +325,17 @@ svm.classify().get_labels();
 % svm lin
 disp('SVMLin')
 
-realfeat=RealFeatures(traindata_real);
+realfeat=RealFeatures(fm_train_real);
 feats_train=SparseRealFeatures();
 feats_train.obtain_from_simple(realfeat);
-realfeat=RealFeatures(testdata_real);
+realfeat=RealFeatures(fm_test_real);
 feats_test=SparseRealFeatures();
 feats_test.obtain_from_simple(realfeat);
 
 C=0.42;
 epsilon=1e-5;
 num_threads=1;
-lab=round(rand(1, feats_train.get_num_vectors()))*2-1;
-labels=Labels(lab);
+labels=Labels(label_train_oneclass);
 
 svm=SVMLin(C, feats_train, labels);
 svm.set_epsilon(epsilon);
@@ -371,14 +355,13 @@ svm.classify().get_labels();
 % perceptron
 disp('Perceptron')
 
-feats_train=RealFeatures(traindata_real);
-feats_test=RealFeatures(traindata_real);
+feats_train=RealFeatures(fm_train_real);
+feats_test=RealFeatures(fm_train_real);
 
 learn_rate=1.;
 max_iter=1000;
 num_threads=1;
-lab=round(rand(1, feats_train.get_num_vectors()))*2-1;
-labels=Labels(lab);
+labels=Labels(label_train_oneclass);
 
 perceptron=Perceptron(feats_train, labels);
 perceptron.set_learn_rate(learn_rate);
@@ -392,14 +375,13 @@ perceptron.classify().get_labels();
 % knn
 disp('KNN')
 
-feats_train=RealFeatures(traindata_real);
-feats_test=RealFeatures(testdata_real);
+feats_train=RealFeatures(fm_train_real);
+feats_test=RealFeatures(fm_test_real);
 distance=EuclidianDistance();
 
 k=3;
 num_threads=1;
-lab=round(rand(1, feats_train.get_num_vectors()))*2-1;
-labels=Labels(lab);
+labels=Labels(label_train_oneclass);
 
 knn=KNN(k, distance, labels);
 knn.parallel.set_num_threads(num_threads);
@@ -411,13 +393,12 @@ knn.classify().get_labels();
 % lda
 disp('LDA')
 
-feats_train=RealFeatures(traindata_real);
-feats_test=RealFeatures(testdata_real);
+feats_train=RealFeatures(fm_train_real);
+feats_test=RealFeatures(fm_test_real);
 
 gamma=3;
 num_threads=1;
-lab=round(rand(1, feats_train.get_num_vectors()))*2-1;
-labels=Labels(lab);
+labels=Labels(label_train_oneclass);
 
 lda=LDA(gamma, feats_train, labels);
 lda.parallel.set_num_threads(num_threads);
