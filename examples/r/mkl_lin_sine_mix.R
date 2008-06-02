@@ -7,8 +7,6 @@
 
 # Setup: MKL on 10 RBF kernels of different widths on 1000 examples
 
-#  source("/fml/ag-raetsch/home/fabio/projects/shogun/R/sg/tests/not_yet/mkl_lin_sine_mix.R")
-
 #load  shogun
 library(sg)
 
@@ -52,6 +50,8 @@ trend = 2 * train_x* ((pi)/(max(train_x)-min(train_x)))
 wave1 = sin(train_x)
 wave2 = sin(f[1]*train_x)
 train_y = trend + wave1 + wave2
+
+train_x=matrix(train_x,1, length(train_x))
 
 for (kk in c(1:length(f))) {  #Big loop
 
