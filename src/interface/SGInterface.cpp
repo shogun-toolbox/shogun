@@ -5238,7 +5238,13 @@ bool CSGInterface::cmd_precompute_content_svms()
 	CDynProg* h = ui_structure->get_dyn_prog();
 	if (!h)
 		SG_ERROR("no DynProg object found, use precompute_content_svms first\n");
-	SG_PRINT("all_pos: %p ",all_pos);
+	SG_PRINT("5 all_pos: %p ",all_pos);
+	for (int i=0;i<10;i++)
+		SG_PRINT("%i ",all_pos[i]);
+	SG_PRINT("\n");
+
+	all_pos = ui_structure->get_all_positions();
+	SG_PRINT("6 all_pos: %p ",all_pos);
 	for (int i=0;i<10;i++)
 		SG_PRINT("%i ",all_pos[i]);
 	SG_PRINT("\n");
@@ -5253,8 +5259,6 @@ bool CSGInterface::cmd_precompute_content_svms()
 	SG_PRINT("precompute_content_svms 2\n");
 	h->init_content_svm_value_array(Npos);
 	SG_PRINT(" Npos:%i Nseq:%i Nweights:%i\n", Npos, Nseq, Nweights, Mweights);
-	for (int i=0;i<10;i++)
-		SG_PRINT("%i ",all_pos[i]);
 
 	h->precompute_content_values(wordstr, all_pos, Npos, Nseq, weights, Nweights*Mweights);
 	h->set_genestr_len(Nseq);
