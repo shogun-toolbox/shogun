@@ -17,7 +17,10 @@
 #include "guilib/GUIStructure.h"
 
 
-CGUIStructure::CGUIStructure(CSGInterface* ui_) : ui(ui_), m_PEN(NULL), m_num_plifs(0), m_num_limits(0), m_num_states(0), m_dp(NULL), m_plif_matrix(NULL)
+CGUIStructure::CGUIStructure(CSGInterface* ui_) : ui(ui_), m_PEN(NULL), m_num_plifs(0), m_num_limits(0), 
+	m_num_states(0), m_dp(NULL), m_plif_matrix(NULL), m_feature_matrix(0,0,0), m_features_dim3(0), 
+	m_num_positions(0), m_all_positions(0), m_content_svm_weights(0), m_num_svm_weights(0), 
+	m_state_signals(NULL), m_orf_info(NULL), m_use_orf(true), m_mod_words(NULL)
 {
 }
 
@@ -133,6 +136,29 @@ bool CGUIStructure::compute_plif_matrix(DREAL* penalties_array, INT* Dim, INT nu
         }
 	if (!set_plif_matrix(PEN_matrix))
 		return false;
+	return true;
+}
+bool  CGUIStructure::set_signal_plifs(INT* state_signals, INT feat_dim3, INT num_states )
+{
+	INT Nplif = get_num_plifs();
+	CPlif** PEN = get_PEN();
+
+        CPlifBase **PEN_state_signal = new CPlifBase*[feat_dim3*num_states] ;
+        for (INT i=0; i<num_states*feat_dim3; i++)
+        {
+                INT id = (INT) state_signals[i]-1 ;
+                if ((id<0 || id>=Nplif) && (id!=-1))
+                {
+                        SG_ERROR( "id out of range\n") ;
+                        delete_penalty_struct(PEN, Nplif) ;
+                        return false ;
+                }
+                if (id==-1)
+                        PEN_state_signal[i]=NULL ;
+                else
+                        PEN_state_signal[i]=PEN[id] ;
+        }
+	set_state_signals(PEN_state_signal);
 	return true;
 }
 #endif

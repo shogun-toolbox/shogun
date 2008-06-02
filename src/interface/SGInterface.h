@@ -348,7 +348,12 @@ class CSGInterface : public CSGObject
  		 *   signal features, length features,
  		 *   content features and tiling features
  		 */
-		bool cmd_compute_plif_matrix();
+		bool cmd_set_model();
+		/**
+		 * set feature matrix and 
+		 * all feature positions
+		 */	
+		bool cmd_set_feature_matrix();
 		/** best path trans */
 		bool cmd_best_path_trans();
 		/** best path trans deriv */

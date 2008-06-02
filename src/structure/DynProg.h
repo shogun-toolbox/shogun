@@ -98,13 +98,14 @@ public:
 	void best_path_no_b_trans(INT max_iter, INT & max_best_iter, SHORT nbest, DREAL *prob_nbest, INT *my_paths);
 	
 	// model related functions
-	/** set N
+	/** set number of states
 	 * use this to set N first
 	 *
 	 * @param p_N new N
 	 */
-	void set_N(INT p_N);
-	
+	void set_num_states(INT p_N);
+	/** get num svms*/
+	INT get_num_svms();
 	/** init CArray for precomputed content svm values
 	 *  with size seq_len x num_svms
 	 *  
@@ -429,9 +430,9 @@ public:
 	void best_path_trans(const DREAL *seq, INT seq_len, const INT *pos,
 						 const INT *orf_info, CPlifBase **PLif_matrix,
 						 CPlifBase **Plif_state_signals, INT max_num_signals,
-						 const char *genestr, INT genestr_len, INT genestr_num,
+						 INT genestr_num,
 						 DREAL *prob_nbest, INT *my_state_seq, INT *my_pos_seq,
-						 DREAL *dictionary_weights, INT dict_len, bool use_orf);
+						 bool use_orf);
 
 	/** best path trans derivative
 	 *
@@ -582,7 +583,12 @@ public:
 	 * Jonas
 	 */
 	void create_word_string(const CHAR* genestr, INT genestr_num, INT genestr_len, WORD*** wordstr);
-        
+
+	/** precompute stop codons */
+	void precompute_stop_codons(const CHAR* genestr, INT genestr_len);        
+
+	/** set genestr len */
+	void set_genestr_len(INT genestr_len);
 
 	/** access function for matrix a
 	 *
@@ -741,7 +747,7 @@ protected:
 	 * @param last_pos last position
 	 * @param to to
 	 */
-	bool extend_orf(const CArray<bool>& genestr_stop, INT orf_from, INT orf_to, INT start, INT &last_pos, INT to);
+	bool extend_orf(INT orf_from, INT orf_to, INT start, INT &last_pos, INT to);
 
 	/** segment loss */
 	struct segment_loss_struct
@@ -928,6 +934,10 @@ protected:
 	/** m positions */
 	CArray2<INT> m_positions;
 
+	/** storeage of stop codons
+	 *  array of size length(sequence)
+	 */
+	CArray<bool> m_genestr_stop;
         //
         /**
 	 *  array for storage of content svm values
@@ -940,6 +950,7 @@ protected:
 	INT* m_probe_pos;
 	INT m_num_probes;
 	bool m_use_tiling;
+	INT m_genestr_len;
 
 };
 inline INT CDynProg::raw_intensities_interval_query(const INT from_pos, const INT to_pos, DREAL* intensities)
@@ -971,8 +982,9 @@ inline INT CDynProg::raw_intensities_interval_query(const INT from_pos, const IN
 }
 inline void CDynProg::lookup_content_svm_values(const INT from_state, const INT to_state, const INT from_pos, const INT to_pos, DREAL* svm_values, INT frame)
 {
-	ASSERT(from_state<to_state);
-	ASSERT(from_pos<to_pos);
+//	ASSERT(from_state<to_state);
+//	if (!(from_pos<to_pos))
+//		SG_ERROR("from_pos!<to_pos, from_pos: %i to_pos: %i \n",from_pos,to_pos);
 	for (INT i=0;i<4;i++)
 	{
 		DREAL to_val   = m_precomputed_svm_values.get_element(i,  to_state);
@@ -980,7 +992,7 @@ inline void CDynProg::lookup_content_svm_values(const INT from_state, const INT 
 		svm_values[i]=(to_val-from_val)/(to_pos-from_pos);
 	}
 	// find the correct row with precomputed 
-	if (frame!=-1)
+	/*if (frame!=-1)
 	{
 		svm_values[4] = 1e10;
 		svm_values[5] = 1e10;
@@ -990,7 +1002,7 @@ inline void CDynProg::lookup_content_svm_values(const INT from_state, const INT 
 		DREAL to_val   = m_precomputed_svm_values.get_element(row,  to_state);
 		DREAL from_val = m_precomputed_svm_values.get_element(row,from_state);
 		svm_values[frame+4] = (to_val-from_val)/(to_pos-from_pos);
-	}
+	}*/
 }
 inline void CDynProg::lookup_tiling_plif_values(const INT from_state, const INT to_state, const INT len, DREAL* svm_values)
 {

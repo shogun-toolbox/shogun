@@ -126,6 +126,9 @@ class CPlif: public CPlifBase
 				return "log(+3)";
 			else if (transform== T_LINEAR_PLUS3)
 				return "(+3)";
+			else 
+				SG_ERROR("wrong type");
+			return "";
 		}
 
 

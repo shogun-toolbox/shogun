@@ -675,15 +675,21 @@ CSGInterfaceMethod sg_methods[]=
 		(CHAR*) USAGE_I(N_PRECOMPUTE_CONTENT_SVMS, "sequence, position_list, weights")
 	},
 	{
-		(CHAR*) N_COMPUTE_PLIF_MATRIX,
-		(&CSGInterface::cmd_compute_plif_matrix),
-		(CHAR*) USAGE_I(N_COMPUTE_PLIF_MATRIX, "transition_pointers")
+		(CHAR*) N_SET_MODEL,
+		(&CSGInterface::cmd_set_model),
+		(CHAR*) USAGE_I(N_SET_MODEL, "content_weights, transition_pointers, use_orf, mod_words")
 	},
+	{
+		(CHAR*) N_SET_FEATURE_MATRIX,
+		(&CSGInterface::cmd_set_feature_matrix),
+		(CHAR*) USAGE_I(N_SET_FEATURE_MATRIX, "features")
+	},
+
 	{
 		(CHAR*) N_BEST_PATH_TRANS,
 		(&CSGInterface::cmd_best_path_trans),
 		(CHAR*) USAGE_IO(N_BEST_PATH_TRANS,
-			"p, q, cmd_trans, seq, pos, orf_info, genestr, penalties, state_signals, penalty_info, nbest, dict_weights, use_orf, mod_words [, segment_loss, segmend_ids_mask]",
+			"p, q, nbest, seg_path, a_trans, segment_loss",
 			"prob, path, pos")
 	},
 	{
@@ -5069,7 +5075,7 @@ bool CSGInterface::cmd_get_plif_struct()
 			all_limits[i*M+j]=limits[j];
 			all_penalties[i*M+j]=penalties[j];
 		}
-		all_transform[i].string = (CHAR*) PEN[i]->get_transform_type();		 //FIXME
+		all_transform[i].string = (CHAR*) PEN[i]->get_transform_type();
 		all_transform[i].length = strlen(PEN[i]->get_transform_type());		
 		min_values[i]=PEN[i]->get_min_value();
 		max_values[i]=PEN[i]->get_max_value();
@@ -5091,45 +5097,20 @@ bool CSGInterface::cmd_get_plif_struct()
 	
 	return true;
 }
-bool CSGInterface::cmd_precompute_content_svms()
+
+bool CSGInterface::cmd_set_model()
 {
-	CPlif** PEN = ui_structure->get_PEN();
-	if (!PEN)
-		SG_ERROR("no plif_array found, use set_plif_struct first\n");
-
-	INT Nseq=0;
-	CHAR* seq;
-	seq = get_string(Nseq);
-
-	INT Npos=0;
-	INT* pos;
-	get_int_vector(pos,Npos);
-
+	//ARG 1
+	// content svm weights
 	INT Nweights=0;
-	INT Mweights=0;
+	INT num_svms=0;
 	DREAL* weights;
-	get_real_matrix(weights, Nweights, Mweights);
-
+	get_real_matrix(weights, num_svms, Nweights);
+	ui_structure->set_content_svm_weights(weights,Nweights, num_svms);
 
 	CDynProg* h=new CDynProg(Nweights/* = num_svms */);
-	WORD** wordstr[Nweights];
-	h->init_content_svm_value_array(Npos);
-	h->create_word_string(seq, (INT) 1, Nseq, wordstr);
-	h->precompute_content_values(wordstr, pos, Npos, Nseq, weights, Nweights*Mweights);
-	
-	SG_PRINT("precompute 1\n");	
-	ui_structure->set_dyn_prog(h);
-}
-bool CSGInterface::cmd_compute_plif_matrix()
-{
-	CPlif** PEN = ui_structure->get_PEN();
-	if (!PEN)
-		SG_ERROR("no plif_array found, use set_plif_struct first\n");
-	
-	CDynProg* h = ui_structure->get_dyn_prog();
-	if (!h)
-		SG_ERROR("no DynProg object found, use precompute_content_svms first\n");
 
+	//ARG 2
 	// transition pointers 
 	// link transitions to length, content, frame (and tiling)
 	// plifs (#states x #states x 3 or 4)
@@ -5137,52 +5118,37 @@ bool CSGInterface::cmd_compute_plif_matrix()
 	INT* Dim=0;
 	DREAL* penalties_array;
 	get_real_ndarray(penalties_array,Dim,numDim);
-
 	ASSERT(numDim==3);
 	ASSERT(Dim[0]==Dim[1]);
-
 	ASSERT(ui_structure->compute_plif_matrix(penalties_array, Dim, numDim));	
-}
-bool CSGInterface::cmd_best_path_trans()
-{
-	if ((m_nrhs!=15 && m_nrhs!=17) || !create_return_values(3))
-		return false;
 
-	SG_ERROR("Sorry, this parameter list is awful!\n");
-
-	// ARG 1
-	// transitions from initial state (#states x 1)
-	INT Np=0;
-	DREAL* p;
-	get_real_vector(p, Np);
-
-	// ARG 2
-	// transitions to end state (#states x 1)
-	INT Nq=0;
-	DREAL* q;
-	get_real_vector(q, Nq);
-	ASSERT(Nq==Np);
 
 	// ARG 3
-	// links for transitions (#transitions x 4)
-	INT Na_trans=0;
-	INT Ma_trans=0;
-	DREAL* a_trans;
-	get_real_matrix(a_trans, Na_trans, Ma_trans);
+	// bool-> determines if orf information should be used
+	bool use_orf = get_bool();
+	ui_structure->set_use_orf(use_orf);
 
 	// ARG 4
-	// feature matrix (#states x #feature_positions x #max_features_per_positon)
-	INT Nfeat=0;
-	INT Mfeat=0;
-	INT Qfeat=0;
-	DREAL* features;
-	//3D get_real_matrix(features, Nfeat, Mfeat, Qfeat);
-	
+	// determines for which contents which orf should be used (#contents x 2)
+	INT Nmod=0;
+	INT Mmod=0;
+	INT* mod_words;
+	get_int_matrix(mod_words, Nmod,Mmod);
+	if (Nmod != num_svms)
+		SG_ERROR("should be equal: Nmod: %i, num_svms: %i\n",Nmod,num_svms);
+	ASSERT(Mmod == 2)
+	//ui_structure->set_mod_words(mod_words); 
+	h->init_mod_words_array(mod_words, Nmod, Mmod) ;
+
 	// ARG 5
-	// all feature positions (1 x #feature_positions)
-	INT Nall_pos=0;
-	INT* all_pos;
-	get_int_vector(all_pos, Nall_pos);
+	// links: states -> signal plifs (#states x 2)
+	INT num_states=0;
+	INT feat_dim3=0;
+	INT* state_signals;
+	get_int_matrix(state_signals,num_states,feat_dim3);
+	ASSERT(num_states==Dim[0]);
+	ui_structure->set_signal_plifs(state_signals, feat_dim3, num_states);
+
 
 	// ARG 6
 	// ORF info (#states x 2)
@@ -5190,62 +5156,172 @@ bool CSGInterface::cmd_best_path_trans()
 	INT Morf=0;
 	INT* orf_info;
 	get_int_matrix(orf_info,Norf,Morf);
+	ui_structure->set_orf_info(orf_info, Norf, Morf);
+
+	h->set_num_states(Dim[0]) ;
 	
-	// ARG 7
-	// DNA sequence 
+	ui_structure->set_dyn_prog(h);
+
+	SG_PRINT("set_model done\n");	
+	return true;
+}
+bool CSGInterface::cmd_set_feature_matrix()
+{
+	// ARG 1
+	// all feature positions
+	INT Npos=0;
+	INT* all_pos;
+	get_int_vector(all_pos,Npos);
+	ui_structure->set_all_pos(all_pos,Npos);
+
+	SG_PRINT("1 ui_structure: %p\n",&ui_structure);
+
+	INT num_states = ui_structure->get_num_states();
+
+	//ARG 2
+	// feature matrix (#states x #feature_positions x max_num_signals)
+	INT* Dims=0;
+	INT numDims=0;
+	DREAL* features;
+	get_real_ndarray(features, Dims, numDims);
+	
+	SG_PRINT("2 ui_structure: %p\n",&ui_structure);
+	ASSERT(numDims==3)
+	ASSERT(Dims[0]==num_states)
+	INT max_num_signals = Dims[2];
+	CArray3<DREAL> feat(features, num_states, Npos, max_num_signals) ;
+	INT d1,d2,d3;
+	feat.get_array_size(d1,d2,d3);
+	SG_PRINT("features: d1:%i d2:%i d3:%i\n",d1,d2,d3);
+	ASSERT(ui_structure->set_feature_matrix(feat));
+	SG_PRINT("3 ui_structure: %p\n",&ui_structure);
+
+	CArray3<DREAL> feat2 = (ui_structure->get_feature_matrix());
+	feat2.get_array_size(d1,d2,d3);
+	SG_PRINT("features2: d1:%i d2:%i d3:%i\n",d1,d2,d3);
+	SG_PRINT("4 ui_structure: %p\n",&ui_structure);
+
+	ASSERT(ui_structure->set_all_pos(all_pos,Npos));
+	ASSERT(ui_structure->set_features_dim3(max_num_signals));
+	SG_PRINT("set_features done\n");	
+	return true;
+
+}
+bool CSGInterface::cmd_precompute_content_svms()
+{
+	INT* all_pos = ui_structure->get_all_positions();
+	SG_PRINT("1 all_pos: %p ",all_pos);
+	for (int i=0;i<10;i++)
+		SG_PRINT("%i ",all_pos[i]);
+	SG_PRINT("\n");
+	SG_PRINT("2 all_pos: %p ",all_pos);
+	for (int i=0;i<10;i++)
+		SG_PRINT("%i ",all_pos[i]);
+	SG_PRINT("\n");
+
+	//CPlif** PEN = ui_structure->get_PEN();
+	//if (!PEN)
+	//	SG_ERROR("no plif_array found, use set_plif_struct first\n");
+	SG_PRINT("3 all_pos: %p ",all_pos);
+	for (int i=0;i<10;i++)
+		SG_PRINT("%i ",all_pos[i]);
+	SG_PRINT("\n");
+
 	INT Nseq=0;
-	char* seq=NULL;
-	get_char_vector(seq,Nseq);
+	CHAR* seq;
+	seq = get_string(Nseq);
+	SG_PRINT("4 all_pos: %p ",all_pos);
+	for (int i=0;i<10;i++)
+		SG_PRINT("%i ",all_pos[i]);
+	SG_PRINT("\n");
 
-	// ARG 8
-	// transition pointers 
-	// link transitions to length, content, frame (and tiling)
-	// plifs (#states x #states x 3 or 4)
-	INT Ntp=0;
-	INT Mtp=0;
-	INT Qtransition_pointers;
-	INT* transition_pointers;
-	//get??? 3D int array
+	CDynProg* h = ui_structure->get_dyn_prog();
+	if (!h)
+		SG_ERROR("no DynProg object found, use precompute_content_svms first\n");
+	SG_PRINT("all_pos: %p ",all_pos);
+	for (int i=0;i<10;i++)
+		SG_PRINT("%i ",all_pos[i]);
+	SG_PRINT("\n");
 
-	// ARG 9
-	// links: states -> signal plifs (#states x 2)
-	INT Nst=0;
-	INT Mst=0;
-	INT* state_signals;
-	get_int_matrix(state_signals,Nst,Mst);
-	
-	// ARG 10
-	// penalty array
-	// array of plifs (1 x #contents+#lengths_plifs+#signals+#other_plifs)
-	INT Nplif=0;
-	INT M_plif=0;
-	//CPlif ** PEN = read_penalty_struct_from_cell(mx_penalty_info, P) ;
+	INT Npos = ui_structure->get_num_positions();
+	DREAL* weights = ui_structure->get_content_svm_weights();
+	INT Mweights = h->get_num_svms();
+	INT Nweights = ui_structure->get_num_svm_weights();
+	WORD** wordstr[Mweights];
+	SG_PRINT("precompute_content_svms 1\n");
+	h->create_word_string(seq, (INT) 1, Nseq, wordstr);
+	SG_PRINT("precompute_content_svms 2\n");
+	h->init_content_svm_value_array(Npos);
+	SG_PRINT(" Npos:%i Nseq:%i Nweights:%i\n", Npos, Nseq, Nweights, Mweights);
+	for (int i=0;i<10;i++)
+		SG_PRINT("%i ",all_pos[i]);
 
-	// ARG 11
+	h->precompute_content_values(wordstr, all_pos, Npos, Nseq, weights, Nweights*Mweights);
+	h->set_genestr_len(Nseq);
+	SG_PRINT("precompute_content_svms done\n");
+	return true;
+}
+
+bool CSGInterface::cmd_best_path_trans()
+{
+	//if ((m_nrhs!=15 && m_nrhs!=17) || !create_return_values(3))
+	//	return false;
+
+	INT num_states = ui_structure->get_num_states();
+	INT feat_dim3 = ui_structure->get_features_dim3();
+	CArray3<DREAL> features = (ui_structure->get_feature_matrix());
+	INT* all_pos = ui_structure->get_all_positions();
+	INT num_pos = ui_structure->get_num_positions();
+	INT* orf_info = ui_structure->get_orf_info();
+	bool use_orf = ui_structure->get_use_orf();
+	INT Nplif = ui_structure->get_num_plifs();
+
+	// ARG 1
+	// transitions from initial state (#states x 1)
+	INT Np=0;
+	DREAL* p;
+	get_real_vector(p, Np);
+	ASSERT(Np==num_states);
+
+	// ARG 2
+	// transitions to end state (#states x 1)
+	INT Nq=0;
+	DREAL* q;
+	get_real_vector(q, Nq);
+	ASSERT(Nq==num_states);
+
+	// ARG 3
 	// number of best paths
 	INT Nnbest=0;
 	INT* all_nbest;
-	get_int_vector(all_nbest, Nnbest);	
+	get_int_vector(all_nbest, Nnbest);
+	INT nbest;
+	INT nother = 0;
+	if (Nnbest==2)
+	{
+		nbest =all_nbest[0];	
+		nother=all_nbest[1];	
+	}
+	else
+		nbest =all_nbest[0];	
+	delete[] all_nbest;
+	// ARG 4
+	// segment path (2 x #feature_positions)
+	// masking/weighting of loss for specific 
+	// regions of the true path
+	INT Nseg_path=0;
+	INT Mseg_path=0;
+	DREAL* seg_path;
+	get_real_matrix(seg_path,Nseg_path,Mseg_path);
 
-	// ARG 12
-	// SVM weight vectors for the different contents (#contents x sum_{orders i}(4^i))
-	INT Ncw=0;
-	INT Mcw=0;
-	DREAL* content_weights;
-	get_real_matrix(content_weights, Ncw, Mcw);
+	// ARG 5
+	// links for transitions (#transitions x 4)
+	INT Na_trans=0;
+	INT num_a_trans=0;
+	DREAL* a_trans;
+	get_real_matrix(a_trans, num_a_trans, Na_trans);
 
-	// ARG 13
-	// bool-> determines if orf information should be used
-	bool use_orf = get_bool();
-
-	// ARG 14
-	// determines for which contents which orf should be used (#contents x 2)
-	INT Nmod=0;
-	INT Mmod=0;
-	INT* mod_words;
-	get_int_matrix(mod_words, Nmod,Mmod); 
-
-	// ARG 15
+	// ARG 6
 	// loss matrix (#segment x 2*#segments)
 	// one (#segment x #segments)-matrix for segment loss 
 	// and one for nucleotide loss
@@ -5253,120 +5329,36 @@ bool CSGInterface::cmd_best_path_trans()
 	INT Mloss=0;
 	DREAL* loss;
 	get_real_matrix(loss, Nloss,Mloss);
-
-	// ARG 16
-	// segment path (2 x #feature_positions)
-	// masking/weighting of loss for specific 
-	// regions of the true path
-	INT Nseg_path=0;
-	INT Mseg_path=0;
-	INT* seg_path;
-	get_int_matrix(seg_path,Nseg_path,Mseg_path);
-
 	
-	INT N = Np;		// number of states
-	INT M = Nall_pos;	// number of candidate positions
-	INT nbest;
+	INT M = ui_structure->get_num_positions();
 	INT genestr_num = 1; //FIXME
-	INT nother;
-	if (Nnbest==2)
-	{
-		nbest = all_nbest[0];
-		nother = all_nbest[1];
-	}
-	else if (Nnbest==1)
-	{
-		nbest = all_nbest[0];
-		nother = 0;
-	}	
-	delete[] all_nbest;
 	
 	/////////////////////////////////////////////////////////////////////////////////
 	// check input
 	/////////////////////////////////////////////////////////////////////////////////
-	ASSERT(N==Nq);	
-	ASSERT(Na_trans==3 || Na_trans==4);
+	ASSERT(num_states==Nq);	
 
 	CPlif** PEN=ui_structure->get_PEN();
 	ASSERT(PEN);
 	
-	CPlifBase **PEN_matrix = new CPlifBase*[N*N] ;
-	CArray3<INT> penalties(transition_pointers, N, N, Qtransition_pointers, false, false) ;
-	
-	for (INT i=0; i<N; i++)
-	{
-		for (INT j=0; j<N; j++)
-		{
-			CPlifArray* plif_array = new CPlifArray() ;
-			CPlif* plif = NULL ;
-			plif_array->clear() ;
-			for (INT k=0; k<Qtransition_pointers; k++)
-			{
-				if (penalties.element(i,j,k)==0)
-					continue ;
-				INT id = (INT) penalties.element(i,j,k)-1 ;
-				if ((id<0 || id>=Nplif) && (id!=-1))
-				{
-					SG_ERROR( "id out of range\n") ;
-					delete_penalty_struct(PEN, Nplif) ;
-					return false ;
-				}
-				plif = PEN[id] ;
-				plif_array->add_plif(plif) ;
-			}
-			if (plif_array->get_num_plifs()==0)
-			{
-				delete plif_array ;
-				PEN_matrix[i+j*N] = NULL ;
-			}
-			else if (plif_array->get_num_plifs()==1)
-			{
-				delete plif_array ;
-				ASSERT(plif!=NULL) ;
-				PEN_matrix[i+j*N] = plif ;
-			}
-			else
-				PEN_matrix[i+j*N] = plif_array ;
-		}
-	}
+	CPlifBase **PEN_matrix = ui_structure->get_plif_matrix();
 
-	CPlifBase **PEN_state_signal = new CPlifBase*[Qfeat*N] ;
-	for (INT i=0; i<N*Qfeat; i++)
-	{
-		INT id = (INT) state_signals[i]-1 ;
-		if ((id<0 || id>=Nplif) && (id!=-1))
-		{
-			SG_ERROR( "id out of range\n") ;
-			delete_penalty_struct(PEN, Nplif) ;
-			return false ;
-		}
-		if (id==-1)
-			PEN_state_signal[i]=NULL ;
-		else
-			PEN_state_signal[i]=PEN[id] ;
-	}
-
+	CPlifBase **PEN_state_signal = ui_structure->get_state_signals();
 	
-	CDynProg* h=new CDynProg();
-	h->set_N(N) ;
-	h->set_p_vector(p, N) ;
-	h->set_q_vector(q, N) ;
+	CDynProg* h = ui_structure->get_dyn_prog();
+	ASSERT(h)
+	h->set_p_vector(p, num_states);
+	h->set_q_vector(q, num_states);
 	if (seg_path!=NULL)
 	{
-		h->set_a_trans_matrix(a_trans, Ma_trans, Na_trans) ;
+		h->set_a_trans_matrix(a_trans, num_a_trans, Na_trans) ;
 	}
 	else
 	{
-		h->set_a_trans_matrix(a_trans, Ma_trans, 3) ; // segment_id = 0 
+		h->set_a_trans_matrix(a_trans, num_a_trans, 3) ; // segment_id = 0 
 	}
-	INT* mod_words_array=new INT[Mmod*Nmod] ;
-	for (INT i=0; i<Mmod; i++)
-	{
-		for (INT j=0; j<Nmod; j++)
-			mod_words_array[i*j] = mod_words[i*Nmod+j];
-	}
-	h->init_mod_words_array(mod_words_array, Mmod, Nmod) ;
 
+	SG_PRINT("call best_path_trans\n");
 	if (!h->check_svm_arrays())
 	{
 		SG_ERROR( "svm arrays inconsistent\n") ;
@@ -5382,7 +5374,6 @@ bool CSGInterface::cmd_best_path_trans()
 	//mxArray* mx_prob = mxCreateDoubleMatrix(1, (nbest+nother), mxREAL);
 	//double* p_prob = mxGetPr(mx_prob);
 	DREAL* p_prob = new DREAL[nbest+nother];
-
 	if (seg_path!=NULL)
 	{
 		INT *segment_ids = new INT[M] ;
@@ -5392,8 +5383,8 @@ bool CSGInterface::cmd_best_path_trans()
 		        segment_ids[i] = (INT)seg_path[2*i] ;
 		        segment_mask[i] = seg_path[2*i+1] ;
 		}
-		h->best_path_set_segment_loss(loss, Mloss, Nloss) ;
-		h->best_path_set_segment_ids_mask(segment_ids, segment_mask, Nseg_path) ;
+		h->best_path_set_segment_loss(loss, Nloss, Mloss) ;
+		h->best_path_set_segment_ids_mask(segment_ids, segment_mask, Mseg_path) ;
 		delete[] segment_ids;
 		delete[] segment_mask;
 	}
@@ -5413,44 +5404,63 @@ bool CSGInterface::cmd_best_path_trans()
 		delete[] izeros ;
 		delete[] dzeros ;
 	}
-	
-	//h->best_path_trans(seq, M, all_pos, orf_info,
-	//				   PEN_matrix, PEN_state_signal, Qfeat, 
-	//				   seq, Nseq, genestr_num,
-	//				   nbest, nother, p_prob, my_path, my_pos, 
-	//				   content_weights, Ncw*Mcw, use_orf) ;
+	SG_PRINT("call best_path_trans\n");
 
+	INT d1;
+	INT d2;
+	INT d3;
+	features.get_array_size(d1,d2,d3);
+	SG_PRINT("features: d1:%i d2:%i d3:%i\n",d1,d2,d3);
+	//if (segment_loss_non_zero)
+	if (true)//FIXME
+	{
+	        SG_DEBUG("Using version with segment_loss\n") ;
+	        if (nbest==1)
+	                h->best_path_trans<1,true,false>(features.get_array(), num_pos, all_pos, orf_info, PEN_matrix, 
+				PEN_state_signal, feat_dim3, genestr_num, p_prob, my_path, my_pos, use_orf) ;
+	        else
+	                h->best_path_trans<2,true,false>(features.get_array(), num_pos, all_pos, orf_info,PEN_matrix, 
+				PEN_state_signal, feat_dim3, genestr_num, p_prob, my_path, my_pos, use_orf) ;
+	}
+	else
+	{
+	        SG_DEBUG("Using version without segment_loss\n") ;
+	        if (nbest==1)
+	                h->best_path_trans<1,false,false>(features.get_array(), num_pos, all_pos, orf_info, PEN_matrix, 
+				PEN_state_signal, feat_dim3, genestr_num, p_prob, my_path, my_pos, use_orf) ;
+	        else
+	                h->best_path_trans<2,false,false>(features.get_array(), num_pos, all_pos, orf_info, PEN_matrix, 
+				PEN_state_signal, feat_dim3, genestr_num, p_prob, my_path, my_pos, use_orf) ;
+	}
+
+	SG_PRINT("best_path_trans: cleanup 1\n");
+	SG_PRINT("num_positions: %i, p_prob: %f\n",M,p_prob);
+	SG_PRINT("best_path_trans: cleanup 2\n");
 	// clean up 
 	delete_penalty_struct(PEN, Nplif) ;
-	delete[] PEN_matrix ;
-	delete[] all_pos ;
-	delete[] orf_info ;
-	delete h ;
-	//mxFree(seq) ;
+	//delete[] PEN_matrix ;
+	//delete[] all_pos ;
+	//delete[] orf_info ;
+	//delete h ;
 
 	// transcribe result
-	//mxArray* mx_my_path=mxCreateDoubleMatrix((nbest+nother), M, mxREAL);
 	DREAL* d_my_path= new DREAL[(nbest+nother)*M];
-	//mxArray* mx_my_pos=mxCreateDoubleMatrix((nbest+nother), M, mxREAL);
 	DREAL* d_my_pos= new DREAL[(nbest+nother)*M];
 	
 	for (INT k=0; k<(nbest+nother); k++)
 	{
 		for (INT i=0; i<M; i++)
 		{
-			d_my_path[i*(nbest+nother)+k] = my_path[i+k*M] ;
-			d_my_pos[i*(nbest+nother)+k] = my_pos[i+k*M] ;
+			d_my_path[i*(nbest+nother)+k] = 1.0;//my_path[i+k*M] ;
+			d_my_pos[i*(nbest+nother)+k] = 1.0;//my_pos[i+k*M] ;
 		}
 	}
-	//retvals[0]=mx_prob ;
-	//retvals[1]=mx_my_path ;
-	//retvals[2]=mx_my_pos ;
 	set_real_vector(p_prob,nbest+nother);
-	set_real_matrix(d_my_path, 1, 1); //FIXME
-	set_real_matrix(d_my_pos, 1, 1);  //FIXME
+	set_real_vector(d_my_path, (nbest+nother)*M);
+	set_real_vector(d_my_pos, (nbest+nother)*M);
 
-	delete[] my_path ;
-	delete[] my_pos ;
+	//delete[] my_path ;
+	//delete[] my_pos ;
 
 	return true;
 
@@ -5493,7 +5503,7 @@ bool CSGInterface::cmd_best_path_no_b()
 
 	CDynProg* h=new CDynProg();
 	ASSERT(h);
-	h->set_N(N_p);
+	h->set_num_states(N_p);
 	h->set_p_vector(p, N_p);
 	h->set_q_vector(q, N_p);
 	h->set_a(a, N_p, N_p);
@@ -5543,7 +5553,7 @@ bool CSGInterface::cmd_best_path_trans_simple()
 
 	CDynProg* h=new CDynProg();
 	ASSERT(h);
-	h->set_N(N_p);
+	h->set_num_states(N_p);
 	h->set_p_vector(p, N_p);
 	h->set_q_vector(q, N_p);
 	h->set_a_trans_matrix(cmd_trans, M_cmd_trans, 3);
@@ -5598,7 +5608,7 @@ bool CSGInterface::cmd_best_path_no_b_trans()
 
 	CDynProg* h=new CDynProg();
 	ASSERT(h);
-	h->set_N(N_p);
+	h->set_num_states(N_p);
 	h->set_p_vector(p, N_p);
 	h->set_q_vector(q, N_p);
 	h->set_a_trans_matrix(cmd_trans, M_cmd_trans, 3);
