@@ -8,6 +8,8 @@ fm_test_real=load_matrix('../data/fm_test_real.dat');
 label_train_dna=load_matrix('../data/label_train_dna.dat');
 fm_train_dna=load_matrix('../data/fm_train_dna.dat');
 fm_test_dna=load_matrix('../data/fm_test_dna.dat');
+fm_train_word=load_matrix('../data/fm_train_word.dat');
+fm_test_word=load_matrix('../data/fm_test_word.dat');
 
 
 %
@@ -220,8 +222,6 @@ km=sg('get_kernel_matrix');
 % word features
 %
 
-maxval=2^16-1;
-
 % LinearWord
 disp('LinearWord');
 
@@ -229,11 +229,11 @@ scale=1.4;
 
 sg('set_kernel', 'LINEAR', 'WORD', size_cache, scale);
 
-sg('set_features', 'TRAIN', uint16(fm_train_real*maxval));
+sg('set_features', 'TRAIN', uint16(fm_train_word));
 sg('init_kernel', 'TRAIN');
 km=sg('get_kernel_matrix');
 
-sg('set_features', 'TEST', uint16(fm_test_real*maxval));
+sg('set_features', 'TEST', uint16(fm_test_word));
 sg('init_kernel', 'TEST');
 km=sg('get_kernel_matrix');
 
@@ -247,11 +247,11 @@ normalize=1;
 
 sg('set_kernel', 'POLYMATCH', 'WORD', size_cache, degree, inhomogene, normalize);
 
-sg('set_features', 'TRAIN', uint16(fm_train_real*maxval));
+sg('set_features', 'TRAIN', uint16(fm_train_word));
 sg('init_kernel', 'TRAIN');
 km=sg('get_kernel_matrix');
 
-sg('set_features', 'TEST', uint16(fm_test_real*maxval));
+sg('set_features', 'TEST', uint16(fm_test_word));
 sg('init_kernel', 'TEST');
 km=sg('get_kernel_matrix');
 

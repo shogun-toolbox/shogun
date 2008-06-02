@@ -7,7 +7,6 @@ tube_epsilon=1e-2;
 
 addpath('tools');
 label_train=load_matrix('../data/label_train_oneclass.dat');
-label_test=label_train;
 fm_train=load_matrix('../data/fm_train_real.dat');
 fm_test=load_matrix('../data/fm_test_real.dat');
 
@@ -31,7 +30,6 @@ try
 	sg('train_regression');
 
 	sg('set_features', 'TEST', fm_test);
-	sg('set_labels', 'TEST', label_test);
 	sg('init_kernel', 'TEST');
 	result=sg('classify');
 catch
@@ -53,7 +51,6 @@ sg('init_kernel', 'TRAIN');
 sg('train_regression');
 
 sg('set_features', 'TEST', fm_test);
-sg('set_labels', 'TEST', label_test);
 sg('init_kernel', 'TEST');
 result=sg('classify');
 
