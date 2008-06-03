@@ -18,19 +18,23 @@
 CDistanceKernel::CDistanceKernel(INT size, DREAL w ,CDistance* d)
 : CKernel(size), distance(d), width(w)
 {
+	SG_REF(distance);
 }
 
 CDistanceKernel::CDistanceKernel(
 	CFeatures *l, CFeatures *r, DREAL w , CDistance* d)
 : CKernel(10), distance(d), width(w)
 {
+	SG_REF(distance);
 	init(l, r);
 }
 
 CDistanceKernel::~CDistanceKernel()
 {
+	// important to have the cleanup of CKernel first, it calls get_name which
+	// uses the distance
 	cleanup();
-	distance=NULL;
+	SG_UNREF(distance);
 }
 
 bool CDistanceKernel::init(CFeatures* l, CFeatures* r)
