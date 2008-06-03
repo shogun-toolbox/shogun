@@ -3,32 +3,16 @@
 Explicit examples on how to use the different distances
 """
 
-from numpy import array, floor
+from numpy import array, floor, double, char
 from numpy.random import seed, rand
 from sg import sg
 
-def get_dna (len_seq_test_add=0):
-	acgt=array(['A', 'C', 'G','T'])
-	len_acgt=len(acgt)
-	rand_train=[]
-	rand_test=[]
+from tools.load import load_features, load_labels
+fm_train_real=load_features('../data/fm_train_real.dat')
+fm_test_real=load_features('../data/fm_test_real.dat')
+fm_train_dna=load_features('../data/fm_train_dna.dat', char)
+fm_test_dna=load_features('../data/fm_test_dna.dat', char)
 
-	for i in xrange(11):
-		str1=[]
-		str2=[]
-		for j in range(60):
-			str1.append(acgt[floor(len_acgt*rand())])
-			str2.append(acgt[floor(len_acgt*rand())])
-		rand_train.append(''.join(str1))
-	rand_test.append(''.join(str2))
-	
-	for i in xrange(6):
-		str1=[]
-		for j in range(60+len_seq_test_add):
-			str1.append(acgt[floor(len_acgt*rand())])
-	rand_test.append(''.join(str1))
-
-	return {'train': rand_train, 'test': rand_test}
 
 ###########################################################################
 # real features
@@ -36,121 +20,87 @@ def get_dna (len_seq_test_add=0):
 
 def euclidian_distance ():
 	print 'EuclidianDistance'
-
-	num_feats=10
-	traindata=rand(num_feats, 11)
-	testdata=rand(num_feats, 17)
-
 	sg('set_distance', 'EUCLIDIAN', 'REAL')
 
-	sg('set_features', 'TRAIN', traindata)
+	sg('set_features', 'TRAIN', fm_train_real)
 	sg('init_distance', 'TRAIN')
 	dm=sg('get_distance_matrix')
 
-	sg('set_features', 'TEST', testdata)
+	sg('set_features', 'TEST', fm_test_real)
 	sg('init_distance', 'TEST')
 	dm=sg('get_distance_matrix')
 
 def canberra_metric ():
 	print 'CanberraMetric'
-
-	num_feats=10
-	traindata=rand(num_feats, 11)
-	testdata=rand(num_feats, 17)
-
 	sg('set_distance', 'CANBERRA', 'REAL')
 
-	sg('set_features', 'TRAIN', traindata)
+	sg('set_features', 'TRAIN', fm_train_real)
 	sg('init_distance', 'TRAIN')
 	dm=sg('get_distance_matrix')
 
-	sg('set_features', 'TEST', testdata)
+	sg('set_features', 'TEST', fm_test_real)
 	sg('init_distance', 'TEST')
 	dm=sg('get_distance_matrix')
 
 def chebyshew_metric ():
 	print 'ChebyshewMetric'
-
-	num_feats=10
-	traindata=rand(num_feats, 11)
-	testdata=rand(num_feats, 17)
-
 	sg('set_distance', 'CHEBYSHEW', 'REAL')
 
-	sg('set_features', 'TRAIN', traindata)
+	sg('set_features', 'TRAIN', fm_train_real)
 	sg('init_distance', 'TRAIN')
 	dm=sg('get_distance_matrix')
 
-	sg('set_features', 'TEST', testdata)
+	sg('set_features', 'TEST', fm_test_real)
 	sg('init_distance', 'TEST')
 	dm=sg('get_distance_matrix')
 
 def geodesic_metric ():
 	print 'GeodesicMetric'
-
-	num_feats=10
-	traindata=rand(num_feats, 11)
-	testdata=rand(num_feats, 17)
-
 	sg('set_distance', 'GEODESIC', 'REAL')
 
-	sg('set_features', 'TRAIN', traindata)
+	sg('set_features', 'TRAIN', fm_train_real)
 	sg('init_distance', 'TRAIN')
 	dm=sg('get_distance_matrix')
 
-	sg('set_features', 'TEST', testdata)
+	sg('set_features', 'TEST', fm_test_real)
 	sg('init_distance', 'TEST')
 	dm=sg('get_distance_matrix')
 
 def jensen_metric ():
 	print 'JensenMetric'
-
-	num_feats=10
-	traindata=rand(num_feats, 11)
-	testdata=rand(num_feats, 17)
-
 	sg('set_distance', 'JENSEN', 'REAL')
 
-	sg('set_features', 'TRAIN', traindata)
+	sg('set_features', 'TRAIN', fm_train_real)
 	sg('init_distance', 'TRAIN')
 	dm=sg('get_distance_matrix')
 
-	sg('set_features', 'TEST', testdata)
+	sg('set_features', 'TEST', fm_test_real)
 	sg('init_distance', 'TEST')
 	dm=sg('get_distance_matrix')
 
 def manhattan_metric ():
 	print 'ManhattanMetric'
-
-	num_feats=10
-	traindata=rand(num_feats, 11)
-	testdata=rand(num_feats, 17)
-
 	sg('set_distance', 'MANHATTAN', 'REAL')
 
-	sg('set_features', 'TRAIN', traindata)
+	sg('set_features', 'TRAIN', fm_train_real)
 	sg('init_distance', 'TRAIN')
 	dm=sg('get_distance_matrix')
 
-	sg('set_features', 'TEST', testdata)
+	sg('set_features', 'TEST', fm_test_real)
 	sg('init_distance', 'TEST')
 	dm=sg('get_distance_matrix')
 
 def minkowski_metric ():
 	print 'MinkowskiMetric'
 
-	num_feats=10
 	k=3.
-	traindata=rand(num_feats, 11)
-	testdata=rand(num_feats, 17)
-
 	sg('set_distance', 'MINKOWSKI', 'REAL', k)
 
-	sg('set_features', 'TRAIN', traindata)
+	sg('set_features', 'TRAIN', fm_train_real)
 	sg('init_distance', 'TRAIN')
 	dm=sg('get_distance_matrix')
 
-	sg('set_features', 'TEST', testdata)
+	sg('set_features', 'TEST', fm_test_real)
 	sg('init_distance', 'TEST')
 	dm=sg('get_distance_matrix')
 
@@ -161,7 +111,6 @@ def minkowski_metric ():
 def canberra_word_distance ():
 	print 'CanberraWordDistance'
 
-	data=get_dna(len_seq_test_add=12)
 	order=3
 	gap=0
 	reverse='n' # bit silly to not use boolean, set 'r' to yield true
@@ -169,13 +118,13 @@ def canberra_word_distance ():
 	sg('set_distance', 'CANBERRA', 'WORD')
 	sg('add_preproc', 'SORTWORDSTRING')
 
-	sg('set_features', 'TRAIN', data['train'], 'DNA')
+	sg('set_features', 'TRAIN', fm_train_dna, 'DNA')
 	sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, gap, reverse)
 	sg('attach_preproc', 'TRAIN')
 	sg('init_distance', 'TRAIN')
 	dm=sg('get_distance_matrix')
 
-	sg('set_features', 'TEST', data['test'], 'DNA')
+	sg('set_features', 'TEST', fm_test_dna, 'DNA')
 	sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, gap, reverse)
 	sg('attach_preproc', 'TEST')
 	sg('init_distance', 'TEST')
@@ -184,7 +133,6 @@ def canberra_word_distance ():
 def hamming_word_distance ():
 	print 'HammingWordDistance'
 
-	data=get_dna(len_seq_test_add=12)
 	order=3
 	gap=0
 	reverse='n' # bit silly to not use boolean, set 'r' to yield true
@@ -192,13 +140,13 @@ def hamming_word_distance ():
 	sg('set_distance', 'HAMMING', 'WORD')
 	sg('add_preproc', 'SORTWORDSTRING')
 
-	sg('set_features', 'TRAIN', data['train'], 'DNA')
+	sg('set_features', 'TRAIN', fm_train_dna, 'DNA')
 	sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, gap, reverse)
 	sg('attach_preproc', 'TRAIN')
 	sg('init_distance', 'TRAIN')
 	dm=sg('get_distance_matrix')
 
-	sg('set_features', 'TEST', data['test'], 'DNA')
+	sg('set_features', 'TEST', fm_test_dna, 'DNA')
 	sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, gap, reverse)
 	sg('attach_preproc', 'TEST')
 	sg('init_distance', 'TEST')
@@ -207,7 +155,6 @@ def hamming_word_distance ():
 def manhattan_word_distance ():
 	print 'ManhattanWordDistance'
 
-	data=get_dna(len_seq_test_add=12)
 	order=3
 	gap=0
 	reverse='n' # bit silly to not use boolean, set 'r' to yield true
@@ -215,13 +162,13 @@ def manhattan_word_distance ():
 	sg('set_distance', 'MANHATTAN', 'WORD')
 	sg('add_preproc', 'SORTWORDSTRING')
 
-	sg('set_features', 'TRAIN', data['train'], 'DNA')
+	sg('set_features', 'TRAIN', fm_train_dna, 'DNA')
 	sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, gap, reverse)
 	sg('attach_preproc', 'TRAIN')
 	sg('init_distance', 'TRAIN')
 	dm=sg('get_distance_matrix')
 
-	sg('set_features', 'TEST', data['test'], 'DNA')
+	sg('set_features', 'TEST', fm_test_dna, 'DNA')
 	sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, gap, reverse)
 	sg('attach_preproc', 'TEST')
 	sg('init_distance', 'TEST')

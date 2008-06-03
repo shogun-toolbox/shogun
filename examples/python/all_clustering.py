@@ -3,14 +3,13 @@
 Explicit examples on how to use clustering
 """
 
-from numpy import array, concatenate, sign
+from numpy import array, concatenate, sign, double
 from numpy.random import rand, seed, permutation
 from sg import sg
 
-def get_clouds (num, num_feats, num_vec):
-	data=[rand(num_feats, num_vec)+x/2 for x in xrange(num)]
-	cloud=concatenate(data, axis=1)
-	return array([permutation(x) for x in cloud])
+from tools.load import load_features, load_labels
+fm_train_real=load_features('../data/fm_train_real.dat')
+
 
 def kmeans ():
 	print 'KMeans'
@@ -18,14 +17,8 @@ def kmeans ():
 	size_cache=10
 	k=3
 	iter=1000
-	num_feats=14
-	num_trainvec=10
 
-	trainlab=sign(rand(1, num_trainvec*k)-0.5)[0]
-	traindata=get_clouds(k, num_feats, num_trainvec)
-
-	sg('set_features', 'TRAIN', traindata)
-	sg('set_labels', 'TRAIN', trainlab)
+	sg('set_features', 'TRAIN', fm_train_real)
 	sg('set_distance', 'EUCLIDIAN', 'REAL')
 	sg('init_distance', 'TRAIN')
 	sg('new_clustering', 'KMEANS')
@@ -39,12 +32,8 @@ def hierarchical ():
 
 	size_cache=10
 	merges=3
-	num_feats=14
-	num_trainvec=10
 
-	traindata=get_clouds(merges, num_feats, num_trainvec)
-
-	sg('set_features', 'TRAIN', traindata)
+	sg('set_features', 'TRAIN', fm_train_real)
 	sg('set_distance', 'EUCLIDIAN', 'REAL')
 	sg('init_distance', 'TRAIN')
 	sg('new_clustering', 'HIERARCHICAL')

@@ -3,9 +3,14 @@
 Explicit examples on how to use distributions
 """
 
-from numpy import array, floor, ushort, ceil, concatenate, ones, zeros
+from numpy import array, floor, ushort, ceil, concatenate, ones, zeros, double, char
 from numpy.random import randint, seed, rand, permutation
 from sg import sg
+
+from tools.load import load_features, load_labels
+fm_train_dna=load_features('../data/fm_train_dna.dat', char)
+fm_test_dna=load_features('../data/fm_test_dna.dat', char)
+
 
 def get_cubes (num=2):
 	leng=50
@@ -41,28 +46,6 @@ def get_cubes (num=2):
 
 	return sequence
 
-def get_dna ():
-	acgt=array(['A', 'C', 'G','T'])
-	len_acgt=len(acgt)
-	rand_train=[]
-	rand_test=[]
-
-	for i in xrange(11):
-		str1=[]
-		str2=[]
-		for j in range(60):
-			str1.append(acgt[floor(len_acgt*rand())])
-			str2.append(acgt[floor(len_acgt*rand())])
-		rand_train.append(''.join(str1))
-	rand_test.append(''.join(str2))
-	
-	for i in xrange(6):
-		str1=[]
-		for j in range(60):
-			str1.append(acgt[floor(len_acgt*rand())])
-	rand_test.append(''.join(str1))
-
-	return {'train': rand_train, 'test': rand_test}
 
 ###########################################################################
 # distributions
@@ -71,7 +54,6 @@ def get_dna ():
 def histogram ():
 	print 'Histogram'
 
-	data=get_dna()
 	order=3
 	gap=0
 	reverse='n' # bit silly to not use boolean, set 'r' to yield true
@@ -79,7 +61,7 @@ def histogram ():
 #	sg('new_distribution', 'HISTOGRAM')
 	sg('add_preproc', 'SORTWORDSTRING')
 
-	sg('set_features', 'TRAIN', data['train'], 'DNA')
+	sg('set_features', 'TRAIN', fm_train_dna, 'DNA')
 	sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, gap, reverse)
 	sg('attach_preproc', 'TRAIN')
 
@@ -98,7 +80,6 @@ def histogram ():
 def linear_hmm ():
 	print 'LinearHMM'
 
-	data=get_dna()
 	order=3
 	gap=0
 	reverse='n' # bit silly to not use boolean, set 'r' to yield true
@@ -106,7 +87,7 @@ def linear_hmm ():
 #	sg('new_distribution', 'LinearHMM')
 	sg('add_preproc', 'SORTWORDSTRING')
 
-	sg('set_features', 'TRAIN', data['train'], 'DNA')
+	sg('set_features', 'TRAIN', fm_train_dna, 'DNA')
 	sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, gap, reverse)
 	sg('attach_preproc', 'TRAIN')
 

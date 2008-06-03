@@ -4,8 +4,8 @@ then
 	PYTHON=python
 fi
 
-( cd ../../src
-for e in ../examples/python/*.py
+(
+for e in *.py
 do
 	echo -n "running $e .."
 	if ${PYTHON} "$e" >/dev/null 2>&1
