@@ -149,6 +149,10 @@ class CCustomKernel: public CKernel
 				return kmatrix[row*num_cols+col];
 		}
 
+	private:
+		/** only cleanup stuff specific to Custom kernel */
+		void cleanup_custom();
+
 	protected:
 		/** kernel matrix */
 		SHORTREAL* kmatrix;

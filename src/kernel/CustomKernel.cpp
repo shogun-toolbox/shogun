@@ -64,14 +64,18 @@ bool CCustomKernel::init(CFeatures* l, CFeatures* r)
 	return true;
 }
 
-void CCustomKernel::cleanup()
+void CCustomKernel::cleanup_custom()
 {
 	delete[] kmatrix;
 	kmatrix=NULL;
 	upper_diagonal=false;
 	num_cols=0;
 	num_rows=0;
+}
 
+void CCustomKernel::cleanup()
+{
+	cleanup_custom();
 	CKernel::cleanup();
 }
 
@@ -99,7 +103,7 @@ bool CCustomKernel::set_triangle_kernel_matrix_from_triangle(const DREAL* km, in
 	}
 
 
-	cleanup();
+	cleanup_custom();
 	SG_DEBUG( "using custom kernel of size %dx%d\n", cols,cols);
 
 	kmatrix= new SHORTREAL[len];
@@ -123,7 +127,7 @@ bool CCustomKernel::set_triangle_kernel_matrix_from_full(const DREAL* km, INT ro
 {
 	ASSERT(rows==cols);
 
-	cleanup();
+	cleanup_custom();
 	SG_DEBUG( "using custom kernel of size %dx%d\n", cols,cols);
 
 	kmatrix= new SHORTREAL[cols*(cols+1)/2];
@@ -149,7 +153,7 @@ bool CCustomKernel::set_triangle_kernel_matrix_from_full(const DREAL* km, INT ro
 
 bool CCustomKernel::set_full_kernel_matrix_from_full(const DREAL* km, INT rows, INT cols)
 {
-	cleanup();
+	cleanup_custom();
 	SG_DEBUG( "using custom kernel of size %dx%d\n", rows,cols);
 
 	kmatrix= new SHORTREAL[rows*cols];
@@ -172,3 +176,5 @@ bool CCustomKernel::set_full_kernel_matrix_from_full(const DREAL* km, INT rows, 
 	else
 		return false;
 }
+
+
