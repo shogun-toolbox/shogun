@@ -8,10 +8,10 @@ fm_test_real=load_matrix('../data/fm_test_real.dat');
 label_train_dna=load_matrix('../data/label_train_dna.dat');
 fm_train_dna=load_matrix('../data/fm_train_dna.dat');
 fm_test_dna=load_matrix('../data/fm_test_dna.dat');
-fm_train_word=load_matrix('../data/fm_train_word.dat');
-fm_test_word=load_matrix('../data/fm_test_word.dat');
-fm_train_byte=load_matrix('../data/fm_train_byte.dat');
-fm_test_byte=load_matrix('../data/fm_test_byte.dat');
+fm_train_word=uint16(load_matrix('../data/fm_train_word.dat'));
+fm_test_word=uint16(load_matrix('../data/fm_test_word.dat'));
+fm_train_byte=uint8(load_matrix('../data/fm_train_byte.dat'));
+fm_test_byte=uint8(load_matrix('../data/fm_test_byte.dat'));
 
 
 leng=28;
@@ -239,8 +239,8 @@ km_test=kernel.get_kernel_matrix();
 % linear_word
 disp('LinearWord')
 
-feats_train=WordFeatures(uint16(fm_train_word));
-feats_test=WordFeatures(uint16(fm_test_word));
+feats_train=WordFeatures(fm_train_word);
+feats_test=WordFeatures(fm_test_word);
 do_rescale=true;
 scale=1.4;
 
@@ -253,8 +253,8 @@ km_test=kernel.get_kernel_matrix();
 % poly_match_word
 disp('PolyMatchWord')
 
-feats_train=WordFeatures(uint16(fm_train_word));
-feats_test=WordFeatures(uint16(fm_test_word));
+feats_train=WordFeatures(fm_train_word);
+feats_test=WordFeatures(fm_test_word);
 degree=2;
 inhomogene=true;
 
@@ -267,8 +267,8 @@ km_test=kernel.get_kernel_matrix();
 % word_match
 disp('WordMatch')
 
-feats_train=WordFeatures(uint16(fm_train_word));
-feats_test=WordFeatures(uint16(fm_test_word));
+feats_train=WordFeatures(fm_train_word);
+feats_test=WordFeatures(fm_test_word);
 degree=3;
 do_rescale=true;
 scale=1.4;
