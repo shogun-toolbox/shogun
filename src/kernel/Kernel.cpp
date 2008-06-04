@@ -360,9 +360,12 @@ void CKernel::cleanup()
 
 void CKernel::kernel_cache_init(INT buffsize, bool regression_hack)
 {
-	INT i;
+	ASSERT(lhs);
+
 	INT totdoc=lhs->get_num_vectors();
+	ASSERT(totdoc>0);
 	ULONG buffer_size=0;
+	INT i;
 
 	//in regression the additional constraints are made by doubling the training data
 	if (regression_hack)
