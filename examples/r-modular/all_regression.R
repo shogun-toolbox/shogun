@@ -13,14 +13,11 @@ cacheMetaData(1)
 #source('regression/Regression.R')
 #cacheMetaData(1)
 
-num <- 50 #number of example
-len <- 10 #number of dimensions
-dist <- 1.5
-
 # Explicit examples on how to use regressions
 
-traindata_real <- matrix(c(rnorm(2*num)-dist,rnorm(2*num)+dist),2,2*num)
-testdata_real <- matrix(c(rnorm(2*num)-dist,rnorm(2*num)+dist),2,2*num)
+fm_train <- as.matrix(read.table('../data/fm_train_real.dat'))
+fm_test <- as.matrix(read.table('../data/fm_test_real.dat'))
+label_train <- as.real(as.matrix(read.table('../data/label_train_oneclass.dat')))
 
 ###########################################################################
 # svm-based
@@ -31,8 +28,8 @@ dosvrlight <- function()
 {
 	print('SVRLight')
 
-	feats_train <- RealFeatures(traindata_real)
-	feats_test <- RealFeatures(testdata_real)
+	feats_train <- RealFeatures(fm_train)
+	feats_test <- RealFeatures(fm_test)
 	width <- 2.1;
 	kernel <- GaussianKernel(feats_train, feats_train, width)
 
@@ -40,8 +37,7 @@ dosvrlight <- function()
 	epsilon <- 1e-5
 	tube_epsilon <- 1e-2
 	num_threads <- as.integer(3)
-	lab <- round(runif(feats_train$get_num_vectors()))*2-1
-	labels <- Labels(lab)
+	labels <- Labels(label_train)
 
 	svr <- SVRLight(C, epsilon, kernel, labels)
 	svr$set_tube_epsilon(svr, tube_epsilon)
@@ -58,8 +54,8 @@ try(dosvrlight())
 # libsvm based support vector regression
 print('LibSVR')
 
-feats_train <- RealFeatures(traindata_real)
-feats_test <- RealFeatures(testdata_real)
+feats_train <- RealFeatures(fm_train)
+feats_test <- RealFeatures(fm_test)
 width <- 2.1
 kernel <- GaussianKernel(feats_train, feats_train, width)
 
@@ -67,8 +63,7 @@ C <- 0.017
 epsilon <- 1e-5
 tube_epsilon <- 1e-2
 num_threads <- as.integer(3)
-lab <- round(runif(feats_train$get_num_vectors()))*2-1
-labels <- Labels(lab)
+labels <- Labels(label_train)
 
 svr <- LibSVR(C, epsilon, kernel, labels)
 svr$set_tube_epsilon(svr, tube_epsilon)
@@ -86,16 +81,15 @@ out <- outlab$get_labels(outlab);
 # kernel ridge regression
 print('KRR')
 
-feats_train <- RealFeatures(traindata_real)
-feats_test <- RealFeatures(testdata_real)
+feats_train <- RealFeatures(fm_train)
+feats_test <- RealFeatures(fm_test)
 width <- 0.8
 kernel <- GaussianKernel(feats_train, feats_train, width)
 
 C <- 0.42
 tau <- 1e-6
 num_threads <- as.integer(1)
-lab <- round(runif(feats_train$get_num_vectors()))*2-1
-labels <- Labels(lab)
+labels <- Labels(label_train)
 
 krr <- KRR(tau, kernel, labels)
 krr$parallel$set_num_threads(krr$parallel, num_threads)

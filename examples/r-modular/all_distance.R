@@ -13,27 +13,14 @@ cacheMetaData(1)
 #source('preproc/PreProc.R')
 #cacheMetaData(1)
 
-len <- 17
-num <- 42
-dist <- 2.3
-
 # Explicit examples on how to use the different distances
-acgt <- c('A', 'C', 'G', 'T')
-trainlab <- c(rep(1,num/2),rep(-1,num/2))
-traindata_dna <- list()
-testdata_dna <- list()
-for (i in 1:num)
-{
-	traindata_dna[i] <- paste(acgt[ceiling(4*runif(len))], sep="", collapse="")
-	testdata_dna[i] <- paste(acgt[ceiling(4*runif(len))], sep="", collapse="")
-}
-traindata_dna=c(traindata_dna,recursive=TRUE)
-testdata_dna=c(testdata_dna,recursive=TRUE)
 
-trainlab <- c(rep(-1,num/2), rep(1,num/2))
-testlab <- c(rep(-1,num/2), rep(1,num/2))
-traindata_real <- matrix(c(rnorm(num)-dist,rnorm(num)+dist),2,num)
-testdata_real <- matrix(c(rnorm(num)-dist,rnorm(num)+dist),2,num)
+fm_train_real <- as.matrix(read.table('../data/fm_train_real.dat'))
+fm_test_real <- as.matrix(read.table('../data/fm_test_real.dat'))
+fm_train_dna <- as.matrix(read.table('../data/fm_train_dna.dat'))
+fm_test_dna <- as.matrix(read.table('../data/fm_test_dna.dat'))
+
+
 ###########################################################################
 # real features
 ###########################################################################
@@ -41,8 +28,8 @@ testdata_real <- matrix(c(rnorm(num)-dist,rnorm(num)+dist),2,num)
 # euclidian distance
 print('EuclidianDistance')
 
-feats_train <- RealFeatures(traindata_real)
-feats_test <- RealFeatures(testdata_real)
+feats_train <- RealFeatures(fm_train_real)
+feats_test <- RealFeatures(fm_test_real)
 
 distance <- EuclidianDistance(feats_train, feats_train)
 
@@ -53,8 +40,8 @@ dm_test <- distance$get_distance_matrix()
 # norm squared distance
 print('EuclidianDistance - NormSquared')
 
-feats_train <- RealFeatures(traindata_real)
-feats_test <- RealFeatures(testdata_real)
+feats_train <- RealFeatures(fm_train_real)
+feats_test <- RealFeatures(fm_test_real)
 
 distance <- EuclidianDistance(feats_train, feats_train)
 distance$set_disable_sqrt(distance,TRUE)
@@ -66,8 +53,8 @@ dm_test <- distance$get_distance_matrix()
 # canberra metric
 print('CanberaMetric')
 
-feats_train <- RealFeatures(traindata_real)
-feats_test <- RealFeatures(testdata_real)
+feats_train <- RealFeatures(fm_train_real)
+feats_test <- RealFeatures(fm_test_real)
 
 distance <- CanberraMetric(feats_train, feats_train)
 
@@ -78,8 +65,8 @@ dm_test <- distance$get_distance_matrix()
 # chebyshew metric
 print('ChebyshewMetric')
 
-feats_train <- RealFeatures(traindata_real)
-feats_test <- RealFeatures(testdata_real)
+feats_train <- RealFeatures(fm_train_real)
+feats_test <- RealFeatures(fm_test_real)
 
 distance <- ChebyshewMetric(feats_train, feats_train)
 
@@ -90,8 +77,8 @@ dm_test <- distance$get_distance_matrix()
 # geodesic metric
 print('GeodesicMetric')
 
-feats_train <- RealFeatures(traindata_real)
-feats_test <- RealFeatures(testdata_real)
+feats_train <- RealFeatures(fm_train_real)
+feats_test <- RealFeatures(fm_test_real)
 
 distance <- GeodesicMetric(feats_train, feats_train)
 
@@ -102,8 +89,8 @@ dm_test <- distance$get_distance_matrix()
 # jensen metric
 print('JensenMetric')
 
-feats_train <- RealFeatures(traindata_real)
-feats_test <- RealFeatures(testdata_real)
+feats_train <- RealFeatures(fm_train_real)
+feats_test <- RealFeatures(fm_test_real)
 
 distance <- JensenMetric(feats_train, feats_train)
 
@@ -114,8 +101,8 @@ dm_test <- distance$get_distance_matrix()
 # manhattan metric
 print('ManhattanMetric')
 
-feats_train <- RealFeatures(traindata_real)
-feats_test <- RealFeatures(testdata_real)
+feats_train <- RealFeatures(fm_train_real)
+feats_test <- RealFeatures(fm_test_real)
 
 distance <- ManhattanMetric(feats_train, feats_train)
 
@@ -127,8 +114,8 @@ dm_test <- distance$get_distance_matrix()
 print('MinkowskiMetric')
 
 k = 4
-feats_train <- RealFeatures(traindata_real)
-feats_test <- RealFeatures(testdata_real)
+feats_train <- RealFeatures(fm_train_real)
+feats_test <- RealFeatures(fm_test_real)
 
 distance <- MinkowskiMetric(feats_train, feats_train, k)
 
@@ -139,10 +126,10 @@ dm_test <- distance$get_distance_matrix()
 # sparse euclidian distance
 print('SparseEuclidianDistance')
 
-realfeat <- RealFeatures(traindata_real)
+realfeat <- RealFeatures(fm_train_real)
 feats_train <- SparseRealFeatures()
 feats_train$obtain_from_simple(feats_train, realfeat)
-realfeat <- RealFeatures(testdata_real)
+realfeat <- RealFeatures(fm_test_real)
 feats_test <- SparseRealFeatures()
 feats_test$obtain_from_simple(feats_test, realfeat)
 
@@ -165,7 +152,7 @@ gap <- 0
 reverse <- FALSE
 
 charfeat <- StringCharFeatures("DNA")
-charfeat$set_string_features(charfeat, traindata_dna)
+charfeat$set_string_features(charfeat, fm_train_dna)
 feats_train <- StringWordFeatures(charfeat$get_alphabet())
 feats_train$obtain_from_char(feats_train, charfeat, order-1, order, gap, reverse)
 preproc <- SortWordString()
@@ -174,7 +161,7 @@ feats_train$add_preproc(feats_train, preproc)
 feats_train$apply_preproc(feats_train)
 
 charfeat <- StringCharFeatures("DNA")
-charfeat$set_string_features(charfeat, testdata_dna)
+charfeat$set_string_features(charfeat, fm_test_dna)
 feats_test <- StringWordFeatures(charfeat$get_alphabet())
 feats_test$obtain_from_char(feats_test, charfeat, order-1, order, gap, reverse)
 feats_test$add_preproc(feats_test, preproc)
@@ -194,7 +181,7 @@ gap <- 0
 reverse <- FALSE
 
 charfeat <- StringCharFeatures("DNA")
-charfeat$set_string_features(charfeat, traindata_dna)
+charfeat$set_string_features(charfeat, fm_train_dna)
 feats_train <- StringWordFeatures(charfeat$get_alphabet())
 feats_train$obtain_from_char(feats_train, charfeat, order-1, order, gap, reverse)
 preproc <- SortWordString()
@@ -203,7 +190,7 @@ feats_train$add_preproc(feats_train, preproc)
 feats_train$apply_preproc(feats_train)
 
 charfeat <- StringCharFeatures("DNA")
-charfeat$set_string_features(charfeat, testdata_dna)
+charfeat$set_string_features(charfeat, fm_test_dna)
 feats_test <- StringWordFeatures(charfeat$get_alphabet())
 feats_test$obtain_from_char(feats_test, charfeat, order-1, order, gap, reverse)
 feats_test$add_preproc(feats_test, preproc)
@@ -225,7 +212,7 @@ gap <- 0
 reverse <- FALSE
 
 charfeat <- StringCharFeatures("DNA")
-charfeat$set_string_features(charfeat, traindata_dna)
+charfeat$set_string_features(charfeat, fm_train_dna)
 feats_train <- StringWordFeatures(charfeat$get_alphabet())
 feats_train$obtain_from_char(feats_train, charfeat, order-1, order, gap, reverse)
 preproc <- SortWordString()
@@ -234,7 +221,7 @@ feats_train$add_preproc(feats_train, preproc)
 feats_train$apply_preproc(feats_train)
 
 charfeat <- StringCharFeatures("DNA")
-charfeat$set_string_features(charfeat, testdata_dna)
+charfeat$set_string_features(charfeat, fm_test_dna)
 feats_test <- StringWordFeatures(charfeat$get_alphabet())
 feats_test$obtain_from_char(feats_test, charfeat, order-1, order, gap, reverse)
 feats_test$add_preproc(feats_test, preproc)

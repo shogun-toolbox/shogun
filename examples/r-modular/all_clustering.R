@@ -15,21 +15,15 @@ cacheMetaData(1)
 
 # Explicit examples on how to use clustering
 
-# 4 clusters
-num <- 50
-dist <- 2.2
-len <- 2
-
-data <- matrix(c(rnorm(len*num)-1,rnorm(len*num)+1), len, 2*num)
-label <- c(rep(-1,num),rep(1,num))
+fm_train <- as.matrix(read.table('../data/fm_train_real.dat'))
 
 
 # KMeans
 print('KMeans')
 
 k <- as.integer(4)
-feats_train <- RealFeatures(data)
-feats_test <- RealFeatures(data)
+feats_train <- RealFeatures(fm_train)
+feats_test <- RealFeatures(fm_train)
 distance <- EuclidianDistance(feats_train, feats_train)
 
 kmeans <- KMeans(k, distance)
@@ -43,8 +37,8 @@ r <- kmeans$get_radiuses()
 print('Hierarchical')
 
 merges <- as.integer(4)
-feats_train <- RealFeatures(data)
-feats_test <- RealFeatures(data)
+feats_train <- RealFeatures(fm_train)
+feats_test <- RealFeatures(fm_train)
 distance <- EuclidianDistance(feats_train, feats_train)
 
 hierarchical <- Hierarchical(merges, distance)

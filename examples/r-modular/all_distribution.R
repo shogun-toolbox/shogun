@@ -13,48 +13,11 @@ cacheMetaData(1)
 #source('distributions/Distribution.R')
 #cacheMetaData(1)
 
-num=12
-leng=50
-rep=5
-weight=0.3
-
 # Explicit examples on how to use distributions
 
-# generate some random DNA =;-]
-#acgt='ACGT'
-acgt <- c('A', 'C', 'G', 'T')
-trainlab_dna=c(rep(1,num/2),rep(-1,num/2))
-traindata_dna=list()
-testdata_dna=list()
-for (i in 1:num)
-{
-	traindata_dna[i]=paste(acgt[ceiling(4*runif(leng))], sep="", collapse="")
-	testdata_dna[i]=paste(acgt[ceiling(4*runif(leng))], sep="", collapse="")
-}
+fm_train_dna <- as.matrix(read.table('../data/fm_train_dna.dat'))
+fm_train_cube <- as.matrix(read.table('../data/fm_train_cube.dat', colClasses=c('character')))
 
-traindata_dna=c(traindata_dna,recursive=TRUE)
-testdata_dna=c(testdata_dna,recursive=TRUE)
-
-cube <- list(NULL, NULL, NULL)
-numrep <- vector(mode='numeric',length=18)+100
-numrep[1] <- 0;
-numrep[2] <- 0;
-numrep[3] <- 0;
-numrep[10] <- 0;
-numrep[11] <- 0;
-numrep[12] <- 0;
-
-for (c in 1:3)
-{
-	for (i in 1:6)
-	{
-		cube[[c]] <- c(cube[[c]], vector(mode='numeric',length=numrep[(c-1)*6+i])+i)
-	}
-	cube[[c]] <- sample(cube[[c]],300,replace=TRUE);
-}
-
-cube <- c(cube[[1]], cube[[2]], cube[[3]])
-cubesequence <- paste(cube, sep="", collapse="")
 
 ###########################################################################
 # distributions
@@ -69,7 +32,7 @@ gap=as.integer(0)
 reverse=FALSE
 
 charfeat=StringCharFeatures("DNA")
-charfeat$set_string_features(charfeat, traindata_dna)
+charfeat$set_string_features(charfeat, fm_train_dna)
 feats=StringWordFeatures(charfeat$get_alphabet())
 feats$obtain_from_char(feats, charfeat, start, order, gap, reverse)
 preproc=SortWordString()
@@ -105,7 +68,7 @@ gap=0
 reverse=FALSE
 
 charfeat=StringCharFeatures("DNA")
-charfeat$set_string_features(charfeat, traindata_dna)
+charfeat$set_string_features(charfeat, fm_train_dna)
 feats=StringWordFeatures(charfeat$get_alphabet())
 feats$obtain_from_char(feats, charfeat, order-1, order, gap, reverse)
 preproc=SortWordString()
@@ -144,7 +107,7 @@ gap=0
 reverse=FALSE
 num_examples=2
 charfeat=StringCharFeatures("CUBE")
-charfeat$set_string_features(charfeat, cubesequence)
+charfeat$set_string_features(charfeat, fm_train_cube)
 feats=StringWordFeatures(charfeat$get_alphabet())
 feats$obtain_from_char(feats, charfeat, order-1, order, gap, reverse)
 preproc=SortWordString()

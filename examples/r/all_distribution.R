@@ -12,7 +12,6 @@ gap <- 0
 reverse <- 'n' # bit silly to not use boolean, set 'r' to yield true
 
 fm_train_dna <- as.matrix(read.table('../data/fm_train_dna.dat'))
-fm_test_dna <- as.matrix(read.table('../data/fm_test_dna.dat'))
 fm_train_cube <- as.matrix(read.table('../data/fm_train_cube.dat', colClasses=c('character')))
 
 

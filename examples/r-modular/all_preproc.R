@@ -13,39 +13,19 @@ cacheMetaData(1)
 #source('kernel/Kernel.R')
 #cacheMetaData(1)
 
-num <- 50; #number of example
-len <- 10; #number of dimensions
-dist <- 1.5
-
-# Explicit examples on how to use the different preprocs
-
-num <- 40
-len <- 3
-dist <- 2
-
 # Explicit examples on how to use the different classifiers
 
-acgt <- c('A', 'C', 'G', 'T')
-traindata_dna <- list()
-testdata_dna <- list()
-for (i in 1:num)
-{
-	traindata_dna[i] <- paste(acgt[ceiling(4*runif(len))], sep="", collapse="")
-	testdata_dna[i] <- paste(acgt[ceiling(4*runif(len))], sep="", collapse="")
-}
-
-traindata_dna=c(traindata_dna,recursive=TRUE)
-testdata_dna=c(testdata_dna,recursive=TRUE)
-
-traindata_real <- matrix(c(rnorm(num)-dist,rnorm(num)+dist),2,num)
-testdata_real <- matrix(c(rnorm(num)-dist,rnorm(num)+dist),2,num)
+fm_train_real <- as.matrix(read.table('../data/fm_train_real.dat'))
+fm_test_real <- as.matrix(read.table('../data/fm_test_real.dat'))
+fm_train_dna <- as.matrix(read.table('../data/fm_train_dna.dat'))
+fm_test_dna <- as.matrix(read.table('../data/fm_test_dna.dat'))
 
 
 #LogPlusOne
 print('LogPlusOne')
 
-feats_train <- RealFeatures(traindata_real)
-feats_test <- RealFeatures(testdata_real)
+feats_train <- RealFeatures(fm_train_real)
+feats_test <- RealFeatures(fm_test_real)
 
 preproc <- LogPlusOne()
 preproc$init(preproc, feats_train)
@@ -66,8 +46,8 @@ km_test <- kernel$get_kernel_matrix()
 #NormOne
 print('NormOne')
 
-feats_train <- RealFeatures(traindata_real)
-feats_test <- RealFeatures(testdata_real)
+feats_train <- RealFeatures(fm_train_real)
+feats_test <- RealFeatures(fm_test_real)
 
 preproc <- NormOne()
 preproc$init(preproc, feats_train)
@@ -88,8 +68,8 @@ km_test <- kernel$get_kernel_matrix()
 #PruneVarSubMean
 print('PruneVarSubMean')
 
-feats_train <- RealFeatures(traindata_real)
-feats_test <- RealFeatures(testdata_real)
+feats_train <- RealFeatures(fm_train_real)
+feats_test <- RealFeatures(fm_test_real)
 
 preproc <- PruneVarSubMean()
 preproc$init(preproc, feats_train)
@@ -145,7 +125,7 @@ gap <- 0
 reverse <- FALSE
 
 charfeat <- StringCharFeatures("DNA")
-charfeat$set_string_features(charfeat, traindata_dna)
+charfeat$set_string_features(charfeat, fm_train_dna)
 feats_train <- StringWordFeatures(charfeat$get_alphabet())
 feats_train$obtain_from_char(feats_train, charfeat, order-1, order, gap, reverse)
 preproc <- SortWordString()
@@ -154,7 +134,7 @@ feats_train$add_preproc(feats_train, preproc)
 feats_train$apply_preproc(feats_train)
 
 charfeat <- StringCharFeatures("DNA")
-charfeat$set_string_features(charfeat, testdata_dna)
+charfeat$set_string_features(charfeat, fm_test_dna)
 feats_test <- StringWordFeatures(charfeat$get_alphabet())
 feats_test$obtain_from_char(feats_test, charfeat, order-1, order, gap, reverse)
 feats_test$add_preproc(feats_test, preproc)
@@ -178,12 +158,12 @@ gap <- 0
 reverse <- FALSE
 
 charfeat <- StringCharFeatures("DNA")
-charfeat$set_string_features(charfeat, traindata_dna)
+charfeat$set_string_features(charfeat, fm_train_dna)
 feats_train <- StringUlongFeatures(charfeat$get_alphabet())
 feats_train$obtain_from_char(feats_train, charfeat, order-1, order, gap, reverse)
 
 charfeat <- StringCharFeatures("DNA")
-charfeat$set_string_features(charfeat, testdata_dna)
+charfeat$set_string_features(charfeat, fm_test_dna)
 feats_test <- StringUlongFeatures(charfeat$get_alphabet())
 feats_test$obtain_from_char(feats_test, charfeat, order-1, order, gap, reverse)
 
