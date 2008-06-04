@@ -4,8 +4,7 @@ then
 	PYTHON=python
 fi
 
-( cd ../../src
-for e in ../examples/python-modular/*.py
+for e in *.py
 do
 	echo -n "running $e .."
 	if ${PYTHON} "$e" >/dev/null 2>&1
@@ -15,4 +14,3 @@ do
 		echo " ERROR"
 	fi
 done
-)
