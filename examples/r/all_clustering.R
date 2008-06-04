@@ -7,12 +7,7 @@ library("sg")
 #dyn.load('sg.so')
 #sg <- function(...) .External("sg",...,PACKAGE="sg")
 
-len <- 12
-num <- 30
-size_cache <- 10
-
-traindat <- matrix(c(rnorm(len*num)-1,rnorm(len*num)+1), len, 2*num)
-trainlab <- c(rep(-1,num),rep(1,num))
+fm_train <- as.matrix(read.table('../data/fm_train_real.dat'))
 
 
 # KMEANS
@@ -22,8 +17,7 @@ k <- 3
 iter <- 1000
 
 dump <- sg('set_distance', 'EUCLIDIAN', 'REAL')
-dump <- sg('set_features', 'TRAIN', traindat)
-dump <- sg('set_labels', 'TRAIN', trainlab)
+dump <- sg('set_features', 'TRAIN', fm_train)
 dump <- sg('init_distance', 'TRAIN')
 dump <- sg('new_clustering', 'KMEANS')
 dump <- sg('train_clustering', k, iter)
@@ -38,7 +32,7 @@ print('Hierarchical')
 
 merges=3
 
-dump <- sg('set_features', 'TRAIN', traindat)
+dump <- sg('set_features', 'TRAIN', fm_train)
 dump <- sg('set_distance', 'EUCLIDIAN', 'REAL')
 dump <- sg('init_distance', 'TRAIN')
 dump <- sg('new_clustering', 'HIERARCHICAL')

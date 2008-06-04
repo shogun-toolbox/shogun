@@ -7,28 +7,14 @@ library("sg")
 #dyn.load('sg.so')
 #sg <- function(...) .External("sg",...,PACKAGE="sg")
 
-len <- 12
-num <- 30
-size_cache <- 10
 order <- 3
 gap <- 0
 reverse <- 'n' # bit silly to not use boolean, set 'r' to yield true
 
-getDNA <- function(len, num) {
-	acgt <- c('A', 'C', 'G', 'T')
-	data <- c()
-	for (j in 1:num) {
-		str <- '';
-		for (i in 1:len) {
-			str <- paste(str, sample(acgt, 1), sep='')
-		}
-		data <- append(data, str)
-	}
-	data
-}
+fm_train_dna <- as.matrix(read.table('../data/fm_train_dna.dat'))
+fm_test_dna <- as.matrix(read.table('../data/fm_test_dna.dat'))
+fm_train_cube <- as.matrix(read.table('../data/fm_train_cube.dat', colClasses=c('character')))
 
-traindat_dna <- getDNA(len, num)
-testdat_dna <- getDNA(len, num+7)
 
 #
 # distributions
@@ -40,7 +26,7 @@ print('Histogram')
 #	sg('new_distribution', 'HISTOGRAM')
 dump <- sg('add_preproc', 'SORTWORDSTRING')
 
-dump <- sg('set_features', 'TRAIN', traindat_dna, 'DNA')
+dump <- sg('set_features', 'TRAIN', fm_train_dna, 'DNA')
 dump <- sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, gap, reverse)
 dump <- sg('attach_preproc', 'TRAIN')
 
@@ -63,7 +49,7 @@ print('LinearHMM')
 #	sg('new_distribution', 'LinearHMM')
 dump <- sg('add_preproc', 'SORTWORDSTRING')
 
-dump <- sg('set_features', 'TRAIN', traindat_dna, 'DNA')
+dump <- sg('set_features', 'TRAIN', fm_train_dna, 'DNA')
 dump <- sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, gap, reverse)
 dump <- sg('attach_preproc', 'TRAIN')
 
@@ -89,28 +75,7 @@ order <- 1
 hmms <- c()
 liks <- c()
 
-cube <- list(NULL, NULL, NULL)
-num <- vector(mode='numeric',length=18)+100
-num[1] <- 0;
-num[2] <- 0;
-num[3] <- 0;
-num[10] <- 0;
-num[11] <- 0;
-num[12] <- 0;
-
-for (c in 1:3)
-{
-	for (i in 1:6)
-	{
-		cube[[c]] <- c(cube[[c]], vector(mode='numeric',length=num[(c-1)*6+i])+i)
-	}
-	cube[[c]] <- sample(cube[[c]],300,replace=TRUE);
-}
-
-cube <- c(cube[[1]], cube[[2]], cube[[3]])
-cube <- paste(cube, sep="", collapse="")
-
-dump <- sg('set_features', 'TRAIN', cube, 'CUBE')
+dump <- sg('set_features', 'TRAIN', fm_train_cube, 'CUBE')
 dump <- sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'WORD', order)
 
 dump <- sg('new_hmm', N, M)

@@ -7,12 +7,13 @@ library("sg")
 #dyn.load('sg.so')
 #sg <- function(...) .External("sg",...,PACKAGE="sg")
 
-len <- 12
-num <- 30
 size_cache <- 10
 
-traindat_real <- matrix(c(rnorm(len*num)-1,rnorm(len*num)+1), len, 2*num)
-testdat_real <- matrix(c(rnorm(len*num)-1,rnorm(len*num)+1), len, 2*num)
+fm_train_real <- as.matrix(read.table('../data/fm_train_real.dat'))
+fm_test_real <- as.matrix(read.table('../data/fm_test_real.dat'))
+fm_train_dna <- as.matrix(read.table('../data/fm_train_dna.dat'))
+fm_test_dna <- as.matrix(read.table('../data/fm_test_dna.dat'))
+label_train_dna <- as.real(as.matrix(read.table('../data/label_train_dna42.dat')))
 
 
 #
@@ -25,11 +26,11 @@ print('Chi2')
 width <- 1.4
 dump <- sg('set_kernel', 'CHI2', 'REAL', size_cache, width)
 
-dump <- sg('set_features', 'TRAIN', traindat_real)
+dump <- sg('set_features', 'TRAIN', fm_train_real)
 dump <- sg('init_kernel', 'TRAIN')
 km <- sg('get_kernel_matrix')
 
-dump <- sg('set_features', 'TEST', testdat_real)
+dump <- sg('set_features', 'TEST', fm_test_real)
 dump <- sg('init_kernel', 'TEST')
 km <- sg('get_kernel_matrix')
 
@@ -41,11 +42,11 @@ c <- 23.
 
 dump <- sg('set_kernel', 'CONST', 'REAL', size_cache, c)
 
-dump <- sg('set_features', 'TRAIN', traindat_real)
+dump <- sg('set_features', 'TRAIN', fm_train_real)
 dump <- sg('init_kernel', 'TRAIN')
 km <- sg('get_kernel_matrix')
 
-dump <- sg('set_features', 'TEST', testdat_real)
+dump <- sg('set_features', 'TEST', fm_test_real)
 dump <- sg('init_kernel', 'TEST')
 km <- sg('get_kernel_matrix')
 
@@ -56,11 +57,11 @@ print('Diag')
 diag=23.
 dump <- sg('set_kernel', 'DIAG', 'REAL', size_cache, diag)
 
-dump <- sg('set_features', 'TRAIN', traindat_real)
+dump <- sg('set_features', 'TRAIN', fm_train_real)
 dump <- sg('init_kernel', 'TRAIN')
 km <- sg('get_kernel_matrix')
 
-dump <- sg('set_features', 'TEST', testdat_real)
+dump <- sg('set_features', 'TEST', fm_test_real)
 dump <- sg('init_kernel', 'TEST')
 km <- sg('get_kernel_matrix')
 
@@ -72,11 +73,11 @@ width <- 1.9
 
 dump <- sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width)
 
-dump <- sg('set_features', 'TRAIN', traindat_real)
+dump <- sg('set_features', 'TRAIN', fm_train_real)
 dump <- sg('init_kernel', 'TRAIN')
 km <- sg('get_kernel_matrix')
 
-dump <- sg('set_features', 'TEST', testdat_real)
+dump <- sg('set_features', 'TEST', fm_test_real)
 dump <- sg('init_kernel', 'TEST')
 km <- sg('get_kernel_matrix')
 
@@ -90,11 +91,11 @@ shift_step <- 1
 
 dump <- sg('set_kernel', 'GAUSSIANSHIFT', 'REAL', size_cache, width, max_shift, shift_step)
 
-dump <- sg('set_features', 'TRAIN', traindat_real)
+dump <- sg('set_features', 'TRAIN', fm_train_real)
 dump <- sg('init_kernel', 'TRAIN')
 km <- sg('get_kernel_matrix')
 
-dump <- sg('set_features', 'TEST', testdat_real)
+dump <- sg('set_features', 'TEST', fm_test_real)
 dump <- sg('init_kernel', 'TEST')
 km <- sg('get_kernel_matrix')
 
@@ -105,11 +106,11 @@ print('Linear')
 scale <- 1.2
 dump <- sg('set_kernel', 'LINEAR', 'REAL', size_cache, scale)
 
-dump <- sg('set_features', 'TRAIN', traindat_real)
+dump <- sg('set_features', 'TRAIN', fm_train_real)
 dump <- sg('init_kernel', 'TRAIN')
 km <- sg('get_kernel_matrix')
 
-dump <- sg('set_features', 'TEST', testdat_real)
+dump <- sg('set_features', 'TEST', fm_test_real)
 dump <- sg('init_kernel', 'TEST')
 km <- sg('get_kernel_matrix')
 
@@ -123,11 +124,11 @@ use_normalization <- TRUE
 
 dump <- sg('set_kernel', 'POLY', 'REAL', size_cache, degree, inhomogene, use_normalization)
 
-dump <- sg('set_features', 'TRAIN', traindat_real)
+dump <- sg('set_features', 'TRAIN', fm_train_real)
 dump <- sg('init_kernel', 'TRAIN')
 km <- sg('get_kernel_matrix')
 
-dump <- sg('set_features', 'TEST', testdat_real)
+dump <- sg('set_features', 'TEST', fm_test_real)
 dump <- sg('init_kernel', 'TEST')
 km <- sg('get_kernel_matrix')
 
@@ -140,11 +141,11 @@ coef0 <- 1.3
 
 dump <- sg('set_kernel', 'SIGMOID', 'REAL', size_cache, gamma, coef0)
 
-dump <- sg('set_features', 'TRAIN', traindat_real)
+dump <- sg('set_features', 'TRAIN', fm_train_real)
 dump <- sg('init_kernel', 'TRAIN')
 km <- sg('get_kernel_matrix')
 
-dump <- sg('set_features', 'TEST', testdat_real)
+dump <- sg('set_features', 'TEST', fm_test_real)
 dump <- sg('init_kernel', 'TEST')
 km <- sg('get_kernel_matrix')
 
@@ -153,23 +154,6 @@ km <- sg('get_kernel_matrix')
 # string features
 #
 
-getDNA <- function(len, num) {
-	acgt <- c('A', 'C', 'G', 'T')
-	data <- c()
-	for (j in 1:num) {
-		str <- '';
-		for (i in 1:len) {
-			str <- paste(str, sample(acgt, 1), sep='')
-		}
-		data <- append(data, str)
-	}
-	data
-}
-
-traindat_dna <- getDNA(len, num)
-testdat_dna <- getDNA(len, num+7)
-
-
 # Fixed Degree String
 print('FixedDegreeString')
 
@@ -177,11 +161,11 @@ degree <- 3
 
 dump <- sg('set_kernel', 'FIXEDDEGREE', 'CHAR', size_cache, degree)
 
-dump <- sg('set_features', 'TRAIN', traindat_dna, 'DNA')
+dump <- sg('set_features', 'TRAIN', fm_train_dna, 'DNA')
 dump <- sg('init_kernel', 'TRAIN')
 km <- sg('get_kernel_matrix')
 
-dump <- sg('set_features', 'TEST', testdat_dna, 'DNA')
+dump <- sg('set_features', 'TEST', fm_test_dna, 'DNA')
 dump <- sg('init_kernel', 'TEST')
 km <- sg('get_kernel_matrix')
 
@@ -191,11 +175,11 @@ print('LinearString')
 
 dump <- sg('set_kernel', 'LINEAR', 'CHAR', size_cache)
 
-dump <- sg('set_features', 'TRAIN', traindat_dna, 'DNA')
+dump <- sg('set_features', 'TRAIN', fm_train_dna, 'DNA')
 dump <- sg('init_kernel', 'TRAIN')
 km <- sg('get_kernel_matrix')
 
-dump <- sg('set_features', 'TEST', testdat_dna, 'DNA')
+dump <- sg('set_features', 'TEST', fm_test_dna, 'DNA')
 dump <- sg('init_kernel', 'TEST')
 km <- sg('get_kernel_matrix')
 
@@ -205,11 +189,11 @@ print('LocalAlignmentString')
 
 dump <- sg('set_kernel', 'LOCALALIGNMENT', 'CHAR', size_cache)
 
-dump <- sg('set_features', 'TRAIN', traindat_dna, 'DNA')
+dump <- sg('set_features', 'TRAIN', fm_train_dna, 'DNA')
 dump <- sg('init_kernel', 'TRAIN')
 km <- sg('get_kernel_matrix')
 
-dump <- sg('set_features', 'TEST', testdat_dna, 'DNA')
+dump <- sg('set_features', 'TEST', fm_test_dna, 'DNA')
 dump <- sg('init_kernel', 'TEST')
 km <- sg('get_kernel_matrix')
 
@@ -222,11 +206,11 @@ inhomogene <- FALSE
 
 dump <- sg('set_kernel', 'POLYMATCH', 'CHAR', size_cache, degree, inhomogene)
 
-dump <- sg('set_features', 'TRAIN', traindat_dna, 'DNA')
+dump <- sg('set_features', 'TRAIN', fm_train_dna, 'DNA')
 dump <- sg('init_kernel', 'TRAIN')
 km <- sg('get_kernel_matrix')
 
-dump <- sg('set_features', 'TEST', testdat_dna, 'DNA')
+dump <- sg('set_features', 'TEST', fm_test_dna, 'DNA')
 dump <- sg('init_kernel', 'TEST')
 km <- sg('get_kernel_matrix')
 
@@ -238,11 +222,11 @@ degree <- 20
 
 dump <- sg('set_kernel', 'WEIGHTEDDEGREE', 'CHAR', size_cache, degree)
 
-dump <- sg('set_features', 'TRAIN', traindat_dna, 'DNA')
+dump <- sg('set_features', 'TRAIN', fm_train_dna, 'DNA')
 dump <- sg('init_kernel', 'TRAIN')
 km <- sg('get_kernel_matrix')
 
-dump <- sg('set_features', 'TEST', testdat_dna, 'DNA')
+dump <- sg('set_features', 'TEST', fm_test_dna, 'DNA')
 dump <- sg('init_kernel', 'TEST')
 km <- sg('get_kernel_matrix')
 
@@ -254,11 +238,11 @@ degree <- 20
 
 dump <- sg('set_kernel', 'WEIGHTEDDEGREEPOS', 'CHAR', size_cache, degree)
 
-dump <- sg('set_features', 'TRAIN', traindat_dna, 'DNA')
+dump <- sg('set_features', 'TRAIN', fm_train_dna, 'DNA')
 dump <- sg('init_kernel', 'TRAIN')
 km <- sg('get_kernel_matrix')
 
-dump <- sg('set_features', 'TEST', testdat_dna, 'DNA')
+dump <- sg('set_features', 'TEST', fm_test_dna, 'DNA')
 dump <- sg('init_kernel', 'TEST')
 km <- sg('get_kernel_matrix')
 
@@ -272,11 +256,11 @@ outer_degree <- inner_degree+2
 
 dump <- sg('set_kernel', 'LIK', 'CHAR', size_cache, length, inner_degree, outer_degree)
 
-dump <- sg('set_features', 'TRAIN', traindat_dna, 'DNA')
+dump <- sg('set_features', 'TRAIN', fm_train_dna, 'DNA')
 dump <- sg('init_kernel', 'TRAIN')
 km <- sg('get_kernel_matrix')
 
-dump <- sg('set_features', 'TEST', testdat_dna, 'DNA')
+dump <- sg('set_features', 'TEST', fm_test_dna, 'DNA')
 dump <- sg('init_kernel', 'TEST')
 km <- sg('get_kernel_matrix')
 
@@ -290,11 +274,11 @@ outer_degree <- inner_degree+2
 
 dump <- sg('set_kernel', 'SLIK', 'CHAR', size_cache, length, inner_degree, outer_degree)
 
-dump <- sg('set_features', 'TRAIN', traindat_dna, 'DNA')
+dump <- sg('set_features', 'TRAIN', fm_train_dna, 'DNA')
 dump <- sg('init_kernel', 'TRAIN')
 km <- sg('get_kernel_matrix')
 
-dump <- sg('set_features', 'TEST', testdat_dna, 'DNA')
+dump <- sg('set_features', 'TEST', fm_test_dna, 'DNA')
 dump <- sg('init_kernel', 'TEST')
 km <- sg('get_kernel_matrix')
 
@@ -316,13 +300,13 @@ print('CommWordString')
 dump <- sg('add_preproc', 'SORTWORDSTRING')
 dump <- sg('set_kernel', 'COMMSTRING', 'WORD', size_cache, use_sign, normalization)
 
-dump <- sg('set_features', 'TRAIN', traindat_dna, 'DNA')
+dump <- sg('set_features', 'TRAIN', fm_train_dna, 'DNA')
 dump <- sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, gap, reverse)
 dump <- sg('attach_preproc', 'TRAIN')
 dump <- sg('init_kernel', 'TRAIN')
 km <- sg('get_kernel_matrix')
 
-dump <- sg('set_features', 'TEST', testdat_dna, 'DNA')
+dump <- sg('set_features', 'TEST', fm_test_dna, 'DNA')
 dump <- sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, gap, reverse)
 dump <- sg('attach_preproc', 'TEST')
 dump <- sg('init_kernel', 'TEST')
@@ -335,13 +319,13 @@ print('WeightedCommWordString')
 dump <- sg('add_preproc', 'SORTWORDSTRING')
 dump <- sg('set_kernel', 'WEIGHTEDCOMMSTRING', 'WORD', size_cache, use_sign, normalization)
 
-dump <- sg('set_features', 'TRAIN', traindat_dna, 'DNA')
+dump <- sg('set_features', 'TRAIN', fm_train_dna, 'DNA')
 dump <- sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, gap, reverse)
 dump <- sg('attach_preproc', 'TRAIN')
 dump <- sg('init_kernel', 'TRAIN')
 km <- sg('get_kernel_matrix')
 
-dump <- sg('set_features', 'TEST', testdat_dna, 'DNA')
+dump <- sg('set_features', 'TEST', fm_test_dna, 'DNA')
 dump <- sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, gap, reverse)
 dump <- sg('attach_preproc', 'TEST')
 dump <- sg('init_kernel', 'TEST')
@@ -354,13 +338,13 @@ print('CommUlongString')
 dump <- sg('add_preproc', 'SORTULONGSTRING')
 dump <- sg('set_kernel', 'COMMSTRING', 'ULONG', size_cache, use_sign, normalization)
 
-dump <- sg('set_features', 'TRAIN', traindat_dna, 'DNA')
+dump <- sg('set_features', 'TRAIN', fm_train_dna, 'DNA')
 dump <- sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'ULONG', order, order-1, gap, reverse)
 dump <- sg('attach_preproc', 'TRAIN')
 dump <- sg('init_kernel', 'TRAIN')
 km <- sg('get_kernel_matrix')
 
-dump <- sg('set_features', 'TEST', testdat_dna, 'DNA')
+dump <- sg('set_features', 'TEST', fm_test_dna, 'DNA')
 dump <- sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'ULONG', order, order-1, gap, reverse)
 dump <- sg('attach_preproc', 'TEST')
 dump <- sg('init_kernel', 'TEST')
@@ -378,11 +362,11 @@ width=1.7
 dump <- sg('set_distance', 'EUCLIDIAN', 'REAL')
 dump <- sg('set_kernel', 'DISTANCE', size_cache, width)
 
-dump <- sg('set_features', 'TRAIN', traindat_real)
+dump <- sg('set_features', 'TRAIN', fm_train_real)
 dump <- sg('init_kernel', 'TRAIN')
 km=sg('get_kernel_matrix')
 
-dump <- sg('set_features', 'TEST', testdat_real)
+dump <- sg('set_features', 'TEST', fm_test_real)
 dump <- sg('init_kernel', 'TEST')
 km=sg('get_kernel_matrix')
 
@@ -392,14 +376,14 @@ print('Combined')
 
 dump <- sg('set_kernel', 'COMBINED', size_cache)
 dump <- sg('add_kernel', 1, 'LINEAR', 'REAL', size_cache)
-dump <- sg('add_features', 'TRAIN', traindat_real)
-dump <- sg('add_features', 'TEST', testdat_real)
+dump <- sg('add_features', 'TRAIN', fm_train_real)
+dump <- sg('add_features', 'TEST', fm_test_real)
 dump <- sg('add_kernel', 1, 'GAUSSIAN', 'REAL', size_cache, 1)
-dump <- sg('add_features', 'TRAIN', traindat_real)
-dump <- sg('add_features', 'TEST', testdat_real)
+dump <- sg('add_features', 'TRAIN', fm_train_real)
+dump <- sg('add_features', 'TEST', fm_test_real)
 dump <- sg('add_kernel', 1, 'POLY', 'REAL', size_cache, 3, FALSE)
-dump <- sg('add_features', 'TRAIN', traindat_real)
-dump <- sg('add_features', 'TEST', testdat_real)
+dump <- sg('add_features', 'TRAIN', fm_train_real)
+dump <- sg('add_features', 'TEST', fm_test_real)
 
 dump <- sg('init_kernel', 'TRAIN')
 km <- sg('get_kernel_matrix')
@@ -411,18 +395,17 @@ km <- sg('get_kernel_matrix')
 # PluginEstimate
 print('PluginEstimate w/ HistogramWord')
 
-dump <- sg('set_features', 'TRAIN', traindat_dna, 'DNA')
+dump <- sg('set_features', 'TRAIN', fm_train_dna, 'DNA')
 dump <- sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, gap, reverse)
 
-dump <- sg('set_features', 'TEST', testdat_dna, 'DNA')
+dump <- sg('set_features', 'TEST', fm_test_dna, 'DNA')
 dump <- sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, gap, reverse)
 
-trainlab_real <- c(rep(-1,num/2),rep(1,num/2))
 pseudo_pos <- 1e-1
 pseudo_neg <- 1e-1
 
 dump <- sg('new_plugin_estimator', pseudo_pos, pseudo_neg)
-dump <- sg('set_labels', 'TRAIN', trainlab_real)
+dump <- sg('set_labels', 'TRAIN', label_train_dna)
 dump <- sg('train_estimator')
 
 dump <- sg('set_kernel', 'HISTOGRAM', 'WORD', size_cache)
