@@ -60,14 +60,14 @@ class CGUIStructure : public CSGObject
 				return false;
 			return true;
 		}
-		inline bool set_plif_matrix(CPlifBase** pm)
-		{
-			if (!m_plif_matrix)
-				m_plif_matrix = pm; 
-			else
-				return false;
-			return true;
-		}
+		//inline bool set_plif_matrix(CPlifBase** pm)
+		//{
+		//	if (!m_plif_matrix)
+		//		m_plif_matrix = pm; 
+		//	else
+		//		return false;
+		//	return true;
+		//}
 		inline  CPlifBase** get_plif_matrix()
 		{
 			return m_plif_matrix;
@@ -101,7 +101,7 @@ class CGUIStructure : public CSGObject
 			DREAL* cp_array = new DREAL[d1*d2*d3];
 			memcpy(cp_array, feat.get_array(),d1*d2*d3*sizeof(DREAL));
 			bool copy=false;
-			m_feature_matrix.set_array(cp_array, d1, d2, d3, true, copy);
+			m_feature_matrix.set_array(cp_array, d1, d2, d3, false, copy);
 			return true;
 		}
 		inline bool set_features_dim3(INT num)

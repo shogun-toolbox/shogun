@@ -5189,7 +5189,7 @@ bool CSGInterface::cmd_set_feature_matrix()
 	ASSERT(numDims==3)
 	ASSERT(Dims[0]==num_states)
 	INT max_num_signals = Dims[2];
-	CArray3<DREAL> feat(features, num_states, Npos, max_num_signals) ;
+	CArray3<DREAL> feat(features, num_states, Npos, max_num_signals, false, false) ;
 	INT d1,d2,d3;
 	feat.get_array_size(d1,d2,d3);
 	SG_PRINT("features: d1:%i d2:%i d3:%i\n",d1,d2,d3);
@@ -5210,44 +5210,19 @@ bool CSGInterface::cmd_set_feature_matrix()
 bool CSGInterface::cmd_precompute_content_svms()
 {
 	INT* all_pos = ui_structure->get_all_positions();
-	SG_PRINT("1 all_pos: %p ",all_pos);
-	for (int i=0;i<10;i++)
-		SG_PRINT("%i ",all_pos[i]);
-	SG_PRINT("\n");
-	SG_PRINT("2 all_pos: %p ",all_pos);
-	for (int i=0;i<10;i++)
-		SG_PRINT("%i ",all_pos[i]);
-	SG_PRINT("\n");
-
-	//CPlif** PEN = ui_structure->get_PEN();
-	//if (!PEN)
-	//	SG_ERROR("no plif_array found, use set_plif_struct first\n");
-	SG_PRINT("3 all_pos: %p ",all_pos);
-	for (int i=0;i<10;i++)
-		SG_PRINT("%i ",all_pos[i]);
-	SG_PRINT("\n");
 
 	INT Nseq=0;
 	CHAR* seq;
 	seq = get_string(Nseq);
-	SG_PRINT("4 all_pos: %p ",all_pos);
-	for (int i=0;i<10;i++)
-		SG_PRINT("%i ",all_pos[i]);
-	SG_PRINT("\n");
 
 	CDynProg* h = ui_structure->get_dyn_prog();
 	if (!h)
 		SG_ERROR("no DynProg object found, use precompute_content_svms first\n");
-	SG_PRINT("5 all_pos: %p ",all_pos);
-	for (int i=0;i<10;i++)
-		SG_PRINT("%i ",all_pos[i]);
-	SG_PRINT("\n");
 
-	all_pos = ui_structure->get_all_positions();
-	SG_PRINT("6 all_pos: %p ",all_pos);
-	for (int i=0;i<10;i++)
-		SG_PRINT("%i ",all_pos[i]);
-	SG_PRINT("\n");
+//	SG_PRINT("6 all_pos: %p ",all_pos);
+//	for (int i=0;i<10;i++)
+//		SG_PRINT("%i ",all_pos[i]);
+//	SG_PRINT("\n");
 
 	INT Npos = ui_structure->get_num_positions();
 	DREAL* weights = ui_structure->get_content_svm_weights();
@@ -5274,6 +5249,7 @@ bool CSGInterface::cmd_best_path_trans()
 	INT num_states = ui_structure->get_num_states();
 	INT feat_dim3 = ui_structure->get_features_dim3();
 	CArray3<DREAL> features = (ui_structure->get_feature_matrix());
+	features.set_name("features");
 	INT* all_pos = ui_structure->get_all_positions();
 	INT num_pos = ui_structure->get_num_positions();
 	INT* orf_info = ui_structure->get_orf_info();
@@ -5345,9 +5321,19 @@ bool CSGInterface::cmd_best_path_trans()
 	CPlif** PEN=ui_structure->get_PEN();
 	ASSERT(PEN);
 	
-	CPlifBase **PEN_matrix = ui_structure->get_plif_matrix();
+	CPlifBase** PEN_matrix = ui_structure->get_plif_matrix();
+	SG_PRINT("PEN_matrix %p\n",PEN_matrix);
+	SG_PRINT("PEN_matrix[24]->get_max_id() %i\n",PEN_matrix[24]->get_max_id());	
+	SG_PRINT("PEN_matrix[25]->get_max_id() %i\n",PEN_matrix[25]->get_max_id());	
+	DREAL tmp[] = {0,0,0,0,0,0,0,0,0};
+	INT tmp2 = 0;
+	for (int i=0;i<num_states;i++)
+		for (int j=0;j<num_states;j++)
+			if (PEN_matrix[i+j*num_states]!=NULL)
+				SG_PRINT("2 PEN_matrix(%i,%i)->lookup_penalty(): %f\n",i,j,PEN_matrix[i+j*num_states]->lookup_penalty(tmp2,tmp));
+	SG_PRINT("\n");
 
-	CPlifBase **PEN_state_signal = ui_structure->get_state_signals();
+	CPlifBase** PEN_state_signal = ui_structure->get_state_signals();
 	
 	CDynProg* h = ui_structure->get_dyn_prog();
 	ASSERT(h)
@@ -5455,8 +5441,8 @@ bool CSGInterface::cmd_best_path_trans()
 	{
 		for (INT i=0; i<M; i++)
 		{
-			d_my_path[i*(nbest+nother)+k] = 1.0;//my_path[i+k*M] ;
-			d_my_pos[i*(nbest+nother)+k] = 1.0;//my_pos[i+k*M] ;
+			d_my_path[i*(nbest+nother)+k] = my_path[i+k*M] ;
+			d_my_pos[i*(nbest+nother)+k] = my_pos[i+k*M] ;
 		}
 	}
 	set_real_vector(p_prob,nbest+nother);

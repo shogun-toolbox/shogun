@@ -93,14 +93,15 @@ bool CGUIStructure::compute_plif_matrix(DREAL* penalties_array, INT* Dim, INT nu
 	SG_PRINT("num_states: %i \n",num_states);
 	SG_PRINT("dim3: %i \n",Dim[2]);
 
-        CPlifBase **PEN_matrix = new CPlifBase*[num_states*num_states] ;
-        CArray3<DREAL> penalties(penalties_array, num_states, num_states, Dim[2], false, false) ;
+        m_plif_matrix = new CPlifBase*[num_states*num_states] ;
+	SG_PRINT("m_plif_matrix: %p \n",m_plif_matrix);
+        CArray3<DREAL> penalties(penalties_array, num_states, num_states, Dim[2], false, true) ;
 
         for (INT i=0; i<num_states; i++)
         {
                 for (INT j=0; j<num_states; j++)
                 {
-			SG_PRINT(" %.2f ",penalties.get_element(i,j,1));
+			//SG_PRINT(" %.2f ",penalties.get_element(i,j,1));
                         CPlifArray * plif_array = new CPlifArray() ;
                         CPlif * plif = NULL ;
                         plif_array->clear() ;
@@ -109,6 +110,7 @@ bool CGUIStructure::compute_plif_matrix(DREAL* penalties_array, INT* Dim, INT nu
                                 if (penalties.element(i,j,k)==0)
                                         continue ;
                                 INT id = (INT) penalties.element(i,j,k)-1 ;
+				SG_PRINT("i:%i j:%i k:%i id:%i \n",i, j, k,id);
                                 if ((id<0 || id>=num_plifs) && (id!=-1))
                                 {
                                         SG_ERROR( "id out of range\n") ;
@@ -116,26 +118,36 @@ bool CGUIStructure::compute_plif_matrix(DREAL* penalties_array, INT* Dim, INT nu
                                         return false ;
                                 }
                                 plif = PEN[id] ;
+				//SG_PRINT("PEN[%i]->get_min_value(): %f\n",id,PEN[id]->get_min_value());
                                 plif_array->add_plif(plif) ;
                         }
                         if (plif_array->get_num_plifs()==0)
                         {
                                 delete plif_array ;
-                                PEN_matrix[i+j*num_states] = NULL ;
+                                m_plif_matrix[i+j*num_states] = NULL ;
                         }
                         else if (plif_array->get_num_plifs()==1)
                         {
                                 delete plif_array ;
                                 ASSERT(plif!=NULL) ;
-                                PEN_matrix[i+j*num_states] = plif ;
+                                m_plif_matrix[i+j*num_states] = plif ;
                         }
                         else
-                                PEN_matrix[i+j*num_states] = plif_array ;
+			{
+                                m_plif_matrix[i+j*num_states] = plif_array ;
+				//INT num_svms;
+				//INT* used_svms;
+				//m_plif_matrix[i+j*num_states]->get_used_svms(&num_svms,used_svms);
+			}
+
                 }
 		SG_PRINT("\n");
         }
-	if (!set_plif_matrix(PEN_matrix))
-		return false;
+	DREAL tmp[] = {0,0,0,0,0,0,0,0,0};
+	for (int i=0;i<num_states;i++)
+                for (INT j=0; j<num_states; j++)
+			if (m_plif_matrix[i+j*num_states]!=NULL)
+				SG_PRINT("1 m_plif_matrix[%i]->lookup_penalty(): %f\n",i+j*num_states, m_plif_matrix[i+j*num_states]->lookup_penalty(0,tmp));
 	return true;
 }
 bool  CGUIStructure::set_signal_plifs(INT* state_signals, INT feat_dim3, INT num_states )

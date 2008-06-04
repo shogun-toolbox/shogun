@@ -315,7 +315,7 @@ void CDynProg::create_word_string(const CHAR* genestr, INT genestr_num, INT gene
 void CDynProg::precompute_content_values(WORD*** wordstr, const INT *pos,const INT seq_len, const INT genestr_len,DREAL *dictionary_weights,INT dict_len)
 {
 
-	SG_PRINT("seq_len=%i, genestr_len=%i, dict_len=%i, num_svms=%i, num_degrees=%i\n",seq_len, genestr_len, dict_len, num_svms, num_degrees);
+	//SG_PRINT("seq_len=%i, genestr_len=%i, dict_len=%i, num_svms=%i, num_degrees=%i\n",seq_len, genestr_len, dict_len, num_svms, num_degrees);
 	
 	dict_weights.set_array(dictionary_weights, dict_len, num_svms, false, false) ;
 	dict_weights_array=dict_weights.get_array() ;
@@ -325,7 +325,7 @@ void CDynProg::precompute_content_values(WORD*** wordstr, const INT *pos,const I
 		INT from_pos = pos[p];
 		INT to_pos = pos[p+1];
 		DREAL my_svm_values_unnormalized[num_svms] ;
-		SG_PRINT("%i(%i->%i) ",p,from_pos, to_pos);
+		//SG_PRINT("%i(%i->%i) ",p,from_pos, to_pos);
       
 		
 			
@@ -357,11 +357,9 @@ void CDynProg::precompute_content_values(WORD*** wordstr, const INT *pos,const I
 			ASSERT(prev>-1e20);
 		}
 	}
-	SG_PRINT("seq_len=%i, genestr_len=%i, dict_len=%i\n",seq_len, genestr_len, dict_len);
 	for (INT j=0; j<num_degrees; j++)
 		delete[] wordstr[0][j] ;
 	delete[] wordstr[0] ;
-	SG_PRINT("seq_len=%i, genestr_len=%i, dict_len=%i\n",seq_len, genestr_len, dict_len);
 }
 void CDynProg::set_p_vector(DREAL *p, INT p_N) 
 {
@@ -865,8 +863,10 @@ void CDynProg::best_path_set_segment_ids_mask(INT* segment_ids, DREAL* segment_m
 	for (INT i=1;i<m;i++)
 		max_id = CMath::max(max_id,segment_ids[i]);
 	SG_PRINT("max_id: %i, m:%i\n",max_id, m); 	
-	m_segment_ids.set_array(segment_ids, m, true, true) ;
-	m_segment_mask.set_array(segment_mask, m, true, true) ;
+	m_segment_ids.set_array(segment_ids, m, false, true) ;
+	m_segment_ids.set_name("m_segment_ids");
+	m_segment_mask.set_array(segment_mask, m, false, true) ;
+	m_segment_mask.set_name("m_segment_mask");
 }
 
 
@@ -2269,12 +2269,17 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	
 	SG_PRINT("N:%i, seq_len:%i, max_num_signals:%i\n",N, seq_len, max_num_signals) ;
 
-	for (int i=0;i<N*seq_len*max_num_signals;i++)
-		SG_PRINT("(%i)%0.2f ",i,seq_array[i]);
+//	for (int i=0;i<N*seq_len*max_num_signals;i++)
+//		SG_PRINT("(%i)%0.2f ",i,seq_array[i]);
 
-	CArray2<CPlifBase*> PEN(Plif_matrix, N, N, false, false) ;
-	CArray2<CPlifBase*> PEN_state_signals(Plif_state_signals, N, max_num_signals, false, false) ;
+	//CArray2<CPlifBase*> PEN(Plif_matrix, N, N, false, false) ;
+	CArray2<CPlifBase*> PEN(Plif_matrix, N, N, false, true) ;
+	PEN.set_name("PEN");
+	//CArray2<CPlifBase*> PEN_state_signals(Plif_state_signals, N, max_num_signals, false, false) ;
+	CArray2<CPlifBase*> PEN_state_signals(Plif_state_signals, N, max_num_signals, false, true) ;
+	PEN_state_signals.set_name("state_signals");
 	SG_PRINT("2 genestr_len: %i\n", m_genestr_len) ;
+	//CArray3<DREAL> seq_input(seq_array, N, seq_len, max_num_signals) ;
 	CArray3<DREAL> seq_input(seq_array, N, seq_len, max_num_signals) ;
 	seq_input.set_name("seq_input") ;
 	//seq_input.display_array() ;
@@ -2367,25 +2372,32 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 
 	
 	CArray3<DREAL> delta(seq_len, N, nbest) ;
+	delta.set_name("delta");
 	DREAL* delta_array = delta.get_array() ;
 	//delta.zero() ;
 	
 	CArray3<T_STATES> psi(seq_len, N, nbest) ;
+	psi.set_name("psi");
 	//psi.zero() ;
 	
 	CArray3<short int> ktable(seq_len, N, nbest) ;
+	ktable.set_name("ktable");
 	//ktable.zero() ;
 	
-	CArray3<INT> ptable(seq_len, N, nbest) ;
+	CArray3<INT> ptable(seq_len, N, nbest) ;	
+	ptable.set_name("ptable");
 	//ptable.zero() ;
 
 	CArray<DREAL> delta_end(nbest) ;
+	delta_end.set_name("delta_end");
 	//delta_end.zero() ;
 	
 	CArray<T_STATES> path_ends(nbest) ;
+	path_ends.set_name("path_ends");
 	//path_ends.zero() ;
 	
 	CArray<short int> ktable_end(nbest) ;
+	ktable_end.set_name("ktable_end");
 	//ktable_end.zero() ;
 
 	DREAL * fixedtempvv=new DREAL[look_back_buflen] ;
@@ -2394,18 +2406,24 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	memset(fixedtempii, 0, look_back_buflen*sizeof(INT)) ;
 
 	CArray<DREAL> oldtempvv(look_back_buflen) ;
+	oldtempvv.set_name("oldtempvv");
 	CArray<DREAL> oldtempvv2(look_back_buflen) ;
+	oldtempvv2.set_name("oldtempvv2");
 	//oldtempvv.zero() ;
 	//oldtempvv.display_size() ;
 	
 	CArray<INT> oldtempii(look_back_buflen) ;
+	oldtempii.set_name("oldtempii");
 	CArray<INT> oldtempii2(look_back_buflen) ;
+	oldtempii2.set_name("oldtempii2");
 	//oldtempii.zero() ;
 
 	CArray<T_STATES> state_seq(seq_len) ;
+	state_seq.set_name("state_seq");
 	//state_seq.zero() ;
 	
 	CArray<INT> pos_seq(seq_len) ;
+	pos_seq.set_name("pos_seq");
 	//pos_seq.zero() ;
 
 	
@@ -2482,6 +2500,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	pos_seq.display_size() ;
 
 	CArray<INT>pp = CArray<INT>(pos, seq_len) ;
+	pp.set_name("pp");
 	pp.display_array() ;
 	
 	//seq.zero() ;
@@ -2554,6 +2573,8 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	struct segment_loss_struct loss;
 	loss.segments_changed = NULL;
 	loss.num_segment_id = NULL;
+
+	SG_DEBUG("START_RECURSION \n\n");
 
 	// recursion
 	for (INT t=1; t<seq_len; t++)
