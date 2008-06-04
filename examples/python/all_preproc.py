@@ -4,17 +4,18 @@ Explicit examples on how to use the different preprocs
 """
 
 from sys import maxint
-from numpy import ubyte, char, ushort, double, int, zeros, sum, floor, array, arange
+from numpy import char, ushort, double, int, zeros, sum, floor, array, arange
 from numpy.random import randint, rand, seed
 from sg import sg
 
-from tools.load import load_features, load_labels
-fm_train_real=load_features('../data/fm_train_real.dat')
-fm_test_real=load_features('../data/fm_test_real.dat')
-fm_train_word=ushort(load_features('../data/fm_train_real.dat'))
-fm_test_word=ushort(load_features('../data/fm_test_real.dat'))
-fm_train_dna=load_features('../data/fm_train_dna.dat', char)
-fm_test_dna=load_features('../data/fm_test_dna.dat', char)
+from tools.load import LoadMatrix
+lm=LoadMatrix()
+fm_train_real=lm.load_numbers('../data/fm_train_real.dat')
+fm_test_real=lm.load_numbers('../data/fm_test_real.dat')
+fm_train_word=ushort(lm.load_numbers('../data/fm_train_real.dat'))
+fm_test_word=ushort(lm.load_numbers('../data/fm_test_real.dat'))
+fm_train_dna=lm.load_dna('../data/fm_train_dna.dat')
+fm_test_dna=lm.load_dna('../data/fm_test_dna.dat')
 
 ###########################################################################
 # real features

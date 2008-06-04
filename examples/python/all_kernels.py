@@ -4,20 +4,21 @@ Explicit examples on how to use the different kernels
 """
 
 from sys import maxint
-from numpy import byte, ubyte, ushort, double, int, char, ones, zeros, sum, floor, array, arange, ceil, concatenate, sign
+from numpy import ubyte, ushort, double, int, char, ones, zeros, sum, floor, array, arange, ceil, concatenate, sign
 from numpy.random import randint, rand, seed, permutation
 from sg import sg
 
-from tools.load import load_features, load_labels
-fm_train_real=load_features('../data/fm_train_real.dat')
-fm_test_real=load_features('../data/fm_test_real.dat')
-fm_train_word=ushort(load_features('../data/fm_test_word.dat'))
-fm_test_word=ushort(load_features('../data/fm_test_word.dat'))
-fm_train_byte=byte(load_features('../data/fm_train_byte.dat'))
-fm_test_byte=byte(load_features('../data/fm_test_byte.dat'))
-fm_train_dna=load_features('../data/fm_train_dna.dat', char)
-fm_test_dna=load_features('../data/fm_test_dna.dat', char)
-label_train_dna=load_labels('../data/label_train_dna.dat')
+from tools.load import LoadMatrix
+lm=LoadMatrix()
+fm_train_real=lm.load_numbers('../data/fm_train_real.dat')
+fm_test_real=lm.load_numbers('../data/fm_test_real.dat')
+fm_train_word=ushort(lm.load_numbers('../data/fm_test_word.dat'))
+fm_test_word=ushort(lm.load_numbers('../data/fm_test_word.dat'))
+fm_train_byte=ubyte(lm.load_numbers('../data/fm_train_byte.dat'))
+fm_test_byte=ubyte(lm.load_numbers('../data/fm_test_byte.dat'))
+fm_train_dna=lm.load_dna('../data/fm_train_dna.dat')
+fm_test_dna=lm.load_dna('../data/fm_test_dna.dat')
+label_train_dna=lm.load_labels('../data/label_train_dna.dat')
 
 
 ###########################################################################

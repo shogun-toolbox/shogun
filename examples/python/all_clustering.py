@@ -7,8 +7,9 @@ from numpy import array, concatenate, sign, double
 from numpy.random import rand, seed, permutation
 from sg import sg
 
-from tools.load import load_features, load_labels
-fm_train_real=load_features('../data/fm_train_real.dat')
+from tools.load import LoadMatrix
+lm=LoadMatrix()
+fm_train=lm.load_numbers('../data/fm_train_real.dat')
 
 
 def kmeans ():
@@ -18,7 +19,7 @@ def kmeans ():
 	k=3
 	iter=1000
 
-	sg('set_features', 'TRAIN', fm_train_real)
+	sg('set_features', 'TRAIN', fm_train)
 	sg('set_distance', 'EUCLIDIAN', 'REAL')
 	sg('init_distance', 'TRAIN')
 	sg('new_clustering', 'KMEANS')
@@ -33,7 +34,7 @@ def hierarchical ():
 	size_cache=10
 	merges=3
 
-	sg('set_features', 'TRAIN', fm_train_real)
+	sg('set_features', 'TRAIN', fm_train)
 	sg('set_distance', 'EUCLIDIAN', 'REAL')
 	sg('init_distance', 'TRAIN')
 	sg('new_clustering', 'HIERARCHICAL')

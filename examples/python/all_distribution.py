@@ -7,45 +7,10 @@ from numpy import array, floor, ushort, ceil, concatenate, ones, zeros, double, 
 from numpy.random import randint, seed, rand, permutation
 from sg import sg
 
-from tools.load import load_features, load_labels
-fm_train_dna=load_features('../data/fm_train_dna.dat', char)
-fm_test_dna=load_features('../data/fm_test_dna.dat', char)
-
-
-def get_cubes (num=2):
-	leng=50
-	rep=5
-	weight=1
-
-	sequence=[]
-
-	for i in xrange(num):
-		# generate a sequence with characters 1-6 drawn from 3 loaded cubes
-		loaded=[]
-		for j in xrange(3):
-			draw=[x*ones((1, ceil(leng*rand())), int)[0] \
-				for x in xrange(1, 7)]
-			loaded.append(permutation(concatenate(draw)))
-
-		draws=[]
-		for j in xrange(len(loaded)):
-			data=ones((1, ceil(rep*rand())), int)
-			draws=concatenate((j*data[0], draws))
-		draws=permutation(draws)
-
-		seq=[]
-		for j in xrange(len(draws)):
-			len_loaded=len(loaded[draws[j]])
-			weighted=int(ceil(
-				((1-weight)*rand()+weight)*len_loaded))
-			perm=permutation(len_loaded)
-			shuffled=[str(loaded[draws[j]][x]) for x in perm[:weighted]]
-			seq=concatenate((seq, shuffled))
-
-		sequence.append(''.join(seq))
-
-	return sequence
-
+from tools.load import LoadMatrix
+lm=LoadMatrix()
+fm_train=lm.load_dna('../data/fm_train_dna.dat')
+fm_cube=lm.load_cubes('../data/fm_cube_train.dat')
 
 ###########################################################################
 # distributions
@@ -61,7 +26,7 @@ def histogram ():
 #	sg('new_distribution', 'HISTOGRAM')
 	sg('add_preproc', 'SORTWORDSTRING')
 
-	sg('set_features', 'TRAIN', fm_train_dna, 'DNA')
+	sg('set_features', 'TRAIN', fm_train, 'DNA')
 	sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, gap, reverse)
 	sg('attach_preproc', 'TRAIN')
 
@@ -87,7 +52,7 @@ def linear_hmm ():
 #	sg('new_distribution', 'LinearHMM')
 	sg('add_preproc', 'SORTWORDSTRING')
 
-	sg('set_features', 'TRAIN', fm_train_dna, 'DNA')
+	sg('set_features', 'TRAIN', fm_train, 'DNA')
 	sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, gap, reverse)
 	sg('attach_preproc', 'TRAIN')
 
@@ -111,10 +76,9 @@ def hmm ():
 	order=1
 	hmms=list()
 	liks=list()
-	sequence=get_cubes()
 
 	sg('new_hmm',N, M)
-	sg('set_features', 'TRAIN', sequence, 'CUBE')
+	sg('set_features', 'TRAIN', fm_cube, 'CUBE')
 	sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'WORD', order)
 	sg('bw')
 	hmm=sg('get_hmm')

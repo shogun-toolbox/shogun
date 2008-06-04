@@ -7,10 +7,11 @@ from sg import sg
 from numpy import array, sign
 from numpy.random import seed, rand
 
-from tools.load import load_features, load_labels
-fm_train=load_features('../data/fm_train_real.dat')
-fm_test=load_features('../data/fm_test_real.dat')
-label_train=load_labels('../data/label_train_oneclass.dat')
+from tools.load import LoadMatrix
+lm=LoadMatrix()
+fm_train=lm.load_numbers('../data/fm_train_real.dat')
+fm_test=lm.load_numbers('../data/fm_test_real.dat')
+label_train=lm.load_labels('../data/label_train_oneclass.dat')
 
 ###########################################################################
 # svm-based

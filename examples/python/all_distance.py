@@ -7,11 +7,12 @@ from numpy import array, floor, double, char
 from numpy.random import seed, rand
 from sg import sg
 
-from tools.load import load_features, load_labels
-fm_train_real=load_features('../data/fm_train_real.dat')
-fm_test_real=load_features('../data/fm_test_real.dat')
-fm_train_dna=load_features('../data/fm_train_dna.dat', char)
-fm_test_dna=load_features('../data/fm_test_dna.dat', char)
+from tools.load import LoadMatrix
+lm=LoadMatrix()
+fm_train_real=lm.load_numbers('../data/fm_train_real.dat')
+fm_test_real=lm.load_numbers('../data/fm_test_real.dat')
+fm_train_dna=lm.load_dna('../data/fm_train_dna.dat')
+fm_test_dna=lm.load_dna('../data/fm_test_dna.dat')
 
 
 ###########################################################################
