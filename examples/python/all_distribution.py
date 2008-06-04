@@ -10,7 +10,7 @@ from sg import sg
 from tools.load import LoadMatrix
 lm=LoadMatrix()
 fm_train=lm.load_dna('../data/fm_train_dna.dat')
-fm_cube=lm.load_cubes('../data/fm_cube_train.dat')
+fm_cube=lm.load_cubes('../data/fm_train_cube.dat')
 
 ###########################################################################
 # distributions

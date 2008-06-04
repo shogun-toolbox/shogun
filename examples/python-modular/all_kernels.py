@@ -24,8 +24,8 @@ fm_test_byte=ubyte(lm.load_numbers('../data/fm_test_byte.dat'))
 fm_train_dna=lm.load_dna('../data/fm_train_dna.dat')
 fm_test_dna=lm.load_dna('../data/fm_test_dna.dat')
 label_train_dna=lm.load_labels('../data/label_train_dna.dat')
-fm_cube_train=lm.load_cubes('../data/fm_cube_train.dat')
-fm_cube_test=lm.load_cubes('../data/fm_cube_test.dat')
+fm_train_cube=lm.load_cubes('../data/fm_train_cube.dat')
+fm_test_cube=lm.load_cubes('../data/fm_test_cube.dat')
 
 ###########################################################################
 # byte features
@@ -652,7 +652,7 @@ def top_fisher ():
 	kargs=[1, False, True]
 
 	charfeat=StringCharFeatures(CUBE)
-	charfeat.set_string_features(fm_cube_train)
+	charfeat.set_string_features(fm_train_cube)
 	wordfeats_train=StringWordFeatures(charfeat.get_alphabet())
 	wordfeats_train.obtain_from_char(charfeat, order-1, order, gap, reverse)
 	preproc=SortWordString()
@@ -661,7 +661,7 @@ def top_fisher ():
 	wordfeats_train.apply_preproc()
 
 	charfeat=StringCharFeatures(CUBE)
-	charfeat.set_string_features(fm_cube_test)
+	charfeat.set_string_features(fm_test_cube)
 	wordfeats_test=StringWordFeatures(charfeat.get_alphabet())
 	wordfeats_test.obtain_from_char(charfeat, order-1, order, gap, reverse)
 	wordfeats_test.add_preproc(preproc)
