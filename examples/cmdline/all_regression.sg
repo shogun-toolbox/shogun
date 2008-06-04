@@ -1,0 +1,65 @@
+% Explicit examples on how to use regressions
+
+%
+% svm-based
+%
+
+% SVR Light
+%try
+	%disp('SVRLight');
+
+	set_kernel GAUSSIAN REAL 10 2.1
+	set_features TRAIN ../data/fm_train_real.dat
+	set_labels TRAIN ../data/label_train_oneclass.dat
+	new_regression SVRLIGHT
+	svr_tube_epsilon 1e-2
+	c 0.017
+
+	init_kernel TRAIN
+	train_regression
+
+	set_features TEST ../data/fm_test.dat
+	init_kernel TEST
+	out.txt = classify
+%catch
+%	disp('No support for SVRLight available.')
+%end
+
+
+% LibSVR
+%disp('LibSVR');
+set_kernel GAUSSIAN REAL 10 2.1
+set_features TRAIN ../data/fm_train_real.dat
+set_labels TRAIN ../data/label_train_oneclass.dat
+new_regression LIBSVR
+svr_tube_epsilon 1e-2
+c 0.017
+
+init_kernel TRAIN
+train_regression
+
+set_features TEST ../data/fm_test.dat
+init_kernel TEST
+out.txt = classify
+
+
+%
+% misc
+%
+
+% KRR
+%disp('KRR');
+set_kernel GAUSSIAN REAL 10 2.1
+set_features TRAIN ../data/fm_train_real.dat
+set_labels TRAIN ../data/label_train_oneclass.dat
+new_regression KRR
+svr_tube_epsilon 1e-2
+krr_tau 1.2
+c 0.017
+
+init_kernel TRAIN
+train_regression
+
+set_features TEST ../data/fm_test.dat
+init_kernel TEST
+out.txt = classify

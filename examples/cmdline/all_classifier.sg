@@ -1,0 +1,303 @@
+% Explicit examples on how to use the different classifiers
+
+%
+% kernel-based SVMs
+%
+
+% SVMLight
+%try
+%	disp('SVMLight');
+
+	set_kernel WEIGHTEDDEGREE CHAR 10 20
+	set_features TRAIN ../data/fm_train_dna.dat DNA
+	set_labels TRAIN ../data/label_train_dna42.dat
+	new_svm LIGHT
+	svm_epsilon 1e-5
+	svm_use_bias 0
+	c 0.017
+
+	init_kernel TRAIN
+	train_classifier
+
+	set_features TEST ../data/fm_test_dna.dat DNA
+	init_kernel TEST
+	out.txt = classify
+%catch
+%	disp('No support for SVMLight available.')
+%end
+
+
+% LibSVM
+%disp('LibSVM');
+
+set_kernel GAUSSIAN REAL 10 1.2
+set_features TRAIN ../data/fm_train_real.dat
+set_labels TRAIN ../data/label_train_oneclass.dat
+new_svm LIBSVM
+svm_epsilon 1e-5
+svm_use_bias 0
+c 0.017
+
+init_kernel TRAIN
+train_classifier
+
+set_features TEST ../data/fm_test_real.dat
+init_kernel TEST
+out.txt = classify
+
+
+% GPBTSVM
+%disp('GPBTSVM');
+
+set_kernel GAUSSIAN REAL 10 1.2
+set_features TRAIN ../data/fm_train_real.dat
+set_labels TRAIN ../data/label_train_oneclass.dat
+new_svm GPBTSVM
+svm_epsilon 1e-5
+svm_use_bias 0
+c 0.017
+
+init_kernel TRAIN
+train_classifier
+
+set_features TEST ../data/fm_test_real.dat
+init_kernel TEST
+out.txt = classify
+
+
+% MPDSVM
+%disp('MPDSVM');
+
+set_kernel GAUSSIAN REAL 10 1.2
+set_features TRAIN ../data/fm_train_real.dat
+set_labels TRAIN ../data/label_train_oneclass.dat
+new_svm MPDSVM
+svm_epsilon 1e-5
+svm_use_bias 0
+c 0.017
+
+init_kernel TRAIN
+train_classifier
+
+set_features TEST ../data/fm_test_real.dat
+init_kernel TEST
+out.txt = classify
+
+
+% LibSVM MultiClass
+%disp('LibSVMMultiClass');
+
+set_kernel GAUSSIAN REAL 10 1.2
+set_features TRAIN ../data/fm_train_real.dat
+set_labels TRAIN ../data/label_train_multiclass.dat
+new_svm LIBSVM_MULTICLASS
+svm_epsilon 1e-5
+svm_use_bias 0
+c 0.017
+
+init_kernel TRAIN
+train_classifier
+
+set_features TEST ../data/fm_test_real.dat
+init_kernel TEST
+out.txt = classify
+
+
+% LibSVM OneClass
+%disp('LibSVMOneClass');
+
+set_kernel GAUSSIAN REAL 10 1.2
+set_features TRAIN ../data/fm_train_real.dat
+set_labels TRAIN ../data/label_train_oneclass.dat
+new_svm LIBSVM_ONECLASS
+svm_epsilon 1e-5
+svm_use_bias 0
+c 0.017
+
+init_kernel TRAIN
+train_classifier
+
+set_features TEST ../data/fm_test_real.dat
+init_kernel TEST
+out.txt = classify
+
+
+% GMNPSVM
+%disp('GMNPSVM');
+
+set_kernel GAUSSIAN REAL 10 1.2
+set_features TRAIN ../data/fm_train_real.dat
+set_labels TRAIN ../data/label_train_oneclass.dat
+new_svm GMNPSVM
+svm_epsilon 1e-5
+svm_use_bias 0
+c 0.017
+
+init_kernel TRAIN
+train_classifier
+
+set_features TEST ../data/fm_test_real.dat
+init_kernel TEST
+out.txt = classify
+
+
+% run with batch or linadd on LibSVM;
+%disp('LibSVM batch');
+
+set_kernel GAUSSIAN REAL 10 1.2
+set_features TRAIN ../data/fm_train_real.dat
+set_labels TRAIN ../data/label_train_oneclass.dat
+new_svm LIBSVM
+svm_epsilon 1e-5
+svm_use_bias 0
+c 0.017
+
+init_kernel TRAIN
+train_classifier
+
+set_features TEST ../data/fm_test_real.dat
+init_kernel TEST
+out.txt = classify
+
+objective.txt = get_svm_objective
+use_batch_computation 1
+use_linadd 1
+out.txt = classify
+
+
+%
+% SparseLinear classifier
+%
+
+% SubgradientSVM - often does not converge
+%disp('SubGradientSVM');
+
+set_features TRAIN ../data/fm_train_real.dat
+set_labels TRAIN ../data/label_train_oneclass.dat
+new_svm SUBGRADIENTSVM
+svm_epsilon 1e-5
+svm_use_bias 0
+svm_max_train_time 60
+c 0.42
+% sometimes does not terminate
+%train_classifier
+
+%set_features TEST ../data/fm_test_real.dat
+%out.txt = classify
+
+% SVMOcas
+%disp('SVMOcas');
+
+set_features TRAIN ../data/fm_train_real.dat
+set_labels TRAIN ../data/label_train_oneclass.dat
+new_svm SVMOCAS
+svm_epsilon 1e-5
+svm_use_bias 0
+c 0.42
+
+init_kernel TRAIN
+train_classifier
+
+set_features TEST ../data/fm_test_real.dat
+init_kernel TEST
+out.txt = classify
+
+% SVMSGD
+%disp('SVMSGD');
+
+set_features TRAIN ../data/fm_train_real.dat
+set_labels TRAIN ../data/label_train_oneclass.dat
+new_svm SVMSGD
+svm_epsilon 1e-5
+svm_use_bias 0
+c 0.42
+
+init_kernel TRAIN
+train_classifier
+
+set_features TEST ../data/fm_test_real.dat
+init_kernel TEST
+out.txt = classify
+
+% LibLinear
+%disp('LibLinear');
+
+set_features TRAIN ../data/fm_train_real.dat
+set_labels TRAIN ../data/label_train_oneclass.dat
+new_svm LIBLINEAR_LR
+svm_epsilon 1e-5
+svm_use_bias 0
+c 0.42
+
+init_kernel TRAIN
+train_classifier
+
+set_features TEST ../data/fm_test_real.dat
+init_kernel TEST
+out.txt = classify
+
+% SVMLin
+%disp('SVMLin');
+
+set_features TRAIN ../data/fm_train_real.dat
+set_labels TRAIN ../data/label_train_oneclass.dat
+new_svm SVMLIN
+svm_epsilon 1e-5
+svm_use_bias 0
+c 0.42
+
+init_kernel TRAIN
+train_classifier
+
+set_features TEST ../data/fm_test_real.dat
+init_kernel TEST
+out.txt = classify
+
+
+%
+% misc classifiers
+%
+
+% KNN
+%disp('KNN');
+
+set_distance EUCLIDIAN REAL
+set_features TRAIN ../data/fm_train_real.dat
+set_labels TRAIN ../data/label_train_oneclass.dat
+new_classifier KNN
+
+init_distance TRAIN
+train_classifier 3
+
+set_features TEST ../data/fm_test_real.dat
+init_distance TEST
+out.txt = classify
+
+
+% LDA
+%disp('LDA');
+
+set_features TRAIN ../data/fm_train_real.dat
+set_labels TRAIN ../data/label_train_oneclass.dat
+new_classifier LDA
+
+train_classifier
+
+set_features TEST ../data/fm_test_real.dat
+out.txt = classify
+
+
+% Perceptron
+%disp('Perceptron');
+
+% a bit silly, but Perceptron does not converge with original data
+%set_features TRAIN ../data/fm_train_real.dat
+%set_labels TRAIN ../data/label_train_oneclass.dat
+%new_classifier PERCEPTRON
+%set_perceptron_parameters 1.6 5000
+%train_classifier
+
+%set_features TEST fm_test_real
+%out.txt = classify
+
+
