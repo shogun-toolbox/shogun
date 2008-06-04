@@ -2081,7 +2081,7 @@ int main(int argc, char** argv)
 	return 0;
 }
 EOF
-		echocheck "ACML support"
+		echocheck "AMD ACML support"
 		if cc_check -lacml -lcblas -lgfortran
 		then
 			echores "yes"
@@ -2108,7 +2108,7 @@ int main(int argc, char** argv)
 	return 0;
 }
 EOF
-			echocheck "MKL support"
+			echocheck "Intel MKL support"
 			if cc_check -lmkl -lguide -lmkl_lapack64
 			then
 				echores "yes"
