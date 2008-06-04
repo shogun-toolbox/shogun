@@ -3,40 +3,22 @@
 Explicit examples on how to use the different classifiers
 """
 
-from numpy import double, array, floor, concatenate
+from numpy import double, array, char, floor, concatenate
 from numpy.random import rand, seed, permutation
 from shogun.Kernel import GaussianKernel, WeightedDegreeStringKernel
 from shogun.Distance import EuclidianDistance
 from shogun.Features import *
 from shogun.Classifier import *
 
-def get_clouds (num, num_feats, num_vec):
-	data=[rand(num_feats, num_vec)+x/2 for x in xrange(num)]
-	cloud=concatenate(data, axis=1)
-	return array([permutation(x) for x in cloud])
-
-def get_dna ():
-	acgt=array(['A', 'C', 'G','T'])
-	len_acgt=len(acgt)
-	rand_train=[]
-	rand_test=[]
-
-	for i in xrange(11):
-		str1=[]
-		str2=[]
-		for j in range(60):
-			str1.append(acgt[floor(len_acgt*rand())])
-			str2.append(acgt[floor(len_acgt*rand())])
-		rand_train.append(''.join(str1))
-	rand_test.append(''.join(str2))
-	
-	for i in xrange(6):
-		str1=[]
-		for j in range(60):
-			str1.append(acgt[floor(len_acgt*rand())])
-	rand_test.append(''.join(str1))
-
-	return {'train': rand_train, 'test': rand_test}
+from tools.load import LoadMatrix
+lm=LoadMatrix()
+fm_train_real=lm.load_numbers('../data/fm_train_real.dat')
+fm_test_real=lm.load_numbers('../data/fm_test_real.dat')
+fm_train_dna=lm.load_dna('../data/fm_train_dna.dat')
+fm_test_dna=lm.load_dna('../data/fm_test_dna.dat')
+label_train_dna=lm.load_labels('../data/label_train_dna.dat')
+label_train_oneclass=lm.load_labels('../data/label_train_oneclass.dat')
+label_train_multiclass=lm.load_labels('../data/label_train_multiclass.dat')
 
 ###########################################################################
 # kernel-based SVMs
@@ -45,11 +27,10 @@ def get_dna ():
 def svm_light ():
 	print 'SVMLight'
 
-	data=get_dna()
 	feats_train=StringCharFeatures(DNA)
-	feats_train.set_string_features(data['train'])
+	feats_train.set_string_features(fm_train_dna)
 	feats_test=StringCharFeatures(DNA)
-	feats_test.set_string_features(data['test'])
+	feats_test.set_string_features(fm_test_dna)
 	degree=20
 
 	kernel=WeightedDegreeStringKernel(feats_train, feats_train, degree)
@@ -58,8 +39,7 @@ def svm_light ():
 	epsilon=1e-5
 	tube_epsilon=1e-2
 	num_threads=1
-	lab=rand(feats_train.get_num_vectors()).round()*2-1
-	labels=Labels(array(lab))
+	labels=Labels(label_train_dna)
 
 	try:
 		svm=SVMLight(C, kernel, labels)
@@ -78,11 +58,8 @@ def svm_light ():
 def libsvm ():
 	print 'LibSVM'
 
-	num_feats=9
-	data=get_clouds(2, num_feats, 11)
-	feats_train=RealFeatures(data)
-	data=get_clouds(2, num_feats, 17)
-	feats_test=RealFeatures(data)
+	feats_train=RealFeatures(fm_train_real)
+	feats_test=RealFeatures(fm_test_real)
 	width=2.1
 	kernel=GaussianKernel(feats_train, feats_train, width)
 
@@ -90,8 +67,7 @@ def libsvm ():
 	epsilon=1e-5
 	tube_epsilon=1e-2
 	num_threads=2
-	lab=rand(feats_train.get_num_vectors()).round()*2-1
-	labels=Labels(array(lab))
+	labels=Labels(label_train_oneclass)
 
 	svm=LibSVM(C, kernel, labels)
 	svm.set_epsilon(epsilon)
@@ -105,11 +81,8 @@ def libsvm ():
 def gpbtsvm ():
 	print 'GPBTSVM'
 
-	num_feats=9
-	data=get_clouds(2, num_feats, 11)
-	feats_train=RealFeatures(data)
-	data=get_clouds(2, num_feats, 17)
-	feats_test=RealFeatures(data)
+	feats_train=RealFeatures(fm_train_real)
+	feats_test=RealFeatures(fm_test_real)
 	width=2.1
 	kernel=GaussianKernel(feats_train, feats_train, width)
 
@@ -117,8 +90,7 @@ def gpbtsvm ():
 	epsilon=1e-5
 	tube_epsilon=1e-2
 	num_threads=8
-	lab=rand(feats_train.get_num_vectors()).round()*2-1
-	labels=Labels(array(lab))
+	labels=Labels(label_train_oneclass)
 
 	svm=GPBTSVM(C, kernel, labels)
 	svm.set_epsilon(epsilon)
@@ -132,11 +104,8 @@ def gpbtsvm ():
 def mpdsvm ():
 	print 'MPDSVM'
 
-	num_feats=9
-	data=get_clouds(2, num_feats, 11)
-	feats_train=RealFeatures(data)
-	data=get_clouds(2, num_feats, 17)
-	feats_test=RealFeatures(data)
+	feats_train=RealFeatures(fm_train_real)
+	feats_test=RealFeatures(fm_test_real)
 	width=2.1
 	kernel=GaussianKernel(feats_train, feats_train, width)
 
@@ -144,8 +113,7 @@ def mpdsvm ():
 	epsilon=1e-5
 	tube_epsilon=1e-2
 	num_threads=1
-	lab=rand(feats_train.get_num_vectors()).round()*2-1
-	labels=Labels(array(lab))
+	labels=Labels(label_train_oneclass)
 
 	svm=MPDSVM(C, kernel, labels)
 	svm.set_epsilon(epsilon)
@@ -159,11 +127,8 @@ def mpdsvm ():
 def libsvm_multiclass ():
 	print 'LibSVMMultiClass'
 
-	num_feats=9
-	data=get_clouds(5, num_feats, 11)
-	feats_train=RealFeatures(data)
-	data=get_clouds(5, num_feats, 17)
-	feats_test=RealFeatures(data)
+	feats_train=RealFeatures(fm_train_real)
+	feats_test=RealFeatures(fm_test_real)
 	width=2.1
 	kernel=GaussianKernel(feats_train, feats_train, width)
 
@@ -171,8 +136,7 @@ def libsvm_multiclass ():
 	epsilon=1e-5
 	tube_epsilon=1e-2
 	num_threads=8
-	lab=[double(x) for x in xrange(feats_train.get_num_vectors())]
-	labels=Labels(array(lab))
+	labels=Labels(label_train_multiclass)
 
 	svm=LibSVMMultiClass(C, kernel, labels)
 	svm.set_epsilon(epsilon)
@@ -186,11 +150,8 @@ def libsvm_multiclass ():
 def libsvm_oneclass ():
 	print 'LibSVMOneClass'
 
-	num_feats=9
-	data=get_clouds(2, num_feats, 11)
-	feats_train=RealFeatures(data)
-	data=get_clouds(2, num_feats, 17)
-	feats_test=RealFeatures(data)
+	feats_train=RealFeatures(fm_train_real)
+	feats_test=RealFeatures(fm_test_real)
 	width=2.1
 	kernel=GaussianKernel(feats_train, feats_train, width)
 
@@ -211,11 +172,8 @@ def libsvm_oneclass ():
 def gmnpsvm ():
 	print 'GMNPSVM'
 
-	num_feats=9
-	data=get_clouds(4, num_feats, 11)
-	feats_train=RealFeatures(data)
-	data=get_clouds(4, num_feats, 17)
-	feats_test=RealFeatures(data)
+	feats_train=RealFeatures(fm_train_real)
+	feats_test=RealFeatures(fm_test_real)
 	width=2.1
 	kernel=GaussianKernel(feats_train, feats_train, width)
 
@@ -223,8 +181,7 @@ def gmnpsvm ():
 	epsilon=1e-5
 	tube_epsilon=1e-2
 	num_threads=1
-	lab=[double(x) for x in xrange(feats_train.get_num_vectors())]
-	labels=Labels(array(lab))
+	labels=Labels(label_train_multiclass)
 
 	svm=GMNPSVM(C, kernel, labels)
 	svm.set_epsilon(epsilon)
@@ -242,11 +199,10 @@ def gmnpsvm ():
 def do_batch_linadd ():
 	print 'LibSVM batch'
 
-	data=get_dna()
 	feats_train=StringCharFeatures(DNA)
-	feats_train.set_string_features(data['train'])
+	feats_train.set_string_features(fm_train_dna)
 	feats_test=StringCharFeatures(DNA)
-	feats_test.set_string_features(data['test'])
+	feats_test.set_string_features(fm_test_dna)
 	degree=20
 
 	kernel=WeightedDegreeStringKernel(feats_train, feats_train, degree)
@@ -255,8 +211,7 @@ def do_batch_linadd ():
 	epsilon=1e-5
 	tube_epsilon=1e-2
 	num_threads=2
-	lab=rand(feats_train.get_num_vectors()).round()*2-1
-	labels=Labels(array(lab))
+	labels=Labels(label_train_dna)
 
 	svm=LibSVM(C, kernel, labels)
 	svm.set_epsilon(epsilon)
@@ -282,13 +237,10 @@ def do_batch_linadd ():
 def subgradient_svm ():
 	print 'SubGradientSVM'
 
-	num_feats=11
-	data=get_clouds(2, num_feats, 11)
-	realfeat=RealFeatures(data)
+	realfeat=RealFeatures(fm_train_real)
 	feats_train=SparseRealFeatures()
 	feats_train.obtain_from_simple(realfeat)
-	data=get_clouds(2, num_feats, 21)
-	realfeat=RealFeatures(data)
+	realfeat=RealFeatures(fm_test_real)
 	feats_test=SparseRealFeatures()
 	feats_test.obtain_from_simple(realfeat)
 
@@ -296,8 +248,7 @@ def subgradient_svm ():
 	epsilon=1e-3
 	num_threads=1
 	max_train_time=1.
-	lab=rand(feats_train.get_num_vectors()).round()*2-1
-	labels=Labels(array(lab))
+	labels=Labels(label_train_oneclass)
 
 	svm=SubGradientSVM(C, feats_train, labels)
 	svm.set_epsilon(epsilon)
@@ -312,21 +263,17 @@ def subgradient_svm ():
 def svmocas ():
 	print 'SVMOcas'
 
-	num_feats=11
-	data=get_clouds(2, num_feats, 12)
-	realfeat=RealFeatures(data)
+	realfeat=RealFeatures(fm_train_real)
 	feats_train=SparseRealFeatures()
 	feats_train.obtain_from_simple(realfeat)
-	data=get_clouds(2, num_feats, 21)
-	realfeat=RealFeatures(data)
+	realfeat=RealFeatures(fm_test_real)
 	feats_test=SparseRealFeatures()
 	feats_test.obtain_from_simple(realfeat)
 
 	C=0.42
 	epsilon=1e-5
 	num_threads=1
-	lab=rand(feats_train.get_num_vectors()).round()*2-1
-	labels=Labels(array(lab))
+	labels=Labels(label_train_oneclass)
 
 	svm=SVMOcas(C, feats_train, labels)
 	svm.set_epsilon(epsilon)
@@ -340,23 +287,19 @@ def svmocas ():
 def svmsgd ():
 	print 'SVMSGD'
 
-	num_feats=11
-	data=get_clouds(2, num_feats, 12)
-	realfeat=RealFeatures(data)
+	realfeat=RealFeatures(fm_train_real)
 	feats_train=SparseRealFeatures()
 	feats_train.obtain_from_simple(realfeat)
-	data=get_clouds(2, num_feats, 21)
-	realfeat=RealFeatures(data)
+	realfeat=RealFeatures(fm_test_real)
 	feats_test=SparseRealFeatures()
 	feats_test.obtain_from_simple(realfeat)
 
 	C=0.42
 	epsilon=1e-5
 	num_threads=1
-	lab=rand(feats_test.get_num_vectors()).round()*2-1
-	labels=Labels(array(lab))
+	labels=Labels(label_train_oneclass)
 
-	svm=SVMSGD(C, feats_test, labels)
+	svm=SVMSGD(C, feats_train, labels)
 	#svm.io.set_loglevel(0)
 	svm.train()
 
@@ -366,21 +309,17 @@ def svmsgd ():
 def liblinear ():
 	print 'LibLinear'
 
-	num_feats=11
-	data=get_clouds(2, num_feats, 10)
-	realfeat=RealFeatures(data)
+	realfeat=RealFeatures(fm_train_real)
 	feats_train=SparseRealFeatures()
 	feats_train.obtain_from_simple(realfeat)
-	data=get_clouds(2, num_feats, 25)
-	realfeat=RealFeatures(data)
+	realfeat=RealFeatures(fm_test_real)
 	feats_test=SparseRealFeatures()
 	feats_test.obtain_from_simple(realfeat)
 
 	C=0.42
 	epsilon=1e-5
 	num_threads=1
-	lab=rand(feats_train.get_num_vectors()).round()*2-1
-	labels=Labels(array(lab))
+	labels=Labels(label_train_oneclass)
 
 	svm=LibLinear(C, feats_train, labels)
 	svm.set_epsilon(epsilon)
@@ -394,21 +333,17 @@ def liblinear ():
 def svmlin ():
 	print 'SVMLin'
 
-	num_feats=11
-	data=get_clouds(2, num_feats, 11)
-	realfeat=RealFeatures(data)
+	realfeat=RealFeatures(fm_train_real)
 	feats_train=SparseRealFeatures()
 	feats_train.obtain_from_simple(realfeat)
-	data=get_clouds(2, num_feats, 25)
-	realfeat=RealFeatures(data)
+	realfeat=RealFeatures(fm_test_real)
 	feats_test=SparseRealFeatures()
 	feats_test.obtain_from_simple(realfeat)
 
 	C=0.42
 	epsilon=1e-5
 	num_threads=1
-	lab=rand(feats_train.get_num_vectors()).round()*2-1
-	labels=Labels(array(lab))
+	labels=Labels(label_train_oneclass)
 
 	svm=SVMLin(C, feats_train, labels)
 	svm.set_epsilon(epsilon)
@@ -428,41 +363,34 @@ def svmlin ():
 def perceptron ():
 	print 'Perceptron'
 
-	num_feats=9
-	data=get_clouds(2, num_feats, 11)
-	feats_train=RealFeatures(data)
-	data=get_clouds(2, num_feats, 17)
-	feats_test=RealFeatures(data)
+	feats_train=RealFeatures(fm_train_real)
+	feats_test=RealFeatures(fm_test_real)
 
 	learn_rate=1.
 	max_iter=1000
 	num_threads=1
-	lab=rand(feats_train.get_num_vectors()).round()*2-1
-	labels=Labels(array(lab))
+	labels=Labels(label_train_oneclass)
 
 	perceptron=Perceptron(feats_train, labels)
 	perceptron.set_learn_rate(learn_rate)
 	perceptron.set_max_iter(max_iter)
 	perceptron.parallel.set_num_threads(num_threads)
-	perceptron.train()
+	# often does not converge
+	#perceptron.train()
 
-	perceptron.set_features(feats_test)
-	perceptron.classify().get_labels()
+	#perceptron.set_features(feats_test)
+	#perceptron.classify().get_labels()
 
 def knn ():
 	print 'KNN'
 
-	num_feats=9
-	data=get_clouds(2, num_feats, 10)
-	feats_train=RealFeatures(data)
-	data=get_clouds(2, num_feats, 18)
-	feats_test=RealFeatures(data)
+	feats_train=RealFeatures(fm_train_real)
+	feats_test=RealFeatures(fm_test_real)
 	distance=EuclidianDistance()
 
 	k=3
 	num_threads=1
-	lab=rand(feats_train.get_num_vectors()).round()*2-1
-	labels=Labels(array(lab))
+	labels=Labels(label_train_oneclass)
 
 	knn=KNN(k, distance, labels)
 	knn.parallel.set_num_threads(num_threads)
@@ -474,16 +402,12 @@ def knn ():
 def lda ():
 	print 'LDA'
 
-	num_feats=9
-	data=get_clouds(2, num_feats, 14)
-	feats_train=RealFeatures(data)
-	data=get_clouds(2, num_feats, 27)
-	feats_test=RealFeatures(data)
+	feats_train=RealFeatures(fm_train_real)
+	feats_test=RealFeatures(fm_test_real)
 
 	gamma=3
 	num_threads=1
-	lab=rand(feats_train.get_num_vectors()).round()*2-1
-	labels=Labels(array(lab))
+	labels=Labels(label_train_oneclass)
 
 	lda=LDA(gamma, feats_train, labels)
 	lda.parallel.set_num_threads(num_threads)

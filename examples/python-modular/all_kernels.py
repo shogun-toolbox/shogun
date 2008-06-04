@@ -4,7 +4,7 @@ Explicit examples on how to use the different kernels
 """
 
 from sys import maxint
-from numpy import ubyte, ushort, double, int, ones, zeros, sum, floor, array, arange, ceil, concatenate
+from numpy import char, ubyte, ushort, double, int, ones, zeros, sum, floor, array, arange, ceil, concatenate
 from numpy.random import randint, rand, seed, permutation
 from shogun.PreProc import SortWordString, SortUlongString
 from shogun.Distance import EuclidianDistance
@@ -13,63 +13,19 @@ from shogun.Distribution import HMM, BW_NORMAL
 from shogun.Kernel import *
 from shogun.Features import *
 
-def get_cubes (num=2):
-	leng=50
-	rep=5
-	weight=1
-
-	sequence=[]
-
-	for i in xrange(num):
-		# generate a sequence with characters 1-6 drawn from 3 loaded cubes
-		loaded=[]
-		for j in xrange(3):
-			draw=[x*ones((1, ceil(leng*rand())), int)[0] \
-				for x in xrange(1, 7)]
-			loaded.append(permutation(concatenate(draw)))
-
-		draws=[]
-		for j in xrange(len(loaded)):
-			data=ones((1, ceil(rep*rand())), int)
-			draws=concatenate((j*data[0], draws))
-		draws=permutation(draws)
-
-		seq=[]
-		for j in xrange(len(draws)):
-			len_loaded=len(loaded[draws[j]])
-			weighted=int(ceil(
-				((1-weight)*rand()+weight)*len_loaded))
-			perm=permutation(len_loaded)
-			shuffled=[str(loaded[draws[j]][x]) for x in perm[:weighted]]
-			seq=concatenate((seq, shuffled))
-
-		sequence.append(''.join(seq))
-
-	return {'train':sequence, 'test':sequence}
-
-
-def get_dna ():
-	acgt=array(['A', 'C', 'G','T'])
-	len_acgt=len(acgt)
-	rand_train=[]
-	rand_test=[]
-
-	for i in xrange(11):
-		str1=[]
-		str2=[]
-		for j in range(60):
-			str1.append(acgt[floor(len_acgt*rand())])
-			str2.append(acgt[floor(len_acgt*rand())])
-		rand_train.append(''.join(str1))
-	rand_test.append(''.join(str2))
-	
-	for i in xrange(6):
-		str1=[]
-		for j in range(60):
-			str1.append(acgt[floor(len_acgt*rand())])
-	rand_test.append(''.join(str1))
-
-	return {'train': rand_train, 'test': rand_test}
+from tools.load import LoadMatrix
+lm=LoadMatrix()
+fm_train_real=lm.load_numbers('../data/fm_train_real.dat')
+fm_test_real=lm.load_numbers('../data/fm_test_real.dat')
+fm_train_word=ushort(lm.load_numbers('../data/fm_test_word.dat'))
+fm_test_word=ushort(lm.load_numbers('../data/fm_test_word.dat'))
+fm_train_byte=ubyte(lm.load_numbers('../data/fm_train_byte.dat'))
+fm_test_byte=ubyte(lm.load_numbers('../data/fm_test_byte.dat'))
+fm_train_dna=lm.load_dna('../data/fm_train_dna.dat')
+fm_test_dna=lm.load_dna('../data/fm_test_dna.dat')
+label_train_dna=lm.load_labels('../data/label_train_dna.dat')
+fm_cube_train=lm.load_cubes('../data/fm_cube_train.dat')
+fm_cube_test=lm.load_cubes('../data/fm_cube_test.dat')
 
 ###########################################################################
 # byte features
@@ -78,14 +34,11 @@ def get_dna ():
 def linear_byte ():
 	print 'LinearByte'
 	
-	num_feats=11
-	data=randint(0, maxint, (num_feats, 11)).astype(ubyte)
 	feats_train=ByteFeatures(RAWBYTE)
-	feats_train.copy_feature_matrix(data)
+	feats_train.copy_feature_matrix(fm_train_byte)
 
-	data=randint(0, maxint, (num_feats, 17)).astype(ubyte)
 	feats_test=ByteFeatures(RAWBYTE)
-	feats_test.copy_feature_matrix(data)
+	feats_test.copy_feature_matrix(fm_test_byte)
 	
 	kernel=LinearByteKernel(feats_train, feats_train)
 
@@ -100,11 +53,8 @@ def linear_byte ():
 def chi2 ():
 	print 'Chi2'
 
-	num_feats=11
-	data=rand(num_feats, 11)
-	feats_train=RealFeatures(data)
-	data=rand(num_feats, 17)
-	feats_test=RealFeatures(data)
+	feats_train=RealFeatures(fm_train_real)
+	feats_test=RealFeatures(fm_test_real)
 	width=1.4
 	size_cache=10
 	
@@ -117,11 +67,8 @@ def chi2 ():
 def const ():
 	print 'Const'
 
-	num_feats=11
-	data=rand(num_feats, 11)
-	feats_train=RealFeatures(data)
-	data=rand(num_feats, 17)
-	feats_test=RealFeatures(data)
+	feats_train=RealFeatures(fm_train_real)
+	feats_test=RealFeatures(fm_test_real)
 	c=23.
 
 	kernel=ConstKernel(feats_train, feats_train, c)
@@ -133,11 +80,8 @@ def const ():
 def diag ():
 	print 'Diag'
 
-	num_feats=11
-	data=rand(num_feats, 11)
-	feats_train=RealFeatures(data)
-	data=rand(num_feats, 17)
-	feats_test=RealFeatures(data)
+	feats_train=RealFeatures(fm_train_real)
+	feats_test=RealFeatures(fm_test_real)
 	diag=23.
 
 	kernel=DiagKernel(feats_train, feats_train, diag)
@@ -149,11 +93,8 @@ def diag ():
 def gaussian ():
 	print 'Gaussian'
 
-	num_feats=11
-	data=rand(num_feats, 11)
-	feats_train=RealFeatures(data)
-	data=rand(num_feats, 17)
-	feats_test=RealFeatures(data)
+	feats_train=RealFeatures(fm_train_real)
+	feats_test=RealFeatures(fm_test_real)
 	width=1.9
 
 	kernel=GaussianKernel(feats_train, feats_train, width)
@@ -165,11 +106,8 @@ def gaussian ():
 def gaussian_shift ():
 	print 'GaussianShift'
 
-	num_feats=11
-	data=rand(num_feats, 11)
-	feats_train=RealFeatures(data)
-	data=rand(num_feats, 17)
-	feats_test=RealFeatures(data)
+	feats_train=RealFeatures(fm_train_real)
+	feats_test=RealFeatures(fm_test_real)
 	width=1.8
 	max_shift=2
 	shift_step=1
@@ -184,11 +122,8 @@ def gaussian_shift ():
 def linear ():
 	print 'Linear'
 
-	num_feats=11
-	data=rand(num_feats, 11)
-	feats_train=RealFeatures(data)
-	data=rand(num_feats, 17)
-	feats_test=RealFeatures(data)
+	feats_train=RealFeatures(fm_train_real)
+	feats_test=RealFeatures(fm_test_real)
 	scale=1.2
 
 	kernel=LinearKernel(feats_train, feats_train, scale)
@@ -200,11 +135,8 @@ def linear ():
 def poly ():
 	print 'Poly'
 
-	num_feats=11
-	data=rand(num_feats, 11)
-	feats_train=RealFeatures(data)
-	data=rand(num_feats, 17)
-	feats_test=RealFeatures(data)
+	feats_train=RealFeatures(fm_train_real)
+	feats_test=RealFeatures(fm_test_real)
 	degree=4
 	inhomogene=False
 	use_normalization=True
@@ -219,11 +151,8 @@ def poly ():
 def sigmoid ():
 	print 'Sigmoid'
 
-	num_feats=11
-	data=rand(num_feats, 11)
-	feats_train=RealFeatures(data)
-	data=rand(num_feats, 17)
-	feats_test=RealFeatures(data)
+	feats_train=RealFeatures(fm_train_real)
+	feats_test=RealFeatures(fm_test_real)
 	size_cache=10
 	gamma=1.2
 	coef0=1.3
@@ -241,15 +170,12 @@ def sigmoid ():
 def sparse_gaussian ():
 	print 'SparseGaussian'
 
-	num_feats=11
-	data=rand(num_feats, 11)
-	feat=RealFeatures(data)
+	realfeat=RealFeatures(fm_train_real)
 	feats_train=SparseRealFeatures()
-	feats_train.obtain_from_simple(feat)
-	data=rand(num_feats, 17)
-	feat=RealFeatures(data)
+	feats_train.obtain_from_simple(realfeat)
+	realfeat=RealFeatures(fm_test_real)
 	feats_test=SparseRealFeatures()
-	feats_test.obtain_from_simple(feat)
+	feats_test.obtain_from_simple(realfeat)
 	width=1.1
 
 	kernel=SparseGaussianKernel(feats_train, feats_train, width)
@@ -261,15 +187,12 @@ def sparse_gaussian ():
 def sparse_linear ():
 	print 'SparseLinear'
 
-	num_feats=11
-	data=rand(num_feats, 11)
-	feat=RealFeatures(data)
+	realfeat=RealFeatures(fm_train_real)
 	feats_train=SparseRealFeatures()
-	feats_train.obtain_from_simple(feat)
-	data=rand(num_feats, 17)
-	feat=RealFeatures(data)
+	feats_train.obtain_from_simple(realfeat)
+	realfeat=RealFeatures(fm_test_real)
 	feats_test=SparseRealFeatures()
-	feats_test.obtain_from_simple(feat)
+	feats_test.obtain_from_simple(realfeat)
 	scale=1.1
 
 	kernel=SparseLinearKernel(feats_train, feats_train, scale)
@@ -281,15 +204,12 @@ def sparse_linear ():
 def sparse_poly ():
 	print 'SparsePoly'
 
-	num_feats=11
-	data=rand(num_feats, 11)
-	feat=RealFeatures(data)
+	realfeat=RealFeatures(fm_train_real)
 	feats_train=SparseRealFeatures()
-	feats_train.obtain_from_simple(feat)
-	data=rand(num_feats, 17)
-	feat=RealFeatures(data)
+	feats_train.obtain_from_simple(realfeat)
+	realfeat=RealFeatures(fm_test_real)
 	feats_test=SparseRealFeatures()
-	feats_test.obtain_from_simple(feat)
+	feats_test.obtain_from_simple(realfeat)
 	size_cache=10
 	degree=3
 	inhomogene=True
@@ -309,12 +229,8 @@ def sparse_poly ():
 def linear_word ():
 	print 'LinearWord'
 
-	maxval=2**16-1
-	num_feats=11
-	data=randint(0, maxval, (num_feats, 11)).astype(ushort)
-	feats_train=WordFeatures(data)
-	data=randint(0, maxval, (num_feats, 17)).astype(ushort)
-	feats_test=WordFeatures(data)
+	feats_train=WordFeatures(fm_train_word)
+	feats_test=WordFeatures(fm_test_word)
 	do_rescale=True
 	scale=1.4
 
@@ -327,12 +243,8 @@ def linear_word ():
 def poly_match_word ():
 	print 'PolyMatchWord'
 
-	maxval=2**16-1
-	num_feats=11
-	data=randint(0, maxval, (num_feats, 11)).astype(ushort)
-	feats_train=WordFeatures(data)
-	data=randint(0, maxval, (num_feats, 17)).astype(ushort)
-	feats_test=WordFeatures(data)
+	feats_train=WordFeatures(fm_train_word)
+	feats_test=WordFeatures(fm_test_word)
 	degree=2
 	inhomogene=True
 
@@ -345,12 +257,8 @@ def poly_match_word ():
 def word_match ():
 	print 'WordMatch'
 
-	maxval=2**16-1
-	num_feats=11
-	data=randint(0, maxval, (num_feats, 11)).astype(ushort)
-	feats_train=WordFeatures(data)
-	data=randint(0, maxval, (num_feats, 17)).astype(ushort)
-	feats_test=WordFeatures(data)
+	feats_train=WordFeatures(fm_train_word)
+	feats_test=WordFeatures(fm_test_word)
 	degree=3
 	do_rescale=True
 	scale=1.4
@@ -368,11 +276,10 @@ def word_match ():
 def fixed_degree_string ():
 	print 'FixedDegreeString'
 
-	data=get_dna()
 	feats_train=StringCharFeatures(DNA)
-	feats_train.set_string_features(data['train'])
+	feats_train.set_string_features(fm_train_dna)
 	feats_test=StringCharFeatures(DNA)
-	feats_test.set_string_features(data['test'])
+	feats_test.set_string_features(fm_test_dna)
 	degree=3
 
 	kernel=FixedDegreeStringKernel(feats_train, feats_train, degree)
@@ -384,11 +291,10 @@ def fixed_degree_string ():
 def linear_string ():
 	print 'LinearString'
 
-	data=get_dna()
 	feats_train=StringCharFeatures(DNA)
-	feats_train.set_string_features(data['train'])
+	feats_train.set_string_features(fm_train_dna)
 	feats_test=StringCharFeatures(DNA)
-	feats_test.set_string_features(data['test'])
+	feats_test.set_string_features(fm_test_dna)
 
 	kernel=LinearStringKernel(feats_train, feats_train)
 
@@ -399,11 +305,10 @@ def linear_string ():
 def local_alignment_string():
 	print 'LocalAlignmentString'
 
-	data=get_dna()
 	feats_train=StringCharFeatures(DNA)
-	feats_train.set_string_features(data['train'])
+	feats_train.set_string_features(fm_train_dna)
 	feats_test=StringCharFeatures(DNA)
-	feats_test.set_string_features(data['test'])
+	feats_test.set_string_features(fm_test_dna)
 
 	kernel=LocalAlignmentStringKernel(feats_train, feats_train)
 
@@ -414,11 +319,10 @@ def local_alignment_string():
 def poly_match_string ():
 	print 'PolyMatchString'
 
-	data=get_dna()
 	feats_train=StringCharFeatures(DNA)
-	feats_train.set_string_features(data['train'])
+	feats_train.set_string_features(fm_train_dna)
 	feats_test=StringCharFeatures(DNA)
-	feats_test.set_string_features(data['test'])
+	feats_test.set_string_features(fm_test_dna)
 	degree=3
 	inhomogene=False
 
@@ -431,11 +335,10 @@ def poly_match_string ():
 def simple_locality_improved_string ():
 	print 'SimpleLocalityImprovedString'
 
-	data=get_dna()
 	feats_train=StringCharFeatures(DNA)
-	feats_train.set_string_features(data['train'])
+	feats_train.set_string_features(fm_train_dna)
 	feats_test=StringCharFeatures(DNA)
-	feats_test.set_string_features(data['test'])
+	feats_test.set_string_features(fm_test_dna)
 	length=5
 	inner_degree=5
 	outer_degree=7
@@ -450,11 +353,10 @@ def simple_locality_improved_string ():
 def weighted_degree_string ():
 	print 'WeightedDegreeString'
 
-	data=get_dna()
 	feats_train=StringCharFeatures(DNA)
-	feats_train.set_string_features(data['train'])
+	feats_train.set_string_features(fm_train_dna)
 	feats_test=StringCharFeatures(DNA)
-	feats_test.set_string_features(data['test'])
+	feats_test.set_string_features(fm_test_dna)
 	degree=20
 
 	kernel=WeightedDegreeStringKernel(feats_train, feats_train, degree)
@@ -470,11 +372,10 @@ def weighted_degree_string ():
 def weighted_degree_position_string ():
 	print 'WeightedDegreePositionString'
 
-	data=get_dna()
 	feats_train=StringCharFeatures(DNA)
-	feats_train.set_string_features(data['train'])
+	feats_train.set_string_features(fm_train_dna)
 	feats_test=StringCharFeatures(DNA)
-	feats_test.set_string_features(data['test'])
+	feats_test.set_string_features(fm_test_dna)
 	degree=20
 
 	kernel=WeightedDegreePositionStringKernel(feats_train, feats_train, degree)
@@ -488,11 +389,10 @@ def weighted_degree_position_string ():
 def locality_improved_string ():
 	print 'LocalityImprovedString'
 
-	data=get_dna()
 	feats_train=StringCharFeatures(DNA)
-	feats_train.set_string_features(data['train'])
+	feats_train.set_string_features(fm_train_dna)
 	feats_test=StringCharFeatures(DNA)
-	feats_test.set_string_features(data['test'])
+	feats_test.set_string_features(fm_test_dna)
 	length=5
 	inner_degree=5
 	outer_degree=7
@@ -511,13 +411,12 @@ def locality_improved_string ():
 def comm_word_string ():
 	print 'CommWordString'
 
-	data=get_dna()
 	order=3
 	gap=0
 	reverse=False
 
 	charfeat=StringCharFeatures(DNA)
-	charfeat.set_string_features(data['train'])
+	charfeat.set_string_features(fm_train_dna)
 	feats_train=StringWordFeatures(charfeat.get_alphabet())
 	feats_train.obtain_from_char(charfeat, order-1, order, gap, reverse)
 	preproc=SortWordString()
@@ -526,7 +425,7 @@ def comm_word_string ():
 	feats_train.apply_preproc()
 
 	charfeat=StringCharFeatures(DNA)
-	charfeat.set_string_features(data['test'])
+	charfeat.set_string_features(fm_test_dna)
 	feats_test=StringWordFeatures(charfeat.get_alphabet())
 	feats_test.obtain_from_char(charfeat, order-1, order, gap, reverse)
 	feats_test.add_preproc(preproc)
@@ -545,13 +444,12 @@ def comm_word_string ():
 def weighted_comm_word_string ():
 	print 'WeightedCommWordString'
 
-	data=get_dna()
 	order=3
 	gap=0
 	reverse=True
 
 	charfeat=StringCharFeatures(DNA)
-	charfeat.set_string_features(data['train'])
+	charfeat.set_string_features(fm_train_dna)
 	feats_train=StringWordFeatures(charfeat.get_alphabet())
 	feats_train.obtain_from_char(charfeat, order-1, order, gap, reverse)
 	preproc=SortWordString()
@@ -560,7 +458,7 @@ def weighted_comm_word_string ():
 	feats_train.apply_preproc()
 
 	charfeat=StringCharFeatures(DNA)
-	charfeat.set_string_features(data['test'])
+	charfeat.set_string_features(fm_test_dna)
 	feats_test=StringWordFeatures(charfeat.get_alphabet())
 	feats_test.obtain_from_char(charfeat, order-1, order, gap, reverse)
 	feats_test.add_preproc(preproc)
@@ -579,13 +477,12 @@ def weighted_comm_word_string ():
 def comm_ulong_string ():
 	print 'CommUlongString'
 
-	data=get_dna()
 	order=3
 	gap=0
 	reverse=False
 
 	charfeat=StringCharFeatures(DNA)
-	charfeat.set_string_features(data['train'])
+	charfeat.set_string_features(fm_train_dna)
 	feats_train=StringUlongFeatures(charfeat.get_alphabet())
 	feats_train.obtain_from_char(charfeat, order-1, order, gap, reverse)
 	preproc=SortUlongString()
@@ -595,7 +492,7 @@ def comm_ulong_string ():
 
 
 	charfeat=StringCharFeatures(DNA)
-	charfeat.set_string_features(data['test'])
+	charfeat.set_string_features(fm_test_dna)
 	feats_test=StringUlongFeatures(charfeat.get_alphabet())
 	feats_test.obtain_from_char(charfeat, order-1, order, gap, reverse)
 	feats_test.add_preproc(preproc)
@@ -639,11 +536,8 @@ def custom ():
 def distance ():
 	print 'Distance'
 
-	num_feats=10
-	data=rand(num_feats, 9)
-	feats_train=RealFeatures(data)
-	data=rand(num_feats, 19)
-	feats_test=RealFeatures(data)
+	feats_train=RealFeatures(fm_train_real)
+	feats_test=RealFeatures(fm_test_real)
 	width=1.7
 	distance=EuclidianDistance()
 
@@ -656,11 +550,8 @@ def distance ():
 def auc ():
 	print 'AUC'
 
-	num_feats=23
-	data=rand(num_feats, 11)
-	feats_train=RealFeatures(data)
-	data=rand(num_feats, 19)
-	feats_test=RealFeatures(data)
+	feats_train=RealFeatures(fm_train_real)
+	feats_test=RealFeatures(fm_test_real)
 	width=1.7
 	subkernel=GaussianKernel(feats_train, feats_test, width)
 
@@ -685,32 +576,29 @@ def combined ():
 	feats_train=CombinedFeatures()
 	feats_test=CombinedFeatures()
 
-	data=get_dna()
 	subkfeats_train=StringCharFeatures(DNA)
-	subkfeats_train.set_string_features(data['train'])
+	subkfeats_train.set_string_features(fm_train_dna)
 	subkfeats_test=StringCharFeatures(DNA)
-	subkfeats_test.set_string_features(data['test'])
+	subkfeats_test.set_string_features(fm_test_dna)
 	subkernel=LinearStringKernel(10)
 	feats_train.append_feature_obj(subkfeats_train)
 	feats_test.append_feature_obj(subkfeats_test)
 	kernel.append_kernel(subkernel)
 
-	data=get_dna()
 	subkfeats_train=StringCharFeatures(DNA)
-	subkfeats_train.set_string_features(data['train'])
+	subkfeats_train.set_string_features(fm_train_dna)
 	subkfeats_test=StringCharFeatures(DNA)
-	subkfeats_test.set_string_features(data['test'])
+	subkfeats_test.set_string_features(fm_test_dna)
 	degree=3
 	subkernel=FixedDegreeStringKernel(10, degree)
 	feats_train.append_feature_obj(subkfeats_train)
 	feats_test.append_feature_obj(subkfeats_test)
 	kernel.append_kernel(subkernel)
 
-	data=get_dna()
 	subkfeats_train=StringCharFeatures(DNA)
-	subkfeats_train.set_string_features(data['train'])
+	subkfeats_train.set_string_features(fm_train_dna)
 	subkfeats_test=StringCharFeatures(DNA)
-	subkfeats_test.set_string_features(data['test'])
+	subkfeats_test.set_string_features(fm_test_dna)
 	subkernel=LocalAlignmentStringKernel(10)
 	feats_train.append_feature_obj(subkfeats_train)
 	feats_test.append_feature_obj(subkfeats_test)
@@ -724,24 +612,22 @@ def combined ():
 def plugin_estimate ():
 	print 'PluginEstimate w/ HistogramWord'
 
-	data=get_dna()
 	order=3
 	gap=0
 	reverse=False
 
 	charfeat=StringCharFeatures(DNA)
-	charfeat.set_string_features(data['train'])
+	charfeat.set_string_features(fm_train_dna)
 	feats_train=StringWordFeatures(charfeat.get_alphabet())
 	feats_train.obtain_from_char(charfeat, order-1, order, gap, reverse)
 
 	charfeat=StringCharFeatures(DNA)
-	charfeat.set_string_features(data['test'])
+	charfeat.set_string_features(fm_test_dna)
 	feats_test=StringWordFeatures(charfeat.get_alphabet())
 	feats_test.obtain_from_char(charfeat, order-1, order, gap, reverse)
 
 	pie=PluginEstimate()
-	lab=rand(feats_train.get_num_vectors()).round()*2-1
-	labels=Labels(array(lab))
+	labels=Labels(label_train_dna)
 	pie.set_labels(labels)
 	pie.set_features(feats_train)
 	pie.train()
@@ -763,11 +649,10 @@ def top_fisher ():
 	order=1
 	gap=0
 	reverse=False
-	data=get_cubes(2)
 	kargs=[1, False, True]
 
 	charfeat=StringCharFeatures(CUBE)
-	charfeat.set_string_features(data['train'])
+	charfeat.set_string_features(fm_cube_train)
 	wordfeats_train=StringWordFeatures(charfeat.get_alphabet())
 	wordfeats_train.obtain_from_char(charfeat, order-1, order, gap, reverse)
 	preproc=SortWordString()
@@ -776,7 +661,7 @@ def top_fisher ():
 	wordfeats_train.apply_preproc()
 
 	charfeat=StringCharFeatures(CUBE)
-	charfeat.set_string_features(data['test'])
+	charfeat.set_string_features(fm_cube_test)
 	wordfeats_test=StringWordFeatures(charfeat.get_alphabet())
 	wordfeats_test.obtain_from_char(charfeat, order-1, order, gap, reverse)
 	wordfeats_test.add_preproc(preproc)

@@ -4,34 +4,20 @@ Explicit examples on how to use the different preprocs
 """
 
 from sys import maxint
-from numpy import ubyte, ushort, double, int, zeros, sum, floor, array, arange
+from numpy import char, ushort, double, int, zeros, sum, floor, array, arange
 from numpy.random import randint, rand, seed
 from shogun.Kernel import *
 from shogun.Features import *
 from shogun.PreProc import *
 
-def get_dna ():
-	acgt=array(['A', 'C', 'G','T'])
-	len_acgt=len(acgt)
-	rand_train=[]
-	rand_test=[]
-
-	for i in xrange(11):
-		str1=[]
-		str2=[]
-		for j in range(60):
-			str1.append(acgt[floor(len_acgt*rand())])
-			str2.append(acgt[floor(len_acgt*rand())])
-		rand_train.append(''.join(str1))
-	rand_test.append(''.join(str2))
-	
-	for i in xrange(6):
-		str1=[]
-		for j in range(60):
-			str1.append(acgt[floor(len_acgt*rand())])
-	rand_test.append(''.join(str1))
-
-	return {'train': rand_train, 'test': rand_test}
+from tools.load import LoadMatrix
+lm=LoadMatrix()
+fm_train_real=lm.load_numbers('../data/fm_train_real.dat')
+fm_test_real=lm.load_numbers('../data/fm_test_real.dat')
+fm_train_word=ushort(lm.load_numbers('../data/fm_train_real.dat'))
+fm_test_word=ushort(lm.load_numbers('../data/fm_test_real.dat'))
+fm_train_dna=lm.load_dna('../data/fm_train_dna.dat')
+fm_test_dna=lm.load_dna('../data/fm_test_dna.dat')
 
 ###########################################################################
 # real features
@@ -40,11 +26,8 @@ def get_dna ():
 def log_plus_one ():
 	print 'LogPlusOne'
 
-	num_feats=11
-	data=rand(num_feats, 11)
-	feats_train=RealFeatures(data)
-	data=rand(num_feats, 17)
-	feats_test=RealFeatures(data)
+	feats_train=RealFeatures(fm_train_real)
+	feats_test=RealFeatures(fm_test_real)
 
 	preproc=LogPlusOne()
 	preproc.init(feats_train)
@@ -65,11 +48,8 @@ def log_plus_one ():
 def norm_one ():
 	print 'NormOne'
 
-	num_feats=11
-	data=rand(num_feats, 11)
-	feats_train=RealFeatures(data)
-	data=rand(num_feats, 17)
-	feats_test=RealFeatures(data)
+	feats_train=RealFeatures(fm_train_real)
+	feats_test=RealFeatures(fm_test_real)
 
 	preproc=NormOne()
 	preproc.init(feats_train)
@@ -90,11 +70,8 @@ def norm_one ():
 def prune_var_sub_mean ():
 	print 'PruneVarSubMean'
 
-	num_feats=11
-	data=rand(num_feats, 11)
-	feats_train=RealFeatures(data)
-	data=rand(num_feats, 17)
-	feats_test=RealFeatures(data)
+	feats_train=RealFeatures(fm_train_real)
+	feats_test=RealFeatures(fm_test_real)
 
 	preproc=PruneVarSubMean()
 	preproc.init(feats_train)
@@ -119,12 +96,8 @@ def prune_var_sub_mean ():
 def sort_word ():
 	print 'LinearWord'
 
-	maxval=2**16-1
-	num_feats=11
-	data=randint(0, maxval, (num_feats, 11)).astype(ushort)
-	feats_train=WordFeatures(data)
-	data=randint(0, maxval, (num_feats, 17)).astype(ushort)
-	feats_test=WordFeatures(data)
+	feats_train=WordFeatures(fm_train_word)
+	feats_test=WordFeatures(fm_test_word)
 
 	preproc=SortWord()
 	preproc.init(feats_train)
@@ -149,13 +122,12 @@ def sort_word ():
 def sort_word_string ():
 	print 'CommWordString'
 
-	data=get_dna()
 	order=3
 	gap=0
 	reverse=False
 
 	charfeat=StringCharFeatures(DNA)
-	charfeat.set_string_features(data['train'])
+	charfeat.set_string_features(fm_train_dna)
 	feats_train=StringWordFeatures(charfeat.get_alphabet())
 	feats_train.obtain_from_char(charfeat, order-1, order, gap, reverse)
 	preproc=SortWordString()
@@ -164,7 +136,7 @@ def sort_word_string ():
 	feats_train.apply_preproc()
 
 	charfeat=StringCharFeatures(DNA)
-	charfeat.set_string_features(data['test'])
+	charfeat.set_string_features(fm_test_dna)
 	feats_test=StringWordFeatures(charfeat.get_alphabet())
 	feats_test.obtain_from_char(charfeat, order-1, order, gap, reverse)
 	feats_test.add_preproc(preproc)
@@ -183,18 +155,17 @@ def sort_word_string ():
 def sort_ulong_string ():
 	print 'CommUlongString'
 
-	data=get_dna()
 	order=3
 	gap=0
 	reverse=False
 
 	charfeat=StringCharFeatures(DNA)
-	charfeat.set_string_features(data['train'])
+	charfeat.set_string_features(fm_train_dna)
 	feats_train=StringUlongFeatures(charfeat.get_alphabet())
 	feats_train.obtain_from_char(charfeat, order-1, order, gap, reverse)
 
 	charfeat=StringCharFeatures(DNA)
-	charfeat.set_string_features(data['test'])
+	charfeat.set_string_features(fm_test_dna)
 	feats_test=StringUlongFeatures(charfeat.get_alphabet())
 	feats_test.obtain_from_char(charfeat, order-1, order, gap, reverse)
 

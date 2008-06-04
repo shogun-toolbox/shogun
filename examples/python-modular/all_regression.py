@@ -9,6 +9,12 @@ from shogun.Features import Labels, RealFeatures
 from shogun.Kernel import GaussianKernel
 from shogun.Regression import *
 
+from tools.load import LoadMatrix
+lm=LoadMatrix()
+fm_train=lm.load_numbers('../data/fm_train_real.dat')
+fm_test=lm.load_numbers('../data/fm_test_real.dat')
+label_train=lm.load_labels('../data/label_train_oneclass.dat')
+
 ###########################################################################
 # svm-based
 ###########################################################################
@@ -16,11 +22,8 @@ from shogun.Regression import *
 def svr_light ():
 	print 'SVRLight'
 
-	num_feats=9
-	data=rand(num_feats, 11)
-	feats_train=RealFeatures(data)
-	data=rand(num_feats, 17)
-	feats_test=RealFeatures(data)
+	feats_train=RealFeatures(fm_train)
+	feats_test=RealFeatures(fm_test)
 	width=2.1
 	kernel=GaussianKernel(feats_train, feats_train, width)
 
@@ -28,8 +31,7 @@ def svr_light ():
 	epsilon=1e-5
 	tube_epsilon=1e-2
 	num_threads=3
-	lab=rand(feats_train.get_num_vectors()).round()*2-1
-	labels=Labels(array(lab))
+	labels=Labels(label_train)
 
 	try:
 		svr=SVRLight(C, epsilon, kernel, labels)
@@ -47,11 +49,8 @@ def svr_light ():
 def libsvr ():
 	print 'LibSVR'
 
-	num_feats=9
-	data=rand(num_feats, 11)
-	feats_train=RealFeatures(data)
-	data=rand(num_feats, 17)
-	feats_test=RealFeatures(data)
+	feats_train=RealFeatures(fm_train)
+	feats_test=RealFeatures(fm_test)
 	width=2.1
 	kernel=GaussianKernel(feats_train, feats_train, width)
 
@@ -59,8 +58,7 @@ def libsvr ():
 	epsilon=1e-5
 	tube_epsilon=1e-2
 	num_threads=1
-	lab=rand(feats_train.get_num_vectors()).round()*2-1
-	labels=Labels(array(lab))
+	labels=Labels(label_train)
 
 	svr=LibSVR(C, epsilon, kernel, labels)
 	svr.set_tube_epsilon(tube_epsilon)
@@ -77,19 +75,15 @@ def libsvr ():
 def krr ():
 	print 'KRR'
 
-	num_feats=13
-	data=rand(num_feats, 12)
-	feats_train=RealFeatures(data)
-	data=rand(num_feats, 19)
-	feats_test=RealFeatures(data)
+	feats_train=RealFeatures(fm_train)
+	feats_test=RealFeatures(fm_test)
 	width=0.8
 	kernel=GaussianKernel(feats_train, feats_train, width)
 
 	C=0.42
 	tau=1e-6
 	num_threads=1
-	lab=rand(feats_train.get_num_vectors()).round()*2-1
-	labels=Labels(array(lab))
+	labels=Labels(label_train)
 
 	krr=KRR(tau, kernel, labels)
 	krr.parallel.set_num_threads(num_threads)

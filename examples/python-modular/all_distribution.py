@@ -3,68 +3,16 @@
 Explicit examples on how to use distributions
 """
 
-from numpy import array, floor, ushort, ceil, concatenate, ones, zeros
+from numpy import array, floor, char, ushort, ceil, concatenate, ones, zeros
 from numpy.random import randint, seed, rand, permutation
 from shogun.Features import StringWordFeatures, CharFeatures, StringCharFeatures
 from shogun.PreProc import SortWordString
 from shogun.Distribution import *
 
-def get_cubes (num=2):
-	leng=50
-	rep=5
-	weight=1
-
-	sequence=[]
-
-	for i in xrange(num):
-		# generate a sequence with characters 1-6 drawn from 3 loaded cubes
-		loaded=[]
-		for j in xrange(3):
-			draw=[x*ones((1, ceil(leng*rand())), int)[0] \
-				for x in xrange(1, 7)]
-			loaded.append(permutation(concatenate(draw)))
-
-		draws=[]
-		for j in xrange(len(loaded)):
-			data=ones((1, ceil(rep*rand())), int)
-			draws=concatenate((j*data[0], draws))
-		draws=permutation(draws)
-
-		seq=[]
-		for j in xrange(len(draws)):
-			len_loaded=len(loaded[draws[j]])
-			weighted=int(ceil(
-				((1-weight)*rand()+weight)*len_loaded))
-			perm=permutation(len_loaded)
-			shuffled=[str(loaded[draws[j]][x]) for x in perm[:weighted]]
-			seq=concatenate((seq, shuffled))
-
-		sequence.append(''.join(seq))
-
-	return {'train':sequence, 'test':sequence}
-
-def get_dna ():
-	acgt=array(['A', 'C', 'G','T'])
-	len_acgt=len(acgt)
-	rand_train=[]
-	rand_test=[]
-
-	for i in xrange(11):
-		str1=[]
-		str2=[]
-		for j in range(60):
-			str1.append(acgt[floor(len_acgt*rand())])
-			str2.append(acgt[floor(len_acgt*rand())])
-		rand_train.append(''.join(str1))
-	rand_test.append(''.join(str2))
-	
-	for i in xrange(6):
-		str1=[]
-		for j in range(60):
-			str1.append(acgt[floor(len_acgt*rand())])
-	rand_test.append(''.join(str1))
-
-	return {'train': rand_train, 'test': rand_test}
+from tools.load import LoadMatrix
+lm=LoadMatrix()
+fm_dna=lm.load_dna('../data/fm_train_dna.dat')
+fm_cube=lm.load_cubes('../data/fm_cube_train.dat')
 
 ###########################################################################
 # distributions
@@ -73,13 +21,12 @@ def get_dna ():
 def histogram ():
 	print 'Histogram'
 
-	data=get_dna()
 	order=3
 	gap=0
 	reverse=False
 
 	charfeat=StringCharFeatures(DNA)
-	charfeat.set_string_features(data['train'])
+	charfeat.set_string_features(fm_dna)
 	feats=StringWordFeatures(charfeat.get_alphabet())
 	feats.obtain_from_char(charfeat, order-1, order, gap, reverse)
 	preproc=SortWordString()
@@ -104,13 +51,12 @@ def histogram ():
 def linear_hmm ():
 	print 'LinearHMM'
 
-	data=get_dna()
 	order=3
 	gap=0
 	reverse=False
 
 	charfeat=StringCharFeatures(DNA)
-	charfeat.set_string_features(data['train'])
+	charfeat.set_string_features(fm_dna)
 	feats=StringWordFeatures(charfeat.get_alphabet())
 	feats.obtain_from_char(charfeat, order-1, order, gap, reverse)
 	preproc=SortWordString()
@@ -142,10 +88,9 @@ def hmm ():
 	gap=0
 	reverse=False
 	num_examples=2
-	data=get_cubes(num_examples)
 
 	charfeat=StringCharFeatures(CUBE)
-	charfeat.set_string_features(data['train'])
+	charfeat.set_string_features(fm_cube)
 	feats=StringWordFeatures(charfeat.get_alphabet())
 	feats.obtain_from_char(charfeat, order-1, order, gap, reverse)
 	preproc=SortWordString()

@@ -3,34 +3,19 @@
 Explicit examples on how to use the different distances
 """
 
-from numpy import array, floor
+from numpy import char, array, floor
 from numpy.random import seed, rand
 from shogun.Features import *
 from shogun.Distance import *
 from shogun.PreProc import SortWordString
 
-def get_dna (len_seq_test_add=0):
-	acgt=array(['A', 'C', 'G','T'])
-	len_acgt=len(acgt)
-	rand_train=[]
-	rand_test=[]
+from tools.load import LoadMatrix
+lm=LoadMatrix()
+fm_train_real=lm.load_numbers('../data/fm_train_real.dat')
+fm_test_real=lm.load_numbers('../data/fm_test_real.dat')
+fm_train_dna=lm.load_dna('../data/fm_train_dna.dat')
+fm_test_dna=lm.load_dna('../data/fm_test_dna.dat')
 
-	for i in xrange(11):
-		str1=[]
-		str2=[]
-		for j in range(60):
-			str1.append(acgt[floor(len_acgt*rand())])
-			str2.append(acgt[floor(len_acgt*rand())])
-		rand_train.append(''.join(str1))
-	rand_test.append(''.join(str2))
-	
-	for i in xrange(6):
-		str1=[]
-		for j in range(60+len_seq_test_add):
-			str1.append(acgt[floor(len_acgt*rand())])
-	rand_test.append(''.join(str1))
-
-	return {'train': rand_train, 'test': rand_test}
 
 ###########################################################################
 # real features
@@ -39,11 +24,8 @@ def get_dna (len_seq_test_add=0):
 def euclidian_distance ():
 	print 'EuclidianDistance'
 
-	num_feats=9
-	data=rand(num_feats, 11)
-	feats_train=RealFeatures(data)
-	data=rand(num_feats, 19)
-	feats_test=RealFeatures(data)
+	feats_train=RealFeatures(fm_train_real)
+	feats_test=RealFeatures(fm_test_real)
 
 	distance=EuclidianDistance(feats_train, feats_train)
 
@@ -54,11 +36,8 @@ def euclidian_distance ():
 def norm_squared_distance ():
 	print 'EuclidianDistance - NormSquared'
 
-	num_feats=9
-	data=rand(num_feats, 11)
-	feats_train=RealFeatures(data)
-	data=rand(num_feats, 19)
-	feats_test=RealFeatures(data)
+	feats_train=RealFeatures(fm_train_real)
+	feats_test=RealFeatures(fm_test_real)
 
 	distance=EuclidianDistance(feats_train, feats_train)
 	distance.set_disable_sqrt(True)
@@ -70,11 +49,8 @@ def norm_squared_distance ():
 def canberra_metric ():
 	print 'CanberaMetric'
 
-	num_feats=9
-	data=rand(num_feats, 10)
-	feats_train=RealFeatures(data)
-	data=rand(num_feats, 17)
-	feats_test=RealFeatures(data)
+	feats_train=RealFeatures(fm_train_real)
+	feats_test=RealFeatures(fm_test_real)
 
 	distance=CanberraMetric(feats_train, feats_train)
 
@@ -85,11 +61,8 @@ def canberra_metric ():
 def chebyshew_metric ():
 	print 'ChebyshewMetric'
 
-	num_feats=9
-	data=rand(num_feats, 11)
-	feats_train=RealFeatures(data)
-	data=rand(num_feats, 17)
-	feats_test=RealFeatures(data)
+	feats_train=RealFeatures(fm_train_real)
+	feats_test=RealFeatures(fm_test_real)
 
 	distance=ChebyshewMetric(feats_train, feats_train)
 
@@ -100,11 +73,8 @@ def chebyshew_metric ():
 def geodesic_metric ():
 	print 'GeodesicMetric'
 
-	num_feats=9
-	data=rand(num_feats, 11)
-	feats_train=RealFeatures(data)
-	data=rand(num_feats, 21)
-	feats_test=RealFeatures(data)
+	feats_train=RealFeatures(fm_train_real)
+	feats_test=RealFeatures(fm_test_real)
 
 	distance=GeodesicMetric(feats_train, feats_train)
 
@@ -115,11 +85,8 @@ def geodesic_metric ():
 def jensen_metric ():
 	print 'JensenMetric'
 
-	num_feats=9
-	data=rand(num_feats, 11)
-	feats_train=RealFeatures(data)
-	data=rand(num_feats, 17)
-	feats_test=RealFeatures(data)
+	feats_train=RealFeatures(fm_train_real)
+	feats_test=RealFeatures(fm_test_real)
 
 	distance=JensenMetric(feats_train, feats_train)
 
@@ -130,11 +97,8 @@ def jensen_metric ():
 def manhattan_metric ():
 	print 'ManhattanMetric'
 
-	num_feats=9
-	data=rand(num_feats, 11)
-	feats_train=RealFeatures(data)
-	data=rand(num_feats, 17)
-	feats_test=RealFeatures(data)
+	feats_train=RealFeatures(fm_train_real)
+	feats_test=RealFeatures(fm_test_real)
 
 	distance=ManhattanMetric(feats_train, feats_train)
 
@@ -145,11 +109,8 @@ def manhattan_metric ():
 def minkowski_metric ():
 	print 'MinkowskiMetric'
 
-	num_feats=9
-	data=rand(num_feats, 11)
-	feats_train=RealFeatures(data)
-	data=rand(num_feats, 15)
-	feats_test=RealFeatures(data)
+	feats_train=RealFeatures(fm_train_real)
+	feats_test=RealFeatures(fm_test_real)
 	k=3
 
 	distance=MinkowskiMetric(feats_train, feats_train, k)
@@ -161,13 +122,10 @@ def minkowski_metric ():
 def sparse_euclidian_distance ():
 	print 'SparseEuclidianDistance'
 
-	num_feats=11
-	data=rand(num_feats, 11)
-	realfeat=RealFeatures(data)
+	realfeat=RealFeatures(fm_train_real)
 	feats_train=SparseRealFeatures()
 	feats_train.obtain_from_simple(realfeat)
-	data=rand(num_feats, 17)
-	realfeat=RealFeatures(data)
+	realfeat=RealFeatures(fm_test_real)
 	feats_test=SparseRealFeatures()
 	feats_test.obtain_from_simple(realfeat)
 
@@ -185,13 +143,12 @@ def sparse_euclidian_distance ():
 def canberra_word_distance ():
 	print 'CanberraWordDistance'
 
-	data=get_dna(len_seq_test_add=12)
 	order=3
 	gap=0
 	reverse=False
 
 	charfeat=StringCharFeatures(DNA)
-	charfeat.set_string_features(data['train'])
+	charfeat.set_string_features(fm_train_dna)
 	feats_train=StringWordFeatures(charfeat.get_alphabet())
 	feats_train.obtain_from_char(charfeat, order-1, order, gap, reverse)
 	preproc=SortWordString()
@@ -200,7 +157,7 @@ def canberra_word_distance ():
 	feats_train.apply_preproc()
 
 	charfeat=StringCharFeatures(DNA)
-	charfeat.set_string_features(data['test'])
+	charfeat.set_string_features(fm_test_dna)
 	feats_test=StringWordFeatures(charfeat.get_alphabet())
 	feats_test.obtain_from_char(charfeat, order-1, order, gap, reverse)
 	feats_test.add_preproc(preproc)
@@ -215,13 +172,12 @@ def canberra_word_distance ():
 def hamming_word_distance ():
 	print 'HammingWordDistance'
 
-	data=get_dna()
 	order=3
 	gap=0
 	reverse=False
 
 	charfeat=StringCharFeatures(DNA)
-	charfeat.set_string_features(data['train'])
+	charfeat.set_string_features(fm_train_dna)
 	feats_train=StringWordFeatures(charfeat.get_alphabet())
 	feats_train.obtain_from_char(charfeat, order-1, order, gap, reverse)
 	preproc=SortWordString()
@@ -230,7 +186,7 @@ def hamming_word_distance ():
 	feats_train.apply_preproc()
 
 	charfeat=StringCharFeatures(DNA)
-	charfeat.set_string_features(data['test'])
+	charfeat.set_string_features(fm_test_dna)
 	feats_test=StringWordFeatures(charfeat.get_alphabet())
 	feats_test.obtain_from_char(charfeat, order-1, order, gap, reverse)
 	feats_test.add_preproc(preproc)
@@ -247,13 +203,12 @@ def hamming_word_distance ():
 def manhattan_word_distance ():
 	print 'ManhattanWordDistance'
 
-	data=get_dna(len_seq_test_add=2)
 	order=3
 	gap=0
 	reverse=False
 
 	charfeat=StringCharFeatures(DNA)
-	charfeat.set_string_features(data['train'])
+	charfeat.set_string_features(fm_train_dna)
 	feats_train=StringWordFeatures(charfeat.get_alphabet())
 	feats_train.obtain_from_char(charfeat, order-1, order, gap, reverse)
 	preproc=SortWordString()
@@ -262,7 +217,7 @@ def manhattan_word_distance ():
 	feats_train.apply_preproc()
 
 	charfeat=StringCharFeatures(DNA)
-	charfeat.set_string_features(data['test'])
+	charfeat.set_string_features(fm_test_dna)
 	feats_test=StringWordFeatures(charfeat.get_alphabet())
 	feats_test.obtain_from_char(charfeat, order-1, order, gap, reverse)
 	feats_test.add_preproc(preproc)

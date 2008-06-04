@@ -9,44 +9,35 @@ from shogun.Distance import EuclidianDistance
 from shogun.Features import RealFeatures
 from shogun.Clustering import *
 
-def get_clouds (num, num_feats, num_vec):
-	data=[rand(num_feats, num_vec)+x/2 for x in xrange(num)]
-	cloud=concatenate(data, axis=1)
-	return array([permutation(x) for x in cloud])
+from tools.load import LoadMatrix
+lm=LoadMatrix()
+fm_train=lm.load_numbers('../data/fm_train_real.dat')
+
 
 def kmeans ():
 	print 'KMeans'
 
-	num_feats=11
 	k=3
-	data=get_clouds(k, num_feats, 11)
-	feats_train=RealFeatures(data)
-	data=get_clouds(k, num_feats, 17)
-	feats_test=RealFeatures(data)
+	feats_train=RealFeatures(fm_train)
 	distance=EuclidianDistance(feats_train, feats_train)
 
 	kmeans=KMeans(k, distance)
 	kmeans.train()
 
-	distance.init(feats_train, feats_test)
 	kmeans.get_cluster_centers()
 	kmeans.get_radiuses()
+
 
 def hierarchical ():
 	print 'Hierarchical'
 
-	num_feats=5
 	merges=3
-	data=get_clouds(merges, num_feats, 11)
-	feats_train=RealFeatures(data)
-	data=get_clouds(merges, num_feats, 17)
-	feats_test=RealFeatures(data)
+	feats_train=RealFeatures(fm_train)
 	distance=EuclidianDistance(feats_train, feats_train)
 
 	hierarchical=Hierarchical(merges, distance)
 	hierarchical.train()
 
-	distance.init(feats_train, feats_test)
 	hierarchical.get_merge_distances()
 	hierarchical.get_cluster_pairs()
 
