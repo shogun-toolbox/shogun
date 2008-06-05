@@ -90,11 +90,11 @@ bool CGUIStructure::compute_plif_matrix(DREAL* penalties_array, INT* Dim, INT nu
 		return false;
         INT num_plifs = get_num_plifs();
 
-	SG_PRINT("num_states: %i \n",num_states);
-	SG_PRINT("dim3: %i \n",Dim[2]);
+	//SG_PRINT("num_states: %i \n",num_states);
+	//SG_PRINT("dim3: %i \n",Dim[2]);
 
         m_plif_matrix = new CPlifBase*[num_states*num_states] ;
-	SG_PRINT("m_plif_matrix: %p \n",m_plif_matrix);
+	//SG_PRINT("m_plif_matrix: %p \n",m_plif_matrix);
         CArray3<DREAL> penalties(penalties_array, num_states, num_states, Dim[2], false, true) ;
 
         for (INT i=0; i<num_states; i++)
@@ -110,7 +110,7 @@ bool CGUIStructure::compute_plif_matrix(DREAL* penalties_array, INT* Dim, INT nu
                                 if (penalties.element(i,j,k)==0)
                                         continue ;
                                 INT id = (INT) penalties.element(i,j,k)-1 ;
-				SG_PRINT("i:%i j:%i k:%i id:%i \n",i, j, k,id);
+				//SG_PRINT("i:%i j:%i k:%i id:%i \n",i, j, k,id);
                                 if ((id<0 || id>=num_plifs) && (id!=-1))
                                 {
                                         SG_ERROR( "id out of range\n") ;
@@ -141,13 +141,13 @@ bool CGUIStructure::compute_plif_matrix(DREAL* penalties_array, INT* Dim, INT nu
 			}
 
                 }
-		SG_PRINT("\n");
+		//SG_PRINT("\n");
         }
-	DREAL tmp[] = {0,0,0,0,0,0,0,0,0};
-	for (int i=0;i<num_states;i++)
-                for (INT j=0; j<num_states; j++)
-			if (m_plif_matrix[i+j*num_states]!=NULL)
-				SG_PRINT("1 m_plif_matrix[%i]->lookup_penalty(): %f\n",i+j*num_states, m_plif_matrix[i+j*num_states]->lookup_penalty(0,tmp));
+//	DREAL tmp[] = {0,0,0,0,0,0,0,0,0};
+//	for (int i=0;i<num_states;i++)
+//                for (INT j=0; j<num_states; j++)
+//			if (m_plif_matrix[i+j*num_states]!=NULL)
+//				SG_PRINT("1 m_plif_matrix[%i]->lookup_penalty(): %f\n",i+j*num_states, m_plif_matrix[i+j*num_states]->lookup_penalty(0,tmp));
 	return true;
 }
 bool  CGUIStructure::set_signal_plifs(INT* state_signals, INT feat_dim3, INT num_states )

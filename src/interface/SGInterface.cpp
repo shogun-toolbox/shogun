@@ -5174,7 +5174,7 @@ bool CSGInterface::cmd_set_feature_matrix()
 	get_int_vector(all_pos,Npos);
 	ui_structure->set_all_pos(all_pos,Npos);
 
-	SG_PRINT("1 ui_structure: %p\n",&ui_structure);
+	//SG_PRINT("1 ui_structure: %p\n",&ui_structure);
 
 	INT num_states = ui_structure->get_num_states();
 
@@ -5185,21 +5185,21 @@ bool CSGInterface::cmd_set_feature_matrix()
 	DREAL* features;
 	get_real_ndarray(features, Dims, numDims);
 	
-	SG_PRINT("2 ui_structure: %p\n",&ui_structure);
+	//SG_PRINT("2 ui_structure: %p\n",&ui_structure);
 	ASSERT(numDims==3)
 	ASSERT(Dims[0]==num_states)
 	INT max_num_signals = Dims[2];
 	CArray3<DREAL> feat(features, num_states, Npos, max_num_signals, false, false) ;
 	INT d1,d2,d3;
 	feat.get_array_size(d1,d2,d3);
-	SG_PRINT("features: d1:%i d2:%i d3:%i\n",d1,d2,d3);
+	//SG_PRINT("features: d1:%i d2:%i d3:%i\n",d1,d2,d3);
 	ASSERT(ui_structure->set_feature_matrix(feat));
-	SG_PRINT("3 ui_structure: %p\n",&ui_structure);
+	//SG_PRINT("3 ui_structure: %p\n",&ui_structure);
 
 	CArray3<DREAL> feat2 = (ui_structure->get_feature_matrix());
 	feat2.get_array_size(d1,d2,d3);
-	SG_PRINT("features2: d1:%i d2:%i d3:%i\n",d1,d2,d3);
-	SG_PRINT("4 ui_structure: %p\n",&ui_structure);
+	//SG_PRINT("features2: d1:%i d2:%i d3:%i\n",d1,d2,d3);
+	//SG_PRINT("4 ui_structure: %p\n",&ui_structure);
 
 	ASSERT(ui_structure->set_all_pos(all_pos,Npos));
 	ASSERT(ui_structure->set_features_dim3(max_num_signals));
@@ -5229,15 +5229,15 @@ bool CSGInterface::cmd_precompute_content_svms()
 	INT Mweights = h->get_num_svms();
 	INT Nweights = ui_structure->get_num_svm_weights();
 	WORD** wordstr[Mweights];
-	SG_PRINT("precompute_content_svms 1\n");
+	//SG_PRINT("precompute_content_svms 1\n");
 	h->create_word_string(seq, (INT) 1, Nseq, wordstr);
-	SG_PRINT("precompute_content_svms 2\n");
+	//SG_PRINT("precompute_content_svms 2\n");
 	h->init_content_svm_value_array(Npos);
-	SG_PRINT(" Npos:%i Nseq:%i Nweights:%i\n", Npos, Nseq, Nweights, Mweights);
+	//SG_PRINT(" Npos:%i Nseq:%i Nweights:%i\n", Npos, Nseq, Nweights, Mweights);
 
 	h->precompute_content_values(wordstr, all_pos, Npos, Nseq, weights, Nweights*Mweights);
 	h->set_genestr_len(Nseq);
-	SG_PRINT("precompute_content_svms done\n");
+	//SG_PRINT("precompute_content_svms done\n");
 	return true;
 }
 
@@ -5322,16 +5322,16 @@ bool CSGInterface::cmd_best_path_trans()
 	ASSERT(PEN);
 	
 	CPlifBase** PEN_matrix = ui_structure->get_plif_matrix();
-	SG_PRINT("PEN_matrix %p\n",PEN_matrix);
-	SG_PRINT("PEN_matrix[24]->get_max_id() %i\n",PEN_matrix[24]->get_max_id());	
-	SG_PRINT("PEN_matrix[25]->get_max_id() %i\n",PEN_matrix[25]->get_max_id());	
-	DREAL tmp[] = {0,0,0,0,0,0,0,0,0};
-	INT tmp2 = 0;
-	for (int i=0;i<num_states;i++)
-		for (int j=0;j<num_states;j++)
-			if (PEN_matrix[i+j*num_states]!=NULL)
-				SG_PRINT("2 PEN_matrix(%i,%i)->lookup_penalty(): %f\n",i,j,PEN_matrix[i+j*num_states]->lookup_penalty(tmp2,tmp));
-	SG_PRINT("\n");
+//	SG_PRINT("PEN_matrix %p\n",PEN_matrix);
+//	SG_PRINT("PEN_matrix[24]->get_max_id() %i\n",PEN_matrix[24]->get_max_id());	
+//	SG_PRINT("PEN_matrix[25]->get_max_id() %i\n",PEN_matrix[25]->get_max_id());	
+//	DREAL tmp[] = {0,0,0,0,0,0,0,0,0};
+//	INT tmp2 = 0;
+//	for (int i=0;i<num_states;i++)
+//		for (int j=0;j<num_states;j++)
+//			if (PEN_matrix[i+j*num_states]!=NULL)
+//				SG_PRINT("2 PEN_matrix(%i,%i)->lookup_penalty(): %f\n",i,j,PEN_matrix[i+j*num_states]->lookup_penalty(tmp2,tmp));
+//	SG_PRINT("\n");
 
 	CPlifBase** PEN_state_signal = ui_structure->get_state_signals();
 	
@@ -5400,7 +5400,7 @@ bool CSGInterface::cmd_best_path_trans()
 	INT d2;
 	INT d3;
 	features.get_array_size(d1,d2,d3);
-	SG_PRINT("features: d1:%i d2:%i d3:%i\n",d1,d2,d3);
+	//SG_PRINT("features: d1:%i d2:%i d3:%i\n",d1,d2,d3);
 	//if (segment_loss_non_zero)
 	if (true)//FIXME
 	{
@@ -5423,11 +5423,11 @@ bool CSGInterface::cmd_best_path_trans()
 				PEN_state_signal, feat_dim3, genestr_num, p_prob, my_path, my_pos, use_orf) ;
 	}
 
-	SG_PRINT("best_path_trans: cleanup 1\n");
-	SG_PRINT("num_positions: %i, p_prob: %f\n",M,p_prob);
-	SG_PRINT("best_path_trans: cleanup 2\n");
+	//SG_PRINT("best_path_trans: cleanup 1\n");
+	//SG_PRINT("num_positions: %i, p_prob: %f\n",M,p_prob[0]);
+	//SG_PRINT("best_path_trans: cleanup 2\n");
 	// clean up 
-	delete_penalty_struct(PEN, Nplif) ;
+	//delete_penalty_struct(PEN, Nplif) ;
 	//delete[] PEN_matrix ;
 	//delete[] all_pos ;
 	//delete[] orf_info ;
@@ -5458,10 +5458,217 @@ bool CSGInterface::cmd_best_path_trans()
 
 bool CSGInterface::cmd_best_path_trans_deriv()
 {
-	if (!((m_nrhs==14 && create_return_values(5)) || (m_nrhs==16 && create_return_values(6))))
-		return false;
+//	if (!((m_nrhs==14 && create_return_values(5)) || (m_nrhs==16 && create_return_values(6))))
+//		return false;
 
-	SG_ERROR("Sorry, this parameter list is awful!\n");
+	INT num_states = ui_structure->get_num_states();
+	INT feat_dim3 = ui_structure->get_features_dim3();
+	CArray3<DREAL> features = (ui_structure->get_feature_matrix());
+	features.set_name("features");
+	INT* all_pos = ui_structure->get_all_positions();
+	INT num_pos = ui_structure->get_num_positions();
+	INT* orf_info = ui_structure->get_orf_info();
+	bool use_orf = ui_structure->get_use_orf();
+	INT Nplif = ui_structure->get_num_plifs();
+	CPlifBase** PEN_state_signal = ui_structure->get_state_signals();
+	CPlifBase** PEN_matrix = ui_structure->get_plif_matrix();
+	CPlif** PEN = ui_structure->get_PEN();
+
+	// ARG 1
+	// transitions from initial state (#states x 1)
+	INT Np=0;
+	DREAL* p;
+	get_real_vector(p, Np);
+	if (Np!=num_states)
+		SG_ERROR("Np!=num_states; Np:%i num_states:%i",Np,num_states);
+
+	// ARG 2
+	// transitions to end state (#states x 1)
+	INT Nq=0;
+	DREAL* q;
+	get_real_vector(q, Nq);
+	if (Nq!=num_states)
+		SG_ERROR("Nq!=num_states; Nq:%i num_states:%i",Nq,num_states);
+		
+
+	// ARG 3
+	// segment path (2 x #feature_positions)
+	// masking/weighting of loss for specific 
+	// regions of the true path
+	INT Nseg_path=0;
+	INT Mseg_path=0;
+	DREAL* seg_path;
+	get_real_matrix(seg_path,Nseg_path,Mseg_path);
+
+	// ARG 4
+	// links for transitions (#transitions x 4)
+	INT Na_trans=0;
+	INT num_a_trans=0;
+	DREAL* a_trans;
+	get_real_matrix(a_trans, num_a_trans, Na_trans);
+
+	// ARG 5
+	// loss matrix (#segment x 2*#segments)
+	// one (#segment x #segments)-matrix for segment loss 
+	// and one for nucleotide loss
+	INT Nloss=0;
+	INT Mloss=0;
+	DREAL* loss;
+	get_real_matrix(loss, Nloss,Mloss);
+	
+	INT M = ui_structure->get_num_positions();
+	INT genestr_num = 1; //FIXME
+	
+	// ARG 6
+	// path to calc derivative for 
+	INT Nmystate_seq=0;
+	INT* mystate_seq;
+	get_int_vector(mystate_seq, Nmystate_seq);
+
+	// ARG 7
+	// positions of the path
+	INT Nmypos_seq=0;
+	INT* mypos_seq;
+	get_int_vector(mypos_seq, Nmypos_seq);
+
+
+        bool use_tiling = false;
+        //if (nrhs==18)
+        //{
+        //        use_tiling = true;
+        //        mx_tiling_data = vals[16];
+        //        mx_tiling_pos = vals[17];
+        //        ASSERT(mxGetN(mx_tiling_data)==mxGetN(mx_tiling_pos));
+	//} ;
+
+
+	{
+				
+		{
+			//a => a_trans
+
+			INT max_plif_id = 0 ;
+			INT max_plif_len = 1 ;
+			for (INT i=0; i<Nplif; i++)
+			{
+				if (i>0 && PEN[i]->get_id()!=i)
+					SG_ERROR("PEN[i]->get_id()!=i; PEN[%i]->get_id():%i  ,\n",i, PEN[i]->get_id());
+				if (i>max_plif_id)
+					max_plif_id=i ;
+				if (PEN[i]->get_plif_len()>max_plif_len)
+					max_plif_len=PEN[i]->get_plif_len() ;
+			} ;
+
+			
+			CDynProg* h = ui_structure->get_dyn_prog();
+			h->set_p_vector(p, num_states) ;
+			h->set_q_vector(q, num_states) ;
+			if (seg_path!=NULL) 
+				h->set_a_trans_matrix(a_trans, num_a_trans, Na_trans) ;
+			else
+				h->set_a_trans_matrix(a_trans, num_a_trans, 3) ;
+
+			if (!h->check_svm_arrays())
+			{
+				SG_ERROR( "svm arrays inconsistent\n") ;
+				//delete_penalty_struct(PEN, P) ;
+				return false ;
+			}
+
+			INT *my_path = new INT[Nmypos_seq+1] ;
+			memset(my_path, -1, Nmypos_seq*sizeof(INT)) ;
+			INT *my_pos = new INT[Nmypos_seq+1] ;
+			memset(my_pos, -1, Nmypos_seq*sizeof(INT)) ;
+
+			for (INT i=0; i<Nmypos_seq; i++)
+			{
+				my_path[i] = mystate_seq[i] ;
+				my_pos[i]  = mypos_seq[i] ;
+			}
+			if (seg_path!=NULL)
+			{
+				INT *segment_ids = new INT[M] ;
+				DREAL *segment_mask = new DREAL[M] ;
+				for (INT i=0; i<M; i++)
+				{
+				        segment_ids[i] = (INT)seg_path[2*i] ;
+				        segment_mask[i] = seg_path[2*i+1] ;
+				}
+				h->best_path_set_segment_loss(loss, Nloss, Mloss) ;
+				h->best_path_set_segment_ids_mask(segment_ids, segment_mask, Mseg_path) ;
+				delete[] segment_ids;
+				delete[] segment_mask;
+			}
+			else
+			{
+				DREAL zero2[2] = {0.0, 0.0} ;
+				h->best_path_set_segment_loss(zero2, 2, 1) ;
+				//fprintf(stderr, "M=%i\n", M) ;
+				INT *izeros = new INT[M] ;
+				DREAL *dzeros = new DREAL[M] ;
+				for (INT i=0; i<M; i++)
+				{
+					izeros[i]=0 ;
+					dzeros[i]=0.0 ;
+				}
+				h->best_path_set_segment_ids_mask(izeros, dzeros, M) ;
+				delete[] izeros ;
+				delete[] dzeros ;
+			}
+				
+	
+			DREAL* p_Plif_deriv = new DREAL[(max_plif_id+1)*max_plif_len];
+			CArray2<DREAL> a_Plif_deriv(p_Plif_deriv, max_plif_id+1, max_plif_len, false, false) ;
+
+			DREAL* p_A_deriv   = new DREAL[num_states*num_states];
+			DREAL* p_p_deriv   = new DREAL[num_states];
+			DREAL* p_q_deriv   = new DREAL[num_states];
+			DREAL* p_my_scores = new DREAL[Nmypos_seq];
+			DREAL* p_my_losses = new DREAL[Nmypos_seq];
+			
+			h->best_path_trans_deriv(my_path, my_pos, p_my_scores, p_my_losses, Nmypos_seq, features.get_array(), 
+						 num_pos, all_pos, PEN_matrix, PEN_state_signal, feat_dim3, genestr_num) ;
+			
+			for (INT i=0; i<num_states; i++)
+			{
+				for (INT j=0; j<num_states; j++)
+					p_A_deriv[i+j*num_states] = h->get_a_deriv(i, j) ;
+				p_p_deriv[i]=h->get_p_deriv(i) ;
+				p_q_deriv[i]=h->get_q_deriv(i) ;
+			}
+			
+			for (INT id=0; id<=max_plif_id; id++)
+			{
+				INT len=0 ;
+				const DREAL * deriv = PEN[id]->get_cum_derivative(len) ;
+				//fprintf(stderr, "len=%i, max_plif_len=%i\n", len, max_plif_len) ;
+				ASSERT(len<=max_plif_len) ;
+				for (INT j=0; j<max_plif_len; j++)
+					a_Plif_deriv.element(id, j)= deriv[j] ;
+			}
+
+			// clean up 
+			//delete_penalty_struct(PEN, Nplif) ;
+			//delete[] PEN_matrix ;
+			//delete[] PEN_state_signal ;
+			//delete[] pos ;
+			//delete h ;
+
+			set_real_vector(p_p_deriv, num_states);
+			set_real_vector(p_q_deriv, num_states);
+			set_real_matrix(p_A_deriv, num_states, num_states);
+			set_real_matrix(p_Plif_deriv, (max_plif_id+1), max_plif_len);
+			set_real_vector(p_my_scores, Nmypos_seq);
+			set_real_vector(p_my_losses, Nmypos_seq);
+
+			delete[] my_path ;
+			delete[] my_pos ;
+
+			return true ;
+		}
+	}
+
+
 
 	return true;
 }

@@ -453,13 +453,9 @@ public:
 	 * @param dictionary_weights dictionary weights
 	 * @param dict_len length of dictionary weights
 	 */
-	void best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *my_scores, DREAL* my_losses,
-							   INT my_seq_len,
-							   const DREAL *seq_array, INT seq_len, const INT *pos,
-							   CPlifBase **Plif_matrix,
-							   CPlifBase **Plif_state_signals, INT max_num_signals,
-							   const char *genestr, INT genestr_len, INT genestr_num,
-							   DREAL *dictionary_weights, INT dict_len);
+	void best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *my_scores, DREAL* my_losses, INT my_seq_len,
+					const DREAL *seq_array, INT seq_len, const INT *pos, CPlifBase **Plif_matrix,
+					CPlifBase **Plif_state_signals, INT max_num_signals, INT genestr_num);
 	
 	/** best path 2struct
 	 *

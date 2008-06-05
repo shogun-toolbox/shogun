@@ -925,10 +925,7 @@ void CDynProg::best_path_deriv_call()
 	best_path_trans_deriv(m_my_state_seq.get_array(), m_my_pos_seq.get_array(), 
 						  m_my_scores.get_array(), m_my_losses.get_array(), m_my_state_seq.get_array_size(),
 						  m_seq.get_array(), m_seq.get_dim2(), m_pos.get_array(), 
-						  m_PEN.get_array(), 
-						  m_PEN_state_signals.get_array(), m_PEN_state_signals.get_dim2(), 
-						  m_genestr.get_array(), m_genestr.get_dim1(), m_genestr.get_dim2(),
-						  m_dict_weights.get_array(), m_dict_weights.get_dim1()*m_dict_weights.get_dim2()) ;
+						  m_PEN.get_array(), m_PEN_state_signals.get_array(), m_PEN_state_signals.get_dim2(), m_genestr.get_dim2()) ;
 
 	m_step=12 ;
 }
@@ -2881,28 +2878,24 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	delete[] fixedtempii ;
 }
 
-void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *my_scores, DREAL* my_losses,
-									 INT my_seq_len, 
-									 const DREAL *seq_array, INT seq_len, const INT *pos,
-									 CPlifBase **Plif_matrix, 
-									 CPlifBase **Plif_state_signals, INT max_num_signals,
-									 const char *genestr, INT genestr_len, INT genestr_num,
-									 DREAL *dictionary_weights, INT dict_len)
+void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *my_scores, DREAL* my_losses,INT my_seq_len, 
+					const DREAL *seq_array, INT seq_len, const INT *pos, CPlifBase **Plif_matrix, 
+					CPlifBase **Plif_state_signals, INT max_num_signals,INT genestr_num)
 {	
 	if (!svm_arrays_clean)
 	{
 		SG_ERROR( "SVM arrays not clean") ;
 		return ;
 	} ;
-	SG_PRINT( "genestr_len=%i, genestr_num=%i\n", genestr_len, genestr_num) ;
+	//SG_PRINT( "genestr_len=%i, genestr_num=%i\n", genestr_len, genestr_num) ;
 	//mod_words.display() ;
 	//sign_words.display() ;
 	//string_words.display() ;
 
 	bool use_svm = false ;
-	ASSERT(dict_len==num_svms*cum_num_words_array[num_degrees]) ;
-	dict_weights.set_array(dictionary_weights, cum_num_words_array[num_degrees], num_svms, false, false) ;
-	dict_weights_array=dict_weights.get_array() ;
+	//ASSERT(dict_len==num_svms*cum_num_words_array[num_degrees]) ;
+	//dict_weights.set_array(dictionary_weights, cum_num_words_array[num_degrees], num_svms, false, false) ;
+	//dict_weights_array=dict_weights.get_array() ;
 	
 	CArray2<CPlifBase*> PEN(Plif_matrix, N, N, false, false) ;
 	CArray2<CPlifBase*> PEN_state_signals(Plif_state_signals, N, max_num_signals, false, false) ;

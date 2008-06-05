@@ -54,10 +54,10 @@ class CGUIStructure : public CSGObject
 		}
 		inline bool set_num_states(INT num)
 		{
-			if (!m_num_states || m_num_states==0)
-				m_num_states = num; 
-			else
-				return false;
+			//if (!m_num_states || m_num_states==0)
+			m_num_states = num; 
+			//else
+			//	return false;
 			return true;
 		}
 		//inline bool set_plif_matrix(CPlifBase** pm)
@@ -88,16 +88,16 @@ class CGUIStructure : public CSGObject
 		}
 		inline CArray3<DREAL> get_feature_matrix()
 		{
-			INT d1,d2,d3;
-			m_feature_matrix.get_array_size(d1,d2,d3);
-			SG_PRINT("ui: get_features: d1:%i d2:%i d3:%i\n",d1,d2,d3);
+			//INT d1,d2,d3;
+			//m_feature_matrix.get_array_size(d1,d2,d3);
+			//SG_PRINT("ui: get_features: d1:%i d2:%i d3:%i\n",d1,d2,d3);
 			return m_feature_matrix;
 		}
 		inline bool set_feature_matrix(CArray3<DREAL> feat)
 		{
 			INT d1,d2,d3;
 			feat.get_array_size(d1,d2,d3);
-			SG_PRINT("ui: set_features: d1:%i d2:%i d3:%i\n",d1,d2,d3);
+			//SG_PRINT("ui: set_features: d1:%i d2:%i d3:%i\n",d1,d2,d3);
 			DREAL* cp_array = new DREAL[d1*d2*d3];
 			memcpy(cp_array, feat.get_array(),d1*d2*d3*sizeof(DREAL));
 			bool copy=false;
