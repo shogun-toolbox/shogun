@@ -462,7 +462,7 @@ bool CGUIClassifier::train_linear()
 		SG_ERROR("No trainfeatures available.\n");
 	if (trainfeatures->get_feature_class()!=C_SIMPLE ||
 		trainfeatures->get_feature_type()!=F_DREAL)
-		SG_ERROR("Trainfeatures not of class SIMPLE type REAL.\n");
+		SG_ERROR("Trainfeatures are not of class SIMPLE type REAL.\n");
 
 	if (!trainlabels)
 		SG_ERROR("No labels available\n");
@@ -492,7 +492,7 @@ bool CGUIClassifier::train_wdocas()
 
 	if (trainfeatures->get_feature_class()!=C_STRING ||
 			trainfeatures->get_feature_type()!=F_BYTE )
-		SG_ERROR("Trainfeatures not of class STRING type BYTE.\n");
+		SG_ERROR("Trainfeatures are not of class STRING type BYTE.\n");
 
 	if (!trainlabels)
 		SG_ERROR("No labels available.\n");
@@ -516,7 +516,7 @@ bool CGUIClassifier::train_sparse_linear()
 
 	if (trainfeatures->get_feature_class()!=C_SPARSE ||
 		trainfeatures->get_feature_type()!=F_DREAL)
-		SG_ERROR("Trainfeatures not of class SPARSE type REAL.\n");
+		SG_ERROR("Trainfeatures are not of class SPARSE type REAL.\n");
 
 	if (!trainlabels)
 		SG_ERROR("No labels available.\n");

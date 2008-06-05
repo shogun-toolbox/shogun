@@ -375,6 +375,8 @@ void CCmdLineInterface::get_real_matrix(DREAL*& matrix, INT& num_feat, INT& num_
 
 	if (!f.read_real_valued_dense(matrix, num_feat, num_vec))
 		SG_ERROR("Could not read REAL data from %s.\n", filename);
+
+	transpose_matrix(matrix, num_feat, num_vec);
 }
 
 void CCmdLineInterface::get_short_matrix(SHORT*& matrix, INT& num_feat, INT& num_vec)
@@ -404,6 +406,8 @@ void CCmdLineInterface::get_real_sparsematrix(TSparse<DREAL>*& matrix, INT& num_
 
 	if (!f.read_real_valued_sparse(matrix, num_feat, num_vec))
 		SG_ERROR("Could not read SPARSE REAL data from %s.\n", filename);
+
+	transpose_matrix(matrix, num_feat, num_vec);
 }
 
 
@@ -906,5 +910,23 @@ int main(int argc, char* argv[])
 		SG_PRINT("%s", e.get_exception_string());
 	}
 
+}
+
+template <class T>
+void CCmdLineInterface::transpose_matrix(T*& matrix, INT& num_feat, INT& num_vec)
+{
+	T* transposed=new T[num_vec*num_feat];
+	for (INT i=0; i<num_vec; i++)
+	{
+		for (INT j=0; j<num_feat; j++)
+			transposed[j+i*num_feat]=matrix[i+j*num_vec];
+	}
+
+	delete[] matrix;
+	matrix=transposed;
+
+	INT tmp=num_feat;
+	num_feat=num_vec;
+	num_vec=tmp;
 }
 #endif // HAVE_CMDLINE
