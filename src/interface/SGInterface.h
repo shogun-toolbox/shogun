@@ -354,6 +354,8 @@ class CSGInterface : public CSGObject
 		bool cmd_toc();
 		/** echo */
 		bool cmd_echo();
+		/** print a message (for e.g. cmdline interface) */
+		bool cmd_print();
 		/** set loglevel */
 		bool cmd_loglevel();
 		/** set progress */

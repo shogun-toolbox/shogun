@@ -146,6 +146,7 @@
 #define N_C								"c"
 #define N_LOGLEVEL						"loglevel"
 #define N_PROGRESS						"progress"
+#define N_PRINT							"print"
 #define N_ECHO							"echo"
 #define N_SVMQPSIZE						"svm_qpsize"
 #define N_SVMBUFSIZE					"svm_bufsize"

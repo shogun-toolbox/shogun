@@ -839,6 +839,11 @@ CSGInterfaceMethod sg_methods[]=
 		(CHAR*) USAGE(N_TOC)
 	},
 	{
+		(CHAR*) N_PRINT,
+		(&CSGInterface::cmd_print),
+		(CHAR*) USAGE_I(N_PRINT, "msg")
+	},
+	{
 		(CHAR*) N_ECHO,
 		(&CSGInterface::cmd_echo),
 		(CHAR*) USAGE_I(N_ECHO, "level")
@@ -5345,6 +5350,20 @@ bool CSGInterface::cmd_tic()
 bool CSGInterface::cmd_toc()
 {
 	ui_time->stop();
+	return true;
+}
+
+bool CSGInterface::cmd_print()
+{
+	if (m_nrhs<2 || !create_return_values(0))
+		return false;
+
+	INT len=0;
+	CHAR* msg=get_str_from_str_or_direct(len);
+
+	SG_PRINT("%s\n", msg);
+
+	delete[] msg;
 	return true;
 }
 
