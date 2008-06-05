@@ -6,7 +6,7 @@
 %
 
 % Euclidian Distance
-%disp('EuclidianDistance');
+print EuclidianDistance
 set_distance EUCLIDIAN REAL
 
 set_features TRAIN ../data/fm_train_real.dat
@@ -19,7 +19,7 @@ dm_test.txt = get_distance_matrix
 
 
 % Canberra Metric
-%disp('CanberraMetric');
+print CanberraMetric
 set_distance CANBERRA REAL
 
 set_features TRAIN ../data/fm_train_real.dat
@@ -32,7 +32,7 @@ dm_test.txt = get_distance_matrix
 
 
 % Chebyshew Metric
-%disp('ChebyshewMetric');
+print ChebyshewMetric
 set_distance CHEBYSHEW REAL
 
 set_features TRAIN ../data/fm_train_real.dat
@@ -45,7 +45,7 @@ dm_test.txt = get_distance_matrix
 
 
 % Geodesic Metric
-%disp('GeodesicMetric');
+print GeodesicMetric
 set_distance GEODESIC REAL
 
 set_features TRAIN ../data/fm_train_real.dat
@@ -58,7 +58,7 @@ dm_test.txt = get_distance_matrix
 
 
 % Jensen Metric
-%disp('JensenMetric');
+print JensenMetric
 set_distance JENSEN REAL
 
 set_features TRAIN ../data/fm_train_real.dat
@@ -71,7 +71,7 @@ dm_test.txt = get_distance_matrix
 
 
 % Manhattan Metric
-%disp('ManhattanMetric');
+print ManhattanMetric
 set_distance MANHATTAN REAL
 
 set_features TRAIN ../data/fm_train_real.dat
@@ -84,7 +84,7 @@ dm_test.txt = get_distance_matrix
 
 
 % Minkowski Metric
-%disp('MinkowskiMetric');
+print MinkowskiMetric
 set_distance MINKOWSKI REAL 3
 
 set_features TRAIN ../data/fm_train_real.dat
@@ -100,12 +100,8 @@ dm_test.txt = get_distance_matrix
 % complex string features;
 %
 
-order=3;
-gap=0;
-reverse='n'; % bit silly to not use boolean, set 'r' to yield true
-
 % CanberraWord Distance
-%disp('CanberraWordDistance');
+print CanberraWordDistance
 
 set_distance CANBERRA WORD
 add_preproc SORTWORDSTRING
@@ -114,17 +110,17 @@ set_features TRAIN ../data/fm_train_dna.dat DNA
 convert TRAIN STRING CHAR STRING WORD 3 2 0 n
 attach_preproc TRAIN
 init_distance TRAIN
-dm_train = get_distance_matrix
+dm_train.txt = get_distance_matrix
 
 set_features TEST ../data/fm_test_dna.dat DNA
 convert TEST STRING CHAR STRING WORD 3 2 0 n
 attach_preproc TEST
 init_distance TEST
-dm_test = get_distance_matrix
+dm_test.txt = get_distance_matrix
 
 
 % HammingWord Distance
-%disp('HammingWordDistance');
+print HammingWordDistance
 
 set_distance HAMMING WORD
 add_preproc SORTWORDSTRING
@@ -133,17 +129,17 @@ set_features TRAIN ../data/fm_train_dna.dat DNA
 convert TRAIN STRING CHAR STRING WORD 3 2 0 n
 attach_preproc TRAIN
 init_distance TRAIN
-dm_train = get_distance_matrix
+dm_train.txt = get_distance_matrix
 
 set_features TEST ../data/fm_test_dna.dat DNA
 convert TEST STRING CHAR STRING WORD 3 2 0 n
 attach_preproc TEST
 init_distance TEST
-dm_test = get_distance_matrix
+dm_test.txt = get_distance_matrix
 
 
 % ManhattanWord Distance
-%disp('ManhattanWordDistance');
+print ManhattanWordDistance
 
 set_distance MANHATTAN WORD
 add_preproc SORTWORDSTRING
@@ -152,11 +148,11 @@ set_features TRAIN ../data/fm_train_dna.dat DNA
 convert TRAIN STRING CHAR STRING WORD 3 2 0 n
 attach_preproc TRAIN
 init_distance TRAIN
-dm_train = get_distance_matrix
+dm_train.txt = get_distance_matrix
 
 set_features TEST ../data/fm_test_dna.dat DNA
 convert TEST STRING CHAR STRING WORD 3 2 0 n
 attach_preproc TEST
 init_distance TEST
-dm_test = get_distance_matrix
+dm_test.txt = get_distance_matrix
 

@@ -5,17 +5,17 @@
 %
 
 % LinearByte is b0rked
-%disp('LinearByte');
+print LinearByte
 
-%sg('set_kernel', 'LINEAR', 'BYTE', size_cache);
+%set_kernel LINEAR BYTE size_cache
 
-%sg('set_features', 'TRAIN', fm_train_byte, 'RAWBYTE');
-%sg('init_kernel', 'TRAIN');
-%km=sg('get_kernel_matrix');
+%set_features TRAIN ../data/fm_train_byte.dat RAWBYTE
+%init_kernel TRAIN
+%km_train.txt = get_kernel_matrix
 
-%sg('set_features', 'TEST', fm_test_byte, 'RAWBYTE');
-%sg('init_kernel', 'TEST');
-%km=sg('get_kernel_matrix');
+%set_features TEST ../data/fm_test_byte.dat RAWBYTE
+%init_kernel TEST
+%km_test.txt = get_kernel_matrix
 
 
 %
@@ -23,7 +23,7 @@
 %
 
 % CHI2
-%disp('Chi2');
+print Chi2
 set_kernel CHI2 REAL 10 1.4
 
 set_features TRAIN ../data/fm_train_real.dat
@@ -36,7 +36,7 @@ km_test.txt = get_kernel_matrix
 
 
 % Const
-%disp('Const');
+print Const
 
 set_kernel CONST REAL 10 23
 
@@ -50,7 +50,7 @@ km_test.txt = get_kernel_matrix
 
 
 % Diag
-%disp('Diag');
+print Diag
 set_kernel DIAG REAL 10 23.
 
 set_features TRAIN ../data/fm_train_real.dat
@@ -63,7 +63,7 @@ km_test.txt = get_kernel_matrix
 
 
 % Gaussian
-%disp('Gaussian');
+print Gaussian
 set_kernel GAUSSIAN REAL 10 1.4
 
 set_features TRAIN ../data/fm_train_real.dat
@@ -76,7 +76,7 @@ km_test.txt = get_kernel_matrix
 
 
 % GaussianShift
-%disp('GaussianShift');
+print GaussianShift
 set_kernel GAUSSIANSHIFT REAL 10 1.4 2 1
 
 set_features TRAIN ../data/fm_train_real.dat
@@ -89,7 +89,7 @@ km_test.txt = get_kernel_matrix
 
 
 % Linear
-%disp('Linear');
+print Linear
 set_kernel LINEAR REAL 10 1.2
 
 set_features TRAIN ../data/fm_train_real.dat
@@ -102,7 +102,7 @@ km_test.txt = get_kernel_matrix
 
 
 % Poly
-%disp('Poly');
+print Poly
 set_kernel POLY REAL 10 4 0 1
 
 set_features TRAIN ../data/fm_train_real.dat
@@ -115,7 +115,7 @@ km_test.txt = get_kernel_matrix
 
 
 % sigmoid
-%disp('Sigmoid');
+print Sigmoid
 set_kernel SIGMOID REAL 10 1.2 1.3
 
 set_features TRAIN ../data/fm_train_real.dat
@@ -132,42 +132,42 @@ km_test.txt = get_kernel_matrix
 %
 
 % Sparse Gaussian
-%disp('SparseGaussian');
-set_kernel GAUSSIAN SPARSEREAL 10 1.4
+%print SparseGaussian
+%set_kernel GAUSSIAN SPARSEREAL 10 1.4
 
-set_features TRAIN ../data/fm_train_real.dat
-init_kernel TRAIN
-km_train.txt = get_kernel_matrix
+%set_features TRAIN ../data/fm_train_real.dat
+%init_kernel TRAIN
+%km_train.txt = get_kernel_matrix
 
-set_features TEST ../data/fm_test_real.dat
-init_kernel TEST
-km_test.txt = get_kernel_matrix
+%set_features TEST ../data/fm_test_real.dat
+%init_kernel TEST
+%km_test.txt = get_kernel_matrix
 
 
 % Sparse Linear
-%disp('SparseLinear');
-set_kernel LINEAR SPARSEREAL 10 1.3
+%print SparseLinear
+%set_kernel LINEAR SPARSEREAL 10 1.3
 
-set_features TRAIN ../data/fm_train_real.dat
-init_kernel TRAIN
-km_train.txt = get_kernel_matrix
+%set_features TRAIN ../data/fm_train_real.dat
+%init_kernel TRAIN
+%km_train.txt = get_kernel_matrix
 
-set_features TEST ../data/fm_test_real.dat
-init_kernel TEST
-km_test.txt = get_kernel_matrix
+%set_features TEST ../data/fm_test_real.dat
+%init_kernel TEST
+%km_test.txt = get_kernel_matrix
 
 
 % Sparse Poly
-%disp('SparsePoly');
-set_kernel POLY SPARSEREAL 10 3 1 1
+%print SparsePoly
+%set_kernel POLY SPARSEREAL 10 3 1 1
 
-set_features TRAIN ../data/fm_train_real.dat
-init_kernel TRAIN
-km_train.txt = get_kernel_matrix
+%set_features TRAIN ../data/fm_train_real.dat
+%init_kernel TRAIN
+%km_train.txt = get_kernel_matrix
 
-set_features TEST ../data/fm_test_real.dat
-init_kernel TEST
-km_test.txt = get_kernel_matrix
+%set_features TEST ../data/fm_test_real.dat
+%init_kernel TEST
+%km_test.txt = get_kernel_matrix
 
 
 %
@@ -175,36 +175,36 @@ km_test.txt = get_kernel_matrix
 %
 
 % LinearWord
-%disp('LinearWord');
-set_kernel LINEAR WORD 10 1.4
+%print LinearWord
+%set_kernel LINEAR WORD 10 1.4
 
-set_features TRAIN ../data/fm_train_word.dat
-init_kernel TRAIN
-km_train.txt = get_kernel_matrix
+%set_features TRAIN ../data/fm_train_word.dat
+%init_kernel TRAIN
+%km_train.txt = get_kernel_matrix
 
-set_features TEST ../data/fm_test_word.dat
-init_kernel TEST
-km_test.txt = get_kernel_matrix
+%set_features TEST ../data/fm_test_word.dat
+%init_kernel TEST
+%km_test.txt = get_kernel_matrix
 
 
 % Poly Match Word
-%disp('PolyMatchWord');
-set_kernel POLYMATCH WORD 10 2 1 1
+%print PolyMatchWord
+%set_kernel POLYMATCH WORD 10 2 1 1
 
-set_features TRAIN ../data/fm_train_word.dat
-init_kernel TRAIN
-km_train.txt = get_kernel_matrix
+%set_features TRAIN ../data/fm_train_word.dat
+%init_kernel TRAIN
+%km_train.txt = get_kernel_matrix
 
-set_features TEST ../data/fm_test_word.dat
-init_kernel TEST
-km_test.txt = get_kernel_matrix
+%set_features TEST ../data/fm_test_word.dat
+%init_kernel TEST
+%km_test.txt = get_kernel_matrix
 
 %
 % string features
 %
 
 % Fixed Degree String
-%disp('FixedDegreeString');
+print FixedDegreeString
 set_kernel FIXEDDEGREE CHAR 10 3
 
 set_features TRAIN ../data/fm_train_dna.dat DNA
@@ -217,7 +217,7 @@ km_test.txt = get_kernel_matrix
 
 
 % Linear String
-%disp('LinearString');
+print LinearString
 set_kernel LINEAR CHAR 10
 
 set_features TRAIN ../data/fm_train_dna.dat DNA
@@ -230,20 +230,20 @@ km_test.txt = get_kernel_matrix
 
 
 % Local Alignment String
-%disp('LocalAlignmentString');
-set_kernel LOACALALIGNMENT CHAR 10
+%print LocalAlignmentString
+%set_kernel LOACALALIGNMENT CHAR 10
 
-set_features TRAIN ../data/fm_train_dna.dat DNA
-init_kernel TRAIN
-km_train.txt = get_kernel_matrix
+%set_features TRAIN ../data/fm_train_dna.dat DNA
+%init_kernel TRAIN
+%km_train.txt = get_kernel_matrix
 
-set_features TEST ../data/fm_test_dna.dat DNA
-init_kernel TEST
-km_test.txt = get_kernel_matrix
+%set_features TEST ../data/fm_test_dna.dat DNA
+%init_kernel TEST
+%km_test.txt = get_kernel_matrix
 
 
 % Poly Match String
-%disp('PolyMatchString');
+print PolyMatchString
 set_kernel POLYMATCH CHAR 10 3 0
 
 set_features TRAIN ../data/fm_train_dna.dat DNA
@@ -256,7 +256,7 @@ km_test.txt = get_kernel_matrix
 
 
 % Weighted Degree String
-%disp('WeightedDegreeString');
+print WeightedDegreeString
 set_kernel WEIGHTEDDEGREE CHAR 10 20
 
 set_features TRAIN ../data/fm_train_dna.dat DNA
@@ -269,7 +269,7 @@ km_test.txt = get_kernel_matrix
 
 
 % Weighted Degree Position String
-%disp('WeightedDegreePositionString');
+print WeightedDegreePositionString
 set_kernel WEIGHTEDDEGREEPOS CHAR 10 20
 
 set_features TRAIN ../data/fm_train_dna.dat DNA
@@ -282,7 +282,7 @@ km_test.txt = get_kernel_matrix
 
 
 % Locality Improved String
-%disp('LocalityImprovedString');
+print LocalityImprovedString
 set_kernel LIK CHAR 10 5 5 7
 
 set_features TRAIN ../data/fm_train_dna.dat DNA
@@ -295,7 +295,7 @@ km_test.txt = get_kernel_matrix
 
 
 % Simple Locality Improved String
-%disp('SimpleLocalityImprovedString');
+print SimpleLocalityImprovedString
 set_kernel SLIK CHAR 10 5 5 7
 
 set_features TRAIN ../data/fm_train_dna.dat DNA
@@ -312,7 +312,7 @@ km_test.txt = get_kernel_matrix
 %
 
 % Comm Word String
-%disp('CommWordString');
+print CommWordString
 add_preproc SORTWORDSTRING
 set_kernel COMMSTRING WORD 10 0 FULL
 
@@ -330,7 +330,7 @@ km_test.txt = get_kernel_matrix
 
 
 % Weighted Comm Word String
-%disp('WeightedCommWordString');
+print WeightedCommWordString
 add_preproc SORTWORDSTRING
 set_kernel WEIGHTEDCOMMSTRING WORD 10 0 FULL
 
@@ -348,8 +348,8 @@ km_test.txt = get_kernel_matrix
 
 
 % Comm Ulong String
-%disp('CommUlongString');
-add_preproc SORTWORDSTRING
+print CommUlongString
+add_preproc SORTULONGSTRING
 set_kernel COMMSTRING ULONG 10 0 FULL
 
 set_features TRAIN ../data/fm_train_dna.dat DNA
@@ -370,7 +370,7 @@ km_test.txt = get_kernel_matrix
 %
 
 % Distance
-%disp('Distance');
+print Distance
 set_distance EUCLIDIAN REAL
 set_kernel DISTANCE 10 1.7
 
@@ -384,7 +384,7 @@ km_test.txt = get_kernel_matrix
 
 
 % Combined
-%disp('Combined');
+print Combined
 
 set_kernel COMBINED 10
 
@@ -408,7 +408,7 @@ km_test.txt = get_kernel_matrix
 
 
 % Plugin Estimate
-%disp('PluginEstimate w/ HistogramWord');
+print PluginEstimate w/ HistogramWord
 
 set_features TRAIN ../data/fm_train_dna.dat DNA
 convert TRAIN STRING CHAR STRING WORD 3 2 0 n
@@ -417,7 +417,7 @@ set_features TEST ../data/fm_test_dna.dat DNA
 convert TEST STRING CHAR STRING WORD 3 2 0 n
 
 new_plugin_estimator 1e-1 1e-1
-set_labels TRAIN ../data/label_train_dna.dat
+set_labels TRAIN ../data/label_train_dna42.dat
 train_estimator
 
 set_kernel HISTOGRAM WORD 10

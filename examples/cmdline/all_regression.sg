@@ -6,7 +6,7 @@
 
 % SVR Light
 %try
-	%disp('SVRLight');
+	print SVRLight
 
 	set_kernel GAUSSIAN REAL 10 2.1
 	set_features TRAIN ../data/fm_train_real.dat
@@ -18,7 +18,7 @@
 	init_kernel TRAIN
 	train_regression
 
-	set_features TEST ../data/fm_test.dat
+	set_features TEST ../data/fm_test_real.dat
 	init_kernel TEST
 	out.txt = classify
 %catch
@@ -27,7 +27,7 @@
 
 
 % LibSVR
-%disp('LibSVR');
+print LibSVR
 set_kernel GAUSSIAN REAL 10 2.1
 set_features TRAIN ../data/fm_train_real.dat
 set_labels TRAIN ../data/label_train_oneclass.dat
@@ -38,7 +38,7 @@ c 0.017
 init_kernel TRAIN
 train_regression
 
-set_features TEST ../data/fm_test.dat
+set_features TEST ../data/fm_test_real.dat
 init_kernel TEST
 out.txt = classify
 
@@ -48,7 +48,7 @@ out.txt = classify
 %
 
 % KRR
-%disp('KRR');
+print KRR
 set_kernel GAUSSIAN REAL 10 2.1
 set_features TRAIN ../data/fm_train_real.dat
 set_labels TRAIN ../data/label_train_oneclass.dat
@@ -60,6 +60,6 @@ c 0.017
 init_kernel TRAIN
 train_regression
 
-set_features TEST ../data/fm_test.dat
+set_features TEST ../data/fm_test_real.dat
 init_kernel TEST
 out.txt = classify

@@ -1,7 +1,7 @@
 % Explicit examples on how to use clustering
 
 % KMEANS
-%disp('KMeans');
+print KMeans
 
 set_features TRAIN ../data/fm_train_real.dat
 set_distance EUCLIDIAN REAL
@@ -13,7 +13,7 @@ radi.txt, centers.txt = get_clustering
 
 
 % Hierarchical
-%disp('Hierarchical');
+print Hierarchical
 
 set_features TRAIN  ../data/fm_train_real.dat
 set_distance EUCLIDIAN REAL

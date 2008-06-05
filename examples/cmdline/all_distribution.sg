@@ -1,7 +1,7 @@
 % Explicit examples on how to use distributions
 
 % Histogram
-%disp('Histogram');
+print Histogram - not yet supported
 
 %new_distribution HISTOGRAM
 add_preproc SORTWORDSTRING
@@ -18,7 +18,7 @@ attach_preproc TRAIN
 
 
 % LinearHMM
-%disp('LinearHMM');
+print LinearHMM - not yet supported
 
 %new_distribution LinearHMM
 add_preproc SORTWORDSTRING
@@ -34,7 +34,7 @@ attach_preproc TRAIN
 %get_log_likelihood_sample
 
 % HMM
-%disp('HMM');
+print HMM
 
 new_hmm 3 6
 set_features TRAIN ../data/fm_train_cube.dat CUBE
@@ -45,5 +45,4 @@ p.txt, q.txt, a.txt, b.txt = get_hmm
 new_hmm 3 6
 set_hmm p.txt q.txt a.txt b.txt
 likelihood.txt = hmm_likelihood
-
 

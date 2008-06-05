@@ -6,7 +6,7 @@
 %
 
 % LogPlusOne
-%disp('LogPlusOne');
+print LogPlusOne
 add_preproc LOGPLUSONE
 set_kernel CHI2 REAL 10 1.4
 
@@ -21,7 +21,7 @@ init_kernel TEST
 km_test.txt = get_kernel_matrix
 
 % NormOne
-%disp('NormOne');
+print NormOne
 add_preproc NORMONE
 set_kernel CHI2 REAL 10 1.4
 
@@ -37,7 +37,7 @@ km_test.txt = get_kernel_matrix
 
 
 % PruneVarSubMean
-%disp('PruneVarSubMean');
+print PruneVarSubMean
 add_preproc PRUNEVARSUBMEAN 1
 set_kernel CHI2 REAL 10 1.4
 
@@ -57,34 +57,27 @@ km_test.txt = get_kernel_matrix
 %
 
 % LinearWord
-%disp('LinearWord');
-add_preproc SORTWORD
-set_kernel LINEAR WORD 10 1.4
+%print LinearWord
+%add_preproc SORTWORD
+%set_kernel LINEAR WORD 10 1.4
 
-set_features TRAIN ../data/fm_train_word.dat
-attach_preproc TRAIN
-init_kernel TRAIN
-km_train.txt = get_kernel_matrix
+%set_features TRAIN ../data/fm_train_word.dat
+%attach_preproc TRAIN
+%init_kernel TRAIN
+%km_train.txt = get_kernel_matrix
 
-set_features TEST ../data/fm_test_word.dat
-attach_preproc TEST
-init_kernel TEST
-km_test.txt = get_kernel_matrix
+%set_features TEST ../data/fm_test_word.dat
+%attach_preproc TEST
+%init_kernel TEST
+%km_test.txt = get_kernel_matrix
 
 
 %
 % complex string features;
 %
 
-order=3;
-gap=0;
-reverse='n'; % bit silly to not use boolean, set 'r' to yield true
-use_sign=0;
-normalization='FULL';
-
-
 % SortWordString
-%disp('CommWordString');
+print CommWordString
 add_preproc SORTWORDSTRING
 set_kernel COMMSTRING WORD 10 0 FULL
 
@@ -102,7 +95,7 @@ km_test.txt = get_kernel_matrix
 
 
 % SortUlongString
-%disp('CommUlongString');
+print CommUlongString
 add_preproc SORTULONGSTRING
 set_kernel COMMSTRING ULONG 10 0 FULL
 
