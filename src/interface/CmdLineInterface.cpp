@@ -164,8 +164,14 @@ IFType CCmdLineInterface::get_argument_type()
 	else
 	{
 		SG_DEBUG("could not find signature in file %s guessing file type.\n", filename);
-		
-		if (strspn(chunk, "0123456789.e+- \t\n")==nread)
+
+		// special for cubes
+		if (strspn(chunk, "123456\n")==nread)
+		{
+			argtype=STRING_CHAR;
+			SG_DEBUG("guessing STRING_CHAR\n");
+		}
+		else if (strspn(chunk, "0123456789.e+- \t\n")==nread)
 		{
 			argtype=DENSE_REAL;
 			SG_DEBUG("guessing DENSE_REAL\n");
