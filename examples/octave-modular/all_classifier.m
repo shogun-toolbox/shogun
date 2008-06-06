@@ -3,7 +3,7 @@ init_shogun
 % Explicit examples on how to use the different classifiers
 
 addpath('tools');
-label_train_oneclass=load_matrix('../data/label_train_oneclass.dat');
+label_train_twoclass=load_matrix('../data/label_train_twoclass.dat');
 label_train_multiclass=load_matrix('../data/label_train_multiclass.dat');
 fm_train_real=load_matrix('../data/fm_train_real.dat');
 fm_test_real=load_matrix('../data/fm_test_real.dat');
@@ -60,7 +60,7 @@ C=0.017;
 epsilon=1e-5;
 tube_epsilon=1e-2;
 num_threads=2;
-labels=Labels(label_train_oneclass);
+labels=Labels(label_train_twoclass);
 
 svm=LibSVM(C, kernel, labels);
 svm.set_epsilon(epsilon);
@@ -83,7 +83,7 @@ C=0.017;
 epsilon=1e-5;
 tube_epsilon=1e-2;
 num_threads=2;
-labels=Labels(label_train_oneclass);
+labels=Labels(label_train_twoclass);
 
 svm=GPBTSVM(C, kernel, labels);
 svm.set_epsilon(epsilon);
@@ -106,7 +106,7 @@ C=0.017;
 epsilon=1e-5;
 tube_epsilon=1e-2;
 num_threads=1;
-labels=Labels(label_train_oneclass);
+labels=Labels(label_train_twoclass);
 
 svm=MPDSVM(C, kernel, labels);
 svm.set_epsilon(epsilon);
@@ -140,7 +140,7 @@ svm.train();
 kernel.init(feats_train, feats_test);
 svm.classify().get_labels();
 
-% libsvm oneclass
+% libsvm twoclass
 disp('LibSVMOneClass')
 
 feats_train=RealFeatures(fm_train_real);
@@ -240,7 +240,7 @@ C=0.42;
 epsilon=1e-3;
 num_threads=1;
 max_train_time=1.;
-labels=Labels(label_train_oneclass);
+labels=Labels(label_train_twoclass);
 
 svm=SubGradientSVM(C, feats_train, labels);
 svm.set_epsilon(epsilon);
@@ -265,7 +265,7 @@ feats_test.obtain_from_simple(realfeat);
 C=0.42;
 epsilon=1e-5;
 num_threads=1;
-labels=Labels(label_train_oneclass);
+labels=Labels(label_train_twoclass);
 
 svm=SVMOcas(C, feats_train, labels);
 svm.set_epsilon(epsilon);
@@ -289,7 +289,7 @@ feats_test.obtain_from_simple(realfeat);
 C=0.42;
 epsilon=1e-5;
 num_threads=1;
-labels=Labels(label_train_oneclass);
+labels=Labels(label_train_twoclass);
 
 svm=SVMSGD(C, feats_train, labels);
 %svm.io.set_loglevel(0);
@@ -311,7 +311,7 @@ feats_test.obtain_from_simple(realfeat);
 C=0.42;
 epsilon=1e-5;
 num_threads=1;
-labels=Labels(label_train_oneclass);
+labels=Labels(label_train_twoclass);
 
 svm=LibLinear(C, feats_train, labels);
 svm.set_epsilon(epsilon);
@@ -335,7 +335,7 @@ feats_test.obtain_from_simple(realfeat);
 C=0.42;
 epsilon=1e-5;
 num_threads=1;
-labels=Labels(label_train_oneclass);
+labels=Labels(label_train_twoclass);
 
 svm=SVMLin(C, feats_train, labels);
 svm.set_epsilon(epsilon);
@@ -361,7 +361,7 @@ feats_test=RealFeatures(fm_train_real);
 learn_rate=1.;
 max_iter=1000;
 num_threads=1;
-labels=Labels(label_train_oneclass);
+labels=Labels(label_train_twoclass);
 
 perceptron=Perceptron(feats_train, labels);
 perceptron.set_learn_rate(learn_rate);
@@ -381,7 +381,7 @@ distance=EuclidianDistance();
 
 k=3;
 num_threads=1;
-labels=Labels(label_train_oneclass);
+labels=Labels(label_train_twoclass);
 
 knn=KNN(k, distance, labels);
 knn.parallel.set_num_threads(num_threads);
@@ -398,7 +398,7 @@ feats_test=RealFeatures(fm_test_real);
 
 gamma=3;
 num_threads=1;
-labels=Labels(label_train_oneclass);
+labels=Labels(label_train_twoclass);
 
 lda=LDA(gamma, feats_train, labels);
 lda.parallel.set_num_threads(num_threads);

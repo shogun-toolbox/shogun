@@ -23,7 +23,7 @@ fm_test_real <- as.matrix(read.table('../data/fm_test_real.dat'))
 fm_train_dna <- as.matrix(read.table('../data/fm_train_dna.dat'))
 fm_test_dna <- as.matrix(read.table('../data/fm_test_dna.dat'))
 label_train_dna <- as.real(as.matrix(read.table('../data/label_train_dna42.dat')))
-label_train_oneclass <- as.real(as.matrix(read.table('../data/label_train_oneclass.dat')))
+label_train_twoclass <- as.real(as.matrix(read.table('../data/label_train_twoclass.dat')))
 label_train_multiclass <- as.real(as.matrix(read.table('../data/label_train_multiclass.dat')))
 
 
@@ -48,7 +48,7 @@ dosvmlight <- function()
 	epsilon <- 1e-5
 	tube_epsilon <- 1e-2
 	num_threads <- as.integer(3)
-	labels <- Labels(label_train_oneclass)
+	labels <- Labels(label_train_twoclass)
 
 	svm <- SVMLight(C, kernel, labels)
 	svm$set_epsilon(svm, epsilon)
@@ -75,7 +75,7 @@ C <- 0.017
 epsilon <- 1e-5
 tube_epsilon <- 1e-2
 num_threads <- as.integer(2)
-labels <- Labels(label_train_oneclass)
+labels <- Labels(label_train_twoclass)
 
 svm <- LibSVM(C, kernel, labels)
 svm$set_epsilon(svm, epsilon)
@@ -99,7 +99,7 @@ C <- 0.017
 epsilon <- 1e-5
 tube_epsilon <- 1e-2
 num_threads <- as.integer(2)
-labels <- Labels(label_train_oneclass)
+labels <- Labels(label_train_twoclass)
 
 svm <- GPBTSVM(C, kernel, labels)
 svm$set_epsilon(svm, epsilon)
@@ -123,7 +123,7 @@ C <- 0.017
 epsilon <- 1e-5
 tube_epsilon <- 1e-2
 num_threads <- as.integer(1)
-labels <- Labels(label_train_oneclass)
+labels <- Labels(label_train_twoclass)
 
 svm <- MPDSVM(C, kernel, labels)
 svm$set_epsilon(svm, epsilon)
@@ -159,7 +159,7 @@ kernel$init(kernel, feats_train, feats_test)
 lab <- svm$classify(svm)
 out <- lab$get_labels(lab)
 
-# libsvm oneclass
+# libsvm twoclass
 print('LibSVMOneClass')
 
 feats_train <- RealFeatures(fm_train_real)
@@ -194,7 +194,7 @@ C <- 0.017
 epsilon <- 1e-5
 tube_epsilon <- 1e-2
 num_threads <- as.integer(1)
-labels <- Labels(label_train_oneclass_multi)
+labels <- Labels(label_train_twoclass_multi)
 
 svm <- GMNPSVM(C, kernel, labels)
 svm$set_epsilon(svm, epsilon)
@@ -263,7 +263,7 @@ C <- 0.42
 epsilon <- 1e-3
 num_threads <- as.integer(1)
 max_train_time <- 1.
-labels <- Labels(label_train_oneclass)
+labels <- Labels(label_train_twoclass)
 
 svm <- SubGradientSVM(C, feats_train, labels)
 svm$set_epsilon(svm, epsilon)
@@ -289,7 +289,7 @@ feats_test$obtain_from_simple(feats_test, realfeat)
 C <- 0.42
 epsilon <- 1e-5
 num_threads <- as.integer(1)
-labels <- Labels(label_train_oneclass)
+labels <- Labels(label_train_twoclass)
 
 svm <- SVMOcas(C, feats_train, labels)
 svm$set_epsilon(svm, epsilon)
@@ -314,7 +314,7 @@ feats_test$obtain_from_simple(feats_test, realfeat)
 C <- 0.42
 epsilon <- 1e-5
 num_threads <- as.integer(1)
-labels <- Labels(label_train_oneclass)
+labels <- Labels(label_train_twoclass)
 
 svm <- SVMSGD(C, feats_test, labels)
 svm$io$set_loglevel(svm$io, 0)
@@ -337,7 +337,7 @@ feats_test$obtain_from_simple(feats_test, realfeat)
 C <- 0.42
 epsilon <- 1e-5
 num_threads <- as.integer(1)
-labels <- Labels(label_train_oneclass)
+labels <- Labels(label_train_twoclass)
 
 svm <- LibLinear(C, feats_train, labels)
 svm$set_epsilon(svm, epsilon)
@@ -362,7 +362,7 @@ feats_test$obtain_from_simple(feats_test, realfeat)
 C <- 0.42
 epsilon <- 1e-5
 num_threads <- as.integer(1)
-labels <- Labels(label_train_oneclass)
+labels <- Labels(label_train_twoclass)
 
 svm <- SVMLin(C, feats_train, labels)
 svm$set_epsilon(svm, epsilon)
@@ -389,7 +389,7 @@ feats_test <- RealFeatures(fm_train_real)
 learn_rate <- 1.
 max_iter <- as.integer(1000)
 num_threads <- as.integer(1)
-labels <- Labels(label_train_oneclass)
+labels <- Labels(label_train_twoclass)
 
 perceptron <- Perceptron(feats_train, labels)
 perceptron$set_learn_rate(perceptron, learn_rate)
@@ -409,7 +409,7 @@ distance <- EuclidianDistance()
 
 k <- as.integer(3)
 num_threads <- as.integer(1)
-labels <- Labels(label_train_oneclass)
+labels <- Labels(label_train_twoclass)
 
 knn <- KNN(k, distance, labels)
 knn$parallel$set_num_threads(knn$parallel, num_threads)
@@ -427,7 +427,7 @@ feats_test <- RealFeatures(fm_test_real)
 
 gamma <- 3
 num_threads <- as.integer(1)
-labels <- Labels(label_train_oneclass)
+labels <- Labels(label_train_twoclass)
 
 lda <- LDA(gamma, feats_train, labels)
 lda$parallel$set_num_threads(lda$parallel, num_threads)

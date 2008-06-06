@@ -14,7 +14,7 @@ fm_test_real=lm.load_numbers('../data/fm_test_real.dat')
 fm_train_dna=lm.load_dna('../data/fm_train_dna.dat')
 fm_test_dna=lm.load_dna('../data/fm_test_dna.dat')
 label_train_dna=lm.load_labels('../data/label_train_dna.dat')
-label_train_oneclass=lm.load_labels('../data/label_train_oneclass.dat')
+label_train_twoclass=lm.load_labels('../data/label_train_twoclass.dat')
 label_train_multiclass=lm.load_labels('../data/label_train_multiclass.dat')
 
 ###########################################################################
@@ -63,7 +63,7 @@ def libsvm ():
 	sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width)
 	sg('init_kernel', 'TRAIN')
 
-	sg('set_labels', 'TRAIN', label_train_oneclass)
+	sg('set_labels', 'TRAIN', label_train_twoclass)
 	sg('new_svm', 'LIBSVM')
 	sg('svm_epsilon', epsilon)
 	sg('c', C)
@@ -87,7 +87,7 @@ def gpbtsvm ():
 	sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width)
 	sg('init_kernel', 'TRAIN')
 
-	sg('set_labels', 'TRAIN', label_train_oneclass)
+	sg('set_labels', 'TRAIN', label_train_twoclass)
 	sg('new_svm', 'GPBTSVM')
 	sg('svm_epsilon', epsilon)
 	sg('c', C)
@@ -111,7 +111,7 @@ def mpdsvm ():
 	sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width)
 	sg('init_kernel', 'TRAIN')
 
-	sg('set_labels', 'TRAIN', label_train_oneclass)
+	sg('set_labels', 'TRAIN', label_train_twoclass)
 	sg('new_svm', 'MPDSVM')
 	sg('svm_epsilon', epsilon)
 	sg('c', C)
@@ -182,7 +182,7 @@ def gmnpsvm ():
 	sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width)
 	sg('init_kernel', 'TRAIN')
 
-	sg('set_labels', 'TRAIN', label_train_oneclass)
+	sg('set_labels', 'TRAIN', label_train_twoclass)
 	sg('new_svm', 'GMNPSVM')
 	sg('svm_epsilon', epsilon)
 	sg('c', C)
@@ -210,7 +210,7 @@ def do_batch_linadd ():
 	sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width)
 	sg('init_kernel', 'TRAIN')
 
-	sg('set_labels', 'TRAIN', label_train_oneclass)
+	sg('set_labels', 'TRAIN', label_train_twoclass)
 	sg('new_svm', 'LIBSVM')
 	sg('svm_epsilon', epsilon)
 	sg('c', C)
@@ -233,7 +233,7 @@ def perceptron ():
 	print 'Perceptron'
 
 	sg('set_features', 'TRAIN', fm_train_real)
-	sg('set_labels', 'TRAIN', label_train_oneclass)
+	sg('set_labels', 'TRAIN', label_train_twoclass)
 	sg('new_classifier', 'PERCEPTRON')
 	# often does not converge, mind your data!
 	#sg('train_classifier')
@@ -247,7 +247,7 @@ def knn ():
 	k=3
 
 	sg('set_features', 'TRAIN', fm_train_real)
-	sg('set_labels', 'TRAIN', label_train_oneclass)
+	sg('set_labels', 'TRAIN', label_train_twoclass)
 	sg('set_distance', 'EUCLIDIAN', 'REAL')
 	sg('init_distance', 'TRAIN')
 	sg('new_classifier', 'KNN')
@@ -261,7 +261,7 @@ def lda ():
 	print 'LDA'
 
 	sg('set_features', 'TRAIN', fm_train_real)
-	sg('set_labels', 'TRAIN', label_train_oneclass)
+	sg('set_labels', 'TRAIN', label_train_twoclass)
 	sg('new_classifier', 'LDA')
 	sg('train_classifier')
 

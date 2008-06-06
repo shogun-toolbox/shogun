@@ -11,7 +11,7 @@ from tools.load import LoadMatrix
 lm=LoadMatrix()
 fm_train=lm.load_numbers('../data/fm_train_real.dat')
 fm_test=lm.load_numbers('../data/fm_test_real.dat')
-label_train=lm.load_labels('../data/label_train_oneclass.dat')
+label_train=lm.load_labels('../data/label_train_twoclass.dat')
 
 ###########################################################################
 # svm-based

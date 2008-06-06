@@ -17,7 +17,7 @@ fm_test_real=lm.load_numbers('../data/fm_test_real.dat')
 fm_train_dna=lm.load_dna('../data/fm_train_dna.dat')
 fm_test_dna=lm.load_dna('../data/fm_test_dna.dat')
 label_train_dna=lm.load_labels('../data/label_train_dna.dat')
-label_train_oneclass=lm.load_labels('../data/label_train_oneclass.dat')
+label_train_twoclass=lm.load_labels('../data/label_train_twoclass.dat')
 label_train_multiclass=lm.load_labels('../data/label_train_multiclass.dat')
 
 ###########################################################################
@@ -67,7 +67,7 @@ def libsvm ():
 	epsilon=1e-5
 	tube_epsilon=1e-2
 	num_threads=2
-	labels=Labels(label_train_oneclass)
+	labels=Labels(label_train_twoclass)
 
 	svm=LibSVM(C, kernel, labels)
 	svm.set_epsilon(epsilon)
@@ -90,7 +90,7 @@ def gpbtsvm ():
 	epsilon=1e-5
 	tube_epsilon=1e-2
 	num_threads=8
-	labels=Labels(label_train_oneclass)
+	labels=Labels(label_train_twoclass)
 
 	svm=GPBTSVM(C, kernel, labels)
 	svm.set_epsilon(epsilon)
@@ -113,7 +113,7 @@ def mpdsvm ():
 	epsilon=1e-5
 	tube_epsilon=1e-2
 	num_threads=1
-	labels=Labels(label_train_oneclass)
+	labels=Labels(label_train_twoclass)
 
 	svm=MPDSVM(C, kernel, labels)
 	svm.set_epsilon(epsilon)
@@ -248,7 +248,7 @@ def subgradient_svm ():
 	epsilon=1e-3
 	num_threads=1
 	max_train_time=1.
-	labels=Labels(label_train_oneclass)
+	labels=Labels(label_train_twoclass)
 
 	svm=SubGradientSVM(C, feats_train, labels)
 	svm.set_epsilon(epsilon)
@@ -273,7 +273,7 @@ def svmocas ():
 	C=0.42
 	epsilon=1e-5
 	num_threads=1
-	labels=Labels(label_train_oneclass)
+	labels=Labels(label_train_twoclass)
 
 	svm=SVMOcas(C, feats_train, labels)
 	svm.set_epsilon(epsilon)
@@ -297,7 +297,7 @@ def svmsgd ():
 	C=0.42
 	epsilon=1e-5
 	num_threads=1
-	labels=Labels(label_train_oneclass)
+	labels=Labels(label_train_twoclass)
 
 	svm=SVMSGD(C, feats_train, labels)
 	#svm.io.set_loglevel(0)
@@ -319,7 +319,7 @@ def liblinear ():
 	C=0.42
 	epsilon=1e-5
 	num_threads=1
-	labels=Labels(label_train_oneclass)
+	labels=Labels(label_train_twoclass)
 
 	svm=LibLinear(C, feats_train, labels)
 	svm.set_epsilon(epsilon)
@@ -343,7 +343,7 @@ def svmlin ():
 	C=0.42
 	epsilon=1e-5
 	num_threads=1
-	labels=Labels(label_train_oneclass)
+	labels=Labels(label_train_twoclass)
 
 	svm=SVMLin(C, feats_train, labels)
 	svm.set_epsilon(epsilon)
@@ -369,7 +369,7 @@ def perceptron ():
 	learn_rate=1.
 	max_iter=1000
 	num_threads=1
-	labels=Labels(label_train_oneclass)
+	labels=Labels(label_train_twoclass)
 
 	perceptron=Perceptron(feats_train, labels)
 	perceptron.set_learn_rate(learn_rate)
@@ -390,7 +390,7 @@ def knn ():
 
 	k=3
 	num_threads=1
-	labels=Labels(label_train_oneclass)
+	labels=Labels(label_train_twoclass)
 
 	knn=KNN(k, distance, labels)
 	knn.parallel.set_num_threads(num_threads)
@@ -407,7 +407,7 @@ def lda ():
 
 	gamma=3
 	num_threads=1
-	labels=Labels(label_train_oneclass)
+	labels=Labels(label_train_twoclass)
 
 	lda=LDA(gamma, feats_train, labels)
 	lda.parallel.set_num_threads(num_threads)

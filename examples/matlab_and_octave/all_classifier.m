@@ -8,7 +8,7 @@ width=2.1;
 max_train_time=60;
 
 addpath('tools');
-label_train_oneclass=load_matrix('../data/label_train_oneclass.dat');
+label_train_twoclass=load_matrix('../data/label_train_twoclass.dat');
 label_train_multiclass=load_matrix('../data/label_train_multiclass.dat');
 fm_train_real=load_matrix('../data/fm_train_real.dat');
 fm_test_real=load_matrix('../data/fm_test_real.dat');
@@ -50,7 +50,7 @@ disp('LibSVM');
 
 sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width);
 sg('set_features', 'TRAIN', fm_train_real);
-sg('set_labels', 'TRAIN', label_train_oneclass);
+sg('set_labels', 'TRAIN', label_train_twoclass);
 sg('new_svm', 'LIBSVM');
 sg('svm_epsilon', epsilon);
 sg('svm_use_bias', use_bias);
@@ -69,7 +69,7 @@ disp('GPBTSVM');
 
 sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width);
 sg('set_features', 'TRAIN', fm_train_real);
-sg('set_labels', 'TRAIN', label_train_oneclass);
+sg('set_labels', 'TRAIN', label_train_twoclass);
 sg('new_svm', 'GPBTSVM');
 sg('svm_epsilon', epsilon);
 sg('svm_use_bias', use_bias);
@@ -87,7 +87,7 @@ disp('MPDSVM');
 
 sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width);
 sg('set_features', 'TRAIN', fm_train_real);
-sg('set_labels', 'TRAIN', label_train_oneclass);
+sg('set_labels', 'TRAIN', label_train_twoclass);
 sg('new_svm', 'MPDSVM');
 sg('svm_epsilon', epsilon);
 sg('svm_use_bias', use_bias);
@@ -144,7 +144,7 @@ sg('new_svm', 'GMNPSVM');
 
 sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width);
 sg('set_features', 'TRAIN', fm_train_real);
-sg('set_labels', 'TRAIN', label_train_oneclass);
+sg('set_labels', 'TRAIN', label_train_twoclass);
 sg('svm_epsilon', epsilon);
 sg('svm_use_bias', use_bias);
 sg('c', C);
@@ -162,7 +162,7 @@ disp('LibSVM batch');
 
 sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width);
 sg('set_features', 'TRAIN', fm_train_real);
-sg('set_labels', 'TRAIN', label_train_oneclass);
+sg('set_labels', 'TRAIN', label_train_twoclass);
 sg('new_svm', 'LIBSVM');
 sg('svm_epsilon', epsilon);
 sg('svm_use_bias', use_bias);
@@ -190,7 +190,7 @@ disp('SubGradientSVM');
 
 C=0.42;
 sg('set_features', 'TRAIN', sparse(fm_train_real));
-sg('set_labels', 'TRAIN', label_train_oneclass);
+sg('set_labels', 'TRAIN', label_train_twoclass);
 sg('new_svm', 'SUBGRADIENTSVM');
 sg('svm_epsilon', epsilon);
 sg('svm_use_bias', use_bias);
@@ -207,7 +207,7 @@ disp('SVMOcas');
 sg('new_svm', 'SVMOCAS');
 
 sg('set_features', 'TRAIN', sparse(fm_train_real));
-sg('set_labels', 'TRAIN', label_train_oneclass);
+sg('set_labels', 'TRAIN', label_train_twoclass);
 sg('svm_epsilon', epsilon);
 sg('svm_use_bias', use_bias);
 sg('svm_max_train_time', max_train_time);
@@ -222,7 +222,7 @@ result=sg('classify');
 disp('SVMSGD');
 
 sg('set_features', 'TRAIN', sparse(fm_train_real));
-sg('set_labels', 'TRAIN', label_train_oneclass);
+sg('set_labels', 'TRAIN', label_train_twoclass);
 sg('new_svm', 'SVMSGD');
 sg('svm_epsilon', epsilon);
 sg('svm_use_bias', use_bias);
@@ -239,7 +239,7 @@ disp('LibLinear');
 sg('new_svm', 'LIBLINEAR_LR');
 
 sg('set_features', 'TRAIN', sparse(fm_train_real));
-sg('set_labels', 'TRAIN', label_train_oneclass);
+sg('set_labels', 'TRAIN', label_train_twoclass);
 sg('svm_epsilon', epsilon);
 sg('svm_use_bias', use_bias);
 sg('svm_max_train_time', max_train_time);
@@ -254,7 +254,7 @@ result=sg('classify');
 disp('SVMLin');
 
 sg('set_features', 'TRAIN', sparse(fm_train_real));
-sg('set_labels', 'TRAIN', label_train_oneclass);
+sg('set_labels', 'TRAIN', label_train_twoclass);
 sg('new_svm', 'SVMLIN');
 sg('svm_epsilon', epsilon);
 sg('svm_use_bias', use_bias);
@@ -276,7 +276,7 @@ disp('KNN');
 
 sg('set_distance', 'EUCLIDIAN', 'REAL');
 sg('set_features', 'TRAIN', fm_train_real);
-sg('set_labels', 'TRAIN', label_train_oneclass);
+sg('set_labels', 'TRAIN', label_train_twoclass);
 sg('new_classifier', 'KNN');
 
 sg('init_distance', 'TRAIN');
@@ -291,7 +291,7 @@ result=sg('classify');
 disp('LDA');
 
 sg('set_features', 'TRAIN', fm_train_real);
-sg('set_labels', 'TRAIN', label_train_oneclass);
+sg('set_labels', 'TRAIN', label_train_twoclass);
 sg('new_classifier', 'LDA');
 
 sg('train_classifier');
@@ -304,11 +304,11 @@ result=sg('classify');
 disp('Perceptron');
 
 % a bit silly, but Perceptron does not converge with original data
-num=length(label_train_oneclass)/2;
-label_train_oneclass=[label_train_oneclass(1:num/2) label_train_oneclass(num+1:num+num/2)];
+num=length(label_train_twoclass)/2;
+label_train_twoclass=[label_train_twoclass(1:num/2) label_train_twoclass(num+1:num+num/2)];
 fm_train_real=[fm_train_real(1,1:num/2) fm_train_real(1,num+1:num+num/2); fm_train_real(2,1:num/2) fm_train_real(2,num+1:num+num/2)];
 sg('set_features', 'TRAIN', fm_train_real);
-sg('set_labels', 'TRAIN', label_train_oneclass);
+sg('set_labels', 'TRAIN', label_train_twoclass);
 sg('new_classifier', 'PERCEPTRON');
 %sg('set_perceptron_parameters', 1.6, 5000);
 sg('train_classifier');

@@ -14,7 +14,7 @@ width <- 2.1
 
 fm_train <- as.matrix(read.table('../data/fm_train_real.dat'))
 fm_test <- as.matrix(read.table('../data/fm_test_real.dat'))
-label_train <- as.real(as.matrix(read.table('../data/label_train_oneclass.dat')))
+label_train <- as.real(as.matrix(read.table('../data/label_train_twoclass.dat')))
 
 #
 # SVM-based
