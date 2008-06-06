@@ -406,8 +406,6 @@ void CCmdLineInterface::get_real_sparsematrix(TSparse<DREAL>*& matrix, INT& num_
 
 	if (!f.read_real_valued_sparse(matrix, num_feat, num_vec))
 		SG_ERROR("Could not read SPARSE REAL data from %s.\n", filename);
-
-	transpose_matrix(matrix, num_feat, num_vec);
 }
 
 
