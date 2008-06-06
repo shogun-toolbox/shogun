@@ -180,9 +180,7 @@ svm_use_bias 0
 svm_max_train_time 60
 c 0.42
 % sometimes does not terminate
-print a
 train_classifier
-print b
 
 set_features TEST ../data/fm_test_sparsereal.dat
 out.txt = classify
@@ -199,53 +197,53 @@ c 0.42
 
 train_classifier
 
-set_features TEST ../data/fm_test_real.dat
+set_features TEST ../data/fm_test_sparsereal.dat
 out.txt = classify
 
 % SVMSGD
-%print SVMSGD
+print SVMSGD
 %
-%set_features TRAIN ../data/fm_train_real.dat
-%set_labels TRAIN ../data/label_train_oneclass.dat
-%new_svm SVMSGD
-%svm_epsilon 1e-5
-%svm_use_bias 0
-%c 0.42
-%
-%train_classifier
-%
-%set_features TEST ../data/fm_test_real.dat
-%out.txt = classify
+set_features TRAIN ../data/fm_train_sparsereal.dat
+set_labels TRAIN ../data/label_train_oneclass.dat
+new_svm SVMSGD
+svm_epsilon 1e-5
+svm_use_bias 0
+c 0.42
+
+train_classifier
+
+set_features TEST ../data/fm_test_sparsereal.dat
+out.txt = classify
 
 % LibLinear
-%print LibLinear
-%
-%set_features TRAIN ../data/fm_train_real.dat
-%set_labels TRAIN ../data/label_train_oneclass.dat
-%new_svm LIBLINEAR_LR
-%svm_epsilon 1e-5
-%svm_use_bias 0
-%c 0.42
-%
-%train_classifier
-%
-%set_features TEST ../data/fm_test_real.dat
-%out.txt = classify
+print LibLinear
+
+set_features TRAIN ../data/fm_train_sparsereal.dat
+set_labels TRAIN ../data/label_train_oneclass.dat
+new_svm LIBLINEAR_LR
+svm_epsilon 1e-5
+svm_use_bias 0
+c 0.42
+
+train_classifier
+
+set_features TEST ../data/fm_test_sparsereal.dat
+out.txt = classify
 
 % SVMLin
-%print SVMLin
-%
-%set_features TRAIN ../data/fm_train_real.dat
-%set_labels TRAIN ../data/label_train_oneclass.dat
-%new_svm SVMLIN
-%svm_epsilon 1e-5
-%svm_use_bias 0
-%c 0.42
-%
-%train_classifier
-%
-%set_features TEST ../data/fm_test_real.dat
-%out.txt = classify
+print SVMLin
+
+set_features TRAIN ../data/fm_train_sparsereal.dat
+set_labels TRAIN ../data/label_train_oneclass.dat
+new_svm SVMLIN
+svm_epsilon 1e-5
+svm_use_bias 0
+c 0.42
+
+train_classifier
+
+set_features TEST ../data/fm_test_sparsereal.dat
+out.txt = classify
 
 
 %
