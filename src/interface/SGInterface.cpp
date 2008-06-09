@@ -5462,7 +5462,7 @@ bool CSGInterface::cmd_help()
 	INT i=0;
 
 	SG_PRINT("\n");
-	if (m_nrhs==1) // all commands' help
+	if (m_nrhs==1) // unspecified help
 	{
 		SG_PRINT("Help is available for the following topics.\n"
 				 "-------------------------------------------\n\n");
@@ -5479,53 +5479,70 @@ bool CSGInterface::cmd_help()
 
 			i++;
 		}
-		SG_PRINT("\n\nUse sg('\033[1;31mhelp\033[0m', '\033[1;31mtopic\033[0m') to see the list of commands in this group, e.g.\n\n"
-				"\tsg('\033[1;31mhelp\033[0m', '\033[1;31mFeatures\033[0m')\n\nto see the list of commands for the 'Features' group.\n");
+		SG_PRINT("\nUse sg('\033[1;31mhelp\033[0m', '\033[1;31m<topic>\033[0m') to see the list of commands in this group, e.g.\n\n"
+				"\tsg('\033[1;31mhelp\033[0m', '\033[1;31mFeatures\033[0m')\n\nto see the list of commands for the 'Features' group.\n"
+				"\nOr use sg('\033[1;31mhelp\033[0m', '\033[1;31mall\033[0m') to see a brief listing of all commands.\n");
 	}
-	else // m_nrhs == 2 -> single command or group help
+	else // m_nrhs == 2 -> all commands, single command or group help
 	{
 		bool found=false;
 		bool in_group=false;
 		INT clen=0;
 		CHAR* command=get_string(clen);
 
-		while (sg_methods[i].command)
+		if (strmatch((CHAR*) "all", command) || strmatch((CHAR* ) "ALL", command))
 		{
-			if (in_group)
+			found=true;
+			while (sg_methods[i].command)
 			{
 				if (sg_methods[i].usage) // display group item
-					SG_PRINT("\t\033[1;31m%s\033[0m\n", sg_methods[i].command);
-					//SG_PRINT("\t%s: %s\n", sg_methods[i].command, sg_methods[i].usage);
-				else // next group reached -> end
-					break;
+					SG_PRINT("\t%s\n", sg_methods[i].usage);
+				else if (!sg_methods[i].method) // display group
+					SG_PRINT("\nCommands in group \033[1;31m%s\033[0m\n", sg_methods[i].command);
+
+				i++;
 			}
-			else
+		}
+		else
+		{
+			while (sg_methods[i].command)
 			{
-				found=strmatch(sg_methods[i].command, command);
-				if (found)
+				if (in_group)
 				{
-					if (sg_methods[i].usage) // found item
-					{
-						SG_PRINT("Usage for \033[1;31m%s\033[0m\n\n\t%s\n",
-							sg_methods[i].command, sg_methods[i].usage);
+					if (sg_methods[i].usage) // display group item
+						SG_PRINT("\t\033[1;31m%s\033[0m\n", sg_methods[i].command);
+						//SG_PRINT("\t%s: %s\n", sg_methods[i].command, sg_methods[i].usage);
+					else // next group reached -> end
 						break;
-					}
-					else // found group item
+				}
+				else
+				{
+					found=strmatch(sg_methods[i].command, command);
+					if (found)
 					{
-						SG_PRINT("Commands in group \033[1;31m%s\033[0m\n\n", sg_methods[i].command);
-						in_group=true;
+						if (sg_methods[i].usage) // found item
+						{
+							SG_PRINT("Usage for \033[1;31m%s\033[0m\n\n\t%s\n",
+								sg_methods[i].command, sg_methods[i].usage);
+							break;
+						}
+						else // found group item
+						{
+							SG_PRINT("Commands in group \033[1;31m%s\033[0m\n\n", sg_methods[i].command);
+							in_group=true;
+						}
 					}
 				}
-			}
 
-			i++;
+				i++;
+			}
 		}
 
 		if (!found)
 			SG_PRINT("Could not find help for command %s.\n", command);
 		else if (in_group)
 		{
-			SG_PRINT("\n\nUse sg('\033[1;31mhelp\033[0m', '\033[1;31mcommand\033[0m') to see the usage pattern of a single command, e.g.\n\n"
+			SG_PRINT("\n\nUse sg('\033[1;31mhelp\033[0m', '\033[1;31m<command>\033[0m') to see the usage pattern of a single command, e.g.\n\n"
 					"\tsg('\033[1;31mhelp\033[0m', '\033[1;31mclassify\033[0m')\n\nto see the usage pattern of the command 'classify'.\n");
 		}
 
