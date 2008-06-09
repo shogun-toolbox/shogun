@@ -5757,7 +5757,7 @@ bool CSGInterface::cmd_send_command()
 
 			if (!(interface->*(sg_methods[i].method))())
 			{
-				SG_ERROR("Usage: %s%s%s\n\n\t%s%s%s%s\n",
+				SG_ERROR("Usage: %s%s%s\n\n\t%s%s%s%s%s\n",
 						hilight.get_command_prefix(),
 						sg_methods[i].command,
 						hilight.get_command_suffix(),
@@ -5999,7 +5999,7 @@ bool CSGInterface::handle()
 			if (!(interface->*(sg_methods[i].method))())
 				if (sg_methods[i].usage_prefix)
 				{
-					SG_ERROR("Usage: %s%s%s\n\n\t%s%s%s%s\n",
+					SG_ERROR("Usage: %s%s%s\n\n\t%s%s%s%s%s\n",
 							hilight.get_command_prefix(),
 							sg_methods[i].command,
 							hilight.get_command_suffix(),
