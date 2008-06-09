@@ -1,4 +1,4 @@
-accuracy = 1e-10
+accuracy = 1e-09
 init_random = 42
 name = 'WeightedDegreeString'
 data_type = ''

@@ -117,7 +117,7 @@ KERNEL={
 	'WeightedDegreePositionString':[['dna', ''], ['string', 'Char'],
 		['degree', 'weights', 'shift', 'shift_len', 'max_mismatch',
 		'use_normalization', 'mkl_stepsize'], 1e-8],
-	'WeightedDegreeString':[['dna', ''], ['string', 'Char'], ['degree'], 1e-10],
+	'WeightedDegreeString':[['dna', ''], ['string', 'Char'], ['degree'], 1e-9],
 	'WeightedCommWordString':[['dna', ''], ['string_complex', 'Word', 'Char'],
 		['use_sign', 'normalization'], 1e-9],
 	'Word':[['rand', 'ushort'], ['simple', 'Word'], [], 1e-8],
