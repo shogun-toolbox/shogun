@@ -31,7 +31,7 @@ PROJECT_NAME           = SHOGUN
 # This could be handy for archiving the generated documentation or 
 # if some version control system is used.
 
-PROJECT_NUMBER         = v0.6.2
+PROJECT_NUMBER         = 
 
 # The OUTPUT_DIRECTORY tag is used to specify the (relative or absolute) 
 # base path where the generated documentation will be put. 
@@ -554,7 +554,7 @@ EXCLUDE_SYMBOLS        =
 # directories that contain example code fragments that are included (see 
 # the \include command).
 
-EXAMPLE_PATH           = ../src ../matlab_and_octave/examples/graphical
+EXAMPLE_PATH           = ../src ../matlab_and_octave/examples/graphical ../doc/data
 
 # If the value of the EXAMPLE_PATH tag contains directories, you can use the 
 # EXAMPLE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp 

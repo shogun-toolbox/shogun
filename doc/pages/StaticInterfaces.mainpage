@@ -283,91 +283,37 @@ commands you are now able to create your own SHOGUN applications.
 \section staticifexample_sec Example
 Let us discuss an example:
 
-\verbinclude svm_classification.m
+   \li \verbatim sg('set_features', 'TRAIN', traindat) \endverbatim
+   registers the training samples which reside in traindat.
 
-   \li sg('set_features', 'TRAIN', traindat) registers the training samples which
-   reside in traindat.
+   \li \verbatim sg('set_labels', 'TRAIN', trainlab) \endverbatim
+   registers the training labels.
 
-   \li sg('set_labels', 'TRAIN', trainlab) registers the training labels.
+   \li \verbatim sg('set_kernel GAUSSIAN REAL 100 1.0') \endverbatim
+   creates a new gaussian kernel for reals with cache size 100Mb and width = 1.
 
-   \li sg('set_kernel GAUSSIAN REAL 100 1.0') creates a new
-   gaussian kernel for reals with cache size 100Mb and width = 1.
+   \li \verbatim sg('init_kernel TRAIN') \endverbatim
+   attaches the data to the kernel and does some initialization.
 
-   \li sg('init_kernel TRAIN') attaches the data to the
-   kernel and does some initialization.
+   \li \verbatim sg('new_svm LIGHT') \endverbatim
+   creates a new SVM object inside the SHOGUN core.
 
-   \li sg('new_svm LIGHT') creates a new SVM object inside
-   the SHOGUN core.
+   \li \verbatim sg('c 20.0')  \endverbatim
+   sets the C value of the new SVM to 20.0.
 
-   \li sg('c 20.0') sets the C value of the new SVM to 20.0.
+   \li \verbatim sg('svm_train') \endverbatim
+   starts the training on the samples.
 
-   \li sg('svm_train') starts the training on the samples.
+   \li \verbatim sg('TEST', testdat) \endverbatim
+   registers the test samples
 
-   \li sg('TEST', testdat) registers the test samples
+   \li \verbatim sg('init_kernel TEST') \endverbatim
+   attaches the data to the kernel.
 
-   \li. sg('init_kernel TEST') attaches the data to the
-   kernel.
-
-   \li. out=sg('svm_classify') gives you the classification result as a
-   vector.
+   \li \verbatim out=sg('svm_classify') \endverbatim
+   gives you the classification result as a vector.
 
 
 \section staticifcmdref_sec Function Reference
-\arg \b crc \verbatim [crc32]=sg('crc', string) \endverbatim
-\arg \b translate_string \verbatim [translation]=sg('translate_string', string, order, start) \endverbatim
-\arg \b best_path_2struct \verbatim [prob, path, pos]=sg('best_path_2struct', p, q, a_trans, seq, pos, genestr, penalties, penalty_info, nbest, dict_weights, segment_sum_weights) \endverbatim
-\arg \b best_path_trans \verbatim [prob, path, pos]=sg('best_path_trans', p, q, a_trans, seq, pos, orf_info, genestr, penalties, state_signals, penalty_info, nbest, dict_weights, use_orf, mod_words [, segment_loss, segmend_ids_mask]) \endverbatim
-\arg \b best_path_trans_deriv \verbatim [p_deriv, q_deriv, a_deriv, penalties_deriv, my_scores, my_loss]=sg('best_path_trans_deriv', my_path, my_pos, p, q, a_trans, seq, pos, genestr, penalties, state_signals, penalty_info, dict_weights, mod_words [, segment_loss, segmend_ids_mask]) \endverbatim
-\arg \b best_path_no_b \verbatim [prob, path]=sg('best_path_no_b', p, q, a, max_iter) \endverbatim
-\arg \b best_path_trans_simple \verbatim [prob, path]=sg('best_path_trans_simple', p, q, a_trans, seq, nbest) \endverbatim
-\arg \b best_path_no_b_trans \verbatim [prob, path]=sg('best_path_no_b_trans', p, q, a_trans, max_iter, nbest) \endverbatim
-\arg \b get_version \verbatim [version]=sg('get_version') \endverbatim
-\arg \b set_labels \verbatim sg('set_labels', 'TRAIN|TEST', labels) \endverbatim
-\arg \b get_labels \verbatim [labels]=sg('get_labels', 'TRAIN|TEST') \endverbatim
-\arg \b from_position_list \verbatim sg('from_position_list', 'TRAIN|TEST', winsize, shift[, skip]) \endverbatim
-\arg \b get_features \verbatim [features]=sg('get_features', 'TRAIN|TEST') \endverbatim
-\arg \b add_features \verbatim ['TRAIN|TEST', features[, DNABINFILE|<ALPHABET>]]=sg('add_features') \endverbatim
-\arg \b set_features \verbatim ['TRAIN|TEST', features[, DNABINFILE|<ALPHABET>]]=sg('set_features') \endverbatim
-\arg \b get_distance_matrix \verbatim [D]=sg('get_distance_matrix') \endverbatim
-\arg \b get_kernel_matrix \verbatim [K]=sg('get_kernel_matrix') \endverbatim
-\arg \b set_custom_kernel \verbatim sg('set_custom_kernel', kernelmatrix, 'DIAG|FULL|FULL2DIAG') \endverbatim
-\arg \b set_WD_position_weights \verbatim sg('set_WD_position_weights', W[, 'TRAIN|TEST']) \endverbatim
-\arg \b get_subkernel_weights \verbatim [W]=sg('get_subkernel_weights') \endverbatim
-\arg \b set_subkernel_weights \verbatim sg('set_subkernel_weights', W) \endverbatim
-\arg \b set_subkernel_weights_combined \verbatim sg('set_subkernel_weights_combined', W, idx) \endverbatim
-\arg \b set_last_subkernel_weights \verbatim sg('set_last_subkernel_weights', W) \endverbatim
-\arg \b get_SPEC_consensus \verbatim [W]=sg('get_SPEC_consensus') \endverbatim
-\arg \b get_SPEC_scoring \verbatim [W]=sg('get_SPEC_scoring', max_order) \endverbatim
-\arg \b get_WD_consensus \verbatim [W]=sg('get_WD_consensus') \endverbatim
-\arg \b compute_poim_wd \verbatim [W]=sg('compute_poim_wd', max_order, distribution) \endverbatim
-\arg \b get_WD_scoring \verbatim [W]=sg('get_WD_scoring', max_order) \endverbatim
-\arg \b get_WD_position_weights \verbatim [W]=sg('get_WD_position_weights') \endverbatim
-\arg \b get_last_subkernel_weights \verbatim [W]=sg('get_last_subkernel_weights') \endverbatim
-\arg \b compute_by_subkernels \verbatim [W]=sg('compute_by_subkernels') \endverbatim
-\arg \b get_kernel_optimization \verbatim [W]=sg('get_kernel_optimization') \endverbatim
-\arg \b plugin_estimate_classify_example \verbatim [result]=sg('plugin_estimate_classify_example', feature_vector_index) \endverbatim
-\arg \b plugin_estimate_classify \verbatim [result]=sg('plugin_estimate_classify') \endverbatim
-\arg \b set_plugin_estimate \verbatim sg('set_plugin_estimate', emission_probs, model_sizes) \endverbatim
-\arg \b get_plugin_estimate \verbatim [emission_probs, model_sizes]=sg('get_plugin_estimate') \endverbatim
-\arg \b classify \verbatim [result]=sg('classify') \endverbatim
-\arg \b svm_classify \verbatim [result]=sg('svm_classify') \endverbatim
-\arg \b classify_example \verbatim [result]=sg('classify_example', feature_vector_index) \endverbatim
-\arg \b svm_classify_example \verbatim [result]=sg('svm_classify_example', feature_vector_index) \endverbatim
-\arg \b get_classifier \verbatim [bias, weights]=sg('get_classifier') \endverbatim
-\arg \b get_svm \verbatim [bias, alphas]=sg('get_svm') \endverbatim
-\arg \b set_svm \verbatim sg('set_svm', bias, alphas) \endverbatim
-\arg \b get_svm_objective \verbatim [objective]=sg('get_svm_objective') \endverbatim
-\arg \b relative_entropy \verbatim [result]=sg('relative_entropy') \endverbatim
-\arg \b entropy \verbatim [result]=sg('entropy') \endverbatim
-\arg \b hmm_classify \verbatim [result]=sg('hmm_classify') \endverbatim
-\arg \b one_class_linear_hmm_classify \verbatim [result]=sg('one_class_linear_hmm_classify') \endverbatim
-\arg \b one_class_hmm_classify \verbatim [result]=sg('one_class_hmm_classify') \endverbatim
-\arg \b one_class_hmm_classify_example \verbatim [result]=sg('one_class_hmm_classify_example', feature_vector_inde) \endverbatim
-\arg \b hmm_classify_example \verbatim [result]=sg('hmm_classify_example', feature_vector_index) \endverbatim
-\arg \b hmm_likelihood \verbatim [likelihood]=sg('hmm_likelihood') \endverbatim
-\arg \b get_viterbi_path \verbatim [path, likelihood]=sg('get_viterbi_path', dim) \endverbatim
-\arg \b get_hmm \verbatim [p, q, a, b]=sg('get_hmm') \endverbatim
-\arg \b append_hmm \verbatim sg('append_hmm', p, q, a, b) \endverbatim
-\arg \b set_hmm \verbatim sg('set_hmm', p, q, a, b) \endverbatim
-
+\verbinclude help_all.txt
 */
