@@ -102,6 +102,10 @@ def _classifier (indata):
 		classifier.set_tube_epsilon(indata['classifier_tube_epsilon'])
 	if indata.has_key('classifier_max_train_time'):
 		classifier.set_max_train_time(indata['classifier_max_train_time'])
+	if indata.has_key('classifier_linadd_enabled'):
+		classifier.set_linadd_enabled(indata['classifier_linadd_enabled'])
+	if indata.has_key('classifier_batch_enabled'):
+		classifier.set_batch_computation_enabled(indata['classifier_batch_enabled'])
 
 	classifier.train()
 

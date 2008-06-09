@@ -45,6 +45,7 @@ def _get_outdata (name, params):
 		'max_iter', 'learn_rate',
 		'k',
 		'gamma',
+		'linadd_enabled', 'batch_enabled'
 	]
 	for opt in optional:
 		if params.has_key(opt):
@@ -126,6 +127,10 @@ def _compute_svm (name, labels, params):
 	if params.has_key('max_train_time'):
 		svm.set_max_train_time(params['max_train_time'])
 		params['max_train_time']=params['max_train_time']
+	if params.has_key('linadd_enabled'):
+		svm.set_linadd_enabled(params['linadd_enabled'])
+	if params.has_key('batch_enabled'):
+		svm.set_batch_computation_enabled(params['batch_enabled'])
 
 	svm.train()
 
@@ -227,16 +232,6 @@ def _run_svm_kernel ():
 	_loop_svm(svms, params)
 
 	params['data']=dataop.get_dna()
-	params['feats']=featop.get_string('Char', params['data'])
-	params['kname']='WeightedDegreeString'
-	params['kargs']=[3]
-	params['kernel']=WeightedDegreeStringKernel(*params['kargs'])
-	_loop_svm(svms, params)
-
-	params['kname']='WeightedDegreePositionString'
-	params['kargs']=[20]
-	params['kernel']=WeightedDegreePositionStringKernel(10, *params['kargs'])
-	_loop_svm(svms, params)
 
 	params['kargs']=[False, library.FULL_NORMALIZATION]
 	params['kname']='CommWordString'
@@ -248,6 +243,28 @@ def _run_svm_kernel ():
 	params['feats']=featop.get_string_complex('Ulong', params['data'])
 	params['kernel']=CommUlongStringKernel(10, *params['kargs'])
 	_loop_svm(svms, params)
+
+	params['feats']=featop.get_string('Char', params['data'])
+	params['kname']='WeightedDegreeString'
+	params['kargs']=[3]
+	params['kernel']=WeightedDegreeStringKernel(*params['kargs'])
+	_loop_svm(svms, params)
+	params['linadd_enabled']=True
+	_loop_svm(svms, params)
+	params['batch_enabled']=True
+	_loop_svm(svms, params)
+	del params['linadd_enabled']
+	del params['batch_enabled']
+
+	params['kname']='WeightedDegreePositionString'
+	params['kargs']=[20]
+	params['kernel']=WeightedDegreePositionStringKernel(10, *params['kargs'])
+	_loop_svm(svms, params)
+	params['linadd_enabled']=True
+	_loop_svm(svms, params)
+	params['batch_enabled']=True
+	_loop_svm(svms, params)
+
 
 def _run_svm_linear ():
 	"""Run all SVMs based on (Sparse) Linear Classifiers."""

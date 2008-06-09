@@ -20,5 +20,5 @@ kernel_arg0_degree = 3
 classifier_alphas = [-0.017, 0.017, 0.0123271672, 0.015277779, 0.0130625255, -0.017, -0.017, -0.017, 0.0137124724, -0.017, 0.0136200559]
 alphabet = 'DNA'
 classifier_support_vectors = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-accuracy = 1e-10
+accuracy = 1e-09
 data_class = 'dna'
