@@ -2141,7 +2141,16 @@ EOF
 					DEFINES="$DEFINES -DHAVE_ATLAS -DHAVE_LAPACK"
 					LINKFLAGS="$LINKFLAGS -llapack_atlas -llapack -lcblas"
 				else
-					echores "no"
+					if cc_check -latlas -llapack -lcblas
+					then
+						echores "yes"
+						HAVE_ATLAS='#define HAVE_ATLAS 1'
+						HAVE_LAPACK='#define HAVE_LAPACK 1'
+						DEFINES="$DEFINES -DHAVE_ATLAS -DHAVE_LAPACK"
+						LINKFLAGS="$LINKFLAGS -latlas -llapack -lcblas"
+					else
+						echores "no"
+					fi
 
 cat > $TMPC << EOF
 #include <cblas.h>

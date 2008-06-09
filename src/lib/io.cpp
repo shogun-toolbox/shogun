@@ -74,8 +74,16 @@ void CIO::message(EMessageType prio, const CHAR *fmt, ... ) const
 			fprintf(target, "%s", msg_intro);
 			mexPrintf("%s", str);
 #elif defined(HAVE_R)
-			Rprintf((char*) "%s", msg_intro);
-			Rprintf((char*) "%s", str);
+			if (target==stdout)
+			{
+				Rprintf((char*) "%s", msg_intro);
+				Rprintf((char*) "%s", str);
+			}
+			else
+			{
+				fprintf(target, "%s", msg_intro);
+				fprintf(target, "%s", str);
+			}
 #else
 			fprintf(target, "%s", msg_intro);
 			fprintf(target, "%s", str);
@@ -90,8 +98,16 @@ void CIO::message(EMessageType prio, const CHAR *fmt, ... ) const
 #elif defined(HAVE_PYTHON) // no check for swig necessary
 			PyErr_Warn(NULL, str);
 #elif defined(HAVE_R)
-			Rprintf((char*) "%s", msg_intro);
-			Rprintf((char*) "%s", str);
+			if (target==stdout)
+			{
+				Rprintf((char*) "%s", msg_intro);
+				Rprintf((char*) "%s", str);
+			}
+			else
+			{
+				fprintf(target, "%s", msg_intro);
+				fprintf(target, "%s", str);
+			}
 #else
 			fprintf(target, "%s", msg_intro);
 			fprintf(target, "%s", str);

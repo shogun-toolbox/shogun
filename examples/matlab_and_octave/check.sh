@@ -26,7 +26,7 @@ fi
 for e in *.m
 do
 	echo -n "running $e .."
-	if cat "$e" | ${INTERFACE} >/dev/null 2>&1
+	if ${INTERFACE} "$e" >/dev/null 2>&1
 	then
 		echo " OK"
 	else

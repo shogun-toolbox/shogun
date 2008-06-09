@@ -315,5 +315,8 @@ Let us discuss an example:
 
 
 \section staticifcmdref_sec Function Reference
-\verbinclude help_all.txt
+  \li \subpage staticoctave
+  \li \subpage staticpython
+  \li \subpage staticcmdline
+  \li \subpage staticr
 */

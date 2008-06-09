@@ -746,7 +746,7 @@ bool CCmdLineInterface::parse_line(CHAR* line)
 char* command_generator(const char *text, int state)
 {
 	static int list_index, len;
-	char *name;
+	const char *name;
 
 	/* If this is a new word to complete, initialize now.  This
 	 *      includes saving the length of TEXT for efficiency, and
@@ -816,7 +816,12 @@ int main(int argc, char* argv[])
 				if (!line)
 					break;
 
-				intf->parse_line(line);
+				try
+				{
+					intf->parse_line(line);
+				}
+				catch (ShogunException e) { }
+
 			}
 
 			delete interface;

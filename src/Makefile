@@ -292,6 +292,37 @@ doc:	lib/versionstring.h
 		-@sed -i "s/PROJECT_NUMBER         = .*/PROJECT_NUMBER         = `sed -n 's/^#define VERSION_RELEASE "\(.*\)_"/\1/p' $@`/" ../doc/Doxyfile
 		cd ../doc && make
 
+reference:
+ifeq (octave,$(INTERFACE))
+	echo "/** \page staticoctave Static Matlab/Octave Interface Function Reference" >x
+	-echo "sg('set_output', 'y');sg('help','doxygen');" | octave
+	echo "*/" >>y
+	cat x y >../doc/pages/StaticOctaveInterface.mainpage
+	rm -f x y
+endif
+ifeq (cmdline,$(INTERFACE))
+	echo "/** \page staticcmdline Static Command Line Interface Function Reference" >x
+	-bash -c "echo -e \"set_output y\nhelp doxygen\n\"" | shogun
+	echo "*/" >>y
+	cat x y >../doc/pages/StaticCommandLineInterface.mainpage
+	rm -f x y
+endif
+ifeq (python,$(INTERFACE))
+	echo "/** \page staticpython Static Python Interface Function Reference" >x
+	-bash -c "echo -e \"from sg import sg\nsg('set_output', 'y')\nsg('help','doxygen')\n\" | python"
+	echo "*/" >>y
+	cat x y >../doc/pages/StaticPythonInterface.mainpage
+	rm -f x y
+endif
+ifeq (r,$(INTERFACE))
+	echo "/** \page staticr Static R Interface Function Reference" >x
+	-echo "library(sg);sg('set_output', 'y');sg('help','doxygen');" | R --no-save
+	echo "*/" >>y
+	cat x y >../doc/pages/StaticRInterface.mainpage
+	rm -f x y
+endif
+
+
 r-precompile: RFILES
 	find ./ -name '*.R' -exec echo "f='{}'; fdata=file.path(dirname(f), paste(strsplit(basename(f),'.',fixed = TRUE)[[1]][1],'.RData', sep='')); source(f); save(list=ls(all=TRUE),file=fdata, compress=TRUE); q(save='no')" | R \;
 
@@ -305,9 +336,9 @@ check-examples:
 else
 ifeq (r,$(INTERFACE))
 run-testsuite:
-		cd ../testsuite/$(INTERFACE) && ( R_LIBS="$(DESTDIR)/usr/lib/R/site-library" ./test_all.sh	)
+		cd ../testsuite/$(INTERFACE) && ( R_LIBS="$(DESTDIR)$(RDIR)" ./test_all.sh	)
 check-examples:
-		cd ../examples/$(INTERFACE) && ( R_LIBS="$(DESTDIR)/usr/lib/R/site-library" ./check.sh	)
+		cd ../examples/$(INTERFACE) && ( R_LIBS="$(DESTDIR)$(RDIR)" ./check.sh	)
 else
 run-testsuite:
 		cd ../testsuite/$(INTERFACE) && test -e ./test_all.sh && ./test_all.sh

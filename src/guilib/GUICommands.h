@@ -177,6 +177,7 @@
 #define N_QUIT							"quit"
 #define N_EXEC							"exec"
 #define N_EXIT							"exit"
+#define N_SYNTAX_HIGHLIGHT				"syntax_highlight"
 #define N_HELP							"help"
 #define N_SYSTEM						"!"
 #define N_SET_THRESHOLD					"set_threshold"

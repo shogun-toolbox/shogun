@@ -360,6 +360,8 @@ class CSGInterface : public CSGObject
 		bool cmd_loglevel();
 		/** set progress */
 		bool cmd_progress();
+		/** en/disable syntax hilighting */
+		bool cmd_syntax_highlight();
 		/** get version */
 		bool cmd_get_version();
 		/** issue help message */
@@ -482,7 +484,7 @@ class CSGInterface : public CSGObject
 		 * @param len number of CHAR to compare, length of cmd if not given
 		 *
 		 */
-		static bool strmatch(CHAR* str, const CHAR* cmd, INT len=-1)
+		static bool strmatch(const CHAR* str, const CHAR* cmd, INT len=-1)
 		{
 			if (len==-1)
 			{
@@ -546,9 +548,10 @@ class CSGInterface : public CSGObject
 typedef bool (CSGInterface::*CSGInterfacePtr)();
 
 typedef struct {
-	CHAR* command;
+	const CHAR* command;
 	CSGInterfacePtr method;
-	CHAR* usage;
+	const CHAR* usage_prefix;
+	const CHAR* usage_suffix;
 } CSGInterfaceMethod;
 
 #endif // !HAVE_SWIG

@@ -3,6 +3,7 @@
 #if !defined(HAVE_SWIG)
 
 #include "interface/SGInterface.h"
+#include "interface/SyntaxHighLight.h"
 #include "lib/ShogunException.h"
 #include "lib/Mathematics.h"
 #include "lib/Signal.h"
@@ -29,847 +30,943 @@
 #include <ctype.h>
 
 CSGInterface* interface=NULL;
+CSyntaxHighLight hilight;
 
-#define USAGE(method) "sg('\033[1;31m" method "\033[0m')"
-#define USAGE_I(method, in) "sg('\033[1;31m" method "\033[0m', " in ")"
-#define USAGE_O(method, out) "[" out "]=sg('\033[1;31m" method "\033[0m')"
-#define USAGE_IO(method, in, out) "[" out "]=sg('\033[1;31m" method "\033[0m', " in ")"
+#if defined(HAVE_CMDLINE)
+#define USAGE(method) "", ""
+#define USAGE_I(method, in) "", " " in ""
+#define USAGE_O(method, out) "" out " = ", ""
+#define USAGE_IO(method, in, out) "" out " = ", " " in ""
+#define USAGE_COMMA " "
+#define USAGE_STR ""
+#else
+#define USAGE(method) "sg('", "')"
+#define USAGE_I(method, in) "sg('", "', " in ")"
+#define USAGE_O(method, out) "[" out "]=sg('", "')"
+#define USAGE_IO(method, in, out) "[" out "]=sg('", "', " in ")"
+#define USAGE_COMMA ", "
+#define USAGE_STR "'"
+#endif
 
 CSGInterfaceMethod sg_methods[]=
 {
-	{ (CHAR*) "Features", NULL, NULL },
+	{ "Features", NULL, NULL, NULL },
 	{
-		(CHAR*) N_LOAD_FEATURES,
+		N_LOAD_FEATURES,
 		(&CSGInterface::cmd_load_features),
-		(CHAR*) USAGE_I(N_LOAD_FEATURES,
-			"filename, feature_class, type, target[, size[, comp_features]]")
+		USAGE_I(N_LOAD_FEATURES,
+			"filename" USAGE_COMMA "feature_class" USAGE_COMMA "type" USAGE_COMMA "target[" USAGE_COMMA "size[" USAGE_COMMA "comp_features]]")
 	},
 	{
-		(CHAR*) N_SAVE_FEATURES,
+		N_SAVE_FEATURES,
 		(&CSGInterface::cmd_save_features),
-		(CHAR*) USAGE_I(N_SAVE_FEATURES, "filename, type, target")
+		USAGE_I(N_SAVE_FEATURES, "filename" USAGE_COMMA "type" USAGE_COMMA "target")
 	},
 	{
-		(CHAR*) N_CLEAN_FEATURES,
+		N_CLEAN_FEATURES,
 		(&CSGInterface::cmd_clean_features),
-		(CHAR*) USAGE_I(N_CLEAN_FEATURES, "'TRAIN|TEST'")
+		USAGE_I(N_CLEAN_FEATURES, USAGE_STR "TRAIN|TEST" USAGE_STR )
 	},
 	{
-		(CHAR*) N_GET_FEATURES,
+		N_GET_FEATURES,
 		(&CSGInterface::cmd_get_features),
-		(CHAR*) USAGE_IO(N_GET_FEATURES, "'TRAIN|TEST'", "features")
+		USAGE_IO(N_GET_FEATURES, USAGE_STR "TRAIN|TEST" USAGE_STR, "features")
 	},
 	{
-		(CHAR*) N_ADD_FEATURES,
+		N_ADD_FEATURES,
 		(&CSGInterface::cmd_add_features),
-		(CHAR*) USAGE_I(N_ADD_FEATURES,
-			"'TRAIN|TEST', features[, DNABINFILE|<ALPHABET>]")
+		USAGE_I(N_ADD_FEATURES,
+			USAGE_STR "TRAIN|TEST" USAGE_STR USAGE_COMMA "features[" USAGE_COMMA "DNABINFILE|<ALPHABET>]")
 	},
 	{
-		(CHAR*) N_SET_FEATURES,
+		N_SET_FEATURES,
 		(&CSGInterface::cmd_set_features),
-		(CHAR*) USAGE_I(N_SET_FEATURES,
-			"'TRAIN|TEST', features[, DNABINFILE|<ALPHABET>]")
+		USAGE_I(N_SET_FEATURES,
+			USAGE_STR "TRAIN|TEST" USAGE_STR USAGE_COMMA "features[" USAGE_COMMA "DNABINFILE|<ALPHABET>]")
 	},
 	{
-		(CHAR*) N_SET_REF_FEAT,
+		N_SET_REF_FEAT,
 		(&CSGInterface::cmd_set_reference_features),
-		(CHAR*) USAGE_I(N_SET_REF_FEAT, "'TRAIN|TEST'")
+		USAGE_I(N_SET_REF_FEAT, USAGE_STR "TRAIN|TEST" USAGE_STR)
 	},
 	{
-		(CHAR*) N_DEL_LAST_FEATURES,
+		N_DEL_LAST_FEATURES,
 		(&CSGInterface::cmd_del_last_features),
-		(CHAR*) USAGE_I(N_DEL_LAST_FEATURES, "'TRAIN|TEST'")
+		USAGE_I(N_DEL_LAST_FEATURES, USAGE_STR "TRAIN|TEST" USAGE_STR )
 	},
 	{
-		(CHAR*) N_CONVERT,
+		N_CONVERT,
 		(&CSGInterface::cmd_convert),
-		(CHAR*) USAGE_I(N_CONVERT, "'TRAIN|TEST', from_class, from_type, to_class, to_type[, order, start, gap, reversed]")
+		USAGE_I(N_CONVERT, USAGE_STR "TRAIN|TEST" USAGE_STR 
+				USAGE_COMMA "from_class"
+				USAGE_COMMA "from_type"
+				USAGE_COMMA "to_class"
+				USAGE_COMMA "to_type["
+				USAGE_COMMA "order"
+				USAGE_COMMA "start"
+				USAGE_COMMA "gap"
+				USAGE_COMMA "reversed]")
 	},
 	{
-		(CHAR*) N_FROM_POSITION_LIST,
+		N_FROM_POSITION_LIST,
 		(&CSGInterface::cmd_obtain_from_position_list),
-		(CHAR*) USAGE_I(N_FROM_POSITION_LIST, "'TRAIN|TEST', winsize, shift[, skip]")
+		USAGE_I(N_FROM_POSITION_LIST, USAGE_STR "TRAIN|TEST" USAGE_STR
+				USAGE_COMMA "winsize"
+				USAGE_COMMA "shift["
+				USAGE_COMMA "skip]")
 	},
 	{
-		(CHAR*) N_SLIDE_WINDOW,
+		N_SLIDE_WINDOW,
 		(&CSGInterface::cmd_obtain_by_sliding_window),
-		(CHAR*) USAGE_I(N_SLIDE_WINDOW, "'TRAIN|TEST', winsize, shift[, skip]")
+		USAGE_I(N_SLIDE_WINDOW, USAGE_STR "TRAIN|TEST" USAGE_STR
+				USAGE_COMMA "winsize"
+				USAGE_COMMA "shift["
+				USAGE_COMMA "skip]")
 	},
 	{
-		(CHAR*) N_RESHAPE,
+		N_RESHAPE,
 		(&CSGInterface::cmd_reshape),
-		(CHAR*) USAGE_I(N_RESHAPE, "'TRAIN|TEST', num_feat, num_vec")
+		USAGE_I(N_RESHAPE, USAGE_STR "TRAIN|TEST"
+				USAGE_COMMA "num_feat"
+				USAGE_COMMA "num_vec")
 	},
 	{
-		(CHAR*) N_LOAD_LABELS,
+		N_LOAD_LABELS,
 		(&CSGInterface::cmd_load_labels),
-		(CHAR*) USAGE_I(N_LOAD_LABELS, "filename, 'TRAIN|TARGET'")
+		USAGE_I(N_LOAD_LABELS, "filename"
+				USAGE_COMMA USAGE_STR "TRAIN|TARGET" USAGE_STR)
 	},
 	{
-		(CHAR*) N_SET_LABELS,
+		N_SET_LABELS,
 		(&CSGInterface::cmd_set_labels),
-		(CHAR*) USAGE_I(N_SET_LABELS, "'TRAIN|TEST', labels")
+		USAGE_I(N_SET_LABELS, USAGE_STR "TRAIN|TEST" USAGE_STR
+				USAGE_COMMA "labels")
 	},
 	{
-		(CHAR*) N_GET_LABELS,
+		N_GET_LABELS,
 		(&CSGInterface::cmd_get_labels),
-		(CHAR*) USAGE_IO(N_GET_LABELS, "'TRAIN|TEST'", "labels")
+		USAGE_IO(N_GET_LABELS, USAGE_STR "TRAIN|TEST" USAGE_STR, "labels")
 	},
 
 
-	{ (CHAR*) "Kernel", NULL, NULL },
+	{ "Kernel", NULL, NULL },
 	{
-		(CHAR*) N_SET_KERNEL,
+		N_SET_KERNEL,
 		(&CSGInterface::cmd_set_kernel),
-		(CHAR*) USAGE_I(N_SET_KERNEL, "type, size[, kernel-specific parameters]")
+		USAGE_I(N_SET_KERNEL, "type" USAGE_COMMA "size[" USAGE_COMMA "kernel-specific parameters]")
 	},
 	{
-		(CHAR*) N_ADD_KERNEL,
+		N_ADD_KERNEL,
 		(&CSGInterface::cmd_add_kernel),
-		(CHAR*) USAGE_I(N_ADD_KERNEL, "weight, kernel-specific parameters")
+		USAGE_I(N_ADD_KERNEL, "weight" USAGE_COMMA "kernel-specific parameters")
 	},
 	{
-		(CHAR*) N_DEL_LAST_KERNEL,
+		N_DEL_LAST_KERNEL,
 		(&CSGInterface::cmd_del_last_kernel),
-		(CHAR*) USAGE(N_DEL_LAST_KERNEL)
+		USAGE(N_DEL_LAST_KERNEL)
 	},
 	{
-		(CHAR*) N_INIT_KERNEL,
+		N_INIT_KERNEL,
 		(&CSGInterface::cmd_init_kernel),
-		(CHAR*) USAGE_I(N_INIT_KERNEL, "'TRAIN|TEST'")
+		USAGE_I(N_INIT_KERNEL, USAGE_STR "TRAIN|TEST" USAGE_STR)
 	},
 	{
-		(CHAR*) N_CLEAN_KERNEL,
+		N_CLEAN_KERNEL,
 		(&CSGInterface::cmd_clean_kernel),
-		(CHAR*) USAGE(N_CLEAN_KERNEL)
+		USAGE(N_CLEAN_KERNEL)
 	},
 	{
-		(CHAR*) N_SAVE_KERNEL,
+		N_SAVE_KERNEL,
 		(&CSGInterface::cmd_save_kernel),
-		(CHAR*) USAGE_I(N_SAVE_KERNEL, "filename")
+		USAGE_I(N_SAVE_KERNEL, "filename")
 	},
 	{
-		(CHAR*) N_LOAD_KERNEL_INIT,
+		N_LOAD_KERNEL_INIT,
 		(&CSGInterface::cmd_load_kernel_init),
-		(CHAR*) USAGE_I(N_LOAD_KERNEL_INIT, "filename")
+		USAGE_I(N_LOAD_KERNEL_INIT, "filename")
 	},
 	{
-		(CHAR*) N_SAVE_KERNEL_INIT,
+		N_SAVE_KERNEL_INIT,
 		(&CSGInterface::cmd_save_kernel_init),
-		(CHAR*) USAGE_I(N_SAVE_KERNEL_INIT, "filename")
+		USAGE_I(N_SAVE_KERNEL_INIT, "filename")
 	},
 	{
-		(CHAR*) N_GET_KERNEL_MATRIX,
+		N_GET_KERNEL_MATRIX,
 		(&CSGInterface::cmd_get_kernel_matrix),
-		(CHAR*) USAGE_O(N_GET_KERNEL_MATRIX, "K")
+		USAGE_O(N_GET_KERNEL_MATRIX, "K")
 	},
 	{
-		(CHAR*) N_SET_CUSTOM_KERNEL,
+		N_SET_CUSTOM_KERNEL,
 		(&CSGInterface::cmd_set_custom_kernel),
-		(CHAR*) USAGE_I(N_SET_CUSTOM_KERNEL, "kernelmatrix, 'DIAG|FULL|FULL2DIAG'")
+		USAGE_I(N_SET_CUSTOM_KERNEL, "kernelmatrix" USAGE_COMMA USAGE_STR "DIAG|FULL|FULL2DIAG" USAGE_STR)
 	},
 	{
-		(CHAR*) N_SET_WD_POS_WEIGHTS,
+		N_SET_WD_POS_WEIGHTS,
 		(&CSGInterface::cmd_set_WD_position_weights),
-		(CHAR*) USAGE_I(N_SET_WD_POS_WEIGHTS, "W[, 'TRAIN|TEST']")
+		USAGE_I(N_SET_WD_POS_WEIGHTS, "W[" USAGE_COMMA USAGE_STR "TRAIN|TEST" USAGE_STR "]")
 	},
 	{
-		(CHAR*) N_GET_SUBKERNEL_WEIGHTS,
+		N_GET_SUBKERNEL_WEIGHTS,
 		(&CSGInterface::cmd_get_subkernel_weights),
-		(CHAR*) USAGE_O(N_GET_SUBKERNEL_WEIGHTS, "W")
+		USAGE_O(N_GET_SUBKERNEL_WEIGHTS, "W")
 	},
 	{
-		(CHAR*) N_SET_SUBKERNEL_WEIGHTS,
+		N_SET_SUBKERNEL_WEIGHTS,
 		(&CSGInterface::cmd_set_subkernel_weights),
-		(CHAR*) USAGE_I(N_SET_SUBKERNEL_WEIGHTS, "W")
+		USAGE_I(N_SET_SUBKERNEL_WEIGHTS, "W")
 	},
 	{
-		(CHAR*) N_SET_SUBKERNEL_WEIGHTS_COMBINED,
+		N_SET_SUBKERNEL_WEIGHTS_COMBINED,
 		(&CSGInterface::cmd_set_subkernel_weights_combined),
-		(CHAR*) USAGE_I(N_SET_SUBKERNEL_WEIGHTS_COMBINED, "W, idx")
+		USAGE_I(N_SET_SUBKERNEL_WEIGHTS_COMBINED, "W" USAGE_COMMA "idx")
 	},
 	{
-		(CHAR*) N_SET_LAST_SUBKERNEL_WEIGHTS,
+		N_SET_LAST_SUBKERNEL_WEIGHTS,
 		(&CSGInterface::cmd_set_last_subkernel_weights),
-		(CHAR*) USAGE_I(N_SET_LAST_SUBKERNEL_WEIGHTS, "W")
+		USAGE_I(N_SET_LAST_SUBKERNEL_WEIGHTS, "W")
 	},
 	{
-		(CHAR*) N_GET_WD_POS_WEIGHTS,
+		N_GET_WD_POS_WEIGHTS,
 		(&CSGInterface::cmd_get_WD_position_weights),
-		(CHAR*) USAGE_O(N_GET_WD_POS_WEIGHTS, "W")
+		USAGE_O(N_GET_WD_POS_WEIGHTS, "W")
 	},
 	{
-		(CHAR*) N_GET_LAST_SUBKERNEL_WEIGHTS,
+		N_GET_LAST_SUBKERNEL_WEIGHTS,
 		(&CSGInterface::cmd_get_last_subkernel_weights),
-		(CHAR*) USAGE_O(N_GET_LAST_SUBKERNEL_WEIGHTS, "W")
+		USAGE_O(N_GET_LAST_SUBKERNEL_WEIGHTS, "W")
 	},
 	{
-		(CHAR*) N_COMPUTE_BY_SUBKERNELS,
+		N_COMPUTE_BY_SUBKERNELS,
 		(&CSGInterface::cmd_compute_by_subkernels),
-		(CHAR*) USAGE_O(N_COMPUTE_BY_SUBKERNELS, "W")
+		USAGE_O(N_COMPUTE_BY_SUBKERNELS, "W")
 	},
 	{
-		(CHAR*) N_INIT_KERNEL_OPTIMIZATION,
+		N_INIT_KERNEL_OPTIMIZATION,
 		(&CSGInterface::cmd_init_kernel_optimization),
-		(CHAR*) USAGE(N_INIT_KERNEL_OPTIMIZATION)
+		USAGE(N_INIT_KERNEL_OPTIMIZATION)
 	},
 	{
-		(CHAR*) N_GET_KERNEL_OPTIMIZATION,
+		N_GET_KERNEL_OPTIMIZATION,
 		(&CSGInterface::cmd_get_kernel_optimization),
-		(CHAR*) USAGE_O(N_GET_KERNEL_OPTIMIZATION, "W")
+		USAGE_O(N_GET_KERNEL_OPTIMIZATION, "W")
 	},
 	{
-		(CHAR*) N_DELETE_KERNEL_OPTIMIZATION,
+		N_DELETE_KERNEL_OPTIMIZATION,
 		(&CSGInterface::cmd_delete_kernel_optimization),
-		(CHAR*) USAGE(N_DELETE_KERNEL_OPTIMIZATION)
+		USAGE(N_DELETE_KERNEL_OPTIMIZATION)
 	},
 	{
-		(CHAR*) N_USE_DIAGONAL_SPEEDUP,
+		N_USE_DIAGONAL_SPEEDUP,
 		(&CSGInterface::cmd_use_diagonal_speedup),
-		(CHAR*) USAGE_I(N_USE_DIAGONAL_SPEEDUP, "'0|1'")
+		USAGE_I(N_USE_DIAGONAL_SPEEDUP, "USAGE_STR" "0|1" "USAGE_STR")
 	},
 	{
-		(CHAR*) N_SET_KERNEL_OPTIMIZATION_TYPE,
+		N_SET_KERNEL_OPTIMIZATION_TYPE,
 		(&CSGInterface::cmd_set_kernel_optimization_type),
-		(CHAR*) USAGE_I(N_SET_KERNEL_OPTIMIZATION_TYPE, "'FASTBUTMEMHUNGRY|SLOWBUTMEMEFFICIENT'")
+		USAGE_I(N_SET_KERNEL_OPTIMIZATION_TYPE, "USAGE_STR" "FASTBUTMEMHUNGRY|SLOWBUTMEMEFFICIENT" "USAGE_STR")
 	},
 #ifdef USE_SVMLIGHT
 	{
-		(CHAR*) N_RESIZE_KERNEL_CACHE,
+		N_RESIZE_KERNEL_CACHE,
 		(&CSGInterface::cmd_resize_kernel_cache),
-		(CHAR*) USAGE_I(N_RESIZE_KERNEL_CACHE, "size")
+		USAGE_I(N_RESIZE_KERNEL_CACHE, "size")
 	},
 #endif //USE_SVMLIGHT
 
 
-	{ (CHAR*) "Distance", NULL, NULL },
+	{ "Distance", NULL, NULL },
 	{
-		(CHAR*) N_SET_DISTANCE,
+		N_SET_DISTANCE,
 		(&CSGInterface::cmd_set_distance),
-		(CHAR*) USAGE_I(N_SET_DISTANCE, "type, data type[, distance-specific parameters]")
+		USAGE_I(N_SET_DISTANCE, "type" USAGE_COMMA "data type[" USAGE_COMMA "distance-specific parameters]")
 	},
 	{
-		(CHAR*) N_INIT_DISTANCE,
+		N_INIT_DISTANCE,
 		(&CSGInterface::cmd_init_distance),
-		(CHAR*) USAGE_I(N_INIT_DISTANCE, "'TRAIN|TEST'")
+		USAGE_I(N_INIT_DISTANCE, USAGE_STR "TRAIN|TEST" USAGE_STR)
 	},
 	{
-		(CHAR*) N_GET_DISTANCE_MATRIX,
+		N_GET_DISTANCE_MATRIX,
 		(&CSGInterface::cmd_get_distance_matrix),
-		(CHAR*) USAGE_O(N_GET_DISTANCE_MATRIX, "D")
+		USAGE_O(N_GET_DISTANCE_MATRIX, "D")
 	},
 
 
-	{ (CHAR*) "SVM & Other Classifier", NULL, NULL },
+	{ "Classifier", NULL, NULL },
 	{
-		(CHAR*) N_CLASSIFY,
+		N_CLASSIFY,
 		(&CSGInterface::cmd_classify),
-		(CHAR*) USAGE_O(N_CLASSIFY, "result")
+		USAGE_O(N_CLASSIFY, "result")
 	},
 	{
-		(CHAR*) N_SVM_CLASSIFY,
+		N_SVM_CLASSIFY,
 		(&CSGInterface::cmd_classify),
-		(CHAR*) USAGE_O(N_SVM_CLASSIFY, "result")
+		USAGE_O(N_SVM_CLASSIFY, "result")
 	},
 	{
-		(CHAR*) N_CLASSIFY_EXAMPLE,
+		N_CLASSIFY_EXAMPLE,
 		(&CSGInterface::cmd_classify_example),
-		(CHAR*) USAGE_IO(N_CLASSIFY_EXAMPLE, "feature_vector_index", "result")
+		USAGE_IO(N_CLASSIFY_EXAMPLE, "feature_vector_index", "result")
 	},
 	{
-		(CHAR*) N_SVM_CLASSIFY_EXAMPLE,
+		N_SVM_CLASSIFY_EXAMPLE,
 		(&CSGInterface::cmd_classify_example),
-		(CHAR*) USAGE_IO(N_SVM_CLASSIFY_EXAMPLE, "feature_vector_index", "result")
+		USAGE_IO(N_SVM_CLASSIFY_EXAMPLE, "feature_vector_index", "result")
 	},
 	{
-		(CHAR*) N_GET_CLASSIFIER,
+		N_GET_CLASSIFIER,
 		(&CSGInterface::cmd_get_classifier),
-		(CHAR*) USAGE_O(N_GET_CLASSIFIER, "bias, weights")
+		USAGE_O(N_GET_CLASSIFIER, "bias, weights")
 	},
 	{
-		(CHAR*) N_GET_CLUSTERING,
+		N_GET_CLUSTERING,
 		(&CSGInterface::cmd_get_classifier),
-		(CHAR*) USAGE_O(N_GET_CLUSTERING, "radi, centers|merge_distances, pairs")
+		USAGE_O(N_GET_CLUSTERING, "radi" USAGE_COMMA "centers|merge_distances" USAGE_COMMA "pairs")
 	},
 	{
-		(CHAR*) N_NEW_SVM,
+		N_NEW_SVM,
 		(&CSGInterface::cmd_new_classifier),
-		(CHAR*) USAGE_I(N_NEW_SVM, "'LIBSVM_ONECLASS|LIBSVM_MULTICLASS|LIBSVM|SVMLIGHT|LIGHT|SVMLIN|GPBTSVM|MPDSVM|GNPPSVM|GMNPSVM|SUBGRADIENTSVM|WDSVMOCAS|SVMOCAS|SVMSGD|SVMBMRM|SVMPERF|KERNELPERCEPTRON|PERCEPTRON|LIBLINEAR_LR|LIBLINEAR_L2|LDA|LPM|LPBOOST|SUBGRADIENTLPM|KNN'")
+		USAGE_I(N_NEW_SVM, USAGE_STR "LIBSVM_ONECLASS|LIBSVM_MULTICLASS|LIBSVM"
+				"|SVMLIGHT|LIGHT|SVMLIN|GPBTSVM|MPDSVM|GNPPSVM|GMNPSVM"
+				"|SUBGRADIENTSVM|WDSVMOCAS|SVMOCAS|SVMSGD|SVMBMRM|SVMPERF"
+				"|KERNELPERCEPTRON|PERCEPTRON|LIBLINEAR_LR|LIBLINEAR_L2|LDA"
+				"|LPM|LPBOOST|SUBGRADIENTLPM|KNN" USAGE_STR)
 	},
 	{
-		(CHAR*) N_NEW_CLASSIFIER,
+		N_NEW_CLASSIFIER,
 		(&CSGInterface::cmd_new_classifier),
-		(CHAR*) USAGE_I(N_NEW_CLASSIFIER, "'LIBSVM_ONECLASS|LIBSVM_MULTICLASS|LIBSVM|SVMLIGHT|LIGHT|SVMLIN|GPBTSVM|MPDSVM|GNPPSVM|GMNPSVM|SUBGRADIENTSVM|WDSVMOCAS|SVMOCAS|SVMSGD|SVMBMRM|SVMPERF|KERNELPERCEPTRON|PERCEPTRON|LIBLINEAR_LR|LIBLINEAR_L2|LDA|LPM|LPBOOST|SUBGRADIENTLPM|KNN'")
+		USAGE_I(N_NEW_CLASSIFIER, USAGE_STR "LIBSVM_ONECLASS|LIBSVM_MULTICLASS"
+				"|LIBSVM|SVMLIGHT|LIGHT|SVMLIN|GPBTSVM|MPDSVM|GNPPSVM|GMNPSVM"
+				"|SUBGRADIENTSVM|WDSVMOCAS|SVMOCAS|SVMSGD|SVMBMRM|SVMPERF"
+				"|KERNELPERCEPTRON|PERCEPTRON|LIBLINEAR_LR|LIBLINEAR_L2|LDA"
+				"|LPM|LPBOOST|SUBGRADIENTLPM|KNN" USAGE_STR)
 	},
 	{
-		(CHAR*) N_NEW_REGRESSION,
+		N_NEW_REGRESSION,
 		(&CSGInterface::cmd_new_classifier),
-		(CHAR*) USAGE_I(N_NEW_REGRESSION, "'SVRLIGHT|LIBSVR|KRR'")
+		USAGE_I(N_NEW_REGRESSION, USAGE_STR "SVRLIGHT|LIBSVR|KRR" USAGE_STR)
 	},
 	{
-		(CHAR*) N_NEW_CLUSTERING,
+		N_NEW_CLUSTERING,
 		(&CSGInterface::cmd_new_classifier),
-		(CHAR*) USAGE_I(N_NEW_CLUSTERING, "'KMEANS|HIERARCHICAL'")
+		USAGE_I(N_NEW_CLUSTERING, USAGE_STR "KMEANS|HIERARCHICAL" USAGE_STR)
 	},
 	{
-		(CHAR*) N_LOAD_SVM,
+		N_LOAD_SVM,
 		(&CSGInterface::cmd_load_classifier),
-		(CHAR*) USAGE_O(N_LOAD_SVM, "filename, type")
+		USAGE_O(N_LOAD_SVM, "filename" USAGE_COMMA "type")
 	},
 	{
-		(CHAR*) N_GET_SVM,
+		N_GET_SVM,
 		(&CSGInterface::cmd_get_svm),
-		(CHAR*) USAGE_O(N_GET_SVM, "bias, alphas")
+		USAGE_O(N_GET_SVM, "bias" USAGE_COMMA "alphas")
 	},
 	{
-		(CHAR*) N_SET_SVM,
+		N_SET_SVM,
 		(&CSGInterface::cmd_set_svm),
-		(CHAR*) USAGE_I(N_SET_SVM, "bias, alphas")
+		USAGE_I(N_SET_SVM, "bias" USAGE_COMMA "alphas")
 	},
 	{
-		(CHAR*) N_GET_SVM_OBJECTIVE,
+		N_GET_SVM_OBJECTIVE,
 		(&CSGInterface::cmd_get_svm_objective),
-		(CHAR*) USAGE_O(N_GET_SVM_OBJECTIVE, "objective")
+		USAGE_O(N_GET_SVM_OBJECTIVE, "objective")
 	},
 	{
-		(CHAR*) N_DO_AUC_MAXIMIZATION,
+		N_DO_AUC_MAXIMIZATION,
 		(&CSGInterface::cmd_do_auc_maximization),
-		(CHAR*) USAGE_I(N_DO_AUC_MAXIMIZATION, "'auc'")
+		USAGE_I(N_DO_AUC_MAXIMIZATION, USAGE_STR "auc" USAGE_STR)
 	},
 	{
-		(CHAR*) N_SET_PERCEPTRON_PARAMETERS,
+		N_SET_PERCEPTRON_PARAMETERS,
 		(&CSGInterface::cmd_set_perceptron_parameters),
-		(CHAR*) USAGE_I(N_SET_PERCEPTRON_PARAMETERS, "learnrate, maxiter")
+		USAGE_I(N_SET_PERCEPTRON_PARAMETERS, "learnrate" USAGE_COMMA "maxiter")
 	},
 	{
-		(CHAR*) N_TRAIN_CLASSIFIER,
+		N_TRAIN_CLASSIFIER,
 		(&CSGInterface::cmd_train_classifier),
-		(CHAR*) USAGE_I(N_TRAIN_CLASSIFIER, "[classifier-specific parameters]")
+		USAGE_I(N_TRAIN_CLASSIFIER, "[classifier-specific parameters]")
 	},
 	{
-		(CHAR*) N_TRAIN_REGRESSION,
+		N_TRAIN_REGRESSION,
 		(&CSGInterface::cmd_train_classifier),
-		(CHAR*) USAGE(N_TRAIN_REGRESSION)
+		USAGE(N_TRAIN_REGRESSION)
 	},
 	{
-		(CHAR*) N_TRAIN_CLUSTERING,
+		N_TRAIN_CLUSTERING,
 		(&CSGInterface::cmd_train_classifier),
-		(CHAR*) USAGE(N_TRAIN_CLUSTERING)
+		USAGE(N_TRAIN_CLUSTERING)
 	},
 	{
-		(CHAR*) N_SVM_TRAIN,
+		N_SVM_TRAIN,
 		(&CSGInterface::cmd_train_classifier),
-		(CHAR*) USAGE_I(N_SVM_TRAIN, "[classifier-specific parameters]")
+		USAGE_I(N_SVM_TRAIN, "[classifier-specific parameters]")
 	},
 	{
-		(CHAR*) N_SVM_TEST,
+		N_SVM_TEST,
 		(&CSGInterface::cmd_test_svm),
-		(CHAR*) USAGE(N_SVM_TEST)
+		USAGE(N_SVM_TEST)
 	},
 	{
-		(CHAR*) N_SVMQPSIZE,
+		N_SVMQPSIZE,
 		(&CSGInterface::cmd_set_svm_qpsize),
-		(CHAR*) USAGE_I(N_SVMQPSIZE, "size")
+		USAGE_I(N_SVMQPSIZE, "size")
 	},
 	{
-		(CHAR*) N_SVMMAXQPSIZE,
+		N_SVMMAXQPSIZE,
 		(&CSGInterface::cmd_set_svm_max_qpsize),
-		(CHAR*) USAGE_I(N_SVMMAXQPSIZE, "size")
+		USAGE_I(N_SVMMAXQPSIZE, "size")
 	},
 	{
-		(CHAR*) N_SVMBUFSIZE,
+		N_SVMBUFSIZE,
 		(&CSGInterface::cmd_set_svm_bufsize),
-		(CHAR*) USAGE_I(N_SVMBUFSIZE, "size")
+		USAGE_I(N_SVMBUFSIZE, "size")
 	},
 	{
-		(CHAR*) N_C,
+		N_C,
 		(&CSGInterface::cmd_set_svm_C),
-		(CHAR*) USAGE_I(N_C, "C1, C2")
+		USAGE_I(N_C, "C1[" USAGE_COMMA "C2]")
 	},
 	{
-		(CHAR*) N_SVM_EPSILON,
+		N_SVM_EPSILON,
 		(&CSGInterface::cmd_set_svm_epsilon),
-		(CHAR*) USAGE_I(N_SVM_EPSILON, "epsilon")
+		USAGE_I(N_SVM_EPSILON, "epsilon")
 	},
 	{
-		(CHAR*) N_SVR_TUBE_EPSILON,
+		N_SVR_TUBE_EPSILON,
 		(&CSGInterface::cmd_set_svr_tube_epsilon),
-		(CHAR*) USAGE_I(N_SVR_TUBE_EPSILON, "tube_epsilon")
+		USAGE_I(N_SVR_TUBE_EPSILON, "tube_epsilon")
 	},
 	{
-		(CHAR*) N_SVM_ONE_CLASS_NU,
+		N_SVM_ONE_CLASS_NU,
 		(&CSGInterface::cmd_set_svm_one_class_nu),
-		(CHAR*) USAGE_I(N_SVM_ONE_CLASS_NU, "nu")
+		USAGE_I(N_SVM_ONE_CLASS_NU, "nu")
 	},
 	{
-		(CHAR*) N_MKL_PARAMETERS,
+		N_MKL_PARAMETERS,
 		(&CSGInterface::cmd_set_svm_mkl_parameters),
-		(CHAR*) USAGE_I(N_MKL_PARAMETERS, "weight_epsilon, C_MKL")
+		USAGE_I(N_MKL_PARAMETERS, "weight_epsilon" USAGE_COMMA "C_MKL")
 	},
 	{
-		(CHAR*) N_SVM_MAX_TRAIN_TIME,
+		N_SVM_MAX_TRAIN_TIME,
 		(&CSGInterface::cmd_set_max_train_time),
-		(CHAR*) USAGE_I(N_SVM_MAX_TRAIN_TIME, "max_train_time")
+		USAGE_I(N_SVM_MAX_TRAIN_TIME, "max_train_time")
 	},
 	{
-		(CHAR*) N_USE_PRECOMPUTE,
+		N_USE_PRECOMPUTE,
 		(&CSGInterface::cmd_set_svm_precompute_enabled),
-		(CHAR*) USAGE_I(N_USE_PRECOMPUTE, "enable_precompute")
+		USAGE_I(N_USE_PRECOMPUTE, "enable_precompute")
 	},
 	{
-		(CHAR*) N_USE_MKL,
+		N_USE_MKL,
 		(&CSGInterface::cmd_set_svm_mkl_enabled),
-		(CHAR*) USAGE_I(N_USE_MKL, "enable_mkl")
+		USAGE_I(N_USE_MKL, "enable_mkl")
 	},
 	{
-		(CHAR*) N_USE_SHRINKING,
+		N_USE_SHRINKING,
 		(&CSGInterface::cmd_set_svm_shrinking_enabled),
-		(CHAR*) USAGE_I(N_USE_SHRINKING, "enable_shrinking")
+		USAGE_I(N_USE_SHRINKING, "enable_shrinking")
 	},
 	{
-		(CHAR*) N_USE_BATCH_COMPUTATION,
+		N_USE_BATCH_COMPUTATION,
 		(&CSGInterface::cmd_set_svm_batch_computation_enabled),
-		(CHAR*) USAGE_I(N_USE_BATCH_COMPUTATION, "enable_batch_computation")
+		USAGE_I(N_USE_BATCH_COMPUTATION, "enable_batch_computation")
 	},
 	{
-		(CHAR*) N_USE_LINADD,
+		N_USE_LINADD,
 		(&CSGInterface::cmd_set_svm_linadd_enabled),
-		(CHAR*) USAGE_I(N_USE_LINADD, "enable_linadd")
+		USAGE_I(N_USE_LINADD, "enable_linadd")
 	},
 	{
-		(CHAR*) N_SVM_USE_BIAS,
+		N_SVM_USE_BIAS,
 		(&CSGInterface::cmd_set_svm_bias_enabled),
-		(CHAR*) USAGE_I(N_SVM_USE_BIAS, "enable_bias")
+		USAGE_I(N_SVM_USE_BIAS, "enable_bias")
 	},
 	{
-		(CHAR*) N_KRR_TAU,
+		N_KRR_TAU,
 		(&CSGInterface::cmd_set_krr_tau),
-		(CHAR*) USAGE_I(N_KRR_TAU, "tau")
+		USAGE_I(N_KRR_TAU, "tau")
 	},
 
 
-	{ (CHAR*) "Preprocessors", NULL, NULL },
+	{ "Preprocessors", NULL, NULL },
 	{
-		(CHAR*) N_ADD_PREPROC,
+		N_ADD_PREPROC,
 		(&CSGInterface::cmd_add_preproc),
-		(CHAR*) USAGE_I(N_ADD_PREPROC, "preproc[, preproc-specific parameters]")
+		USAGE_I(N_ADD_PREPROC, "preproc[, preproc-specific parameters]")
 	},
 	{
-		(CHAR*) N_DEL_PREPROC,
+		N_DEL_PREPROC,
 		(&CSGInterface::cmd_del_preproc),
-		(CHAR*) USAGE(N_DEL_PREPROC)
+		USAGE(N_DEL_PREPROC)
 	},
 	{
-		(CHAR*) N_LOAD_PREPROC,
+		N_LOAD_PREPROC,
 		(&CSGInterface::cmd_load_preproc),
-		(CHAR*) USAGE_I(N_LOAD_PREPROC, "filename")
+		USAGE_I(N_LOAD_PREPROC, "filename")
 	},
 	{
-		(CHAR*) N_SAVE_PREPROC,
+		N_SAVE_PREPROC,
 		(&CSGInterface::cmd_save_preproc),
-		(CHAR*) USAGE_I(N_SAVE_PREPROC, "filename")
+		USAGE_I(N_SAVE_PREPROC, "filename")
 	},
 	{
-		(CHAR*) N_ATTACH_PREPROC,
+		N_ATTACH_PREPROC,
 		(&CSGInterface::cmd_attach_preproc),
-		(CHAR*) USAGE_I(N_ATTACH_PREPROC, "'TRAIN|TEST', force")
+		USAGE_I(N_ATTACH_PREPROC, USAGE_STR "TRAIN|TEST" USAGE_STR USAGE_COMMA "force")
 	},
 	{
-		(CHAR*) N_CLEAN_PREPROC,
+		N_CLEAN_PREPROC,
 		(&CSGInterface::cmd_clean_preproc),
-		(CHAR*) USAGE(N_CLEAN_PREPROC)
+		USAGE(N_CLEAN_PREPROC)
 	},
 
 
-	{ (CHAR*) "HMM", NULL, NULL },
+	{ "HMM", NULL, NULL },
 	{
-		(CHAR*) N_NEW_HMM,
+		N_NEW_HMM,
 		(&CSGInterface::cmd_new_hmm),
-		(CHAR*) USAGE_I(N_NEW_HMM, "N, M")
+		USAGE_I(N_NEW_HMM, "N" USAGE_COMMA "M")
 	},
 	{
-		(CHAR*) N_LOAD_HMM,
+		N_LOAD_HMM,
 		(&CSGInterface::cmd_load_hmm),
-		(CHAR*) USAGE_I(N_LOAD_HMM, "filename")
+		USAGE_I(N_LOAD_HMM, "filename")
 	},
 	{
-		(CHAR*) N_SAVE_HMM,
+		N_SAVE_HMM,
 		(&CSGInterface::cmd_save_hmm),
-		(CHAR*) USAGE_I(N_SAVE_HMM, "filename[, save_binary]")
+		USAGE_I(N_SAVE_HMM, "filename[" USAGE_COMMA "save_binary]")
 	},
 	{
-		(CHAR*) N_GET_HMM,
+		N_GET_HMM,
 		(&CSGInterface::cmd_get_hmm),
-		(CHAR*) USAGE_O(N_GET_HMM, "p, q, a, b")
+		USAGE_O(N_GET_HMM, "p" USAGE_COMMA "q" USAGE_COMMA "a" USAGE_COMMA "b")
 	},
 	{
-		(CHAR*) N_APPEND_HMM,
+		N_APPEND_HMM,
 		(&CSGInterface::cmd_append_hmm),
-		(CHAR*) USAGE_I(N_APPEND_HMM, "p, q, a, b")
+		USAGE_I(N_APPEND_HMM, "p" USAGE_COMMA "q" USAGE_COMMA "a" USAGE_COMMA "b")
 	},
 	{
-		(CHAR*) N_APPEND_MODEL,
+		N_APPEND_MODEL,
 		(&CSGInterface::cmd_append_model),
-		(CHAR*) USAGE_I(N_APPEND_MODEL, "'filename'[, base1, base2]")
+		USAGE_I(N_APPEND_MODEL, USAGE_STR "filename" USAGE_STR "[" USAGE_COMMA "base1" USAGE_COMMA "base2]")
 	},
 	{
-		(CHAR*) N_SET_HMM,
+		N_SET_HMM,
 		(&CSGInterface::cmd_set_hmm),
-		(CHAR*) USAGE_I(N_SET_HMM, "p, q, a, b")
+		USAGE_I(N_SET_HMM, "p" USAGE_COMMA "q" USAGE_COMMA "a" USAGE_COMMA "b")
 	},
 	{
-		(CHAR*) N_SET_HMM_AS,
+		N_SET_HMM_AS,
 		(&CSGInterface::cmd_set_hmm_as),
-		(CHAR*) USAGE_I(N_SET_HMM_AS, "POS|NEG|TEST")
+		USAGE_I(N_SET_HMM_AS, "POS|NEG|TEST")
 	},
 	{
-		(CHAR*) N_CHOP,
+		N_CHOP,
 		(&CSGInterface::cmd_set_chop),
-		(CHAR*) USAGE_I(N_CHOP, "chop")
+		USAGE_I(N_CHOP, "chop")
 	},
 	{
-		(CHAR*) N_PSEUDO,
+		N_PSEUDO,
 		(&CSGInterface::cmd_set_pseudo),
-		(CHAR*) USAGE_I(N_PSEUDO, "pseudo")
+		USAGE_I(N_PSEUDO, "pseudo")
 	},
 	{
-		(CHAR*) N_LOAD_DEFINITIONS,
+		N_LOAD_DEFINITIONS,
 		(&CSGInterface::cmd_load_definitions),
-		(CHAR*) USAGE_I(N_LOAD_DEFINITIONS, "filename, init")
+		USAGE_I(N_LOAD_DEFINITIONS, "filename" USAGE_COMMA "init")
 	},
 	{
-		(CHAR*) N_HMM_CLASSIFY,
+		N_HMM_CLASSIFY,
 		(&CSGInterface::cmd_hmm_classify),
-		(CHAR*) USAGE_O(N_HMM_CLASSIFY, "result")
+		USAGE_O(N_HMM_CLASSIFY, "result")
 	},
 	{
-		(CHAR*) N_HMM_TEST,
+		N_HMM_TEST,
 		(&CSGInterface::cmd_hmm_test),
-		(CHAR*) USAGE_I(N_HMM_TEST, "output name[, ROC filename[, neglinear[, poslinear]]]")
+		USAGE_I(N_HMM_TEST, "output name[" USAGE_COMMA "ROC filename[" USAGE_COMMA "neglinear[" USAGE_COMMA "poslinear]]]")
 	},
 	{
-		(CHAR*) N_ONE_CLASS_LINEAR_HMM_CLASSIFY,
+		N_ONE_CLASS_LINEAR_HMM_CLASSIFY,
 		(&CSGInterface::cmd_one_class_linear_hmm_classify),
-		(CHAR*) USAGE_O(N_ONE_CLASS_LINEAR_HMM_CLASSIFY, "result")
+		USAGE_O(N_ONE_CLASS_LINEAR_HMM_CLASSIFY, "result")
 	},
 	{
-		(CHAR*) N_ONE_CLASS_HMM_TEST,
+		N_ONE_CLASS_HMM_TEST,
 		(&CSGInterface::cmd_one_class_hmm_test),
-		(CHAR*) USAGE_I(N_ONE_CLASS_HMM_TEST, "output name[, ROC filename[, linear]]")
+		USAGE_I(N_ONE_CLASS_HMM_TEST, "output name[" USAGE_COMMA "ROC filename[" USAGE_COMMA "linear]]")
 	},
 	{
-		(CHAR*) N_ONE_CLASS_HMM_CLASSIFY,
+		N_ONE_CLASS_HMM_CLASSIFY,
 		(&CSGInterface::cmd_one_class_hmm_classify),
-		(CHAR*) USAGE_O(N_ONE_CLASS_HMM_CLASSIFY, "result")
+		USAGE_O(N_ONE_CLASS_HMM_CLASSIFY, "result")
 	},
 	{
-		(CHAR*) N_ONE_CLASS_HMM_CLASSIFY_EXAMPLE,
+		N_ONE_CLASS_HMM_CLASSIFY_EXAMPLE,
 		(&CSGInterface::cmd_one_class_hmm_classify_example),
-		(CHAR*) USAGE_IO(N_ONE_CLASS_HMM_CLASSIFY_EXAMPLE, "feature_vector_index", "result")
+		USAGE_IO(N_ONE_CLASS_HMM_CLASSIFY_EXAMPLE, "feature_vector_index", "result")
 	},
 	{
-		(CHAR*) N_HMM_CLASSIFY_EXAMPLE,
+		N_HMM_CLASSIFY_EXAMPLE,
 		(&CSGInterface::cmd_hmm_classify_example),
-		(CHAR*) USAGE_IO(N_HMM_CLASSIFY_EXAMPLE, "feature_vector_index", "result")
+		USAGE_IO(N_HMM_CLASSIFY_EXAMPLE, "feature_vector_index", "result")
 	},
 	{
-		(CHAR*) N_OUTPUT_HMM,
+		N_OUTPUT_HMM,
 		(&CSGInterface::cmd_output_hmm),
-		(CHAR*) USAGE(N_OUTPUT_HMM)
+		USAGE(N_OUTPUT_HMM)
 	},
 	{
-		(CHAR*) N_OUTPUT_HMM_DEFINED,
+		N_OUTPUT_HMM_DEFINED,
 		(&CSGInterface::cmd_output_hmm_defined),
-		(CHAR*) USAGE(N_OUTPUT_HMM_DEFINED)
+		USAGE(N_OUTPUT_HMM_DEFINED)
 	},
 	{
-		(CHAR*) N_HMM_LIKELIHOOD,
+		N_HMM_LIKELIHOOD,
 		(&CSGInterface::cmd_hmm_likelihood),
-		(CHAR*) USAGE_O(N_HMM_LIKELIHOOD, "likelihood")
+		USAGE_O(N_HMM_LIKELIHOOD, "likelihood")
 	},
 	{
-		(CHAR*) N_LIKELIHOOD,
+		N_LIKELIHOOD,
 		(&CSGInterface::cmd_likelihood),
-		(CHAR*) USAGE(N_LIKELIHOOD)
+		USAGE(N_LIKELIHOOD)
 	},
 	{
-		(CHAR*) N_SAVE_LIKELIHOOD,
+		N_SAVE_LIKELIHOOD,
 		(&CSGInterface::cmd_save_likelihood),
-		(CHAR*) USAGE_I(N_SAVE_LIKELIHOOD, "filename[, save_binary]")
+		USAGE_I(N_SAVE_LIKELIHOOD, "filename[" USAGE_COMMA "save_binary]")
 	},
 	{
-		(CHAR*) N_GET_VITERBI_PATH,
+		N_GET_VITERBI_PATH,
 		(&CSGInterface::cmd_get_viterbi_path),
-		(CHAR*) USAGE_IO(N_GET_VITERBI_PATH, "dim", "path, likelihood")
+		USAGE_IO(N_GET_VITERBI_PATH, "dim", "path" USAGE_COMMA "likelihood")
 	},
 	{
-		(CHAR*) N_VITERBI_TRAIN_DEFINED,
+		N_VITERBI_TRAIN_DEFINED,
 		(&CSGInterface::cmd_viterbi_train_defined),
-		(CHAR*) USAGE(N_VITERBI_TRAIN_DEFINED)
+		USAGE(N_VITERBI_TRAIN_DEFINED)
 	},
 	{
-		(CHAR*) N_VITERBI_TRAIN,
+		N_VITERBI_TRAIN,
 		(&CSGInterface::cmd_viterbi_train),
-		(CHAR*) USAGE(N_VITERBI_TRAIN)
+		USAGE(N_VITERBI_TRAIN)
 	},
 	{
-		(CHAR*) N_BAUM_WELCH_TRAIN,
+		N_BAUM_WELCH_TRAIN,
 		(&CSGInterface::cmd_baum_welch_train),
-		(CHAR*) USAGE(N_BAUM_WELCH_TRAIN)
+		USAGE(N_BAUM_WELCH_TRAIN)
 	},
 	{
-		(CHAR*) N_BAUM_WELCH_TRAIN_DEFINED,
+		N_BAUM_WELCH_TRAIN_DEFINED,
 		(&CSGInterface::cmd_baum_welch_train_defined),
-		(CHAR*) USAGE(N_BAUM_WELCH_TRAIN_DEFINED)
+		USAGE(N_BAUM_WELCH_TRAIN_DEFINED)
 	},
 	{
-		(CHAR*) N_BAUM_WELCH_TRANS_TRAIN,
+		N_BAUM_WELCH_TRANS_TRAIN,
 		(&CSGInterface::cmd_baum_welch_trans_train),
-		(CHAR*) USAGE(N_BAUM_WELCH_TRANS_TRAIN)
+		USAGE(N_BAUM_WELCH_TRANS_TRAIN)
 	},
 	{
-		(CHAR*) N_LINEAR_TRAIN,
+		N_LINEAR_TRAIN,
 		(&CSGInterface::cmd_linear_train),
-		(CHAR*) USAGE(N_LINEAR_TRAIN)
+		USAGE(N_LINEAR_TRAIN)
 	},
 	{
-		(CHAR*) N_SAVE_PATH,
+		N_SAVE_PATH,
 		(&CSGInterface::cmd_save_path),
-		(CHAR*) USAGE_I(N_SAVE_PATH, "filename[, save_binary]")
+		USAGE_I(N_SAVE_PATH, "filename[" USAGE_COMMA "save_binary]")
 	},
 	{
-		(CHAR*) N_CONVERGENCE_CRITERIA,
+		N_CONVERGENCE_CRITERIA,
 		(&CSGInterface::cmd_convergence_criteria),
-		(CHAR*) USAGE_I(N_CONVERGENCE_CRITERIA, "num_iterations, epsilon")
+		USAGE_I(N_CONVERGENCE_CRITERIA, "num_iterations" USAGE_COMMA "epsilon")
 	},
 	{
-		(CHAR*) N_NORMALIZE,
+		N_NORMALIZE,
 		(&CSGInterface::cmd_normalize),
-		(CHAR*) USAGE_I(N_NORMALIZE, "[keep_dead_states]")
+		USAGE_I(N_NORMALIZE, "[keep_dead_states]")
 	},
 	{
-		(CHAR*) N_ADD_STATES,
+		N_ADD_STATES,
 		(&CSGInterface::cmd_add_states),
-		(CHAR*) USAGE_I(N_ADD_STATES, "states, value")
+		USAGE_I(N_ADD_STATES, "states" USAGE_COMMA "value")
 	},
 	{
-		(CHAR*) N_PERMUTATION_ENTROPY,
+		N_PERMUTATION_ENTROPY,
 		(&CSGInterface::cmd_permutation_entropy),
-		(CHAR*) USAGE_I(N_PERMUTATION_ENTROPY, "width, seqnum")
+		USAGE_I(N_PERMUTATION_ENTROPY, "width" USAGE_COMMA "seqnum")
 	},
 	{
-		(CHAR*) N_RELATIVE_ENTROPY,
+		N_RELATIVE_ENTROPY,
 		(&CSGInterface::cmd_relative_entropy),
-		(CHAR*) USAGE_O(N_RELATIVE_ENTROPY, "result")
+		USAGE_O(N_RELATIVE_ENTROPY, "result")
 	},
 	{
-		(CHAR*) N_ENTROPY,
+		N_ENTROPY,
 		(&CSGInterface::cmd_entropy),
-		(CHAR*) USAGE_O(N_ENTROPY, "result")
+		USAGE_O(N_ENTROPY, "result")
 	},
 	{
-		(CHAR*) N_BEST_PATH,
+		N_BEST_PATH,
 		(&CSGInterface::cmd_best_path),
-		(CHAR*) USAGE_I(N_BEST_PATH, "from, to")
+		USAGE_I(N_BEST_PATH, "from" USAGE_COMMA "to")
 	},
 	{
-		(CHAR*) N_BEST_PATH_2STRUCT,
+		N_BEST_PATH_2STRUCT,
 		(&CSGInterface::cmd_best_path_2struct),
-		(CHAR*) USAGE_IO(N_BEST_PATH_2STRUCT,
-			"p, q, cmd_trans, seq, pos, genestr, penalties, penalty_info, nbest, dict_weights, segment_sum_weights",
-			"prob, path, pos")
+		USAGE_IO(N_BEST_PATH_2STRUCT, "p"
+				USAGE_COMMA "q" 
+				USAGE_COMMA "cmd_trans"
+				USAGE_COMMA "seq"
+				USAGE_COMMA "pos"
+				USAGE_COMMA "genestr"
+				USAGE_COMMA "penalties"
+				USAGE_COMMA "penalty_info"
+				USAGE_COMMA "nbest"
+				USAGE_COMMA "dict_weights"
+				USAGE_COMMA "segment_sum_weights",
+			"prob" USAGE_COMMA "path" USAGE_COMMA "pos")
 	},
 	{
-		(CHAR*) N_BEST_PATH_TRANS,
+		N_BEST_PATH_TRANS,
 		(&CSGInterface::cmd_best_path_trans),
-		(CHAR*) USAGE_IO(N_BEST_PATH_TRANS,
-			"p, q, cmd_trans, seq, pos, orf_info, genestr, penalties, state_signals, penalty_info, nbest, dict_weights, use_orf, mod_words [, segment_loss, segmend_ids_mask]",
-			"prob, path, pos")
+		USAGE_IO(N_BEST_PATH_TRANS, "p"
+				USAGE_COMMA "q"
+				USAGE_COMMA "cmd_trans"
+				USAGE_COMMA "seq"
+				USAGE_COMMA "pos"
+				USAGE_COMMA "orf_info"
+				USAGE_COMMA "genestr"
+				USAGE_COMMA "penalties"
+				USAGE_COMMA "state_signals"
+				USAGE_COMMA "penalty_info"
+				USAGE_COMMA "nbest"
+				USAGE_COMMA "dict_weights"
+				USAGE_COMMA "use_orf"
+				USAGE_COMMA "mod_words ["
+				USAGE_COMMA "segment_loss"
+				USAGE_COMMA "segmend_ids_mask]",
+			"prob" USAGE_COMMA "path" USAGE_COMMA "pos")
 	},
 	{
-		(CHAR*) N_BEST_PATH_TRANS_DERIV,
+		N_BEST_PATH_TRANS_DERIV,
 		(&CSGInterface::cmd_best_path_trans_deriv),
-		(CHAR*) USAGE_IO(N_BEST_PATH_TRANS_DERIV,
-			"my_path, my_pos, p, q, cmd_trans, seq, pos, genestr, penalties, state_signals, penalty_info, dict_weights, mod_words [, segment_loss, segmend_ids_mask]",
-			"p_deriv, q_deriv, cmd_deriv, penalties_deriv, my_scores, my_loss")
+		USAGE_IO(N_BEST_PATH_TRANS_DERIV,
+			USAGE_COMMA "my_path"
+			USAGE_COMMA "my_pos"
+			USAGE_COMMA "p"
+			USAGE_COMMA "q"
+			USAGE_COMMA "cmd_trans"
+			USAGE_COMMA "seq"
+			USAGE_COMMA "pos"
+			USAGE_COMMA "genestr"
+			USAGE_COMMA "penalties"
+			USAGE_COMMA "state_signals"
+			USAGE_COMMA "penalty_info"
+			USAGE_COMMA "dict_weights"
+			USAGE_COMMA "mod_words ["
+			USAGE_COMMA "segment_loss"
+			USAGE_COMMA "segmend_ids_mask]", "p_deriv"
+			USAGE_COMMA "q_deriv"
+			USAGE_COMMA "cmd_deriv"
+			USAGE_COMMA "penalties_deriv"
+			USAGE_COMMA "my_scores"
+			USAGE_COMMA "my_loss")
 	},
 	{
-		(CHAR*) N_BEST_PATH_NO_B,
+		N_BEST_PATH_NO_B,
 		(&CSGInterface::cmd_best_path_no_b),
-		(CHAR*) USAGE_IO(N_BEST_PATH_NO_B, "p, q, a, max_iter", "prob, path")
+		USAGE_IO(N_BEST_PATH_NO_B, "p"
+				USAGE_COMMA "q"
+				USAGE_COMMA "a"
+				USAGE_COMMA "max_iter",
+				"prob" USAGE_COMMA "path")
 	},
 	{
-		(CHAR*) N_BEST_PATH_TRANS_SIMPLE,
+		N_BEST_PATH_TRANS_SIMPLE,
 		(&CSGInterface::cmd_best_path_trans_simple),
-		(CHAR*) USAGE_IO(N_BEST_PATH_TRANS_SIMPLE,
-			"p, q, cmd_trans, seq, nbest", "prob, path")
+		USAGE_IO(N_BEST_PATH_TRANS_SIMPLE, "p"
+				USAGE_COMMA "q"
+				USAGE_COMMA "cmd_trans"
+				USAGE_COMMA "seq"
+				USAGE_COMMA "nbest",
+				"prob" USAGE_COMMA "path")
 	},
 	{
-		(CHAR*) N_BEST_PATH_NO_B_TRANS,
+		N_BEST_PATH_NO_B_TRANS,
 		(&CSGInterface::cmd_best_path_no_b_trans),
-		(CHAR*) USAGE_IO(N_BEST_PATH_NO_B_TRANS,
-			"p, q, cmd_trans, max_iter, nbest", "prob, path")
+		USAGE_IO(N_BEST_PATH_NO_B_TRANS, "p"
+			USAGE_COMMA "q"
+			USAGE_COMMA "cmd_trans"
+			USAGE_COMMA "max_iter"
+			USAGE_COMMA "nbest",
+			"prob" USAGE_COMMA "path")
 	},
 	{
-		(CHAR*) N_NEW_PLUGIN_ESTIMATOR,
+		N_NEW_PLUGIN_ESTIMATOR,
 		(&CSGInterface::cmd_new_plugin_estimator),
-		(CHAR*) USAGE_I(N_NEW_PLUGIN_ESTIMATOR, "pos_pseudo, neg_pseudo")
+		USAGE_I(N_NEW_PLUGIN_ESTIMATOR, "pos_pseudo" USAGE_COMMA "neg_pseudo")
 	},
 	{
-		(CHAR*) N_TRAIN_ESTIMATOR,
+		N_TRAIN_ESTIMATOR,
 		(&CSGInterface::cmd_train_estimator),
-		(CHAR*) USAGE(N_TRAIN_ESTIMATOR)
+		USAGE(N_TRAIN_ESTIMATOR)
 	},
 	{
-		(CHAR*) N_TEST_ESTIMATOR,
+		N_TEST_ESTIMATOR,
 		(&CSGInterface::cmd_test_estimator),
-		(CHAR*) USAGE(N_TEST_ESTIMATOR)
+		USAGE(N_TEST_ESTIMATOR)
 	},
 	{
-		(CHAR*) N_PLUGIN_ESTIMATE_CLASSIFY_EXAMPLE,
+		N_PLUGIN_ESTIMATE_CLASSIFY_EXAMPLE,
 		(&CSGInterface::cmd_plugin_estimate_classify_example),
-		(CHAR*) USAGE_IO(N_PLUGIN_ESTIMATE_CLASSIFY_EXAMPLE, "feature_vector_index", "result")
+		USAGE_IO(N_PLUGIN_ESTIMATE_CLASSIFY_EXAMPLE, "feature_vector_index", "result")
 	},
 	{
-		(CHAR*) N_PLUGIN_ESTIMATE_CLASSIFY,
+		N_PLUGIN_ESTIMATE_CLASSIFY,
 		(&CSGInterface::cmd_plugin_estimate_classify),
-		(CHAR*) USAGE_O(N_PLUGIN_ESTIMATE_CLASSIFY, "result")
+		USAGE_O(N_PLUGIN_ESTIMATE_CLASSIFY, "result")
 	},
 	{
-		(CHAR*) N_SET_PLUGIN_ESTIMATE,
+		N_SET_PLUGIN_ESTIMATE,
 		(&CSGInterface::cmd_set_plugin_estimate),
-		(CHAR*) USAGE_I(N_SET_PLUGIN_ESTIMATE, "emission_probs, model_sizes")
+		USAGE_I(N_SET_PLUGIN_ESTIMATE, "emission_probs" USAGE_COMMA "model_sizes")
 	},
 	{
-		(CHAR*) N_GET_PLUGIN_ESTIMATE,
+		N_GET_PLUGIN_ESTIMATE,
 		(&CSGInterface::cmd_get_plugin_estimate),
-		(CHAR*) USAGE_O(N_GET_PLUGIN_ESTIMATE, "emission_probs, model_sizes")
+		USAGE_O(N_GET_PLUGIN_ESTIMATE, "emission_probs" USAGE_COMMA "model_sizes")
 	},
 
 
-	{ (CHAR*) "POIM", NULL, NULL },
+	{ "POIM", NULL, NULL },
 	{
-		(CHAR*) N_COMPUTE_POIM_WD,
+		N_COMPUTE_POIM_WD,
 		(&CSGInterface::cmd_compute_POIM_WD),
-		(CHAR*) USAGE_IO(N_COMPUTE_POIM_WD, "max_order, distribution", "W")
+		USAGE_IO(N_COMPUTE_POIM_WD, "max_order" USAGE_COMMA "distribution", "W")
 	},
 	{
-		(CHAR*) N_GET_SPEC_CONSENSUS,
+		N_GET_SPEC_CONSENSUS,
 		(&CSGInterface::cmd_get_SPEC_consensus),
-		(CHAR*) USAGE_O(N_GET_SPEC_CONSENSUS, "W")
+		USAGE_O(N_GET_SPEC_CONSENSUS, "W")
 	},
 	{
-		(CHAR*) N_GET_SPEC_SCORING,
+		N_GET_SPEC_SCORING,
 		(&CSGInterface::cmd_get_SPEC_scoring),
-		(CHAR*) USAGE_IO(N_GET_SPEC_SCORING, "max_order", "W")
+		USAGE_IO(N_GET_SPEC_SCORING, "max_order", "W")
 	},
 	{
-		(CHAR*) N_GET_WD_CONSENSUS,
+		N_GET_WD_CONSENSUS,
 		(&CSGInterface::cmd_get_WD_consensus),
-		(CHAR*) USAGE_O(N_GET_WD_CONSENSUS, "W")
+		USAGE_O(N_GET_WD_CONSENSUS, "W")
 	},
 	{
-		(CHAR*) N_GET_WD_SCORING,
+		N_GET_WD_SCORING,
 		(&CSGInterface::cmd_get_WD_scoring),
-		(CHAR*) USAGE_IO(N_GET_WD_SCORING, "max_order", "W")
+		USAGE_IO(N_GET_WD_SCORING, "max_order", "W")
 	},
 
 
-	{ (CHAR*) "Utility", NULL, NULL },
+	{ "Utility", NULL, NULL },
 	{
-		(CHAR*) N_CRC,
+		N_CRC,
 		(&CSGInterface::cmd_crc),
-		(CHAR*) USAGE_IO(N_CRC, "string", "crc32")
+		USAGE_IO(N_CRC, "string", "crc32")
 	},
 	{
-		(CHAR*) N_SYSTEM,
+		N_SYSTEM,
 		(&CSGInterface::cmd_system),
-		(CHAR*) USAGE_I(N_SYSTEM, "system_command")
+		USAGE_I(N_SYSTEM, "system_command")
 	},
 	{
-		(CHAR*) N_EXIT,
+		N_EXIT,
 		(&CSGInterface::cmd_exit),
-		(CHAR*) USAGE(N_EXIT)
+		USAGE(N_EXIT)
 	},
 	{
-		(CHAR*) N_QUIT,
+		N_QUIT,
 		(&CSGInterface::cmd_exit),
-		(CHAR*) USAGE(N_QUIT)
+		USAGE(N_QUIT)
 	},
 	{
-		(CHAR*) N_EXEC,
+		N_EXEC,
 		(&CSGInterface::cmd_exec),
-		(CHAR*) USAGE_I(N_EXEC, "filename")
+		USAGE_I(N_EXEC, "filename")
 	},
 	{
-		(CHAR*) N_SET_OUTPUT,
+		N_SET_OUTPUT,
 		(&CSGInterface::cmd_set_output),
-		(CHAR*) USAGE_I(N_SET_OUTPUT, "'STDERR'|'STDOUT'|filename")
+		USAGE_I(N_SET_OUTPUT, USAGE_STR "STDERR|STDOUT|filename" USAGE_STR)
 	},
 	{
-		(CHAR*) N_SET_THRESHOLD,
+		N_SET_THRESHOLD,
 		(&CSGInterface::cmd_set_threshold),
-		(CHAR*) USAGE_I(N_SET_THRESHOLD, "threshold")
+		USAGE_I(N_SET_THRESHOLD, "threshold")
 	},
 	{
-		(CHAR*) N_THREADS,
+		N_THREADS,
 		(&CSGInterface::cmd_set_num_threads),
-		(CHAR*) USAGE_I(N_THREADS, "num_threads")
+		USAGE_I(N_THREADS, "num_threads")
 	},
 	{
-		(CHAR*) N_TRANSLATE_STRING,
+		N_TRANSLATE_STRING,
 		(&CSGInterface::cmd_translate_string),
-		(CHAR*) USAGE_IO(N_TRANSLATE_STRING,
+		USAGE_IO(N_TRANSLATE_STRING,
 			"string, order, start", "translation")
 	},
 	{
-		(CHAR*) N_CLEAR,
+		N_CLEAR,
 		(&CSGInterface::cmd_clear),
-		(CHAR*) USAGE(N_CLEAR)
+		USAGE(N_CLEAR)
 	},
 	{
-		(CHAR*) N_TIC,
+		N_TIC,
 		(&CSGInterface::cmd_tic),
-		(CHAR*) USAGE(N_TIC)
+		USAGE(N_TIC)
 	},
 	{
-		(CHAR*) N_TOC,
+		N_TOC,
 		(&CSGInterface::cmd_toc),
-		(CHAR*) USAGE(N_TOC)
+		USAGE(N_TOC)
 	},
 	{
-		(CHAR*) N_PRINT,
+		N_PRINT,
 		(&CSGInterface::cmd_print),
-		(CHAR*) USAGE_I(N_PRINT, "msg")
+		USAGE_I(N_PRINT, "msg")
 	},
 	{
-		(CHAR*) N_ECHO,
+		N_ECHO,
 		(&CSGInterface::cmd_echo),
-		(CHAR*) USAGE_I(N_ECHO, "level")
+		USAGE_I(N_ECHO, "level")
 	},
 	{
-		(CHAR*) N_LOGLEVEL,
+		N_LOGLEVEL,
 		(&CSGInterface::cmd_loglevel),
-		(CHAR*) USAGE_I(N_LOGLEVEL, "'ALL|DEBUG|INFO|NOTICE|WARN|ERROR|CRITICAL|ALERT|EMERGENCY'")
+		USAGE_I(N_LOGLEVEL, USAGE_STR "ALL|DEBUG|INFO|NOTICE|WARN|ERROR|CRITICAL|ALERT|EMERGENCY" USAGE_STR)
 	},
 	{
-		(CHAR*) N_PROGRESS,
+		N_SYNTAX_HIGHLIGHT,
+		(&CSGInterface::cmd_syntax_highlight),
+		USAGE_I(N_SYNTAX_HIGHLIGHT, USAGE_STR "ON|OFF" USAGE_STR)
+	},
+	{
+		N_PROGRESS,
 		(&CSGInterface::cmd_progress),
-		(CHAR*) USAGE_I(N_PROGRESS, "'ON|OFF'")
+		USAGE_I(N_PROGRESS, USAGE_STR "ON|OFF" USAGE_STR)
 	},
 	{
-		(CHAR*) N_GET_VERSION,
+		N_GET_VERSION,
 		(&CSGInterface::cmd_get_version),
-		(CHAR*) USAGE_O(N_GET_VERSION, "version")
+		USAGE_O(N_GET_VERSION, "version")
 	},
 	{
-		(CHAR*) N_HELP,
+		N_HELP,
 		(&CSGInterface::cmd_help),
-		(CHAR*) USAGE(N_HELP)
+		USAGE(N_HELP)
 	},
 	{
-		(CHAR*) N_SEND_COMMAND,
+		N_SEND_COMMAND,
 		(&CSGInterface::cmd_send_command),
 		NULL
 	},
@@ -2661,7 +2758,7 @@ bool CSGInterface::cmd_set_WD_position_weights()
 		CWeightedDegreeStringKernel* k=
 			(CWeightedDegreeStringKernel*) kernel;
 
-		if (dim!=1 & len>0)
+		if (dim!=1 && len>0)
 			SG_ERROR("Dimension mismatch (should be 1 x seq_length or 0x0\n");
 
 		success=k->set_position_weights(weights, len);
@@ -5423,6 +5520,27 @@ bool CSGInterface::cmd_loglevel()
 	return true;
 }
 
+bool CSGInterface::cmd_syntax_highlight()
+{
+	if (m_nrhs<2 || !create_return_values(0))
+		return false;
+
+	INT len=0;
+	CHAR* hili=get_str_from_str_or_direct(len);
+
+	if (strmatch(hili, "ON"))
+		hilight.set_ansi_syntax_hilighting();
+	else if (strmatch(hili, "OFF"))
+		hilight.disable_syntax_hilighting();
+	else
+		SG_ERROR("arguments to " N_SYNTAX_HIGHLIGHT " are ON|OFF - found '%s'.\n", hili);
+
+	SG_INFO("Syntax hilighting set to %s.\n", hili);
+
+	delete[] hili;
+	return true;
+}
+
 bool CSGInterface::cmd_progress()
 {
 	if (m_nrhs<2 || !create_return_values(0))
@@ -5436,7 +5554,7 @@ bool CSGInterface::cmd_progress()
 	else if (strmatch(progress, "OFF"))
 		io.disable_progress();
 	else
-		SG_ERROR("arguments to progress are be ON|OFF - found '%s'.\n", progress);
+		SG_ERROR("arguments to progress are ON|OFF - found '%s'.\n", progress);
 
 	SG_INFO("Progress set to %s.\n", progress);
 
@@ -5469,19 +5587,31 @@ bool CSGInterface::cmd_help()
 		while (sg_methods[i].command)
 		{
 			bool is_group_item=false;
-			if (!sg_methods[i].method && !sg_methods[i].usage)
+			if (!sg_methods[i].method && !sg_methods[i].usage_prefix)
 				is_group_item=true;
 
 			if (is_group_item)
 			{
-				SG_PRINT("\033[1;31m%s\033[0m\n", sg_methods[i].command);
+				SG_PRINT("%s%s%s\n",
+						hilight.get_command_prefix(),
+						sg_methods[i].command,
+						hilight.get_command_suffix());
 			}
 
 			i++;
 		}
-		SG_PRINT("\nUse sg('\033[1;31mhelp\033[0m', '\033[1;31m<topic>\033[0m') to see the list of commands in this group, e.g.\n\n"
-				"\tsg('\033[1;31mhelp\033[0m', '\033[1;31mFeatures\033[0m')\n\nto see the list of commands for the 'Features' group.\n"
-				"\nOr use sg('\033[1;31mhelp\033[0m', '\033[1;31mall\033[0m') to see a brief listing of all commands.\n");
+		SG_PRINT("\nUse sg('%shelp%s', '%s<topic>%s')"
+				" to see the list of commands in this group, e.g.\n\n"
+				"\tsg('%shelp%s', '%sFeatures%s')\n\n"
+				"to see the list of commands for the 'Features' group.\n"
+				"\nOr use sg('%shelp%s', '%sall%s')"
+				" to see a brief listing of all commands.\n",
+					hilight.get_command_prefix(), hilight.get_command_suffix(),
+					hilight.get_command_prefix(), hilight.get_command_suffix(),
+					hilight.get_command_prefix(), hilight.get_command_suffix(),
+					hilight.get_command_prefix(), hilight.get_command_suffix(),
+					hilight.get_command_prefix(), hilight.get_command_suffix(),
+					hilight.get_command_prefix(), hilight.get_command_suffix());
 	}
 	else // m_nrhs == 2 -> all commands, single command or group help
 	{
@@ -5490,16 +5620,47 @@ bool CSGInterface::cmd_help()
 		INT clen=0;
 		CHAR* command=get_string(clen);
 
-		if (strmatch((CHAR*) "all", command) || strmatch((CHAR* ) "ALL", command))
+		if (strmatch("doxygen", command) || strmatch("DOXYGEN", command))
 		{
 			found=true;
 			while (sg_methods[i].command)
 			{
-				if (sg_methods[i].usage) // display group item
-					SG_PRINT("\t%s\n", sg_methods[i].usage);
+				if (sg_methods[i].usage_prefix) // display group item
+				{
+					SG_PRINT("\\arg \\b %s \\verbatim %s%s%s \\endverbatim\n",
+							sg_methods[i].command,
+							sg_methods[i].usage_prefix,
+							sg_methods[i].command,
+							sg_methods[i].usage_suffix);
+				}
 				else if (!sg_methods[i].method) // display group
-					SG_PRINT("\nCommands in group \033[1;31m%s\033[0m\n", sg_methods[i].command);
-
+				{
+					SG_PRINT("\n\\section %s_sec %s\n", 
+							sg_methods[i].command, sg_methods[i].command);
+				}
+				i++;
+			}
+		}
+		if (strmatch("all", command) || strmatch("ALL", command))
+		{
+			found=true;
+			while (sg_methods[i].command)
+			{
+				if (sg_methods[i].usage_prefix) // display group item
+				{
+					SG_PRINT("\t%s%s%s%s%s\n", sg_methods[i].usage_prefix, 
+							hilight.get_command_prefix(),
+							sg_methods[i].command,
+							hilight.get_command_suffix(),
+							sg_methods[i].usage_suffix);
+				}
+				else if (!sg_methods[i].method) // display group
+				{
+					SG_PRINT("\nCommands in group %s%s%s\n", 
+							hilight.get_command_prefix(),
+							sg_methods[i].command,
+							hilight.get_command_suffix());
+				}
 				i++;
 			}
 		}
@@ -5509,9 +5670,11 @@ bool CSGInterface::cmd_help()
 			{
 				if (in_group)
 				{
-					if (sg_methods[i].usage) // display group item
-						SG_PRINT("\t\033[1;31m%s\033[0m\n", sg_methods[i].command);
-						//SG_PRINT("\t%s: %s\n", sg_methods[i].command, sg_methods[i].usage);
+					if (sg_methods[i].usage_prefix) // display group item
+						SG_PRINT("\t%s%s%s\n",
+							hilight.get_command_prefix(),
+							sg_methods[i].command,
+							hilight.get_command_suffix());
 					else // next group reached -> end
 						break;
 				}
@@ -5520,15 +5683,25 @@ bool CSGInterface::cmd_help()
 					found=strmatch(sg_methods[i].command, command);
 					if (found)
 					{
-						if (sg_methods[i].usage) // found item
+						if (sg_methods[i].usage_prefix) // found item
 						{
-							SG_PRINT("Usage for \033[1;31m%s\033[0m\n\n\t%s\n",
-								sg_methods[i].command, sg_methods[i].usage);
+							SG_PRINT("Usage for %s%s%s\n\n\t%s%s%s%s%s\n",
+									hilight.get_command_prefix(),
+									sg_methods[i].command,
+									hilight.get_command_suffix(),
+									sg_methods[i].usage_prefix,
+									hilight.get_command_prefix(),
+									sg_methods[i].command,
+									hilight.get_command_suffix(),
+									sg_methods[i].usage_suffix);
 							break;
 						}
 						else // found group item
 						{
-							SG_PRINT("Commands in group \033[1;31m%s\033[0m\n\n", sg_methods[i].command);
+							SG_PRINT("Commands in group %s%s%s\n\n",
+									hilight.get_command_prefix(),
+									sg_methods[i].command,
+									hilight.get_command_suffix());
 							in_group=true;
 						}
 					}
@@ -5542,8 +5715,14 @@ bool CSGInterface::cmd_help()
 			SG_PRINT("Could not find help for command %s.\n", command);
 		else if (in_group)
 		{
-			SG_PRINT("\n\nUse sg('\033[1;31mhelp\033[0m', '\033[1;31m<command>\033[0m') to see the usage pattern of a single command, e.g.\n\n"
-					"\tsg('\033[1;31mhelp\033[0m', '\033[1;31mclassify\033[0m')\n\nto see the usage pattern of the command 'classify'.\n");
+			SG_PRINT("\n\nUse sg('%shelp%s', '%s<command>%s')"
+					" to see the usage pattern of a single command, e.g.\n\n"
+					"\tsg('%shelp%s', '%sclassify%s')\n\n"
+					" to see the usage pattern of the command 'classify'.\n",
+					hilight.get_command_prefix(), hilight.get_command_suffix(),
+					hilight.get_command_prefix(), hilight.get_command_suffix(),
+					hilight.get_command_prefix(), hilight.get_command_suffix(),
+					hilight.get_command_prefix(), hilight.get_command_suffix());
 		}
 
 		delete[] command;
@@ -5577,7 +5756,17 @@ bool CSGInterface::cmd_send_command()
 			m_nrhs=get_num_args_in_str()+1;
 
 			if (!(interface->*(sg_methods[i].method))())
-				SG_ERROR("Usage: %s\n", sg_methods[i].usage);
+			{
+				SG_ERROR("Usage: %s%s%s\n\n\t%s%s%s%s\n",
+						hilight.get_command_prefix(),
+						sg_methods[i].command,
+						hilight.get_command_suffix(),
+						sg_methods[i].usage_prefix,
+						hilight.get_command_prefix(),
+						sg_methods[i].command,
+						hilight.get_command_suffix(),
+						sg_methods[i].usage_suffix);
+			}
 			else
 			{
 				success=true;
@@ -5598,7 +5787,9 @@ bool CSGInterface::cmd_send_command()
 
 void CSGInterface::print_prompt()
 {
-	SG_PRINT("\033[1;34mshogun\033[0m >> ");
+	SG_PRINT("%sshogun%s >> ",
+			hilight.get_prompt_prefix(),
+			hilight.get_prompt_suffix());
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -5800,12 +5991,29 @@ bool CSGInterface::handle()
 	{
 		if (strmatch(command, sg_methods[i].command))
 		{
-			SG_DEBUG("found command %s\n", sg_methods[i].command);
+			SG_DEBUG("found command %s%s%s\n",
+					hilight.get_command_prefix(),
+					sg_methods[i].command,
+					hilight.get_command_suffix());
+
 			if (!(interface->*(sg_methods[i].method))())
-				if (sg_methods[i].usage)
-					SG_ERROR("Usage: %s.\n", sg_methods[i].usage);
+				if (sg_methods[i].usage_prefix)
+				{
+					SG_ERROR("Usage: %s%s%s\n\n\t%s%s%s%s\n",
+							hilight.get_command_prefix(),
+							sg_methods[i].command,
+							hilight.get_command_suffix(),
+							sg_methods[i].usage_prefix,
+							hilight.get_command_prefix(),
+							sg_methods[i].command,
+							hilight.get_command_suffix(),
+							sg_methods[i].usage_suffix);
+				}
 				else
-					SG_ERROR("Non-supported command %s.\n", command);
+					SG_ERROR("Non-supported command %s%s%s.\n",
+							hilight.get_command_prefix(),
+							sg_methods[i].command,
+							hilight.get_command_suffix());
 			else
 			{
 				success=true;
@@ -5820,7 +6028,10 @@ bool CSGInterface::handle()
 #endif
 
 	if (!success)
-		SG_ERROR("Unknown command %s.\n", command);
+		SG_ERROR("Unknown command %s%s%s.\n",
+				hilight.get_command_prefix(),
+				command,
+				hilight.get_command_suffix());
 
 	delete[] command;
 	return success;

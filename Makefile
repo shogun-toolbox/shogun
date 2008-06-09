@@ -1,6 +1,7 @@
 # Usage scenarios
 #
-# * To make a release (and tag it) run (run make distclean before!)
+# * To make a release (and tag it) run (run make distclean before! and
+# 	compile each static interface and run make reference to update documentation)
 #
 #		(cd trunk/src;  rm ChangeLog ; make ChangeLog ; svn ci -m "updated changelog")
 #       make svn-tag-release  
