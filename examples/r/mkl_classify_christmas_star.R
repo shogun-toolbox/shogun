@@ -78,7 +78,7 @@ for (kk in 1:dim(radius_star)[1]) {
   sg('add_features','TRAIN', train_x)
   sg('add_features','TRAIN', train_x)
   sg('set_labels','TRAIN', train_y)         # set the labels
-  sg('new_svm', 'LIBSVM')
+  sg('new_svm', 'SVMLIGHT')
   sg('use_linadd', FALSE)
   sg('use_mkl', TRUE)
   sg('use_precompute', 0)

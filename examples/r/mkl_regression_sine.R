@@ -40,8 +40,7 @@ for (kk in 1:length(f)) {   # big loop for the different learning problems
   train_x <- matrix(train_x, 1, length(train_x))
 
   # initialize MKL-SVR
-  #sg('new_svm', 'SVRLIGHT')
-  #sg('new_svm', 'LIBSVR')
+  sg('new_svm', 'SVRLIGHT')
   sg('use_mkl', TRUE)                      
   sg('use_precompute', 3)
   sg('mkl_parameters', mkl_eps, 0)

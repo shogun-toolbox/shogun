@@ -63,8 +63,7 @@ for (kk in c(1:length(f))) {  #Big loop
    train_y <- trend + wave1 + wave2
 
    #MK Learning
-   #sg('new_svm', 'SVRLIGHT')
-   sg('new_svm', 'LIBSVR')
+   sg('new_svm', 'SVRLIGHT')
    sg('use_mkl', TRUE)
    sg('use_precompute', 0)      #precompute every SINGLE kernel!
    sg('mkl_parameters', mkl_eps, 0)
