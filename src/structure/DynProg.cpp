@@ -2053,10 +2053,12 @@ void CDynProg::find_svm_values_till_pos(WORD** wordstr,  const INT *pos,  INT t_
 			{
 				double normalization_factor = 1.0;
 				if (my_num_unique_words[s] > 0)
+				{
 					if (sign_words_array[s])
 						normalization_factor = sqrt((double)my_num_unique_words[s]);
 					else
 						normalization_factor = (double)my_num_unique_words[s];
+				}
 
 				if (j==0)
 					svs.svm_values[offset+s]=0 ;
