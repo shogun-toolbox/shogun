@@ -955,8 +955,32 @@ template <class ST> class CStringFeatures : public CFeatures
 				return true;
 			}
 
+		/* check if length of all vectors in given feature objects is the
+		 * same.
+		 *
+		 * @param lhs feature object of left hand side
+		 * @param rhs feature object of right hand side
+		 * @return if length of all vectors in given feature objects is the
+		 * same.
+		 */
+		bool have_same_length(CStringFeatures<ST>* l, CStringFeatures<ST>* r)
+		{
+			ASSERT(l && r);
+			INT num_lhs=l->get_num_vectors();
+			if (num_lhs!=r->get_num_vectors())
+				return false;
+
+			for (INT i=0; i<num_lhs; i++)
+			{
+				if (l->get_vector_length(i)!=r->get_vector_length(i))
+					return false;
+			}
+
+			return true;
+		}
+
 	protected:
-		/** translage from single order
+		/** translate from single order
 		 *
 		 * @param obs observation
 		 * @param sequence_length length of sequence
@@ -997,7 +1021,7 @@ template <class ST> class CStringFeatures : public CFeatures
 				obs[i-start]=obs[i];
 		}
 
-		/** translage from single order reversed
+		/** translate from single order reversed
 		 *
 		 * @param obs observation
 		 * @param sequence_length length of sequence

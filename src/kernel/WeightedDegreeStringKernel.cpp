@@ -149,18 +149,27 @@ void CWeightedDegreeStringKernel::create_empty_tries()
   
 bool CWeightedDegreeStringKernel::init(CFeatures* l, CFeatures* r)
 {
-	INT lhs_changed = (lhs!=l) ;
-	INT rhs_changed = (rhs!=r) ;
+	ASSERT(l && r);
+	INT lhs_changed=(lhs!=l);
+	INT rhs_changed=(rhs!=r);
+	CStringFeatures<CHAR>* sf_l=(CStringFeatures<CHAR>*) l;
+	CStringFeatures<CHAR>* sf_r=(CStringFeatures<CHAR>*) r;
 
-	bool result=CStringKernel<CHAR>::init(l,r);
-	initialized=false;
+	if (lhs_changed || rhs_changed)
+	{
+		if (!sf_l->have_same_length(sf_l, sf_r))
+			SG_ERROR("Length of lhs and rhs differs.\n");
+	}
 
 	SG_DEBUG("lhs_changed: %i\n", lhs_changed);
 	SG_DEBUG("rhs_changed: %i\n", rhs_changed);
 
+	bool result=CStringKernel<CHAR>::init(l,r);
+	initialized=false;
+
 	delete alphabet;
-	alphabet=new CAlphabet(((CStringFeatures<CHAR>*) l)->get_alphabet());
-	CAlphabet* ralphabet=((CStringFeatures<CHAR>*) r)->get_alphabet();
+	alphabet=new CAlphabet(sf_l->get_alphabet());
+	CAlphabet* ralphabet=(sf_r->get_alphabet());
 	if (!((alphabet->get_alphabet()==DNA) || (alphabet->get_alphabet()==RNA)))
 		properties &= ((ULONG) (-1)) ^ (KP_LINADD | KP_BATCHEVALUATION);
 
@@ -181,8 +190,8 @@ bool CWeightedDegreeStringKernel::init(CFeatures* l, CFeatures* r)
 	else
 		normalization_const=1.0;
 	
-	this->lhs=(CStringFeatures<CHAR>*) l;
-	this->rhs=(CStringFeatures<CHAR>*) r;
+	this->lhs=sf_l;
+	this->rhs=sf_r;
 
 	initialized=true;
 	return result;
@@ -382,28 +391,24 @@ DREAL CWeightedDegreeStringKernel::compute_without_mismatch_matrix(CHAR* avec, I
 
 DREAL CWeightedDegreeStringKernel::compute(INT idx_a, INT idx_b)
 {
-  INT alen, blen;
+	INT alen, blen;
+	CHAR* avec=((CStringFeatures<CHAR>*) lhs)->get_feature_vector(idx_a, alen);
+	CHAR* bvec=((CStringFeatures<CHAR>*) rhs)->get_feature_vector(idx_b, blen);
+	DREAL result=0;
 
-  CHAR* avec=((CStringFeatures<CHAR>*) lhs)->get_feature_vector(idx_a, alen);
-  CHAR* bvec=((CStringFeatures<CHAR>*) rhs)->get_feature_vector(idx_b, blen);
-  // can only deal with strings of same length
-  ASSERT(alen==blen);
+	if (max_mismatch==0 && length==0 && block_computation)
+		result=compute_using_block(avec, alen, bvec, blen);
+	else
+	{
+		if (max_mismatch>0)
+			result=compute_with_mismatch(avec, alen, bvec, blen);
+		else if (length==0)
+			result=compute_without_mismatch(avec, alen, bvec, blen);
+		else
+			result=compute_without_mismatch_matrix(avec, alen, bvec, blen);
+	}
 
-  DREAL result=0;
-
-  if (max_mismatch == 0 && length == 0 && block_computation)
-	  result = compute_using_block(avec, alen, bvec, blen) ;
-  else
-  {
-	  if (max_mismatch > 0)
-		  result = compute_with_mismatch(avec, alen, bvec, blen) ;
-	  else if (length==0)
-		  result = compute_without_mismatch(avec, alen, bvec, blen) ;
-	  else
-		  result = compute_without_mismatch_matrix(avec, alen, bvec, blen) ;
-  }
-  
-  return result/normalization_const;
+	return result/normalization_const;
 }
 
 
