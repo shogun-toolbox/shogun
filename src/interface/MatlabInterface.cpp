@@ -213,6 +213,37 @@ GET_MATRIX(get_real_matrix, "double", DREAL, double, "Double Precision")
 GET_MATRIX(get_word_matrix, "uint16", WORD, unsigned short, "Word")
 #undef GET_MATRIX
 
+#define GET_NDARRAY(function_name, mx_type, sg_type, if_type, error_string)		\
+void CMatlabInterface::function_name(sg_type*& array, INT*& dims, INT& num_dims)\
+{ 																				\
+	const mxArray* mx_array=get_arg_increment(); 								\
+	if (!mx_array || !(mxIsClass(mx_array, mx_type))) 							\
+		SG_ERROR("Expected " error_string " ND Array, got class %s as argument %d\n", \
+			mxGetClassName(mx_array), m_rhs_counter); 							\
+ 																				\
+	num_dims = (INT) mxGetNumberOfDimensions(mx_array);							\
+	const mwSize* mw_dims = mxGetDimensions(mx_array);							\
+	mwSize total_size=mxGetNumberOfElements(mx_array);							\
+	if_type* data=(if_type*) mxGetData(mx_array); 								\
+ 																				\
+	dims=new INT[num_dims];														\
+	for (INT d=0; d<num_dims; d++)												\
+		dims[d]=(INT) mw_dims[d];												\
+																				\
+	array=new sg_type[total_size]; 												\
+	for (mwSize i=0; i<total_size; i++) 										\
+		array[i]=data[i];														\
+}
+
+GET_NDARRAY(get_byte_ndarray, "uint8", BYTE, BYTE, "Byte")
+GET_NDARRAY(get_char_ndarray, "char", CHAR, mxChar, "Char")
+GET_NDARRAY(get_int_ndarray, "int32", INT, int, "Integer")
+GET_NDARRAY(get_short_ndarray, "int16", SHORT, short, "Short")
+GET_NDARRAY(get_shortreal_ndarray, "single", SHORTREAL, float, "Single Precision")
+GET_NDARRAY(get_real_ndarray, "double", DREAL, double, "Double Precision")
+GET_NDARRAY(get_word_ndarray, "uint16", WORD, unsigned short, "Word")
+#undef GET_NDARRAY
+
 #define GET_SPARSEMATRIX(function_name, mx_type, sg_type, if_type, error_string)		\
 void CMatlabInterface::function_name(TSparse<sg_type>*& matrix, INT& num_feat, INT& num_vec) \
 {																						\
@@ -283,8 +314,10 @@ void CMatlabInterface::function_name(T_STRING<sg_type>*& strings, INT& num_str, 
 		for (int i=0; i<num_str; i++)													\
 		{																				\
 			mxArray* str=mxGetCell(mx_str, i);											\
+			if (!str)					\
+				SG_ERROR("argument empty");		\
 			if (!str || !mxIsClass(str, mx_type) || !mxGetM(str)==1)					\
-				SG_ERROR("Expected String of type " error_string " as argument %d.\n", m_rhs_counter); \
+				SG_ERROR("Expected String of type " error_string " as argument %d.  M:%i N:%i\n", m_rhs_counter,mxGetM(str),mxGetN(str)); \
 																						\
 			INT len=mxGetN(str);														\
 			if (len>0) 																	\

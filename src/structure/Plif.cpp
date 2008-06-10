@@ -36,7 +36,7 @@ CPlif::CPlif(INT l)
 	use_svm=0;
 	use_cache=false;
 	len=0;
-
+	do_calc = true;
 	if (l>0)
 		set_plif_length(l);
 }
@@ -74,7 +74,6 @@ bool CPlif::set_transform_type(const char *type_str)
 	}
 	return true ;
 }
-
 void CPlif::init_penalty_struct_cache()
 {
 	if (!use_cache)
@@ -228,6 +227,7 @@ CPlif** read_penalty_struct_from_cell(const mxArray * mx_penalty_info, INT P)
 			return NULL ;
 		}
 		PEN[id]->set_min_value(min_value) ;
+		//SG_PRINT("id: %i, min_value: %i,  max_value: %i\n",id,min_value, max_value);
 		
 		if (PEN[id]->get_id()!=-1)
 		{
@@ -289,6 +289,8 @@ DREAL CPlif::lookup_penalty_svm(DREAL p_value, DREAL *d_values) const
 	SG_PRINT("%s.lookup_penalty_svm(%f)\n", get_name(), d_value) ;
 #endif
 
+	if (!do_calc)
+		return d_value;
 	switch (transform)
 	{
 	case T_LINEAR:
@@ -348,7 +350,8 @@ DREAL CPlif::lookup_penalty(INT p_value, DREAL* svm_values) const
 
 	if ((p_value<min_value) || (p_value>max_value))
 		return -CMath::INFTY ;
-	
+	if (!do_calc)
+		return p_value;
 	if (cache!=NULL && (p_value>=0) && (p_value<=max_value))
 	{
 		DREAL ret=cache[p_value] ;
@@ -366,9 +369,13 @@ DREAL CPlif::lookup_penalty(DREAL p_value, DREAL* svm_values) const
 	SG_PRINT("%s.lookup_penalty(%f)\n", get_name(), p_value) ;
 #endif
 
+
 	if ((p_value<min_value) || (p_value>max_value))
 		return -CMath::INFTY ;
-	
+
+	if (!do_calc)
+		return p_value;
+
 	DREAL d_value = (DREAL) p_value ;
 	switch (transform)
 	{
@@ -443,8 +450,9 @@ void CPlif::penalty_add_derivative(DREAL p_value, DREAL* svm_values)
 	}
 	
 	if ((p_value<min_value) || (p_value>max_value))
+	{
 		return ;
-	
+	}
 	DREAL d_value = (DREAL) p_value ;
 	switch (transform)
 	{
@@ -489,6 +497,9 @@ void CPlif::penalty_add_derivative_svm(DREAL p_value, DREAL *d_values)
 {	
 	ASSERT(use_svm>0);
 	DREAL d_value=d_values[use_svm-1] ;
+
+	if (d_value<-1e+20)
+		return;
 	
 	switch (transform)
 	{
@@ -528,3 +539,23 @@ void CPlif::penalty_add_derivative_svm(DREAL p_value, DREAL *d_values)
 		cum_derivatives[idx-1]+=(limits[idx]-d_value)/(limits[idx]-limits[idx-1]) ;
 	}
 }
+void CPlif::get_used_svms(INT* num_svms, INT* svm_ids)
+{
+	if (use_svm)
+	{
+		svm_ids[(*num_svms)] = use_svm;
+		(*num_svms)++;
+	}
+	SG_PRINT("-> %i ,num_svms: %i plif_id: %i  ",use_svm, *num_svms, get_id());
+}
+bool CPlif::get_do_calc()
+{
+	return do_calc;
+}
+void CPlif::set_do_calc(bool b)
+{
+	do_calc = b;;
+}
+
+
+

@@ -58,10 +58,14 @@ void CPlifArray::clear()
 }
 
 DREAL CPlifArray::lookup_penalty(DREAL p_value, DREAL* svm_values) const 
-{
+{	
+	//min_value = -1e6 ;
+	//max_value = 1e6 ;
 	if (p_value<min_value || p_value>max_value)
+	{
+		//SG_WARNING("lookup_penalty: p_value: %i min_value: %f, max_value: %f\n",p_value, min_value, max_value);
 		return -CMath::INFTY ;
-
+	}
 	DREAL ret = 0.0 ;
 	for (INT i=0; i<m_array.get_num_elements(); i++)
 		ret += m_array[i]->lookup_penalty(p_value, svm_values) ;
@@ -69,10 +73,14 @@ DREAL CPlifArray::lookup_penalty(DREAL p_value, DREAL* svm_values) const
 } 
 
 DREAL CPlifArray::lookup_penalty(INT p_value, DREAL* svm_values) const 
-{
+{	
+	//min_value = -1e6 ;
+	//max_value = 1e6 ;
 	if (p_value<min_value || p_value>max_value)
+	{
+		//SG_WARNING("lookup_penalty: p_value: %i min_value: %f, max_value: %f\n",p_value, min_value, max_value);
 		return -CMath::INFTY ;
-	
+	}
 	DREAL ret = 0.0 ;
 	for (INT i=0; i<m_array.get_num_elements(); i++)
 	{
@@ -117,5 +125,14 @@ INT CPlifArray::get_max_id() const
 	return max_id ;
 }
 
+void CPlifArray::get_used_svms(INT* num_svms, INT* svm_ids)
+{
+	SG_PRINT("get_used_svms: num: %i \n",m_array.get_num_elements());
+	for (INT i=0; i<m_array.get_num_elements(); i++)
+	{
+		m_array[i]->get_used_svms(num_svms, svm_ids);
+	}
+	SG_PRINT("\n");
+}
 
 

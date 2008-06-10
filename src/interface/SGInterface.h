@@ -21,6 +21,7 @@
 #include "guilib/GUIPluginEstimate.h"
 #include "guilib/GUIPreProc.h"
 #include "guilib/GUITime.h"
+#include "guilib/GUIStructure.h"
 
 enum IFType
 {
@@ -319,6 +320,49 @@ class CSGInterface : public CSGObject
 		bool cmd_best_path();
 		/** best path 2struct */
 		bool cmd_best_path_2struct();
+		/** 
+ 		 * -assemble plif struct from a bunch of 
+ 		 *  arrays of the same length corresponding
+ 		 *  to the fields of the plif-struct-array
+ 		 */
+		bool cmd_set_plif_struct();
+		/** 
+		 * -get plif struct as a bunch 
+		 *  of arrays of the same length
+		 * -each array corresponding to one
+		 *  field of the struct
+		 */
+		bool cmd_get_plif_struct();
+		/** 
+		 * -precompute content svms 
+		 *  and save the outputs 
+		 *  in a matrix with dim nof contents times 
+		 *  nof feature positions 
+		 *
+		 * -the SVM score for a specific segment can be
+		 *  calculated by subtraction the 
+		 *  the start and end position entries 
+		 *  from the row corresponding to the segment 
+		 *  type
+		 */
+		bool cmd_precompute_content_svms();
+		/** 
+ 		 * -compute the matrix that links 
+ 		 *  the plif ids to the transitions
+ 		 *
+ 		 * -the matrix has dimensions nof states 
+ 		 *  times nof states times nof feature types
+ 		 *
+ 		 * - feature types are for example 
+ 		 *   signal features, length features,
+ 		 *   content features and tiling features
+ 		 */
+		bool cmd_set_model();
+		/**
+		 * set feature matrix and 
+		 * all feature positions
+		 */	
+		bool cmd_set_feature_matrix();
 		/** best path trans */
 		bool cmd_best_path_trans();
 		/** best path trans deriv */
@@ -380,6 +424,8 @@ class CSGInterface : public CSGObject
 
 		virtual CHAR* get_string(INT& len)=0;
 
+		virtual void get_bool_vector(bool*& vector, INT& len);
+		virtual void set_bool_vector(bool*& vector, INT& len);
 		virtual void get_byte_vector(BYTE*& vector, INT& len)=0;
 		virtual void get_char_vector(CHAR*& vector, INT& len)=0;
 		virtual void get_int_vector(INT*& vector, INT& len)=0;
@@ -396,6 +442,14 @@ class CSGInterface : public CSGObject
 		virtual void get_real_matrix(DREAL*& matrix, INT& num_feat, INT& num_vec)=0;
 		virtual void get_short_matrix(SHORT*& matrix, INT& num_feat, INT& num_vec)=0;
 		virtual void get_word_matrix(WORD*& matrix, INT& num_feat, INT& num_vec)=0;
+
+		virtual void get_byte_ndarray(BYTE*& array, INT*& dims, INT& num_dims)=0;
+		virtual void get_char_ndarray(CHAR*& array, INT*& dims, INT& num_dims)=0;
+		virtual void get_int_ndarray(INT*& array, INT*& dims, INT& num_dims)=0;
+		virtual void get_shortreal_ndarray(SHORTREAL*& array, INT*& dims, INT& num_dims)=0;
+		virtual void get_real_ndarray(DREAL*& array, INT*& dims, INT& num_dims)=0;
+		virtual void get_short_ndarray(SHORT*& array, INT*& dims, INT& num_dims)=0;
+		virtual void get_word_ndarray(WORD*& array, INT*& dims, INT& num_dims)=0;
 
 
 		virtual void get_real_sparsematrix(TSparse<DREAL>*& matrix, INT& num_feat, INT& num_vec)=0;
@@ -475,6 +529,7 @@ class CSGInterface : public CSGObject
 		CGUIPluginEstimate* ui_pluginestimate;
 		CGUIPreProc* ui_preproc;
 		CGUITime* ui_time;
+		CGUIStructure* ui_structure;
 
 	protected:
 		/* return true if str starts with cmd

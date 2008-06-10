@@ -18,6 +18,7 @@
 #include "lib/io.h"
 #include "lib/config.h"
 #include "structure/PlifBase.h"
+#include "structure/Plif.h"
 #include "features/StringFeatures.h"
 #include "distributions/Distribution.h"
 #include "lib/DynamicArray.h"
@@ -27,6 +28,8 @@
 #include "lib/Time.h"
 
 #include <stdio.h>
+
+//#define DYNPROG_TIMING
 
 #ifdef USE_BIGSTATES
 typedef WORD T_STATES ;
@@ -59,6 +62,8 @@ private:
 	DREAL segment_clean_time ;
 	DREAL segment_extend_time ;
 	DREAL orf_time ;
+	DREAL content_time ;
+	DREAL content_penalty_time ;
 	DREAL svm_init_time ;
 	DREAL svm_pos_time ;
 	DREAL svm_clean_time ;
@@ -93,12 +98,31 @@ public:
 	void best_path_no_b_trans(INT max_iter, INT & max_best_iter, SHORT nbest, DREAL *prob_nbest, INT *my_paths);
 	
 	// model related functions
-	/** set N
+	/** set number of states
 	 * use this to set N first
 	 *
 	 * @param p_N new N
 	 */
-	void set_N(INT p_N);
+	void set_num_states(INT p_N);
+	/** get num svms*/
+	INT get_num_svms();
+	/** init CArray for precomputed content svm values
+	 *  with size seq_len x num_svms
+	 *  
+	 *  @param seq_len: number of candidate positions
+	 */
+	void init_content_svm_value_array(const INT seq_len);
+
+	/** init CArray for precomputed tiling intensitie-plif-values
+	 *  with size seq_len x num_svms
+	 *  
+	 *  @param seq_len: number of candidate positions
+	 *  @param probe_pos: local positions of probes 
+	 *  @param probe_pos: intensities of probes 
+	 */
+	void init_tiling_data(DREAL* probe_pos, DREAL* intensities, const INT num_probes, const INT seq_len);
+
+	void precompute_tiling_plifs(CPlif** PEN, const INT num_penalties, const INT seq_len, const INT* pos);	
 
 	/** set vector p
 	 *
@@ -313,11 +337,11 @@ public:
 
 	/** set best path segmend ids mask
 	 *
-	 * @param segment_ids_mask segment ids mask
+	 * @param segment_ids segment ids
+	 * @param segment_mask segment mask
 	 * @param m dimension m
-	 * @param n dimension n
 	 */
-	void best_path_set_segment_ids_mask(INT* segment_ids_mask, INT m, INT n);
+	void best_path_set_segment_ids_mask(INT* segment_ids, DREAL* segment_mask, INT m);
 
 	// best_path functions
 	/** best path call
@@ -406,9 +430,9 @@ public:
 	void best_path_trans(const DREAL *seq, INT seq_len, const INT *pos,
 						 const INT *orf_info, CPlifBase **PLif_matrix,
 						 CPlifBase **Plif_state_signals, INT max_num_signals,
-						 const char *genestr, INT genestr_len, INT genestr_num,
+						 INT genestr_num,
 						 DREAL *prob_nbest, INT *my_state_seq, INT *my_pos_seq,
-						 DREAL *dictionary_weights, INT dict_len, bool use_orf);
+						 bool use_orf);
 
 	/** best path trans derivative
 	 *
@@ -429,13 +453,9 @@ public:
 	 * @param dictionary_weights dictionary weights
 	 * @param dict_len length of dictionary weights
 	 */
-	void best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *my_scores, DREAL* my_losses,
-							   INT my_seq_len,
-							   const DREAL *seq_array, INT seq_len, const INT *pos,
-							   CPlifBase **Plif_matrix,
-							   CPlifBase **Plif_state_signals, INT max_num_signals,
-							   const char *genestr, INT genestr_len, INT genestr_num,
-							   DREAL *dictionary_weights, INT dict_len);
+	void best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *my_scores, DREAL* my_losses, INT my_seq_len,
+					const DREAL *seq_array, INT seq_len, const INT *pos, CPlifBase **Plif_matrix,
+					CPlifBase **Plif_state_signals, INT max_num_signals, INT genestr_num);
 	
 	/** best path 2struct
 	 *
@@ -550,22 +570,22 @@ public:
 	
 	/** create array of precomputed content svm values
 	 * Jonas
-	 * @param wordstr wordst
-	 * @param pos pos
-	 * @param num_cand_pos num_cand_pos
-	 * @param genestr_len genestr_len
-	 * @param dictionary_weights dictionary_weights
-	 * @param dict_len dict_len
+	 * @param genestr
+	 * @param pos from 
+	 * @param pos to
 	 */
-	void precompute_content_values(WORD*** wordstr, const INT *pos,
-			const INT num_cand_pos, const INT genestr_len,
-			DREAL *dictionary_weights, INT dict_len);
-
+	void precompute_content_values(WORD*** wordstr, const INT *pos,const INT num_cand_pos, const INT genestr_len,DREAL *dictionary_weights,INT dict_len);
 	/** create word string from char* 
 	 * Jonas
 	 */
 	void create_word_string(const CHAR* genestr, INT genestr_num, INT genestr_len, WORD*** wordstr);
-        
+
+	/** precompute stop codons */
+	void precompute_stop_codons(const CHAR* genestr, INT genestr_len);        
+
+	/** set genestr len */
+	void set_genestr_len(INT genestr_len);
+
 	/** access function for matrix a
 	 *
 	 * @param line_ row in matrix 0...N-1
@@ -574,7 +594,7 @@ public:
 	 */
 	inline DREAL get_a(T_STATES line_, T_STATES column) const
 	{
-		return transition_matrix_a.element(line_,column); // look also best_path()!
+	  return transition_matrix_a.element(line_,column); // look also best_path()!
 	}
 
 	/** access function for matrix a derivated
@@ -585,22 +605,20 @@ public:
 	 */
 	inline DREAL get_a_deriv(T_STATES line_, T_STATES column) const
 	{
-		return transition_matrix_a_deriv.element(line_,column); // look also best_path()!
+	  return transition_matrix_a_deriv.element(line_,column); // look also best_path()!
 	}
-
-	/** access function for precomputed svm values
-	 *
-	 * @param i i
-	 * @param j j
-	 * @return value at (i,j)
-	 */
-	inline DREAL get_precomputed_svm_value(INT i, INT j) const
-	{
-		return m_precomputed_svm_values.get_element(i,j);
-	}
+	//@}
 protected:
 
 	/* helper functions */
+
+	inline void lookup_content_svm_values(const INT from_state, const INT to_state, const INT from_pos, const INT to_pos, DREAL* svm_values, INT frame);
+
+	inline void lookup_tiling_plif_values(const INT from_state, const INT to_state, const INT len, DREAL* svm_values);
+	inline INT find_frame(const INT from_state);
+
+	inline INT raw_intensities_interval_query(const INT from_pos, const INT to_pos, DREAL* intensities);
+
 	/** translate from single order
 	 *
 	 * @param obs observation matrix
@@ -725,7 +743,7 @@ protected:
 	 * @param last_pos last position
 	 * @param to to
 	 */
-	bool extend_orf(const CArray<bool>& genestr_stop, INT orf_from, INT orf_to, INT start, INT &last_pos, INT to);
+	bool extend_orf(INT orf_from, INT orf_to, INT start, INT &last_pos, INT to);
 
 	/** segment loss */
 	struct segment_loss_struct
@@ -737,7 +755,7 @@ protected:
 		/** segments changed */
 		INT *segments_changed;
 		/** numb segment ID */
-		INT *num_segment_id;
+		DREAL *num_segment_id;
 		/** length of segmend ID */
 		INT *length_segment_id ;
 	} ;
@@ -775,7 +793,7 @@ protected:
 	 * @param segment_ids segment IDs
 	 * @param loss segment loss
 	 */
-	void find_segment_loss_till_pos(const INT * pos, INT t_end, CArray2<INT>& segment_ids, struct segment_loss_struct & loss);
+	void find_segment_loss_till_pos(const INT * pos, INT t_end, CArray<INT>& segment_ids, CArray<DREAL>& segment_mask, struct segment_loss_struct & loss);
 
 	
 	/**@name model specific variables.
@@ -891,8 +909,10 @@ protected:
 	CArray2<DREAL> m_dict_weights;
 	/** m segment loss */
 	CArray3<DREAL> m_segment_loss;
-	/** m segment IDs mask */
-	CArray2<INT> m_segment_ids_mask;
+	/** m segment IDs */
+	CArray<INT> m_segment_ids;
+	/** m segment mask */
+	CArray<DREAL> m_segment_mask;
 	/** m my state seq */
 	CArray<INT> m_my_state_seq;
 	/** m my position sequence */
@@ -910,7 +930,85 @@ protected:
 	/** m positions */
 	CArray2<INT> m_positions;
 
-	/** m precompted svm values */
+	/** storeage of stop codons
+	 *  array of size length(sequence)
+	 */
+	CArray<bool> m_genestr_stop;
+        //
+        /**
+	 *  array for storage of content svm values
+	 * Jonas
+	 */
 	CArray2<DREAL> m_precomputed_svm_values;
+	CArray2<DREAL> m_precomputed_tiling_values;
+
+	DREAL* m_raw_intensities;
+	INT* m_probe_pos;
+	INT m_num_probes;
+	bool m_use_tiling;
+	INT m_genestr_len;
+
 };
+inline INT CDynProg::raw_intensities_interval_query(const INT from_pos, const INT to_pos, DREAL* intensities)
+{
+	ASSERT(from_pos<to_pos);
+	//SG_PRINT("m_num_probes:%i, m_raw_intensities[1]:%f, m_probe_pos[1]:%i \n",m_num_probes, m_raw_intensities[10], m_probe_pos[10]);
+	INT num_intensities = 0;
+	INT* p_tiling_pos  = m_probe_pos;
+	DREAL* p_tiling_data = m_raw_intensities;
+	INT last_pos;
+	INT num = 0;
+	while (*p_tiling_pos<to_pos)
+	{
+		if (*p_tiling_pos>=from_pos)
+		{
+			intensities[num_intensities] = *p_tiling_data;
+			num_intensities++;
+			//SG_PRINT("*p_tiling_data:%f, *p_tiling_pos:%i\n",*p_tiling_data,*p_tiling_pos);
+		}
+		num++;
+		if (num>=m_num_probes)
+			break;
+		last_pos = *p_tiling_pos;	
+		p_tiling_pos++;
+		p_tiling_data++;	
+		ASSERT(last_pos<*p_tiling_pos);
+	}
+	return num_intensities;
+}
+inline void CDynProg::lookup_content_svm_values(const INT from_state, const INT to_state, const INT from_pos, const INT to_pos, DREAL* svm_values, INT frame)
+{
+//	ASSERT(from_state<to_state);
+//	if (!(from_pos<to_pos))
+//		SG_ERROR("from_pos!<to_pos, from_pos: %i to_pos: %i \n",from_pos,to_pos);
+	for (INT i=0;i<4;i++)
+	{
+		DREAL to_val   = m_precomputed_svm_values.get_element(i,  to_state);
+		DREAL from_val = m_precomputed_svm_values.get_element(i,from_state);
+		svm_values[i]=(to_val-from_val)/(to_pos-from_pos);
+	}
+	// find the correct row with precomputed 
+	/*if (frame!=-1)
+	{
+		svm_values[4] = 1e10;
+		svm_values[5] = 1e10;
+		svm_values[6] = 1e10;
+		INT global_frame = from_pos%3;
+        	INT row = ((global_frame+frame)%3)+4;
+		DREAL to_val   = m_precomputed_svm_values.get_element(row,  to_state);
+		DREAL from_val = m_precomputed_svm_values.get_element(row,from_state);
+		svm_values[frame+4] = (to_val-from_val)/(to_pos-from_pos);
+	}*/
+}
+inline void CDynProg::lookup_tiling_plif_values(const INT from_state, const INT to_state, const INT len, DREAL* svm_values)
+{
+	ASSERT(from_state<to_state);
+	ASSERT(len>0);
+	for (INT i=num_svms;i<2*num_svms;i++)
+	{
+		//svm_values[i]=(m_precomputed_tiling_values.get_element(i-num_svms,to_state)-m_precomputed_tiling_values.get_element(i-num_svms,from_state))/len;
+		svm_values[i]=(m_precomputed_tiling_values.get_element(i-num_svms,to_state)-m_precomputed_tiling_values.get_element(i-num_svms,from_state));
+		//svm_values[i]=0.0;
+	}
+}
 #endif

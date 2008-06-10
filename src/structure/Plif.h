@@ -110,6 +110,28 @@ class CPlif: public CPlifBase
 		 */
 		bool set_transform_type(const char *type_str);
 
+		/** get transform type
+		 *
+		 * @return type_str type (string)
+		 */
+		const char* get_transform_type()
+		{
+			if (transform== T_LINEAR)
+				return "linear";
+			else if (transform== T_LOG)
+				return "log";
+			else if (transform== T_LOG_PLUS1)
+				return "log(+1)";
+			else if (transform== T_LOG_PLUS3)
+				return "log(+3)";
+			else if (transform== T_LINEAR_PLUS3)
+				return "(+3)";
+			else 
+				SG_ERROR("wrong type");
+			return "";
+		}
+
+
 		/** set ID
 		 *
 		 * @param p_id the id to set
@@ -259,7 +281,11 @@ class CPlif: public CPlifBase
 
 			penalty_clear_derivative();
 		}
-
+		
+		DREAL* get_plif_limits()
+		{
+			return limits;
+		}
 		/** set plif penalty
 		 *
 		 * @param p_penalties penalties
@@ -276,7 +302,14 @@ class CPlif: public CPlifBase
 
 			penalty_clear_derivative();
 		}
-
+		/** get plif penalty
+ 		 *	
+ 		 * @return plif penalty
+ 		 */ 
+		DREAL* get_plif_penalties()
+		{
+			return penalties;
+		}
 		/** set maximum value
 		 *
 		 * @param p_max_value maximum value
@@ -339,7 +372,14 @@ class CPlif: public CPlifBase
 				return strdup(buf);
 			}
 		}
-
+		bool get_do_calc();
+		void set_do_calc(bool b);
+		
+		/** get SVM_ids and number of SVMs used 
+		 * 
+		 */ 
+		void get_used_svms(INT* num_svms, INT* svm_ids);
+		
 		/** get plif len
 		 *
 		 * @return plif len
@@ -374,6 +414,10 @@ class CPlif: public CPlifBase
 		INT use_svm;
 		/** if cache shall be used */
 		bool use_cache;
+		/** do calc
+		 *  if this is true: lookup_penalty behaves normal
+		 *  else: lookup_penalty returns the p_value untransformed*/
+		bool do_calc;
 };
 
 #ifdef HAVE_MATLAB

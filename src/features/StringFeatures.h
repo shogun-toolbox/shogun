@@ -44,6 +44,15 @@ template <class T> struct T_STRING
 	INT length;
 };
 
+template <class T> CHAR* get_zero_terminated_string_copy(T_STRING<T> str)
+{
+	INT l=str.length;
+	CHAR* s=new CHAR[l+1];
+	memcpy(s, str.string, sizeof(CHAR)*l);
+	s[l]='\0';
+	return s;
+}
+
 /** template class StringFeatures
  * StringFeatures do not yet support PREPROCS
  */
