@@ -283,6 +283,23 @@ class CMath : public CSGObject
 			return ::log(v);
 		}
 
+		template <class T> void transpose_matrix(T*& matrix, INT& num_feat, INT& num_vec)
+		{
+			T* transposed=new T[num_vec*num_feat];
+			for (INT i=0; i<num_vec; i++)
+			{
+				for (INT j=0; j<num_feat; j++)
+					transposed[j+i*num_feat]=matrix[i+j*num_vec];
+			}
+
+			delete[] matrix;
+			matrix=transposed;
+
+			INT tmp=num_feat;
+			num_feat=num_vec;
+			num_vec=tmp;
+		}
+
 #ifdef HAVE_LAPACK
 		/// return the pseudo inverse for matrix
 		/// when matrix has shape (rows, cols) the pseudo inverse has (cols, rows)

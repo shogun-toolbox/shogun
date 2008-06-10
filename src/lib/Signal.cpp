@@ -42,6 +42,8 @@ CSignal::~CSignal()
 
 void CSignal::handler(int signal)
 {
+	unset_handler();
+
 #if !defined(HAVE_SWIG) && (defined(HAVE_MATLAB) || defined(HAVE_OCTAVE) || defined(HAVE_R))
 	if (signal == SIGINT)
 	{
@@ -50,7 +52,6 @@ void CSignal::handler(int signal)
 
 		if (answer == 'I')
 		{
-			unset_handler();
 #if defined(HAVE_MATLAB)
 			mexErrMsgTxt("sg stopped by SIGINT\n");
 #elif defined(HAVE_OCTAVE)
@@ -67,10 +68,15 @@ void CSignal::handler(int signal)
 #endif
 
 		}
-		else if (answer == 'P')
-			cancel_computation=true;
 		else
-			SG_SPRINT("\n");
+		{
+			set_handler();
+
+			if (answer == 'P')
+				cancel_computation=true;
+			else
+				SG_SPRINT("\n");
+		}
 	}
 	else if (signal == SIGURG)
 		cancel_computation=true;

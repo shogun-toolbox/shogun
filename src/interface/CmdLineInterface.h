@@ -116,9 +116,6 @@ class CCmdLineInterface : public CSGInterface
 			return element;
 		}
 
-		template <class T>
-		void transpose_matrix(T*& matrix, INT& num_feat, INT& num_vec);
-
 	private:
 		CDynamicArray<CHAR*>* m_lhs;
 		CDynamicArray<CHAR*>* m_rhs;
