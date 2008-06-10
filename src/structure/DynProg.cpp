@@ -345,11 +345,11 @@ void CDynProg::precompute_content_values(WORD*** wordstr, const INT *pos,const I
 				WORD word = wordstr[0][j][i] ;
 				for (INT s=0; s<num_svms; s++)
 				{
-					if (s==4 & i%3!=0)
+					if (s==4 && i%3!=0)
 						continue;
-					else if (s==5 & i%3!=1)
+					else if (s==5 && i%3!=1)
 						continue;
-					else if (s==6 & i%3!=2)
+					else if (s==6 && i%3!=2)
 						continue;
 					my_svm_values_unnormalized[s] += dict_weights_array[(word+cum_num_words_array[j])+s*cum_num_words_array[num_degrees]] ;
 				}
@@ -2057,10 +2057,12 @@ void CDynProg::find_svm_values_till_pos(WORD*** wordstr,  const INT *pos,  INT t
 			{
 				double normalization_factor = 1.0;
 				if (my_num_unique_words[s] > 0)
+				{
 					if (sign_words_array[s])
 						normalization_factor = sqrt((double)my_num_unique_words[s]);
 					else
 						normalization_factor = (double)my_num_unique_words[s];
+				}
 
 				if (j==0)
 					svs.svm_values[offset+s]=0 ;
