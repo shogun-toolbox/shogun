@@ -546,7 +546,6 @@ PyObject* sg(PyObject* self, PyObject* args)
 	}
 	catch (ShogunException e)
 	{
-		SG_PRINT("%s", e.get_exception_string());
 		return NULL;
 	}
 

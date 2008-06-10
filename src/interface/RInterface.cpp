@@ -466,7 +466,6 @@ SEXP sg(SEXP args)
 	}
 	catch (ShogunException e)
 	{
-		SG_PRINT("%s", e.get_exception_string());
 		return R_NilValue;
 	}
 
