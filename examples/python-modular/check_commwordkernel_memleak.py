@@ -56,7 +56,7 @@ order=7
 gap=0
 reverse=False
 
-for i in xrange(1000):
+for i in xrange(10):
     alpha=Alphabet(DNA)
     traindat=StringCharFeatures(alpha)
     traindat.set_string_features(POS+NEG)
