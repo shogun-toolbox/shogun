@@ -1,8 +1,8 @@
 rand('seed',17);
 %sequence lengths, number of sequences
 len=100;
-num_train=1000;
-num_test=2000;
+num_train=200;
+num_test=300;
 num_a=3;
 aa=(round(len/2-num_a/2)):(round(len/2+num_a/2-1));
 

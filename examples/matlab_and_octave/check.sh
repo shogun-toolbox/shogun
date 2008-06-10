@@ -22,6 +22,10 @@ then
 	errormsg "octave is not the configured interface!"
 fi
 
+if ! echo 'sg('help')' | octave >/dev/null 2>&1
+then
+	ln -s ../../src/sg.oct .
+fi
 
 for e in *.m
 do
