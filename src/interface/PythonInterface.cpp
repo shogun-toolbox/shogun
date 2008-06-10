@@ -190,6 +190,43 @@ GET_MATRIX(get_real_matrix, NPY_DOUBLE, DREAL, double, "Double Precision")
 GET_MATRIX(get_word_matrix, NPY_USHORT, WORD, unsigned short, "Word")
 #undef GET_MATRIX
 
+#define GET_NDARRAY(function_name, py_type, sg_type, if_type, error_string)	\
+void CPythonInterface::function_name(sg_type*& array, INT*& dims, INT& num_dims)	\
+{ 																			\
+	const PyArrayObject* py_mat=(PyArrayObject *) get_arg_increment(); 		\
+	if (!py_mat || !PyArray_Check(py_mat) || 								\
+			PyArray_TYPE(py_mat)!=py_type) 									\
+	{																		\
+		SG_ERROR("Expected " error_string " ND-Array as argument %d\n",		\
+			m_rhs_counter); 												\
+	}																		\
+																			\
+ 	num_dims=py_mat->nd;													\
+	LONG total_size=0;														\
+																			\
+	dims=new INT[num_dims];													\
+	for (INT d=0; d<num_dims; d++)											\
+	{																		\
+		dims[d]=(INT) py_mat->dimensions[d];								\
+		total_size+=dims[d];												\
+	}																		\
+																			\
+	array=new sg_type[total_size]; 											\
+																			\
+	char* data=py_mat->data; 												\
+	for (LONG i=0; i<total_size; i++) 										\
+		array[i]=*(((if_type*)(data))+i);									\
+}
+
+GET_NDARRAY(get_byte_ndarray, NPY_BYTE, BYTE, BYTE, "Byte")
+GET_NDARRAY(get_char_ndarray, NPY_CHAR, CHAR, char, "Char")
+GET_NDARRAY(get_int_ndarray, NPY_INT, INT, int, "Integer")
+GET_NDARRAY(get_short_ndarray, NPY_SHORT, SHORT, short, "Short")
+GET_NDARRAY(get_shortreal_ndarray, NPY_FLOAT, SHORTREAL, float, "Single Precision")
+GET_NDARRAY(get_real_ndarray, NPY_DOUBLE, DREAL, double, "Double Precision")
+GET_NDARRAY(get_word_ndarray, NPY_USHORT, WORD, unsigned short, "Word")
+#undef GET_NDARRAY
+
 
 #define GET_SPARSEMATRIX(function_name, py_type, sg_type, if_type, error_string) \
 void CPythonInterface::function_name(TSparse<sg_type>*& matrix, INT& num_feat, INT& num_vec) \

@@ -271,6 +271,7 @@ CPlif** read_penalty_struct_from_cell(const mxArray * mx_penalty_info, INT P)
 	}
 	return PEN ;
 }
+#endif
 
 void delete_penalty_struct(CPlif** PEN, INT P) 
 {
@@ -278,8 +279,6 @@ void delete_penalty_struct(CPlif** PEN, INT P)
 		delete PEN[i] ;
 	delete[] PEN ;
 }
-
-#endif
 
 DREAL CPlif::lookup_penalty_svm(DREAL p_value, DREAL *d_values) const
 {	

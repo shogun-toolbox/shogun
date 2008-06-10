@@ -78,6 +78,14 @@ class CPythonInterface : public CSGInterface
 		virtual void set_short_matrix(const SHORT* matrix, INT num_feat, INT num_vec);
 		virtual void set_word_matrix(const WORD* matrix, INT num_feat, INT num_vec);
 
+		virtual void get_byte_ndarray(BYTE*& array, INT*& dims, INT& num_dims);
+		virtual void get_char_ndarray(CHAR*& array, INT*& dims, INT& num_dims);
+		virtual void get_int_ndarray(INT*& array, INT*& dims, INT& num_dims);
+		virtual void get_shortreal_ndarray(SHORTREAL*& array, INT*& dims, INT& num_dims);
+		virtual void get_real_ndarray(DREAL*& array, INT*& dims, INT& num_dims);
+		virtual void get_short_ndarray(SHORT*& array, INT*& dims, INT& num_dims);
+		virtual void get_word_ndarray(WORD*& array, INT*& dims, INT& num_dims);
+
 		virtual void set_real_sparsematrix(const TSparse<DREAL>* matrix, INT num_feat, INT num_vec, LONG nnz);
 
 		virtual void set_byte_string_list(const T_STRING<BYTE>* strings, INT num_str);

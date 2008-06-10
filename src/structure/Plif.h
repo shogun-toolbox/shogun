@@ -422,7 +422,8 @@ class CPlif: public CPlifBase
 
 #ifdef HAVE_MATLAB
 CPlif** read_penalty_struct_from_cell(const mxArray * mx_penalty_info, INT P) ;
-void delete_penalty_struct(CPlif** PEN, INT P) ;
 #endif
+
+void delete_penalty_struct(CPlif** PEN, INT P) ;
 
 #endif

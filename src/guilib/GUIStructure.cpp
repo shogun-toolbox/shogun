@@ -15,6 +15,7 @@
 
 #include "interface/SGInterface.h"
 #include "guilib/GUIStructure.h"
+#include "structure/Plif.h"
 
 
 CGUIStructure::CGUIStructure(CSGInterface* ui_) : ui(ui_), m_PEN(NULL), m_num_plifs(0), m_num_limits(0), 

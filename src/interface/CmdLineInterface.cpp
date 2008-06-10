@@ -399,6 +399,33 @@ void CCmdLineInterface::get_word_matrix(WORD*& matrix, INT& num_feat, INT& num_v
 	num_vec=0;
 }
 
+void CCmdLineInterface::get_byte_ndarray(BYTE*& array, INT*& dims, INT& num_dims)
+{
+}
+
+void CCmdLineInterface::get_char_ndarray(CHAR*& array, INT*& dims, INT& num_dims)
+{
+}
+
+void CCmdLineInterface::get_int_ndarray(INT*& array, INT*& dims, INT& num_dims)
+{
+}
+
+void CCmdLineInterface::get_shortreal_ndarray(SHORTREAL*& array, INT*& dims, INT& num_dims)
+{
+}
+
+void CCmdLineInterface::get_real_ndarray(DREAL*& array, INT*& dims, INT& num_dims)
+{
+}
+
+void CCmdLineInterface::get_short_ndarray(SHORT*& array, INT*& dims, INT& num_dims)
+{
+}
+
+void CCmdLineInterface::get_word_ndarray(WORD*& array, INT*& dims, INT& num_dims)
+{
+}
 
 void CCmdLineInterface::get_real_sparsematrix(TSparse<DREAL>*& matrix, INT& num_feat, INT& num_vec)
 {

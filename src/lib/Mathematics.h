@@ -283,7 +283,7 @@ class CMath : public CSGObject
 			return ::log(v);
 		}
 
-		template <class T> void transpose_matrix(T*& matrix, INT& num_feat, INT& num_vec)
+		template <class T> static void transpose_matrix(T*& matrix, INT& num_feat, INT& num_vec)
 		{
 			T* transposed=new T[num_vec*num_feat];
 			for (INT i=0; i<num_vec; i++)

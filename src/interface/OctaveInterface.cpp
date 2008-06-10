@@ -198,6 +198,30 @@ GET_MATRIX(get_real_matrix, is_double_type, Matrix, matrix_value, DREAL, DREAL, 
 GET_MATRIX(get_word_matrix, is_uint16_type, uint16NDArray, uint16_array_value, WORD, WORD, "Word")
 #undef GET_MATRIX
 
+#define GET_NDARRAY(function_name, oct_type_check, oct_type, oct_converter, sg_type, if_type, error_string)		\
+void COctaveInterface::function_name(sg_type*& array, INT*& dims, INT& num_dims)	\
+{																					\
+	const octave_value mat_feat=get_arg_increment();								\
+	if (!mat_feat.is_matrix_type() || !mat_feat.oct_type_check())					\
+		SG_ERROR("Expected " error_string " ND Array as argument %d\n", m_rhs_counter); \
+																					\
+	num_dims = (INT) mat_feat.ndims();												\
+	oct_type m = mat_feat.oct_converter();											\
+	LONG total_size=mat_feat.length();												\
+	array=new sg_type[total_size];													\
+																					\
+	for (LONG i=0; i<total_size; i++)												\
+		array[i]= (sg_type) m(i);													\
+}
+GET_NDARRAY(get_byte_ndarray, is_uint8_type, uint8NDArray, uint8_array_value, BYTE, BYTE, "Byte")
+GET_NDARRAY(get_char_ndarray, is_char_matrix, charMatrix, char_matrix_value, CHAR, CHAR, "Char")
+GET_NDARRAY(get_int_ndarray, is_int32_type, int32NDArray, uint8_array_value, INT, INT, "Integer")
+GET_NDARRAY(get_short_ndarray, is_int16_type, int16NDArray, uint8_array_value, SHORT, SHORT, "Short")
+GET_NDARRAY(get_shortreal_ndarray, is_single_type, Matrix, matrix_value, SHORTREAL, SHORTREAL, "Single Precision")
+GET_NDARRAY(get_real_ndarray, is_double_type, Matrix, matrix_value, DREAL, DREAL, "Double Precision")
+GET_NDARRAY(get_word_ndarray, is_uint16_type, uint16NDArray, uint16_array_value, WORD, WORD, "Word")
+#undef GET_NDARRAY
+
 void COctaveInterface::get_real_sparsematrix(TSparse<DREAL>*& matrix, INT& num_feat, INT& num_vec)
 {
 	const octave_value mat_feat=get_arg_increment();
