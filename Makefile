@@ -1,13 +1,10 @@
 # Usage scenarios
 #
-# * To make a release (and tag it) run (run make distclean before! and
-# 	compile each static interface and run make reference to update documentation)
+# * To make a release (and tag it) run
 #
-#		(cd trunk/src;  rm ChangeLog ; make ChangeLog ; svn ci -m "updated changelog")
+#       make prepare-release
 #       make svn-tag-release  
-#       (cd releases/shogun_0.6.2)
-#       make release
-#       make update-webpage
+#       (cd releases/shogun_X.Y.Z ; make release ; make update-webpage)
 #
 # * To create a debian .orig.tar.gz run
 #
@@ -92,6 +89,40 @@ sed -i '/^ \* EXCEPT FOR THE KERNEL CACHING FUNCTIONS WHICH ARE (W) THORSTEN JOA
 sed -i '/^SVMlight:$$/,/^$$/c\\' $(DESTDIR)/src/LICENSE
 
 # We assume that a release is always created from a SVN working copy.
+
+prepare-release:
+	#update changelog
+	(cd src;  rm ChangeLog ; make ChangeLog ; svn ci -m "updated changelog")
+	#static interfaces
+	( cd src && ./configure --interface=octave )
+	make -C src 
+	sudo make -C src install
+	make -C src reference
+	make -C src tests
+	( cd src && ./configure --interface=python )
+	make -C src 
+	sudo make -C src install
+	make -C src reference
+	make -C src tests
+	( cd src && ./configure --interface=r )
+	make -C src 
+	sudo make -C src install
+	make -C src reference
+	make -C src tests
+	#modular interfaces
+	( cd src && ./configure --interface=octave-modular )
+	make -C src 
+	sudo make -C src install
+	make -C src tests
+	( cd src && ./configure --interface=python-modular )
+	make -C src 
+	sudo make -C src install
+	make -C src tests
+	( cd src && ./configure --interface=r-modular )
+	make -C src 
+	sudo make -C src install
+	make -C src tests
+	(cd doc; svn ci -m "updated reference documentation")
 
 release: src/lib/versionstring.h $(DESTDIR)/src/lib/versionstring.h
 	tar -c -f $(DESTDIR).tar -C .. $(RELEASENAME)
