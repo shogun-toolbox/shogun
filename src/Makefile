@@ -308,7 +308,7 @@ ifeq (octave,$(INTERFACE))
 endif
 ifeq (cmdline,$(INTERFACE))
 	echo "/** \page staticcmdline Static Command Line Interface Function Reference" >x
-	-bash -c "echo -e \"set_output y\nhelp doxygen\n\"" | shogun
+	-bash -c "echo -e \"set_output y\nhelp doxygen\n\"" | ./shogun
 	echo "*/" >>y
 	cat x y >../doc/pages/StaticCommandLineInterface.mainpage
 	rm -f x y

@@ -96,6 +96,13 @@ prepare-release:
 	+(cd src;  rm -f ChangeLog ; $(MAKE) ChangeLog ; svn ci -m "updated changelog")
 	#static interfaces
 	+$(MAKE) -C src distclean
+	( cd src && ./configure --interface=cmdline )
+	+$(MAKE) -C src 
+	+sudo $(MAKE) -C src install
+	+$(MAKE) -C src reference
+	+$(MAKE) -C src tests
+	+$(MAKE) -C src distclean
+	+$(MAKE) -C src distclean
 	( cd src && ./configure --interface=octave )
 	+$(MAKE) -C src 
 	+sudo $(MAKE) -C src install
