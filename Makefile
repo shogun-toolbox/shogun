@@ -91,37 +91,44 @@ sed -i '/^SVMlight:$$/,/^$$/c\\' $(DESTDIR)/src/LICENSE
 # We assume that a release is always created from a SVN working copy.
 
 prepare-release:
+	svn update
 	#update changelog
-	(cd src;  rm ChangeLog ; make ChangeLog ; svn ci -m "updated changelog")
+	+(cd src;  rm -f ChangeLog ; $(MAKE) ChangeLog ; svn ci -m "updated changelog")
 	#static interfaces
+	+$(MAKE) -C src distclean
 	( cd src && ./configure --interface=octave )
-	make -C src 
-	sudo make -C src install
-	make -C src reference
-	make -C src tests
+	+$(MAKE) -C src 
+	+sudo $(MAKE) -C src install
+	+$(MAKE) -C src reference
+	+$(MAKE) -C src tests
+	+$(MAKE) -C src distclean
 	( cd src && ./configure --interface=python )
-	make -C src 
-	sudo make -C src install
-	make -C src reference
-	make -C src tests
+	+$(MAKE) -C src 
+	+sudo $(MAKE) -C src install
+	+$(MAKE) -C src reference
+	+$(MAKE) -C src tests
+	+$(MAKE) -C src distclean
 	( cd src && ./configure --interface=r )
-	make -C src 
-	sudo make -C src install
-	make -C src reference
-	make -C src tests
+	+$(MAKE) -C src 
+	+sudo $(MAKE) -C src install
+	+$(MAKE) -C src reference
+	+$(MAKE) -C src tests
 	#modular interfaces
+	+$(MAKE) -C src distclean
 	( cd src && ./configure --interface=octave-modular )
-	make -C src 
-	sudo make -C src install
-	make -C src tests
+	+$(MAKE) -C src 
+	+sudo $(MAKE) -C src install
+	+$(MAKE) -C src tests
+	+$(MAKE) -C src distclean
 	( cd src && ./configure --interface=python-modular )
-	make -C src 
-	sudo make -C src install
-	make -C src tests
+	+$(MAKE) -C src 
+	+sudo $(MAKE) -C src install
+	+$(MAKE) -C src tests
+	+$(MAKE) -C src distclean
 	( cd src && ./configure --interface=r-modular )
-	make -C src 
-	sudo make -C src install
-	make -C src tests
+	+$(MAKE) -C src 
+	+sudo $(MAKE) -C src install
+	+$(MAKE) -C src tests
 	(cd doc; svn ci -m "updated reference documentation")
 
 release: src/lib/versionstring.h $(DESTDIR)/src/lib/versionstring.h
