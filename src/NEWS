@@ -11,7 +11,7 @@
 		use it.
 		- Add examples for cmdline interface.
 		- Dynamically generate a reference documentation for the static interfaces.
-		- Syntax highlight commands again and and 
+		- Syntax highlight commands again.
 		- Support for cplex 11.
 		- Port MKL examples to R.
 		- Merge structure learning branch.
@@ -24,7 +24,7 @@
 		- Check that strings have same length on initing WD kernels.
 		- Remove signal handler on Ctrl+C to fix Ctrl+C pressed twice bug.
 		- All derived classes now call their parent class on construction.
-		- Fix a crasher occuring with SVRLight.
+		- Fix a crasher occuring with SVRLight on multiple threads.
 
 
 2008-05-15  Soeren Sonnenburg <debian@nn7.de>
