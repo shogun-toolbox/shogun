@@ -135,8 +135,13 @@
 \arg \b relative_entropy \verbatim [result]=sg('relative_entropy') \endverbatim
 \arg \b entropy \verbatim [result]=sg('entropy') \endverbatim
 \arg \b best_path \verbatim sg('best_path', from, to) \endverbatim
-\arg \b best_path_2struct \verbatim [prob, path, pos]=sg('best_path_2struct', p, q, cmd_trans, seq, pos, genestr, penalties, penalty_info, nbest, dict_weights, segment_sum_weights) \endverbatim
-\arg \b best_path_trans \verbatim [prob, path, pos]=sg('best_path_trans', p, q, cmd_trans, seq, pos, orf_info, genestr, penalties, state_signals, penalty_info, nbest, dict_weights, use_orf, mod_words [, segment_loss, segmend_ids_mask]) \endverbatim
+\arg \b best_path_2struct \verbatim [prob, path, pos]=sg('best_path_2struct', p, q, cmd_trans, seq, pos, genestr, penalties, penalty_info, nbest, content_weights, segment_sum_weights) \endverbatim
+\arg \b set_plif_struct \verbatim sg('set_plif_struct', id, name, limits, penalties, transform, min_value, max_value, use_cache, use_svm) \endverbatim
+\arg \b get_plif_struct \verbatim [id, name, limits, penalties, transform, min_value, max_value, use_cache, use_svm]=sg('get_plif_struct') \endverbatim
+\arg \b precompute_content_svms \verbatim sg('precompute_content_svms', sequence, position_list, weights) \endverbatim
+\arg \b set_model \verbatim sg('set_model', content_weights, transition_pointers, use_orf, mod_words) \endverbatim
+\arg \b set_feature_matrix \verbatim sg('set_feature_matrix', features) \endverbatim
+\arg \b best_path_trans \verbatim [prob, path, pos]=sg('best_path_trans', p, q, nbest, seq_path, a_trans, segment_loss) \endverbatim
 \arg \b best_path_trans_deriv \verbatim [p_deriv, q_deriv, cmd_deriv, penalties_deriv, my_scores, my_loss]=sg('best_path_trans_deriv', , my_path, my_pos, p, q, cmd_trans, seq, pos, genestr, penalties, state_signals, penalty_info, dict_weights, mod_words [, segment_loss, segmend_ids_mask]) \endverbatim
 \arg \b best_path_no_b \verbatim [prob, path]=sg('best_path_no_b', p, q, a, max_iter) \endverbatim
 \arg \b best_path_trans_simple \verbatim [prob, path]=sg('best_path_trans_simple', p, q, cmd_trans, seq, nbest) \endverbatim
