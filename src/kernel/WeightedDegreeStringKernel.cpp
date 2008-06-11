@@ -134,22 +134,24 @@ void CWeightedDegreeStringKernel::create_empty_tries()
   
 bool CWeightedDegreeStringKernel::init(CFeatures* l, CFeatures* r)
 {
-	ASSERT(l && r);
-
 	INT lhs_changed=(lhs!=l);
-	SG_DEBUG("lhs_changed: %i\n", lhs_changed);
-	CStringFeatures<CHAR>* sf_l=(CStringFeatures<CHAR>*) l;
-	if (lhs_changed)
-		sf_l->have_same_length(sf_l->get_max_vector_length());
-
 	INT rhs_changed=(rhs!=r);
-	SG_DEBUG("rhs_changed: %i\n", rhs_changed);
-	CStringFeatures<CHAR>* sf_r=(CStringFeatures<CHAR>*) r;
-	if (rhs_changed)
-		sf_r->have_same_length(sf_r->get_max_vector_length());
 
 	bool result=CStringKernel<CHAR>::init(l,r);
 	initialized=false;
+
+	SG_DEBUG("lhs_changed: %i\n", lhs_changed);
+	SG_DEBUG("rhs_changed: %i\n", rhs_changed);
+
+	CStringFeatures<CHAR>* sf_l=(CStringFeatures<CHAR>*) l;
+	CStringFeatures<CHAR>* sf_r=(CStringFeatures<CHAR>*) r;
+
+	INT len=sf_l->get_max_vector_length();
+	if (lhs_changed && !sf_l->have_same_length(len))
+		SG_ERROR("All strings in WD kernel must have same length (lhs wrong)!\n");
+
+	if (rhs_changed && !sf_r->have_same_length(len))
+		SG_ERROR("All strings in WD kernel must have same length (rhs wrong)!\n");
 
 	delete alphabet;
 	alphabet=new CAlphabet(sf_l->get_alphabet());
@@ -174,9 +176,6 @@ bool CWeightedDegreeStringKernel::init(CFeatures* l, CFeatures* r)
 	else
 		normalization_const=1.0;
 	
-	this->lhs=sf_l;
-	this->rhs=sf_r;
-
 	initialized=true;
 	return result;
 }

@@ -11,13 +11,20 @@
 		use it.
 		- Add examples for cmdline interface.
 		- Dynamically generate a reference documentation for the static interfaces.
+		- Syntax highlight commands again and and 
+		- Support for cplex 11.
+		- Port MKL examples to R.
+		- Merge structure learning branch.
 	* Bugfixes:
 		- Don't render string if it is not printed in current loglevel anyway
 		and throw exceptions for messages with priority ERROR or higher.
 		- Compile fix when lapack is not available.
 		- Fix when only lapack and blas (but not atlas) are available.
 		- Fix bug in batch/linadd occurring for WD kernel of order 1.
-		- Check that all strings have same length in WD kernels
+		- Check that strings have same length on initing WD kernels.
+		- Remove signal handler on Ctrl+C to fix Ctrl+C pressed twice bug.
+		- All derived classes now call their parent class on construction.
+		- Fix a crasher occuring with SVRLight.
 
 
 2008-05-15  Soeren Sonnenburg <debian@nn7.de>

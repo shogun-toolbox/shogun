@@ -1,5 +1,6 @@
 2008-06-11  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
 
+	* ChangeLog, Makefile, NEWS: updated changelog
 	* ChangeLog: updated changelog
 	* interface/SGInterface.cpp,
 	  kernel/WeightedDegreePositionStringKernel.cpp,

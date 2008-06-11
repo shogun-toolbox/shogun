@@ -170,9 +170,15 @@ bool CWeightedDegreePositionStringKernel::init(CFeatures* l, CFeatures* r)
 
 	bool result=CStringKernel<CHAR>::init(l,r);
 
+	SG_DEBUG( "lhs_changed: %i\n", lhs_changed) ;
+	SG_DEBUG( "rhs_changed: %i\n", rhs_changed) ;
+
+	CStringFeatures<CHAR>* sf_l=(CStringFeatures<CHAR>*) l;
+	CStringFeatures<CHAR>* sf_r=(CStringFeatures<CHAR>*) r;
+
 	/* set shift */
 	if (shift_len==0) {
-		shift_len=((CStringFeatures<CHAR>*) l)->get_vector_length(0);
+		shift_len=sf_l->get_vector_length(0);
 		INT *shifts=new INT[shift_len];
 		for (INT i=0; i<shift_len; i++) {
 			shifts[i]=1;
@@ -181,12 +187,17 @@ bool CWeightedDegreePositionStringKernel::init(CFeatures* l, CFeatures* r)
 		delete[] shifts;
 	}
 
-	SG_DEBUG( "lhs_changed: %i\n", lhs_changed) ;
-	SG_DEBUG( "rhs_changed: %i\n", rhs_changed) ;
+
+	INT len=sf_l->get_max_vector_length();
+	if (lhs_changed && !sf_l->have_same_length(len))
+		SG_ERROR("All strings in WD kernel must have same length (lhs wrong)!\n");
+
+	if (rhs_changed && !sf_r->have_same_length(len))
+		SG_ERROR("All strings in WD kernel must have same length (rhs wrong)!\n");
 
 	delete alphabet;
-	alphabet= new CAlphabet(((CStringFeatures<CHAR>*) l)->get_alphabet());
-	CAlphabet* ralphabet=((CStringFeatures<CHAR>*) r)->get_alphabet();
+	alphabet= new CAlphabet(sf_l->get_alphabet());
+	CAlphabet* ralphabet=sf_r->get_alphabet();
 	if (!((alphabet->get_alphabet()==DNA) || (alphabet->get_alphabet()==RNA)))
 		properties &= ((ULONG) (-1)) ^ (KP_LINADD | KP_BATCHEVALUATION);
 

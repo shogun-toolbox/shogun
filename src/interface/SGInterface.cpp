@@ -43,6 +43,13 @@ CSyntaxHighLight hilight;
 #define USAGE_IO(method, in, out) "" out " = ", " " in ""
 #define USAGE_COMMA " "
 #define USAGE_STR ""
+#elif defined(HAVE_R)
+#define USAGE(method) "sg('", "')"
+#define USAGE_I(method, in) "sg('", "', " in ")"
+#define USAGE_O(method, out) "[" out "] <- sg('", "')"
+#define USAGE_IO(method, in, out) "[" out "] <- sg('", "', " in ")"
+#define USAGE_COMMA ", "
+#define USAGE_STR "'"
 #else
 #define USAGE(method) "sg('", "')"
 #define USAGE_I(method, in) "sg('", "', " in ")"

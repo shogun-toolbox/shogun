@@ -267,6 +267,9 @@ endif
 		-name "*.h" -o -name "*.$(EXT_SRC_CPP)" -o -name "*.$(EXT_SRC_CPP)" | \
 		cut -c 3- | \
 		$(PYTHON) .generate_link_dependencies.py "$(PRE_LIB_SWIG)" "$(EXT_LIB_SWIG)" >>.depend
+ifeq (r-modular,$(INTERFACE))
+	bash -c "( for i in \`grep '.so:' .depend | cut -f 1 -d ':'\` ; do echo \`echo \$$i | sed s/.so/.R:/\` \$$i ; done ) >>.depend"
+endif
 
 .depend:	.config lib/versionstring.h
 ifeq (makedepend,$(MAKEDEPEND))
@@ -284,6 +287,9 @@ endif
 		-name "*.h" -o -name "*.$(EXT_SRC_CPP)" -o -name "*.$(EXT_SRC_CPP)" | \
 		cut -c 3- | \
 		$(PYTHON) .generate_link_dependencies.py "$(PRE_LIB_SWIG)" "$(EXT_LIB_SWIG)" >>.depend
+ifeq (r-modular,$(INTERFACE))
+	bash -c "( for i in \`grep '.so:' .depend | cut -f 1 -d ':'\` ; do echo \`echo \$$i | sed s/.so/.R:/\` \$$i ; done ) >>.depend"
+endif
 
 lib/versionstring.h:	$(SVNEntries)
 		sh .version.sh > $@
@@ -355,7 +361,7 @@ $(OBJFILES): .config .depend lib/versionstring.h ChangeLog
 ifeq (yes,$(USE_SWIG))
 ifeq (r-modular,$(INTERFACE))
 $(TARGET): $(OBJFILES) $(SRCFILES) $(HEADERFILES) $(SWIGSRCFILES) $(SWIGDOCFILES) $(SWIGLIBFILES) $(SWIGRFILES) $(SWIGRDATAFILES)
-%.R: $(PRE_LIB_SWIG)%.${EXT_LIB_SWIG}
+%.R: %.${EXT_LIB_SWIG}
 %.RData: %.R
 	echo 'f="$<"; fdata="$@"; source(f); save(list=ls(all=TRUE),file=fdata, compress=TRUE); q(save="no")' | R --no-save
 else #r-modular
