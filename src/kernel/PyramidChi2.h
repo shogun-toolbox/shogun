@@ -23,60 +23,106 @@ class CPyramidChi2 : public CSimpleKernel<DREAL>
 {
 public:
 
+	/** constructor
+	 *
+	 * @param size size
+	 * @param width2 width2
+	 * @param pyramidlevels2 pyramidlevels2
+	 * @param numlevels2 numlevels2
+	 * @param numbinsinhistogram2 numbinsinhistogram2
+	 * @param weights2 weights2
+	 * @param numweights2 numweights2
+	 */
 	CPyramidChi2(INT size, DREAL width2,
 		INT* pyramidlevels2, INT numlevels2,
 		INT  numbinsinhistogram2, DREAL* weights2, INT numweights2);
 
-	virtual bool init(CFeatures* l, CFeatures* r);
-
+	/** constructor
+	 *
+	 * @param l features lhs
+	 * @param r features rhs
+	 * @param size size
+	 * @param width2 width2
+	 * @param pyramidlevels2 pyramidlevels2
+	 * @param numlevels2 numlevels2
+	 * @param numbinsinhistogram2 numbinsinhistogram2
+	 * @param weights2 weights2
+	 * @param numweights2 numweights2
+	 */
 	CPyramidChi2(CRealFeatures* l, CRealFeatures* r, INT size, DREAL width2,
 		INT* pyramidlevels2, INT numlevels2,
 		INT  numbinsinhistogram2, DREAL* weights2, INT numweights2);
 
+	/** init
+	 *
+	 * @param l features lhs
+	 * @param r reatures rhs
+	 */
+	virtual bool init(CFeatures* l, CFeatures* r);
+
+
 	virtual ~CPyramidChi2();
 
+	/** cleanup */
 	virtual void cleanup();
 
-	/// load and save kernel init_data
+	/* load kernel init_data
+	 *
+	 * @param src source file to load from
+	 * @return if loading was successful
+	 */
 	virtual bool load_init(FILE* src);
+
+	/** save kernel init_data
+	 *
+	 * @param dest destination file to save to
+	 * @return if saving was succesful
+	 */
 	virtual bool save_init(FILE* dest);
 
-	/// return what type of kernel we are Linear,Polynomial, Gaussian,...
+	/** return what type of kernel we are Linear,Polynomial, Gaussian,... */
 	virtual EKernelType get_kernel_type()
 	{
 		//preliminary output
 		return K_PYRAMIDCHI2;
 	}
 
-	/// return the name of a kernel
+	/** return the name of a kernel */
 	virtual const CHAR* get_name()
 	{
 		return("PyramidoverChi2\0");
 	}
 
-	/// sets standard weights
-	void setstandardweights(); 
+	/** sets standard weights */
+	void setstandardweights();
 
-	/// performs a weak check, does not test for correct feature length
-	bool sanitycheck_weak(); 
+	/** performs a weak check, does not test for correct feature length */
+	bool sanitycheck_weak();
 
 protected:
-	/// compute kernel function for features a and b
-	/// idx_{a,b} denote the index of the feature vectors
-	/// in the corresponding feature object
+	/** compute kernel function for features a and b
+	 *
+	 * @param idx_a index of feature vector a
+	 * @param idx_b index of feature vector b
+	 * @return computed kernel function
+	 */
 	virtual DREAL compute(INT idx_a, INT idx_b);
 
 protected:
+	/** width */
 	DREAL width;
+	/** pyramidlevels */
 	INT* pyramidlevels;
 
-	/// length of vector pyramidlevels
-	INT numlevels; 
+	/** length of vector pyramidlevels */
+	INT numlevels;
+	/** numbinsinhistogram */
 	INT numbinsinhistogram;
+	/** weights */
 	DREAL* weights;
 
-	/// length of vector weights
-	INT numweights; 
+	/** length of vector weights */
+	INT numweights;
 	//bool sanitycheckbit;
 };
 

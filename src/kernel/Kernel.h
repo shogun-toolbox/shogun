@@ -364,8 +364,16 @@ class CKernel : public CSGObject
 			return(kernel_cache.elems < kernel_cache.max_elems);
 		}
 
-		void   kernel_cache_init(INT size, bool regression_hack=false);
-		void   kernel_cache_cleanup();
+		/** initialize kernel cache
+		 *
+		 * @param size size to initialize to
+		 * @param regression_hack if hack for regression shall be applied
+		 */
+		void kernel_cache_init(INT size, bool regression_hack=false);
+
+		/** cleanup kernel cache */
+		void kernel_cache_cleanup();
+
 #endif //USE_SVMLIGHT
 
 		/** list kernel */

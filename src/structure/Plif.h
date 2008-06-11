@@ -281,11 +281,16 @@ class CPlif: public CPlifBase
 
 			penalty_clear_derivative();
 		}
-		
+
+		/** get Plif limits
+		 *
+		 * @return limits
+		 */
 		DREAL* get_plif_limits()
 		{
 			return limits;
 		}
+
 		/** set plif penalty
 		 *
 		 * @param p_penalties penalties
@@ -372,12 +377,22 @@ class CPlif: public CPlifBase
 				return strdup(buf);
 			}
 		}
+
+		/** get do calc
+		 *
+		 * @return if calc shall be done
+		 */
 		bool get_do_calc();
+
+		/** set do calc
+		 *
+		 * @param b if calc shall be done
+		 */
 		void set_do_calc(bool b);
 		
-		/** get SVM_ids and number of SVMs used 
-		 * 
-		 */ 
+		/** get SVM_ids and number of SVMs used
+		 *
+		 */
 		void get_used_svms(INT* num_svms, INT* svm_ids);
 		
 		/** get plif len

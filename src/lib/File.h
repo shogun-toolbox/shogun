@@ -32,14 +32,25 @@ template <class ST> struct TSparse;
 class CFile : public CSGObject
 {
 public:
-	///Open a file of name fname with mode rw (r or w)
-	/// - type specifies the datatype used in the file (F_INT,...)
-	/// - fourcc : in the case fourcc is 0, type will be ignored
-	/// and the file is treated as if it has a header/[typeheader,data]+
-	/// else a the files header will be checked to contain the specified
-	/// fourcc (e.g. 'RFEA')
+	/** constructor
+	 *
+	 * @param f already opened file
+	 */
 	CFile(FILE* f);
+
+	/** constructor
+	 *
+	 * @param fname filename to open
+	 * @param rw mode, 'r' or 'w'
+	 * @param type specifies the datatype used in the file (F_INT,...)
+	 * @param fourcc in the case fourcc is 0, type will be ignored
+	 *               and the file is treated as if it has a
+	 *               header/[typeheader,data]+ else the files header
+	 *               will be checked to contain the specified fourcc
+	 *               (e.g. 'RFEA')
+	 */
 	CFile(CHAR* fname, CHAR rw, EFeatureType type, CHAR fourcc[4]=NULL);
+
 	~CFile();
 
 	/** parse first header - defunct!
@@ -186,8 +197,21 @@ public:
 	 * and dim 1    - value  10.0
 	 *     dim 2    - value 100.2
 	 *     dim 1000 - value   1.3
+	 *
+	 * @param matrix matrix to read into
+	 * @param num_feat number of features for each vector
+	 * @param num_vec number of vectors in matrix
+	 * @return if reading was successful
 	 */
 	bool read_real_valued_sparse(TSparse<DREAL>*& matrix, INT& num_feat, INT& num_vec);
+
+	/** write sparse real valued features in svm light format
+	 *
+	 * @param matrix matrix to write
+	 * @param num_feat number of features for each vector
+	 * @param num_vec number of vectros in matrix
+	 * @return if writing was successful
+	 */
 	bool write_real_valued_sparse(const TSparse<DREAL>* matrix, INT num_feat, INT num_vec);
 
 	/** read dense real valued features, simple ascii format
@@ -195,8 +219,21 @@ public:
 	 *      2.3 3.5 5
 	 *
 	 *  a matrix that consists of 3 vectors with each of 2d
-	 *  */
+	 *
+	 * @param matrix matrix to read into
+	 * @param num_feat number of features for each vector
+	 * @param num_vec number of vectors in matrix
+	 * @return if reading was successful
+	 */
 	bool read_real_valued_dense(DREAL*& matrix, INT& num_feat, INT& num_vec);
+
+	/** write dense real valued features, simple ascii format
+	 *
+	 * @param matrix matrix to write
+	 * @param num_feat number of features for each vector
+	 * @param num_vec number of vectros in matrix
+	 * @return if writing was successful
+	 */
 	bool write_real_valued_dense(const DREAL* matrix, INT num_feat, INT num_vec);
 
 	/** read char string features, simple ascii format
@@ -204,8 +241,20 @@ public:
 	 *      ACGTACGTATCT
 	 *
 	 *  two strings
-	 *  */
+	 *
+	 * @param strings strings to read into
+	 * @param num_str number of strings
+	 * @param max_string_len length of longest string
+	 * @return if reading was successful
+	 */
 	bool read_char_valued_strings(T_STRING<CHAR>*& strings, INT& num_str, INT& max_string_len);
+
+	/** write char string features, simple ascii format
+	 *
+	 * @param strings strings to write
+	 * @param num_str number of strings
+	 * @return if writing was successful
+	 */
 	bool write_char_valued_strings(const T_STRING<CHAR>* strings, INT num_str);
 
 protected:

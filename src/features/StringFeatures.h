@@ -955,7 +955,7 @@ template <class ST> class CStringFeatures : public CFeatures
 				return true;
 			}
 
-		/* check if length of each vector in this feature object equals the
+		/** check if length of each vector in this feature object equals the
 		 * given length.
 		 *
 		 * @param len vector length to check against

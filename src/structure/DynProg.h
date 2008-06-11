@@ -45,28 +45,28 @@ typedef T_STATES* P_STATES ;
 class CDynProg : public CSGObject
 {
 private:
-	
-	T_STATES trans_list_len ;
-	T_STATES **trans_list_forward  ;
-	T_STATES *trans_list_forward_cnt  ;
-	DREAL **trans_list_forward_val ;
-	INT **trans_list_forward_id ;
-	bool mem_initialized ;
+
+	T_STATES trans_list_len;
+	T_STATES **trans_list_forward;
+	T_STATES *trans_list_forward_cnt;
+	DREAL **trans_list_forward_val;
+	INT **trans_list_forward_id;
+	bool mem_initialized;
 
 #ifdef DYNPROG_TIMING
-	CTime MyTime ;
-	CTime MyTime2 ;
+	CTime MyTime;
+	CTime MyTime2;
 	
-	DREAL segment_init_time ;
-	DREAL segment_pos_time ;
-	DREAL segment_clean_time ;
-	DREAL segment_extend_time ;
-	DREAL orf_time ;
-	DREAL content_time ;
-	DREAL content_penalty_time ;
-	DREAL svm_init_time ;
-	DREAL svm_pos_time ;
-	DREAL svm_clean_time ;
+	DREAL segment_init_time;
+	DREAL segment_pos_time;
+	DREAL segment_clean_time;
+	DREAL segment_extend_time;
+	DREAL orf_time;
+	DREAL content_time;
+	DREAL content_penalty_time;
+	DREAL svm_init_time;
+	DREAL svm_pos_time;
+	DREAL svm_clean_time;
 #endif
 	
 public:
@@ -74,7 +74,7 @@ public:
 	 *
 	 * @param p_num_svms number of SVMs
 	 */
-	CDynProg(INT p_num_svms = 8);
+	CDynProg(INT p_num_svms=8);
 	~CDynProg();
 
 	/** best path no b
@@ -104,24 +104,34 @@ public:
 	 * @param p_N new N
 	 */
 	void set_num_states(INT p_N);
+
 	/** get num svms*/
 	INT get_num_svms();
+
 	/** init CArray for precomputed content svm values
 	 *  with size seq_len x num_svms
-	 *  
+	 *
 	 *  @param seq_len: number of candidate positions
 	 */
 	void init_content_svm_value_array(const INT seq_len);
 
 	/** init CArray for precomputed tiling intensitie-plif-values
 	 *  with size seq_len x num_svms
-	 *  
+	 *
+	 *  @param probe_pos local positions of probes
+	 *  @param intensities intensities of probes
+	 *  @param num_probes number of probes
 	 *  @param seq_len: number of candidate positions
-	 *  @param probe_pos: local positions of probes 
-	 *  @param probe_pos: intensities of probes 
 	 */
 	void init_tiling_data(DREAL* probe_pos, DREAL* intensities, const INT num_probes, const INT seq_len);
 
+	/** precompute tiling Plifs
+	 *
+	 * @param PEN Plif PEN
+	 * @param num_penalties number of penalties
+	 * @param seq_len sequence length
+	 * @param pos pos
+	 */
 	void precompute_tiling_plifs(CPlif** PEN, const INT num_penalties, const INT seq_len, const INT* pos);	
 
 	/** set vector p
@@ -351,8 +361,7 @@ public:
 	 */
 	void best_path_call(INT nbest, bool use_orf);
 
-	/** best path derivative call
-	 */
+	/** best path derivative call */
 	void best_path_deriv_call();
 
 	/** best path 2struct call
@@ -416,14 +425,10 @@ public:
 	 * @param PLif_matrix Plif matrix
 	 * @param Plif_state_signals Plif state signals
 	 * @param max_num_signals maximal number of signals
-	 * @param genestr gene string
-	 * @param genestr_len length of gene string
 	 * @param genestr_num number of gene strings
 	 * @param prob_nbest prob nbest
 	 * @param my_state_seq my state seq
 	 * @param my_pos_seq my pos seq
-	 * @param dictionary_weights dictionary weights
-	 * @param dict_len length of dictionary weights
 	 * @param use_orf whether orf shall be used
 	 */
 	template <short int nbest, bool with_loss, bool with_multiple_sequences>
@@ -447,11 +452,7 @@ public:
 	 * @param Plif_matrix Plif matrix
 	 * @param Plif_state_signals Plif state signals
 	 * @param max_num_signals maximal number of signals
-	 * @param genestr gene string
-	 * @param genestr_len length of gene string
 	 * @param genestr_num number of gene strings
-	 * @param dictionary_weights dictionary weights
-	 * @param dict_len length of dictionary weights
 	 */
 	void best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *my_scores, DREAL* my_losses, INT my_seq_len,
 					const DREAL *seq_array, INT seq_len, const INT *pos, CPlifBase **Plif_matrix,
@@ -570,20 +571,40 @@ public:
 	
 	/** create array of precomputed content svm values
 	 * Jonas
-	 * @param genestr
-	 * @param pos from 
-	 * @param pos to
+	 *
+	 * @param wordstr word strings
+	 * @param pos position
+	 * @param num_cand_pos number of cand position
+	 * @param genestr_len length of gene string
+	 * @param dictionary_weights dictionary weights
+	 * @param dict_len lenght of dictionary
 	 */
-	void precompute_content_values(WORD*** wordstr, const INT *pos,const INT num_cand_pos, const INT genestr_len,DREAL *dictionary_weights,INT dict_len);
-	/** create word string from char* 
+	void precompute_content_values(WORD*** wordstr, const INT *pos,
+		const INT num_cand_pos, const INT genestr_len,
+		DREAL *dictionary_weights, INT dict_len);
+
+	/** create word string from char*
 	 * Jonas
+	 *
+	 * @param genestr gene string
+	 * @param genestr_num number of gene string
+	 * @param genestr_len length of gene string
+	 * @param wordstr word strings
 	 */
 	void create_word_string(const CHAR* genestr, INT genestr_num, INT genestr_len, WORD*** wordstr);
 
-	/** precompute stop codons */
-	void precompute_stop_codons(const CHAR* genestr, INT genestr_len);        
+	/** precompute stop codons
+	 *
+	 * @param genestr gene string
+	 * @param genestr_len length of gene string
+	 */
+	void precompute_stop_codons(const CHAR* genestr, INT genestr_len);
 
-	/** set genestr len */
+	/** set genestr len
+	 *
+	 * @param genestr_len length of gene string
+	 *
+	 */
 	void set_genestr_len(INT genestr_len);
 
 	/** access function for matrix a
@@ -612,12 +633,44 @@ protected:
 
 	/* helper functions */
 
-	inline void lookup_content_svm_values(const INT from_state, const INT to_state, const INT from_pos, const INT to_pos, DREAL* svm_values, INT frame);
+	/** lookup content SVM values
+	 *
+	 * @param from_state from state
+	 * @param to_state to state
+	 * @param from_pos from position
+	 * @param to_pos to position
+	 * @param svm_values SVM values
+	 * @param frame frame
+	 */
+	inline void lookup_content_svm_values(const INT from_state,
+		const INT to_state, const INT from_pos, const INT to_pos,
+		DREAL* svm_values, INT frame);
 
-	inline void lookup_tiling_plif_values(const INT from_state, const INT to_state, const INT len, DREAL* svm_values);
+	/** lookup tiling Plif values
+	 *
+	 * @param from_state from state
+	 * @param to_state to state
+	 * @param len length
+	 * @param svm_values SVM values
+	 */
+	inline void lookup_tiling_plif_values(const INT from_state,
+		const INT to_state, const INT len, DREAL* svm_values);
+
+	/** find frame
+	 *
+	 * @param from_state from state
+	 */
 	inline INT find_frame(const INT from_state);
 
-	inline INT raw_intensities_interval_query(const INT from_pos, const INT to_pos, DREAL* intensities);
+	/** raw intensities interval query
+	 *
+	 * @param from_pos from position
+	 * @param to_pos to position
+	 * @param intensities intensities
+	 * @return an integer
+	 */
+	inline INT raw_intensities_interval_query(
+		const INT from_pos, const INT to_pos, DREAL* intensities);
 
 	/** translate from single order
 	 *
@@ -627,9 +680,8 @@ protected:
 	 * @param order order
 	 * @param max_val maximum number of bits, e.g. 2 for DNA
 	 */
-	void translate_from_single_order(WORD* obs, INT sequence_length,
-									 INT start, INT order,
-									 INT max_val=2);
+	void translate_from_single_order(WORD* obs, INT sequence_length, INT start,
+		INT order, INT max_val=2);
 
 	/** reset SVM value
 	 *
@@ -646,7 +698,8 @@ protected:
 	 * @param last_svm_pos lsat SVM position
 	 * @param svm_value value to set
 	 */
-	void extend_svm_value(WORD* wordstr, INT pos, INT &last_svm_pos, DREAL* svm_value);
+	void extend_svm_value(WORD* wordstr, INT pos, INT &last_svm_pos,
+		DREAL* svm_value);
 
 	/** reset segment sum value
 	 *
@@ -655,7 +708,8 @@ protected:
 	 * @param last_segment_sum_pos last segment sum position
 	 * @param segment_sum_value value to set
 	 */
-	void reset_segment_sum_value(INT num_states, INT pos, INT & last_segment_sum_pos, DREAL * segment_sum_value);
+	void reset_segment_sum_value(INT num_states, INT pos,
+		INT & last_segment_sum_pos, DREAL * segment_sum_value);
 
 	/** extend segment sum value
 	 *
@@ -666,8 +720,9 @@ protected:
 	 * @param last_segment_sum_pos last segment sum position
 	 * @param segment_sum_value value to set
 	 */
-	void extend_segment_sum_value(DREAL *segment_sum_weights, INT seqlen, INT num_states,
-								  INT pos, INT &last_segment_sum_pos, DREAL* segment_sum_value);
+	void extend_segment_sum_value(DREAL *segment_sum_weights, INT seqlen,
+		INT num_states, INT pos, INT &last_segment_sum_pos,
+		DREAL* segment_sum_value);
 
 	/** SVM values */
 	struct svm_values_struct
@@ -698,7 +753,8 @@ protected:
 	 * @param seqlen length of sequence
 	 * @param howmuchlookback how far to look back
 	 */
-	void init_svm_values(struct svm_values_struct & svs, INT start_pos, INT seqlen, INT howmuchlookback);
+	void init_svm_values(struct svm_values_struct & svs, INT start_pos,
+		INT seqlen, INT howmuchlookback);
 
 	/** clear SVM values
 	 *
@@ -713,7 +769,8 @@ protected:
 	 * @param t_end t end
 	 * @param svs SVM values
 	 */
-	void find_svm_values_till_pos(WORD*** wordstr,  const INT *pos,  INT t_end, struct svm_values_struct &svs);
+	void find_svm_values_till_pos(WORD*** wordstr, const INT *pos, INT t_end,
+		struct svm_values_struct &svs);
 
 	/** find SVM values till position
 	 *
@@ -722,7 +779,8 @@ protected:
 	 * @param t_end t end
 	 * @param svs SVM values
 	 */
-	void find_svm_values_till_pos(WORD** wordstr,  const INT *pos,  INT t_end, struct svm_values_struct &svs);
+	void find_svm_values_till_pos(WORD** wordstr, const INT *pos, INT t_end,
+		struct svm_values_struct &svs);
 
 	/** update SVM values till position
 	 *
@@ -732,11 +790,11 @@ protected:
 	 * @param prev_t_end previous t end
 	 * @param svs SVM values
 	 */
-	void update_svm_values_till_pos(WORD*** wordstr,  const INT *pos,  INT t_end, INT prev_t_end, struct svm_values_struct &svs);
+	void update_svm_values_till_pos(WORD*** wordstr, const INT *pos, INT t_end,
+		INT prev_t_end, struct svm_values_struct &svs);
 
 	/** extend orf
 	 *
-	 * @param genestr_stop gene string stop
 	 * @param orf_from orf from
 	 * @param orf_to orf to
 	 * @param start start
@@ -758,7 +816,7 @@ protected:
 		DREAL *num_segment_id;
 		/** length of segmend ID */
 		INT *length_segment_id ;
-	} ;
+	};
 
 	/** init segment loss
 	 *
@@ -766,7 +824,8 @@ protected:
 	 * @param seqlen length of sequence
 	 * @param howmuchlookback how far to look back
 	 */
-	void init_segment_loss(struct segment_loss_struct & loss, INT seqlen, INT howmuchlookback);
+	void init_segment_loss(struct segment_loss_struct & loss, INT seqlen,
+		INT howmuchlookback);
 
 	/** clear segment loss
 	 *
@@ -784,16 +843,21 @@ protected:
 	 * @param last_value last value
 	 * @return last value
 	 */
-	DREAL extend_segment_loss(struct segment_loss_struct & loss, const INT * pos_array, INT segment_id, INT pos, INT& last_pos, DREAL &last_value);
+	DREAL extend_segment_loss(struct segment_loss_struct & loss,
+		const INT * pos_array, INT segment_id, INT pos, INT& last_pos,
+		DREAL &last_value);
 
 	/** find segment loss till pos
 	 *
 	 * @param pos position
 	 * @param t_end t end
 	 * @param segment_ids segment IDs
+	 * @param segment_mask segmend mask
 	 * @param loss segment loss
 	 */
-	void find_segment_loss_till_pos(const INT * pos, INT t_end, CArray<INT>& segment_ids, CArray<DREAL>& segment_mask, struct segment_loss_struct & loss);
+	void find_segment_loss_till_pos(const INT * pos, INT t_end,
+		CArray<INT>& segment_ids, CArray<DREAL>& segment_mask,
+		struct segment_loss_struct& loss);
 
 	
 	/**@name model specific variables.
@@ -803,7 +867,7 @@ protected:
 	/// number of states
 	INT N;
 
-	/// transition matrix 
+	/// transition matrix
 	CArray2<INT> transition_matrix_a_id;
 	CArray2<DREAL> transition_matrix_a;
 	CArray2<DREAL> transition_matrix_a_deriv;
@@ -934,21 +998,28 @@ protected:
 	 *  array of size length(sequence)
 	 */
 	CArray<bool> m_genestr_stop;
-        //
-        /**
+
+	/**
 	 *  array for storage of content svm values
 	 * Jonas
 	 */
 	CArray2<DREAL> m_precomputed_svm_values;
+
+	/** precomputed tiling values */
 	CArray2<DREAL> m_precomputed_tiling_values;
 
+	/** raw intensities */
 	DREAL* m_raw_intensities;
+	/** prope position */
 	INT* m_probe_pos;
+	/** number of probes */
 	INT m_num_probes;
+	/** use tiling */
 	bool m_use_tiling;
+	/** length of gene string */
 	INT m_genestr_len;
-
 };
+
 inline INT CDynProg::raw_intensities_interval_query(const INT from_pos, const INT to_pos, DREAL* intensities)
 {
 	ASSERT(from_pos<to_pos);
@@ -969,9 +1040,9 @@ inline INT CDynProg::raw_intensities_interval_query(const INT from_pos, const IN
 		num++;
 		if (num>=m_num_probes)
 			break;
-		last_pos = *p_tiling_pos;	
+		last_pos = *p_tiling_pos;
 		p_tiling_pos++;
-		p_tiling_data++;	
+		p_tiling_data++;
 		ASSERT(last_pos<*p_tiling_pos);
 	}
 	return num_intensities;
