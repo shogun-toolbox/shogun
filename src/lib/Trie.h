@@ -560,8 +560,6 @@ class CTrie : public CSGObject
 		INT length;
 		/** trees */
 		INT * trees;
-		/** if tree is initialized */
-		bool tree_initialized;
 
 		/** degree */
 		INT degree;
@@ -596,7 +594,6 @@ class CTrie : public CSGObject
 
 		length=0;
 		trees=NULL;
-		tree_initialized=false;
 
 		NUM_SYMS=4;
 	}
@@ -625,7 +622,6 @@ class CTrie : public CSGObject
 		trees=new INT[length];
 		for (INT i=0; i<length; i++)
 			trees[i]=to_copy.trees[i];
-		tree_initialized=to_copy.tree_initialized;
 
 		NUM_SYMS=4;
 	}
@@ -660,7 +656,6 @@ const CTrie<Trie> &CTrie<Trie>::operator=(const CTrie<Trie> & to_copy)
 	trees=new INT[length] ;		
 	for (INT i=0; i<length; i++)
 		trees[i]=to_copy.trees[i] ;
-	tree_initialized=to_copy.tree_initialized ;
 
 	return *this ;
 }
@@ -918,22 +913,6 @@ bool CTrie<Trie>::compare_traverse(INT node, const CTrie<Trie> & other, INT othe
 	template <class Trie>
 bool CTrie<Trie>::compare(const CTrie<Trie> & other)
 {
-	/*if (TreeMemPtr!=other.TreeMemPtr)
-	  {
-	  SG_DEBUG( "CTrie::compare: TreeMemPtr=%i!=other.TreeMemPtr=%i\n", TreeMemPtr, other.TreeMemPtr) ;
-	  return false ;
-	  }
-	  if (length!=other.length)
-	  {
-	  SG_DEBUG( "CTrie::compare: unequal number of trees\n") ;
-	  return false ;
-	  }
-	  if (tree_initialized!=other.tree_initialized)
-	  {
-	  SG_DEBUG( "CTrie::compare: unequal initialized status\n") ;
-	  return false ;
-	  }*/
-
 	bool ret=true ;
 	for (INT i=0; i<length; i++)
 		if (!compare_traverse(trees[i], other, other.trees[i]))
@@ -1049,40 +1028,37 @@ void CTrie<Trie>::display_node(INT node) const
 }
 
 
-	template <class Trie>
-CTrie<Trie>::~CTrie()
+template <class Trie> CTrie<Trie>::~CTrie()
 {
 	destroy() ;
 
 	free(TreeMem) ;
 }
 
-	template <class Trie>
-void CTrie<Trie>::destroy()
+template <class Trie> void CTrie<Trie>::destroy()
 {
 	if (trees!=NULL)
 	{
-		delete_trees() ;
+		delete_trees();
 		for (INT i=0; i<length; i++)
 			trees[i] = NO_CHILD;
-		TreeMemPtr=0 ;
 		delete[] trees;
+
+		TreeMemPtr=0;
+		length=0;
 		trees=NULL;
 	}
 }
 
-	template <class Trie>
-void CTrie<Trie>::set_degree(INT d)
+template <class Trie> void CTrie<Trie>::set_degree(INT d)
 {
 	delete_trees(get_use_compact_terminal_nodes());
 	degree=d;
 }
 
-	template <class Trie>
-void CTrie<Trie>::create(INT len, bool p_use_compact_terminal_nodes)
+template <class Trie> void CTrie<Trie>::create(INT len, bool p_use_compact_terminal_nodes)
 {
-	if (trees)
-		delete[] trees ;
+	destroy();
 
 	trees=new INT[len] ;		
 	TreeMemPtr=0 ;
@@ -1094,8 +1070,7 @@ void CTrie<Trie>::create(INT len, bool p_use_compact_terminal_nodes)
 }
 
 
-	template <class Trie>
-void CTrie<Trie>::delete_trees(bool p_use_compact_terminal_nodes)
+template <class Trie> void CTrie<Trie>::delete_trees(bool p_use_compact_terminal_nodes)
 {
 	if (trees==NULL)
 		return;

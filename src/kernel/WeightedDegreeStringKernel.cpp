@@ -113,27 +113,12 @@ void CWeightedDegreeStringKernel::remove_lhs()
 { 
 	SG_DEBUG( "deleting CWeightedDegreeStringKernel optimization\n");
 	delete_optimization();
-
-#ifdef SVMLIGHT
-	if (lhs)
-		cache_reset();
-#endif
-
-	lhs = NULL ; 
-	rhs = NULL ; 
-	initialized = false ;
+	initialized = false;
 
 	if (tries!=NULL)
-		tries->destroy() ;
-}
+		tries->destroy();
 
-void CWeightedDegreeStringKernel::remove_rhs()
-{
-#ifdef SVMLIGHT
-	if (rhs)
-		cache_reset() ;
-#endif
-	rhs = lhs ;
+	CKernel::remove_lhs();
 }
 
 void CWeightedDegreeStringKernel::create_empty_tries()
@@ -211,9 +196,6 @@ void CWeightedDegreeStringKernel::cleanup()
 		tries=NULL;
 	}
 
-	lhs=NULL;
-	rhs=NULL;
-
 	seq_length=0;
 	initialized=false;
 	tree_initialized = false;
@@ -239,6 +221,7 @@ bool CWeightedDegreeStringKernel::init_optimization(INT count, INT* IDX, DREAL* 
 {
 	if (tree_num<0)
 		SG_DEBUG( "deleting CWeightedDegreeStringKernel optimization\n");
+
 	delete_optimization();
 
 	if (tree_num<0)

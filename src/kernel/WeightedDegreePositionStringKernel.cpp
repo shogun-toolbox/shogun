@@ -136,37 +136,19 @@ void CWeightedDegreePositionStringKernel::remove_lhs()
 {
 	SG_DEBUG( "deleting CWeightedDegreePositionStringKernel optimization\n");
 	delete_optimization();
+	initialized = false;
 
-#ifdef USE_SVMLIGHT
-	if (lhs)
-		cache_reset() ;
-#endif //USE_SVMLIGHT
+	tries.destroy();
+	poim_tries.destroy();
 
-	lhs = NULL ; 
-	rhs = NULL ; 
-	initialized = false ;
-
-	tries.destroy() ;
-	poim_tries.destroy() ;
-} ;
-
-void CWeightedDegreePositionStringKernel::remove_rhs()
-{
-#ifdef USE_SVMLIGHT
-	if (rhs)
-		cache_reset() ;
-#endif //USE_SVMLIGHT
-
-	rhs = lhs ;
+	CKernel::remove_lhs();
 }
-
 
 void CWeightedDegreePositionStringKernel::create_empty_tries()
 {
+	ASSERT(lhs);
 	seq_length = ((CStringFeatures<CHAR>*) lhs)->get_max_vector_length();
 
-	tries.destroy() ;
-	poim_tries.destroy() ;
 	if (opt_type==SLOWBUTMEMEFFICIENT)
 	{
 		tries.create(seq_length, true); 
@@ -211,11 +193,16 @@ bool CWeightedDegreePositionStringKernel::init(CFeatures* l, CFeatures* r)
 	ASSERT(ralphabet->get_alphabet()==alphabet->get_alphabet());
 	SG_UNREF(ralphabet);
 
-	if (lhs_changed) 
+	//whenever init is called also init tries and block weights
+	if (!initialized)
 	{
 		create_empty_tries();
 		init_block_weights();
+	}
 
+	//whenever lhs changes also recompute normalisation const
+	if (lhs_changed)
+	{
 		normalization_const=1.0;
 		if (use_normalization)
 			normalization_const=compute(0,0);
@@ -224,7 +211,7 @@ bool CWeightedDegreePositionStringKernel::init(CFeatures* l, CFeatures* r)
 	SG_DEBUG( "use normalization:%d (const:%f)\n", (use_normalization) ? 1 : 0,
 			normalization_const);
 
-	initialized = true ;
+	initialized = true;
 	return result;
 }
 
@@ -236,11 +223,8 @@ void CWeightedDegreePositionStringKernel::cleanup()
 	delete[] block_weights;
 	block_weights=NULL;
 
-	tries.destroy() ;
-	poim_tries.destroy() ;
-
-	lhs = NULL;
-	rhs = NULL;
+	tries.destroy();
+	poim_tries.destroy();
 
 	seq_length = 0;
 	initialized = false;
@@ -278,6 +262,7 @@ bool CWeightedDegreePositionStringKernel::init_optimization(INT p_count, INT * I
 
 	if (tree_num<0)
 		SG_DEBUG( "deleting CWeightedDegreePositionStringKernel optimization\n");
+
 	delete_optimization();
 
 	if (tree_num<0)
@@ -1268,6 +1253,7 @@ void CWeightedDegreePositionStringKernel::compute_batch(INT num_vec, INT* vec_id
 	ASSERT(num_vec>0);
 	ASSERT(vec_idx);
 	ASSERT(result);
+	create_empty_tries();
 
 	INT num_feat=((CStringFeatures<CHAR>*) rhs)->get_max_vector_length();
 	ASSERT(num_feat>0);

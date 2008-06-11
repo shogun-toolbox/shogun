@@ -3752,11 +3752,11 @@ bool CSGInterface::cmd_classify()
 	if (!feat)
 		SG_ERROR("No features found.\n");
 
-	INT num_vec=feat->get_num_vectors();
 	CLabels* labels=ui_classifier->classify();
 	if (!labels)
 		SG_ERROR("Classify failed\n");
 
+	INT num_vec=labels->get_num_labels();
 	DREAL* result=new DREAL[num_vec];
 	for (INT i=0; i<num_vec; i++)
 		result[i]=labels->get_label(i);

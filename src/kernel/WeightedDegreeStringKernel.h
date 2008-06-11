@@ -630,10 +630,6 @@ class CWeightedDegreeStringKernel: public CStringKernel<CHAR>
 		/** remove lhs from kernel */
 		virtual void remove_lhs();
 
-		/** remove rhs from kernel */
-		virtual void remove_rhs();
-
-
 	protected:
 		/** degree*length weights
 		 *length must match seq_length if != 0

@@ -660,9 +660,6 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<CHAR>
 		/** remove lhs from kernel */
 		virtual void remove_lhs();
 
-		/** remove rhs from kernel */
-		virtual void remove_rhs();
-
 	protected:
 		/** weights */
 		DREAL* weights;
