@@ -1,4 +1,4 @@
-2008-06-??  Soeren Sonnenburg <debian@nn7.de>
+2008-06-15  Soeren Sonnenburg <debian@nn7.de>
 
 	* SHOGUN Release version 0.6.3
 	* This release contains several cleanups and bugfixes:
@@ -7,12 +7,17 @@
 		interfaces.
 		- Disable progress output by default.
 		- Revised directory structure with /doc, /examples, /src, /testsuite.
+		- Add common toy data repository and make all examples from all interfaces
+		use it.
+		- Add examples for cmdline interface.
+		- Dynamically generate a reference documentation for the static interfaces.
 	* Bugfixes:
 		- Don't render string if it is not printed in current loglevel anyway
 		and throw exceptions for messages with priority ERROR or higher.
 		- Compile fix when lapack is not available.
 		- Fix when only lapack and blas (but not atlas) are available.
 		- Fix bug in batch/linadd occurring for WD kernel of order 1.
+		- Check that all strings have same length in WD kernels
 
 
 2008-05-15  Soeren Sonnenburg <debian@nn7.de>

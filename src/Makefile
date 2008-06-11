@@ -354,7 +354,7 @@ $(OBJFILES): .config .depend lib/versionstring.h ChangeLog
 
 ifeq (yes,$(USE_SWIG))
 ifeq (r-modular,$(INTERFACE))
-$(TARGET): $(OBJFILES) $(SRCFILES) $(HEADERFILES) $(SWIGSRCFILES) $(SWIGDOCFILES) $(SWIGLIBFILES) $(SWIGRDATAFILES)
+$(TARGET): $(OBJFILES) $(SRCFILES) $(HEADERFILES) $(SWIGSRCFILES) $(SWIGDOCFILES) $(SWIGLIBFILES) $(SWIGRFILES) $(SWIGRDATAFILES)
 %.R: $(PRE_LIB_SWIG)%.${EXT_LIB_SWIG}
 %.RData: %.R
 	echo 'f="$<"; fdata="$@"; source(f); save(list=ls(all=TRUE),file=fdata, compress=TRUE); q(save="no")' | R --no-save

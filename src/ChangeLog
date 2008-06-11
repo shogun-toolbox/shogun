@@ -1,3 +1,21 @@
+2008-06-11  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* ChangeLog: updated changelog
+	* interface/SGInterface.cpp,
+	  kernel/WeightedDegreePositionStringKernel.cpp,
+	  kernel/WeightedDegreePositionStringKernel.h,
+	  kernel/WeightedDegreeStringKernel.cpp,
+	  kernel/WeightedDegreeStringKernel.h, lib/Trie.h: fix a couple of
+	  crashers due to uninited tries by making sure tables that are
+	  cleaned up on cleanup() are inited on init() - this is yet
+	  another side effect of correctly removing lhs/rhs and calling
+	  kernel cleanup()
+	* interface/SGInterface.cpp, kernel/Kernel.cpp, kernel/Kernel.h: -
+	  add a function remove_lhs_and_rhs() which simply calls
+	  remove_rhs() and remove_lhs() in the right order (recall that the
+	  case lhs==rhs is valid and currently needs extra treatment)
+	  - add assertions for WDS kernel 2/3
+
 2008-06-11  Sebastian Henschel <shogun@kodeaffe.de>
 
 	* features/StringFeatures.h, kernel/WeightedDegreeStringKernel.cpp:
