@@ -11,11 +11,11 @@
 #
 # * To create a debian .orig.tar.gz run
 #
-#       make vanilla-package DEBIAN=yes
+#       make release DEBIAN=yes
 #
 # * To create a snapshot run
 #
-#       make vanilla-package SNAPSHOT=yes
+#       make release SNAPSHOT=yes
 # 
 # * To sign/md5sum the created tarballs and copy them to the webpage
 #
@@ -78,11 +78,11 @@ else
 ifeq ($(SNAPSHOT),yes)
 RELEASENAME := $(RELEASENAME)+svn$(SVNVERSION)
 endif
-all: doc release matlab python octave r
+all: doc release matlab python octave
 endif
 
 
-.PHONY: doc release matlab python octave r vanilla-package r-package
+.PHONY: all release package-from-release update-webpage svn-ignores clean distclean
 
 DESTDIR := ../$(RELEASENAME)
 REMOVE_SVMLIGHT := rm -f $(DESTDIR)/src/classifier/svm/SVM_light.* $(DESTDIR)/src/classifier/svm/Optimizer.* $(DESTDIR)/src/regression/svr/SVR_light.* $(DESTDIR)/src/LICENSE.SVMlight; \
@@ -93,18 +93,22 @@ sed -i '/^SVMlight:$$/,/^$$/c\\' $(DESTDIR)/src/LICENSE
 
 # We assume that a release is always created from a SVN working copy.
 
-release: src/lib/versionstring.h $(DESTDIR)/src/lib/versionstring.h vanilla-package r-package
-	rm -rf $(DESTDIR)
-
-vanilla-package: src/lib/versionstring.h $(DESTDIR)/src/lib/versionstring.h
+release: src/lib/versionstring.h $(DESTDIR)/src/lib/versionstring.h
 	tar -c -f $(DESTDIR).tar -C .. $(RELEASENAME)
 	rm -f $(DESTDIR).tar.bz2 $(DESTDIR).tar.gz
 	$(COMPRESS) -9 $(DESTDIR).tar
 
-# build r-package
-r-package:	src/lib/versionstring.h $(DESTDIR)/src/lib/versionstring.h
-	-make -C $(DESTDIR)/r package
-	cp $(DESTDIR)/r/*.tar.gz ../
+svn-tag-release: src/lib/versionstring.h
+	sed -i 's/VERSION_RELEASE "svn/VERSION_RELEASE "v$(MAINVERSION)/' src/lib/versionstring.h
+	sed -i "s/PROJECT_NUMBER         = .*/PROJECT_NUMBER         = v$(MAINVERSION)/" doc/Doxyfile
+	svn ci -m "Preparing for new Release shogun_$(MAINVERSION)"
+	-cd .. && svn --force rm releases/shogun_$(MAINVERSION)
+	-cd .. && svn commit releases -m "clean old tag"
+	cd .. && svn cp trunk releases/shogun_$(MAINVERSION)
+	cp src/lib/versionstring.h ../releases/shogun_$(MAINVERSION)/src/lib/versionstring.h
+	sed -i "s| lib/versionstring.h||" ../releases/shogun_$(MAINVERSION)/src/Makefile
+	cd ../releases && svn add shogun_$(MAINVERSION)/src/lib/versionstring.h
+	cd ../releases && svn ci -m "Tagging shogun_$(MAINVERSION) release"
 
 package-from-release:
 	rm -rf $(DESTDIR)
@@ -122,14 +126,12 @@ update-webpage:
 	gpg --sign $(DESTDIR).tar.bz2
 	gpg --sign ../sg_$(MAINVERSION).tar.gz
 
-	ssh vserver mkdir -m 0755 -p /pub/shogun-ftp/releases/$(VERSIONBASE)/sources \
-		/pub/shogun-ftp/releases/$(VERSIONBASE)/Rsources
+	ssh vserver mkdir -m 0755 -p /pub/shogun-ftp/releases/$(VERSIONBASE)/sources
 	scp ../sg_$(MAINVERSION).tar.gz ../sg_$(MAINVERSION).tar.gz.gpg \
-		../sg_$(MAINVERSION).md5sum vserver:/pub/shogun-ftp/releases/$(VERSIONBASE)/Rsources/
+		../sg_$(MAINVERSION).md5sum
 	scp $(DESTDIR).tar.bz2 $(DESTDIR).tar.bz2.gpg $(DESTDIR).md5sum \
 		../sg_$(MAINVERSION).md5sum vserver:/pub/shogun-ftp/releases/$(VERSIONBASE)/sources/
-	ssh vserver chmod 644 /pub/shogun-ftp/releases/$(VERSIONBASE)/sources/*.* \
-		/pub/shogun-ftp/releases/$(VERSIONBASE)/Rsources/*.*
+	ssh vserver chmod 644 /pub/shogun-ftp/releases/$(VERSIONBASE)/sources/*.*
 	
 	rm -rf doc/html
 	make -C doc
@@ -138,21 +140,6 @@ update-webpage:
 	ssh vserver chmod 644 /pub/shogun/doc/*.*
 	ssh vserver ./bin/shogun_doc_install.sh
 	rm -rf doc/html
-
-svn-tag-release: src/lib/versionstring.h
-	sed -i "s/^Version.*$$/Version: $(MAINVERSION)/" r/sg/DESCRIPTION
-	sed -i "s/^Date:.*$$/Date: `date +%Y-%m-%d`/" r/sg/DESCRIPTION
-	sed -i "s/^SHOGUN:=.*$$/SHOGUN:=sg_$(MAINVERSION)-1.tar.gz/" r/Makefile
-	sed -i 's/VERSION_RELEASE "svn/VERSION_RELEASE "v$(MAINVERSION)/' src/lib/versionstring.h
-	sed -i "s/PROJECT_NUMBER         = .*/PROJECT_NUMBER         = v$(MAINVERSION)/" doc/Doxyfile
-	svn ci -m "Preparing for new Release shogun_$(MAINVERSION)"
-	-cd .. && svn --force rm releases/shogun_$(MAINVERSION)
-	-cd .. && svn commit releases -m "clean old tag"
-	cd .. && svn cp trunk releases/shogun_$(MAINVERSION)
-	cp src/lib/versionstring.h ../releases/shogun_$(MAINVERSION)/src/lib/versionstring.h
-	sed -i "s| lib/versionstring.h||" ../releases/shogun_$(MAINVERSION)/src/Makefile
-	cd ../releases && svn add shogun_$(MAINVERSION)/src/lib/versionstring.h
-	cd ../releases && svn ci -m "Tagging shogun_$(MAINVERSION) release"
 
 src/lib/versionstring.h:
 	rm -f src/ChangeLog
@@ -166,7 +153,6 @@ $(DESTDIR)/src/lib/versionstring.h: src/lib/versionstring.h
 
 	# remove top level makefile from distribution
 	rm -f $(DESTDIR)/src/.authors
-	rm -rf $(DESTDIR)/r/sg/src
 	cp -f src/lib/versionstring.h $(DESTDIR)/src/lib/
 
 svn-ignores: .svn_ignores
