@@ -556,19 +556,23 @@ void CKernel::cache_multiple_kernel_rows(INT* rows, INT num_rows)
 		INT end=0;
 
 		// allocate cachelines if necessary
-		for(INT i=0; i<num_rows; i++) 
+		for (INT i=0; i<num_rows; i++)
 		{
-			if(!kernel_cache_check(rows[i])) 
-			{
-				needs_computation[rows[i]]=1;
-				uncached_rows[num]=rows[i];
-				cache[num]= kernel_cache_clean_and_malloc(rows[i]);
+			INT idx=rows[i];
+			if (kernel_cache_check(idx))
+				continue;
 
-				if (!cache[num] )
-               SG_ERROR( "Kernel cache full! => increase cache size");
+			if (idx>=num_vec)
+				idx=2*num_vec-1-idx;
 
-				num++;
-			}
+			needs_computation[idx]=1;
+			uncached_rows[num]=idx;
+			cache[num]= kernel_cache_clean_and_malloc(idx);
+
+			if (!cache[num])
+				SG_ERROR("Kernel cache full! => increase cache size\n");
+
+			num++;
 		}
 
 		if (num>0)
