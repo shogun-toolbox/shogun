@@ -205,6 +205,9 @@ class CKernel : public CSGObject
 			return lhs && rhs;
 		}
 
+		/** remove lhs and rhs from kernel */
+		virtual void remove_lhs_and_rhs();
+
 		/** remove lhs from kernel */
 		virtual void remove_lhs();
 

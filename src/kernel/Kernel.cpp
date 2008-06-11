@@ -323,9 +323,7 @@ bool CKernel::init(CFeatures* l, CFeatures* r)
 	ASSERT(l->get_feature_type()==r->get_feature_type());
 
 	//remove references to previous features
-    SG_UNREF(lhs);
-    if (lhs!=rhs)
-        SG_UNREF(rhs);
+	remove_lhs_and_rhs();
 
     //increase reference counts
     SG_REF(l);
@@ -343,16 +341,7 @@ bool CKernel::init(CFeatures* l, CFeatures* r)
 
 void CKernel::cleanup()
 {
-	if (lhs==rhs)
-	{
-		remove_lhs();
-		rhs=lhs;
-	}
-	else
-	{
-		remove_lhs();
-		remove_rhs();
-	}
+	remove_lhs_and_rhs();
 }
 
 #ifdef USE_SVMLIGHT
@@ -818,6 +807,12 @@ bool CKernel::save(CHAR* fname)
     return (f.is_ok());
 }
 
+void CKernel::remove_lhs_and_rhs()
+{
+	remove_rhs();
+	remove_lhs();
+}
+
 void CKernel::remove_lhs()
 { 
 #ifdef USE_SVMLIGHT
@@ -837,7 +832,8 @@ void CKernel::remove_rhs()
 		cache_reset();
 #endif //USE_SVMLIGHT
 
-	SG_UNREF(rhs);
+	if (rhs!=lhs)
+		SG_UNREF(rhs);
 	rhs = NULL;
 }
 

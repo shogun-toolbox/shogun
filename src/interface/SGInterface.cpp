@@ -2273,7 +2273,10 @@ CKernel* CSGInterface::create_kernel()
 			INT max_mismatch=get_int_from_int_or_str();
 			INT length=get_int_from_int_or_str();
 			INT* shifts=NULL;
-			get_int_vector_from_int_vector_or_str(shifts, length);
+			INT l=0;
+			get_int_vector_from_int_vector_or_str(shifts, l);
+
+			ASSERT(l==length);
 
 			bool use_normalization=true;
 			if (strmatch(type, "WEIGHTEDDEGREEPOS2_NONORM"))
@@ -2302,7 +2305,9 @@ CKernel* CSGInterface::create_kernel()
 			INT length=get_int_from_int_or_str();
 			INT mkl_stepsize=get_int_from_int_or_str();
 			INT* shifts=NULL;
+			INT l=0;
 			get_int_vector_from_int_vector_or_str(shifts, length);
+			ASSERT(l==length);
 
 			DREAL* position_weights=NULL;
 			if (m_nrhs>9+length)
