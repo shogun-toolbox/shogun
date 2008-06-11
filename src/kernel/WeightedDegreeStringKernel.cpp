@@ -150,19 +150,18 @@ void CWeightedDegreeStringKernel::create_empty_tries()
 bool CWeightedDegreeStringKernel::init(CFeatures* l, CFeatures* r)
 {
 	ASSERT(l && r);
+
 	INT lhs_changed=(lhs!=l);
-	INT rhs_changed=(rhs!=r);
-	CStringFeatures<CHAR>* sf_l=(CStringFeatures<CHAR>*) l;
-	CStringFeatures<CHAR>* sf_r=(CStringFeatures<CHAR>*) r;
-
-	if (lhs_changed || rhs_changed)
-	{
-		if (!sf_l->have_same_length(sf_l, sf_r))
-			SG_ERROR("Length of lhs and rhs differs.\n");
-	}
-
 	SG_DEBUG("lhs_changed: %i\n", lhs_changed);
+	CStringFeatures<CHAR>* sf_l=(CStringFeatures<CHAR>*) l;
+	if (lhs_changed)
+		sf_l->have_same_length(sf_l->get_max_vector_length());
+
+	INT rhs_changed=(rhs!=r);
 	SG_DEBUG("rhs_changed: %i\n", rhs_changed);
+	CStringFeatures<CHAR>* sf_r=(CStringFeatures<CHAR>*) r;
+	if (rhs_changed)
+		sf_r->have_same_length(sf_r->get_max_vector_length());
 
 	bool result=CStringKernel<CHAR>::init(l,r);
 	initialized=false;

@@ -955,24 +955,21 @@ template <class ST> class CStringFeatures : public CFeatures
 				return true;
 			}
 
-		/* check if length of all vectors in given feature objects is the
-		 * same.
+		/* check if length of each vector in this feature object equals the
+		 * given length.
 		 *
-		 * @param lhs feature object of left hand side
-		 * @param rhs feature object of right hand side
-		 * @return if length of all vectors in given feature objects is the
-		 * same.
+		 * @param len vector length to check against
+		 * @return if length of each vector in this feature object equals the
+		 * given length.
 		 */
-		bool have_same_length(CStringFeatures<ST>* l, CStringFeatures<ST>* r)
+		bool have_same_length(INT len)
 		{
-			ASSERT(l && r);
-			INT num_lhs=l->get_num_vectors();
-			if (num_lhs!=r->get_num_vectors())
+			if (len!=get_max_vector_length())
 				return false;
 
-			for (INT i=0; i<num_lhs; i++)
+			for (INT i=0; i<num_vectors; i++)
 			{
-				if (l->get_vector_length(i)!=r->get_vector_length(i))
+				if (get_vector_length(i)!=len)
 					return false;
 			}
 
