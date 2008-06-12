@@ -85,7 +85,6 @@ bool CSVMOcas::train()
 			&CSVMOcas::add_new_cut, 
 			&CSVMOcas::compute_output,
 			&CSVMOcas::sort,
-			&printf,
 			this);
 
 	SG_INFO("Ocas Converged after %d iterations\n"

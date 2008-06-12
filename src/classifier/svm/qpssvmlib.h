@@ -19,5 +19,4 @@ int qpssvm_solver(const void* (*get_col)(uint32_t),
                   double tolrel,
                   double *QP,
                   double *QD,
-                  int (*qpssvmlib_print)(const char *format, ...),
                   uint32_t verb);

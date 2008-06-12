@@ -95,7 +95,6 @@ int qpssvm_solver(const void* (*get_col)(uint32_t),
                   double tolrel,
                   double *QP,
                   double *QD,
-				  int (*qpssvmlib_print)(const char *format, ...),
                   uint32_t verb)
 {
   double *x_nequ;
@@ -371,7 +370,7 @@ int qpssvm_solver(const void* (*get_col)(uint32_t),
     }
 
     if( verb > 0 && (exitflag > 0 || (t % verb)==0 )) {
-       qpssvmlib_print("%d: UB=%.10f, LB=%.10f, UB-LB=%.10f, (UB-LB)/|UB|=%.10f \n",
+       SG_SINFO("%d: UB=%.10f, LB=%.10f, UB-LB=%.10f, (UB-LB)/|UB|=%.10f \n",
         t, UB, LB, UB-LB, (UB!=0) ? (UB-LB)/ABS(UB) : 0);      
     }    
 

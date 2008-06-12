@@ -175,7 +175,6 @@ bool CWDSVMOcas::train()
 			&CWDSVMOcas::add_new_cut, 
 			&CWDSVMOcas::compute_output,
 			&CWDSVMOcas::sort,
-			&printf,
 			this);
 
 	SG_INFO("Ocas Converged after %d iterations\n"

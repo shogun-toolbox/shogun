@@ -62,7 +62,6 @@ ocas_return_value_T svm_ocas_solver(
 		void (*add_new_cut)(double*, uint32_t*, uint32_t, uint32_t, void*),
 		void (*compute_output)( double*, void* ),
 		void (*sort)(double*, uint32_t*, uint32_t),
-		int (*ocas_print)(const char *format, ...),
 		void* user_data);
 
 void qsort_index(double* value, uint32_t* index, uint32_t size);
