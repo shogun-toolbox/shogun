@@ -26,7 +26,6 @@
 		- All derived classes now call their parent class on construction.
 		- Fix a crasher occuring with SVRLight on multiple threads.
 
-
 2008-05-15  Soeren Sonnenburg <debian@nn7.de>
 
 	* SHOGUN Release version 0.6.2

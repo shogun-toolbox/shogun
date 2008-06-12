@@ -75,13 +75,7 @@ CKernel::~CKernel()
 	if (get_is_initialized())
 		SG_ERROR("Kernel still initialized on destruction.\n");
 
-	SG_UNREF(lhs);
-	if (lhs!=rhs)
-		SG_UNREF(rhs);
-
-#ifdef USE_SVMLIGHT
-	kernel_cache_cleanup();
-#endif //USE_SVMLIGHT
+	remove_lhs_and_rhs();
 
 	delete[] precomputed_matrix;
 	precomputed_matrix=NULL;
@@ -304,8 +298,6 @@ void CKernel::resize_kernel_cache(KERNELCACHE_IDX size, bool regression_hack)
 	
 	kernel_cache_cleanup();
 	cache_size=size;
-
-	memset(&kernel_cache, 0x0, sizeof(KERNEL_CACHE));
 
 	if (lhs!=NULL && rhs!=NULL)
 		kernel_cache_init(cache_size, regression_hack);
@@ -809,32 +801,38 @@ bool CKernel::save(CHAR* fname)
 
 void CKernel::remove_lhs_and_rhs()
 {
-	remove_rhs();
-	remove_lhs();
+	if (rhs!=lhs)
+		SG_UNREF(rhs);
+	rhs = NULL;
+
+	SG_UNREF(lhs);
+	lhs = NULL;
+
+#ifdef USE_SVMLIGHT
+	cache_reset();
+#endif //USE_SVMLIGHT
 }
 
 void CKernel::remove_lhs()
 { 
-#ifdef USE_SVMLIGHT
-	if (lhs)
-		cache_reset();
-#endif //USE_SVMLIGHT
-
 	SG_UNREF(lhs);
 	lhs = NULL;
+
+#ifdef USE_SVMLIGHT
+	cache_reset();
+#endif //USE_SVMLIGHT
 }
 
 /// takes all necessary steps if the rhs is removed from kernel
 void CKernel::remove_rhs()
 {
-#ifdef USE_SVMLIGHT
-	if (rhs)
-		cache_reset();
-#endif //USE_SVMLIGHT
-
 	if (rhs!=lhs)
 		SG_UNREF(rhs);
 	rhs = NULL;
+
+#ifdef USE_SVMLIGHT
+	cache_reset();
+#endif //USE_SVMLIGHT
 }
 
 

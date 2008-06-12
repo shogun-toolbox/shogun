@@ -259,10 +259,11 @@ void COctaveInterface::get_real_sparsematrix(TSparse<DREAL>*& matrix, INT& num_f
 	ASSERT(offset=nnz);
 }
 
-#define GET_STRINGLIST(function_name, oct_type_check, oct_type, oct_converter, sg_type, if_type, error_string)		\
+#define GET_STRINGLIST(function_name, oct_type_check1, oct_type_check2, \
+		oct_type, oct_converter, sg_type, if_type, error_string)		\
 void COctaveInterface::function_name(T_STRING<sg_type>*& strings, INT& num_str, INT& max_string_len) \
 {																					\
-	max_string_len=0;														\
+	max_string_len=0;																\
 	octave_value arg=get_arg_increment();											\
 	if (arg.is_cell())																\
 	{																				\
@@ -273,9 +274,11 @@ void COctaveInterface::function_name(T_STRING<sg_type>*& strings, INT& num_str, 
 																					\
 		for (int i=0; i<num_str; i++)												\
 		{																			\
-			if (!c.elem(i).oct_type_check() || !c.elem(i).rows()==1)				\
+			if (!c.elem(i).oct_type_check1() || !c.elem(i).oct_type_check2()		\
+					|| !c.elem(i).rows()==1)				\
 				SG_ERROR("Expected String of type " error_string " as argument %d.\n", m_rhs_counter); \
-			oct_type str=c.elem(i).oct_converter();							\
+																					\
+			oct_type str=c.elem(i).oct_converter();									\
 																					\
 			INT len=str.cols();														\
 			if (len>0) 																\
@@ -296,7 +299,7 @@ void COctaveInterface::function_name(T_STRING<sg_type>*& strings, INT& num_str, 
 			}																		\
 		} 																			\
 	} 																				\
-	else if (arg.oct_type_check())							\
+	else if (arg.oct_type_check1() && arg.oct_type_check2())						\
 	{																				\
 		oct_type data=arg.oct_converter();											\
 		num_str=data.cols(); 														\
@@ -330,11 +333,12 @@ void COctaveInterface::function_name(T_STRING<sg_type>*& strings, INT& num_str, 
 			"???", m_rhs_counter);													\
 	}\
 }
-GET_STRINGLIST(get_byte_string_list, is_matrix_type() && arg.is_uint8_type, uint8NDArray, uint8_array_value, BYTE, BYTE, "Byte")
-GET_STRINGLIST(get_char_string_list, is_char_matrix, charMatrix, char_matrix_value, CHAR, CHAR, "Char")
-GET_STRINGLIST(get_int_string_list, is_matrix_type() && arg.is_int32_type, int32NDArray, int32_array_value, INT, INT, "Integer")
-GET_STRINGLIST(get_short_string_list, is_matrix_type() && arg.is_int16_type, int16NDArray, int16_array_value, SHORT, SHORT, "Short")
-GET_STRINGLIST(get_word_string_list, is_matrix_type() && arg.is_uint16_type, uint16NDArray, uint16_array_value, WORD, WORD, "Word")
+/* ignore the g++ warning here */
+GET_STRINGLIST(get_byte_string_list, is_matrix_type, is_uint8_type, uint8NDArray, uint8_array_value, BYTE, BYTE, "Byte")
+GET_STRINGLIST(get_char_string_list, is_char_matrix, is_char_matrix, charMatrix, char_matrix_value, CHAR, CHAR, "Char")
+GET_STRINGLIST(get_int_string_list, is_matrix_type, is_int32_type, int32NDArray, int32_array_value, INT, INT, "Integer")
+GET_STRINGLIST(get_short_string_list, is_matrix_type, is_int16_type, int16NDArray, int16_array_value, SHORT, SHORT, "Short")
+GET_STRINGLIST(get_word_string_list, is_matrix_type, is_uint16_type, uint16NDArray, uint16_array_value, WORD, WORD, "Word")
 #undef GET_STRINGLIST
 
 
