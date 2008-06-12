@@ -4,7 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2006 Christian Gehl
+ * Written (W) 2006-2008 Christian Gehl
  * Copyright (C) 2006-2008 Fraunhofer Institute FIRST
  */
 
@@ -64,10 +64,14 @@ DREAL CGeodesicMetric::compute(INT idx_a, INT idx_b)
 
 	DREAL s=0;
 	DREAL d=0;
+	DREAL nx=0;
+	DREAL ny=0;
 	{
 		for (INT i=0; i<alen; i++)
 		{
-			d+=CMath::sqrt(fabs(avec[i])*fabs(bvec[i]));
+			d+=avec[i]*bvec[i];
+			nx+=avec[i]*avec[i];
+			ny+=bvec[i]*bvec[i];
 			s+=avec[i]+bvec[i];
 		}
 	}
@@ -78,8 +82,6 @@ DREAL CGeodesicMetric::compute(INT idx_a, INT idx_b)
 
 	if(s==0)
 		return 0;
-	if(d>1)
-		return 0;
 
-	return acos(d);
+	return acos(d/CMath::sqrt(nx*ny));
 }
