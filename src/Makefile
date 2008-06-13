@@ -340,6 +340,12 @@ run-testsuite:
 check-examples:
 		cd ../examples/$(INTERFACE) && ( PYTHON=$(PYTHON) PYTHONPATH="$(DESTDIR)$(PYDIR)" ./check.sh	)
 else
+ifeq (r-modular,$(INTERFACE))
+run-testsuite:
+		cd ../testsuite/$(INTERFACE) && ( R_LIBS="$(DESTDIR)$(RDIR)" ./test_all.sh	)
+check-examples:
+		cd ../examples/$(INTERFACE) && ( R_LIBS="$(DESTDIR)$(RDIR)" ./check.sh	)
+else
 ifeq (r,$(INTERFACE))
 run-testsuite:
 		cd ../testsuite/$(INTERFACE) && ( R_LIBS="$(DESTDIR)$(RDIR)" ./test_all.sh	)
@@ -350,6 +356,7 @@ run-testsuite:
 		cd ../testsuite/$(INTERFACE) && test -e ./test_all.sh && ./test_all.sh
 check-examples:
 		cd ../examples/$(INTERFACE) && ./check.sh
+endif
 endif
 endif
 

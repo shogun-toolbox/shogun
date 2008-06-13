@@ -80,8 +80,15 @@ DREAL CGeodesicMetric::compute(INT idx_a, INT idx_b)
 	((CRealFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
 
-	if(s==0)
+	// trap division by zero
+	if(s==0 || nx==0 || ny==0)
 		return 0;
 
-	return acos(d/CMath::sqrt(nx*ny));
+	d/=CMath::sqrt(nx*ny);
+
+	// can only happen due to numerical problems
+	if (CMath::abs(d)>1.0)
+		d=CMath::sign(d);
+
+	return acos(d);
 }
