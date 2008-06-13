@@ -719,6 +719,47 @@ CSGInterfaceMethod sg_methods[]=
 		USAGE_O(N_ENTROPY, "result")
 	},
 	{
+		(CHAR*) N_SET_FEATURE_MATRIX,
+		(&CSGInterface::cmd_set_feature_matrix),
+		(CHAR*) USAGE_I(N_SET_FEATURE_MATRIX, "features")
+	},
+	{
+		N_NEW_PLUGIN_ESTIMATOR,
+		(&CSGInterface::cmd_new_plugin_estimator),
+		USAGE_I(N_NEW_PLUGIN_ESTIMATOR, "pos_pseudo" USAGE_COMMA "neg_pseudo")
+	},
+	{
+		N_TRAIN_ESTIMATOR,
+		(&CSGInterface::cmd_train_estimator),
+		USAGE(N_TRAIN_ESTIMATOR)
+	},
+	{
+		N_TEST_ESTIMATOR,
+		(&CSGInterface::cmd_test_estimator),
+		USAGE(N_TEST_ESTIMATOR)
+	},
+	{
+		N_PLUGIN_ESTIMATE_CLASSIFY_EXAMPLE,
+		(&CSGInterface::cmd_plugin_estimate_classify_example),
+		USAGE_IO(N_PLUGIN_ESTIMATE_CLASSIFY_EXAMPLE, "feature_vector_index", "result")
+	},
+	{
+		N_PLUGIN_ESTIMATE_CLASSIFY,
+		(&CSGInterface::cmd_plugin_estimate_classify),
+		USAGE_O(N_PLUGIN_ESTIMATE_CLASSIFY, "result")
+	},
+	{
+		N_SET_PLUGIN_ESTIMATE,
+		(&CSGInterface::cmd_set_plugin_estimate),
+		USAGE_I(N_SET_PLUGIN_ESTIMATE, "emission_probs" USAGE_COMMA "model_sizes")
+	},
+	{
+		N_GET_PLUGIN_ESTIMATE,
+		(&CSGInterface::cmd_get_plugin_estimate),
+		USAGE_O(N_GET_PLUGIN_ESTIMATE, "emission_probs" USAGE_COMMA "model_sizes")
+	},
+	{ "Structure", NULL, NULL },
+	{
 		N_BEST_PATH,
 		(&CSGInterface::cmd_best_path),
 		USAGE_I(N_BEST_PATH, "from" USAGE_COMMA "to")
@@ -779,11 +820,6 @@ CSGInterfaceMethod sg_methods[]=
 				USAGE_COMMA "transition_pointers"
 				USAGE_COMMA "use_orf"
 				USAGE_COMMA "mod_words")
-	},
-	{
-		(CHAR*) N_SET_FEATURE_MATRIX,
-		(&CSGInterface::cmd_set_feature_matrix),
-		(CHAR*) USAGE_I(N_SET_FEATURE_MATRIX, "features")
 	},
 
 	{
@@ -850,41 +886,6 @@ CSGInterfaceMethod sg_methods[]=
 			USAGE_COMMA "max_iter"
 			USAGE_COMMA "nbest",
 			"prob" USAGE_COMMA "path")
-	},
-	{
-		N_NEW_PLUGIN_ESTIMATOR,
-		(&CSGInterface::cmd_new_plugin_estimator),
-		USAGE_I(N_NEW_PLUGIN_ESTIMATOR, "pos_pseudo" USAGE_COMMA "neg_pseudo")
-	},
-	{
-		N_TRAIN_ESTIMATOR,
-		(&CSGInterface::cmd_train_estimator),
-		USAGE(N_TRAIN_ESTIMATOR)
-	},
-	{
-		N_TEST_ESTIMATOR,
-		(&CSGInterface::cmd_test_estimator),
-		USAGE(N_TEST_ESTIMATOR)
-	},
-	{
-		N_PLUGIN_ESTIMATE_CLASSIFY_EXAMPLE,
-		(&CSGInterface::cmd_plugin_estimate_classify_example),
-		USAGE_IO(N_PLUGIN_ESTIMATE_CLASSIFY_EXAMPLE, "feature_vector_index", "result")
-	},
-	{
-		N_PLUGIN_ESTIMATE_CLASSIFY,
-		(&CSGInterface::cmd_plugin_estimate_classify),
-		USAGE_O(N_PLUGIN_ESTIMATE_CLASSIFY, "result")
-	},
-	{
-		N_SET_PLUGIN_ESTIMATE,
-		(&CSGInterface::cmd_set_plugin_estimate),
-		USAGE_I(N_SET_PLUGIN_ESTIMATE, "emission_probs" USAGE_COMMA "model_sizes")
-	},
-	{
-		N_GET_PLUGIN_ESTIMATE,
-		(&CSGInterface::cmd_get_plugin_estimate),
-		USAGE_O(N_GET_PLUGIN_ESTIMATE, "emission_probs" USAGE_COMMA "model_sizes")
 	},
 
 
