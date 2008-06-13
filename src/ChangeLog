@@ -1,5 +1,8 @@
 2008-06-13  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
 
+	* interface/SGInterface.cpp: R tests don't run yet, fix stupid
+	  error for WDS 3 kernel
+	* ChangeLog: updated changelog
 	* Makefile, distance/GeodesicMetric.cpp: run R tests with R_PATH
 	  set and trap division by zero and acos input outside [-1,+1]
 	  range
