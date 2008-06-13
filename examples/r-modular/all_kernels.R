@@ -1,30 +1,4 @@
-dyn.load('features/Features.so')
-dyn.load('preproc/PreProc.so')
-dyn.load('kernel/Kernel.so')
-dyn.load('distributions/Distribution.so')
-dyn.load('distance/Distance.so')
-dyn.load('classifier/Classifier.so')
-load('features/Features.RData')
-cacheMetaData(1)
-load('preproc/PreProc.RData')
-cacheMetaData(1)
-load('kernel/Kernel.RData')
-cacheMetaData(1)
-load('distributions/Distribution.RData')
-cacheMetaData(1)
-load('distance/Distance.RData')
-cacheMetaData(1)
-load('classifier/Classifier.RData')
-cacheMetaData(1)
-
-#source('features/Features.R')
-#source('preproc/PreProc.R')
-#source('kernel/Kernel.R')
-#source('distributions/Distribution.R')
-#source('distance/Distance.R')
-#source('classifier/Classifier.R')
-#cacheMetaData(1)
-
+library(shogun)
 
 # Explicit examples on how to use the different kernels
 

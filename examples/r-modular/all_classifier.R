@@ -1,20 +1,4 @@
-dyn.load('features/Features.so')
-dyn.load('classifier/Classifier.so')
-dyn.load('kernel/Kernel.so')
-dyn.load('distance/Distance.so')
-load('features/Features.RData')
-cacheMetaData(1)
-load('classifier/Classifier.RData')
-cacheMetaData(1)
-load('kernel/Kernel.RData')
-cacheMetaData(1)
-load('distance/Distance.RData')
-cacheMetaData(1)
-#source('features/Features.R')
-#source('classifier/Classifier.R')
-#source('kernel/Kernel.R')
-#source('distance/Distance.R')
-#cacheMetaData(1)
+library(shogun)
 
 # Explicit examples on how to use the different classifiers
 
@@ -22,10 +6,9 @@ fm_train_real <- as.matrix(read.table('../data/fm_train_real.dat'))
 fm_test_real <- as.matrix(read.table('../data/fm_test_real.dat'))
 fm_train_dna <- as.matrix(read.table('../data/fm_train_dna.dat'))
 fm_test_dna <- as.matrix(read.table('../data/fm_test_dna.dat'))
-label_train_dna <- as.real(as.matrix(read.table('../data/label_train_dna42.dat')))
-label_train_twoclass <- as.real(as.matrix(read.table('../data/label_train_twoclass.dat')))
-label_train_multiclass <- as.real(as.matrix(read.table('../data/label_train_multiclass.dat')))
-
+label_train_dna <- as.real(read.table('../data/label_train_dna42.dat'))
+label_train_twoclass <- as.real(read.table('../data/label_train_twoclass.dat'))
+label_train_multiclass <- as.real(read.table('../data/label_train_multiclass.dat'))
 
 ###########################################################################
 # kernel-based SVMs
@@ -194,7 +177,7 @@ C <- 0.017
 epsilon <- 1e-5
 tube_epsilon <- 1e-2
 num_threads <- as.integer(1)
-labels <- Labels(label_train_twoclass_multi)
+labels <- Labels(label_train_multiclass)
 
 svm <- GMNPSVM(C, kernel, labels)
 svm$set_epsilon(svm, epsilon)
@@ -316,7 +299,7 @@ epsilon <- 1e-5
 num_threads <- as.integer(1)
 labels <- Labels(label_train_twoclass)
 
-svm <- SVMSGD(C, feats_test, labels)
+svm <- SVMSGD(C, feats_train, labels)
 svm$io$set_loglevel(svm$io, 0)
 svm$train()
 

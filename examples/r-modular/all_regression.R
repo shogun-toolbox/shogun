@@ -1,23 +1,10 @@
-dyn.load('features/Features.so')
-dyn.load('kernel/Kernel.so')
-dyn.load('regression/Regression.so')
-load('features/Features.RData')
-cacheMetaData(1)
-load('kernel/Kernel.RData')
-cacheMetaData(1)
-load('regression/Regression.RData')
-cacheMetaData(1)
-
-#source('kernel/Kernel.R')
-#source('features/Features.R')
-#source('regression/Regression.R')
-#cacheMetaData(1)
+library(shogun)
 
 # Explicit examples on how to use regressions
 
 fm_train <- as.matrix(read.table('../data/fm_train_real.dat'))
 fm_test <- as.matrix(read.table('../data/fm_test_real.dat'))
-label_train <- as.real(as.matrix(read.table('../data/label_train_twoclass.dat')))
+label_train <- as.real(read.table('../data/label_train_twoclass.dat'))
 
 ###########################################################################
 # svm-based

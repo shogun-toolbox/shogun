@@ -1,17 +1,4 @@
-dyn.load('features/Features.so')
-dyn.load('preproc/PreProc.so')
-dyn.load('distributions/Distribution.so')
-load('features/Features.RData')
-cacheMetaData(1)
-load('preproc/PreProc.RData')
-cacheMetaData(1)
-load('distributions/Distribution.RData')
-cacheMetaData(1)
-
-#source('preproc/PreProc.R')
-#source('features/Features.R')
-#source('distributions/Distribution.R')
-#cacheMetaData(1)
+library(shogun)
 
 # Explicit examples on how to use distributions
 

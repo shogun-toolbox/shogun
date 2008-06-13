@@ -1,12 +1,4 @@
-dyn.load('features/Features.so')
-dyn.load('kernel/Kernel.so')
-dyn.load('classifier/Classifier.so')
-load('kernel/Kernel.RData')
-cacheMetaData(1)
-load('features/Features.RData')
-cacheMetaData(1)
-load('classifier/Classifier.RData')
-cacheMetaData(1)
+library(shogun)
 
 num <- 1000
 dist <- 1

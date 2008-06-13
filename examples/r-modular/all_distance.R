@@ -1,17 +1,4 @@
-dyn.load('features/Features.so')
-dyn.load('distance/Distance.so')
-dyn.load('preproc/PreProc.so')
-load('features/Features.RData')
-cacheMetaData(1)
-load('distance/Distance.RData')
-cacheMetaData(1)
-load('preproc/PreProc.RData')
-cacheMetaData(1)
-
-#source('features/Features.R')
-#source('distance/Distance.R')
-#source('preproc/PreProc.R')
-#cacheMetaData(1)
+library(shogun)
 
 # Explicit examples on how to use the different distances
 
