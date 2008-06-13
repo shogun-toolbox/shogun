@@ -1,3 +1,10 @@
+2008-06-13  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* Makefile, distance/GeodesicMetric.cpp: run R tests with R_PATH
+	  set and trap division by zero and acos input outside [-1,+1]
+	  range
+	* ChangeLog: updated changelog
+
 2008-06-13  Sebastian Henschel <shogun@kodeaffe.de>
 
 	* NEWS: Add Ocas changes to News.
