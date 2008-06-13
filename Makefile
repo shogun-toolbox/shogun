@@ -167,15 +167,11 @@ package-from-release:
 
 update-webpage: 
 	md5sum $(DESTDIR).tar.bz2 >$(DESTDIR).md5sum
-	md5sum ../sg_$(MAINVERSION).tar.gz >../sg_$(MAINVERSION).md5sum
 	gpg --sign $(DESTDIR).tar.bz2
-	gpg --sign ../sg_$(MAINVERSION).tar.gz
 
 	ssh vserver mkdir -m 0755 -p /pub/shogun-ftp/releases/$(VERSIONBASE)/sources
-	scp ../sg_$(MAINVERSION).tar.gz ../sg_$(MAINVERSION).tar.gz.gpg \
-		../sg_$(MAINVERSION).md5sum
 	scp $(DESTDIR).tar.bz2 $(DESTDIR).tar.bz2.gpg $(DESTDIR).md5sum \
-		../sg_$(MAINVERSION).md5sum vserver:/pub/shogun-ftp/releases/$(VERSIONBASE)/sources/
+		vserver:/pub/shogun-ftp/releases/$(VERSIONBASE)/sources/
 	ssh vserver chmod 644 /pub/shogun-ftp/releases/$(VERSIONBASE)/sources/*.*
 	
 	rm -rf doc/html
