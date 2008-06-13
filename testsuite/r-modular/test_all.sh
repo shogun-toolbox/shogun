@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# not implemented yet
+exit 0
+
 if test -z "$PYTHON" 
 then
 	PYTHON=python

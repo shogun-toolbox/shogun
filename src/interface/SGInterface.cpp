@@ -2314,7 +2314,7 @@ CKernel* CSGInterface::create_kernel()
 			INT mkl_stepsize=get_int_from_int_or_str();
 			INT* shifts=NULL;
 			INT l=0;
-			get_int_vector_from_int_vector_or_str(shifts, length);
+			get_int_vector_from_int_vector_or_str(shifts, l);
 			ASSERT(l==length);
 
 			DREAL* position_weights=NULL;
