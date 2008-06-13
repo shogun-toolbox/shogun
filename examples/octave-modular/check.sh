@@ -1,6 +1,5 @@
 #!/bin/bash
-( cd ../../src
-for e in ../examples/octave-modular/*.m
+for e in *.m
 do
 	echo -n "running $e .."
 	if octave "$e" >/dev/null 2>&1
@@ -10,4 +9,3 @@ do
 		echo " ERROR"
 	fi
 done
-)
