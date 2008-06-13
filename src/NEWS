@@ -5,7 +5,8 @@
 		- Fail nicely in out of memory situations.
 		- Drop R package, now configure; make; make install will work for all
 		interfaces.
-		- Disable progress output by default.
+		- Disable progress output by default. Ocas now uses a progress bar and
+		  hence is less verbose.
 		- Revised directory structure with /doc, /examples, /src, /testsuite.
 		- Add common toy data repository and make all examples from all interfaces
 		use it.
