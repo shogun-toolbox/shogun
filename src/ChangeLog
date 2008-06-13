@@ -1,5 +1,66 @@
+2008-06-13  Sebastian Henschel <shogun@kodeaffe.de>
+
+	* NEWS: Add Ocas changes to News.
+
+2008-06-13  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* interface/SGInterface.cpp: move structure commands to separate
+	  group
+
+2008-06-13  Sebastian Henschel <shogun@kodeaffe.de>
+
+	* classifier/svm/libocas.cpp, classifier/svm/qpssvmlib.cpp:
+	  classifier:
+	  - Transformed SG_SINFO into SG_ABS_PROGRESS in Ocas.
+
+2008-06-13  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* NEWS, guilib/GUIStructure.h, interface/SGInterface.cpp,
+	  structure/DynProg.cpp, structure/DynProg.h, structure/Plif.cpp:
+	  merge changes from structure branch
+
+2008-06-12  Sebastian Henschel <shogun@kodeaffe.de>
+
+	* classifier/svm/SVMOcas.cpp, classifier/svm/WDSVMOcas.cpp,
+	  classifier/svm/libocas.cpp, classifier/svm/libocas.h,
+	  classifier/svm/qpssvmlib.cpp, classifier/svm/qpssvmlib.h:
+	  classifier:
+	  - Made Ocas less verbose, actually modifying the way it prints
+	  out error
+	  messages.
+
+2008-06-12  Christian Gehl <Christian.Gehl@first.fraunhofer.de>
+
+	* distance/GeodesicMetric.cpp: -changed distance function to arcos(
+	  x*y/sqrt( (x*x) * (y*y) ) )
+	  -distance can handle data, which has not be normalized
+
+2008-06-12  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* NEWS, interface/OctaveInterface.cpp, kernel/Kernel.cpp:
+	  -refresh+resize kernel cache after we actually erease lhs or rhs
+	  -fix a bug+warning in octave interface when setting strings
+
 2008-06-11  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
 
+	* kernel/KernelMachine.cpp: minor code cleanup
+	* Makefile: include test and doc for cmdline interface
+
+2008-06-11  Sebastian Henschel <shogun@kodeaffe.de>
+
+	* features/StringFeatures.h, kernel/Kernel.h, kernel/PyramidChi2.h,
+	  lib/File.h, structure/DynProg.h, structure/Plif.h: documentation:
+	  - Fixed some doxygen warnings.
+	* ., NEWS, classifier, clustering, distance, distributions,
+	  evaluation, features, kernel, lib, preproc, regression,
+	  structure: - Slightly modified NEWS
+	  - updated svn:ignores in various places.
+
+2008-06-11  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* ChangeLog, Makefile, NEWS, interface/SGInterface.cpp,
+	  kernel/WeightedDegreePositionStringKernel.cpp,
+	  kernel/WeightedDegreeStringKernel.cpp: updated changelog
 	* ChangeLog, Makefile, NEWS: updated changelog
 	* ChangeLog: updated changelog
 	* interface/SGInterface.cpp,
