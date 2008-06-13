@@ -105,6 +105,9 @@ public:
 	 */
 	void set_num_states(INT p_N);
 
+	/** get num states */
+	INT get_num_states();
+
 	/** get num svms*/
 	INT get_num_svms();
 

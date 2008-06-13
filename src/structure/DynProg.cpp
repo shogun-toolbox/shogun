@@ -1,4 +1,3 @@
-
 /*
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -173,8 +172,11 @@ CDynProg::~CDynProg()
 		}
 		delete[] trans_list_forward_id;
 	}
-	//delete[] m_raw_intensities ;
-	//delete[] m_probe_pos ;
+	//if (m_raw_intensities)
+	//	delete[] m_raw_intensities;
+	//if (m_probe_pos)
+	//	delete[] m_probe_pos;
+	
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -197,11 +199,11 @@ void CDynProg::precompute_stop_codons(const CHAR* sequence, INT length)
 			(((sequence[i+1]=='a' || sequence[i+1]=='A') && 
 			  (sequence[i+2]=='a' || sequence[i+2]=='g' || sequence[i+2]=='A' || sequence[i+2]=='G')) ||
 			 ((sequence[i+1]=='g'||sequence[i+1]=='G') && (sequence[i+2]=='a' || sequence[i+2]=='A') )))
-			m_genestr_stop[i]=true ;
+			m_genestr_stop.element(i)=true ;
 		else
-			m_genestr_stop[i]=false ;
-	m_genestr_stop[length-1]=false ;
-	m_genestr_stop[length-1]=false ;
+			m_genestr_stop.element(i)=false ;
+	m_genestr_stop.element(length-1)=false ;
+	m_genestr_stop.element(length-1)=false ;
 	}
 }
 void CDynProg::set_num_states(INT p_N)
@@ -219,6 +221,10 @@ void CDynProg::set_num_states(INT p_N)
 	m_orf_info.resize_array(N,2) ;
 	m_PEN.resize_array(N,N) ;
 	m_PEN_state_signals.resize_array(N,1) ;
+}
+INT CDynProg::get_num_states()
+{
+	return N;
 }
 void CDynProg::init_tiling_data(DREAL* probe_pos, DREAL* intensities, const INT num_probes, const INT seq_len)
 {
@@ -321,7 +327,7 @@ void CDynProg::precompute_content_values(WORD*** wordstr, const INT *pos,const I
 {
 
 	//SG_PRINT("seq_len=%i, genestr_len=%i, dict_len=%i, num_svms=%i, num_degrees=%i\n",seq_len, genestr_len, dict_len, num_svms, num_degrees);
-	
+
 	dict_weights.set_array(dictionary_weights, dict_len, num_svms, false, false) ;
 	dict_weights_array=dict_weights.get_array() ;
 
@@ -332,7 +338,8 @@ void CDynProg::precompute_content_values(WORD*** wordstr, const INT *pos,const I
 		DREAL my_svm_values_unnormalized[num_svms] ;
 		//SG_PRINT("%i(%i->%i) ",p,from_pos, to_pos);
       
-		
+		ASSERT(from_pos<=genestr_len)	
+		ASSERT(to_pos<=genestr_len)	
 			
 		for (INT s=0; s<num_svms; s++)
 		{
@@ -867,7 +874,7 @@ void CDynProg::best_path_set_segment_ids_mask(INT* segment_ids, DREAL* segment_m
 	INT max_id = 0;
 	for (INT i=1;i<m;i++)
 		max_id = CMath::max(max_id,segment_ids[i]);
-	SG_PRINT("max_id: %i, m:%i\n",max_id, m); 	
+	//SG_PRINT("max_id: %i, m:%i\n",max_id, m); 	
 	m_segment_ids.set_array(segment_ids, m, false, true) ;
 	m_segment_ids.set_name("m_segment_ids");
 	m_segment_mask.set_array(segment_mask, m, false, true) ;
@@ -2265,7 +2272,6 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	fprintf(stderr, "use_orf = %i\n", use_orf) ;
 #endif
 	
-	SG_PRINT("1 genestr_len: %i\n", m_genestr_len) ;
 	const INT default_look_back = 30000 ;
 	INT max_look_back = default_look_back ;
 	bool use_svm = false ;
@@ -2284,12 +2290,10 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	//CArray2<CPlifBase*> PEN_state_signals(Plif_state_signals, N, max_num_signals, false, false) ;
 	CArray2<CPlifBase*> PEN_state_signals(Plif_state_signals, N, max_num_signals, false, true) ;
 	PEN_state_signals.set_name("state_signals");
-	SG_PRINT("2 genestr_len: %i\n", m_genestr_len) ;
 	//CArray3<DREAL> seq_input(seq_array, N, seq_len, max_num_signals) ;
 	CArray3<DREAL> seq_input(seq_array, N, seq_len, max_num_signals) ;
 	seq_input.set_name("seq_input") ;
 	//seq_input.display_array() ;
-	SG_PRINT("3 genestr_len: %i\n", m_genestr_len) ;
 	CArray2<DREAL> seq(N, seq_len) ;
 	seq.set_name("seq") ;
 	seq.zero() ;
@@ -2352,7 +2356,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 			}
 	}
 
-	SG_PRINT("use_svm=%i, genestr_len: \n", use_svm, m_genestr_len) ;
+	//SG_PRINT("use_svm=%i, genestr_len: \n", use_svm, m_genestr_len) ;
 	max_look_back = CMath::min(m_genestr_len, max_look_back) ;
 	SG_DEBUG("use_svm=%i\n", use_svm) ;
 	
@@ -2692,7 +2696,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 							////////////////////////////////////////////////////////
 							// BEST_PATH_TRANS
 							////////////////////////////////////////////////////////
-							INT frame = -1;//orf_info.element(ii,0);
+							INT frame = orf_info.element(ii,0);
 							lookup_content_svm_values(ts, t, pos[ts], pos[t], svm_value, frame);
 							if (m_use_tiling)
 								lookup_tiling_plif_values(ts, t, pos[t]-pos[ts], svm_value);
@@ -3019,6 +3023,7 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 			// increase usage of this transition
 			transition_matrix_a_deriv.element(from_state, to_state)++ ;
 			my_scores[i] += transition_matrix_a.element(from_state, to_state) ;
+			//SG_PRINT("transition_matrix_a.element(%i, %i),%f \n",from_state, to_state, transition_matrix_a.element(from_state, to_state));
 #ifdef DYNPROG_DEBUG
 			SG_DEBUG( "%i. scores[i]=%f\n", i, my_scores[i]) ;
 #endif
@@ -3044,9 +3049,10 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 			{
 				DREAL nscore = PEN.element(to_state, from_state)->lookup_penalty(pos[to_pos]-pos[from_pos], svm_value) ;
 				my_scores[i] += nscore ;
-				//SG_PRINT("to_state: %i, from_state: %i, nscore: %f, len: %i\n",to_state,from_state,nscore, pos[to_pos]-pos[from_pos]);
-				for (INT s=0;s<num_svms;s++)/*set tiling plif values to neutral values (that do not influence derivative calculation)*/
-					svm_value[num_svms+s]=-CMath::INFTY;
+				//SG_PRINT("to_state: %i, from_state: %i, nscore: %f, len: %i \n",to_state,from_state,nscore, pos[to_pos]-pos[from_pos]);
+				if (m_use_tiling)
+					for (INT s=0;s<num_svms;s++)/*set tiling plif values to neutral values (that do not influence derivative calculation)*/
+						svm_value[num_svms+s]=-CMath::INFTY;
 			
 #ifdef DYNPROG_DEBUG
 				//SG_DEBUG( "%i. transition penalty: from_state=%i to_state=%i from_pos=%i [%i] to_pos=%i [%i] value=%i\n", i, from_state, to_state, from_pos, pos[from_pos], to_pos, pos[to_pos], pos[to_pos]-pos[from_pos]) ;

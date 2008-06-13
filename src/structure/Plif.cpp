@@ -545,7 +545,7 @@ void CPlif::get_used_svms(INT* num_svms, INT* svm_ids)
 		svm_ids[(*num_svms)] = use_svm;
 		(*num_svms)++;
 	}
-	SG_PRINT("-> %i ,num_svms: %i plif_id: %i  ",use_svm, *num_svms, get_id());
+	SG_PRINT("->use_svm:%i plif_id:%i name:%s trans_type:%s  ",use_svm, get_id(), get_name(), get_transform_type());
 }
 bool CPlif::get_do_calc()
 {

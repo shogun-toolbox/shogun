@@ -88,16 +88,12 @@ class CGUIStructure : public CSGObject
 		}
 		inline CArray3<DREAL> get_feature_matrix()
 		{
-			//INT d1,d2,d3;
-			//m_feature_matrix.get_array_size(d1,d2,d3);
-			//SG_PRINT("ui: get_features: d1:%i d2:%i d3:%i\n",d1,d2,d3);
 			return m_feature_matrix;
 		}
 		inline bool set_feature_matrix(CArray3<DREAL> feat)
 		{
 			INT d1,d2,d3;
 			feat.get_array_size(d1,d2,d3);
-			//SG_PRINT("ui: set_features: d1:%i d2:%i d3:%i\n",d1,d2,d3);
 			DREAL* cp_array = new DREAL[d1*d2*d3];
 			memcpy(cp_array, feat.get_array(),d1*d2*d3*sizeof(DREAL));
 			bool copy=false;
@@ -115,6 +111,8 @@ class CGUIStructure : public CSGObject
 		}
 		inline bool set_all_pos(INT* pos, INT Npos)
 		{
+			if (m_all_positions!=pos)
+				delete[] m_all_positions;
 			INT* cp_array = new INT[Npos];
 			memcpy(cp_array, pos,Npos*sizeof(INT));
 			m_num_positions = Npos;
@@ -131,15 +129,13 @@ class CGUIStructure : public CSGObject
 		}
 		inline bool set_content_svm_weights(DREAL* weights, INT Nweights, INT Mweights/*==num_svms*/)
 		{
+			if (m_content_svm_weights!=weights)
+				delete[] m_content_svm_weights;
 			DREAL* cp_array = new DREAL[Nweights*Mweights];
 			memcpy(cp_array, weights,Nweights*Mweights*sizeof(DREAL));
-			if (!m_content_svm_weights || *m_content_svm_weights==0)
-			{
-				m_content_svm_weights = cp_array;
-				m_num_svm_weights = Nweights;
-				return true;	
-			}
-			return false;
+			m_content_svm_weights = cp_array;
+			m_num_svm_weights = Nweights;
+			return true;	
 		}
 		inline DREAL* get_content_svm_weights()
 		{
@@ -160,6 +156,8 @@ class CGUIStructure : public CSGObject
 		}
 		inline bool set_orf_info(INT* orf_info, INT Norf_info, INT Morf_info)
 		{
+			if (m_orf_info!=orf_info)
+				delete[] m_orf_info;
 			INT* cp_array = new INT[Norf_info*Morf_info];
 			memcpy(cp_array, orf_info,Norf_info*Morf_info*sizeof(INT));
 			m_orf_info = cp_array;
@@ -181,6 +179,8 @@ class CGUIStructure : public CSGObject
 		}
 		inline bool set_mod_words(INT* mod_words, INT Nmod_words, INT Mmod_words)
 		{
+			if (mod_words!=m_mod_words)
+				delete[] m_mod_words;
 			INT* cp_array = new INT[Nmod_words*Mmod_words];
 			memcpy(cp_array, mod_words, Nmod_words*Mmod_words*sizeof(INT));
 			m_mod_words = cp_array;

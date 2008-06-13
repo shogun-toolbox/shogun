@@ -5273,7 +5273,7 @@ bool CSGInterface::cmd_set_model()
 	INT Nweights=0;
 	INT num_svms=0;
 	DREAL* weights;
-	get_real_matrix(weights, num_svms, Nweights);
+	get_real_matrix(weights, Nweights, num_svms);
 	ui_structure->set_content_svm_weights(weights,Nweights, num_svms);
 
 	CDynProg* h=new CDynProg(Nweights/* = num_svms */);
@@ -5385,7 +5385,7 @@ bool CSGInterface::cmd_precompute_content_svms()
 
 	CDynProg* h = ui_structure->get_dyn_prog();
 	if (!h)
-		SG_ERROR("no DynProg object found, use precompute_content_svms first\n");
+		SG_ERROR("no DynProg object found, use set_model first\n");
 
 //	SG_PRINT("6 all_pos: %p ",all_pos);
 //	for (int i=0;i<10;i++)
@@ -5413,8 +5413,11 @@ bool CSGInterface::cmd_best_path_trans()
 {
 	//if ((m_nrhs!=15 && m_nrhs!=17) || !create_return_values(3))
 	//	return false;
+	CDynProg* h = ui_structure->get_dyn_prog();
+	if (!h)
+		SG_ERROR("no DynProg object found, use set_model first\n");
 
-	INT num_states = ui_structure->get_num_states();
+	INT num_states = h->get_num_states();
 	INT feat_dim3 = ui_structure->get_features_dim3();
 	CArray3<DREAL> features = (ui_structure->get_feature_matrix());
 	features.set_name("features");
@@ -5429,14 +5432,16 @@ bool CSGInterface::cmd_best_path_trans()
 	INT Np=0;
 	DREAL* p;
 	get_real_vector(p, Np);
-	ASSERT(Np==num_states);
+	if (Np!=num_states)
+		SG_ERROR("# transitions from initial state (%i) does not match # states (%i)\n", Np, num_states);
 
 	// ARG 2
 	// transitions to end state (#states x 1)
 	INT Nq=0;
 	DREAL* q;
 	get_real_vector(q, Nq);
-	ASSERT(Nq==num_states);
+	if (Nq!=num_states)
+		SG_ERROR("# transitions to end state (%i) does not match # states (%i)\n", Nq, num_states);
 
 	// ARG 3
 	// number of best paths
@@ -5503,8 +5508,6 @@ bool CSGInterface::cmd_best_path_trans()
 
 	CPlifBase** PEN_state_signal = ui_structure->get_state_signals();
 	
-	CDynProg* h = ui_structure->get_dyn_prog();
-	ASSERT(h)
 	h->set_p_vector(p, num_states);
 	h->set_q_vector(q, num_states);
 	if (seg_path!=NULL)
