@@ -369,10 +369,11 @@ int qpssvm_solver(const void* (*get_col)(uint32_t),
       if( tmp < 0) LB += b*tmp;
     }
 
-    if( verb > 0 && (exitflag > 0 || (t % verb)==0 )) {
-       SG_SINFO("%d: UB=%.10f, LB=%.10f, UB-LB=%.10f, (UB-LB)/|UB|=%.10f \n",
-        t, UB, LB, UB-LB, (UB!=0) ? (UB-LB)/ABS(UB) : 0);      
-    }    
+    if( verb > 0 && (exitflag > 0 || (t % verb)==0 ))
+    {
+        double gap=(UB!=0) ? (UB-LB)/ABS(UB) : 0;
+        SG_SABS_PROGRESS(gap, -CMath::log10(gap), -CMath::log10(1), -CMath::log10(tolrel), 6);
+    }
 
   }
 
