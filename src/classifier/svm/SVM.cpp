@@ -69,6 +69,7 @@ void CSVM::set_defaults(INT num_sv)
 	C1=1;
 	C2=1;
 	C_mkl=0;
+	mkl_norm=1;
 
 	objective=0;
 

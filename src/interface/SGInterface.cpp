@@ -455,7 +455,7 @@ CSGInterfaceMethod sg_methods[]=
 	{
 		N_MKL_PARAMETERS,
 		(&CSGInterface::cmd_set_svm_mkl_parameters),
-		USAGE_I(N_MKL_PARAMETERS, "weight_epsilon" USAGE_COMMA "C_MKL")
+		USAGE_I(N_MKL_PARAMETERS, "weight_epsilon" USAGE_COMMA "C_MKL [" USAGE_COMMA "mkl_norm ]")
 	},
 	{
 		N_SVM_MAX_TRAIN_TIME,
@@ -4104,13 +4104,20 @@ bool CSGInterface::cmd_set_svm_one_class_nu()
 
 bool CSGInterface::cmd_set_svm_mkl_parameters()
 {
-	if (m_nrhs!=3 || !create_return_values(0))
+	if (m_nrhs<3 || m_nrhs>4 || !create_return_values(0))
 		return false;
 
 	DREAL weight_epsilon=get_real_from_real_or_str();
 	DREAL C_mkl=get_real_from_real_or_str();
+	INT mkl_norm=1;
+	
+	if (m_nrhs==4)
+	{
+		mkl_norm=get_int_from_int_or_str();
+		ASSERT(mkl_norm==1 || mkl_norm==2);
+	}
 
-	return ui_classifier->set_svm_mkl_parameters(weight_epsilon, C_mkl);
+	return ui_classifier->set_svm_mkl_parameters(weight_epsilon, C_mkl, mkl_norm);
 }
 
 bool CSGInterface::cmd_set_max_train_time()

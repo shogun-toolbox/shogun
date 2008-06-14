@@ -74,6 +74,7 @@ CGUIClassifier::CGUIClassifier(CSGInterface* ui_)
 	svm_qpsize=41;
 	svm_bufsize=3000;
 	svm_max_qpsize=1000;
+	svm_mkl_norm=1;
 	svm_C1=1;
 	svm_C2=1;
 	svm_C_mkl=0;
@@ -365,6 +366,7 @@ bool CGUIClassifier::train_svm()
 
 	svm->set_bias_enabled(svm_use_bias);
 	svm->set_weight_epsilon(svm_weight_epsilon);
+	svm->set_mkl_norm(svm_mkl_norm);
 	svm->set_epsilon(svm_epsilon);
 	svm->set_max_train_time(max_train_time);
 	svm->set_tube_epsilon(svm_tube_epsilon);
@@ -709,14 +711,22 @@ bool CGUIClassifier::set_svm_one_class_nu(DREAL nu)
 	return true;
 }
 
-bool CGUIClassifier::set_svm_mkl_parameters(DREAL weight_epsilon, DREAL C_mkl)
+bool CGUIClassifier::set_svm_mkl_parameters(DREAL weight_epsilon, DREAL C_mkl, INT mkl_norm)
 {
 	if (weight_epsilon<0)
 		svm_weight_epsilon=1e-4;
 	if (C_mkl<0)
-		svm_C_mkl=1e-4;
+		svm_C_mkl=0;
+	if (mkl_norm!=1 || mkl_norm!=2)
+		svm_mkl_norm=1;
+
+	svm_weight_epsilon=weight_epsilon;
+	svm_C_mkl=C_mkl;
+	svm_mkl_norm=mkl_norm;
+
 	SG_INFO("Set to weight_epsilon=%f.\n", svm_weight_epsilon);
 	SG_INFO("Set to C_mkl=%f.\n", svm_C_mkl);
+	SG_INFO("Set to mkl_norm=%d.\n", svm_mkl_norm);
 
 	return true;
 }

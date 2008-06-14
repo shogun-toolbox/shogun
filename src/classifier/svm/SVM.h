@@ -109,6 +109,17 @@ class CSVM : public CKernelMachine
 		 */
 		inline void set_C_mkl(DREAL C) { C_mkl = C; }
 
+		/** set mkl norm
+		 *
+		 * @param norm new mkl norm (1 or 2)
+		 */
+		inline void set_mkl_norm(INT norm)
+		{
+			if (norm!=1 && norm!=2)
+				SG_ERROR("Only 1-and 2-norm supported\n");
+			mkl_norm = norm;
+		}
+
 		/** set qpsize
 		 *
 		 * @param qps new qpsize
@@ -455,18 +466,20 @@ class CSVM : public CKernelMachine
 		TModel svm_model;
 		/** if SVM is loaded */
 		bool svm_loaded;
-		/** epsilon of weights */
+		/** epsilon for multiple kernel learning */
 		DREAL weight_epsilon;
 		/** epsilon */
 		DREAL epsilon;
-		/** tube epsilon */
+		/** tube epsilon for support vector regression*/
 		DREAL tube_epsilon;
 		/** nu */
 		DREAL nu;
-		/** C1 */
+		/** C1 regularization const*/
 		DREAL C1;
 		/** C2 */
 		DREAL C2;
+		/** norm used in mkl, can be 1 or 2 */
+		int  mkl_norm;
 		/** C_mkl */
 		DREAL C_mkl;
 		/** objective */

@@ -704,6 +704,7 @@ protected:
   CPXLPptr      lp;
   /** if lp is initialized */
   bool          lp_initialized ;
+
 #endif
 
 };

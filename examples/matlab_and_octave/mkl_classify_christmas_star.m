@@ -26,12 +26,14 @@ radius_star(:,2) = 4*ones(length(radius_star(:,1)),1);   % fixed radius 2.class
 rbf_width = [0.01 0.1 1 10 100];     % different width for the five used rbf kernels
 
 
+mkl_norm = 2; % 1 or 2
+
 %%%%
 %%%% Great loop: train MKL for every data set (the different distances between the stars)
 %%%%
 
-sg('loglevel', 'ERROR');
-sg('echo', 'OFF');
+sg('loglevel', 'ALL');
+sg('echo', 'ON');
 
 
 for kk = 1:size(radius_star,1)
@@ -73,7 +75,7 @@ for kk = 1:size(radius_star,1)
   sg('use_linadd', 0);
   sg('use_mkl', 1);
   sg('use_precompute', 0);
-  sg('mkl_parameters', mkl_eps, 0);
+  sg('mkl_parameters', mkl_eps, 0, mkl_norm);
   sg('svm_epsilon', svm_eps);
   sg('set_kernel', 'COMBINED', 0);
   sg('add_kernel', 1, 'GAUSSIAN', 'REAL', cache_size, rbf_width(1));

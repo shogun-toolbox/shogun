@@ -71,7 +71,7 @@ class CGUIClassifier : public CSGObject
 		bool set_svm_bias_enabled(bool enabled);
 		bool set_svm_epsilon(DREAL epsilon);
 		bool set_svr_tube_epsilon(DREAL tube_epsilon);
-		bool set_svm_mkl_parameters(DREAL weight_epsilon, DREAL C_mkl);
+		bool set_svm_mkl_parameters(DREAL weight_epsilon, DREAL C_mkl, INT mkl_norm);
 		bool set_svm_precompute_enabled(INT precompute);
 
 		/** set KRR's tau */
@@ -101,6 +101,7 @@ class CGUIClassifier : public CSGObject
 		int svm_qpsize;
 		int svm_bufsize;
 		int svm_max_qpsize;
+		int svm_mkl_norm;
 		double svm_weight_epsilon;
 		double svm_epsilon;
 		double svm_tube_epsilon;
