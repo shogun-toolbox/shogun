@@ -334,28 +334,56 @@ r-precompile: RFILES
 
 tests: run-testsuite check-examples
 
+# python-modular
 ifeq (python-modular,$(INTERFACE))
 run-testsuite:
 		cd ../testsuite/$(INTERFACE) && ( PYTHON=$(PYTHON) PYTHONPATH="$(DESTDIR)$(PYDIR)" ./test_all.sh	)
 check-examples:
 		cd ../examples/$(INTERFACE) && ( PYTHON=$(PYTHON) PYTHONPATH="$(DESTDIR)$(PYDIR)" ./check.sh	)
 else
+ifeq (python,$(INTERFACE))
+run-testsuite:
+		cd ../testsuite/$(INTERFACE) && ( PYTHON=$(PYTHON) PYTHONPATH="$(DESTDIR)$(PYDIR)" ./test_all.sh	)
+check-examples:
+		cd ../examples/$(INTERFACE) && ( PYTHON=$(PYTHON) PYTHONPATH="$(DESTDIR)$(PYDIR)" ./check.sh	)
+else
+# R-modular
 ifeq (r-modular,$(INTERFACE))
 run-testsuite:
-		cd ../testsuite/$(INTERFACE) && ( R_LIBS="$(DESTDIR)$(RDIR)" ./test_all.sh	)
+		cd ../testsuite/$(INTERFACE) && ( R_LIBS="$(DESTDIR)$(RDIR)" ./test_all.sh )
 check-examples:
-		cd ../examples/$(INTERFACE) && ( R_LIBS="$(DESTDIR)$(RDIR)" ./check.sh	)
+		cd ../examples/$(INTERFACE) && ( R_LIBS="$(DESTDIR)$(RDIR)" ./check.sh )
 else
+# R
 ifeq (r,$(INTERFACE))
 run-testsuite:
-		cd ../testsuite/$(INTERFACE) && ( R_LIBS="$(DESTDIR)$(RDIR)" ./test_all.sh	)
+		cd ../testsuite/$(INTERFACE) && ( R_LIBS="$(DESTDIR)$(RDIR)" ./test_all.sh )
 check-examples:
-		cd ../examples/$(INTERFACE) && ( R_LIBS="$(DESTDIR)$(RDIR)" ./check.sh	)
+		cd ../examples/$(INTERFACE) && ( R_LIBS="$(DESTDIR)$(RDIR)" ./check.sh )
 else
+# Standalone
+ifeq (cmdline,$(INTERFACE))
 run-testsuite:
-		cd ../testsuite/$(INTERFACE) && test -e ./test_all.sh && ./test_all.sh
+		cd ../testsuite/$(INTERFACE) && ( PATH="$(DESTDIR)$(BINDIR)"  ./test_all.sh )
 check-examples:
-		cd ../examples/$(INTERFACE) && ./check.sh
+		cd ../examples/$(INTERFACE) && ( PATH="$(DESTDIR)$(BINDIR)"  ./check.sh )
+# Octave
+else
+ifeq (octave-modular,$(INTERFACE))
+run-testsuite:
+	cd ../testsuite/$(INTERFACE) && ( OCTAVE_LOADPATH="$(DESTDIR)$(OCTDIR):" ./test_all.sh )
+check-examples:
+	cd ../examples/$(INTERFACE) && ( OCTAVE_LOADPATH="$(DESTDIR)$(OCTDIR):" ./check.sh )
+else
+ifeq (octave,$(INTERFACE))
+run-testsuite:
+	cd ../testsuite/$(INTERFACE) && ( OCTAVE_LOADPATH="$(DESTDIR)$(OCTDIR):" ./test_all.sh )
+check-examples:
+	cd ../examples/$(INTERFACE) && ( OCTAVE_LOADPATH="$(DESTDIR)$(OCTDIR):" ./check.sh )
+endif
+endif
+endif
+endif
 endif
 endif
 endif
