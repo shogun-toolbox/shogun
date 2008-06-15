@@ -373,9 +373,9 @@ check-examples:
 else
 ifeq (octave-modular,$(INTERFACE))
 run-testsuite:
-	cd ../testsuite/$(INTERFACE) && ( OCTAVE_LOADPATH="$(DESTDIR)$(OCTDIR):" ./test_all.sh )
+	cd ../testsuite/$(INTERFACE) && ( OCTAVE_LOADPATH="$(DESTDIR)$(OCTDIR)/shogun:" ./test_all.sh )
 check-examples:
-	cd ../examples/$(INTERFACE) && ( OCTAVE_LOADPATH="$(DESTDIR)$(OCTDIR):" ./check.sh )
+	cd ../examples/$(INTERFACE) && ( OCTAVE_LOADPATH="$(DESTDIR)$(OCTDIR)/shogun:" ./check.sh )
 else
 ifeq (octave,$(INTERFACE))
 run-testsuite:
