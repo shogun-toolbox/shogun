@@ -301,28 +301,32 @@ doc:	lib/versionstring.h
 reference:
 ifeq (octave,$(INTERFACE))
 	echo "/** \page staticoctave Static Matlab/Octave Interface Function Reference" >x
-	-echo "sg('set_output', 'y');sg('help','doxygen');" | octave
+	-echo "sg('set_output', 'y');sg('help','doxygen');" | \
+		( OCTAVE_LOADPATH="$(DESTDIR)$(OCTDIR)" octave )
 	echo "*/" >>y
 	cat x y >../doc/pages/StaticOctaveInterface.mainpage
 	rm -f x y
 endif
 ifeq (cmdline,$(INTERFACE))
 	echo "/** \page staticcmdline Static Command Line Interface Function Reference" >x
-	-bash -c "echo -e \"set_output y\nhelp doxygen\n\"" | ./shogun
+	-bash -c "echo -e \"set_output y\nhelp doxygen\n\"" | \
+		( PATH="$(DESTDIR)$(BINDIR)" shogun )
 	echo "*/" >>y
 	cat x y >../doc/pages/StaticCommandLineInterface.mainpage
 	rm -f x y
 endif
 ifeq (python,$(INTERFACE))
 	echo "/** \page staticpython Static Python Interface Function Reference" >x
-	-bash -c "echo -e \"from sg import sg\nsg('set_output', 'y')\nsg('help','doxygen')\n\" | python"
+	-bash -c "echo -e \"from sg import sg\nsg('set_output', 'y')\nsg('help','doxygen')\n\"" | \
+		( PYTHONPATH="$(DESTDIR)$(PYDIR)" python )
 	echo "*/" >>y
 	cat x y >../doc/pages/StaticPythonInterface.mainpage
 	rm -f x y
 endif
 ifeq (r,$(INTERFACE))
 	echo "/** \page staticr Static R Interface Function Reference" >x
-	-echo "library(sg);sg('set_output', 'y');sg('help','doxygen');" | R --no-save
+	-echo "library(sg);sg('set_output', 'y');sg('help','doxygen');" | \
+		( R_PATH="$(DESTDIR)$(RDIR)" R --no-save)
 	echo "*/" >>y
 	cat x y >../doc/pages/StaticRInterface.mainpage
 	rm -f x y

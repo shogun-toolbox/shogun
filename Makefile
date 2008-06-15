@@ -98,44 +98,43 @@ prepare-release:
 	+$(MAKE) -C src distclean
 	( cd src && ./configure --interface=cmdline )
 	+$(MAKE) -C src 
-	+sudo $(MAKE) -C src install
-	+$(MAKE) -C src reference
-	+$(MAKE) -C src tests
-	+$(MAKE) -C src distclean
+	+$(MAKE) -C src install DESTDIR=/tmp/
+	+$(MAKE) -C src reference DESTDIR=/tmp/
+	+$(MAKE) -C src tests DESTDIR=/tmp/
 	+$(MAKE) -C src distclean
 	( cd src && ./configure --interface=octave )
 	+$(MAKE) -C src 
-	+sudo $(MAKE) -C src install
-	+$(MAKE) -C src reference
-	+$(MAKE) -C src tests
+	+$(MAKE) -C src install DESTDIR=/tmp/
+	+$(MAKE) -C src reference DESTDIR=/tmp/
+	+$(MAKE) -C src tests DESTDIR=/tmp/
 	+$(MAKE) -C src distclean
 	( cd src && ./configure --interface=python )
 	+$(MAKE) -C src 
-	+sudo $(MAKE) -C src install
-	+$(MAKE) -C src reference
-	+$(MAKE) -C src tests
+	+$(MAKE) -C src install DESTDIR=/tmp/
+	+$(MAKE) -C src reference DESTDIR=/tmp/
+	+$(MAKE) -C src tests DESTDIR=/tmp/
 	+$(MAKE) -C src distclean
 	( cd src && ./configure --interface=r )
 	+$(MAKE) -C src 
-	+sudo $(MAKE) -C src install
-	+$(MAKE) -C src reference
-	+$(MAKE) -C src tests
+	+$(MAKE) -C src install DESTDIR=/tmp/
+	+$(MAKE) -C src reference DESTDIR=/tmp/
+	+$(MAKE) -C src tests DESTDIR=/tmp/
 	#modular interfaces
 	+$(MAKE) -C src distclean
 	( cd src && ./configure --interface=octave-modular )
 	+$(MAKE) -C src 
-	+sudo $(MAKE) -C src install
-	+$(MAKE) -C src tests
+	+$(MAKE) -C src install DESTDIR=/tmp/
+	+$(MAKE) -C src tests DESTDIR=/tmp/
 	+$(MAKE) -C src distclean
 	( cd src && ./configure --interface=python-modular )
 	+$(MAKE) -C src 
-	+sudo $(MAKE) -C src install
-	+$(MAKE) -C src tests
+	+$(MAKE) -C src install DESTDIR=/tmp/
+	+$(MAKE) -C src tests DESTDIR=/tmp/
 	+$(MAKE) -C src distclean
 	( cd src && ./configure --interface=r-modular )
 	+$(MAKE) -C src 
-	+sudo $(MAKE) -C src install
-	+$(MAKE) -C src tests
+	+$(MAKE) -C src install DESTDIR=/tmp/
+	+$(MAKE) -C src tests DESTDIR=/tmp/
 	(cd doc; svn ci -m "updated reference documentation")
 
 release: src/lib/versionstring.h $(DESTDIR)/src/lib/versionstring.h
