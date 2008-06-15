@@ -218,7 +218,7 @@ install: $(TARGET)
 	install -d -m755 $(DESTDIR)$(RDIR)/sg/Meta
 	install -d -m755 $(DESTDIR)$(RDIR)/sg/R
 	install -m755 $(TARGET) $(DESTDIR)$(RDIR)/sg/libs
-	install -m755 ../examples/r/*.R ../examples/r/graphical/*.R $(DESTDIR)$(RDIR)/sg/demo
+	install -m644 ../examples/r/*.R ../examples/r/graphical/*.R $(DESTDIR)$(RDIR)/sg/demo
 	./.r-install.sh $(DESTDIR)$(RDIR) sg
 # r-modular
 else
@@ -229,7 +229,7 @@ install: $(OBJFILES) $(SRCFILES) $(SWIGSRCFILES) $(SWIGDOCFILES) $(SWIGLIBFILES)
 	install -d -m755 $(DESTDIR)$(RDIR)/shogun/libs
 	install -d -m755 $(DESTDIR)$(RDIR)/shogun/Meta
 	install -d -m755 $(DESTDIR)$(RDIR)/shogun/R
-	install -m755 ../examples/r-modular/*.R $(DESTDIR)$(RDIR)/shogun/demo
+	install -m644 ../examples/r-modular/*.R $(DESTDIR)$(RDIR)/shogun/demo
 	install -m755 */*.so $(DESTDIR)$(RDIR)/shogun/libs
 	install -m755 */*.RData $(DESTDIR)$(RDIR)/shogun/R
 	./.r-install.sh $(DESTDIR)$(RDIR) shogun
