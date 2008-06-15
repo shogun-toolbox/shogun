@@ -213,7 +213,6 @@ else
 ifeq (r,$(INTERFACE))
 install: $(TARGET)
 	install -d -m755 $(DESTDIR)$(RDIR)/sg/demo
-	install -d -m755 $(DESTDIR)$(RDIR)/sg/doc
 	install -d -m755 $(DESTDIR)$(RDIR)/sg/libs
 	install -d -m755 $(DESTDIR)$(RDIR)/sg/Meta
 	install -d -m755 $(DESTDIR)$(RDIR)/sg/R
@@ -225,7 +224,6 @@ else
 ifeq (r-modular,$(INTERFACE))
 install: $(OBJFILES) $(SRCFILES) $(SWIGSRCFILES) $(SWIGDOCFILES) $(SWIGLIBFILES)
 	install -d -m755 $(DESTDIR)$(RDIR)/shogun/demo
-	install -d -m755 $(DESTDIR)$(RDIR)/shogun/doc
 	install -d -m755 $(DESTDIR)$(RDIR)/shogun/libs
 	install -d -m755 $(DESTDIR)$(RDIR)/shogun/Meta
 	install -d -m755 $(DESTDIR)$(RDIR)/shogun/R
