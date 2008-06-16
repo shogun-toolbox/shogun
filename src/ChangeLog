@@ -1,5 +1,51 @@
+2008-06-16  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* NEWS: update news
+
+2008-06-15  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* Makefile: fix path for octave modular if
+	* Makefile: we don't have any r-doc/vignette or the like
+	* Makefile: don't make examples executable
+	* Makefile: - also set paths for make reference.
+	  - make prepare-release doesn't require root access anymore but
+	  does testing in /tmp/
+	* Makefile: to run tests now do
+	  make
+	  make install DESTDIR=/tmp/
+	  make tests DESTDIR=/tmp/
+	  
+	  (with DESTDIR optional :-)
+
+2008-06-14  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* classifier/svm/SVM.cpp, classifier/svm/SVM.h,
+	  classifier/svm/SVM_light.cpp, classifier/svm/SVM_light.h,
+	  guilib/GUIClassifier.cpp, guilib/GUIClassifier.h,
+	  interface/SGInterface.cpp: - implement 2-norm MKL for non-linadd
+	  kernels and add example of how it works in
+	  mkl_classify_christmas_star
+	  - instead of creating a symlink set octave path to current src
+	  dir. this all needs further thinking, maybe it is a good idea to
+	  have a general policy like:
+	  
+	  1. compile (make)
+	  2. install (make install)
+	  3. test (make tests)
+	  
+	  thus the install path has to be set in environment variables as
+	  the path to shogun:
+	  cmdline -> PATH=...
+	  octave -> octave -p ...
+	  R -> R_PATH==...
+	  matlab -> doesn't support this
+	  python -> PYTHONPATH=...
+	  
+	  ... is $DESTDIR/$PYDIR etc
+
 2008-06-13  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
 
+	* ChangeLog: updated changelog
 	* interface/SGInterface.cpp: R tests don't run yet, fix stupid
 	  error for WDS 3 kernel
 	* ChangeLog: updated changelog
