@@ -1,3 +1,12 @@
+2008-08-15  Soeren Sonnenburg <debian@nn7.de>
+
+	* SHOGUN Release version 0.7.0
+	* This release contains major feature enhancements and bugfixes:
+		- Implement 2-norm Multiple Kernel Learning
+	* Bugfixes:
+		- Tests are now run in the examples/interface directory, with paths set
+		to the installation directory
+
 2008-06-13  Soeren Sonnenburg <debian@nn7.de>
 
 	* SHOGUN Release version 0.6.3
