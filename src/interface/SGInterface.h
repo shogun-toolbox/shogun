@@ -346,6 +346,15 @@ class CSGInterface : public CSGObject
 		 *  type
 		 */
 		bool cmd_precompute_content_svms();
+		/**
+		 * -precompute tiling features 
+		 *  and save the outputs (# content types x 
+		 *  # features positons) in a member variable 
+		 *  of the DynProg Object
+		 * -the tiling intensities are transformed 
+		 *  and then stored as cumulative scores
+		 */
+		bool cmd_precompute_tiling_features();
 		/** 
  		 * -compute the matrix that links 
  		 *  the plif ids to the transitions

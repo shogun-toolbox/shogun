@@ -19,7 +19,7 @@
 
 
 CGUIStructure::CGUIStructure(CSGInterface* ui_) : ui(ui_), m_PEN(NULL), m_num_plifs(0), m_num_limits(0), 
-	m_num_states(0), m_dp(NULL), m_plif_matrix(NULL), m_feature_matrix(0,0,0), m_features_dim3(0), 
+	m_num_states(0), m_dp(NULL), m_plif_matrix(NULL), m_feature_matrix(NULL), m_feature_dims(NULL), 
 	m_num_positions(0), m_all_positions(0), m_content_svm_weights(0), m_num_svm_weights(0), 
 	m_state_signals(NULL), m_orf_info(NULL), m_use_orf(true), m_mod_words(NULL)
 {

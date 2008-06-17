@@ -78,7 +78,7 @@
 \arg \b svm_epsilon \verbatim sg('svm_epsilon', epsilon) \endverbatim
 \arg \b svr_tube_epsilon \verbatim sg('svr_tube_epsilon', tube_epsilon) \endverbatim
 \arg \b svm_one_class_nu \verbatim sg('svm_one_class_nu', nu) \endverbatim
-\arg \b mkl_parameters \verbatim sg('mkl_parameters', weight_epsilon, C_MKL) \endverbatim
+\arg \b mkl_parameters \verbatim sg('mkl_parameters', weight_epsilon, C_MKL [, mkl_norm ]) \endverbatim
 \arg \b svm_max_train_time \verbatim sg('svm_max_train_time', max_train_time) \endverbatim
 \arg \b use_precompute \verbatim sg('use_precompute', enable_precompute) \endverbatim
 \arg \b use_mkl \verbatim sg('use_mkl', enable_mkl) \endverbatim

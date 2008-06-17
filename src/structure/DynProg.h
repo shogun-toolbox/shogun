@@ -126,16 +126,17 @@ public:
 	 *  @param num_probes number of probes
 	 *  @param seq_len: number of candidate positions
 	 */
-	void init_tiling_data(DREAL* probe_pos, DREAL* intensities, const INT num_probes, const INT seq_len);
+	void init_tiling_data(INT* probe_pos, DREAL* intensities, const INT num_probes, const INT seq_len);
 
 	/** precompute tiling Plifs
 	 *
 	 * @param PEN Plif PEN
-	 * @param num_penalties number of penalties
+	 * @param tiling_plif_ids tiling plif id's
+	 * @param num_tiling_plifs number of tiling plifs
 	 * @param seq_len sequence length
 	 * @param pos pos
 	 */
-	void precompute_tiling_plifs(CPlif** PEN, const INT num_penalties, const INT seq_len, const INT* pos);	
+	void precompute_tiling_plifs(CPlif** PEN, const INT* tiling_plif_ids, const INT num_tiling_plifs, const INT seq_len, const INT* pos);	
 
 	/** set vector p
 	 *
@@ -1062,17 +1063,18 @@ inline void CDynProg::lookup_content_svm_values(const INT from_state, const INT 
 		svm_values[i]=(to_val-from_val)/(to_pos-from_pos);
 	}
 	// find the correct row with precomputed 
-	/*if (frame!=-1)
+	if (frame!=-1)
 	{
 		svm_values[4] = 1e10;
 		svm_values[5] = 1e10;
 		svm_values[6] = 1e10;
 		INT global_frame = from_pos%3;
         	INT row = ((global_frame+frame)%3)+4;
+		//SG_PRINT("global_frame:%i row:%i frame:%i \n", global_frame, row, frame);
 		DREAL to_val   = m_precomputed_svm_values.get_element(row,  to_state);
 		DREAL from_val = m_precomputed_svm_values.get_element(row,from_state);
 		svm_values[frame+4] = (to_val-from_val)/(to_pos-from_pos);
-	}*/
+	}
 }
 inline void CDynProg::lookup_tiling_plif_values(const INT from_state, const INT to_state, const INT len, DREAL* svm_values)
 {

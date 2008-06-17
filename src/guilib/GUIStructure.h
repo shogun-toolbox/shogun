@@ -84,30 +84,40 @@ class CGUIStructure : public CSGObject
 		}
 		inline CDynProg* get_dyn_prog()
 		{
+			if (!m_dp)
+				SG_ERROR("no DynProg object found, use set_model first\n");
 			return m_dp;
 		}
-		inline CArray3<DREAL> get_feature_matrix()
+		inline DREAL* get_feature_matrix(bool copy)
 		{
-			return m_feature_matrix;
+			if (copy)
+			{
+				INT len = m_feature_dims[0]*m_feature_dims[1]*m_feature_dims[2];
+				DREAL* d_cpy = new DREAL[len];
+				memcpy(d_cpy, m_feature_matrix,len*sizeof(DREAL));
+				return d_cpy;
+			}
+			else 
+				return m_feature_matrix;
 		}
-		inline bool set_feature_matrix(CArray3<DREAL> feat)
+		inline bool set_feature_matrix(DREAL* feat, INT* dims)
 		{
-			INT d1,d2,d3;
-			feat.get_array_size(d1,d2,d3);
-			DREAL* cp_array = new DREAL[d1*d2*d3];
-			memcpy(cp_array, feat.get_array(),d1*d2*d3*sizeof(DREAL));
-			bool copy=false;
-			m_feature_matrix.set_array(cp_array, d1, d2, d3, false, copy);
+			delete[] m_feature_matrix;
+			INT len = dims[0]*dims[1]*dims[2];
+			m_feature_matrix = new DREAL[len];
+			memcpy(m_feature_matrix, feat,len*sizeof(DREAL));
 			return true;
 		}
-		inline bool set_features_dim3(INT num)
+		inline bool set_feature_dims(INT* dims)
 		{
-			m_features_dim3 = num;
+			delete[] m_feature_dims;
+			m_feature_dims = new INT[3];
+			memcpy(m_feature_dims, dims,3*sizeof(INT));
 			return true;
 		}
-		inline INT get_features_dim3()
+		inline INT* get_feature_dims()
 		{
-			return m_features_dim3;
+			return m_feature_dims;
 		}
 		inline bool set_all_pos(INT* pos, INT Npos)
 		{
@@ -199,8 +209,8 @@ class CGUIStructure : public CSGObject
 		INT m_num_states;
 		CDynProg* m_dp;
 		CPlifBase** m_plif_matrix;
-		CArray3<DREAL> m_feature_matrix;
-		INT m_features_dim3;
+		DREAL* m_feature_matrix;
+		INT* m_feature_dims;
 		INT m_num_positions;
 		INT* m_all_positions;
 		DREAL* m_content_svm_weights;

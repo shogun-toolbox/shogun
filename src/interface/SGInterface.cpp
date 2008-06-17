@@ -814,6 +814,13 @@ CSGInterfaceMethod sg_methods[]=
 				USAGE_COMMA "weights")
 	},
 	{
+		(CHAR*) N_PRECOMPUTE_TILING_FEATURES,
+		(&CSGInterface::cmd_precompute_tiling_features),
+		(CHAR*) USAGE_I(N_PRECOMPUTE_TILING_FEATURES, "intensities"
+				USAGE_COMMA "probe_pos"
+				USAGE_COMMA "tiling_plif_ids")
+	},
+	{
 		(CHAR*) N_SET_MODEL,
 		(&CSGInterface::cmd_set_model),
 		(CHAR*) USAGE_I(N_SET_MODEL, "content_weights"
@@ -5332,13 +5339,17 @@ bool CSGInterface::cmd_set_model()
 	INT Morf=0;
 	INT* orf_info;
 	get_int_matrix(orf_info,Norf,Morf);
+	ASSERT(Norf==num_states)
+	ASSERT(Morf==2)
+
 	ui_structure->set_orf_info(orf_info, Norf, Morf);
+	h->best_path_set_orf_info(orf_info, Norf, Morf);
 
 	h->set_num_states(Dim[0]) ;
 	
 	ui_structure->set_dyn_prog(h);
 
-	SG_PRINT("set_model done\n");	
+	SG_DEBUG("set_model done\n");	
 	return true;
 }
 bool CSGInterface::cmd_set_feature_matrix()
@@ -5350,8 +5361,6 @@ bool CSGInterface::cmd_set_feature_matrix()
 	get_int_vector(all_pos,Npos);
 	ui_structure->set_all_pos(all_pos,Npos);
 
-	//SG_PRINT("1 ui_structure: %p\n",&ui_structure);
-
 	INT num_states = ui_structure->get_num_states();
 
 	//ARG 2
@@ -5361,25 +5370,13 @@ bool CSGInterface::cmd_set_feature_matrix()
 	DREAL* features;
 	get_real_ndarray(features, Dims, numDims);
 	
-	//SG_PRINT("2 ui_structure: %p\n",&ui_structure);
 	ASSERT(numDims==3)
 	ASSERT(Dims[0]==num_states)
-	INT max_num_signals = Dims[2];
-	CArray3<DREAL> feat(features, num_states, Npos, max_num_signals, false, false) ;
-	INT d1,d2,d3;
-	feat.get_array_size(d1,d2,d3);
-	//SG_PRINT("features: d1:%i d2:%i d3:%i\n",d1,d2,d3);
-	ASSERT(ui_structure->set_feature_matrix(feat));
-	//SG_PRINT("3 ui_structure: %p\n",&ui_structure);
-
-	CArray3<DREAL> feat2 = (ui_structure->get_feature_matrix());
-	feat2.get_array_size(d1,d2,d3);
-	//SG_PRINT("features2: d1:%i d2:%i d3:%i\n",d1,d2,d3);
-	//SG_PRINT("4 ui_structure: %p\n",&ui_structure);
+	ASSERT(ui_structure->set_feature_matrix(features, Dims));
 
 	ASSERT(ui_structure->set_all_pos(all_pos,Npos));
-	ASSERT(ui_structure->set_features_dim3(max_num_signals));
-	SG_PRINT("set_features done\n");	
+	ASSERT(ui_structure->set_feature_dims(Dims));
+	SG_DEBUG("set_features done\n");	
 	return true;
 
 }
@@ -5395,40 +5392,50 @@ bool CSGInterface::cmd_precompute_content_svms()
 	if (!h)
 		SG_ERROR("no DynProg object found, use set_model first\n");
 
-//	SG_PRINT("6 all_pos: %p ",all_pos);
-//	for (int i=0;i<10;i++)
-//		SG_PRINT("%i ",all_pos[i]);
-//	SG_PRINT("\n");
 
 	INT Npos = ui_structure->get_num_positions();
 	DREAL* weights = ui_structure->get_content_svm_weights();
 	INT Mweights = h->get_num_svms();
 	INT Nweights = ui_structure->get_num_svm_weights();
 	WORD** wordstr[Mweights];
-	//SG_PRINT("precompute_content_svms 1\n");
 	h->create_word_string(seq, (INT) 1, Nseq, wordstr);
-	//SG_PRINT("precompute_content_svms 2\n");
 	h->init_content_svm_value_array(Npos);
-	//SG_PRINT(" Npos:%i Nseq:%i Nweights:%i\n", Npos, Nseq, Nweights, Mweights);
-
 	h->precompute_content_values(wordstr, all_pos, Npos, Nseq, weights, Nweights*Mweights);
 	h->set_genestr_len(Nseq);
-	//SG_PRINT("precompute_content_svms done\n");
+	SG_DEBUG("precompute_content_svms done\n");
 	return true;
 }
+bool CSGInterface::cmd_precompute_tiling_features()
+{
+	INT* all_pos = ui_structure->get_all_positions();
+	INT Npos     = ui_structure->get_num_positions();
+	CPlif** PEN  = ui_structure->get_PEN();
+	CDynProg* h  = ui_structure->get_dyn_prog();
 
+	INT Nintensities=0;
+	DREAL* intensities;
+	get_real_vector(intensities, Nintensities);
+
+	INT Nprobe_pos=0;
+	INT* probe_pos;
+	get_int_vector(probe_pos, Nprobe_pos);
+	ASSERT(Nprobe_pos==Nintensities);
+
+	INT Ntiling_plif_ids=0;
+	INT* tiling_plif_ids;
+	get_int_vector(tiling_plif_ids, Ntiling_plif_ids);
+
+	h->init_tiling_data(probe_pos,intensities, Nprobe_pos,  Npos);
+	h->precompute_tiling_plifs(PEN, tiling_plif_ids, Ntiling_plif_ids, Npos, all_pos);
+	return true;
+}
 bool CSGInterface::cmd_best_path_trans()
 {
-	//if ((m_nrhs!=15 && m_nrhs!=17) || !create_return_values(3))
-	//	return false;
 	CDynProg* h = ui_structure->get_dyn_prog();
-	if (!h)
-		SG_ERROR("no DynProg object found, use set_model first\n");
 
 	INT num_states = h->get_num_states();
-	INT feat_dim3 = ui_structure->get_features_dim3();
-	CArray3<DREAL> features = (ui_structure->get_feature_matrix());
-	features.set_name("features");
+	INT* feat_dims = ui_structure->get_feature_dims();
+	DREAL* features = (ui_structure->get_feature_matrix(false));
 	INT* all_pos = ui_structure->get_all_positions();
 	INT num_pos = ui_structure->get_num_positions();
 	INT* orf_info = ui_structure->get_orf_info();
@@ -5503,17 +5510,6 @@ bool CSGInterface::cmd_best_path_trans()
 	ASSERT(PEN);
 	
 	CPlifBase** PEN_matrix = ui_structure->get_plif_matrix();
-//	SG_PRINT("PEN_matrix %p\n",PEN_matrix);
-//	SG_PRINT("PEN_matrix[24]->get_max_id() %i\n",PEN_matrix[24]->get_max_id());	
-//	SG_PRINT("PEN_matrix[25]->get_max_id() %i\n",PEN_matrix[25]->get_max_id());	
-//	DREAL tmp[] = {0,0,0,0,0,0,0,0,0};
-//	INT tmp2 = 0;
-//	for (int i=0;i<num_states;i++)
-//		for (int j=0;j<num_states;j++)
-//			if (PEN_matrix[i+j*num_states]!=NULL)
-//				SG_PRINT("2 PEN_matrix(%i,%i)->lookup_penalty(): %f\n",i,j,PEN_matrix[i+j*num_states]->lookup_penalty(tmp2,tmp));
-//	SG_PRINT("\n");
-
 	CPlifBase** PEN_state_signal = ui_structure->get_state_signals();
 	
 	h->set_p_vector(p, num_states);
@@ -5527,7 +5523,6 @@ bool CSGInterface::cmd_best_path_trans()
 		h->set_a_trans_matrix(a_trans, num_a_trans, 3) ; // segment_id = 0 
 	}
 
-	SG_PRINT("call best_path_trans\n");
 	if (!h->check_svm_arrays())
 	{
 		SG_ERROR( "svm arrays inconsistent\n") ;
@@ -5540,8 +5535,6 @@ bool CSGInterface::cmd_best_path_trans()
 	INT *my_pos = new INT[M*(nbest+nother)] ;
 	memset(my_pos, -1, M*(nbest+nother)*sizeof(INT)) ;
 	
-	//mxArray* mx_prob = mxCreateDoubleMatrix(1, (nbest+nother), mxREAL);
-	//double* p_prob = mxGetPr(mx_prob);
 	DREAL* p_prob = new DREAL[nbest+nother];
 	if (seg_path!=NULL)
 	{
@@ -5573,38 +5566,32 @@ bool CSGInterface::cmd_best_path_trans()
 		delete[] izeros ;
 		delete[] dzeros ;
 	}
-	SG_PRINT("call best_path_trans\n");
 
-	INT d1;
-	INT d2;
-	INT d3;
-	features.get_array_size(d1,d2,d3);
-	//SG_PRINT("features: d1:%i d2:%i d3:%i\n",d1,d2,d3);
-	//if (segment_loss_non_zero)
-	if (true)//FIXME
+	bool segment_loss_non_zero=false;
+	for (INT i=0; i<Nloss*Mloss; i++)
+		if (loss[i]>1e-3)
+			segment_loss_non_zero=true;
+	if (segment_loss_non_zero)
 	{
 	        SG_DEBUG("Using version with segment_loss\n") ;
 	        if (nbest==1)
-	                h->best_path_trans<1,true,false>(features.get_array(), num_pos, all_pos, orf_info, PEN_matrix, 
-				PEN_state_signal, feat_dim3, genestr_num, p_prob, my_path, my_pos, use_orf) ;
+	                h->best_path_trans<1,true,false>(features, num_pos, all_pos, orf_info, PEN_matrix, 
+				PEN_state_signal, feat_dims[2], genestr_num, p_prob, my_path, my_pos, use_orf) ;
 	        else
-	                h->best_path_trans<2,true,false>(features.get_array(), num_pos, all_pos, orf_info,PEN_matrix, 
-				PEN_state_signal, feat_dim3, genestr_num, p_prob, my_path, my_pos, use_orf) ;
+	                h->best_path_trans<2,true,false>(features, num_pos, all_pos, orf_info,PEN_matrix, 
+				PEN_state_signal, feat_dims[2], genestr_num, p_prob, my_path, my_pos, use_orf) ;
 	}
 	else
 	{
 	        SG_DEBUG("Using version without segment_loss\n") ;
 	        if (nbest==1)
-	                h->best_path_trans<1,false,false>(features.get_array(), num_pos, all_pos, orf_info, PEN_matrix, 
-				PEN_state_signal, feat_dim3, genestr_num, p_prob, my_path, my_pos, use_orf) ;
+	                h->best_path_trans<1,false,false>(features, num_pos, all_pos, orf_info, PEN_matrix, 
+				PEN_state_signal, feat_dims[2], genestr_num, p_prob, my_path, my_pos, use_orf) ;
 	        else
-	                h->best_path_trans<2,false,false>(features.get_array(), num_pos, all_pos, orf_info, PEN_matrix, 
-				PEN_state_signal, feat_dim3, genestr_num, p_prob, my_path, my_pos, use_orf) ;
+	                h->best_path_trans<2,false,false>(features, num_pos, all_pos, orf_info, PEN_matrix, 
+				PEN_state_signal, feat_dims[2], genestr_num, p_prob, my_path, my_pos, use_orf) ;
 	}
 
-	//SG_PRINT("best_path_trans: cleanup 1\n");
-	//SG_PRINT("num_positions: %i, p_prob: %f\n",M,p_prob[0]);
-	//SG_PRINT("best_path_trans: cleanup 2\n");
 	// clean up 
 	//delete_penalty_struct(PEN, Nplif) ;
 	//delete[] PEN_matrix ;
@@ -5641,9 +5628,11 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 //		return false;
 
 	INT num_states = ui_structure->get_num_states();
-	INT feat_dim3 = ui_structure->get_features_dim3();
-	CArray3<DREAL> features = (ui_structure->get_feature_matrix());
-	features.set_name("features");
+	INT* feat_dims = ui_structure->get_feature_dims();
+	//DREAL* features = (ui_structure->get_feature_matrix(true));
+	DREAL* features = (ui_structure->get_feature_matrix(false));
+	//CArray3<DREAL> features(d_feat, feat_dims[0], feat_dims[1], feat_dims[2], true, true);
+	//features.set_name("features");
 	INT* all_pos = ui_structure->get_all_positions();
 	INT num_pos = ui_structure->get_num_positions();
 	//INT* orf_info = ui_structure->get_orf_info();
@@ -5805,8 +5794,8 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 			DREAL* p_my_scores = new DREAL[Nmypos_seq];
 			DREAL* p_my_losses = new DREAL[Nmypos_seq];
 			
-			h->best_path_trans_deriv(my_path, my_pos, p_my_scores, p_my_losses, Nmypos_seq, features.get_array(), 
-						 num_pos, all_pos, PEN_matrix, PEN_state_signal, feat_dim3, genestr_num) ;
+			h->best_path_trans_deriv(my_path, my_pos, p_my_scores, p_my_losses, Nmypos_seq, features, 
+						 num_pos, all_pos, PEN_matrix, PEN_state_signal, feat_dims[2], genestr_num) ;
 			
 			for (INT i=0; i<num_states; i++)
 			{

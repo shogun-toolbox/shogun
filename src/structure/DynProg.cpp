@@ -172,10 +172,10 @@ CDynProg::~CDynProg()
 		}
 		delete[] trans_list_forward_id;
 	}
-	//if (m_raw_intensities)
-	//	delete[] m_raw_intensities;
-	//if (m_probe_pos)
-	//	delete[] m_probe_pos;
+	if (m_raw_intensities)
+		delete[] m_raw_intensities;
+	if (m_probe_pos)
+		delete[] m_probe_pos;
 	
 }
 
@@ -226,11 +226,10 @@ INT CDynProg::get_num_states()
 {
 	return N;
 }
-void CDynProg::init_tiling_data(DREAL* probe_pos, DREAL* intensities, const INT num_probes, const INT seq_len)
+void CDynProg::init_tiling_data(INT* probe_pos, DREAL* intensities, const INT num_probes, const INT seq_len)
 {
 	m_probe_pos = new INT[num_probes];
-	for (INT i=0;i<num_probes;i++)
-		m_probe_pos[i] = (INT) probe_pos[i];
+	memcpy(m_probe_pos,probe_pos,num_probes*sizeof(INT));
 	m_raw_intensities = intensities;
 	m_num_probes = num_probes;
 	m_precomputed_tiling_values.resize_array(num_svms,seq_len);
@@ -242,11 +241,11 @@ void CDynProg::init_content_svm_value_array(const INT seq_len)
 {
 	m_precomputed_svm_values.resize_array(num_svms,seq_len);
 }
-void CDynProg::precompute_tiling_plifs(CPlif** PEN, const INT num_penalties, const INT seq_len, const INT* pos)
+void CDynProg::precompute_tiling_plifs(CPlif** PEN, const INT* tiling_plif_ids, const INT num_tiling_plifs, const INT seq_len, const INT* pos)
 {
 //	SG_PRINT("precompute_tiling_plifs: %f  \n",m_raw_intensities[0]);
 
-	INT tiling_plif_ids[num_svms];
+	/*INT tiling_plif_ids[num_svms];
 	INT num = 0;
         for (INT i=0; i<num_penalties; i++)
 	{
@@ -256,8 +255,8 @@ void CDynProg::precompute_tiling_plifs(CPlif** PEN, const INT num_penalties, con
 			tiling_plif_ids[num] = i;
 			num++;
 		}
-	}
-	ASSERT(num==num_svms)
+	}*/
+	ASSERT(num_tiling_plifs==num_svms)
 
 	DREAL tiling_plif[num_svms];
 	DREAL svm_value[2*num_svms];
@@ -331,6 +330,16 @@ void CDynProg::precompute_content_values(WORD*** wordstr, const INT *pos,const I
 	dict_weights.set_array(dictionary_weights, dict_len, num_svms, false, false) ;
 	dict_weights_array=dict_weights.get_array() ;
 
+	//INT d1 = mod_words.get_dim1();
+	//INT d2 = mod_words.get_dim2();
+	//SG_PRINT("d1:%i, d2:%i \n",d1, d2);
+	//for (INT p=0 ; p<d1 ; p++)
+	//{
+	//	for (INT q=0 ; q<d2 ; q++)
+	//		SG_PRINT("%i ",mod_words.get_element(p,q));
+	//	SG_PRINT("\n");
+	//}
+
 	for (INT p=0 ; p<seq_len-1 ; p++)
 	{
 		INT from_pos = pos[p];
@@ -352,11 +361,8 @@ void CDynProg::precompute_content_values(WORD*** wordstr, const INT *pos,const I
 				WORD word = wordstr[0][j][i] ;
 				for (INT s=0; s<num_svms; s++)
 				{
-					if (s==4 && i%3!=0)
-						continue;
-					else if (s==5 && i%3!=1)
-						continue;
-					else if (s==6 && i%3!=2)
+					// check if this k-mere should be considered for this SVM
+					if (mod_words.get_element(s,0)==3 && i%3!=mod_words.get_element(s,1))
 						continue;
 					my_svm_values_unnormalized[s] += dict_weights_array[(word+cum_num_words_array[j])+s*cum_num_words_array[num_degrees]] ;
 				}
@@ -562,16 +568,18 @@ void CDynProg::init_num_words_array(INT * p_num_words_array, INT num_elem)
 
 void CDynProg::init_mod_words_array(INT * mod_words_input, INT num_elem, INT num_columns)
 {
-	INT* p_mod_words_array=new INT[num_columns*num_elem] ;
-	for (INT i=0; i<num_columns; i++)
-		for (INT j=0; j<num_elem; j++)
-			p_mod_words_array[i*j] = mod_words_input[i*num_elem+j];//FIXME //found that line in old interface GUIMatlab.cpp
+	//for (INT i=0; i<num_columns; i++)
+	//{
+	//	for (INT j=0; j<num_elem; j++)
+	//		SG_PRINT("%i ",mod_words_input[i*num_elem+j]);
+	//	SG_PRINT("\n");
+	//}
 	svm_arrays_clean=false ;
 
 	ASSERT(num_svms==num_elem);
 	ASSERT(num_columns==2);
 
-	mod_words.set_array(p_mod_words_array, num_elem, 2, true, true) ;
+	mod_words.set_array(mod_words_input, num_elem, 2, true, true) ;
 	mod_words_array = mod_words.get_array() ;
 	
 	/*SG_DEBUG( "mod_words=[") ;
@@ -709,15 +717,15 @@ void CDynProg::best_path_set_pos(INT *pos, INT seq_len)
 
 void CDynProg::best_path_set_orf_info(INT *orf_info, INT m, INT n) 
 {
-	if (m_step!=3)
-		SG_ERROR( "please call best_path_set_pos first\n") ;
+	//if (m_step!=3)
+	//	SG_ERROR( "please call best_path_set_pos first\n") ;
 		
-	if (m!=N)
-		SG_ERROR( "orf_info size does not match previous info %i!=%i\n", m, N) ;
+	//if (m!=N)
+	//	SG_ERROR( "orf_info size does not match previous info %i!=%i\n", m, N) ;
 	if (n!=2)
 		SG_ERROR( "orf_info size incorrect %i!=2\n", n) ;
 	m_orf_info.set_array(orf_info, m, n, true, true) ;
-	
+
 	m_call=1 ;
 	m_step=4 ;
 }
@@ -3036,7 +3044,19 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 			{
 				//SG_PRINT("from_pos: %i; to_pos: %i; pos[to_pos]-pos[from_pos]: %i \n",from_pos, to_pos, pos[to_pos]-pos[from_pos]); 
 				INT frame = m_orf_info.element(from_state,0);
+				if (false)//(frame>=0)
+				{
+					INT num_current_svms=0;
+					INT svm_ids[] = {-8, -7, -6, -5, -4, -3, -2, -1};
+					SG_PRINT("penalties(%i, %i), frame:%i  ", from_state, to_state, frame);
+					PEN.element(to_state, from_state)->get_used_svms(&num_current_svms, svm_ids);
+					SG_PRINT("\n");
+				}
+
+
 				lookup_content_svm_values(from_pos, to_pos, pos[from_pos],pos[to_pos], svm_value, frame);
+				if (false)//(frame>=0)
+					SG_PRINT("svm_values: %f, %f, %f \n", svm_value[4], svm_value[5], svm_value[6]);
 				if (m_use_tiling)
 					lookup_tiling_plif_values(from_pos, to_pos, pos[to_pos]-pos[from_pos], svm_value);
 	

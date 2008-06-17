@@ -55,6 +55,7 @@
 #define N_SET_PLIF_STRUCT				"set_plif_struct"
 #define N_GET_PLIF_STRUCT				"get_plif_struct"
 #define N_PRECOMPUTE_CONTENT_SVMS			"precompute_content_svms"
+#define N_PRECOMPUTE_TILING_FEATURES			"precompute_tiling_features"
 #define N_SET_MODEL					"set_model"
 #define N_SET_FEATURE_MATRIX				"set_feature_matrix"
 #define N_BEST_PATH_2STRUCT					"best_path_2struct"
