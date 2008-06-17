@@ -1968,7 +1968,10 @@ void CSVMLight::update_linear_component_mkl(INT* docs, INT* label,
 			char sense[1] ;
 			
 			rmatbeg[0] = 0;
-			rhs[0]=-suma ;
+			if (mkl_norm==1)
+				rhs[0]=0 ;
+			else
+				rhs[0]=-suma ;
 			sense[0]='L' ;
 			
 			for (INT i=0; i<num_kernels; i++)
