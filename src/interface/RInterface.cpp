@@ -315,7 +315,7 @@ SEXP CRInterface::get_return_values()
 	if (m_nlhs==1)
 	{
 		SEXP arg=VECTOR_ELT(m_lhs, 0);
-		SET_VECTOR_ELT(m_lhs, m_lhs_counter, R_NilValue);
+		SET_VECTOR_ELT(m_lhs, 0, R_NilValue);
 		UNPROTECT(1);
 		return arg;
 	}
