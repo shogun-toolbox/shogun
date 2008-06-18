@@ -49,6 +49,9 @@ class CSignal : public CSGObject
 		/** clear signals */
 		static void clear();
 
+		/** clear cancel flag signals */
+		static void clear_cancel();
+
 		/** cancel computations
 		 *
 		 * @return if computations could be cancelled

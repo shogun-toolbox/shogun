@@ -1277,7 +1277,7 @@ void CWeightedDegreePositionStringKernel::compute_batch(INT num_vec, INT* vec_id
 #ifdef WIN32
 	   for (INT j=0; j<num_feat; j++)
 #else
-       CSignal::clear() ;
+       CSignal::clear_cancel();
 	   for (INT j=0; j<num_feat && !CSignal::cancel_computations(); j++)
 #endif
 			{
@@ -1305,7 +1305,7 @@ void CWeightedDegreePositionStringKernel::compute_batch(INT num_vec, INT* vec_id
 	else
 	{
 
-		CSignal::clear() ;
+		CSignal::clear_cancel();
 		for (INT j=0; j<num_feat && !CSignal::cancel_computations(); j++)
 		{
 			init_optimization(num_suppvec, IDX, alphas, j);
