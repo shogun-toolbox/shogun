@@ -2075,6 +2075,7 @@ void CSVMLight::update_linear_component_mkl(INT* docs, INT* label,
 							}
 						}
 					}
+					//num_active_rows++; // intended?
 				}
 				
 				// have at most max(100,num_active_rows*2) rows, if not, remove one
@@ -2203,6 +2204,7 @@ void CSVMLight::update_linear_component_mkl_linadd(INT* docs, INT* label,
 		delete[] w_backup;
 		delete[] w1;
 	}
+
 	DREAL mkl_objective=0;
 #ifdef HAVE_LAPACK
 	DREAL *alphay  = buffer_num;
@@ -2493,6 +2495,7 @@ void CSVMLight::update_linear_component_mkl_linadd(INT* docs, INT* label,
 							}
 						}
 					}
+					//num_active_rows++;  // intended?
 				}
 				
 				// have at most max(100,num_active_rows*2) rows, if not, remove one
