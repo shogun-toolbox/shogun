@@ -61,21 +61,9 @@ DREAL* CNormOne::apply_to_feature_matrix(CFeatures* f)
 
 	for (i=0; i<num_vec; i++)
 	{
-		DREAL sqnorm=0;
-		DREAL norm=0;
 		DREAL* vec=&matrix[i*num_feat];
-
-		for (j=0; j<num_feat; j++)
-		{
-			if (vec[j]>1e100)
-				vec[j]=0;
-			sqnorm+=vec[j]*vec[j];
-		}
-
-		norm=sqrt(sqnorm);
-
-		for (j=0; j<num_feat; j++)
-			vec[j]/=norm;
+		DREAL norm=CMath::sqrt(CMath::dot(vec, vec, num_feat));
+		CMath::scale_vector(1.0/norm, vec, num_feat);
 	}
 	return matrix;
 }
@@ -85,16 +73,9 @@ DREAL* CNormOne::apply_to_feature_matrix(CFeatures* f)
 DREAL* CNormOne::apply_to_feature_vector(DREAL* f, INT& len)
 {
 	DREAL* vec=new DREAL[len];
-	DREAL sqnorm=0;
-	DREAL norm=0;
-	INT i=0;
+	DREAL norm=CMath::sqrt(CMath::dot(f, f, len));
 
-	for (i=0; i<len; i++)
-		sqnorm+=f[i]*f[i];
-
-	norm=sqrt(sqnorm);
-
-	for (i=0; i<len; i++)
+	for (INT i=0; i<len; i++)
 		vec[i]=f[i]/norm;
 
 	return vec;

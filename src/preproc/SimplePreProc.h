@@ -18,7 +18,14 @@
 
 template <class ST> class CSimpleFeatures;
 
-/** template class SimplePreProc */
+/** Template class SimplePreProc, base class for preprocessors (cf. CPreProc)
+ * that apply to CSimpleFeatures (i.e. rectangular dense matrices)
+ *
+ * Two new functions apply_to_feature_vector() and apply_to_feature_matrix()
+ * are defined in this interface that need to be implemented in each particular
+ * preprocessor operating on CSimpleFeatures. For examples see e.g. CLogPlusOne
+ * or CPCACut.
+ */
 template <class ST> class CSimplePreProc : public CPreProc
 {
 	public:

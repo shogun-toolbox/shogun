@@ -6,6 +6,8 @@
 	* Bugfixes:
 		- Tests are now run in the examples/interface directory, with paths set
 		to the installation directory
+		- Filter out duplicate signals in signal handler and make sure the
+		handler is removed.
 
 2008-06-13  Soeren Sonnenburg <debian@nn7.de>
 

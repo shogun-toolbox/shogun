@@ -58,9 +58,7 @@ bool CPCACut::init(CFeatures* f)
 
 		// clear
 		for (j=0; j<num_features; j++)
-		{
 			mean[j]=0 ; 
-		}
 
 		// sum 
 		for (i=0; i<num_vectors; i++)
@@ -69,9 +67,8 @@ bool CPCACut::init(CFeatures* f)
 			bool free;
 			DREAL* vec=((CRealFeatures*) f)->get_feature_vector(i, len, free);
 			for (j=0; j<num_features; j++)
-			{
 				mean[j]+= vec[j];
-			}
+
 			((CRealFeatures*) f)->free_feature_vector(vec, i, free);
 		}
 
@@ -121,19 +118,10 @@ bool CPCACut::init(CFeatures* f)
 		SG_INFO("Computing Eigenvalues ... ") ;
 		char V='V';
 		char U='U';
-		//#ifdef DARWIN
-		//		__CLPK_integer ord= (int) num_features;
-		//		__CLPK_integer lda= (int) num_features;
-		//		__CLPK_integer info;
-		//		__CLPK_integer lwork=3*num_features ;
-		//		__CLPK_doublereal* work=new __CLPK_doublereal[lwork] ;
-		//		__CLPK_doublereal* eigenvalues=new __CLPK_doublereal[num_features] ;
-		//#else
 		int info;
 		int ord= (int) num_features;
 		int lda= (int) num_features;
 		double* eigenvalues=new double[num_features] ;
-		//#endif
 
 		for (i=0; i<num_features; i++)
 			eigenvalues[i]=0;
@@ -160,7 +148,7 @@ bool CPCACut::init(CFeatures* f)
 			INT offs=0 ;
 			for (i=0; i<num_features; i++)
 			{
-				if (eigenvalues[i]>1e-6)
+				if (eigenvalues[i]>thresh)
 				{
 					for (INT jj=0; jj<num_features; jj++)
 						T[offs+jj*num_dim]=cov[num_features*i+jj]/sqrt(eigenvalues[i]) ;
