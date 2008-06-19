@@ -18,7 +18,12 @@
 
 #include <stdlib.h>
 
-/** template class Cache */
+/** Template class Cache implements a simple cache, where -- when the cache is
+ * full -- elements that are least used are freed from the cache. Thus for the
+ * cache to be effective one should not visit loop over objects, i.e. visit
+ * elements in order 0...num_elements (with num_elements >> the maximal number
+ * of entries in cache)
+ * */
 template<class T> class CCache : public CSGObject
 {
 	/** cache entry */

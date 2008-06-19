@@ -18,7 +18,12 @@
 template <class T> class CArray3;
 
 
-/** template class Array3 (three dimensional) */
+/** Template class Array3 implements a dense three dimensional array.
+ *
+ * Note that depending on compile options everything will be inlined, such that
+ * this is as high performance 3d-array implementation \b without error checking.
+ *
+ * */
 template <class T> class CArray3: public CArray<T>
 {
 	public:

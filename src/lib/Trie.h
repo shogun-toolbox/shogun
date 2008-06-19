@@ -129,9 +129,23 @@ struct TreeParseInfo {
 
 template <class Trie> class CTrie;
 
-template <class Trie>
-/** class Trie */
-class CTrie : public CSGObject
+/** Template class Trie implements a suffix trie, i.e. a tree in which all
+ * suffixes up to a certain length are stored. It is excessively used in the
+ * CWeightedDegreeStringKernel and CWeightedDegreePositionStringKernel to
+ * construct the whole features space \f$\Phi(x)\f$ and enormously helps here to
+ * speed up SVM training and evaluation.
+ *
+ * Note that depending on the underlying structure used, a single symbol in the
+ * tree requires 20 bytes (DNATrie). It is also used to do the efficient
+ * recursion in computing positional oligomer importance matrices (POIMs) where
+ * the structure requires * 20+3*8 (POIMTrie) bytes.
+ *
+ * Finally note that this try may use compact internal nodes (for strings that
+ * appear without modifications, thus not requiring further branches), which
+ * may save a lot of memory on higher degree tries.
+ *
+ */
+template <class Trie> class CTrie : public CSGObject
 {
 	public:
 		/** constructor

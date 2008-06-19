@@ -20,7 +20,20 @@
 
 #include "lib/python.h"
 
-/** class Signal */
+/** Class Signal implements signal handling to e.g. allow ctrl+c to cancel a
+ * long running process. This is done in two ways: 
+ *
+ * -# A signal handler is attached to trap the SIGINT and SIGURG signal.
+ *  Pressing ctrl+c or sending the SIGINT (kill ...) signal to the shogun
+ *  process will make shogun print a message asking to immediately exit the
+ *  running method and to fall back to the command line.
+ *
+ * -# When an URG signal is received or ctrl+c P is pressed shogun will
+ *  prematurely stop a method and continue execution. For example when an SVM
+ *  solver takes a long time without progressing much, one might still be
+ *  interested in the result and should thus send SIGURG or interactively
+ *  prematurely stop the method
+ */
 class CSignal : public CSGObject
 {
 	public:

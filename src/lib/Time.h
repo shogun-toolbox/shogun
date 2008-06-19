@@ -18,7 +18,8 @@
 #include "lib/io.h"
 #include "base/SGObject.h"
 
-/** class Time */
+/** Class Time that implements a stopwatch based on either cpu time or wall
+ * clock time. */
 class CTime : public CSGObject
 {
 	public:
