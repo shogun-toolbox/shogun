@@ -27,7 +27,6 @@
  *  Pressing ctrl+c or sending the SIGINT (kill ...) signal to the shogun
  *  process will make shogun print a message asking to immediately exit the
  *  running method and to fall back to the command line.
- *
  * -# When an URG signal is received or ctrl+c P is pressed shogun will
  *  prematurely stop a method and continue execution. For example when an SVM
  *  solver takes a long time without progressing much, one might still be
