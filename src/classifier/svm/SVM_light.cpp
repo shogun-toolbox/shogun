@@ -2075,7 +2075,6 @@ void CSVMLight::update_linear_component_mkl(INT* docs, INT* label,
 							}
 						}
 					}
-					//num_active_rows++; // intended?
 				}
 				
 				// have at most max(100,num_active_rows*2) rows, if not, remove one
@@ -2495,7 +2494,6 @@ void CSVMLight::update_linear_component_mkl_linadd(INT* docs, INT* label,
 							}
 						}
 					}
-					//num_active_rows++;  // intended?
 				}
 				
 				// have at most max(100,num_active_rows*2) rows, if not, remove one
