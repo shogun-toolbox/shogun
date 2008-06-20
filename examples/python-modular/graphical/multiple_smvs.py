@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: latin-1 -*-
 
-from pylab import figure,pcolor,scatter,contour,colorbar,show,subplot,connect
+from pylab import figure,pcolor,scatter,contour,colorbar,show,subplot,connect,axis
 from numpy import array,meshgrid,reshape,linspace,ones,min,max
 from numpy import concatenate,transpose,ravel
 from numpy.random import randn
@@ -48,6 +48,7 @@ for i in range(num_svms):
 	pcolor(x, y, z, shading='interp')
 	contour(x, y, z, linewidths=1, colors='black', hold=True)
 	scatter(traindatList[i][0,:],traindatList[i][1,:], s=20, marker='o', c=trainlabsList[i], hold=True)
+	axis('tight')
 
 connect('key_press_event', util.quit)
 show()
