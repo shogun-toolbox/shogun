@@ -2,10 +2,11 @@
 
 	* SHOGUN Release version 0.7.0
 	* This release contains major feature enhancements and bugfixes:
-		- Implement 2-norm Multiple Kernel Learning
+		- Implement 2-norm Multiple Kernel Learning.
+		- Much extended documentation.
 	* Bugfixes:
 		- Tests are now run in the examples/interface directory, with paths set
-		to the installation directory
+		to the installation directory.
 		- Filter out duplicate signals in signal handler and make sure the
 		handler is removed.
 

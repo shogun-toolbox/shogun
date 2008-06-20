@@ -18,7 +18,34 @@
 
 #include "kernel/KernelMachine.h"
 
-/** class KRR */
+/** Class KRR implements Kernel Ridge Regression - a regularized least square
+ * method for classification and regression. It is similar to support vector
+ * machines (cf. CSVM). However in contrast to SVMs a different objective is
+ * optimized that leads to a dense solution (thus not only a few support
+ * vectors are active in the end but all training examples). This makes it only
+ * applicable to rather few training examples. In case a linear kernel is used
+ * RR is closely related to Fishers Linear Discriminant (cf. LDA).
+ *
+ * Internally (for linear kernels) it is solved via minimizing the following system
+ *
+ * \f[
+ * \frac{1}{2}\left(\sum_{i=1}^N(y_i-{\bf w}\cdot {\bf x}_i)^2 + \tau||{\bf w}||^2\right)
+ * \f]
+ * 
+ * which is boils down to solving a linear system
+ *
+ * \f[
+ * {\bf w} = \left(\tau {\bf I}+ \sum_{i=1}^N{\bf x}_i{\bf x}_i^T\right)^{-1}\left(\sum_{i=1}^N y_i{\bf x}_i\right)
+ * \f]
+ *
+ * and in the kernel case
+ * \f[
+ * {\bf \alpha}=\left({\bf K}+\tau{\bf I}\right)^{-1}{\bf y}
+ * \f]
+ * where K is the kernel matrix and y the vector of labels. The expressed
+ * solution can again be written as a linear combination of kernels (cf.
+ * CKernelMachine) with bias \f$b=0\f$.
+ */
 class CKRR : public CKernelMachine
 {
 	public:
