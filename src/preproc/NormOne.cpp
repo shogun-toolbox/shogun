@@ -54,12 +54,11 @@ bool CNormOne::save(FILE* f)
 /// return pointer to feature_matrix, i.e. f->get_feature_matrix();
 DREAL* CNormOne::apply_to_feature_matrix(CFeatures* f)
 {
-	INT i,j;
 	INT num_vec;
 	INT num_feat;
 	DREAL* matrix=((CRealFeatures*) f)->get_feature_matrix(num_feat, num_vec);
 
-	for (i=0; i<num_vec; i++)
+	for (INT i=0; i<num_vec; i++)
 	{
 		DREAL* vec=&matrix[i*num_feat];
 		DREAL norm=CMath::sqrt(CMath::dot(vec, vec, num_feat));

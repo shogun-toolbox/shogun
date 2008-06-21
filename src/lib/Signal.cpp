@@ -108,7 +108,7 @@ bool CSignal::set_handler()
 		{
 			if (sigaction(signals[i], &act, &oldsigaction[i]))
 			{
-				SG_WARNING("Error trapping signals!\n");
+				SG_SWARNING("Error trapping signals!\n");
 				for (INT j=i-1; j>=0; j--)
 					sigaction(signals[i], &oldsigaction[i], NULL);
 
