@@ -15,13 +15,13 @@
 #include "lib/io.h"
 
 CGaussianShortRealKernel::CGaussianShortRealKernel(INT size, DREAL w)
-: CSimpleKernel<DREAL>(size), width(w)
+: CSimpleKernel<SHORTREAL>(size), width(w)
 {
 }
 
 CGaussianShortRealKernel::CGaussianShortRealKernel(
 	CShortRealFeatures* l, CShortRealFeatures* r, DREAL w, INT size)
-: CSimpleKernel<DREAL>(size), width(w)
+: CSimpleKernel<SHORTREAL>(size), width(w)
 {
 	init(l,r);
 }
@@ -32,7 +32,7 @@ CGaussianShortRealKernel::~CGaussianShortRealKernel()
 
 bool CGaussianShortRealKernel::init(CFeatures* l, CFeatures* r)
 {
-	CSimpleKernel<DREAL>::init(l, r);
+	CSimpleKernel<SHORTREAL>::init(l, r);
 	return true;
 }
 

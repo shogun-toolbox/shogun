@@ -78,6 +78,8 @@ template <class ST> class CSimpleKernel : public CKernel
 
 template<> inline EFeatureType CSimpleKernel<DREAL>::get_feature_type() { return F_DREAL; }
 
+template<> inline EFeatureType CSimpleKernel<SHORTREAL>::get_feature_type() { return F_SHORTREAL; }
+
 template<> inline EFeatureType CSimpleKernel<ULONG>::get_feature_type() { return F_ULONG; }
 
 template<> inline EFeatureType CSimpleKernel<INT>::get_feature_type() { return F_INT; }
