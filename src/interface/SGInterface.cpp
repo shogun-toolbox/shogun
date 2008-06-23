@@ -961,6 +961,11 @@ CSGInterfaceMethod sg_methods[]=
 		USAGE_I(N_SET_THRESHOLD, "threshold")
 	},
 	{
+		N_INIT_RANDOM,
+		(&CSGInterface::cmd_init_random),
+		USAGE_I(N_INIT_RANDOM, "value_to_initialize_RNG_with")
+	},
+	{
 		N_THREADS,
 		(&CSGInterface::cmd_set_num_threads),
 		USAGE_I(N_THREADS, "num_threads")
@@ -6102,6 +6107,17 @@ bool CSGInterface::cmd_set_threshold()
 	DREAL value=get_real_from_real_or_str();
 
 	ui_math->set_threshold(value);
+	return true;
+}
+
+bool CSGInterface::cmd_init_random()
+{
+	if (m_nrhs!=2 || !create_return_values(0))
+		return false;
+
+	UINT initseed=(UINT) get_int_from_int_or_str();
+	ui_math->init_random(initseed);
+
 	return true;
 }
 

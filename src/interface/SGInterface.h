@@ -395,6 +395,8 @@ class CSGInterface : public CSGObject
 		bool cmd_set_output();
 		/** set threshold */
 		bool cmd_set_threshold();
+		/** initialize random number generator */
+		bool cmd_init_random();
 		/** set number of threads */
 		bool cmd_set_num_threads();
 		/** translate string */
