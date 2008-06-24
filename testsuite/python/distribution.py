@@ -2,37 +2,31 @@
 Test Distribution
 """
 from numpy import inf, nan
-from shogun.Distribution import *
-
+from sg import sg
 import util
 
-def _distribution (indata):
-	fun=eval('util.get_feats_'+indata['feature_class'])
-	feats=fun(indata)
+
+########################################################################
+# public
+########################################################################
+
+def test (indata):
+	util.set_features(indata)
 
 	if indata['name']=='HMM':
-		distribution=HMM(feats['train'], indata['distribution_N'],
-			indata['distribution_M'], indata['distribution_pseudo'])
-		distribution.train()
-		distribution.baum_welch_viterbi_train(BW_NORMAL)
+		sg('new_hmm', indata['distribution_N'], indata['distribution_M'])
+		sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'WORD', indata['order'])
+		sg('bw')
 	else:
-		fun=eval(indata['name'])
-		distribution=fun(feats['train'])
-		distribution.train()
+		print 'Can\'t yet train other distributions in static interface.'
+		return False
 
-	likelihood=distribution.get_log_likelihood_sample()
-	num_examples=feats['train'].get_num_vectors()
-	num_param=distribution.get_num_model_parameters()
-	derivatives=0
-	for i in xrange(num_param):
-		for j in xrange(num_examples):
-			val=distribution.get_log_derivative(i, j)
-			if val!=-inf and val!=nan: # only consider sparse matrix!
-				derivatives+=val
+	# what is sg('likelihood')?
+	likelihood=abs(sg('hmm_likelihood')-indata['distribution_likelihood'])
+	return util.check_accuracy(indata['distribution_accuracy'],
+		likelihood=likelihood)
 
-	derivatives=abs(derivatives-indata['distribution_derivatives'])
-	likelihood=abs(likelihood-indata['distribution_likelihood'])
-
+	# best path? which? no_b_trans? trans? trans_deriv?
 	if indata['name']=='HMM':
 		best_path=0
 		best_path_state=0
@@ -51,11 +45,4 @@ def _distribution (indata):
 	else:
 		return util.check_accuracy(indata['distribution_accuracy'],
 			derivatives=derivatives, likelihood=likelihood)
-
-########################################################################
-# public
-########################################################################
-
-def test (indata):
-	return _distribution(indata)
 

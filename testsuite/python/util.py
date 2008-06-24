@@ -121,10 +121,15 @@ def get_feats_string_complex (indata):
 
 def set_features (indata):
 	if indata.has_key('alphabet'):
-		sg('set_features', 'TRAIN',
-			list(indata['data_train'][0]), indata['alphabet'])
-		sg('set_features', 'TEST',
-			list(indata['data_test'][0]), indata['alphabet'])
+		if indata['alphabet']=='CUBE':
+			data_train=[str(x) for x in list(indata['data_train'][0])]
+			data_test=[str(x) for x in list(indata['data_test'][0])]
+		else:
+			data_train=list(indata['data_train'][0])
+			data_test=list(indata['data_test'][0])
+
+		sg('set_features', 'TRAIN', data_train, indata['alphabet'])
+		sg('set_features', 'TEST', data_test, indata['alphabet'])
 	else:
 		sg('set_features', 'TRAIN',
 			indata['data_train'].astype(eval(indata['data_type'])))
@@ -134,9 +139,13 @@ def set_features (indata):
 
 def set_distance (indata):
 	dargs=get_args(indata, 'distance_arg')
-	dname=fix_distance_name_inconsistency(indata['distance_name'])
-	sg('set_distance', dname, indata['feature_type'].upper(),
-		CACHE_SIZE, *dargs)
+
+	if indata.has_key('distance_name'):
+		dname=fix_distance_name_inconsistency(indata['distance_name'])
+	else:
+		dname=fix_distance_name_inconsistency(indata['name'])
+
+	sg('set_distance', dname, indata['feature_type'].upper(), *dargs)
 	sg('init_distance', 'TRAIN')
 
 
@@ -202,8 +211,12 @@ def fix_normalization_inconsistency (normalization):
 
 def fix_distance_name_inconsistency (dname):
 	dname=dname.upper()
-	if dname.endswith('DISTANCE'):
+	if dname.endswith('WORDDISTANCE'):
+		return dname.split('WORDDISTANCE')[0]
+	elif dname.endswith('DISTANCE'):
 		return dname.split('DISTANCE')[0]
+	elif dname.endswith('METRIC'):
+		return dname.split('METRIC')[0]
 	else:
 		return dname
 

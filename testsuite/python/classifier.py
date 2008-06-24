@@ -89,8 +89,8 @@ def _evaluate (indata):
 ########################################################################
 
 def test (indata):
-	if indata.has_key('classifier_type') and indata['classifier_type']=='linear':
-		print "Sparse features / Linear classifiers not supported yet!"
+	if indata['classifier_type']=='linear':
+		print "Sparse features not supported yet!"
 		return False
 
 	util.set_features(indata)
