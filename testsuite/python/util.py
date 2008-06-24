@@ -5,6 +5,9 @@ Utilities for testing
 from numpy import double
 from sg import sg
 
+CACHE_SIZE=10
+
+
 def check_accuracy (accuracy, **kwargs):
 	acc=double(accuracy)
 	output=[]
@@ -116,6 +119,40 @@ def get_feats_string_complex (indata):
 		return feats
 
 
+def set_features (indata):
+	if indata.has_key('alphabet'):
+		sg('set_features', 'TRAIN',
+			list(indata['data_train'][0]), indata['alphabet'])
+		sg('set_features', 'TEST',
+			list(indata['data_test'][0]), indata['alphabet'])
+	else:
+		sg('set_features', 'TRAIN',
+			indata['data_train'].astype(eval(indata['data_type'])))
+		sg('set_features', 'TEST',
+			indata['data_test'].astype(eval(indata['data_type'])))
+
+
+def set_distance (indata):
+	dargs=get_args(indata, 'distance_arg')
+	dname=fix_distance_name_inconsistency(indata['distance_name'])
+	sg('set_distance', dname, indata['feature_type'].upper(),
+		CACHE_SIZE, *dargs)
+	sg('init_distance', 'TRAIN')
+
+
+def set_kernel (indata):
+	kargs=get_args(indata, 'kernel_arg')
+	kname=fix_kernel_name_inconsistency(indata['kernel_name'])
+
+	if kname=='COMMSTRING':
+		kargs[1]=fix_normalization_inconsistency(kargs[1])
+		convert_features_and_add_preproc(indata)
+
+	sg('set_kernel', kname, indata['feature_type'].upper(),
+		CACHE_SIZE, *kargs)
+	sg('init_kernel', 'TRAIN')
+
+
 def convert_features_and_add_preproc (indata):
 	if indata['feature_type']=='Ulong':
 		type='ULONG'
@@ -136,7 +173,7 @@ def convert_features_and_add_preproc (indata):
 
 
 # fix inconsistency in modular/static interfaces
-def fix_kname_inconsistency (kname):
+def fix_kernel_name_inconsistency (kname):
 	kname=kname.upper()
 	if kname=='WEIGHTEDDEGREESTRING':
 		return 'WEIGHTEDDEGREE'
@@ -163,17 +200,21 @@ def fix_normalization_inconsistency (normalization):
 	else:
 		return 'NO'
 
-def fix_dname_inconsistency (dname):
+def fix_distance_name_inconsistency (dname):
 	dname=dname.upper()
 	if dname.endswith('DISTANCE'):
 		return dname.split('DISTANCE')[0]
 	else:
 		return dname
 
-def fix_cname_inconsistency (cname):
+
+def fix_classifier_name_inconsistency (cname):
 	cname=cname.upper()
 	if cname.startswith('LIBSVM') and len(cname)>len('LIBSVM'):
 		return 'LIBSVM_'+cname.split('LIBSVM')[1]
 	else:
 		return cname
 
+
+def fix_clustering_name_inconsistency (cname):
+	return cname.upper()

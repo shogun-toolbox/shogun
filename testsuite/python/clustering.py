@@ -2,45 +2,30 @@
 Test Clustering
 """
 
-from shogun.Distance import EuclidianDistance
-from shogun.Clustering import *
-
+from sg import sg
 import util
 
-def _clustering (indata):
-	if indata.has_key('clustering_k'):
-		first_arg=indata['clustering_k']
-	elif indata.has_key('clustering_merges'):
-		first_arg=indata['clustering_merges']
-	else:
-		return False
 
-	fun=eval('util.get_feats_'+indata['feature_class'])
-	feats=fun(indata)
-
-	dargs=util.get_args(indata, 'distance_arg')
-	dfun=eval(indata['distance_name'])
-	distance=dfun(feats['train'], feats['train'], *dargs)
-
-	fun=eval(indata['name'])
-	clustering=fun(first_arg, distance)
-	clustering.train()
-
-	distance.init(feats['train'], feats['test'])
-
+def _evaluate (indata):
 	if indata.has_key('clustering_radi'):
-		radi=max(abs(clustering.get_radiuses()-indata['clustering_radi']))
-		centers=max(abs(clustering.get_cluster_centers()- \
-			indata['clustering_centers']).flat)
+		[radi, centers]=sg('get_clustering')
+		radi=max(abs(radi.T[0]-indata['clustering_radi']))
+		centers=max(abs(centers-indata['clustering_centers']).flat)
+
 		return util.check_accuracy(indata['clustering_accuracy'],
 			radi=radi, centers=centers)
+
 	elif indata.has_key('clustering_merge_distance'):
-		merge_distance=max(abs(clustering.get_merge_distances()- \
+		[merge_distances, pairs]=sg('get_clustering')
+		print merge_distances.T[0]
+		print indata['clustering_merge_distance']
+		merge_distances=max(abs(merge_distances.T[0]- \
 			indata['clustering_merge_distance']))
-		pairs=max(abs(clustering.get_cluster_pairs()- \
-			indata['clustering_pairs']).flat)
+		pairs=max(abs(pairs-indata['clustering_pairs']).flat)
+
 		return util.check_accuracy(indata['clustering_accuracy'],
-			merge_distance=merge_distance, pairs=pairs)
+			merge_distances=merge_distances, pairs=pairs)
+
 	else:
 		return util.check_accuracy(indata['clustering_accuracy'])
 
@@ -49,5 +34,25 @@ def _clustering (indata):
 ########################################################################
 
 def test (indata):
-	return _clustering(indata)
+	util.set_features(indata)
+	util.set_distance(indata)
+
+	cname=util.fix_clustering_name_inconsistency(indata['name'])
+	sg('new_clustering', cname)
+
+	if indata.has_key('clustering_k'):
+		if indata.has_key('clustering_max_iter'):
+			max_iter=indata['clustering_max_iter']
+		else:
+			max_iter=1000
+		sg('train_clustering', indata['clustering_k'], max_iter)
+
+	elif indata.has_key('clustering_merges'):
+		sg('train_clustering', indata['clustering_merges'])
+
+	else:
+		print 'Incomplete clustering data.'
+		return False
+
+	return _evaluate(indata)
 

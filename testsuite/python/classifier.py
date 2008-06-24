@@ -9,45 +9,10 @@ import util
 
 
 
-def _set_features (indata):
-	# set features
-	if indata.has_key('alphabet'):
-		sg('set_features', 'TRAIN',
-			list(indata['data_train'][0]), indata['alphabet'])
-		sg('set_features', 'TEST',
-			list(indata['data_test'][0]), indata['alphabet'])
-	else:
-		sg('set_features', 'TRAIN',
-			indata['data_train'].astype(eval(indata['data_type'])))
-		sg('set_features', 'TEST',
-			indata['data_test'].astype(eval(indata['data_type'])))
-
-
-def _set_machine (indata):
-	cache_size=10
-
-	if indata['classifier_type']=='kernel':
-		kargs=util.get_args(indata, 'kernel_arg')
-		kname=util.fix_kname_inconsistency(indata['kernel_name'])
-
-		if kname=='COMMSTRING':
-			kargs[1]=util.fix_normalization_inconsistency(kargs[1])
-			util.convert_features_and_add_preproc(indata)
-
-		sg('set_kernel', kname, indata['feature_type'].upper(),
-			cache_size, *kargs)
-		sg('init_kernel', 'TRAIN')
-
-	elif indata['classifier_type']=='knn':
-		dargs=util.get_args(indata, 'distance_arg')
-		dname=util.fix_dname_inconsistency(indata['distance_name'])
-		sg('set_distance', dname, indata['feature_type'].upper(),
-			cache_size, *dargs)
-		sg('init_distance', 'TRAIN')
 
 
 def _set_classifier (indata):
-	cname=util.fix_cname_inconsistency(indata['name'])
+	cname=util.fix_classifier_name_inconsistency(indata['name'])
 	sg('new_classifier', cname)
 	if indata.has_key('classifier_bias'):
 		sg('svm_use_bias', True)
@@ -114,14 +79,15 @@ def test (indata):
 		print "Sparse features / Linear classifiers not supported yet!"
 		return False
 
-	_set_features(indata)
-	_set_machine(indata)
+	util.set_features(indata)
+	if indata['classifier_type']=='kernel':
+		util.set_kernel(indata)
+	elif indata['classifier_type']=='knn':
+		util.set_distance(indata)
 
-	# set labels
 	if indata.has_key('classifier_labels'):
 		sg('set_labels', 'TRAIN', double(indata['classifier_labels']))
 
-	# set misc
 	if indata.has_key('classifier_num_threads'):
 		sg('threads', indata['classifier_num_threads'])
 
