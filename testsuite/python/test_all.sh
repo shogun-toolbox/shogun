@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# not implemented yet
-exit 0
-
 DATAPATH='../data'
 
 function test_all () {
