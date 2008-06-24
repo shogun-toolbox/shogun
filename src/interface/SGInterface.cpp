@@ -3449,7 +3449,7 @@ bool CSGInterface::cmd_set_distance()
 	else if (strmatch(type, "HAMMING") && strmatch(dtype, "WORD"))
 	{
 		bool use_sign=false;
-		if (m_nrhs==5)
+		if (m_nrhs==4)
 			use_sign=get_bool_from_bool_or_str(); // optional
 
 		distance=ui_distance->create_hammingword(use_sign);
