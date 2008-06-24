@@ -2355,7 +2355,7 @@ CKernel* CSGInterface::create_kernel()
 		{
 			INT size=get_int_from_int_or_str();
 			INT order=3;
-			INT max_mismatch=1;
+			INT max_mismatch=0;
 			INT length=0;
 			INT center=0;
 			DREAL step=1;
@@ -2399,7 +2399,7 @@ CKernel* CSGInterface::create_kernel()
 		{
 			INT size=get_int_from_int_or_str();
 			INT order=3;
-			INT max_mismatch=1;
+			INT max_mismatch=0;
 			bool use_normalization=true;
 			INT mkl_stepsize=1;
 			bool block_computation=true;
@@ -3819,7 +3819,11 @@ bool CSGInterface::cmd_get_classifier()
 	if (!ui_classifier->get_trained_classifier(weights, rows, cols, bias, brows, bcols))
 		return false;
 
+	//SG_PRINT("brows %d, bcols %d\n", brows, bcols);
+	//CMath::display_matrix(bias, brows, bcols);
 	set_real_matrix(bias, brows, bcols);
+	//SG_PRINT("rows %d, cols %d\n", rows, cols);
+	//CMath::display_matrix(weights, rows, cols);
 	set_real_matrix(weights, rows, cols);
 
 	return true;
