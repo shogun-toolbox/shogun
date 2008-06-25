@@ -1,7 +1,4 @@
-%Regression; %uncomment to get a nice crasher :(
-Features;
-Classifier;
-Kernel;
+init_shogun
 
 num=1000;
 dist=1;
