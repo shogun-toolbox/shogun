@@ -104,6 +104,8 @@ def set_and_train_kernel (indata, do_train=True):
 
 	if indata.has_key('kernel_name'):
 		kname=fix_kernel_name_inconsistency(indata['kernel_name'])
+	if indata.has_key('name_kernel'): # FIXME!!!!
+		kname=fix_kernel_name_inconsistency(indata['name_kernel'])
 	else:
 		kname=fix_kernel_name_inconsistency(indata['name'])
 
@@ -147,6 +149,15 @@ def convert_features_and_add_preproc (indata):
 
 	sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', type,
 		order, order-1, indata['gap'], indata['reverse'])
+	sg('attach_preproc', 'TEST')
+
+
+def add_preproc (indata):
+	pname=fix_preproc_name_inconsistency(indata['name'])
+	args=get_args(indata, 'preproc_arg')
+
+	sg('add_preproc', pname, *args)
+	sg('attach_preproc', 'TRAIN')
 	sg('attach_preproc', 'TEST')
 
 
@@ -212,3 +223,6 @@ def fix_classifier_name_inconsistency (cname):
 
 def fix_clustering_name_inconsistency (cname):
 	return cname.upper()
+
+def fix_preproc_name_inconsistency (pname):
+	return pname.upper()

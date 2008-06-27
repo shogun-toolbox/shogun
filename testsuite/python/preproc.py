@@ -2,34 +2,41 @@
 Test PreProc
 """
 
-from shogun.Kernel import *
-
+from sg import sg
 import util
 
 ########################################################################
 # kernel computation
 ########################################################################
 
-def _kernel (indata, feats):
-	fun=eval(indata['name_kernel']+'Kernel')
-	args=util.get_args(indata, 'kernel_arg')
+def _kernel (indata):
+	util.set_and_train_kernel(indata)
 
-	kernel=fun(feats['train'], feats['train'], *args)
-	ktrain=max(abs(indata['km_train']-kernel.get_kernel_matrix()).flat)
-	kernel.init(feats['train'], feats['test'])
-	ktest=max(abs(indata['km_test']-kernel.get_kernel_matrix()).flat)
+	kmatrix=sg('get_kernel_matrix')
+	ktrain=max(abs(indata['km_train']-kmatrix).flat)
+
+	sg('init_kernel', 'TEST')
+	kmatrix=sg('get_kernel_matrix')
+	ktest=max(abs(indata['km_test']-kmatrix).flat)
 
 	return util.check_accuracy(indata['accuracy'], ktrain=ktrain, ktest=ktest)
+
+
+def _add_preproc (indata):
+	pname=util.fix_preproc_name_inconsistency(indata['name'])
+	args=util.get_args(indata, 'preproc_arg')
+
+	sg('add_preproc', pname, *args)
+	sg('attach_preproc', 'TRAIN')
+	sg('attach_preproc', 'TEST')
 
 ########################################################################
 # public
 ########################################################################
 
 def test (indata):
-	fun=eval('util.get_feats_'+indata['feature_class'])
-	feats=fun(indata)
-	args=util.get_args(indata, 'preproc_arg')
-	feats=util.add_preproc(indata['name'], feats, *args)
+	util.set_features(indata)
+	_add_preproc(indata)
 
-	return _kernel(indata, feats)
+	return _kernel(indata)
 
