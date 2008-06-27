@@ -7,11 +7,12 @@ import util
 
 
 def test (indata):
-	if indata['name'].startswith('Sparse'):
-		print "Sparse features not supported yet!"
+	try:
+		util.set_features(indata)
+	except NotImplementedError, e:
+		print e
 		return True
 
-	util.set_features(indata)
 	util.set_and_train_distance(indata)
 
 	dmatrix=sg('get_distance_matrix')

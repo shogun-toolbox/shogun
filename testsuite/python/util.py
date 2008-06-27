@@ -53,6 +53,12 @@ def get_args (indata, ident):
 
 
 def set_features (indata):
+	if indata['name'].startswith('Sparse'):
+		raise NotImplementedError, 'Sparse features not supported yet.'
+	elif indata.has_key('classifier_type') and \
+		indata['classifier_type']=='linear':
+		raise NotImplementedError, 'Linear classifiers with sparse features not supported yet.'
+
 	if indata.has_key('alphabet'):
 		if indata['alphabet']=='RAWBYTE':
 			raise NotImplementedError, 'Alphabet RAWBYTE not supported yet.'

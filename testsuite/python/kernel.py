@@ -179,10 +179,6 @@ def _kernel_top_fisher (indata):
 ########################################################################
 
 def test (indata):
-	if indata['name'].startswith('Sparse'):
-		print 'Sparse features not supported yet.'
-		return True
-
 	try:
 		util.set_features(indata)
 	except NotImplementedError, e:

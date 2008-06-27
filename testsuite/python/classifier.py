@@ -8,9 +8,6 @@ from sg import sg
 import util
 
 
-
-
-
 def _set_classifier (indata):
 	cname=util.fix_classifier_name_inconsistency(indata['name'])
 	sg('new_classifier', cname)
@@ -89,11 +86,12 @@ def _evaluate (indata):
 ########################################################################
 
 def test (indata):
-	if indata['classifier_type']=='linear':
-		print "Sparse features not supported yet!"
+	try:
+		util.set_features(indata)
+	except NotImplementedError, e:
+		print e
 		return True
 
-	util.set_features(indata)
 	if indata['classifier_type']=='kernel':
 		util.set_and_train_kernel(indata)
 	elif indata['classifier_type']=='knn':
