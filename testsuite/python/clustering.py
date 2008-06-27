@@ -35,7 +35,7 @@ def _evaluate (indata):
 
 def test (indata):
 	util.set_features(indata)
-	util.set_distance(indata)
+	util.set_and_train_distance(indata)
 
 	cname=util.fix_clustering_name_inconsistency(indata['name'])
 	sg('new_clustering', cname)

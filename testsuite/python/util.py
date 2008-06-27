@@ -2,10 +2,10 @@
 Utilities for testing
 """
 
-from numpy import double
+from numpy import double, ushort
 from sg import sg
 
-CACHE_SIZE=10
+SIZE_CACHE=10
 
 
 def check_accuracy (accuracy, **kwargs):
@@ -21,6 +21,7 @@ def check_accuracy (accuracy, **kwargs):
 			return False
 
 	return True
+
 
 def get_args (indata, ident):
 	# python dicts are not ordered, so we have to look at the number in
@@ -40,7 +41,7 @@ def get_args (indata, ident):
 			raise ValueError, 'Wrong indata data %s: "%s"!' % (ident, i)
 
 		if i.find('_distance')!=-1: # DistanceKernel
-			args[idx]=eval(indata[i]+'()')
+			args[idx]=indata[i]
 		else:
 			try:
 				args[idx]=eval(indata[i])
@@ -50,77 +51,12 @@ def get_args (indata, ident):
 	# weed out superfluous Nones
 	return filter(lambda arg: arg is not None, args)
 
-def get_feats_simple (indata):
-	# have to explicitely set data type for numpy if not real
-	data_train=indata['data_train'].astype(eval(indata['data_type']))
-	data_test=indata['data_test'].astype(eval(indata['data_type']))
-
-	if indata['feature_type']=='Byte' or indata['feature_type']=='Char':
-		alphabet=eval(indata['alphabet'])
-		ftrain=eval(indata['feature_type']+"Features(alphabet)")
-		ftest=eval(indata['feature_type']+"Features(alphabet)")
-		ftrain.copy_feature_matrix(data_train)
-		ftest.copy_feature_matrix(data_test)
-	else:
-		ftrain=eval(indata['feature_type']+"Features(data_train)")
-		ftest=eval(indata['feature_type']+"Features(data_test)")
-
-	if (indata['name'].find('Sparse')!=-1 or (
-		indata.has_key('classifier_type') and indata['classifier_type']=='linear')):
-		sparse_train=eval('Sparse'+indata['feature_type']+'Features()')
-		sparse_train.obtain_from_simple(ftrain)
-
-		sparse_test=eval('Sparse'+indata['feature_type']+'Features()')
-		sparse_test.obtain_from_simple(ftest)
-
-		return {'train':sparse_train, 'test':sparse_test}
-	else:
-		return {'train':ftrain, 'test':ftest}
-
-def get_feats_string (indata):
-	feats={'train':StringCharFeatures(eval(indata['alphabet'])),
-		'test':StringCharFeatures(eval(indata['alphabet']))}
-	feats['train'].set_string_features(list(indata['data_train'][0]))
-	feats['test'].set_string_features(list(indata['data_test'][0]))
-
-	return feats
-
-def get_feats_string_complex (indata):
-	alphabet=eval(indata['alphabet'])
-	feats={'train':StringCharFeatures(alphabet),
-		'test':StringCharFeatures(alphabet)}
-
-	if alphabet==CUBE: # data_{train,test} ints due to test.py:_read_matrix
-		data_train=[str(x) for x in list(indata['data_train'][0])]
-		data_test=[str(x) for x in list(indata['data_test'][0])]
-	else:
-		data_train=list(indata['data_train'][0])
-		data_test=list(indata['data_test'][0])
-
-	feats['train'].set_string_features(data_train)
-	feats['test'].set_string_features(data_test)
-
-	feat=eval('String'+indata['feature_type']+ \
-		"Features(feats['train'].get_alphabet())")
-	feat.obtain_from_char(feats['train'], indata['order']-1, indata['order'],
-		indata['gap'], eval(indata['reverse']))
-	feats['train']=feat
-
-	feat=eval('String'+indata['feature_type']+ \
-		"Features(feats['train'].get_alphabet())")
-	feat.obtain_from_char(feats['test'], indata['order']-1, indata['order'],
-		indata['gap'], eval(indata['reverse']))
-	feats['test']=feat
-
-	if indata['feature_type']=='Word' or indata['feature_type']=='Ulong':
-		name='Sort'+indata['feature_type']+'String'
-		return add_preproc(name, feats)
-	else:
-		return feats
-
 
 def set_features (indata):
 	if indata.has_key('alphabet'):
+		if indata['alphabet']=='RAWBYTE':
+			raise NotImplementedError, 'Alphabet RAWBYTE not supported yet.'
+
 		if indata['alphabet']=='CUBE':
 			data_train=[str(x) for x in list(indata['data_train'][0])]
 			data_test=[str(x) for x in list(indata['data_test'][0])]
@@ -130,14 +66,26 @@ def set_features (indata):
 
 		sg('set_features', 'TRAIN', data_train, indata['alphabet'])
 		sg('set_features', 'TEST', data_test, indata['alphabet'])
+
+	elif indata.has_key('data'):
+		sg('set_features', 'TRAIN',
+			indata['data'].astype(eval(indata['data_type'])))
+		sg('set_features', 'TEST',
+			indata['data'].astype(eval(indata['data_type'])))
+
+	elif indata['name'].upper()=='COMBINED':
+		pass
+
 	else:
 		sg('set_features', 'TRAIN',
 			indata['data_train'].astype(eval(indata['data_type'])))
 		sg('set_features', 'TEST',
 			indata['data_test'].astype(eval(indata['data_type'])))
 
+	convert_features_and_add_preproc(indata)
 
-def set_distance (indata):
+
+def set_and_train_distance (indata, do_train=True):
 	dargs=get_args(indata, 'distance_arg')
 
 	if indata.has_key('distance_name'):
@@ -146,20 +94,38 @@ def set_distance (indata):
 		dname=fix_distance_name_inconsistency(indata['name'])
 
 	sg('set_distance', dname, indata['feature_type'].upper(), *dargs)
-	sg('init_distance', 'TRAIN')
+
+	if do_train:
+		sg('init_distance', 'TRAIN')
 
 
-def set_kernel (indata):
+def set_and_train_kernel (indata, do_train=True):
 	kargs=get_args(indata, 'kernel_arg')
-	kname=fix_kernel_name_inconsistency(indata['kernel_name'])
 
-	if kname=='COMMSTRING':
+	if indata.has_key('kernel_name'):
+		kname=fix_kernel_name_inconsistency(indata['kernel_name'])
+	else:
+		kname=fix_kernel_name_inconsistency(indata['name'])
+
+	if kname.find('COMMSTRING')!=-1:
 		kargs[1]=fix_normalization_inconsistency(kargs[1])
-		convert_features_and_add_preproc(indata)
 
-	sg('set_kernel', kname, indata['feature_type'].upper(),
-		CACHE_SIZE, *kargs)
-	sg('init_kernel', 'TRAIN')
+	if indata.has_key('kernel_arg0_size'):
+		size=kargs[0]
+		kargs=kargs[1:]
+	else:
+		size=SIZE_CACHE
+
+	if kname=='DISTANCE':
+		dname=fix_distance_name_inconsistency(kargs.pop())
+		# FIXME: REAL is cheating and will break in the future
+		sg('set_distance', dname, 'REAL')
+		sg('set_kernel', kname, size, *kargs)
+	else:
+		sg('set_kernel', kname, indata['feature_type'].upper(), size, *kargs)
+
+	if do_train:
+		sg('init_kernel', 'TRAIN')
 
 
 def convert_features_and_add_preproc (indata):
@@ -168,6 +134,9 @@ def convert_features_and_add_preproc (indata):
 	elif indata['feature_type']=='Word':
 		type='WORD'
 	else:
+		return
+
+	if not indata.has_key('order'):
 		return
 
 	order=indata['order']
@@ -184,16 +153,27 @@ def convert_features_and_add_preproc (indata):
 # fix inconsistency in modular/static interfaces
 def fix_kernel_name_inconsistency (kname):
 	kname=kname.upper()
-	if kname=='WEIGHTEDDEGREESTRING':
-		return 'WEIGHTEDDEGREE'
+	if kname=='LOCALITYIMPROVEDSTRING':
+		return 'LIK'
+	elif kname=='SIMPLELOCALITYIMPROVEDSTRING':
+		return 'SLIK'
+	elif kname=='WORDMATCH':
+		return 'MATCH'
 	elif kname=='WEIGHTEDDEGREEPOSITIONSTRING':
 		return 'WEIGHTEDDEGREEPOS'
 	elif kname=='COMMULONGSTRING':
 		return 'COMMSTRING'
 	elif kname=='COMMWORDSTRING':
 		return 'COMMSTRING'
+	elif kname=='WEIGHTEDCOMMWORDSTRING':
+		return 'WEIGHTEDCOMMSTRING'
+	elif kname.endswith('STRING'):
+		return kname.split('STRING')[0]
+	elif kname.endswith('WORD'):
+		return kname.split('WORD')[0]
 	else:
 		return kname
+
 
 def fix_normalization_inconsistency (normalization):
 	if normalization==1:
@@ -208,6 +188,7 @@ def fix_normalization_inconsistency (normalization):
 		return 'SQLEN'
 	else:
 		return 'NO'
+
 
 def fix_distance_name_inconsistency (dname):
 	dname=dname.upper()

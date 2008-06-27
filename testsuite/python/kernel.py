@@ -2,14 +2,8 @@
 Test Kernel
 """
 
-from shogun.Features import *
-from shogun.Kernel import *
-from shogun.PreProc import *
-from shogun.Distance import *
-from shogun.Classifier import PluginEstimate
-from shogun.Distribution import HMM, BW_NORMAL
-from numpy import array, ushort, ubyte, double
-
+from sg import sg
+from numpy import double
 import util
 
 ########################################################################
@@ -17,25 +11,16 @@ import util
 ########################################################################
 
 def _kernel (indata):
-	fun=eval('util.get_feats_'+indata['feature_class'])
-	feats=fun(indata)
+	util.set_and_train_kernel(indata)
 
-	fun=eval(indata['name']+'Kernel')
-	args=util.get_args(indata, 'kernel_arg')
+	kmatrix=sg('get_kernel_matrix')
+	ktrain=max(abs(indata['km_train']-kmatrix).flat)
 
-	kernel=fun(feats['train'], feats['train'], *args)
-	km_train=max(abs(indata['km_train']-kernel.get_kernel_matrix()).flat)
-	kernel.init(feats['train'], feats['test'])
-	km_test=max(abs(indata['km_test']-kernel.get_kernel_matrix()).flat)
+	sg('init_kernel', 'TEST')
+	kmatrix=sg('get_kernel_matrix')
+	ktest=max(abs(indata['km_test']-kmatrix).flat)
 
-	return util.check_accuracy(indata['accuracy'], km_train=km_train, km_test=km_test)
-
-def _add_subkernels (subkernels):
-	for idx, subk in enumerate(subkernels):
-		fun=eval(subk['name']+'Kernel')
-		args=util.get_args(subk, 'kernel_arg')
-		subkernels[idx]['kernel']=fun(*args)
-	return subkernels
+	return util.check_accuracy(indata['accuracy'], ktrain=ktrain, ktest=ktest)
 
 def _get_subkernels (indata):
 	subkernels=len(indata)*[None]
@@ -62,127 +47,148 @@ def _get_subkernels (indata):
 
 	# weed out empty subkernels
 	subkernels=filter(lambda x: x is not None, subkernels)
-	return _add_subkernels(subkernels)
+
+	for idx, subk in enumerate(subkernels):
+		subkernels[idx]['args']=util.get_args(subk, 'kernel_arg')
+		subkernels[idx]['name']=util.fix_kernel_name_inconsistency(subk['name'])
+
+	return subkernels
 
 def _kernel_combined (indata):
-	kernel=CombinedKernel()
-	feats={'train':CombinedFeatures(), 'test':CombinedFeatures()}
+	sg('set_kernel', 'COMBINED', util.SIZE_CACHE)
 
 	subkernels=_get_subkernels(indata)
 	for subk in subkernels:
-		feats_subk=eval('util.get_feats_'+subk['feature_class']+'(subk)')
-		kernel.append_kernel(subk['kernel'])
-		feats['train'].append_feature_obj(feats_subk['train'])
-		feats['test'].append_feature_obj(feats_subk['test'])
+		sg('add_kernel', 1., subk['name'], subk['feature_type'].upper(), *subk['args'])
 
-	return _kernel_subkernels(indata, feats, kernel)
+		if subk.has_key('alphabet'):
+			sg('add_features', 'TRAIN', list(subk['data_train'][0]), subk['alphabet'])
+			sg('add_features', 'TEST', list(subk['data_test'][0]), subk['alphabet'])
+		else:
+			sg('add_features', 'TRAIN', subk['data_train'][0])
+			sg('add_features', 'TEST', subk['data_test'][0])
+
+	return _kernel_subkernels(indata)
 
 def _kernel_auc (indata):
+	print 'AUC kernel not yet supported in static interfaces.'
+	return True
+
 	subk=_get_subkernels(indata)[0]
-	feats_subk=eval('util.get_feats_'+subk['feature_class']+'(subk)')
-	subk['kernel'].init(feats_subk['train'], feats_subk['test'])
+	#subk['kernel'].init(feats_subk['train'], feats_subk['test'])
 
-	feats={
-		'train':WordFeatures(indata['data_train'].astype(eval(indata['data_type']))),
-		'test':WordFeatures(indata['data_test'].astype(eval(indata['data_type'])))}
-	kernel=AUCKernel(10, subk['kernel'])
+	#feats={
+	#	'train':WordFeatures(indata['data_train'].astype(eval(indata['data_type']))),
+	#	'test':WordFeatures(indata['data_test'].astype(eval(indata['data_type'])))}
+	#kernel=AUCKernel(10, subk['kernel'])
 
-	return _kernel_subkernels(indata, feats, kernel)
+	#return _kernel_subkernels(indata)
 
-def _kernel_subkernels (indata, feats, kernel):
-	kernel.init(feats['train'], feats['train'])
-	km_train=max(abs(indata['km_train']-kernel.get_kernel_matrix()).flat)
-	kernel.init(feats['train'], feats['test'])
-	km_test=max(abs(indata['km_test']-kernel.get_kernel_matrix()).flat)
+def _kernel_subkernels (indata):
+	sg('init_kernel', 'TRAIN')
+	km_train=max(abs(indata['km_train']-sg('get_kernel_matrix')).flat)
+	sg('init_kernel', 'TEST')
+	km_test=max(abs(indata['km_test']-sg('get_kernel_matrix')).flat)
 
 	return util.check_accuracy(indata['accuracy'],
 		km_train=km_train, km_test=km_test)
 
 def _kernel_custom (indata):
-	feats={'train':RealFeatures(indata['data']),
-		'test':RealFeatures(indata['data'])}
+	print 'Custom kernel not yet implemented in static interfaces.'
+	return True
 
 	symdata=indata['symdata']
 	lowertriangle=array([symdata[(x,y)] for x in xrange(symdata.shape[1])
 		for y in xrange(symdata.shape[0]) if y<=x])
-	kernel=CustomKernel(feats['train'], feats['train'])
-	kernel.set_triangle_kernel_matrix_from_triangle(lowertriangle)
+
+	sg('set_kernel', 'CUSTOM')
+	sg('set_triangle_kernel_matrix_from_triangle', lowertriangle)
 	triangletriangle=max(abs(
-		indata['km_triangletriangle']-kernel.get_kernel_matrix()).flat)
-	kernel.set_triangle_kernel_matrix_from_full(indata['symdata'])
+		indata['km_triangletriangle']-sg('get_kernel_matrix')).flat)
+
+	sg('set_triangle_kernel_matrix_from_full', indata['symdata'])
 	fulltriangle=max(abs(
-		indata['km_fulltriangle']-kernel.get_kernel_matrix()).flat)
-	kernel.set_full_kernel_matrix_from_full(indata['data'])
-	fullfull=max(abs(indata['km_fullfull']-kernel.get_kernel_matrix()).flat)
+		indata['km_fulltriangle']-sg('get_kernel_matrix')).flat)
+
+	sg('set_full_kernel_matrix_from_full', indata['data'])
+	fullfull=max(abs(indata['km_fullfull']-sg('get_kernel_matrix')).flat)
 
 	return util.check_accuracy(indata['accuracy'],
 		triangletriangle=triangletriangle, fulltriangle=fulltriangle,
 		fullfull=fullfull)
 
 def _kernel_pie (indata):
-	pie=PluginEstimate()
-	fun=eval('util.get_feats_'+indata['feature_class'])
-	feats=fun(indata)
-	labels=Labels(double(indata['classifier_labels']))
-	pie.set_labels(labels)
-	pie.set_features(feats['train'])
-	pie.train()
+	pseudo_pos=1e-10
+	pseudo_neg=1e-10
 
-	fun=eval(indata['name']+'Kernel')
-	kernel=fun(feats['train'], feats['train'], pie)
-	km_train=max(abs(indata['km_train']-kernel.get_kernel_matrix()).flat)
+	sg('new_plugin_estimator', pseudo_pos, pseudo_neg)
 
-	kernel.init(feats['train'], feats['test'])
-	pie.set_features(feats['test'])
-	km_test=max(abs(indata['km_test']-kernel.get_kernel_matrix()).flat)
-	classified=max(abs(
-		pie.classify().get_labels()-indata['classifier_classified']))
+	sg('set_labels', 'TRAIN', double(indata['classifier_labels']))
+	sg('train_estimator')
+	util.set_and_train_kernel(indata)
 
-	return util.check_accuracy(indata['accuracy'],
-		km_train=km_train, km_test=km_test, classified=classified)
+	km_train=max(abs(indata['km_train']-sg('get_kernel_matrix')).flat)
 
-def _kernel_top_fisher (indata):
-	feats={}
-	wordfeats=util.get_feats_string_complex(indata)
-
-	pos=HMM(wordfeats['train'], indata['N'], indata['M'],
-		indata['pseudo'])
-	pos.train()
-	pos.baum_welch_viterbi_train(BW_NORMAL)
-	neg=HMM(wordfeats['train'], indata['N'], indata['M'],
-		indata['pseudo'])
-	neg.train()
-	neg.baum_welch_viterbi_train(BW_NORMAL)
-	pos_clone=HMM(pos)
-	neg_clone=HMM(neg)
-	pos_clone.set_observations(wordfeats['test'])
-	neg_clone.set_observations(wordfeats['test'])
-
-	if indata['name_features']=='TOP':
-		feats['train']=TOPFeatures(10, pos, neg, False, False)
-		feats['test']=TOPFeatures(10, pos_clone, neg_clone, False, False)
-	else:
-		feats['train']=FKFeatures(10, pos, neg)
-		feats['train'].set_opt_a(-1) #estimate prior
-		feats['test']=FKFeatures(10, pos_clone, neg_clone)
-		feats['test'].set_a(feats['train'].get_a()) #use prior from training data
-
-	args=util.get_args(indata, 'kernel_arg')
-	kernel=PolyKernel(feats['train'], feats['train'], *args)
-	km_train=max(abs(
-		indata['km_train']-kernel.get_kernel_matrix()).flat)
-	kernel.init(feats['train'], feats['test'])
-	km_test=max(abs(
-		indata['km_test']-kernel.get_kernel_matrix()).flat)
+	sg('init_kernel', 'TEST')
+	km_test=max(abs(indata['km_test']-sg('get_kernel_matrix')).flat)
 
 	return util.check_accuracy(indata['accuracy'],
 		km_train=km_train, km_test=km_test)
+
+def _kernel_top_fisher (indata):
+	print 'TOP/Fisher not yet supported in static interfaces.'
+	return True
+
+
+	#sg('new_hmm', indata['distribution_N'], indata['distribution_M'])
+	#pos=HMM(wordfeats['train'], indata['N'], indata['M'],
+#		indata['pseudo'])
+#	pos.train()
+#	pos.baum_welch_viterbi_train(BW_NORMAL)
+#	neg=HMM(wordfeats['train'], indata['N'], indata['M'],
+#		indata['pseudo'])
+#	neg.train()
+#	neg.baum_welch_viterbi_train(BW_NORMAL)
+#	pos_clone=HMM(pos)
+#	neg_clone=HMM(neg)
+#	pos_clone.set_observations(wordfeats['test'])
+#	neg_clone.set_observations(wordfeats['test'])
+
+#	if indata['name_features']=='TOP':
+#		feats['train']=TOPFeatures(10, pos, neg, False, False)
+#		feats['test']=TOPFeatures(10, pos_clone, neg_clone, False, False)
+#	else:
+#		feats['train']=FKFeatures(10, pos, neg)
+#		feats['train'].set_opt_a(-1) #estimate prior
+#		feats['test']=FKFeatures(10, pos_clone, neg_clone)
+#		feats['test'].set_a(feats['train'].get_a()) #use prior from training data
+
+#	args=util.get_args(indata, 'kernel_arg')
+#	kernel=PolyKernel(feats['train'], feats['train'], *args)
+#	km_train=max(abs(
+#		indata['km_train']-kernel.get_kernel_matrix()).flat)
+#	kernel.init(feats['train'], feats['test'])
+#	km_test=max(abs(
+#		indata['km_test']-kernel.get_kernel_matrix()).flat)
+
+#	return util.check_accuracy(indata['accuracy'],
+#		km_train=km_train, km_test=km_test)
 
 ########################################################################
 # public
 ########################################################################
 
 def test (indata):
+	if indata['name'].startswith('Sparse'):
+		print 'Sparse features not supported yet.'
+		return True
+
+	try:
+		util.set_features(indata)
+	except NotImplementedError, e:
+		print e
+		return True
+
 	# FIXME: name_features has to go away, a bit tricky, though
 	if indata.has_key('name_features'):
 		return _kernel_top_fisher(indata)
@@ -197,5 +203,6 @@ def test (indata):
 		if indata['name']==name:
 			return _kernel_pie(indata)
 
+	# pretty normal kernel
 	return _kernel(indata)
 

@@ -91,13 +91,13 @@ def _evaluate (indata):
 def test (indata):
 	if indata['classifier_type']=='linear':
 		print "Sparse features not supported yet!"
-		return False
+		return True
 
 	util.set_features(indata)
 	if indata['classifier_type']=='kernel':
-		util.set_kernel(indata)
+		util.set_and_train_kernel(indata)
 	elif indata['classifier_type']=='knn':
-		util.set_distance(indata)
+		util.set_and_train_distance(indata)
 
 	if indata.has_key('classifier_labels'):
 		sg('set_labels', 'TRAIN', double(indata['classifier_labels']))
@@ -109,7 +109,7 @@ def test (indata):
 		_set_classifier(indata)
 	except RuntimeError:
 		print "%s is disabled/unavailable!" % indata['name']
-		return False
+		return True
 
 	_train(indata)
 	return _evaluate(indata)

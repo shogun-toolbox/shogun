@@ -9,11 +9,10 @@ import util
 def test (indata):
 	if indata['name'].startswith('Sparse'):
 		print "Sparse features not supported yet!"
-		return False
+		return True
 
 	util.set_features(indata)
-	util.convert_features_and_add_preproc(indata)
-	util.set_distance(indata)
+	util.set_and_train_distance(indata)
 
 	dmatrix=sg('get_distance_matrix')
 	dtrain=max(abs(indata['dm_train']-dmatrix).flat)
