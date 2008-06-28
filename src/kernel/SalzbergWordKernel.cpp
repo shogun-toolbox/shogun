@@ -16,23 +16,29 @@
 #include "features/Labels.h"
 #include "classifier/PluginEstimate.h"
 
-CSalzbergWordKernel::CSalzbergWordKernel(INT size, CPluginEstimate* pie)
+CSalzbergWordKernel::CSalzbergWordKernel(INT size, CPluginEstimate* pie, CLabels* labels)
 : CStringKernel<WORD>(size), estimate(pie), mean(NULL), variance(NULL),
 	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL),
 	ld_mean_lhs(NULL), ld_mean_rhs(NULL),
 	num_params(0), num_symbols(0), sum_m2_s2(0), pos_prior(0.5),
 	neg_prior(0.5), initialized(false)
 {
+	if (labels)
+		set_prior_probs_from_labels(labels);
 }
 
 CSalzbergWordKernel::CSalzbergWordKernel(
-	CStringFeatures<WORD>* l, CStringFeatures<WORD>* r, CPluginEstimate* pie)
+	CStringFeatures<WORD>* l, CStringFeatures<WORD>* r,
+	CPluginEstimate* pie, CLabels* labels)
 : CStringKernel<WORD>(10),estimate(pie), mean(NULL), variance(NULL),
 	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL),
 	ld_mean_lhs(NULL), ld_mean_rhs(NULL),
 	num_params(0), num_symbols(0), sum_m2_s2(0), pos_prior(0.5),
 	neg_prior(0.5), initialized(false)
 {
+	if (labels)
+		set_prior_probs_from_labels(labels);
+
 	init(l, r);
 }
 
@@ -332,4 +338,26 @@ DREAL CSalzbergWordKernel::compute(INT idx_a, INT idx_b)
 
 	//fprintf(stderr, "%ld : %ld -> %f\n",idx_a, idx_b, result) ;
 	return result;
+}
+
+void CSalzbergWordKernel::set_prior_probs_from_labels(CLabels* labels)
+{
+	ASSERT(labels);
+
+	INT num_pos=0, num_neg=0;
+	for (INT i=0; i<labels->get_num_labels(); i++)
+	{
+		if (labels->get_int_label(i)==1)
+			num_pos++;
+		if (labels->get_int_label(i)==-1)
+			num_neg++;
+	}
+
+	SG_INFO("priors: pos=%1.3f (%i)  neg=%1.3f (%i)\n",
+		(DREAL) num_pos/(num_pos+num_neg), num_pos,
+		(DREAL) num_neg/(num_pos+num_neg), num_neg);
+
+	set_prior_probs(
+		(DREAL)num_pos/(num_pos+num_neg),
+		(DREAL)num_neg/(num_pos+num_neg));
 }

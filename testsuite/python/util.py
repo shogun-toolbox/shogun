@@ -145,6 +145,7 @@ def convert_features_and_add_preproc (indata):
 	else:
 		return
 
+	# having order implies having gap and reverse
 	if not indata.has_key('order'):
 		return
 

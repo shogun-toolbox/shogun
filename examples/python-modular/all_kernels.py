@@ -609,7 +609,7 @@ def combined ():
 	kernel.init(feats_train, feats_test)
 	km_test=kernel.get_kernel_matrix()
 
-def plugin_estimate ():
+def plugin_estimate_histogram ():
 	print 'PluginEstimate w/ HistogramWord'
 
 	order=3
@@ -633,6 +633,37 @@ def plugin_estimate ():
 	pie.train()
 
 	kernel=HistogramWordKernel(feats_train, feats_train, pie)
+	km_train=kernel.get_kernel_matrix()
+
+	kernel.init(feats_train, feats_test)
+	pie.set_features(feats_test)
+	pie.classify().get_labels()
+	km_test=kernel.get_kernel_matrix()
+
+def plugin_estimate_salzberg ():
+	print 'PluginEstimate w/ SalzbergWord'
+
+	order=3
+	gap=0
+	reverse=False
+
+	charfeat=StringCharFeatures(DNA)
+	charfeat.set_string_features(fm_train_dna)
+	feats_train=StringWordFeatures(charfeat.get_alphabet())
+	feats_train.obtain_from_char(charfeat, order-1, order, gap, reverse)
+
+	charfeat=StringCharFeatures(DNA)
+	charfeat.set_string_features(fm_test_dna)
+	feats_test=StringWordFeatures(charfeat.get_alphabet())
+	feats_test.obtain_from_char(charfeat, order-1, order, gap, reverse)
+
+	pie=PluginEstimate()
+	labels=Labels(label_train_dna)
+	pie.set_labels(labels)
+	pie.set_features(feats_train)
+	pie.train()
+
+	kernel=SalzbergWordKernel(feats_train, feats_test, pie, labels)
 	km_train=kernel.get_kernel_matrix()
 
 	kernel.init(feats_train, feats_test)
@@ -740,6 +771,7 @@ if __name__=='__main__':
 	distance()
 	auc()
 	combined()
-	plugin_estimate()
+	plugin_estimate_histogram()
+	plugin_estimate_salzberg()
 	top_fisher()
 	mindygram()

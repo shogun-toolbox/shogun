@@ -135,6 +135,10 @@ class CSGInterface : public CSGObject
 		bool cmd_use_diagonal_speedup();
 		/** set kernel optimization type */
 		bool cmd_set_kernel_optimization_type();
+		/** set Salzberg prior probs */
+		bool cmd_set_prior_probs();
+		/** set Salzberg prior probs from labels */
+		bool cmd_set_prior_probs_from_labels();
 #ifdef USE_SVMLIGHT
 		bool cmd_resize_kernel_cache();
 #endif //USE_SVMLIGHT

@@ -18,6 +18,7 @@
 #include "kernel/SparseLinearKernel.h"
 #include "kernel/CombinedKernel.h"
 #include "kernel/CustomKernel.h"
+#include "kernel/SalzbergWordKernel.h"
 #include "features/ByteFeatures.h"
 #include "features/CharFeatures.h"
 #include "features/IntFeatures.h"
@@ -275,6 +276,16 @@ CSGInterfaceMethod sg_methods[]=
 		N_SET_KERNEL_OPTIMIZATION_TYPE,
 		(&CSGInterface::cmd_set_kernel_optimization_type),
 		USAGE_I(N_SET_KERNEL_OPTIMIZATION_TYPE, "USAGE_STR" "FASTBUTMEMHUNGRY|SLOWBUTMEMEFFICIENT" "USAGE_STR")
+	},
+	{
+		N_SET_PRIOR_PROBS,
+		(&CSGInterface::cmd_set_prior_probs),
+		USAGE_I(N_SET_PRIOR_PROBS, "USAGE_STR" "pos probs, neg_probs" "USAGE_STR")
+	},
+	{
+		N_SET_PRIOR_PROBS_FROM_LABELS,
+		(&CSGInterface::cmd_set_prior_probs_from_labels),
+		USAGE_I(N_SET_PRIOR_PROBS_FROM_LABELS, "USAGE_STR" "labels" "USAGE_STR")
 	},
 #ifdef USE_SVMLIGHT
 	{
@@ -3408,6 +3419,50 @@ bool CSGInterface::cmd_set_kernel_optimization_type()
 
 	delete[] opt_type;
 	return success;
+}
+
+bool CSGInterface::cmd_set_prior_probs()
+{
+	if (m_nrhs<3 || !create_return_values(0))
+		return false;
+
+	CSalzbergWordKernel* kernel=(CSalzbergWordKernel*) ui_kernel->get_kernel();
+	if (kernel->get_kernel_type()!=K_SALZBERG)
+		SG_ERROR("SalzbergWordKernel required for setting prior probs!\n");
+
+	DREAL pos_probs=get_real_from_real_or_str();
+	DREAL neg_probs=get_real_from_real_or_str();
+
+	kernel->set_prior_probs(pos_probs, neg_probs);
+
+	return true;
+}
+
+bool CSGInterface::cmd_set_prior_probs_from_labels()
+{
+	if (m_nrhs<2 || !create_return_values(0))
+		return false;
+
+	CSalzbergWordKernel* kernel=(CSalzbergWordKernel*) ui_kernel->get_kernel();
+	if (kernel->get_kernel_type()!=K_SALZBERG)
+	SG_ERROR("SalzbergWordKernel required for setting prior probs!\n");
+
+	DREAL* lab=NULL;
+	INT len=0;
+	get_real_vector(lab, len);
+
+	CLabels* labels=new CLabels(len);
+	for (INT i=0; i<len; i++)
+	{
+		if (!labels->set_label(i, lab[i]))
+			SG_ERROR("Couldn't set label %d (of %d): %f.\n", i, len, lab[i]);
+	}
+	delete[] lab;
+
+	kernel->set_prior_probs_from_labels(labels);
+
+	delete labels;
+	return true;
 }
 
 #ifdef USE_SVMLIGHT

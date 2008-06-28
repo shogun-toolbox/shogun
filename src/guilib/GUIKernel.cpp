@@ -502,7 +502,6 @@ CKernel* CGUIKernel::create_polymatchword(
 
 CKernel* CGUIKernel::create_salzbergword(INT size)
 {
-
 	SG_INFO("Getting estimator.\n");
 	CPluginEstimate* estimator=ui->ui_pluginestimate->get_estimator();
 	if (!estimator)
@@ -510,10 +509,11 @@ CKernel* CGUIKernel::create_salzbergword(INT size)
 
 	CKernel* kern=new CSalzbergWordKernel(size, estimator);
 	if (!kern)
-		SG_ERROR("Couldn't create HistogramWord with size %d.\n", size);
+		SG_ERROR("Couldn't create SalzbergWord with size %d.\n", size);
 	else
-		SG_DEBUG("created HistogramWord (%p) with size %d.\n", kern, size);
+		SG_DEBUG("created SalzbergWord (%p) with size %d.\n", kern, size);
 
+/*
 	// prior stuff
 	SG_INFO("Getting labels.\n");
 	CLabels* train_labels=ui->ui_labels->get_train_labels();
@@ -522,22 +522,8 @@ CKernel* CGUIKernel::create_salzbergword(INT size)
 		SG_INFO("Assign train labels first!\n");
 		return NULL;
 	}
-
-	INT num_pos=0, num_neg=0;
-	for (INT i=0; i<train_labels->get_num_labels(); i++)
-	{
-		if (train_labels->get_int_label(i)==1)
-			num_pos++;
-		if (train_labels->get_int_label(i)==-1)
-			num_neg++;
-	}
-	SG_INFO("priors: pos=%1.3f (%i)  neg=%1.3f (%i)\n",
-		(DREAL) num_pos/(num_pos+num_neg), num_pos,
-		(DREAL) num_neg/(num_pos+num_neg), num_neg);
-
-	((CSalzbergWordKernel*) kern)->set_prior_probs(
-		(DREAL)num_pos/(num_pos+num_neg),
-		(DREAL)num_neg/(num_pos+num_neg));
+	((CSalzbergWordKernel *) kern)->set_prior_probs_from_labels(train_labels);
+*/
 
 	return kern;
 }

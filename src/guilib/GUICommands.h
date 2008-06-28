@@ -130,6 +130,8 @@
 #endif //USE_SVMLIGHT
 
 #define N_SET_KERNEL_OPTIMIZATION_TYPE	"set_kernel_optimization_type"
+#define N_SET_PRIOR_PROBS				"set_prior_probs"
+#define N_SET_PRIOR_PROBS_FROM_LABELS	"set_prior_probs_from_labels"
 #define N_ATTACH_PREPROC				"attach_preproc"
 #define N_ADD_PREPROC					"add_preproc"
 #define N_DEL_PREPROC					"del_preproc"

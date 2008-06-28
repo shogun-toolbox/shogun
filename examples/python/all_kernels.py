@@ -459,7 +459,7 @@ def combined ():
 	sg('init_kernel', 'TEST')
 	km=sg('get_kernel_matrix')
 
-def plugin_estimate ():
+def plugin_estimate_histogram ():
 	print 'PluginEstimate w/ HistogramWord'
 
 	size_cache=10
@@ -482,6 +482,40 @@ def plugin_estimate ():
 	sg('train_estimator')
 
 	sg('set_kernel', 'HISTOGRAM', 'WORD', size_cache)
+	sg('init_kernel', 'TRAIN')
+	km=sg('get_kernel_matrix')
+
+	sg('init_kernel', 'TEST')
+# not supported yet
+#	lab=sg('plugin_estimate_classify')
+	km=sg('get_kernel_matrix')
+
+
+def plugin_estimate_salzberg ():
+	print 'PluginEstimate w/ SalzbergWord'
+
+	size_cache=10
+	order=3
+	gap=0
+	reverse='n' # bit silly to not use boolean, set 'r' to yield true
+	use_sign=False
+	normalization='FULL'
+
+	sg('set_features', 'TRAIN', fm_train_dna, 'DNA')
+	sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, gap, reverse)
+
+	sg('set_features', 'TEST', fm_test_dna, 'DNA')
+	sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, gap, reverse)
+
+	pseudo_pos=1e-1
+	pseudo_neg=1e-1
+	sg('new_plugin_estimator', pseudo_pos, pseudo_neg)
+	sg('set_labels', 'TRAIN', label_train_dna)
+	sg('train_estimator')
+
+	sg('set_kernel', 'SALZBERG', 'WORD', size_cache)
+	#sg('set_prior_probs', 0.4, 0.6)
+	sg('set_prior_probs_from_labels', label_train_dna)
 	sg('init_kernel', 'TRAIN')
 	km=sg('get_kernel_matrix')
 
@@ -526,4 +560,5 @@ if __name__=='__main__':
 
 	distance()
 	combined()
-	plugin_estimate()
+	plugin_estimate_histogram()
+	plugin_estimate_salzberg()
