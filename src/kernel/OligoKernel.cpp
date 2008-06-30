@@ -98,7 +98,7 @@ void COligoKernel::getExpFunctionCache(double sigma, unsigned int sequence_lengt
 {
 	cache.resize(sequence_length, 0.);
 	cache[0] = 1;
-	for (int i = 1; i < sequence_length - 1; i++)
+	for (unsigned int i = 1; i < sequence_length - 1; i++)
 	{
 		cache[i] = exp((-1 / (4.0 * sigma * sigma)) * i * i);
 	}
@@ -116,7 +116,7 @@ double COligoKernel::kernelOligoFast(const vector< pair<int, double> >& x,
 	unsigned int x_size = x.size();
 	unsigned int y_size = y.size();
 
-	while(i1 < x_size && i2 < y_size)
+	while ((unsigned int) i1 < x_size && (unsigned int) i2 < y_size)
 	{
 		if (x[i1].second == y[i2].second)
 		{
@@ -197,7 +197,7 @@ double COligoKernel::kernelOligo(const vector< pair<int, double> >&    x,
 	unsigned int x_size = x.size();
 	unsigned int y_size = y.size();
 
-	while(i1 < x_size && i2 < y_size)
+	while ((unsigned int) i1 < x_size && (unsigned int) i2 < y_size)
 	{
 		if (x[i1].second == y[i2].second)
 		{
