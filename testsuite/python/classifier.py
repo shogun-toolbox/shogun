@@ -61,16 +61,13 @@ def _evaluate (indata):
 	elif indata['classifier_type']=='lda':
 		pass
 	else:
-		[bias, weights]=sg('get_svm')
-		weights=weights.T
-		print 'bias', bias
-		print 'weights', weights
-		if indata.has_key('classifier_bias'):
+		if indata.has_key('classifier_bias') and indata.has_key('classifier_alphas'):
+			[bias, weights]=sg('get_svm')
+			weights=weights.T
 			res['bias']=abs(bias[0][0]-indata['classifier_bias'])
-		if indata.has_key('classifier_alphas'):
 			res['alphas']=max(abs(weights[0]-indata['classifier_alphas']))
-		if indata.has_key('classifier_support_vectors'):
-			res['sv']=max(abs(weights[1]-indata['classifier_support_vectors']))
+			if indata.has_key('classifier_support_vectors'):
+				res['sv']=max(abs(weights[1]-indata['classifier_support_vectors']))
 		sg('init_kernel', 'TEST')
 
 	classified=sg('classify')
