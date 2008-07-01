@@ -453,7 +453,7 @@ bool CGUIClassifier::train_knn(INT k)
 	return result;
 }
 
-bool CGUIClassifier::train_linear()
+bool CGUIClassifier::train_linear(DREAL gamma)
 {
 	CFeatures* trainfeatures=ui->ui_features->get_train_features();
 	CLabels* trainlabels=ui->ui_labels->get_train_labels();
@@ -474,6 +474,9 @@ bool CGUIClassifier::train_linear()
 		((CPerceptron*) classifier)->set_learn_rate(perceptron_learnrate);
 		((CPerceptron*) classifier)->set_max_iter(perceptron_maxiter);
 	}
+
+	if (classifier->get_classifier_type()==CT_LDA)
+		((CLDA*) classifier)->set_gamma(gamma);
 
 	((CLinearClassifier*) classifier)->set_labels(trainlabels);
 	((CLinearClassifier*) classifier)->set_features((CRealFeatures*) trainfeatures);

@@ -4038,8 +4038,16 @@ bool CSGInterface::cmd_train_classifier()
 		}
 
 		case CT_PERCEPTRON:
-		case CT_LDA:
 			return ui_classifier->train_linear();
+
+		case CT_LDA:
+		{
+			DREAL gamma=0;
+			if (m_nrhs==2)
+				gamma=get_real_from_real_or_str();
+
+			return ui_classifier->train_linear(gamma);
+		}
 
 		case CT_SVMLIN:
 		case CT_SVMPERF:
