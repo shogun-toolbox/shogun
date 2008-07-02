@@ -61,7 +61,7 @@
   \subsection distmachine_sec Distance Machines
   \li KNN
   \subsection otherclassi_sec Other Classifiers
-  \li k-Neighreast Neigbor
+  \li k-Nearest Neighbor
   \section regression_sec Regression
   \subsection Support Vector Regression
   \li SVRLight
