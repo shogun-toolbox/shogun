@@ -81,7 +81,7 @@ CGUIClassifier::CGUIClassifier(CSGInterface* ui_)
 	svm_weight_epsilon=1e-5;
 	svm_epsilon=1e-5;
 	svm_tube_epsilon=1e-2;
-	svm_nu=1e-2;
+	svm_nu=0.5;
 	svm_use_shrinking = true ;
 
 	svm_use_bias = true;

@@ -16,10 +16,8 @@ def _set_classifier (indata):
 	else:
 		sg('svm_use_bias', False)
 	if indata.has_key('classifier_epsilon'):
-		print 'epsilon', indata['classifier_epsilon']
 		sg('svm_epsilon', indata['classifier_epsilon'])
 	if indata.has_key('classifier_tube_epsilon'):
-		print 'tube epsilon', indata['classifier_tube_epsilon']
 		sg('svr_tube_epsilon', indata['classifier_tube_epsilon'])
 	if indata.has_key('classifier_max_train_time'):
 		sg('svm_max_train_time', indata['classifier_max_train_time'])
@@ -44,7 +42,6 @@ def _train (indata):
 	else:
 		if indata.has_key('classifier_C'):
 			sg('c', double(indata['classifier_C']))
-			print 'c', indata['classifier_C']
 		sg('train_classifier')
 
 
@@ -66,12 +63,13 @@ def _evaluate (indata):
 			weights=weights.T
 			res['bias']=abs(bias[0][0]-indata['classifier_bias'])
 			res['alphas']=max(abs(weights[0]-indata['classifier_alphas']))
+
 			if indata.has_key('classifier_support_vectors'):
 				res['sv']=max(abs(weights[1]-indata['classifier_support_vectors']))
+
 		sg('init_kernel', 'TEST')
 
 	classified=sg('classify')
-	print 'classified', classified
 	res['classified']=max(abs(classified-indata['classifier_classified']))
 
 	return util.check_accuracy(res['accuracy'],
@@ -83,6 +81,7 @@ def _evaluate (indata):
 ########################################################################
 
 def test (indata):
+	#sg('loglevel', 'ALL')
 	try:
 		util.set_features(indata)
 	except NotImplementedError, e:
