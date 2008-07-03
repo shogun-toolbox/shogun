@@ -700,6 +700,9 @@ bool CGUIClassifier::set_svr_tube_epsilon(DREAL tube_epsilon)
 {
 	if (tube_epsilon<0)
 		svm_tube_epsilon=1e-2;
+	svm_tube_epsilon=tube_epsilon;
+
+	((CSVM*) classifier)->set_tube_epsilon(svm_tube_epsilon);
 	SG_INFO("Set to svr_tube_epsilon=%f.\n", svm_tube_epsilon);
 
 	return true;
@@ -1259,7 +1262,8 @@ bool CGUIClassifier::classify_example(INT idx, DREAL &result)
 bool CGUIClassifier::set_krr_tau(DREAL tau)
 {
 	krr_tau=tau;
-	((CKRR*) classifier)->set_tau(tau);
+	((CKRR*) classifier)->set_tau(krr_tau);
+	SG_INFO("Set to krr_tau=%f.\n", krr_tau);
 
 	return true;
 }
