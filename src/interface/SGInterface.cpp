@@ -2104,7 +2104,7 @@ CKernel* CSGInterface::create_kernel()
 
 		CHAR* dtype=get_str_from_str_or_direct(len);
 		INT size=get_int_from_int_or_str();
-		DREAL scale=1.4;
+		DREAL scale=-1;
 		if (m_nrhs==5)
 			scale=get_real_from_real_or_str();
 

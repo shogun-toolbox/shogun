@@ -138,15 +138,15 @@ def set_and_train_kernel (indata, do_train=True):
 
 
 def convert_features_and_add_preproc (indata):
+	# having order implies having gap and reverse
+	if not indata.has_key('order'):
+		return
+
 	if indata['feature_type']=='Ulong':
 		type='ULONG'
 	elif indata['feature_type']=='Word':
 		type='WORD'
 	else:
-		return
-
-	# having order implies having gap and reverse
-	if not indata.has_key('order'):
 		return
 
 	order=indata['order']
