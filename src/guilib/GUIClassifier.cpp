@@ -1254,4 +1254,14 @@ bool CGUIClassifier::classify_example(INT idx, DREAL &result)
 	result=classifier->classify_example(idx);
 	return true ;
 }
+
+
+bool CGUIClassifier::set_krr_tau(DREAL tau)
+{
+	krr_tau=tau;
+	((CKRR*) classifier)->set_tau(tau);
+
+	return true;
+}
+
 #endif

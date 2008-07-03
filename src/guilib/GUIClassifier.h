@@ -75,7 +75,7 @@ class CGUIClassifier : public CSGObject
 		bool set_svm_precompute_enabled(INT precompute);
 
 		/** set KRR's tau */
-		bool set_krr_tau(DREAL tau=1) { krr_tau=tau; return true; }
+		bool set_krr_tau(DREAL tau=1);
 
 		/** train SVM */
 		bool train_svm();
