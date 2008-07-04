@@ -5,21 +5,7 @@ from numpy import inf, nan
 from sg import sg
 import util
 
-
-########################################################################
-# public
-########################################################################
-
-def test (indata):
-	util.set_features(indata)
-
-	if indata['name']=='HMM':
-		sg('new_hmm', indata['distribution_N'], indata['distribution_M'])
-		sg('bw')
-	else:
-		print 'Can\'t yet train other distributions than HMM in static interface.'
-		return True
-
+def _evaluate (indata):
 	# what is sg('likelihood')?
 	likelihood=abs(sg('hmm_likelihood')-indata['distribution_likelihood'])
 	return util.check_accuracy(indata['distribution_accuracy'],
@@ -44,4 +30,27 @@ def test (indata):
 	else:
 		return util.check_accuracy(indata['distribution_accuracy'],
 			derivatives=derivatives, likelihood=likelihood)
+
+
+def _set_distribution (indata):
+	if indata['name']=='HMM':
+		sg('new_hmm', indata['distribution_N'], indata['distribution_M'])
+		sg('bw')
+	else:
+		raise NotImplementedError, 'Can\'t yet train other distributions than HMM in static interface.'
+
+
+########################################################################
+# public
+########################################################################
+
+def test (indata):
+	try:
+		util.set_features(indata)
+		_set_distribution(indata)
+	except NotImplementedError, e:
+		print e
+		return True
+
+	return _evaluate(indata)
 

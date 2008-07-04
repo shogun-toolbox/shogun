@@ -5,11 +5,8 @@ Test PreProc
 from sg import sg
 import util
 
-########################################################################
-# kernel computation
-########################################################################
 
-def _kernel (indata):
+def _evaluate (indata):
 	util.set_and_train_kernel(indata)
 
 	kmatrix=sg('get_kernel_matrix')
@@ -22,7 +19,7 @@ def _kernel (indata):
 	return util.check_accuracy(indata['accuracy'], ktrain=ktrain, ktest=ktest)
 
 
-def _add_preproc (indata):
+def _set_preproc (indata):
 	pname=util.fix_preproc_name_inconsistency(indata['name'])
 	args=util.get_args(indata, 'preproc_arg')
 
@@ -30,13 +27,19 @@ def _add_preproc (indata):
 	sg('attach_preproc', 'TRAIN')
 	sg('attach_preproc', 'TEST')
 
+
 ########################################################################
 # public
 ########################################################################
 
 def test (indata):
-	util.set_features(indata)
-	_add_preproc(indata)
+	try:
+		util.set_features(indata)
+	except NotImplementedError, e:
+		print e
+		return True
 
-	return _kernel(indata)
+	_set_preproc(indata)
+
+	return _evaluate(indata)
 

@@ -6,6 +6,27 @@ from sg import sg
 import util
 
 
+def _set_clustering (indata):
+	cname=util.fix_clustering_name_inconsistency(indata['name'])
+	sg('new_clustering', cname)
+
+
+def _train (indata):
+	if indata.has_key('clustering_max_iter'):
+		max_iter=indata['clustering_max_iter']
+	else:
+		max_iter=1000
+
+	if indata.has_key('clustering_k'):
+		first_arg=indata['clustering_k']
+	elif indata.has_key('clustering_merges'):
+		first_arg=indata['clustering_merges']
+	else:
+		raise StandardError, 'Incomplete clustering data.'
+
+	sg('train_clustering', first_arg, max_iter)
+
+
 def _evaluate (indata):
 	if indata.has_key('clustering_radi'):
 		[radi, centers]=sg('get_clustering')
@@ -25,33 +46,26 @@ def _evaluate (indata):
 			merge_distances=merge_distances, pairs=pairs)
 
 	else:
-		return util.check_accuracy(indata['clustering_accuracy'])
+		raise StandardError, 'Incomplete clustering data.'
 
 ########################################################################
 # public
 ########################################################################
 
 def test (indata):
-	util.set_features(indata)
+	try:
+		util.set_features(indata)
+	except NotImplementedError, e:
+		print e
+		return True
+
 	util.set_and_train_distance(indata)
+	_set_clustering(indata)
 
-	cname=util.fix_clustering_name_inconsistency(indata['name'])
-	sg('new_clustering', cname)
-
-	if indata.has_key('clustering_k'):
-		first_arg=indata['clustering_k']
-	elif indata.has_key('clustering_merges'):
-		first_arg=indata['clustering_merges']
-	else:
-		print 'Incomplete clustering data.'
+	try:
+		_train(indata)
+		return _evaluate(indata)
+	except StandardError, e:
+		print e
 		return False
-
-	if indata.has_key('clustering_max_iter'):
-		max_iter=indata['clustering_max_iter']
-	else:
-		max_iter=1000
-
-	sg('train_clustering', first_arg, max_iter)
-
-	return _evaluate(indata)
 
