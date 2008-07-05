@@ -2280,8 +2280,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	fprintf(stderr, "use_orf = %i\n", use_orf) ;
 #endif
 	
-	const INT default_look_back = 30000 ;
-	INT max_look_back = default_look_back ;
+	INT max_look_back = 20000 ;
 	bool use_svm = false ;
 	//ASSERT(dict_len==num_svms*cum_num_words_array[num_degrees]) ;
 	//dict_weights.set_array(dictionary_weights, cum_num_words_array[num_degrees], num_svms, false, false) ;
@@ -2347,21 +2346,31 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 				}
 	}
 
+
 	{ // determine maximal length of look-back
 		for (INT i=0; i<N; i++)
-			for (INT j=0; j<N; j++)
+		{
+			// only consider transitions that are actually allowed
+			const T_STATES num_elem   = trans_list_forward_cnt[i] ;
+			const T_STATES *elem_list = trans_list_forward[i] ;
+				
+			for (INT jj=0; jj<num_elem; jj++)
 			{
+				T_STATES j = elem_list[jj] ;
+
 				CPlifBase *penij=PEN.element(i,j) ;
 				if (penij==NULL)
 					continue ;
 				if (penij->get_max_value()>max_look_back)
 				{
 					SG_DEBUG( "%d %d -> value: %f\n", i,j,penij->get_max_value());
+					penij->print() ;
 					max_look_back=(INT) (CMath::ceil(penij->get_max_value()));
 				}
 				if (penij->uses_svm_values())
 					use_svm=true ;
 			}
+		}
 	}
 
 	//SG_PRINT("use_svm=%i, genestr_len: \n", use_svm, m_genestr_len) ;
@@ -2378,7 +2387,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 
     bool is_big = (mem_use>200) || (seq_len>5000) ;
 
-	if (is_big)
+	if (1)//(is_big)
 	{
 		SG_DEBUG("calling best_path_trans: seq_len=%i, N=%i, lookback=%i nbest=%i\n", 
 					 seq_len, N, max_look_back, nbest) ;
@@ -2643,11 +2652,13 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 					T_STATES ii = elem_list[i] ;
 					
 					const CPlifBase * penalty = PEN.element(j,ii) ;
-					INT look_back = default_look_back ;
+					INT look_back = max_look_back ;
 					{ // find lookback length
 						CPlifBase *pen = (CPlifBase*) penalty ;
 						if (pen!=NULL)
 							look_back=(INT) (CMath::ceil(pen->get_max_value()));
+						if (look_back>=1e6)
+							fprintf(stderr, "%i,%i -> %d from %ld\n", j, ii, look_back, (long)pen) ;
 						ASSERT(look_back<1e6);
 					}
 					//INT num_current_svms = trans_matrix_num_svms.element(j,ii);
