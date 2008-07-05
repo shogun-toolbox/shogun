@@ -1,15 +1,16 @@
-
-
 function y = test_octave(filename)
-  
-  pos = max(findstr('/', filename));
-  res = test_kernels(filename(pos+1:end));
+	addpath('util');
 
-  if(res == 0)
-    sprintf('__OK__')
-  else
-    sprintf( '__ERR__')
-  end
+	slashes=findstr('/', filename);
+	pos_filename=slashes(end);
+	pos_modulename=slashes(end-1);
+	modulename=filename(pos_modulename+1:pos_filename-1);
+	filename=filename(pos_filename+1:end-2);
+	testcase=strcat(modulename, '("', filename, '")');
+	res=eval(testcase);
 
-
-
+	if (res==0)
+		y=0;
+	else
+		y=1;
+	end

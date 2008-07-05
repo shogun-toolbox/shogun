@@ -13,14 +13,18 @@ function test_all () {
 		echo -n "$file"
 		echo -n -e "\t\t"
 
-		output=`${PYTHON} test_one.py "$file"`
+		if [ -n "${OCTAVE_LOADPATH}" ]; then
+			output=`echo "test_octave('${file}')" | octave | grep '__OK__'`
+		else
+			output=`echo "test_matlab('${file}')" | matlab -nojvm -nodisplay | grep '__OK__'`
+		fi
 		ret=$?
 
-		if [ $ret -eq 0 ] ; then
+		if [ ${ret} -eq 0 ] ; then
 			echo 'OK'
 		else
 			echo 'ERROR'
-			echo $output
+			echo ${output}
 		fi
 	done
 	sleep 1
