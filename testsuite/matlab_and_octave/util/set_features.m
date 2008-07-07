@@ -24,7 +24,7 @@ function y = set_features()
 		return
 	end
 
-	if !findstr('Combined', name)
+	if isempty(findstr('Combined', name))
 		if !isempty(alphabet)
 			sg('set_features', 'TRAIN', data_train, alphabet);
 			sg('set_features', 'TEST', data_test, alphabet);
