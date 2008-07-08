@@ -110,8 +110,6 @@ def set_and_train_kernel (indata, do_train=True):
 
 	if indata.has_key('kernel_name'):
 		kname=fix_kernel_name_inconsistency(indata['kernel_name'])
-	elif indata.has_key('name_kernel'): # FIXME!!!!
-		kname=fix_kernel_name_inconsistency(indata['name_kernel'])
 	else:
 		kname=fix_kernel_name_inconsistency(indata['name'])
 

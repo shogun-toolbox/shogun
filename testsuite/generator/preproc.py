@@ -10,18 +10,18 @@ import featop
 import dataop
 import config
 
-def _compute (name, name_kernel, feats, data, *kargs):
+def _compute (name, kernel_name, feats, data, *kargs):
 	"""Perform computations on kernel using preprocessors.
 
 	@param name Name of the preprocessor
-	@param name_kernel Name of the kernel
+	@param kernel_name Name of the kernel
 	@param feats Features of the kernel
 	@param data Train and test data
 	@param *kargs Variable kernel argument list
 	@return Dict of testcase data ready to be written to file
 	"""
 
-	fun=eval(name_kernel+'Kernel')
+	fun=eval(kernel_name+'Kernel')
 	kernel=fun(feats['train'], feats['train'], *kargs)
 	km_train=kernel.get_kernel_matrix()
 	kernel.init(feats['train'], feats['test'])
@@ -29,14 +29,14 @@ def _compute (name, name_kernel, feats, data, *kargs):
 
 	outdata={
 		'name':name,
-		'name_kernel':name_kernel,
+		'kernel_name':kernel_name,
 		'km_train':km_train,
 		'km_test':km_test,
 		'init_random':dataop.INIT_RANDOM,
 		'data_train':numpy.matrix(data['train']),
 		'data_test':numpy.matrix(data['test'])
 	}
-	outdata.update(fileop.get_outdata(name_kernel, config.C_KERNEL, kargs))
+	outdata.update(fileop.get_outdata(kernel_name, config.C_KERNEL, kargs))
 	return outdata
 
 def _run_string_complex (ftype):

@@ -11,7 +11,7 @@ import util
 ########################################################################
 
 def _kernel (indata, feats):
-	fun=eval(indata['name_kernel']+'Kernel')
+	fun=eval(indata['kernel_name']+'Kernel')
 	args=util.get_args(indata, 'kernel_arg')
 
 	kernel=fun(feats['train'], feats['train'], *args)

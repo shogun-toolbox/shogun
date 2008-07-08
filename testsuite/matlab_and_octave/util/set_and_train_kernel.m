@@ -1,14 +1,11 @@
 function y = set_and_train_kernel()
 	global kernel_name;
-	global name_kernel;
 	global name;
 	global feature_type;
 	global kernel_arg0_size;
 
 	if !isempty(kernel_name)
 		kname=fix_kernel_name_inconsistency(kernel_name);
-	elseif !isempty(name_kernel)
-		kname=fix_kernel_name_inconsistency(name_kernel);
 	elseif !isempty(name)
 		kname=fix_kernel_name_inconsistency(name);
 	else

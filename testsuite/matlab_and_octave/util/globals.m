@@ -6,7 +6,6 @@ global data_test;
 global data;
 global distance_name;
 global kernel_name;
-global name_kernel;
 global feature_type;
 global kernel_arg0_size;
 global kernel_arg1_gamma_;
