@@ -4,6 +4,7 @@ function y = set_features()
 	global alphabet;
 	global data_train;
 	global data_test;
+	global data_type;
 	global data;
 
 	if findstr('Sparse', name)
@@ -32,8 +33,13 @@ function y = set_features()
 			sg('set_features', 'TRAIN', data);
 			sg('set_features', 'TEST', data);
 		else
-			sg('set_features', 'TRAIN', data_train);
-			sg('set_features', 'TEST', data_test);
+			fname='double';
+			if data_type=='ushort'
+				fname='uint8';
+			end
+
+			sg('set_features', 'TRAIN', feval(fname, data_train));
+			sg('set_features', 'TEST', feval(fname, data_test));
 		end
 	end
 
