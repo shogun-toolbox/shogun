@@ -118,19 +118,21 @@ void CIO::message(EMessageType prio, const CHAR *fmt, ... ) const
 		case M_CRITICAL:
 		case M_ALERT:
 		case M_EMERGENCY:
-#ifndef WIN32
-			CSignal::unset_handler();
-#endif
 #if defined(WIN32) && defined(HAVE_MATLAB)
 			mexPrintf("%s", str);
-#elif defined(HAVE_OCTAVE)
-			error("%s", str);
-#elif defined(HAVE_PYTHON) && !defined(HAVE_SWIG)
-			PyErr_SetString(PyExc_RuntimeError, str);
-#elif defined(HAVE_PYTHON) && defined(HAVE_SWIG)
-			// nop
+#elif defined(HAVE_PYTHON)
+			// nop - str will be printed when exception is displayed in python
 #elif defined(HAVE_R)
-			error("%s", str);
+			if (target==stdout)
+			{
+				Rprintf((char*) "%s", msg_intro);
+				Rprintf((char*) "%s", str);
+			}
+			else
+			{
+				fprintf(target, "%s", msg_intro);
+				fprintf(target, "%s", str);
+			}
 #else
 			fprintf(target, "%s", str);
 #endif

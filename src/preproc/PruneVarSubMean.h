@@ -19,7 +19,10 @@
 
 #include <stdio.h>
 
-/** Preprocessor PruneVarSubMean */
+/** Preprocessor PruneVarSubMean will substract the mean and remove features
+ * that have zero variance. It will optionally normalize standard deviation of
+ * features to 1 (by dividing by standard deviation of the feature)
+ */
 class CPruneVarSubMean : public CSimplePreProc<DREAL>
 {
 	public:

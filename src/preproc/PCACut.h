@@ -23,7 +23,16 @@
 #include "lib/common.h"
 
 
-/** Preprocessor PCACut */
+/** Preprocessor PCACut performs principial component analysis on the input
+ * vectors and keeps only the n eigenvectors with eigenvalues above a certain
+ * threshold. On preprocessing the stored covariance matrix is used to project
+ * vectors into eigenspace only returning vectors of reduced dimension n.
+ * Optional whitening is performed.
+ *
+ * This is only useful if the dimensionality of the data is rather low, as the
+ * covariance matrix is of size num_feat*num_feat. Note that vectors don't have
+ * to have zero mean as it is substracted.
+ */
 class CPCACut : public CSimplePreProc<DREAL>
 {
 	public:

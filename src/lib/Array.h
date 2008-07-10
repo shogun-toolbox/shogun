@@ -70,7 +70,12 @@ struct array_statistics {
 #define INCREMENT_ARRAY_STATISTICS_VALUE(_val_)
 #endif /* ARRAY_STATISTICS */
 
-/** template class Array */
+/** Template class Array implements a dense one dimensional array.
+ *
+ * Note that depending on compile options everything will be inlined, such that
+ * this is as high performance array implementation \b without error checking.
+ *
+ * */
 template <class T> class CArray : public CSGObject
 {
 	public:

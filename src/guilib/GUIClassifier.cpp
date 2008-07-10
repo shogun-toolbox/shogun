@@ -81,7 +81,7 @@ CGUIClassifier::CGUIClassifier(CSGInterface* ui_)
 	svm_weight_epsilon=1e-5;
 	svm_epsilon=1e-5;
 	svm_tube_epsilon=1e-2;
-	svm_nu=1e-2;
+	svm_nu=0.5;
 	svm_use_shrinking = true ;
 
 	svm_use_bias = true;
@@ -453,7 +453,7 @@ bool CGUIClassifier::train_knn(INT k)
 	return result;
 }
 
-bool CGUIClassifier::train_linear()
+bool CGUIClassifier::train_linear(DREAL gamma)
 {
 	CFeatures* trainfeatures=ui->ui_features->get_train_features();
 	CLabels* trainlabels=ui->ui_labels->get_train_labels();
@@ -474,6 +474,9 @@ bool CGUIClassifier::train_linear()
 		((CPerceptron*) classifier)->set_learn_rate(perceptron_learnrate);
 		((CPerceptron*) classifier)->set_max_iter(perceptron_maxiter);
 	}
+
+	if (classifier->get_classifier_type()==CT_LDA)
+		((CLDA*) classifier)->set_gamma(gamma);
 
 	((CLinearClassifier*) classifier)->set_labels(trainlabels);
 	((CLinearClassifier*) classifier)->set_features((CRealFeatures*) trainfeatures);
@@ -697,6 +700,9 @@ bool CGUIClassifier::set_svr_tube_epsilon(DREAL tube_epsilon)
 {
 	if (tube_epsilon<0)
 		svm_tube_epsilon=1e-2;
+	svm_tube_epsilon=tube_epsilon;
+
+	((CSVM*) classifier)->set_tube_epsilon(svm_tube_epsilon);
 	SG_INFO("Set to svr_tube_epsilon=%f.\n", svm_tube_epsilon);
 
 	return true;
@@ -1044,26 +1050,16 @@ bool CGUIClassifier::get_clustering(DREAL* &centers, INT& rows, INT& cols,
 		{
 			CHierarchical* clustering=(CHierarchical*) classifier;
 
-			INT* a=NULL;
+			// radi == merge_distances, centers == pairs
 			bcols=1;
-			clustering->get_assignment(a, brows);
-			radi = new DREAL[brows*bcols];
-			for (INT i=0; i<brows*bcols; i++)
-				radi[i]=a[i];
+			clustering->get_merge_distance(radi, brows);
 
-			DREAL* d=NULL;
-			clustering->get_merge_distance(d, cols);
+			INT* p=NULL;
+			clustering->get_pairs(p, rows, cols);
+			centers=new DREAL[rows*cols]; // FIXME memleak
+			for (INT i=0; i<rows*cols; i++)
+				centers[i]=(DREAL) p[i];
 
-			INT* c=NULL;
-			clustering->get_pairs(c, rows, cols);
-			rows=rows+1;
-			centers=new DREAL[rows*cols];//FIXME memleak
-			for (INT i=0; i<cols; i++)
-			{
-				centers[3*i]=c[2*i];
-				centers[3*i+1]=c[2*i+1];
-				centers[3*i+2]=d[i];
-			}
 			break;
 		}
 
@@ -1261,4 +1257,15 @@ bool CGUIClassifier::classify_example(INT idx, DREAL &result)
 	result=classifier->classify_example(idx);
 	return true ;
 }
+
+
+bool CGUIClassifier::set_krr_tau(DREAL tau)
+{
+	krr_tau=tau;
+	((CKRR*) classifier)->set_tau(krr_tau);
+	SG_INFO("Set to krr_tau=%f.\n", krr_tau);
+
+	return true;
+}
+
 #endif

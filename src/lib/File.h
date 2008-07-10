@@ -22,13 +22,12 @@
 template <class ST> struct T_STRING;
 template <class ST> struct TSparse;
 
-/// A file consists of a header
-/// then an alternation of a type header and data
-///
-/// or just raw data (simplefile=true)
-///
-/// the more complex stuff is currently not implemented
-///
+/** A File access class. A file consists of a fourcc header then an alternation
+ * of a type header and data or just raw data (simplefile=true). However this
+ * implementation is not complete - the more complex stuff is currently not
+ * implemented.
+ */
+
 class CFile : public CSGObject
 {
 public:

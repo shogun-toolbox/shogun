@@ -42,6 +42,7 @@
 %include "features/ShortFeatures.i"
 %include "features/WordFeatures.i"
 %include "features/RealFeatures.i"
+%include "features/ShortRealFeatures.i"
 %include "features/CombinedFeatures.i"
 %include "features/MindyGramFeatures.i"
 %include "features/Labels.i"

@@ -75,7 +75,7 @@ class CGUIClassifier : public CSGObject
 		bool set_svm_precompute_enabled(INT precompute);
 
 		/** set KRR's tau */
-		bool set_krr_tau(DREAL tau=1) { krr_tau=tau; return true; }
+		bool set_krr_tau(DREAL tau=1);
 
 		/** train SVM */
 		bool train_svm();
@@ -83,8 +83,10 @@ class CGUIClassifier : public CSGObject
 		bool train_knn(INT k=3);
 		/** train clustering */
 		bool train_clustering(INT k=3, INT max_iter=1000);
-		/** train linear classifier */
-		bool train_linear();
+		/** train linear classifier
+		 * @param gamma gamma parameter of LDA
+		 */
+		bool train_linear(DREAL gamma=0);
 		/** train sparse linear classifier */
 		bool train_sparse_linear();
 		/** train WD OCAS */

@@ -74,7 +74,11 @@ extern CIO sg_io;
 
 #define ASSERT(x) { if (!(x)) SG_SERROR("assertion %s failed in file %s line %d\n",#x, __FILE__, __LINE__);}
 
-/** class IO */
+/** Class IO, used to do input output operations throughout shogun, i.e. any
+ * debug or error or progress message is passed through the functions of this
+ * class to be in the end written to the screen. Note that messages don't have
+ * to be written to stdout or stderr, but can be redirected to a file.
+ */
 class CIO
 {
 	public:

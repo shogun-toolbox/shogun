@@ -17,7 +17,12 @@
 
 template <class T> class CArray2;
 
-/** template class Array2 (two dimensional) */
+/** Template class Array2 implements a dense two dimensional array.
+ *
+ * Note that depending on compile options everything will be inlined, such that
+ * this is as high performance 2d-array implementation \b without error checking.
+ *
+ * */
 template <class T> class CArray2: public CArray<T>
 {
 	public:

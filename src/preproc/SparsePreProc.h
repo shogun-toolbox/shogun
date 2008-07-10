@@ -20,7 +20,14 @@
 template <class ST> class TSparse;
 template <class ST> class CSparseFeatures;
 
-/** template class SparsePreProc */
+/** Template class SparsePreProc, base class for preprocessors (cf. CPreProc)
+ * that apply to CSparseFeatures
+ *
+ * Two new functions apply_to_sparse_feature_vector() and
+ * apply_to_sparse_feature_matrix() are defined in this interface that need to
+ * be implemented in each particular preprocessor operating on CSparseFeatures.
+ *
+ * */
 template <class ST> class CSparsePreProc : public CPreProc
 {
 public:

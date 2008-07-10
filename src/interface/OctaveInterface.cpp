@@ -480,6 +480,7 @@ DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 	}
 	catch (ShogunException e)
 	{
+		error("%s", e.get_exception_string());
 		return octave_value_list();
 	}
 }

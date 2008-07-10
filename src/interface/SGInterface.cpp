@@ -18,6 +18,7 @@
 #include "kernel/SparseLinearKernel.h"
 #include "kernel/CombinedKernel.h"
 #include "kernel/CustomKernel.h"
+#include "kernel/SalzbergWordKernel.h"
 #include "features/ByteFeatures.h"
 #include "features/CharFeatures.h"
 #include "features/IntFeatures.h"
@@ -275,6 +276,16 @@ CSGInterfaceMethod sg_methods[]=
 		N_SET_KERNEL_OPTIMIZATION_TYPE,
 		(&CSGInterface::cmd_set_kernel_optimization_type),
 		USAGE_I(N_SET_KERNEL_OPTIMIZATION_TYPE, "USAGE_STR" "FASTBUTMEMHUNGRY|SLOWBUTMEMEFFICIENT" "USAGE_STR")
+	},
+	{
+		N_SET_PRIOR_PROBS,
+		(&CSGInterface::cmd_set_prior_probs),
+		USAGE_I(N_SET_PRIOR_PROBS, "USAGE_STR" "pos probs, neg_probs" "USAGE_STR")
+	},
+	{
+		N_SET_PRIOR_PROBS_FROM_LABELS,
+		(&CSGInterface::cmd_set_prior_probs_from_labels),
+		USAGE_I(N_SET_PRIOR_PROBS_FROM_LABELS, "USAGE_STR" "labels" "USAGE_STR")
 	},
 #ifdef USE_SVMLIGHT
 	{
@@ -959,6 +970,11 @@ CSGInterfaceMethod sg_methods[]=
 		N_SET_THRESHOLD,
 		(&CSGInterface::cmd_set_threshold),
 		USAGE_I(N_SET_THRESHOLD, "threshold")
+	},
+	{
+		N_INIT_RANDOM,
+		(&CSGInterface::cmd_init_random),
+		USAGE_I(N_INIT_RANDOM, "value_to_initialize_RNG_with")
 	},
 	{
 		N_THREADS,
@@ -2088,7 +2104,7 @@ CKernel* CSGInterface::create_kernel()
 
 		CHAR* dtype=get_str_from_str_or_direct(len);
 		INT size=get_int_from_int_or_str();
-		DREAL scale=1.4;
+		DREAL scale=-1;
 		if (m_nrhs==5)
 			scale=get_real_from_real_or_str();
 
@@ -2350,7 +2366,7 @@ CKernel* CSGInterface::create_kernel()
 		{
 			INT size=get_int_from_int_or_str();
 			INT order=3;
-			INT max_mismatch=1;
+			INT max_mismatch=0;
 			INT length=0;
 			INT center=0;
 			DREAL step=1;
@@ -2394,7 +2410,7 @@ CKernel* CSGInterface::create_kernel()
 		{
 			INT size=get_int_from_int_or_str();
 			INT order=3;
-			INT max_mismatch=1;
+			INT max_mismatch=0;
 			bool use_normalization=true;
 			INT mkl_stepsize=1;
 			bool block_computation=true;
@@ -3405,6 +3421,50 @@ bool CSGInterface::cmd_set_kernel_optimization_type()
 	return success;
 }
 
+bool CSGInterface::cmd_set_prior_probs()
+{
+	if (m_nrhs<3 || !create_return_values(0))
+		return false;
+
+	CSalzbergWordKernel* kernel=(CSalzbergWordKernel*) ui_kernel->get_kernel();
+	if (kernel->get_kernel_type()!=K_SALZBERG)
+		SG_ERROR("SalzbergWordKernel required for setting prior probs!\n");
+
+	DREAL pos_probs=get_real_from_real_or_str();
+	DREAL neg_probs=get_real_from_real_or_str();
+
+	kernel->set_prior_probs(pos_probs, neg_probs);
+
+	return true;
+}
+
+bool CSGInterface::cmd_set_prior_probs_from_labels()
+{
+	if (m_nrhs<2 || !create_return_values(0))
+		return false;
+
+	CSalzbergWordKernel* kernel=(CSalzbergWordKernel*) ui_kernel->get_kernel();
+	if (kernel->get_kernel_type()!=K_SALZBERG)
+	SG_ERROR("SalzbergWordKernel required for setting prior probs!\n");
+
+	DREAL* lab=NULL;
+	INT len=0;
+	get_real_vector(lab, len);
+
+	CLabels* labels=new CLabels(len);
+	for (INT i=0; i<len; i++)
+	{
+		if (!labels->set_label(i, lab[i]))
+			SG_ERROR("Couldn't set label %d (of %d): %f.\n", i, len, lab[i]);
+	}
+	delete[] lab;
+
+	kernel->set_prior_probs_from_labels(labels);
+
+	delete labels;
+	return true;
+}
+
 #ifdef USE_SVMLIGHT
 bool CSGInterface::cmd_resize_kernel_cache()
 {
@@ -3444,7 +3504,7 @@ bool CSGInterface::cmd_set_distance()
 	else if (strmatch(type, "HAMMING") && strmatch(dtype, "WORD"))
 	{
 		bool use_sign=false;
-		if (m_nrhs==5)
+		if (m_nrhs==4)
 			use_sign=get_bool_from_bool_or_str(); // optional
 
 		distance=ui_distance->create_hammingword(use_sign);
@@ -3814,7 +3874,11 @@ bool CSGInterface::cmd_get_classifier()
 	if (!ui_classifier->get_trained_classifier(weights, rows, cols, bias, brows, bcols))
 		return false;
 
+	//SG_PRINT("brows %d, bcols %d\n", brows, bcols);
+	//CMath::display_matrix(bias, brows, bcols);
 	set_real_matrix(bias, brows, bcols);
+	//SG_PRINT("rows %d, cols %d\n", rows, cols);
+	//CMath::display_matrix(weights, rows, cols);
 	set_real_matrix(weights, rows, cols);
 
 	return true;
@@ -3974,8 +4038,16 @@ bool CSGInterface::cmd_train_classifier()
 		}
 
 		case CT_PERCEPTRON:
-		case CT_LDA:
 			return ui_classifier->train_linear();
+
+		case CT_LDA:
+		{
+			DREAL gamma=0;
+			if (m_nrhs==2)
+				gamma=get_real_from_real_or_str();
+
+			return ui_classifier->train_linear(gamma);
+		}
 
 		case CT_SVMLIN:
 		case CT_SVMPERF:
@@ -6102,6 +6174,17 @@ bool CSGInterface::cmd_set_threshold()
 	DREAL value=get_real_from_real_or_str();
 
 	ui_math->set_threshold(value);
+	return true;
+}
+
+bool CSGInterface::cmd_init_random()
+{
+	if (m_nrhs!=2 || !create_return_values(0))
+		return false;
+
+	UINT initseed=(UINT) get_int_from_int_or_str();
+	ui_math->init_random(initseed);
+
 	return true;
 }
 

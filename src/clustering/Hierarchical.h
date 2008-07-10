@@ -99,7 +99,7 @@ class CHierarchical : public CDistanceMachine
 		inline void get_merge_distance(DREAL*& dist, INT& num)
 		{
 			dist=merge_distance;
-			num=table_size;
+			num=merges;
 		}
 
 		/** get merge distances (swig compatible)
@@ -127,7 +127,7 @@ class CHierarchical : public CDistanceMachine
 		{
 			tuples=pairs;
 			rows=2;
-			num=table_size;
+			num=merges;
 		}
 
 		/** get cluster pairs (swig compatible)

@@ -26,6 +26,15 @@ class CIO;
 #define SG_REF(x)
 #define SG_UNREF(x)
 #endif // HAVE_SWIG
+
+/** Class SGObject is the base class of all shogun objects. Apart from dealing
+ * with reference counting that is used to manage shogung objects in memory
+ * (erase unused object, avoid cleaning objects when they are still in use), it
+ * provides interfaces for:
+ * -# parallel - to determine the number of used CPUs for a method (cf. CParallel)
+ * -# io - to output messages and general i/o (cf. CIO)
+ * -# version - to provide version information of the shogun version used (cf. CVersion)
+ */
 class CSGObject
 {
 public:

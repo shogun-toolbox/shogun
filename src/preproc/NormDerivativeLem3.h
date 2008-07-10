@@ -17,7 +17,8 @@
 
 #include <stdio.h>
 
-/** preprocessor NormDerivativeLem3 */
+/** Preprocessor NormDerivativeLem3, performs the normalization used in Lemma3
+ * in Jaakola Hausslers Fischer Kernel paper <b>currently not implemented</b>*/
 class CNormDerivativeLem3 : public CSimplePreProc<DREAL>
 {
 	public:

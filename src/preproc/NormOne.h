@@ -17,7 +17,15 @@
 
 #include <stdio.h>
 
-/** Preprocessor NormOne */
+/** Preprocessor NormOne, normalizes vectors to have norm 1, i.e.
+ *
+ * \f[
+ * {\bf x} \leftarrow \frac{{\bf x}}{||{\bf x}||}
+ * \f]
+ *
+ * It therefore does not need any initialization. It is most useful to get data
+ * onto a ball of radius one.
+ */
 class CNormOne : public CSimplePreProc<DREAL>
 {
 	public:

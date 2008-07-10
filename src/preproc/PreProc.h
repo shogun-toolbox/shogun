@@ -19,7 +19,19 @@
 class CPreProc;
 class CFeatures;
 
-/** class PreProc */
+/** Class PreProc defines a preprocessor interface. Preprocessors are
+ * transformation functions that don't change the domain of the input features.
+ * These functions can be applied in-place if the input features fit in memory
+ * or can be applied on-the-fly when (depending on features) a feature caching
+ * strategy is applied. However, if the individual features are in
+ * \f$\bf{R}\f$ they have to stay in \f$\bf{R}\f$ although the
+ * dimensionality of the feature vectors is allowed change.
+ *
+ * As preprocessors might need a certain initialization they may expect that
+ * the init() function is called before anything else. The actual preprocessing
+ * is feature type dependent and thus coordinated in the sub-classes, cf. e.g.
+ * CSimplePreProc .
+ */
 class CPreProc : public CSGObject
 {
 public:

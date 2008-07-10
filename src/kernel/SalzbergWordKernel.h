@@ -24,18 +24,20 @@ class CSalzbergWordKernel: public CStringKernel<WORD>
 		 *
 		 * @param size cache size
 		 * @param pie the plugin estimate
+		 * @param optional labels to set prior from
 		 */
-		CSalzbergWordKernel(INT size, CPluginEstimate* pie);
+		CSalzbergWordKernel(INT size, CPluginEstimate* pie, CLabels* labels=NULL);
 
 		/** constructor
 	 	 *
 	 	 * @param l features of left-hand side
 	 	 * @param r features of right-hand side
 		 * @param pie the plugin estimate
+		 * @param optional labels to set prior from
 		 */
 		CSalzbergWordKernel(
 			CStringFeatures<WORD>* l, CStringFeatures<WORD>* r,
-			CPluginEstimate *pie);
+			CPluginEstimate *pie, CLabels* labels=NULL);
 
 		virtual ~CSalzbergWordKernel();
 
@@ -51,6 +53,12 @@ class CSalzbergWordKernel: public CStringKernel<WORD>
 			if (fabs(pos_prior+neg_prior-1)>1e-6)
 				SG_WARNING( "priors don't sum to 1: %f+%f-1=%f\n", pos_prior, neg_prior, pos_prior+neg_prior-1) ;
 		};
+
+		/** set prior probs from labels
+		 *
+		 * @param labels labels to set prior probabilites from
+		 */
+		void set_prior_probs_from_labels(CLabels* labels);
 
 		/** initialize kernel
 		 *

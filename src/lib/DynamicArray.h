@@ -22,10 +22,12 @@
 
 template <class T> class CDynamicArray;
 
-/** dynamic array, i.e. array that can be used like a list or an array.
- * it grows and shrinks dynamically, while elements can be accessed via index
- * performance tuned for simple types as float etc.
- * for hi-level objects only store pointers
+/** Template Dynamic array class that creates an array that can be used like a
+ * list or an array.
+ *
+ * It grows and shrinks dynamically, while elements can be accessed via index.
+ * It is performance tuned for simple types like float etc. and for hi-level
+ * objects only stores pointers, which are not automagically deleted.
  */
 template <class T> class CDynamicArray : public CSGObject
 {

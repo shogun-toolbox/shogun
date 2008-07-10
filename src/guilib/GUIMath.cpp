@@ -29,6 +29,11 @@ void CGUIMath::set_threshold(DREAL value)
 	SG_INFO("New threshold: %f.\n", threshold);
 }
 
+void CGUIMath::init_random(UINT initseed)
+{
+	CMath::init_random(initseed);
+}
+
 void CGUIMath::evaluate_results(DREAL* output, INT* label, INT total, FILE* outputfile, FILE* rocfile)
 {
 	current_results(output, label, total, outputfile);

@@ -15,17 +15,27 @@
 #include "features/Labels.h"
 #include "lib/DynamicArray.h"
 
-/** class to implement various performance measures:
- * Receiver Operating Curve (ROC),
- * Precision Recall Curve (PRC),
- * Detection Error Tradeoff (DET),
- * Cross Correlation coefficient (CC),
- * Weighted Relative Accuracy (WRAcc),
- * Balanced Error (BAL)
+/** Class to implement various performance measures:
+ *
+ * - Receiver Operating Curve (ROC)
+ * - Area under the ROC curve (auROC)
+ * - Area over the ROC curve (aoROC)
+ * - Precision Recall Curve (PRC)
+ * - Area under the PRC (auPRC)
+ * - Area over the PRC (aoPRC)
+ * - Detection Error Tradeoff (DET)
+ * - Area under the DET (auDET)
+ * - Area over the DET (aoDET)
+ * - Cross Correlation coefficient (CC)
+ * - Weighted Relative Accuracy (WRAcc)
+ * - Balanced Error (BAL)
+ * - F-Measure
+ * - Accuracy
+ * - Error
  *
  * based on:
  * Fawcett, T: March 2004, ROC Graphs: Notes and Practical
- * Considerations for Researchers
+ * Considerations for Researchers and input from
  * Sonnenburg, S: Feburary 2008, various discussions
  */
 class CPerformanceMeasures : public CSGObject

@@ -17,7 +17,7 @@
 
 #include <stdio.h>
 
-/** Preprocessor SortWord */
+/** Preprocessor SortWord, sorts the indivual strings in ascending order. */
 class CSortWord : public CSimplePreProc<WORD>
 {
 	public:

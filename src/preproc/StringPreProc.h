@@ -18,7 +18,13 @@
 
 template <class ST> class CStringFeatures;
 
-/** template class StringPreProc */
+/** Template class StringPreProc, base class for preprocessors (cf. CPreProc)
+ * that apply to CStringFeatures (i.e. strings of variable length).
+ *
+ * Two new functions apply_to_string() and apply_to_string_features()
+ * are defined in this interface that need to be implemented in each particular
+ * preprocessor operating on CStringFeatures.
+ */
 template <class ST> class CStringPreProc : public CPreProc
 {
 	public:

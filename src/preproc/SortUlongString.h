@@ -17,7 +17,12 @@
 
 #include <stdio.h>
 
-/** Preprocessor SortUlongString */
+/** Preprocessor SortUlongString, sorts the indivual strings in ascending order.
+ * This is useful in conjunction with the CCommUlongStringKernel and will result
+ * in the spectrum kernel. For this to work the strings have to be mapped into
+ * a binary higher order representation first (cf. obtain_from_*() functions in
+ * CStringFeatures)
+ */
 class CSortUlongString : public CStringPreProc<ULONG>
 {
 public:

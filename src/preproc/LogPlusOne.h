@@ -17,7 +17,16 @@
 
 #include <stdio.h>
 
-/** Preprocessor LogPlusOne */
+/** Preprocessor LogPlusOne does what the name says, it adds one to a dense
+ * real valued vector and takes the logarithm of each component of it.
+ * \f[
+ * {\bf x}\leftarrow \log({\bf x}+{\bf 1}
+ * \f]
+ * It therefore does not need any initialization. It is most useful in
+ * situations where the inputs are counts: When one compares differences of
+ * small counts any difference may matter a lot, while small differences in
+ * large counts don't. This is what this log transformation controls for.
+ */
 class CLogPlusOne : public CSimplePreProc<DREAL>
 {
 	public:

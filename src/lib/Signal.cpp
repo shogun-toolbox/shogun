@@ -42,16 +42,15 @@ CSignal::~CSignal()
 
 void CSignal::handler(int signal)
 {
-	unset_handler();
-
 #if !defined(HAVE_SWIG) && (defined(HAVE_MATLAB) || defined(HAVE_OCTAVE) || defined(HAVE_R))
 	if (signal == SIGINT)
 	{
-		SG_SPRINT("\nImmediately return to matlab prompt / Prematurely finish computations / Do nothing (I/P/D)? ");
+		SG_SPRINT("\nImmediately return to prompt / Prematurely finish computations / Do nothing (I/P/D)? ");
 		char answer=fgetc(stdin);
 
 		if (answer == 'I')
 		{
+			unset_handler();
 #if defined(HAVE_MATLAB)
 			mexErrMsgTxt("sg stopped by SIGINT\n");
 #elif defined(HAVE_OCTAVE)
@@ -66,12 +65,9 @@ void CSignal::handler(int signal)
 #elif defined(HAVE_R)
 			R_Suicide((char*) "sg stopped by SIGINT\n");
 #endif
-
 		}
 		else
 		{
-			set_handler();
-
 			if (answer == 'P')
 				cancel_computation=true;
 			else
@@ -98,6 +94,8 @@ bool CSignal::set_handler()
 		sigset_t st;
 
 		sigemptyset(&st);
+		for (INT i=0; i<NUMTRAPPEDSIGS; i++)
+			sigaddset(&st, signals[i]);
 
 #ifndef __INTERIX
 		act.sa_sigaction=NULL; //just in case
@@ -110,6 +108,7 @@ bool CSignal::set_handler()
 		{
 			if (sigaction(signals[i], &act, &oldsigaction[i]))
 			{
+				SG_SWARNING("Error trapping signals!\n");
 				for (INT j=i-1; j>=0; j--)
 					sigaction(signals[i], &oldsigaction[i], NULL);
 
@@ -149,9 +148,14 @@ bool CSignal::unset_handler()
 		return false;
 }
 
-void CSignal::clear()
+void CSignal::clear_cancel()
 {
 	cancel_computation=false;
+}
+
+void CSignal::clear()
+{
+	clear_cancel();
 	active=false;
 	memset(&CSignal::oldsigaction, 0, sizeof(CSignal::oldsigaction));
 }

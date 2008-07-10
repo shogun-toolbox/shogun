@@ -583,6 +583,7 @@ PyObject* sg(PyObject* self, PyObject* args)
 	}
 	catch (ShogunException e)
 	{
+		PyErr_SetString(PyExc_RuntimeError, e.get_exception_string());
 		return NULL;
 	}
 

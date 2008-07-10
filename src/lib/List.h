@@ -14,7 +14,7 @@
 
 #include "lib/common.h"
 
-/** class ListElement */
+/** Class ListElement, defines how an element of the the list looks like */
 template <class T> class CListElement
 {
 	public:
@@ -39,11 +39,14 @@ template <class T> class CListElement
 			this->prev = p_prev;
 		};
 
-		/// Destruktor
+		/// destructor
 		~CListElement() { data = NULL; }
 };
 
-/** doubly connected list for low-level-objects. use pointers to higher-level objects */
+/** Class List implements a doubly connected list for low-level-objects. For
+ * higher level objects pointers should be used. The list supports calling
+ * delete() of an object that is to be removed from the list.
+ */
 template <class T> class CList
 {
 	public:
