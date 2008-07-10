@@ -118,8 +118,8 @@ CDynProg::CDynProg(INT p_num_svms /*= 8 */)
           m_segment_ids(1),
           m_segment_mask(1),
 	  m_scores(1), m_states(1,1), m_positions(1,1), m_genestr_stop(1),
-	  m_precomputed_svm_values(1,1), //by Jonas
-	  m_precomputed_tiling_values(1,1) //by Jonas
+	  m_lin_feat(1,1), //by Jonas
+	  m_num_lin_feat(0)
 {
 	trans_list_forward = NULL ;
 	trans_list_forward_cnt = NULL ;
@@ -236,13 +236,26 @@ void CDynProg::init_tiling_data(INT* probe_pos, DREAL* intensities, const INT nu
 	memcpy(m_probe_pos, probe_pos, num_probes*sizeof(INT));
 	memcpy(m_raw_intensities, intensities, num_probes*sizeof(DREAL));
 	m_num_probes = num_probes;
-	m_precomputed_tiling_values.resize_array(num_svms,seq_len);
+	//m_precomputed_tiling_values.resize_array(num_svms,seq_len);
 	m_use_tiling=true;
-
 }
 void CDynProg::init_content_svm_value_array(const INT seq_len)
 {
-	m_precomputed_svm_values.resize_array(num_svms,seq_len);
+	m_lin_feat.resize_array(num_svms,seq_len);
+}
+void CDynProg::resize_lin_feat(const INT num_new_feat, const INT seq_len)
+{
+	INT dim1,dim2;
+	m_lin_feat.get_array_size(dim1,dim2);
+	ASSERT(dim1==m_num_lin_feat);
+	ASSERT(dim2==seq_len);
+	
+	CArray2<DREAL> tmp(num_new_feat+m_num_lin_feat, seq_len);
+	for(INT j=1;j<seq_len;j++)
+		for(INT k=1;k<m_num_lin_feat;k++)
+			tmp.set_element(m_lin_feat.get_element(k,j),k,j);
+	delete &m_lin_feat;
+	m_lin_feat = tmp;
 }
 void CDynProg::precompute_tiling_plifs(CPlif** PEN, const INT* tiling_plif_ids, const INT num_tiling_plifs, const INT seq_len, const INT* pos)
 {
@@ -259,12 +272,17 @@ void CDynProg::precompute_tiling_plifs(CPlif** PEN, const INT* tiling_plif_ids, 
 			num++;
 		}
 	}*/
-	ASSERT(num_tiling_plifs==num_svms)
-
-	DREAL tiling_plif[num_svms];
-	DREAL svm_value[2*num_svms];
-	for (INT i=0; i<num_svms; i++)
+	DREAL tiling_plif[num_tiling_plifs];
+	DREAL svm_value[m_num_lin_feat+num_tiling_plifs];
+	INT tiling_rows[num_tiling_plifs];
+	for (INT i=0; i<num_tiling_plifs; i++)
+	{
 		tiling_plif[i]=0.0;
+		CPlif * plif = PEN[tiling_plif_ids[i]];
+		tiling_rows[i] = plif->get_use_svm();
+		ASSERT(tiling_rows[i]==m_num_lin_feat+1)
+	}
+	resize_lin_feat(num_tiling_plifs, seq_len);
 
 	INT* p_tiling_pos  = m_probe_pos;
 	DREAL* p_tiling_data = m_raw_intensities;
@@ -275,9 +293,9 @@ void CDynProg::precompute_tiling_plifs(CPlif** PEN, const INT* tiling_plif_ids, 
 		while (*p_tiling_pos<pos[pos_idx])
 		{
 			//SG_PRINT("raw_intens: %f  \n",*p_tiling_data);
-			for (INT i=0; i<num_svms; i++)
+			for (INT i=0; i<num_tiling_plifs; i++)
 			{
-				svm_value[num_svms+i]=*p_tiling_data;
+				svm_value[m_num_lin_feat+i]=*p_tiling_data;
 				CPlif * plif = PEN[tiling_plif_ids[i]];
 				plif->set_do_calc(true);
 				tiling_plif[i]+=plif->lookup_penalty(0,svm_value);
@@ -288,9 +306,10 @@ void CDynProg::precompute_tiling_plifs(CPlif** PEN, const INT* tiling_plif_ids, 
 			p_tiling_data++;
 			p_tiling_pos++;
 		}
-		for (INT i=0; i<num_svms; i++)
-			m_precomputed_tiling_values.set_element(tiling_plif[i],i,pos_idx);
+		for (INT i=0; i<num_tiling_plifs; i++)
+			m_lin_feat.set_element(tiling_plif[i],tiling_rows[i],pos_idx);
 	}
+	m_num_lin_feat += num_tiling_plifs;
 	//DREAL intensities[m_num_probes];
 	//INT nummm = raw_intensities_interval_query(1000, 1025, intensities);
 	//SG_PRINT("nummm:%i\n",nummm);
@@ -373,8 +392,8 @@ void CDynProg::precompute_content_values(WORD*** wordstr, const INT *pos,const I
 		}
 		for (INT s=0; s<num_svms; s++)
 		{
-			DREAL prev = m_precomputed_svm_values.get_element(s,p);
-			m_precomputed_svm_values.set_element(prev + my_svm_values_unnormalized[s],s,p+1);
+			DREAL prev = m_lin_feat.get_element(s,p);
+			m_lin_feat.set_element(prev + my_svm_values_unnormalized[s],s,p+1);
 			ASSERT(prev>-1e20);
 		}
 	}
@@ -2313,9 +2332,9 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	//g_orf_info = orf_info ;
 	//orf_info.display_array() ;
 
-	DREAL svm_value[2*num_svms] ;
+	DREAL svm_value[m_num_lin_feat] ;
 	{ // initialize svm_svalue
-		for (INT s=0; s<2*num_svms; s++)
+		for (INT s=0; s<m_num_lin_feat; s++)
 			svm_value[s]=0 ;
 	}
 
@@ -2720,8 +2739,8 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 							////////////////////////////////////////////////////////
 							INT frame = orf_info.element(ii,0);
 							lookup_content_svm_values(ts, t, pos[ts], pos[t], svm_value, frame);
-							if (m_use_tiling)
-								lookup_tiling_plif_values(ts, t, pos[t]-pos[ts], svm_value);
+							//if (m_use_tiling)
+							//	lookup_tiling_plif_values(ts, t, pos[t]-pos[ts], svm_value);
 
 							//INT offset = plen*num_svms ;
 							//for (INT ss=0; ss<num_svms; ss++)
@@ -3071,8 +3090,8 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 				lookup_content_svm_values(from_pos, to_pos, pos[from_pos],pos[to_pos], svm_value, frame);
 				if (false)//(frame>=0)
 					SG_PRINT("svm_values: %f, %f, %f \n", svm_value[4], svm_value[5], svm_value[6]);
-				if (m_use_tiling)
-					lookup_tiling_plif_values(from_pos, to_pos, pos[to_pos]-pos[from_pos], svm_value);
+				//if (m_use_tiling)
+					//lookup_tiling_plif_values(from_pos, to_pos, pos[to_pos]-pos[from_pos], svm_value);
 	
 #ifdef DYNPROG_DEBUG
 					SG_DEBUG( "svm[%i]: %f\n", ss, svm_value[ss]) ;

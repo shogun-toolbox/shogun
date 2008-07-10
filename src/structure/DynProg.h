@@ -138,6 +138,12 @@ public:
 	 */
 	void precompute_tiling_plifs(CPlif** PEN, const INT* tiling_plif_ids, const INT num_tiling_plifs, const INT seq_len, const INT* pos);	
 
+	/** append rows to linear features array
+ 	 * 
+ 	 * @param num_new_feat number of new rows to add
+ 	 * @param seq_len number of columns (must be equal to the existing num of cols)
+ 	 */
+	void resize_lin_feat(INT num_new_feat, INT seq_len);
 	/** set vector p
 	 *
 	 * @param p new vector p
@@ -1004,13 +1010,13 @@ protected:
 	CArray<bool> m_genestr_stop;
 
 	/**
-	 *  array for storage of content svm values
+	 *  array for storage of precomputed linear features linge content svm values or pliffed tiling data
 	 * Jonas
 	 */
-	CArray2<DREAL> m_precomputed_svm_values;
+	CArray2<DREAL> m_lin_feat;
+	/**number of  linear features*/ 
+	INT m_num_lin_feat;
 
-	/** precomputed tiling values */
-	CArray2<DREAL> m_precomputed_tiling_values;
 
 	/** raw intensities */
 	DREAL* m_raw_intensities;
@@ -1056,10 +1062,10 @@ inline void CDynProg::lookup_content_svm_values(const INT from_state, const INT 
 //	ASSERT(from_state<to_state);
 //	if (!(from_pos<to_pos))
 //		SG_ERROR("from_pos!<to_pos, from_pos: %i to_pos: %i \n",from_pos,to_pos);
-	for (INT i=0;i<4;i++)
+	for (INT i=0;i<m_num_lin_feat;i++)
 	{
-		DREAL to_val   = m_precomputed_svm_values.get_element(i,  to_state);
-		DREAL from_val = m_precomputed_svm_values.get_element(i,from_state);
+		DREAL to_val   = m_lin_feat.get_element(i,  to_state);
+		DREAL from_val = m_lin_feat.get_element(i,from_state);
 		svm_values[i]=(to_val-from_val)/(to_pos-from_pos);
 	}
 	// find the correct row with precomputed 
@@ -1071,20 +1077,9 @@ inline void CDynProg::lookup_content_svm_values(const INT from_state, const INT 
 		INT global_frame = from_pos%3;
         	INT row = ((global_frame+frame)%3)+4;
 		//SG_PRINT("global_frame:%i row:%i frame:%i \n", global_frame, row, frame);
-		DREAL to_val   = m_precomputed_svm_values.get_element(row,  to_state);
-		DREAL from_val = m_precomputed_svm_values.get_element(row,from_state);
+		DREAL to_val   = m_lin_feat.get_element(row,  to_state);
+		DREAL from_val = m_lin_feat.get_element(row,from_state);
 		svm_values[frame+4] = (to_val-from_val)/(to_pos-from_pos);
-	}
-}
-inline void CDynProg::lookup_tiling_plif_values(const INT from_state, const INT to_state, const INT len, DREAL* svm_values)
-{
-	ASSERT(from_state<to_state);
-	ASSERT(len>0);
-	for (INT i=num_svms;i<2*num_svms;i++)
-	{
-		//svm_values[i]=(m_precomputed_tiling_values.get_element(i-num_svms,to_state)-m_precomputed_tiling_values.get_element(i-num_svms,from_state))/len;
-		svm_values[i]=(m_precomputed_tiling_values.get_element(i-num_svms,to_state)-m_precomputed_tiling_values.get_element(i-num_svms,from_state));
-		//svm_values[i]=0.0;
 	}
 }
 #endif
