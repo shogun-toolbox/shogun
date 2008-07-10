@@ -2364,7 +2364,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 				if (penij->get_max_value()>max_look_back)
 				{
 					SG_DEBUG( "%d %d -> value: %f\n", i,j,penij->get_max_value());
-					penij->print() ;
+					//penij->print() ;
 					max_look_back=(INT) (CMath::ceil(penij->get_max_value()));
 				}
 				if (penij->uses_svm_values())
