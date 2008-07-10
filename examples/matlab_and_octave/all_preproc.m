@@ -53,7 +53,7 @@ km=sg('get_kernel_matrix');
 % PruneVarSubMean
 disp('PruneVarSubMean');
 
-divide_by_std=1;
+divide_by_std=true;
 
 sg('add_preproc', 'PRUNEVARSUBMEAN', divide_by_std);
 sg('set_kernel', 'CHI2', 'REAL', size_cache, width);
@@ -99,7 +99,7 @@ km=sg('get_kernel_matrix');
 order=3;
 gap=0;
 reverse='n'; % bit silly to not use boolean, set 'r' to yield true
-use_sign=0;
+use_sign=false;
 normalization='FULL';
 
 

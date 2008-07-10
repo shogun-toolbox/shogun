@@ -49,9 +49,9 @@ LT=LT(p(1:1000));
 sg('set_features', 'TRAIN', XT, 'DNA');
 sg('set_labels', 'TRAIN', LT);
 
-sg('use_mkl', 1);
+sg('use_mkl', true);
 sg('new_svm', 'LIGHT');
-sg('set_kernel', 'WEIGHTEDDEGREE', 'CHAR', 124, order, mismatch, 0);
+sg('set_kernel', 'WEIGHTEDDEGREE', 'CHAR', 124, order, mismatch, false);
 sg('init_kernel', 'TRAIN');
 sg('c', C);
 

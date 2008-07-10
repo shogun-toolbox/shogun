@@ -14,7 +14,7 @@ max_order=5;
 order=15
 max_mismatch=0;
 cache=100;
-normalize=1;
+normalize=true;
 mkl_stepsize=1;
 block=0;
 single_degree=-1;
@@ -34,8 +34,8 @@ testdat(aa,testlab==1)='A';
 %input('key to continue')
 
 %train svm
-sg('use_linadd', 1);
-sg('use_batch_computation', 0);
+sg('use_linadd', true);
+sg('use_batch_computation', false);
 sg('loglevel', 'ALL');
 sg('set_features', 'TRAIN', traindat, 'DNA');
 sg('set_labels', 'TRAIN', trainlab);
@@ -54,18 +54,18 @@ sg('init_kernel', 'TEST');
 %sg('init_kernel_optimization');
 %sg('delete_kernel_optimization');
 
-sg('use_batch_computation', 0);
+sg('use_batch_computation', true);
 sg('delete_kernel_optimization');
 out1=sg('classify');
 fprintf('accuracy: %f                                                                                         \n', mean(sign(out1)==testlab))
 
 sg('init_kernel', 'TEST');
-sg('use_batch_computation', 1);
+sg('use_batch_computation', true);
 out2=sg('classify');
 fprintf('accuracy: %f                                                                                         \n', mean(sign(out2)==testlab))
 
 
-sg('use_batch_computation', 0);
+sg('use_batch_computation', false);
 tic;sg('init_kernel_optimization');toc;
 %sg('delete_kernel_optimization');
 

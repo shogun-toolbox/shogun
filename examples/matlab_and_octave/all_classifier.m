@@ -2,7 +2,7 @@
 
 size_cache=10;
 C=0.017;
-use_bias=0;
+use_bias=false;
 epsilon=1e-5;
 width=2.1;
 max_train_time=60;
@@ -176,8 +176,8 @@ sg('init_kernel', 'TEST');
 result=sg('classify');
 
 objective=sg('get_svm_objective');
-sg('use_batch_computation', 1);
-sg('use_linadd', 1);
+sg('use_batch_computation', true);
+sg('use_linadd', true);
 result=sg('classify');
 
 

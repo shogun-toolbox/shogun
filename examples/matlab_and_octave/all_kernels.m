@@ -135,8 +135,8 @@ km=sg('get_kernel_matrix');
 disp('Poly');
 
 degree=4;
-inhomogene=0;
-use_normalization=1;
+inhomogene=false;
+use_normalization=true;
 
 sg('set_kernel', 'POLY', 'REAL', size_cache, degree, inhomogene, use_normalization);
 
@@ -206,8 +206,8 @@ km=sg('get_kernel_matrix');
 disp('SparsePoly');
 
 degree=3;
-inhomogene=1;
-use_normalization=1;
+inhomogene=true;
+use_normalization=false;
 
 sg('set_kernel', 'POLY', 'SPARSEREAL', size_cache, degree, inhomogene, use_normalization);
 
@@ -244,8 +244,8 @@ km=sg('get_kernel_matrix');
 disp('PolyMatchWord');
 
 degree=2;
-inhomogene=1;
-normalize=1;
+inhomogene=true;
+normalize=true;
 
 sg('set_kernel', 'POLYMATCH', 'WORD', size_cache, degree, inhomogene, normalize);
 
@@ -309,7 +309,7 @@ km=sg('get_kernel_matrix');
 disp('PolyMatchString');
 
 degree=3;
-inhomogene=0;
+inhomogene=false;
 
 sg('set_kernel', 'POLYMATCH', 'CHAR', size_cache, degree, inhomogene);
 
@@ -395,7 +395,7 @@ km=sg('get_kernel_matrix');
 order=3;
 gap=0;
 reverse='n'; % bit silly to not use boolean, set 'r' to yield true
-use_sign=0;
+use_sign=false;
 normalization='FULL';
 
 % Comm Word String
@@ -488,7 +488,7 @@ sg('add_kernel', 1, 'GAUSSIAN', 'REAL', size_cache, 1);
 sg('add_features', 'TRAIN', fm_train_real);
 sg('add_features', 'TEST', fm_test_real);
 
-sg('add_kernel', 1, 'POLY', 'REAL', size_cache, 3, 0);
+sg('add_kernel', 1, 'POLY', 'REAL', size_cache, 3, false);
 sg('add_features', 'TRAIN', fm_train_real);
 sg('add_features', 'TEST', fm_test_real);
 

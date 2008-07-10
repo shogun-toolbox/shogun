@@ -55,20 +55,9 @@ function y = set_and_train_kernel()
 		global kernel_arg1_inhomogene;
 		global kernel_arg2_use_normalization;
 
-		% doesn't work as boolean otherwise :(
-		if eval(tolower(kernel_arg1_inhomogene))
-			inhomogene=1;
-		else
-			inhomogene=0;
-		end
-		if eval(tolower(kernel_arg2_use_normalization))
-			use_normalization=1;
-		else
-			use_normalization=0;
-		end
-
 		sg('set_kernel', kname, ftype, size_cache, kernel_arg0_degree,
-			inhomogene, use_normalization);
+			eval(tolower(kernel_arg1_inhomogene)),
+			eval(tolower(kernel_arg2_use_normalization)));
 	elseif findstr('COMMSTRING', kname)
 		global kernel_arg1_normalization;
 		norm=fix_normalization_inconsistency(kernel_arg1_normalization);

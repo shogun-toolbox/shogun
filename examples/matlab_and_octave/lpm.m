@@ -12,7 +12,7 @@ trainlab=[-ones(1,num/2), ones(1,num/2) ];
 sg('set_features', 'TRAIN', traindat);
 sg('set_labels', 'TRAIN', trainlab);
 sg('c', C);
-sg('svm_use_bias', 1);
+sg('svm_use_bias', true);
 sg('new_classifier', 'LPM');
 tic;
 sg('train_classifier');

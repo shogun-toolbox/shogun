@@ -5,7 +5,7 @@ num_train=1000;
 num_a=5;
 shift=20;
 cache=10;
-use_sign=0;
+use_sign=false;
 normalization='NO'; %NO,SQRT,LEN,SQLEN,FULL
 aa=(round(len/2-num_a/2)):(round(len/2+num_a/2-1));
 
@@ -39,7 +39,7 @@ for i=floor(length(idx)/2)+1:length(idx),
 end
 
 %train svm
-sg('use_linadd', 1);
+sg('use_linadd', true);
 sg('set_features', 'TRAIN', traindat, 'DNA');
 sg('set_labels', 'TRAIN', trainlab);
 

@@ -26,8 +26,8 @@ traindat(10,trainlab==+1)='A';
 traindat(11,trainlab==+1)='C';
 traindat(12,trainlab==+1)='G';
 traindat(13,trainlab==+1)='T';
-traindat'
-input('key to continue')
+%traindat'
+%input('key to continue')
 
 %train svm
 sg('loglevel', 'INFO');
@@ -41,7 +41,7 @@ sg('train_classifier');
 consensus=sg('get_WD_consensus');
 scores=sg('get_WD_scoring',1);
 imagesc(reshape(scores,[4,length(scores)/4]))
-consensus'
+%consensus'
 
 x=traindat(:,trainlab==1);
 x(x=='A')=1;
@@ -54,4 +54,4 @@ sg('set_features', 'TEST', [ consensus  traindat(:,end)'], 'DNA');
 sg('init_kernel', 'TEST');
 [b,alphas]=sg('get_svm');
 out=sg('classify')-b;
-out'
+%out'

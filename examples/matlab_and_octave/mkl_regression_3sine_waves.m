@@ -56,7 +56,7 @@ for kk = 1:length(f)   % Big loop
 	kernels={};
 
 	sg('new_regression', 'SVRLIGHT');
-	sg('use_mkl', 1);
+	sg('use_mkl', true);
 	sg('use_precompute', 0); % precompute every SINGLE kernel!
 	sg('mkl_parameters', mkl_eps, 0);
 	sg('c', C);

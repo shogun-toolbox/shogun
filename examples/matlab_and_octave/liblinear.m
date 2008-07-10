@@ -13,7 +13,7 @@ sg('loglevel', 'ALL');
 sg('set_features', 'TRAIN', traindat);
 sg('set_labels', 'TRAIN', trainlab);
 sg('c', C);
-sg('svm_use_bias', 0);
+sg('svm_use_bias', false);
 sg('svm_epsilon', epsilon);
 sg('new_classifier', 'LIBLINEAR_L2');
 tic;

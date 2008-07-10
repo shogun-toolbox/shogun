@@ -54,8 +54,8 @@ testlab = lab(    num_train + (1:num_test) );
 
 % === train SVM
 sg( 'loglevel', 'INFO' );
-sg( 'use_linadd', 1 );
-sg( 'use_batch_computation', 1);
+sg( 'use_linadd', true);
+sg( 'use_batch_computation', true);
 sg( 'set_features', 'TRAIN', traindat, 'DNA' );
 sg( 'set_labels', 'TRAIN', trainlab );
 sg( 'set_kernel', 'WEIGHTEDDEGREEPOS2_NONORM', 'CHAR', 10, order, max_mismatch, len, shifts );

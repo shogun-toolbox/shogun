@@ -11,7 +11,7 @@ C=1;
 %Spectrum kernel parameters
 order=8;
 cache=10;
-use_sign=0;
+use_sign=false;
 normalization='NO'; %NO,SQRT,LEN,SQLEN,FULL
 
 %generate some toy data

@@ -1,4 +1,4 @@
-addpath('tools')
+addpath('../tools')
 rand('seed',17);
 %sequence lengths, number of sequences
 len=100;
@@ -69,8 +69,8 @@ end
 
 %train svm
 sg('loglevel', 'INFO');
-sg('use_linadd', 1);
-sg('use_batch_computation', 1);
+sg('use_linadd', true);
+sg('use_batch_computation', true);
 sg('set_features', 'TRAIN', traindat,'DNA');
 sg('set_labels', 'TRAIN', trainlab);
 sg('set_kernel', 'WEIGHTEDDEGREEPOS2', 'CHAR', 10, order, max_mismatch, len, shifts);

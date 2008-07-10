@@ -14,7 +14,7 @@ sg('loglevel', 'ALL');
 sg('set_features', 'TRAIN', traindat);
 sg('set_labels', 'TRAIN', trainlab);
 sg('c', C);
-sg('svm_use_bias', 0);
+sg('svm_use_bias', false);
 sg('new_classifier', 'SVMSGD');
 tic;
 sg('train_classifier');

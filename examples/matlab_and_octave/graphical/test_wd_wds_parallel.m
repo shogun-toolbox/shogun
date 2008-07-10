@@ -2,8 +2,8 @@ clear sg
 rand('seed',17);
 %sequence lengths, number of sequences
 len=100;
-num_train=15000;
-num_test=15000;
+num_train=1500;
+num_test=1500;
 num_a=3;
 aa=(round(len/2-num_a/2)):(round(len/2+num_a/2-1));
 
@@ -46,8 +46,8 @@ end
 %train svm
 sg('threads', 4);
 sg('loglevel', 'ALL');
-sg('use_linadd', 0);
-sg('use_batch_computation', 0);
+sg('use_linadd', false);
+sg('use_batch_computation', false);
 sg('set_features', 'TRAIN', traindat,'DNA');
 sg('set_labels', 'TRAIN', trainlab);
 sg('set_kernel', 'WEIGHTEDDEGREEPOS2', 'CHAR', 10, order, max_mismatch, len, shifts);
@@ -71,13 +71,13 @@ sg('threads', 4);
 sg('init_kernel_optimization');
 sg('set_features', 'TEST', testdat,'DNA');
 sg('set_labels', 'TEST', testlab);
-sg('init_kernel', TEST);
+sg('init_kernel', 'TEST');
 out2=sg('classify');
 fprintf('accuracy: %f                                                                                         \n', mean(sign(out2)==testlab))
 
 %evaluate svm on test data using 4 threads batch kernel eval
 sg('threads', 4);
-sg('use_batch_computation', 1);
+sg('use_batch_computation', true);
 sg('set_features', 'TEST', testdat,'DNA');
 sg('set_labels', 'TEST', testlab);
 sg('init_kernel', 'TEST');
@@ -104,7 +104,7 @@ fprintf('accuracy: %f                                                           
 
 %evaluate svm on test data using 1 threads batch kernel eval
 sg('threads',  1);
-sg('use_batch_computation', 1);
+sg('use_batch_computation', true);
 sg('set_features', 'TEST', testdat,'DNA');
 sg('set_labels', 'TEST', testlab);
 sg('init_kernel', 'TEST');

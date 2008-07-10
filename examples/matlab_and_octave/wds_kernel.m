@@ -49,8 +49,8 @@ traindat(end,end)='A' ;
 %input('key to continue')
 
 %train svm
-sg('use_linadd', 1);
-sg('use_batch_computation', 1);
+sg('use_linadd', true);
+sg('use_batch_computation', true);
 sg('set_features', 'TRAIN', traindat,'DNA');
 sg('set_labels', 'TRAIN', trainlab);
 %sg('loglevel', 'ALL');
@@ -80,34 +80,34 @@ sg('set_features', 'TEST', testdat,'DNA');
 sg('set_labels', 'TEST', testlab);
 sg('init_kernel', 'TEST');
 
-  sg('use_batch_computation', 0);
+  sg('use_batch_computation', false);
   sg('delete_kernel_optimization');
   out1=sg('classify');
   fprintf('accuracy: %f                                                                                         \n', mean(sign(out1)==testlab))
 
   sg('set_kernel_optimization_type', 'SLOWBUTMEMEFFICIENT');
-  sg('use_batch_computation', 1);
+  sg('use_batch_computation', true);
   sg('delete_kernel_optimization');
   sg('train_classifier')
   out2=sg('classify');
   fprintf('accuracy: %f                                                                                         \n', mean(sign(out2)==testlab))
 
   sg('set_kernel_optimization_type', 'FASTBUTMEMHUNGRY');
-  sg('use_batch_computation', 1);
+  sg('use_batch_computation', true);
   sg('delete_kernel_optimization');
   out3=sg('classify');
   fprintf('accuracy: %f                                                                                         \n', mean(sign(out3)==testlab))
 
 sg('set_kernel_optimization_type', 'SLOWBUTMEMEFFICIENT');
 %sg('set_kernel_optimization_type', 'FASTBUTMEMHUNGRY');
-sg('use_batch_computation', 0);
+sg('use_batch_computation', false);
 tic;sg('init_kernel_optimization');toc;
 %sg('delete_kernel_optimization');
 tic;out4=sg('classify');toc;
 fprintf('accuracy: %f                                                                                         \n', mean(sign(out4)==testlab))
 
 sg('set_kernel_optimization_type', 'FASTBUTMEMHUNGRY');
-sg('use_batch_computation', 0);
+sg('use_batch_computation', false);
 tic;sg('init_kernel_optimization');toc;
 %sg('delete_kernel_optimization');
 tic;out5=sg('classify');toc;

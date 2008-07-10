@@ -12,7 +12,7 @@ C=1;
 %Spectrum kernel parameters
 order=5;
 cache=10;
-use_sign=1;
+use_sign=true;
 normalization='FULL'; %NO,SQRT,LEN,SQLEN,FULL
 
 %generate some toy data
@@ -39,7 +39,7 @@ end
 %input('key to continue')
 
 %train svm
-sg('use_linadd', 1);
+sg('use_linadd', true);
 sg('set_features', 'TRAIN', traindat, 'DNA');
 sg('set_labels', 'TRAIN', trainlab);
 
