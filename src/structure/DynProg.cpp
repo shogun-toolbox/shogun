@@ -119,7 +119,7 @@ CDynProg::CDynProg(INT p_num_svms /*= 8 */)
           m_segment_mask(1),
 	  m_scores(1), m_states(1,1), m_positions(1,1), m_genestr_stop(1),
 	  m_lin_feat(1,1), //by Jonas
-	  m_num_lin_feat(0)
+	  m_num_lin_feat(num_svms)
 {
 	trans_list_forward = NULL ;
 	trans_list_forward_cnt = NULL ;
@@ -245,21 +245,47 @@ void CDynProg::init_content_svm_value_array(const INT seq_len)
 }
 void CDynProg::resize_lin_feat(const INT num_new_feat, const INT seq_len)
 {
+	SG_PRINT("resize_lin_feat: num_new_feat:%i, seq_len:%i\n",num_new_feat, seq_len);
 	INT dim1,dim2;
 	m_lin_feat.get_array_size(dim1,dim2);
+	SG_PRINT("resize_lin_feat: dim1:%i, dim2:%i\n",dim1,dim2);
 	ASSERT(dim1==m_num_lin_feat);
 	ASSERT(dim2==seq_len);
-	
-	CArray2<DREAL> tmp(num_new_feat+m_num_lin_feat, seq_len);
-	for(INT j=1;j<seq_len;j++)
-		for(INT k=1;k<m_num_lin_feat;k++)
-			tmp.set_element(m_lin_feat.get_element(k,j),k,j);
-	delete &m_lin_feat;
-	m_lin_feat = tmp;
+
+	/*for(INT j=0;j<5;j++)
+	{
+		for(INT k=0;k<m_num_lin_feat;k++)
+		{
+			SG_PRINT("(%i,%i)%f ",k,j,m_lin_feat.get_element(k,j));
+		}
+		SG_PRINT("\n");
+	}*/
+
+	DREAL* arr = m_lin_feat.get_array();
+	DREAL* tmp = new DREAL[(dim1+num_new_feat)*dim2];	
+	memset(tmp, 0, (dim1+num_new_feat)*dim2*sizeof(DREAL)) ;
+	for(INT j=0;j<seq_len;j++)
+                for(INT k=0;k<m_num_lin_feat;k++)
+			tmp[j*(dim1+num_new_feat)+k] = arr[j*dim1+k];
+
+	m_lin_feat.set_array(tmp, dim1+num_new_feat,dim2);
+
+	/*for(INT j=0;j<5;j++)
+	{
+		for(INT k=0;k<m_num_lin_feat;k++)
+		{
+			SG_PRINT("(%i,%i)%f ",k,j,m_lin_feat.get_element(k,j));
+		}
+		SG_PRINT("\n");
+	}*/
+	m_lin_feat.get_array_size(dim1,dim2);
+	SG_PRINT("resize_lin_feat: dim1:%i, dim2:%i\n",dim1,dim2);
+
+	SG_PRINT("resize_lin_feat: done\n");
 }
 void CDynProg::precompute_tiling_plifs(CPlif** PEN, const INT* tiling_plif_ids, const INT num_tiling_plifs, const INT seq_len, const INT* pos)
 {
-//	SG_PRINT("precompute_tiling_plifs: %f  \n",m_raw_intensities[0]);
+	SG_PRINT("precompute_tiling_plifs:%f num_tiling_plifs:%i\n",m_raw_intensities[0], num_tiling_plifs);
 
 	/*INT tiling_plif_ids[num_svms];
 	INT num = 0;
@@ -280,7 +306,8 @@ void CDynProg::precompute_tiling_plifs(CPlif** PEN, const INT* tiling_plif_ids, 
 		tiling_plif[i]=0.0;
 		CPlif * plif = PEN[tiling_plif_ids[i]];
 		tiling_rows[i] = plif->get_use_svm();
-		ASSERT(tiling_rows[i]==m_num_lin_feat+1)
+		//SG_PRINT("tiling_rows[%i]:%i, tiling_plif_ids[%i]:%i  \n",i,tiling_rows[i],i,tiling_plif_ids[i]);
+		ASSERT(tiling_rows[i]==m_num_lin_feat+i+1)
 	}
 	resize_lin_feat(num_tiling_plifs, seq_len);
 
@@ -307,12 +334,13 @@ void CDynProg::precompute_tiling_plifs(CPlif** PEN, const INT* tiling_plif_ids, 
 			p_tiling_pos++;
 		}
 		for (INT i=0; i<num_tiling_plifs; i++)
-			m_lin_feat.set_element(tiling_plif[i],tiling_rows[i],pos_idx);
+			m_lin_feat.set_element(tiling_plif[i],tiling_rows[i]-1,pos_idx);
 	}
 	m_num_lin_feat += num_tiling_plifs;
 	//DREAL intensities[m_num_probes];
 	//INT nummm = raw_intensities_interval_query(1000, 1025, intensities);
 	//SG_PRINT("nummm:%i\n",nummm);
+	SG_PRINT("precompute_tiling_plifs: done\n");
 
 }
 void CDynProg::create_word_string(const CHAR* genestr, INT genestr_num, INT genestr_len, WORD*** wordstr)
