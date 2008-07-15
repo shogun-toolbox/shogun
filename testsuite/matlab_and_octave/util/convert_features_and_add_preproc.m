@@ -9,9 +9,9 @@ function y = convert_features_and_add_preproc()
 		return
 	end
 
-	if findstr('Ulong', feature_type)
+	if strcmp(feature_type, 'Ulong')==1
 		type='ULONG';
-	elseif findstr('Word', feature_type)
+	elseif strcmp(feature_type, 'Word')==1
 		type='WORD';
 	else
 		y=1;

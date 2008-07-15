@@ -1,5 +1,6 @@
 global name;
 global classifier_type;
+global classifier_labels;
 global alphabet;
 global data_train;
 global data_test;
@@ -23,6 +24,10 @@ global kernel_arg0_scale;
 global kernel_arg0_degree;;
 global kernel_arg1_inhomogene;
 global kernel_arg2_use_normalization;
+global kernel_arg0_use_sign;
+global kernel_arg0_length;
+global kernel_arg1_inner_degree;
+global kernel_arg2_outer_degree;
 global order;
 global gap;
 global reverse;

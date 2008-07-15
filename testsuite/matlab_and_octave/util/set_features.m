@@ -8,39 +8,47 @@ function y = set_features()
 	global data;
 
 	if findstr('Sparse', name)
-		fprintf(1, 'Sparse features not supported yet');
+		printf("Sparse features not supported yet\n");
 		y=1;
 		return
 	end
 
 	if findstr('linear', classifier_type)
-		fprintf(1, 'Linear classifiers with sparse features not supported yet');
+		printf("Linear classifiers with sparse features not supported yet.\n");
 		y=1;
 		return
 	end
 
-	if findstr('RAWBYTE', alphabet)
-		fprintf(1, 'Alphabet RAWBYTE not supported yed.');
+	if strcmp(alphabet, 'RAWBYTE')==1
+		fprintf(1, "Alphabet RAWBYTE not supported yet.\n");
 		y=1;
 		return
 	end
 
-	if isempty(findstr('Combined', name))
-		if !isempty(alphabet)
-			sg('set_features', 'TRAIN', data_train, alphabet);
-			sg('set_features', 'TEST', data_test, alphabet);
-		elseif !isempty(data)
-			sg('set_features', 'TRAIN', data);
-			sg('set_features', 'TEST', data);
-		else
-			fname='double';
-			if data_type=='ushort'
-				fname='uint8';
-			end
+	if strcmp(name, 'Combined')==1
+		y=0;
+		return
+	end
 
-			sg('set_features', 'TRAIN', feval(fname, data_train));
-			sg('set_features', 'TEST', feval(fname, data_test));
+	if !isempty(alphabet)
+		sg('set_features', 'TRAIN', data_train, alphabet);
+		sg('set_features', 'TEST', data_test, alphabet);
+	elseif !isempty(data)
+		sg('set_features', 'TRAIN', data);
+		sg('set_features', 'TEST', data);
+	else
+		fname='double';
+		if strcmp(data_type, 'ushort')==1
+			fname='uint16';
 		end
+
+		if iscell(data_train)
+			data_train=cellfun(@str2num, data_train);
+			data_test=cellfun(@str2num, data_test);
+		end
+
+		sg('set_features', 'TRAIN', feval(fname, data_train));
+		sg('set_features', 'TEST', feval(fname, data_test));
 	end
 
 	convert_features_and_add_preproc();

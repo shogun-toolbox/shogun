@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# not implemented yet
-exit 0
-
 DATAPATH='../data'
 
 function test_all () {
@@ -13,18 +10,19 @@ function test_all () {
 		echo -n "$file"
 		echo -n -e "\t\t"
 
-		if [ -n "${OCTAVE_LOADPATH}" ]; then
-			is_octave=1
-		else
-			is_octave=0
+		interface=`grep INTERFACE ../../src/.config | awk '{print $3}'`
+		if [ ${interface} != "octave" -a ${interface} != "matlab" ]; then
+			echo "Unknown interface ${interface}"
+			exit 1
 		fi
-		output=`./test_one.sh ${file} ${is_octave}`
 
-		if [ $? -eq 0 ]; then
-			echo 'OK'
-		else
+		output=`./test_one.sh ${file} ${interface}`
+
+		if [ $? -ne 0 ]; then
 			echo 'ERROR'
 			echo ${output}
+		else
+			echo 'OK'
 		fi
 	done
 	sleep 1
