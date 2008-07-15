@@ -1,5 +1,6 @@
 function y = set_features()
 	global name;
+	global name_features;
 	global classifier_type;
 	global alphabet;
 	global data_train;
@@ -21,6 +22,13 @@ function y = set_features()
 
 	if strcmp(alphabet, 'RAWBYTE')==1
 		fprintf(1, "Alphabet RAWBYTE not supported yet.\n");
+		y=1;
+		return
+	end
+
+	if (!isempty(name_features) &&
+		(strcmp(name_features, 'FK')==1 || strcmp(name_features, 'TOP')==1))
+		printf("Fisher/TOP not supported yet in static interfaces.\n");
 		y=1;
 		return
 	end

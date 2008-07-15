@@ -1,4 +1,5 @@
 global name;
+global name_features;
 global classifier_type;
 global classifier_labels;
 global alphabet;

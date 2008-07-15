@@ -15,6 +15,12 @@ function y = set_and_train_kernel()
 		return
 	end
 
+	if strcmp(kname, 'AUC')==1 || strcmp(kname, 'CUSTOM')==1
+		printf("Kernel %s yet unsupported in static interfaces.\n", kname);
+		y=1;
+		return
+	end
+
 	if !isempty(kernel_arg0_size)
 		size_cache=kernel_arg0_size;
 	elseif !isempty(kernel_arg1_size)
@@ -142,11 +148,6 @@ function y = set_and_train_kernel()
 		subkernel_name=fix_kernel_name_inconsistency(subkernel2_name);
 		sg('add_kernel', 1., subkernel_name, toupper(subkernel2_feature_type),
 			str2num(subkernel2_kernel_arg0_size));
-
-	elseif strcmp(kname, 'AUC')==1 || strcmp(kname, 'CUSTOM')==1
-		printf("Kernel %s yet unsupported in static interfaces.\n", kname);
-		y=1;
-		return
 
 	else
 		printf("Unknown kernel %s.\n", kname);
