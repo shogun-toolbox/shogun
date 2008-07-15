@@ -5,9 +5,11 @@ import os
 import featop
 import dataop
 import config
+from numpy import ushort, ubyte
 
 DIR_OUTPUT='data'
 EXT_OUTPUT='.m'
+
 
 def _get_str_category (category):
 	"""Returns the string representation of given category.
@@ -31,6 +33,7 @@ def _get_str_category (category):
 	except IndexError:
 		return ''
 
+
 def _get_matrix (name, kmatrix):
 	"""Converts a numpy matrix into a matrix digestable by e.g. matlab.
 
@@ -40,29 +43,44 @@ def _get_matrix (name, kmatrix):
 	"""
 
 	line=list()
-	lis=list()
+	list_numbers=(int, long, float, complex)
+	matrix=[]
+	is_string=True
 
 	try:
+		# assume, all elements have same data type
+		if isinstance(kmatrix[0, 0], list_numbers):
+			is_string=False
+
 		for x in range(kmatrix.shape[0]):
 			for y in range(kmatrix.shape[1]):
-				if (isinstance(kmatrix[x, y], (int, long, float, complex))):
-					line.append('%.9g' %kmatrix[x, y])
+				if is_string:
+					line.append("'%s'" % kmatrix[x, y])
 				else:
-					line.append("'%s'" %kmatrix[x, y])
-			lis.append(', '.join(line))
+					line.append('%.9g' % kmatrix[x, y])
+			matrix.append(', '.join(line))
 			line=list()
 	except IndexError:
-		for x in range(kmatrix.shape[0]):
-			if (isinstance(kmatrix[x], (int, long, float, complex))):
-				line.append('%.9g' %kmatrix[x])
-			else:
-				line.append("'%s'" %kmatrix[x])
-		lis.append(', '.join(line))
-		line=list()
-	str_kmatrix=';'.join(lis)
-	str_kmatrix=''.join([name, ' = [', str_kmatrix, ']'])
+		if isinstance(kmatrix[0], list_numbers):
+			is_string=False
 
-	return str_kmatrix.replace('\n', '')
+		for x in range(kmatrix.shape[0]):
+			if is_string:
+				line.append("'%s'" % kmatrix[x])
+			else:
+				line.append('%.9g' % kmatrix[x])
+		matrix.append(', '.join(line))
+		line=list()
+
+	matrix=';'.join(matrix)
+
+	if is_string:
+		matrix=''.join([name, ' = {', matrix, '}'])
+	else:
+		matrix=''.join([name, ' = [', matrix, ']'])
+
+	return matrix.replace('\n', '')
+
 
 def _is_excluded_from_filename (key):
 	"""Determine if given key's value shall not be part of the filename.
@@ -87,6 +105,7 @@ def _is_excluded_from_filename (key):
 		return True
 	else:
 		return False
+
 
 def _get_filename (category, outdata):
 	"""Return filename for testcase data's output.
