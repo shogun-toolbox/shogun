@@ -223,7 +223,7 @@ def _compute_top_fisher (feats, params):
 	}
 
 	for key, value in params.iteritems():
-		if key!='data':
+		if key!='data' and key!='kargs':
 			outdata[key]=value
 
 	outdata.update(fileop.get_outdata(
