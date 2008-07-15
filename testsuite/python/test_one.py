@@ -75,7 +75,11 @@ def _test_mfile (fnam):
 	return fun(indata)
 
 def _read_matrix (line):
-	str_line=(line.split('[')[1]).split(']')[0]
+	try:
+		str_line=(line.split('[')[1]).split(']')[0]
+	except IndexError:
+		str_line=(line.split('{')[1]).split('}')[0]
+
 	lines=str_line.split(';')
 	lis2d=list()
 
