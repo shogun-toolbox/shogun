@@ -113,6 +113,36 @@ function y = set_and_train_kernel()
 		sg('set_kernel', kname, ftype, size_cache, kernel_arg0_length,
 			kernel_arg1_inner_degree, kernel_arg2_outer_degree);
 
+	elseif strcmp(kname, 'COMBINED')
+		% this will break when test file is changed!
+		global subkernel0_name;
+		global subkernel0_feature_type;
+		global subkernel0_kernel_arg0_size;
+		global subkernel0_kernel_arg1_degree;
+		global subkernel1_name;
+		global subkernel1_feature_type;
+		global subkernel1_kernel_arg0_size;
+		global subkernel1_kernel_arg1_degree;
+		global subkernel1_kernel_arg2_inhomogene;
+		global subkernel2_name;
+		global subkernel2_feature_type;
+		global subkernel2_kernel_arg0_size;
+
+		sg('set_kernel', 'COMBINED', size_cache);
+
+		subkernel_name=fix_kernel_name_inconsistency(subkernel0_name);
+		sg('add_kernel', 1., subkernel_name, toupper(subkernel0_feature_type),
+			str2num(subkernel0_kernel_arg0_size), subkernel0_kernel_arg1_degree);
+
+		subkernel_name=fix_kernel_name_inconsistency(subkernel1_name);
+		sg('add_kernel', 1., subkernel_name, toupper(subkernel1_feature_type),
+			str2num(subkernel1_kernel_arg0_size), subkernel1_kernel_arg1_degree,
+			eval(tolower(subkernel1_kernel_arg2_inhomogene)));
+
+		subkernel_name=fix_kernel_name_inconsistency(subkernel2_name);
+		sg('add_kernel', 1., subkernel_name, toupper(subkernel2_feature_type),
+			str2num(subkernel2_kernel_arg0_size));
+
 	elseif strcmp(kname, 'AUC')==1 || strcmp(kname, 'CUSTOM')==1
 		printf("Kernel %s yet unsupported in static interfaces.\n", kname);
 		y=1;
