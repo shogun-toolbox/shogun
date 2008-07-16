@@ -5,8 +5,8 @@ function y = preproc(filename)
 	eval('globals'); % ugly hack to have vars from filename as globals
 	eval(filename);
 
-	if set_features()==1
-		y=1;
+	if !set_features()
+		y=false;
 		return;
 	end
 
@@ -20,8 +20,8 @@ function y = preproc(filename)
 	sg('attach_preproc', 'TRAIN');
 	sg('attach_preproc', 'TEST');
 
-	if set_and_train_kernel()==1
-		y=1;
+	if !set_and_train_kernel()
+		y=false;
 		return;
 	end
 

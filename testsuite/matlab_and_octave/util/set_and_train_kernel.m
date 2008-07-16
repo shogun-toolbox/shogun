@@ -11,13 +11,13 @@ function y = set_and_train_kernel()
 		kname=fix_kernel_name_inconsistency(name);
 	else
 		disp('Something is wrong with the input data!')
-		y=1;
+		y=false;
 		return
 	end
 
 	if strcmp(kname, 'AUC')==1 || strcmp(kname, 'CUSTOM')==1
 		printf("Kernel %s yet unsupported in static interfaces.\n", kname);
-		y=1;
+		y=false;
 		return
 	end
 
@@ -151,9 +151,9 @@ function y = set_and_train_kernel()
 
 	else
 		printf("Unknown kernel %s.\n", kname);
-		y=1;
+		y=false;
 		return
 	end
 
 	sg('init_kernel', 'TRAIN');
-	y=0;
+	y=true;

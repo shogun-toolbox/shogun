@@ -13,4 +13,4 @@ function y = set_and_train_distance()
 
 	sg('set_distance', dname, toupper(feature_type), dargs);
 	sg('init_distance', 'TRAIN');
-	y=0;
+	y=true;

@@ -5,7 +5,7 @@ function y = convert_features_and_add_preproc()
 	global feature_type;
 
 	if isempty(order)
-		y=1;
+		y=false;
 		return
 	end
 
@@ -14,7 +14,7 @@ function y = convert_features_and_add_preproc()
 	elseif strcmp(feature_type, 'Word')==1
 		type='WORD';
 	else
-		y=1;
+		y=false;
 		return
 	end
 
@@ -26,3 +26,5 @@ function y = convert_features_and_add_preproc()
 	sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', type,
 		order, order-1, gap, reverse);
 	sg('attach_preproc', 'TEST');
+
+	y=true;

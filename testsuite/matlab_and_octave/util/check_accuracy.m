@@ -2,9 +2,9 @@ function y = check_accuracy(accuracy, ktrain, ktest)
 	printf("ktrain: %e, ktest: %e <--- accuracy: %e\n", ktrain, ktest, accuracy);
 
 	if ktrain>accuracy
-		y=1;
+		y=false;
 	elseif ktest>accuracy
-		y=1;
+		y=false;
 	else
-		y=0;
+		y=true;
 	end
