@@ -222,6 +222,9 @@ bool CGUIPreProc::attach_preproc(CHAR* target, bool do_force)
 	if (strncmp(target, "TRAIN", 5)==0)
 	{
 		CFeatures* f=ui->ui_features->get_train_features();
+		if (!f)
+			SG_ERROR("No train features assigned!\n");
+
 		if (f->get_feature_class()==C_COMBINED)
 			f=((CCombinedFeatures*)f)->get_last_feature_obj();
 
@@ -232,7 +235,13 @@ bool CGUIPreProc::attach_preproc(CHAR* target, bool do_force)
 	else if (strncmp(target, "TEST", 4)==0)
 	{
 		CFeatures* f_test=ui->ui_features->get_test_features();
+		if (!f_test)
+			SG_ERROR("No test features assigned!\n");
+
 		CFeatures* f_train=ui->ui_features->get_train_features();
+		if (!f_train)
+			SG_ERROR("No train features assigned!\n");
+
 		EFeatureClass fclass_train=f_train->get_feature_class();
 		EFeatureClass fclass_test=f_test->get_feature_class();
 
