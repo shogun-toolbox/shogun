@@ -87,3 +87,10 @@ global regression_alphas;
 global regression_support_vectors;
 global regression_classified;
 global regression_accuracy;
+
+global clustering_max_iter;
+global clustering_k;
+global clustering_merges;
+global clustering_radi;
+global clustering_merge_distance;
+global clustering_accuracy;
