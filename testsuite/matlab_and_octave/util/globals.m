@@ -7,7 +7,6 @@ global data_train;
 global data_test;
 global data_type;
 global data;
-global distance_name;
 global kernel_name;
 global feature_type;
 
@@ -71,3 +70,20 @@ global subkernel2_data_train;
 global subkernel2_data_test;
 global subkernel2_alphabet;
 global subkernel2_seqlen;
+
+global distance_name;
+global distance_arg0_use_sign;
+global distance_arg0_k;
+
+global regression_num_threads;
+global regression_labels;
+global regression_type;
+global regression_C;
+global regression_epsilon;
+global regression_tube_epsilon;
+global regression_tau;
+global regression_bias;
+global regression_alphas;
+global regression_support_vectors;
+global regression_classified;
+global regression_accuracy;

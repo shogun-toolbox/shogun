@@ -10,7 +10,7 @@ function y = kernel(filename)
 	eval(filename);
 
 	if !set_features()
-		y=false
+		y=false;
 		return;
 	end
 

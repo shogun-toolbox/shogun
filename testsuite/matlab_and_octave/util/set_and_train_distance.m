@@ -2,6 +2,7 @@ function y = set_and_train_distance()
 	global distance_name;
 	global name;
 	global feature_type;
+	ftype=toupper(feature_type);
 
 	dargs=0;
 
@@ -11,6 +12,15 @@ function y = set_and_train_distance()
 		dname=fix_distance_name_inconsistency(name);
 	end
 
-	sg('set_distance', dname, toupper(feature_type), dargs);
+	if strcmp(dname, 'HAMMING')==1
+		global distance_arg0_use_sign;
+		sg('set_distance', dname, ftype, eval(tolower(distance_arg0_use_sign)));
+	elseif strcmp(dname, 'MINKOWSKI')==1
+		global distance_arg0_k;
+		sg('set_distance', dname, ftype, distance_arg0_k);
+	else
+		sg('set_distance', dname, ftype);
+	end
+
 	sg('init_distance', 'TRAIN');
 	y=true;
