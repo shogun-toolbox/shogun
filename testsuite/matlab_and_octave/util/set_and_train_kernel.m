@@ -70,22 +70,22 @@ function y = set_and_train_kernel()
 		global kernel_arg0_degree;
 		global kernel_arg1_inhomogene;
 		sg('set_kernel', kname, ftype, size_cache, kernel_arg0_degree,
-			eval(tolower(kernel_arg1_inhomogene)));
+			tobool(kernel_arg1_inhomogene));
 
 	elseif strcmp(kname, 'POLY')==1
 		global kernel_arg0_degree;
 		global kernel_arg1_inhomogene;
 		global kernel_arg2_use_normalization;
 		sg('set_kernel', kname, ftype, size_cache, kernel_arg0_degree,
-			eval(tolower(kernel_arg1_inhomogene)),
-			eval(tolower(kernel_arg2_use_normalization)));
+			tobool(kernel_arg1_inhomogene),
+			tobool(kernel_arg2_use_normalization));
 
 	elseif findstr(kname, 'COMMSTRING') % normal + WEIGHTED
 		global kernel_arg0_use_sign;
 		global kernel_arg1_normalization;
 		norm=fix_normalization_inconsistency(kernel_arg1_normalization);
 		sg('set_kernel', kname, ftype, size_cache,
-				eval(tolower(kernel_arg0_use_sign)), norm);
+				tobool(kernel_arg0_use_sign), norm);
 
 	elseif findstr(kname, 'DEGREE') % FIXED + WEIGHTED
 		global kernel_arg0_degree;
@@ -143,7 +143,7 @@ function y = set_and_train_kernel()
 		subkernel_name=fix_kernel_name_inconsistency(subkernel1_name);
 		sg('add_kernel', 1., subkernel_name, toupper(subkernel1_feature_type),
 			str2num(subkernel1_kernel_arg0_size), subkernel1_kernel_arg1_degree,
-			eval(tolower(subkernel1_kernel_arg2_inhomogene)));
+			tobool(subkernel1_kernel_arg2_inhomogene));
 
 		subkernel_name=fix_kernel_name_inconsistency(subkernel2_name);
 		sg('add_kernel', 1., subkernel_name, toupper(subkernel2_feature_type),

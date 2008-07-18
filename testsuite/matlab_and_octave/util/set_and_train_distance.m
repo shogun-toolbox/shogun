@@ -14,7 +14,7 @@ function y = set_and_train_distance()
 
 	if strcmp(dname, 'HAMMING')==1
 		global distance_arg0_use_sign;
-		sg('set_distance', dname, ftype, eval(tolower(distance_arg0_use_sign)));
+		sg('set_distance', dname, ftype, tobool(distance_arg0_use_sign));
 	elseif strcmp(dname, 'MINKOWSKI')==1
 		global distance_arg0_k;
 		sg('set_distance', dname, ftype, distance_arg0_k);

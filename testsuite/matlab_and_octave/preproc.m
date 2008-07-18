@@ -12,7 +12,7 @@ function y = preproc(filename)
 
 	pname=fix_preproc_name_inconsistency(name);
 	if strcmp(pname, 'PRUNEVARSUBMEAN')==1
-		sg('add_preproc', pname, eval(tolower(preproc_arg0_divide)));
+		sg('add_preproc', pname, tobool(preproc_arg0_divide));
 	else
 		sg('add_preproc', pname);
 	end
