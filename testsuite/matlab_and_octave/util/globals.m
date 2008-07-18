@@ -1,7 +1,5 @@
 global name;
 global name_features;
-global classifier_type;
-global classifier_labels;
 global alphabet;
 global data_train;
 global data_test;
@@ -75,6 +73,23 @@ global distance_name;
 global distance_arg0_use_sign;
 global distance_arg0_k;
 
+global classifier_type;
+global classifier_labels;
+global classifier_bias;
+global classifier_epsilon;
+global classifier_tube_epsilon;
+global classifier_max_train_time;
+global classifier_linadd_enabled;
+global classifier_batch_enabled;
+global classifier_num_threads;
+global classifier_batch_enabled;
+global classifier_k;
+global classifier_gamma;
+global classifier_C;
+global classifier_classified;
+global classifier_accuracy;
+
+
 global regression_num_threads;
 global regression_labels;
 global regression_type;
@@ -94,3 +109,8 @@ global clustering_merges;
 global clustering_radi;
 global clustering_merge_distance;
 global clustering_accuracy;
+
+global distribution_N;
+global distribution_M;
+global distribution_accuracy;
+global distribution_likelihood;
