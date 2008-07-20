@@ -1062,11 +1062,17 @@ inline void CDynProg::lookup_content_svm_values(const INT from_state, const INT 
 //	ASSERT(from_state<to_state);
 //	if (!(from_pos<to_pos))
 //		SG_ERROR("from_pos!<to_pos, from_pos: %i to_pos: %i \n",from_pos,to_pos);
-	for (INT i=0;i<m_num_lin_feat;i++)
+	for (INT i=0;i<num_svms;i++)
 	{
 		DREAL to_val   = m_lin_feat.get_element(i,  to_state);
 		DREAL from_val = m_lin_feat.get_element(i,from_state);
 		svm_values[i]=(to_val-from_val)/(to_pos-from_pos);
+	}
+	for (INT i=num_svms;i<m_num_lin_feat;i++)
+	{
+		DREAL to_val   = m_lin_feat.get_element(i,  to_state);
+		DREAL from_val = m_lin_feat.get_element(i,from_state);
+		svm_values[i]=to_val-from_val;
 	}
 	// find the correct row with precomputed 
 	if (frame!=-1)

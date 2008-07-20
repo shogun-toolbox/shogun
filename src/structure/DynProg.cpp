@@ -245,10 +245,10 @@ void CDynProg::init_content_svm_value_array(const INT seq_len)
 }
 void CDynProg::resize_lin_feat(const INT num_new_feat, const INT seq_len)
 {
-	SG_PRINT("resize_lin_feat: num_new_feat:%i, seq_len:%i\n",num_new_feat, seq_len);
+	//SG_PRINT("resize_lin_feat: num_new_feat:%i, seq_len:%i\n",num_new_feat, seq_len);
 	INT dim1,dim2;
 	m_lin_feat.get_array_size(dim1,dim2);
-	SG_PRINT("resize_lin_feat: dim1:%i, dim2:%i\n",dim1,dim2);
+	//SG_PRINT("resize_lin_feat: dim1:%i, dim2:%i\n",dim1,dim2);
 	ASSERT(dim1==m_num_lin_feat);
 	ASSERT(dim2==seq_len);
 
@@ -279,9 +279,9 @@ void CDynProg::resize_lin_feat(const INT num_new_feat, const INT seq_len)
 		SG_PRINT("\n");
 	}*/
 	m_lin_feat.get_array_size(dim1,dim2);
-	SG_PRINT("resize_lin_feat: dim1:%i, dim2:%i\n",dim1,dim2);
+	//SG_PRINT("resize_lin_feat: dim1:%i, dim2:%i\n",dim1,dim2);
 
-	SG_PRINT("resize_lin_feat: done\n");
+	//SG_PRINT("resize_lin_feat: done\n");
 }
 void CDynProg::precompute_tiling_plifs(CPlif** PEN, const INT* tiling_plif_ids, const INT num_tiling_plifs, const INT seq_len, const INT* pos)
 {
@@ -340,7 +340,15 @@ void CDynProg::precompute_tiling_plifs(CPlif** PEN, const INT* tiling_plif_ids, 
 	//DREAL intensities[m_num_probes];
 	//INT nummm = raw_intensities_interval_query(1000, 1025, intensities);
 	//SG_PRINT("nummm:%i\n",nummm);
-	SG_PRINT("precompute_tiling_plifs: done\n");
+	/*for(INT k=0;k<m_num_lin_feat;k++)
+	{
+		for(INT j=100;j<108;j++)
+		{
+			SG_PRINT("(%i,%i)%.2f\t ",k,j,m_lin_feat.get_element(k,j));
+		}
+		SG_PRINT("\n");
+	}
+	SG_PRINT("precompute_tiling_plifs: done\n");*/
 
 }
 void CDynProg::create_word_string(const CHAR* genestr, INT genestr_num, INT genestr_len, WORD*** wordstr)
@@ -2641,11 +2649,11 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 		}
 	}
 
-	struct svm_values_struct svs;
+	/*struct svm_values_struct svs;
 	svs.num_unique_words = NULL;
 	svs.svm_values = NULL;
 	svs.svm_values_unnormalized = NULL;
-	svs.word_used = NULL;
+	svs.word_used = NULL;*/
 
 	struct segment_loss_struct loss;
 	loss.segments_changed = NULL;
@@ -2659,12 +2667,6 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 		if (is_big && t%(1+(seq_len/1000))==1)
 			SG_PROGRESS(t, 0, seq_len);
 		//fprintf(stderr, "%i\n", t) ;
-
-		//init_svm_values(svs, pos[t], seq_len, max_look_back) ;
-		//if (with_multiple_sequences)
-			//find_svm_values_till_pos(wordstr, pos, t, svs);  
-		//else
-			//find_svm_values_till_pos(wordstr[0], pos, t, svs);  
 
 		if (with_loss)
 		{
@@ -2885,7 +2887,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 		}
 	}
 
-	clear_svm_values(svs);
+	//clear_svm_values(svs);
 	if (with_loss)
 		clear_segment_loss(loss);
 
@@ -3031,8 +3033,8 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 	//transition_matrix_a_id.display_array() ;
 	
 	{ // compute derivatives for given path
-		DREAL svm_value[2*num_svms] ;
-		for (INT s=0; s<2*num_svms; s++)
+		DREAL svm_value[m_num_lin_feat] ;
+		for (INT s=0; s<m_num_lin_feat; s++)
 			svm_value[s]=0 ;
 		
 		for (INT i=0; i<my_seq_len; i++)
@@ -3118,6 +3120,7 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 				lookup_content_svm_values(from_pos, to_pos, pos[from_pos],pos[to_pos], svm_value, frame);
 				if (false)//(frame>=0)
 					SG_PRINT("svm_values: %f, %f, %f \n", svm_value[4], svm_value[5], svm_value[6]);
+				//SG_PRINT("svm_values: %f, %f, %f, %f \n", svm_value[8], svm_value[9], svm_value[10], svm_value[11]);
 				//if (m_use_tiling)
 					//lookup_tiling_plif_values(from_pos, to_pos, pos[to_pos]-pos[from_pos], svm_value);
 	
@@ -3132,8 +3135,8 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 				my_scores[i] += nscore ;
 				//SG_PRINT("to_state: %i, from_state: %i, nscore: %f, len: %i \n",to_state,from_state,nscore, pos[to_pos]-pos[from_pos]);
 				if (m_use_tiling)
-					for (INT s=0;s<num_svms;s++)/*set tiling plif values to neutral values (that do not influence derivative calculation)*/
-						svm_value[num_svms+s]=-CMath::INFTY;
+					for (INT s=num_svms;s<m_num_lin_feat;s++)/*set tiling plif values to neutral values (that do not influence derivative calculation)*/
+						svm_value[s]=-CMath::INFTY;
 			
 #ifdef DYNPROG_DEBUG
 				//SG_DEBUG( "%i. transition penalty: from_state=%i to_state=%i from_pos=%i [%i] to_pos=%i [%i] value=%i\n", i, from_state, to_state, from_pos, pos[from_pos], to_pos, pos[to_pos], pos[to_pos]-pos[from_pos]) ;
@@ -3158,8 +3161,8 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 					//SG_PRINT("pos[from_pos]:%i, pos[to_pos]:%i, num_intensities:%i\n",pos[from_pos],pos[to_pos], num_intensities);
 					for (INT k=0;k<num_intensities;k++)
 					{
-					 	for (INT j=0;j<num_svms;j++)
-							svm_value[num_svms+j]=intensities[k];
+					 	for (INT j=num_svms;j<m_num_lin_feat;j++)
+							svm_value[j]=intensities[k];
 						PEN.element(to_state, from_state)->penalty_add_derivative(-CMath::INFTY, svm_value) ;	
 						
 					}
