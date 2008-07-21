@@ -5,7 +5,7 @@ import os
 import featop
 import dataop
 import config
-from numpy import ushort, ubyte
+from numpy import ushort, ubyte, double
 
 DIR_OUTPUT='data'
 EXT_OUTPUT='.m'
@@ -122,7 +122,10 @@ def _get_filename (category, outdata):
 			continue
 		cname=val.__class__.__name__
 		if cname=='bool' or cname=='float' or cname=='int' or cname=='str':
-			params.append(str(val))
+			val=str(val)
+			val=val.replace('-', 'n')
+			val=val.replace('+', 'p')
+			params.append(val)
 
 	params='_'.join(params).replace('.', '')
 	if len(params)>0:
