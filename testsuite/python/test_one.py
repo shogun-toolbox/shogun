@@ -46,6 +46,7 @@ def _test_mfile (fnam):
 		return False
 
 	for line in mfile:
+		line=line.strip(" \t\n;")
 		param = line.split('=')[0].strip()
 		
 		if param=='name':

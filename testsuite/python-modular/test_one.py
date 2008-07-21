@@ -46,8 +46,9 @@ def _test_mfile (fnam):
 		return False
 
 	for line in mfile:
+		line=line.strip(" \t\n;")
 		param = line.split('=')[0].strip()
-		
+
 		if param=='name':
 			name=line.split('=')[1].strip().split("'")[1]
 			indata[param]=name
@@ -63,7 +64,7 @@ def _test_mfile (fnam):
 		else:
 			if (line.find("'")==-1):
 				indata[param]=eval(line.split('=')[1])
-			else: 
+			else:
 				indata[param]=line.split('=')[1].strip().split("'")[1]
 
 	mfile.close()

@@ -151,11 +151,11 @@ def write (category, outdata):
 	for key, val in outdata.iteritems():
 		cname=val.__class__.__name__
 		if cname=='bool' or cname=='str':
-			mfile.write("%s = '%s'\n"%(key, val))
+			mfile.write("%s = '%s';\n"%(key, val))
 		elif cname=='ndarray' or cname=='matrix':
-			mfile.write("%s\n"%_get_matrix(key, val))
+			mfile.write("%s;\n"%_get_matrix(key, val))
 		else:
-			mfile.write("%s = %s\n"%(key, val))
+			mfile.write("%s = %s;\n"%(key, val))
 	mfile.close()
 
 	return True
