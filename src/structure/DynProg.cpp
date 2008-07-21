@@ -300,38 +300,54 @@ void CDynProg::precompute_tiling_plifs(CPlif** PEN, const INT* tiling_plif_ids, 
 	}*/
 	DREAL tiling_plif[num_tiling_plifs];
 	DREAL svm_value[m_num_lin_feat+num_tiling_plifs];
+	for (INT i=0; i<m_num_lin_feat+num_tiling_plifs; i++)
+		svm_value[i]=0.0;
 	INT tiling_rows[num_tiling_plifs];
 	for (INT i=0; i<num_tiling_plifs; i++)
 	{
 		tiling_plif[i]=0.0;
 		CPlif * plif = PEN[tiling_plif_ids[i]];
 		tiling_rows[i] = plif->get_use_svm();
+		//DREAL* limits = plif->get_plif_limits();
+		//for(int j=0;j<20;j++)
+		//	SG_PRINT("%.2f, ",limits[j]);
+		//SG_PRINT("\n ");
 		//SG_PRINT("tiling_rows[%i]:%i, tiling_plif_ids[%i]:%i  \n",i,tiling_rows[i],i,tiling_plif_ids[i]);
-		ASSERT(tiling_rows[i]==m_num_lin_feat+i+1)
+		ASSERT(tiling_rows[i]-1==m_num_lin_feat+i)
 	}
 	resize_lin_feat(num_tiling_plifs, seq_len);
 
 	INT* p_tiling_pos  = m_probe_pos;
 	DREAL* p_tiling_data = m_raw_intensities;
+	INT num=0;
 	for (INT pos_idx=0;pos_idx<seq_len;pos_idx++)
 	{
 		//SG_PRINT("pos[%i]: %i  \n",pos_idx,pos[pos_idx]);
 		//SG_PRINT("*p_tiling_pos: %i  \n",*p_tiling_pos);
+		if (num>=m_num_probes)
+			break;
 		while (*p_tiling_pos<pos[pos_idx])
 		{
 			//SG_PRINT("raw_intens: %f  \n",*p_tiling_data);
 			for (INT i=0; i<num_tiling_plifs; i++)
 			{
 				svm_value[m_num_lin_feat+i]=*p_tiling_data;
+				//if (svm_value[m_num_lin_feat+i]>15||svm_value[m_num_lin_feat+i]<4)
+				//	SG_PRINT("uninitialized value, value:%f, i:%i, pos:%i \n", svm_value[m_num_lin_feat+i], i, pos[pos_idx]);
 				CPlif * plif = PEN[tiling_plif_ids[i]];
+				ASSERT(m_num_lin_feat+i==plif->get_use_svm()-1)
 				plif->set_do_calc(true);
 				tiling_plif[i]+=plif->lookup_penalty(0,svm_value);
 				//SG_PRINT("true: plif->lookup_penalty: %f  \n",plif->lookup_penalty(0,svm_value));
 				plif->set_do_calc(false);
 				//SG_PRINT("false: plif->lookup_penalty: %f  \n",plif->lookup_penalty(0,svm_value));
 			}
+			//SG_PRINT("p_tiling_data:%f\n",*p_tiling_data);
 			p_tiling_data++;
 			p_tiling_pos++;
+			num++;
+			if (num>=m_num_probes)
+				break;
 		}
 		for (INT i=0; i<num_tiling_plifs; i++)
 			m_lin_feat.set_element(tiling_plif[i],tiling_rows[i]-1,pos_idx);
