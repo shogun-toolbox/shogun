@@ -17,8 +17,10 @@ function test_all () {
 		fi
 
 		output=`./test_one.sh ${file} ${interface}`
+		ans=`echo $output | grep 'ans =' | awk '{print $NF}'`
 
-		if [ $? -ne 0 ]; then
+		# thanks to matlab, 1 means ok and 0 means error
+		if [ $? -ne 0 -o ${ans} -eq 0 ]; then
 			echo 'ERROR'
 			echo ${output}
 		else
