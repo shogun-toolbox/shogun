@@ -17,8 +17,8 @@ function y = set_and_train_kernel()
 
 	if strcmp(kname, 'AUC')==1 || strcmp(kname, 'CUSTOM')==1
 		printf("Kernel %s yet unsupported in static interfaces.\n", kname);
-		y=false;
-		return
+		y='catchme';
+		return;
 	end
 
 	if !isempty(kernel_arg0_size)
@@ -79,6 +79,10 @@ function y = set_and_train_kernel()
 		sg('set_kernel', kname, ftype, size_cache, kernel_arg0_degree,
 			tobool(kernel_arg1_inhomogene),
 			tobool(kernel_arg2_use_normalization));
+
+	elseif strcmp(kname, 'MATCH')==1
+		global kernel_arg0_degree;
+		sg('set_kernel', kname, ftype, size_cache, kernel_arg0_degree);
 
 	elseif findstr(kname, 'COMMSTRING') % normal + WEIGHTED
 		global kernel_arg0_use_sign;

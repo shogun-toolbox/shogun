@@ -5,8 +5,12 @@ function y = distance(filename)
 	eval('globals'); % ugly hack to have vars from filename as globals
 	eval(filename);
 
-	if !set_features()
+	fset=set_features();
+	if !fset
 		y=false;
+		return;
+	elseif strcmp(fset, 'catchme')==1
+		y=true;
 		return;
 	end
 
