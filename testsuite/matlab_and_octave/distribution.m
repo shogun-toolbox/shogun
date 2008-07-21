@@ -19,10 +19,5 @@ function y = distribution(filename)
 		return;
 	end
 
-	if !set_and_train_distance()
-		y=false;
-		return;
-	end
-
 	likelihood=abs(sg('hmm_likelihood')-distribution_likelihood);
 	y=check_accuracy_distribution(distribution_accuracy, likelihood);

@@ -1,4 +1,4 @@
-function y = check_accuracy(accuracy, likelihood)
+function y = check_accuracy_distribution(accuracy, likelihood)
 	printf("likelihood: %e <--- accuracy: %e\n", likelihood, accuracy);
 
 	if likelihood>accuracy
