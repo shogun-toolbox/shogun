@@ -38,10 +38,10 @@ function y = regression(filename)
 	sv=0;
 	if !isempty(regression_bias)
 		[bias, weights]=sg('get_svm');
-		weights=weights';
 		bias=abs(bias-regression_bias);
-		alphas=max(abs(weights(1)-regression_alphas));
-		sv=max(abs(weights(2)-regression_support_vectors));
+		weights=weights';
+		alphas=max(abs(weights(1:1,:)-regression_alphas));
+		sv=max(abs(weights(2:2,:)-regression_support_vectors));
 	end
 
 	sg('init_kernel', 'TEST');

@@ -1,4 +1,4 @@
-function y = check_accuracy(accuracy, alphas, bias, sv, classified)
+function y = check_accuracy_classifier(accuracy, alphas, bias, sv, classified)
 	printf("alphas: %e, bias: %e, sv: %e, classified %e <--- accuracy: %e\n", alphas, bias, sv, classified, accuracy);
 
 	if alphas>accuracy
