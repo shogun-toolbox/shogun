@@ -14,6 +14,7 @@ function y = convert_features_and_add_preproc()
 	elseif strcmp(feature_type, 'Word')==1
 		type='WORD';
 	else
+		printf("Cannot handle feature type %s!\n", feature_type);
 		y=false;
 		return
 	end
