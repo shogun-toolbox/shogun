@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# not implemented yet
-exit 0
-
 DATAPATH='../data'
 
 function test_all () {
@@ -13,14 +10,15 @@ function test_all () {
 		echo -n "$file"
 		echo -n -e "\t\t"
 
-		output=`${PYTHON} test_one.py "$file"`
-		ret=$?
+		output=`./test_one.sh ${file}`
+		ans=`echo $output | grep 'ans =' | awk '{print $NF}'`
 
-		if [ $ret -eq 0 ] ; then
-			echo 'OK'
-		else
+		# thanks to matlab, 1 means ok and 0 means error
+		if [ $? -ne 0 -o ${ans} -eq 0 ]; then
 			echo 'ERROR'
-			echo $output
+			echo ${output}
+		else
+			echo 'OK'
 		fi
 	done
 	sleep 1
