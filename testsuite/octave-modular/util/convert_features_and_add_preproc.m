@@ -5,10 +5,10 @@ function y = convert_features_and_add_preproc()
 	global feature_type;
 	global feats_train;
 	global feats_test;
+	y=false;
 
 	if isempty(order)
-		y=false;
-		return
+		return;
 	end
 
 	charfeat_train=feats_train;
@@ -27,7 +27,6 @@ function y = convert_features_and_add_preproc()
 		feats_test=StringWordFeatures(charfeat_test.get_alphabet());
 		preproc=SortWordString();
 	else
-		y=true;
 		return;
 	end
 

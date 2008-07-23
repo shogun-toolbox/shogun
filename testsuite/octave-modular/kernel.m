@@ -1,25 +1,15 @@
 function y = kernel(filename)
+	y=true;
 	addpath('util');
 	addpath('../data/kernel');
 
 	eval('globals'); % ugly hack to have vars from filename as globals
 	eval(filename);
 
-	fset=set_features();
-	if !fset
-		y=false;
-		return;
-	elseif strcmp(fset, 'catchme')==1
-		y=true;
+	if !set_features()
 		return;
 	end
-
-	kset=set_and_train_kernel();
-	if !kset
-		y=false;
-		return;
-	elseif strcmp(kset, 'catchme')==1
-		y=true;
+	if !set_kernel()
 		return;
 	end
 

@@ -4,11 +4,12 @@ function y = set_distance()
 	global feats_train;
 	global feats_test;
 	global distance;
+	y=false;
 
-	if !isempty(distance_name)
-		dname=distance_name;
-	else
+	if isempty(distance_name)
 		dname=name;
+	else
+		dname=distance_name;
 	end
 
 	if strcmp(dname, 'CanberraMetric')==1
@@ -47,9 +48,7 @@ function y = set_distance()
 		distance=SparseEuclidianDistance(feats_train, feats_train);
 
 	else
-		printf("Unknown distance %s!\n", dname);
-		y=false;
-		return;
+		error('Unknown distance %s!', dname);
 	end
 
 	y=true;

@@ -1,58 +1,51 @@
 function y = regression(filename)
+	init_shogun;
+	y=true;
 	addpath('util');
 	addpath('../data/regression');
 
 	eval('globals'); % ugly hack to have vars from filename as globals
 	eval(filename);
 
-	fset=set_features();
-	if !fset
-		y=false;
-		return;
-	elseif strcmp(fset, 'catchme')==1
-		y=true;
+	if !set_features()
 		return;
 	end
-
-	kset=set_and_train_kernel();
-	if !kset
-		y=false;
-		return;
-	elseif strcmp(kset, 'catchme')==1
-		y=true;
+	if !set_kernel()
 		return;
 	end
+	kernel.parallel.set_num_threads(regression_num_threads);
 
-	sg('threads', regression_num_threads);
-	sg('set_labels', 'TRAIN', regression_labels);
+	labels=Labels(regression_labels);
 
-	rname=fix_regression_name_inconsistency(name);
-	sg('new_regression', rname);
-
-	if strcmp(regression_type, 'svm')==1
-		sg('c', regression_C);
-		sg('svm_epsilon', regression_epsilon);
-		sg('svr_tube_epsilon', regression_tube_epsilon);
-	elseif strcmp(regression_type, 'kernelmachine')==1
-		sg('krr_tau', regression_tau);
+	if strcmp(name, 'KRR')==1
+		regression=KRR(regression_tau, kernel, labels);
+	elseif strcmp(name, 'LibSVR')==1
+		regression=LibSVR(regression_C, regression_epsilon, kernel, labels);
+		regression.set_tube_epsilon(regression_tube_epsilon);
+	elseif strcmp(name, 'SVRLight')==1
+		regression=SVRLight(regression_C, regression_epsilon, kernel, labels);
+		regression.set_tube_epsilon(regression_tube_epsilon);
 	else
-		printf("Incomplete regression data!\n");
+		error('Unsupported regression %s!', name);
 	end
 
-	sg('train_regression');
+	regression.parallel.set_num_threads(regression_num_threads);
+	regression.train();
 
 	alphas=0;
 	bias=0;
 	sv=0;
 	if !isempty(regression_bias)
-		[bias, weights]=sg('get_svm');
+		bias=regression.get_bias();
 		bias=abs(bias-regression_bias);
-		weights=weights';
-		alphas=max(abs(weights(1:1,:)-regression_alphas));
-		sv=max(abs(weights(2:2,:)-regression_support_vectors));
+		alphas=regression.get_alphas();
+		alphas=max(abs(alphas-regression_alphas));
+		sv=regression.get_support_vectors();
+		sv=max(abs(sv-regression_support_vectors));
 	end
 
-	sg('init_kernel', 'TEST');
-	classified=max(abs(sg('classify')-regression_classified));
+	kernel.init(feats_train, feats_test);
+	classified=max(abs(
+		regression.classify().get_labels()-regression_classified));
 
 	y=check_accuracy_classifier(regression_accuracy, alphas, bias, sv, classified);

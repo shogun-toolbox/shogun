@@ -1,4 +1,5 @@
 function y = classifier(filename)
+	y=true;
 	addpath('util');
 	addpath('../data/classifier');
 
@@ -6,31 +7,19 @@ function y = classifier(filename)
 	eval(filename);
 
 	if strcmp(name, 'Perceptron')==1 % b0rked, skip it
-		y=true;
 		return;
 	end
 
-	fset=set_features();
-	if !fset
-		y=false;
-		return;
-	elseif strcmp(fset, 'catchme')==1
-		y=true;
+	if !set_features()
 		return;
 	end
 
 	if strcmp(classifier_type, 'kernel')==1
-		kset=set_and_train_kernel();
-		if !kset
-			y=false;
-			return;
-		elseif strcmp(kset, 'catchme')==1
-			y=true;
+		if !set_kernel()
 			return;
 		end
 	elseif strcmp(classifier_type, 'knn')==1
-		if !set_and_train_distance()
-			y=false;
+		if !set_distance()
 			return;
 		end
 	end

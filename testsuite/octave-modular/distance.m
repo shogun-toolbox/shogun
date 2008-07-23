@@ -1,21 +1,15 @@
 function y = distance(filename)
+	y=true;
 	addpath('util');
 	addpath('../data/distance');
 
 	eval('globals'); % ugly hack to have vars from filename as globals
 	eval(filename);
 
-	fset=set_features();
-	if !fset
-		y=false;
-		return;
-	elseif strcmp(fset, 'catchme')==1
-		y=true;
+	if !set_features()
 		return;
 	end
-
-	if !set_and_train_distance()
-		y=false;
+	if !set_distance()
 		return;
 	end
 

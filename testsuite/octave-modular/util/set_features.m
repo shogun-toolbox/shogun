@@ -8,6 +8,7 @@ function y = set_features()
 	global data_test;
 	global feats_train;
 	global feats_test;
+	y=false;
 
 	if strcmp(name, 'Combined')==1
 		% this will break when subkernels in data file are changed
@@ -58,7 +59,6 @@ function y = set_features()
 		global neg_clone;
 
 		if !set_pos_and_neg()
-			y=false;
 			return;
 		end
 
@@ -75,7 +75,6 @@ function y = set_features()
 		global neg_clone;
 
 		if !set_pos_and_neg()
-			y=false;
 			return;
 		end
 
@@ -91,13 +90,10 @@ function y = set_features()
 				feats_test=RealFeatures(data_test);
 			elseif strcmp(feature_type, 'Word')==1
 				global WordFeatures;
-				feats_train=WordFeatures(data_train);
 				feats_train=WordFeatures(uint16(data_train));
-				feats_train=WordFeatures(uint16(cell2mat(data_train)));
-				feats_test=WordFeatures(uint16(cell2mat(data_test)));
+				feats_test=WordFeatures(uint16(data_test));
 			else
-				printf("Simple feature type %s not supported yet!\n", feature_type);
-				y=false;
+				fprintf('Simple feature type %s not supported yet!\n', feature_type);
 				return;
 			end
 		elseif strcmp(feature_class, 'string')==1 || strcmp(feature_class, 'string_complex')==1
@@ -109,13 +105,10 @@ function y = set_features()
 			elseif strcmp(alphabet, 'CUBE')==1
 				alphabet=CUBE;
 			elseif strcmp(alphabet, 'RAWBYTE')==1
-				printf("Alphabet RAWBYTE not supported yet.\n");
-				y='catchme';
+				disp('Alphabet RAWBYTE not supported yet.');
 				return;
 			else
-				printf("Alphabet %s not supported yet!\n", alphabet);
-				y=false;
-				return;
+				error('Alphabet %s not supported yet!', alphabet);
 			end
 
 			global StringCharFeatures;
@@ -129,10 +122,7 @@ function y = set_features()
 			end
 
 		else
-			feature_class
-			printf("Unknown feature class %s\n", feature_class);
-			y=false;
-			return;
+			error('Unknown feature class %s', feature_class);
 		end
 	end
 

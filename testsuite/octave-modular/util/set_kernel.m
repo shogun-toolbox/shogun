@@ -5,6 +5,7 @@ function y = set_kernel()
 	global kernel;
 	global kernel_arg0_size;
 	global kernel_arg1_size;
+	y=false;
 
 	if !isempty(kernel_arg0_size)
 		size_cache=kernel_arg0_size;
@@ -14,15 +15,15 @@ function y = set_kernel()
 		size_cache=10;
 	end
 
-	if !isempty(kernel_name)
-		kname=kernel_name;
-	else
+	if isempty(kernel_name)
 		kname=name;
+	else
+		kname=kernel_name;
 	end
 
 	% this sux awfully, but dunno how to do it differently here :(
 	if strcmp(kname, 'AUC')==1
-		disp('not implemented yet'); y=false; return;
+		disp('not implemented yet'); return;
 
 	elseif strcmp(kname, 'Chi2')==1
 		global Chi2Kernel;
@@ -31,7 +32,7 @@ function y = set_kernel()
 			kernel_arg0_width, size_cache);
 
 	elseif strcmp(kname, 'Combined')
-		disp('not implemented yet'); y=false; return;
+		disp('not implemented yet'); return;
 		% this will break when test file is changed!
 		global CombinedKernel;
 		global subkernel0_name;
@@ -83,7 +84,7 @@ function y = set_kernel()
 
 	elseif strcmp(kname, 'Custom')==1
 		global CustomKernel;
-		disp('not implemented yet'); y=true; return;
+		disp('not implemented yet'); return;
 
 	elseif strcmp(kname, 'Diag')==1
 		global DiagKernel;
@@ -125,14 +126,13 @@ function y = set_kernel()
 		global HistogramWordKernel;
 		global pie;
 		if !set_pie()
-			y=false;
 			return;
 		end
 		kernel=HistogramWordKernel(feats_train, feats_train, pie);
 
 	elseif strcmp(kname, 'LinearByte')==1
 		global LinearByteKernel;
-		disp('not implemented yet'); y=true; return;
+		disp('not implemented yet'); return;
 
 	elseif strcmp(kname, 'LinearString')==1
 		global LinearStringKernel;
@@ -179,7 +179,6 @@ function y = set_kernel()
 		global SalzbergWordKernel;
 		global pie;
 		if !set_pie()
-			y=false;
 			return;
 		end
 		kernel=SalzbergWordKernel(feats_train, feats_train, pie);
@@ -247,9 +246,7 @@ function y = set_kernel()
 			kernel_arg0_degree);
 
 	else
-		printf("Unknown kernel %s.\n", kname);
-		y=false;
-		return
+		error('Unsupported kernel %s!', kname);
 	end
 
 	y=true;

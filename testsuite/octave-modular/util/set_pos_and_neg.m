@@ -11,6 +11,7 @@ function y = set_pos_and_neg()
 	global reverse;
 	global data_train;
 	global data_test;
+	y=true;
 
 	charfeat=StringCharFeatures(CUBE);
 	charfeat.set_string_features(data_train);
@@ -42,4 +43,3 @@ function y = set_pos_and_neg()
 	neg_clone=HMM(neg);
 	pos_clone.set_observations(wordfeats_test);
 	neg_clone.set_observations(wordfeats_test);
-

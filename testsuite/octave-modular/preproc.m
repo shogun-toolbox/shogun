@@ -1,20 +1,12 @@
 function y = preproc(filename)
-	init_shogun
+	init_shogun;
+	y=true;
 
 	addpath('util');
 	addpath('../data/preproc');
 
 	eval('globals'); % ugly hack to have vars from filename as globals
 	eval(filename);
-
-	fset=set_features();
-	if !fset
-		y=false;
-		return;
-	elseif strcmp(fset, 'catchme')==1
-		y=true;
-		return;
-	end
 
 	if strcmp(name, 'LogPlusOne')==1
 		preproc=LogPlusOne();
@@ -28,6 +20,12 @@ function y = preproc(filename)
 		preproc=SortWord();
 	elseif strcmp(name, 'SortWordString')==1
 		preproc=SortWordString();
+	else
+		error('Unsupported preproc %s', name);
+	end
+
+	if !set_features()
+		return;
 	end
 
 	preproc.init(feats_train);
@@ -36,12 +34,7 @@ function y = preproc(filename)
 	feats_test.add_preproc(preproc);
 	feats_test.apply_preproc();
 
-	kset=set_kernel();
-	if !kset
-		y=false;
-		return;
-	elseif strcmp(kset, 'catchme')==1
-		y=true;
+	if !set_kernel()
 		return;
 	end
 

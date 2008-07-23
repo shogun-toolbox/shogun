@@ -1,26 +1,23 @@
 function y = distribution(filename)
+	y=true;
 	addpath('util');
 	addpath('../data/distribution');
 
 	eval('globals'); % ugly hack to have vars from filename as globals
 	eval(filename);
 
-	fset=set_features();
-	if !fset
-		y=false;
-		return;
-	elseif strcmp(fset, 'catchme')==1
-		y=true;
+	if !set_features()
 		return;
 	end
 
 	if strcmp(name, 'HMM')==1
 		sg('new_hmm', distribution_N, distribution_M);
 		sg('bw');
-	else
-		printf("Can\'t yet train other distributions than HMM in static interface.\n");
-		y=true;
+	elseif strcmp(name, 'Histogram')==1 || strcmp(name, 'LinearHMM')==1
+		disp('Cannot yet train other distributions than HMM in static interface.');
 		return;
+	else
+		error('Unsupported distribution %s', name);
 	end
 
 	likelihood=abs(sg('hmm_likelihood')-distribution_likelihood);

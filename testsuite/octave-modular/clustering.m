@@ -1,21 +1,15 @@
 function y = clustering(filename)
+	y=true;
 	addpath('util');
 	addpath('../data/clustering');
 
 	eval('globals'); % ugly hack to have vars from filename as globals
 	eval(filename);
 
-	fset=set_features();
-	if !fset
-		y=false;
-		return;
-	elseif strcmp(fset, 'catchme')==1
-		y=true;
+	if !set_features()
 		return;
 	end
-
-	if !set_and_train_distance()
-		y=false;
+	if !set_distance()
 		return;
 	end
 
@@ -33,9 +27,7 @@ function y = clustering(filename)
 	elseif !isempty(clustering_merges)
 		first_arg=clustering_merges;
 	else
-		printf("Incomplete clustering data!\n");
-		y=false;
-		return
+		error('Incomplete clustering data!');
 	end
 
 	sg('train_clustering', first_arg, max_iter)
@@ -55,6 +47,6 @@ function y = clustering(filename)
 		y=check_accuracy_hierarchical(clustering_accuracy, merge_distances, pairs);
 
 	else
-		printf("Incomplete clustering data!\n");
-		y=false;
+		error('Incomplete clustering data!');
 	end
+
