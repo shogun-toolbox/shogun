@@ -374,9 +374,14 @@ CSGInterfaceMethod sg_methods[]=
 		USAGE_I(N_NEW_CLUSTERING, USAGE_STR "KMEANS|HIERARCHICAL" USAGE_STR)
 	},
 	{
-		N_LOAD_SVM,
+		N_LOAD_CLASSIFIER,
 		(&CSGInterface::cmd_load_classifier),
-		USAGE_O(N_LOAD_SVM, "filename" USAGE_COMMA "type")
+		USAGE_O(N_LOAD_CLASSIFIER, "filename" USAGE_COMMA "type")
+	},
+	{
+		N_SAVE_CLASSIFIER,
+		(&CSGInterface::cmd_save_classifier),
+		USAGE_O(N_SAVE_CLASSIFIER, "filename" USAGE_COMMA "type")
 	},
 	{
 		N_GET_SVM,
@@ -3905,6 +3910,20 @@ bool CSGInterface::cmd_new_classifier()
 	bool success=ui_classifier->new_classifier(name, d, from_d);
 
 	delete[] name;
+	return success;
+}
+
+bool CSGInterface::cmd_save_classifier()
+{
+	if (m_nrhs<2 || !create_return_values(0))
+		return false;
+
+	INT len=0;
+	CHAR* filename=get_str_from_str_or_direct(len);
+
+	bool success=ui_classifier->save(filename);
+
+	delete[] filename;
 	return success;
 }
 

@@ -200,6 +200,9 @@ bool CSVM::load(FILE* modelfl)
 
 bool CSVM::save(FILE* modelfl)
 {
+	if (!kernel)
+		SG_ERROR("Kernel not defined!\n");
+
 	SG_INFO( "Writing model file...");
 	fprintf(modelfl,"%%SVM\n");
 	fprintf(modelfl,"numsv=%d;\n", get_num_support_vectors());
