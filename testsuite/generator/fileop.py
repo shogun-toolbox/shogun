@@ -5,7 +5,7 @@ import os
 import featop
 import dataop
 import config
-from numpy import ushort, ubyte, double
+from numpy import int, long, float, double, ushort, uint16, ubyte, short
 
 DIR_OUTPUT='data'
 EXT_OUTPUT='.m'
@@ -43,7 +43,7 @@ def _get_matrix (name, kmatrix):
 	"""
 
 	line=list()
-	list_numbers=(int, long, float, complex)
+	list_numbers=(int, long, float, double, ubyte, ushort, short, uint16)
 	matrix=[]
 	is_string=True
 
