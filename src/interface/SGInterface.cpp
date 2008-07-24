@@ -381,7 +381,7 @@ CSGInterfaceMethod sg_methods[]=
 	{
 		N_SAVE_CLASSIFIER,
 		(&CSGInterface::cmd_save_classifier),
-		USAGE_O(N_SAVE_CLASSIFIER, "filename" USAGE_COMMA "type")
+		USAGE_I(N_SAVE_CLASSIFIER, "filename")
 	},
 	{
 		N_GET_SVM,
