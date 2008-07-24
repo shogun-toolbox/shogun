@@ -130,6 +130,8 @@ def _get_filename (category, outdata):
 	params='_'.join(params).replace('.', '')
 	if len(params)>0:
 		params='_'+params
+	else:
+		params='_fnord'
 
 	return DIR_OUTPUT+os.sep+_get_str_category(category)+os.sep+ \
 		outdata['name']+params+EXT_OUTPUT
