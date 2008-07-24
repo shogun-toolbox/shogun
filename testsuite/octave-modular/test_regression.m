@@ -1,4 +1,4 @@
-function y = regression(filename)
+function y = test_regression(filename)
 	init_shogun;
 	y=true;
 	addpath('util');
@@ -13,17 +13,17 @@ function y = regression(filename)
 	if !set_kernel()
 		return;
 	end
-	kernel.parallel.set_num_threads(regression_num_threads);
+	kern.parallel.set_num_threads(regression_num_threads);
 
-	labels=Labels(regression_labels);
+	lab=Labels(regression_labels);
 
 	if strcmp(name, 'KRR')==1
-		regression=KRR(regression_tau, kernel, labels);
+		regression=KRR(regression_tau, kern, lab);
 	elseif strcmp(name, 'LibSVR')==1
-		regression=LibSVR(regression_C, regression_epsilon, kernel, labels);
+		regression=LibSVR(regression_C, regression_epsilon, kern, lab);
 		regression.set_tube_epsilon(regression_tube_epsilon);
 	elseif strcmp(name, 'SVRLight')==1
-		regression=SVRLight(regression_C, regression_epsilon, kernel, labels);
+		regression=SVRLight(regression_C, regression_epsilon, kern, lab);
 		regression.set_tube_epsilon(regression_tube_epsilon);
 	else
 		error('Unsupported regression %s!', name);
@@ -44,7 +44,7 @@ function y = regression(filename)
 		sv=max(abs(sv-regression_support_vectors));
 	end
 
-	kernel.init(feats_train, feats_test);
+	kern.init(feats_train, feats_test);
 	classified=max(abs(
 		regression.classify().get_labels()-regression_classified));
 

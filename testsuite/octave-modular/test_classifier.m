@@ -1,4 +1,4 @@
-function y = classifier(filename)
+function y = test_classifier(filename)
 	y=true;
 	addpath('util');
 	addpath('../data/classifier');

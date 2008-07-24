@@ -1,4 +1,5 @@
-function y = kernel(filename)
+function y = test_kernel(filename)
+	init_shogun;
 	y=true;
 	addpath('util');
 	addpath('../data/kernel');

@@ -86,8 +86,19 @@ function y = set_features()
 		if strcmp(feature_class, 'simple')==1
 			if strcmp(feature_type, 'Real')==1
 				global RealFeatures;
-				feats_train=RealFeatures(data_train);
-				feats_test=RealFeatures(data_test);
+				feats_train=RealFeatures(double(data_train));
+				feats_test=RealFeatures(double(data_test));
+
+				if findstr(name, 'Sparse')
+					global SparseRealFeatures;
+					sparse=SparseRealFeatures();
+					sparse.obtain_from_simple(feats_train);
+					feats_train=sparse;
+					sparse=SparseRealFeatures();
+					sparse.obtain_from_simple(feats_test);
+					feats_test=sparse;
+				end
+
 			elseif strcmp(feature_type, 'Word')==1
 				global WordFeatures;
 				feats_train=WordFeatures(uint16(data_train));

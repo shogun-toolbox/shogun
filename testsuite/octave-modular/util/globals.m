@@ -10,9 +10,13 @@ global feature_type;
 global feature_class;
 global feats_train;
 global feats_test;
+global km_train;
+global km_test;
+global dm_train;
+global dm_test;
 
-global distance;
-global kernel;
+global dist;
+global kern;
 global pie;
 
 global order;
@@ -103,7 +107,6 @@ global classifier_gamma;
 global classifier_C;
 global classifier_classified;
 global classifier_accuracy;
-
 
 global regression_num_threads;
 global regression_labels;

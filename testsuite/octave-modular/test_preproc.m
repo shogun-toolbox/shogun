@@ -1,4 +1,4 @@
-function y = preproc(filename)
+function y = test_preproc(filename)
 	init_shogun;
 	y=true;
 
@@ -38,11 +38,8 @@ function y = preproc(filename)
 		return;
 	end
 
-	kmatrix=kernel.get_kernel_matrix();
-	ktrain=max(abs(km_train-kmatrix))(1:1);
-
-	kernel.init(feats_train, feats_test);
-	kmatrix=kernel.get_kernel_matrix();
-	ktest=max(abs(km_test-kmatrix))(1:1);
+	ktrain=max(max(abs(km_train-kern.get_kernel_matrix())));
+	kern.init(feats_train, feats_test);
+	ktest=max(max(abs(km_test-kern.get_kernel_matrix())));
 
 	y=check_accuracy(accuracy, ktrain, ktest);

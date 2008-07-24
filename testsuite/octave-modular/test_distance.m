@@ -1,5 +1,7 @@
-function y = distance(filename)
+function y = test_distance(filename)
+	init_shogun;
 	y=true;
+
 	addpath('util');
 	addpath('../data/distance');
 
@@ -13,11 +15,8 @@ function y = distance(filename)
 		return;
 	end
 
-	dmatrix=sg('get_distance_matrix');
-	dtrain=max(abs(dm_train-dmatrix))(1:1);
-
-	sg('init_distance', 'TEST');
-	dmatrix=sg('get_distance_matrix');
-	dtest=max(abs(dm_test-dmatrix))(1:1);
+	dtrain=max(max(abs(dm_train-dist.get_distance_matrix())));
+	dist.init(feats_train, feats_test);
+	dtest=max(max(abs(dm_test-dist.get_distance_matrix())));
 
 	y=check_accuracy(accuracy, dtrain, dtest);
