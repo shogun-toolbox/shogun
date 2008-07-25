@@ -2,6 +2,7 @@ function y = set_kernel()
 	global kernel_name;
 	global name;
 	global feats_train;
+	global feats_test;
 	global kern;
 	global kernel_arg0_size;
 	global kernel_arg1_size;
@@ -15,15 +16,34 @@ function y = set_kernel()
 		size_cache=10;
 	end
 
-	if isempty(kernel_name)
-		kname=name;
-	else
+	if !isempty(kernel_name)
 		kname=kernel_name;
+	else
+		kname=name;
 	end
 
 	% this sux awfully, but dunno how to do it differently here :(
 	if strcmp(kname, 'AUC')==1
-		disp('not implemented yet'); return;
+		global subkernel0_name;
+		global subkernel0_data_train;
+		global subkernel0_data_test;
+		global subkernel0_kernel_arg1_width;
+		global subkern; % subkernel will be destroyed otherwise
+		global RealFeatures;
+		global GaussianKernel;
+		global AUCKernel;
+
+		% this will break when testcase is changed!
+		if strcmp(subkernel0_name, 'Gaussian')!=1
+			error('Dunno how to handle AUC subkernel %s',
+				subkernel0_name);
+		end
+
+		subfeats_train=RealFeatures(subkernel0_data_train);
+		subfeats_test=RealFeatures(subkernel0_data_test);
+		subkern=GaussianKernel(subfeats_train, subfeats_test,
+			subkernel0_kernel_arg1_width);
+		kern=AUCKernel(feats_train, feats_train, subkern);
 
 	elseif strcmp(kname, 'Chi2')==1
 		global Chi2Kernel;
@@ -32,9 +52,11 @@ function y = set_kernel()
 			kernel_arg0_width, size_cache);
 
 	elseif strcmp(kname, 'Combined')
-		disp('not implemented yet'); return;
 		% this will break when test file is changed!
 		global CombinedKernel;
+		global FixedDegreeStringKernel;
+		global PolyMatchStringKernel;
+		global LinearStringKernel;
 		global subkernel0_name;
 		global subkernel0_feature_type;
 		global subkernel0_kernel_arg0_size;
@@ -47,21 +69,20 @@ function y = set_kernel()
 		global subkernel2_name;
 		global subkernel2_feature_type;
 		global subkernel2_kernel_arg0_size;
+		global StringCharFeatures;
+		global DNA;
 
-		sg('set_kernel', 'COMBINED', size_cache);
-
-		subkernel_name=fix_kernel_name_inconsistency(subkernel0_name);
-		sg('add_kernel', 1., subkernel_name, toupper(subkernel0_feature_type),
-			str2num(subkernel0_kernel_arg0_size), subkernel0_kernel_arg1_degree);
-
-		subkernel_name=fix_kernel_name_inconsistency(subkernel1_name);
-		sg('add_kernel', 1., subkernel_name, toupper(subkernel1_feature_type),
-			str2num(subkernel1_kernel_arg0_size), subkernel1_kernel_arg1_degree,
+		kern=CombinedKernel();
+		subkern=FixedDegreeStringKernel(size_cache,
+			subkernel0_kernel_arg1_degree);
+		kern.append_kernel(subkern);
+		subkern=PolyMatchStringKernel(size_cache,
+			subkernel1_kernel_arg1_degree,
 			tobool(subkernel1_kernel_arg2_inhomogene));
-
-		subkernel_name=fix_kernel_name_inconsistency(subkernel2_name);
-		sg('add_kernel', 1., subkernel_name, toupper(subkernel2_feature_type),
-			str2num(subkernel2_kernel_arg0_size));
+		kern.append_kernel(subkern);
+		subkern=LinearStringKernel(size_cache);
+		kern.append_kernel(subkern);
+		kern.init(feats_train, feats_train);
 
 	elseif strcmp(kname, 'CommUlongString')==1
 		global CommUlongStringKernel;
@@ -84,7 +105,7 @@ function y = set_kernel()
 
 	elseif strcmp(kname, 'Custom')==1
 		global CustomKernel;
-		disp('not implemented yet'); return;
+		kern=CustomKernel(feats_train, feats_train);
 
 	elseif strcmp(kname, 'Diag')==1
 		global DiagKernel;
@@ -94,13 +115,13 @@ function y = set_kernel()
 	elseif strcmp(kname, 'Distance')==1
 		global DistanceKernel;
 		global kernel_arg0_width;
-		global distance;
-		if !set_and_train_distance()
+		global dist;
+		if !set_distance()
 			y=false;
 			return;
 		end
 		kern=DistanceKernel(feats_train, feats_train,
-			kernel_arg0_width, distance);
+			kernel_arg0_width, dist);
 
 	elseif strcmp(kname, 'FixedDegreeString')==1
 		global FixedDegreeStringKernel;
@@ -132,7 +153,7 @@ function y = set_kernel()
 
 	elseif strcmp(kname, 'LinearByte')==1
 		global LinearByteKernel;
-		disp('not implemented yet'); return;
+		kern=LinearByteKernel(feats_train, feats_train);
 
 	elseif strcmp(kname, 'LinearString')==1
 		global LinearStringKernel;
@@ -206,19 +227,19 @@ function y = set_kernel()
 			kernel_arg0_width);
 
 	elseif strcmp(kname, 'SparseLinear')==1
-		SparseLinearKernel;
+		global SparseLinearKernel;
 		global kernel_arg0_scale;
 		kern=SparseLinearKernel(feats_train, feats_train,
 			kernel_arg0_scale);
 
 	elseif strcmp(kname, 'SparsePoly')==1
 		global SparsePolyKernel;
-		global kernel_arg0_degree;
-		global kernel_arg1_inhomogene;
-		global kernel_arg2_use_normalization;
-		kern=SparsePolyKernel(feats_train, feats_train,
-			kernel_arg0_degree, tobool(kernel_arg1_inhomogene),
-			tobool(kernel_arg2_use_normalization));
+		global kernel_arg1_degree;
+		global kernel_arg2_inhomogene;
+		global kernel_arg3_use_normalization;
+		kern=SparsePolyKernel(feats_train, feats_train, size_cache,
+			kernel_arg1_degree, tobool(kernel_arg2_inhomogene),
+			tobool(kernel_arg3_use_normalization));
 
 	elseif strcmp(kname, 'WeightedCommWordString')==1
 		global WeightedCommWordStringKernel;

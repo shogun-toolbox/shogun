@@ -4,12 +4,15 @@ function y = set_distance()
 	global feats_train;
 	global feats_test;
 	global dist;
+	global kernel_arg1_distance;
 	y=false;
 
-	if isempty(distance_name)
-		dname=name;
-	else
+	if !isempty(distance_name)
 		dname=distance_name;
+	elseif !isempty(kernel_arg1_distance)
+		dname=kernel_arg1_distance;
+	else
+		dname=name;
 	end
 
 	if strcmp(dname, 'CanberraMetric')==1

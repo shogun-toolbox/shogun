@@ -14,11 +14,22 @@ function y = test_kernel(filename)
 		return;
 	end
 
-	kmatrix=sg('get_kernel_matrix');
-	ktrain=max(abs(km_train-kmatrix))(1:1);
+	if strcmp(name, 'Custom')==1
+		kern.io.set_loglevel(M_DEBUG)
+		kern.set_triangle_kernel_matrix_from_triangle(tril(symdata));
+		triangletriangle=max(abs(km_triangletriangle-kern.get_kernel_matrix()));
 
-	sg('init_kernel', 'TEST');
-	kmatrix=sg('get_kernel_matrix');
-	ktest=max(abs(km_test-kmatrix))(1:1);
+		%kern.set_triangle_kernel_matrix_from_full(symdata);
+		%fulltriangle=max(abs(km_fulltriangle-kern.get_kernel_matrix()));
+		%kern.set_full_kernel_matrix_from_full(data)
+		%fullfull=max(abs(km_fullfull-kern.get_kernel_matrix()))
 
-	y=check_accuracy(accuracy, ktrain, ktest);
+		%y=check_accuracy_custom(accuracy,
+		%	triangletriangle, fulltriangle, fullfull);
+	else
+		ktrain=max(max(abs(km_train-kern.get_kernel_matrix())));
+		kern.init(feats_train, feats_test);
+		ktest=max(max(abs(km_test-kern.get_kernel_matrix())));
+
+		y=check_accuracy(accuracy, ktrain, ktest);
+	end

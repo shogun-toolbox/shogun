@@ -2,7 +2,7 @@ function y = set_pos_and_neg()
 	global pos;
 	global pos_clone;
 	global neg;
-	globaln neg_clone;
+	global neg_clone;
 	global N;
 	global M;
 	global pseudo;
@@ -11,6 +11,11 @@ function y = set_pos_and_neg()
 	global reverse;
 	global data_train;
 	global data_test;
+	global StringCharFeatures;
+	global StringWordFeatures;
+	global SortWordString;
+	global CUBE;
+	global HMM;
 	y=true;
 
 	charfeat=StringCharFeatures(CUBE);

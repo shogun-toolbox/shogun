@@ -9,6 +9,7 @@ function y = set_features()
 	global feats_train;
 	global feats_test;
 	y=false;
+	size_cache=10;
 
 	if strcmp(name, 'Combined')==1
 		% this will break when subkernels in data file are changed
@@ -21,6 +22,7 @@ function y = set_features()
 		global subkernel2_data_test;
 		global CombinedFeatures;
 		global StringCharFeatures;
+		global DNA;
 
 		feats_train=CombinedFeatures();
 		feats_test=CombinedFeatures();
@@ -113,6 +115,15 @@ function y = set_features()
 				global WordFeatures;
 				feats_train=WordFeatures(uint16(data_train));
 				feats_test=WordFeatures(uint16(data_test));
+
+			elseif strcmp(feature_type, 'Byte')==1
+				global RAWBYTE;
+				global ByteFeatures;
+				feats_train=ByteFeatures(RAWBYTE);
+				feats_train.copy_feature_matrix(uint8(data_train));
+				feats_test=ByteFeatures(RAWBYTE);
+				feats_test.copy_feature_matrix(uint8(data_test));
+
 			else
 				fprintf('Simple feature type %s not supported yet!\n', feature_type);
 				return;
