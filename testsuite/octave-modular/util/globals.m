@@ -107,6 +107,8 @@ global classifier_gamma;
 global classifier_C;
 global classifier_classified;
 global classifier_accuracy;
+global classifier_alphas;
+global classifier_support_vectors;
 
 global regression_num_threads;
 global regression_labels;

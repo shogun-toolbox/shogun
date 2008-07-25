@@ -83,13 +83,23 @@ function y = set_features()
 		feats_test=TOPFeatures(size_cache, pos_clone, neg_clone, false, false);
 
 	else
+		global classifier_type;
+		if findstr(name, 'Sparse')
+			is_sparse=true;
+		elseif (!isempty(classifier_type) &&
+			strcmp(classifier_type, 'linear')==1)
+			is_sparse=true;
+		else
+			is_sparse=false;
+		end
+
 		if strcmp(feature_class, 'simple')==1
 			if strcmp(feature_type, 'Real')==1
 				global RealFeatures;
 				feats_train=RealFeatures(double(data_train));
 				feats_test=RealFeatures(double(data_test));
 
-				if findstr(name, 'Sparse')
+				if is_sparse
 					global SparseRealFeatures;
 					sparse=SparseRealFeatures();
 					sparse.obtain_from_simple(feats_train);
