@@ -41,20 +41,20 @@ end
 % byte features
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% linear byte - b0rked?
-%disp('LinearByte')
+% linear byte
+disp('LinearByte')
 
-%feats_train=ByteFeatures(RAWBYTE);
-%feats_train.copy_feature_matrix(fm_train_byte);
+feats_train=ByteFeatures(RAWBYTE);
+feats_train.copy_feature_matrix(fm_train_byte);
 
-%feats_test=ByteFeatures(RAWBYTE);
-%feats_test.copy_feature_matrix(fm_test_byte);
+feats_test=ByteFeatures(RAWBYTE);
+feats_test.copy_feature_matrix(fm_test_byte);
 
-%kernel=LinearByteKernel(feats_train, feats_train);
+kernel=LinearByteKernel(feats_train, feats_train);
 
-%km_train=kernel.get_kernel_matrix();
-%kernel.init(feats_train, feats_test);
-%km_test=kernel.get_kernel_matrix();
+km_train=kernel.get_kernel_matrix();
+kernel.init(feats_train, feats_test);
+km_test=kernel.get_kernel_matrix();
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % real features
@@ -573,7 +573,7 @@ feats_train=WordFeatures(data);
 data=uint16((len_test-1)*rand(num_feats, len_test));
 feats_test=WordFeatures(data);
 
-kernel=AUCKernel(feats_train, feats_test, subkernel);
+kernel=AUCKernel(feats_train, feats_train, subkernel);
 
 km_train=kernel.get_kernel_matrix();
 kernel.init(feats_train, feats_test);
