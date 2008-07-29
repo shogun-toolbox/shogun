@@ -15,8 +15,9 @@ function y = test_distance(filename)
 		return;
 	end
 
-	dtrain=max(max(abs(dm_train-dist.get_distance_matrix())));
-	dist.init(feats_train, feats_test);
-	dtest=max(max(abs(dm_test-dist.get_distance_matrix())));
+	dtrain=max(max(abs(dm_train-distance.get_distance_matrix())));
+	distance.init(feats_train, feats_test);
+	dtest=max(max(abs(dm_test-distance.get_distance_matrix())));
 
-	y=check_accuracy(accuracy, dtrain, dtest);
+	data={'distance', dtrain, dtest};
+	y=check_accuracy(accuracy, data);

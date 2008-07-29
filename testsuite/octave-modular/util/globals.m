@@ -15,8 +15,8 @@ global km_test;
 global dm_train;
 global dm_test;
 
-global dist;
-global kern;
+global distance;
+global kernel;
 global pie;
 
 global order;

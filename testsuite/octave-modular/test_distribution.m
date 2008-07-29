@@ -46,4 +46,5 @@ function y = test_distribution(filename)
 	end
 	derivatives=max(abs(derivatives-distribution_derivatives));
 
-	y=check_accuracy_distribution(distribution_accuracy, likelihood, derivatives);
+	data={'distribution', likelihood, derivatives};
+	y=check_accuracy(distribution_accuracy, data);

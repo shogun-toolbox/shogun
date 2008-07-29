@@ -38,8 +38,9 @@ function y = test_preproc(filename)
 		return;
 	end
 
-	ktrain=max(max(abs(km_train-kern.get_kernel_matrix())));
-	kern.init(feats_train, feats_test);
-	ktest=max(max(abs(km_test-kern.get_kernel_matrix())));
+	ktrain=max(max(abs(km_train-kernel.get_kernel_matrix())));
+	kernel.init(feats_train, feats_test);
+	ktest=max(max(abs(km_test-kernel.get_kernel_matrix())));
 
-	y=check_accuracy(accuracy, ktrain, ktest);
+	data={'kernel', ktrain, ktest};
+	y=check_accuracy(accuracy, data);

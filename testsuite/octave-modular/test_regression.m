@@ -13,18 +13,26 @@ function y = test_regression(filename)
 	if !set_kernel()
 		return;
 	end
-	kern.parallel.set_num_threads(regression_num_threads);
+	kernel.parallel.set_num_threads(regression_num_threads);
 
 	lab=Labels(regression_labels);
 
 	if strcmp(name, 'KRR')==1
-		regression=KRR(regression_tau, kern, lab);
+		regression=KRR(regression_tau, kernel, lab);
+
 	elseif strcmp(name, 'LibSVR')==1
-		regression=LibSVR(regression_C, regression_epsilon, kern, lab);
+		regression=LibSVR(regression_C, regression_epsilon, kernel, lab);
 		regression.set_tube_epsilon(regression_tube_epsilon);
+
 	elseif strcmp(name, 'SVRLight')==1
-		regression=SVRLight(regression_C, regression_epsilon, kern, lab);
-		regression.set_tube_epsilon(regression_tube_epsilon);
+		try
+			regression=SVRLight(regression_C, regression_epsilon, kernel, lab);
+			regression.set_tube_epsilon(regression_tube_epsilon);
+		catch
+			disp('No support for SVRLight available.');
+			return;
+		end
+
 	else
 		error('Unsupported regression %s!', name);
 	end
@@ -44,8 +52,9 @@ function y = test_regression(filename)
 		sv=max(abs(sv-regression_support_vectors));
 	end
 
-	kern.init(feats_train, feats_test);
+	kernel.init(feats_train, feats_test);
 	classified=max(abs(
 		regression.classify().get_labels()-regression_classified));
 
-	y=check_accuracy_classifier(regression_accuracy, alphas, bias, sv, classified);
+ 	data={'classifier', alphas, bias, sv, classified};
+	y=check_accuracy(regression_accuracy, data);

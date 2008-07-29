@@ -15,7 +15,7 @@ function y = test_clustering(filename)
 	end
 
 	if strcmp(name, 'KMeans')==1
-		clustering=KMeans(clustering_k, dist);
+		clustering=KMeans(clustering_k, distance);
 		clustering.train();
 
 		radi=clustering.get_radiuses();
@@ -23,10 +23,11 @@ function y = test_clustering(filename)
 		centers=clustering.get_cluster_centers();
 		centers=max(max(abs(centers-clustering_centers)));
 
-		y=check_accuracy_kmeans(clustering_accuracy, radi, centers);
+		data={'kmeans', radi, centers};
+		y=check_accuracy(clustering_accuracy, data);
 
 	elseif strcmp(name, 'Hierarchical')==1
-		clustering=Hierarchical(clustering_merges, dist);
+		clustering=Hierarchical(clustering_merges, distance);
 		clustering.train();
 
 		merge_distances=clustering.get_merge_distances();
@@ -35,7 +36,8 @@ function y = test_clustering(filename)
 		pairs=clustering.get_cluster_pairs();
 		pairs=max(max(abs(pairs-clustering_pairs)));
 
-		y=check_accuracy_hierarchical(clustering_accuracy, merge_distances, pairs);
+		data={'hierarchical', merge_distances, pairs};
+		y=check_accuracy(clustering_accuracy, data);
 	else
 		error('Unsupported clustering %s', name);
 	end
