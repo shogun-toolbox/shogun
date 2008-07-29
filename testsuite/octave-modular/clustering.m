@@ -1,4 +1,4 @@
-function y = test_clustering(filename)
+function y = clustering(filename)
 	init_shogun;
 	y=true;
 	addpath('util');

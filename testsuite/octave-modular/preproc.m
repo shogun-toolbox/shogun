@@ -1,4 +1,4 @@
-function y = test_preproc(filename)
+function y = preproc(filename)
 	init_shogun;
 	y=true;
 

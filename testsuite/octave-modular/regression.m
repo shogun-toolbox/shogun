@@ -1,4 +1,4 @@
-function y = test_regression(filename)
+function y = regression(filename)
 	init_shogun;
 	y=true;
 	addpath('util');

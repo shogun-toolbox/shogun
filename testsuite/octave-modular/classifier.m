@@ -1,4 +1,4 @@
-function y = test_classifier(filename)
+function y = classifier(filename)
 	init_shogun;
 	y=true;
 	addpath('util');

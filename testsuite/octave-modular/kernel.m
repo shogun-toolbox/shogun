@@ -1,4 +1,4 @@
-function y = test_kernel(filename)
+function y = kernel(filename)
 	init_shogun;
 	y=true;
 	addpath('util');

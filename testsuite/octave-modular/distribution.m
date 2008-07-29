@@ -1,4 +1,4 @@
-function y = test_distribution(filename)
+function y = distribution(filename)
 	init_shogun;
 	y=true;
 	addpath('util');
@@ -27,7 +27,7 @@ function y = test_distribution(filename)
 		distribution.train();
 
 	else
-		error('Unsupported distribution %s', name);
+		error('Unsupported distribution %s!', name);
 	end
 
 

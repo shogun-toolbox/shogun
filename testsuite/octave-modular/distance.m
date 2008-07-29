@@ -1,4 +1,4 @@
-function y = test_distance(filename)
+function y = distance(filename)
 	init_shogun;
 	y=true;
 
