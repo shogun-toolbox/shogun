@@ -1,16 +1,12 @@
 function y = preproc(filename)
 	addpath('util');
 	addpath('../data/preproc');
+	y=true;
 
 	eval('globals'); % ugly hack to have vars from filename as globals
 	eval(filename);
 
-	fset=set_features();
-	if !fset
-		y=false;
-		return;
-	elseif strcmp(fset, 'catchme')==1
-		y=true;
+	if !set_features()
 		return;
 	end
 
@@ -24,12 +20,7 @@ function y = preproc(filename)
 	sg('attach_preproc', 'TRAIN');
 	sg('attach_preproc', 'TEST');
 
-	kset=set_and_train_kernel();
-	if !kset
-		y=false;
-		return;
-	elseif strcmp(kset, 'catchme')==1
-		y=true;
+	if !set_kernel()
 		return;
 	end
 
@@ -40,4 +31,5 @@ function y = preproc(filename)
 	kmatrix=sg('get_kernel_matrix');
 	ktest=max(abs(km_test-kmatrix))(1:1);
 
-	y=check_accuracy(accuracy, ktrain, ktest);
+	data={'kernel', ktrain, ktest};
+	y=check_accuracy(accuracy, data);

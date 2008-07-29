@@ -1,36 +1,25 @@
 function y = classifier(filename)
 	addpath('util');
 	addpath('../data/classifier');
+	y=true;
 
 	eval('globals'); % ugly hack to have vars from filename as globals
 	eval(filename);
 
 	if strcmp(name, 'Perceptron')==1 % b0rked, skip it
-		y=true;
 		return;
 	end
 
-	fset=set_features();
-	if !fset
-		y=false;
-		return;
-	elseif strcmp(fset, 'catchme')==1
-		y=true;
+	if !set_features()
 		return;
 	end
 
 	if strcmp(classifier_type, 'kernel')==1
-		kset=set_and_train_kernel();
-		if !kset
-			y=false;
-			return;
-		elseif strcmp(kset, 'catchme')==1
-			y=true;
+		if !set_kernel()
 			return;
 		end
 	elseif strcmp(classifier_type, 'knn')==1
-		if !set_and_train_distance()
-			y=false;
+		if !set_distance()
 			return;
 		end
 	end
@@ -40,7 +29,12 @@ function y = classifier(filename)
 	end
 
 	cname=fix_classifier_name_inconsistency(name);
-	sg('new_classifier', cname);
+	try
+		sg('new_classifier', cname);
+	catch
+		fprintf('Cannot set classifier %s!\n', cname);
+		return;
+	end
 
 	if !isempty(classifier_bias)
 		sg('svm_use_bias', true);
@@ -100,4 +94,5 @@ function y = classifier(filename)
 
 	classified=max(abs(sg('classify')-classifier_classified));
 
-	y=check_accuracy_classifier(classifier_accuracy, alphas, bias, sv, classified);
+	data={'classifier', alphas, bias, sv, classified};
+	y=check_accuracy(classifier_accuracy, data);

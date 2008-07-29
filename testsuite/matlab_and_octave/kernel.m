@@ -1,25 +1,16 @@
 function y = kernel(filename)
 	addpath('util');
 	addpath('../data/kernel');
+	y=true;
 
 	eval('globals'); % ugly hack to have vars from filename as globals
 	eval(filename);
 
-	fset=set_features();
-	if !fset
-		y=false;
-		return;
-	elseif strcmp(fset, 'catchme')==1
-		y=true;
+	if !set_features()
 		return;
 	end
 
-	kset=set_and_train_kernel();
-	if !kset
-		y=false;
-		return;
-	elseif strcmp(kset, 'catchme')==1
-		y=true;
+	if !set_kernel()
 		return;
 	end
 
@@ -30,4 +21,5 @@ function y = kernel(filename)
 	kmatrix=sg('get_kernel_matrix');
 	ktest=max(abs(km_test-kmatrix))(1:1);
 
-	y=check_accuracy(accuracy, ktrain, ktest);
+	data={'kernel', ktrain, ktest};
+	y=check_accuracy(accuracy, data);

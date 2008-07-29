@@ -3,10 +3,10 @@ function y = convert_features_and_add_preproc()
 	global gap;
 	global reverse;
 	global feature_type;
+	y=false;
 
 	if isempty(order)
-		y=false;
-		return
+		return;
 	end
 
 	if strcmp(feature_type, 'Ulong')==1
@@ -14,9 +14,7 @@ function y = convert_features_and_add_preproc()
 	elseif strcmp(feature_type, 'Word')==1
 		type='WORD';
 	else
-		printf("Cannot handle feature type %s!\n", feature_type);
-		y=false;
-		return
+		return;
 	end
 
 	sg('add_preproc', strcat('SORT', type, 'STRING'));

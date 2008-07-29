@@ -7,30 +7,27 @@ function y = set_features()
 	global data_test;
 	global data_type;
 	global data;
+	y=false;
 
 	if findstr('Sparse', name)
-		printf("Sparse features not supported yet\n");
-		y='catchme';
-		return
+		fprintf('Sparse features not supported yet!\n');
+		return;
 	end
 
 	if findstr('linear', classifier_type)
-		printf("Linear classifiers with sparse features not supported yet.\n");
-		y='catchme';
-		return
+		fprintf('Linear classifiers with sparse features not supported yet!\n');
+		return;
 	end
 
 	if strcmp(alphabet, 'RAWBYTE')==1
-		fprintf(1, "Alphabet RAWBYTE not supported yet.\n");
-		y='catchme';
-		return
+		fprintf('Alphabet RAWBYTE not supported yet!\n');
+		return;
 	end
 
 	if (!isempty(name_features) &&
 		(strcmp(name_features, 'FK')==1 || strcmp(name_features, 'TOP')==1))
-		printf("Fisher/TOP not supported yet in static interfaces.\n");
-		y='catchme';
-		return
+		fprintf('Fisher/TOP not supported yet!\n');
+		return;
 	end
 
 	if strcmp(name, 'Combined')==1

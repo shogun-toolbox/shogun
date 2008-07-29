@@ -1,4 +1,4 @@
-function y = set_and_train_distance()
+function y = set_distance()
 	global distance_name;
 	global name;
 	global feature_type;

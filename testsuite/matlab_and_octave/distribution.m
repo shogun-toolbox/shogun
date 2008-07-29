@@ -1,16 +1,12 @@
 function y = distribution(filename)
 	addpath('util');
 	addpath('../data/distribution');
+	y=true;
 
 	eval('globals'); % ugly hack to have vars from filename as globals
 	eval(filename);
 
-	fset=set_features();
-	if !fset
-		y=false;
-		return;
-	elseif strcmp(fset, 'catchme')==1
-		y=true;
+	if !set_features()
 		return;
 	end
 
@@ -18,10 +14,11 @@ function y = distribution(filename)
 		sg('new_hmm', distribution_N, distribution_M);
 		sg('bw');
 	else
-		printf("Can\'t yet train other distributions than HMM in static interface.\n");
-		y=true;
+		fprintf('Cannot yet train other distributions than HMM!\n');
 		return;
 	end
 
 	likelihood=abs(sg('hmm_likelihood')-distribution_likelihood);
-	y=check_accuracy_distribution(distribution_accuracy, likelihood);
+
+	data={'distribution', likelihood, 0};
+	y=check_accuracy(distribution_accuracy, data);

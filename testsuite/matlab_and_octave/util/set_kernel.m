@@ -1,23 +1,19 @@
-function y = set_and_train_kernel()
+function y = set_kernel()
 	global kernel_name;
 	global name;
 	global feature_type;
 	global kernel_arg0_size;
 	global kernel_arg1_size;
+	y=false;
 
 	if !isempty(kernel_name)
 		kname=fix_kernel_name_inconsistency(kernel_name);
-	elseif !isempty(name)
-		kname=fix_kernel_name_inconsistency(name);
 	else
-		disp('Something is wrong with the input data!')
-		y=false;
-		return
+		kname=fix_kernel_name_inconsistency(name);
 	end
 
 	if strcmp(kname, 'AUC')==1 || strcmp(kname, 'CUSTOM')==1
-		printf("Kernel %s yet unsupported in static interfaces.\n", kname);
-		y='catchme';
+		fprintf('Kernel %s not supported yet!\n', kname);
 		return;
 	end
 
@@ -154,9 +150,7 @@ function y = set_and_train_kernel()
 			str2num(subkernel2_kernel_arg0_size));
 
 	else
-		printf("Unknown kernel %s.\n", kname);
-		y=false;
-		return
+		error('Unknown kernel %s!\n', kname);
 	end
 
 	sg('init_kernel', 'TRAIN');

@@ -1,25 +1,16 @@
 function y = regression(filename)
 	addpath('util');
 	addpath('../data/regression');
+	y=true;
 
 	eval('globals'); % ugly hack to have vars from filename as globals
 	eval(filename);
 
-	fset=set_features();
-	if !fset
-		y=false;
-		return;
-	elseif strcmp(fset, 'catchme')==1
-		y=true;
+	if !set_features()
 		return;
 	end
 
-	kset=set_and_train_kernel();
-	if !kset
-		y=false;
-		return;
-	elseif strcmp(kset, 'catchme')==1
-		y=true;
+	if !set_kernel()
 		return;
 	end
 
@@ -27,7 +18,12 @@ function y = regression(filename)
 	sg('set_labels', 'TRAIN', regression_labels);
 
 	rname=fix_regression_name_inconsistency(name);
-	sg('new_regression', rname);
+	try
+		sg('new_regression', rname);
+	catch
+		fprintf('Cannot set regression %s!\n', rname);
+		return;
+	end
 
 	if strcmp(regression_type, 'svm')==1
 		sg('c', regression_C);
@@ -36,7 +32,7 @@ function y = regression(filename)
 	elseif strcmp(regression_type, 'kernelmachine')==1
 		sg('krr_tau', regression_tau);
 	else
-		printf("Incomplete regression data!\n");
+		error('Incomplete regression data!\n');
 	end
 
 	sg('train_regression');
@@ -55,4 +51,5 @@ function y = regression(filename)
 	sg('init_kernel', 'TEST');
 	classified=max(abs(sg('classify')-regression_classified));
 
-	y=check_accuracy_classifier(regression_accuracy, alphas, bias, sv, classified);
+	data={'classifier', alphas, bias, sv, classified};
+	y=check_accuracy(regression_accuracy, data);
