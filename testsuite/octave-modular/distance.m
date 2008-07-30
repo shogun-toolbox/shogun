@@ -8,10 +8,10 @@ function y = distance(filename)
 	eval('globals'); % ugly hack to have vars from filename as globals
 	eval(filename);
 
-	if !set_features()
+	if ~set_features()
 		return;
 	end
-	if !set_distance()
+	if ~set_distance()
 		return;
 	end
 

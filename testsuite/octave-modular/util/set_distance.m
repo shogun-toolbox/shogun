@@ -38,7 +38,8 @@ function y = set_distance()
 	elseif strcmp(dname, 'HammingWordDistance')==1
 		global HammingWordDistance;
 		global distance_arg0_use_sign;
-		distance=HammingWordDistance(feats_train, feats_train, tobool(distance_arg0_use_sign));
+		distance=HammingWordDistance(feats_train, feats_train, ...
+			tobool(distance_arg0_use_sign));
 
 	elseif strcmp(dname, 'JensenMetric')==1
 		global JensenMetric;

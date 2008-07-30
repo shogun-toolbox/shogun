@@ -7,10 +7,10 @@ function y = regression(filename)
 	eval('globals'); % ugly hack to have vars from filename as globals
 	eval(filename);
 
-	if !set_features()
+	if ~set_features()
 		return;
 	end
-	if !set_kernel()
+	if ~set_kernel()
 		return;
 	end
 	kernel.parallel.set_num_threads(regression_num_threads);
@@ -43,7 +43,7 @@ function y = regression(filename)
 	alphas=0;
 	bias=0;
 	sv=0;
-	if !isempty(regression_bias)
+	if ~isempty(regression_bias)
 		bias=regression.get_bias();
 		bias=abs(bias-regression_bias);
 		alphas=regression.get_alphas();

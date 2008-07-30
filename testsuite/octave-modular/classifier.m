@@ -7,25 +7,21 @@ function y = classifier(filename)
 	eval('globals'); % ugly hack to have vars from filename as globals
 	eval(filename);
 
-	%if strcmp(name, 'Perceptron')==1 % b0rked, skip it
-%		return;
-%	end
-
-	if !set_features()
+	if ~set_features()
 		return;
 	end
 
 	if strcmp(classifier_type, 'kernel')==1
-		if !set_kernel()
+		if ~set_kernel()
 			return;
 		end
 	elseif strcmp(classifier_type, 'knn')==1
-		if !set_distance()
+		if ~set_distance()
 			return;
 		end
 	end
 
-	if !isempty(classifier_labels)
+	if ~isempty(classifier_labels)
 		lab=Labels(classifier_labels);
 	end
 
@@ -86,22 +82,22 @@ function y = classifier(filename)
 	end
 
 	classifier.parallel.set_num_threads(classifier_num_threads);
-	if strcmp(classifier_type, 'linear')==1 && !isempty(classifier_bias)
+	if strcmp(classifier_type, 'linear')==1 && ~isempty(classifier_bias)
 		classifier.set_bias_enabled(true);
 	end
-	if !isempty(classifier_epsilon) && strcmp(name, 'SVMSGD')!=1
+	if ~isempty(classifier_epsilon) && strcmp(name, 'SVMSGD')!=1
 		classifier.set_epsilon(classifier_epsilon);
 	end
-	if !isempty(classifier_tube_epsilon)
+	if ~isempty(classifier_tube_epsilon)
 		classifier.set_tube_epsilon(classifier_tube_epsilon);
 	end
-	if !isempty(classifier_max_train_time)
+	if ~isempty(classifier_max_train_time)
 		classifier.set_max_train_time(classifier_max_train_time);
 	end
-	if !isempty(classifier_linadd_enabled)
+	if ~isempty(classifier_linadd_enabled)
 		classifier.set_linadd_enabled(tobool(classifier_linadd_enabled));
 	end
-	if !isempty(classifier_batch_enabled)
+	if ~isempty(classifier_batch_enabled)
 		classifier.set_batch_computation_enabled(
 			tobool(classifier_batch_enabled));
 	end
@@ -111,15 +107,15 @@ function y = classifier(filename)
 	alphas=0;
 	bias=0;
 	sv=0;
-	if !isempty(classifier_bias)
+	if ~isempty(classifier_bias)
 		bias=classifier.get_bias();
 		bias=abs(bias-classifier_bias);
 	end
-	if !isempty(classifier_alphas)
+	if ~isempty(classifier_alphas)
 		alphas=classifier.get_alphas();
 		alphas=max(abs(alphas-classifier_alphas));
 	end
-	if !isempty(classifier_support_vectors)
+	if ~isempty(classifier_support_vectors)
 		sv=classifier.get_support_vectors();
 		sv=max(abs(sv-classifier_support_vectors));
 	end

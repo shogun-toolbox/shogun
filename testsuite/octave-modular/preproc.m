@@ -24,7 +24,7 @@ function y = preproc(filename)
 		error('Unsupported preproc %s', name);
 	end
 
-	if !set_features()
+	if ~set_features()
 		return;
 	end
 
@@ -34,7 +34,7 @@ function y = preproc(filename)
 	feats_test.add_preproc(preproc);
 	feats_test.apply_preproc();
 
-	if !set_kernel()
+	if ~set_kernel()
 		return;
 	end
 

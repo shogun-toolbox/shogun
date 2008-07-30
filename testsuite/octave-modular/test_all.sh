@@ -18,11 +18,11 @@ function test_all () {
 
 		# thanks to matlab, 1 means ok and 0 means error
 		if [ ${ans} -eq 0 ]; then
-			echo 'ERROR'
+			echo ERROR
 			# remove octave banner
 			echo ${output} | grep -v 'GNU Octave'
 		else
-			echo 'OK'
+			echo OK
 		fi
 	done
 	sleep 1
