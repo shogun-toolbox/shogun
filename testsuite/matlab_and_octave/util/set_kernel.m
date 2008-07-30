@@ -6,7 +6,7 @@ function y = set_kernel()
 	global kernel_arg1_size;
 	y=false;
 
-	if !isempty(kernel_name)
+	if ~isempty(kernel_name)
 		kname=fix_kernel_name_inconsistency(kernel_name);
 	else
 		kname=fix_kernel_name_inconsistency(name);
@@ -17,9 +17,9 @@ function y = set_kernel()
 		return;
 	end
 
-	if !isempty(kernel_arg0_size)
+	if ~isempty(kernel_arg0_size)
 		size_cache=kernel_arg0_size;
-	elseif !isempty(kernel_arg1_size)
+	elseif ~isempty(kernel_arg1_size)
 		size_cache=kernel_arg1_size;
 	else
 		size_cache=10;
@@ -27,7 +27,7 @@ function y = set_kernel()
 
 
 	% this sux awfully, but dunno how to do it differently here :(
-	ftype=toupper(feature_type);
+	ftype=upper(feature_type);
 	if strcmp(kname, 'SIGMOID')==1
 		global kernel_arg1_gamma_;
 		global kernel_arg2_coef0;
@@ -65,15 +65,15 @@ function y = set_kernel()
 	elseif strcmp(kname, 'POLYMATCH')==1
 		global kernel_arg0_degree;
 		global kernel_arg1_inhomogene;
-		sg('set_kernel', kname, ftype, size_cache, kernel_arg0_degree,
-			tobool(kernel_arg1_inhomogene));
+		sg('set_kernel', kname, ftype, size_cache, ...
+			kernel_arg0_degree, tobool(kernel_arg1_inhomogene));
 
 	elseif strcmp(kname, 'POLY')==1
 		global kernel_arg0_degree;
 		global kernel_arg1_inhomogene;
 		global kernel_arg2_use_normalization;
-		sg('set_kernel', kname, ftype, size_cache, kernel_arg0_degree,
-			tobool(kernel_arg1_inhomogene),
+		sg('set_kernel', kname, ftype, size_cache, ...
+			kernel_arg0_degree, tobool(kernel_arg1_inhomogene), ...
 			tobool(kernel_arg2_use_normalization));
 
 	elseif strcmp(kname, 'MATCH')==1
@@ -84,7 +84,7 @@ function y = set_kernel()
 		global kernel_arg0_use_sign;
 		global kernel_arg1_normalization;
 		norm=fix_normalization_inconsistency(kernel_arg1_normalization);
-		sg('set_kernel', kname, ftype, size_cache,
+		sg('set_kernel', kname, ftype, size_cache, ...
 				tobool(kernel_arg0_use_sign), norm);
 
 	elseif findstr(kname, 'DEGREE') % FIXED + WEIGHTED
@@ -116,8 +116,9 @@ function y = set_kernel()
 		global kernel_arg0_length;
 		global kernel_arg1_inner_degree;
 		global kernel_arg2_outer_degree;
-		sg('set_kernel', kname, ftype, size_cache, kernel_arg0_length,
-			kernel_arg1_inner_degree, kernel_arg2_outer_degree);
+		sg('set_kernel', kname, ftype, size_cache, ...
+			kernel_arg0_length, kernel_arg1_inner_degree, ...
+			kernel_arg2_outer_degree);
 
 	elseif strcmp(kname, 'COMBINED')
 		% this will break when test file is changed!
@@ -137,16 +138,21 @@ function y = set_kernel()
 		sg('set_kernel', 'COMBINED', size_cache);
 
 		subkernel_name=fix_kernel_name_inconsistency(subkernel0_name);
-		sg('add_kernel', 1., subkernel_name, toupper(subkernel0_feature_type),
-			str2num(subkernel0_kernel_arg0_size), subkernel0_kernel_arg1_degree);
+		sg('add_kernel', 1., subkernel_name, ...
+			upper(subkernel0_feature_type), ...
+			str2num(subkernel0_kernel_arg0_size), ...
+			subkernel0_kernel_arg1_degree);
 
 		subkernel_name=fix_kernel_name_inconsistency(subkernel1_name);
-		sg('add_kernel', 1., subkernel_name, toupper(subkernel1_feature_type),
-			str2num(subkernel1_kernel_arg0_size), subkernel1_kernel_arg1_degree,
+		sg('add_kernel', 1., subkernel_name, ...
+			upper(subkernel1_feature_type), ...
+			str2num(subkernel1_kernel_arg0_size), ...
+			subkernel1_kernel_arg1_degree, ...
 			tobool(subkernel1_kernel_arg2_inhomogene));
 
 		subkernel_name=fix_kernel_name_inconsistency(subkernel2_name);
-		sg('add_kernel', 1., subkernel_name, toupper(subkernel2_feature_type),
+		sg('add_kernel', 1., subkernel_name, ...
+			upper(subkernel2_feature_type), ...
 			str2num(subkernel2_kernel_arg0_size));
 
 	else

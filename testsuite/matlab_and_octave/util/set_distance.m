@@ -2,9 +2,9 @@ function y = set_distance()
 	global distance_name;
 	global name;
 	global feature_type;
-	ftype=toupper(feature_type);
+	ftype=upper(feature_type);
 
-	if !isempty(distance_name)
+	if ~isempty(distance_name)
 		dname=fix_distance_name_inconsistency(distance_name);
 	else
 		dname=fix_distance_name_inconsistency(name);

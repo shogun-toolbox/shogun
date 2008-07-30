@@ -1,5 +1,5 @@
 function y = fix_kernel_name_inconsistency (kname)
-	kname=toupper(kname);
+	kname=upper(kname);
 	if findstr('SIMPLELOCALITYIMPROVEDSTRING', kname)
 		y='SLIK';
 	elseif findstr('LOCALITYIMPROVEDSTRING', kname)

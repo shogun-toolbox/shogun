@@ -11,20 +11,29 @@ function test_all () {
 		echo -n -e "\t\t"
 
 		interface=`grep INTERFACE ../../src/.config | awk '{print $3}'`
-		if [ ${interface} != "octave" -a ${interface} != "matlab" ]; then
+		if [ "${interface}" != "octave" -a "${interface}" != "matlab" ]; then
 			echo "Unknown interface ${interface}"
 			exit 1
 		fi
 
 		output=`./test_one.sh ${file} ${interface}`
-		ans=`echo $output | grep 'ans =' | awk '{print $NF}'`
+
+		if [ "${interface}" == "octave" ]; then
+			ans=`echo $output | grep 'ans =' | awk '{print $NF}'`
+		else # matlab has '>>' as last element in output
+			ans=`echo $output | grep 'ans =' | awk '{print $(NF-1)}'`
+		fi
+
+		if [ -z ${ans} ]; then
+			ans=0
+		fi
 
 		# thanks to matlab, 1 means ok and 0 means error
 		if [ $? -ne 0 -o ${ans} -eq 0 ]; then
-			echo 'ERROR'
+			echo ERROR
 			echo ${output}
 		else
-			echo 'OK'
+			echo OK
 		fi
 	done
 	sleep 1

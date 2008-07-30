@@ -10,21 +10,21 @@ function y = classifier(filename)
 		return;
 	end
 
-	if !set_features()
+	if ~set_features()
 		return;
 	end
 
 	if strcmp(classifier_type, 'kernel')==1
-		if !set_kernel()
+		if ~set_kernel()
 			return;
 		end
 	elseif strcmp(classifier_type, 'knn')==1
-		if !set_distance()
+		if ~set_distance()
 			return;
 		end
 	end
 
-	if !isempty(classifier_labels)
+	if ~isempty(classifier_labels)
 		sg('set_labels', 'TRAIN', classifier_labels);
 	end
 
@@ -36,28 +36,28 @@ function y = classifier(filename)
 		return;
 	end
 
-	if !isempty(classifier_bias)
+	if ~isempty(classifier_bias)
 		sg('svm_use_bias', true);
 	else
 		sg('svm_use_bias', false);
 	end
 
-	if !isempty(classifier_epsilon)
+	if ~isempty(classifier_epsilon)
 		sg('svm_epsilon', classifier_epsilon);
 	end
-	if !isempty(classifier_tube_epsilon)
+	if ~isempty(classifier_tube_epsilon)
 		sg('svr_tube_epsilon', classifier_tube_epsilon);
 	end
-	if !isempty(classifier_max_train_time)
+	if ~isempty(classifier_max_train_time)
 		sg('svm_max_train_time', classifier_max_train_time);
 	end
-	if !isempty(classifier_linadd_enabled)
+	if ~isempty(classifier_linadd_enabled)
 		sg('use_linadd', true);
 	end
-	if !isempty(classifier_batch_enabled)
+	if ~isempty(classifier_batch_enabled)
 		sg('use_batch_computation', true);
 	end
-	if !isempty(classifier_num_threads)
+	if ~isempty(classifier_num_threads)
 		sg('threads', classifier_num_threads);
 	end
 
@@ -66,7 +66,7 @@ function y = classifier(filename)
 	elseif strcmp(classifier_type, 'lda')==1
 		sg('train_classifier', classifier_gamma);
 	else
-		if !isempty(classifier_C)
+		if ~isempty(classifier_C)
 			sg('c', classifier_C);
 		end
 		sg('train_classifier');
@@ -79,9 +79,9 @@ function y = classifier(filename)
 	if strcmp(classifier_type, 'knn')==1
 		sg('init_distance', 'TEST');
 	elseif strcmp(classifier_type, 'lda')==1
-		sv; % nop
+		0; % nop
 	else
-		if !isempty(regression_bias)
+		if ~isempty(regression_bias)
 			[bias, weights]=sg('get_svm');
 			bias=abs(bias-regression_bias);
 			weights=weights';

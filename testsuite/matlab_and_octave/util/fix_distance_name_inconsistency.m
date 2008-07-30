@@ -1,5 +1,5 @@
 function y = fix_distance_name_inconsistency (dname)
-	dname=toupper(dname);
+	dname=upper(dname);
 	if findstr('WORDDISTANCE', dname)
 		pos=findstr('WORDDISTANCE', dname);
 		y=dname(1:pos-1);

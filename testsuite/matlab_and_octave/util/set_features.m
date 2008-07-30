@@ -24,9 +24,8 @@ function y = set_features()
 		return;
 	end
 
-	if (!isempty(name_features) &&
-		(strcmp(name_features, 'FK')==1 || strcmp(name_features, 'TOP')==1))
-		fprintf('Fisher/TOP not supported yet!\n');
+	if ~isempty(name_features)
+		fprintf('Features %s not yet supported!\n', name_features);
 		return;
 	end
 
@@ -45,9 +44,9 @@ function y = set_features()
 			sg('add_features', 'TRAIN', subkernel0_data_train);
 			sg('add_features', 'TEST', subkernel0_data_test);
 		else
-			sg('add_features', 'TRAIN',
+			sg('add_features', 'TRAIN', ...
 				subkernel0_data_train, subkernel0_alphabet);
-			sg('add_features', 'TEST',
+			sg('add_features', 'TEST', ...
 				subkernel0_data_test, subkernel0_alphabet);
 		end
 
@@ -55,9 +54,9 @@ function y = set_features()
 			sg('add_features', 'TRAIN', subkernel1_data_train);
 			sg('add_features', 'TEST', subkernel1_data_test);
 		else
-			sg('add_features', 'TRAIN',
+			sg('add_features', 'TRAIN', ...
 				subkernel1_data_train, subkernel1_alphabet);
-			sg('add_features', 'TEST',
+			sg('add_features', 'TEST', ...
 				subkernel1_data_test, subkernel1_alphabet);
 		end
 
@@ -65,17 +64,17 @@ function y = set_features()
 			sg('add_features', 'TRAIN', subkernel2_data_train);
 			sg('add_features', 'TEST', subkernel2_data_test);
 		else
-			sg('add_features', 'TRAIN',
+			sg('add_features', 'TRAIN', ...
 				subkernel2_data_train, subkernel2_alphabet);
-			sg('add_features', 'TEST',
+			sg('add_features', 'TEST', ...
 				subkernel2_data_test, subkernel2_alphabet);
 		end
 
-	elseif !isempty(alphabet)
+	elseif ~isempty(alphabet)
 		sg('set_features', 'TRAIN', data_train, alphabet);
 		sg('set_features', 'TEST', data_test, alphabet);
 
-	elseif !isempty(data)
+	elseif ~isempty(data)
 		sg('set_features', 'TRAIN', data);
 		sg('set_features', 'TEST', data);
 

@@ -6,11 +6,11 @@ function y = regression(filename)
 	eval('globals'); % ugly hack to have vars from filename as globals
 	eval(filename);
 
-	if !set_features()
+	if ~set_features()
 		return;
 	end
 
-	if !set_kernel()
+	if ~set_kernel()
 		return;
 	end
 
@@ -40,7 +40,7 @@ function y = regression(filename)
 	alphas=0;
 	bias=0;
 	sv=0;
-	if !isempty(regression_bias)
+	if ~isempty(regression_bias)
 		[bias, weights]=sg('get_svm');
 		bias=abs(bias-regression_bias);
 		weights=weights';

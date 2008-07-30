@@ -1,2 +1,2 @@
 function y = tobool(arg)
-	y=eval(tolower(arg));
+	y=eval(lower(arg));

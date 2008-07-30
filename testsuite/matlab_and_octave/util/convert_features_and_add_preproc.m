@@ -18,11 +18,11 @@ function y = convert_features_and_add_preproc()
 	end
 
 	sg('add_preproc', strcat('SORT', type, 'STRING'));
-	sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', type,
+	sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', type, ...
 		order, order-1, gap, reverse);
 	sg('attach_preproc', 'TRAIN');
 
-	sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', type,
+	sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', type, ...
 		order, order-1, gap, reverse);
 	sg('attach_preproc', 'TEST');
 
