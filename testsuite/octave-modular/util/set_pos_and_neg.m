@@ -21,7 +21,7 @@ function y = set_pos_and_neg()
 	charfeat=StringCharFeatures(CUBE);
 	charfeat.set_string_features(data_train);
 	wordfeats_train=StringWordFeatures(charfeat.get_alphabet());
-	wordfeats_train.obtain_from_char(charfeat,
+	wordfeats_train.obtain_from_char(charfeat, ...
 		order-1, order, gap, tobool(reverse));
 	preproc=SortWordString();
 	preproc.init(wordfeats_train);
@@ -31,7 +31,7 @@ function y = set_pos_and_neg()
 	charfeat=StringCharFeatures(CUBE);
 	charfeat.set_string_features(data_test);
 	wordfeats_test=StringWordFeatures(charfeat.get_alphabet());
-	wordfeats_test.obtain_from_char(charfeat,
+	wordfeats_test.obtain_from_char(charfeat, ...
 		order-1, order, gap, tobool(reverse));
 	wordfeats_test.add_preproc(preproc);
 	wordfeats_test.apply_preproc();
