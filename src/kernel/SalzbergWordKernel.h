@@ -24,7 +24,7 @@ class CSalzbergWordKernel: public CStringKernel<WORD>
 		 *
 		 * @param size cache size
 		 * @param pie the plugin estimate
-		 * @param optional labels to set prior from
+		 * @param labels optional labels to set prior from
 		 */
 		CSalzbergWordKernel(INT size, CPluginEstimate* pie, CLabels* labels=NULL);
 
@@ -33,7 +33,7 @@ class CSalzbergWordKernel: public CStringKernel<WORD>
 	 	 * @param l features of left-hand side
 	 	 * @param r features of right-hand side
 		 * @param pie the plugin estimate
-		 * @param optional labels to set prior from
+		 * @param labels optional labels to set prior from
 		 */
 		CSalzbergWordKernel(
 			CStringFeatures<WORD>* l, CStringFeatures<WORD>* r,
