@@ -206,10 +206,10 @@ function y = set_kernel()
 
 	elseif strcmp(kname, 'Sigmoid')==1
 		global SigmoidKernel;
-		global kernel_arg1_gamma_;
+		global kernel_arg1_gamma;
 		global kernel_arg2_coef0;
 		kernel=SigmoidKernel(feats_train, feats_train, size_cache, ...
-			kernel_arg1_gamma_, kernel_arg2_coef0);
+			kernel_arg1_gamma, kernel_arg2_coef0);
 
 	elseif strcmp(kname, 'SimpleLocalityImprovedString')==1
 		global SimpleLocalityImprovedStringKernel;

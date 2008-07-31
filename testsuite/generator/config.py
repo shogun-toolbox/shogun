@@ -97,7 +97,7 @@ KERNEL={
 		[], 1e-6],
 	'Short':[['rand', 'ushort'], ['simple', 'short'], [], 1e-8],
 	'Sigmoid':[['rand', 'double'], ['simple', 'Real'],
-		['size', 'gamma_', 'coef0'], 1e-9],
+		['size', 'gamma', 'coef0'], 1e-9],
 	'SimpleLocalityImprovedString':[['dna', ''], ['string', 'Char'],
 		['length', 'inner_degree', 'outer_degree'], 1e-15],
 	'SparseReal':[['rand', 'double'], ['simple', 'Real'], [], 1e-8],

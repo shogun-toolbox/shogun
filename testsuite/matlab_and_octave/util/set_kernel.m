@@ -29,9 +29,9 @@ function y = set_kernel()
 	% this sux awfully, but dunno how to do it differently here :(
 	ftype=upper(feature_type);
 	if strcmp(kname, 'SIGMOID')==1
-		global kernel_arg1_gamma_;
+		global kernel_arg1_gamma;
 		global kernel_arg2_coef0;
-		sg('set_kernel', kname, ftype, size_cache, kernel_arg1_gamma_, kernel_arg2_coef0);
+		sg('set_kernel', kname, ftype, size_cache, kernel_arg1_gamma, kernel_arg2_coef0);
 
 	elseif strcmp(kname, 'CHI2')==1
 		global kernel_arg0_width;

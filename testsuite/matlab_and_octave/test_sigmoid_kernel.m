@@ -5,7 +5,7 @@ function y = test_sigmoid_kernel(filename)
   sg('set_features', 'TRAIN', traindat);
 
 
-  kname = ['set_kernel ', 'SIGMOID REAL ', num2str(size_),' ',  num2str(gamma_), ' ', num2str(coef0)];
+  kname = ['set_kernel ', 'SIGMOID REAL ', num2str(size_),' ',  num2str(gamma), ' ', num2str(coef0)];
   sg('send_command',kname);
 
   sg('send_command', 'init_kernel TRAIN');

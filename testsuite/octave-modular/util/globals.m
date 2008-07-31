@@ -33,7 +33,7 @@ global M;
 
 global kernel_arg0_size;
 global kernel_arg1_size;
-global kernel_arg1_gamma_;
+global kernel_arg1_gamma;
 global kernel_arg2_coef0;
 global kernel_arg1_normalization;
 global kernel_arg1_distance;
