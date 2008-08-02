@@ -1,7 +1,7 @@
-library("sg")
-sg('echo', 'hi')
+library(sg)
+
 source("util/read_mfile.R")
-filename <- commandArgs()[5]
+filename <- commandArgs()[6]
 indata <- read_mfile(filename)
 for (i in 1:length(indata)) {
 	eval(parse(text=indata[i]))

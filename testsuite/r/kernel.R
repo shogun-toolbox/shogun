@@ -1,6 +1,7 @@
 kernel <- function() {
 	source('util/set_features.R')
 	source('util/set_kernel.R')
+	source('util/check_accuracy.R')
 
 	if (!set_features()) {
 		return(TRUE)
@@ -17,6 +18,6 @@ kernel <- function() {
 	kmatrix <- sg('get_kernel_matrix')
 	ktest <- max(max(abs(km_test-kmatrix)))
 
-	data=matrix(ktrain, ktest)
+	data=list(ktrain, ktest)
 	return(check_accuracy(accuracy, 'kernel', data))
 }

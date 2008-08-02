@@ -10,14 +10,8 @@ function test_all () {
 		echo -n "${file}"
 		echo -n -e "\t\t"
 
-		output=`R --no-save --no-restore --no-readline ${file} < test_one.R`
-		ans=`echo ${output} | grep 'ans =' | awk '{print $NF}'`
-		if [ -z ${ans} ]; then
-			ans=0
-		fi
-
-		# thanks to matlab, 1 means ok and 0 means error
-		if [ ${ans} -eq 0 ]; then
+		output=`R --no-save --no-restore --no-readline --slave ${file} < test_one.R`
+		if [ $? -ne 0 ]; then
 			echo ERROR
 			echo ${output}
 		else
