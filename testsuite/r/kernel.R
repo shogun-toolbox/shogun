@@ -18,6 +18,6 @@ kernel <- function() {
 	kmatrix <- sg('get_kernel_matrix')
 	ktest <- max(max(abs(km_test-kmatrix)))
 
-	data=list(ktrain, ktest)
+	data <- list(ktrain, ktest)
 	return(check_accuracy(accuracy, 'kernel', data))
 }
