@@ -73,14 +73,14 @@ function y = set_kernel()
 		global DNA;
 
 		kernel=CombinedKernel();
-		subkernel=FixedDegreeStringKernel(size_cache, ...
+		subkernel=FixedDegreeStringKernel(subkernel0_kernel_arg0_size, ...
 			subkernel0_kernel_arg1_degree);
 		kernel.append_kernel(subkernel);
-		subkernel=PolyMatchStringKernel(size_cache, ...
+		subkernel=PolyMatchStringKernel(subkernel1_kernel_arg0_size, ...
 			subkernel1_kernel_arg1_degree, ...
 			tobool(subkernel1_kernel_arg2_inhomogene));
 		kernel.append_kernel(subkernel);
-		subkernel=LinearStringKernel(size_cache);
+		subkernel=LinearStringKernel(subkernel2_kernel_arg0_size);
 		kernel.append_kernel(subkernel);
 		kernel.init(feats_train, feats_train);
 

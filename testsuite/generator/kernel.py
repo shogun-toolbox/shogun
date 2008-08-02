@@ -68,7 +68,7 @@ def _get_subkernel_outdata (subkernel, data, num):
 
 	outdata[prefix+'name']=subkernel[0]
 	#FIXME: size soon to be removed from constructor
-	outdata[prefix+'kernel_arg0_size']='10'
+	outdata[prefix+'kernel_arg0_size']=10
 	outdata[prefix+'data_train']=numpy.matrix(data['train'])
 	outdata[prefix+'data_test']=numpy.matrix(data['test'])
 	outdata.update(fileop.get_outdata(
