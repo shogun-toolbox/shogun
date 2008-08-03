@@ -5,8 +5,12 @@ check_accuracy <- function(accuracy, type, data) {
 		print(paste('dtrain:', data[1], ', dtest:', data[2], '<--- accuracy ', accuracy))
 	} else if (regexpr(type, 'distribution')>0) {
 		print(paste('likelihood:', data[1], ', derivatives:', data[2], '<--- accuracy ', accuracy))
+	} else if (regexpr(type, 'hierarchical')>0) {
+		print(paste('merge_distances:', data[1], ', pairs:', data[2], '<--- accuracy', accuracy))
 	} else if (regexpr(type, 'kernel')>0) {
 		print(paste('ktrain:', data[1], ', ktest:', data[2], '<--- accuracy', accuracy))
+	} else if (regexpr(type, 'kmeans')>0) {
+		print(paste('radi:', data[1], ', centers:', data[2], '<--- accuracy', accuracy))
 	} else {
 		print(paste('Unknown accuracy type', type, '!'))
 		return(FALSE)

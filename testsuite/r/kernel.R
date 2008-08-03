@@ -8,13 +8,13 @@ kernel <- function() {
 	}
 
 	if (!set_kernel()) {
-		return(TRUE);
+		return(TRUE)
 	}
 
 	kmatrix <- sg('get_kernel_matrix')
 	ktrain <- max(max(abs(km_train-kmatrix)))
 
-	sg('init_kernel', 'TEST');
+	sg('init_kernel', 'TEST')
 	kmatrix <- sg('get_kernel_matrix')
 	ktest <- max(max(abs(km_test-kmatrix)))
 
