@@ -81,12 +81,12 @@ function y = classifier(filename)
 	elseif strcmp(classifier_type, 'lda')==1
 		0; % nop
 	else
-		if ~isempty(regression_bias)
+		if ~isempty(classifier_bias) && ~isempty(classifier_alphas)
 			[bias, weights]=sg('get_svm');
-			bias=abs(bias-regression_bias);
+			bias=abs(bias-classifier_bias);
 			weights=weights';
-			alphas=max(abs(weights(1:1,:)-regression_alphas));
-			sv=max(abs(weights(2:2,:)-regression_support_vectors));
+			alphas=max(abs(weights(1:1,:)-classifier_alphas));
+			sv=max(abs(weights(2:2,:)-classifier_support_vectors));
 		end
 
 		sg('init_kernel', 'TEST');

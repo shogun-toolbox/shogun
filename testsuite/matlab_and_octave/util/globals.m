@@ -76,6 +76,8 @@ global distance_arg0_k;
 global classifier_type;
 global classifier_labels;
 global classifier_bias;
+global classifier_alphas;
+global classifier_support_vectors;
 global classifier_epsilon;
 global classifier_tube_epsilon;
 global classifier_max_train_time;
