@@ -362,6 +362,12 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<CHAR>
 		 */
 		bool set_shifts(INT* shifts, INT len);
 
+		/** set normalization constant
+		 *
+		 * @return if setting was successful
+		 */
+		inline bool set_normalization_const(DREAL norm_const) { return (normalization_const = norm_const); }
+
 		/** set weights
 		 *
 		 * @param weights new weights
