@@ -3,7 +3,7 @@ regression <- function(filename) {
 	source('util/set_kernel.R')
 	source('util/check_accuracy.R')
 	source('util/tobool.R')
-	source('util/fix_regression_name_inconsistency.R');
+	source('util/fix_regression_name_inconsistency.R')
 
 	if (!set_features()) {
 		return(TRUE)

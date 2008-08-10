@@ -21,3 +21,5 @@ kernel <- function() {
 	data <- list(ktrain, ktest)
 	return(check_accuracy(accuracy, 'kernel', data))
 }
+
+# vim: set filetype=R

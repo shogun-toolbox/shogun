@@ -1,4 +1,6 @@
 set_features <- function() {
+	source('util/convert_features_and_add_preproc.R')
+
 	if (regexpr('Sparse', name)>0) {
 		print('Sparse features not supported yet!')
 		return(FALSE)
@@ -78,7 +80,6 @@ set_features <- function() {
 		sg('set_features', 'TEST', data)
 	}
 
-	source('util/convert_features_and_add_preproc.R')
 	convert_features_and_add_preproc()
 
 	return(TRUE)
