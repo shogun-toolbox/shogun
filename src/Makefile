@@ -382,6 +382,14 @@ run-testsuite:
 	cd ../testsuite/$(INTERFACE) && ( OCTAVE_LOADPATH="$(DESTDIR)$(OCTDIR):" ./test_all.sh )
 check-examples:
 	cd ../examples/$(INTERFACE) && ( OCTAVE_LOADPATH="$(DESTDIR)$(OCTDIR):" ./check.sh )
+#Matlab
+else
+ifeq (matlab,$(INTERFACE))
+run-testsuite:
+	cd ../testsuite/$(INTERFACE) && ( ln -sf ../../src/$(TARGET) ; ./test_all.sh )
+check-examples:
+	cd ../examples/$(INTERFACE) && ./check.sh
+endif
 endif
 endif
 endif

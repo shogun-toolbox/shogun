@@ -4,7 +4,10 @@ function y = kernel(filename)
 	y=true;
 
 	eval('globals'); % ugly hack to have vars from filename as globals
-	eval(filename);
+	system(sprintf('ln -sf ../data/kernel/%s.m testscript.m', filename));
+	testscript;
+	system('rm -f testscript.m'); %avoid ultra long filenames (>63 chars)
+	%eval(filename);
 
 	if ~set_features()
 		return;
