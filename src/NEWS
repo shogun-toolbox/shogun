@@ -1,10 +1,12 @@
 2008-08-15  Soeren Sonnenburg <debian@nn7.de>
 
-	* SHOGUN Release version 0.7.0
+	* SHOGUN Release version 0.6.4
 	* This release contains major feature enhancements and bugfixes:
 		- Implement 2-norm Multiple Kernel Learning.
 		- Much extended documentation.
 		- Add Gaussian kernel for 32bit floating point features.
+		- Testsuite is now available for static interfaces python, octave,
+		  matlab and R and modular interface octave.
 	* Bugfixes:
 		- Tests are now run in the examples/interface directory, with paths set
 		to the installation directory.
