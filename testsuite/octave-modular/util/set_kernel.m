@@ -115,13 +115,13 @@ function y = set_kernel()
 	elseif strcmp(kname, 'Distance')==1
 		global DistanceKernel;
 		global kernel_arg0_width;
-		global dist;
+		global distance;
 		if !set_distance()
 			y=false;
 			return;
 		end
 		kernel=DistanceKernel(feats_train, feats_train, ...
-			kernel_arg0_width, dist);
+			kernel_arg0_width, distance);
 
 	elseif strcmp(kname, 'FixedDegreeString')==1
 		global FixedDegreeStringKernel;
