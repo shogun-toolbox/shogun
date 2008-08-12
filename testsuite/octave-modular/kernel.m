@@ -15,17 +15,24 @@ function y = kernel(filename)
 	end
 
 	if strcmp(name, 'Custom')==1
-		kernel.io.set_loglevel(M_DEBUG)
-		kernel.set_triangle_kernel_matrix_from_triangle(tril(symdata));
-		triangletriangle=max(abs(km_triangletriangle-kernel.get_kernel_matrix()));
+		kmt=[];
+		sz=size(km_triangletriangle, 2);
+		for i=1:size(km_triangletriangle, 2)
+			kmt=[kmt km_triangletriangle(i, 1:sz)];
+			sz=sz-1;
+		end
 
-		%kernel.set_triangle_kernel_matrix_from_full(symdata);
-		%fulltriangle=max(abs(km_fulltriangle-kernel.get_kernel_matrix()));
-		%kernel.set_full_kernel_matrix_from_full(data)
-		%fullfull=max(abs(km_fullfull-kernel.get_kernel_matrix()))
+		kernel.set_triangle_kernel_matrix_from_triangle(kmt);
+		triangletriangle=max(max(abs(km_triangletriangle-kernel.get_kernel_matrix())));
 
-		%data={'custom', triangletriangle, fulltriangle, fullfull};
-		%y=check_accuracy(accuracy, data);
+		kernel.set_triangle_kernel_matrix_from_full(km_fulltriangle);
+		fulltriangle=max(max(abs(km_fulltriangle-kernel.get_kernel_matrix())));
+
+		kernel.set_full_kernel_matrix_from_full(km_fullfull);
+		fullfull=max(max(abs(km_fullfull-kernel.get_kernel_matrix())));
+
+		data={'custom', triangletriangle, fulltriangle, fullfull};
+		y=check_accuracy(accuracy, data);
 	else
 		ktrain=max(max(abs(km_train-kernel.get_kernel_matrix())));
 		kernel.init(feats_train, feats_test);
