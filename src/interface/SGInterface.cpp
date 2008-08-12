@@ -6871,6 +6871,7 @@ bool CSGInterface::handle()
 					hilight.get_command_suffix());
 
 			if (!(interface->*(sg_methods[i].method))())
+			{
 				if (sg_methods[i].usage_prefix)
 				{
 					SG_ERROR("Usage: %s%s%s\n\n\t%s%s%s%s%s\n",
@@ -6888,6 +6889,7 @@ bool CSGInterface::handle()
 							hilight.get_command_prefix(),
 							sg_methods[i].command,
 							hilight.get_command_suffix());
+			}
 			else
 			{
 				success=true;

@@ -56,6 +56,9 @@
 extern "C" int	finite(double);
 #endif
 
+/* Size of RNG seed */
+#define RNG_SEED_SIZE 256
+
 /* Maximum stack size */
 #define RADIX_STACK_SIZE	    512
 
@@ -345,9 +348,9 @@ class CMath : public CSGObject
 			else
 				seed=initseed;
 #if !defined(CYGWIN) && !defined(__INTERIX)
-			//seed=42;
-			//SG_SPRINT("initializing random number generator with %d\n", seed);
-			initstate(seed, CMath::rand_state, sizeof(CMath::rand_state));
+			//seed=42
+			//SG_SPRINT("initializing random number generator with %d (seed size %d)\n", seed, RNG_SEED_SIZE);
+			initstate(seed, CMath::rand_state, RNG_SEED_SIZE);
 #endif
 		}
 

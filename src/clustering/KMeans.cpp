@@ -216,7 +216,7 @@ void CKMeans::clustknb(bool use_old_mus, double *mus_start)
 
 		for (i=0; i<XSize; i++) 
 		{
-			const int Cl= (int) ( CMath::random(0, k-1) );
+			const int Cl=CMath::random(0, k-1);
 			int j;
 			double weight=Weights[i];
 

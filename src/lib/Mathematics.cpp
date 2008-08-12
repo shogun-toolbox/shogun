@@ -57,10 +57,10 @@ CMath::CMath()
 #ifndef HAVE_SWIG
 	CSGObject::version.print_version();
 #endif
-	CMath::rand_state=new CHAR[256];
+	CMath::rand_state=new CHAR[RNG_SEED_SIZE];
 	init_random();
 #ifndef HAVE_SWIG
-	SG_PRINT( "( seeding random number generator with %u, ", seed);
+	SG_PRINT("( seeding random number generator with %u (seed size %d))\n", seed, RNG_SEED_SIZE);
 #endif
 
 #ifdef USE_LOGCACHE
