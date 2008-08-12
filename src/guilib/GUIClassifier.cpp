@@ -513,6 +513,7 @@ bool CGUIClassifier::train_wdocas()
 
 bool CGUIClassifier::train_sparse_linear()
 {
+	EClassifierType ctype=classifier->get_classifier_type();
 	CFeatures* trainfeatures=ui->ui_features->get_train_features();
 	CLabels* trainlabels=ui->ui_labels->get_train_labels();
 
@@ -527,6 +528,17 @@ bool CGUIClassifier::train_sparse_linear()
 
 	if (!trainlabels)
 		SG_ERROR("No labels available.\n");
+
+	if (ctype==CT_SVMOCAS)
+		((CSVMOcas*) classifier)->set_C(svm_C1, svm_C2);
+	else if (ctype==CT_LIBLINEAR)
+		((CLibLinear*) classifier)->set_C(svm_C1, svm_C2);
+	else if (ctype==CT_SVMLIN)
+		((CSVMLin*) classifier)->set_C(svm_C1, svm_C2);
+	else if (ctype==CT_SVMSGD)
+		((CSVMSGD*) classifier)->set_C(svm_C1, svm_C2);
+	else if (ctype==CT_SUBGRADIENTSVM)
+		((CSubGradientSVM*) classifier)->set_C(svm_C1, svm_C2);
 
 	((CSparseLinearClassifier*) classifier)->set_labels(trainlabels);
 	((CSparseLinearClassifier*) classifier)->set_features((CSparseFeatures<DREAL>*) trainfeatures);
