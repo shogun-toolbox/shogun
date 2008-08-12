@@ -18,8 +18,7 @@ function y = kernel(filename)
 		kmt=[];
 		sz=size(km_triangletriangle, 2);
 		for i=1:size(km_triangletriangle, 2)
-			kmt=[kmt km_triangletriangle(i, 1:sz)];
-			sz=sz-1;
+			kmt=[kmt km_triangletriangle(i, i:sz)];
 		end
 
 		kernel.set_triangle_kernel_matrix_from_triangle(kmt);
