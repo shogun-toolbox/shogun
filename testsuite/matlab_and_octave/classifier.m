@@ -29,10 +29,12 @@ function y = classifier(filename)
 	end
 
 	if ~isempty(classifier_labels)
+		classifier_labels
 		sg('set_labels', 'TRAIN', classifier_labels);
 	end
 
 	cname=fix_classifier_name_inconsistency(name);
+	cname
 	try
 		sg('new_classifier', cname);
 	catch
@@ -40,19 +42,20 @@ function y = classifier(filename)
 		return;
 	end
 
-	if ~isempty(classifier_bias)
-		sg('svm_use_bias', true);
-	else
-		sg('svm_use_bias', false);
+	if ~isempty(classifier_bias_enabled)
+		classifier_bias_enabled
+		sg('svm_use_bias', tobool(classifier_bias_enabled));
 	end
 
 	if ~isempty(classifier_epsilon)
+		classifier_epsilon
 		sg('svm_epsilon', classifier_epsilon);
 	end
 	if ~isempty(classifier_tube_epsilon)
 		sg('svr_tube_epsilon', classifier_tube_epsilon);
 	end
 	if ~isempty(classifier_max_train_time)
+		classifier_max_train_time
 		sg('svm_max_train_time', classifier_max_train_time);
 	end
 	if ~isempty(classifier_linadd_enabled)
@@ -71,6 +74,7 @@ function y = classifier(filename)
 		sg('train_classifier', classifier_gamma);
 	else
 		if ~isempty(classifier_C)
+			classifier_C
 			sg('c', classifier_C);
 		end
 		sg('train_classifier');
@@ -93,9 +97,15 @@ function y = classifier(filename)
 			sv=max(abs(weights(2:2,:)-classifier_support_vectors));
 		end
 
-		sg('init_kernel', 'TEST');
+		if strcmp(classifier_type, 'linear')~=1
+			sg('init_kernel', 'TEST');
+		end
 	end
 
+	%res=sg('classify')
+	%classifier_classified
+	%testf=sg('get_features', 'TEST')
+	%trainf=sg('get_features', 'TRAIN')
 	classified=max(abs(sg('classify')-classifier_classified));
 
 	data={'classifier', alphas, bias, sv, classified};

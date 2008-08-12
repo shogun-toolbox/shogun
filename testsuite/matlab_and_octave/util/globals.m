@@ -83,8 +83,8 @@ global classifier_tube_epsilon;
 global classifier_max_train_time;
 global classifier_linadd_enabled;
 global classifier_batch_enabled;
+global classifier_bias_enabled
 global classifier_num_threads;
-global classifier_batch_enabled;
 global classifier_k;
 global classifier_gamma;
 global classifier_C;

@@ -6,17 +6,15 @@ function y = set_features()
 	global data_train;
 	global data_test;
 	global data_type;
+	global feature_type;
 	global data;
 	y=false;
 
 	if findstr('Sparse', name)
-		fprintf('Sparse features not supported yet!\n');
-		return;
-	end
-
-	if findstr('linear', classifier_type)
-		fprintf('Linear classifiers with sparse features not supported yet!\n');
-		return;
+		if strcmp(feature_type, 'Real')~=1
+			fprintf('Sparse features other than Real not supported yet!\n');
+			return;
+		end
 	end
 
 	if strcmp(alphabet, 'RAWBYTE')==1
@@ -82,6 +80,8 @@ function y = set_features()
 		fname='double';
 		if strcmp(data_type, 'ushort')==1
 			fname='uint16';
+		elseif strcmp(classifier_type, 'linear')==1
+			fname='sparse';
 		end
 
 		if iscell(data_train)
@@ -89,6 +89,7 @@ function y = set_features()
 			data_test=cellfun(@str2num, data_test);
 		end
 
+		fname
 		sg('set_features', 'TRAIN', feval(fname, data_train));
 		sg('set_features', 'TEST', feval(fname, data_test));
 	end

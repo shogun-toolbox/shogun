@@ -7,6 +7,9 @@ function y = fix_classifier_name_inconsistency (cname)
 			y=strcat('LIBSVM_', cname(pos+6:end));
 			return;
 		end
+	elseif findstr('LIBLINEAR', cname)
+		y='LIBLINEAR_LR';
+		return
 	end
 
 	y=cname;
