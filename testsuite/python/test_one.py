@@ -70,8 +70,9 @@ def _test_mfile (fnam):
 	mfile.close()
 	fun=eval(name_fun)
 
-	# init random in Shogun to be constant
+	# seed random to constant value used at data file's creation
 	sg('init_random', indata['init_random'])
+	random.seed(indata['init_random'])
 
 	return fun(indata)
 

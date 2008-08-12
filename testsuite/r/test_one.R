@@ -7,6 +7,11 @@ for (i in 1:length(indata)) {
 	eval(parse(text=indata[i]))
 }
 
+# there is some randomness involved, alas this is
+# not working correctly in R
+sg('init_random', init_random)
+set.seed(init_random)
+
 path=strsplit(filename, '/', fixed=TRUE)
 module=path[[1]][3]
 

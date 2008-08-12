@@ -10,6 +10,8 @@ Copyright (C) 2007-2008 Fraunhofer Institute FIRST and Max-Planck-Society
 
 import sys
 import os
+import numpy.random as random
+
 from shogun.Library import Math_init_random
 from dataop import INIT_RANDOM
 from fileop import clean_dir_outdata
@@ -23,8 +25,9 @@ def run (argv):
 	argument list.
 	"""
 
-	# init random in Shogun to be constant
+	# put some constantness into randomness
 	Math_init_random(INIT_RANDOM)
+	random.seed(INIT_RANDOM)
 
 	arglen=len(argv)
 	if arglen==2: # run given module

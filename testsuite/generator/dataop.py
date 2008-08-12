@@ -13,6 +13,7 @@ INIT_RANDOM=42
 
 _NUM_FEATS=11
 
+
 def _get_seed ():
 	"""Return a somewhat constant seed.
 
@@ -25,6 +26,7 @@ def _get_seed ():
 	fcode=sys._getframe(2).f_code
 	hash=reduce(lambda x,y:x+y, map(ord, fcode.co_name+fcode.co_filename))
 	return hash
+
 
 def get_rand (dattype=numpy.double, num_feats=_NUM_FEATS, dim_square=False,
 	max_train=sys.maxint, max_test=sys.maxint):
@@ -41,7 +43,7 @@ def get_rand (dattype=numpy.double, num_feats=_NUM_FEATS, dim_square=False,
 	@return Dict which contains the random numbers
 	"""
 
-	random.seed(_get_seed())
+	#random.seed(_get_seed())
 
 	if dim_square:
 		num_feats=num_vec_train=num_vec_test=dim_square
@@ -81,6 +83,7 @@ def get_rand (dattype=numpy.double, num_feats=_NUM_FEATS, dim_square=False,
 			'test':rand_test.astype(dattype)
 		}
 
+
 def get_clouds (num_clouds, num_feats=_NUM_FEATS):
 	"""Return random float numbers organised, but scrambled, in clouds.
 
@@ -92,7 +95,7 @@ def get_clouds (num_clouds, num_feats=_NUM_FEATS):
 	@return Dict which contains the random numbers
 	"""
 
-	random.seed(_get_seed())
+	#random.seed(_get_seed())
 	clouds={}
 
 	data=[random.rand(num_feats, NUM_VEC_TRAIN)+x/2 for x in xrange(num_clouds)]
@@ -104,6 +107,7 @@ def get_clouds (num_clouds, num_feats=_NUM_FEATS):
 	clouds['test']=numpy.array([random.permutation(x) for x in clouds['test']])
 
 	return clouds
+
 
 def get_cubes (num_train=4, num_test=8):
 	"""Return cubes of with random emissions.
@@ -119,7 +123,7 @@ def get_cubes (num_train=4, num_test=8):
 	rep=5
 	weight=1
 
-	random.seed(_get_seed())
+	#random.seed(_get_seed())
 
 	sequence={'train':list(), 'test':list()}
 	num={'train': num_train, 'test': num_test}
@@ -152,6 +156,7 @@ def get_cubes (num_train=4, num_test=8):
 
 	return sequence
 
+
 def get_labels (num, ltype='twoclass'):
 	"""Return labels used for classification.
 
@@ -160,7 +165,7 @@ def get_labels (num, ltype='twoclass'):
 	@return Tuple to contain the labels as numbers in a tuple and labels as objects digestable for Shogun.
 	"""
 
-	random.seed(_get_seed())
+	#random.seed(_get_seed())
 	labels=[]
 	if ltype=='twoclass':
 		labels.append(random.rand(num).round()*2-1)
@@ -174,6 +179,7 @@ def get_labels (num, ltype='twoclass'):
 
 	return labels
 
+
 def get_dna (len_seq_test_add=0):
 	"""Return a random DNA sequence.
 
@@ -181,7 +187,7 @@ def get_dna (len_seq_test_add=0):
 	@return Dict of tuples of DNA sequences.
 	"""
 
-	random.seed(_get_seed())
+	#random.seed(_get_seed())
 	acgt=numpy.array(['A', 'C', 'G','T'])
 	len_acgt=len(acgt)
 	rand_train=[]
@@ -203,5 +209,3 @@ def get_dna (len_seq_test_add=0):
 	rand_test.append(''.join(str1))
 
 	return {'train': rand_train, 'test': rand_test}
-
-

@@ -7,6 +7,9 @@ function y = clustering(filename)
 	eval('globals'); % ugly hack to have vars from filename as globals
 	eval(filename);
 
+	Math_init_random(init_random);
+	rand('state', init_random);
+
 	if ~set_features()
 		return;
 	end

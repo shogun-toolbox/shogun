@@ -4,11 +4,6 @@ clustering <- function(filename) {
 	source('util/check_accuracy.R')
 	source('util/fix_clustering_name_inconsistency.R')
 
-	# there is some randomness involved, alas this is
-	# not working correctly in R
-	sg('init_random', init_random)
-	set.seed(init_random)
-
 	if (!set_features()) {
 		return(TRUE)
 	}
