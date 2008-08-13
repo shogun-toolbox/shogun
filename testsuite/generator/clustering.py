@@ -5,6 +5,9 @@ from numpy import matrix
 from shogun.Distance import EuclidianDistance
 import shogun.Clustering as clustering
 
+from shogun.Library import Math_init_random
+from dataop import INIT_RANDOM
+
 import fileop
 import featop
 import dataop
@@ -47,6 +50,9 @@ def _run (name, first_arg):
 	@param name Name of the clustering method to run.
 	@param first_arg First argument to the clustering's constructor; so far, only this distinguishes the instantion of the different methods.
 	"""
+
+	# put some constantness into randomness
+	Math_init_random(INIT_RANDOM)
 
 	params={
 		first_arg:3,

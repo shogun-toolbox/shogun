@@ -4,6 +4,9 @@ import numpy
 import shogun.Distribution as distribution
 import shogun.Library as library
 
+from shogun.Library import Math_init_random
+from dataop import INIT_RANDOM
+
 import fileop
 import featop
 import dataop
@@ -87,6 +90,9 @@ def _run (name):
 	@param name Name of the distribtuion method
 	"""
 
+	# put some constantness into randomness
+	Math_init_random(INIT_RANDOM)
+
 	params={
 		'data':dataop.get_dna(),
 	}
@@ -105,6 +111,9 @@ def _run (name):
 
 def _run_hmm ():
 	"""Run generator for Hidden-Markov-Model."""
+
+	# put some constantness into randomness
+	Math_init_random(INIT_RANDOM)
 
 	params={
 		'N':3,
