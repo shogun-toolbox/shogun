@@ -6,6 +6,12 @@ function y = fix_kernel_name_inconsistency (kname)
 		y='LIK';
 	elseif findstr('WORDMATCH', kname)
 		y='MATCH';
+	elseif findstr('SPARSEGAUSSIAN', kname)
+		y='GAUSSIAN';
+	elseif findstr('SPARSEPOLY', kname)
+		y='POLY';
+	elseif findstr('SPARSELINEAR', kname)
+		y='LINEAR';
 	elseif findstr('WEIGHTEDDEGREEPOSITIONSTRING', kname)
 		y='WEIGHTEDDEGREEPOS';
 	elseif strcmp(kname, 'WEIGHTEDCOMMWORDSTRING')==1

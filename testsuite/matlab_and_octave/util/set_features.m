@@ -82,6 +82,8 @@ function y = set_features()
 			fname='uint16';
 		elseif strcmp(classifier_type, 'linear')==1
 			fname='sparse';
+		elseif findstr('Sparse', name)
+			fname='sparse';
 		end
 
 		if iscell(data_train)
@@ -89,7 +91,6 @@ function y = set_features()
 			data_test=cellfun(@str2num, data_test);
 		end
 
-		fname
 		sg('set_features', 'TRAIN', feval(fname, data_train));
 		sg('set_features', 'TEST', feval(fname, data_test));
 	end

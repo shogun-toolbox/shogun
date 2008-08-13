@@ -6,9 +6,13 @@ function y = set_kernel()
 	global kernel_arg1_size;
 	y=false;
 
+	is_sparse=false;
 	if ~isempty(kernel_name)
 		kname=fix_kernel_name_inconsistency(kernel_name);
 	else
+		if findstr('Sparse', name)
+			is_sparse=true;
+		end
 		kname=fix_kernel_name_inconsistency(name);
 	end
 
@@ -53,12 +57,18 @@ function y = set_kernel()
 
 	elseif strcmp(kname, 'GAUSSIAN')==1
 		global kernel_arg0_width;
+		if is_sparse
+			ftype=strcat('SPARSE', ftype);
+		end
 		sg('set_kernel', kname, ftype, size_cache, kernel_arg0_width);
 
 	elseif strcmp(kname, 'LINEAR')==1
 		global kernel_arg0_scale;
 		if isempty(kernel_arg0_scale)
 			kernel_arg0_scale=-1;
+		end
+		if is_sparse
+			ftype=strcat('SPARSE', ftype);
 		end
 		sg('set_kernel', kname, ftype, size_cache, kernel_arg0_scale);
 
@@ -69,12 +79,25 @@ function y = set_kernel()
 			kernel_arg0_degree, tobool(kernel_arg1_inhomogene));
 
 	elseif strcmp(kname, 'POLY')==1
-		global kernel_arg0_degree;
-		global kernel_arg1_inhomogene;
-		global kernel_arg2_use_normalization;
+		if is_sparse
+			global kernel_arg1_degree;
+			global kernel_arg2_inhomogene;
+			global kernel_arg3_use_normalization;
+			degree=kernel_arg1_degree;
+			inhomogene=kernel_arg2_inhomogene;
+			use_normalization=kernel_arg3_use_normalization;
+			ftype=strcat('SPARSE', ftype);
+		else
+			global kernel_arg0_degree;
+			global kernel_arg1_inhomogene;
+			global kernel_arg2_use_normalization;
+			degree=kernel_arg0_degree;
+			inhomogene=kernel_arg1_inhomogene;
+			use_normalization=kernel_arg2_use_normalization;
+		end
+
 		sg('set_kernel', kname, ftype, size_cache, ...
-			kernel_arg0_degree, tobool(kernel_arg1_inhomogene), ...
-			tobool(kernel_arg2_use_normalization));
+			degree, tobool(inhomogene), tobool(use_normalization));
 
 	elseif strcmp(kname, 'MATCH')==1
 		global kernel_arg0_degree;
