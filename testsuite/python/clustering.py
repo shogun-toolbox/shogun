@@ -24,6 +24,7 @@ def _train (indata):
 	else:
 		raise StandardError, 'Incomplete clustering data.'
 
+	sg('init_random', 42)
 	sg('train_clustering', first_arg, max_iter)
 
 

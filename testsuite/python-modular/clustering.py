@@ -4,6 +4,7 @@ Test Clustering
 
 from shogun.Distance import EuclidianDistance
 from shogun.Clustering import *
+#from shogun.Library import Math_init_random
 
 import util
 
@@ -24,6 +25,7 @@ def _clustering (indata):
 
 	fun=eval(indata['name'])
 	clustering=fun(first_arg, distance)
+	#Math_init_random(indata['init_random'])
 	clustering.train()
 
 	distance.init(feats['train'], feats['test'])

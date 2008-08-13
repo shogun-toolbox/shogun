@@ -8,7 +8,6 @@ function y = clustering(filename)
 
 	% there is some randomness involved, alas this is
 	% not working correctly in matlab
-	sg('init_random', init_random);
 	rand('state', init_random);
 
 	if ~set_features()
@@ -36,6 +35,7 @@ function y = clustering(filename)
 		error('Incomplete clustering data!\n');
 	end
 
+	sg('init_random', init_random);
 	sg('train_clustering', first_arg, max_iter);
 
 	if ~isempty(clustering_radi)
