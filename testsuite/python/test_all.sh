@@ -2,6 +2,8 @@
 
 DATAPATH='../data'
 
+[ -z "$PYTHON" ] && PYTHON=python
+
 function test_all () {
 	datapath="$1"
 	echo "*** Testing in $datapath"
