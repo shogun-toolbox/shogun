@@ -141,9 +141,7 @@ bool CCustomKernel::set_triangle_kernel_matrix_from_full(const DREAL* km, INT ro
 		for (INT row=0; row<num_rows; row++)
 		{
 			for (INT col=row; col<num_cols; col++)
-			{
 				kmatrix[row * num_cols - row*(row+1)/2 + col]=km[col*num_rows+row];
-			}
 		}
 		return true;
 	}

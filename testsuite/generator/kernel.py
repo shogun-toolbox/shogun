@@ -10,6 +10,9 @@ from shogun.Classifier import PluginEstimate
 from shogun.Distance import CanberraMetric
 from shogun.Distribution import HMM, Model, LinearHMM, BW_NORMAL
 
+from shogun.Library import Math_init_random
+from dataop import INIT_RANDOM
+
 import fileop
 import featop
 import dataop
@@ -379,6 +382,9 @@ def _run_pie ():
 
 def _run_top_fisher ():
 	"""Run Linear Kernel with {Top,Fisher}Features."""
+
+	# put some constantness into randomness
+	Math_init_random(INIT_RANDOM)
 
 	params={
 		'N':3,
