@@ -18,7 +18,27 @@
 
 class CSVM ;
 
-/** kernel WeightedDegreePositionString */
+/** The WeightedDegreePositionString kernel (Weighted Degree kernel with shifts)
+ *  of order d compares two sequences \f${\bf x}\f$ and \f${\bf x'}\f$ of length
+ *  L by summing all contributions of k-mer matches of lengths
+ *  \f$k\in\{1,\dots,d\}\f$, weighted by coefficients \f$\beta_k\f$ allowing for
+ *  a positional tolerance of up to shift s.
+ *
+ *  It is formally defined as
+ * \f{eqnarray*}
+ * &&\!\!\!\!\!\!\!k({\bf x}_i,{\bf x}_j)=\sum_{k=1}^d\beta_k\sum_{l=1}^{\!\!\!\!L-k+1\!\!\!\!}\gamma_l\sum_{\begin{array}{c}s=0\\
+ *   \!\!\!\!s+l\leq L\!\!\!\!\end{array}}^{S(l)}
+ *   \delta_s\;\mu_{k,l,s,{{\bf x}_i},{{\bf x}_j}},\\
+ *   &&\!\!\!\!\!\!\!\!\!\! {\footnotesize \mu_{k,l,s,{{\bf x}_i},{{\bf x}_j}}\!\!\! =\!\!
+ *   I({\bf u}_{k,l+s}({\bf x}_i)\! =\!{\bf u}_{k,l}({\bf x}_j))\! +\!I({\bf u}_{k,l}({\bf x}_i)\!
+ *   =\!{\bf u}_{k,l+s}({\bf x}_j))},\nonumber
+ *   \f}
+ *   where \f$\beta_j\f$ are the weighting coefficients of the j-mers,
+ *   \f$\gamma_l\f$ is a weighting over the
+ *   position in the sequence, \f$\delta_s=1/(2(s+1))\f$ is the weight assigned
+ *   to shifts (in either direction) of extent s, and S(l) determines
+ *   the shift range at position l.
+ */
 class CWeightedDegreePositionStringKernel: public CStringKernel<CHAR>
 {
 	public:

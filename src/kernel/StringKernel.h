@@ -14,7 +14,7 @@
 #include "kernel/Kernel.h"
 #include "features/StringFeatures.h"
 
-/** template class StringKernel */
+/** Template class StringKernel, is the base class of all String Kernels. */
 template <class ST> class CStringKernel : public CKernel
 {
 	public:

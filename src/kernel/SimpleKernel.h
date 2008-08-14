@@ -15,7 +15,9 @@
 #include "features/SimpleFeatures.h"
 #include "lib/io.h"
 
-/** template class SimpleKernel */
+/** Template class SimpleKernel is the base class for kernels working on dense
+ * features, i.e. they all derive from this class (cf. e.g. CGaussianKernel)
+ */ 
 template <class ST> class CSimpleKernel : public CKernel
 {
 	public:

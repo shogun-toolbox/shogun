@@ -16,7 +16,12 @@
 #include "classifier/PluginEstimate.h"
 #include "features/StringFeatures.h"
 
-/** kernel SalzbergWord */
+/** The SalzbergWord kernel implements the Salzberg kernel as described in
+ *
+ * Engineering Support Vector Machine Kernels That Recognize Translation Initiation Sites
+ * A. Zien, G.Raetsch, S. Mika, B. Schoelkopf, T. Lengauer, K.-R. Mueller
+ *
+ */
 class CSalzbergWordKernel: public CStringKernel<WORD>
 {
 	public:

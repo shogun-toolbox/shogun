@@ -15,7 +15,15 @@
 #include "kernel/SimpleKernel.h"
 #include "features/ShortRealFeatures.h"
 
-/** kernel GaussianShortReal */
+/** The well known Gaussian kernel (swiss army knife for SVMs)
+ * on dense short-real valued features is computed as
+ *
+ * \f[
+ * k({\bf x},{\bf x'})= exp(-\frac{||{\bf x}-{\bf x'}||^2}{\tau})
+ * \f]
+ *
+ * where \f$\tau\f$ is the kernel width.
+ */
 class CGaussianShortRealKernel: public CSimpleKernel<SHORTREAL>
 {
 	public:

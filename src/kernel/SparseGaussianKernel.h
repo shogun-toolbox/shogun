@@ -15,7 +15,15 @@
 #include "kernel/SparseKernel.h"
 #include "features/SparseFeatures.h"
 
-/** kernel SparseGaussian */
+/** The well known Gaussian kernel (swiss army knife for SVMs)
+ * on sparse real valued features is computed as
+ *
+ * \f[
+ * k({\bf x},{\bf x'})= exp(-\frac{||{\bf x}-{\bf x'}||^2}{\tau})
+ * \f]
+ *
+ * where \f$\tau\f$ is the kernel width.
+ */
 class CSparseGaussianKernel: public CSparseKernel<DREAL>
 {
 	public:

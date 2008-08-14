@@ -16,7 +16,10 @@
 
 #define LOGSUM_TBL 10000      /* span of the logsum table */
 
-/** kernel LocalAlignmentString */
+/** The LocalAlignmentString kernel compares two sequences through all possible
+ * local alignments between the two sequences. The implementation is taken from
+ * http://www.mloss.org/software/view/40/ and only adjusted to work with shogun.
+ */
 class CLocalAlignmentStringKernel: public CStringKernel<CHAR>
 {
 	public:

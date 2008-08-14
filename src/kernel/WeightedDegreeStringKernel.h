@@ -17,7 +17,18 @@
 #include "kernel/StringKernel.h"
 #include "features/StringFeatures.h"
 
-/** kernel WeightedDegreeString */
+/** The Weighted Degree kernel of order d compares two sequences \f${\bf x}\f$ and
+ *  \f${\bf x'}\f$ of length L by summing all contributions of k-mer matches of
+ *  lengths \f$k\in\{1,\dots,d\}\f$, weighted by coefficients \f$\beta_k\f$. It
+ *  is defined as
+ *  \f[
+ *      k({\bf x},{\bf x'})=\sum_{k=1}^d\beta_k\sum_{l=1}^{L-k+1}I({\bf u}_{k,l}({\bf x})={\bf u}_{k,l}({\bf x'})).
+ *  \f]
+ *      Here, \f${\bf u}_{k,l}({\bf x})\f$ is the string of length k starting at position
+ *      l of the sequence \f${\bf x}\f$ and \f$I(\cdot)\f$ is the indicator function
+ *      which evaluates to 1 when its argument is true and to 0
+ *      otherwise.
+ */
 class CWeightedDegreeStringKernel: public CStringKernel<CHAR>
 {
 	public:

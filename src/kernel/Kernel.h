@@ -21,7 +21,29 @@
 
 class CSVM;
 
-/** class Kernel */
+/** The Kernel base class. Non-mathematically spoken, a kernel is a function
+ * that given two input objects \f${\bf x}\f$ and \f${\bf x'}\f$ returns a
+ * score describing the similarity of the vectors. The score should be larger
+ * when the objects are more similar.
+ *
+ * It can be defined as
+ *
+ * \f[
+ * k({\bf x},{\bf x'})= \Phi_k({\bf x})\cdot \Phi_k({\bf x'})
+ * \f]
+ *
+ * where \f$\Phi$ maps the objects into some potentially high dimensional
+ * feature space.
+ *
+ * Apart from the input features, the base kernel takes only one argument (the
+ * size of the kernel cache) that is used to efficiently train kernel-machines
+ * like e.g. SVMs.
+ *
+ * In case you would like to define your own kernel, you only have to define a
+ * new compute() function (and the kernel name via get_name() and
+ * the kernel type get_kernel_type()). A good example to look at is the
+ * GaussianKernel.
+ */
 class CKernel : public CSGObject
 {
 	public:

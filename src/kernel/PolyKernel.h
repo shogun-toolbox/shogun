@@ -17,7 +17,7 @@
 
 /** Computes the standard polynomial kernel on dense real valued features
  * \f[
- * k({\bf x},{\bf x'})= (\Phi_k({\bf x})\cdot \Phi_k({\bf x'})+c)^d
+ * k({\bf x},{\bf x'})= ({\bf x}\cdot {\bf x'}+c)^d
  * \f]
  *
  * Note that additional normalisation is applied, i.e.

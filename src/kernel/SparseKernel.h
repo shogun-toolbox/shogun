@@ -14,7 +14,9 @@
 #include "kernel/Kernel.h"
 #include "features/SparseFeatures.h"
 
-/** template class SparseKernel */
+/** Template class SparseKernel, is the base class of kernels working on sparse
+ * features, like e.g. the CSparseGaussianKernel.
+ */
 template <class ST> class CSparseKernel : public CKernel
 {
 	public:

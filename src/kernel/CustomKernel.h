@@ -20,7 +20,9 @@
  *
  * This kernel allows for custom user provided kernel matrices. For squared
  * training matrices it allows to store only the upper triangle of the kernel
- * to save memory. Also note that values are stored as 32bit floats.
+ * to save memory: Full symmetric kernel matrices can be stored as is or
+ * can be internally converted into (or directly given in) upper triangle
+ * representation. Also note that values are stored as 32bit floats.
  *
  */
 class CCustomKernel: public CKernel

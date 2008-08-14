@@ -15,7 +15,11 @@
 #include "kernel/SimpleKernel.h"
 #include "features/RealFeatures.h"
 
-/** kernel Sigmoid */
+/** The standard Sigmoid kernel computed on dense real valued features as
+ * \f[
+ * k({\bf x},{\bf x'})=\text{tanh}(\gamma {\bf x}\cdot{\bf x'}+c)
+ * \f]
+ */
 class CSigmoidKernel: public CSimpleKernel<DREAL>
 {
 	public:

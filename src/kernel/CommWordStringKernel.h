@@ -16,7 +16,7 @@
 #include "lib/Mathematics.h"
 #include "kernel/StringKernel.h"
 
-/** The CommWordString kernel may be used to compute the spectrum kernel [
+/** The CommWordString kernel may be used to compute the spectrum kernel
  * from strings that have been mapped into unsigned 16bit integers. These 16bit
  * integers correspond to k-mers. To applicable in this kernel they need to be
  * sorted (e.g. via the SortWordString pre-processor).

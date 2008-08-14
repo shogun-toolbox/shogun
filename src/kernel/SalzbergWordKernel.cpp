@@ -336,7 +336,6 @@ DREAL CSalzbergWordKernel::compute(INT idx_a, INT idx_b)
 	if (initialized)
 		result /=  (sqrtdiag_lhs[idx_a]*sqrtdiag_rhs[idx_b]) ;
 
-	//fprintf(stderr, "%ld : %ld -> %f\n",idx_a, idx_b, result) ;
 	return result;
 }
 

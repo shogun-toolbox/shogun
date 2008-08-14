@@ -15,7 +15,15 @@
 #include "kernel/SimpleKernel.h"
 #include "features/RealFeatures.h"
 
-/** kernel Gaussian */
+/** The well known Gaussian kernel (swiss army knife for SVMs)
+ * on dense real valued features is computed as
+ *
+ * \f[
+ * k({\bf x},{\bf x'})= exp(-\frac{||{\bf x}-{\bf x'}||^2}{\tau})
+ * \f]
+ *
+ * where \f$\tau\f$ is the kernel width.
+ */
 class CGaussianKernel: public CSimpleKernel<DREAL>
 {
 	public:

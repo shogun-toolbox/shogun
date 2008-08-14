@@ -15,7 +15,16 @@
 #include "lib/common.h"
 #include "kernel/StringKernel.h"
 
-/** kernel LocalityImprovedString */
+/** The LocalityImprovedString kernel is inspired by the polynomial kernel.
+ * Comparing neighboring characters it puts emphasize on local features.
+ *
+ * It can be defined as
+ * \f[
+ * K({\bf x},{\bf x'})=\left(\sum_{i=0}^{T-1}\left(\sum_{j=-l}^{+l}w_jI_{i+j}({\bf x},{\bf x'})\right)^{d_1}\right)^{d_2},
+ * \f]
+ * where
+ * \f$ I_i({\bf x},{\bf x'})=1\f$ if \f$x_i=x'_i\f$ and 0 otherwise.
+ */
 class CLocalityImprovedStringKernel: public CStringKernel<CHAR>
 {
 	public:

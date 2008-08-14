@@ -7,13 +7,14 @@
 #include <utility>
 
 /**
-  @brief This class offers access to the Oligo Kernel introduced 
+  This class offers access to the Oligo Kernel introduced 
   by Meinicke et al. in 2004
 
   The class has functions to preprocess the data such that the kernel
   computation can be pursued faster. The kernel function is then
   kernelOligoFast or kernelOligo.
 
+  <b>currently not functional</b>
 */
 class COligoKernel : public CKernel
 {

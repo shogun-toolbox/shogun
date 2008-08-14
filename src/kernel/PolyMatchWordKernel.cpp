@@ -153,10 +153,7 @@ DREAL CPolyMatchWordKernel::compute(INT idx_a, INT idx_b)
 	INT sum=0;
 	{
 		for (INT i=0; i<alen; i++)
-		{
 			sum+= (avec[i]==bvec[i]) ? 1 : 0;
-		}
-
 	}
 
 	if (inhomogene)

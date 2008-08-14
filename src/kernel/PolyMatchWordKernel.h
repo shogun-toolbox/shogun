@@ -15,7 +15,21 @@
 #include "kernel/SimpleKernel.h"
 #include "features/WordFeatures.h"
 
-/** kernel PolyMatchWord */
+/** The class PolyMatchWordKernel computes a variant of the polynomial kernel
+ * on word-features (makes sense for strings of same length mapped to word
+ * features). It is computed as
+ * \f[
+ * k({\bf x},{\bf x'})= \sum_{i=0}^L I(x_i=x'_i}+c)^d
+ * \f]
+ *
+ * where I is the indicator function which evaluates to 1 if its argument is
+ * true and to 0 otherwise.
+ *
+ * Note that additional normalisation is applied, i.e.
+ * \f[
+ *     k'({\bf x}, {\bf x'})=\frac{k({\bf x}, {\bf x'})}{\sqrt{k({\bf x}, {\bf x})k({\bf x'}, {\bf x'})}}
+ * \f]
+ */
 class CPolyMatchWordKernel: public CSimpleKernel<WORD>
 {
 	public:

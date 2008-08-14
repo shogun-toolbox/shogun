@@ -15,7 +15,11 @@
 #include "kernel/SimpleKernel.h"
 #include "features/ByteFeatures.h"
 
-/** kernel LinearByte */
+/** Computes the standard linear kernel on dense byte valued features
+ * \f[
+ * k({\bf x},{\bf x'})= \frac{1}{scale}{\bf x}\cdot {\bf x'}
+ * \f]
+ */
 class CLinearByteKernel: public CSimpleKernel<BYTE>
 {
 	public:

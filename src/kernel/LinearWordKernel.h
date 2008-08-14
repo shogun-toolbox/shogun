@@ -15,7 +15,11 @@
 #include "kernel/SimpleKernel.h"
 #include "features/WordFeatures.h"
 
-/** kernel LinearWord */
+/** Computes the standard linear kernel on dense word (2-byte) valued features
+ * \f[
+ * k({\bf x},{\bf x'})= \frac{1}{scale}{\bf x}\cdot {\bf x'}
+ * \f]
+ */
 class CLinearWordKernel: public CSimpleKernel<WORD>
 {
 	public:

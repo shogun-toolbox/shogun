@@ -14,7 +14,13 @@
 #include "lib/common.h"
 #include "kernel/StringKernel.h"
 
-/** kernel LinearString */
+/** Computes the standard linear kernel on dense char valued features
+ * \f[
+ * k({\bf x},{\bf x'})= \frac{1}{scale}{\bf x}\cdot {\bf x'}
+ * \f]
+ *
+ * Note: Basically the same as LinearByteKernel but on signed chars.
+ */
 class CLinearStringKernel: public CStringKernel<CHAR>
 {
 	public:

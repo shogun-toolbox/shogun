@@ -17,7 +17,7 @@
 #include "classifier/PluginEstimate.h"
 #include "features/StringFeatures.h"
 
-/** kernel HistogramWord */
+/** The HistogramWord computes the TOP kernel on inhomogeneous Markov Chains. */
 class CHistogramWordKernel: public CStringKernel<WORD>
 {
 	public:

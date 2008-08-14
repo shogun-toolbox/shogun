@@ -14,7 +14,15 @@
 #include "lib/common.h"
 #include "kernel/GaussianKernel.h"
 
-/** kernel GaussianShift */
+/** An experimental kernel inspired by the WeightedDegreePositionStringKernel
+ * and the Gaussian kernel. It is computed as
+ *
+ * \f[
+ * k({\bf x},{\bf x'})= exp(-\frac{||{\bf x}-{\bf x'}||^2}{\tau}) + \sum_{...}
+ * \f]
+ *
+ * where \f$\tau\f$ is the kernel width.
+ */
 class CGaussianShiftKernel: public CGaussianKernel
 {
 	public:

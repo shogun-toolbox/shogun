@@ -107,15 +107,17 @@ DREAL CPolyMatchStringKernel::compute(INT idx_a, INT idx_b)
 {
 	INT i, alen, blen, sum;
 
-	//fprintf(stderr, "LinKernel.compute(%ld,%ld)\n", idx_a, idx_b);
 	CHAR* avec = ((CStringFeatures<CHAR>*) lhs)->get_feature_vector(idx_a, alen);
 	CHAR* bvec = ((CStringFeatures<CHAR>*) rhs)->get_feature_vector(idx_b, blen);
 
 	ASSERT(alen==blen);
 	DREAL sqrt = (initialized && use_normalization)?
 		sqrtdiag_lhs[idx_a]*sqrtdiag_rhs[idx_b] : 1;
+
 	for (i = 0, sum = inhomogene; i<alen; i++)
+	{
 		if (avec[i]==bvec[i])
 			sum++;
+	}
 	return pow(sum, degree) / sqrt;
 }
