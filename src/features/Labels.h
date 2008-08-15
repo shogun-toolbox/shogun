@@ -16,7 +16,10 @@
 #include "lib/io.h"
 #include "base/SGObject.h"
 
-/** class Labels */
+/** The class Labels models labels, i.e. class assignments of objects. Labels
+ * here are always real-valued and thus applicable to classification (cf.
+ * CClassifier) and regression (cf. CRegression) problems.
+ */
 class CLabels : public CSGObject
 {
 	public:

@@ -16,7 +16,10 @@
 #include "features/CharFeatures.h"
 #include "lib/common.h"
 
-/** class WordFeatures */
+/** The class WordFeatures implements a dense word (16bit unsigned) matrix.
+ * It inherits its functionality from CSimpleFeatures, which should be
+ * consulted for further reference.
+ */
 class CWordFeatures : public CSimpleFeatures<WORD>
 {
 	public:

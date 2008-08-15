@@ -27,9 +27,6 @@
 #include "features/RealFeatures.h"
 #include "preproc/SparsePreProc.h"
 
-//features are an array of TSparse, sorted w.r.t. vec_index (increasing) and
-//withing same vec_index w.r.t. feat_index (increasing);
-
 template <class ST> class CSparsePreProc;
 
 /** template class TSparseEntry */
@@ -53,7 +50,18 @@ template <class ST> struct TSparse
 		TSparseEntry<ST>* features;
 };
 
-/** template class SparseFeatures */
+/** Template class SparseFeatures implements sparse matrices. Features are an
+ * array of TSparse, sorted w.r.t. vec_index (increasing) and withing same
+ * vec_index w.r.t. feat_index (increasing);
+ *
+ * Sparse feature vectors can be accessed via get_sparse_feature_vector() and
+ * should be freed (this operation is a NOP in most cases) via
+ * free_sparse_feature_vector().
+ *
+ * As this is a template class it can directly be used for different data types
+ * like sparse matrices of real valued, integer, byte etc type.
+ */
+
 template <class ST> class CSparseFeatures : public CFeatures
 {
 	public:

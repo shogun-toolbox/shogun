@@ -21,8 +21,23 @@
 class CPreProc;
 class CFeatures;
 
-/** class Features
- * Features can just be DREALs, SHORT or STRINGs, FILES, or...
+/** The class Features is the base class of all feature objects. It can be
+ * understood as a dense real valued feature matrix (with e.g. columns as
+ * single feature vectors), a set of strings, graphs or any other arbitrary
+ * collection of objects. As a result this class is kept very general and
+ * implements only very weak interfaces to
+ *
+ * - duplicate the Feature object
+ * - obtain the feature type (like DREALs, SHORT ...)
+ * - obtain the feature class (like Simple dense matrices, sparse or strings)
+ * - obtain the number of feature "vectors"
+ *
+ *   In addition it provides helpers to check e.g. for compability of feature objects.
+ *
+ *   Currently there are 3 general feature classes, which are CSimpleFeatures
+ *   (dense matrices), CSparseFeatures (sparse matrices), CStringFeatures (a
+ *   set of strings) from which all the specific features like CRealFeatures
+ *   (dense real valued feature matrices) are derived.
  */
 class CFeatures : public CSGObject
 {

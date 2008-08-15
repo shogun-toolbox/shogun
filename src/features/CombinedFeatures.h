@@ -17,7 +17,14 @@
 
 class CFeatures;
 
-/** class CombinedFeatures */
+/** The class CombinedFeatures is used to combine a number of of feature objects
+ * into a single CombinedFeatures object. It keeps pointers to the added
+ * sub-features.
+ *
+ * It is especially useful to combine kernels working on different domains
+ * (c.f. CCombinedKernel) and to combine kernels looking at independent
+ * features.
+ */
 class CCombinedFeatures : public CFeatures
 {
 	public:

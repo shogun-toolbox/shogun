@@ -15,7 +15,14 @@
 #include "base/SGObject.h"
 #include "lib/common.h"
 
-/** class Alphabet */
+/** The class Alphabet implements an alphabet and utility functions, to remap
+ * characters to more (bit-)efficient representations, check if a string is
+ * valid, compute histograms etc.
+ *
+ * Currently supported alphabets are DNA, RAWDNA, RNA, PROTEIN, ALPHANUM, CUBE, RAW,
+ * IUPAC_NUCLEIC_ACID and IUPAC_AMINO_ACID.
+ *
+ */
 class CAlphabet : public CSGObject
 {
 	public:

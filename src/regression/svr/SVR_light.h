@@ -39,8 +39,8 @@
  * Note that the SV regression problem is reduced to the standard SV
  * classification problem by introducing artificial labels \f$-y_i\f$ which
  * leads to the epsilon insensitive loss constraints * \f{eqnarray*}
- * 		\w^T{\bf x}_i+b-c_i-\xi_i\leq 0,&\, \forall i=1\dots N\\
- * 		-\w^T{\bf x}_i-b-c_i^*-\xi_i^*\leq 0,&\, \forall i=1\dots N
+ * 		{\bf w}^T{\bf x}_i+b-c_i-\xi_i\leq 0,&\, \forall i=1\dots N\\
+ * 		-{\bf w}^T{\bf x}_i-b-c_i^*-\xi_i^*\leq 0,&\, \forall i=1\dots N
  * \f}
  * with \f$c_i=y_i+ \epsilon\f$ and \f$c_i^*=-y_i+ \epsilon\f$
  *

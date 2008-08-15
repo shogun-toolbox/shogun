@@ -14,7 +14,10 @@
 #include "lib/common.h"
 #include "features/RealFeatures.h"
 
-/** class RealFileFeatures */
+/** The class RealFileFeatures implements a dense double-precision floating
+ * point matrix <b>from a file</b>.  It inherits its functionality from
+ * CSimpleFeatures, which should be consulted for further reference.
+ */
 class CRealFileFeatures: public CRealFeatures
 {
 	public:

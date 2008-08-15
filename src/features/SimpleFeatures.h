@@ -26,7 +26,32 @@
 template <class ST> class CSimpleFeatures;
 template <class ST> class CSimplePreProc;
 
-/** class SimpleFeatures */
+/** The class SimpleFeatures implements dense feature matrices, which are
+ * stored en-block in memory in fortran order, i.e. column-by-column, where a
+ * column denotes a feature vector.
+ *
+ * There are get_num_vectors() many feature vectors, of dimension
+ * get_num_features(). To access a feature vector call
+ * get_feature_vector() and when you are done treating it call
+ * free_feature_vector(). While free_feature_vector() is a NOP in most cases
+ * feature vectors might have been generated on the fly (due to a number
+ * preprocessors being attached to them).
+ *
+ * From this template class a number of dense feature matrix classes are derived.
+ * They all are only shortcuts for different data types and heavily rely on
+ * this class:
+ *
+ * 8bit char matrix - CCharFeatures
+ * 8bit Byte matrix - CByteFeatures
+ * 16bit Integer matrix - CShortFeatures
+ * 16bit Word matrix - CWordFeatures
+ * 32bit Float matrix - CShortRealFeatures
+ * 64bit Double matrix - CRealFeatures
+ * 64bit Double matrix <b>in a file</b> - CRealFileFeatures
+ * 64bit Tangent of posterior log-odds (TOP) features from HMM - CTOPFeatures
+ * 64bit Fisher Kernel (FK) features from HMM - CTOPFeatures
+ * 32bit Integer matrix - CIntFeatures
+ */
 template <class ST> class CSimpleFeatures: public CFeatures
 {
 	public:

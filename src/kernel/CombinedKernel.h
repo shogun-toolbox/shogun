@@ -25,12 +25,13 @@
  * specific weight \f$\beta_m\f$.
  *
  * It is especially useful to combine kernels working on different domains and
- * to combine kernels looking at independent features.
+ * to combine kernels looking at independent features and requires
+ * CCombinedFeatures to be used.
  *
  * It is defined as:
  *
  * \f[
- *     k_{combined}({\bf x}, {\bf x'}) = \sum_{m=0}^M \beta_m k_m({\bf x}, {\bf x'})
+ *     k_{combined}({\bf x}, {\bf x'}) = \sum_{m=1}^M \beta_m k_m({\bf x}, {\bf x'})
  * \f]
  *
  */

@@ -15,7 +15,10 @@
 #include "features/Alphabet.h"
 #include "lib/common.h"
 
-/** class CharFeatures */
+/** The class CharFeatures implements a dense char matrix.
+ * It inherits its functionality from CSimpleFeatures, which should be
+ * consulted for further reference.
+ */
 class CCharFeatures : public CSimpleFeatures<CHAR>
 {
 	public:

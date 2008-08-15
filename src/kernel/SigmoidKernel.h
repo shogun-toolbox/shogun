@@ -17,7 +17,7 @@
 
 /** The standard Sigmoid kernel computed on dense real valued features as
  * \f[
- * k({\bf x},{\bf x'})=\text{tanh}(\gamma {\bf x}\cdot{\bf x'}+c)
+ * k({\bf x},{\bf x'})=\mbox{tanh}(\gamma {\bf x}\cdot{\bf x'}+c)
  * \f]
  */
 class CSigmoidKernel: public CSimpleKernel<DREAL>

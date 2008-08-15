@@ -14,7 +14,10 @@
 #include "features/SimpleFeatures.h"
 #include "lib/common.h"
 
-/** class IntFeatures */
+/** The class IntFeatures implements a dense integer matrix.
+ * It inherits its functionality from CSimpleFeatures, which should be
+ * consulted for further reference.
+ */
 class CIntFeatures: public CSimpleFeatures<INT>
 {
 	public:

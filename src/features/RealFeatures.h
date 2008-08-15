@@ -17,7 +17,10 @@
 #include "features/CharFeatures.h"
 #include "lib/common.h"
 
-/** class RealFeatures */
+/** The class RealFeatures implements a dense double-precision floating point
+ * matrix.  It inherits its functionality from CSimpleFeatures, which should be
+ * consulted for further reference.
+ */
 class CRealFeatures : public CSimpleFeatures<DREAL>
 {
 	public:

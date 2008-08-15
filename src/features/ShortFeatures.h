@@ -16,7 +16,10 @@
 #include "features/CharFeatures.h"
 #include "lib/common.h"
 
-/** class ShortFeatures */
+/** The class ShortFeatures implements a dense short integer matrix.
+ * It inherits its functionality from CSimpleFeatures, which should be
+ * consulted for further reference.
+ */
 class CShortFeatures : public CSimpleFeatures<SHORT>
 {
 	public:

@@ -16,7 +16,10 @@
 #include "features/Alphabet.h"
 #include "lib/common.h"
 
-/** class ByteFeatures */
+/** The class class ByteFeatures implements a dense byte matrix.
+ * It inherits its functionality from CSimpleFeatures, which should be
+ * consulted for further reference.
+ */
 class CByteFeatures : public CSimpleFeatures<BYTE>
 {
 	public:

@@ -53,8 +53,17 @@ template <class T> CHAR* get_zero_terminated_string_copy(T_STRING<T> str)
 	return s;
 }
 
-/** template class StringFeatures
- * StringFeatures do not yet support PREPROCS
+/** Template class StringFeatures implements a list of strings. As this class
+ * is template the underlying storage type is quite arbitrary and not limited
+ * to character strings, but could also be sequences of floating point numbers
+ * etc. Strings differ from matrices (cf. CSimpleFeatures) in a way that the
+ * dimensionality of the feature vectors (i.e. the strings) is not fixed; it
+ * may vary between strings.
+ * 
+ * Most string kernels require StringFeatures but a number of them actually
+ * requires strings to have same length.
+ *
+ * Note: StringFeatures do not support PreProcs
  */
 template <class ST> class CStringFeatures : public CFeatures
 {

@@ -20,7 +20,18 @@
 
 class CDistanceMachine;
 
-/** class Hierarchical */
+/** Agglomerative hierarchical single linkage clustering. Starting with each
+ * object being assigned to its own cluster clusters are iteratively merged.
+ * Here the clusters are merged whose elements have minimum distance, i.e.
+ * the clusters A and B that obtain
+ *
+ * \f[
+ * \min\{d({\bf x},{\bf x'}): {\bf x}\in {\cal A},{\bf x'}\in {\cal B}\}
+ * \f]
+ *
+ * are merged.
+ *
+ * cf e.g. http://en.wikipedia.org/wiki/Data_clustering*/
 class CHierarchical : public CDistanceMachine
 {
 	public:

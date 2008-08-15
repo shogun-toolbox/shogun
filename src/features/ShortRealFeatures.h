@@ -14,7 +14,10 @@
 #include "features/SimpleFeatures.h"
 #include "lib/common.h"
 
-/** class RealFeatures */
+/** The class ShortRealFeatures implements a dense single-precision floating point
+ * matrix.  It inherits its functionality from CSimpleFeatures, which should be
+ * consulted for further reference.
+ */
 class CShortRealFeatures: public CSimpleFeatures<SHORTREAL>
 {
 	public:

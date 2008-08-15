@@ -15,7 +15,9 @@
 #include "lib/Mathematics.h"
 #include "base/SGObject.h"
 
-/** class Distribution */
+/** Base class Distribution from which all methods implementing a distribution
+ * are derived.
+ */
 class CDistribution : public CSGObject
 {
 	public:
@@ -69,7 +71,7 @@ class CDistribution : public CSGObject
 		 * abstract base method
 		 *
 		 * @param num_example which example
-		 * @return log likeliehood for example
+		 * @return log likelihood for example
 		 */
 		virtual DREAL get_log_likelihood_example(INT num_example)=0;
 

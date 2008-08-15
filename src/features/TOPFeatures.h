@@ -41,7 +41,21 @@ struct T_HMM_INDIZES
 	INT num_b;
 };
 
-/** class TOPFeatures */
+/** The class TOPFeatures implements TOP kernel features obtained from
+ * two Hidden Markov models and was used in
+ *
+ * K. Tsuda, M. Kawanabe, G. Raetsch, S. Sonnenburg, and K.R. Mueller. A new
+ * discriminative kernel from probabilistic models. Neural Computation,
+ * 14:2397-2414, 2002.
+ *
+ * which also has the details.
+ *
+ * Note that TOP-features are computed on the fly, so to be effective feature
+ * caching should be enabled.
+ *
+ * It inherits its functionality from CSimpleFeatures, which should be
+ * consulted for further reference.
+ */
 class CTOPFeatures : public CRealFeatures
 {
 	public:
