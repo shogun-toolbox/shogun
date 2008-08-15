@@ -42,6 +42,8 @@
 \arg \b delete_kernel_optimization \verbatim sg('delete_kernel_optimization') \endverbatim
 \arg \b use_diagonal_speedup \verbatim sg('use_diagonal_speedup', USAGE_STR0|1USAGE_STR) \endverbatim
 \arg \b set_kernel_optimization_type \verbatim sg('set_kernel_optimization_type', USAGE_STRFASTBUTMEMHUNGRY|SLOWBUTMEMEFFICIENTUSAGE_STR) \endverbatim
+\arg \b set_prior_probs \verbatim sg('set_prior_probs', USAGE_STRpos probs, neg_probsUSAGE_STR) \endverbatim
+\arg \b set_prior_probs_from_labels \verbatim sg('set_prior_probs_from_labels', USAGE_STRlabelsUSAGE_STR) \endverbatim
 \arg \b resize_kernel_cache \verbatim sg('resize_kernel_cache', size) \endverbatim
 
 \section Distance_sec Distance
@@ -60,7 +62,8 @@
 \arg \b new_classifier \verbatim sg('new_classifier', 'LIBSVM_ONECLASS|LIBSVM_MULTICLASS|LIBSVM|SVMLIGHT|LIGHT|SVMLIN|GPBTSVM|MPDSVM|GNPPSVM|GMNPSVM|SUBGRADIENTSVM|WDSVMOCAS|SVMOCAS|SVMSGD|SVMBMRM|SVMPERF|KERNELPERCEPTRON|PERCEPTRON|LIBLINEAR_LR|LIBLINEAR_L2|LDA|LPM|LPBOOST|SUBGRADIENTLPM|KNN') \endverbatim
 \arg \b new_regression \verbatim sg('new_regression', 'SVRLIGHT|LIBSVR|KRR') \endverbatim
 \arg \b new_clustering \verbatim sg('new_clustering', 'KMEANS|HIERARCHICAL') \endverbatim
-\arg \b load_svm \verbatim [filename, type] <- sg('load_svm') \endverbatim
+\arg \b load_classifier \verbatim [filename, type] <- sg('load_classifier') \endverbatim
+\arg \b save_classifier \verbatim sg('save_classifier', filename) \endverbatim
 \arg \b get_svm \verbatim [bias, alphas] <- sg('get_svm') \endverbatim
 \arg \b set_svm \verbatim sg('set_svm', bias, alphas) \endverbatim
 \arg \b get_svm_objective \verbatim [objective] <- sg('get_svm_objective') \endverbatim
@@ -78,7 +81,7 @@
 \arg \b svm_epsilon \verbatim sg('svm_epsilon', epsilon) \endverbatim
 \arg \b svr_tube_epsilon \verbatim sg('svr_tube_epsilon', tube_epsilon) \endverbatim
 \arg \b svm_one_class_nu \verbatim sg('svm_one_class_nu', nu) \endverbatim
-\arg \b mkl_parameters \verbatim sg('mkl_parameters', weight_epsilon, C_MKL) \endverbatim
+\arg \b mkl_parameters \verbatim sg('mkl_parameters', weight_epsilon, C_MKL [, mkl_norm ]) \endverbatim
 \arg \b svm_max_train_time \verbatim sg('svm_max_train_time', max_train_time) \endverbatim
 \arg \b use_precompute \verbatim sg('use_precompute', enable_precompute) \endverbatim
 \arg \b use_mkl \verbatim sg('use_mkl', enable_mkl) \endverbatim
@@ -149,6 +152,7 @@
 \arg \b set_plif_struct \verbatim sg('set_plif_struct', id, name, limits, penalties, transform, min_value, max_value, use_cache, use_svm) \endverbatim
 \arg \b get_plif_struct \verbatim [id, name, limits, penalties, transform, min_value, max_value, use_cache, use_svm] <- sg('get_plif_struct') \endverbatim
 \arg \b precompute_content_svms \verbatim sg('precompute_content_svms', sequence, position_list, weights) \endverbatim
+\arg \b precompute_tiling_features \verbatim sg('precompute_tiling_features', intensities, probe_pos, tiling_plif_ids) \endverbatim
 \arg \b set_model \verbatim sg('set_model', content_weights, transition_pointers, use_orf, mod_words) \endverbatim
 \arg \b best_path_trans \verbatim [prob, path, pos] <- sg('best_path_trans', p, q, nbest, seq_path, a_trans, segment_loss) \endverbatim
 \arg \b best_path_trans_deriv \verbatim [p_deriv, q_deriv, cmd_deriv, penalties_deriv, my_scores, my_loss] <- sg('best_path_trans_deriv', , my_path, my_pos, p, q, cmd_trans, seq, pos, genestr, penalties, state_signals, penalty_info, dict_weights, mod_words [, segment_loss, segmend_ids_mask]) \endverbatim
@@ -171,6 +175,7 @@
 \arg \b exec \verbatim sg('exec', filename) \endverbatim
 \arg \b set_output \verbatim sg('set_output', 'STDERR|STDOUT|filename') \endverbatim
 \arg \b set_threshold \verbatim sg('set_threshold', threshold) \endverbatim
+\arg \b init_random \verbatim sg('init_random', value_to_initialize_RNG_with) \endverbatim
 \arg \b threads \verbatim sg('threads', num_threads) \endverbatim
 \arg \b translate_string \verbatim [translation] <- sg('translate_string', string, order, start) \endverbatim
 \arg \b clear \verbatim sg('clear') \endverbatim
