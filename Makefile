@@ -151,8 +151,8 @@ svn-tag-release: src/lib/versionstring.h
 	cd .. && svn cp trunk releases/shogun_$(MAINVERSION)
 	cp src/lib/versionstring.h ../releases/shogun_$(MAINVERSION)/src/lib/versionstring.h
 	sed -i "s| lib/versionstring.h||" ../releases/shogun_$(MAINVERSION)/src/Makefile
-	cd ../releases && svn add shogun_$(MAINVERSION)
-	cd ../releases && svn ci -m "Tagging shogun_$(MAINVERSION) release"
+	#cd ../releases && svn add shogun_$(MAINVERSION)
+	#cd ../releases && svn ci -m "Tagging shogun_$(MAINVERSION) release"
 
 package-from-release:
 	rm -rf $(DESTDIR)
