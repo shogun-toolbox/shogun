@@ -2,8 +2,6 @@ distribution <- function(filename) {
 	source('util/set_features.R')
 	source('util/check_accuracy.R')
 
-	# there is some randomness involved, alas this is
-	# not working correctly in R
 	sg('init_random', init_random)
 	set.seed(init_random)
 
