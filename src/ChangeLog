@@ -1,5 +1,6 @@
 2008-08-15  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
 
+	* ChangeLog: updated changelog
 	* clustering/Hierarchical.h, clustering/KMeans.h,
 	  distributions/Distribution.h, features/Alphabet.h,
 	  features/ByteFeatures.h, features/CharFeatures.h,
