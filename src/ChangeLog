@@ -1,5 +1,298 @@
+2008-08-15  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* clustering/Hierarchical.h, clustering/KMeans.h,
+	  distributions/Distribution.h, features/Alphabet.h,
+	  features/ByteFeatures.h, features/CharFeatures.h,
+	  features/CombinedFeatures.h, features/FKFeatures.h,
+	  features/Features.h, features/IntFeatures.h, features/Labels.h,
+	  features/RealFeatures.h, features/RealFileFeatures.h,
+	  features/ShortFeatures.h, features/ShortRealFeatures.h,
+	  features/SimpleFeatures.h, features/SparseFeatures.h,
+	  features/StringFeatures.h, features/TOPFeatures.h,
+	  features/WordFeatures.h, kernel/CombinedKernel.h,
+	  kernel/PolyMatchWordKernel.h, kernel/SigmoidKernel.h,
+	  regression/svr/LibSVR.h, regression/svr/SVR_light.h: Document
+	  everything in features/ and clustering/, fixes for
+	  regression/kernel.
+	  
+	  To be really useful we still need documentation for everything in
+	  
+	  • classifier/*
+	  • distances/*
+	  • distributions/*
+	  
+	  and of course we need some first steps tutorial for the modular
+	  interfaces.
+
+2008-08-15  Gunnar Raetsch <Gunnar.Raetsch@tuebingen.mpg.de>
+
+	* kernel/GaussianShiftKernel.h: minor correction
+	* kernel/GaussianShiftKernel.h: added some documentation of the
+	  GaussianShift kernel
+
+2008-08-14  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* NEWS, kernel/CommWordStringKernel.h, kernel/CustomKernel.h,
+	  kernel/GaussianKernel.h, kernel/GaussianShiftKernel.h,
+	  kernel/GaussianShortRealKernel.h, kernel/HistogramWordKernel.h,
+	  kernel/Kernel.h, kernel/LinearByteKernel.h,
+	  kernel/LinearKernel.h, kernel/LinearStringKernel.h,
+	  kernel/LinearWordKernel.h, kernel/LocalAlignmentStringKernel.h,
+	  kernel/LocalityImprovedStringKernel.h, kernel/OligoKernel.h,
+	  kernel/PolyKernel.h, kernel/PolyMatchStringKernel.cpp,
+	  kernel/PolyMatchStringKernel.h, kernel/PolyMatchWordKernel.cpp,
+	  kernel/PolyMatchWordKernel.h, kernel/SalzbergWordKernel.cpp,
+	  kernel/SalzbergWordKernel.h, kernel/SigmoidKernel.h,
+	  kernel/SimpleKernel.h,
+	  kernel/SimpleLocalityImprovedStringKernel.h,
+	  kernel/SparseGaussianKernel.h, kernel/SparseKernel.h,
+	  kernel/SparsePolyKernel.h, kernel/StringKernel.h,
+	  kernel/WeightedCommWordStringKernel.h,
+	  kernel/WeightedDegreePositionStringKernel.h,
+	  kernel/WeightedDegreeStringKernel.h, kernel/WordMatchKernel.h:
+	  document kernels
+
+2008-08-13  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* kernel/CustomKernel.cpp: kill remaining randomness, testsuite
+	  runs through now for octave/python/python-modular
+
+2008-08-12  Sebastian Henschel <shogun@kodeaffe.de>
+
+	* guilib/GUIClassifier.cpp: interface:
+	  - Fixed issue because SVM parameter C was not passed on from
+	  guilib to
+	  classifier in static interface.
+
+2008-08-12  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* clustering/KMeans.cpp, interface/SGInterface.cpp,
+	  lib/Mathematics.cpp, lib/Mathematics.h: fix a long standing bug
+	  in seeding the random number generator. now seeding is reliable,
+	  however all scripts relying on init_random will have to be
+	  adjusted
+	* kernel/DistanceKernel.cpp: trap distance == NULL
+
+2008-08-11  Sebastian Henschel <shogun@kodeaffe.de>
+
+	* NEWS: - Updated news.
+	* Makefile: weird crashes in modular octave:
+	  - Does not seem to concern Soeren, but shogun crashes often when
+	  working with
+	  classifiers in octave modular. a rearranging of the shogun
+	  modules loaded on
+	  startup, like alphabetical sorting, seems to remedy this.
+
+2008-08-10  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* Makefile: add make tests for matlab (works now for all except
+	  randomized algos :)
+
+2008-08-09  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* kernel/WeightedDegreePositionStringKernel.h: fix one liner
+	  normalization const function - however this still is not the
+	  right way to do it
+
+2008-08-06  Cheng Soon Ong <chengsoon.ong@tuebingen.mpg.de>
+
+	* kernel/WeightedDegreePositionStringKernel.h: Added method to
+	  explicitly set the normalization.
+
+2008-07-30  Sebastian Henschel <shogun@kodeaffe.de>
+
+	* kernel/SalzbergWordKernel.h: kernel:
+	  - Little documentation fix in constructor.
+
+2008-07-24  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* guilib/GUIClassifier.cpp, interface/SGInterface.cpp: fix
+	  documentation string and LDA / lapack compile error
+
+2008-07-23  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* NEWS, classifier/svm/SVM.cpp, guilib/GUICommands.h,
+	  interface/SGInterface.cpp, interface/SGInterface.h: add
+	  save_classifier command (which will currently only work for SVMs)
+
+2008-07-16  Sebastian Henschel <shogun@kodeaffe.de>
+
+	* guilib/GUIPreProc.cpp: interface:
+	  - Fixed segfault issue when attaching preprocs.
+
+2008-07-10  Sebastian Henschel <shogun@kodeaffe.de>
+
+	* interface/OctaveInterface.cpp: interface/examples/testsuite:
+	  - Fixed missing ! bug in octave interface for reading boolean
+	  values, changed
+	  examples/testsuite accordingly.
+	* structure/DynProg.cpp: structure:
+	  - Compile fix: commented non-existing call to print method.
+
+2008-07-05  Gunnar Raetsch <Gunnar.Raetsch@tuebingen.mpg.de>
+
+	* structure/DynProg.cpp: in semi-markov dynamic programming code:
+	  * changed max_look_back default length
+	  * new version of code only looks at transitions that are actually
+	  allowed
+	  * some more outputs about max_look_back
+
+2008-07-03  Sebastian Henschel <shogun@kodeaffe.de>
+
+	* guilib/GUIClassifier.cpp: interface:
+	  - Very similar fix to previous KRR, but tube_epsilon wasn't
+	  actually set in
+	  classifier for LibSVR/SVR_Light.
+	* guilib/GUIClassifier.cpp, guilib/GUIClassifier.h: interface:
+	  - Fixed bug in KRR regression which did not set tau properly
+	  within the
+	  initialised 'classifier'.
+	* interface/SGInterface.cpp: interface/testsuite:
+	  - Changed default value for scale parameter of Linear kernels in
+	  static
+	  interface, so that testsuite for python static now succeeds.
+	* clustering/Hierarchical.h, guilib/GUIClassifier.cpp:
+	  testsuite/interface:
+	  - static and modular interfaces now do the same in Hierarchical
+	  clustering,
+	  not sure if it is the correct sameness, though.
+
+2008-07-02  Sebastian Henschel <shogun@kodeaffe.de>
+
+	* guilib/GUIClassifier.cpp: testsuite/interface:
+	  - Changed default for nu in static interfaces to the same value
+	  as in the
+	  SVM class. classifier testsuite for python static should now run
+	  through.
+
+2008-07-01  Sebastian Henschel <shogun@kodeaffe.de>
+
+	* guilib/GUIClassifier.cpp, guilib/GUIClassifier.h,
+	  interface/SGInterface.cpp: interface:
+	  - Added parameter gamma to training of classifier LDA which makes
+	  testsuite
+	  for python static succeed on it.
+
+2008-06-30  Sebastian Henschel <shogun@kodeaffe.de>
+
+	* kernel/OligoKernel.cpp: kernel:
+	  - Fixed compile warnings in OligoKernel.
+
+2008-06-28  Sebastian Henschel <shogun@kodeaffe.de>
+
+	* guilib/GUICommands.h, guilib/GUIKernel.cpp,
+	  interface/SGInterface.cpp, interface/SGInterface.h,
+	  kernel/SalzbergWordKernel.cpp, kernel/SalzbergWordKernel.h:
+	  kernel/interface/testsuite/examples:
+	  - SalzbergWordKernel: made set_prior_probs available to static
+	  interfaces,
+	  added set_prior_probs_from_labels to the kernel, adjusted
+	  testgenerator
+	  and python static/modular examples and testsuite.
+
+2008-06-24  Sebastian Henschel <shogun@kodeaffe.de>
+
+	* interface/SGInterface.cpp: interface:
+	  - Fixed a bug when counting arguments for HammingWordDistance.
+
+2008-06-24  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* features/ShortRealFeatures.i, features/SimpleFeatures.i: fix
+	  rename to ShortRealFeatures
+
+2008-06-24  Sebastian Henschel <shogun@kodeaffe.de>
+
+	* interface/SGInterface.cpp: interface:
+	  - Set default value in static interface for max_mismatch in
+	  WeightedDegreePositionString from 1 to 0 (as in the class'
+	  constructor)
+
+2008-06-23  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* kernel/GaussianShortRealKernel.cpp, kernel/SimpleKernel.h,
+	  kernel/SimpleKernel.i: fix compilation and warnings caused by my
+	  previous commit
+	* features/Features.i, kernel/GaussianShortRealKernel.cpp,
+	  kernel/GaussianShortRealKernel.h,
+	  kernel/GaussianShortRealKernel.i, kernel/Kernel.i: add gaussian
+	  kernel for shortreal features
+
+2008-06-23  Sebastian Henschel <shogun@kodeaffe.de>
+
+	* guilib/GUICommands.h, guilib/GUIMath.cpp, guilib/GUIMath.h,
+	  interface/SGInterface.cpp, interface/SGInterface.h: interface:
+	  - Added command init_random to static interfaces.
+
+2008-06-21  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* kernel/OligoKernel.cpp, kernel/OligoKernel.h, lib/Signal.cpp,
+	  preproc/NormOne.cpp: moving the oligokernel in place - currently
+	  only formatting changes.. still way to go before it is working in
+	  sg
+
+2008-06-20  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* NEWS, regression/KRR.h, regression/svr/LibSVR.h,
+	  regression/svr/SVR_light.h: - document methods in regression/*
+	  - update doxyfile to not show methods from inherited classes (its
+	  is becoming messy+confusing) and define USE_SVMLIGHT and
+	  HAVE_LAPACK/ATLAS to also see these methods documented
+
+2008-06-19  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* NEWS, preproc/LogPlusOne.h, preproc/NormDerivativeLem3.h,
+	  preproc/NormOne.cpp, preproc/NormOne.h, preproc/PCACut.cpp,
+	  preproc/PCACut.h, preproc/PreProc.h, preproc/PruneVarSubMean.h,
+	  preproc/SimplePreProc.h, preproc/SortUlongString.h,
+	  preproc/SortWord.h, preproc/SortWordString.h,
+	  preproc/SparsePreProc.h, preproc/StringPreProc.h: document
+	  preprocessors
+	* base/Parallel.h, base/SGObject.h, base/Version.h, lib/Signal.h:
+	  document items in base/
+	* evaluation/PerformanceMeasures.h, lib/Array.h, lib/Array2.h,
+	  lib/Array3.h, lib/Cache.h, lib/Cplex.h, lib/DynamicArray.h,
+	  lib/File.h, lib/List.h, lib/ShogunException.h, lib/Signal.h,
+	  lib/SimpleFile.h, lib/Time.h, lib/Trie.h, lib/io.h: document
+	  classes in lib/
+	* classifier/svm/SVM_light.cpp: remove accidental unconditional
+	  active constraint counter increase
+
+2008-06-18  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* classifier/svm/SVM_light.cpp: looks like there is some problem in
+	  the heuristic?
+	* classifier/svm/SVM.cpp, classifier/svm/SVM_light.cpp,
+	  interface/OctaveInterface.cpp, interface/PythonInterface.cpp,
+	  interface/RInterface.cpp,
+	  kernel/WeightedDegreePositionStringKernel.cpp,
+	  kernel/WeightedDegreeStringKernel.cpp, lib/ShogunException.cpp,
+	  lib/Signal.cpp, lib/Signal.h, lib/io.cpp: hopefully fix signal
+	  handling:
+	  - SVM* / WDKernel* erranously called CSignal::clear() keeping the
+	  signal handler active
+	  - if a command returned with an error, the signal handler was
+	  still set, fix this by removing the signal handler in shogun
+	  exception
+	  - only use printf in SG_ERROR etc as we are throwing an exception
+	  anyway. note that for modular interfaces we need to call
+	  CSignal::set_handler(); for all commands that can be expected to
+	  run a bit longer
+	* classifier/svm/SVM_light.cpp: also implement two/one norm mkl for
+	  linadd
+
+2008-06-17  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* interface/RInterface.cpp: fix index
+	* interface/RInterface.cpp: attempt to fix corruption
+	* classifier/svm/SVM_light.cpp: potentially fix 1 norm mkl bug
+	* guilib/GUICommands.h, guilib/GUIStructure.cpp,
+	  guilib/GUIStructure.h, interface/SGInterface.cpp,
+	  interface/SGInterface.h, structure/DynProg.cpp,
+	  structure/DynProg.h: merge jonas' changes back to trunk
+
 2008-06-16  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
 
+	* ChangeLog: updated changelog
 	* NEWS: update news
 
 2008-06-15  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
