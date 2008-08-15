@@ -27,7 +27,7 @@
  *
  * where \f$\tau\f$ is the kernel width. The idea is to shift the dimensions of the input vectors against eachother.
  * \f$S_{\mathrm{step}}\f$ is the step size (parameter shift_step) of the shifts and 
- * \f$S_{\mathrm{max}}\f$ (parameter max_shift_ is the maximal shift.
+ * \f$S_{\mathrm{max}}\f$ (parameter max_shift) is the maximal shift.
  */
 class CGaussianShiftKernel: public CGaussianKernel
 {
