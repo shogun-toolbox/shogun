@@ -10,12 +10,6 @@ function test_all () {
 		echo -n "$file"
 		echo -n -e "\t\t"
 
-		interface=`grep INTERFACE ../../src/.config | awk '{print $3}'`
-		if [ "${interface}" != "octave" -a "${interface}" != "matlab" ]; then
-			echo "Unknown interface ${interface}"
-			exit 1
-		fi
-
 		output=`./test_one.sh ${file} ${interface}`
 
 		if [ "${interface}" == "octave" ]; then
@@ -40,7 +34,14 @@ function test_all () {
 	echo
 }
 
-if [ -n "$1" ]; then
+interface=${2-octave}
+
+if [ "${interface}" != "octave" -a "${interface}" != "matlab" ]; then
+	echo "Unknown interface ${interface}"
+	exit 1
+fi
+
+if [ -n "$1" -a "$1" != "-" ]; then
 	test_all "$DATAPATH/$1/*.m"
 else
 	for i in $DATAPATH/*; do

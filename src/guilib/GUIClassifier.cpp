@@ -531,8 +531,10 @@ bool CGUIClassifier::train_sparse_linear()
 
 	if (ctype==CT_SVMOCAS)
 		((CSVMOcas*) classifier)->set_C(svm_C1, svm_C2);
+#ifdef HAVE_LAPACK
 	else if (ctype==CT_LIBLINEAR)
 		((CLibLinear*) classifier)->set_C(svm_C1, svm_C2);
+#endif
 	else if (ctype==CT_SVMLIN)
 		((CSVMLin*) classifier)->set_C(svm_C1, svm_C2);
 	else if (ctype==CT_SVMSGD)
