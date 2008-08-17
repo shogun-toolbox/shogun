@@ -43,7 +43,7 @@ function y = clustering(filename)
 		radi=max(abs(radi'-clustering_radi));
 		centers=max(max(abs(centers-clustering_centers)));
 
-		data={'kmeans', radi, centers};
+		data={'kmeans', centers, radi};
 		y=check_accuracy(clustering_accuracy, data);
 
 	elseif ~isempty(clustering_merge_distance)

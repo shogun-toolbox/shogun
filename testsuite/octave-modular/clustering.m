@@ -26,7 +26,7 @@ function y = clustering(filename)
 		centers=clustering.get_cluster_centers();
 		centers=max(max(abs(centers-clustering_centers)));
 
-		data={'kmeans', radi, centers};
+		data={'kmeans', centers, radi};
 		y=check_accuracy(clustering_accuracy, data);
 
 	elseif strcmp(name, 'Hierarchical')==1

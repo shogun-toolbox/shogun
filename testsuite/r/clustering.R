@@ -42,7 +42,7 @@ clustering <- function(filename) {
 		radi <- max(abs(radi-clustering_radi))
 		centers <- max(max(abs(res[[2]]-clustering_centers)))
 
-		data <- list(radi, centers);
+		data <- list(centers, radi);
 		return(check_accuracy(clustering_accuracy, 'kmeans', data))
 
 	} else if (exists('clustering_merge_distance')) {

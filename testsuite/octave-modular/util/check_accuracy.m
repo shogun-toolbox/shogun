@@ -6,7 +6,7 @@ function y = check_accuracy(accuracy, data)
 		fprintf('alphas: %e, bias: %e, sv: %e, classified: %e %s', ...
 			data{2}, data{3}, data{4}, data{5}, ending);
 	elseif strcmp(data{1}, 'kmeans')==1
-		fprintf('radi: %e, centers: %e %s', data{2}, data{3}, ending);
+		fprintf('centers: %e, radi: %e %s', data{2}, data{3}, ending);
 	elseif strcmp(data{1}, 'hierarchical')==1
 		fprintf('merge_distances: %e, pairs: %e %s', ...
 			data{2}, data{3}, ending);

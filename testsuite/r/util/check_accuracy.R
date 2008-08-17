@@ -10,7 +10,7 @@ check_accuracy <- function(accuracy, type, data) {
 	} else if (regexpr(type, 'kernel')>0) {
 		print(paste('ktrain:', data[1], ', ktest:', data[2], '<--- accuracy', accuracy))
 	} else if (regexpr(type, 'kmeans')>0) {
-		print(paste('radi:', data[1], ', centers:', data[2], '<--- accuracy', accuracy))
+		print(paste('centers:', data[1], ', radi:', data[2], '<--- accuracy', accuracy))
 	} else {
 		print(paste('Unknown accuracy type', type, '!'))
 		return(FALSE)
