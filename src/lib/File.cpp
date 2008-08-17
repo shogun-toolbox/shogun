@@ -327,12 +327,12 @@ bool CFile::write_real_valued_dense(const DREAL* matrix, INT num_feat, INT num_v
 	if (!(file && matrix))
 		SG_ERROR("File or matrix invalid.\n");
 
-	for (INT j=0; j<num_vec; j++)
+	for (INT i=0; i<num_feat; i++)
 	{
-		for (INT i=0; i<num_feat; i++)
+		for (INT j=0; j<num_vec; j++)
 		{
 			DREAL v=matrix[num_feat*j+i];
-			if (i==num_feat-1)
+			if (j==num_vec-1)
 				fprintf(file, "%f\n", v);
 			else
 				fprintf(file, "%f ", v);

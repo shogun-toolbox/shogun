@@ -292,15 +292,13 @@ class CMath : public CSGObject
 			for (INT i=0; i<num_vec; i++)
 			{
 				for (INT j=0; j<num_feat; j++)
-					transposed[j+i*num_feat]=matrix[i+j*num_vec];
+					transposed[i+j*num_vec]=matrix[i*num_feat+j];
 			}
 
 			delete[] matrix;
 			matrix=transposed;
 
-			INT tmp=num_feat;
-			num_feat=num_vec;
-			num_vec=tmp;
+			CMath::swap(num_feat, num_vec);
 		}
 
 #ifdef HAVE_LAPACK
