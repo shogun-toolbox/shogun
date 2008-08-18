@@ -2109,15 +2109,23 @@ int main(int argc, char** argv)
 }
 EOF
 			echocheck "Intel MKL support"
-			if cc_check -lmkl -lguide -lmkl_lapack64
+			if cc_check -lmkl -lguide -lmkl_lapack
 			then
 				echores "yes"
 				HAVE_MKL='#define HAVE_MKL 1'
 				HAVE_LAPACK='#define HAVE_LAPACK 1'
 				DEFINES="$DEFINES -DHAVE_MKL -DHAVE_LAPACK"
-				LINKFLAGS="$LINKFLAGS -lmkl -lguide -lmkl_lapack64"
+				LINKFLAGS="$LINKFLAGS -lmkl -lguide -lmkl_lapack"
 			else
-				echores "no"
+				if cc_check -lmkl -lguide -lmkl_lapack64
+				then
+					echores "yes"
+					HAVE_MKL='#define HAVE_MKL 1'
+					HAVE_LAPACK='#define HAVE_LAPACK 1'
+					DEFINES="$DEFINES -DHAVE_MKL -DHAVE_LAPACK"
+					LINKFLAGS="$LINKFLAGS -lmkl -lguide -lmkl_lapack64"
+				else
+					echores "no"
 
 cat > $TMPC << EOF
 #include <cblas.h>
@@ -2132,25 +2140,25 @@ int main(int argc, char** argv)
 	return 0;
 }
 EOF
-				echocheck "Atlas support"
-				if cc_check -llapack_atlas -llapack -lcblas
-				then
-					echores "yes"
-					HAVE_ATLAS='#define HAVE_ATLAS 1'
-					HAVE_LAPACK='#define HAVE_LAPACK 1'
-					DEFINES="$DEFINES -DHAVE_ATLAS -DHAVE_LAPACK"
-					LINKFLAGS="$LINKFLAGS -llapack_atlas -llapack -lcblas"
-				else
-					if cc_check -latlas -llapack -lcblas
+					echocheck "Atlas support"
+					if cc_check -llapack_atlas -llapack -lcblas
 					then
 						echores "yes"
 						HAVE_ATLAS='#define HAVE_ATLAS 1'
 						HAVE_LAPACK='#define HAVE_LAPACK 1'
 						DEFINES="$DEFINES -DHAVE_ATLAS -DHAVE_LAPACK"
-						LINKFLAGS="$LINKFLAGS -latlas -llapack -lcblas"
+						LINKFLAGS="$LINKFLAGS -llapack_atlas -llapack -lcblas"
 					else
-						echores "no"
-					fi
+						if cc_check -latlas -llapack -lcblas
+						then
+							echores "yes"
+							HAVE_ATLAS='#define HAVE_ATLAS 1'
+							HAVE_LAPACK='#define HAVE_LAPACK 1'
+							DEFINES="$DEFINES -DHAVE_ATLAS -DHAVE_LAPACK"
+							LINKFLAGS="$LINKFLAGS -latlas -llapack -lcblas"
+						else
+							echores "no"
+						fi
 
 cat > $TMPC << EOF
 #include <cblas.h>
@@ -2166,22 +2174,23 @@ int main(int argc, char** argv)
 	return 0;
 }
 EOF
-					echocheck "Vanilla lapack and blas support"
-					if cc_check -llapack -lcblas
-					then
-						echores "yes"
-						HAVE_LAPACK='#define HAVE_LAPACK 1'
-						DEFINES="$DEFINES -DHAVE_LAPACK -DHAVE_LAPACK"
-						LINKFLAGS="$LINKFLAGS -llapack -lcblas"
-					else
-						if cc_check -llapack -lblas
+						echocheck "Vanilla lapack and blas support"
+						if cc_check -llapack -lcblas
 						then
 							echores "yes"
 							HAVE_LAPACK='#define HAVE_LAPACK 1'
 							DEFINES="$DEFINES -DHAVE_LAPACK -DHAVE_LAPACK"
-							LINKFLAGS="$LINKFLAGS -llapack -lblas"
+							LINKFLAGS="$LINKFLAGS -llapack -lcblas"
 						else
-							echores "no"
+							if cc_check -llapack -lblas
+							then
+								echores "yes"
+								HAVE_LAPACK='#define HAVE_LAPACK 1'
+								DEFINES="$DEFINES -DHAVE_LAPACK -DHAVE_LAPACK"
+								LINKFLAGS="$LINKFLAGS -llapack -lblas"
+							else
+								echores "no"
+							fi
 						fi
 					fi
 				fi
