@@ -680,7 +680,7 @@ protected:
 	 * @return an integer
 	 */
 	inline INT raw_intensities_interval_query(
-		const INT from_pos, const INT to_pos, DREAL* intensities);
+		const INT from_pos, const INT to_pos, DREAL* intensities, INT type);
 
 	/** translate from single order
 	 *
@@ -1023,22 +1023,24 @@ protected:
 	/** prope position */
 	INT* m_probe_pos;
 	/** number of probes */
-	INT m_num_probes;
-	/** use tiling */
-	bool m_use_tiling;
+	INT* m_num_probes_cum;
+	/** num lin feat plifs cum */
+	INT* m_num_lin_feat_plifs_cum;
+	/** number of additional data tracks like tiling, RNA-Seq, ...*/
+	INT m_num_raw_data;
 	/** length of gene string */
 	INT m_genestr_len;
 };
 
-inline INT CDynProg::raw_intensities_interval_query(const INT from_pos, const INT to_pos, DREAL* intensities)
+inline INT CDynProg::raw_intensities_interval_query(const INT from_pos, const INT to_pos, DREAL* intensities, INT type)
 {
 	ASSERT(from_pos<to_pos);
 	//SG_PRINT("m_num_probes:%i, m_raw_intensities[1]:%f, m_probe_pos[1]:%i \n",m_num_probes, m_raw_intensities[10], m_probe_pos[10]);
 	INT num_intensities = 0;
-	INT* p_tiling_pos  = m_probe_pos;
-	DREAL* p_tiling_data = m_raw_intensities;
+	INT* p_tiling_pos  = &m_probe_pos[m_num_probes_cum[type-1]];
+	DREAL* p_tiling_data = &m_raw_intensities[m_num_probes_cum[type-1]];
 	INT last_pos;
-	INT num = 0;
+	INT num = m_num_probes_cum[type-1];
 	while (*p_tiling_pos<to_pos)
 	{
 		if (*p_tiling_pos>=from_pos)
@@ -1048,11 +1050,13 @@ inline INT CDynProg::raw_intensities_interval_query(const INT from_pos, const IN
 			//SG_PRINT("*p_tiling_data:%f, *p_tiling_pos:%i\n",*p_tiling_data,*p_tiling_pos);
 		}
 		num++;
-		if (num>=m_num_probes)
+		if (num>=m_num_probes_cum[type])
 			break;
 		last_pos = *p_tiling_pos;
 		p_tiling_pos++;
 		p_tiling_data++;
+		SG_PRINT("num:%i, m_num_probes_cum[%i]:%i\n", num, type-1, m_num_probes_cum[type-1]);
+		SG_PRINT("last_pos:%i, tiling_pos:%i\n", last_pos, *p_tiling_pos);
 		ASSERT(last_pos<*p_tiling_pos);
 	}
 	return num_intensities;

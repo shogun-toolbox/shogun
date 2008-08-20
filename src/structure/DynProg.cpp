@@ -118,8 +118,8 @@ CDynProg::CDynProg(INT p_num_svms /*= 8 */)
           m_segment_ids(1),
           m_segment_mask(1),
 	  m_scores(1), m_states(1,1), m_positions(1,1), m_genestr_stop(1),
-	  m_lin_feat(1,1), //by Jonas
-	  m_num_lin_feat(num_svms)
+	  m_lin_feat(1,1) //by Jonas
+	  //m_num_lin_feat(num_svms)
 {
 	trans_list_forward = NULL ;
 	trans_list_forward_cnt = NULL ;
@@ -134,7 +134,12 @@ CDynProg::CDynProg(INT p_num_svms /*= 8 */)
 
 	m_raw_intensities = NULL;
 	m_probe_pos = NULL;
-	m_use_tiling=false;
+	m_num_probes_cum = new INT[100];
+	m_num_probes_cum[0] = 0;
+	//m_use_tiling=false;
+	m_num_lin_feat_plifs_cum = new INT[100];
+	m_num_lin_feat_plifs_cum[0] = num_svms;
+	m_num_raw_data = 0;
 	m_genestr_len = 0;
 #ifdef ARRAY_STATISTICS
 	word_degree.set_name("word_degree");
@@ -228,16 +233,36 @@ INT CDynProg::get_num_states()
 }
 void CDynProg::init_tiling_data(INT* probe_pos, DREAL* intensities, const INT num_probes, const INT seq_len)
 {
+	m_num_raw_data++;
+	m_num_probes_cum[m_num_raw_data] = m_num_probes_cum[m_num_raw_data-1]+num_probes;
+
+	INT* tmp_probe_pos = new INT[m_num_probes_cum[m_num_raw_data]];
+	DREAL* tmp_raw_intensities = new DREAL[m_num_probes_cum[m_num_raw_data]];
+
+
+	if (m_num_raw_data==1){
+		memcpy(tmp_probe_pos, probe_pos, num_probes*sizeof(INT));
+		memcpy(tmp_raw_intensities, intensities, num_probes*sizeof(DREAL));
+		SG_PRINT("raw_intens:%f \n",*tmp_raw_intensities+2);	
+	}else{
+		memcpy(tmp_probe_pos, m_probe_pos, m_num_probes_cum[m_num_raw_data-1]*sizeof(INT));	
+		memcpy(tmp_raw_intensities, m_raw_intensities, m_num_probes_cum[m_num_raw_data-1]*sizeof(DREAL));	
+		memcpy(tmp_probe_pos+m_num_probes_cum[m_num_raw_data-1], probe_pos, num_probes*sizeof(INT));	
+		memcpy(tmp_raw_intensities+m_num_probes_cum[m_num_raw_data-1], intensities, num_probes*sizeof(DREAL));	
+	}
 	delete[] m_probe_pos;
 	delete[] m_raw_intensities;
-	m_probe_pos = new INT[num_probes];
-	m_raw_intensities = new DREAL[num_probes];
+	m_probe_pos = tmp_probe_pos;
+	m_raw_intensities = tmp_raw_intensities;
 
-	memcpy(m_probe_pos, probe_pos, num_probes*sizeof(INT));
-	memcpy(m_raw_intensities, intensities, num_probes*sizeof(DREAL));
-	m_num_probes = num_probes;
+	for (INT j=0;j<m_num_probes_cum[m_num_raw_data];j++)
+		SG_PRINT("%i:%f ",j,m_raw_intensities[j]);
+	SG_PRINT("\n ");
+	for (INT j=0;j<m_num_probes_cum[m_num_raw_data];j++)
+		SG_PRINT("%i:%i ",j,m_probe_pos[j]);
+	
 	//m_precomputed_tiling_values.resize_array(num_svms,seq_len);
-	m_use_tiling=true;
+	//m_use_tiling=true;
 }
 void CDynProg::init_content_svm_value_array(const INT seq_len)
 {
@@ -249,7 +274,7 @@ void CDynProg::resize_lin_feat(const INT num_new_feat, const INT seq_len)
 	INT dim1,dim2;
 	m_lin_feat.get_array_size(dim1,dim2);
 	//SG_PRINT("resize_lin_feat: dim1:%i, dim2:%i\n",dim1,dim2);
-	ASSERT(dim1==m_num_lin_feat);
+	ASSERT(dim1==m_num_lin_feat_plifs_cum[m_num_raw_data-1]);
 	ASSERT(dim2==seq_len);
 
 	/*for(INT j=0;j<5;j++)
@@ -265,14 +290,14 @@ void CDynProg::resize_lin_feat(const INT num_new_feat, const INT seq_len)
 	DREAL* tmp = new DREAL[(dim1+num_new_feat)*dim2];	
 	memset(tmp, 0, (dim1+num_new_feat)*dim2*sizeof(DREAL)) ;
 	for(INT j=0;j<seq_len;j++)
-                for(INT k=0;k<m_num_lin_feat;k++)
+                for(INT k=0;k<m_num_lin_feat_plifs_cum[m_num_raw_data];k++)
 			tmp[j*(dim1+num_new_feat)+k] = arr[j*dim1+k];
 
 	m_lin_feat.set_array(tmp, dim1+num_new_feat,dim2);
 
 	/*for(INT j=0;j<5;j++)
 	{
-		for(INT k=0;k<m_num_lin_feat;k++)
+		for(INT k=0;k<m_num_lin_feat_plifs_cum[m_num_raw_data];k++)
 		{
 			SG_PRINT("(%i,%i)%f ",k,j,m_lin_feat.get_element(k,j));
 		}
@@ -298,9 +323,12 @@ void CDynProg::precompute_tiling_plifs(CPlif** PEN, const INT* tiling_plif_ids, 
 			num++;
 		}
 	}*/
+	m_num_lin_feat_plifs_cum[m_num_raw_data] = m_num_lin_feat_plifs_cum[m_num_raw_data-1]+ num_tiling_plifs;
+	for (INT d=0;d<=m_num_raw_data;d++)
+		SG_PRINT("lin_feat_plifs%i: %i\n",d,m_num_lin_feat_plifs_cum[d]);
 	DREAL tiling_plif[num_tiling_plifs];
-	DREAL svm_value[m_num_lin_feat+num_tiling_plifs];
-	for (INT i=0; i<m_num_lin_feat+num_tiling_plifs; i++)
+	DREAL svm_value[m_num_lin_feat_plifs_cum[m_num_raw_data]];
+	for (INT i=0; i<m_num_lin_feat_plifs_cum[m_num_raw_data]; i++)
 		svm_value[i]=0.0;
 	INT tiling_rows[num_tiling_plifs];
 	for (INT i=0; i<num_tiling_plifs; i++)
@@ -312,30 +340,29 @@ void CDynProg::precompute_tiling_plifs(CPlif** PEN, const INT* tiling_plif_ids, 
 		//for(int j=0;j<20;j++)
 		//	SG_PRINT("%.2f, ",limits[j]);
 		//SG_PRINT("\n ");
-		//SG_PRINT("tiling_rows[%i]:%i, tiling_plif_ids[%i]:%i  \n",i,tiling_rows[i],i,tiling_plif_ids[i]);
-		ASSERT(tiling_rows[i]-1==m_num_lin_feat+i)
+		SG_PRINT("tiling_rows[%i]:%i, tiling_plif_ids[%i]:%i  \n",i,tiling_rows[i],i,tiling_plif_ids[i]);
+		ASSERT(tiling_rows[i]-1==m_num_lin_feat_plifs_cum[m_num_raw_data-1]+i)
 	}
 	resize_lin_feat(num_tiling_plifs, seq_len);
 
 	INT* p_tiling_pos  = m_probe_pos;
 	DREAL* p_tiling_data = m_raw_intensities;
-	INT num=0;
+	INT num=m_num_probes_cum[m_num_raw_data-1];
 	for (INT pos_idx=0;pos_idx<seq_len;pos_idx++)
 	{
 		//SG_PRINT("pos[%i]: %i  \n",pos_idx,pos[pos_idx]);
 		//SG_PRINT("*p_tiling_pos: %i  \n",*p_tiling_pos);
-		if (num>=m_num_probes)
-			break;
-		while (*p_tiling_pos<pos[pos_idx])
+		while (num<m_num_probes_cum[m_num_raw_data]&&*p_tiling_pos<pos[pos_idx])
 		{
 			//SG_PRINT("raw_intens: %f  \n",*p_tiling_data);
 			for (INT i=0; i<num_tiling_plifs; i++)
 			{
-				svm_value[m_num_lin_feat+i]=*p_tiling_data;
+				svm_value[m_num_lin_feat_plifs_cum[m_num_raw_data]+i]=*p_tiling_data;
 				//if (svm_value[m_num_lin_feat+i]>15||svm_value[m_num_lin_feat+i]<4)
 				//	SG_PRINT("uninitialized value, value:%f, i:%i, pos:%i \n", svm_value[m_num_lin_feat+i], i, pos[pos_idx]);
 				CPlif * plif = PEN[tiling_plif_ids[i]];
-				ASSERT(m_num_lin_feat+i==plif->get_use_svm()-1)
+				//SG_PRINT("m_num_lin_feat_plifs_cum[m_num_raw_data]:%i, i:%i, plif->get_use_svm():%i\n",m_num_lin_feat_plifs_cum[m_num_raw_data],i, plif->get_use_svm());
+				ASSERT(m_num_lin_feat_plifs_cum[m_num_raw_data-1]+i==plif->get_use_svm()-1)
 				plif->set_do_calc(true);
 				tiling_plif[i]+=plif->lookup_penalty(0,svm_value);
 				//SG_PRINT("true: plif->lookup_penalty: %f  \n",plif->lookup_penalty(0,svm_value));
@@ -346,19 +373,19 @@ void CDynProg::precompute_tiling_plifs(CPlif** PEN, const INT* tiling_plif_ids, 
 			p_tiling_data++;
 			p_tiling_pos++;
 			num++;
-			if (num>=m_num_probes)
-				break;
 		}
 		for (INT i=0; i<num_tiling_plifs; i++)
 			m_lin_feat.set_element(tiling_plif[i],tiling_rows[i]-1,pos_idx);
 	}
-	m_num_lin_feat += num_tiling_plifs;
+	//m_num_lin_feat += num_tiling_plifs;
 	//DREAL intensities[m_num_probes];
 	//INT nummm = raw_intensities_interval_query(1000, 1025, intensities);
 	//SG_PRINT("nummm:%i\n",nummm);
-	/*for(INT k=0;k<m_num_lin_feat;k++)
+	//for(INT j=1;j<seq_len;j++)
+	//	SG_PRINT("%i: %.2f\n ",j,m_lin_feat.get_element(10,j));
+	/*for(INT k=8;k<12;k++)
 	{
-		for(INT j=100;j<108;j++)
+		for(INT j=1000;j<1010;j++)
 		{
 			SG_PRINT("(%i,%i)%.2f\t ",k,j,m_lin_feat.get_element(k,j));
 		}
@@ -2384,9 +2411,9 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	//g_orf_info = orf_info ;
 	//orf_info.display_array() ;
 
-	DREAL svm_value[m_num_lin_feat] ;
+	DREAL svm_value[m_num_lin_feat_plifs_cum[m_num_raw_data]] ;
 	{ // initialize svm_svalue
-		for (INT s=0; s<m_num_lin_feat; s++)
+		for (INT s=0; s<m_num_lin_feat_plifs_cum[m_num_raw_data]; s++)
 			svm_value[s]=0 ;
 	}
 
@@ -2785,8 +2812,6 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 							////////////////////////////////////////////////////////
 							INT frame = orf_info.element(ii,0);
 							lookup_content_svm_values(ts, t, pos[ts], pos[t], svm_value, frame);
-							//if (m_use_tiling)
-							//	lookup_tiling_plif_values(ts, t, pos[t]-pos[ts], svm_value);
 
 							//INT offset = plen*num_svms ;
 							//for (INT ss=0; ss<num_svms; ss++)
@@ -3049,8 +3074,8 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 	//transition_matrix_a_id.display_array() ;
 	
 	{ // compute derivatives for given path
-		DREAL svm_value[m_num_lin_feat] ;
-		for (INT s=0; s<m_num_lin_feat; s++)
+		DREAL svm_value[m_num_lin_feat_plifs_cum[m_num_raw_data]] ;
+		for (INT s=0; s<m_num_lin_feat_plifs_cum[m_num_raw_data]; s++)
 			svm_value[s]=0 ;
 		
 		for (INT i=0; i<my_seq_len; i++)
@@ -3137,8 +3162,6 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 				if (false)//(frame>=0)
 					SG_PRINT("svm_values: %f, %f, %f \n", svm_value[4], svm_value[5], svm_value[6]);
 				//SG_PRINT("svm_values: %f, %f, %f, %f \n", svm_value[8], svm_value[9], svm_value[10], svm_value[11]);
-				//if (m_use_tiling)
-					//lookup_tiling_plif_values(from_pos, to_pos, pos[to_pos]-pos[from_pos], svm_value);
 	
 #ifdef DYNPROG_DEBUG
 					SG_DEBUG( "svm[%i]: %f\n", ss, svm_value[ss]) ;
@@ -3150,9 +3173,8 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 				DREAL nscore = PEN.element(to_state, from_state)->lookup_penalty(pos[to_pos]-pos[from_pos], svm_value) ;
 				my_scores[i] += nscore ;
 				//SG_PRINT("to_state: %i, from_state: %i, nscore: %f, len: %i \n",to_state,from_state,nscore, pos[to_pos]-pos[from_pos]);
-				if (m_use_tiling)
-					for (INT s=num_svms;s<m_num_lin_feat;s++)/*set tiling plif values to neutral values (that do not influence derivative calculation)*/
-						svm_value[s]=-CMath::INFTY;
+				for (INT s=num_svms;s<m_num_lin_feat_plifs_cum[m_num_raw_data];s++)/*set tiling plif values to neutral values (that do not influence derivative calculation)*/
+					svm_value[s]=-CMath::INFTY;
 			
 #ifdef DYNPROG_DEBUG
 				//SG_DEBUG( "%i. transition penalty: from_state=%i to_state=%i from_pos=%i [%i] to_pos=%i [%i] value=%i\n", i, from_state, to_state, from_pos, pos[from_pos], to_pos, pos[to_pos], pos[to_pos]-pos[from_pos]) ;
@@ -3168,17 +3190,24 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 				*/
 #endif
 				PEN.element(to_state, from_state)->penalty_add_derivative(pos[to_pos]-pos[from_pos], svm_value) ;
-				if (m_use_tiling) 
+				for (INT d=1;d<=m_num_raw_data;d++) 
 				{
 					for (INT s=0;s<num_svms;s++)
 						svm_value[s]=-CMath::INFTY;
-					DREAL intensities[m_num_probes];
-					INT num_intensities = raw_intensities_interval_query(pos[from_pos], pos[to_pos],intensities);
-					//SG_PRINT("pos[from_pos]:%i, pos[to_pos]:%i, num_intensities:%i\n",pos[from_pos],pos[to_pos], num_intensities);
+					DREAL intensities[m_num_probes_cum[d]];
+					INT num_intensities = raw_intensities_interval_query(pos[from_pos], pos[to_pos],intensities, d);
+					SG_PRINT("pos[from_pos]:%i, pos[to_pos]:%i, num_intensities:%i\n",pos[from_pos],pos[to_pos], num_intensities);
 					for (INT k=0;k<num_intensities;k++)
 					{
-					 	for (INT j=num_svms;j<m_num_lin_feat;j++)
+						SG_PRINT("intensity: %f d:%i \n", intensities[k], d);
+					 	for (INT j=m_num_lin_feat_plifs_cum[d-1];j<m_num_lin_feat_plifs_cum[d];j++)
+						{
+							SG_PRINT("j: %i \n",j);
 							svm_value[j]=intensities[k];
+						}
+						INT num_s=0;
+						INT svm_ids[100];
+						PEN.element(to_state, from_state)->get_used_svms(&num_s, svm_ids);
 						PEN.element(to_state, from_state)->penalty_add_derivative(-CMath::INFTY, svm_value) ;	
 						
 					}
