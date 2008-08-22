@@ -1015,7 +1015,7 @@ protected:
 	 */
 	CArray2<DREAL> m_lin_feat;
 	/**number of  linear features*/ 
-	INT m_num_lin_feat;
+	//INT m_num_lin_feat;
 
 
 	/** raw intensities */
@@ -1055,8 +1055,8 @@ inline INT CDynProg::raw_intensities_interval_query(const INT from_pos, const IN
 		last_pos = *p_tiling_pos;
 		p_tiling_pos++;
 		p_tiling_data++;
-		SG_PRINT("num:%i, m_num_probes_cum[%i]:%i\n", num, type-1, m_num_probes_cum[type-1]);
-		SG_PRINT("last_pos:%i, tiling_pos:%i\n", last_pos, *p_tiling_pos);
+		//SG_PRINT("num:%i, m_num_probes_cum[%i]:%i\n", num, type-1, m_num_probes_cum[type-1]);
+		//SG_PRINT("last_pos:%i, tiling_pos:%i\n", last_pos, *p_tiling_pos);
 		ASSERT(last_pos<*p_tiling_pos);
 	}
 	return num_intensities;
@@ -1072,7 +1072,7 @@ inline void CDynProg::lookup_content_svm_values(const INT from_state, const INT 
 		DREAL from_val = m_lin_feat.get_element(i,from_state);
 		svm_values[i]=(to_val-from_val)/(to_pos-from_pos);
 	}
-	for (INT i=num_svms;i<m_num_lin_feat;i++)
+	for (INT i=num_svms;i<m_num_lin_feat_plifs_cum[m_num_raw_data];i++)
 	{
 		DREAL to_val   = m_lin_feat.get_element(i,  to_state);
 		DREAL from_val = m_lin_feat.get_element(i,from_state);
