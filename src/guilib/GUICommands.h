@@ -64,6 +64,7 @@
 #define N_SET_SVM							"set_svm"
 #define N_SET_CUSTOM_KERNEL					"set_custom_kernel"
 #define N_SET_KERNEL_INIT					"set_kernel_init"
+#define N_SET_KERNEL_NORMALIZATION			"set_kernel_normalization"
 #define N_SET_FEATURES						"set_features"
 #define N_FROM_POSITION_LIST				"from_position_list"
 #define N_ADD_FEATURES						"add_features"

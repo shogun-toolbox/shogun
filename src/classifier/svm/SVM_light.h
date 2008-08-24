@@ -578,29 +578,16 @@ class CSVMLight : public CSVM
 				      double* maxdiff);
 
 protected:
-   /** compute kernel
+	/** compute kernel
 	*
 	* @param i at index i
 	* @param j at index j
 	* @return computed kernel item at index i, j
 	*/
-   inline virtual DREAL compute_kernel(INT i, INT j)
-	   {
-		   if (use_precomputed_subkernels)
-		   {
-			   if (j>i)
-				   CMath::swap(i,j) ;
-			   DREAL sum=0 ;
-			   INT num_weights=-1 ;
-			   const DREAL * w = kernel->get_subkernel_weights(num_weights) ;
-			   for (INT n=0; n<num_precomputed_subkernels; n++)
-				   if (w[n]!=0)
-					   sum += w[n]*precomputed_subkernels[n][i*(i+1)/2+j] ;
-			   return sum ;
-		   }
-		   else
-			   return kernel->kernel(i, j) ;
-	   }
+	inline virtual DREAL compute_kernel(INT i, INT j)
+	{
+		return kernel->kernel(i, j);
+	}
 
 	/** helper for compute kernel
 	 *
@@ -689,11 +676,6 @@ protected:
   DREAL *buffer_num;
   /** a buffer of length num_cols */
   DREAL *buffer_numcols;
-  // MKL kernel precomputation
-  /** precomputed subkernels */
-  SHORTREAL ** precomputed_subkernels;
-  /** number of precomputed subkernels */
-  INT num_precomputed_subkernels;
   /** if kernel cache is used */
   bool use_kernel_cache;
 

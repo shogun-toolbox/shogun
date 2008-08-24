@@ -17,28 +17,22 @@
 
 /** Computes the standard linear kernel on dense byte valued features
  * \f[
- * k({\bf x},{\bf x'})= \frac{1}{scale}{\bf x}\cdot {\bf x'}
+ * k({\bf x},{\bf x'})= {\bf x}\cdot {\bf x'}
  * \f]
  */
 class CLinearByteKernel: public CSimpleKernel<BYTE>
 {
 	public:
 		/** constructor
-		 *
-		 * @param size cache size
-		 * @param do_rescale if rescaling shall be applied
-		 * @param scale scaling factor
 		 */
-		CLinearByteKernel(INT size, bool do_rescale=true, DREAL scale=1.0);
+		CLinearByteKernel();
 
 		/** constructor
 		 *
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
-		 * @param do_rescale if rescaling shall be applied
-		 * @param scale scaling factor
 		 */
-		CLinearByteKernel(CByteFeatures* l, CByteFeatures *r, bool do_rescale=true, DREAL scale=1.0);
+		CLinearByteKernel(CByteFeatures* l, CByteFeatures *r);
 
 		virtual ~CLinearByteKernel();
 
@@ -123,16 +117,7 @@ class CLinearByteKernel: public CSimpleKernel<BYTE>
 		 */
 		virtual DREAL compute(INT idx_a, INT idx_b);
 
-		/** initialize rescaling */
-		virtual void init_rescale();
-
 	protected:
-		/** scaling factor */
-		double scale;
-		/** if rescaling shall be applied */
-		bool do_rescale;
-		/** if kernel is initialized */
-		bool initialized;
 		/** normal vector (used in case of optimized kernel) */
 		double* normal;
 };

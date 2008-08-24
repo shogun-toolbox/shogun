@@ -88,9 +88,6 @@ CGUIClassifier::CGUIClassifier(CSGInterface* ui_)
 	svm_use_mkl = false ;
 	svm_use_batch_computation = true ;
 	svm_use_linadd = true ;
-	svm_use_precompute = false ;
-	svm_use_precompute_subkernel = false ;
-	svm_use_precompute_subkernel_light = false ;
 	svm_do_auc_maximization = false ;
 
 	// KRR parameters
@@ -381,8 +378,6 @@ bool CGUIClassifier::train_svm()
 	if(!oneclass)
 		((CKernelMachine*) svm)->set_labels(trainlabels);
 	((CKernelMachine*) svm)->set_kernel(kernel);
-	((CSVM*) svm)->set_precomputed_subkernels_enabled(svm_use_precompute_subkernel_light);
-	kernel->set_precompute_matrix(svm_use_precompute, svm_use_precompute_subkernel);
 
 #ifdef USE_SVMLIGHT
 	if (svm_do_auc_maximization)
@@ -390,7 +385,6 @@ bool CGUIClassifier::train_svm()
 #endif //USE_SVMLIGHT
 
 	bool result=svm->train();
-	kernel->set_precompute_matrix(false,false);
 
 	return result;
 }
@@ -589,7 +583,6 @@ bool CGUIClassifier::test(CHAR* filename_out, CHAR* filename_roc)
 	SG_INFO("Starting svm testing.\n");
 	((CKernelMachine*) classifier)->set_labels(testlabels);
 	((CKernelMachine*) classifier)->set_kernel(ui->ui_kernel->get_kernel());
-	ui->ui_kernel->get_kernel()->set_precompute_matrix(false,false);
 	((CKernelMachine*) classifier)->set_batch_computation_enabled(svm_use_batch_computation);
 
 	CLabels* predictions= classifier->classify();
@@ -836,30 +829,6 @@ bool CGUIClassifier::set_svm_batch_computation_enabled(bool enabled)
 	return true;
 }
 
-bool CGUIClassifier::set_svm_precompute_enabled(INT precompute)
-{
-	svm_use_precompute=(precompute==1);
-	svm_use_precompute_subkernel=(precompute==2);
-	svm_use_precompute_subkernel_light=(precompute==3);
-
-	if (svm_use_precompute)
-		SG_INFO("Enabling Kernel Matrix Precomputation.\n");
-	else
-		SG_INFO("Disabling Kernel Matrix Precomputation.\n");
-
-	if (svm_use_precompute_subkernel)
-		SG_INFO("Enabling Subkernel Matrix Precomputation.\n");
-	else
-		SG_INFO("Disabling Subkernel Matrix Precomputation.\n");
-
-	if (svm_use_precompute_subkernel_light)
-		SG_INFO("Enabling Subkernel Matrix Precomputation by SVM Light.\n");
-	else
-		SG_INFO("Disabling Subkernel Matrix Precomputation by SVM Light.\n");
-
-	return true;
-}
-
 bool CGUIClassifier::set_svm_linadd_enabled(bool enabled)
 {
 	svm_use_linadd=enabled;
@@ -943,7 +912,6 @@ CLabels* CGUIClassifier::classify_kernelmachine(CLabels* output)
 {
 	CFeatures* trainfeatures=ui->ui_features->get_train_features();
 	CFeatures* testfeatures=ui->ui_features->get_test_features();
-	ui->ui_kernel->get_kernel()->set_precompute_matrix(false,false);
 
 	if (!classifier)
 		SG_ERROR("No kernelmachine available.\n");
@@ -956,7 +924,6 @@ CLabels* CGUIClassifier::classify_kernelmachine(CLabels* output)
 
 	CKernelMachine* km=(CKernelMachine*) classifier;
 	km->set_kernel(ui->ui_kernel->get_kernel());
-	ui->ui_kernel->get_kernel()->set_precompute_matrix(false,false);
 	km->set_batch_computation_enabled(svm_use_batch_computation);
 
 	SG_INFO("Starting kernel machine testing.\n");
@@ -1127,7 +1094,6 @@ CLabels* CGUIClassifier::classify_distancemachine(CLabels* output)
 {
 	CFeatures* trainfeatures=ui->ui_features->get_train_features();
 	CFeatures* testfeatures=ui->ui_features->get_test_features();
-	ui->ui_distance->get_distance()->set_precompute_matrix(false);
 
 	if (!classifier)
 	{
@@ -1154,7 +1120,6 @@ CLabels* CGUIClassifier::classify_distancemachine(CLabels* output)
 	  
 	((CDistanceMachine*) classifier)->set_distance(
 		ui->ui_distance->get_distance());
-	ui->ui_distance->get_distance()->set_precompute_matrix(false);
 	SG_INFO("starting distance machine testing\n") ;
 	return classifier->classify(output);
 }
@@ -1242,7 +1207,6 @@ bool CGUIClassifier::classify_example(INT idx, DREAL &result)
 {
 	CFeatures* trainfeatures=ui->ui_features->get_train_features();
 	CFeatures* testfeatures=ui->ui_features->get_test_features();
-	ui->ui_kernel->get_kernel()->set_precompute_matrix(false,false);
 
 	if (!classifier)
 	{

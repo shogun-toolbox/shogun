@@ -14,16 +14,13 @@
 #include "kernel/LinearWordKernel.h"
 #include "features/WordFeatures.h"
 
-CLinearWordKernel::CLinearWordKernel(INT size, bool dr, DREAL s)
-: CSimpleKernel<WORD>(size), scale(s), do_rescale(dr), initialized(false),
-	normal(NULL)
+CLinearWordKernel::CLinearWordKernel()
+: CSimpleKernel<WORD>(0), normal(NULL)
 {
 }
 
-CLinearWordKernel::CLinearWordKernel(
-	CWordFeatures* l, CWordFeatures* r, bool dr, DREAL s)
-: CSimpleKernel<WORD>(10), scale(s), do_rescale(dr), initialized(false),
-	normal(NULL)
+CLinearWordKernel::CLinearWordKernel(CWordFeatures* l, CWordFeatures* r)
+: CSimpleKernel<WORD>(0), normal(NULL)
 {
 	init(l, r);
 }
@@ -36,29 +33,7 @@ CLinearWordKernel::~CLinearWordKernel()
 bool CLinearWordKernel::init(CFeatures* l, CFeatures* r)
 {
 	CSimpleKernel<WORD>::init(l, r);
-
-	if (!initialized)
-		init_rescale() ;
-
-	SG_INFO( "rescaling kernel by %g (num:%d)\n",scale, CMath::min(l->get_num_vectors(), r->get_num_vectors()));
-
-	return true;
-}
-
-void CLinearWordKernel::init_rescale()
-{
-	if (!do_rescale)
-		return ;
-	LONGREAL sum=0;
-	scale=1.0;
-	for (INT i=0; (i<lhs->get_num_vectors() && i<rhs->get_num_vectors()); i++)
-		sum+=compute(i, i);
-
-	if ( sum > (pow((double) 2, (double) 8*sizeof(LONG))) ) {
-      SG_ERROR( "the sum %lf does not fit into integer of %d bits expect bogus results.\n", sum, 8*sizeof(LONG));
-   }
-	scale=sum/CMath::min(lhs->get_num_vectors(), rhs->get_num_vectors());
-	initialized=true;
+	return init_normalizer();
 }
 
 void CLinearWordKernel::cleanup()
@@ -81,9 +56,7 @@ bool CLinearWordKernel::save_init(FILE* dest)
 void CLinearWordKernel::clear_normal()
 {
 	int num = lhs->get_num_vectors();
-
-	for (int i=0; i<num; i++)
-		normal[i]=0;
+	CMath::fill_vector(normal, num, 0.0);
 }
 
 void CLinearWordKernel::add_to_normal(INT idx, DREAL weight) 
@@ -93,7 +66,7 @@ void CLinearWordKernel::add_to_normal(INT idx, DREAL weight)
 	WORD* vec=((CWordFeatures*) lhs)->get_feature_vector(idx, vlen, vfree);
 
 	for (int i=0; i<vlen; i++)
-		normal[i]+= weight*vec[i];
+		normal[i]+= weight*normalizer->normalize_lhs(vec[i], idx);
 
 	((CWordFeatures*) lhs)->free_feature_vector(vec, idx, vfree);
 }
@@ -107,11 +80,8 @@ DREAL CLinearWordKernel::compute(INT idx_a, INT idx_b)
 	WORD* bvec=((CWordFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
 	ASSERT(alen==blen);
 
-	double sum=0;
-	for (LONG i=0; i<alen; i++)
-		sum+=((LONG) avec[i])*((LONG) bvec[i]);
+	DREAL result=CMath::dot(avec, bvec, alen);
 
-	DREAL result=sum/scale;
 	((CWordFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
 	((CWordFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
@@ -120,7 +90,6 @@ DREAL CLinearWordKernel::compute(INT idx_a, INT idx_b)
 
 bool CLinearWordKernel::init_optimization(INT num_suppvec, INT* sv_idx, DREAL* alphas) 
 {
-	SG_DEBUG("drin gelandet yeah\n");
 	INT alen;
 	bool afree;
 
@@ -128,8 +97,7 @@ bool CLinearWordKernel::init_optimization(INT num_suppvec, INT* sv_idx, DREAL* a
 	ASSERT(num_feat);
 
 	normal=new DREAL[num_feat];
-	for (INT i=0; i<num_feat; i++)
-		normal[i]=0;
+	CMath::fill_vector(normal, num_feat, 0.0);
 
 	for (int i=0; i<num_suppvec; i++)
 	{
@@ -137,7 +105,7 @@ bool CLinearWordKernel::init_optimization(INT num_suppvec, INT* sv_idx, DREAL* a
 		ASSERT(avec);
 
 		for (int j=0; j<num_feat; j++)
-			normal[j]+=alphas[i] * ((double) avec[j]);
+			normal[j]+=alphas[i] * normalizer->normalize_lhs(((DREAL) avec[j]), sv_idx[i]);
 
 		((CWordFeatures*) lhs)->free_feature_vector(avec, 0, afree);
 	}
@@ -167,9 +135,8 @@ DREAL CLinearWordKernel::compute_optimized(INT idx_b)
 		for (INT i=0; i<blen; i++)
 			result+= normal[i] * ((double) bvec[i]);
 	}
-	result/=scale;
 
 	((CWordFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
-	return result;
+	return normalizer->normalize_rhs(result, idx_b);
 }

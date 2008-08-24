@@ -36,10 +36,8 @@ class CPolyMatchStringKernel: public CStringKernel<CHAR>
 		 * @param size cache size
 		 * @param degree degree
 		 * @param inhomogene is inhomogeneous
-		 * @param use_normalization use normalization
 		 */
-		CPolyMatchStringKernel(INT size, INT degree, bool inhomogene,
-			bool use_normalization=true);
+		CPolyMatchStringKernel(INT size, INT degree, bool inhomogene);
 
 		/** constructor
 		 *
@@ -47,11 +45,10 @@ class CPolyMatchStringKernel: public CStringKernel<CHAR>
 		 * @param r features of right-hand side
 		 * @param degree degree
 		 * @param inhomogene is inhomogeneous
-		 * @param use_normalization use normalization
 		 */
 		CPolyMatchStringKernel(
 			CStringFeatures<CHAR>* l, CStringFeatures<CHAR>* r,
-			INT degree, bool inhomogene, bool use_normalization=true);
+			INT degree, bool inhomogene);
 
 		virtual ~CPolyMatchStringKernel();
 
@@ -114,15 +111,6 @@ class CPolyMatchStringKernel: public CStringKernel<CHAR>
 		INT degree;
 		/** if kernel is inhomogeneous */
 		bool inhomogene;
-		/** if normalization is used */
-		bool use_normalization;
-
-		/** sqrt diagonal of left-hand side */
-		DREAL *sqrtdiag_lhs;
-		/** sqrt diagonal of right-hand side */
-		DREAL *sqrtdiag_rhs;
-		/** if kernel is initialized */
-		bool initialized;
 };
 
 #endif /* _POLYMATCHSTRINGKERNEL_H___ */

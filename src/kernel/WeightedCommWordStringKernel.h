@@ -51,24 +51,19 @@ class CWeightedCommWordStringKernel: public CCommWordStringKernel
 		 *
 		 * @param size cache size
 		 * @param use_sign if sign shall be used
-		 * @param normalization_ type of normalization
 		 */
-		CWeightedCommWordStringKernel(INT size, bool use_sign,
-			ENormalizationType normalization_=FULL_NORMALIZATION);
+		CWeightedCommWordStringKernel(INT size, bool use_sign);
 
 		/** constructor
 		 *
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 * @param use_sign if sign shall be used
-		 * @param normalization_ type of normalization
 		 * @param size cache size
 		 */
 		CWeightedCommWordStringKernel(
 			CStringFeatures<WORD>* l, CStringFeatures<WORD>* r,
-			bool use_sign=false,
-			ENormalizationType normalization_=FULL_NORMALIZATION,
-			INT size=10);
+			bool use_sign=false, INT size=10);
 
 		virtual ~CWeightedCommWordStringKernel();
 

@@ -33,10 +33,10 @@ class CCustomKernel: public CKernel
 
 		/** constructor
 		 *
-		 * @param l features of left-hand side
-		 * @param r features of right-hand side
+		 * compute custom kernel from given kernel matrix
+		 * @param k kernel matrix
 		 */
-		CCustomKernel(CFeatures* l, CFeatures* r);
+		CCustomKernel(CKernel* k);
 
 		virtual ~CCustomKernel();
 
@@ -48,6 +48,18 @@ class CCustomKernel: public CKernel
 		 * @return the kernel matrix
 		 */
 		virtual SHORTREAL* get_kernel_matrix_shortreal(INT &m, INT &n, SHORTREAL* target=NULL);
+
+		/** initialize kernel with dummy features
+		 *
+		 * Kernels always need feature objects assigned. As the custom kernel
+		 * does not really require this it creates some magic dummy features
+		 * that only know about the number of vectors
+		 *
+		 * @param rows features of left-hand side
+		 * @param cols features of right-hand side
+		 * @return if initializing was successful
+		 */
+		virtual bool dummy_init(INT rows, INT cols);
 
 		/** initialize kernel
 		 *

@@ -1,3 +1,23 @@
+2008-09-12  Soeren Sonnenburg <debian@nn7.de>
+
+	* SHOGUN Release version 0.6.5
+	* This release contains several cleanups and bugfixes:
+		- Implement KernelNormalizer class with a couple of normalization
+		functions that can now be attached to almost any kernel via
+		set_normalizer() in the modular and set_kernel_normalization in the
+		static interfaces. This fixes a long standing bug in the
+		WeightedDegreePositionStringKernel normalization WARNING will break
+		compatibility to all previously trained WD-shift kernel models, use
+		FIRSTELEMENT / CFirstElementKernelNormalizer for an *approximation* to
+		the previous buggy behaviour. Also breaks WordMatchKernel as for this
+		kernel normalization is now enabled by default.
+		- The custom kernel no longer requires lhs/rhs features (it will create
+				its own dummy features)
+		- Linear kernels don't use kernel cache (only slows down things)
+	* Bugfixes:
+		- Support Intel MKL on 32bit archs.
+		- Fix compilation when atlas/lapack is not available.
+
 2008-08-15  Soeren Sonnenburg <debian@nn7.de>
 
 	* SHOGUN Release version 0.6.4

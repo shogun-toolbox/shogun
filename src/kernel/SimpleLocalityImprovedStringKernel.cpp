@@ -80,7 +80,8 @@ bool CSimpleLocalityImprovedStringKernel::init(CFeatures* l, CFeatures* r)
 	for (j = 0; j < pyra_len; j++)
 		pyramid_weights[j] /= PYRAL_pot;
 	}
-	return true;
+
+	return init_normalizer();
 }
 
 void CSimpleLocalityImprovedStringKernel::cleanup()

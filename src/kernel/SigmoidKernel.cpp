@@ -36,7 +36,7 @@ CSigmoidKernel::~CSigmoidKernel()
 bool CSigmoidKernel::init(CFeatures* l, CFeatures* r)
 {
 	CSimpleKernel<DREAL>::init(l, r);
-	return true;
+	return init_normalizer();
 }
 
 void CSigmoidKernel::cleanup()

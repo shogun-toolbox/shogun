@@ -18,6 +18,7 @@
 #include "lib/common.h"
 #include "base/SGObject.h"
 #include "features/Features.h"
+#include "kernel/KernelNormalizer.h"
 
 class CSVM;
 
@@ -32,7 +33,7 @@ class CSVM;
  * k({\bf x},{\bf x'})= \Phi_k({\bf x})\cdot \Phi_k({\bf x'})
  * \f]
  *
- * where \f$\Phi$ maps the objects into some potentially high dimensional
+ * where \f$\Phi\f$ maps the objects into some potentially high dimensional
  * feature space.
  *
  * Apart from the input features, the base kernel takes only one argument (the
@@ -46,6 +47,10 @@ class CSVM;
  */
 class CKernel : public CSGObject
 {
+	friend class CSqrtDiagKernelNormalizer;
+	friend class CAvgDiagKernelNormalizer;
+	friend class CFirstElementKernelNormalizer;
+
 	public:
 		/** constructor
 		 *
@@ -89,18 +94,7 @@ class CKernel : public CSGObject
 					idx_b=2*num_vectors-1-idx_b;
 			}
 
-			if (precompute_matrix && (precomputed_matrix==NULL) && (lhs==rhs))
-				do_precompute_matrix() ;
-
-			if (precompute_matrix && (precomputed_matrix!=NULL))
-			{
-				if (idx_a>=idx_b)
-					return precomputed_matrix[idx_a*(idx_a+1)/2+idx_b] ;
-				else
-					return precomputed_matrix[idx_b*(idx_b+1)/2+idx_a] ;
-			}
-
-			return compute(idx_a, idx_b);
+			return normalizer->normalize(compute(idx_a, idx_b), idx_a, idx_b);
 		}
 
 		/** get kernel matrix
@@ -141,6 +135,23 @@ class CKernel : public CSGObject
 		 *  @return if init was successful
 		 */
 		virtual bool init(CFeatures* lhs, CFeatures* rhs);
+
+		/** set the current kernel normalizer
+		 *
+		 * @return if succesful
+		 */
+		virtual bool set_normalizer(CKernelNormalizer* normalizer);
+
+		/** obtain the current kernel normalizer
+		 *
+		 * @return the kernel normalizer
+		 */
+		virtual CKernelNormalizer* get_normalizer();
+
+		/** initialize the current kernel normalizer
+		 *  @return if init was successful
+		 */
+		virtual bool init_normalizer();
 
 		/** clean up your kernel
 		 *
@@ -225,6 +236,15 @@ class CKernel : public CSGObject
 		inline bool has_features()
 		{
 			return lhs && rhs;
+		}
+
+		/** test whether features on lhs and rhs are the same
+		 *
+		 * @return true if features are the same
+		 */
+		inline bool lhs_equals_rhs()
+		{
+			return lhs==rhs;
 		}
 
 		/** remove lhs and rhs from kernel */
@@ -485,7 +505,7 @@ class CKernel : public CSGObject
 
 		/** set combined kernel weight
 		 *
-		 * @param nw nw
+		 * @param nw new combined kernel weight
 		 */
 		inline void set_combined_kernel_weight(double nw) { combined_kernel_weight=nw; }
 
@@ -515,36 +535,6 @@ class CKernel : public CSGObject
 		 * @param num_weights number of weights
 		 */
 		virtual void set_subkernel_weights(DREAL* weights, INT num_weights);
-
-		//FIXME: precompute matrix should be dropped, handling should be via customkernel
-		/** get precompute matrix
-		 *
-		 * @return if matrix shall be precomputed
-		 */
-		inline bool get_precompute_matrix() { return precompute_matrix ;  }
-
-		/** get precompute subkernel matrix
-		 *
-		 * @return if subkernel matrix shall be precomputed
-		 */
-		inline bool get_precompute_subkernel_matrix() { return precompute_subkernel_matrix ;  }
-
-		/** set precompute matrix
-		 *
-		 * @param flag flag
-		 * @param subkernel_flag subkernel flag
-		 */
-		inline virtual void set_precompute_matrix(bool flag, bool subkernel_flag)
-		{
-			precompute_matrix = flag;
-			precompute_subkernel_matrix = subkernel_flag;
-
-			if (!precompute_matrix)
-			{
-				delete[] precomputed_matrix;
-				precomputed_matrix = NULL;
-			}
-		}
 
 	protected:
 		/** set property
@@ -582,16 +572,6 @@ class CKernel : public CSGObject
 		 * @return computed kernel function at indices a,b
 		 */
 		virtual DREAL compute(INT x, INT y)=0;
-
-		/// matrix precomputation
-		void do_precompute_matrix();
-
-		/** initialize sqrt diagonal
-		 *
-		 * @param v v
-		 * @param num num
-		 */
-		void init_sqrt_diag(DREAL *v, INT num);
 
 #ifdef USE_SVMLIGHT
 		/**@ cache kernel evalutations to improve speed
@@ -666,15 +646,8 @@ class CKernel : public CSGObject
 #endif //USE_SVMLIGHT
 
 		/// this *COULD* store the whole kernel matrix
-		/// usually not applicable / faster
+		/// usually not applicable / necessary to compute the whole matrix
 		KERNELCACHE_ELEM* kernel_matrix;
-
-		/** precomputed matrix */
-		SHORTREAL * precomputed_matrix;
-		/** if subkernel matrix shall be precomputed */
-		bool precompute_subkernel_matrix;
-		/** if matrix shall be precomputed */
-		bool precompute_matrix ;
 
 		/// feature vectors to occur on left hand side
 		CFeatures* lhs;
@@ -691,8 +664,12 @@ class CKernel : public CSGObject
 		 */
 		EOptimizationType opt_type;
 
-		/** properties */
+		/** kernel properties */
 		ULONG  properties;
+
+		/** normalize the kernel(i,j) function based on this normalization
+		 * function */
+		CKernelNormalizer* normalizer;
 };
 
 #endif /* _KERNEL_H__ */

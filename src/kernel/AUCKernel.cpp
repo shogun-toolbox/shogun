@@ -33,6 +33,7 @@ CAUCKernel::~CAUCKernel()
 bool CAUCKernel::init(CFeatures* l, CFeatures* r)
 {
 	CSimpleKernel<WORD>::init(l, r);
+	init_normalizer();
 	return true;
 }
 

@@ -42,7 +42,9 @@ CDistanceKernel::~CDistanceKernel()
 bool CDistanceKernel::init(CFeatures* l, CFeatures* r)
 {
 	ASSERT(distance);
-	return CKernel::init(l,r) && distance->init(l,r);
+	CKernel::init(l,r);
+	distance->init(l,r);
+	return init_normalizer();
 }
 
 DREAL CDistanceKernel::compute(INT idx_a, INT idx_b)

@@ -24,21 +24,15 @@ class CLinearKernel: public CSimpleKernel<DREAL>
 {
 	public:
 		/** constructor
-		 *
-		 * @param size cache size
-		 * @param scale scaling factor
 		 */
-		CLinearKernel(INT size, DREAL scale=1.0);
+		CLinearKernel();
 
 		/** constructor
 		 *
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
-		 * @param scale scaling factor
-		 * @param size cache size
 		 */
-		CLinearKernel(CRealFeatures* l, CRealFeatures* r,
-			DREAL scale=1.0, INT size=10);
+		CLinearKernel(CRealFeatures* l, CRealFeatures* r);
 
 		virtual ~CLinearKernel();
 
@@ -170,14 +164,7 @@ class CLinearKernel: public CSimpleKernel<DREAL>
 		 */
 		virtual DREAL compute(INT idx_a, INT idx_b);
 
-		/** initialize rescaling */
-		virtual void init_rescale();
-
 	protected:
-		/** scaling factor */
-		double scale;
-		/** if kernel is initialized */
-		bool initialized;
 		/** normal vector (used in case of optimized kernel) */
 		DREAL* normal;
 		/** length of normal vector */

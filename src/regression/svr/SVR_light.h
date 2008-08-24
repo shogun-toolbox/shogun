@@ -213,22 +213,7 @@ class CSVRLight: public CSVMLight
 		{
 			i=regression_fix_index(i);
 			j=regression_fix_index(j);
-
-			if (use_precomputed_subkernels)
-			{
-				if (j>i)
-					CMath::swap(i,j);
-				DREAL sum=0;
-				INT num_weights=-1;
-
-				const DREAL * w = kernel->get_subkernel_weights(num_weights);
-				for (INT n=0; n<num_precomputed_subkernels; n++)
-					if (w[n]!=0)
-						sum += w[n]*precomputed_subkernels[n][i*(i+1)/2+j];
-				return sum;
-			}
-			else
-				return kernel->kernel(i, j);
+			return kernel->kernel(i, j);
 		}
 
 		/** number of train elements */

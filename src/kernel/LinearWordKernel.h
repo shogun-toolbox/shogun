@@ -24,23 +24,15 @@ class CLinearWordKernel: public CSimpleKernel<WORD>
 {
 	public:
 		/** constructor
-		 *
-		 * @param size cache size
-		 * @param do_rescale if rescaling shall be applied
-		 * @param scale scaling factor
 		 */
-		CLinearWordKernel(INT size,
-			bool do_rescale=true, DREAL scale=1.);
+		CLinearWordKernel();
 
 		/** constructor
 		 *
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
-		 * @param do_rescale if rescaling shall be applied
-		 * @param scale scaling factor
 		 */
-		CLinearWordKernel(CWordFeatures* l, CWordFeatures* r,
-			bool do_rescale=true, DREAL scale=1.);
+		CLinearWordKernel(CWordFeatures* l, CWordFeatures* r);
 
 		virtual ~CLinearWordKernel();
 
@@ -124,16 +116,7 @@ class CLinearWordKernel: public CSimpleKernel<WORD>
 		 */
 		virtual DREAL compute(INT idx_a, INT idx_b);
 
-		/** initialize rescaling */
-		virtual void init_rescale();
-
 	protected:
-		/** scaling factor */
-		double scale;
-		/** if rescaling shall be applied */
-		bool do_rescale;
-		/** if kernel is initialized */
-		bool initialized;
 		/** normal vector (used in case of optimized kernel) */
 		double* normal;
 };

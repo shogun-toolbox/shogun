@@ -89,6 +89,8 @@ class CSGInterface : public CSGObject
 		/** get labels */
 		bool cmd_get_labels();
 
+		/** set kernel normalization */
+		bool cmd_set_kernel_normalization();
 		/** set kernel */
 		bool cmd_set_kernel();
 		/** add kernel (to e.g. CombinedKernel) */

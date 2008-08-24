@@ -10,26 +10,26 @@
 
 #include "lib/common.h"
 #include "kernel/CommUlongStringKernel.h"
+#include "kernel/SqrtDiagKernelNormalizer.h"
 #include "features/StringFeatures.h"
 #include "lib/io.h"
 
-CCommUlongStringKernel::CCommUlongStringKernel(
-	INT size, bool us, ENormalizationType n)
-: CStringKernel<ULONG>(size), sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL),
-	initialized(false), use_sign(us), normalization(n)
+CCommUlongStringKernel::CCommUlongStringKernel(INT size, bool us)
+: CStringKernel<ULONG>(size), use_sign(us)
 {
 	properties |= KP_LINADD;
 	clear_normal();
+
+	set_normalizer(new CSqrtDiagKernelNormalizer());
 }
 
 CCommUlongStringKernel::CCommUlongStringKernel(
-	CStringFeatures<ULONG>* l, CStringFeatures<ULONG>* r, bool us,
-	ENormalizationType n, INT size)
-: CStringKernel<ULONG>(size), sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL),
-	initialized(false), use_sign(us), normalization(n)
+	CStringFeatures<ULONG>* l, CStringFeatures<ULONG>* r, bool us, INT size)
+: CStringKernel<ULONG>(size), use_sign(us)
 {
 	properties |= KP_LINADD;
 	clear_normal();
+	set_normalizer(new CSqrtDiagKernelNormalizer());
 	init(l,r);
 }
 
@@ -47,15 +47,8 @@ void CCommUlongStringKernel::remove_lhs()
 		cache_reset();
 #endif
 
-	if (sqrtdiag_lhs != sqrtdiag_rhs)
-		delete[] sqrtdiag_rhs;
-	delete[] sqrtdiag_lhs;
-
 	lhs = NULL ; 
 	rhs = NULL ; 
-	initialized = false;
-	sqrtdiag_lhs = NULL;
-	sqrtdiag_rhs = NULL;
 }
 
 void CCommUlongStringKernel::remove_rhs()
@@ -65,89 +58,19 @@ void CCommUlongStringKernel::remove_rhs()
 		cache_reset();
 #endif
 
-	if (sqrtdiag_lhs != sqrtdiag_rhs)
-		delete[] sqrtdiag_rhs;
-	sqrtdiag_rhs = sqrtdiag_lhs;
 	rhs = lhs;
 }
 
 bool CCommUlongStringKernel::init(CFeatures* l, CFeatures* r)
 {
-	bool result=CStringKernel<ULONG>::init(l,r);
-	INT i;
-
-	initialized=false;
-	if (sqrtdiag_lhs!=sqrtdiag_rhs)
-		delete[] sqrtdiag_rhs;
-	sqrtdiag_rhs=NULL;
-	delete[] sqrtdiag_lhs;
-	sqrtdiag_lhs=new DREAL[lhs->get_num_vectors()];
-
-	for (i=0; i<lhs->get_num_vectors(); i++)
-		sqrtdiag_lhs[i]=1;
-
-	if (l==r)
-		sqrtdiag_rhs=sqrtdiag_lhs;
-	else
-	{
-		sqrtdiag_rhs=new DREAL[rhs->get_num_vectors()];
-		for (i=0; i<rhs->get_num_vectors(); i++)
-			sqrtdiag_rhs[i]=1;
-	}
-
-	this->lhs=(CStringFeatures<ULONG>*) l;
-	this->rhs=(CStringFeatures<ULONG>*) l;
-
-	//compute normalize to 1 values
-	for (i=0; i<lhs->get_num_vectors(); i++)
-	{
-		sqrtdiag_lhs[i]=sqrt(compute(i,i));
-
-		//trap divide by zero exception
-		if (sqrtdiag_lhs[i]==0)
-			sqrtdiag_lhs[i]=1e-16;
-	}
-
-	// if lhs is different from rhs (train/test data)
-	// compute also the normalization for rhs
-	if (sqrtdiag_lhs!=sqrtdiag_rhs)
-	{
-		this->lhs=(CStringFeatures<ULONG>*) r;
-		this->rhs=(CStringFeatures<ULONG>*) r;
-
-		//compute normalize to 1 values
-		for (i=0; i<rhs->get_num_vectors(); i++)
-		{
-			sqrtdiag_rhs[i]=sqrt(compute(i,i));
-
-			//trap divide by zero exception
-			if (sqrtdiag_rhs[i]==0)
-				sqrtdiag_rhs[i]=1e-16;
-		}
-	}
-
-	this->lhs=(CStringFeatures<ULONG>*) l;
-	this->rhs=(CStringFeatures<ULONG>*) r;
-
-	initialized = true;
-	return result;
+	CStringKernel<ULONG>::init(l,r);
+	return init_normalizer();
 }
 
 void CCommUlongStringKernel::cleanup()
 {
 	delete_optimization();
 	clear_normal();
-
-	initialized=false;
-
-	if (sqrtdiag_lhs != sqrtdiag_rhs)
-		delete[] sqrtdiag_rhs;
-
-	sqrtdiag_rhs=NULL;
-
-	delete[] sqrtdiag_lhs;
-	sqrtdiag_lhs=NULL;
-
 	CKernel::cleanup();
 }
 
@@ -220,29 +143,7 @@ DREAL CCommUlongStringKernel::compute(INT idx_a, INT idx_b)
 		}
 	}
 
-	if (initialized)
-	{
-		switch (normalization)
-		{
-			case NO_NORMALIZATION:
-				return result;
-			case SQRT_NORMALIZATION:
-				return result/sqrt(sqrtdiag_lhs[idx_a]*sqrtdiag_rhs[idx_b]);
-			case FULL_NORMALIZATION:
-				return result/(sqrtdiag_lhs[idx_a]*sqrtdiag_rhs[idx_b]);
-			case SQRTLEN_NORMALIZATION:
-				return result/sqrt(sqrt(alen*blen));
-			case LEN_NORMALIZATION:
-				return result/sqrt(alen*blen);
-			case SQLEN_NORMALIZATION:
-				return result/(alen*blen);
-			default:
-            SG_ERROR( "Unknown Normalization in use!\n");
-				return -CMath::INFTY;
-		}
-	}
-	else
-		return result;
+	return result;
 }
 
 void CCommUlongStringKernel::add_to_normal(INT vec_idx, DREAL weight)
@@ -267,10 +168,10 @@ void CCommUlongStringKernel::add_to_normal(INT vec_idx, DREAL weight)
 				if (vec[j]==vec[j-1])
 					continue;
 
-				merge_dictionaries(t, j, k, vec, dic, dic_weights, weight, vec_idx, len, normalization);
+				merge_dictionaries(t, j, k, vec, dic, dic_weights, weight, vec_idx);
 			}
 
-			merge_dictionaries(t, j, k, vec, dic, dic_weights, weight, vec_idx, len, normalization);
+			merge_dictionaries(t, j, k, vec, dic, dic_weights, weight, vec_idx);
 
 			while (k<dictionary.get_num_elements())
 			{
@@ -287,11 +188,11 @@ void CCommUlongStringKernel::add_to_normal(INT vec_idx, DREAL weight)
 				if (vec[j]==vec[j-1])
 					continue;
 
-				merge_dictionaries(t, j, k, vec, dic, dic_weights, weight*(j-last_j), vec_idx, len, normalization);
+				merge_dictionaries(t, j, k, vec, dic, dic_weights, weight*(j-last_j), vec_idx);
 				last_j = j;
 			}
 
-			merge_dictionaries(t, j, k, vec, dic, dic_weights, weight*(j-last_j), vec_idx, len, normalization);
+			merge_dictionaries(t, j, k, vec, dic, dic_weights, weight*(j-last_j), vec_idx);
 
 			while (k<dictionary.get_num_elements())
 			{
@@ -417,25 +318,7 @@ DREAL CCommUlongStringKernel::compute_optimized(INT i)
 			if (idx!=-1)
 				result += dictionary_weights[idx+old_idx]*(alen-last_j);
 		}
-
-		switch (normalization)
-		{
-			case NO_NORMALIZATION:
-				return result;
-			case SQRT_NORMALIZATION:
-				return result/sqrt(sqrtdiag_rhs[i]);
-			case FULL_NORMALIZATION:
-				return result/sqrtdiag_rhs[i];
-			case SQRTLEN_NORMALIZATION:
-				return result/sqrt(sqrt(alen));
-			case LEN_NORMALIZATION:
-				return result/sqrt(alen);
-			case SQLEN_NORMALIZATION:
-				return result/alen;
-			default:
-            SG_ERROR( "Unknown Normalization in use!\n");
-				return -CMath::INFTY;
-		}
 	}
-	return result;
+
+	return normalizer->normalize_rhs(result, i);
 }

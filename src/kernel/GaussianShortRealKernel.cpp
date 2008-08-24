@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2008 Soeren Sonnenburg
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 2008 Soeren Sonnenburg
+ * Copyright (C) 2008 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #include "lib/common.h"
@@ -33,7 +33,7 @@ CGaussianShortRealKernel::~CGaussianShortRealKernel()
 bool CGaussianShortRealKernel::init(CFeatures* l, CFeatures* r)
 {
 	CSimpleKernel<SHORTREAL>::init(l, r);
-	return true;
+	return init_normalizer();
 }
 
 bool CGaussianShortRealKernel::load_init(FILE* src)

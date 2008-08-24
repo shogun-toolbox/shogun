@@ -47,11 +47,10 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<CHAR>
 		 * @param size cache size
 		 * @param degree degree
 		 * @param max_mismatch maximum mismatch
-		 * @param use_norm if normalization shall be used
 		 * @param mkl_stepsize MKL stepsize
 		 */
 		CWeightedDegreePositionStringKernel(INT size, INT degree,
-			INT max_mismatch=0, bool use_norm=true, INT mkl_stepsize=1);
+			INT max_mismatch=0, INT mkl_stepsize=1);
 
 		/** constructor
 		 *
@@ -61,12 +60,11 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<CHAR>
 		 * @param max_mismatch maximum mismatch
 		 * @param shift position shifts
 		 * @param shift_len number of shifts
-		 * @param use_norm if normalization shall be used
 		 * @param mkl_stepsize MKL stepsize
 		 */
 		CWeightedDegreePositionStringKernel(INT size, DREAL* weights,
 			INT degree, INT max_mismatch, INT* shift, INT shift_len,
-			bool use_norm=true, INT mkl_stepsize=1);
+			INT mkl_stepsize=1);
 
 		/** constructor
 		 *
@@ -327,12 +325,6 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<CHAR>
 		 */
 		inline INT get_degree() { return degree; }
 
-		/** get normalization constant
-		 *
-		 * @return normalization constant
-		 */
-		inline DREAL get_normalization_const() { return normalization_const; }
-
 		/** get degree weights
 		 *
 		 * @param d degree weights will be stored here
@@ -381,9 +373,6 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<CHAR>
 		 * @param len number of shifts
 		 */
 		bool set_shifts(INT* shifts, INT len);
-
-		/** set normalization constant */
-		inline void set_normalization_const(DREAL c) { normalization_const=c; }
 
 		/** set weights
 		 *
@@ -502,12 +491,6 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<CHAR>
 		 * @return if deleting was successful
 		 */
 		bool delete_position_weights_rhs() { delete[] position_weights_rhs ; position_weights_rhs=NULL ; return true ; } ;
-
-		/** check if normalization is used
-		 *
-		 * @return if normalization is used
-		 */
-		inline bool get_use_normalization() { return use_normalization; }
 
 		/** compute by tree
 		 *
@@ -717,15 +700,8 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<CHAR>
 		/** maximum shift */
 		INT max_shift;
 
-		/** if kernel is initialized */
-		bool initialized;
-		/** if normalization is used */
-		bool use_normalization;
 		/** if block computation is used */
 		bool block_computation;
-
-		/** normalization constant */
-		DREAL normalization_const;
 
 		/** number of external block weights */
 		INT num_block_weights_external;

@@ -10,21 +10,22 @@
 
 #include "lib/common.h"
 #include "kernel/FixedDegreeStringKernel.h"
+#include "kernel/SqrtDiagKernelNormalizer.h"
 #include "features/Features.h"
 #include "features/StringFeatures.h"
 #include "lib/io.h"
 
 CFixedDegreeStringKernel::CFixedDegreeStringKernel(INT size, INT d)
-: CStringKernel<CHAR>(size), degree(d), sqrtdiag_lhs(NULL),
-	sqrtdiag_rhs(NULL), initialized(false)
+: CStringKernel<CHAR>(size), degree(d)
 {
+	set_normalizer(new CSqrtDiagKernelNormalizer());
 }
 
 CFixedDegreeStringKernel::CFixedDegreeStringKernel(
 	CStringFeatures<CHAR>* l, CStringFeatures<CHAR>* r, INT d)
-: CStringKernel<CHAR>(10), degree(d), sqrtdiag_lhs(NULL),
-	sqrtdiag_rhs(NULL), initialized(false)
+: CStringKernel<CHAR>(10), degree(d)
 {
+	set_normalizer(new CSqrtDiagKernelNormalizer());
 	init(l, r);
 }
 
@@ -35,51 +36,12 @@ CFixedDegreeStringKernel::~CFixedDegreeStringKernel()
 
 bool CFixedDegreeStringKernel::init(CFeatures* l, CFeatures* r)
 {
-	bool result = CStringKernel<CHAR>::init(l, r);
-	initialized = false;
-
-	if (sqrtdiag_lhs!=sqrtdiag_rhs)
-		delete[] sqrtdiag_rhs;
-	sqrtdiag_rhs=NULL;
-	delete[] sqrtdiag_lhs;
-	sqrtdiag_lhs=new DREAL[lhs->get_num_vectors()];
-
-	if (l==r)
-		sqrtdiag_rhs=sqrtdiag_lhs;
-	else
-		sqrtdiag_rhs=new DREAL[rhs->get_num_vectors()];
-
-	this->lhs=(CStringFeatures<CHAR>*) l;
-	this->rhs=(CStringFeatures<CHAR>*) l;
-
-	CKernel::init_sqrt_diag(sqrtdiag_lhs, lhs->get_num_vectors());
-	// if lhs is different from rhs (train/test data)
-	// compute also the normalization for rhs
-	if (sqrtdiag_lhs!=sqrtdiag_rhs)
-	{
-		this->lhs = (CStringFeatures<CHAR>*) r;
-		this->rhs = (CStringFeatures<CHAR>*) r;
-		CKernel::init_sqrt_diag(sqrtdiag_rhs, rhs->get_num_vectors());
-	}
-
-	this->lhs = (CStringFeatures<CHAR>*) l;
-	this->rhs = (CStringFeatures<CHAR>*) r;
-
-	initialized = true;
-	return result;
+	CStringKernel<CHAR>::init(l, r);
+	return init_normalizer();
 }
 
 void CFixedDegreeStringKernel::cleanup()
 {
-	if (sqrtdiag_lhs != sqrtdiag_rhs)
-		delete[] sqrtdiag_rhs;
-	sqrtdiag_rhs = NULL;
-
-	delete[] sqrtdiag_lhs;
-	sqrtdiag_lhs = NULL;
-
-	initialized = false;
-
 	CKernel::cleanup();
 }
 
@@ -99,10 +61,10 @@ DREAL CFixedDegreeStringKernel::compute(INT idx_a, INT idx_b)
 
 	CHAR* avec = ((CStringFeatures<CHAR>*) lhs)->get_feature_vector(idx_a, alen);
 	CHAR* bvec = ((CStringFeatures<CHAR>*) rhs)->get_feature_vector(idx_b, blen);
+
 	// can only deal with strings of same length
 	ASSERT(alen==blen);
 
-	DREAL sqrt = initialized ? (sqrtdiag_lhs[idx_a]*sqrtdiag_rhs[idx_b]) : 1.0;
 	LONG sum = 0;
 	for (INT i = 0; i<alen-degree+1; i++)
 	{
@@ -113,5 +75,5 @@ DREAL CFixedDegreeStringKernel::compute(INT idx_a, INT idx_b)
 		if (match)
 			sum++;
 	}
-	return (DREAL) sum/sqrt;
+	return sum;
 }

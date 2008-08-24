@@ -20,6 +20,7 @@
 #include "features/MindyGramFeatures.h"
 #include "lib/io.h"
 #include "kernel/MindyGramKernel.h"
+#include "kernel/SqrtDiagKernelNormalizer.h"
 
 /*
  * Similarity parameters
@@ -42,9 +43,6 @@ CMindyGramKernel::CMindyGramKernel(INT ch, CHAR *meas, DREAL w)
 : CKernel(ch)
 {
 	/* Init attributes */
-	sdiag_lhs=NULL;
-	sdiag_rhs=NULL;
-	initialized=false;
 	measure=meas;
 	norm=NO_NORMALIZATION;
 	width=w;
@@ -72,12 +70,13 @@ CMindyGramKernel::CMindyGramKernel(INT ch, CHAR *meas, DREAL w)
 
 	normal=NULL;
 	clear_normal();
+
+	set_normalizer(new CSqrtDiagKernelNormalizer());
 }
 
 CMindyGramKernel::CMindyGramKernel(
 	CFeatures* l, CFeatures* r, CHAR *m, DREAL w)
-: CKernel(10), sdiag_lhs(NULL), sdiag_rhs(NULL), initialized(false),
-	measure(m), norm(NO_NORMALIZATION), width(w)
+: CKernel(10), measure(m), width(w)
 {
 	/* Check for similarity coefficients */
 	simcof=sico_get_type(measure);
@@ -101,6 +100,7 @@ CMindyGramKernel::CMindyGramKernel(
 
 	normal=NULL;
 	clear_normal();
+	init_normalizer(new CSqrtDiagKernelNormalizer());
 
 	init(l, r);
 }
@@ -137,14 +137,6 @@ void CMindyGramKernel::set_param(CHAR *param)
                         p_map[i].descr);
     }
 } 
-
-/*
- * Set normalization
- */
-void CMindyGramKernel::set_norm(ENormalizationType n)
-{
-    norm = n;
-}
 
 /**
  * Mindy kernel destructor
@@ -218,15 +210,8 @@ void CMindyGramKernel::remove_lhs()
         cache_reset();
 #endif
 
-    if (sdiag_lhs != sdiag_rhs)
-        delete[] sdiag_rhs;
-    delete[] sdiag_lhs;
-
     lhs = NULL ;
     rhs = NULL ;
-    initialized = false;
-    sdiag_lhs = NULL;
-    sdiag_rhs = NULL;
 }
 
 /**
@@ -250,18 +235,13 @@ void CMindyGramKernel::remove_rhs()
  * Initialize the kernel with features vectors
  * @param l Set of feature vectors
  * @param r Set of feature vectors
- * @param do_init Flag to force initialization
  * @return true on success, false otherwise
  */
 bool CMindyGramKernel::init(CFeatures* l, CFeatures* r)
 {
-
     SG_DEBUG( "Initializing MindyGramKernel %p %p\n", l, r);
     /* Call constructor of super class */
     bool result = CKernel::init(l,r);
-
-    initialized = false;
-    INT i;
 
     /* Assert correct types of features */
     ASSERT(l->get_feature_class()== C_MINDYGRAM);
@@ -269,60 +249,7 @@ bool CMindyGramKernel::init(CFeatures* l, CFeatures* r)
     ASSERT(l->get_feature_type()==F_ULONG);
     ASSERT(r->get_feature_type()==F_ULONG);
 
-    /* Clean diagonals */
-    if (sdiag_lhs != sdiag_rhs)
-        delete[] sdiag_rhs;
-    sdiag_rhs=NULL;
-    delete[] sdiag_lhs;
-    sdiag_lhs=NULL;
-
-    /* Initialize left normalization diagonal */
-    sdiag_lhs= new DREAL[lhs->get_num_vectors()];
-    for (i = 0; i < lhs->get_num_vectors(); i++)
-        sdiag_lhs[i]=1;
-
-    /* Initialize (or copy) right normalization diagonal */
-    if (l == r) {
-        sdiag_rhs=sdiag_lhs;
-    } else {
-        sdiag_rhs= new DREAL[rhs->get_num_vectors()];
-        for (i = 0; i<rhs->get_num_vectors(); i++)
-            sdiag_rhs[i]=1;
-    }
-
-    this->lhs=(CMindyGramFeatures *) l;
-    this->rhs=(CMindyGramFeatures *) l;
-
-    /* Compute left normalization diagonal */
-    for (i = 0; i<lhs->get_num_vectors(); i++) {
-        sdiag_lhs[i] = sqrt(compute(i,i));
-
-        /* trap divide by zero exception */
-        if (sdiag_lhs[i] == 0)
-            sdiag_lhs[i] = 1e-16;
-    }
-
-    /*  Skip if rhs computation if necessary */
-    if (sdiag_lhs != sdiag_rhs) {
-        this->lhs=(CMindyGramFeatures *) r;
-        this->rhs=(CMindyGramFeatures *) r;
-
-        /* Compute right normalization diagonal */
-        for (i=0; i<rhs->get_num_vectors(); i++) {
-            sdiag_rhs[i] = sqrt(compute(i,i));
-
-            /* trap divide by zero exception */
-            if (sdiag_rhs[i]==0)
-                sdiag_rhs[i]=1e-16;
-        }
-    }
-    
-    /* Reset feature pointers */
-    this->lhs=(CStringFeatures<WORD>*) l;
-    this->rhs=(CStringFeatures<WORD>*) r;
-
-    initialized = true;
-    return result;
+    return init_normalizer();
 }
 
 /**
@@ -361,22 +288,6 @@ DREAL CMindyGramKernel::compute(INT i, INT j)
             }  
         }   
     }    
-
-    if (!initialized)
-        return result;
-
-    /* Normalize result */
-    switch (norm) {
-        case NO_NORMALIZATION:
-            return result;
-        case SQRT_NORMALIZATION:
-            return result/sqrt(sdiag_lhs[i]*sdiag_rhs[i]);
-        case FULL_NORMALIZATION:
-            return result/(sdiag_lhs[i]*sdiag_rhs[j]);
-        default:
-            SG_ERROR( "Unknown Normalization in use!\n");
-            return -CMath::INFTY;
-    }
 }
 
 /**
@@ -394,7 +305,7 @@ void CMindyGramKernel::add_to_normal(INT i, DREAL w)
         normal = gram_empty();
 
     gram_add(normal, lm->get_feature_vector(i),
-                     normalize_weight(w, i, norm));
+                     normalizer->normalize_lhs(w, i));
 
     set_is_initialized(true);
 }
@@ -467,17 +378,7 @@ DREAL CMindyGramKernel::compute_optimized(INT i)
     CMindyGramFeatures *rm = (CMindyGramFeatures *) rhs;
     DREAL result = gram_cmp(kernel, rm->get_feature_vector(i), normal);
 
-    switch (norm) {
-        case NO_NORMALIZATION:
-            return result;
-        case SQRT_NORMALIZATION:
-            return result/sqrt(sdiag_rhs[i]);
-        case FULL_NORMALIZATION:
-            return result/sdiag_rhs[i];
-        default:
-            SG_ERROR( "Unknown Normalization in use!\n");
-            return -CMath::INFTY;
-    }
+	return normalizer->normalize_rhs(result, i);
 }
 
 bool CMindyGramKernel::load_init(FILE* src)

@@ -53,8 +53,8 @@ void CPyramidChi2::cleanup()
 
 bool CPyramidChi2::init(CFeatures* l, CFeatures* r)
 {
-	bool result=CSimpleKernel<DREAL>::init(l, r);
-	return result;
+	CSimpleKernel<DREAL>::init(l, r);
+	return init_normalizer();
 }
 
 CPyramidChi2::CPyramidChi2(CRealFeatures* l, CRealFeatures* r, INT size, DREAL width2,

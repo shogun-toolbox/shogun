@@ -14,16 +14,14 @@
 #include "kernel/LinearStringKernel.h"
 #include "features/StringFeatures.h"
 
-CLinearStringKernel::CLinearStringKernel(INT size, bool dr, DREAL s)
-: CStringKernel<CHAR>(size), scale(s), do_rescale(dr),
-	initialized(false), normal(NULL)
+CLinearStringKernel::CLinearStringKernel()
+: CStringKernel<CHAR>(0), normal(NULL)
 {
 }
 
 CLinearStringKernel::CLinearStringKernel(
-	CStringFeatures<CHAR>* l, CStringFeatures<CHAR>* r, bool dr, DREAL s)
-: CStringKernel<CHAR>(10), scale(s), do_rescale(dr),
-	initialized(false), normal(NULL)
+	CStringFeatures<CHAR>* l, CStringFeatures<CHAR>* r)
+: CStringKernel<CHAR>(0), normal(NULL)
 {
 	init(l, r);
 }
@@ -36,28 +34,7 @@ CLinearStringKernel::~CLinearStringKernel()
 bool CLinearStringKernel::init(CFeatures *l, CFeatures *r)
 {
 	CStringKernel<CHAR>::init(l, r);
-
-	if (!initialized)
-		init_rescale();
-	SG_INFO("rescaling kernel by %g (num:%d)\n", scale,
-		CMath::min(l->get_num_vectors(), r->get_num_vectors()));
-	return true;
-}
-
-void CLinearStringKernel::init_rescale()
-{
-	if (!do_rescale)
-		return ;
-	LONGREAL sum = 0;
-	scale = 1.0;
-	for (LONG i = 0; i<lhs->get_num_vectors() && i<rhs->get_num_vectors(); i++)
-		sum += compute(i, i);
-
-	if (sum > pow(2, 8*sizeof(LONG)))
-		SG_ERROR("the sum %lf does not fit into integer of %d bits "
-			"expect bogus results.\n", sum, 8*sizeof(LONG));
-	scale = sum/CMath::min(lhs->get_num_vectors(), rhs->get_num_vectors());
-	initialized = true;
+	return init_normalizer();
 }
 
 void CLinearStringKernel::cleanup()
@@ -85,10 +62,10 @@ void CLinearStringKernel::clear_normal()
 void CLinearStringKernel::add_to_normal(INT idx, DREAL weight)
 {
 	INT vlen;
-	CHAR *vec = ((CStringFeatures<CHAR>*) lhs)->get_feature_vector(idx, vlen);
+	CHAR* vec = ((CStringFeatures<CHAR>*) lhs)->get_feature_vector(idx, vlen);
 
-	for (INT i = 0; i<vlen; i++)
-		normal[i] += weight*vec[i];
+	for (INT i=0; i<vlen; i++)
+		normal[i] += weight*normalizer->normalize_lhs(vec[i], idx);
 }
 
 DREAL CLinearStringKernel::compute(INT idx_a, INT idx_b)
@@ -99,16 +76,12 @@ DREAL CLinearStringKernel::compute(INT idx_a, INT idx_b)
 	CHAR *bvec = ((CStringFeatures<CHAR>*) rhs)->get_feature_vector(idx_b, blen);
 
 	ASSERT(alen==blen);
-	double sum = 0;
-	for (INT i = 0; i<alen; i++) /* FIXME: use dot from Mathematics.h */
-		sum += ((LONG) avec[i])*((LONG) bvec[i]);
-	return sum/scale;
+	return CMath::dot(avec, bvec, alen);
 }
 
 bool CLinearStringKernel::init_optimization(INT num_suppvec, INT *sv_idx,
 		DREAL *alphas)
 {
-	SG_DEBUG("drin gelandet yeah\n");
 	INT i, alen;
 
 	int num_feat = ((CStringFeatures<CHAR>*) lhs)->get_max_vector_length();
@@ -124,7 +97,7 @@ bool CLinearStringKernel::init_optimization(INT num_suppvec, INT *sv_idx,
 		ASSERT(avec);
 
 		for (INT j = 0; j<num_feat; j++)
-			normal[j] += alphas[i]*((double) avec[j]);
+			normal[j] += alphas[i]*normalizer->normalize_lhs(((double) avec[j]), sv_idx[i]);
 	}
 	set_is_initialized(true);
 	return true;
@@ -141,11 +114,7 @@ bool CLinearStringKernel::delete_optimization()
 DREAL CLinearStringKernel::compute_optimized(INT idx_b)
 {
 	INT blen;
+	CHAR* bvec = ((CStringFeatures<CHAR>*) rhs)->get_feature_vector(idx_b, blen);
 
-	CHAR *bvec = ((CStringFeatures<CHAR>*) rhs)->get_feature_vector(idx_b, blen);
-
-	double result = 0;
-	for (INT i = 0; i<blen; i++) /* FIXME: Use dot() from Mathematics.h */
-		result += normal[i]*((double) bvec[i]);
-	return result/scale;
+	return normalizer->normalize_rhs(CMath::dot(normal, bvec, blen), idx_b);
 }

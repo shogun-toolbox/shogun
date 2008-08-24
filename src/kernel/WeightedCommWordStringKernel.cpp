@@ -13,18 +13,16 @@
 #include "features/StringFeatures.h"
 #include "lib/io.h"
 
-CWeightedCommWordStringKernel::CWeightedCommWordStringKernel(
-	INT size, bool us, ENormalizationType n)
-: CCommWordStringKernel(size, us, n), degree(0), weights(NULL)
+CWeightedCommWordStringKernel::CWeightedCommWordStringKernel(INT size, bool us)
+: CCommWordStringKernel(size, us), degree(0), weights(NULL)
 {
 	init_dictionary(1<<(sizeof(WORD)*9));
 	ASSERT(us==false);
 }
 
 CWeightedCommWordStringKernel::CWeightedCommWordStringKernel(
-	CStringFeatures<WORD>* l, CStringFeatures<WORD>* r,
-	bool us, ENormalizationType n, INT size)
-: CCommWordStringKernel(size, us, n), degree(0), weights(NULL)
+	CStringFeatures<WORD>* l, CStringFeatures<WORD>* r, bool us, INT size)
+: CCommWordStringKernel(size, us), degree(0), weights(NULL)
 {
 	init_dictionary(1<<(sizeof(WORD)*9));
 	ASSERT(us==false);
@@ -44,7 +42,8 @@ bool CWeightedCommWordStringKernel::init(CFeatures* l, CFeatures* r)
 	degree=((CStringFeatures<WORD>*) l)->get_order();
 	set_wd_weights();
 
-	return CCommWordStringKernel::init(l,r);
+	CCommWordStringKernel::init(l,r);
+	return init_normalizer();
 }
 
 void CWeightedCommWordStringKernel::cleanup()
@@ -56,7 +55,6 @@ void CWeightedCommWordStringKernel::cleanup()
 }
 bool CWeightedCommWordStringKernel::set_wd_weights()
 {
-	SG_DEBUG("WSPEC degree: %d\n", degree);
 	delete[] weights;
 	weights=new DREAL[degree];
 
@@ -170,29 +168,7 @@ DREAL CWeightedCommWordStringKernel::compute_helper(INT idx_a, INT idx_b, bool d
 		delete[] bvec;
 	}
 
-	if (initialized)
-	{
-		switch (normalization)
-		{
-			case NO_NORMALIZATION:
-				return result;
-			case SQRT_NORMALIZATION:
-				return result/sqrt(sqrtdiag_lhs[idx_a]*sqrtdiag_rhs[idx_b]);
-			case FULL_NORMALIZATION:
-				return result/(sqrtdiag_lhs[idx_a]*sqrtdiag_rhs[idx_b]);
-			case SQRTLEN_NORMALIZATION:
-				return result/sqrt(sqrt(alen*blen));
-			case LEN_NORMALIZATION:
-				return result/sqrt(alen*blen);
-			case SQLEN_NORMALIZATION:
-				return result/(alen*blen);
-			default:
-				SG_ERROR( "Unknown Normalization in use!\n");
-				return -CMath::INFTY;
-		}
-	}
-	else
-		return result;
+	return result;
 }
 
 void CWeightedCommWordStringKernel::add_to_normal(INT vec_idx, DREAL weight)
@@ -212,7 +188,7 @@ void CWeightedCommWordStringKernel::add_to_normal(INT vec_idx, DREAL weight)
 				mask = mask | (1 << (degree-d-1));
 				INT idx=s->get_masked_symbols(vec[j], mask);
 				idx=s->shift_symbol(idx, degree-d-1);
-				dictionary_weights[offs + idx] += normalize_weight(sqrtdiag_lhs, weight*weights[d], vec_idx, len, normalization);
+				dictionary_weights[offs + idx] += normalizer->normalize_lhs(weight*weights[d], vec_idx);
 				offs+=s->shift_offset(1,d+1);
 			}
 		}
@@ -281,7 +257,7 @@ DREAL CWeightedCommWordStringKernel::compute_optimized(INT i)
 			}
 		}
 
-		result=normalize_weight(sqrtdiag_rhs, result, i, len, normalization);
+		result=normalizer->normalize_rhs(result, i);
 	}
 	return result;
 }

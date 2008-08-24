@@ -16,6 +16,7 @@
 #include "base/Parallel.h"
 
 #include "kernel/WeightedDegreePositionStringKernel.h"
+#include "kernel/SqrtDiagKernelNormalizer.h"
 #include "features/Features.h"
 #include "features/StringFeatures.h"
 
@@ -45,35 +46,35 @@ template <class Trie> struct S_THREAD_PARAM
 };
 
 CWeightedDegreePositionStringKernel::CWeightedDegreePositionStringKernel(
-	INT size, INT d, INT mm, bool un, INT mkls)
+	INT size, INT d, INT mm, INT mkls)
 : CStringKernel<CHAR>(size), weights(NULL), position_weights(NULL),
 	position_weights_lhs(NULL), position_weights_rhs(NULL),
 	weights_buffer(NULL), mkl_stepsize(mkls), degree(d), length(0),
 	max_mismatch(mm), seq_length(0), shift(NULL), shift_len(0),
-	initialized(false), use_normalization(un),
-	normalization_const(1.0), num_block_weights_external(0),
-	block_weights_external(NULL), block_weights(NULL), type(E_EXTERNAL),
-	tries(d), poim_tries(d), tree_initialized(false), use_poim_tries(false),
-	m_poim_distrib(NULL), m_poim(NULL), m_poim_num_sym(0), m_poim_num_feat(0),
-	m_poim_result_len(0), alphabet(NULL)
+	num_block_weights_external(0), block_weights_external(NULL),
+	block_weights(NULL), type(E_EXTERNAL), tries(d), poim_tries(d),
+	tree_initialized(false), use_poim_tries(false), m_poim_distrib(NULL),
+	m_poim(NULL), m_poim_num_sym(0), m_poim_num_feat(0), m_poim_result_len(0),
+	alphabet(NULL)
 {
 	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
 	set_wd_weights();
 	ASSERT(weights);
+
+	set_normalizer(new CSqrtDiagKernelNormalizer());
 }
 
 CWeightedDegreePositionStringKernel::CWeightedDegreePositionStringKernel(
-	INT size, DREAL* w, INT d, INT mm, INT* s, INT sl, bool un, INT mkls)
+	INT size, DREAL* w, INT d, INT mm, INT* s, INT sl, INT mkls)
 : CStringKernel<CHAR>(size), weights(NULL), position_weights(NULL),
 	position_weights_lhs(NULL), position_weights_rhs(NULL),
 	weights_buffer(NULL), mkl_stepsize(mkls), degree(d), length(0),
 	max_mismatch(mm), seq_length(0), shift(NULL), shift_len(0),
-	initialized(false), use_normalization(un),
-	normalization_const(1.0), num_block_weights_external(0),
-	block_weights_external(NULL), block_weights(NULL), type(E_EXTERNAL),
-	tries(d), poim_tries(d), tree_initialized(false), use_poim_tries(false),
-	m_poim_distrib(NULL), m_poim(NULL), m_poim_num_sym(0), m_poim_num_feat(0),
-	m_poim_result_len(0), alphabet(NULL)
+	num_block_weights_external(0), block_weights_external(NULL),
+	block_weights(NULL), type(E_EXTERNAL), tries(d), poim_tries(d),
+	tree_initialized(false), use_poim_tries(false), m_poim_distrib(NULL),
+	m_poim(NULL), m_poim_num_sym(0), m_poim_num_feat(0), m_poim_result_len(0),
+	alphabet(NULL)
 {
 	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
 
@@ -82,6 +83,8 @@ CWeightedDegreePositionStringKernel::CWeightedDegreePositionStringKernel(
 		weights[i]=w[i];
 
 	set_shifts(s, sl);
+
+	set_normalizer(new CSqrtDiagKernelNormalizer());
 }
 
 CWeightedDegreePositionStringKernel::CWeightedDegreePositionStringKernel(
@@ -90,16 +93,16 @@ CWeightedDegreePositionStringKernel::CWeightedDegreePositionStringKernel(
 	position_weights_lhs(NULL), position_weights_rhs(NULL),
 	weights_buffer(NULL), mkl_stepsize(1), degree(d), length(0),
 	max_mismatch(0), seq_length(0), shift(NULL), shift_len(0),
-	initialized(false), use_normalization(true),
-	normalization_const(1.0), num_block_weights_external(0),
-	block_weights_external(NULL), block_weights(NULL), type(E_EXTERNAL),
-	tries(d), poim_tries(d), tree_initialized(false), use_poim_tries(false),
-	m_poim_distrib(NULL), m_poim(NULL), m_poim_num_sym(0), m_poim_num_feat(0),
-	m_poim_result_len(0), alphabet(NULL)
+	num_block_weights_external(0), block_weights_external(NULL),
+	block_weights(NULL), type(E_EXTERNAL), tries(d), poim_tries(d),
+	tree_initialized(false), use_poim_tries(false), m_poim_distrib(NULL),
+	m_poim(NULL), m_poim_num_sym(0), m_poim_num_feat(0), m_poim_result_len(0),
+	alphabet(NULL)
 {
 	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
 	set_wd_weights();
 	ASSERT(weights);
+	set_normalizer(new CSqrtDiagKernelNormalizer());
 
 	init(l, r);
 }
@@ -136,7 +139,6 @@ void CWeightedDegreePositionStringKernel::remove_lhs()
 {
 	SG_DEBUG( "deleting CWeightedDegreePositionStringKernel optimization\n");
 	delete_optimization();
-	initialized = false;
 
 	tries.destroy();
 	poim_tries.destroy();
@@ -168,7 +170,7 @@ bool CWeightedDegreePositionStringKernel::init(CFeatures* l, CFeatures* r)
 	INT lhs_changed = (lhs!=l) ;
 	INT rhs_changed = (rhs!=r) ;
 
-	bool result=CStringKernel<CHAR>::init(l,r);
+	CStringKernel<CHAR>::init(l,r);
 
 	SG_DEBUG( "lhs_changed: %i\n", lhs_changed) ;
 	SG_DEBUG( "rhs_changed: %i\n", rhs_changed) ;
@@ -205,25 +207,10 @@ bool CWeightedDegreePositionStringKernel::init(CFeatures* l, CFeatures* r)
 	SG_UNREF(ralphabet);
 
 	//whenever init is called also init tries and block weights
-	if (!initialized)
-	{
-		create_empty_tries();
-		init_block_weights();
-	}
+	create_empty_tries();
+	init_block_weights();
 
-	//whenever lhs changes also recompute normalisation const
-	if (lhs_changed)
-	{
-		normalization_const=1.0;
-		if (use_normalization)
-			normalization_const=compute(0,0);
-	} 
-
-	SG_DEBUG( "use normalization:%d (const:%f)\n", (use_normalization) ? 1 : 0,
-			normalization_const);
-
-	initialized = true;
-	return result;
+	return init_normalizer();
 }
 
 void CWeightedDegreePositionStringKernel::cleanup()
@@ -238,7 +225,6 @@ void CWeightedDegreePositionStringKernel::cleanup()
 	poim_tries.destroy();
 
 	seq_length = 0;
-	initialized = false;
 	tree_initialized = false;
 
 	delete alphabet;
@@ -630,8 +616,6 @@ DREAL CWeightedDegreePositionStringKernel::compute(INT idx_a, INT idx_b)
 	else
 		result = compute_without_mismatch_matrix(avec, alen, bvec, blen) ;
 
-	result/=normalization_const;
-
 	return result ;
 }
 
@@ -671,7 +655,7 @@ void CWeightedDegreePositionStringKernel::add_example_to_tree(INT idx, DREAL alp
 
 		for (INT s=max_s; s>=0; s--)
 		{
-			DREAL alpha_pw = (s==0) ? (alpha) : (alpha/(2.0*s)) ;
+			DREAL alpha_pw = normalizer->normalize_lhs((s==0) ? (alpha) : (alpha/(2.0*s)), idx);
 			TRIES(add_to_trie(i, s, vec, alpha_pw, weights, (length!=0))) ;
 			//fprintf(stderr, "tree=%i, s=%i, example=%i, alpha_pw=%1.2f\n", i, s, idx, alpha_pw) ;
 
@@ -715,7 +699,7 @@ void CWeightedDegreePositionStringKernel::add_example_to_single_tree(INT idx, DR
 
 	for (INT s=max_s; s>=0; s--)
 	{
-		DREAL alpha_pw = (s==0) ? (alpha) : (alpha/(2.0*s)) ;
+		DREAL alpha_pw = normalizer->normalize_lhs((s==0) ? (alpha) : (alpha/(2.0*s)), idx);
 		tries.add_to_trie(tree_num, s, vec, alpha_pw, weights, (length!=0)) ;
 		//fprintf(stderr, "tree=%i, s=%i, example=%i, alpha_pw=%1.2f\n", tree_num, s, idx, alpha_pw) ;
 	} 
@@ -727,7 +711,7 @@ void CWeightedDegreePositionStringKernel::add_example_to_single_tree(INT idx, DR
 			INT s=tree_num-i;
 			if ((i+s<len) && (s>=1) && (s<=shift[i]))
 			{
-				DREAL alpha_pw = (s==0) ? (alpha) : (alpha/(2.0*s)) ;
+				DREAL alpha_pw = normalizer->normalize_lhs((s==0) ? (alpha) : (alpha/(2.0*s)), idx);
 				tries.add_to_trie(tree_num, -s, vec, alpha_pw, weights, (length!=0)) ; 
 				//fprintf(stderr, "tree=%i, s=%i, example=%i, alpha_pw=%1.2f\n", tree_num, -s, idx, alpha_pw) ;
 			}
@@ -770,7 +754,7 @@ DREAL CWeightedDegreePositionStringKernel::compute_by_tree(INT idx)
 
 	delete[] vec ;
 
-	return sum/normalization_const;
+	return normalizer->normalize_rhs(sum, idx);
 }
 
 void CWeightedDegreePositionStringKernel::compute_by_tree(INT idx, DREAL* LevelContrib)
@@ -789,15 +773,23 @@ void CWeightedDegreePositionStringKernel::compute_by_tree(INT idx, DREAL* LevelC
 		vec[i]=alphabet->remap_to_bin(char_vec[i]);
 
 	for (INT i=0; i<len; i++)
-		tries.compute_by_tree_helper(vec, len, i, i, i, LevelContrib, 1.0/normalization_const, mkl_stepsize, weights, (length!=0)) ;
+	{
+		tries.compute_by_tree_helper(vec, len, i, i, i, LevelContrib,
+				normalizer->normalize_rhs(1.0, idx), mkl_stepsize, weights,
+				(length!=0));
+	}
 
 	if (opt_type==SLOWBUTMEMEFFICIENT)
 	{
 		for (INT i=0; i<len; i++)
 			for (INT k=1; (k<=shift[i]) && (i+k<len); k++)
 			{
-				tries.compute_by_tree_helper(vec, len, i, i+k, i, LevelContrib, 1.0/(2*k*normalization_const), mkl_stepsize, weights, (length!=0)) ;
-				tries.compute_by_tree_helper(vec, len, i+k, i, i+k, LevelContrib, 1.0/(2*k*normalization_const), mkl_stepsize, weights, (length!=0)) ;
+				tries.compute_by_tree_helper(vec, len, i, i+k, i, LevelContrib,
+						normalizer->normalize_rhs(1.0/(2*k), idx), mkl_stepsize,
+						weights, (length!=0)) ;
+				tries.compute_by_tree_helper(vec, len, i+k, i, i+k,
+						LevelContrib, normalizer->normalize_rhs(1.0/(2*k), idx),
+						mkl_stepsize, weights, (length!=0)) ;
 			}
 	}
 
@@ -1235,7 +1227,7 @@ void* CWeightedDegreePositionStringKernel::compute_batch_helper(void* p)
 
 		SG_UNREF(rhs_feat);
 
-		result[i] += factor*tries->compute_by_tree_helper(vec, len, j, j, j, weights, (length!=0))/wd->normalization_const ;
+		result[i] += factor*wd->normalizer->normalize_rhs(tries->compute_by_tree_helper(vec, len, j, j, j, weights, (length!=0)), vec_idx[i]);
 
 		if (wd->get_optimization_type()==SLOWBUTMEMEFFICIENT)
 		{
@@ -1243,10 +1235,21 @@ void* CWeightedDegreePositionStringKernel::compute_batch_helper(void* p)
 			{
 				INT s=j-q ;
 				if ((s>=1) && (s<=shift[q]) && (q+s<len))
-					result[i] += tries->compute_by_tree_helper(vec, len, q, q+s, q, weights, (length!=0))/(2.0*s*wd->normalization_const) ;
+				{
+					result[i] +=
+						wd->normalizer->normalize_rhs(tries->compute_by_tree_helper(vec,
+								len, q, q+s, q, weights, (length!=0)),
+								vec_idx[i])/(2.0*s);
+				}
 			}
+
 			for (INT s=1; (s<=shift[j]) && (j+s<len); s++)
-				result[i] += tries->compute_by_tree_helper(vec, len, j+s, j, j+s, weights, (length!=0))/(2.0*s*wd->normalization_const) ;
+			{
+				result[i] +=
+					wd->normalizer->normalize_rhs(tries->compute_by_tree_helper(vec,
+								len, j+s, j, j+s, weights, (length!=0)),
+								vec_idx[i])/(2.0*s);
+			}
 		}
 	}
 

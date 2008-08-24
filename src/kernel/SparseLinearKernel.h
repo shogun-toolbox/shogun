@@ -17,29 +17,24 @@
 
 /** Computes the standard linear kernel on sparse real valued features
  * \f[
- * k({\bf x},{\bf x'})= \frac{1}{scale}\Phi_k({\bf x})\cdot \Phi_k({\bf x'})
+ * k({\bf x},{\bf x'})= \Phi_k({\bf x})\cdot \Phi_k({\bf x'})
  * \f]
+ *
  */
 class CSparseLinearKernel: public CSparseKernel<DREAL>
 {
 	public:
 		/** constructor
-		 *
-		 * @param size cache size
-		 * @param scale scaling factor
 		 */
-		CSparseLinearKernel(INT size, DREAL scale=1.0);
+		CSparseLinearKernel();
 
 		/** constructor
 		 *
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
-		 * @param scale scaling factor
-		 * @param size cache size
 		 */
 		CSparseLinearKernel(
-			CSparseFeatures<DREAL>* l, CSparseFeatures<DREAL>* r,
-			DREAL scale=1.0, INT size=10);
+			CSparseFeatures<DREAL>* l, CSparseFeatures<DREAL>* r);
 
 		virtual ~CSparseLinearKernel();
 
@@ -136,15 +131,7 @@ class CSparseLinearKernel: public CSparseKernel<DREAL>
 		 */
 		virtual DREAL compute(INT idx_a, INT idx_b);
 
-		/** initialize rescaling */
-		virtual void init_rescale();
-
 	protected:
-		/** scaling factor */
-		double scale;
-		/** if kernel is initialized */
-		bool initialized;
-
 		/** normal vector (used in case of optimized kernel) */
 		DREAL* normal;
 		/** length of normal vector */

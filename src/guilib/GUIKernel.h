@@ -31,6 +31,8 @@ class CGUIKernel : public CSGObject
 
 	/** get active kernel */
 	CKernel* get_kernel();
+	/** set normalization */
+	bool set_normalization(CHAR* normalization, DREAL c=0.0);
 	/** set active kernel */
 	bool set_kernel(CKernel* kern);
 	/** add kernel to a Combined kernel, creating one if necessary */
@@ -84,13 +86,11 @@ class CGUIKernel : public CSGObject
 	/** create a new Sigmoid kernel */
 	CKernel* create_sigmoid(INT size=10, DREAL gamma=0.01, DREAL coef0=0);
 	/** create a new SparsePoly kernel */
-	CKernel* create_sparsepoly(
-		INT size=10, INT degree=2, bool inhomogene=false,
-		bool normalize=true);
+	CKernel* create_sparsepoly(INT size=10, INT degree=2,
+			bool inhomogene=false, bool normalize=true);
 	/** create a new Poly kernel */
-	CKernel* create_poly(
-		INT size=10, INT degree=2, bool inhomogene=false,
-		bool normalize=true);
+	CKernel* create_poly(INT size=10, INT degree=2,
+			bool inhomogene=false, bool normalize=true);
 	/** create a new (Simple)LocalityImprovedString kernel */
 	CKernel* create_localityimprovedstring(
 		INT size=10, INT length=3, INT inner_degree=3,
@@ -122,13 +122,13 @@ class CGUIKernel : public CSGObject
 		INT size=10, bool use_sign=false, CHAR* norm_str=NULL,
 		EKernelType ktype=K_WEIGHTEDCOMMWORDSTRING);
 	/** create a new WordMatch kernel */
-	CKernel* create_wordmatch(INT size=10, INT d=3);
+	CKernel* create_wordmatch(INT size=10, INT d=3, bool normalize=true);
 	/** create a new PolyMatchString kernel */
-	CKernel* create_polymatchstring(
-		INT size=10, INT degree=2, bool inhomogene=false, bool normalize=true);
+	CKernel* create_polymatchstring(INT size=10,
+			INT degree=2, bool inhomogene=false, bool normalize=true);
 	/** create a new PolyMatchWord kernel */
-	CKernel* create_polymatchword(
-		INT size=10, INT degree=2, bool inhomogene=false, bool normalize=true);
+	CKernel* create_polymatchword(INT size=10,
+			INT degree=2, bool inhomogene=false, bool normalize=true);
 	/** create a new SalzbergWord kernel */
 	CKernel* create_salzbergword(INT size=10);
 	/** create a new HistogramWord kernel */
@@ -156,7 +156,6 @@ class CGUIKernel : public CSGObject
 	bool initialized;
 
  private:
-	ENormalizationType get_normalization_from_str(CHAR* str);
 	DREAL* get_weights(INT order, INT max_mismatch);
 
 };

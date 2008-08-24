@@ -14,16 +14,14 @@
 #include "features/RealFeatures.h"
 #include "kernel/LinearKernel.h"
 
-CLinearKernel::CLinearKernel(INT size, DREAL s)
-: CSimpleKernel<DREAL>(size), scale(s), initialized(false),
-	normal(NULL), normal_length(0)
+CLinearKernel::CLinearKernel()
+: CSimpleKernel<DREAL>(0), normal(NULL), normal_length(0)
 {
 	properties |= KP_LINADD;
 }
 
-CLinearKernel::CLinearKernel(CRealFeatures* l, CRealFeatures* r, DREAL s, INT size)
-: CSimpleKernel<DREAL>(size), scale(s), initialized(false),
-	normal(NULL), normal_length(0)
+CLinearKernel::CLinearKernel(CRealFeatures* l, CRealFeatures* r)
+: CSimpleKernel<DREAL>(0), normal(NULL), normal_length(0)
 {
 	properties |= KP_LINADD;
 	init(l,r);
@@ -38,25 +36,7 @@ bool CLinearKernel::init(CFeatures* l, CFeatures* r)
 {
 	CSimpleKernel<DREAL>::init(l, r);
 
-	if (!initialized)
-		init_rescale();
-
-	SG_INFO( "rescaling kernel by %g (num:%d)\n",scale, CMath::min(l->get_num_vectors(), r->get_num_vectors()));
-
-	return true;
-}
-
-void CLinearKernel::init_rescale()
-{
-	if (scale!=0.0)
-		return;
-	double sum=0;
-	scale=1.0;
-	for (INT i=0; (i<lhs->get_num_vectors() && i<rhs->get_num_vectors()); i++)
-			sum+=compute(i, i);
-
-	scale=sum/CMath::min(lhs->get_num_vectors(), rhs->get_num_vectors());
-	initialized=true;
+	return init_normalizer();
 }
 
 void CLinearKernel::cleanup()
@@ -97,7 +77,7 @@ void CLinearKernel::add_to_normal(INT idx, DREAL weight)
 	double* vec=((CRealFeatures*) lhs)->get_feature_vector(idx, vlen, vfree);
 
 	for (int i=0; i<vlen; i++)
-		normal[i]+= weight*vec[i];
+		normal[i]+= weight*normalizer->normalize_lhs(vec[i], idx);
 
 	((CRealFeatures*) lhs)->free_feature_vector(vec, idx, vfree);
 
@@ -114,7 +94,7 @@ DREAL CLinearKernel::compute(INT idx_a, INT idx_b)
   
   ASSERT(alen==blen);
 
-  DREAL result=CMath::dot(avec, bvec, alen) / scale;
+  DREAL result=CMath::dot(avec, bvec, alen);
 
   ((CRealFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
   ((CRealFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
@@ -151,8 +131,8 @@ DREAL CLinearKernel::compute_optimized(INT idx)
 	bool vfree;
 	double* vec=((CRealFeatures*) rhs)->get_feature_vector(idx, vlen, vfree);
 	ASSERT(vlen==normal_length);
-	DREAL result=CMath::dot(normal,vec, vlen)/scale;
+	DREAL result=CMath::dot(normal,vec, vlen);
 	((CRealFeatures*) rhs)->free_feature_vector(vec, idx, vfree);
 
-	return result;
+	return normalizer->normalize_rhs(result, idx);
 }

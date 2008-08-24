@@ -34,7 +34,7 @@
  *
  * Note that this representation is especially tuned to small alphabets
  * (like the 2-bit alphabet DNA), for which it enables spectrum kernels
- * of order 8.
+ * of order up to 8.
  *
  * For this kernel the linadd speedups are quite efficiently implemented using
  * direct maps.
@@ -42,29 +42,26 @@
  */
 class CCommWordStringKernel : public CStringKernel<WORD>
 {
+	friend class CSqrtDiagKernelNormalizer;
+
 	public:
 		/** constructor
 		 *
 		 * @param size cache size
 		 * @param use_sign if sign shall be used
-		 * @param normalization_ type of normalization
 		 */
-		CCommWordStringKernel(INT size, bool use_sign,
-			ENormalizationType normalization_=FULL_NORMALIZATION);
+		CCommWordStringKernel(INT size, bool use_sign);
 
 		/** constructor
 		 *
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 * @param use_sign if sign shall be used
-		 * @param normalization_ type of normalization
 		 * @param size cache size
 		 */
 		CCommWordStringKernel(
 			CStringFeatures<WORD>* l, CStringFeatures<WORD>* r,
-			bool use_sign=false,
-			ENormalizationType normalization_=FULL_NORMALIZATION,
-			INT size=10);
+			bool use_sign=false, INT size=10);
 
 		virtual ~CCommWordStringKernel();
 
@@ -194,7 +191,6 @@ class CCommWordStringKernel : public CStringKernel<WORD>
 		CHAR* compute_consensus(INT &num_feat, INT num_suppvec,
 			INT* IDX, DREAL* alphas);
 
-
 		/** set_use_dict_diagonal_optimization
 		 *
 		 * @param flag enable diagonal optimization
@@ -243,53 +239,7 @@ class CCommWordStringKernel : public CStringKernel<WORD>
 		 */
 		virtual DREAL compute_diag(INT idx_a);
 
-		/** normalize weight
-		 *
-		 * @param weights weights
-		 * @param value value
-		 * @param seq_num sequence number
-		 * @param seq_len length of sequence
-		 * @param p_normalization type of normalization
-		 */
-		inline DREAL normalize_weight(DREAL* weights, DREAL value,
-			INT seq_num, INT seq_len,
-			ENormalizationType p_normalization)
-		{
-			switch (p_normalization)
-			{
-				case NO_NORMALIZATION:
-					return value;
-					break;
-				case SQRT_NORMALIZATION:
-					return value/sqrt(weights[seq_num]);
-					break;
-				case FULL_NORMALIZATION:
-					return value/weights[seq_num];
-					break;
-				case SQRTLEN_NORMALIZATION:
-					return value/sqrt(sqrt((double) seq_len));
-					break;
-				case LEN_NORMALIZATION:
-					return value/sqrt((double) seq_len);
-					break;
-				case SQLEN_NORMALIZATION:
-					return value/seq_len;
-					break;
-				default:
-					ASSERT(0);
-			}
-
-			return -CMath::INFTY;
-		}
-
 	protected:
-		/** sqrt diagonal of left-hand side */
-		DREAL *sqrtdiag_lhs;
-		/** sqrt diagonal of right-hand side */
-		DREAL *sqrtdiag_rhs;
-		/** if kernel is initialized */
-		bool initialized;
-
 		/** size of dictionary (number of possible strings) */
 		INT dictionary_size;
 		/** dictionary weights - array to hold counters for all possible
@@ -298,8 +248,6 @@ class CCommWordStringKernel : public CStringKernel<WORD>
 
 		/** if sign shall be used */
 		bool use_sign;
-		/** type of normalization */
-		ENormalizationType normalization;
 
 		/** whether diagonal optimization shall be used */
 		bool use_dict_diagonal_optimization;

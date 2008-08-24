@@ -34,21 +34,18 @@ class CPolyKernel: public CSimpleKernel<DREAL>
 		 * @param r features of right-hand side
 		 * @param d degree
 		 * @param inhom is inhomogeneous
-		 * @param use_norm use normalization
 		 * @param size cache size
 		 */
 		CPolyKernel(CRealFeatures* l, CRealFeatures* r,
-			INT d, bool inhom, bool use_norm, INT size=10);
+			INT d, bool inhom, INT size=10);
 
 		/** constructor
 		 *
 		 * @param size cache size
 		 * @param degree degree
 		 * @param inhomogene is inhomogeneous
-		 * @param use_normalization use normalization
 		 */
-		CPolyKernel(INT size, INT degree,
-			bool inhomogene=true, bool use_normalization=true);
+		CPolyKernel(INT size, INT degree, bool inhomogene=true);
 
 		virtual ~CPolyKernel();
 
@@ -105,15 +102,6 @@ class CPolyKernel: public CSimpleKernel<DREAL>
 		INT degree;
 		/** if kernel is inhomogeneous */
 		bool inhomogene;
-		/** if normalization is used */
-		bool use_normalization;
-
-		/** sqrt diagonal of left-hand side */
-		DREAL *sqrtdiag_lhs;
-		/** sqrt diagonal of right-hand side */
-		DREAL *sqrtdiag_rhs;
-		/** if kernel is initialized */
-		bool initialized;
 };
 
 #endif /* _POLYKERNEL_H__ */

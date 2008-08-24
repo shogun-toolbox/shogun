@@ -35,21 +35,18 @@ class CSparsePolyKernel: public CSparseKernel<DREAL>
 		 * @param size cache size
 		 * @param d degree
 		 * @param inhom is inhomogeneous
-		 * @param use_norm use normalization
 		 */
 		CSparsePolyKernel(
 			CSparseFeatures<DREAL>* l, CSparseFeatures<DREAL>* r,
-			INT size, INT d, bool inhom, bool use_norm);
+			INT size, INT d, bool inhom);
 
 		/** constructor
 		 *
 		 * @param size cache size
 		 * @param degree degree
 		 * @param inhomogene is inhomogeneous
-		 * @param use_normalization use normalization
 		 */
-		CSparsePolyKernel(INT size, INT degree,
-			bool inhomogene=true, bool use_normalization=true);
+		CSparsePolyKernel(INT size, INT degree, bool inhomogene=true);
 
 		virtual ~CSparsePolyKernel();
 
@@ -112,15 +109,6 @@ class CSparsePolyKernel: public CSparseKernel<DREAL>
 		INT degree;
 		/** if kernel is inhomogeneous */
 		bool inhomogene;
-		/** if normalization is used */
-		bool use_normalization;
-
-		/** sqrt diagonal of left-hand side */
-		DREAL *sqrtdiag_lhs;
-		/** sqrt diagonal of right-hand side */
-		DREAL *sqrtdiag_rhs;
-		/** if kernel is initialized */
-		bool initialized;
 };
 
 #endif /* _SPARSEPOLYKERNEL_H__ */

@@ -117,9 +117,9 @@ CLocalAlignmentStringKernel::~CLocalAlignmentStringKernel()
 
 bool CLocalAlignmentStringKernel::init(CFeatures* l, CFeatures* r)
 {
-	bool result = CStringKernel<CHAR>::init(l, r);
+	CStringKernel<CHAR>::init(l, r);
 	initialized = true;
-	return result;
+	return init_normalizer();
 }
 
 void CLocalAlignmentStringKernel::cleanup()

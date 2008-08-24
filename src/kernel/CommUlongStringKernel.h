@@ -47,23 +47,19 @@ class CCommUlongStringKernel: public CStringKernel<ULONG>
 		 *
 		 * @param size cache size
 		 * @param use_sign if sign shall be used
-		 * @param normalization_ type of normalization
 		 */
-		CCommUlongStringKernel(INT size=10, bool use_sign=false,
-			ENormalizationType normalization_=FULL_NORMALIZATION);
+		CCommUlongStringKernel(INT size=10, bool use_sign=false);
 
 		/** constructor
 		 *
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 * @param use_sign if sign shall be used
-		 * @param normalization_ type of normalization
 		 * @param size cache size
 		 */
 		CCommUlongStringKernel(
 			CStringFeatures<ULONG>* l, CStringFeatures<ULONG>* r,
 			bool use_sign=false,
-			ENormalizationType normalization_=FULL_NORMALIZATION,
 			INT size=10);
 
 		virtual ~CCommUlongStringKernel();
@@ -137,12 +133,9 @@ class CCommUlongStringKernel: public CStringKernel<ULONG>
 		 * @param dic_weights dictionary weights
 		 * @param weight weight
 		 * @param vec_idx vector index
-		 * @param len length
-		 * @param p_normalization normalization
 		 */
-		inline void merge_dictionaries(INT &t, INT j, INT &k,
-			ULONG* vec, ULONG* dic, DREAL* dic_weights, DREAL weight,
-			INT vec_idx, INT len, ENormalizationType p_normalization)
+		inline void merge_dictionaries(INT &t, INT j, INT &k, ULONG* vec,
+				ULONG* dic, DREAL* dic_weights, DREAL weight, INT vec_idx)
 		{
 			while (k<dictionary.get_num_elements() && dictionary[k] < vec[j-1])
 			{
@@ -155,13 +148,13 @@ class CCommUlongStringKernel: public CStringKernel<ULONG>
 			if (k<dictionary.get_num_elements() && dictionary[k]==vec[j-1])
 			{
 				dic[t]=vec[j-1];
-				dic_weights[t]=dictionary_weights[k]+normalize_weight(weight, vec_idx, len, p_normalization);
+				dic_weights[t]=dictionary_weights[k]+normalizer->normalize_lhs(weight, vec_idx);
 				k++;
 			}
 			else
 			{
 				dic[t]=vec[j-1];
-				dic_weights[t]=normalize_weight(weight, vec_idx, len, p_normalization);
+				dic_weights[t]=normalizer->normalize_lhs(weight, vec_idx);
 			}
 			t++;
 		}
@@ -212,50 +205,7 @@ class CCommUlongStringKernel: public CStringKernel<ULONG>
 		 */
 		DREAL compute(INT idx_a, INT idx_b);
 
-		/** normalize weight
-		 *
-		 * @param value value
-		 * @param seq_num sequence number
-		 * @param seq_len length of sequence
-		 * @param p_normalization type of normalization
-		 */
-		inline DREAL normalize_weight(DREAL value, INT seq_num,
-			INT seq_len, ENormalizationType p_normalization)
-		{
-			switch (p_normalization)
-			{
-				case NO_NORMALIZATION:
-					return value;
-					break;
-				case SQRT_NORMALIZATION:
-					return value/sqrt(sqrtdiag_lhs[seq_num]);
-					break;
-				case FULL_NORMALIZATION:
-					return value/sqrtdiag_lhs[seq_num];
-					break;
-				case SQRTLEN_NORMALIZATION:
-					return value/sqrt(sqrt(seq_len));
-					break;
-				case LEN_NORMALIZATION:
-					return value/sqrt(seq_len);
-					break;
-				case SQLEN_NORMALIZATION:
-					return value/seq_len;
-					break;
-				default:
-					ASSERT(0);
-			}
-			return -CMath::INFTY;
-		}
-
 	protected:
-		/** sqrt diagonal of left-hand side */
-		DREAL *sqrtdiag_lhs;
-		/** sqrt diagonal of right-hand side */
-		DREAL *sqrtdiag_rhs;
-		/** if kernel is initialized */
-		bool initialized;
-
 		/** dictionary */
 		CDynamicArray<ULONG> dictionary;
 		/** dictionary weights */
@@ -263,8 +213,6 @@ class CCommUlongStringKernel: public CStringKernel<ULONG>
 
 		/** if sign shall be used */
 		bool use_sign;
-		/** type of normalization */
-		ENormalizationType normalization;
 };
 
 #endif /* _COMMULONGFSTRINGKERNEL_H__ */

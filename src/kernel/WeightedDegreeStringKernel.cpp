@@ -16,6 +16,7 @@
 #include "base/Parallel.h"
 
 #include "kernel/WeightedDegreeStringKernel.h"
+#include "kernel/FirstElementKernelNormalizer.h"
 #include "features/Features.h"
 #include "features/StringFeatures.h"
 
@@ -42,11 +43,10 @@ CWeightedDegreeStringKernel::CWeightedDegreeStringKernel (
 	INT degree_, EWDKernType type_)
 : CStringKernel<CHAR>(10),weights(NULL),position_weights(NULL),
 	weights_buffer(NULL), mkl_stepsize(1),degree(degree_), length(0),
-	max_mismatch(0), seq_length(0), initialized(false),
-	use_normalization(true),block_computation(true),
-	normalization_const(1.0), num_block_weights_external(0),
-	block_weights_external(NULL), block_weights(NULL), type(type_),
-	which_degree(-1), tries(NULL), tree_initialized(false), alphabet(NULL)
+	max_mismatch(0), seq_length(0), block_computation(true),
+	num_block_weights_external(0), block_weights_external(NULL),
+	block_weights(NULL), type(type_), which_degree(-1), tries(NULL),
+	tree_initialized(false), alphabet(NULL)
 {
 	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
 	lhs=NULL;
@@ -54,17 +54,18 @@ CWeightedDegreeStringKernel::CWeightedDegreeStringKernel (
 
 	if (type!=E_EXTERNAL)
 		set_wd_weights_by_type(type);
+
+	set_normalizer(new CFirstElementKernelNormalizer());
 }
 
 CWeightedDegreeStringKernel::CWeightedDegreeStringKernel (
 	DREAL *weights_, INT degree_)
 : CStringKernel<CHAR>(10), weights(NULL), position_weights(NULL),
 	weights_buffer(NULL), mkl_stepsize(1), degree(degree_), length(0),
-	max_mismatch(0), seq_length(0), initialized(false),
-	use_normalization(true), block_computation(true),
-	normalization_const(1.0), num_block_weights_external(0),
-	block_weights_external(NULL), block_weights(NULL), type(E_EXTERNAL),
-	which_degree(-1), tries(NULL), tree_initialized(false), alphabet(NULL)
+	max_mismatch(0), seq_length(0), block_computation(true),
+	num_block_weights_external(0), block_weights_external(NULL),
+	block_weights(NULL), type(E_EXTERNAL), which_degree(-1), tries(NULL),
+	tree_initialized(false), alphabet(NULL)
 {
 	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
 	lhs=NULL;
@@ -73,21 +74,22 @@ CWeightedDegreeStringKernel::CWeightedDegreeStringKernel (
 	weights=new DREAL[degree*(1+max_mismatch)];
 	for (INT i=0; i<degree*(1+max_mismatch); i++)
 		weights[i]=weights_[i];
+	set_normalizer(new CFirstElementKernelNormalizer());
 }
 
 CWeightedDegreeStringKernel::CWeightedDegreeStringKernel(
 	CStringFeatures<CHAR>* l, CStringFeatures<CHAR>* r, INT degree_)
 : CStringKernel<CHAR>(10), weights(NULL), position_weights(NULL),
 	weights_buffer(NULL), mkl_stepsize(1), degree(degree_), length(0),
-	max_mismatch(0), seq_length(0), initialized(false),
-	use_normalization(true), block_computation(true),
-	normalization_const(1.0), num_block_weights_external(0),
-	block_weights_external(NULL), block_weights(NULL), type(E_WD),
-	which_degree(-1), tries(NULL), tree_initialized(false), alphabet(NULL)
+	max_mismatch(0), seq_length(0), block_computation(true),
+	num_block_weights_external(0), block_weights_external(NULL),
+	block_weights(NULL), type(E_WD), which_degree(-1), tries(NULL),
+	tree_initialized(false), alphabet(NULL)
 {
 	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
 
 	set_wd_weights_by_type(type);
+	set_normalizer(new CFirstElementKernelNormalizer());
 	init(l, r);
 }
 
@@ -113,7 +115,6 @@ void CWeightedDegreeStringKernel::remove_lhs()
 { 
 	SG_DEBUG( "deleting CWeightedDegreeStringKernel optimization\n");
 	delete_optimization();
-	initialized = false;
 
 	if (tries!=NULL)
 		tries->destroy();
@@ -137,8 +138,7 @@ bool CWeightedDegreeStringKernel::init(CFeatures* l, CFeatures* r)
 	INT lhs_changed=(lhs!=l);
 	INT rhs_changed=(rhs!=r);
 
-	bool result=CStringKernel<CHAR>::init(l,r);
-	initialized=false;
+	CStringKernel<CHAR>::init(l,r);
 
 	SG_DEBUG("lhs_changed: %i\n", lhs_changed);
 	SG_DEBUG("rhs_changed: %i\n", rhs_changed);
@@ -171,13 +171,7 @@ bool CWeightedDegreeStringKernel::init(CFeatures* l, CFeatures* r)
 
 	init_block_weights();
 
-	if (use_normalization)
-		normalization_const=block_weights[seq_length-1];
-	else
-		normalization_const=1.0;
-	
-	initialized=true;
-	return result;
+	return init_normalizer();
 }
 
 void CWeightedDegreeStringKernel::cleanup()
@@ -196,7 +190,6 @@ void CWeightedDegreeStringKernel::cleanup()
 	}
 
 	seq_length=0;
-	initialized=false;
 	tree_initialized = false;
 
 	delete alphabet;
@@ -389,7 +382,7 @@ DREAL CWeightedDegreeStringKernel::compute(INT idx_a, INT idx_b)
 			result=compute_without_mismatch_matrix(avec, alen, bvec, blen);
 	}
 
-	return result/normalization_const;
+	return result;
 }
 
 
@@ -416,7 +409,7 @@ void CWeightedDegreeStringKernel::add_example_to_tree(INT idx, DREAL alpha)
 			if (alpha_pw==0.0)
 				continue;
 			ASSERT(tries);
-			tries->add_to_trie(i, 0, vec, alpha_pw, weights, (length!=0));
+			tries->add_to_trie(i, 0, vec, normalizer->normalize_lhs(alpha_pw, idx), weights, (length!=0));
 		}
 	}
 	else
@@ -429,7 +422,7 @@ void CWeightedDegreeStringKernel::add_example_to_tree(INT idx, DREAL alpha)
 			if (alpha_pw==0.0)
 				continue ;
 			ASSERT(tries);
-			tries->add_to_trie(i, 0, vec, alpha_pw, weights, (length!=0));
+			tries->add_to_trie(i, 0, vec, normalizer->normalize_lhs(alpha_pw, idx), weights, (length!=0));
 		}
 	}
 	delete[] vec ;
@@ -451,7 +444,7 @@ void CWeightedDegreeStringKernel::add_example_to_single_tree(INT idx, DREAL alph
 	
 	ASSERT(tries);
 	if (alpha!=0.0)
-		tries->add_to_trie(tree_num, 0, vec, alpha, weights, (length!=0));
+		tries->add_to_trie(tree_num, 0, vec, normalizer->normalize_lhs(alpha, idx), weights, (length!=0));
 
 	delete[] vec ;
 	tree_initialized=true ;
@@ -474,7 +467,7 @@ void CWeightedDegreeStringKernel::add_example_to_tree_mismatch(INT idx, DREAL al
 	for (INT i=0; i<len; i++)
 	{
 		if (alpha!=0.0)
-			tries->add_example_to_tree_mismatch_recursion(NO_CHILD, i, alpha, &vec[i], len-i, 0, 0, max_mismatch, weights);
+			tries->add_example_to_tree_mismatch_recursion(NO_CHILD, i, normalizer->normalize_lhs(alpha, idx), &vec[i], len-i, 0, 0, max_mismatch, weights);
 	}
 	
 	delete[] vec ;
@@ -497,7 +490,7 @@ void CWeightedDegreeStringKernel::add_example_to_single_tree_mismatch(INT idx, D
 	if (alpha!=0.0)
 	{
 		tries->add_example_to_tree_mismatch_recursion(
-			NO_CHILD, tree_num, alpha, &vec[tree_num], len-tree_num,
+			NO_CHILD, tree_num, normalizer->normalize_lhs(alpha, idx), &vec[tree_num], len-tree_num,
 			0, 0, max_mismatch, weights);
 	}
 
@@ -525,7 +518,7 @@ DREAL CWeightedDegreeStringKernel::compute_by_tree(INT idx)
 		sum+=tries->compute_by_tree_helper(vec, len, i, i, i, weights, (length!=0));
 
 	delete[] vec;
-	return sum/normalization_const;
+	return normalizer->normalize_rhs(sum, idx);
 }
 
 void CWeightedDegreeStringKernel::compute_by_tree(INT idx, DREAL* LevelContrib)
@@ -543,7 +536,11 @@ void CWeightedDegreeStringKernel::compute_by_tree(INT idx, DREAL* LevelContrib)
 
 	ASSERT(tries);
 	for (INT i=0; i<len; i++)
-	  tries->compute_by_tree_helper(vec, len, i, i, i, LevelContrib, 1.0/normalization_const, mkl_stepsize, weights, (length!=0));
+	{
+		tries->compute_by_tree_helper(vec, len, i, i, i, LevelContrib,
+				normalizer->normalize_rhs(1.0, idx),
+				mkl_stepsize, weights, (length!=0));
+	}
 
 	delete[] vec ;
 }
@@ -871,8 +868,7 @@ void* CWeightedDegreeStringKernel::compute_batch_helper(void* p)
 		ASSERT(tries);
 
 		result[i]+=factor*
-			tries->compute_by_tree_helper(vec, len, j, j, j, weights, (length!=0))/
-			wd->get_normalization_const();
+			wd->normalizer->normalize_rhs(tries->compute_by_tree_helper(vec, len, j, j, j, weights, (length!=0)), vec_idx[i]);
 	}
 
 	SG_UNREF(rhs_feat);
@@ -992,4 +988,3 @@ bool CWeightedDegreeStringKernel::set_max_mismatch(INT max)
 	else
 		return true;
 }
-

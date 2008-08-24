@@ -163,6 +163,12 @@ CSGInterfaceMethod sg_methods[]=
 
 	{ "Kernel", NULL, NULL },
 	{
+		N_SET_KERNEL_NORMALIZATION,
+		(&CSGInterface::cmd_set_kernel_normalization),
+		USAGE_I(N_SET_KERNEL_NORMALIZATION, "IDENTITY|AVGDIAG|SQRTDIAG|FIRSTELEMENT"
+				USAGE_COMMA "size[" USAGE_COMMA "kernel-specific parameters]")
+	},
+	{
 		N_SET_KERNEL,
 		(&CSGInterface::cmd_set_kernel),
 		USAGE_I(N_SET_KERNEL, "type" USAGE_COMMA "size[" USAGE_COMMA "kernel-specific parameters]")
@@ -477,11 +483,6 @@ CSGInterfaceMethod sg_methods[]=
 		N_SVM_MAX_TRAIN_TIME,
 		(&CSGInterface::cmd_set_max_train_time),
 		USAGE_I(N_SVM_MAX_TRAIN_TIME, "max_train_time")
-	},
-	{
-		N_USE_PRECOMPUTE,
-		(&CSGInterface::cmd_set_svm_precompute_enabled),
-		USAGE_I(N_USE_PRECOMPUTE, "enable_precompute")
 	},
 	{
 		N_USE_MKL,
@@ -2042,6 +2043,25 @@ bool CSGInterface::cmd_get_labels()
 
 /** Kernel */
 
+bool CSGInterface::cmd_set_kernel_normalization()
+{
+	if (m_nrhs<2 || !create_return_values(0))
+		return false;
+
+	INT len=0;
+	CHAR* normalization=get_string(len);
+
+	DREAL c=0;
+
+	if (m_nrhs==3)
+		c=get_real();
+
+	bool success=ui_kernel->set_normalization(normalization, c);
+
+	delete[] normalization;
+	return success;
+}
+
 bool CSGInterface::cmd_set_kernel()
 {
 	if (m_nrhs<2 || !create_return_values(0))
@@ -2199,11 +2219,14 @@ CKernel* CSGInterface::create_kernel()
 		{
 			INT size=get_int_from_int_or_str();
 			INT d=3;
+			bool normalize=true;
 
 			if (m_nrhs>4)
 				d=get_int_from_int_or_str();
+			if (m_nrhs>5)
+				normalize=get_bool_from_bool_or_str();
 
-			kernel=ui_kernel->create_wordmatch(size, d);
+			kernel=ui_kernel->create_wordmatch(size, d, normalize);
 		}
 
 		delete[] dtype;
@@ -4226,16 +4249,6 @@ bool CSGInterface::cmd_set_max_train_time()
 	DREAL max_train_time=get_real_from_real_or_str();
 
 	return ui_classifier->set_max_train_time(max_train_time);
-}
-
-bool CSGInterface::cmd_set_svm_precompute_enabled()
-{
-	if (m_nrhs!=2 || !create_return_values(0))
-		return false;
-
-	INT precompute=get_int_from_int_or_str();
-
-	return ui_classifier->set_svm_precompute_enabled(precompute);
 }
 
 bool CSGInterface::cmd_set_svm_mkl_enabled()

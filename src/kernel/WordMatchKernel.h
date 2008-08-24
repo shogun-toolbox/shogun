@@ -36,22 +36,16 @@ class CWordMatchKernel: public CSimpleKernel<WORD>
 		 *
 		 * @param size cache size
 		 * @param d degree
-		 * @param do_rescale if rescaling shall be applied
-		 * @param scale scaling factor
 		 */
-		CWordMatchKernel(INT size, INT d,
-			bool do_rescale=true, DREAL scale=1.);
+		CWordMatchKernel(INT size, INT d);
 
 		/** constructor
 		 *
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 * @param degree degree
-		 * @param do_rescale if rescaling shall be applied
-		 * @param scale scaling factor
 		 */
-		CWordMatchKernel(CWordFeatures* l, CWordFeatures* r, INT degree,
-			bool do_rescale=true, DREAL scale=1.);
+		CWordMatchKernel(CWordFeatures* l, CWordFeatures* r, INT degree);
 
 		virtual ~CWordMatchKernel();
 
@@ -100,17 +94,7 @@ class CWordMatchKernel: public CSimpleKernel<WORD>
 		 */
 		virtual DREAL compute(INT idx_a, INT idx_b);
 
-		/** initialize rescaling */
-		virtual void init_rescale();
-
 	protected:
-		/** scaling factor */
-		double scale;
-		/** if rescaling shall be applied */
-		bool do_rescale;
-		/** if kernel is initialized */
-		bool initialized;
-
 		/** degree */
 		INT degree;
 };

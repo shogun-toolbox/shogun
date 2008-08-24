@@ -76,3 +76,8 @@
 %include "kernel/CombinedKernel.i"
 %include "kernel/CustomKernel.i"
 %include "kernel/DistanceKernel.i"
+
+%include "kernel/KernelNormalizer.i"
+%include "kernel/AvgDiagKernelNormalizer.i"
+%include "kernel/IdentityKernelNormalizer.i"
+%include "kernel/SqrtDiagKernelNormalizer.i"

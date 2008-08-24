@@ -10,29 +10,29 @@
 
 #include "lib/common.h"
 #include "kernel/CommWordStringKernel.h"
+#include "kernel/SqrtDiagKernelNormalizer.h"
 #include "features/StringFeatures.h"
 #include "lib/io.h"
 
-CCommWordStringKernel::CCommWordStringKernel(
-	INT size, bool s, ENormalizationType n)
-: CStringKernel<WORD>(size), sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL),
-	initialized(false), dictionary_size(0), dictionary_weights(NULL),
-	use_sign(s), normalization(n), use_dict_diagonal_optimization(false), dict_diagonal_optimization(NULL)
+CCommWordStringKernel::CCommWordStringKernel(INT size, bool s)
+: CStringKernel<WORD>(size),
+	dictionary_size(0), dictionary_weights(NULL),
+	use_sign(s), use_dict_diagonal_optimization(false), dict_diagonal_optimization(NULL)
 {
 	properties |= KP_LINADD;
 	init_dictionary(1<<(sizeof(WORD)*8));
+	set_normalizer(new CSqrtDiagKernelNormalizer(use_dict_diagonal_optimization));
 }
 
 CCommWordStringKernel::CCommWordStringKernel(
-	CStringFeatures<WORD>* l, CStringFeatures<WORD>* r,
-	bool s, ENormalizationType n, INT size)
-: CStringKernel<WORD>(size), sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL),
-	initialized(false), dictionary_size(0), dictionary_weights(NULL),
-	use_sign(s), normalization(n), use_dict_diagonal_optimization(false), dict_diagonal_optimization(NULL)
+	CStringFeatures<WORD>* l, CStringFeatures<WORD>* r, bool s, INT size)
+: CStringKernel<WORD>(size), dictionary_size(0), dictionary_weights(NULL),
+	use_sign(s), use_dict_diagonal_optimization(false), dict_diagonal_optimization(NULL)
 {
 	properties |= KP_LINADD;
 
 	init_dictionary(1<<(sizeof(WORD)*8));
+	set_normalizer(new CSqrtDiagKernelNormalizer(use_dict_diagonal_optimization));
 	init(l,r);
 }
 
@@ -65,15 +65,8 @@ void CCommWordStringKernel::remove_lhs()
 		cache_reset();
 #endif
 
-	if (sqrtdiag_lhs != sqrtdiag_rhs)
-		delete[] sqrtdiag_rhs;
-	delete[] sqrtdiag_lhs;
-
 	lhs = NULL ; 
 	rhs = NULL ; 
-	initialized = false;
-	sqrtdiag_lhs = NULL;
-	sqrtdiag_rhs = NULL;
 }
 
 void CCommWordStringKernel::remove_rhs()
@@ -83,40 +76,12 @@ void CCommWordStringKernel::remove_rhs()
 		cache_reset();
 #endif
 
-	if (sqrtdiag_lhs != sqrtdiag_rhs)
-		delete[] sqrtdiag_rhs;
-	sqrtdiag_rhs = sqrtdiag_lhs;
 	rhs = lhs;
 }
 
 bool CCommWordStringKernel::init(CFeatures* l, CFeatures* r)
 {
-	bool result=CStringKernel<WORD>::init(l,r);
-
-
-	initialized = false;
-	INT i;
-
-	if (sqrtdiag_lhs!=sqrtdiag_rhs)
-		delete[] sqrtdiag_rhs;
-	sqrtdiag_rhs=NULL;
-	delete[] sqrtdiag_lhs;
-	sqrtdiag_lhs=new DREAL[lhs->get_num_vectors()];
-
-	for (i=0; i<lhs->get_num_vectors(); i++)
-		sqrtdiag_lhs[i]=1;
-
-	if (l==r)
-		sqrtdiag_rhs=sqrtdiag_lhs;
-	else
-	{
-		sqrtdiag_rhs=new DREAL[rhs->get_num_vectors()];
-		for (i=0; i<rhs->get_num_vectors(); i++)
-			sqrtdiag_rhs[i]=1;
-	}
-
-	this->lhs=(CStringFeatures<WORD>*) l;
-	this->rhs=(CStringFeatures<WORD>*) l;
+	CStringKernel<WORD>::init(l,r);
 
 	if (use_dict_diagonal_optimization)
 	{
@@ -125,62 +90,13 @@ bool CCommWordStringKernel::init(CFeatures* l, CFeatures* r)
 		ASSERT(((CStringFeatures<WORD>*)l)->get_num_symbols() == ((CStringFeatures<WORD>*)r)->get_num_symbols()) ;
 	}
 
-	//compute normalize to 1 values
-	for (i=0; i<lhs->get_num_vectors(); i++)
-	{
-		if (use_dict_diagonal_optimization)
-			sqrtdiag_lhs[i]=sqrt(compute_diag(i));
-		else
-			sqrtdiag_lhs[i]=sqrt(compute_helper(i,i, true));
-		
-		//trap divide by zero exception
-		if (sqrtdiag_lhs[i]==0)
-			sqrtdiag_lhs[i]=1e-16;
-	}
-
-	// if lhs is different from rhs (train/test data)
-	// compute also the normalization for rhs
-	if (sqrtdiag_lhs!=sqrtdiag_rhs)
-	{
-		this->lhs=(CStringFeatures<WORD>*) r;
-		this->rhs=(CStringFeatures<WORD>*) r;
-		
-		//compute normalize to 1 values
-		for (i=0; i<rhs->get_num_vectors(); i++)
-		{
-			if (use_dict_diagonal_optimization)
-				sqrtdiag_rhs[i]=sqrt(compute_diag(i));
-			else
-				sqrtdiag_rhs[i]=sqrt(compute_helper(i,i, true));
-				
-			//trap divide by zero exception
-			if (sqrtdiag_rhs[i]==0)
-				sqrtdiag_rhs[i]=1e-16;
-		}
-	}
-
-	this->lhs=(CStringFeatures<WORD>*) l;
-	this->rhs=(CStringFeatures<WORD>*) r;
-
-	initialized = true;
-	return result;
+	return init_normalizer();
 }
 
 void CCommWordStringKernel::cleanup()
 {
 	delete_optimization();
 	clear_normal();
-
-	initialized=false;
-
-	if (sqrtdiag_lhs != sqrtdiag_rhs)
-		delete[] sqrtdiag_rhs;
-
-	sqrtdiag_rhs=NULL;
-
-	delete[] sqrtdiag_lhs;
-	sqrtdiag_lhs=NULL;
-
 	CKernel::cleanup();
 }
 
@@ -338,29 +254,7 @@ DREAL CCommWordStringKernel::compute_helper(INT idx_a, INT idx_b, bool do_sort)
 		delete[] bvec;
 	}
 
-	if (initialized)
-	{
-		switch (normalization)
-		{
-			case NO_NORMALIZATION:
-				return result;
-			case SQRT_NORMALIZATION:
-				return result/sqrt(sqrtdiag_lhs[idx_a]*sqrtdiag_rhs[idx_b]);
-			case FULL_NORMALIZATION:
-				return result/(sqrtdiag_lhs[idx_a]*sqrtdiag_rhs[idx_b]);
-			case SQRTLEN_NORMALIZATION:
-				return result/sqrt(sqrt(alen*blen));
-			case LEN_NORMALIZATION:
-				return result/sqrt(alen*blen);
-			case SQLEN_NORMALIZATION:
-				return result/(alen*blen);
-			default:
-				SG_ERROR( "Unknown Normalization in use!\n");
-				return -CMath::INFTY;
-		}
-	}
-	else
-		return result;
+	return result;
 }
 
 void CCommWordStringKernel::add_to_normal(INT vec_idx, DREAL weight)
@@ -378,10 +272,10 @@ void CCommWordStringKernel::add_to_normal(INT vec_idx, DREAL weight)
 				if (vec[j]==vec[j-1])
 					continue;
 
-				dictionary_weights[(int) vec[j-1]] += normalize_weight(sqrtdiag_lhs, weight, vec_idx, len, normalization);
+				dictionary_weights[(int) vec[j-1]] += normalizer->normalize_lhs(weight, vec_idx);
 			}
 
-			dictionary_weights[(int) vec[len-1]] += normalize_weight(sqrtdiag_lhs, weight, vec_idx, len, normalization);
+			dictionary_weights[(int) vec[len-1]] += normalizer->normalize_lhs(weight, vec_idx);
 		}
 		else
 		{
@@ -390,11 +284,11 @@ void CCommWordStringKernel::add_to_normal(INT vec_idx, DREAL weight)
 				if (vec[j]==vec[j-1])
 					continue;
 
-				dictionary_weights[(int) vec[j-1]] += normalize_weight(sqrtdiag_lhs, weight*(j-last_j), vec_idx, len, normalization);
+				dictionary_weights[(int) vec[j-1]] += normalizer->normalize_lhs(weight*(j-last_j), vec_idx);
 				last_j = j;
 			}
 
-			dictionary_weights[(int) vec[len-1]] += normalize_weight(sqrtdiag_lhs, weight*(len-last_j), vec_idx, len, normalization);
+			dictionary_weights[(int) vec[len-1]] += normalizer->normalize_lhs(weight*(len-last_j), vec_idx);
 		}
 		set_is_initialized(true);
 	}
@@ -427,8 +321,6 @@ bool CCommWordStringKernel::init_optimization(INT count, INT *IDX, DREAL * weigh
 		add_to_normal(IDX[i], weights[i]);
 	}
 
-	//SG_PRINT( "Done.         \n");
-	
 	set_is_initialized(true);
 	return true;
 }
@@ -482,7 +374,7 @@ DREAL CCommWordStringKernel::compute_optimized(INT i)
 			result += dictionary_weights[(int) vec[len-1]]*(len-last_j);
 		}
 
-		result=normalize_weight(sqrtdiag_rhs, result, i, len, normalization);
+		result=normalizer->normalize_rhs(result, i);
 	}
 	return result;
 }

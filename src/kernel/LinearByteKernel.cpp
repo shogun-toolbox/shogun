@@ -14,16 +14,13 @@
 #include "kernel/LinearByteKernel.h"
 #include "features/ByteFeatures.h"
 
-CLinearByteKernel::CLinearByteKernel(INT size, bool dr, DREAL s)
-: CSimpleKernel<BYTE>(size), scale(s), do_rescale(dr), initialized(false),
-	normal(NULL)
+CLinearByteKernel::CLinearByteKernel()
+: CSimpleKernel<BYTE>(0), normal(NULL)
 {
 }
 
-CLinearByteKernel::CLinearByteKernel(
-	CByteFeatures* l, CByteFeatures* r, bool dr, DREAL s)
-: CSimpleKernel<BYTE>(10), scale(s), do_rescale(dr), initialized(false),
-	normal(NULL)
+CLinearByteKernel::CLinearByteKernel(CByteFeatures* l, CByteFeatures* r)
+: CSimpleKernel<BYTE>(0), normal(NULL)
 {
 	init(l, r);
 }
@@ -36,29 +33,7 @@ CLinearByteKernel::~CLinearByteKernel()
 bool CLinearByteKernel::init(CFeatures* l, CFeatures* r)
 {
 	CSimpleKernel<BYTE>::init(l, r);
-
-	if (!initialized)
-		init_rescale() ;
-
-	SG_INFO( "rescaling kernel by %g (num:%d)\n",scale, CMath::min(l->get_num_vectors(), r->get_num_vectors()));
-
-	return true;
-}
-
-void CLinearByteKernel::init_rescale()
-{
-	if (!do_rescale)
-		return ;
-	LONGREAL sum=0;
-	scale=1.0;
-	for (INT i=0; (i<lhs->get_num_vectors() && i<rhs->get_num_vectors()); i++)
-			sum+=compute(i, i);
-
-	if ( sum > (pow((double) 2, (double) 8*sizeof(LONG))) ) {
-      SG_ERROR( "the sum %lf does not fit into integer of %d bits expect bogus results.\n", sum, 8*sizeof(LONG));
-   }
-	scale=sum/CMath::min(lhs->get_num_vectors(), rhs->get_num_vectors());
-	initialized=true;
+	return init_normalizer();
 }
 
 void CLinearByteKernel::cleanup()
@@ -93,7 +68,7 @@ void CLinearByteKernel::add_to_normal(INT idx, DREAL weight)
 	BYTE* vec=((CByteFeatures*) lhs)->get_feature_vector(idx, vlen, vfree);
 
 	for (int i=0; i<vlen; i++)
-		normal[i]+= weight*vec[i];
+		normal[i]+= weight*normalizer->normalize_lhs(vec[i], idx);
 
 	((CByteFeatures*) lhs)->free_feature_vector(vec, idx, vfree);
 }
@@ -107,10 +82,7 @@ DREAL CLinearByteKernel::compute(INT idx_a, INT idx_b)
   BYTE* bvec=((CByteFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
   ASSERT(alen==blen);
 
-  double sum=0;
-  for (INT i=0; i<alen; i++)
-	  sum+=((LONG) avec[i])*((LONG) bvec[i]);
-  DREAL result=sum/scale;
+  DREAL result=CMath::dot(avec,bvec, alen);
 
   ((CByteFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
   ((CByteFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
@@ -120,7 +92,6 @@ DREAL CLinearByteKernel::compute(INT idx_a, INT idx_b)
 
 bool CLinearByteKernel::init_optimization(INT num_suppvec, INT* sv_idx, DREAL* alphas) 
 {
-	SG_DEBUG("drin gelandet yeah\n");
 	INT alen;
 	bool afree;
 
@@ -137,7 +108,7 @@ bool CLinearByteKernel::init_optimization(INT num_suppvec, INT* sv_idx, DREAL* a
 		ASSERT(avec);
 
 		for (int j=0; j<num_feat; j++)
-			normal[j]+= alphas[i] * ((double) avec[j]);
+			normal[j]+= alphas[i] * normalizer->normalize_lhs(((double) avec[j]), sv_idx[i]);
 
 		((CByteFeatures*) lhs)->free_feature_vector(avec, 0, afree);
 	}
@@ -168,9 +139,8 @@ DREAL CLinearByteKernel::compute_optimized(INT idx_b)
 		for (INT i=0; i<blen; i++)
 			result+= normal[i] * ((double) bvec[i]);
 	}
-	result/=scale;
 
 	((CByteFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
-	return result;
+	return normalizer->normalize_rhs(result, idx_b);
 }

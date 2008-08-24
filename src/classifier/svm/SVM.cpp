@@ -79,7 +79,6 @@ void CSVM::set_defaults(INT num_sv)
 	use_mkl=false;
 	use_batch_computation=true;
 	use_linadd=true;
-	use_precomputed_subkernels=false;
 
     if (num_sv>0)
         create_new_model(num_sv);

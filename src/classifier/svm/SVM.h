@@ -438,15 +438,6 @@ class CSVM : public CKernelMachine
 		 */
 		static void* classify_example_helper(void* p);
 
-		/** set state of precomputed subkernels
-		 *
-		 * @param flag if precomputed subkernels shall be enabled
-		 */
-		void set_precomputed_subkernels_enabled(bool flag)
-		{
-			use_precomputed_subkernels=flag;
-		}
-
 	protected:
 		/// an SVM is defined by support vectors, their coefficients alpha
 		/// and the bias b ( + CKernelMachine::kernel)
@@ -492,7 +483,5 @@ class CSVM : public CKernelMachine
 		bool use_shrinking;
 		/** if mkl shall be used */
 		bool use_mkl;
-		/** if precomputed subkernels shall be used */
-		bool use_precomputed_subkernels;
 };
 #endif

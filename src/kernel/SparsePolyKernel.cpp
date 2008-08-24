@@ -11,21 +11,20 @@
 #include "lib/common.h"
 #include "lib/io.h"
 #include "kernel/SparsePolyKernel.h"
+#include "kernel/SqrtDiagKernelNormalizer.h"
 #include "features/SparseFeatures.h"
 
-CSparsePolyKernel::CSparsePolyKernel(INT size, INT d, bool i, bool un)
-: CSparseKernel<DREAL>(size), degree(d),
-	inhomogene(i),use_normalization(un), sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL),
-	initialized(false)
+CSparsePolyKernel::CSparsePolyKernel(INT size, INT d, bool i)
+: CSparseKernel<DREAL>(size), degree(d), inhomogene(i)
 {
+	set_normalizer(new CSqrtDiagKernelNormalizer());
 }
 
 CSparsePolyKernel::CSparsePolyKernel(
-	CSparseFeatures<DREAL>* l, CSparseFeatures<DREAL>* r,
-	INT size, INT d, bool i, bool un)
-: CSparseKernel<DREAL>(size),degree(d),inhomogene(i), use_normalization(un),
-	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false)
+	CSparseFeatures<DREAL>* l, CSparseFeatures<DREAL>* r, INT size, INT d, bool i)
+: CSparseKernel<DREAL>(size),degree(d),inhomogene(i)
 {
+	set_normalizer(new CSqrtDiagKernelNormalizer());
 	init(l,r);
 }
 
@@ -36,83 +35,12 @@ CSparsePolyKernel::~CSparsePolyKernel()
 
 bool CSparsePolyKernel::init(CFeatures* l, CFeatures* r)
 {
-	bool result=CSparseKernel<DREAL>::init(l,r);
-
-	initialized = false ;
-	INT i;
-
-	if (sqrtdiag_lhs != sqrtdiag_rhs)
-	  delete[] sqrtdiag_rhs;
-	sqrtdiag_rhs=NULL ;
-	delete[] sqrtdiag_lhs;
-	sqrtdiag_lhs=NULL ;
-
-	if (use_normalization)
-	{
-		sqrtdiag_lhs= new DREAL[lhs->get_num_vectors()];
-
-		for (i=0; i<lhs->get_num_vectors(); i++)
-			sqrtdiag_lhs[i]=1;
-
-		if (l==r)
-			sqrtdiag_rhs=sqrtdiag_lhs;
-		else
-		{
-			sqrtdiag_rhs= new DREAL[rhs->get_num_vectors()];
-			for (i=0; i<rhs->get_num_vectors(); i++)
-				sqrtdiag_rhs[i]=1;
-		}
-
-		this->lhs=(CSparseFeatures<DREAL>*) l;
-		this->rhs=(CSparseFeatures<DREAL>*) l;
-
-		//compute normalize to 1 values
-		for (i=0; i<lhs->get_num_vectors(); i++)
-		{
-			sqrtdiag_lhs[i]=sqrt(compute(i,i));
-
-			//trap divide by zero exception
-			if (sqrtdiag_lhs[i]==0)
-				sqrtdiag_lhs[i]=1e-16;
-		}
-
-		// if lhs is different from rhs (train/test data)
-		// compute also the normalization for rhs
-		if (sqrtdiag_lhs!=sqrtdiag_rhs)
-		{
-			this->lhs=(CSparseFeatures<DREAL>*) r;
-			this->rhs=(CSparseFeatures<DREAL>*) r;
-
-			//compute normalize to 1 values
-			for (i=0; i<rhs->get_num_vectors(); i++)
-			{
-				sqrtdiag_rhs[i]=sqrt(compute(i,i));
-
-				//trap divide by zero exception
-				if (sqrtdiag_rhs[i]==0)
-					sqrtdiag_rhs[i]=1e-16;
-			}
-		}
-	}
-
-	this->lhs=(CSparseFeatures<DREAL>*) l;
-	this->rhs=(CSparseFeatures<DREAL>*) r;
-
-	initialized = true;
-	return result;
+	CSparseKernel<DREAL>::init(l,r);
+	return init_normalizer();
 }
   
 void CSparsePolyKernel::cleanup()
 {
-	if (sqrtdiag_lhs != sqrtdiag_rhs)
-		delete[] sqrtdiag_rhs;
-	sqrtdiag_rhs=NULL;
-
-	delete[] sqrtdiag_lhs;
-	sqrtdiag_lhs=NULL;
-
-	initialized=false;
-
 	CKernel::cleanup();
 }
 
@@ -136,28 +64,15 @@ DREAL CSparsePolyKernel::compute(INT idx_a, INT idx_b)
   TSparseEntry<DREAL>* avec=((CSparseFeatures<DREAL>*) lhs)->get_sparse_feature_vector(idx_a, alen, afree);
   TSparseEntry<DREAL>* bvec=((CSparseFeatures<DREAL>*) rhs)->get_sparse_feature_vector(idx_b, blen, bfree);
 
-  DREAL sqrt_a= 1.0;
-  DREAL sqrt_b= 1.0;
-  if (initialized && use_normalization)
-  {
-	  sqrt_a=sqrtdiag_lhs[idx_a] ;
-	  sqrt_b=sqrtdiag_rhs[idx_b] ;
-  }
-
-  DREAL sqrt_both=sqrt_a*sqrt_b;
-  
   DREAL result=((CSparseFeatures<DREAL>*) lhs)->sparse_dot(1.0,avec, alen, bvec, blen);
 
   if (inhomogene)
 	  result+=1;
 
-  DREAL re=result;
-
-  for (INT j=1; j<degree; j++)
-	  result*=re;
+  result=CMath::pow(result, degree);
 
   ((CSparseFeatures<DREAL>*) lhs)->free_feature_vector(avec, idx_a, afree);
   ((CSparseFeatures<DREAL>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
-  return result/sqrt_both;
+  return result;
 }

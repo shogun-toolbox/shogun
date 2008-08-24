@@ -21,6 +21,7 @@
 #include "base/Parallel.h"
 
 #include "kernel/Kernel.h"
+#include "kernel/IdentityKernelNormalizer.h"
 #include "features/Features.h"
 
 #include "classifier/svm/SVM.h"
@@ -34,10 +35,9 @@
 #endif
 
 CKernel::CKernel(INT size)
-: CSGObject(), kernel_matrix(NULL), precomputed_matrix(NULL),
-	precompute_subkernel_matrix(false), precompute_matrix(false), lhs(NULL),
+: CSGObject(), kernel_matrix(NULL), lhs(NULL),
 	rhs(NULL), combined_kernel_weight(1), optimization_initialized(false),
-	opt_type(FASTBUTMEMHUNGRY), properties(KP_NONE)
+	opt_type(FASTBUTMEMHUNGRY), properties(KP_NONE), normalizer(NULL)
 {
 	if (size<10)
 		size=10;
@@ -46,16 +46,18 @@ CKernel::CKernel(INT size)
 #ifdef USE_SVMLIGHT
 	memset(&kernel_cache, 0x0, sizeof(KERNEL_CACHE));
 #endif //USE_SVMLIGHT
+
 	if (get_is_initialized())
 		SG_ERROR( "COptimizableKernel still initialized on destruction");
+
+	set_normalizer(new CIdentityKernelNormalizer());
 }
 
 
-CKernel::CKernel(CFeatures* p_lhs, CFeatures* p_rhs, INT size)
-: CSGObject(), kernel_matrix(NULL), precomputed_matrix(NULL),
-	precompute_subkernel_matrix(false), precompute_matrix(false),
-	lhs(NULL), rhs(NULL), combined_kernel_weight(1), optimization_initialized(false),
-	opt_type(FASTBUTMEMHUNGRY), properties(KP_NONE)
+CKernel::CKernel(CFeatures* p_lhs, CFeatures* p_rhs, INT size) : CSGObject(),
+	kernel_matrix(NULL), lhs(NULL), rhs(NULL), combined_kernel_weight(1),
+	optimization_initialized(false), opt_type(FASTBUTMEMHUNGRY),
+	properties(KP_NONE), normalizer(NULL)
 {
 	if (size<10)
 		size=10;
@@ -67,6 +69,7 @@ CKernel::CKernel(CFeatures* p_lhs, CFeatures* p_rhs, INT size)
 	if (get_is_initialized())
 		SG_ERROR("Kernel initialized on construction.\n");
 
+	set_normalizer(new CIdentityKernelNormalizer());
 	init(p_lhs, p_rhs);
 }
 
@@ -76,9 +79,6 @@ CKernel::~CKernel()
 		SG_ERROR("Kernel still initialized on destruction.\n");
 
 	remove_lhs_and_rhs();
-
-	delete[] precomputed_matrix;
-	precomputed_matrix=NULL;
 
 	SG_INFO("Kernel deleted (%p).\n", this);
 }
@@ -325,10 +325,30 @@ bool CKernel::init(CFeatures* l, CFeatures* r)
 	lhs=l;
 	rhs=r;
 
-	delete[] precomputed_matrix ;
-	precomputed_matrix=NULL ;
-
 	return true;
+}
+
+bool CKernel::set_normalizer(CKernelNormalizer* n)
+{
+	SG_REF(n);
+	SG_UNREF(normalizer);
+#ifndef HAVE_SWIG
+	delete normalizer;
+#endif
+	normalizer=n;
+
+	return (normalizer!=NULL);
+}
+
+CKernelNormalizer* CKernel::get_normalizer()
+{
+	SG_REF(normalizer)
+	return normalizer;
+}
+
+bool CKernel::init_normalizer()
+{
+	return normalizer->init(this);
 }
 
 void CKernel::cleanup()
@@ -1051,44 +1071,6 @@ void CKernel::set_subkernel_weights(DREAL* weights, INT num_weights)
 	combined_kernel_weight = weights[0] ;
 	if (num_weights!=1)
       SG_ERROR( "number of subkernel weights should be one ...\n");
-}
-
-void CKernel::do_precompute_matrix()
-{
-	INT num_left=lhs->get_num_vectors();
-	INT num_right=rhs->get_num_vectors();
-	SG_INFO( "precomputing kernel matrix (%ix%i)\n", num_left, num_right) ;
-
-	ASSERT(num_left==num_right);
-	ASSERT(lhs==rhs);
-	INT num=num_left;
-	
-	delete[] precomputed_matrix;
-	precomputed_matrix=new SHORTREAL[num*(num+1)/2];
-
-	for (INT i=0; i<num; i++)
-	{
-		SG_PROGRESS(i*i,0,num*num);
-		for (INT j=0; j<=i; j++)
-			precomputed_matrix[i*(i+1)/2+j] = compute(i,j) ;
-	}
-
-	SG_PROGRESS(num*num,0,num*num);
-	SG_INFO( "\ndone.\n") ;
-}
-
-/*
- * compute the vector containing the square root of the diagonal elements
- * of this kernel.
- */
-void CKernel::init_sqrt_diag(DREAL *v, INT num)
-{
-	for (INT i = 0; i<num; i++)
-	{
-		v[i] = sqrt(this->compute(i,i));
-		if (!v[i])
-			v[i] = 1e-16; /* avoid divide by zero exception */
-	}
 }
 
 bool CKernel::init_optimization_svm(CSVM * svm)

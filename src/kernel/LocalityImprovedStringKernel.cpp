@@ -37,7 +37,8 @@ CLocalityImprovedStringKernel::~CLocalityImprovedStringKernel()
 
 bool CLocalityImprovedStringKernel::init(CFeatures* l, CFeatures* r)
 {
-	return CStringKernel<CHAR>::init(l,r);
+	CStringKernel<CHAR>::init(l,r);
+	return init_normalizer();
 }
 
 bool CLocalityImprovedStringKernel::load_init(FILE* src)

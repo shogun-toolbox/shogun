@@ -25,24 +25,15 @@ class CLinearStringKernel: public CStringKernel<CHAR>
 {
 	public:
 		/** constructor
-		 *
-		 * @param size cache size
-		 * @param do_rescale if rescaling shall be applied
-		 * @param scale scaling factor
 		 */
-		CLinearStringKernel(INT size,
-			bool do_rescale=true, DREAL scale=1.);
+		CLinearStringKernel();
 
 		/** constructor
 		 *
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
-		 * @param do_rescale if rescaling shall be applied
-		 * @param scale scaling factor
 		 */
-		CLinearStringKernel(
-			CStringFeatures<CHAR>* l, CStringFeatures<CHAR>* r,
-			bool do_rescale=true, DREAL scale=1.);
+		CLinearStringKernel(CStringFeatures<CHAR>* l, CStringFeatures<CHAR>* r);
 
 		virtual ~CLinearStringKernel();
 
@@ -134,16 +125,7 @@ class CLinearStringKernel: public CStringKernel<CHAR>
 		 */
 		virtual DREAL compute(INT idx_a, INT idx_b);
 
-		/** initialize rescaling */
-		virtual void init_rescale();
-
 	protected:
-		/** scaling factor */
-		double scale;
-		/** if rescaling shall be applied */
-		bool do_rescale;
-		/** if kernel is initialized */
-		bool initialized;
 		/** normal vector (used in case of optimized kernel) */
 		double* normal;
 };

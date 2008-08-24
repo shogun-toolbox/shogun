@@ -12,19 +12,19 @@
 #include "lib/Mathematics.h"
 #include "lib/io.h"
 #include "kernel/WordMatchKernel.h"
+#include "kernel/AvgDiagKernelNormalizer.h"
 #include "features/WordFeatures.h"
 
-CWordMatchKernel::CWordMatchKernel(INT size, INT d, bool dr, DREAL s)
-: CSimpleKernel<WORD>(size),scale(s),do_rescale(dr), initialized(false),
-	degree(d)
+CWordMatchKernel::CWordMatchKernel(INT size, INT d)
+: CSimpleKernel<WORD>(size), degree(d)
 {
+	set_normalizer(new CAvgDiagKernelNormalizer());
 }
 
-CWordMatchKernel::CWordMatchKernel(
-	CWordFeatures* l, CWordFeatures* r, INT d, bool dr, DREAL s)
-: CSimpleKernel<WORD>(10), scale(s), do_rescale(dr), initialized(false),
-	degree(d)
+CWordMatchKernel::CWordMatchKernel(CWordFeatures* l, CWordFeatures* r, INT d)
+: CSimpleKernel<WORD>(10), degree(d)
 {
+	set_normalizer(new CAvgDiagKernelNormalizer());
 	init(l, r);
 }
 
@@ -36,29 +36,7 @@ CWordMatchKernel::~CWordMatchKernel()
 bool CWordMatchKernel::init(CFeatures* l, CFeatures* r)
 {
 	CSimpleKernel<WORD>::init(l, r);
-
-	if (!initialized)
-		init_rescale() ;
-
-	SG_INFO( "rescaling kernel by %g (num:%d)\n",scale, CMath::min(l->get_num_vectors(), r->get_num_vectors()));
-
-	return true;
-}
-
-void CWordMatchKernel::init_rescale()
-{
-	if (!do_rescale)
-		return ;
-	LONGREAL sum=0;
-	scale=1.0;
-	for (INT i=0; (i<lhs->get_num_vectors() && i<rhs->get_num_vectors()); i++)
-			sum+=compute(i, i);
-
-	if ( sum > (pow((double) 2, (double) 8*sizeof(LONG))) ) {
-      SG_ERROR( "the sum %lf does not fit into integer of %d bits expect bogus results.\n", sum, 8*sizeof(LONG));
-   }
-	scale=sum/CMath::min(lhs->get_num_vectors(), rhs->get_num_vectors());
-	initialized=true;
+	return init_normalizer();
 }
 
 bool CWordMatchKernel::load_init(FILE* src)
@@ -80,18 +58,12 @@ DREAL CWordMatchKernel::compute(INT idx_a, INT idx_b)
   WORD* bvec=((CWordFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
   ASSERT(alen==blen);
 
-  double sum=0;
+  DREAL sum=0;
   for (INT i=0; i<alen; i++)
 	  sum+= (avec[i]==bvec[i]) ? 1 : 0;
-
-  DREAL result=sum;
-
-  for (INT j=1; j<degree; j++)
-	  result*=sum;
-  sum/=scale;
 
   ((CWordFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
   ((CWordFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
-  return result;
+  return CMath::pow(sum, degree);
 }

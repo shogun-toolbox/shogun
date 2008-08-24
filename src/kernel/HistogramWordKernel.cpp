@@ -53,7 +53,7 @@ CHistogramWordKernel::~CHistogramWordKernel()
 
 bool CHistogramWordKernel::init(CFeatures* p_l, CFeatures* p_r)
 {
-	bool status=CStringKernel<WORD>::init(p_l,p_r);
+	CStringKernel<WORD>::init(p_l,p_r);
 	CStringFeatures<WORD>* l=(CStringFeatures<WORD>*) p_l;
 	CStringFeatures<WORD>* r=(CStringFeatures<WORD>*) p_r;
 	ASSERT(l);
@@ -292,7 +292,7 @@ bool CHistogramWordKernel::init(CFeatures* p_l, CFeatures* p_r)
 	ld_mean_rhs = l_ld_mean_rhs ;
 
 	initialized = true ;
-	return status;
+	return init_normalizer();
 }
 
 void CHistogramWordKernel::cleanup()

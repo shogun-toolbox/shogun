@@ -38,10 +38,8 @@ class CPolyMatchWordKernel: public CSimpleKernel<WORD>
 		 * @param size cache size
 		 * @param degree degree
 		 * @param inhomogene is inhomogeneous
-		 * @param use_normalization use normalization
 		 */
-		CPolyMatchWordKernel(INT size, INT degree, bool inhomogene,
-			bool use_normalization=true);
+		CPolyMatchWordKernel(INT size, INT degree, bool inhomogene);
 
 		/** constructor
 		 *
@@ -49,10 +47,8 @@ class CPolyMatchWordKernel: public CSimpleKernel<WORD>
 		 * @param r features of right-hand side
 		 * @param degree degree
 		 * @param inhomogene is inhomogeneous
-		 * @param use_normalization use normalization
 		 */
-		CPolyMatchWordKernel(CWordFeatures* l, CWordFeatures* r,
-			INT degree, bool inhomogene, bool use_normalization=true);
+		CPolyMatchWordKernel(CWordFeatures* l, CWordFeatures* r, INT degree, bool inhomogene);
 
 		virtual ~CPolyMatchWordKernel();
 
@@ -109,15 +105,6 @@ class CPolyMatchWordKernel: public CSimpleKernel<WORD>
 		INT degree;
 		/** if kernel is inhomogeneous */
 		bool inhomogene;
-		/** if normalization is used */
-		bool use_normalization;
-
-		/** sqrt diagonal of left-hand side */
-		DREAL *sqrtdiag_lhs;
-		/** sqrt diagonal of right-hand side */
-		DREAL *sqrtdiag_rhs;
-		/** if kernel is initialized */
-		bool initialized;
 };
 
 #endif /* _POLYMATCHWORDKERNEL_H__ */

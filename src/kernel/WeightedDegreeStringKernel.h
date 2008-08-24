@@ -304,12 +304,6 @@ class CWeightedDegreeStringKernel: public CStringKernel<CHAR>
 		 */
 		bool is_tree_initialized() { return tree_initialized; }
 
-		/** get normalization constant
-		 *
-		 * @return normalization constant
-		 */
-		inline DREAL get_normalization_const() { return normalization_const; }
-
 		/** get degree weights
 		 *
 		 * @param d degree weights will be stored here
@@ -477,19 +471,6 @@ class CWeightedDegreeStringKernel: public CStringKernel<CHAR>
 		 * @return degree
 		 */
 		inline INT get_degree() { return degree; }
-
-		/** set if normalization shall be used
-		 *
-		 * @param opt if normalization shall be used
-		 * @return if setting was successful
-		 */
-		inline bool set_use_normalization(bool opt) { use_normalization=opt; return true; }
-
-		/** check if normalization is used
-		 *
-		 * @return if normalization is used
-		 */
-		inline bool get_use_normalization() { return use_normalization; }
 
 		/** set if block computation shall be performed
 		 *
@@ -664,13 +645,9 @@ class CWeightedDegreeStringKernel: public CStringKernel<CHAR>
 
 		/** if kernel is initialized */
 		bool initialized;
-		/** if normalization is used */
-		bool use_normalization;
+
 		/** if block computation is used */
 		bool block_computation;
-
-		/** normalization constant */
-		DREAL normalization_const;
 
 		/** number of external block weights */
 		INT num_block_weights_external;

@@ -49,7 +49,7 @@ CSalzbergWordKernel::~CSalzbergWordKernel()
 
 bool CSalzbergWordKernel::init(CFeatures* p_l, CFeatures* p_r)
 {
-	bool status=CStringKernel<WORD>::init(p_l,p_r);
+	CStringKernel<WORD>::init(p_l,p_r);
 	CStringFeatures<WORD>* l=(CStringFeatures<WORD>*) p_l;
 	ASSERT(l);
 	CStringFeatures<WORD>* r=(CStringFeatures<WORD>*) p_r;
@@ -267,7 +267,7 @@ bool CSalzbergWordKernel::init(CFeatures* p_l, CFeatures* p_r)
 	ld_mean_rhs = l_ld_mean_rhs ;
 
 	initialized = true ;
-	return status;
+	return init_normalizer();
 }
 
 void CSalzbergWordKernel::cleanup()

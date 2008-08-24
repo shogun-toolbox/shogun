@@ -34,82 +34,61 @@ typedef struct {
 class CMindyGramKernel: public CKernel
 {
 	public:
-			/* Constructors */
-			CMindyGramKernel(INT ch, CHAR *measure, DREAL width);
-			CMindyGramKernel(CFeatures *l, CFeatures *r, CHAR *measure, DREAL width);
-			virtual ~CMindyGramKernel();
-			
-			/* Set options */
-			void set_param(CHAR *param);
-			/* Set MD5 cache size */
-			void set_md5cache(INT c);
-			/* Set normalization */
-			void set_norm(ENormalizationType e);
+		/* Constructors */
+		CMindyGramKernel(INT ch, CHAR *measure, DREAL width);
+		CMindyGramKernel(CFeatures *l, CFeatures *r, CHAR *measure, DREAL width);
+		virtual ~CMindyGramKernel();
 
-			/* Init and cleanup functions */
-			void parse_params(CHAR *);
-			virtual bool init(CFeatures* l, CFeatures* r);
-			virtual void cleanup();
-			virtual void remove_lhs();
-			virtual void remove_rhs();
+		/* Set options */
+		void set_param(CHAR *param);
+		/* Set MD5 cache size */
+		void set_md5cache(INT c);
+		/* Set normalization */
+		void set_norm(ENormalizationType e);
 
-			/* Identification functions */
-			inline virtual EKernelType get_kernel_type() { return K_MINDYGRAM; }
-			inline virtual EFeatureType get_feature_type() { return F_ULONG; }
-			inline virtual EFeatureClass get_feature_class() { return C_MINDYGRAM; }
-			inline virtual const CHAR* get_name() { return "MindyGram"; }
+		/* Init and cleanup functions */
+		void parse_params(CHAR *);
+		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual void cleanup();
+		virtual void remove_lhs();
+		virtual void remove_rhs();
 
-			/* Optimization functions */
-			virtual bool init_optimization(INT count, INT *IDX, DREAL * weights);
-			virtual bool delete_optimization();
-			virtual DREAL compute_optimized(INT idx);
-			virtual void add_to_normal(INT idx, DREAL weight);
-			virtual void clear_normal();
+		/* Identification functions */
+		inline virtual EKernelType get_kernel_type() { return K_MINDYGRAM; }
+		inline virtual EFeatureType get_feature_type() { return F_ULONG; }
+		inline virtual EFeatureClass get_feature_class() { return C_MINDYGRAM; }
+		inline virtual const CHAR* get_name() { return "MindyGram"; }
 
-			/* Load and ysave functions */
-			bool load_init(FILE* src);
-			bool save_init(FILE* dest);
+		/* Optimization functions */
+		virtual bool init_optimization(INT count, INT *IDX, DREAL * weights);
+		virtual bool delete_optimization();
+		virtual DREAL compute_optimized(INT idx);
+		virtual void add_to_normal(INT idx, DREAL weight);
+		virtual void clear_normal();
 
-			/* Normalize function for optimization */
-			inline DREAL normalize_weight(DREAL v, INT i, ENormalizationType n) {
-					switch (n) {
-							case NO_NORMALIZATION:
-									return v;
-							case SQRT_NORMALIZATION:
-									return v / sqrt(sdiag_lhs[i]);
-							case FULL_NORMALIZATION:
-									return v / sdiag_lhs[i];
-							default:
-									ASSERT(0);
-					}
-					return -CMath::INFTY;
-			}
+		/* Load and ysave functions */
+		bool load_init(FILE* src);
+		bool save_init(FILE* dest);
 
-protected:
-			/* Kernel function */
-			DREAL compute(INT idx_a, INT idx_b);
+	protected:
+		/* Kernel function */
+		DREAL compute(INT idx_a, INT idx_b);
 
-private:
-			/* Arrays of kernel matrix diagonals */
-			DREAL* sdiag_lhs;
-			DREAL* sdiag_rhs;
-	
-			/* Name of similartiy measure */
-			CHAR *measure;
-			/* Initialization flag */
-			bool initialized;
-			/* Similarity coefficient or 0 */
-			sico_t simcof;
-			/* Normalization mode */
-			ENormalizationType norm;
-			/* Kernel function (=> Mindy similarity measure) */
-			sm_t *kernel;
-			/* Normal vector for optimization */
-			gram_t *normal;
-			/* MD5 cache size */
-			size_t cache;
-			/* Kernel width */
-			DREAL width;
+	private:
+		/* Name of similartiy measure */
+		CHAR *measure;
+		/* Similarity coefficient or 0 */
+		sico_t simcof;
+		/* Normalization mode */
+		ENormalizationType norm;
+		/* Kernel function (=> Mindy similarity measure) */
+		sm_t *kernel;
+		/* Normal vector for optimization */
+		gram_t *normal;
+		/* MD5 cache size */
+		size_t cache;
+		/* Kernel width */
+		DREAL width;
 
 };
 #endif /* _MINDYGRAMKERNEL_H__ */

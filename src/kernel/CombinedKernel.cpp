@@ -139,6 +139,7 @@ bool CCombinedKernel::init(CFeatures* l, CFeatures* r)
 		return false;
 	}
 	
+	init_normalizer();
 	return true;
 }
 

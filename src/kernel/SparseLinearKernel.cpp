@@ -15,16 +15,16 @@
 #include "kernel/SparseLinearKernel.h"
 #include "kernel/SparseKernel.h"
 
-CSparseLinearKernel::CSparseLinearKernel(INT size, DREAL s)
-: CSparseKernel<DREAL>(size), scale(s), initialized(false), normal(NULL),
+CSparseLinearKernel::CSparseLinearKernel()
+: CSparseKernel<DREAL>(0), normal(NULL),
 	normal_length(0)
 {
 	properties |= KP_LINADD;
 }
 
 CSparseLinearKernel::CSparseLinearKernel(
-	CSparseFeatures<DREAL>* l, CSparseFeatures<DREAL>* r, DREAL s, INT size)
-: CSparseKernel<DREAL>(size), scale(s), initialized(false), normal(NULL),
+	CSparseFeatures<DREAL>* l, CSparseFeatures<DREAL>* r)
+: CSparseKernel<DREAL>(0), normal(NULL),
 	normal_length(0)
 {
 	properties |= KP_LINADD;
@@ -39,26 +39,7 @@ CSparseLinearKernel::~CSparseLinearKernel()
 bool CSparseLinearKernel::init(CFeatures* l, CFeatures* r)
 {
 	CSparseKernel<DREAL>::init(l, r);
-
-	if (!initialized)
-		init_rescale();
-
-	SG_INFO( "rescaling kernel by %g (num:%d)\n",scale, CMath::min(l->get_num_vectors(), r->get_num_vectors()));
-
-	return true;
-}
-
-void CSparseLinearKernel::init_rescale()
-{
-	if (scale!=0.0)
-		return;
-	double sum=0;
-	scale=1.0;
-	for (INT i=0; (i<lhs->get_num_vectors() && i<rhs->get_num_vectors()); i++)
-			sum+=compute(i, i);
-
-	scale=sum/CMath::min(lhs->get_num_vectors(), rhs->get_num_vectors());
-	initialized=true;
+	return init_normalizer();
 }
 
 void CSparseLinearKernel::cleanup()
@@ -94,7 +75,7 @@ void CSparseLinearKernel::clear_normal()
 
 void CSparseLinearKernel::add_to_normal(INT idx, DREAL weight) 
 {
-	((CSparseFeatures<DREAL>*) rhs)->add_to_dense_vec(weight, idx, normal, normal_length);
+	((CSparseFeatures<DREAL>*) rhs)->add_to_dense_vec(normalizer->normalize_lhs(weight, idx), idx, normal, normal_length);
 	set_is_initialized(true);
 }
   
@@ -108,7 +89,7 @@ DREAL CSparseLinearKernel::compute(INT idx_a, INT idx_b)
   TSparseEntry<DREAL>* avec=((CSparseFeatures<DREAL>*) lhs)->get_sparse_feature_vector(idx_a, alen, afree);
   TSparseEntry<DREAL>* bvec=((CSparseFeatures<DREAL>*) rhs)->get_sparse_feature_vector(idx_b, blen, bfree);
   
-  DREAL result=((CSparseFeatures<DREAL>*) lhs)->sparse_dot(1.0/scale, avec,alen, bvec,blen);
+  DREAL result=((CSparseFeatures<DREAL>*) lhs)->sparse_dot(1.0, avec,alen, bvec,blen);
 
   ((CSparseFeatures<DREAL>*) lhs)->free_feature_vector(avec, idx_a, afree);
   ((CSparseFeatures<DREAL>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
@@ -140,5 +121,6 @@ bool CSparseLinearKernel::delete_optimization()
 DREAL CSparseLinearKernel::compute_optimized(INT idx) 
 {
 	ASSERT(get_is_initialized());
-	return ((CSparseFeatures<DREAL>*) rhs)->dense_dot(1.0/scale, idx, normal, normal_length, 0.0);
+	DREAL result = ((CSparseFeatures<DREAL>*) rhs)->dense_dot(1.0, idx, normal, normal_length, 0.0);
+	return normalizer->normalize_rhs(result, idx);
 }

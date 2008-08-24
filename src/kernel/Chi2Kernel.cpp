@@ -33,6 +33,7 @@ CChi2Kernel::~CChi2Kernel()
 bool CChi2Kernel::init(CFeatures* l, CFeatures* r)
 {
 	bool result=CSimpleKernel<DREAL>::init(l,r);
+	init_normalizer();
 	return result;
 }
 

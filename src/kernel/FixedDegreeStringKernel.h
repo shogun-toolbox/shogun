@@ -103,12 +103,6 @@ class CFixedDegreeStringKernel: public CStringKernel<CHAR>
 		DREAL compute(INT idx_a, INT idx_b);
 		/** the degree */
 		INT degree;
-		/** sqrt diagonal of left-hand side */
-		DREAL *sqrtdiag_lhs;
-		/** sqrt diagonal of right-hand side */
-		DREAL *sqrtdiag_rhs;
-		/** if kernel is initialized */
-		bool initialized;
 };
 
 #endif /* _FIXEDDEGREESTRINGKERNEL_H___ */

@@ -121,16 +121,6 @@ enum EOptimizationType
 	SLOWBUTMEMEFFICIENT
 };
 
-enum ENormalizationType
-{
-	NO_NORMALIZATION,
-	SQRT_NORMALIZATION,
-	FULL_NORMALIZATION,
-	SQRTLEN_NORMALIZATION,
-	LEN_NORMALIZATION,
-	SQLEN_NORMALIZATION 
-};
-
 enum EWDKernType
 {
 	E_WD=0,
@@ -278,8 +268,8 @@ enum EFeatureClass
 	C_SPARSE = 20,
 	C_STRING = 30,
 	C_COMBINED = 40,
-	C_ANY = 50,
-	C_MINDYGRAM = 60
+	C_MINDYGRAM = 50,
+	C_ANY = 1000
 };
 
 /// Alphabet of charfeatures/observations

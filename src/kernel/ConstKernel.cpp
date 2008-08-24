@@ -31,7 +31,7 @@ CConstKernel::~CConstKernel()
 bool CConstKernel::init(CFeatures* l, CFeatures* r)
 {
 	CKernel::init(l, r);
-	return true;
+	return init_normalizer();
 }
 
 bool CConstKernel::load_init(FILE* src)

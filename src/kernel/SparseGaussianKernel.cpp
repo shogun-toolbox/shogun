@@ -48,7 +48,7 @@ bool CSparseGaussianKernel::init(CFeatures* l, CFeatures* r)
 		sq_rhs=((CSparseFeatures<DREAL>*) rhs)->compute_squared(sq_rhs);
 	}
 
-	return true;
+	return init_normalizer();
 }
 
 void CSparseGaussianKernel::cleanup()

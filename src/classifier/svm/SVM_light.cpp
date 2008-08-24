@@ -170,10 +170,6 @@ void CSVMLight::init()
 	buffer_num      = NULL ;
 	buffer_numcols  = NULL ;
 	
-	precomputed_subkernels = NULL ;
-	num_precomputed_subkernels = 0 ;
-	use_kernel_cache = true ;
-
 #ifdef USE_CPLEX
 	lp = NULL ;
 	env = NULL ;
@@ -278,16 +274,6 @@ CSVMLight::~CSVMLight()
   delete[] W ;
   delete[] buffer_num ;
   delete[] buffer_numcols ;
-
-  if (precomputed_subkernels != NULL)
-  {
-	  for (INT i=0; i<num_precomputed_subkernels; i++)
-		  delete[] precomputed_subkernels[i] ;
-	  delete[] precomputed_subkernels ;
-	  precomputed_subkernels=NULL ;
-	  num_precomputed_subkernels=0 ;
-  }
-  
 }
 
 bool CSVMLight::setup_auc_maximization()
@@ -425,13 +411,9 @@ bool CSVMLight::train()
 	SG_DEBUG( "kernel->get_num_subkernels() = %i\n", kernel->get_num_subkernels()) ;
 	SG_DEBUG( "estimated time: %1.1f minutes\n", 5e-11*pow(kernel->get_num_subkernels(),2.22)*pow(kernel->get_num_vec_rhs(),1.68)*pow(CMath::log2(1/weight_epsilon),2.52)/60) ;
 
-	use_kernel_cache = !(use_precomputed_subkernels || (kernel->get_kernel_type() == K_CUSTOM) ||
-						 (get_linadd_enabled() && kernel->has_property(KP_LINADD)) ||
-						 kernel->get_precompute_matrix() || 
-						 kernel->get_precompute_subkernel_matrix()) ;
+	use_kernel_cache = !((kernel->get_kernel_type() == K_CUSTOM) ||
+						 (get_linadd_enabled() && kernel->has_property(KP_LINADD)));
 
-	SG_DEBUG( "kernel->get_precompute_matrix() = %i\n", kernel->get_precompute_matrix()) ;
-	SG_DEBUG( "kernel->get_precompute_subkernel_matrix() = %i\n", kernel->get_precompute_subkernel_matrix()) ;
 	SG_DEBUG( "use_kernel_cache = %i\n", use_kernel_cache) ;
 
 #ifdef USE_CPLEX
@@ -444,67 +426,6 @@ bool CSVMLight::train()
       SG_ERROR( "CPLEX was disabled at compile-time\n");
 #endif
 	
-	if (precomputed_subkernels != NULL)
-	{
-		for (INT i=0; i<num_precomputed_subkernels; i++)
-			delete[] precomputed_subkernels[i] ;
-		delete[] precomputed_subkernels ;
-		num_precomputed_subkernels=0 ;
-		precomputed_subkernels=NULL ;
-	}
-
-	if (use_precomputed_subkernels)
-	{
-		INT num = kernel->get_num_vec_rhs();
-		INT num_kernels = kernel->get_num_subkernels() ;
-		num_precomputed_subkernels=num_kernels ;
-		precomputed_subkernels=new SHORTREAL*[num_precomputed_subkernels] ;
-		INT num_weights = -1;
-		const DREAL* w   = kernel->get_subkernel_weights(num_weights);
-
-		DREAL* w_backup = new DREAL[num_kernels] ;
-		DREAL* w1 = new DREAL[num_kernels] ;
-		
-		// backup and set to zero
-		for (INT i=0; i<num_kernels; i++)
-		{
-			w_backup[i] = w[i] ;
-			w1[i]=0.0 ; 
-		}
-
-        // allocating memory 
-		for (INT n=0; n<num_precomputed_subkernels; n++)
-			precomputed_subkernels[n]=new SHORTREAL[num*(num+1)/2];
-
-		for (INT n=0; n<num_precomputed_subkernels; n++)
-		{
-			w1[n]=1.0 ;
-			kernel->set_subkernel_weights(w1, num_weights) ;
-
-			SHORTREAL * matrix = precomputed_subkernels[n] ;
-			
-			SG_INFO( "precomputing kernel matrix %i (%ix%i)\n", n, num, num) ;
-			for (INT i=0; i<num; i++)
-			{
-				SG_PROGRESS(i*i,0,num*num);
-				
-				for (INT j=0; j<=i; j++)
-					matrix[i*(i+1)/2+j] = kernel->kernel(i,j) ;
-
-			}
-			SG_PROGRESS(num*num,0,num*num);
-			SG_DONE();
-			w1[n]=0.0 ;
-		}
-
-		// restore old weights
-		kernel->set_subkernel_weights(w_backup,num_weights) ;
-		
-		delete[] w_backup ;
-		delete[] w1 ;
-
-	}
-
 	if (kernel->get_kernel_type() == K_COMBINED)
 	{
 		CKernel* kn = ((CCombinedKernel*)kernel)->get_first_kernel();
@@ -535,15 +456,6 @@ bool CSVMLight::train()
 	cleanup_cplex();
 #endif
 	
-	if (precomputed_subkernels!=NULL)
-	{
-		for (INT i=0; i<num_precomputed_subkernels; i++)
-			delete[] precomputed_subkernels[i] ;
-		delete[] precomputed_subkernels ;
-		num_precomputed_subkernels=0 ;
-		precomputed_subkernels=NULL ;
-	}
-
 	// in case of LINADD enabled kernels cleanup!
 	if (kernel->has_property(KP_LINADD) && get_linadd_enabled())
 	{
@@ -1709,27 +1621,7 @@ void CSVMLight::update_linear_component_mkl(INT* docs, INT* label,
 	DREAL* sumw=new DREAL[num_kernels];
 	DREAL suma=-17;
 
-	if (use_precomputed_subkernels) // everything is already precomputed
-	{
-		ASSERT(precomputed_subkernels);
-		for (INT n=0; n<num_kernels; n++)
-		{
-			ASSERT(precomputed_subkernels[n]);
-			SHORTREAL * matrix = precomputed_subkernels[n] ;
-			for(INT i=0;i<num;i++) 
-			{
-				if(a[i] != a_old[i]) 
-				{
-					for(INT j=0;j<num;j++) 
-						if (i>=j)
-							W[j*num_kernels+n]+=(a[i]-a_old[i])*matrix[i*(i+1)/2+j]*(double)label[i];
-						else
-							W[j*num_kernels+n]+=(a[i]-a_old[i])*matrix[i+j*(j+1)/2]*(double)label[i];
-				}
-			}
-		}
-	} 
-	else if ((kernel->get_kernel_type()==K_COMBINED) && 
+	if ((kernel->get_kernel_type()==K_COMBINED) && 
 			 (!((CCombinedKernel*)kernel)->get_append_subkernel_weights()))// for combined kernel
 	{
 		CCombinedKernel* k      = (CCombinedKernel*) kernel;

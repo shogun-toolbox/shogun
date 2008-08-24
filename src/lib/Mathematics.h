@@ -259,6 +259,16 @@ class CMath : public CSGObject
 			return result;
 		}
 
+		static inline DREAL pow(DREAL x, INT n)
+		{
+			ASSERT(n>=0);
+			DREAL result=1;
+			while (n--)
+				result*=x;
+
+			return result;
+		}
+
 		static inline DREAL pow(DREAL x, DREAL n)
 		{
 			return ::pow(x, n);
@@ -465,6 +475,56 @@ class CMath : public CSGObject
 			for (INT i=0; i<n; i++)
 				r+=v1[i]*v2[i];
 #endif
+			return r;
+		}
+
+		/// compute dot product between v1 and v2 (for 64bit ints)
+		static inline DREAL dot(const LONG* v1, const LONG* v2, INT n)
+		{
+			DREAL r=0;
+			for (INT i=0; i<n; i++)
+				r+=((DREAL) v1[i])*v2[i];
+
+			return r;
+		}
+
+		/// compute dot product between v1 and v2 (for 16bit unsigned ints)
+		static inline DREAL dot(const WORD* v1, const WORD* v2, INT n)
+		{
+			DREAL r=0;
+			for (INT i=0; i<n; i++)
+				r+=((DREAL) v1[i])*v2[i];
+
+			return r;
+		}
+
+		/// compute dot product between v1 and v2 (for 8bit (un)signed ints)
+		static inline DREAL dot(const CHAR* v1, const CHAR* v2, INT n)
+		{
+			DREAL r=0;
+			for (INT i=0; i<n; i++)
+				r+=((DREAL) v1[i])*v2[i];
+
+			return r;
+		}
+
+		/// compute dot product between v1 and v2 (for 8bit (un)signed ints)
+		static inline DREAL dot(const BYTE* v1, const BYTE* v2, INT n)
+		{
+			DREAL r=0;
+			for (INT i=0; i<n; i++)
+				r+=((DREAL) v1[i])*v2[i];
+
+			return r;
+		}
+
+		/// compute dot product between v1 and v2
+		static inline DREAL dot(const DREAL* v1, const CHAR* v2, INT n)
+		{
+			DREAL r=0;
+			for (INT i=0; i<n; i++)
+				r+=((DREAL) v1[i])*v2[i];
+
 			return r;
 		}
 

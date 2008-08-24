@@ -357,30 +357,6 @@ class CCombinedKernel : public CKernel
 		 */
 		virtual void set_optimization_type(EOptimizationType t);
 
-		/** set precompute matrix
-		 *
-		 * @param flag flag
-		 * @param subkernel_flag subkernel flag
-		 */
-		virtual void set_precompute_matrix(bool flag, bool subkernel_flag)
-		{
-			precompute_matrix = flag; 
-			precompute_subkernel_matrix = subkernel_flag; 
-
-			if (!precompute_matrix)
-			{
-				delete[] precomputed_matrix;
-				precomputed_matrix = NULL;
-			}
-			CListElement<CKernel*> *current = NULL ;
-			CKernel *kn = get_first_kernel(current);
-			while (kn)
-			{
-				kn->set_precompute_matrix(subkernel_flag,false);
-				kn = get_next_kernel(current);
-			}
-		}
-
 	protected:
 		/** compute kernel function
 		 *

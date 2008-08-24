@@ -33,7 +33,7 @@ CGaussianKernel::~CGaussianKernel()
 bool CGaussianKernel::init(CFeatures* l, CFeatures* r)
 {
 	CSimpleKernel<DREAL>::init(l, r);
-	return true;
+	return init_normalizer();
 }
 
 bool CGaussianKernel::load_init(FILE* src)
