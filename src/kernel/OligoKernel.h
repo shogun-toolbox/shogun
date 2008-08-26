@@ -1,45 +1,113 @@
-#ifndef KERNEL_OLIGO_H
-#define KERNEL_OLIGO_H
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Written (W) 1999-2008  Who is the author??? Tobias Igel? Peter Meinicke? Tobias Glasmachers?
+ * Copyright (C) 1999-2008 ??? Ruhr Uni Bochum? GWDG ?
+ *
+ * Shogun adjustments (w) 2008 Soeren Sonnenburg
+ */
+#ifndef _OLIGOKERNEL_H_
+#define _OLIGOKERNEL_H_
 
-#include "kernel/Kernel.h"
+#include "kernel/StringKernel.h"
+
 #include <vector>
 #include <string>
 #include <utility>
 
 /**
-  This class offers access to the Oligo Kernel introduced 
-  by Meinicke et al. in 2004
-
-  The class has functions to preprocess the data such that the kernel
-  computation can be pursued faster. The kernel function is then
-  kernelOligoFast or kernelOligo.
-
-  <b>currently not functional</b>
-*/
-class COligoKernel : public CKernel
+ * This class offers access to the Oligo Kernel introduced 
+ * by Meinicke et al. in 2004
+ *
+ * The class has functions to preprocess the data such that the kernel
+ * computation can be pursued faster. The kernel function is then
+ * kernelOligoFast or kernelOligo.
+ *
+ * Requires significant speedup, should be working but as is might be
+ * applicable only to academic small scale problems: 
+ *
+ * - the kernel should only ever see encoded sequences, which however
+ * requires another OligoFeatures object (using CSimpleFeatures of pairs)
+ *
+ * Uses CSqrtDiagKernelNormalizer, as the vanilla kernel seems to be very
+ * diagonally dominant.
+ *
+ * Who is the author??? Tobias Igel? Peter Meinicke? Tobias Glasmachers?
+ */
+class COligoKernel : public CStringKernel<CHAR>
 {
 	public:
-		/// Constructor
-		COligoKernel(INT cache_size);
-		/// Destructor
+		/** Constructor
+		 * @param k k-mer length
+		 * @param width sigma^2
+		 */
+		COligoKernel(INT cache_size, INT k, DREAL width);
+
+		/** Destructor */
 		~COligoKernel();
 
+		/** initialize kernel
+		 *
+		 * @param l features of left-hand side
+		 * @param r features of right-hand side
+		 * @return if initializing was successful
+		 */
+		virtual bool init(CFeatures* l, CFeatures* r);
+
+		/** load kernel init_data
+		 *
+		 * @param src file to load from
+		 * @return if loading was successful
+		 */
+		virtual bool load_init(FILE*)
+		{
+			return false;
+		}
+
+		/** save kernel init_data
+		 *
+		 * @param dest file to save to
+		 * @return if saving was successful
+		 */
+		virtual bool save_init(FILE*)
+		{
+			return false;
+		}
+
+		/** return what type of kernel we are
+		 *
+		 * @return kernel type OLIGO
+		 */
+		virtual EKernelType get_kernel_type() { return K_OLIGO; }
+
+		/** return the kernel's name
+		 *
+		 * @return name OLIGO
+		 */
+		virtual const CHAR* get_name() { return "Oligo"; }
+
+
+		virtual DREAL compute(INT x, INT y);
+	protected:
 		/**
-		  @brief encodes the signals of the sequence
-
-		  This function stores the oligo function signals in 'values'. 
-		  The 'k_mer_length' and the 'allowed_characters' determine, 
-		  which signals are used. Every pair contains the position of the
-		  signal and a numerical value reflecting the signal. The
-		  numerical value represents the k_mer to a base 
-		  n = |allowed_characters|. 
-
-Example: The value of k_mer CG for the allowed characters ACGT
-would be 1 * n^1 + 2 * n^0 = 6.
-*/ 				
-		static void encodeOligo(const std::string&                       sequence,
-				unsigned int                             k_mer_length,
-				const std::string&                       allowed_characters,
+		 * @brief encodes the signals of the sequence
+		 * 
+		 * This function stores the oligo function signals in 'values'. 
+		 * 
+		 * The 'k_mer_length' and the 'allowed_characters' determine, 
+		 * which signals are used. Every pair contains the position of the
+		 * signal and a numerical value reflecting the signal. The
+		 * numerical value represents the k_mer to a base 
+		 * n = |allowed_characters|. 
+		 * Example: The value of k_mer CG for the allowed characters ACGT
+		 * would be 1 * n^1 + 2 * n^0 = 6.
+		 */ 				
+		static void encodeOligo(const std::string& sequence,
+				unsigned int k_mer_length,
+				const std::string& allowed_characters,
 				std::vector< std::pair<int, double> >&   values);
 
 		/**
@@ -102,5 +170,8 @@ would be 1 * n^1 + 2 * n^0 = 6.
 	private: 
 		static bool cmpOligos_( std::pair<int, double> a, std::pair<int, double> b ); 
 
+	protected:
+		INT k;
+		DREAL width;
 };
 #endif // KERNEL_OLIGO_H

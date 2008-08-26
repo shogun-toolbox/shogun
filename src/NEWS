@@ -14,6 +14,7 @@
 		- The custom kernel no longer requires lhs/rhs features (it will create
 				its own dummy features)
 		- Linear kernels don't use kernel cache (only slows down things)
+		- Integrate the Oligo string-kernel (from Meinecke et.al 2004)
 	* Bugfixes:
 		- Support Intel MKL on 32bit archs.
 		- Fix compilation when atlas/lapack is not available.

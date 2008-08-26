@@ -70,6 +70,9 @@ class CGUIKernel : public CSGObject
 		INT size=10, CHAR* meas_str=NULL, CHAR* norm_str=NULL,
 		DREAL width=1, CHAR* param_str=NULL)
 #endif
+
+	/** create Oligo kernel */
+	CKernel* create_oligo(INT size, INT k, DREAL width);
 	/** create a new Diag kernel */
 	CKernel* create_diag(INT size=10, DREAL diag=1);
 	/** create a new Const kernel */

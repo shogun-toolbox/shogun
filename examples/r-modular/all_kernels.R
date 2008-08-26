@@ -302,6 +302,22 @@ km_train <- kernel$get_kernel_matrix()
 kernel$init(kernel, feats_train, feats_test)
 km_test <- kernel$get_kernel_matrix()
 
+# oligo_string
+print('OligoString')
+
+feats_train <- StringCharFeatures("DNA")
+feats_train$set_string_features(feats_train, fm_train_dna)
+feats_test <- StringCharFeatures("DNA")
+feats_test$set_string_features(feats_test, fm_test_dna)
+k <- 3
+width <- 1.2
+
+kernel <- OligoKernel(feats_train, feats_train, k, width)
+
+km_train <- kernel$get_kernel_matrix()
+kernel$init(kernel, feats_train, feats_test)
+km_test <- kernel$get_kernel_matrix()
+
 # poly_match_string
 print('PolyMatchString')
 

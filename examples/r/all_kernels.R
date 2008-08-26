@@ -197,6 +197,21 @@ dump <- sg('set_features', 'TEST', fm_test_dna, 'DNA')
 dump <- sg('init_kernel', 'TEST')
 km <- sg('get_kernel_matrix')
 
+# Oligo String
+print('OligoString')
+
+k <- 3
+width <- 1.2
+
+dump <- sg('set_kernel', 'OLIGO', 'CHAR', size_cache, k, width)
+
+dump <- sg('set_features', 'TRAIN', fm_train_dna, 'DNA')
+dump <- sg('init_kernel', 'TRAIN')
+km <- sg('get_kernel_matrix')
+
+dump <- sg('set_features', 'TEST', fm_test_dna, 'DNA')
+dump <- sg('init_kernel', 'TEST')
+km <- sg('get_kernel_matrix')
 
 # Poly Match String
 print('PolyMatchString')

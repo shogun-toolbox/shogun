@@ -2318,6 +2318,23 @@ CKernel* CSGInterface::create_kernel()
 
 		delete[] dtype;
 	}
+	else if (strmatch(type, "OLIGO"))
+	{
+		if (m_nrhs<6)
+			return NULL;
+
+		CHAR* dtype=get_str_from_str_or_direct(len);
+		if (strmatch(dtype, "CHAR"))
+		{
+			INT size=get_int_from_int_or_str();
+			INT k=get_int_from_int_or_str();
+			DREAL w=get_real_from_real_or_str();
+
+			kernel=ui_kernel->create_oligo(size, k, w);
+		}
+
+		delete[] dtype;
+	}
 	else if (strmatch(type, "WEIGHTEDDEGREEPOS2") ||
 		strmatch(type, "WEIGHTEDDEGREEPOS2_NONORM"))
 	{

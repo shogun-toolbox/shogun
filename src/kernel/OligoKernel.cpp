@@ -1,4 +1,6 @@
-#include "OligoKernel.h"
+#include "kernel/OligoKernel.h"
+#include "kernel/SqrtDiagKernelNormalizer.h"
+#include "features/StringFeatures.h"
 
 #include <map>
 #include <cmath>
@@ -8,14 +10,20 @@
 
 using namespace std;
 
-COligoKernel::COligoKernel(INT cache_sz) : CKernel(cache_sz)
+COligoKernel::COligoKernel(INT cache_sz, INT kmer_len, DREAL w) : CStringKernel<CHAR>(cache_sz), k(kmer_len), width(w)
 {
-
+	set_normalizer(new CSqrtDiagKernelNormalizer());
 }
 
 COligoKernel::~COligoKernel()
 {
 
+}
+
+bool COligoKernel::init(CFeatures* l, CFeatures* r)
+{
+	CStringKernel<CHAR>::init(l,r);
+	return init_normalizer();
 }
 
 bool COligoKernel::cmpOligos_( pair<int, double> a, pair<int, double> b ) 
@@ -203,12 +211,12 @@ double COligoKernel::kernelOligo(const vector< pair<int, double> >&    x,
 		{
 			kernel += exp(-1 * (x[i1].first - y[i2].first) * (x[i1].first - y[i2].first) / (4 * sigma_square));
 
-			if (x[i1].second == x[i1 + 1].second)
+			if (((unsigned int) i1+1) < x_size && x[i1].second == x[i1 + 1].second)
 			{
 				i1++;
 				c1++;
 			}
-			else if (y[i2].second == y[i2 + 1].second)
+			else if (((unsigned int) i2+1) <y_size && y[i2].second == y[i2 + 1].second)
 			{
 				i2++;
 				i1 -= c1;
@@ -232,3 +240,17 @@ double COligoKernel::kernelOligo(const vector< pair<int, double> >&    x,
 	}
 	return kernel;
 }		
+
+DREAL COligoKernel::compute(INT idx_a, INT idx_b)
+{
+	INT alen, blen;
+	CHAR* avec=((CStringFeatures<CHAR>*) lhs)->get_feature_vector(idx_a, alen);
+	CHAR* bvec=((CStringFeatures<CHAR>*) rhs)->get_feature_vector(idx_b, blen);
+	vector< pair<int,double> > aenc;
+	vector< pair<int,double> > benc;
+	encodeOligo(string(avec, alen), k, "ACGT", aenc);
+	encodeOligo(string(bvec, alen), k, "ACGT", benc);
+	DREAL result=kernelOligo(aenc, benc, width);
+	return result;
+}
+

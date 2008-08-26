@@ -19,6 +19,14 @@
 #include <pthread.h>
 #endif
 
+struct pair
+{
+	/** index 1 */
+	int idx1;
+	/** index 2 */
+	int idx2;
+};
+
 CHierarchical::CHierarchical()
 : CDistanceMachine(), merges(3), dimensions(0), assignment(NULL),
 	table_size(0), pairs(NULL), merge_distance(NULL)

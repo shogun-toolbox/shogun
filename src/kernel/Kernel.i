@@ -59,6 +59,7 @@
 %include "kernel/CommWordStringKernel.i" 
 %include "kernel/WeightedCommWordStringKernel.i" 
 %include "kernel/MindyGramKernel.i"
+%include "kernel/OligoKernel.i"
 %include "kernel/FixedDegreeStringKernel.i"
 %include "kernel/HistogramWordKernel.i"
 %include "kernel/LinearByteKernel.i"

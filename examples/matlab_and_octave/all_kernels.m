@@ -304,6 +304,19 @@ sg('set_features', 'TEST', fm_test_dna, 'DNA');
 sg('init_kernel', 'TEST');
 km=sg('get_kernel_matrix');
 
+% Oligo String
+k=3;
+w=1.2;
+
+sg('set_kernel', 'OLIGO', 'CHAR', size_cache, k, w);
+
+sg('set_features', 'TRAIN', fm_train_dna, 'DNA');
+sg('init_kernel', 'TRAIN');
+km=sg('get_kernel_matrix');
+
+sg('set_features', 'TEST', fm_test_dna, 'DNA');
+sg('init_kernel', 'TEST');
+km=sg('get_kernel_matrix');
 
 % Poly Match String
 disp('PolyMatchString');

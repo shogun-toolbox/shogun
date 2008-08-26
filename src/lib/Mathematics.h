@@ -77,14 +77,7 @@ template <class T> struct radix_stack_t
 	unsigned short si;
 };
 
-/** pair */
-struct pair
-{
-	/** index 1 */
-	int idx1;
-	/** index 2 */
-	int idx2;
-};
+///** pair */
 
 /** thread qsort */
 struct thread_qsort

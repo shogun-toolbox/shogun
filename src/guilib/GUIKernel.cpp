@@ -52,6 +52,7 @@
 #include "kernel/SparseGaussianKernel.h"
 #include "kernel/DiagKernel.h"
 #include "kernel/MindyGramKernel.h"
+#include "kernel/OligoKernel.h"
 #include "kernel/DistanceKernel.h"
 
 #include "kernel/AvgDiagKernelNormalizer.h"
@@ -95,6 +96,14 @@ CKernel* CGUIKernel::create_mindygram(INT size, CHAR* meas_str, CHAR* norm_str, 
 	return kern;
 }
 #endif
+
+CKernel* CGUIKernel::create_oligo(INT size, INT k, DREAL width)
+{
+	CKernel* kern=new COligoKernel(size, k, width);
+	SG_DEBUG("created OligoKernel (%p) with size %d, k %d, width %f.\n", kern, size, k, width);
+
+	return kern;
+}
 
 CKernel* CGUIKernel::create_diag(INT size, DREAL diag)
 {

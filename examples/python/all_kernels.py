@@ -253,6 +253,22 @@ def local_alignment_string():
 	sg('init_kernel', 'TEST')
 	km=sg('get_kernel_matrix')
 
+def oligo_string ():
+	print 'OligoString'
+
+	size_cache=10
+	k=3
+	width=1.2
+
+	sg('set_features', 'TRAIN', fm_train_dna, 'DNA')
+	sg('set_features', 'TEST', fm_test_dna, 'DNA')
+	sg('set_kernel', 'OLIGO', 'CHAR', size_cache, k, width)
+	sg('init_kernel', 'TRAIN')
+	km=sg('get_kernel_matrix')
+
+	sg('init_kernel', 'TEST')
+	km=sg('get_kernel_matrix')
+
 def poly_match_string ():
 	print 'PolyMatchString'
 
@@ -548,6 +564,7 @@ if __name__=='__main__':
 	fixed_degree_string()
 	linear_string()
 	local_alignment_string()
+	oligo_string()
 	poly_match_string()
 	weighted_degree_string()
 	weighted_degree_position_string()

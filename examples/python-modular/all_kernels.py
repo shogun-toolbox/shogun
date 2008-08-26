@@ -316,6 +316,23 @@ def local_alignment_string():
 	kernel.init(feats_train, feats_test)
 	km_test=kernel.get_kernel_matrix()
 
+def oligo_string ():
+	print 'OligoString'
+
+	feats_train=StringCharFeatures(DNA)
+	feats_train.set_string_features(fm_train_dna)
+	feats_test=StringCharFeatures(DNA)
+	feats_test.set_string_features(fm_test_dna)
+	k=3
+	width=1.2
+
+	kernel=OligoKernel(feats_train, feats_train, k, width)
+
+	km_train=kernel.get_kernel_matrix()
+	kernel.init(feats_train, feats_test)
+	km_test=kernel.get_kernel_matrix()
+
+
 def poly_match_string ():
 	print 'PolyMatchString'
 
@@ -757,6 +774,7 @@ if __name__=='__main__':
 	fixed_degree_string()
 	linear_string()
 	local_alignment_string()
+	oligo_string()
 	poly_match_string()
 	simple_locality_improved_string()
 	weighted_degree_string()
