@@ -17,6 +17,22 @@
 
 /** Base class Distribution from which all methods implementing a distribution
  * are derived.
+ *
+ * Distributions are based on some general feature object and have to implement
+ * interfaces to
+ *
+ * train()						- for learning a distribution
+ * get_num_model_parameters()	- for the total number of model parameters
+ * get_log_model_parameter()	- for the n-th model parameter (logarithmic)
+ * get_log_derivative()			- for the partial derivative wrt. to the n-th
+ * 										model parameter
+ * get_log_likelihood_example() - for the likelihood for the
+ * 										n-th example
+ *
+ * This way methods building on CDistribution, might enumerate over all possible
+ * model parameters and obtain the parameter vector and the gradient. This is
+ * used to compute e.g. the TOP and Fisher Kernel (cf. CPluginEstimate, CHistogramKernel,
+ * CTOPFeatures and CFKFeatures ).
  */
 class CDistribution : public CSGObject
 {
@@ -56,11 +72,11 @@ class CDistribution : public CSGObject
 		 */
 		virtual DREAL get_log_model_parameter(INT num_param)=0;
 
-		/** get derivative of likelihood function (logarithmic)
+		/** get partial derivative of likelihood function (logarithmic)
 		 *
 		 * abstract base method
 		 *
-		 * @param num_param which param
+		 * @param num_param derivative against which param
 		 * @param num_example which example
 		 * @return derivative of likelihood (logarithmic)
 		 */
@@ -98,9 +114,9 @@ class CDistribution : public CSGObject
 			return exp(get_log_model_parameter(num_param));
 		}
 
-		/** get derivative of likelihood function
+		/** get partial derivative of likelihood function
 		 *
-		 * @param num_param which param
+		 * @param num_param partial derivative against which param
 		 * @param num_example which example
 		 * @return derivative of likelihood function
 		 */

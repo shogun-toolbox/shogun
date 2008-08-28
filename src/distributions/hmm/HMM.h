@@ -9,10 +9,6 @@
  * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-// HMM.h: interface for the CHMM class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #ifndef __CHMM_H__
 #define __CHMM_H__
 
@@ -350,8 +346,12 @@ class CModel
 
 
 /** Hidden Markov Model.
+ *
  * Structure and Function collection.
  * This Class implements a Hidden Markov Model.
+ * For a tutorial on HMMs see Rabiner et.al A Tutorial on Hidden Markov Models
+ * and Selected Applications in Speech Recognition, 1989
+ *
  * Several functions for tasks such as training,reading/writing models, reading observations,
  * calculation of derivatives are supplied.
  */

@@ -80,8 +80,11 @@ class CSVM : public CKernelMachine
 
 		/** set C
 		 *
-		 * @param c1 new C1
-		 * @param c2 new C2
+		 * @param c1 new C constant for negatively labelled examples
+		 * @param c2 new C constant for positively labelled examples
+		 *
+		 * Note that not all SVMs support this (however at least CLibSVM and
+		 * CSVMLight do)
 		 */
 		inline void set_C(DREAL c1, DREAL c2) { C1=c1; C2=c2; }
 

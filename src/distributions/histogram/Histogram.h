@@ -14,7 +14,8 @@
 #include "features/StringFeatures.h"
 #include "distributions/Distribution.h"
 
-/** class Histogram */
+/** Class Histogram computes a histogram over all 16bit unsigned integers in the
+ * features. Values in histogram are absolute counts (logarithmic) */
 class CHistogram : public CDistribution
 {
 	public:

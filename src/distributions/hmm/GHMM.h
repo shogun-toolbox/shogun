@@ -16,7 +16,8 @@
 #include "distributions/Distribution.h"
 
 
-/** class GHMM */
+/** class GHMM - this class is non-functional and was meant to implement a
+ * Generalize Hidden Markov Model (aka Semi Hidden Markov HMM) */
 class CGHMM : public CDistribution
 {
 	public:

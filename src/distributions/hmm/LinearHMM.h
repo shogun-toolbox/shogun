@@ -16,7 +16,23 @@
 #include "features/Labels.h"
 #include "distributions/Distribution.h"
 
-/** class LinearHMM */
+/** The class LinearHMM is for learning Higher Order Markov chains, i.e.
+ * the parameters \f${\bf \theta}\f$ in
+ *
+ * \f{eqnarray*}
+ * P({\bf x}|{\bf \theta}^\pm)&=&P(x_1, \ldots, x_N|{\bf \theta}^\pm)\\
+ * &=&P(x_1,\ldots,x_{d}|{\bf \theta}^\pm)\prod_{i=d+1}^N
+ * P(x_i|x_{i-1},\ldots,x_{i-d},{\bf \theta}^\pm)
+ * \f}
+ *
+ * are determined in training. 
+ *
+ * A more detailed description can be found in
+ *
+ * Durbin et.al, Biological Sequence Analysis -Probabilistic Models of Proteins
+ * and Nucleic Acids, 1998
+ *
+ * */
 class CLinearHMM : public CDistribution
 {
 	public:

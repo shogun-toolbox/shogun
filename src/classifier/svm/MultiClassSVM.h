@@ -125,6 +125,16 @@ class CMultiClassSVM : public CSVM
 		 */
 		DREAL classify_example_one_vs_one(INT num);
 
+		/** load a Multiclass SVM from file
+		 * @param svm_file the file handle
+		 */
+		bool load(FILE* svm_file);
+
+		/** write a Multiclass SVM to a file
+		 * @param svm_file the file handle
+		 */
+		bool save(FILE* svm_file);
+
 	protected:
 		/** type of MultiClassSVM */
 		EMultiClassSVM multiclass_type;
