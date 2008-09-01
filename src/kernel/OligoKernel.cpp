@@ -1,3 +1,14 @@
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Written (W) 2008 Christian Igel, Tobias Glasmachers
+ * Copyright (C) 2008 Christian Igel, Tobias Glasmachers
+ *
+ * Shogun adjustments (w) 2008 Soeren Sonnenburg
+ */
 #include "kernel/OligoKernel.h"
 #include "kernel/SqrtDiagKernelNormalizer.h"
 #include "features/StringFeatures.h"

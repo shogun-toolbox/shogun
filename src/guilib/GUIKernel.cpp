@@ -889,4 +889,15 @@ bool CGUIKernel::set_optimization_type(CHAR* opt_type)
 
 	return false;
 }
+
+bool CGUIKernel::precompute_subkernels()
+{
+	if (!kernel)
+		SG_ERROR("No kernel available.\n");
+
+	if (kernel->get_kernel_type()!=K_COMBINED)
+		SG_ERROR("Not a combined kernel.\n");
+
+	return ((CCombinedKernel*) kernel)->precompute_subkernels();
+}
 #endif

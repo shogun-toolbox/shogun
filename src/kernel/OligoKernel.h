@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2008  Who is the author??? Tobias Igel? Peter Meinicke? Tobias Glasmachers?
- * Copyright (C) 1999-2008 ??? Ruhr Uni Bochum? GWDG ?
+ * Written (W) 2008 Christian Igel, Tobias Glasmachers
+ * Copyright (C) 2008 Christian Igel, Tobias Glasmachers
  *
  * Shogun adjustments (w) 2008 Soeren Sonnenburg
  */
@@ -35,7 +35,6 @@
  * Uses CSqrtDiagKernelNormalizer, as the vanilla kernel seems to be very
  * diagonally dominant.
  *
- * Who is the author??? Tobias Igel? Peter Meinicke? Tobias Glasmachers?
  */
 class COligoKernel : public CStringKernel<CHAR>
 {

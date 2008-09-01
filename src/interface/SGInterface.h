@@ -208,8 +208,6 @@ class CSGInterface : public CSGObject
 		bool cmd_set_svm_mkl_parameters();
 		/** set max train time */
 		bool cmd_set_max_train_time();
-		/** set SVM precompute enabled */
-		bool cmd_set_svm_precompute_enabled();
 		/** set SVM MKL enabled */
 		bool cmd_set_svm_mkl_enabled();
 		/** set SVM shrinking enabled */
@@ -341,6 +339,10 @@ class CSGInterface : public CSGObject
 		 *  field of the struct
 		 */
 		bool cmd_get_plif_struct();
+		/**
+		 * precompute subkernels of a combined kernel
+		 */
+		bool cmd_precompute_subkernels();
 		/** 
 		 * -precompute content svms 
 		 *  and save the outputs 

@@ -60,6 +60,8 @@ class CGUIKernel : public CSGObject
 #endif //USE_SVMLIGHT
 	/** set optimization type */
 	bool set_optimization_type(CHAR* opt_type);
+	/** precompute subkernels */
+	bool precompute_subkernels();
 
 	/** check if kernel is initialized */
 	bool is_initialized() { return initialized; }

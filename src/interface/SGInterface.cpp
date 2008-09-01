@@ -824,6 +824,11 @@ CSGInterfaceMethod sg_methods[]=
 				USAGE_COMMA "use_svm")
 	},
 	{
+		(CHAR*) N_PRECOMPUTE_SUBKERNELS,
+		(&CSGInterface::cmd_precompute_subkernels),
+		(CHAR*) USAGE(N_PRECOMPUTE_SUBKERNELS)
+	},
+	{
 		(CHAR*) N_PRECOMPUTE_CONTENT_SVMS,
 		(&CSGInterface::cmd_precompute_content_svms),
 		(CHAR*) USAGE_I(N_PRECOMPUTE_CONTENT_SVMS, "sequence"
@@ -5501,6 +5506,15 @@ bool CSGInterface::cmd_set_feature_matrix()
 	return true;
 
 }
+
+bool CSGInterface::cmd_precompute_subkernels()
+{
+	if (m_nrhs!=1 || !create_return_values(0))
+		return false;
+
+	return ui_kernel->precompute_subkernels();
+}
+
 bool CSGInterface::cmd_precompute_content_svms()
 {
 	INT* all_pos = ui_structure->get_all_positions();

@@ -16,6 +16,7 @@
 
 #include "kernel/Kernel.h"
 #include "kernel/CombinedKernel.h"
+#include "kernel/CustomKernel.h"
 #include "features/CombinedFeatures.h"
 
 #include <string.h>
@@ -668,14 +669,34 @@ void CCombinedKernel::set_subkernel_weights(DREAL* weights, INT num_weights)
 
 void CCombinedKernel::set_optimization_type(EOptimizationType t)
 { 
-	CListElement<CKernel*> * current = NULL ;	
-	CKernel* k = get_first_kernel(current);
+	CKernel* k = get_first_kernel();
 
 	while(k)
 	{
 		k->set_optimization_type(t);
-		k = get_next_kernel(current);
+		k = get_next_kernel(k);
 	}
 
 	CKernel::set_optimization_type(t);
+}
+
+bool CCombinedKernel::precompute_subkernels()
+{
+	CKernel* k = get_first_kernel();
+
+	if (!k)
+		return false;
+
+	CList<CKernel*>* new_kernel_list = new CList<CKernel*>(true);
+
+	while(k)
+	{
+		new_kernel_list->append_element(new CCustomKernel(k));
+		k = get_next_kernel(k);
+	}
+
+	delete kernel_list;
+	new_kernel_list=kernel_list;
+
+	return true;
 }

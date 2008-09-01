@@ -15,6 +15,9 @@
 				its own dummy features)
 		- Linear kernels don't use kernel cache (only slows down things)
 		- Integrate the Oligo string-kernel (from Meinecke et.al 2004)
+		- Remove use_precompute hack from SVMLight.
+		- Add precompute_kernels function to turn kernels appended to a
+		combined kernel into CustomKernels (i.e. precomputed ones).
 	* Bugfixes:
 		- Support Intel MKL on 32bit archs.
 		- Fix compilation when atlas/lapack is not available.
