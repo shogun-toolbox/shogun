@@ -3,7 +3,7 @@
 import numpy
 import shogun.Library as library
 from shogun.Kernel import GaussianKernel, CommWordStringKernel, \
-	CommUlongStringKernel, LinearWordKernel
+	CommUlongStringKernel, LinearWordKernel, WordMatchKernel
 
 import fileop
 import featop
@@ -49,8 +49,7 @@ def _run_string_complex (ftype):
 	name='Sort'+ftype+'String'
 	# featop.get_string_complex adds preproc implicitely on Word/Ulong feats
 	feats=featop.get_string_complex(ftype, data)
-	outdata=_compute(name, 'Comm'+ftype+'String', feats, data,
-		False, library.FULL_NORMALIZATION)
+	outdata=_compute(name, 'Comm'+ftype+'String', feats, data, False)
 	fileop.write(config.C_PREPROC, outdata)
 
 def _run_word ():
@@ -61,7 +60,8 @@ def _run_word ():
 	feats=featop.get_simple('Word', data)
 	feats=featop.add_preproc(name, feats)
 
-	outdata=_compute(name, 'LinearWord', feats, data)
+	outdata=_compute(name, 'WordMatch', feats, data, 3)
+	#outdata=_compute(name, 'LinearWord', feats, data)
 	fileop.write(config.C_PREPROC, outdata)
 
 def _run_real (name, *args):

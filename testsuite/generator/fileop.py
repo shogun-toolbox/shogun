@@ -130,7 +130,7 @@ def _get_filename (category, outdata):
 	params='_'.join(params).replace('.', '')
 	if len(params)>0:
 		params='_'+params
-	else:
+	else: # problems with one interface (FIXME: find out which) otherwise
 		params='_fnord'
 
 	return DIR_OUTPUT+os.sep+_get_str_category(category)+os.sep+ \
@@ -151,6 +151,10 @@ def write (category, outdata):
 	fnam=_get_filename(category, outdata)
 	print 'Writing for '+_get_str_category(category).upper()+': '+ \
 		os.path.basename(fnam)
+
+	dirname=os.path.dirname(fnam)
+	if not os.path.isdir(dirname):
+		os.mkdir(dirname)
 
 	mfile=open(fnam, mode='w')
 	for key, val in outdata.iteritems():

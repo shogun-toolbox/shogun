@@ -59,7 +59,7 @@ KERNEL={
 	'Byte':[['rand', 'ubyte'], ['simple', 'Byte'], [], 1e-8],
 	'Char':[['rand', 'character'], ['simple', 'Char'], [], 1e-8],
 	'Chi2':[['rand', 'double'], ['simple', 'Real'], ['width', 'size'], 1e-8],
-	'Combined':[['', ''], ['', ''], ['append_subkernel_weights'], 1e-8],
+	'Combined':[['', ''], ['', ''], ['append_subkernel_weights'], 1e-7],
 	'CommUlongString':[['dna', ''], ['string_complex', 'Ulong', 'Char'],
 		['use_sign', 'normalization'], 1e-9],
 	'CommWordString':[['dna', ''], ['string_complex', 'Word', 'Char'],

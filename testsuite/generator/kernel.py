@@ -107,15 +107,14 @@ def _run_combined ():
 	subkernels=[
 		['FixedDegreeString', 3],
 		['PolyMatchString', 3, True],
-		['LinearString'],
-#		['Gaussian', 1.7],
+		['LocalAlignmentString'],
 	]
 	outdata={}
 
 	for i in range(0, len(subkernels)):
 		kdata=config.KERNEL[subkernels[i][0]]
 		args=_get_subkernel_args(subkernels[i])
-		#FIXME: size soon to be removed from constructor
+		#FIXME: cache size (10) soon to be removed from constructor
 		subk=eval('kernel.'+subkernels[i][0]+'Kernel(10'+args+')')
 		kern.append_kernel(subk)
 		data_subk=eval('dataop.get_'+kdata[0][0]+'('+kdata[0][1]+')')
@@ -252,7 +251,8 @@ def _run_custom ():
 
 	lowertriangle=numpy.array([symdata[(x,y)] for x in xrange(symdata.shape[1])
 		for y in xrange(symdata.shape[0]) if y<=x])
-	kern=kernel.CustomKernel(feats['train'], feats['train'])
+	kern=kernel.CustomKernel()
+	#kern.init(feats['train'], feats['train']
 	kern.set_triangle_kernel_matrix_from_triangle(lowertriangle)
 	km_triangletriangle=kern.get_kernel_matrix()
 	kern.set_triangle_kernel_matrix_from_full(symdata)
@@ -310,7 +310,7 @@ def _run_feats_real ():
 	_compute('Diag', feats, data, 23.)
 	_compute('Gaussian', feats, data, 1.3)
 	_compute('GaussianShift', feats, data, 1.3, 2, 1)
-	_compute('Linear', feats, data, 1.)
+	_compute('Linear', feats, data)
 	_compute('Poly', feats, data, 3, True, True)
 	_compute('Poly', feats, data, 3, False, True)
 	_compute('Poly', feats, data, 3, True, False)
@@ -320,8 +320,9 @@ def _run_feats_real ():
 
 	feats=featop.get_simple('Real', data, sparse=True)
 	_compute('SparseGaussian', feats, data, 1.3)
-	_compute('SparseLinear', feats, data, 1.)
-	_compute('SparsePoly', feats, data, 10, 3, True, True)
+	_compute('SparseLinear', feats, data)
+	_compute('SparsePoly', feats, data, 10, 3, True)
+	_compute('SparsePoly', feats, data, 10, 3, False)
 
 def _run_feats_string ():
 	"""Run kernel with StringFeatures."""
@@ -364,12 +365,11 @@ def _run_feats_string_complex ():
 	data=dataop.get_dna()
 	feats=featop.get_string_complex('Word', data)
 
-	_compute('CommWordString', feats, data, False, library.FULL_NORMALIZATION)
-	_compute('WeightedCommWordString', feats, data, False,
-		library.FULL_NORMALIZATION)
+	_compute('CommWordString', feats, data, False)
+	_compute('WeightedCommWordString', feats, data, False)
 
 	feats=featop.get_string_complex('Ulong', data)
-	_compute('CommUlongString', feats, data, False, library.FULL_NORMALIZATION)
+	_compute('CommUlongString', feats, data, False)
 
 def _run_pie ():
 	"""Run kernel with PluginEstimate."""
@@ -432,8 +432,8 @@ def run ():
 	"""Run generator for all kernels."""
 
 	#_run_mindygram()
-	_run_top_fisher()
-	_run_pie()
+#	_run_top_fisher()
+#	_run_pie()
 	_run_custom()
 	_run_distance()
 	_run_subkernels()

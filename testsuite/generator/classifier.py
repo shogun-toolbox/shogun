@@ -227,13 +227,16 @@ def _run_svm_kernel ():
 	_loop_svm(svms, params)
 
 	svms=['SVMLight', 'GPBTSVM']
+	params['kargs']=[]
 	params['kname']='Linear'
-	params['kernel']=LinearKernel(10, *params['kargs'])
+	params['kernel']=LinearKernel()
+	params['kernel'].init(params['feats']['train'], params['feats']['train'])
+
 	_loop_svm(svms, params)
 
 	params['data']=dataop.get_dna()
 
-	params['kargs']=[False, library.FULL_NORMALIZATION]
+	params['kargs']=[False]
 	params['kname']='CommWordString'
 	params['feats']=featop.get_string_complex('Word', params['data'])
 	params['kernel']=CommWordStringKernel(10, *params['kargs'])
