@@ -113,9 +113,6 @@ def set_and_train_kernel (indata, do_train=True):
 	else:
 		kname=fix_kernel_name_inconsistency(indata['name'])
 
-	if kname.find('COMMSTRING')!=-1:
-		kargs[1]=fix_normalization_inconsistency(kargs[1])
-
 	if indata.has_key('kernel_arg0_size'):
 		size=kargs[0]
 		kargs=kargs[1:]
@@ -181,21 +178,6 @@ def fix_kernel_name_inconsistency (kname):
 		return kname.split('WORD')[0]
 	else:
 		return kname
-
-
-def fix_normalization_inconsistency (normalization):
-	if normalization==1:
-		return 'SQRT'
-	elif normalization==2:
-		return 'FULL'
-	elif normalization==3:
-		return 'SQRTLEN'
-	elif normalization==4:
-		return 'LEN'
-	elif normalization==5:
-		return 'SQLEN'
-	else:
-		return 'NO'
 
 
 def fix_distance_name_inconsistency (dname):
