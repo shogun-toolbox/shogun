@@ -105,7 +105,8 @@ def _kernel_custom (indata):
 	symdata=indata['symdata']
 	lowertriangle=array([symdata[(x,y)] for x in xrange(symdata.shape[1])
 		for y in xrange(symdata.shape[0]) if y<=x])
-	kernel=CustomKernel(feats['train'], feats['train'])
+	kernel=CustomKernel()
+	#kernel.init(feats['train'], feats['train'])
 	kernel.set_triangle_kernel_matrix_from_triangle(lowertriangle)
 	triangletriangle=max(abs(
 		indata['km_triangletriangle']-kernel.get_kernel_matrix()).flat)
