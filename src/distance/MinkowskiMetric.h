@@ -15,7 +15,26 @@
 #include "distance/SimpleDistance.h"
 #include "features/RealFeatures.h"
 
-/** class MinkowskiMetric */
+/** class MinkowskiMetric 
+ *
+ * The Minkowski metric is one general class of metrics for a 
+ * \f$\displaystyle R^{n}\f$ feature space also referred as 
+ * the \f$\displaystyle L_{k} \f$ norm.
+ *
+ * \f[ \displaystyle
+ *  d(\bf{x},\bf{x'}) = (\sum_{i=1}^{n} |\bf{x_{i}}-\bf{x'_{i}}|^{k})^{\frac{1}{k}}
+ *  \quad x,x' \in R^{n}
+ * \f]
+ *
+ * special cases:
+ * -# \f$\displaystyle L_{1} \f$ norm: Manhattan distance @see CManhattanMetric
+ * -# \f$\displaystyle L_{2} \f$ norm: Euclidean distance @see CEuclidianDistance
+ *  
+ * Note that the Minkowski distance tends to the Chebyshew distance for 
+ * increasing \f$k\f$.
+ *
+ * @see <a href="http://en.wikipedia.org/wiki/Distance">Wikipedia: Distance</a>
+ */
 class CMinkowskiMetric: public CSimpleDistance<DREAL>
 {
 	public:

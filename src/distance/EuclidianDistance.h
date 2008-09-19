@@ -15,7 +15,29 @@
 #include "distance/RealDistance.h"
 #include "features/RealFeatures.h"
 
-/** class EuclidianDistance */
+/** class EuclidianDistance 
+ *
+ * The familiar Euclidian distance for real valued features computes
+ * the square root of the sum of squared disparity between the
+ * corresponding feature dimensions of two data points.
+ *
+ * \f[\displaystyle
+ *  d({\bf x},{\bf x'})= \sqrt{\sum_{i=0}^{n}|{\bf x_i}-{\bf x'_i}|^2}
+ * \f]
+ * 
+ * This special case of Minkowski metric is invariant to an arbitrary
+ * translation or rotation in feature space.
+ *
+ * The Euclidian Squared distance does not take the square root:
+ * 
+ * \f[\displaystyle
+ *  d({\bf x},{\bf x'})= \sum_{i=0}^{n}|{\bf x_i}-{\bf x'_i}|^2
+ * \f]
+ * 
+ * @see CMinkowskiMetric
+ * @see <a href="http://en.wikipedia.org/wiki/Distance#Distance_in_Euclidean_space">
+ * Wikipedia: Distance in Euclidean space</a>                   
+ */
 class CEuclidianDistance: public CRealDistance
 {
 	public:

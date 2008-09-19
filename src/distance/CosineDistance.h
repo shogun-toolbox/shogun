@@ -4,43 +4,46 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2006 Christian Gehl
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST
+ * Written (W) 2008 Christian Gehl
+ * Copyright (C) 2008 Fraunhofer Institute FIRST
  */
 
-#ifndef _CANBERRAMETRIC_H__
-#define _CANBERRAMETRIC_H___
+#ifndef _COSINEDISTANCE_H___
+#define _COSINEDISTANCE_H___
 
 #include "lib/common.h"
 #include "distance/SimpleDistance.h"
 #include "features/RealFeatures.h"
 
-/** class CanberraMetric 
+/** class CosineDistance 
  *
- * The Canberra distance sums up the dissimilarity (ratios) between feature 
- * dimensions of two data points.
- *
+ * The Cosine distance is obtained by using the Cosine similarity (Orchini
+ * similarity, angular similarity, normalized dot product), which
+ * measures similarity between two vectors by finding their angle.
+ * An extension to the Cosine similarity yields the Tanimoto coefficient.
+ * 
  * \f[\displaystyle
- *   d(\bf{x},\bf{x'}) = \sum_{i=1}^{n}\frac{|\bf{x_{i}-\bf{x'_{i}}}|}
- *    {|\bf{x_{i}}|+|\bf{x'_{i}}|} \quad \bf{x},\bf{x'} \in R^{n}
- * \f]
- *
- *  A summation element has range [0,1]. Note that \f$d(x,0)=d(0,x')=n\f$ 
- *  and \f$d(0,0)=0\f$.
+ *  d(\bf{x},\bf{x'}) = 1 - \frac{\sum_{i=1}^{n}\bf{x_{i}}\bf{x'_{i}}}
+ *  {\sqrt{\sum_{i=1}^{n}x_{i}^2 \sum_{i=1}^{n}x'_{i}^2}} \quad x,x' \in R^{n}
+ * \f] 
+ * 
+ * @see <a href="http://en.wikipedia.org/wiki/Cosine_similarity"> Wikipedia:
+ * Cosine similarity </a>
+ * @see CTanimotoDistance
  */
-class CCanberraMetric: public CSimpleDistance<DREAL>
+class CCosineDistance: public CSimpleDistance<DREAL>
 {
 	public:
 		/** default constructor */
-		CCanberraMetric();
+		CCosineDistance();
 
 		/** constructor
 		 *
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 */
-		CCanberraMetric(CRealFeatures* l, CRealFeatures* r);
-		virtual ~CCanberraMetric();
+		CCosineDistance(CRealFeatures* l, CRealFeatures* r);
+		virtual ~CCosineDistance();
 
 		/** init distance
 		 *
@@ -69,15 +72,15 @@ class CCanberraMetric: public CSimpleDistance<DREAL>
 
 		/** get distance type we are
 		 *
-		 * @return distance type CANBERRA
+		 * @return distance type COSINE
 		 */
-		virtual EDistanceType get_distance_type() { return D_CANBERRA; }
+		virtual EDistanceType get_distance_type() { return D_COSINE; }
 
 		/** get name of the distance
 		 *
-		 * @return name Canberra-Metric
+		 * @return name Cosine distance
 		 */
-		virtual const CHAR* get_name() { return "Canberra-Metric"; };
+		virtual const CHAR* get_name() { return "Cosine distance"; };
 
 	protected:
 		/// compute distance for features a and b
@@ -86,4 +89,4 @@ class CCanberraMetric: public CSimpleDistance<DREAL>
 		virtual DREAL compute(INT idx_a, INT idx_b);
 };
 
-#endif /* _CANBERRAMETRIC_H__ */
+#endif /* _COSINEDISTANCE_H___ */

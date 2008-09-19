@@ -4,43 +4,45 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2006 Christian Gehl
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST
+ * Written (W) 2008 Christian Gehl
+ * Copyright (C) 2008 Fraunhofer Institute FIRST
  */
 
-#ifndef _CANBERRAMETRIC_H__
-#define _CANBERRAMETRIC_H___
+#ifndef _TANIMOTODISTANCE_H___
+#define _TANIMOTODISTANCE_H___
 
 #include "lib/common.h"
 #include "distance/SimpleDistance.h"
 #include "features/RealFeatures.h"
 
-/** class CanberraMetric 
+/** class Tanimoto coefficient 
  *
- * The Canberra distance sums up the dissimilarity (ratios) between feature 
- * dimensions of two data points.
+ * The Tanimoto distance/coefficient (extended Jaccard coefficient)
+ * is obtained by extending the cosine similarity.
  *
  * \f[\displaystyle
- *   d(\bf{x},\bf{x'}) = \sum_{i=1}^{n}\frac{|\bf{x_{i}-\bf{x'_{i}}}|}
- *    {|\bf{x_{i}}|+|\bf{x'_{i}}|} \quad \bf{x},\bf{x'} \in R^{n}
+ *  d(\bf{x},\bf{x'}) = \frac{\sum_{i=1}^{n}x_{i}x'_{i}}{
+ *  \sum_{i=1}^{n}x_{i}x_{i}x'_{i}x'_{i}-x_{i}x'_{i}}
+ *  /quad x,x' /in R^{n}
  * \f]
  *
- *  A summation element has range [0,1]. Note that \f$d(x,0)=d(0,x')=n\f$ 
- *  and \f$d(0,0)=0\f$.
+ * @see <a href="http://en.wikipedia.org/wiki/Jaccard_index">Wikipedia:
+ * Tanimoto coefficient</a>
+ * @see CCosineDistance
  */
-class CCanberraMetric: public CSimpleDistance<DREAL>
+class CTanimotoDistance: public CSimpleDistance<DREAL>
 {
 	public:
 		/** default constructor */
-		CCanberraMetric();
+		CTanimotoDistance();
 
 		/** constructor
 		 *
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 */
-		CCanberraMetric(CRealFeatures* l, CRealFeatures* r);
-		virtual ~CCanberraMetric();
+		CTanimotoDistance(CRealFeatures* l, CRealFeatures* r);
+		virtual ~CTanimotoDistance();
 
 		/** init distance
 		 *
@@ -69,15 +71,15 @@ class CCanberraMetric: public CSimpleDistance<DREAL>
 
 		/** get distance type we are
 		 *
-		 * @return distance type CANBERRA
+		 * @return distance type TANIMOTO
 		 */
-		virtual EDistanceType get_distance_type() { return D_CANBERRA; }
+		virtual EDistanceType get_distance_type() { return D_TANIMOTO; }
 
 		/** get name of the distance
 		 *
-		 * @return name Canberra-Metric
+		 * @return name Tanimoto coefficient/distance
 		 */
-		virtual const CHAR* get_name() { return "Canberra-Metric"; };
+		virtual const CHAR* get_name() { return "Tanimoto coefficient/distance"; };
 
 	protected:
 		/// compute distance for features a and b
@@ -86,4 +88,4 @@ class CCanberraMetric: public CSimpleDistance<DREAL>
 		virtual DREAL compute(INT idx_a, INT idx_b);
 };
 
-#endif /* _CANBERRAMETRIC_H__ */
+#endif /* _TANIMOTODISTANCE_H___ */

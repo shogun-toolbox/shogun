@@ -8,7 +8,7 @@
  * Written (W) 1999-2008 Gunnar Raetsch
  * Written (W) 2006 Fabio De Bona
  * Written (W) 2006 Konrad Rieck
- * Written (W) 2006-2007 Christian Gehl
+ * Written (W) 2006-2008 Christian Gehl
  * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
@@ -216,7 +216,11 @@ enum EDistanceType
 	D_HAMMINGWORD = 80 ,
 	D_CANBERRAWORD = 90,
 	D_SPARSEEUCLIDIAN = 100,
-	D_EUCLIDIAN = 110
+	D_EUCLIDIAN = 110,
+	D_CHISQUARE = 120,
+	D_TANIMOTO = 130,
+	D_COSINE = 140,
+	D_BRAYCURTIS =150
 };
 
 enum ERegressionType

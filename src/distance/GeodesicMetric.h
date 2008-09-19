@@ -15,7 +15,21 @@
 #include "distance/SimpleDistance.h"
 #include "features/RealFeatures.h"
 
-/** class GeodesicMetric */
+/** class GeodesicMetric
+ *
+ * The Geodesic distance (Great circle distance) computes the shortest path
+ * between two data points on a sphere (the radius is set to one for the
+ * evaluation).
+ * 
+ * \f[\displaystyle
+ *  d(\bf{x},\bf{x'}) = arccos\sum_{i=1}^{n} \frac{\bf{x_{i}}\cdot\bf{x'_{i}}}
+ *  {\sqrt{x_{i}x_{i} x'_{i}x'_{i}}}
+ * \f]
+ *
+ * @see <a href="http://en.wikipedia.org/wiki/Great_circle_distance">Wikipedia:
+ * Geodesic distance</a>
+ *          
+ */
 class CGeodesicMetric: public CSimpleDistance<DREAL>
 {
 	public:

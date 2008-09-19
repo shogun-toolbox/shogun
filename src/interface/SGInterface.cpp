@@ -3578,6 +3578,22 @@ bool CSGInterface::cmd_set_distance()
 	{
 		distance=ui_distance->create_generic(D_JENSEN);
 	}
+	else if (strmatch(type, "CHISQUARE") && strmatch(dtype, "REAL"))
+	{
+		distance=ui_distance->create_generic(D_CHISQUARE);
+	}
+	else if (strmatch(type, "TANIMOTO") && strmatch(dtype, "REAL"))
+	{
+		distance=ui_distance->create_generic(D_TANIMOTO);
+	}
+	else if (strmatch(type, "COSINE") && strmatch(dtype, "REAL"))
+	{
+		distance=ui_distance->create_generic(D_COSINE);
+	}
+	else if (strmatch(type, "BRAYCURTIS") && strmatch(dtype, "REAL"))
+	{
+		distance=ui_distance->create_generic(D_BRAYCURTIS);
+	}
 	else if (strmatch(type, "EUCLIDIAN"))
 	{
 		if (strmatch(dtype, "REAL"))

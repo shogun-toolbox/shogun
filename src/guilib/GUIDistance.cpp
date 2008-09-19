@@ -4,7 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2006-2007 Christian Gehl
+ * Written (W) 2006-2008 Christian Gehl
  * Written (W) 1999-2008 Soeren Sonnenburg
  * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
  */
@@ -34,6 +34,10 @@
 #include "distance/HammingWordDistance.h"
 #include "distance/EuclidianDistance.h"
 #include "distance/SparseEuclidianDistance.h"
+#include "distance/TanimotoDistance.h"
+#include "distance/ChiSquareDistance.h"
+#include "distance/CosineDistance.h"
+#include "distance/BrayCurtisDistance.h"
 
 #include "features/RealFileFeatures.h"
 #include "features/TOPFeatures.h"
@@ -256,6 +260,14 @@ CDistance* CGUIDistance::create_generic(EDistanceType type)
 			dist=new CEuclidianDistance(); break;
 		case D_SPARSEEUCLIDIAN:
 			dist=new CSparseEuclidianDistance(); break;
+		case D_CHISQUARE:
+			dist=new CChiSquareDistance(); break;
+		case D_TANIMOTO:
+			dist=new CTanimotoDistance(); break;
+		case D_COSINE:
+			dist=new CCosineDistance(); break;
+		case D_BRAYCURTIS:
+			dist=new CBrayCurtisDistance(); break;
 		default:
 			SG_ERROR("Unknown metric/distance type %d given to create generic distance/metric.\n", type);
 	}
