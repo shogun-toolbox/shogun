@@ -66,6 +66,18 @@ class CWordFeatures : public CSimpleFeatures<WORD>
 		 */
 		bool obtain_from_char_features(CCharFeatures* cf, INT start, INT order, INT gap=0);
 
+		/** get feature matrix
+		 *
+		 * @param dst destination where matrix will be stored
+		 * @param d1 dimension 1 of matrix
+		 * @param d2 dimension 2 of matrix
+		 */
+		inline virtual void get_fm(WORD** dst, INT* d1, INT* d2)
+		{
+			CSimpleFeatures<WORD>::get_fm(dst, d1, d2);
+		}
+
+
 		/** copy feature matrix
 		 *
 		 * wrapper to base class' method
