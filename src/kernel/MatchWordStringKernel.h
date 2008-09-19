@@ -8,14 +8,14 @@
  * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#ifndef _WORDMATCHKERNEL_H___
-#define _WORDMATCHKERNEL_H___
+#ifndef _MATCHWORDSTRINGKERNEL_H___
+#define _MATCHWORDSTRINGKERNEL_H___
 
 #include "lib/common.h"
-#include "kernel/SimpleKernel.h"
-#include "features/WordFeatures.h"
+#include "kernel/StringKernel.h"
+#include "features/StringFeatures.h"
 
-/** The class WordMatchKernel computes a variant of the polynomial kernel
+/** The class MatchWordStringKernel computes a variant of the polynomial kernel
  * on strings of same length converted to a word alphabet. It is computed as
  * \f[
  * k({\bf x},{\bf x'})= \sum_{i=0}^L I(x_i=x'_i)+c)^d
@@ -29,7 +29,7 @@
  *     k'({\bf x}, {\bf x'})=\frac{k({\bf x}, {\bf x'})}{\sqrt{k({\bf x}, {\bf x})k({\bf x'}, {\bf x'})}}
  * \f]
  */
-class CWordMatchKernel: public CSimpleKernel<WORD>
+class CMatchWordStringKernel: public CStringKernel<WORD>
 {
 	public:
 		/** constructor
@@ -37,7 +37,7 @@ class CWordMatchKernel: public CSimpleKernel<WORD>
 		 * @param size cache size
 		 * @param d degree
 		 */
-		CWordMatchKernel(INT size, INT d);
+		CMatchWordStringKernel(INT size, INT d);
 
 		/** constructor
 		 *
@@ -45,9 +45,9 @@ class CWordMatchKernel: public CSimpleKernel<WORD>
 		 * @param r features of right-hand side
 		 * @param degree degree
 		 */
-		CWordMatchKernel(CWordFeatures* l, CWordFeatures* r, INT degree);
+		CMatchWordStringKernel(CStringFeatures<WORD>* l, CStringFeatures<WORD>* r, INT degree);
 
-		virtual ~CWordMatchKernel();
+		virtual ~CMatchWordStringKernel();
 
 		/** initialize kernel
 		 *
@@ -75,13 +75,13 @@ class CWordMatchKernel: public CSimpleKernel<WORD>
 		 *
 		 * @return kernel type LINEAR
 		 */
-		virtual EKernelType get_kernel_type() { return K_LINEAR; }
+		virtual EKernelType get_kernel_type() { return K_MATCHWORD; }
 
 		/** return the kernel's name
 		 *
-		 * @return name WordMatch
+		 * @return name MatchWordString
 		 */
-		virtual const CHAR* get_name() { return "WordMatch"; }
+		virtual const CHAR* get_name() { return "MatchWordString"; }
 
 	protected:
 		/** compute kernel function for features a and b
@@ -99,4 +99,4 @@ class CWordMatchKernel: public CSimpleKernel<WORD>
 		INT degree;
 };
 
-#endif /* _WORDMATCHKERNEL_H__ */
+#endif /* _MATCHWORDSTRINGKERNEL_H__ */

@@ -35,15 +35,15 @@
 #include "kernel/PolyKernel.h"
 #include "kernel/CustomKernel.h"
 #include "kernel/ConstKernel.h"
-#include "kernel/PolyMatchWordKernel.h"
+#include "kernel/PolyMatchWordStringKernel.h"
 #include "kernel/PolyMatchStringKernel.h"
 #include "kernel/LocalAlignmentStringKernel.h"
-#include "kernel/WordMatchKernel.h"
+#include "kernel/MatchWordStringKernel.h"
 #include "kernel/CommWordStringKernel.h"
 #include "kernel/WeightedCommWordStringKernel.h"
 #include "kernel/CommUlongStringKernel.h"
-#include "kernel/HistogramWordKernel.h"
-#include "kernel/SalzbergWordKernel.h"
+#include "kernel/HistogramWordStringKernel.h"
+#include "kernel/SalzbergWordStringKernel.h"
 #include "kernel/GaussianKernel.h"
 #include "kernel/GaussianShiftKernel.h"
 #include "kernel/SigmoidKernel.h"
@@ -428,8 +428,8 @@ CKernel* CGUIKernel::create_commstring(
 
 CKernel* CGUIKernel::create_wordmatch(INT size, INT d, bool normalize)
 {
-	CKernel* kern=new CWordMatchKernel(size, d);
-	SG_DEBUG("created WordMatchKernel (%p) with size %d and d %d.\n", kern, size, d);
+	CKernel* kern=new CMatchWordStringKernel(size, d);
+	SG_DEBUG("created MatchWordStringKernel (%p) with size %d and d %d.\n", kern, size, d);
 	if (!normalize)
 		kern->set_normalizer(new CIdentityKernelNormalizer());
 
@@ -450,8 +450,8 @@ CKernel* CGUIKernel::create_polymatchstring(
 CKernel* CGUIKernel::create_polymatchword(
 	INT size, INT degree, bool inhomogene, bool normalize)
 {
-	CKernel* kern=new CPolyMatchWordKernel(size, degree, inhomogene);
-	SG_DEBUG("created PolyMatchWordKernel (%p) with size %d, degree %d, inhomogene %d, normalize %d.\n", kern, size, degree, inhomogene, normalize);
+	CKernel* kern=new CPolyMatchWordStringKernel(size, degree, inhomogene);
+	SG_DEBUG("created PolyMatchWordStringKernel (%p) with size %d, degree %d, inhomogene %d, normalize %d.\n", kern, size, degree, inhomogene, normalize);
 
 	return kern;
 }

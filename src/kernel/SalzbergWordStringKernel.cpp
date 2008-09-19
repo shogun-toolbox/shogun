@@ -10,7 +10,7 @@
 
 #include "lib/common.h"
 #include "lib/io.h"
-#include "kernel/SalzbergWordKernel.h"
+#include "kernel/SalzbergWordStringKernel.h"
 #include "features/Features.h"
 #include "features/StringFeatures.h"
 #include "features/Labels.h"

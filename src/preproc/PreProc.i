@@ -31,6 +31,5 @@
 %include "preproc/PCACut.i"
 %include "preproc/PruneVarSubMean.i"
 %include "preproc/SortUlongString.i"
-%include "preproc/SortWord.i"
 %include "preproc/SortWordString.i"
 %include "preproc/SparsePreProc.i"

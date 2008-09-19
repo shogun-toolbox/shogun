@@ -8,14 +8,14 @@
  * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#ifndef _POLYMATCHWORDKERNEL_H___
-#define _POLYMATCHWORDKERNEL_H___
+#ifndef _POLYMATCHWORDSTRINGKERNEL_H___
+#define _POLYMATCHWORDSTRINGKERNEL_H___
 
 #include "lib/common.h"
-#include "kernel/SimpleKernel.h"
-#include "features/WordFeatures.h"
+#include "kernel/StringKernel.h"
+#include "features/StringFeatures.h"
 
-/** The class PolyMatchWordKernel computes a variant of the polynomial kernel
+/** The class PolyMatchWordStringKernel computes a variant of the polynomial kernel
  * on word-features (makes sense for strings of same length mapped to word
  * features). It is computed as
  * \f[
@@ -30,7 +30,7 @@
  *     k'({\bf x}, {\bf x'})=\frac{k({\bf x}, {\bf x'})}{\sqrt{k({\bf x}, {\bf x})k({\bf x'}, {\bf x'})}}
  * \f]
  */
-class CPolyMatchWordKernel: public CSimpleKernel<WORD>
+class CPolyMatchWordStringKernel: public CStringKernel<WORD>
 {
 	public:
 		/** constructor
@@ -39,7 +39,7 @@ class CPolyMatchWordKernel: public CSimpleKernel<WORD>
 		 * @param degree degree
 		 * @param inhomogene is inhomogeneous
 		 */
-		CPolyMatchWordKernel(INT size, INT degree, bool inhomogene);
+		CPolyMatchWordStringKernel(INT size, INT degree, bool inhomogene);
 
 		/** constructor
 		 *
@@ -48,9 +48,9 @@ class CPolyMatchWordKernel: public CSimpleKernel<WORD>
 		 * @param degree degree
 		 * @param inhomogene is inhomogeneous
 		 */
-		CPolyMatchWordKernel(CWordFeatures* l, CWordFeatures* r, INT degree, bool inhomogene);
+		CPolyMatchWordStringKernel(CStringFeatures<WORD>* l, CStringFeatures<WORD>* r, INT degree, bool inhomogene);
 
-		virtual ~CPolyMatchWordKernel();
+		virtual ~CPolyMatchWordStringKernel();
 
 		/** initialize kernel
 		 *
@@ -87,7 +87,7 @@ class CPolyMatchWordKernel: public CSimpleKernel<WORD>
 		 *
 		 * @return name PolyMatchWord
 		 */
-		virtual const CHAR* get_name() { return "PolyMatchWord"; }
+		virtual const CHAR* get_name() { return "PolyMatchWordString"; }
 
 	protected:
 		/** compute kernel function for features a and b
@@ -107,4 +107,4 @@ class CPolyMatchWordKernel: public CSimpleKernel<WORD>
 		bool inhomogene;
 };
 
-#endif /* _POLYMATCHWORDKERNEL_H__ */
+#endif /* _POLYMATCHWORDSTRINGKERNEL_H__ */

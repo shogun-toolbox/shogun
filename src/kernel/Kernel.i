@@ -61,7 +61,7 @@
 %include "kernel/MindyGramKernel.i"
 %include "kernel/OligoKernel.i"
 %include "kernel/FixedDegreeStringKernel.i"
-%include "kernel/HistogramWordKernel.i"
+%include "kernel/HistogramWordStringKernel.i"
 %include "kernel/LinearByteKernel.i"
 %include "kernel/LinearStringKernel.i"
 %include "kernel/LocalAlignmentStringKernel.i"
@@ -69,10 +69,10 @@
 
 %include "kernel/LocalityImprovedStringKernel.i"
 %include "kernel/PolyMatchStringKernel.i"
-%include "kernel/PolyMatchWordKernel.i"
-%include "kernel/SalzbergWordKernel.i"
+%include "kernel/PolyMatchWordStringKernel.i"
+%include "kernel/SalzbergWordStringKernel.i"
 %include "kernel/SimpleLocalityImprovedStringKernel.i"
-%include "kernel/WordMatchKernel.i"
+%include "kernel/MatchWordStringKernel.i"
 
 %include "kernel/CombinedKernel.i"
 %include "kernel/CustomKernel.i"

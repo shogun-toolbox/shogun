@@ -167,7 +167,8 @@ enum EKernelType
 	K_DISTANCE = 220,
 	K_LOCALALIGNMENT = 230,
 	K_PYRAMIDCHI2 = 240,
-	K_OLIGO = 250
+	K_OLIGO = 250,
+	K_MATCHWORD = 260
 };
 
 enum EClassifierType

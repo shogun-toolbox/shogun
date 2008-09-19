@@ -10,7 +10,7 @@
  */
 
 #include "lib/common.h"
-#include "kernel/HistogramWordKernel.h"
+#include "kernel/HistogramWordStringKernel.h"
 #include "features/Features.h"
 #include "features/StringFeatures.h"
 #include "classifier/PluginEstimate.h"

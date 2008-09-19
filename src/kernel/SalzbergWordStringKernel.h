@@ -8,8 +8,8 @@
  * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#ifndef _SALZBERGWORDKERNEL_H___
-#define _SALZBERGWORDKERNEL_H___
+#ifndef _SALZBERGWORDSTRINGKERNEL_H___
+#define _SALZBERGWORDSTRINGKERNEL_H___
 
 #include "lib/common.h"
 #include "kernel/StringKernel.h"

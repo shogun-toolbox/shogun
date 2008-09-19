@@ -18,7 +18,7 @@
 #include "kernel/SparseLinearKernel.h"
 #include "kernel/CombinedKernel.h"
 #include "kernel/CustomKernel.h"
-#include "kernel/SalzbergWordKernel.h"
+#include "kernel/SalzbergWordStringKernel.h"
 #include "features/ByteFeatures.h"
 #include "features/CharFeatures.h"
 #include "features/IntFeatures.h"

@@ -22,7 +22,6 @@
 #include "preproc/NormOne.h"
 #include "preproc/PruneVarSubMean.h"
 #include "preproc/PCACut.h"
-#include "preproc/SortWord.h"
 #include "preproc/SortWordString.h"
 #include "preproc/SortUlongString.h"
 #include "features/RealFileFeatures.h"
@@ -96,8 +95,6 @@ CPreProc* CGUIPreProc::create_generic(EPreProcType type)
 			preproc=new CSortWordString(); break;
 		case P_SORTULONGSTRING:
 			preproc=new CSortUlongString(); break;
-		case P_SORTWORD:
-			preproc=new CSortWord(); break;
 		default:
 			SG_ERROR("Unknown PreProc type %d\n", type);
 	}
