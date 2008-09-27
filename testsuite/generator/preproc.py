@@ -3,7 +3,7 @@
 import numpy
 import shogun.Library as library
 from shogun.Kernel import GaussianKernel, CommWordStringKernel, \
-	CommUlongStringKernel, LinearWordKernel, WordMatchKernel
+	CommUlongStringKernel, LinearWordKernel
 
 import fileop
 import featop
@@ -52,18 +52,6 @@ def _run_string_complex (ftype):
 	outdata=_compute(name, 'Comm'+ftype+'String', feats, data, False)
 	fileop.write(config.C_PREPROC, outdata)
 
-def _run_word ():
-	"""Run preprocessor applied on WordFeatures."""
-
-	name='SortWord'
-	data=dataop.get_rand(dattype=numpy.ushort)
-	feats=featop.get_simple('Word', data)
-	feats=featop.add_preproc(name, feats)
-
-	outdata=_compute(name, 'WordMatch', feats, data, 3)
-	#outdata=_compute(name, 'LinearWord', feats, data)
-	fileop.write(config.C_PREPROC, outdata)
-
 def _run_real (name, *args):
 	"""Run preprocessor applied on RealFeatures.
 
@@ -90,7 +78,6 @@ def run():
 
 	_run_string_complex('Word')
 	_run_string_complex('Ulong')
-	_run_word()
 
 #	_run_norm_derivative_lem3()
 #	_run_pcacut()

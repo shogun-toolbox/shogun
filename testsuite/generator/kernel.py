@@ -355,9 +355,6 @@ def _run_feats_word ():
 	feats=featop.get_simple('Word', data)
 
 	_compute('LinearWord', feats, data)
-	_compute('PolyMatchWord', feats, data, 3, True)
-	_compute('PolyMatchWord', feats, data, 3, False)
-	_compute('WordMatch', feats, data, 3)
 
 def _run_feats_string_complex ():
 	"""Run kernel with complex StringFeatures."""
@@ -367,6 +364,9 @@ def _run_feats_string_complex ():
 
 	_compute('CommWordString', feats, data, False)
 	_compute('WeightedCommWordString', feats, data, False)
+	_compute('MatchWordString', feats, data, 3)
+	_compute('PolyMatchWordString', feats, data, 3, True)
+	_compute('PolyMatchWordString', feats, data, 3, False)
 
 	feats=featop.get_string_complex('Ulong', data)
 	_compute('CommUlongString', feats, data, False)
@@ -377,8 +377,8 @@ def _run_pie ():
 	data=dataop.get_dna()
 	feats=featop.get_string_complex('Word', data)
 
-	_compute_pie('HistogramWord', feats, data)
-	_compute_pie('SalzbergWord', feats, data)
+	_compute_pie('HistogramWordString', feats, data)
+	_compute_pie('SalzbergWordString', feats, data)
 
 def _run_top_fisher ():
 	"""Run Linear Kernel with {Top,Fisher}Features."""

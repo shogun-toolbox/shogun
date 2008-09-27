@@ -73,7 +73,7 @@ KERNEL={
 	'Gaussian':[['rand', 'double'], ['simple', 'Real'], ['width'], 1e-6],
 	'GaussianShift':[['rand', 'double'], ['simple', 'Real'],
 		['width', 'max_shift', 'shift_step'], 1e-8],
-	'HistogramWord':[['dna', ''], ['string_complex', 'Word', 'Char'],
+	'HistogramWordString':[['dna', ''], ['string_complex', 'Word', 'Char'],
 		[], 1e-6],
 	'Int':[['rand', 'int'], ['simple', 'Int'], [], 1e-8],
 	'Linear':[['rand', 'double'], ['simple', 'Real'], ['scale'], 1e-8],
@@ -85,15 +85,18 @@ KERNEL={
 	'LocalAlignmentString':[['dna', ''], ['string', 'Char'], [], 1e-8],
 	'LocalityImprovedString':[['dna', ''], ['string', 'Char'],
 		['length', 'inner_degree', 'outer_degree'], 1e-8],
+	'MatchWordString':[['dna', ''], ['string_complex', 'Word', 'Char'],
+		['degree', 'do_rescale', 'scale'], 1e-8],
 	'MindyGram':[['', ''], ['mindy', ''], ['measure', 'width'], 1e-8],
 	'Poly':[['rand', 'double'], ['simple', 'Real'],
 		['degree', 'inhomogene', 'use_normalization'], 1e-6],
 	'PolyMatchString':[['dna', ''], ['string', 'Char'],
+
 		['degree', 'inhomogene'], 1e-10],
-	'PolyMatchWord':[['rand', 'ushort'], ['simple', 'Word'],
+	'PolyMatchWordString':[['dna', ''], ['string_complex', 'Word', 'Char'],
 		['degree', 'inhomogene'], 1e-10],
 	'Real':[['rand', 'double'], ['simple', 'Real'], [], 1e-8],
-	'SalzbergWord':[['dna', ''], ['string_complex', 'Word', 'Char'],
+	'SalzbergWordString':[['dna', ''], ['string_complex', 'Word', 'Char'],
 		[], 1e-6],
 	'Short':[['rand', 'ushort'], ['simple', 'short'], [], 1e-8],
 	'Sigmoid':[['rand', 'double'], ['simple', 'Real'],
@@ -121,8 +124,6 @@ KERNEL={
 	'WeightedCommWordString':[['dna', ''], ['string_complex', 'Word', 'Char'],
 		['use_sign', 'normalization'], 1e-9],
 	'Word':[['rand', 'ushort'], ['simple', 'Word'], [], 1e-8],
-	'WordMatch':[['rand', 'ushort'], ['simple', 'Word'],
-		['degree', 'do_rescale', 'scale'], 1e-8],
 }
 
 # name: accuracy, classifier type
