@@ -1,4 +1,4 @@
-accuracy = 1e-09;
+accuracy = 1e-07;
 init_random = 42;
 name = 'WeightedDegreeString';
 data_type = '';
