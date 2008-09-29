@@ -55,7 +55,7 @@ def get_args (indata, ident):
 # the kernel lists here are highly dependent on how the generator sets
 # them up, be careful!
 def get_normalizer (kname, do_normalize):
-	name=['Poly', 'SparsePoly']
+	name=['Poly']
 	if kname in name and not do_normalize:
 		return IdentityKernelNormalizer()
 

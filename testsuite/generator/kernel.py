@@ -324,11 +324,11 @@ def _run_feats_real ():
 	_compute('Poly', feats, data, normalizer, 3, True, True)
 	_compute('Poly', feats, data, normalizer, 3, False, True)
 	_compute('SparsePoly', sparsefeats, data, normalizer, 10, 3, True)
+	_compute('SparsePoly', sparsefeats, data, normalizer, 10, 3, False)
 
 	normalizer=kernel.IdentityKernelNormalizer()
 	_compute('Poly', feats, data, normalizer, 3, True, False)
 	_compute('Poly', feats, data, normalizer, 3, False, False)
-	_compute('SparsePoly', sparsefeats, data, normalizer, 10, 3, False)
 
 	normalizer=kernel.AvgDiagKernelNormalizer(-1)
 	_compute('Linear', feats, data, normalizer)
