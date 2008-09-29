@@ -15,6 +15,11 @@ def _get_machine (indata, feats):
 		kargs=util.get_args(indata, 'kernel_arg')
 		kfun=eval(indata['kernel_name']+'Kernel')
 		machine=kfun(feats['train'], feats['train'], *kargs)
+
+		if indata['kernel_name']=='Linear':
+			machine.set_normalizer(AvgDiagKernelNormalizer(-1))
+			machine.init(feats['train'], feats['train'])
+
 		machine.parallel.set_num_threads(indata['classifier_num_threads'])
 	elif indata['classifier_type']=='knn':
 		dargs=util.get_args(indata, 'distance_arg')

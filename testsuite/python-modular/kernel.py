@@ -24,6 +24,19 @@ def _kernel (indata):
 	args=util.get_args(indata, 'kernel_arg')
 
 	kernel=fun(feats['train'], feats['train'], *args)
+
+	if len(args)>0:
+		normalizer=util.get_normalizer(indata['name'], args[-1])
+	else:
+		normalizer=util.get_normalizer(indata['name'], True)
+	if normalizer:
+		kernel.set_normalizer(normalizer)
+	# FIXME: necessity to retrain after setting normalizer
+	# unfortunately cannot set args easily on each kernel without
+	# also setting the train features (and hence do some unwanted 
+	# training)
+	kernel.init(feats['train'], feats['train'])
+
 	km_train=max(abs(indata['km_train']-kernel.get_kernel_matrix()).flat)
 	kernel.init(feats['train'], feats['test'])
 	km_test=max(abs(indata['km_test']-kernel.get_kernel_matrix()).flat)

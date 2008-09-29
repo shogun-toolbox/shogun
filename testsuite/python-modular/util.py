@@ -5,7 +5,9 @@ Utilities for testing
 from shogun.Features import *
 from shogun.PreProc import *
 from shogun.Distance import *
+from shogun.Kernel import *
 from numpy import *
+
 
 def check_accuracy (accuracy, **kwargs):
 	acc=double(accuracy)
@@ -48,6 +50,21 @@ def get_args (indata, ident):
 
 	# weed out superfluous Nones
 	return filter(lambda arg: arg is not None, args)
+
+
+# the kernel lists here are highly dependent on how the generator sets
+# them up, be careful!
+def get_normalizer (kname, do_normalize):
+	name=['Poly', 'SparsePoly']
+	if kname in name and not do_normalize:
+		return IdentityKernelNormalizer()
+
+	name=['Linear', 'SparseLinear', 'LinearString', 'LinearWord', 'LinearByte']
+	if kname in name:
+		return AvgDiagKernelNormalizer(-1)
+
+	return False
+
 
 def get_feats_simple (indata):
 	# have to explicitely set data type for numpy if not real
