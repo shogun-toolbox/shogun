@@ -62,7 +62,7 @@ def _run_real (name, *args):
 	data=dataop.get_rand()
 	feats=featop.get_simple('Real', data)
 	feats=featop.add_preproc(name, feats, *args)
-	
+
 	outdata=_compute(name, 'Gaussian', feats, data, 1.2)
 	if args!=():
 		outdata.update(fileop.get_args('preproc', config.PREPROC[name][0], args))

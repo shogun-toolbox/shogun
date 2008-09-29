@@ -3,9 +3,7 @@
 import numpy
 import shogun.Library as library
 import shogun.Classifier as classifier
-from shogun.Kernel import GaussianKernel, WeightedDegreeStringKernel, \
-	LinearKernel, WeightedDegreePositionStringKernel, CommWordStringKernel, \
-	CommUlongStringKernel
+from shogun.Kernel import *
 from shogun.Distance import EuclidianDistance
 from shogun.Features import Labels
 
@@ -230,6 +228,7 @@ def _run_svm_kernel ():
 	params['kargs']=[]
 	params['kname']='Linear'
 	params['kernel']=LinearKernel()
+	params['kernel'].set_normalizer(AvgDiagKernelNormalizer(-1))
 	params['kernel'].init(params['feats']['train'], params['feats']['train'])
 
 	_loop_svm(svms, params)

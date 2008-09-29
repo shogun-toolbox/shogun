@@ -137,7 +137,7 @@ def _run_subkernels ():
 ## compute/kernel funcs
 ##################################################################
 
-def _compute (name, feats, data, *args):
+def _compute (name, feats, data, normalizer, *args):
 	"""Compute a kernel and gather data.
 
 	@param name name of the kernel
@@ -148,6 +148,9 @@ def _compute (name, feats, data, *args):
 
 	fun=eval('kernel.'+name+'Kernel')
 	kern=fun(feats['train'], feats['train'], *args)
+	if normalizer:
+		kern.set_normalizer(normalizer)
+
 	kern.init(feats['train'], feats['train'])
 	km_train=kern.get_kernel_matrix()
 	kern.init(feats['train'], feats['test'])
@@ -279,15 +282,17 @@ def _run_distance ():
 	data=dataop.get_rand()
 	feats=featop.get_simple('Real', data)
 	distance=CanberraMetric()
-	_compute('Distance', feats, data, 1.7, distance)
+	normalizer=False
+	_compute('Distance', feats, data, normalizer, 1.7, distance)
 
 def _run_feats_byte ():
 	"""Run kernel with ByteFeatures."""
 
 	data=dataop.get_rand(dattype=numpy.ubyte)
 	feats=featop.get_simple('Byte', data, library.RAWBYTE)
+	normalizer=kernel.AvgDiagKernelNormalizer(-1)
 
-	_compute('LinearByte', feats, data)
+	_compute('LinearByte', feats, data, normalizer)
 
 def _run_mindygram ():
 	"""Run Mindygram kernel."""
@@ -296,54 +301,62 @@ def _run_mindygram ():
 	data=dataop.get_dna()
 	feats={'train':MindyGramFeatures('DNA', 'freq', '%20.,', 0),
 		'test':MindyGramFeatures('DNA', 'freq', '%20.,', 0)}
+	normalizer=False
 
-	_compute('MindyGram', feats, data, 'MEASURE', 1.5)
+	_compute('MindyGram', feats, data, normalizer, 'MEASURE', 1.5)
 
 def _run_feats_real ():
 	"""Run kernel with RealFeatures."""
 
 	data=dataop.get_rand()
 	feats=featop.get_simple('Real', data)
+	sparsefeats=featop.get_simple('Real', data, sparse=True)
+	normalizer=False
 
-	_compute('Chi2', feats, data, 1.2, 10)
-	_compute('Const', feats, data, 23.)
-	_compute('Diag', feats, data, 23.)
-	_compute('Gaussian', feats, data, 1.3)
-	_compute('GaussianShift', feats, data, 1.3, 2, 1)
-	_compute('Linear', feats, data)
-	_compute('Poly', feats, data, 3, True, True)
-	_compute('Poly', feats, data, 3, False, True)
-	_compute('Poly', feats, data, 3, True, False)
-	_compute('Poly', feats, data, 3, False, False)
-	_compute('Sigmoid', feats, data, 10, 1.1, 1.3)
-	_compute('Sigmoid', feats, data, 10, 0.5, 0.7)
+	_compute('Chi2', feats, data, normalizer, 1.2, 10)
+	_compute('Const', feats, data, normalizer, 23.)
+	_compute('Diag', feats, data, normalizer, 23.)
+	_compute('Gaussian', feats, data, normalizer, 1.3)
+	_compute('GaussianShift', feats, data, normalizer, 1.3, 2, 1)
+	_compute('SparseGaussian', sparsefeats, data, normalizer, 1.3)
+	_compute('Sigmoid', feats, data, normalizer, 10, 1.1, 1.3)
+	_compute('Sigmoid', feats, data, normalizer, 10, 0.5, 0.7)
+	_compute('Poly', feats, data, normalizer, 3, True, True)
+	_compute('Poly', feats, data, normalizer, 3, False, True)
+	_compute('SparsePoly', sparsefeats, data, normalizer, 10, 3, True)
 
-	feats=featop.get_simple('Real', data, sparse=True)
-	_compute('SparseGaussian', feats, data, 1.3)
-	_compute('SparseLinear', feats, data)
-	_compute('SparsePoly', feats, data, 10, 3, True)
-	_compute('SparsePoly', feats, data, 10, 3, False)
+	normalizer=kernel.IdentityKernelNormalizer()
+	_compute('Poly', feats, data, normalizer, 3, True, False)
+	_compute('Poly', feats, data, normalizer, 3, False, False)
+	_compute('SparsePoly', sparsefeats, data, normalizer, 10, 3, False)
+
+	normalizer=kernel.AvgDiagKernelNormalizer(-1)
+	_compute('Linear', feats, data, normalizer)
+	_compute('SparseLinear', sparsefeats, data, normalizer)
+
 
 def _run_feats_string ():
 	"""Run kernel with StringFeatures."""
 
 	data=dataop.get_dna()
 	feats=featop.get_string('Char', data)
+	normalizer=False
 
-	_compute('FixedDegreeString', feats, data, 3)
-	_compute('LinearString', feats, data)
-	_compute('LocalAlignmentString', feats, data)
-	_compute('PolyMatchString', feats, data, 3, True)
-	_compute('PolyMatchString', feats, data, 3, False)
-	_compute('SimpleLocalityImprovedString', feats, data, 5, 7, 5)
+	_compute('FixedDegreeString', feats, data, normalizer, 3)
+	_compute('LocalAlignmentString', feats, data, normalizer)
+	_compute('PolyMatchString', feats, data, normalizer, 3, True)
+	_compute('PolyMatchString', feats, data, normalizer, 3, False)
+	_compute('SimpleLocalityImprovedString', feats, data, normalizer, 5, 7, 5)
+	_compute('WeightedDegreeString', feats, data, normalizer, 20)
+	_compute('WeightedDegreeString', feats, data, normalizer, 1)
+	_compute('WeightedDegreePositionString', feats, data, normalizer, 20)
+	_compute('WeightedDegreePositionString', feats, data, normalizer, 1)
 
-	_compute('WeightedDegreeString', feats, data, 20)
-	_compute('WeightedDegreeString', feats, data, 1)
-	_compute('WeightedDegreePositionString', feats, data, 20)
-	_compute('WeightedDegreePositionString', feats, data, 1)
+	normalizer=kernel.AvgDiagKernelNormalizer(-1)
+	_compute('LinearString', feats, data, normalizer)
 
 	# buggy:
-	#_compute('LocalityImprovedString', feats, data, 51, 5, 7)
+	#_compute('LocalityImprovedString', feats, data, normalizer, 51, 5, 7)
 
 
 def _run_feats_word ():
@@ -353,23 +366,25 @@ def _run_feats_word ():
 	data=dataop.get_rand(dattype=numpy.ushort,
 		max_train=maxval, max_test=maxval)
 	feats=featop.get_simple('Word', data)
+	normalizer=kernel.AvgDiagKernelNormalizer(-1)
 
-	_compute('LinearWord', feats, data)
+	_compute('LinearWord', feats, data, normalizer)
 
 def _run_feats_string_complex ():
 	"""Run kernel with complex StringFeatures."""
 
 	data=dataop.get_dna()
-	feats=featop.get_string_complex('Word', data)
+	wordfeats=featop.get_string_complex('Word', data)
+	ulongfeats=featop.get_string_complex('Ulong', data)
+	normalizer=False
 
-	_compute('CommWordString', feats, data, False)
-	_compute('WeightedCommWordString', feats, data, False)
-	_compute('MatchWordString', feats, data, 3)
-	_compute('PolyMatchWordString', feats, data, 3, True)
-	_compute('PolyMatchWordString', feats, data, 3, False)
+	_compute('CommWordString', wordfeats, data, normalizer, False)
+	_compute('CommUlongString', ulongfeats, data, normalizer, False)
+	_compute('WeightedCommWordString', wordfeats, data, normalizer, False)
+	_compute('PolyMatchWordString', wordfeats, data, normalizer, 3, True)
+	_compute('PolyMatchWordString', wordfeats, data, normalizer, 3, False)
+	_compute('MatchWordString', wordfeats, data, normalizer, 3)
 
-	feats=featop.get_string_complex('Ulong', data)
-	_compute('CommUlongString', feats, data, False)
 
 def _run_pie ():
 	"""Run kernel with PluginEstimate."""
