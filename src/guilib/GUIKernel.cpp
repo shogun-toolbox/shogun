@@ -452,6 +452,8 @@ CKernel* CGUIKernel::create_polymatchwordstring(
 {
 	CKernel* kern=new CPolyMatchWordStringKernel(size, degree, inhomogene);
 	SG_DEBUG("created PolyMatchWordStringKernel (%p) with size %d, degree %d, inhomogene %d, normalize %d.\n", kern, size, degree, inhomogene, normalize);
+	if (!normalize)
+		kern->set_normalizer(new CIdentityKernelNormalizer());
 
 	return kern;
 }
