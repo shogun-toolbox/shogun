@@ -170,7 +170,9 @@ class COligoKernel : public CStringKernel<CHAR>
 		static bool cmpOligos_( std::pair<int, double> a, std::pair<int, double> b ); 
 
 	protected:
+		/** member variable k */
 		INT k;
+		/** width of kernel */
 		DREAL width;
 };
 #endif // KERNEL_OLIGO_H

@@ -100,7 +100,7 @@ class CTanimotoKernelNormalizer : public CKernelNormalizer
 		}
 
     public:
-		/*
+		/**
 		 * alloc and compute the vector containing the square root of the
 		 * diagonal elements of this kernel.
 		 */
@@ -129,8 +129,11 @@ class CTanimotoKernelNormalizer : public CKernelNormalizer
 		}
 
     protected:
+		/** diagonal left-hand side */
 		DREAL* diag_lhs;
+		/** diagonal right-hand side */
 		DREAL* diag_rhs;
+		/** flat if optimized diagonal computation is used */
 		bool use_optimized_diagonal_computation;
 };
 

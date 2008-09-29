@@ -14,48 +14,61 @@
 #include "lib/common.h"
 #include "features/Features.h"
 
+/** The class DummyFeatures implements a set of dummy features. */
 class CDummyFeatures : public CFeatures
 {
 	public:
+		/** constructor
+		 *
+		 * @param num number of feature vectors
+		 */
 		CDummyFeatures(INT num) : CFeatures(0), num_vectors(num)
 		{
 		}
 
+		/** copy constructor */
 		CDummyFeatures(const CDummyFeatures &orig) : CFeatures(0),
 			num_vectors(orig.num_vectors)
 		{
 		}
 
+		/** destructor */
 		virtual ~CDummyFeatures()
 		{
 		}
 
+		/** get number of feature vectors */
 		virtual int get_num_vectors()
 		{
 			return num_vectors;
 		}
 
+		/** get size of features (always 1) */
 		virtual INT get_size()
 		{
 			return 1;
 		}
 
+		/** duplicate features */
 		virtual CFeatures* duplicate() const
 		{
 			return new CDummyFeatures(*this);
 		}
 
+		/** get feature type (ANY) */
 		inline EFeatureType get_feature_type()
 		{
 			return F_ANY;
 		}
 
+		/** get feature class (ANY) */
 		inline virtual EFeatureClass get_feature_class()
 		{
 			return C_ANY;
 		}
 
 	protected:
+		/** number of feature vectors */
 		INT num_vectors;
 };
 #endif

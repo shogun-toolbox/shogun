@@ -99,7 +99,7 @@ class CSqrtDiagKernelNormalizer : public CKernelNormalizer
 		}
 
     public:
-		/*
+		/**
 		 * alloc and compute the vector containing the square root of the
 		 * diagonal elements of this kernel.
 		 */
@@ -128,8 +128,11 @@ class CSqrtDiagKernelNormalizer : public CKernelNormalizer
 		}
 
     protected:
+		/** sqrt diagonal left-hand side */
 		DREAL* sqrtdiag_lhs;
+		/** sqrt diagonal right-hand side */
 		DREAL* sqrtdiag_rhs;
+		/** f optimized diagonal computation is used */
 		bool use_optimized_diagonal_computation;
 };
 

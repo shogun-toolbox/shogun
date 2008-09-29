@@ -357,10 +357,7 @@ class CCombinedKernel : public CKernel
 		 */
 		virtual void set_optimization_type(EOptimizationType t);
 
-		/** precompute all sub-kernels
-		 *
-		 * @param t optimization type
-		 */
+		/** precompute all sub-kernels */
 		bool precompute_subkernels();
 
 	protected:
