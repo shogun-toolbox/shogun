@@ -6,6 +6,8 @@ function y = set_kernel()
 	global kernel;
 	global kernel_arg0_size;
 	global kernel_arg1_size;
+	global IdentityKernelNormalizer;
+	global AvgDiagKernelNormalizer;
 	y=false;
 
 	if !isempty(kernel_arg0_size)
@@ -56,7 +58,7 @@ function y = set_kernel()
 		global CombinedKernel;
 		global FixedDegreeStringKernel;
 		global PolyMatchStringKernel;
-		global LinearStringKernel;
+		global LocalAlignmentStringKernel;
 		global subkernel0_name;
 		global subkernel0_feature_type;
 		global subkernel0_kernel_arg0_size;
@@ -80,23 +82,21 @@ function y = set_kernel()
 			subkernel1_kernel_arg1_degree, ...
 			tobool(subkernel1_kernel_arg2_inhomogene));
 		kernel.append_kernel(subkernel);
-		subkernel=LinearStringKernel(subkernel2_kernel_arg0_size);
+		subkernel=LocalAlignmentStringKernel(subkernel2_kernel_arg0_size);
 		kernel.append_kernel(subkernel);
 		kernel.init(feats_train, feats_train);
 
 	elseif strcmp(kname, 'CommUlongString')==1
 		global CommUlongStringKernel;
 		global kernel_arg0_use_sign;
-		global kernel_arg1_normalization;
 		kernel=CommUlongStringKernel(feats_train, feats_train, ...
-			tobool(kernel_arg0_use_sign), kernel_arg1_normalization);
+			tobool(kernel_arg0_use_sign));
 
 	elseif strcmp(kname, 'CommWordString')==1
 		global CommWordStringKernel;
 		global kernel_arg0_use_sign;
-		global kernel_arg1_normalization;
 		kernel=CommWordStringKernel(feats_train, feats_train, ...
-			tobool(kernel_arg0_use_sign), kernel_arg1_normalization);
+			tobool(kernel_arg0_use_sign));
 
 	elseif strcmp(kname, 'Const')==1
 		global ConstKernel;
@@ -105,7 +105,7 @@ function y = set_kernel()
 
 	elseif strcmp(kname, 'Custom')==1
 		global CustomKernel;
-		kernel=CustomKernel(feats_train, feats_train);
+		kernel=CustomKernel();
 
 	elseif strcmp(kname, 'Diag')==1
 		global DiagKernel;
@@ -143,31 +143,42 @@ function y = set_kernel()
 		kernel=GaussianKernel(feats_train, feats_train, ...
 			kernel_arg0_width);
 
-	elseif strcmp(kname, 'HistogramWord')==1
-		global HistogramWordKernel;
+	elseif strcmp(kname, 'HistogramWordString')==1
+		global HistogramWordStringKernel;
 		global pie;
 		if !set_pie()
 			return;
 		end
-		kernel=HistogramWordKernel(feats_train, feats_train, pie);
+		kernel=HistogramWordStringKernel(feats_train, feats_train, pie);
 
 	elseif strcmp(kname, 'LinearByte')==1
 		global LinearByteKernel;
-		kernel=LinearByteKernel(feats_train, feats_train);
+		kernel=LinearByteKernel();
+		kernel.set_normalizer(AvgDiagKernelNormalizer(-1));
+		kernel.init(feats_train, feats_train);
 
 	elseif strcmp(kname, 'LinearString')==1
 		global LinearStringKernel;
-		kernel=LinearStringKernel(feats_train, feats_train);
+		kernel=LinearStringKernel();
+		kernel.set_normalizer(AvgDiagKernelNormalizer(-1));
+		kernel.init(feats_train, feats_train);
 
 	elseif strcmp(kname, 'LinearWord')==1
 		global LinearWordKernel;
-		kernel=LinearWordKernel(feats_train, feats_train);
+		kernel=LinearWordKernel();
+		kernel.set_normalizer(AvgDiagKernelNormalizer(-1));
+		kernel.init(feats_train, feats_train);
 
 	elseif strcmp(kname, 'Linear')==1
 		global LinearKernel;
 		global kernel_arg0_scale;
-		kernel=LinearKernel(feats_train, feats_train, ...
-			kernel_arg0_scale);
+		kernel=LinearKernel();
+		if kernel_arg0_scale
+			kernel.set_normalizer(AvgDiagKernelNormalizer(kernel_arg0_scale));
+		else
+			kernel.set_normalizer(AvgDiagKernelNormalizer(-1));
+		end
+		kernel.init(feats_train, feats_train);
 
 	elseif strcmp(kname, 'LocalAlignmentString')==1
 		global LocalAlignmentStringKernel;
@@ -180,11 +191,11 @@ function y = set_kernel()
 		kernel=PolyMatchStringKernel(feats_train, feats_train, ...
 			kernel_arg0_degree, tobool(kernel_arg1_inhomogene));
 
-	elseif strcmp(kname, 'PolyMatchWord')==1
-		global PolyMatchWordKernel;
+	elseif strcmp(kname, 'PolyMatchWordString')==1
+		global PolyMatchWordStringKernel;
 		global kernel_arg0_degree;
 		global kernel_arg1_inhomogene;
-		kernel=PolyMatchWordKernel(feats_train, feats_train, ...
+		kernel=PolyMatchWordStringKernel(feats_train, feats_train, ...
 			kernel_arg0_degree, tobool(kernel_arg1_inhomogene));
 
 	elseif strcmp(kname, 'Poly')==1
@@ -192,17 +203,21 @@ function y = set_kernel()
 		global kernel_arg0_degree;
 		global kernel_arg1_inhomogene;
 		global kernel_arg2_use_normalization;
-		kernel=PolyKernel(feats_train, feats_train, ...
-			kernel_arg0_degree, tobool(kernel_arg1_inhomogene), ...
-			tobool(kernel_arg2_use_normalization));
+		use_normalization=tobool(kernel_arg2_use_normalization);
+		kernel=PolyKernel(size_cache, kernel_arg0_degree, ...
+			tobool(kernel_arg1_inhomogene));
+		if !use_normalization
+			kernel.set_normalizer(IdentityKernelNormalizer());
+		end
+		kernel.init(feats_train, feats_train);
 
-	elseif strcmp(kname, 'SalzbergWord')==1
-		global SalzbergWordKernel;
+	elseif strcmp(kname, 'SalzbergWordString')==1
+		global SalzbergWordStringKernel;
 		global pie;
 		if !set_pie()
 			return;
 		end
-		kernel=SalzbergWordKernel(feats_train, feats_train, pie);
+		kernel=SalzbergWordStringKernel(feats_train, feats_train, pie);
 
 	elseif strcmp(kname, 'Sigmoid')==1
 		global SigmoidKernel;
@@ -229,24 +244,27 @@ function y = set_kernel()
 	elseif strcmp(kname, 'SparseLinear')==1
 		global SparseLinearKernel;
 		global kernel_arg0_scale;
-		kernel=SparseLinearKernel(feats_train, feats_train, ...
-			kernel_arg0_scale);
+		kernel=SparseLinearKernel();
+		if kernel_arg0_scale
+			kernel.set_normalizer(AvgDiagKernelNormalizer(kernel_arg0_scale));
+		else
+			kernel.set_normalizer(AvgDiagKernelNormalizer(-1));
+		end
+		kernel.init(feats_train, feats_train);
 
 	elseif strcmp(kname, 'SparsePoly')==1
 		global SparsePolyKernel;
 		global kernel_arg1_degree;
 		global kernel_arg2_inhomogene;
-		global kernel_arg3_use_normalization;
-		kernel=SparsePolyKernel(feats_train, feats_train, size_cache, ...
-			kernel_arg1_degree, tobool(kernel_arg2_inhomogene), ...
-			tobool(kernel_arg3_use_normalization));
+		kernel=SparsePolyKernel(size_cache, kernel_arg1_degree, ...
+			tobool(kernel_arg2_inhomogene));
+		kernel.init(feats_train, feats_train);
 
 	elseif strcmp(kname, 'WeightedCommWordString')==1
 		global WeightedCommWordStringKernel;
 		global kernel_arg0_use_sign;
-		global kernel_arg1_normalization;
 		kernel=WeightedCommWordStringKernel(feats_train, feats_train, ...
-			tobool(kernel_arg0_use_sign), kernel_arg1_normalization);
+			tobool(kernel_arg0_use_sign));
 
 	elseif strcmp(kname, 'WeightedDegreePositionString')==1
 		global WeightedDegreePositionStringKernel;
@@ -260,10 +278,10 @@ function y = set_kernel()
 		kernel=WeightedDegreeStringKernel(feats_train, feats_train, ...
 			kernel_arg0_degree);
 
-	elseif strcmp(kname, 'WordMatch')==1
-		global WordMatchKernel;
+	elseif strcmp(kname, 'MatchWordString')==1
+		global MatchWordStringKernel;
 		global kernel_arg0_degree;
-		kernel=WordMatchKernel(feats_train, feats_train, ...
+		kernel=MatchWordStringKernel(feats_train, feats_train, ...
 			kernel_arg0_degree);
 
 	else

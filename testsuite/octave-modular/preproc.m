@@ -16,8 +16,6 @@ function y = preproc(filename)
 		preproc=PruneVarSubMean(tobool(preproc_arg0_divide));
 	elseif strcmp(name, 'SortUlongString')==1
 		preproc=SortUlongString();
-	elseif strcmp(name, 'SortWord')==1
-		preproc=SortWord();
 	elseif strcmp(name, 'SortWordString')==1
 		preproc=SortWordString();
 	else
