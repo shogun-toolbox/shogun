@@ -426,7 +426,7 @@ CKernel* CGUIKernel::create_commstring(
 	return kern;
 }
 
-CKernel* CGUIKernel::create_wordmatch(INT size, INT d, bool normalize)
+CKernel* CGUIKernel::create_matchwordstring(INT size, INT d, bool normalize)
 {
 	CKernel* kern=new CMatchWordStringKernel(size, d);
 	SG_DEBUG("created MatchWordStringKernel (%p) with size %d and d %d.\n", kern, size, d);
@@ -447,7 +447,7 @@ CKernel* CGUIKernel::create_polymatchstring(
 	return kern;
 }
 
-CKernel* CGUIKernel::create_polymatchword(
+CKernel* CGUIKernel::create_polymatchwordstring(
 	INT size, INT degree, bool inhomogene, bool normalize)
 {
 	CKernel* kern=new CPolyMatchWordStringKernel(size, degree, inhomogene);

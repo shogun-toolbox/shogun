@@ -126,13 +126,13 @@ class CGUIKernel : public CSGObject
 	CKernel* create_commstring(
 		INT size=10, bool use_sign=false, CHAR* norm_str=NULL,
 		EKernelType ktype=K_WEIGHTEDCOMMWORDSTRING);
-	/** create a new WordMatch kernel */
-	CKernel* create_wordmatch(INT size=10, INT d=3, bool normalize=true);
+	/** create a new MatchWordString kernel */
+	CKernel* create_matchwordstring(INT size=10, INT d=3, bool normalize=true);
 	/** create a new PolyMatchString kernel */
 	CKernel* create_polymatchstring(INT size=10,
 			INT degree=2, bool inhomogene=false, bool normalize=true);
-	/** create a new PolyMatchWord kernel */
-	CKernel* create_polymatchword(INT size=10,
+	/** create a new PolyMatchWordString kernel */
+	CKernel* create_polymatchwordstring(INT size=10,
 			INT degree=2, bool inhomogene=false, bool normalize=true);
 	/** create a new SalzbergWord kernel */
 	CKernel* create_salzbergword(INT size=10);
