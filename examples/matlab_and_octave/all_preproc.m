@@ -68,29 +68,6 @@ sg('attach_preproc', 'TEST');
 sg('init_kernel', 'TEST');
 km=sg('get_kernel_matrix');
 
-%
-% word features;
-%
-
-
-% LinearWord
-disp('LinearWord');
-
-scale=1.4;
-
-sg('add_preproc', 'SORTWORD');
-sg('set_kernel', 'LINEAR', 'WORD', size_cache, scale);
-
-sg('set_features', 'TRAIN', uint16(fm_train_word));
-sg('attach_preproc', 'TRAIN');
-sg('init_kernel', 'TRAIN');
-km=sg('get_kernel_matrix');
-
-sg('set_features', 'TEST', uint16(fm_test_word));
-sg('attach_preproc', 'TEST');
-sg('init_kernel', 'TEST');
-km=sg('get_kernel_matrix');
-
 
 %
 % complex string features;

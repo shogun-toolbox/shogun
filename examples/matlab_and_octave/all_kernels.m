@@ -239,27 +239,10 @@ sg('set_features', 'TEST', fm_test_word);
 sg('init_kernel', 'TEST');
 km=sg('get_kernel_matrix');
 
-
-% Poly Match Word
-disp('PolyMatchWord');
-
-degree=2;
-inhomogene=true;
-normalize=true;
-
-sg('set_kernel', 'POLYMATCH', 'WORD', size_cache, degree, inhomogene, normalize);
-
-sg('set_features', 'TRAIN', fm_train_word);
-sg('init_kernel', 'TRAIN');
-km=sg('get_kernel_matrix');
-
-sg('set_features', 'TEST', fm_test_word);
-sg('init_kernel', 'TEST');
-km=sg('get_kernel_matrix');
-
 %
 % string features
 %
+
 
 % Fixed Degree String
 disp('FixedDegreeString');
@@ -410,6 +393,29 @@ gap=0;
 reverse='n'; % bit silly to not use boolean, set 'r' to yield true
 use_sign=false;
 normalization='FULL';
+
+
+% Poly Match WordString
+disp('PolyMatchWordString');
+
+degree=2;
+inhomogene=true;
+
+sg('add_preproc', 'SORTWORDSTRING');
+sg('set_kernel', 'POLYMATCHWORD', 'WORD', size_cache, degree, inhomogene);
+
+sg('set_features', 'TRAIN', fm_train_dna, 'DNA');
+sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, gap, reverse);
+sg('attach_preproc', 'TRAIN');
+sg('init_kernel', 'TRAIN');
+km=sg('get_kernel_matrix');
+
+sg('set_features', 'TEST', fm_test_dna, 'DNA');
+sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, gap, reverse);
+sg('attach_preproc', 'TEST');
+sg('init_kernel', 'TEST');
+km=sg('get_kernel_matrix');
+
 
 % Comm Word String
 disp('CommWordString');
