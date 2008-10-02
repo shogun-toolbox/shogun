@@ -75,32 +75,6 @@ kernel$init(kernel, feats_train, feats_test)
 km_test <- kernel$get_kernel_matrix()
 
 ###########################################################################
-# word features
-###########################################################################
-
-#LinearWord - unsigned 16bit type not supported by R
-#print('LinearWord')
-#
-#feats_train <- WordFeatures(traindata_word)
-#feats_test <- WordFeatures(testdata_word)
-#
-#preproc <- SortWord()
-#preproc$init(preproc, feats_train)
-#feats_train$add_preproc(feats_train, preproc)
-#feats_train$apply_preproc(feats_train)
-#feats_test$add_preproc(feats_test, preproc)
-#feats_test$apply_preproc(feats_test)
-#
-#do_rescale <- TRUE
-#scale <- 1.4
-#
-#kernel <- LinearWordKernel(feats_train, feats_train, do_rescale, scale)
-#
-#km_train <- kernel$get_kernel_matrix()
-#kernel$init(kernel, feats_train, feats_test)
-#km_test <- kernel$get_kernel_matrix()
-
-###########################################################################
 # complex string features
 ###########################################################################
 
@@ -128,10 +102,8 @@ feats_test$add_preproc(feats_test, preproc)
 feats_test$apply_preproc(feats_test)
 
 use_sign <- FALSE
-normalization <- "FULL_NORMALIZATION"
 
-kernel <- CommWordStringKernel(
-	feats_train, feats_train, use_sign, normalization)
+kernel <- CommWordStringKernel(feats_train, feats_train, use_sign)
 
 km_train <- kernel$get_kernel_matrix()
 kernel$init(kernel, feats_train, feats_test)
@@ -162,10 +134,8 @@ feats_test$add_preproc(feats_test, preproc)
 feats_test$apply_preproc(feats_test)
 
 use_sign <- FALSE
-normalization <- "FULL_NORMALIZATION"
 
-kernel <- CommUlongStringKernel(
-	feats_train, feats_train, use_sign, normalization)
+kernel <- CommUlongStringKernel(feats_train, feats_train, use_sign)
 
 km_train <- kernel$get_kernel_matrix()
 kernel$init(kernel, feats_train, feats_test)

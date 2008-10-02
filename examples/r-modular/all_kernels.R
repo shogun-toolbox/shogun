@@ -112,7 +112,9 @@ feats_train <- RealFeatures(fm_train_real)
 feats_test <- RealFeatures(fm_test_real)
 scale <- 1.2
 
-kernel <- LinearKernel(feats_train, feats_train, scale)
+kernel <- LinearKernel()
+kernel$set_normalizer(kernel, AvgDiagKernelNormalizer(scale))
+kernel$init(kernel, feats_train, feats_train)
 
 km_train <- kernel$get_kernel_matrix()
 kernel$init(kernel, feats_train, feats_test)
@@ -125,10 +127,9 @@ feats_train <- RealFeatures(fm_train_real)
 feats_test <- RealFeatures(fm_test_real)
 degree <- as.integer(4)
 inhomogene <- FALSE
-use_normalization <- TRUE
 
 kernel <- PolyKernel(
-	feats_train, feats_train, degree, inhomogene, use_normalization)
+	feats_train, feats_train, degree, inhomogene)
 
 km_train <- kernel$get_kernel_matrix()
 kernel$init(kernel, feats_train, feats_test)
@@ -181,7 +182,10 @@ feats_test <- SparseRealFeatures()
 feats_test$obtain_from_simple(feats_test, feat)
 scale <- 1.1
 
-kernel <- SparseLinearKernel(feats_train, feats_train, scale)
+kernel <- SparseLinearKernel()
+kernel$set_normalizer(kernel, AvgDiagKernelNormalizer(scale))
+kernel$init(kernel, feats_train, feats_train)
+
 
 km_train <- kernel$get_kernel_matrix()
 kernel$init(kernel, feats_train, feats_test)
@@ -199,10 +203,9 @@ feats_test$obtain_from_simple(feats_test, feat)
 size_cache <- as.integer(10)
 degree <- as.integer(3)
 inhomogene <- TRUE
-use_normalization <- FALSE
 
 kernel <- SparsePolyKernel(feats_train, feats_train, size_cache, degree,
-	inhomogene, use_normalization)
+	inhomogene)
 
 km_train <- kernel$get_kernel_matrix()
 kernel$init(kernel, feats_train, feats_test)
@@ -311,8 +314,10 @@ feats_test <- StringCharFeatures("DNA")
 feats_test$set_string_features(feats_test, fm_test_dna)
 k <- 3
 width <- 1.2
+size_cache <- 10
 
-kernel <- OligoKernel(feats_train, feats_train, k, width)
+kernel <- OligoKernel(size_cache,  k, width)
+kernel$init(kernel, feats_train, feats_train)
 
 km_train <- kernel$get_kernel_matrix()
 kernel$init(kernel, feats_train, feats_test)
@@ -434,10 +439,8 @@ feats_test$add_preproc(feats_test, preproc)
 feats_test$apply_preproc(feats_test)
 
 use_sign <- FALSE
-normalization <- "FULL_NORMALIZATION"
 
-kernel <- CommWordStringKernel(
-	feats_train, feats_train, use_sign, normalization)
+kernel <- CommWordStringKernel(feats_train, feats_train, use_sign)
 
 km_train <- kernel$get_kernel_matrix()
 kernel$init(kernel, feats_train, feats_test)
@@ -467,10 +470,8 @@ feats_test$add_preproc(feats_test, preproc)
 feats_test$apply_preproc(feats_test)
 
 use_sign <- FALSE
-normalization <- "FULL_NORMALIZATION"
 
-kernel <- WeightedCommWordStringKernel(
-	feats_train, feats_train, use_sign, normalization)
+kernel <- WeightedCommWordStringKernel(feats_train, feats_train, use_sign)
 
 km_train <- kernel$get_kernel_matrix()
 kernel$init(kernel, feats_train, feats_test)
@@ -501,10 +502,8 @@ feats_test$add_preproc(feats_test, preproc)
 feats_test$apply_preproc(feats_test)
 
 use_sign <- FALSE
-normalization <- "FULL_NORMALIZATION"
 
-kernel <- CommUlongStringKernel(
-	feats_train, feats_train, use_sign, normalization)
+kernel <- CommUlongStringKernel(feats_train, feats_train, use_sign)
 
 km_train <- kernel$get_kernel_matrix()
 kernel$init(kernel, feats_train, feats_test)
@@ -578,11 +577,9 @@ kernel <- CombinedKernel()
 feats_train <- CombinedFeatures()
 feats_test <- CombinedFeatures()
 
-subkfeats_train <- StringCharFeatures("DNA")
-subkfeats_train$set_string_features(subkfeats_train, fm_train_dna)
-subkfeats_test <- StringCharFeatures("DNA")
-subkfeats_test$set_string_features(subkfeats_test, fm_test_dna)
-subkernel <- LinearStringKernel(10)
+subkfeats_train <- RealFeatures(fm_train_real)
+subkfeats_test <- RealFeatures(fm_test_real)
+subkernel <- GaussianKernel(10, 1.6)
 feats_train$append_feature_obj(feats_train, subkfeats_train)
 feats_test$append_feature_obj(feats_test, subkfeats_test)
 kernel$append_kernel(kernel, subkernel)
@@ -634,7 +631,7 @@ pie$set_labels(pie, labels)
 pie$set_features(pie, feats_train)
 pie$train()
 
-kernel <- HistogramWordKernel(feats_train, feats_train, pie)
+kernel <- HistogramWordStringKernel(feats_train, feats_train, pie)
 km_train <- kernel$get_kernel_matrix()
 
 kernel$init(kernel, feats_train, feats_test)
@@ -680,7 +677,7 @@ neg_clone$set_observations(neg_clone, wordfeats_test)
 
 feats_train <- TOPFeatures(10, pos, neg, FALSE, FALSE)
 feats_test <- TOPFeatures(10, pos_clone, neg_clone, FALSE, FALSE)
-kernel <- PolyKernel(feats_train, feats_train, 1, FALSE, TRUE)
+kernel <- PolyKernel(feats_train, feats_train, 1, FALSE)
 km_train <- kernel$get_kernel_matrix()
 kernel$init(kernel, feats_train, feats_test)
 km_test <- kernel$get_kernel_matrix()
@@ -689,7 +686,7 @@ feats_train <- FKFeatures(10, pos, neg)
 feats_train$set_opt_a(feats_train, -1); #estimate prior
 feats_test <- FKFeatures(10, pos_clone, neg_clone)
 feats_test$set_a(feats_test, feats_train$get_a()); #use prior from training data
-kernel <- PolyKernel(feats_train, feats_train, 1, FALSE, TRUE)
+kernel <- PolyKernel(feats_train, feats_train, 1, FALSE)
 km_train <- kernel$get_kernel_matrix()
 kernel$init(kernel, feats_train, feats_test)
 km_test <- kernel$get_kernel_matrix()
