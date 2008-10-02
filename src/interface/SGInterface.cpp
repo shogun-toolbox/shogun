@@ -3501,9 +3501,10 @@ bool CSGInterface::cmd_set_prior_probs()
 	if (m_nrhs<3 || !create_return_values(0))
 		return false;
 
-	CSalzbergWordKernel* kernel=(CSalzbergWordKernel*) ui_kernel->get_kernel();
+	CSalzbergWordStringKernel* kernel=
+		(CSalzbergWordStringKernel*) ui_kernel->get_kernel();
 	if (kernel->get_kernel_type()!=K_SALZBERG)
-		SG_ERROR("SalzbergWordKernel required for setting prior probs!\n");
+		SG_ERROR("SalzbergWordStringKernel required for setting prior probs!\n");
 
 	DREAL pos_probs=get_real_from_real_or_str();
 	DREAL neg_probs=get_real_from_real_or_str();
@@ -3518,9 +3519,10 @@ bool CSGInterface::cmd_set_prior_probs_from_labels()
 	if (m_nrhs<2 || !create_return_values(0))
 		return false;
 
-	CSalzbergWordKernel* kernel=(CSalzbergWordKernel*) ui_kernel->get_kernel();
+	CSalzbergWordStringKernel* kernel=
+		(CSalzbergWordStringKernel*) ui_kernel->get_kernel();
 	if (kernel->get_kernel_type()!=K_SALZBERG)
-	SG_ERROR("SalzbergWordKernel required for setting prior probs!\n");
+	SG_ERROR("SalzbergWordStringKernel required for setting prior probs!\n");
 
 	DREAL* lab=NULL;
 	INT len=0;

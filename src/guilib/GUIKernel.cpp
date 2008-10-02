@@ -465,11 +465,11 @@ CKernel* CGUIKernel::create_salzbergword(INT size)
 	if (!estimator)
 		SG_ERROR("No estimator set.\n");
 
-	CKernel* kern=new CSalzbergWordKernel(size, estimator);
+	CKernel* kern=new CSalzbergWordStringKernel(size, estimator);
 	if (!kern)
-		SG_ERROR("Couldn't create SalzbergWord with size %d.\n", size);
+		SG_ERROR("Couldn't create SalzbergWordString with size %d.\n", size);
 	else
-		SG_DEBUG("created SalzbergWord (%p) with size %d.\n", kern, size);
+		SG_DEBUG("created SalzbergWordString (%p) with size %d.\n", kern, size);
 
 /*
 	// prior stuff
@@ -480,7 +480,7 @@ CKernel* CGUIKernel::create_salzbergword(INT size)
 		SG_INFO("Assign train labels first!\n");
 		return NULL;
 	}
-	((CSalzbergWordKernel *) kern)->set_prior_probs_from_labels(train_labels);
+	((CSalzbergWordStringKernel *) kern)->set_prior_probs_from_labels(train_labels);
 */
 
 	return kern;
@@ -493,11 +493,11 @@ CKernel* CGUIKernel::create_histogramword(INT size)
 	if (!estimator)
 		SG_ERROR("No estimator set.\n");
 
-	CKernel* kern=new CHistogramWordKernel(size, estimator);
+	CKernel* kern=new CHistogramWordStringKernel(size, estimator);
 	if (!kern)
-		SG_ERROR("Couldn't create HistogramWord with size %d.\n", size);
+		SG_ERROR("Couldn't create HistogramWordString with size %d.\n", size);
 	else
-		SG_DEBUG("created HistogramWord (%p) with size %d.\n", kern, size);
+		SG_DEBUG("created HistogramWordString (%p) with size %d.\n", kern, size);
 
 	return kern;
 }
