@@ -72,7 +72,7 @@ function y = set_kernel()
 		end
 		sg('set_kernel', kname, ftype, size_cache, kernel_arg0_scale);
 
-	elseif strcmp(kname, 'POLYMATCH')==1
+	elseif strcmp(kname, 'POLYMATCH')==1 || strcmp(kname, 'POLYMATCHWORD')
 		global kernel_arg0_degree;
 		global kernel_arg1_inhomogene;
 		sg('set_kernel', kname, ftype, size_cache, ...
@@ -82,11 +82,11 @@ function y = set_kernel()
 		if is_sparse
 			global kernel_arg1_degree;
 			global kernel_arg2_inhomogene;
-			global kernel_arg3_use_normalization;
 			degree=kernel_arg1_degree;
 			inhomogene=kernel_arg2_inhomogene;
-			use_normalization=kernel_arg3_use_normalization;
 			ftype=strcat('SPARSE', ftype);
+			sg('set_kernel', kname, ftype, size_cache, ...
+				degree, tobool(inhomogene));
 		else
 			global kernel_arg0_degree;
 			global kernel_arg1_inhomogene;
@@ -94,12 +94,11 @@ function y = set_kernel()
 			degree=kernel_arg0_degree;
 			inhomogene=kernel_arg1_inhomogene;
 			use_normalization=kernel_arg2_use_normalization;
+			sg('set_kernel', kname, ftype, size_cache, ...
+				degree, tobool(inhomogene), tobool(use_normalization));
 		end
 
-		sg('set_kernel', kname, ftype, size_cache, ...
-			degree, tobool(inhomogene), tobool(use_normalization));
-
-	elseif strcmp(kname, 'MATCH')==1
+	elseif strcmp(kname, 'MATCHWORD')==1
 		global kernel_arg0_degree;
 		sg('set_kernel', kname, ftype, size_cache, kernel_arg0_degree);
 

@@ -4,8 +4,6 @@ function y = fix_kernel_name_inconsistency (kname)
 		y='SLIK';
 	elseif findstr('LOCALITYIMPROVEDSTRING', kname)
 		y='LIK';
-	elseif findstr('WORDMATCH', kname)
-		y='MATCH';
 	elseif findstr('SPARSEGAUSSIAN', kname)
 		y='GAUSSIAN';
 	elseif findstr('SPARSEPOLY', kname)
@@ -29,4 +27,3 @@ function y = fix_kernel_name_inconsistency (kname)
 	else
 		y=kname;
 	end
-
