@@ -136,7 +136,9 @@ feats_train=RealFeatures(fm_train_real);
 feats_test=RealFeatures(fm_test_real);
 scale=1.2;
 
-kernel=LinearKernel(feats_train, feats_train, scale);
+kernel=LinearKernel();
+kernel.set_normalizer(AvgDiagKernelNormalizer(scale));
+kernel.init(feats_train, feats_train);
 
 km_train=kernel.get_kernel_matrix();
 kernel.init(feats_train, feats_test);
@@ -205,7 +207,9 @@ feats_test=SparseRealFeatures();
 feats_test.obtain_from_simple(feat);
 scale=1.1;
 
-kernel=SparseLinearKernel(feats_train, feats_train, scale);
+kernel=SparseLinearKernel();
+kernel.set_normalizer(AvgDiagKernelNormalizer(scale));
+kernel.init(feats_train, feats_train);
 
 km_train=kernel.get_kernel_matrix();
 kernel.init(feats_train, feats_test);
@@ -223,10 +227,9 @@ feats_test.obtain_from_simple(feat);
 size_cache=10;
 degree=3;
 inhomogene=true;
-use_normalization=false;
 
 kernel=SparsePolyKernel(feats_train, feats_train, size_cache, degree,
-	inhomogene, use_normalization);
+	inhomogene);
 
 km_train=kernel.get_kernel_matrix();
 kernel.init(feats_train, feats_test);
@@ -244,40 +247,14 @@ feats_test=WordFeatures(fm_test_word);
 do_rescale=true;
 scale=1.4;
 
-kernel=LinearWordKernel(feats_train, feats_train, do_rescale, scale);
+kernel=LinearWordKernel();
+kernel.set_normalizer(AvgDiagKernelNormalizer(scale));
+kernel.init(feats_train, feats_train);
 
 km_train=kernel.get_kernel_matrix();
 kernel.init(feats_train, feats_test);
 km_test=kernel.get_kernel_matrix();
 
-% poly_match_word
-disp('PolyMatchWord')
-
-feats_train=WordFeatures(fm_train_word);
-feats_test=WordFeatures(fm_test_word);
-degree=2;
-inhomogene=true;
-
-kernel=PolyMatchWordKernel(feats_train, feats_train, degree, inhomogene);
-
-km_train=kernel.get_kernel_matrix();
-kernel.init(feats_train, feats_test);
-km_test=kernel.get_kernel_matrix();
-
-% word_match
-disp('WordMatch')
-
-feats_train=WordFeatures(fm_train_word);
-feats_test=WordFeatures(fm_test_word);
-degree=3;
-do_rescale=true;
-scale=1.4;
-
-kernel=WordMatchKernel(feats_train, feats_train, degree, do_rescale, scale);
-
-km_train=kernel.get_kernel_matrix();
-kernel.init(feats_train, feats_test);
-km_test=kernel.get_kernel_matrix();
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % string features
@@ -335,8 +312,10 @@ feats_test=StringCharFeatures(DNA);
 feats_test.set_string_features(fm_test_dna);
 k=3;
 width=1.2;
+size_cache=10;
 
-kernel=OligoKernel(feats_train, feats_train, k, width);
+kernel=OligoKernel(size_cache, k, width);
+kernel.init(feats_train, feats_train);
 
 km_train=kernel.get_kernel_matrix();
 kernel.init(feats_train, feats_test);
@@ -435,12 +414,15 @@ km_test=kernel.get_kernel_matrix();
 % complex string features
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% comm_word_string
-disp('CommWordString')
-
 order=3;
 gap=0;
 reverse=false;
+
+% poly_match_word_string
+disp('PolyMatchWordString')
+
+degree=2;
+inhomogene=true;
 
 charfeat=StringCharFeatures(DNA);
 charfeat.set_string_features(fm_train_dna);
@@ -458,11 +440,66 @@ feats_test.obtain_from_char(charfeat, order-1, order, gap, reverse);
 feats_test.add_preproc(preproc);
 feats_test.apply_preproc();
 
-use_sign=false;
-normalization=FULL_NORMALIZATION;
+kernel=PolyMatchWordStringKernel(feats_train, feats_train, degree, inhomogene);
 
-kernel=CommWordStringKernel(
-	feats_train, feats_train, use_sign, normalization);
+km_train=kernel.get_kernel_matrix();
+kernel.init(feats_train, feats_test);
+km_test=kernel.get_kernel_matrix();
+
+% match_word_string
+disp('MatchWordString')
+
+degree=3;
+scale=1.4;
+size_cache=10;
+
+charfeat=StringCharFeatures(DNA);
+charfeat.set_string_features(fm_train_dna);
+feats_train=StringWordFeatures(charfeat.get_alphabet());
+feats_train.obtain_from_char(charfeat, order-1, order, gap, reverse);
+preproc=SortWordString();
+preproc.init(feats_train);
+feats_train.add_preproc(preproc);
+feats_train.apply_preproc();
+
+charfeat=StringCharFeatures(DNA);
+charfeat.set_string_features(fm_test_dna);
+feats_test=StringWordFeatures(charfeat.get_alphabet());
+feats_test.obtain_from_char(charfeat, order-1, order, gap, reverse);
+feats_test.add_preproc(preproc);
+feats_test.apply_preproc();
+
+kernel=MatchWordStringKernel(size_cache, degree);
+kernel.set_normalizer(AvgDiagKernelNormalizer(scale));
+kernel.init(feats_train, feats_train);
+
+km_train=kernel.get_kernel_matrix();
+kernel.init(feats_train, feats_test);
+km_test=kernel.get_kernel_matrix();
+
+
+% comm_word_string
+disp('CommWordString')
+
+	charfeat=StringCharFeatures(DNA);
+	charfeat.set_string_features(fm_train_dna);
+	feats_train=StringWordFeatures(charfeat.get_alphabet());
+	feats_train.obtain_from_char(charfeat, order-1, order, gap, reverse);
+	preproc=SortWordString();
+	preproc.init(feats_train);
+	feats_train.add_preproc(preproc);
+	feats_train.apply_preproc();
+
+	charfeat=StringCharFeatures(DNA);
+	charfeat.set_string_features(fm_test_dna);
+	feats_test=StringWordFeatures(charfeat.get_alphabet());
+	feats_test.obtain_from_char(charfeat, order-1, order, gap, reverse);
+	feats_test.add_preproc(preproc);
+feats_test.apply_preproc();
+
+use_sign=false;
+
+kernel=CommWordStringKernel(feats_train, feats_train, use_sign);
 
 km_train=kernel.get_kernel_matrix();
 kernel.init(feats_train, feats_test);
@@ -492,10 +529,8 @@ feats_test.add_preproc(preproc);
 feats_test.apply_preproc();
 
 use_sign=false;
-normalization=FULL_NORMALIZATION;
 
-kernel=WeightedCommWordStringKernel(
-	feats_train, feats_train, use_sign, normalization);
+kernel=WeightedCommWordStringKernel(feats_train, feats_train, use_sign);
 
 km_train=kernel.get_kernel_matrix();
 kernel.init(feats_train, feats_test);
@@ -526,10 +561,8 @@ feats_test.add_preproc(preproc);
 feats_test.apply_preproc();
 
 use_sign=false;
-normalization=FULL_NORMALIZATION;
 
-kernel=CommUlongStringKernel(
-	feats_train, feats_train, use_sign, normalization);
+kernel=CommUlongStringKernel(feats_train, feats_train, use_sign);
 
 km_train=kernel.get_kernel_matrix();
 kernel.init(feats_train, feats_test);
@@ -603,11 +636,9 @@ kernel=CombinedKernel();
 feats_train=CombinedFeatures();
 feats_test=CombinedFeatures();
 
-subkfeats_train=StringCharFeatures(DNA);
-subkfeats_train.set_string_features(fm_train_dna);
-subkfeats_test=StringCharFeatures(DNA);
-subkfeats_test.set_string_features(fm_test_dna);
-subkernel=LinearStringKernel(10);
+subkfeats_train=RealFeatures(fm_train_real);
+subkfeats_test=RealFeatures(fm_test_real);
+subkernel=GaussianKernel(10, 1.2);
 feats_train.append_feature_obj(subkfeats_train);
 feats_test.append_feature_obj(subkfeats_test);
 kernel.append_kernel(subkernel);
@@ -659,7 +690,7 @@ pie.set_labels(labels);
 pie.set_features(feats_train);
 pie.train();
 
-kernel=HistogramWordKernel(feats_train, feats_train, pie);
+kernel=HistogramWordStringKernel(feats_train, feats_train, pie);
 km_train=kernel.get_kernel_matrix();
 
 kernel.init(feats_train, feats_test);

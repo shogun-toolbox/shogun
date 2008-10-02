@@ -78,32 +78,6 @@ kernel.init(feats_train, feats_test);
 km_test=kernel.get_kernel_matrix();
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% word features
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%LinearWord
-disp('LinearWord')
-
-feats_train=WordFeatures(uint16(fm_train_word));
-feats_test=WordFeatures(uint16(fm_test_word));
-
-preproc=SortWord();
-preproc.init(feats_train);
-feats_train.add_preproc(preproc);
-feats_train.apply_preproc();
-feats_test.add_preproc(preproc);
-feats_test.apply_preproc();
-
-do_rescale=true;
-scale=1.4;
-
-kernel=LinearWordKernel(feats_train, feats_train, do_rescale, scale);
-
-km_train=kernel.get_kernel_matrix();
-kernel.init(feats_train, feats_test);
-km_test=kernel.get_kernel_matrix();
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % complex string features
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -131,10 +105,8 @@ feats_test.add_preproc(preproc);
 feats_test.apply_preproc();
 
 use_sign=false;
-normalization=FULL_NORMALIZATION;
 
-kernel=CommWordStringKernel(
-	feats_train, feats_train, use_sign, normalization);
+kernel=CommWordStringKernel(feats_train, feats_train, use_sign);
 
 km_train=kernel.get_kernel_matrix();
 kernel.init(feats_train, feats_test);
@@ -165,10 +137,8 @@ feats_test.add_preproc(preproc);
 feats_test.apply_preproc();
 
 use_sign=false;
-normalization=FULL_NORMALIZATION;
 
-kernel=CommUlongStringKernel(
-	feats_train, feats_train, use_sign, normalization);
+kernel=CommUlongStringKernel(feats_train, feats_train, use_sign);
 
 km_train=kernel.get_kernel_matrix();
 kernel.init(feats_train, feats_test);
