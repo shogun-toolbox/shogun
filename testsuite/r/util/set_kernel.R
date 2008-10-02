@@ -74,10 +74,8 @@ set_kernel <- function() {
 	}
 
 	else if (regexpr('COMMSTRING', kname)>0) { # normal + WEIGHTED
-		source('util/fix_normalization_inconsistency.R')
-		norm <- fix_normalization_inconsistency(kernel_arg1_normalization)
 		sg('set_kernel', kname, ftype, size_cache,
-			tobool(kernel_arg0_use_sign), norm)
+			tobool(kernel_arg0_use_sign))
 	}
 
 	else if (regexpr('DEGREE', kname)>0) { # FIXED + WEIGHTED
