@@ -17,8 +17,8 @@
 #include "classifier/PluginEstimate.h"
 #include "features/StringFeatures.h"
 
-/** The HistogramWord computes the TOP kernel on inhomogeneous Markov Chains. */
-class CHistogramWordKernel: public CStringKernel<WORD>
+/** The HistogramWordString computes the TOP kernel on inhomogeneous Markov Chains. */
+class CHistogramWordStringKernel: public CStringKernel<WORD>
 {
 	public:
 		/** constructor
@@ -26,7 +26,7 @@ class CHistogramWordKernel: public CStringKernel<WORD>
 		 * @param size cache size
 		 * @param pie plugin estimate
 		 */
-		CHistogramWordKernel(INT size, CPluginEstimate* pie);
+		CHistogramWordStringKernel(INT size, CPluginEstimate* pie);
 
 		/** constructor
 		 *
@@ -34,11 +34,11 @@ class CHistogramWordKernel: public CStringKernel<WORD>
 		 * @param r features of right-hand side
 		 * @param pie plugin estimate
 		 */
-		CHistogramWordKernel(
+		CHistogramWordStringKernel(
 			CStringFeatures<WORD>* l, CStringFeatures<WORD>* r,
 			CPluginEstimate* pie);
 
-		virtual ~CHistogramWordKernel();
+		virtual ~CHistogramWordStringKernel();
 
 		/** initialize kernel
 		 *

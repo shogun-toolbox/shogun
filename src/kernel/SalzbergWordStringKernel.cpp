@@ -16,7 +16,7 @@
 #include "features/Labels.h"
 #include "classifier/PluginEstimate.h"
 
-CSalzbergWordKernel::CSalzbergWordKernel(INT size, CPluginEstimate* pie, CLabels* labels)
+CSalzbergWordStringKernel::CSalzbergWordStringKernel(INT size, CPluginEstimate* pie, CLabels* labels)
 : CStringKernel<WORD>(size), estimate(pie), mean(NULL), variance(NULL),
 	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL),
 	ld_mean_lhs(NULL), ld_mean_rhs(NULL),
@@ -27,7 +27,7 @@ CSalzbergWordKernel::CSalzbergWordKernel(INT size, CPluginEstimate* pie, CLabels
 		set_prior_probs_from_labels(labels);
 }
 
-CSalzbergWordKernel::CSalzbergWordKernel(
+CSalzbergWordStringKernel::CSalzbergWordStringKernel(
 	CStringFeatures<WORD>* l, CStringFeatures<WORD>* r,
 	CPluginEstimate* pie, CLabels* labels)
 : CStringKernel<WORD>(10),estimate(pie), mean(NULL), variance(NULL),
@@ -42,12 +42,12 @@ CSalzbergWordKernel::CSalzbergWordKernel(
 	init(l, r);
 }
 
-CSalzbergWordKernel::~CSalzbergWordKernel()
+CSalzbergWordStringKernel::~CSalzbergWordStringKernel()
 {
 	cleanup();
 }
 
-bool CSalzbergWordKernel::init(CFeatures* p_l, CFeatures* p_r)
+bool CSalzbergWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 {
 	CStringKernel<WORD>::init(p_l,p_r);
 	CStringFeatures<WORD>* l=(CStringFeatures<WORD>*) p_l;
@@ -270,7 +270,7 @@ bool CSalzbergWordKernel::init(CFeatures* p_l, CFeatures* p_r)
 	return init_normalizer();
 }
 
-void CSalzbergWordKernel::cleanup()
+void CSalzbergWordStringKernel::cleanup()
 {
 	delete[] variance;
 	variance=NULL;
@@ -295,19 +295,19 @@ void CSalzbergWordKernel::cleanup()
 	CKernel::cleanup();
 }
 
-bool CSalzbergWordKernel::load_init(FILE* src)
+bool CSalzbergWordStringKernel::load_init(FILE* src)
 {
 	return false;
 }
 
-bool CSalzbergWordKernel::save_init(FILE* dest)
+bool CSalzbergWordStringKernel::save_init(FILE* dest)
 {
 	return false;
 }
 
 
 
-DREAL CSalzbergWordKernel::compute(INT idx_a, INT idx_b)
+DREAL CSalzbergWordStringKernel::compute(INT idx_a, INT idx_b)
 {
 	INT alen, blen;
 	WORD* avec=((CStringFeatures<WORD>*) lhs)->get_feature_vector(idx_a, alen);
@@ -339,7 +339,7 @@ DREAL CSalzbergWordKernel::compute(INT idx_a, INT idx_b)
 	return result;
 }
 
-void CSalzbergWordKernel::set_prior_probs_from_labels(CLabels* labels)
+void CSalzbergWordStringKernel::set_prior_probs_from_labels(CLabels* labels)
 {
 	ASSERT(labels);
 

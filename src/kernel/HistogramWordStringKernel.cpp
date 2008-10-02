@@ -16,7 +16,7 @@
 #include "classifier/PluginEstimate.h"
 #include "lib/io.h"
 
-CHistogramWordKernel::CHistogramWordKernel(INT size, CPluginEstimate* pie)
+CHistogramWordStringKernel::CHistogramWordStringKernel(INT size, CPluginEstimate* pie)
 : CStringKernel<WORD>(size), estimate(pie), mean(NULL), variance(NULL),
 	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL),
 	ld_mean_lhs(NULL), ld_mean_rhs(NULL),
@@ -25,7 +25,7 @@ CHistogramWordKernel::CHistogramWordKernel(INT size, CPluginEstimate* pie)
 {
 }
 
-CHistogramWordKernel::CHistogramWordKernel(
+CHistogramWordStringKernel::CHistogramWordStringKernel(
 	CStringFeatures<WORD>* l, CStringFeatures<WORD>* r, CPluginEstimate* pie)
 : CStringKernel<WORD>(10), estimate(pie), mean(NULL), variance(NULL),
 	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL),
@@ -36,7 +36,7 @@ CHistogramWordKernel::CHistogramWordKernel(
 	init(l, r);
 }
 
-CHistogramWordKernel::~CHistogramWordKernel()
+CHistogramWordStringKernel::~CHistogramWordStringKernel()
 {
 	delete[] variance;
 	delete[] mean;
@@ -51,7 +51,7 @@ CHistogramWordKernel::~CHistogramWordKernel()
 	delete[] plo_lhs ;
 }
 
-bool CHistogramWordKernel::init(CFeatures* p_l, CFeatures* p_r)
+bool CHistogramWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 {
 	CStringKernel<WORD>::init(p_l,p_r);
 	CStringFeatures<WORD>* l=(CStringFeatures<WORD>*) p_l;
@@ -295,7 +295,7 @@ bool CHistogramWordKernel::init(CFeatures* p_l, CFeatures* p_r)
 	return init_normalizer();
 }
 
-void CHistogramWordKernel::cleanup()
+void CHistogramWordStringKernel::cleanup()
 {
 	delete[] variance;
 	variance=NULL;
@@ -333,19 +333,19 @@ void CHistogramWordKernel::cleanup()
 	CKernel::cleanup();
 }
 
-bool CHistogramWordKernel::load_init(FILE* src)
+bool CHistogramWordStringKernel::load_init(FILE* src)
 {
 	return false;
 }
 
-bool CHistogramWordKernel::save_init(FILE* dest)
+bool CHistogramWordStringKernel::save_init(FILE* dest)
 {
 	return false;
 }
 
 
 
-DREAL CHistogramWordKernel::compute(INT idx_a, INT idx_b)
+DREAL CHistogramWordStringKernel::compute(INT idx_a, INT idx_b)
 {
 	INT alen, blen;
 	WORD* avec=((CStringFeatures<WORD>*) lhs)->get_feature_vector(idx_a, alen);
@@ -386,7 +386,7 @@ DREAL CHistogramWordKernel::compute(INT idx_a, INT idx_b)
 
 #ifdef BLABLA
 
-DREAL CHistogramWordKernel::compute_slow(INT idx_a, INT idx_b)
+DREAL CHistogramWordStringKernel::compute_slow(INT idx_a, INT idx_b)
 {
 	INT alen, blen;
 	WORD* avec=((CStringFeatures<WORD>*) lhs)->get_feature_vector(idx_a, alen);

@@ -16,13 +16,13 @@
 #include "classifier/PluginEstimate.h"
 #include "features/StringFeatures.h"
 
-/** The SalzbergWord kernel implements the Salzberg kernel as described in
+/** The SalzbergWordString kernel implements the Salzberg kernel as described in
  *
  * Engineering Support Vector Machine Kernels That Recognize Translation Initiation Sites
  * A. Zien, G.Raetsch, S. Mika, B. Schoelkopf, T. Lengauer, K.-R. Mueller
  *
  */
-class CSalzbergWordKernel: public CStringKernel<WORD>
+class CSalzbergWordStringKernel: public CStringKernel<WORD>
 {
 	public:
 		/** constructor
@@ -31,7 +31,7 @@ class CSalzbergWordKernel: public CStringKernel<WORD>
 		 * @param pie the plugin estimate
 		 * @param labels optional labels to set prior from
 		 */
-		CSalzbergWordKernel(INT size, CPluginEstimate* pie, CLabels* labels=NULL);
+		CSalzbergWordStringKernel(INT size, CPluginEstimate* pie, CLabels* labels=NULL);
 
 		/** constructor
 	 	 *
@@ -40,11 +40,11 @@ class CSalzbergWordKernel: public CStringKernel<WORD>
 		 * @param pie the plugin estimate
 		 * @param labels optional labels to set prior from
 		 */
-		CSalzbergWordKernel(
+		CSalzbergWordStringKernel(
 			CStringFeatures<WORD>* l, CStringFeatures<WORD>* r,
 			CPluginEstimate *pie, CLabels* labels=NULL);
 
-		virtual ~CSalzbergWordKernel();
+		virtual ~CSalzbergWordStringKernel();
 
 		/** set prior probs
 		 *
