@@ -189,22 +189,6 @@ def linear_word ():
 	sg('init_kernel', 'TEST')
 	km=sg('get_kernel_matrix')
 
-def poly_match_word ():
-	print 'PolyMatchWord'
-
-	size_cache=10
-	degree=2
-	inhomogene=True
-	normalize=True
-
-	sg('set_features', 'TRAIN', fm_train_word)
-	sg('set_features', 'TEST', fm_test_word)
-	sg('set_kernel', 'POLYMATCH', 'WORD', size_cache, degree, inhomogene, normalize)
-	sg('init_kernel', 'TRAIN')
-	km=sg('get_kernel_matrix')
-
-	sg('init_kernel', 'TEST')
-	km=sg('get_kernel_matrix')
 
 ###########################################################################
 # string features
@@ -352,6 +336,33 @@ def simple_locality_improved_string ():
 ###########################################################################
 # complex string features
 ###########################################################################
+
+def poly_match_word ():
+	print 'PolyMatchWord'
+
+	size_cache=10
+	degree=2
+	inhomogene=True
+	normalize=True
+	order=3
+	gap=0
+	reverse='n' # bit silly to not use boolean, set 'r' to yield true
+
+	sg('add_preproc', 'SORTWORDSTRING')
+	sg('set_features', 'TRAIN', fm_train_dna, 'DNA')
+	sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, gap, reverse)
+	sg('attach_preproc', 'TRAIN')
+
+	sg('set_features', 'TEST', fm_test_dna, 'DNA')
+	sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, gap, reverse)
+	sg('attach_preproc', 'TEST')
+
+	sg('set_kernel', 'POLYMATCHWORD', 'WORD', size_cache, degree, inhomogene, normalize)
+	sg('init_kernel', 'TRAIN')
+	km=sg('get_kernel_matrix')
+
+	sg('init_kernel', 'TEST')
+	km=sg('get_kernel_matrix')
 
 def comm_word_string ():
 	print 'CommWordString'

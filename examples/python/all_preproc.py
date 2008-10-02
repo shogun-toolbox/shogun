@@ -80,29 +80,6 @@ def prune_var_sub_mean ():
 	km=sg('get_kernel_matrix')
 
 ###########################################################################
-# word features
-###########################################################################
-
-def sort_word ():
-	print 'LinearWord'
-
-	size_cache=10
-	scale=1.4
-
-	sg('add_preproc', 'SORTWORD')
-	sg('set_kernel', 'LINEAR', 'WORD', size_cache, scale)
-
-	sg('set_features', 'TRAIN', fm_train_word)
-	sg('attach_preproc', 'TRAIN')
-	sg('init_kernel', 'TRAIN')
-	km=sg('get_kernel_matrix')
-
-	sg('set_features', 'TEST', fm_test_word)
-	sg('attach_preproc', 'TEST')
-	sg('init_kernel', 'TEST')
-	km=sg('get_kernel_matrix')
-
-###########################################################################
 # complex string features
 ###########################################################################
 
@@ -168,8 +145,6 @@ if __name__=='__main__':
 	log_plus_one()
 	norm_one()
 	prune_var_sub_mean()
-
-	sort_word()
 
 	sort_word_string()
 	sort_ulong_string()
