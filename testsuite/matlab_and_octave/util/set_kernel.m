@@ -72,7 +72,7 @@ function y = set_kernel()
 		end
 		sg('set_kernel', kname, ftype, size_cache, kernel_arg0_scale);
 
-	elseif strcmp(kname, 'POLYMATCH')==1 || strcmp(kname, 'POLYMATCHWORD')
+	elseif strcmp(kname, 'POLYMATCH')==1 || strcmp(kname, 'POLYMATCHWORD')==1
 		global kernel_arg0_degree;
 		global kernel_arg1_inhomogene;
 		sg('set_kernel', kname, ftype, size_cache, ...
