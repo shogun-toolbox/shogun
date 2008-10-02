@@ -126,7 +126,9 @@ def linear ():
 	feats_test=RealFeatures(fm_test_real)
 	scale=1.2
 
-	kernel=LinearKernel(feats_train, feats_train, scale)
+	kernel=LinearKernel()
+	kernel.set_normalizer(AvgDiagKernelNormalizer(scale))
+	kernel.init(feats_train, feats_train)
 
 	km_train=kernel.get_kernel_matrix()
 	kernel.init(feats_train, feats_test)
@@ -195,7 +197,9 @@ def sparse_linear ():
 	feats_test.obtain_from_simple(realfeat)
 	scale=1.1
 
-	kernel=SparseLinearKernel(feats_train, feats_train, scale)
+	kernel=SparseLinearKernel()
+	kernel.set_normalizer(AvgDiagKernelNormalizer(scale))
+	kernel.init(feats_train, feats_train)
 
 	km_train=kernel.get_kernel_matrix()
 	kernel.init(feats_train, feats_test)
@@ -213,10 +217,9 @@ def sparse_poly ():
 	size_cache=10
 	degree=3
 	inhomogene=True
-	use_normalization=False
 
 	kernel=SparsePolyKernel(feats_train, feats_train, size_cache, degree,
-		inhomogene, use_normalization)
+		inhomogene)
 
 	km_train=kernel.get_kernel_matrix()
 	kernel.init(feats_train, feats_test)
@@ -231,39 +234,11 @@ def linear_word ():
 
 	feats_train=WordFeatures(fm_train_word)
 	feats_test=WordFeatures(fm_test_word)
-	do_rescale=True
 	scale=1.4
 
-	kernel=LinearWordKernel(feats_train, feats_train, do_rescale, scale)
-
-	km_train=kernel.get_kernel_matrix()
-	kernel.init(feats_train, feats_test)
-	km_test=kernel.get_kernel_matrix()
-
-def poly_match_word ():
-	print 'PolyMatchWord'
-
-	feats_train=WordFeatures(fm_train_word)
-	feats_test=WordFeatures(fm_test_word)
-	degree=2
-	inhomogene=True
-
-	kernel=PolyMatchWordKernel(feats_train, feats_train, degree, inhomogene)
-
-	km_train=kernel.get_kernel_matrix()
-	kernel.init(feats_train, feats_test)
-	km_test=kernel.get_kernel_matrix()
-
-def word_match ():
-	print 'WordMatch'
-
-	feats_train=WordFeatures(fm_train_word)
-	feats_test=WordFeatures(fm_test_word)
-	degree=3
-	do_rescale=True
-	scale=1.4
-
-	kernel=WordMatchKernel(feats_train, feats_train, degree, do_rescale, scale)
+	kernel=LinearWordKernel()
+	kernel.set_normalizer(AvgDiagKernelNormalizer(scale))
+	kernel.init(feats_train, feats_train)
 
 	km_train=kernel.get_kernel_matrix()
 	kernel.init(feats_train, feats_test)
@@ -325,8 +300,10 @@ def oligo_string ():
 	feats_test.set_string_features(fm_test_dna)
 	k=3
 	width=1.2
+	size_cache=10
 
-	kernel=OligoKernel(feats_train, feats_train, k, width)
+	kernel=OligoKernel(size_cache, k, width)
+	kernel.init(feats_train, feats_train)
 
 	km_train=kernel.get_kernel_matrix()
 	kernel.init(feats_train, feats_test)
@@ -425,6 +402,72 @@ def locality_improved_string ():
 # complex string features
 ###########################################################################
 
+def poly_match_word_string ():
+	print 'PolyMatchWordString'
+
+	degree=2
+	inhomogene=True
+	order=3
+	gap=0
+	reverse=False
+
+	charfeat=StringCharFeatures(DNA)
+	charfeat.set_string_features(fm_train_dna)
+	feats_train=StringWordFeatures(charfeat.get_alphabet())
+	feats_train.obtain_from_char(charfeat, order-1, order, gap, reverse)
+	preproc=SortWordString()
+	preproc.init(feats_train)
+	feats_train.add_preproc(preproc)
+	feats_train.apply_preproc()
+
+	charfeat=StringCharFeatures(DNA)
+	charfeat.set_string_features(fm_test_dna)
+	feats_test=StringWordFeatures(charfeat.get_alphabet())
+	feats_test.obtain_from_char(charfeat, order-1, order, gap, reverse)
+	feats_test.add_preproc(preproc)
+	feats_test.apply_preproc()
+
+	kernel=PolyMatchWordStringKernel(feats_train, feats_train, degree, inhomogene)
+
+	km_train=kernel.get_kernel_matrix()
+	kernel.init(feats_train, feats_test)
+	km_test=kernel.get_kernel_matrix()
+
+def match_word_string ():
+	print 'MatchWordString'
+
+	degree=3
+	scale=1.4
+	size_cache=10
+	order=3
+	gap=0
+	reverse=False
+
+	charfeat=StringCharFeatures(DNA)
+	charfeat.set_string_features(fm_train_dna)
+	feats_train=StringWordFeatures(charfeat.get_alphabet())
+	feats_train.obtain_from_char(charfeat, order-1, order, gap, reverse)
+	preproc=SortWordString()
+	preproc.init(feats_train)
+	feats_train.add_preproc(preproc)
+	feats_train.apply_preproc()
+
+	charfeat=StringCharFeatures(DNA)
+	charfeat.set_string_features(fm_test_dna)
+	feats_test=StringWordFeatures(charfeat.get_alphabet())
+	feats_test.obtain_from_char(charfeat, order-1, order, gap, reverse)
+	feats_test.add_preproc(preproc)
+	feats_test.apply_preproc()
+
+	kernel=MatchWordStringKernel(size_cache, degree)
+	kernel.set_normalizer(AvgDiagKernelNormalizer(scale))
+	kernel.init(feats_train, feats_train)
+
+	km_train=kernel.get_kernel_matrix()
+	kernel.init(feats_train, feats_test)
+	km_test=kernel.get_kernel_matrix()
+
+
 def comm_word_string ():
 	print 'CommWordString'
 
@@ -449,10 +492,8 @@ def comm_word_string ():
 	feats_test.apply_preproc()
 
 	use_sign=False
-	normalization=FULL_NORMALIZATION
 
-	kernel=CommWordStringKernel(
-		feats_train, feats_train, use_sign, normalization)
+	kernel=CommWordStringKernel(feats_train, feats_train, use_sign)
 
 	km_train=kernel.get_kernel_matrix()
 	kernel.init(feats_train, feats_test)
@@ -482,10 +523,8 @@ def weighted_comm_word_string ():
 	feats_test.apply_preproc()
 
 	use_sign=False
-	normalization=FULL_NORMALIZATION
 
-	kernel=WeightedCommWordStringKernel(
-		feats_train, feats_train, use_sign, normalization)
+	kernel=WeightedCommWordStringKernel(feats_train, feats_train, use_sign)
 
 	km_train=kernel.get_kernel_matrix()
 	kernel.init(feats_train, feats_test)
@@ -516,10 +555,8 @@ def comm_ulong_string ():
 	feats_test.apply_preproc()
 
 	use_sign=False
-	normalization=FULL_NORMALIZATION
 
-	kernel=CommUlongStringKernel(
-		feats_train, feats_train, use_sign, normalization)
+	kernel=CommUlongStringKernel(feats_train, feats_train, use_sign)
 
 	km_train=kernel.get_kernel_matrix()
 	kernel.init(feats_train, feats_test)
@@ -539,7 +576,7 @@ def custom ():
 	lowertriangle=array([symdata[(x,y)] for x in xrange(symdata.shape[1])
 		for y in xrange(symdata.shape[0]) if y<=x])
 
-	kernel=CustomKernel(feats, feats)
+	kernel=CustomKernel()
 
 	kernel.set_triangle_kernel_matrix_from_triangle(lowertriangle)
 	km_triangletriangle=kernel.get_kernel_matrix()
@@ -593,11 +630,9 @@ def combined ():
 	feats_train=CombinedFeatures()
 	feats_test=CombinedFeatures()
 
-	subkfeats_train=StringCharFeatures(DNA)
-	subkfeats_train.set_string_features(fm_train_dna)
-	subkfeats_test=StringCharFeatures(DNA)
-	subkfeats_test.set_string_features(fm_test_dna)
-	subkernel=LinearStringKernel(10)
+	subkfeats_train=RealFeatures(fm_train_real)
+	subkfeats_test=RealFeatures(fm_test_real)
+	subkernel=GaussianKernel(10, 1.1)
 	feats_train.append_feature_obj(subkfeats_train)
 	feats_test.append_feature_obj(subkfeats_test)
 	kernel.append_kernel(subkernel)
@@ -649,7 +684,7 @@ def plugin_estimate_histogram ():
 	pie.set_features(feats_train)
 	pie.train()
 
-	kernel=HistogramWordKernel(feats_train, feats_train, pie)
+	kernel=HistogramWordStringKernel(feats_train, feats_train, pie)
 	km_train=kernel.get_kernel_matrix()
 
 	kernel.init(feats_train, feats_test)
@@ -680,7 +715,7 @@ def plugin_estimate_salzberg ():
 	pie.set_features(feats_train)
 	pie.train()
 
-	kernel=SalzbergWordKernel(feats_train, feats_test, pie, labels)
+	kernel=SalzbergWordStringKernel(feats_train, feats_test, pie, labels)
 	km_train=kernel.get_kernel_matrix()
 
 	kernel.init(feats_train, feats_test)
@@ -768,8 +803,6 @@ if __name__=='__main__':
 	sparse_poly()
 
 	linear_word()
-	poly_match_word()
-	word_match()
 
 	fixed_degree_string()
 	linear_string()
@@ -781,6 +814,8 @@ if __name__=='__main__':
 	weighted_degree_position_string()
 	locality_improved_string()
 
+	poly_match_word_string()
+	match_word_string()
 	comm_word_string()
 	weighted_comm_word_string()
 	comm_ulong_string()

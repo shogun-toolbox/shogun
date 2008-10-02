@@ -1,7 +1,7 @@
 import gc
 from shogun.Features import Alphabet,StringCharFeatures,StringWordFeatures,DNA
 from shogun.PreProc import SortWordString, M_DEBUG
-from shogun.Kernel import CommWordStringKernel,NO_NORMALIZATION
+from shogun.Kernel import CommWordStringKernel, IdentityKernelNormalizer
 from numpy import mat
 
 POS=[100*'ACGT', 100*'ACGT', 100*'ACGT',100*'ACGT', 100*'ACGT', 
@@ -68,7 +68,9 @@ for i in xrange(10):
     pre.init(trainudat)
     trainudat.add_preproc(pre)
     trainudat.apply_preproc()
-    spec = CommWordStringKernel(trainudat,trainudat,False,NO_NORMALIZATION)
+    spec = CommWordStringKernel(10, False)
+    spec.set_normalizer(IdentityKernelNormalizer())
+    spec.init(trainudat, trainudat)
     K=mat(spec.get_kernel_matrix())
 
 del POS

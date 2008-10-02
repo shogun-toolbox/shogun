@@ -90,32 +90,6 @@ def prune_var_sub_mean ():
 	km_test=kernel.get_kernel_matrix()
 
 ###########################################################################
-# word features
-###########################################################################
-
-def sort_word ():
-	print 'LinearWord'
-
-	feats_train=WordFeatures(fm_train_word)
-	feats_test=WordFeatures(fm_test_word)
-
-	preproc=SortWord()
-	preproc.init(feats_train)
-	feats_train.add_preproc(preproc)
-	feats_train.apply_preproc()
-	feats_test.add_preproc(preproc)
-	feats_test.apply_preproc()
-
-	do_rescale=True
-	scale=1.4
-
-	kernel=LinearWordKernel(feats_train, feats_train, do_rescale, scale)
-
-	km_train=kernel.get_kernel_matrix()
-	kernel.init(feats_train, feats_test)
-	km_test=kernel.get_kernel_matrix()
-
-###########################################################################
 # complex string features
 ###########################################################################
 
@@ -143,10 +117,8 @@ def sort_word_string ():
 	feats_test.apply_preproc()
 
 	use_sign=False
-	normalization=FULL_NORMALIZATION
 
-	kernel=CommWordStringKernel(
-		feats_train, feats_train, use_sign, normalization)
+	kernel=CommWordStringKernel(feats_train, feats_train, use_sign)
 
 	km_train=kernel.get_kernel_matrix()
 	kernel.init(feats_train, feats_test)
@@ -177,10 +149,8 @@ def sort_ulong_string ():
 	feats_test.apply_preproc()
 
 	use_sign=False
-	normalization=FULL_NORMALIZATION
 
-	kernel=CommUlongStringKernel(
-		feats_train, feats_train, use_sign, normalization)
+	kernel=CommUlongStringKernel(feats_train, feats_train, use_sign)
 
 	km_train=kernel.get_kernel_matrix()
 	kernel.init(feats_train, feats_test)
@@ -196,8 +166,6 @@ if __name__=='__main__':
 	log_plus_one()
 	norm_one()
 	prune_var_sub_mean()
-
-	sort_word()
 
 	sort_word_string()
 	sort_ulong_string()
