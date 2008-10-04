@@ -447,8 +447,8 @@ def run ():
 	"""Run generator for all kernels."""
 
 	#_run_mindygram()
-#	_run_top_fisher()
-#	_run_pie()
+	_run_top_fisher()
+	_run_pie()
 	_run_custom()
 	_run_distance()
 	_run_subkernels()

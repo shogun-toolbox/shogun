@@ -98,7 +98,7 @@ function y = set_kernel()
 				degree, tobool(inhomogene), tobool(use_normalization));
 		end
 
-	elseif strcmp(kname, 'MATCHWORD')==1
+	elseif strcmp(kname, 'MATCH')==1
 		global kernel_arg0_degree;
 		sg('set_kernel', kname, ftype, size_cache, kernel_arg0_degree);
 

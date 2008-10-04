@@ -18,6 +18,9 @@ function y = fix_kernel_name_inconsistency (kname)
 		y='COMMSTRING';
 	elseif findstr('COMMWORDSTRING', kname)
 		y='COMMSTRING';
+	elseif findstr('WORDSTRING', kname)
+		pos=findstr('WORDSTRING', kname);
+		y=kname(1:pos-1);
 	elseif findstr('STRING', kname)
 		pos=findstr('STRING', kname);
 		y=kname(1:pos-1);

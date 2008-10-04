@@ -18,7 +18,7 @@ def _evaluate (indata):
 			if indata['name']==name:
 				return eval('_evaluate_'+name.lower()+'(indata)')
 
-		names=['HistogramWord', 'SalzbergWord']
+		names=['HistogramWordString', 'SalzbergWordString']
 		for name in names:
 			if indata['name']==name:
 				return _evaluate_pie(indata)

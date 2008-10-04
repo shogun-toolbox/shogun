@@ -22,6 +22,9 @@ fix_kernel_name_inconsistency = function(kname) {
 	else if (regexpr('COMMWORDSTRING', kname)>0) {
 		return('COMMSTRING')
 	}
+	else if (regexpr('WORDSTRING', kname)>0) {
+		return(strsplit(kname, 'WORDSTRING')[[1]])
+	}
 	else if (regexpr('STRING', kname)>0) {
 		return(strsplit(kname, 'STRING')[[1]])
 	}

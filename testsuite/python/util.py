@@ -172,6 +172,8 @@ def fix_kernel_name_inconsistency (kname):
 		return 'COMMSTRING'
 	elif kname=='WEIGHTEDCOMMWORDSTRING':
 		return 'WEIGHTEDCOMMSTRING'
+	elif kname.endswith('WORDSTRING'):
+		return kname.split('WORDSTRING')[0]
 	elif kname.endswith('STRING'):
 		return kname.split('STRING')[0]
 	elif kname.endswith('WORD'):
