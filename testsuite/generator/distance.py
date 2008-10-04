@@ -46,6 +46,12 @@ def _run_feats_real ():
 	_compute('GeodesicMetric', feats, data)
 	_compute('JensenMetric', feats, data)
 	_compute('ManhattanMetric', feats, data)
+	_compute('BrayCurtisDistance', feats, data)
+	_compute('ChiSquareDistance', feats, data)
+	_compute('CosineDistance', feats, data)
+	_compute('TanimotoDistance', feats, data)
+	_compute('ManhattanMetric', feats, data)
+	_compute('ManhattanMetric', feats, data)
 	_compute('MinkowskiMetric', feats, data, 1.3)
 
 	feats=featop.get_simple('Real', data, sparse=True)

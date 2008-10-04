@@ -28,10 +28,13 @@ CLUSTERING={
 # name: data_class + _type, feature_class + _type(s), available distance
 #  parameters, accuracy
 DISTANCE={
+	'BrayCurtisDistance':[['rand', 'double'], ['simple', 'Real'], [], 1e-8],
 	'CanberraMetric':[['rand', 'double'], ['simple', 'Real'], [], 1e-8],
-	'ChebyshewMetric':[['rand', 'double'], ['simple', 'Real'], [], 1e-8],
 	'CanberraWordDistance':[['dna', ''], ['string_complex', 'Word', 'Char'],
 		[], 1e-7],
+	'ChebyshewMetric':[['rand', 'double'], ['simple', 'Real'], [], 1e-8],
+	'ChiSquareDistance':[['rand', 'double'], ['simple', 'Real'], [], 1e-8],
+	'CosineDistance':[['rand', 'double'], ['simple', 'Real'], [], 1e-8],
 	'EuclidianDistance':[['rand', 'double'], ['simple', 'Real'], [], 1e-8],
 	'GeodesicMetric':[['rand', 'double'], ['simple', 'Real'], [], 1e-8],
 	'HammingWordDistance':[['dna', ''], ['string_complex', 'Word', 'Char'],
@@ -43,6 +46,7 @@ DISTANCE={
 	'MinkowskiMetric':[['rand', 'double'], ['simple', 'Real'], ['k'], 1e-8],
 	'SparseEuclidianDistance':[['rand', 'double'], ['simple', 'Real'],
 		[], 1e-7],
+	'TanimotoDistance':[['rand', 'double'], ['simple', 'Real'], [], 1e-8],
 }
 
 # name: data_class + _type, feature_class + _type(s), accuracy

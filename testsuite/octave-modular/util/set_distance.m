@@ -15,7 +15,10 @@ function y = set_distance()
 		dname=name;
 	end
 
-	if strcmp(dname, 'CanberraMetric')==1
+	if strcmp(dname, 'BrayCurtisDistance')==1
+		global BrayCurtisDistance;
+		distance=BrayCurtisDistance(feats_train, feats_train);
+	elseif strcmp(dname, 'CanberraMetric')==1
 		global CanberraMetric;
 		distance=CanberraMetric(feats_train, feats_train);
 
@@ -26,6 +29,14 @@ function y = set_distance()
 	elseif strcmp(dname, 'ChebyshewMetric')==1
 		global ChebyshewMetric;
 		distance=ChebyshewMetric(feats_train, feats_train);
+
+	elseif strcmp(dname, 'ChiSquareDistance')==1
+		global ChiSquareDistance;
+		distance=ChiSquareDistance(feats_train, feats_train);
+
+	elseif strcmp(dname, 'CosineDistance')==1
+		global CosineDistance;
+		distance=CosineDistance(feats_train, feats_train);
 
 	elseif strcmp(dname, 'EuclidianDistance')==1
 		global EuclidianDistance;
@@ -61,6 +72,10 @@ function y = set_distance()
 	elseif strcmp(dname, 'SparseEuclidianDistance')==1
 		global SparseEuclidianDistance;
 		distance=SparseEuclidianDistance(feats_train, feats_train);
+
+	elseif strcmp(dname, 'TanimotoDistance')==1
+		global TanimotoDistance;
+		distance=TanimotoDistance(feats_train, feats_train);
 
 	else
 		error('Unknown distance %s!', dname);
