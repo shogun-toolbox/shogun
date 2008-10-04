@@ -18,6 +18,7 @@
 		- Remove use_precompute hack from SVMLight.
 		- Add precompute_kernels function to turn kernels appended to a
 		combined kernel into CustomKernels (i.e. precomputed ones).
+		- Add distances BrayCurtis, ChiSquare, Cosine and Tanimoto.
 	* Bugfixes:
 		- Support Intel MKL on 32bit archs.
 		- Fix compilation when atlas/lapack is not available.
