@@ -2179,36 +2179,6 @@ CKernel* CSGInterface::create_kernel()
 
 		delete[] dtype;
 	}
-	else if (strmatch(type, "POLYMATCHWORD"))
-	{
-		if (m_nrhs<4)
-			return NULL;
-
-		CHAR* dtype=get_str_from_str_or_direct(len);
-		INT size=get_int_from_int_or_str();
-		INT degree=3;
-		bool inhomogene=false;
-		bool normalize=true;
-
-		if (m_nrhs>4)
-		{
-			degree=get_int_from_int_or_str();
-			if (m_nrhs>5)
-			{
-				inhomogene=get_bool_from_bool_or_str();
-				if (m_nrhs>6)
-					normalize=get_bool_from_bool_or_str();
-			}
-		}
-
-		if (strmatch(dtype, "WORD"))
-		{
-			kernel=ui_kernel->create_polymatchwordstring(
-				size, degree, inhomogene, normalize);
-		}
-
-		delete[] dtype;
-	}
 	else if (strmatch(type, "POLYMATCH"))
 	{
 		if (m_nrhs<4)
@@ -2236,10 +2206,15 @@ CKernel* CSGInterface::create_kernel()
 			kernel=ui_kernel->create_polymatchstring(
 				size, degree, inhomogene, normalize);
 		}
+		else if (strmatch(dtype, "WORD"))
+		{
+			kernel=ui_kernel->create_polymatchwordstring(
+				size, degree, inhomogene, normalize);
+		}
 
 		delete[] dtype;
 	}
-	else if (strmatch(type, "MATCHWORD"))
+	else if (strmatch(type, "MATCH"))
 	{
 		if (m_nrhs<4)
 			return NULL;
