@@ -58,7 +58,6 @@ class COligoKernel : public CStringKernel<CHAR>
 
 		/** load kernel init_data
 		 *
-		 * @param src file to load from
 		 * @return if loading was successful
 		 */
 		virtual bool load_init(FILE*)
@@ -68,7 +67,6 @@ class COligoKernel : public CStringKernel<CHAR>
 
 		/** save kernel init_data
 		 *
-		 * @param dest file to save to
 		 * @return if saving was successful
 		 */
 		virtual bool save_init(FILE*)
