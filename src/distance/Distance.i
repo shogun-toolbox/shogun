@@ -49,3 +49,7 @@
 %include "distance/CanberraWordDistance.i"
 %include "distance/EuclidianDistance.i"
 %include "distance/SparseEuclidianDistance.i"
+%include "distance/BrayCurtisDistance.i"
+%include "distance/ChiSquareDistance.i"
+%include "distance/CosineDistance.i"
+%include "distance/TanimotoDistance.i"
