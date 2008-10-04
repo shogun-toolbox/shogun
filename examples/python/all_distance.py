@@ -19,6 +19,18 @@ fm_test_dna=lm.load_dna('../data/fm_test_dna.dat')
 # real features
 ###########################################################################
 
+def bray_curtis_distance ():
+	print 'BrayCurtisDistance'
+	sg('set_distance', 'BRAYCURTIS', 'REAL')
+
+	sg('set_features', 'TRAIN', fm_train_real)
+	sg('init_distance', 'TRAIN')
+	dm=sg('get_distance_matrix')
+
+	sg('set_features', 'TEST', fm_test_real)
+	sg('init_distance', 'TEST')
+	dm=sg('get_distance_matrix')
+
 def euclidian_distance ():
 	print 'EuclidianDistance'
 	sg('set_distance', 'EUCLIDIAN', 'REAL')
@@ -46,6 +58,30 @@ def canberra_metric ():
 def chebyshew_metric ():
 	print 'ChebyshewMetric'
 	sg('set_distance', 'CHEBYSHEW', 'REAL')
+
+	sg('set_features', 'TRAIN', fm_train_real)
+	sg('init_distance', 'TRAIN')
+	dm=sg('get_distance_matrix')
+
+	sg('set_features', 'TEST', fm_test_real)
+	sg('init_distance', 'TEST')
+	dm=sg('get_distance_matrix')
+
+def chi_square_distance ():
+	print 'ChiSquareDistance'
+	sg('set_distance', 'CHISQUARE', 'REAL')
+
+	sg('set_features', 'TRAIN', fm_train_real)
+	sg('init_distance', 'TRAIN')
+	dm=sg('get_distance_matrix')
+
+	sg('set_features', 'TEST', fm_test_real)
+	sg('init_distance', 'TEST')
+	dm=sg('get_distance_matrix')
+
+def cosine_distance ():
+	print 'CosineDistance'
+	sg('set_distance', 'COSINE', 'REAL')
 
 	sg('set_features', 'TRAIN', fm_train_real)
 	sg('init_distance', 'TRAIN')
@@ -96,6 +132,18 @@ def minkowski_metric ():
 
 	k=3.
 	sg('set_distance', 'MINKOWSKI', 'REAL', k)
+
+	sg('set_features', 'TRAIN', fm_train_real)
+	sg('init_distance', 'TRAIN')
+	dm=sg('get_distance_matrix')
+
+	sg('set_features', 'TEST', fm_test_real)
+	sg('init_distance', 'TEST')
+	dm=sg('get_distance_matrix')
+
+def tanimoto_distance ():
+	print 'TanimotoDistance'
+	sg('set_distance', 'TANIMOTO', 'REAL')
 
 	sg('set_features', 'TRAIN', fm_train_real)
 	sg('init_distance', 'TRAIN')
@@ -182,13 +230,17 @@ def manhattan_word_distance ():
 if __name__=='__main__':
 	seed(42)
 
+	bray_curtis_distance()
 	euclidian_distance()
 	canberra_metric()
 	chebyshew_metric()
+	chi_square_distance()
+	cosine_distance()
 	geodesic_metric()
 	jensen_metric()
 	manhattan_metric()
 	minkowski_metric()
+	tanimoto_distance()
 
 	canberra_word_distance()
 	hamming_word_distance()

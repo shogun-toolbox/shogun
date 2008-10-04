@@ -5,6 +5,19 @@
 % real features
 %
 
+% BrayCurtis Distance
+print BrayCurtis Distance
+set_distance BRAYCURTIS REAL
+
+set_features TRAIN ../data/fm_train_real.dat
+init_distance TRAIN
+dm_train.txt = get_distance_matrix
+
+set_features TEST ../data/fm_test_real.dat
+init_distance TEST
+dm_test.txt = get_distance_matrix
+
+
 % Euclidian Distance
 print EuclidianDistance
 set_distance EUCLIDIAN REAL
@@ -34,6 +47,32 @@ dm_test.txt = get_distance_matrix
 % Chebyshew Metric
 print ChebyshewMetric
 set_distance CHEBYSHEW REAL
+
+set_features TRAIN ../data/fm_train_real.dat
+init_distance TRAIN
+dm_train.txt = get_distance_matrix
+
+set_features TEST ../data/fm_test_real.dat
+init_distance TEST
+dm_test.txt = get_distance_matrix
+
+
+% ChiSquare Distance
+print ChiSquareDistance
+set_distance CHISQUARE REAL
+
+set_features TRAIN ../data/fm_train_real.dat
+init_distance TRAIN
+dm_train.txt = get_distance_matrix
+
+set_features TEST ../data/fm_test_real.dat
+init_distance TEST
+dm_test.txt = get_distance_matrix
+
+
+% Cosine Distance
+print CosineDistance
+set_distance COSINE REAL
 
 set_features TRAIN ../data/fm_train_real.dat
 init_distance TRAIN
@@ -94,6 +133,20 @@ dm_train.txt = get_distance_matrix
 set_features TEST ../data/fm_test_real.dat
 init_distance TEST
 dm_test.txt = get_distance_matrix
+
+
+% Tanimoto Distance
+print TanimotoDistance
+set_distance TANIMOTO REAL
+
+set_features TRAIN ../data/fm_train_real.dat
+init_distance TRAIN
+dm_train.txt = get_distance_matrix
+
+set_features TEST ../data/fm_test_real.dat
+init_distance TEST
+dm_test.txt = get_distance_matrix
+
 
 
 %

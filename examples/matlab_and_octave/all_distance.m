@@ -11,6 +11,18 @@ fm_test_dna=load_matrix('../data/fm_test_dna.dat');
 % real features
 %
 
+% BrayCurtis Distance
+disp('BrayCurtisDistance');
+sg('set_distance', 'BRAYCURTIS', 'REAL');
+
+sg('set_features', 'TRAIN', fm_train_real);;
+sg('init_distance', 'TRAIN');
+dm=sg('get_distance_matrix');
+
+sg('set_features', 'TEST', fm_test_real);;
+sg('init_distance', 'TEST');
+dm=sg('get_distance_matrix');
+
 % Euclidian Distance
 disp('EuclidianDistance');
 sg('set_distance', 'EUCLIDIAN', 'REAL');
@@ -40,6 +52,32 @@ dm=sg('get_distance_matrix');
 % Chebyshew Metric
 disp('ChebyshewMetric');
 sg('set_distance', 'CHEBYSHEW', 'REAL');
+
+sg('set_features', 'TRAIN', fm_train_real);
+sg('init_distance', 'TRAIN');
+dm=sg('get_distance_matrix');
+
+sg('set_features', 'TEST', fm_test_real);;
+sg('init_distance', 'TEST');
+dm=sg('get_distance_matrix');
+
+
+% Chi Square Metric
+disp('ChiSquareDistance');
+sg('set_distance', 'CHISQUARE', 'REAL');
+
+sg('set_features', 'TRAIN', fm_train_real);
+sg('init_distance', 'TRAIN');
+dm=sg('get_distance_matrix');
+
+sg('set_features', 'TEST', fm_test_real);;
+sg('init_distance', 'TEST');
+dm=sg('get_distance_matrix');
+
+
+% Cosine Distance
+disp('CosineDistance');
+sg('set_distance', 'COSINE', 'REAL');
 
 sg('set_features', 'TRAIN', fm_train_real);
 sg('init_distance', 'TRAIN');
@@ -101,6 +139,20 @@ dm=sg('get_distance_matrix');
 sg('set_features', 'TEST', fm_test_real);;
 sg('init_distance', 'TEST');
 dm=sg('get_distance_matrix');
+
+
+% Tanimoto Metric
+disp('TanimotoDistance');
+sg('set_distance', 'TANIMOTO', 'REAL');
+
+sg('set_features', 'TRAIN', fm_train_real);
+sg('init_distance', 'TRAIN');
+dm=sg('get_distance_matrix');
+
+sg('set_features', 'TEST', fm_test_real);;
+sg('init_distance', 'TEST');
+dm=sg('get_distance_matrix');
+
 
 
 %

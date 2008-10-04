@@ -21,6 +21,18 @@ fm_test_dna=lm.load_dna('../data/fm_test_dna.dat')
 # real features
 ###########################################################################
 
+def bray_curtis_distance ():
+	print 'BrayCurtisDistance'
+
+	feats_train=RealFeatures(fm_train_real)
+	feats_test=RealFeatures(fm_test_real)
+
+	distance=BrayCurtisDistance(feats_train, feats_train)
+
+	dm_train=distance.get_distance_matrix()
+	distance.init(feats_train, feats_test)
+	dm_test=distance.get_distance_matrix()
+
 def euclidian_distance ():
 	print 'EuclidianDistance'
 
@@ -65,6 +77,30 @@ def chebyshew_metric ():
 	feats_test=RealFeatures(fm_test_real)
 
 	distance=ChebyshewMetric(feats_train, feats_train)
+
+	dm_train=distance.get_distance_matrix()
+	distance.init(feats_train, feats_test)
+	dm_test=distance.get_distance_matrix()
+
+def chi_square_distance ():
+	print 'ChiSquareDistance'
+
+	feats_train=RealFeatures(fm_train_real)
+	feats_test=RealFeatures(fm_test_real)
+
+	distance=ChiSquareDistance(feats_train, feats_train)
+
+	dm_train=distance.get_distance_matrix()
+	distance.init(feats_train, feats_test)
+	dm_test=distance.get_distance_matrix()
+
+def cosine_distance ():
+	print 'CosineDistance'
+
+	feats_train=RealFeatures(fm_train_real)
+	feats_test=RealFeatures(fm_test_real)
+
+	distance=CosineDistance(feats_train, feats_train)
 
 	dm_train=distance.get_distance_matrix()
 	distance.init(feats_train, feats_test)
@@ -119,6 +155,18 @@ def minkowski_metric ():
 	distance.init(feats_train, feats_test)
 	dm_test=distance.get_distance_matrix()
 
+def tanimoto_distance ():
+	print 'TanimotoDistance'
+
+	feats_train=RealFeatures(fm_train_real)
+	feats_test=RealFeatures(fm_test_real)
+
+	distance=TanimotoDistance(feats_train, feats_train)
+
+	dm_train=distance.get_distance_matrix()
+	distance.init(feats_train, feats_test)
+	dm_test=distance.get_distance_matrix()
+
 def sparse_euclidian_distance ():
 	print 'SparseEuclidianDistance'
 
@@ -134,7 +182,6 @@ def sparse_euclidian_distance ():
 	dm_train=distance.get_distance_matrix()
 	distance.init(feats_train, feats_test)
 	dm_test=distance.get_distance_matrix()
-
 
 ###########################################################################
 # complex string features
@@ -236,14 +283,18 @@ def manhattan_word_distance ():
 if __name__=='__main__':
 	seed(42)
 
+	bray_curtis_distance()
 	euclidian_distance()
 	norm_squared_distance()
 	canberra_metric()
 	chebyshew_metric()
+	chi_square_distance()
+	cosine_distance()
 	geodesic_metric()
 	jensen_metric()
 	manhattan_metric()
 	minkowski_metric()
+	tanimoto_distance()
 
 	sparse_euclidian_distance()
 

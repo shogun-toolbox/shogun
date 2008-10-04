@@ -18,6 +18,20 @@ fm_test_dna <- as.matrix(read.table('../data/fm_test_dna.dat'))
 #
 
 
+# BrayCurtis Distance
+print('BrayCurtisDistance')
+
+dump <- sg('set_distance', 'BRAYCURTIS', 'REAL')
+
+dump <- sg('set_features', 'TRAIN', fm_train_real)
+dump <- sg('init_distance', 'TRAIN')
+dm <- sg('get_distance_matrix')
+
+dump <- sg('set_features', 'TEST', fm_test_real)
+dump <- sg('init_distance', 'TEST')
+dm <- sg('get_distance_matrix')
+
+
 # Euclidian Distance
 print('EuclidianDistance')
 
@@ -50,6 +64,34 @@ dm <- sg('get_distance_matrix')
 print('ChebyshewMetric')
 
 dump <- sg('set_distance', 'CHEBYSHEW', 'REAL')
+
+dump <- sg('set_features', 'TRAIN', fm_train_real)
+dump <- sg('init_distance', 'TRAIN')
+dm <- sg('get_distance_matrix')
+
+dump <- sg('set_features', 'TEST', fm_test_real)
+dump <- sg('init_distance', 'TEST')
+dm <- sg('get_distance_matrix')
+
+
+# ChiSquare Distance
+print('ChiSquareDistance')
+
+dump <- sg('set_distance', 'CHISQUARE', 'REAL')
+
+dump <- sg('set_features', 'TRAIN', fm_train_real)
+dump <- sg('init_distance', 'TRAIN')
+dm <- sg('get_distance_matrix')
+
+dump <- sg('set_features', 'TEST', fm_test_real)
+dump <- sg('init_distance', 'TEST')
+dm <- sg('get_distance_matrix')
+
+
+# Cosine Distance
+print('CosineDistance')
+
+dump <- sg('set_distance', 'COSINE', 'REAL')
 
 dump <- sg('set_features', 'TRAIN', fm_train_real)
 dump <- sg('init_distance', 'TRAIN')
@@ -116,6 +158,21 @@ dm <- sg('get_distance_matrix')
 dump <- sg('set_features', 'TEST', fm_test_real)
 dump <- sg('init_distance', 'TEST')
 dm <- sg('get_distance_matrix')
+
+
+# Tanimoto Distance
+print('TanimotoDistance')
+
+dump <- sg('set_distance', 'TANIMOTO', 'REAL')
+
+dump <- sg('set_features', 'TRAIN', fm_train_real)
+dump <- sg('init_distance', 'TRAIN')
+dm <- sg('get_distance_matrix')
+
+dump <- sg('set_features', 'TEST', fm_test_real)
+dump <- sg('init_distance', 'TEST')
+dm <- sg('get_distance_matrix')
+
 
 
 #

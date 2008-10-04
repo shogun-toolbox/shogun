@@ -12,6 +12,19 @@ fm_test_dna <- as.matrix(read.table('../data/fm_test_dna.dat'))
 # real features
 ###########################################################################
 
+# bray curtis distance
+print('BrayCurtisDistance')
+
+feats_train <- RealFeatures(fm_train_real)
+feats_test <- RealFeatures(fm_test_real)
+
+distance <- BrayCurtisDistance(feats_train, feats_train)
+
+dm_train <- distance$get_distance_matrix()
+distance$init(distance, feats_train, feats_test)
+dm_test <- distance$get_distance_matrix()
+
+
 # euclidian distance
 print('EuclidianDistance')
 
@@ -31,7 +44,7 @@ feats_train <- RealFeatures(fm_train_real)
 feats_test <- RealFeatures(fm_test_real)
 
 distance <- EuclidianDistance(feats_train, feats_train)
-distance$set_disable_sqrt(distance,TRUE)
+dump <- distance$set_disable_sqrt(distance,TRUE)
 
 dm_train <- distance$get_distance_matrix()
 distance$init(distance, feats_train, feats_test)
@@ -60,6 +73,31 @@ distance <- ChebyshewMetric(feats_train, feats_train)
 dm_train <- distance$get_distance_matrix()
 distance$init(distance, feats_train, feats_test)
 dm_test <- distance$get_distance_matrix()
+
+# chi square distance
+print('ChiSquareDistance')
+
+feats_train <- RealFeatures(fm_train_real)
+feats_test <- RealFeatures(fm_test_real)
+
+distance <- ChiSquareDistance(feats_train, feats_train)
+
+dm_train <- distance$get_distance_matrix()
+distance$init(distance, feats_train, feats_test)
+dm_test <- distance$get_distance_matrix()
+
+# cosine distance
+print('CosineDistance')
+
+feats_train <- RealFeatures(fm_train_real)
+feats_test <- RealFeatures(fm_test_real)
+
+distance <- CosineDistance(feats_train, feats_train)
+
+dm_train <- distance$get_distance_matrix()
+distance$init(distance, feats_train, feats_test)
+dm_test <- distance$get_distance_matrix()
+
 
 # geodesic metric
 print('GeodesicMetric')
@@ -109,6 +147,19 @@ distance <- MinkowskiMetric(feats_train, feats_train, k)
 dm_train <- distance$get_distance_matrix()
 distance$init(distance, feats_train, feats_test)
 dm_test <- distance$get_distance_matrix()
+
+# tanimoto distance
+print('TanimotoDistance')
+
+feats_train <- RealFeatures(fm_train_real)
+feats_test <- RealFeatures(fm_test_real)
+
+distance <- TanimotoDistance(feats_train, feats_train)
+
+dm_train <- distance$get_distance_matrix()
+distance$init(distance, feats_train, feats_test)
+dm_test <- distance$get_distance_matrix()
+
 
 # sparse euclidian distance
 print('SparseEuclidianDistance')
