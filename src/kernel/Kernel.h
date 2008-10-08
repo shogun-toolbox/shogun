@@ -20,6 +20,58 @@
 #include "features/Features.h"
 #include "kernel/KernelNormalizer.h"
 
+
+enum EOptimizationType
+{
+	FASTBUTMEMHUNGRY,
+	SLOWBUTMEMEFFICIENT
+};
+
+enum EKernelType
+{
+	K_UNKNOWN = 0,
+	K_LINEAR = 10,
+	K_SPARSELINEAR = 11,
+	K_POLY = 20,
+	K_GAUSSIAN = 30,
+	K_SPARSEGAUSSIAN = 31,
+	K_GAUSSIANSHIFT = 32,
+	K_HISTOGRAM = 40,
+	K_SALZBERG = 41,
+	K_LOCALITYIMPROVED = 50,
+	K_SIMPLELOCALITYIMPROVED = 60,
+	K_FIXEDDEGREE = 70,
+	K_WEIGHTEDDEGREE =    80,
+	K_WEIGHTEDDEGREEPOS = 81,
+	K_WEIGHTEDCOMMWORDSTRING = 90,
+	K_POLYMATCH = 100,
+	K_ALIGNMENT = 110,
+	K_COMMWORDSTRING = 120,
+	K_COMMULONGSTRING = 121,
+	K_COMBINED = 140,
+	K_AUC = 150,
+	K_CUSTOM = 160,
+	K_SIGMOID = 170,
+	K_CHI2 = 180,
+	K_DIAG = 190,
+	K_CONST = 200,
+	K_MINDYGRAM = 210,
+	K_DISTANCE = 220,
+	K_LOCALALIGNMENT = 230,
+	K_PYRAMIDCHI2 = 240,
+	K_OLIGO = 250,
+	K_MATCHWORD = 260
+};
+
+enum EKernelProperty
+{
+	KP_NONE = 0,
+	KP_LINADD = 1, 	// Kernels that can be optimized via doing normal updates w + dw
+	KP_KERNCOMBINATION = 2,	// Kernels that are infact a linear combination of subkernels K=\sum_i b_i*K_i
+	KP_BATCHEVALUATION = 4  // Kernels that can on the fly generate normals in linadd and more quickly/memory efficient process batches instead of single examples
+};
+
+
 class CSVM;
 
 /** The Kernel base class. Non-mathematically spoken, a kernel is a function

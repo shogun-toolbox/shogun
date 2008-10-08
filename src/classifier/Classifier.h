@@ -16,6 +16,41 @@
 #include "lib/Mathematics.h"
 #include "features/Labels.h"
 
+
+enum EClassifierType
+{
+	CT_NONE = 0,
+	CT_LIGHT = 10,
+	CT_LIBSVM = 20,
+	CT_LIBSVMONECLASS=30,
+	CT_LIBSVMMULTICLASS=40,
+	CT_MPD = 50,
+	CT_GPBT = 60,
+	CT_CPLEXSVM = 70,
+	CT_PERCEPTRON = 80,
+	CT_KERNELPERCEPTRON = 90,
+	CT_LDA = 100,
+	CT_LPM = 110,
+	CT_LPBOOST = 120,
+	CT_KNN = 130,
+	CT_SVMLIN=140,
+	CT_KRR = 150,
+	CT_GNPPSVM = 160,
+	CT_GMNPSVM = 170,
+	CT_SUBGRADIENTSVM = 180,
+	CT_SUBGRADIENTLPM = 190,
+	CT_SVMPERF = 200,
+	CT_LIBSVR = 210,
+	CT_SVRLIGHT = 220,
+	CT_LIBLINEAR = 230,
+	CT_KMEANS = 240,
+	CT_HIERARCHICAL = 250,
+	CT_SVMOCAS = 260,
+	CT_WDSVMOCAS = 270,
+	CT_SVMSGD = 280,
+};
+
+
 /** class Classifier */
 class CClassifier : public CSGObject
 {
@@ -113,4 +148,5 @@ class CClassifier : public CSGObject
 		/** labels */
 		CLabels* labels;
 };
-#endif
+
+#endif // _CLASSIFIER_H__

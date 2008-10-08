@@ -13,11 +13,29 @@
 #define __CIO_H__
 
 #include <time.h>
-#include "lib/common.h"
-
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
+
+#include "lib/common.h"
+
+
+/// The io libs output [DEBUG] etc in front of every message
+/// 'higher' messages filter output depending on the loglevel, i.e. CRITICAL messages
+/// will print all M_CRITICAL TO M_EMERGENCY messages to
+enum EMessageType
+{
+	M_DEBUG,
+	M_INFO,
+	M_NOTICE,
+	M_WARN,
+	M_ERROR,
+	M_CRITICAL,
+	M_ALERT,
+	M_EMERGENCY,
+	M_MESSAGEONLY
+};
+
 
 #define NUM_LOG_LEVELS 9
 #define FBUFSIZE 4096
@@ -73,6 +91,7 @@ extern CIO sg_io;
 #endif
 
 #define ASSERT(x) { if (!(x)) SG_SERROR("assertion %s failed in file %s line %d\n",#x, __FILE__, __LINE__);}
+
 
 /** Class IO, used to do input output operations throughout shogun, i.e. any
  * debug or error or progress message is passed through the functions of this

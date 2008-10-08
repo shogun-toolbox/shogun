@@ -72,7 +72,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 *
 		 * @param alpha alphabet (type) to use for string features
 		 */
-		CStringFeatures(E_ALPHABET alpha)
+		CStringFeatures(EAlphabet alpha)
 		: CFeatures(0), num_vectors(0), features(NULL),
 			single_string(NULL),length_of_single_string(0),
 			max_string_length(0), order(0), selected_vector(0),
@@ -141,7 +141,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param fname filename to load features from
 		 * @param alpha alphabet (type) to use for string features
 		 */
-		CStringFeatures(char* fname, E_ALPHABET alpha=DNA)
+		CStringFeatures(char* fname, EAlphabet alpha=DNA)
 		: CFeatures(fname), num_vectors(0),
 			features(NULL), single_string(NULL),
 			length_of_single_string(0), max_string_length(0),

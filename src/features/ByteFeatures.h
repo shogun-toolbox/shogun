@@ -28,7 +28,7 @@ class CByteFeatures : public CSimpleFeatures<BYTE>
 		 * @param alpha alphabet (type) to use
 		 * @param size cache size
 		 */
-		CByteFeatures(E_ALPHABET alpha, INT size=0);
+		CByteFeatures(EAlphabet alpha, INT size=0);
 
 		/** constructor
 		 *
@@ -47,14 +47,14 @@ class CByteFeatures : public CSimpleFeatures<BYTE>
 		 * @param num_feat number of features in matrix
 		 * @param num_vec number of vectors in matrix
 		 */
-        CByteFeatures(E_ALPHABET alphabet, BYTE* feature_matrix, INT num_feat, INT num_vec);
+        CByteFeatures(EAlphabet alphabet, BYTE* feature_matrix, INT num_feat, INT num_vec);
 
 		/** constructor
 		 *
 		 * @param alphabet alphabet (type) to use
 		 * @param fname filename to load features from
 		 */
-		CByteFeatures(E_ALPHABET alphabet, CHAR* fname);
+		CByteFeatures(EAlphabet alphabet, CHAR* fname);
 
 		~CByteFeatures();
 

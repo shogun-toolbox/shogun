@@ -13,6 +13,7 @@
 #define _KRR_H__
 
 #include "lib/config.h"
+#include "regression/Regression.h"
 
 #ifdef HAVE_LAPACK
 

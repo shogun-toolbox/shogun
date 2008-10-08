@@ -12,12 +12,34 @@
 #ifndef _DISTANCE_H___
 #define _DISTANCE_H___
 
+#include <stdio.h>
+
 #include "lib/common.h"
 #include "lib/Mathematics.h"
 #include "base/SGObject.h"
 #include "features/Features.h"
 
-#include <stdio.h>
+
+enum EDistanceType
+{
+	D_UNKNOWN = 0,
+	D_MINKOWSKI = 10,
+	D_MANHATTAN = 20,
+	D_CANBERRA = 30,
+	D_CHEBYSHEW = 40,
+	D_GEODESIC = 50,
+	D_JENSEN = 60,
+	D_MANHATTANWORD = 70,
+	D_HAMMINGWORD = 80 ,
+	D_CANBERRAWORD = 90,
+	D_SPARSEEUCLIDIAN = 100,
+	D_EUCLIDIAN = 110,
+	D_CHISQUARE = 120,
+	D_TANIMOTO = 130,
+	D_COSINE = 140,
+	D_BRAYCURTIS =150
+};
+
 
 /** class Distance */
 class CDistance : public CSGObject

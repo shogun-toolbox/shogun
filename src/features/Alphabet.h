@@ -11,9 +11,48 @@
 #ifndef _CALPHABET__H__
 #define _CALPHABET__H__
 
-#include "lib/Mathematics.h"
 #include "base/SGObject.h"
+#include "lib/Mathematics.h"
 #include "lib/common.h"
+
+
+/// Alphabet of charfeatures/observations
+enum EAlphabet
+{
+	/// DNA - letters A,C,G,T,*,N,n
+	DNA=0,
+
+	/// RAWDNA - letters 0,1,2,3
+	RAWDNA=1,
+
+	/// RNA - letters A,C,G,U,*,N,n
+	RNA=2,
+
+	/// PROTEIN - letters a-z
+	PROTEIN=3,
+
+	/// ALPHANUM - [0-9a-z]
+	ALPHANUM=5,
+
+	/// CUBE - [1-6]
+	CUBE=6,
+
+	/// RAW BYTE - [0-255]
+	RAWBYTE=7,
+
+	/// IUPAC_NUCLEIC_ACID
+	IUPAC_NUCLEIC_ACID=8,
+
+	/// IUPAC_AMINO_ACID
+	IUPAC_AMINO_ACID=9,
+
+	/// NONE - type has no alphabet
+	NONE=10,
+
+	/// unknown alphabet
+	UNKNOWN=11,
+};
+
 
 /** The class Alphabet implements an alphabet and utility functions, to remap
  * characters to more (bit-)efficient representations, check if a string is
@@ -37,7 +76,7 @@ class CAlphabet : public CSGObject
 		 *
 		 * @param alpha alphabet (type) to use
 		 */
-		CAlphabet(E_ALPHABET alpha);
+		CAlphabet(EAlphabet alpha);
 
 		/** constructor
 		 *
@@ -50,13 +89,13 @@ class CAlphabet : public CSGObject
 		 *
 		 * @param alpha new alphabet
 		 */
-		bool set_alphabet(E_ALPHABET alpha);
+		bool set_alphabet(EAlphabet alpha);
 
 		/** get alphabet
 		 *
 		 * @return alphabet
 		 */
-		inline E_ALPHABET get_alphabet()
+		inline EAlphabet get_alphabet()
 		{
 			return alphabet;
 		}
@@ -232,7 +271,7 @@ class CAlphabet : public CSGObject
 		 *
 		 * @param alphabet alphabet type to get name from
 		 */
-		static const CHAR* get_alphabet_name(E_ALPHABET alphabet);
+		static const CHAR* get_alphabet_name(EAlphabet alphabet);
 
 	protected:
 		/** init map table */
@@ -260,7 +299,7 @@ class CAlphabet : public CSGObject
 
 	protected:
 		/** alphabet */
-		E_ALPHABET alphabet;
+		EAlphabet alphabet;
 		/** number of symbols */
 		INT num_symbols;
 		/** number of bits */

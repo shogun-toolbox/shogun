@@ -15,9 +15,9 @@
 #include <stdlib.h>
 #include <stdarg.h>
 
-#include "lib/common.h"
-#include "lib/DynamicArray.h"
 #include "base/SGObject.h"
+#include "lib/DynamicArray.h"
+#include "features/Features.h"
 
 template <class ST> struct T_STRING;
 template <class ST> struct TSparse;

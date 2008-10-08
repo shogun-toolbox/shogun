@@ -25,7 +25,7 @@ const CHAR* CAlphabet::alphabet_names[11]={"DNA", "RAWDNA", "RNA", "PROTEIN", "A
 CAlphabet::CAlphabet(CHAR* al, INT len)
 : CSGObject()
 {
-	E_ALPHABET alpha=NONE;
+	EAlphabet alpha=NONE;
 
 	if (len>=(INT) strlen("DNA") && !strncmp(al, "DNA", strlen("DNA")))
 		alpha = DNA;
@@ -53,7 +53,7 @@ CAlphabet::CAlphabet(CHAR* al, INT len)
 	set_alphabet(alpha);
 }
 
-CAlphabet::CAlphabet(E_ALPHABET alpha)
+CAlphabet::CAlphabet(EAlphabet alpha)
 : CSGObject()
 {
 	set_alphabet(alpha);
@@ -71,7 +71,7 @@ CAlphabet::~CAlphabet()
 {
 }
 
-bool CAlphabet::set_alphabet(E_ALPHABET alpha)
+bool CAlphabet::set_alphabet(EAlphabet alpha)
 {
 	bool result=true;
 	alphabet=alpha;
@@ -531,7 +531,7 @@ void CAlphabet::copy_histogram(CAlphabet* a)
 	memcpy(histogram, a->get_histogram(), sizeof(histogram));
 }
 
-const CHAR* CAlphabet::get_alphabet_name(E_ALPHABET alphabet)
+const CHAR* CAlphabet::get_alphabet_name(EAlphabet alphabet)
 {
 	
 	INT idx;

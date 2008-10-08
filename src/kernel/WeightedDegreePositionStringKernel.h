@@ -14,6 +14,7 @@
 
 #include "lib/common.h"
 #include "kernel/StringKernel.h"
+#include "kernel/WeightedDegreeStringKernel.h"
 #include "lib/Trie.h"
 
 class CSVM ;

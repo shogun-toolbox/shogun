@@ -12,6 +12,7 @@
 #define _SVRLight_H___
 
 #include "lib/config.h"
+#include "regression/Regression.h"
 
 #ifdef USE_SVMLIGHT
 #include "classifier/svm/SVM_light.h"

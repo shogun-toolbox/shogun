@@ -10,11 +10,14 @@
 
 #ifndef _LIBSVR_H___
 #define _LIBSVR_H___
+
+#include <stdio.h>
+
 #include "lib/common.h"
 #include "classifier/svm/SVM.h"
 #include "classifier/svm/SVM_libsvm.h"
+#include "regression/Regression.h"
 
-#include <stdio.h>
 
 /** Class LibSVR, performs support vector regression using LibSVM. The SVR solution can be expressed as 
  *  \f[

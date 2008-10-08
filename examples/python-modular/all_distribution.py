@@ -5,7 +5,7 @@ Explicit examples on how to use distributions
 
 from numpy import array, floor, char, ushort, ceil, concatenate, ones, zeros
 from numpy.random import randint, seed, rand, permutation
-from shogun.Features import StringWordFeatures, CharFeatures, StringCharFeatures
+from shogun.Features import StringWordFeatures, CharFeatures, StringCharFeatures, DNA, CUBE
 from shogun.PreProc import SortWordString
 from shogun.Distribution import *
 

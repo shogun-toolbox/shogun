@@ -17,6 +17,22 @@
 #include "kernel/StringKernel.h"
 #include "features/StringFeatures.h"
 
+
+enum EWDKernType
+{
+	E_WD=0,
+	E_EXTERNAL=1,
+
+	E_BLOCK_CONST=2,
+	E_BLOCK_LINEAR=3,
+	E_BLOCK_SQPOLY=4,
+	E_BLOCK_CUBICPOLY=5,
+	E_BLOCK_EXP=6,
+	E_BLOCK_LOG=7,
+	E_BLOCK_EXTERNAL=8
+};
+
+
 /** The Weighted Degree kernel of order d compares two sequences \f${\bf x}\f$ and
  *  \f${\bf x'}\f$ of length L by summing all contributions of k-mer matches of
  *  lengths \f$k\in\{1,\dots,d\}\f$, weighted by coefficients \f$\beta_k\f$. It

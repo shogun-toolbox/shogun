@@ -5,6 +5,7 @@
 %module(docstring=REGRESSION_DOCSTR) Regression
 %{
  #define SWIG_FILE_WITH_INIT
+ #include "regression/Regression.h"
 %}
 
 #ifdef HAVE_DOXYGEN
@@ -21,13 +22,14 @@
 
 %include "lib/common.i"
 %include "lib/ShogunException.i"
-%include "lib/io.i" 
+%include "lib/io.i"
 %include "base/Version.i"
 %include "base/Parallel.i"
 %include "base/SGObject.i"
 
 /* regressors based on kernelmachine */
-%include "kernel/KernelMachine.i" 
+%include "kernel/KernelMachine.i"
+%include "regression/Regression.h"
 %include "regression/KRR.i"
 %include "classifier/svm/SVM.i"
 %include "classifier/svm/LibSVM.i"

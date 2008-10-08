@@ -16,10 +16,39 @@
 #include "lib/common.h"
 #include "base/SGObject.h"
 
-#include "preproc/PreProc.h"
+enum EFeatureType
+{
+	F_UNKNOWN = 0,
+	F_CHAR = 10,
+	F_BYTE = 20,
+	F_SHORT = 30,
+	F_WORD = 40,
+	F_INT = 50,
+	F_UINT = 60,
+	F_LONG = 70,
+	F_ULONG = 80,
+	F_SHORTREAL = 90,
+	F_DREAL = 100,
+	F_LONGREAL = 110,
+	F_ANY = 1000
+};
 
+enum EFeatureClass
+{
+	C_UNKNOWN = 0,
+	C_SIMPLE = 10,
+	C_SPARSE = 20,
+	C_STRING = 30,
+	C_COMBINED = 40,
+	C_MINDYGRAM = 50,
+	C_ANY = 1000
+};
+
+
+#include "preproc/PreProc.h"
 class CPreProc;
 class CFeatures;
+
 
 /** The class Features is the base class of all feature objects. It can be
  * understood as a dense real valued feature matrix (with e.g. columns as

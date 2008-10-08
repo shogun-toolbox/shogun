@@ -12,7 +12,7 @@
 #include "lib/common.h"
 #include "lib/File.h"
 
-CCharFeatures::CCharFeatures(E_ALPHABET a, INT size)
+CCharFeatures::CCharFeatures(EAlphabet a, INT size)
 : CSimpleFeatures<CHAR>(size)
 {
 	alphabet=new CAlphabet(a);
@@ -30,13 +30,13 @@ CCharFeatures::CCharFeatures(const CCharFeatures & orig)
 	alphabet=orig.alphabet;
 }
 
-CCharFeatures::CCharFeatures(E_ALPHABET a, CHAR* fm, INT num_feat, INT num_vec)
+CCharFeatures::CCharFeatures(EAlphabet a, CHAR* fm, INT num_feat, INT num_vec)
 : CSimpleFeatures<CHAR>(fm, num_feat, num_vec)
 {
 	alphabet=new CAlphabet(a);
 }
 
-CCharFeatures::CCharFeatures(E_ALPHABET a, CHAR* fname)
+CCharFeatures::CCharFeatures(EAlphabet a, CHAR* fname)
 : CSimpleFeatures<CHAR>(fname)
 {
 	alphabet=new CAlphabet(a);

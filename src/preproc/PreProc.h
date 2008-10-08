@@ -14,10 +14,23 @@
 
 #include "lib/common.h"
 #include "base/SGObject.h"
-#include "features/Features.h"
 
-class CPreProc;
+
+enum EPreProcType
+{
+	P_UNKNOWN=0,
+	P_NORMONE=10,
+	P_LOGPLUSONE=20,
+	P_SORTWORDSTRING=30,
+	P_SORTULONGSTRING=40,
+	P_SORTWORD=50,
+	P_PRUNEVARSUBMEAN=60
+};
+
+
+#include "features/Features.h"
 class CFeatures;
+
 
 /** Class PreProc defines a preprocessor interface. Preprocessors are
  * transformation functions that don't change the domain of the input features.
