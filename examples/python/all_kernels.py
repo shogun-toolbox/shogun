@@ -357,7 +357,7 @@ def poly_match_word ():
 	sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, gap, reverse)
 	sg('attach_preproc', 'TEST')
 
-	sg('set_kernel', 'POLYMATCHWORD', 'WORD', size_cache, degree, inhomogene, normalize)
+	sg('set_kernel', 'POLYMATCH', 'WORD', size_cache, degree, inhomogene, normalize)
 	sg('init_kernel', 'TRAIN')
 	km=sg('get_kernel_matrix')
 

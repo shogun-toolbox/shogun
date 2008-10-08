@@ -402,7 +402,7 @@ degree=2;
 inhomogene=true;
 
 sg('add_preproc', 'SORTWORDSTRING');
-sg('set_kernel', 'POLYMATCHWORD', 'WORD', size_cache, degree, inhomogene);
+sg('set_kernel', 'POLYMATCH', 'WORD', size_cache, degree, inhomogene);
 
 sg('set_features', 'TRAIN', fm_train_dna, 'DNA');
 sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, gap, reverse);
