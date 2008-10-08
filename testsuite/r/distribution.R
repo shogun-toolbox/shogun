@@ -9,7 +9,7 @@ distribution <- function(filename) {
 		return(TRUE)
 	}
 
-	if (regexpr('HMM', name)>0) {
+	if (regexpr('^HMM', name)>0) {
 		sg('new_hmm', distribution_N, distribution_M)
 		sg('bw')
 	} else {
