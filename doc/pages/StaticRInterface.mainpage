@@ -19,6 +19,7 @@
 \arg \b get_labels \verbatim [labels] <- sg('get_labels', 'TRAIN|TEST') \endverbatim
 
 \section Kernel_sec Kernel
+\arg \b set_kernel_normalization \verbatim sg('set_kernel_normalization', IDENTITY|AVGDIAG|SQRTDIAG|FIRSTELEMENT, size[, kernel-specific parameters]) \endverbatim
 \arg \b set_kernel \verbatim sg('set_kernel', type, size[, kernel-specific parameters]) \endverbatim
 \arg \b add_kernel \verbatim sg('add_kernel', weight, kernel-specific parameters) \endverbatim
 \arg \b del_last_kernel \verbatim sg('del_last_kernel') \endverbatim
@@ -83,7 +84,6 @@
 \arg \b svm_one_class_nu \verbatim sg('svm_one_class_nu', nu) \endverbatim
 \arg \b mkl_parameters \verbatim sg('mkl_parameters', weight_epsilon, C_MKL [, mkl_norm ]) \endverbatim
 \arg \b svm_max_train_time \verbatim sg('svm_max_train_time', max_train_time) \endverbatim
-\arg \b use_precompute \verbatim sg('use_precompute', enable_precompute) \endverbatim
 \arg \b use_mkl \verbatim sg('use_mkl', enable_mkl) \endverbatim
 \arg \b use_shrinking \verbatim sg('use_shrinking', enable_shrinking) \endverbatim
 \arg \b use_batch_computation \verbatim sg('use_batch_computation', enable_batch_computation) \endverbatim
@@ -151,6 +151,7 @@
 \arg \b best_path_2struct \verbatim [prob, path, pos] <- sg('best_path_2struct', p, q, cmd_trans, seq, pos, genestr, penalties, penalty_info, nbest, content_weights, segment_sum_weights) \endverbatim
 \arg \b set_plif_struct \verbatim sg('set_plif_struct', id, name, limits, penalties, transform, min_value, max_value, use_cache, use_svm) \endverbatim
 \arg \b get_plif_struct \verbatim [id, name, limits, penalties, transform, min_value, max_value, use_cache, use_svm] <- sg('get_plif_struct') \endverbatim
+\arg \b precompute_subkernels \verbatim sg('precompute_subkernels') \endverbatim
 \arg \b precompute_content_svms \verbatim sg('precompute_content_svms', sequence, position_list, weights) \endverbatim
 \arg \b precompute_tiling_features \verbatim sg('precompute_tiling_features', intensities, probe_pos, tiling_plif_ids) \endverbatim
 \arg \b set_model \verbatim sg('set_model', content_weights, transition_pointers, use_orf, mod_words) \endverbatim
