@@ -2220,10 +2220,10 @@ EOF
 
 		else
 			echocheck "Matlab"
-			if matlab -nodisplay -r 'version;quit' >/dev/null 2>&1
+			if matlab -nojvm -nodisplay -r 'version;quit' >/dev/null 2>&1
 			then
-				 echores "`matlab -nodisplay -r \"sprintf('ver:%s',version),quit\" | grep '^ver:' | cut -f '2-' -d ':'`"
-				 MATLAB_DIR=`echo "unix('env');quit" | matlab -nodisplay | grep '^MATLAB=' | cut -c 8-`
+				 echores "`matlab -nojvm -nodisplay -r \"sprintf('ver:%s',version),quit\" | grep '^ver:' | cut -f '2-' -d ':'`"
+				 MATLAB_DIR=`echo "unix('env');quit" | matlab -nojvm -nodisplay | grep '^MATLAB=' | cut -c 8-`
 				 MATLAB_SRCDIR="$MATLAB_DIR/extern/src"
 				 MATLAB_INCDIR="$MATLAB_DIR/extern/include"
 				 MATLAB_LIBDIR="$MATLAB_DIR/extern/lib"
