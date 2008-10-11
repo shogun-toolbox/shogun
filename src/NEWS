@@ -1,7 +1,9 @@
 2008-10-11  Soeren Sonnenburg <debian@nn7.de>
 
 	* SHOGUN Release version 0.6.6
-	* Include missing file regression/Regression.h
+	* Bugfixes:
+		- Include missing file regression/Regression.h.
+		- Fix formula in CosineDistance.
 
 2008-10-10  Soeren Sonnenburg <debian@nn7.de>
 

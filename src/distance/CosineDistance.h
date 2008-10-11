@@ -24,7 +24,7 @@
  * 
  * \f[\displaystyle
  *  d(\bf{x},\bf{x'}) = 1 - \frac{\sum_{i=1}^{n}\bf{x_{i}}\bf{x'_{i}}}
- *  {\sqrt{\sum_{i=1}^{n}x_{i}^2 \sum_{i=1}^{n}x'_{i}^2}} \quad x,x' \in R^{n}
+ *  {\sqrt{\sum_{i=1}^{n} x_{i}^2 \sum_{i=1}^{n} {x'}_{i}^2}} \quad x,x' \in R^{n}
  * \f] 
  * 
  * @see <a href="http://en.wikipedia.org/wiki/Cosine_similarity"> Wikipedia:
