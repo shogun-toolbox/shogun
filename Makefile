@@ -93,6 +93,9 @@ sed -i '/^SVMlight:$$/,/^$$/c\\' $(DESTDIR)/src/LICENSE
 prepare-release:
 	svn update
 	#update changelog
+	svn stat
+	@echo "Please check output of 'svn stat'. Press any key to continue or Ctrl-C to abort."
+	@read foobar
 	+(cd src;  rm -f ChangeLog ; $(MAKE) ChangeLog ; svn ci -m "updated changelog")
 	#static interfaces
 	+$(MAKE) -C src distclean
