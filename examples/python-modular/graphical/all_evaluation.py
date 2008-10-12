@@ -6,13 +6,8 @@ import pylab
 from shogun.Features import RealFeatures, SparseRealFeatures, Labels
 from shogun.Classifier import SVMOcas
 from shogun.Evaluation import *
+import util
 
-
-QUITKEY='q'
-
-def quit (event):
-	if event.key==QUITKEY or event.key==QUITKEY.upper():
-		pylab.close()
 
 def classify (true_labels):
 	num_feats=2
@@ -162,7 +157,7 @@ if __name__=='__main__':
 	except AttributeError:
 		pass
 
-	pylab.connect('key_press_event', quit)
+	pylab.connect('key_press_event', util.quit)
 	pylab.show()
 
 
