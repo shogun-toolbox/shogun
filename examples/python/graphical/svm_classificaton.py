@@ -1,44 +1,51 @@
 from sg import sg
-from pylab import figure,pcolor,scatter,contour,colorbar,show,imshow
-from numpy import meshgrid,reshape,linspace,ones,min,max,concatenate,transpose
-from numpy import ravel,array
-from numpy.random import randn
-import numpy
+from pylab import pcolor, scatter, contour, colorbar, show, imshow, connect
+from numpy import min, max, where
+import util
 
-num=200
-sg('loglevel', 'ALL')
-features=concatenate((randn(2,num)-1,randn(2,num)+1),1)
-labels=concatenate((-ones([1,num]), ones([1,num])),1)[0]
-sg('set_features', 'TRAIN', features)
+util.set_title('SVM Classification')
+
+#sg('loglevel', 'ALL')
+traindata=util.get_traindata()
+labels=util.get_labels()
+width=1.
+size_cache=10
+
+sg('set_features', 'TRAIN', traindata)
 sg('set_labels', 'TRAIN', labels)
-sg('set_kernel', 'GAUSSIAN', 'REAL', 10, 1.)
+sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width)
 sg('init_kernel', 'TRAIN')
 sg('new_svm', 'LIBSVM')
 sg('c', 100.)
 sg('train_classifier')
 [bias, alphas]=sg('get_svm')
-print bias
-print alphas
-figure()
+#print bias
+#print alphas
 
-print "objective: %f" % sg('get_svm_objective')
+#print "objective: %f" % sg('get_svm_objective')
 
-x1=linspace(1.2*min(features),1.2*max(features), 50)
-x2=linspace(1.2*min(features),1.2*max(features), 50)
-x,y=meshgrid(x1,x2)
-testfeatures=array((ravel(x), ravel(y)))
-
-sg('set_features', 'TEST', testfeatures)
+x, y=util.get_meshgrid(traindata)
+testdata=util.get_testdata(x, y)
+sg('set_features', 'TEST', testdata)
 sg('init_kernel', 'TEST')
 z=sg('classify')
 
 z.resize((50,50))
-#pcolor(x, y, z, shading='flat') #for non-smooth visualization
-i=imshow(z,  origin='lower', extent=(1.2*min(features),1.2*max(features),1.2*min(features),1.2*max(features))) #for smooth visualization
-negidx=numpy.where(labels==-1)[0]
-posidx=numpy.where(labels==+1)[0]
-scatter(features[0,negidx],features[1,negidx], s=20, marker='o', c='b', hold=True)
-scatter(features[0,posidx],features[1,posidx], s=20, marker='o', c='r', hold=True)
+
+#for non-smooth visualization
+#pcolor(x, y, z, shading='flat')
+#for smooth visualization
+i=imshow(z,  origin='lower', extent=(
+	1.2*min(traindata), 1.2*max(traindata), 1.2*min(traindata),
+	1.2*max(traindata)))
+
+negidx=where(labels==-1)[0]
+posidx=where(labels==+1)[0]
+scatter(traindata[0, negidx], traindata[1, negidx],
+	s=20, marker='o', c='b', hold=True)
+scatter(traindata[0, posidx], traindata[1, posidx],
+	s=20, marker='o', c='r', hold=True)
 contour(x, y, z, linewidths=1, colors='black', hold=True)
 colorbar(i)
+connect('key_press_event', util.quit)
 show()

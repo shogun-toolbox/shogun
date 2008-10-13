@@ -1,6 +1,10 @@
 from sg import sg
-from pylab import figure,plot,show
+from pylab import plot, show, connect
 from numpy import array,transpose,sin,double
+
+import util
+
+util.set_title('SVR Regression')
 
 sg('new_regression', 'LIBSVR')
 features=array([range(0,100)],dtype=double)
@@ -17,9 +21,9 @@ sg('set_features', "TEST", features)
 sg('init_kernel', 'TEST')
 out=sg('classify');
 
-figure()
 plot(features[0],labels,'b-')
 plot(features[0],labels,'bo')
 plot(features[0],out,'r-')
 plot(features[0],out,'ro')
+connect('key_press_event', util.quit)
 show()
