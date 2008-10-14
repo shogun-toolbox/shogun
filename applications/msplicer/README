@@ -1,0 +1,110 @@
+This is the mSplicer program accompanying the PLoS "Improving the C. elegans
+genome annotation using machine learning" submission.  by Gunnar Rätsch, Sören
+Sonnenburg, Jagan Srinivasan, Hanh Witte, Klaus-Robert Müller, Ralf Sommer and
+Bernhard Schölkopf. Published in PLoS Computational Biology, February, 2007.
+
+ABSTRACT:
+
+For modern biology, precise genome annotations are of prime importance as they
+allow the accurate definition of genic regions. We employ state of the art
+machine learning methods to assay and improve the accuracy of the genome
+annotation of the nematode Caenorhabditis elegans. The proposed machine
+learning system is trained to recognize exons and introns on the unspliced mRNA
+utilizing recent advances in support vector machines and label sequence
+learning. In 87% (coding and untranslated regions) and 95% (coding regions
+only) of all genes tested in several out-of-sample evaluations, our method
+correctly identified all exons and introns. Notably, only 37% and 50%,
+respectively, of the presently unconfirmed genes in the C. elegans genome
+annotation agree with our predictions, thus we hypothesize that a sizable
+fraction of those genes are not correctly annotated. A retrospective evaluation
+of the Wormbase WS120 annotation [1] of C. elegans reveals that splice form
+predictions on unconfirmed genes in WS120 are inaccurate in about 18% of the
+considered cases, while our predictions deviate from the truth only in 10 −
+13%. We experimentally analyzed 20 controversial genes on which our system and
+the annotation disagree, confirming the superiority of our predictions. While
+our method correctly predicted 75% of those cases, the standard annotation was
+never completely correct. The accuracy of our system is further corroborated by
+a comparison with two other recently proposed systems that can be used for
+splice form prediction: SNAP and ExonHunter. We conclude that the genome
+annotation of C. elegans and other organisms can be greatly enhanced using
+modern machine learning technology.  Availabibility:
+
+Training the mSplicer involves solving a relatively large linear optimization
+problem, which we have implemented in MATLAB using the CPLEX optimization
+package. Additionally we have developed a standalone tool for predicting the
+splice form for C. elegans sequences implemented in PYTHON and C++ available
+under the General Public License. It is based on python scripts that call
+methods implemented in C++ for predicting splice sites using Support Vector
+Machines [2] and Dynamic Programming for splice form prediction. These routines
+are part of the freely available Shogun toolbox for large scale kernel learning
+[3] which is available under http://www.shogun-toolbox.org.
+
+If you have questions regarding the results in [4], please consult
+http://www.msplicer.org or contact Gunnar Rätsch. In case you have difficulties
+using the provided software, please contact Sören Sonnenburg or Gunnar Rätsch.
+
+Following a statistical setup common in machine learning, we trained our
+system on 60% of the available cDNA sequences currently known for C. elegans
+(based on Wormbase [5], version WS120). The remaining 40% of the cDNA sequences
+were used to generate an independent set for out-of-sample testing.
+Additionally, we used available EST sequences (dbEST [6], as of 19/02/2004) to
+maximally extend the cDNA sequences at the 5’ and 3’ ends. For training, we did
+not use any EST sequences overlapping with the 40% of the cDNA sequences for
+out-of-sample prediction.
+
+MSPLICER PROGRAM REQUIREMENTS:
+
+The stand alone linux binary does not need further compilation/libraries and
+should run out of the box (tested on Debian sarge and Debian etch).
+
+For the python version you need a working python 2.4 installation with numpy
+(version 1.0 or later) and the shogun toolbox (version 0.6.2 or later)
+- which is available from http://www.shogun-toolbox.org for Linux, MacOSX,
+cygwin/win32. If you are running Debian GNU Linux, shogun 0.6.2 is available in
+debian unstable http://packages.debian.org/unstable/science/shogun-python-modular.
+
+MSPLICER PROGRAM RUNNING TIME AND MEMORY REQUIREMENTS:
+
+mSplicer requires about 100M of memory for short sequences. Memory requirements
+don't grow much (a additional linear term w.r.t. the length of the input
+sequence). On first run with a new model (see --model option below),
+msplicer will load and decompress the .bz2 compressed model file and store it
+as a python native pickle dump, which increases startup times a lot.
+Due to the optimizations in [3] splice form prediction (layer 1) times
+won't change much for many/long sequences. Otherwise mSplicer running times are
+dominated by computing the viterby path (layer 2). For example computing
+the output of the 708 sequences (2.3Mb) of elegans_WS160_mSplicer_val.fa takes
+on a 2GHz machine about 15 minutes and 170M of memory.
+
+MSPLICER PROGRAM USAGE:
+
+./msplicer fasta_file.fa
+
+This will read all entries in the .fa file and print a .gff file with the
+predictions for each of the entries to stdout. One may optionally specify the
+start and stop of the transcript via --start <basenum> / --stop <basenum> and
+the model via --model one of WS120, WS120gc, WS150, WS160, WS160gc. Note that
+<basenum> is zero based.
+
+
+REFERENCES:
+
+[1]	Harris T, Chen N, Cunningham F, et al. (2004) Wormbase, a multi-species
+	resource for nematode biology and genomics. Nucl Acids Res 32. D411-7.
+
+[2]	Cortes, C, Vapnik, VN. Support-vector networks. Machine Learning,
+	20(3):273--297, 1995.
+
+[3]	Sonnenburg, S, Rätsch, G, Schäfer, C, Schölkopf, B. Large Scale Multiple
+	Kernel Learning. Journal of Machine Learning Research,7:1531-1565,
+	July 2006, K.Bennett and E.P.-Hernandez Editors.
+
+[4]	Rätsch, G, Sonnenburg, S, Srinivasan, J, Witte, H, Müller, KR, Sommer, R,
+	and Schölkopf, B (2007). Improving the C. elegans genome annotation using
+	machine learning. PLoS Computational Biology 3(2):e20.
+
+[5]	Schwarz E, Antoshechkin I, Bastiani C, et al (2006) Wormbase, better
+	software, richer content. Nucleic Acids Res 34:D475–8.
+
+[6]	Boguski M, Tolstoshev TLC (1993). dbEST–database for expressed sequence
+	tags. Nat Genet 4,332–3.

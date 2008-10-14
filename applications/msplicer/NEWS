@@ -1,0 +1,6 @@
+2008-05-18  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+    * mSplicer version 0.3
+		- Adjust code to work with newer shogun versions.
+		- Require shogun version at least 0.6.2 as splice site prediction in
+		the new version is now orders of magnitude faster.
