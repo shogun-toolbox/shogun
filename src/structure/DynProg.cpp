@@ -228,14 +228,17 @@ INT CDynProg::get_num_states()
 }
 void CDynProg::init_tiling_data(INT* probe_pos, DREAL* intensities, const INT num_probes, const INT seq_len)
 {
+	delete[] m_probe_pos;
+	delete[] m_raw_intensities;
 	m_probe_pos = new INT[num_probes];
-	memcpy(m_probe_pos,probe_pos,num_probes*sizeof(INT));
-	m_raw_intensities = intensities;
+	m_raw_intensities = new DREAL[num_probes];
+
+	memcpy(m_probe_pos, probe_pos, num_probes*sizeof(INT));
+	memcpy(m_raw_intensities, intensities, num_probes*sizeof(DREAL));
 	m_num_probes = num_probes;
 	m_precomputed_tiling_values.resize_array(num_svms,seq_len);
 	m_use_tiling=true;
 
-//	SG_PRINT("num_probes: %i  \n",m_num_probes);
 }
 void CDynProg::init_content_svm_value_array(const INT seq_len)
 {
@@ -265,11 +268,12 @@ void CDynProg::precompute_tiling_plifs(CPlif** PEN, const INT* tiling_plif_ids, 
 
 	INT* p_tiling_pos  = m_probe_pos;
 	DREAL* p_tiling_data = m_raw_intensities;
+	INT num=0;
 	for (INT pos_idx=0;pos_idx<seq_len;pos_idx++)
 	{
 		//SG_PRINT("pos[%i]: %i  \n",pos_idx,pos[pos_idx]);
 		//SG_PRINT("*p_tiling_pos: %i  \n",*p_tiling_pos);
-		while (*p_tiling_pos<pos[pos_idx])
+		while (num<m_num_probes&&*p_tiling_pos<pos[pos_idx])
 		{
 			//SG_PRINT("raw_intens: %f  \n",*p_tiling_data);
 			for (INT i=0; i<num_svms; i++)
@@ -284,6 +288,7 @@ void CDynProg::precompute_tiling_plifs(CPlif** PEN, const INT* tiling_plif_ids, 
 			}
 			p_tiling_data++;
 			p_tiling_pos++;
+			num++;
 		}
 		for (INT i=0; i<num_svms; i++)
 			m_precomputed_tiling_values.set_element(tiling_plif[i],i,pos_idx);
@@ -912,17 +917,15 @@ void CDynProg::best_path_call(INT nbest, bool use_orf)
 		best_path_trans<1,false,false>(m_seq.get_array(), m_seq.get_dim2(), m_pos.get_array(), 
 				m_orf_info.get_array(), m_PEN.get_array(),
 				m_PEN_state_signals.get_array(), m_PEN_state_signals.get_dim2(),
-				m_genestr.get_array(), m_genestr.get_dim1(), m_genestr.get_dim2(),
+				m_genestr.get_dim2(),
 				m_scores.get_array(), m_states.get_array(), m_positions.get_array(),
-				m_dict_weights.get_array(), m_dict_weights.get_dim1()*m_dict_weights.get_dim2(),
 				use_orf) ;
 	else
 		best_path_trans<2,false,false>(m_seq.get_array(), m_seq.get_dim2(), m_pos.get_array(), 
 				m_orf_info.get_array(), m_PEN.get_array(),
 				m_PEN_state_signals.get_array(), m_PEN_state_signals.get_dim2(),
-				m_genestr.get_array(), m_genestr.get_dim1(), m_genestr.get_dim2(),
+				m_genestr.get_dim2(),
 				m_scores.get_array(), m_states.get_array(), m_positions.get_array(),
-				m_dict_weights.get_array(), m_dict_weights.get_dim1()*m_dict_weights.get_dim2(),
 				use_orf) ;
 
 	m_step=9 ;
