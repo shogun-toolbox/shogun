@@ -907,24 +907,24 @@ void CDynProg::best_path_call(INT nbest, bool use_orf)
 
 	ASSERT(nbest==1||nbest==2) ;
 	ASSERT(m_genestr.get_dim2()==1) ;
-        SG_ERROR("is this used???\n");	
-//	if (nbest==1)
-//		best_path_trans<1,false,false>(m_seq.get_array(), m_seq.get_dim2(), m_pos.get_array(), 
-//								m_orf_info.get_array(), m_PEN.get_array(),
-//								m_PEN_state_signals.get_array(), m_PEN_state_signals.get_dim2(),
-//								m_genestr.get_array(), m_genestr.get_dim1(), m_genestr.get_dim2(),
-//								m_scores.get_array(), m_states.get_array(), m_positions.get_array(),
-//								m_dict_weights.get_array(), m_dict_weights.get_dim1()*m_dict_weights.get_dim2(),
-//								use_orf) ;
-//	else
-//		best_path_trans<2,false,false>(m_seq.get_array(), m_seq.get_dim2(), m_pos.get_array(), 
-//								m_orf_info.get_array(), m_PEN.get_array(),
-//								m_PEN_state_signals.get_array(), m_PEN_state_signals.get_dim2(),
-//								m_genestr.get_array(), m_genestr.get_dim1(), m_genestr.get_dim2(),
-//								m_scores.get_array(), m_states.get_array(), m_positions.get_array(),
-//								m_dict_weights.get_array(), m_dict_weights.get_dim1()*m_dict_weights.get_dim2(),
-//								use_orf) ;
-//
+
+	if (nbest==1)
+		best_path_trans<1,false,false>(m_seq.get_array(), m_seq.get_dim2(), m_pos.get_array(), 
+				m_orf_info.get_array(), m_PEN.get_array(),
+				m_PEN_state_signals.get_array(), m_PEN_state_signals.get_dim2(),
+				m_genestr.get_array(), m_genestr.get_dim1(), m_genestr.get_dim2(),
+				m_scores.get_array(), m_states.get_array(), m_positions.get_array(),
+				m_dict_weights.get_array(), m_dict_weights.get_dim1()*m_dict_weights.get_dim2(),
+				use_orf) ;
+	else
+		best_path_trans<2,false,false>(m_seq.get_array(), m_seq.get_dim2(), m_pos.get_array(), 
+				m_orf_info.get_array(), m_PEN.get_array(),
+				m_PEN_state_signals.get_array(), m_PEN_state_signals.get_dim2(),
+				m_genestr.get_array(), m_genestr.get_dim1(), m_genestr.get_dim2(),
+				m_scores.get_array(), m_states.get_array(), m_positions.get_array(),
+				m_dict_weights.get_array(), m_dict_weights.get_dim1()*m_dict_weights.get_dim2(),
+				use_orf) ;
+
 	m_step=9 ;
 }
 
