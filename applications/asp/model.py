@@ -123,7 +123,7 @@ if __name__ == '__main__':
 	import hotshot, hotshot.stats
 
 	def load():
-		f=file('data/asplicer_test.dat');
+		f=file('data/asp_test.dat');
 		m=parse_file(f);
 
 		print m.acc_splice_b is None

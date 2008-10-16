@@ -39,9 +39,9 @@ except ImportError:
 	sys.exit(1)
 
 
-asplicer_version='v0.1'
+asp_version='v0.1'
 
-class asplicer:
+class asp:
 	def __init__(self):
 		self.model = None
 		self.signal = None
@@ -74,7 +74,7 @@ class asplicer:
 		for i in xrange(len(preds)):
 			d=dict()
 			d['seqname']=name
-			d['source']='asplicer'
+			d['source']='asp'
 			d['feature']=preds[i][0]
 			d['start']=preds[i][1]
 			d['end']=preds[i][1]+1
@@ -83,7 +83,7 @@ class asplicer:
 			d['frame']=0
 			descr.append(d)
 
-		genomic.write_gff(outfile, ('asplicer',asplicer_version + ' ' + self.model_name),
+		genomic.write_gff(outfile, ('asp',asp_version + ' ' + self.model_name),
 				('DNA', name), descr, skipheader)
 
 	def write_binary(self, preds):
@@ -133,7 +133,7 @@ class asplicer:
 					outfile.close()
 
 def print_version():
-	sys.stderr.write('aSplicer '+asplicer_version+'\n')
+	sys.stderr.write('asp '+asp_version+'\n')
 
 def parse_options():
 	parser = optparse.OptionParser(usage="usage: %prog [options] seq.fa")
@@ -150,7 +150,7 @@ def parse_options():
 			                  help="""coding stop (zero based, if positive relative to
 							  sequence start, if negative relative to sequence end)""")
 	parser.add_option("--organism", type="str", default='Worm',
-			                  help="""use aSplicer model for organism when predicting 
+			                  help="""use asp model for organism when predicting 
 							  (one of Cress, Fish, Fly, Human, Worm)""")
 
 	(options, args) = parser.parse_args()
@@ -215,6 +215,6 @@ worm, fly, cress, fish
 
 if __name__ == '__main__':
 	(startstop, fafname, modelfname, outfile, binary_out, binary_pos ) = parse_options()
-	p=asplicer()
+	p=asp()
 	p.load_model(modelfname);
 	p.predict_file(fafname, startstop)
