@@ -24,7 +24,6 @@ class model(object):
 	#donor
 	don_splice_b=None
 	don_splice_order=None
-	don_splice_use_gc=None
 	don_splice_window_left=None
 	don_splice_window_right=None
 	don_splice_alphas=None
@@ -53,7 +52,6 @@ def parse_file(file):
 			#donor
 			if m.don_splice_b is None: m.don_splice_b=parse_value(l, 'don_splice_b')
 			if m.don_splice_order is None: m.don_splice_order=parse_value(l, 'don_splice_order')
-			if m.don_splice_use_gc is None: m.don_splice_use_gc=parse_value(l, 'don_splice_use_gc')
 			if m.don_splice_window_left is None: m.don_splice_window_left=parse_value(l, 'don_splice_window_left')
 			if m.don_splice_window_right is None: m.don_splice_window_right=parse_value(l, 'don_splice_window_right')
 			if m.don_splice_alphas is None: m.don_splice_alphas=parse_vector(l, file, 'don_splice_alphas')
@@ -137,7 +135,6 @@ if __name__ == '__main__':
 
 		print m.don_splice_b is None
 		print m.don_splice_order is None
-		print m.don_splice_use_gc is None
 		print m.don_splice_window_left is None
 		print m.don_splice_window_right is None
 		print m.don_splice_alphas is None

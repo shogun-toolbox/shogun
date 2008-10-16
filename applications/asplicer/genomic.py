@@ -4,7 +4,7 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
 # 
-# Written (W) 2006-2007 Soeren Sonnenburg
+# Written (W) 2006-2008 Soeren Sonnenburg
 # Written (W) 2006-2007 Mikio Braun
 # Copyright (C) 2007 Fraunhofer Institute FIRST and Max-Planck-Society
 # 
@@ -117,7 +117,7 @@ def write_gff(f, (source, version), (seqtype, seqname), descrlist, skipheader=Fa
 	f.write('##Type %s %s\n' % (seqtype, seqname) )
 
 	for d in descrlist:
-		f.write('%s\t%s\t%s\t%d\t%d\t%f\t%s\t%d' % (d['seqname'], d['source'], 
+		f.write('%s\t%s\t%s\t%d\t%d\t%+f\t%s\t%d' % (d['seqname'], d['source'], 
 											d['feature'], d['start'], d['end'], 
 											d['score'], d['strand'], d['frame']))
 		if d.has_key('attributes'):

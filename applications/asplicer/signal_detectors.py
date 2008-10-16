@@ -126,10 +126,7 @@ class svm_splice_model(object):
 
 class signal_detectors(object):
 	def __init__(self, model):
-		if model.don_splice_use_gc:
-			don_consensus=['GC','GT']
-		else:
-			don_consensus=['GT']
+		don_consensus=['GC','GT']
 
 		self.acceptor=svm_splice_model(model.acc_splice_order, model.acc_splice_svs,
 				numpy.array(model.acc_splice_alphas).flatten(), model.acc_splice_b, 
