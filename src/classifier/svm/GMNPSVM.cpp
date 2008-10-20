@@ -90,7 +90,7 @@ bool CGMNPSVM::train()
 			mnp.get_indices2( &inx1, &inx2, j );
 
 			all_alphas[(inx1*num_classes)+i] += 
-				alpha[j]*(KDELTA(vector_y[inx1],i+1)+KDELTA(i+1,inx2));
+				alpha[j]*(KDELTA(vector_y[inx1],i+1)-KDELTA(i+1,inx2));
 			all_bs[i] += alpha[j]*(KDELTA(vector_y[inx1],i+1)-KDELTA(i+1,inx2));
 		}
 	}
@@ -115,11 +115,7 @@ bool CGMNPSVM::train()
 		{
 			if (all_alphas[j*num_classes+i] != 0)
 			{
-				if (i==vector_y[j]-1)
-					svm->set_alpha(k, all_alphas[j*num_classes+i]);
-				else
-					svm->set_alpha(k, -all_alphas[j*num_classes+i]);
-
+				svm->set_alpha(k, all_alphas[j*num_classes+i]);
 				svm->set_support_vector(k, j);
 				k++;
 			}
