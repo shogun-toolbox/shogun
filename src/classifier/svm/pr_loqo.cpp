@@ -108,7 +108,7 @@ bool choldc(double a[], int n, double p[])
 			{
 				if (sum <= 0.0)
 				{
-					SG_SERROR("Choldc failed, matrix not positive definite");
+					SG_SDEBUG("Choldc failed, matrix not positive definite");
 					sum = 0.0;
 					return false;
 				}
