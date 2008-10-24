@@ -7,7 +7,7 @@
 %include "structure/PlifBase.i"
 
 %template(DynamicCharArray) CDynamicArray<char>;
-%template(DynamicByteArray) CDynamicArray<BYTE>;
+%template(DynamicByteArray) CDynamicArray<uint8_t>;
 %template(DynamicShortArray) CDynamicArray<SHORT>;
 %template(DynamicWordArray) CDynamicArray<WORD>;
 %template(DynamicIntArray) CDynamicArray<INT>;

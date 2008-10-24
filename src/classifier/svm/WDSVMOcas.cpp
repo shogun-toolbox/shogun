@@ -55,7 +55,7 @@ CWDSVMOcas::CWDSVMOcas(E_SVM_TYPE type)
 	normalization_const=1.0;
 }
 
-CWDSVMOcas::CWDSVMOcas(DREAL C, INT d, INT from_d, CStringFeatures<BYTE>* traindat, CLabels* trainlab)
+CWDSVMOcas::CWDSVMOcas(DREAL C, INT d, INT from_d, CStringFeatures<uint8_t>* traindat, CLabels* trainlab)
 : CClassifier(), use_bias(false), bufsize(3000), C1(C), C2(C), epsilon(1e-3),
 	degree(d), from_degree(from_d)
 {
@@ -247,7 +247,7 @@ void* CWDSVMOcas::add_new_cut_helper( void* ptr)
 	INT alphabet_size = o->alphabet_size;
 	SHORTREAL* wd_weights = o->wd_weights;
 	INT degree = o->degree;
-	CStringFeatures<BYTE>* f = o->features;
+	CStringFeatures<uint8_t>* f = o->features;
 	DREAL normalization_const = o->normalization_const;
 
 	// temporary vector
@@ -265,7 +265,7 @@ void* CWDSVMOcas::add_new_cut_helper( void* ptr)
 
 		for (INT k=0; k<lim; k++)
 		{
-			BYTE* vec = f->get_feature_vector(j+k, len);
+			uint8_t* vec = f->get_feature_vector(j+k, len);
 			SHORTREAL wd = wd_weights[k]/normalization_const;
 
 			for(uint32_t i=0; i < cut_length; i++) 
@@ -383,7 +383,7 @@ void* CWDSVMOcas::compute_output_helper(void* ptr)
 	double* output = p->output;
 	INT* val = p->val;
 
-	CStringFeatures<BYTE>* f=o->get_features();
+	CStringFeatures<uint8_t>* f=o->get_features();
 
 	INT degree = o->degree;
 	INT string_length = o->string_length;
@@ -407,7 +407,7 @@ void* CWDSVMOcas::compute_output_helper(void* ptr)
 
 		for (INT k=0; k<lim; k++)
 		{
-			BYTE* vec=f->get_feature_vector(j+k, len);
+			uint8_t* vec=f->get_feature_vector(j+k, len);
 			SHORTREAL wd = wd_weights[k];
 
 			for (INT i=start; i<end; i++) // quite fast 1.9s

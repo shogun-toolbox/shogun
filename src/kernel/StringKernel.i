@@ -10,4 +10,4 @@
 %template(StringIntKernel) CStringKernel<INT>;
 %template(StringUlongKernel) CStringKernel<ULONG>;
 %template(StringShortKernel) CStringKernel<SHORT>;
-%template(StringByteKernel) CStringKernel<BYTE>;
+%template(StringByteKernel) CStringKernel<uint8_t>;

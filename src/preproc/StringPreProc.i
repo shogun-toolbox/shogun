@@ -6,5 +6,5 @@
 
 %template(StringUlongPreProc) CStringPreProc<ULONG>;
 %template(StringWordPreProc) CStringPreProc<WORD>;
-%template(StringBytePreProc) CStringPreProc<BYTE>;
+%template(StringBytePreProc) CStringPreProc<uint8_t>;
 %template(StringCharPreProc) CStringPreProc<char>;

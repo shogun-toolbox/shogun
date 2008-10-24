@@ -88,7 +88,7 @@ template<> inline EFeatureType CStringDistance<SHORT>::get_feature_type() { retu
  *
  * @return feature type BYTE
  */
-template<> inline EFeatureType CStringDistance<BYTE>::get_feature_type() { return F_BYTE; }
+template<> inline EFeatureType CStringDistance<uint8_t>::get_feature_type() { return F_BYTE; }
 
 /** get feature type the CHAR distance can deal with
  *

@@ -347,11 +347,11 @@ INT CMath::calcroc(DREAL* fp, DREAL* tp, DREAL* output, INT* label, INT& size, I
 	return returnidx;
 }
 
-UINT CMath::crc32(BYTE *data, INT len)
+UINT CMath::crc32(uint8_t *data, INT len)
 {
     UINT        result;
     INT                 i,j;
-    BYTE       octet;
+    uint8_t       octet;
 
     result = 0-1;
 
@@ -455,7 +455,7 @@ DREAL* CMath::pinv(DREAL* matrix, INT rows, INT cols, DREAL* target)
 #endif
 
 template <>
-void CMath::display_vector(BYTE* vector, INT n, const char* name)
+void CMath::display_vector(uint8_t* vector, INT n, const char* name)
 {
 	ASSERT(n>=0);
 	SG_SPRINT("%s=[", name);

@@ -124,7 +124,7 @@ class CAlphabet : public CSGObject
 		 * @param c element to remap
 		 * @return remapped element
 		 */
-		inline BYTE remap_to_bin(BYTE c)
+		inline uint8_t remap_to_bin(uint8_t c)
 		{
 			return maptable_to_bin[c];
 		}
@@ -134,7 +134,7 @@ class CAlphabet : public CSGObject
 		 * @param c element to remap
 		 * @return remapped element
 		 */
-		inline BYTE remap_to_char(BYTE c)
+		inline uint8_t remap_to_char(uint8_t c)
 		{
 			return maptable_to_char[c];
 		}
@@ -154,7 +154,7 @@ class CAlphabet : public CSGObject
 		 * @param p string
 		 * @param len length of string
 		 */
-		void add_string_to_histogram(BYTE* p, LONG len);
+		void add_string_to_histogram(uint8_t* p, LONG len);
 
 		/** make histogram for whole string
 		 *
@@ -202,7 +202,7 @@ class CAlphabet : public CSGObject
 		 *
 		 * @param p element
 		 */
-		inline void add_byte_to_histogram(BYTE p)
+		inline void add_byte_to_histogram(uint8_t p)
 		{
 			histogram[(INT) p]++;
 		}
@@ -217,7 +217,7 @@ class CAlphabet : public CSGObject
 		 */
 		inline void get_hist(LONG** h, INT* len)
 		{
-			INT hist_size=(1 << (sizeof(BYTE)*8));
+			INT hist_size=(1 << (sizeof(uint8_t)*8));
 			ASSERT(h && len);
 			*h=(LONG*) malloc(sizeof(LONG)*hist_size);
 			ASSERT(*h);
@@ -285,15 +285,15 @@ class CAlphabet : public CSGObject
 
 	public:
 		/** B_A */
-		static const BYTE B_A;
+		static const uint8_t B_A;
 		/** B_C */
-		static const BYTE B_C;
+		static const uint8_t B_C;
 		/** B_G */
-		static const BYTE B_G;
+		static const uint8_t B_G;
 		/** B_T */
-		static const BYTE B_T;
+		static const uint8_t B_T;
 		/** MAPTABLE UNDEF */
-		static const BYTE MAPTABLE_UNDEF;
+		static const uint8_t MAPTABLE_UNDEF;
 		/** alphabet names */
 		static const char* alphabet_names[11];
 
@@ -305,12 +305,12 @@ class CAlphabet : public CSGObject
 		/** number of bits */
 		INT num_bits;
 		/** valid chars */
-		BYTE valid_chars[1 << (sizeof(BYTE)*8)];
+		uint8_t valid_chars[1 << (sizeof(uint8_t)*8)];
 		/** maptable to bin */
-		BYTE maptable_to_bin[1 << (sizeof(BYTE)*8)];
+		uint8_t maptable_to_bin[1 << (sizeof(uint8_t)*8)];
 		/** maptable to char */
-		BYTE maptable_to_char[1 << (sizeof(BYTE)*8)];
+		uint8_t maptable_to_char[1 << (sizeof(uint8_t)*8)];
 		/** histogram */
-		LONG histogram[1 << (sizeof(BYTE)*8)];
+		LONG histogram[1 << (sizeof(uint8_t)*8)];
 };
 #endif

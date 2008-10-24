@@ -1197,7 +1197,7 @@ bool CSGInterface::cmd_get_features()
 			{
 				case F_BYTE:
 				{
-					BYTE* fmatrix=((CByteFeatures *) feat)->get_feature_matrix(num_feat, num_vec);
+					uint8_t* fmatrix=((CByteFeatures *) feat)->get_feature_matrix(num_feat, num_vec);
 					set_byte_matrix(fmatrix, num_feat, num_vec);
 					break;
 				}
@@ -1281,7 +1281,7 @@ bool CSGInterface::cmd_get_features()
 			{
 				case F_BYTE:
 				{
-					T_STRING<BYTE>* fmatrix=((CStringFeatures<BYTE>*) feat)->get_features(num_str, max_str_len);
+					T_STRING<uint8_t>* fmatrix=((CStringFeatures<uint8_t>*) feat)->get_features(num_str, max_str_len);
 					set_byte_string_list(fmatrix, num_str);
 					break;
 				}
@@ -1430,9 +1430,9 @@ bool CSGInterface::do_set_features(bool add)
 				delete[] alphabet_str;
 
 				ASSERT(fmatrix[0].string);
-				feat=new CStringFeatures<BYTE>(DNA);
+				feat=new CStringFeatures<uint8_t>(DNA);
 
-				if (!((CStringFeatures<BYTE>*) feat)->load_dna_file(fmatrix[0].string))
+				if (!((CStringFeatures<uint8_t>*) feat)->load_dna_file(fmatrix[0].string))
 				{
 					delete feat;
 					SG_ERROR("Couldn't load DNA features from file.\n");
@@ -1463,7 +1463,7 @@ bool CSGInterface::do_set_features(bool add)
 
 			INT num_str=0;
 			INT max_str_len=0;
-			T_STRING<BYTE>* fmatrix=NULL;
+			T_STRING<uint8_t>* fmatrix=NULL;
 			get_byte_string_list(fmatrix, num_str, max_str_len);
 
 			INT alphabet_len=0;
@@ -1472,8 +1472,8 @@ bool CSGInterface::do_set_features(bool add)
 			CAlphabet* alphabet=new CAlphabet(alphabet_str, alphabet_len);
 			delete[] alphabet_str;
 
-			feat=new CStringFeatures<BYTE>(alphabet);
-			if (!((CStringFeatures<BYTE>*) feat)->set_features(fmatrix, num_str, max_str_len))
+			feat=new CStringFeatures<uint8_t>(alphabet);
+			if (!((CStringFeatures<uint8_t>*) feat)->set_features(fmatrix, num_str, max_str_len))
 			{
 				delete alphabet;
 				delete feat;
@@ -1709,7 +1709,7 @@ bool CSGInterface::cmd_convert()
 				DREAL maxv=get_real_from_real_or_str(len);
 
 				result=ui_features.convert_string_char_to_mindy_grams<char>(
-					(CStringFeatures<BYTE>*) features, alph, embed,
+					(CStringFeatures<uint8_t>*) features, alph, embed,
 					nlen, delim, maxv);
 
 				delete[] alph;
@@ -1756,14 +1756,14 @@ bool CSGInterface::cmd_convert()
 
 				if (strmatch(to_type, "WORD"))
 				{
-					result=ui_features->convert_string_char_to_string_generic<BYTE,WORD>(
-						(CStringFeatures<BYTE>*) features, order, start,
+					result=ui_features->convert_string_char_to_string_generic<uint8_t,WORD>(
+						(CStringFeatures<uint8_t>*) features, order, start,
 						gap, rev);
 				}
 				else if (strmatch(to_type, "ULONG"))
 				{
-					result=ui_features->convert_string_char_to_string_generic<BYTE,ULONG>(
-						(CStringFeatures<BYTE>*) features, order, start,
+					result=ui_features->convert_string_char_to_string_generic<uint8_t,ULONG>(
+						(CStringFeatures<uint8_t>*) features, order, start,
 						gap, rev);
 				}
 				else
@@ -1780,8 +1780,8 @@ bool CSGInterface::cmd_convert()
 				char* delim=get_str_from_str_or_direct(len);
 				DREAL maxv=get_real_from_real_or_str(len);
 
-				result=ui_features.convert_string_char_to_mindy_grams<BYTE>(
-					(CStringFeatures<BYTE>*) features, alph, embed,
+				result=ui_features.convert_string_char_to_mindy_grams<uint8_t>(
+					(CStringFeatures<uint8_t>*) features, alph, embed,
 					nlen, delim, maxv);
 
 				delete[] alph;
@@ -1791,7 +1791,7 @@ bool CSGInterface::cmd_convert()
 #endif
 			else
 				io.not_implemented();
-		} // from_type BYTE
+		} // from_type uint8_t
 
 		else if (strmatch(from_type, "WORD"))
 		{
@@ -1895,7 +1895,7 @@ bool CSGInterface::cmd_obtain_from_position_list()
 		}
 		case F_BYTE:
 		{
-			success=(((CStringFeatures<BYTE>*) features)->
+			success=(((CStringFeatures<uint8_t>*) features)->
 				obtain_by_position_list(winsize, &positions, skip)>0);
 			break;
 		}
@@ -6151,7 +6151,7 @@ bool CSGInterface::cmd_crc()
 	INT slen=0;
 	char* string=get_string(slen);
 	ASSERT(string);
-	BYTE* bstring=new BYTE[slen];
+	uint8_t* bstring=new uint8_t[slen];
 
 	for (INT i=0; i<slen; i++)
 		bstring[i]=string[i];

@@ -5,7 +5,7 @@
 
 %include "lib/swig_typemaps.i"
 
-%apply (BYTE* IN_ARRAY2, INT DIM1, INT DIM2) {(BYTE* src, INT num_feat, INT num_vec)};
+%apply (uint8_t* IN_ARRAY2, INT DIM1, INT DIM2) {(uint8_t* src, INT num_feat, INT num_vec)};
 
 %rename(ByteFeatures) CByteFeatures;
 

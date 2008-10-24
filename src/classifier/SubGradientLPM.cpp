@@ -478,11 +478,11 @@ void CSubGradientLPM::init(INT num_vec, INT num_feat)
 	hinge_idx=new INT[num_vec+num_feat];
 	memset(hinge_idx,0,sizeof(INT)*(num_vec+num_feat));
 
-	active=new BYTE[num_vec];
-	memset(active,0,sizeof(BYTE)*num_vec);
+	active=new uint8_t[num_vec];
+	memset(active,0,sizeof(uint8_t)*num_vec);
 
-	old_active=new BYTE[num_vec];
-	memset(old_active,0,sizeof(BYTE)*num_vec);
+	old_active=new uint8_t[num_vec];
+	memset(old_active,0,sizeof(uint8_t)*num_vec);
 
 	idx_bound=new INT[num_vec];
 	memset(idx_bound,0,sizeof(INT)*num_vec);

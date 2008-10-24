@@ -82,7 +82,7 @@ template<> inline EFeatureType CSparseKernel<WORD>::get_feature_type() { return 
 
 template<> inline EFeatureType CSparseKernel<SHORT>::get_feature_type() { return F_SHORT; }
 
-template<> inline EFeatureType CSparseKernel<BYTE>::get_feature_type() { return F_BYTE; }
+template<> inline EFeatureType CSparseKernel<uint8_t>::get_feature_type() { return F_BYTE; }
 
 template<> inline EFeatureType CSparseKernel<char>::get_feature_type() { return F_CHAR; }
 

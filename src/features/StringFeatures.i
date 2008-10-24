@@ -10,7 +10,7 @@
 
 %apply (ST** ARGOUT1, INT* DIM1) {(ST** dst, INT* len)};
 %apply (char** ARGOUT1, INT* DIM1) {(char** dst, INT* len)};
-%apply (BYTE** ARGOUT1, INT* DIM1) {(BYTE** dst, INT* len)};
+%apply (uint8_t** ARGOUT1, INT* DIM1) {(uint8_t** dst, INT* len)};
 %apply (SHORT** ARGOUT1, INT* DIM1) {(SHORT** dst, INT* len)};
 %apply (WORD** ARGOUT1, INT* DIM1) {(WORD** dst, INT* len)};
 %apply (INT** ARGOUT1, INT* DIM1) {(INT** dst, INT* len)};
@@ -33,11 +33,11 @@
         return self->CStringFeatures<char>::set_features(strings, num_strings, max_len);
     }
 };
-%extend CStringFeatures<BYTE>
+%extend CStringFeatures<uint8_t>
 {
-    void get_str(BYTE** dst, INT* len)
+    void get_str(uint8_t** dst, INT* len)
     {
-        self->CStringFeatures<BYTE>::get_string(dst,len);
+        self->CStringFeatures<uint8_t>::get_string(dst,len);
     }
 };
 %extend CStringFeatures<SHORT>
@@ -84,7 +84,7 @@
 };
 
 %template(StringCharFeatures) CStringFeatures<char>;
-%template(StringByteFeatures) CStringFeatures<BYTE>;
+%template(StringByteFeatures) CStringFeatures<uint8_t>;
 %template(StringShortFeatures) CStringFeatures<SHORT>;
 %template(StringWordFeatures) CStringFeatures<WORD>;
 %template(StringIntFeatures) CStringFeatures<INT>;

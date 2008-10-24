@@ -79,7 +79,7 @@ template<> inline EFeatureType CStringKernel<WORD>::get_feature_type() { return 
 
 template<> inline EFeatureType CStringKernel<SHORT>::get_feature_type() { return F_SHORT; }
 
-template<> inline EFeatureType CStringKernel<BYTE>::get_feature_type() { return F_BYTE; }
+template<> inline EFeatureType CStringKernel<uint8_t>::get_feature_type() { return F_BYTE; }
 
 template<> inline EFeatureType CStringKernel<char>::get_feature_type() { return F_CHAR; }
 

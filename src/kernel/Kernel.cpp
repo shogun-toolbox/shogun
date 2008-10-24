@@ -550,8 +550,8 @@ void CKernel::cache_multiple_kernel_rows(INT* rows, INT num_rows)
 		INT num_threads=parallel.get_num_threads()-1;
 		INT num_vec=lhs->get_num_vectors();
 		ASSERT(num_vec>0);
-		BYTE* needs_computation=new BYTE[num_vec];
-		memset(needs_computation, 0, sizeof(BYTE)*num_vec);
+		uint8_t* needs_computation=new uint8_t[num_vec];
+		memset(needs_computation, 0, sizeof(uint8_t)*num_vec);
 		INT step=0;
 		INT num=0;
 		INT end=0;

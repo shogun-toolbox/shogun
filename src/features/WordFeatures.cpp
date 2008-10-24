@@ -117,7 +117,7 @@ bool CWordFeatures::obtain_from_char_features(CCharFeatures* cf, INT start, INT 
 
 	for (INT i=0; i<256; i++)
 	{
-		BYTE bits=(BYTE) i;
+		uint8_t bits=(uint8_t) i;
 		symbol_mask_table[i]=0;
 
 		for (INT j=0; j<8; j++)

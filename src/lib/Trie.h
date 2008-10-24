@@ -65,7 +65,7 @@ struct POIMTrie
 		/** children */
 		INT children[4];
 		/** sequence */
-		BYTE seq[16] ;
+		uint8_t seq[16] ;
 	}; 
 
 	/** super_string_score */
@@ -94,7 +94,7 @@ struct DNATrie
 		/** children */
 		INT children[4];
 		/** sequence */
-		BYTE seq[16] ;
+		uint8_t seq[16] ;
 	}; 
 };
 

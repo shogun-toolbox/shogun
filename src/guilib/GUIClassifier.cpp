@@ -499,7 +499,7 @@ bool CGUIClassifier::train_wdocas()
 		SG_ERROR("No labels available.\n");
 
 	((CWDSVMOcas*) classifier)->set_labels(trainlabels);
-	((CWDSVMOcas*) classifier)->set_features((CStringFeatures<BYTE>*) trainfeatures);
+	((CWDSVMOcas*) classifier)->set_features((CStringFeatures<uint8_t>*) trainfeatures);
 	result=((CWDSVMOcas*) classifier)->train();
 
 	return result;
@@ -1172,7 +1172,7 @@ CLabels* CGUIClassifier::classify_byte_linear(CLabels* output)
 		return false ;
 	}
 
-	((CWDSVMOcas*) classifier)->set_features((CStringFeatures<BYTE>*) testfeatures);
+	((CWDSVMOcas*) classifier)->set_features((CStringFeatures<uint8_t>*) testfeatures);
 	SG_INFO("starting linear classifier testing\n") ;
 	return classifier->classify(output);
 }

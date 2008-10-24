@@ -113,7 +113,7 @@ bool CGUIFeatures::load(
 		else if (strncmp(type, "BYTE", 4)==0)
 		{
 			///FIXME make CHAR type configurable... it is DNA by default
-			*f_ptr=new CStringFeatures<BYTE>(filename, DNA);
+			*f_ptr=new CStringFeatures<uint8_t>(filename, DNA);
 		}
 		else if (strncmp(type, "CHAR", 4)==0)
 		{
@@ -248,7 +248,7 @@ bool CGUIFeatures::obtain_by_sliding_window(
 		case F_CHAR:
 			return ( ((CStringFeatures<char>*) features)->obtain_by_sliding_window(winsize, shift, skip)>0);
 		case F_BYTE:
-			return ( ((CStringFeatures<BYTE>*) features)->obtain_by_sliding_window(winsize, shift, skip)>0);
+			return ( ((CStringFeatures<uint8_t>*) features)->obtain_by_sliding_window(winsize, shift, skip)>0);
 		case F_WORD:
 			return ( ((CStringFeatures<WORD>*) features)->obtain_by_sliding_window(winsize, shift, skip)>0);
 		case F_ULONG:

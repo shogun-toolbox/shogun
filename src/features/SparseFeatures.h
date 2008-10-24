@@ -883,7 +883,7 @@ template <class ST> class CSparseFeatures : public CFeatures
 
 			size_t blocksize=1024*1024;
 			size_t required_blocksize=blocksize;
-			BYTE* dummy=new BYTE[blocksize];
+			uint8_t* dummy=new uint8_t[blocksize];
 			FILE* f=fopen(fname, "ro");
 
 			if (f)
@@ -902,7 +902,7 @@ template <class ST> class CSparseFeatures : public CFeatures
 
 				while (sz == blocksize)
 				{
-					sz=fread(dummy, sizeof(BYTE), blocksize, f);
+					sz=fread(dummy, sizeof(uint8_t), blocksize, f);
 					bool contains_cr=false;
 					for (size_t i=0; i<sz; i++)
 					{
@@ -921,7 +921,7 @@ template <class ST> class CSparseFeatures : public CFeatures
 				SG_INFO("found %d feature vectors\n", num_vectors);
 				delete[] dummy;
 				blocksize=required_blocksize;
-				dummy = new BYTE[blocksize+1]; //allow setting of '\0' at EOL
+				dummy = new uint8_t[blocksize+1]; //allow setting of '\0' at EOL
 
 				lab=new CLabels(num_vectors);
 				sparse_feature_matrix=new TSparse<ST>[num_vectors];
@@ -931,7 +931,7 @@ template <class ST> class CSparseFeatures : public CFeatures
 				INT lines=0;
 				while (sz == blocksize)
 				{
-					sz=fread(dummy, sizeof(BYTE), blocksize, f);
+					sz=fread(dummy, sizeof(uint8_t), blocksize, f);
 
 					size_t old_sz=0;
 					for (size_t i=0; i<sz; i++)
@@ -939,12 +939,12 @@ template <class ST> class CSparseFeatures : public CFeatures
 						if (i==sz-1 && dummy[i]!='\n' && sz==blocksize)
 						{
 							size_t len=i-old_sz+1;
-							BYTE* data=&dummy[old_sz];
+							uint8_t* data=&dummy[old_sz];
 
 							for (INT j=0; j<len; j++)
 								dummy[j]=data[j];
 
-							sz=fread(dummy+len, sizeof(BYTE), blocksize-len, f);
+							sz=fread(dummy+len, sizeof(uint8_t), blocksize-len, f);
 							i=0;
 							old_sz=0;
 							sz+=len;
@@ -954,7 +954,7 @@ template <class ST> class CSparseFeatures : public CFeatures
 						{
 
 							size_t len=i-old_sz;
-							BYTE* data=&dummy[old_sz];
+							uint8_t* data=&dummy[old_sz];
 
 							INT dims=0;
 							for (INT j=0; j<len; j++)
@@ -986,7 +986,7 @@ template <class ST> class CSparseFeatures : public CFeatures
 
 							INT d=0;
 							j++;
-							BYTE* start=&data[j];
+							uint8_t* start=&data[j];
 							for (; j<len; j++)
 							{
 								if (data[j]==':')
@@ -1124,7 +1124,7 @@ template<> inline EFeatureType CSparseFeatures<char>::get_feature_type()
  *
  * @return feature type BYTE
  */
-template<> inline EFeatureType CSparseFeatures<BYTE>::get_feature_type()
+template<> inline EFeatureType CSparseFeatures<uint8_t>::get_feature_type()
 {
 	return F_BYTE;
 }

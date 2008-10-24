@@ -15,8 +15,8 @@
 #ifndef __COMMON_H__
 #define __COMMON_H__
 
-#include <stdlib.h> 
-#include <stdio.h> 
+#include <stdlib.h>
+#include <stdio.h>
 #include "lib/config.h"
 #include "lib/memory.h"
 
@@ -37,10 +37,6 @@
 */
 //@{
 
-
-/// Type BYTE 
-typedef unsigned char BYTE;
-
 /// Type SHORT is 2 bytes in size
 typedef short int SHORT;
 
@@ -54,20 +50,17 @@ typedef int INT;
 typedef unsigned int UINT;
 
 /// Type LONG is 8 bytes in size
-#ifndef SUNOS
-#include <stdint.h>
-typedef int64_t LONG;
-#else
-typedef long LONG;
-#endif
-
 /// Type ULONG is 8 bytes in size
 #ifndef SUNOS
 #include <stdint.h>
+typedef int64_t LONG;
 typedef uint64_t ULONG;
 #else
+typedef long LONG;
 typedef unsigned long ULONG;
+typedef unsigned short uint8_t;
 #endif
+
 
 /// Type SHORTREAL is 4 bytes in size
 typedef float SHORTREAL;

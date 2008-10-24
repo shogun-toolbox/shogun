@@ -20,7 +20,7 @@
  * k({\bf x},{\bf x'})= {\bf x}\cdot {\bf x'}
  * \f]
  */
-class CLinearByteKernel: public CSimpleKernel<BYTE>
+class CLinearByteKernel: public CSimpleKernel<uint8_t>
 {
 	public:
 		/** constructor

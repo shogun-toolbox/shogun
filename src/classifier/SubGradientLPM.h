@@ -96,8 +96,8 @@ class CSubGradientLPM : public CSparseLinearClassifier
 		INT num_it_noimprovement;
 
 		//idx vectors of length num_vec
-		BYTE* active; // 0=not active, 1=active, 2=on boundary
-		BYTE* old_active;
+		uint8_t* active; // 0=not active, 1=active, 2=on boundary
+		uint8_t* old_active;
 		INT* idx_active;
 		INT* idx_bound;
 		INT delta_active;

@@ -132,7 +132,7 @@ class CWordFeatures : public CSimpleFeatures<WORD>
 		 * @param mask mask to apply
 		 * @return masked symbol
 		 */
-		inline WORD get_masked_symbols(WORD symbol, BYTE mask)
+		inline WORD get_masked_symbols(WORD symbol, uint8_t mask)
 		{
 			ASSERT(symbol_mask_table);
 			return symbol_mask_table[mask] & symbol;

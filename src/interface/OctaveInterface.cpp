@@ -163,7 +163,7 @@ void COctaveInterface::function_name(sg_type*& vec, INT& len)						\
 	for (INT i=0; i<len; i++)														\
 			vec[i]= (sg_type) m(i);													\
 }
-GET_VECTOR(get_byte_vector, is_uint8_type, uint8NDArray, uint8_array_value, BYTE, BYTE, "Byte")
+GET_VECTOR(get_byte_vector, is_uint8_type, uint8NDArray, uint8_array_value, uint8_t, uint8_t, "Byte")
 GET_VECTOR(get_char_vector, is_char_matrix, charMatrix, char_matrix_value, char, char, "Char")
 GET_VECTOR(get_int_vector, is_int32_type, int32NDArray, uint8_array_value, INT, INT, "Integer")
 GET_VECTOR(get_short_vector, is_int16_type, int16NDArray, uint8_array_value, SHORT, SHORT, "Short")
@@ -189,7 +189,7 @@ void COctaveInterface::function_name(sg_type*& matrix, INT& num_feat, INT& num_v
 		for (INT j=0; j<num_feat; j++)												\
 			matrix[i*num_feat+j]= (sg_type) m(j,i);									\
 }
-GET_MATRIX(get_byte_matrix, is_uint8_type, uint8NDArray, uint8_array_value, BYTE, BYTE, "Byte")
+GET_MATRIX(get_byte_matrix, is_uint8_type, uint8NDArray, uint8_array_value, uint8_t, uint8_t, "Byte")
 GET_MATRIX(get_char_matrix, is_char_matrix, charMatrix, char_matrix_value, char, char, "Char")
 GET_MATRIX(get_int_matrix, is_int32_type, int32NDArray, uint8_array_value, INT, INT, "Integer")
 GET_MATRIX(get_short_matrix, is_int16_type, int16NDArray, uint8_array_value, SHORT, SHORT, "Short")
@@ -213,7 +213,7 @@ void COctaveInterface::function_name(sg_type*& array, INT*& dims, INT& num_dims)
 	for (LONG i=0; i<total_size; i++)												\
 		array[i]= (sg_type) m(i);													\
 }
-GET_NDARRAY(get_byte_ndarray, is_uint8_type, uint8NDArray, uint8_array_value, BYTE, BYTE, "Byte")
+GET_NDARRAY(get_byte_ndarray, is_uint8_type, uint8NDArray, uint8_array_value, uint8_t, uint8_t, "Byte")
 GET_NDARRAY(get_char_ndarray, is_char_matrix, charMatrix, char_matrix_value, char, char, "Char")
 GET_NDARRAY(get_int_ndarray, is_int32_type, int32NDArray, uint8_array_value, INT, INT, "Integer")
 GET_NDARRAY(get_short_ndarray, is_int16_type, int16NDArray, uint8_array_value, SHORT, SHORT, "Short")
@@ -334,7 +334,7 @@ void COctaveInterface::function_name(T_STRING<sg_type>*& strings, INT& num_str, 
 	}\
 }
 /* ignore the g++ warning here */
-GET_STRINGLIST(get_byte_string_list, is_matrix_type, is_uint8_type, uint8NDArray, uint8_array_value, BYTE, BYTE, "Byte")
+GET_STRINGLIST(get_byte_string_list, is_matrix_type, is_uint8_type, uint8NDArray, uint8_array_value, uint8_t, uint8_t, "Byte")
 GET_STRINGLIST(get_char_string_list, is_char_matrix, is_char_matrix, charMatrix, char_matrix_value, char, char, "Char")
 GET_STRINGLIST(get_int_string_list, is_matrix_type, is_int32_type, int32NDArray, int32_array_value, INT, INT, "Integer")
 GET_STRINGLIST(get_short_string_list, is_matrix_type, is_int16_type, int16NDArray, int16_array_value, SHORT, SHORT, "Short")
@@ -373,7 +373,7 @@ void COctaveInterface::function_name(const sg_type* vec, INT len)				\
 																				\
 	set_arg_increment(mat);														\
 }
-SET_VECTOR(set_byte_vector, uint8NDArray, BYTE, BYTE, "Byte")
+SET_VECTOR(set_byte_vector, uint8NDArray, uint8_t, uint8_t, "Byte")
 SET_VECTOR(set_char_vector, charMatrix, char, char, "Char")
 SET_VECTOR(set_int_vector, int32NDArray, INT, INT, "Integer")
 SET_VECTOR(set_short_vector, int16NDArray, SHORT, SHORT, "Short")
@@ -395,7 +395,7 @@ void COctaveInterface::function_name(const sg_type* matrix, INT num_feat, INT nu
 																				\
 	set_arg_increment(mat);														\
 }
-SET_MATRIX(set_byte_matrix, uint8NDArray, BYTE, BYTE, "Byte")
+SET_MATRIX(set_byte_matrix, uint8NDArray, uint8_t, uint8_t, "Byte")
 SET_MATRIX(set_char_matrix, charMatrix, char, char, "Char")
 SET_MATRIX(set_int_matrix, int32NDArray, INT, INT, "Integer")
 SET_MATRIX(set_short_matrix, int16NDArray, SHORT, SHORT, "Short")
@@ -452,7 +452,7 @@ void COctaveInterface::function_name(const T_STRING<sg_type>* strings, INT num_s
 																					\
 	set_arg_increment(c);															\
 }
-SET_STRINGLIST(set_byte_string_list, int8NDArray, BYTE, BYTE, "Byte")
+SET_STRINGLIST(set_byte_string_list, int8NDArray, uint8_t, uint8_t, "Byte")
 SET_STRINGLIST(set_char_string_list, charNDArray, char, char, "Char")
 SET_STRINGLIST(set_int_string_list, int32NDArray, INT, INT, "Integer")
 SET_STRINGLIST(set_short_string_list, int16NDArray, SHORT, SHORT, "Short")

@@ -34,7 +34,7 @@
 #ifdef USE_BIGSTATES
 typedef WORD T_STATES ;
 #else
-typedef BYTE T_STATES ;
+typedef uint8_t T_STATES ;
 #endif
 typedef T_STATES* P_STATES ;
 

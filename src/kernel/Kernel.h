@@ -671,7 +671,7 @@ class CKernel : public CSGObject
 			/** number of uncached rows */
 			INT num_uncached;
 			/** needs computation */
-			BYTE* needs_computation;
+			uint8_t* needs_computation;
 			/** start */
 			INT start;
 			/** end */

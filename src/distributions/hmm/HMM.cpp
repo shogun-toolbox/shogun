@@ -5431,7 +5431,7 @@ bool CHMM::linear_train(bool right_align)
 			for (INT j=0; j<get_M(); j++)
 			{
 				DREAL sum=0;
-				INT offs=i*get_M()+ p_observations->get_masked_symbols((WORD) j, (BYTE) 254);
+				INT offs=i*get_M()+ p_observations->get_masked_symbols((WORD) j, (uint8_t) 254);
 
 				for (INT k=0; k<p_observations->get_original_num_symbols(); k++)
 					sum+=hist[offs+k];

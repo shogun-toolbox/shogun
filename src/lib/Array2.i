@@ -6,7 +6,7 @@
 %include "lib/Array2.h"
 
 %template(CharArray2) CArray2<char>;
-%template(ByteArray2) CArray2<BYTE>;
+%template(ByteArray2) CArray2<uint8_t>;
 %template(ShortArray2) CArray2<SHORT>;
 %template(WordArray2) CArray2<WORD>;
 %template(IntArray2) CArray2<INT>;

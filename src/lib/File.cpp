@@ -143,19 +143,19 @@ bool CFile::save_char_data(char* src, LONG num)
 	return status;
 }
 
-BYTE* CFile::load_byte_data(BYTE* target, LONG& num)
+uint8_t* CFile::load_byte_data(uint8_t* target, LONG& num)
 {
 	ASSERT(expected_type==F_BYTE);
-	CSimpleFile<BYTE> f(filename, file);
+	CSimpleFile<uint8_t> f(filename, file);
 	target=f.load(target, num);
 	status=(target!=NULL);
 	return target;
 }
 
-bool CFile::save_byte_data(BYTE* src, LONG num)
+bool CFile::save_byte_data(uint8_t* src, LONG num)
 {
 	ASSERT(expected_type==F_BYTE);
-	CSimpleFile<BYTE> f(filename, file);
+	CSimpleFile<uint8_t> f(filename, file);
 	status=f.save(src, num);
 	return status;
 }
@@ -213,8 +213,8 @@ bool CFile::read_header()
 	UINT file_fourcc=0;
 	UINT doublelen=0;
 
-	if ( (fread(&intlen, sizeof(BYTE), 1, file)==1) &&
-			(fread(&doublelen, sizeof(BYTE), 1, file)==1) &&
+	if ( (fread(&intlen, sizeof(uint8_t), 1, file)==1) &&
+			(fread(&doublelen, sizeof(uint8_t), 1, file)==1) &&
 			(fread(&endian, (UINT) intlen, 1, file)== 1) &&
 			(fread(&file_fourcc, (UINT) intlen, 1, file)==1))
 		return true;
@@ -224,12 +224,12 @@ bool CFile::read_header()
 
 bool CFile::write_header()
 {
-    BYTE intlen=sizeof(UINT);
-    BYTE doublelen=sizeof(double);
+    uint8_t intlen=sizeof(UINT);
+    uint8_t doublelen=sizeof(double);
     UINT endian=0x12345678;
 
-	if ((fwrite(&intlen, sizeof(BYTE), 1, file)==1) &&
-			(fwrite(&doublelen, sizeof(BYTE), 1, file)==1) &&
+	if ((fwrite(&intlen, sizeof(uint8_t), 1, file)==1) &&
+			(fwrite(&doublelen, sizeof(uint8_t), 1, file)==1) &&
 			(fwrite(&endian, sizeof(UINT), 1, file)==1) &&
 			(fwrite(&fourcc, 4*sizeof(char), 1, file)==1))
 		return true;
@@ -346,7 +346,7 @@ bool CFile::read_real_valued_sparse(TSparse<DREAL>*& matrix, INT& num_feat, INT&
 {
 	size_t blocksize=1024*1024;
 	size_t required_blocksize=blocksize;
-	BYTE* dummy=new BYTE[blocksize];
+	uint8_t* dummy=new uint8_t[blocksize];
 
 	if (file)
 	{
@@ -363,7 +363,7 @@ bool CFile::read_real_valued_sparse(TSparse<DREAL>*& matrix, INT& num_feat, INT&
 
 		while (sz == blocksize)
 		{
-			sz=fread(dummy, sizeof(BYTE), blocksize, file);
+			sz=fread(dummy, sizeof(uint8_t), blocksize, file);
 			bool contains_cr=false;
 			for (size_t i=0; i<sz; i++)
 			{
@@ -382,7 +382,7 @@ bool CFile::read_real_valued_sparse(TSparse<DREAL>*& matrix, INT& num_feat, INT&
 		SG_INFO("found %d feature vectors\n", num_vec);
 		delete[] dummy;
 		blocksize=required_blocksize;
-		dummy = new BYTE[blocksize+1]; //allow setting of '\0' at EOL
+		dummy = new uint8_t[blocksize+1]; //allow setting of '\0' at EOL
 		matrix=new TSparse<DREAL>[num_vec];
 
 		rewind(file);
@@ -390,7 +390,7 @@ bool CFile::read_real_valued_sparse(TSparse<DREAL>*& matrix, INT& num_feat, INT&
 		INT lines=0;
 		while (sz == blocksize)
 		{
-			sz=fread(dummy, sizeof(BYTE), blocksize, file);
+			sz=fread(dummy, sizeof(uint8_t), blocksize, file);
 
 			size_t old_sz=0;
 			for (size_t i=0; i<sz; i++)
@@ -398,12 +398,12 @@ bool CFile::read_real_valued_sparse(TSparse<DREAL>*& matrix, INT& num_feat, INT&
 				if (i==sz-1 && dummy[i]!='\n' && sz==blocksize)
 				{
 					size_t len=i-old_sz+1;
-					BYTE* data=&dummy[old_sz];
+					uint8_t* data=&dummy[old_sz];
 
 					for (size_t j=0; j<len; j++)
 						dummy[j]=data[j];
 
-					sz=fread(dummy+len, sizeof(BYTE), blocksize-len, file);
+					sz=fread(dummy+len, sizeof(uint8_t), blocksize-len, file);
 					i=0;
 					old_sz=0;
 					sz+=len;
@@ -413,7 +413,7 @@ bool CFile::read_real_valued_sparse(TSparse<DREAL>*& matrix, INT& num_feat, INT&
 				{
 
 					size_t len=i-old_sz;
-					BYTE* data=&dummy[old_sz];
+					uint8_t* data=&dummy[old_sz];
 
 					INT dims=0;
 					for (size_t j=0; j<len; j++)
@@ -453,7 +453,7 @@ bool CFile::read_real_valued_sparse(TSparse<DREAL>*& matrix, INT& num_feat, INT&
 
 					INT d=0;
 					j++;
-					BYTE* start=&data[j];
+					uint8_t* start=&data[j];
 					for (; j<len; j++)
 					{
 						if (data[j]==':')

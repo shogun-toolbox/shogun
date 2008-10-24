@@ -253,7 +253,7 @@ char* CCmdLineInterface::get_string(INT& len)
 	return result;
 }
 
-void CCmdLineInterface::get_byte_vector(BYTE*& vec, INT& len)
+void CCmdLineInterface::get_byte_vector(uint8_t*& vec, INT& len)
 {
 	vec=NULL;
 	len=0;
@@ -341,7 +341,7 @@ void CCmdLineInterface::get_word_vector(WORD*& vec, INT& len)
 }
 
 
-void CCmdLineInterface::get_byte_matrix(BYTE*& matrix, INT& num_feat, INT& num_vec)
+void CCmdLineInterface::get_byte_matrix(uint8_t*& matrix, INT& num_feat, INT& num_vec)
 {
 	matrix=NULL;
 	num_feat=0;
@@ -399,7 +399,7 @@ void CCmdLineInterface::get_word_matrix(WORD*& matrix, INT& num_feat, INT& num_v
 	num_vec=0;
 }
 
-void CCmdLineInterface::get_byte_ndarray(BYTE*& array, INT*& dims, INT& num_dims)
+void CCmdLineInterface::get_byte_ndarray(uint8_t*& array, INT*& dims, INT& num_dims)
 {
 }
 
@@ -442,7 +442,7 @@ void CCmdLineInterface::get_real_sparsematrix(TSparse<DREAL>*& matrix, INT& num_
 }
 
 
-void CCmdLineInterface::get_byte_string_list(T_STRING<BYTE>*& strings, INT& num_str, INT& max_string_len)
+void CCmdLineInterface::get_byte_string_list(T_STRING<uint8_t>*& strings, INT& num_str, INT& max_string_len)
 {
 	strings=NULL;
 	num_str=0;
@@ -530,7 +530,7 @@ void CCmdLineInterface::set_short_vector(const SHORT* vec, INT len)
 {
 }
 
-void CCmdLineInterface::set_byte_vector(const BYTE* vec, INT len)
+void CCmdLineInterface::set_byte_vector(const uint8_t* vec, INT len)
 {
 }
 
@@ -575,7 +575,7 @@ void CCmdLineInterface::function_name(const sg_type* vec, INT len)	\
 	set_arg_increment(feat);									\
 }
 
-SET_VECTOR(set_byte_vector, INTSXP, INTEGER, BYTE, int, "Byte")
+SET_VECTOR(set_byte_vector, INTSXP, INTEGER, uint8_t, int, "Byte")
 SET_VECTOR(set_int_vector, INTSXP, INTEGER, INT, int, "Integer")
 SET_VECTOR(set_short_vector, INTSXP, INTEGER, SHORT, int, "Short")
 SET_VECTOR(set_shortreal_vector, XP, REAL, SHORTREAL, float, "Single Precision")
@@ -588,7 +588,7 @@ SET_VECTOR(set_word_vector, INTSXP, INTEGER, WORD, int, "Word")
 void CCmdLineInterface::set_char_matrix(const char* matrix, INT num_feat, INT num_vec)
 {
 }
-void CCmdLineInterface::set_byte_matrix(const BYTE* matrix, INT num_feat, INT num_vec)
+void CCmdLineInterface::set_byte_matrix(const uint8_t* matrix, INT num_feat, INT num_vec)
 {
 }
 void CCmdLineInterface::set_int_matrix(const INT* matrix, INT num_feat, INT num_vec)
@@ -633,7 +633,7 @@ void CCmdLineInterface::function_name(const sg_type* matrix, INT num_feat, INT n
 	UNPROTECT(1);															\
 	set_arg_increment(feat);												\
 }
-SET_MATRIX(set_byte_matrix, INTSXP, INTEGER, BYTE, int, "Byte")
+SET_MATRIX(set_byte_matrix, INTSXP, INTEGER, uint8_t, int, "Byte")
 SET_MATRIX(set_int_matrix, INTSXP, INTEGER, INT, int, "Integer")
 SET_MATRIX(set_short_matrix, INTSXP, INTEGER, SHORT, int, "Short")
 SET_MATRIX(set_shortreal_matrix, XP, REAL, SHORTREAL, float, "Single Precision")
@@ -657,7 +657,7 @@ void CCmdLineInterface::set_real_sparsematrix(const TSparse<DREAL>* matrix, INT 
 		SG_ERROR("Could not write SPARSE REAL data to %s.\n", filename);
 }
 
-void CCmdLineInterface::set_byte_string_list(const T_STRING<BYTE>* strings, INT num_str)
+void CCmdLineInterface::set_byte_string_list(const T_STRING<uint8_t>* strings, INT num_str)
 {
 }
 

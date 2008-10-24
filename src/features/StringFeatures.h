@@ -353,7 +353,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param mask mask to apply
 		 * @return masked symbol
 		 */
-		inline ST get_masked_symbols(ST symbol, BYTE mask)
+		inline ST get_masked_symbols(ST symbol, uint8_t mask)
 		{
 			ASSERT(symbol_mask_table);
 			return symbol_mask_table[mask] & symbol;
@@ -454,8 +454,8 @@ template <class ST> class CStringFeatures : public CFeatures
 
 			size_t blocksize=1024*1024;
 			size_t required_blocksize=0;
-			BYTE* dummy=new BYTE[blocksize];
-			BYTE* overflow=NULL;
+			uint8_t* dummy=new uint8_t[blocksize];
+			uint8_t* overflow=NULL;
 			INT overflow_len=0;
 
 			num_symbols=4;
@@ -481,7 +481,7 @@ template <class ST> class CStringFeatures : public CFeatures
 
 				while (sz == blocksize)
 				{
-					sz=fread(dummy, sizeof(BYTE), blocksize, f);
+					sz=fread(dummy, sizeof(uint8_t), blocksize, f);
 					bool contains_cr=false;
 					for (size_t i=0; i<sz; i++)
 					{
@@ -500,8 +500,8 @@ template <class ST> class CStringFeatures : public CFeatures
 				SG_INFO("found %d strings\n", num_vectors);
 				delete[] dummy;
 				blocksize=required_blocksize;
-				dummy = new BYTE[blocksize];
-				overflow = new BYTE[blocksize];
+				dummy = new uint8_t[blocksize];
+				overflow = new uint8_t[blocksize];
 				features=new T_STRING<ST>[num_vectors];
 
 				rewind(f);
@@ -509,7 +509,7 @@ template <class ST> class CStringFeatures : public CFeatures
 				INT lines=0;
 				while (sz == blocksize)
 				{
-					sz=fread(dummy, sizeof(BYTE), blocksize, f);
+					sz=fread(dummy, sizeof(uint8_t), blocksize, f);
 
 					size_t old_sz=0;
 					for (size_t i=0; i<sz; i++)
@@ -949,7 +949,7 @@ template <class ST> class CStringFeatures : public CFeatures
 
 				for (INT i=0; i<256; i++)
 				{
-					BYTE bits=(BYTE) i;
+					uint8_t bits=(uint8_t) i;
 					symbol_mask_table[i]=0;
 
 					for (INT j=0; j<8; j++)
@@ -1247,7 +1247,7 @@ template<> inline EFeatureType CStringFeatures<char>::get_feature_type()
  *
  * @return feature type BYTE
  */
-template<> inline EFeatureType CStringFeatures<BYTE>::get_feature_type()
+template<> inline EFeatureType CStringFeatures<uint8_t>::get_feature_type()
 {
 	return F_BYTE;
 }

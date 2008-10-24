@@ -113,8 +113,8 @@ bool CRealFileFeatures::load_base_data()
 	UINT num_vec=0;
 	UINT num_feat=0;
 
-	ASSERT(fread(&intlen, sizeof(BYTE), 1, working_file)==1);
-	ASSERT(fread(&doublelen, sizeof(BYTE), 1, working_file)==1);
+	ASSERT(fread(&intlen, sizeof(uint8_t), 1, working_file)==1);
+	ASSERT(fread(&doublelen, sizeof(uint8_t), 1, working_file)==1);
 	ASSERT(fread(&endian, (UINT) intlen, 1, working_file)== 1);
 	ASSERT(fread(&fourcc, (UINT) intlen, 1, working_file)==1);
 	ASSERT(fread(&num_vec, (UINT) intlen, 1, working_file)==1);

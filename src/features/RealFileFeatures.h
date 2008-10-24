@@ -79,9 +79,9 @@ class CRealFileFeatures: public CRealFeatures
 		INT* labels;
 
 		/** intlen */
-		BYTE intlen;
+		uint8_t intlen;
 		/** doublelen */
-		BYTE doublelen;
+		uint8_t doublelen;
 		/** endian */
 		UINT endian;
 		/** fourcc */

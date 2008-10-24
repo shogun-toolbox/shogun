@@ -127,7 +127,7 @@ DREAL CWeightedCommWordStringKernel::compute_helper(INT idx_a, INT idx_b, bool d
 	}
 
 	DREAL result=0;
-	BYTE mask=0;
+	uint8_t mask=0;
 
 	for (INT d=0; d<degree; d++)
 	{
@@ -181,7 +181,7 @@ void CWeightedCommWordStringKernel::add_to_normal(INT vec_idx, DREAL weight)
 	{
 		for (INT j=0; j<len; j++)
 		{
-			BYTE mask=0;
+			uint8_t mask=0;
 			INT offs=0;
 			for (INT d=0; d<degree; d++)
 			{
@@ -211,7 +211,7 @@ void CWeightedCommWordStringKernel::merge_normal()
 	for (UINT sym=0; sym<num_symbols; sym++)
 	{
 		DREAL result=0;
-		BYTE mask=0;
+		uint8_t mask=0;
 		INT offs=0;
 		for (INT d=0; d<degree; d++)
 		{
@@ -245,7 +245,7 @@ DREAL CWeightedCommWordStringKernel::compute_optimized(INT i)
 	{
 		for (INT j=0; j<len; j++)
 		{
-			BYTE mask=0;
+			uint8_t mask=0;
 			INT offs=0;
 			for (INT d=0; d<degree; d++)
 			{

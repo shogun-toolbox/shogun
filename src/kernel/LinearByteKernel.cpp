@@ -15,12 +15,12 @@
 #include "features/ByteFeatures.h"
 
 CLinearByteKernel::CLinearByteKernel()
-: CSimpleKernel<BYTE>(0), normal(NULL)
+: CSimpleKernel<uint8_t>(0), normal(NULL)
 {
 }
 
 CLinearByteKernel::CLinearByteKernel(CByteFeatures* l, CByteFeatures* r)
-: CSimpleKernel<BYTE>(0), normal(NULL)
+: CSimpleKernel<uint8_t>(0), normal(NULL)
 {
 	init(l, r);
 }
@@ -32,7 +32,7 @@ CLinearByteKernel::~CLinearByteKernel()
 
 bool CLinearByteKernel::init(CFeatures* l, CFeatures* r)
 {
-	CSimpleKernel<BYTE>::init(l, r);
+	CSimpleKernel<uint8_t>::init(l, r);
 	return init_normalizer();
 }
 
@@ -65,7 +65,7 @@ void CLinearByteKernel::add_to_normal(INT idx, DREAL weight)
 {
 	INT vlen;
 	bool vfree;
-	BYTE* vec=((CByteFeatures*) lhs)->get_feature_vector(idx, vlen, vfree);
+	uint8_t* vec=((CByteFeatures*) lhs)->get_feature_vector(idx, vlen, vfree);
 
 	for (int i=0; i<vlen; i++)
 		normal[i]+= weight*normalizer->normalize_lhs(vec[i], idx);
@@ -78,8 +78,8 @@ DREAL CLinearByteKernel::compute(INT idx_a, INT idx_b)
   INT alen, blen;
   bool afree, bfree;
 
-  BYTE* avec=((CByteFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
-  BYTE* bvec=((CByteFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
+  uint8_t* avec=((CByteFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
+  uint8_t* bvec=((CByteFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
   ASSERT(alen==blen);
 
   DREAL result=CMath::dot(avec,bvec, alen);
@@ -104,7 +104,7 @@ bool CLinearByteKernel::init_optimization(INT num_suppvec, INT* sv_idx, DREAL* a
 
 	for (int i=0; i<num_suppvec; i++)
 	{
-		BYTE* avec=((CByteFeatures*) lhs)->get_feature_vector(sv_idx[i], alen, afree);
+		uint8_t* avec=((CByteFeatures*) lhs)->get_feature_vector(sv_idx[i], alen, afree);
 		ASSERT(avec);
 
 		for (int j=0; j<num_feat; j++)
@@ -132,7 +132,7 @@ DREAL CLinearByteKernel::compute_optimized(INT idx_b)
 	INT blen;
 	bool bfree;
 
-	BYTE* bvec=((CByteFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
+	uint8_t* bvec=((CByteFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
 
 	double result=0;
 	{

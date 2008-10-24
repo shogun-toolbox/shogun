@@ -13,31 +13,31 @@
 #include "lib/File.h"
 
 CByteFeatures::CByteFeatures(EAlphabet a, INT size)
-: CSimpleFeatures<BYTE>(size)
+: CSimpleFeatures<uint8_t>(size)
 {
 	alphabet=new CAlphabet(a);
 }
 
 CByteFeatures::CByteFeatures(CAlphabet* a, INT size)
-: CSimpleFeatures<BYTE>(size)
+: CSimpleFeatures<uint8_t>(size)
 {
 	alphabet=a;
 }
 
 CByteFeatures::CByteFeatures(const CByteFeatures & orig)
-: CSimpleFeatures<BYTE>(orig)
+: CSimpleFeatures<uint8_t>(orig)
 {
 	alphabet=orig.alphabet;
 }
 
-CByteFeatures::CByteFeatures(EAlphabet a, BYTE* fm, INT num_feat, INT num_vec)
-: CSimpleFeatures<BYTE>(fm, num_feat, num_vec)
+CByteFeatures::CByteFeatures(EAlphabet a, uint8_t* fm, INT num_feat, INT num_vec)
+: CSimpleFeatures<uint8_t>(fm, num_feat, num_vec)
 {
 	alphabet=new CAlphabet(a);
 }
 
 CByteFeatures::CByteFeatures(EAlphabet a, char* fname)
-: CSimpleFeatures<BYTE>(fname)
+: CSimpleFeatures<uint8_t>(fname)
 {
 	alphabet=new CAlphabet(a);
 	load(fname);

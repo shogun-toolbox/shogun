@@ -72,7 +72,7 @@ template<> inline EFeatureType CSimplePreProc<char>::get_feature_type()
 	return F_CHAR;
 }
 
-template<> inline EFeatureType CSimplePreProc<BYTE>::get_feature_type()
+template<> inline EFeatureType CSimplePreProc<uint8_t>::get_feature_type()
 {
 	return F_BYTE;
 }

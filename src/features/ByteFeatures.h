@@ -20,7 +20,7 @@
  * It inherits its functionality from CSimpleFeatures, which should be
  * consulted for further reference.
  */
-class CByteFeatures : public CSimpleFeatures<BYTE>
+class CByteFeatures : public CSimpleFeatures<uint8_t>
 {
 	public:
 		/** constructor
@@ -47,7 +47,7 @@ class CByteFeatures : public CSimpleFeatures<BYTE>
 		 * @param num_feat number of features in matrix
 		 * @param num_vec number of vectors in matrix
 		 */
-        CByteFeatures(EAlphabet alphabet, BYTE* feature_matrix, INT num_feat, INT num_vec);
+        CByteFeatures(EAlphabet alphabet, uint8_t* feature_matrix, INT num_feat, INT num_vec);
 
 		/** constructor
 		 *
@@ -75,9 +75,9 @@ class CByteFeatures : public CSimpleFeatures<BYTE>
 		 * @param num_feat number of features
 		 * @param num_vec number of vectors
 		 */
-		inline virtual void copy_feature_matrix(BYTE* src, INT num_feat, INT num_vec)
+		inline virtual void copy_feature_matrix(uint8_t* src, INT num_feat, INT num_vec)
 		{
-			CSimpleFeatures<BYTE>::copy_feature_matrix(src, num_feat, num_vec);
+			CSimpleFeatures<uint8_t>::copy_feature_matrix(src, num_feat, num_vec);
 		}
 
 		/** get feature type

@@ -49,13 +49,13 @@ struct T_ALPHA_BETA
 };
 
 /** type that is used for states.
- * Probably BYTE is enough if you have at most 256 states,
+ * Probably uint8_t is enough if you have at most 256 states,
  * however WORD/long/... is also possible although you might quickly run into memory problems
  */
 #ifdef USE_BIGSTATES
 typedef WORD T_STATES ;
 #else
-typedef BYTE T_STATES ;
+typedef uint8_t T_STATES ;
 #endif
 typedef T_STATES* P_STATES ;
 

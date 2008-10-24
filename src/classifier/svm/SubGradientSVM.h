@@ -170,9 +170,9 @@ class CSubGradientSVM : public CSparseLinearClassifier
 
 		//idx vectors of length num_vec
 		/** 0=not active, 1=active, 2=on boundary */
-		BYTE* active;
+		uint8_t* active;
 		/** old active */
-		BYTE* old_active;
+		uint8_t* old_active;
 		/** idx active */
 		INT* idx_active;
 		/** idx bound */

@@ -59,7 +59,7 @@ template<> inline EFeatureType CStringPreProc<WORD>::get_feature_type()
 	return F_WORD;
 }
 
-template<> inline EFeatureType CStringPreProc<BYTE>::get_feature_type()
+template<> inline EFeatureType CStringPreProc<uint8_t>::get_feature_type()
 {
 	return F_BYTE;
 }

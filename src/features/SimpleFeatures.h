@@ -475,7 +475,7 @@ template<> inline EFeatureType CSimpleFeatures<char>::get_feature_type()
  *
  * @return feature type BYTE
  */
-template<> inline EFeatureType CSimpleFeatures<BYTE>::get_feature_type()
+template<> inline EFeatureType CSimpleFeatures<uint8_t>::get_feature_type()
 {
 	return F_BYTE;
 }

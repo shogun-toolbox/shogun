@@ -592,11 +592,11 @@ char* CCommWordStringKernel::compute_consensus(INT &result_len, INT num_suppvec,
 	SG_PRINT("max_idx:%i, max_score:%f\n", max_idx, max_score);
 	
 	for (INT i=result_len-1; i>=num_feat; i--)
-		result[i]=alpha->remap_to_char( (BYTE) str->get_masked_symbols( (WORD) max_idx >> (num_bits*(result_len-1-i)), 1) );
+		result[i]=alpha->remap_to_char( (uint8_t) str->get_masked_symbols( (WORD) max_idx >> (num_bits*(result_len-1-i)), 1) );
 
 	for (INT i=num_feat-1; i>=0; i--)
 	{
-		result[i]=alpha->remap_to_char( (BYTE) str->get_masked_symbols( (WORD) max_idx >> (num_bits*(order-1)), 1) );
+		result[i]=alpha->remap_to_char( (uint8_t) str->get_masked_symbols( (WORD) max_idx >> (num_bits*(order-1)), 1) );
 		max_idx=bt[num_words*i + max_idx];
 	}
 

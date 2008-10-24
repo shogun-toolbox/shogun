@@ -106,7 +106,7 @@ public:
 	 * @param num number of data elements
 	 * @return loaded data
 	 */
-	BYTE*  load_byte_data(BYTE* target, LONG& num);
+	uint8_t*  load_byte_data(uint8_t* target, LONG& num);
 
 	/** load word data
 	 *
@@ -162,7 +162,7 @@ public:
 	 * @param num number of data elements
 	 * @return whether operation was successful
 	 */
-	bool save_byte_data(BYTE* src, LONG num);
+	bool save_byte_data(uint8_t* src, LONG num);
 
 	/** save word data
 	 *

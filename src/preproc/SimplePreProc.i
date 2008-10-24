@@ -10,5 +10,5 @@
 %template(SimpleUlongPreProc) CSimplePreProc<ULONG>;
 %template(SimpleWordPreProc) CSimplePreProc<WORD>;
 %template(SimpleShortPreProc) CSimplePreProc<SHORT>;
-%template(SimpleBytePreProc) CSimplePreProc<BYTE>;
+%template(SimpleBytePreProc) CSimplePreProc<uint8_t>;
 %template(SimpleCharPreProc) CSimplePreProc<char>;

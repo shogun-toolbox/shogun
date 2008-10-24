@@ -163,7 +163,7 @@ class CMath : public CSGObject
 		//@{
 
 		/// crc32
-		static UINT crc32(BYTE *data, INT len);
+		static UINT crc32(uint8_t *data, INT len);
 
 		static inline DREAL round(DREAL d)
 		{
@@ -502,7 +502,7 @@ class CMath : public CSGObject
 		}
 
 		/// compute dot product between v1 and v2 (for 8bit (un)signed ints)
-		static inline DREAL dot(const BYTE* v1, const BYTE* v2, INT n)
+		static inline DREAL dot(const uint8_t* v1, const uint8_t* v2, INT n)
 		{
 			DREAL r=0;
 			for (INT i=0; i<n; i++)
@@ -619,7 +619,7 @@ class CMath : public CSGObject
 			}
 
 		template <class T>
-			static inline BYTE byte(T word, unsigned short p)
+			static inline uint8_t byte(T word, unsigned short p)
 			{
 				return (word >> (sizeof(T)-p-1) * 8) & 0xff;
 			}
@@ -629,7 +629,7 @@ class CMath : public CSGObject
 			{
 				static size_t count[256], nc, cmin;
 				T *ak;
-				BYTE c=0;
+				uint8_t c=0;
 				radix_stack_t<T> s[RADIX_STACK_SIZE], *sp, *olds, *bigs;
 				T *an, *aj, *pile[256];
 				size_t *cp, cmax;

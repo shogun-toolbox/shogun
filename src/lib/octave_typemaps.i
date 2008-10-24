@@ -68,7 +68,7 @@
 %enddef
 
 /* Define concrete examples of the TYPEMAP_IN1 macros */
-TYPEMAP_IN1(is_uint8_type, uint8NDArray, uint8_array_value, BYTE, BYTE, "Byte")
+TYPEMAP_IN1(is_uint8_type, uint8NDArray, uint8_array_value, uint8_t, uint8_t, "Byte")
 TYPEMAP_IN1(is_char_matrix, charMatrix, char_matrix_value, char, char, "Char")
 TYPEMAP_IN1(is_int32_type, int32NDArray, uint8_array_value, INT, INT, "Integer")
 TYPEMAP_IN1(is_int16_type, int16NDArray, uint8_array_value, SHORT, SHORT, "Short")
@@ -105,7 +105,7 @@ TYPEMAP_IN1(is_uint16_type, uint16NDArray, uint16_array_value, WORD, WORD, "Word
 }
 %enddef
 
-TYPEMAP_IN2(is_uint8_type, uint8NDArray, uint8_array_value, BYTE, BYTE, "Byte")
+TYPEMAP_IN2(is_uint8_type, uint8NDArray, uint8_array_value, uint8_t, uint8_t, "Byte")
 TYPEMAP_IN2(is_char_matrix, charMatrix, char_matrix_value, char, char, "Char")
 TYPEMAP_IN2(is_int32_type, int32NDArray, uint8_array_value, INT, INT, "Integer")
 TYPEMAP_IN2(is_int16_type, int16NDArray, uint8_array_value, SHORT, SHORT, "Short")
@@ -160,7 +160,7 @@ TYPEMAP_IN2(is_uint16_type, uint16NDArray, uint16_array_value, WORD, WORD, "Word
 }
 %enddef
 
-TYPEMAP_ARGOUT1(uint8NDArray, BYTE, BYTE, "Byte")
+TYPEMAP_ARGOUT1(uint8NDArray, uint8_t, uint8_t, "Byte")
 TYPEMAP_ARGOUT1(charMatrix, char, char, "Char")
 TYPEMAP_ARGOUT1(int32NDArray, INT, INT, "Integer")
 TYPEMAP_ARGOUT1(int16NDArray, SHORT, SHORT, "Short")
@@ -198,7 +198,7 @@ TYPEMAP_ARGOUT1(uint16NDArray, WORD, WORD, "Word")
 }
 %enddef
 
-TYPEMAP_ARGOUT2(uint8NDArray, BYTE, BYTE, "Byte")
+TYPEMAP_ARGOUT2(uint8NDArray, uint8_t, uint8_t, "Byte")
 TYPEMAP_ARGOUT2(charMatrix, char, char, "Char")
 TYPEMAP_ARGOUT2(int32NDArray, INT, INT, "Integer")
 TYPEMAP_ARGOUT2(int16NDArray, SHORT, SHORT, "Short")
@@ -294,7 +294,7 @@ TYPEMAP_ARGOUT2(uint16NDArray, WORD, WORD, "Word")
 }
 %enddef
 
-GET_STRINGLIST(is_matrix_type() && arg.is_uint8_type, uint8NDArray, uint8_array_value, BYTE, BYTE, "Byte")
+GET_STRINGLIST(is_matrix_type() && arg.is_uint8_type, uint8NDArray, uint8_array_value, uint8_t, uint8_t, "Byte")
 GET_STRINGLIST(is_char_matrix, charMatrix, char_matrix_value, char, char, "Char")
 GET_STRINGLIST(is_matrix_type() && arg.is_int32_type, int32NDArray, int32_array_value, INT, INT, "Integer")
 GET_STRINGLIST(is_matrix_type() && arg.is_int16_type, int16NDArray, int16_array_value, SHORT, SHORT, "Short")

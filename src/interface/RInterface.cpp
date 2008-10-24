@@ -111,7 +111,7 @@ char* CRInterface::get_string(INT& len)
 	return res;
 }
 
-void CRInterface::get_byte_vector(BYTE*& vec, INT& len)
+void CRInterface::get_byte_vector(uint8_t*& vec, INT& len)
 {
 	vec=NULL;
 	len=0;
@@ -173,7 +173,7 @@ void CRInterface::get_word_vector(WORD*& vec, INT& len)
 }
 
 
-void CRInterface::get_byte_matrix(BYTE*& matrix, INT& num_feat, INT& num_vec)
+void CRInterface::get_byte_matrix(uint8_t*& matrix, INT& num_feat, INT& num_vec)
 {
 }
 
@@ -215,7 +215,7 @@ void CRInterface::get_word_matrix(WORD*& matrix, INT& num_feat, INT& num_vec)
 {
 }
 
-void CRInterface::get_byte_ndarray(BYTE*& array, INT*& dims, INT& num_dims)
+void CRInterface::get_byte_ndarray(uint8_t*& array, INT*& dims, INT& num_dims)
 {
 }
 
@@ -247,7 +247,7 @@ void CRInterface::get_real_sparsematrix(TSparse<DREAL>*& matrix, INT& num_feat, 
 {
 }
 
-void CRInterface::get_byte_string_list(T_STRING<BYTE>*& strings, INT& num_str, INT& max_string_len)
+void CRInterface::get_byte_string_list(T_STRING<uint8_t>*& strings, INT& num_str, INT& max_string_len)
 {
 }
 
@@ -363,7 +363,7 @@ void CRInterface::function_name(const sg_type* vec, INT len)	\
 	set_arg_increment(feat);									\
 }
 
-SET_VECTOR(set_byte_vector, INTSXP, INTEGER, BYTE, int, "Byte")
+SET_VECTOR(set_byte_vector, INTSXP, INTEGER, uint8_t, int, "Byte")
 SET_VECTOR(set_int_vector, INTSXP, INTEGER, INT, int, "Integer")
 SET_VECTOR(set_short_vector, INTSXP, INTEGER, SHORT, int, "Short")
 SET_VECTOR(set_shortreal_vector, REALSXP, REAL, SHORTREAL, float, "Single Precision")
@@ -390,7 +390,7 @@ void CRInterface::function_name(const sg_type* matrix, INT num_feat, INT num_vec
 	UNPROTECT(1);															\
 	set_arg_increment(feat);												\
 }
-SET_MATRIX(set_byte_matrix, INTSXP, INTEGER, BYTE, int, "Byte")
+SET_MATRIX(set_byte_matrix, INTSXP, INTEGER, uint8_t, int, "Byte")
 SET_MATRIX(set_int_matrix, INTSXP, INTEGER, INT, int, "Integer")
 SET_MATRIX(set_short_matrix, INTSXP, INTEGER, SHORT, int, "Short")
 SET_MATRIX(set_shortreal_matrix, REALSXP, REAL, SHORTREAL, float, "Single Precision")
@@ -403,7 +403,7 @@ void CRInterface::set_real_sparsematrix(const TSparse<DREAL>* matrix, INT num_fe
 	// R does not support sparse matrices yet
 }
 
-void CRInterface::set_byte_string_list(const T_STRING<BYTE>* strings, INT num_str)
+void CRInterface::set_byte_string_list(const T_STRING<uint8_t>* strings, INT num_str)
 {
 }
  //this function will fail for strings containing 0, unclear how to do 'raw'

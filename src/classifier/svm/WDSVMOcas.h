@@ -36,7 +36,7 @@ class CWDSVMOcas : public CClassifier
 		 * @param traindat training features
 		 * @param trainlab labels for training features
 		 */
-		CWDSVMOcas(DREAL C, INT d, INT from_d, CStringFeatures<BYTE>* traindat, CLabels* trainlab);
+		CWDSVMOcas(DREAL C, INT d, INT from_d, CStringFeatures<uint8_t>* traindat, CLabels* trainlab);
 		virtual ~CWDSVMOcas();
 
 		/** get classifier type
@@ -86,13 +86,13 @@ class CWDSVMOcas : public CClassifier
 		 *
 		 * @param feat features to set
 		 */
-		inline void set_features(CStringFeatures<BYTE>* feat) { features=feat; }
+		inline void set_features(CStringFeatures<uint8_t>* feat) { features=feat; }
 
 		/** get features
 		 *
 		 * @return features
 		 */
-		inline CStringFeatures<BYTE>* get_features() { return features; }
+		inline CStringFeatures<uint8_t>* get_features() { return features; }
 
 		/** set if bias shall be enabled
 		 *
@@ -151,7 +151,7 @@ class CWDSVMOcas : public CClassifier
 
 			INT len=0;
 			DREAL sum=0;
-			BYTE* vec=features->get_feature_vector(num, len);
+			uint8_t* vec=features->get_feature_vector(num, len);
 			ASSERT(len==string_length);
 
 			for (INT j=0; j<string_length; j++)
@@ -254,7 +254,7 @@ class CWDSVMOcas : public CClassifier
 
 	protected:
 		/** features */
-		CStringFeatures<BYTE>* features;
+		CStringFeatures<uint8_t>* features;
 		/** if bias shall be used */
 		bool use_bias;
 		/** buffer size */

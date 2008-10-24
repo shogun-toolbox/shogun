@@ -13,7 +13,7 @@ REPLACEMENTS=[
 	[' UINT', ' int'],
 	[' LONG', ' int'],
 	[' ULONG', ' int'],
-	[' BYTE', ' int'],
+	[' uint8_t', ' int'],
 	[' SHORT', ' int'],
 	[' WORD', ' int'],
 	[' char', ' str'],

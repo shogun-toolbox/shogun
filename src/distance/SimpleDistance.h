@@ -94,7 +94,7 @@ template<> inline EFeatureType CSimpleDistance<SHORT>::get_feature_type() { retu
  *
  * @return feature type BYTE
  */
-template<> inline EFeatureType CSimpleDistance<BYTE>::get_feature_type() { return F_BYTE; }
+template<> inline EFeatureType CSimpleDistance<uint8_t>::get_feature_type() { return F_BYTE; }
 
 /** get feature type the CHAR distance can deal with
  *
