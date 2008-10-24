@@ -12,7 +12,7 @@
 #include "features/RealFeatures.h"
 #include "lib/File.h"
 
-bool CRealFeatures::load(CHAR* fname)
+bool CRealFeatures::load(char* fname)
 {
 	bool status=false;
 	num_vectors=1;
@@ -33,7 +33,7 @@ bool CRealFeatures::load(CHAR* fname)
 	return status;
 }
 
-bool CRealFeatures::save(CHAR* fname)
+bool CRealFeatures::save(char* fname)
 {
 	INT len;
 	bool free;
@@ -74,8 +74,8 @@ bool CRealFeatures::Align_char_features(CCharFeatures* cf, CCharFeatures* Ref, D
 	INT num_cf_vec=0;
 	INT num_ref_feat=0;
 	INT num_ref_vec=0;
-	CHAR* fm_cf=cf->get_feature_matrix(num_cf_feat, num_cf_vec);
-	CHAR* fm_ref=Ref->get_feature_matrix(num_ref_feat, num_ref_vec);
+	char* fm_cf=cf->get_feature_matrix(num_cf_feat, num_cf_vec);
+	char* fm_ref=Ref->get_feature_matrix(num_ref_feat, num_ref_vec);
 
 	ASSERT(num_cf_vec==num_vectors);
 	ASSERT(num_ref_vec==num_features);

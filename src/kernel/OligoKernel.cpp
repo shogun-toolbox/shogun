@@ -21,7 +21,7 @@
 
 using namespace std;
 
-COligoKernel::COligoKernel(INT cache_sz, INT kmer_len, DREAL w) : CStringKernel<CHAR>(cache_sz), k(kmer_len), width(w)
+COligoKernel::COligoKernel(INT cache_sz, INT kmer_len, DREAL w) : CStringKernel<char>(cache_sz), k(kmer_len), width(w)
 {
 	set_normalizer(new CSqrtDiagKernelNormalizer());
 }
@@ -33,7 +33,7 @@ COligoKernel::~COligoKernel()
 
 bool COligoKernel::init(CFeatures* l, CFeatures* r)
 {
-	CStringKernel<CHAR>::init(l,r);
+	CStringKernel<char>::init(l,r);
 	return init_normalizer();
 }
 
@@ -255,8 +255,8 @@ double COligoKernel::kernelOligo(const vector< pair<int, double> >&    x,
 DREAL COligoKernel::compute(INT idx_a, INT idx_b)
 {
 	INT alen, blen;
-	CHAR* avec=((CStringFeatures<CHAR>*) lhs)->get_feature_vector(idx_a, alen);
-	CHAR* bvec=((CStringFeatures<CHAR>*) rhs)->get_feature_vector(idx_b, blen);
+	char* avec=((CStringFeatures<char>*) lhs)->get_feature_vector(idx_a, alen);
+	char* bvec=((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen);
 	vector< pair<int,double> > aenc;
 	vector< pair<int,double> > benc;
 	encodeOligo(string(avec, alen), k, "ACGT", aenc);

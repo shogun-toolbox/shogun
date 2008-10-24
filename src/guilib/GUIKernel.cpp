@@ -81,7 +81,7 @@ CKernel* CGUIKernel::get_kernel()
 }
 
 #ifdef HAVE_MINDY
-CKernel* CGUIKernel::create_mindygram(INT size, CHAR* meas_str, CHAR* norm_str, DREAL width, CHAR* param_str)
+CKernel* CGUIKernel::create_mindygram(INT size, char* meas_str, char* norm_str, DREAL width, char* param_str)
 {
 	CKernel* kern=new CMindyGramKernel(size, meast_str, width);
 	if (!kern)
@@ -411,7 +411,7 @@ CKernel* CGUIKernel::create_chi2(INT size, DREAL width)
 }
 
 CKernel* CGUIKernel::create_commstring(
-	INT size, bool use_sign, CHAR* norm_str, EKernelType ktype)
+	INT size, bool use_sign, char* norm_str, EKernelType ktype)
 {
 	CKernel* kern=NULL;
 	if (ktype==K_COMMULONGSTRING)
@@ -583,7 +583,7 @@ CKernel* CGUIKernel::create_combined(
 	return kern;
 }
 
-bool CGUIKernel::set_normalization(CHAR* normalization, DREAL c)
+bool CGUIKernel::set_normalization(char* normalization, DREAL c)
 {
 	CKernel* k=kernel;
 
@@ -634,7 +634,7 @@ bool CGUIKernel::set_kernel(CKernel* kern)
 		return false;
 }
 
-bool CGUIKernel::load_kernel_init(CHAR* filename)
+bool CGUIKernel::load_kernel_init(char* filename)
 {
 	bool result=false;
 	if (kernel)
@@ -658,7 +658,7 @@ bool CGUIKernel::load_kernel_init(CHAR* filename)
 	return result;
 }
 
-bool CGUIKernel::save_kernel_init(CHAR* filename)
+bool CGUIKernel::save_kernel_init(char* filename)
 {
 	bool result=false;
 
@@ -724,7 +724,7 @@ bool CGUIKernel::delete_kernel_optimization()
 }
 
 
-bool CGUIKernel::init_kernel(CHAR* target)
+bool CGUIKernel::init_kernel(char* target)
 {
 	if (!kernel)
 		SG_ERROR("No kernel available.\n");
@@ -785,7 +785,7 @@ bool CGUIKernel::init_kernel(CHAR* target)
 	return true;
 }
 
-bool CGUIKernel::save_kernel(CHAR* filename)
+bool CGUIKernel::save_kernel(char* filename)
 {
 	if (kernel && initialized)
 	{
@@ -864,7 +864,7 @@ bool CGUIKernel::resize_kernel_cache(INT size)
 }
 #endif //USE_SVMLIGHT
 
-bool CGUIKernel::set_optimization_type(CHAR* opt_type)
+bool CGUIKernel::set_optimization_type(char* opt_type)
 {
 	EOptimizationType opt=SLOWBUTMEMEFFICIENT;
 	if (!kernel)

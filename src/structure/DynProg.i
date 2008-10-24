@@ -28,8 +28,8 @@
 %apply (DREAL* IN_ARRAY2, INT DIM1, INT DIM2) {(DREAL* segment_sum_weights, INT num_states, INT seq_len)};
 %apply (INT* IN_ARRAY2, INT DIM1, INT DIM2) {(INT *plif_id_matrix, INT m, INT n)}
 %apply (INT* IN_ARRAY2, INT DIM1, INT DIM2) {(INT *plif_id_matrix, INT m, INT n)}
-%apply (CHAR* IN_ARRAY2, INT DIM1, INT DIM2) {(CHAR* genestr, INT genestr_len, INT genestr_num)};
-%apply (CHAR* IN_ARRAY1, INT DIM1) {(CHAR* genestr, INT genestr_len)};
+%apply (char* IN_ARRAY2, INT DIM1, INT DIM2) {(char* genestr, INT genestr_len, INT genestr_num)};
+%apply (char* IN_ARRAY1, INT DIM1) {(char* genestr, INT genestr_len)};
 
 /* best_path_trans_deriv preparation functions */
 %apply (INT* IN_ARRAY1, INT DIM1) {(INT* my_state_seq, INT seq_len)}

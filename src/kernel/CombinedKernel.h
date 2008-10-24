@@ -118,7 +118,7 @@ class CCombinedKernel : public CKernel
 		 *
 		 * @return name Combined
 		 */
-		virtual const CHAR* get_name() { return "Combined"; }
+		virtual const char* get_name() { return "Combined"; }
 
 		/** list kernels */
 		void list_kernels();

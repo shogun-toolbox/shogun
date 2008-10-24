@@ -84,7 +84,7 @@ class CFeatures : public CSGObject
 		 *
 		 * @param fname filename to load features from
 		 */
-		CFeatures(CHAR* fname);
+		CFeatures(char* fname);
 
 		/** duplicate feature object
 		 *
@@ -199,14 +199,14 @@ class CFeatures : public CSGObject
 		 * @param fname filename to load from
 		 * @return if loading was successful
 		 */
-		virtual bool load(CHAR* fname);
+		virtual bool load(char* fname);
 
 		/** save features to file
 		 *
 		 * @param fname filename to save to
 		 * @return if saving was successful
 		 */
-		virtual bool save(CHAR* fname);
+		virtual bool save(char* fname);
 
 		/** check feature compatibility
 		 *

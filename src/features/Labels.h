@@ -43,7 +43,7 @@ class CLabels : public CSGObject
 		 *
 		 * @param fname filename to load labels from
 		 */
-		CLabels(CHAR* fname);
+		CLabels(char* fname);
 		~CLabels();
 
 		/** load labels from file
@@ -51,14 +51,14 @@ class CLabels : public CSGObject
 		 * @param fname filename to load from
 		 * @return if loading was successful
 		 */
-		bool load(CHAR* fname);
+		bool load(char* fname);
 
 		/** save labels to file
 		 *
 		 * @param fname filename to save to
 		 * @return if saving was successful
 		 */
-		bool save(CHAR* fname);
+		bool save(char* fname);
 
 		/** set label
 		 *

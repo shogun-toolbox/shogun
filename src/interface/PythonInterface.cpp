@@ -106,17 +106,17 @@ bool CPythonInterface::get_bool()
 }
 
 
-CHAR* CPythonInterface::get_string(INT& len)
+char* CPythonInterface::get_string(INT& len)
 {
 	const PyObject* s=get_arg_increment();
 	if (!s || !PyString_Check(s))
 		SG_ERROR("Expected String as argument %d\n", m_rhs_counter);
 
 	len=PyString_Size((PyObject*) s);
-	CHAR* str=PyString_AS_STRING(s);
+	char* str=PyString_AS_STRING(s);
 	ASSERT(str && len>0);
 
-	CHAR* cstr=new CHAR[len+1];
+	char* cstr=new char[len+1];
 	memcpy(cstr, str, len+1);
 	cstr[len]='\0';
 
@@ -143,7 +143,7 @@ void CPythonInterface::function_name(sg_type*& vector, INT& len)			\
 }
 
 GET_VECTOR(get_byte_vector, NPY_BYTE, BYTE, BYTE, "Byte")
-GET_VECTOR(get_char_vector, NPY_CHAR, CHAR, char, "Char")
+GET_VECTOR(get_char_vector, NPY_CHAR, char, char, "Char")
 GET_VECTOR(get_int_vector, NPY_INT, INT, int, "Integer")
 GET_VECTOR(get_short_vector, NPY_SHORT, SHORT, short, "Short")
 GET_VECTOR(get_shortreal_vector, NPY_FLOAT, SHORTREAL, float, "Single Precision")
@@ -182,7 +182,7 @@ void CPythonInterface::function_name(sg_type*& matrix, INT& num_feat, INT& num_v
 }
 
 GET_MATRIX(get_byte_matrix, NPY_BYTE, BYTE, BYTE, "Byte")
-GET_MATRIX(get_char_matrix, NPY_CHAR, CHAR, char, "Char")
+GET_MATRIX(get_char_matrix, NPY_CHAR, char, char, "Char")
 GET_MATRIX(get_int_matrix, NPY_INT, INT, int, "Integer")
 GET_MATRIX(get_short_matrix, NPY_SHORT, SHORT, short, "Short")
 GET_MATRIX(get_shortreal_matrix, NPY_FLOAT, SHORTREAL, float, "Single Precision")
@@ -219,7 +219,7 @@ void CPythonInterface::function_name(sg_type*& array, INT*& dims, INT& num_dims)
 }
 
 GET_NDARRAY(get_byte_ndarray, NPY_BYTE, BYTE, BYTE, "Byte")
-GET_NDARRAY(get_char_ndarray, NPY_CHAR, CHAR, char, "Char")
+GET_NDARRAY(get_char_ndarray, NPY_CHAR, char, char, "Char")
 GET_NDARRAY(get_int_ndarray, NPY_INT, INT, int, "Integer")
 GET_NDARRAY(get_short_ndarray, NPY_SHORT, SHORT, short, "Short")
 GET_NDARRAY(get_shortreal_ndarray, NPY_FLOAT, SHORTREAL, float, "Single Precision")
@@ -278,7 +278,7 @@ void CPythonInterface::function_name(TSparse<sg_type>*& matrix, INT& num_feat, I
 GET_SPARSEMATRIX(get_real_sparsematrix, NPY_DOUBLE, DREAL, double, "Double Precision")
 /*  future versions might support types other than DREAL
 GET_SPARSEMATRIX(get_byte_sparsematrix, "uint8", BYTE, BYTE, "Byte")
-GET_SPARSEMATRIX(get_char_sparsematrix, "char", CHAR, mxChar, "Char")
+GET_SPARSEMATRIX(get_char_sparsematrix, "char", char, mxChar, "Char")
 GET_SPARSEMATRIX(get_int_sparsematrix, "int32", INT, int, "Integer")
 GET_SPARSEMATRIX(get_short_sparsematrix, "int16", SHORT, short, "Short")
 GET_SPARSEMATRIX(get_shortreal_sparsematrix, "single", SHORTREAL, float, "Single Precision")
@@ -366,7 +366,7 @@ void CPythonInterface::function_name(T_STRING<sg_type>*& strings, INT& num_str, 
 }
 
 GET_STRINGLIST(get_byte_string_list, NPY_BYTE, BYTE, BYTE, 1, "Byte")
-GET_STRINGLIST(get_char_string_list, NPY_CHAR, CHAR, char, 1, "Char")
+GET_STRINGLIST(get_char_string_list, NPY_CHAR, char, char, 1, "Char")
 GET_STRINGLIST(get_int_string_list, NPY_INT, INT, int, 0, "Integer")
 GET_STRINGLIST(get_short_string_list, NPY_SHORT, SHORT, short, 0, "Short")
 GET_STRINGLIST(get_word_string_list, NPY_USHORT, WORD, unsigned short, 0, "Word")
@@ -426,7 +426,7 @@ void CPythonInterface::function_name(const sg_type* vector, INT len)		\
 }
 
 SET_VECTOR(set_byte_vector, NPY_BYTE, BYTE, BYTE, "Byte")
-SET_VECTOR(set_char_vector, NPY_CHAR, CHAR, char, "Char")
+SET_VECTOR(set_char_vector, NPY_CHAR, char, char, "Char")
 SET_VECTOR(set_int_vector, NPY_INT, INT, int, "Integer")
 SET_VECTOR(set_short_vector, NPY_SHORT, SHORT, short, "Short")
 SET_VECTOR(set_shortreal_vector, NPY_FLOAT, SHORTREAL, float, "Single Precision")
@@ -458,7 +458,7 @@ void CPythonInterface::function_name(const sg_type* matrix, INT num_feat, INT nu
 }
 
 SET_MATRIX(set_byte_matrix, NPY_BYTE, BYTE, BYTE, "Byte")
-SET_MATRIX(set_char_matrix, NPY_CHAR, CHAR, char, "Char")
+SET_MATRIX(set_char_matrix, NPY_CHAR, char, char, "Char")
 SET_MATRIX(set_int_matrix, NPY_INT, INT, int, "Integer")
 SET_MATRIX(set_short_matrix, NPY_SHORT, SHORT, short, "Short")
 SET_MATRIX(set_shortreal_matrix, NPY_FLOAT, SHORTREAL, float, "Single Precision")
@@ -505,7 +505,7 @@ SET_SPARSEMATRIX(set_real_sparsematrix, NPY_DOUBLE, DREAL, double, "Double Preci
 
 /* future version might support this
 SET_SPARSEMATRIX(set_byte_sparsematrix, mxUINT8_CLASS, BYTE, BYTE, "Byte")
-SET_SPARSEMATRIX(set_char_sparsematrix, mxCHAR_CLASS, CHAR, mxChar, "Char")
+SET_SPARSEMATRIX(set_char_sparsematrix, mxCHAR_CLASS, char, mxChar, "Char")
 SET_SPARSEMATRIX(set_int_sparsematrix, mxINT32_CLASS, INT, int, "Integer")
 SET_SPARSEMATRIX(set_short_sparsematrix, mxINT16_CLASS, SHORT, short, "Short")
 SET_SPARSEMATRIX(set_shortreal_sparsematrix, mxSINGLE_CLASS, SHORTREAL, float, "Single Precision")
@@ -544,7 +544,7 @@ void CPythonInterface::function_name(const T_STRING<sg_type>* strings, INT num_s
 }
 
 SET_STRINGLIST(set_byte_string_list, NPY_BYTE, BYTE, BYTE, 0, "Byte")
-SET_STRINGLIST(set_char_string_list, NPY_CHAR, CHAR, char, 1, "Char")
+SET_STRINGLIST(set_char_string_list, NPY_CHAR, char, char, 1, "Char")
 SET_STRINGLIST(set_int_string_list, NPY_INT, INT, int, 0, "Integer")
 SET_STRINGLIST(set_short_string_list, NPY_SHORT, SHORT, short, 0, "Short")
 SET_STRINGLIST(set_word_string_list, NPY_USHORT, WORD, unsigned short, 0, "Word")

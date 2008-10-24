@@ -97,5 +97,5 @@ template<> inline EFeatureType CSparseDistance<BYTE>::get_feature_type() { retur
  *
  * @return feature type CHAR
  */
-template<> inline EFeatureType CSparseDistance<CHAR>::get_feature_type() { return F_CHAR; }
+template<> inline EFeatureType CSparseDistance<char>::get_feature_type() { return F_CHAR; }
 #endif

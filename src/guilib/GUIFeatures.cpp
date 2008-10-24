@@ -47,7 +47,7 @@ void CGUIFeatures::invalidate_test()
 }
 
 bool CGUIFeatures::load(
-	CHAR* filename, CHAR* fclass, CHAR* type, CHAR* target, INT size,
+	char* filename, char* fclass, char* type, char* target, INT size,
 	INT comp_features)
 {
 	bool result=false;
@@ -118,7 +118,7 @@ bool CGUIFeatures::load(
 		else if (strncmp(type, "CHAR", 4)==0)
 		{
 			///FIXME make CHAR type configurable... it is DNA by default
-			*f_ptr=new CStringFeatures<CHAR>(filename, DNA);
+			*f_ptr=new CStringFeatures<char>(filename, DNA);
 		}
 		else if (strncmp(type, "SHORT", 5)==0)
 		{
@@ -142,7 +142,7 @@ bool CGUIFeatures::load(
 	return result;
 }
 
-bool CGUIFeatures::save(CHAR* filename, CHAR* type, CHAR* target)
+bool CGUIFeatures::save(char* filename, char* type, char* target)
 {
 	bool result=false;
 
@@ -201,7 +201,7 @@ bool CGUIFeatures::save(CHAR* filename, CHAR* type, CHAR* target)
 	return result;
 }
 
-bool CGUIFeatures::clean(CHAR* target)
+bool CGUIFeatures::clean(char* target)
 {
 	if (strncmp(target, "TRAIN", 5)==0)
 		set_train_features(NULL);
@@ -214,7 +214,7 @@ bool CGUIFeatures::clean(CHAR* target)
 }
 
 bool CGUIFeatures::obtain_by_sliding_window(
-	CHAR* target, INT winsize, INT shift, INT skip)
+	char* target, INT winsize, INT shift, INT skip)
 {
 	ASSERT(winsize>0);
 	ASSERT(shift>0);
@@ -246,7 +246,7 @@ bool CGUIFeatures::obtain_by_sliding_window(
 	switch (features->get_feature_type())
 	{
 		case F_CHAR:
-			return ( ((CStringFeatures<CHAR>*) features)->obtain_by_sliding_window(winsize, shift, skip)>0);
+			return ( ((CStringFeatures<char>*) features)->obtain_by_sliding_window(winsize, shift, skip)>0);
 		case F_BYTE:
 			return ( ((CStringFeatures<BYTE>*) features)->obtain_by_sliding_window(winsize, shift, skip)>0);
 		case F_WORD:
@@ -261,7 +261,7 @@ bool CGUIFeatures::obtain_by_sliding_window(
 	return false;
 }
 
-bool CGUIFeatures::reshape(CHAR* target, INT num_feat, INT num_vec)
+bool CGUIFeatures::reshape(char* target, INT num_feat, INT num_vec)
 {
 	CFeatures** f_ptr=NULL;
 
@@ -294,7 +294,7 @@ bool CGUIFeatures::reshape(CHAR* target, INT num_feat, INT num_vec)
 	return result;
 }
 
-CFeatures* CGUIFeatures::get_convert_features(CHAR* target)
+CFeatures* CGUIFeatures::get_convert_features(char* target)
 {
 	CFeatures* features;
 
@@ -311,7 +311,7 @@ CFeatures* CGUIFeatures::get_convert_features(CHAR* target)
 	return features;
 }
 
-bool CGUIFeatures::set_convert_features(CFeatures* features, CHAR* target)
+bool CGUIFeatures::set_convert_features(CFeatures* features, char* target)
 {
 	CFeatures* features_prev;
 
@@ -366,19 +366,19 @@ CSparseFeatures<DREAL>* CGUIFeatures::convert_simple_real_to_sparse_real(CRealFe
 	return NULL;
 }
 
-CStringFeatures<CHAR>* CGUIFeatures::convert_simple_char_to_string_char(CCharFeatures* src)
+CStringFeatures<char>* CGUIFeatures::convert_simple_char_to_string_char(CCharFeatures* src)
 {
 	if (src && src->get_feature_class()==C_SIMPLE)
 	{
 		INT num_vec=src->get_num_vectors();
-		T_STRING<CHAR>* strings=new T_STRING<CHAR>[num_vec];
+		T_STRING<char>* strings=new T_STRING<char>[num_vec];
 		INT max_len=-1;
 
 		for (INT i=0; i<num_vec; i++)
 		{
 			bool to_free=false;
 			INT len=0;
-			CHAR* str=src->get_feature_vector(i, len, to_free);
+			char* str=src->get_feature_vector(i, len, to_free);
 			strings[i].length=len ;
 			for (int j=0; j<len; j++)
 				if (str[j]==0)
@@ -386,7 +386,7 @@ CStringFeatures<CHAR>* CGUIFeatures::convert_simple_char_to_string_char(CCharFea
 					strings[i].length=j ;
 					break ;
 				} ;
-			strings[i].string=new CHAR[strings[i].length];
+			strings[i].string=new char[strings[i].length];
 
 			for (int j=0; j<strings[i].length; j++)
 				strings[i].string[j]=str[j];
@@ -397,7 +397,7 @@ CStringFeatures<CHAR>* CGUIFeatures::convert_simple_char_to_string_char(CCharFea
 			src->free_feature_vector(str, i, to_free);
 		}
 
-		CStringFeatures<CHAR>* target=new CStringFeatures<CHAR>(
+		CStringFeatures<char>* target=new CStringFeatures<char>(
 			new CAlphabet(src->get_alphabet()));
 		target->set_features(strings, num_vec, max_len);
 		return target;
@@ -625,7 +625,7 @@ CRealFeatures* CGUIFeatures::convert_simple_char_to_simple_align(CCharFeatures* 
 	return NULL;
 }
 
-bool CGUIFeatures::set_reference_features(CHAR* target)
+bool CGUIFeatures::set_reference_features(char* target)
 {
 	if (strncmp(target, "TRAIN", 5)==0)
 	{
@@ -693,7 +693,7 @@ void CGUIFeatures::add_test_features(CFeatures* f)
 		SG_ERROR("Appending feature object failed.\n");
 }
 
-bool CGUIFeatures::del_last_features(CHAR* target)
+bool CGUIFeatures::del_last_features(char* target)
 {
 	CCombinedFeatures* cf=NULL;
 	if (strncmp(target, "TRAIN", 5)==0)

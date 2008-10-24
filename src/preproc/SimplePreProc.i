@@ -11,4 +11,4 @@
 %template(SimpleWordPreProc) CSimplePreProc<WORD>;
 %template(SimpleShortPreProc) CSimplePreProc<SHORT>;
 %template(SimpleBytePreProc) CSimplePreProc<BYTE>;
-%template(SimpleCharPreProc) CSimplePreProc<CHAR>;
+%template(SimpleCharPreProc) CSimplePreProc<char>;

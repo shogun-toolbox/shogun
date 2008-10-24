@@ -9,7 +9,7 @@
 #endif
 
 %apply (ST** ARGOUT1, INT* DIM1) {(ST** dst, INT* len)};
-%apply (CHAR** ARGOUT1, INT* DIM1) {(CHAR** dst, INT* len)};
+%apply (char** ARGOUT1, INT* DIM1) {(char** dst, INT* len)};
 %apply (BYTE** ARGOUT1, INT* DIM1) {(BYTE** dst, INT* len)};
 %apply (SHORT** ARGOUT1, INT* DIM1) {(SHORT** dst, INT* len)};
 %apply (WORD** ARGOUT1, INT* DIM1) {(WORD** dst, INT* len)};
@@ -21,16 +21,16 @@
 %include "features/StringFeatures.h"
 
 /* workaround broken typemap %apply on templated classes */
-%extend CStringFeatures<CHAR>
+%extend CStringFeatures<char>
 {
-    bool get_str(CHAR** dst, INT* len)
+    bool get_str(char** dst, INT* len)
     {
-        self->CStringFeatures<CHAR>::get_string(dst,len);
+        self->CStringFeatures<char>::get_string(dst,len);
     }
 
-    bool set_string_features(T_STRING<CHAR>* strings, INT num_strings, INT max_len)
+    bool set_string_features(T_STRING<char>* strings, INT num_strings, INT max_len)
     {
-        return self->CStringFeatures<CHAR>::set_features(strings, num_strings, max_len);
+        return self->CStringFeatures<char>::set_features(strings, num_strings, max_len);
     }
 };
 %extend CStringFeatures<BYTE>
@@ -83,7 +83,7 @@
     }
 };
 
-%template(StringCharFeatures) CStringFeatures<CHAR>;
+%template(StringCharFeatures) CStringFeatures<char>;
 %template(StringByteFeatures) CStringFeatures<BYTE>;
 %template(StringShortFeatures) CStringFeatures<SHORT>;
 %template(StringWordFeatures) CStringFeatures<WORD>;

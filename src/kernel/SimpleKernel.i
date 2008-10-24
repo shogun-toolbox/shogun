@@ -7,7 +7,7 @@
 %template(RealKernel) CSimpleKernel<DREAL>;
 %template(ShortRealKernel) CSimpleKernel<SHORTREAL>;
 %template(WordKernel) CSimpleKernel<WORD>;
-%template(CharKernel) CSimpleKernel<CHAR>;
+%template(CharKernel) CSimpleKernel<char>;
 %template(ByteKernel) CSimpleKernel<BYTE>;
 %template(IntKernel) CSimpleKernel<INT>;
 %template(ShortKernel) CSimpleKernel<SHORT>;

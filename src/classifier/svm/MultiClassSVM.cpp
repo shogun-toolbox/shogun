@@ -281,7 +281,7 @@ DREAL CMultiClassSVM::classify_example_one_vs_one(INT num)
 bool CMultiClassSVM::load(FILE* modelfl)
 {
 	bool result=true;
-	CHAR char_buffer[1024];
+	char char_buffer[1024];
 	int int_buffer;
 	double double_buffer;
 	int line_number=1;

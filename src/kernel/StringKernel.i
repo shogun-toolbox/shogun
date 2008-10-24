@@ -6,7 +6,7 @@
 
 %template(StringRealKernel) CStringKernel<DREAL>;
 %template(StringWordKernel) CStringKernel<WORD>;
-%template(StringCharKernel) CStringKernel<CHAR>;
+%template(StringCharKernel) CStringKernel<char>;
 %template(StringIntKernel) CStringKernel<INT>;
 %template(StringUlongKernel) CStringKernel<ULONG>;
 %template(StringShortKernel) CStringKernel<SHORT>;

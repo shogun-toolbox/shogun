@@ -38,9 +38,6 @@
 //@{
 
 
-/// Type CHAR
-typedef char CHAR;
-
 /// Type BYTE 
 typedef unsigned char BYTE;
 

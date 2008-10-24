@@ -24,7 +24,7 @@ CWordFeatures::CWordFeatures(const CWordFeatures & orig)
 {
 }
 
-CWordFeatures::CWordFeatures(CHAR* fname, INT num_sym)
+CWordFeatures::CWordFeatures(char* fname, INT num_sym)
 : CSimpleFeatures<WORD>(fname), num_symbols(num_sym),
 	original_num_symbols(num_sym), order(0), symbol_mask_table(NULL)
 {
@@ -54,7 +54,7 @@ bool CWordFeatures::obtain_from_char_features(CCharFeatures* cf, INT start, INT 
 	feature_matrix=new WORD[len];
 	INT num_cf_feat=0;
 	INT num_cf_vec=0;
-	CHAR* fm=cf->get_feature_matrix(num_cf_feat, num_cf_vec);
+	char* fm=cf->get_feature_matrix(num_cf_feat, num_cf_vec);
 
 	ASSERT(num_cf_vec==num_vectors);
 	ASSERT(num_cf_feat==num_features);
@@ -187,12 +187,12 @@ void CWordFeatures::translate_from_single_order(WORD* obs, INT sequence_length, 
 		obs[i-start]=obs[i];
 }
 
-bool CWordFeatures::load(CHAR* fname)
+bool CWordFeatures::load(char* fname)
 {
 	return false;
 }
 
-bool CWordFeatures::save(CHAR* fname)
+bool CWordFeatures::save(char* fname)
 {
 	INT len;
 	bool free;

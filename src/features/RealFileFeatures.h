@@ -33,7 +33,7 @@ class CRealFileFeatures: public CRealFeatures
 		 * @param size cache size
 		 * @param filename filename to load features from
 		 */
-		CRealFileFeatures(INT size, CHAR* filename);
+		CRealFileFeatures(INT size, char* filename);
 
 		/** copy constructor */
 		CRealFileFeatures(const CRealFileFeatures& orig);
@@ -72,7 +72,7 @@ class CRealFileFeatures: public CRealFeatures
 		/** working file */
 		FILE* working_file;
 		/** working filename */
-		CHAR* working_filename;
+		char* working_filename;
 		/** status */
 		bool status;
 		/** labels */

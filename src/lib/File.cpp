@@ -29,14 +29,14 @@ CFile::CFile(FILE* f)
 	expected_type=F_UNKNOWN;
 }
 
-CFile::CFile(CHAR* fname, CHAR rw, EFeatureType typ, CHAR file_fourcc[4])
+CFile::CFile(char* fname, char rw, EFeatureType typ, char file_fourcc[4])
 : CSGObject()
 {
 	status=false;
 	task=rw;
 	expected_type=typ;
 	filename=strdup(fname);
-	CHAR mode[2];
+	char mode[2];
 	mode[0]=rw;
 	mode[1]='\0';
 
@@ -45,7 +45,7 @@ CFile::CFile(CHAR* fname, CHAR rw, EFeatureType typ, CHAR file_fourcc[4])
 	{
 		if (filename)
 		{
-			if ((file=fopen((const CHAR*) filename, (const CHAR*) mode)))
+			if ((file=fopen((const char*) filename, (const char*) mode)))
 				status=true;
 		}
 	}
@@ -126,19 +126,19 @@ bool CFile::save_shortreal_data(SHORTREAL* src, LONG num)
 	return status;
 }
 
-CHAR* CFile::load_char_data(CHAR* target, LONG& num)
+char* CFile::load_char_data(char* target, LONG& num)
 {
 	ASSERT(expected_type==F_CHAR);
-	CSimpleFile<CHAR> f(filename, file);
+	CSimpleFile<char> f(filename, file);
 	target=f.load(target, num);
 	status=(target!=NULL);
 	return target;
 }
 
-bool CFile::save_char_data(CHAR* src, LONG num)
+bool CFile::save_char_data(char* src, LONG num)
 {
 	ASSERT(expected_type==F_CHAR);
-	CSimpleFile<CHAR> f(filename, file);
+	CSimpleFile<char> f(filename, file);
 	status=f.save(src, num);
 	return status;
 }
@@ -237,11 +237,11 @@ bool CFile::write_header()
 		return false;
 }
 
-template <class T> void CFile::append_item(CDynamicArray<T>* items, CHAR* ptr_data, CHAR* ptr_item)
+template <class T> void CFile::append_item(CDynamicArray<T>* items, char* ptr_data, char* ptr_item)
 {
-	size_t len=(ptr_data-ptr_item)/sizeof(CHAR);
-	CHAR* item=new CHAR[len+1];
-	memset(item, 0, sizeof(CHAR)*(len+1));
+	size_t len=(ptr_data-ptr_item)/sizeof(char);
+	char* item=new char[len+1];
+	memset(item, 0, sizeof(char)*(len+1));
 	item=strncpy(item, ptr_item, len);
 
 	SG_DEBUG("current %c, len %d, item %s\n", *ptr_data, len, item);
@@ -256,9 +256,9 @@ bool CFile::read_real_valued_dense(DREAL*& matrix, INT& num_feat, INT& num_vec)
 	if (stat(filename, &stats)!=0)
 		SG_ERROR("Could not get file statistics.\n");
 
-	CHAR* data=new CHAR[stats.st_size+1];
-	memset(data, 0, sizeof(CHAR)*(stats.st_size+1));
-	size_t nread=fread(data, sizeof(CHAR), stats.st_size, file);
+	char* data=new char[stats.st_size+1];
+	memset(data, 0, sizeof(char)*(stats.st_size+1));
+	size_t nread=fread(data, sizeof(char), stats.st_size, file);
 	if (nread<=0)
 		SG_ERROR("Could not read data from %s.\n");
 
@@ -268,9 +268,9 @@ bool CFile::read_real_valued_dense(DREAL*& matrix, INT& num_feat, INT& num_vec)
 	INT nf=0;
 	num_feat=0;
 	num_vec=0;
-	CHAR* ptr_item=NULL;
-	CHAR* ptr_data=data;
-	CDynamicArray<CHAR*>* items=new CDynamicArray<CHAR*>();
+	char* ptr_item=NULL;
+	char* ptr_data=data;
+	CDynamicArray<char*>* items=new CDynamicArray<char*>();
 
 	while (*ptr_data)
 	{
@@ -311,7 +311,7 @@ bool CFile::read_real_valued_dense(DREAL*& matrix, INT& num_feat, INT& num_vec)
 	{
 		for (INT j=0; j<num_feat; j++)
 		{
-			CHAR* item=items->get_element(i*num_feat+j);
+			char* item=items->get_element(i*num_feat+j);
 			matrix[i*num_feat+j]=atof(item);
 			delete[] item;
 		}
@@ -528,14 +528,14 @@ bool CFile::write_real_valued_sparse(const TSparse<DREAL>* matrix, INT num_feat,
 }
 
 
-bool CFile::read_char_valued_strings(T_STRING<CHAR>*& strings, INT& num_str, INT& max_string_len)
+bool CFile::read_char_valued_strings(T_STRING<char>*& strings, INT& num_str, INT& max_string_len)
 {
 	bool result=false;
 
 	size_t blocksize=1024*1024;
 	size_t required_blocksize=0;
-	CHAR* dummy=new CHAR[blocksize];
-	CHAR* overflow=NULL;
+	char* dummy=new char[blocksize];
+	char* overflow=NULL;
 	INT overflow_len=0;
 
 	if (file)
@@ -553,7 +553,7 @@ bool CFile::read_char_valued_strings(T_STRING<CHAR>*& strings, INT& num_str, INT
 
 		while (sz == blocksize)
 		{
-			sz=fread(dummy, sizeof(CHAR), blocksize, file);
+			sz=fread(dummy, sizeof(char), blocksize, file);
 			bool contains_cr=false;
 			for (size_t i=0; i<sz; i++)
 			{
@@ -573,9 +573,9 @@ bool CFile::read_char_valued_strings(T_STRING<CHAR>*& strings, INT& num_str, INT
 		SG_DEBUG("block_size=%d\n", required_blocksize);
 		delete[] dummy;
 		blocksize=required_blocksize;
-		dummy=new CHAR[blocksize];
-		overflow=new CHAR[blocksize];
-		strings=new T_STRING<CHAR>[num_str];
+		dummy=new char[blocksize];
+		overflow=new char[blocksize];
+		strings=new T_STRING<char>[num_str];
 
 		rewind(file);
 		sz=blocksize;
@@ -583,7 +583,7 @@ bool CFile::read_char_valued_strings(T_STRING<CHAR>*& strings, INT& num_str, INT
 		size_t old_sz=0;
 		while (sz == blocksize)
 		{
-			sz=fread(dummy, sizeof(CHAR), blocksize, file);
+			sz=fread(dummy, sizeof(char), blocksize, file);
 
 			old_sz=0;
 			for (size_t i=0; i<sz; i++)
@@ -594,7 +594,7 @@ bool CFile::read_char_valued_strings(T_STRING<CHAR>*& strings, INT& num_str, INT
 					max_string_len=CMath::max(max_string_len, len+overflow_len);
 
 					strings[lines].length=len+overflow_len;
-					strings[lines].string=new CHAR[len+overflow_len];
+					strings[lines].string=new char[len+overflow_len];
 
 					for (INT j=0; j<overflow_len; j++)
 						strings[lines].string[j]=overflow[j];
@@ -628,7 +628,7 @@ bool CFile::read_char_valued_strings(T_STRING<CHAR>*& strings, INT& num_str, INT
 	return result;
 }
 
-bool CFile::write_char_valued_strings(const T_STRING<CHAR>* strings, INT num_str)
+bool CFile::write_char_valued_strings(const T_STRING<char>* strings, INT num_str)
 {
 	if (!(file && strings))
 		SG_ERROR("File or strings invalid.\n");
@@ -636,7 +636,7 @@ bool CFile::write_char_valued_strings(const T_STRING<CHAR>* strings, INT num_str
 	for (INT i=0; i<num_str; i++)
 	{
 		INT len = strings[i].length;
-		fwrite(strings[i].string, sizeof(CHAR), len, file);
+		fwrite(strings[i].string, sizeof(char), len, file);
 		fprintf(file, "\n");
 	}
 

@@ -40,10 +40,10 @@ class CGUIDistance : public CSGObject
 	CDistance* create_hammingword(bool use_sign=false);
 
 	/** initialize distance */
-	bool init_distance(CHAR* target);
-	bool load_distance_init(CHAR* param);
-	bool save_distance_init(CHAR* param);
-	bool save_distance(CHAR* param);
+	bool init_distance(char* target);
+	bool load_distance_init(char* param);
+	bool save_distance_init(char* param);
+	bool save_distance(char* param);
 
 	bool is_initialized() { return initialized; }
 

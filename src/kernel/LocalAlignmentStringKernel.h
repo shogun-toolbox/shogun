@@ -20,7 +20,7 @@
  * local alignments between the two sequences. The implementation is taken from
  * http://www.mloss.org/software/view/40/ and only adjusted to work with shogun.
  */
-class CLocalAlignmentStringKernel: public CStringKernel<CHAR>
+class CLocalAlignmentStringKernel: public CStringKernel<char>
 {
 	public:
 		/** constructor
@@ -34,7 +34,7 @@ class CLocalAlignmentStringKernel: public CStringKernel<CHAR>
 		 * @param r features of right-hand side
 		 */
 		CLocalAlignmentStringKernel(
-			CStringFeatures<CHAR>* l, CStringFeatures<CHAR>* r);
+			CStringFeatures<char>* l, CStringFeatures<char>* r);
 
 		virtual ~CLocalAlignmentStringKernel();
 
@@ -76,7 +76,7 @@ class CLocalAlignmentStringKernel: public CStringKernel<CHAR>
 		 *
 		 * @return name LocalAlignment
 		 */
-		virtual const CHAR* get_name()
+		virtual const char* get_name()
 		{
 			return "LocalAlignment";
 		}

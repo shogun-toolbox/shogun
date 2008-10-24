@@ -9,6 +9,6 @@
 %template(SimpleByteFeatures) CSimpleFeatures<BYTE>;
 %template(SimpleWordFeatures) CSimpleFeatures<WORD>;
 %template(SimpleShortFeatures) CSimpleFeatures<SHORT>;
-%template(SimpleCharFeatures) CSimpleFeatures<CHAR>;
+%template(SimpleCharFeatures) CSimpleFeatures<char>;
 %template(SimpleIntFeatures)  CSimpleFeatures<INT>;
 

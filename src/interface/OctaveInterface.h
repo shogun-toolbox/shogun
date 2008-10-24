@@ -27,10 +27,10 @@ class COctaveInterface : public CSGInterface
 		virtual DREAL get_real();
 		virtual bool get_bool();
 
-		virtual CHAR* get_string(INT& len);
+		virtual char* get_string(INT& len);
 
 		virtual void get_byte_vector(BYTE*& vec, INT& len);
-		virtual void get_char_vector(CHAR*& vec, INT& len);
+		virtual void get_char_vector(char*& vec, INT& len);
 		virtual void get_int_vector(INT*& vec, INT& len);
 		virtual void get_shortreal_vector(SHORTREAL*& vec, INT& len);
 		virtual void get_real_vector(DREAL*& vec, INT& len);
@@ -38,7 +38,7 @@ class COctaveInterface : public CSGInterface
 		virtual void get_word_vector(WORD*& vec, INT& len);
 
 		virtual void get_byte_matrix(BYTE*& matrix, INT& num_feat, INT& num_vec);
-		virtual void get_char_matrix(CHAR*& matrix, INT& num_feat, INT& num_vec);
+		virtual void get_char_matrix(char*& matrix, INT& num_feat, INT& num_vec);
 		virtual void get_int_matrix(INT*& matrix, INT& num_feat, INT& num_vec);
 		virtual void get_shortreal_matrix(SHORTREAL*& matrix, INT& num_feat, INT& num_vec);
 		virtual void get_real_matrix(DREAL*& matrix, INT& num_feat, INT& num_vec);
@@ -46,7 +46,7 @@ class COctaveInterface : public CSGInterface
 		virtual void get_word_matrix(WORD*& matrix, INT& num_feat, INT& num_vec);
 
 		virtual void get_byte_ndarray(BYTE*& array, INT*& dims, INT& num_dims);
-		virtual void get_char_ndarray(CHAR*& array, INT*& dims, INT& num_dims);
+		virtual void get_char_ndarray(char*& array, INT*& dims, INT& num_dims);
 		virtual void get_int_ndarray(INT*& array, INT*& dims, INT& num_dims);
 		virtual void get_shortreal_ndarray(SHORTREAL*& array, INT*& dims, INT& num_dims);
 		virtual void get_real_ndarray(DREAL*& array, INT*& dims, INT& num_dims);
@@ -55,14 +55,14 @@ class COctaveInterface : public CSGInterface
 
 		virtual void get_real_sparsematrix(TSparse<DREAL>*& matrix, INT& num_feat, INT& num_vec);
 		/*virtual void get_byte_sparsematrix(TSparse<BYTE>*& matrix, INT& num_feat, INT& num_vec);
-		virtual void get_char_sparsematrix(TSparse<CHAR>*& matrix, INT& num_feat, INT& num_vec);
+		virtual void get_char_sparsematrix(TSparse<char>*& matrix, INT& num_feat, INT& num_vec);
 		virtual void get_int_sparsematrix(TSparse<INT>*& matrix, INT& num_feat, INT& num_vec);
 		virtual void get_shortreal_sparsematrix(TSparse<SHORTREAL>*& matrix, INT& num_feat, INT& num_vec);
 		virtual void get_short_sparsematrix(TSparse<SHORT>*& matrix, INT& num_feat, INT& num_vec);
 		virtual void get_word_sparsematrix(TSparse<WORD>*& matrix, INT& num_feat, INT& num_vec);*/
 
 		virtual void get_byte_string_list(T_STRING<BYTE>*& strings, INT& num_str, INT& max_string_len);
-		virtual void get_char_string_list(T_STRING<CHAR>*& strings, INT& num_str, INT& max_string_len);
+		virtual void get_char_string_list(T_STRING<char>*& strings, INT& num_str, INT& max_string_len);
 		virtual void get_int_string_list(T_STRING<INT>*& strings, INT& num_str, INT& max_string_len);
 		virtual void get_short_string_list(T_STRING<SHORT>*& strings, INT& num_str, INT& max_string_len);
 		virtual void get_word_string_list(T_STRING<WORD>*& strings, INT& num_str, INT& max_string_len);
@@ -74,7 +74,7 @@ class COctaveInterface : public CSGInterface
 		virtual void set_bool(bool scalar);
 
 		virtual void set_byte_vector(const BYTE* vec, INT len);
-		virtual void set_char_vector(const CHAR* vec, INT len);
+		virtual void set_char_vector(const char* vec, INT len);
 		virtual void set_int_vector(const INT* vec, INT len);
 		virtual void set_shortreal_vector(const SHORTREAL* vec, INT len);
 		virtual void set_real_vector(const DREAL* vec, INT len);
@@ -82,7 +82,7 @@ class COctaveInterface : public CSGInterface
 		virtual void set_word_vector(const WORD* vec, INT len);
 
 		virtual void set_byte_matrix(const BYTE* matrix, INT num_feat, INT num_vec);
-		virtual void set_char_matrix(const CHAR* matrix, INT num_feat, INT num_vec);
+		virtual void set_char_matrix(const char* matrix, INT num_feat, INT num_vec);
 		virtual void set_int_matrix(const INT* matrix, INT num_feat, INT num_vec);
 		virtual void set_shortreal_matrix(const SHORTREAL* matrix, INT num_feat, INT num_vec);
 		virtual void set_real_matrix(const DREAL* matrix, INT num_feat, INT num_vec);
@@ -92,14 +92,14 @@ class COctaveInterface : public CSGInterface
 		virtual void set_real_sparsematrix(const TSparse<DREAL>* matrix, INT num_feat, INT num_vec, LONG nnz);
 		/*
 		virtual void set_byte_sparsematrix(const TSparse<BYTE>* matrix, INT num_feat, INT num_vec, LONG nnz);
-		virtual void set_char_sparsematrix(const TSparse<CHAR>* matrix, INT num_feat, INT num_vec, LONG nnz);
+		virtual void set_char_sparsematrix(const TSparse<char>* matrix, INT num_feat, INT num_vec, LONG nnz);
 		virtual void set_int_sparsematrix(const TSparse<INT>* matrix, INT num_feat, INT num_vec, LONG nnz);
 		virtual void set_shortreal_sparsematrix(const TSparse<SHORTREAL>* matrix, INT num_feat, INT num_vec, LONG nnz);
 		virtual void set_short_sparsematrix(const TSparse<SHORT>* matrix, INT num_feat, INT num_vec, LONG nnz);
 		virtual void set_word_sparsematrix(const TSparse<WORD>* matrix, INT num_feat, INT num_vec, LONG nnz);*/
 
 		void set_byte_string_list(const T_STRING<BYTE>* strings, INT num_str);
-		void set_char_string_list(const T_STRING<CHAR>* strings, INT num_str);
+		void set_char_string_list(const T_STRING<char>* strings, INT num_str);
 		void set_int_string_list(const T_STRING<INT>* strings, INT num_str);
 		void set_short_string_list(const T_STRING<SHORT>* strings, INT num_str);
 		void set_word_string_list(const T_STRING<WORD>* strings, INT num_str);

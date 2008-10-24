@@ -34,8 +34,8 @@ class CGUILabels : public CSGObject
 		bool set_test_labels(CLabels* lab) { delete test_labels; test_labels=lab; return true;}
 
 		/** load labels from file */
-		bool load(CHAR* filename, CHAR* target);
-		bool save(CHAR* param);
+		bool load(char* filename, char* target);
+		bool save(char* param);
 
 	protected:
 		CSGInterface* ui;

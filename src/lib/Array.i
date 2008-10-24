@@ -5,7 +5,7 @@
 
 %include "lib/Array.h"
 
-%template(CharArray) CArray<CHAR>;
+%template(CharArray) CArray<char>;
 %template(ByteArray) CArray<BYTE>;
 %template(ShortArray) CArray<SHORT>;
 %template(WordArray) CArray<WORD>;

@@ -99,7 +99,7 @@ template <class ST> class CSparseFeatures : public CFeatures
 		 *
 		 * @param fname filename to load features from
 		 */
-		CSparseFeatures(CHAR* fname)
+		CSparseFeatures(char* fname)
 		: CFeatures(fname), num_vectors(0), num_features(0),
 			sparse_feature_matrix(NULL), feature_cache(NULL)
 		{}
@@ -877,7 +877,7 @@ template <class ST> class CSparseFeatures : public CFeatures
 		 * @param fname filename to load from
 		 * @return label object with corresponding labels
 		 */
-		CLabels* load_svmlight_file(CHAR* fname)
+		CLabels* load_svmlight_file(char* fname)
 		{
 			CLabels* lab=NULL;
 
@@ -1045,7 +1045,7 @@ template <class ST> class CSparseFeatures : public CFeatures
 		 * @param label Label object (number of labels must correspond to number of features)
 		 * @return true if successful
 		 */
-		bool write_svmlight_file(CHAR* fname, CLabels* label)
+		bool write_svmlight_file(char* fname, CLabels* label)
 		{
 			ASSERT(label);
 			INT num=label->get_num_labels();
@@ -1115,7 +1115,7 @@ template <class ST> class CSparseFeatures : public CFeatures
  *
  * @return feature type CHAR
  */
-template<> inline EFeatureType CSparseFeatures<CHAR>::get_feature_type()
+template<> inline EFeatureType CSparseFeatures<char>::get_feature_type()
 {
 	return F_CHAR;
 }

@@ -265,7 +265,7 @@ int require_dimensions(PyObject* ary, int exact_dimensions) {
 
 /* Define concrete examples of the TYPEMAP_IN1 macros */
 TYPEMAP_IN1(bool,          NPY_BOOL )
-TYPEMAP_IN1(CHAR,          NPY_STRING )
+TYPEMAP_IN1(char,          NPY_STRING )
 TYPEMAP_IN1(BYTE,          NPY_UINT8 )
 TYPEMAP_IN1(SHORT,         NPY_INT16)
 TYPEMAP_IN1(WORD,          NPY_UINT16 )
@@ -307,7 +307,7 @@ TYPEMAP_IN1(PyObject,      NPY_OBJECT)
 
 /* Define concrete examples of the TYPEMAP_IN2 macros */
 TYPEMAP_IN2(bool,          NPY_BOOL )
-TYPEMAP_IN2(CHAR,          NPY_STRING )
+TYPEMAP_IN2(char,          NPY_STRING )
 TYPEMAP_IN2(BYTE,          NPY_UINT8 )
 TYPEMAP_IN2(SHORT,         NPY_INT16)
 TYPEMAP_IN2(WORD,          NPY_UINT16 )
@@ -361,7 +361,7 @@ TYPEMAP_IN2(PyObject,      NPY_OBJECT)
 
 /* Define concrete examples of the TYPEMAP_INPLACE1 macro */
 TYPEMAP_INPLACE1(bool,          NPY_BOOL )
-TYPEMAP_INPLACE1(CHAR,          NPY_STRING )
+TYPEMAP_INPLACE1(char,          NPY_STRING )
 TYPEMAP_INPLACE1(BYTE,          NPY_UINT8 )
 TYPEMAP_INPLACE1(SHORT,         NPY_INT16)
 TYPEMAP_INPLACE1(WORD,          NPY_UINT16 )
@@ -389,7 +389,7 @@ TYPEMAP_INPLACE1(PyObject,      NPY_OBJECT)
 
 /* Define concrete examples of the TYPEMAP_INPLACE2 macro */
 TYPEMAP_INPLACE2(bool,          NPY_BOOL )
-TYPEMAP_INPLACE2(CHAR,          NPY_STRING )
+TYPEMAP_INPLACE2(char,          NPY_STRING )
 TYPEMAP_INPLACE2(BYTE,          NPY_UINT8 )
 TYPEMAP_INPLACE2(SHORT,         NPY_INT16)
 TYPEMAP_INPLACE2(WORD,          NPY_UINT16 )
@@ -445,7 +445,7 @@ TYPEMAP_INPLACE2(PyObject,      NPY_OBJECT)
 
 /* Define concrete examples of the TYPEMAP_ARRAYOUT1 macro */
 TYPEMAP_ARRAYOUT1(bool,          NPY_BOOL )
-TYPEMAP_ARRAYOUT1(CHAR,          NPY_STRING )
+TYPEMAP_ARRAYOUT1(char,          NPY_STRING )
 TYPEMAP_ARRAYOUT1(BYTE,          NPY_UINT8 )
 TYPEMAP_ARRAYOUT1(SHORT,         NPY_INT16)
 TYPEMAP_ARRAYOUT1(WORD,          NPY_UINT16 )
@@ -473,7 +473,7 @@ TYPEMAP_ARRAYOUT1(PyObject,      NPY_OBJECT)
 
 /* Define concrete examples of the TYPEMAP_ARRAYOUT2 macro */
 TYPEMAP_ARRAYOUT2(bool,          NPY_BOOL )
-TYPEMAP_ARRAYOUT2(CHAR,          NPY_STRING )
+TYPEMAP_ARRAYOUT2(char,          NPY_STRING )
 TYPEMAP_ARRAYOUT2(BYTE,          NPY_UINT8 )
 TYPEMAP_ARRAYOUT2(SHORT,         NPY_INT16)
 TYPEMAP_ARRAYOUT2(WORD,          NPY_UINT16 )
@@ -535,7 +535,7 @@ TYPEMAP_ARRAYOUT2(PyObject,      NPY_OBJECT)
 %enddef
 
 TYPEMAP_ARGOUT1(bool,          NPY_BOOL )
-TYPEMAP_ARGOUT1(CHAR,          NPY_STRING )
+TYPEMAP_ARGOUT1(char,          NPY_STRING )
 TYPEMAP_ARGOUT1(BYTE,          NPY_UINT8 )
 TYPEMAP_ARGOUT1(SHORT,         NPY_INT16)
 TYPEMAP_ARGOUT1(WORD,          NPY_UINT16 )
@@ -574,7 +574,7 @@ TYPEMAP_ARGOUT1(PyObject,      NPY_OBJECT)
 %enddef
 
 TYPEMAP_ARGOUT2(bool,          NPY_BOOL )
-TYPEMAP_ARGOUT2(CHAR,          NPY_STRING )
+TYPEMAP_ARGOUT2(char,          NPY_STRING )
 TYPEMAP_ARGOUT2(BYTE,          NPY_UINT8 )
 TYPEMAP_ARGOUT2(SHORT,         NPY_INT16)
 TYPEMAP_ARGOUT2(WORD,          NPY_UINT16 )
@@ -589,15 +589,15 @@ TYPEMAP_ARGOUT2(PyObject,      NPY_OBJECT)
 
 #undef TYPEMAP_ARGOUT2
 
-/* input typemap for CStringFeatures<CHAR> */
-%typemap(in) (T_STRING<CHAR>* strings, INT num_strings, INT max_len)
+/* input typemap for CStringFeatures<char> */
+%typemap(in) (T_STRING<char>* strings, INT num_strings, INT max_len)
 {
     PyObject* list=(PyObject*) $input;
     /* Check if is a list */
     if (!list || PyList_Check(list) || PyList_Size(list)==0)
     {
         INT size=PyList_Size(list);
-        T_STRING<CHAR>* strings=new T_STRING<CHAR>[size];
+        T_STRING<char>* strings=new T_STRING<char>[size];
 
         INT max_len=0;
 
@@ -608,14 +608,14 @@ TYPEMAP_ARGOUT2(PyObject,      NPY_OBJECT)
             {
                 INT len=PyString_Size(o);
                 max_len=CMath::max(len,max_len);
-                const CHAR* str=PyString_AsString(o);
+                const char* str=PyString_AsString(o);
 
                 strings[i].length=len;
                 strings[i].string=NULL;
 
                 if (len>0)
                 {
-                    strings[i].string=new CHAR[len];
+                    strings[i].string=new char[len];
                     memcpy(strings[i].string, str, len);
                 }
             }

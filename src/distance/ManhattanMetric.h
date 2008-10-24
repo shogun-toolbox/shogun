@@ -80,7 +80,7 @@ class CManhattanMetric: public CSimpleDistance<DREAL>
 		 *
 		 * @return name Manhattan-Metric
 		 */
-		virtual const CHAR* get_name() { return "Manhattan-Metric"; };
+		virtual const char* get_name() { return "Manhattan-Metric"; }
 
 	protected:
 		/// compute distance for features a and b

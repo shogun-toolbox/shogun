@@ -88,10 +88,7 @@ public:
 	}
 
 	/** return the name of a kernel */
-	virtual const CHAR* get_name()
-	{
-		return("PyramidoverChi2\0");
-	}
+	virtual const char* get_name() { return "PyramidoverChi2"; }
 
 	/** sets standard weights */
 	void setstandardweights();

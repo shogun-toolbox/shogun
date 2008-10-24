@@ -30,9 +30,9 @@ CGUIStructure::~CGUIStructure()
 }
 
 bool CGUIStructure::set_plif_struct(INT N, INT M, DREAL* all_limits,
-				DREAL* all_penalties, INT* ids, T_STRING<CHAR>* names,
+				DREAL* all_penalties, INT* ids, T_STRING<char>* names,
 				DREAL* min_values, DREAL* max_values, bool* all_use_cache,
-				INT* all_use_svm, T_STRING<CHAR>* all_transform)
+				INT* all_use_svm, T_STRING<char>* all_transform)
 {
 	// cleanup 
 	//SG_PRINT("set_plif_struct, N:%i\n",N);
@@ -69,7 +69,7 @@ bool CGUIStructure::set_plif_struct(INT N, INT M, DREAL* all_limits,
 		m_PEN[id]->set_use_svm(all_use_svm[i]);
 		m_PEN[id]->set_plif(M,limits,penalties);
 		//m_PEN[id]->set_do_calc(all_do_calc[i]); //JONAS FIX
-		CHAR* transform_str=get_zero_terminated_string_copy(all_transform[i]);
+		char* transform_str=get_zero_terminated_string_copy(all_transform[i]);
 		if (!m_PEN[id]->set_transform_type(transform_str))
 		{
 			SG_ERROR( "transform type not recognized ('%s')\n", transform_str) ;

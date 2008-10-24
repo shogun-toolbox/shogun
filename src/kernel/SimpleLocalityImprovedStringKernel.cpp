@@ -16,15 +16,15 @@
 
 CSimpleLocalityImprovedStringKernel::CSimpleLocalityImprovedStringKernel(
 	INT size, INT l, INT id, INT od)
-: CStringKernel<CHAR>(size), length(l), inner_degree(id), outer_degree(od),
+: CStringKernel<char>(size), length(l), inner_degree(id), outer_degree(od),
 	pyramid_weights(NULL)
 {
 }
 
 CSimpleLocalityImprovedStringKernel::CSimpleLocalityImprovedStringKernel(
-	CStringFeatures<CHAR>* l, CStringFeatures<CHAR>* r,
+	CStringFeatures<char>* l, CStringFeatures<char>* r,
 	INT len, INT id, INT od)
-: CStringKernel<CHAR>(10), length(len), inner_degree(id), outer_degree(od),
+: CStringKernel<char>(10), length(len), inner_degree(id), outer_degree(od),
 	pyramid_weights(NULL)
 {
 	init(l, r);
@@ -37,11 +37,11 @@ CSimpleLocalityImprovedStringKernel::~CSimpleLocalityImprovedStringKernel()
 
 bool CSimpleLocalityImprovedStringKernel::init(CFeatures* l, CFeatures* r)
 {
-	bool result = CStringKernel<CHAR>::init(l,r);
+	bool result = CStringKernel<char>::init(l,r);
 
 	if (!result)
 		return false;
-	INT num_features = ((CStringFeatures<CHAR>*) l)->get_max_vector_length();
+	INT num_features = ((CStringFeatures<char>*) l)->get_max_vector_length();
 	pyramid_weights = new DREAL[num_features];
 	ASSERT(pyramid_weights);
 	SG_INFO("initializing pyramid weights: size=%ld length=%i\n",
@@ -102,8 +102,8 @@ bool CSimpleLocalityImprovedStringKernel::save_init(FILE* dest)
 	return false;
 }
 
-DREAL CSimpleLocalityImprovedStringKernel::dot_pyr (const CHAR* const x1,
-	     const CHAR* const x2, const INT NOF_NTS, const INT NTWIDTH,
+DREAL CSimpleLocalityImprovedStringKernel::dot_pyr (const char* const x1,
+	     const char* const x2, const INT NOF_NTS, const INT NTWIDTH,
 	     const INT DEGREE1, const INT DEGREE2, DREAL *pyra)
 {
 	const INT PYRAL = 2*NTWIDTH-1; // total window length
@@ -193,8 +193,8 @@ DREAL CSimpleLocalityImprovedStringKernel::compute(INT idx_a, INT idx_b)
 {
 	INT alen, blen;
 
-	CHAR* avec = ((CStringFeatures<CHAR>*) lhs)->get_feature_vector(idx_a, alen);
-	CHAR* bvec = ((CStringFeatures<CHAR>*) rhs)->get_feature_vector(idx_b, blen);
+	char* avec = ((CStringFeatures<char>*) lhs)->get_feature_vector(idx_a, alen);
+	char* bvec = ((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen);
 
 	// can only deal with strings of same length
 	ASSERT(alen==blen);

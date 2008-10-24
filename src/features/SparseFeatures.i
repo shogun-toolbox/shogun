@@ -4,7 +4,7 @@
 
 %include "features/SparseFeatures.h" 
 
-%template(SparseCharFeatures) CSparseFeatures<CHAR>;
+%template(SparseCharFeatures) CSparseFeatures<char>;
 %template(SparseByteFeatures) CSparseFeatures<BYTE>;
 %template(SparseShortFeatures) CSparseFeatures<SHORT>;
 %template(SparseWordFeatures) CSparseFeatures<WORD>;

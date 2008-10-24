@@ -39,7 +39,7 @@ param_spec_t p_map[] = {
  * @param meas Similarity measure to use
  * @param w Kernel width
  */
-CMindyGramKernel::CMindyGramKernel(INT ch, CHAR *meas, DREAL w)
+CMindyGramKernel::CMindyGramKernel(INT ch, char *meas, DREAL w)
 : CKernel(ch)
 {
 	/* Init attributes */
@@ -75,7 +75,7 @@ CMindyGramKernel::CMindyGramKernel(INT ch, CHAR *meas, DREAL w)
 }
 
 CMindyGramKernel::CMindyGramKernel(
-	CFeatures* l, CFeatures* r, CHAR *m, DREAL w)
+	CFeatures* l, CFeatures* r, char *m, DREAL w)
 : CKernel(10), measure(m), width(w)
 {
 	/* Check for similarity coefficients */
@@ -121,7 +121,7 @@ void CMindyGramKernel::set_md5cache(INT c)
 /*
  * Set parameters 
  */
-void CMindyGramKernel::set_param(CHAR *param) 
+void CMindyGramKernel::set_param(char *param) 
 {
     /* Parse and set parameters */
     parse_params(param);
@@ -154,10 +154,10 @@ CMindyGramKernel::~CMindyGramKernel()
 /**
  * Parse provided parameters
  */
-void CMindyGramKernel::parse_params(CHAR *pa)
+void CMindyGramKernel::parse_params(char *pa)
 {
     INT i;
-    CHAR *t, *p;
+    char *t, *p;
 
     if (strlen(pa) == 0)
         return;

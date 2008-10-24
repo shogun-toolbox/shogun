@@ -33,11 +33,11 @@ class CGUIPluginEstimate : public CSGObject
 		bool new_estimator(DREAL pos, DREAL neg);
 		/** train estimator */
 		bool train();
-		bool marginalized_train(CHAR* param);
+		bool marginalized_train(char* param);
 		/** test estimator */
-		bool test(CHAR* filename_out, CHAR* filename_roc);
-		bool load(CHAR* param);
-		bool save(CHAR* param);
+		bool test(char* filename_out, char* filename_roc);
+		bool load(char* param);
+		bool save(char* param);
 
 		inline CPluginEstimate* get_estimator() { return estimator; }
 

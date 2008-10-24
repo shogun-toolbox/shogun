@@ -43,15 +43,15 @@ class CGUIPreProc : public CSGObject
 		bool clean_preproc();
 
 		/** load preproc from file */
-		bool load(CHAR* filename);
+		bool load(char* filename);
 		/** save preproc to file */
-		bool save(CHAR* filename, INT num_preprocs);
+		bool save(char* filename, INT num_preprocs);
 
 		/** attach preprocessor to TRAIN/TEST feature obj.
 		 *  it will also preprocess train/test data
 		 *  when a feature matrix is available
 		 */
-		bool attach_preproc(CHAR* target, bool do_force=false);
+		bool attach_preproc(char* target, bool do_force=false);
 
 	protected:
 		bool preprocess_features(CFeatures* trainfeat, CFeatures* testfeat, bool force);

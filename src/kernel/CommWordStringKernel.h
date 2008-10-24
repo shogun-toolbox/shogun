@@ -100,7 +100,7 @@ class CCommWordStringKernel : public CStringKernel<WORD>
 		 *
 		 * @return name CommWordString
 		 */
-		virtual const CHAR* get_name() { return "CommWordString"; }
+		virtual const char* get_name() { return "CommWordString"; }
 
 		/** initialize dictionary
 		 *
@@ -188,7 +188,7 @@ class CCommWordStringKernel : public CStringKernel<WORD>
 		 * @param alphas alphas
 		 * @return computed consensus
 		 */
-		CHAR* compute_consensus(INT &num_feat, INT num_suppvec,
+		char* compute_consensus(INT &num_feat, INT num_suppvec,
 			INT* IDX, DREAL* alphas);
 
 		/** set_use_dict_diagonal_optimization

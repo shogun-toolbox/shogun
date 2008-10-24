@@ -15,13 +15,13 @@
 #include "features/StringFeatures.h"
 
 CLinearStringKernel::CLinearStringKernel()
-: CStringKernel<CHAR>(0), normal(NULL)
+: CStringKernel<char>(0), normal(NULL)
 {
 }
 
 CLinearStringKernel::CLinearStringKernel(
-	CStringFeatures<CHAR>* l, CStringFeatures<CHAR>* r)
-: CStringKernel<CHAR>(0), normal(NULL)
+	CStringFeatures<char>* l, CStringFeatures<char>* r)
+: CStringKernel<char>(0), normal(NULL)
 {
 	init(l, r);
 }
@@ -33,7 +33,7 @@ CLinearStringKernel::~CLinearStringKernel()
 
 bool CLinearStringKernel::init(CFeatures *l, CFeatures *r)
 {
-	CStringKernel<CHAR>::init(l, r);
+	CStringKernel<char>::init(l, r);
 	return init_normalizer();
 }
 
@@ -62,7 +62,7 @@ void CLinearStringKernel::clear_normal()
 void CLinearStringKernel::add_to_normal(INT idx, DREAL weight)
 {
 	INT vlen;
-	CHAR* vec = ((CStringFeatures<CHAR>*) lhs)->get_feature_vector(idx, vlen);
+	char* vec = ((CStringFeatures<char>*) lhs)->get_feature_vector(idx, vlen);
 
 	for (INT i=0; i<vlen; i++)
 		normal[i] += weight*normalizer->normalize_lhs(vec[i], idx);
@@ -72,8 +72,8 @@ DREAL CLinearStringKernel::compute(INT idx_a, INT idx_b)
 {
 	INT alen, blen;
 
-	CHAR *avec = ((CStringFeatures<CHAR>*) lhs)->get_feature_vector(idx_a, alen);
-	CHAR *bvec = ((CStringFeatures<CHAR>*) rhs)->get_feature_vector(idx_b, blen);
+	char *avec = ((CStringFeatures<char>*) lhs)->get_feature_vector(idx_a, alen);
+	char *bvec = ((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen);
 
 	ASSERT(alen==blen);
 	return CMath::dot(avec, bvec, alen);
@@ -84,7 +84,7 @@ bool CLinearStringKernel::init_optimization(INT num_suppvec, INT *sv_idx,
 {
 	INT i, alen;
 
-	int num_feat = ((CStringFeatures<CHAR>*) lhs)->get_max_vector_length();
+	int num_feat = ((CStringFeatures<char>*) lhs)->get_max_vector_length();
 	ASSERT(num_feat);
 
 	normal = new DREAL[num_feat];
@@ -93,7 +93,7 @@ bool CLinearStringKernel::init_optimization(INT num_suppvec, INT *sv_idx,
 
 	for (i = 0; i<num_suppvec; i++)
 	{
-		CHAR *avec = ((CStringFeatures<CHAR>*) lhs)->get_feature_vector(sv_idx[i], alen);
+		char *avec = ((CStringFeatures<char>*) lhs)->get_feature_vector(sv_idx[i], alen);
 		ASSERT(avec);
 
 		for (INT j = 0; j<num_feat; j++)
@@ -114,7 +114,7 @@ bool CLinearStringKernel::delete_optimization()
 DREAL CLinearStringKernel::compute_optimized(INT idx_b)
 {
 	INT blen;
-	CHAR* bvec = ((CStringFeatures<CHAR>*) rhs)->get_feature_vector(idx_b, blen);
+	char* bvec = ((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen);
 
 	return normalizer->normalize_rhs(CMath::dot(normal, bvec, blen), idx_b);
 }

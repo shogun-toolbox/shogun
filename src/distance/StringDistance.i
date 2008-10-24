@@ -6,6 +6,6 @@
 
 %template(StringRealDistance) CStringDistance<DREAL>;
 %template(StringWordDistance) CStringDistance<WORD>;
-%template(StringCharDistance) CStringDistance<CHAR>;
+%template(StringCharDistance) CStringDistance<char>;
 %template(StringIntDistance) CStringDistance<INT>;
 %template(StringUlongDistance) CStringDistance<ULONG>;

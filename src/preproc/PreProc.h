@@ -53,7 +53,7 @@ public:
 	 * @param name preprocessor's name
 	 * @param id preprocessor's id
 	 */
-	CPreProc(const CHAR* name, const CHAR* id);
+	CPreProc(const char* name, const char* id);
 	virtual ~CPreProc();
 
 	/// initialize preprocessor from features
@@ -78,15 +78,15 @@ public:
 	virtual EFeatureClass get_feature_class()=0;
 
 	/// return the name of the preprocessor
-	const CHAR * get_name() const { return preproc_name; }
+	const char * get_name() const { return preproc_name; }
 	
 	/// return a FOUR letter id of the preprocessor
-	const CHAR * get_id() const { return preproc_id; }
+	const char * get_id() const { return preproc_id; }
 
  protected:
  	/** preprocessor name */
-	const CHAR* preproc_name;
+	const char* preproc_name;
 	/** preprocessor id */
-	const CHAR* preproc_id;
+	const char* preproc_id;
 };
 #endif

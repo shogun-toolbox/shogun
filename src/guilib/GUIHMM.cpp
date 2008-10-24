@@ -120,7 +120,7 @@ bool CGUIHMM::viterbi_train_defined()
 	return working->baum_welch_viterbi_train(VIT_DEFINED);
 }
 
-bool CGUIHMM::linear_train(CHAR align)
+bool CGUIHMM::linear_train(char align)
 {
 	if (!working)
 		SG_ERROR("Create HMM first.\n");
@@ -149,7 +149,7 @@ bool CGUIHMM::linear_train(CHAR align)
 }
 
 bool CGUIHMM::one_class_test(
-	CHAR* filename_out, CHAR* filename_roc, bool is_linear)
+	char* filename_out, char* filename_roc, bool is_linear)
 {
 	bool result=false;
 	FILE* file_out=stdout;
@@ -209,11 +209,11 @@ bool CGUIHMM::one_class_test(
 	return result;
 }
 
-bool CGUIHMM::hmm_classify(CHAR* param)
+bool CGUIHMM::hmm_classify(char* param)
 {
 	bool result=false;
-	CHAR outputname[1024];
-	CHAR rocfname[1024];
+	char outputname[1024];
+	char rocfname[1024];
 	FILE* outputfile=stdout;
 	FILE* rocfile=NULL;
 	INT numargs=-1;
@@ -297,7 +297,7 @@ bool CGUIHMM::hmm_classify(CHAR* param)
 }
 
 bool CGUIHMM::hmm_test(
-	CHAR* filename_out, CHAR* filename_roc,
+	char* filename_out, char* filename_roc,
 	bool is_pos_linear, bool is_neg_linear)
 {
 	bool result=false;
@@ -473,7 +473,7 @@ DREAL CGUIHMM::one_class_classify_example(INT idx)
 	return result;
 }
 
-bool CGUIHMM::append_model(CHAR* filename, INT base1, INT base2)
+bool CGUIHMM::append_model(char* filename, INT base1, INT base2)
 {
 	if (!working)
 		SG_ERROR("Create HMM first.\n");
@@ -556,7 +556,7 @@ bool CGUIHMM::convergence_criteria(INT num_iterations, DREAL epsilon)
 	return true;
 }
 
-bool CGUIHMM::set_hmm_as(CHAR* target)
+bool CGUIHMM::set_hmm_as(char* target)
 {
 	if (!working)
 		SG_ERROR("Create HMM first!\n");
@@ -585,7 +585,7 @@ bool CGUIHMM::set_hmm_as(CHAR* target)
 	return true;
 }
 
-bool CGUIHMM::load(CHAR* filename)
+bool CGUIHMM::load(char* filename)
 {
 	bool result=false;
 
@@ -608,7 +608,7 @@ bool CGUIHMM::load(CHAR* filename)
 	return result;
 }
 
-bool CGUIHMM::save(CHAR* filename, bool is_binary)
+bool CGUIHMM::save(char* filename, bool is_binary)
 {
 	bool result=false;
 
@@ -635,7 +635,7 @@ bool CGUIHMM::save(CHAR* filename, bool is_binary)
 	return result;
 }
 
-bool CGUIHMM::load_definitions(CHAR* filename, bool do_init)
+bool CGUIHMM::load_definitions(char* filename, bool do_init)
 {
 	if (!working)
 		SG_ERROR("Create HMM first.\n");
@@ -657,7 +657,7 @@ bool CGUIHMM::load_definitions(CHAR* filename, bool do_init)
 	return result;
 }
 
-bool CGUIHMM::save_likelihood(CHAR* filename, bool is_binary)
+bool CGUIHMM::save_likelihood(char* filename, bool is_binary)
 {
 	bool result=false;
 
@@ -686,7 +686,7 @@ bool CGUIHMM::save_likelihood(CHAR* filename, bool is_binary)
 	return result;
 }
 
-bool CGUIHMM::save_path(CHAR* filename, bool is_binary)
+bool CGUIHMM::save_path(char* filename, bool is_binary)
 {
 	bool result=false;
 	if (!working)

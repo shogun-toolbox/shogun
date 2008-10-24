@@ -48,7 +48,7 @@ class CShortRealFeatures: public CSimpleFeatures<SHORTREAL>
 		 *
 		 * @param fname filename to load features from
 		 */
-		CShortRealFeatures(CHAR* fname) : CSimpleFeatures<SHORTREAL>(fname)
+		CShortRealFeatures(char* fname) : CSimpleFeatures<SHORTREAL>(fname)
 		{
 			load(fname);
 		}
@@ -82,13 +82,13 @@ class CShortRealFeatures: public CSimpleFeatures<SHORTREAL>
 		 * @param fname filename to load from
 		 * @return if loading was successful
 		 */
-		virtual bool load(CHAR* fname);
+		virtual bool load(char* fname);
 
 		/** save features to file
 		 *
 		 * @param fname filename to save to
 		 * @return if saving was successful
 		 */
-		virtual bool save(CHAR* fname);
+		virtual bool save(char* fname);
 };
 #endif

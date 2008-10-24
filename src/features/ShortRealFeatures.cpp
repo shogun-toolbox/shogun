@@ -11,7 +11,7 @@
 #include "features/ShortRealFeatures.h"
 #include "lib/File.h"
 
-bool CShortRealFeatures::load(CHAR* fname)
+bool CShortRealFeatures::load(char* fname)
 {
 	bool status=false;
 	num_vectors=1;
@@ -32,7 +32,7 @@ bool CShortRealFeatures::load(CHAR* fname)
 	return status;
 }
 
-bool CShortRealFeatures::save(CHAR* fname)
+bool CShortRealFeatures::save(char* fname)
 {
 	INT len;
 	bool free;

@@ -93,7 +93,7 @@ const int CLocalAlignmentStringKernel::blosum[] = {
 int CLocalAlignmentStringKernel::logsum_lookup[LOGSUM_TBL];
 
 CLocalAlignmentStringKernel::CLocalAlignmentStringKernel(INT size)
-: CStringKernel<CHAR>(size), initialized(false)
+: CStringKernel<char>(size), initialized(false)
 {
 	scaled_blosum=new int[sizeof(blosum)];
 	init_logsum();
@@ -101,8 +101,8 @@ CLocalAlignmentStringKernel::CLocalAlignmentStringKernel(INT size)
 }
 
 CLocalAlignmentStringKernel::CLocalAlignmentStringKernel(
-	CStringFeatures<CHAR>* l, CStringFeatures<CHAR>* r)
-: CStringKernel<CHAR>(10), initialized(false)
+	CStringFeatures<char>* l, CStringFeatures<char>* r)
+: CStringKernel<char>(10), initialized(false)
 {
 	scaled_blosum=new int[sizeof(blosum)];
 	init_logsum();
@@ -117,7 +117,7 @@ CLocalAlignmentStringKernel::~CLocalAlignmentStringKernel()
 
 bool CLocalAlignmentStringKernel::init(CFeatures* l, CFeatures* r)
 {
-	CStringKernel<CHAR>::init(l, r);
+	CStringKernel<char>::init(l, r);
 	initialized = true;
 	return init_normalizer();
 }
@@ -358,8 +358,8 @@ DREAL CLocalAlignmentStringKernel::compute(INT idx_x, INT idx_y)
   if (isAA == NULL)
     initialize();
 
-  CHAR* x=((CStringFeatures<CHAR>*) lhs)->get_feature_vector(idx_x, lx);
-  CHAR* y=((CStringFeatures<CHAR>*) rhs)->get_feature_vector(idx_y, ly);
+  char* x=((CStringFeatures<char>*) lhs)->get_feature_vector(idx_x, lx);
+  char* y=((CStringFeatures<char>*) rhs)->get_feature_vector(idx_y, ly);
   ASSERT(x && y);
 
   if ((lx<1) || (ly<1))

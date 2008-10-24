@@ -29,7 +29,7 @@ template <class T> class CSimpleFile : public CSGObject
 		 * @param fname filename
 		 * @param f file descriptor
 		 */
-		CSimpleFile(CHAR* fname, FILE* f)
+		CSimpleFile(char* fname, FILE* f)
 		: CSGObject()
 		{
 			file=f;
@@ -145,8 +145,8 @@ template <class T> class CSimpleFile : public CSGObject
 		/** status of file operations */
 		bool status;
 		/** task */
-		CHAR task;
+		char task;
 		/** filename */
-		CHAR* filename;
+		char* filename;
 };
 #endif

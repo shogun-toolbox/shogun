@@ -39,7 +39,7 @@ extern "C" {
   in a larger system
   ***************************************************************/
 
-void nrerror(CHAR error_text[])
+void nrerror(char error_text[])
 {
 	SG_SDEBUG("terminating optimizer - %s\n", error_text);
  // exit(1); 
@@ -91,7 +91,7 @@ bool choldc(double* a, int n, double* p)
 #else
 bool choldc(double a[], int n, double p[])
 {
-	void nrerror(CHAR error_text[]);
+	void nrerror(char error_text[]);
 	int i, j, k;
 	double sum;
 

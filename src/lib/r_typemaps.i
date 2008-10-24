@@ -179,7 +179,7 @@ TYPEMAP_ARGOUT2(REALSXP, REAL, DREAL, double, "Double Precision")
 TYPEMAP_ARGOUT2(INTSXP, INTEGER, WORD, int, "Word")
 #undef TYPEMAP_ARGOUT2
 
-/* input typemap for CStringFeatures<CHAR> etc */
+/* input typemap for CStringFeatures<char> etc */
 %define GET_STRINGLIST(r_type, sg_type, if_type, error_string)
 %typemap(in) (T_STRING<sg_type>* strings, INT num_strings, INT max_len)
 {
@@ -225,5 +225,5 @@ TYPEMAP_ARGOUT2(INTSXP, INTEGER, WORD, int, "Word")
 }
 %enddef
 
-GET_STRINGLIST(STRSXP, CHAR, CHAR, "Char")
+GET_STRINGLIST(STRSXP, char, CHAR, "Char")
 #undef GET_STRINGLIST

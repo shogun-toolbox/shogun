@@ -36,7 +36,7 @@ CByteFeatures::CByteFeatures(EAlphabet a, BYTE* fm, INT num_feat, INT num_vec)
 	alphabet=new CAlphabet(a);
 }
 
-CByteFeatures::CByteFeatures(EAlphabet a, CHAR* fname)
+CByteFeatures::CByteFeatures(EAlphabet a, char* fname)
 : CSimpleFeatures<BYTE>(fname)
 {
 	alphabet=new CAlphabet(a);
@@ -49,7 +49,7 @@ CByteFeatures::~CByteFeatures()
 	alphabet=NULL;
 }
 
-bool CByteFeatures::load(CHAR* fname)
+bool CByteFeatures::load(char* fname)
 {
 	SG_INFO( "loading...\n");
     LONG length=0;
@@ -100,7 +100,7 @@ bool CByteFeatures::load(CHAR* fname)
 	return false;
 }
 
-bool CByteFeatures::save(CHAR* fname)
+bool CByteFeatures::save(char* fname)
 {
 	return false;
 }

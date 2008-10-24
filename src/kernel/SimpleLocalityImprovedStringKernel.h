@@ -24,7 +24,7 @@
  * where
  * \f$ I_i({\bf x},{\bf x'})=1\f$ if \f$x_i=x'_i\f$ and 0 otherwise.
  */
-class CSimpleLocalityImprovedStringKernel: public CStringKernel<CHAR>
+class CSimpleLocalityImprovedStringKernel: public CStringKernel<char>
 {
 	public:
 		/** constructor
@@ -46,7 +46,7 @@ class CSimpleLocalityImprovedStringKernel: public CStringKernel<CHAR>
 		 * @param outer_degree outer degree
 		 */
 		CSimpleLocalityImprovedStringKernel(
-			CStringFeatures<CHAR>* l, CStringFeatures<CHAR>* r,
+			CStringFeatures<char>* l, CStringFeatures<char>* r,
 			INT length, INT inner_degree, INT outer_degree);
 
 		virtual ~CSimpleLocalityImprovedStringKernel();
@@ -89,7 +89,7 @@ class CSimpleLocalityImprovedStringKernel: public CStringKernel<CHAR>
 		 *
 		 * @return name SimpleLocalityImproved
 		 */
-		virtual const CHAR *get_name()
+		virtual const char *get_name()
 		{
 			return "SimpleLocalityImproved";
 		}
@@ -106,7 +106,7 @@ class CSimpleLocalityImprovedStringKernel: public CStringKernel<CHAR>
 		 * @param pyra pyramid
 		 * @return dot product of pyramid (?)
 		 */
-		DREAL dot_pyr (const CHAR* const x1, const CHAR* const x2,
+		DREAL dot_pyr (const char* const x1, const char* const x2,
 				const INT NOF_NTS, const INT NTWIDTH,
 				const INT DEGREE1, const INT DEGREE2, DREAL *pyra);
 

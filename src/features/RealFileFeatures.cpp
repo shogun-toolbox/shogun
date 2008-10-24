@@ -15,7 +15,7 @@
 #include <stdio.h>
 #include <string.h>
 
-CRealFileFeatures::CRealFileFeatures(INT size, CHAR* fname) : CRealFeatures(size)
+CRealFileFeatures::CRealFileFeatures(INT size, char* fname) : CRealFeatures(size)
 {
 	working_file=fopen(fname, "r");
 	working_filename=strdup(fname);

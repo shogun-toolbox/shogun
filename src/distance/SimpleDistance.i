@@ -8,6 +8,6 @@
 
 %template(SimpleRealDistance) CSimpleDistance<DREAL>;
 %template(SimpleWordDistance) CSimpleDistance<WORD>;
-%template(SimpleCharDistance) CSimpleDistance<CHAR>;
+%template(SimpleCharDistance) CSimpleDistance<char>;
 %template(SimpleIntDistance) CSimpleDistance<INT>;
 

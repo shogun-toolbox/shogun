@@ -48,7 +48,7 @@ public:
 	 *               will be checked to contain the specified fourcc
 	 *               (e.g. 'RFEA')
 	 */
-	CFile(CHAR* fname, CHAR rw, EFeatureType type, CHAR fourcc[4]=NULL);
+	CFile(char* fname, char rw, EFeatureType type, char fourcc[4]=NULL);
 
 	~CFile();
 
@@ -98,7 +98,7 @@ public:
 	 * @param num number of data elements
 	 * @return loaded data
 	 */
-	CHAR*  load_char_data(CHAR* target, LONG& num);
+	char*  load_char_data(char* target, LONG& num);
 
 	/** load byte data
 	 *
@@ -154,7 +154,7 @@ public:
 	 * @param num number of data elements
 	 * @return whether operation was successful
 	 */
-	bool save_char_data(CHAR* src, LONG num);
+	bool save_char_data(char* src, LONG num);
 
 	/** save byte data
 	 *
@@ -246,7 +246,7 @@ public:
 	 * @param max_string_len length of longest string
 	 * @return if reading was successful
 	 */
-	bool read_char_valued_strings(T_STRING<CHAR>*& strings, INT& num_str, INT& max_string_len);
+	bool read_char_valued_strings(T_STRING<char>*& strings, INT& num_str, INT& max_string_len);
 
 	/** write char string features, simple ascii format
 	 *
@@ -254,7 +254,7 @@ public:
 	 * @param num_str number of strings
 	 * @return if writing was successful
 	 */
-	bool write_char_valued_strings(const T_STRING<CHAR>* strings, INT num_str);
+	bool write_char_valued_strings(const T_STRING<char>* strings, INT num_str);
 
 protected:
 	/** read header
@@ -270,7 +270,7 @@ protected:
 
 private:
 	/** helper function to read_*valued_* */
-	template <class T> void append_item(CDynamicArray<T>* items, CHAR* ptr_data, CHAR* ptr_item);
+	template <class T> void append_item(CDynamicArray<T>* items, char* ptr_data, char* ptr_item);
 
 protected:
 	/** file object */
@@ -278,14 +278,14 @@ protected:
 	/** status */
 	bool status;
 	/** task */
-	CHAR task;
+	char task;
 	/** name of the handled file */
-	CHAR* filename;
+	char* filename;
 	/** expected feature type */
 	EFeatureType expected_type;
 	/** number of headers */
 	INT num_header;
 	/** fourcc */
-	CHAR fourcc[4];
+	char fourcc[4];
 };
 #endif

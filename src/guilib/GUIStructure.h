@@ -32,9 +32,9 @@ class CGUIStructure : public CSGObject
 		~CGUIStructure();
 
 		bool set_plif_struct(INT N, INT M, DREAL* all_limits,
-				DREAL* all_penalties, INT* ids, T_STRING<CHAR>* names,
+				DREAL* all_penalties, INT* ids, T_STRING<char>* names,
 				DREAL* min_values, DREAL* max_values, bool* all_use_cache,
-				INT* all_use_svm, T_STRING<CHAR>* all_transform);
+				INT* all_use_svm, T_STRING<char>* all_transform);
 
 		bool compute_plif_matrix(DREAL* penalties_array, INT* Dim, INT numDims);
 

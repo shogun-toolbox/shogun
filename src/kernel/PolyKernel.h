@@ -84,7 +84,7 @@ class CPolyKernel: public CSimpleKernel<DREAL>
 		 *
 		 * @return name Poly
 		 */
-		virtual const CHAR* get_name() { return "Poly"; };
+		virtual const char* get_name() { return "Poly"; };
 
 	protected:
 		/** compute kernel function for features a and b

@@ -95,18 +95,18 @@ bool CRInterface::get_bool()
 }
 
 
-CHAR* CRInterface::get_string(INT& len)
+char* CRInterface::get_string(INT& len)
 {
 	SEXP s=get_arg_increment();
 	if (s == R_NilValue || TYPEOF(CAR(s)) != STRSXP || length(CAR(s))!=1)
 		SG_ERROR("Expected String as argument %d\n", m_rhs_counter);
 
 	SEXPREC* rstr= STRING_ELT(CAR(s),0);
-	const CHAR* str= CHAR(rstr);
+	const char* str= CHAR(rstr);
 	len=LENGTH(rstr);
 	ASSERT(len>0);
-	CHAR* res=new CHAR[len+1];
-	memcpy(res, str, len*sizeof(CHAR));
+	char* res=new char[len+1];
+	memcpy(res, str, len*sizeof(char));
 	res[len]='\0';
 	return res;
 }
@@ -117,7 +117,7 @@ void CRInterface::get_byte_vector(BYTE*& vec, INT& len)
 	len=0;
 }
 
-void CRInterface::get_char_vector(CHAR*& vec, INT& len)
+void CRInterface::get_char_vector(char*& vec, INT& len)
 {
 	vec=NULL;
 	len=0;
@@ -177,7 +177,7 @@ void CRInterface::get_byte_matrix(BYTE*& matrix, INT& num_feat, INT& num_vec)
 {
 }
 
-void CRInterface::get_char_matrix(CHAR*& matrix, INT& num_feat, INT& num_vec)
+void CRInterface::get_char_matrix(char*& matrix, INT& num_feat, INT& num_vec)
 {
 }
 
@@ -219,7 +219,7 @@ void CRInterface::get_byte_ndarray(BYTE*& array, INT*& dims, INT& num_dims)
 {
 }
 
-void CRInterface::get_char_ndarray(CHAR*& array, INT*& dims, INT& num_dims)
+void CRInterface::get_char_ndarray(char*& array, INT*& dims, INT& num_dims)
 {
 }
 
@@ -251,7 +251,7 @@ void CRInterface::get_byte_string_list(T_STRING<BYTE>*& strings, INT& num_str, I
 {
 }
 
-void CRInterface::get_char_string_list(T_STRING<CHAR>*& strings, INT& num_str, INT& max_string_len)
+void CRInterface::get_char_string_list(T_STRING<char>*& strings, INT& num_str, INT& max_string_len)
 {
 	SEXP strs=get_arg_increment();
 
@@ -261,19 +261,19 @@ void CRInterface::get_char_string_list(T_STRING<CHAR>*& strings, INT& num_str, I
 
 	max_string_len=0;
 	num_str=length(strs);
-	strings=new T_STRING<CHAR>[num_str];
+	strings=new T_STRING<char>[num_str];
 	ASSERT(strings);
 
 	for (int i=0; i<num_str; i++)
 	{
 		SEXPREC* s= STRING_ELT(strs,i);
-		CHAR* c= (CHAR*) CHAR(s);
+		char* c= (char*) CHAR(s);
 		int len=LENGTH(s);
 
 		if (len && c)
 		{
-			CHAR* dst=new CHAR[len+1];
-			strings[i].string=(CHAR*) memcpy(dst, c, len*sizeof(CHAR));
+			char* dst=new char[len+1];
+			strings[i].string=(char*) memcpy(dst, c, len*sizeof(char));
 			strings[i].string[len]='\0';
 			strings[i].length=len;
 			max_string_len=CMath::max(max_string_len, len);
@@ -345,7 +345,7 @@ void CRInterface::set_bool(bool scalar)
 }
 
 
-void CRInterface::set_char_vector(const CHAR* vec, INT len)
+void CRInterface::set_char_vector(const char* vec, INT len)
 {
 }
 
@@ -371,7 +371,7 @@ SET_VECTOR(set_real_vector, REALSXP, REAL, DREAL, double, "Double Precision")
 SET_VECTOR(set_word_vector, INTSXP, INTEGER, WORD, int, "Word")
 #undef SET_VECTOR
 
-void CRInterface::set_char_matrix(const CHAR* matrix, INT num_feat, INT num_vec)
+void CRInterface::set_char_matrix(const char* matrix, INT num_feat, INT num_vec)
 {
 }
 
@@ -408,7 +408,7 @@ void CRInterface::set_byte_string_list(const T_STRING<BYTE>* strings, INT num_st
 }
  //this function will fail for strings containing 0, unclear how to do 'raw'
  //strings in R
-void CRInterface::set_char_string_list(const T_STRING<CHAR>* strings, INT num_str)
+void CRInterface::set_char_string_list(const T_STRING<char>* strings, INT num_str)
 {
 	if (!strings)
 		SG_ERROR("Given strings are invalid.\n");

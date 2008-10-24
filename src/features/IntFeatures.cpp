@@ -12,7 +12,7 @@
 #include "features/IntFeatures.h"
 #include "lib/File.h"
 
-bool CIntFeatures::load(CHAR* fname)
+bool CIntFeatures::load(char* fname)
 {
 	bool status=false;
 	num_vectors=1;
@@ -33,7 +33,7 @@ bool CIntFeatures::load(CHAR* fname)
 	return status;
 }
 
-bool CIntFeatures::save(CHAR* fname)
+bool CIntFeatures::save(char* fname)
 {
 	INT len;
 	bool free;

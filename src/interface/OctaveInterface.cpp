@@ -131,18 +131,18 @@ bool COctaveInterface::get_bool()
 	return b.bool_value();
 }
 
-CHAR* COctaveInterface::get_string(INT& len)
+char* COctaveInterface::get_string(INT& len)
 {
 	const octave_value s=get_arg_increment();
 	if (!s.is_string())
 		SG_ERROR("Expected String as argument %d\n", m_rhs_counter);
 
 	std::string std_str=s.string_value();
-	const CHAR* str= std_str.c_str();
+	const char* str= std_str.c_str();
 	len=std_str.length();
 	ASSERT(str && len>0);
 
-	CHAR* cstr=new CHAR[len+1];
+	char* cstr=new char[len+1];
 	memcpy(cstr, str, len+1);
 	cstr[len]='\0';
 
@@ -164,7 +164,7 @@ void COctaveInterface::function_name(sg_type*& vec, INT& len)						\
 			vec[i]= (sg_type) m(i);													\
 }
 GET_VECTOR(get_byte_vector, is_uint8_type, uint8NDArray, uint8_array_value, BYTE, BYTE, "Byte")
-GET_VECTOR(get_char_vector, is_char_matrix, charMatrix, char_matrix_value, CHAR, CHAR, "Char")
+GET_VECTOR(get_char_vector, is_char_matrix, charMatrix, char_matrix_value, char, char, "Char")
 GET_VECTOR(get_int_vector, is_int32_type, int32NDArray, uint8_array_value, INT, INT, "Integer")
 GET_VECTOR(get_short_vector, is_int16_type, int16NDArray, uint8_array_value, SHORT, SHORT, "Short")
 GET_VECTOR(get_shortreal_vector, is_single_type, Matrix, matrix_value, SHORTREAL, SHORTREAL, "Single Precision")
@@ -190,7 +190,7 @@ void COctaveInterface::function_name(sg_type*& matrix, INT& num_feat, INT& num_v
 			matrix[i*num_feat+j]= (sg_type) m(j,i);									\
 }
 GET_MATRIX(get_byte_matrix, is_uint8_type, uint8NDArray, uint8_array_value, BYTE, BYTE, "Byte")
-GET_MATRIX(get_char_matrix, is_char_matrix, charMatrix, char_matrix_value, CHAR, CHAR, "Char")
+GET_MATRIX(get_char_matrix, is_char_matrix, charMatrix, char_matrix_value, char, char, "Char")
 GET_MATRIX(get_int_matrix, is_int32_type, int32NDArray, uint8_array_value, INT, INT, "Integer")
 GET_MATRIX(get_short_matrix, is_int16_type, int16NDArray, uint8_array_value, SHORT, SHORT, "Short")
 GET_MATRIX(get_shortreal_matrix, is_single_type, Matrix, matrix_value, SHORTREAL, SHORTREAL, "Single Precision")
@@ -214,7 +214,7 @@ void COctaveInterface::function_name(sg_type*& array, INT*& dims, INT& num_dims)
 		array[i]= (sg_type) m(i);													\
 }
 GET_NDARRAY(get_byte_ndarray, is_uint8_type, uint8NDArray, uint8_array_value, BYTE, BYTE, "Byte")
-GET_NDARRAY(get_char_ndarray, is_char_matrix, charMatrix, char_matrix_value, CHAR, CHAR, "Char")
+GET_NDARRAY(get_char_ndarray, is_char_matrix, charMatrix, char_matrix_value, char, char, "Char")
 GET_NDARRAY(get_int_ndarray, is_int32_type, int32NDArray, uint8_array_value, INT, INT, "Integer")
 GET_NDARRAY(get_short_ndarray, is_int16_type, int16NDArray, uint8_array_value, SHORT, SHORT, "Short")
 GET_NDARRAY(get_shortreal_ndarray, is_single_type, Matrix, matrix_value, SHORTREAL, SHORTREAL, "Single Precision")
@@ -335,7 +335,7 @@ void COctaveInterface::function_name(T_STRING<sg_type>*& strings, INT& num_str, 
 }
 /* ignore the g++ warning here */
 GET_STRINGLIST(get_byte_string_list, is_matrix_type, is_uint8_type, uint8NDArray, uint8_array_value, BYTE, BYTE, "Byte")
-GET_STRINGLIST(get_char_string_list, is_char_matrix, is_char_matrix, charMatrix, char_matrix_value, CHAR, CHAR, "Char")
+GET_STRINGLIST(get_char_string_list, is_char_matrix, is_char_matrix, charMatrix, char_matrix_value, char, char, "Char")
 GET_STRINGLIST(get_int_string_list, is_matrix_type, is_int32_type, int32NDArray, int32_array_value, INT, INT, "Integer")
 GET_STRINGLIST(get_short_string_list, is_matrix_type, is_int16_type, int16NDArray, int16_array_value, SHORT, SHORT, "Short")
 GET_STRINGLIST(get_word_string_list, is_matrix_type, is_uint16_type, uint16NDArray, uint16_array_value, WORD, WORD, "Word")
@@ -374,7 +374,7 @@ void COctaveInterface::function_name(const sg_type* vec, INT len)				\
 	set_arg_increment(mat);														\
 }
 SET_VECTOR(set_byte_vector, uint8NDArray, BYTE, BYTE, "Byte")
-SET_VECTOR(set_char_vector, charMatrix, CHAR, CHAR, "Char")
+SET_VECTOR(set_char_vector, charMatrix, char, char, "Char")
 SET_VECTOR(set_int_vector, int32NDArray, INT, INT, "Integer")
 SET_VECTOR(set_short_vector, int16NDArray, SHORT, SHORT, "Short")
 SET_VECTOR(set_shortreal_vector, Matrix, SHORTREAL, SHORTREAL, "Single Precision")
@@ -396,7 +396,7 @@ void COctaveInterface::function_name(const sg_type* matrix, INT num_feat, INT nu
 	set_arg_increment(mat);														\
 }
 SET_MATRIX(set_byte_matrix, uint8NDArray, BYTE, BYTE, "Byte")
-SET_MATRIX(set_char_matrix, charMatrix, CHAR, CHAR, "Char")
+SET_MATRIX(set_char_matrix, charMatrix, char, char, "Char")
 SET_MATRIX(set_int_matrix, int32NDArray, INT, INT, "Integer")
 SET_MATRIX(set_short_matrix, int16NDArray, SHORT, SHORT, "Short")
 SET_MATRIX(set_shortreal_matrix, Matrix, SHORTREAL, SHORTREAL, "Single Precision")
@@ -453,7 +453,7 @@ void COctaveInterface::function_name(const T_STRING<sg_type>* strings, INT num_s
 	set_arg_increment(c);															\
 }
 SET_STRINGLIST(set_byte_string_list, int8NDArray, BYTE, BYTE, "Byte")
-SET_STRINGLIST(set_char_string_list, charNDArray, CHAR, CHAR, "Char")
+SET_STRINGLIST(set_char_string_list, charNDArray, char, char, "Char")
 SET_STRINGLIST(set_int_string_list, int32NDArray, INT, INT, "Integer")
 SET_STRINGLIST(set_short_string_list, int16NDArray, SHORT, SHORT, "Short")
 SET_STRINGLIST(set_word_string_list, uint16NDArray, WORD, WORD, "Word")

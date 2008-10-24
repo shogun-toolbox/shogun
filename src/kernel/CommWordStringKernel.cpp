@@ -501,7 +501,7 @@ DREAL* CCommWordStringKernel::compute_scoring(INT max_degree, INT& num_feat,
 }
 
 
-CHAR* CCommWordStringKernel::compute_consensus(INT &result_len, INT num_suppvec, INT* IDX, DREAL* alphas)
+char* CCommWordStringKernel::compute_consensus(INT &result_len, INT num_suppvec, INT* IDX, DREAL* alphas)
 {
 
 	ASSERT(lhs);
@@ -523,7 +523,7 @@ CHAR* CCommWordStringKernel::compute_consensus(INT &result_len, INT num_suppvec,
 	//init
 	init_optimization(num_suppvec, IDX, alphas);
 
-	CHAR* result=new CHAR[result_len];
+	char* result=new char[result_len];
 	INT* bt=new INT[total_len];
 	DREAL* score=new DREAL[total_len];
 

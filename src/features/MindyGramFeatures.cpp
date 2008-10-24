@@ -118,14 +118,14 @@ void CMindyGramFeatures::trim_max(double max)
  * @param fname File name
  * @return true on success, false otherwise
  */
-bool CMindyGramFeatures::load(CHAR * fname)
+bool CMindyGramFeatures::load(char * fname)
 {
 	SG_INFO( "Loading strings from %s\n", fname);
 	LONG len = 0;
-	CHAR *s, *t;
+	char *s, *t;
 
 	CFile f(fname, 'r', F_CHAR);
-	CHAR *data = f.load_char_data(NULL, len);
+	char *data = f.load_char_data(NULL, len);
 
 	if (!f.is_ok()) {
 		SG_ERROR( "Reading file failed\n");

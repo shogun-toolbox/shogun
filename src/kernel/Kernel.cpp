@@ -783,12 +783,12 @@ KERNELCACHE_ELEM* CKernel::kernel_cache_clean_and_malloc(INT cacheidx)
 }
 #endif //USE_SVMLIGHT
 
-bool CKernel::load(CHAR* fname)
+bool CKernel::load(char* fname)
 {
 	return false;
 }
 
-bool CKernel::save(CHAR* fname)
+bool CKernel::save(char* fname)
 {
 	INT i=0;
 	INT num_left=lhs->get_num_vectors();

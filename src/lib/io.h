@@ -46,8 +46,8 @@ enum EMessageType
 #define CONST_DIRENT_T const struct dirent
 #endif //DARWIN
 
-extern CHAR file_buffer[FBUFSIZE];
-extern CHAR directory_name[FBUFSIZE];
+extern char file_buffer[FBUFSIZE];
+extern char directory_name[FBUFSIZE];
 
 class CIO;
 
@@ -169,21 +169,21 @@ class CIO
 		 * @param prio message priority
 		 * @param fmt format string
 		 */
-		void buffered_message(EMessageType prio, const CHAR *fmt, ... ) const;
+		void buffered_message(EMessageType prio, const char *fmt, ... ) const;
 
 		/** skip leading spaces
 		 *
 		 * @param str string in which to look for spaces
 		 * @return string after after skipping leading spaces
 		 */
-		static CHAR* skip_spaces(CHAR* str);
+		static char* skip_spaces(char* str);
 
 		/** skip leading spaces + tabs
 		 *
 		 * @param str string in which to look for blanks
 		 * @return string after after skipping leading blanks
 		 */
-		static CHAR* skip_blanks(CHAR* str);
+		static char* skip_blanks(char* str);
 
 		/** get target
 		 *
@@ -240,7 +240,7 @@ class CIO
 		 *
 		 * @param dirname new directory name
 		 */
-		inline void set_dirname(const CHAR* dirname)
+		inline void set_dirname(const char* dirname)
 		{
 			strncpy(directory_name, dirname, FBUFSIZE);
 		}
@@ -251,7 +251,7 @@ class CIO
 		 * @param filename new filename
 		 * @return concatenated directory and filename
 		 */
-		static CHAR* concat_filename(const CHAR* filename);
+		static char* concat_filename(const char* filename);
 
 		/** filter
 		 *
@@ -267,7 +267,7 @@ class CIO
 		 * @return message intro or NULL if message is not to be
 		 *         printed
 		 */
-		const CHAR* get_msg_intro(EMessageType prio) const;
+		const char* get_msg_intro(EMessageType prio) const;
 
 	protected:
 		/** target file */

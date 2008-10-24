@@ -145,14 +145,14 @@ class CDistance : public CSGObject
 		 * @param fname filename to load from
 		 * @return if loading was successful
 		 */
-		bool load(CHAR* fname);
+		bool load(char* fname);
 
 		/** save distance matrix to file
 		 *
 		 * @param fname filename to save to
 		 * @return if saving was successful
 		 */
-		bool save(CHAR* fname);
+		bool save(char* fname);
 
 		/** load init data from file
 		 *
@@ -220,7 +220,7 @@ class CDistance : public CSGObject
 		 *
 		 * @return name
 		 */
-		virtual const CHAR* get_name()=0 ;
+		virtual const char* get_name()=0 ;
 
 
 		/** FIXME: precompute matrix should be dropped, handling

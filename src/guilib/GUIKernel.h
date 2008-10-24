@@ -32,7 +32,7 @@ class CGUIKernel : public CSGObject
 	/** get active kernel */
 	CKernel* get_kernel();
 	/** set normalization */
-	bool set_normalization(CHAR* normalization, DREAL c=0.0);
+	bool set_normalization(char* normalization, DREAL c=0.0);
 	/** set active kernel */
 	bool set_kernel(CKernel* kern);
 	/** add kernel to a Combined kernel, creating one if necessary */
@@ -41,17 +41,17 @@ class CGUIKernel : public CSGObject
 	bool del_last_kernel();
 
 	/** initialize kernel */
-	bool init_kernel(CHAR* target);
+	bool init_kernel(char* target);
 	/** initialize kernel  optimization */
 	bool init_kernel_optimization();
 	/** delete kernel optimization */
 	bool delete_kernel_optimization();
 	/** load kernel initialization from file */
-	bool load_kernel_init(CHAR* filename);
+	bool load_kernel_init(char* filename);
 	/** save kernel initialization to file */
-	bool save_kernel_init(CHAR* filename);
+	bool save_kernel_init(char* filename);
 	/** save kernel (matrix) to file */
-	bool save_kernel(CHAR* filename);
+	bool save_kernel(char* filename);
 	/** clean/r kernel */
 	bool clean_kernel();
 #ifdef USE_SVMLIGHT
@@ -59,7 +59,7 @@ class CGUIKernel : public CSGObject
 	bool resize_kernel_cache(INT size);
 #endif //USE_SVMLIGHT
 	/** set optimization type */
-	bool set_optimization_type(CHAR* opt_type);
+	bool set_optimization_type(char* opt_type);
 	/** precompute subkernels */
 	bool precompute_subkernels();
 
@@ -69,8 +69,8 @@ class CGUIKernel : public CSGObject
 #ifdef HAVE_MINDY
 	/** create a new MindyGram kernel */
 	CKernel* CGUIKernel::create_mindygram(
-		INT size=10, CHAR* meas_str=NULL, CHAR* norm_str=NULL,
-		DREAL width=1, CHAR* param_str=NULL)
+		INT size=10, char* meas_str=NULL, char* norm_str=NULL,
+		DREAL width=1, char* param_str=NULL)
 #endif
 
 	/** create Oligo kernel */
@@ -124,7 +124,7 @@ class CGUIKernel : public CSGObject
 	CKernel* create_chi2(INT size=10, DREAL width=1);
 	/** create a new WeightedCommWord/CommWord/CommULongString kernel */
 	CKernel* create_commstring(
-		INT size=10, bool use_sign=false, CHAR* norm_str=NULL,
+		INT size=10, bool use_sign=false, char* norm_str=NULL,
 		EKernelType ktype=K_WEIGHTEDCOMMWORDSTRING);
 	/** create a new MatchWordString kernel */
 	CKernel* create_matchwordstring(INT size=10, INT d=3, bool normalize=true);

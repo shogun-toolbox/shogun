@@ -68,46 +68,46 @@ class CGUIFeatures : public CSGObject
 		void add_test_features(CFeatures* f);
 
 		/** delete last features from combined features */
-		bool del_last_features(CHAR* target);
+		bool del_last_features(char* target);
 
 		void invalidate_train();
 		void invalidate_test();
 
 		/** load features from file */
-		bool load(CHAR* filename, CHAR* fclass, CHAR* type,
-			CHAR* target, INT size, INT comp_features);
+		bool load(char* filename, char* fclass, char* type,
+			char* target, INT size, INT comp_features);
 		/** save features to file */
-		bool save(CHAR* filename, CHAR* type, CHAR* target);
+		bool save(char* filename, char* type, char* target);
 		/** clean/r features */
-		bool clean(CHAR* target);
+		bool clean(char* target);
 		/** obtain feature by sliding window */
-		bool obtain_by_sliding_window(CHAR* target, INT winsize, INT shift, INT skip=0);
+		bool obtain_by_sliding_window(char* target, INT winsize, INT shift, INT skip=0);
 		/** reshape target feature matrix */
-		bool reshape(CHAR* target, INT num_feat, INT num_vec);
+		bool reshape(char* target, INT num_feat, INT num_vec);
 
 		/** get features for target to convert */
-		CFeatures* get_convert_features(CHAR* target);
+		CFeatures* get_convert_features(char* target);
 		/** set convert(ed) features for target */
-		bool set_convert_features(CFeatures* features, CHAR* target);
+		bool set_convert_features(CFeatures* features, char* target);
 
 		/* convert features from one class/type to another */
 		CSparseFeatures<DREAL>* convert_simple_real_to_sparse_real(CRealFeatures* src);
-		CStringFeatures<CHAR>* convert_simple_char_to_string_char(CCharFeatures* src);
+		CStringFeatures<char>* convert_simple_char_to_string_char(CCharFeatures* src);
 		CWordFeatures* convert_simple_char_to_simple_word(
 			CCharFeatures* src, INT order=1, INT start=0, INT gap=0);
 		CShortFeatures* convert_simple_char_to_simple_short(CCharFeatures* src, INT order=1, INT start=0, INT gap=0);
 		CRealFeatures* convert_simple_char_to_simple_align(CCharFeatures* src, DREAL gap_cost=0);
 		CRealFeatures* convert_simple_word_to_simple_salzberg(CWordFeatures* src);
 
-		CStringFeatures<WORD>* convert_string_char_to_string_word(CStringFeatures<CHAR>* src);
-		CStringFeatures<ULONG>* convert_string_char_to_string_ulong(CStringFeatures<CHAR>* src);
+		CStringFeatures<WORD>* convert_string_char_to_string_word(CStringFeatures<char>* src);
+		CStringFeatures<ULONG>* convert_string_char_to_string_ulong(CStringFeatures<char>* src);
 		CTOPFeatures* convert_string_word_to_simple_top(CStringFeatures<WORD>* src);
 		CFKFeatures* convert_string_word_to_simple_fk(CStringFeatures<WORD>* src);
 
 		CRealFeatures* convert_sparse_real_to_simple_real(CSparseFeatures<DREAL>* src);
 
 		template <class CT, class ST>
-		CStringFeatures<ST>* convert_string_char_to_string_generic(CStringFeatures<CT>* src, INT order=1, INT start=0, INT gap=0, CHAR rev='f')
+		CStringFeatures<ST>* convert_string_char_to_string_generic(CStringFeatures<CT>* src, INT order=1, INT start=0, INT gap=0, char rev='f')
 		{
 			if (src && src->get_feature_class()==C_STRING)
 			{
@@ -132,8 +132,8 @@ class CGUIFeatures : public CSGObject
 #ifdef HAVE_MINDY
 		template <class CT>
 		CMindyGramFeatures* convert_string_char_to_mindy_grams(
-			CStringFeatures<CT> *src, CHAR* alph, CHAR* embed,
-			INT nlen, CHAR* delim, DREAL maxv)
+			CStringFeatures<CT> *src, char* alph, char* embed,
+			INT nlen, char* delim, DREAL maxv)
 		{
 			if (!src || !aplh || !embed || !delim) {
 				SG_ERROR("Invalid arguments.\n");
@@ -153,7 +153,7 @@ class CGUIFeatures : public CSGObject
 #endif
 
 		/** set reference features from target */
-		bool set_reference_features(CHAR* target);
+		bool set_reference_features(char* target);
 
 	protected:
 		CSGInterface* ui;

@@ -170,7 +170,7 @@ class CModel
 		}
 #ifdef FIX_POS
 		/// get value out of fix_pos_state array
-		inline CHAR get_fix_pos_state(INT pos, T_STATES state, T_STATES num_states)
+		inline char get_fix_pos_state(INT pos, T_STATES state, T_STATES num_states)
 		{
 #ifdef HMM_DEBUG
 			if ((pos<0)||(pos*num_states+state>65336))
@@ -258,7 +258,7 @@ class CModel
 		}
 #ifdef FIX_POS
 		/// set value in fix_pos_state vector
-		inline void set_fix_pos_state(INT pos, T_STATES state, T_STATES num_states, CHAR value)
+		inline void set_fix_pos_state(INT pos, T_STATES state, T_STATES num_states, char value)
 		{
 #ifdef HMM_DEBUG
 			if ((pos<0)||(pos*num_states+state>65336))
@@ -273,13 +273,13 @@ class CModel
 		//@}
 
 		/// FIX_DISALLOWED - state is forbidden and will be penalized with DISALLOWED_PENALTY
-		const static CHAR FIX_DISALLOWED ;
+		const static char FIX_DISALLOWED ;
 
 		/// FIX_ALLOWED - state is allowed
-		const static CHAR FIX_ALLOWED ;
+		const static char FIX_ALLOWED ;
 
 		/// FIX_DEFAULT - default value 
-		const static CHAR FIX_DEFAULT ;
+		const static char FIX_DEFAULT ;
 
 		/// DISALLOWED_PENALTY - states in FIX_DISALLOWED will be penalized with this value
 		const static DREAL DISALLOWED_PENALTY ;
@@ -339,7 +339,7 @@ class CModel
 		/** states in whose the model has to be at specific times/states which the model has to avoid.
 		 * only used in viterbi
 		 */
-		CHAR* fix_pos_state;
+		char* fix_pos_state;
 #endif
 		//@}
 };
@@ -753,7 +753,7 @@ class CHMM : public CDistribution
 		/** access function to set value in fix_pos_state vector in underlying model 
 		 * @see CModel
 		 */
-		inline bool set_fix_pos_state(INT pos, T_STATES state, CHAR value)
+		inline bool set_fix_pos_state(INT pos, T_STATES state, char value)
 		{
 			if (!model)
 				return false ;
@@ -1474,7 +1474,7 @@ protected:
  */
 //@{
 /// put a sequence of numbers into the buffer
-bool get_numbuffer(FILE* file, CHAR* buffer, INT length);
+bool get_numbuffer(FILE* file, char* buffer, INT length);
 
 /// expect open bracket. 
 void open_bracket(FILE* file);
@@ -1486,7 +1486,7 @@ void close_bracket(FILE* file);
 bool comma_or_space(FILE* file);
 
 /// parse error messages
-inline void error(INT p_line, const CHAR* str)
+inline void error(INT p_line, const char* str)
 {
 	if (p_line)
 		SG_ERROR( "error in line %d %s\n", p_line, str);

@@ -13,31 +13,31 @@
 #include "lib/File.h"
 
 CCharFeatures::CCharFeatures(EAlphabet a, INT size)
-: CSimpleFeatures<CHAR>(size)
+: CSimpleFeatures<char>(size)
 {
 	alphabet=new CAlphabet(a);
 }
 
 CCharFeatures::CCharFeatures(CAlphabet* a, INT size)
-: CSimpleFeatures<CHAR>(size)
+: CSimpleFeatures<char>(size)
 {
 	alphabet= new CAlphabet(a);
 }
 
 CCharFeatures::CCharFeatures(const CCharFeatures & orig)
-: CSimpleFeatures<CHAR>(orig)
+: CSimpleFeatures<char>(orig)
 {
 	alphabet=orig.alphabet;
 }
 
-CCharFeatures::CCharFeatures(EAlphabet a, CHAR* fm, INT num_feat, INT num_vec)
-: CSimpleFeatures<CHAR>(fm, num_feat, num_vec)
+CCharFeatures::CCharFeatures(EAlphabet a, char* fm, INT num_feat, INT num_vec)
+: CSimpleFeatures<char>(fm, num_feat, num_vec)
 {
 	alphabet=new CAlphabet(a);
 }
 
-CCharFeatures::CCharFeatures(EAlphabet a, CHAR* fname)
-: CSimpleFeatures<CHAR>(fname)
+CCharFeatures::CCharFeatures(EAlphabet a, char* fname)
+: CSimpleFeatures<char>(fname)
 {
 	alphabet=new CAlphabet(a);
 	load(fname);
@@ -49,7 +49,7 @@ CCharFeatures::~CCharFeatures()
 	alphabet=NULL;
 }
 
-bool CCharFeatures::load(CHAR* fname)
+bool CCharFeatures::load(char* fname)
 {
 	SG_INFO( "loading...\n");
     LONG length=0;
@@ -100,7 +100,7 @@ bool CCharFeatures::load(CHAR* fname)
 	return false;
 }
 
-bool CCharFeatures::save(CHAR* fname)
+bool CCharFeatures::save(char* fname)
 {
 	return false;
 }

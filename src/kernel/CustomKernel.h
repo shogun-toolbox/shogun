@@ -108,7 +108,7 @@ class CCustomKernel: public CKernel
 		 *
 		 * @return name Custom
 		 */
-		virtual const CHAR* get_name() { return "Custom"; }
+		virtual const char* get_name() { return "Custom"; }
 
 		/** set kernel matrix (only elements from upper triangle)
 		 * from elements of upper triangle (concat'd), including the

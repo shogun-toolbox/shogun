@@ -97,7 +97,7 @@ template <class ST> class CSimpleFeatures: public CFeatures
 		 *
 		 * @param fname filename to load features from
 		 */
-		CSimpleFeatures(CHAR* fname)
+		CSimpleFeatures(char* fname)
 		: CFeatures(fname), num_vectors(0), num_features(0),
 			feature_matrix(NULL), feature_cache(NULL) {}
 
@@ -466,7 +466,7 @@ template<> inline EFeatureType CSimpleFeatures<SHORT>::get_feature_type()
  *
  * @return feature type CHAR
  */
-template<> inline EFeatureType CSimpleFeatures<CHAR>::get_feature_type()
+template<> inline EFeatureType CSimpleFeatures<char>::get_feature_type()
 {
 	return F_CHAR;
 }

@@ -99,7 +99,7 @@ CGUIClassifier::~CGUIClassifier()
 	delete classifier;
 }
 
-bool CGUIClassifier::new_classifier(CHAR* name, INT d, INT from_d)
+bool CGUIClassifier::new_classifier(char* name, INT d, INT from_d)
 {
 	if (strcmp(name,"LIBSVM_ONECLASS")==0)
 	{
@@ -543,7 +543,7 @@ bool CGUIClassifier::train_sparse_linear()
 	return result;
 }
 
-bool CGUIClassifier::test(CHAR* filename_out, CHAR* filename_roc)
+bool CGUIClassifier::test(char* filename_out, char* filename_roc)
 {
 	FILE* file_out=stdout;
 	FILE* file_roc=NULL;
@@ -608,7 +608,7 @@ bool CGUIClassifier::test(CHAR* filename_out, CHAR* filename_roc)
 	return true;
 }
 
-bool CGUIClassifier::load(CHAR* filename, CHAR* type)
+bool CGUIClassifier::load(char* filename, char* type)
 {
 	bool result=false;
 
@@ -639,7 +639,7 @@ bool CGUIClassifier::load(CHAR* filename, CHAR* type)
 	return false;
 }
 
-bool CGUIClassifier::save(CHAR* param)
+bool CGUIClassifier::save(char* param)
 {
 	bool result=false;
 	param=CIO::skip_spaces(param);

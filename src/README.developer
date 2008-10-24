@@ -117,7 +117,7 @@ instead
 
 TYPES:
 - types (use only these!):
-	CHAR	(8bit char(maybe signed or unsigned))
+	char	(8bit char(maybe signed or unsigned))
 	BYTE	(8bit unsigned char)
 	WORD	(16bit unsigned short)
 	UINT	(32bit unsinged int)

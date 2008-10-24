@@ -47,7 +47,7 @@ class CIntFeatures: public CSimpleFeatures<INT>
 		 *
 		 * @param fname filename to load features from
 		 */
-		CIntFeatures(CHAR* fname) : CSimpleFeatures<INT>(fname)
+		CIntFeatures(char* fname) : CSimpleFeatures<INT>(fname)
 		{
 			load(fname);
 		}
@@ -81,13 +81,13 @@ class CIntFeatures: public CSimpleFeatures<INT>
 		 * @param fname filename to load from
 		 * @return if loading was successful
 		 */
-		virtual bool load(CHAR* fname);
+		virtual bool load(char* fname);
 
 		/** save features to file
 		 *
 		 * @param fname filename to save to
 		 * @return if saving was successful
 		 */
-		virtual bool save(CHAR* fname);
+		virtual bool save(char* fname);
 };
 #endif

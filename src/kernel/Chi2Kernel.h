@@ -80,7 +80,7 @@ class CChi2Kernel: public CSimpleKernel<DREAL>
 		 *
 		 * @return name Chi2
 		 */
-		virtual const CHAR* get_name() { return "Chi2"; };
+		virtual const char* get_name() { return "Chi2"; }
 
 	protected:
 		/** compute kernel function for features a and b

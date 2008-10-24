@@ -736,9 +736,9 @@ CSGInterfaceMethod sg_methods[]=
 		USAGE_O(N_ENTROPY, "result")
 	},
 	{
-		(CHAR*) N_SET_FEATURE_MATRIX,
+		(char*) N_SET_FEATURE_MATRIX,
 		(&CSGInterface::cmd_set_feature_matrix),
-		(CHAR*) USAGE_I(N_SET_FEATURE_MATRIX, "features")
+		(char*) USAGE_I(N_SET_FEATURE_MATRIX, "features")
 	},
 	{
 		N_NEW_PLUGIN_ESTIMATOR,
@@ -798,9 +798,9 @@ CSGInterfaceMethod sg_methods[]=
 			"prob" USAGE_COMMA "path" USAGE_COMMA "pos")
 	},
 	{
-		(CHAR*) N_SET_PLIF_STRUCT,
+		(char*) N_SET_PLIF_STRUCT,
 		(&CSGInterface::cmd_set_plif_struct),
-		(CHAR*) USAGE_I(N_SET_PLIF_STRUCT, "id"
+		(char*) USAGE_I(N_SET_PLIF_STRUCT, "id"
 				USAGE_COMMA "name"
 				USAGE_COMMA "limits"
 				USAGE_COMMA "penalties"
@@ -811,9 +811,9 @@ CSGInterfaceMethod sg_methods[]=
 				USAGE_COMMA "use_svm")
 	},
 	{
-		(CHAR*) N_GET_PLIF_STRUCT,
+		(char*) N_GET_PLIF_STRUCT,
 		(&CSGInterface::cmd_get_plif_struct),
-		(CHAR*) USAGE_O(N_GET_PLIF_STRUCT, "id"
+		(char*) USAGE_O(N_GET_PLIF_STRUCT, "id"
 				USAGE_COMMA "name"
 				USAGE_COMMA "limits"
 				USAGE_COMMA "penalties"
@@ -824,35 +824,35 @@ CSGInterfaceMethod sg_methods[]=
 				USAGE_COMMA "use_svm")
 	},
 	{
-		(CHAR*) N_PRECOMPUTE_SUBKERNELS,
+		(char*) N_PRECOMPUTE_SUBKERNELS,
 		(&CSGInterface::cmd_precompute_subkernels),
-		(CHAR*) USAGE(N_PRECOMPUTE_SUBKERNELS)
+		(char*) USAGE(N_PRECOMPUTE_SUBKERNELS)
 	},
 	{
-		(CHAR*) N_PRECOMPUTE_CONTENT_SVMS,
+		(char*) N_PRECOMPUTE_CONTENT_SVMS,
 		(&CSGInterface::cmd_precompute_content_svms),
-		(CHAR*) USAGE_I(N_PRECOMPUTE_CONTENT_SVMS, "sequence"
+		(char*) USAGE_I(N_PRECOMPUTE_CONTENT_SVMS, "sequence"
 				USAGE_COMMA "position_list"
 				USAGE_COMMA "weights")
 	},
 	{
-		(CHAR*) N_PRECOMPUTE_TILING_FEATURES,
+		(char*) N_PRECOMPUTE_TILING_FEATURES,
 		(&CSGInterface::cmd_precompute_tiling_features),
-		(CHAR*) USAGE_I(N_PRECOMPUTE_TILING_FEATURES, "intensities"
+		(char*) USAGE_I(N_PRECOMPUTE_TILING_FEATURES, "intensities"
 				USAGE_COMMA "probe_pos"
 				USAGE_COMMA "tiling_plif_ids")
 	},
 	{
-		(CHAR*) N_SET_MODEL,
+		(char*) N_SET_MODEL,
 		(&CSGInterface::cmd_set_model),
-		(CHAR*) USAGE_I(N_SET_MODEL, "content_weights"
+		(char*) USAGE_I(N_SET_MODEL, "content_weights"
 				USAGE_COMMA "transition_pointers"
 				USAGE_COMMA "use_orf"
 				USAGE_COMMA "mod_words")
 	},
 
 	{
-		(CHAR*) N_BEST_PATH_TRANS,
+		(char*) N_BEST_PATH_TRANS,
 		(&CSGInterface::cmd_best_path_trans),
 		USAGE_IO(N_BEST_PATH_TRANS, "p"
 				USAGE_COMMA "q"
@@ -1115,10 +1115,10 @@ bool CSGInterface::cmd_load_features()
 		return false;
 
 	INT len=0;
-	CHAR* filename=get_str_from_str_or_direct(len);
-	CHAR* fclass=get_str_from_str_or_direct(len);
-	CHAR* type=get_str_from_str_or_direct(len);
-	CHAR* target=get_str_from_str_or_direct(len);
+	char* filename=get_str_from_str_or_direct(len);
+	char* fclass=get_str_from_str_or_direct(len);
+	char* type=get_str_from_str_or_direct(len);
+	char* target=get_str_from_str_or_direct(len);
 	INT size=get_int_from_int_or_str();
 	INT comp_features=get_int_from_int_or_str();
 
@@ -1138,9 +1138,9 @@ bool CSGInterface::cmd_save_features()
 		return false;
 
 	INT len=0;
-	CHAR* filename=get_str_from_str_or_direct(len);
-	CHAR* type=get_str_from_str_or_direct(len);
-	CHAR* target=get_str_from_str_or_direct(len);
+	char* filename=get_str_from_str_or_direct(len);
+	char* type=get_str_from_str_or_direct(len);
+	char* target=get_str_from_str_or_direct(len);
 
 	bool success=ui_features->save(filename, type, target);
 
@@ -1156,7 +1156,7 @@ bool CSGInterface::cmd_clean_features()
 		return false;
 
 	INT len=0;
-	CHAR* target=get_str_from_str_or_direct(len);
+	char* target=get_str_from_str_or_direct(len);
 
 	bool success=ui_features->clean(target);
 
@@ -1170,7 +1170,7 @@ bool CSGInterface::cmd_get_features()
 		return false;
 
 	INT tlen=0;
-	CHAR* target=get_string(tlen);
+	char* target=get_string(tlen);
 	CFeatures* feat=NULL;
 
 	if (strmatch(target, "TRAIN"))
@@ -1204,7 +1204,7 @@ bool CSGInterface::cmd_get_features()
 
 				case F_CHAR:
 				{
-					CHAR* fmatrix=((CCharFeatures *) feat)->get_feature_matrix(num_feat, num_vec);
+					char* fmatrix=((CCharFeatures *) feat)->get_feature_matrix(num_feat, num_vec);
 					set_char_matrix(fmatrix, num_feat, num_vec);
 					break;
 				}
@@ -1288,7 +1288,7 @@ bool CSGInterface::cmd_get_features()
 
 				case F_CHAR:
 				{
-					T_STRING<CHAR>* fmatrix=((CStringFeatures<CHAR>*) feat)->get_features(num_str, max_str_len);
+					T_STRING<char>* fmatrix=((CStringFeatures<char>*) feat)->get_features(num_str, max_str_len);
 					set_char_string_list(fmatrix, num_str);
 					break;
 				}
@@ -1332,7 +1332,7 @@ bool CSGInterface::cmd_set_features()
 bool CSGInterface::do_set_features(bool add)
 {
 	INT tlen=0;
-	CHAR* target=get_string(tlen);
+	char* target=get_string(tlen);
 	if (!strmatch(target, "TRAIN") && !strmatch(target, "TEST"))
 	{
 		delete[] target;
@@ -1418,11 +1418,11 @@ bool CSGInterface::do_set_features(bool add)
 
 			INT num_str=0;
 			INT max_str_len=0;
-			T_STRING<CHAR>* fmatrix=NULL;
+			T_STRING<char>* fmatrix=NULL;
 			get_char_string_list(fmatrix, num_str, max_str_len);
 
 			INT alphabet_len=0;
-			CHAR* alphabet_str=get_string(alphabet_len);
+			char* alphabet_str=get_string(alphabet_len);
 			ASSERT(alphabet_str);
 
 			if (strmatch(alphabet_str, "DNABINFILE"))
@@ -1443,8 +1443,8 @@ bool CSGInterface::do_set_features(bool add)
 				CAlphabet* alphabet=new CAlphabet(alphabet_str, alphabet_len);
 				delete[] alphabet_str;
 
-				feat=new CStringFeatures<CHAR>(alphabet);
-				if (!((CStringFeatures<CHAR>*) feat)->set_features(fmatrix, num_str, max_str_len))
+				feat=new CStringFeatures<char>(alphabet);
+				if (!((CStringFeatures<char>*) feat)->set_features(fmatrix, num_str, max_str_len))
 				{
 					delete alphabet;
 					delete feat;
@@ -1467,7 +1467,7 @@ bool CSGInterface::do_set_features(bool add)
 			get_byte_string_list(fmatrix, num_str, max_str_len);
 
 			INT alphabet_len=0;
-			CHAR* alphabet_str=get_string(alphabet_len);
+			char* alphabet_str=get_string(alphabet_len);
 			ASSERT(alphabet_str);
 			CAlphabet* alphabet=new CAlphabet(alphabet_str, alphabet_len);
 			delete[] alphabet_str;
@@ -1514,7 +1514,7 @@ bool CSGInterface::cmd_set_reference_features()
 		return false;
 
 	INT len=0;
-	CHAR* target=get_str_from_str_or_direct(len);
+	char* target=get_str_from_str_or_direct(len);
 
 	bool success=ui_features->set_reference_features(target);
 
@@ -1528,7 +1528,7 @@ bool CSGInterface::cmd_del_last_features()
 		return false;
 
 	INT len=0;
-	CHAR* target=get_str_from_str_or_direct(len);
+	char* target=get_str_from_str_or_direct(len);
 	bool success=ui_features->del_last_features(target);
 
 	delete[] target;
@@ -1541,7 +1541,7 @@ bool CSGInterface::cmd_convert()
 		return false;
 
 	INT len=0;
-	CHAR* target=get_str_from_str_or_direct(len);
+	char* target=get_str_from_str_or_direct(len);
 	CFeatures* features=ui_features->get_convert_features(target);
 	if (!features)
 	{
@@ -1549,10 +1549,10 @@ bool CSGInterface::cmd_convert()
 		SG_ERROR("No \"%s\" features available.\n", target);
 	}
 
-	CHAR* from_class=get_str_from_str_or_direct(len);
-	CHAR* from_type=get_str_from_str_or_direct(len);
-	CHAR* to_class=get_str_from_str_or_direct(len);
-	CHAR* to_type=get_str_from_str_or_direct(len);
+	char* from_class=get_str_from_str_or_direct(len);
+	char* from_type=get_str_from_str_or_direct(len);
+	char* to_class=get_str_from_str_or_direct(len);
+	char* to_type=get_str_from_str_or_direct(len);
 
 	CFeatures* result=NULL;
 	if (strmatch(from_class, "SIMPLE"))
@@ -1656,7 +1656,7 @@ bool CSGInterface::cmd_convert()
 				INT order=1;
 				INT start=0;
 				INT gap=0;
-				CHAR rev='f';
+				char rev='f';
 
 				if (m_nrhs>6)
 				{
@@ -1672,7 +1672,7 @@ bool CSGInterface::cmd_convert()
 
 							if (m_nrhs>9)
 							{
-								CHAR* rev_str=get_str_from_str_or_direct(len);
+								char* rev_str=get_str_from_str_or_direct(len);
 								if (rev_str)
 									rev=rev_str[0];
 
@@ -1684,14 +1684,14 @@ bool CSGInterface::cmd_convert()
 
 				if (strmatch(to_type, "WORD"))
 				{
-						result=ui_features->convert_string_char_to_string_generic<CHAR,WORD>(
-						(CStringFeatures<CHAR>*) features, order, start,
+						result=ui_features->convert_string_char_to_string_generic<char,WORD>(
+						(CStringFeatures<char>*) features, order, start,
 						gap, rev);
 				}
 				else if (strmatch(to_type, "ULONG"))
 				{
-					result=ui_features->convert_string_char_to_string_generic<CHAR,ULONG>(
-					(CStringFeatures<CHAR>*) features, order, start,
+					result=ui_features->convert_string_char_to_string_generic<char,ULONG>(
+					(CStringFeatures<char>*) features, order, start,
 						gap, rev);
 				}
 				else
@@ -1702,13 +1702,13 @@ bool CSGInterface::cmd_convert()
 				strmatch(to_type, "ULONG") &&
 				m_nrhs==11)
 			{
-				CHAR* alph=get_str_from_str_or_direct(len);
-				CHAR* embed=get_str_from_str_or_direct(len);
+				char* alph=get_str_from_str_or_direct(len);
+				char* embed=get_str_from_str_or_direct(len);
 				INT nlen=get_int_from_int_or_str(len);
-				CHAR* delim=get_str_from_str_or_direct(len);
+				char* delim=get_str_from_str_or_direct(len);
 				DREAL maxv=get_real_from_real_or_str(len);
 
-				result=ui_features.convert_string_char_to_mindy_grams<CHAR>(
+				result=ui_features.convert_string_char_to_mindy_grams<char>(
 					(CStringFeatures<BYTE>*) features, alph, embed,
 					nlen, delim, maxv);
 
@@ -1728,7 +1728,7 @@ bool CSGInterface::cmd_convert()
 				INT order=1;
 				INT start=0;
 				INT gap=0;
-				CHAR rev='f';
+				char rev='f';
 
 				if (m_nrhs>6)
 				{
@@ -1744,7 +1744,7 @@ bool CSGInterface::cmd_convert()
 
 							if (m_nrhs>9)
 							{
-								CHAR* rev_str=get_str_from_str_or_direct(len);
+								char* rev_str=get_str_from_str_or_direct(len);
 								if (rev_str)
 									rev=rev_str[0];
 
@@ -1774,10 +1774,10 @@ bool CSGInterface::cmd_convert()
 				strmatch(to_type, "ULONG") &&
 				m_nrhs==11)
 			{
-				CHAR* alph=get_str_from_str_or_direct(len);
-				CHAR* embed=get_str_from_str_or_direct(len);
+				char* alph=get_str_from_str_or_direct(len);
+				char* embed=get_str_from_str_or_direct(len);
 				INT nlen=get_int_from_int_or_str(len);
-				CHAR* delim=get_str_from_str_or_direct(len);
+				char* delim=get_str_from_str_or_direct(len);
 				DREAL maxv=get_real_from_real_or_str(len);
 
 				result=ui_features.convert_string_char_to_mindy_grams<BYTE>(
@@ -1834,7 +1834,7 @@ bool CSGInterface::cmd_obtain_from_position_list()
 		return false;
 
 	INT tlen=0;
-	CHAR* target=get_string(tlen);
+	char* target=get_string(tlen);
 	if (!strmatch(target, "TRAIN") && !strmatch(target, "TEST"))
 	{
 		delete[] target;
@@ -1889,7 +1889,7 @@ bool CSGInterface::cmd_obtain_from_position_list()
 	{
 		case F_CHAR:
 		{
-			success=(((CStringFeatures<CHAR>*) features)->
+			success=(((CStringFeatures<char>*) features)->
 				obtain_by_position_list(winsize, &positions, skip)>0);
 			break;
 		}
@@ -1924,7 +1924,7 @@ bool CSGInterface::cmd_obtain_by_sliding_window()
 		return false;
 
 	INT len=0;
-	CHAR* target=get_str_from_str_or_direct(len);
+	char* target=get_str_from_str_or_direct(len);
 	INT winsize=get_int_from_int_or_str();
 	INT shift=get_int_from_int_or_str();
 	INT skip=0;
@@ -1944,7 +1944,7 @@ bool CSGInterface::cmd_reshape()
 		return false;
 
 	INT len=0;
-	CHAR* target=get_str_from_str_or_direct(len);
+	char* target=get_str_from_str_or_direct(len);
 	INT num_feat=get_int_from_int_or_str();
 	INT num_vec=get_int_from_int_or_str();
 
@@ -1960,8 +1960,8 @@ bool CSGInterface::cmd_load_labels()
 		return false;
 
 	INT len=0;
-	CHAR* filename=get_str_from_str_or_direct(len);
-	CHAR* target=get_str_from_str_or_direct(len);
+	char* filename=get_str_from_str_or_direct(len);
+	char* target=get_str_from_str_or_direct(len);
 
 	bool success=ui_labels->load(filename, target);
 
@@ -1976,7 +1976,7 @@ bool CSGInterface::cmd_set_labels()
 		return false;
 
 	INT tlen=0;
-	CHAR* target=get_string(tlen);
+	char* target=get_string(tlen);
 	if (!strmatch(target, "TRAIN") && !strmatch(target, "TEST"))
 	{
 		delete[] target;
@@ -2016,7 +2016,7 @@ bool CSGInterface::cmd_get_labels()
 		return false;
 
 	INT tlen=0;
-	CHAR* target=get_string(tlen);
+	char* target=get_string(tlen);
 	CLabels* labels=NULL;
 
 	if (strmatch(target, "TRAIN"))
@@ -2054,7 +2054,7 @@ bool CSGInterface::cmd_set_kernel_normalization()
 		return false;
 
 	INT len=0;
-	CHAR* normalization=get_string(len);
+	char* normalization=get_string(len);
 
 	DREAL c=0;
 
@@ -2101,7 +2101,7 @@ CKernel* CSGInterface::create_kernel()
 {
 	CKernel* kernel=NULL;
 	INT len=0;
-	CHAR* type=get_str_from_str_or_direct(len);
+	char* type=get_str_from_str_or_direct(len);
 
 	if (strmatch(type, "COMBINED"))
 	{
@@ -2132,7 +2132,7 @@ CKernel* CSGInterface::create_kernel()
 		if (m_nrhs<4)
 			return NULL;
 
-		CHAR* dtype=get_str_from_str_or_direct(len);
+		char* dtype=get_str_from_str_or_direct(len);
 		INT size=get_int_from_int_or_str();
 		DREAL scale=-1;
 		if (m_nrhs==5)
@@ -2156,7 +2156,7 @@ CKernel* CSGInterface::create_kernel()
 		if (m_nrhs<4)
 			return NULL;
 
-		CHAR* dtype=get_str_from_str_or_direct(len);
+		char* dtype=get_str_from_str_or_direct(len);
 		if (strmatch(dtype, "WORD"))
 		{
 			INT size=get_int_from_int_or_str();
@@ -2170,7 +2170,7 @@ CKernel* CSGInterface::create_kernel()
 		if (m_nrhs<4)
 			return NULL;
 
-		CHAR* dtype=get_str_from_str_or_direct(len);
+		char* dtype=get_str_from_str_or_direct(len);
 		if (strmatch(dtype, "WORD"))
 		{
 			INT size=get_int_from_int_or_str();
@@ -2184,7 +2184,7 @@ CKernel* CSGInterface::create_kernel()
 		if (m_nrhs<4)
 			return NULL;
 
-		CHAR* dtype=get_str_from_str_or_direct(len);
+		char* dtype=get_str_from_str_or_direct(len);
 		INT size=get_int_from_int_or_str();
 		INT degree=3;
 		bool inhomogene=false;
@@ -2219,7 +2219,7 @@ CKernel* CSGInterface::create_kernel()
 		if (m_nrhs<4)
 			return NULL;
 
-		CHAR* dtype=get_str_from_str_or_direct(len);
+		char* dtype=get_str_from_str_or_direct(len);
 		if (strmatch(dtype, "WORD"))
 		{
 			INT size=get_int_from_int_or_str();
@@ -2238,10 +2238,10 @@ CKernel* CSGInterface::create_kernel()
 	}
 	else if (strmatch(type, "WEIGHTEDCOMMSTRING") || strmatch(type, "COMMSTRING"))
 	{
-		CHAR* dtype=get_str_from_str_or_direct(len);
+		char* dtype=get_str_from_str_or_direct(len);
 		INT size=get_int_from_int_or_str();
 		bool use_sign=false;
-		CHAR* norm_str=NULL;
+		char* norm_str=NULL;
 
 		if (m_nrhs>4)
 		{
@@ -2278,7 +2278,7 @@ CKernel* CSGInterface::create_kernel()
 		if (m_nrhs<4)
 			return NULL;
 
-		CHAR* dtype=get_str_from_str_or_direct(len);
+		char* dtype=get_str_from_str_or_direct(len);
 		if (strmatch(dtype, "REAL"))
 		{
 			INT size=get_int_from_int_or_str();
@@ -2297,7 +2297,7 @@ CKernel* CSGInterface::create_kernel()
 		if (m_nrhs<4)
 			return NULL;
 
-		CHAR* dtype=get_str_from_str_or_direct(len);
+		char* dtype=get_str_from_str_or_direct(len);
 		if (strmatch(dtype, "CHAR"))
 		{
 			INT size=get_int_from_int_or_str();
@@ -2313,7 +2313,7 @@ CKernel* CSGInterface::create_kernel()
 		if (m_nrhs<4)
 			return NULL;
 
-		CHAR* dtype=get_str_from_str_or_direct(len);
+		char* dtype=get_str_from_str_or_direct(len);
 		if (strmatch(dtype, "CHAR"))
 		{
 			INT size=get_int_from_int_or_str();
@@ -2328,7 +2328,7 @@ CKernel* CSGInterface::create_kernel()
 		if (m_nrhs<6)
 			return NULL;
 
-		CHAR* dtype=get_str_from_str_or_direct(len);
+		char* dtype=get_str_from_str_or_direct(len);
 		if (strmatch(dtype, "CHAR"))
 		{
 			INT size=get_int_from_int_or_str();
@@ -2346,7 +2346,7 @@ CKernel* CSGInterface::create_kernel()
 		if (m_nrhs<7)
 			return NULL;
 
-		CHAR* dtype=get_str_from_str_or_direct(len);
+		char* dtype=get_str_from_str_or_direct(len);
 		if (strmatch(dtype, "CHAR") || strmatch(dtype, "STRING"))
 		{
 			INT size=get_int_from_int_or_str();
@@ -2377,7 +2377,7 @@ CKernel* CSGInterface::create_kernel()
 		if (m_nrhs<7)
 			return NULL;
 
-		CHAR* dtype=get_str_from_str_or_direct(len);
+		char* dtype=get_str_from_str_or_direct(len);
 		if (strmatch(dtype, "CHAR") || strmatch(dtype, "STRING"))
 		{
 			INT size=get_int_from_int_or_str();
@@ -2411,7 +2411,7 @@ CKernel* CSGInterface::create_kernel()
 		if (m_nrhs<4)
 			return NULL;
 
-		CHAR* dtype=get_str_from_str_or_direct(len);
+		char* dtype=get_str_from_str_or_direct(len);
 		if (strmatch(dtype, "CHAR") || strmatch(dtype, "STRING"))
 		{
 			INT size=get_int_from_int_or_str();
@@ -2455,7 +2455,7 @@ CKernel* CSGInterface::create_kernel()
 		if (m_nrhs<4)
 			return NULL;
 
-		CHAR* dtype=get_str_from_str_or_direct(len);
+		char* dtype=get_str_from_str_or_direct(len);
 		if (strmatch(dtype, "CHAR") || strmatch(dtype, "STRING"))
 		{
 			INT size=get_int_from_int_or_str();
@@ -2506,7 +2506,7 @@ CKernel* CSGInterface::create_kernel()
 		if (m_nrhs<4)
 			return NULL;
 
-		CHAR* dtype=get_str_from_str_or_direct(len);
+		char* dtype=get_str_from_str_or_direct(len);
 		if (strmatch(dtype, "CHAR"))
 		{
 			INT size=get_int_from_int_or_str();
@@ -2548,7 +2548,7 @@ CKernel* CSGInterface::create_kernel()
 		if (m_nrhs<4)
 			return NULL;
 
-		CHAR* dtype=get_str_from_str_or_direct(len);
+		char* dtype=get_str_from_str_or_direct(len);
 		INT size=get_int_from_int_or_str();
 		INT degree=2;
 		bool inhomogene=false;
@@ -2585,7 +2585,7 @@ CKernel* CSGInterface::create_kernel()
 		if (m_nrhs<4)
 			return NULL;
 
-		CHAR* dtype=get_str_from_str_or_direct(len);
+		char* dtype=get_str_from_str_or_direct(len);
 		if (strmatch(dtype, "REAL"))
 		{
 			INT size=get_int_from_int_or_str();
@@ -2610,7 +2610,7 @@ CKernel* CSGInterface::create_kernel()
 		if (m_nrhs<4)
 			return NULL;
 
-		CHAR* dtype=get_str_from_str_or_direct(len);
+		char* dtype=get_str_from_str_or_direct(len);
 		INT size=get_int_from_int_or_str();
 		DREAL width=1;
 		if (m_nrhs>4)
@@ -2628,7 +2628,7 @@ CKernel* CSGInterface::create_kernel()
 		if (m_nrhs<7)
 			return NULL;
 
-		CHAR* dtype=get_str_from_str_or_direct(len);
+		char* dtype=get_str_from_str_or_direct(len);
 		if (strmatch(dtype, "REAL"))
 		{
 			INT size=get_int_from_int_or_str();
@@ -2651,7 +2651,7 @@ CKernel* CSGInterface::create_kernel()
 		if (m_nrhs<4)
 			return NULL;
 
-		CHAR* dtype=get_str_from_str_or_direct(len);
+		char* dtype=get_str_from_str_or_direct(len);
 		if (strmatch(dtype, "REAL"))
 		{
 			INT size=get_int_from_int_or_str();
@@ -2669,7 +2669,7 @@ CKernel* CSGInterface::create_kernel()
 		if (m_nrhs<4)
 			return NULL;
 
-		CHAR* dtype=get_str_from_str_or_direct(len);
+		char* dtype=get_str_from_str_or_direct(len);
 		if (strmatch(dtype, "REAL"))
 		{
 			INT size=get_int_from_int_or_str();
@@ -2690,10 +2690,10 @@ CKernel* CSGInterface::create_kernel()
 			return NULL;
 
 		INT size=get_int_from_int_or_str();
-		CHAR* meas_str=get_str_from_str_or_direct(len);
-		CHAR* norm_str=get_str_from_str_or_direct(len);
+		char* meas_str=get_str_from_str_or_direct(len);
+		char* norm_str=get_str_from_str_or_direct(len);
 		DREAL width=get_real_from_real_or_str();
-		CHAR* param_str=get_str_from_str_or_direct(len);
+		char* param_str=get_str_from_str_or_direct(len);
 
 		kernel=ui_kernel.create_mindygram(
 			size, meas_str, norm_str, width, param_str);
@@ -2714,7 +2714,7 @@ bool CSGInterface::cmd_init_kernel()
 		return false;
 
 	INT len=0;
-	CHAR* target=get_str_from_str_or_direct(len);
+	char* target=get_str_from_str_or_direct(len);
 
 	bool success=ui_kernel->init_kernel(target);
 
@@ -2736,7 +2736,7 @@ bool CSGInterface::cmd_save_kernel()
 		return false;
 
 	INT len=0;
-	CHAR* filename=get_str_from_str_or_direct(len);
+	char* filename=get_str_from_str_or_direct(len);
 
 	bool success=ui_kernel->save_kernel(filename);
 
@@ -2750,7 +2750,7 @@ bool CSGInterface::cmd_load_kernel_init()
 		return false;
 
 	INT len=0;
-	CHAR* filename=get_str_from_str_or_direct(len);
+	char* filename=get_str_from_str_or_direct(len);
 
 	bool success=ui_kernel->load_kernel_init(filename);
 
@@ -2764,7 +2764,7 @@ bool CSGInterface::cmd_save_kernel_init()
 		return false;
 
 	INT len=0;
-	CHAR* filename=get_str_from_str_or_direct(len);
+	char* filename=get_str_from_str_or_direct(len);
 
 	bool success=ui_kernel->save_kernel_init(filename);
 
@@ -2819,7 +2819,7 @@ bool CSGInterface::cmd_set_custom_kernel()
 	get_real_matrix(kmatrix, num_feat, num_vec);
 
 	INT tlen=0;
-	CHAR* type=get_string(tlen);
+	char* type=get_string(tlen);
 
 	if (!strmatch(type, "DIAG") &&
 		!strmatch(type, "FULL") &&
@@ -2896,7 +2896,7 @@ bool CSGInterface::cmd_set_WD_position_weights()
 	{
 		CWeightedDegreePositionStringKernel* k=
 			(CWeightedDegreePositionStringKernel*) kernel;
-		CHAR* target=NULL;
+		char* target=NULL;
 		bool is_train=true;
 
 		if (m_nrhs==3)
@@ -3463,7 +3463,7 @@ bool CSGInterface::cmd_set_kernel_optimization_type()
 		return false;
 
 	INT len=0;
-	CHAR* opt_type=get_str_from_str_or_direct(len);
+	char* opt_type=get_str_from_str_or_direct(len);
 
 	bool success=ui_kernel->set_optimization_type(opt_type);
 
@@ -3538,8 +3538,8 @@ bool CSGInterface::cmd_set_distance()
 
 	CDistance* distance=NULL;
 	INT len=0;
-	CHAR* type=get_str_from_str_or_direct(len);
-	CHAR* dtype=get_str_from_str_or_direct(len);
+	char* type=get_str_from_str_or_direct(len);
+	char* dtype=get_str_from_str_or_direct(len);
 
 	if (strmatch(type, "MINKOWSKI") && m_nrhs==4)
 	{
@@ -3617,7 +3617,7 @@ bool CSGInterface::cmd_init_distance()
 		return false;
 
 	INT len=0;
-	CHAR* target=get_str_from_str_or_direct(len);
+	char* target=get_str_from_str_or_direct(len);
 
 	bool success=ui_distance->init_distance(target);
 
@@ -3672,7 +3672,7 @@ bool CSGInterface::cmd_get_SPEC_consensus()
 		sv_weight[i]=svm->get_alpha(i);
 	}
 
-	CHAR* consensus=((CCommWordStringKernel*) kernel)->compute_consensus(
+	char* consensus=((CCommWordStringKernel*) kernel)->compute_consensus(
 		num_feat, num_suppvec, sv_idx, sv_weight);
 	delete[] sv_idx;
 	delete[] sv_weight;
@@ -3759,7 +3759,7 @@ bool CSGInterface::cmd_get_WD_consensus()
 		sv_weight[i]=svm->get_alpha(i);
 	}
 
-	CHAR* consensus=((CWeightedDegreePositionStringKernel*) kernel)->compute_consensus(
+	char* consensus=((CWeightedDegreePositionStringKernel*) kernel)->compute_consensus(
 			num_feat, num_suppvec, sv_idx, sv_weight);
 	delete[] sv_idx;
 	delete[] sv_weight;
@@ -3792,7 +3792,7 @@ bool CSGInterface::cmd_compute_POIM_WD()
 
 	INT seqlen=0;
 	INT num_sym=0;
-	CStringFeatures<CHAR>* sfeat=(CStringFeatures<CHAR>*)
+	CStringFeatures<char>* sfeat=(CStringFeatures<char>*)
 		(((CWeightedDegreePositionStringKernel*) kernel)->get_lhs());
 	ASSERT(sfeat);
 	seqlen=sfeat->get_max_vector_length();
@@ -3958,7 +3958,7 @@ bool CSGInterface::cmd_new_classifier()
 		return false;
 
 	INT len=0;
-	CHAR* name=get_str_from_str_or_direct(len);
+	char* name=get_str_from_str_or_direct(len);
 	INT d=6;
 	INT from_d=40;
 
@@ -3982,7 +3982,7 @@ bool CSGInterface::cmd_save_classifier()
 		return false;
 
 	INT len=0;
-	CHAR* filename=get_str_from_str_or_direct(len);
+	char* filename=get_str_from_str_or_direct(len);
 
 	bool success=ui_classifier->save(filename);
 
@@ -3996,8 +3996,8 @@ bool CSGInterface::cmd_load_classifier()
 		return false;
 
 	INT len=0;
-	CHAR* filename=get_str_from_str_or_direct(len);
-	CHAR* type=get_str_from_str_or_direct(len);
+	char* filename=get_str_from_str_or_direct(len);
+	char* type=get_str_from_str_or_direct(len);
 
 	bool success=ui_classifier->load(filename, type);
 
@@ -4158,8 +4158,8 @@ bool CSGInterface::cmd_test_svm()
 		return false;
 
 	INT len=0;
-	CHAR* filename_out=get_str_from_str_or_direct(len);
-	CHAR* filename_roc=get_str_from_str_or_direct(len);
+	char* filename_out=get_str_from_str_or_direct(len);
+	char* filename_roc=get_str_from_str_or_direct(len);
 
 	bool success=ui_classifier->test(filename_out, filename_roc);
 
@@ -4361,7 +4361,7 @@ bool CSGInterface::cmd_add_preproc()
 		return false;
 
 	INT len=0;
-	CHAR* type=get_str_from_str_or_direct(len);
+	char* type=get_str_from_str_or_direct(len);
 	CPreProc* preproc=NULL;
 
 	if (strmatch(type, "NORMONE"))
@@ -4415,7 +4415,7 @@ bool CSGInterface::cmd_load_preproc()
 		return false;
 
 	INT len=0;
-	CHAR* filename=get_str_from_str_or_direct(len);
+	char* filename=get_str_from_str_or_direct(len);
 
 	bool success=ui_preproc->load(filename);
 
@@ -4429,7 +4429,7 @@ bool CSGInterface::cmd_save_preproc()
 		return false;
 
 	INT len=0;
-	CHAR* filename=get_str_from_str_or_direct(len);
+	char* filename=get_str_from_str_or_direct(len);
 	INT num_preprocs=get_int_from_int_or_str();
 
 	bool success=ui_preproc->save(filename, num_preprocs);
@@ -4444,7 +4444,7 @@ bool CSGInterface::cmd_attach_preproc()
 		return false;
 
 	INT len=0;
-	CHAR* target=get_str_from_str_or_direct(len);
+	char* target=get_str_from_str_or_direct(len);
 
 	bool do_force=false;
 	if (m_nrhs==3)
@@ -4492,8 +4492,8 @@ bool CSGInterface::cmd_test_estimator()
 		return false;
 
 	INT len=0;
-	CHAR* filename_out=get_str_from_str_or_direct(len);
-	CHAR* filename_roc=get_str_from_str_or_direct(len);
+	char* filename_out=get_str_from_str_or_direct(len);
+	char* filename_roc=get_str_from_str_or_direct(len);
 
 	bool success=ui_pluginestimate->test(filename_out, filename_roc);
 
@@ -4689,8 +4689,8 @@ bool CSGInterface::cmd_hmm_test()
 		return false;
 
 	INT len=0;
-	CHAR* filename_out=get_str_from_str_or_direct(len);
-	CHAR* filename_roc=get_str_from_str_or_direct(len);
+	char* filename_out=get_str_from_str_or_direct(len);
+	char* filename_roc=get_str_from_str_or_direct(len);
 	bool pos_is_linear=get_bool_from_bool_or_str();
 	bool neg_is_linear=get_bool_from_bool_or_str();
 
@@ -4708,8 +4708,8 @@ bool CSGInterface::cmd_one_class_hmm_test()
 		return false;
 
 	INT len=0;
-	CHAR* filename_out=get_str_from_str_or_direct(len);
-	CHAR* filename_roc=get_str_from_str_or_direct(len);
+	char* filename_out=get_str_from_str_or_direct(len);
+	char* filename_roc=get_str_from_str_or_direct(len);
 	bool is_linear=get_bool_from_bool_or_str();
 
 	bool success=ui_hmm->one_class_test(
@@ -4840,7 +4840,7 @@ bool CSGInterface::cmd_save_likelihood()
 		return false;
 
 	INT len=0;
-	CHAR* filename=get_str_from_str_or_direct(len);
+	char* filename=get_str_from_str_or_direct(len);
 
 	bool is_binary=false;
 	if (m_nrhs==3)
@@ -4936,7 +4936,7 @@ bool CSGInterface::cmd_linear_train()
 	if (m_nrhs==2)
 	{
 		INT len=0;
-		CHAR* align=get_str_from_str_or_direct(len);
+		char* align=get_str_from_str_or_direct(len);
 
 		bool success=ui_hmm->linear_train(align[0]);
 
@@ -4953,7 +4953,7 @@ bool CSGInterface::cmd_save_path()
 		return false;
 
 	INT len=0;
-	CHAR* filename=get_str_from_str_or_direct(len);
+	char* filename=get_str_from_str_or_direct(len);
 
 	bool is_binary=false;
 	if (m_nrhs==3)
@@ -5032,7 +5032,7 @@ bool CSGInterface::cmd_append_model()
 		return false;
 
 	INT len=0;
-	CHAR* filename=get_str_from_str_or_direct(len);
+	char* filename=get_str_from_str_or_direct(len);
 	INT base1=-1;
 	INT base2=-1;
 	if (m_nrhs>2)
@@ -5064,7 +5064,7 @@ bool CSGInterface::cmd_load_hmm()
 		return false;
 
 	INT len=0;
-	CHAR* filename=get_str_from_str_or_direct(len);
+	char* filename=get_str_from_str_or_direct(len);
 
 	bool success=ui_hmm->load(filename);
 
@@ -5078,7 +5078,7 @@ bool CSGInterface::cmd_save_hmm()
 		return false;
 
 	INT len=0;
-	CHAR* filename=get_str_from_str_or_direct(len);
+	char* filename=get_str_from_str_or_direct(len);
 
 	bool is_binary=false;
 	if (m_nrhs==3)
@@ -5154,7 +5154,7 @@ bool CSGInterface::cmd_set_hmm_as()
 		return false;
 
 	INT len=0;
-	CHAR* target=get_str_from_str_or_direct(len);
+	char* target=get_str_from_str_or_direct(len);
 
 	bool success=ui_hmm->set_hmm_as(target);
 
@@ -5186,7 +5186,7 @@ bool CSGInterface::cmd_load_definitions()
 		return false;
 
 	INT len=0;
-	CHAR* filename=get_str_from_str_or_direct(len);
+	char* filename=get_str_from_str_or_direct(len);
 
 	bool do_init=false;
 	if (m_nrhs==3)
@@ -5300,7 +5300,7 @@ bool CSGInterface::cmd_set_plif_struct()
 	// ARG 3
 	INT Nname=0;
 	INT Mname=0;
-	T_STRING<CHAR>* names;
+	T_STRING<char>* names;
 	get_char_string_list(names, Nname,Mname);
 
 	// ARG 4
@@ -5318,7 +5318,7 @@ bool CSGInterface::cmd_set_plif_struct()
 	// ARG 6
 	INT Ntransform=0;
 	INT Mtransform=0;
-	T_STRING<CHAR>* all_transform;
+	T_STRING<char>* all_transform;
 	get_char_string_list(all_transform, Ntransform, Mtransform);
 
 	// ARG 7
@@ -5383,8 +5383,8 @@ bool CSGInterface::cmd_get_plif_struct()
 	INT* ids = new INT[N];
 	DREAL* max_values = new DREAL[N];
 	DREAL* min_values = new DREAL[N];
-	T_STRING<CHAR>* names = new T_STRING<CHAR>[N];
-	T_STRING<CHAR>* all_transform = new T_STRING<CHAR>[N];
+	T_STRING<char>* names = new T_STRING<char>[N];
+	T_STRING<char>* all_transform = new T_STRING<char>[N];
 	DREAL* all_limits = new DREAL[N*M];
 	DREAL* all_penalties = new DREAL[N*M];
 	bool* all_use_cache = new bool[N];
@@ -5402,7 +5402,7 @@ bool CSGInterface::cmd_get_plif_struct()
 			all_limits[i*M+j]=limits[j];
 			all_penalties[i*M+j]=penalties[j];
 		}
-		all_transform[i].string = (CHAR*) PEN[i]->get_transform_type();
+		all_transform[i].string = (char*) PEN[i]->get_transform_type();
 		all_transform[i].length = strlen(PEN[i]->get_transform_type());		
 		min_values[i]=PEN[i]->get_min_value();
 		max_values[i]=PEN[i]->get_max_value();
@@ -5538,7 +5538,7 @@ bool CSGInterface::cmd_precompute_content_svms()
 	INT* all_pos = ui_structure->get_all_positions();
 
 	INT Nseq=0;
-	CHAR* seq;
+	char* seq;
 	seq = get_string(Nseq);
 
 	CDynProg* h = ui_structure->get_dyn_prog();
@@ -6149,7 +6149,7 @@ bool CSGInterface::cmd_crc()
 		return false;
 
 	INT slen=0;
-	CHAR* string=get_string(slen);
+	char* string=get_string(slen);
 	ASSERT(string);
 	BYTE* bstring=new BYTE[slen];
 
@@ -6170,16 +6170,16 @@ bool CSGInterface::cmd_system()
 		return false;
 
 	INT len=0;
-	CHAR* command=new CHAR[10000];
-	memset(command, 0, sizeof(CHAR)*10000);
-	CHAR* cmd=get_str_from_str_or_direct(len);
+	char* command=new char[10000];
+	memset(command, 0, sizeof(char)*10000);
+	char* cmd=get_str_from_str_or_direct(len);
 	strncat(command, cmd, 10000);
 	delete[] cmd;
 
 	while (m_rhs_counter<m_nrhs)
 	{
 		strncat(command, " ", 10000);
-		CHAR* arg=get_str_from_str_or_direct(len);
+		char* arg=get_str_from_str_or_direct(len);
 		strncat(command, arg, 10000);
 		delete[] arg;
 	}
@@ -6200,7 +6200,7 @@ bool CSGInterface::cmd_exec()
 		return false;
 
 	INT len=0;
-	CHAR* filename=get_str_from_str_or_direct(len);
+	char* filename=get_str_from_str_or_direct(len);
 	FILE* file=fopen(filename, "r");
 	if (!file)
 	{
@@ -6224,7 +6224,7 @@ bool CSGInterface::cmd_set_output()
 		return false;
 
 	INT len=0;
-	CHAR* filename=get_str_from_str_or_direct(len);
+	char* filename=get_str_from_str_or_direct(len);
 
 	if (file_out)
 		fclose(file_out);
@@ -6300,7 +6300,7 @@ bool CSGInterface::cmd_translate_string()
 
 	for (i=0; i<len; i++)
 	{
-		switch ((CHAR) string[i])
+		switch ((char) string[i])
 		{
 			case 'A': obs[i]=0; break;
 			case 'C': obs[i]=1; break;
@@ -6392,7 +6392,7 @@ bool CSGInterface::cmd_print()
 		return false;
 
 	INT len=0;
-	CHAR* msg=get_str_from_str_or_direct(len);
+	char* msg=get_str_from_str_or_direct(len);
 
 	SG_PRINT("%s\n", msg);
 
@@ -6406,7 +6406,7 @@ bool CSGInterface::cmd_echo()
 		return false;
 
 	INT len=0;
-	CHAR* level=get_str_from_str_or_direct(len);
+	char* level=get_str_from_str_or_direct(len);
 
 	if (strmatch(level, "OFF"))
 	{
@@ -6429,7 +6429,7 @@ bool CSGInterface::cmd_loglevel()
 		return false;
 
 	INT len=0;
-	CHAR* level=get_str_from_str_or_direct(len);
+	char* level=get_str_from_str_or_direct(len);
 
 	if (strmatch(level, "ALL") || strmatch(level, "DEBUG"))
 		io.set_loglevel(M_DEBUG);
@@ -6462,7 +6462,7 @@ bool CSGInterface::cmd_syntax_highlight()
 		return false;
 
 	INT len=0;
-	CHAR* hili=get_str_from_str_or_direct(len);
+	char* hili=get_str_from_str_or_direct(len);
 
 	if (strmatch(hili, "ON"))
 		hilight.set_ansi_syntax_hilighting();
@@ -6483,7 +6483,7 @@ bool CSGInterface::cmd_progress()
 		return false;
 
 	INT len=0;
-	CHAR* progress=get_str_from_str_or_direct(len);
+	char* progress=get_str_from_str_or_direct(len);
 
 	if (strmatch(progress, "ON"))
 		io.enable_progress();
@@ -6554,7 +6554,7 @@ bool CSGInterface::cmd_help()
 		bool found=false;
 		bool in_group=false;
 		INT clen=0;
-		CHAR* command=get_string(clen);
+		char* command=get_string(clen);
 
 		if (strmatch("doxygen", command) || strmatch("DOXYGEN", command))
 		{
@@ -6675,11 +6675,11 @@ bool CSGInterface::cmd_send_command()
 	SG_WARNING("ATTENTION: You are using a legacy command. Please consider using the new syntax as given by the help command!\n");
 
 	INT len=0;
-	CHAR* arg=get_string(len);
+	char* arg=get_string(len);
 	//SG_DEBUG("legacy: arg == %s\n", arg);
 	m_legacy_strptr=arg;
 
-	CHAR* command=get_str_from_str(len);
+	char* command=get_str_from_str(len);
 	INT i=0;
 	bool success=false;
 
@@ -6732,7 +6732,7 @@ void CSGInterface::print_prompt()
 // legacy-related methods
 ////////////////////////////////////////////////////////////////////////////
 
-CHAR* CSGInterface::get_str_from_str_or_direct(INT& len)
+char* CSGInterface::get_str_from_str_or_direct(INT& len)
 {
 	if (m_legacy_strptr)
 		return get_str_from_str(len);
@@ -6745,7 +6745,7 @@ INT CSGInterface::get_int_from_int_or_str()
 	if (m_legacy_strptr)
 	{
 		INT len=0;
-		CHAR* str=get_str_from_str(len);
+		char* str=get_str_from_str(len);
 		INT val=strtol(str, NULL, 10);
 
 		delete[] str;
@@ -6760,7 +6760,7 @@ DREAL CSGInterface::get_real_from_real_or_str()
 	if (m_legacy_strptr)
 	{
 		INT len=0;
-		CHAR* str=get_str_from_str(len);
+		char* str=get_str_from_str(len);
 		DREAL val=strtod(str, NULL);
 
 		delete[] str;
@@ -6775,7 +6775,7 @@ bool CSGInterface::get_bool_from_bool_or_str()
 	if (m_legacy_strptr)
 	{
 		INT len=0;
-		CHAR* str=get_str_from_str(len);
+		char* str=get_str_from_str(len);
 		bool val=strtol(str, NULL, 10)!=0;
 
 		delete[] str;
@@ -6797,7 +6797,7 @@ void CSGInterface::get_int_vector_from_int_vector_or_str(INT*& vector, INT& len)
 		}
 
 		vector=new INT[len];
-		CHAR* str=NULL;
+		char* str=NULL;
 		INT slen=0;
 		for (INT i=0; i<len; i++)
 		{
@@ -6823,7 +6823,7 @@ void CSGInterface::get_real_vector_from_real_vector_or_str(DREAL*& vector, INT& 
 		}
 
 		vector=new DREAL[len];
-		CHAR* str=NULL;
+		char* str=NULL;
 		INT slen=0;
 		for (INT i=0; i<len; i++)
 		{
@@ -6854,7 +6854,7 @@ INT CSGInterface::get_vector_len_from_str(INT expected_len)
 	return 0;
 }
 
-CHAR* CSGInterface::get_str_from_str(INT& len)
+char* CSGInterface::get_str_from_str(INT& len)
 {
 	if (!m_legacy_strptr)
 		return NULL;
@@ -6864,7 +6864,7 @@ CHAR* CSGInterface::get_str_from_str(INT& len)
 		i++;
 
 	len=i;
-	CHAR* str=new CHAR[len+1];
+	char* str=new char[len+1];
 	for (i=0; i<len; i++)
 		str[i]=m_legacy_strptr[i];
 	str[len]='\0';
@@ -6918,7 +6918,7 @@ bool CSGInterface::handle()
 	CSignal::set_handler();
 #endif
 
-	CHAR* command=NULL;
+	char* command=NULL;
 	command=interface->get_command(len);
 
 	SG_DEBUG("command: %s, nrhs %d\n", command, m_nrhs);

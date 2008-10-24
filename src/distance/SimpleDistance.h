@@ -100,6 +100,6 @@ template<> inline EFeatureType CSimpleDistance<BYTE>::get_feature_type() { retur
  *
  * @return feature type CHAR
  */
-template<> inline EFeatureType CSimpleDistance<CHAR>::get_feature_type() { return F_CHAR; }
+template<> inline EFeatureType CSimpleDistance<char>::get_feature_type() { return F_CHAR; }
 
 #endif

@@ -48,7 +48,7 @@ const DREAL CMath::ALMOST_NEG_INFTY =  -1000;
 #ifdef USE_LOGCACHE
 DREAL* CMath::logtable = NULL;
 #endif
-CHAR* CMath::rand_state = NULL;
+char* CMath::rand_state = NULL;
 UINT CMath::seed = 0;
 
 CMath::CMath()
@@ -57,7 +57,7 @@ CMath::CMath()
 #ifndef HAVE_SWIG
 	CSGObject::version.print_version();
 #endif
-	CMath::rand_state=new CHAR[RNG_SEED_SIZE];
+	CMath::rand_state=new char[RNG_SEED_SIZE];
 	init_random();
 #ifndef HAVE_SWIG
 	SG_PRINT("( seeding random number generator with %u (seed size %d))\n", seed, RNG_SEED_SIZE);
@@ -164,7 +164,7 @@ void CMath::sort(DREAL *a, INT* idx, INT N)
 	 
 } 
 
-DREAL CMath::Align(CHAR * seq1, CHAR* seq2, INT l1, INT l2, DREAL gapCost)
+DREAL CMath::Align(char * seq1, char* seq2, INT l1, INT l2, DREAL gapCost)
 {
   DREAL actCost=0 ;
   INT i1, i2 ;
@@ -338,7 +338,7 @@ INT CMath::calcroc(DREAL* fp, DREAL* tp, DREAL* output, INT* label, INT& size, I
 
 	if (rocfile)
 	{
-		const CHAR id[]="ROC";
+		const char id[]="ROC";
 		fwrite(id, sizeof(char), sizeof(id), rocfile);
 		fwrite(fp, sizeof(DREAL), size, rocfile);
 		fwrite(tp, sizeof(DREAL), size, rocfile);

@@ -79,7 +79,7 @@ class CTanimotoDistance: public CSimpleDistance<DREAL>
 		 *
 		 * @return name Tanimoto coefficient/distance
 		 */
-		virtual const CHAR* get_name() { return "Tanimoto coefficient/distance"; };
+		virtual const char* get_name() { return "Tanimoto coefficient/distance"; }
 
 	protected:
 		/// compute distance for features a and b

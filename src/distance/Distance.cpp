@@ -66,12 +66,12 @@ bool CDistance::init(CFeatures* l, CFeatures* r)
 	return true;
 }
 
-bool CDistance::load(CHAR* fname)
+bool CDistance::load(char* fname)
 {
 	return false;
 }
 
-bool CDistance::save(CHAR* fname)
+bool CDistance::save(char* fname)
 {
 	INT i=0;
 	INT num_left=lhs->get_num_vectors();

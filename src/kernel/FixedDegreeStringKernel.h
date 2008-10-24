@@ -26,7 +26,7 @@
  *     k'({\bf x}, {\bf x'})=\frac{k({\bf x}, {\bf x'})}{\sqrt{k({\bf x}, {\bf x})k({\bf x'}, {\bf x'})}}
  * \f]
  */
-class CFixedDegreeStringKernel: public CStringKernel<CHAR>
+class CFixedDegreeStringKernel: public CStringKernel<char>
 {
 	public:
 		/** constructor
@@ -43,7 +43,7 @@ class CFixedDegreeStringKernel: public CStringKernel<CHAR>
 		 * @param degree the degree
 		 */
 		CFixedDegreeStringKernel(
-			CStringFeatures<CHAR>* l, CStringFeatures<CHAR>* r,
+			CStringFeatures<char>* l, CStringFeatures<char>* r,
 			INT degree);
 
 		virtual ~CFixedDegreeStringKernel();
@@ -86,10 +86,7 @@ class CFixedDegreeStringKernel: public CStringKernel<CHAR>
 		 *
 		 * @return name FixedDegree
 		 */
-		virtual const CHAR* get_name()
-		{
-			return "FixedDegree";
-		}
+		virtual const char* get_name() { return "FixedDegree"; }
 
 	protected:
 		/** compute kernel function for features a and b

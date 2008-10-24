@@ -33,7 +33,7 @@ CGUILabels::~CGUILabels()
 	delete test_labels;
 }
 
-bool CGUILabels::load(CHAR* filename, CHAR* target)
+bool CGUILabels::load(char* filename, char* target)
 {
 	CLabels* labels=NULL;
 
@@ -65,7 +65,7 @@ bool CGUILabels::load(CHAR* filename, CHAR* target)
 	return false;
 }
 
-bool CGUILabels::save(CHAR* param)
+bool CGUILabels::save(char* param)
 {
 	bool result=false;
 	return result;

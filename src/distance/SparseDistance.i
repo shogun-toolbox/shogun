@@ -8,5 +8,5 @@
 
 %template(SparseRealDistance) CSparseDistance<DREAL>;
 %template(SparseWordDistance) CSparseDistance<WORD>;
-%template(SparseCharDistance) CSparseDistance<CHAR>;
+%template(SparseCharDistance) CSparseDistance<char>;
 %template(SparseIntDistance) CSparseDistance<INT>;

@@ -81,10 +81,10 @@ bool CGUIDistance::set_distance(CDistance* dist)
 		return false;
 }
 
-bool CGUIDistance::load_distance_init(CHAR* param)
+bool CGUIDistance::load_distance_init(char* param)
 {
 	bool result=false;
-	CHAR filename[1024]="";
+	char filename[1024]="";
 
 	if (distance)
 	{
@@ -111,10 +111,10 @@ bool CGUIDistance::load_distance_init(CHAR* param)
 	return result;
 }
 
-bool CGUIDistance::save_distance_init(CHAR* param)
+bool CGUIDistance::save_distance_init(char* param)
 {
 	bool result=false;
-	CHAR filename[1024]="";
+	char filename[1024]="";
 
 	if (distance)
 	{
@@ -143,7 +143,7 @@ bool CGUIDistance::save_distance_init(CHAR* param)
 }
 
 
-bool CGUIDistance::init_distance(CHAR* target)
+bool CGUIDistance::init_distance(char* target)
 {
 	SG_DEBUG("init_distance start\n.");
 
@@ -211,10 +211,10 @@ bool CGUIDistance::init_distance(CHAR* target)
 
 }
 
-bool CGUIDistance::save_distance(CHAR* param)
+bool CGUIDistance::save_distance(char* param)
 {
 	bool result=false;
-	CHAR filename[1024]="";
+	char filename[1024]="";
 
 	if (distance && initialized)
 	{

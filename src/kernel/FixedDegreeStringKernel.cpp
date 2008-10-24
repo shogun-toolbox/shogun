@@ -16,14 +16,14 @@
 #include "lib/io.h"
 
 CFixedDegreeStringKernel::CFixedDegreeStringKernel(INT size, INT d)
-: CStringKernel<CHAR>(size), degree(d)
+: CStringKernel<char>(size), degree(d)
 {
 	set_normalizer(new CSqrtDiagKernelNormalizer());
 }
 
 CFixedDegreeStringKernel::CFixedDegreeStringKernel(
-	CStringFeatures<CHAR>* l, CStringFeatures<CHAR>* r, INT d)
-: CStringKernel<CHAR>(10), degree(d)
+	CStringFeatures<char>* l, CStringFeatures<char>* r, INT d)
+: CStringKernel<char>(10), degree(d)
 {
 	set_normalizer(new CSqrtDiagKernelNormalizer());
 	init(l, r);
@@ -36,7 +36,7 @@ CFixedDegreeStringKernel::~CFixedDegreeStringKernel()
 
 bool CFixedDegreeStringKernel::init(CFeatures* l, CFeatures* r)
 {
-	CStringKernel<CHAR>::init(l, r);
+	CStringKernel<char>::init(l, r);
 	return init_normalizer();
 }
 
@@ -59,8 +59,8 @@ DREAL CFixedDegreeStringKernel::compute(INT idx_a, INT idx_b)
 {
 	INT alen, blen;
 
-	CHAR* avec = ((CStringFeatures<CHAR>*) lhs)->get_feature_vector(idx_a, alen);
-	CHAR* bvec = ((CStringFeatures<CHAR>*) rhs)->get_feature_vector(idx_b, blen);
+	char* avec = ((CStringFeatures<char>*) lhs)->get_feature_vector(idx_a, alen);
+	char* bvec = ((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen);
 
 	// can only deal with strings of same length
 	ASSERT(alen==blen);

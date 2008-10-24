@@ -81,7 +81,7 @@ template<> inline EFeatureType CStringKernel<SHORT>::get_feature_type() { return
 
 template<> inline EFeatureType CStringKernel<BYTE>::get_feature_type() { return F_BYTE; }
 
-template<> inline EFeatureType CStringKernel<CHAR>::get_feature_type() { return F_CHAR; }
+template<> inline EFeatureType CStringKernel<char>::get_feature_type() { return F_CHAR; }
 
 #endif /* _STRINGKERNEL_H__ */
 

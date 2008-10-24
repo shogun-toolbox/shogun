@@ -492,7 +492,7 @@ class CMath : public CSGObject
 		}
 
 		/// compute dot product between v1 and v2 (for 8bit (un)signed ints)
-		static inline DREAL dot(const CHAR* v1, const CHAR* v2, INT n)
+		static inline DREAL dot(const char* v1, const char* v2, INT n)
 		{
 			DREAL r=0;
 			for (INT i=0; i<n; i++)
@@ -512,7 +512,7 @@ class CMath : public CSGObject
 		}
 
 		/// compute dot product between v1 and v2
-		static inline DREAL dot(const DREAL* v1, const CHAR* v2, INT n)
+		static inline DREAL dot(const DREAL* v1, const char* v2, INT n)
 		{
 			DREAL r=0;
 			for (INT i=0; i<n; i++)
@@ -887,7 +887,7 @@ class CMath : public CSGObject
 
 		/// align two sequences seq1 & seq2 of length l1 and l2 using gapCost
 		/// return alignment cost
-		static DREAL Align(CHAR * seq1, CHAR* seq2, INT l1, INT l2, DREAL gapCost);
+		static DREAL Align(char * seq1, char* seq2, INT l1, INT l2, DREAL gapCost);
 
 		/** calculates ROC into (fp,tp)
 		 * from output and label of length size 
@@ -1017,7 +1017,7 @@ class CMath : public CSGObject
 				///table with log-values
 				static DREAL* logtable;	
 #endif
-				static CHAR* rand_state;
+				static char* rand_state;
 };
 
 	template <class T1,class T2>

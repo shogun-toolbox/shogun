@@ -188,7 +188,7 @@ INT CDynProg::get_num_svms()
 {
 	return num_svms;
 }
-void CDynProg::precompute_stop_codons(const CHAR* sequence, INT length)
+void CDynProg::precompute_stop_codons(const char* sequence, INT length)
 {
 	m_genestr_stop.resize_array(length) ;
 	m_genestr_stop.zero() ;
@@ -298,7 +298,7 @@ void CDynProg::precompute_tiling_plifs(CPlif** PEN, const INT* tiling_plif_ids, 
 	//SG_PRINT("nummm:%i\n",nummm);
 
 }
-void CDynProg::create_word_string(const CHAR* genestr, INT genestr_num, INT genestr_len, WORD*** wordstr)
+void CDynProg::create_word_string(const char* genestr, INT genestr_num, INT genestr_len, WORD*** wordstr)
 {
 	for (INT k=0; k<genestr_num; k++)
 	{
@@ -816,7 +816,7 @@ void CDynProg::best_path_set_plif_state_signal_matrix(INT *plif_id_matrix, INT m
 	m_step=6 ;
 }
 
-void CDynProg::best_path_set_genestr(CHAR* genestr, INT genestr_len, INT genestr_num)
+void CDynProg::best_path_set_genestr(char* genestr, INT genestr_len, INT genestr_num)
 {
 	if (m_step!=6)
 		SG_ERROR( "please call best_path_set_plif_id_matrix first\n") ;

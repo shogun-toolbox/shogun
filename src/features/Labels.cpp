@@ -39,7 +39,7 @@ CLabels::CLabels(DREAL* p_labels, INT len)
     set_labels(p_labels, len);
 }
 
-CLabels::CLabels(CHAR* fname)
+CLabels::CLabels(char* fname)
 : CSGObject()
 {
 	num_labels=0;
@@ -151,7 +151,7 @@ void CLabels::set_int_labels(INT * mylabels, INT len)
 		set_int_label(i, mylabels[i]) ;
 }
 
-bool CLabels::load(CHAR* fname)
+bool CLabels::load(char* fname)
 {
 	bool status=false;
 
@@ -175,7 +175,7 @@ bool CLabels::load(CHAR* fname)
 	return status;
 }
 
-bool CLabels::save(CHAR* fname)
+bool CLabels::save(char* fname)
 {
 	return false;
 }

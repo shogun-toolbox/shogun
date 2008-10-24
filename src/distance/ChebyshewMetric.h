@@ -75,7 +75,7 @@ class CChebyshewMetric: public CSimpleDistance<DREAL>
 		 *
 		 * @return name Chebyshew-Metric
 		 */
-		virtual const CHAR* get_name() { return "Chebyshew-Metric"; };
+		virtual const char* get_name() { return "Chebyshew-Metric"; }
 
 	protected:
 		/// compute distance for features a and b

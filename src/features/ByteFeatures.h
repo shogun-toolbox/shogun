@@ -54,7 +54,7 @@ class CByteFeatures : public CSimpleFeatures<BYTE>
 		 * @param alphabet alphabet (type) to use
 		 * @param fname filename to load features from
 		 */
-		CByteFeatures(EAlphabet alphabet, CHAR* fname);
+		CByteFeatures(EAlphabet alphabet, char* fname);
 
 		~CByteFeatures();
 
@@ -91,14 +91,14 @@ class CByteFeatures : public CSimpleFeatures<BYTE>
 		 * @param fname filename to load from
 		 * @return if loading was successful
 		 */
-		virtual bool load(CHAR* fname);
+		virtual bool load(char* fname);
 
 		/** save features to file
 		 *
 		 * @param fname filename to save to
 		 * @return if saving was successful
 		 */
-		virtual bool save(CHAR* fname);
+		virtual bool save(char* fname);
 
 	protected:
 		/** alphabet */

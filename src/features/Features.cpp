@@ -30,7 +30,7 @@ CFeatures::CFeatures(const CFeatures& orig)
 	memcpy(preprocessed, orig.preprocessed, sizeof(bool)*orig.num_preproc);
 }
 
-CFeatures::CFeatures(CHAR* fname)
+CFeatures::CFeatures(char* fname)
 : CSGObject(), cache_size(0), preproc(NULL), num_preproc(0),
 	preprocessed(false)
 {
@@ -210,12 +210,12 @@ void CFeatures::list_feature_obj()
 	}
 }
 
-bool CFeatures::load(CHAR* fname)
+bool CFeatures::load(char* fname)
 {
 	return false;
 }
 
-bool CFeatures::save(CHAR* fname)
+bool CFeatures::save(char* fname)
 {
 	return false;
 }

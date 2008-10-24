@@ -21,7 +21,7 @@
  *
  * Note: Basically the same as LinearByteKernel but on signed chars.
  */
-class CLinearStringKernel: public CStringKernel<CHAR>
+class CLinearStringKernel: public CStringKernel<char>
 {
 	public:
 		/** constructor
@@ -33,7 +33,7 @@ class CLinearStringKernel: public CStringKernel<CHAR>
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 */
-		CLinearStringKernel(CStringFeatures<CHAR>* l, CStringFeatures<CHAR>* r);
+		CLinearStringKernel(CStringFeatures<char>* l, CStringFeatures<char>* r);
 
 		virtual ~CLinearStringKernel();
 
@@ -75,7 +75,7 @@ class CLinearStringKernel: public CStringKernel<CHAR>
 		 *
 		 * @return name FixedDegree
 		 */
-		virtual const CHAR* get_name()
+		virtual const char* get_name()
 		{
 			return "Linear";
 		}

@@ -34,7 +34,7 @@ template <class ST> class CSimplePreProc : public CPreProc
 		 * @param name simple preprocessor's name
 		 * @param id simple preprocessor's id
 		 */
-		CSimplePreProc(const CHAR *name, const CHAR* id) : CPreProc(name,id) {}
+		CSimplePreProc(const char *name, const char* id) : CPreProc(name,id) {}
 
 		/// apply preproc on feature matrix
 		/// result in feature matrix
@@ -67,7 +67,7 @@ template<> inline EFeatureType CSimplePreProc<WORD>::get_feature_type()
 	return F_WORD;
 }
 
-template<> inline EFeatureType CSimplePreProc<CHAR>::get_feature_type()
+template<> inline EFeatureType CSimplePreProc<char>::get_feature_type()
 {
 	return F_CHAR;
 }

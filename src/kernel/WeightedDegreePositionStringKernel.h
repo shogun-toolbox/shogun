@@ -40,7 +40,7 @@ class CSVM ;
  *   to shifts (in either direction) of extent s, and S(l) determines
  *   the shift range at position l.
  */
-class CWeightedDegreePositionStringKernel: public CStringKernel<CHAR>
+class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 {
 	public:
 		/** constructor
@@ -74,7 +74,7 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<CHAR>
 		 * @param degree degree
 		 */
 		CWeightedDegreePositionStringKernel(
-			CStringFeatures<CHAR>* l, CStringFeatures<CHAR>* r,
+			CStringFeatures<char>* l, CStringFeatures<char>* r,
 			INT degree);
 
 		virtual ~CWeightedDegreePositionStringKernel();
@@ -114,7 +114,7 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<CHAR>
 		 *
 		 * @return name WeightedDegreePos
 		 */
-		virtual const CHAR* get_name() { return "WeightedDegreePos" ; } ;
+		virtual const char* get_name() { return "WeightedDegreePos" ; } ;
 
 		/** initialize optimization
 		 *
@@ -530,7 +530,7 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<CHAR>
 		 * @param alphas alphas
 		 * @return consensus string
 		 */
-		CHAR* compute_consensus(INT &num_feat, INT num_suppvec, INT* IDX,
+		char* compute_consensus(INT &num_feat, INT num_suppvec, INT* IDX,
 			DREAL* alphas);
 
 		/** extract w
@@ -625,8 +625,8 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<CHAR>
 		 * @param blen length of vector b
 		 * @return computed value
 		 */
-		DREAL compute_with_mismatch(CHAR* avec, INT alen,
-			CHAR* bvec, INT blen);
+		DREAL compute_with_mismatch(char* avec, INT alen,
+			char* bvec, INT blen);
 
 		/** compute without mismatch
 		 *
@@ -636,8 +636,8 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<CHAR>
 		 * @param blen length of vector b
 		 * @return computed value
 		 */
-		DREAL compute_without_mismatch(CHAR* avec, INT alen,
-			CHAR* bvec, INT blen);
+		DREAL compute_without_mismatch(char* avec, INT alen,
+			char* bvec, INT blen);
 
 		/** compute without mismatch matrix
 		 *
@@ -647,8 +647,8 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<CHAR>
 		 * @param blen length of vector b
 		 * @return computed value
 		 */
-		DREAL compute_without_mismatch_matrix(CHAR* avec, INT alen,
-			CHAR* bvec, INT blen);
+		DREAL compute_without_mismatch_matrix(char* avec, INT alen,
+			char* bvec, INT blen);
 
 		/** compute without mismatch position weights
 		 *
@@ -661,8 +661,8 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<CHAR>
 		 * @return computed value
 		 */
 		DREAL compute_without_mismatch_position_weights(
-			CHAR* avec, DREAL *posweights_lhs, INT alen,
-			CHAR* bvec, DREAL *posweights_rhs, INT blen);
+			char* avec, DREAL *posweights_lhs, INT alen,
+			char* bvec, DREAL *posweights_rhs, INT blen);
 
 		/** remove lhs from kernel */
 		virtual void remove_lhs();

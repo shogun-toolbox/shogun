@@ -84,6 +84,6 @@ template<> inline EFeatureType CSparseKernel<SHORT>::get_feature_type() { return
 
 template<> inline EFeatureType CSparseKernel<BYTE>::get_feature_type() { return F_BYTE; }
 
-template<> inline EFeatureType CSparseKernel<CHAR>::get_feature_type() { return F_CHAR; }
+template<> inline EFeatureType CSparseKernel<char>::get_feature_type() { return F_CHAR; }
 
 #endif /* _SPARSEKERNEL_H__ */

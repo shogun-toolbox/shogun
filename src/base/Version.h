@@ -37,12 +37,12 @@ public:
 		SG_SPRINT( "( configure options: \"%s\" compile flags: \"%s\" link flags: \"%s\" )\n", CONFIGURE_OPTIONS, COMPFLAGS_CPP, LINKFLAGS);
 	}
 
-	static inline const CHAR* get_version_extra()
+	static inline const char* get_version_extra()
 	{
 		return version_extra;
 	}
 
-	static inline const CHAR* get_version_release()
+	static inline const char* get_version_release()
 	{
 		return version_release;
 	}
@@ -82,8 +82,8 @@ public:
 		return ((((version_year)*12 + version_month)*30 + version_day)* 24 + version_hour)*60 + version_minute;
 	}
 
-	static const CHAR version_release[128];
-	static const CHAR version_extra[128];
+	static const char version_release[128];
+	static const char version_extra[128];
 
 	static const INT version_revision;
 	static const INT version_year;

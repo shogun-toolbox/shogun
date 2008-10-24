@@ -16,7 +16,7 @@ REPLACEMENTS=[
 	[' BYTE', ' int'],
 	[' SHORT', ' int'],
 	[' WORD', ' int'],
-	[' CHAR', ' str'],
+	[' char', ' str'],
 	['-> CFeatures', '-> Features'],
 ]
 

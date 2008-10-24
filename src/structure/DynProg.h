@@ -305,7 +305,7 @@ public:
 	 * @param genestr_len length of gene string
 	 * @param genestr_num number of gene strings, typically 1
 	 */
-	void best_path_set_genestr(CHAR* genestr, INT genestr_len, INT genestr_num);
+	void best_path_set_genestr(char* genestr, INT genestr_len, INT genestr_num);
 
 	// additional best_path_trans_deriv functions
 	/** set best path my state sequence
@@ -327,7 +327,7 @@ public:
 	 * @param genestr gene string
 	 * @param genestr_len length of gene string
 	 */
-	inline void best_path_set_single_genestr(CHAR* genestr, INT genestr_len)
+	inline void best_path_set_single_genestr(char* genestr, INT genestr_len)
 	{
 		SG_DEBUG("genestrpy: %d", genestr_len);
 		best_path_set_genestr(genestr, genestr_len, 1);
@@ -595,14 +595,14 @@ public:
 	 * @param genestr_len length of gene string
 	 * @param wordstr word strings
 	 */
-	void create_word_string(const CHAR* genestr, INT genestr_num, INT genestr_len, WORD*** wordstr);
+	void create_word_string(const char* genestr, INT genestr_num, INT genestr_len, WORD*** wordstr);
 
 	/** precompute stop codons
 	 *
 	 * @param genestr gene string
 	 * @param genestr_len length of gene string
 	 */
-	void precompute_stop_codons(const CHAR* genestr, INT genestr_len);
+	void precompute_stop_codons(const char* genestr, INT genestr_len);
 
 	/** set genestr len
 	 *
@@ -972,7 +972,7 @@ protected:
 	/** m PEN state signals */
 	CArray2<CPlifBase*> m_PEN_state_signals;
 	/** m genestr */
-	CArray2<CHAR> m_genestr;
+	CArray2<char> m_genestr;
 	/** m dict weights */
 	CArray2<DREAL> m_dict_weights;
 	/** m segment loss */

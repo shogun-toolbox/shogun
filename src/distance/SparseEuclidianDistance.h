@@ -71,7 +71,7 @@ class CSparseEuclidianDistance: public CSparseDistance<DREAL>
 		 *
 		 * @return name SparseEuclidian
 		 */
-		virtual const CHAR* get_name() { return "SparseEuclidian" ; } ;
+		virtual const char* get_name() { return "SparseEuclidian"; }
 
 	protected:
 		/// compute kernel function for features a and b

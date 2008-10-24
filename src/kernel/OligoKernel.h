@@ -36,7 +36,7 @@
  * diagonally dominant.
  *
  */
-class COligoKernel : public CStringKernel<CHAR>
+class COligoKernel : public CStringKernel<char>
 {
 	public:
 		/** Constructor
@@ -84,7 +84,7 @@ class COligoKernel : public CStringKernel<CHAR>
 		 *
 		 * @return name OLIGO
 		 */
-		virtual const CHAR* get_name() { return "Oligo"; }
+		virtual const char* get_name() { return "Oligo"; }
 
 
 		virtual DREAL compute(INT x, INT y);

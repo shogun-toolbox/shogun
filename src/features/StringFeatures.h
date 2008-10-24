@@ -44,11 +44,11 @@ template <class T> struct T_STRING
 	INT length;
 };
 
-template <class T> CHAR* get_zero_terminated_string_copy(T_STRING<T> str)
+template <class T> char* get_zero_terminated_string_copy(T_STRING<T> str)
 {
 	INT l=str.length;
-	CHAR* s=new CHAR[l+1];
-	memcpy(s, str.string, sizeof(CHAR)*l);
+	char* s=new char[l+1];
+	memcpy(s, str.string, sizeof(char)*l);
 	s[l]='\0';
 	return s;
 }
@@ -388,14 +388,14 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param fname filename to load from
 		 * @return if loading was successful
 		 */
-		virtual bool load(CHAR* fname)
+		virtual bool load(char* fname)
 		{
 			SG_INFO( "loading...\n");
 			LONG length=0;
 			max_string_length=0;
 
 			CFile f(fname, 'r', F_CHAR);
-			CHAR* feature_matrix=f.load_char_data(NULL, length);
+			char* feature_matrix=f.load_char_data(NULL, length);
 
 			num_vectors=0;
 
@@ -413,7 +413,7 @@ template <class ST> class CStringFeatures : public CFeatures
 				long index=0;
 				for (INT lines=0; lines<num_vectors; lines++)
 				{
-					CHAR* p=&feature_matrix[index];
+					char* p=&feature_matrix[index];
 					INT columns=0;
 
 					for (columns=0; index+columns<length && p[columns]!='\n'; columns++);
@@ -448,7 +448,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param remap_to_bin if remap_to_bin
 		 * @return if loading was successful
 		 */
-		bool load_dna_file(CHAR* fname, bool remap_to_bin=true)
+		bool load_dna_file(char* fname, bool remap_to_bin=true)
 		{
 			bool result=false;
 
@@ -581,7 +581,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param dirname directory name to load from
 		 * @return if loading was successful
 		 */
-		bool load_from_directory(CHAR* dirname)
+		bool load_from_directory(char* dirname)
 		{
 			struct dirent **namelist;
 			int n;
@@ -608,7 +608,7 @@ template <class ST> class CStringFeatures : public CFeatures
 
 				for (int i=0; i<n; i++)
 				{
-					CHAR* fname=io.concat_filename(namelist[i]->d_name);
+					char* fname=io.concat_filename(namelist[i]->d_name);
 
 					struct stat s;
 					off_t filesize=0;
@@ -710,7 +710,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param dest filename to save to
 		 * @return if saving was successful
 		 */
-		virtual bool save(CHAR* dest)
+		virtual bool save(char* dest)
 		{
 			return false;
 		}
@@ -863,7 +863,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param rev reverse
 		 * @return if obtaining was successful
 		 */
-		inline bool obtain_from_char(CStringFeatures<CHAR>* sf, INT start, INT p_order, INT gap, bool rev)
+		inline bool obtain_from_char(CStringFeatures<char>* sf, INT start, INT p_order, INT gap, bool rev)
 		{
 			return obtain_from_char_features(sf, start, p_order, gap, rev);
 		}
@@ -1234,11 +1234,11 @@ template <class ST> class CStringFeatures : public CFeatures
 		ST* symbol_mask_table;
 };
 
-/** get feature type the CHAR feature can deal with
+/** get feature type the char feature can deal with
  *
- * @return feature type CHAR
+ * @return feature type char
  */
-template<> inline EFeatureType CStringFeatures<CHAR>::get_feature_type()
+template<> inline EFeatureType CStringFeatures<char>::get_feature_type()
 {
 	return F_CHAR;
 }

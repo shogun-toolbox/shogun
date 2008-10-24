@@ -36,10 +36,10 @@ const EMessageType CIO::levels[NUM_LOG_LEVELS]={M_DEBUG, M_INFO, M_NOTICE, M_WAR
 const char* CIO::message_strings[NUM_LOG_LEVELS]={"[DEBUG] ", "[INFO] ", "[NOTICE] ", "\033[1;34m[WARN]\033[0m ", "\033[1;31m[ERROR]\033[0m ", "[CRITICAL] ", "[ALERT] ", "[EMERGENCY] ", ""};
 
 /// file name buffer
-CHAR file_buffer[FBUFSIZE];
+char file_buffer[FBUFSIZE];
 
 /// directory name buffer
-CHAR directory_name[FBUFSIZE];
+char directory_name[FBUFSIZE];
 
 CIO::CIO() : target(stdout), last_progress_time(0), progress_start_time(0),
 	last_progress(1), show_progress(false), loglevel(M_WARN)
@@ -52,13 +52,13 @@ CIO::CIO(const CIO& orig) : target(orig.get_target()), last_progress_time(0),
 {
 }
 
-void CIO::message(EMessageType prio, const CHAR *fmt, ... ) const
+void CIO::message(EMessageType prio, const char *fmt, ... ) const
 {
-	const CHAR* msg_intro=get_msg_intro(prio);
+	const char* msg_intro=get_msg_intro(prio);
 	if (!msg_intro)
 		return;
 
-	CHAR str[4096];
+	char str[4096];
 	va_list list;
 	va_start(list,fmt);
 	vsnprintf(str, sizeof(str), fmt, list);
@@ -145,9 +145,9 @@ void CIO::message(EMessageType prio, const CHAR *fmt, ... ) const
 	fflush(target);
 }
 
-void CIO::buffered_message(EMessageType prio, const CHAR *fmt, ... ) const
+void CIO::buffered_message(EMessageType prio, const char *fmt, ... ) const
 {
-	const CHAR* msg_intro=get_msg_intro(prio);
+	const char* msg_intro=get_msg_intro(prio);
 	if (!msg_intro)
 		return;
 
@@ -266,7 +266,7 @@ void CIO::done()
 	message(M_INFO, "done.\n");
 }
 
-CHAR* CIO::skip_spaces(CHAR* str)
+char* CIO::skip_spaces(char* str)
 {
 	INT i=0;
 
@@ -280,7 +280,7 @@ CHAR* CIO::skip_spaces(CHAR* str)
 		return str;
 }
 
-CHAR* CIO::skip_blanks(CHAR* str)
+char* CIO::skip_blanks(char* str)
 {
 	INT i=0;
 
@@ -314,7 +314,7 @@ void CIO::set_target(FILE* t)
 	target=t;
 }
 
-const CHAR* CIO::get_msg_intro(EMessageType prio) const
+const char* CIO::get_msg_intro(EMessageType prio) const
 {
 	for (INT i=NUM_LOG_LEVELS-1; i>=0; i--)
 	{
@@ -330,7 +330,7 @@ const CHAR* CIO::get_msg_intro(EMessageType prio) const
 	return NULL;
 }
 
-CHAR* CIO::concat_filename(const CHAR* filename)
+char* CIO::concat_filename(const char* filename)
 {
 	if (snprintf(file_buffer, FBUFSIZE, "%s/%s", directory_name, filename) > FBUFSIZE)
 		SG_SERROR("filename too long");
@@ -341,7 +341,7 @@ int CIO::filter(CONST_DIRENT_T* d)
 {
 	if (d)
 	{
-		CHAR* fname=concat_filename(d->d_name);
+		char* fname=concat_filename(d->d_name);
 
 		if (!access(fname, R_OK))
 		{

@@ -16,14 +16,14 @@
 
 CLocalityImprovedStringKernel::CLocalityImprovedStringKernel(
 	INT size, INT l, INT id, INT od)
-: CStringKernel<CHAR>(size), length(l), inner_degree(id), outer_degree(od)
+: CStringKernel<char>(size), length(l), inner_degree(id), outer_degree(od)
 {
 	SG_INFO( "LIK with parms: l=%d, id=%d, od=%d created!\n", l, id, od);
 }
 
 CLocalityImprovedStringKernel::CLocalityImprovedStringKernel(
-	CStringFeatures<CHAR>* l, CStringFeatures<CHAR>* r, INT len, INT id, INT od)
-: CStringKernel<CHAR>(10), length(len), inner_degree(id), outer_degree(od)
+	CStringFeatures<char>* l, CStringFeatures<char>* r, INT len, INT id, INT od)
+: CStringKernel<char>(10), length(len), inner_degree(id), outer_degree(od)
 {
 	SG_INFO( "LIK with parms: l=%d, id=%d, od=%d created!\n", len, id, od);
 
@@ -37,7 +37,7 @@ CLocalityImprovedStringKernel::~CLocalityImprovedStringKernel()
 
 bool CLocalityImprovedStringKernel::init(CFeatures* l, CFeatures* r)
 {
-	CStringKernel<CHAR>::init(l,r);
+	CStringKernel<char>::init(l,r);
 	return init_normalizer();
 }
 
@@ -55,8 +55,8 @@ DREAL CLocalityImprovedStringKernel::compute(INT idx_a, INT idx_b)
 {
 	INT alen, blen;
 
-	CHAR* avec = ((CStringFeatures<CHAR>*) lhs)->get_feature_vector(idx_a, alen);
-	CHAR* bvec = ((CStringFeatures<CHAR>*) rhs)->get_feature_vector(idx_b, blen);
+	char* avec = ((CStringFeatures<char>*) lhs)->get_feature_vector(idx_a, alen);
+	char* bvec = ((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen);
 	// can only deal with strings of same length
 	ASSERT(alen==blen && alen>0);
 

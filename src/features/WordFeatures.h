@@ -52,7 +52,7 @@ class CWordFeatures : public CSimpleFeatures<WORD>
 		 * @param fname filename to load features from
 		 * @param num_sym number of symbols
 		 */
-		CWordFeatures(CHAR* fname, INT num_sym = (1<<16));
+		CWordFeatures(char* fname, INT num_sym = (1<<16));
 
 		virtual ~CWordFeatures();
 
@@ -96,14 +96,14 @@ class CWordFeatures : public CSimpleFeatures<WORD>
 		 * @param fname filename to load from
 		 * @return if loading was successful
 		 */
-		virtual bool load(CHAR* fname);
+		virtual bool load(char* fname);
 
 		/** save features to file
 		 *
 		 * @param fname filename to save to
 		 * @return if saving was successful
 		 */
-		virtual bool save(CHAR* fname);
+		virtual bool save(char* fname);
 
 		/** get number of symbols
 		 *

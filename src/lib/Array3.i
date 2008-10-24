@@ -5,7 +5,7 @@
 
 %include "lib/Array3.h"
 
-%template(CharArray3) CArray3<CHAR>;
+%template(CharArray3) CArray3<char>;
 %template(ByteArray3) CArray3<BYTE>;
 %template(ShortArray3) CArray3<SHORT>;
 %template(WordArray3) CArray3<WORD>;

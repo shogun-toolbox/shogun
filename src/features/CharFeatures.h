@@ -19,7 +19,7 @@
  * It inherits its functionality from CSimpleFeatures, which should be
  * consulted for further reference.
  */
-class CCharFeatures : public CSimpleFeatures<CHAR>
+class CCharFeatures : public CSimpleFeatures<char>
 {
 	public:
 		/** constructor
@@ -46,14 +46,14 @@ class CCharFeatures : public CSimpleFeatures<CHAR>
 		 * @param num_feat number of features in matrix
 		 * @param num_vec number of vectors in matrix
 		 */
-		CCharFeatures(EAlphabet alphabet, CHAR* feature_matrix, INT num_feat, INT num_vec);
+		CCharFeatures(EAlphabet alphabet, char* feature_matrix, INT num_feat, INT num_vec);
 
 		/** constructor
 		 *
 		 * @param alphabet alphabet (type) to use
 		 * @param fname filename to load features from
 		 */
-		CCharFeatures(EAlphabet alphabet, CHAR* fname);
+		CCharFeatures(EAlphabet alphabet, char* fname);
 
 		~CCharFeatures();
 
@@ -74,9 +74,9 @@ class CCharFeatures : public CSimpleFeatures<CHAR>
 		 * @param num_feat number of features
 		 * @param num_vec number of vectors
 		 */
-		inline virtual void copy_feature_matrix(CHAR* src, INT num_feat, INT num_vec)
+		inline virtual void copy_feature_matrix(char* src, INT num_feat, INT num_vec)
 		{
-			CSimpleFeatures<CHAR>::copy_feature_matrix(src, num_feat, num_vec);
+			CSimpleFeatures<char>::copy_feature_matrix(src, num_feat, num_vec);
 		}
 
 		/** load features from file
@@ -84,14 +84,14 @@ class CCharFeatures : public CSimpleFeatures<CHAR>
 		 * @param fname filename to load from
 		 * @return if loading was successful
 		 */
-		virtual bool load(CHAR* fname);
+		virtual bool load(char* fname);
 
 		/** save features to file
 		 *
 		 * @param fname filename to save to
 		 * @return if saving was successful
 		 */
-		virtual bool save(CHAR* fname);
+		virtual bool save(char* fname);
 
 	protected:
 		/** alphabet */

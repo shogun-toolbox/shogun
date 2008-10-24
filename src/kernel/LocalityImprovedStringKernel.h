@@ -25,7 +25,7 @@
  * where
  * \f$ I_i({\bf x},{\bf x'})=1\f$ if \f$x_i=x'_i\f$ and 0 otherwise.
  */
-class CLocalityImprovedStringKernel: public CStringKernel<CHAR>
+class CLocalityImprovedStringKernel: public CStringKernel<char>
 {
 	public:
 		/** constructor
@@ -47,7 +47,7 @@ class CLocalityImprovedStringKernel: public CStringKernel<CHAR>
 		 * @param outer_degree outer degree
 		 */
 		CLocalityImprovedStringKernel(
-			CStringFeatures<CHAR>* l, CStringFeatures<CHAR>* r,
+			CStringFeatures<char>* l, CStringFeatures<char>* r,
 			INT length, INT inner_degree, INT outer_degree);
 
 		virtual ~CLocalityImprovedStringKernel();
@@ -84,7 +84,7 @@ class CLocalityImprovedStringKernel: public CStringKernel<CHAR>
 		 *
 		 * @return name LocalityImproved
 		 */
-		virtual const CHAR* get_name() { return "LocalityImproved"; }
+		virtual const char* get_name() { return "LocalityImproved"; }
 
 	protected:
 		/** compute kernel function for features a and b

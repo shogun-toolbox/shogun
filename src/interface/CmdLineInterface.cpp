@@ -35,17 +35,17 @@ CCmdLineInterface::~CCmdLineInterface()
 	delete m_rhs;
 }
 
-void CCmdLineInterface::reset(const CHAR* line)
+void CCmdLineInterface::reset(const char* line)
 {
 	CSGInterface::reset();
 
 	if (!line)
 		return;
 
-	CHAR* element=NULL;
-	CHAR delim_equal[]="=";
-	CHAR delim_lhs[]="=, \t\n";
-	CHAR delim_rhs[]=" \t\n";
+	char* element=NULL;
+	char delim_equal[]="=";
+	char delim_lhs[]="=, \t\n";
+	char delim_rhs[]=" \t\n";
 
 	delete m_lhs;
 	m_lhs=NULL;
@@ -53,17 +53,17 @@ void CCmdLineInterface::reset(const CHAR* line)
 	m_rhs=NULL;
 
 	// split lhs from rhs
-	CHAR* equal_sign=strstr(line, delim_equal);
+	char* equal_sign=strstr(line, delim_equal);
 	if (equal_sign)
 	//if (strstr(line, delim_equal))
 	{
 #ifdef DEBUG_CMDLINEIF
 		SG_PRINT("has lhs!\n");
 #endif
-		element=strtok((CHAR*) line, delim_lhs);
+		element=strtok((char*) line, delim_lhs);
 		if (element)
 		{
-			m_lhs=new CDynamicArray<CHAR*>();
+			m_lhs=new CDynamicArray<char*>();
 			m_lhs->append_element(element);
 			m_nlhs++;
 			while ((element=strtok(NULL, delim_lhs)))
@@ -77,11 +77,11 @@ void CCmdLineInterface::reset(const CHAR* line)
 		}
 	}
 	else
-		element=strtok((CHAR*) line, delim_rhs);
+		element=strtok((char*) line, delim_rhs);
 
 	if (element)
 	{
-		m_rhs=new CDynamicArray<CHAR*>();
+		m_rhs=new CDynamicArray<char*>();
 		m_rhs->append_element(element);
 		m_nrhs++;
 		while ((element=strtok(NULL, delim_rhs)))
@@ -129,22 +129,22 @@ IFType CCmdLineInterface::get_argument_type()
 {
 	const INT len=1024;
 	IFType argtype=UNDEFINED;
-	const CHAR* filename=m_rhs->get_element(m_rhs_counter);
+	const char* filename=m_rhs->get_element(m_rhs_counter);
 
 	// read the first 1024 of the file and heuristically decide about its
 	// content
-	FILE* fh=fopen((CHAR*) filename, "r");
+	FILE* fh=fopen((char*) filename, "r");
 	if (!fh)
 		SG_ERROR("Could not find file %s.\n", filename);
 
-	CHAR* chunk=new CHAR[len+1];
-	memset(chunk, 0, sizeof(CHAR)*(len+1));
-	size_t nread=fread(chunk, sizeof(CHAR), len, fh);
+	char* chunk=new char[len+1];
+	memset(chunk, 0, sizeof(char)*(len+1));
+	size_t nread=fread(chunk, sizeof(char), len, fh);
 	fclose(fh);
 	if (nread<=0)
 		SG_ERROR("Could not read data from %s.\n");
 
-	CHAR* signature=new CHAR[len+1];
+	char* signature=new char[len+1];
 	INT num=sscanf(chunk, "### SHOGUN V0 %s\n", signature);
 
 	// if file has valid shogun signature use it to determine file type
@@ -196,7 +196,7 @@ IFType CCmdLineInterface::get_argument_type()
 
 INT CCmdLineInterface::get_int()
 {
-	const CHAR* i=get_arg_increment();
+	const char* i=get_arg_increment();
 	if (!i)
 		SG_ERROR("Expected Scalar Integer as argument %d\n", m_rhs_counter);
 
@@ -210,7 +210,7 @@ INT CCmdLineInterface::get_int()
 
 DREAL CCmdLineInterface::get_real()
 {
-	const CHAR* r=get_arg_increment();
+	const char* r=get_arg_increment();
 	if (!r)
 		SG_ERROR("Expected Scalar Real as argument %d\n", m_rhs_counter);
 
@@ -224,7 +224,7 @@ DREAL CCmdLineInterface::get_real()
 
 bool CCmdLineInterface::get_bool()
 {
-	const CHAR* b=get_arg_increment();
+	const char* b=get_arg_increment();
 	if (!b)
 		SG_ERROR("Expected Scalar Bool as argument %d\n", m_rhs_counter);
 
@@ -237,17 +237,17 @@ bool CCmdLineInterface::get_bool()
 }
 
 
-CHAR* CCmdLineInterface::get_string(INT& len)
+char* CCmdLineInterface::get_string(INT& len)
 {
-	const CHAR* s=get_arg_increment();
+	const char* s=get_arg_increment();
 	if (!s)
 		SG_ERROR("Expected 1 String as argument %d.\n", m_rhs_counter);
 
 	len=strlen(s);
 	ASSERT(len>0);
 
-	CHAR* result=new CHAR[len+1];
-	memcpy(result, s, len*sizeof(CHAR));
+	char* result=new char[len+1];
+	memcpy(result, s, len*sizeof(char));
 	result[len]='\0';
 
 	return result;
@@ -259,7 +259,7 @@ void CCmdLineInterface::get_byte_vector(BYTE*& vec, INT& len)
 	len=0;
 }
 
-void CCmdLineInterface::get_char_vector(CHAR*& vec, INT& len)
+void CCmdLineInterface::get_char_vector(char*& vec, INT& len)
 {
 	vec=NULL;
 	len=0;
@@ -297,11 +297,11 @@ void CCmdLineInterface::get_real_vector(DREAL*& vec, INT& len)
 	vec=NULL;
 	len=0;
 
-	const CHAR* filename=get_arg_increment();
+	const char* filename=get_arg_increment();
 	if (!filename)
 		SG_ERROR("No filename given to read REAL matrix.\n");
 
-	CFile f((CHAR*) filename, 'r', F_DREAL);
+	CFile f((char*) filename, 'r', F_DREAL);
 	if (!f.is_ok())
 		SG_ERROR("Could not open file %s to read REAL matrix.\n", filename);
 
@@ -348,7 +348,7 @@ void CCmdLineInterface::get_byte_matrix(BYTE*& matrix, INT& num_feat, INT& num_v
 	num_vec=0;
 }
 
-void CCmdLineInterface::get_char_matrix(CHAR*& matrix, INT& num_feat, INT& num_vec)
+void CCmdLineInterface::get_char_matrix(char*& matrix, INT& num_feat, INT& num_vec)
 {
 	matrix=NULL;
 	num_feat=0;
@@ -371,11 +371,11 @@ void CCmdLineInterface::get_shortreal_matrix(SHORTREAL*& matrix, INT& num_feat, 
 
 void CCmdLineInterface::get_real_matrix(DREAL*& matrix, INT& num_feat, INT& num_vec)
 {
-	const CHAR* filename=get_arg_increment();
+	const char* filename=get_arg_increment();
 	if (!filename)
 		SG_ERROR("No filename given to read REAL matrix.\n");
 
-	CFile f((CHAR*) filename, 'r', F_DREAL);
+	CFile f((char*) filename, 'r', F_DREAL);
 	if (!f.is_ok())
 		SG_ERROR("Could not open file %s to read REAL matrix.\n", filename);
 
@@ -403,7 +403,7 @@ void CCmdLineInterface::get_byte_ndarray(BYTE*& array, INT*& dims, INT& num_dims
 {
 }
 
-void CCmdLineInterface::get_char_ndarray(CHAR*& array, INT*& dims, INT& num_dims)
+void CCmdLineInterface::get_char_ndarray(char*& array, INT*& dims, INT& num_dims)
 {
 }
 
@@ -429,11 +429,11 @@ void CCmdLineInterface::get_word_ndarray(WORD*& array, INT*& dims, INT& num_dims
 
 void CCmdLineInterface::get_real_sparsematrix(TSparse<DREAL>*& matrix, INT& num_feat, INT& num_vec)
 {
-	const CHAR* filename=get_arg_increment();
+	const char* filename=get_arg_increment();
 	if (!filename)
 		SG_ERROR("No filename given to read SPARSE REAL matrix.\n");
 
-	CFile f((CHAR*) filename, 'r', F_DREAL);
+	CFile f((char*) filename, 'r', F_DREAL);
 	if (!f.is_ok())
 		SG_ERROR("Could not open file %s to read SPARSE REAL matrix.\n", filename);
 
@@ -449,13 +449,13 @@ void CCmdLineInterface::get_byte_string_list(T_STRING<BYTE>*& strings, INT& num_
 	max_string_len=0;
 }
 
-void CCmdLineInterface::get_char_string_list(T_STRING<CHAR>*& strings, INT& num_str, INT& max_string_len)
+void CCmdLineInterface::get_char_string_list(T_STRING<char>*& strings, INT& num_str, INT& max_string_len)
 {
-	const CHAR* filename=get_arg_increment();
+	const char* filename=get_arg_increment();
 	if (!filename)
 		SG_ERROR("No filename given to read CHAR string list.\n");
 
-	CFile f((CHAR*) filename, 'r', F_CHAR);
+	CFile f((char*) filename, 'r', F_CHAR);
 	if (!f.is_ok())
 		SG_ERROR("Could not open file %s to read CHAR string list.\n", filename);
 
@@ -522,7 +522,7 @@ void CCmdLineInterface::set_bool(bool scalar)
 }
 
 
-void CCmdLineInterface::set_char_vector(const CHAR* vec, INT len)
+void CCmdLineInterface::set_char_vector(const char* vec, INT len)
 {
 }
 
@@ -544,11 +544,11 @@ void CCmdLineInterface::set_shortreal_vector(const SHORTREAL* vec, INT len)
 
 void CCmdLineInterface::set_real_vector(const DREAL* vec, INT len)
 {
-	const CHAR* filename=set_arg_increment();
+	const char* filename=set_arg_increment();
 	if (!filename)
 		SG_ERROR("No filename given to write REAL vector.\n");
 
-	CFile f((CHAR*) filename, 'w', F_DREAL);
+	CFile f((char*) filename, 'w', F_DREAL);
 	if (!f.is_ok())
 		SG_ERROR("Could not open file %s to write REAL vector.\n", filename);
 
@@ -585,7 +585,7 @@ SET_VECTOR(set_word_vector, INTSXP, INTEGER, WORD, int, "Word")
 */
 
 
-void CCmdLineInterface::set_char_matrix(const CHAR* matrix, INT num_feat, INT num_vec)
+void CCmdLineInterface::set_char_matrix(const char* matrix, INT num_feat, INT num_vec)
 {
 }
 void CCmdLineInterface::set_byte_matrix(const BYTE* matrix, INT num_feat, INT num_vec)
@@ -602,11 +602,11 @@ void CCmdLineInterface::set_shortreal_matrix(const SHORTREAL* matrix, INT num_fe
 }
 void CCmdLineInterface::set_real_matrix(const DREAL* matrix, INT num_feat, INT num_vec)
 {
-	const CHAR* filename=set_arg_increment();
+	const char* filename=set_arg_increment();
 	if (!filename)
 		SG_ERROR("No filename given to write REAL matrix.\n");
 
-	CFile f((CHAR*) filename, 'w', F_DREAL);
+	CFile f((char*) filename, 'w', F_DREAL);
 	if (!f.is_ok())
 		SG_ERROR("Could not open file %s to write REAL matrix.\n", filename);
 
@@ -645,11 +645,11 @@ SET_MATRIX(set_word_matrix, INTSXP, INTEGER, WORD, int, "Word")
 
 void CCmdLineInterface::set_real_sparsematrix(const TSparse<DREAL>* matrix, INT num_feat, INT num_vec, LONG nnz)
 {
-	const CHAR* filename=set_arg_increment();
+	const char* filename=set_arg_increment();
 	if (!filename)
 		SG_ERROR("No filename given to write SPARSE REAL matrix.\n");
 
-	CFile f((CHAR*) filename, 'w', F_DREAL);
+	CFile f((char*) filename, 'w', F_DREAL);
 	if (!f.is_ok())
 		SG_ERROR("Could not open file %s to write SPARSE REAL matrix.\n", filename);
 
@@ -661,13 +661,13 @@ void CCmdLineInterface::set_byte_string_list(const T_STRING<BYTE>* strings, INT 
 {
 }
 
-void CCmdLineInterface::set_char_string_list(const T_STRING<CHAR>* strings, INT num_str)
+void CCmdLineInterface::set_char_string_list(const T_STRING<char>* strings, INT num_str)
 {
-	const CHAR* filename=set_arg_increment();
+	const char* filename=set_arg_increment();
 	if (!filename)
 		SG_ERROR("No filename given to write CHAR string list.\n");
 
-	CFile f((CHAR*) filename, 'w', F_CHAR);
+	CFile f((char*) filename, 'w', F_CHAR);
 	if (!f.is_ok())
 		SG_ERROR("Could not open file %s to write CHAR string list.\n", filename);
 
@@ -688,7 +688,7 @@ void CCmdLineInterface::set_word_string_list(const T_STRING<WORD>* strings, INT 
 }
 
 
-bool CCmdLineInterface::skip_line(const CHAR* line)
+bool CCmdLineInterface::skip_line(const char* line)
 {
 	if (!line)
 		return true;
@@ -702,7 +702,7 @@ bool CCmdLineInterface::skip_line(const CHAR* line)
 
 	//SG_PRINT("ascii(0) %d, %c\n", int(line[0]), line[0]);
 
-	CHAR* skipped=CIO::skip_blanks((CHAR*) line);
+	char* skipped=CIO::skip_blanks((char*) line);
 	if (skipped[0]==CMDLINE_COMMENT0 || skipped[0]==CMDLINE_COMMENT1)
 		return true;
 
@@ -716,7 +716,7 @@ void CCmdLineInterface::print_prompt()
 }
 
 
-CHAR* CCmdLineInterface::get_line(FILE* infile, bool interactive_mode)
+char* CCmdLineInterface::get_line(FILE* infile, bool interactive_mode)
 {
 	char* in=NULL;
 	memset(input, 0, sizeof(input));
@@ -755,7 +755,7 @@ CHAR* CCmdLineInterface::get_line(FILE* infile, bool interactive_mode)
 		return input;
 }
 
-bool CCmdLineInterface::parse_line(CHAR* line)
+bool CCmdLineInterface::parse_line(char* line)
 {
 	if (!line)
 		return false;
@@ -838,7 +838,7 @@ int main(int argc, char* argv[])
 		{
 			while (true)
 			{
-				CHAR* line=intf->get_line();
+				char* line=intf->get_line();
 
 				if (!line)
 					break;
@@ -887,7 +887,7 @@ int main(int argc, char* argv[])
 			int s2=accept(s, NULL, NULL);
 			SG_SINFO( "accepting connection\n");
 
-			CHAR input[READLINE_BUFFER_SIZE];
+			char input[READLINE_BUFFER_SIZE];
 			do
 			{
 				bzero(input, sizeof(input));

@@ -77,7 +77,7 @@ class CChiSquareDistance: public CSimpleDistance<DREAL>
 		 *
 		 * @return name Chi-square distance 
 		 */
-		virtual const CHAR* get_name() { return "Chi-Square-Distance"; };
+		virtual const char* get_name() { return "Chi-Square-Distance"; }
 
 	protected:
 		/// compute distance for features a and b

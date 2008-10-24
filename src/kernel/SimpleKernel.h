@@ -92,7 +92,7 @@ template<> inline EFeatureType CSimpleKernel<SHORT>::get_feature_type() { return
 
 template<> inline EFeatureType CSimpleKernel<BYTE>::get_feature_type() { return F_BYTE; }
 
-template<> inline EFeatureType CSimpleKernel<CHAR>::get_feature_type() { return F_CHAR; }
+template<> inline EFeatureType CSimpleKernel<char>::get_feature_type() { return F_CHAR; }
 
 
 #endif /* _SIMPLEKERNEL_H__ */

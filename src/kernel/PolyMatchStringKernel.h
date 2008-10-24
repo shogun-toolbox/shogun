@@ -28,7 +28,7 @@
  *     k'({\bf x}, {\bf x'})=\frac{k({\bf x}, {\bf x'})}{\sqrt{k({\bf x}, {\bf x})k({\bf x'}, {\bf x'})}}
  * \f]
  */
-class CPolyMatchStringKernel: public CStringKernel<CHAR>
+class CPolyMatchStringKernel: public CStringKernel<char>
 {
 	public:
 		/** constructor
@@ -47,7 +47,7 @@ class CPolyMatchStringKernel: public CStringKernel<CHAR>
 		 * @param inhomogene is inhomogeneous
 		 */
 		CPolyMatchStringKernel(
-			CStringFeatures<CHAR>* l, CStringFeatures<CHAR>* r,
+			CStringFeatures<char>* l, CStringFeatures<char>* r,
 			INT degree, bool inhomogene);
 
 		virtual ~CPolyMatchStringKernel();
@@ -90,7 +90,7 @@ class CPolyMatchStringKernel: public CStringKernel<CHAR>
 		 *
 		 * @return name PolyMatchString
 		 */
-		virtual const CHAR* get_name()
+		virtual const char* get_name()
 		{
 			return "PolyMatchString";
 		}

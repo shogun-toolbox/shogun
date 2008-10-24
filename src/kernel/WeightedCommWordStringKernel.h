@@ -119,7 +119,7 @@ class CWeightedCommWordStringKernel: public CCommWordStringKernel
 		 *
 		 * @return name WeightedCommWordString
 		 */
-		virtual const CHAR* get_name() { return "WeightedCommWordString"; }
+		virtual const char* get_name() { return "WeightedCommWordString"; }
 
 		/** return feature type the kernel can deal with
 		 *

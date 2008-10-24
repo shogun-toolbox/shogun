@@ -48,7 +48,7 @@ class CShortFeatures : public CSimpleFeatures<SHORT>
 		 *
 		 * @param fname filename to load features from
 		 */
-		CShortFeatures(CHAR* fname);
+		CShortFeatures(char* fname);
 
 		/** obtain from char features
 		 *
@@ -84,14 +84,14 @@ class CShortFeatures : public CSimpleFeatures<SHORT>
 		 * @param fname filename to load from
 		 * @return if loading was successful
 		 */
-		virtual bool load(CHAR* fname);
+		virtual bool load(char* fname);
 
 		/** save features to file
 		 *
 		 * @param fname filename to save to
 		 * @return if saving was successful
 		 */
-		virtual bool save(CHAR* fname);
+		virtual bool save(char* fname);
 	protected:
 		/** translate from single order
 		 *

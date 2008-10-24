@@ -16,14 +16,14 @@
 #include "features/StringFeatures.h"
 
 CPolyMatchStringKernel::CPolyMatchStringKernel(INT size, INT d, bool i)
-: CStringKernel<CHAR>(size), degree(d), inhomogene(i)
+: CStringKernel<char>(size), degree(d), inhomogene(i)
 {
 	set_normalizer(new CSqrtDiagKernelNormalizer());
 }
 
 CPolyMatchStringKernel::CPolyMatchStringKernel(
-	CStringFeatures<CHAR>* l, CStringFeatures<CHAR>* r, INT d, bool i)
-: CStringKernel<CHAR>(10), degree(d), inhomogene(i)
+	CStringFeatures<char>* l, CStringFeatures<char>* r, INT d, bool i)
+: CStringKernel<char>(10), degree(d), inhomogene(i)
 {
 	set_normalizer(new CSqrtDiagKernelNormalizer());
 	init(l, r);
@@ -36,7 +36,7 @@ CPolyMatchStringKernel::~CPolyMatchStringKernel()
 
 bool CPolyMatchStringKernel::init(CFeatures* l, CFeatures* r)
 {
-	CStringKernel<CHAR>::init(l, r);
+	CStringKernel<char>::init(l, r);
 	return init_normalizer();
 }
 
@@ -59,8 +59,8 @@ DREAL CPolyMatchStringKernel::compute(INT idx_a, INT idx_b)
 {
 	INT i, alen, blen, sum;
 
-	CHAR* avec = ((CStringFeatures<CHAR>*) lhs)->get_feature_vector(idx_a, alen);
-	CHAR* bvec = ((CStringFeatures<CHAR>*) rhs)->get_feature_vector(idx_b, blen);
+	char* avec = ((CStringFeatures<char>*) lhs)->get_feature_vector(idx_a, alen);
+	char* bvec = ((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen);
 
 	ASSERT(alen==blen);
 	for (i = 0, sum = inhomogene; i<alen; i++)

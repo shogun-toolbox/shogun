@@ -131,13 +131,13 @@ bool CGUIPreProc::del_preproc()
 	return (preproc!=NULL);
 }
 
-bool CGUIPreProc::load(CHAR* filename)
+bool CGUIPreProc::load(char* filename)
 {
 	bool result=false;
 	CPreProc* preproc=NULL;
 
 	FILE* file=fopen(filename, "r");
-	CHAR id[5]="UDEF";
+	char id[5]="UDEF";
 
 	if (file)
 	{
@@ -181,7 +181,7 @@ bool CGUIPreProc::load(CHAR* filename)
 	return result;
 }
 
-bool CGUIPreProc::save(CHAR* filename, INT num_preprocs)
+bool CGUIPreProc::save(char* filename, INT num_preprocs)
 {
 	bool result=false;
 	CPreProc* preproc=preprocs->get_last_element();
@@ -212,7 +212,7 @@ bool CGUIPreProc::save(CHAR* filename, INT num_preprocs)
 	return result;
 }
 
-bool CGUIPreProc::attach_preproc(CHAR* target, bool do_force)
+bool CGUIPreProc::attach_preproc(char* target, bool do_force)
 {
 	bool result=false;
 

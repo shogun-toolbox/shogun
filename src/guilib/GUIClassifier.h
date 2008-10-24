@@ -26,14 +26,14 @@ class CGUIClassifier : public CSGObject
 		~CGUIClassifier();
 
 		/** create new classifier */
-		bool new_classifier(CHAR* name, INT d=6, INT from_d=40);
+		bool new_classifier(char* name, INT d=6, INT from_d=40);
 		/** set maximum train time */
 		bool set_max_train_time(DREAL max);
 		/** test classifier */
-		bool test(CHAR* filename_out=NULL, CHAR* filename_roc=NULL);
+		bool test(char* filename_out=NULL, char* filename_roc=NULL);
 		/** load classifier from file */
-		bool load(CHAR* filename, CHAR* type);
-		bool save(CHAR* param);
+		bool load(char* filename, char* type);
+		bool save(char* param);
 		CLabels* classify(CLabels* output=NULL);
 		CLabels* classify_kernelmachine(CLabels* output=NULL);
 		CLabels* classify_distancemachine(CLabels* output=NULL);

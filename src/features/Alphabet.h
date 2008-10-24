@@ -70,7 +70,7 @@ class CAlphabet : public CSGObject
 		 * @param alpha alphabet to use
 		 * @param len len
 		 */
-		CAlphabet(CHAR* alpha, INT len);
+		CAlphabet(char* alpha, INT len);
 
 		/** constructor
 		 *
@@ -147,7 +147,7 @@ class CAlphabet : public CSGObject
 		 * @param p string
 		 * @param len length of string
 		 */
-		void add_string_to_histogram(CHAR* p, LONG len);
+		void add_string_to_histogram(char* p, LONG len);
 
 		/** make histogram for whole string
 		 *
@@ -271,7 +271,7 @@ class CAlphabet : public CSGObject
 		 *
 		 * @param alphabet alphabet type to get name from
 		 */
-		static const CHAR* get_alphabet_name(EAlphabet alphabet);
+		static const char* get_alphabet_name(EAlphabet alphabet);
 
 	protected:
 		/** init map table */
@@ -295,7 +295,7 @@ class CAlphabet : public CSGObject
 		/** MAPTABLE UNDEF */
 		static const BYTE MAPTABLE_UNDEF;
 		/** alphabet names */
-		static const CHAR* alphabet_names[11];
+		static const char* alphabet_names[11];
 
 	protected:
 		/** alphabet */

@@ -69,7 +69,7 @@ bool CGUIPluginEstimate::train()
 	return result;
 }
 
-bool CGUIPluginEstimate::test(CHAR* filename_out, CHAR* filename_roc)
+bool CGUIPluginEstimate::test(char* filename_out, char* filename_roc)
 {
 	FILE* file_out=stdout;
 	FILE* file_roc=NULL;
@@ -128,13 +128,13 @@ bool CGUIPluginEstimate::test(CHAR* filename_out, CHAR* filename_roc)
 	return true;
 }
 
-bool CGUIPluginEstimate::load(CHAR* param)
+bool CGUIPluginEstimate::load(char* param)
 {
   bool result=false;
   return result;
 }
 
-bool CGUIPluginEstimate::save(CHAR* param)
+bool CGUIPluginEstimate::save(char* param)
 {
   bool result=false;
   return result;

@@ -45,7 +45,7 @@ enum EWDKernType
  *      which evaluates to 1 when its argument is true and to 0
  *      otherwise.
  */
-class CWeightedDegreeStringKernel: public CStringKernel<CHAR>
+class CWeightedDegreeStringKernel: public CStringKernel<char>
 {
 	public:
 		/** constructor
@@ -69,7 +69,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<CHAR>
 		 * @param degree degree
 		 */
 		CWeightedDegreeStringKernel(
-			CStringFeatures<CHAR>* l, CStringFeatures<CHAR>* r, INT degree);
+			CStringFeatures<char>* l, CStringFeatures<char>* r, INT degree);
 
 		virtual ~CWeightedDegreeStringKernel();
 
@@ -108,7 +108,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<CHAR>
 		 *
 		 * @return name WeightedDegree
 		 */
-		virtual const CHAR* get_name() { return "WeightedDegree"; } ;
+		virtual const char* get_name() { return "WeightedDegree"; } ;
 
 		/** initialize optimization
 		 *
@@ -599,8 +599,8 @@ class CWeightedDegreeStringKernel: public CStringKernel<CHAR>
 		 * @param blen length of vector b
 		 * @return computed value
 		 */
-		DREAL compute_with_mismatch(CHAR* avec, INT alen,
-			CHAR* bvec, INT blen) ;
+		DREAL compute_with_mismatch(char* avec, INT alen,
+			char* bvec, INT blen) ;
 
 		/** compute without mismatch
 		 *
@@ -610,8 +610,8 @@ class CWeightedDegreeStringKernel: public CStringKernel<CHAR>
 		 * @param blen length of vector b
 		 * @return computed value
 		 */
-		DREAL compute_without_mismatch(CHAR* avec, INT alen,
-			CHAR* bvec, INT blen);
+		DREAL compute_without_mismatch(char* avec, INT alen,
+			char* bvec, INT blen);
 
 		/** compute without mismatch matrix
 		 *
@@ -621,8 +621,8 @@ class CWeightedDegreeStringKernel: public CStringKernel<CHAR>
 		 * @param blen length of vector b
 		 * @return computed value
 		 */
-		DREAL compute_without_mismatch_matrix(CHAR* avec, INT alen,
-			CHAR* bvec, INT blen);
+		DREAL compute_without_mismatch_matrix(char* avec, INT alen,
+			char* bvec, INT blen);
 
 		/** compute using block
 		 *
@@ -632,8 +632,8 @@ class CWeightedDegreeStringKernel: public CStringKernel<CHAR>
 		 * @param blen length of vector b
 		 * @return computed value
 		 */
-		DREAL compute_using_block(CHAR* avec, INT alen,
-			CHAR* bvec, INT blen);
+		DREAL compute_using_block(char* avec, INT alen,
+			char* bvec, INT blen);
 
 		/** remove lhs from kernel */
 		virtual void remove_lhs();

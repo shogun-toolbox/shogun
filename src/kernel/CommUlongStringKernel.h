@@ -99,7 +99,7 @@ class CCommUlongStringKernel: public CStringKernel<ULONG>
 		 *
 		 * @return name CommUlongString
 		 */
-		virtual const CHAR* get_name() { return "CommUlongString"; }
+		virtual const char* get_name() { return "CommUlongString"; }
 
 		/** initialize optimization
 		 *

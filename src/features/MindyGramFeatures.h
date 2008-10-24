@@ -33,7 +33,7 @@ class CMindyGramFeatures : public CFeatures
 		 * @param delim Escaped string of delimiters, e.g. '%20.,'
 		 * @param nlen  K-gram length, 0 = word mode
 		 */
-		CMindyGramFeatures(CHAR *aname, CHAR *embed, CHAR *delim, BYTE nlen)
+		CMindyGramFeatures(char *aname, char *embed, char *delim, BYTE nlen)
 		: CFeatures(0)
 		{
 			ASSERT(aname && embed && delim);
@@ -137,7 +137,7 @@ class CMindyGramFeatures : public CFeatures
 
     protected:
         /* Import and load functions */
-        virtual bool load(CHAR * fname);
+        virtual bool load(char * fname);
 
     private:
         /**< number of gram vectors */

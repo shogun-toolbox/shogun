@@ -47,7 +47,7 @@ template <class Trie> struct S_THREAD_PARAM
 
 CWeightedDegreePositionStringKernel::CWeightedDegreePositionStringKernel(
 	INT size, INT d, INT mm, INT mkls)
-: CStringKernel<CHAR>(size), weights(NULL), position_weights(NULL),
+: CStringKernel<char>(size), weights(NULL), position_weights(NULL),
 	position_weights_lhs(NULL), position_weights_rhs(NULL),
 	weights_buffer(NULL), mkl_stepsize(mkls), degree(d), length(0),
 	max_mismatch(mm), seq_length(0), shift(NULL), shift_len(0),
@@ -66,7 +66,7 @@ CWeightedDegreePositionStringKernel::CWeightedDegreePositionStringKernel(
 
 CWeightedDegreePositionStringKernel::CWeightedDegreePositionStringKernel(
 	INT size, DREAL* w, INT d, INT mm, INT* s, INT sl, INT mkls)
-: CStringKernel<CHAR>(size), weights(NULL), position_weights(NULL),
+: CStringKernel<char>(size), weights(NULL), position_weights(NULL),
 	position_weights_lhs(NULL), position_weights_rhs(NULL),
 	weights_buffer(NULL), mkl_stepsize(mkls), degree(d), length(0),
 	max_mismatch(mm), seq_length(0), shift(NULL), shift_len(0),
@@ -88,8 +88,8 @@ CWeightedDegreePositionStringKernel::CWeightedDegreePositionStringKernel(
 }
 
 CWeightedDegreePositionStringKernel::CWeightedDegreePositionStringKernel(
-	CStringFeatures<CHAR>* l, CStringFeatures<CHAR>* r, INT d)
-: CStringKernel<CHAR>(10), weights(NULL), position_weights(NULL),
+	CStringFeatures<char>* l, CStringFeatures<char>* r, INT d)
+: CStringKernel<char>(10), weights(NULL), position_weights(NULL),
 	position_weights_lhs(NULL), position_weights_rhs(NULL),
 	weights_buffer(NULL), mkl_stepsize(1), degree(d), length(0),
 	max_mismatch(0), seq_length(0), shift(NULL), shift_len(0),
@@ -149,7 +149,7 @@ void CWeightedDegreePositionStringKernel::remove_lhs()
 void CWeightedDegreePositionStringKernel::create_empty_tries()
 {
 	ASSERT(lhs);
-	seq_length = ((CStringFeatures<CHAR>*) lhs)->get_max_vector_length();
+	seq_length = ((CStringFeatures<char>*) lhs)->get_max_vector_length();
 
 	if (opt_type==SLOWBUTMEMEFFICIENT)
 	{
@@ -170,13 +170,13 @@ bool CWeightedDegreePositionStringKernel::init(CFeatures* l, CFeatures* r)
 	INT lhs_changed = (lhs!=l) ;
 	INT rhs_changed = (rhs!=r) ;
 
-	CStringKernel<CHAR>::init(l,r);
+	CStringKernel<char>::init(l,r);
 
 	SG_DEBUG( "lhs_changed: %i\n", lhs_changed) ;
 	SG_DEBUG( "rhs_changed: %i\n", rhs_changed) ;
 
-	CStringFeatures<CHAR>* sf_l=(CStringFeatures<CHAR>*) l;
-	CStringFeatures<CHAR>* sf_r=(CStringFeatures<CHAR>*) r;
+	CStringFeatures<char>* sf_l=(CStringFeatures<char>*) l;
+	CStringFeatures<char>* sf_r=(CStringFeatures<char>*) r;
 
 	/* set shift */
 	if (shift_len==0) {
@@ -313,7 +313,7 @@ bool CWeightedDegreePositionStringKernel::delete_optimization()
 	return false;
 }
 
-DREAL CWeightedDegreePositionStringKernel::compute_with_mismatch(CHAR* avec, INT alen, CHAR* bvec, INT blen) 
+DREAL CWeightedDegreePositionStringKernel::compute_with_mismatch(char* avec, INT alen, char* bvec, INT blen) 
 {
 	DREAL max_shift_vec[max_shift];
     DREAL sum0=0 ;
@@ -391,7 +391,7 @@ DREAL CWeightedDegreePositionStringKernel::compute_with_mismatch(CHAR* avec, INT
     return result ;
 }
 
-DREAL CWeightedDegreePositionStringKernel::compute_without_mismatch(CHAR* avec, INT alen, CHAR* bvec, INT blen) 
+DREAL CWeightedDegreePositionStringKernel::compute_without_mismatch(char* avec, INT alen, char* bvec, INT blen) 
 {
 	DREAL max_shift_vec[max_shift];
 	DREAL sum0=0 ;
@@ -454,7 +454,7 @@ DREAL CWeightedDegreePositionStringKernel::compute_without_mismatch(CHAR* avec, 
 	return result ;
 }
 
-DREAL CWeightedDegreePositionStringKernel::compute_without_mismatch_matrix(CHAR* avec, INT alen, CHAR* bvec, INT blen) 
+DREAL CWeightedDegreePositionStringKernel::compute_without_mismatch_matrix(char* avec, INT alen, char* bvec, INT blen) 
 {
 	DREAL max_shift_vec[max_shift];
 	DREAL sum0=0 ;
@@ -516,7 +516,7 @@ DREAL CWeightedDegreePositionStringKernel::compute_without_mismatch_matrix(CHAR*
 	return result ;
 }
 
-DREAL CWeightedDegreePositionStringKernel::compute_without_mismatch_position_weights(CHAR* avec, DREAL* pos_weights_lhs, INT alen, CHAR* bvec, DREAL* pos_weights_rhs, INT blen) 
+DREAL CWeightedDegreePositionStringKernel::compute_without_mismatch_position_weights(char* avec, DREAL* pos_weights_lhs, INT alen, char* bvec, DREAL* pos_weights_rhs, INT blen) 
 {
 	DREAL max_shift_vec[max_shift];
 	DREAL sum0=0 ;
@@ -597,8 +597,8 @@ DREAL CWeightedDegreePositionStringKernel::compute(INT idx_a, INT idx_b)
 {
 	INT alen, blen;
 
-	CHAR* avec=((CStringFeatures<CHAR>*) lhs)->get_feature_vector(idx_a, alen);
-	CHAR* bvec=((CStringFeatures<CHAR>*) rhs)->get_feature_vector(idx_b, blen);
+	char* avec=((CStringFeatures<char>*) lhs)->get_feature_vector(idx_a, alen);
+	char* bvec=((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen);
 	// can only deal with strings of same length
 	ASSERT(alen==blen);
 	ASSERT(shift_len==alen);
@@ -628,7 +628,7 @@ void CWeightedDegreePositionStringKernel::add_example_to_tree(INT idx, DREAL alp
 	ASSERT(alphabet->get_alphabet()==DNA || alphabet->get_alphabet()==RNA);
 
 	INT len=0;
-	CHAR* char_vec=((CStringFeatures<CHAR>*) lhs)->get_feature_vector(idx, len);
+	char* char_vec=((CStringFeatures<char>*) lhs)->get_feature_vector(idx, len);
 	ASSERT(max_mismatch==0);
 	INT *vec = new INT[len] ;
 
@@ -679,7 +679,7 @@ void CWeightedDegreePositionStringKernel::add_example_to_single_tree(INT idx, DR
 	ASSERT(alphabet->get_alphabet()==DNA || alphabet->get_alphabet()==RNA);
 
 	INT len=0;
-	CHAR* char_vec=((CStringFeatures<CHAR>*) lhs)->get_feature_vector(idx, len);
+	char* char_vec=((CStringFeatures<char>*) lhs)->get_feature_vector(idx, len);
 	ASSERT(max_mismatch==0);
 	INT *vec=new INT[len];
 	INT max_s=-1;
@@ -730,7 +730,7 @@ DREAL CWeightedDegreePositionStringKernel::compute_by_tree(INT idx)
 
 	DREAL sum=0;
 	INT len=0;
-	CHAR* char_vec=((CStringFeatures<CHAR>*) rhs)->get_feature_vector(idx, len);
+	char* char_vec=((CStringFeatures<char>*) rhs)->get_feature_vector(idx, len);
 	ASSERT(max_mismatch==0);
 	INT *vec=new INT[len];
 
@@ -765,7 +765,7 @@ void CWeightedDegreePositionStringKernel::compute_by_tree(INT idx, DREAL* LevelC
 	ASSERT(alphabet->get_alphabet()==DNA || alphabet->get_alphabet()==RNA);
 
 	INT len=0;
-	CHAR* char_vec=((CStringFeatures<CHAR>*) rhs)->get_feature_vector(idx, len);
+	char* char_vec=((CStringFeatures<char>*) rhs)->get_feature_vector(idx, len);
 	ASSERT(max_mismatch==0);
 	INT *vec=new INT[len];
 
@@ -1218,10 +1218,10 @@ void* CWeightedDegreePositionStringKernel::compute_batch_helper(void* p)
 	for (INT i=params->start; i<params->end; i++)
 	{
 		INT len=0;
-		CStringFeatures<CHAR>* rhs_feat=((CStringFeatures<CHAR>*) wd->get_rhs());
+		CStringFeatures<char>* rhs_feat=((CStringFeatures<char>*) wd->get_rhs());
 		CAlphabet* alpha=wd->alphabet;
 
-		CHAR* char_vec=rhs_feat->get_feature_vector(vec_idx[i], len);
+		char* char_vec=rhs_feat->get_feature_vector(vec_idx[i], len);
 		for (INT k=CMath::max(0,j-max_shift); k<CMath::min(len,j+wd->get_degree()+max_shift); k++)
 			vec[k]=alpha->remap_to_bin(char_vec[k]);
 
@@ -1269,7 +1269,7 @@ void CWeightedDegreePositionStringKernel::compute_batch(INT num_vec, INT* vec_id
 	ASSERT(result);
 	create_empty_tries();
 
-	INT num_feat=((CStringFeatures<CHAR>*) rhs)->get_max_vector_length();
+	INT num_feat=((CStringFeatures<char>*) rhs)->get_max_vector_length();
 	ASSERT(num_feat>0);
 	INT num_threads=parallel.get_num_threads();
 	ASSERT(num_threads>0);
@@ -1369,7 +1369,7 @@ DREAL* CWeightedDegreePositionStringKernel::compute_scoring(INT max_degree, INT&
 	ASSERT(position_weights_lhs==NULL);
 	ASSERT(position_weights_rhs==NULL);
 
-	num_feat=((CStringFeatures<CHAR>*) rhs)->get_max_vector_length();
+	num_feat=((CStringFeatures<char>*) rhs)->get_max_vector_length();
 	ASSERT(num_feat>0);
 	ASSERT(alphabet);
 	ASSERT(alphabet->get_alphabet()==DNA || alphabet->get_alphabet()==RNA);
@@ -1518,20 +1518,20 @@ DREAL* CWeightedDegreePositionStringKernel::compute_scoring(INT max_degree, INT&
 	return result;
 }
 
-CHAR* CWeightedDegreePositionStringKernel::compute_consensus(INT &num_feat, INT num_suppvec, INT* IDX, DREAL* alphas)
+char* CWeightedDegreePositionStringKernel::compute_consensus(INT &num_feat, INT num_suppvec, INT* IDX, DREAL* alphas)
 {
 	ASSERT(position_weights_lhs==NULL);
 	ASSERT(position_weights_rhs==NULL);
 	//only works for order <= 32
 	ASSERT(degree<=32);
 	ASSERT(!tries.get_use_compact_terminal_nodes());
-	num_feat=((CStringFeatures<CHAR>*) rhs)->get_max_vector_length();
+	num_feat=((CStringFeatures<char>*) rhs)->get_max_vector_length();
 	ASSERT(num_feat>0);
 	ASSERT(alphabet);
 	ASSERT(alphabet->get_alphabet()==DNA || alphabet->get_alphabet()==RNA);
 
 	//consensus
-	CHAR* result=new CHAR[num_feat];
+	char* result=new char[num_feat];
 
 	//backtracking and scoring table
 	INT num_tables=CMath::max(1,num_feat-degree+1);
@@ -1583,7 +1583,7 @@ CHAR* CWeightedDegreePositionStringKernel::compute_consensus(INT &num_feat, INT 
 	//	SG_PRINT("second last: str:0%0llx sc:%f bt:%d\n",e.string,e.score,e.bt);
 	//}
 
-	const CHAR* acgt="ACGT";
+	const char* acgt="ACGT";
 
 	//backtracking start
 	INT max_idx=-1;
@@ -1643,7 +1643,7 @@ DREAL* CWeightedDegreePositionStringKernel::extract_w( INT max_degree, INT& num_
   // === check
   ASSERT(position_weights_lhs==NULL);
   ASSERT(position_weights_rhs==NULL);
-  num_feat=((CStringFeatures<CHAR>*) rhs)->get_max_vector_length();
+  num_feat=((CStringFeatures<char>*) rhs)->get_max_vector_length();
   ASSERT(num_feat>0);
   ASSERT(alphabet->get_alphabet()==DNA);
   ASSERT(max_degree>0);
@@ -1704,7 +1704,7 @@ DREAL* CWeightedDegreePositionStringKernel::compute_POIM( INT max_degree, INT& n
   // === check
   ASSERT(position_weights_lhs==NULL);
   ASSERT(position_weights_rhs==NULL);
-  num_feat=((CStringFeatures<CHAR>*) rhs)->get_max_vector_length();
+  num_feat=((CStringFeatures<char>*) rhs)->get_max_vector_length();
   ASSERT(num_feat>0);
   ASSERT(alphabet->get_alphabet()==DNA);
   ASSERT(max_degree!=0);

@@ -71,7 +71,7 @@ class CHammingWordDistance: public CStringDistance<WORD>
 		 *
 		 * @return name HammingWord
 		 */
-		virtual const CHAR* get_name() { return "HammingWord"; }
+		virtual const char* get_name() { return "HammingWord"; }
 
 		/** get dictionary weights
 		 *

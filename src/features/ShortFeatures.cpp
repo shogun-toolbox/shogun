@@ -22,7 +22,7 @@ CShortFeatures::CShortFeatures(const CShortFeatures & orig)
 {
 }
 
-CShortFeatures::CShortFeatures(CHAR* fname)
+CShortFeatures::CShortFeatures(char* fname)
 : CSimpleFeatures<SHORT>(fname)
 {
 }
@@ -42,7 +42,7 @@ bool CShortFeatures::obtain_from_char_features(CCharFeatures* cf, INT start, INT
 	feature_matrix=new SHORT[len];
 	INT num_cf_feat=0;
 	INT num_cf_vec=0;
-	CHAR* fm=cf->get_feature_matrix(num_cf_feat, num_cf_vec);
+	char* fm=cf->get_feature_matrix(num_cf_feat, num_cf_vec);
 
 	ASSERT(num_cf_vec==num_vectors);
 	ASSERT(num_cf_feat==num_features);
@@ -121,12 +121,12 @@ void CShortFeatures::translate_from_single_order(SHORT* obs, INT sequence_length
 		obs[i-start]=obs[i];
 }
 
-bool CShortFeatures::load(CHAR* fname)
+bool CShortFeatures::load(char* fname)
 {
 	return false;
 }
 
-bool CShortFeatures::save(CHAR* fname)
+bool CShortFeatures::save(char* fname)
 {
 	return false;
 }

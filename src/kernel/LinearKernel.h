@@ -71,7 +71,7 @@ class CLinearKernel: public CSimpleKernel<DREAL>
 		 *
 		 * @return name Lineaer
 		 */
-		virtual const CHAR* get_name() { return "Linear"; }
+		virtual const char* get_name() { return "Linear"; }
 
 		/** optimizable kernel, i.e. precompute normal vector and as
 		 * phi(x) = x do scalar product in input space

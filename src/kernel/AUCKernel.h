@@ -68,7 +68,7 @@ class CAUCKernel: public CSimpleKernel<WORD>
 		 *
 		 * @return name AUC
 		 */
-		virtual const CHAR* get_name() { return "AUC" ; }
+		virtual const char* get_name() { return "AUC" ; }
 
 	protected:
 		/** compute kernel function for features a and b

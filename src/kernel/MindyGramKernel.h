@@ -35,19 +35,19 @@ class CMindyGramKernel: public CKernel
 {
 	public:
 		/* Constructors */
-		CMindyGramKernel(INT ch, CHAR *measure, DREAL width);
-		CMindyGramKernel(CFeatures *l, CFeatures *r, CHAR *measure, DREAL width);
+		CMindyGramKernel(INT ch, char *measure, DREAL width);
+		CMindyGramKernel(CFeatures *l, CFeatures *r, char *measure, DREAL width);
 		virtual ~CMindyGramKernel();
 
 		/* Set options */
-		void set_param(CHAR *param);
+		void set_param(char *param);
 		/* Set MD5 cache size */
 		void set_md5cache(INT c);
 		/* Set normalization */
 		void set_norm(ENormalizationType e);
 
 		/* Init and cleanup functions */
-		void parse_params(CHAR *);
+		void parse_params(char *);
 		virtual bool init(CFeatures* l, CFeatures* r);
 		virtual void cleanup();
 		virtual void remove_lhs();
@@ -57,7 +57,7 @@ class CMindyGramKernel: public CKernel
 		inline virtual EKernelType get_kernel_type() { return K_MINDYGRAM; }
 		inline virtual EFeatureType get_feature_type() { return F_ULONG; }
 		inline virtual EFeatureClass get_feature_class() { return C_MINDYGRAM; }
-		inline virtual const CHAR* get_name() { return "MindyGram"; }
+		inline virtual const char* get_name() { return "MindyGram"; }
 
 		/* Optimization functions */
 		virtual bool init_optimization(INT count, INT *IDX, DREAL * weights);
@@ -76,7 +76,7 @@ class CMindyGramKernel: public CKernel
 
 	private:
 		/* Name of similartiy measure */
-		CHAR *measure;
+		char *measure;
 		/* Similarity coefficient or 0 */
 		sico_t simcof;
 		/* Normalization mode */

@@ -79,9 +79,9 @@ enum E_STATE
 
 
 #ifdef FIX_POS
-const CHAR CModel::FIX_DISALLOWED=0 ;
-const CHAR CModel::FIX_ALLOWED=1 ;
-const CHAR CModel::FIX_DEFAULT=-1 ;
+const char CModel::FIX_DISALLOWED=0 ;
+const char CModel::FIX_ALLOWED=1 ;
+const char CModel::FIX_DEFAULT=-1 ;
 const DREAL CModel::DISALLOWED_PENALTY=CMath::ALMOST_NEG_INFTY ;
 #endif
 
@@ -3050,7 +3050,7 @@ bool CHMM::comma_or_space(FILE* file)
 	return true ;
 }
 
-bool CHMM::get_numbuffer(FILE* file, CHAR* buffer, INT length)
+bool CHMM::get_numbuffer(FILE* file, char* buffer, INT length)
 {
 	signed char value;
 
@@ -3165,7 +3165,7 @@ bool CHMM::load_model(FILE* file)
 
 	bool result=false;
 	E_STATE state=INITIAL;
-	CHAR buffer[1024];
+	char buffer[1024];
 
 	line=1;
 	INT i,j;
@@ -3464,7 +3464,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool init)
 	model=new CModel();
 
 	INT received_params=0x0000000;	//a,b,p,q,N,M,O
-	CHAR buffer[1024];
+	char buffer[1024];
 
 	bool result=false;
 	E_STATE state=INITIAL;

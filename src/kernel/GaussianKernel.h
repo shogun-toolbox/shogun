@@ -78,7 +78,7 @@ class CGaussianKernel: public CSimpleKernel<DREAL>
 		 *
 		 * @return name Gaussian
 		 */
-		virtual const CHAR* get_name() { return "Gaussian"; }
+		virtual const char* get_name() { return "Gaussian"; }
 
 	protected:
 		/** compute kernel function for features a and b

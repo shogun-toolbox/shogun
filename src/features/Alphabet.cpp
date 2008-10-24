@@ -20,9 +20,9 @@ const BYTE CAlphabet::B_C=1;
 const BYTE CAlphabet::B_G=2;
 const BYTE CAlphabet::B_T=3;
 const BYTE CAlphabet::MAPTABLE_UNDEF=0xff;
-const CHAR* CAlphabet::alphabet_names[11]={"DNA", "RAWDNA", "RNA", "PROTEIN", "ALPHANUM", "CUBE", "RAW", "IUPAC_NUCLEIC_ACID", "IUPAC_AMINO_ACID", "NONE", "UNKNOWN"};
+const char* CAlphabet::alphabet_names[11]={"DNA", "RAWDNA", "RNA", "PROTEIN", "ALPHANUM", "CUBE", "RAW", "IUPAC_NUCLEIC_ACID", "IUPAC_AMINO_ACID", "NONE", "UNKNOWN"};
 
-CAlphabet::CAlphabet(CHAR* al, INT len)
+CAlphabet::CAlphabet(char* al, INT len)
 : CSGObject()
 {
 	EAlphabet alpha=NONE;
@@ -388,7 +388,7 @@ void CAlphabet::add_string_to_histogram(BYTE* p, LONG len)
 		add_byte_to_histogram(p[i]);
 }
 
-void CAlphabet::add_string_to_histogram(CHAR* p, LONG len)
+void CAlphabet::add_string_to_histogram(char* p, LONG len)
 {
 	for (LONG i=0; i<len; i++)
 		add_byte_to_histogram(p[i]);
@@ -531,7 +531,7 @@ void CAlphabet::copy_histogram(CAlphabet* a)
 	memcpy(histogram, a->get_histogram(), sizeof(histogram));
 }
 
-const CHAR* CAlphabet::get_alphabet_name(EAlphabet alphabet)
+const char* CAlphabet::get_alphabet_name(EAlphabet alphabet)
 {
 	
 	INT idx;
