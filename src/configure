@@ -1,5 +1,9 @@
 #!/bin/bash
 
+VERSION=`grep "SHOGUN Release version" NEWS 2>&1 | cut -c 27- | head -n 1`
+
+[ -n "$VERSION" ] && echo "Running configure for SHOGUN version $VERSION"
+
 # some hopefully reasonable defaults
 MAKEDEPEND="gcc -MM"
 MAKEDEPENDOPTS=""
@@ -40,6 +44,8 @@ else
   _gpl=yes
 fi
 _cplex=auto
+_lpsolve=auto
+_glpk=auto
 _doxygen=auto
 _wtiming=no
 _logcache=no
@@ -550,6 +556,8 @@ Optional features:
   --disable-largefile           disable large file support (64bit file acces routines) [enabled]
   --disable-lapack    	        disable lapack (fast blas and lapack math routines) and use built in ones (slower!) [auto]
   --disable-cplex    	        disable code using CPLEX  [auto]
+  --disable-lpsolve    	        disable code using lpsolve  [auto]
+  --disable-glpk				disable code using GLPK [auto]
   --disable-bigstates	        disable big (16bit) state [enabled]
   --disable-hmmcache 	        disable HMM cache [enabled]
   --disable-svm-light 	        disable building of SVM-light and thus result in pure GPLv3 code [enabled]
@@ -663,6 +671,10 @@ for ac_option do
   --enable-lapack)		_lapack=yes	;;
   --disable-cplex)		_cplex=no	;;
   --enable-cplex)		_cplex=yes	;;
+  --disable-lpsolve)	_lpsolve=no	;;
+  --enable-lpsolve)		_lpsolve=yes;;
+  --diable-glpk)		_glpk=no;;
+  --enable-glpk)		_glpk=yes;;
   --disable-doxygen)	_doxygen=no	;;
   --enable-doxygen)		_doxygen=yes	;;
   --disable-bigstates)	_bigstates=no	;;
@@ -2619,6 +2631,56 @@ EOF
 		fi
 	fi
 
+	if test "$_glpk" = yes || test "$_glpk" = auto
+	then
+cat >$TMPC<<EOF
+#include <glpk.h>
+int main()
+{
+	LPX* lp=lpx_create_prob();
+	lpx_delete_prob(lp);
+	return 0;
+}
+EOF
+		echocheck "GLPK"
+		GLPKLINKFLAGS="-lglpk -lm"
+		if cc_check $GLPKLINKFLAGS
+		then 
+			echores "yes"
+			USE_GLPK='#define USE_GLPK 1'
+			LINKFLAGS="$LINKFLAGS $GLPKLINKFLAGS"
+			DEFINES="$DEFINES -DUSE_GLPK"
+		else
+			echores "no"
+		fi
+	fi
+
+	if test "$_lpsolve" = yes || test "$_lpsolve" = auto
+	then
+cat > $TMPC << EOF
+#include <lpsolve/lp_lib.h>
+int main (int argc, char **argv)
+{
+	lprec* lp=make_lp(0,0);
+	delete_lp(lp);
+	return 0;
+}
+EOF
+		echocheck "lpsolve Developer Files"
+		LPSOLVELINKFLAGS="-L /usr/lib/lp_solve -llpsolve55"
+		if cc_check $LPSOLVELINKFLAGS
+		then 
+			echores "yes"
+			USE_LPSOLVE='#define USE_LPSOLVE 1'
+			LINKFLAGS="$LINKFLAGS $LPSOLVELINKFLAGS"
+			POSTLINKFLAGS="$POSTLINKFLAGS $LPSOLVELINKFLAGS"
+			DEFINES="$DEFINES -DUSE_LPSOLVE -DYY_NEVER_INTERACTIVE -DPARSER_LP -DINVERSE_ACTIVE=INVERSE_LUSOL -DRoleIsExternalInvEngine" 
+		else
+			echores "no"
+		fi
+	fi
+
+
 	if test "$_wtiming" = yes
 	then
 		USE_W_TIMING='#define USE_W_TIMING 1'
@@ -2891,6 +2953,8 @@ $USE_PATHDEBUG
 $USE_SVMLIGHT
 $GPL
 $USE_CPLEX
+$USE_LPSOLVE
+$USE_GLPK
 $USE_W_TIMING
 #define $OS 1
 #define CONFIGURE_OPTIONS "$CONFIGURE_OPTIONS"
