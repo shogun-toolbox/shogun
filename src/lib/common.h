@@ -37,29 +37,24 @@
 */
 //@{
 
+
 /// Type CHAR
 typedef char CHAR;
-typedef CHAR* P_CHAR;
 
 /// Type BYTE 
 typedef unsigned char BYTE;
-typedef BYTE* P_BYTE;
 
 /// Type SHORT is 2 bytes in size
 typedef short int SHORT;
-typedef SHORT* P_SHORT;
 
 /// Type WORD is 2 bytes in size
 typedef unsigned short int WORD;
-typedef WORD* P_WORD;
 
 /// Type INT is 4 bytes in size
 typedef int INT;
-typedef INT* P_INT;
 
 /// Type INT is 4 bytes in size
 typedef unsigned int UINT;
-typedef UINT* P_UINT;
 
 /// Type LONG is 8 bytes in size
 #ifndef SUNOS
@@ -68,7 +63,6 @@ typedef int64_t LONG;
 #else
 typedef long LONG;
 #endif
-typedef LONG* P_LONG;
 
 /// Type ULONG is 8 bytes in size
 #ifndef SUNOS
@@ -77,19 +71,15 @@ typedef uint64_t ULONG;
 #else
 typedef unsigned long ULONG;
 #endif
-typedef ULONG* P_ULONG;
 
 /// Type SHORTREAL is 4 bytes in size
 typedef float SHORTREAL;
-typedef SHORTREAL* P_SHORTREAL;
 
 /// Type DREAL is 8 bytes in size
 typedef double DREAL;
-typedef DREAL* P_DREAL;
 
 /// Type LONGREAL is 16 bytes in size
 typedef long double LONGREAL;
-typedef LONGREAL* P_LONGREAL;
 
 #ifdef USE_SHORTREAL_KERNELCACHE
 	typedef SHORTREAL KERNELCACHE_ELEM;
