@@ -18,7 +18,7 @@
 #include "features/StringFeatures.h"
 
 /** The HistogramWordString computes the TOP kernel on inhomogeneous Markov Chains. */
-class CHistogramWordStringKernel: public CStringKernel<WORD>
+class CHistogramWordStringKernel: public CStringKernel<uint16_t>
 {
 	public:
 		/** constructor
@@ -35,7 +35,7 @@ class CHistogramWordStringKernel: public CStringKernel<WORD>
 		 * @param pie plugin estimate
 		 */
 		CHistogramWordStringKernel(
-			CStringFeatures<WORD>* l, CStringFeatures<WORD>* r,
+			CStringFeatures<uint16_t>* l, CStringFeatures<uint16_t>* r,
 			CPluginEstimate* pie);
 
 		virtual ~CHistogramWordStringKernel();
@@ -94,7 +94,7 @@ class CHistogramWordStringKernel: public CStringKernel<WORD>
 		 * @param symbol symbol
 		 * @return index at given position in given symbol
 		 */
-		inline INT compute_index(INT position, WORD symbol)
+		inline INT compute_index(INT position, uint16_t symbol)
 		{
 			return position*num_symbols+symbol+1;
 		}

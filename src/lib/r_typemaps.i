@@ -144,7 +144,7 @@ TYPEMAP_ARGOUT1(INTSXP, INTEGER, INT, int, "Integer")
 TYPEMAP_ARGOUT1(INTSXP, INTEGER, SHORT, int, "Short")
 TYPEMAP_ARGOUT1(REALSXP, REAL, SHORTREAL, float, "Single Precision")
 TYPEMAP_ARGOUT1(REALSXP, REAL, DREAL, double, "Double Precision")
-TYPEMAP_ARGOUT1(INTSXP, INTEGER, WORD, int, "Word")
+TYPEMAP_ARGOUT1(INTSXP, INTEGER, uint16_t, int, "Word")
 #undef TYPEMAP_ARGOUT1
 
 %define TYPEMAP_ARGOUT2(r_type, r_cast, sg_type, if_type, error_string)
@@ -176,7 +176,7 @@ TYPEMAP_ARGOUT2(INTSXP, INTEGER, INT, int, "Integer")
 TYPEMAP_ARGOUT2(INTSXP, INTEGER, SHORT, int, "Short")
 TYPEMAP_ARGOUT2(REALSXP, REAL, SHORTREAL, float, "Single Precision")
 TYPEMAP_ARGOUT2(REALSXP, REAL, DREAL, double, "Double Precision")
-TYPEMAP_ARGOUT2(INTSXP, INTEGER, WORD, int, "Word")
+TYPEMAP_ARGOUT2(INTSXP, INTEGER, uint16_t, int, "Word")
 #undef TYPEMAP_ARGOUT2
 
 /* input typemap for CStringFeatures<char> etc */

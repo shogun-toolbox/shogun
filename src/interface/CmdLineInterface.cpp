@@ -334,7 +334,7 @@ void CCmdLineInterface::get_short_vector(SHORT*& vec, INT& len)
 	len=0;
 }
 
-void CCmdLineInterface::get_word_vector(WORD*& vec, INT& len)
+void CCmdLineInterface::get_word_vector(uint16_t*& vec, INT& len)
 {
 	vec=NULL;
 	len=0;
@@ -392,7 +392,7 @@ void CCmdLineInterface::get_short_matrix(SHORT*& matrix, INT& num_feat, INT& num
 	num_vec=0;
 }
 
-void CCmdLineInterface::get_word_matrix(WORD*& matrix, INT& num_feat, INT& num_vec)
+void CCmdLineInterface::get_word_matrix(uint16_t*& matrix, INT& num_feat, INT& num_vec)
 {
 	matrix=NULL;
 	num_feat=0;
@@ -423,7 +423,7 @@ void CCmdLineInterface::get_short_ndarray(SHORT*& array, INT*& dims, INT& num_di
 {
 }
 
-void CCmdLineInterface::get_word_ndarray(WORD*& array, INT*& dims, INT& num_dims)
+void CCmdLineInterface::get_word_ndarray(uint16_t*& array, INT*& dims, INT& num_dims)
 {
 }
 
@@ -482,7 +482,7 @@ void CCmdLineInterface::get_short_string_list(T_STRING<SHORT>*& strings, INT& nu
 	max_string_len=0;
 }
 
-void CCmdLineInterface::get_word_string_list(T_STRING<WORD>*& strings, INT& num_str, INT& max_string_len)
+void CCmdLineInterface::get_word_string_list(T_STRING<uint16_t>*& strings, INT& num_str, INT& max_string_len)
 {
 	strings=NULL;
 	num_str=0;
@@ -556,7 +556,7 @@ void CCmdLineInterface::set_real_vector(const DREAL* vec, INT len)
 		SG_ERROR("Could not write REAL data to %s.\n", filename);
 }
 
-void CCmdLineInterface::set_word_vector(const WORD* vec, INT len)
+void CCmdLineInterface::set_word_vector(const uint16_t* vec, INT len)
 {
 }
 
@@ -580,7 +580,7 @@ SET_VECTOR(set_int_vector, INTSXP, INTEGER, INT, int, "Integer")
 SET_VECTOR(set_short_vector, INTSXP, INTEGER, SHORT, int, "Short")
 SET_VECTOR(set_shortreal_vector, XP, REAL, SHORTREAL, float, "Single Precision")
 SET_VECTOR(set_real_vector, XP, REAL, DREAL, double, "Double Precision")
-SET_VECTOR(set_word_vector, INTSXP, INTEGER, WORD, int, "Word")
+SET_VECTOR(set_word_vector, INTSXP, INTEGER, uint16_t, int, "Word")
 #undef SET_VECTOR
 */
 
@@ -613,7 +613,7 @@ void CCmdLineInterface::set_real_matrix(const DREAL* matrix, INT num_feat, INT n
 	if (!f.write_real_valued_dense(matrix, num_feat, num_vec))
 		SG_ERROR("Could not write REAL data to %s.\n", filename);
 }
-void CCmdLineInterface::set_word_matrix(const WORD* matrix, INT num_feat, INT num_vec)
+void CCmdLineInterface::set_word_matrix(const uint16_t* matrix, INT num_feat, INT num_vec)
 {
 }
 
@@ -638,7 +638,7 @@ SET_MATRIX(set_int_matrix, INTSXP, INTEGER, INT, int, "Integer")
 SET_MATRIX(set_short_matrix, INTSXP, INTEGER, SHORT, int, "Short")
 SET_MATRIX(set_shortreal_matrix, XP, REAL, SHORTREAL, float, "Single Precision")
 SET_MATRIX(set_real_matrix, XP, REAL, DREAL, double, "Double Precision")
-SET_MATRIX(set_word_matrix, INTSXP, INTEGER, WORD, int, "Word")
+SET_MATRIX(set_word_matrix, INTSXP, INTEGER, uint16_t, int, "Word")
 #undef SET_MATRIX
 */
 
@@ -683,7 +683,7 @@ void CCmdLineInterface::set_short_string_list(const T_STRING<SHORT>* strings, IN
 {
 }
 
-void CCmdLineInterface::set_word_string_list(const T_STRING<WORD>* strings, INT num_str)
+void CCmdLineInterface::set_word_string_list(const T_STRING<uint16_t>* strings, INT num_str)
 {
 }
 

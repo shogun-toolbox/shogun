@@ -20,7 +20,7 @@
  * k({\bf x},{\bf x'})= \frac{1}{scale}{\bf x}\cdot {\bf x'}
  * \f]
  */
-class CLinearWordKernel: public CSimpleKernel<WORD>
+class CLinearWordKernel: public CSimpleKernel<uint16_t>
 {
 	public:
 		/** constructor

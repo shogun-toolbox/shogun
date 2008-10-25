@@ -47,7 +47,7 @@ bool CGUIPluginEstimate::new_estimator(DREAL pos, DREAL neg)
 bool CGUIPluginEstimate::train()
 {
 	CLabels* trainlabels=ui->ui_labels->get_train_labels();
-	CStringFeatures<WORD>* trainfeatures=(CStringFeatures<WORD>*) ui->
+	CStringFeatures<uint16_t>* trainfeatures=(CStringFeatures<uint16_t>*) ui->
 		ui_features->get_train_features();
 	bool result=false;
 
@@ -105,7 +105,7 @@ bool CGUIPluginEstimate::test(char* filename_out, char* filename_roc)
 	}
 
 	SG_INFO("Starting estimator testing.\n");
-	estimator->set_features((CStringFeatures<WORD>*) testfeatures);
+	estimator->set_features((CStringFeatures<uint16_t>*) testfeatures);
 	INT len=0;
 	DREAL* output=estimator->classify()->get_labels(len);
 
@@ -156,7 +156,7 @@ CLabels* CGUIPluginEstimate::classify(CLabels* output)
 		return 0;
 	}
 
-	estimator->set_features((CStringFeatures<WORD>*) testfeatures);
+	estimator->set_features((CStringFeatures<uint16_t>*) testfeatures);
 
 	return estimator->classify(output);
 }
@@ -177,7 +177,7 @@ DREAL CGUIPluginEstimate::classify_example(INT idx)
 		return 0;
 	}
 
-	estimator->set_features((CStringFeatures<WORD>*) testfeatures);
+	estimator->set_features((CStringFeatures<uint16_t>*) testfeatures);
 
 	return estimator->classify_example(idx);
 }

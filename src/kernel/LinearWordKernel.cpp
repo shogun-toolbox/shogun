@@ -15,12 +15,12 @@
 #include "features/WordFeatures.h"
 
 CLinearWordKernel::CLinearWordKernel()
-: CSimpleKernel<WORD>(0), normal(NULL)
+: CSimpleKernel<uint16_t>(0), normal(NULL)
 {
 }
 
 CLinearWordKernel::CLinearWordKernel(CWordFeatures* l, CWordFeatures* r)
-: CSimpleKernel<WORD>(0), normal(NULL)
+: CSimpleKernel<uint16_t>(0), normal(NULL)
 {
 	init(l, r);
 }
@@ -32,7 +32,7 @@ CLinearWordKernel::~CLinearWordKernel()
 
 bool CLinearWordKernel::init(CFeatures* l, CFeatures* r)
 {
-	CSimpleKernel<WORD>::init(l, r);
+	CSimpleKernel<uint16_t>::init(l, r);
 	return init_normalizer();
 }
 
@@ -63,7 +63,7 @@ void CLinearWordKernel::add_to_normal(INT idx, DREAL weight)
 {
 	INT vlen;
 	bool vfree;
-	WORD* vec=((CWordFeatures*) lhs)->get_feature_vector(idx, vlen, vfree);
+	uint16_t* vec=((CWordFeatures*) lhs)->get_feature_vector(idx, vlen, vfree);
 
 	for (int i=0; i<vlen; i++)
 		normal[i]+= weight*normalizer->normalize_lhs(vec[i], idx);
@@ -76,8 +76,8 @@ DREAL CLinearWordKernel::compute(INT idx_a, INT idx_b)
 	INT alen, blen;
 	bool afree, bfree;
 
-	WORD* avec=((CWordFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
-	WORD* bvec=((CWordFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
+	uint16_t* avec=((CWordFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
+	uint16_t* bvec=((CWordFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
 	ASSERT(alen==blen);
 
 	DREAL result=CMath::dot(avec, bvec, alen);
@@ -101,7 +101,7 @@ bool CLinearWordKernel::init_optimization(INT num_suppvec, INT* sv_idx, DREAL* a
 
 	for (int i=0; i<num_suppvec; i++)
 	{
-		WORD* avec=((CWordFeatures*) lhs)->get_feature_vector(sv_idx[i], alen, afree);
+		uint16_t* avec=((CWordFeatures*) lhs)->get_feature_vector(sv_idx[i], alen, afree);
 		ASSERT(avec);
 
 		for (int j=0; j<num_feat; j++)
@@ -128,7 +128,7 @@ DREAL CLinearWordKernel::compute_optimized(INT idx_b)
 	INT blen;
 	bool bfree;
 
-	WORD* bvec=((CWordFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
+	uint16_t* bvec=((CWordFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
 
 	double result=0;
 	{

@@ -15,23 +15,23 @@
 #include "lib/io.h"
 
 CCommWordStringKernel::CCommWordStringKernel(INT size, bool s)
-: CStringKernel<WORD>(size),
+: CStringKernel<uint16_t>(size),
 	dictionary_size(0), dictionary_weights(NULL),
 	use_sign(s), use_dict_diagonal_optimization(false), dict_diagonal_optimization(NULL)
 {
 	properties |= KP_LINADD;
-	init_dictionary(1<<(sizeof(WORD)*8));
+	init_dictionary(1<<(sizeof(uint16_t)*8));
 	set_normalizer(new CSqrtDiagKernelNormalizer(use_dict_diagonal_optimization));
 }
 
 CCommWordStringKernel::CCommWordStringKernel(
-	CStringFeatures<WORD>* l, CStringFeatures<WORD>* r, bool s, INT size)
-: CStringKernel<WORD>(size), dictionary_size(0), dictionary_weights(NULL),
+	CStringFeatures<uint16_t>* l, CStringFeatures<uint16_t>* r, bool s, INT size)
+: CStringKernel<uint16_t>(size), dictionary_size(0), dictionary_weights(NULL),
 	use_sign(s), use_dict_diagonal_optimization(false), dict_diagonal_optimization(NULL)
 {
 	properties |= KP_LINADD;
 
-	init_dictionary(1<<(sizeof(WORD)*8));
+	init_dictionary(1<<(sizeof(uint16_t)*8));
 	set_normalizer(new CSqrtDiagKernelNormalizer(use_dict_diagonal_optimization));
 	init(l,r);
 }
@@ -81,13 +81,13 @@ void CCommWordStringKernel::remove_rhs()
 
 bool CCommWordStringKernel::init(CFeatures* l, CFeatures* r)
 {
-	CStringKernel<WORD>::init(l,r);
+	CStringKernel<uint16_t>::init(l,r);
 
 	if (use_dict_diagonal_optimization)
 	{
 		delete[] dict_diagonal_optimization ;
-		dict_diagonal_optimization=new INT[INT(((CStringFeatures<WORD>*)l)->get_num_symbols())];
-		ASSERT(((CStringFeatures<WORD>*)l)->get_num_symbols() == ((CStringFeatures<WORD>*)r)->get_num_symbols()) ;
+		dict_diagonal_optimization=new INT[INT(((CStringFeatures<uint16_t>*)l)->get_num_symbols())];
+		ASSERT(((CStringFeatures<uint16_t>*)l)->get_num_symbols() == ((CStringFeatures<uint16_t>*)r)->get_num_symbols()) ;
 	}
 
 	return init_normalizer();
@@ -113,15 +113,15 @@ bool CCommWordStringKernel::save_init(FILE* dest)
 DREAL CCommWordStringKernel::compute_diag(INT idx_a)
 {
 	INT alen;
-	CStringFeatures<WORD>* l = (CStringFeatures<WORD>*) lhs;
-	CStringFeatures<WORD>* r = (CStringFeatures<WORD>*) rhs;
+	CStringFeatures<uint16_t>* l = (CStringFeatures<uint16_t>*) lhs;
+	CStringFeatures<uint16_t>* r = (CStringFeatures<uint16_t>*) rhs;
 
-	WORD* av=l->get_feature_vector(idx_a, alen);
+	uint16_t* av=l->get_feature_vector(idx_a, alen);
 
 	DREAL result=0.0 ;
 	ASSERT(l==r);
-	ASSERT(sizeof(WORD)<=sizeof(DREAL));
-	ASSERT((1<<(sizeof(WORD)*8)) > alen);
+	ASSERT(sizeof(uint16_t)<=sizeof(DREAL));
+	ASSERT((1<<(sizeof(uint16_t)*8)) > alen);
 
 	INT num_symbols=(INT) l->get_num_symbols();
 	ASSERT(num_symbols<=dictionary_size);
@@ -155,21 +155,21 @@ DREAL CCommWordStringKernel::compute_diag(INT idx_a)
 DREAL CCommWordStringKernel::compute_helper(INT idx_a, INT idx_b, bool do_sort)
 {
 	INT alen, blen;
-	CStringFeatures<WORD>* l = (CStringFeatures<WORD>*) lhs;
-	CStringFeatures<WORD>* r = (CStringFeatures<WORD>*) rhs;
+	CStringFeatures<uint16_t>* l = (CStringFeatures<uint16_t>*) lhs;
+	CStringFeatures<uint16_t>* r = (CStringFeatures<uint16_t>*) rhs;
 
-	WORD* av=l->get_feature_vector(idx_a, alen);
-	WORD* bv=r->get_feature_vector(idx_b, blen);
+	uint16_t* av=l->get_feature_vector(idx_a, alen);
+	uint16_t* bv=r->get_feature_vector(idx_b, blen);
 
-	WORD* avec=av;
-	WORD* bvec=bv;
+	uint16_t* avec=av;
+	uint16_t* bvec=bv;
 
 	if (do_sort)
 	{
 		if (alen>0)
 		{
-			avec=new WORD[alen];
-			memcpy(avec, av, sizeof(WORD)*alen);
+			avec=new uint16_t[alen];
+			memcpy(avec, av, sizeof(uint16_t)*alen);
 			CMath::radix_sort(avec, alen);
 		}
 		else
@@ -177,8 +177,8 @@ DREAL CCommWordStringKernel::compute_helper(INT idx_a, INT idx_b, bool do_sort)
 
 		if (blen>0)
 		{
-			bvec=new WORD[blen];
-			memcpy(bvec, bv, sizeof(WORD)*blen);
+			bvec=new uint16_t[blen];
+			memcpy(bvec, bv, sizeof(uint16_t)*blen);
 			CMath::radix_sort(bvec, blen);
 		}
 		else
@@ -206,7 +206,7 @@ DREAL CCommWordStringKernel::compute_helper(INT idx_a, INT idx_b, bool do_sort)
 		{
 			if (avec[left_idx]==bvec[right_idx])
 			{
-				WORD sym=avec[left_idx];
+				uint16_t sym=avec[left_idx];
 
 				while (left_idx< alen && avec[left_idx]==sym)
 					left_idx++;
@@ -231,7 +231,7 @@ DREAL CCommWordStringKernel::compute_helper(INT idx_a, INT idx_b, bool do_sort)
 				INT old_left_idx=left_idx;
 				INT old_right_idx=right_idx;
 
-				WORD sym=avec[left_idx];
+				uint16_t sym=avec[left_idx];
 
 				while (left_idx< alen && avec[left_idx]==sym)
 					left_idx++;
@@ -260,7 +260,7 @@ DREAL CCommWordStringKernel::compute_helper(INT idx_a, INT idx_b, bool do_sort)
 void CCommWordStringKernel::add_to_normal(INT vec_idx, DREAL weight)
 {
 	INT len=-1;
-	WORD* vec=((CStringFeatures<WORD>*) lhs)->get_feature_vector(vec_idx, len);
+	uint16_t* vec=((CStringFeatures<uint16_t>*) lhs)->get_feature_vector(vec_idx, len);
 
 	if (len>0)
 	{
@@ -343,7 +343,7 @@ DREAL CCommWordStringKernel::compute_optimized(INT i)
 
 	DREAL result = 0;
 	INT len = -1;
-	WORD* vec=((CStringFeatures<WORD>*) rhs)->get_feature_vector(i, len);
+	uint16_t* vec=((CStringFeatures<uint16_t>*) rhs)->get_feature_vector(i, len);
 
 	int j, last_j=0;
 	if (vec && len>0)
@@ -384,7 +384,7 @@ DREAL* CCommWordStringKernel::compute_scoring(INT max_degree, INT& num_feat,
 		bool do_init)
 {
 	ASSERT(lhs);
-	CStringFeatures<WORD>* str=((CStringFeatures<WORD>*) lhs);
+	CStringFeatures<uint16_t>* str=((CStringFeatures<uint16_t>*) lhs);
 	num_feat=1;//str->get_max_vector_length();
 	CAlphabet* alpha=str->get_alphabet();
 	ASSERT(alpha);
@@ -451,7 +451,7 @@ DREAL* CCommWordStringKernel::compute_scoring(INT max_degree, INT& num_feat,
 			
 			for (UINT i=0; i<words; i++)
 			{
-				WORD x= ((i << (num_bits*il)) >> (num_bits*ir)) & imer_mask;
+				uint16_t x= ((i << (num_bits*il)) >> (num_bits*ir)) & imer_mask;
 
 				if (p>=0 && p<order-o)
 				{
@@ -508,11 +508,11 @@ char* CCommWordStringKernel::compute_consensus(INT &result_len, INT num_suppvec,
 	ASSERT(IDX);
 	ASSERT(alphas);
 
-	CStringFeatures<WORD>* str=((CStringFeatures<WORD>*) lhs);
+	CStringFeatures<uint16_t>* str=((CStringFeatures<uint16_t>*) lhs);
 	INT num_words=(INT) str->get_num_symbols();
 	INT num_feat=str->get_max_vector_length();
 	LONG total_len=((LONG) num_feat) * num_words;
-	CAlphabet* alpha=((CStringFeatures<WORD>*) lhs)->get_alphabet();
+	CAlphabet* alpha=((CStringFeatures<uint16_t>*) lhs)->get_alphabet();
 	ASSERT(alpha);
 	INT num_bits=alpha->get_num_bits();
 	INT order=str->get_order();
@@ -553,11 +553,11 @@ char* CCommWordStringKernel::compute_consensus(INT &result_len, INT num_suppvec,
 
 			/* iterate over words t ending on t1 and find the highest scoring
 			 * pair */
-			WORD suffix=(WORD) t1 >> num_bits;
+			uint16_t suffix=(uint16_t) t1 >> num_bits;
 
 			for (INT sym=0; sym<str->get_original_num_symbols(); sym++)
 			{
-				WORD t=suffix | sym << (num_bits*(order-1));
+				uint16_t t=suffix | sym << (num_bits*(order-1));
 
 				//if (dictionary_weights[t]==0.0)
 				//	continue;
@@ -592,11 +592,11 @@ char* CCommWordStringKernel::compute_consensus(INT &result_len, INT num_suppvec,
 	SG_PRINT("max_idx:%i, max_score:%f\n", max_idx, max_score);
 	
 	for (INT i=result_len-1; i>=num_feat; i--)
-		result[i]=alpha->remap_to_char( (uint8_t) str->get_masked_symbols( (WORD) max_idx >> (num_bits*(result_len-1-i)), 1) );
+		result[i]=alpha->remap_to_char( (uint8_t) str->get_masked_symbols( (uint16_t) max_idx >> (num_bits*(result_len-1-i)), 1) );
 
 	for (INT i=num_feat-1; i>=0; i--)
 	{
-		result[i]=alpha->remap_to_char( (uint8_t) str->get_masked_symbols( (WORD) max_idx >> (num_bits*(order-1)), 1) );
+		result[i]=alpha->remap_to_char( (uint8_t) str->get_masked_symbols( (uint16_t) max_idx >> (num_bits*(order-1)), 1) );
 		max_idx=bt[num_words*i + max_idx];
 	}
 

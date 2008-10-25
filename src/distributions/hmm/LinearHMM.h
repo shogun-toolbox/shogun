@@ -40,7 +40,7 @@ class CLinearHMM : public CDistribution
 		 *
 		 * @param f features to use
 		 */
-		CLinearHMM(CStringFeatures<WORD>* f);
+		CLinearHMM(CStringFeatures<uint16_t>* f);
 
 		/** constructor
 		 *
@@ -71,7 +71,7 @@ class CLinearHMM : public CDistribution
 		 * @param len length of vector
 		 * @return logarithm of likelihood
 		 */
-		DREAL get_log_likelihood_example(WORD* vector, INT len);
+		DREAL get_log_likelihood_example(uint16_t* vector, INT len);
 
 		/** get one example's likelihood
 		 *
@@ -79,7 +79,7 @@ class CLinearHMM : public CDistribution
 		 * @param len length of vector
 		 * @return likelihood
 		 */
-		DREAL get_likelihood_example(WORD* vector, INT len);
+		DREAL get_likelihood_example(uint16_t* vector, INT len);
 
 		/** get logarithm of one example's likelihood
 		 *
@@ -102,7 +102,7 @@ class CLinearHMM : public CDistribution
 		 * @param obs observation
 		 * @param pos position
 		 */
-		virtual inline DREAL get_log_derivative_obsolete(WORD obs, INT pos)
+		virtual inline DREAL get_log_derivative_obsolete(uint16_t obs, INT pos)
 		{
 			return 1.0/transition_probs[pos*num_symbols+obs];
 		}
@@ -113,7 +113,7 @@ class CLinearHMM : public CDistribution
 		 * @param len length
 		 * @param pos position
 		 */
-		virtual inline DREAL get_derivative_obsolete(WORD* vector, INT len, INT pos)
+		virtual inline DREAL get_derivative_obsolete(uint16_t* vector, INT len, INT pos)
 		{
 			ASSERT(pos<len);
 			return get_likelihood_example(vector, len)/transition_probs[pos*num_symbols+vector[pos]];
@@ -143,7 +143,7 @@ class CLinearHMM : public CDistribution
 		 * @param position position
 		 * @return positional log parameter
 		 */
-		virtual inline DREAL get_positional_log_parameter(WORD obs, INT position)
+		virtual inline DREAL get_positional_log_parameter(uint16_t obs, INT position)
 		{
 			return log_transition_probs[position*num_symbols+obs];
 		}

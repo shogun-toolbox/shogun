@@ -171,7 +171,7 @@ CHMM::CHMM(INT p_N, INT p_M, CModel* p_model, DREAL p_PSEUDO)
 	status=initialize(p_model, p_PSEUDO);
 }
 
-CHMM::CHMM(CStringFeatures<WORD>* obs, INT p_N, INT p_M, DREAL p_PSEUDO)
+CHMM::CHMM(CStringFeatures<uint16_t>* obs, INT p_N, INT p_M, DREAL p_PSEUDO)
 : CDistribution(), iterations(150), epsilon(1e-4), conv_it(5)
 {
 	this->N=p_N;
@@ -5361,7 +5361,7 @@ bool CHMM::linear_train(bool right_align)
 			for (dim=0; dim<p_observations->get_num_vectors(); dim++)
 			{
 				INT len=0;
-				WORD* obs=p_observations->get_feature_vector(dim, len);
+				uint16_t* obs=p_observations->get_feature_vector(dim, len);
 
 				ASSERT(len<=get_N());
 				startendhist[(get_N()-len)]++;
@@ -5393,7 +5393,7 @@ bool CHMM::linear_train(bool right_align)
 			for (dim=0; dim<p_observations->get_num_vectors(); dim++)
 			{
 				INT len=0;
-				WORD* obs=p_observations->get_feature_vector(dim, len);
+				uint16_t* obs=p_observations->get_feature_vector(dim, len);
 
 				ASSERT(len<=get_N());
 				for (i=0;i<len;i++)
@@ -5431,7 +5431,7 @@ bool CHMM::linear_train(bool right_align)
 			for (INT j=0; j<get_M(); j++)
 			{
 				DREAL sum=0;
-				INT offs=i*get_M()+ p_observations->get_masked_symbols((WORD) j, (uint8_t) 254);
+				INT offs=i*get_M()+ p_observations->get_masked_symbols((uint16_t) j, (uint8_t) 254);
 
 				for (INT k=0; k<p_observations->get_original_num_symbols(); k++)
 					sum+=hist[offs+k];
@@ -5450,7 +5450,7 @@ bool CHMM::linear_train(bool right_align)
 		return false;
 }
 
-void CHMM::set_observation_nocache(CStringFeatures<WORD>* obs)
+void CHMM::set_observation_nocache(CStringFeatures<uint16_t>* obs)
 {
 	ASSERT(obs);
 	p_observations=obs;
@@ -5494,7 +5494,7 @@ void CHMM::set_observation_nocache(CStringFeatures<WORD>* obs)
 	invalidate_model();
 }
 
-void CHMM::set_observations(CStringFeatures<WORD>* obs, CHMM* lambda)
+void CHMM::set_observations(CStringFeatures<uint16_t>* obs, CHMM* lambda)
 {
 	ASSERT(obs);
 	p_observations=obs;
@@ -5660,7 +5660,7 @@ bool CHMM::permutation_entropy(INT window_width, INT sequence_number)
 		for (sequence_number=min_sequence; sequence_number<max_sequence; sequence_number++)
 		{
 			INT sequence_length=0;
-			WORD* obs=p_observations->get_feature_vector(sequence_number, sequence_length);
+			uint16_t* obs=p_observations->get_feature_vector(sequence_number, sequence_length);
 
 			INT histsize=get_M();
 			LONG* hist=new LONG[histsize];
@@ -5671,7 +5671,7 @@ bool CHMM::permutation_entropy(INT window_width, INT sequence_number)
 				for (j=0; j<histsize; j++)
 					hist[j]=0;
 
-				WORD* ptr=&obs[i];
+				uint16_t* ptr=&obs[i];
 				for (j=0; j<window_width; j++)
 				{
 					hist[*ptr++]++;

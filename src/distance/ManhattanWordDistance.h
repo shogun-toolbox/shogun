@@ -18,7 +18,7 @@
 #include "distance/StringDistance.h"
 
 /** class ManhattanWordDistance */
-class CManhattanWordDistance: public CStringDistance<WORD>
+class CManhattanWordDistance: public CStringDistance<uint16_t>
 {
 	public:
 		/** default constructor */
@@ -29,7 +29,7 @@ class CManhattanWordDistance: public CStringDistance<WORD>
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 */
-		CManhattanWordDistance(CStringFeatures<WORD>* l, CStringFeatures<WORD>* r);
+		CManhattanWordDistance(CStringFeatures<uint16_t>* l, CStringFeatures<uint16_t>* r);
 		virtual ~CManhattanWordDistance();
 
 		/** init distance

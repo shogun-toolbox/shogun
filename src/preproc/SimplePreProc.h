@@ -62,7 +62,7 @@ template<> inline EFeatureType CSimplePreProc<SHORT>::get_feature_type()
 	return F_SHORT;
 }
 
-template<> inline EFeatureType CSimplePreProc<WORD>::get_feature_type()
+template<> inline EFeatureType CSimplePreProc<uint16_t>::get_feature_type()
 {
 	return F_WORD;
 }

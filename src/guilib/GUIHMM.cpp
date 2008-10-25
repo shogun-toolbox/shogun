@@ -63,7 +63,7 @@ bool CGUIHMM::baum_welch_train()
 		trainfeatures->get_feature_class()!=C_STRING)
 		SG_ERROR("Features must be STRING of type WORD.\n");
 
-	CStringFeatures<WORD>* sf=(CStringFeatures<WORD>*) trainfeatures;
+	CStringFeatures<uint16_t>* sf=(CStringFeatures<uint16_t>*) trainfeatures;
 	SG_DEBUG("Stringfeatures have %ld orig_symbols %ld symbols %d order %ld max_symbols\n",  (LONG) sf->get_original_num_symbols(), (LONG) sf->get_num_symbols(), sf->get_order(), (LONG) sf->get_max_num_symbols());
 
 	working->set_observations(sf);
@@ -84,7 +84,7 @@ bool CGUIHMM::baum_welch_trans_train()
 		trainfeatures->get_feature_class()!=C_STRING)
 		SG_ERROR("Features must be STRING of type WORD.\n");
 
-	working->set_observations((CStringFeatures<WORD>*) trainfeatures);
+	working->set_observations((CStringFeatures<uint16_t>*) trainfeatures);
 
 	return working->baum_welch_viterbi_train(BW_TRANS);
 }
@@ -132,7 +132,7 @@ bool CGUIHMM::linear_train(char align)
 		trainfeatures->get_feature_class()!=C_STRING)
 		SG_ERROR("Features must be STRING of type WORD.\n");
 
-	working->set_observations((CStringFeatures<WORD>*) ui->
+	working->set_observations((CStringFeatures<uint16_t>*) ui->
 		ui_features->get_train_features());
 
 	bool right_align=false;
@@ -177,10 +177,10 @@ bool CGUIHMM::one_class_test(
 	if (ui->ui_features->get_test_features())
 		SG_ERROR("Assign posttest and negtest observations first!\n");
 
-	CStringFeatures<WORD>* obs= (CStringFeatures<WORD>*) ui->
+	CStringFeatures<uint16_t>* obs= (CStringFeatures<uint16_t>*) ui->
 		ui_features->get_test_features();
 	working->set_observations(obs);
-	CStringFeatures<WORD>* old_test=working->get_observations();
+	CStringFeatures<uint16_t>* old_test=working->get_observations();
 	CLabels* lab=ui->ui_labels->get_test_labels();
 	INT total=obs->get_num_vectors();
 	ASSERT(lab && total==lab->get_num_labels());
@@ -250,12 +250,12 @@ bool CGUIHMM::hmm_classify(char* param)
 	{
 		if (ui->ui_features->get_test_features())
 		{
-			CStringFeatures<WORD>* o= (CStringFeatures<WORD>*) ui->
+			CStringFeatures<uint16_t>* o= (CStringFeatures<uint16_t>*) ui->
 				ui_features->get_test_features();
 			CLabels* lab= ui->ui_labels->get_test_labels();
 
-			//CStringFeatures<WORD>* old_pos=pos->get_observations();
-			//CStringFeatures<WORD>* old_neg=neg->get_observations();
+			//CStringFeatures<uint16_t>* old_pos=pos->get_observations();
+			//CStringFeatures<uint16_t>* old_neg=neg->get_observations();
 
 			pos->set_observations(o);
 			neg->set_observations(o);
@@ -326,12 +326,12 @@ bool CGUIHMM::hmm_test(
 	if (!ui->ui_features->get_test_features())
 		SG_ERROR("Assign test features first!\n");
 
-	CStringFeatures<WORD>* o=(CStringFeatures<WORD>*) ui->
+	CStringFeatures<uint16_t>* o=(CStringFeatures<uint16_t>*) ui->
 		ui_features->get_test_features();
 	ASSERT(o);
 	CLabels* lab=ui->ui_labels->get_test_labels();
-	CStringFeatures<WORD>* old_pos=pos->get_observations();
-	CStringFeatures<WORD>* old_neg=neg->get_observations();
+	CStringFeatures<uint16_t>* old_pos=pos->get_observations();
+	CStringFeatures<uint16_t>* old_neg=neg->get_observations();
 	pos->set_observations(o);
 	neg->set_observations(o);
 	INT total=o->get_num_vectors();
@@ -370,13 +370,13 @@ bool CGUIHMM::hmm_test(
 
 CLabels* CGUIHMM::classify(CLabels* result)
 {
-	CStringFeatures<WORD>* obs= (CStringFeatures<WORD>*) ui->
+	CStringFeatures<uint16_t>* obs= (CStringFeatures<uint16_t>*) ui->
 		ui_features->get_test_features();
 	ASSERT(obs);
 	INT num_vec=obs->get_num_vectors();
 
-	//CStringFeatures<WORD>* old_pos=pos->get_observations();
-	//CStringFeatures<WORD>* old_neg=neg->get_observations();
+	//CStringFeatures<uint16_t>* old_pos=pos->get_observations();
+	//CStringFeatures<uint16_t>* old_neg=neg->get_observations();
 
 	pos->set_observations(obs);
 	neg->set_observations(obs);
@@ -394,12 +394,12 @@ CLabels* CGUIHMM::classify(CLabels* result)
 
 DREAL CGUIHMM::classify_example(INT idx)
 {
-	CStringFeatures<WORD>* obs= (CStringFeatures<WORD>*) ui->
+	CStringFeatures<uint16_t>* obs= (CStringFeatures<uint16_t>*) ui->
 		ui_features->get_test_features();
 	ASSERT(obs);
 
-	//CStringFeatures<WORD>* old_pos=pos->get_observations();
-	//CStringFeatures<WORD>* old_neg=neg->get_observations();
+	//CStringFeatures<uint16_t>* old_pos=pos->get_observations();
+	//CStringFeatures<uint16_t>* old_neg=neg->get_observations();
 
 	pos->set_observations(obs);
 	neg->set_observations(obs);
@@ -414,12 +414,12 @@ CLabels* CGUIHMM::one_class_classify(CLabels* result)
 {
 	ASSERT(working);
 
-	CStringFeatures<WORD>* obs= (CStringFeatures<WORD>*) ui->
+	CStringFeatures<uint16_t>* obs= (CStringFeatures<uint16_t>*) ui->
 		ui_features->get_test_features();
 	ASSERT(obs);
 	INT num_vec=obs->get_num_vectors();
 
-	//CStringFeatures<WORD>* old_pos=working->get_observations();
+	//CStringFeatures<uint16_t>* old_pos=working->get_observations();
 	working->set_observations(obs);
 
 	if (!result)
@@ -436,12 +436,12 @@ CLabels* CGUIHMM::linear_one_class_classify(CLabels* result)
 {
 	ASSERT(working);
 
-	CStringFeatures<WORD>* obs= (CStringFeatures<WORD>*) ui->
+	CStringFeatures<uint16_t>* obs= (CStringFeatures<uint16_t>*) ui->
 		ui_features->get_test_features();
 	ASSERT(obs);
 	INT num_vec=obs->get_num_vectors();
 
-	//CStringFeatures<WORD>* old_pos=working->get_observations();
+	//CStringFeatures<uint16_t>* old_pos=working->get_observations();
 	working->set_observations(obs);
 
 	if (!result)
@@ -459,11 +459,11 @@ DREAL CGUIHMM::one_class_classify_example(INT idx)
 {
 	ASSERT(working);
 
-	CStringFeatures<WORD>* obs= (CStringFeatures<WORD>*) ui->
+	CStringFeatures<uint16_t>* obs= (CStringFeatures<uint16_t>*) ui->
 		ui_features->get_test_features();
 	ASSERT(obs);
 
-	//CStringFeatures<WORD>* old_pos=pos->get_observations();
+	//CStringFeatures<uint16_t>* old_pos=pos->get_observations();
 
 	pos->set_observations(obs);
 	neg->set_observations(obs);
@@ -699,7 +699,7 @@ bool CGUIHMM::save_path(char* filename, bool is_binary)
 		//if (binary)
 		//_train()/	result=working->save_model_bin(file);
 		//else
-		CStringFeatures<WORD>* obs=(CStringFeatures<WORD>*) ui->
+		CStringFeatures<uint16_t>* obs=(CStringFeatures<uint16_t>*) ui->
 			ui_features->get_test_features();
 		ASSERT(obs);
 		working->set_observations(obs);

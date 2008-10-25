@@ -16,15 +16,15 @@
 CWeightedCommWordStringKernel::CWeightedCommWordStringKernel(INT size, bool us)
 : CCommWordStringKernel(size, us), degree(0), weights(NULL)
 {
-	init_dictionary(1<<(sizeof(WORD)*9));
+	init_dictionary(1<<(sizeof(uint16_t)*9));
 	ASSERT(us==false);
 }
 
 CWeightedCommWordStringKernel::CWeightedCommWordStringKernel(
-	CStringFeatures<WORD>* l, CStringFeatures<WORD>* r, bool us, INT size)
+	CStringFeatures<uint16_t>* l, CStringFeatures<uint16_t>* r, bool us, INT size)
 : CCommWordStringKernel(size, us), degree(0), weights(NULL)
 {
-	init_dictionary(1<<(sizeof(WORD)*9));
+	init_dictionary(1<<(sizeof(uint16_t)*9));
 	ASSERT(us==false);
 
 	init(l,r);
@@ -37,9 +37,9 @@ CWeightedCommWordStringKernel::~CWeightedCommWordStringKernel()
 
 bool CWeightedCommWordStringKernel::init(CFeatures* l, CFeatures* r)
 {
-	ASSERT(((CStringFeatures<WORD>*) l)->get_order() ==
-			((CStringFeatures<WORD>*) r)->get_order());
-	degree=((CStringFeatures<WORD>*) l)->get_order();
+	ASSERT(((CStringFeatures<uint16_t>*) l)->get_order() ==
+			((CStringFeatures<uint16_t>*) r)->get_order());
+	degree=((CStringFeatures<uint16_t>*) l)->get_order();
 	set_wd_weights();
 
 	CCommWordStringKernel::init(l,r);
@@ -86,21 +86,21 @@ DREAL CWeightedCommWordStringKernel::compute_helper(INT idx_a, INT idx_b, bool d
 {
 	INT alen, blen;
 
-	CStringFeatures<WORD>* l = (CStringFeatures<WORD>*) lhs;
-	CStringFeatures<WORD>* r = (CStringFeatures<WORD>*) rhs;
+	CStringFeatures<uint16_t>* l = (CStringFeatures<uint16_t>*) lhs;
+	CStringFeatures<uint16_t>* r = (CStringFeatures<uint16_t>*) rhs;
 
-	WORD* av=l->get_feature_vector(idx_a, alen);
-	WORD* bv=r->get_feature_vector(idx_b, blen);
+	uint16_t* av=l->get_feature_vector(idx_a, alen);
+	uint16_t* bv=r->get_feature_vector(idx_b, blen);
 
-	WORD* avec=av;
-	WORD* bvec=bv;
+	uint16_t* avec=av;
+	uint16_t* bvec=bv;
 
 	if (do_sort)
 	{
 		if (alen>0)
 		{
-			avec=new WORD[alen];
-			memcpy(avec, av, sizeof(WORD)*alen);
+			avec=new uint16_t[alen];
+			memcpy(avec, av, sizeof(uint16_t)*alen);
 			CMath::radix_sort(avec, alen);
 		}
 		else
@@ -108,8 +108,8 @@ DREAL CWeightedCommWordStringKernel::compute_helper(INT idx_a, INT idx_b, bool d
 
 		if (blen>0)
 		{
-			bvec=new WORD[blen];
-			memcpy(bvec, bv, sizeof(WORD)*blen);
+			bvec=new uint16_t[blen];
+			memcpy(bvec, bv, sizeof(uint16_t)*blen);
 			CMath::radix_sort(bvec, blen);
 		}
 		else
@@ -132,15 +132,15 @@ DREAL CWeightedCommWordStringKernel::compute_helper(INT idx_a, INT idx_b, bool d
 	for (INT d=0; d<degree; d++)
 	{
 		mask = mask | (1 << (degree-d-1));
-		WORD masked=((CStringFeatures<WORD>*) lhs)->get_masked_symbols(0xffff, mask);
+		uint16_t masked=((CStringFeatures<uint16_t>*) lhs)->get_masked_symbols(0xffff, mask);
 
 		INT left_idx=0;
 		INT right_idx=0;
 
 		while (left_idx < alen && right_idx < blen)
 		{
-			WORD lsym=avec[left_idx] & masked;
-			WORD rsym=bvec[right_idx] & masked;
+			uint16_t lsym=avec[left_idx] & masked;
+			uint16_t rsym=bvec[right_idx] & masked;
 
 			if (lsym == rsym)
 			{
@@ -174,8 +174,8 @@ DREAL CWeightedCommWordStringKernel::compute_helper(INT idx_a, INT idx_b, bool d
 void CWeightedCommWordStringKernel::add_to_normal(INT vec_idx, DREAL weight)
 {
 	INT len=-1;
-	CStringFeatures<WORD>* s=(CStringFeatures<WORD>*) lhs;
-	WORD* vec=s->get_feature_vector(vec_idx, len);
+	CStringFeatures<uint16_t>* s=(CStringFeatures<uint16_t>*) lhs;
+	uint16_t* vec=s->get_feature_vector(vec_idx, len);
 
 	if (len>0)
 	{
@@ -202,9 +202,9 @@ void CWeightedCommWordStringKernel::merge_normal()
 	ASSERT(get_is_initialized());
 	ASSERT(use_sign==false);
 
-	CStringFeatures<WORD>* s=(CStringFeatures<WORD>*) rhs;
+	CStringFeatures<uint16_t>* s=(CStringFeatures<uint16_t>*) rhs;
 	UINT num_symbols=(UINT) s->get_num_symbols();
-	INT dic_size=1<<(sizeof(WORD)*8);
+	INT dic_size=1<<(sizeof(uint16_t)*8);
 	DREAL* dic=new DREAL[dic_size];
 	memset(dic, 0, sizeof(DREAL)*dic_size);
 
@@ -224,7 +224,7 @@ void CWeightedCommWordStringKernel::merge_normal()
 		dic[sym]=result;
 	}
 
-	init_dictionary(1<<(sizeof(WORD)*8));
+	init_dictionary(1<<(sizeof(uint16_t)*8));
 	memcpy(dictionary_weights, dic, sizeof(DREAL)*dic_size);
 	delete[] dic;
 }
@@ -238,8 +238,8 @@ DREAL CWeightedCommWordStringKernel::compute_optimized(INT i)
 
 	DREAL result=0;
 	INT len=-1;
-	CStringFeatures<WORD>* s=(CStringFeatures<WORD>*) rhs;
-	WORD* vec=s->get_feature_vector(i, len);
+	CStringFeatures<uint16_t>* s=(CStringFeatures<uint16_t>*) rhs;
+	uint16_t* vec=s->get_feature_vector(i, len);
 
 	if (vec && len>0)
 	{
@@ -268,7 +268,7 @@ DREAL* CWeightedCommWordStringKernel::compute_scoring(INT max_degree, INT& num_f
 	if (do_init)
 		CCommWordStringKernel::init_optimization(num_suppvec, IDX, alphas);
 
-	INT dic_size=1<<(sizeof(WORD)*9);
+	INT dic_size=1<<(sizeof(uint16_t)*9);
 	DREAL* dic=new DREAL[dic_size];
 	memcpy(dic, dictionary_weights, sizeof(DREAL)*dic_size);
 
@@ -276,7 +276,7 @@ DREAL* CWeightedCommWordStringKernel::compute_scoring(INT max_degree, INT& num_f
 	DREAL* result=CCommWordStringKernel::compute_scoring(max_degree, num_feat,
 			num_sym, target, num_suppvec, IDX, alphas, false);
 
-	init_dictionary(1<<(sizeof(WORD)*9));
+	init_dictionary(1<<(sizeof(uint16_t)*9));
 	memcpy(dictionary_weights,dic,  sizeof(DREAL)*dic_size);
 	delete[] dic;
 

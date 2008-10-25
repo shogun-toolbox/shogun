@@ -148,7 +148,7 @@ GET_VECTOR(get_int_vector, NPY_INT, INT, int, "Integer")
 GET_VECTOR(get_short_vector, NPY_SHORT, SHORT, short, "Short")
 GET_VECTOR(get_shortreal_vector, NPY_FLOAT, SHORTREAL, float, "Single Precision")
 GET_VECTOR(get_real_vector, NPY_DOUBLE, DREAL, double, "Double Precision")
-GET_VECTOR(get_word_vector, NPY_USHORT, WORD, unsigned short, "Word")
+GET_VECTOR(get_word_vector, NPY_USHORT, uint16_t, unsigned short, "Word")
 #undef GET_VECTOR
 
 
@@ -187,7 +187,7 @@ GET_MATRIX(get_int_matrix, NPY_INT, INT, int, "Integer")
 GET_MATRIX(get_short_matrix, NPY_SHORT, SHORT, short, "Short")
 GET_MATRIX(get_shortreal_matrix, NPY_FLOAT, SHORTREAL, float, "Single Precision")
 GET_MATRIX(get_real_matrix, NPY_DOUBLE, DREAL, double, "Double Precision")
-GET_MATRIX(get_word_matrix, NPY_USHORT, WORD, unsigned short, "Word")
+GET_MATRIX(get_word_matrix, NPY_USHORT, uint16_t, unsigned short, "Word")
 #undef GET_MATRIX
 
 #define GET_NDARRAY(function_name, py_type, sg_type, if_type, error_string)	\
@@ -224,7 +224,7 @@ GET_NDARRAY(get_int_ndarray, NPY_INT, INT, int, "Integer")
 GET_NDARRAY(get_short_ndarray, NPY_SHORT, SHORT, short, "Short")
 GET_NDARRAY(get_shortreal_ndarray, NPY_FLOAT, SHORTREAL, float, "Single Precision")
 GET_NDARRAY(get_real_ndarray, NPY_DOUBLE, DREAL, double, "Double Precision")
-GET_NDARRAY(get_word_ndarray, NPY_USHORT, WORD, unsigned short, "Word")
+GET_NDARRAY(get_word_ndarray, NPY_USHORT, uint16_t, unsigned short, "Word")
 #undef GET_NDARRAY
 
 
@@ -282,7 +282,7 @@ GET_SPARSEMATRIX(get_char_sparsematrix, "char", char, mxChar, "Char")
 GET_SPARSEMATRIX(get_int_sparsematrix, "int32", INT, int, "Integer")
 GET_SPARSEMATRIX(get_short_sparsematrix, "int16", SHORT, short, "Short")
 GET_SPARSEMATRIX(get_shortreal_sparsematrix, "single", SHORTREAL, float, "Single Precision")
-GET_SPARSEMATRIX(get_word_sparsematrix, "uint16", WORD, unsigned short, "Word")*/
+GET_SPARSEMATRIX(get_word_sparsematrix, "uint16", uint16_t, unsigned short, "Word")*/
 #undef GET_SPARSEMATRIX
 
 
@@ -369,7 +369,7 @@ GET_STRINGLIST(get_byte_string_list, NPY_BYTE, uint8_t, uint8_t, 1, "Byte")
 GET_STRINGLIST(get_char_string_list, NPY_CHAR, char, char, 1, "Char")
 GET_STRINGLIST(get_int_string_list, NPY_INT, INT, int, 0, "Integer")
 GET_STRINGLIST(get_short_string_list, NPY_SHORT, SHORT, short, 0, "Short")
-GET_STRINGLIST(get_word_string_list, NPY_USHORT, WORD, unsigned short, 0, "Word")
+GET_STRINGLIST(get_word_string_list, NPY_USHORT, uint16_t, unsigned short, 0, "Word")
 #undef GET_STRINGLIST
 
 
@@ -431,7 +431,7 @@ SET_VECTOR(set_int_vector, NPY_INT, INT, int, "Integer")
 SET_VECTOR(set_short_vector, NPY_SHORT, SHORT, short, "Short")
 SET_VECTOR(set_shortreal_vector, NPY_FLOAT, SHORTREAL, float, "Single Precision")
 SET_VECTOR(set_real_vector, NPY_DOUBLE, DREAL, double, "Double Precision")
-SET_VECTOR(set_word_vector, NPY_USHORT, WORD, unsigned short, "Word")
+SET_VECTOR(set_word_vector, NPY_USHORT, uint16_t, unsigned short, "Word")
 #undef SET_VECTOR
 
 
@@ -463,7 +463,7 @@ SET_MATRIX(set_int_matrix, NPY_INT, INT, int, "Integer")
 SET_MATRIX(set_short_matrix, NPY_SHORT, SHORT, short, "Short")
 SET_MATRIX(set_shortreal_matrix, NPY_FLOAT, SHORTREAL, float, "Single Precision")
 SET_MATRIX(set_real_matrix, NPY_DOUBLE, DREAL, double, "Double Precision")
-SET_MATRIX(set_word_matrix, NPY_USHORT, WORD, unsigned short, "Word")
+SET_MATRIX(set_word_matrix, NPY_USHORT, uint16_t, unsigned short, "Word")
 #undef SET_MATRIX
 
 #define SET_SPARSEMATRIX(function_name, py_type, sg_type, if_type, error_string)	\
@@ -509,7 +509,7 @@ SET_SPARSEMATRIX(set_char_sparsematrix, mxCHAR_CLASS, char, mxChar, "Char")
 SET_SPARSEMATRIX(set_int_sparsematrix, mxINT32_CLASS, INT, int, "Integer")
 SET_SPARSEMATRIX(set_short_sparsematrix, mxINT16_CLASS, SHORT, short, "Short")
 SET_SPARSEMATRIX(set_shortreal_sparsematrix, mxSINGLE_CLASS, SHORTREAL, float, "Single Precision")
-SET_SPARSEMATRIX(set_word_sparsematrix, mxUINT16_CLASS, WORD, unsigned short, "Word")*/
+SET_SPARSEMATRIX(set_word_sparsematrix, mxUINT16_CLASS, uint16_t, unsigned short, "Word")*/
 #undef SET_SPARSEMATRIX
 
 
@@ -547,7 +547,7 @@ SET_STRINGLIST(set_byte_string_list, NPY_BYTE, uint8_t, uint8_t, 0, "Byte")
 SET_STRINGLIST(set_char_string_list, NPY_CHAR, char, char, 1, "Char")
 SET_STRINGLIST(set_int_string_list, NPY_INT, INT, int, 0, "Integer")
 SET_STRINGLIST(set_short_string_list, NPY_SHORT, SHORT, short, 0, "Short")
-SET_STRINGLIST(set_word_string_list, NPY_USHORT, WORD, unsigned short, 0, "Word")
+SET_STRINGLIST(set_word_string_list, NPY_USHORT, uint16_t, unsigned short, 0, "Word")
 #undef SET_STRINGLIST
 
 

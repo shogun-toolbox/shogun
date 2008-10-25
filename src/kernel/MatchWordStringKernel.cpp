@@ -16,13 +16,13 @@
 #include "features/StringFeatures.h"
 
 CMatchWordStringKernel::CMatchWordStringKernel(INT size, INT d)
-: CStringKernel<WORD>(size), degree(d)
+: CStringKernel<uint16_t>(size), degree(d)
 {
 	set_normalizer(new CAvgDiagKernelNormalizer());
 }
 
-CMatchWordStringKernel::CMatchWordStringKernel(CStringFeatures<WORD>* l, CStringFeatures<WORD>* r, INT d)
-: CStringKernel<WORD>(10), degree(d)
+CMatchWordStringKernel::CMatchWordStringKernel(CStringFeatures<uint16_t>* l, CStringFeatures<uint16_t>* r, INT d)
+: CStringKernel<uint16_t>(10), degree(d)
 {
 	set_normalizer(new CAvgDiagKernelNormalizer());
 	init(l, r);
@@ -35,7 +35,7 @@ CMatchWordStringKernel::~CMatchWordStringKernel()
 
 bool CMatchWordStringKernel::init(CFeatures* l, CFeatures* r)
 {
-	CStringKernel<WORD>::init(l, r);
+	CStringKernel<uint16_t>::init(l, r);
 	return init_normalizer();
 }
 
@@ -53,8 +53,8 @@ DREAL CMatchWordStringKernel::compute(INT idx_a, INT idx_b)
 {
 	INT alen, blen;
 
-	WORD* avec=((CStringFeatures<WORD>*) lhs)->get_feature_vector(idx_a, alen);
-	WORD* bvec=((CStringFeatures<WORD>*) rhs)->get_feature_vector(idx_b, blen);
+	uint16_t* avec=((CStringFeatures<uint16_t>*) lhs)->get_feature_vector(idx_a, alen);
+	uint16_t* bvec=((CStringFeatures<uint16_t>*) rhs)->get_feature_vector(idx_b, blen);
 	// can only deal with strings of same length
 	ASSERT(alen==blen);
 

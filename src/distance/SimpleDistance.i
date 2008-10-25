@@ -7,7 +7,7 @@
 %include "distance/SimpleDistance.h"
 
 %template(SimpleRealDistance) CSimpleDistance<DREAL>;
-%template(SimpleWordDistance) CSimpleDistance<WORD>;
+%template(SimpleWordDistance) CSimpleDistance<uint16_t>;
 %template(SimpleCharDistance) CSimpleDistance<char>;
 %template(SimpleIntDistance) CSimpleDistance<INT>;
 

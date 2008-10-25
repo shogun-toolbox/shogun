@@ -299,7 +299,7 @@ bool CSVMLight::setup_auc_maximization()
 	INT num_auc = num_pos*num_neg ;
 	SG_INFO( "num_pos: %i  num_neg: %i  num_auc: %i\n", num_pos, num_neg, num_auc) ;
 
-	WORD* features_auc = new WORD[num_auc*2] ;
+	uint16_t* features_auc = new uint16_t[num_auc*2] ;
 	INT* labels_auc = new INT[num_auc] ;
 	INT n=0 ;
 	for (INT i=0; i<num; i++)

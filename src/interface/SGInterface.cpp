@@ -1239,7 +1239,7 @@ bool CSGInterface::cmd_get_features()
 
 				case F_WORD:
 				{
-					WORD* fmatrix=((CWordFeatures *) feat)->get_feature_matrix(num_feat, num_vec);
+					uint16_t* fmatrix=((CWordFeatures *) feat)->get_feature_matrix(num_feat, num_vec);
 					set_word_matrix(fmatrix, num_feat, num_vec);
 					break;
 				}
@@ -1295,7 +1295,7 @@ bool CSGInterface::cmd_get_features()
 
 				case F_WORD:
 				{
-					T_STRING<WORD>* fmatrix=((CStringFeatures<WORD>*) feat)->get_features(num_str, max_str_len);
+					T_STRING<uint16_t>* fmatrix=((CStringFeatures<uint16_t>*) feat)->get_features(num_str, max_str_len);
 					set_word_string_list(fmatrix, num_str);
 					break;
 				}
@@ -1391,7 +1391,7 @@ bool CSGInterface::do_set_features(bool add)
 
 		case DENSE_WORD:
 		{
-			WORD* fmatrix=NULL;
+			uint16_t* fmatrix=NULL;
 			get_word_matrix(fmatrix, num_feat, num_vec);
 
 			feat=new CWordFeatures(0);
@@ -1684,7 +1684,7 @@ bool CSGInterface::cmd_convert()
 
 				if (strmatch(to_type, "WORD"))
 				{
-						result=ui_features->convert_string_char_to_string_generic<char,WORD>(
+						result=ui_features->convert_string_char_to_string_generic<char,uint16_t>(
 						(CStringFeatures<char>*) features, order, start,
 						gap, rev);
 				}
@@ -1756,7 +1756,7 @@ bool CSGInterface::cmd_convert()
 
 				if (strmatch(to_type, "WORD"))
 				{
-					result=ui_features->convert_string_char_to_string_generic<uint8_t,WORD>(
+					result=ui_features->convert_string_char_to_string_generic<uint8_t,uint16_t>(
 						(CStringFeatures<uint8_t>*) features, order, start,
 						gap, rev);
 				}
@@ -1798,7 +1798,7 @@ bool CSGInterface::cmd_convert()
 			if (strmatch(to_class, "SIMPLE") && strmatch(to_type, "TOP"))
 			{
 				result=ui_features->convert_string_word_to_simple_top(
-					(CStringFeatures<WORD>*) features);
+					(CStringFeatures<uint16_t>*) features);
 			}
 			else 
 				io.not_implemented();
@@ -1807,7 +1807,7 @@ bool CSGInterface::cmd_convert()
 		else if (strmatch(to_class, "SIMPLE") && strmatch(to_type, "FK"))
 		{
 			result=ui_features->convert_string_word_to_simple_fk(
-				(CStringFeatures<WORD>*) features);
+				(CStringFeatures<uint16_t>*) features);
 		} // to_type FK
 
 		else
@@ -1901,7 +1901,7 @@ bool CSGInterface::cmd_obtain_from_position_list()
 		}
 		case F_WORD:
 		{
-			success=(((CStringFeatures<WORD>*) features)->
+			success=(((CStringFeatures<uint16_t>*) features)->
 				obtain_by_position_list(winsize, &positions, skip)>0);
 			break;
 		}
@@ -4869,10 +4869,10 @@ bool CSGInterface::cmd_get_viterbi_path()
 			(feat->get_feature_type()!=F_WORD))
 		return false;
 
-	h->set_observations((CStringFeatures<WORD>*) feat);
+	h->set_observations((CStringFeatures<uint16_t>*) feat);
 
 	INT num_feat=0;
-	WORD* vec=((CStringFeatures<WORD>*) feat)->get_feature_vector(dim, num_feat);
+	uint16_t* vec=((CStringFeatures<uint16_t>*) feat)->get_feature_vector(dim, num_feat);
 	if (!vec || num_feat<=0)
 		return false;
 
@@ -5142,7 +5142,7 @@ bool CSGInterface::cmd_set_hmm()
 		for (j=0; j<M; j++)
 			current->set_b(i,j, b[i+j*N]);
 
-	CStringFeatures<WORD>* sf = ((CStringFeatures<WORD>*) (ui_features->get_train_features()));
+	CStringFeatures<uint16_t>* sf = ((CStringFeatures<uint16_t>*) (ui_features->get_train_features()));
 	current->set_observations(sf);
 
 	return true;
@@ -5550,7 +5550,7 @@ bool CSGInterface::cmd_precompute_content_svms()
 	DREAL* weights = ui_structure->get_content_svm_weights();
 	INT Mweights = h->get_num_svms();
 	INT Nweights = ui_structure->get_num_svm_weights();
-	WORD** wordstr[Mweights];
+	uint16_t** wordstr[Mweights];
 	h->create_word_string(seq, (INT) 1, Nseq, wordstr);
 	h->init_content_svm_value_array(Npos);
 	h->precompute_content_values(wordstr, all_pos, Npos, Nseq, weights, Nweights*Mweights);
@@ -6296,7 +6296,7 @@ bool CSGInterface::cmd_translate_string()
 
 	const INT max_val=2; /* DNA->2bits */
 	INT i,j;
-	WORD* obs=new WORD[len];
+	uint16_t* obs=new uint16_t[len];
 
 	for (i=0; i<len; i++)
 	{
@@ -6317,16 +6317,16 @@ bool CSGInterface::cmd_translate_string()
 	//convert interval of size T
 	for (i=len-1; i>=order-1; i--)
 	{
-		WORD value=0;
+		uint16_t value=0;
 		for (j=i; j>=i-order+1; j--)
 			value=(value>>max_val) | ((obs[j])<<(max_val*(order-1)));
 		
-		obs[i]=(WORD) value;
+		obs[i]=(uint16_t) value;
 	}
 	
 	for (i=order-2;i>=0;i--)
 	{
-		WORD value=0;
+		uint16_t value=0;
 		for (j=i; j>=i-order+1; j--)
 		{
 			value= (value >> max_val);

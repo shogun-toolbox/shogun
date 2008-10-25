@@ -62,7 +62,7 @@ class CWeightedCommWordStringKernel: public CCommWordStringKernel
 		 * @param size cache size
 		 */
 		CWeightedCommWordStringKernel(
-			CStringFeatures<WORD>* l, CStringFeatures<WORD>* r,
+			CStringFeatures<uint16_t>* l, CStringFeatures<uint16_t>* r,
 			bool use_sign=false, INT size=10);
 
 		virtual ~CWeightedCommWordStringKernel();

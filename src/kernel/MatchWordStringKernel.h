@@ -29,7 +29,7 @@
  *     k'({\bf x}, {\bf x'})=\frac{k({\bf x}, {\bf x'})}{\sqrt{k({\bf x}, {\bf x})k({\bf x'}, {\bf x'})}}
  * \f]
  */
-class CMatchWordStringKernel: public CStringKernel<WORD>
+class CMatchWordStringKernel: public CStringKernel<uint16_t>
 {
 	public:
 		/** constructor
@@ -45,7 +45,7 @@ class CMatchWordStringKernel: public CStringKernel<WORD>
 		 * @param r features of right-hand side
 		 * @param degree degree
 		 */
-		CMatchWordStringKernel(CStringFeatures<WORD>* l, CStringFeatures<WORD>* r, INT degree);
+		CMatchWordStringKernel(CStringFeatures<uint16_t>* l, CStringFeatures<uint16_t>* r, INT degree);
 
 		virtual ~CMatchWordStringKernel();
 

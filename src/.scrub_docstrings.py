@@ -15,7 +15,7 @@ REPLACEMENTS=[
 	[' ULONG', ' int'],
 	[' uint8_t', ' int'],
 	[' SHORT', ' int'],
-	[' WORD', ' int'],
+	[' uint16_t', ' int'],
 	[' char', ' str'],
 	['-> CFeatures', '-> Features'],
 ]

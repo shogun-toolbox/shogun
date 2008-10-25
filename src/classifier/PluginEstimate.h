@@ -40,7 +40,7 @@ class CPluginEstimate: public CClassifier
 		 *
 		 * @param feat features to set
 		 */
-		virtual inline void set_features(CStringFeatures<WORD>* feat)
+		virtual inline void set_features(CStringFeatures<uint16_t>* feat)
 		{
 			SG_UNREF(features);
 			SG_REF(feat);
@@ -51,7 +51,7 @@ class CPluginEstimate: public CClassifier
 		 *
 		 * @return features
 		 */
-		virtual CStringFeatures<WORD>* get_features() { SG_REF(features); return features; }
+		virtual CStringFeatures<uint16_t>* get_features() { SG_REF(features); return features; }
 
 		/// classify the test feature vector indexed by vec_idx
 		DREAL classify_example(INT vec_idx);
@@ -62,7 +62,7 @@ class CPluginEstimate: public CClassifier
 		 * @param len len
 		 * @return something floaty
 		 */
-		inline DREAL posterior_log_odds_obsolete(WORD* vector, INT len)
+		inline DREAL posterior_log_odds_obsolete(uint16_t* vector, INT len)
 		{
 			return pos_model->get_log_likelihood_example(vector, len) - neg_model->get_log_likelihood_example(vector, len);
 		}
@@ -73,7 +73,7 @@ class CPluginEstimate: public CClassifier
 		 * @param position position
 		 * @return log odd at position
 		 */
-		inline DREAL get_parameterwise_log_odds(WORD obs, INT position)
+		inline DREAL get_parameterwise_log_odds(uint16_t obs, INT position)
 		{
 			return pos_model->get_positional_log_parameter(obs, position) - neg_model->get_positional_log_parameter(obs, position);
 		}
@@ -84,7 +84,7 @@ class CPluginEstimate: public CClassifier
 		 * @param pos position
 		 * @return positive log derivative
 		 */
-		inline DREAL log_derivative_pos_obsolete(WORD obs, INT pos)
+		inline DREAL log_derivative_pos_obsolete(uint16_t obs, INT pos)
 		{
 			return pos_model->get_log_derivative_obsolete(obs, pos);
 		}
@@ -95,7 +95,7 @@ class CPluginEstimate: public CClassifier
 		 * @param pos position
 		 * @return negative log derivative
 		 */
-		inline DREAL log_derivative_neg_obsolete(WORD obs, INT pos)
+		inline DREAL log_derivative_neg_obsolete(uint16_t obs, INT pos)
 		{
 			return neg_model->get_log_derivative_obsolete(obs, pos);
 		}
@@ -181,6 +181,6 @@ class CPluginEstimate: public CClassifier
 		CLinearHMM* neg_model;
 
 		/** features */
-		CStringFeatures<WORD>* features;
+		CStringFeatures<uint16_t>* features;
 };
 #endif

@@ -298,16 +298,16 @@ void CDynProg::precompute_tiling_plifs(CPlif** PEN, const INT* tiling_plif_ids, 
 	//SG_PRINT("nummm:%i\n",nummm);
 
 }
-void CDynProg::create_word_string(const char* genestr, INT genestr_num, INT genestr_len, WORD*** wordstr)
+void CDynProg::create_word_string(const char* genestr, INT genestr_num, INT genestr_len, uint16_t*** wordstr)
 {
 	for (INT k=0; k<genestr_num; k++)
 	{
-		wordstr[k]=new WORD*[num_degrees] ;
+		wordstr[k]=new uint16_t*[num_degrees] ;
 		for (INT j=0; j<num_degrees; j++)
 		{
 			wordstr[k][j]=NULL ;
 			{
-				wordstr[k][j]=new WORD[genestr_len] ;
+				wordstr[k][j]=new uint16_t[genestr_len] ;
 				for (INT i=0; i<genestr_len; i++)
 					switch (genestr[i])
 					{
@@ -327,7 +327,7 @@ void CDynProg::create_word_string(const char* genestr, INT genestr_num, INT gene
 	}
 	precompute_stop_codons(genestr, genestr_len);
 }
-void CDynProg::precompute_content_values(WORD*** wordstr, const INT *pos,const INT seq_len, const INT genestr_len,DREAL *dictionary_weights,INT dict_len)
+void CDynProg::precompute_content_values(uint16_t*** wordstr, const INT *pos,const INT seq_len, const INT genestr_len,DREAL *dictionary_weights,INT dict_len)
 {
 
 	//SG_PRINT("seq_len=%i, genestr_len=%i, dict_len=%i, num_svms=%i, num_degrees=%i\n",seq_len, genestr_len, dict_len, num_svms, num_degrees);
@@ -363,7 +363,7 @@ void CDynProg::precompute_content_values(WORD*** wordstr, const INT *pos,const I
                 {
 			for (INT j=0; j<num_degrees; j++)
 			{
-				WORD word = wordstr[0][j][i] ;
+				uint16_t word = wordstr[0][j][i] ;
 				for (INT s=0; s<num_svms; s++)
 				{
 					// check if this k-mere should be considered for this SVM
@@ -1295,12 +1295,12 @@ void CDynProg::best_path_no_b_trans(INT max_iter, INT &max_best_iter, short int 
 }
 
 
-void CDynProg::translate_from_single_order(WORD* obs, INT sequence_length, 
+void CDynProg::translate_from_single_order(uint16_t* obs, INT sequence_length, 
 										   INT start, INT order, 
 										   INT max_val)
 {
 	INT i,j;
-	WORD value=0;
+	uint16_t value=0;
 	
 	for (i=sequence_length-1; i>= ((int) order)-1; i--)	//convert interval of size T
 	{
@@ -1308,7 +1308,7 @@ void CDynProg::translate_from_single_order(WORD* obs, INT sequence_length,
 		for (j=i; j>=i-((int) order)+1; j--)
 			value= (value >> max_val) | (obs[j] << (max_val * (order-1)));
 		
-		obs[i]= (WORD) value;
+		obs[i]= (uint16_t) value;
 	}
 	
 	for (i=order-2;i>=0;i--)
@@ -1340,7 +1340,7 @@ void CDynProg::reset_svm_value(INT pos, INT & last_svm_pos, DREAL * svm_value)
 	num_unique_words_single=0 ;
 }
 
-void CDynProg::extend_svm_value(WORD* wordstr, INT pos, INT &last_svm_pos, DREAL* svm_value) 
+void CDynProg::extend_svm_value(uint16_t* wordstr, INT pos, INT &last_svm_pos, DREAL* svm_value) 
 {
 	bool did_something = false ;
 	for (int i=last_svm_pos-1; (i>=pos) && (i>=0); i--)
@@ -1472,11 +1472,11 @@ void CDynProg::best_path_2struct(const DREAL *seq_array, INT seq_len, const INT 
 	CArray<INT> pos_seq(seq_len) ;
 
 	// translate to words, if svm is used
-	WORD* wordstr=NULL ;
+	uint16_t* wordstr=NULL ;
 	if (use_svm)
 	{
 		ASSERT(dictionary_weights!=NULL) ;
-		wordstr=new WORD[genestr_len] ;
+		wordstr=new uint16_t[genestr_len] ;
 		for (INT i=0; i<genestr_len; i++)
 			switch (genestr[i])
 			{
@@ -1670,7 +1670,7 @@ void CDynProg::best_path_2struct(const DREAL *seq_array, INT seq_len, const INT 
 		svm_value[s] = 0 ;
 }
 
-void CDynProg::extend_svm_values(WORD** wordstr, INT pos, INT *last_svm_pos, DREAL* svm_value) 
+void CDynProg::extend_svm_values(uint16_t** wordstr, INT pos, INT *last_svm_pos, DREAL* svm_value) 
 {
 	bool did_something = false ;
 	for (INT j=0; j<num_degrees; j++)
@@ -1997,7 +1997,7 @@ void CDynProg::clear_svm_values(struct svm_values_struct & svs)
 }
 
 
-void CDynProg::find_svm_values_till_pos(WORD*** wordstr,  const INT *pos,  INT t_end, struct svm_values_struct &svs)
+void CDynProg::find_svm_values_till_pos(uint16_t*** wordstr,  const INT *pos,  INT t_end, struct svm_values_struct &svs)
 {
 #ifdef DYNPROG_TIMING
 	MyTime.start() ;
@@ -2043,7 +2043,7 @@ void CDynProg::find_svm_values_till_pos(WORD*** wordstr,  const INT *pos,  INT t
 			{
 				//fprintf(stderr, "string_words_array[0]=%i (%ld), j=%i (%ld)  i=%i\n", string_words_array[0], wordstr[string_words_array[0]], j, wordstr[string_words_array[0]][j], i) ;
 				
-				WORD word = wordstr[string_words_array[0]][j][i] ;
+				uint16_t word = wordstr[string_words_array[0]][j][i] ;
 				INT last_string = string_words_array[0] ;
 				for (INT s=0; s<num_svms; s++)
 				{
@@ -2110,7 +2110,7 @@ void CDynProg::find_svm_values_till_pos(WORD*** wordstr,  const INT *pos,  INT t
 }
 
 
-void CDynProg::find_svm_values_till_pos(WORD** wordstr,  const INT *pos,  INT t_end, struct svm_values_struct &svs)
+void CDynProg::find_svm_values_till_pos(uint16_t** wordstr,  const INT *pos,  INT t_end, struct svm_values_struct &svs)
 {
 #ifdef DYNPROG_TIMING
 	MyTime.start() ;
@@ -2155,7 +2155,7 @@ void CDynProg::find_svm_values_till_pos(WORD** wordstr,  const INT *pos,  INT t_
 			{
 				//fprintf(stderr, "string_words_array[0]=%i (%ld), j=%i (%ld)  i=%i\n", string_words_array[0], wordstr[string_words_array[0]], j, wordstr[string_words_array[0]][j], i) ;
 				
-				WORD word = wordstr[j][i] ;
+				uint16_t word = wordstr[j][i] ;
 				for (INT s=0; s<num_svms; s++)
 				{
 					//sign_words_array[s]=false;

@@ -16,14 +16,14 @@
 #include "features/StringFeatures.h"
 
 CPolyMatchWordStringKernel::CPolyMatchWordStringKernel(INT size, INT d, bool i)
-: CStringKernel<WORD>(size),degree(d),inhomogene(i)
+: CStringKernel<uint16_t>(size),degree(d),inhomogene(i)
 {
 	set_normalizer(new CSqrtDiagKernelNormalizer());
 }
 
 CPolyMatchWordStringKernel::CPolyMatchWordStringKernel(
-	CStringFeatures<WORD>* l, CStringFeatures<WORD>* r, INT d, bool i)
-: CStringKernel<WORD>(10),degree(d),inhomogene(i)
+	CStringFeatures<uint16_t>* l, CStringFeatures<uint16_t>* r, INT d, bool i)
+: CStringKernel<uint16_t>(10),degree(d),inhomogene(i)
 {
 	set_normalizer(new CSqrtDiagKernelNormalizer());
 	init(l, r);
@@ -36,7 +36,7 @@ CPolyMatchWordStringKernel::~CPolyMatchWordStringKernel()
 
 bool CPolyMatchWordStringKernel::init(CFeatures* l, CFeatures* r)
 {
-	CStringKernel<WORD>::init(l,r);
+	CStringKernel<uint16_t>::init(l,r);
 	return init_normalizer();
 }
 
@@ -59,8 +59,8 @@ DREAL CPolyMatchWordStringKernel::compute(INT idx_a, INT idx_b)
 {
 	INT alen, blen;
 
-	WORD* avec=((CStringFeatures<WORD>*) lhs)->get_feature_vector(idx_a, alen);
-	WORD* bvec=((CStringFeatures<WORD>*) rhs)->get_feature_vector(idx_b, blen);
+	uint16_t* avec=((CStringFeatures<uint16_t>*) lhs)->get_feature_vector(idx_a, alen);
+	uint16_t* bvec=((CStringFeatures<uint16_t>*) rhs)->get_feature_vector(idx_b, blen);
 
 	ASSERT(alen==blen);
 

@@ -160,19 +160,19 @@ bool CFile::save_byte_data(uint8_t* src, LONG num)
 	return status;
 }
 
-WORD* CFile::load_word_data(WORD* target, LONG& num)
+uint16_t* CFile::load_word_data(uint16_t* target, LONG& num)
 {
 	ASSERT(expected_type==F_WORD);
-	CSimpleFile<WORD> f(filename, file);
+	CSimpleFile<uint16_t> f(filename, file);
 	target=f.load(target, num);
 	status=(target!=NULL);
 	return target;
 }
 
-bool CFile::save_word_data(WORD* src, LONG num)
+bool CFile::save_word_data(uint16_t* src, LONG num)
 {
 	ASSERT(expected_type==F_WORD);
-	CSimpleFile<WORD> f(filename, file);
+	CSimpleFile<uint16_t> f(filename, file);
 	status=f.save(src, num);
 	return status;
 }

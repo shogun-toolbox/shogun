@@ -16,7 +16,7 @@
 #include "features/WordFeatures.h"
 
 /** kernel AUC */
-class CAUCKernel: public CSimpleKernel<WORD>
+class CAUCKernel: public CSimpleKernel<uint16_t>
 {
 	public:
 		/** constructor

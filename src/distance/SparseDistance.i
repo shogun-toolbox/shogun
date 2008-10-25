@@ -7,6 +7,6 @@
 %include "distance/SparseDistance.h"
 
 %template(SparseRealDistance) CSparseDistance<DREAL>;
-%template(SparseWordDistance) CSparseDistance<WORD>;
+%template(SparseWordDistance) CSparseDistance<uint16_t>;
 %template(SparseCharDistance) CSparseDistance<char>;
 %template(SparseIntDistance) CSparseDistance<INT>;

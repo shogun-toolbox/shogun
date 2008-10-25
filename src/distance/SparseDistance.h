@@ -79,7 +79,7 @@ template<> inline EFeatureType CSparseDistance<INT>::get_feature_type() { return
  *
  * @return feature type WORD
  */
-template<> inline EFeatureType CSparseDistance<WORD>::get_feature_type() { return F_WORD; }
+template<> inline EFeatureType CSparseDistance<uint16_t>::get_feature_type() { return F_WORD; }
 
 /** get feature type the SHORT distance can deal with
  *

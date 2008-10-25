@@ -41,8 +41,8 @@ bool CPluginEstimate::train()
 	pos_model=new CLinearHMM(features);
 	neg_model=new CLinearHMM(features);
 
-	INT* pos_indizes=new INT[((CStringFeatures<WORD>*) features)->get_num_vectors()];
-	INT* neg_indizes=new INT[((CStringFeatures<WORD>*) features)->get_num_vectors()];
+	INT* pos_indizes=new INT[((CStringFeatures<uint16_t>*) features)->get_num_vectors()];
+	INT* neg_indizes=new INT[((CStringFeatures<uint16_t>*) features)->get_num_vectors()];
 
 	ASSERT(labels->get_num_labels()==features->get_num_vectors());
 
@@ -86,7 +86,7 @@ DREAL CPluginEstimate::classify_example(INT vec_idx)
 	ASSERT(features);
 
 	INT len;
-	WORD* vector=features->get_feature_vector(vec_idx, len);
+	uint16_t* vector=features->get_feature_vector(vec_idx, len);
 
 	if ((!pos_model) || (!neg_model))
 		SG_ERROR( "model(s) not assigned\n");

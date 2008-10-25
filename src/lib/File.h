@@ -114,7 +114,7 @@ public:
 	 * @param num number of data elements
 	 * @return loaded data
 	 */
-	WORD*  load_word_data(WORD* target, LONG& num);
+	uint16_t*  load_word_data(uint16_t* target, LONG& num);
 
 	/** load short data
 	 *
@@ -170,7 +170,7 @@ public:
 	 * @param num number of data elements
 	 * @return whether operation was successful
 	 */
-	bool save_word_data(WORD* src, LONG num);
+	bool save_word_data(uint16_t* src, LONG num);
 
 	/** save short data
 	 *

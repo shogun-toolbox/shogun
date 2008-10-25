@@ -126,7 +126,7 @@ bool CGUIFeatures::load(
 		}
 		else if (strncmp(type, "WORD", 4)==0)
 		{
-			*f_ptr=new CStringFeatures<WORD>(filename);
+			*f_ptr=new CStringFeatures<uint16_t>(filename);
 		}
 		else if (strncmp(type, "ULONG", 5)==0)
 		{
@@ -250,7 +250,7 @@ bool CGUIFeatures::obtain_by_sliding_window(
 		case F_BYTE:
 			return ( ((CStringFeatures<uint8_t>*) features)->obtain_by_sliding_window(winsize, shift, skip)>0);
 		case F_WORD:
-			return ( ((CStringFeatures<WORD>*) features)->obtain_by_sliding_window(winsize, shift, skip)>0);
+			return ( ((CStringFeatures<uint16_t>*) features)->obtain_by_sliding_window(winsize, shift, skip)>0);
 		case F_ULONG:
 			return ( ((CStringFeatures<ULONG>*) features)->obtain_by_sliding_window(winsize, shift, skip)>0);
 		default:
@@ -428,7 +428,7 @@ CRealFeatures* CGUIFeatures::convert_simple_word_to_simple_salzberg(CWordFeature
 			{
 				INT len=0;
 				bool to_free=false;
-				WORD* vec = src->get_feature_vector(i, len, to_free);
+				uint16_t* vec = src->get_feature_vector(i, len, to_free);
 				ASSERT(num_feat==len);
 
 				for (INT j=0; j<num_feat; j++)
@@ -449,7 +449,7 @@ CRealFeatures* CGUIFeatures::convert_simple_word_to_simple_salzberg(CWordFeature
 }
 
 
-CTOPFeatures* CGUIFeatures::convert_string_word_to_simple_top(CStringFeatures<WORD>* src)
+CTOPFeatures* CGUIFeatures::convert_string_word_to_simple_top(CStringFeatures<uint16_t>* src)
 {
 	CTOPFeatures* tf=NULL;
 
@@ -481,7 +481,7 @@ CTOPFeatures* CGUIFeatures::convert_string_word_to_simple_top(CStringFeatures<WO
 	return tf;
 }
 
-CFKFeatures* CGUIFeatures::convert_string_word_to_simple_fk(CStringFeatures<WORD>* src)
+CFKFeatures* CGUIFeatures::convert_string_word_to_simple_fk(CStringFeatures<uint16_t>* src)
 {
 	CFKFeatures* fkf=NULL;
 
@@ -489,12 +489,12 @@ CFKFeatures* CGUIFeatures::convert_string_word_to_simple_fk(CStringFeatures<WORD
 
 	if (ui->ui_hmm->get_pos() && ui->ui_hmm->get_neg())
 	{
-		CStringFeatures<WORD>* old_obs_pos=
+		CStringFeatures<uint16_t>* old_obs_pos=
 			ui->ui_hmm->get_pos()->get_observations();
-		CStringFeatures<WORD>* old_obs_neg=
+		CStringFeatures<uint16_t>* old_obs_neg=
 			ui->ui_hmm->get_neg()->get_observations();
 
-		CStringFeatures<WORD>* string_feat=src;
+		CStringFeatures<uint16_t>* string_feat=src;
 		ui->ui_hmm->get_pos()->set_observations(string_feat);
 		ui->ui_hmm->get_neg()->set_observations(string_feat);
 

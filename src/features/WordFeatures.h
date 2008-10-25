@@ -20,7 +20,7 @@
  * It inherits its functionality from CSimpleFeatures, which should be
  * consulted for further reference.
  */
-class CWordFeatures : public CSimpleFeatures<WORD>
+class CWordFeatures : public CSimpleFeatures<uint16_t>
 {
 	public:
 		/** constructor
@@ -40,11 +40,11 @@ class CWordFeatures : public CSimpleFeatures<WORD>
 		 * @param num_feat number of features
 		 * @param num_vec number of vectors
 		 */
-		inline CWordFeatures(WORD* src, INT num_feat, INT num_vec):
-            CSimpleFeatures<WORD>(0), num_symbols(1<<16),
+		inline CWordFeatures(uint16_t* src, INT num_feat, INT num_vec):
+            CSimpleFeatures<uint16_t>(0), num_symbols(1<<16),
 			original_num_symbols(1<<16), order(0), symbol_mask_table(NULL)
 		{
-			CSimpleFeatures<WORD>::copy_feature_matrix(src, num_feat, num_vec);
+			CSimpleFeatures<uint16_t>::copy_feature_matrix(src, num_feat, num_vec);
 		}
 
 		/** constructor
@@ -72,9 +72,9 @@ class CWordFeatures : public CSimpleFeatures<WORD>
 		 * @param d1 dimension 1 of matrix
 		 * @param d2 dimension 2 of matrix
 		 */
-		inline virtual void get_fm(WORD** dst, INT* d1, INT* d2)
+		inline virtual void get_fm(uint16_t** dst, INT* d1, INT* d2)
 		{
-			CSimpleFeatures<WORD>::get_fm(dst, d1, d2);
+			CSimpleFeatures<uint16_t>::get_fm(dst, d1, d2);
 		}
 
 
@@ -86,9 +86,9 @@ class CWordFeatures : public CSimpleFeatures<WORD>
 		 * @param num_feat number of features
 		 * @param num_vec number of vectors
 		 */
-		inline virtual void copy_feature_matrix(WORD* src, INT num_feat, INT num_vec)
+		inline virtual void copy_feature_matrix(uint16_t* src, INT num_feat, INT num_vec)
 		{
-			CSimpleFeatures<WORD>::copy_feature_matrix(src, num_feat, num_vec);
+			CSimpleFeatures<uint16_t>::copy_feature_matrix(src, num_feat, num_vec);
 		}
 
 		/** load features from file
@@ -132,7 +132,7 @@ class CWordFeatures : public CSimpleFeatures<WORD>
 		 * @param mask mask to apply
 		 * @return masked symbol
 		 */
-		inline WORD get_masked_symbols(WORD symbol, uint8_t mask)
+		inline uint16_t get_masked_symbols(uint16_t symbol, uint8_t mask)
 		{
 			ASSERT(symbol_mask_table);
 			return symbol_mask_table[mask] & symbol;
@@ -149,7 +149,7 @@ class CWordFeatures : public CSimpleFeatures<WORD>
 		 *                require to be stored without loss
 		 * @param gap gap
 		 */
-		void translate_from_single_order(WORD* obs, INT sequence_length, INT start, INT order, INT max_val, INT gap=0);
+		void translate_from_single_order(uint16_t* obs, INT sequence_length, INT start, INT order, INT max_val, INT gap=0);
 
 	protected:
 		/// number of used symbols
@@ -162,6 +162,6 @@ class CWordFeatures : public CSimpleFeatures<WORD>
 		INT order;
 
 		/// order used in higher order mapping
-		WORD* symbol_mask_table;
+		uint16_t* symbol_mask_table;
 };
 #endif

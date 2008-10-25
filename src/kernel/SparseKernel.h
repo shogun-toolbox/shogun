@@ -78,7 +78,7 @@ template<> inline EFeatureType CSparseKernel<ULONG>::get_feature_type() { return
 
 template<> inline EFeatureType CSparseKernel<INT>::get_feature_type() { return F_INT; }
 
-template<> inline EFeatureType CSparseKernel<WORD>::get_feature_type() { return F_WORD; }
+template<> inline EFeatureType CSparseKernel<uint16_t>::get_feature_type() { return F_WORD; }
 
 template<> inline EFeatureType CSparseKernel<SHORT>::get_feature_type() { return F_SHORT; }
 

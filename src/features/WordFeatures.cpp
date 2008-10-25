@@ -14,18 +14,18 @@
 #include "lib/File.h"
 
 CWordFeatures::CWordFeatures(INT size, INT num_sym)
-: CSimpleFeatures<WORD>(size), num_symbols(num_sym),
+: CSimpleFeatures<uint16_t>(size), num_symbols(num_sym),
 	original_num_symbols(num_sym), order(0), symbol_mask_table(NULL)
 {
 }
 
 CWordFeatures::CWordFeatures(const CWordFeatures & orig)
-: CSimpleFeatures<WORD>(orig)
+: CSimpleFeatures<uint16_t>(orig)
 {
 }
 
 CWordFeatures::CWordFeatures(char* fname, INT num_sym)
-: CSimpleFeatures<WORD>(fname), num_symbols(num_sym),
+: CSimpleFeatures<uint16_t>(fname), num_symbols(num_sym),
 	original_num_symbols(num_sym), order(0), symbol_mask_table(NULL)
 {
 }
@@ -41,7 +41,7 @@ bool CWordFeatures::obtain_from_char_features(CCharFeatures* cf, INT start, INT 
 
 	this->order=p_order;
 	delete[] symbol_mask_table;
-	symbol_mask_table=new WORD[256];
+	symbol_mask_table=new uint16_t[256];
 
 	num_vectors=cf->get_num_vectors();
 	num_features=cf->get_num_features();
@@ -51,7 +51,7 @@ bool CWordFeatures::obtain_from_char_features(CCharFeatures* cf, INT start, INT 
 
 	INT len=num_vectors*num_features;
 	delete[] feature_matrix;
-	feature_matrix=new WORD[len];
+	feature_matrix=new uint16_t[len];
 	INT num_cf_feat=0;
 	INT num_cf_vec=0;
 	char* fm=cf->get_feature_matrix(num_cf_feat, num_cf_vec);
@@ -62,7 +62,7 @@ bool CWordFeatures::obtain_from_char_features(CCharFeatures* cf, INT start, INT 
 	INT max_val=0;
 	for (INT i=0; i<len; i++)
 	{
-		feature_matrix[i]=(WORD) alpha->remap_to_bin(fm[i]);
+		feature_matrix[i]=(uint16_t) alpha->remap_to_bin(fm[i]);
 		max_val=CMath::max((INT) feature_matrix[i],max_val);
 	}
 
@@ -74,7 +74,7 @@ bool CWordFeatures::obtain_from_char_features(CCharFeatures* cf, INT start, INT 
 
 	for (INT i=0; i<len; i++)
 	{
-		feature_matrix[i]=(WORD) alpha->remap_to_bin(fm[i]);
+		feature_matrix[i]=(uint16_t) alpha->remap_to_bin(fm[i]);
 		hist[feature_matrix[i]]++ ;
 	}
 	for (INT i=0; i<=max_val; i++)
@@ -89,7 +89,7 @@ bool CWordFeatures::obtain_from_char_features(CCharFeatures* cf, INT start, INT 
 
 	SG_INFO( "max_val (bit): %d order: %d -> results in num_symbols: %d\n", max_val, p_order, num_symbols);
 
-	if (num_symbols>(1<<(sizeof(WORD)*8)))
+	if (num_symbols>(1<<(sizeof(uint16_t)*8)))
 	{
       SG_ERROR( "symbol does not fit into datatype \"%c\" (%d)\n", (char) max_val, (int) max_val);
 		return false;
@@ -111,7 +111,7 @@ bool CWordFeatures::obtain_from_char_features(CCharFeatures* cf, INT start, INT 
 	for (INT i=0; i<256; i++)
 		symbol_mask_table[i]=0;
 
-	WORD mask=0;
+	uint16_t mask=0;
 	for (INT i=0; i<max_val; i++)
 		mask=(mask<<1) | 1;
 
@@ -132,7 +132,7 @@ bool CWordFeatures::obtain_from_char_features(CCharFeatures* cf, INT start, INT 
 	return true;
 }
 
-void CWordFeatures::translate_from_single_order(WORD* obs, INT sequence_length, INT start, INT p_order, INT max_val, INT gap)
+void CWordFeatures::translate_from_single_order(uint16_t* obs, INT sequence_length, INT start, INT p_order, INT max_val, INT gap)
 {
 	ASSERT(gap>=0);
 	
@@ -140,7 +140,7 @@ void CWordFeatures::translate_from_single_order(WORD* obs, INT sequence_length, 
 	const INT end_gap = start_gap + gap ;
 	
 	INT i,j;
-	WORD value=0;
+	uint16_t value=0;
 
 	// almost all positions
 	for (i=sequence_length-1; i>= ((int) p_order)-1; i--)	//convert interval of size T
@@ -157,7 +157,7 @@ void CWordFeatures::translate_from_single_order(WORD* obs, INT sequence_length, 
 				value= (value >> max_val) | (obs[j] << (max_val * (p_order-1-gap)));
 			}
 		}
-		obs[i]= (WORD) value;
+		obs[i]= (uint16_t) value;
 	}
 
 	// the remaining `order` positions
@@ -196,7 +196,7 @@ bool CWordFeatures::save(char* fname)
 {
 	INT len;
 	bool free;
-	WORD* fv;
+	uint16_t* fv;
 
 	CFile f(fname, 'w', F_WORD);
 
@@ -213,7 +213,7 @@ bool CWordFeatures::save(char* fname)
 	}
 
 	if (f.is_ok())
-		SG_INFO( "%d vectors with %d features each successfully written (filesize: %ld)\n", num_vectors, num_features, num_vectors*num_features*sizeof(WORD));
+		SG_INFO( "%d vectors with %d features each successfully written (filesize: %ld)\n", num_vectors, num_features, num_vectors*num_features*sizeof(uint16_t));
 
     return true;
 }

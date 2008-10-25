@@ -50,10 +50,10 @@ struct T_ALPHA_BETA
 
 /** type that is used for states.
  * Probably uint8_t is enough if you have at most 256 states,
- * however WORD/long/... is also possible although you might quickly run into memory problems
+ * however uint16_t/long/... is also possible although you might quickly run into memory problems
  */
 #ifdef USE_BIGSTATES
-typedef WORD T_STATES ;
+typedef uint16_t T_STATES ;
 #else
 typedef uint8_t T_STATES ;
 #endif
@@ -472,7 +472,7 @@ class CHMM : public CDistribution
 		 */
 
 		CHMM(INT N, INT M, CModel* model, DREAL PSEUDO);
-		CHMM(CStringFeatures<WORD>* obs, INT N, INT M, DREAL PSEUDO);
+		CHMM(CStringFeatures<uint16_t>* obs, INT N, INT M, DREAL PSEUDO);
 		CHMM(INT N, double* p, double* q, double* a) ;
 		CHMM(INT N, double* p, double* q, int num_trans, double* a_trans) ;
 
@@ -541,7 +541,7 @@ class CHMM : public CDistribution
 		 * @param dimension dimension of observation for which the most probable path is calculated (observations are a matrix, where a row stands for one dimension i.e. 0_0,O_1,...,O_{T-1} 
 		 */
 		DREAL best_path(INT dimension);
-		inline WORD get_best_path_state(INT dim, INT t)
+		inline uint16_t get_best_path_state(INT dim, INT t)
 		{
 			ASSERT(PATH(dim));
 			return PATH(dim)[t];
@@ -576,7 +576,7 @@ class CHMM : public CDistribution
 		{
 			DREAL lik=0;
 			INT len=0;
-			WORD* o=p_observations->get_feature_vector(dimension, len);
+			uint16_t* o=p_observations->get_feature_vector(dimension, len);
 			DREAL* obs_b=observation_matrix_b;
 
 			ASSERT(N==len);
@@ -771,15 +771,15 @@ class CHMM : public CDistribution
 		 * sets the observation pointer and initializes observation-dependent caches
 		 * if lambda is given, then the caches of the model lambda are used
 		 */
-		void set_observations(CStringFeatures<WORD>* obs, CHMM* lambda=NULL);
+		void set_observations(CStringFeatures<uint16_t>* obs, CHMM* lambda=NULL);
 
 		/** set new observations
 		 * only set the observation pointer and drop caches if there were any
 		 */
-		void set_observation_nocache(CStringFeatures<WORD>* obs);
+		void set_observation_nocache(CStringFeatures<uint16_t>* obs);
 
 		/// return observation pointer
-		inline CStringFeatures<WORD>* get_observations()
+		inline CStringFeatures<uint16_t>* get_observations()
 		{
 			return p_observations;
 		}
@@ -1025,7 +1025,7 @@ class CHMM : public CDistribution
 		 * @param column column in matrix 0...M-1
 		 * @param value value to be set
 		 */
-		inline void set_B(T_STATES line_, WORD column, DREAL value)
+		inline void set_B(T_STATES line_, uint16_t column, DREAL value)
 		{
 #ifdef HMM_DEBUG
 			if ((line_>=N)||(column>=M))
@@ -1039,7 +1039,7 @@ class CHMM : public CDistribution
 		 * @param column column in matrix 0...M-1
 		 * @param value value to be set
 		 */
-		inline void set_b(T_STATES line_, WORD column, DREAL value)
+		inline void set_b(T_STATES line_, uint16_t column, DREAL value)
 		{
 #ifdef HMM_DEBUG
 			if ((line_>=N)||(column>=M))
@@ -1124,7 +1124,7 @@ class CHMM : public CDistribution
 		 * @param column column in matrix 0...M-1
 		 * @return value at position line colum
 		 */
-		inline DREAL get_B(T_STATES line_, WORD column) const
+		inline DREAL get_B(T_STATES line_, uint16_t column) const
 		{
 #ifdef HMM_DEBUG
 			if ((line_>=N)||(column>=M))
@@ -1138,7 +1138,7 @@ class CHMM : public CDistribution
 		 * @param column column in matrix 0...M-1
 		 * @return value at position line colum
 		 */
-		inline DREAL get_b(T_STATES line_, WORD column) const 
+		inline DREAL get_b(T_STATES line_, uint16_t column) const 
 		{
 #ifdef HMM_DEBUG
 			if ((line_>=N)||(column>=M))
@@ -1183,7 +1183,7 @@ class CHMM : public CDistribution
 		INT line;
 
 		/// observation matrix
-		CStringFeatures<WORD>* p_observations;
+		CStringFeatures<uint16_t>* p_observations;
 
 		//train definition for HMM
 		CModel* model;
@@ -1374,7 +1374,7 @@ inline DREAL transition_probability(INT time, INT state_i, INT state_j, INT dime
 
 /** computes log dp(lambda)/d b_ij for linear model
 */
-inline DREAL linear_model_derivative(T_STATES i, WORD j, INT dimension)
+inline DREAL linear_model_derivative(T_STATES i, uint16_t j, INT dimension)
 {
 	DREAL der=0;
 
@@ -1415,7 +1415,7 @@ inline DREAL model_derivative_a(T_STATES i, T_STATES j, INT dimension)
 
 
 /// computes log dp(lambda)/d b_ij. 
-inline DREAL model_derivative_b(T_STATES i, WORD j, INT dimension)
+inline DREAL model_derivative_b(T_STATES i, uint16_t j, INT dimension)
 {
 	DREAL sum=-CMath::INFTY;
 	for (INT t=0; t<p_observations->get_vector_length(dimension); t++)
@@ -1459,7 +1459,7 @@ inline DREAL path_derivative_a(T_STATES i, T_STATES j, INT dimension)
 }
 
 /// computes d log p(lambda,best_path)/d b_ij
-inline DREAL path_derivative_b(T_STATES i, WORD j, INT dimension)
+inline DREAL path_derivative_b(T_STATES i, uint16_t j, INT dimension)
 {
 	prepare_path_derivative(dimension) ;
 	return (get_B(i,j)==0) ? (0) : (get_B(i,j)*exp(-get_b(i,j))) ;

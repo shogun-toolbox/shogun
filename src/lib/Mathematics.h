@@ -482,7 +482,7 @@ class CMath : public CSGObject
 		}
 
 		/// compute dot product between v1 and v2 (for 16bit unsigned ints)
-		static inline DREAL dot(const WORD* v1, const WORD* v2, INT n)
+		static inline DREAL dot(const uint16_t* v1, const uint16_t* v2, INT n)
 		{
 			DREAL r=0;
 			for (INT i=0; i<n; i++)

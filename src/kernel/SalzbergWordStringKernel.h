@@ -22,7 +22,7 @@
  * A. Zien, G.Raetsch, S. Mika, B. Schoelkopf, T. Lengauer, K.-R. Mueller
  *
  */
-class CSalzbergWordStringKernel: public CStringKernel<WORD>
+class CSalzbergWordStringKernel: public CStringKernel<uint16_t>
 {
 	public:
 		/** constructor
@@ -41,7 +41,7 @@ class CSalzbergWordStringKernel: public CStringKernel<WORD>
 		 * @param labels optional labels to set prior from
 		 */
 		CSalzbergWordStringKernel(
-			CStringFeatures<WORD>* l, CStringFeatures<WORD>* r,
+			CStringFeatures<uint16_t>* l, CStringFeatures<uint16_t>* r,
 			CPluginEstimate *pie, CLabels* labels=NULL);
 
 		virtual ~CSalzbergWordStringKernel();
@@ -120,7 +120,7 @@ class CSalzbergWordStringKernel: public CStringKernel<WORD>
 		 * @param symbol symbol
 		 * @return index
 		 */
-		inline INT compute_index(INT position, WORD symbol)
+		inline INT compute_index(INT position, uint16_t symbol)
 		{
 			return position*num_symbols+symbol;
 		}

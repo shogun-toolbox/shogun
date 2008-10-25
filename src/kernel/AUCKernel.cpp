@@ -15,12 +15,12 @@
 #include "lib/io.h"
 
 CAUCKernel::CAUCKernel(INT size, CKernel* s)
-: CSimpleKernel<WORD>(size), subkernel(s)
+: CSimpleKernel<uint16_t>(size), subkernel(s)
 {
 }
 
 CAUCKernel::CAUCKernel(CWordFeatures* l, CWordFeatures* r, CKernel* s)
-: CSimpleKernel<WORD>(10), subkernel(s)
+: CSimpleKernel<uint16_t>(10), subkernel(s)
 {
 	init(l, r);
 }
@@ -32,7 +32,7 @@ CAUCKernel::~CAUCKernel()
   
 bool CAUCKernel::init(CFeatures* l, CFeatures* r)
 {
-	CSimpleKernel<WORD>::init(l, r);
+	CSimpleKernel<uint16_t>::init(l, r);
 	init_normalizer();
 	return true;
 }
@@ -52,23 +52,23 @@ DREAL CAUCKernel::compute(INT idx_a, INT idx_b)
   INT alen, blen;
   bool afree, bfree;
 
-  WORD* avec=((CWordFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
-  WORD* bvec=((CWordFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
+  uint16_t* avec=((CWordFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
+  uint16_t* bvec=((CWordFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
 
   ASSERT(alen==2);
   ASSERT(blen==2);
 
   ASSERT(subkernel && subkernel->has_features());
 
-  DREAL k11,k12,k21,k22 ;
-  INT idx_a1=avec[0], idx_a2=avec[1], idx_b1=bvec[0], idx_b2=bvec[1] ;
-  
-  k11 = subkernel->kernel(idx_a1,idx_b1) ;
-  k12 = subkernel->kernel(idx_a1,idx_b2) ;
-  k21 = subkernel->kernel(idx_a2,idx_b1) ;  
-  k22 = subkernel->kernel(idx_a2,idx_b2) ;
+  DREAL k11,k12,k21,k22;
+  INT idx_a1=avec[0], idx_a2=avec[1], idx_b1=bvec[0], idx_b2=bvec[1];
 
-  DREAL result = k11+k22-k21-k12 ;
+  k11 = subkernel->kernel(idx_a1,idx_b1);
+  k12 = subkernel->kernel(idx_a1,idx_b2);
+  k21 = subkernel->kernel(idx_a2,idx_b1);
+  k22 = subkernel->kernel(idx_a2,idx_b2);
+
+  DREAL result = k11+k22-k21-k12;
 
   ((CWordFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
   ((CWordFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);

@@ -30,7 +30,7 @@
  *     k'({\bf x}, {\bf x'})=\frac{k({\bf x}, {\bf x'})}{\sqrt{k({\bf x}, {\bf x})k({\bf x'}, {\bf x'})}}
  * \f]
  */
-class CPolyMatchWordStringKernel: public CStringKernel<WORD>
+class CPolyMatchWordStringKernel: public CStringKernel<uint16_t>
 {
 	public:
 		/** constructor
@@ -48,7 +48,7 @@ class CPolyMatchWordStringKernel: public CStringKernel<WORD>
 		 * @param degree degree
 		 * @param inhomogene is inhomogeneous
 		 */
-		CPolyMatchWordStringKernel(CStringFeatures<WORD>* l, CStringFeatures<WORD>* r, INT degree, bool inhomogene);
+		CPolyMatchWordStringKernel(CStringFeatures<uint16_t>* l, CStringFeatures<uint16_t>* r, INT degree, bool inhomogene);
 
 		virtual ~CPolyMatchWordStringKernel();
 

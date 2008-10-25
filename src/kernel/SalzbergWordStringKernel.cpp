@@ -17,7 +17,7 @@
 #include "classifier/PluginEstimate.h"
 
 CSalzbergWordStringKernel::CSalzbergWordStringKernel(INT size, CPluginEstimate* pie, CLabels* labels)
-: CStringKernel<WORD>(size), estimate(pie), mean(NULL), variance(NULL),
+: CStringKernel<uint16_t>(size), estimate(pie), mean(NULL), variance(NULL),
 	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL),
 	ld_mean_lhs(NULL), ld_mean_rhs(NULL),
 	num_params(0), num_symbols(0), sum_m2_s2(0), pos_prior(0.5),
@@ -28,9 +28,9 @@ CSalzbergWordStringKernel::CSalzbergWordStringKernel(INT size, CPluginEstimate* 
 }
 
 CSalzbergWordStringKernel::CSalzbergWordStringKernel(
-	CStringFeatures<WORD>* l, CStringFeatures<WORD>* r,
+	CStringFeatures<uint16_t>* l, CStringFeatures<uint16_t>* r,
 	CPluginEstimate* pie, CLabels* labels)
-: CStringKernel<WORD>(10),estimate(pie), mean(NULL), variance(NULL),
+: CStringKernel<uint16_t>(10),estimate(pie), mean(NULL), variance(NULL),
 	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL),
 	ld_mean_lhs(NULL), ld_mean_rhs(NULL),
 	num_params(0), num_symbols(0), sum_m2_s2(0), pos_prior(0.5),
@@ -49,10 +49,10 @@ CSalzbergWordStringKernel::~CSalzbergWordStringKernel()
 
 bool CSalzbergWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 {
-	CStringKernel<WORD>::init(p_l,p_r);
-	CStringFeatures<WORD>* l=(CStringFeatures<WORD>*) p_l;
+	CStringKernel<uint16_t>::init(p_l,p_r);
+	CStringFeatures<uint16_t>* l=(CStringFeatures<uint16_t>*) p_l;
 	ASSERT(l);
-	CStringFeatures<WORD>* r=(CStringFeatures<WORD>*) p_r;
+	CStringFeatures<uint16_t>* r=(CStringFeatures<uint16_t>*) p_r;
 	ASSERT(r);
 
 	INT i;
@@ -130,7 +130,7 @@ bool CSalzbergWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 		for (i=0; i<num_vectors; i++)
 		{
 			INT len;
-			WORD* vec=l->get_feature_vector(i, len);
+			uint16_t* vec=l->get_feature_vector(i, len);
 
 			for (INT j=0; j<len; j++)
 			{
@@ -147,7 +147,7 @@ bool CSalzbergWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 		for (i=0; i<num_vectors; i++)
 		{
 			INT len;
-			WORD* vec=l->get_feature_vector(i, len);
+			uint16_t* vec=l->get_feature_vector(i, len);
 
 			for (INT j=0; j<len; j++)
 			{
@@ -187,7 +187,7 @@ bool CSalzbergWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 	for (i=0; i<l->get_num_vectors(); i++)
 	{
 		INT alen ;
-		WORD* avec=l->get_feature_vector(i, alen);
+		uint16_t* avec=l->get_feature_vector(i, alen);
 		DREAL  result=0 ;
 		for (INT j=0; j<alen; j++)
 		{
@@ -209,7 +209,7 @@ bool CSalzbergWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 		for (i=0; i<r->get_num_vectors(); i++)
 		{
 			INT alen ;
-			WORD* avec=r->get_feature_vector(i, alen);
+			uint16_t* avec=r->get_feature_vector(i, alen);
 			DREAL  result=0 ;
 			for (INT j=0; j<alen; j++)
 			{
@@ -310,8 +310,8 @@ bool CSalzbergWordStringKernel::save_init(FILE* dest)
 DREAL CSalzbergWordStringKernel::compute(INT idx_a, INT idx_b)
 {
 	INT alen, blen;
-	WORD* avec=((CStringFeatures<WORD>*) lhs)->get_feature_vector(idx_a, alen);
-	WORD* bvec=((CStringFeatures<WORD>*) rhs)->get_feature_vector(idx_b, blen);
+	uint16_t* avec=((CStringFeatures<uint16_t>*) lhs)->get_feature_vector(idx_a, alen);
+	uint16_t* bvec=((CStringFeatures<uint16_t>*) rhs)->get_feature_vector(idx_b, blen);
 	// can only deal with strings of same length
 	ASSERT(alen==blen);
 

@@ -166,7 +166,7 @@ void CRInterface::get_short_vector(SHORT*& vec, INT& len)
 	len=0;
 }
 
-void CRInterface::get_word_vector(WORD*& vec, INT& len)
+void CRInterface::get_word_vector(uint16_t*& vec, INT& len)
 {
 	vec=NULL;
 	len=0;
@@ -211,7 +211,7 @@ void CRInterface::get_short_matrix(SHORT*& matrix, INT& num_feat, INT& num_vec)
 {
 }
 
-void CRInterface::get_word_matrix(WORD*& matrix, INT& num_feat, INT& num_vec)
+void CRInterface::get_word_matrix(uint16_t*& matrix, INT& num_feat, INT& num_vec)
 {
 }
 
@@ -239,7 +239,7 @@ void CRInterface::get_short_ndarray(SHORT*& array, INT*& dims, INT& num_dims)
 {
 }
 
-void CRInterface::get_word_ndarray(WORD*& array, INT*& dims, INT& num_dims)
+void CRInterface::get_word_ndarray(uint16_t*& array, INT*& dims, INT& num_dims)
 {
 }
 
@@ -295,7 +295,7 @@ void CRInterface::get_short_string_list(T_STRING<SHORT>*& strings, INT& num_str,
 {
 }
 
-void CRInterface::get_word_string_list(T_STRING<WORD>*& strings, INT& num_str, INT& max_string_len)
+void CRInterface::get_word_string_list(T_STRING<uint16_t>*& strings, INT& num_str, INT& max_string_len)
 {
 }
 
@@ -368,7 +368,7 @@ SET_VECTOR(set_int_vector, INTSXP, INTEGER, INT, int, "Integer")
 SET_VECTOR(set_short_vector, INTSXP, INTEGER, SHORT, int, "Short")
 SET_VECTOR(set_shortreal_vector, REALSXP, REAL, SHORTREAL, float, "Single Precision")
 SET_VECTOR(set_real_vector, REALSXP, REAL, DREAL, double, "Double Precision")
-SET_VECTOR(set_word_vector, INTSXP, INTEGER, WORD, int, "Word")
+SET_VECTOR(set_word_vector, INTSXP, INTEGER, uint16_t, int, "Word")
 #undef SET_VECTOR
 
 void CRInterface::set_char_matrix(const char* matrix, INT num_feat, INT num_vec)
@@ -395,7 +395,7 @@ SET_MATRIX(set_int_matrix, INTSXP, INTEGER, INT, int, "Integer")
 SET_MATRIX(set_short_matrix, INTSXP, INTEGER, SHORT, int, "Short")
 SET_MATRIX(set_shortreal_matrix, REALSXP, REAL, SHORTREAL, float, "Single Precision")
 SET_MATRIX(set_real_matrix, REALSXP, REAL, DREAL, double, "Double Precision")
-SET_MATRIX(set_word_matrix, INTSXP, INTEGER, WORD, int, "Word")
+SET_MATRIX(set_word_matrix, INTSXP, INTEGER, uint16_t, int, "Word")
 #undef SET_MATRIX
 
 void CRInterface::set_real_sparsematrix(const TSparse<DREAL>* matrix, INT num_feat, INT num_vec, LONG nnz)
@@ -434,7 +434,7 @@ void CRInterface::set_short_string_list(const T_STRING<SHORT>* strings, INT num_
 {
 }
 
-void CRInterface::set_word_string_list(const T_STRING<WORD>* strings, INT num_str)
+void CRInterface::set_word_string_list(const T_STRING<uint16_t>* strings, INT num_str)
 {
 }
 

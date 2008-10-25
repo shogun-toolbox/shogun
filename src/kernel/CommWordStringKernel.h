@@ -40,7 +40,7 @@
  * direct maps.
  *
  */
-class CCommWordStringKernel : public CStringKernel<WORD>
+class CCommWordStringKernel : public CStringKernel<uint16_t>
 {
 	friend class CSqrtDiagKernelNormalizer;
 
@@ -60,7 +60,7 @@ class CCommWordStringKernel : public CStringKernel<WORD>
 		 * @param size cache size
 		 */
 		CCommWordStringKernel(
-			CStringFeatures<WORD>* l, CStringFeatures<WORD>* r,
+			CStringFeatures<uint16_t>* l, CStringFeatures<uint16_t>* r,
 			bool use_sign=false, INT size=10);
 
 		virtual ~CCommWordStringKernel();

@@ -15,7 +15,7 @@
 #include "lib/Mathematics.h"
 
 CSortWordString::CSortWordString()
-: CStringPreProc<WORD>("SortWordString", "STWS") 
+: CStringPreProc<uint16_t>("SortWordString", "STWS") 
 {
 }
 
@@ -55,12 +55,12 @@ bool CSortWordString::save(FILE* f)
 bool CSortWordString::apply_to_string_features(CFeatures* f)
 {
 	INT i;
-	INT num_vec=((CStringFeatures<WORD>*)f)->get_num_vectors() ;
+	INT num_vec=((CStringFeatures<uint16_t>*)f)->get_num_vectors() ;
 	
 	for (i=0; i<num_vec; i++)
 	{
 		INT len = 0 ;
-		WORD* vec = ((CStringFeatures<WORD>*)f)->get_feature_vector(i, len) ;
+		uint16_t* vec = ((CStringFeatures<uint16_t>*)f)->get_feature_vector(i, len) ;
 		
 		//CMath::qsort(vec, len);
 		CMath::radix_sort(vec, len);
@@ -69,9 +69,9 @@ bool CSortWordString::apply_to_string_features(CFeatures* f)
 }
 
 /// apply preproc on single feature vector
-WORD* CSortWordString::apply_to_string(WORD* f, INT& len)
+uint16_t* CSortWordString::apply_to_string(uint16_t* f, INT& len)
 {
-	WORD* vec=new WORD[len];
+	uint16_t* vec=new uint16_t[len];
 	INT i=0;
 
 	for (i=0; i<len; i++)

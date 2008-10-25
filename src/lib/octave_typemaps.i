@@ -74,7 +74,7 @@ TYPEMAP_IN1(is_int32_type, int32NDArray, uint8_array_value, INT, INT, "Integer")
 TYPEMAP_IN1(is_int16_type, int16NDArray, uint8_array_value, SHORT, SHORT, "Short")
 TYPEMAP_IN1(is_single_type, Matrix, matrix_value, SHORTREAL, SHORTREAL, "Single Precision")
 TYPEMAP_IN1(is_double_type, Matrix, matrix_value, DREAL, DREAL, "Double Precision")
-TYPEMAP_IN1(is_uint16_type, uint16NDArray, uint16_array_value, WORD, WORD, "Word")
+TYPEMAP_IN1(is_uint16_type, uint16NDArray, uint16_array_value, uint16_t, uint16_t, "Word")
 #undef TYPEMAP_IN1
 
 
@@ -111,7 +111,7 @@ TYPEMAP_IN2(is_int32_type, int32NDArray, uint8_array_value, INT, INT, "Integer")
 TYPEMAP_IN2(is_int16_type, int16NDArray, uint8_array_value, SHORT, SHORT, "Short")
 TYPEMAP_IN2(is_single_type, Matrix, matrix_value, SHORTREAL, SHORTREAL, "Single Precision")
 TYPEMAP_IN2(is_double_type, Matrix, matrix_value, DREAL, DREAL, "Double Precision")
-TYPEMAP_IN2(is_uint16_type, uint16NDArray, uint16_array_value, WORD, WORD, "Word")
+TYPEMAP_IN2(is_uint16_type, uint16NDArray, uint16_array_value, uint16_t, uint16_t, "Word")
 #undef TYPEMAP_IN2
 
 /* TYPEMAP_ARGOUT macros
@@ -166,7 +166,7 @@ TYPEMAP_ARGOUT1(int32NDArray, INT, INT, "Integer")
 TYPEMAP_ARGOUT1(int16NDArray, SHORT, SHORT, "Short")
 TYPEMAP_ARGOUT1(Matrix, SHORTREAL, SHORTREAL, "Single Precision")
 TYPEMAP_ARGOUT1(Matrix, DREAL, DREAL, "Double Precision")
-TYPEMAP_ARGOUT1(uint16NDArray, WORD, WORD, "Word")
+TYPEMAP_ARGOUT1(uint16NDArray, uint16_t, uint16_t, "Word")
 
 #undef TYPEMAP_ARGOUT1
 
@@ -204,7 +204,7 @@ TYPEMAP_ARGOUT2(int32NDArray, INT, INT, "Integer")
 TYPEMAP_ARGOUT2(int16NDArray, SHORT, SHORT, "Short")
 TYPEMAP_ARGOUT2(Matrix, SHORTREAL, SHORTREAL, "Single Precision")
 TYPEMAP_ARGOUT2(Matrix, DREAL, DREAL, "Double Precision")
-TYPEMAP_ARGOUT2(uint16NDArray, WORD, WORD, "Word")
+TYPEMAP_ARGOUT2(uint16NDArray, uint16_t, uint16_t, "Word")
 #undef TYPEMAP_ARGOUT2
 
 /* input typemap for CStringFeatures<char> etc */
@@ -298,5 +298,5 @@ GET_STRINGLIST(is_matrix_type() && arg.is_uint8_type, uint8NDArray, uint8_array_
 GET_STRINGLIST(is_char_matrix, charMatrix, char_matrix_value, char, char, "Char")
 GET_STRINGLIST(is_matrix_type() && arg.is_int32_type, int32NDArray, int32_array_value, INT, INT, "Integer")
 GET_STRINGLIST(is_matrix_type() && arg.is_int16_type, int16NDArray, int16_array_value, SHORT, SHORT, "Short")
-GET_STRINGLIST(is_matrix_type() && arg.is_uint16_type, uint16NDArray, uint16_array_value, WORD, WORD, "Word")
+GET_STRINGLIST(is_matrix_type() && arg.is_uint16_type, uint16NDArray, uint16_array_value, uint16_t, uint16_t, "Word")
 #undef GET_STRINGLIST

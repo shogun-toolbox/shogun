@@ -40,9 +40,6 @@
 /// Type SHORT is 2 bytes in size
 typedef short int SHORT;
 
-/// Type WORD is 2 bytes in size
-typedef unsigned short int WORD;
-
 /// Type INT is 4 bytes in size
 typedef int INT;
 
@@ -59,6 +56,7 @@ typedef uint64_t ULONG;
 typedef long LONG;
 typedef unsigned long ULONG;
 typedef unsigned char uint8_t;
+typedef unsigned short int uint16_t;
 #endif
 
 

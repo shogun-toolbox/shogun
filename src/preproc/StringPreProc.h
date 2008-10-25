@@ -54,7 +54,7 @@ template<> inline EFeatureType CStringPreProc<ULONG>::get_feature_type()
 	return F_ULONG;
 }
 
-template<> inline EFeatureType CStringPreProc<WORD>::get_feature_type()
+template<> inline EFeatureType CStringPreProc<uint16_t>::get_feature_type()
 {
 	return F_WORD;
 }

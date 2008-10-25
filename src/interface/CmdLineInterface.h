@@ -35,7 +35,7 @@ class CCmdLineInterface : public CSGInterface
 		virtual void get_shortreal_vector(SHORTREAL*& vec, INT& len);
 		virtual void get_real_vector(DREAL*& vec, INT& len);
 		virtual void get_short_vector(SHORT*& vec, INT& len);
-		virtual void get_word_vector(WORD*& vec, INT& len);
+		virtual void get_word_vector(uint16_t*& vec, INT& len);
 
 		virtual void get_byte_matrix(uint8_t*& matrix, INT& num_feat, INT& num_vec);
 		virtual void get_char_matrix(char*& matrix, INT& num_feat, INT& num_vec);
@@ -43,7 +43,7 @@ class CCmdLineInterface : public CSGInterface
 		virtual void get_shortreal_matrix(SHORTREAL*& matrix, INT& num_feat, INT& num_vec);
 		virtual void get_real_matrix(DREAL*& matrix, INT& num_feat, INT& num_vec);
 		virtual void get_short_matrix(SHORT*& matrix, INT& num_feat, INT& num_vec);
-		virtual void get_word_matrix(WORD*& matrix, INT& num_feat, INT& num_vec);
+		virtual void get_word_matrix(uint16_t*& matrix, INT& num_feat, INT& num_vec);
 
 		virtual void get_byte_ndarray(uint8_t*& array, INT*& dims, INT& num_dims);
 		virtual void get_char_ndarray(char*& array, INT*& dims, INT& num_dims);
@@ -51,7 +51,7 @@ class CCmdLineInterface : public CSGInterface
 		virtual void get_shortreal_ndarray(SHORTREAL*& array, INT*& dims, INT& num_dims);
 		virtual void get_real_ndarray(DREAL*& array, INT*& dims, INT& num_dims);
 		virtual void get_short_ndarray(SHORT*& array, INT*& dims, INT& num_dims);
-		virtual void get_word_ndarray(WORD*& array, INT*& dims, INT& num_dims);
+		virtual void get_word_ndarray(uint16_t*& array, INT*& dims, INT& num_dims);
 
 		virtual void get_real_sparsematrix(TSparse<DREAL>*& matrix, INT& num_feat, INT& num_vec);
 
@@ -59,7 +59,7 @@ class CCmdLineInterface : public CSGInterface
 		virtual void get_char_string_list(T_STRING<char>*& strings, INT& num_str, INT& max_string_len);
 		virtual void get_int_string_list(T_STRING<INT>*& strings, INT& num_str, INT& max_string_len);
 		virtual void get_short_string_list(T_STRING<SHORT>*& strings, INT& num_str, INT& max_string_len);
-		virtual void get_word_string_list(T_STRING<WORD>*& strings, INT& num_str, INT& max_string_len);
+		virtual void get_word_string_list(T_STRING<uint16_t>*& strings, INT& num_str, INT& max_string_len);
 
 		/** set functions - to pass data from shogun to the target interface */
 		virtual void set_int(INT scalar);
@@ -73,7 +73,7 @@ class CCmdLineInterface : public CSGInterface
 		virtual void set_shortreal_vector(const SHORTREAL* vec, INT len);
 		virtual void set_real_vector(const DREAL* vec, INT len);
 		virtual void set_short_vector(const SHORT* vec, INT len);
-		virtual void set_word_vector(const WORD* vec, INT len);
+		virtual void set_word_vector(const uint16_t* vec, INT len);
 
 		virtual void set_byte_matrix(const uint8_t* matrix, INT num_feat, INT num_vec);
 		virtual void set_char_matrix(const char* matrix, INT num_feat, INT num_vec);
@@ -81,7 +81,7 @@ class CCmdLineInterface : public CSGInterface
 		virtual void set_shortreal_matrix(const SHORTREAL* matrix, INT num_feat, INT num_vec);
 		virtual void set_real_matrix(const DREAL* matrix, INT num_feat, INT num_vec);
 		virtual void set_short_matrix(const SHORT* matrix, INT num_feat, INT num_vec);
-		virtual void set_word_matrix(const WORD* matrix, INT num_feat, INT num_vec);
+		virtual void set_word_matrix(const uint16_t* matrix, INT num_feat, INT num_vec);
 
 		virtual void set_real_sparsematrix(const TSparse<DREAL>* matrix, INT num_feat, INT num_vec, LONG nnz);
 
@@ -89,7 +89,7 @@ class CCmdLineInterface : public CSGInterface
 		virtual void set_char_string_list(const T_STRING<char>* strings, INT num_str);
 		virtual void set_int_string_list(const T_STRING<INT>* strings, INT num_str);
 		virtual void set_short_string_list(const T_STRING<SHORT>* strings, INT num_str);
-		virtual void set_word_string_list(const T_STRING<WORD>* strings, INT num_str);
+		virtual void set_word_string_list(const T_STRING<uint16_t>* strings, INT num_str);
 
 		void* get_return_values();
 

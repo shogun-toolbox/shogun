@@ -18,7 +18,7 @@
 #include "distance/StringDistance.h"
 
 /** class HammingWordDistance */
-class CHammingWordDistance: public CStringDistance<WORD>
+class CHammingWordDistance: public CStringDistance<uint16_t>
 {
 	public:
 		/** constructor
@@ -33,7 +33,7 @@ class CHammingWordDistance: public CStringDistance<WORD>
 		 * @param r features of right-hand side
 		 * @param use_sign if sign shall be used
 		 */
-		CHammingWordDistance(CStringFeatures<WORD>* l, CStringFeatures<WORD>* r, bool use_sign);
+		CHammingWordDistance(CStringFeatures<uint16_t>* l, CStringFeatures<uint16_t>* r, bool use_sign);
 		virtual ~CHammingWordDistance();
 
 		/** init distance

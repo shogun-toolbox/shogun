@@ -16,20 +16,20 @@
 #include "lib/io.h"
 
 CHammingWordDistance::CHammingWordDistance(bool sign)
-: CStringDistance<WORD>(), use_sign(sign)
+: CStringDistance<uint16_t>(), use_sign(sign)
 {
 	SG_DEBUG( "CHammingWordDistance with sign: %d created\n", (sign) ? 1 : 0);
-	dictionary_size= 1<<(sizeof(WORD)*8);
+	dictionary_size= 1<<(sizeof(uint16_t)*8);
 	dictionary_weights = new DREAL[dictionary_size];
 	SG_DEBUG( "using dictionary of %d bytes\n", dictionary_size);
 }
 
 CHammingWordDistance::CHammingWordDistance(
-	CStringFeatures<WORD>* l, CStringFeatures<WORD>* r, bool sign)
-: CStringDistance<WORD>(), use_sign(sign)
+	CStringFeatures<uint16_t>* l, CStringFeatures<uint16_t>* r, bool sign)
+: CStringDistance<uint16_t>(), use_sign(sign)
 {
 	SG_DEBUG( "CHammingWordDistance with sign: %d created\n", (sign) ? 1 : 0);
-	dictionary_size= 1<<(sizeof(WORD)*8);
+	dictionary_size= 1<<(sizeof(uint16_t)*8);
 	dictionary_weights = new DREAL[dictionary_size];
 	SG_DEBUG( "using dictionary of %d bytes\n", dictionary_size);
 
@@ -45,7 +45,7 @@ CHammingWordDistance::~CHammingWordDistance()
   
 bool CHammingWordDistance::init(CFeatures* l, CFeatures* r)
 {
-	bool result=CStringDistance<WORD>::init(l,r);
+	bool result=CStringDistance<uint16_t>::init(l,r);
 	return result;
 }
 
@@ -67,8 +67,8 @@ DREAL CHammingWordDistance::compute(INT idx_a, INT idx_b)
 {
 	INT alen, blen;
 
-	WORD* avec=((CStringFeatures<WORD>*) lhs)->get_feature_vector(idx_a, alen);
-	WORD* bvec=((CStringFeatures<WORD>*) rhs)->get_feature_vector(idx_b, blen);
+	uint16_t* avec=((CStringFeatures<uint16_t>*) lhs)->get_feature_vector(idx_a, alen);
+	uint16_t* bvec=((CStringFeatures<uint16_t>*) rhs)->get_feature_vector(idx_b, blen);
 
 	INT result=0;
 
@@ -80,7 +80,7 @@ DREAL CHammingWordDistance::compute(INT idx_a, INT idx_b)
 		// hamming of: if words appear in both vectors 
 		while (left_idx < alen && right_idx < blen)
 		{
-			WORD sym=avec[left_idx];
+			uint16_t sym=avec[left_idx];
 			if (avec[left_idx]==bvec[right_idx])
 			{
 				while (left_idx< alen && avec[left_idx]==sym)
@@ -111,7 +111,7 @@ DREAL CHammingWordDistance::compute(INT idx_a, INT idx_b)
 		//hamming of: if words appear in both vectors _the same number_ of times
 		while (left_idx < alen && right_idx < blen)
 		{
-			WORD sym=avec[left_idx];
+			uint16_t sym=avec[left_idx];
 			if (avec[left_idx]==bvec[right_idx])
 			{
 				INT old_left_idx=left_idx;
@@ -146,7 +146,7 @@ DREAL CHammingWordDistance::compute(INT idx_a, INT idx_b)
 
 	while (left_idx < alen)
 	{
-		WORD sym=avec[left_idx];
+		uint16_t sym=avec[left_idx];
 		result++;
 
 		while (left_idx< alen && avec[left_idx]==sym)
@@ -155,7 +155,7 @@ DREAL CHammingWordDistance::compute(INT idx_a, INT idx_b)
 
 	while (right_idx < blen)
 	{
-		WORD sym=bvec[right_idx];
+		uint16_t sym=bvec[right_idx];
 		result++;
 
 		while (right_idx< blen && bvec[right_idx]==sym)

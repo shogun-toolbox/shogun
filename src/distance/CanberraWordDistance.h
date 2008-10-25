@@ -18,7 +18,7 @@
 #include "distance/StringDistance.h"
 
 /** class CanberraWordDistance */
-class CCanberraWordDistance: public CStringDistance<WORD>
+class CCanberraWordDistance: public CStringDistance<uint16_t>
 {
 	public:
 		/** default constructor */
@@ -29,7 +29,7 @@ class CCanberraWordDistance: public CStringDistance<WORD>
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 */
-		CCanberraWordDistance(CStringFeatures<WORD>* l, CStringFeatures<WORD>* r);
+		CCanberraWordDistance(CStringFeatures<uint16_t>* l, CStringFeatures<uint16_t>* r);
 		virtual ~CCanberraWordDistance();
 
 		/** init distance

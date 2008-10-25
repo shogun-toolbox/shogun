@@ -99,10 +99,10 @@ class CGUIFeatures : public CSGObject
 		CRealFeatures* convert_simple_char_to_simple_align(CCharFeatures* src, DREAL gap_cost=0);
 		CRealFeatures* convert_simple_word_to_simple_salzberg(CWordFeatures* src);
 
-		CStringFeatures<WORD>* convert_string_char_to_string_word(CStringFeatures<char>* src);
+		CStringFeatures<uint16_t>* convert_string_char_to_string_word(CStringFeatures<char>* src);
 		CStringFeatures<ULONG>* convert_string_char_to_string_ulong(CStringFeatures<char>* src);
-		CTOPFeatures* convert_string_word_to_simple_top(CStringFeatures<WORD>* src);
-		CFKFeatures* convert_string_word_to_simple_fk(CStringFeatures<WORD>* src);
+		CTOPFeatures* convert_string_word_to_simple_top(CStringFeatures<uint16_t>* src);
+		CFKFeatures* convert_string_word_to_simple_fk(CStringFeatures<uint16_t>* src);
 
 		CRealFeatures* convert_sparse_real_to_simple_real(CSparseFeatures<DREAL>* src);
 

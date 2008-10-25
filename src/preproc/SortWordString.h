@@ -23,7 +23,7 @@
  * a binary higher order representation first (cf. obtain_from_*() functions in
  * CStringFeatures)
  */
-class CSortWordString : public CStringPreProc<WORD>
+class CSortWordString : public CStringPreProc<uint16_t>
 {
 public:
 	/** default constructor */
@@ -51,6 +51,6 @@ public:
 
 	/// apply preproc on single feature vector
 	/// result in feature matrix
-	virtual WORD* apply_to_string(WORD* f, INT &len);
+	virtual uint16_t* apply_to_string(uint16_t* f, INT &len);
 };
 #endif

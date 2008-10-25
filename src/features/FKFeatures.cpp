@@ -35,7 +35,7 @@ CFKFeatures::~CFKFeatures()
 
 double CFKFeatures::deriv_a(double a, INT dimension)
 {
-	CStringFeatures<WORD> *Obs=pos->get_observations() ;
+	CStringFeatures<uint16_t> *Obs=pos->get_observations() ;
 	double deriv=0.0 ;
 	INT i=dimension ;
 

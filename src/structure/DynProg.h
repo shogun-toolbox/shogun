@@ -32,7 +32,7 @@
 //#define DYNPROG_TIMING
 
 #ifdef USE_BIGSTATES
-typedef WORD T_STATES ;
+typedef uint16_t T_STATES ;
 #else
 typedef uint8_t T_STATES ;
 #endif
@@ -583,7 +583,7 @@ public:
 	 * @param dictionary_weights dictionary weights
 	 * @param dict_len lenght of dictionary
 	 */
-	void precompute_content_values(WORD*** wordstr, const INT *pos,
+	void precompute_content_values(uint16_t*** wordstr, const INT *pos,
 		const INT num_cand_pos, const INT genestr_len,
 		DREAL *dictionary_weights, INT dict_len);
 
@@ -595,7 +595,7 @@ public:
 	 * @param genestr_len length of gene string
 	 * @param wordstr word strings
 	 */
-	void create_word_string(const char* genestr, INT genestr_num, INT genestr_len, WORD*** wordstr);
+	void create_word_string(const char* genestr, INT genestr_num, INT genestr_len, uint16_t*** wordstr);
 
 	/** precompute stop codons
 	 *
@@ -684,7 +684,7 @@ protected:
 	 * @param order order
 	 * @param max_val maximum number of bits, e.g. 2 for DNA
 	 */
-	void translate_from_single_order(WORD* obs, INT sequence_length, INT start,
+	void translate_from_single_order(uint16_t* obs, INT sequence_length, INT start,
 		INT order, INT max_val=2);
 
 	/** reset SVM value
@@ -702,7 +702,7 @@ protected:
 	 * @param last_svm_pos lsat SVM position
 	 * @param svm_value value to set
 	 */
-	void extend_svm_value(WORD* wordstr, INT pos, INT &last_svm_pos,
+	void extend_svm_value(uint16_t* wordstr, INT pos, INT &last_svm_pos,
 		DREAL* svm_value);
 
 	/** reset segment sum value
@@ -749,7 +749,7 @@ protected:
 	};
 
 	//void reset_svm_values(INT pos, INT * last_svm_pos, DREAL * svm_value) ;
-	//void extend_svm_values(WORD** wordstr, INT pos, INT *last_svm_pos, DREAL* svm_value) ;
+	//void extend_svm_values(uint16_t** wordstr, INT pos, INT *last_svm_pos, DREAL* svm_value) ;
 	/** init SVM values
 	 *
 	 * @param svs SVM values
@@ -773,7 +773,7 @@ protected:
 	 * @param t_end t end
 	 * @param svs SVM values
 	 */
-	void find_svm_values_till_pos(WORD*** wordstr, const INT *pos, INT t_end,
+	void find_svm_values_till_pos(uint16_t*** wordstr, const INT *pos, INT t_end,
 		struct svm_values_struct &svs);
 
 	/** find SVM values till position
@@ -783,7 +783,7 @@ protected:
 	 * @param t_end t end
 	 * @param svs SVM values
 	 */
-	void find_svm_values_till_pos(WORD** wordstr, const INT *pos, INT t_end,
+	void find_svm_values_till_pos(uint16_t** wordstr, const INT *pos, INT t_end,
 		struct svm_values_struct &svs);
 
 	/** update SVM values till position
@@ -794,7 +794,7 @@ protected:
 	 * @param prev_t_end previous t end
 	 * @param svs SVM values
 	 */
-	void update_svm_values_till_pos(WORD*** wordstr, const INT *pos, INT t_end,
+	void update_svm_values_till_pos(uint16_t*** wordstr, const INT *pos, INT t_end,
 		INT prev_t_end, struct svm_values_struct &svs);
 
 	/** extend orf

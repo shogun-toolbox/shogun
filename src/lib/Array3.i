@@ -8,7 +8,7 @@
 %template(CharArray3) CArray3<char>;
 %template(ByteArray3) CArray3<uint8_t>;
 %template(ShortArray3) CArray3<SHORT>;
-%template(WordArray3) CArray3<WORD>;
+%template(WordArray3) CArray3<uint16_t>;
 %template(IntArray3) CArray3<INT>;
 %template(UIntArray3) CArray3<UINT>;
 %template(LongArray3) CArray3<LONG>;

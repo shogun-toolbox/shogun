@@ -493,7 +493,7 @@ template<> inline EFeatureType CSimpleFeatures<INT>::get_feature_type()
  *
  * @return feature type WORD
  */
-template<> inline EFeatureType CSimpleFeatures<WORD>::get_feature_type()
+template<> inline EFeatureType CSimpleFeatures<uint16_t>::get_feature_type()
 {
 	return F_WORD;
 }

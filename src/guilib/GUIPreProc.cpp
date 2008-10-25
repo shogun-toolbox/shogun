@@ -387,7 +387,7 @@ bool CGUIPreProc::preproc_all_features(CFeatures* f, bool force)
 			switch (f->get_feature_type())
 			{
 				case F_WORD:
-					return ((CStringFeatures<WORD>*) f)->apply_preproc(force);
+					return ((CStringFeatures<uint16_t>*) f)->apply_preproc(force);
 				case F_ULONG:
 					return ((CStringFeatures<ULONG>*) f)->apply_preproc(force);
 				default:

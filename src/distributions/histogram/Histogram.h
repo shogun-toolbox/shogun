@@ -26,7 +26,7 @@ class CHistogram : public CDistribution
 		 *
 		 * @param f histogram's features
 		 */
-		CHistogram(CStringFeatures<WORD>* f);
+		CHistogram(CStringFeatures<uint16_t>* f);
 		~CHistogram();
 
 		/** train histogram

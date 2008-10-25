@@ -1265,7 +1265,7 @@ template<> inline EFeatureType CStringFeatures<SHORT>::get_feature_type()
  *
  * @return feature type WORD
  */
-template<> inline EFeatureType CStringFeatures<WORD>::get_feature_type()
+template<> inline EFeatureType CStringFeatures<uint16_t>::get_feature_type()
 {
 	return F_WORD;
 }

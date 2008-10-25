@@ -169,7 +169,7 @@ GET_VECTOR(get_int_vector, is_int32_type, int32NDArray, uint8_array_value, INT, 
 GET_VECTOR(get_short_vector, is_int16_type, int16NDArray, uint8_array_value, SHORT, SHORT, "Short")
 GET_VECTOR(get_shortreal_vector, is_single_type, Matrix, matrix_value, SHORTREAL, SHORTREAL, "Single Precision")
 GET_VECTOR(get_real_vector, is_double_type, Matrix, matrix_value, DREAL, DREAL, "Double Precision")
-GET_VECTOR(get_word_vector, is_uint16_type, uint16NDArray, uint16_array_value, WORD, WORD, "Word")
+GET_VECTOR(get_word_vector, is_uint16_type, uint16NDArray, uint16_array_value, uint16_t, uint16_t, "Word")
 #undef GET_VECTOR
 
 
@@ -195,7 +195,7 @@ GET_MATRIX(get_int_matrix, is_int32_type, int32NDArray, uint8_array_value, INT, 
 GET_MATRIX(get_short_matrix, is_int16_type, int16NDArray, uint8_array_value, SHORT, SHORT, "Short")
 GET_MATRIX(get_shortreal_matrix, is_single_type, Matrix, matrix_value, SHORTREAL, SHORTREAL, "Single Precision")
 GET_MATRIX(get_real_matrix, is_double_type, Matrix, matrix_value, DREAL, DREAL, "Double Precision")
-GET_MATRIX(get_word_matrix, is_uint16_type, uint16NDArray, uint16_array_value, WORD, WORD, "Word")
+GET_MATRIX(get_word_matrix, is_uint16_type, uint16NDArray, uint16_array_value, uint16_t, uint16_t, "Word")
 #undef GET_MATRIX
 
 #define GET_NDARRAY(function_name, oct_type_check, oct_type, oct_converter, sg_type, if_type, error_string)		\
@@ -219,7 +219,7 @@ GET_NDARRAY(get_int_ndarray, is_int32_type, int32NDArray, uint8_array_value, INT
 GET_NDARRAY(get_short_ndarray, is_int16_type, int16NDArray, uint8_array_value, SHORT, SHORT, "Short")
 GET_NDARRAY(get_shortreal_ndarray, is_single_type, Matrix, matrix_value, SHORTREAL, SHORTREAL, "Single Precision")
 GET_NDARRAY(get_real_ndarray, is_double_type, Matrix, matrix_value, DREAL, DREAL, "Double Precision")
-GET_NDARRAY(get_word_ndarray, is_uint16_type, uint16NDArray, uint16_array_value, WORD, WORD, "Word")
+GET_NDARRAY(get_word_ndarray, is_uint16_type, uint16NDArray, uint16_array_value, uint16_t, uint16_t, "Word")
 #undef GET_NDARRAY
 
 void COctaveInterface::get_real_sparsematrix(TSparse<DREAL>*& matrix, INT& num_feat, INT& num_vec)
@@ -338,7 +338,7 @@ GET_STRINGLIST(get_byte_string_list, is_matrix_type, is_uint8_type, uint8NDArray
 GET_STRINGLIST(get_char_string_list, is_char_matrix, is_char_matrix, charMatrix, char_matrix_value, char, char, "Char")
 GET_STRINGLIST(get_int_string_list, is_matrix_type, is_int32_type, int32NDArray, int32_array_value, INT, INT, "Integer")
 GET_STRINGLIST(get_short_string_list, is_matrix_type, is_int16_type, int16NDArray, int16_array_value, SHORT, SHORT, "Short")
-GET_STRINGLIST(get_word_string_list, is_matrix_type, is_uint16_type, uint16NDArray, uint16_array_value, WORD, WORD, "Word")
+GET_STRINGLIST(get_word_string_list, is_matrix_type, is_uint16_type, uint16NDArray, uint16_array_value, uint16_t, uint16_t, "Word")
 #undef GET_STRINGLIST
 
 
@@ -379,7 +379,7 @@ SET_VECTOR(set_int_vector, int32NDArray, INT, INT, "Integer")
 SET_VECTOR(set_short_vector, int16NDArray, SHORT, SHORT, "Short")
 SET_VECTOR(set_shortreal_vector, Matrix, SHORTREAL, SHORTREAL, "Single Precision")
 SET_VECTOR(set_real_vector, Matrix, DREAL, DREAL, "Double Precision")
-SET_VECTOR(set_word_vector, uint16NDArray, WORD, WORD, "Word")
+SET_VECTOR(set_word_vector, uint16NDArray, uint16_t, uint16_t, "Word")
 #undef SET_VECTOR
 
 #define SET_MATRIX(function_name, oct_type, sg_type, if_type, error_string)		\
@@ -401,7 +401,7 @@ SET_MATRIX(set_int_matrix, int32NDArray, INT, INT, "Integer")
 SET_MATRIX(set_short_matrix, int16NDArray, SHORT, SHORT, "Short")
 SET_MATRIX(set_shortreal_matrix, Matrix, SHORTREAL, SHORTREAL, "Single Precision")
 SET_MATRIX(set_real_matrix, Matrix, DREAL, DREAL, "Double Precision")
-SET_MATRIX(set_word_matrix, uint16NDArray, WORD, WORD, "Word")
+SET_MATRIX(set_word_matrix, uint16NDArray, uint16_t, uint16_t, "Word")
 #undef SET_MATRIX
 
 void COctaveInterface::set_real_sparsematrix(const TSparse<DREAL>* matrix, INT num_feat, INT num_vec, LONG nnz)
@@ -456,7 +456,7 @@ SET_STRINGLIST(set_byte_string_list, int8NDArray, uint8_t, uint8_t, "Byte")
 SET_STRINGLIST(set_char_string_list, charNDArray, char, char, "Char")
 SET_STRINGLIST(set_int_string_list, int32NDArray, INT, INT, "Integer")
 SET_STRINGLIST(set_short_string_list, int16NDArray, SHORT, SHORT, "Short")
-SET_STRINGLIST(set_word_string_list, uint16NDArray, WORD, WORD, "Word")
+SET_STRINGLIST(set_word_string_list, uint16NDArray, uint16_t, uint16_t, "Word")
 #undef SET_STRINGLIST
 
 DEFUN_DLD (sg, prhs, nlhs, "shogun.")

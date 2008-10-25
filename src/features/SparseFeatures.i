@@ -7,7 +7,7 @@
 %template(SparseCharFeatures) CSparseFeatures<char>;
 %template(SparseByteFeatures) CSparseFeatures<uint8_t>;
 %template(SparseShortFeatures) CSparseFeatures<SHORT>;
-%template(SparseWordFeatures) CSparseFeatures<WORD>;
+%template(SparseWordFeatures) CSparseFeatures<uint16_t>;
 %template(SparseIntFeatures) CSparseFeatures<INT>;
 %template(SparseUIntFeatures) CSparseFeatures<UINT>;
 %template(SparseLongFeatures) CSparseFeatures<LONG>;

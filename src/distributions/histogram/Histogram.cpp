@@ -22,7 +22,7 @@ CHistogram::CHistogram()
 	hist=new DREAL[1<<16];
 }
 
-CHistogram::CHistogram(CStringFeatures<WORD> *f)
+CHistogram::CHistogram(CStringFeatures<uint16_t> *f)
 : CDistribution()
 {
 	hist=new DREAL[1<<16];
@@ -51,7 +51,7 @@ bool CHistogram::train()
 	{
 		INT len;
 
-		WORD* vector=((CStringFeatures<WORD>*) features)->get_feature_vector(vec, len);
+		uint16_t* vector=((CStringFeatures<uint16_t>*) features)->get_feature_vector(vec, len);
 
 		for (feat=0; feat<len ; feat++)
 			hist[vector[feat]]++;
@@ -72,7 +72,7 @@ DREAL CHistogram::get_log_likelihood_example(INT num_example)
 	INT len;
 	DREAL loglik=0;
 
-	WORD* vector=((CStringFeatures<WORD>*) features)->get_feature_vector(num_example, len);
+	uint16_t* vector=((CStringFeatures<uint16_t>*) features)->get_feature_vector(num_example, len);
 
 	for (INT i=0; i<len; i++)
 		loglik+=hist[vector[i]];
@@ -93,7 +93,7 @@ DREAL CHistogram::get_log_derivative(INT num_param, INT num_example)
 		INT len;
 		DREAL deriv=0;
 
-		WORD* vector=((CStringFeatures<WORD>*) features)->get_feature_vector(num_example, len);
+		uint16_t* vector=((CStringFeatures<uint16_t>*) features)->get_feature_vector(num_example, len);
 
 		INT num_occurences=0;
 
