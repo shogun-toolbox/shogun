@@ -35,6 +35,7 @@
 %include "features/StringFeatures.i"
 %include "features/SparseFeatures.i"
 %include "features/SimpleFeatures.i" 
+%include "features/DummyFeatures.i" 
 
 %include "features/Alphabet.i"
 %include "features/CharFeatures.i"
