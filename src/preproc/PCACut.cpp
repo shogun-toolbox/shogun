@@ -249,8 +249,8 @@ bool CPCACut::load_init_data(FILE* src)
 	mean=new double[num_dim];
 	T=new double[num_dim*num_old_dim];
 	ASSERT (mean!=NULL && T!=NULL);
-	ASSERT(fread(mean, sizeof(double), num_old_dim, src)==(UINT) num_old_dim);
-	ASSERT(fread(T, sizeof(double), num_dim*num_old_dim, src)==(UINT) num_old_dim*num_dim);
+	ASSERT(fread(mean, sizeof(double), num_old_dim, src)==(uint32_t) num_old_dim);
+	ASSERT(fread(T, sizeof(double), num_dim*num_old_dim, src)==(uint32_t) num_old_dim*num_dim);
 	return true;
 }
 
@@ -259,8 +259,8 @@ bool CPCACut::save_init_data(FILE* dst)
 {
 	ASSERT(fwrite(&num_dim, sizeof(int), 1, dst)==1);
 	ASSERT(fwrite(&num_old_dim, sizeof(int), 1, dst)==1);
-	ASSERT(fwrite(mean, sizeof(double), num_old_dim, dst)==(UINT) num_old_dim);
-	ASSERT(fwrite(T, sizeof(double), num_dim*num_old_dim, dst)==(UINT) num_old_dim*num_dim);
+	ASSERT(fwrite(mean, sizeof(double), num_old_dim, dst)==(uint32_t) num_old_dim);
+	ASSERT(fwrite(T, sizeof(double), num_dim*num_old_dim, dst)==(uint32_t) num_old_dim*num_dim);
 	return true;
 }
 #endif // HAVE_LAPACK

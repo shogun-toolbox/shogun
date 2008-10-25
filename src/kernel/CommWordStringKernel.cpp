@@ -410,8 +410,8 @@ DREAL* CCommWordStringKernel::compute_scoring(INT max_degree, INT& num_feat,
 	if (do_init)
 		init_optimization(num_suppvec, IDX, alphas);
 
-	UINT kmer_mask=0;
-	UINT words=CMath::pow((INT) num_words,(INT) order);
+	uint32_t kmer_mask=0;
+	uint32_t words=CMath::pow((INT) num_words,(INT) order);
 
 	for (INT o=0; o<max_degree; o++)
 	{
@@ -423,8 +423,8 @@ DREAL* CCommWordStringKernel::compute_scoring(INT max_degree, INT& num_feat,
 		for (INT p=-o; p<order; p++)
 		{
 			INT o_sym=0, m_sym=0, il=0,ir=0, jl=0;
-			UINT imer_mask=kmer_mask;
-			UINT jmer_mask=kmer_mask;
+			uint32_t imer_mask=kmer_mask;
+			uint32_t jmer_mask=kmer_mask;
 
 			if (p<0)
 			{
@@ -449,7 +449,7 @@ DREAL* CCommWordStringKernel::compute_scoring(INT max_degree, INT& num_feat,
 
 			DREAL marginalizer=1.0/CMath::pow((INT) num_words,(INT) m_sym);
 			
-			for (UINT i=0; i<words; i++)
+			for (uint32_t i=0; i<words; i++)
 			{
 				uint16_t x= ((i << (num_bits*il)) >> (num_bits*ir)) & imer_mask;
 
@@ -471,9 +471,9 @@ DREAL* CCommWordStringKernel::compute_scoring(INT max_degree, INT& num_feat,
 				}
 				else
 				{
-					for (UINT j=0; j< (UINT) CMath::pow((INT) num_words, (INT) o_sym); j++)
+					for (uint32_t j=0; j< (uint32_t) CMath::pow((INT) num_words, (INT) o_sym); j++)
 					{
-						UINT c=x | ((j & jmer_mask) << (num_bits*jl));
+						uint32_t c=x | ((j & jmer_mask) << (num_bits*jl));
 #ifdef DEBUG_COMMSCORING
 
 						SG_PRINT("o=%d/%d p=%d/%d i=0x%x j=0x%x x=0x%x c=0x%x imask=%x jmask=%x kmask=%x il=%d ir=%d jl=%d marg=%g o_sym:%d m_sym:%d weight(",

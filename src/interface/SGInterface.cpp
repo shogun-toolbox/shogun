@@ -6263,7 +6263,7 @@ bool CSGInterface::cmd_init_random()
 	if (m_nrhs!=2 || !create_return_values(0))
 		return false;
 
-	UINT initseed=(UINT) get_int_from_int_or_str();
+	uint32_t initseed=(uint32_t) get_int_from_int_or_str();
 	ui_math->init_random(initseed);
 
 	return true;

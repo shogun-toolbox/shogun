@@ -83,11 +83,11 @@ class CRealFileFeatures: public CRealFeatures
 		/** doublelen */
 		uint8_t doublelen;
 		/** endian */
-		UINT endian;
+		uint32_t endian;
 		/** fourcc */
-		UINT fourcc;
+		uint32_t fourcc;
 		/** preprocd */
-		UINT preprocd;
+		uint32_t preprocd;
 		/** filepos */
 		LONG filepos;
 };

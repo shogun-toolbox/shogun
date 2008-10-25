@@ -1283,7 +1283,7 @@ template<> inline EFeatureType CStringFeatures<INT>::get_feature_type()
  *
  * @return feature type INT
  */
-template<> inline EFeatureType CStringFeatures<UINT>::get_feature_type()
+template<> inline EFeatureType CStringFeatures<uint32_t>::get_feature_type()
 {
 	return F_UINT;
 }

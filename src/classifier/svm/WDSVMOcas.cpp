@@ -418,7 +418,7 @@ void* CWDSVMOcas::compute_output_helper(void* ptr)
 
 			/*for (INT i=0; i<nData/4; i++) // slowest 2s
 			{
-				UINT x=((UINT*) vec)[i];
+				uint32_t x=((uint32_t*) vec)[i];
 				INT ii=4*i;
 				val[ii]=val[ii]*alphabet_size + (x&255);
 				val[ii+1]=val[ii+1]*alphabet_size + ((x>>8)&255);

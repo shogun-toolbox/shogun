@@ -10,7 +10,7 @@
 %template(ShortArray2) CArray2<SHORT>;
 %template(WordArray2) CArray2<uint16_t>;
 %template(IntArray2) CArray2<INT>;
-%template(UIntArray2) CArray2<UINT>;
+%template(UIntArray2) CArray2<uint32_t>;
 %template(LongArray2) CArray2<LONG>;
 %template(ULongArray2) CArray2<ULONG>;
 %template(ShortRealArray2) CArray2<SHORTREAL>;

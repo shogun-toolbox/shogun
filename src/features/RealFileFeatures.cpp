@@ -110,16 +110,16 @@ INT CRealFileFeatures::get_label(INT idx)
 bool CRealFileFeatures::load_base_data()
 {
 	ASSERT(working_file);
-	UINT num_vec=0;
-	UINT num_feat=0;
+	uint32_t num_vec=0;
+	uint32_t num_feat=0;
 
 	ASSERT(fread(&intlen, sizeof(uint8_t), 1, working_file)==1);
 	ASSERT(fread(&doublelen, sizeof(uint8_t), 1, working_file)==1);
-	ASSERT(fread(&endian, (UINT) intlen, 1, working_file)== 1);
-	ASSERT(fread(&fourcc, (UINT) intlen, 1, working_file)==1);
-	ASSERT(fread(&num_vec, (UINT) intlen, 1, working_file)==1);
-	ASSERT(fread(&num_feat, (UINT) intlen, 1, working_file)==1);
-	ASSERT(fread(&preprocd, (UINT) intlen, 1, working_file)==1);
+	ASSERT(fread(&endian, (uint32_t) intlen, 1, working_file)== 1);
+	ASSERT(fread(&fourcc, (uint32_t) intlen, 1, working_file)==1);
+	ASSERT(fread(&num_vec, (uint32_t) intlen, 1, working_file)==1);
+	ASSERT(fread(&num_feat, (uint32_t) intlen, 1, working_file)==1);
+	ASSERT(fread(&preprocd, (uint32_t) intlen, 1, working_file)==1);
 	SG_INFO( "detected: intsize=%d, doublesize=%d, num_vec=%d, num_feat=%d, preprocd=%d\n", intlen, doublelen, num_vec, num_feat, preprocd);
 	filepos=ftell(working_file);
 	set_num_vectors(num_vec);

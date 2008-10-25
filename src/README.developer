@@ -120,7 +120,7 @@ TYPES:
 	char		(8bit char(maybe signed or unsigned))
 	uint8_t		(8bit unsigned char)
 	uint16_t	(16bit unsigned short)
-	UINT		(32bit unsinged int)
+	uint32_t	(32bit unsinged int)
 	INT			(32bit int)
 	LONG		(64bit int)
 	DREAL		(double)

@@ -203,12 +203,12 @@ void CWeightedCommWordStringKernel::merge_normal()
 	ASSERT(use_sign==false);
 
 	CStringFeatures<uint16_t>* s=(CStringFeatures<uint16_t>*) rhs;
-	UINT num_symbols=(UINT) s->get_num_symbols();
+	uint32_t num_symbols=(uint32_t) s->get_num_symbols();
 	INT dic_size=1<<(sizeof(uint16_t)*8);
 	DREAL* dic=new DREAL[dic_size];
 	memset(dic, 0, sizeof(DREAL)*dic_size);
 
-	for (UINT sym=0; sym<num_symbols; sym++)
+	for (uint32_t sym=0; sym<num_symbols; sym++)
 	{
 		DREAL result=0;
 		uint8_t mask=0;

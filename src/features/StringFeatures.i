@@ -14,7 +14,7 @@
 %apply (SHORT** ARGOUT1, INT* DIM1) {(SHORT** dst, INT* len)};
 %apply (uint16_t** ARGOUT1, INT* DIM1) {(uint16_t** dst, INT* len)};
 %apply (INT** ARGOUT1, INT* DIM1) {(INT** dst, INT* len)};
-%apply (UINT** ARGOUT1, INT* DIM1) {(UINT** dst, INT* len)};
+%apply (uint32_t** ARGOUT1, INT* DIM1) {(uint32_t** dst, INT* len)};
 %apply (LONG** ARGOUT1, INT* DIM1) {(LONG** dst, INT* len)};
 %apply (ULONG** ARGOUT1, INT* DIM1) {(ULONG** dst, INT* len)};
 
@@ -61,11 +61,11 @@
         self->CStringFeatures<INT>::get_string(dst,len);
     }
 };
-%extend CStringFeatures<UINT>
+%extend CStringFeatures<uint32_t>
 {
-    void get_str(UINT** dst, INT* len)
+    void get_str(uint32_t** dst, INT* len)
     {
-        self->CStringFeatures<UINT>::get_string(dst,len);
+        self->CStringFeatures<uint32_t>::get_string(dst,len);
     }
 };
 %extend CStringFeatures<LONG>
@@ -88,6 +88,6 @@
 %template(StringShortFeatures) CStringFeatures<SHORT>;
 %template(StringWordFeatures) CStringFeatures<uint16_t>;
 %template(StringIntFeatures) CStringFeatures<INT>;
-%template(StringUIntFeatures) CStringFeatures<UINT>;
+%template(StringUIntFeatures) CStringFeatures<uint32_t>;
 %template(StringLongFeatures) CStringFeatures<LONG>;
 %template(StringUlongFeatures) CStringFeatures<ULONG>;

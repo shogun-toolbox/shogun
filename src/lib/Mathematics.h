@@ -163,7 +163,7 @@ class CMath : public CSGObject
 		//@{
 
 		/// crc32
-		static UINT crc32(uint8_t *data, INT len);
+		static uint32_t crc32(uint8_t *data, INT len);
 
 		static inline DREAL round(DREAL d)
 		{
@@ -338,13 +338,13 @@ class CMath : public CSGObject
 			return res ;
 		}
 
-		static void init_random(UINT initseed=0)
+		static void init_random(uint32_t initseed=0)
 		{
 			if (initseed==0)
 			{
 				struct timeval tv;
 				gettimeofday(&tv, NULL);
-				seed=(UINT) (4223517*getpid()*tv.tv_sec*tv.tv_usec);
+				seed=(uint32_t) (4223517*getpid()*tv.tv_sec*tv.tv_usec);
 			}
 			else
 				seed=initseed;
@@ -793,7 +793,7 @@ class CMath : public CSGObject
 		 * matlab alike [sorted,index]=sort(output) 
 		 */
 		template <class T1,class T2>
-			static void qsort_index(T1* output, T2* index, UINT size);
+			static void qsort_index(T1* output, T2* index, uint32_t size);
 
 		template <class T1,class T2>
 			static void* parallel_qsort_index(void* p);
@@ -908,7 +908,7 @@ class CMath : public CSGObject
 		static double entropy(DREAL* p, INT len);
 
 		/// returns number generator seed
-		inline static UINT get_seed()
+		inline static uint32_t get_seed()
 		{
 			return CMath::seed;
 		}
@@ -1006,7 +1006,7 @@ class CMath : public CSGObject
 				static INT LOGRANGE;
 
 				/// random generator seed
-				static UINT seed;
+				static uint32_t seed;
 
 #ifdef USE_LOGCACHE	
 
@@ -1121,7 +1121,7 @@ void* CMath::parallel_qsort_index(void* p)
 
 //implementations of template functions
 	template <class T1,class T2>
-void CMath::qsort_index(T1* output, T2* index, UINT size)
+void CMath::qsort_index(T1* output, T2* index, uint32_t size)
 {
 	if (size==2)
 	{

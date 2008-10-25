@@ -208,15 +208,15 @@ INT CFile::parse_next_header(EFeatureType &type)
 bool CFile::read_header()
 {
 	ASSERT(file);
-	UINT intlen=0;
-	UINT endian=0;
-	UINT file_fourcc=0;
-	UINT doublelen=0;
+	uint32_t intlen=0;
+	uint32_t endian=0;
+	uint32_t file_fourcc=0;
+	uint32_t doublelen=0;
 
 	if ( (fread(&intlen, sizeof(uint8_t), 1, file)==1) &&
 			(fread(&doublelen, sizeof(uint8_t), 1, file)==1) &&
-			(fread(&endian, (UINT) intlen, 1, file)== 1) &&
-			(fread(&file_fourcc, (UINT) intlen, 1, file)==1))
+			(fread(&endian, (uint32_t) intlen, 1, file)== 1) &&
+			(fread(&file_fourcc, (uint32_t) intlen, 1, file)==1))
 		return true;
 	else
 		return false;
@@ -224,13 +224,13 @@ bool CFile::read_header()
 
 bool CFile::write_header()
 {
-    uint8_t intlen=sizeof(UINT);
+    uint8_t intlen=sizeof(uint32_t);
     uint8_t doublelen=sizeof(double);
-    UINT endian=0x12345678;
+    uint32_t endian=0x12345678;
 
 	if ((fwrite(&intlen, sizeof(uint8_t), 1, file)==1) &&
 			(fwrite(&doublelen, sizeof(uint8_t), 1, file)==1) &&
-			(fwrite(&endian, sizeof(UINT), 1, file)==1) &&
+			(fwrite(&endian, sizeof(uint32_t), 1, file)==1) &&
 			(fwrite(&fourcc, 4*sizeof(char), 1, file)==1))
 		return true;
 	else

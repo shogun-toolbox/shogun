@@ -219,9 +219,9 @@ bool CPruneVarSubMean::load_init_data(FILE* src)
 	mean=new DREAL[num_idx];
 	std=new DREAL[num_idx];
 	ASSERT (mean!=NULL && idx!=NULL && std!=NULL);
-	ASSERT(fread(idx, sizeof(int), num_idx, src)==(UINT) num_idx);
-	ASSERT(fread(mean, sizeof(DREAL), num_idx, src)==(UINT) num_idx);
-	ASSERT(fread(std, sizeof(DREAL), num_idx, src)==(UINT) num_idx);
+	ASSERT(fread(idx, sizeof(int), num_idx, src)==(uint32_t) num_idx);
+	ASSERT(fread(mean, sizeof(DREAL), num_idx, src)==(uint32_t) num_idx);
+	ASSERT(fread(std, sizeof(DREAL), num_idx, src)==(uint32_t) num_idx);
 
 	result=true;
 	divide_by_std=(divide==1);

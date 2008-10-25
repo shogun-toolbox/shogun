@@ -43,9 +43,6 @@ typedef short int SHORT;
 /// Type INT is 4 bytes in size
 typedef int INT;
 
-/// Type INT is 4 bytes in size
-typedef unsigned int UINT;
-
 /// Type LONG is 8 bytes in size
 /// Type ULONG is 8 bytes in size
 #ifndef SUNOS
@@ -57,6 +54,7 @@ typedef long LONG;
 typedef unsigned long ULONG;
 typedef unsigned char uint8_t;
 typedef unsigned short int uint16_t;
+typedef unsigned int uint32_t;
 #endif
 
 

@@ -26,7 +26,7 @@ class CGUIMath : public CSGObject
 		void current_results(DREAL* output, INT* label, INT total, FILE* outputfile=NULL);
 
 		void set_threshold(DREAL value);
-		void init_random(UINT initseed=0);
+		void init_random(uint32_t initseed=0);
 
 	protected:
 		CSGInterface* ui;

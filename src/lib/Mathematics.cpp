@@ -49,7 +49,7 @@ const DREAL CMath::ALMOST_NEG_INFTY =  -1000;
 DREAL* CMath::logtable = NULL;
 #endif
 char* CMath::rand_state = NULL;
-UINT CMath::seed = 0;
+uint32_t CMath::seed = 0;
 
 CMath::CMath()
 : CSGObject()
@@ -347,16 +347,15 @@ INT CMath::calcroc(DREAL* fp, DREAL* tp, DREAL* output, INT* label, INT& size, I
 	return returnidx;
 }
 
-UINT CMath::crc32(uint8_t *data, INT len)
+uint32_t CMath::crc32(uint8_t *data, INT len)
 {
-    UINT        result;
-    INT                 i,j;
-    uint8_t       octet;
+	uint32_t result;
+	INT i,j;
+	uint8_t octet;
 
-    result = 0-1;
-
-    for (i=0; i<len; i++)
-    {
+	result = 0-1;
+	for (i=0; i<len; i++)
+	{
 	octet = *(data++);
 	for (j=0; j<8; j++)
 	{

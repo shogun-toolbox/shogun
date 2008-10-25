@@ -29,7 +29,7 @@ void CGUIMath::set_threshold(DREAL value)
 	SG_INFO("New threshold: %f.\n", threshold);
 }
 
-void CGUIMath::init_random(UINT initseed)
+void CGUIMath::init_random(uint32_t initseed)
 {
 	CMath::init_random(initseed);
 }

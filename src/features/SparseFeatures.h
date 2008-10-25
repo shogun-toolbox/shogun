@@ -1160,7 +1160,7 @@ template<> inline EFeatureType CSparseFeatures<INT>::get_feature_type()
  *
  * @return feature type UINT
  */
-template<> inline EFeatureType CSparseFeatures<UINT>::get_feature_type()
+template<> inline EFeatureType CSparseFeatures<uint32_t>::get_feature_type()
 {
 	return F_UINT;
 }
