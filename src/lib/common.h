@@ -58,7 +58,7 @@ typedef uint64_t ULONG;
 #else
 typedef long LONG;
 typedef unsigned long ULONG;
-typedef unsigned short uint8_t;
+typedef unsigned char uint8_t;
 #endif
 
 
