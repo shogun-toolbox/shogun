@@ -402,11 +402,11 @@ void CAlphabet::add_string_to_histogram(uint16_t* p, int64_t len)
 		add_byte_to_histogram(b[i]);
 }
 
-void CAlphabet::add_string_to_histogram(SHORT* p, int64_t len)
+void CAlphabet::add_string_to_histogram(int16_t* p, int64_t len)
 {
 	SG_WARNING("computing byte histogram over word strings\n");
 	uint8_t* b= (uint8_t*) p;
-	for (int64_t i=0; i<((int64_t) sizeof(SHORT))*len; i++)
+	for (int64_t i=0; i<((int64_t) sizeof(int16_t))*len; i++)
 		add_byte_to_histogram(b[i]);
 }
 

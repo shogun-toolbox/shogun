@@ -77,7 +77,7 @@ template<> inline EFeatureType CStringKernel<int32_t>::get_feature_type() { retu
 
 template<> inline EFeatureType CStringKernel<uint16_t>::get_feature_type() { return F_WORD; }
 
-template<> inline EFeatureType CStringKernel<SHORT>::get_feature_type() { return F_SHORT; }
+template<> inline EFeatureType CStringKernel<int16_t>::get_feature_type() { return F_SHORT; }
 
 template<> inline EFeatureType CStringKernel<uint8_t>::get_feature_type() { return F_BYTE; }
 

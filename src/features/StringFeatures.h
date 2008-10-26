@@ -1256,7 +1256,7 @@ template<> inline EFeatureType CStringFeatures<uint8_t>::get_feature_type()
  *
  * @return feature type SHORT
  */
-template<> inline EFeatureType CStringFeatures<SHORT>::get_feature_type()
+template<> inline EFeatureType CStringFeatures<int16_t>::get_feature_type()
 {
 	return F_SHORT;
 }

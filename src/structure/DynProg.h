@@ -95,7 +95,7 @@ public:
 	 * @param prob_nbest prob_nbest
 	 * @param my_paths my paths
 	 */
-	void best_path_no_b_trans(int32_t max_iter, int32_t & max_best_iter, SHORT nbest, DREAL *prob_nbest, int32_t *my_paths);
+	void best_path_no_b_trans(int32_t max_iter, int32_t & max_best_iter, int16_t nbest, DREAL *prob_nbest, int32_t *my_paths);
 	
 	// model related functions
 	/** set number of states
@@ -481,7 +481,7 @@ public:
 	void best_path_2struct(const DREAL *seq, int32_t seq_len, const int32_t *pos,
 						   CPlifBase **Plif_matrix,
 						   const char *genestr, int32_t genestr_len,
-						   SHORT nbest,
+						   int16_t nbest,
 						   DREAL *prob_nbest, int32_t *my_state_seq, int32_t *my_pos_seq,
 						   DREAL *dictionary_weights, int32_t dict_len, DREAL *segment_sum_weights);
 
@@ -493,7 +493,7 @@ public:
 	 * @param prob_nbest prob(ability?) nbest
 	 * @param my_state_seq my state seq
 	 */
-	void best_path_trans_simple(const DREAL *seq, int32_t seq_len, SHORT nbest,
+	void best_path_trans_simple(const DREAL *seq, int32_t seq_len, int16_t nbest,
 								DREAL *prob_nbest, int32_t *my_state_seq);
 
 

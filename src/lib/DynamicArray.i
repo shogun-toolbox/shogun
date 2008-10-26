@@ -8,7 +8,7 @@
 
 %template(DynamicCharArray) CDynamicArray<char>;
 %template(DynamicByteArray) CDynamicArray<uint8_t>;
-%template(DynamicShortArray) CDynamicArray<SHORT>;
+%template(DynamicShortArray) CDynamicArray<int16_t>;
 %template(DynamicWordArray) CDynamicArray<uint16_t>;
 %template(DynamicIntArray) CDynamicArray<int32_t>;
 %template(DynamicUIntArray) CDynamicArray<uint32_t>;

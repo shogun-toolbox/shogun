@@ -122,7 +122,7 @@ bool CGUIFeatures::load(
 		}
 		else if (strncmp(type, "SHORT", 5)==0)
 		{
-			*f_ptr=new CStringFeatures<SHORT>(filename);
+			*f_ptr=new CStringFeatures<int16_t>(filename);
 		}
 		else if (strncmp(type, "WORD", 4)==0)
 		{

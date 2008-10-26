@@ -1225,7 +1225,7 @@ bool CSGInterface::cmd_get_features()
 
 				case F_SHORT:
 				{
-					SHORT* fmatrix=((CShortFeatures *) feat)->get_feature_matrix(num_feat, num_vec);
+					int16_t* fmatrix=((CShortFeatures *) feat)->get_feature_matrix(num_feat, num_vec);
 					set_short_matrix(fmatrix, num_feat, num_vec);
 					break;
 				}
@@ -1380,7 +1380,7 @@ bool CSGInterface::do_set_features(bool add)
 
 		case DENSE_SHORT:
 		{
-			SHORT* fmatrix=NULL;
+			int16_t* fmatrix=NULL;
 			get_short_matrix(fmatrix, num_feat, num_vec);
 
 			feat=new CShortFeatures(0);

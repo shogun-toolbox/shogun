@@ -122,7 +122,7 @@ public:
 	 * @param num number of data elements
 	 * @return loaded data
 	 */
-	SHORT* load_short_data(SHORT* target, int64_t& num);
+	int16_t* load_short_data(int16_t* target, int64_t& num);
 
 	/** save integer data
 	 *
@@ -178,7 +178,7 @@ public:
 	 * @param num number of data elements
 	 * @return whether operation was successful
 	 */
-	bool save_short_data(SHORT* src, int64_t num);
+	bool save_short_data(int16_t* src, int64_t num);
 
 	/** check if status is ok
 	 *

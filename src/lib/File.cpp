@@ -177,19 +177,19 @@ bool CFile::save_word_data(uint16_t* src, int64_t num)
 	return status;
 }
 
-SHORT* CFile::load_short_data(SHORT* target, int64_t& num)
+int16_t* CFile::load_short_data(int16_t* target, int64_t& num)
 {
 	ASSERT(expected_type==F_SHORT);
-	CSimpleFile<SHORT> f(filename, file);
+	CSimpleFile<int16_t> f(filename, file);
 	target=f.load(target, num);
 	status=(target!=NULL);
 	return target;
 }
 
-bool CFile::save_short_data(SHORT* src, int64_t num)
+bool CFile::save_short_data(int16_t* src, int64_t num)
 {
 	ASSERT(expected_type==F_SHORT);
-	CSimpleFile<SHORT> f(filename, file);
+	CSimpleFile<int16_t> f(filename, file);
 	status=f.save(src, num);
 	return status;
 }

@@ -88,7 +88,7 @@ template<> inline EFeatureType CSimpleDistance<uint16_t>::get_feature_type() { r
  *
  * @return feature type SHORT
  */
-template<> inline EFeatureType CSimpleDistance<SHORT>::get_feature_type() { return F_SHORT; }
+template<> inline EFeatureType CSimpleDistance<int16_t>::get_feature_type() { return F_SHORT; }
 
 /** get feature type the BYTE distance can deal with
  *

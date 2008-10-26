@@ -457,7 +457,7 @@ template<> inline EFeatureType CSimpleFeatures<SHORTREAL>::get_feature_type()
  *
  * @return feature type SHORT
  */
-template<> inline EFeatureType CSimpleFeatures<SHORT>::get_feature_type()
+template<> inline EFeatureType CSimpleFeatures<int16_t>::get_feature_type()
 {
 	return F_SHORT;
 }

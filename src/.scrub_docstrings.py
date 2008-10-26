@@ -14,7 +14,7 @@ REPLACEMENTS=[
 	[' int64_t', ' int'],
 	[' uint64_t', ' int'],
 	[' uint8_t', ' int'],
-	[' SHORT', ' int'],
+	[' int16_t', ' int'],
 	[' uint16_t', ' int'],
 	[' char', ' str'],
 	['-> CFeatures', '-> Features'],

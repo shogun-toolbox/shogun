@@ -10,5 +10,5 @@
 %template(CharKernel) CSimpleKernel<char>;
 %template(ByteKernel) CSimpleKernel<uint8_t>;
 %template(IntKernel) CSimpleKernel<int32_t>;
-%template(ShortKernel) CSimpleKernel<SHORT>;
+%template(ShortKernel) CSimpleKernel<int16_t>;
 %template(UlongKernel) CSimpleKernel<uint64_t>;

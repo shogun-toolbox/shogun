@@ -8,7 +8,7 @@
 %template(SimpleShortRealFeatures) CSimpleFeatures<SHORTREAL>;
 %template(SimpleByteFeatures) CSimpleFeatures<uint8_t>;
 %template(SimpleWordFeatures) CSimpleFeatures<uint16_t>;
-%template(SimpleShortFeatures) CSimpleFeatures<SHORT>;
+%template(SimpleShortFeatures) CSimpleFeatures<int16_t>;
 %template(SimpleCharFeatures) CSimpleFeatures<char>;
 %template(SimpleIntFeatures)  CSimpleFeatures<int32_t>;
 

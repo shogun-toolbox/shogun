@@ -160,7 +160,7 @@ void CRInterface::get_real_vector(DREAL*& vec, int32_t& len)
 		vec[i]= (DREAL) REAL(rvec)[i];
 }
 
-void CRInterface::get_short_vector(SHORT*& vec, int32_t& len)
+void CRInterface::get_short_vector(int16_t*& vec, int32_t& len)
 {
 	vec=NULL;
 	len=0;
@@ -207,7 +207,7 @@ void CRInterface::get_real_matrix(DREAL*& matrix, int32_t& num_feat, int32_t& nu
 	}
 }
 
-void CRInterface::get_short_matrix(SHORT*& matrix, int32_t& num_feat, int32_t& num_vec)
+void CRInterface::get_short_matrix(int16_t*& matrix, int32_t& num_feat, int32_t& num_vec)
 {
 }
 
@@ -235,7 +235,7 @@ void CRInterface::get_real_ndarray(DREAL*& array, int32_t*& dims, int32_t& num_d
 {
 }
 
-void CRInterface::get_short_ndarray(SHORT*& array, int32_t*& dims, int32_t& num_dims)
+void CRInterface::get_short_ndarray(int16_t*& array, int32_t*& dims, int32_t& num_dims)
 {
 }
 
@@ -291,7 +291,7 @@ void CRInterface::get_int_string_list(T_STRING<int32_t>*& strings, int32_t& num_
 {
 }
 
-void CRInterface::get_short_string_list(T_STRING<SHORT>*& strings, int32_t& num_str, int32_t& max_string_len)
+void CRInterface::get_short_string_list(T_STRING<int16_t>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 }
 
@@ -365,7 +365,7 @@ void CRInterface::function_name(const sg_type* vec, int32_t len)	\
 
 SET_VECTOR(set_byte_vector, INTSXP, INTEGER, uint8_t, int, "Byte")
 SET_VECTOR(set_int_vector, INTSXP, INTEGER, int32_t, int, "Integer")
-SET_VECTOR(set_short_vector, INTSXP, INTEGER, SHORT, int, "Short")
+SET_VECTOR(set_short_vector, INTSXP, INTEGER, int16_t, int, "Short")
 SET_VECTOR(set_shortreal_vector, REALSXP, REAL, SHORTREAL, float, "Single Precision")
 SET_VECTOR(set_real_vector, REALSXP, REAL, DREAL, double, "Double Precision")
 SET_VECTOR(set_word_vector, INTSXP, INTEGER, uint16_t, int, "Word")
@@ -392,7 +392,7 @@ void CRInterface::function_name(const sg_type* matrix, int32_t num_feat, int32_t
 }
 SET_MATRIX(set_byte_matrix, INTSXP, INTEGER, uint8_t, int, "Byte")
 SET_MATRIX(set_int_matrix, INTSXP, INTEGER, int32_t, int, "Integer")
-SET_MATRIX(set_short_matrix, INTSXP, INTEGER, SHORT, int, "Short")
+SET_MATRIX(set_short_matrix, INTSXP, INTEGER, int16_t, int, "Short")
 SET_MATRIX(set_shortreal_matrix, REALSXP, REAL, SHORTREAL, float, "Single Precision")
 SET_MATRIX(set_real_matrix, REALSXP, REAL, DREAL, double, "Double Precision")
 SET_MATRIX(set_word_matrix, INTSXP, INTEGER, uint16_t, int, "Word")
@@ -430,7 +430,7 @@ void CRInterface::set_int_string_list(const T_STRING<int32_t>* strings, int32_t 
 {
 }
 
-void CRInterface::set_short_string_list(const T_STRING<SHORT>* strings, int32_t num_str)
+void CRInterface::set_short_string_list(const T_STRING<int16_t>* strings, int32_t num_str)
 {
 }
 

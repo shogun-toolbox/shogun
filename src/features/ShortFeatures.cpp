@@ -13,17 +13,17 @@
 #include "features/CharFeatures.h"
 
 CShortFeatures::CShortFeatures(int32_t size)
-: CSimpleFeatures<SHORT>(size)
+: CSimpleFeatures<int16_t>(size)
 {
 }
 
 CShortFeatures::CShortFeatures(const CShortFeatures & orig)
-: CSimpleFeatures<SHORT>(orig)
+: CSimpleFeatures<int16_t>(orig)
 {
 }
 
 CShortFeatures::CShortFeatures(char* fname)
-: CSimpleFeatures<SHORT>(fname)
+: CSimpleFeatures<int16_t>(fname)
 {
 }
 
@@ -40,7 +40,7 @@ bool CShortFeatures::obtain_from_char_features(
 
 	int32_t len=num_vectors*num_features;
 	free_feature_matrix();
-	feature_matrix=new SHORT[len];
+	feature_matrix=new int16_t[len];
 	int32_t num_cf_feat=0;
 	int32_t num_cf_vec=0;
 	char* fm=cf->get_feature_matrix(num_cf_feat, num_cf_vec);
@@ -51,7 +51,7 @@ bool CShortFeatures::obtain_from_char_features(
 	int32_t max_val=0;
 	for (int32_t i=0; i<len; i++)
 	{
-		feature_matrix[i]=(SHORT) alpha->remap_to_bin(fm[i]);
+		feature_matrix[i]=(int16_t) alpha->remap_to_bin(fm[i]);
 		max_val=CMath::max((int32_t) feature_matrix[i],max_val);
 	}
 
@@ -73,7 +73,7 @@ bool CShortFeatures::obtain_from_char_features(
 
 
 void CShortFeatures::translate_from_single_order(
-	SHORT* obs, int32_t sequence_length, int32_t start, int32_t order,
+	int16_t* obs, int32_t sequence_length, int32_t start, int32_t order,
 	int32_t max_val, int32_t gap)
 {
 	ASSERT(gap>=0);
@@ -81,7 +81,7 @@ void CShortFeatures::translate_from_single_order(
 	const int32_t start_gap = (order - gap)/2;
 	const int32_t end_gap = start_gap + gap;
 	int32_t i,j;
-	SHORT value=0;
+	int16_t value=0;
 
 	// almost all positions
 	for (i=sequence_length-1; i>=order-1; i--) //convert interval of size T

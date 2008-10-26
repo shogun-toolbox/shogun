@@ -1133,7 +1133,7 @@ template<> inline EFeatureType CSparseFeatures<uint8_t>::get_feature_type()
  *
  * @return feature type SHORT
  */
-template<> inline EFeatureType CSparseFeatures<SHORT>::get_feature_type()
+template<> inline EFeatureType CSparseFeatures<int16_t>::get_feature_type()
 {
 	return F_SHORT;
 }

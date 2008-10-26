@@ -9,6 +9,6 @@
 %template(SimpleRealPreProc) CSimplePreProc<DREAL>;
 %template(SimpleUlongPreProc) CSimplePreProc<uint64_t>;
 %template(SimpleWordPreProc) CSimplePreProc<uint16_t>;
-%template(SimpleShortPreProc) CSimplePreProc<SHORT>;
+%template(SimpleShortPreProc) CSimplePreProc<int16_t>;
 %template(SimpleBytePreProc) CSimplePreProc<uint8_t>;
 %template(SimpleCharPreProc) CSimplePreProc<char>;

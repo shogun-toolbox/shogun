@@ -20,7 +20,7 @@
  * It inherits its functionality from CSimpleFeatures, which should be
  * consulted for further reference.
  */
-class CShortFeatures : public CSimpleFeatures<SHORT>
+class CShortFeatures : public CSimpleFeatures<int16_t>
 {
 	public:
 		/** constructor
@@ -39,9 +39,9 @@ class CShortFeatures : public CSimpleFeatures<SHORT>
 		 * @param num_feat number of features
 		 * @param num_vec number of vectors
 		 */
-		inline CShortFeatures(SHORT* src, int32_t num_feat, int32_t num_vec): CSimpleFeatures<SHORT>(0)
+		inline CShortFeatures(int16_t* src, int32_t num_feat, int32_t num_vec): CSimpleFeatures<int16_t>(0)
 		{
-			CSimpleFeatures<SHORT>::copy_feature_matrix(src, num_feat, num_vec);
+			CSimpleFeatures<int16_t>::copy_feature_matrix(src, num_feat, num_vec);
 		}
 
 		/** constructor
@@ -74,9 +74,9 @@ class CShortFeatures : public CSimpleFeatures<SHORT>
 		 * @param num_feat number of features
 		 * @param num_vec number of vectors
 		 */
-		inline virtual void copy_feature_matrix(SHORT* src, int32_t num_feat, int32_t num_vec)
+		inline virtual void copy_feature_matrix(int16_t* src, int32_t num_feat, int32_t num_vec)
 		{
-			CSimpleFeatures<SHORT>::copy_feature_matrix(src, num_feat, num_vec);
+			CSimpleFeatures<int16_t>::copy_feature_matrix(src, num_feat, num_vec);
 		}
 
 		/** load features from file
@@ -102,6 +102,6 @@ class CShortFeatures : public CSimpleFeatures<SHORT>
 		 * @param max_val maximum value
 		 * @param gap gap
 		 */
-		void translate_from_single_order(SHORT* obs, int32_t sequence_length, int32_t start, int32_t order, int32_t max_val, int32_t gap);
+		void translate_from_single_order(int16_t* obs, int32_t sequence_length, int32_t start, int32_t order, int32_t max_val, int32_t gap);
 };
 #endif

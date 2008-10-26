@@ -88,7 +88,7 @@ template<> inline EFeatureType CSimpleKernel<int32_t>::get_feature_type() { retu
 
 template<> inline EFeatureType CSimpleKernel<uint16_t>::get_feature_type() { return F_WORD; }
 
-template<> inline EFeatureType CSimpleKernel<SHORT>::get_feature_type() { return F_SHORT; }
+template<> inline EFeatureType CSimpleKernel<int16_t>::get_feature_type() { return F_SHORT; }
 
 template<> inline EFeatureType CSimpleKernel<uint8_t>::get_feature_type() { return F_BYTE; }
 

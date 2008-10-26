@@ -161,7 +161,7 @@ class CAlphabet : public CSGObject
 		 * @param p string
 		 * @param len length of string
 		 */
-		void add_string_to_histogram(SHORT* p, int64_t len);
+		void add_string_to_histogram(int16_t* p, int64_t len);
 
 		/** make histogram for whole string
 		 *

@@ -9,5 +9,5 @@
 %template(StringCharKernel) CStringKernel<char>;
 %template(StringIntKernel) CStringKernel<int32_t>;
 %template(StringUlongKernel) CStringKernel<uint64_t>;
-%template(StringShortKernel) CStringKernel<SHORT>;
+%template(StringShortKernel) CStringKernel<int16_t>;
 %template(StringByteKernel) CStringKernel<uint8_t>;

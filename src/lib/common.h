@@ -37,19 +37,17 @@
 */
 //@{
 
-/// Type SHORT is 2 bytes in size
-typedef short int SHORT;
-
-#ifndef SUNOS
-#include <stdint.h>
-#else
+#ifdef SUNOS
+typedef short int int16_t;
+typedef int int32_t;
 typedef long int64_t;
-typedef unsigned long uint64_t;
-typedef unsigned long long int uintmax_t;
 typedef unsigned char uint8_t;
 typedef unsigned short int uint16_t;
 typedef unsigned int uint32_t;
-typedef int int32_t;
+typedef unsigned long uint64_t;
+typedef unsigned long long int uintmax_t;
+#else
+#include <stdint.h>
 #endif
 
 
