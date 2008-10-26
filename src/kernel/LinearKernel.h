@@ -81,7 +81,7 @@ class CLinearKernel: public CSimpleKernel<DREAL>
 		 * @param alphas alphas
 		 * @return if optimization was successful
 		 */
-		virtual bool init_optimization(INT num_suppvec, INT* sv_idx, DREAL* alphas);
+		virtual bool init_optimization(int32_t num_suppvec, int32_t* sv_idx, DREAL* alphas);
 
 		/** delete optimization
 		 *
@@ -94,7 +94,7 @@ class CLinearKernel: public CSimpleKernel<DREAL>
 	 	* @param idx index to compute
 	 	* @return optimized value at given index
 	 	*/
-		virtual DREAL compute_optimized(INT idx);
+		virtual DREAL compute_optimized(int32_t idx);
 
 		/** clear normal vector */
 		virtual void clear_normal();
@@ -104,14 +104,14 @@ class CLinearKernel: public CSimpleKernel<DREAL>
 		 * @param idx where to add
 		 * @param weight what to add
 		 */
-		virtual void add_to_normal(INT idx, DREAL weight);
+		virtual void add_to_normal(int32_t idx, DREAL weight);
 
 		/** get normal
 		 *
 		 * @param len where length of normal vector will be stored
 		 * @return normal vector
 		 */
-		inline const double* get_normal(INT& len)
+		inline const double* get_normal(int32_t& len)
 		{
 			if (lhs && normal)
 			{
@@ -130,10 +130,10 @@ class CLinearKernel: public CSimpleKernel<DREAL>
 		 * @param dst_w store w in this argument
 		 * @param dst_dims dimension of w
 		 */
-		inline void get_w(DREAL** dst_w, INT* dst_dims)
+		inline void get_w(DREAL** dst_w, int32_t* dst_dims)
 		{
 			ASSERT(lhs && normal);
-			INT len = ((CRealFeatures*) lhs)->get_num_features();
+			int32_t len = ((CRealFeatures*) lhs)->get_num_features();
 			ASSERT(dst_w && dst_dims);
 			*dst_dims=len;
 			*dst_w=(DREAL*) malloc(sizeof(DREAL)*(*dst_dims));
@@ -146,7 +146,7 @@ class CLinearKernel: public CSimpleKernel<DREAL>
 		 * @param src_w new w
 		 * @param src_w_dim dimension of new w - must fit dim of lhs
 		 */
-		inline void set_w(DREAL* src_w, INT src_w_dim)
+		inline void set_w(DREAL* src_w, int32_t src_w_dim)
 		{
 			ASSERT(lhs && src_w_dim==((CRealFeatures*) lhs)->get_num_features());
 			clear_normal();
@@ -162,13 +162,13 @@ class CLinearKernel: public CSimpleKernel<DREAL>
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		virtual DREAL compute(INT idx_a, INT idx_b);
+		virtual DREAL compute(int32_t idx_a, int32_t idx_b);
 
 	protected:
 		/** normal vector (used in case of optimized kernel) */
 		DREAL* normal;
 		/** length of normal vector */
-		INT normal_length;
+		int32_t normal_length;
 };
 
 #endif /* _LINEARKERNEL_H__ */

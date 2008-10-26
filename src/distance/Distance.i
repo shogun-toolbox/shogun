@@ -22,7 +22,7 @@
 %feature("autodoc", "get_distance_matrix(self) -> numpy 2dim array of float") get_distance_matrix;
 #endif
 
-%apply (DREAL** ARGOUT2, INT* DIM1, INT* DIM2) {(DREAL** dst, INT* m, INT* n)};
+%apply (DREAL** ARGOUT2, int32_t* DIM1, int32_t* DIM2) {(DREAL** dst, int32_t* m, int32_t* n)};
 
 %rename(Distance) CDistance;
 %feature("autodoc","0");

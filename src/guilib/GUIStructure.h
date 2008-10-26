@@ -31,28 +31,28 @@ class CGUIStructure : public CSGObject
 		CGUIStructure(CSGInterface* interface);
 		~CGUIStructure();
 
-		bool set_plif_struct(INT N, INT M, DREAL* all_limits,
-				DREAL* all_penalties, INT* ids, T_STRING<char>* names,
+		bool set_plif_struct(int32_t N, int32_t M, DREAL* all_limits,
+				DREAL* all_penalties, int32_t* ids, T_STRING<char>* names,
 				DREAL* min_values, DREAL* max_values, bool* all_use_cache,
-				INT* all_use_svm, T_STRING<char>* all_transform);
+				int32_t* all_use_svm, T_STRING<char>* all_transform);
 
-		bool compute_plif_matrix(DREAL* penalties_array, INT* Dim, INT numDims);
+		bool compute_plif_matrix(DREAL* penalties_array, int32_t* Dim, int32_t numDims);
 
-		bool set_signal_plifs(INT* state_signals, INT feat_dim3, INT num_states );
+		bool set_signal_plifs(int32_t* state_signals, int32_t feat_dim3, int32_t num_states );
 
 		inline CPlif** get_PEN()
 		{
 			return m_PEN;
 		}
-		inline INT get_num_plifs()
+		inline int32_t get_num_plifs()
 		{
 			return m_num_plifs;
 		}
-		inline INT get_num_limits()
+		inline int32_t get_num_limits()
 		{
 			return m_num_limits;
 		}
-		inline bool set_num_states(INT num)
+		inline bool set_num_states(int32_t num)
 		{
 			//if (!m_num_states || m_num_states==0)
 			m_num_states = num; 
@@ -72,7 +72,7 @@ class CGUIStructure : public CSGObject
 		{
 			return m_plif_matrix;
 		}
-		inline INT get_num_states()
+		inline int32_t get_num_states()
 		{
 			return m_num_states;
 		}
@@ -92,7 +92,7 @@ class CGUIStructure : public CSGObject
 		{
 			if (copy)
 			{
-				INT len = m_feature_dims[0]*m_feature_dims[1]*m_feature_dims[2];
+				int32_t len = m_feature_dims[0]*m_feature_dims[1]*m_feature_dims[2];
 				DREAL* d_cpy = new DREAL[len];
 				memcpy(d_cpy, m_feature_matrix,len*sizeof(DREAL));
 				return d_cpy;
@@ -100,44 +100,44 @@ class CGUIStructure : public CSGObject
 			else 
 				return m_feature_matrix;
 		}
-		inline bool set_feature_matrix(DREAL* feat, INT* dims)
+		inline bool set_feature_matrix(DREAL* feat, int32_t* dims)
 		{
 			delete[] m_feature_matrix;
-			INT len = dims[0]*dims[1]*dims[2];
+			int32_t len = dims[0]*dims[1]*dims[2];
 			m_feature_matrix = new DREAL[len];
 			memcpy(m_feature_matrix, feat,len*sizeof(DREAL));
 			return true;
 		}
-		inline bool set_feature_dims(INT* dims)
+		inline bool set_feature_dims(int32_t* dims)
 		{
 			delete[] m_feature_dims;
-			m_feature_dims = new INT[3];
-			memcpy(m_feature_dims, dims,3*sizeof(INT));
+			m_feature_dims = new int32_t[3];
+			memcpy(m_feature_dims, dims,3*sizeof(int32_t));
 			return true;
 		}
-		inline INT* get_feature_dims()
+		inline int32_t* get_feature_dims()
 		{
 			return m_feature_dims;
 		}
-		inline bool set_all_pos(INT* pos, INT Npos)
+		inline bool set_all_pos(int32_t* pos, int32_t Npos)
 		{
 			if (m_all_positions!=pos)
 				delete[] m_all_positions;
-			INT* cp_array = new INT[Npos];
-			memcpy(cp_array, pos,Npos*sizeof(INT));
+			int32_t* cp_array = new int32_t[Npos];
+			memcpy(cp_array, pos,Npos*sizeof(int32_t));
 			m_num_positions = Npos;
 			m_all_positions = cp_array;
 			return true;	
 		}
-		inline INT* get_all_positions()
+		inline int32_t* get_all_positions()
 		{
 			return m_all_positions;
 		}
-		inline INT get_num_positions()
+		inline int32_t get_num_positions()
 		{
 			return m_num_positions;
 		}
-		inline bool set_content_svm_weights(DREAL* weights, INT Nweights, INT Mweights/*==num_svms*/)
+		inline bool set_content_svm_weights(DREAL* weights, int32_t Nweights, int32_t Mweights/*==num_svms*/)
 		{
 			if (m_content_svm_weights!=weights)
 				delete[] m_content_svm_weights;
@@ -151,7 +151,7 @@ class CGUIStructure : public CSGObject
 		{
 			return m_content_svm_weights;
 		}
-		inline INT get_num_svm_weights()
+		inline int32_t get_num_svm_weights()
 		{
 			return m_num_svm_weights;
 		}
@@ -164,16 +164,16 @@ class CGUIStructure : public CSGObject
 		{
 			return m_state_signals;
 		}
-		inline bool set_orf_info(INT* orf_info, INT Norf_info, INT Morf_info)
+		inline bool set_orf_info(int32_t* orf_info, int32_t Norf_info, int32_t Morf_info)
 		{
 			if (m_orf_info!=orf_info)
 				delete[] m_orf_info;
-			INT* cp_array = new INT[Norf_info*Morf_info];
-			memcpy(cp_array, orf_info,Norf_info*Morf_info*sizeof(INT));
+			int32_t* cp_array = new int32_t[Norf_info*Morf_info];
+			memcpy(cp_array, orf_info,Norf_info*Morf_info*sizeof(int32_t));
 			m_orf_info = cp_array;
 			return true;	
 		}
-		inline INT* get_orf_info()
+		inline int32_t* get_orf_info()
 		{
 			return m_orf_info;
 		}
@@ -187,16 +187,16 @@ class CGUIStructure : public CSGObject
 		{
 			return m_use_orf;
 		}
-		inline bool set_mod_words(INT* mod_words, INT Nmod_words, INT Mmod_words)
+		inline bool set_mod_words(int32_t* mod_words, int32_t Nmod_words, int32_t Mmod_words)
 		{
 			if (mod_words!=m_mod_words)
 				delete[] m_mod_words;
-			INT* cp_array = new INT[Nmod_words*Mmod_words];
-			memcpy(cp_array, mod_words, Nmod_words*Mmod_words*sizeof(INT));
+			int32_t* cp_array = new int32_t[Nmod_words*Mmod_words];
+			memcpy(cp_array, mod_words, Nmod_words*Mmod_words*sizeof(int32_t));
 			m_mod_words = cp_array;
 			return true;	
 		}
-		inline INT* get_mod_words()
+		inline int32_t* get_mod_words()
 		{
 			return m_mod_words;
 		}
@@ -204,21 +204,21 @@ class CGUIStructure : public CSGObject
 	protected:
 		CSGInterface* ui;
 		CPlif** m_PEN;
-		INT m_num_plifs;
-		INT m_num_limits;
-		INT m_num_states;
+		int32_t m_num_plifs;
+		int32_t m_num_limits;
+		int32_t m_num_states;
 		CDynProg* m_dp;
 		CPlifBase** m_plif_matrix;
 		DREAL* m_feature_matrix;
-		INT* m_feature_dims;
-		INT m_num_positions;
-		INT* m_all_positions;
+		int32_t* m_feature_dims;
+		int32_t m_num_positions;
+		int32_t* m_all_positions;
 		DREAL* m_content_svm_weights;
-		INT m_num_svm_weights;
+		int32_t m_num_svm_weights;
 		CPlifBase** m_state_signals;
-		INT* m_orf_info;
+		int32_t* m_orf_info;
 		bool m_use_orf;
-		INT* m_mod_words;
+		int32_t* m_mod_words;
 };
 #endif //HAVE_SWIG
 #endif

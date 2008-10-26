@@ -16,7 +16,7 @@
 #include "features/Labels.h"
 #include "classifier/PluginEstimate.h"
 
-CSalzbergWordStringKernel::CSalzbergWordStringKernel(INT size, CPluginEstimate* pie, CLabels* labels)
+CSalzbergWordStringKernel::CSalzbergWordStringKernel(int32_t size, CPluginEstimate* pie, CLabels* labels)
 : CStringKernel<uint16_t>(size), estimate(pie), mean(NULL), variance(NULL),
 	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL),
 	ld_mean_lhs(NULL), ld_mean_rhs(NULL),
@@ -55,7 +55,7 @@ bool CSalzbergWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 	CStringFeatures<uint16_t>* r=(CStringFeatures<uint16_t>*) p_r;
 	ASSERT(r);
 
-	INT i;
+	int32_t i;
 	initialized=false;
 
 	if (sqrtdiag_lhs!=sqrtdiag_rhs)
@@ -95,12 +95,12 @@ bool CSalzbergWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 	//from our knowledge first normalize variance to 1 and then norm=1 does the job
 	if (!initialized)
 	{
-		INT num_vectors=l->get_num_vectors();
-		num_symbols=(INT) l->get_num_symbols();
-		INT llen=l->get_vector_length(0);
-		INT rlen=r->get_vector_length(0);
-		num_params=(INT) llen*l->get_num_symbols();
-		INT num_params2=(INT) llen*l->get_num_symbols()+rlen*r->get_num_symbols();
+		int32_t num_vectors=l->get_num_vectors();
+		num_symbols=(int32_t) l->get_num_symbols();
+		int32_t llen=l->get_vector_length(0);
+		int32_t rlen=r->get_vector_length(0);
+		num_params=(int32_t) llen*l->get_num_symbols();
+		int32_t num_params2=(int32_t) llen*l->get_num_symbols()+rlen*r->get_num_symbols();
 		if ((!estimate) || (!estimate->check_models()))
 		{
 			SG_ERROR( "no estimate available\n");
@@ -129,12 +129,12 @@ bool CSalzbergWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 		// compute mean
 		for (i=0; i<num_vectors; i++)
 		{
-			INT len;
+			int32_t len;
 			uint16_t* vec=l->get_feature_vector(i, len);
 
-			for (INT j=0; j<len; j++)
+			for (int32_t j=0; j<len; j++)
 			{
-				INT idx=compute_index(j, vec[j]);
+				int32_t idx=compute_index(j, vec[j]);
 				DREAL theta_p = 1/estimate->log_derivative_pos_obsolete(vec[j], j) ;
 				DREAL theta_n = 1/estimate->log_derivative_neg_obsolete(vec[j], j) ;
 				DREAL value   = (theta_p/(pos_prior*theta_p+neg_prior*theta_n)) ;
@@ -146,14 +146,14 @@ bool CSalzbergWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 		// compute variance
 		for (i=0; i<num_vectors; i++)
 		{
-			INT len;
+			int32_t len;
 			uint16_t* vec=l->get_feature_vector(i, len);
 
-			for (INT j=0; j<len; j++)
+			for (int32_t j=0; j<len; j++)
 			{
-				for (INT k=0; k<4; k++)
+				for (int32_t k=0; k<4; k++)
 				{
-					INT idx=compute_index(j, k);
+					int32_t idx=compute_index(j, k);
 					if (k!=vec[j])
 						variance[idx]+=mean[idx]*mean[idx]/num_vectors;
 					else
@@ -186,12 +186,12 @@ bool CSalzbergWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 
 	for (i=0; i<l->get_num_vectors(); i++)
 	{
-		INT alen ;
+		int32_t alen ;
 		uint16_t* avec=l->get_feature_vector(i, alen);
 		DREAL  result=0 ;
-		for (INT j=0; j<alen; j++)
+		for (int32_t j=0; j<alen; j++)
 		{
-			INT a_idx = compute_index(j, avec[j]) ;
+			int32_t a_idx = compute_index(j, avec[j]) ;
 			DREAL theta_p = 1/estimate->log_derivative_pos_obsolete(avec[j], j) ;
 			DREAL theta_n = 1/estimate->log_derivative_neg_obsolete(avec[j], j) ;
 			DREAL value = (theta_p/(pos_prior*theta_p+neg_prior*theta_n)) ;
@@ -208,12 +208,12 @@ bool CSalzbergWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 		//result -= feature*mean[b_idx]/variance[b_idx] ;
 		for (i=0; i<r->get_num_vectors(); i++)
 		{
-			INT alen ;
+			int32_t alen ;
 			uint16_t* avec=r->get_feature_vector(i, alen);
 			DREAL  result=0 ;
-			for (INT j=0; j<alen; j++)
+			for (int32_t j=0; j<alen; j++)
 			{
-				INT a_idx = compute_index(j, avec[j]) ;
+				int32_t a_idx = compute_index(j, avec[j]) ;
 				DREAL theta_p = 1/estimate->log_derivative_pos_obsolete(avec[j], j) ;
 				DREAL theta_n = 1/estimate->log_derivative_neg_obsolete(avec[j], j) ;
 				DREAL value = (theta_p/(pos_prior*theta_p+neg_prior*theta_n)) ;
@@ -307,9 +307,9 @@ bool CSalzbergWordStringKernel::save_init(FILE* dest)
 
 
 
-DREAL CSalzbergWordStringKernel::compute(INT idx_a, INT idx_b)
+DREAL CSalzbergWordStringKernel::compute(int32_t idx_a, int32_t idx_b)
 {
-	INT alen, blen;
+	int32_t alen, blen;
 	uint16_t* avec=((CStringFeatures<uint16_t>*) lhs)->get_feature_vector(idx_a, alen);
 	uint16_t* bvec=((CStringFeatures<uint16_t>*) rhs)->get_feature_vector(idx_b, blen);
 	// can only deal with strings of same length
@@ -317,11 +317,11 @@ DREAL CSalzbergWordStringKernel::compute(INT idx_a, INT idx_b)
 
 	DREAL result = sum_m2_s2 ; // does not contain 0-th element
 
-	for (INT i=0; i<alen; i++)
+	for (int32_t i=0; i<alen; i++)
 	{
 		if (avec[i]==bvec[i])
 		{
-			INT a_idx = compute_index(i, avec[i]) ;
+			int32_t a_idx = compute_index(i, avec[i]) ;
 
 			DREAL theta_p = 1/estimate->log_derivative_pos_obsolete(avec[i], i) ;
 			DREAL theta_n = 1/estimate->log_derivative_neg_obsolete(avec[i], i) ;
@@ -343,8 +343,8 @@ void CSalzbergWordStringKernel::set_prior_probs_from_labels(CLabels* labels)
 {
 	ASSERT(labels);
 
-	INT num_pos=0, num_neg=0;
-	for (INT i=0; i<labels->get_num_labels(); i++)
+	int32_t num_pos=0, num_neg=0;
+	for (int32_t i=0; i<labels->get_num_labels(); i++)
 	{
 		if (labels->get_int_label(i)==1)
 			num_pos++;

@@ -14,7 +14,7 @@
 #include "features/WordFeatures.h"
 #include "lib/io.h"
 
-CAUCKernel::CAUCKernel(INT size, CKernel* s)
+CAUCKernel::CAUCKernel(int32_t size, CKernel* s)
 : CSimpleKernel<uint16_t>(size), subkernel(s)
 {
 }
@@ -47,9 +47,9 @@ bool CAUCKernel::save_init(FILE* dest)
 	return false;
 }
   
-DREAL CAUCKernel::compute(INT idx_a, INT idx_b)
+DREAL CAUCKernel::compute(int32_t idx_a, int32_t idx_b)
 {
-  INT alen, blen;
+  int32_t alen, blen;
   bool afree, bfree;
 
   uint16_t* avec=((CWordFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
@@ -61,7 +61,7 @@ DREAL CAUCKernel::compute(INT idx_a, INT idx_b)
   ASSERT(subkernel && subkernel->has_features());
 
   DREAL k11,k12,k21,k22;
-  INT idx_a1=avec[0], idx_a2=avec[1], idx_b1=bvec[0], idx_b2=bvec[1];
+  int32_t idx_a1=avec[0], idx_a2=avec[1], idx_b1=bvec[0], idx_b2=bvec[1];
 
   k11 = subkernel->kernel(idx_a1,idx_b1);
   k12 = subkernel->kernel(idx_a1,idx_b2);

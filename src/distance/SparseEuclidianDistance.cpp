@@ -71,7 +71,7 @@ bool CSparseEuclidianDistance::save_init(FILE* dest)
 	return false;
 }
 
-DREAL CSparseEuclidianDistance::compute(INT idx_a, INT idx_b)
+DREAL CSparseEuclidianDistance::compute(int32_t idx_a, int32_t idx_b)
 {
 	DREAL result=((CSparseFeatures<DREAL>*) lhs)->compute_squared_norm((CSparseFeatures<DREAL>*) lhs, sq_lhs, idx_a, (CSparseFeatures<DREAL>*) rhs, sq_rhs, idx_b);
 

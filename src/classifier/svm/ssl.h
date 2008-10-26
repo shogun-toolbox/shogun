@@ -41,15 +41,15 @@
 struct data
 {
 	/** number of examples */
-	int m;
+	int32_t m;
 	/** number of labeled examples */
-	int l;
+	int32_t l;
 	/** number of unlabeled examples l+u = m */
-	int u;
+	int32_t u;
 	/** number of features */
-	int n;
+	int32_t n;
 	/** number of non-zeros */
-	int nz;
+	int32_t nz;
 
 	/** features */
 	CSparseFeatures<DREAL>* features;
@@ -63,7 +63,7 @@ struct data
 struct vector_double
 {
 	/** number of elements */
-	int d;
+	int32_t d;
 	/** ptr to vector elements*/
 	double *vec;
 };
@@ -72,9 +72,9 @@ struct vector_double
 struct vector_int
 {
 	/** number of elements */
-	int d;
+	int32_t d;
 	/** ptr to vector elements */
-	int *vec;
+	int32_t *vec;
 };
 
 enum { RLS, SVM, TSVM, DA_SVM }; /* currently implemented algorithms */
@@ -84,13 +84,13 @@ struct options
 {
 	/* user options */
 	/** regularization parameter */
-	int algo;
+	int32_t algo;
 	/** regularization parameter */
 	double lambda;
 	/** regularization parameter over unlabeled examples */
 	double lambda_u;
 	/** maximum number of TSVM switches per fixed-weight label optimization */
-	int S;
+	int32_t S;
 	/** expected fraction of unlabeled examples in positive class */
 	double R;
 	/** cost for positive examples */
@@ -102,9 +102,9 @@ struct options
 	/** all tolerances */
 	double epsilon;
 	/** max iterations for CGLS */
-	int cgitermax;
+	int32_t cgitermax;
 	/** max iterations for L2_SVM_MFN */
-	int mfnitermax;
+	int32_t mfnitermax;
 
 	/** 1.0 if bias is to be used, 0.0 otherwise */
 	double bias;
@@ -114,20 +114,24 @@ struct options
 class Delta {
 	public:
 		/** default constructor */
-		Delta() {delta=0.0; index=0;s=0;};
+		Delta() { delta=0.0; index=0;s=0; }
 
 		/** delta */
 		double delta;
 		/** index */
-		int index;
+		int32_t index;
 		/** s */
-		int s;
+		int32_t s;
 };
-inline bool operator<(const Delta& a , const Delta& b) { return (a.delta < b.delta);};
 
-void initialize(struct vector_double *A, int k, double a);  
+inline bool operator<(const Delta& a , const Delta& b)
+{
+	return (a.delta < b.delta);
+}
+
+void initialize(struct vector_double *A, int32_t k, double a);
 /* initializes a vector_double to be of length k, all elements set to a */
-void initialize(struct vector_int *A, int k); 
+void initialize(struct vector_int *A, int32_t k);
 /* initializes a vector_int to be of length k, elements set to 1,2..k. */
 void GetLabeledData(struct data *Data_Labeled, const struct data *Data); 
 /* extracts labeled data from Data and copies it into Data_Labeled */
@@ -136,62 +140,87 @@ double norm_square(const vector_double *A); /* returns squared length of A */
 /* ssl_train: takes data, options, uninitialized weight and output
    vector_doubles, routes it to the algorithm */
 /* the learnt weight vector and the outputs it gives on the data matrix are saved */
-void ssl_train(struct data *Data, 
-		struct options *Options,
-		struct vector_double *W, /* weight vector */
-		struct vector_double *O); /* output vector */
+void ssl_train(
+	struct data *Data,
+	struct options *Options,
+	struct vector_double *W, /* weight vector */
+	struct vector_double *O); /* output vector */
 
 /* svmlin algorithms and their subroutines */
 
 /* Conjugate Gradient for Sparse Linear Least Squares Problems */
 /* Solves: min_w 0.5*Options->lamda*w'*w + 0.5*sum_{i in Subset} Data->C[i] (Y[i]- w' x_i)^2 */
 /* over a subset of examples x_i specified by vector_int Subset */
-int CGLS(const struct data *Data, 
-		const struct options *Options, 
-		const struct vector_int *Subset,
-		struct vector_double *Weights,
-		struct vector_double *Outputs);
+int32_t CGLS(
+	const struct data *Data,
+	const struct options *Options,
+	const struct vector_int *Subset,
+	struct vector_double *Weights,
+	struct vector_double *Outputs);
 
 /* Linear Modified Finite Newton L2-SVM*/
 /* Solves: min_w 0.5*Options->lamda*w'*w + 0.5*sum_i Data->C[i] max(0,1 - Y[i] w' x_i)^2 */
-int L2_SVM_MFN(const struct data *Data, 
-		struct options *Options, 
-		struct vector_double *Weights,
-		struct vector_double *Outputs,
-		int ini); /* use ini=0 if no good starting guess for Weights, else 1 */
-double line_search(double *w, 
-		double *w_bar,
-		double lambda,
-		double *o, 
-		double *o_bar, 
-		double *Y, 
-		double *C,
-		int d,
-		int l);
+int32_t L2_SVM_MFN(
+	const struct data *Data,
+	struct options *Options,
+	struct vector_double *Weights,
+	struct vector_double *Outputs,
+	int32_t ini); /* use ini=0 if no good starting guess for Weights, else 1 */
+
+double line_search(
+	double *w,
+	double *w_bar,
+	double lambda,
+	double *o,
+	double *o_bar,
+	double *Y,
+	double *C,
+	int32_t d,
+	int32_t l);
 
 /* Transductive L2-SVM */
 /* Solves : min_(w, Y[i],i in UNlabeled) 0.5*Options->lamda*w'*w + 0.5*(1/Data->l)*sum_{i in labeled} max(0,1 - Y[i] w' x_i)^2 + 0.5*(Options->lambda_u/Data->u)*sum_{i in UNlabeled} max(0,1 - Y[i] w' x_i)^2 
    subject to: (1/Data->u)*sum_{i in UNlabeled} max(0,Y[i]) = Options->R */
-int   TSVM_MFN(const struct data *Data, 
-		struct options *Options, 
-		struct vector_double *Weights,
-		struct vector_double *Outputs);
-int switch_labels(double* Y, double* o, int* JU, int u, int S);
+int32_t TSVM_MFN(
+	const struct data *Data,
+	struct options *Options,
+	struct vector_double *Weights,
+	struct vector_double *Outputs);
+
+int32_t switch_labels(
+	double* Y,
+	double* o,
+	int32_t* JU,
+	int32_t u,
+	int32_t S);
 
 /* Deterministic Annealing*/
-int DA_S3VM(struct data *Data, 
-		struct options *Options, 
-		struct vector_double *Weights,
-		struct vector_double *Outputs);
-void optimize_p(const double* g, int u, double T, double r, double*p);
-int optimize_w(const struct data *Data, 
-		const  double *p,
-		struct options *Options, 
-		struct vector_double *Weights,
-		struct vector_double *Outputs,
-		int ini);
-double transductive_cost(double normWeights,double *Y, double *Outputs, int m, double lambda,double lambda_u);
-double entropy(const  double *p, int u); 
-double KL(const  double *p, const  double *q, int u); /* KL-divergence */
+int32_t DA_S3VM(
+	struct data *Data,
+	struct options *Options,
+	struct vector_double *Weights,
+	struct vector_double *Outputs);
+
+void optimize_p(const double* g, int32_t u, double T, double r, double*p);
+
+int32_t optimize_w(
+	const struct data *Data,
+	const  double *p,
+	struct options *Options,
+	struct vector_double *Weights,
+	struct vector_double *Outputs,
+	int32_t ini);
+
+double transductive_cost(
+	double normWeights,
+	double *Y,
+	double *Outputs,
+	int32_t m,
+	double lambda,
+	double lambda_u);
+
+double entropy(const  double *p, int32_t u);
+
+double KL(const  double *p, const  double *q, int32_t u); /* KL-divergence */
 
 #endif

@@ -22,7 +22,7 @@ class CDummyFeatures : public CFeatures
 		 *
 		 * @param num number of feature vectors
 		 */
-		CDummyFeatures(INT num) : CFeatures(0), num_vectors(num)
+		CDummyFeatures(int32_t num) : CFeatures(0), num_vectors(num)
 		{
 		}
 
@@ -38,13 +38,13 @@ class CDummyFeatures : public CFeatures
 		}
 
 		/** get number of feature vectors */
-		virtual int get_num_vectors()
+		virtual int32_t get_num_vectors()
 		{
 			return num_vectors;
 		}
 
 		/** get size of features (always 1) */
-		virtual INT get_size()
+		virtual int32_t get_size()
 		{
 			return 1;
 		}
@@ -69,6 +69,6 @@ class CDummyFeatures : public CFeatures
 
 	protected:
 		/** number of feature vectors */
-		INT num_vectors;
+		int32_t num_vectors;
 };
 #endif

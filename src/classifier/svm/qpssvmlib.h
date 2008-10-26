@@ -7,7 +7,7 @@
  * Written (W) 2007-2008 Vojtech Franc
  */
 
-int qpssvm_solver(const void* (*get_col)(uint32_t),
+int8_t qpssvm_solver(const void* (*get_col)(uint32_t),
                   double *diag_H,
                   double *f,
                   double b,

@@ -9,7 +9,7 @@ REPLACEMENTS=[
 	[' SHORTREAL', ' float'],
 	[' LONGREAL', ' float'],
 	[' double', ' float'],
-	[' INT', '  int'],
+	[' int32_t', '  int'],
 	[' uint32_t', ' int'],
 	[' LONG', ' int'],
 	[' ULONG', ' int'],

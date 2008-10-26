@@ -12,12 +12,12 @@
 #include "lib/versionstring.h"
 
 
-const INT CVersion::version_revision = VERSION_REVISION;
-const INT CVersion::version_year = VERSION_YEAR;
-const INT CVersion::version_month = VERSION_MONTH;
-const INT CVersion::version_day = VERSION_DAY;
-const INT CVersion::version_hour = VERSION_HOUR;
-const INT CVersion::version_minute = VERSION_MINUTE;
+const int32_t CVersion::version_revision = VERSION_REVISION;
+const int32_t CVersion::version_year = VERSION_YEAR;
+const int32_t CVersion::version_month = VERSION_MONTH;
+const int32_t CVersion::version_day = VERSION_DAY;
+const int32_t CVersion::version_hour = VERSION_HOUR;
+const int32_t CVersion::version_minute = VERSION_MINUTE;
 const char CVersion::version_extra[128] = VERSION_EXTRA;
 const char CVersion::version_release[128] = VERSION_RELEASE;
 

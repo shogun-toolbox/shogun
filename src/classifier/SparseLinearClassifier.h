@@ -31,7 +31,7 @@ class CSparseLinearClassifier : public CClassifier
 		virtual CLabels* classify(CLabels* output=NULL);
 
 		/// get output for example "vec_idx"
-		virtual inline DREAL classify_example(INT vec_idx)
+		virtual inline DREAL classify_example(int32_t vec_idx)
 		{
 			return features->dense_dot(1.0, vec_idx, w, w_dim, bias);
 		}
@@ -41,7 +41,7 @@ class CSparseLinearClassifier : public CClassifier
 		 * @param dst_w store w in this argument
 		 * @param dst_dims dimension of w
 		 */
-		inline void get_w(DREAL** dst_w, INT* dst_dims)
+		inline void get_w(DREAL** dst_w, int32_t* dst_dims)
 		{
 			ASSERT(dst_w && dst_dims);
 			ASSERT(w && w_dim>0);
@@ -56,7 +56,7 @@ class CSparseLinearClassifier : public CClassifier
 		 * @param src_w new w
 		 * @param src_w_dim dimension of new w
 		 */
-		inline void set_w(DREAL* src_w, INT src_w_dim)
+		inline void set_w(DREAL* src_w, int32_t src_w_dim)
 		{
 			w=src_w;
 			w_dim=src_w_dim;
@@ -99,7 +99,7 @@ class CSparseLinearClassifier : public CClassifier
 
 	protected:
 		/** dimension of w */
-		INT w_dim;
+		int32_t w_dim;
 		/** w */
 		DREAL* w;
 		/** bias */

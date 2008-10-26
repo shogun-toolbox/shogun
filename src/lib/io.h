@@ -139,7 +139,7 @@ class CIO
 		 * @param decimals decimals
 		 * @param prefix message prefix
 		 */
-		void progress(DREAL current_val, DREAL min_val=0.0, DREAL max_val=1.0, INT decimals=1, const char* prefix="PROGRESS:\t");
+		void progress(DREAL current_val, DREAL min_val=0.0, DREAL max_val=1.0, int32_t decimals=1, const char* prefix="PROGRESS:\t");
 
 		/** print absolute progress bar
 		 *
@@ -150,7 +150,7 @@ class CIO
 		 * @param decimals decimals
 		 * @param prefix message prefix
 		 */
-		void absolute_progress(DREAL current_val, DREAL val, DREAL min_val=0.0, DREAL max_val=1.0, INT decimals=1, const char* prefix="PROGRESS:\t");
+		void absolute_progress(DREAL current_val, DREAL val, DREAL min_val=0.0, DREAL max_val=1.0, int32_t decimals=1, const char* prefix="PROGRESS:\t");
 
 		/** print 'done' with priority INFO,
 		 * but only if progress bar is enabled

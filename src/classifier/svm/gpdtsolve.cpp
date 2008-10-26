@@ -86,7 +86,7 @@
 #define alpha_out(i) alpha[index_out[(i)]]
 #define minfty       (-1.0e+30)  // minus infinity
 
-unsigned int Randnext = 1;
+uint32_t Randnext = 1;
 
 #define ThRand    (Randnext = Randnext * 1103515245L + 12345L)
 #define ThRandPos ((Randnext = Randnext * 1103515245L + 12345L) & 0x7fffffff)
@@ -94,9 +94,9 @@ unsigned int Randnext = 1;
 FILE        *fp;
 
 /* utility routines prototyping */
-void quick_si (int    a[], int k);
-void quick_s3 (int    a[], int k, int ia[]);
-void quick_s2 (double a[], int k, int ia[]);
+void quick_si (int32_t a[], int32_t k);
+void quick_s3 (int32_t a[], int32_t k, int32_t ia[]);
+void quick_s2 (double a[], int32_t k, int32_t ia[]);
 
 /******************************************************************************/
 /*** Class for caching strategy implementation                              ***/
@@ -105,21 +105,21 @@ class sCache
 {
 
 public:
-  sCache  (sKernel* sk, int Mbyte, int ell);
+  sCache  (sKernel* sk, int32_t Mbyte, int32_t ell);
   ~sCache ();
 
-  cachetype *FillRow (int row, int IsC = 0);
-  cachetype *GetRow  (int row);
+  cachetype *FillRow (int32_t row, int32_t IsC = 0);
+  cachetype *GetRow  (int32_t row);
 
-  int       DivideMP (int *out, int *in, int n);
+  int32_t DivideMP (int32_t *out, int32_t *in, int32_t n);
 
   /*** Itarations counter ***/
   void Iteration(void) { nit++; }
 
   /*** Cache size control ***/
-  int CheckCycle(void)
+  int32_t CheckCycle(void)
   {
-    int us;
+    int32_t us;
     cache_entry *pt = first_free->next;
 
     for (us = 0; pt != first_free; us++, pt = pt->next);
@@ -133,31 +133,31 @@ private:
 
   struct cache_entry
   {
-    int         row;      // unused row
-    int         last_access_it;
+    int32_t row;      // unused row
+    int32_t last_access_it;
     cache_entry *prev, *next;
     cachetype   *data;
   };
 
   sKernel* KER;
-  int     maxmw, ell;
-  int     nit;
+  int32_t maxmw, ell;
+  int32_t nit;
 
   cache_entry *mw;
   cache_entry *first_free;
   cache_entry **pindmw;    // 0 if unused row
   cachetype   *onerow;
 
-  cachetype   *FindFree(int row, int IsC);
+  cachetype   *FindFree(int32_t row, int32_t IsC);
 };
 
 
 /******************************************************************************/
 /*** Cache class constructor                                                ***/
 /******************************************************************************/
-sCache::sCache(sKernel* sk, int Mbyte, int _ell) : KER(sk), ell(_ell)
+sCache::sCache(sKernel* sk, int32_t Mbyte, int32_t _ell) : KER(sk), ell(_ell)
 {
-  int i;
+  int32_t i;
 
   // size in dwords of one cache row
   maxmw = (sizeof(cache_entry) + sizeof(cache_entry *)
@@ -191,7 +191,7 @@ sCache::sCache(sKernel* sk, int Mbyte, int _ell) : KER(sk), ell(_ell)
 /******************************************************************************/
 sCache::~sCache()
 {
-  int i;
+  int32_t i;
 
   for (i = maxmw-1; i >= 0; i--)
       if (mw[i].data) free(mw[i].data);
@@ -204,7 +204,7 @@ sCache::~sCache()
 /******************************************************************************/
 /*** Retrieve a cached row                                                  ***/
 /******************************************************************************/
-cachetype *sCache::GetRow(int row)
+cachetype *sCache::GetRow(int32_t row)
 {
   cache_entry *c;
 
@@ -236,7 +236,7 @@ cachetype *sCache::GetRow(int row)
  *** IMPORTANT: call this method only if you are sure that "row"            ***
  ***            is not already in the cache ( i.e. after calling GetRow() ) ***
  ******************************************************************************/
-cachetype *sCache::FindFree(int row, int IsC)
+cachetype *sCache::FindFree(int32_t row, int32_t IsC)
 {
   cachetype *pt;
 
@@ -261,9 +261,9 @@ cachetype *sCache::FindFree(int row, int IsC)
 /******************************************************************************/
 /*** Enter data in a cache row                                              ***/
 /******************************************************************************/
-cachetype *sCache::FillRow(int row, int IsC)
+cachetype *sCache::FillRow(int32_t row, int32_t IsC)
 {
-  int       j;
+  int32_t j;
   cachetype *pt;
 
   pt = GetRow(row);
@@ -284,7 +284,7 @@ cachetype *sCache::FillRow(int row, int IsC)
 /******************************************************************************/
 /*** Expand a sparse row in a full cache row                                ***/
 /******************************************************************************/
-int sCache::DivideMP(int *out, int *in, int n)
+int32_t sCache::DivideMP(int32_t *out, int32_t *in, int32_t n)
 {
    /********************************************************************
     * Input meaning:                                                   *
@@ -296,10 +296,10 @@ int sCache::DivideMP(int *out, int *in, int n)
     * Returns: the number of components of this processor              *
     ********************************************************************/
 
-  int *remained, nremained, k;
-  int i;
+  int32_t *remained, nremained, k;
+  int32_t i;
 
-  remained = (int *)malloc(n*sizeof(int));
+  remained = (int32_t *) malloc(n*sizeof(int32_t));
 
   nremained = 0;
   k = 0;
@@ -321,13 +321,13 @@ int sCache::DivideMP(int *out, int *in, int n)
 /******************************************************************************/
 /*** Check solution optimality                                              ***/
 /******************************************************************************/
-int QPproblem::optimal()
+int32_t QPproblem::optimal()
 {
   /***********************************************************************
    * Returns 1 if the computed solution is optimal, otherwise returns 0. *
    * To verify the optimality it checks the KKT optimality conditions.   *
    ***********************************************************************/
-  register int i, j, margin_sv_number, z, k, s, kin, z1, znew=0, nnew;
+  register int32_t i, j, margin_sv_number, z, k, s, kin, z1, znew=0, nnew;
 
   double gx_i, aux, s1, s2;
 
@@ -689,12 +689,12 @@ int QPproblem::optimal()
 /******************************************************************************/
 /*** Optional preprocessing: random distribution                            ***/
 /******************************************************************************/
-int QPproblem::Preprocess0(int *aux, int *sv)
+int32_t QPproblem::Preprocess0(int32_t *aux, int32_t *sv)
 {
-  int i, j;
+  int32_t i, j;
 
   Randnext = 1;
-  memset(sv, 0, ell*sizeof(int));
+  memset(sv, 0, ell*sizeof(int32_t));
   for (i = 0; i < chunk_size; i++)
   {
       do
@@ -709,13 +709,13 @@ int QPproblem::Preprocess0(int *aux, int *sv)
 /******************************************************************************/
 /*** Optional preprocessing: block parallel distribution                    ***/
 /******************************************************************************/
-int QPproblem::Preprocess1(sKernel* kernel, int *aux, int *sv)
+int32_t QPproblem::Preprocess1(sKernel* kernel, int32_t *aux, int32_t *sv)
 {
-  int    s;    // elements owned by the processor
-  int    sl;   // elements of the n-1 subproblems
-  int    n, i, off, j, k, ll;
-  int    nsv, nbsv;
-  int    *sv_loc, *bsv_loc, *sp_y;
+  int32_t    s;    // elements owned by the processor
+  int32_t    sl;   // elements of the n-1 subproblems
+  int32_t    n, i, off, j, k, ll;
+  int32_t    nsv, nbsv;
+  int32_t    *sv_loc, *bsv_loc, *sp_y;
   float  *sp_D=NULL;
   double *sp_alpha, *sp_h;
 
@@ -731,11 +731,11 @@ int QPproblem::Preprocess1(sKernel* kernel, int *aux, int *sv)
       SG_INFO(", size = %d\n",sl);
   }
 
-  sv_loc   = (int    *)malloc(s*sizeof(int    ));
-  bsv_loc  = (int    *)malloc(s*sizeof(int    ));
+  sv_loc   = (int32_t *) malloc(s*sizeof(int32_t));
+  bsv_loc  = (int32_t *)malloc(s*sizeof(int32_t));
   sp_alpha = (double *)malloc(sl*sizeof(double));
   sp_h     = (double *)malloc(sl*sizeof(double));
-  sp_y     = (int    *)malloc(sl*sizeof(int   ));
+  sp_y     = (int32_t *)malloc(sl*sizeof(int32_t));
 
   if (sl < 500)
       sp_D = (float *)malloc(sl*sl * sizeof(float));
@@ -783,8 +783,8 @@ int QPproblem::Preprocess1(sKernel* kernel, int *aux, int *sv)
       {
           QPproblem p2;
           p2.Subproblem(*this, ll, aux + off);
-          p2.chunk_size     = (int) ( (double)chunk_size / sqrt((double)n) );
-          p2.q              = (int) ( (double)q / sqrt((double)n) );
+          p2.chunk_size     = (int32_t) ((double)chunk_size / sqrt((double)n));
+          p2.q              = (int32_t) ((double)q / sqrt((double)n));
           p2.maxmw          = ll*ll*4 / (1024 * 1024);
           if (p2.maxmw > maxmw / 2)
               p2.maxmw = maxmw / 2;
@@ -815,7 +815,7 @@ int QPproblem::Preprocess1(sKernel* kernel, int *aux, int *sv)
   Randnext = 1;
 
   /* add the known support vectors to the working set */
-  memset(sv, 0, ell*sizeof(int));
+  memset(sv, 0, ell*sizeof(int32_t));
   ll = (nsv < chunk_size ? nsv : chunk_size);
   for (i = 0; i < ll; i++)
   {
@@ -868,12 +868,12 @@ int QPproblem::Preprocess1(sKernel* kernel, int *aux, int *sv)
 /******************************************************************************/
 double QPproblem::gpdtsolve(double *solution)
 {
-  int       i, j, k, z, iin, jin, nit, tot_vpm_iter, lsCount;
-  int       tot_vpm_secant, projCount, proximal_count;
-  int       vpmWarningThreshold;
-  int       nzin, nzout;
-  int       *sp_y;               /* labels vector                             */
-  int       *indnzin, *indnzout; /* nonzero components indices vectors        */
+  int32_t i, j, k, z, iin, jin, nit, tot_vpm_iter, lsCount;
+  int32_t tot_vpm_secant, projCount, proximal_count;
+  int32_t vpmWarningThreshold;
+  int32_t  nzin, nzout;
+  int32_t *sp_y;               /* labels vector                             */
+  int32_t *indnzin, *indnzout; /* nonzero components indices vectors        */
   float     *sp_D;               /* quadratic part of the objective function  */
   double    *sp_h, *sp_hloc,     /* linear part of the objective function     */
             *sp_alpha,*stloc;    /* variables and gradient updating vectors   */
@@ -928,15 +928,15 @@ double QPproblem::gpdtsolve(double *solution)
 
   /* arrays allocation */
   SG_DEBUG("ell:%d, chunk_size:%d, nb:%d dim:%d\n", ell, chunk_size,nb, dim);
-  ing       = (int    *)malloc(ell*sizeof(int       ));
-  inaux     = (int    *)malloc(ell*sizeof(int       ));
-  index_in  = (int    *)malloc(chunk_size*sizeof(int));
-  index_out = (int    *)malloc(ell*sizeof(int       ));
-  indnzout  = (int    *)malloc(nb*sizeof(int        ));
+  ing       = (int32_t *) malloc(ell*sizeof(int32_t));
+  inaux     = (int32_t *) malloc(ell*sizeof(int32_t));
+  index_in  = (int32_t *) malloc(chunk_size*sizeof(int32_t));
+  index_out = (int32_t *) malloc(ell*sizeof(int32_t));
+  indnzout  = (int32_t *) malloc(nb*sizeof(int32_t));
   alpha     = (double *)malloc(ell*sizeof(double    ));
 
   memset(alpha, 0, ell*sizeof(double));
-  memset(ing,   0, ell*sizeof(int));
+  memset(ing,   0, ell*sizeof(int32_t));
 
   if (verbosity > 0 && PreprocessMode != 0)
       SG_INFO("\n*********** Begin setup step...\n");
@@ -965,13 +965,13 @@ double QPproblem::gpdtsolve(double *solution)
   }
 
   /* arrays allocation */
-  bmem     = (int    *)malloc(ell*sizeof(int       ));
-  bmemrid  = (int    *)malloc(chunk_size*sizeof(int));
-  pbmr     = (int    *)malloc(chunk_size*sizeof(int));
-  cec      = (int    *)malloc(ell*sizeof(int       ));
-  indnzin  = (int    *)malloc(chunk_size*sizeof(int));
-  inold    = (int    *)malloc(chunk_size*sizeof(int));
-  incom    = (int    *)malloc(chunk_size*sizeof(int));
+  bmem     = (int32_t *)malloc(ell*sizeof(int32_t));
+  bmemrid  = (int32_t *)malloc(chunk_size*sizeof(int32_t));
+  pbmr     = (int32_t *)malloc(chunk_size*sizeof(int32_t));
+  cec      = (int32_t *)malloc(ell*sizeof(int32_t));
+  indnzin  = (int32_t *)malloc(chunk_size*sizeof(int32_t));
+  inold    = (int32_t *)malloc(chunk_size*sizeof(int32_t));
+  incom    = (int32_t *)malloc(chunk_size*sizeof(int32_t));
   vau      = (double *)malloc(ell*sizeof(double    ));
   grad     = (double *)malloc(ell*sizeof(double    ));
   weight   = (double *)malloc(dim*sizeof(double    ));
@@ -985,7 +985,7 @@ double QPproblem::gpdtsolve(double *solution)
       st[i]   = 0;
   }
 
-  sp_y     = (int    *)malloc(chunk_size*sizeof(int               ));
+  sp_y     = (int32_t *)malloc(chunk_size*sizeof(int32_t));
   sp_D     = (float  *)malloc(chunk_size*chunk_size * sizeof(float));
   sp_alpha = (double *)malloc(chunk_size*sizeof(double            ));
   sp_h     = (double *)malloc(chunk_size*sizeof(double            ));
@@ -1399,9 +1399,9 @@ double QPproblem::gpdtsolve(double *solution)
 /******************************************************************************/
 /*** Quick sort for integer vectors                                         ***/
 /******************************************************************************/
-void quick_si(int a[], int n)
+void quick_si(int32_t a[], int32_t n)
 {
-  int i, j, s, d, l, x, w, ps[20], pd[20];
+  int32_t i, j, s, d, l, x, w, ps[20], pd[20];
 
   l     = 0;
   ps[0] = 0;
@@ -1453,9 +1453,9 @@ void quick_si(int a[], int n)
 /******************************************************************************/
 /*** Quick sort for real vectors returning also the exchanges               ***/
 /******************************************************************************/
-void quick_s2(double a[], int n, int ia[])
+void quick_s2(double a[], int32_t n, int32_t ia[])
 {
-  int     i, j, s, d, l, iw, ps[20], pd[20];
+  int32_t     i, j, s, d, l, iw, ps[20], pd[20];
   double  x, w;
 
   l     = 0;
@@ -1511,9 +1511,9 @@ void quick_s2(double a[], int n, int ia[])
 /******************************************************************************/
 /*** Quick sort for integer vectors returning also the exchanges            ***/
 /******************************************************************************/
-void quick_s3(int a[], int n, int ia[])
+void quick_s3(int32_t a[], int32_t n, int32_t ia[])
 {
-  int i, j, s, d, l, iw, w, x, ps[20], pd[20];
+  int32_t i, j, s, d, l, iw, w, x, ps[20], pd[20];
 
   l     = 0;
   ps[0] = 0;

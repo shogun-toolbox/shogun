@@ -51,19 +51,19 @@ extern "C" {
 /** model */
 struct MODEL {
 /** sv num */
-INT    sv_num;
+int32_t    sv_num;
 /** at upper bound */
-INT    at_upper_bound;
+int32_t    at_upper_bound;
 /** b */
 double b;
 /** supvec */
-INT*   supvec;
+int32_t*   supvec;
 /** alpha */
 double *alpha;
 /** index from docnum to position in model */
-INT    *index;
+int32_t    *index;
 /** number of training documents */
-INT    totdoc;
+int32_t    totdoc;
 /** kernel */
 CKernel* kernel;
 
@@ -84,7 +84,7 @@ double xa_precision;
 };
 
 /** the type used for storing feature ids */
-typedef INT FNUM;
+typedef int32_t FNUM;
 
 /** the type used for storing feature values */
 typedef double FVAL;  
@@ -92,7 +92,7 @@ typedef double FVAL;
 /** learning parameters */
 struct LEARN_PARM {
   /** selects between regression and classification */
-  INT   type;
+  int32_t   type;
   /** upper bound C on alphas */
   double svm_c;
   /** regression epsilon (eps=1.0 for classification */
@@ -103,36 +103,36 @@ struct LEARN_PARM {
   double transduction_posratio;
   /* classified as positives */
   /** if nonzero, use hyperplane w*x+b=0 otherwise w*x=0 */
-  INT   biased_hyperplane;
+  int32_t   biased_hyperplane;
   /** if nonzero, it will use the shared slack variable mode in
    * svm_learn_optimization. It requires that the slackid is set for every
    * training example
    */
-  INT   sharedslack;
+  int32_t   sharedslack;
   /** size q of working set */
-  INT   svm_maxqpsize;
+  int32_t   svm_maxqpsize;
   /** new variables to enter the working set in each iteration */
-  INT   svm_newvarsinqp;
+  int32_t   svm_newvarsinqp;
   /** size of kernel cache in megabytes */
-  INT   kernel_cache_size;
+  int32_t   kernel_cache_size;
   /** tolerable error for distances used in stopping criterion */
   double epsilon_crit;
   /** how much a multiplier should be above zero for shrinking */
   double epsilon_shrink;
   /** iterations h after which an example can be removed by shrinking */
-  INT   svm_iter_to_shrink;
+  int32_t   svm_iter_to_shrink;
   /** number of iterations after which the optimizer terminates, if there was
    * no progress in maxdiff
    */
-  INT   maxiter;
+  int32_t   maxiter;
   /** exclude examples with alpha at C and retrain */
-  INT   remove_inconsistent;
+  int32_t   remove_inconsistent;
   /** do not check KT-Conditions at the end of optimization for examples
    * removed by shrinking. WARNING: This might lead to sub-optimal solutions!
    */
-  INT   skip_final_opt_check;
+  int32_t   skip_final_opt_check;
   /** if nonzero, computes leave-one-out estimates */
-  INT   compute_loo;
+  int32_t   compute_loo;
   /** parameter in xi/alpha-estimates and for pruning leave-one-out range
    * [1..2]
    */
@@ -140,7 +140,7 @@ struct LEARN_PARM {
   /** parameter in xi/alpha-estimates upper bounding the number of SV the
    * current alpha_t is distributed over
    */
-  INT   xa_depth;
+  int32_t   xa_depth;
   /** file for predicitions on unlabeled examples in transduction */
   char predfile[200];
   /** file to store optimal alphas in. use empty string if alphas should not be
@@ -158,7 +158,7 @@ struct LEARN_PARM {
 
   /* the following are only for internal use */
   /** do so many steps for finding optimal C */
-  INT   svm_c_steps;
+  int32_t   svm_c_steps;
   /** increase C by this factor every step */
   double svm_c_factor;
   /** costratio unlab */
@@ -172,19 +172,19 @@ struct LEARN_PARM {
 /** timing profile */
 struct TIMING {
   /** time kernel */
-  INT   time_kernel;
+  int32_t   time_kernel;
   /** time opti */
-  INT   time_opti;
+  int32_t   time_opti;
   /** time shrink */
-  INT   time_shrink;
+  int32_t   time_shrink;
   /** time update */
-  INT   time_update;
+  int32_t   time_update;
   /** time model */
-  INT   time_model;
+  int32_t   time_model;
   /** time check */
-  INT   time_check;
+  int32_t   time_check;
   /** time select */
-  INT   time_select;
+  int32_t   time_select;
 };
 
 
@@ -192,15 +192,15 @@ struct TIMING {
 struct SHRINK_STATE
 {
   /** active */
-  INT   *active;
+  int32_t   *active;
   /** inactive since */
-  INT   *inactive_since;
+  int32_t   *inactive_since;
   /** deactnum */
-  INT   deactnum;
+  int32_t   deactnum;
   /** for shrinking with non-linear kernel */
   double **a_history;
   /** maximum history */
-  INT   maxhistory;
+  int32_t   maxhistory;
   /** for shrinking with linear kernel */
   double *last_a;
   /** for shrinking with linear kernel */
@@ -248,7 +248,7 @@ class CSVMLight : public CSVM
    *
    * @return runtime
    */
-  INT   get_runtime();
+  int32_t   get_runtime();
 
   /** learn SVM */
   void   svm_learn();
@@ -269,10 +269,10 @@ class CSVMLight : public CSVM
    * @param retrain retrain
    * @return something inty
    */
-  INT optimize_to_convergence(INT* docs, INT* label, INT totdoc,
-					   SHRINK_STATE *shrink_state, INT *inconsistent,
+  int32_t optimize_to_convergence(int32_t* docs, int32_t* label, int32_t totdoc,
+					   SHRINK_STATE *shrink_state, int32_t *inconsistent,
 					   double *a, double *lin, double *c, TIMING *timing_profile,
-					   double *maxdiff, INT heldout, INT retrain);
+					   double *maxdiff, int32_t heldout, int32_t retrain);
 
   /** compute objective function
    *
@@ -284,20 +284,20 @@ class CSVMLight : public CSVM
    * @param totdoc totdoc
    * @return something floaty
    */
-  virtual double compute_objective_function(double *a, double *lin, double *c, double eps, INT *label, INT totdoc);
+  virtual double compute_objective_function(double *a, double *lin, double *c, double eps, int32_t *label, int32_t totdoc);
 
   /** clear index
    *
    * @param index index
    */
-  void   clear_index(INT *index);
+  void   clear_index(int32_t *index);
 
   /** add to index
    *
    * @param index index
    * @param elem element at index
    */
-  void   add_to_index(INT *index, INT elem);
+  void   add_to_index(int32_t *index, int32_t elem);
 
   /** compute index
    *
@@ -306,7 +306,7 @@ class CSVMLight : public CSVM
    * @param index
    * @return something inty
    */
-  INT   compute_index(INT *binfeature, INT range, INT *index);
+  int32_t   compute_index(int32_t *binfeature, int32_t range, int32_t *index);
 
   /** optimise SVM
    *
@@ -326,10 +326,10 @@ class CSVMLight : public CSVM
    * @param qp QP
    * @param epsilon_crit_target epsilon crit target
    */
-  void optimize_svm(INT* docs, INT* label,
-		  INT *exclude_from_eq_const, double eq_target,
-		  INT *chosen, INT *active2dnum,
-		  INT totdoc, INT *working2dnum, INT varnum,
+  void optimize_svm(int32_t* docs, int32_t* label,
+		  int32_t *exclude_from_eq_const, double eq_target,
+		  int32_t *chosen, int32_t *active2dnum,
+		  int32_t totdoc, int32_t *working2dnum, int32_t varnum,
 		  double *a, double *lin, double *c, DREAL *aicache, QP *qp,
 		  double *epsilon_crit_target);
 
@@ -350,11 +350,11 @@ class CSVMLight : public CSVM
    * @param aicache ai cache
    * @param qp QP
    */
-  void compute_matrices_for_optimization(INT* docs, INT* label,
-										 INT *exclude_from_eq_const, double eq_target,
-										 INT *chosen, INT *active2dnum,
-										 INT *key, double *a, double *lin, double *c,
-										 INT varnum, INT totdoc, DREAL *aicache, QP *qp);
+  void compute_matrices_for_optimization(int32_t* docs, int32_t* label,
+										 int32_t *exclude_from_eq_const, double eq_target,
+										 int32_t *chosen, int32_t *active2dnum,
+										 int32_t *key, double *a, double *lin, double *c,
+										 int32_t varnum, int32_t totdoc, DREAL *aicache, QP *qp);
 
   /** compute matrices for optimization in parallel
    *
@@ -373,11 +373,11 @@ class CSVMLight : public CSVM
    * @param aicache ai cache
    * @param qp QP
    */
-  void compute_matrices_for_optimization_parallel(INT* docs, INT* label,
-												  INT *exclude_from_eq_const, double eq_target,
-												  INT *chosen, INT *active2dnum,
-												  INT *key, double *a, double *lin, double *c,
-												  INT varnum, INT totdoc, DREAL *aicache, QP *qp);
+  void compute_matrices_for_optimization_parallel(int32_t* docs, int32_t* label,
+												  int32_t *exclude_from_eq_const, double eq_target,
+												  int32_t *chosen, int32_t *active2dnum,
+												  int32_t *key, double *a, double *lin, double *c,
+												  int32_t varnum, int32_t totdoc, DREAL *aicache, QP *qp);
 
   /** calculate SVM model
    *
@@ -391,7 +391,7 @@ class CSVMLight : public CSVM
    * @param active2dnum active 2D num
    * @return something inty
    */
-  INT   calculate_svm_model(INT* docs, INT *label,double *lin, double *a, double* a_old, double *c, INT *working2dnum, INT *active2dnum);
+  int32_t   calculate_svm_model(int32_t* docs, int32_t *label,double *lin, double *a, double* a_old, double *c, int32_t *working2dnum, int32_t *active2dnum);
 
   /** check optimality
    *
@@ -409,10 +409,10 @@ class CSVMLight : public CSVM
    * @param iteration iteration
    * @return something inty
    */
-  INT   check_optimality(INT *label, double *a, double* lin, double *c,
-			  INT totdoc, double *maxdiff, double epsilon_crit_org,
-			  INT *misclassified, INT *inconsistent,INT* active2dnum,
-			  INT *last_suboptimal_at, INT iteration);
+  int32_t   check_optimality(int32_t *label, double *a, double* lin, double *c,
+			  int32_t totdoc, double *maxdiff, double epsilon_crit_org,
+			  int32_t *misclassified, int32_t *inconsistent,int32_t* active2dnum,
+			  int32_t *last_suboptimal_at, int32_t iteration);
 
   /** update linear component
    *
@@ -427,9 +427,9 @@ class CSVMLight : public CSVM
    * @param aicache ai cache
    * @param c c
    */
-  virtual void update_linear_component(INT* docs, INT *label,
-							   INT *active2dnum, double *a, double* a_old,
-							   INT *working2dnum, INT totdoc,
+  virtual void update_linear_component(int32_t* docs, int32_t *label,
+							   int32_t *active2dnum, double *a, double* a_old,
+							   int32_t *working2dnum, int32_t totdoc,
 							   double *lin, DREAL *aicache, double* c);
 
   // MKL stuff
@@ -445,9 +445,9 @@ class CSVMLight : public CSVM
    * @param lin lin
    * @param aicache ai cache
    */
-  void update_linear_component_mkl(INT* docs, INT *label,
-								   INT *active2dnum, double *a, double* a_old,
-								   INT *working2dnum, INT totdoc,
+  void update_linear_component_mkl(int32_t* docs, int32_t *label,
+								   int32_t *active2dnum, double *a, double* a_old,
+								   int32_t *working2dnum, int32_t totdoc,
 								   double *lin, DREAL *aicache);
 
   /** update linear component MKL
@@ -462,9 +462,9 @@ class CSVMLight : public CSVM
    * @param lin lin
    * @param aicache ai cache
    */
-  void update_linear_component_mkl_linadd(INT* docs, INT *label,
-										  INT *active2dnum, double *a, double* a_old,
-										  INT *working2dnum, INT totdoc,
+  void update_linear_component_mkl_linadd(int32_t* docs, int32_t *label,
+										  int32_t *active2dnum, double *a, double* a_old,
+										  int32_t *working2dnum, int32_t totdoc,
 										  double *lin, DREAL *aicache);
 
   /** select next qp subproblem grad
@@ -485,10 +485,10 @@ class CSVMLight : public CSVM
    * @param chosen chosen
    * @return something inty
    */
-  INT select_next_qp_subproblem_grad( INT *label, double *a,
-						  double* lin, double* c, INT totdoc, INT qp_size, INT *inconsistent,
-						  INT* active2dnum, INT* working2dnum, double *selcrit,
-						  INT *select, INT cache_only, INT *key, INT *chosen);
+  int32_t select_next_qp_subproblem_grad( int32_t *label, double *a,
+						  double* lin, double* c, int32_t totdoc, int32_t qp_size, int32_t *inconsistent,
+						  int32_t* active2dnum, int32_t* working2dnum, double *selcrit,
+						  int32_t *select, int32_t cache_only, int32_t *key, int32_t *chosen);
 
   /** select next qp subproblem rand
    *
@@ -508,12 +508,12 @@ class CSVMLight : public CSVM
    * @param iteration iteration
    * @return something inty
    */
-  INT select_next_qp_subproblem_rand(INT* label, double *a, double *lin,
-				    double *c, INT totdoc, INT qp_size,
-				    INT *inconsistent, INT *active2dnum, INT *working2dnum,
-				    double *selcrit, INT *select, INT *key,
-					INT *chosen,
-				    INT iteration);
+  int32_t select_next_qp_subproblem_rand(int32_t* label, double *a, double *lin,
+				    double *c, int32_t totdoc, int32_t qp_size,
+				    int32_t *inconsistent, int32_t *active2dnum, int32_t *working2dnum,
+				    double *selcrit, int32_t *select, int32_t *key,
+					int32_t *chosen,
+				    int32_t iteration);
 
   /** select top n
    *
@@ -522,7 +522,7 @@ class CSVMLight : public CSVM
    * @param select select
    * @param n n
    */
-  void   select_top_n(double *selcrit, INT range, INT *select, INT n);
+  void   select_top_n(double *selcrit, int32_t range, int32_t *select, int32_t n);
 
   /** init shrink state
    *
@@ -530,7 +530,7 @@ class CSVMLight : public CSVM
    * @param totdoc totdoc
    * @param maxhistory maximum history
    */
-  void   init_shrink_state(SHRINK_STATE *shrink_state, INT totdoc, INT maxhistory);
+  void   init_shrink_state(SHRINK_STATE *shrink_state, int32_t totdoc, int32_t maxhistory);
 
   /** cleanup shrink state
    *
@@ -553,9 +553,9 @@ class CSVMLight : public CSVM
    * @param label label
    * @return something inty
    */
-  INT shrink_problem(SHRINK_STATE *shrink_state, INT *active2dnum, INT *last_suboptimal_at,
-		    INT iteration, INT totdoc, INT minshrink,
-		    double *a, INT *inconsistent, double* c, double* lin, int* label);
+  int32_t shrink_problem(SHRINK_STATE *shrink_state, int32_t *active2dnum, int32_t *last_suboptimal_at,
+		    int32_t iteration, int32_t totdoc, int32_t minshrink,
+		    double *a, int32_t *inconsistent, double* c, double* lin, int* label);
 
   /** reactivate inactive examples
    *
@@ -571,10 +571,10 @@ class CSVMLight : public CSVM
    * @param aicache ai cache
    * @param maxdiff maximum diff
    */
-  virtual void   reactivate_inactive_examples(INT *label,double *a,SHRINK_STATE *shrink_state,
-				      double *lin, double *c, INT totdoc,INT iteration,
-				      INT *inconsistent,
-				      INT *docs,DREAL *aicache,
+  virtual void   reactivate_inactive_examples(int32_t *label,double *a,SHRINK_STATE *shrink_state,
+				      double *lin, double *c, int32_t totdoc,int32_t iteration,
+				      int32_t *inconsistent,
+				      int32_t *docs,DREAL *aicache,
 				      double* maxdiff);
 
 protected:
@@ -584,7 +584,7 @@ protected:
 	* @param j at index j
 	* @return computed kernel item at index i, j
 	*/
-	inline virtual DREAL compute_kernel(INT i, INT j)
+	inline virtual DREAL compute_kernel(int32_t i, int32_t j)
 	{
 		return kernel->kernel(i, j);
 	}
@@ -639,14 +639,14 @@ protected:
   /** learn parameters */
   LEARN_PARM* learn_parm;
   /** verbosity level (0-4) */
-  INT   verbosity;
+  int32_t   verbosity;
 
   /** init margin */
   double init_margin;
   /** init iter */
-  INT   init_iter;
+  int32_t   init_iter;
   /** precision violations */
-  INT precision_violations;
+  int32_t precision_violations;
   /** model b */
   double model_b;
   /** opt precision */
@@ -665,13 +665,13 @@ protected:
   /** regularization parameter for w smoothing */
   DREAL lp_C;
   /** number of iteration */
-  INT count;
+  int32_t count;
   /** current alpha gap */
   DREAL mymaxdiff;
   /** number of alpha constraint rows */
-  INT num_rows;
+  int32_t num_rows;
   /** number of active alpha constraint rows */
-  INT num_active_rows;
+  int32_t num_active_rows;
   /** a buffer of length num */
   DREAL *buffer_num;
   /** a buffer of length num_cols */

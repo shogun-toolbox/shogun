@@ -25,7 +25,7 @@
 #include "features/RealFeatures.h"
 #include "lib/io.h"
 
-CPCACut::CPCACut(INT do_whitening_, double thresh_)
+CPCACut::CPCACut(int32_t do_whitening_, double thresh_)
 : CSimplePreProc<DREAL>("PCACut", "PCAC"), T(NULL), num_dim(0), mean(NULL),
 	initialized(false), do_whitening(do_whitening_), thresh(thresh_)
 {
@@ -46,13 +46,13 @@ bool CPCACut::init(CFeatures* f)
 		ASSERT(f->get_feature_type()==F_DREAL);
 
 		SG_INFO("calling CPCACut::init\n") ;
-		INT num_vectors=((CRealFeatures*)f)->get_num_vectors() ;
-		INT num_features=((CRealFeatures*)f)->get_num_features() ;
+		int32_t num_vectors=((CRealFeatures*)f)->get_num_vectors() ;
+		int32_t num_features=((CRealFeatures*)f)->get_num_features() ;
 		SG_INFO("num_examples: %ld num_features: %ld \n", num_vectors, num_features);
 		delete[] mean ;
 		mean=new double[num_features+1] ;
 
-		INT i,j;
+		int32_t i,j;
 
 		/// compute mean
 
@@ -63,7 +63,7 @@ bool CPCACut::init(CFeatures* f)
 		// sum 
 		for (i=0; i<num_vectors; i++)
 		{
-			INT len;
+			int32_t len;
 			bool free;
 			DREAL* vec=((CRealFeatures*) f)->get_feature_vector(i, len, free);
 			for (j=0; j<num_features; j++)
@@ -88,20 +88,20 @@ bool CPCACut::init(CFeatures* f)
 			if (!(i % (num_vectors/10+1)))
 				SG_PROGRESS(i, 0, num_vectors);
 
-			INT len;
+			int32_t len;
 			bool free;
 
 			DREAL* vec=((CRealFeatures*) f)->get_feature_vector(i, len, free) ;
 
-			for (INT jj=0; jj<num_features; jj++)
+			for (int32_t jj=0; jj<num_features; jj++)
 				vec[jj]-=mean[jj] ;
 
 			/// A = 1.0*xy^T+A blas
 			cblas_dger(CblasColMajor, num_features,num_features, 1.0, vec, 1, 
 					vec, 1, cov, (int)num_features) ;
 
-			//for (INT k=0; k<num_features; k++)
-			//	for (INT l=0; l<num_features; l++)
+			//for (int32_t k=0; k<num_features; k++)
+			//	for (int32_t l=0; l<num_features; l++)
 			//          cov[k*num_features+l]+=feature[l]*feature[k] ;
 
 			((CRealFeatures*) f)->free_feature_vector(vec, i, free) ;
@@ -118,9 +118,9 @@ bool CPCACut::init(CFeatures* f)
 		SG_INFO("Computing Eigenvalues ... ") ;
 		char V='V';
 		char U='U';
-		int info;
-		int ord= (int) num_features;
-		int lda= (int) num_features;
+		int32_t info;
+		int32_t ord= num_features;
+		int32_t lda= num_features;
 		double* eigenvalues=new double[num_features] ;
 
 		for (i=0; i<num_features; i++)
@@ -145,12 +145,12 @@ bool CPCACut::init(CFeatures* f)
 
 		if (do_whitening)
 		{
-			INT offs=0 ;
+			int32_t offs=0 ;
 			for (i=0; i<num_features; i++)
 			{
 				if (eigenvalues[i]>thresh)
 				{
-					for (INT jj=0; jj<num_features; jj++)
+					for (int32_t jj=0; jj<num_features; jj++)
 						T[offs+jj*num_dim]=cov[num_features*i+jj]/sqrt(eigenvalues[i]) ;
 					offs++ ;
 				} ;
@@ -179,8 +179,8 @@ void CPCACut::cleanup()
 /// return pointer to feature_matrix, i.e. f->get_feature_matrix();
 DREAL* CPCACut::apply_to_feature_matrix(CFeatures* f)
 {
-	INT num_vectors=0;
-	INT num_features=0;
+	int32_t num_vectors=0;
+	int32_t num_features=0;
 
 	DREAL* m=((CRealFeatures*) f)->get_feature_matrix(num_features, num_vectors);
 	SG_INFO("get Feature matrix: %ix%i\n", num_vectors, num_features) ;
@@ -191,9 +191,9 @@ DREAL* CPCACut::apply_to_feature_matrix(CFeatures* f)
 		DREAL* res= new DREAL[num_dim];
 		double* sub_mean= new double[num_features];
 
-		for (INT vec=0; vec<num_vectors; vec++)
+		for (int32_t vec=0; vec<num_vectors; vec++)
 		{
-			INT i;
+			int32_t i;
 
 			for (i=0; i<num_features; i++)
 				sub_mean[i]=m[num_features*vec+i]-mean[i] ;
@@ -218,11 +218,11 @@ DREAL* CPCACut::apply_to_feature_matrix(CFeatures* f)
 
 /// apply preproc on single feature vector
 /// result in feature matrix
-DREAL* CPCACut::apply_to_feature_vector(DREAL* f, INT &len)
+DREAL* CPCACut::apply_to_feature_vector(DREAL* f, int32_t &len)
 {
 	DREAL *ret=new DREAL[num_dim];
 	DREAL *sub_mean=new DREAL[len];
-	for (INT i=0; i<len; i++)
+	for (int32_t i=0; i<len; i++)
 		sub_mean[i]=f[i]-mean[i];
 
 	cblas_dgemv(CblasColMajor, CblasNoTrans, num_dim, len, 1.0 , T, num_dim, sub_mean, 1, 0, ret, 1) ;

@@ -106,11 +106,11 @@ bool CGUIPluginEstimate::test(char* filename_out, char* filename_roc)
 
 	SG_INFO("Starting estimator testing.\n");
 	estimator->set_features((CStringFeatures<uint16_t>*) testfeatures);
-	INT len=0;
+	int32_t len=0;
 	DREAL* output=estimator->classify()->get_labels(len);
 
-	INT total=testfeatures->get_num_vectors();
-	INT* label=testlabels->get_int_labels(len);
+	int32_t total=testfeatures->get_num_vectors();
+	int32_t* label=testlabels->get_int_labels(len);
 
 	SG_DEBUG("out !!! %ld %ld.\n", total, len);
 	ASSERT(label);
@@ -161,7 +161,7 @@ CLabels* CGUIPluginEstimate::classify(CLabels* output)
 	return estimator->classify(output);
 }
 
-DREAL CGUIPluginEstimate::classify_example(INT idx)
+DREAL CGUIPluginEstimate::classify_example(int32_t idx)
 {
 	CFeatures* testfeatures=ui->ui_features->get_test_features();
 

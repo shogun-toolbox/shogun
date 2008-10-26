@@ -14,7 +14,7 @@
 #include "features/StringFeatures.h"
 #include "lib/io.h"
 
-CCommUlongStringKernel::CCommUlongStringKernel(INT size, bool us)
+CCommUlongStringKernel::CCommUlongStringKernel(int32_t size, bool us)
 : CStringKernel<ULONG>(size), use_sign(us)
 {
 	properties |= KP_LINADD;
@@ -24,7 +24,7 @@ CCommUlongStringKernel::CCommUlongStringKernel(INT size, bool us)
 }
 
 CCommUlongStringKernel::CCommUlongStringKernel(
-	CStringFeatures<ULONG>* l, CStringFeatures<ULONG>* r, bool us, INT size)
+	CStringFeatures<ULONG>* l, CStringFeatures<ULONG>* r, bool us, int32_t size)
 : CStringKernel<ULONG>(size), use_sign(us)
 {
 	properties |= KP_LINADD;
@@ -84,16 +84,16 @@ bool CCommUlongStringKernel::save_init(FILE* dest)
 	return false;
 }
   
-DREAL CCommUlongStringKernel::compute(INT idx_a, INT idx_b)
+DREAL CCommUlongStringKernel::compute(int32_t idx_a, int32_t idx_b)
 {
-	INT alen, blen;
+	int32_t alen, blen;
 	ULONG* avec=((CStringFeatures<ULONG>*) lhs)->get_feature_vector(idx_a, alen);
 	ULONG* bvec=((CStringFeatures<ULONG>*) rhs)->get_feature_vector(idx_b, blen);
 
 	DREAL result=0;
 
-	INT left_idx=0;
-	INT right_idx=0;
+	int32_t left_idx=0;
+	int32_t right_idx=0;
 
 	if (use_sign)
 	{
@@ -123,8 +123,8 @@ DREAL CCommUlongStringKernel::compute(INT idx_a, INT idx_b)
 		{
 			if (avec[left_idx]==bvec[right_idx])
 			{
-				INT old_left_idx=left_idx;
-				INT old_right_idx=right_idx;
+				int32_t old_left_idx=left_idx;
+				int32_t old_right_idx=right_idx;
 
 				ULONG sym=avec[left_idx];
 
@@ -146,13 +146,13 @@ DREAL CCommUlongStringKernel::compute(INT idx_a, INT idx_b)
 	return result;
 }
 
-void CCommUlongStringKernel::add_to_normal(INT vec_idx, DREAL weight)
+void CCommUlongStringKernel::add_to_normal(int32_t vec_idx, DREAL weight)
 {
-	INT t=0;
-	INT j=0;
-	INT k=0;
-	INT last_j=0;
-	INT len=-1;
+	int32_t t=0;
+	int32_t j=0;
+	int32_t k=0;
+	int32_t last_j=0;
+	int32_t len=-1;
 	ULONG* vec=((CStringFeatures<ULONG>*) lhs)->get_feature_vector(vec_idx, len);
 
 	if (vec && len>0)
@@ -217,7 +217,7 @@ void CCommUlongStringKernel::clear_normal()
 	set_is_initialized(false);
 }
 
-bool CCommUlongStringKernel::init_optimization(INT count, INT *IDX, DREAL * weights) 
+bool CCommUlongStringKernel::init_optimization(int32_t count, int32_t *IDX, DREAL * weights) 
 {
 	clear_normal();
 
@@ -230,7 +230,7 @@ bool CCommUlongStringKernel::init_optimization(INT count, INT *IDX, DREAL * weig
 
 	SG_DEBUG( "initializing CCommUlongStringKernel optimization\n");
 
-	for (int i=0; i<count; i++)
+	for (int32_t i=0; i<count; i++)
 	{
 		if ( (i % (count/10+1)) == 0)
 			SG_PROGRESS(i, 0, count);
@@ -253,11 +253,11 @@ bool CCommUlongStringKernel::delete_optimization()
 
 // binary search for each feature. trick: as features are sorted save last found idx in old_idx and
 // only search in the remainder of the dictionary
-DREAL CCommUlongStringKernel::compute_optimized(INT i) 
+DREAL CCommUlongStringKernel::compute_optimized(int32_t i) 
 { 
 	DREAL result = 0;
-	INT j, last_j=0;
-	INT old_idx = 0;
+	int32_t j, last_j=0;
+	int32_t old_idx = 0;
 
 	if (!get_is_initialized())
 	{
@@ -267,7 +267,7 @@ DREAL CCommUlongStringKernel::compute_optimized(INT i)
 
 
 
-	INT alen = -1;
+	int32_t alen = -1;
 	ULONG* avec=((CStringFeatures<ULONG>*) rhs)->get_feature_vector(i, alen);
 
 	if (avec && alen>0)
@@ -279,7 +279,7 @@ DREAL CCommUlongStringKernel::compute_optimized(INT i)
 				if (avec[j]==avec[j-1])
 					continue;
 
-				INT idx = CMath::binary_search_max_lower_equal(&(dictionary.get_array()[old_idx]), dictionary.get_num_elements()-old_idx, avec[j-1]);
+				int32_t idx = CMath::binary_search_max_lower_equal(&(dictionary.get_array()[old_idx]), dictionary.get_num_elements()-old_idx, avec[j-1]);
 
 				if (idx!=-1)
 				{
@@ -290,7 +290,7 @@ DREAL CCommUlongStringKernel::compute_optimized(INT i)
 				}
 			}
 
-			INT idx = CMath::binary_search(&(dictionary.get_array()[old_idx]), dictionary.get_num_elements()-old_idx, avec[alen-1]);
+			int32_t idx = CMath::binary_search(&(dictionary.get_array()[old_idx]), dictionary.get_num_elements()-old_idx, avec[alen-1]);
 			if (idx!=-1)
 				result += dictionary_weights[idx+old_idx];
 		}
@@ -301,7 +301,7 @@ DREAL CCommUlongStringKernel::compute_optimized(INT i)
 				if (avec[j]==avec[j-1])
 					continue;
 
-				INT idx = CMath::binary_search_max_lower_equal(&(dictionary.get_array()[old_idx]), dictionary.get_num_elements()-old_idx, avec[j-1]);
+				int32_t idx = CMath::binary_search_max_lower_equal(&(dictionary.get_array()[old_idx]), dictionary.get_num_elements()-old_idx, avec[j-1]);
 
 				if (idx!=-1)
 				{
@@ -314,7 +314,7 @@ DREAL CCommUlongStringKernel::compute_optimized(INT i)
 				last_j = j;
 			}
 
-			INT idx = CMath::binary_search(&(dictionary.get_array()[old_idx]), dictionary.get_num_elements()-old_idx, avec[alen-1]);
+			int32_t idx = CMath::binary_search(&(dictionary.get_array()[old_idx]), dictionary.get_num_elements()-old_idx, avec[alen-1]);
 			if (idx!=-1)
 				result += dictionary_weights[idx+old_idx]*(alen-last_j);
 		}

@@ -34,17 +34,17 @@ class QPproblem : public CSGObject
 // ----------------- Public Data ---------------
 public:
   /** chunk size */
-  int     chunk_size;
+  int32_t     chunk_size;
   /** ell */
-  int     ell;
+  int32_t     ell;
   /** y */
-  int    *y;
+  int32_t    *y;
   /** delta sv */
   double DELTAsv;
   /** q */
-  int     q;
+  int32_t     q;
   /** max mw */
-  int     maxmw;
+  int32_t     maxmw;
   /** c const */
   double  c_const;
   /** bee */
@@ -57,17 +57,17 @@ public:
   /** kernel */
   sKernel* KER;
   /** kernel type */
-  int     ker_type;
+  int32_t     ker_type;
   /** projection solver */
-  int     projection_solver;
+  int32_t     projection_solver;
   /** projection projector */
-  int     projection_projector;
+  int32_t     projection_projector;
   /** preprocess mode */
-  int     PreprocessMode;
+  int32_t     PreprocessMode;
   /** preprocess size */
-  int     preprocess_size;
+  int32_t     preprocess_size;
   /** verbosity */
-  int     verbosity;
+  int32_t     verbosity;
   /** tau proximal */
   double  tau_proximal;
   /** objective value */
@@ -83,20 +83,20 @@ public:
    * @param fInput input filename
    * @return an int
    */
-  int  ReadSVMFile    (char *fInput);
+  int32_t  ReadSVMFile    (char *fInput);
 
   /** read GPDT binary
    *
    * @param fName input filename
    * @return an int
    */
-  int  ReadGPDTBinary(char *fName);
+  int32_t  ReadGPDTBinary(char *fName);
 
   /** check if 2-class
    *
    * @return an int
    */
-  int  Check2Class    (void);
+  int32_t  Check2Class    (void);
 
   /** subproblem
    *
@@ -104,7 +104,7 @@ public:
    * @param len length
    * @param perm perm
    */
-  void Subproblem     (QPproblem &ker, int len, int *perm);
+  void Subproblem     (QPproblem &ker, int32_t len, int32_t *perm);
 
   /** PrepMP */
   void PrepMP         (void);
@@ -134,15 +134,15 @@ public:
 
 // ----------------- Private Data  ---------------
 private:
-  int    dim;
-  int    *index_in, *index_out;
-  int    *ing, *inaux, *inold, *incom;
-  int    *cec;
-  int    nb;
-  int    *bmem, *bmemrid, *pbmr;
-  int    my_chunk_size;    // chunk_size for the current processor
-  int    my_spD_offset;    // offset of the current processor into sp_D matrix
-  int    recvl[32], displ[32];
+  int32_t    dim;
+  int32_t    *index_in, *index_out;
+  int32_t    *ing, *inaux, *inold, *incom;
+  int32_t    *cec;
+  int32_t    nb;
+  int32_t    *bmem, *bmemrid, *pbmr;
+  int32_t    my_chunk_size;  // chunk_size for the current processor
+  int32_t    my_spD_offset;  // offset of the current processor into sp_D matrix
+  int32_t    recvl[32], displ[32];
   double kktold;
   double DELTAvpm, InitialDELTAvpm, DELTAkin;
   double *alpha;
@@ -150,13 +150,13 @@ private:
 
 // ----------------- Private Methods ---------------
 private:
-  int  Preprocess0 (int *aux, int *sv);
-  int  Preprocess1 (sKernel* KER, int *aux, int *sv);
-  int  optimal     (void);
+  int32_t  Preprocess0 (int32_t *aux, int32_t *sv);
+  int32_t  Preprocess1 (sKernel* KER, int32_t *aux, int32_t *sv);
+  int32_t  optimal     (void);
 
-  bool is_zero(int  i) { return (alpha[i] < DELTAsv); }
-  bool is_free(int  i) 
+  bool is_zero(int32_t  i) { return (alpha[i] < DELTAsv); }
+  bool is_free(int32_t  i)
        { return (alpha[i] > DELTAsv && alpha[i] < (c_const - DELTAsv)); }
-  bool is_bound(int i) { return (alpha[i] > (c_const - DELTAsv)); }
+  bool is_bound(int32_t i) { return (alpha[i] > (c_const - DELTAsv)); }
 
 };

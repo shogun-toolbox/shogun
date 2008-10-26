@@ -24,7 +24,7 @@ CCustomKernel::CCustomKernel(CKernel* k)
 {
 	if (k->lhs_equals_rhs())
 	{
-		INT cols=k->get_num_vec_lhs();
+		int32_t cols=k->get_num_vec_lhs();
 		SG_DEBUG( "using custom kernel of size %dx%d\n", cols,cols);
 
 		kmatrix= new SHORTREAL[cols*(cols+1)/2];
@@ -33,25 +33,25 @@ CCustomKernel::CCustomKernel(CKernel* k)
 		num_rows=cols;
 		num_cols=cols;
 
-		for (INT row=0; row<num_rows; row++)
+		for (int32_t row=0; row<num_rows; row++)
 		{
-			for (INT col=row; col<num_cols; col++)
+			for (int32_t col=row; col<num_cols; col++)
 				kmatrix[row * num_cols - row*(row+1)/2 + col]=k->kernel(row,col);
 		}
 	}
 	else
 	{
-		INT rows=k->get_num_vec_lhs();
-		INT cols=k->get_num_vec_rhs();
+		int32_t rows=k->get_num_vec_lhs();
+		int32_t cols=k->get_num_vec_rhs();
 		kmatrix= new SHORTREAL[rows*cols];
 
 		upper_diagonal=false;
 		num_rows=rows;
 		num_cols=cols;
 
-		for (INT row=0; row<num_rows; row++)
+		for (int32_t row=0; row<num_rows; row++)
 		{
-			for (INT col=0; col<num_cols; col++)
+			for (int32_t col=0; col<num_cols; col++)
 			{
 				kmatrix[row * num_cols + col]=k->kernel(row,col);
 			}
@@ -67,7 +67,7 @@ CCustomKernel::~CCustomKernel()
 	cleanup();
 }
 
-SHORTREAL* CCustomKernel::get_kernel_matrix_shortreal(INT &num_vec1, INT &num_vec2, SHORTREAL* target)
+SHORTREAL* CCustomKernel::get_kernel_matrix_shortreal(int32_t &num_vec1, int32_t &num_vec2, SHORTREAL* target)
 {
 	if (target == NULL)
 		return CKernel::get_kernel_matrix_shortreal(num_vec1, num_vec2, target);
@@ -79,7 +79,7 @@ SHORTREAL* CCustomKernel::get_kernel_matrix_shortreal(INT &num_vec1, INT &num_ve
 	}
 }
   
-bool CCustomKernel::dummy_init(INT rows, INT cols)
+bool CCustomKernel::dummy_init(int32_t rows, int32_t cols)
 {
 	return init(new CDummyFeatures(rows), new CDummyFeatures(cols));
 }
@@ -120,12 +120,12 @@ bool CCustomKernel::save_init(FILE* dest)
 	return false;
 }
 
-bool CCustomKernel::set_triangle_kernel_matrix_from_triangle(const DREAL* km, int len)
+bool CCustomKernel::set_triangle_kernel_matrix_from_triangle(const DREAL* km, int32_t len)
 {
 	ASSERT(km);
 	ASSERT(len>0);
 
-	INT cols = (INT) floor(-0.5 + CMath::sqrt(0.25+2*len));
+	int32_t cols = (int32_t) floor(-0.5 + CMath::sqrt(0.25+2*len));
 	if (cols*(cols+1)/2 != len)
 	{
 		SG_ERROR("km should be a vector containing a lower triangle matrix, with len=cols*(cols+1)/2 elements\n");
@@ -142,14 +142,14 @@ bool CCustomKernel::set_triangle_kernel_matrix_from_triangle(const DREAL* km, in
 	num_rows=cols;
 	num_cols=cols;
 
-	for (INT i=0; i<len; i++)
+	for (int32_t i=0; i<len; i++)
 		kmatrix[i]=km[i];
 
 	dummy_init(num_rows, num_cols);
 	return true;
 }
 
-bool CCustomKernel::set_triangle_kernel_matrix_from_full(const DREAL* km, INT rows, INT cols)
+bool CCustomKernel::set_triangle_kernel_matrix_from_full(const DREAL* km, int32_t rows, int32_t cols)
 {
 	ASSERT(rows==cols);
 
@@ -162,16 +162,16 @@ bool CCustomKernel::set_triangle_kernel_matrix_from_full(const DREAL* km, INT ro
 	num_rows=cols;
 	num_cols=cols;
 
-	for (INT row=0; row<num_rows; row++)
+	for (int32_t row=0; row<num_rows; row++)
 	{
-		for (INT col=row; col<num_cols; col++)
+		for (int32_t col=row; col<num_cols; col++)
 			kmatrix[row * num_cols - row*(row+1)/2 + col]=km[col*num_rows+row];
 	}
 	dummy_init(rows, cols);
 	return true;
 }
 
-bool CCustomKernel::set_full_kernel_matrix_from_full(const DREAL* km, INT rows, INT cols)
+bool CCustomKernel::set_full_kernel_matrix_from_full(const DREAL* km, int32_t rows, int32_t cols)
 {
 	cleanup_custom();
 	SG_DEBUG( "using custom kernel of size %dx%d\n", rows,cols);
@@ -182,9 +182,9 @@ bool CCustomKernel::set_full_kernel_matrix_from_full(const DREAL* km, INT rows, 
 	num_rows=rows;
 	num_cols=cols;
 
-	for (INT row=0; row<num_rows; row++)
+	for (int32_t row=0; row<num_rows; row++)
 	{
-		for (INT col=0; col<num_cols; col++)
+		for (int32_t col=0; col<num_cols; col++)
 		{
 			kmatrix[row * num_cols + col]=km[col*num_rows+row];
 		}

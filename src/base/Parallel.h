@@ -34,12 +34,12 @@ public:
 	CParallel(const CParallel& orig);
 	~CParallel();
 
-	inline INT get_num_cpus() const
+	inline int32_t get_num_cpus() const
 	{
 #if defined(LINUX) && defined(_SC_NPROCESSORS_ONLN)
 		return sysconf( _SC_NPROCESSORS_ONLN );
 #elif defined(DARWIN)
-		int num;
+		int num; /* for calling external lib */
 		size_t size=sizeof(num);
 		if (!sysctlbyname("hw.ncpu", &num, &size, NULL, 0))
 			return num;
@@ -47,7 +47,7 @@ public:
 		return 1;
 	}
 
-	inline void set_num_threads(INT n)
+	inline void set_num_threads(int32_t n)
 	{
 #ifdef WIN32
 		ASSERT(n==1);
@@ -55,12 +55,12 @@ public:
 		num_threads=n;
 	}
 
-	inline INT get_num_threads() const
+	inline int32_t get_num_threads() const
 	{
 		return num_threads;
 	}
 
 protected:
-	INT num_threads;
+	int32_t num_threads;
 };
 #endif

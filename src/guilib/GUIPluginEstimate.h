@@ -42,7 +42,7 @@ class CGUIPluginEstimate : public CSGObject
 		inline CPluginEstimate* get_estimator() { return estimator; }
 
 		CLabels* classify(CLabels* output=NULL);
-		DREAL classify_example(INT idx);
+		DREAL classify_example(int32_t idx);
 
 	protected:
 		CSGInterface* ui;

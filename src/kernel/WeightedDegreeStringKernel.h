@@ -53,14 +53,14 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 * @param degree degree
 		 * @param type weighted degree kernel type
 		 */
-		CWeightedDegreeStringKernel(INT degree, EWDKernType type=E_WD);
+		CWeightedDegreeStringKernel(int32_t degree, EWDKernType type=E_WD);
 
 		/** constructor
 		 *
 		 * @param weights kernel's weights
 		 * @param degree degree
 		 */
-		CWeightedDegreeStringKernel(DREAL* weights, INT degree);
+		CWeightedDegreeStringKernel(DREAL* weights, int32_t degree);
 
 		/** constructor
 		 *
@@ -69,7 +69,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 * @param degree degree
 		 */
 		CWeightedDegreeStringKernel(
-			CStringFeatures<char>* l, CStringFeatures<char>* r, INT degree);
+			CStringFeatures<char>* l, CStringFeatures<char>* r, int32_t degree);
 
 		virtual ~CWeightedDegreeStringKernel();
 
@@ -117,7 +117,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 * @param alphas alphas
 		 * @return if initializing was successful
 		 */
-		inline virtual bool init_optimization(INT count, INT *IDX, DREAL* alphas)
+		inline virtual bool init_optimization(int32_t count, int32_t *IDX, DREAL* alphas)
 		{
 			return init_optimization(count, IDX, alphas, -1);
 		}
@@ -132,8 +132,8 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 * @param tree_num which tree
 		 * @return if initializing was successful
 		 */
-		virtual bool init_optimization(INT count, INT *IDX, DREAL* alphas,
-			INT tree_num);
+		virtual bool init_optimization(int32_t count, int32_t *IDX, DREAL* alphas,
+			int32_t tree_num);
 
 		/** delete optimization
 		 *
@@ -146,7 +146,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 	 	* @param idx index to compute
 	 	* @return optimized value at given index
 	 	*/
-		virtual DREAL compute_optimized(INT idx)
+		virtual DREAL compute_optimized(int32_t idx)
 		{ 
 			if (get_is_initialized())
 				return compute_by_tree(idx);
@@ -171,8 +171,8 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 * @param alphas alphas
 		 * @param factor factor
 		 */
-		virtual void compute_batch(INT num_vec, INT* vec_idx, DREAL* target,
-			INT num_suppvec, INT* IDX, DREAL* alphas, DREAL factor=1.0);
+		virtual void compute_batch(int32_t num_vec, int32_t* vec_idx, DREAL* target,
+			int32_t num_suppvec, int32_t* IDX, DREAL* alphas, DREAL factor=1.0);
 
 		/** clear normal
 		 * subkernel functionality
@@ -191,7 +191,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 * @param idx where to add
 		 * @param weight what to add
 		 */
-		inline virtual void add_to_normal(INT idx, DREAL weight)
+		inline virtual void add_to_normal(int32_t idx, DREAL weight)
 		{
 			if (max_mismatch==0)
 				add_example_to_tree(idx, weight);
@@ -205,13 +205,13 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 *
 		 * @return number of subkernels
 		 */
-		inline virtual INT get_num_subkernels()
+		inline virtual int32_t get_num_subkernels()
 		{
 			if (position_weights!=NULL)
-				return (INT) ceil(1.0*seq_length/mkl_stepsize) ;
+				return (int32_t) ceil(1.0*seq_length/mkl_stepsize) ;
 			if (length==0)
-				return (INT) ceil(1.0*get_degree()/mkl_stepsize);
-			return (INT) ceil(1.0*get_degree()*length/mkl_stepsize) ;
+				return (int32_t) ceil(1.0*get_degree()/mkl_stepsize);
+			return (int32_t) ceil(1.0*get_degree()*length/mkl_stepsize) ;
 		}
 
 		/** compute by subkernel
@@ -219,7 +219,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 * @param idx index
 		 * @param subkernel_contrib subkernel contribution
 		 */
-		inline void compute_by_subkernel(INT idx, DREAL * subkernel_contrib)
+		inline void compute_by_subkernel(int32_t idx, DREAL * subkernel_contrib)
 		{ 
 			if (get_is_initialized())
 			{
@@ -235,7 +235,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 * @param num_weights number of weights will be stored here
 		 * @return subkernel weights
 		 */
-		inline const DREAL* get_subkernel_weights(INT& num_weights)
+		inline const DREAL* get_subkernel_weights(int32_t& num_weights)
 		{
 			num_weights = get_num_subkernels();
 
@@ -243,10 +243,10 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 			weights_buffer = new DREAL[num_weights];
 
 			if (position_weights!=NULL)
-				for (INT i=0; i<num_weights; i++)
+				for (int32_t i=0; i<num_weights; i++)
 					weights_buffer[i] = position_weights[i*mkl_stepsize];
 			else
-				for (INT i=0; i<num_weights; i++)
+				for (int32_t i=0; i<num_weights; i++)
 					weights_buffer[i] = weights[i*mkl_stepsize];
 
 			return weights_buffer;
@@ -257,17 +257,17 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 * @param weights2 weights
 		 * @param num_weights2 number of weights
 		 */
-		inline void set_subkernel_weights(DREAL* weights2, INT num_weights2)
+		inline void set_subkernel_weights(DREAL* weights2, int32_t num_weights2)
 		{
-			INT num_weights = get_num_subkernels();
+			int32_t num_weights = get_num_subkernels();
 			if (num_weights!=num_weights2)
 				SG_ERROR( "number of weights do not match\n");
 
 			if (position_weights!=NULL)
 			{
-				for (INT i=0; i<num_weights; i++)
+				for (int32_t i=0; i<num_weights; i++)
 				{
-					for (INT j=0; j<mkl_stepsize; j++)
+					for (int32_t j=0; j<mkl_stepsize; j++)
 					{
 						if (i*mkl_stepsize+j<seq_length)
 							position_weights[i*mkl_stepsize+j] = weights2[i];
@@ -276,9 +276,9 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 			}
 			else if (length==0)
 			{
-				for (INT i=0; i<num_weights; i++)
+				for (int32_t i=0; i<num_weights; i++)
 				{
-					for (INT j=0; j<mkl_stepsize; j++)
+					for (int32_t j=0; j<mkl_stepsize; j++)
 					{
 						if (i*mkl_stepsize+j<get_degree())
 							weights[i*mkl_stepsize+j] = weights2[i];
@@ -287,9 +287,9 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 			}
 			else
 			{
-				for (INT i=0; i<num_weights; i++)
+				for (int32_t i=0; i<num_weights; i++)
 				{
-					for (INT j=0; j<mkl_stepsize; j++)
+					for (int32_t j=0; j<mkl_stepsize; j++)
 					{
 						if (i*mkl_stepsize+j<get_degree()*length)
 							weights[i*mkl_stepsize+j] = weights2[i];
@@ -304,7 +304,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 * @param len len
 		 * @return computed abs weights
 		 */
-		DREAL *compute_abs_weights(INT & len);
+		DREAL *compute_abs_weights(int32_t & len);
 
 		/** compute by tree
 		 *
@@ -312,7 +312,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 * @param LevelContrib level contribution
 		 * @return computed value
 		 */
-		void compute_by_tree(INT idx, DREAL *LevelContrib);
+		void compute_by_tree(int32_t idx, DREAL *LevelContrib);
 
 		/** check if tree is initialized
 		 *
@@ -325,7 +325,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 * @param d degree weights will be stored here
 		 * @param len number of degree weights will be stored here
 		 */
-		inline DREAL *get_degree_weights(INT& d, INT& len)
+		inline DREAL *get_degree_weights(int32_t& d, int32_t& len)
 		{
 			d=degree;
 			len=length;
@@ -337,7 +337,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 * @param num_weights number of weights will be stored here
 		 * @return weights
 		 */
-		inline DREAL *get_weights(INT& num_weights)
+		inline DREAL *get_weights(int32_t& num_weights)
 		{
 			if (position_weights!=NULL)
 			{
@@ -356,7 +356,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 * @param len number of position weights will be stored here
 		 * @return position weights
 		 */
-		inline DREAL *get_position_weights(INT& len)
+		inline DREAL *get_position_weights(int32_t& len)
 		{
 			len=seq_length;
 			return position_weights;
@@ -375,7 +375,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 * @param d degree
 		 * @return if setting was successful
 		 */
-		void set_wd_weights(DREAL* p_weights, INT d)
+		void set_wd_weights(DREAL* p_weights, int32_t d)
 		{
 			set_weights(p_weights,d,0);
 		}
@@ -386,7 +386,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 * @param d degree
 		 * @param len number of weights
 		 */
-		bool set_weights(DREAL* weights, INT d, INT len);
+		bool set_weights(DREAL* weights, int32_t d, int32_t len);
 
 		/** set position weights
 		 *
@@ -394,7 +394,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 * @param len number of position weights
 		 * @return if setting was successful
 		 */
-		bool set_position_weights(DREAL* position_weights, INT len=0);
+		bool set_position_weights(DREAL* position_weights, int32_t len=0);
 
 		/** initialize block weights
 		 *
@@ -467,26 +467,26 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 * @param max new maximum mismatch
 		 * @return if setting was succesful
 		 */
-		bool set_max_mismatch(INT max);
+		bool set_max_mismatch(int32_t max);
 
 		/** get maximum mismatch
 		 *
 		 * @return maximum mismatch
 		 */
-		inline INT get_max_mismatch() { return max_mismatch; }
+		inline int32_t get_max_mismatch() { return max_mismatch; }
 
 		/** set degree
 		 *
 		 * @param deg new degree
 		 * @return if setting was successful
 		 */
-		inline bool set_degree(INT deg) { degree=deg; return true; }
+		inline bool set_degree(int32_t deg) { degree=deg; return true; }
 
 		/** get degree
 		 *
 		 * @return degree
 		 */
-		inline INT get_degree() { return degree; }
+		inline int32_t get_degree() { return degree; }
 
 		/** set if block computation shall be performed
 		 *
@@ -506,26 +506,26 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 * @param step new step size
 		 * @return if setting was successful
 		 */
-		inline bool set_mkl_stepsize(INT step) { mkl_stepsize=step; return true; }
+		inline bool set_mkl_stepsize(int32_t step) { mkl_stepsize=step; return true; }
 
 		/** get MKL step size
 		 *
 		 * @return MKL step size
 		 */
-		inline INT get_mkl_stepsize() { return mkl_stepsize; }
+		inline int32_t get_mkl_stepsize() { return mkl_stepsize; }
 
 		/** set which degree
 		 *
 		 * @param which which degree
 		 * @return if setting was successful
 		 */
-		inline bool set_which_degree(INT which) { which_degree=which; return true; }
+		inline bool set_which_degree(int32_t which) { which_degree=which; return true; }
 
 		/** get which degree
 		 *
 		 * @return which degree
 		 */
-		inline INT get_which_degree() { return which_degree; }
+		inline int32_t get_which_degree() { return which_degree; }
 
 	protected:
 		/** create emtpy tries */
@@ -536,7 +536,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 * @param idx index
 		 * @param weight weight
 		 */
-		void add_example_to_tree(INT idx, DREAL weight);
+		void add_example_to_tree(int32_t idx, DREAL weight);
 
 		/** add example to single tree
 		 *
@@ -544,14 +544,14 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 * @param weight weight
 		 * @param tree_num which tree
 		 */
-		void add_example_to_single_tree(INT idx, DREAL weight, INT tree_num);
+		void add_example_to_single_tree(int32_t idx, DREAL weight, int32_t tree_num);
 
 		/** add example to tree mismatch
 		 *
 		 * @param idx index
 		 * @param weight weight
 		 */
-		void add_example_to_tree_mismatch(INT idx, DREAL weight);
+		void add_example_to_tree_mismatch(int32_t idx, DREAL weight);
 
 		/** add example to single tree mismatch
 		 *
@@ -559,7 +559,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 * @param weight weight
 		 * @param tree_num which tree
 		 */
-		void add_example_to_single_tree_mismatch(INT idx, DREAL weight, INT tree_num);
+		void add_example_to_single_tree_mismatch(int32_t idx, DREAL weight, int32_t tree_num);
 
 		/** add example to tree mismatch recursion
 		 *
@@ -571,15 +571,15 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 * @param mismatch_rec mismatch rec
 		 */
 		void add_example_to_tree_mismatch_recursion(DNATrie *tree,
-			DREAL alpha, INT *vec, INT len_rem,
-			INT depth_rec, INT mismatch_rec);
+			DREAL alpha, int32_t *vec, int32_t len_rem,
+			int32_t depth_rec, int32_t mismatch_rec);
 
 		/** compute by tree
 		 *
 		 * @param idx index
 		 * @return computed value
 		 */
-		DREAL compute_by_tree(INT idx);
+		DREAL compute_by_tree(int32_t idx);
 
 		/** compute kernel function for features a and b
 		 * idx_{a,b} denote the index of the feature vectors
@@ -589,7 +589,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		DREAL compute(INT idx_a, INT idx_b);
+		DREAL compute(int32_t idx_a, int32_t idx_b);
 
 		/** compute with mismatch
 		 *
@@ -599,8 +599,8 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 * @param blen length of vector b
 		 * @return computed value
 		 */
-		DREAL compute_with_mismatch(char* avec, INT alen,
-			char* bvec, INT blen) ;
+		DREAL compute_with_mismatch(char* avec, int32_t alen,
+			char* bvec, int32_t blen) ;
 
 		/** compute without mismatch
 		 *
@@ -610,8 +610,8 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 * @param blen length of vector b
 		 * @return computed value
 		 */
-		DREAL compute_without_mismatch(char* avec, INT alen,
-			char* bvec, INT blen);
+		DREAL compute_without_mismatch(char* avec, int32_t alen,
+			char* bvec, int32_t blen);
 
 		/** compute without mismatch matrix
 		 *
@@ -621,8 +621,8 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 * @param blen length of vector b
 		 * @return computed value
 		 */
-		DREAL compute_without_mismatch_matrix(char* avec, INT alen,
-			char* bvec, INT blen);
+		DREAL compute_without_mismatch_matrix(char* avec, int32_t alen,
+			char* bvec, int32_t blen);
 
 		/** compute using block
 		 *
@@ -632,8 +632,8 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 * @param blen length of vector b
 		 * @return computed value
 		 */
-		DREAL compute_using_block(char* avec, INT alen,
-			char* bvec, INT blen);
+		DREAL compute_using_block(char* avec, int32_t alen,
+			char* bvec, int32_t blen);
 
 		/** remove lhs from kernel */
 		virtual void remove_lhs();
@@ -648,16 +648,16 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		/** weights buffer */
 		DREAL* weights_buffer;
 		/** MKL step size */
-		INT mkl_stepsize;
+		int32_t mkl_stepsize;
 		/** degree */
-		INT degree;
+		int32_t degree;
 		/** length */
-		INT length;
+		int32_t length;
 
 		/** maximum mismatch */
-		INT max_mismatch;
+		int32_t max_mismatch;
 		/** sequence length */
-		INT seq_length;
+		int32_t seq_length;
 
 		/** if kernel is initialized */
 		bool initialized;
@@ -666,7 +666,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		bool block_computation;
 
 		/** number of external block weights */
-		INT num_block_weights_external;
+		int32_t num_block_weights_external;
 		/** external block weights */
 		DREAL* block_weights_external;
 
@@ -675,7 +675,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		/** WeightedDegree kernel type */
 		EWDKernType type;
 		/** which degree */
-		INT which_degree;
+		int32_t which_degree;
 
 		/** tries */
 		CTrie<DNATrie>* tries;

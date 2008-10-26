@@ -27,14 +27,14 @@ ever use tabs for indentations
   x+=1;
   set_cache_size(0);
 
-  for (int i=0; i<10; i++)
+  for (uint32_t i=0; i<10; i++)
       ...
 
 - brackets () and (greater/lower) equal sign ><= should should not contain
   unecessary spaces, e.g:
 
-  int a=1;
-  int b=kernel->compute();
+  int32_t a=1;
+  int32_t b=kernel->compute();
 
   if (a==1)
   {
@@ -50,7 +50,7 @@ ever use tabs for indentations
 - breaking long lines and strings
 	limit yourselves to 80 columns
 
-	for (INT vec=params->start; vec<params->end &&
+	for (int32_t vec=params->start; vec<params->end &&
 			!CSignal::cancel_computations(); vec++)
 	{
 		//foo
@@ -62,19 +62,19 @@ ever use tabs for indentations
 
 - functions look like
 
-	INT* fun(INT* foo)
+	int32_t* fun(int32_t* foo)
 	{
 		return foo;
 	}
 
   and are separated by a newline, e.g:
 
-	INT* fun1(INT* foo1)
+	int32_t* fun1(int32_t* foo1)
 	{
 		return foo;
 	}
 
-	INT* fun2(INT* foo2)
+	int32_t* fun2(int32_t* foo2)
 	{
 		return foo2;
 	}
@@ -95,7 +95,7 @@ MACROS & IFDEFS:
 - use macros sparingly
 - avoid defining constants using macros (bye bye typechecking), use
 
-const int FOO=5; 
+const int32_t FOO=5; 
 
 or enums (when defining several realted constants)
 
@@ -121,7 +121,7 @@ TYPES:
 	uint8_t		(8bit unsigned char)
 	uint16_t	(16bit unsigned short)
 	uint32_t	(32bit unsinged int)
-	INT			(32bit int)
+	int32_t		(32bit int)
 	LONG		(64bit int)
 	DREAL		(double)
 	LONGREAL	(long double)

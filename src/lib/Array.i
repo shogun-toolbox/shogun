@@ -9,7 +9,7 @@
 %template(ByteArray) CArray<uint8_t>;
 %template(ShortArray) CArray<SHORT>;
 %template(WordArray) CArray<uint16_t>;
-%template(IntArray) CArray<INT>;
+%template(IntArray) CArray<int32_t>;
 %template(UIntArray) CArray<uint32_t>;
 %template(LongArray) CArray<LONG>;
 %template(ULongArray) CArray<ULONG>;

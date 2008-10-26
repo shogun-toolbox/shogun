@@ -39,8 +39,8 @@ class CGaussianShiftKernel: public CGaussianKernel
 		 * @param max_shift maximum shift
 		 * @param shift_step shift step
 		 */
-		CGaussianShiftKernel(INT size, double width, int max_shift,
-			int shift_step);
+		CGaussianShiftKernel(int32_t size, double width, int32_t max_shift,
+			int32_t shift_step);
 
 		/** constructor
 		 *
@@ -52,7 +52,7 @@ class CGaussianShiftKernel: public CGaussianKernel
 		 * @param size cache size
 		 */
 		CGaussianShiftKernel(CRealFeatures* l, CRealFeatures* r,
-			double width, int max_shift, int shift_step, INT size=10);
+			double width, int32_t max_shift, int32_t shift_step, int32_t size=10);
 
 		virtual ~CGaussianShiftKernel();
 
@@ -77,13 +77,13 @@ class CGaussianShiftKernel: public CGaussianKernel
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		virtual DREAL compute(INT idx_a, INT idx_b);
+		virtual DREAL compute(int32_t idx_a, int32_t idx_b);
 
 	protected:
 		/** maximum shift */
-		int max_shift;
+		int32_t max_shift;
 		/** shift step */
-		int shift_step;
+		int32_t shift_step;
 };
 
 #endif /* _GAUSSIANSHIFTKERNEL_H__ */

@@ -35,8 +35,8 @@ class CLocalityImprovedStringKernel: public CStringKernel<char>
 		 * @param inner_degree inner degree
 		 * @param outer_degree outer degree
 		 */
-		CLocalityImprovedStringKernel(INT size, INT length,
-			INT inner_degree, INT outer_degree);
+		CLocalityImprovedStringKernel(int32_t size, int32_t length,
+			int32_t inner_degree, int32_t outer_degree);
 
 		/** constructor
 		 *
@@ -48,7 +48,7 @@ class CLocalityImprovedStringKernel: public CStringKernel<char>
 		 */
 		CLocalityImprovedStringKernel(
 			CStringFeatures<char>* l, CStringFeatures<char>* r,
-			INT length, INT inner_degree, INT outer_degree);
+			int32_t length, int32_t inner_degree, int32_t outer_degree);
 
 		virtual ~CLocalityImprovedStringKernel();
 
@@ -95,15 +95,15 @@ class CLocalityImprovedStringKernel: public CStringKernel<char>
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		DREAL compute(INT idx_a, INT idx_b);
+		DREAL compute(int32_t idx_a, int32_t idx_b);
 
 	protected:
 		/** length */
-		INT length;
+		int32_t length;
 		/** inner degree */
-		INT inner_degree;
+		int32_t inner_degree;
 		/** outer degree */
-		INT outer_degree;
+		int32_t outer_degree;
 };
 
 #endif /* _LOCALITYIMPROVEDSTRINGKERNEL_H__ */

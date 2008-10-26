@@ -31,7 +31,7 @@ bool CLibSVMMultiClass::train()
 	struct svm_node* x_space;
 
 	ASSERT(labels && labels->get_num_labels());
-	INT num_classes = labels->get_num_classes();
+	int32_t num_classes = labels->get_num_classes();
 	problem.l=labels->get_num_labels();
 	SG_INFO( "%d trainlabels, %d classes\n", problem.l, num_classes);
 
@@ -39,7 +39,7 @@ bool CLibSVMMultiClass::train()
 	problem.x=new struct svm_node*[problem.l];
 	x_space=new struct svm_node[2*problem.l];
 
-	for (int i=0; i<problem.l; i++)
+	for (int32_t i=0; i<problem.l; i++)
 	{
 		problem.y[i]=labels->get_label(i);
 		problem.x[i]=&x_space[2*i];
@@ -81,22 +81,24 @@ bool CLibSVMMultiClass::train()
 		ASSERT((model->l==0) || (model->l>0 && model->SV && model->sv_coef));
 		create_multiclass_svm(num_classes);
 
-		INT* offsets=new INT[num_classes];
+		int32_t* offsets=new int32_t[num_classes];
 		offsets[0]=0;
 
-		for (INT i=1; i<num_classes; i++)
+		for (int32_t i=1; i<num_classes; i++)
 			offsets[i] = offsets[i-1]+model->nSV[i-1];
 
-		INT s=0;
-		for (INT i=0; i<num_classes; i++)
+		int32_t s=0;
+		for (int32_t i=0; i<num_classes; i++)
 		{
-			for (INT j=i+1; j<num_classes; j++)
+			for (int32_t j=i+1; j<num_classes; j++)
 			{
+				int32_t k, l;
+
 				DREAL sgn=1;
 				if (model->label[i]>model->label[j])
 					sgn=-1;
 
-				int num_sv=model->nSV[i]+model->nSV[j];
+				int32_t num_sv=model->nSV[i]+model->nSV[j];
 				DREAL bias=-model->rho[s];
 
 				ASSERT(num_sv>0);
@@ -106,37 +108,37 @@ bool CLibSVMMultiClass::train()
 
 				svm->set_bias(sgn*bias);
 
-				INT sv_idx=0;
-				for (int k=0; k<model->nSV[i]; k++)
+				int32_t sv_idx=0;
+				for (k=0; k<model->nSV[i]; k++)
 				{
 					svm->set_support_vector(sv_idx, model->SV[offsets[i]+k]->index);
 					svm->set_alpha(sv_idx, sgn*model->sv_coef[j-1][offsets[i]+k]);
 					sv_idx++;
 				}
 
-				for (int k=0; k<model->nSV[j]; k++)
+				for (k=0; k<model->nSV[j]; k++)
 				{
 					svm->set_support_vector(sv_idx, model->SV[offsets[j]+k]->index);
 					svm->set_alpha(sv_idx, sgn*model->sv_coef[i][offsets[j]+k]);
 					sv_idx++;
 				}
 
-				INT idx=0;
+				int32_t idx=0;
 
 				if (sgn>0)
 				{
-					for (INT k=0; k<model->label[i]; k++)
+					for (k=0; k<model->label[i]; k++)
 						idx+=num_classes-k-1;
 
-					for (INT l=model->label[i]+1; l<model->label[j]; l++)
+					for (l=model->label[i]+1; l<model->label[j]; l++)
 						idx++;
 				}
 				else
 				{
-					for (INT k=0; k<model->label[j]; k++)
+					for (k=0; k<model->label[j]; k++)
 						idx+=num_classes-k-1;
 
-					for (INT l=model->label[j]+1; l<model->label[i]; l++)
+					for (l=model->label[j]+1; l<model->label[i]; l++)
 						idx++;
 				}
 

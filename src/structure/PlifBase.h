@@ -33,7 +33,7 @@ class CPlifBase : public CSGObject
 		 */
 		virtual DREAL lookup_penalty(DREAL p_value, DREAL* svm_values) const =0;
 
-		/** lookup penalty INT
+		/** lookup penalty int32_t
 		 *
 		 * abstract base method
 		 *
@@ -41,7 +41,7 @@ class CPlifBase : public CSGObject
 		 * @param svm_values SVM values
 		 * @return penalty
 		 */
-		virtual DREAL lookup_penalty(INT p_value, DREAL* svm_values) const =0;
+		virtual DREAL lookup_penalty(int32_t p_value, DREAL* svm_values) const =0;
 
 		/** penalty clear derivative
 		 *
@@ -78,7 +78,7 @@ class CPlifBase : public CSGObject
 		 *
 		 * abstract base method
 		 */
-		virtual void get_used_svms(INT* num_svms, INT* svm_ids) = 0;
+		virtual void get_used_svms(int32_t* num_svms, int32_t* svm_ids) = 0;
 
 		/** if plif uses SVM values
 		 *
@@ -94,6 +94,6 @@ class CPlifBase : public CSGObject
 		 *
 		 * @return maximum ID
 		 */
-		virtual INT get_max_id() const = 0;
+		virtual int32_t get_max_id() const = 0;
 };
 #endif

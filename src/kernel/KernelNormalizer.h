@@ -52,18 +52,18 @@ class CKernelNormalizer : public CSGObject
 		 * @param idx_lhs index of left hand side vector
 		 * @param idx_rhs index of right hand side vector
 		 */
-		virtual DREAL normalize(DREAL value, INT idx_lhs, INT idx_rhs)=0; 
+		virtual DREAL normalize(DREAL value, int32_t idx_lhs, int32_t idx_rhs)=0; 
 
 		/** normalize only the left hand side vector
 		 * @param value value of a component of the left hand side feature vector
 		 * @param idx_lhs index of left hand side vector
 		 */
-		virtual DREAL normalize_lhs(DREAL value, INT idx_lhs)=0; 
+		virtual DREAL normalize_lhs(DREAL value, int32_t idx_lhs)=0; 
 
 		/** normalize only the right hand side vector
 		 * @param value value of a component of the right hand side feature vector
 		 * @param idx_rhs index of right hand side vector
 		 */
-		virtual DREAL normalize_rhs(DREAL value, INT idx_rhs)=0; 
+		virtual DREAL normalize_rhs(DREAL value, int32_t idx_rhs)=0; 
 };
 #endif

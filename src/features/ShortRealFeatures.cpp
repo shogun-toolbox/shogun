@@ -34,13 +34,13 @@ bool CShortRealFeatures::load(char* fname)
 
 bool CShortRealFeatures::save(char* fname)
 {
-	INT len;
+	int32_t len;
 	bool free;
 	SHORTREAL* fv;
 
 	CFile f(fname, 'w', F_SHORTREAL);
 
-    for (INT i=0; i< (INT) num_vectors && f.is_ok(); i++)
+    for (int32_t i=0; i< (int32_t) num_vectors && f.is_ok(); i++)
 	{
 		if (!(i % (num_vectors/10+1)))
 			SG_PRINT( "%02d%%.", (int) (100.0*i/num_vectors));

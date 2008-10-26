@@ -34,7 +34,7 @@ class CLPBoost : public CSparseLinearClassifier
 			return CT_LPBOOST;
 		}
 
-		bool init(INT num_vec);
+		bool init(int32_t num_vec);
 		void cleanup();
 
 		inline void set_C(DREAL c1, DREAL c2) { C1=c1; C2=c2; }
@@ -48,7 +48,7 @@ class CLPBoost : public CSparseLinearClassifier
 		inline void set_epsilon(DREAL eps) { epsilon=eps; }
 		inline DREAL get_epsilon() { return epsilon; }
 
-		DREAL find_max_violator(INT& max_dim);
+		DREAL find_max_violator(int32_t& max_dim);
 
 	protected:
 		DREAL C1;
@@ -57,10 +57,10 @@ class CLPBoost : public CSparseLinearClassifier
 		DREAL epsilon;
 
 		DREAL* u;
-		CDynamicArray<INT>* dim;
+		CDynamicArray<int32_t>* dim;
 
-		INT num_sfeat;
-		INT num_svec;
+		int32_t num_sfeat;
+		int32_t num_svec;
 		TSparse<DREAL>* sfeat;
 
 };

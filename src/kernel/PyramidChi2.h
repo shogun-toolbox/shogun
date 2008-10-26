@@ -33,9 +33,9 @@ public:
 	 * @param weights2 weights2
 	 * @param numweights2 numweights2
 	 */
-	CPyramidChi2(INT size, DREAL width2,
-		INT* pyramidlevels2, INT numlevels2,
-		INT  numbinsinhistogram2, DREAL* weights2, INT numweights2);
+	CPyramidChi2(int32_t size, DREAL width2,
+		int32_t* pyramidlevels2, int32_t numlevels2,
+		int32_t  numbinsinhistogram2, DREAL* weights2, int32_t numweights2);
 
 	/** constructor
 	 *
@@ -49,9 +49,9 @@ public:
 	 * @param weights2 weights2
 	 * @param numweights2 numweights2
 	 */
-	CPyramidChi2(CRealFeatures* l, CRealFeatures* r, INT size, DREAL width2,
-		INT* pyramidlevels2, INT numlevels2,
-		INT  numbinsinhistogram2, DREAL* weights2, INT numweights2);
+	CPyramidChi2(CRealFeatures* l, CRealFeatures* r, int32_t size, DREAL width2,
+		int32_t* pyramidlevels2, int32_t numlevels2,
+		int32_t  numbinsinhistogram2, DREAL* weights2, int32_t numweights2);
 
 	/** init
 	 *
@@ -103,23 +103,23 @@ protected:
 	 * @param idx_b index of feature vector b
 	 * @return computed kernel function
 	 */
-	virtual DREAL compute(INT idx_a, INT idx_b);
+	virtual DREAL compute(int32_t idx_a, int32_t idx_b);
 
 protected:
 	/** width */
 	DREAL width;
 	/** pyramidlevels */
-	INT* pyramidlevels;
+	int32_t* pyramidlevels;
 
 	/** length of vector pyramidlevels */
-	INT numlevels;
+	int32_t numlevels;
 	/** numbinsinhistogram */
-	INT numbinsinhistogram;
+	int32_t numbinsinhistogram;
 	/** weights */
 	DREAL* weights;
 
 	/** length of vector weights */
-	INT numweights;
+	int32_t numweights;
 	//bool sanitycheckbit;
 };
 

@@ -100,7 +100,7 @@ class CPerformanceMeasures : public CSGObject
 		 *
 		 * @return number of labels in output/true labels
 		 */
-		inline INT get_num_labels() const { return m_num_labels; }
+		inline int32_t get_num_labels() const { return m_num_labels; }
 
 		/** get Receiver Operating Curve for previously given labels
 		 * (swig compatible)
@@ -114,7 +114,7 @@ class CPerformanceMeasures : public CSGObject
 		 * @param num number of labels/examples
 		 * @param dim dimensions == 2 (false positive rate, true positive rate)
 		 */
-		void get_ROC(DREAL** result, INT* num, INT* dim);
+		void get_ROC(DREAL** result, int32_t* num, int32_t* dim);
 
 		/** return area under Receiver Operating Curve
 		 *
@@ -156,7 +156,7 @@ class CPerformanceMeasures : public CSGObject
 		 * @param num number of labels/examples
 		 * @param dim dimension == 2 (recall, precision)
 		 */
-		void get_PRC(DREAL** result, INT* num, INT* dim);
+		void get_PRC(DREAL** result, int32_t* num, int32_t* dim);
 
 		/** return area under Precision Recall Curve
 		 *
@@ -198,7 +198,7 @@ class CPerformanceMeasures : public CSGObject
 		 * @param num number of labels/examples
 		 * @param dim dimension == 2 (false positive rate, false negative rate)
 		 */
-		void get_DET(DREAL** result, INT* num, INT* dim);
+		void get_DET(DREAL** result, int32_t* num, int32_t* dim);
 
 		/** return area under Detection Error Tradeoff curve
 		 *
@@ -239,7 +239,7 @@ class CPerformanceMeasures : public CSGObject
 		 * @param num number of accuracy points
 		 * @param dim dimension == 2 (output, accuracy)
 		 */
-		void get_all_accuracy(DREAL** result, INT* num, INT* dim);
+		void get_all_accuracy(DREAL** result, int32_t* num, int32_t* dim);
 
 		/** get classifier's accuracy at given threshold
 		 *
@@ -260,7 +260,7 @@ class CPerformanceMeasures : public CSGObject
 		 * @param num number of accuracy points
 		 * @param dim dimension == 2 (output, error)
 		 */
-		void get_all_error(DREAL** result, INT* num, INT* dim);
+		void get_all_error(DREAL** result, int32_t* num, int32_t* dim);
 
 		/** get classifier's error at threshold
 		 *
@@ -286,7 +286,7 @@ class CPerformanceMeasures : public CSGObject
 		 * @param num number of accuracy points
 		 * @param dim dimension == 2 (output, fmeasure)
 		 */
-		void get_all_fmeasure(DREAL** result, INT* num, INT* dim);
+		void get_all_fmeasure(DREAL** result, int32_t* num, int32_t* dim);
 
 		/** get classifier's F-measure at threshold 0
 		 *
@@ -321,7 +321,7 @@ class CPerformanceMeasures : public CSGObject
 		 * @param num number of CC points
 		 * @param dim dimension == 2 (output, CC)
 		 */
-		void get_all_CC(DREAL** result, INT* num, INT* dim);
+		void get_all_CC(DREAL** result, int32_t* num, int32_t* dim);
 
 		/** get classifier's Cross Correlation coefficient at threshold
 		 *
@@ -346,7 +346,7 @@ class CPerformanceMeasures : public CSGObject
 		 * @param num number of WRAcc points
 		 * @param dim dimension == 2 (output, WRAcc)
 		 */
-		void get_all_WRAcc(DREAL** result, INT* num, INT* dim);
+		void get_all_WRAcc(DREAL** result, int32_t* num, int32_t* dim);
 
 		/** get classifier's Weighted Relative Accuracy at threshold 0
 		 *
@@ -371,7 +371,7 @@ class CPerformanceMeasures : public CSGObject
 		 * @param num number of BAL points
 		 * @param dim dimension == 2 (output, BAL)
 		 */
-		void get_all_BAL(DREAL** result, INT* num, INT* dim);
+		void get_all_BAL(DREAL** result, int32_t* num, int32_t* dim);
 
 		/** get classifier's Balanced Error at threshold 0
 		 *
@@ -411,7 +411,7 @@ class CPerformanceMeasures : public CSGObject
 		 * @param do_error if error instead of accuracy shall be computed
 		 */
 		void compute_accuracy(
-			DREAL** result, INT* num, INT* dim, bool do_error=false);
+			DREAL** result, int32_t* num, int32_t* dim, bool do_error=false);
 
 		/** compute PRC points and auPRC
 		 *
@@ -435,7 +435,7 @@ class CPerformanceMeasures : public CSGObject
 		 * @param fn storage of false negatives or NULL if unused
 		 * @param tn storage of true negatives or NULL if unused
 		 */
-		void compute_confusion_matrix(DREAL threshold, INT* tp, INT* fp, INT* fn, INT* tn);
+		void compute_confusion_matrix(DREAL threshold, int32_t* tp, int32_t* fp, int32_t* fn, int32_t* tn);
 
 	protected:
 		/** true labels/examples as seen in real world */
@@ -443,16 +443,16 @@ class CPerformanceMeasures : public CSGObject
 		/** output labels/hypothesis from a classifier */
 		CLabels* m_output;
 		/** number of true labels/outputs/accuracies/ROC points */
-		INT m_num_labels;
+		int32_t m_num_labels;
 
 		/** number of positive examples in true_labels */
-		INT m_all_true;
+		int32_t m_all_true;
 		/** number of negative examples in true_labels */
-		INT m_all_false;
+		int32_t m_all_false;
 
 		/** array of size num_labels with indices of true_labels/output
 		 * sorted to fit ROC algorithm */
-		INT* m_sortedROC;
+		int32_t* m_sortedROC;
 		/** area under ROC; 1 - area over ROC */
 		DREAL m_auROC;
 		/** area under PRC; 1 - area over PRC */

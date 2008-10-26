@@ -38,10 +38,10 @@ bool CSVMLin::train()
 	ASSERT(labels);
 	ASSERT(get_features());
 
-	INT num_train_labels=0;
+	int32_t num_train_labels=0;
 	DREAL* train_labels=labels->get_labels(num_train_labels);
-	INT num_feat=features->get_num_features();
-	INT num_vec=features->get_num_vectors();
+	int32_t num_feat=features->get_num_features();
+	int32_t num_vec=features->get_num_vectors();
 
 	ASSERT(num_vec==num_train_labels);
 	delete[] w;
@@ -76,7 +76,7 @@ bool CSVMLin::train()
 	else
 		Options.bias=0.0;
 
-	for(int i=0;i<num_vec;i++)
+	for (int32_t i=0;i<num_vec;i++)
 	{
 		if(train_labels[i]>0) 
 			Data.C[i]=Options.Cp;
@@ -87,7 +87,7 @@ bool CSVMLin::train()
 	ASSERT(Weights.vec && Weights.d==num_feat+1);
 
 	DREAL sgn=train_labels[0];
-	for (INT i=0; i<num_feat+1; i++)
+	for (int32_t i=0; i<num_feat+1; i++)
 		Weights.vec[i]*=sgn;
 
 	CSparseLinearClassifier::set_w(Weights.vec, num_feat);

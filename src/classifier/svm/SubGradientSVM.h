@@ -92,53 +92,53 @@ class CSubGradientSVM : public CSparseLinearClassifier
 		 *
 		 * @param q new qpsize
 		 */
-		inline void set_qpsize(INT q) { qpsize=q; }
+		inline void set_qpsize(int32_t q) { qpsize=q; }
 
 		/** get qpsize
 		 *
 		 * @return qpsize
 		 */
-		inline INT get_qpsize() { return qpsize; }
+		inline int32_t get_qpsize() { return qpsize; }
 
 		/** set qpsize_max
 		 *
 		 * @param q new qpsize_max
 		 */
-		inline void set_qpsize_max(INT q) { qpsize_max=q; }
+		inline void set_qpsize_max(int32_t q) { qpsize_max=q; }
 
 		/** get qpsize_max
 		 *
 		 * @return qpsize_max
 		 */
-		inline INT get_qpsize_max() { return qpsize_max; }
+		inline int32_t get_qpsize_max() { return qpsize_max; }
 
 	protected:
 		/// returns number of changed constraints for precision work_epsilon
 		/// and fills active array
-		INT find_active(INT num_feat, INT num_vec, INT& num_active, INT& num_bound);
+		int32_t find_active(int32_t num_feat, int32_t num_vec, int32_t& num_active, int32_t& num_bound);
 
 		/// swaps the active / old_active and computes idx_active, idx_bound
 		/// and sum_CXy_active arrays and the sum_Cy_active variable
-		void update_active(INT num_feat, INT num_vec);
+		void update_active(int32_t num_feat, int32_t num_vec);
 
 		/// compute svm objective
-		DREAL compute_objective(INT num_feat, INT num_vec);
+		DREAL compute_objective(int32_t num_feat, int32_t num_vec);
 
 		/// compute minimum norm subgradient
 		/// return norm of minimum norm subgradient
-		DREAL compute_min_subgradient(INT num_feat, INT num_vec, INT num_active, INT num_bound);
+		DREAL compute_min_subgradient(int32_t num_feat, int32_t num_vec, int32_t num_active, int32_t num_bound);
 
 		///performs a line search to determine step size
-		DREAL line_search(INT num_feat, INT num_vec);
+		DREAL line_search(int32_t num_feat, int32_t num_vec);
 
 		/// compute projection
-		void compute_projection(INT num_feat, INT num_vec);
+		void compute_projection(int32_t num_feat, int32_t num_vec);
 
 		/// only computes updates on the projection
-		void update_projection(DREAL alpha, INT num_vec);
+		void update_projection(DREAL alpha, int32_t num_vec);
 
 		/// alloc helper arrays
-		void init(INT num_vec, INT num_feat);
+		void init(int32_t num_vec, int32_t num_feat);
 		
 		/// de-alloc helper arrays
 		void cleanup();
@@ -155,18 +155,18 @@ class CSubGradientSVM : public CSparseLinearClassifier
 		/** autoselected epsilon */
 		DREAL autoselected_epsilon;
 		/** qpsize */
-		INT qpsize;
+		int32_t qpsize;
 		/** maximum qpsize */
-		INT qpsize_max;
+		int32_t qpsize_max;
 		/** limit of qpsize */
-		INT qpsize_limit;
+		int32_t qpsize_limit;
 		/** shall bias be used */
 		bool use_bias;
 
 		/** last iteration no improvement */
-		INT last_it_noimprovement;
+		int32_t last_it_noimprovement;
 		/** number of iterations no improvement */
-		INT num_it_noimprovement;
+		int32_t num_it_noimprovement;
 
 		//idx vectors of length num_vec
 		/** 0=not active, 1=active, 2=on boundary */
@@ -174,19 +174,19 @@ class CSubGradientSVM : public CSparseLinearClassifier
 		/** old active */
 		uint8_t* old_active;
 		/** idx active */
-		INT* idx_active;
+		int32_t* idx_active;
 		/** idx bound */
-		INT* idx_bound;
+		int32_t* idx_bound;
 		/** delta active */
-		INT delta_active;
+		int32_t delta_active;
 		/** delta bound */
-		INT delta_bound;
+		int32_t delta_bound;
 		/** proj */
 		DREAL* proj;
 		/** tmp proj*/
 		DREAL* tmp_proj;
 		/** tmp proj index */
-		INT* tmp_proj_idx;
+		int32_t* tmp_proj_idx;
 		
 		//vector of length num_feat
 		/** sum CXy active */
@@ -208,7 +208,7 @@ class CSubGradientSVM : public CSparseLinearClassifier
 		/** hinge point */
 		DREAL* hinge_point;
 		/** hinge index */
-		INT* hinge_idx;
+		int32_t* hinge_idx;
 
 		//vectors/sym matrix of size qpsize_limit
 		/** beta */

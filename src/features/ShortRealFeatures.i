@@ -9,8 +9,8 @@
 %feature("autodoc", "get_fm(self) -> numpy 1dim array of float") get_fm;
 #endif
 
-%apply (SHORTREAL* IN_ARRAY2, INT DIM1, INT DIM2) {(SHORTREAL* src, INT num_feat, INT num_vec)};
-%apply (SHORTREAL** ARGOUT2, INT* DIM1, INT* DIM2) {(SHORTREAL** dst, INT* d1, INT* d2)};
+%apply (SHORTREAL* IN_ARRAY2, int32_t DIM1, int32_t DIM2) {(SHORTREAL* src, int32_t num_feat, int32_t num_vec)};
+%apply (SHORTREAL** ARGOUT2, int32_t* DIM1, int32_t* DIM2) {(SHORTREAL** dst, int32_t* d1, int32_t* d2)};
 
 %rename(ShortRealFeatures) CShortRealFeatures;
 

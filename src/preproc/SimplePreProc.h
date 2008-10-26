@@ -44,7 +44,7 @@ template <class ST> class CSimplePreProc : public CPreProc
 		/// apply preproc on single feature vector
 		/// result in feature matrix
 
-		virtual ST* apply_to_feature_vector(ST* f, INT &len)=0;
+		virtual ST* apply_to_feature_vector(ST* f, int32_t &len)=0;
 
 		/// return that we are simple features (just fixed size matrices)
 		inline virtual EFeatureClass get_feature_class() { return C_SIMPLE; }

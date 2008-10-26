@@ -23,16 +23,16 @@
 
 #ifdef ARRAY_STATISTICS
 struct array_statistics {
-	INT const_element;
-	INT element;
-	INT set_element;
-	INT get_element;
-	INT operator_overload;
-	INT const_operator_overload;
-	INT set_array;
-	INT get_array;
-	INT resize_array;
-	INT array_element;
+	int32_t const_element;
+	int32_t element;
+	int32_t set_element;
+	int32_t get_element;
+	int32_t operator_overload;
+	int32_t const_operator_overload;
+	int32_t set_array;
+	int32_t get_array;
+	int32_t resize_array;
+	int32_t array_element;
 };
 
 #define DECLARE_ARRAY_STATISTICS struct array_statistics as
@@ -83,7 +83,7 @@ template <class T> class CArray : public CSGObject
 		 *
 		 * @param initial_size initial size of array
 		 */
-		CArray(INT initial_size = 1)
+		CArray(int32_t initial_size = 1)
 		: CSGObject(), free_array(true), name(NULL)
 		{
 			INIT_ARRAY_STATISTICS;
@@ -99,7 +99,7 @@ template <class T> class CArray : public CSGObject
 		 * @param p_free_array if array must be freed
 		 * @param p_copy_array if array must be copied
 		 */
-		CArray(T* p_array, INT p_array_size, bool p_free_array=true,
+		CArray(T* p_array, int32_t p_array_size, bool p_free_array=true,
 			bool p_copy_array=false)
 		: CSGObject(), array(NULL), free_array(false), name(NULL)
 		{
@@ -112,7 +112,7 @@ template <class T> class CArray : public CSGObject
 		 * @param p_array another array
 		 * @param p_array_size size of another array
 		 */
-		CArray(const T* p_array, INT p_array_size)
+		CArray(const T* p_array, int32_t p_array_size)
 		: CSGObject(), array(NULL), free_array(false), name(NULL)
 		{
 			INIT_ARRAY_STATISTICS;
@@ -150,7 +150,7 @@ template <class T> class CArray : public CSGObject
 		 *
 		 * @return total array size
 		 */
-		inline INT get_array_size() const
+		inline int32_t get_array_size() const
 		{
 			return array_size;
 		}
@@ -159,7 +159,7 @@ template <class T> class CArray : public CSGObject
 		 *
 		 * @return total array size
 		 */
-		inline INT get_dim1()
+		inline int32_t get_dim1()
 		{
 			return array_size;
 		}
@@ -167,7 +167,7 @@ template <class T> class CArray : public CSGObject
 		/** zero array */
 		inline void zero()
 		{
-			for (INT i=0; i< array_size; i++)
+			for (int32_t i=0; i< array_size; i++)
 				array[i]=0;
 		}
 
@@ -176,7 +176,7 @@ template <class T> class CArray : public CSGObject
 		 * @param index index
 		 * @return array element at index
 		 */
-		inline const T& get_element(INT index) const
+		inline const T& get_element(int32_t index) const
 		{
 			ARRAY_ASSERT(array && (index>=0) && (index<array_size));
 			INCREMENT_ARRAY_STATISTICS_VALUE(get_element);
@@ -189,7 +189,7 @@ template <class T> class CArray : public CSGObject
 		 * @param index index
 		 * @return if setting was successful
 		 */
-		inline bool set_element(const T& p_element, INT index)
+		inline bool set_element(const T& p_element, int32_t index)
 		{
 			ARRAY_ASSERT(array && (index>=0) && (index<array_size));
 			INCREMENT_ARRAY_STATISTICS_VALUE(set_element);
@@ -202,7 +202,7 @@ template <class T> class CArray : public CSGObject
 		 * @param idx1 index
 		 * @return element at given index
 		 */
-		inline const T& element(INT idx1) const
+		inline const T& element(int32_t idx1) const
 		{
 			INCREMENT_ARRAY_STATISTICS_VALUE(const_element);
 			return get_element(idx1);
@@ -213,7 +213,7 @@ template <class T> class CArray : public CSGObject
 		 * @param index index
 		 * @return element at given index
 		 */
-		inline T& element(INT index)
+		inline T& element(int32_t index)
 		{
 			ARRAY_ASSERT(array);
 			ARRAY_ASSERT(index>=0);
@@ -228,7 +228,7 @@ template <class T> class CArray : public CSGObject
 		 * @param index index
 		 * @return element of given array at given index
 		 */
-		inline T& element(T* p_array, INT index)
+		inline T& element(T* p_array, int32_t index)
 		{
 			ARRAY_ASSERT(array && (index>=0) && (index<array_size));
 			ARRAY_ASSERT(array == p_array);
@@ -241,7 +241,7 @@ template <class T> class CArray : public CSGObject
 		 * @param n new size
 		 * @return if resizing was successful
 		 */
-		bool resize_array(INT n)
+		bool resize_array(int32_t n)
 		{
 			INCREMENT_ARRAY_STATISTICS_VALUE(resize_array);
 			ARRAY_ASSERT(free_array);
@@ -275,7 +275,7 @@ template <class T> class CArray : public CSGObject
 		 * @param p_free_array if array must be freed
 		 * @param copy_array if array must be copied
 		 */
-		inline void set_array(T* p_array, INT p_array_size, bool p_free_array=true,
+		inline void set_array(T* p_array, int32_t p_array_size, bool p_free_array=true,
 				bool copy_array=false)
 		{
 			INCREMENT_ARRAY_STATISTICS_VALUE(set_array);
@@ -297,7 +297,7 @@ template <class T> class CArray : public CSGObject
 		 * @param p_array another array
 		 * @param p_array_size size of another array
 		 */
-		inline void set_array(const T* p_array, INT p_array_size)
+		inline void set_array(const T* p_array, int32_t p_array_size)
 		{
 			INCREMENT_ARRAY_STATISTICS_VALUE(set_array);
 			free(this->array);
@@ -322,7 +322,7 @@ template <class T> class CArray : public CSGObject
 		 * @param index
 		 * @return element at index
 		 */
-		inline const T& operator[](INT index) const
+		inline const T& operator[](int32_t index) const
 		{
 			INCREMENT_ARRAY_STATISTICS_VALUE(const_operator_overload);
 			return array[index];
@@ -335,7 +335,7 @@ template <class T> class CArray : public CSGObject
 		 * @param index
 		 * @return element at index
 		 */
-		inline T& operator[](INT index)
+		inline T& operator[](int32_t index)
 		{
 			INCREMENT_ARRAY_STATISTICS_VALUE(operator_overload);
 			return element(index);
@@ -365,7 +365,7 @@ template <class T> class CArray : public CSGObject
 		void display_array() const
 		{
 			display_size();
-			for (INT i=0; i<array_size; i++)
+			for (int32_t i=0; i<array_size; i++)
 				SG_PRINT("%1.1f,", (float)array[i]);
 			SG_PRINT("\n");
 		}
@@ -374,7 +374,7 @@ template <class T> class CArray : public CSGObject
 		/** memory for dynamic array */
 		T* array;
 		/** the number of potentially used elements in array */
-		INT array_size;
+		int32_t array_size;
 		/** if array must be freed */
 		bool free_array;
 		/** array's name */

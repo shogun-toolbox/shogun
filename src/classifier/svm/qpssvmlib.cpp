@@ -83,7 +83,7 @@ Inputs/Outputs:
  Usage: exitflag = qpssvm_solver( &get_col, diag_H, f, b, I, x, n, tmax, 
          tolabs, tolrel, &QP, &QD, verb );   
 -------------------------------------------------------------- */
-int qpssvm_solver(const void* (*get_col)(uint32_t),
+int8_t qpssvm_solver(const void* (*get_col)(uint32_t),
                   double *diag_H,
                   double *f,
                   double b,
@@ -117,9 +117,9 @@ int qpssvm_solver(const void* (*get_col)(uint32_t),
   uint32_t v=0;
   uint32_t k;
   uint32_t i, j;
-  int exitflag;
+  int8_t exitflag;
 
-  
+
   /* ------------------------------------------------------------ 
     Initialization                                               
   ------------------------------------------------------------ */

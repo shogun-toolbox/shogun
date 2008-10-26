@@ -15,14 +15,14 @@
 #include "features/Features.h"
 #include "features/StringFeatures.h"
 
-CPolyMatchWordStringKernel::CPolyMatchWordStringKernel(INT size, INT d, bool i)
+CPolyMatchWordStringKernel::CPolyMatchWordStringKernel(int32_t size, int32_t d, bool i)
 : CStringKernel<uint16_t>(size),degree(d),inhomogene(i)
 {
 	set_normalizer(new CSqrtDiagKernelNormalizer());
 }
 
 CPolyMatchWordStringKernel::CPolyMatchWordStringKernel(
-	CStringFeatures<uint16_t>* l, CStringFeatures<uint16_t>* r, INT d, bool i)
+	CStringFeatures<uint16_t>* l, CStringFeatures<uint16_t>* r, int32_t d, bool i)
 : CStringKernel<uint16_t>(10),degree(d),inhomogene(i)
 {
 	set_normalizer(new CSqrtDiagKernelNormalizer());
@@ -55,18 +55,18 @@ bool CPolyMatchWordStringKernel::save_init(FILE* dest)
 	return false;
 }
 
-DREAL CPolyMatchWordStringKernel::compute(INT idx_a, INT idx_b)
+DREAL CPolyMatchWordStringKernel::compute(int32_t idx_a, int32_t idx_b)
 {
-	INT alen, blen;
+	int32_t alen, blen;
 
 	uint16_t* avec=((CStringFeatures<uint16_t>*) lhs)->get_feature_vector(idx_a, alen);
 	uint16_t* bvec=((CStringFeatures<uint16_t>*) rhs)->get_feature_vector(idx_b, blen);
 
 	ASSERT(alen==blen);
 
-	INT sum=0;
+	int32_t sum=0;
 
-	for (INT i=0; i<alen; i++)
+	for (int32_t i=0; i<alen; i++)
 		sum+= (avec[i]==bvec[i]) ? 1 : 0;
 
 	if (inhomogene)
@@ -74,7 +74,7 @@ DREAL CPolyMatchWordStringKernel::compute(INT idx_a, INT idx_b)
 
 	DREAL result=sum;
 
-	for (INT j=1; j<degree; j++)
+	for (int32_t j=1; j<degree; j++)
 		result*=sum;
 
 	return result;

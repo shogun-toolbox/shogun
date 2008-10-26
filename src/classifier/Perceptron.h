@@ -50,7 +50,7 @@ class CPerceptron : public CLinearClassifier
 		}
 
 		/// set maximum number of iterations
-		inline void set_max_iter(INT i)
+		inline void set_max_iter(int32_t i)
 		{
 			max_iter=i;
 		}
@@ -59,6 +59,6 @@ class CPerceptron : public CLinearClassifier
 		/** learning rate */
 		DREAL learn_rate;
 		/** maximum number of iterations */
-		INT max_iter;
+		int32_t max_iter;
 };
 #endif

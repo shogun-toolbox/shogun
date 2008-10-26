@@ -55,9 +55,9 @@ bool CLogPlusOne::save(FILE* f)
 /// return pointer to feature_matrix, i.e. f->get_feature_matrix();
 DREAL* CLogPlusOne::apply_to_feature_matrix(CFeatures* f)
 {
-	INT i,j;
-	INT num_vec;
-	INT num_feat;
+	int32_t i,j;
+	int32_t num_vec;
+	int32_t num_feat;
 	DREAL* matrix=((CRealFeatures*) f)->get_feature_matrix(num_feat, num_vec);
 
 	for (i=0; i<num_vec; i++)
@@ -72,10 +72,10 @@ DREAL* CLogPlusOne::apply_to_feature_matrix(CFeatures* f)
 
 /// apply preproc on single feature vector
 /// result in feature matrix
-DREAL* CLogPlusOne::apply_to_feature_vector(DREAL* f, INT& len)
+DREAL* CLogPlusOne::apply_to_feature_vector(DREAL* f, int32_t& len)
 {
 	DREAL* vec=new DREAL[len];
-	INT i=0;
+	int32_t i=0;
 
 	for (i=0; i<len; i++)
 		vec[i]=log(f[i]+1);

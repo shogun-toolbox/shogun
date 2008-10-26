@@ -444,7 +444,7 @@ static void swapf(double* a, double* b)
 
 static void swapi(uint32_t* a, uint32_t* b)
 {
-	int dummy=*b;
+	uint32_t dummy=*b;
 	*b=*a;
 	*a=dummy;
 }

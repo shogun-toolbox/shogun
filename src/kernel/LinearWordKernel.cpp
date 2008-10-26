@@ -55,29 +55,31 @@ bool CLinearWordKernel::save_init(FILE* dest)
 
 void CLinearWordKernel::clear_normal()
 {
-	int num = lhs->get_num_vectors();
+	int32_t num = lhs->get_num_vectors();
 	CMath::fill_vector(normal, num, 0.0);
 }
 
-void CLinearWordKernel::add_to_normal(INT idx, DREAL weight) 
+void CLinearWordKernel::add_to_normal(int32_t idx, DREAL weight)
 {
-	INT vlen;
+	int32_t vlen;
 	bool vfree;
 	uint16_t* vec=((CWordFeatures*) lhs)->get_feature_vector(idx, vlen, vfree);
 
-	for (int i=0; i<vlen; i++)
+	for (int32_t i=0; i<vlen; i++)
 		normal[i]+= weight*normalizer->normalize_lhs(vec[i], idx);
 
 	((CWordFeatures*) lhs)->free_feature_vector(vec, idx, vfree);
 }
   
-DREAL CLinearWordKernel::compute(INT idx_a, INT idx_b)
+DREAL CLinearWordKernel::compute(int32_t idx_a, int32_t idx_b)
 {
-	INT alen, blen;
+	int32_t alen, blen;
 	bool afree, bfree;
 
-	uint16_t* avec=((CWordFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
-	uint16_t* bvec=((CWordFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
+	uint16_t* avec=((CWordFeatures*) lhs)->get_feature_vector(
+		idx_a, alen, afree);
+	uint16_t* bvec=((CWordFeatures*) rhs)->get_feature_vector(
+		idx_b, blen, bfree);
 	ASSERT(alen==blen);
 
 	DREAL result=CMath::dot(avec, bvec, alen);
@@ -88,24 +90,26 @@ DREAL CLinearWordKernel::compute(INT idx_a, INT idx_b)
 	return result;
 }
 
-bool CLinearWordKernel::init_optimization(INT num_suppvec, INT* sv_idx, DREAL* alphas) 
+bool CLinearWordKernel::init_optimization(int32_t num_suppvec, int32_t* sv_idx, DREAL* alphas)
 {
-	INT alen;
+	int32_t alen;
 	bool afree;
 
-	int num_feat=((CWordFeatures*) lhs)->get_num_features();
+	int32_t num_feat=((CWordFeatures*) lhs)->get_num_features();
 	ASSERT(num_feat);
 
 	normal=new DREAL[num_feat];
 	CMath::fill_vector(normal, num_feat, 0.0);
 
-	for (int i=0; i<num_suppvec; i++)
+	for (int32_t i=0; i<num_suppvec; i++)
 	{
-		uint16_t* avec=((CWordFeatures*) lhs)->get_feature_vector(sv_idx[i], alen, afree);
+		uint16_t* avec=((CWordFeatures*) lhs)->get_feature_vector(
+			sv_idx[i], alen, afree);
 		ASSERT(avec);
 
-		for (int j=0; j<num_feat; j++)
-			normal[j]+=alphas[i] * normalizer->normalize_lhs(((DREAL) avec[j]), sv_idx[i]);
+		for (int32_t j=0; j<num_feat; j++)
+			normal[j]+=alphas[i] * normalizer->normalize_lhs(
+				((DREAL) avec[j]), sv_idx[i]);
 
 		((CWordFeatures*) lhs)->free_feature_vector(avec, 0, afree);
 	}
@@ -123,16 +127,16 @@ bool CLinearWordKernel::delete_optimization()
 	return true;
 }
 
-DREAL CLinearWordKernel::compute_optimized(INT idx_b) 
+DREAL CLinearWordKernel::compute_optimized(int32_t idx_b) 
 {
-	INT blen;
+	int32_t blen;
 	bool bfree;
 
 	uint16_t* bvec=((CWordFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
 
 	double result=0;
 	{
-		for (INT i=0; i<blen; i++)
+		for (int32_t i=0; i<blen; i++)
 			result+= normal[i] * ((double) bvec[i]);
 	}
 

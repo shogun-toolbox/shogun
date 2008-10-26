@@ -79,7 +79,7 @@ class CClassifier : public CSGObject
 		 * @param num which example to classify
 		 * @return infinite float value
 		 */
-		virtual DREAL classify_example(INT num) { return CMath::INFTY; }
+		virtual DREAL classify_example(int32_t num) { return CMath::INFTY; }
 
 		/** load Classifier from file
 		 *
@@ -121,7 +121,7 @@ class CClassifier : public CSGObject
 		 * @param i index of label to get
 		 * @return value of label at index i
 		 */
-		virtual inline DREAL get_label(INT i) { return labels->get_label(i); }
+		virtual inline DREAL get_label(int32_t i) { return labels->get_label(i); }
 
 		/** set maximum training time
 		 *

@@ -36,8 +36,8 @@ bool CMPDSVM::train()
 	const DREAL eps=get_epsilon();
 	const long int maxiter = 1L<<30;
 	//const bool nustop=false;
-	//const int k=2;
-	const int n=labels->get_num_labels();
+	//const int32_t k=2;
+	const int32_t n=labels->get_num_labels();
 	ASSERT(n>0);
 	//const DREAL d = 1.0/n/nu; //NUSVC
 	const DREAL d = get_C1(); //CSVC
@@ -70,7 +70,7 @@ bool CMPDSVM::train()
 	//if (nustop)
 	//etas[1] = 1;
 
-	for (int i=0; i<n; i++)
+	for (int32_t i=0; i<n; i++)
 	{
 		alphas[i]=0;
 		F[i]=labels->get_label(i);
@@ -84,7 +84,7 @@ bool CMPDSVM::train()
 	// go ...
 	while (niter++ < maxiter)
 	{
-		int maxpidx=-1;
+		int32_t maxpidx=-1;
 		DREAL maxpviol = -1;
 		//DREAL maxdviol = CMath::abs(detas[0]);
 		DREAL maxdviol = CMath::abs(detas);
@@ -94,7 +94,7 @@ bool CMPDSVM::train()
 		//maxdviol=CMath::abs(detas[1]);
 
 		// compute kkt violations with correct sign ...
-		for (int i=0; i<n; i++)
+		for (int32_t i=0; i<n; i++)
 		{
 			DREAL v=CMath::abs(dalphas[i]);
 
@@ -132,17 +132,17 @@ bool CMPDSVM::train()
 		{
 			DREAL obj=0;
 
-			for (int i=0; i<n; i++)
+			for (int32_t i=0; i<n; i++)
 			{
 				obj-=alphas[i];
-				for (int j=0; j<n; j++)
+				for (int32_t j=0; j<n; j++)
 					obj+=0.5*labels->get_label(i)*labels->get_label(j)*alphas[i]*alphas[j]*kernel->kernel(i,j);
 			}
 
 			SG_DEBUG( "obj:%f pviol:%f dviol:%f maxpidx:%d iter:%d\n", obj, maxpviol, maxdviol, maxpidx, niter);
 		}
 
-		//for (int i=0; i<n; i++)
+		//for (int32_t i=0; i<n; i++)
 		//	SG_DEBUG( "alphas:%f dalphas:%f\n", alphas[i], dalphas[i]);
 
 		primalcool = (maxpviol < primaleps*stopfac);
@@ -183,7 +183,7 @@ bool CMPDSVM::train()
 		alphas[maxpidx] = tmpalpha;
 
 		KERNELCACHE_ELEM* h=lock_kernel_row(maxpidx);
-		for (int i=0; i<n; i++)
+		for (int32_t i=0; i<n; i++)
 		{
 			hessres[i]+=h[i]*hstep;
 			//hessres[i]+=h[i]*hstep[0];
@@ -207,7 +207,7 @@ bool CMPDSVM::train()
 			//etas[1]+=etachange[1];        
 
 			// update dalphas
-			for (int i=0; i<n; i++)
+			for (int32_t i=0; i<n; i++)
 				dalphas[i]+= F[i] * etachange;
 			//dalphas[i]+= F[i] * etachange[0] + F[i+n] * etachange[1];
 		}
@@ -217,8 +217,8 @@ bool CMPDSVM::train()
 		SG_WARNING( "increase maxiter ... \n");
 
 
-	int nsv=0;
-	for (int i=0; i<n; i++)
+	int32_t nsv=0;
+	for (int32_t i=0; i<n; i++)
 	{
 		if (alphas[i]>0)
 			nsv++;
@@ -229,8 +229,8 @@ bool CMPDSVM::train()
 	//set_bias(etas[0]/etas[1]);
 	set_bias(etas);
 
-	int j=0;
-	for (int i=0; i<n; i++)
+	int32_t j=0;
+	for (int32_t i=0; i<n; i++)
 	{
 		if (alphas[i]>0)
 		{

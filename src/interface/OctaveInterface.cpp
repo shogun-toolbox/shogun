@@ -12,7 +12,7 @@
 
 extern CSGInterface* interface;
 
-COctaveInterface::COctaveInterface(octave_value_list prhs, INT nlhs)
+COctaveInterface::COctaveInterface(octave_value_list prhs, int32_t nlhs)
 : CSGInterface()
 {
 	reset(prhs, nlhs);
@@ -22,7 +22,7 @@ COctaveInterface::~COctaveInterface()
 {
 }
 
-void COctaveInterface::reset(octave_value_list prhs, INT nlhs)
+void COctaveInterface::reset(octave_value_list prhs, int32_t nlhs)
 {
 	CSGInterface::reset();
 
@@ -100,7 +100,7 @@ IFType COctaveInterface::get_argument_type()
 }
 
 
-INT COctaveInterface::get_int()
+int32_t COctaveInterface::get_int()
 {
 	const octave_value i=get_arg_increment();
 	if (!i.is_real_scalar())
@@ -110,7 +110,7 @@ INT COctaveInterface::get_int()
 	if (s-CMath::floor(s)!=0)
 		SG_ERROR("Expected Integer as argument %d\n", m_rhs_counter);
 
-	return INT(s);
+	return int32_t(s);
 }
 
 DREAL COctaveInterface::get_real()
@@ -131,7 +131,7 @@ bool COctaveInterface::get_bool()
 	return b.bool_value();
 }
 
-char* COctaveInterface::get_string(INT& len)
+char* COctaveInterface::get_string(int32_t& len)
 {
 	const octave_value s=get_arg_increment();
 	if (!s.is_string())
@@ -150,7 +150,7 @@ char* COctaveInterface::get_string(INT& len)
 }
 
 #define GET_VECTOR(function_name, oct_type_check, oct_type, oct_converter, sg_type, if_type, error_string)		\
-void COctaveInterface::function_name(sg_type*& vec, INT& len)						\
+void COctaveInterface::function_name(sg_type*& vec, int32_t& len)						\
 {																					\
 	const octave_value mat_feat=get_arg_increment();								\
 	if (!mat_feat.is_matrix_type() || !mat_feat.oct_type_check() || mat_feat.rows()!=1)	\
@@ -160,12 +160,12 @@ void COctaveInterface::function_name(sg_type*& vec, INT& len)						\
 	len = m.cols();																	\
 	vec=new sg_type[len];															\
 																					\
-	for (INT i=0; i<len; i++)														\
+	for (int32_t i=0; i<len; i++)														\
 			vec[i]= (sg_type) m(i);													\
 }
 GET_VECTOR(get_byte_vector, is_uint8_type, uint8NDArray, uint8_array_value, uint8_t, uint8_t, "Byte")
 GET_VECTOR(get_char_vector, is_char_matrix, charMatrix, char_matrix_value, char, char, "Char")
-GET_VECTOR(get_int_vector, is_int32_type, int32NDArray, uint8_array_value, INT, INT, "Integer")
+GET_VECTOR(get_int_vector, is_int32_type, int32NDArray, uint8_array_value, int32_t, int32_t, "Integer")
 GET_VECTOR(get_short_vector, is_int16_type, int16NDArray, uint8_array_value, SHORT, SHORT, "Short")
 GET_VECTOR(get_shortreal_vector, is_single_type, Matrix, matrix_value, SHORTREAL, SHORTREAL, "Single Precision")
 GET_VECTOR(get_real_vector, is_double_type, Matrix, matrix_value, DREAL, DREAL, "Double Precision")
@@ -174,7 +174,7 @@ GET_VECTOR(get_word_vector, is_uint16_type, uint16NDArray, uint16_array_value, u
 
 
 #define GET_MATRIX(function_name, oct_type_check, oct_type, oct_converter, sg_type, if_type, error_string)		\
-void COctaveInterface::function_name(sg_type*& matrix, INT& num_feat, INT& num_vec) \
+void COctaveInterface::function_name(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec) \
 {																					\
 	const octave_value mat_feat=get_arg_increment();								\
 	if (!mat_feat.is_matrix_type() || !mat_feat.oct_type_check())						\
@@ -185,13 +185,13 @@ void COctaveInterface::function_name(sg_type*& matrix, INT& num_feat, INT& num_v
 	num_feat = m.rows();															\
 	matrix=new sg_type[num_vec*num_feat];											\
 																					\
-	for (INT i=0; i<num_vec; i++)													\
-		for (INT j=0; j<num_feat; j++)												\
+	for (int32_t i=0; i<num_vec; i++)													\
+		for (int32_t j=0; j<num_feat; j++)												\
 			matrix[i*num_feat+j]= (sg_type) m(j,i);									\
 }
 GET_MATRIX(get_byte_matrix, is_uint8_type, uint8NDArray, uint8_array_value, uint8_t, uint8_t, "Byte")
 GET_MATRIX(get_char_matrix, is_char_matrix, charMatrix, char_matrix_value, char, char, "Char")
-GET_MATRIX(get_int_matrix, is_int32_type, int32NDArray, uint8_array_value, INT, INT, "Integer")
+GET_MATRIX(get_int_matrix, is_int32_type, int32NDArray, uint8_array_value, int32_t, int32_t, "Integer")
 GET_MATRIX(get_short_matrix, is_int16_type, int16NDArray, uint8_array_value, SHORT, SHORT, "Short")
 GET_MATRIX(get_shortreal_matrix, is_single_type, Matrix, matrix_value, SHORTREAL, SHORTREAL, "Single Precision")
 GET_MATRIX(get_real_matrix, is_double_type, Matrix, matrix_value, DREAL, DREAL, "Double Precision")
@@ -199,13 +199,13 @@ GET_MATRIX(get_word_matrix, is_uint16_type, uint16NDArray, uint16_array_value, u
 #undef GET_MATRIX
 
 #define GET_NDARRAY(function_name, oct_type_check, oct_type, oct_converter, sg_type, if_type, error_string)		\
-void COctaveInterface::function_name(sg_type*& array, INT*& dims, INT& num_dims)	\
+void COctaveInterface::function_name(sg_type*& array, int32_t*& dims, int32_t& num_dims)	\
 {																					\
 	const octave_value mat_feat=get_arg_increment();								\
 	if (!mat_feat.is_matrix_type() || !mat_feat.oct_type_check())					\
 		SG_ERROR("Expected " error_string " ND Array as argument %d\n", m_rhs_counter); \
 																					\
-	num_dims = (INT) mat_feat.ndims();												\
+	num_dims = (int32_t) mat_feat.ndims();												\
 	oct_type m = mat_feat.oct_converter();											\
 	LONG total_size=mat_feat.length();												\
 	array=new sg_type[total_size];													\
@@ -215,14 +215,14 @@ void COctaveInterface::function_name(sg_type*& array, INT*& dims, INT& num_dims)
 }
 GET_NDARRAY(get_byte_ndarray, is_uint8_type, uint8NDArray, uint8_array_value, uint8_t, uint8_t, "Byte")
 GET_NDARRAY(get_char_ndarray, is_char_matrix, charMatrix, char_matrix_value, char, char, "Char")
-GET_NDARRAY(get_int_ndarray, is_int32_type, int32NDArray, uint8_array_value, INT, INT, "Integer")
+GET_NDARRAY(get_int_ndarray, is_int32_type, int32NDArray, uint8_array_value, int32_t, int32_t, "Integer")
 GET_NDARRAY(get_short_ndarray, is_int16_type, int16NDArray, uint8_array_value, SHORT, SHORT, "Short")
 GET_NDARRAY(get_shortreal_ndarray, is_single_type, Matrix, matrix_value, SHORTREAL, SHORTREAL, "Single Precision")
 GET_NDARRAY(get_real_ndarray, is_double_type, Matrix, matrix_value, DREAL, DREAL, "Double Precision")
 GET_NDARRAY(get_word_ndarray, is_uint16_type, uint16NDArray, uint16_array_value, uint16_t, uint16_t, "Word")
 #undef GET_NDARRAY
 
-void COctaveInterface::get_real_sparsematrix(TSparse<DREAL>*& matrix, INT& num_feat, INT& num_vec)
+void COctaveInterface::get_real_sparsematrix(TSparse<DREAL>*& matrix, int32_t& num_feat, int32_t& num_vec)
 {
 	const octave_value mat_feat=get_arg_increment();
 	if (!mat_feat.is_sparse_type() || !(mat_feat.is_double_type()))
@@ -236,9 +236,9 @@ void COctaveInterface::get_real_sparsematrix(TSparse<DREAL>*& matrix, INT& num_f
 	matrix=new TSparse<DREAL>[num_vec];
 
 	LONG offset=0;
-	for (INT i=0; i<num_vec; i++)
+	for (int32_t i=0; i<num_vec; i++)
 	{
-		INT len=sm.cidx(i+1)-sm.cidx(i);
+		int32_t len=sm.cidx(i+1)-sm.cidx(i);
 		matrix[i].vec_index=i;
 		matrix[i].num_feat_entries=len;
 
@@ -246,7 +246,7 @@ void COctaveInterface::get_real_sparsematrix(TSparse<DREAL>*& matrix, INT& num_f
 		{
 			matrix[i].features=new TSparseEntry<DREAL>[len];
 
-			for (INT j=0; j<len; j++)
+			for (int32_t j=0; j<len; j++)
 			{
 				matrix[i].features[j].entry=sm.data(offset);
 				matrix[i].features[j].feat_index=sm.ridx(offset);
@@ -261,7 +261,7 @@ void COctaveInterface::get_real_sparsematrix(TSparse<DREAL>*& matrix, INT& num_f
 
 #define GET_STRINGLIST(function_name, oct_type_check1, oct_type_check2, \
 		oct_type, oct_converter, sg_type, if_type, error_string)		\
-void COctaveInterface::function_name(T_STRING<sg_type>*& strings, INT& num_str, INT& max_string_len) \
+void COctaveInterface::function_name(T_STRING<sg_type>*& strings, int32_t& num_str, int32_t& max_string_len) \
 {																					\
 	max_string_len=0;																\
 	octave_value arg=get_arg_increment();											\
@@ -272,7 +272,7 @@ void COctaveInterface::function_name(T_STRING<sg_type>*& strings, INT& num_str, 
 		ASSERT(num_str>=1);															\
 		strings=new T_STRING<sg_type>[num_str];										\
 																					\
-		for (int i=0; i<num_str; i++)												\
+		for (int32_t i=0; i<num_str; i++)												\
 		{																			\
 			if (!c.elem(i).oct_type_check1() || !c.elem(i).oct_type_check2()		\
 					|| !c.elem(i).rows()==1)				\
@@ -280,12 +280,12 @@ void COctaveInterface::function_name(T_STRING<sg_type>*& strings, INT& num_str, 
 																					\
 			oct_type str=c.elem(i).oct_converter();									\
 																					\
-			INT len=str.cols();														\
+			int32_t len=str.cols();														\
 			if (len>0) 																\
 			{ 																		\
 				strings[i].length=len; /* all must have same length in octave */ 	\
 				strings[i].string=new sg_type[len+1]; /* not zero terminated in octave */ \
-				INT j; 																\
+				int32_t j; 																\
 				for (j=0; j<len; j++) 												\
 					strings[i].string[j]=str(0,j); 									\
 				strings[i].string[j]='\0'; 											\
@@ -303,16 +303,16 @@ void COctaveInterface::function_name(T_STRING<sg_type>*& strings, INT& num_str, 
 	{																				\
 		oct_type data=arg.oct_converter();											\
 		num_str=data.cols(); 														\
-		INT len=data.rows(); 														\
+		int32_t len=data.rows(); 														\
 		strings=new T_STRING<sg_type>[num_str]; 									\
 																					\
-		for (INT i=0; i<num_str; i++) 												\
+		for (int32_t i=0; i<num_str; i++) 												\
 		{ 																			\
 			if (len>0) 																\
 			{ 																		\
 				strings[i].length=len; /* all must have same length in octave */ 	\
 				strings[i].string=new sg_type[len+1]; /* not zero terminated in octave */ \
-				INT j; 																\
+				int32_t j; 																\
 				for (j=0; j<len; j++) 												\
 					strings[i].string[j]=data(j,i);									\
 				strings[i].string[j]='\0'; 											\
@@ -336,7 +336,7 @@ void COctaveInterface::function_name(T_STRING<sg_type>*& strings, INT& num_str, 
 /* ignore the g++ warning here */
 GET_STRINGLIST(get_byte_string_list, is_matrix_type, is_uint8_type, uint8NDArray, uint8_array_value, uint8_t, uint8_t, "Byte")
 GET_STRINGLIST(get_char_string_list, is_char_matrix, is_char_matrix, charMatrix, char_matrix_value, char, char, "Char")
-GET_STRINGLIST(get_int_string_list, is_matrix_type, is_int32_type, int32NDArray, int32_array_value, INT, INT, "Integer")
+GET_STRINGLIST(get_int_string_list, is_matrix_type, is_int32_type, int32NDArray, int32_array_value, int32_t, int32_t, "Integer")
 GET_STRINGLIST(get_short_string_list, is_matrix_type, is_int16_type, int16NDArray, int16_array_value, SHORT, SHORT, "Short")
 GET_STRINGLIST(get_word_string_list, is_matrix_type, is_uint16_type, uint16NDArray, uint16_array_value, uint16_t, uint16_t, "Word")
 #undef GET_STRINGLIST
@@ -344,7 +344,7 @@ GET_STRINGLIST(get_word_string_list, is_matrix_type, is_uint16_type, uint16NDArr
 
 /** set functions - to pass data from shogun to Octave */
 
-void COctaveInterface::set_int(INT scalar)
+void COctaveInterface::set_int(int32_t scalar)
 {
 	octave_value o(scalar);
 	set_arg_increment(o);
@@ -364,18 +364,18 @@ void COctaveInterface::set_bool(bool scalar)
 
 
 #define SET_VECTOR(function_name, oct_type, sg_type, if_type, error_string)		\
-void COctaveInterface::function_name(const sg_type* vec, INT len)				\
+void COctaveInterface::function_name(const sg_type* vec, int32_t len)				\
 {																				\
 	oct_type mat=oct_type(dim_vector(1, len));									\
 																				\
-	for (INT i=0; i<len; i++)													\
+	for (int32_t i=0; i<len; i++)													\
 			mat(i) = (if_type) vec[i];											\
 																				\
 	set_arg_increment(mat);														\
 }
 SET_VECTOR(set_byte_vector, uint8NDArray, uint8_t, uint8_t, "Byte")
 SET_VECTOR(set_char_vector, charMatrix, char, char, "Char")
-SET_VECTOR(set_int_vector, int32NDArray, INT, INT, "Integer")
+SET_VECTOR(set_int_vector, int32NDArray, int32_t, int32_t, "Integer")
 SET_VECTOR(set_short_vector, int16NDArray, SHORT, SHORT, "Short")
 SET_VECTOR(set_shortreal_vector, Matrix, SHORTREAL, SHORTREAL, "Single Precision")
 SET_VECTOR(set_real_vector, Matrix, DREAL, DREAL, "Double Precision")
@@ -383,13 +383,13 @@ SET_VECTOR(set_word_vector, uint16NDArray, uint16_t, uint16_t, "Word")
 #undef SET_VECTOR
 
 #define SET_MATRIX(function_name, oct_type, sg_type, if_type, error_string)		\
-void COctaveInterface::function_name(const sg_type* matrix, INT num_feat, INT num_vec) \
+void COctaveInterface::function_name(const sg_type* matrix, int32_t num_feat, int32_t num_vec) \
 {																				\
 	oct_type mat=oct_type(dim_vector(num_feat, num_vec));						\
 																				\
-	for (INT i=0; i<num_vec; i++)												\
+	for (int32_t i=0; i<num_vec; i++)												\
 	{																			\
-		for (INT j=0; j<num_feat; j++)											\
+		for (int32_t j=0; j<num_feat; j++)											\
 			mat(j,i) = (if_type) matrix[j+i*num_feat];							\
 	}																			\
 																				\
@@ -397,23 +397,23 @@ void COctaveInterface::function_name(const sg_type* matrix, INT num_feat, INT nu
 }
 SET_MATRIX(set_byte_matrix, uint8NDArray, uint8_t, uint8_t, "Byte")
 SET_MATRIX(set_char_matrix, charMatrix, char, char, "Char")
-SET_MATRIX(set_int_matrix, int32NDArray, INT, INT, "Integer")
+SET_MATRIX(set_int_matrix, int32NDArray, int32_t, int32_t, "Integer")
 SET_MATRIX(set_short_matrix, int16NDArray, SHORT, SHORT, "Short")
 SET_MATRIX(set_shortreal_matrix, Matrix, SHORTREAL, SHORTREAL, "Single Precision")
 SET_MATRIX(set_real_matrix, Matrix, DREAL, DREAL, "Double Precision")
 SET_MATRIX(set_word_matrix, uint16NDArray, uint16_t, uint16_t, "Word")
 #undef SET_MATRIX
 
-void COctaveInterface::set_real_sparsematrix(const TSparse<DREAL>* matrix, INT num_feat, INT num_vec, LONG nnz)
+void COctaveInterface::set_real_sparsematrix(const TSparse<DREAL>* matrix, int32_t num_feat, int32_t num_vec, LONG nnz)
 {
 	SparseMatrix sm((octave_idx_type) num_feat, (octave_idx_type) num_vec, (octave_idx_type) nnz);
 
 	LONG offset=0;
-	for (INT i=0; i<num_vec; i++)
+	for (int32_t i=0; i<num_vec; i++)
 	{
-		INT len=matrix[i].num_feat_entries;
+		int32_t len=matrix[i].num_feat_entries;
 		sm.cidx(i)=offset;
-		for (INT j=0; j<len; j++)
+		for (int32_t j=0; j<len; j++)
 		{
 			sm.data(offset) = matrix[i].features[j].entry;
 			sm.ridx(offset) = matrix[i].features[j].feat_index;
@@ -426,7 +426,7 @@ void COctaveInterface::set_real_sparsematrix(const TSparse<DREAL>* matrix, INT n
 }
 
 #define SET_STRINGLIST(function_name, oct_type, sg_type, if_type, error_string)	\
-void COctaveInterface::function_name(const T_STRING<sg_type>* strings, INT num_str)	\
+void COctaveInterface::function_name(const T_STRING<sg_type>* strings, int32_t num_str)	\
 {																					\
 	if (!strings)																	\
 		SG_ERROR("Given strings are invalid.\n");									\
@@ -435,16 +435,16 @@ void COctaveInterface::function_name(const T_STRING<sg_type>* strings, INT num_s
 	if (c.nelem()!=num_str)															\
 		SG_ERROR("Couldn't create Cell Array of %d strings.\n", num_str);			\
 																					\
-	for (INT i=0; i<num_str; i++)													\
+	for (int32_t i=0; i<num_str; i++)													\
 	{																				\
-		INT len=strings[i].length;													\
+		int32_t len=strings[i].length;													\
 		if (len>0)																	\
 		{																			\
 			oct_type str(dim_vector(1,len));										\
 			if (str.cols()!=len)													\
 				SG_ERROR("Couldn't create " error_string " String %d of length %d.\n", i, len);	\
 																					\
-			for (INT j=0; j<len; j++)												\
+			for (int32_t j=0; j<len; j++)												\
 				str(j)= (if_type) strings[i].string[j];								\
 			c.elem(i)=str;															\
 		}																			\
@@ -454,7 +454,7 @@ void COctaveInterface::function_name(const T_STRING<sg_type>* strings, INT num_s
 }
 SET_STRINGLIST(set_byte_string_list, int8NDArray, uint8_t, uint8_t, "Byte")
 SET_STRINGLIST(set_char_string_list, charNDArray, char, char, "Char")
-SET_STRINGLIST(set_int_string_list, int32NDArray, INT, INT, "Integer")
+SET_STRINGLIST(set_int_string_list, int32NDArray, int32_t, int32_t, "Integer")
 SET_STRINGLIST(set_short_string_list, int16NDArray, SHORT, SHORT, "Short")
 SET_STRINGLIST(set_word_string_list, uint16NDArray, uint16_t, uint16_t, "Word")
 #undef SET_STRINGLIST

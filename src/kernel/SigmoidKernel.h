@@ -29,7 +29,7 @@ class CSigmoidKernel: public CSimpleKernel<DREAL>
 		 * @param gamma gamma
 		 * @param coef0 coefficient 0
 		 */
-		CSigmoidKernel(INT size, DREAL gamma, DREAL coef0);
+		CSigmoidKernel(int32_t size, DREAL gamma, DREAL coef0);
 
 		/** constructor
 		 *
@@ -39,7 +39,7 @@ class CSigmoidKernel: public CSimpleKernel<DREAL>
 		 * @param gamma gamma
 		 * @param coef0 coefficient 0
 		 */
-		CSigmoidKernel(CRealFeatures* l, CRealFeatures* r, INT size,
+		CSigmoidKernel(CRealFeatures* l, CRealFeatures* r, int32_t size,
 			DREAL gamma, DREAL coef0);
 
 		virtual ~CSigmoidKernel();
@@ -90,7 +90,7 @@ class CSigmoidKernel: public CSimpleKernel<DREAL>
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		virtual DREAL compute(INT idx_a, INT idx_b);
+		virtual DREAL compute(int32_t idx_a, int32_t idx_b);
 
 	protected:
 		/** gamma */

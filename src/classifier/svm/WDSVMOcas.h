@@ -36,7 +36,7 @@ class CWDSVMOcas : public CClassifier
 		 * @param traindat training features
 		 * @param trainlab labels for training features
 		 */
-		CWDSVMOcas(DREAL C, INT d, INT from_d, CStringFeatures<uint8_t>* traindat, CLabels* trainlab);
+		CWDSVMOcas(DREAL C, int32_t d, int32_t from_d, CStringFeatures<uint8_t>* traindat, CLabels* trainlab);
 		virtual ~CWDSVMOcas();
 
 		/** get classifier type
@@ -110,26 +110,26 @@ class CWDSVMOcas : public CClassifier
 		 *
 		 * @param sz buffer size
 		 */
-		inline void set_bufsize(INT sz) { bufsize=sz; }
+		inline void set_bufsize(int32_t sz) { bufsize=sz; }
 
 		/** get buffer size
 		 *
 		 * @return buffer size
 		 */
-		inline INT get_bufsize() { return bufsize; }
+		inline int32_t get_bufsize() { return bufsize; }
 
 		/** set degree
 		 *
 		 * @param d degree
 		 * @param from_d from degree
 		 */
-		inline void set_degree(INT d, INT from_d) { degree=d; from_degree=from_d;}
+		inline void set_degree(int32_t d, int32_t from_d) { degree=d; from_degree=from_d;}
 
 		/** get degree
 		 *
 		 * @return degree
 		 */
-		inline INT get_degree() { return degree; }
+		inline int32_t get_degree() { return degree; }
 
 		/** classify all examples
 		 *
@@ -143,22 +143,22 @@ class CWDSVMOcas : public CClassifier
 		 * @param num number of example to classify
 		 * @return classified result
 		 */
-		inline virtual DREAL classify_example(INT num)
+		inline virtual DREAL classify_example(int32_t num)
 		{
 			ASSERT(features);
 			if (!wd_weights)
 				set_wd_weights();
 
-			INT len=0;
+			int32_t len=0;
 			DREAL sum=0;
 			uint8_t* vec=features->get_feature_vector(num, len);
 			ASSERT(len==string_length);
 
-			for (INT j=0; j<string_length; j++)
+			for (int32_t j=0; j<string_length; j++)
 			{
-				INT offs=w_dim_single_char*j;
-				INT val=0;
-				for (INT k=0; (j+k<string_length) && (k<degree); k++)
+				int32_t offs=w_dim_single_char*j;
+				int32_t val=0;
+				for (int32_t k=0; (j+k<string_length) && (k<degree); k++)
 				{
 					val=val*alphabet_size + vec[j+k];
 					sum+=wd_weights[k] * w[offs+val];
@@ -173,7 +173,7 @@ class CWDSVMOcas : public CClassifier
 		{
 			ASSERT(features);
 			normalization_const=0;
-			for (INT i=0; i<degree; i++)
+			for (int32_t i=0; i<degree; i++)
 				normalization_const+=(string_length-i)*wd_weights[i]*wd_weights[i];
 
 			normalization_const=CMath::sqrt(normalization_const);
@@ -192,7 +192,7 @@ class CWDSVMOcas : public CClassifier
 		 *
 		 * @return something inty
 		 */
-		INT set_wd_weights();
+		int32_t set_wd_weights();
 
 		/** compute W
 		 *
@@ -258,7 +258,7 @@ class CWDSVMOcas : public CClassifier
 		/** if bias shall be used */
 		bool use_bias;
 		/** buffer size */
-		INT bufsize;
+		int32_t bufsize;
 		/** C1 */
 		DREAL C1;
 		/** C2 */
@@ -269,17 +269,17 @@ class CWDSVMOcas : public CClassifier
 		E_SVM_TYPE method;
 
 		/** degree */
-		INT degree;
+		int32_t degree;
 		/** from degree */
-		INT from_degree;
+		int32_t from_degree;
 		/** wd weights */
 		SHORTREAL* wd_weights;
 		/** num vectors */
-		INT num_vec;
+		int32_t num_vec;
 		/** length of string in vector */
-		INT string_length;
+		int32_t string_length;
 		/** size of alphabet */
-		INT alphabet_size;
+		int32_t alphabet_size;
 
 		/** normalization const */
 		DREAL normalization_const;
@@ -287,11 +287,11 @@ class CWDSVMOcas : public CClassifier
 		/** bias */
 		DREAL bias;
 		/** w offsets */
-		INT* w_offsets;
+		int32_t* w_offsets;
 		/** w dim */
-		INT w_dim;
+		int32_t w_dim;
 		/** w dim of a single char */
-		INT w_dim_single_char;
+		int32_t w_dim_single_char;
 		/** w */
 		SHORTREAL* w;
 		/** old w*/

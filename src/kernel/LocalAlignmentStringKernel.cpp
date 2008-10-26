@@ -42,7 +42,7 @@ static const char *aaList= "ARNDCQEGHILKMFPSTWYV";    /* The list of amino acids
 #define EXTENSION 2                             /* Gap extension penalty */
 
 /* mutation matrix */
-const int CLocalAlignmentStringKernel::blosum[] = {
+const int32_t CLocalAlignmentStringKernel::blosum[] = {
   6,
  -2,   8,
  -2,  -1,   9,
@@ -90,12 +90,12 @@ const int CLocalAlignmentStringKernel::blosum[] = {
 #define LOG0 -10000          /* log(0) */
 #define INTSCALE 1000.0      /* critical for speed and precise computation*/
 
-int CLocalAlignmentStringKernel::logsum_lookup[LOGSUM_TBL];
+int32_t CLocalAlignmentStringKernel::logsum_lookup[LOGSUM_TBL];
 
-CLocalAlignmentStringKernel::CLocalAlignmentStringKernel(INT size)
+CLocalAlignmentStringKernel::CLocalAlignmentStringKernel(int32_t size)
 : CStringKernel<char>(size), initialized(false)
 {
-	scaled_blosum=new int[sizeof(blosum)];
+	scaled_blosum=new int32_t[sizeof(blosum)];
 	init_logsum();
 	initialize();
 }
@@ -104,7 +104,7 @@ CLocalAlignmentStringKernel::CLocalAlignmentStringKernel(
 	CStringFeatures<char>* l, CStringFeatures<char>* r)
 : CStringKernel<char>(10), initialized(false)
 {
-	scaled_blosum=new int[sizeof(blosum)];
+	scaled_blosum=new int32_t[sizeof(blosum)];
 	init_logsum();
 	initialize();
 	init(l, r);
@@ -139,21 +139,28 @@ void CLocalAlignmentStringKernel::cleanup()
 /* LogSum2 - precise, but slow. Note that these two functions need different figure types  */
 
 void CLocalAlignmentStringKernel::init_logsum(void){
-  int i;
+  int32_t i;
   for (i = 0; i < LOGSUM_TBL; i++) 
-    logsum_lookup[i] = (int) (INTSCALE*
+    logsum_lookup[i] = (int32_t) (INTSCALE*
 			       (log(1.+exp( (float) -i/INTSCALE))));
 }
 
-int CLocalAlignmentStringKernel::LogSum(int p1, int p2){
-  int diff;
-  static int firsttime = 1;
-  if (firsttime) {init_logsum(); firsttime = 0;}
-  diff = p1 - p2;
-  if      (diff >=  LOGSUM_TBL) return p1;
-  else if (diff <= -LOGSUM_TBL) return p2;
-  else if (diff > 0)            return p1+logsum_lookup[diff];
-  else                          return p2+logsum_lookup[-diff];
+int32_t CLocalAlignmentStringKernel::LogSum(int32_t p1, int32_t p2)
+{
+	int32_t diff;
+	static int32_t firsttime=1;
+
+	if (firsttime)
+	{
+		init_logsum();
+		firsttime =0;
+	}
+
+	diff=p1-p2;
+	if (diff>=LOGSUM_TBL) return p1;
+	else if (diff<=-LOGSUM_TBL) return p2;
+	else if (diff>0) return p1+logsum_lookup[diff];
+	else return p2+logsum_lookup[-diff];
 }
 
 
@@ -169,45 +176,45 @@ float CLocalAlignmentStringKernel::LogSum2(float p1, float p2)
 void CLocalAlignmentStringKernel::initialize(void)
      /* Initialize all static variables. This function should be called once before computing the first pair HMM score */
 {
-  register int i;
+  register int32_t i;
 
   /* Initialization of the array which gives the position of each amino-acid in the set of amino-acid */
-  if ((aaIndex=(int *)calloc(NLET,sizeof(int))) == NULL)
+  if ((aaIndex=(int32_t *)calloc(NLET,sizeof(int32_t))) == NULL)
     SG_ERROR("run out o memory");
   for (i=0;i<NAA;i++) 
     aaIndex[aaList[i]-'A']=i;
   
   /* Initialization of the array which indicates whether a char is an amino-acid */
-  if ((isAA=(int *)calloc(256,sizeof(int))) == NULL)
+  if ((isAA=(int32_t *)calloc(256,sizeof(int32_t))) == NULL)
     SG_ERROR("run out of memory");
   for (i=0;i<NAA;i++) 
-    isAA[(int)aaList[i]]=1;
+    isAA[(int32_t)aaList[i]]=1;
 
   /* Scale the blossum matrix */
   for (i=0 ; i<NAA*(NAA+1)/2; i++)
-	  scaled_blosum[i] = (int) floor(blosum[i]*SCALING*INTSCALE);
+	  scaled_blosum[i] = (int32_t) floor(blosum[i]*SCALING*INTSCALE);
 
 
   /* Scale of gap penalties */
-  opening = (int) floor(OPENING * SCALING*INTSCALE);
-  extension = (int) floor(EXTENSION * SCALING*INTSCALE);
+  opening = (int32_t) floor(OPENING * SCALING*INTSCALE);
+  extension = (int32_t) floor(EXTENSION * SCALING*INTSCALE);
 }
 
 
 
-DREAL CLocalAlignmentStringKernel::LAkernelcompute(int* aaX, int* aaY, /* Implementation of the
+DREAL CLocalAlignmentStringKernel::LAkernelcompute(int32_t* aaX, int32_t* aaY, /* Implementation of the
 								convolution kernel which generalizes the Smith-Waterman algorithm */
 		/* the two amino-acid sequences (as sequences of indexes in [0..NAA-1] indicating the
 		 * position of the amino-acid in the variable 'aaList') */
-		int nX, int nY /* the lengths of both sequences */
+		int32_t nX, int32_t nY /* the lengths of both sequences */
 		)
 {
-   register int
+   register int32_t
     i,j,                /* loop indexes */
     cur, old,           /* to indicate the array to use (0 or 1) */
     curpos, frompos;    /* position in an array */
 
-   int
+   int32_t
     *logX,           /* arrays to store the log-values of each state */
     *logY,
     *logM,
@@ -215,7 +222,7 @@ DREAL CLocalAlignmentStringKernel::LAkernelcompute(int* aaX, int* aaY, /* Implem
     *logY2,
 
     aux , aux2;/* , aux3 , aux4 , aux5;*/
-  int
+  int32_t
     cl;                /* length of a column for the dynamic programming */
 
   /*
@@ -230,11 +237,11 @@ DREAL CLocalAlignmentStringKernel::LAkernelcompute(int* aaX, int* aaY, /* Implem
   /* Each array stores two successive columns of the (nX+1)x(nY+1) table used in dynamic programming */
   cl = nY+1;           /* each column stores the positions in the aaY sequence, plus a position at zero */
 
-  logM=new int[2*cl];
-  logX=new int[2*cl];
-  logY=new int[2*cl];
-  logX2=new int[2*cl];
-  logY2=new int[2*cl];
+  logM=new int32_t[2*cl];
+  logX=new int32_t[2*cl];
+  logY=new int32_t[2*cl];
+  logX2=new int32_t[2*cl];
+  logY2=new int32_t[2*cl];
 
   /************************************************/
   /* First iteration : initialization of column 0 */
@@ -348,11 +355,11 @@ DREAL CLocalAlignmentStringKernel::LAkernelcompute(int* aaX, int* aaY, /* Implem
 
 /* Return the log-probability of two sequences x and y under a pair HMM model */
 /* x and y are strings of aminoacid letters, e.g., "AABRS" */
-DREAL CLocalAlignmentStringKernel::compute(INT idx_x, INT idx_y)
+DREAL CLocalAlignmentStringKernel::compute(int32_t idx_x, int32_t idx_y)
 {
-  int *aax,*aay;  /* to convert x and y into sequences of amino-acid indexes */
-  int lx=0,ly=0;       /* lengths of x and y */
-  int i,j;
+  int32_t *aax,*aay;  /* to convert x and y into sequences of amino-acid indexes */
+  int32_t lx=0,ly=0;       /* lengths of x and y */
+  int32_t i,j;
 
   /* If necessary, initialize static variables */
   if (isAA == NULL)
@@ -367,9 +374,9 @@ DREAL CLocalAlignmentStringKernel::compute(INT idx_x, INT idx_y)
 
   /* Create aax and aay */
 
-  if ((aax=(int *)calloc(lx,sizeof(int))) == NULL)
+  if ((aax=(int32_t *)calloc(lx,sizeof(int32_t))) == NULL)
     SG_ERROR("run out of memory");
-  if ((aay=(int *)calloc(ly,sizeof(int))) == NULL)
+  if ((aay=(int32_t *)calloc(ly,sizeof(int32_t))) == NULL)
     SG_ERROR("run out of memory");
 
   /* Extract the characters corresponding to aminoacids and keep their indexes */

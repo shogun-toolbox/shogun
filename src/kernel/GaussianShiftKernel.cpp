@@ -14,13 +14,13 @@
 #include "features/RealFeatures.h"
 #include "lib/io.h"
 
-CGaussianShiftKernel::CGaussianShiftKernel(INT size, double w, int ms, int ss)
+CGaussianShiftKernel::CGaussianShiftKernel(int32_t size, double w, int32_t ms, int32_t ss)
 : CGaussianKernel(size, w), max_shift(ms), shift_step(ss)
 {
 }
 
 CGaussianShiftKernel::CGaussianShiftKernel(
-	CRealFeatures* l, CRealFeatures* r, double w, int ms, int ss, INT size)
+	CRealFeatures* l, CRealFeatures* r, double w, int32_t ms, int32_t ss, int32_t size)
 : CGaussianKernel(l, r, w, size), max_shift(ms), shift_step(ss)
 {
 	init(l,r);
@@ -30,9 +30,9 @@ CGaussianShiftKernel::~CGaussianShiftKernel()
 {
 }
 
-DREAL CGaussianShiftKernel::compute(INT idx_a, INT idx_b)
+DREAL CGaussianShiftKernel::compute(int32_t idx_a, int32_t idx_b)
 {
-	INT alen, blen;
+	int32_t alen, blen;
 	bool afree, bfree;
 
 	double* avec=((CRealFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
@@ -41,19 +41,19 @@ DREAL CGaussianShiftKernel::compute(INT idx_a, INT idx_b)
 
 	DREAL result = 0.0 ;
 	DREAL sum=0.0 ;
-	for (INT i=0; i<alen; i++)
+	for (int32_t i=0; i<alen; i++)
 		sum+=(avec[i]-bvec[i])*(avec[i]-bvec[i]);
 	result += exp(-sum/width) ;
 
-	for (INT shift = shift_step, s=1; shift<max_shift; shift+=shift_step, s++)
+	for (int32_t shift = shift_step, s=1; shift<max_shift; shift+=shift_step, s++)
 	{
 		sum=0.0 ;
-		for (INT i=0; i<alen-shift; i++)
+		for (int32_t i=0; i<alen-shift; i++)
 			sum+=(avec[i+shift]-bvec[i])*(avec[i+shift]-bvec[i]);
 		result += exp(-sum/width)/(2*s) ;
 
 		sum=0.0 ;
-		for (INT i=0; i<alen-shift; i++)
+		for (int32_t i=0; i<alen-shift; i++)
 			sum+=(avec[i]-bvec[i+shift])*(avec[i]-bvec[i+shift]);
 		result += exp(-sum/width)/(2*s) ;
 	}

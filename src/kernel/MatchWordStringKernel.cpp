@@ -15,13 +15,13 @@
 #include "kernel/AvgDiagKernelNormalizer.h"
 #include "features/StringFeatures.h"
 
-CMatchWordStringKernel::CMatchWordStringKernel(INT size, INT d)
+CMatchWordStringKernel::CMatchWordStringKernel(int32_t size, int32_t d)
 : CStringKernel<uint16_t>(size), degree(d)
 {
 	set_normalizer(new CAvgDiagKernelNormalizer());
 }
 
-CMatchWordStringKernel::CMatchWordStringKernel(CStringFeatures<uint16_t>* l, CStringFeatures<uint16_t>* r, INT d)
+CMatchWordStringKernel::CMatchWordStringKernel(CStringFeatures<uint16_t>* l, CStringFeatures<uint16_t>* r, int32_t d)
 : CStringKernel<uint16_t>(10), degree(d)
 {
 	set_normalizer(new CAvgDiagKernelNormalizer());
@@ -49,9 +49,9 @@ bool CMatchWordStringKernel::save_init(FILE* dest)
 	return false;
 }
   
-DREAL CMatchWordStringKernel::compute(INT idx_a, INT idx_b)
+DREAL CMatchWordStringKernel::compute(int32_t idx_a, int32_t idx_b)
 {
-	INT alen, blen;
+	int32_t alen, blen;
 
 	uint16_t* avec=((CStringFeatures<uint16_t>*) lhs)->get_feature_vector(idx_a, alen);
 	uint16_t* bvec=((CStringFeatures<uint16_t>*) rhs)->get_feature_vector(idx_b, blen);
@@ -59,7 +59,7 @@ DREAL CMatchWordStringKernel::compute(INT idx_a, INT idx_b)
 	ASSERT(alen==blen);
 
 	DREAL sum=0;
-	for (INT i=0; i<alen; i++)
+	for (int32_t i=0; i<alen; i++)
 		sum+= (avec[i]==bvec[i]) ? 1 : 0;
 
 	return CMath::pow(sum, degree);

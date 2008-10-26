@@ -48,7 +48,7 @@ bool CKernelPerceptron::save(FILE* dstfile)
 }
 
 
-DREAL CKernelPerceptron::classify_example(INT num)
+DREAL CKernelPerceptron::classify_example(int32_t num)
 {
 	return 0;
 }

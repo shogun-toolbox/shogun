@@ -36,7 +36,7 @@ template <class T> class CDynamicArray : public CSGObject
 		 *
 		 * @param p_resize_granularity resize granularity
 		 */
-		CDynamicArray(INT p_resize_granularity=128)
+		CDynamicArray(int32_t p_resize_granularity=128)
 		: CSGObject()
 		{
 			this->resize_granularity=p_resize_granularity;
@@ -55,7 +55,7 @@ template <class T> class CDynamicArray : public CSGObject
 		 * @param g new granularity
 		 * @return what has been set (minimum is 128)
 		 */
-		inline INT set_granularity(INT g)
+		inline int32_t set_granularity(int32_t g)
 		{
 			g=CMath::max(g,128);
 			this->resize_granularity = g;
@@ -66,7 +66,7 @@ template <class T> class CDynamicArray : public CSGObject
 		 *
 		 * @return total array size (including granularity buffer)
 		 */
-		inline INT get_array_size()
+		inline int32_t get_array_size()
 		{
 			return num_elements;
 		}
@@ -75,7 +75,7 @@ template <class T> class CDynamicArray : public CSGObject
 		 *
 		 * @return index of last element
 		 */
-		inline INT get_num_elements() const
+		inline int32_t get_num_elements() const
 		{
 			return last_element_idx+1;
 		}
@@ -86,7 +86,7 @@ template <class T> class CDynamicArray : public CSGObject
 		 * @param index index
 		 * @return array element at index
 		 */
-		inline T get_element(INT index) const
+		inline T get_element(int32_t index) const
 		{
 			return array[index];
 		}
@@ -97,7 +97,7 @@ template <class T> class CDynamicArray : public CSGObject
 		 * @param index index
 		 * @return if setting was successful
 		 */
-		inline bool set_element(T element, INT index)
+		inline bool set_element(T element, int32_t index)
 		{
 			if (index < 0)
 			{
@@ -129,11 +129,11 @@ template <class T> class CDynamicArray : public CSGObject
 		 * @param index index
 		 * @return if setting was successful
 		 */
-		inline bool insert_element(T element, INT index)
+		inline bool insert_element(T element, int32_t index)
 		{
 			if (append_element(get_element(last_element_idx)))
 			{
-				for (INT i=last_element_idx-1; i>index; i--)
+				for (int32_t i=last_element_idx-1; i>index; i--)
 				{
 					array[i]=array[i-1];
 				}
@@ -161,11 +161,11 @@ template <class T> class CDynamicArray : public CSGObject
 		 * @param idx index
 		 * @return if deleting was successful
 		 */
-		inline bool delete_element(INT idx)
+		inline bool delete_element(int32_t idx)
 		{
 			if (idx>=0 && idx<=last_element_idx)
 			{
-				for (INT i=idx; i<last_element_idx; i++)
+				for (int32_t i=idx; i<last_element_idx; i++)
 					array[i]=array[i+1];
 
 				array[last_element_idx]=0;
@@ -185,9 +185,9 @@ template <class T> class CDynamicArray : public CSGObject
 		 * @param n new size
 		 * @return if resizing was successful
 		 */
-		bool resize_array(INT n)
+		bool resize_array(int32_t n)
 		{
-			INT new_num_elements= ((n/resize_granularity)+1)*resize_granularity;
+			int32_t new_num_elements= ((n/resize_granularity)+1)*resize_granularity;
 
 			T* p= (T*) realloc(array, sizeof(T)*new_num_elements);
 			if (p)
@@ -227,7 +227,7 @@ template <class T> class CDynamicArray : public CSGObject
 		 * @param p_num_elements last element index + 1
 		 * @param array_size number of elements in array
 		 */
-		inline void set_array(T* p_array, INT p_num_elements, INT array_size)
+		inline void set_array(T* p_array, int32_t p_num_elements, int32_t array_size)
 		{
 			free(this->array);
 			this->array=p_array;
@@ -251,7 +251,7 @@ template <class T> class CDynamicArray : public CSGObject
 		 * @param index index
 		 * @return element at index
 		 */
-		inline T operator[](INT index) const
+		inline T operator[](int32_t index) const
 		{
 			return array[index];
 		}
@@ -273,15 +273,15 @@ template <class T> class CDynamicArray : public CSGObject
 
 	protected:
 		/** shrink/grow step size */
-		INT resize_granularity;
+		int32_t resize_granularity;
 
 		/** memory for dynamic array */
 		T* array;
 
 		/** the number of potentially used elements in array */
-		INT num_elements;
+		int32_t num_elements;
 
 		/** the element in the array that has largest index */
-		INT last_element_idx;
+		int32_t last_element_idx;
 };
 #endif

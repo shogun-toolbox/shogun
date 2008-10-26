@@ -36,8 +36,8 @@ bool CPruneVarSubMean::init(CFeatures* p_f)
 		ASSERT(p_f->get_feature_type()==F_DREAL);
 
 		CRealFeatures *f=(CRealFeatures*) p_f;
-		INT num_examples=f->get_num_vectors();
-		INT num_features=((CRealFeatures*)f)->get_num_features();
+		int32_t num_examples=f->get_num_vectors();
+		int32_t num_features=((CRealFeatures*)f)->get_num_features();
 
 		delete[] mean;
 		delete[] idx;
@@ -48,7 +48,7 @@ bool CPruneVarSubMean::init(CFeatures* p_f)
 
 		mean=new double[num_features];
 		double* var=new double[num_features];
-		INT i,j;
+		int32_t i,j;
 
 		for (i=0; i<num_features; i++)
 		{
@@ -59,7 +59,7 @@ bool CPruneVarSubMean::init(CFeatures* p_f)
 		// compute mean
 		for (i=0; i<num_examples; i++)
 		{
-			INT len ; bool free ;
+			int32_t len ; bool free ;
 			DREAL* feature=f->get_feature_vector(i, len, free) ;
 
 			for (j=0; j<len; j++)
@@ -74,7 +74,7 @@ bool CPruneVarSubMean::init(CFeatures* p_f)
 		// compute var
 		for (i=0; i<num_examples; i++)
 		{
-			INT len ; bool free ;
+			int32_t len ; bool free ;
 			DREAL* feature=f->get_feature_vector(i, len, free) ;
 
 			for (j=0; j<num_features; j++)
@@ -83,8 +83,8 @@ bool CPruneVarSubMean::init(CFeatures* p_f)
 			f->free_feature_vector(feature, i, free) ;
 		}
 
-		INT num_ok=0;
-		INT* idx_ok=new int[num_features];
+		int32_t num_ok=0;
+		int32_t* idx_ok=new int[num_features];
 
 		for (j=0; j<num_features; j++)
 		{
@@ -141,25 +141,25 @@ DREAL* CPruneVarSubMean::apply_to_feature_matrix(CFeatures* f)
 {
 	ASSERT(initialized);
 
-	INT num_vectors=0;
-	INT num_features=0;
+	int32_t num_vectors=0;
+	int32_t num_features=0;
 	DREAL* m=((CRealFeatures*) f)->get_feature_matrix(num_features, num_vectors);
 
 	SG_INFO( "get Feature matrix: %ix%i\n", num_vectors, num_features);
 	SG_INFO( "Preprocessing feature matrix\n");
-	for (INT vec=0; vec<num_vectors; vec++)
+	for (int32_t vec=0; vec<num_vectors; vec++)
 	{
 		DREAL* v_src=&m[num_features*vec];
 		DREAL* v_dst=&m[num_idx*vec];
 
 		if (divide_by_std)
 		{
-			for (INT feat=0; feat<num_idx; feat++)
+			for (int32_t feat=0; feat<num_idx; feat++)
 				v_dst[feat]=(v_src[idx[feat]]-mean[feat])/std[feat];
 		}
 		else
 		{
-			for (INT feat=0; feat<num_idx; feat++)
+			for (int32_t feat=0; feat<num_idx; feat++)
 				v_dst[feat]=(v_src[idx[feat]]-mean[feat]);
 		}
 	}
@@ -173,7 +173,7 @@ DREAL* CPruneVarSubMean::apply_to_feature_matrix(CFeatures* f)
 
 /// apply preproc on single feature vector
 /// result in feature matrix
-DREAL* CPruneVarSubMean::apply_to_feature_vector(DREAL* f, INT &len)
+DREAL* CPruneVarSubMean::apply_to_feature_vector(DREAL* f, int32_t &len)
 {
 	DREAL* ret=NULL;
 
@@ -183,12 +183,12 @@ DREAL* CPruneVarSubMean::apply_to_feature_vector(DREAL* f, INT &len)
 
 		if (divide_by_std)
 		{
-			for (INT i=0; i<num_idx; i++)
+			for (int32_t i=0; i<num_idx; i++)
 				ret[i]=(f[idx[i]]-mean[i])/std[i];
 		}
 		else
 		{
-			for (INT i=0; i<num_idx; i++)
+			for (int32_t i=0; i<num_idx; i++)
 				ret[i]=(f[idx[i]]-mean[i]);
 		}
 		len=num_idx ;
@@ -196,7 +196,7 @@ DREAL* CPruneVarSubMean::apply_to_feature_vector(DREAL* f, INT &len)
 	else
 	{
 		ret=new DREAL[len] ;
-		for (INT i=0; i<len; i++)
+		for (int32_t i=0; i<len; i++)
 			ret[i]=f[i];
 	}
 
@@ -207,21 +207,21 @@ DREAL* CPruneVarSubMean::apply_to_feature_vector(DREAL* f, INT &len)
 bool CPruneVarSubMean::load_init_data(FILE* src)
 {
 	bool result=false;
-	INT divide=0;
+	int32_t divide=0;
 
-	ASSERT(fread(&divide, sizeof(int), 1, src)==1);
-	ASSERT(fread(&num_idx, sizeof(int), 1, src)==1);
+	ASSERT(fread(&divide, sizeof(int32_t), 1, src)==1);
+	ASSERT(fread(&num_idx, sizeof(int32_t), 1, src)==1);
 	SG_INFO( "divide:%d num_idx:%d\n", divide, num_idx);
 	delete[] mean;
 	delete[] idx;
 	delete[] std;
-	idx=new int[num_idx];
+	idx=new int32_t[num_idx];
 	mean=new DREAL[num_idx];
 	std=new DREAL[num_idx];
 	ASSERT (mean!=NULL && idx!=NULL && std!=NULL);
-	ASSERT(fread(idx, sizeof(int), num_idx, src)==(uint32_t) num_idx);
-	ASSERT(fread(mean, sizeof(DREAL), num_idx, src)==(uint32_t) num_idx);
-	ASSERT(fread(std, sizeof(DREAL), num_idx, src)==(uint32_t) num_idx);
+	ASSERT(fread(idx, sizeof(int32_t), num_idx, src)==(size_t) num_idx);
+	ASSERT(fread(mean, sizeof(DREAL), num_idx, src)==(size_t) num_idx);
+	ASSERT(fread(std, sizeof(DREAL), num_idx, src)==(size_t) num_idx);
 
 	result=true;
 	divide_by_std=(divide==1);

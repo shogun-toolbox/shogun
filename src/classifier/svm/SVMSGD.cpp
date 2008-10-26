@@ -129,9 +129,9 @@ bool CSVMSGD::train()
 	ASSERT(get_features());
 	ASSERT(labels->is_two_class_labeling());
 
-	INT num_train_labels=labels->get_num_labels();
+	int32_t num_train_labels=labels->get_num_labels();
 	w_dim=features->get_num_features();
-	INT num_vec=features->get_num_vectors();
+	int32_t num_vec=features->get_num_vectors();
 
 	ASSERT(num_vec==num_train_labels);
 	ASSERT(num_vec>0);
@@ -158,10 +158,10 @@ bool CSVMSGD::train()
 	calibrate();
 
 	SG_INFO("Training on %d vectors\n", num_vec);
-	for(INT e=0; e<epochs; e++)
+	for(int32_t e=0; e<epochs; e++)
 	{
 		count = skip;
-		for (INT i=0; i<num_vec; i++)
+		for (int32_t i=0; i<num_vec; i++)
 		{
 			DREAL eta = 1.0 / (lambda * t);
 			DREAL y = labels->get_label(i);
@@ -203,8 +203,8 @@ bool CSVMSGD::train()
 void CSVMSGD::calibrate()
 { 
 	ASSERT(get_features());
-	INT num_vec=features->get_num_vectors();
-	INT c_dim=features->get_num_features();
+	int32_t num_vec=features->get_num_vectors();
+	int32_t c_dim=features->get_num_features();
 
 	ASSERT(num_vec>0);
 	ASSERT(c_dim>0);
@@ -215,11 +215,11 @@ void CSVMSGD::calibrate()
 	SG_INFO("Estimating sparsity and bscale num_vec=%d num_feat=%d.\n", num_vec, c_dim);
 
 	// compute average gradient size
-	INT n = 0;
+	int32_t n = 0;
 	DREAL m = 0;
 	DREAL r = 0;
 
-	for (INT j=0; j<num_vec && m<=1000; j++, n++)
+	for (int32_t j=0; j<num_vec && m<=1000; j++, n++)
 	{
 		r += features->get_num_sparse_vec_features(j);
 		features->add_to_dense_vec(1, j, c, c_dim, true);
@@ -233,7 +233,7 @@ void CSVMSGD::calibrate()
 	bscale = m/n;
 
 	// compute weight decay skip
-	skip = (INT) ((16 * n * c_dim) / r);
+	skip = (int32_t) ((16 * n * c_dim) / r);
 	SG_INFO("using %d examples. skip=%d  bscale=%.6f\n", n, skip, bscale);
 
 	delete[] c;

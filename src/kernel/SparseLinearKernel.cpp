@@ -61,28 +61,27 @@ bool CSparseLinearKernel::save_init(FILE* dest)
 
 void CSparseLinearKernel::clear_normal()
 {
-	int num = ((CSparseFeatures<DREAL>*) lhs)->get_num_features();
+	int32_t num=((CSparseFeatures<DREAL>*) lhs)->get_num_features();
 	if (normal==NULL)
 	{
-		normal = new DREAL[num];
+		normal=new DREAL[num];
 		normal_length=num;
 	}
 
 	memset(normal, 0, sizeof(DREAL)*normal_length);
-
 	set_is_initialized(true);
 }
 
-void CSparseLinearKernel::add_to_normal(INT idx, DREAL weight) 
+void CSparseLinearKernel::add_to_normal(int32_t idx, DREAL weight) 
 {
 	((CSparseFeatures<DREAL>*) rhs)->add_to_dense_vec(normalizer->normalize_lhs(weight, idx), idx, normal, normal_length);
 	set_is_initialized(true);
 }
   
-DREAL CSparseLinearKernel::compute(INT idx_a, INT idx_b)
+DREAL CSparseLinearKernel::compute(int32_t idx_a, int32_t idx_b)
 {
-  INT alen=0;
-  INT blen=0;
+  int32_t alen=0;
+  int32_t blen=0;
   bool afree=false;
   bool bfree=false;
 
@@ -97,11 +96,11 @@ DREAL CSparseLinearKernel::compute(INT idx_a, INT idx_b)
   return result;
 }
 
-bool CSparseLinearKernel::init_optimization(INT num_suppvec, INT* sv_idx, DREAL* alphas) 
+bool CSparseLinearKernel::init_optimization(int32_t num_suppvec, int32_t* sv_idx, DREAL* alphas) 
 {
 	clear_normal();
 
-	for (int i=0; i<num_suppvec; i++)
+	for (int32_t i=0; i<num_suppvec; i++)
 		add_to_normal(sv_idx[i], alphas[i]);
 
 	set_is_initialized(true);
@@ -118,7 +117,7 @@ bool CSparseLinearKernel::delete_optimization()
 	return true;
 }
 
-DREAL CSparseLinearKernel::compute_optimized(INT idx) 
+DREAL CSparseLinearKernel::compute_optimized(int32_t idx) 
 {
 	ASSERT(get_is_initialized());
 	DREAL result = ((CSparseFeatures<DREAL>*) rhs)->dense_dot(1.0, idx, normal, normal_length, 0.0);

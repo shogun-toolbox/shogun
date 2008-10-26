@@ -14,7 +14,7 @@
 #include "features/Features.h"
 #include "features/SparseFeatures.h"
 
-CSparseGaussianKernel::CSparseGaussianKernel(INT size, double w)
+CSparseGaussianKernel::CSparseGaussianKernel(int32_t size, double w)
 : CSparseKernel<DREAL>(size), width(w), sq_lhs(NULL), sq_rhs(NULL)
 {
 }
@@ -73,7 +73,7 @@ bool CSparseGaussianKernel::save_init(FILE* dest)
 	return false;
 }
 
-DREAL CSparseGaussianKernel::compute(INT idx_a, INT idx_b)
+DREAL CSparseGaussianKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	//DREAL result = sq_lhs[idx_a] + sq_rhs[idx_b];
 	DREAL result=((CSparseFeatures<DREAL>*) lhs)->compute_squared_norm((CSparseFeatures<DREAL>*) lhs, sq_lhs, idx_a, (CSparseFeatures<DREAL>*) rhs, sq_rhs, idx_b);

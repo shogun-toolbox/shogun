@@ -19,7 +19,7 @@ CKNN::CKNN()
 {
 }
 
-CKNN::CKNN(INT k_, CDistance* d, CLabels* trainlab)
+CKNN::CKNN(int32_t k_, CDistance* d, CLabels* trainlab)
 : CDistanceMachine(), k(k_), num_classes(0), train_labels(NULL)
 {
     set_distance(d);
@@ -41,10 +41,10 @@ bool CKNN::train()
 	ASSERT(train_labels);
 	ASSERT(num_train_labels>0);
 
-	int max_class=train_labels[0];
-	int min_class=train_labels[0];
+	int32_t max_class=train_labels[0];
+	int32_t min_class=train_labels[0];
 
-	int i;
+	int32_t i;
 	for (i=1; i<num_train_labels; i++)
 	{
 		max_class=CMath::max(max_class, train_labels[i]);
@@ -68,15 +68,15 @@ CLabels* CKNN::classify(CLabels* output)
 	ASSERT(labels);
 	ASSERT(labels->get_num_labels());
 
-	INT num_lab=labels->get_num_labels();
+	int32_t num_lab=labels->get_num_labels();
 	ASSERT(k<=num_lab);
 
 	//distances to train data and working buffer of train_labels
 	DREAL* dists=new DREAL[num_train_labels];
-	INT* train_lab=new INT[num_train_labels];
+	int32_t* train_lab=new int32_t[num_train_labels];
 
 	///histogram of classes and returned output
-	INT* classes=new INT[num_classes];
+	int32_t* classes=new int32_t[num_classes];
 	if (!output)
 		output=new CLabels(num_lab);
 
@@ -86,12 +86,12 @@ CLabels* CKNN::classify(CLabels* output)
 	ASSERT(classes);
 
 	SG_INFO( "%d test examples\n", num_lab);
-	for (INT i=0; i<num_lab; i++)
+	for (int32_t i=0; i<num_lab; i++)
 	{
 		if ((i%(num_lab/10+1))== 0)
 			SG_PROGRESS(i, 0, num_lab);
 
-		INT j;
+		int32_t j;
 		for (j=0; j<num_train_labels; j++)
 		{
 			//copy back train labels and compute distance
@@ -112,8 +112,8 @@ CLabels* CKNN::classify(CLabels* output)
 			classes[train_lab[j]]++;
 
 		//choose the class that got 'outputted' most often
-		INT out_idx=0;
-		INT out_max=0;
+		int32_t out_idx=0;
+		int32_t out_max=0;
 
 		for (j=0; j<num_classes; j++)
 		{

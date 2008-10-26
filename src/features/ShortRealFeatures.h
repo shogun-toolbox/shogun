@@ -25,7 +25,7 @@ class CShortRealFeatures: public CSimpleFeatures<SHORTREAL>
 		 *
 		 * @param size cache size
 		 */
-		CShortRealFeatures(INT size=0) : CSimpleFeatures<SHORTREAL>(size) {}
+		CShortRealFeatures(int32_t size=0) : CSimpleFeatures<SHORTREAL>(size) {}
 
 		/** copy constructor */
 		CShortRealFeatures(const CShortRealFeatures & orig) :
@@ -38,7 +38,7 @@ class CShortRealFeatures: public CSimpleFeatures<SHORTREAL>
 		 * @param num_feat number of features
 		 * @param num_vec number of vectors
 		 */
-        inline CShortRealFeatures(SHORTREAL* src, INT num_feat, INT num_vec) :
+        inline CShortRealFeatures(SHORTREAL* src, int32_t num_feat, int32_t num_vec) :
             CSimpleFeatures<SHORTREAL>(0)
 		{
 			CSimpleFeatures<SHORTREAL>::copy_feature_matrix(src, num_feat, num_vec);
@@ -59,7 +59,7 @@ class CShortRealFeatures: public CSimpleFeatures<SHORTREAL>
 		 * @param d1 dimension 1 of matrix
 		 * @param d2 dimension 2 of matrix
 		 */
-		inline virtual void get_fm(SHORTREAL** dst, INT* d1, INT* d2)
+		inline virtual void get_fm(SHORTREAL** dst, int32_t* d1, int32_t* d2)
 		{
 			CSimpleFeatures<SHORTREAL>::get_fm(dst, d1, d2);
 		}
@@ -72,7 +72,7 @@ class CShortRealFeatures: public CSimpleFeatures<SHORTREAL>
 		 * @param num_feat number of features
 		 * @param num_vec number of vectors
 		 */
-		inline virtual void copy_feature_matrix(SHORTREAL* src, INT num_feat, INT num_vec)
+		inline virtual void copy_feature_matrix(SHORTREAL* src, int32_t num_feat, int32_t num_vec)
 		{
 			CSimpleFeatures<SHORTREAL>::copy_feature_matrix(src, num_feat, num_vec);
 		}

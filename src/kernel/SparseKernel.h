@@ -24,7 +24,7 @@ template <class ST> class CSparseKernel : public CKernel
 		 *
 		 * @param cachesize cache size
 		 */
-		CSparseKernel(INT cachesize) : CKernel(cachesize) {}
+		CSparseKernel(int32_t cachesize) : CKernel(cachesize) {}
 
 		/** constructor
 		 *
@@ -76,7 +76,7 @@ template<> inline EFeatureType CSparseKernel<DREAL>::get_feature_type() { return
 
 template<> inline EFeatureType CSparseKernel<ULONG>::get_feature_type() { return F_ULONG; }
 
-template<> inline EFeatureType CSparseKernel<INT>::get_feature_type() { return F_INT; }
+template<> inline EFeatureType CSparseKernel<int32_t>::get_feature_type() { return F_INT; }
 
 template<> inline EFeatureType CSparseKernel<uint16_t>::get_feature_type() { return F_WORD; }
 

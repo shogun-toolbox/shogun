@@ -86,7 +86,7 @@ class CKRR : public CKernelMachine
 		 * @param num which example to classify
 		 * @return result
 		 */
-		virtual DREAL classify_example(INT num);
+		virtual DREAL classify_example(int32_t num);
 
 		/** load regression from file
 		 *

@@ -54,12 +54,12 @@ bool CSortWordString::save(FILE* f)
 /// return pointer to feature_matrix, i.e. f->get_feature_matrix();
 bool CSortWordString::apply_to_string_features(CFeatures* f)
 {
-	INT i;
-	INT num_vec=((CStringFeatures<uint16_t>*)f)->get_num_vectors() ;
+	int32_t i;
+	int32_t num_vec=((CStringFeatures<uint16_t>*)f)->get_num_vectors() ;
 	
 	for (i=0; i<num_vec; i++)
 	{
-		INT len = 0 ;
+		int32_t len = 0 ;
 		uint16_t* vec = ((CStringFeatures<uint16_t>*)f)->get_feature_vector(i, len) ;
 		
 		//CMath::qsort(vec, len);
@@ -69,10 +69,10 @@ bool CSortWordString::apply_to_string_features(CFeatures* f)
 }
 
 /// apply preproc on single feature vector
-uint16_t* CSortWordString::apply_to_string(uint16_t* f, INT& len)
+uint16_t* CSortWordString::apply_to_string(uint16_t* f, int32_t& len)
 {
 	uint16_t* vec=new uint16_t[len];
-	INT i=0;
+	int32_t i=0;
 
 	for (i=0; i<len; i++)
 		vec[i]=f[i];

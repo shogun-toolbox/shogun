@@ -43,7 +43,7 @@ public:
 	 *
 	 * @return something inty
 	 */
-	virtual int get_nr_variable(void) = 0 ;
+	virtual int32_t get_nr_variable(void) = 0 ;
 
 	virtual ~function(void){}
 };
@@ -58,7 +58,7 @@ public:
 	 * @param eps eps
 	 * @param max_iter max iter
 	 */
-	CTron(const function *fun_obj, double eps = 0.1, int max_iter = 1000);
+	CTron(const function *fun_obj, double eps = 0.1, int32_t max_iter = 1000);
 	~CTron();
 
 	/** tron
@@ -68,11 +68,11 @@ public:
 	void tron(double *w);
 
 private:
-	int trcg(double delta, double *g, double *s, double *r);
-	double norm_inf(int n, double *x);
+	int32_t trcg(double delta, double *g, double *s, double *r);
+	double norm_inf(int32_t n, double *x);
 
 	double eps;
-	int max_iter;
+	int32_t max_iter;
 	function *fun_obj;
 };
 

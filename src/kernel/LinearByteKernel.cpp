@@ -55,27 +55,27 @@ bool CLinearByteKernel::save_init(FILE* dest)
 
 void CLinearByteKernel::clear_normal()
 {
-	int num = lhs->get_num_vectors();
+	int32_t num = lhs->get_num_vectors();
 
-	for (int i=0; i<num; i++)
+	for (int32_t i=0; i<num; i++)
 		normal[i]=0;
 }
 
-void CLinearByteKernel::add_to_normal(INT idx, DREAL weight) 
+void CLinearByteKernel::add_to_normal(int32_t idx, DREAL weight)
 {
-	INT vlen;
+	int32_t vlen;
 	bool vfree;
 	uint8_t* vec=((CByteFeatures*) lhs)->get_feature_vector(idx, vlen, vfree);
 
-	for (int i=0; i<vlen; i++)
+	for (int32_t i=0; i<vlen; i++)
 		normal[i]+= weight*normalizer->normalize_lhs(vec[i], idx);
 
 	((CByteFeatures*) lhs)->free_feature_vector(vec, idx, vfree);
 }
   
-DREAL CLinearByteKernel::compute(INT idx_a, INT idx_b)
+DREAL CLinearByteKernel::compute(int32_t idx_a, int32_t idx_b)
 {
-  INT alen, blen;
+  int32_t alen, blen;
   bool afree, bfree;
 
   uint8_t* avec=((CByteFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
@@ -90,24 +90,24 @@ DREAL CLinearByteKernel::compute(INT idx_a, INT idx_b)
   return result;
 }
 
-bool CLinearByteKernel::init_optimization(INT num_suppvec, INT* sv_idx, DREAL* alphas) 
+bool CLinearByteKernel::init_optimization(int32_t num_suppvec, int32_t* sv_idx, DREAL* alphas)
 {
-	INT alen;
+	int32_t alen;
 	bool afree;
 
-	int num_feat=((CByteFeatures*) lhs)->get_num_features();
+	int32_t num_feat=((CByteFeatures*) lhs)->get_num_features();
 	ASSERT(num_feat);
 
 	normal=new DREAL[num_feat];
-	for (INT i=0; i<num_feat; i++)
+	for (int32_t i=0; i<num_feat; i++)
 		normal[i]=0;
 
-	for (int i=0; i<num_suppvec; i++)
+	for (int32_t i=0; i<num_suppvec; i++)
 	{
 		uint8_t* avec=((CByteFeatures*) lhs)->get_feature_vector(sv_idx[i], alen, afree);
 		ASSERT(avec);
 
-		for (int j=0; j<num_feat; j++)
+		for (int32_t j=0; j<num_feat; j++)
 			normal[j]+= alphas[i] * normalizer->normalize_lhs(((double) avec[j]), sv_idx[i]);
 
 		((CByteFeatures*) lhs)->free_feature_vector(avec, 0, afree);
@@ -127,16 +127,16 @@ bool CLinearByteKernel::delete_optimization()
 	return true;
 }
 
-DREAL CLinearByteKernel::compute_optimized(INT idx_b) 
+DREAL CLinearByteKernel::compute_optimized(int32_t idx_b) 
 {
-	INT blen;
+	int32_t blen;
 	bool bfree;
 
 	uint8_t* bvec=((CByteFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
 
 	double result=0;
 	{
-		for (INT i=0; i<blen; i++)
+		for (int32_t i=0; i<blen; i++)
 			result+= normal[i] * ((double) bvec[i]);
 	}
 

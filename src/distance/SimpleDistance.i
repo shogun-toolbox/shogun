@@ -9,5 +9,5 @@
 %template(SimpleRealDistance) CSimpleDistance<DREAL>;
 %template(SimpleWordDistance) CSimpleDistance<uint16_t>;
 %template(SimpleCharDistance) CSimpleDistance<char>;
-%template(SimpleIntDistance) CSimpleDistance<INT>;
+%template(SimpleIntDistance) CSimpleDistance<int32_t>;
 

@@ -39,7 +39,7 @@ param_spec_t p_map[] = {
  * @param meas Similarity measure to use
  * @param w Kernel width
  */
-CMindyGramKernel::CMindyGramKernel(INT ch, char *meas, DREAL w)
+CMindyGramKernel::CMindyGramKernel(int32_t ch, char *meas, DREAL w)
 : CKernel(ch)
 {
 	/* Init attributes */
@@ -108,7 +108,7 @@ CMindyGramKernel::CMindyGramKernel(
 /*
  * Set MD5 cache
  */
-void CMindyGramKernel::set_md5cache(INT c)
+void CMindyGramKernel::set_md5cache(int32_t c)
 {
     cache = c;
     if (cache <= 0) 
@@ -127,7 +127,7 @@ void CMindyGramKernel::set_param(char *param)
     parse_params(param);
 
     /* Display paramater list */
-    for (INT i = 0; p_map[i].name; i++) {
+    for (int32_t i = 0; p_map[i].name; i++) {
         if (p_map[i].idx != SP_DIST)
             SG_INFO( "Param %8s=%8.6f\t %s\n", 
 			p_map[i].name, p_map[i].val, p_map[i].descr);
@@ -156,7 +156,7 @@ CMindyGramKernel::~CMindyGramKernel()
  */
 void CMindyGramKernel::parse_params(char *pa)
 {
-    INT i;
+    int32_t i;
     char *t, *p;
 
     if (strlen(pa) == 0)
@@ -258,7 +258,7 @@ bool CMindyGramKernel::init(CFeatures* l, CFeatures* r)
  * @param j Index to rhs vector
  * @param kernel value
  */
-DREAL CMindyGramKernel::compute(INT i, INT j)
+DREAL CMindyGramKernel::compute(int32_t i, int32_t j)
 {
     /* Cast things to mindy gram features */
     CMindyGramFeatures *lm = (CMindyGramFeatures *) lhs;
@@ -295,7 +295,7 @@ DREAL CMindyGramKernel::compute(INT i, INT j)
  * @param i Index of feature vector
  * @param w Weight for addition (usually alpha_i)
  */
-void CMindyGramKernel::add_to_normal(INT i, DREAL w)
+void CMindyGramKernel::add_to_normal(int32_t i, DREAL w)
 {
     /* Add indexed vector to normal */
     CMindyGramFeatures *lm = (CMindyGramFeatures *) lhs;
@@ -327,7 +327,7 @@ void CMindyGramKernel::clear_normal()
  * @param is Array of indices in left-hand side of data
  * @param ws Array of weights
  */
-bool CMindyGramKernel::init_optimization(INT n, INT *is, DREAL * ws)
+bool CMindyGramKernel::init_optimization(int32_t n, int32_t *is, DREAL * ws)
 {
     /* Delete old optimization */
     delete_optimization();
@@ -340,7 +340,7 @@ bool CMindyGramKernel::init_optimization(INT n, INT *is, DREAL * ws)
     }
 
     SG_DEBUG( "initializing MindyGramKernel optimization\n");
-    for (int i = 0; i < n; i++) {
+    for (int32_t i = 0; i < n; i++) {
         if ( (i % (n / 10 + 1)) == 0)
             SG_PROGRESS(i, 0, n);
 
@@ -368,7 +368,7 @@ bool CMindyGramKernel::delete_optimization()
  * @param i Index of feature vector on the right-hand side
  * @return kernel value for normal and feature vector
  */
-DREAL CMindyGramKernel::compute_optimized(INT i)
+DREAL CMindyGramKernel::compute_optimized(int32_t i)
 {
     if (!get_is_initialized()) {
         SG_ERROR( "MindyGramKernel optimization not initialized\n");

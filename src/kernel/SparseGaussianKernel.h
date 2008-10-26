@@ -32,7 +32,7 @@ class CSparseGaussianKernel: public CSparseKernel<DREAL>
 		 * @param size cache size
 		 * @param width width
 		 */
-		CSparseGaussianKernel(INT size, double width);
+		CSparseGaussianKernel(int32_t size, double width);
 
 		/** constructor
 		 *
@@ -98,7 +98,7 @@ class CSparseGaussianKernel: public CSparseKernel<DREAL>
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		virtual DREAL compute(INT idx_a, INT idx_b);
+		virtual DREAL compute(int32_t idx_a, int32_t idx_b);
 
 	protected:
 		/** width */

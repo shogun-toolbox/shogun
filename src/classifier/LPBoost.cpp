@@ -36,13 +36,13 @@ CLPBoost::~CLPBoost()
 	cleanup();
 }
 
-bool CLPBoost::init(INT num_vec)
+bool CLPBoost::init(int32_t num_vec)
 {
 	u=new DREAL[num_vec];
-	for (INT i=0; i<num_vec; i++)
+	for (int32_t i=0; i<num_vec; i++)
 		u[i]=1.0/num_vec;
 
-	dim=new CDynamicArray<INT>(100000);
+	dim=new CDynamicArray<int32_t>(100000);
 
 	sfeat= features->get_transposed(num_sfeat, num_svec);
 
@@ -64,19 +64,19 @@ void CLPBoost::cleanup()
 	dim=NULL;
 }
 
-DREAL CLPBoost::find_max_violator(INT& max_dim)
+DREAL CLPBoost::find_max_violator(int32_t& max_dim)
 {
 	DREAL max_val=0;
 	max_dim=-1;
 
-	for (INT i=0; i<num_svec; i++)
+	for (int32_t i=0; i<num_svec; i++)
 	{
 		DREAL valplus=0;
 		DREAL valminus=0;
 
-		for (INT j=0; j<sfeat[i].num_feat_entries; j++)
+		for (int32_t j=0; j<sfeat[i].num_feat_entries; j++)
 		{
-			INT idx=sfeat[i].features[j].feat_index;
+			int32_t idx=sfeat[i].features[j].feat_index;
 			DREAL v=u[idx]*labels->get_label(idx)*sfeat[i].features[j].entry;
 			valplus+=v;
 			valminus-=v;
@@ -103,9 +103,9 @@ bool CLPBoost::train()
 {
 	ASSERT(labels);
 	ASSERT(features);
-	INT num_train_labels=labels->get_num_labels();
-	INT num_feat=features->get_num_features();
-	INT num_vec=features->get_num_vectors();
+	int32_t num_train_labels=labels->get_num_labels();
+	int32_t num_feat=features->get_num_features();
+	int32_t num_vec=features->get_num_vectors();
 
 	ASSERT(num_vec==num_train_labels);
 	delete[] w;
@@ -122,12 +122,12 @@ bool CLPBoost::train()
 	DREAL result=init(num_vec);
 	ASSERT(result);
 
-	INT num_hypothesis=0;
+	int32_t num_hypothesis=0;
 	CTime time;
 
 	while (!(CSignal::cancel_computations()))
 	{
-		INT max_dim=0;
+		int32_t max_dim=0;
 		DREAL violator=find_max_violator(max_dim);
 		SG_PRINT("iteration:%06d violator: %10.17f (>1.0) chosen: %d\n", num_hypothesis, violator, max_dim);
 		if (violator <= 1.0+epsilon && num_hypothesis>1) //no constraint violated
@@ -144,7 +144,7 @@ bool CLPBoost::train()
 		}
 
 		TSparseEntry<DREAL>* h=sfeat[max_dim].features;
-		INT len=sfeat[max_dim].num_feat_entries;
+		int32_t len=sfeat[max_dim].num_feat_entries;
 		solver.add_lpboost_constraint(factor, h, len, num_vec, labels);
 		solver.optimize(u);
 		//CMath::display_vector(u, num_vec, "u");
@@ -157,9 +157,9 @@ bool CLPBoost::train()
 	solver.optimize(u, lambda);
 
 	//CMath::display_vector(lambda, num_hypothesis, "lambda");
-	for (INT i=0; i<num_hypothesis; i++)
+	for (int32_t i=0; i<num_hypothesis; i++)
 	{
-		INT d=dim->get_element(i);
+		int32_t d=dim->get_element(i);
 		if (d>=num_svec)
 			w[d-num_svec]+=lambda[i];
 		else

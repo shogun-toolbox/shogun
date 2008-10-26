@@ -34,7 +34,7 @@ class CKNN : public CDistanceMachine
 		 * @param d distance
 		 * @param trainlab labels for training
 		 */
-		CKNN(INT k, CDistance* d, CLabels* trainlab);
+		CKNN(int32_t k, CDistance* d, CLabels* trainlab);
 		virtual ~CKNN();
 
 		/** get classifier type
@@ -58,7 +58,7 @@ class CKNN : public CDistanceMachine
 		virtual CLabels* classify(CLabels* output=NULL);
 
 		/// get output for example "vec_idx"
-		virtual DREAL classify_example(INT vec_idx)
+		virtual DREAL classify_example(int32_t vec_idx)
 		{
 			SG_ERROR( "for performance reasons use classify() instead of classify_example\n");
 			return 0;
@@ -102,16 +102,16 @@ class CKNN : public CDistanceMachine
 		DREAL k;
 
 		///	number of classes (i.e. number of values labels can take)
-		int num_classes;
+		int32_t num_classes;
 
 		///	smallest label, i.e. -1
-		int min_label;
+		int32_t min_label;
 
 		/// number of train examples
-		int num_train_labels;
+		int32_t num_train_labels;
 
 		/// the actual trainlabels
-		INT* train_labels;
+		int32_t* train_labels;
 };
 #endif
 

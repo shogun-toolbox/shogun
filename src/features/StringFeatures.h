@@ -41,12 +41,12 @@ template <class T> struct T_STRING
 	/** string */
 	T* string;
 	/** length of string */
-	INT length;
+	int32_t length;
 };
 
 template <class T> char* get_zero_terminated_string_copy(T_STRING<T> str)
 {
-	INT l=str.length;
+	int32_t l=str.length;
 	char* s=new char[l+1];
 	memcpy(s, str.string, sizeof(char)*l);
 	s[l]='\0';
@@ -119,7 +119,7 @@ template <class ST> class CStringFeatures : public CFeatures
 			{
 				features=new T_STRING<ST>[orig.num_vectors];
 
-				for (INT i=0; i<num_vectors; i++)
+				for (int32_t i=0; i<num_vectors; i++)
 				{
 					features[i].string=new ST[orig.features[i].length];
 					ASSERT(features[i].string);
@@ -131,7 +131,7 @@ template <class ST> class CStringFeatures : public CFeatures
 			if (orig.symbol_mask_table)
 			{
 				symbol_mask_table=new ST[256];
-				for (INT i=0; i<256; i++)
+				for (int32_t i=0; i<256; i++)
 					symbol_mask_table[i]=orig.symbol_mask_table[i];
 			}
 		}
@@ -175,7 +175,7 @@ template <class ST> class CStringFeatures : public CFeatures
 			}
 			else
 			{
-				for (int i=0; i<num_vectors; i++)
+				for (int32_t i=0; i<num_vectors; i++)
 				{
 					delete[] features[i].string;
 					features[i].length=0;
@@ -223,7 +223,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 *
 		 * @param num which feature vector to select
 		 */
-		void select_feature_vector(INT num)
+		void select_feature_vector(int32_t num)
 		{
 			ASSERT(features);
 			ASSERT(num<num_vectors);
@@ -236,7 +236,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param dst destination where vector will be stored
 		 * @param len number of features in vector
 		 */
-		void get_string(ST** dst, INT* len)
+		void get_string(ST** dst, int32_t* len)
 		{
 			ASSERT(features);
 			ASSERT(selected_vector<num_vectors);
@@ -252,7 +252,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param len length is returned by reference
 		 * @return feature vector for sample num
 		 */
-		virtual ST* get_feature_vector(INT num, INT& len)
+		virtual ST* get_feature_vector(int32_t num, int32_t& len)
 		{
 			ASSERT(features);
 			ASSERT(num<num_vectors);
@@ -267,7 +267,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param string string with the feature vector's content
 		 * @param len length of the string
 		 */
-		virtual void set_feature_vector(INT num, ST* string, INT len)
+		virtual void set_feature_vector(int32_t num, ST* string, int32_t len)
 		{
 			ASSERT(features);
 			ASSERT(num<num_vectors);
@@ -282,7 +282,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param feat_num which feature
 		 * @return feature
 		 */
-		virtual ST inline get_feature(INT vec_num, INT feat_num)
+		virtual ST inline get_feature(int32_t vec_num, int32_t feat_num)
 		{
 			ASSERT(features && vec_num<num_vectors);
 			ASSERT(feat_num<features[vec_num].length);
@@ -295,7 +295,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param vec_num which vector
 		 * @return length of vector
 		 */
-		virtual inline INT get_vector_length(INT vec_num)
+		virtual inline int32_t get_vector_length(int32_t vec_num)
 		{
 			ASSERT(features && vec_num<num_vectors);
 			return features[vec_num].length;
@@ -305,7 +305,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 *
 		 * @return maximum vector/string length
 		 */
-		virtual inline INT get_max_vector_length()
+		virtual inline int32_t get_max_vector_length()
 		{
 			return max_string_length;
 		}
@@ -314,7 +314,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 *
 		 * @return number of vectors
 		 */
-		virtual inline INT get_num_vectors() { return num_vectors; }
+		virtual inline int32_t get_num_vectors() { return num_vectors; }
 
 		/** get number of symbols
 		 *
@@ -344,7 +344,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 *
 		 * @return order
 		 */
-		inline INT get_order() { return order; }
+		inline int32_t get_order() { return order; }
 
 		/** a higher order mapped symbol will be shaped such that the symbols
 		 * specified by bits in the mask will be returned.
@@ -365,7 +365,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param amount amount to shift the offset
 		 * @return shifted offset
 		 */
-		inline ST shift_offset(ST offset, INT amount)
+		inline ST shift_offset(ST offset, int32_t amount)
 		{
 			ASSERT(alphabet);
 			return (offset << (amount*alphabet->get_num_bits()));
@@ -377,7 +377,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param amount amount to shift the symbol
 		 * @return shifted symbol
 		 */
-		inline ST shift_symbol(ST symbol, INT amount)
+		inline ST shift_symbol(ST symbol, int32_t amount)
 		{
 			ASSERT(alphabet);
 			return (symbol >> (amount*alphabet->get_num_bits()));
@@ -411,10 +411,10 @@ template <class ST> class CStringFeatures : public CFeatures
 				features= new T_STRING<ST>[num_vectors];
 
 				long index=0;
-				for (INT lines=0; lines<num_vectors; lines++)
+				for (int32_t lines=0; lines<num_vectors; lines++)
 				{
 					char* p=&feature_matrix[index];
-					INT columns=0;
+					int32_t columns=0;
 
 					for (columns=0; index+columns<length && p[columns]!='\n'; columns++);
 
@@ -427,7 +427,7 @@ template <class ST> class CStringFeatures : public CFeatures
 
 					max_string_length=CMath::max(max_string_length,columns);
 
-					for (INT i=0; i<columns; i++)
+					for (int32_t i=0; i<columns; i++)
 						features[lines].string[i]= ((ST) p[i]);
 
 					index+= features[lines].length+1;
@@ -456,7 +456,7 @@ template <class ST> class CStringFeatures : public CFeatures
 			size_t required_blocksize=0;
 			uint8_t* dummy=new uint8_t[blocksize];
 			uint8_t* overflow=NULL;
-			INT overflow_len=0;
+			int32_t overflow_len=0;
 
 			num_symbols=4;
 			cleanup();
@@ -506,7 +506,7 @@ template <class ST> class CStringFeatures : public CFeatures
 
 				rewind(f);
 				sz=blocksize;
-				INT lines=0;
+				int32_t lines=0;
 				while (sz == blocksize)
 				{
 					sz=fread(dummy, sizeof(uint8_t), blocksize, f);
@@ -516,7 +516,7 @@ template <class ST> class CStringFeatures : public CFeatures
 					{
 						if (dummy[i]=='\n' || (i==sz-1 && sz<blocksize))
 						{
-							INT len=i-old_sz;
+							int32_t len=i-old_sz;
 							//SG_PRINT("i:%d len:%d old_sz:%d\n", i, len, old_sz);
 							max_string_length=CMath::max(max_string_length, len+overflow_len);
 
@@ -525,16 +525,16 @@ template <class ST> class CStringFeatures : public CFeatures
 
 							if (remap_to_bin)
 							{
-								for (INT j=0; j<overflow_len; j++)
+								for (int32_t j=0; j<overflow_len; j++)
 									features[lines].string[j]=alpha->remap_to_bin(overflow[j]);
-								for (INT j=0; j<len; j++)
+								for (int32_t j=0; j<len; j++)
 									features[lines].string[j+overflow_len]=alpha->remap_to_bin(dummy[old_sz+j]);
 							}
 							else
 							{
-								for (INT j=0; j<overflow_len; j++)
+								for (int32_t j=0; j<overflow_len; j++)
 									features[lines].string[j]=overflow[j];
-								for (INT j=0; j<len; j++)
+								for (int32_t j=0; j<len; j++)
 									features[lines].string[j+overflow_len]=dummy[old_sz+j];
 							}
 
@@ -584,7 +584,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		bool load_from_directory(char* dirname)
 		{
 			struct dirent **namelist;
-			int n;
+			int32_t n;
 
 			io.set_dirname(dirname);
 
@@ -599,14 +599,14 @@ template <class ST> class CStringFeatures : public CFeatures
 				T_STRING<ST>* strings=NULL;
 				alphabet->clear_histogram();
 
-				INT num=0;
-				INT max_len=-1;
+				int32_t num=0;
+				int32_t max_len=-1;
 
 				//usually n==num_vec, but it might not in race conditions 
 				//(file perms modified, file erased)
 				strings=new T_STRING<ST>[n];
 
-				for (int i=0; i<n; i++)
+				for (int32_t i=0; i<n; i++)
 				{
 					char* fname=io.concat_filename(namelist[i]->d_name);
 
@@ -654,14 +654,14 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param p_max_string_length maximum string length
 		 * @return if setting was successful
 		 */
-		bool set_features(T_STRING<ST>* p_features, INT p_num_vectors, INT p_max_string_length)
+		bool set_features(T_STRING<ST>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)
 		{
 			if (p_features)
 			{
 				CAlphabet* alpha=new CAlphabet(alphabet);
 
 				//compute histogram for char/byte
-				for (INT i=0; i<p_num_vectors; i++)
+				for (int32_t i=0; i<p_num_vectors; i++)
 					alpha->add_string_to_histogram( p_features[i].string, p_features[i].length);
 
 				SG_INFO("max_value_in_histogram:%d\n", alpha->get_max_value_in_histogram());
@@ -698,7 +698,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param max_str_len maximal string length (returned)
 		 * @return string features
 		 */
-		virtual T_STRING<ST>* get_features(INT& num_str, INT& max_str_len)
+		virtual T_STRING<ST>* get_features(int32_t& num_str, int32_t& max_str_len)
 		{
 			num_str=num_vectors;
 			max_str_len=max_string_length;
@@ -719,7 +719,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 *
 		 * @return memory footprint of one feature
 		 */
-		virtual INT get_size() { return sizeof(ST); }
+		virtual int32_t get_size() { return sizeof(ST); }
 
 		/** apply preprocessor
 		 *
@@ -730,7 +730,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		{
 			SG_DEBUG( "force: %d\n", force_preprocessing);
 
-			for (INT i=0; i<get_num_preproc(); i++)
+			for (int32_t i=0; i<get_num_preproc(); i++)
 			{ 
 				if ( (!is_preprocessed(i) || force_preprocessing) )
 				{
@@ -754,7 +754,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param skip skip
 		 * @return something inty
 		 */
-		INT obtain_by_sliding_window(INT window_size, INT step_size, INT skip=0)
+		int32_t obtain_by_sliding_window(int32_t window_size, int32_t step_size, int32_t skip=0)
 		{
 			ASSERT(step_size>0);
 			ASSERT(window_size>0);
@@ -773,8 +773,8 @@ template <class ST> class CStringFeatures : public CFeatures
 			}
 
 			T_STRING<ST>* f=new T_STRING<ST>[num_vectors];
-			INT offs=0;
-			for (INT i=0; i<num_vectors; i++)
+			int32_t offs=0;
+			for (int32_t i=0; i<num_vectors; i++)
 			{
 				f[i].string=&features[0].string[offs+skip];
 				f[i].length=window_size-skip;
@@ -797,7 +797,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param skip skip
 		 * @return something inty
 		 */
-		INT obtain_by_position_list(INT window_size, CDynamicArray<INT>* positions, INT skip=0)
+		int32_t obtain_by_position_list(int32_t window_size, CDynamicArray<int32_t>* positions, int32_t skip=0)
 		{
 			ASSERT(positions);
 			ASSERT(window_size>0);
@@ -808,7 +808,7 @@ template <class ST> class CStringFeatures : public CFeatures
 			num_vectors= positions->get_num_elements();
 			ASSERT(num_vectors>0);
 
-			INT len;
+			int32_t len;
 
 			//in case we are dealing with a single remapped string
 			//allow remapping
@@ -822,9 +822,9 @@ template <class ST> class CStringFeatures : public CFeatures
 			}
 
 			T_STRING<ST>* f=new T_STRING<ST>[num_vectors];
-			for (INT i=0; i<num_vectors; i++)
+			for (int32_t i=0; i<num_vectors; i++)
 			{
-				INT p=positions->get_element(i);
+				int32_t p=positions->get_element(i);
 
 				if (p>=0 && p<=len-window_size)
 				{
@@ -863,7 +863,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param rev reverse
 		 * @return if obtaining was successful
 		 */
-		inline bool obtain_from_char(CStringFeatures<char>* sf, INT start, INT p_order, INT gap, bool rev)
+		inline bool obtain_from_char(CStringFeatures<char>* sf, int32_t start, int32_t p_order, int32_t gap, bool rev)
 		{
 			return obtain_from_char_features(sf, start, p_order, gap, rev);
 		}
@@ -878,7 +878,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @return if obtaining was successful
 		 */
 		template <class CT>
-			bool obtain_from_char_features(CStringFeatures<CT>* sf, INT start, INT p_order, INT gap, bool rev)
+			bool obtain_from_char_features(CStringFeatures<CT>* sf, int32_t start, int32_t p_order, int32_t gap, bool rev)
 			{
 				ASSERT(sf);
 				this->order=p_order;
@@ -895,22 +895,22 @@ template <class ST> class CStringFeatures : public CFeatures
 
 				SG_DEBUG( "%1.0llf symbols in StringFeatures<*>\n", sf->get_num_symbols());
 
-				for (INT i=0; i<num_vectors; i++)
+				for (int32_t i=0; i<num_vectors; i++)
 				{
-					INT len=-1;
+					int32_t len=-1;
 					CT* c=sf->get_feature_vector(i, len);
 
 					features[i].string=new ST[len];
 					features[i].length=len;
 
 					ST* str=features[i].string;
-					for (INT j=0; j<len; j++)
+					for (int32_t j=0; j<len; j++)
 						str[j]=(ST) alpha->remap_to_bin(c[j]);
 
 				}
 
 				original_num_symbols=alpha->get_num_symbols();
-				INT max_val=alpha->get_num_bits();
+				int32_t max_val=alpha->get_num_bits();
 
 				if (p_order>1)
 					num_symbols=CMath::powl((long double) 2, (long double) max_val*p_order);
@@ -925,9 +925,9 @@ template <class ST> class CStringFeatures : public CFeatures
 				}
 
 				SG_DEBUG( "translate: start=%i order=%i gap=%i(size:%i)\n", start, p_order, gap, sizeof(ST)) ;
-				for (INT line=0; line<num_vectors; line++)
+				for (int32_t line=0; line<num_vectors; line++)
 				{
-					INT len=0;
+					int32_t len=0;
 					ST* fv=get_feature_vector(line, len);
 
 					if (rev)
@@ -944,15 +944,15 @@ template <class ST> class CStringFeatures : public CFeatures
 				}         
 
 				ULONG mask=0;
-				for (INT i=0; i< (LONG) max_val; i++)
+				for (int32_t i=0; i< (LONG) max_val; i++)
 					mask=(mask<<1) | 1;
 
-				for (INT i=0; i<256; i++)
+				for (int32_t i=0; i<256; i++)
 				{
 					uint8_t bits=(uint8_t) i;
 					symbol_mask_table[i]=0;
 
-					for (INT j=0; j<8; j++)
+					for (int32_t j=0; j<8; j++)
 					{
 						if (bits & 1)
 							symbol_mask_table[i]|=mask<<(max_val*j);
@@ -971,12 +971,12 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @return if length of each vector in this feature object equals the
 		 * given length.
 		 */
-		bool have_same_length(INT len)
+		bool have_same_length(int32_t len)
 		{
 			if (len!=get_max_vector_length())
 				return false;
 
-			for (INT i=0; i<num_vectors; i++)
+			for (int32_t i=0; i<num_vectors; i++)
 			{
 				if (get_vector_length(i)!=len)
 					return false;
@@ -994,9 +994,9 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param p_order order
 		 * @param max_val maximum value
 		 */
-		void translate_from_single_order(ST* obs, INT sequence_length, INT start, INT p_order, INT max_val)
+		void translate_from_single_order(ST* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val)
 		{
-			INT i,j;
+			int32_t i,j;
 			ST value=0;
 
 			for (i=sequence_length-1; i>= p_order-1; i--) //convert interval of size T
@@ -1035,9 +1035,9 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param p_order order
 		 * @param max_val maximum value
 		 */
-		void translate_from_single_order_reversed(ST* obs, INT sequence_length, INT start, INT p_order, INT max_val)
+		void translate_from_single_order_reversed(ST* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val)
 		{
-			INT i,j;
+			int32_t i,j;
 			ST value=0;
 
 			for (i=sequence_length-1; i>= p_order-1; i--) //convert interval of size T
@@ -1077,14 +1077,14 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param max_val maximum value
 		 * @param gap gap
 		 */
-		void translate_from_single_order(ST* obs, INT sequence_length, INT start, INT p_order, INT max_val, INT gap)
+		void translate_from_single_order(ST* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap)
 		{
 			ASSERT(gap>=0);
 
-			const INT start_gap=(p_order-gap)/2;
-			const INT end_gap=start_gap+gap;
+			const int32_t start_gap=(p_order-gap)/2;
+			const int32_t end_gap=start_gap+gap;
 
-			INT i,j;
+			int32_t i,j;
 			ST value=0;
 
 			// almost all positions
@@ -1144,14 +1144,14 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param max_val maximum value
 		 * @param gap gap
 		 */
-		void translate_from_single_order_reversed(ST* obs, INT sequence_length, INT start, INT p_order, INT max_val, INT gap)
+		void translate_from_single_order_reversed(ST* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap)
 		{
 			ASSERT(gap>=0);
 
-			const INT start_gap=(p_order-gap)/2;
-			const INT end_gap=start_gap+gap;
+			const int32_t start_gap=(p_order-gap)/2;
+			const int32_t end_gap=start_gap+gap;
 
-			INT i,j;
+			int32_t i,j;
 			ST value=0;
 
 			// almost all positions
@@ -1204,7 +1204,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		CAlphabet* alphabet;
 
 		/// number of string vectors
-		INT num_vectors;
+		int32_t num_vectors;
 
 		/// this contains the array of features.
 		T_STRING<ST>* features;
@@ -1213,10 +1213,10 @@ template <class ST> class CStringFeatures : public CFeatures
 		ST* single_string;
 
 		/// length of prior single string
-		INT length_of_single_string;
+		int32_t length_of_single_string;
 
 		/// length of longest string
-		INT max_string_length;
+		int32_t max_string_length;
 
 		/// number of used symbols
 		LONGREAL num_symbols;
@@ -1225,10 +1225,10 @@ template <class ST> class CStringFeatures : public CFeatures
 		LONGREAL original_num_symbols;
 
 		/// order used in higher order mapping
-		INT order;
+		int32_t order;
 
 		/// vector to be obtained via get_string
-		INT selected_vector;
+		int32_t selected_vector;
 
 		/// order used in higher order mapping
 		ST* symbol_mask_table;
@@ -1274,7 +1274,7 @@ template<> inline EFeatureType CStringFeatures<uint16_t>::get_feature_type()
  *
  * @return feature type INT
  */
-template<> inline EFeatureType CStringFeatures<INT>::get_feature_type()
+template<> inline EFeatureType CStringFeatures<int32_t>::get_feature_type()
 {
 	return F_INT;
 }

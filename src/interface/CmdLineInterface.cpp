@@ -20,7 +20,7 @@
 #include <netinet/in.h>
 #endif
 
-const INT READLINE_BUFFER_SIZE = 10000;
+const int32_t READLINE_BUFFER_SIZE = 10000;
 extern CSGInterface* interface;
 extern CSGInterfaceMethod sg_methods[];
 
@@ -97,13 +97,13 @@ void CCmdLineInterface::reset(const char* line)
 	SG_PRINT("nlhs=%d nrhs=%d\n", m_nlhs, m_nrhs);
 	if (m_lhs)
 	{
-		for (INT i=0; i<m_lhs->get_num_elements(); i++)
+		for (int32_t i=0; i<m_lhs->get_num_elements(); i++)
 			SG_PRINT("element lhs %i %s\n", i, m_lhs->get_element(i));
 	}
 
 	if (m_rhs)
 	{
-		for (INT i=0; i<m_rhs->get_num_elements(); i++)
+		for (int32_t i=0; i<m_rhs->get_num_elements(); i++)
 			SG_PRINT("element rhs %i %s\n", i, m_rhs->get_element(i));
 	}
 #endif
@@ -127,7 +127,7 @@ void CCmdLineInterface::reset(const char* line)
  */
 IFType CCmdLineInterface::get_argument_type()
 {
-	const INT len=1024;
+	const int32_t len=1024;
 	IFType argtype=UNDEFINED;
 	const char* filename=m_rhs->get_element(m_rhs_counter);
 
@@ -145,7 +145,7 @@ IFType CCmdLineInterface::get_argument_type()
 		SG_ERROR("Could not read data from %s.\n");
 
 	char* signature=new char[len+1];
-	INT num=sscanf(chunk, "### SHOGUN V0 %s\n", signature);
+	int32_t num=sscanf(chunk, "### SHOGUN V0 %s\n", signature);
 
 	// if file has valid shogun signature use it to determine file type
 	if (num==1)
@@ -194,14 +194,14 @@ IFType CCmdLineInterface::get_argument_type()
 }
 
 
-INT CCmdLineInterface::get_int()
+int32_t CCmdLineInterface::get_int()
 {
 	const char* i=get_arg_increment();
 	if (!i)
 		SG_ERROR("Expected Scalar Integer as argument %d\n", m_rhs_counter);
 
-	INT value=-1;
-	INT num=sscanf(i, "%d", &value);
+	int32_t value=-1;
+	int32_t num=sscanf(i, "%d", &value);
 	if (num!=1)
 		SG_ERROR("Expected Scalar Integer as argument %d\n", m_rhs_counter);
 
@@ -215,7 +215,7 @@ DREAL CCmdLineInterface::get_real()
 		SG_ERROR("Expected Scalar Real as argument %d\n", m_rhs_counter);
 
 	DREAL value=-1;
-	INT num=sscanf(r, "%lf", &value);
+	int32_t num=sscanf(r, "%lf", &value);
 	if (num!=1)
 		SG_ERROR("Expected Scalar Real as argument %d\n", m_rhs_counter);
 
@@ -228,8 +228,8 @@ bool CCmdLineInterface::get_bool()
 	if (!b)
 		SG_ERROR("Expected Scalar Bool as argument %d\n", m_rhs_counter);
 
-	INT value=-1;
-	INT num=sscanf(b, "%i", &value);
+	int32_t value=-1;
+	int32_t num=sscanf(b, "%i", &value);
 	if (num!=1)
 		SG_ERROR("Expected Scalar Bool as argument %d\n", m_rhs_counter);
 
@@ -237,7 +237,7 @@ bool CCmdLineInterface::get_bool()
 }
 
 
-char* CCmdLineInterface::get_string(INT& len)
+char* CCmdLineInterface::get_string(int32_t& len)
 {
 	const char* s=get_arg_increment();
 	if (!s)
@@ -253,19 +253,19 @@ char* CCmdLineInterface::get_string(INT& len)
 	return result;
 }
 
-void CCmdLineInterface::get_byte_vector(uint8_t*& vec, INT& len)
+void CCmdLineInterface::get_byte_vector(uint8_t*& vec, int32_t& len)
 {
 	vec=NULL;
 	len=0;
 }
 
-void CCmdLineInterface::get_char_vector(char*& vec, INT& len)
+void CCmdLineInterface::get_char_vector(char*& vec, int32_t& len)
 {
 	vec=NULL;
 	len=0;
 }
 
-void CCmdLineInterface::get_int_vector(INT*& vec, INT& len)
+void CCmdLineInterface::get_int_vector(int32_t*& vec, int32_t& len)
 {
 	vec=NULL;
 	len=0;
@@ -278,21 +278,21 @@ void CCmdLineInterface::get_int_vector(INT*& vec, INT& len)
 		SG_ERROR("Expected Integer Vector as argument %d\n", m_rhs_counter);
 
 	len=LENGTH(rvec);
-	vec=new INT[len];
+	vec=new int32_t[len];
 	ASSERT(vec);
 
-	for (INT i=0; i<len; i++)
-		vec[i]= (INT) INTEGER(rvec)[i];
+	for (int32_t i=0; i<len; i++)
+		vec[i]= (int32_t) INTEGER(rvec)[i];
 		*/
 }
 
-void CCmdLineInterface::get_shortreal_vector(SHORTREAL*& vec, INT& len)
+void CCmdLineInterface::get_shortreal_vector(SHORTREAL*& vec, int32_t& len)
 {
 	vec=NULL;
 	len=0;
 }
 
-void CCmdLineInterface::get_real_vector(DREAL*& vec, INT& len)
+void CCmdLineInterface::get_real_vector(DREAL*& vec, int32_t& len)
 {
 	vec=NULL;
 	len=0;
@@ -305,8 +305,8 @@ void CCmdLineInterface::get_real_vector(DREAL*& vec, INT& len)
 	if (!f.is_ok())
 		SG_ERROR("Could not open file %s to read REAL matrix.\n", filename);
 
-	INT num_feat=0;
-	INT num_vec=0;
+	int32_t num_feat=0;
+	int32_t num_vec=0;
 
 	if (!f.read_real_valued_dense(vec, num_feat, num_vec))
 		SG_ERROR("Could not read REAL data from %s.\n", filename);
@@ -328,48 +328,48 @@ void CCmdLineInterface::get_real_vector(DREAL*& vec, INT& len)
 
 }
 
-void CCmdLineInterface::get_short_vector(SHORT*& vec, INT& len)
+void CCmdLineInterface::get_short_vector(SHORT*& vec, int32_t& len)
 {
 	vec=NULL;
 	len=0;
 }
 
-void CCmdLineInterface::get_word_vector(uint16_t*& vec, INT& len)
+void CCmdLineInterface::get_word_vector(uint16_t*& vec, int32_t& len)
 {
 	vec=NULL;
 	len=0;
 }
 
 
-void CCmdLineInterface::get_byte_matrix(uint8_t*& matrix, INT& num_feat, INT& num_vec)
+void CCmdLineInterface::get_byte_matrix(uint8_t*& matrix, int32_t& num_feat, int32_t& num_vec)
 {
 	matrix=NULL;
 	num_feat=0;
 	num_vec=0;
 }
 
-void CCmdLineInterface::get_char_matrix(char*& matrix, INT& num_feat, INT& num_vec)
+void CCmdLineInterface::get_char_matrix(char*& matrix, int32_t& num_feat, int32_t& num_vec)
 {
 	matrix=NULL;
 	num_feat=0;
 	num_vec=0;
 }
 
-void CCmdLineInterface::get_int_matrix(INT*& matrix, INT& num_feat, INT& num_vec)
+void CCmdLineInterface::get_int_matrix(int32_t*& matrix, int32_t& num_feat, int32_t& num_vec)
 {
 	matrix=NULL;
 	num_feat=0;
 	num_vec=0;
 }
 
-void CCmdLineInterface::get_shortreal_matrix(SHORTREAL*& matrix, INT& num_feat, INT& num_vec)
+void CCmdLineInterface::get_shortreal_matrix(SHORTREAL*& matrix, int32_t& num_feat, int32_t& num_vec)
 {
 	matrix=NULL;
 	num_feat=0;
 	num_vec=0;
 }
 
-void CCmdLineInterface::get_real_matrix(DREAL*& matrix, INT& num_feat, INT& num_vec)
+void CCmdLineInterface::get_real_matrix(DREAL*& matrix, int32_t& num_feat, int32_t& num_vec)
 {
 	const char* filename=get_arg_increment();
 	if (!filename)
@@ -385,49 +385,49 @@ void CCmdLineInterface::get_real_matrix(DREAL*& matrix, INT& num_feat, INT& num_
 	CMath::transpose_matrix(matrix, num_feat, num_vec);
 }
 
-void CCmdLineInterface::get_short_matrix(SHORT*& matrix, INT& num_feat, INT& num_vec)
+void CCmdLineInterface::get_short_matrix(SHORT*& matrix, int32_t& num_feat, int32_t& num_vec)
 {
 	matrix=NULL;
 	num_feat=0;
 	num_vec=0;
 }
 
-void CCmdLineInterface::get_word_matrix(uint16_t*& matrix, INT& num_feat, INT& num_vec)
+void CCmdLineInterface::get_word_matrix(uint16_t*& matrix, int32_t& num_feat, int32_t& num_vec)
 {
 	matrix=NULL;
 	num_feat=0;
 	num_vec=0;
 }
 
-void CCmdLineInterface::get_byte_ndarray(uint8_t*& array, INT*& dims, INT& num_dims)
+void CCmdLineInterface::get_byte_ndarray(uint8_t*& array, int32_t*& dims, int32_t& num_dims)
 {
 }
 
-void CCmdLineInterface::get_char_ndarray(char*& array, INT*& dims, INT& num_dims)
+void CCmdLineInterface::get_char_ndarray(char*& array, int32_t*& dims, int32_t& num_dims)
 {
 }
 
-void CCmdLineInterface::get_int_ndarray(INT*& array, INT*& dims, INT& num_dims)
+void CCmdLineInterface::get_int_ndarray(int32_t*& array, int32_t*& dims, int32_t& num_dims)
 {
 }
 
-void CCmdLineInterface::get_shortreal_ndarray(SHORTREAL*& array, INT*& dims, INT& num_dims)
+void CCmdLineInterface::get_shortreal_ndarray(SHORTREAL*& array, int32_t*& dims, int32_t& num_dims)
 {
 }
 
-void CCmdLineInterface::get_real_ndarray(DREAL*& array, INT*& dims, INT& num_dims)
+void CCmdLineInterface::get_real_ndarray(DREAL*& array, int32_t*& dims, int32_t& num_dims)
 {
 }
 
-void CCmdLineInterface::get_short_ndarray(SHORT*& array, INT*& dims, INT& num_dims)
+void CCmdLineInterface::get_short_ndarray(SHORT*& array, int32_t*& dims, int32_t& num_dims)
 {
 }
 
-void CCmdLineInterface::get_word_ndarray(uint16_t*& array, INT*& dims, INT& num_dims)
+void CCmdLineInterface::get_word_ndarray(uint16_t*& array, int32_t*& dims, int32_t& num_dims)
 {
 }
 
-void CCmdLineInterface::get_real_sparsematrix(TSparse<DREAL>*& matrix, INT& num_feat, INT& num_vec)
+void CCmdLineInterface::get_real_sparsematrix(TSparse<DREAL>*& matrix, int32_t& num_feat, int32_t& num_vec)
 {
 	const char* filename=get_arg_increment();
 	if (!filename)
@@ -442,14 +442,14 @@ void CCmdLineInterface::get_real_sparsematrix(TSparse<DREAL>*& matrix, INT& num_
 }
 
 
-void CCmdLineInterface::get_byte_string_list(T_STRING<uint8_t>*& strings, INT& num_str, INT& max_string_len)
+void CCmdLineInterface::get_byte_string_list(T_STRING<uint8_t>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 	strings=NULL;
 	num_str=0;
 	max_string_len=0;
 }
 
-void CCmdLineInterface::get_char_string_list(T_STRING<char>*& strings, INT& num_str, INT& max_string_len)
+void CCmdLineInterface::get_char_string_list(T_STRING<char>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 	const char* filename=get_arg_increment();
 	if (!filename)
@@ -463,26 +463,26 @@ void CCmdLineInterface::get_char_string_list(T_STRING<char>*& strings, INT& num_
 		SG_ERROR("Could not read CHAR data from %s.\n", filename);
 
 /*
-	for (INT i=0; i<num_str; i++)
+	for (int32_t i=0; i<num_str; i++)
 		SG_PRINT("%s\n", strings[i].string);
 */
 }
 
-void CCmdLineInterface::get_int_string_list(T_STRING<INT>*& strings, INT& num_str, INT& max_string_len)
+void CCmdLineInterface::get_int_string_list(T_STRING<int32_t>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 	strings=NULL;
 	num_str=0;
 	max_string_len=0;
 }
 
-void CCmdLineInterface::get_short_string_list(T_STRING<SHORT>*& strings, INT& num_str, INT& max_string_len)
+void CCmdLineInterface::get_short_string_list(T_STRING<SHORT>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 	strings=NULL;
 	num_str=0;
 	max_string_len=0;
 }
 
-void CCmdLineInterface::get_word_string_list(T_STRING<uint16_t>*& strings, INT& num_str, INT& max_string_len)
+void CCmdLineInterface::get_word_string_list(T_STRING<uint16_t>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 	strings=NULL;
 	num_str=0;
@@ -490,7 +490,7 @@ void CCmdLineInterface::get_word_string_list(T_STRING<uint16_t>*& strings, INT& 
 }
 
 /** set functions - to pass data from shogun to the target interface */
-bool CCmdLineInterface::create_return_values(INT num)
+bool CCmdLineInterface::create_return_values(int32_t num)
 {
 	if (num==m_nlhs)
 		return true;
@@ -506,7 +506,7 @@ void* CCmdLineInterface::get_return_values()
 
 /** set functions - to pass data from shogun to the target interface */
 
-void CCmdLineInterface::set_int(INT scalar)
+void CCmdLineInterface::set_int(int32_t scalar)
 {
 	//set_arg_increment(ScalarInteger(scalar));
 }
@@ -522,27 +522,27 @@ void CCmdLineInterface::set_bool(bool scalar)
 }
 
 
-void CCmdLineInterface::set_char_vector(const char* vec, INT len)
+void CCmdLineInterface::set_char_vector(const char* vec, int32_t len)
 {
 }
 
-void CCmdLineInterface::set_short_vector(const SHORT* vec, INT len)
+void CCmdLineInterface::set_short_vector(const SHORT* vec, int32_t len)
 {
 }
 
-void CCmdLineInterface::set_byte_vector(const uint8_t* vec, INT len)
+void CCmdLineInterface::set_byte_vector(const uint8_t* vec, int32_t len)
 {
 }
 
-void CCmdLineInterface::set_int_vector(const INT* vec, INT len)
+void CCmdLineInterface::set_int_vector(const int32_t* vec, int32_t len)
 {
 }
 
-void CCmdLineInterface::set_shortreal_vector(const SHORTREAL* vec, INT len)
+void CCmdLineInterface::set_shortreal_vector(const SHORTREAL* vec, int32_t len)
 {
 }
 
-void CCmdLineInterface::set_real_vector(const DREAL* vec, INT len)
+void CCmdLineInterface::set_real_vector(const DREAL* vec, int32_t len)
 {
 	const char* filename=set_arg_increment();
 	if (!filename)
@@ -556,19 +556,19 @@ void CCmdLineInterface::set_real_vector(const DREAL* vec, INT len)
 		SG_ERROR("Could not write REAL data to %s.\n", filename);
 }
 
-void CCmdLineInterface::set_word_vector(const uint16_t* vec, INT len)
+void CCmdLineInterface::set_word_vector(const uint16_t* vec, int32_t len)
 {
 }
 
 /*
 #undef SET_VECTOR
 #define SET_VECTOR(function_name, r_type, r_cast, sg_type, if_type, error_string) \
-void CCmdLineInterface::function_name(const sg_type* vec, INT len)	\
+void CCmdLineInterface::function_name(const sg_type* vec, int32_t len)	\
 {																\
 	void* feat=NULL;												\
 	PROTECT( feat = allocVector(r_type, len) );					\
 																\
-	for (INT i=0; i<len; i++)									\
+	for (int32_t i=0; i<len; i++)									\
 		r_cast(feat)[i]=(if_type) vec[i];						\
 																\
 	UNPROTECT(1);												\
@@ -576,7 +576,7 @@ void CCmdLineInterface::function_name(const sg_type* vec, INT len)	\
 }
 
 SET_VECTOR(set_byte_vector, INTSXP, INTEGER, uint8_t, int, "Byte")
-SET_VECTOR(set_int_vector, INTSXP, INTEGER, INT, int, "Integer")
+SET_VECTOR(set_int_vector, INTSXP, INTEGER, int32_t, int, "Integer")
 SET_VECTOR(set_short_vector, INTSXP, INTEGER, SHORT, int, "Short")
 SET_VECTOR(set_shortreal_vector, XP, REAL, SHORTREAL, float, "Single Precision")
 SET_VECTOR(set_real_vector, XP, REAL, DREAL, double, "Double Precision")
@@ -585,22 +585,22 @@ SET_VECTOR(set_word_vector, INTSXP, INTEGER, uint16_t, int, "Word")
 */
 
 
-void CCmdLineInterface::set_char_matrix(const char* matrix, INT num_feat, INT num_vec)
+void CCmdLineInterface::set_char_matrix(const char* matrix, int32_t num_feat, int32_t num_vec)
 {
 }
-void CCmdLineInterface::set_byte_matrix(const uint8_t* matrix, INT num_feat, INT num_vec)
+void CCmdLineInterface::set_byte_matrix(const uint8_t* matrix, int32_t num_feat, int32_t num_vec)
 {
 }
-void CCmdLineInterface::set_int_matrix(const INT* matrix, INT num_feat, INT num_vec)
+void CCmdLineInterface::set_int_matrix(const int32_t* matrix, int32_t num_feat, int32_t num_vec)
 {
 }
-void CCmdLineInterface::set_short_matrix(const SHORT* matrix, INT num_feat, INT num_vec)
+void CCmdLineInterface::set_short_matrix(const SHORT* matrix, int32_t num_feat, int32_t num_vec)
 {
 }
-void CCmdLineInterface::set_shortreal_matrix(const SHORTREAL* matrix, INT num_feat, INT num_vec)
+void CCmdLineInterface::set_shortreal_matrix(const SHORTREAL* matrix, int32_t num_feat, int32_t num_vec)
 {
 }
-void CCmdLineInterface::set_real_matrix(const DREAL* matrix, INT num_feat, INT num_vec)
+void CCmdLineInterface::set_real_matrix(const DREAL* matrix, int32_t num_feat, int32_t num_vec)
 {
 	const char* filename=set_arg_increment();
 	if (!filename)
@@ -613,20 +613,20 @@ void CCmdLineInterface::set_real_matrix(const DREAL* matrix, INT num_feat, INT n
 	if (!f.write_real_valued_dense(matrix, num_feat, num_vec))
 		SG_ERROR("Could not write REAL data to %s.\n", filename);
 }
-void CCmdLineInterface::set_word_matrix(const uint16_t* matrix, INT num_feat, INT num_vec)
+void CCmdLineInterface::set_word_matrix(const uint16_t* matrix, int32_t num_feat, int32_t num_vec)
 {
 }
 
 /*
 #define SET_MATRIX(function_name, r_type, r_cast, sg_type, if_type, error_string) \
-void CCmdLineInterface::function_name(const sg_type* matrix, INT num_feat, INT num_vec) \
+void CCmdLineInterface::function_name(const sg_type* matrix, int32_t num_feat, int32_t num_vec) \
 {																			\
 	void* feat=NULL;															\
 	PROTECT( feat = allocMatrix(r_type, num_feat, num_vec) );				\
 																			\
-	for (INT i=0; i<num_vec; i++)											\
+	for (int32_t i=0; i<num_vec; i++)											\
 	{																		\
-		for (INT j=0; j<num_feat; j++)										\
+		for (int32_t j=0; j<num_feat; j++)										\
 			r_cast(feat)[i*num_feat+j]=(if_type) matrix[i*num_feat+j];		\
 	}																		\
 																			\
@@ -634,7 +634,7 @@ void CCmdLineInterface::function_name(const sg_type* matrix, INT num_feat, INT n
 	set_arg_increment(feat);												\
 }
 SET_MATRIX(set_byte_matrix, INTSXP, INTEGER, uint8_t, int, "Byte")
-SET_MATRIX(set_int_matrix, INTSXP, INTEGER, INT, int, "Integer")
+SET_MATRIX(set_int_matrix, INTSXP, INTEGER, int32_t, int, "Integer")
 SET_MATRIX(set_short_matrix, INTSXP, INTEGER, SHORT, int, "Short")
 SET_MATRIX(set_shortreal_matrix, XP, REAL, SHORTREAL, float, "Single Precision")
 SET_MATRIX(set_real_matrix, XP, REAL, DREAL, double, "Double Precision")
@@ -643,7 +643,7 @@ SET_MATRIX(set_word_matrix, INTSXP, INTEGER, uint16_t, int, "Word")
 */
 
 
-void CCmdLineInterface::set_real_sparsematrix(const TSparse<DREAL>* matrix, INT num_feat, INT num_vec, LONG nnz)
+void CCmdLineInterface::set_real_sparsematrix(const TSparse<DREAL>* matrix, int32_t num_feat, int32_t num_vec, LONG nnz)
 {
 	const char* filename=set_arg_increment();
 	if (!filename)
@@ -657,11 +657,11 @@ void CCmdLineInterface::set_real_sparsematrix(const TSparse<DREAL>* matrix, INT 
 		SG_ERROR("Could not write SPARSE REAL data to %s.\n", filename);
 }
 
-void CCmdLineInterface::set_byte_string_list(const T_STRING<uint8_t>* strings, INT num_str)
+void CCmdLineInterface::set_byte_string_list(const T_STRING<uint8_t>* strings, int32_t num_str)
 {
 }
 
-void CCmdLineInterface::set_char_string_list(const T_STRING<char>* strings, INT num_str)
+void CCmdLineInterface::set_char_string_list(const T_STRING<char>* strings, int32_t num_str)
 {
 	const char* filename=set_arg_increment();
 	if (!filename)
@@ -675,15 +675,15 @@ void CCmdLineInterface::set_char_string_list(const T_STRING<char>* strings, INT 
 		SG_ERROR("Could not write CHAR data to %s.\n", filename);
 }
 
-void CCmdLineInterface::set_int_string_list(const T_STRING<INT>* strings, INT num_str)
+void CCmdLineInterface::set_int_string_list(const T_STRING<int32_t>* strings, int32_t num_str)
 {
 }
 
-void CCmdLineInterface::set_short_string_list(const T_STRING<SHORT>* strings, INT num_str)
+void CCmdLineInterface::set_short_string_list(const T_STRING<SHORT>* strings, int32_t num_str)
 {
 }
 
-void CCmdLineInterface::set_word_string_list(const T_STRING<uint16_t>* strings, INT num_str)
+void CCmdLineInterface::set_word_string_list(const T_STRING<uint16_t>* strings, int32_t num_str)
 {
 }
 

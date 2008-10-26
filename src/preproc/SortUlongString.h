@@ -51,6 +51,6 @@ public:
 
 	/// apply preproc on single feature vector
 	/// result in feature matrix
-	virtual ULONG* apply_to_string(ULONG* f, INT &len);
+	virtual ULONG* apply_to_string(ULONG* f, int32_t &len);
 };
 #endif

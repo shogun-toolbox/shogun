@@ -181,12 +181,12 @@ bool CGUIPreProc::load(char* filename)
 	return result;
 }
 
-bool CGUIPreProc::save(char* filename, INT num_preprocs)
+bool CGUIPreProc::save(char* filename, int32_t num_preprocs)
 {
 	bool result=false;
 	CPreProc* preproc=preprocs->get_last_element();
 
-	INT num=preprocs->get_num_elements()-1;
+	int32_t num=preprocs->get_num_elements()-1;
 	if (num_preprocs>=0)
 		num=num_preprocs;
 
@@ -252,7 +252,7 @@ bool CGUIPreProc::attach_preproc(char* target, bool do_force)
 					CFeatures* te_feat=((CCombinedFeatures*) f_test)->get_first_feature_obj();
 					CFeatures* tr_feat=((CCombinedFeatures*) f_train)->get_first_feature_obj();
 
-					INT num_combined=((CCombinedFeatures*) f_test)->get_num_feature_obj();
+					int32_t num_combined=((CCombinedFeatures*) f_test)->get_num_feature_obj();
 					ASSERT(((CCombinedFeatures*) f_train)->get_num_feature_obj()==num_combined);
 
 					if (!(num_combined && tr_feat && te_feat))
@@ -260,7 +260,7 @@ bool CGUIPreProc::attach_preproc(char* target, bool do_force)
 
 					SG_INFO("BEGIN PREPROCESSING COMBINED FEATURES (%d sub-featureobjects).\n", num_combined);
 					
-					int n=0;
+					int32_t n=0;
 					while (n<num_combined && tr_feat && te_feat)
 					{
 						// and preprocess using that one 
@@ -323,7 +323,7 @@ bool CGUIPreProc::preprocess_features(CFeatures* trainfeat, CFeatures* testfeat,
 
 			if (trainfeat->get_num_preproc() && (trainfeat->get_num_preproc() > testfeat->get_num_preproc()))
 			{
-				for (INT i=0; i<trainfeat->get_num_preproc();  i++)
+				for (int32_t i=0; i<trainfeat->get_num_preproc();  i++)
 				{
 					CPreProc* preproc = trainfeat->get_preproc(i);
 					preproc->init(trainfeat);

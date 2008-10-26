@@ -46,14 +46,14 @@ extern "C" {
 struct svm_node
 {
 	/** index */
-	int index;
+	int32_t index;
 };
 
 /** SVM problem */
 struct svm_problem
 {
 	/** l */
-	int l;
+	int32_t l;
 	/** y */
 	double *y;
 	/** SVM node x */
@@ -67,13 +67,13 @@ enum { LINEAR, POLY, RBF, SIGMOID, PRECOMPUTED }; /* kernel_type */
 struct svm_parameter
 {
 	/** SVM type */
-	int svm_type;
+	int32_t svm_type;
 	/** kernel type */
-	int kernel_type;
+	int32_t kernel_type;
 	/** kernel */
 	CKernel* kernel;
 	/** for poly */
-	int degree;
+	int32_t degree;
 	/** for poly/rbf/sigmoid */
 	double gamma;
 	/** for poly/sigmoid */
@@ -87,9 +87,9 @@ struct svm_parameter
 	/** for C_SVC, EPSILON_SVR and NU_SVR */
 	double C;
 	/** for C_SVC */
-	int nr_weight;
+	int32_t nr_weight;
 	/** for C_SVC */
-	int *weight_label;
+	int32_t *weight_label;
 	/** for C_SVC */
 	double* weight;
 	/** for NU_SVC, ONE_CLASS, and NU_SVR */
@@ -97,7 +97,7 @@ struct svm_parameter
 	/** for EPSILON_SVR */
 	double p;
 	/** use the shrinking heuristics */
-	int shrinking;
+	int32_t shrinking;
 };
 
 /** svm_model */
@@ -106,9 +106,9 @@ struct svm_model
 	/** parameter */
 	svm_parameter param;
 	/** number of classes, = 2 in regression/one class svm */
-	int nr_class;
+	int32_t nr_class;
 	/** total #SV */
-	int l;
+	int32_t l;
 	/** SVs (SV[l]) */
 	svm_node **SV;
 	/** coefficients for SVs in decision functions (sv_coef[n-1][l]) */
@@ -119,16 +119,16 @@ struct svm_model
 	// for classification only
 
 	/** label of each class (label[n]) */
-	int *label;
+	int32_t *label;
 	/** number of SVs for each class (nSV[n])
 	 * nSV[0] + nSV[1] + ... + nSV[n-1] = l
 	 */
-	int *nSV;
+	int32_t *nSV;
 	// XXX
 	/** 1 if svm_model is created by svm_load_model
 	    0 if svm_model is created by svm_train
 	*/
-	int free_sv;
+	int32_t free_sv;
 	/** objective */
 	double objective;
 };

@@ -25,7 +25,7 @@ template <class ST> class CSimpleKernel : public CKernel
 		 *
 		 * @param cachesize cache size
 		 */
-		CSimpleKernel(INT cachesize) : CKernel(cachesize) {}
+		CSimpleKernel(int32_t cachesize) : CKernel(cachesize) {}
 
 		/** constructor
 		 *
@@ -84,7 +84,7 @@ template<> inline EFeatureType CSimpleKernel<SHORTREAL>::get_feature_type() { re
 
 template<> inline EFeatureType CSimpleKernel<ULONG>::get_feature_type() { return F_ULONG; }
 
-template<> inline EFeatureType CSimpleKernel<INT>::get_feature_type() { return F_INT; }
+template<> inline EFeatureType CSimpleKernel<int32_t>::get_feature_type() { return F_INT; }
 
 template<> inline EFeatureType CSimpleKernel<uint16_t>::get_feature_type() { return F_WORD; }
 

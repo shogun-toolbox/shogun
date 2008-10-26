@@ -108,7 +108,7 @@ class CKernel : public CSGObject
 		 *
 		 * @param size cache size
 		 */
-		CKernel(INT size);
+		CKernel(int32_t size);
 
 		/** constructor
 		 *
@@ -116,7 +116,7 @@ class CKernel : public CSGObject
 		 * @param r features for right-hand side
 		 * @param size cache size
 		 */
-		CKernel(CFeatures* l, CFeatures* r, INT size);
+		CKernel(CFeatures* l, CFeatures* r, int32_t size);
 
 		virtual ~CKernel();
 
@@ -127,7 +127,7 @@ class CKernel : public CSGObject
 		 * @param idx_b index of feature vector b
 		 * @return computed kernel function
 		 */
-		inline DREAL kernel(INT idx_a, INT idx_b)
+		inline DREAL kernel(int32_t idx_a, int32_t idx_b)
 		{
 			if (idx_a < 0 || idx_b <0)
 				return 0;
@@ -137,7 +137,7 @@ class CKernel : public CSGObject
 
 			if (lhs==rhs)
 			{
-				INT num_vectors = lhs->get_num_vectors();
+				int32_t num_vectors = lhs->get_num_vectors();
 
 				if (idx_a>=num_vectors)
 					idx_a=2*num_vectors-1-idx_a;
@@ -155,7 +155,7 @@ class CKernel : public CSGObject
 		 * @param m dimension m of matrix
 		 * @param n dimension n of matrix
 		 */
-		void get_kernel_matrix(DREAL** dst, INT* m, INT* n);
+		void get_kernel_matrix(DREAL** dst, int32_t* m, int32_t* n);
 
 		/** get kernel matrix real
 		 *
@@ -164,7 +164,8 @@ class CKernel : public CSGObject
 		 * @param target the kernel matrix
 		 * @return the kernel matrix
 		 */
-		virtual DREAL* get_kernel_matrix_real(int &m, int &n, DREAL* target);
+		virtual DREAL* get_kernel_matrix_real(
+			int32_t &m, int32_t &n, DREAL* target);
 
 		/** get kernel matrix shortreal
 		 *
@@ -173,8 +174,8 @@ class CKernel : public CSGObject
 		 * @param target target for kernel matrix
 		 * @return the kernel matrix
 		 */
-		virtual SHORTREAL* get_kernel_matrix_shortreal(int &m, int &n,
-			SHORTREAL* target);
+		virtual SHORTREAL* get_kernel_matrix_shortreal(
+			int32_t &m, int32_t &n, SHORTREAL* target);
 
 		/** initialize kernel
 		 *  e.g. setup lhs/rhs of kernel, precompute normalization
@@ -261,7 +262,7 @@ class CKernel : public CSGObject
 		 *
 		 * @return number of vectors of left-hand side
 		 */
-		inline INT get_num_vec_lhs()
+		inline int32_t get_num_vec_lhs()
 		{
 			if (!lhs)
 				return 0;
@@ -273,7 +274,7 @@ class CKernel : public CSGObject
 		 *
 		 * @return number of vectors of right-hand side
 		 */
-		inline INT get_num_vec_rhs()
+		inline int32_t get_num_vec_rhs()
 		{
 			if (!rhs)
 				return 0;
@@ -343,7 +344,7 @@ class CKernel : public CSGObject
 		 *
 		 * @param size of kernel cache
 		 */
-		inline void set_cache_size(INT size)
+		inline void set_cache_size(int32_t size)
 		{
 			cache_size = size;
 #ifdef USE_SVMLIGHT
@@ -355,7 +356,7 @@ class CKernel : public CSGObject
 		 *
 		 * @return size of kernel cache
 		 */
-		inline int get_cache_size() { return cache_size; }
+		inline int32_t get_cache_size() { return cache_size; }
 
 #ifdef USE_SVMLIGHT
 		/** cache reset */
@@ -365,13 +366,13 @@ class CKernel : public CSGObject
 		 *
 		 * @return maximum elements in cache
 		 */
-		inline int get_max_elems_cache() { return kernel_cache.max_elems; }
+		inline int32_t get_max_elems_cache() { return kernel_cache.max_elems; }
 
 		/** get activenum cache
 		 *
 		 * @return activecnum cache
 		 */
-		inline int get_activenum_cache() { return kernel_cache.activenum; }
+		inline int32_t get_activenum_cache() { return kernel_cache.activenum; }
 
 		/** get kernel row
 		 *
@@ -380,21 +381,21 @@ class CKernel : public CSGObject
 		 * @param buffer buffer
 		 * @param full_line full line
 		 */
-		void get_kernel_row(INT docnum, INT *active2dnum, DREAL *buffer,
+		void get_kernel_row(int32_t docnum, int32_t *active2dnum, DREAL *buffer,
 			bool full_line=false);
 
 		/** cache kernel row
 		 *
 		 * @param x x
 		 */
-		void cache_kernel_row(INT x);
+		void cache_kernel_row(int32_t x);
 
 		/** cache multiple kernel rows
 		 *
 		 * @param key key
 		 * @param varnum
 		 */
-		void cache_multiple_kernel_rows(INT* key, INT varnum);
+		void cache_multiple_kernel_rows(int32_t* key, int32_t varnum);
 
 		/** kernel cache reset lru */
 		void kernel_cache_reset_lru();
@@ -405,7 +406,7 @@ class CKernel : public CSGObject
 		 * @param num_shrink number of shrink
 		 * @param after after
 		 */
-		void kernel_cache_shrink(INT totdoc, INT num_shrink, INT *after);
+		void kernel_cache_shrink(int32_t totdoc, int32_t num_shrink, int32_t *after);
 
 		/** resize kernel cache
 		 *
@@ -419,7 +420,7 @@ class CKernel : public CSGObject
 		 *
 		 * @param t the time to use
 		 */
-		inline void set_time(INT t)
+		inline void set_time(int32_t t)
 		{
 			kernel_cache.time=t;
 		}
@@ -429,7 +430,7 @@ class CKernel : public CSGObject
 		 * @param cacheidx index in cache
 		 * @return if updating was successful
 		 */
-		inline INT kernel_cache_touch(INT cacheidx)
+		inline int32_t kernel_cache_touch(int32_t cacheidx)
 		{
 			if(kernel_cache.index[cacheidx] != -1)
 			{
@@ -444,7 +445,7 @@ class CKernel : public CSGObject
 		 * @param cacheidx index in cache
 		 * @return if row at given index is cached
 		 */
-		inline INT kernel_cache_check(INT cacheidx)
+		inline int32_t kernel_cache_check(int32_t cacheidx)
 		{
 			return(kernel_cache.index[cacheidx] >= 0);
 		}
@@ -453,7 +454,7 @@ class CKernel : public CSGObject
 		 *
 		 * @return if there is room for one more row in kernel cache
 		 */
-		inline INT kernel_cache_space_available()
+		inline int32_t kernel_cache_space_available()
 		{
 			return(kernel_cache.elems < kernel_cache.max_elems);
 		}
@@ -463,7 +464,7 @@ class CKernel : public CSGObject
 		 * @param size size to initialize to
 		 * @param regression_hack if hack for regression shall be applied
 		 */
-		void kernel_cache_init(INT size, bool regression_hack=false);
+		void kernel_cache_init(int32_t size, bool regression_hack=false);
 
 		/** cleanup kernel cache */
 		void kernel_cache_cleanup();
@@ -490,7 +491,7 @@ class CKernel : public CSGObject
 		 * @param vector_idx index
 		 * @param weight weight
 		 */
-		virtual void add_to_normal(INT vector_idx, DREAL weight);
+		virtual void add_to_normal(int32_t vector_idx, DREAL weight);
 
 		/** get optimization type
 		 *
@@ -517,7 +518,7 @@ class CKernel : public CSGObject
 		 * @param weights weights
 		 * @return if initializing was successful
 		 */
-		virtual bool init_optimization(INT count, INT *IDX, DREAL *weights);
+		virtual bool init_optimization(int32_t count, int32_t *IDX, DREAL *weights);
 
 		/** delete optimization
 		 *
@@ -537,7 +538,7 @@ class CKernel : public CSGObject
 		 * @param vector_idx index to compute
 		 * @return optimized value at given index
 		 */
-		virtual DREAL compute_optimized(INT vector_idx);
+		virtual DREAL compute_optimized(int32_t vector_idx);
 
 		/** computes output for a batch of examples in an optimized fashion
 		 * (favorable if kernel supports it, i.e. has KP_BATCHEVALUATION.  to
@@ -547,7 +548,7 @@ class CKernel : public CSGObject
 		 * alphas arguments are the number of support vectors, their indices
 		 * and weights
 		 */
-		virtual void compute_batch(INT num_vec, INT* vec_idx, DREAL* target, INT num_suppvec, INT* IDX, DREAL* alphas, DREAL factor=1.0);
+		virtual void compute_batch(int32_t num_vec, int32_t* vec_idx, DREAL* target, int32_t num_suppvec, int32_t* IDX, DREAL* alphas, DREAL factor=1.0);
 
 		/** get combined kernel weight
 		 *
@@ -565,28 +566,28 @@ class CKernel : public CSGObject
 		 *
 		 * @return number of subkernels
 		 */
-		virtual INT get_num_subkernels();
+		virtual int32_t get_num_subkernels();
 
 		/** compute by subkernel
 		 *
 		 * @param vector_idx index
 		 * @param subkernel_contrib subkernel contribution
 		 */
-		virtual void compute_by_subkernel(INT vector_idx, DREAL * subkernel_contrib);
+		virtual void compute_by_subkernel(int32_t vector_idx, DREAL * subkernel_contrib);
 
 		/** get subkernel weights
 		 *
 		 * @param num_weights number of weights will be stored here
 		 * @return subkernel weights
 		 */
-		virtual const DREAL* get_subkernel_weights(INT& num_weights);
+		virtual const DREAL* get_subkernel_weights(int32_t& num_weights);
 
 		/** set subkernel weights
 		 *
 		 * @param weights subkernel weights
 		 * @param num_weights number of weights
 		 */
-		virtual void set_subkernel_weights(DREAL* weights, INT num_weights);
+		virtual void set_subkernel_weights(DREAL* weights, int32_t num_weights);
 
 	protected:
 		/** set property
@@ -623,7 +624,7 @@ class CKernel : public CSGObject
 		 * @param y index b
 		 * @return computed kernel function at indices a,b
 		 */
-		virtual DREAL compute(INT x, INT y)=0;
+		virtual DREAL compute(int32_t x, int32_t y)=0;
 
 #ifdef USE_SVMLIGHT
 		/**@ cache kernel evalutations to improve speed
@@ -631,25 +632,25 @@ class CKernel : public CSGObject
 		//@{
 		struct KERNEL_CACHE {
 			/** index */
-			INT   *index;
+			int32_t   *index;
 			/** inverse index */
-			INT   *invindex;
+			int32_t   *invindex;
 			/** active2totdoc */
-			INT   *active2totdoc;
+			int32_t   *active2totdoc;
 			/** totdoc2active */
-			INT   *totdoc2active;
+			int32_t   *totdoc2active;
 			/** least recently used */
-			INT   *lru;
+			int32_t   *lru;
 			/** occu */
-			INT   *occu;
+			int32_t   *occu;
 			/** elements */
-			INT   elems;
+			int32_t   elems;
 			/** max elements */
-			INT   max_elems;
+			int32_t   max_elems;
 			/** time */
-			INT   time;
+			int32_t   time;
 			/** active num */
-			INT   activenum;
+			int32_t   activenum;
 
 			/** buffer */
 			KERNELCACHE_ELEM  *buffer;
@@ -667,30 +668,30 @@ class CKernel : public CSGObject
 			/** cache */
 			KERNELCACHE_ELEM** cache;
 			/** uncached rows */
-			INT* uncached_rows;
+			int32_t* uncached_rows;
 			/** number of uncached rows */
-			INT num_uncached;
+			int32_t num_uncached;
 			/** needs computation */
 			uint8_t* needs_computation;
 			/** start */
-			INT start;
+			int32_t start;
 			/** end */
-			INT end;
+			int32_t end;
 		};
 		static void* cache_multiple_kernel_row_helper(void* p);
 
 		/// init kernel cache of size megabytes
-		void   kernel_cache_free(INT cacheidx);
-		INT   kernel_cache_malloc();
-		INT   kernel_cache_free_lru();
-		KERNELCACHE_ELEM *kernel_cache_clean_and_malloc(INT cacheidx);
+		void   kernel_cache_free(int32_t cacheidx);
+		int32_t   kernel_cache_malloc();
+		int32_t   kernel_cache_free_lru();
+		KERNELCACHE_ELEM *kernel_cache_clean_and_malloc(int32_t cacheidx);
 #endif //USE_SVMLIGHT
 		//@}
 
 
 	protected:
 		/// cache_size in MB
-		INT cache_size;
+		int32_t cache_size;
 
 #ifdef USE_SVMLIGHT
 		/// kernel cache

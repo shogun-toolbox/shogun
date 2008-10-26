@@ -16,7 +16,7 @@
 #include "classifier/PluginEstimate.h"
 #include "lib/io.h"
 
-CHistogramWordStringKernel::CHistogramWordStringKernel(INT size, CPluginEstimate* pie)
+CHistogramWordStringKernel::CHistogramWordStringKernel(int32_t size, CPluginEstimate* pie)
 : CStringKernel<uint16_t>(size), estimate(pie), mean(NULL), variance(NULL),
 	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL),
 	ld_mean_lhs(NULL), ld_mean_rhs(NULL),
@@ -60,7 +60,7 @@ bool CHistogramWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 	ASSERT(r);
 
 	SG_DEBUG( "init: lhs: %ld   rhs: %ld\n", l, r) ;
-	INT i;
+	int32_t i;
 	initialized=false;
 
 	if (sqrtdiag_lhs != sqrtdiag_rhs)
@@ -110,12 +110,12 @@ bool CHistogramWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 	//from our knowledge first normalize variance to 1 and then norm=1 does the job
 	if (!initialized)
 	{
-		INT num_vectors=l->get_num_vectors();
-		num_symbols=(INT) l->get_num_symbols();
-		INT llen=l->get_vector_length(0);
-		INT rlen=r->get_vector_length(0);
-		num_params=llen*((INT) l->get_num_symbols());
-		num_params2=llen*((INT) l->get_num_symbols())+rlen*((INT) r->get_num_symbols());
+		int32_t num_vectors=l->get_num_vectors();
+		num_symbols=(int32_t) l->get_num_symbols();
+		int32_t llen=l->get_vector_length(0);
+		int32_t rlen=r->get_vector_length(0);
+		num_params=llen*((int32_t) l->get_num_symbols());
+		num_params2=llen*((int32_t) l->get_num_symbols())+rlen*((int32_t) r->get_num_symbols());
 
 		if ((!estimate) || (!estimate->check_models()))
 		{
@@ -145,14 +145,14 @@ bool CHistogramWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 		// compute mean
 		for (i=0; i<num_vectors; i++)
 		{
-			INT len;
+			int32_t len;
 			uint16_t* vec=l->get_feature_vector(i, len);
 
 			mean[0]+=estimate->posterior_log_odds_obsolete(vec, len)/num_vectors;
 
-			for (INT j=0; j<len; j++)
+			for (int32_t j=0; j<len; j++)
 			{
-				INT idx=compute_index(j, vec[j]);
+				int32_t idx=compute_index(j, vec[j]);
 				mean[idx]             += estimate->log_derivative_pos_obsolete(vec[j], j)/num_vectors;
 				mean[idx+num_params] += estimate->log_derivative_neg_obsolete(vec[j], j)/num_vectors;
 			}
@@ -161,16 +161,16 @@ bool CHistogramWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 		// compute variance
 		for (i=0; i<num_vectors; i++)
 		{
-			INT len;
+			int32_t len;
 			uint16_t* vec=l->get_feature_vector(i, len);
 
 			variance[0] += CMath::sq(estimate->posterior_log_odds_obsolete(vec, len)-mean[0])/num_vectors;
 
-			for (INT j=0; j<len; j++)
+			for (int32_t j=0; j<len; j++)
 			{
-				for (INT k=0; k<4; k++)
+				for (int32_t k=0; k<4; k++)
 				{
-					INT idx=compute_index(j, k);
+					int32_t idx=compute_index(j, k);
 					if (k!=vec[j])
 					{
 						variance[idx]+=mean[idx]*mean[idx]/num_vectors;
@@ -205,12 +205,12 @@ bool CHistogramWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 	//result -= estimate->log_derivative_neg(avec[i], i)*mean[a_idx+num_params]/variance[a_idx+num_params] ;
 	for (i=0; i<l->get_num_vectors(); i++)
 	{
-		INT alen ;
+		int32_t alen ;
 		uint16_t* avec = l->get_feature_vector(i, alen);
 		DREAL  result=0 ;
-		for (INT j=0; j<alen; j++)
+		for (int32_t j=0; j<alen; j++)
 		{
-			INT a_idx = compute_index(j, avec[j]) ;
+			int32_t a_idx = compute_index(j, avec[j]) ;
 			result -= estimate->log_derivative_pos_obsolete(avec[j], j)*mean[a_idx]/variance[a_idx] ;
 			result -= estimate->log_derivative_neg_obsolete(avec[j], j)*mean[a_idx+num_params]/variance[a_idx+num_params] ;
 		}
@@ -227,12 +227,12 @@ bool CHistogramWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 		//result -= estimate->log_derivative_neg(bvec[i], i)*mean[b_idx+num_params]/variance[b_idx+num_params] ;	
 		for (i=0; i < r->get_num_vectors(); i++)
 		{
-			INT alen ;
+			int32_t alen ;
 			uint16_t* avec=r->get_feature_vector(i, alen);
 			DREAL  result=0 ;
-			for (INT j=0; j<alen; j++)
+			for (int32_t j=0; j<alen; j++)
 			{
-				INT a_idx = compute_index(j, avec[j]) ;
+				int32_t a_idx = compute_index(j, avec[j]) ;
 				result -= estimate->log_derivative_pos_obsolete(avec[j], j)*mean[a_idx]/variance[a_idx] ;
 				result -= estimate->log_derivative_neg_obsolete(avec[j], j)*mean[a_idx+num_params]/variance[a_idx+num_params] ;
 			}
@@ -345,9 +345,9 @@ bool CHistogramWordStringKernel::save_init(FILE* dest)
 
 
 
-DREAL CHistogramWordStringKernel::compute(INT idx_a, INT idx_b)
+DREAL CHistogramWordStringKernel::compute(int32_t idx_a, int32_t idx_b)
 {
-	INT alen, blen;
+	int32_t alen, blen;
 	uint16_t* avec=((CStringFeatures<uint16_t>*) lhs)->get_feature_vector(idx_a, alen);
 	uint16_t* bvec=((CStringFeatures<uint16_t>*) rhs)->get_feature_vector(idx_b, blen);
 	// can only deal with strings of same length
@@ -356,11 +356,11 @@ DREAL CHistogramWordStringKernel::compute(INT idx_a, INT idx_b)
 	DREAL result = plo_lhs[idx_a]*plo_rhs[idx_b]/variance[0];
 	result+= sum_m2_s2 ; // does not contain 0-th element
 
-	for (INT i=0; i<alen; i++)
+	for (int32_t i=0; i<alen; i++)
 	{
 		if (avec[i]==bvec[i])
 		{
-			INT a_idx = compute_index(i, avec[i]) ;
+			int32_t a_idx = compute_index(i, avec[i]) ;
 			DREAL dd = estimate->log_derivative_pos_obsolete(avec[i], i) ;
 			result   += dd*dd/variance[a_idx] ;
 			dd        = estimate->log_derivative_neg_obsolete(avec[i], i) ;
@@ -386,9 +386,9 @@ DREAL CHistogramWordStringKernel::compute(INT idx_a, INT idx_b)
 
 #ifdef BLABLA
 
-DREAL CHistogramWordStringKernel::compute_slow(INT idx_a, INT idx_b)
+DREAL CHistogramWordStringKernel::compute_slow(int32_t idx_a, int32_t idx_b)
 {
-	INT alen, blen;
+	int32_t alen, blen;
 	uint16_t* avec=((CStringFeatures<uint16_t>*) lhs)->get_feature_vector(idx_a, alen);
 	uint16_t* bvec=((CStringFeatures<uint16_t>*) rhs)->get_feature_vector(idx_b, blen);
 	// can only deal with strings of same length
@@ -398,10 +398,10 @@ DREAL CHistogramWordStringKernel::compute_slow(INT idx_a, INT idx_b)
 		(estimate->posterior_log_odds_obsolete(bvec, blen)-mean[0])/(variance[0]);
 	result+= sum_m2_s2 ; // does not contain 0-th element
 
-	for (INT i=0; i<alen; i++)
+	for (int32_t i=0; i<alen; i++)
 	{
-		INT a_idx = compute_index(i, avec[i]) ;
-		INT b_idx = compute_index(i, bvec[i]) ;
+		int32_t a_idx = compute_index(i, avec[i]) ;
+		int32_t b_idx = compute_index(i, bvec[i]) ;
 
 		if (avec[i]==bvec[i])
 		{

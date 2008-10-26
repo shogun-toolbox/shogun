@@ -52,9 +52,9 @@ bool CJensenMetric::save_init(FILE* dest)
 	return false;
 }
 
-DREAL CJensenMetric::compute(INT idx_a, INT idx_b)
+DREAL CJensenMetric::compute(int32_t idx_a, int32_t idx_b)
 {
-	INT alen, blen;
+	int32_t alen, blen;
 	bool afree, bfree;
 
 	double* avec=((CRealFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
@@ -65,7 +65,7 @@ DREAL CJensenMetric::compute(INT idx_a, INT idx_b)
 	DREAL absTmp = 0;
 	DREAL result=0;
 	{
-		for (INT i=0; i<alen; i++)
+		for (int32_t i=0; i<alen; i++)
 		{
 			absTmp=0.5*(avec[i]+bvec[i]);
 			if(avec[i]>0)

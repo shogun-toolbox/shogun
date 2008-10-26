@@ -28,7 +28,7 @@ class CDiagKernel: public CKernel
 		 * @param size cache size
 		 * @param diag diagonal
 		 */
-		CDiagKernel(INT size, DREAL diag=1.0);
+		CDiagKernel(int32_t size, DREAL diag=1.0);
 
 		/** constructor
 		 *
@@ -93,7 +93,7 @@ class CDiagKernel: public CKernel
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		inline virtual DREAL compute(INT idx_a, INT idx_b)
+		inline virtual DREAL compute(int32_t idx_a, int32_t idx_b)
 		{
 			if (idx_a==idx_b)
 				return diag;

@@ -78,7 +78,7 @@ IFType CPythonInterface::get_argument_type()
 }
 
 
-INT CPythonInterface::get_int()
+int32_t CPythonInterface::get_int()
 {
 	const PyObject* i=get_arg_increment();
 	if (!i || !PyInt_Check(i))
@@ -106,7 +106,7 @@ bool CPythonInterface::get_bool()
 }
 
 
-char* CPythonInterface::get_string(INT& len)
+char* CPythonInterface::get_string(int32_t& len)
 {
 	const PyObject* s=get_arg_increment();
 	if (!s || !PyString_Check(s))
@@ -124,7 +124,7 @@ char* CPythonInterface::get_string(INT& len)
 }
 
 #define GET_VECTOR(function_name, py_type, sg_type, if_type, error_string)	\
-void CPythonInterface::function_name(sg_type*& vector, INT& len)			\
+void CPythonInterface::function_name(sg_type*& vector, int32_t& len)			\
 { 																			\
 	const PyArrayObject* py_vec=(PyArrayObject *) get_arg_increment();		\
 	if (!py_vec || !PyArray_Check(py_vec) || py_vec->nd!=1 ||				\
@@ -138,13 +138,13 @@ void CPythonInterface::function_name(sg_type*& vector, INT& len)			\
 	vector=new sg_type[len];												\
 	if_type* data=(if_type*) py_vec->data;									\
 																			\
-	for (INT i=0; i<len; i++)												\
+	for (int32_t i=0; i<len; i++)												\
 			vector[i]=data[i];												\
 }
 
 GET_VECTOR(get_byte_vector, NPY_BYTE, uint8_t, uint8_t, "Byte")
 GET_VECTOR(get_char_vector, NPY_CHAR, char, char, "Char")
-GET_VECTOR(get_int_vector, NPY_INT, INT, int, "Integer")
+GET_VECTOR(get_int_vector, NPY_INT, int32_t, int, "Integer")
 GET_VECTOR(get_short_vector, NPY_SHORT, SHORT, short, "Short")
 GET_VECTOR(get_shortreal_vector, NPY_FLOAT, SHORTREAL, float, "Single Precision")
 GET_VECTOR(get_real_vector, NPY_DOUBLE, DREAL, double, "Double Precision")
@@ -153,7 +153,7 @@ GET_VECTOR(get_word_vector, NPY_USHORT, uint16_t, unsigned short, "Word")
 
 
 #define GET_MATRIX(function_name, py_type, sg_type, if_type, error_string)	\
-void CPythonInterface::function_name(sg_type*& matrix, INT& num_feat, INT& num_vec)	\
+void CPythonInterface::function_name(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec)	\
 { 																			\
 	const PyArrayObject* py_mat=(PyArrayObject *) get_arg_increment(); 		\
 	if (!py_mat || !PyArray_Check(py_mat) || 								\
@@ -169,10 +169,10 @@ void CPythonInterface::function_name(sg_type*& matrix, INT& num_feat, INT& num_v
 	char* data=py_mat->data; 												\
 	npy_intp* strides= py_mat->strides; 									\
 	npy_intp d2_offs=0;														\
-	for (INT i=0; i<num_feat; i++) 											\
+	for (int32_t i=0; i<num_feat; i++) 											\
 	{																		\
 		npy_intp offs=d2_offs;												\
-		for (INT j=0; j<num_vec; j++) 										\
+		for (int32_t j=0; j<num_vec; j++) 										\
 		{																	\
 			matrix[i+j*num_feat]=*((if_type*)(data+offs));					\
 			offs+=strides[1];												\
@@ -183,7 +183,7 @@ void CPythonInterface::function_name(sg_type*& matrix, INT& num_feat, INT& num_v
 
 GET_MATRIX(get_byte_matrix, NPY_BYTE, uint8_t, uint8_t, "Byte")
 GET_MATRIX(get_char_matrix, NPY_CHAR, char, char, "Char")
-GET_MATRIX(get_int_matrix, NPY_INT, INT, int, "Integer")
+GET_MATRIX(get_int_matrix, NPY_INT, int32_t, int, "Integer")
 GET_MATRIX(get_short_matrix, NPY_SHORT, SHORT, short, "Short")
 GET_MATRIX(get_shortreal_matrix, NPY_FLOAT, SHORTREAL, float, "Single Precision")
 GET_MATRIX(get_real_matrix, NPY_DOUBLE, DREAL, double, "Double Precision")
@@ -191,7 +191,7 @@ GET_MATRIX(get_word_matrix, NPY_USHORT, uint16_t, unsigned short, "Word")
 #undef GET_MATRIX
 
 #define GET_NDARRAY(function_name, py_type, sg_type, if_type, error_string)	\
-void CPythonInterface::function_name(sg_type*& array, INT*& dims, INT& num_dims)	\
+void CPythonInterface::function_name(sg_type*& array, int32_t*& dims, int32_t& num_dims)	\
 { 																			\
 	const PyArrayObject* py_mat=(PyArrayObject *) get_arg_increment(); 		\
 	if (!py_mat || !PyArray_Check(py_mat) || 								\
@@ -204,10 +204,10 @@ void CPythonInterface::function_name(sg_type*& array, INT*& dims, INT& num_dims)
  	num_dims=py_mat->nd;													\
 	LONG total_size=0;														\
 																			\
-	dims=new INT[num_dims];													\
-	for (INT d=0; d<num_dims; d++)											\
+	dims=new int32_t[num_dims];													\
+	for (int32_t d=0; d<num_dims; d++)											\
 	{																		\
-		dims[d]=(INT) py_mat->dimensions[d];								\
+		dims[d]=(int32_t) py_mat->dimensions[d];								\
 		total_size+=dims[d];												\
 	}																		\
 																			\
@@ -220,7 +220,7 @@ void CPythonInterface::function_name(sg_type*& array, INT*& dims, INT& num_dims)
 
 GET_NDARRAY(get_byte_ndarray, NPY_BYTE, uint8_t, uint8_t, "Byte")
 GET_NDARRAY(get_char_ndarray, NPY_CHAR, char, char, "Char")
-GET_NDARRAY(get_int_ndarray, NPY_INT, INT, int, "Integer")
+GET_NDARRAY(get_int_ndarray, NPY_INT, int32_t, int, "Integer")
 GET_NDARRAY(get_short_ndarray, NPY_SHORT, SHORT, short, "Short")
 GET_NDARRAY(get_shortreal_ndarray, NPY_FLOAT, SHORTREAL, float, "Single Precision")
 GET_NDARRAY(get_real_ndarray, NPY_DOUBLE, DREAL, double, "Double Precision")
@@ -229,7 +229,7 @@ GET_NDARRAY(get_word_ndarray, NPY_USHORT, uint16_t, unsigned short, "Word")
 
 
 #define GET_SPARSEMATRIX(function_name, py_type, sg_type, if_type, error_string) \
-void CPythonInterface::function_name(TSparse<sg_type>*& matrix, INT& num_feat, INT& num_vec) \
+void CPythonInterface::function_name(TSparse<sg_type>*& matrix, int32_t& num_feat, int32_t& num_vec) \
 {																			\
 	/* no sparse available yet */ \
 	return; \
@@ -252,16 +252,16 @@ void CPythonInterface::function_name(TSparse<sg_type>*& matrix, INT& num_feat, I
 	mwIndex* ir=mxGetIr(mx_mat); 											\
 	mwIndex* jc=mxGetJc(mx_mat); 											\
 	LONG offset=0; 															\
-	for (INT i=0; i<num_vec; i++) 											\
+	for (int32_t i=0; i<num_vec; i++) 											\
 	{ 																		\
-		INT len=jc[i+1]-jc[i]; 												\
+		int32_t len=jc[i+1]-jc[i]; 												\
 		matrix[i].vec_index=i; 												\
 		matrix[i].num_feat_entries=len;										\
  																			\
 		if (len>0) 															\
 		{ 																	\
 			matrix[i].features=new TSparseEntry<sg_type>[len]; 				\
-			for (INT j=0; j<len; j++) 										\
+			for (int32_t j=0; j<len; j++) 										\
 			{ 																\
 				matrix[i].features[j].entry=data[offset]; 					\
 				matrix[i].features[j].feat_index=ir[offset]; 				\
@@ -279,7 +279,7 @@ GET_SPARSEMATRIX(get_real_sparsematrix, NPY_DOUBLE, DREAL, double, "Double Preci
 /*  future versions might support types other than DREAL
 GET_SPARSEMATRIX(get_byte_sparsematrix, "uint8", uint8_t, uint8_t, "Byte")
 GET_SPARSEMATRIX(get_char_sparsematrix, "char", char, mxChar, "Char")
-GET_SPARSEMATRIX(get_int_sparsematrix, "int32", INT, int, "Integer")
+GET_SPARSEMATRIX(get_int_sparsematrix, "int32", int32_t, int, "Integer")
 GET_SPARSEMATRIX(get_short_sparsematrix, "int16", SHORT, short, "Short")
 GET_SPARSEMATRIX(get_shortreal_sparsematrix, "single", SHORTREAL, float, "Single Precision")
 GET_SPARSEMATRIX(get_word_sparsematrix, "uint16", uint16_t, unsigned short, "Word")*/
@@ -287,7 +287,7 @@ GET_SPARSEMATRIX(get_word_sparsematrix, "uint16", uint16_t, unsigned short, "Wor
 
 
 #define GET_STRINGLIST(function_name, py_type, sg_type, if_type, is_char_str, error_string)	\
-void CPythonInterface::function_name(T_STRING<sg_type>*& strings, INT& num_str, INT& max_string_len)	\
+void CPythonInterface::function_name(T_STRING<sg_type>*& strings, int32_t& num_str, int32_t& max_string_len)	\
 { 																			\
 	max_string_len=0;														\
 	const PyObject* py_str= get_arg_increment();							\
@@ -305,12 +305,12 @@ void CPythonInterface::function_name(T_STRING<sg_type>*& strings, INT& num_str, 
 		strings=new T_STRING<sg_type>[num_str];								\
 		ASSERT(strings);													\
 																			\
-		for (int i=0; i<num_str; i++)										\
+		for (int32_t i=0; i<num_str; i++)										\
 		{																	\
 			PyObject *o = PyList_GetItem((PyObject*) py_str,i);				\
 			if (PyString_Check(o))											\
 			{																\
-				INT len=PyString_Size(o);									\
+				int32_t len=PyString_Size(o);									\
 				const sg_type* str= (const sg_type*) PyString_AsString(o);	\
 																			\
 				strings[i].length=len;										\
@@ -326,7 +326,7 @@ void CPythonInterface::function_name(T_STRING<sg_type>*& strings, INT& num_str, 
 			}																\
 			else															\
 			{																\
-				for (INT j=0; j<i; j++)										\
+				for (int32_t j=0; j<i; j++)										\
 					delete[] strings[i].string;								\
 				delete[] strings;											\
 				SG_ERROR("All elements in list must be strings, error in line %d.\n", i);\
@@ -338,16 +338,16 @@ void CPythonInterface::function_name(T_STRING<sg_type>*& strings, INT& num_str, 
 		const PyArrayObject* py_array_str=(const PyArrayObject*) py_str;	\
 		if_type* data=(if_type*) py_array_str->data;						\
 		num_str=py_array_str->dimensions[0]; 								\
-		INT len=py_array_str->dimensions[1]; 								\
+		int32_t len=py_array_str->dimensions[1]; 								\
 		strings=new T_STRING<sg_type>[num_str]; 							\
 																			\
-		for (INT i=0; i<num_str; i++) 										\
+		for (int32_t i=0; i<num_str; i++) 										\
 		{ 																	\
 			if (len>0) 														\
 			{ 																\
 				strings[i].length=len; /* all must have same length*/		\
 				strings[i].string=new sg_type[len+1]; /* not zero terminated */	\
-				INT j; 														\
+				int32_t j; 														\
 				for (j=0; j<len; j++) 										\
 					strings[i].string[j]=data[j+i*len]; 					\
 				strings[i].string[j]='\0'; 									\
@@ -367,7 +367,7 @@ void CPythonInterface::function_name(T_STRING<sg_type>*& strings, INT& num_str, 
 
 GET_STRINGLIST(get_byte_string_list, NPY_BYTE, uint8_t, uint8_t, 1, "Byte")
 GET_STRINGLIST(get_char_string_list, NPY_CHAR, char, char, 1, "Char")
-GET_STRINGLIST(get_int_string_list, NPY_INT, INT, int, 0, "Integer")
+GET_STRINGLIST(get_int_string_list, NPY_INT, int32_t, int, 0, "Integer")
 GET_STRINGLIST(get_short_string_list, NPY_SHORT, SHORT, short, 0, "Short")
 GET_STRINGLIST(get_word_string_list, NPY_USHORT, uint16_t, unsigned short, 0, "Word")
 #undef GET_STRINGLIST
@@ -376,7 +376,7 @@ GET_STRINGLIST(get_word_string_list, NPY_USHORT, uint16_t, unsigned short, 0, "W
 
 /** set functions - to pass data from shogun to the target interface */
 
-void CPythonInterface::set_int(INT scalar)
+void CPythonInterface::set_int(int32_t scalar)
 {
 	PyObject* o=Py_BuildValue("i", scalar);
 	if (!o)
@@ -406,7 +406,7 @@ void CPythonInterface::set_bool(bool scalar)
 
 
 #define SET_VECTOR(function_name, py_type, sg_type, if_type, error_string)	\
-void CPythonInterface::function_name(const sg_type* vector, INT len)		\
+void CPythonInterface::function_name(const sg_type* vector, int32_t len)		\
 {																			\
 	if (!vector || len<1)													\
 		SG_ERROR("Given vector is invalid.\n");								\
@@ -419,7 +419,7 @@ void CPythonInterface::function_name(const sg_type* vector, INT len)		\
 																			\
 	if_type* data=(if_type*) ((PyArrayObject *) py_vec)->data;				\
 																			\
-	for (INT i=0; i<len; i++)												\
+	for (int32_t i=0; i<len; i++)												\
 		data[i]=vector[i];													\
 																			\
 	set_arg_increment(py_vec);												\
@@ -427,7 +427,7 @@ void CPythonInterface::function_name(const sg_type* vector, INT len)		\
 
 SET_VECTOR(set_byte_vector, NPY_BYTE, uint8_t, uint8_t, "Byte")
 SET_VECTOR(set_char_vector, NPY_CHAR, char, char, "Char")
-SET_VECTOR(set_int_vector, NPY_INT, INT, int, "Integer")
+SET_VECTOR(set_int_vector, NPY_INT, int32_t, int, "Integer")
 SET_VECTOR(set_short_vector, NPY_SHORT, SHORT, short, "Short")
 SET_VECTOR(set_shortreal_vector, NPY_FLOAT, SHORTREAL, float, "Single Precision")
 SET_VECTOR(set_real_vector, NPY_DOUBLE, DREAL, double, "Double Precision")
@@ -436,7 +436,7 @@ SET_VECTOR(set_word_vector, NPY_USHORT, uint16_t, unsigned short, "Word")
 
 
 #define SET_MATRIX(function_name, py_type, sg_type, if_type, error_string)	\
-void CPythonInterface::function_name(const sg_type* matrix, INT num_feat, INT num_vec)	\
+void CPythonInterface::function_name(const sg_type* matrix, int32_t num_feat, int32_t num_vec)	\
 { 																			\
 	if (!matrix || num_feat<1 || num_vec<1) 								\
 		SG_ERROR("Given matrix is invalid.\n");								\
@@ -450,8 +450,8 @@ void CPythonInterface::function_name(const sg_type* matrix, INT num_feat, INT nu
  																			\
 	if_type* data=(if_type*) ((PyArrayObject *) py_mat)->data; 				\
  																			\
-	for (INT j=0; j<num_feat; j++) 											\
-		for (INT i=0; i<num_vec; i++) 										\
+	for (int32_t j=0; j<num_feat; j++) 											\
+		for (int32_t i=0; i<num_vec; i++) 										\
 			data[i+j*num_vec]=matrix[i*num_feat+j]; 						\
  																			\
 	set_arg_increment(py_mat); 												\
@@ -459,7 +459,7 @@ void CPythonInterface::function_name(const sg_type* matrix, INT num_feat, INT nu
 
 SET_MATRIX(set_byte_matrix, NPY_BYTE, uint8_t, uint8_t, "Byte")
 SET_MATRIX(set_char_matrix, NPY_CHAR, char, char, "Char")
-SET_MATRIX(set_int_matrix, NPY_INT, INT, int, "Integer")
+SET_MATRIX(set_int_matrix, NPY_INT, int32_t, int, "Integer")
 SET_MATRIX(set_short_matrix, NPY_SHORT, SHORT, short, "Short")
 SET_MATRIX(set_shortreal_matrix, NPY_FLOAT, SHORTREAL, float, "Single Precision")
 SET_MATRIX(set_real_matrix, NPY_DOUBLE, DREAL, double, "Double Precision")
@@ -467,7 +467,7 @@ SET_MATRIX(set_word_matrix, NPY_USHORT, uint16_t, unsigned short, "Word")
 #undef SET_MATRIX
 
 #define SET_SPARSEMATRIX(function_name, py_type, sg_type, if_type, error_string)	\
-void CPythonInterface::function_name(const TSparse<sg_type>* matrix, INT num_feat, INT num_vec, LONG nnz)	\
+void CPythonInterface::function_name(const TSparse<sg_type>* matrix, int32_t num_feat, int32_t num_vec, LONG nnz)	\
 {																			\
 	/* no sparse available yet */ \
 	return; \
@@ -484,11 +484,11 @@ void CPythonInterface::function_name(const TSparse<sg_type>* matrix, INT num_fea
 	mwIndex* ir=mxGetIr(mx_mat);											\
 	mwIndex* jc=mxGetJc(mx_mat);											\
 	LONG offset=0;															\
-	for (INT i=0; i<num_vec; i++)											\
+	for (int32_t i=0; i<num_vec; i++)											\
 	{																		\
-		INT len=matrix[i].num_feat_entries;									\
+		int32_t len=matrix[i].num_feat_entries;									\
 		jc[i]=offset;														\
-		for (INT j=0; j<len; j++)											\
+		for (int32_t j=0; j<len; j++)											\
 		{																	\
 			data[offset]=matrix[i].features[j].entry;						\
 			ir[offset]=matrix[i].features[j].feat_index;					\
@@ -506,7 +506,7 @@ SET_SPARSEMATRIX(set_real_sparsematrix, NPY_DOUBLE, DREAL, double, "Double Preci
 /* future version might support this
 SET_SPARSEMATRIX(set_byte_sparsematrix, mxUINT8_CLASS, uint8_t, uint8_t, "Byte")
 SET_SPARSEMATRIX(set_char_sparsematrix, mxCHAR_CLASS, char, mxChar, "Char")
-SET_SPARSEMATRIX(set_int_sparsematrix, mxINT32_CLASS, INT, int, "Integer")
+SET_SPARSEMATRIX(set_int_sparsematrix, mxINT32_CLASS, int32_t, int, "Integer")
 SET_SPARSEMATRIX(set_short_sparsematrix, mxINT16_CLASS, SHORT, short, "Short")
 SET_SPARSEMATRIX(set_shortreal_sparsematrix, mxSINGLE_CLASS, SHORTREAL, float, "Single Precision")
 SET_SPARSEMATRIX(set_word_sparsematrix, mxUINT16_CLASS, uint16_t, unsigned short, "Word")*/
@@ -514,7 +514,7 @@ SET_SPARSEMATRIX(set_word_sparsematrix, mxUINT16_CLASS, uint16_t, unsigned short
 
 
 #define SET_STRINGLIST(function_name, py_type, sg_type, if_type, is_char_str, error_string)	\
-void CPythonInterface::function_name(const T_STRING<sg_type>* strings, INT num_str)	\
+void CPythonInterface::function_name(const T_STRING<sg_type>* strings, int32_t num_str)	\
 {																				\
 	if (!is_char_str)															\
 		SG_ERROR("Only character strings supported.\n");						\
@@ -526,9 +526,9 @@ void CPythonInterface::function_name(const T_STRING<sg_type>* strings, INT num_s
 	if (!py_str || PyTuple_GET_SIZE(py_str)!=num_str)							\
 		SG_ERROR("Couldn't create Cell Array of %d strings.\n", num_str);		\
 																				\
-	for (INT i=0; i<num_str; i++)												\
+	for (int32_t i=0; i<num_str; i++)												\
 	{																			\
-		INT len=strings[i].length;												\
+		int32_t len=strings[i].length;												\
 		if (len>0)																\
 		{																		\
 			PyObject* str=PyString_FromStringAndSize((const char*) strings[i].string, len); \
@@ -545,13 +545,13 @@ void CPythonInterface::function_name(const T_STRING<sg_type>* strings, INT num_s
 
 SET_STRINGLIST(set_byte_string_list, NPY_BYTE, uint8_t, uint8_t, 0, "Byte")
 SET_STRINGLIST(set_char_string_list, NPY_CHAR, char, char, 1, "Char")
-SET_STRINGLIST(set_int_string_list, NPY_INT, INT, int, 0, "Integer")
+SET_STRINGLIST(set_int_string_list, NPY_INT, int32_t, int, 0, "Integer")
 SET_STRINGLIST(set_short_string_list, NPY_SHORT, SHORT, short, 0, "Short")
 SET_STRINGLIST(set_word_string_list, NPY_USHORT, uint16_t, unsigned short, 0, "Word")
 #undef SET_STRINGLIST
 
 
-bool CPythonInterface::create_return_values(INT num)
+bool CPythonInterface::create_return_values(int32_t num)
 {
 	if (num<=0)
 		return true;

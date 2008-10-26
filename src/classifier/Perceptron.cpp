@@ -33,11 +33,11 @@ bool CPerceptron::train()
 	ASSERT(labels);
 	ASSERT(features);
 	bool converged=false;
-	INT iter=0;
-	INT num_train_labels=0;
-	INT* train_labels=labels->get_int_labels(num_train_labels);
-	INT num_feat=features->get_num_features();
-	INT num_vec=features->get_num_vectors();
+	int32_t iter=0;
+	int32_t num_train_labels=0;
+	int32_t* train_labels=labels->get_int_labels(num_train_labels);
+	int32_t num_feat=features->get_num_features();
+	int32_t num_vec=features->get_num_vectors();
 
 	ASSERT(num_vec==num_train_labels);
 	delete[] w;
@@ -47,7 +47,7 @@ bool CPerceptron::train()
 
 	//start with uniform w, bias=0
 	bias=0;
-	for (INT i=0; i<num_feat; i++)
+	for (int32_t i=0; i<num_feat; i++)
 		w[i]=1.0/num_feat;
 
 	//loop till we either get everything classified right or reach max_iter
@@ -55,20 +55,20 @@ bool CPerceptron::train()
 	while (!converged && iter<max_iter)
 	{
 		converged=true;
-		for (INT i=0; i<num_vec; i++)
+		for (int32_t i=0; i<num_vec; i++)
 			output[i]=classify_example(i);
 
-		for (INT i=0; i<num_vec; i++)
+		for (int32_t i=0; i<num_vec; i++)
 		{
 			if (CMath::sign<DREAL>(output[i]) != train_labels[i])
 			{
 				converged=false;
-				INT vlen;
+				int32_t vlen;
 				bool vfree;
 				double* vec=features->get_feature_vector(i, vlen, vfree);
 
 				bias+=learn_rate*train_labels[i];
-				for (INT j=0; j<num_feat; j++)
+				for (int32_t j=0; j<num_feat; j++)
 					w[j]+=  learn_rate*train_labels[i]*vec[j];
 
 				features->free_feature_vector(vec, i, vfree);

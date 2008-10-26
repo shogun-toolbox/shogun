@@ -31,7 +31,7 @@ template <class T> class CArray2: public CArray<T>
 		 * @param dim1 dimension 1
 		 * @param dim2 dimension 2
 		 */
-		CArray2(INT dim1, INT dim2)
+		CArray2(int32_t dim1, int32_t dim2)
 		: CArray<T>(dim1*dim2), dim1_size(dim1), dim2_size(dim2)
 		{
 		}
@@ -44,7 +44,7 @@ template <class T> class CArray2: public CArray<T>
 		 * @param p_free_array if array must be freed
 		 * @param p_copy_array if array must be copied
 		 */
-		CArray2(T* p_array, INT dim1, INT dim2, bool p_free_array=true, bool p_copy_array=false)
+		CArray2(T* p_array, int32_t dim1, int32_t dim2, bool p_free_array=true, bool p_copy_array=false)
 		: CArray<T>(p_array, dim1*dim2, p_free_array, p_copy_array),
 			dim1_size(dim1), dim2_size(dim2)
 		{
@@ -56,7 +56,7 @@ template <class T> class CArray2: public CArray<T>
 		 * @param dim1 dimension 1
 		 * @param dim2 dimension 2
 		 */
-		CArray2(const T* p_array, INT dim1, INT dim2)
+		CArray2(const T* p_array, int32_t dim1, int32_t dim2)
 		: CArray<T>(p_array, dim1*dim2), dim1_size(dim1), dim2_size(dim2)
 		{
 		}
@@ -68,7 +68,7 @@ template <class T> class CArray2: public CArray<T>
 		 * @param dim1 dimension 1 will be stored here
 		 * @param dim2 dimension 2 will be stored here
 		 */
-		inline void get_array_size(INT & dim1, INT & dim2)
+		inline void get_array_size(int32_t & dim1, int32_t & dim2)
 		{
 			dim1=dim1_size;
 			dim2=dim2_size;
@@ -78,13 +78,13 @@ template <class T> class CArray2: public CArray<T>
 		 *
 		 * @return dimension 1
 		 */
-		inline INT get_dim1() { return dim1_size; }
+		inline int32_t get_dim1() { return dim1_size; }
 
 		/** get dimension 2
 		 *
 		 * @return dimension 2
 		 */
-		inline INT get_dim2() { return dim2_size; }
+		inline int32_t get_dim2() { return dim2_size; }
 
 		/** zero array */
 		inline void zero() { CArray<T>::zero(); }
@@ -115,7 +115,7 @@ template <class T> class CArray2: public CArray<T>
 		 * @param p_free_array if array must be freed
 		 * @param copy_array if array must be copied
 		 */
-		inline void set_array(T* p_array, INT dim1, INT dim2, bool p_free_array=true, bool copy_array=false)
+		inline void set_array(T* p_array, int32_t dim1, int32_t dim2, bool p_free_array=true, bool copy_array=false)
 		{
 			dim1_size=dim1;
 			dim2_size=dim2;
@@ -128,7 +128,7 @@ template <class T> class CArray2: public CArray<T>
 		 * @param dim2 new dimension 2
 		 * @return if resizing was successful
 		 */
-		inline bool resize_array(INT dim1, INT dim2)
+		inline bool resize_array(int32_t dim1, int32_t dim2)
 		{
 			dim1_size=dim1;
 			dim2_size=dim2;
@@ -141,7 +141,7 @@ template <class T> class CArray2: public CArray<T>
 		 * @param idx2 index 2
 		 * @return array element at index
 		 */
-		inline const T& get_element(INT idx1, INT idx2) const
+		inline const T& get_element(int32_t idx1, int32_t idx2) const
 		{
 			ARRAY_ASSERT(idx1>=0 && idx1<dim1_size);
 			ARRAY_ASSERT(idx2>=0 && idx2<dim2_size);
@@ -155,7 +155,7 @@ template <class T> class CArray2: public CArray<T>
 		 * @param idx2 index 2
 		 * @return if setting was successful
 		 */
-		inline bool set_element(const T& p_element, INT idx1, INT idx2)
+		inline bool set_element(const T& p_element, int32_t idx1, int32_t idx2)
 		{
 			ARRAY_ASSERT(idx1>=0 && idx1<dim1_size);
 			ARRAY_ASSERT(idx2>=0 && idx2<dim2_size);
@@ -168,7 +168,7 @@ template <class T> class CArray2: public CArray<T>
 		 * @param idx2 index 2
 		 * @return array element at index
 		 */
-		inline const T& element(INT idx1, INT idx2) const
+		inline const T& element(int32_t idx1, int32_t idx2) const
 		{
 			return get_element(idx1,idx2);
 		}
@@ -179,7 +179,7 @@ template <class T> class CArray2: public CArray<T>
 		 * @param idx2 index 2
 		 * @return array element at index
 		 */
-		inline T& element(INT idx1, INT idx2)
+		inline T& element(int32_t idx1, int32_t idx2)
 		{
 			ARRAY_ASSERT(idx1>=0 && idx1<dim1_size);
 			ARRAY_ASSERT(idx2>=0 && idx2<dim2_size);
@@ -193,7 +193,7 @@ template <class T> class CArray2: public CArray<T>
 		 * @param idx2 index 2
 		 * @return element of given array at given index
 		 */
-		inline T& element(T* p_array, INT idx1, INT idx2)
+		inline T& element(T* p_array, int32_t idx1, int32_t idx2)
 		{
 			ARRAY_ASSERT(CArray<T>::array==p_array);
 			ARRAY_ASSERT(idx1>=0 && idx1<dim1_size);
@@ -209,7 +209,7 @@ template <class T> class CArray2: public CArray<T>
 		 * @param p_dim1_size size of dimension 1
 		 * @return element of given array at given index
 		 */
-		inline T& element(T* p_array, INT idx1, INT idx2, INT p_dim1_size) 
+		inline T& element(T* p_array, int32_t idx1, int32_t idx2, int32_t p_dim1_size) 
 		{
 			ARRAY_ASSERT(CArray<T>::array==p_array);
 			ARRAY_ASSERT(p_dim1_size==dim1_size);
@@ -238,10 +238,10 @@ template <class T> class CArray2: public CArray<T>
 				CArray<T>::SG_PRINT( "2d-Array '%s' of size: %dx%d\n", CArray<T>::get_name(), dim1_size,dim2_size);
 			else
 				CArray<T>::SG_PRINT( "2d-Array of size: %dx%d\n",dim1_size,dim2_size);
-			for (INT i=0; i<dim1_size; i++)
+			for (int32_t i=0; i<dim1_size; i++)
 			{
 				CArray<T>::SG_PRINT( "element(%d,:) = [ ",i);
-				for (INT j=0; j<dim2_size; j++)
+				for (int32_t j=0; j<dim2_size; j++)
 					CArray<T>::SG_PRINT( "%1.1f,", (float) element(i,j));
 				CArray<T>::SG_PRINT( " ]\n");
 			}
@@ -255,8 +255,8 @@ template <class T> class CArray2: public CArray<T>
 
 	protected:
 		/** size of array's dimension 1 */
-		INT dim1_size;
+		int32_t dim1_size;
 		/** size of array's dimension 2 */
-		INT dim2_size;
+		int32_t dim2_size;
 };
 #endif

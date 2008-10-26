@@ -37,8 +37,8 @@ bool CGPBTSVM::train()
 	ASSERT(labels && labels->get_num_labels());
 	ASSERT(labels->is_two_class_labeling());
 
-	int num_lab = 0;
-	int* lab=get_labels()->get_int_labels(num_lab);
+	int32_t num_lab = 0;
+	int32_t* lab=get_labels()->get_int_labels(num_lab);
 	prob.KER=new sKernel(kernel, num_lab);
 	prob.y=lab;
 	prob.ell=get_labels()->get_num_labels();
@@ -74,7 +74,7 @@ bool CGPBTSVM::train()
 
 	//  /*** compute the number of cache rows up to maxmw Mb. ***/
 	if (prob.preprocess_size == -1)
-		prob.preprocess_size = (int) ( (double)prob.chunk_size * 1.5 );
+		prob.preprocess_size = (int32_t) ( (double)prob.chunk_size * 1.5 );
 
 	if (prob.projection_projector == -1)
 	{
@@ -89,10 +89,10 @@ bool CGPBTSVM::train()
 
 	CSVM::set_objective(prob.objective_value);
 
-	int num_sv=0;
-	int bsv=0;
-	int i=0;
-	int k=0;
+	int32_t num_sv=0;
+	int32_t bsv=0;
+	int32_t i=0;
+	int32_t k=0;
 
 	for (i = 0; i < prob.ell; i++)
 	{

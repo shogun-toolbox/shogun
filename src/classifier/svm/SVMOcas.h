@@ -101,13 +101,13 @@ class CSVMOcas : public CSparseLinearClassifier
 		 *
 		 * @param sz buffer size
 		 */
-		inline void set_bufsize(INT sz) { bufsize=sz; }
+		inline void set_bufsize(int32_t sz) { bufsize=sz; }
 
 		/** get buffer size
 		 *
 		 * @return buffer size
 		 */
-		inline INT get_bufsize() { return bufsize; }
+		inline int32_t get_bufsize() { return bufsize; }
 
 	protected:
 		/** compute W
@@ -158,7 +158,7 @@ class CSVMOcas : public CSparseLinearClassifier
 		/** if bias is used */
 		bool use_bias;
 		/** buffer size */
-		INT bufsize;
+		int32_t bufsize;
 		/** C1 */
 		DREAL C1;
 		/** C2 */

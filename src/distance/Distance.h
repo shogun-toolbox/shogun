@@ -64,7 +64,7 @@ class CDistance : public CSGObject
 		  * @param idx_b feature vector b at idx_b
 		  * @return distance value
 		 */
-		inline DREAL distance(INT idx_a, INT idx_b)
+		inline DREAL distance(int32_t idx_a, int32_t idx_b)
 		{
 			if (idx_a < 0 || idx_b <0)
 				return 0;
@@ -74,7 +74,7 @@ class CDistance : public CSGObject
 
 			if (lhs==rhs)
 			{
-				INT num_vectors = lhs->get_num_vectors();
+				int32_t num_vectors = lhs->get_num_vectors();
 
 				if (idx_a>=num_vectors)
 					idx_a=2*num_vectors-1-idx_a;
@@ -103,7 +103,7 @@ class CDistance : public CSGObject
 		 * @param m dimension m of matrix is stored in here
 		 * @param n dimension n of matrix is stored in here
 		 */
-		void get_distance_matrix(DREAL** dst,INT* m, INT* n);
+		void get_distance_matrix(DREAL** dst,int32_t* m, int32_t* n);
 
 		/** get distance matrix real
 		 *
@@ -112,7 +112,8 @@ class CDistance : public CSGObject
 		 * @param target target matrix
 		 * @return target matrix
 		 */
-		virtual DREAL* get_distance_matrix_real(int &m,int &n, DREAL* target);
+		virtual DREAL* get_distance_matrix_real(
+			int32_t &m,int32_t &n, DREAL* target);
 
 		/** get distance matrix short real
 		 *
@@ -121,7 +122,8 @@ class CDistance : public CSGObject
 		 * @param target target matrix
 		 * @return target matrix
 		 */
-		virtual SHORTREAL* get_distance_matrix_shortreal(int &m,int &n,SHORTREAL* target);
+		virtual SHORTREAL* get_distance_matrix_shortreal(
+			int32_t &m,int32_t &n,SHORTREAL* target);
 
 		/** init distance
 		 *
@@ -250,7 +252,7 @@ class CDistance : public CSGObject
 		/// compute distance function for features a and b
 		/// idx_{a,b} denote the index of the feature vectors
 		/// in the corresponding feature object
-		virtual DREAL compute(INT x, INT y)=0;
+		virtual DREAL compute(int32_t x, int32_t y)=0;
 
 		/// matrix precomputation
 		void do_precompute_matrix();

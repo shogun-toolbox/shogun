@@ -39,7 +39,7 @@ template <class T> class CArray3: public CArray<T>
 		 * @param dim2 dimension 2
 		 * @param dim3 dimension 3
 		 */
-		CArray3(INT dim1, INT dim2, INT dim3)
+		CArray3(int32_t dim1, int32_t dim2, int32_t dim3)
 		: CArray<T>(dim1*dim2*dim3), dim1_size(dim1), dim2_size(dim2), dim3_size(dim3)
 		{
 		}
@@ -53,7 +53,7 @@ template <class T> class CArray3: public CArray<T>
 		 * @param p_free_array if array must be freed
 		 * @param p_copy_array if array must be copied
 		 */
-		CArray3(T* p_array, INT dim1, INT dim2, INT dim3,
+		CArray3(T* p_array, int32_t dim1, int32_t dim2, int32_t dim3,
 			bool p_free_array=true, bool p_copy_array=false)
 		: CArray<T>(p_array, dim1*dim2*dim3, p_free_array, p_copy_array),
 			dim1_size(dim1), dim2_size(dim2), dim3_size(dim3)
@@ -68,7 +68,7 @@ template <class T> class CArray3: public CArray<T>
 		 * @param dim2 dimension 2
 		 * @param dim3 dimension 3
 		 */
-		CArray3(const T* p_array, INT dim1, INT dim2, INT dim3)
+		CArray3(const T* p_array, int32_t dim1, int32_t dim2, int32_t dim3)
 		: CArray<T>(p_array, dim1*dim2*dim3),
 			dim1_size(dim1), dim2_size(dim2), dim3_size(dim3)
 		{
@@ -91,7 +91,7 @@ template <class T> class CArray3: public CArray<T>
 		 * @param dim2 dimension 2 will be stored here
 		 * @param dim3 dimension 3 will be stored here
 		 */
-		inline void get_array_size(INT & dim1, INT & dim2, INT & dim3)
+		inline void get_array_size(int32_t & dim1, int32_t & dim2, int32_t & dim3)
 		{
 			dim1=dim1_size;
 			dim2=dim2_size;
@@ -102,19 +102,19 @@ template <class T> class CArray3: public CArray<T>
 		 *
 		 * @return dimension 1
 		 */
-		inline INT get_dim1() { return dim1_size; }
+		inline int32_t get_dim1() { return dim1_size; }
 
 		/** get dimension 2
 		 *
 		 * @return dimension 2
 		 */
-		inline INT get_dim2() { return dim2_size; }
+		inline int32_t get_dim2() { return dim2_size; }
 
 		/** get dimension 3
 		 *
 		 * @return dimension 3
 		 */
-		inline INT get_dim3() { return dim3_size ;
+		inline int32_t get_dim3() { return dim3_size ;
 		}
 
 		/** zero array */
@@ -138,7 +138,7 @@ template <class T> class CArray3: public CArray<T>
 		 * @param p_free_array if array must be freed
 		 * @param copy_array if array must be copied
 		 */
-		inline void set_array(T* p_array, INT dim1, INT dim2, INT dim3, bool p_free_array, bool copy_array=false)
+		inline void set_array(T* p_array, int32_t dim1, int32_t dim2, int32_t dim3, bool p_free_array, bool copy_array=false)
 		{
 			dim1_size=dim1;
 			dim2_size=dim2;
@@ -153,7 +153,7 @@ template <class T> class CArray3: public CArray<T>
 		 * @param dim3 new dimension 3
 		 * @return if resizing was successful
 		 */
-		inline bool resize_array(INT dim1, INT dim2, INT dim3)
+		inline bool resize_array(int32_t dim1, int32_t dim2, int32_t dim3)
 		{
 			dim1_size=dim1;
 			dim2_size=dim2;
@@ -168,7 +168,7 @@ template <class T> class CArray3: public CArray<T>
 		 * @param idx3 index 3
 		 * @return array element at index
 		 */
-		inline T get_element(INT idx1, INT idx2, INT idx3) const
+		inline T get_element(int32_t idx1, int32_t idx2, int32_t idx3) const
 		{
 			ARRAY_ASSERT(idx1>=0 && idx1<dim1_size);
 			ARRAY_ASSERT(idx2>=0 && idx2<dim2_size);
@@ -184,7 +184,7 @@ template <class T> class CArray3: public CArray<T>
 		 * @param idx3 index 3
 		 * @return if setting was successful
 		 */
-		inline bool set_element(T p_element, INT idx1, INT idx2, INT idx3)
+		inline bool set_element(T p_element, int32_t idx1, int32_t idx2, int32_t idx3)
 		{
 			ARRAY_ASSERT(idx1>=0 && idx1<dim1_size);
 			ARRAY_ASSERT(idx2>=0 && idx2<dim2_size);
@@ -199,7 +199,7 @@ template <class T> class CArray3: public CArray<T>
 		 * @param idx3 index 3
 		 * @return array element at index
 		 */
-		inline const T& element(INT idx1, INT idx2, INT idx3) const
+		inline const T& element(int32_t idx1, int32_t idx2, int32_t idx3) const
 		{
 			ARRAY_ASSERT(idx1>=0 && idx1<dim1_size);
 			ARRAY_ASSERT(idx2>=0 && idx2<dim2_size);
@@ -214,7 +214,7 @@ template <class T> class CArray3: public CArray<T>
 		 * @param idx3 index 3
 		 * @return array element at index
 		 */
-		inline T& element(INT idx1, INT idx2, INT idx3)
+		inline T& element(int32_t idx1, int32_t idx2, int32_t idx3)
 		{
 			ARRAY_ASSERT(idx1>=0 && idx1<dim1_size);
 			ARRAY_ASSERT(idx2>=0 && idx2<dim2_size);
@@ -230,7 +230,7 @@ template <class T> class CArray3: public CArray<T>
 		 * @param idx3 index 3
 		 * @return array element at index
 		 */
-		inline T& element(T* p_array, INT idx1, INT idx2, INT idx3)
+		inline T& element(T* p_array, int32_t idx1, int32_t idx2, int32_t idx3)
 		{
 			ARRAY_ASSERT(p_array==CArray<T>::array);
 			ARRAY_ASSERT(idx1>=0 && idx1<dim1_size);
@@ -249,7 +249,7 @@ template <class T> class CArray3: public CArray<T>
 		 * @param p_dim2_size size of dimension 2
 		 * @return element of given array at given index
 		 */
-		inline T& element(T* p_array, INT idx1, INT idx2, INT idx3, INT p_dim1_size, INT p_dim2_size)
+		inline T& element(T* p_array, int32_t idx1, int32_t idx2, int32_t idx3, int32_t p_dim1_size, int32_t p_dim2_size)
 		{
 			ARRAY_ASSERT(p_array==CArray<T>::array);
 			ARRAY_ASSERT(p_dim1_size==dim1_size);
@@ -287,11 +287,11 @@ template <class T> class CArray3: public CArray<T>
 				CArray<T>::SG_PRINT( "3d-Array '%s' of size: %dx%dx%d\n", CArray<T>::get_name(), dim1_size, dim2_size, dim3_size);
 			else
 				CArray<T>::SG_PRINT( "2d-Array of size: %dx%dx%d\n",dim1_size, dim2_size, dim3_size);
-			for (INT k=0; k<dim3_size; k++)
-				for (INT i=0; i<dim1_size; i++)
+			for (int32_t k=0; k<dim3_size; k++)
+				for (int32_t i=0; i<dim1_size; i++)
 				{
 					CArray<T>::SG_PRINT( "element(%d,:,%d) = [ ",i, k);
-					for (INT j=0; j<dim2_size; j++)
+					for (int32_t j=0; j<dim2_size; j++)
 						CArray<T>::SG_PRINT( "%1.1f,", (float)element(i,j,k));
 					CArray<T>::SG_PRINT( " ]\n");
 				}
@@ -299,10 +299,10 @@ template <class T> class CArray3: public CArray<T>
 
 	protected:
 		/** size of array's dimension 1 */
-		INT dim1_size;
+		int32_t dim1_size;
 		/** size of array's dimension 2 */
-		INT dim2_size;
+		int32_t dim2_size;
 		/** size of array's dimension 3 */
-		INT dim3_size;
+		int32_t dim3_size;
 };
 #endif

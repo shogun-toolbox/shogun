@@ -20,8 +20,8 @@
  *
  * This family of typemaps allows pure input C arguments of the form
  *
- *     (type* IN_ARRAY1, int DIM1)
- *     (type* IN_ARRAY2, int DIM1, int DIM2)
+ *     (type* IN_ARRAY1, int32_t DIM1)
+ *     (type* IN_ARRAY2, int32_t DIM1, int32_t DIM2)
  *
  * where "type" is any type supported by the numpy module, to be
  * called in python with an argument list of a single array (or any
@@ -29,28 +29,28 @@
  * to produce an arrayof te specified shape).  This can be applied to
  * a existing functions using the %apply directive:
  *
- *     %apply (double* IN_ARRAY1, int DIM1) {double* series, int length}
- *     %apply (double* IN_ARRAY2, int DIM1, int DIM2) {double* mx, int rows, int cols}
- *     double sum(double* series, int length);
- *     double max(double* mx, int rows, int cols);
+ *     %apply (double* IN_ARRAY1, int32_t DIM1) {double* series, int32_t length}
+ *     %apply (double* IN_ARRAY2, int32_t DIM1, int32_t DIM2) {double* mx, int32_t rows, int32_t cols}
+ *     double sum(double* series, int32_t length);
+ *     double max(double* mx, int32_t rows, int32_t cols);
  *
  * or with
  *
- *     double sum(double* IN_ARRAY1, int DIM1);
- *     double max(double* IN_ARRAY2, int DIM1, int DIM2);
+ *     double sum(double* IN_ARRAY1, int32_t DIM1);
+ *     double max(double* IN_ARRAY2, int32_t DIM1, int32_t DIM2);
  */
 
 /* One dimensional input arrays */
 %define TYPEMAP_IN1(oct_type_check, oct_type, oct_converter, sg_type, if_type, error_string)
 %typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER)
-        (sg_type* IN_ARRAY1, INT DIM1)
+        (sg_type* IN_ARRAY1, int32_t DIM1)
 {
     const octave_value m=$input;
 
     $1 = (m.is_matrix_type() && m.oct_type_check() && m.rows()==1) ? 1 : 0;
 }
 
-%typemap(in) (sg_type* IN_ARRAY1, INT DIM1) (oct_type m)
+%typemap(in) (sg_type* IN_ARRAY1, int32_t DIM1) (oct_type m)
 {
     const octave_value mat_feat=$input;
     if (!mat_feat.is_matrix_type() || !mat_feat.oct_type_check() || mat_feat.rows()!=1)
@@ -63,14 +63,14 @@
     $1 = (sg_type*) m.fortran_vec();
     $2 = m.cols();
 }
-%typemap(freearg) (type* IN_ARRAY1, INT DIM1) {
+%typemap(freearg) (type* IN_ARRAY1, int32_t DIM1) {
 }
 %enddef
 
 /* Define concrete examples of the TYPEMAP_IN1 macros */
 TYPEMAP_IN1(is_uint8_type, uint8NDArray, uint8_array_value, uint8_t, uint8_t, "Byte")
 TYPEMAP_IN1(is_char_matrix, charMatrix, char_matrix_value, char, char, "Char")
-TYPEMAP_IN1(is_int32_type, int32NDArray, uint8_array_value, INT, INT, "Integer")
+TYPEMAP_IN1(is_int32_type, int32NDArray, uint8_array_value, int32_t, int32_t, "Integer")
 TYPEMAP_IN1(is_int16_type, int16NDArray, uint8_array_value, SHORT, SHORT, "Short")
 TYPEMAP_IN1(is_single_type, Matrix, matrix_value, SHORTREAL, SHORTREAL, "Single Precision")
 TYPEMAP_IN1(is_double_type, Matrix, matrix_value, DREAL, DREAL, "Double Precision")
@@ -80,13 +80,13 @@ TYPEMAP_IN1(is_uint16_type, uint16NDArray, uint16_array_value, uint16_t, uint16_
 
 %define TYPEMAP_IN2(oct_type_check, oct_type, oct_converter, sg_type, if_type, error_string)
 %typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER)
-        (sg_type* IN_ARRAY2, INT DIM1, INT DIM2)
+        (sg_type* IN_ARRAY2, int32_t DIM1, int32_t DIM2)
 {
     const octave_value m=$input;
     $1 = (m.is_matrix_type() && m.oct_type_check()) ? 1 : 0;
 }
 
-%typemap(in) (sg_type* IN_ARRAY2, INT DIM1, INT DIM2) (oct_type m)
+%typemap(in) (sg_type* IN_ARRAY2, int32_t DIM1, int32_t DIM2) (oct_type m)
 {
     const octave_value mat_feat=$input;
     if (!mat_feat.is_matrix_type() || !mat_feat.oct_type_check())
@@ -101,13 +101,13 @@ TYPEMAP_IN1(is_uint16_type, uint16NDArray, uint16_array_value, uint16_t, uint16_
     $2 = m.rows();
     $3 = m.cols();
 }
-%typemap(freearg) (type* IN_ARRAY2, INT DIM1, INT DIM2) {
+%typemap(freearg) (type* IN_ARRAY2, int32_t DIM1, int32_t DIM2) {
 }
 %enddef
 
 TYPEMAP_IN2(is_uint8_type, uint8NDArray, uint8_array_value, uint8_t, uint8_t, "Byte")
 TYPEMAP_IN2(is_char_matrix, charMatrix, char_matrix_value, char, char, "Char")
-TYPEMAP_IN2(is_int32_type, int32NDArray, uint8_array_value, INT, INT, "Integer")
+TYPEMAP_IN2(is_int32_type, int32NDArray, uint8_array_value, int32_t, int32_t, "Integer")
 TYPEMAP_IN2(is_int16_type, int16NDArray, uint8_array_value, SHORT, SHORT, "Short")
 TYPEMAP_IN2(is_single_type, Matrix, matrix_value, SHORTREAL, SHORTREAL, "Single Precision")
 TYPEMAP_IN2(is_double_type, Matrix, matrix_value, DREAL, DREAL, "Double Precision")
@@ -125,34 +125,34 @@ TYPEMAP_IN2(is_uint16_type, uint16NDArray, uint16_array_value, uint16_t, uint16_
  * numpy array.  This can be applied to an existing function using
  * the %apply directive:
  *
- *     %apply (DREAL** ARGOUT_ARRAY1, {(DREAL** series, INT* len)}
- *     %apply (DREAL** ARGOUT_ARRAY2, {(DREAL** matrix, INT* d1, INT* d2)}
+ *     %apply (DREAL** ARGOUT_ARRAY1, {(DREAL** series, int32_t* len)}
+ *     %apply (DREAL** ARGOUT_ARRAY2, {(DREAL** matrix, int32_t* d1, int32_t* d2)}
  *
  * with
  *
- *     void sum(DREAL* series, INT* len);
- *     void sum(DREAL** series, INT* len);
- *     void sum(DREAL** matrix, INT* d1, INT* d2);
+ *     void sum(DREAL* series, int32_t* len);
+ *     void sum(DREAL** series, int32_t* len);
+ *     void sum(DREAL** matrix, int32_t* d1, int32_t* d2);
  *
  * where sum mallocs the array and assigns dimensions and the pointer
  *
  */
 %define TYPEMAP_ARGOUT1(oct_type, sg_type, if_type, error_string)
-%typemap(in, numinputs=0) (sg_type** ARGOUT1, INT* DIM1) {
+%typemap(in, numinputs=0) (sg_type** ARGOUT1, int32_t* DIM1) {
     $1 = (sg_type**) malloc(sizeof(sg_type*));
-    $2 = (INT*) malloc(sizeof(INT));
+    $2 = (int32_t*) malloc(sizeof(int32_t));
 }
 
-%typemap(argout) (sg_type** ARGOUT1, INT* DIM1) {
+%typemap(argout) (sg_type** ARGOUT1, int32_t* DIM1) {
     sg_type* vec = *$1;
-    INT len = *$2;
+    int32_t len = *$2;
 
     oct_type mat=oct_type(dim_vector(1, len));
 
     if (mat.cols() != len)
         SWIG_fail;
 
-    for (INT i=0; i<len; i++)
+    for (int32_t i=0; i<len; i++)
         mat(i) = (if_type) vec[i];
 
     $result->append(mat);
@@ -162,7 +162,7 @@ TYPEMAP_IN2(is_uint16_type, uint16NDArray, uint16_array_value, uint16_t, uint16_
 
 TYPEMAP_ARGOUT1(uint8NDArray, uint8_t, uint8_t, "Byte")
 TYPEMAP_ARGOUT1(charMatrix, char, char, "Char")
-TYPEMAP_ARGOUT1(int32NDArray, INT, INT, "Integer")
+TYPEMAP_ARGOUT1(int32NDArray, int32_t, int32_t, "Integer")
 TYPEMAP_ARGOUT1(int16NDArray, SHORT, SHORT, "Short")
 TYPEMAP_ARGOUT1(Matrix, SHORTREAL, SHORTREAL, "Single Precision")
 TYPEMAP_ARGOUT1(Matrix, DREAL, DREAL, "Double Precision")
@@ -171,25 +171,25 @@ TYPEMAP_ARGOUT1(uint16NDArray, uint16_t, uint16_t, "Word")
 #undef TYPEMAP_ARGOUT1
 
 %define TYPEMAP_ARGOUT2(oct_type, sg_type, if_type, error_string)
-%typemap(in, numinputs=0) (sg_type** ARGOUT2, INT* DIM1, INT* DIM2) {
+%typemap(in, numinputs=0) (sg_type** ARGOUT2, int32_t* DIM1, int32_t* DIM2) {
     $1 = (sg_type**) malloc(sizeof(sg_type*));
-    $2 = (INT*) malloc(sizeof(INT));
-    $3 = (INT*) malloc(sizeof(INT));
+    $2 = (int32_t*) malloc(sizeof(int32_t));
+    $3 = (int32_t*) malloc(sizeof(int32_t));
 }
 
-%typemap(argout) (sg_type** ARGOUT2, INT* DIM1, INT* DIM2) {
+%typemap(argout) (sg_type** ARGOUT2, int32_t* DIM1, int32_t* DIM2) {
     sg_type* matrix = *$1;
-    INT num_feat = *$2;
-    INT num_vec = *$3;
+    int32_t num_feat = *$2;
+    int32_t num_vec = *$3;
 
     oct_type mat=oct_type(dim_vector(num_feat, num_vec));
 
     if (mat.rows() != num_feat || mat.cols() != num_vec)
         SWIG_fail;
 
-    for (INT i=0; i<num_vec; i++)
+    for (int32_t i=0; i<num_vec; i++)
     {
-        for (INT j=0; j<num_feat; j++)
+        for (int32_t j=0; j<num_feat; j++)
             mat(j,i) = (if_type) matrix[j+i*num_feat];
     }
 
@@ -200,7 +200,7 @@ TYPEMAP_ARGOUT1(uint16NDArray, uint16_t, uint16_t, "Word")
 
 TYPEMAP_ARGOUT2(uint8NDArray, uint8_t, uint8_t, "Byte")
 TYPEMAP_ARGOUT2(charMatrix, char, char, "Char")
-TYPEMAP_ARGOUT2(int32NDArray, INT, INT, "Integer")
+TYPEMAP_ARGOUT2(int32NDArray, int32_t, int32_t, "Integer")
 TYPEMAP_ARGOUT2(int16NDArray, SHORT, SHORT, "Short")
 TYPEMAP_ARGOUT2(Matrix, SHORTREAL, SHORTREAL, "Single Precision")
 TYPEMAP_ARGOUT2(Matrix, DREAL, DREAL, "Double Precision")
@@ -209,10 +209,10 @@ TYPEMAP_ARGOUT2(uint16NDArray, uint16_t, uint16_t, "Word")
 
 /* input typemap for CStringFeatures<char> etc */
 %define GET_STRINGLIST(oct_type_check, oct_type, oct_converter, sg_type, if_type, error_string)
-%typemap(in) (T_STRING<sg_type>* strings, INT num_strings, INT max_len)
+%typemap(in) (T_STRING<sg_type>* strings, int32_t num_strings, int32_t max_len)
 {
-    INT max_len=0;
-    INT num_strings=0;
+    int32_t max_len=0;
+    int32_t num_strings=0;
     T_STRING<sg_type>* strings=NULL;
 
     octave_value arg=$input;
@@ -223,7 +223,7 @@ TYPEMAP_ARGOUT2(uint16NDArray, uint16_t, uint16_t, "Word")
         ASSERT(num_strings>=1);
         strings=new T_STRING<sg_type>[num_strings];
 
-        for (int i=0; i<num_strings; i++)
+        for (int32_t i=0; i<num_strings; i++)
         {
             if (!c.elem(i).oct_type_check() || !c.elem(i).rows()==1)
             {
@@ -232,13 +232,13 @@ TYPEMAP_ARGOUT2(uint16NDArray, uint16_t, uint16_t, "Word")
             }
             oct_type str=c.elem(i).oct_converter();
 
-            INT len=str.cols();
+            int32_t len=str.cols();
             if (len>0) 
             { 
                 strings[i].length=len; /* all must have same length in octave */
                 strings[i].string=new sg_type[len+1]; /* not zero terminated in octave */
                 /*ASSERT(strings[i].string);*/
-                INT j; 
+                int32_t j; 
                 for (j=0; j<len; j++)
                     strings[i].string[j]=str(0,j);
                 strings[i].string[j]='\0';
@@ -256,18 +256,18 @@ TYPEMAP_ARGOUT2(uint16NDArray, uint16_t, uint16_t, "Word")
     {
         oct_type data=arg.oct_converter();
         num_strings=data.cols(); 
-        INT len=data.rows();
+        int32_t len=data.rows();
         strings=new T_STRING<sg_type>[num_strings];
         ASSERT(strings);
 
-        for (INT i=0; i<num_strings; i++)
+        for (int32_t i=0; i<num_strings; i++)
         { 
             if (len>0) 
             { 
                 strings[i].length=len; /* all must have same length in octave */
                 strings[i].string=new sg_type[len+1]; /* not zero terminated in octave */
                 /*ASSERT(strings[i].string);*/
-                INT j;
+                int32_t j;
                 for (j=0; j<len; j++)
                     strings[i].string[j]=data(j,i);
                 strings[i].string[j]='\0';
@@ -296,7 +296,7 @@ TYPEMAP_ARGOUT2(uint16NDArray, uint16_t, uint16_t, "Word")
 
 GET_STRINGLIST(is_matrix_type() && arg.is_uint8_type, uint8NDArray, uint8_array_value, uint8_t, uint8_t, "Byte")
 GET_STRINGLIST(is_char_matrix, charMatrix, char_matrix_value, char, char, "Char")
-GET_STRINGLIST(is_matrix_type() && arg.is_int32_type, int32NDArray, int32_array_value, INT, INT, "Integer")
+GET_STRINGLIST(is_matrix_type() && arg.is_int32_type, int32NDArray, int32_array_value, int32_t, int32_t, "Integer")
 GET_STRINGLIST(is_matrix_type() && arg.is_int16_type, int16NDArray, int16_array_value, SHORT, SHORT, "Short")
 GET_STRINGLIST(is_matrix_type() && arg.is_uint16_type, uint16NDArray, uint16_array_value, uint16_t, uint16_t, "Word")
 #undef GET_STRINGLIST

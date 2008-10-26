@@ -13,7 +13,7 @@
 #include "lib/io.h"
 #include "lib/Mathematics.h"
 
-CTOPFeatures::CTOPFeatures(INT size, CHMM* p, CHMM* n, bool neglin, bool poslin)
+CTOPFeatures::CTOPFeatures(int32_t size, CHMM* p, CHMM* n, bool neglin, bool poslin)
 : CRealFeatures(size), neglinear(neglin), poslinear(poslin)
 {
 	memset(&pos_relevant_indizes, 0, sizeof(pos_relevant_indizes));
@@ -71,7 +71,7 @@ void CTOPFeatures::set_models(CHMM* p, CHMM* n)
 	SG_DEBUG( "pos_feat=[%i,%i,%i,%i],neg_feat=[%i,%i,%i,%i] -> %i features\n", pos->get_N(), pos->get_N(), pos->get_N()*pos->get_N(), pos->get_N()*pos->get_M(), neg->get_N(), neg->get_N(), neg->get_N()*neg->get_N(), neg->get_N()*neg->get_M(),num_features) ;
 }
 
-DREAL* CTOPFeatures::compute_feature_vector(INT num, INT &len, DREAL* target)
+DREAL* CTOPFeatures::compute_feature_vector(int32_t num, int32_t &len, DREAL* target)
 {
 	DREAL* featurevector=target;
 
@@ -86,10 +86,10 @@ DREAL* CTOPFeatures::compute_feature_vector(INT num, INT &len, DREAL* target)
 	return featurevector;
 }
 
-void CTOPFeatures::compute_feature_vector(DREAL* featurevector, INT num, INT& len)
+void CTOPFeatures::compute_feature_vector(DREAL* featurevector, int32_t num, int32_t& len)
 {
-	INT i,j,p=0,x=num;
-	INT idx=0;
+	int32_t i,j,p=0,x=num;
+	int32_t idx=0;
 
 	double posx=(poslinear) ? (pos->linear_model_probability(x)) : (pos->model_probability(x));
 	double negx=(neglinear) ? (neg->linear_model_probability(x)) : (neg->model_probability(x));
@@ -174,7 +174,7 @@ void CTOPFeatures::compute_feature_vector(DREAL* featurevector, INT num, INT& le
 
 DREAL* CTOPFeatures::set_feature_matrix()
 {
-	INT len=0;
+	int32_t len=0;
 
 	num_features=get_num_features();
 	ASSERT(num_features);
@@ -193,7 +193,7 @@ DREAL* CTOPFeatures::set_feature_matrix()
 
 	SG_INFO( "calculating top feature matrix\n");
 
-	for (INT x=0; x<num_vectors; x++)
+	for (int32_t x=0; x<num_vectors; x++)
 	{
 		if (!(x % (num_vectors/10+1)))
 			SG_DEBUG( "%02d%%.", (int) (100.0*x/num_vectors));
@@ -213,8 +213,8 @@ DREAL* CTOPFeatures::set_feature_matrix()
 
 bool CTOPFeatures::compute_relevant_indizes(CHMM* hmm, T_HMM_INDIZES* hmm_idx)
 {
-	INT i=0;
-	INT j=0;
+	int32_t i=0;
+	int32_t j=0;
 
 	hmm_idx->num_p=0;
 	hmm_idx->num_q=0;
@@ -244,37 +244,37 @@ bool CTOPFeatures::compute_relevant_indizes(CHMM* hmm, T_HMM_INDIZES* hmm_idx)
 
 	if (hmm_idx->num_p > 0)
 	{
-		hmm_idx->idx_p=new INT[hmm_idx->num_p];
+		hmm_idx->idx_p=new int32_t[hmm_idx->num_p];
 		ASSERT(hmm_idx->idx_p);
 	}
 
 	if (hmm_idx->num_q > 0)
 	{
-		hmm_idx->idx_q=new INT[hmm_idx->num_q];
+		hmm_idx->idx_q=new int32_t[hmm_idx->num_q];
 		ASSERT(hmm_idx->idx_q);
 	}
 
 	if (hmm_idx->num_a > 0)
 	{
-		hmm_idx->idx_a_rows=new INT[hmm_idx->num_a];
-		hmm_idx->idx_a_cols=new INT[hmm_idx->num_a];
+		hmm_idx->idx_a_rows=new int32_t[hmm_idx->num_a];
+		hmm_idx->idx_a_cols=new int32_t[hmm_idx->num_a];
 		ASSERT(hmm_idx->idx_a_rows);
 		ASSERT(hmm_idx->idx_a_cols);
 	}
 
 	if (hmm_idx->num_b > 0)
 	{
-		hmm_idx->idx_b_rows=new INT[hmm_idx->num_b];
-		hmm_idx->idx_b_cols=new INT[hmm_idx->num_b];
+		hmm_idx->idx_b_rows=new int32_t[hmm_idx->num_b];
+		hmm_idx->idx_b_cols=new int32_t[hmm_idx->num_b];
 		ASSERT(hmm_idx->idx_b_rows);
 		ASSERT(hmm_idx->idx_b_cols);
 	}
 
 
-	INT idx_p=0;
-	INT idx_q=0;
-	INT idx_a=0;
-	INT idx_b=0;
+	int32_t idx_p=0;
+	int32_t idx_q=0;
+	int32_t idx_a=0;
+	int32_t idx_b=0;
 
 	for (i=0; i<hmm->get_N(); i++)
 	{
@@ -314,9 +314,9 @@ bool CTOPFeatures::compute_relevant_indizes(CHMM* hmm, T_HMM_INDIZES* hmm_idx)
 	return true;
 }
 
-INT CTOPFeatures::compute_num_features()
+int32_t CTOPFeatures::compute_num_features()
 {
-	INT num=0;
+	int32_t num=0;
 
 	if (pos && neg)
 	{

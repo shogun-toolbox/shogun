@@ -34,7 +34,7 @@ class CFixedDegreeStringKernel: public CStringKernel<char>
 		 * @param size cache size
 		 * @param degree the degree
 		 */
-		CFixedDegreeStringKernel(INT size, INT degree);
+		CFixedDegreeStringKernel(int32_t size, int32_t degree);
 
 		/** constructor
 		 *
@@ -44,7 +44,7 @@ class CFixedDegreeStringKernel: public CStringKernel<char>
 		 */
 		CFixedDegreeStringKernel(
 			CStringFeatures<char>* l, CStringFeatures<char>* r,
-			INT degree);
+			int32_t degree);
 
 		virtual ~CFixedDegreeStringKernel();
 
@@ -97,9 +97,9 @@ class CFixedDegreeStringKernel: public CStringKernel<char>
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		DREAL compute(INT idx_a, INT idx_b);
+		DREAL compute(int32_t idx_a, int32_t idx_b);
 		/** the degree */
-		INT degree;
+		int32_t degree;
 };
 
 #endif /* _FIXEDDEGREESTRINGKERNEL_H___ */

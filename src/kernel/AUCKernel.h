@@ -24,7 +24,7 @@ class CAUCKernel: public CSimpleKernel<uint16_t>
 		 * @param size cache size
 		 * @param subkernel the subkernel
 		 */
-		CAUCKernel(INT size, CKernel* subkernel);
+		CAUCKernel(int32_t size, CKernel* subkernel);
 
 		/** constructor
 		 *
@@ -79,7 +79,7 @@ class CAUCKernel: public CSimpleKernel<uint16_t>
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		virtual DREAL compute(INT idx_a, INT idx_b);
+		virtual DREAL compute(int32_t idx_a, int32_t idx_b);
 
 	protected:
 		/** the subkernel */

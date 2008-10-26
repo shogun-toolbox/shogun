@@ -61,25 +61,25 @@ bool CCanberraWordDistance::save_init(FILE* dest)
 	return false;
 }
   
-DREAL CCanberraWordDistance::compute(INT idx_a, INT idx_b)
+DREAL CCanberraWordDistance::compute(int32_t idx_a, int32_t idx_b)
 {
-	INT alen, blen;
+	int32_t alen, blen;
 
 	uint16_t* avec=((CStringFeatures<uint16_t>*) lhs)->get_feature_vector(idx_a, alen);
 	uint16_t* bvec=((CStringFeatures<uint16_t>*) rhs)->get_feature_vector(idx_b, blen);
 
 	DREAL result=0;
 
-	INT left_idx=0;
-	INT right_idx=0;
+	int32_t left_idx=0;
+	int32_t right_idx=0;
 
 	while (left_idx < alen && right_idx < blen)
 	{
 		uint16_t sym=avec[left_idx];
 		if (avec[left_idx]==bvec[right_idx])
 		{
-			INT old_left_idx=left_idx;
-			INT old_right_idx=right_idx;
+			int32_t old_left_idx=left_idx;
+			int32_t old_right_idx=right_idx;
 
 			while (left_idx< alen && avec[left_idx]==sym)
 				left_idx++;

@@ -45,7 +45,7 @@ class CGUIPreProc : public CSGObject
 		/** load preproc from file */
 		bool load(char* filename);
 		/** save preproc to file */
-		bool save(char* filename, INT num_preprocs);
+		bool save(char* filename, int32_t num_preprocs);
 
 		/** attach preprocessor to TRAIN/TEST feature obj.
 		 *  it will also preprocess train/test data

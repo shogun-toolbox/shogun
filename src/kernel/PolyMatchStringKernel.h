@@ -37,7 +37,7 @@ class CPolyMatchStringKernel: public CStringKernel<char>
 		 * @param degree degree
 		 * @param inhomogene is inhomogeneous
 		 */
-		CPolyMatchStringKernel(INT size, INT degree, bool inhomogene);
+		CPolyMatchStringKernel(int32_t size, int32_t degree, bool inhomogene);
 
 		/** constructor
 		 *
@@ -48,7 +48,7 @@ class CPolyMatchStringKernel: public CStringKernel<char>
 		 */
 		CPolyMatchStringKernel(
 			CStringFeatures<char>* l, CStringFeatures<char>* r,
-			INT degree, bool inhomogene);
+			int32_t degree, bool inhomogene);
 
 		virtual ~CPolyMatchStringKernel();
 
@@ -104,11 +104,11 @@ class CPolyMatchStringKernel: public CStringKernel<char>
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		virtual DREAL compute(INT idx_a, INT idx_b);
+		virtual DREAL compute(int32_t idx_a, int32_t idx_b);
 
 	protected:
 		/** degree */
-		INT degree;
+		int32_t degree;
 		/** if kernel is inhomogeneous */
 		bool inhomogene;
 };

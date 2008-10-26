@@ -11,7 +11,7 @@
 %feature("autodoc", "get_w(self) -> [] of float") get_w;
 #endif
 
-%apply (DREAL** ARGOUT1, INT* DIM1) {(DREAL** dst_w, INT* dst_dims)};
+%apply (DREAL** ARGOUT1, int32_t* DIM1) {(DREAL** dst_w, int32_t* dst_dims)};
 
 %include "classifier/SparseLinearClassifier.h"
 %include "classifier/svm/SVMLin.i"

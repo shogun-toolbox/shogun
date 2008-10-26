@@ -47,8 +47,8 @@ void CGUIFeatures::invalidate_test()
 }
 
 bool CGUIFeatures::load(
-	char* filename, char* fclass, char* type, char* target, INT size,
-	INT comp_features)
+	char* filename, char* fclass, char* type, char* target, int32_t size,
+	int32_t comp_features)
 {
 	bool result=false;
 	CFeatures** f_ptr=NULL;
@@ -214,7 +214,7 @@ bool CGUIFeatures::clean(char* target)
 }
 
 bool CGUIFeatures::obtain_by_sliding_window(
-	char* target, INT winsize, INT shift, INT skip)
+	char* target, int32_t winsize, int32_t shift, int32_t skip)
 {
 	ASSERT(winsize>0);
 	ASSERT(shift>0);
@@ -261,7 +261,7 @@ bool CGUIFeatures::obtain_by_sliding_window(
 	return false;
 }
 
-bool CGUIFeatures::reshape(char* target, INT num_feat, INT num_vec)
+bool CGUIFeatures::reshape(char* target, int32_t num_feat, int32_t num_vec)
 {
 	CFeatures** f_ptr=NULL;
 
@@ -352,8 +352,8 @@ CSparseFeatures<DREAL>* CGUIFeatures::convert_simple_real_to_sparse_real(CRealFe
 		//create sparse features with 0 cache
 		SG_INFO("Attempting to convert dense feature matrix to a sparse one.\n");
 		CSparseFeatures<DREAL>* target=new CSparseFeatures<DREAL>(0);
-		INT num_f=0;
-		INT num_v=0;
+		int32_t num_f=0;
+		int32_t num_v=0;
 		DREAL* feats=src->get_feature_matrix(num_f, num_v);
 		if (target->set_full_feature_matrix(feats, num_f, num_v))
 			return target;
@@ -370,17 +370,17 @@ CStringFeatures<char>* CGUIFeatures::convert_simple_char_to_string_char(CCharFea
 {
 	if (src && src->get_feature_class()==C_SIMPLE)
 	{
-		INT num_vec=src->get_num_vectors();
+		int32_t num_vec=src->get_num_vectors();
 		T_STRING<char>* strings=new T_STRING<char>[num_vec];
-		INT max_len=-1;
+		int32_t max_len=-1;
 
-		for (INT i=0; i<num_vec; i++)
+		for (int32_t i=0; i<num_vec; i++)
 		{
 			bool to_free=false;
-			INT len=0;
+			int32_t len=0;
 			char* str=src->get_feature_vector(i, len, to_free);
 			strings[i].length=len ;
-			for (int j=0; j<len; j++)
+			for (int32_t j=0; j<len; j++)
 				if (str[j]==0)
 				{
 					strings[i].length=j ;
@@ -388,7 +388,7 @@ CStringFeatures<char>* CGUIFeatures::convert_simple_char_to_string_char(CCharFea
 				} ;
 			strings[i].string=new char[strings[i].length];
 
-			for (int j=0; j<strings[i].length; j++)
+			for (int32_t j=0; j<strings[i].length; j++)
 				strings[i].string[j]=str[j];
 
 			if (strings[i].length> max_len)
@@ -418,20 +418,20 @@ CRealFeatures* CGUIFeatures::convert_simple_word_to_simple_salzberg(CWordFeature
 		pie)
 	{
 		CRealFeatures* target=new CRealFeatures(0);
-		INT num_feat=src->get_num_features();
-		INT num_vec=src->get_num_vectors();
+		int32_t num_feat=src->get_num_features();
+		int32_t num_vec=src->get_num_vectors();
 		DREAL* fm=new DREAL[num_vec*num_feat];
 
 		if (fm)
 		{
-			for (INT i=0; i<num_vec; i++)
+			for (int32_t i=0; i<num_vec; i++)
 			{
-				INT len=0;
+				int32_t len=0;
 				bool to_free=false;
 				uint16_t* vec = src->get_feature_vector(i, len, to_free);
 				ASSERT(num_feat==len);
 
-				for (INT j=0; j<num_feat; j++)
+				for (int32_t j=0; j<num_feat; j++)
 					fm[i*num_feat+j]=
 						pie->get_parameterwise_log_odds(vec[j], j);
 
@@ -529,8 +529,8 @@ CRealFeatures* CGUIFeatures::convert_sparse_real_to_simple_real(CSparseFeatures<
 		CRealFeatures* rf=new CRealFeatures(0);
 		if (rf)
 		{
-			INT num_f=0;
-			INT num_v=0;
+			int32_t num_f=0;
+			int32_t num_v=0;
 			DREAL* feats=src->get_full_feature_matrix(num_f, num_v);
 			rf->set_feature_matrix(feats, num_f, num_v);
 			return rf;
@@ -543,7 +543,7 @@ CRealFeatures* CGUIFeatures::convert_sparse_real_to_simple_real(CSparseFeatures<
 }
 
 CWordFeatures* CGUIFeatures::convert_simple_char_to_simple_word(
-	CCharFeatures* src, INT order, INT start, INT gap)
+	CCharFeatures* src, int32_t order, int32_t start, int32_t gap)
 {
 	if (src &&
 		src->get_feature_class()==C_SIMPLE &&
@@ -571,7 +571,7 @@ CWordFeatures* CGUIFeatures::convert_simple_char_to_simple_word(
 	return NULL;
 }
 
-CShortFeatures* CGUIFeatures::convert_simple_char_to_simple_short(CCharFeatures* src, INT order, INT start, INT gap)
+CShortFeatures* CGUIFeatures::convert_simple_char_to_simple_short(CCharFeatures* src, int32_t order, int32_t start, int32_t gap)
 {
 	if (src &&
 		src->get_feature_class()==C_SIMPLE &&

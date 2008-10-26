@@ -22,29 +22,29 @@ const uint8_t CAlphabet::B_T=3;
 const uint8_t CAlphabet::MAPTABLE_UNDEF=0xff;
 const char* CAlphabet::alphabet_names[11]={"DNA", "RAWDNA", "RNA", "PROTEIN", "ALPHANUM", "CUBE", "RAW", "IUPAC_NUCLEIC_ACID", "IUPAC_AMINO_ACID", "NONE", "UNKNOWN"};
 
-CAlphabet::CAlphabet(char* al, INT len)
+CAlphabet::CAlphabet(char* al, int32_t len)
 : CSGObject()
 {
 	EAlphabet alpha=NONE;
 
-	if (len>=(INT) strlen("DNA") && !strncmp(al, "DNA", strlen("DNA")))
+	if (len>=(int32_t) strlen("DNA") && !strncmp(al, "DNA", strlen("DNA")))
 		alpha = DNA;
-	else if (len>=(INT) strlen("RAWDNA") && !strncmp(al, "RAWDNA", strlen("RAWDNA")))
+	else if (len>=(int32_t) strlen("RAWDNA") && !strncmp(al, "RAWDNA", strlen("RAWDNA")))
 		alpha = RAWDNA;
-	else if (len>=(INT) strlen("RNA") && !strncmp(al, "RNA", strlen("RNA")))
+	else if (len>=(int32_t) strlen("RNA") && !strncmp(al, "RNA", strlen("RNA")))
 		alpha = RNA;
-	else if (len>=(INT) strlen("PROTEIN") && !strncmp(al, "PROTEIN", strlen("PROTEIN")))
+	else if (len>=(int32_t) strlen("PROTEIN") && !strncmp(al, "PROTEIN", strlen("PROTEIN")))
 		alpha = PROTEIN;
-	else if (len>=(INT) strlen("ALPHANUM") && !strncmp(al, "ALPHANUM", strlen("ALPHANUM")))
+	else if (len>=(int32_t) strlen("ALPHANUM") && !strncmp(al, "ALPHANUM", strlen("ALPHANUM")))
 		alpha = ALPHANUM;
-	else if (len>=(INT) strlen("CUBE") && !strncmp(al, "CUBE", strlen("CUBE")))
+	else if (len>=(int32_t) strlen("CUBE") && !strncmp(al, "CUBE", strlen("CUBE")))
 		alpha = CUBE;
-	else if ((len>=(INT) strlen("BYTE") && !strncmp(al, "BYTE", strlen("BYTE"))) || 
-			(len>=(INT) strlen("RAW") && !strncmp(al, "RAW", strlen("RAW"))))
+	else if ((len>=(int32_t) strlen("BYTE") && !strncmp(al, "BYTE", strlen("BYTE"))) || 
+			(len>=(int32_t) strlen("RAW") && !strncmp(al, "RAW", strlen("RAW"))))
 		alpha = RAWBYTE;
-	else if (len>=(INT) strlen("IUPAC_NUCLEIC_ACID") && !strncmp(al, "IUPAC_NUCLEIC_ACID", strlen("IUPAC_NUCLEIC_ACID")))
+	else if (len>=(int32_t) strlen("IUPAC_NUCLEIC_ACID") && !strncmp(al, "IUPAC_NUCLEIC_ACID", strlen("IUPAC_NUCLEIC_ACID")))
 		alpha = IUPAC_NUCLEIC_ACID;
-	else if (len>=(INT) strlen("IUPAC_AMINO_ACID") && !strncmp(al, "IUPAC_AMINO_ACID", strlen("IUPAC_AMINO_ACID")))
+	else if (len>=(int32_t) strlen("IUPAC_AMINO_ACID") && !strncmp(al, "IUPAC_AMINO_ACID", strlen("IUPAC_AMINO_ACID")))
 		alpha = IUPAC_AMINO_ACID;
 	else {
       SG_ERROR( "unknown alphabet %s\n", al);
@@ -112,7 +112,7 @@ bool CAlphabet::set_alphabet(EAlphabet alpha)
 			break;
 	}
 
-	num_bits=(INT) ceil(log((double) num_symbols)/log((double) 2));
+	num_bits=(int32_t) ceil(log((double) num_symbols)/log((double) 2));
 	init_map_table();
     clear_histogram();
 
@@ -123,7 +123,7 @@ bool CAlphabet::set_alphabet(EAlphabet alpha)
 
 void CAlphabet::init_map_table()
 {
-	INT i;
+	int32_t i;
 	for (i=0; i<(1<<(8*sizeof(uint8_t))); i++)
 	{
 		maptable_to_bin[i] = MAPTABLE_UNDEF;
@@ -158,7 +158,7 @@ void CAlphabet::init_map_table()
 
 		case PROTEIN:
 			{
-				INT skip=0 ;
+				int32_t skip=0 ;
 				for (i=0; i<21; i++)
 				{
 					if (i==1) skip++ ;
@@ -410,11 +410,11 @@ void CAlphabet::add_string_to_histogram(SHORT* p, LONG len)
 		add_byte_to_histogram(b[i]);
 }
 
-void CAlphabet::add_string_to_histogram(INT* p, LONG len)
+void CAlphabet::add_string_to_histogram(int32_t* p, LONG len)
 {
 	SG_WARNING("computing byte histogram over word strings\n");
 	uint8_t* b= (uint8_t*) p;
-	for (LONG i=0; i<((LONG) sizeof(INT))*len; i++)
+	for (LONG i=0; i<((LONG) sizeof(int32_t))*len; i++)
 		add_byte_to_histogram(b[i]);
 }
 
@@ -442,10 +442,10 @@ void CAlphabet::add_string_to_histogram(ULONG* p, LONG len)
 		add_byte_to_histogram(b[i]);
 }
 
-INT CAlphabet::get_max_value_in_histogram()
+int32_t CAlphabet::get_max_value_in_histogram()
 {
-	INT max_sym=-1;
-	for (INT i=(INT) (1 <<(sizeof(uint8_t)*8))-1;i>=0; i--)
+	int32_t max_sym=-1;
+	for (int32_t i=(int32_t) (1 <<(sizeof(uint8_t)*8))-1;i>=0; i--)
 	{
 		if (histogram[i])
 		{
@@ -457,10 +457,10 @@ INT CAlphabet::get_max_value_in_histogram()
 	return max_sym;
 }
 
-INT CAlphabet::get_num_symbols_in_histogram()
+int32_t CAlphabet::get_num_symbols_in_histogram()
 {
-	INT num_sym=0;
-	for (INT i=0; i<(INT) (1 <<(sizeof(uint8_t)*8)); i++)
+	int32_t num_sym=0;
+	for (int32_t i=0; i<(int32_t) (1 <<(sizeof(uint8_t)*8)); i++)
 	{
 		if (histogram[i])
 			num_sym++;
@@ -469,18 +469,18 @@ INT CAlphabet::get_num_symbols_in_histogram()
 	return num_sym;
 }
 
-INT CAlphabet::get_num_bits_in_histogram()
+int32_t CAlphabet::get_num_bits_in_histogram()
 {
-	INT num_sym=get_num_symbols_in_histogram();
+	int32_t num_sym=get_num_symbols_in_histogram();
 	if (num_sym>0)
-		return (INT) ceil(log((double) num_sym)/log((double) 2));
+		return (int32_t) ceil(log((double) num_sym)/log((double) 2));
 	else
 		return 0;
 }
 
 void CAlphabet::print_histogram()
 {
-	for (INT i=0; i<(INT) (1 <<(sizeof(uint8_t)*8)); i++)
+	for (int32_t i=0; i<(int32_t) (1 <<(sizeof(uint8_t)*8)); i++)
 	{
 		if (histogram[i])
 			SG_PRINT( "hist[%d]=%lld\n", i, histogram[i]);
@@ -491,7 +491,7 @@ bool CAlphabet::check_alphabet(bool print_error)
 {
 	bool result = true;
 
-	for (INT i=0; i<(INT) (1 <<(sizeof(uint8_t)*8)); i++)
+	for (int32_t i=0; i<(int32_t) (1 <<(sizeof(uint8_t)*8)); i++)
 	{
 		if (histogram[i]>0 && valid_chars[i]==0)
 		{
@@ -534,7 +534,7 @@ void CAlphabet::copy_histogram(CAlphabet* a)
 const char* CAlphabet::get_alphabet_name(EAlphabet alphabet)
 {
 	
-	INT idx;
+	int32_t idx;
 	switch (alphabet)
 	{
 		case DNA:

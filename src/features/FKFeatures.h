@@ -39,7 +39,7 @@ class CFKFeatures: public CRealFeatures
 		 * @param p positive HMM
 		 * @param n negative HMM
 		 */
-		CFKFeatures(INT size, CHMM* p, CHMM* n);
+		CFKFeatures(int32_t size, CHMM* p, CHMM* n);
 
 		/** copy constructor */
 		CFKFeatures(const CFKFeatures &orig);
@@ -98,7 +98,7 @@ class CFKFeatures: public CRealFeatures
 		 * @param target
 		 * @return something floaty
 		 */
-		virtual DREAL* compute_feature_vector(INT num, INT& len, DREAL* target=NULL);
+		virtual DREAL* compute_feature_vector(int32_t num, int32_t& len, DREAL* target=NULL);
 
 		/** computes the feature vector to the address addr
 		 *
@@ -106,14 +106,14 @@ class CFKFeatures: public CRealFeatures
 		 * @param num num
 		 * @param len len
 		 */
-		void compute_feature_vector(DREAL* addr, INT num, INT& len);
+		void compute_feature_vector(DREAL* addr, int32_t num, int32_t& len);
 
 		/** deriv a
 		 *
 		 * @param a a
 		 * @param dimension dimension
 		 */
-		double deriv_a(double a, INT dimension=-1) ;
+		double deriv_a(double a, int32_t dimension=-1) ;
 
 	protected:
 		/** positive HMM */

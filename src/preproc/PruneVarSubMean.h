@@ -51,17 +51,17 @@ class CPruneVarSubMean : public CSimplePreProc<DREAL>
 
 		/// apply preproc on single feature vector
 		/// result in feature matrix
-		virtual DREAL* apply_to_feature_vector(DREAL* f, INT &len);
+		virtual DREAL* apply_to_feature_vector(DREAL* f, int32_t &len);
 
 	protected:
 		/** idx */
-		INT* idx;
+		int32_t* idx;
 		/** mean */
 		DREAL* mean;
 		/** std */
 		DREAL* std;
 		/** num idx */
-		INT num_idx;
+		int32_t num_idx;
 		/** divide by std */
 		bool divide_by_std;
 

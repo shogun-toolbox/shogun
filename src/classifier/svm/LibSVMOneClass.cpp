@@ -39,16 +39,15 @@ bool CLibSVMOneClass::train()
 	problem.x=new struct svm_node*[problem.l];
 	x_space=new struct svm_node[2*problem.l];
 
-	for (int i=0; i<problem.l; i++)
+	for (int32_t i=0; i<problem.l; i++)
 	{
 		problem.x[i]=&x_space[2*i];
 		x_space[2*i].index=i;
 		x_space[2*i+1].index=-1;
 	}
 
-	int weights_label[2]={-1,+1};
+	int32_t weights_label[2]={-1,+1};
 	double weights[2]={1.0,get_C2()/get_C1()};
-
 
 	param.svm_type=ONE_CLASS; // C SVM
 	param.kernel_type = LINEAR;
@@ -81,13 +80,13 @@ bool CLibSVMOneClass::train()
 		ASSERT(model->nr_class==2);
 		ASSERT((model->l==0) || (model->l>0 && model->SV && model->sv_coef && model->sv_coef[0]));
 
-		int num_sv=model->l;
+		int32_t num_sv=model->l;
 
 		create_new_model(num_sv);
 		CSVM::set_objective(model->objective);
 
 		set_bias(-model->rho[0]);
-		for (int i=0; i<num_sv; i++)
+		for (int32_t i=0; i<num_sv; i++)
 		{
 			set_support_vector(i, (model->SV[i])->index);
 			set_alpha(i, model->sv_coef[0][i]);

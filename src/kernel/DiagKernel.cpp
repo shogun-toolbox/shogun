@@ -14,7 +14,7 @@
 #include "kernel/DiagKernel.h"
 #include "lib/io.h"
 
-CDiagKernel::CDiagKernel(INT size, DREAL d)
+CDiagKernel::CDiagKernel(int32_t size, DREAL d)
 : CKernel(size), diag(d)
 {
 }

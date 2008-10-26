@@ -29,16 +29,16 @@ struct S_THREAD_PARAM
 {
 	CKernel* kernel;
 	DREAL* result;
-	INT* vec_idx;
-	INT start;
-	INT end;
+	int32_t* vec_idx;
+	int32_t start;
+	int32_t end;
 	/// required only for non optimized kernels
 	DREAL* weights;
-	INT* IDX;
-	INT num_suppvec;
+	int32_t* IDX;
+	int32_t num_suppvec;
 };
 
-CCombinedKernel::CCombinedKernel(INT size, bool asw)
+CCombinedKernel::CCombinedKernel(int32_t size, bool asw)
 : CKernel(size), sv_count(0), sv_idx(NULL), sv_weight(NULL),
 	subkernel_weights_buffer(NULL), append_subkernel_weights(asw)
 {
@@ -215,7 +215,7 @@ void CCombinedKernel::list_kernels()
 	SG_INFO( "END COMBINED KERNEL LIST - ");
 }
 
-DREAL CCombinedKernel::compute(INT x, INT y)
+DREAL CCombinedKernel::compute(int32_t x, int32_t y)
 {
 	DREAL result=0;
 	CListElement<CKernel*> * current = NULL ;	
@@ -230,55 +230,55 @@ DREAL CCombinedKernel::compute(INT x, INT y)
 	return result;
 }
 
-bool CCombinedKernel::init_optimization(INT count, INT *IDX, DREAL * weights) 
+bool CCombinedKernel::init_optimization(
+	int32_t count, int32_t *IDX, DREAL *weights)
 {
-	SG_DEBUG( "initializing CCombinedKernel optimization\n") ;
+	SG_DEBUG( "initializing CCombinedKernel optimization\n");
 
 	delete_optimization();
-	
-	CListElement<CKernel*> * current = NULL ;	
-	CKernel * k = get_first_kernel(current) ;
-	bool have_non_optimizable = false ;
-	
+
+	CListElement<CKernel*> *current=NULL;
+	CKernel *k=get_first_kernel(current);
+	bool have_non_optimizable=false;
+
 	while(k)
 	{
-		bool ret = true ;
-		
+		bool ret=true;
+
 		if (k && k->has_property(KP_LINADD))
-			ret = k->init_optimization(count, IDX, weights) ;
+			ret=k->init_optimization(count, IDX, weights);
 		else
 		{
-			SG_WARNING( "non-optimizable kernel 0x%X in kernel-list\n",k) ;
-			have_non_optimizable = true ;
+			SG_WARNING("non-optimizable kernel 0x%X in kernel-list\n", k);
+			have_non_optimizable=true;
 		}
 		
 		if (!ret)
 		{
-			have_non_optimizable = true ;
-			SG_WARNING( "init_optimization of kernel 0x%X failed\n",k) ;
-		} ;
+			have_non_optimizable=true;
+			SG_WARNING("init_optimization of kernel 0x%X failed\n", k);
+		}
 		
-		k = get_next_kernel(current) ;
+		k=get_next_kernel(current);
 	}
 	
 	if (have_non_optimizable)
 	{
-		SG_WARNING( "some kernels in the kernel-list are not optimized\n") ;
+		SG_WARNING( "some kernels in the kernel-list are not optimized\n");
 
-		sv_idx = new INT[count] ;
-		sv_weight = new DREAL[count] ;
-		sv_count = count ;
-		int i ;
-		for (i=0; i<count; i++)
+		sv_idx=new int32_t[count];
+		sv_weight=new DREAL[count];
+		sv_count=count;
+		for (int32_t i=0; i<count; i++)
 		{
-			sv_idx[i] = IDX[i] ;
-			sv_weight[i] = weights[i] ;
+			sv_idx[i]=IDX[i];
+			sv_weight[i]=weights[i];
 		}
 	}
-	set_is_initialized(true) ;
-	
-	return true ;
-} ;
+	set_is_initialized(true);
+
+	return true;
+}
 
 bool CCombinedKernel::delete_optimization() 
 { 
@@ -305,7 +305,7 @@ bool CCombinedKernel::delete_optimization()
 	return true;
 }
 
-void CCombinedKernel::compute_batch(INT num_vec, INT* vec_idx, DREAL* result, INT num_suppvec, INT* IDX, DREAL* weights, DREAL factor)
+void CCombinedKernel::compute_batch(int32_t num_vec, int32_t* vec_idx, DREAL* result, int32_t num_suppvec, int32_t* IDX, DREAL* weights, DREAL factor)
 {
 	ASSERT(rhs);
 	ASSERT(num_vec<=rhs->get_num_vectors())
@@ -340,11 +340,11 @@ void CCombinedKernel::compute_batch(INT num_vec, INT* vec_idx, DREAL* result, IN
 void* CCombinedKernel::compute_optimized_kernel_helper(void* p)
 {
 	S_THREAD_PARAM* params= (S_THREAD_PARAM*) p;
-	INT* vec_idx=params->vec_idx;
+	int32_t* vec_idx=params->vec_idx;
 	CKernel* k=params->kernel;
 	DREAL* result=params->result;
 
-	for (INT i=params->start; i<params->end; i++)
+	for (int32_t i=params->start; i<params->end; i++)
 		result[i] += k->get_combined_kernel_weight()*k->compute_optimized(vec_idx[i]);
 
 	return NULL;
@@ -353,27 +353,26 @@ void* CCombinedKernel::compute_optimized_kernel_helper(void* p)
 void* CCombinedKernel::compute_kernel_helper(void* p)
 {
 	S_THREAD_PARAM* params= (S_THREAD_PARAM*) p;
-	INT* vec_idx=params->vec_idx;
+	int32_t* vec_idx=params->vec_idx;
 	CKernel* k=params->kernel;
 	DREAL* result=params->result;
 	DREAL* weights=params->weights;
-	INT* IDX=params->IDX;
-	INT num_suppvec=params->num_suppvec;
+	int32_t* IDX=params->IDX;
+	int32_t num_suppvec=params->num_suppvec;
 
-	for (INT i=params->start; i<params->end; i++)
+	for (int32_t i=params->start; i<params->end; i++)
 	{
-		int j=0;
-		DREAL sub_result=0 ;
-		for (j=0; j<num_suppvec; j++)
-			sub_result += weights[j] * k->kernel(IDX[j], vec_idx[i]) ;
+		DREAL sub_result=0;
+		for (int32_t j=0; j<num_suppvec; j++)
+			sub_result += weights[j] * k->kernel(IDX[j], vec_idx[i]);
 
-		result[i] += k->get_combined_kernel_weight()*sub_result ;
+		result[i] += k->get_combined_kernel_weight()*sub_result;
 	}
 
 	return NULL;
 }
 
-void CCombinedKernel::emulate_compute_batch(CKernel* k, INT num_vec, INT* vec_idx, DREAL* result, INT num_suppvec, INT* IDX, DREAL* weights)
+void CCombinedKernel::emulate_compute_batch(CKernel* k, int32_t num_vec, int32_t* vec_idx, DREAL* result, int32_t num_suppvec, int32_t* IDX, DREAL* weights)
 {
 	ASSERT(k);
 	ASSERT(result);
@@ -384,7 +383,7 @@ void CCombinedKernel::emulate_compute_batch(CKernel* k, INT num_vec, INT* vec_id
 		{
 			k->init_optimization(num_suppvec, IDX, weights);
 
-			INT num_threads=parallel.get_num_threads();
+			int32_t num_threads=parallel.get_num_threads();
 			ASSERT(num_threads>0);
 
 			if (num_threads < 2)
@@ -402,9 +401,9 @@ void CCombinedKernel::emulate_compute_batch(CKernel* k, INT num_vec, INT* vec_id
 			{
 				pthread_t threads[num_threads-1];
 				S_THREAD_PARAM params[num_threads];
-				INT step= num_vec/num_threads;
+				int32_t step= num_vec/num_threads;
 
-				INT t;
+				int32_t t;
 
 				for (t=0; t<num_threads-1; t++)
 				{
@@ -439,7 +438,7 @@ void CCombinedKernel::emulate_compute_batch(CKernel* k, INT num_vec, INT* vec_id
 
 		if (k->get_combined_kernel_weight()!=0)
 		{ // compute the usual way for any non-optimized kernel
-			INT num_threads=parallel.get_num_threads();
+			int32_t num_threads=parallel.get_num_threads();
 			ASSERT(num_threads>0);
 
 			if (num_threads < 2)
@@ -460,9 +459,9 @@ void CCombinedKernel::emulate_compute_batch(CKernel* k, INT num_vec, INT* vec_id
 			{
 				pthread_t threads[num_threads-1];
 				S_THREAD_PARAM params[num_threads];
-				INT step= num_vec/num_threads;
+				int32_t step= num_vec/num_threads;
 
-				INT t;
+				int32_t t;
 
 				for (t=0; t<num_threads-1; t++)
 				{
@@ -496,26 +495,26 @@ void CCombinedKernel::emulate_compute_batch(CKernel* k, INT num_vec, INT* vec_id
 	}
 }
 
-DREAL CCombinedKernel::compute_optimized(INT idx) 
+DREAL CCombinedKernel::compute_optimized(int32_t idx)
 { 		  
 	if (!get_is_initialized())
 	{
-		SG_ERROR( "CCombinedKernel optimization not initialized\n") ;
-		return 0 ;
+		SG_ERROR("CCombinedKernel optimization not initialized\n");
+		return 0;
 	}
 	
-	DREAL result = 0 ;
-	
-	CListElement<CKernel*> * current = NULL ;	
-	CKernel * k = get_first_kernel(current) ;
+	DREAL result=0;
+
+	CListElement<CKernel*> *current=NULL;
+	CKernel *k=get_first_kernel(current);
 	while(k)
 	{
-		if (k && k->has_property(KP_LINADD) && 
+		if (k && k->has_property(KP_LINADD) &&
 			k->get_is_initialized())
 		{
 			if (k->get_combined_kernel_weight()!=0)
-				result += k->get_combined_kernel_weight()*
-					k->compute_optimized(idx) ;
+				result +=
+					k->get_combined_kernel_weight()*k->compute_optimized(idx);
 		}
 		else
 		{
@@ -524,22 +523,21 @@ DREAL CCombinedKernel::compute_optimized(INT idx)
 
 			if (k->get_combined_kernel_weight()!=0)
 			{ // compute the usual way for any non-optimized kernel
-				int j=0;
-				DREAL sub_result=0 ;
-				for (j=0; j<sv_count; j++)
-					sub_result += sv_weight[j] * k->kernel(sv_idx[j], idx) ;
-				
-				result += k->get_combined_kernel_weight()*sub_result ;
+				DREAL sub_result=0;
+				for (int32_t j=0; j<sv_count; j++)
+					sub_result += sv_weight[j] * k->kernel(sv_idx[j], idx);
+
+				result += k->get_combined_kernel_weight()*sub_result;
 			}
-		} ;
-		
-		k = get_next_kernel(current) ;
+		}
+
+		k=get_next_kernel(current);
 	}
 
 	return result;
 }
 
-void CCombinedKernel::add_to_normal(INT idx, DREAL weight) 
+void CCombinedKernel::add_to_normal(int32_t idx, DREAL weight) 
 { 
 	CListElement<CKernel*> * current = NULL ;	
 	CKernel* k = get_first_kernel(current);
@@ -565,16 +563,16 @@ void CCombinedKernel::clear_normal()
 	set_is_initialized(true) ;
 }
 
-void CCombinedKernel::compute_by_subkernel(INT idx, DREAL * subkernel_contrib)
+void CCombinedKernel::compute_by_subkernel(int32_t idx, DREAL * subkernel_contrib)
 {
 	if (append_subkernel_weights)
 	{
-		INT i=0 ;
+		int32_t i=0 ;
 		CListElement<CKernel*> * current = NULL ;	
 		CKernel* k = get_first_kernel(current);
 		while(k)
 		{
-			INT num = -1 ;
+			int32_t num = -1 ;
 			k->get_subkernel_weights(num);
 			if (num>1)
 				k->compute_by_subkernel(idx, &subkernel_contrib[i]) ;
@@ -587,7 +585,7 @@ void CCombinedKernel::compute_by_subkernel(INT idx, DREAL * subkernel_contrib)
 	}
 	else
 	{
-		INT i=0 ;
+		int32_t i=0 ;
 		CListElement<CKernel*> * current = NULL ;	
 		CKernel* k = get_first_kernel(current);
 		while(k)
@@ -600,7 +598,7 @@ void CCombinedKernel::compute_by_subkernel(INT idx, DREAL * subkernel_contrib)
 	}
 }
 
-const DREAL* CCombinedKernel::get_subkernel_weights(INT& num_weights)
+const DREAL* CCombinedKernel::get_subkernel_weights(int32_t& num_weights)
 {
 	num_weights = get_num_subkernels() ;
 	delete[] subkernel_weights_buffer ;
@@ -608,15 +606,15 @@ const DREAL* CCombinedKernel::get_subkernel_weights(INT& num_weights)
 
 	if (append_subkernel_weights)
 	{
-		INT i=0 ;
+		int32_t i=0 ;
 		CListElement<CKernel*> * current = NULL ;	
 		CKernel* k = get_first_kernel(current);
 		while(k)
 		{
-			INT num = -1 ;
+			int32_t num = -1 ;
 			const DREAL *w = k->get_subkernel_weights(num);
 			ASSERT(num==k->get_num_subkernels());
-			for (INT j=0; j<num; j++)
+			for (int32_t j=0; j<num; j++)
 				subkernel_weights_buffer[i+j]=w[j] ;
 			k = get_next_kernel(current);
 			i += num ;
@@ -624,7 +622,7 @@ const DREAL* CCombinedKernel::get_subkernel_weights(INT& num_weights)
 	}
 	else
 	{
-		INT i=0 ;
+		int32_t i=0 ;
 		CListElement<CKernel*> * current = NULL ;	
 		CKernel* k = get_first_kernel(current);
 		while(k)
@@ -638,16 +636,16 @@ const DREAL* CCombinedKernel::get_subkernel_weights(INT& num_weights)
 	return subkernel_weights_buffer ;
 }
 
-void CCombinedKernel::set_subkernel_weights(DREAL* weights, INT num_weights)
+void CCombinedKernel::set_subkernel_weights(DREAL* weights, int32_t num_weights)
 {
 	if (append_subkernel_weights)
 	{
-		INT i=0 ;
+		int32_t i=0 ;
 		CListElement<CKernel*> * current = NULL ;	
 		CKernel* k = get_first_kernel(current);
 		while(k)
 		{
-			INT num = k->get_num_subkernels() ;
+			int32_t num = k->get_num_subkernels() ;
 			k->set_subkernel_weights(&weights[i],num);
 			k = get_next_kernel(current);
 			i += num ;
@@ -655,7 +653,7 @@ void CCombinedKernel::set_subkernel_weights(DREAL* weights, INT num_weights)
 	}
 	else
 	{
-		INT i=0 ;
+		int32_t i=0 ;
 		CListElement<CKernel*> * current = NULL ;	
 		CKernel* k = get_first_kernel(current);
 		while(k)

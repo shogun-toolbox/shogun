@@ -94,7 +94,7 @@ bool CSignal::set_handler()
 		sigset_t st;
 
 		sigemptyset(&st);
-		for (INT i=0; i<NUMTRAPPEDSIGS; i++)
+		for (int32_t i=0; i<NUMTRAPPEDSIGS; i++)
 			sigaddset(&st, signals[i]);
 
 #ifndef __INTERIX
@@ -104,12 +104,12 @@ bool CSignal::set_handler()
 		act.sa_mask = st;
 		act.sa_flags = 0;
 
-		for (INT i=0; i<NUMTRAPPEDSIGS; i++)
+		for (int32_t i=0; i<NUMTRAPPEDSIGS; i++)
 		{
 			if (sigaction(signals[i], &act, &oldsigaction[i]))
 			{
 				SG_SWARNING("Error trapping signals!\n");
-				for (INT j=i-1; j>=0; j--)
+				for (int32_t j=i-1; j>=0; j--)
 					sigaction(signals[i], &oldsigaction[i], NULL);
 
 				clear();
@@ -130,7 +130,7 @@ bool CSignal::unset_handler()
 	{
 		bool result=true;
 
-		for (INT i=0; i<NUMTRAPPEDSIGS; i++)
+		for (int32_t i=0; i<NUMTRAPPEDSIGS; i++)
 		{
 			if (sigaction(signals[i], &oldsigaction[i], NULL))
 			{

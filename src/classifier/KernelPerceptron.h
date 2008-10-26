@@ -32,7 +32,7 @@ class CKernelPerceptron : public CKernelMachine
 		 * @param num which example to classify
 		 * @return classified value
 		 */
-		virtual DREAL classify_example(INT num);
+		virtual DREAL classify_example(int32_t num);
 
 		/** load KernelPerceptron from file
 		 *

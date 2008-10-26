@@ -46,7 +46,7 @@ class CMPDSVM : public CSVM
 		 * @param j index of H
 		 * @return computed H at index i,j
 		 */
-		inline DREAL compute_H(int i, int j)
+		inline DREAL compute_H(int32_t i, int32_t j)
 		{
 			return labels->get_label(i)*labels->get_label(j)*kernel->kernel(i,j);
 		}
@@ -56,7 +56,7 @@ class CMPDSVM : public CSVM
 		 * @param i row to lock
 		 * @return locked row
 		 */
-		inline KERNELCACHE_ELEM* lock_kernel_row(int i)
+		inline KERNELCACHE_ELEM* lock_kernel_row(int32_t i)
 		{
 			KERNELCACHE_ELEM* line=NULL;
 
@@ -73,7 +73,7 @@ class CMPDSVM : public CSVM
 				CLabels* l=CKernelMachine::get_labels();
 				ASSERT(l);
 
-				for (int j=0; j<l->get_num_labels(); j++)
+				for (int32_t j=0; j<l->get_num_labels(); j++)
 					line[j]=(KERNELCACHE_ELEM) l->get_label(i)*l->get_label(j)*kernel->kernel(i,j);
 			}
 
@@ -84,7 +84,7 @@ class CMPDSVM : public CSVM
 		 *
 		 * @param i row to unlock
 		 */
-		inline void unlock_kernel_row(int i)
+		inline void unlock_kernel_row(int32_t i)
 		{
 			kernel_cache->unlock_entry(i);
 		}

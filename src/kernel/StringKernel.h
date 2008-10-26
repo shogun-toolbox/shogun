@@ -22,7 +22,7 @@ template <class ST> class CStringKernel : public CKernel
 		 *
 		 * @param cachesize cache size
 		 */
-		CStringKernel(INT cachesize) : CKernel(cachesize) {}
+		CStringKernel(int32_t cachesize) : CKernel(cachesize) {}
 
 		/** constructor
 		 *
@@ -73,7 +73,7 @@ template<> inline EFeatureType CStringKernel<DREAL>::get_feature_type() { return
 
 template<> inline EFeatureType CStringKernel<ULONG>::get_feature_type() { return F_ULONG; }
 
-template<> inline EFeatureType CStringKernel<INT>::get_feature_type() { return F_INT; }
+template<> inline EFeatureType CStringKernel<int32_t>::get_feature_type() { return F_INT; }
 
 template<> inline EFeatureType CStringKernel<uint16_t>::get_feature_type() { return F_WORD; }
 

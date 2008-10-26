@@ -15,7 +15,7 @@
 #include "features/StringFeatures.h"
 
 CSimpleLocalityImprovedStringKernel::CSimpleLocalityImprovedStringKernel(
-	INT size, INT l, INT id, INT od)
+	int32_t size, int32_t l, int32_t id, int32_t od)
 : CStringKernel<char>(size), length(l), inner_degree(id), outer_degree(od),
 	pyramid_weights(NULL)
 {
@@ -23,7 +23,7 @@ CSimpleLocalityImprovedStringKernel::CSimpleLocalityImprovedStringKernel(
 
 CSimpleLocalityImprovedStringKernel::CSimpleLocalityImprovedStringKernel(
 	CStringFeatures<char>* l, CStringFeatures<char>* r,
-	INT len, INT id, INT od)
+	int32_t len, int32_t id, int32_t od)
 : CStringKernel<char>(10), length(len), inner_degree(id), outer_degree(od),
 	pyramid_weights(NULL)
 {
@@ -41,19 +41,19 @@ bool CSimpleLocalityImprovedStringKernel::init(CFeatures* l, CFeatures* r)
 
 	if (!result)
 		return false;
-	INT num_features = ((CStringFeatures<char>*) l)->get_max_vector_length();
+	int32_t num_features = ((CStringFeatures<char>*) l)->get_max_vector_length();
 	pyramid_weights = new DREAL[num_features];
 	ASSERT(pyramid_weights);
 	SG_INFO("initializing pyramid weights: size=%ld length=%i\n",
 		num_features, length);
 
-	const INT PYRAL = 2 * length - 1; // total window length
+	const int32_t PYRAL = 2 * length - 1; // total window length
 	DREAL PYRAL_pot;
-	INT DEGREE1_1  = (inner_degree & 0x1)==0;
-	INT DEGREE1_1n = (inner_degree & ~0x1)!=0;
-	INT DEGREE1_2  = (inner_degree & 0x2)!=0;
-	INT DEGREE1_3  = (inner_degree & ~0x3)!=0;
-	INT DEGREE1_4  = (inner_degree & 0x4)!=0;
+	int32_t DEGREE1_1  = (inner_degree & 0x1)==0;
+	int32_t DEGREE1_1n = (inner_degree & ~0x1)!=0;
+	int32_t DEGREE1_2  = (inner_degree & 0x2)!=0;
+	int32_t DEGREE1_3  = (inner_degree & ~0x3)!=0;
+	int32_t DEGREE1_4  = (inner_degree & 0x4)!=0;
 	{
 	DREAL PYRAL_ = PYRAL;
 	PYRAL_pot = DEGREE1_1 ? 1.0 : PYRAL_;
@@ -71,10 +71,10 @@ bool CSimpleLocalityImprovedStringKernel::init(CFeatures* l, CFeatures* r)
 	}
 	}
 
-	INT pyra_len  = num_features-PYRAL+1;
-	INT pyra_len2 = (int) pyra_len/2;
+	int32_t pyra_len  = num_features-PYRAL+1;
+	int32_t pyra_len2 = (int32_t) pyra_len/2;
 	{
-	INT j;
+	int32_t j;
 	for (j = 0; j < pyra_len; j++)
 		pyramid_weights[j] = 4*((DREAL)((j < pyra_len2)? j+1 : pyra_len-j))/((DREAL)pyra_len);
 	for (j = 0; j < pyra_len; j++)
@@ -103,18 +103,18 @@ bool CSimpleLocalityImprovedStringKernel::save_init(FILE* dest)
 }
 
 DREAL CSimpleLocalityImprovedStringKernel::dot_pyr (const char* const x1,
-	     const char* const x2, const INT NOF_NTS, const INT NTWIDTH,
-	     const INT DEGREE1, const INT DEGREE2, DREAL *pyra)
+	     const char* const x2, const int32_t NOF_NTS, const int32_t NTWIDTH,
+	     const int32_t DEGREE1, const int32_t DEGREE2, DREAL *pyra)
 {
-	const INT PYRAL = 2*NTWIDTH-1; // total window length
-	INT pyra_len, pyra_len2;
+	const int32_t PYRAL = 2*NTWIDTH-1; // total window length
+	int32_t pyra_len, pyra_len2;
 	DREAL pot, PYRAL_pot;
 	DREAL sum;
-	INT DEGREE1_1 = (DEGREE1 & 0x1)==0;
-	INT DEGREE1_1n = (DEGREE1 & ~0x1)!=0;
-	INT DEGREE1_2 = (DEGREE1 & 0x2)!=0;
-	INT DEGREE1_3 = (DEGREE1 & ~0x3)!=0;
-	INT DEGREE1_4 = (DEGREE1 & 0x4)!=0;
+	int32_t DEGREE1_1 = (DEGREE1 & 0x1)==0;
+	int32_t DEGREE1_1n = (DEGREE1 & ~0x1)!=0;
+	int32_t DEGREE1_2 = (DEGREE1 & 0x2)!=0;
+	int32_t DEGREE1_3 = (DEGREE1 & ~0x3)!=0;
+	int32_t DEGREE1_4 = (DEGREE1 & 0x4)!=0;
 	{
 	DREAL PYRAL_ = PYRAL;
 	PYRAL_pot = DEGREE1_1 ? 1.0 : PYRAL_;
@@ -134,18 +134,18 @@ DREAL CSimpleLocalityImprovedStringKernel::dot_pyr (const char* const x1,
 	ASSERT((DEGREE2 & ~0x7) == 0);
 
 	pyra_len = NOF_NTS-PYRAL+1;
-	pyra_len2 = (int) pyra_len/2;
+	pyra_len2 = (int32_t) pyra_len/2;
 	{
-	INT j;
+	int32_t j;
 	for (j = 0; j < pyra_len; j++)
 		pyra[j] = 4*((DREAL)((j < pyra_len2) ? j+1 : pyra_len-j))/((DREAL)pyra_len);
 	for (j = 0; j < pyra_len; j++)
 		pyra[j] /= PYRAL_pot;
 	}
 
-	register INT conv;
-	register INT i;
-	register INT j;
+	register int32_t conv;
+	register int32_t i;
+	register int32_t j;
 
 	sum = 0.0;
 	conv = 0;
@@ -189,9 +189,9 @@ DREAL CSimpleLocalityImprovedStringKernel::dot_pyr (const char* const x1,
 	return pot;
 }
 
-DREAL CSimpleLocalityImprovedStringKernel::compute(INT idx_a, INT idx_b)
+DREAL CSimpleLocalityImprovedStringKernel::compute(int32_t idx_a, int32_t idx_b)
 {
-	INT alen, blen;
+	int32_t alen, blen;
 
 	char* avec = ((CStringFeatures<char>*) lhs)->get_feature_vector(idx_a, alen);
 	char* bvec = ((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen);

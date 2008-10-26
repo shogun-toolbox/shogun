@@ -9,7 +9,7 @@
 #include "lib/Mathematics.h"
 #include "classifier/svm/Tron.h"
 
-CTron::CTron(const function *f, double e, int it)
+CTron::CTron(const function *f, double e, int32_t it)
 : CSGObject()
 {
 	this->fun_obj=const_cast<function *>(f);
@@ -29,11 +29,11 @@ void CTron::tron(double *w)
 	// Parameters for updating the trust region size delta.
 	double sigma1 = 0.25, sigma2 = 0.5, sigma3 = 4;
 
-	int n = fun_obj->get_nr_variable();
-	int i, cg_iter;
+	int n = (int) fun_obj->get_nr_variable(); /* for calling external lib */
+	int32_t i, cg_iter;
 	double delta, snorm, one=1.0;
 	double alpha, f, fnew, prered, actred, gs;
-	int search = 1, iter = 1, inc = 1;
+	int search = 1, iter = 1, inc = 1; /* for calling external lib */
 	double *s = new double[n];
 	double *r = new double[n];
 	double *w_new = new double[n];
@@ -125,10 +125,11 @@ void CTron::tron(double *w)
 	delete[] s;
 }
 
-int CTron::trcg(double delta, double *g, double *s, double *r)
+int32_t CTron::trcg(double delta, double *g, double *s, double *r)
 {
-	int i, inc = 1;
-	int n = fun_obj->get_nr_variable();
+	int32_t i, cg_iter;
+	int inc = 1; /* for calling external lib */
+	int n = (int) fun_obj->get_nr_variable(); /* for calling external lib */
 	double one = 1;
 	double *d = new double[n];
 	double *Hd = new double[n];
@@ -142,7 +143,7 @@ int CTron::trcg(double delta, double *g, double *s, double *r)
 	}
 	cgtol = 0.1*cblas_dnrm2(n, g, inc);
 
-	int cg_iter = 0;
+	cg_iter = 0;
 	rTr = cblas_ddot(n, r, inc, r, inc);
 	while (1)
 	{
@@ -188,10 +189,10 @@ int CTron::trcg(double delta, double *g, double *s, double *r)
 	return(cg_iter);
 }
 
-double CTron::norm_inf(int n, double *x)
+double CTron::norm_inf(int32_t n, double *x)
 {
 	double dmax = CMath::abs(x[0]);
-	for (int i=1; i<n; i++)
+	for (int32_t i=1; i<n; i++)
 		if (CMath::abs(x[i]) >= dmax)
 			dmax = CMath::abs(x[i]);
 	return(dmax);

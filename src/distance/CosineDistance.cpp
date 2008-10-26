@@ -52,9 +52,9 @@ bool CCosineDistance::save_init(FILE* dest)
 	return false;
 }
 
-DREAL CCosineDistance::compute(INT idx_a, INT idx_b)
+DREAL CCosineDistance::compute(int32_t idx_a, int32_t idx_b)
 {
-	INT alen, blen;
+	int32_t alen, blen;
 	bool afree, bfree;
 
 	double* avec=((CRealFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
@@ -66,7 +66,7 @@ DREAL CCosineDistance::compute(INT idx_a, INT idx_b)
 	DREAL sa=0;
 	DREAL sb=0;
 	{
-		for (INT i=0; i<alen; i++)
+		for (int32_t i=0; i<alen; i++)
 		{
 			ab+=avec[i]*bvec[i];
 			sa+=pow(fabs(avec[i]),2);

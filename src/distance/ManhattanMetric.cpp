@@ -52,9 +52,9 @@ bool CManhattanMetric::save_init(FILE* dest)
 	return false;
 }
 
-DREAL CManhattanMetric::compute(INT idx_a, INT idx_b)
+DREAL CManhattanMetric::compute(int32_t idx_a, int32_t idx_b)
 {
-	INT alen, blen;
+	int32_t alen, blen;
 	bool afree, bfree;
 
 	double* avec=((CRealFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
@@ -64,7 +64,7 @@ DREAL CManhattanMetric::compute(INT idx_a, INT idx_b)
 
 	DREAL result=0;
 	{
-		for (INT i=0; i<alen; i++)
+		for (int32_t i=0; i<alen; i++)
 		{
 			result+=fabs(avec[i]-bvec[i]);
 		}

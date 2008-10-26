@@ -83,7 +83,7 @@ template <class T> class CList
 		 *
 		 * @return number of elements in list
 		 */
-		inline int get_num_elements() { return num_elements; }
+		inline int32_t get_num_elements() { return num_elements; }
 
 		/** go to first element in list and return it
 		 *
@@ -372,6 +372,6 @@ template <class T> class CList
 		/** last element in list */
 		CListElement<T>* last;
 		/** number of elements */
-		int num_elements;
+		int32_t num_elements;
 };
 #endif

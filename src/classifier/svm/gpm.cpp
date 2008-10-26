@@ -81,12 +81,13 @@
 #define alpha_max        1e10
 #define alpha_min        1e-10
 
-extern unsigned int Randnext;
+extern uint32_t Randnext;
 #define ThRand    (Randnext = Randnext * 1103515245L + 12345L)
 #define ThRandPos ((Randnext = Randnext * 1103515245L + 12345L) & 0x7fffffff)
 
-int InnerProjector(int method, int n, int *iy, double e, double *qk,
-                   double l, double u, double *x, double &lambda);
+int32_t InnerProjector(
+	int32_t method, int32_t n, int32_t *iy, double e, double *qk, double l,
+	double u, double *x, double &lambda);
 
 /* Uncomment if you want to allocate vectors on the stack  *
  * instead of the heap. On some architectures this helps   *
@@ -104,38 +105,39 @@ int InnerProjector(int method, int n, int *iy, double e, double *qk,
  *** Applications in Training Support Vector Machines";                     ***
  *** Optim. Meth. Soft. 20, 2005, 353-378)                                  ***
  ******************************************************************************/
-int gvpm(int Projector, int n, float *vecA, double *b, double c, double e, 
-         int *iy, double *x, double tol, int *ls, int *proj)
+int32_t gvpm(
+	int32_t Projector, int32_t n, float *vecA, double *b, double c, double e,
+	int32_t *iy, double *x, double tol, int32_t *ls, int32_t *proj)
 {
-  int     i, j, iter, it, it2, luv, info;
+  int32_t i, j, iter, it, it2, luv, info;
   double  gd, max, normd, dAd, lam, lamnew, alpha, kktlam, ak, bk;
 
-  int     lscount = 0, projcount = 0;
+  int32_t lscount = 0, projcount = 0;
   double  eps     = 1.0e-16;
   double  DELTAsv, ProdDELTAsv;
   double  lam_ext;
 
   /* solver-specific settings */
 #ifdef VPM_ADA
-  int     nc = 1, ia1 = -1;
+  int32_t     nc = 1, ia1 = -1;
   double  alpha1, alpha2;
 #endif
 
   /* allocation-dependant settings */
 #ifdef VARIABLES_ON_STACK
 
-  int     ipt[in], ipt2[in], uv[in];
+  int32_t     ipt[in], ipt2[in], uv[in];
   double  g[in], y[in], tempv[in], d[in], Ad[in], t[in];
 
 #else
 
-  int     *ipt, *ipt2, *uv;
+  int32_t     *ipt, *ipt2, *uv;
   double  *g, *y, *tempv, *d, *Ad, *t;
 
   /*** array allocations ***/
-  ipt   = (int    *)malloc(n * sizeof(int   ));
-  ipt2  = (int    *)malloc(n * sizeof(int   ));
-  uv    = (int    *)malloc(n * sizeof(int   ));
+  ipt   = (int32_t *) malloc(n * sizeof(int32_t));
+  ipt2  = (int32_t *) malloc(n * sizeof(int32_t));
+  uv    = (int32_t *) malloc(n * sizeof(int32_t));
   g     = (double *)malloc(n * sizeof(double));
   y     = (double *)malloc(n * sizeof(double));
   d     = (double *)malloc(n * sizeof(double));
@@ -440,33 +442,34 @@ Clean:
  *** Singly Linear Constrained Quadratic Programs Subject to Lower and      *** 
  *** Upper Bounds"; Math. Prog. to appear)                                  ***
  ******************************************************************************/
-int FletcherAlg2A(int Projector, int n, float *vecA, double *b, double c, 
-                  double e, int *iy, double *x, double tol, int *ls, int *proj)
+int32_t FletcherAlg2A(
+	int32_t Projector, int32_t n, float *vecA, double *b, double c,
+	double e, int32_t *iy, double *x, double tol, int32_t *ls, int32_t *proj)
 {
-  int    i, j, iter, it, it2, luv, info, lscount = 0, projcount = 0;
+  int32_t i, j, iter, it, it2, luv, info, lscount = 0, projcount = 0;
   double gd, max, ak, bk, akold, bkold, lamnew, alpha, kktlam, lam_ext;
   double eps     = 1.0e-16;
   double DELTAsv, ProdDELTAsv;
 
   /*** variables for the adaptive nonmonotone linesearch ***/
-  int    L, llast;
+  int32_t L, llast;
   double fr, fbest, fv, fc, fv0;
 
   /*** allocation-dependant settings ***/
 #ifdef VARIABLES_ON_STACK
 
-  int    ipt[in], ipt2[in], uv[in];
+  int32_t ipt[in], ipt2[in], uv[in];
   double g[in], y[in], tempv[in], d[in], Ad[in], t[in],
          xplus[in], tplus[in], sk[in], yk[in];
 #else
 
-  int    *ipt, *ipt2, *uv;
+  int32_t *ipt, *ipt2, *uv;
   double *g, *y, *tempv, *d, *Ad, *t, *xplus, *tplus, *sk, *yk;
 
   /*** arrays allocation ***/
-  ipt   = (int    *)malloc(n * sizeof(int   ));
-  ipt2  = (int    *)malloc(n * sizeof(int   ));
-  uv    = (int    *)malloc(n * sizeof(int   ));
+  ipt   = (int32_t *)malloc(n * sizeof(int32_t));
+  ipt2  = (int32_t *)malloc(n * sizeof(int32_t));
+  uv    = (int32_t *)malloc(n * sizeof(int32_t));
   g     = (double *)malloc(n * sizeof(double));
   y     = (double *)malloc(n * sizeof(double));
   tempv = (double *)malloc(n * sizeof(double));
@@ -778,12 +781,14 @@ Clean:
 /******************************************************************************/
 /*** Encapsulating method to call the chosen Gradient Projection Method     ***/
 /******************************************************************************/
-int gpm_solver(int Solver, int Projector, int n, float *A, double *b, double c, 
-               double e, int *iy, double *x, double tol, int *ls, int *proj)
+int32_t gpm_solver(
+	int32_t Solver, int32_t Projector, int32_t n, float *A, double *b,
+	double c, double e, int32_t *iy, double *x, double tol, int32_t *ls,
+	int32_t *proj)
 {
   /*** Uncomment the following if you need to scale the QP Hessian matrix
    *** before calling the chosen solver
-  int    i, j;
+  int32_t    i, j;
   float  *ptrA;
   double max, s;
 
@@ -820,10 +825,11 @@ int gpm_solver(int Solver, int Projector, int n, float *A, double *b, double c,
  *** Constrained Quadratic Programs Subject to Lower and Upper Bounds";     ***
  *** Math. Prog. to appear)                                                 ***
  ******************************************************************************/
-double ProjectR(double *x, int n, double lambda, int *a, double b, double *c, 
-                double l, double u)
+double ProjectR(
+	double *x, int32_t n, double lambda, int32_t *a, double b, double *c,
+	double l, double u)
 {
-  int    i;
+  int32_t i;
   double r = 0.0;
 
   for (i = 0; i < n; i++)
@@ -847,12 +853,13 @@ double ProjectR(double *x, int n, double lambda, int *a, double b, double *c,
  ***                       subj to  a'*x - b = 0                            ***
  ***                                l <= x <= u                             ***
  ******************************************************************************/
-int ProjectDai(int n, int *a, double b, double *c, double l, double u, 
-               double *x, double &lam_ext)
+int32_t ProjectDai(
+	int32_t n, int32_t *a, double b, double *c, double l, double u, double *x,
+	double &lam_ext)
 {
   double lambda, lambdal, lambdau, dlambda, lambda_new, tol_lam;
   double r, rl, ru, s, tol_r;
-  int    iter;
+  int32_t iter;
 
   tol_lam = 1.0e-11;
   tol_r   = 1.0e-10 * sqrt((u-l)*(double)n);
@@ -978,16 +985,16 @@ int ProjectDai(int n, int *a, double b, double *c, double l, double u,
 #define SWAP(a,b) { register double t=(a);(a)=(b);(b)=t; }
 
 /*** Median computation using Quick Select ***/
-double quick_select(double *arr, int n)
+double quick_select(double *arr, int32_t n)
 {
-  int low, high ;
-  int median;
-  int middle, l, h;
+  int32_t low, high;
+  int32_t median;
+  int32_t middle, l, h;
 
-  low    = 0; 
+  low    = 0;
   high   = n-1;
   median = (low + high) / 2;
-  
+
   for (;;)
   {
     if (high <= low)
@@ -1038,26 +1045,27 @@ double quick_select(double *arr, int n)
  ***                            iy(i) ~= 0                                  ***
  ******************************************************************************/
 
-int Pardalos(int n, int *iy, double e,   double *qk,
-                             double low, double up,  double *x)
+int32_t Pardalos(
+	int32_t n, int32_t *iy, double e, double *qk, double low, double up,
+	double *x)
 {
-  int    i, l, iter; /* conters    */
-  int    luv, lxint; /* dimensions */
+  int32_t i, l, iter; /* conters    */
+  int32_t luv, lxint; /* dimensions */
   double d, xmin, xmax, xmold, xmid, xx, ts, sw, s, s1, testsum;
 
   /*** allocation-dependant settings ***/
 #ifdef VARIABLES_ON_STACK
-  int    uv[in], uvt[in];
+  int32_t uv[in], uvt[in];
   double xint[2*in+2], xint2[2*in+2], a[in], b[in], at[in], bt[in];
   double newdia[in], newdt[in];
 #else
 
-  int    *uv, *uvt;
+  int32_t *uv, *uvt;
   double *xint, *xint2, *a, *b, *at, *bt, *newdia, *newdt;
 
   /*** arrays allocation ***/
-  uv     = (int    *)malloc(n * sizeof(int           ));
-  uvt    = (int    *)malloc(n * sizeof(int           ));
+  uv     = (int32_t *) malloc(n * sizeof(int32_t));
+  uvt    = (int32_t *) malloc(n * sizeof(int32_t));
   a      = (double *)malloc(n * sizeof(double        ));
   b      = (double *)malloc(n * sizeof(double        ));
   at     = (double *)malloc(n * sizeof(double        ));
@@ -1123,7 +1131,7 @@ int Pardalos(int n, int *iy, double e,   double *qk,
      xmold = xmid;
      xmid = quick_select(xint, lxint);
      if (xmold == xmid)
-         xmid = xint[(int)(ThRandPos % lxint)];
+         xmid = xint[(int32_t)(ThRandPos % lxint)];
 
      s  = ts;
      s1 = sw;
@@ -1163,7 +1171,7 @@ int Pardalos(int n, int *iy, double e,   double *qk,
              uvt[l++] = uv[i];
     }
     luv = l;
-    memcpy(uv, uvt, luv*sizeof(int));
+    memcpy(uv, uvt, luv*sizeof(int32_t));
     iter++;
   } while(luv != 0 && iter < maxprojections);
 
@@ -1206,8 +1214,9 @@ int Pardalos(int n, int *iy, double e,   double *qk,
 /******************************************************************************/
 /*** Wrapper method to call the selected inner projector                    ***/
 /******************************************************************************/
-int InnerProjector(int method, int n, int *iy, double e, double *qk,
-                   double l, double u, double *x, double &lambda)
+int32_t InnerProjector(
+	int32_t method, int32_t n, int32_t *iy, double e, double *qk, double l,
+	double u, double *x, double &lambda)
 {
   if (method == 0)
       return Pardalos(n, iy, e, qk, l, u, x);

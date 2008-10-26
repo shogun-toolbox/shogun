@@ -13,10 +13,10 @@
 %feature("autodoc", "get_alphas(self) -> [] of float") get_alphas;
 #endif //HAVE_PYTHON
 
-%apply (INT** ARGOUT1, INT* DIM1) {(INT** svs, INT* num)};
-%apply (DREAL** ARGOUT1, INT* DIM1) {(DREAL** alphas, INT* d1)};
-%apply (DREAL* IN_ARRAY1, INT DIM1) {(DREAL* alphas, INT d)};
-%apply (INT* IN_ARRAY1, INT DIM1) {(INT* svs, INT d)};
+%apply (int32_t** ARGOUT1, int32_t* DIM1) {(int32_t** svs, int32_t* num)};
+%apply (DREAL** ARGOUT1, int32_t* DIM1) {(DREAL** alphas, int32_t* d1)};
+%apply (DREAL* IN_ARRAY1, int32_t DIM1) {(DREAL* alphas, int32_t d)};
+%apply (int32_t* IN_ARRAY1, int32_t DIM1) {(int32_t* svs, int32_t d)};
 
 #ifndef HAVE_PYTHON
 %rename(SVM) CSVM;

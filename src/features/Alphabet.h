@@ -70,7 +70,7 @@ class CAlphabet : public CSGObject
 		 * @param alpha alphabet to use
 		 * @param len len
 		 */
-		CAlphabet(char* alpha, INT len);
+		CAlphabet(char* alpha, int32_t len);
 
 		/** constructor
 		 *
@@ -104,7 +104,7 @@ class CAlphabet : public CSGObject
 		 *
 		 * @return number of symbols
 		 */
-		inline INT get_num_symbols()
+		inline int32_t get_num_symbols()
 		{
 			return num_symbols;
 		}
@@ -114,7 +114,7 @@ class CAlphabet : public CSGObject
 		 *
 		 * @return number of necessary storage bits
 		 */
-		inline INT get_num_bits()
+		inline int32_t get_num_bits()
 		{
 			return num_bits;
 		}
@@ -175,7 +175,7 @@ class CAlphabet : public CSGObject
 		 * @param p string
 		 * @param len length of string
 		 */
-		void add_string_to_histogram(INT* p, LONG len);
+		void add_string_to_histogram(int32_t* p, LONG len);
 
 		/** make histogram for whole string
 		 *
@@ -204,7 +204,7 @@ class CAlphabet : public CSGObject
 		 */
 		inline void add_byte_to_histogram(uint8_t p)
 		{
-			histogram[(INT) p]++;
+			histogram[(int32_t) p]++;
 		}
 
 		/// print histogram
@@ -215,9 +215,9 @@ class CAlphabet : public CSGObject
 		 * @param h where the histogram will be stored
 		 * @param len length of histogram
 		 */
-		inline void get_hist(LONG** h, INT* len)
+		inline void get_hist(LONG** h, int32_t* len)
 		{
-			INT hist_size=(1 << (sizeof(uint8_t)*8));
+			int32_t hist_size=(1 << (sizeof(uint8_t)*8));
 			ASSERT(h && len);
 			*h=(LONG*) malloc(sizeof(LONG)*hist_size);
 			ASSERT(*h);
@@ -251,13 +251,13 @@ class CAlphabet : public CSGObject
 		 *
 		 * @return number of symbols in histogram
 		 */
-		INT get_num_symbols_in_histogram();
+		int32_t get_num_symbols_in_histogram();
 
 		/** return maximum value in histogram
 		 *
 		 * @return maximum value in histogram
 		 */
-		INT get_max_value_in_histogram();
+		int32_t get_max_value_in_histogram();
 
 		/** return number of bits required to store all symbols in
 		 * histogram
@@ -265,7 +265,7 @@ class CAlphabet : public CSGObject
 		 * @return number of bits required to store all symbols in
 		 *         histogram
 		 */
-		INT get_num_bits_in_histogram();
+		int32_t get_num_bits_in_histogram();
 
 		/** return alphabet name
 		 *
@@ -301,9 +301,9 @@ class CAlphabet : public CSGObject
 		/** alphabet */
 		EAlphabet alphabet;
 		/** number of symbols */
-		INT num_symbols;
+		int32_t num_symbols;
 		/** number of bits */
-		INT num_bits;
+		int32_t num_bits;
 		/** valid chars */
 		uint8_t valid_chars[1 << (sizeof(uint8_t)*8)];
 		/** maptable to bin */

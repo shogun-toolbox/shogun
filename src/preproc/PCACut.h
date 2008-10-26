@@ -41,7 +41,7 @@ class CPCACut : public CSimplePreProc<DREAL>
 		 * @param do_whitening do whitening
 		 * @param thresh threshold
 		 */
-		CPCACut(INT do_whitening=0, double thresh=1e-6);
+		CPCACut(int32_t do_whitening=0, double thresh=1e-6);
 		virtual ~CPCACut();
 
 		/// initialize preprocessor from features
@@ -60,15 +60,15 @@ class CPCACut : public CSimplePreProc<DREAL>
 
 		/// apply preproc on single feature vector
 		/// result in feature matrix
-		virtual DREAL* apply_to_feature_vector(DREAL* f, INT &len);
+		virtual DREAL* apply_to_feature_vector(DREAL* f, int32_t &len);
 
 	protected:
 		/** T */
 		double* T ;
 		/** num dim */
-		INT num_dim;
+		int32_t num_dim;
 		/** num old dim */
-		INT num_old_dim;
+		int32_t num_old_dim;
 		/** mean */
 		double *mean ;
 
@@ -76,7 +76,7 @@ class CPCACut : public CSimplePreProc<DREAL>
 		bool initialized;
 
 		/** do whitening */
-		INT do_whitening;
+		int32_t do_whitening;
 		/** thresh */
 		double thresh;
 };

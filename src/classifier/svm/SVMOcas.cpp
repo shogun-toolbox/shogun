@@ -51,10 +51,10 @@ bool CSVMOcas::train()
 	ASSERT(get_features());
 	ASSERT(labels->is_two_class_labeling());
 
-	INT num_train_labels=0;
+	int32_t num_train_labels=0;
 	lab=labels->get_labels(num_train_labels);
 	w_dim=features->get_num_features();
-	INT num_vec=features->get_num_vectors();
+	int32_t num_vec=features->get_num_vectors();
 
 	ASSERT(num_vec==num_train_labels);
 	ASSERT(num_vec>0);
@@ -75,7 +75,7 @@ bool CSVMOcas::train()
 
 	double TolAbs=0;
 	double QPBound=0;
-	int Method=0;
+	int32_t Method=0;
 	if (method == SVM_OCAS)
 		Method = 1;
 	ocas_return_value_T result = svm_ocas_solver( get_C1(), num_vec, get_epsilon(),
@@ -220,7 +220,7 @@ void CSVMOcas::add_new_cut( double *new_col_H,
 		new_col_H[i] = tmp;
 	}
 	//CMath::display_vector(new_col_H, nSel+1, "new_col_H");
-	//CMath::display_vector((INT*) c_idx[nSel], (INT) nz_dims, "c_idx");
+	//CMath::display_vector((int32_t*) c_idx[nSel], (int32_t) nz_dims, "c_idx");
 	//CMath::display_vector((DREAL*) c_val[nSel], nz_dims, "c_val");
 }
 
@@ -238,7 +238,7 @@ void CSVMOcas::compute_output( double *output, void* ptr )
 {
 	CSVMOcas* o = (CSVMOcas*) ptr;
 	CSparseFeatures<DREAL>* f=o->get_features();
-	INT nData=f->get_num_vectors();
+	int32_t nData=f->get_num_vectors();
 
 	DREAL* y = o->lab;
 	f->dense_dot_range(output, 0, nData, y, o->w, o->w_dim, 0.0);

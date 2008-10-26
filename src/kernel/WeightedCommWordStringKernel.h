@@ -52,7 +52,7 @@ class CWeightedCommWordStringKernel: public CCommWordStringKernel
 		 * @param size cache size
 		 * @param use_sign if sign shall be used
 		 */
-		CWeightedCommWordStringKernel(INT size, bool use_sign);
+		CWeightedCommWordStringKernel(int32_t size, bool use_sign);
 
 		/** constructor
 		 *
@@ -63,7 +63,7 @@ class CWeightedCommWordStringKernel: public CCommWordStringKernel
 		 */
 		CWeightedCommWordStringKernel(
 			CStringFeatures<uint16_t>* l, CStringFeatures<uint16_t>* r,
-			bool use_sign=false, INT size=10);
+			bool use_sign=false, int32_t size=10);
 
 		virtual ~CWeightedCommWordStringKernel();
 
@@ -83,14 +83,14 @@ class CWeightedCommWordStringKernel: public CCommWordStringKernel
 	 	* @param idx index to compute
 	 	* @return optimized value at given index
 	 	*/
-		virtual DREAL compute_optimized(INT idx);
+		virtual DREAL compute_optimized(int32_t idx);
 
 		/** add to normal
 		 *
 		 * @param idx where to add
 		 * @param weight what to add
 		 */
-		virtual void add_to_normal(INT idx, DREAL weight);
+		virtual void add_to_normal(int32_t idx, DREAL weight);
 
 		/** merge normal */
 		void merge_normal();
@@ -107,7 +107,7 @@ class CWeightedCommWordStringKernel: public CCommWordStringKernel
 		 * @param d degree (must match number of weights)
 		 * @return if setting was successful
 		 */
-		bool set_weights(DREAL* w, INT d);
+		bool set_weights(DREAL* w, int32_t d);
 
 		/** return what type of kernel we are
 		 *
@@ -139,8 +139,8 @@ class CWeightedCommWordStringKernel: public CCommWordStringKernel
 		 * @param do_init if initialization shall be performed
 		 * @return computed score
 		 */
-		virtual DREAL* compute_scoring(INT max_degree, INT& num_feat,
-			INT& num_sym, DREAL* target, INT num_suppvec, INT* IDX,
+		virtual DREAL* compute_scoring(int32_t max_degree, int32_t& num_feat,
+			int32_t& num_sym, DREAL* target, int32_t num_suppvec, int32_t* IDX,
 			DREAL* alphas, bool do_init=true);
 
 	protected:
@@ -150,10 +150,10 @@ class CWeightedCommWordStringKernel: public CCommWordStringKernel
 		 * @param idx_b index b
 		 * @param do_sort if sorting shall be performed
 		 */
-		virtual DREAL compute_helper(INT idx_a, INT idx_b, bool do_sort);
+		virtual DREAL compute_helper(int32_t idx_a, int32_t idx_b, bool do_sort);
 
 		/** degree */
-		INT degree;
+		int32_t degree;
 
 		/** weights for each of the subkernels of degree 1...d */
 		DREAL* weights;

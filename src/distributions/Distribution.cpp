@@ -26,13 +26,13 @@ DREAL CDistribution::get_log_likelihood_sample()
 	ASSERT(features);
 
 	DREAL sum=0;
-	for (INT i=0; i<features->get_num_vectors(); i++)
+	for (int32_t i=0; i<features->get_num_vectors(); i++)
 		sum+=get_log_likelihood_example(i);
 
 	return sum/features->get_num_vectors();
 }
 
-void CDistribution::get_log_likelihood(DREAL **dst, INT *num)
+void CDistribution::get_log_likelihood(DREAL **dst, int32_t *num)
 {
 	ASSERT(features);
 
@@ -41,16 +41,16 @@ void CDistribution::get_log_likelihood(DREAL **dst, INT *num)
 	*dst=(DREAL*) malloc(sz);
 	ASSERT(dst);
 
-	for (INT i=0; i<(*num); i++)
+	for (int32_t i=0; i<(*num); i++)
 		*(*dst+i)=get_log_likelihood_example(i);
 }
 
-INT CDistribution::get_num_relevant_model_parameters()
+int32_t CDistribution::get_num_relevant_model_parameters()
 {
-	INT total_num=get_num_model_parameters();
-	INT num=0;
+	int32_t total_num=get_num_model_parameters();
+	int32_t num=0;
 
-	for (INT i=0; i<total_num; i++)
+	for (int32_t i=0; i<total_num; i++)
 	{
 		if (get_log_model_parameter(i)>CMath::ALMOST_NEG_INFTY)
 			num++;

@@ -82,13 +82,13 @@ class CSVMSGD : public CSparseLinearClassifier
 		 *
 		 * @param e new number of training epochs
 		 */
-		inline void set_epochs(INT e) { epochs=e; }
+		inline void set_epochs(int32_t e) { epochs=e; }
 
 		/** get epochs
 		 *
 		 * @return the number of training epochs
 		 */
-		inline INT get_epochs() { return epochs; }
+		inline int32_t get_epochs() { return epochs; }
 
 		/** set if bias shall be enabled
 		 *
@@ -124,9 +124,9 @@ class CSVMSGD : public CSparseLinearClassifier
 		DREAL C2;
 		DREAL wscale;
 		DREAL bscale;
-		INT epochs;
-		INT skip;
-		INT count;
+		int32_t epochs;
+		int32_t skip;
+		int32_t count;
 
 		bool use_bias;
 		bool use_regularized_bias;

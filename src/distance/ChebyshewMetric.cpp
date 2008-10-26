@@ -52,9 +52,9 @@ bool CChebyshewMetric::save_init(FILE* dest)
 	return false;
 }
 
-DREAL CChebyshewMetric::compute(INT idx_a, INT idx_b)
+DREAL CChebyshewMetric::compute(int32_t idx_a, int32_t idx_b)
 {
-	INT alen, blen;
+	int32_t alen, blen;
 	bool afree, bfree;
 
 	double* avec=((CRealFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
@@ -64,7 +64,7 @@ DREAL CChebyshewMetric::compute(INT idx_a, INT idx_b)
 
 	DREAL result=DBL_MIN;
 
-	for (INT i=0; i<alen; i++)
+	for (int32_t i=0; i<alen; i++)
 		result=CMath::max(result, fabs(avec[i]-bvec[i]));
 
 	((CRealFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);

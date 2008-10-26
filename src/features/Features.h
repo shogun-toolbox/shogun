@@ -75,7 +75,7 @@ class CFeatures : public CSGObject
 		 *
 		 * @param size cache size
 		 */
-		CFeatures(INT size);
+		CFeatures(int32_t size);
 
 		/** copy constructor */
 		CFeatures(const CFeatures& orig);
@@ -117,44 +117,44 @@ class CFeatures : public CSGObject
 		 * @param p preprocessor to set
 		 * @return something inty
 		 */
-		virtual INT add_preproc(CPreProc* p);
+		virtual int32_t add_preproc(CPreProc* p);
 
 		/** delete preprocessor from list
 		 * caller has to clean up returned preproc
 		 *
 		 * @param num index of preprocessor in list
 		 */
-		virtual CPreProc* del_preproc(INT num);
+		virtual CPreProc* del_preproc(int32_t num);
 
 		/** get specified preprocessor
 		 *
 		 * @param num index of preprocessor in list
 		 */
-		CPreProc* get_preproc(INT num);
+		CPreProc* get_preproc(int32_t num);
 
 		/** set applied flag for preprocessor
 		 *
 		 * @param num index of preprocessor in list
 		 */
-		inline void set_preprocessed(INT num) { preprocessed[num]=true; }
+		inline void set_preprocessed(int32_t num) { preprocessed[num]=true; }
 
 		/** get whether specified preprocessor was already applied
 		 *
 		 * @param num index of preprocessor in list
 		 */
-		inline bool is_preprocessed(INT num) { return preprocessed[num]; }
+		inline bool is_preprocessed(int32_t num) { return preprocessed[num]; }
 
 		/** get the number of applied preprocs
 		 *
 		 * @return number of applied preprocessors
 		 */
-		INT get_num_preprocessed();
+		int32_t get_num_preprocessed();
 
 		/** get number of preprocessors
 		 *
 		 * @return number of preprocessors
 		 */
-		inline INT get_num_preproc() { return num_preproc; }
+		inline int32_t get_num_preproc() { return num_preproc; }
 
 		/** clears all preprocs */
 		void clean_preprocs();
@@ -163,7 +163,7 @@ class CFeatures : public CSGObject
 		 *
 		 * @return cache size
 		 */
-		inline INT get_cache_size() { return cache_size; };
+		inline int32_t get_cache_size() { return cache_size; };
 
 		/** get number of examples/vectors
 		 *
@@ -171,7 +171,7 @@ class CFeatures : public CSGObject
 		 *
 		 * @return number of examples/vectors
 		 */
-		virtual INT get_num_vectors()=0 ;
+		virtual int32_t get_num_vectors()=0 ;
 
 		/** in case there is a feature matrix allow for reshaping
 		 *
@@ -181,7 +181,7 @@ class CFeatures : public CSGObject
 		 * @param num_vectors new number of vectors
 		 * @return if reshaping was succesful
 		 */
-		virtual bool reshape(INT num_features, INT num_vectors) { return false; }
+		virtual bool reshape(int32_t num_features, int32_t num_vectors) { return false; }
 
 		/** get memory footprint of one feature
 		 *
@@ -189,7 +189,7 @@ class CFeatures : public CSGObject
 		 *
 		 * @return memory footprint of one feature
 		 */
-		virtual INT get_size()=0;
+		virtual int32_t get_size()=0;
 
 		/** list feature object */
 		void list_feature_obj();
@@ -217,13 +217,13 @@ class CFeatures : public CSGObject
 
 	private:
 		/// size of cache in MB
-		INT cache_size;
+		int32_t cache_size;
 
 		/// list of preprocessors
 		CPreProc** preproc;
 
 		/// number of preprocs in list
-		INT num_preproc;
+		int32_t num_preproc;
 
 		/// i'th entry is true if features were already preprocessed with preproc i
 		bool* preprocessed;

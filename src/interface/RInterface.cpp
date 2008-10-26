@@ -55,7 +55,7 @@ IFType CRInterface::get_argument_type()
 }
 
 
-INT CRInterface::get_int()
+int32_t CRInterface::get_int()
 {
 	SEXP i=get_arg_increment();
 
@@ -67,7 +67,7 @@ INT CRInterface::get_int()
 		double d=REAL(CAR(i))[0];
 		if (d-CMath::floor(d)!=0)
 			SG_ERROR("Expected Integer as argument %d\n", m_rhs_counter);
-		return (INT) d;
+		return (int32_t) d;
 	}
 
 	if (TYPEOF(CAR(i)) != INTSXP)
@@ -95,7 +95,7 @@ bool CRInterface::get_bool()
 }
 
 
-char* CRInterface::get_string(INT& len)
+char* CRInterface::get_string(int32_t& len)
 {
 	SEXP s=get_arg_increment();
 	if (s == R_NilValue || TYPEOF(CAR(s)) != STRSXP || length(CAR(s))!=1)
@@ -111,19 +111,19 @@ char* CRInterface::get_string(INT& len)
 	return res;
 }
 
-void CRInterface::get_byte_vector(uint8_t*& vec, INT& len)
+void CRInterface::get_byte_vector(uint8_t*& vec, int32_t& len)
 {
 	vec=NULL;
 	len=0;
 }
 
-void CRInterface::get_char_vector(char*& vec, INT& len)
+void CRInterface::get_char_vector(char*& vec, int32_t& len)
 {
 	vec=NULL;
 	len=0;
 }
 
-void CRInterface::get_int_vector(INT*& vec, INT& len)
+void CRInterface::get_int_vector(int32_t*& vec, int32_t& len)
 {
 	vec=NULL;
 	len=0;
@@ -133,20 +133,20 @@ void CRInterface::get_int_vector(INT*& vec, INT& len)
 		SG_ERROR("Expected Integer Vector as argument %d\n", m_rhs_counter);
 
 	len=LENGTH(rvec);
-	vec=new INT[len];
+	vec=new int32_t[len];
 	ASSERT(vec);
 
-	for (INT i=0; i<len; i++)
-		vec[i]= (INT) INTEGER(rvec)[i];
+	for (int32_t i=0; i<len; i++)
+		vec[i]= (int32_t) INTEGER(rvec)[i];
 }
 
-void CRInterface::get_shortreal_vector(SHORTREAL*& vec, INT& len)
+void CRInterface::get_shortreal_vector(SHORTREAL*& vec, int32_t& len)
 {
 	vec=NULL;
 	len=0;
 }
 
-void CRInterface::get_real_vector(DREAL*& vec, INT& len)
+void CRInterface::get_real_vector(DREAL*& vec, int32_t& len)
 {
 	SEXP rvec=CAR(get_arg_increment());
 	if( TYPEOF(rvec) != REALSXP && TYPEOF(rvec) != INTSXP )
@@ -156,40 +156,40 @@ void CRInterface::get_real_vector(DREAL*& vec, INT& len)
 	vec=new DREAL[len];
 	ASSERT(vec);
 
-	for (INT i=0; i<len; i++)
+	for (int32_t i=0; i<len; i++)
 		vec[i]= (DREAL) REAL(rvec)[i];
 }
 
-void CRInterface::get_short_vector(SHORT*& vec, INT& len)
+void CRInterface::get_short_vector(SHORT*& vec, int32_t& len)
 {
 	vec=NULL;
 	len=0;
 }
 
-void CRInterface::get_word_vector(uint16_t*& vec, INT& len)
+void CRInterface::get_word_vector(uint16_t*& vec, int32_t& len)
 {
 	vec=NULL;
 	len=0;
 }
 
 
-void CRInterface::get_byte_matrix(uint8_t*& matrix, INT& num_feat, INT& num_vec)
+void CRInterface::get_byte_matrix(uint8_t*& matrix, int32_t& num_feat, int32_t& num_vec)
 {
 }
 
-void CRInterface::get_char_matrix(char*& matrix, INT& num_feat, INT& num_vec)
+void CRInterface::get_char_matrix(char*& matrix, int32_t& num_feat, int32_t& num_vec)
 {
 }
 
-void CRInterface::get_int_matrix(INT*& matrix, INT& num_feat, INT& num_vec)
+void CRInterface::get_int_matrix(int32_t*& matrix, int32_t& num_feat, int32_t& num_vec)
 {
 }
 
-void CRInterface::get_shortreal_matrix(SHORTREAL*& matrix, INT& num_feat, INT& num_vec)
+void CRInterface::get_shortreal_matrix(SHORTREAL*& matrix, int32_t& num_feat, int32_t& num_vec)
 {
 }
 
-void CRInterface::get_real_matrix(DREAL*& matrix, INT& num_feat, INT& num_vec)
+void CRInterface::get_real_matrix(DREAL*& matrix, int32_t& num_feat, int32_t& num_vec)
 {
 	SEXP feat=CAR(get_arg_increment());
 	if( TYPEOF(feat) != REALSXP && TYPEOF(feat) != INTSXP )
@@ -200,58 +200,58 @@ void CRInterface::get_real_matrix(DREAL*& matrix, INT& num_feat, INT& num_vec)
 	matrix=new DREAL[num_vec*num_feat];
 	ASSERT(matrix);
 
-	for (INT i=0; i<num_vec; i++)
+	for (int32_t i=0; i<num_vec; i++)
 	{
-		for (INT j=0; j<num_feat; j++)
+		for (int32_t j=0; j<num_feat; j++)
 			matrix[i*num_feat+j]= (DREAL) REAL(feat)[i*num_feat+j];
 	}
 }
 
-void CRInterface::get_short_matrix(SHORT*& matrix, INT& num_feat, INT& num_vec)
+void CRInterface::get_short_matrix(SHORT*& matrix, int32_t& num_feat, int32_t& num_vec)
 {
 }
 
-void CRInterface::get_word_matrix(uint16_t*& matrix, INT& num_feat, INT& num_vec)
+void CRInterface::get_word_matrix(uint16_t*& matrix, int32_t& num_feat, int32_t& num_vec)
 {
 }
 
-void CRInterface::get_byte_ndarray(uint8_t*& array, INT*& dims, INT& num_dims)
+void CRInterface::get_byte_ndarray(uint8_t*& array, int32_t*& dims, int32_t& num_dims)
 {
 }
 
-void CRInterface::get_char_ndarray(char*& array, INT*& dims, INT& num_dims)
+void CRInterface::get_char_ndarray(char*& array, int32_t*& dims, int32_t& num_dims)
 {
 }
 
-void CRInterface::get_int_ndarray(INT*& array, INT*& dims, INT& num_dims)
+void CRInterface::get_int_ndarray(int32_t*& array, int32_t*& dims, int32_t& num_dims)
 {
 }
 
-void CRInterface::get_shortreal_ndarray(SHORTREAL*& array, INT*& dims, INT& num_dims)
+void CRInterface::get_shortreal_ndarray(SHORTREAL*& array, int32_t*& dims, int32_t& num_dims)
 {
 }
 
-void CRInterface::get_real_ndarray(DREAL*& array, INT*& dims, INT& num_dims)
+void CRInterface::get_real_ndarray(DREAL*& array, int32_t*& dims, int32_t& num_dims)
 {
 }
 
-void CRInterface::get_short_ndarray(SHORT*& array, INT*& dims, INT& num_dims)
+void CRInterface::get_short_ndarray(SHORT*& array, int32_t*& dims, int32_t& num_dims)
 {
 }
 
-void CRInterface::get_word_ndarray(uint16_t*& array, INT*& dims, INT& num_dims)
+void CRInterface::get_word_ndarray(uint16_t*& array, int32_t*& dims, int32_t& num_dims)
 {
 }
 
-void CRInterface::get_real_sparsematrix(TSparse<DREAL>*& matrix, INT& num_feat, INT& num_vec)
+void CRInterface::get_real_sparsematrix(TSparse<DREAL>*& matrix, int32_t& num_feat, int32_t& num_vec)
 {
 }
 
-void CRInterface::get_byte_string_list(T_STRING<uint8_t>*& strings, INT& num_str, INT& max_string_len)
+void CRInterface::get_byte_string_list(T_STRING<uint8_t>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 }
 
-void CRInterface::get_char_string_list(T_STRING<char>*& strings, INT& num_str, INT& max_string_len)
+void CRInterface::get_char_string_list(T_STRING<char>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 	SEXP strs=get_arg_increment();
 
@@ -264,11 +264,11 @@ void CRInterface::get_char_string_list(T_STRING<char>*& strings, INT& num_str, I
 	strings=new T_STRING<char>[num_str];
 	ASSERT(strings);
 
-	for (int i=0; i<num_str; i++)
+	for (int32_t i=0; i<num_str; i++)
 	{
 		SEXPREC* s= STRING_ELT(strs,i);
 		char* c= (char*) CHAR(s);
-		int len=LENGTH(s);
+		int32_t len=LENGTH(s);
 
 		if (len && c)
 		{
@@ -287,20 +287,20 @@ void CRInterface::get_char_string_list(T_STRING<char>*& strings, INT& num_str, I
 	}
 }
 
-void CRInterface::get_int_string_list(T_STRING<INT>*& strings, INT& num_str, INT& max_string_len)
+void CRInterface::get_int_string_list(T_STRING<int32_t>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 }
 
-void CRInterface::get_short_string_list(T_STRING<SHORT>*& strings, INT& num_str, INT& max_string_len)
+void CRInterface::get_short_string_list(T_STRING<SHORT>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 }
 
-void CRInterface::get_word_string_list(T_STRING<uint16_t>*& strings, INT& num_str, INT& max_string_len)
+void CRInterface::get_word_string_list(T_STRING<uint16_t>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 }
 
 /** set functions - to pass data from shogun to the target interface */
-bool CRInterface::create_return_values(INT num)
+bool CRInterface::create_return_values(int32_t num)
 {
 	if (num<=0)
 		return true;
@@ -329,7 +329,7 @@ SEXP CRInterface::get_return_values()
 
 /** set functions - to pass data from shogun to the target interface */
 
-void CRInterface::set_int(INT scalar)
+void CRInterface::set_int(int32_t scalar)
 {
 	set_arg_increment(ScalarInteger(scalar));
 }
@@ -345,18 +345,18 @@ void CRInterface::set_bool(bool scalar)
 }
 
 
-void CRInterface::set_char_vector(const char* vec, INT len)
+void CRInterface::set_char_vector(const char* vec, int32_t len)
 {
 }
 
 #undef SET_VECTOR
 #define SET_VECTOR(function_name, r_type, r_cast, sg_type, if_type, error_string) \
-void CRInterface::function_name(const sg_type* vec, INT len)	\
+void CRInterface::function_name(const sg_type* vec, int32_t len)	\
 {																\
 	SEXP feat=NULL;												\
 	PROTECT( feat = allocVector(r_type, len) );					\
 																\
-	for (INT i=0; i<len; i++)									\
+	for (int32_t i=0; i<len; i++)									\
 		r_cast(feat)[i]=(if_type) vec[i];						\
 																\
 	UNPROTECT(1);												\
@@ -364,26 +364,26 @@ void CRInterface::function_name(const sg_type* vec, INT len)	\
 }
 
 SET_VECTOR(set_byte_vector, INTSXP, INTEGER, uint8_t, int, "Byte")
-SET_VECTOR(set_int_vector, INTSXP, INTEGER, INT, int, "Integer")
+SET_VECTOR(set_int_vector, INTSXP, INTEGER, int32_t, int, "Integer")
 SET_VECTOR(set_short_vector, INTSXP, INTEGER, SHORT, int, "Short")
 SET_VECTOR(set_shortreal_vector, REALSXP, REAL, SHORTREAL, float, "Single Precision")
 SET_VECTOR(set_real_vector, REALSXP, REAL, DREAL, double, "Double Precision")
 SET_VECTOR(set_word_vector, INTSXP, INTEGER, uint16_t, int, "Word")
 #undef SET_VECTOR
 
-void CRInterface::set_char_matrix(const char* matrix, INT num_feat, INT num_vec)
+void CRInterface::set_char_matrix(const char* matrix, int32_t num_feat, int32_t num_vec)
 {
 }
 
 #define SET_MATRIX(function_name, r_type, r_cast, sg_type, if_type, error_string) \
-void CRInterface::function_name(const sg_type* matrix, INT num_feat, INT num_vec) \
+void CRInterface::function_name(const sg_type* matrix, int32_t num_feat, int32_t num_vec) \
 {																			\
 	SEXP feat=NULL;															\
 	PROTECT( feat = allocMatrix(r_type, num_feat, num_vec) );				\
 																			\
-	for (INT i=0; i<num_vec; i++)											\
+	for (int32_t i=0; i<num_vec; i++)											\
 	{																		\
-		for (INT j=0; j<num_feat; j++)										\
+		for (int32_t j=0; j<num_feat; j++)										\
 			r_cast(feat)[i*num_feat+j]=(if_type) matrix[i*num_feat+j];		\
 	}																		\
 																			\
@@ -391,24 +391,24 @@ void CRInterface::function_name(const sg_type* matrix, INT num_feat, INT num_vec
 	set_arg_increment(feat);												\
 }
 SET_MATRIX(set_byte_matrix, INTSXP, INTEGER, uint8_t, int, "Byte")
-SET_MATRIX(set_int_matrix, INTSXP, INTEGER, INT, int, "Integer")
+SET_MATRIX(set_int_matrix, INTSXP, INTEGER, int32_t, int, "Integer")
 SET_MATRIX(set_short_matrix, INTSXP, INTEGER, SHORT, int, "Short")
 SET_MATRIX(set_shortreal_matrix, REALSXP, REAL, SHORTREAL, float, "Single Precision")
 SET_MATRIX(set_real_matrix, REALSXP, REAL, DREAL, double, "Double Precision")
 SET_MATRIX(set_word_matrix, INTSXP, INTEGER, uint16_t, int, "Word")
 #undef SET_MATRIX
 
-void CRInterface::set_real_sparsematrix(const TSparse<DREAL>* matrix, INT num_feat, INT num_vec, LONG nnz)
+void CRInterface::set_real_sparsematrix(const TSparse<DREAL>* matrix, int32_t num_feat, int32_t num_vec, LONG nnz)
 {
 	// R does not support sparse matrices yet
 }
 
-void CRInterface::set_byte_string_list(const T_STRING<uint8_t>* strings, INT num_str)
+void CRInterface::set_byte_string_list(const T_STRING<uint8_t>* strings, int32_t num_str)
 {
 }
  //this function will fail for strings containing 0, unclear how to do 'raw'
  //strings in R
-void CRInterface::set_char_string_list(const T_STRING<char>* strings, INT num_str)
+void CRInterface::set_char_string_list(const T_STRING<char>* strings, int32_t num_str)
 {
 	if (!strings)
 		SG_ERROR("Given strings are invalid.\n");
@@ -416,9 +416,9 @@ void CRInterface::set_char_string_list(const T_STRING<char>* strings, INT num_st
 	SEXP feat=NULL;
 	PROTECT( feat = allocVector(STRSXP, num_str) );
 
-	for (INT i=0; i<num_str; i++)
+	for (int32_t i=0; i<num_str; i++)
 	{
-		INT len=strings[i].length;
+		int32_t len=strings[i].length;
 		if (len>0)
 			SET_STRING_ELT(feat, i, mkChar(strings[i].string));
 	}
@@ -426,15 +426,15 @@ void CRInterface::set_char_string_list(const T_STRING<char>* strings, INT num_st
 	set_arg_increment(feat);
 }
 
-void CRInterface::set_int_string_list(const T_STRING<INT>* strings, INT num_str)
+void CRInterface::set_int_string_list(const T_STRING<int32_t>* strings, int32_t num_str)
 {
 }
 
-void CRInterface::set_short_string_list(const T_STRING<SHORT>* strings, INT num_str)
+void CRInterface::set_short_string_list(const T_STRING<SHORT>* strings, int32_t num_str)
 {
 }
 
-void CRInterface::set_word_string_list(const T_STRING<uint16_t>* strings, INT num_str)
+void CRInterface::set_word_string_list(const T_STRING<uint16_t>* strings, int32_t num_str)
 {
 }
 

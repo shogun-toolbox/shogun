@@ -50,7 +50,7 @@ class CCommWordStringKernel : public CStringKernel<uint16_t>
 		 * @param size cache size
 		 * @param use_sign if sign shall be used
 		 */
-		CCommWordStringKernel(INT size, bool use_sign);
+		CCommWordStringKernel(int32_t size, bool use_sign);
 
 		/** constructor
 		 *
@@ -61,7 +61,7 @@ class CCommWordStringKernel : public CStringKernel<uint16_t>
 		 */
 		CCommWordStringKernel(
 			CStringFeatures<uint16_t>* l, CStringFeatures<uint16_t>* r,
-			bool use_sign=false, INT size=10);
+			bool use_sign=false, int32_t size=10);
 
 		virtual ~CCommWordStringKernel();
 
@@ -106,7 +106,7 @@ class CCommWordStringKernel : public CStringKernel<uint16_t>
 		 *
 		 * @param size size
 		 */
-		virtual bool init_dictionary(INT size);
+		virtual bool init_dictionary(int32_t size);
 
 		/** initialize optimization
 		 *
@@ -115,7 +115,7 @@ class CCommWordStringKernel : public CStringKernel<uint16_t>
 		 * @param weights weights
 		 * @return if initializing was successful
 		 */
-		virtual bool init_optimization(INT count, INT *IDX,
+		virtual bool init_optimization(int32_t count, int32_t *IDX,
 			DREAL* weights);
 
 		/** delete optimization
@@ -129,14 +129,14 @@ class CCommWordStringKernel : public CStringKernel<uint16_t>
 	 	* @param idx index to compute
 	 	* @return optimized value at given index
 	 	*/
-		virtual DREAL compute_optimized(INT idx);
+		virtual DREAL compute_optimized(int32_t idx);
 
 		/** add to normal
 		 *
 		 * @param idx where to add
 		 * @param weight what to add
 		 */
-		virtual void add_to_normal(INT idx, DREAL weight);
+		virtual void add_to_normal(int32_t idx, DREAL weight);
 
 		/** clear normal */
 		virtual void clear_normal();
@@ -158,7 +158,7 @@ class CCommWordStringKernel : public CStringKernel<uint16_t>
 		 * @param dsize dictionary size will be stored in here
 		 * @param dweights dictionary weights will be stored in here
 		 */
-		void get_dictionary(INT& dsize, DREAL*& dweights)
+		void get_dictionary(int32_t& dsize, DREAL*& dweights)
 		{
 			dsize=dictionary_size;
 			dweights = dictionary_weights;
@@ -176,8 +176,8 @@ class CCommWordStringKernel : public CStringKernel<uint16_t>
 		 * @param do_init if initialization shall be performed
 		 * @return computed scores
 		 */
-		virtual DREAL* compute_scoring(INT max_degree, INT& num_feat,
-			INT& num_sym, DREAL* target, INT num_suppvec, INT* IDX,
+		virtual DREAL* compute_scoring(int32_t max_degree, int32_t& num_feat,
+			int32_t& num_sym, DREAL* target, int32_t num_suppvec, int32_t* IDX,
 			DREAL* alphas, bool do_init=true);
 
 		/** compute consensus
@@ -188,8 +188,8 @@ class CCommWordStringKernel : public CStringKernel<uint16_t>
 		 * @param alphas alphas
 		 * @return computed consensus
 		 */
-		char* compute_consensus(INT &num_feat, INT num_suppvec,
-			INT* IDX, DREAL* alphas);
+		char* compute_consensus(int32_t &num_feat, int32_t num_suppvec,
+			int32_t* IDX, DREAL* alphas);
 
 		/** set_use_dict_diagonal_optimization
 		 *
@@ -218,7 +218,7 @@ class CCommWordStringKernel : public CStringKernel<uint16_t>
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		inline virtual DREAL compute(INT idx_a, INT idx_b)
+		inline virtual DREAL compute(int32_t idx_a, int32_t idx_b)
 		{
 			return compute_helper(idx_a, idx_b, false);
 		}
@@ -230,18 +230,18 @@ class CCommWordStringKernel : public CStringKernel<uint16_t>
 		 * @param do_sort if sorting shall be performed
 		 * @return computed value
 		 */
-		virtual DREAL compute_helper(INT idx_a, INT idx_b, bool do_sort);
+		virtual DREAL compute_helper(int32_t idx_a, int32_t idx_b, bool do_sort);
 
 		/** helper to compute only diagonal normalization for training
 		 *
 		 * @param idx_a index a
 		 * @return unnormalized diagonal value
 		 */
-		virtual DREAL compute_diag(INT idx_a);
+		virtual DREAL compute_diag(int32_t idx_a);
 
 	protected:
 		/** size of dictionary (number of possible strings) */
-		INT dictionary_size;
+		int32_t dictionary_size;
 		/** dictionary weights - array to hold counters for all possible
 		 * strings */
 		DREAL* dictionary_weights;
@@ -252,7 +252,7 @@ class CCommWordStringKernel : public CStringKernel<uint16_t>
 		/** whether diagonal optimization shall be used */
 		bool use_dict_diagonal_optimization;
 		/** array to hold counters for all strings */
-		INT* dict_diagonal_optimization;
+		int32_t* dict_diagonal_optimization;
 };
 
 #endif /* _COMMWORDSTRINGKERNEL_H__ */

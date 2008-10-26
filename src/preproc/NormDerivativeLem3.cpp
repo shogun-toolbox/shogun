@@ -58,7 +58,7 @@ DREAL* CNormDerivativeLem3::apply_to_feature_matrix(CFeatures* f)
 
 /// apply preproc on single feature vector
 /// result in feature matrix
-DREAL* CNormDerivativeLem3::apply_to_feature_vector(DREAL* f, INT len)
+DREAL* CNormDerivativeLem3::apply_to_feature_vector(DREAL* f, int32_t len)
 {
 	return NULL;
 }
@@ -66,7 +66,7 @@ DREAL* CNormDerivativeLem3::apply_to_feature_vector(DREAL* f, INT len)
 //#warning TODO implement jahau 
 //#ifdef JaaHau
 // //this is the normalization used in jaahau
-//    INT o_p=1;
+//    int32_t o_p=1;
 //    double sum_p=0;
 //    double sum_q=0;
 //    //first do positive model

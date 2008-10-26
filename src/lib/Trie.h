@@ -20,7 +20,7 @@
 #include "base/SGObject.h"
 
 // sentinel is 0xFFFFFFFC or float -2
-#define NO_CHILD ((INT)-1073741824)
+#define NO_CHILD ((int32_t)-1073741824)
 
 #define WEIGHTS_IN_TRIE 
 //#define TRIE_CHECK_EVERYTHING
@@ -44,7 +44,7 @@ struct ConsensusEntry
 	/** score */
 	SHORTREAL score;
 	/** bt */
-	INT bt;
+	int32_t bt;
 };
 
 /** POIM trie */
@@ -63,7 +63,7 @@ struct POIMTrie
 		/** child weights */
 		SHORTREAL child_weights[4];
 		/** children */
-		INT children[4];
+		int32_t children[4];
 		/** sequence */
 		uint8_t seq[16] ;
 	}; 
@@ -92,7 +92,7 @@ struct DNATrie
 		/** child weights */
 		SHORTREAL child_weights[4];
 		/** children */
-		INT children[4];
+		int32_t children[4];
 		/** sequence */
 		uint8_t seq[16] ;
 	}; 
@@ -101,23 +101,23 @@ struct DNATrie
 /** tree parse info */
 struct TreeParseInfo {
 	/** number of symbols */
-	INT num_sym;
+	int32_t num_sym;
 	/** number of features */
-	INT num_feat;
+	int32_t num_feat;
 	/** p */
-	INT p;
+	int32_t p;
 	/** k */
-	INT k;
+	int32_t k;
 	/** nofsKmers */
-	INT* nofsKmers;
+	int32_t* nofsKmers;
 	/** margFactors */
 	DREAL* margFactors;
 	/** x */
-	INT* x;
+	int32_t* x;
 	/** substrs */
-	INT* substrs;
+	int32_t* substrs;
 	/** y0 */
-	INT y0;
+	int32_t y0;
 	/** C k */
 	DREAL* C_k;
 	/** L k */
@@ -154,7 +154,7 @@ template <class Trie> class CTrie : public CSGObject
 		 * @param p_use_compact_terminal_nodes if compact terminal nodes shall
 		 *                                     be used
 		 */
-		CTrie(INT d, bool p_use_compact_terminal_nodes=true);
+		CTrie(int32_t d, bool p_use_compact_terminal_nodes=true);
 
 		/** copy constructor */
 		CTrie(const CTrie & to_copy);
@@ -170,7 +170,7 @@ template <class Trie> class CTrie : public CSGObject
 		 * @param other_node other node
 		 * @return if comparison was successful
 		 */
-		bool compare_traverse(INT node, const CTrie & other, INT other_node);
+		bool compare_traverse(int32_t node, const CTrie & other, int32_t other_node);
 
 		/** compare
 		 *
@@ -185,7 +185,7 @@ template <class Trie> class CTrie : public CSGObject
 		 * @param trace trace
 		 * @param trace_len length of trace
 		 */
-		bool find_node(INT node, INT * trace, INT &trace_len) const;
+		bool find_node(int32_t node, int32_t * trace, int32_t &trace_len) const;
 
 		/** find deepest node
 		 *
@@ -193,13 +193,13 @@ template <class Trie> class CTrie : public CSGObject
 		 * @param deepest_node deepest node will be stored in here
 		 * @return depth of deepest node
 		 */
-		INT find_deepest_node(INT start_node, INT &deepest_node) const;
+		int32_t find_deepest_node(int32_t start_node, int32_t &deepest_node) const;
 
 		/** display node
 		 *
 		 * @param node node to display
 		 */
-		void display_node(INT node) const;
+		void display_node(int32_t node) const;
 
 		/** destroy */
 		void destroy();
@@ -208,7 +208,7 @@ template <class Trie> class CTrie : public CSGObject
 		 *
 		 * @param d new degree
 		 */
-		void set_degree(INT d);
+		void set_degree(int32_t d);
 
 		/** create
 		 *
@@ -216,7 +216,7 @@ template <class Trie> class CTrie : public CSGObject
 		 * @param p_use_compact_terminal_nodes if compact terminal nodes shall
 		 *                                     be used
 		 */
-		void create(INT len, bool p_use_compact_terminal_nodes=true);
+		void create(int32_t len, bool p_use_compact_terminal_nodes=true);
 
 		/** delete trees
 		 *
@@ -235,7 +235,9 @@ template <class Trie> class CTrie : public CSGObject
 		 * @param degree_times_position_weights if degree times position
 		 *                                      weights shall be applied
 		 */
-		void add_to_trie(int i, INT seq_offset, INT * vec, float alpha, DREAL *weights, bool degree_times_position_weights);
+		void add_to_trie(
+			int32_t i, int32_t seq_offset, int32_t* vec, float alpha,
+			DREAL *weights, bool degree_times_position_weights);
 
 		/** compute absolute weights tree
 		 *
@@ -243,14 +245,14 @@ template <class Trie> class CTrie : public CSGObject
 		 * @param depth depth
 		 * @return computed absolute weights tree
 		 */
-		DREAL compute_abs_weights_tree(INT tree, INT depth);
+		DREAL compute_abs_weights_tree(int32_t tree, int32_t depth);
 
 		/** compute absolute weights
 		 *
 		 * @param len length
 		 * @return computed absolute weights
 		 */
-		DREAL* compute_abs_weights(int &len);
+		DREAL* compute_abs_weights(int32_t &len);
 
 		/** compute by tree helper
 		 *
@@ -264,7 +266,7 @@ template <class Trie> class CTrie : public CSGObject
 		 *                                      weights shall be applied
 		 * @return a computed value
 		 */
-		DREAL compute_by_tree_helper(INT* vec, INT len, INT seq_pos, INT tree_pos, INT weight_pos, DREAL * weights, bool degree_times_position_weights) ;
+		DREAL compute_by_tree_helper(int32_t* vec, int32_t len, int32_t seq_pos, int32_t tree_pos, int32_t weight_pos, DREAL * weights, bool degree_times_position_weights) ;
 
 		/** compute by tree helper
 		 *
@@ -280,7 +282,7 @@ template <class Trie> class CTrie : public CSGObject
 		 * @param degree_times_position_weights if degree times position
 		 *                                      weights shall be applied
 		 */
-		void compute_by_tree_helper(INT* vec, INT len, INT seq_pos, INT tree_pos, INT weight_pos, DREAL* LevelContrib, DREAL factor, INT mkl_stepsize, DREAL * weights, bool degree_times_position_weights);
+		void compute_by_tree_helper(int32_t* vec, int32_t len, int32_t seq_pos, int32_t tree_pos, int32_t weight_pos, DREAL* LevelContrib, DREAL factor, int32_t mkl_stepsize, DREAL * weights, bool degree_times_position_weights);
 
 		/** compute scoring helper
 		 *
@@ -296,7 +298,7 @@ template <class Trie> class CTrie : public CSGObject
 		 * @param offs offsets
 		 * @param result result
 		 */
-		void compute_scoring_helper(INT tree, INT i, INT j, DREAL weight, INT d, INT max_degree, INT num_feat, INT num_sym, INT sym_offset, INT offs, DREAL* result);
+		void compute_scoring_helper(int32_t tree, int32_t i, int32_t j, DREAL weight, int32_t d, int32_t max_degree, int32_t num_feat, int32_t num_sym, int32_t sym_offset, int32_t offs, DREAL* result);
 
 		/** add example to tree mismatch recursion
 		 *
@@ -310,7 +312,7 @@ template <class Trie> class CTrie : public CSGObject
 		 * @param max_mismatch maximum mismatch
 		 * @param weights weights
 		 */
-		void add_example_to_tree_mismatch_recursion(INT tree,  INT i, DREAL alpha, INT *vec, INT len_rem, INT degree_rec, INT mismatch_rec, INT max_mismatch, DREAL * weights);
+		void add_example_to_tree_mismatch_recursion(int32_t tree,  int32_t i, DREAL alpha, int32_t *vec, int32_t len_rem, int32_t degree_rec, int32_t mismatch_rec, int32_t max_mismatch, DREAL * weights);
 
 		/** traverse
 		 *
@@ -321,7 +323,7 @@ template <class Trie> class CTrie : public CSGObject
 		 * @param x x
 		 * @param k k
 		 */
-		void traverse(INT tree, const INT p, struct TreeParseInfo info, const INT depth, INT* const x, const INT k);
+		void traverse(int32_t tree, const int32_t p, struct TreeParseInfo info, const int32_t depth, int32_t* const x, const int32_t k);
 
 		/** count
 		 *
@@ -332,7 +334,7 @@ template <class Trie> class CTrie : public CSGObject
 		 * @param x x
 		 * @param k
 		 */
-		void count(const DREAL w, const INT depth, const struct TreeParseInfo info, const INT p, INT* x, const INT k);
+		void count(const DREAL w, const int32_t depth, const struct TreeParseInfo info, const int32_t p, int32_t* x, const int32_t k);
 
 		/** compact nodes
 		 *
@@ -340,7 +342,7 @@ template <class Trie> class CTrie : public CSGObject
 		 * @param depth depth
 		 * @param weights weights
 		 */
-		INT compact_nodes(INT start_node, INT depth, DREAL * weights);
+		int32_t compact_nodes(int32_t start_node, int32_t depth, DREAL * weights);
 
 		/** get cumulative score
 		 *
@@ -350,7 +352,7 @@ template <class Trie> class CTrie : public CSGObject
 		 * @param weights weights
 		 * @return cumulative score
 		 */
-		DREAL get_cumulative_score(INT pos, ULONG seq, INT deg, DREAL* weights);
+		DREAL get_cumulative_score(int32_t pos, ULONG seq, int32_t deg, DREAL* weights);
 
 		/** fill backtracking table recursion
 		 *
@@ -361,7 +363,7 @@ template <class Trie> class CTrie : public CSGObject
 		 * @param table table of concensus entries
 		 * @param weights weights
 		 */
-		void fill_backtracking_table_recursion(Trie* tree, INT depth, ULONG seq, DREAL value, CDynamicArray<ConsensusEntry>* table, DREAL* weights);
+		void fill_backtracking_table_recursion(Trie* tree, int32_t depth, ULONG seq, DREAL value, CDynamicArray<ConsensusEntry>* table, DREAL* weights);
 
 		/** fill backtracking table
 		 *
@@ -371,14 +373,14 @@ template <class Trie> class CTrie : public CSGObject
 		 * @param cumulative if is cumulative
 		 * @param weights weights
 		 */
-		void fill_backtracking_table(INT pos, CDynamicArray<ConsensusEntry>* prev, CDynamicArray<ConsensusEntry>* cur, bool cumulative, DREAL* weights);
+		void fill_backtracking_table(int32_t pos, CDynamicArray<ConsensusEntry>* prev, CDynamicArray<ConsensusEntry>* cur, bool cumulative, DREAL* weights);
 
 		/** POIMs extract W
 		 *
 		 * @param W W
 		 * @param K K
 		 */
-		void POIMs_extract_W(DREAL* const* const W, const INT K);
+		void POIMs_extract_W(DREAL* const* const W, const int32_t K);
 
 		/** POIMs precalc SLR
 		 *
@@ -395,7 +397,9 @@ template <class Trie> class CTrie : public CSGObject
 		 * @param L will point to L
 		 * @param R will point to R
 		 */
-		void POIMs_get_SLR(const INT parentIdx, const INT sym, const int depth, DREAL* S, DREAL* L, DREAL* R);
+		void POIMs_get_SLR(
+			const int32_t parentIdx, const int32_t sym, const int32_t depth,
+			DREAL* S, DREAL* L, DREAL* R);
 
 		/** POIMs add SLR
 		 *
@@ -403,7 +407,7 @@ template <class Trie> class CTrie : public CSGObject
 		 * @param K K
 		 * @param debug debug level
 		 */
-		void POIMs_add_SLR(DREAL* const* const poims, const INT K, const INT debug);
+		void POIMs_add_SLR(DREAL* const* const poims, const int32_t K, const int32_t debug);
 
 		/** get use compact terminal nodes
 		 *
@@ -428,7 +432,7 @@ template <class Trie> class CTrie : public CSGObject
 		 *
 		 * @return number of used nodes
 		 */
-		inline INT get_num_used_nodes()
+		inline int32_t get_num_used_nodes()
 		{
 			return TreeMemPtr;
 		}
@@ -446,19 +450,19 @@ template <class Trie> class CTrie : public CSGObject
 		 *
 		 * @return node
 		 */
-		inline INT get_node(bool last_node=false)
+		inline int32_t get_node(bool last_node=false)
 		{
-			INT ret = TreeMemPtr++;
+			int32_t ret = TreeMemPtr++;
 			check_treemem() ;
 
 			if (last_node)
 			{
-				for (INT q=0; q<4; q++)
+				for (int32_t q=0; q<4; q++)
 					TreeMem[ret].child_weights[q]=0.0;
 			}
 			else
 			{
-				for (INT q=0; q<4; q++)
+				for (int32_t q=0; q<4; q++)
 					TreeMem[ret].children[q]=NO_CHILD;
 			}
 #ifdef TRIE_CHECK_EVERYTHING
@@ -475,8 +479,8 @@ template <class Trie> class CTrie : public CSGObject
 			if (TreeMemPtr+10 < TreeMemPtrMax)
 				return;
 			SG_DEBUG( "Extending TreeMem from %i to %i elements\n",
-					TreeMemPtrMax, (INT) ((double)TreeMemPtrMax*1.2));
-			TreeMemPtrMax = (INT) ((double)TreeMemPtrMax*1.2);
+					TreeMemPtrMax, (int32_t) ((double)TreeMemPtrMax*1.2));
+			TreeMemPtrMax = (int32_t) ((double)TreeMemPtrMax*1.2);
 			TreeMem = (Trie*) realloc(TreeMem,
 					TreeMemPtrMax*sizeof(Trie));
 			if (!TreeMem)
@@ -510,7 +514,9 @@ template <class Trie> class CTrie : public CSGObject
 		 * @param W W
 		 * @param K K
 		 */
-		void POIMs_extract_W_helper(const INT nodeIdx, const int depth, const INT offset, const INT y0, DREAL* const* const W, const INT K);
+		void POIMs_extract_W_helper(
+			const int32_t nodeIdx, const int32_t depth, const int32_t offset,
+			const int32_t y0, DREAL* const* const W, const int32_t K);
 
 		/** POIMs calc SLR helper
 		 *
@@ -524,7 +530,11 @@ template <class Trie> class CTrie : public CSGObject
 		 * @param L L
 		 * @param R R
 		 */
-		void POIMs_calc_SLR_helper1(const DREAL* const distrib, const INT i, const INT nodeIdx, INT left_tries_idx[4], const int depth, INT const lastSym, DREAL* S, DREAL* L, DREAL* R);
+		void POIMs_calc_SLR_helper1(
+			const DREAL* const distrib, const int32_t i, const int32_t nodeIdx,
+			int32_t left_tries_idx[4], const int32_t depth,
+			int32_t const lastSym, DREAL* S, DREAL* L, DREAL* R);
+
 
 		/** POIMs calc SLR helper 2
 		 * @param distrib distribution
@@ -536,7 +546,10 @@ template <class Trie> class CTrie : public CSGObject
 		 * @param L L
 		 * @param R R
 		 */
-		void POIMs_calc_SLR_helper2(const DREAL* const distrib, const INT i, const INT nodeIdx, INT left_tries_idx[4], const int depth, DREAL* S, DREAL* L, DREAL* R);
+		void POIMs_calc_SLR_helper2(
+			const DREAL* const distrib, const int32_t i, const int32_t nodeIdx,
+			int32_t left_tries_idx[4], const int32_t depth, DREAL* S, DREAL* L,
+			DREAL* R);
 
 		/** POIMs add SLR helper 1
 		 *
@@ -548,7 +561,10 @@ template <class Trie> class CTrie : public CSGObject
 		 * @param K K
 		 * @param debug debug level
 		 */
-		void POIMs_add_SLR_helper1(const INT nodeIdx, const int depth, const INT i, const INT y0, DREAL* const* const poims, const INT K, const INT debug);
+		void POIMs_add_SLR_helper1(
+			const int32_t nodeIdx, const int32_t depth,const int32_t i,
+			const int32_t y0, DREAL* const* const poims, const int32_t K,
+			const int32_t debug);
 
 		/** POIMs add SLR helper 2
 		 *
@@ -563,29 +579,33 @@ template <class Trie> class CTrie : public CSGObject
 		 * @param valR value R
 		 * @param debug debug level
 		 */
-		void POIMs_add_SLR_helper2(DREAL* const* const poims, const int K, const int k, const INT i, const INT y, const DREAL valW, const DREAL valS, const DREAL valL, const DREAL valR, const INT debug);
+		void POIMs_add_SLR_helper2(
+			DREAL* const* const poims, const int32_t K, const int32_t k,
+			const int32_t i, const int32_t y, const DREAL valW,
+			const DREAL valS, const DREAL valL, const DREAL valR,
+			const int32_t debug);
 
 	public:
 		/** number of symbols */
-		INT NUM_SYMS;
+		int32_t NUM_SYMS;
 
 	protected:
 		/** length */
-		INT length;
+		int32_t length;
 		/** trees */
-		INT * trees;
+		int32_t * trees;
 
 		/** degree */
-		INT degree;
+		int32_t degree;
 		/** position weights */
 		DREAL const *  position_weights;
 
 		/** tree memory */
 		Trie* TreeMem;
 		/** tree memory pointer */
-		INT TreeMemPtr;
+		int32_t TreeMemPtr;
 		/** tree memory pointer maximum */
-		INT TreeMemPtrMax;
+		int32_t TreeMemPtrMax;
 		/** if compact terminal nodes are used */
 		bool use_compact_terminal_nodes;
 
@@ -593,11 +613,11 @@ template <class Trie> class CTrie : public CSGObject
 		bool weights_in_tree;
 
 		/** nofsKmers */
-		INT* nofsKmers;
+		int32_t* nofsKmers;
 };
 
 	template <class Trie>
-	CTrie<Trie>::CTrie(INT d, bool p_use_compact_terminal_nodes)
+	CTrie<Trie>::CTrie(int32_t d, bool p_use_compact_terminal_nodes)
 	: CSGObject(), degree(d), position_weights(NULL),
 		use_compact_terminal_nodes(p_use_compact_terminal_nodes),
 		weights_in_tree(true)
@@ -621,7 +641,7 @@ template <class Trie> class CTrie : public CSGObject
 		{
 			position_weights = to_copy.position_weights;
 			/*new DREAL[to_copy.length];
-			  for (INT i=0; i<to_copy.length; i++)
+			  for (int32_t i=0; i<to_copy.length; i++)
 			  position_weights[i]=to_copy.position_weights[i]; */
 		}
 		else
@@ -633,8 +653,8 @@ template <class Trie> class CTrie : public CSGObject
 		memcpy(TreeMem, to_copy.TreeMem, TreeMemPtrMax*sizeof(Trie));
 
 		length=to_copy.length;
-		trees=new INT[length];
-		for (INT i=0; i<length; i++)
+		trees=new int32_t[length];
+		for (int32_t i=0; i<length; i++)
 			trees[i]=to_copy.trees[i];
 
 		NUM_SYMS=4;
@@ -652,7 +672,7 @@ const CTrie<Trie> &CTrie<Trie>::operator=(const CTrie<Trie> & to_copy)
 	{
 		position_weights=to_copy.position_weights ;
 		/*position_weights = new DREAL[to_copy.length] ;
-		  for (INT i=0; i<to_copy.length; i++)
+		  for (int32_t i=0; i<to_copy.length; i++)
 		  position_weights[i]=to_copy.position_weights[i] ;*/
 	}
 	else
@@ -667,26 +687,26 @@ const CTrie<Trie> &CTrie<Trie>::operator=(const CTrie<Trie> & to_copy)
 	length = to_copy.length ;
 	if (trees)
 		delete[] trees ;
-	trees=new INT[length] ;		
-	for (INT i=0; i<length; i++)
+	trees=new int32_t[length] ;		
+	for (int32_t i=0; i<length; i++)
 		trees[i]=to_copy.trees[i] ;
 
 	return *this ;
 }
 
 template <class Trie>
-INT CTrie<Trie>::find_deepest_node(INT start_node, INT& deepest_node) const 
+int32_t CTrie<Trie>::find_deepest_node(int32_t start_node, int32_t& deepest_node) const 
 {
 #ifdef TRIE_CHECK_EVERYTHING
-	INT ret=0 ;
+	int32_t ret=0 ;
 	SG_DEBUG("start_node=%i\n", start_node) ;
 
 	if (start_node==NO_CHILD) 
 	{
-		for (INT i=0; i<length; i++)
+		for (int32_t i=0; i<length; i++)
 		{
-			INT my_deepest_node ;
-			INT depth=find_deepest_node(i, my_deepest_node) ;
+			int32_t my_deepest_node ;
+			int32_t depth=find_deepest_node(i, my_deepest_node) ;
 			SG_DEBUG("start_node %i depth=%i\n", i, depth) ;
 			if (depth>ret)
 			{
@@ -699,7 +719,7 @@ INT CTrie<Trie>::find_deepest_node(INT start_node, INT& deepest_node) const
 
 	if (TreeMem[start_node].has_seq)
 	{
-		for (INT q=0; q<16; q++)
+		for (int32_t q=0; q<16; q++)
 			if (TreeMem[start_node].seq[q]!=TRIE_TERMINAL_CHARACTER)
 				ret++ ;
 		deepest_node=start_node ;
@@ -711,12 +731,12 @@ INT CTrie<Trie>::find_deepest_node(INT start_node, INT& deepest_node) const
 		return 1 ;
 	}
 
-	for (INT q=0; q<4; q++)
+	for (int32_t q=0; q<4; q++)
 	{
-		INT my_deepest_node ;
+		int32_t my_deepest_node ;
 		if (TreeMem[start_node].children[q]==NO_CHILD)
 			continue ;
-		INT depth=find_deepest_node(abs(TreeMem[start_node].children[q]), my_deepest_node) ;
+		int32_t depth=find_deepest_node(abs(TreeMem[start_node].children[q]), my_deepest_node) ;
 		if (depth>ret)
 		{
 			deepest_node=my_deepest_node ;
@@ -731,15 +751,15 @@ INT CTrie<Trie>::find_deepest_node(INT start_node, INT& deepest_node) const
 }
 
 	template <class Trie>
-INT CTrie<Trie>::compact_nodes(INT start_node, INT depth, DREAL * weights) 
+int32_t CTrie<Trie>::compact_nodes(int32_t start_node, int32_t depth, DREAL * weights) 
 {
 	SG_ERROR( "code buggy\n") ;
 
-	INT ret=0 ;
+	int32_t ret=0 ;
 
 	if (start_node==NO_CHILD) 
 	{
-		for (INT i=0; i<length; i++)
+		for (int32_t i=0; i<length; i++)
 			compact_nodes(i,1, weights) ;
 		return 0 ;
 	}
@@ -749,8 +769,8 @@ INT CTrie<Trie>::compact_nodes(INT start_node, INT depth, DREAL * weights)
 	if (depth==degree-1)
 	{
 		TRIE_ASSERT_EVERYTHING(TreeMem[start_node].has_floats) ;
-		INT num_used=0 ;
-		for (INT q=0; q<4; q++)
+		int32_t num_used=0 ;
+		for (int32_t q=0; q<4; q++)
 			if (TreeMem[start_node].child_weights[q]!=0.0)
 				num_used++ ;
 		if (num_used>1)
@@ -759,10 +779,10 @@ INT CTrie<Trie>::compact_nodes(INT start_node, INT depth, DREAL * weights)
 	}
 	TRIE_ASSERT_EVERYTHING(!TreeMem[start_node].has_floats) ;
 
-	INT num_used = 0 ;
-	INT q_used=-1 ;
+	int32_t num_used = 0 ;
+	int32_t q_used=-1 ;
 
-	for (INT q=0; q<4; q++)
+	for (int32_t q=0; q<4; q++)
 	{
 		if (TreeMem[start_node].children[q]==NO_CHILD)
 			continue ;
@@ -773,16 +793,16 @@ INT CTrie<Trie>::compact_nodes(INT start_node, INT depth, DREAL * weights)
 	{
 		if (depth>=degree-2)
 			return -1 ;
-		for (INT q=0; q<4; q++)
+		for (int32_t q=0; q<4; q++)
 		{
 			if (TreeMem[start_node].children[q]==NO_CHILD)
 				continue ;
-			INT num=compact_nodes(abs(TreeMem[start_node].children[q]), depth+1, weights) ;
+			int32_t num=compact_nodes(abs(TreeMem[start_node].children[q]), depth+1, weights) ;
 			if (num<=2)
 				continue ;
-			INT node=get_node() ;
+			int32_t node=get_node() ;
 
-			INT last_node=TreeMem[start_node].children[q] ;
+			int32_t last_node=TreeMem[start_node].children[q] ;
 			if (weights_in_tree)
 			{
 				ASSERT(weights[depth]!=0.0) ;
@@ -795,14 +815,14 @@ INT CTrie<Trie>::compact_nodes(INT start_node, INT depth, DREAL * weights)
 			TreeMem[node].has_seq=true ;
 #endif
 			memset(TreeMem[node].seq, TRIE_TERMINAL_CHARACTER, 16) ;
-			for (INT n=0; n<num; n++)
+			for (int32_t n=0; n<num; n++)
 			{
 				ASSERT(depth+n+1<=degree-1) ;
 				ASSERT(last_node!=NO_CHILD) ;
 				if (depth+n+1==degree-1)
 				{
 					TRIE_ASSERT_EVERYTHING(TreeMem[last_node].has_floats) ;
-					INT  k ;
+					int32_t  k ;
 					for (k=0; k<4; k++)
 						if (TreeMem[last_node].child_weights[k]!=0.0)
 							break ;
@@ -814,7 +834,7 @@ INT CTrie<Trie>::compact_nodes(INT start_node, INT depth, DREAL * weights)
 				else
 				{
 					TRIE_ASSERT_EVERYTHING(!TreeMem[last_node].has_floats) ;
-					INT k ;
+					int32_t k ;
 					for (k=0; k<4; k++)
 						if (TreeMem[last_node].children[k]!=NO_CHILD)
 							break ;
@@ -839,7 +859,7 @@ INT CTrie<Trie>::compact_nodes(INT start_node, INT depth, DREAL * weights)
 
 
 	template <class Trie>
-bool CTrie<Trie>::compare_traverse(INT node, const CTrie<Trie> & other, INT other_node) 
+bool CTrie<Trie>::compare_traverse(int32_t node, const CTrie<Trie> & other, int32_t other_node) 
 {
 	SG_DEBUG("checking nodes %i and %i\n", node, other_node) ;
 	if (fabs(TreeMem[node].weight-other.TreeMem[other_node].weight)>=1e-5)
@@ -871,7 +891,7 @@ bool CTrie<Trie>::compare_traverse(INT node, const CTrie<Trie> & other, INT othe
 	}
 	if (other.TreeMem[other_node].has_floats)
 	{
-		for (INT q=0; q<4; q++)
+		for (int32_t q=0; q<4; q++)
 			if (fabs(TreeMem[node].child_weights[q]-other.TreeMem[other_node].child_weights[q])>1e-5)
 			{
 				SG_DEBUG( "CTrie::compare: TreeMem[%i].child_weights[%i]=%e!=other.TreeMem[%i].child_weights[%i]=%e\n", node, q,TreeMem[node].child_weights[q], other_node,q,other.TreeMem[other_node].child_weights[q]) ;
@@ -885,7 +905,7 @@ bool CTrie<Trie>::compare_traverse(INT node, const CTrie<Trie> & other, INT othe
 	}
 	if (other.TreeMem[other_node].has_seq)
 	{
-		for (INT q=0; q<16; q++)
+		for (int32_t q=0; q<16; q++)
 			if ((TreeMem[node].seq[q]!=other.TreeMem[other_node].seq[q]) && ((TreeMem[node].seq[q]<4)||(other.TreeMem[other_node].seq[q]<4)))
 			{
 				SG_DEBUG( "CTrie::compare: TreeMem[%i].seq[%i]=%i!=other.TreeMem[%i].seq[%i]=%i\n", node,q,TreeMem[node].seq[q], other_node,q,other.TreeMem[other_node].seq[q]) ;
@@ -899,7 +919,7 @@ bool CTrie<Trie>::compare_traverse(INT node, const CTrie<Trie> & other, INT othe
 	}
 	if (!other.TreeMem[other_node].has_seq && !other.TreeMem[other_node].has_floats)
 	{
-		for (INT q=0; q<4; q++)
+		for (int32_t q=0; q<4; q++)
 		{
 			if ((TreeMem[node].children[q]==NO_CHILD) && (other.TreeMem[other_node].children[q]==NO_CHILD))
 				continue ;
@@ -928,7 +948,7 @@ bool CTrie<Trie>::compare_traverse(INT node, const CTrie<Trie> & other, INT othe
 bool CTrie<Trie>::compare(const CTrie<Trie> & other)
 {
 	bool ret=true ;
-	for (INT i=0; i<length; i++)
+	for (int32_t i=0; i<length; i++)
 		if (!compare_traverse(trees[i], other, other.trees[i]))
 			return false ;
 		else
@@ -938,7 +958,7 @@ bool CTrie<Trie>::compare(const CTrie<Trie> & other)
 }
 
 template <class Trie>
-bool CTrie<Trie>::find_node(INT node, INT * trace, INT& trace_len) const 
+bool CTrie<Trie>::find_node(int32_t node, int32_t * trace, int32_t& trace_len) const 
 {
 #ifdef TRIE_CHECK_EVERYTHING
 	ASSERT(trace_len-1>=0) ;
@@ -948,11 +968,11 @@ bool CTrie<Trie>::find_node(INT node, INT * trace, INT& trace_len) const
 	if (TreeMem[trace[trace_len-1]].has_floats)
 		return false ;
 
-	for (INT q=0; q<4; q++)
+	for (int32_t q=0; q<4; q++)
 	{
 		if (TreeMem[trace[trace_len-1]].children[q]==NO_CHILD)
 			continue ;
-		INT tl=trace_len+1 ;
+		int32_t tl=trace_len+1 ;
 		if (TreeMem[trace[trace_len-1]].children[q]>=0)
 			trace[trace_len]=TreeMem[trace[trace_len-1]].children[q] ;
 		else
@@ -978,13 +998,13 @@ bool CTrie<Trie>::find_node(INT node, INT * trace, INT& trace_len) const
 }
 
 template <class Trie>
-void CTrie<Trie>::display_node(INT node) const
+void CTrie<Trie>::display_node(int32_t node) const
 {
 #ifdef TRIE_CHECK_EVERYTHING
-	INT * trace=new INT[2*degree] ;
-	INT trace_len=-1 ;
+	int32_t * trace=new int32_t[2*degree] ;
+	int32_t trace_len=-1 ;
 	bool found = false ;
-	INT tree=-1 ;
+	int32_t tree=-1 ;
 	for (tree=0; tree<length; tree++)
 	{
 		trace[0]=trees[tree] ;
@@ -996,10 +1016,10 @@ void CTrie<Trie>::display_node(INT node) const
 	ASSERT(found) ;
 	SG_PRINT( "position %i  trace: ", tree) ;
 
-	for (INT i=0; i<trace_len-1; i++)
+	for (int32_t i=0; i<trace_len-1; i++)
 	{
-		INT branch=-1 ;
-		for (INT q=0; q<4; q++)
+		int32_t branch=-1 ;
+		for (int32_t q=0; q<4; q++)
 			if (abs(TreeMem[trace[i]].children[q])==trace[i+1])
 			{
 				branch=q;
@@ -1012,17 +1032,17 @@ void CTrie<Trie>::display_node(INT node) const
 	SG_PRINT( "\nnode=%i\nweight=%f\nhas_seq=%i\nhas_floats=%i\n", node, TreeMem[node].weight, TreeMem[node].has_seq, TreeMem[node].has_floats) ;
 	if (TreeMem[node].has_floats)
 	{
-		for (INT q=0; q<4; q++)
+		for (int32_t q=0; q<4; q++)
 			SG_PRINT( "child_weighs[%i] = %f\n", q, TreeMem[node].child_weights[q]) ;
 	}
 	if (TreeMem[node].has_seq)
 	{
-		for (INT q=0; q<16; q++)
+		for (int32_t q=0; q<16; q++)
 			SG_PRINT( "seq[%i] = %i\n", q, TreeMem[node].seq[q]) ;
 	}
 	if (!TreeMem[node].has_seq && !TreeMem[node].has_floats)
 	{
-		for (INT q=0; q<4; q++)
+		for (int32_t q=0; q<4; q++)
 		{
 			if (TreeMem[node].children[q]!=NO_CHILD)
 			{
@@ -1054,7 +1074,7 @@ template <class Trie> void CTrie<Trie>::destroy()
 	if (trees!=NULL)
 	{
 		delete_trees();
-		for (INT i=0; i<length; i++)
+		for (int32_t i=0; i<length; i++)
 			trees[i] = NO_CHILD;
 		delete[] trees;
 
@@ -1064,19 +1084,19 @@ template <class Trie> void CTrie<Trie>::destroy()
 	}
 }
 
-template <class Trie> void CTrie<Trie>::set_degree(INT d)
+template <class Trie> void CTrie<Trie>::set_degree(int32_t d)
 {
 	delete_trees(get_use_compact_terminal_nodes());
 	degree=d;
 }
 
-template <class Trie> void CTrie<Trie>::create(INT len, bool p_use_compact_terminal_nodes)
+template <class Trie> void CTrie<Trie>::create(int32_t len, bool p_use_compact_terminal_nodes)
 {
 	destroy();
 
-	trees=new INT[len] ;		
+	trees=new int32_t[len] ;		
 	TreeMemPtr=0 ;
-	for (INT i=0; i<len; i++)
+	for (int32_t i=0; i<len; i++)
 		trees[i]=get_node(degree==1);
 	length = len ;
 
@@ -1090,14 +1110,14 @@ template <class Trie> void CTrie<Trie>::delete_trees(bool p_use_compact_terminal
 		return;
 
 	TreeMemPtr=0 ;
-	for (INT i=0; i<length; i++)
+	for (int32_t i=0; i<length; i++)
 		trees[i]=get_node(degree==1);
 
 	use_compact_terminal_nodes=p_use_compact_terminal_nodes ;
 } 
 
 	template <class Trie>
-DREAL CTrie<Trie>::compute_abs_weights_tree(INT tree, INT depth) 
+DREAL CTrie<Trie>::compute_abs_weights_tree(int32_t tree, int32_t depth) 
 {
 	DREAL ret=0 ;
 
@@ -1109,7 +1129,7 @@ DREAL CTrie<Trie>::compute_abs_weights_tree(INT tree, INT depth)
 	{
 		ret+=(TreeMem[tree].weight) ;
 
-		for (INT k=0; k<4; k++)
+		for (int32_t k=0; k<4; k++)
 			ret+=(TreeMem[tree].child_weights[k]) ;
 
 		return ret ;
@@ -1117,7 +1137,7 @@ DREAL CTrie<Trie>::compute_abs_weights_tree(INT tree, INT depth)
 
 	ret+=(TreeMem[tree].weight) ;
 
-	for (INT i=0; i<4; i++)
+	for (int32_t i=0; i<4; i++)
 		if (TreeMem[tree].children[i]!=NO_CHILD)
 			ret += compute_abs_weights_tree(TreeMem[tree].children[i], depth+1)  ;
 
@@ -1126,17 +1146,17 @@ DREAL CTrie<Trie>::compute_abs_weights_tree(INT tree, INT depth)
 
 
 	template <class Trie>
-DREAL *CTrie<Trie>::compute_abs_weights(int &len) 
+DREAL *CTrie<Trie>::compute_abs_weights(int32_t &len)
 {
 	DREAL * sum=new DREAL[length*4] ;
-	for (INT i=0; i<length*4; i++)
+	for (int32_t i=0; i<length*4; i++)
 		sum[i]=0 ;
 	len=length ;
 
-	for (INT i=0; i<length; i++)
+	for (int32_t i=0; i<length; i++)
 	{
 		TRIE_ASSERT(trees[i]!=NO_CHILD) ;
-		for (INT k=0; k<4; k++)
+		for (int32_t k=0; k<4; k++)
 		{
 			sum[i*4+k]=compute_abs_weights_tree(TreeMem[trees[i]].children[k], 0) ;
 		}
@@ -1146,10 +1166,10 @@ DREAL *CTrie<Trie>::compute_abs_weights(int &len)
 }
 
 	template <class Trie>
-void CTrie<Trie>::add_example_to_tree_mismatch_recursion(INT tree,  INT i, DREAL alpha,
-		INT *vec, INT len_rem, 
-		INT degree_rec, INT mismatch_rec, 
-		INT max_mismatch, DREAL * weights) 
+void CTrie<Trie>::add_example_to_tree_mismatch_recursion(int32_t tree,  int32_t i, DREAL alpha,
+		int32_t *vec, int32_t len_rem, 
+		int32_t degree_rec, int32_t mismatch_rec, 
+		int32_t max_mismatch, DREAL * weights) 
 {
 	if (tree==NO_CHILD)
 		tree=trees[i] ;
@@ -1157,9 +1177,9 @@ void CTrie<Trie>::add_example_to_tree_mismatch_recursion(INT tree,  INT i, DREAL
 
 	if ((len_rem<=0) || (mismatch_rec>max_mismatch) || (degree_rec>degree))
 		return ;
-	const INT other[4][3] = {	{1,2,3},{0,2,3},{0,1,3},{0,1,2} } ;
+	const int32_t other[4][3] = {	{1,2,3},{0,2,3},{0,1,3},{0,1,2} } ;
 
-	INT subtree = NO_CHILD ;
+	int32_t subtree = NO_CHILD ;
 
 	if (degree_rec==degree-1)
 	{
@@ -1170,7 +1190,7 @@ void CTrie<Trie>::add_example_to_tree_mismatch_recursion(INT tree,  INT i, DREAL
 			if (weights[degree_rec]!=0.0)
 				TreeMem[tree].child_weights[vec[0]] += alpha*weights[degree_rec+degree*mismatch_rec]/weights[degree_rec];
 		if (mismatch_rec+1<=max_mismatch)
-			for (INT o=0; o<3; o++)
+			for (int32_t o=0; o<3; o++)
 			{
 				if (weights_in_tree)
 					TreeMem[tree].child_weights[other[vec[0]][o]] += alpha*weights[degree_rec+degree*(mismatch_rec+1)];
@@ -1194,7 +1214,7 @@ void CTrie<Trie>::add_example_to_tree_mismatch_recursion(INT tree,  INT i, DREAL
 		}
 		else 
 		{
-			INT tmp = get_node(degree_rec==degree-2);
+			int32_t tmp = get_node(degree_rec==degree-2);
 			ASSERT(tmp>=0) ;
 			TreeMem[tree].children[vec[0]]=tmp ;
 			subtree=tmp ;
@@ -1217,9 +1237,9 @@ void CTrie<Trie>::add_example_to_tree_mismatch_recursion(INT tree,  INT i, DREAL
 		if (mismatch_rec+1<=max_mismatch)
 		{
 			TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_floats) ;
-			for (INT o=0; o<3; o++)
+			for (int32_t o=0; o<3; o++)
 			{
-				INT ot = other[vec[0]][o] ;
+				int32_t ot = other[vec[0]][o] ;
 				if (TreeMem[tree].children[ot]!=NO_CHILD)
 				{
 					subtree=TreeMem[tree].children[ot] ;
@@ -1231,7 +1251,7 @@ void CTrie<Trie>::add_example_to_tree_mismatch_recursion(INT tree,  INT i, DREAL
 				}
 				else 
 				{
-					INT tmp = get_node(degree_rec==degree-2);
+					int32_t tmp = get_node(degree_rec==degree-2);
 					ASSERT(tmp>=0) ;
 					TreeMem[tree].children[ot]=tmp ;
 					subtree=tmp ;
@@ -1258,7 +1278,7 @@ void CTrie<Trie>::add_example_to_tree_mismatch_recursion(INT tree,  INT i, DREAL
 }
 
 	template <class Trie>
-void CTrie<Trie>::compute_scoring_helper(INT tree, INT i, INT j, DREAL weight, INT d, INT max_degree, INT num_feat, INT num_sym, INT sym_offset, INT offs, DREAL* result)
+void CTrie<Trie>::compute_scoring_helper(int32_t tree, int32_t i, int32_t j, DREAL weight, int32_t d, int32_t max_degree, int32_t num_feat, int32_t num_sym, int32_t sym_offset, int32_t offs, DREAL* result)
 {
 	if (i+j<num_feat)
 	{
@@ -1268,11 +1288,11 @@ void CTrie<Trie>::compute_scoring_helper(INT tree, INT i, INT j, DREAL weight, I
 
 		if (j<degree-1)
 		{
-			for (INT k=0; k<num_sym; k++)
+			for (int32_t k=0; k<num_sym; k++)
 			{
 				if (TreeMem[tree].children[k]!=NO_CHILD)
 				{
-					INT child=TreeMem[tree].children[k];
+					int32_t child=TreeMem[tree].children[k];
 					//continue recursion if not yet at max_degree, else add to result
 					if (d<max_degree-1)
 						compute_scoring_helper(child, i, j+1, weight+decay*TreeMem[child].weight, d+1, max_degree, num_feat, num_sym, sym_offset, num_sym*offs+k, result);
@@ -1287,7 +1307,7 @@ void CTrie<Trie>::compute_scoring_helper(INT tree, INT i, INT j, DREAL weight, I
 		}
 		else if (j==degree-1)
 		{
-			for (INT k=0; k<num_sym; k++)
+			for (int32_t k=0; k<num_sym; k++)
 			{
 				//continue recursion if not yet at max_degree, else add to result
 				if (d<max_degree-1 && i<num_feat-1)
@@ -1300,25 +1320,25 @@ void CTrie<Trie>::compute_scoring_helper(INT tree, INT i, INT j, DREAL weight, I
 }
 
 	template <class Trie>
-void CTrie<Trie>::traverse( INT tree, const INT p, struct TreeParseInfo info, const INT depth, INT* const x, const INT k )
+void CTrie<Trie>::traverse( int32_t tree, const int32_t p, struct TreeParseInfo info, const int32_t depth, int32_t* const x, const int32_t k )
 {
-	const INT num_sym = info.num_sym;
-	const INT y0 = info.y0;
-	const INT y1 = (k==0) ? 0 : y0 - ( (depth<k) ? 0 : info.nofsKmers[k-1] * x[depth-k] );
-	//const INT temp = info.substrs[depth]*num_sym - ( (depth<=k) ? 0 : info.nofsKmers[k] * x[depth-k-1] );
+	const int32_t num_sym = info.num_sym;
+	const int32_t y0 = info.y0;
+	const int32_t y1 = (k==0) ? 0 : y0 - ( (depth<k) ? 0 : info.nofsKmers[k-1] * x[depth-k] );
+	//const int32_t temp = info.substrs[depth]*num_sym - ( (depth<=k) ? 0 : info.nofsKmers[k] * x[depth-k-1] );
 	//if( !( info.y0 == temp ) ) {
 	//  printf( "\n temp=%d y0=%d k=%d depth=%d \n", temp, info.y0, k, depth );
 	//}
 	//ASSERT( info.y0 == temp );
-	INT sym;
+	int32_t sym;
 	ASSERT( depth < degree );
 	//ASSERT( 0 <= info.substrs[depth] && info.substrs[depth] < info.nofsKmers[k] );
 	if (depth<degree-1)
 	{
 		for( sym=0; sym<num_sym; ++sym ) {
-			const INT childNum = TreeMem[tree].children[ sym ];
+			const int32_t childNum = TreeMem[tree].children[ sym ];
 			if( childNum != NO_CHILD ) {
-				INT child = childNum ;
+				int32_t child = childNum ;
 				x[depth] = sym;
 				info.substrs[depth+1] = y0 + sym;
 				info.y0 = (k==0) ? 0 : (y1+sym)*num_sym;
@@ -1348,7 +1368,7 @@ void CTrie<Trie>::traverse( INT tree, const INT p, struct TreeParseInfo info, co
 }
 
 	template <class Trie>
-void CTrie<Trie>::count( const DREAL w, const INT depth, const struct TreeParseInfo info, const INT p, INT* x, const INT k )
+void CTrie<Trie>::count( const DREAL w, const int32_t depth, const struct TreeParseInfo info, const int32_t p, int32_t* x, const int32_t k )
 {
 	ASSERT( fabs(w) < 1e10 );
 	ASSERT( x[depth] >= 0 );
@@ -1357,28 +1377,28 @@ void CTrie<Trie>::count( const DREAL w, const INT depth, const struct TreeParseI
 		return;
 	}
 	//ASSERT( info.margFactors[ depth-k ] == pow( 0.25, depth-k ) );
-	const INT nofKmers = info.nofsKmers[k];
+	const int32_t nofKmers = info.nofsKmers[k];
 	const DREAL margWeight =  w * info.margFactors[ depth-k ];
-	const INT m_a = depth - k + 1;
-	const INT m_b = info.num_feat - p;
-	const INT m = ( m_a < m_b ) ? m_a : m_b;
+	const int32_t m_a = depth - k + 1;
+	const int32_t m_b = info.num_feat - p;
+	const int32_t m = ( m_a < m_b ) ? m_a : m_b;
 	// all proper k-substrings
-	const INT offset0 = nofKmers * p;
-	register INT i;
-	register INT offset;
+	const int32_t offset0 = nofKmers * p;
+	register int32_t i;
+	register int32_t offset;
 	offset = offset0;
 	for( i = 0; i < m; ++i ) {
-		const INT y = info.substrs[i+k+1];
+		const int32_t y = info.substrs[i+k+1];
 		info.C_k[ y + offset ] += margWeight;
 		offset += nofKmers;
 	}
 	if( depth > k ) {
 		// k-prefix
-		const INT offsR = info.substrs[k+1] + offset0;
+		const int32_t offsR = info.substrs[k+1] + offset0;
 		info.R_k[offsR] += margWeight;
 		// k-suffix
 		if( p+depth-k < info.num_feat ) {
-			const INT offsL = info.substrs[depth+1] + nofKmers * (p+depth-k);
+			const int32_t offsL = info.substrs[depth+1] + nofKmers * (p+depth-k);
 			info.L_k[offsL] += margWeight; 
 		}
 	}
@@ -1400,12 +1420,14 @@ void CTrie<Trie>::count( const DREAL w, const INT depth, const struct TreeParseI
 }
 
 	template <class Trie>
-void CTrie<Trie>::add_to_trie(int i, INT seq_offset, INT * vec, float alpha, DREAL *weights, bool degree_times_position_weights)
+void CTrie<Trie>::add_to_trie(
+	int32_t i, int32_t seq_offset, int32_t * vec, float alpha, DREAL *weights,
+	bool degree_times_position_weights)
 {
-	INT tree = trees[i] ;
+	int32_t tree = trees[i] ;
 	//ASSERT(seq_offset==0) ;
 
-	INT max_depth = 0 ;
+	int32_t max_depth = 0 ;
 	DREAL* weights_column ;
 	if (degree_times_position_weights)
 		weights_column = &weights[(i+seq_offset)*degree] ;
@@ -1414,7 +1436,7 @@ void CTrie<Trie>::add_to_trie(int i, INT seq_offset, INT * vec, float alpha, DRE
 
 	if (weights_in_tree)
 	{
-		for (INT j=0; (j<degree) && (i+j<length); j++)
+		for (int32_t j=0; (j<degree) && (i+j<length); j++)
 			if (CMath::abs(weights_column[j]*alpha)>0)
 				max_depth = j+1 ;
 	}
@@ -1422,7 +1444,7 @@ void CTrie<Trie>::add_to_trie(int i, INT seq_offset, INT * vec, float alpha, DRE
 		// don't use the weights
 		max_depth=degree ;
 
-	for (INT j=0; (j<max_depth) && (i+j+seq_offset<length); j++)
+	for (int32_t j=0; (j<max_depth) && (i+j+seq_offset<length); j++)
 	{
 		TRIE_ASSERT((vec[i+j+seq_offset]>=0) && (vec[i+j+seq_offset]<4)) ;
 		if ((j<degree-1) && (TreeMem[tree].children[vec[i+j+seq_offset]]!=NO_CHILD))
@@ -1434,16 +1456,16 @@ void CTrie<Trie>::add_to_trie(int i, INT seq_offset, INT * vec, float alpha, DRE
 				// get the right element
 				TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq) ;
 				TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_floats) ;
-				INT node = - TreeMem[tree].children[vec[i+j+seq_offset]] ;
+				int32_t node = - TreeMem[tree].children[vec[i+j+seq_offset]] ;
 
 				TRIE_ASSERT((node>=0) && (node<=TreeMemPtrMax)) ;
 				TRIE_ASSERT_EVERYTHING(TreeMem[node].has_seq) ;
 				TRIE_ASSERT_EVERYTHING(!TreeMem[node].has_floats) ;
 
 				// check whether the same string is stored
-				INT mismatch_pos = -1 ;
+				int32_t mismatch_pos = -1 ;
 				{
-					INT k ;
+					int32_t k ;
 					for (k=0; (j+k<max_depth) && (i+j+seq_offset+k<length); k++)
 					{
 						TRIE_ASSERT((vec[i+j+seq_offset+k]>=0) && (vec[i+j+seq_offset+k]<4)) ;
@@ -1472,16 +1494,16 @@ void CTrie<Trie>::add_to_trie(int i, INT seq_offset, INT * vec, float alpha, DRE
 					// 2. add a branch with old string (old node) and the new string (new node)
 				{
 					// replace old node
-					INT last_node=tree ;
+					int32_t last_node=tree ;
 
 					// create new nodes until mismatch
-					INT k ;
+					int32_t k ;
 					for (k=0; k<mismatch_pos; k++)
 					{
 						TRIE_ASSERT((vec[i+j+seq_offset+k]>=0) && (vec[i+j+seq_offset+k]<4)) ;
 						TRIE_ASSERT(vec[i+j+seq_offset+k]==TreeMem[node].seq[k]) ;
 
-						INT tmp=get_node();
+						int32_t tmp=get_node();
 						TreeMem[last_node].children[vec[i+j+seq_offset+k]]=tmp ;
 						last_node=tmp ;
 						if (weights_in_tree)
@@ -1500,7 +1522,7 @@ void CTrie<Trie>::add_to_trie(int i, INT seq_offset, INT * vec, float alpha, DRE
 						// init child weights with zero if after dropping out
 						// of the k<mismatch_pos loop we are one level below degree
 						// (keep this even after get_node() change!)
-						for (INT q=0; q<4; q++)
+						for (int32_t q=0; q<4; q++)
 							TreeMem[last_node].child_weights[q]=0.0 ;
 						if (weights_in_tree)
 						{
@@ -1527,7 +1549,7 @@ void CTrie<Trie>::add_to_trie(int i, INT seq_offset, INT * vec, float alpha, DRE
 							TreeMem[last_node].children[TreeMem[node].seq[mismatch_pos]] = -node ;
 
 							// move string by mismatch_pos positions
-							for (INT q=0; q<16; q++)
+							for (int32_t q=0; q<16; q++)
 							{
 								if ((j+q+mismatch_pos<degree) && (i+j+seq_offset+q+mismatch_pos<length))
 									TreeMem[node].seq[q] = TreeMem[node].seq[q+mismatch_pos] ;
@@ -1541,7 +1563,7 @@ void CTrie<Trie>::add_to_trie(int i, INT seq_offset, INT * vec, float alpha, DRE
 
 						// the new branch
 						TRIE_ASSERT((vec[i+j+seq_offset+mismatch_pos]>=0) && (vec[i+j+seq_offset+mismatch_pos]<4)) ;
-						INT tmp = get_node() ;
+						int32_t tmp = get_node() ;
 						TreeMem[last_node].children[vec[i+j+seq_offset+mismatch_pos]] = -tmp ;
 						last_node=tmp ;
 
@@ -1550,7 +1572,7 @@ void CTrie<Trie>::add_to_trie(int i, INT seq_offset, INT * vec, float alpha, DRE
 						TreeMem[last_node].has_seq = true ;
 #endif
 						memset(TreeMem[last_node].seq, TRIE_TERMINAL_CHARACTER, 16) ;
-						for (INT q=0; (j+q+mismatch_pos<degree) && (i+j+seq_offset+q+mismatch_pos<length); q++)
+						for (int32_t q=0; (j+q+mismatch_pos<degree) && (i+j+seq_offset+q+mismatch_pos<length); q++)
 							TreeMem[last_node].seq[q] = vec[i+j+seq_offset+mismatch_pos+q] ;
 					}
 				}
@@ -1585,7 +1607,7 @@ void CTrie<Trie>::add_to_trie(int i, INT seq_offset, INT * vec, float alpha, DRE
 			TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq) ;
 			TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_floats) ;
 
-			INT tmp = get_node((j==degree-2) && (!use_seq));
+			int32_t tmp = get_node((j==degree-2) && (!use_seq));
 			if (use_seq)
 				TreeMem[tree].children[vec[i+j+seq_offset]] = -tmp ;
 			else
@@ -1601,7 +1623,7 @@ void CTrie<Trie>::add_to_trie(int i, INT seq_offset, INT * vec, float alpha, DRE
 				TreeMem[tree].weight = alpha ;
 				// important to have the terminal characters (see ###)
 				memset(TreeMem[tree].seq, TRIE_TERMINAL_CHARACTER, 16) ;
-				for (INT q=0; (j+q<degree) && (i+j+seq_offset+q<length); q++)
+				for (int32_t q=0; (j+q<degree) && (i+j+seq_offset+q<length); q++)
 				{
 					TRIE_ASSERT(q<16) ;
 					TreeMem[tree].seq[q]=vec[i+j+seq_offset+q] ;
@@ -1624,12 +1646,12 @@ void CTrie<Trie>::add_to_trie(int i, INT seq_offset, INT * vec, float alpha, DRE
 }
 
 	template <class Trie>
-DREAL CTrie<Trie>::compute_by_tree_helper(INT* vec, INT len, INT seq_pos, 
-		INT tree_pos,
-		INT weight_pos, DREAL* weights, 
+DREAL CTrie<Trie>::compute_by_tree_helper(int32_t* vec, int32_t len, int32_t seq_pos, 
+		int32_t tree_pos,
+		int32_t weight_pos, DREAL* weights, 
 		bool degree_times_position_weights)
 {
-	INT tree = trees[tree_pos] ;
+	int32_t tree = trees[tree_pos] ;
 
 	if ((position_weights!=NULL) && (position_weights[weight_pos]==0))
 		return 0.0;
@@ -1641,7 +1663,7 @@ DREAL CTrie<Trie>::compute_by_tree_helper(INT* vec, INT len, INT seq_pos,
 		weights_column=weights ;
 
 	DREAL sum=0 ;
-	for (INT j=0; seq_pos+j < len; j++)
+	for (int32_t j=0; seq_pos+j < len; j++)
 	{
 		TRIE_ASSERT((vec[seq_pos+j]<4) && (vec[seq_pos+j]>=0)) ;
 
@@ -1654,7 +1676,7 @@ DREAL CTrie<Trie>::compute_by_tree_helper(INT* vec, INT len, INT seq_pos,
 				TRIE_ASSERT(tree>=0) ;
 				TRIE_ASSERT_EVERYTHING(TreeMem[tree].has_seq) ;
 				DREAL this_weight=0.0 ;
-				for (INT k=0; (j+k<degree) && (seq_pos+j+k<length); k++)
+				for (int32_t k=0; (j+k<degree) && (seq_pos+j+k<length); k++)
 				{
 					TRIE_ASSERT((vec[seq_pos+j+k]<4) && (vec[seq_pos+j+k]>=0)) ;
 					if (TreeMem[tree].seq[k]!=vec[seq_pos+j+k])
@@ -1699,15 +1721,15 @@ DREAL CTrie<Trie>::compute_by_tree_helper(INT* vec, INT len, INT seq_pos,
 }
 
 	template <class Trie>
-void CTrie<Trie>::compute_by_tree_helper(INT* vec, INT len,
-		INT seq_pos, INT tree_pos, 
-		INT weight_pos, 
+void CTrie<Trie>::compute_by_tree_helper(int32_t* vec, int32_t len,
+		int32_t seq_pos, int32_t tree_pos, 
+		int32_t weight_pos, 
 		DREAL* LevelContrib, DREAL factor, 
-		INT mkl_stepsize, 
+		int32_t mkl_stepsize, 
 		DREAL * weights, 
 		bool degree_times_position_weights) 
 {
-	INT tree = trees[tree_pos] ;
+	int32_t tree = trees[tree_pos] ;
 	if (factor==0)
 		return ;
 
@@ -1718,7 +1740,7 @@ void CTrie<Trie>::compute_by_tree_helper(INT* vec, INT len,
 			return ;
 		if (!degree_times_position_weights) // with position_weigths, weights is a vector (1 x degree)
 		{
-			for (INT j=0; seq_pos+j<len; j++)
+			for (int32_t j=0; seq_pos+j<len; j++)
 			{
 				if ((j<degree-1) && (TreeMem[tree].children[vec[seq_pos+j]]!=NO_CHILD))
 				{
@@ -1726,7 +1748,7 @@ void CTrie<Trie>::compute_by_tree_helper(INT* vec, INT len,
 					{
 						tree = -TreeMem[tree].children[vec[seq_pos+j]];
 						TRIE_ASSERT_EVERYTHING(TreeMem[tree].has_seq) ;
-						for (INT k=0; (j+k<degree) && (seq_pos+j+k<length); k++)
+						for (int32_t k=0; (j+k<degree) && (seq_pos+j+k<length); k++)
 						{
 							if (TreeMem[tree].seq[k]!=vec[seq_pos+j+k])
 								break ;
@@ -1762,7 +1784,7 @@ void CTrie<Trie>::compute_by_tree_helper(INT* vec, INT len,
 		} 
 		else // with position_weigths, weights is a matrix (len x degree)
 		{
-			for (INT j=0; seq_pos+j<len; j++)
+			for (int32_t j=0; seq_pos+j<len; j++)
 			{
 				if ((j<degree-1) && (TreeMem[tree].children[vec[seq_pos+j]]!=NO_CHILD))
 				{
@@ -1770,7 +1792,7 @@ void CTrie<Trie>::compute_by_tree_helper(INT* vec, INT len,
 					{
 						tree = -TreeMem[tree].children[vec[seq_pos+j]];
 						TRIE_ASSERT_EVERYTHING(TreeMem[tree].has_seq) ;
-						for (INT k=0; (j+k<degree) && (seq_pos+j+k<length); k++)
+						for (int32_t k=0; (j+k<degree) && (seq_pos+j+k<length); k++)
 						{
 							if (TreeMem[tree].seq[k]!=vec[seq_pos+j+k])
 								break ;
@@ -1808,7 +1830,7 @@ void CTrie<Trie>::compute_by_tree_helper(INT* vec, INT len,
 	}
 	else if (!degree_times_position_weights) // no position_weigths, weights is a vector (1 x degree)
 	{
-		for (INT j=0; seq_pos+j<len; j++)
+		for (int32_t j=0; seq_pos+j<len; j++)
 		{
 			if ((j<degree-1) && (TreeMem[tree].children[vec[seq_pos+j]]!=NO_CHILD))
 			{
@@ -1816,7 +1838,7 @@ void CTrie<Trie>::compute_by_tree_helper(INT* vec, INT len,
 				{
 					tree = -TreeMem[tree].children[vec[seq_pos+j]];
 					TRIE_ASSERT_EVERYTHING(TreeMem[tree].has_seq) ;
-					for (INT k=0; (j+k<degree) && (seq_pos+j+k<length); k++)
+					for (int32_t k=0; (j+k<degree) && (seq_pos+j+k<length); k++)
 					{
 						if (TreeMem[tree].seq[k]!=vec[seq_pos+j+k])
 							break ;
@@ -1856,11 +1878,11 @@ void CTrie<Trie>::compute_by_tree_helper(INT* vec, INT len,
 		/*if (!position_mask)
 		  {		
 		  position_mask = new bool[len] ;
-		  for (INT i=0; i<len; i++)
+		  for (int32_t i=0; i<len; i++)
 		  {
 		  position_mask[i]=false ;
 
-		  for (INT j=0; j<degree; j++)
+		  for (int32_t j=0; j<degree; j++)
 		  if (weights[i*degree+j]!=0.0)
 		  {
 		  position_mask[i]=true ;
@@ -1871,7 +1893,7 @@ void CTrie<Trie>::compute_by_tree_helper(INT* vec, INT len,
 		  if (position_mask[weight_pos]==0)
 		  return ;*/
 
-		for (INT j=0; seq_pos+j<len; j++)
+		for (int32_t j=0; seq_pos+j<len; j++)
 		{
 			if ((j<degree-1) && (TreeMem[tree].children[vec[seq_pos+j]]!=NO_CHILD))
 			{
@@ -1879,7 +1901,7 @@ void CTrie<Trie>::compute_by_tree_helper(INT* vec, INT len,
 				{
 					tree = -TreeMem[tree].children[vec[seq_pos+j]];
 					TRIE_ASSERT_EVERYTHING(TreeMem[tree].has_seq) ;
-					for (INT k=0; (j+k<degree) && (seq_pos+j+k<length); k++)
+					for (int32_t k=0; (j+k<degree) && (seq_pos+j+k<length); k++)
 					{
 						if (TreeMem[tree].seq[k]!=vec[seq_pos+j+k])
 							break ;
@@ -1917,7 +1939,7 @@ void CTrie<Trie>::compute_by_tree_helper(INT* vec, INT len,
 }
 
 	template <class Trie>
-void CTrie<Trie>::fill_backtracking_table_recursion(Trie* tree, INT depth, ULONG seq, DREAL value, CDynamicArray<ConsensusEntry>* table, DREAL* weights)
+void CTrie<Trie>::fill_backtracking_table_recursion(Trie* tree, int32_t depth, ULONG seq, DREAL value, CDynamicArray<ConsensusEntry>* table, DREAL* weights)
 {
 	DREAL w=1.0;
 
@@ -1931,7 +1953,7 @@ void CTrie<Trie>::fill_backtracking_table_recursion(Trie* tree, INT depth, ULONG
 
 	if (degree-1==depth)
 	{
-		for (INT sym=0; sym<4; sym++)
+		for (int32_t sym=0; sym<4; sym++)
 		{
 			DREAL v=w*tree->child_weights[sym];
 			if (v!=0.0)
@@ -1947,7 +1969,7 @@ void CTrie<Trie>::fill_backtracking_table_recursion(Trie* tree, INT depth, ULONG
 	}
 	else
 	{
-		for (INT sym=0; sym<4; sym++)
+		for (int32_t sym=0; sym<4; sym++)
 		{
 			ULONG str=seq | ((ULONG) sym) << (2*(degree-depth-1));
 			if (tree->children[sym] != NO_CHILD)
@@ -1957,22 +1979,22 @@ void CTrie<Trie>::fill_backtracking_table_recursion(Trie* tree, INT depth, ULONG
 }
 
 	template <class Trie>
-DREAL CTrie<Trie>::get_cumulative_score(INT pos, ULONG seq, INT deg, DREAL* weights)
+DREAL CTrie<Trie>::get_cumulative_score(int32_t pos, ULONG seq, int32_t deg, DREAL* weights)
 {
 	DREAL result=0.0;
 
 	//SG_PRINT("pos:%i length:%i deg:%i seq:0x%0llx...\n", pos, length, deg, seq);
 
-	for (INT i=pos; i<pos+deg && i<length; i++)
+	for (int32_t i=pos; i<pos+deg && i<length; i++)
 	{
 		//SG_PRINT("loop %d\n", i);
 		Trie* tree = &TreeMem[trees[i]];
 
-		for (INT d=0; d<deg-i+pos; d++)
+		for (int32_t d=0; d<deg-i+pos; d++)
 		{
 			//SG_PRINT("loop degree %d shit: %d\n", d, (2*(deg-1-d-i+pos)));
 			ASSERT(d-1<degree);
-			INT sym = (INT) (seq >> (2*(deg-1-d-i+pos)) & 3);
+			int32_t sym = (int32_t) (seq >> (2*(deg-1-d-i+pos)) & 3);
 
 			DREAL w=1.0;
 			if (!weights_in_tree)
@@ -1988,7 +2010,7 @@ DREAL CTrie<Trie>::get_cumulative_score(INT pos, ULONG seq, INT deg, DREAL* weig
 }
 
 	template <class Trie>
-void CTrie<Trie>::fill_backtracking_table(INT pos, CDynamicArray<ConsensusEntry>* prev, CDynamicArray<ConsensusEntry>* cur, bool cumulative, DREAL* weights)
+void CTrie<Trie>::fill_backtracking_table(int32_t pos, CDynamicArray<ConsensusEntry>* prev, CDynamicArray<ConsensusEntry>* cur, bool cumulative, DREAL* weights)
 {
 	ASSERT(pos>=0 && pos<length);
 	ASSERT(!use_compact_terminal_nodes);
@@ -2000,8 +2022,8 @@ void CTrie<Trie>::fill_backtracking_table(INT pos, CDynamicArray<ConsensusEntry>
 
 	if (cumulative)
 	{
-		INT num_cur=cur->get_num_elements();
-		for (INT i=0; i<num_cur; i++)
+		int32_t num_cur=cur->get_num_elements();
+		for (int32_t i=0; i<num_cur; i++)
 		{
 			ConsensusEntry entry=cur->get_element(i);
 			entry.score+=get_cumulative_score(pos+1, entry.string, degree-1, weights);
@@ -2014,19 +2036,19 @@ void CTrie<Trie>::fill_backtracking_table(INT pos, CDynamicArray<ConsensusEntry>
 	//for each element in cur and update bt table
 	if (prev)
 	{
-		INT num_cur=cur->get_num_elements();
-		INT num_prev=prev->get_num_elements();
+		int32_t num_cur=cur->get_num_elements();
+		int32_t num_prev=prev->get_num_elements();
 
-		for (INT i=0; i<num_cur; i++)
+		for (int32_t i=0; i<num_cur; i++)
 		{
 			//ULONG str_cur_old= cur->get_element(i).string;
 			ULONG str_cur= cur->get_element(i).string >> 2;
 			//SG_PRINT("...cur:0x%0llx cur_noprfx:0x%0llx...\n", str_cur_old, str_cur);
 
-			INT bt=-1;
+			int32_t bt=-1;
 			DREAL max_score=0.0;
 
-			for (INT j=0; j<num_prev; j++)
+			for (int32_t j=0; j<num_prev; j++)
 			{
 				//ULONG str_prev_old= prev->get_element(j).string;
 				ULONG mask=((((ULONG)0)-1) ^ (((ULONG) 3) << (2*(degree-1))));

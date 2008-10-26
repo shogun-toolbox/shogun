@@ -52,7 +52,7 @@ class CAvgDiagKernelNormalizer : public CKernelNormalizer
 			if (scale<=0)
 			{
 				ASSERT(k);
-				INT num=k->get_num_vec_lhs();
+				int32_t num=k->get_num_vec_lhs();
 				ASSERT(num>0);
 
 				CFeatures* old_lhs=k->lhs;
@@ -61,7 +61,7 @@ class CAvgDiagKernelNormalizer : public CKernelNormalizer
 				k->rhs=old_lhs;
 
 				double sum=0;
-				for (INT i=0; i<num; i++)
+				for (int32_t i=0; i<num; i++)
 					sum+=k->compute(i, i);
 
 				scale=sum/num;
@@ -77,7 +77,7 @@ class CAvgDiagKernelNormalizer : public CKernelNormalizer
 		 * @param idx_lhs index of left hand side vector
 		 * @param idx_rhs index of right hand side vector
 		 */
-		inline virtual DREAL normalize(DREAL value, INT idx_lhs, INT idx_rhs)
+		inline virtual DREAL normalize(DREAL value, int32_t idx_lhs, int32_t idx_rhs)
 		{
 			return value/scale;
 		}
@@ -86,7 +86,7 @@ class CAvgDiagKernelNormalizer : public CKernelNormalizer
 		 * @param value value of a component of the left hand side feature vector
 		 * @param idx_lhs index of left hand side vector
 		 */
-		inline virtual DREAL normalize_lhs(DREAL value, INT idx_lhs)
+		inline virtual DREAL normalize_lhs(DREAL value, int32_t idx_lhs)
 		{
 			return value/sqrt(scale);
 		}
@@ -95,7 +95,7 @@ class CAvgDiagKernelNormalizer : public CKernelNormalizer
 		 * @param value value of a component of the right hand side feature vector
 		 * @param idx_rhs index of right hand side vector
 		 */
-		inline virtual DREAL normalize_rhs(DREAL value, INT idx_rhs)
+		inline virtual DREAL normalize_rhs(DREAL value, int32_t idx_rhs)
 		{
 			return value/sqrt(scale);
 		}

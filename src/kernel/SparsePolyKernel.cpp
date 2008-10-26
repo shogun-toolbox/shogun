@@ -14,14 +14,14 @@
 #include "kernel/SqrtDiagKernelNormalizer.h"
 #include "features/SparseFeatures.h"
 
-CSparsePolyKernel::CSparsePolyKernel(INT size, INT d, bool i)
+CSparsePolyKernel::CSparsePolyKernel(int32_t size, int32_t d, bool i)
 : CSparseKernel<DREAL>(size), degree(d), inhomogene(i)
 {
 	set_normalizer(new CSqrtDiagKernelNormalizer());
 }
 
 CSparsePolyKernel::CSparsePolyKernel(
-	CSparseFeatures<DREAL>* l, CSparseFeatures<DREAL>* r, INT size, INT d, bool i)
+	CSparseFeatures<DREAL>* l, CSparseFeatures<DREAL>* r, int32_t size, int32_t d, bool i)
 : CSparseKernel<DREAL>(size),degree(d),inhomogene(i)
 {
 	set_normalizer(new CSqrtDiagKernelNormalizer());
@@ -54,10 +54,10 @@ bool CSparsePolyKernel::save_init(FILE* dest)
 	return false;
 }
   
-DREAL CSparsePolyKernel::compute(INT idx_a, INT idx_b)
+DREAL CSparsePolyKernel::compute(int32_t idx_a, int32_t idx_b)
 {
-  INT alen=0;
-  INT blen=0;
+  int32_t alen=0;
+  int32_t blen=0;
   bool afree=false;
   bool bfree=false;
 

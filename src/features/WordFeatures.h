@@ -28,7 +28,7 @@ class CWordFeatures : public CSimpleFeatures<uint16_t>
 		 * @param size cache size
 		 * @param num_symbols number of symbols
 		 */
-		CWordFeatures(INT size=0, INT num_symbols=(1<<16));
+		CWordFeatures(int32_t size=0, int32_t num_symbols=(1<<16));
 
 		/** copy constructor */
 		CWordFeatures(const CWordFeatures & orig);
@@ -40,7 +40,7 @@ class CWordFeatures : public CSimpleFeatures<uint16_t>
 		 * @param num_feat number of features
 		 * @param num_vec number of vectors
 		 */
-		inline CWordFeatures(uint16_t* src, INT num_feat, INT num_vec):
+		inline CWordFeatures(uint16_t* src, int32_t num_feat, int32_t num_vec):
             CSimpleFeatures<uint16_t>(0), num_symbols(1<<16),
 			original_num_symbols(1<<16), order(0), symbol_mask_table(NULL)
 		{
@@ -52,7 +52,7 @@ class CWordFeatures : public CSimpleFeatures<uint16_t>
 		 * @param fname filename to load features from
 		 * @param num_sym number of symbols
 		 */
-		CWordFeatures(char* fname, INT num_sym = (1<<16));
+		CWordFeatures(char* fname, int32_t num_sym = (1<<16));
 
 		virtual ~CWordFeatures();
 
@@ -64,7 +64,7 @@ class CWordFeatures : public CSimpleFeatures<uint16_t>
 		 * @param gap gap
 		 * @return if obtaining was successful
 		 */
-		bool obtain_from_char_features(CCharFeatures* cf, INT start, INT order, INT gap=0);
+		bool obtain_from_char_features(CCharFeatures* cf, int32_t start, int32_t order, int32_t gap=0);
 
 		/** get feature matrix
 		 *
@@ -72,7 +72,7 @@ class CWordFeatures : public CSimpleFeatures<uint16_t>
 		 * @param d1 dimension 1 of matrix
 		 * @param d2 dimension 2 of matrix
 		 */
-		inline virtual void get_fm(uint16_t** dst, INT* d1, INT* d2)
+		inline virtual void get_fm(uint16_t** dst, int32_t* d1, int32_t* d2)
 		{
 			CSimpleFeatures<uint16_t>::get_fm(dst, d1, d2);
 		}
@@ -86,7 +86,7 @@ class CWordFeatures : public CSimpleFeatures<uint16_t>
 		 * @param num_feat number of features
 		 * @param num_vec number of vectors
 		 */
-		inline virtual void copy_feature_matrix(uint16_t* src, INT num_feat, INT num_vec)
+		inline virtual void copy_feature_matrix(uint16_t* src, int32_t num_feat, int32_t num_vec)
 		{
 			CSimpleFeatures<uint16_t>::copy_feature_matrix(src, num_feat, num_vec);
 		}
@@ -109,7 +109,7 @@ class CWordFeatures : public CSimpleFeatures<uint16_t>
 		 *
 		 * @return number of symbols
 		 */
-		inline INT get_num_symbols() { return num_symbols; }
+		inline int32_t get_num_symbols() { return num_symbols; }
 
 		// these functions are necessary to find out about a former conversion process
 
@@ -117,13 +117,13 @@ class CWordFeatures : public CSimpleFeatures<uint16_t>
 		 *
 		 * @return original number of symbols
 		 */
-		inline INT get_original_num_symbols() { return original_num_symbols; }
+		inline int32_t get_original_num_symbols() { return original_num_symbols; }
 
 		/** order used for higher order mapping
 		 *
 		 * @return order
 		 */
-		inline INT get_order() { return order; }
+		inline int32_t get_order() { return order; }
 
 		/** a higher order mapped symbol will be shaped such that the symbols in
 		 * specified by bits in the mask will be returned.
@@ -149,17 +149,17 @@ class CWordFeatures : public CSimpleFeatures<uint16_t>
 		 *                require to be stored without loss
 		 * @param gap gap
 		 */
-		void translate_from_single_order(uint16_t* obs, INT sequence_length, INT start, INT order, INT max_val, INT gap=0);
+		void translate_from_single_order(uint16_t* obs, int32_t sequence_length, int32_t start, int32_t order, int32_t max_val, int32_t gap=0);
 
 	protected:
 		/// number of used symbols
-		INT num_symbols;
+		int32_t num_symbols;
 
 		/// original number of used symbols (before higher order mapping)
-		INT original_num_symbols;
+		int32_t original_num_symbols;
 
 		/// order used in higher order mapping
-		INT order;
+		int32_t order;
 
 		/// order used in higher order mapping
 		uint16_t* symbol_mask_table;

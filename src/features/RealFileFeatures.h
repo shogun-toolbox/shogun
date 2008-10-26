@@ -26,14 +26,14 @@ class CRealFileFeatures: public CRealFeatures
 		 * @param size cache size
 		 * @param file file to load features from
 		 */
-		CRealFileFeatures(INT size, FILE* file);
+		CRealFileFeatures(int32_t size, FILE* file);
 
 		/** constructor
 		 *
 		 * @param size cache size
 		 * @param filename filename to load features from
 		 */
-		CRealFileFeatures(INT size, char* filename);
+		CRealFileFeatures(int32_t size, char* filename);
 
 		/** copy constructor */
 		CRealFileFeatures(const CRealFileFeatures& orig);
@@ -51,7 +51,7 @@ class CRealFileFeatures: public CRealFeatures
 		 * @param idx index to look at
 		 * @return label at given index
 		 */
-		INT get_label(INT idx);
+		int32_t get_label(int32_t idx);
 
 	protected:
 		/** compute feature vector for sample num
@@ -61,7 +61,7 @@ class CRealFileFeatures: public CRealFeatures
 		 * @param len len
 		 * @param target target
 		 */
-		virtual DREAL* compute_feature_vector(INT num, INT& len, DREAL* target=NULL);
+		virtual DREAL* compute_feature_vector(int32_t num, int32_t& len, DREAL* target=NULL);
 
 		/** load base data
 		 *
@@ -76,7 +76,7 @@ class CRealFileFeatures: public CRealFeatures
 		/** status */
 		bool status;
 		/** labels */
-		INT* labels;
+		int32_t* labels;
 
 		/** intlen */
 		uint8_t intlen;

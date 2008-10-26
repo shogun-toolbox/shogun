@@ -41,15 +41,15 @@ bool CPluginEstimate::train()
 	pos_model=new CLinearHMM(features);
 	neg_model=new CLinearHMM(features);
 
-	INT* pos_indizes=new INT[((CStringFeatures<uint16_t>*) features)->get_num_vectors()];
-	INT* neg_indizes=new INT[((CStringFeatures<uint16_t>*) features)->get_num_vectors()];
+	int32_t* pos_indizes=new int32_t[((CStringFeatures<uint16_t>*) features)->get_num_vectors()];
+	int32_t* neg_indizes=new int32_t[((CStringFeatures<uint16_t>*) features)->get_num_vectors()];
 
 	ASSERT(labels->get_num_labels()==features->get_num_vectors());
 
-	INT pos_idx=0;
-	INT neg_idx=0;
+	int32_t pos_idx=0;
+	int32_t neg_idx=0;
 
-	for (INT i=0; i<labels->get_num_labels(); i++)
+	for (int32_t i=0; i<labels->get_num_labels(); i++)
 	{
 		if (labels->get_label(i) > 0)
 			pos_indizes[pos_idx++]=i;
@@ -75,17 +75,17 @@ CLabels* CPluginEstimate::classify(CLabels* result)
 		result=new CLabels(features->get_num_vectors());
 	ASSERT(result->get_num_labels()==features->get_num_vectors());
 
-	for (INT vec=0; vec<features->get_num_vectors(); vec++)
+	for (int32_t vec=0; vec<features->get_num_vectors(); vec++)
 		result->set_label(vec, classify_example(vec));
 
 	return result;
 }
 
-DREAL CPluginEstimate::classify_example(INT vec_idx)
+DREAL CPluginEstimate::classify_example(int32_t vec_idx)
 {
 	ASSERT(features);
 
-	INT len;
+	int32_t len;
 	uint16_t* vector=features->get_feature_vector(vec_idx, len);
 
 	if ((!pos_model) || (!neg_model))

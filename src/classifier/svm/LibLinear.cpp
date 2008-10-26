@@ -46,9 +46,9 @@ bool CLibLinear::train()
 
 	CSparseFeatures<DREAL>* sfeat=(CSparseFeatures<DREAL>*) features;
 
-	INT num_train_labels=labels->get_num_labels();
-	INT num_feat=features->get_num_features();
-	INT num_vec=features->get_num_vectors();
+	int32_t num_train_labels=labels->get_num_labels();
+	int32_t num_feat=features->get_num_features();
+	int32_t num_vec=features->get_num_vectors();
 
 	ASSERT(num_vec==num_train_labels);
 	delete[] w;
@@ -74,7 +74,7 @@ bool CLibLinear::train()
 	prob.y=new int[prob.l];
 	prob.use_bias=use_bias;
 
-	for (int i=0; i<prob.l; i++)
+	for (int32_t i=0; i<prob.l; i++)
 		prob.y[i]=labels->get_int_label(i);
 
 	SG_INFO( "%d training points %d dims\n", prob.l, prob.n);
@@ -100,7 +100,7 @@ bool CLibLinear::train()
 		tron_obj.tron(w);
 		DREAL sgn=prob.y[0];
 
-		for (INT i=0; i<w_dim; i++)
+		for (int32_t i=0; i<w_dim; i++)
 			w[i]*=sgn;
 
 		if (use_bias)

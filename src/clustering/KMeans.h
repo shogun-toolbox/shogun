@@ -44,7 +44,7 @@ class CKMeans : public CDistanceMachine
 		 * @param k parameter k
 		 * @param d distance
 		 */
-		CKMeans(INT k, CDistance* d);
+		CKMeans(int32_t k, CDistance* d);
 		virtual ~CKMeans();
 
 		/** get classifier type
@@ -77,7 +77,7 @@ class CKMeans : public CDistanceMachine
 		 *
 		 * @param p_k new k
 		 */
-		inline void set_k(INT p_k)
+		inline void set_k(int32_t p_k)
 		{
 			ASSERT(p_k>0);
 			this->k=p_k;
@@ -87,7 +87,7 @@ class CKMeans : public CDistanceMachine
 		 *
 		 * @return the parameter k
 		 */
-		inline INT get_k()
+		inline int32_t get_k()
 		{
 			return k;
 		}
@@ -96,7 +96,7 @@ class CKMeans : public CDistanceMachine
 		 *
 		 * @param iter the new maximum
 		 */
-		inline void set_max_iter(INT iter)
+		inline void set_max_iter(int32_t iter)
 		{
 			ASSERT(iter>0);
 			max_iter=iter;
@@ -116,7 +116,7 @@ class CKMeans : public CDistanceMachine
 		 * @param radi current radi are stored in here
 		 * @param num number of radi is stored in here
 		 */
-		inline void get_radi(DREAL*& radi, INT& num)
+		inline void get_radi(DREAL*& radi, int32_t& num)
 		{
 			radi=R;
 			num=k;
@@ -128,7 +128,7 @@ class CKMeans : public CDistanceMachine
 		 * @param dim dimensions are stored in here
 		 * @param num number of centers is stored in here
 		 */
-		inline void get_centers(DREAL*& centers, INT& dim, INT& num)
+		inline void get_centers(DREAL*& centers, int32_t& dim, int32_t& num)
 		{
 			centers=mus;
 			dim=dimensions;
@@ -140,7 +140,7 @@ class CKMeans : public CDistanceMachine
 		 * @param radii current radiuses are stored in here
 		 * @param num number of radiuses is stored in here
 		 */
-		inline void get_radiuses(DREAL** radii, INT* num)
+		inline void get_radiuses(DREAL** radii, int32_t* num)
 		{
 			size_t sz=sizeof(*R)*k;
 			*radii=(DREAL*) malloc(sz);
@@ -156,7 +156,7 @@ class CKMeans : public CDistanceMachine
 		 * @param dim dimensions are stored in here
 		 * @param num number of centers is stored in here
 		 */
-		inline void get_cluster_centers(DREAL** centers, INT* dim, INT* num)
+		inline void get_cluster_centers(DREAL** centers, int32_t* dim, int32_t* num)
 		{
 			size_t sz=sizeof(*mus)*dimensions*k;
 			*centers=(DREAL*) malloc(sz);
@@ -171,7 +171,7 @@ class CKMeans : public CDistanceMachine
 		 *
 		 * @return number of dimensions
 		 */
-		inline INT get_dimensions()
+		inline int32_t get_dimensions()
 		{
 			return dimensions;
 		}
@@ -188,8 +188,9 @@ class CKMeans : public CDistanceMachine
 		 * @param n2 n2
 		 * @param m m
 		 */
-		void sqdist(double * x, CRealFeatures* y, double *z,
-				int n1, int offs, int n2, int m);
+		void sqdist(
+			double * x, CRealFeatures* y, double *z, int32_t n1, int32_t offs,
+			int32_t n2, int32_t m);
 
 		/** clustknb
 		 *
@@ -200,13 +201,13 @@ class CKMeans : public CDistanceMachine
 
 	protected:
 		/// maximum number of iterations
-		INT max_iter;
+		int32_t max_iter;
 
 		/// the k parameter in KMeans
-		INT k;
+		int32_t k;
 
 		/// number of dimensions
-		INT dimensions;
+		int32_t dimensions;
 
 		/// radi of the clusters (size k)
 		DREAL* R;

@@ -37,7 +37,7 @@ class CMatchWordStringKernel: public CStringKernel<uint16_t>
 		 * @param size cache size
 		 * @param d degree
 		 */
-		CMatchWordStringKernel(INT size, INT d);
+		CMatchWordStringKernel(int32_t size, int32_t d);
 
 		/** constructor
 		 *
@@ -45,7 +45,7 @@ class CMatchWordStringKernel: public CStringKernel<uint16_t>
 		 * @param r features of right-hand side
 		 * @param degree degree
 		 */
-		CMatchWordStringKernel(CStringFeatures<uint16_t>* l, CStringFeatures<uint16_t>* r, INT degree);
+		CMatchWordStringKernel(CStringFeatures<uint16_t>* l, CStringFeatures<uint16_t>* r, int32_t degree);
 
 		virtual ~CMatchWordStringKernel();
 
@@ -92,11 +92,11 @@ class CMatchWordStringKernel: public CStringKernel<uint16_t>
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		virtual DREAL compute(INT idx_a, INT idx_b);
+		virtual DREAL compute(int32_t idx_a, int32_t idx_b);
 
 	protected:
 		/** degree */
-		INT degree;
+		int32_t degree;
 };
 
 #endif /* _MATCHWORDSTRINGKERNEL_H__ */

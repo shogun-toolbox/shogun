@@ -25,6 +25,7 @@
  ***                                                                        ***
  *** SHOGUN adaptions  Written (W) 2006-2008 Soeren Sonnenburg              ***
  */
-int gpm_solver(int Solver, int Projector, int n, float *A, double *b, double c,
-               double e, int *iy, double *x, double tol, 
-               int *ls = 0, int *proj = 0);
+int32_t gpm_solver(
+	int32_t Solver, int32_t Projector, int32_t n, float *A, double *b, double c,
+	double e, int32_t *iy, double *x, double tol, int32_t *ls = 0,
+	int32_t *proj = 0);

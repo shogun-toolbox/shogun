@@ -15,14 +15,14 @@
 #include "features/StringFeatures.h"
 
 CLocalityImprovedStringKernel::CLocalityImprovedStringKernel(
-	INT size, INT l, INT id, INT od)
+	int32_t size, int32_t l, int32_t id, int32_t od)
 : CStringKernel<char>(size), length(l), inner_degree(id), outer_degree(od)
 {
 	SG_INFO( "LIK with parms: l=%d, id=%d, od=%d created!\n", l, id, od);
 }
 
 CLocalityImprovedStringKernel::CLocalityImprovedStringKernel(
-	CStringFeatures<char>* l, CStringFeatures<char>* r, INT len, INT id, INT od)
+	CStringFeatures<char>* l, CStringFeatures<char>* r, int32_t len, int32_t id, int32_t od)
 : CStringKernel<char>(10), length(len), inner_degree(id), outer_degree(od)
 {
 	SG_INFO( "LIK with parms: l=%d, id=%d, od=%d created!\n", len, id, od);
@@ -51,16 +51,16 @@ bool CLocalityImprovedStringKernel::save_init(FILE* dest)
 	return false;
 }
 
-DREAL CLocalityImprovedStringKernel::compute(INT idx_a, INT idx_b)
+DREAL CLocalityImprovedStringKernel::compute(int32_t idx_a, int32_t idx_b)
 {
-	INT alen, blen;
+	int32_t alen, blen;
 
 	char* avec = ((CStringFeatures<char>*) lhs)->get_feature_vector(idx_a, alen);
 	char* bvec = ((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen);
 	// can only deal with strings of same length
 	ASSERT(alen==blen && alen>0);
 
-	INT i,t;
+	int32_t i,t;
 	DREAL* match=new DREAL[alen];
 
 	// initialize match table 1 -> match;  0 -> no match

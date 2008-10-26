@@ -24,14 +24,14 @@ CLabels* CKernelMachine::classify(CLabels* output)
 {
 	if (kernel && kernel->has_features())
 	{
-		INT num=kernel->get_num_vec_rhs();
+		int32_t num=kernel->get_num_vec_rhs();
 		ASSERT(num>0);
 
 		if (!output)
 			output=new CLabels(num);
 		ASSERT(output->get_num_labels()==num);
 
-		for (INT i=0; i<num; i++)
+		for (int32_t i=0; i<num; i++)
 			output->set_label(i, classify_example(i));
 
 		return output;

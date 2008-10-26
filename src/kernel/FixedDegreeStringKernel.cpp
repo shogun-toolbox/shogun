@@ -15,14 +15,14 @@
 #include "features/StringFeatures.h"
 #include "lib/io.h"
 
-CFixedDegreeStringKernel::CFixedDegreeStringKernel(INT size, INT d)
+CFixedDegreeStringKernel::CFixedDegreeStringKernel(int32_t size, int32_t d)
 : CStringKernel<char>(size), degree(d)
 {
 	set_normalizer(new CSqrtDiagKernelNormalizer());
 }
 
 CFixedDegreeStringKernel::CFixedDegreeStringKernel(
-	CStringFeatures<char>* l, CStringFeatures<char>* r, INT d)
+	CStringFeatures<char>* l, CStringFeatures<char>* r, int32_t d)
 : CStringKernel<char>(10), degree(d)
 {
 	set_normalizer(new CSqrtDiagKernelNormalizer());
@@ -55,9 +55,9 @@ bool CFixedDegreeStringKernel::save_init(FILE* dest)
 	return false;
 }
 
-DREAL CFixedDegreeStringKernel::compute(INT idx_a, INT idx_b)
+DREAL CFixedDegreeStringKernel::compute(int32_t idx_a, int32_t idx_b)
 {
-	INT alen, blen;
+	int32_t alen, blen;
 
 	char* avec = ((CStringFeatures<char>*) lhs)->get_feature_vector(idx_a, alen);
 	char* bvec = ((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen);
@@ -66,11 +66,11 @@ DREAL CFixedDegreeStringKernel::compute(INT idx_a, INT idx_b)
 	ASSERT(alen==blen);
 
 	LONG sum = 0;
-	for (INT i = 0; i<alen-degree+1; i++)
+	for (int32_t i = 0; i<alen-degree+1; i++)
 	{
 		bool match = true;
 
-		for (INT j = i; j<i+degree && match; j++)
+		for (int32_t j = i; j<i+degree && match; j++)
 			match = avec[j]==bvec[j];
 		if (match)
 			sum++;

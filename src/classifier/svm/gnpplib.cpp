@@ -29,7 +29,7 @@
 #define INDEX(ROW,COL,DIM) ((COL*DIM)+ROW)
 
 
-CGNPPLib::CGNPPLib(DREAL* vector_y, CKernel* kernel, INT num_data, DREAL reg_const)
+CGNPPLib::CGNPPLib(DREAL* vector_y, CKernel* kernel, int32_t num_data, DREAL reg_const)
 : CSGObject()
 {
   m_reg_const = reg_const;
@@ -47,7 +47,7 @@ CGNPPLib::CGNPPLib(DREAL* vector_y, CKernel* kernel, INT num_data, DREAL reg_con
   kernel_columns = new DREAL*[Cache_Size];
   cache_index = new DREAL[Cache_Size];
 
-  for(INT i = 0; i < Cache_Size; i++ ) 
+  for(int32_t i = 0; i < Cache_Size; i++ ) 
   {
     kernel_columns[i] = new DREAL[num_data];
     cache_index[i] = -2;
@@ -58,7 +58,7 @@ CGNPPLib::CGNPPLib(DREAL* vector_y, CKernel* kernel, INT num_data, DREAL reg_con
 
 CGNPPLib::~CGNPPLib()
 {
-  for(INT i = 0; i < Cache_Size; i++ ) 
+  for(int32_t i = 0; i < Cache_Size; i++ ) 
       delete[] kernel_columns[i];
 
   delete[] cache_index;
@@ -71,20 +71,20 @@ CGNPPLib::~CGNPPLib()
  Usage: exitflag = gnpp_mdm( diag_H, vector_c, vector_y,
        dim, tmax, tolabs, tolrel, th, &alpha, &t, &aHa11, &aHa22, &History );
 -------------------------------------------------------------- */
-int CGNPPLib::gnpp_mdm(double *diag_H,
+int8_t CGNPPLib::gnpp_mdm(double *diag_H,
                        double *vector_c,
                        double *vector_y,
-                       INT dim, 
-                       INT tmax,
+                       int32_t dim,
+                       int32_t tmax,
                        double tolabs,
                        double tolrel,
                        double th,
                        double *alpha,
-                       INT  *ptr_t, 
+                       int32_t  *ptr_t,
                        double *ptr_aHa11,
                        double *ptr_aHa22,
                        double **ptr_History,
-                       INT verb)
+                       int32_t verb)
 {
   double LB;
   double UB;
@@ -105,7 +105,7 @@ int CGNPPLib::gnpp_mdm(double *diag_H,
   long i;
   long t;
   long History_size;
-  int exitflag;
+  int8_t exitflag;
 
   /* ------------------------------------------------------------ */
   /* Initialization                                               */
@@ -336,20 +336,20 @@ int CGNPPLib::gnpp_mdm(double *diag_H,
  Usage: exitflag = gnpp_imdm( diag_H, vector_c, vector_y,
        dim, tmax, tolabs, tolrel, th, &alpha, &t, &aHa11, &aHa22, &History );
 -------------------------------------------------------------- */
-int CGNPPLib::gnpp_imdm(double *diag_H,
+int8_t CGNPPLib::gnpp_imdm(double *diag_H,
             double *vector_c,
             double *vector_y,
-            INT dim, 
-            INT tmax,
+            int32_t dim,
+            int32_t tmax,
             double tolabs,
             double tolrel,
             double th,
             double *alpha,
-            INT  *ptr_t, 
+            int32_t  *ptr_t,
             double *ptr_aHa11,
             double *ptr_aHa22,
             double **ptr_History,
-            INT verb)
+            int32_t verb)
 {
   double LB;
   double UB;
@@ -371,8 +371,8 @@ int CGNPPLib::gnpp_imdm(double *diag_H,
   long i;
   long t;
   long History_size;
-  int exitflag;
-  int which_case;
+  int8_t exitflag;
+  int8_t which_case;
 
   /* ------------------------------------------------------------ */
   /* Initialization                                               */

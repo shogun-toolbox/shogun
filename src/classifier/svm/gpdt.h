@@ -83,11 +83,11 @@ class sKernel
 {
 public:
   /** kernel type */
-  int    ker_type;
+  int32_t  ker_type;
   /** lx */
-  int    *lx;
+  int32_t  *lx;
   /** ix */
-  int    **ix;
+  int32_t  **ix;
   /** x */
   float  **x;
   /** nor */
@@ -109,14 +109,14 @@ public:
    * @param j
    * @return something floaty
    */
-  double (sKernel::*kernel_fun)(int i, int j);
+  double (sKernel::*kernel_fun)(int32_t i, int32_t j);
 
   /** constructor
    *
    * @param k kernel
    * @param ell ell
    */
-  sKernel (CKernel* k, int ell);
+  sKernel (CKernel* k, int32_t ell);
   ~sKernel();
 
   /** set data
@@ -127,7 +127,8 @@ public:
    * @param ell new ell
    * @param dim dim
    */
-  void   SetData       (float **x_, int **ix_, int *lx_, int ell, int dim);
+  void SetData(
+	float **x_, int32_t **ix_, int32_t *lx_, int32_t ell, int32_t dim);
 
   /** set subproblem
    *
@@ -135,7 +136,7 @@ public:
    * @param len len
    * @param perm perm
    */
-  void   SetSubproblem (sKernel* ker, int len, int *perm);
+  void   SetSubproblem (sKernel* ker, int32_t len, int32_t *perm);
 
   /** get an item from the kernel
    *
@@ -143,7 +144,7 @@ public:
    * @param j index j
    * @return item from kernel at index i, j
    */
-  double Get(int i, int j)
+  double Get(int32_t i, int32_t j)
   {
     KernelEvaluations += 1.0F;
     return kernel->kernel(i, j);
@@ -155,7 +156,7 @@ public:
    * @param j j
    * @param mul mul
    */
-  void   Add           (double *v, int j, double mul);
+  void   Add           (double *v, int32_t j, double mul);
 
   /** prod something
    *
@@ -163,7 +164,7 @@ public:
    * @param j j
    * @return something floaty
    */
-  double Prod          (double *v, int j);
+  double Prod          (double *v, int32_t j);
 
   /** get kernel
    *
@@ -176,16 +177,17 @@ public:
 
 private:
   CKernel* kernel;
-  int    vauxRow;
-  int    IsSubproblem;
-  int    ell, dim;
+  int32_t    vauxRow;
+  int32_t    IsSubproblem;
+  int32_t    ell, dim;
   float  *vaux;
 
-  double dot     (int i, int j);
+  double dot     (int32_t i, int32_t j);
 };
 
-void SplitParts (int n, int part, int parts, int *dim, int *off);
-void SplitNum   (int n, int *nloc, int *noff);
+void SplitParts (
+	int32_t n, int32_t part, int32_t parts, int32_t *dim, int32_t *off);
+void SplitNum   (int32_t n, int32_t *nloc, int32_t *noff);
 
 /******************************************************************************/
 /*** End of gpdt.h file                                                     ***/

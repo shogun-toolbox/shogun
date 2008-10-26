@@ -36,20 +36,20 @@ CHistogram::~CHistogram()
 
 bool CHistogram::train()
 {
-	INT vec;
-	INT feat;
-	INT i;
+	int32_t vec;
+	int32_t feat;
+	int32_t i;
 
 	ASSERT(features);
 	ASSERT(features->get_feature_class()==C_STRING);
 	ASSERT(features->get_feature_type()==F_WORD);
 
-	for (i=0; i< (INT) (1<<16); i++)
+	for (i=0; i< (int32_t) (1<<16); i++)
 		hist[i]=0;
 
 	for (vec=0; vec<features->get_num_vectors(); vec++)
 	{
-		INT len;
+		int32_t len;
 
 		uint16_t* vector=((CStringFeatures<uint16_t>*) features)->get_feature_vector(vec, len);
 
@@ -57,30 +57,30 @@ bool CHistogram::train()
 			hist[vector[feat]]++;
 	}
 
-	for (i=0; i< (INT) (1<<16); i++)
+	for (i=0; i< (int32_t) (1<<16); i++)
 		hist[i]=log(hist[i]);
 
 	return true;
 }
 
-DREAL CHistogram::get_log_likelihood_example(INT num_example)
+DREAL CHistogram::get_log_likelihood_example(int32_t num_example)
 {
 	ASSERT(features);
 	ASSERT(features->get_feature_class()==C_STRING);
 	ASSERT(features->get_feature_type()==F_WORD);
 
-	INT len;
+	int32_t len;
 	DREAL loglik=0;
 
 	uint16_t* vector=((CStringFeatures<uint16_t>*) features)->get_feature_vector(num_example, len);
 
-	for (INT i=0; i<len; i++)
+	for (int32_t i=0; i<len; i++)
 		loglik+=hist[vector[i]];
 
 	return loglik;
 }
 
-DREAL CHistogram::get_log_derivative(INT num_param, INT num_example)
+DREAL CHistogram::get_log_derivative(int32_t num_param, int32_t num_example)
 {
 	if (hist[num_param] < CMath::ALMOST_NEG_INFTY)
 		return -CMath::INFTY;
@@ -90,14 +90,14 @@ DREAL CHistogram::get_log_derivative(INT num_param, INT num_example)
 		ASSERT(features->get_feature_class()==C_STRING);
 		ASSERT(features->get_feature_type()==F_WORD);
 
-		INT len;
+		int32_t len;
 		DREAL deriv=0;
 
 		uint16_t* vector=((CStringFeatures<uint16_t>*) features)->get_feature_vector(num_example, len);
 
-		INT num_occurences=0;
+		int32_t num_occurences=0;
 
-		for (INT i=0; i<len; i++)
+		for (int32_t i=0; i<len; i++)
 		{
 			deriv+=hist[vector[i]];
 
@@ -114,25 +114,25 @@ DREAL CHistogram::get_log_derivative(INT num_param, INT num_example)
 	}
 }
 
-DREAL CHistogram::get_log_model_parameter(INT num_param)
+DREAL CHistogram::get_log_model_parameter(int32_t num_param)
 {
 	return hist[num_param];
 }
 
-bool CHistogram::set_histogram(DREAL* src, INT num)
+bool CHistogram::set_histogram(DREAL* src, int32_t num)
 {
 	ASSERT(num==get_num_model_parameters());
 
 	delete[] hist;
 	hist=new DREAL[num];
-	for (INT i=0; i<num; i++) {
+	for (int32_t i=0; i<num; i++) {
 		hist[i]=src[i];
 	}
 
 	return true;
 }
 
-void CHistogram::get_histogram(DREAL** dst, INT* num)
+void CHistogram::get_histogram(DREAL** dst, int32_t* num)
 {
 	*num=get_num_model_parameters();
 	size_t sz=sizeof(*hist)*(*num);

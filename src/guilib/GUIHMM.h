@@ -28,7 +28,7 @@ class CGUIHMM : public CSGObject
 		~CGUIHMM();
 
 		/** create new HMM */
-		bool new_hmm(INT n, INT m);
+		bool new_hmm(int32_t n, int32_t m);
 		/** load HMM from file */
 		bool load(char* filename);
 		/** save HMM to file */
@@ -55,22 +55,22 @@ class CGUIHMM : public CSGObject
 				bool is_pos_linear, bool is_neg_linear);
 		bool hmm_classify(char* param);
 		/** append HMM/model for CmdlineInterface */
-		bool append_model(char* filename, INT base1=-1, INT base2=-1);
+		bool append_model(char* filename, int32_t base1=-1, int32_t base2=-1);
 		/** add states to HMM */
-		bool add_states(INT num_states=1, DREAL value=0);
+		bool add_states(int32_t num_states=1, DREAL value=0);
 		/** set HMM as POS/NEG/TEST */
 		bool set_hmm_as(char* target);
 		/** set HMM pseudo */
 		bool set_pseudo(DREAL pseudo);
 		/** set convergence criteria */
 		bool convergence_criteria(
-			INT num_iterations=100, DREAL epsilon=0.001);
+			int32_t num_iterations=100, DREAL epsilon=0.001);
 		/** output HMM */
 		bool output_hmm();
 		/** output HMM defined */
 		bool output_hmm_defined();
 		/** print best path */
-		bool best_path(INT from=0, INT to=100);
+		bool best_path(int32_t from=0, int32_t to=100);
 		bool normalize(bool keep_dead_states=false);
 		bool save_path(char* filename, bool is_binary=false);
 		/** save HMM likelihood  to file */
@@ -81,10 +81,10 @@ class CGUIHMM : public CSGObject
 		bool likelihood();
 		/** chop HMM */
 		bool chop(DREAL value);
-		bool relative_entropy(DREAL*& values, INT& len);
-		bool entropy(DREAL*& values, INT& len);
+		bool relative_entropy(DREAL*& values, int32_t& len);
+		bool entropy(DREAL*& values, int32_t& len);
 		/** define permutation entropy */
-		bool permutation_entropy(INT width=0, INT seq_num=-1);
+		bool permutation_entropy(int32_t width=0, int32_t seq_num=-1);
 		inline CHMM* get_pos() { return pos; }
 		inline CHMM* get_neg() { return neg; }
 		inline CHMM* get_test() { return test; }
@@ -93,10 +93,10 @@ class CGUIHMM : public CSGObject
 		inline DREAL get_pseudo() { return PSEUDO; }
 
 		CLabels* classify(CLabels* output=NULL);
-		DREAL classify_example(INT idx);
+		DREAL classify_example(int32_t idx);
 		CLabels* one_class_classify(CLabels* output=NULL);
 		CLabels* linear_one_class_classify(CLabels* output=NULL);
-		DREAL one_class_classify_example(INT idx);
+		DREAL one_class_classify_example(int32_t idx);
 
 	protected:
 		bool converge(double x, double y);
@@ -109,7 +109,7 @@ class CGUIHMM : public CSGObject
 		CHMM* test;
 
 		DREAL PSEUDO;
-		INT M;
+		int32_t M;
 
 	protected:
 		CSGInterface* ui;

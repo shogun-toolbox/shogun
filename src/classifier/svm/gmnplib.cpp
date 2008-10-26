@@ -75,7 +75,7 @@ gmnplib.c: Library of solvers for Generalized Minimal Norm Problem (GMNP).
 #define KDELTA(A,B) (A==B)
 #define KDELTA4(A1,A2,A3,A4) ((A1==A2)||(A1==A3)||(A1==A4)||(A2==A3)||(A2==A4)||(A3==A4))
 
-CGMNPLib::CGMNPLib(DREAL* vector_y, CKernel* kernel, INT num_data, INT num_virt_data, INT num_classes, DREAL reg_const)
+CGMNPLib::CGMNPLib(DREAL* vector_y, CKernel* kernel, int32_t num_data, int32_t num_virt_data, int32_t num_classes, DREAL reg_const)
 : CSGObject()
 {
   m_num_classes=num_classes;
@@ -95,7 +95,7 @@ CGMNPLib::CGMNPLib(DREAL* vector_y, CKernel* kernel, INT num_data, INT num_virt_
   kernel_columns = new DREAL*[Cache_Size];
   cache_index = new DREAL[Cache_Size];
 
-  for(INT i = 0; i < Cache_Size; i++ ) 
+  for(int32_t i = 0; i < Cache_Size; i++ ) 
   {
     kernel_columns[i] = new DREAL[num_data];
     cache_index[i] = -2;
@@ -104,7 +104,7 @@ CGMNPLib::CGMNPLib(DREAL* vector_y, CKernel* kernel, INT num_data, INT num_virt_
 
 
 
-  for(INT i = 0; i < 3; i++ )
+  for(int32_t i = 0; i < 3; i++ )
   {
     virt_columns[i] = new DREAL[num_virt_data];
   }
@@ -112,16 +112,16 @@ CGMNPLib::CGMNPLib(DREAL* vector_y, CKernel* kernel, INT num_data, INT num_virt_
 
   diag_H = new DREAL[num_virt_data];
 
-  for(INT i = 0; i < num_virt_data; i++ )
+  for(int32_t i = 0; i < num_virt_data; i++ )
 	  diag_H[i] = kernel_fce(i,i);
 }
 
 CGMNPLib::~CGMNPLib()
 {
-	for(INT i = 0; i < Cache_Size; i++ ) 
+	for(int32_t i = 0; i < Cache_Size; i++ ) 
 		delete[] kernel_columns[i];
 
-	for(INT i = 0; i < 3; i++ ) 
+	for(int32_t i = 0; i < 3; i++ ) 
 		delete[] virt_columns[i];
 
 	delete[] cache_index;
@@ -134,11 +134,11 @@ CGMNPLib::~CGMNPLib()
   Returns pointer at a-th column of the kernel matrix.
   This function maintains FIFO cache of kernel columns.
 ------------------------------------------------------------ */
-DREAL* CGMNPLib::get_kernel_col( INT a ) 
+DREAL* CGMNPLib::get_kernel_col( int32_t a ) 
 {
   double *col_ptr;
-  INT i;
-  INT inx;
+  int32_t i;
+  int32_t inx;
 
   inx = -1;
   for( i=0; i < Cache_Size; i++ ) {
@@ -167,7 +167,7 @@ DREAL* CGMNPLib::get_kernel_col( INT a )
   Computes index of input example and its class label from 
   index of virtual "single-class" example.
 ------------------------------------------------------------ */
-void CGMNPLib::get_indices2( INT *index, INT *c, INT i )
+void CGMNPLib::get_indices2( int32_t *index, int32_t *c, int32_t i )
 {
    *index = i / (m_num_classes-1);
  
@@ -185,13 +185,13 @@ void CGMNPLib::get_indices2( INT *index, INT *c, INT i )
    updating but b is from (a(t-2), a(t-1)) where a=a(t) and
    thus FIFO with three columns does not have to take care od b.)
 ------------------------------------------------------------ */
-DREAL* CGMNPLib::get_col( INT a, INT b )
+DREAL* CGMNPLib::get_col( int32_t a, int32_t b )
 {
-  INT i;
+  int32_t i;
   double *col_ptr;
   double *ker_ptr;
   double value;
-  INT i1,c1,i2,c2;
+  int32_t i1,c1,i2,c2;
 
   col_ptr = virt_columns[first_virt_inx++];
   if( first_virt_inx >= 3 ) first_virt_inx = 0;
@@ -233,16 +233,16 @@ DREAL* CGMNPLib::get_col( INT a, INT b )
                   tmax, tolabs, tolrel, th, &alpha, &t, &History );
 -------------------------------------------------------------- */
 
-int CGMNPLib::gmnp_imdm(double *vector_c,
-            INT dim, 
-            INT tmax,
+int8_t CGMNPLib::gmnp_imdm(double *vector_c,
+            int32_t dim, 
+            int32_t tmax,
             double tolabs,
             double tolrel,
             double th,
             double *alpha,
-            INT  *ptr_t,
+            int32_t  *ptr_t,
             double **ptr_History,
-            INT verb)
+            int32_t verb)
 {
   double LB;
   double UB;
@@ -256,13 +256,13 @@ int CGMNPLib::gmnp_imdm(double *vector_c,
   double *Ha;
   double *tmp_ptr;
   double *col_u, *col_v;
-  INT u=0;
-  INT v=0;
-  INT new_u=0;
-  INT i;
-  INT t;
-  INT History_size;
-  int exitflag;
+  int32_t u=0;
+  int32_t v=0;
+  int32_t new_u=0;
+  int32_t i;
+  int32_t t;
+  int32_t History_size;
+  int8_t exitflag;
 
   /* ------------------------------------------------------------ */
   /* Initialization                                               */
@@ -445,10 +445,10 @@ int CGMNPLib::gmnp_imdm(double *vector_c,
   Retures (a,b)-th element of the virtual kernel matrix 
   of size [num_virt_data x num_virt_data]. 
 ------------------------------------------------------------ */
-double CGMNPLib::kernel_fce( INT a, INT b )
+double CGMNPLib::kernel_fce( int32_t a, int32_t b )
 {
   double value;
-  INT i1,c1,i2,c2;
+  int32_t i1,c1,i2,c2;
 
   get_indices2( &i1, &c1, a );
   get_indices2( &i2, &c2, b );

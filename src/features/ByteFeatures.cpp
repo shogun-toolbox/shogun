@@ -12,13 +12,13 @@
 #include "lib/common.h"
 #include "lib/File.h"
 
-CByteFeatures::CByteFeatures(EAlphabet a, INT size)
+CByteFeatures::CByteFeatures(EAlphabet a, int32_t size)
 : CSimpleFeatures<uint8_t>(size)
 {
 	alphabet=new CAlphabet(a);
 }
 
-CByteFeatures::CByteFeatures(CAlphabet* a, INT size)
+CByteFeatures::CByteFeatures(CAlphabet* a, int32_t size)
 : CSimpleFeatures<uint8_t>(size)
 {
 	alphabet=a;
@@ -30,7 +30,7 @@ CByteFeatures::CByteFeatures(const CByteFeatures & orig)
 	alphabet=orig.alphabet;
 }
 
-CByteFeatures::CByteFeatures(EAlphabet a, uint8_t* fm, INT num_feat, INT num_vec)
+CByteFeatures::CByteFeatures(EAlphabet a, uint8_t* fm, int32_t num_feat, int32_t num_vec)
 : CSimpleFeatures<uint8_t>(fm, num_feat, num_vec)
 {
 	alphabet=new CAlphabet(a);
@@ -77,9 +77,9 @@ bool CByteFeatures::load(char* fname)
 
 		if (length && (num_vectors*linelen==length))
 		{
-			for (INT lines=0; lines<num_vectors; lines++)
+			for (int32_t lines=0; lines<num_vectors; lines++)
 			{
-				for (INT columns=0; columns<num_features; columns++)
+				for (int32_t columns=0; columns<num_features; columns++)
 					feature_matrix[lines*num_features+columns]=feature_matrix[lines*linelen+columns];
 
 				if (feature_matrix[lines*linelen+num_features]!='\n')

@@ -29,14 +29,14 @@ CGUIStructure::~CGUIStructure()
 {
 }
 
-bool CGUIStructure::set_plif_struct(INT N, INT M, DREAL* all_limits,
-				DREAL* all_penalties, INT* ids, T_STRING<char>* names,
+bool CGUIStructure::set_plif_struct(int32_t N, int32_t M, DREAL* all_limits,
+				DREAL* all_penalties, int32_t* ids, T_STRING<char>* names,
 				DREAL* min_values, DREAL* max_values, bool* all_use_cache,
-				INT* all_use_svm, T_STRING<char>* all_transform)
+				int32_t* all_use_svm, T_STRING<char>* all_transform)
 {
 	// cleanup 
 	//SG_PRINT("set_plif_struct, N:%i\n",N);
-	for (INT i=0; i<m_num_plifs; i++)	
+	for (int32_t i=0; i<m_num_plifs; i++)	
 		delete m_PEN[i];
 	delete[] m_PEN;
 	m_PEN=NULL;
@@ -45,19 +45,19 @@ bool CGUIStructure::set_plif_struct(INT N, INT M, DREAL* all_limits,
 	m_num_plifs=N;
 	m_num_limits=M;
 	m_PEN = new CPlif*[N] ;
-	for (INT i=0; i<N; i++)	
+	for (int32_t i=0; i<N; i++)	
 		m_PEN[i]=new CPlif() ;
 
-	for (INT i=0; i<N; i++)
+	for (int32_t i=0; i<N; i++)
 	{
 		DREAL* limits = new DREAL[M];
 		DREAL* penalties = new DREAL[M];
-		for (INT k=0; k<M; k++)
+		for (int32_t k=0; k<M; k++)
 		{
 			limits[k] = all_limits[i*M+k];
 			penalties[k] = all_penalties[i*M+k];
 		}
-		INT id = ids[i];
+		int32_t id = ids[i];
 		if (id>=N)
 			SG_ERROR("plif id (%i)  exceeds array length (%i)\n",id,N);
 		m_PEN[id]->set_id(id);
@@ -83,13 +83,13 @@ bool CGUIStructure::set_plif_struct(INT N, INT M, DREAL* all_limits,
 
 	return true;
 }
-bool CGUIStructure::compute_plif_matrix(DREAL* penalties_array, INT* Dim, INT numDims)
+bool CGUIStructure::compute_plif_matrix(DREAL* penalties_array, int32_t* Dim, int32_t numDims)
 {
 	CPlif** PEN = get_PEN();
-	INT num_states = Dim[0];
+	int32_t num_states = Dim[0];
         if (!set_num_states(Dim[0]))
 		return false;
-        INT num_plifs = get_num_plifs();
+        int32_t num_plifs = get_num_plifs();
 
 	//SG_PRINT("num_states: %i \n",num_states);
 	//SG_PRINT("dim3: %i \n",Dim[2]);
@@ -98,19 +98,19 @@ bool CGUIStructure::compute_plif_matrix(DREAL* penalties_array, INT* Dim, INT nu
 	//SG_PRINT("m_plif_matrix: %p \n",m_plif_matrix);
         CArray3<DREAL> penalties(penalties_array, num_states, num_states, Dim[2], false, true) ;
 
-        for (INT i=0; i<num_states; i++)
+        for (int32_t i=0; i<num_states; i++)
         {
-                for (INT j=0; j<num_states; j++)
+                for (int32_t j=0; j<num_states; j++)
                 {
 			//SG_PRINT(" %.2f ",penalties.get_element(i,j,1));
                         CPlifArray * plif_array = new CPlifArray() ;
                         CPlif * plif = NULL ;
                         plif_array->clear() ;
-                        for (INT k=0; k<Dim[2]; k++)
+                        for (int32_t k=0; k<Dim[2]; k++)
                         {
                                 if (penalties.element(i,j,k)==0)
                                         continue ;
-                                INT id = (INT) penalties.element(i,j,k)-1 ;
+                                int32_t id = (int32_t) penalties.element(i,j,k)-1 ;
 				//SG_PRINT("i:%i j:%i k:%i id:%i \n",i, j, k,id);
                                 if ((id<0 || id>=num_plifs) && (id!=-1))
                                 {
@@ -136,8 +136,8 @@ bool CGUIStructure::compute_plif_matrix(DREAL* penalties_array, INT* Dim, INT nu
                         else
 			{
                                 m_plif_matrix[i+j*num_states] = plif_array ;
-				//INT num_svms;
-				//INT* used_svms;
+				//int32_t num_svms;
+				//int32_t* used_svms;
 				//m_plif_matrix[i+j*num_states]->get_used_svms(&num_svms,used_svms);
 			}
 
@@ -145,21 +145,21 @@ bool CGUIStructure::compute_plif_matrix(DREAL* penalties_array, INT* Dim, INT nu
 		//SG_PRINT("\n");
         }
 //	DREAL tmp[] = {0,0,0,0,0,0,0,0,0};
-//	for (int i=0;i<num_states;i++)
-//                for (INT j=0; j<num_states; j++)
+//	for (int32_t i=0;i<num_states;i++)
+//                for (int32_t j=0; j<num_states; j++)
 //			if (m_plif_matrix[i+j*num_states]!=NULL)
 //				SG_PRINT("1 m_plif_matrix[%i]->lookup_penalty(): %f\n",i+j*num_states, m_plif_matrix[i+j*num_states]->lookup_penalty(0,tmp));
 	return true;
 }
-bool  CGUIStructure::set_signal_plifs(INT* state_signals, INT feat_dim3, INT num_states )
+bool  CGUIStructure::set_signal_plifs(int32_t* state_signals, int32_t feat_dim3, int32_t num_states )
 {
-	INT Nplif = get_num_plifs();
+	int32_t Nplif = get_num_plifs();
 	CPlif** PEN = get_PEN();
 
         CPlifBase **PEN_state_signal = new CPlifBase*[feat_dim3*num_states] ;
-        for (INT i=0; i<num_states*feat_dim3; i++)
+        for (int32_t i=0; i<num_states*feat_dim3; i++)
         {
-                INT id = (INT) state_signals[i]-1 ;
+                int32_t id = (int32_t) state_signals[i]-1 ;
                 if ((id<0 || id>=Nplif) && (id!=-1))
                 {
                         SG_ERROR( "id out of range\n") ;

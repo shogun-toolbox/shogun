@@ -46,8 +46,8 @@ class CTanimotoKernelNormalizer : public CKernelNormalizer
 		virtual bool init(CKernel* k)
 		{
 			ASSERT(k);
-			INT num_lhs=k->get_num_vec_lhs();
-			INT num_rhs=k->get_num_vec_rhs();
+			int32_t num_lhs=k->get_num_vec_lhs();
+			int32_t num_rhs=k->get_num_vec_rhs();
 			ASSERT(num_lhs>0);
 			ASSERT(num_rhs>0);
 
@@ -73,7 +73,7 @@ class CTanimotoKernelNormalizer : public CKernelNormalizer
 		 * @param idx_lhs index of left hand side vector
 		 * @param idx_rhs index of right hand side vector
 		 */
-		inline virtual DREAL normalize(DREAL value, INT idx_lhs, INT idx_rhs)
+		inline virtual DREAL normalize(DREAL value, int32_t idx_lhs, int32_t idx_rhs)
 		{
 			DREAL diag_sum=diag_lhs[idx_lhs]*diag_rhs[idx_rhs];
 			return value/(diag_sum-value);
@@ -83,7 +83,7 @@ class CTanimotoKernelNormalizer : public CKernelNormalizer
 		 * @param value value of a component of the left hand side feature vector
 		 * @param idx_lhs index of left hand side vector
 		 */
-		inline virtual DREAL normalize_lhs(DREAL value, INT idx_lhs)
+		inline virtual DREAL normalize_lhs(DREAL value, int32_t idx_lhs)
 		{
 			SG_ERROR("linadd not supported with Tanimoto normalization.\n");
 			return 0;
@@ -93,7 +93,7 @@ class CTanimotoKernelNormalizer : public CKernelNormalizer
 		 * @param value value of a component of the right hand side feature vector
 		 * @param idx_rhs index of right hand side vector
 		 */
-		inline virtual DREAL normalize_rhs(DREAL value, INT idx_rhs)
+		inline virtual DREAL normalize_rhs(DREAL value, int32_t idx_rhs)
 		{
 			SG_ERROR("linadd not supported with Tanimoto normalization.\n");
 			return 0;
@@ -104,12 +104,12 @@ class CTanimotoKernelNormalizer : public CKernelNormalizer
 		 * alloc and compute the vector containing the square root of the
 		 * diagonal elements of this kernel.
 		 */
-		bool alloc_and_compute_diag(CKernel* k, DREAL* &v, INT num)
+		bool alloc_and_compute_diag(CKernel* k, DREAL* &v, int32_t num)
 		{
 			delete[] v;
 			v=new DREAL[num];
 
-			for (INT i=0; i<num; i++)
+			for (int32_t i=0; i<num; i++)
 			{
 				if (k->get_kernel_type() == K_COMMWORDSTRING)
 				{

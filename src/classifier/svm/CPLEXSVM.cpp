@@ -33,8 +33,8 @@ bool CCPLEXSVM::train()
 
 	if (cplex.init(E_QP))
 	{
-		INT n,m;
-		INT num_label=0;
+		int32_t n,m;
+		int32_t num_label=0;
 		DREAL* y = labels->get_labels(num_label);
 		DREAL* H = kernel->get_kernel_matrix_real(m, n, NULL);
 		ASSERT(n>0 && n==m && n==num_label);
@@ -43,20 +43,20 @@ bool CCPLEXSVM::train()
 		DREAL* ub=new DREAL[n];
 
 		//hessian y'y.*K
-		for (int i=0; i<n; i++)
+		for (int32_t i=0; i<n; i++)
 		{
 			lb[i]=0;
 			ub[i]=get_C1();
 
-			for (int j=0; j<n; j++)
+			for (int32_t j=0; j<n; j++)
 				H[i*n+j]*=y[j]*y[i];
 		}
 
 		//feed qp to cplex
 
 
-		int j=0;
-		for (int i=0; i<n; i++)
+		int32_t j=0;
+		for (int32_t i=0; i<n; i++)
 		{
 			if (alphas[i]>0)
 			{

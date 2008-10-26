@@ -158,7 +158,7 @@ void CIO::buffered_message(EMessageType prio, const char *fmt, ... ) const
 	va_end(list);
 }
 
-void CIO::progress(DREAL current_val, DREAL min_val, DREAL max_val, INT decimals, const char* prefix)
+void CIO::progress(DREAL current_val, DREAL min_val, DREAL max_val, int32_t decimals, const char* prefix)
 {
 	if (!show_progress)
 		return;
@@ -208,7 +208,7 @@ void CIO::progress(DREAL current_val, DREAL min_val, DREAL max_val, INT decimals
     fflush(target);
 }
 
-void CIO::absolute_progress(DREAL current_val, DREAL val, DREAL min_val, DREAL max_val, INT decimals, const char* prefix)
+void CIO::absolute_progress(DREAL current_val, DREAL val, DREAL min_val, DREAL max_val, int32_t decimals, const char* prefix)
 {
 	if (!show_progress)
 		return;
@@ -268,7 +268,7 @@ void CIO::done()
 
 char* CIO::skip_spaces(char* str)
 {
-	INT i=0;
+	int32_t i=0;
 
 	if (str)
 	{
@@ -282,7 +282,7 @@ char* CIO::skip_spaces(char* str)
 
 char* CIO::skip_blanks(char* str)
 {
-	INT i=0;
+	int32_t i=0;
 
 	if (str)
 	{
@@ -316,7 +316,7 @@ void CIO::set_target(FILE* t)
 
 const char* CIO::get_msg_intro(EMessageType prio) const
 {
-	for (INT i=NUM_LOG_LEVELS-1; i>=0; i--)
+	for (int32_t i=NUM_LOG_LEVELS-1; i>=0; i--)
 	{
 		// ignore msg if prio's level is under loglevel,
 		// but not if prio's level higher than M_WARN

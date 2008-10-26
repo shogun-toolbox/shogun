@@ -75,15 +75,15 @@ class CGUIFeatures : public CSGObject
 
 		/** load features from file */
 		bool load(char* filename, char* fclass, char* type,
-			char* target, INT size, INT comp_features);
+			char* target, int32_t size, int32_t comp_features);
 		/** save features to file */
 		bool save(char* filename, char* type, char* target);
 		/** clean/r features */
 		bool clean(char* target);
 		/** obtain feature by sliding window */
-		bool obtain_by_sliding_window(char* target, INT winsize, INT shift, INT skip=0);
+		bool obtain_by_sliding_window(char* target, int32_t winsize, int32_t shift, int32_t skip=0);
 		/** reshape target feature matrix */
-		bool reshape(char* target, INT num_feat, INT num_vec);
+		bool reshape(char* target, int32_t num_feat, int32_t num_vec);
 
 		/** get features for target to convert */
 		CFeatures* get_convert_features(char* target);
@@ -94,8 +94,8 @@ class CGUIFeatures : public CSGObject
 		CSparseFeatures<DREAL>* convert_simple_real_to_sparse_real(CRealFeatures* src);
 		CStringFeatures<char>* convert_simple_char_to_string_char(CCharFeatures* src);
 		CWordFeatures* convert_simple_char_to_simple_word(
-			CCharFeatures* src, INT order=1, INT start=0, INT gap=0);
-		CShortFeatures* convert_simple_char_to_simple_short(CCharFeatures* src, INT order=1, INT start=0, INT gap=0);
+			CCharFeatures* src, int32_t order=1, int32_t start=0, int32_t gap=0);
+		CShortFeatures* convert_simple_char_to_simple_short(CCharFeatures* src, int32_t order=1, int32_t start=0, int32_t gap=0);
 		CRealFeatures* convert_simple_char_to_simple_align(CCharFeatures* src, DREAL gap_cost=0);
 		CRealFeatures* convert_simple_word_to_simple_salzberg(CWordFeatures* src);
 
@@ -107,7 +107,7 @@ class CGUIFeatures : public CSGObject
 		CRealFeatures* convert_sparse_real_to_simple_real(CSparseFeatures<DREAL>* src);
 
 		template <class CT, class ST>
-		CStringFeatures<ST>* convert_string_char_to_string_generic(CStringFeatures<CT>* src, INT order=1, INT start=0, INT gap=0, char rev='f')
+		CStringFeatures<ST>* convert_string_char_to_string_generic(CStringFeatures<CT>* src, int32_t order=1, int32_t start=0, int32_t gap=0, char rev='f')
 		{
 			if (src && src->get_feature_class()==C_STRING)
 			{
@@ -133,7 +133,7 @@ class CGUIFeatures : public CSGObject
 		template <class CT>
 		CMindyGramFeatures* convert_string_char_to_mindy_grams(
 			CStringFeatures<CT> *src, char* alph, char* embed,
-			INT nlen, char* delim, DREAL maxv)
+			int32_t nlen, char* delim, DREAL maxv)
 		{
 			if (!src || !aplh || !embed || !delim) {
 				SG_ERROR("Invalid arguments.\n");

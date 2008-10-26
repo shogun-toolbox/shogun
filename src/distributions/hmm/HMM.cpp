@@ -38,22 +38,22 @@ extern "C" int	finite(double);
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-const INT CHMM::GOTN= (1<<1);
-const INT CHMM::GOTM= (1<<2);
-const INT CHMM::GOTO= (1<<3);
-const INT CHMM::GOTa= (1<<4);
-const INT CHMM::GOTb= (1<<5);
-const INT CHMM::GOTp= (1<<6);
-const INT CHMM::GOTq= (1<<7);
+const int32_t CHMM::GOTN= (1<<1);
+const int32_t CHMM::GOTM= (1<<2);
+const int32_t CHMM::GOTO= (1<<3);
+const int32_t CHMM::GOTa= (1<<4);
+const int32_t CHMM::GOTb= (1<<5);
+const int32_t CHMM::GOTp= (1<<6);
+const int32_t CHMM::GOTq= (1<<7);
 
-const INT CHMM::GOTlearn_a= (1<<1);
-const INT CHMM::GOTlearn_b= (1<<2);
-const INT CHMM::GOTlearn_p= (1<<3);
-const INT CHMM::GOTlearn_q= (1<<4);
-const INT CHMM::GOTconst_a= (1<<5);
-const INT CHMM::GOTconst_b= (1<<6);
-const INT CHMM::GOTconst_p= (1<<7);
-const INT CHMM::GOTconst_q= (1<<8);
+const int32_t CHMM::GOTlearn_a= (1<<1);
+const int32_t CHMM::GOTlearn_b= (1<<2);
+const int32_t CHMM::GOTlearn_p= (1<<3);
+const int32_t CHMM::GOTlearn_q= (1<<4);
+const int32_t CHMM::GOTconst_a= (1<<5);
+const int32_t CHMM::GOTconst_b= (1<<6);
+const int32_t CHMM::GOTconst_p= (1<<7);
+const int32_t CHMM::GOTconst_q= (1<<8);
 
 enum E_STATE
 {
@@ -105,7 +105,7 @@ CModel::CModel()
 #ifdef FIX_POS
 	fix_pos_state = new char[ARRAY_SIZE];
 #endif
-	for (INT i=0; i<ARRAY_SIZE; i++)
+	for (int32_t i=0; i<ARRAY_SIZE; i++)
 	{
 		const_a[i]=-1 ;
 		const_b[i]=-1 ;
@@ -159,7 +159,7 @@ CHMM::CHMM(CHMM* h)
 	set_observations(h->get_observations());
 }
 
-CHMM::CHMM(INT p_N, INT p_M, CModel* p_model, DREAL p_PSEUDO)
+CHMM::CHMM(int32_t p_N, int32_t p_M, CModel* p_model, DREAL p_PSEUDO)
 : CDistribution(), iterations(150), epsilon(1e-4), conv_it(5)
 {
 	this->N=p_N;
@@ -171,7 +171,7 @@ CHMM::CHMM(INT p_N, INT p_M, CModel* p_model, DREAL p_PSEUDO)
 	status=initialize(p_model, p_PSEUDO);
 }
 
-CHMM::CHMM(CStringFeatures<uint16_t>* obs, INT p_N, INT p_M, DREAL p_PSEUDO)
+CHMM::CHMM(CStringFeatures<uint16_t>* obs, int32_t p_N, int32_t p_M, DREAL p_PSEUDO)
 : CDistribution(), iterations(150), epsilon(1e-4), conv_it(5)
 {
 	this->N=p_N;
@@ -184,7 +184,7 @@ CHMM::CHMM(CStringFeatures<uint16_t>* obs, INT p_N, INT p_M, DREAL p_PSEUDO)
 	set_observations(obs);
 }
 
-CHMM::CHMM(INT p_N, double* p, double* q, double* a)
+CHMM::CHMM(int32_t p_N, double* p, double* q, double* a)
 : CDistribution(), iterations(150), epsilon(1e-4), conv_it(5)
 {
 	this->N=p_N;
@@ -232,7 +232,7 @@ CHMM::CHMM(INT p_N, double* p, double* q, double* a)
 //	this->invalidate_model();
 }
 
-CHMM::CHMM(INT p_N, double* p, double* q, int num_trans, double* a_trans)
+CHMM::CHMM(int32_t p_N, double* p, double* q, int32_t num_trans, double* a_trans)
 : CDistribution(), iterations(150), epsilon(1e-4), conv_it(5)
 {
 	model=NULL ;
@@ -277,10 +277,10 @@ CHMM::CHMM(INT p_N, double* p, double* q, int num_trans, double* a_trans)
 	trans_list_forward_val = new DREAL*[N] ;
 	trans_list_forward_cnt = new T_STATES[N] ;
 	
-	INT start_idx=0;
-	for (INT j=0; j<N; j++)
+	int32_t start_idx=0;
+	for (int32_t j=0; j<N; j++)
 	{
-		INT old_start_idx=start_idx;
+		int32_t old_start_idx=start_idx;
 
 		while (start_idx<num_trans && a_trans[start_idx+num_trans]==j)
 		{
@@ -293,7 +293,7 @@ CHMM::CHMM(INT p_N, double* p, double* q, int num_trans, double* a_trans)
 		if (start_idx>1 && start_idx<num_trans)
 			ASSERT(a_trans[start_idx+num_trans-1]<=a_trans[start_idx+num_trans]);
 		
-		INT len=start_idx-old_start_idx;
+		int32_t len=start_idx-old_start_idx;
 		ASSERT(len>=0);
 
 		trans_list_forward_cnt[j] = 0 ;
@@ -310,10 +310,10 @@ CHMM::CHMM(INT p_N, double* p, double* q, int num_trans, double* a_trans)
 		}
 	}
 
-	for (INT i=0; i<num_trans; i++)
+	for (int32_t i=0; i<num_trans; i++)
 	{
-		INT from = (INT)a_trans[i+num_trans] ;
-		INT to   = (INT)a_trans[i] ;
+		int32_t from = (int32_t)a_trans[i+num_trans] ;
+		int32_t to   = (int32_t)a_trans[i] ;
 		DREAL val = a_trans[i+num_trans*2] ;
 		
 		ASSERT(from>=0 && from<N);
@@ -354,21 +354,21 @@ CHMM::~CHMM()
 		delete[] trans_list_backward_cnt ;
 	if (trans_list_forward)
 	{
-	    for (INT i=0; i<trans_list_len; i++)
+	    for (int32_t i=0; i<trans_list_len; i++)
 			if (trans_list_forward[i])
 				delete[] trans_list_forward[i] ;
 	    delete[] trans_list_forward ;
 	}
 	if (trans_list_forward_val)
 	{
-	    for (INT i=0; i<trans_list_len; i++)
+	    for (int32_t i=0; i<trans_list_len; i++)
 			if (trans_list_forward_val[i])
 				delete[] trans_list_forward_val[i] ;
 	    delete[] trans_list_forward_val ;
 	}
 	if (trans_list_backward)
 	  {
-	    for (INT i=0; i<trans_list_len; i++)
+	    for (int32_t i=0; i<trans_list_len; i++)
 	      if (trans_list_backward[i])
 		delete[] trans_list_backward[i] ;
 	    delete[] trans_list_backward ;
@@ -379,7 +379,7 @@ CHMM::~CHMM()
 	if (!reused_caches)
 	{
 #ifdef USE_HMMPARALLEL_STRUCTURES
-		for (INT i=0; i<parallel.get_num_threads(); i++)
+		for (int32_t i=0; i<parallel.get_num_threads(); i++)
 		{
 			delete[] alpha_cache[i].table;
 			delete[] beta_cache[i].table;
@@ -407,7 +407,7 @@ CHMM::~CHMM()
 #ifdef USE_LOGSUMARRAY
 #ifdef USE_HMMPARALLEL_STRUCTURES
 	{
-		for (INT i=0; i<parallel.get_num_threads(); i++)
+		for (int32_t i=0; i<parallel.get_num_threads(); i++)
 			delete[] arrayS[i];
 		delete[] arrayS ;
 	} ;
@@ -422,7 +422,7 @@ CHMM::~CHMM()
 #ifdef USE_HMMPARALLEL_STRUCTURES
 		delete[] path_prob_updated ;
 		delete[] path_prob_dimension ;
-		for (INT i=0; i<parallel.get_num_threads(); i++)
+		for (int32_t i=0; i<parallel.get_num_threads(); i++)
 			delete[] path[i] ;
 #endif //USE_HMMPARALLEL_STRUCTURES
 		delete[] path;
@@ -444,7 +444,7 @@ bool CHMM::alloc_state_dependend_arrays()
 	}
 
 #ifdef USE_HMMPARALLEL_STRUCTURES
-	for (INT i=0; i<parallel.get_num_threads(); i++)
+	for (int32_t i=0; i<parallel.get_num_threads(); i++)
 	{
 		arrayN1[i]=new DREAL[N];
 		arrayN2[i]=new DREAL[N];
@@ -456,10 +456,10 @@ bool CHMM::alloc_state_dependend_arrays()
 
 #ifdef LOG_SUMARRAY
 #ifdef USE_HMMPARALLEL_STRUCTURES
-	for (INT i=0; i<parallel.get_num_threads(); i++)
-		arrayS[i]=new DREAL[(int)(this->N/2+1)];
+	for (int32_t i=0; i<parallel.get_num_threads(); i++)
+		arrayS[i]=new DREAL[(int32_t)(this->N/2+1)];
 #else //USE_HMMPARALLEL_STRUCTURES
-	arrayS=new DREAL[(int)(this->N/2+1)];
+	arrayS=new DREAL[(int32_t)(this->N/2+1)];
 #endif //USE_HMMPARALLEL_STRUCTURES
 #endif //LOG_SUMARRAY
 	transition_matrix_A=new DREAL[this->N*this->N];
@@ -487,7 +487,7 @@ bool CHMM::alloc_state_dependend_arrays()
 void CHMM::free_state_dependend_arrays()
 {
 #ifdef USE_HMMPARALLEL_STRUCTURES
-	for (INT i=0; i<parallel.get_num_threads(); i++)
+	for (int32_t i=0; i<parallel.get_num_threads(); i++)
 	{
 		delete[] arrayN1[i];
 		delete[] arrayN2[i];
@@ -546,7 +546,7 @@ bool CHMM::initialize(CModel* m, DREAL pseudo, FILE* modelfile)
 	beta_cache=new T_ALPHA_BETA[parallel.get_num_threads()] ;
 	states_per_observation_psi=new P_STATES[parallel.get_num_threads()] ;
 
-	for (INT i=0; i<parallel.get_num_threads(); i++)
+	for (int32_t i=0; i<parallel.get_num_threads(); i++)
 	{
 		this->alpha_cache[i].table=NULL;
 		this->beta_cache[i].table=NULL;
@@ -578,7 +578,7 @@ bool CHMM::initialize(CModel* m, DREAL pseudo, FILE* modelfile)
 
 	path=new P_STATES[parallel.get_num_threads()];
 
-	for (INT i=0; i<parallel.get_num_threads(); i++)
+	for (int32_t i=0; i<parallel.get_num_threads(); i++)
 	{
 #ifndef NOVIT
 		this->path[i]=NULL;
@@ -619,7 +619,7 @@ bool CHMM::initialize(CModel* m, DREAL pseudo, FILE* modelfile)
 //forward algorithm
 //calculates Pr[O_0,O_1, ..., O_t, q_time=S_i| lambda] for 0<= time <= T-1
 //Pr[O|lambda] for time > T
-DREAL CHMM::forward_comp(INT time, INT state, INT dimension)
+DREAL CHMM::forward_comp(int32_t time, int32_t state, int32_t dimension)
 {
   T_ALPHA_BETA_TABLE* alpha_new;
   T_ALPHA_BETA_TABLE* alpha;
@@ -628,7 +628,7 @@ DREAL CHMM::forward_comp(INT time, INT state, INT dimension)
     time=0;
 
 
-  INT wanted_time=time;
+  int32_t wanted_time=time;
   
   if (ALPHA_CACHE(dimension).table)
     {
@@ -647,20 +647,20 @@ DREAL CHMM::forward_comp(INT time, INT state, INT dimension)
   else
     {
       //initialization	alpha_1(i)=p_i*b_i(O_1)
-      for (INT i=0; i<N; i++)
+      for (int32_t i=0; i<N; i++)
 	alpha[i] = get_p(i) + get_b(i, p_observations->get_feature(dimension,0)) ;
       
       //induction		alpha_t+1(j) = (sum_i=1^N alpha_t(i)a_ij) b_j(O_t+1)
-      for (register INT t=1; t<time && t < p_observations->get_vector_length(dimension); t++)
+      for (register int32_t t=1; t<time && t < p_observations->get_vector_length(dimension); t++)
 	{
 	  
-	  for (INT j=0; j<N; j++)
+	  for (int32_t j=0; j<N; j++)
 	    {
-	      register INT i, num = trans_list_forward_cnt[j] ;
+	      register int32_t i, num = trans_list_forward_cnt[j] ;
 	      DREAL sum=-CMath::INFTY;  
 	      for (i=0; i < num; i++)
 		{
-		  INT ii = trans_list_forward[j][i] ;
+		  int32_t ii = trans_list_forward[j][i] ;
 		  sum = CMath::logarithmic_sum(sum, alpha[ii] + get_a(ii,j));
 		} ;
 	      
@@ -683,11 +683,11 @@ DREAL CHMM::forward_comp(INT time, INT state, INT dimension)
       
       if (time<p_observations->get_vector_length(dimension))
 	{
-	  register INT i, num=trans_list_forward_cnt[state];
+	  register int32_t i, num=trans_list_forward_cnt[state];
 	  register DREAL sum=-CMath::INFTY; 
 	  for (i=0; i<num; i++)
 	    {
-	      int ii = trans_list_forward[state][i] ;
+	      int32_t ii = trans_list_forward[state][i] ;
 	      sum= CMath::logarithmic_sum(sum, alpha[ii] + get_a(ii, state));
 	    } ;
 	  
@@ -696,7 +696,7 @@ DREAL CHMM::forward_comp(INT time, INT state, INT dimension)
       else
 	{
 	  // termination
-	  register INT i ; 
+	  register int32_t i ; 
 	  DREAL sum ; 
 	  sum=-CMath::INFTY; 
 	  for (i=0; i<N; i++)		 	                      //sum over all paths
@@ -723,7 +723,7 @@ DREAL CHMM::forward_comp(INT time, INT state, INT dimension)
 //forward algorithm
 //calculates Pr[O_0,O_1, ..., O_t, q_time=S_i| lambda] for 0<= time <= T-1
 //Pr[O|lambda] for time > T
-DREAL CHMM::forward_comp_old(INT time, INT state, INT dimension)
+DREAL CHMM::forward_comp_old(int32_t time, int32_t state, int32_t dimension)
 {
 	T_ALPHA_BETA_TABLE* alpha_new;
 	T_ALPHA_BETA_TABLE* alpha;
@@ -731,7 +731,7 @@ DREAL CHMM::forward_comp_old(INT time, INT state, INT dimension)
 	if (time<1)
 		time=0;
 
-	INT wanted_time=time;
+	int32_t wanted_time=time;
 
 	if (ALPHA_CACHE(dimension).table)
 	{
@@ -750,16 +750,16 @@ DREAL CHMM::forward_comp_old(INT time, INT state, INT dimension)
 	else
 	{
 		//initialization	alpha_1(i)=p_i*b_i(O_1)
-		for (INT i=0; i<N; i++)
+		for (int32_t i=0; i<N; i++)
 			alpha[i] = get_p(i) + get_b(i, p_observations->get_feature(dimension,0)) ;
 
 		//induction		alpha_t+1(j) = (sum_i=1^N alpha_t(i)a_ij) b_j(O_t+1)
-		for (register INT t=1; t<time && t < p_observations->get_vector_length(dimension); t++)
+		for (register int32_t t=1; t<time && t < p_observations->get_vector_length(dimension); t++)
 		{
 
-			for (INT j=0; j<N; j++)
+			for (int32_t j=0; j<N; j++)
 			{
-				register INT i ;
+				register int32_t i ;
 #ifdef USE_LOGSUMARRAY
 				for (i=0; i<(N>>1); i++)
 					ARRAYS(dimension)[i]=CMath::logarithmic_sum(alpha[i<<1] + get_a(i<<1,j),
@@ -795,7 +795,7 @@ DREAL CHMM::forward_comp_old(INT time, INT state, INT dimension)
 
 		if (time<p_observations->get_vector_length(dimension))
 		{
-			register INT i;
+			register int32_t i;
 #ifdef USE_LOGSUMARRAY
 			for (i=0; i<(N>>1); i++)
 				ARRAYS(dimension)[i]=CMath::logarithmic_sum(alpha[i<<1] + get_a(i<<1,state),
@@ -817,7 +817,7 @@ DREAL CHMM::forward_comp_old(INT time, INT state, INT dimension)
 		else
 		{
 			// termination
-			register INT i ; 
+			register int32_t i ; 
 			DREAL sum ; 
 #ifdef USE_LOGSUMARRAY
 			for (i=0; i<(N>>1); i++)
@@ -855,12 +855,12 @@ DREAL CHMM::forward_comp_old(INT time, INT state, INT dimension)
 //backward algorithm
 //calculates Pr[O_t+1,O_t+2, ..., O_T| q_time=S_i, lambda] for 0<= time <= T-1
 //Pr[O|lambda] for time >= T
-DREAL CHMM::backward_comp(INT time, INT state, INT dimension)
+DREAL CHMM::backward_comp(int32_t time, int32_t state, int32_t dimension)
 {
   T_ALPHA_BETA_TABLE* beta_new;
   T_ALPHA_BETA_TABLE* beta;
   T_ALPHA_BETA_TABLE* dummy;
-  INT wanted_time=time;
+  int32_t wanted_time=time;
   
   if (time<0)
     forward(time, state, dimension);
@@ -884,19 +884,19 @@ DREAL CHMM::backward_comp(INT time, INT state, INT dimension)
   else
     {
       //initialization	beta_T(i)=q(i)
-      for (register INT i=0; i<N; i++)
+      for (register int32_t i=0; i<N; i++)
 	beta[i]=get_q(i);
       
       //induction		beta_t(i) = (sum_j=1^N a_ij*b_j(O_t+1)*beta_t+1(j)
-      for (register INT t=p_observations->get_vector_length(dimension)-1; t>time+1 && t>0; t--)
+      for (register int32_t t=p_observations->get_vector_length(dimension)-1; t>time+1 && t>0; t--)
 	{
-	  for (register INT i=0; i<N; i++)
+	  for (register int32_t i=0; i<N; i++)
 	    {
-	      register INT j, num=trans_list_backward_cnt[i] ;
+	      register int32_t j, num=trans_list_backward_cnt[i] ;
 	      DREAL sum=-CMath::INFTY; 
 	      for (j=0; j<num; j++)
 		{
-		  INT jj = trans_list_backward[i][j] ;
+		  int32_t jj = trans_list_backward[i][j] ;
 		  sum= CMath::logarithmic_sum(sum, get_a(i, jj) + get_b(jj, p_observations->get_feature(dimension,t)) + beta[jj]);
 		} ;
 	      beta_new[i]=sum;
@@ -917,11 +917,11 @@ DREAL CHMM::backward_comp(INT time, INT state, INT dimension)
       
       if (time>=0)
 	{
-	  register INT j, num=trans_list_backward_cnt[state] ;
+	  register int32_t j, num=trans_list_backward_cnt[state] ;
 	  DREAL sum=-CMath::INFTY; 
 	  for (j=0; j<num; j++)
 	    {
-	      INT jj = trans_list_backward[state][j] ;
+	      int32_t jj = trans_list_backward[state][j] ;
 	      sum= CMath::logarithmic_sum(sum, get_a(state, jj) + get_b(jj, p_observations->get_feature(dimension,time+1))+beta[jj]);
 	    } ;
 	  return sum;
@@ -931,7 +931,7 @@ DREAL CHMM::backward_comp(INT time, INT state, INT dimension)
 	  if (BETA_CACHE(dimension).table)
 	    {
 	      DREAL sum=-CMath::INFTY; 
-	      for (register INT j=0; j<N; j++)
+	      for (register int32_t j=0; j<N; j++)
 		sum= CMath::logarithmic_sum(sum, get_p(j) + get_b(j, p_observations->get_feature(dimension,0))+beta[j]);
 	      BETA_CACHE(dimension).sum=sum;
 	      BETA_CACHE(dimension).dimension=dimension;
@@ -945,7 +945,7 @@ DREAL CHMM::backward_comp(INT time, INT state, INT dimension)
 	  else
 	    {
 	      DREAL sum=-CMath::INFTY; // apply LOG_SUM_ARRAY -- no cache ... does not make very sense anyway...
-	      for (register INT j=0; j<N; j++)
+	      for (register int32_t j=0; j<N; j++)
 		sum= CMath::logarithmic_sum(sum, get_p(j) + get_b(j, p_observations->get_feature(dimension,0))+beta[j]);
 	      return sum;
 	    }
@@ -954,12 +954,12 @@ DREAL CHMM::backward_comp(INT time, INT state, INT dimension)
 }
 
 
-DREAL CHMM::backward_comp_old(INT time, INT state, INT dimension)
+DREAL CHMM::backward_comp_old(int32_t time, int32_t state, int32_t dimension)
 {
 	T_ALPHA_BETA_TABLE* beta_new;
 	T_ALPHA_BETA_TABLE* beta;
 	T_ALPHA_BETA_TABLE* dummy;
-	INT wanted_time=time;
+	int32_t wanted_time=time;
 
 	if (time<0)
 		forward(time, state, dimension);
@@ -983,15 +983,15 @@ DREAL CHMM::backward_comp_old(INT time, INT state, INT dimension)
 	else
 	{
 		//initialization	beta_T(i)=q(i)
-		for (register INT i=0; i<N; i++)
+		for (register int32_t i=0; i<N; i++)
 			beta[i]=get_q(i);
 
 		//induction		beta_t(i) = (sum_j=1^N a_ij*b_j(O_t+1)*beta_t+1(j)
-		for (register INT t=p_observations->get_vector_length(dimension)-1; t>time+1 && t>0; t--)
+		for (register int32_t t=p_observations->get_vector_length(dimension)-1; t>time+1 && t>0; t--)
 		{
-			for (register INT i=0; i<N; i++)
+			for (register int32_t i=0; i<N; i++)
 			{
-				register INT j ;
+				register int32_t j ;
 #ifdef USE_LOGSUMARRAY
 				for (j=0; j<(N>>1); j++)
 					ARRAYS(dimension)[j]=CMath::logarithmic_sum(
@@ -1026,7 +1026,7 @@ DREAL CHMM::backward_comp_old(INT time, INT state, INT dimension)
 
 		if (time>=0)
 		{
-			register INT j ;
+			register int32_t j ;
 #ifdef USE_LOGSUMARRAY
 			for (j=0; j<(N>>1); j++)
 				ARRAYS(dimension)[j]=CMath::logarithmic_sum(
@@ -1050,7 +1050,7 @@ DREAL CHMM::backward_comp_old(INT time, INT state, INT dimension)
 			if (BETA_CACHE(dimension).table)
 			{
 #ifdef USE_LOGSUMARRAY//AAA
-				for (INT j=0; j<(N>>1); j++)
+				for (int32_t j=0; j<(N>>1); j++)
 					ARRAYS(dimension)[j]=CMath::logarithmic_sum(get_p(j<<1) + get_b(j<<1, p_observations->get_feature(dimension,0))+beta[j<<1],
 							get_p((j<<1)+1) + get_b((j<<1)+1, p_observations->get_feature(dimension,0))+beta[(j<<1)+1]) ;
 				if (N%2==1) 
@@ -1060,7 +1060,7 @@ DREAL CHMM::backward_comp_old(INT time, INT state, INT dimension)
 					BETA_CACHE(dimension).sum=CMath::logarithmic_sum_array(ARRAYS(dimension), N>>1) ;
 #else //USE_LOGSUMARRAY
 				DREAL sum=-CMath::INFTY; 
-				for (register INT j=0; j<N; j++)
+				for (register int32_t j=0; j<N; j++)
 					sum= CMath::logarithmic_sum(sum, get_p(j) + get_b(j, p_observations->get_feature(dimension,0))+beta[j]);
 				BETA_CACHE(dimension).sum=sum;
 #endif //USE_LOGSUMARRAY
@@ -1075,7 +1075,7 @@ DREAL CHMM::backward_comp_old(INT time, INT state, INT dimension)
 			else
 			{
 				DREAL sum=-CMath::INFTY; // apply LOG_SUM_ARRAY -- no cache ... does not make very sense anyway...
-				for (register INT j=0; j<N; j++)
+				for (register int32_t j=0; j<N; j++)
 					sum= CMath::logarithmic_sum(sum, get_p(j) + get_b(j, p_observations->get_feature(dimension,0))+beta[j]);
 				return sum;
 			}
@@ -1086,7 +1086,7 @@ DREAL CHMM::backward_comp_old(INT time, INT state, INT dimension)
 #ifndef NOVIT
 //calculates probability  of best path through the model lambda AND path itself
 //using viterbi algorithm
-DREAL CHMM::best_path(INT dimension)
+DREAL CHMM::best_path(int32_t dimension)
 {
 	if (!p_observations)
 		return -1;
@@ -1097,7 +1097,7 @@ DREAL CHMM::best_path(INT dimension)
 		{
 			SG_INFO( "computing full viterbi likelihood\n") ;
 			DREAL sum = 0 ;
-			for (INT i=0; i<p_observations->get_num_vectors(); i++)
+			for (int32_t i=0; i<p_observations->get_num_vectors(); i++)
 				sum+=best_path(i) ;
 			sum /= p_observations->get_num_vectors() ;
 			all_pat_prob=sum ;
@@ -1110,7 +1110,7 @@ DREAL CHMM::best_path(INT dimension)
 	if (!STATES_PER_OBSERVATION_PSI(dimension))
 		return -1 ;
 
-	INT len=0;
+	int32_t len=0;
 	if (!p_observations->get_feature_vector(dimension,len))
 		return -1;
 
@@ -1122,7 +1122,7 @@ DREAL CHMM::best_path(INT dimension)
 		register DREAL* delta_new= ARRAYN1(dimension);
 
 		{ //initialization
-			for (register INT i=0; i<N; i++)
+			for (register int32_t i=0; i<N; i++)
 			{
 				delta[i]=get_p(i)+get_b(i, p_observations->get_feature(dimension,0));
 				set_psi(0, i, 0, dimension);
@@ -1133,17 +1133,17 @@ DREAL CHMM::best_path(INT dimension)
 		DREAL worst=-CMath::INFTY/4 ;
 #endif
 		//recursion
-		for (register INT t=1; t<p_observations->get_vector_length(dimension); t++)
+		for (register int32_t t=1; t<p_observations->get_vector_length(dimension); t++)
 		{
 			register DREAL* dummy;
-			register INT NN=N ;
-			for (register INT j=0; j<NN; j++)
+			register int32_t NN=N ;
+			for (register int32_t j=0; j<NN; j++)
 			{
 				register DREAL * matrix_a=&transition_matrix_a[j*N] ; // sorry for that
 				register DREAL maxj=delta[0] + matrix_a[0];
-				register INT argmax=0;
+				register int32_t argmax=0;
 
-				for (register INT i=1; i<NN; i++)
+				for (register int32_t i=1; i<NN; i++)
 				{
 					register DREAL temp = delta[i] + matrix_a[i];
 
@@ -1166,7 +1166,7 @@ DREAL CHMM::best_path(INT dimension)
 
 #ifdef USE_PATHDEBUG
 			DREAL best=log(0) ;
-			for (INT jj=0; jj<N; jj++)
+			for (int32_t jj=0; jj<N; jj++)
 				if (delta_new[jj]>best)
 					best=delta_new[jj] ;
 
@@ -1185,9 +1185,9 @@ DREAL CHMM::best_path(INT dimension)
 
 		{ //termination
 			register DREAL maxj=delta[0]+get_q(0);
-			register INT argmax=0;
+			register int32_t argmax=0;
 
-			for (register INT i=1; i<N; i++)
+			for (register int32_t i=1; i<N; i++)
 			{
 				register DREAL temp=delta[i]+get_q(i);
 
@@ -1203,7 +1203,7 @@ DREAL CHMM::best_path(INT dimension)
 
 
 		{ //state sequence backtracking
-			for (register INT t=p_observations->get_vector_length(dimension)-1; t>0; t--)
+			for (register int32_t t=p_observations->get_vector_length(dimension)-1; t>0; t--)
 			{
 				PATH(dimension)[t-1]=get_psi(t, PATH(dimension)[t], dimension);
 			}
@@ -1222,7 +1222,7 @@ DREAL CHMM::model_probability_comp()
 {
 	//for faster calculation cache model probability
 	mod_prob=0 ;
-	for (INT dim=0; dim<p_observations->get_num_vectors(); dim++) //sum in log space
+	for (int32_t dim=0; dim<p_observations->get_num_vectors(); dim++) //sum in log space
 		mod_prob+=forward(p_observations->get_vector_length(dim), 0, dim);
 
 	mod_prob_updated=true;
@@ -1239,7 +1239,7 @@ DREAL CHMM::model_probability_comp()
 	SG_INFO( "computing full model probablity\n");
 	mod_prob=0;
 
-	for (INT cpu=0; cpu<parallel.get_num_threads(); cpu++)
+	for (int32_t cpu=0; cpu<parallel.get_num_threads(); cpu++)
 	{
 		params[cpu].hmm=this ;
 		params[cpu].dim_start= p_observations->get_num_vectors()*cpu/parallel.get_num_threads();
@@ -1268,7 +1268,7 @@ DREAL CHMM::model_probability_comp()
 void* CHMM::bw_dim_prefetch(void * params)
 {
 	CHMM* hmm=((S_THREAD_PARAM*)params)->hmm ;
-	INT dim=((S_THREAD_PARAM*)params)->dim ;
+	int32_t dim=((S_THREAD_PARAM*)params)->dim ;
 	DREAL*p_buf=((S_THREAD_PARAM*)params)->p_buf ;
 	DREAL*q_buf=((S_THREAD_PARAM*)params)->q_buf ;
 	DREAL*a_buf=((S_THREAD_PARAM*)params)->a_buf ;
@@ -1280,11 +1280,11 @@ void* CHMM::bw_dim_prefetch(void * params)
 DREAL CHMM::model_prob_thread(void* params)
 {
 	CHMM* hmm=((S_THREAD_PARAM*)params)->hmm ;
-	INT dim_start=((S_THREAD_PARAM*)params)->dim_start;
-	INT dim_stop=((S_THREAD_PARAM*)params)->dim_stop;
+	int32_t dim_start=((S_THREAD_PARAM*)params)->dim_start;
+	int32_t dim_stop=((S_THREAD_PARAM*)params)->dim_stop;
 
 	DREAL prob=0;
-	for (INT dim=dim_start; dim<dim_stop; dim++)
+	for (int32_t dim=dim_start; dim<dim_stop; dim++)
 		hmm->model_probability(dim);
 
 	ab_buf_comp(p_buf, q_buf, a_buf, b_buf, dim) ;
@@ -1294,7 +1294,7 @@ DREAL CHMM::model_prob_thread(void* params)
 void* CHMM::bw_dim_prefetch(void * params)
 {
 	CHMM* hmm=((S_THREAD_PARAM*)params)->hmm ;
-	INT dim=((S_THREAD_PARAM*)params)->dim ;
+	int32_t dim=((S_THREAD_PARAM*)params)->dim ;
 	DREAL*p_buf=((S_THREAD_PARAM*)params)->p_buf ;
 	DREAL*q_buf=((S_THREAD_PARAM*)params)->q_buf ;
 	DREAL*a_buf=((S_THREAD_PARAM*)params)->a_buf ;
@@ -1307,13 +1307,13 @@ void* CHMM::bw_dim_prefetch(void * params)
 void* CHMM::vit_dim_prefetch(void * params)
 {
 	CHMM* hmm=((S_THREAD_PARAM*)params)->hmm ;
-	INT dim=((S_THREAD_PARAM*)params)->dim ;
+	int32_t dim=((S_THREAD_PARAM*)params)->dim ;
 	((S_THREAD_PARAM*)params)->ret = hmm->prefetch(dim, false) ;
 	return NULL ;
 } ;
 #endif // NOVIT
 
-DREAL CHMM::prefetch(INT dim, bool bw, DREAL* p_buf, DREAL* q_buf, DREAL* a_buf, DREAL* b_buf)
+DREAL CHMM::prefetch(int32_t dim, bool bw, DREAL* p_buf, DREAL* q_buf, DREAL* a_buf, DREAL* b_buf)
 {
 	if (bw)
 	{
@@ -1333,9 +1333,9 @@ DREAL CHMM::prefetch(INT dim, bool bw, DREAL* p_buf, DREAL* q_buf, DREAL* a_buf,
 
 #ifdef USE_HMMPARALLEL
 
-void CHMM::ab_buf_comp(DREAL* p_buf, DREAL* q_buf, DREAL *a_buf, DREAL* b_buf, INT dim)
+void CHMM::ab_buf_comp(DREAL* p_buf, DREAL* q_buf, DREAL *a_buf, DREAL* b_buf, int32_t dim)
 {
-	INT i,j,t ;
+	int32_t i,j,t ;
 	DREAL a_sum;
 	DREAL b_sum;
 	DREAL prob=0;	//model probability for dim
@@ -1380,7 +1380,7 @@ void CHMM::ab_buf_comp(DREAL* p_buf, DREAL* q_buf, DREAL *a_buf, DREAL* b_buf, I
 //estimates new model lambda out of lambda_train using baum welch algorithm
 void CHMM::estimate_model_baum_welch(CHMM* train)
 {
-	INT i,j,t,cpu;
+	int32_t i,j,t,cpu;
 	DREAL a_sum, b_sum;	//numerator
 	DREAL fullmodprob=0;	//for all dims
 
@@ -1483,7 +1483,7 @@ void CHMM::estimate_model_baum_welch(CHMM* train)
 //estimates new model lambda out of lambda_estimate using baum welch algorithm
 void CHMM::estimate_model_baum_welch(CHMM* estimate)
 {
-	INT i,j,t,dim;
+	int32_t i,j,t,dim;
 	DREAL a_sum, b_sum;	//numerator
 	DREAL dimmodprob=0;	//model probability for dim
 	DREAL fullmodprob=0;	//for all dims
@@ -1525,12 +1525,12 @@ void CHMM::estimate_model_baum_welch(CHMM* estimate)
 			set_p(i, CMath::logarithmic_sum(get_p(i), estimate->get_p(i)+estimate->get_b(i,p_observations->get_feature(dim,0))+estimate->backward(0,i,dim) - dimmodprob));
 			set_q(i, CMath::logarithmic_sum(get_q(i), estimate->forward(p_observations->get_vector_length(dim)-1, i, dim)+estimate->get_q(i) - dimmodprob ));
 
-			INT num = trans_list_backward_cnt[i] ;
+			int32_t num = trans_list_backward_cnt[i] ;
 
 			//estimate a
 			for (j=0; j<num; j++)
 			{
-				INT jj = trans_list_backward[i][j] ;
+				int32_t jj = trans_list_backward[i][j] ;
 				a_sum=-CMath::INFTY;
 
 				for (t=0; t<p_observations->get_vector_length(dim)-1; t++) 
@@ -1570,7 +1570,7 @@ void CHMM::estimate_model_baum_welch(CHMM* estimate)
 // optimize only p, q, a but not b
 void CHMM::estimate_model_baum_welch_trans(CHMM* estimate)
 {
-	INT i,j,t,dim;
+	int32_t i,j,t,dim;
 	DREAL a_sum;	//numerator
 	DREAL dimmodprob=0;	//model probability for dim
 	DREAL fullmodprob=0;	//for all dims
@@ -1609,11 +1609,11 @@ void CHMM::estimate_model_baum_welch_trans(CHMM* estimate)
 		set_p(i, CMath::logarithmic_sum(get_p(i), estimate->get_p(i)+estimate->get_b(i,p_observations->get_feature(dim,0))+estimate->backward(0,i,dim) - dimmodprob));
 		set_q(i, CMath::logarithmic_sum(get_q(i), estimate->forward(p_observations->get_vector_length(dim)-1, i, dim)+estimate->get_q(i) - dimmodprob ));
 		
-		INT num = trans_list_backward_cnt[i] ;
+		int32_t num = trans_list_backward_cnt[i] ;
 		//estimate a
 		for (j=0; j<num; j++)
 		  {
-		    INT jj = trans_list_backward[i][j] ;
+		    int32_t jj = trans_list_backward[i][j] ;
 		    a_sum=-CMath::INFTY;
 		    
 		    for (t=0; t<p_observations->get_vector_length(dim)-1; t++) 
@@ -1639,7 +1639,7 @@ void CHMM::estimate_model_baum_welch_trans(CHMM* estimate)
 //estimates new model lambda out of lambda_estimate using baum welch algorithm
 void CHMM::estimate_model_baum_welch_old(CHMM* estimate)
 {
-	INT i,j,t,dim;
+	int32_t i,j,t,dim;
 	DREAL a_sum, b_sum;	//numerator
 	DREAL dimmodprob=0;	//model probability for dim
 	DREAL fullmodprob=0;	//for all dims
@@ -1724,7 +1724,7 @@ void CHMM::estimate_model_baum_welch_old(CHMM* estimate)
 //estimates new model lambda out of lambda_estimate using baum welch algorithm
 void CHMM::estimate_model_baum_welch(CHMM* estimate)
 {
-	INT i,j,t,dim;
+	int32_t i,j,t,dim;
 	DREAL a_sum, b_sum;	//numerator
 	DREAL dimmodprob=0;	//model probability for dim
 	DREAL fullmodprob=0;	//for all dims
@@ -1835,7 +1835,7 @@ void CHMM::estimate_model_baum_welch(CHMM* estimate)
 //estimates new model lambda out of lambda_estimate using baum welch algorithm
 void CHMM::estimate_model_baum_welch(CHMM* estimate)
 {
-	INT i,j,t,dim;
+	int32_t i,j,t,dim;
 	DREAL a_sum, b_sum;	//numerator
 	DREAL dimmodprob=0;	//model probability for dim
 	DREAL fullmodprob=0;	//for all dims
@@ -1952,7 +1952,7 @@ void CHMM::estimate_model_baum_welch(CHMM* estimate)
 //estimates new model lambda out of lambda_estimate using baum welch algorithm
 void CHMM::estimate_model_baum_welch_defined(CHMM* estimate)
 {
-	INT i,j,old_i,k,t,dim;
+	int32_t i,j,old_i,k,t,dim;
 	DREAL a_sum_num, b_sum_num;		//numerator
 	DREAL a_sum_denom, b_sum_denom;	//denominator
 	DREAL dimmodprob=-CMath::INFTY;	//model probability for dim
@@ -1997,7 +1997,7 @@ void CHMM::estimate_model_baum_welch_defined(CHMM* estimate)
 #ifdef USE_HMMPARALLEL
 		if (dim%parallel.get_num_threads()==0)
 		{
-			INT i ;
+			int32_t i ;
 			for (i=0; i<parallel.get_num_threads(); i++)
 				if (dim+i<p_observations->get_num_vectors())
 				{
@@ -2127,7 +2127,7 @@ void CHMM::estimate_model_baum_welch_defined(CHMM* estimate)
 //estimates new model lambda out of lambda_estimate using viterbi algorithm
 void CHMM::estimate_model_viterbi(CHMM* estimate)
 {
-	INT i,j,t;
+	int32_t i,j,t;
 	DREAL sum;
 	DREAL* P=ARRAYN1(0);
 	DREAL* Q=ARRAYN2(0);
@@ -2154,13 +2154,13 @@ void CHMM::estimate_model_viterbi(CHMM* estimate)
 	S_THREAD_PARAM *params=new S_THREAD_PARAM[parallel.get_num_threads()] ;
 #endif
 
-	for (INT dim=0; dim<p_observations->get_num_vectors(); dim++)
+	for (int32_t dim=0; dim<p_observations->get_num_vectors(); dim++)
 	{
 
 #ifdef USE_HMMPARALLEL
 		if (dim%parallel.get_num_threads()==0)
 		{
-			INT i ;
+			int32_t i ;
 			for (i=0; i<parallel.get_num_threads(); i++)
 				if (dim+i<p_observations->get_num_vectors())
 				{
@@ -2252,7 +2252,7 @@ void CHMM::estimate_model_viterbi(CHMM* estimate)
 // estimate parameters listed in learn_x
 void CHMM::estimate_model_viterbi_defined(CHMM* estimate)
 {
-	INT i,j,k,t;
+	int32_t i,j,k,t;
 	DREAL sum;
 	DREAL* P=ARRAYN1(0);
 	DREAL* Q=ARRAYN2(0);
@@ -2278,13 +2278,13 @@ void CHMM::estimate_model_viterbi_defined(CHMM* estimate)
 #endif
 
 	DREAL allpatprob=0.0 ;
-	for (INT dim=0; dim<p_observations->get_num_vectors(); dim++)
+	for (int32_t dim=0; dim<p_observations->get_num_vectors(); dim++)
 	{
 
 #ifdef USE_HMMPARALLEL
 		if (dim%parallel.get_num_threads()==0)
 		{
-			INT i ;
+			int32_t i ;
 			for (i=0; i<parallel.get_num_threads(); i++)
 				if (dim+i<p_observations->get_num_vectors())
 				{
@@ -2437,7 +2437,7 @@ void CHMM::estimate_model_viterbi_defined(CHMM* estimate)
 //to give an idea what the model looks like
 void CHMM::output_model(bool verbose)
 {
-	INT i,j;
+	int32_t i,j;
 	DREAL checksum;
 
 	//generic info
@@ -2521,7 +2521,7 @@ void CHMM::output_model(bool verbose)
 //to give an idea what the model looks like
 void CHMM::output_model_defined(bool verbose)
 {
-	INT i,j;
+	int32_t i,j;
 	if (!model)
 		return ;
 
@@ -2576,7 +2576,7 @@ void CHMM::output_model_defined(bool verbose)
 //convert model to log probabilities
 void CHMM::convert_to_log()
 {
-	INT i,j;
+	int32_t i,j;
 
 	for (i=0; i<N; i++)
 	{
@@ -2626,7 +2626,7 @@ void CHMM::init_model_random()
 	const DREAL MIN_RAND=23e-3;
 
 	DREAL sum;
-	INT i,j;
+	int32_t i,j;
 
 	//initialize a with random values
 	for (i=0; i<N; i++)
@@ -2689,7 +2689,7 @@ void CHMM::init_model_random()
 //init model according to const_x
 void CHMM::init_model_defined()
 {
-	INT i,j,k,r;
+	int32_t i,j,k,r;
 	DREAL sum;
 	const DREAL MIN_RAND=23e-3;
 
@@ -2843,7 +2843,7 @@ void CHMM::init_model_defined()
 
 void CHMM::clear_model()
 {
-	INT i,j;
+	int32_t i,j;
 	for (i=0; i<N; i++)
 	{
 		set_p(i, log(PSEUDO));
@@ -2859,7 +2859,7 @@ void CHMM::clear_model()
 
 void CHMM::clear_model_defined()
 {
-	INT i,j,k;
+	int32_t i,j,k;
 
 	for (i=0; (j=model->get_learn_p(i))!=-1; i++)
 		set_p(j, log(PSEUDO));
@@ -2882,7 +2882,7 @@ void CHMM::clear_model_defined()
 
 void CHMM::copy_model(CHMM* l)
 {
-	INT i,j;
+	int32_t i,j;
 	for (i=0; i<N; i++)
 	{
 		set_p(i, l->get_p(i));
@@ -2912,7 +2912,7 @@ void CHMM::invalidate_model()
 	  trans_list_backward_cnt=NULL ;
 	  if (trans_list_forward)
 	    {
-	      for (INT i=0; i<trans_list_len; i++)
+	      for (int32_t i=0; i<trans_list_len; i++)
 		if (trans_list_forward[i])
 		  delete[] trans_list_forward[i] ;
 	      delete[] trans_list_forward ;
@@ -2920,7 +2920,7 @@ void CHMM::invalidate_model()
 	    }
 	  if (trans_list_backward)
 	    {
-	      for (INT i=0; i<trans_list_len; i++)
+	      for (int32_t i=0; i<trans_list_len; i++)
 		if (trans_list_backward[i])
 		  delete[] trans_list_backward[i] ;
 	      delete[] trans_list_backward ;
@@ -2931,11 +2931,11 @@ void CHMM::invalidate_model()
 	  trans_list_forward = new T_STATES*[N] ;
 	  trans_list_forward_cnt = new T_STATES[N] ;
 
-	  for (INT j=0; j<N; j++)
+	  for (int32_t j=0; j<N; j++)
 	    {
 	      trans_list_forward_cnt[j]= 0 ;
 	      trans_list_forward[j]= new T_STATES[N] ;
-	      for (INT i=0; i<N; i++)
+	      for (int32_t i=0; i<N; i++)
 		if (get_a(i,j)>CMath::ALMOST_NEG_INFTY)
 		  {
 		    trans_list_forward[j][trans_list_forward_cnt[j]]=i ;
@@ -2946,11 +2946,11 @@ void CHMM::invalidate_model()
 	  trans_list_backward = new T_STATES*[N] ;
 	  trans_list_backward_cnt = new T_STATES[N] ;
 	  
-	  for (INT i=0; i<N; i++)
+	  for (int32_t i=0; i<N; i++)
 	    {
 	      trans_list_backward_cnt[i]= 0 ;
 	      trans_list_backward[i]= new T_STATES[N] ;
-	      for (INT j=0; j<N; j++)
+	      for (int32_t j=0; j<N; j++)
 		if (get_a(i,j)>CMath::ALMOST_NEG_INFTY)
 		  {
 		    trans_list_backward[i][trans_list_backward_cnt[i]]=j ;
@@ -2968,7 +2968,7 @@ void CHMM::invalidate_model()
 
 #ifdef USE_HMMPARALLEL_STRUCTURES
 	{
-		for (INT i=0; i<parallel.get_num_threads(); i++)
+		for (int32_t i=0; i<parallel.get_num_threads(); i++)
 		{
 			this->alpha_cache[i].updated=false;
 			this->beta_cache[i].updated=false;
@@ -2991,7 +2991,7 @@ void CHMM::invalidate_model()
 
 void CHMM::open_bracket(FILE* file)
 {
-	INT value;
+	int32_t value;
 	while (((value=fgetc(file)) != EOF) && (value!='['))	//skip possible spaces and end if '[' occurs
 	{
 		if (value=='\n')
@@ -3012,7 +3012,7 @@ void CHMM::open_bracket(FILE* file)
 
 void CHMM::close_bracket(FILE* file)
 {
-	INT value;
+	int32_t value;
 	while (((value=fgetc(file)) != EOF) && (value!=']'))	//skip possible spaces and end if ']' occurs
 	{
 		if (value=='\n')
@@ -3025,7 +3025,7 @@ void CHMM::close_bracket(FILE* file)
 
 bool CHMM::comma_or_space(FILE* file)
 {
-	INT value;
+	int32_t value;
 	while (((value=fgetc(file)) != EOF) && (value!=',') && (value!=';') && (value!=']'))	 //skip possible spaces and end if ',' or ';' occurs
 	{
 		if (value=='\n')
@@ -3050,7 +3050,7 @@ bool CHMM::comma_or_space(FILE* file)
 	return true ;
 }
 
-bool CHMM::get_numbuffer(FILE* file, char* buffer, INT length)
+bool CHMM::get_numbuffer(FILE* file, char* buffer, int32_t length)
 {
 	signed char value;
 
@@ -3070,7 +3070,7 @@ bool CHMM::get_numbuffer(FILE* file, char* buffer, INT length)
 	} ;
 	if (value!=EOF)
 	{
-		INT i=0;
+		int32_t i=0;
 		switch (value)
 		{
 			case 'A':
@@ -3138,8 +3138,8 @@ bool CHMM::get_numbuffer(FILE* file, char* buffer, INT length)
    % p is initial distribution
    % size(p)= [1, N]
 
-   N=<INT>;	
-   M=<INT>;
+   N=<int32_t>;	
+   M=<int32_t>;
 
    p=[<DREAL>,<DREAL>...<DOUBLE>];
    q=[<DOUBLE>,<DOUBLE>...<DOUBLE>];
@@ -3161,20 +3161,20 @@ bool CHMM::get_numbuffer(FILE* file, char* buffer, INT length)
 
 bool CHMM::load_model(FILE* file)
 {
-	INT received_params=0;	//a,b,p,N,M,O
+	int32_t received_params=0;	//a,b,p,N,M,O
 
 	bool result=false;
 	E_STATE state=INITIAL;
 	char buffer[1024];
 
 	line=1;
-	INT i,j;
+	int32_t i,j;
 
 	if (file)
 	{
 		while (state!=END)
 		{
-			INT value=fgetc(file);
+			int32_t value=fgetc(file);
 
 			if (value=='\n')
 				line++;
@@ -3418,44 +3418,44 @@ bool CHMM::load_model(FILE* file)
 	%		#define T 3
 	%
 
-	learn_a=[ [<INT>,<INT>]; 
-	[<INT>,<INT>]; 
-	[<INT>,<INT>]; 
+	learn_a=[ [<int32_t>,<int32_t>]; 
+	[<int32_t>,<int32_t>]; 
+	[<int32_t>,<int32_t>]; 
 	........
-	[<INT>,<INT>]; 
+	[<int32_t>,<int32_t>]; 
 	[-1,-1];
 	];
 
-	learn_b=[ [<INT>,<INT>]; 
-	[<INT>,<INT>]; 
-	[<INT>,<INT>]; 
+	learn_b=[ [<int32_t>,<int32_t>]; 
+	[<int32_t>,<int32_t>]; 
+	[<int32_t>,<int32_t>]; 
 	........
-	[<INT>,<INT>]; 
+	[<int32_t>,<int32_t>]; 
 	[-1,-1];
 	];
 
-	learn_p= [ <INT>, ... , <INT>, -1 ];
-	learn_q= [ <INT>, ... , <INT>, -1 ];
+	learn_p= [ <int32_t>, ... , <int32_t>, -1 ];
+	learn_q= [ <int32_t>, ... , <int32_t>, -1 ];
 
 
-	const_a=[ [<INT>,<INT>,<DOUBLE>]; 
-	[<INT>,<INT>,<DOUBLE>]; 
-	[<INT>,<INT>,<DOUBLE>]; 
+	const_a=[ [<int32_t>,<int32_t>,<DOUBLE>]; 
+	[<int32_t>,<int32_t>,<DOUBLE>]; 
+	[<int32_t>,<int32_t>,<DOUBLE>]; 
 	........
-	[<INT>,<INT>,<DOUBLE>]; 
+	[<int32_t>,<int32_t>,<DOUBLE>]; 
 	[-1,-1,-1];
 	];
 
-	const_b=[ [<INT>,<INT>,<DOUBLE>]; 
-	[<INT>,<INT>,<DOUBLE>]; 
-	[<INT>,<INT>,<DOUBLE]; 
+	const_b=[ [<int32_t>,<int32_t>,<DOUBLE>]; 
+	[<int32_t>,<int32_t>,<DOUBLE>]; 
+	[<int32_t>,<int32_t>,<DOUBLE]; 
 	........
-	[<INT>,<INT>,<DOUBLE>]; 
+	[<int32_t>,<int32_t>,<DOUBLE>]; 
 	[-1,-1];
 	];
 
-	const_p[]=[ [<INT>, <DOUBLE>], ... , [<INT>,<DOUBLE>], [-1,-1] ];
-	const_q[]=[ [<INT>, <DOUBLE>], ... , [<INT>,<DOUBLE>], [-1,-1] ];
+	const_p[]=[ [<int32_t>, <DOUBLE>], ... , [<int32_t>,<DOUBLE>], [-1,-1] ];
+	const_q[]=[ [<int32_t>, <DOUBLE>], ... , [<int32_t>,<DOUBLE>], [-1,-1] ];
 	*/
 bool CHMM::load_definitions(FILE* file, bool verbose, bool init)
 {
@@ -3463,7 +3463,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool init)
 		delete model ;
 	model=new CModel();
 
-	INT received_params=0x0000000;	//a,b,p,q,N,M,O
+	int32_t received_params=0x0000000;	//a,b,p,q,N,M,O
 	char buffer[1024];
 
 	bool result=false;
@@ -3490,7 +3490,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool init)
 	{
 		while (state!=END)
 		{
-			INT value=fgetc(file);
+			int32_t value=fgetc(file);
 
 			if (value=='\n')
 				line++;
@@ -3562,7 +3562,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool init)
 					{
 						open_bracket(file);
 						bool finished=false;
-						INT i=0;
+						int32_t i=0;
 
 						if (verbose) 
 							SG_DEBUG( "\nlearn for transition matrix: ") ;
@@ -3625,7 +3625,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool init)
 					{
 						open_bracket(file);
 						bool finished=false;
-						INT i=0;
+						int32_t i=0;
 
 						if (verbose) 
 							SG_DEBUG( "\nlearn for emission matrix:   ") ;
@@ -3634,9 +3634,9 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool init)
 						{
 							open_bracket(file);
 
-							INT combine=0;
+							int32_t combine=0;
 
-							for (int j=0; j<2; j++)
+							for (int32_t j=0; j<2; j++)
 							{
 								if (get_numbuffer(file, buffer, 4))   //get num
 								{
@@ -3688,7 +3688,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool init)
 					{
 						open_bracket(file);
 						bool finished=false;
-						INT i=0;
+						int32_t i=0;
 
 						if (verbose) 
 							SG_DEBUG( "\nlearn start states: ") ;
@@ -3732,7 +3732,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool init)
 					{
 						open_bracket(file);
 						bool finished=false;
-						INT i=0;
+						int32_t i=0;
 
 						if (verbose) 
 							SG_DEBUG( "\nlearn terminal states: ") ;
@@ -3775,7 +3775,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool init)
 					{
 						open_bracket(file);
 						bool finished=false;
-						INT i=0;
+						int32_t i=0;
 
 						if (verbose) 
 #ifdef USE_HMMDEBUG
@@ -3796,7 +3796,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool init)
 								{
 									finished=true;
 									model->set_const_a(i++, value);
-									model->set_const_a_val((int)i/2 - 1, value);
+									model->set_const_a_val((int32_t)i/2 - 1, value);
 									break;
 								}
 								if (value>=N)
@@ -3815,7 +3815,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool init)
 								if (value<0)
 								{
 									finished=true;
-									model->set_const_a_val((int)i/2 - 1, value);
+									model->set_const_a_val((int32_t)i/2 - 1, value);
 									break;
 								}
 								if (value>=N)
@@ -3825,12 +3825,12 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool init)
 								break;
 
 							if (!comma_or_space(file))
-								model->set_const_a_val((int)i/2 - 1, 1.0);
+								model->set_const_a_val((int32_t)i/2 - 1, 1.0);
 							else
 								if (get_numbuffer(file, buffer, 10))	//get num
 								{
 									DREAL dvalue=atof(buffer);
-									model->set_const_a_val((int)i/2 - 1, dvalue);
+									model->set_const_a_val((int32_t)i/2 - 1, dvalue);
 									if (dvalue<0)
 									{
 										finished=true;
@@ -3840,11 +3840,11 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool init)
 										SG_ERROR( "invalid value for const_a_val(%i): %e\n",(int)i/2-1,dvalue) ;
 								}
 								else
-									model->set_const_a_val((int)i/2 - 1, 1.0);
+									model->set_const_a_val((int32_t)i/2 - 1, 1.0);
 
 #ifdef USE_HMMDEBUG
 							if (verbose)
-								SG_ERROR("const_a(%i,%i)=%e\n", model->get_const_a((int)i/2-1,0),model->get_const_a((int)i/2-1,1),model->get_const_a_val((int)i/2-1)) ;
+								SG_ERROR("const_a(%i,%i)=%e\n", model->get_const_a((int32_t)i/2-1,0),model->get_const_a((int32_t)i/2-1,1),model->get_const_a_val((int32_t)i/2-1)) ;
 #endif
 							close_bracket(file);
 						}
@@ -3867,7 +3867,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool init)
 					{
 						open_bracket(file);
 						bool finished=false;
-						INT i=0;
+						int32_t i=0;
 
 						if (verbose) 
 #ifdef USE_HMMDEBUG
@@ -3878,8 +3878,8 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool init)
 						while (!finished)
 						{
 							open_bracket(file);
-							INT combine=0;
-							for (INT j=0; j<3; j++)
+							int32_t combine=0;
+							for (int32_t j=0; j<3; j++)
 							{
 								if (get_numbuffer(file, buffer, 10))	//get num
 								{
@@ -3892,7 +3892,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool init)
 										if (value<0)
 										{
 											finished=true;
-											//model->set_const_b_val((int)(i-1)/2, value);
+											//model->set_const_b_val((int32_t)(i-1)/2, value);
 											break;
 										}
 										if (value>=N)
@@ -3901,7 +3901,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool init)
 									else if (j==2)
 									{
 										DREAL dvalue=atof(buffer);
-										model->set_const_b_val((int)(i-1)/2, dvalue);
+										model->set_const_b_val((int32_t)(i-1)/2, dvalue);
 										if (dvalue<0)
 										{
 											finished=true;
@@ -3919,13 +3919,13 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool init)
 								else
 								{
 									if (j==2)
-										model->set_const_b_val((int)(i-1)/2, 1.0);
+										model->set_const_b_val((int32_t)(i-1)/2, 1.0);
 									break;
 								} ;
 								if (j<2)
 									if ((!comma_or_space(file)) && (j==1))
 									{
-										model->set_const_b_val((int)(i-1)/2, 1.0) ;
+										model->set_const_b_val((int32_t)(i-1)/2, 1.0) ;
 										break ;
 									} ;
 							}
@@ -3935,7 +3935,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool init)
 								SG_ERROR("invalid value for const_b(%i,1): %i\n",i/2-1, combine) ;
 #ifdef USE_HMMDEBUG
 							if (verbose && !finished)
-								SG_ERROR("const_b(%i,%i)=%e\n", model->get_const_b((int)i/2-1,0),model->get_const_b((int)i/2-1,1),model->get_const_b_val((int)i/2-1)) ;
+								SG_ERROR("const_b(%i,%i)=%e\n", model->get_const_b((int32_t)i/2-1,0),model->get_const_b((int32_t)i/2-1,1),model->get_const_b_val((int32_t)i/2-1)) ;
 #endif
 						}
 						close_bracket(file);
@@ -3956,7 +3956,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool init)
 					{
 						open_bracket(file);
 						bool finished=false;
-						INT i=0;
+						int32_t i=0;
 
 						if (verbose) 
 #ifdef USE_HMMDEBUG
@@ -4036,7 +4036,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool init)
 #else
 						SG_DEBUG( "\nconst for terminal states: ") ;
 #endif
-						INT i=0;
+						int32_t i=0;
 
 						while (!finished)
 						{
@@ -4142,8 +4142,8 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool init)
    % p is initial distribution
    % size(p)= [1, N]
 
-   N=<INT>;	
-   M=<INT>;
+   N=<int32_t>;	
+   M=<int32_t>;
 
    p=[<DOUBLE>,<DOUBLE>...<DOUBLE>];
 
@@ -4165,7 +4165,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool init)
 bool CHMM::save_model(FILE* file)
 {
 	bool result=false;
-	INT i,j;
+	int32_t i,j;
 	const float NAN_REPLACEMENT = (float) CMath::ALMOST_NEG_INFTY ;
 
 	if (file)
@@ -4259,14 +4259,14 @@ bool CHMM::save_model(FILE* file)
 }
 
 #ifndef NOVIT
-T_STATES* CHMM::get_path(INT dim, DREAL& prob)
+T_STATES* CHMM::get_path(int32_t dim, DREAL& prob)
 {
 	T_STATES* result = NULL;
 
 	prob = best_path(dim);
 	result = new T_STATES[p_observations->get_vector_length(dim)];
 
-	for (INT i=0; i<p_observations->get_vector_length(dim); i++)
+	for (int32_t i=0; i<p_observations->get_vector_length(dim); i++)
 		result[i]=PATH(dim)[i];
 
 	return result;
@@ -4278,13 +4278,13 @@ bool CHMM::save_path(FILE* file)
 
 	if (file)
 	{
-	  for (INT dim=0; dim<p_observations->get_num_vectors(); dim++)
+	  for (int32_t dim=0; dim<p_observations->get_num_vectors(); dim++)
 	    {
 	      if (dim%100==0)
 		SG_PRINT( "%i..", dim) ;
 	      DREAL prob = best_path(dim);
 	      fprintf(file,"%i. path probability:%e\nstate sequence:\n", dim, prob);
-	      for (INT i=0; i<p_observations->get_vector_length(dim)-1; i++)
+	      for (int32_t i=0; i<p_observations->get_vector_length(dim)-1; i++)
 		fprintf(file,"%d ", PATH(dim)[i]);
 	      fprintf(file,"%d", PATH(dim)[p_observations->get_vector_length(dim)-1]);
 	      fprintf(file,"\n\n") ;
@@ -4303,7 +4303,7 @@ bool CHMM::save_likelihood_bin(FILE* file)
 
 	if (file)
 	{
-		for (INT dim=0; dim<p_observations->get_num_vectors(); dim++)
+		for (int32_t dim=0; dim<p_observations->get_num_vectors(); dim++)
 		{
 			float prob= (float) model_probability(dim);
 			fwrite(&prob, sizeof(float), 1, file);
@@ -4323,7 +4323,7 @@ bool CHMM::save_likelihood(FILE* file)
 		fprintf(file, "%% likelihood of model per observation\n%% P[O|model]=[ P[O|model]_1 P[O|model]_2 ... P[O|model]_dim ]\n%%\n");
 
 		fprintf(file, "P=[");
-		for (INT dim=0; dim<p_observations->get_num_vectors(); dim++)
+		for (int32_t dim=0; dim<p_observations->get_num_vectors(); dim++)
 			fprintf(file, "%e ", (double) model_probability(dim));
 
 		fprintf(file,"];");
@@ -4337,7 +4337,7 @@ bool CHMM::save_likelihood(FILE* file)
 
 bool CHMM::save_model_bin(FILE* file)
 {
-	INT i,j,q, num_floats=0 ;
+	int32_t i,j,q, num_floats=0 ;
 	if (!model)
 	{
 		if (file)
@@ -4383,7 +4383,7 @@ bool CHMM::save_model_bin(FILE* file)
 	{
 		if (file)
 		{
-			INT num_p, num_q, num_a, num_b ;
+			int32_t num_p, num_q, num_a, num_b ;
 			// write id
 			FLOATWRITE(file, (float)CMath::INFTY);	  
 			FLOATWRITE(file, (float) 2);	  
@@ -4440,7 +4440,7 @@ bool CHMM::save_model_bin(FILE* file)
 #ifndef NOVIT
 bool CHMM::save_path_derivatives(FILE* logfile)
 {
-	INT dim,i,j;
+	int32_t dim,i,j;
 	DREAL prob;
 
 	if (logfile)
@@ -4489,9 +4489,9 @@ bool CHMM::save_path_derivatives(FILE* logfile)
 bool CHMM::save_path_derivatives_bin(FILE* logfile)
 {
 	bool result=false;
-	INT dim,i,j,q;
+	int32_t dim,i,j,q;
 	DREAL prob=0 ;
-	INT num_floats=0 ;
+	int32_t num_floats=0 ;
 
 	DREAL sum_prob=0.0 ;
 	if (!model)
@@ -4573,8 +4573,8 @@ bool CHMM::save_path_derivatives_bin(FILE* logfile)
 bool CHMM::save_model_derivatives_bin(FILE* file)
 {
 	bool result=false;
-	INT dim,i,j,q ;
-	INT num_floats=0 ;
+	int32_t dim,i,j,q ;
+	int32_t num_floats=0 ;
 
 	if (!model)
 		SG_WARNING( "No definitions loaded -- writing derivatives of all weights\n") ;
@@ -4597,7 +4597,7 @@ bool CHMM::save_model_derivatives_bin(FILE* file)
 #ifdef USE_HMMPARALLEL
 		if (dim%parallel.get_num_threads()==0)
 		{
-			INT i ;
+			int32_t i ;
 			for (i=0; i<parallel.get_num_threads(); i++)
 				if (dim+i<p_observations->get_num_vectors())
 				{
@@ -4693,7 +4693,7 @@ bool CHMM::save_model_derivatives_bin(FILE* file)
 bool CHMM::save_model_derivatives(FILE* file)
 {
 	bool result=false;
-	INT dim,i,j;
+	int32_t dim,i,j;
 
 	if (file)
 	{
@@ -4743,11 +4743,11 @@ bool CHMM::check_model_derivatives_combined()
 	//	bool result=false;
 	const DREAL delta=5e-4 ;
 
-	INT i ;
+	int32_t i ;
 	//derivates log(da)
 	/*	for (i=0; i<N; i++)
 		{
-		for (INT j=0; j<N; j++)
+		for (int32_t j=0; j<N; j++)
 		{
 		DREAL old_a=get_a(i,j) ;
 
@@ -4767,7 +4767,7 @@ bool CHMM::check_model_derivatives_combined()
 		DREAL prod_prob=model_probability(-1)*p_observations->get_num_vectors() ;
 
 		DREAL deriv_calc=0 ;
-		for (INT dim=0; dim<p_observations->get_num_vectors(); dim++)
+		for (int32_t dim=0; dim<p_observations->get_num_vectors(); dim++)
 		deriv_calc+=exp(model_derivative_a(i, j, dim)+
 		prod_prob-model_probability(dim)) ;
 
@@ -4777,7 +4777,7 @@ bool CHMM::check_model_derivatives_combined()
 	//derivates log(db)
 	i=0;//for (i=0; i<N; i++)
 	{
-		for (INT j=0; j<M; j++)
+		for (int32_t j=0; j<M; j++)
 		{
 			DREAL old_b=get_b(i,j) ;
 
@@ -4795,7 +4795,7 @@ bool CHMM::check_model_derivatives_combined()
 			invalidate_model() ;
 
 			DREAL deriv_calc=0 ;
-			for (INT dim=0; dim<p_observations->get_num_vectors(); dim++)
+			for (int32_t dim=0; dim<p_observations->get_num_vectors(); dim++)
 			{
 				deriv_calc+=exp(model_derivative_b(i, j, dim)-model_probability(dim)) ;
 				if (j==1)
@@ -4813,13 +4813,13 @@ bool CHMM::check_model_derivatives()
 	bool result=false;
 	const DREAL delta=3e-4 ;
 
-	for (INT dim=0; dim<p_observations->get_num_vectors(); dim++)
+	for (int32_t dim=0; dim<p_observations->get_num_vectors(); dim++)
 	{	
-		INT i ;
+		int32_t i ;
 		//derivates log(dp),log(dq)
 		for (i=0; i<N; i++)
 		{
-			for (INT j=0; j<N; j++)
+			for (int32_t j=0; j<N; j++)
 			{
 				DREAL old_a=get_a(i,j) ;
 
@@ -4843,7 +4843,7 @@ bool CHMM::check_model_derivatives()
 		} ;
 		for (i=0; i<N; i++)
 		{
-			for (INT j=0; j<M; j++)
+			for (int32_t j=0; j<M; j++)
 			{
 				DREAL old_b=get_b(i,j) ;
 
@@ -4918,13 +4918,13 @@ bool CHMM::check_path_derivatives()
 	bool result=false;
 	const DREAL delta=1e-4 ;
 
-	for (INT dim=0; dim<p_observations->get_num_vectors(); dim++)
+	for (int32_t dim=0; dim<p_observations->get_num_vectors(); dim++)
 	{	
-		INT i ;
+		int32_t i ;
 		//derivates log(dp),log(dq)
 		for (i=0; i<N; i++)
 		{
-			for (INT j=0; j<N; j++)
+			for (int32_t j=0; j<N; j++)
 			{
 				DREAL old_a=get_a(i,j) ;
 
@@ -4947,7 +4947,7 @@ bool CHMM::check_path_derivatives()
 		} ;
 		for (i=0; i<N; i++)
 		{
-			for (INT j=0; j<M; j++)
+			for (int32_t j=0; j<M; j++)
 			{
 				DREAL old_b=get_b(i,j) ;
 
@@ -5018,7 +5018,7 @@ bool CHMM::check_path_derivatives()
 //normalize model (sum to one constraint)
 void CHMM::normalize(bool keep_dead_states)
 {
-	INT i,j;
+	int32_t i,j;
 	const DREAL INF=-1e10;
 	DREAL sum_p =INF;
 
@@ -5054,8 +5054,8 @@ void CHMM::normalize(bool keep_dead_states)
 bool CHMM::append_model(CHMM* app_model)
 {
 	bool result=false;
-	const INT num_states=app_model->get_N();
-	INT i,j;
+	const int32_t num_states=app_model->get_N();
+	int32_t i,j;
 
 	SG_DEBUG( "cur N:%d M:%d\n", N, M);
 	SG_DEBUG( "old N:%d M:%d\n", app_model->get_N(), app_model->get_M());
@@ -5146,8 +5146,8 @@ bool CHMM::append_model(CHMM* app_model)
 bool CHMM::append_model(CHMM* app_model, DREAL* cur_out, DREAL* app_out)
 {
 	bool result=false;
-	const INT num_states=app_model->get_N()+2;
-	INT i,j;
+	const int32_t num_states=app_model->get_N()+2;
+	int32_t i,j;
 
 	if (app_model->get_M() == get_M())
 	{
@@ -5251,9 +5251,9 @@ bool CHMM::append_model(CHMM* app_model, DREAL* cur_out, DREAL* app_out)
 }
 
 
-void CHMM::add_states(INT num_states, DREAL default_value)
+void CHMM::add_states(int32_t num_states, DREAL default_value)
 {
-	INT i,j;
+	int32_t i,j;
 	const DREAL MIN_RAND=1e-2; //this is the range of the random values for the new variables
 	const DREAL MAX_RAND=2e-1;
 
@@ -5313,9 +5313,9 @@ void CHMM::add_states(INT num_states, DREAL default_value)
 
 void CHMM::chop(DREAL value)
 {
-	for (INT i=0; i<N; i++)
+	for (int32_t i=0; i<N; i++)
 	{
-		INT j;
+		int32_t j;
 
 		if (exp(get_p(i)) < value)
 			set_p(i, CMath::ALMOST_NEG_INFTY);
@@ -5343,10 +5343,10 @@ bool CHMM::linear_train(bool right_align)
 {
 	if (p_observations)
 	{
-		INT histsize=(get_M()*get_N());
-		INT* hist=new INT[histsize];
-		INT* startendhist=new INT[get_N()];
-		INT i,dim;
+		int32_t histsize=(get_M()*get_N());
+		int32_t* hist=new int32_t[histsize];
+		int32_t* startendhist=new int32_t[get_N()];
+		int32_t i,dim;
 
 		ASSERT(p_observations->get_max_vector_length()<=get_N());
 
@@ -5360,7 +5360,7 @@ bool CHMM::linear_train(bool right_align)
 		{
 			for (dim=0; dim<p_observations->get_num_vectors(); dim++)
 			{
-				INT len=0;
+				int32_t len=0;
 				uint16_t* obs=p_observations->get_feature_vector(dim, len);
 
 				ASSERT(len<=get_N());
@@ -5379,7 +5379,7 @@ bool CHMM::linear_train(bool right_align)
 
 			for (i=0;i<get_N();i++)
 			{
-				for (INT j=0; j<get_N(); j++)
+				for (int32_t j=0; j<get_N(); j++)
 				{
 					if (i==j-1)
 						set_a(i,j, 1);
@@ -5392,7 +5392,7 @@ bool CHMM::linear_train(bool right_align)
 		{
 			for (dim=0; dim<p_observations->get_num_vectors(); dim++)
 			{
-				INT len=0;
+				int32_t len=0;
 				uint16_t* obs=p_observations->get_feature_vector(dim, len);
 
 				ASSERT(len<=get_N());
@@ -5409,13 +5409,13 @@ bool CHMM::linear_train(bool right_align)
 			for (i=0; i<get_N(); i++)
 				set_q(i, startendhist[i]+PSEUDO);
 
-			INT total=p_observations->get_num_vectors();
+			int32_t total=p_observations->get_num_vectors();
 
 			for (i=0;i<get_N();i++)
 			{
 				total-= startendhist[i] ;
 
-				for (INT j=0; j<get_N(); j++)
+				for (int32_t j=0; j<get_N(); j++)
 				{
 					if (i==j-1)
 						set_a(i,j, total+PSEUDO);
@@ -5428,12 +5428,12 @@ bool CHMM::linear_train(bool right_align)
 
 		for (i=0;i<get_N();i++)
 		{
-			for (INT j=0; j<get_M(); j++)
+			for (int32_t j=0; j<get_M(); j++)
 			{
 				DREAL sum=0;
-				INT offs=i*get_M()+ p_observations->get_masked_symbols((uint16_t) j, (uint8_t) 254);
+				int32_t offs=i*get_M()+ p_observations->get_masked_symbols((uint16_t) j, (uint8_t) 254);
 
-				for (INT k=0; k<p_observations->get_original_num_symbols(); k++)
+				for (int32_t k=0; k<p_observations->get_original_num_symbols(); k++)
 					sum+=hist[offs+k];
 
 				set_b(i,j, (PSEUDO+hist[i*get_M()+j])/(sum+PSEUDO*p_observations->get_original_num_symbols()));
@@ -5463,7 +5463,7 @@ void CHMM::set_observation_nocache(CStringFeatures<uint16_t>* obs)
 	if (!reused_caches)
 	{
 #ifdef USE_HMMPARALLEL_STRUCTURES
-		for (INT i=0; i<parallel.get_num_threads(); i++) 
+		for (int32_t i=0; i<parallel.get_num_threads(); i++) 
 		{
 			delete[] alpha_cache[i].table;
 			delete[] beta_cache[i].table;
@@ -5519,7 +5519,7 @@ void CHMM::set_observations(CStringFeatures<uint16_t>* obs, CHMM* lambda)
 	if (!reused_caches)
 	{
 #ifdef USE_HMMPARALLEL_STRUCTURES
-		for (INT i=0; i<parallel.get_num_threads(); i++) 
+		for (int32_t i=0; i<parallel.get_num_threads(); i++) 
 		{
 			delete[] alpha_cache[i].table;
 			delete[] beta_cache[i].table;
@@ -5551,12 +5551,12 @@ void CHMM::set_observations(CStringFeatures<uint16_t>* obs, CHMM* lambda)
 
 	if (obs!=NULL)
 	{
-		INT max_T=obs->get_max_vector_length();
+		int32_t max_T=obs->get_max_vector_length();
 
 		if (lambda)
 		{
 #ifdef USE_HMMPARALLEL_STRUCTURES
-			for (INT i=0; i<parallel.get_num_threads(); i++) 
+			for (int32_t i=0; i<parallel.get_num_threads(); i++) 
 			{
 				this->alpha_cache[i].table= lambda->alpha_cache[i].table;
 				this->beta_cache[i].table=	lambda->beta_cache[i].table;
@@ -5577,7 +5577,7 @@ void CHMM::set_observations(CStringFeatures<uint16_t>* obs, CHMM* lambda)
 			this->reused_caches=false;
 #ifdef USE_HMMPARALLEL_STRUCTURES
 			SG_INFO( "allocating mem for path-table of size %.2f Megabytes (%d*%d) each:\n", ((float)max_T)*N*sizeof(T_STATES)/(1024*1024), max_T, N);
-			for (INT i=0; i<parallel.get_num_threads(); i++)
+			for (int32_t i=0; i<parallel.get_num_threads(); i++)
 			{
 				if ((states_per_observation_psi[i]=new T_STATES[max_T*N])!=NULL)
 					SG_DEBUG( "path_table[%i] successfully allocated\n",i) ;
@@ -5598,7 +5598,7 @@ void CHMM::set_observations(CStringFeatures<uint16_t>* obs, CHMM* lambda)
 			SG_INFO( "allocating mem for caches each of size %.2f Megabytes (%d*%d) ....\n", ((float)max_T)*N*sizeof(T_ALPHA_BETA_TABLE)/(1024*1024), max_T, N);
 
 #ifdef USE_HMMPARALLEL_STRUCTURES
-			for (INT i=0; i<parallel.get_num_threads(); i++)
+			for (int32_t i=0; i<parallel.get_num_threads(); i++)
 			{
 				if ((alpha_cache[i].table=new T_ALPHA_BETA_TABLE[max_T*N])!=NULL)
 					SG_DEBUG( "alpha_cache[%i].table successfully allocated\n",i) ;
@@ -5624,7 +5624,7 @@ void CHMM::set_observations(CStringFeatures<uint16_t>* obs, CHMM* lambda)
 #endif // USE_HMMPARALLEL_STRUCTURES
 #else // USE_HMMCACHE
 #ifdef USE_HMMPARALLEL_STRUCTURES
-			for (INT i=0; i<parallel.get_num_threads(); i++)
+			for (int32_t i=0; i<parallel.get_num_threads(); i++)
 			{
 				alpha_cache[i].table=NULL ;
 				beta_cache[i].table=NULL ;
@@ -5641,13 +5641,13 @@ void CHMM::set_observations(CStringFeatures<uint16_t>* obs, CHMM* lambda)
 	invalidate_model();
 }
 
-bool CHMM::permutation_entropy(INT window_width, INT sequence_number)
+bool CHMM::permutation_entropy(int32_t window_width, int32_t sequence_number)
 {
 	if (p_observations && window_width>0 &&
 			( sequence_number<0 || sequence_number < p_observations->get_num_vectors()))
 	{
-		INT min_sequence=sequence_number;
-		INT max_sequence=sequence_number;
+		int32_t min_sequence=sequence_number;
+		int32_t max_sequence=sequence_number;
 
 		if (sequence_number<0)
 		{
@@ -5659,12 +5659,12 @@ bool CHMM::permutation_entropy(INT window_width, INT sequence_number)
 		SG_INFO( "min_sequence: %d max_sequence: %d\n", min_sequence, max_sequence);
 		for (sequence_number=min_sequence; sequence_number<max_sequence; sequence_number++)
 		{
-			INT sequence_length=0;
+			int32_t sequence_length=0;
 			uint16_t* obs=p_observations->get_feature_vector(sequence_number, sequence_length);
 
-			INT histsize=get_M();
+			int32_t histsize=get_M();
 			LONG* hist=new LONG[histsize];
-			INT i,j;
+			int32_t i,j;
 
 			for (i=0; i<sequence_length-window_width; i++)
 			{
@@ -5696,7 +5696,7 @@ bool CHMM::permutation_entropy(INT window_width, INT sequence_number)
 		return false;
 }
 
-DREAL CHMM::get_log_derivative(INT num_param, INT num_example)
+DREAL CHMM::get_log_derivative(int32_t num_param, int32_t num_example)
 {
 	if (num_param<N)
 		return model_derivative_p(num_param, num_example);
@@ -5704,16 +5704,16 @@ DREAL CHMM::get_log_derivative(INT num_param, INT num_example)
 		return model_derivative_q(num_param-N, num_example);
 	else if (num_param<N*(N+2))
 	{
-		INT k=num_param-2*N;
-		INT i=k/N;
-		INT j=k%N;
+		int32_t k=num_param-2*N;
+		int32_t i=k/N;
+		int32_t j=k%N;
 		return model_derivative_a(i,j, num_example);
 	}
 	else if (num_param<N*(N+2+M))
 	{
-		INT k=num_param-N*(N+2);
-		INT i=k/M;
-		INT j=k%M;
+		int32_t k=num_param-N*(N+2);
+		int32_t i=k/M;
+		int32_t j=k%M;
 		return model_derivative_b(i,j, num_example);
 	}
 
@@ -5721,7 +5721,7 @@ DREAL CHMM::get_log_derivative(INT num_param, INT num_example)
 	return -1;
 }
 
-DREAL CHMM::get_log_model_parameter(INT num_param)
+DREAL CHMM::get_log_model_parameter(int32_t num_param)
 {
 	if (num_param<N)
 		return get_p(num_param);

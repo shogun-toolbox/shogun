@@ -36,7 +36,7 @@ class CGMNPLib: public CSGObject
 		 * @param num_classes number of classes
 		 * @param reg_const reg const
 		 */
-		CGMNPLib(DREAL* vector_y, CKernel* kernel, INT num_data, INT num_virtual_data, INT num_classes, DREAL reg_const);
+		CGMNPLib(DREAL* vector_y, CKernel* kernel, int32_t num_data, int32_t num_virtual_data, int32_t num_classes, DREAL reg_const);
 
 		~CGMNPLib();
 
@@ -49,16 +49,16 @@ class CGMNPLib: public CSGObject
 Usage: exitflag = gmnp_imdm( &get_col, diag_H, vector_c, dim,  
 tmax, tolabs, tolrel, th, &alpha, &t, &History );
 -------------------------------------------------------------- */
-		int gmnp_imdm(double *vector_c,
-				INT dim,
-				INT tmax,
+		int8_t gmnp_imdm(double *vector_c,
+				int32_t dim,
+				int32_t tmax,
 				double tolabs,
 				double tolrel,
 				double th,
 				double *alpha,
-				INT  *ptr_t,
+				int32_t  *ptr_t,
 				double **ptr_History,
-				INT verb);
+				int32_t verb);
 
 		/** get indices2
 		 *
@@ -66,7 +66,7 @@ tmax, tolabs, tolrel, th, &alpha, &t, &History );
 		 * @param c c
 		 * @param i i
 		 */
-		void get_indices2( INT *index, INT *c, INT i );
+		void get_indices2( int32_t *index, int32_t *c, int32_t i );
 
 	protected:
 		/** get kernel col
@@ -74,7 +74,7 @@ tmax, tolabs, tolrel, th, &alpha, &t, &History );
 		 * @param a a
 		 * @return col at a
 		 */
-		DREAL *get_kernel_col( INT a );
+		DREAL *get_kernel_col( int32_t a );
 
 		/** get col
 		 *
@@ -82,7 +82,7 @@ tmax, tolabs, tolrel, th, &alpha, &t, &History );
 		 * @param b b
 		 * @return col at a, b
 		 */
-		DREAL* get_col( INT a, INT b );
+		DREAL* get_col( int32_t a, int32_t b );
 
 		/** kernel fce
 		 *
@@ -90,7 +90,7 @@ tmax, tolabs, tolrel, th, &alpha, &t, &History );
 		 * @param b b
 		 * @return something floaty
 		 */
-		double kernel_fce( INT a, INT b );
+		double kernel_fce( int32_t a, int32_t b );
 
 	protected:
 		/** diag H */
@@ -100,11 +100,11 @@ tmax, tolabs, tolrel, th, &alpha, &t, &History );
 		/** cache index */
 		DREAL* cache_index;
 		/** first kernel inx */
-		INT first_kernel_inx;
+		int32_t first_kernel_inx;
 		/** cache size */
 		LONG Cache_Size;
 		/** num data */
-		INT m_num_data;
+		int32_t m_num_data;
 		/** reg const */
 		DREAL m_reg_const;
 		/** vectory */
@@ -113,13 +113,13 @@ tmax, tolabs, tolrel, th, &alpha, &t, &History );
 		CKernel* m_kernel;
 
 		/** index of first used column */
-		INT first_virt_inx;
+		int32_t first_virt_inx;
 		/** cache for three columns */
 		DREAL *virt_columns[3];
 		/** number of virt data */
-		INT m_num_virt_data;
+		int32_t m_num_virt_data;
 		/** number of classes */
-		INT m_num_classes;
+		int32_t m_num_classes;
 };
 
 

@@ -33,7 +33,7 @@ class CDistanceKernel: public CKernel
 		 * @param width width
 		 * @param dist distance
 		 */
-		CDistanceKernel(INT cache, DREAL width, CDistance* dist);
+		CDistanceKernel(int32_t cache, DREAL width, CDistance* dist);
 
 		/** constructor
 		 *
@@ -100,7 +100,7 @@ class CDistanceKernel: public CKernel
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		DREAL compute(INT idx_a, INT idx_b);
+		DREAL compute(int32_t idx_a, int32_t idx_b);
 
 	private:
 		/** distance */

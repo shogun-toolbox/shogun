@@ -25,12 +25,12 @@ struct S_THREAD_PARAM
 {
 	CSVM* svm;
 	CLabels* result;
-	INT start;
-	INT end;
+	int32_t start;
+	int32_t end;
 	bool verbose;
 };
 
-CSVM::CSVM(INT num_sv)
+CSVM::CSVM(int32_t num_sv)
 : CKernelMachine()
 {
 	set_defaults(num_sv);
@@ -53,7 +53,7 @@ CSVM::~CSVM()
 	SG_DEBUG("SVM object destroyed\n");
 }
 
-void CSVM::set_defaults(INT num_sv)
+void CSVM::set_defaults(int32_t num_sv)
 {
 	svm_model.b=0.0;
 	svm_model.alpha=NULL;
@@ -88,9 +88,9 @@ bool CSVM::load(FILE* modelfl)
 {
 	bool result=true;
 	char char_buffer[1024];
-	int int_buffer;
+	int32_t int_buffer;
 	double double_buffer;
-	int line_number=1;
+	int32_t line_number=1;
 
 	if (fscanf(modelfl,"%4s\n", char_buffer)==EOF)
 	{
@@ -159,7 +159,7 @@ bool CSVM::load(FILE* modelfl)
 		line_number++;
 	}
 
-	for (INT i=0; i<get_num_support_vectors(); i++)
+	for (int32_t i=0; i<get_num_support_vectors(); i++)
 	{
 		double_buffer=0;
 		int_buffer=0;
@@ -210,7 +210,7 @@ bool CSVM::save(FILE* modelfl)
 
 	fprintf(modelfl, "alphas=\[\n");
 
-	for(INT i=0; i<get_num_support_vectors(); i++)
+	for(int32_t i=0; i<get_num_support_vectors(); i++)
 		fprintf(modelfl,"\t[%+10.16e,%d];\n",
 				CSVM::get_alpha(i), get_support_vector(i));
 
@@ -222,14 +222,14 @@ bool CSVM::save(FILE* modelfl)
 
 bool CSVM::init_kernel_optimization()
 {
-	INT num_sv=get_num_support_vectors();
+	int32_t num_sv=get_num_support_vectors();
 
 	if (kernel && kernel->has_property(KP_LINADD) && num_sv>0)
 	{
-		INT * sv_idx    = new INT[num_sv] ;
+		int32_t * sv_idx    = new int32_t[num_sv] ;
 		DREAL* sv_weight = new DREAL[num_sv] ;
 
-		for(INT i=0; i<num_sv; i++)
+		for(int32_t i=0; i<num_sv; i++)
 		{
 			sv_idx[i]    = get_support_vector(i) ;
 			sv_weight[i] = get_alpha(i) ;
@@ -258,17 +258,17 @@ void* CSVM::classify_example_helper(void* p)
 	CSVM* svm=params->svm;
 
 #ifdef WIN32
-	for (INT vec=params->start; vec<params->end; vec++)
+	for (int32_t vec=params->start; vec<params->end; vec++)
 #else
 	CSignal::clear_cancel();
-	for (INT vec=params->start; vec<params->end && 
+	for (int32_t vec=params->start; vec<params->end && 
 			!CSignal::cancel_computations(); vec++)
 #endif
 	{
 		if (params->verbose)
 		{
-			INT num_vectors=params->end - params->start;
-			INT v=vec-params->start;
+			int32_t num_vectors=params->end - params->start;
+			int32_t v=vec-params->start;
 			if ( (v% (num_vectors/100+1))== 0)
 				SG_SPROGRESS(v, 0.0, num_vectors-1);
 		}
@@ -289,7 +289,7 @@ CLabels* CSVM::classify(CLabels* lab)
 
 	if ( kernel && kernel->get_num_vec_rhs()>0 )
 	{
-		INT num_vectors=kernel->get_num_vec_rhs();
+		int32_t num_vectors=kernel->get_num_vec_rhs();
 
 		if (!lab)
 			lab=new CLabels(num_vectors);
@@ -304,17 +304,17 @@ CLabels* CSVM::classify(CLabels* lab)
 				get_batch_computation_enabled())
 		{
 			ASSERT(get_num_support_vectors()>0);
-			INT* sv_idx=new INT[get_num_support_vectors()];
+			int32_t* sv_idx=new int32_t[get_num_support_vectors()];
 			DREAL* sv_weight=new DREAL[get_num_support_vectors()];
-			INT* idx=new INT[num_vectors];
+			int32_t* idx=new int32_t[num_vectors];
 			DREAL* output=new DREAL[num_vectors];
 			memset(output, 0, sizeof(DREAL)*num_vectors);
 
 			//compute output for all vectors v[0]...v[num_vectors-1]
-			for (INT i=0; i<num_vectors; i++)
+			for (int32_t i=0; i<num_vectors; i++)
 				idx[i]=i;
 
-			for (INT i=0; i<get_num_support_vectors(); i++)
+			for (int32_t i=0; i<get_num_support_vectors(); i++)
 			{
 				sv_idx[i]    = get_support_vector(i) ;
 				sv_weight[i] = get_alpha(i) ;
@@ -323,7 +323,7 @@ CLabels* CSVM::classify(CLabels* lab)
 			kernel->compute_batch(num_vectors, idx,
 					output, get_num_support_vectors(), sv_idx, sv_weight);
 
-			for (INT i=0; i<num_vectors; i++)
+			for (int32_t i=0; i<num_vectors; i++)
 				lab->set_label(i, get_bias()+output[i]);
 
 			delete[] sv_idx ;
@@ -333,7 +333,7 @@ CLabels* CSVM::classify(CLabels* lab)
 		}
 		else
 		{
-			INT num_threads=parallel.get_num_threads();
+			int32_t num_threads=parallel.get_num_threads();
 			ASSERT(num_threads>0);
 
 			if (num_threads < 2)
@@ -351,9 +351,9 @@ CLabels* CSVM::classify(CLabels* lab)
 			{
 				pthread_t threads[num_threads-1];
 				S_THREAD_PARAM params[num_threads];
-				INT step= num_vectors/num_threads;
+				int32_t step= num_vectors/num_threads;
 
-				INT t;
+				int32_t t;
 
 				for (t=0; t<num_threads-1; t++)
 				{
@@ -392,7 +392,7 @@ CLabels* CSVM::classify(CLabels* lab)
 	return lab;
 }
 
-DREAL CSVM::classify_example(INT num)
+DREAL CSVM::classify_example(int32_t num)
 {
 	ASSERT(kernel);
 
@@ -404,7 +404,7 @@ DREAL CSVM::classify_example(INT num)
 	else
 	{
 		DREAL dist=0;
-		for(INT i=0; i<get_num_support_vectors(); i++)
+		for(int32_t i=0; i<get_num_support_vectors(); i++)
 			dist+=kernel->kernel(get_support_vector(i), num)*get_alpha(i);
 
 		return (dist+get_bias());
@@ -414,15 +414,15 @@ DREAL CSVM::classify_example(INT num)
 
 DREAL CSVM::compute_objective()
 {
-	INT n=get_num_support_vectors();
+	int32_t n=get_num_support_vectors();
 
 	if (labels && kernel)
 	{
 		objective=0;
-		for (int i=0; i<n; i++)
+		for (int32_t i=0; i<n; i++)
 		{
 			objective-=get_alpha(i)*labels->get_label(i);
-			for (int j=0; j<n; j++)
+			for (int32_t j=0; j<n; j++)
 				objective+=0.5*get_alpha(i)*get_alpha(j)*kernel->kernel(i,j);
 		}
 	}

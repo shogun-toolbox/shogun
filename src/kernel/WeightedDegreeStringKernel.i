@@ -5,7 +5,7 @@
 
 %include "lib/swig_typemaps.i"
 
-%apply (DREAL* IN_ARRAY1, INT DIM1) {(DREAL* p_weights, INT d)};
+%apply (DREAL* IN_ARRAY1, int32_t DIM1) {(DREAL* p_weights, int32_t d)};
 
 %rename(WeightedDegreeStringKernel) CWeightedDegreeStringKernel;
 

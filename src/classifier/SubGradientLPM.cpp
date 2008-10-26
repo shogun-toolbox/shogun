@@ -47,13 +47,13 @@ CSubGradientLPM::~CSubGradientLPM()
 	cleanup();
 }
 
-INT CSubGradientLPM::find_active(INT num_feat, INT num_vec, INT& num_active, INT& num_bound)
+int32_t CSubGradientLPM::find_active(int32_t num_feat, int32_t num_vec, int32_t& num_active, int32_t& num_bound)
 {
 	//delta_active=0;
 	//num_active=0;
 	//num_bound=0;
 
-	//for (INT i=0; i<num_vec; i++)
+	//for (int32_t i=0; i<num_vec; i++)
 	//{
 	//	active[i]=0;
 
@@ -80,7 +80,7 @@ INT CSubGradientLPM::find_active(INT num_feat, INT num_vec, INT& num_active, INT
 	num_active=0;
 	num_bound=0;
 
-	for (INT i=0; i<num_vec; i++)
+	for (int32_t i=0; i<num_vec; i++)
 	{
 		active[i]=0;
 
@@ -120,7 +120,7 @@ INT CSubGradientLPM::find_active(INT num_feat, INT num_vec, INT& num_active, INT
 	num_active=0;
 	num_bound=0;
 
-	for (INT i=0; i<num_vec; i++)
+	for (int32_t i=0; i<num_vec; i++)
 	{
 		tmp_proj[i]=CMath::abs(proj[i]-1);
 		tmp_proj_idx[i]=i;
@@ -141,7 +141,7 @@ INT CSubGradientLPM::find_active(INT num_feat, INT num_vec, INT& num_active, INT
 	{
 		autoselected_epsilon=epsilon;
 
-		INT i=0;
+		int32_t i=0;
 		while (i < num_vec && tmp_proj[i] <= autoselected_epsilon)
 			i++;
 
@@ -150,7 +150,7 @@ INT CSubGradientLPM::find_active(INT num_feat, INT num_vec, INT& num_active, INT
 		if (i>=qpsize_max && autoselected_epsilon>epsilon) //qpsize limit
 		{
 			SG_PRINT("qpsize limit (%d) reached\n", qpsize_max);
-			INT num_in_qp=i;
+			int32_t num_in_qp=i;
 			while (--i>=0 && num_in_qp>=qpsize_max)
 			{
 				if (tmp_proj[i] < autoselected_epsilon)
@@ -164,7 +164,7 @@ INT CSubGradientLPM::find_active(INT num_feat, INT num_vec, INT& num_active, INT
 		}
 	}
 
-	for (INT i=0; i<num_vec; i++)
+	for (int32_t i=0; i<num_vec; i++)
 	{
 		active[i]=0;
 
@@ -193,7 +193,7 @@ INT CSubGradientLPM::find_active(INT num_feat, INT num_vec, INT& num_active, INT
 	neg_idx=0;
 	zero_idx=0;
 
-	for (INT i=0; i<num_feat; i++)
+	for (int32_t i=0; i<num_feat; i++)
 	{
 		if (w[i]>work_epsilon)
 		{
@@ -217,9 +217,9 @@ INT CSubGradientLPM::find_active(INT num_feat, INT num_vec, INT& num_active, INT
 }
 
 
-void CSubGradientLPM::update_active(INT num_feat, INT num_vec)
+void CSubGradientLPM::update_active(int32_t num_feat, int32_t num_vec)
 {
-	for (INT i=0; i<num_vec; i++)
+	for (int32_t i=0; i<num_vec; i++)
 	{
 		if (active[i]==1 && old_active[i]!=1)
 		{
@@ -238,9 +238,9 @@ void CSubGradientLPM::update_active(INT num_feat, INT num_vec)
 	CMath::swap(active,old_active);
 }
 
-DREAL CSubGradientLPM::line_search(INT num_feat, INT num_vec)
+DREAL CSubGradientLPM::line_search(int32_t num_feat, int32_t num_vec)
 {
-	INT num_hinge=0;
+	int32_t num_hinge=0;
 	DREAL alpha=0;
 	DREAL sgrad=0;
 
@@ -249,7 +249,7 @@ DREAL CSubGradientLPM::line_search(INT num_feat, INT num_vec)
 	DREAL* C=new DREAL[num_feat+num_vec];
 	DREAL* D=new DREAL[num_feat+num_vec];
 
-	for (INT i=0; i<num_feat+num_vec; i++)
+	for (int32_t i=0; i<num_feat+num_vec; i++)
 	{
 		if (i<num_feat)
 		{
@@ -299,7 +299,7 @@ DREAL CSubGradientLPM::line_search(INT num_feat, INT num_vec)
 	//CMath::display_vector(hinge_point, num_feat+num_vec, "hinge_point_sorted");
 
 
-	INT i=-1;
+	int32_t i=-1;
 	while (i < num_hinge-1 && sgrad < 0)
 	{
 		i+=1;
@@ -321,7 +321,7 @@ DREAL CSubGradientLPM::line_search(INT num_feat, INT num_vec)
 	return alpha;
 }
 
-DREAL CSubGradientLPM::compute_min_subgradient(INT num_feat, INT num_vec, INT num_active, INT num_bound)
+DREAL CSubGradientLPM::compute_min_subgradient(int32_t num_feat, int32_t num_vec, int32_t num_active, int32_t num_bound)
 {
 	DREAL dir_deriv=0;
 	solver->init(E_QP);
@@ -353,26 +353,26 @@ DREAL CSubGradientLPM::compute_min_subgradient(INT num_feat, INT num_vec, INT nu
 		dir_deriv = CMath::dot(beta, grad_w, num_feat);
 		dir_deriv-=beta[num_feat]*sum_Cy_active;
 
-		for (INT i=0; i<num_bound; i++)
+		for (int32_t i=0; i<num_bound; i++)
 		{
 			DREAL val= C1*get_label(idx_bound[i])*features->dense_dot(1.0, idx_bound[i], beta, num_feat, beta[num_feat]);
 			dir_deriv += CMath::max(0.0, val);
 		}
 
-		for (INT i=0; i<num_feat; i++)
+		for (int32_t i=0; i<num_feat; i++)
 			grad_w[i]=beta[i];
 
 		if (use_bias)
 			grad_b=beta[num_feat];
 
-		//for (INT i=0; i<zero_idx+num_bound; i++)
+		//for (int32_t i=0; i<zero_idx+num_bound; i++)
 		//	beta[i]=beta[i+num_feat+1];
 
 		//CMath::display_vector(beta, zero_idx+num_bound, "beta");
 		//SG_PRINT("beta[0]=%10.16f\n", beta[0]);
 		//ASSERT(0);
 
-		//for (INT i=0; i<zero_idx+num_bound; i++)
+		//for (int32_t i=0; i<zero_idx+num_bound; i++)
 		//{
 		//	if (i<zero_idx)
 		//		grad_w[w_zero[i]]+=beta[w_zero[i]];
@@ -406,11 +406,11 @@ DREAL CSubGradientLPM::compute_min_subgradient(INT num_feat, INT num_vec, INT nu
 	return dir_deriv;
 }
 
-DREAL CSubGradientLPM::compute_objective(INT num_feat, INT num_vec)
+DREAL CSubGradientLPM::compute_objective(int32_t num_feat, int32_t num_vec)
 {
 	DREAL result= CMath::sum_abs(w, num_feat);
 	
-	for (INT i=0; i<num_vec; i++)
+	for (int32_t i=0; i<num_vec; i++)
 	{
 		if (proj[i]<1.0)
 			result += C1 * (1.0-proj[i]);
@@ -419,23 +419,23 @@ DREAL CSubGradientLPM::compute_objective(INT num_feat, INT num_vec)
 	return result;
 }
 
-void CSubGradientLPM::compute_projection(INT num_feat, INT num_vec)
+void CSubGradientLPM::compute_projection(int32_t num_feat, int32_t num_vec)
 {
-	for (INT i=0; i<num_vec; i++)
+	for (int32_t i=0; i<num_vec; i++)
 		proj[i]=get_label(i)*features->dense_dot(1.0, i, w, num_feat, bias);
 }
 
-void CSubGradientLPM::update_projection(DREAL alpha, INT num_vec)
+void CSubGradientLPM::update_projection(DREAL alpha, int32_t num_vec)
 {
 	CMath::vec1_plus_scalar_times_vec2(proj,-alpha, grad_proj, num_vec);
 }
 
-void CSubGradientLPM::init(INT num_vec, INT num_feat)
+void CSubGradientLPM::init(int32_t num_vec, int32_t num_feat)
 {
 	// alloc normal and bias inited with 0
 	delete[] w;
 	w=new DREAL[num_feat];
-	for (INT i=0; i<num_feat; i++)
+	for (int32_t i=0; i<num_feat; i++)
 		w[i]=1.0;
 	//CMath::random_vector(w, num_feat, -1.0, 1.0);
 	bias=0;
@@ -443,14 +443,14 @@ void CSubGradientLPM::init(INT num_vec, INT num_feat)
 	grad_b=0;
 	set_w(w, num_feat);
 
-	w_pos=new INT[num_feat];
-	memset(w_pos,0,sizeof(INT)*num_feat);
+	w_pos=new int32_t[num_feat];
+	memset(w_pos,0,sizeof(int32_t)*num_feat);
 
-	w_zero=new INT[num_feat];
-	memset(w_zero,0,sizeof(INT)*num_feat);
+	w_zero=new int32_t[num_feat];
+	memset(w_zero,0,sizeof(int32_t)*num_feat);
 
-	w_neg=new INT[num_feat];
-	memset(w_neg,0,sizeof(INT)*num_feat);
+	w_neg=new int32_t[num_feat];
+	memset(w_neg,0,sizeof(int32_t)*num_feat);
 
 	grad_w=new DREAL[num_feat+1];
 	memset(grad_w,0,sizeof(DREAL)*(num_feat+1));
@@ -466,8 +466,8 @@ void CSubGradientLPM::init(INT num_vec, INT num_feat)
 	tmp_proj=new DREAL[num_vec];
 	memset(proj,0,sizeof(DREAL)*num_vec);
 
-	tmp_proj_idx=new INT[num_vec];
-	memset(tmp_proj_idx,0,sizeof(INT)*num_vec);
+	tmp_proj_idx=new int32_t[num_vec];
+	memset(tmp_proj_idx,0,sizeof(int32_t)*num_vec);
 
 	grad_proj=new DREAL[num_vec];
 	memset(grad_proj,0,sizeof(DREAL)*num_vec);
@@ -475,8 +475,8 @@ void CSubGradientLPM::init(INT num_vec, INT num_feat)
 	hinge_point=new DREAL[num_vec+num_feat];
 	memset(hinge_point,0,sizeof(DREAL)*(num_vec+num_feat));
 
-	hinge_idx=new INT[num_vec+num_feat];
-	memset(hinge_idx,0,sizeof(INT)*(num_vec+num_feat));
+	hinge_idx=new int32_t[num_vec+num_feat];
+	memset(hinge_idx,0,sizeof(int32_t)*(num_vec+num_feat));
 
 	active=new uint8_t[num_vec];
 	memset(active,0,sizeof(uint8_t)*num_vec);
@@ -484,11 +484,11 @@ void CSubGradientLPM::init(INT num_vec, INT num_feat)
 	old_active=new uint8_t[num_vec];
 	memset(old_active,0,sizeof(uint8_t)*num_vec);
 
-	idx_bound=new INT[num_vec];
-	memset(idx_bound,0,sizeof(INT)*num_vec);
+	idx_bound=new int32_t[num_vec];
+	memset(idx_bound,0,sizeof(int32_t)*num_vec);
 
-	idx_active=new INT[num_vec];
-	memset(idx_active,0,sizeof(INT)*num_vec);
+	idx_active=new int32_t[num_vec];
+	memset(idx_active,0,sizeof(int32_t)*num_vec);
 
 	beta=new DREAL[num_feat+1+num_feat+num_vec];
 	memset(beta,0,sizeof(DREAL)*num_feat+1+num_feat+num_vec);
@@ -543,17 +543,17 @@ bool CSubGradientLPM::train()
 	ASSERT(labels);
 	ASSERT(features);
 
-	INT num_iterations=0;
-	INT num_train_labels=labels->get_num_labels();
-	INT num_feat=features->get_num_features();
-	INT num_vec=features->get_num_vectors();
+	int32_t num_iterations=0;
+	int32_t num_train_labels=labels->get_num_labels();
+	int32_t num_feat=features->get_num_features();
+	int32_t num_vec=features->get_num_vectors();
 
 	ASSERT(num_vec==num_train_labels);
 
 	init(num_vec, num_feat);
 
-	INT num_active=0;
-	INT num_bound=0;
+	int32_t num_active=0;
+	int32_t num_bound=0;
 	DREAL alpha=0;
 	DREAL dir_deriv=0;
 	DREAL obj=0;

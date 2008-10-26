@@ -57,14 +57,14 @@ public:
 	 * @param type feature type
 	 * @return -1
 	 */
-	INT parse_first_header(EFeatureType &type);
+	int32_t parse_first_header(EFeatureType &type);
 
 	/** parse next header - defunct!
 	 *
 	 * @param type feature type
 	 * @return -1
 	 */
-	INT parse_next_header(EFeatureType &type);
+	int32_t parse_next_header(EFeatureType &type);
 
 	// set target to NULL to get it automagically allocated
 	// set num to 0 if whole file is to be read
@@ -74,7 +74,7 @@ public:
 	 * @param num number of data elements
 	 * @return loaded data
 	 */
-	INT*   load_int_data(INT* target, LONG& num);
+	int32_t*   load_int_data(int32_t* target, LONG& num);
 
 	/** load real data
 	 *
@@ -130,7 +130,7 @@ public:
 	 * @param num number of data elements
 	 * @return whether operation was successful
 	 */
-	bool save_int_data(INT* src, LONG num);
+	bool save_int_data(int32_t* src, LONG num);
 
 	/** save real data
 	 *
@@ -202,7 +202,7 @@ public:
 	 * @param num_vec number of vectors in matrix
 	 * @return if reading was successful
 	 */
-	bool read_real_valued_sparse(TSparse<DREAL>*& matrix, INT& num_feat, INT& num_vec);
+	bool read_real_valued_sparse(TSparse<DREAL>*& matrix, int32_t& num_feat, int32_t& num_vec);
 
 	/** write sparse real valued features in svm light format
 	 *
@@ -211,7 +211,7 @@ public:
 	 * @param num_vec number of vectros in matrix
 	 * @return if writing was successful
 	 */
-	bool write_real_valued_sparse(const TSparse<DREAL>* matrix, INT num_feat, INT num_vec);
+	bool write_real_valued_sparse(const TSparse<DREAL>* matrix, int32_t num_feat, int32_t num_vec);
 
 	/** read dense real valued features, simple ascii format
 	 * e.g. 1.0 1.1 0.2 
@@ -224,7 +224,7 @@ public:
 	 * @param num_vec number of vectors in matrix
 	 * @return if reading was successful
 	 */
-	bool read_real_valued_dense(DREAL*& matrix, INT& num_feat, INT& num_vec);
+	bool read_real_valued_dense(DREAL*& matrix, int32_t& num_feat, int32_t& num_vec);
 
 	/** write dense real valued features, simple ascii format
 	 *
@@ -233,7 +233,7 @@ public:
 	 * @param num_vec number of vectros in matrix
 	 * @return if writing was successful
 	 */
-	bool write_real_valued_dense(const DREAL* matrix, INT num_feat, INT num_vec);
+	bool write_real_valued_dense(const DREAL* matrix, int32_t num_feat, int32_t num_vec);
 
 	/** read char string features, simple ascii format
 	 * e.g. foo bar
@@ -246,7 +246,7 @@ public:
 	 * @param max_string_len length of longest string
 	 * @return if reading was successful
 	 */
-	bool read_char_valued_strings(T_STRING<char>*& strings, INT& num_str, INT& max_string_len);
+	bool read_char_valued_strings(T_STRING<char>*& strings, int32_t& num_str, int32_t& max_string_len);
 
 	/** write char string features, simple ascii format
 	 *
@@ -254,7 +254,7 @@ public:
 	 * @param num_str number of strings
 	 * @return if writing was successful
 	 */
-	bool write_char_valued_strings(const T_STRING<char>* strings, INT num_str);
+	bool write_char_valued_strings(const T_STRING<char>* strings, int32_t num_str);
 
 protected:
 	/** read header
@@ -284,7 +284,7 @@ protected:
 	/** expected feature type */
 	EFeatureType expected_type;
 	/** number of headers */
-	INT num_header;
+	int32_t num_header;
 	/** fourcc */
 	char fourcc[4];
 };

@@ -34,7 +34,7 @@ class CGNPPLib: public CSGObject
    * @param num_data number of data
    * @param reg_const reg const
    */
-  CGNPPLib(DREAL* vector_y, CKernel* kernel, INT num_data, DREAL reg_const);
+  CGNPPLib(DREAL* vector_y, CKernel* kernel, int32_t num_data, DREAL reg_const);
   ~CGNPPLib();
 
   /** --------------------------------------------------------------
@@ -43,20 +43,20 @@ class CGNPPLib: public CSGObject
      Usage: exitflag = gnpp_mdm(diag_H, vector_c, vector_y,
      dim, tmax, tolabs, tolrel, th, &alpha, &t, &aHa11, &aHa22, &History );
      -------------------------------------------------------------- */
-  int gnpp_mdm(double *diag_H,
+  int8_t gnpp_mdm(double *diag_H,
                double *vector_c,
                double *vector_y,
-               INT dim, 
-               INT tmax,
+               int32_t dim,
+               int32_t tmax,
                double tolabs,
                double tolrel,
                double th,
                double *alpha,
-               INT  *ptr_t, 
+               int32_t  *ptr_t,
                double *ptr_aHa11,
                double *ptr_aHa22,
                double **ptr_History,
-               INT verb);
+               int32_t verb);
 
   /** --------------------------------------------------------------
      QP solver based on improved MDM algorithm (u fixed v optimized)
@@ -64,20 +64,20 @@ class CGNPPLib: public CSGObject
      Usage: exitflag = gnpp_imdm( diag_H, vector_c, vector_y,
      dim, tmax, tolabs, tolrel, th, &alpha, &t, &aHa11, &aHa22, &History );
      -------------------------------------------------------------- */
-  int gnpp_imdm(double *diag_H,
+  int8_t gnpp_imdm(double *diag_H,
                 double *vector_c,
                 double *vector_y,
-                INT dim, 
-                INT tmax,
+                int32_t dim, 
+                int32_t tmax,
                 double tolabs,
                 double tolrel,
                 double th,
                 double *alpha,
-                INT  *ptr_t, 
+                int32_t  *ptr_t, 
                 double *ptr_aHa11,
                 double *ptr_aHa22,
                 double **ptr_History,
-                INT verb);
+                int32_t verb);
 
  protected:
   /** get col
@@ -93,11 +93,11 @@ class CGNPPLib: public CSGObject
   /** cache index */
   DREAL* cache_index;
   /** first kernel inx */
-  INT first_kernel_inx;
+  int32_t first_kernel_inx;
   /** cache size */
   LONG Cache_Size;
   /** num data */
-  INT m_num_data;
+  int32_t m_num_data;
   /** reg const */
   DREAL m_reg_const;
   /** vector y */

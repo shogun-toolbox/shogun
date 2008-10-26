@@ -25,7 +25,7 @@
 %feature("autodoc", "get_log_likelihood(self) -> numpy 1dim array of float") get_log_likelihood;
 #endif
 
-%apply (DREAL** ARGOUT1, INT* DIM1) {(DREAL** dst, INT* num)};
+%apply (DREAL** ARGOUT1, int32_t* DIM1) {(DREAL** dst, int32_t* num)};
 
 %include "lib/ShogunException.i"
 %include "lib/io.i"

@@ -63,7 +63,7 @@ class CCombinedFeatures : public CFeatures
 		 *
 		 * @return number of feature vectors
 		 */
-		inline virtual INT get_num_vectors()
+		inline virtual int32_t get_num_vectors()
 		{
 			if (feature_list->get_current_element())
 			{
@@ -77,7 +77,7 @@ class CCombinedFeatures : public CFeatures
 		 *
 		 * @return memory footprint of one feature
 		 */
-		virtual INT get_size()
+		virtual int32_t get_size()
 		{
 			if (feature_list->get_current_element())
 			{
@@ -198,7 +198,7 @@ class CCombinedFeatures : public CFeatures
 		 *
 		 * @return number of feature objects
 		 */
-		inline int get_num_feature_obj()
+		inline int32_t get_num_feature_obj()
 		{
 			return feature_list->get_num_elements();
 		}

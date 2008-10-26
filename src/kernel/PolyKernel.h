@@ -37,7 +37,7 @@ class CPolyKernel: public CSimpleKernel<DREAL>
 		 * @param size cache size
 		 */
 		CPolyKernel(CRealFeatures* l, CRealFeatures* r,
-			INT d, bool inhom, INT size=10);
+			int32_t d, bool inhom, int32_t size=10);
 
 		/** constructor
 		 *
@@ -45,7 +45,7 @@ class CPolyKernel: public CSimpleKernel<DREAL>
 		 * @param degree degree
 		 * @param inhomogene is inhomogeneous
 		 */
-		CPolyKernel(INT size, INT degree, bool inhomogene=true);
+		CPolyKernel(int32_t size, int32_t degree, bool inhomogene=true);
 
 		virtual ~CPolyKernel();
 
@@ -95,11 +95,11 @@ class CPolyKernel: public CSimpleKernel<DREAL>
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		virtual DREAL compute(INT idx_a, INT idx_b);
+		virtual DREAL compute(int32_t idx_a, int32_t idx_b);
 
 	protected:
 		/** degree */
-		INT degree;
+		int32_t degree;
 		/** if kernel is inhomogeneous */
 		bool inhomogene;
 };

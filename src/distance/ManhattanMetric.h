@@ -86,7 +86,7 @@ class CManhattanMetric: public CSimpleDistance<DREAL>
 		/// compute distance for features a and b
 		/// idx_{a,b} denote the index of the feature vectors
 		/// in the corresponding feature object
-		virtual DREAL compute(INT idx_a, INT idx_b);
+		virtual DREAL compute(int32_t idx_a, int32_t idx_b);
 };
 
 #endif /* _MANHATTANMETRIC_H___ */

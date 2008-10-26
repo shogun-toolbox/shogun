@@ -81,7 +81,7 @@ CKernel* CGUIKernel::get_kernel()
 }
 
 #ifdef HAVE_MINDY
-CKernel* CGUIKernel::create_mindygram(INT size, char* meas_str, char* norm_str, DREAL width, char* param_str)
+CKernel* CGUIKernel::create_mindygram(int32_t size, char* meas_str, char* norm_str, DREAL width, char* param_str)
 {
 	CKernel* kern=new CMindyGramKernel(size, meast_str, width);
 	if (!kern)
@@ -97,7 +97,7 @@ CKernel* CGUIKernel::create_mindygram(INT size, char* meas_str, char* norm_str, 
 }
 #endif
 
-CKernel* CGUIKernel::create_oligo(INT size, INT k, DREAL width)
+CKernel* CGUIKernel::create_oligo(int32_t size, int32_t k, DREAL width)
 {
 	CKernel* kern=new COligoKernel(size, k, width);
 	SG_DEBUG("created OligoKernel (%p) with size %d, k %d, width %f.\n", kern, size, k, width);
@@ -105,7 +105,7 @@ CKernel* CGUIKernel::create_oligo(INT size, INT k, DREAL width)
 	return kern;
 }
 
-CKernel* CGUIKernel::create_diag(INT size, DREAL diag)
+CKernel* CGUIKernel::create_diag(int32_t size, DREAL diag)
 {
 	CKernel* kern=new CDiagKernel(size, diag);
 	if (!kern)
@@ -116,7 +116,7 @@ CKernel* CGUIKernel::create_diag(INT size, DREAL diag)
 	return kern;
 }
 
-CKernel* CGUIKernel::create_const(INT size, DREAL c)
+CKernel* CGUIKernel::create_const(int32_t size, DREAL c)
 {
 	CKernel* kern=new CConstKernel(c);
 	if (!kern)
@@ -142,7 +142,7 @@ CKernel* CGUIKernel::create_custom()
 
 
 CKernel* CGUIKernel::create_gaussianshift(
-	INT size, DREAL width, INT max_shift, INT shift_step)
+	int32_t size, DREAL width, int32_t max_shift, int32_t shift_step)
 {
 	CKernel* kern=new CGaussianShiftKernel(size, width, max_shift, shift_step);
 	if (!kern)
@@ -153,7 +153,7 @@ CKernel* CGUIKernel::create_gaussianshift(
 	return kern;
 }
 
-CKernel* CGUIKernel::create_sparsegaussian(INT size, DREAL width)
+CKernel* CGUIKernel::create_sparsegaussian(int32_t size, DREAL width)
 {
 	CKernel* kern=new CSparseGaussianKernel(size, width);
 	if (!kern)
@@ -164,7 +164,7 @@ CKernel* CGUIKernel::create_sparsegaussian(INT size, DREAL width)
 	return kern;
 }
 
-CKernel* CGUIKernel::create_gaussian(INT size, DREAL width)
+CKernel* CGUIKernel::create_gaussian(int32_t size, DREAL width)
 {
 	CKernel* kern=new CGaussianKernel(size, width);
 	if (!kern)
@@ -175,7 +175,7 @@ CKernel* CGUIKernel::create_gaussian(INT size, DREAL width)
 	return kern;
 }
 
-CKernel* CGUIKernel::create_sigmoid(INT size, DREAL gamma, DREAL coef0)
+CKernel* CGUIKernel::create_sigmoid(int32_t size, DREAL gamma, DREAL coef0)
 {
 	CKernel* kern=new CSigmoidKernel(size, gamma, coef0);
 	if (!kern)
@@ -187,7 +187,7 @@ CKernel* CGUIKernel::create_sigmoid(INT size, DREAL gamma, DREAL coef0)
 }
 
 CKernel* CGUIKernel::create_sparsepoly(
-	INT size, INT degree, bool inhomogene, bool normalize)
+	int32_t size, int32_t degree, bool inhomogene, bool normalize)
 {
 	CKernel* kern=new CSparsePolyKernel(size, degree, inhomogene);
 	if (!normalize)
@@ -198,7 +198,7 @@ CKernel* CGUIKernel::create_sparsepoly(
 }
 
 CKernel* CGUIKernel::create_poly(
-	INT size, INT degree, bool inhomogene, bool normalize)
+	int32_t size, int32_t degree, bool inhomogene, bool normalize)
 {
 	CKernel* kern=new CPolyKernel(size, degree, inhomogene);
 	if (!normalize)
@@ -209,7 +209,7 @@ CKernel* CGUIKernel::create_poly(
 }
 
 CKernel* CGUIKernel::create_localityimprovedstring(
-	INT size, INT length, INT inner_degree, INT outer_degree,
+	int32_t size, int32_t length, int32_t inner_degree, int32_t outer_degree,
 	EKernelType ktype)
 {
 	CKernel* kern=NULL;
@@ -234,12 +234,12 @@ CKernel* CGUIKernel::create_localityimprovedstring(
 }
 
 CKernel* CGUIKernel::create_weighteddegreestring(
-	INT size, INT order, INT max_mismatch, bool use_normalization,
-	INT mkl_stepsize, bool block_computation, INT single_degree)
+	int32_t size, int32_t order, int32_t max_mismatch, bool use_normalization,
+	int32_t mkl_stepsize, bool block_computation, int32_t single_degree)
 {
 	DREAL* weights=get_weights(order, max_mismatch);
 
-	INT i=0;
+	int32_t i=0;
 	if (single_degree>=0)
 	{
 		ASSERT(single_degree<order);
@@ -270,17 +270,17 @@ CKernel* CGUIKernel::create_weighteddegreestring(
 }
 
 CKernel* CGUIKernel::create_weighteddegreepositionstring(
-	INT size, INT order, INT max_mismatch, INT length, INT center,
+	int32_t size, int32_t order, int32_t max_mismatch, int32_t length, int32_t center,
 	DREAL step)
 {
-	INT i=0;
-	INT* shifts=new INT[length];
+	int32_t i=0;
+	int32_t* shifts=new int32_t[length];
 
 	for (i=center; i<length; i++)
-		shifts[i]=(int) floor(((DREAL) (i-center))/step);
+		shifts[i]=(int32_t) floor(((DREAL) (i-center))/step);
 
 	for (i=center-1; i>=0; i--)
-		shifts[i]=(int) floor(((DREAL) (center-i))/step);
+		shifts[i]=(int32_t) floor(((DREAL) (center-i))/step);
 
 	for (i=0; i<length; i++)
 	{
@@ -305,8 +305,8 @@ CKernel* CGUIKernel::create_weighteddegreepositionstring(
 }
 
 CKernel* CGUIKernel::create_weighteddegreepositionstring3(
-	INT size, INT order, INT max_mismatch, INT* shifts, INT length,
-	INT mkl_stepsize, DREAL* position_weights)
+	int32_t size, int32_t order, int32_t max_mismatch, int32_t* shifts, int32_t length,
+	int32_t mkl_stepsize, DREAL* position_weights)
 {
 	DREAL* weights=get_weights(order, max_mismatch);
 
@@ -318,7 +318,7 @@ CKernel* CGUIKernel::create_weighteddegreepositionstring3(
 	if (!position_weights)
 	{
 		position_weights=new DREAL[length];
-		for (INT i=0; i<length; i++)
+		for (int32_t i=0; i<length; i++)
 			position_weights[i]=1.0/length;
 	}
 	((CWeightedDegreePositionStringKernel*) kern)->
@@ -329,7 +329,7 @@ CKernel* CGUIKernel::create_weighteddegreepositionstring3(
 }
 
 CKernel* CGUIKernel::create_weighteddegreepositionstring2(
-	INT size, INT order, INT max_mismatch, INT* shifts, INT length,
+	int32_t size, int32_t order, int32_t max_mismatch, int32_t* shifts, int32_t length,
 	bool use_normalization)
 {
 	DREAL* weights=get_weights(order, max_mismatch);
@@ -345,11 +345,11 @@ CKernel* CGUIKernel::create_weighteddegreepositionstring2(
 	return kern;
 }
 
-DREAL* CGUIKernel::get_weights(INT order, INT max_mismatch)
+DREAL* CGUIKernel::get_weights(int32_t order, int32_t max_mismatch)
 {
 	DREAL *weights=new DREAL[order*(1+max_mismatch)];
 	DREAL sum=0;
-	INT i=0;
+	int32_t i=0;
 
 	for (i=0; i<order; i++)
 	{
@@ -361,11 +361,11 @@ DREAL* CGUIKernel::get_weights(INT order, INT max_mismatch)
 	
 	for (i=0; i<order; i++)
 	{
-		for (INT j=1; j<=max_mismatch; j++)
+		for (int32_t j=1; j<=max_mismatch; j++)
 		{
 			if (j<i+1)
 			{
-				INT nk=CMath::nchoosek(i+1, j);
+				int32_t nk=CMath::nchoosek(i+1, j);
 				weights[i+j*order]=weights[i]/(nk*pow(3, j));
 			}
 			else
@@ -377,7 +377,7 @@ DREAL* CGUIKernel::get_weights(INT order, INT max_mismatch)
 }
 
 
-CKernel* CGUIKernel::create_localalignmentstring(INT size)
+CKernel* CGUIKernel::create_localalignmentstring(int32_t size)
 {
 	CKernel* kern=new CLocalAlignmentStringKernel(size);
 	if (!kern)
@@ -388,7 +388,7 @@ CKernel* CGUIKernel::create_localalignmentstring(INT size)
 	return kern;
 }
 
-CKernel* CGUIKernel::create_fixeddegreestring(INT size, INT d)
+CKernel* CGUIKernel::create_fixeddegreestring(int32_t size, int32_t d)
 {
 	CKernel* kern=new CFixedDegreeStringKernel(size, d);
 	if (!kern)
@@ -399,7 +399,7 @@ CKernel* CGUIKernel::create_fixeddegreestring(INT size, INT d)
 	return kern;
 }
 
-CKernel* CGUIKernel::create_chi2(INT size, DREAL width)
+CKernel* CGUIKernel::create_chi2(int32_t size, DREAL width)
 {
 	CKernel* kern=new CChi2Kernel(size, width);
 	if (!kern)
@@ -411,7 +411,7 @@ CKernel* CGUIKernel::create_chi2(INT size, DREAL width)
 }
 
 CKernel* CGUIKernel::create_commstring(
-	INT size, bool use_sign, char* norm_str, EKernelType ktype)
+	int32_t size, bool use_sign, char* norm_str, EKernelType ktype)
 {
 	CKernel* kern=NULL;
 	if (ktype==K_COMMULONGSTRING)
@@ -426,7 +426,7 @@ CKernel* CGUIKernel::create_commstring(
 	return kern;
 }
 
-CKernel* CGUIKernel::create_matchwordstring(INT size, INT d, bool normalize)
+CKernel* CGUIKernel::create_matchwordstring(int32_t size, int32_t d, bool normalize)
 {
 	CKernel* kern=new CMatchWordStringKernel(size, d);
 	SG_DEBUG("created MatchWordStringKernel (%p) with size %d and d %d.\n", kern, size, d);
@@ -437,7 +437,7 @@ CKernel* CGUIKernel::create_matchwordstring(INT size, INT d, bool normalize)
 }
 
 CKernel* CGUIKernel::create_polymatchstring(
-	INT size, INT degree, bool inhomogene, bool normalize)
+	int32_t size, int32_t degree, bool inhomogene, bool normalize)
 {
 	CKernel* kern=new CPolyMatchStringKernel(size, degree, inhomogene);
 	SG_DEBUG("created PolyMatchStringKernel (%p) with size %d, degree %d, inhomogene %d normalize %d.\n", kern, size, degree, inhomogene, normalize);
@@ -448,7 +448,7 @@ CKernel* CGUIKernel::create_polymatchstring(
 }
 
 CKernel* CGUIKernel::create_polymatchwordstring(
-	INT size, INT degree, bool inhomogene, bool normalize)
+	int32_t size, int32_t degree, bool inhomogene, bool normalize)
 {
 	CKernel* kern=new CPolyMatchWordStringKernel(size, degree, inhomogene);
 	SG_DEBUG("created PolyMatchWordStringKernel (%p) with size %d, degree %d, inhomogene %d, normalize %d.\n", kern, size, degree, inhomogene, normalize);
@@ -458,7 +458,7 @@ CKernel* CGUIKernel::create_polymatchwordstring(
 	return kern;
 }
 
-CKernel* CGUIKernel::create_salzbergword(INT size)
+CKernel* CGUIKernel::create_salzbergword(int32_t size)
 {
 	SG_INFO("Getting estimator.\n");
 	CPluginEstimate* estimator=ui->ui_pluginestimate->get_estimator();
@@ -486,7 +486,7 @@ CKernel* CGUIKernel::create_salzbergword(INT size)
 	return kern;
 }
 
-CKernel* CGUIKernel::create_histogramword(INT size)
+CKernel* CGUIKernel::create_histogramword(int32_t size)
 {
 	SG_INFO("Getting estimator.\n");
 	CPluginEstimate* estimator=ui->ui_pluginestimate->get_estimator();
@@ -502,7 +502,7 @@ CKernel* CGUIKernel::create_histogramword(INT size)
 	return kern;
 }
 
-CKernel* CGUIKernel::create_linearbyte(INT size, DREAL scale)
+CKernel* CGUIKernel::create_linearbyte(int32_t size, DREAL scale)
 {
 	size=0;
 	CKernel* kern=new CLinearByteKernel();
@@ -512,7 +512,7 @@ CKernel* CGUIKernel::create_linearbyte(INT size, DREAL scale)
 	return kern;
 }
 
-CKernel* CGUIKernel::create_linearword(INT size, DREAL scale)
+CKernel* CGUIKernel::create_linearword(int32_t size, DREAL scale)
 {
 	size=0;
 	CKernel* kern=new CLinearWordKernel();
@@ -522,7 +522,7 @@ CKernel* CGUIKernel::create_linearword(INT size, DREAL scale)
 	return kern;
 }
 
-CKernel* CGUIKernel::create_linearstring(INT size, DREAL scale)
+CKernel* CGUIKernel::create_linearstring(int32_t size, DREAL scale)
 {
 	size=0;
 	CKernel* kern=NULL;
@@ -534,7 +534,7 @@ CKernel* CGUIKernel::create_linearstring(INT size, DREAL scale)
 	return kern;
 }
 
-CKernel* CGUIKernel::create_linear(INT size, DREAL scale)
+CKernel* CGUIKernel::create_linear(int32_t size, DREAL scale)
 {
 	size=0;
 	CKernel* kern=new CLinearKernel();
@@ -545,7 +545,7 @@ CKernel* CGUIKernel::create_linear(INT size, DREAL scale)
 	return kern;
 }
 
-CKernel* CGUIKernel::create_sparselinear(INT size, DREAL scale)
+CKernel* CGUIKernel::create_sparselinear(int32_t size, DREAL scale)
 {
 	size=0;
 	CKernel* kern=new CSparseLinearKernel();
@@ -556,7 +556,7 @@ CKernel* CGUIKernel::create_sparselinear(INT size, DREAL scale)
 	return kern;
 }
 
-CKernel* CGUIKernel::create_distance(INT size, DREAL width)
+CKernel* CGUIKernel::create_distance(int32_t size, DREAL width)
 {
 	CDistance* dist=ui->ui_distance->get_distance();
 	if (!dist)
@@ -572,7 +572,7 @@ CKernel* CGUIKernel::create_distance(INT size, DREAL width)
 }
 
 CKernel* CGUIKernel::create_combined(
-	INT size, bool append_subkernel_weights)
+	int32_t size, bool append_subkernel_weights)
 {
 	CKernel* kern=new CCombinedKernel(size, append_subkernel_weights);
 	if (!kern)
@@ -689,11 +689,11 @@ bool CGUIKernel::init_kernel_optimization()
 	{
 		if (kernel->has_property(KP_LINADD))
 		{
-			INT num_sv=svm->get_num_support_vectors();
-			INT* sv_idx=new INT[num_sv];
+			int32_t num_sv=svm->get_num_support_vectors();
+			int32_t* sv_idx=new int32_t[num_sv];
 			DREAL* sv_weight=new DREAL[num_sv];
 			
-			for (INT i=0; i<num_sv; i++)
+			for (int32_t i=0; i<num_sv; i++)
 			{
 				sv_idx[i]=svm->get_support_vector(i);
 				sv_weight[i]=svm->get_alpha(i);
@@ -854,7 +854,7 @@ bool CGUIKernel::clean_kernel()
 }
 
 #ifdef USE_SVMLIGHT
-bool CGUIKernel::resize_kernel_cache(INT size)
+bool CGUIKernel::resize_kernel_cache(int32_t size)
 {
 	if (!kernel)
 		SG_ERROR("No kernel available.\n");

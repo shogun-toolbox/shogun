@@ -43,7 +43,7 @@ CGUIHMM::~CGUIHMM()
 
 }
 
-bool CGUIHMM::new_hmm(INT n, INT m)
+bool CGUIHMM::new_hmm(int32_t n, int32_t m)
 {
 	delete working;
 	working=new CHMM(n, m, NULL, PSEUDO);
@@ -182,12 +182,12 @@ bool CGUIHMM::one_class_test(
 	working->set_observations(obs);
 	CStringFeatures<uint16_t>* old_test=working->get_observations();
 	CLabels* lab=ui->ui_labels->get_test_labels();
-	INT total=obs->get_num_vectors();
+	int32_t total=obs->get_num_vectors();
 	ASSERT(lab && total==lab->get_num_labels());
 	DREAL* output=new DREAL[total];
-	INT* label=new INT[total];
+	int32_t* label=new int32_t[total];
 
-	for (INT dim=0; dim<total; dim++)
+	for (int32_t dim=0; dim<total; dim++)
 	{
 		output[dim]= is_linear ? working->linear_model_probability(dim) : working->model_probability(dim);
 		label[dim]= lab->get_int_label(dim);
@@ -216,9 +216,9 @@ bool CGUIHMM::hmm_classify(char* param)
 	char rocfname[1024];
 	FILE* outputfile=stdout;
 	FILE* rocfile=NULL;
-	INT numargs=-1;
-	INT poslinear=0;
-	INT neglinear=0;
+	int32_t numargs=-1;
+	int32_t poslinear=0;
+	int32_t neglinear=0;
 
 	param=CIO::skip_spaces(param);
 
@@ -260,14 +260,14 @@ bool CGUIHMM::hmm_classify(char* param)
 			pos->set_observations(o);
 			neg->set_observations(o);
 
-			INT total=o->get_num_vectors();
+			int32_t total=o->get_num_vectors();
 
 			DREAL* output = new DREAL[total];	
-			INT* label= new INT[total];	
+			int32_t* label= new int32_t[total];	
 
 			SG_INFO( "classifying using neg %s hmm vs. pos %s hmm\n", neglinear ? "linear" : "", poslinear ? "linear" : "");
 
-			for (INT dim=0; dim<total; dim++)
+			for (int32_t dim=0; dim<total; dim++)
 			{
 				output[dim]= 
 					(poslinear ? pos->linear_model_probability(dim) : pos->model_probability(dim)) -
@@ -334,14 +334,14 @@ bool CGUIHMM::hmm_test(
 	CStringFeatures<uint16_t>* old_neg=neg->get_observations();
 	pos->set_observations(o);
 	neg->set_observations(o);
-	INT total=o->get_num_vectors();
+	int32_t total=o->get_num_vectors();
 	ASSERT(lab && total==lab->get_num_labels());
 	DREAL* output=new DREAL[total];
-	INT* label=new INT[total];
+	int32_t* label=new int32_t[total];
 
 	SG_INFO("Testing using neg %s hmm vs. pos %s hmm\n", is_neg_linear ? "linear" : "", is_pos_linear ? "linear" : "");
 
-	for (INT dim=0; dim<total; dim++)
+	for (int32_t dim=0; dim<total; dim++)
 	{
 		output[dim]=
 			(is_pos_linear ? pos->linear_model_probability(dim) : pos->model_probability(dim)) -
@@ -373,7 +373,7 @@ CLabels* CGUIHMM::classify(CLabels* result)
 	CStringFeatures<uint16_t>* obs= (CStringFeatures<uint16_t>*) ui->
 		ui_features->get_test_features();
 	ASSERT(obs);
-	INT num_vec=obs->get_num_vectors();
+	int32_t num_vec=obs->get_num_vectors();
 
 	//CStringFeatures<uint16_t>* old_pos=pos->get_observations();
 	//CStringFeatures<uint16_t>* old_neg=neg->get_observations();
@@ -384,7 +384,7 @@ CLabels* CGUIHMM::classify(CLabels* result)
 	if (!result)
 		result=new CLabels(num_vec);
 
-	for (INT i=0; i<num_vec; i++)
+	for (int32_t i=0; i<num_vec; i++)
 		result->set_label(i, pos->model_probability(i) - neg->model_probability(i));
 
 	//pos->set_observations(old_pos);
@@ -392,7 +392,7 @@ CLabels* CGUIHMM::classify(CLabels* result)
 	return result;
 }
 
-DREAL CGUIHMM::classify_example(INT idx)
+DREAL CGUIHMM::classify_example(int32_t idx)
 {
 	CStringFeatures<uint16_t>* obs= (CStringFeatures<uint16_t>*) ui->
 		ui_features->get_test_features();
@@ -417,7 +417,7 @@ CLabels* CGUIHMM::one_class_classify(CLabels* result)
 	CStringFeatures<uint16_t>* obs= (CStringFeatures<uint16_t>*) ui->
 		ui_features->get_test_features();
 	ASSERT(obs);
-	INT num_vec=obs->get_num_vectors();
+	int32_t num_vec=obs->get_num_vectors();
 
 	//CStringFeatures<uint16_t>* old_pos=working->get_observations();
 	working->set_observations(obs);
@@ -425,7 +425,7 @@ CLabels* CGUIHMM::one_class_classify(CLabels* result)
 	if (!result)
 		result=new CLabels(num_vec);
 
-	for (INT i=0; i<num_vec; i++)
+	for (int32_t i=0; i<num_vec; i++)
 		result->set_label(i, working->model_probability(i));
 
 	//working->set_observations(old_pos);
@@ -439,7 +439,7 @@ CLabels* CGUIHMM::linear_one_class_classify(CLabels* result)
 	CStringFeatures<uint16_t>* obs= (CStringFeatures<uint16_t>*) ui->
 		ui_features->get_test_features();
 	ASSERT(obs);
-	INT num_vec=obs->get_num_vectors();
+	int32_t num_vec=obs->get_num_vectors();
 
 	//CStringFeatures<uint16_t>* old_pos=working->get_observations();
 	working->set_observations(obs);
@@ -447,7 +447,7 @@ CLabels* CGUIHMM::linear_one_class_classify(CLabels* result)
 	if (!result)
 		result=new CLabels(num_vec);
 
-	for (INT i=0; i<num_vec; i++)
+	for (int32_t i=0; i<num_vec; i++)
 		result->set_label(i, working->linear_model_probability(i));
 
 	//working->set_observations(old_pos);
@@ -455,7 +455,7 @@ CLabels* CGUIHMM::linear_one_class_classify(CLabels* result)
 }
 
 
-DREAL CGUIHMM::one_class_classify_example(INT idx)
+DREAL CGUIHMM::one_class_classify_example(int32_t idx)
 {
 	ASSERT(working);
 
@@ -473,7 +473,7 @@ DREAL CGUIHMM::one_class_classify_example(INT idx)
 	return result;
 }
 
-bool CGUIHMM::append_model(char* filename, INT base1, INT base2)
+bool CGUIHMM::append_model(char* filename, int32_t base1, int32_t base2)
 {
 	if (!working)
 		SG_ERROR("Create HMM first.\n");
@@ -501,7 +501,7 @@ bool CGUIHMM::append_model(char* filename, INT base1, INT base2)
 		DREAL* cur_o=new DREAL[h->get_M()];
 		DREAL* app_o=new DREAL[h->get_M()];
 
-		for (INT i=0; i<h->get_M(); i++)
+		for (int32_t i=0; i<h->get_M(); i++)
 		{
 			if (i==base1)
 				cur_o[i]=0;
@@ -527,7 +527,7 @@ bool CGUIHMM::append_model(char* filename, INT base1, INT base2)
 	return true;
 }
 
-bool CGUIHMM::add_states(INT num_states, DREAL value)
+bool CGUIHMM::add_states(int32_t num_states, DREAL value)
 {
 	if (!working)
 		SG_ERROR("Create HMM first.\n");
@@ -544,7 +544,7 @@ bool CGUIHMM::set_pseudo(DREAL pseudo)
 	return true;
 }
 
-bool CGUIHMM::convergence_criteria(INT num_iterations, DREAL epsilon)
+bool CGUIHMM::convergence_criteria(int32_t num_iterations, DREAL epsilon)
 {
 	if (!working)
 		SG_ERROR("Create HMM first.\n");
@@ -754,7 +754,7 @@ bool CGUIHMM::output_hmm_defined()
 	return true;
 }
 
-bool CGUIHMM::best_path(INT from, INT to)
+bool CGUIHMM::best_path(int32_t from, int32_t to)
 {
 	// FIXME: from unused???
 
@@ -764,7 +764,7 @@ bool CGUIHMM::best_path(INT from, INT to)
 	//get path
 	working->best_path(0);
 
-	for (INT t=0; t<working->get_observations()->get_vector_length(0)-1 && t<to; t++)
+	for (int32_t t=0; t<working->get_observations()->get_vector_length(0)-1 && t<to; t++)
 		SG_PRINT("%d ", working->get_best_path_state(0, t));
 	SG_PRINT("\n");
 
@@ -783,15 +783,15 @@ bool CGUIHMM::normalize(bool keep_dead_states)
 	return true;
 }
 
-bool CGUIHMM::relative_entropy(DREAL*& values, INT& len)
+bool CGUIHMM::relative_entropy(DREAL*& values, int32_t& len)
 {
 	if (!pos || !neg)
 		SG_ERROR("Set pos and neg HMM first!\n");
 
-	INT pos_N=pos->get_N();
-	INT neg_N=neg->get_N();
-	INT pos_M=pos->get_M();
-	INT neg_M=neg->get_M();
+	int32_t pos_N=pos->get_N();
+	int32_t neg_N=neg->get_N();
+	int32_t pos_M=pos->get_M();
+	int32_t neg_M=neg->get_M();
 	if (pos_M!=neg_M || pos_N!=neg_N)
 		SG_ERROR("Pos and neg HMM's differ in number of emissions or states.\n");
 
@@ -801,9 +801,9 @@ bool CGUIHMM::relative_entropy(DREAL*& values, INT& len)
 	delete[] values;
 	values=new DREAL[pos_N];
 
-	for (INT i=0; i<pos_N; i++)
+	for (int32_t i=0; i<pos_N; i++)
 	{
-		for (INT j=0; j<pos_M; j++)
+		for (int32_t j=0; j<pos_M; j++)
 		{
 			p[j]=pos->get_b(i, j);
 			q[j]=neg->get_b(i, j);
@@ -818,21 +818,21 @@ bool CGUIHMM::relative_entropy(DREAL*& values, INT& len)
 	return true;
 }
 
-bool CGUIHMM::entropy(DREAL*& values, INT& len)
+bool CGUIHMM::entropy(DREAL*& values, int32_t& len)
 {
 	if (!working)
 		SG_ERROR("Create HMM first!\n");
 
-	INT n=working->get_N();
-	INT m=working->get_M();
+	int32_t n=working->get_N();
+	int32_t m=working->get_M();
 	DREAL* p=new DREAL[m];
 
 	delete[] values;
 	values=new DREAL[n];
 
-	for (INT i=0; i<n; i++)
+	for (int32_t i=0; i<n; i++)
 	{
-		for (INT j=0; j<m; j++)
+		for (int32_t j=0; j<m; j++)
 			p[j]=working->get_b(i, j);
 
 		values[i]=CMath::entropy(p, m);
@@ -843,7 +843,7 @@ bool CGUIHMM::entropy(DREAL*& values, INT& len)
 	return true;
 }
 
-bool CGUIHMM::permutation_entropy(INT width, INT seq_num)
+bool CGUIHMM::permutation_entropy(int32_t width, int32_t seq_num)
 {
 	if (!working)
 		SG_ERROR("Create hmm first.\n");

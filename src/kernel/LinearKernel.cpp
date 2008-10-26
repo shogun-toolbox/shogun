@@ -58,7 +58,7 @@ bool CLinearKernel::save_init(FILE* dest)
 
 void CLinearKernel::clear_normal()
 {
-	int num = ((CRealFeatures*) lhs)->get_num_features();
+	int32_t num = ((CRealFeatures*) lhs)->get_num_features();
 	if (normal==NULL)
 	{
 		normal = new DREAL[num];
@@ -70,13 +70,13 @@ void CLinearKernel::clear_normal()
 	set_is_initialized(true);
 }
 
-void CLinearKernel::add_to_normal(INT idx, DREAL weight) 
+void CLinearKernel::add_to_normal(int32_t idx, DREAL weight) 
 {
-	INT vlen;
+	int32_t vlen;
 	bool vfree;
 	double* vec=((CRealFeatures*) lhs)->get_feature_vector(idx, vlen, vfree);
 
-	for (int i=0; i<vlen; i++)
+	for (int32_t i=0; i<vlen; i++)
 		normal[i]+= weight*normalizer->normalize_lhs(vec[i], idx);
 
 	((CRealFeatures*) lhs)->free_feature_vector(vec, idx, vfree);
@@ -84,9 +84,9 @@ void CLinearKernel::add_to_normal(INT idx, DREAL weight)
 	set_is_initialized(true);
 }
   
-DREAL CLinearKernel::compute(INT idx_a, INT idx_b)
+DREAL CLinearKernel::compute(int32_t idx_a, int32_t idx_b)
 {
-  INT alen, blen;
+  int32_t alen, blen;
   bool afree, bfree;
 
   double* avec=((CRealFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
@@ -102,11 +102,11 @@ DREAL CLinearKernel::compute(INT idx_a, INT idx_b)
   return result;
 }
 
-bool CLinearKernel::init_optimization(INT num_suppvec, INT* sv_idx, DREAL* alphas) 
+bool CLinearKernel::init_optimization(int32_t num_suppvec, int32_t* sv_idx, DREAL* alphas) 
 {
 	clear_normal();
 
-	for (int i=0; i<num_suppvec; i++)
+	for (int32_t i=0; i<num_suppvec; i++)
 		add_to_normal(sv_idx[i], alphas[i]);
 
 	set_is_initialized(true);
@@ -123,11 +123,11 @@ bool CLinearKernel::delete_optimization()
 	return true;
 }
 
-DREAL CLinearKernel::compute_optimized(INT idx) 
+DREAL CLinearKernel::compute_optimized(int32_t idx)
 {
 	ASSERT(get_is_initialized());
 
-	INT vlen;
+	int32_t vlen;
 	bool vfree;
 	double* vec=((CRealFeatures*) rhs)->get_feature_vector(idx, vlen, vfree);
 	ASSERT(vlen==normal_length);

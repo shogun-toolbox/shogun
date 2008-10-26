@@ -26,7 +26,7 @@ class CHistogramWordStringKernel: public CStringKernel<uint16_t>
 		 * @param size cache size
 		 * @param pie plugin estimate
 		 */
-		CHistogramWordStringKernel(INT size, CPluginEstimate* pie);
+		CHistogramWordStringKernel(int32_t size, CPluginEstimate* pie);
 
 		/** constructor
 		 *
@@ -86,7 +86,7 @@ class CHistogramWordStringKernel: public CStringKernel<uint16_t>
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		DREAL compute(INT idx_a, INT idx_b);
+		DREAL compute(int32_t idx_a, int32_t idx_b);
 
 		/** compute index
 		 *
@@ -94,7 +94,7 @@ class CHistogramWordStringKernel: public CStringKernel<uint16_t>
 		 * @param symbol symbol
 		 * @return index at given position in given symbol
 		 */
-		inline INT compute_index(INT position, uint16_t symbol)
+		inline int32_t compute_index(int32_t position, uint16_t symbol)
 		{
 			return position*num_symbols+symbol+1;
 		}
@@ -124,11 +124,11 @@ class CHistogramWordStringKernel: public CStringKernel<uint16_t>
 		DREAL* plo_rhs;
 
 		/** number of parameters */
-		INT num_params;
+		int32_t num_params;
 		/** number of parameters2 */
-		INT num_params2;
+		int32_t num_params2;
 		/** number of symbols */
-		INT num_symbols;
+		int32_t num_symbols;
 		/** sum m2 s2 */
 		DREAL sum_m2_s2;
 

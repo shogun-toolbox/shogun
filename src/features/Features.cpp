@@ -15,7 +15,7 @@
 
 #include <string.h>
 
-CFeatures::CFeatures(INT size)
+CFeatures::CFeatures(int32_t size)
 : CSGObject(), cache_size(size), preproc(NULL), num_preproc(0),
 	preprocessed(NULL)
 {
@@ -45,10 +45,10 @@ CFeatures::~CFeatures()
 }
 
 /// set preprocessor
-INT CFeatures::add_preproc(CPreProc* p)
+int32_t CFeatures::add_preproc(CPreProc* p)
 { 
 	SG_INFO( "%d preprocs currently, new preproc list is\n", num_preproc);
-	INT i;
+	int32_t i;
 
 	bool* preprocd=new bool[num_preproc+1];
 	CPreProc** pps=new CPreProc*[num_preproc+1];
@@ -75,7 +75,7 @@ INT CFeatures::add_preproc(CPreProc* p)
 }
 
 /// get current preprocessor
-CPreProc* CFeatures::get_preproc(INT num)
+CPreProc* CFeatures::get_preproc(int32_t num)
 { 
 	if (num<num_preproc)
 		return preproc[num];
@@ -84,11 +84,11 @@ CPreProc* CFeatures::get_preproc(INT num)
 }
 
 /// get whether specified preprocessor (or all if num=1) was/were already applied
-INT CFeatures::get_num_preprocessed()
+int32_t CFeatures::get_num_preprocessed()
 {
-	INT num=0;
+	int32_t num=0;
 
-	for (INT i=0; i<num_preproc; i++)
+	for (int32_t i=0; i<num_preproc; i++)
 	{
 		if (preprocessed[i])
 			num++;
@@ -104,7 +104,7 @@ void CFeatures::clean_preprocs()
 }
 
 /// del current preprocessor
-CPreProc* CFeatures::del_preproc(INT num)
+CPreProc* CFeatures::del_preproc(int32_t num)
 {
 	CPreProc** pps=NULL; 
 	bool* preprocd=NULL; 
@@ -121,8 +121,8 @@ CPreProc* CFeatures::del_preproc(INT num)
 
 			if (pps && preprocd)
 			{
-				INT j=0;
-				for (INT i=0; i<num_preproc; i++)
+				int32_t j=0;
+				for (int32_t i=0; i<num_preproc; i++)
 				{
 					if (i!=num)
 					{
@@ -141,7 +141,7 @@ CPreProc* CFeatures::del_preproc(INT num)
 
 		num_preproc--;
 
-		for (INT i=0; i<num_preproc; i++)
+		for (int32_t i=0; i<num_preproc; i++)
 			SG_INFO( "preproc[%d]=%s\n",i, preproc[i]->get_name()) ;
 	}
 

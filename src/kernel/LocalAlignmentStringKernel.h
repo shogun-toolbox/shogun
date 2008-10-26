@@ -26,7 +26,7 @@ class CLocalAlignmentStringKernel: public CStringKernel<char>
 		/** constructor
 		 * @param size cache size
 		 */
-		CLocalAlignmentStringKernel(INT size);
+		CLocalAlignmentStringKernel(int32_t size);
 
 		/** constructor
 		 *
@@ -89,15 +89,15 @@ class CLocalAlignmentStringKernel: public CStringKernel<char>
 		 *
 		 * @param p1 parameter1
 		 * @param p2 parameter2
-		 * @return logarithmic sum as int
+		 * @return logarithmic sum as integer
 		 */
-		int LogSum(int p1, int p2);
+		int32_t LogSum(int32_t p1, int32_t p2);
 
 		/** logarithmic sum 2
 		 *
 		 * @param p1 parameter 1
 		 * @param p2 parameter 2
-		 * @return logarithmic sum as float
+		 * @return logarithmic sum as floating point
 		 */
 		float LogSum2(float p1, float p2);
 
@@ -112,7 +112,8 @@ class CLocalAlignmentStringKernel: public CStringKernel<char>
 		 * @param nY nY
 		 * @return computed value
 		 */
-		DREAL LAkernelcompute(int* aaX, int* aaY, int nX, int nY);
+		DREAL LAkernelcompute(
+			int32_t* aaX, int32_t* aaY, int32_t nX, int32_t nY);
 
 	protected:
 		/** compute kernel function for features a and b
@@ -123,28 +124,28 @@ class CLocalAlignmentStringKernel: public CStringKernel<char>
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		virtual DREAL compute(INT idx_a, INT idx_b);
+		virtual DREAL compute(int32_t idx_a, int32_t idx_b);
 
 	protected:
 		/** if kernel is initialized */
 		bool initialized;
 
 		/** indicates whether a char is an amino-acid */
-		int *isAA;
+		int32_t *isAA;
 		/** correspondance between amino-acid letter and index */
-		int *aaIndex;
+		int32_t *aaIndex;
 
 		/** gap penalty opening */
-		int opening;
+		int32_t opening;
 		/** gap penalty extension */
-		int extension;
+		int32_t extension;
 
 		/** static logsum lookup */
-		static int logsum_lookup[LOGSUM_TBL];
+		static int32_t logsum_lookup[LOGSUM_TBL];
 		/** static blosum */
-		static const int blosum[];
+		static const int32_t blosum[];
 		/** scaled blosum */
-		int* scaled_blosum;
+		int32_t* scaled_blosum;
 };
 
 #endif /* _LOCALALIGNMENTSTRINGKERNEL_H__ */

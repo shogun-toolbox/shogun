@@ -48,7 +48,7 @@ class CCommUlongStringKernel: public CStringKernel<ULONG>
 		 * @param size cache size
 		 * @param use_sign if sign shall be used
 		 */
-		CCommUlongStringKernel(INT size=10, bool use_sign=false);
+		CCommUlongStringKernel(int32_t size=10, bool use_sign=false);
 
 		/** constructor
 		 *
@@ -60,7 +60,7 @@ class CCommUlongStringKernel: public CStringKernel<ULONG>
 		CCommUlongStringKernel(
 			CStringFeatures<ULONG>* l, CStringFeatures<ULONG>* r,
 			bool use_sign=false,
-			INT size=10);
+			int32_t size=10);
 
 		virtual ~CCommUlongStringKernel();
 
@@ -108,7 +108,7 @@ class CCommUlongStringKernel: public CStringKernel<ULONG>
 		 * @param weights weights
 		 * @return if initializing was successful
 		 */
-		virtual bool init_optimization(INT count, INT* IDX, DREAL* weights);
+		virtual bool init_optimization(int32_t count, int32_t* IDX, DREAL* weights);
 
 		/** delete optimization
 		 *
@@ -121,7 +121,7 @@ class CCommUlongStringKernel: public CStringKernel<ULONG>
 	 	* @param idx index to compute
 	 	* @return optimized value at given index
 	 	*/
-		virtual DREAL compute_optimized(INT idx);
+		virtual DREAL compute_optimized(int32_t idx);
 
 		/** merge dictionaries
 		 *
@@ -134,8 +134,8 @@ class CCommUlongStringKernel: public CStringKernel<ULONG>
 		 * @param weight weight
 		 * @param vec_idx vector index
 		 */
-		inline void merge_dictionaries(INT &t, INT j, INT &k, ULONG* vec,
-				ULONG* dic, DREAL* dic_weights, DREAL weight, INT vec_idx)
+		inline void merge_dictionaries(int32_t &t, int32_t j, int32_t &k, ULONG* vec,
+				ULONG* dic, DREAL* dic_weights, DREAL weight, int32_t vec_idx)
 		{
 			while (k<dictionary.get_num_elements() && dictionary[k] < vec[j-1])
 			{
@@ -164,7 +164,7 @@ class CCommUlongStringKernel: public CStringKernel<ULONG>
 		 * @param idx where to add
 		 * @param weight what to add
 		 */
-		virtual void add_to_normal(INT idx, DREAL weight);
+		virtual void add_to_normal(int32_t idx, DREAL weight);
 
 		/** clear normal */
 		virtual void clear_normal();
@@ -187,7 +187,7 @@ class CCommUlongStringKernel: public CStringKernel<ULONG>
 		 * @param dict dictionary will be stored in here
 		 * @param dweights dictionary weights will be stored in here
 		 */
-		void get_dictionary(INT &dsize, ULONG*& dict, DREAL*& dweights) 
+		void get_dictionary(int32_t &dsize, ULONG*& dict, DREAL*& dweights) 
 		{
 			dsize=dictionary.get_num_elements();
 			dict=dictionary.get_array();
@@ -203,7 +203,7 @@ class CCommUlongStringKernel: public CStringKernel<ULONG>
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		DREAL compute(INT idx_a, INT idx_b);
+		DREAL compute(int32_t idx_a, int32_t idx_b);
 
 	protected:
 		/** dictionary */

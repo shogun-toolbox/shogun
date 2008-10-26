@@ -10,5 +10,5 @@
 %template(SimpleWordFeatures) CSimpleFeatures<uint16_t>;
 %template(SimpleShortFeatures) CSimpleFeatures<SHORT>;
 %template(SimpleCharFeatures) CSimpleFeatures<char>;
-%template(SimpleIntFeatures)  CSimpleFeatures<INT>;
+%template(SimpleIntFeatures)  CSimpleFeatures<int32_t>;
 

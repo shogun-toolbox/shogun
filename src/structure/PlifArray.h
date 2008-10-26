@@ -37,7 +37,7 @@ class CPlifArray: public CPlifBase
 		 *
 		 * @return number of plifs
 		 */
-		INT get_num_plifs()
+		int32_t get_num_plifs()
 		{
 			return m_array.get_num_elements();
 		}
@@ -49,12 +49,12 @@ class CPlifArray: public CPlifBase
 		 */
 		virtual DREAL lookup_penalty(DREAL p_value, DREAL* svm_values) const;
 
-		/** lookup penalty INT
+		/** lookup penalty int32_t
 		 *
 		 * @param p_value value
 		 * @param svm_values SVM values
 		 */
-		virtual DREAL lookup_penalty(INT p_value, DREAL* svm_values) const;
+		virtual DREAL lookup_penalty(int32_t p_value, DREAL* svm_values) const;
 
 		/** penalty clear derivative */
 		virtual void penalty_clear_derivative();
@@ -94,9 +94,9 @@ class CPlifArray: public CPlifBase
 		 *
 		 * @return maximum ID
 		 */
-		virtual INT get_max_id() const;
+		virtual int32_t get_max_id() const;
 
-		void get_used_svms(INT* num_svms, INT* svm_ids);
+		void get_used_svms(int32_t* num_svms, int32_t* svm_ids);
 	protected:
 		/** plif array */
 		CDynamicArray<CPlifBase*> m_array;

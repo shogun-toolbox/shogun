@@ -91,7 +91,7 @@ class CSignal : public CSGObject
 		}
 
 	protected:
-		/** signals */
+		/** signals; handling external lib  */
 		static int signals[NUMTRAPPEDSIGS];
 
 		/** signal actions */

@@ -38,7 +38,7 @@ class CSparsePolyKernel: public CSparseKernel<DREAL>
 		 */
 		CSparsePolyKernel(
 			CSparseFeatures<DREAL>* l, CSparseFeatures<DREAL>* r,
-			INT size, INT d, bool inhom);
+			int32_t size, int32_t d, bool inhom);
 
 		/** constructor
 		 *
@@ -46,7 +46,7 @@ class CSparsePolyKernel: public CSparseKernel<DREAL>
 		 * @param degree degree
 		 * @param inhomogene is inhomogeneous
 		 */
-		CSparsePolyKernel(INT size, INT degree, bool inhomogene=true);
+		CSparsePolyKernel(int32_t size, int32_t degree, bool inhomogene=true);
 
 		virtual ~CSparsePolyKernel();
 
@@ -102,11 +102,11 @@ class CSparsePolyKernel: public CSparseKernel<DREAL>
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		virtual DREAL compute(INT idx_a, INT idx_b);
+		virtual DREAL compute(int32_t idx_a, int32_t idx_b);
 
 	protected:
 		/** degree */
-		INT degree;
+		int32_t degree;
 		/** if kernel is inhomogeneous */
 		bool inhomogene;
 };

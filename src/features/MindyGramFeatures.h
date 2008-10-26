@@ -82,7 +82,7 @@ class CMindyGramFeatures : public CFeatures
 
 		         /* Clone gram vectors */
 		         vectors = (gram_t **) calloc(num_vectors, sizeof(gram_t *));
-		         for (INT i = 0; i < num_vectors; i++)
+		         for (int32_t i = 0; i < num_vectors; i++)
 		                 vectors[i] = gram_clone(orig.vectors[i]);
                 }
 #endif
@@ -95,7 +95,7 @@ class CMindyGramFeatures : public CFeatures
 		template <class T> 
 		bool import_features(CStringFeatures<T> *sf)
 		{
-			INT i;
+			int32_t i;
 			num_vectors = sf->get_num_vectors();
 			SG_INFO( "Importing %ld string features\n", num_vectors);
 
@@ -106,7 +106,7 @@ class CMindyGramFeatures : public CFeatures
 			}
 
 			for (i = 0; i < num_vectors; i++) {
-				INT len;
+				int32_t len;
 				T *s = sf->get_feature_vector(i, len);
 				vectors[i] = gram_extract(cfg, (byte_t *) s, (size_t) len);
 
@@ -123,15 +123,15 @@ class CMindyGramFeatures : public CFeatures
         CFeatures *duplicate() const;
 
         /* Feature and vector functions */
-        gram_t *get_feature_vector(INT i);
-        void set_feature_vector(INT i, gram_t * g);
-        ULONG get_feature(INT i, INT j);
-        INT get_vector_length(INT i);
+        gram_t *get_feature_vector(int32_t i);
+        void set_feature_vector(int32_t i, gram_t * g);
+        ULONG get_feature(int32_t i, int32_t j);
+        int32_t get_vector_length(int32_t i);
         void trim_max(double m);
 
         /* Simple functions */
-        virtual INT get_num_vectors() { return num_vectors; }
-        virtual INT get_size() { return sizeof(gram_t *); }
+        virtual int32_t get_num_vectors() { return num_vectors; }
+        virtual int32_t get_size() { return sizeof(gram_t *); }
         EFeatureClass get_feature_class() { return C_MINDYGRAM; }
         EFeatureType get_feature_type() { return F_ULONG; }
 
@@ -141,7 +141,7 @@ class CMindyGramFeatures : public CFeatures
 
     private:
         /**< number of gram vectors */
-        INT num_vectors;
+        int32_t num_vectors;
         /**< Array of gram features */
         gram_t **vectors;
         /**< Gram configuration used */

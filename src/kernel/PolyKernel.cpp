@@ -15,13 +15,13 @@
 #include "kernel/SqrtDiagKernelNormalizer.h"
 #include "features/RealFeatures.h"
 
-CPolyKernel::CPolyKernel(INT size, INT d, bool i)
+CPolyKernel::CPolyKernel(int32_t size, int32_t d, bool i)
 : CSimpleKernel<DREAL>(size), degree(d), inhomogene(i)
 {
 	set_normalizer(new CSqrtDiagKernelNormalizer());
 }
 
-CPolyKernel::CPolyKernel(CRealFeatures* l, CRealFeatures* r, INT d, bool i, INT size)
+CPolyKernel::CPolyKernel(CRealFeatures* l, CRealFeatures* r, int32_t d, bool i, int32_t size)
 : CSimpleKernel<DREAL>(size), degree(d), inhomogene(i)
 {
 	set_normalizer(new CSqrtDiagKernelNormalizer());
@@ -54,10 +54,10 @@ bool CPolyKernel::save_init(FILE* dest)
 	return false;
 }
   
-DREAL CPolyKernel::compute(INT idx_a, INT idx_b)
+DREAL CPolyKernel::compute(int32_t idx_a, int32_t idx_b)
 {
-  INT alen=0;
-  INT blen=0;
+  int32_t alen=0;
+  int32_t blen=0;
   bool afree=false;
   bool bfree=false;
 

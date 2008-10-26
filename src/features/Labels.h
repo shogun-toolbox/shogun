@@ -30,14 +30,14 @@ class CLabels : public CSGObject
 		 *
 		 * @param num_labels number of labels
 		 */
-		CLabels(INT num_labels);
+		CLabels(int32_t num_labels);
 
 		/** constructor
 		 *
 		 * @param labels labels to set
 		 * @param len number of labels
 		 */
-		CLabels(DREAL* labels, INT len);
+		CLabels(DREAL* labels, int32_t len);
 
 		/** constructor
 		 *
@@ -66,7 +66,7 @@ class CLabels : public CSGObject
 		 * @param label value of label
 		 * @return if setting was successful
 		 */
-		inline bool set_label(INT idx, DREAL label)
+		inline bool set_label(int32_t idx, DREAL label)
 		{ 
 			if (labels && idx<num_labels)
 			{
@@ -83,7 +83,7 @@ class CLabels : public CSGObject
 		 * @param label INT value of label
 		 * @return if setting was successful
 		 */
-		inline bool set_int_label(INT idx, INT label)
+		inline bool set_int_label(int32_t idx, int32_t label)
 		{ 
 			if (labels && idx<num_labels)
 			{
@@ -99,7 +99,7 @@ class CLabels : public CSGObject
 		 * @param idx index of label to get
 		 * @return value of label
 		 */
-		inline DREAL get_label(INT idx)
+		inline DREAL get_label(int32_t idx)
 		{
 			if (labels && idx<num_labels)
 				return labels[idx];
@@ -112,12 +112,12 @@ class CLabels : public CSGObject
 		 * @param idx index of label to get
 		 * @return INT value of label
 		 */
-		inline INT get_int_label(INT idx)
+		inline int32_t get_int_label(int32_t idx)
 		{
 			if (labels && idx<num_labels)
 			{
-				ASSERT(labels[idx]== ((DREAL) ((INT) labels[idx])));
-				return ((INT) labels[idx]);
+				ASSERT(labels[idx]== ((DREAL) ((int32_t) labels[idx])));
+				return ((int32_t) labels[idx]);
 			}
 			else
 				return -1;
@@ -135,7 +135,7 @@ class CLabels : public CSGObject
 		 *
 		 * @return number of classes
 		 */
-		INT get_num_classes();
+		int32_t get_num_classes();
 
 		/** get labels
 		 * caller has to clean up
@@ -143,21 +143,21 @@ class CLabels : public CSGObject
 		 * @param len number of labels
 		 * @return the labels
 		 */
-		DREAL* get_labels(INT &len);
+		DREAL* get_labels(int32_t &len);
 		
 		/** get labels (swig compatible)
 		 *
 		 * @param labels where labels will be stored in
 		 * @param len where number of labels will be stored in
 		 */
-		void get_labels(DREAL** labels, INT* len);
+		void get_labels(DREAL** labels, int32_t* len);
 
 		/** set labels
 		 *
 		 * @param labels labels to set
 		 * @param len number of labels
 		 */
-		void set_labels(DREAL* labels, INT len);
+		void set_labels(DREAL* labels, int32_t len);
 
 		/** get INT label vector
 		 * caller has to clean up
@@ -165,7 +165,7 @@ class CLabels : public CSGObject
 		 * @param len number of labels to get
 		 * @return INT labels
 		 */
-		INT* get_int_labels(INT &len);
+		int32_t* get_int_labels(int32_t &len);
 
 		/** set INT labels
 		 * caller has to clean up
@@ -173,16 +173,16 @@ class CLabels : public CSGObject
 		 * @param labels INT labels
 		 * @param len number of INT labels
 		 */
-		void set_int_labels(INT *labels, INT len) ;
+		void set_int_labels(int32_t *labels, int32_t len) ;
 
 		/** get number of labels
 		 *
 		 * @return number of labels
 		 */
-		inline INT get_num_labels() { return num_labels; }
+		inline int32_t get_num_labels() { return num_labels; }
 	protected:
 		/** number of labels */
-		INT num_labels;
+		int32_t num_labels;
 		/** the labels */
 		DREAL* labels;
 };

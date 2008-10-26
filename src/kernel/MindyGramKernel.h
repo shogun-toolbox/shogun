@@ -25,24 +25,24 @@
 
 /* Parameter specifications */
 typedef struct {
-		char *name;									/* Name of parameter */
-		int idx;										/* Index in param array (see sm.h) */
-		double val;									/* Default value */
-		char *descr;								/* Description */
+		char *name;			/* Name of parameter */
+		int32_t idx;		/* Index in param array (see sm.h) */
+		double val;			/* Default value */
+		char *descr;		/* Description */
 } param_spec_t;
 
 class CMindyGramKernel: public CKernel
 {
 	public:
 		/* Constructors */
-		CMindyGramKernel(INT ch, char *measure, DREAL width);
+		CMindyGramKernel(int32_t ch, char *measure, DREAL width);
 		CMindyGramKernel(CFeatures *l, CFeatures *r, char *measure, DREAL width);
 		virtual ~CMindyGramKernel();
 
 		/* Set options */
 		void set_param(char *param);
 		/* Set MD5 cache size */
-		void set_md5cache(INT c);
+		void set_md5cache(int32_t c);
 		/* Set normalization */
 		void set_norm(ENormalizationType e);
 
@@ -60,10 +60,10 @@ class CMindyGramKernel: public CKernel
 		inline virtual const char* get_name() { return "MindyGram"; }
 
 		/* Optimization functions */
-		virtual bool init_optimization(INT count, INT *IDX, DREAL * weights);
+		virtual bool init_optimization(int32_t count, int32_t *IDX, DREAL * weights);
 		virtual bool delete_optimization();
-		virtual DREAL compute_optimized(INT idx);
-		virtual void add_to_normal(INT idx, DREAL weight);
+		virtual DREAL compute_optimized(int32_t idx);
+		virtual void add_to_normal(int32_t idx, DREAL weight);
 		virtual void clear_normal();
 
 		/* Load and ysave functions */
@@ -72,7 +72,7 @@ class CMindyGramKernel: public CKernel
 
 	protected:
 		/* Kernel function */
-		DREAL compute(INT idx_a, INT idx_b);
+		DREAL compute(int32_t idx_a, int32_t idx_b);
 
 	private:
 		/* Name of similartiy measure */

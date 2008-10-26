@@ -31,7 +31,7 @@ class CSalzbergWordStringKernel: public CStringKernel<uint16_t>
 		 * @param pie the plugin estimate
 		 * @param labels optional labels to set prior from
 		 */
-		CSalzbergWordStringKernel(INT size, CPluginEstimate* pie, CLabels* labels=NULL);
+		CSalzbergWordStringKernel(int32_t size, CPluginEstimate* pie, CLabels* labels=NULL);
 
 		/** constructor
 	 	 *
@@ -111,7 +111,7 @@ class CSalzbergWordStringKernel: public CStringKernel<uint16_t>
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		DREAL compute(INT idx_a, INT idx_b);
+		DREAL compute(int32_t idx_a, int32_t idx_b);
 		//	DREAL compute_slow(LONG idx_a, LONG idx_b);
 
 		/** compute index of given symbol at given position
@@ -120,7 +120,7 @@ class CSalzbergWordStringKernel: public CStringKernel<uint16_t>
 		 * @param symbol symbol
 		 * @return index
 		 */
-		inline INT compute_index(INT position, uint16_t symbol)
+		inline int32_t compute_index(int32_t position, uint16_t symbol)
 		{
 			return position*num_symbols+symbol;
 		}
@@ -145,9 +145,9 @@ class CSalzbergWordStringKernel: public CStringKernel<uint16_t>
 		DREAL* ld_mean_rhs;
 
 		/** number of params */
-		INT num_params;
+		int32_t num_params;
 		/** number of symbols */
-		INT num_symbols;
+		int32_t num_symbols;
 		/** sum m2 s2 */
 		DREAL sum_m2_s2;
 		/** positive prior */

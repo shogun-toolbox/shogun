@@ -35,13 +35,13 @@ bool CRealFeatures::load(char* fname)
 
 bool CRealFeatures::save(char* fname)
 {
-	INT len;
+	int32_t len;
 	bool free;
 	DREAL* fv;
 
 	CFile f(fname, 'w', F_DREAL);
 
-    for (INT i=0; i< (INT) num_vectors && f.is_ok(); i++)
+    for (int32_t i=0; i< (int32_t) num_vectors && f.is_ok(); i++)
 	{
 		if (!(i % (num_vectors/10+1)))
 			SG_PRINT( "%02d%%.", (int) (100.0*i/num_vectors));
@@ -67,13 +67,13 @@ bool CRealFeatures::Align_char_features(CCharFeatures* cf, CCharFeatures* Ref, D
 	num_vectors=cf->get_num_vectors();
 	num_features=Ref->get_num_vectors();
 
-	INT len=num_vectors*num_features;
+	int32_t len=num_vectors*num_features;
 	free_feature_matrix();
 	feature_matrix=new DREAL[len];
-	INT num_cf_feat=0;
-	INT num_cf_vec=0;
-	INT num_ref_feat=0;
-	INT num_ref_vec=0;
+	int32_t num_cf_feat=0;
+	int32_t num_cf_vec=0;
+	int32_t num_ref_feat=0;
+	int32_t num_ref_vec=0;
 	char* fm_cf=cf->get_feature_matrix(num_cf_feat, num_cf_vec);
 	char* fm_ref=Ref->get_feature_matrix(num_ref_feat, num_ref_vec);
 
@@ -81,11 +81,11 @@ bool CRealFeatures::Align_char_features(CCharFeatures* cf, CCharFeatures* Ref, D
 	ASSERT(num_ref_vec==num_features);
 
 	SG_INFO( "computing aligments of %i vectors to %i reference vectors: ", num_cf_vec, num_ref_vec) ;
-	for (INT i=0; i< num_ref_vec; i++)
+	for (int32_t i=0; i< num_ref_vec; i++)
 	  {
 	    if (i%10==0)
 	      SG_PRINT( "%i..", i) ;
-	    for (INT j=0; j<num_cf_vec; j++)
+	    for (int32_t j=0; j<num_cf_vec; j++)
 	      feature_matrix[i+j*num_features] = CMath::Align(&fm_cf[j*num_cf_feat], &fm_ref[i*num_ref_feat], num_cf_feat, num_ref_feat, gapCost);
 	  } ;
 

@@ -18,18 +18,18 @@
  * It inherits its functionality from CSimpleFeatures, which should be
  * consulted for further reference.
  */
-class CIntFeatures: public CSimpleFeatures<INT>
+class CIntFeatures: public CSimpleFeatures<int32_t>
 {
 	public:
 		/** constructor
 		 *
 		 * @param size cache size
 		 */
-		CIntFeatures(INT size=0) : CSimpleFeatures<INT>(size) {}
+		CIntFeatures(int32_t size=0) : CSimpleFeatures<int32_t>(size) {}
 
 		/** copy constructor */
 		CIntFeatures(const CIntFeatures & orig) :
-			CSimpleFeatures<INT>(orig) {}
+			CSimpleFeatures<int32_t>(orig) {}
 
         /** constructor that copies feature matrix from
          * pointer num_feat,num_vec pair
@@ -38,16 +38,16 @@ class CIntFeatures: public CSimpleFeatures<INT>
 		 * @param num_feat number of features
 		 * @param num_vec number of vectors
 		 */
-		inline CIntFeatures(INT* src, INT num_feat, INT num_vec): CSimpleFeatures<INT>(0)
+		inline CIntFeatures(int32_t* src, int32_t num_feat, int32_t num_vec): CSimpleFeatures<int32_t>(0)
 		{
-			CSimpleFeatures<INT>::copy_feature_matrix(src, num_feat, num_vec);
+			CSimpleFeatures<int32_t>::copy_feature_matrix(src, num_feat, num_vec);
 		}
 
 		/** constructor
 		 *
 		 * @param fname filename to load features from
 		 */
-		CIntFeatures(char* fname) : CSimpleFeatures<INT>(fname)
+		CIntFeatures(char* fname) : CSimpleFeatures<int32_t>(fname)
 		{
 			load(fname);
 		}
@@ -58,9 +58,9 @@ class CIntFeatures: public CSimpleFeatures<INT>
 		 * @param d1 dimension 1 of matrix
 		 * @param d2 dimension 2 of matrix
 		 */
-		inline virtual void get_fm(INT** dst, INT* d1, INT* d2)
+		inline virtual void get_fm(int32_t** dst, int32_t* d1, int32_t* d2)
 		{
-			CSimpleFeatures<INT>::get_fm(dst, d1, d2);
+			CSimpleFeatures<int32_t>::get_fm(dst, d1, d2);
 		}
 
 		/** copy feature matrix
@@ -71,9 +71,9 @@ class CIntFeatures: public CSimpleFeatures<INT>
 		 * @param num_feat number of features
 		 * @param num_vec number of vectors
 		 */
-		inline virtual void copy_feature_matrix(INT* src, INT num_feat, INT num_vec)
+		inline virtual void copy_feature_matrix(int32_t* src, int32_t num_feat, int32_t num_vec)
 		{
-			CSimpleFeatures<INT>::copy_feature_matrix(src, num_feat, num_vec);
+			CSimpleFeatures<int32_t>::copy_feature_matrix(src, num_feat, num_vec);
 		}
 
 		/** load features from file

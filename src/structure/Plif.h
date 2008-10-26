@@ -34,7 +34,7 @@ class CPlif: public CPlifBase
 		 *
 		 * @param len len
 		 */
-		CPlif(INT len=0);
+		CPlif(int32_t len=0);
 		~CPlif();
 
 		/** init penalty struct cache */
@@ -56,13 +56,13 @@ class CPlif: public CPlifBase
 		 */
 		DREAL lookup_penalty(DREAL p_value, DREAL* svm_values) const;
 
-		/** lookup penalty INT
+		/** lookup penalty int32_t
 		 *
 		 * @param p_value value
 		 * @param svm_values SVM values
 		 * @return the penalty
 		 */
-		DREAL lookup_penalty(INT p_value, DREAL* svm_values) const;
+		DREAL lookup_penalty(int32_t p_value, DREAL* svm_values) const;
 
 		/** lookup
 		 *
@@ -97,7 +97,7 @@ class CPlif: public CPlifBase
 		 * @param p_len len
 		 * @return cum derivative
 		 */
-		const DREAL * get_cum_derivative(INT & p_len) const
+		const DREAL * get_cum_derivative(int32_t & p_len) const
 		{
 			p_len = len;
 			return cum_derivatives;
@@ -136,7 +136,7 @@ class CPlif: public CPlifBase
 		 *
 		 * @param p_id the id to set
 		 */
-		void set_id(INT p_id)
+		void set_id(int32_t p_id)
 		{
 			id=p_id;
 		}
@@ -145,7 +145,7 @@ class CPlif: public CPlifBase
 		 *
 		 * @return the ID
 		 */
-		INT get_id() const
+		int32_t get_id() const
 		{
 			return id;
 		}
@@ -154,7 +154,7 @@ class CPlif: public CPlifBase
 		 *
 		 * @return maximum ID
 		 */
-		INT get_max_id() const
+		int32_t get_max_id() const
 		{
 			return get_id();
 		}
@@ -163,7 +163,7 @@ class CPlif: public CPlifBase
 		 *
 		 * @param p_use_svm if SVM shall be used
 		 */
-		void set_use_svm(INT p_use_svm)
+		void set_use_svm(int32_t p_use_svm)
 		{
 			delete[] cache;
 			cache=NULL;
@@ -174,7 +174,7 @@ class CPlif: public CPlifBase
 		 *
 		 * @return if SVM is used
 		 */
-		INT get_use_svm() const
+		int32_t get_use_svm() const
 		{
 			return use_svm;
 		}
@@ -192,7 +192,7 @@ class CPlif: public CPlifBase
 		 *
 		 * @param p_use_cache if cache shall be used
 		 */
-		void set_use_cache(INT p_use_cache)
+		void set_use_cache(int32_t p_use_cache)
 		{
 			delete[] cache;
 			cache=NULL;
@@ -203,7 +203,7 @@ class CPlif: public CPlifBase
 		 *
 		 * @return if cache is used
 		 */
-		INT get_use_cache()
+		int32_t get_use_cache()
 		{
 			return use_cache;
 		}
@@ -216,7 +216,7 @@ class CPlif: public CPlifBase
 		 * @param p_limits limit
 		 * @param p_penalties penalties
 		 */
-		void set_plif(INT p_len, DREAL *p_limits, DREAL* p_penalties)
+		void set_plif(int32_t p_len, DREAL *p_limits, DREAL* p_penalties)
 		{
 			len=p_len;
 			delete[] limits;
@@ -229,7 +229,7 @@ class CPlif: public CPlifBase
 			penalties=new DREAL[len];
 			cum_derivatives=new DREAL[len];
 
-			for (INT i=0; i<len; i++)
+			for (int32_t i=0; i<len; i++)
 			{
 				limits[i]=p_limits[i];
 				penalties[i]=p_penalties[i];
@@ -242,7 +242,7 @@ class CPlif: public CPlifBase
 		 *
 		 * @param p_len len
 		 */
-		void set_plif_length(INT p_len)
+		void set_plif_length(int32_t p_len)
 		{
 			if (len!=p_len)
 			{
@@ -257,7 +257,7 @@ class CPlif: public CPlifBase
 			}
 			delete[] cache;
 			cache=NULL;
-			for (INT i=0; i<len; i++)
+			for (int32_t i=0; i<len; i++)
 			{
 				limits[i]=0.0;
 				penalties[i]=0.0;
@@ -270,13 +270,13 @@ class CPlif: public CPlifBase
 		 * @param p_limits limits
 		 * @param p_len len
 		 */
-		void set_plif_limits(DREAL* p_limits, INT p_len)
+		void set_plif_limits(DREAL* p_limits, int32_t p_len)
 		{
 			delete[] cache;
 			cache=NULL;
 			ASSERT(len==p_len);
 
-			for (INT i=0; i<len; i++)
+			for (int32_t i=0; i<len; i++)
 				limits[i]=p_limits[i];
 
 			penalty_clear_derivative();
@@ -296,13 +296,13 @@ class CPlif: public CPlifBase
 		 * @param p_penalties penalties
 		 * @param p_len len
 		 */
-		void set_plif_penalty(DREAL* p_penalties, INT p_len)
+		void set_plif_penalty(DREAL* p_penalties, int32_t p_len)
 		{
 			delete[] cache;
 			cache=NULL;
 			ASSERT(len==p_len);
 
-			for (INT i=0; i<len; i++)
+			for (int32_t i=0; i<len; i++)
 				penalties[i]=p_penalties[i];
 
 			penalty_clear_derivative();
@@ -393,20 +393,20 @@ class CPlif: public CPlifBase
 		/** get SVM_ids and number of SVMs used
 		 *
 		 */
-		void get_used_svms(INT* num_svms, INT* svm_ids);
+		void get_used_svms(int32_t* num_svms, int32_t* svm_ids);
 		
 		/** get plif len
 		 *
 		 * @return plif len
 		 */
-		inline INT get_plif_len()
+		inline int32_t get_plif_len()
 		{
 			return len;
 		}
 
 	protected:
 		/** len */
-		INT len;
+		int32_t len;
 		/** limits */
 		DREAL *limits;
 		/** penalties */
@@ -422,11 +422,11 @@ class CPlif: public CPlifBase
 		/** transform type */
 		enum ETransformType transform;
 		/** id */
-		INT id;
+		int32_t id;
 		/** name */
 		char * name;
 		/** if SVM shall be used */
-		INT use_svm;
+		int32_t use_svm;
 		/** if cache shall be used */
 		bool use_cache;
 		/** do calc
@@ -436,9 +436,9 @@ class CPlif: public CPlifBase
 };
 
 #ifdef HAVE_MATLAB
-CPlif** read_penalty_struct_from_cell(const mxArray * mx_penalty_info, INT P) ;
+CPlif** read_penalty_struct_from_cell(const mxArray * mx_penalty_info, int32_t P) ;
 #endif
 
-void delete_penalty_struct(CPlif** PEN, INT P) ;
+void delete_penalty_struct(CPlif** PEN, int32_t P) ;
 
 #endif

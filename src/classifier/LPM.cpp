@@ -31,16 +31,16 @@ bool CLPM::train()
 {
 	ASSERT(labels);
 	ASSERT(features);
-	INT num_train_labels=labels->get_num_labels();
-	INT num_feat=features->get_num_features();
-	INT num_vec=features->get_num_vectors();
+	int32_t num_train_labels=labels->get_num_labels();
+	int32_t num_feat=features->get_num_features();
+	int32_t num_vec=features->get_num_vectors();
 
 	ASSERT(num_vec==num_train_labels);
 	delete[] w;
 	w=new DREAL[num_feat];
 	w_dim=num_feat;
 
-	INT num_params=1+2*num_feat+num_vec; //b,w+,w-,xi
+	int32_t num_params=1+2*num_feat+num_vec; //b,w+,w-,xi
 	DREAL* params=new DREAL[num_params];
 	memset(params,0,sizeof(DREAL)*num_params);
 
@@ -54,7 +54,7 @@ bool CLPM::train()
 	solver.cleanup();
 
 	set_bias(params[0]);
-	for (INT i=0; i<num_feat; i++)
+	for (int32_t i=0; i<num_feat; i++)
 		w[i]=params[1+i]-params[1+num_feat+i];
 
 //#define LPM_DEBUG

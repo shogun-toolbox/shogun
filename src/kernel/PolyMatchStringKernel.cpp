@@ -15,14 +15,14 @@
 #include "features/Features.h"
 #include "features/StringFeatures.h"
 
-CPolyMatchStringKernel::CPolyMatchStringKernel(INT size, INT d, bool i)
+CPolyMatchStringKernel::CPolyMatchStringKernel(int32_t size, int32_t d, bool i)
 : CStringKernel<char>(size), degree(d), inhomogene(i)
 {
 	set_normalizer(new CSqrtDiagKernelNormalizer());
 }
 
 CPolyMatchStringKernel::CPolyMatchStringKernel(
-	CStringFeatures<char>* l, CStringFeatures<char>* r, INT d, bool i)
+	CStringFeatures<char>* l, CStringFeatures<char>* r, int32_t d, bool i)
 : CStringKernel<char>(10), degree(d), inhomogene(i)
 {
 	set_normalizer(new CSqrtDiagKernelNormalizer());
@@ -55,9 +55,9 @@ bool CPolyMatchStringKernel::save_init(FILE *dest)
 	return false;
 }
 
-DREAL CPolyMatchStringKernel::compute(INT idx_a, INT idx_b)
+DREAL CPolyMatchStringKernel::compute(int32_t idx_a, int32_t idx_b)
 {
-	INT i, alen, blen, sum;
+	int32_t i, alen, blen, sum;
 
 	char* avec = ((CStringFeatures<char>*) lhs)->get_feature_vector(idx_a, alen);
 	char* bvec = ((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen);

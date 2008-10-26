@@ -34,7 +34,7 @@ class CChi2Kernel: public CSimpleKernel<DREAL>
 		 * @param size cache size
 		 * @param width width
 		 */
-		CChi2Kernel(INT size, DREAL width);
+		CChi2Kernel(int32_t size, DREAL width);
 
 		/** constructor
 		 *
@@ -44,7 +44,7 @@ class CChi2Kernel: public CSimpleKernel<DREAL>
 		 * @param size cache size
 		 */
 		CChi2Kernel(CRealFeatures* l, CRealFeatures* r,
-			DREAL width, INT size);
+			DREAL width, int32_t size);
 
 		virtual ~CChi2Kernel();
 
@@ -91,7 +91,7 @@ class CChi2Kernel: public CSimpleKernel<DREAL>
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		virtual DREAL compute(INT idx_a, INT idx_b);
+		virtual DREAL compute(int32_t idx_a, int32_t idx_b);
 
 	protected:
 		/** width */

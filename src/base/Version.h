@@ -47,32 +47,32 @@ public:
 		return version_release;
 	}
 
-	static inline INT get_version_revision()
+	static inline int32_t get_version_revision()
 	{
 		return version_revision;
 	}
 
-	static inline INT get_version_year()
+	static inline int32_t get_version_year()
 	{
 		return version_year;
 	}
 
-	static inline INT get_version_month()
+	static inline int32_t get_version_month()
 	{
 		return version_month;
 	}
 
-	static inline INT get_version_day()
+	static inline int32_t get_version_day()
 	{
 		return version_day;
 	}
 
-	static inline INT get_version_hour()
+	static inline int32_t get_version_hour()
 	{
 		return version_hour;
 	}
 
-	static inline INT get_version_minute()
+	static inline int32_t get_version_minute()
 	{
 		return version_year;
 	}
@@ -85,11 +85,11 @@ public:
 	static const char version_release[128];
 	static const char version_extra[128];
 
-	static const INT version_revision;
-	static const INT version_year;
-	static const INT version_month;
-	static const INT version_day;
-	static const INT version_hour;
-	static const INT version_minute;
+	static const int32_t version_revision;
+	static const int32_t version_year;
+	static const int32_t version_month;
+	static const int32_t version_day;
+	static const int32_t version_hour;
+	static const int32_t version_minute;
 };
 #endif

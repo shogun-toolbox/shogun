@@ -48,7 +48,7 @@ class CMultiClassSVM : public CSVM
 		 * @param num_classes number of classes in SVM
 		 * @return if creation was successful
 		 */
-		bool create_multiclass_svm(int num_classes);
+		bool create_multiclass_svm(int32_t num_classes);
 
 		/** set SVM
 		 *
@@ -56,14 +56,14 @@ class CMultiClassSVM : public CSVM
 		 * @param svm SVM to set
 		 * @return if setting was successful
 		 */
-		bool set_svm(INT num, CSVM* svm);
+		bool set_svm(int32_t num, CSVM* svm);
 
 		/** get SVM
 		 *
 		 * @param num which SVM to get
 		 * @return SVM at number num
 		 */
-		CSVM* get_svm(INT num)
+		CSVM* get_svm(int32_t num)
 		{
 			ASSERT(m_num_svms>0);
 			ASSERT(num>=0 && num<m_num_svms);
@@ -75,7 +75,7 @@ class CMultiClassSVM : public CSVM
 		 *
 		 * @return number of SVMs
 		 */
-		INT inline get_num_svms()
+		int32_t inline get_num_svms()
 		{
 			return m_num_svms;
 		}
@@ -95,7 +95,7 @@ class CMultiClassSVM : public CSVM
 		 * @param num number of example to classify
 		 * @return resulting classification
 		 */
-		virtual DREAL classify_example(INT num);
+		virtual DREAL classify_example(int32_t num);
 
 		/** classify one vs rest
 		 *
@@ -109,7 +109,7 @@ class CMultiClassSVM : public CSVM
 		 * @param num number of example of classify
 		 * @return resulting classification
 		 */
-		DREAL classify_example_one_vs_rest(INT num);
+		DREAL classify_example_one_vs_rest(int32_t num);
 
 		/** classify one vs one
 		 *
@@ -123,7 +123,7 @@ class CMultiClassSVM : public CSVM
 		 * @param num number of example of classify
 		 * @return resulting classification
 		 */
-		DREAL classify_example_one_vs_one(INT num);
+		DREAL classify_example_one_vs_one(int32_t num);
 
 		/** load a Multiclass SVM from file
 		 * @param svm_file the file handle
@@ -140,9 +140,9 @@ class CMultiClassSVM : public CSVM
 		EMultiClassSVM multiclass_type;
 
 		/** number of classes */
-		INT m_num_classes;
+		int32_t m_num_classes;
 		/** number of SVMs */
-		INT m_num_svms;
+		int32_t m_num_svms;
 		/** the SVMs */
 		CSVM** m_svms;
 };

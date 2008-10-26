@@ -53,20 +53,20 @@ public:
 	{
 	}
 
-	inline INT ref()
+	inline int32_t ref()
 	{
 		++refcount;
 		SG_DEBUG("ref():%ld obj:%p\n", refcount, this);
 		return refcount;
 	}
 
-	inline INT ref_count() const
+	inline int32_t ref_count() const
 	{
 		SG_DEBUG("ref_count(): refcount is: %d\n", refcount);
 		return refcount;
 	}
 
-	inline INT unref()
+	inline int32_t unref()
 	{
 		if (refcount==0 || --refcount==0)
 		{
@@ -84,7 +84,7 @@ public:
 	}
 
 private:
-	INT refcount;
+	int32_t refcount;
 #else //HAVE_R
 	inline CSGObject()
 	{

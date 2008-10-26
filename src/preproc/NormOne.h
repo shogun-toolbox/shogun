@@ -53,6 +53,6 @@ class CNormOne : public CSimplePreProc<DREAL>
 
 		/// apply preproc on single feature vector
 		/// result in feature matrix
-		virtual DREAL* apply_to_feature_vector(DREAL* f, INT &len);
+		virtual DREAL* apply_to_feature_vector(DREAL* f, int32_t &len);
 };
 #endif

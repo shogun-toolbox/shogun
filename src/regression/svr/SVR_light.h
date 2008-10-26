@@ -93,7 +93,7 @@ class CSVRLight: public CSVMLight
 		 * @param label label
 		 * @param totdoc totdoc
 		 */
-		virtual double compute_objective_function(double *a, double *lin, double *c, double eps, INT *label, INT totdoc);
+		virtual double compute_objective_function(double *a, double *lin, double *c, double eps, int32_t *label, int32_t totdoc);
 
 		/** update linear component
 		 *
@@ -108,9 +108,9 @@ class CSVRLight: public CSVMLight
 		 * @param aicache ai cache
 		 * @param c c
 		 */
-		virtual void update_linear_component(INT* docs, INT *label,
-				INT *active2dnum, double *a, double* a_old,
-				INT *working2dnum, INT totdoc,
+		virtual void update_linear_component(int32_t* docs, int32_t *label,
+				int32_t *active2dnum, double *a, double* a_old,
+				int32_t *working2dnum, int32_t totdoc,
 				double *lin, DREAL *aicache, double* c);
 
 
@@ -127,9 +127,9 @@ class CSVRLight: public CSVMLight
 		 * @param aicache ai cache
 		 * @param c c
 		 */
-		virtual void update_linear_component_mkl(INT* docs, INT *label,
-				INT *active2dnum, double *a, double* a_old,
-				INT *working2dnum, INT totdoc,
+		virtual void update_linear_component_mkl(int32_t* docs, int32_t *label,
+				int32_t *active2dnum, double *a, double* a_old,
+				int32_t *working2dnum, int32_t totdoc,
 				double *lin, DREAL *aicache, double* c);
 
 		/** update linear component MKL linadd
@@ -145,9 +145,9 @@ class CSVRLight: public CSVMLight
 		 * @param aicache ai cache
 		 * @param c c
 		 */
-		virtual void update_linear_component_mkl_linadd(INT* docs, INT *label,
-				INT *active2dnum, double *a, double* a_old,
-				INT *working2dnum, INT totdoc,
+		virtual void update_linear_component_mkl_linadd(int32_t* docs, int32_t *label,
+				int32_t *active2dnum, double *a, double* a_old,
+				int32_t *working2dnum, int32_t totdoc,
 				double *lin, DREAL *aicache, double* c);
 
 		/** reactivate inactive examples
@@ -164,10 +164,10 @@ class CSVRLight: public CSVMLight
 		 * @param aicache ai cache
 		 * @param maxdiff maxdiff
 		 */
-		virtual void   reactivate_inactive_examples(INT *label,double *a,SHRINK_STATE *shrink_state,
-				double *lin, double *c, INT totdoc,INT iteration,
-				INT *inconsistent,
-				INT *docs,DREAL *aicache,
+		virtual void   reactivate_inactive_examples(int32_t *label,double *a,SHRINK_STATE *shrink_state,
+				double *lin, double *c, int32_t totdoc,int32_t iteration,
+				int32_t *inconsistent,
+				int32_t *docs,DREAL *aicache,
 				double* maxdiff) ;
 
 	protected:
@@ -182,7 +182,7 @@ class CSVRLight: public CSVMLight
 		 * @param i i
 		 * @return fix index
 		 */
-		inline INT regression_fix_index(INT i)
+		inline int32_t regression_fix_index(int32_t i)
 		{
 			if (i>=num_vectors)
 				i=2*num_vectors-1-i;
@@ -196,7 +196,7 @@ class CSVRLight: public CSVMLight
 		 * @param num_vectors number of vectors
 		 * @return fix index
 		 */
-		static inline INT regression_fix_index2(INT i, INT num_vectors)
+		static inline int32_t regression_fix_index2(int32_t i, int32_t num_vectors)
 		{
 			if (i>=num_vectors)
 				i=2*num_vectors-1-i;
@@ -210,7 +210,7 @@ class CSVRLight: public CSVMLight
 		 * @param j index j
 		 * @return kernel value at i,j
 		 */
-		inline virtual DREAL compute_kernel(INT i, INT j)
+		inline virtual DREAL compute_kernel(int32_t i, int32_t j)
 		{
 			i=regression_fix_index(i);
 			j=regression_fix_index(j);
@@ -218,7 +218,7 @@ class CSVRLight: public CSVMLight
 		}
 
 		/** number of train elements */
-		INT num_vectors;
+		int32_t num_vectors;
 };
 #endif //USE_SVMLIGHT
 #endif

@@ -37,18 +37,18 @@ bool CGMNPSVM::train()
 	ASSERT(kernel);
 	ASSERT(labels && labels->get_num_labels());
 
-	INT num_data = labels->get_num_labels();
-	INT num_classes = labels->get_num_classes();
-	INT num_virtual_data= num_data*(num_classes-1);
+	int32_t num_data = labels->get_num_labels();
+	int32_t num_classes = labels->get_num_classes();
+	int32_t num_virtual_data= num_data*(num_classes-1);
 
 	SG_INFO( "%d trainlabels, %d classes\n", num_data, num_classes);
 
 	DREAL* vector_y = new double[num_data];
-	for (int i=0; i<num_data; i++)
+	for (int32_t i=0; i<num_data; i++)
 		vector_y[i]= labels->get_label(i)+1;
 
 	DREAL C = get_C1();
-	INT tmax = 1000000000;
+	int32_t tmax = 1000000000;
 	DREAL tolabs = 0;
 	DREAL tolrel = epsilon;
 
@@ -62,9 +62,9 @@ bool CGMNPSVM::train()
 	memset(vector_c, 0, num_virtual_data*sizeof(DREAL));
 
 	DREAL thlb = 10000000000.0;
-	INT t = 0;
+	int32_t t = 0;
 	DREAL* History = NULL;
-	INT verb = 0;
+	int32_t verb = 0;
 
 	CGMNPLib mnp(vector_y,kernel,num_data, num_virtual_data, num_classes, reg_const);
 
@@ -80,12 +80,12 @@ bool CGMNPSVM::train()
 	memset(all_bs,0,num_classes*sizeof(DREAL));
 
 	/* compute alpha/b from virt_data */
-	for(INT i=0; i < num_classes; i++ )
+	for(int32_t i=0; i < num_classes; i++ )
 	{
-		for(INT j=0; j < num_virtual_data; j++ )
+		for(int32_t j=0; j < num_virtual_data; j++ )
 		{
-			INT inx1=0;
-			INT inx2=0;
+			int32_t inx1=0;
+			int32_t inx2=0;
 
 			mnp.get_indices2( &inx1, &inx2, j );
 
@@ -97,10 +97,10 @@ bool CGMNPSVM::train()
 
 	create_multiclass_svm(num_classes);
 
-	for (INT i=0; i<num_classes; i++)
+	for (int32_t i=0; i<num_classes; i++)
 	{
-		INT num_sv=0;
-		for (INT j=0; j<num_data; j++)
+		int32_t num_sv=0;
+		for (int32_t j=0; j<num_data; j++)
 		{
 			if (all_alphas[j*num_classes+i] != 0)
 				num_sv++;
@@ -110,8 +110,8 @@ bool CGMNPSVM::train()
 
 		CSVM* svm=new CSVM(num_sv);
 
-		INT k=0;
-		for (INT j=0; j<num_data; j++)
+		int32_t k=0;
+		for (int32_t j=0; j<num_data; j++)
 		{
 			if (all_alphas[j*num_classes+i] != 0)
 			{

@@ -35,13 +35,13 @@ bool CIntFeatures::load(char* fname)
 
 bool CIntFeatures::save(char* fname)
 {
-	INT len;
+	int32_t len;
 	bool free;
-	INT* fv;
+	int32_t* fv;
 
 	CFile f(fname, 'w', F_INT);
 
-    for (INT i=0; i< (INT) num_vectors && f.is_ok(); i++)
+    for (int32_t i=0; i< (int32_t) num_vectors && f.is_ok(); i++)
 	{
 		if (!(i % (num_vectors/10+1)))
 			SG_PRINT( "%02d%%.", (int) (100.0*i/num_vectors));
@@ -54,7 +54,7 @@ bool CIntFeatures::save(char* fname)
 	}
 
 	if (f.is_ok())
-		SG_INFO( "%d vectors with %d features each successfully written (filesize: %ld)\n", num_vectors, num_features, num_vectors*num_features*sizeof(INT));
+		SG_INFO( "%d vectors with %d features each successfully written (filesize: %ld)\n", num_vectors, num_features, num_vectors*num_features*sizeof(int32_t));
 
     return true;
 }

@@ -15,19 +15,19 @@
 #include "features/RealFeatures.h"
 #include "lib/io.h"
 
-CPyramidChi2::CPyramidChi2(INT size, DREAL width2, INT* pyramidlevels2,INT
-	numlevels2, INT  numbinsinhistogram2, DREAL* weights2, INT numweights2)
+CPyramidChi2::CPyramidChi2(int32_t size, DREAL width2, int32_t* pyramidlevels2,int32_t
+	numlevels2, int32_t  numbinsinhistogram2, DREAL* weights2, int32_t numweights2)
 : CSimpleKernel<DREAL>(size), width(width2), pyramidlevels(NULL),
 	numlevels(numlevels2), weights(NULL), numweights(numweights2)
 {
-	pyramidlevels=new INT[numlevels];
-	for(INT i=0; i<numlevels; ++i)
+	pyramidlevels=new int32_t[numlevels];
+	for(int32_t i=0; i<numlevels; ++i)
 		pyramidlevels[i]=pyramidlevels2[i];
 	
 	numbinsinhistogram=numbinsinhistogram2;
 	
 	weights=new DREAL[numweights];
-	for(INT i=0; i<numweights; ++i)
+	for(int32_t i=0; i<numweights; ++i)
 		weights[i]=weights2[i];
 	
 	if (!sanitycheck_weak())
@@ -57,19 +57,19 @@ bool CPyramidChi2::init(CFeatures* l, CFeatures* r)
 	return init_normalizer();
 }
 
-CPyramidChi2::CPyramidChi2(CRealFeatures* l, CRealFeatures* r, INT size, DREAL width2,
-		INT* pyramidlevels2,INT numlevels2,
-		INT  numbinsinhistogram2, DREAL* weights2,INT numweights2) :
+CPyramidChi2::CPyramidChi2(CRealFeatures* l, CRealFeatures* r, int32_t size, DREAL width2,
+		int32_t* pyramidlevels2,int32_t numlevels2,
+		int32_t  numbinsinhistogram2, DREAL* weights2,int32_t numweights2) :
 	CSimpleKernel<DREAL>(size), width(width2),pyramidlevels(NULL),numlevels(numlevels2),weights(NULL),numweights(numweights2)
 {
-	pyramidlevels=new INT[numlevels];
-	for(INT i=0; i<numlevels;++i )
+	pyramidlevels=new int32_t[numlevels];
+	for(int32_t i=0; i<numlevels;++i )
 		pyramidlevels[i]=pyramidlevels2[i];
 	
 	numbinsinhistogram=numbinsinhistogram2;
 	
 	weights=new DREAL[numweights];
-	for(INT i=0; i<numweights;++i )
+	for(int32_t i=0; i<numweights;++i )
 		weights[i]=weights2[i];
 	
 	if(!sanitycheck_weak())
@@ -131,10 +131,10 @@ bool CPyramidChi2::sanitycheck_weak()
 	}
 	
 
-	INT sum=0;
-	for (INT levelind=0; levelind < numlevels; ++levelind)
+	int32_t sum=0;
+	for (int32_t levelind=0; levelind < numlevels; ++levelind)
 	{
-		sum+=(ULONG) CMath::pow(4, pyramidlevels[levelind]);
+		sum+=CMath::pow(4, pyramidlevels[levelind]);
 	}
 	
 	if (sum!=numweights )
@@ -148,7 +148,7 @@ bool CPyramidChi2::sanitycheck_weak()
 }
 
 
-DREAL CPyramidChi2::compute(INT idx_a, INT idx_b)
+DREAL CPyramidChi2::compute(int32_t idx_a, int32_t idx_b)
 {
 	// implied structure
 	// for each level l in pyramidlevels we have at level l we have 4^l histograms with numbinsinhistogram bins
@@ -158,7 +158,7 @@ DREAL CPyramidChi2::compute(INT idx_a, INT idx_b)
 
 	// the dimensionality is (LATEX) \sum_{ l \ in pyramidlevels } 4^l * numbinsinhistogram
 
-	INT alen, blen;
+	int32_t alen, blen;
 	bool afree, bfree;
 
 	DREAL* avec=
@@ -169,26 +169,26 @@ DREAL CPyramidChi2::compute(INT idx_a, INT idx_b)
 					blen, bfree);
 	ASSERT(alen==blen);
 
-	INT dims=0;
-	for (INT levelind=0; levelind <numlevels; ++levelind)
+	int32_t dims=0;
+	for (int32_t levelind=0; levelind<numlevels; ++levelind)
 	{
-		dims+=(INT)CMath::pow(4, pyramidlevels[levelind])*numbinsinhistogram;
+		dims+=CMath::pow(4, pyramidlevels[levelind])*numbinsinhistogram;
 	}
 	ASSERT(dims==alen);
 
 	//the actual computation - a weighted sum over chi2
 	DREAL result=0;
-	INT cursum=0;
+	int32_t cursum=0;
 	
-	for (INT lvlind=0; lvlind< numlevels; ++lvlind)
+	for (int32_t lvlind=0; lvlind< numlevels; ++lvlind)
 	{
-		for (INT histoind=0; histoind< (int)CMath::pow(4, pyramidlevels[lvlind]); ++histoind)
+		for (int32_t histoind=0; histoind<CMath::pow(4, pyramidlevels[lvlind]); ++histoind)
 		{
 			DREAL curweight=weights[cursum+histoind];
 			
-			for (INT i=0; i< numbinsinhistogram; ++i)
+			for (int32_t i=0; i< numbinsinhistogram; ++i)
 			{
-				INT index= (cursum+histoind)*numbinsinhistogram+i;
+				int32_t index= (cursum+histoind)*numbinsinhistogram+i;
 				if(avec[index] + bvec[index]>0)
 				{	
 					result+= curweight*(avec[index] - bvec[index])*(avec[index]
@@ -210,9 +210,9 @@ DREAL CPyramidChi2::compute(INT idx_a, INT idx_b)
 
 void CPyramidChi2::setstandardweights()
 {
-	INT sum=0;
-	INT maxlvl=0;
-	for (INT levelind=0; levelind < numlevels; ++levelind)
+	int32_t sum=0;
+	int32_t maxlvl=0;
+	for (int32_t levelind=0; levelind < numlevels; ++levelind)
 	{
 		sum+=CMath::pow(4, pyramidlevels[levelind]);
 		maxlvl=CMath::max(maxlvl,pyramidlevels[levelind]);
@@ -241,12 +241,12 @@ void CPyramidChi2::setstandardweights()
 	}
 	//weights.resize(sum);
 	
-	INT cursum=0;
-	for (INT levelind=0; levelind < numlevels; ++levelind)
+	int32_t cursum=0;
+	for (int32_t levelind=0; levelind < numlevels; ++levelind)
 	{
 		if (pyramidlevels[levelind]==0)
 		{
-			for (INT histoind=0; histoind< (int)CMath::pow(4, pyramidlevels[levelind]); ++histoind)
+			for (int32_t histoind=0; histoind<CMath::pow(4, pyramidlevels[levelind]); ++histoind)
 			{
 				weights[cursum+histoind]=CMath::pow((DREAL)2.0,
 						-(DREAL)maxlvl);
@@ -254,7 +254,7 @@ void CPyramidChi2::setstandardweights()
 		}
 		else
 		{
-			for (INT histoind=0; histoind< (INT)CMath::pow(4, pyramidlevels[levelind]); ++histoind)
+			for (int32_t histoind=0; histoind<CMath::pow(4, pyramidlevels[levelind]); ++histoind)
 			{
 				weights[cursum+histoind]=CMath::pow((DREAL)2.0,
 						(DREAL)(pyramidlevels[levelind]-1-maxlvl));

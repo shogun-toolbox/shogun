@@ -74,7 +74,7 @@ class CManhattanWordDistance: public CStringDistance<uint16_t>
 		 * @param dsize size of the dictionary
 		 * @param dweights dictionary weights are stored in here
 		 */
-		void get_dictionary(INT& dsize, DREAL*& dweights)
+		void get_dictionary(int32_t& dsize, DREAL*& dweights)
 		{
 			dsize=dictionary_size;
 			dweights = dictionary_weights;
@@ -84,11 +84,11 @@ class CManhattanWordDistance: public CStringDistance<uint16_t>
 		/// compute distance function for features a and b
 		/// idx_{a,b} denote the index of the feature vectors
 		/// in the corresponding feature object
-		DREAL compute(INT idx_a, INT idx_b);
+		DREAL compute(int32_t idx_a, int32_t idx_b);
 
 	protected:
 		/** size of the dictionary */
-		INT dictionary_size;
+		int32_t dictionary_size;
 		/** dictionary weights */
 		DREAL* dictionary_weights;
 };

@@ -22,8 +22,8 @@ class CGUIMath : public CSGObject
 {
 	public:
 		CGUIMath(CSGInterface* interface);
-		void evaluate_results(DREAL* output, INT* label, INT total, FILE* outputfile=NULL, FILE* rocfile=NULL);
-		void current_results(DREAL* output, INT* label, INT total, FILE* outputfile=NULL);
+		void evaluate_results(DREAL* output, int32_t* label, int32_t total, FILE* outputfile=NULL, FILE* rocfile=NULL);
+		void current_results(DREAL* output, int32_t* label, int32_t total, FILE* outputfile=NULL);
 
 		void set_threshold(DREAL value);
 		void init_random(uint32_t initseed=0);

@@ -21,7 +21,7 @@
 
 //#define PLIF_DEBUG
 
-CPlif::CPlif(INT l)
+CPlif::CPlif(int32_t l)
 : CPlifBase()
 {
 	limits=NULL;
@@ -83,11 +83,11 @@ void CPlif::init_penalty_struct_cache()
 	if (max_value<=0)
 		return ;
 
-	DREAL* local_cache=new DREAL[ ((INT) max_value) + 2] ;
+	DREAL* local_cache=new DREAL[ ((int32_t) max_value) + 2] ;
 	
 	if (local_cache)
 	{
-		for (INT i=0; i<=max_value; i++)
+		for (int32_t i=0; i<=max_value; i++)
 		{
 			if (i<min_value)
 				local_cache[i] = -CMath::INFTY ;
@@ -107,16 +107,16 @@ void CPlif::set_name(char *p_name)
 }
 
 #ifdef HAVE_MATLAB
-CPlif** read_penalty_struct_from_cell(const mxArray * mx_penalty_info, INT P)
+CPlif** read_penalty_struct_from_cell(const mxArray * mx_penalty_info, int32_t P)
 {
 	//P = mxGetN(mx_penalty_info) ;
 	//fprintf(stderr, "p=%i size=%i\n", P, P*sizeof(CPlif)) ;
 	
 	CPlif** PEN = new CPlif*[P] ;
-	for (INT i=0; i<P; i++)
+	for (int32_t i=0; i<P; i++)
 		PEN[i]=new CPlif() ;
 	
-	for (INT i=0; i<P; i++)
+	for (int32_t i=0; i<P; i++)
 	{
 		//fprintf(stderr, "i=%i/%i\n", i, P) ;
 		
@@ -143,11 +143,11 @@ CPlif** read_penalty_struct_from_cell(const mxArray * mx_penalty_info, INT P)
 			delete[] PEN ;
 			return NULL ;
 		}
-		INT len = mxGetN(mx_limits_field) ;
+		int32_t len = mxGetN(mx_limits_field) ;
 		
 		const mxArray* mx_penalties_field = mxGetField(mx_elem, 0, "penalties") ;
 		if (mx_penalties_field==NULL || !mxIsNumeric(mx_penalties_field) ||
-			mxGetM(mx_penalties_field)!=1 || ((INT) mxGetN(mx_penalties_field))!=len)
+			mxGetM(mx_penalties_field)!=1 || ((int32_t) mxGetN(mx_penalties_field))!=len)
 		{
 			SG_SERROR( "missing penalties field (%i)\n", i) ;
 			delete[] PEN ;
@@ -191,7 +191,7 @@ CPlif** read_penalty_struct_from_cell(const mxArray * mx_penalty_info, INT P)
 			delete[] PEN;
 			return NULL ;
 		}
-		INT use_svm = (INT) mxGetScalar(mx_use_svm_field) ;
+		int32_t use_svm = (int32_t) mxGetScalar(mx_use_svm_field) ;
 
 		const mxArray* mx_use_cache_field = mxGetField(mx_elem, 0, "use_cache") ;
 		if (mx_use_cache_field==NULL || !mxIsNumeric(mx_use_cache_field) ||
@@ -201,16 +201,16 @@ CPlif** read_penalty_struct_from_cell(const mxArray * mx_penalty_info, INT P)
 			delete[] PEN;
 			return NULL ;
 		}
-		INT use_cache = (INT) mxGetScalar(mx_use_cache_field) ;
+		int32_t use_cache = (int32_t) mxGetScalar(mx_use_cache_field) ;
 
-		INT id = (INT) mxGetScalar(mx_id_field)-1 ;
+		int32_t id = (int32_t) mxGetScalar(mx_id_field)-1 ;
 		if (i<0 || i>P-1)
 		{
 			SG_SERROR( "id out of range\n") ;
 			delete[] PEN;
 			return NULL ;
 		}
-		INT max_value = (INT) mxGetScalar(mx_max_value_field) ;
+		int32_t max_value = (int32_t) mxGetScalar(mx_max_value_field) ;
 		if (max_value<-1024*1024*100 || max_value>1024*1024*100)
 		{
 			SG_SERROR( "max_value out of range\n") ;
@@ -219,7 +219,7 @@ CPlif** read_penalty_struct_from_cell(const mxArray * mx_penalty_info, INT P)
 		}
 		PEN[id]->set_max_value(max_value) ;
 
-		INT min_value = (INT) mxGetScalar(mx_min_value_field) ;
+		int32_t min_value = (int32_t) mxGetScalar(mx_min_value_field) ;
 		if (min_value<-1024*1024*100 || min_value>1024*1024*100)
 		{
 			SG_SERROR( "min_value out of range\n") ;
@@ -273,9 +273,9 @@ CPlif** read_penalty_struct_from_cell(const mxArray * mx_penalty_info, INT P)
 }
 #endif
 
-void delete_penalty_struct(CPlif** PEN, INT P) 
+void delete_penalty_struct(CPlif** PEN, int32_t P) 
 {
-	for (INT i=0; i<P; i++)
+	for (int32_t i=0; i<P; i++)
 		delete PEN[i] ;
 	delete[] PEN ;
 }
@@ -311,9 +311,9 @@ DREAL CPlif::lookup_penalty_svm(DREAL p_value, DREAL *d_values) const
 		break ;
 	}
 	
-	INT idx = 0 ;
+	int32_t idx = 0 ;
 	DREAL ret ;
-	for (INT i=0; i<len; i++)
+	for (int32_t i=0; i<len; i++)
 		if (limits[i]<=d_value)
 			idx++ ;
 		else
@@ -342,7 +342,7 @@ DREAL CPlif::lookup_penalty_svm(DREAL p_value, DREAL *d_values) const
 	return ret ;
 }
 
-DREAL CPlif::lookup_penalty(INT p_value, DREAL* svm_values) const
+DREAL CPlif::lookup_penalty(int32_t p_value, DREAL* svm_values) const
 {
 	if (use_svm)
 		return lookup_penalty_svm(p_value, svm_values) ;
@@ -401,9 +401,9 @@ DREAL CPlif::lookup_penalty(DREAL p_value, DREAL* svm_values) const
 	SG_PRINT("  -> value = %1.4f ", d_value) ;
 #endif
 
-	INT idx = 0 ;
+	int32_t idx = 0 ;
 	DREAL ret ;
-	for (INT i=0; i<len; i++)
+	for (int32_t i=0; i<len; i++)
 		if (limits[i]<=d_value)
 			idx++ ;
 		else
@@ -436,7 +436,7 @@ DREAL CPlif::lookup_penalty(DREAL p_value, DREAL* svm_values) const
 
 void CPlif::penalty_clear_derivative() 
 {
-	for (INT i=0; i<len; i++)
+	for (int32_t i=0; i<len; i++)
 		cum_derivatives[i]=0.0 ;
 }
 
@@ -474,8 +474,8 @@ void CPlif::penalty_add_derivative(DREAL p_value, DREAL* svm_values)
 		break ;
 	}
 
-	INT idx = 0 ;
-	for (INT i=0; i<len; i++)
+	int32_t idx = 0 ;
+	for (int32_t i=0; i<len; i++)
 		if (limits[i]<=d_value)
 			idx++ ;
 		else
@@ -521,8 +521,8 @@ void CPlif::penalty_add_derivative_svm(DREAL p_value, DREAL *d_values)
 		break ;
 	}
 	
-	INT idx = 0 ;
-	for (INT i=0; i<len; i++)
+	int32_t idx = 0 ;
+	for (int32_t i=0; i<len; i++)
 		if (limits[i]<=d_value)
 			idx++ ;
 		else
@@ -538,7 +538,7 @@ void CPlif::penalty_add_derivative_svm(DREAL p_value, DREAL *d_values)
 		cum_derivatives[idx-1]+=(limits[idx]-d_value)/(limits[idx]-limits[idx-1]) ;
 	}
 }
-void CPlif::get_used_svms(INT* num_svms, INT* svm_ids)
+void CPlif::get_used_svms(int32_t* num_svms, int32_t* svm_ids)
 {
 	if (use_svm)
 	{

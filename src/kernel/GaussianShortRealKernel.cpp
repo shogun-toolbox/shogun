@@ -14,13 +14,13 @@
 #include "features/ShortRealFeatures.h"
 #include "lib/io.h"
 
-CGaussianShortRealKernel::CGaussianShortRealKernel(INT size, DREAL w)
+CGaussianShortRealKernel::CGaussianShortRealKernel(int32_t size, DREAL w)
 : CSimpleKernel<SHORTREAL>(size), width(w)
 {
 }
 
 CGaussianShortRealKernel::CGaussianShortRealKernel(
-	CShortRealFeatures* l, CShortRealFeatures* r, DREAL w, INT size)
+	CShortRealFeatures* l, CShortRealFeatures* r, DREAL w, int32_t size)
 : CSimpleKernel<SHORTREAL>(size), width(w)
 {
 	init(l,r);
@@ -46,9 +46,9 @@ bool CGaussianShortRealKernel::save_init(FILE* dest)
 	return false;
 }
 
-DREAL CGaussianShortRealKernel::compute(INT idx_a, INT idx_b)
+DREAL CGaussianShortRealKernel::compute(int32_t idx_a, int32_t idx_b)
 {
-	INT alen, blen;
+	int32_t alen, blen;
 	bool afree, bfree;
 
 	SHORTREAL* avec=((CShortRealFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
@@ -56,7 +56,7 @@ DREAL CGaussianShortRealKernel::compute(INT idx_a, INT idx_b)
 	ASSERT(alen==blen);
 
 	DREAL result=0;
-	for (INT i=0; i<alen; i++)
+	for (int32_t i=0; i<alen; i++)
 		result+=CMath::sq(avec[i]-bvec[i]);
 
 	result=exp(-result/width);

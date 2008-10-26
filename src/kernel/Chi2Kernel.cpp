@@ -14,12 +14,12 @@
 #include "features/RealFeatures.h"
 #include "lib/io.h"
 
-CChi2Kernel::CChi2Kernel(INT size, DREAL w)
+CChi2Kernel::CChi2Kernel(int32_t size, DREAL w)
 : CSimpleKernel<DREAL>(size), width(w)
 {
 }
 
-CChi2Kernel::CChi2Kernel(CRealFeatures* l, CRealFeatures* r, DREAL w, INT size)
+CChi2Kernel::CChi2Kernel(CRealFeatures* l, CRealFeatures* r, DREAL w, int32_t size)
 : CSimpleKernel<DREAL>(size), width(w)
 {
 	init(l,r);
@@ -47,9 +47,9 @@ bool CChi2Kernel::save_init(FILE* dest)
 	return false;
 }
   
-DREAL CChi2Kernel::compute(INT idx_a, INT idx_b)
+DREAL CChi2Kernel::compute(int32_t idx_a, int32_t idx_b)
 {
-	INT alen, blen;
+	int32_t alen, blen;
 	bool afree, bfree;
 
 	double* avec=((CRealFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
@@ -57,7 +57,7 @@ DREAL CChi2Kernel::compute(INT idx_a, INT idx_b)
 	ASSERT(alen==blen);
 
 	DREAL result=0;
-	for (INT i=0; i<alen; i++)
+	for (int32_t i=0; i<alen; i++)
 	{
 		DREAL n=avec[i]-bvec[i];
 		DREAL d=avec[i]+bvec[i];

@@ -15,11 +15,11 @@ extern "C" {
 struct problem
 {
 	/** l */
-	INT l;
+	int32_t l;
 	/** n */
-	INT n;
+	int32_t n;
 	/** y */
-	INT *y;
+	int32_t *y;
 	/** sparse features x */
 	CSparseFeatures<DREAL>* x;
 	/** if bias shall be used */
@@ -30,7 +30,7 @@ struct problem
 struct parameter
 {
 	/** solver type */
-	int solver_type;
+	int32_t solver_type;
 
 	/* these are for training only */
 	/** stopping criteria */
@@ -38,9 +38,9 @@ struct parameter
 	/** C */
 	double C;
 	/** number of weights */
-	int nr_weight;
+	int32_t nr_weight;
 	/** weight label */
-	int *weight_label;
+	int32_t *weight_label;
 	/** weight */
 	double* weight;
 };
@@ -51,34 +51,41 @@ struct model
 	/** parameter */
 	struct parameter param;
 	/** number of classes */
-	int nr_class;
+	int32_t nr_class;
 	/** number of features */
-	int nr_feature;
+	int32_t nr_feature;
 	/** w */
 	double *w;
 	/** label of each class (label[n]) */
-	int *label;
+	int32_t *label;
 	/** bias */
 	double bias;
 };
 
 struct model* train(const struct problem *prob, const struct parameter *param);
-void cross_validation(const struct problem *prob, const struct parameter *param, int nr_fold, int *target);
+void cross_validation(
+	const struct problem *prob, const struct parameter *param, int32_t nr_fold,
+	int32_t *target);
 
-int predict_values(const struct model *model_, const struct feature_node *x, double* dec_values);
-int predict(const struct model *model_, const struct feature_node *x);
-int predict_probability(const struct model *model_, const struct feature_node *x, double* prob_estimates);
+int32_t predict_values(
+	const struct model *model_, const struct feature_node *x,
+	double* dec_values);
+int32_t predict(const struct model *model_, const struct feature_node *x);
+int32_t predict_probability(
+	const struct model *model_, const struct feature_node *x,
+	double* prob_estimates);
 
-int save_model(const char *model_file_name, const struct model *model_);
+int32_t save_model(const char *model_file_name, const struct model *model_);
 struct model *load_model(const char *model_file_name);
 
-int get_nr_feature(const struct model *model_);
-int get_nr_class(const struct model *model_);
-void get_labels(const struct model *model_, int* label);
+int32_t get_nr_feature(const struct model *model_);
+int32_t get_nr_class(const struct model *model_);
+void get_labels(const struct model *model_, int32_t* label);
 
 void destroy_model(struct model *model_);
 void destroy_param(struct parameter *param);
-const char *check_parameter(const struct problem *prob, const struct parameter *param);
+const char *check_parameter(
+	const struct problem *prob, const struct parameter *param);
 
 #ifdef __cplusplus
 }
@@ -122,7 +129,7 @@ public:
 	 *
 	 * @return number of variables
 	 */
-	int get_nr_variable(void);
+	int32_t get_nr_variable(void);
 
 private:
 	void Xv(double *v, double *Xv);
@@ -132,8 +139,8 @@ private:
 	double *C;
 	double *z;
 	double *D;
-	int *I;
-	int sizeI;
+	int32_t *I;
+	int32_t sizeI;
 	const problem *prob;
 };
 
@@ -171,7 +178,7 @@ public:
 	 */
 	void Hv(double *s, double *Hs);
 
-	int get_nr_variable(void);
+	int32_t get_nr_variable(void);
 
 private:
 	void Xv(double *v, double *Xv);

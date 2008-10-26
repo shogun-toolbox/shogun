@@ -46,7 +46,7 @@ class CSVM : public CKernelMachine
 		/** Create an empty Support Vector Machine Object
 		 * @param num_sv with num_sv support vectors
 		 */
-		CSVM(INT num_sv=0);
+		CSVM(int32_t num_sv=0);
 
 		/** Create a Support Vector Machine Object from a
 		 * trained SVM
@@ -60,7 +60,7 @@ class CSVM : public CKernelMachine
 
 		/** set default values for members a SVM object
 		*/
-		void set_defaults(INT num_sv=0);
+		void set_defaults(int32_t num_sv=0);
 
 		/** load a SVM from file
 		 * @param svm_file the file handle
@@ -116,7 +116,7 @@ class CSVM : public CKernelMachine
 		 *
 		 * @param norm new mkl norm (1 or 2)
 		 */
-		inline void set_mkl_norm(INT norm)
+		inline void set_mkl_norm(int32_t norm)
 		{
 			if (norm!=1 && norm!=2)
 				SG_ERROR("Only 1-and 2-norm supported\n");
@@ -127,7 +127,7 @@ class CSVM : public CKernelMachine
 		 *
 		 * @param qps new qpsize
 		 */
-		inline void set_qpsize(INT qps) { qpsize=qps; }
+		inline void set_qpsize(int32_t qps) { qpsize=qps; }
 
 		/** set state of bias
 		 *
@@ -175,14 +175,14 @@ class CSVM : public CKernelMachine
 		 *
 		 * @return qpsize
 		 */
-		inline int get_qpsize() { return qpsize; }
+		inline int32_t get_qpsize() { return qpsize; }
 
 		/** get support vector at given index
 		 *
 		 * @param idx index of support vector
 		 * @return support vector
 		 */
-		inline int get_support_vector(INT idx)
+		inline int32_t get_support_vector(int32_t idx)
 		{
 			ASSERT(svm_model.svs && idx<svm_model.num_svs);
 			return svm_model.svs[idx];
@@ -193,7 +193,7 @@ class CSVM : public CKernelMachine
 		 * @param idx index of alpha
 		 * @return alpha
 		 */
-		inline DREAL get_alpha(INT idx)
+		inline DREAL get_alpha(int32_t idx)
 		{
 			ASSERT(svm_model.alpha && idx<svm_model.num_svs);
 			return svm_model.alpha[idx];
@@ -205,7 +205,7 @@ class CSVM : public CKernelMachine
 		 * @param val new value of support vector
 		 * @return if operation was successful
 		 */
-		inline bool set_support_vector(INT idx, INT val)
+		inline bool set_support_vector(int32_t idx, int32_t val)
 		{
 			if (svm_model.svs && idx<svm_model.num_svs)
 				svm_model.svs[idx]=val;
@@ -221,7 +221,7 @@ class CSVM : public CKernelMachine
 		 * @param val new value of alpha vector
 		 * @return if operation was successful
 		 */
-		inline bool set_alpha(INT idx, DREAL val)
+		inline bool set_alpha(int32_t idx, DREAL val)
 		{
 			if (svm_model.alpha && idx<svm_model.num_svs)
 				svm_model.alpha[idx]=val;
@@ -253,7 +253,7 @@ class CSVM : public CKernelMachine
 		 *
 		 * @return number of support vectors
 		 */
-		inline int get_num_support_vectors()
+		inline int32_t get_num_support_vectors()
 		{
 			return svm_model.num_svs;
 		}
@@ -263,12 +263,12 @@ class CSVM : public CKernelMachine
 		 * @param alphas array with all alphas to set
 		 * @param d number of alphas (== number of support vectors)
 		 */
-		void set_alphas(DREAL* alphas, INT d)
+		void set_alphas(DREAL* alphas, int32_t d)
 		{
 			ASSERT(alphas);
 			ASSERT(d==svm_model.num_svs);
 
-			for(int i=0; i<d; i++)
+			for(int32_t i=0; i<d; i++)
 				svm_model.alpha[i]=alphas[i];
 		}
 
@@ -277,12 +277,12 @@ class CSVM : public CKernelMachine
 		 * @param svs array with all support vectors to set
 		 * @param d number of support vectors
 		 */
-		void set_support_vectors(INT* svs, INT d)
+		void set_support_vectors(int32_t* svs, int32_t d)
 		{
 			ASSERT(svs);
 			ASSERT(d==svm_model.num_svs);
 
-			for(int i=0; i<d; i++)
+			for(int32_t i=0; i<d; i++)
 				svm_model.svs[i]=svs[i];
 		}
 
@@ -291,9 +291,9 @@ class CSVM : public CKernelMachine
 		 * @param svs array to contain a copy of the support vectors
 		 * @param num number of support vectors in the array
 		 */
-		void get_support_vectors(INT** svs, INT* num)
+		void get_support_vectors(int32_t** svs, int32_t* num)
 		{
-			int nsv = get_num_support_vectors();
+			int32_t nsv = get_num_support_vectors();
 
 			ASSERT(svs && num);
 			*svs=NULL;
@@ -301,8 +301,8 @@ class CSVM : public CKernelMachine
 
 			if (nsv>0)
 			{
-				*svs = (INT*) malloc(sizeof(INT)*nsv);
-				for(int i=0; i<nsv; i++)
+				*svs = (int32_t*) malloc(sizeof(int32_t)*nsv);
+				for(int32_t i=0; i<nsv; i++)
 					(*svs)[i] = get_support_vector(i);
 			}
 		}
@@ -312,9 +312,9 @@ class CSVM : public CKernelMachine
 		 * @param alphas array to contain a copy of the alphas
 		 * @param d1 number of alphas in the array
 		 */
-		void get_alphas(DREAL** alphas, INT* d1)
+		void get_alphas(DREAL** alphas, int32_t* d1)
 		{
-			int nsv = get_num_support_vectors();
+			int32_t nsv = get_num_support_vectors();
 
 			ASSERT(alphas && d1);
 			*alphas=NULL;
@@ -323,7 +323,7 @@ class CSVM : public CKernelMachine
 			if (nsv>0)
 			{
 				*alphas = (DREAL*) malloc(nsv*sizeof(DREAL));
-				for(int i=0; i<nsv; i++)
+				for(int32_t i=0; i<nsv; i++)
 					(*alphas)[i] = get_alpha(i);
 			}
 		}
@@ -332,7 +332,7 @@ class CSVM : public CKernelMachine
 		 *
 		 * @param num number of alphas and support vectors in new model
 		 */
-		inline bool create_new_model(INT num)
+		inline bool create_new_model(int32_t num)
 		{
 			delete[] svm_model.alpha;
 			delete[] svm_model.svs;
@@ -343,7 +343,7 @@ class CSVM : public CKernelMachine
 			if (num>0)
 			{
 				svm_model.alpha= new double[num];
-				svm_model.svs= new int[num];
+				svm_model.svs= new int32_t[num];
 				return (svm_model.alpha!=NULL && svm_model.svs!=NULL);
 			}
 			else
@@ -411,7 +411,7 @@ class CSVM : public CKernelMachine
 		 */
 		inline DREAL get_objective()
 		{
-			return objective ;
+			return objective;
 		}
 
 		/** initialise kernel optimisation
@@ -432,7 +432,7 @@ class CSVM : public CKernelMachine
 		 * @param num which example to classify
 		 * @return classified value
 		 */
-		virtual DREAL classify_example(INT num);
+		virtual DREAL classify_example(int32_t num);
 
 		/** classify example helper, used in threads
 		 *
@@ -451,9 +451,9 @@ class CSVM : public CKernelMachine
 			/** array of coefficients alpha */
 			DREAL* alpha;
 			/** array of support vectors */
-			INT* svs;
+			int32_t* svs;
 			/** number of support vectors */
-			INT num_svs;
+			int32_t num_svs;
 		};
 
 		/** SVM's model */
@@ -473,13 +473,13 @@ class CSVM : public CKernelMachine
 		/** C2 */
 		DREAL C2;
 		/** norm used in mkl, can be 1 or 2 */
-		int  mkl_norm;
+		int32_t  mkl_norm;
 		/** C_mkl */
 		DREAL C_mkl;
 		/** objective */
 		DREAL objective;
 		/** qpsize */
-		int qpsize;
+		int32_t qpsize;
 		/** if bias shall be used */
 		bool use_bias;
 		/** if shrinking shall be used */

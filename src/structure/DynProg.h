@@ -50,7 +50,7 @@ private:
 	T_STATES **trans_list_forward;
 	T_STATES *trans_list_forward_cnt;
 	DREAL **trans_list_forward_val;
-	INT **trans_list_forward_id;
+	int32_t **trans_list_forward_id;
 	bool mem_initialized;
 
 #ifdef DYNPROG_TIMING
@@ -74,7 +74,7 @@ public:
 	 *
 	 * @param p_num_svms number of SVMs
 	 */
-	CDynProg(INT p_num_svms=8);
+	CDynProg(int32_t p_num_svms=8);
 	~CDynProg();
 
 	/** best path no b
@@ -85,7 +85,7 @@ public:
 	 *
 	 * @return best path no b
 	 */
-	DREAL best_path_no_b(INT max_iter, INT & best_iter, INT *my_path);
+	DREAL best_path_no_b(int32_t max_iter, int32_t & best_iter, int32_t *my_path);
 
 	/** best path no b transition
 	 *
@@ -95,7 +95,7 @@ public:
 	 * @param prob_nbest prob_nbest
 	 * @param my_paths my paths
 	 */
-	void best_path_no_b_trans(INT max_iter, INT & max_best_iter, SHORT nbest, DREAL *prob_nbest, INT *my_paths);
+	void best_path_no_b_trans(int32_t max_iter, int32_t & max_best_iter, SHORT nbest, DREAL *prob_nbest, int32_t *my_paths);
 	
 	// model related functions
 	/** set number of states
@@ -103,20 +103,20 @@ public:
 	 *
 	 * @param p_N new N
 	 */
-	void set_num_states(INT p_N);
+	void set_num_states(int32_t p_N);
 
 	/** get num states */
-	INT get_num_states();
+	int32_t get_num_states();
 
 	/** get num svms*/
-	INT get_num_svms();
+	int32_t get_num_svms();
 
 	/** init CArray for precomputed content svm values
 	 *  with size seq_len x num_svms
 	 *
 	 *  @param seq_len: number of candidate positions
 	 */
-	void init_content_svm_value_array(const INT seq_len);
+	void init_content_svm_value_array(const int32_t seq_len);
 
 	/** init CArray for precomputed tiling intensitie-plif-values
 	 *  with size seq_len x num_svms
@@ -126,7 +126,7 @@ public:
 	 *  @param num_probes number of probes
 	 *  @param seq_len: number of candidate positions
 	 */
-	void init_tiling_data(INT* probe_pos, DREAL* intensities, const INT num_probes, const INT seq_len);
+	void init_tiling_data(int32_t* probe_pos, DREAL* intensities, const int32_t num_probes, const int32_t seq_len);
 
 	/** precompute tiling Plifs
 	 *
@@ -136,21 +136,21 @@ public:
 	 * @param seq_len sequence length
 	 * @param pos pos
 	 */
-	void precompute_tiling_plifs(CPlif** PEN, const INT* tiling_plif_ids, const INT num_tiling_plifs, const INT seq_len, const INT* pos);	
+	void precompute_tiling_plifs(CPlif** PEN, const int32_t* tiling_plif_ids, const int32_t num_tiling_plifs, const int32_t seq_len, const int32_t* pos);	
 
 	/** set vector p
 	 *
 	 * @param p new vector p
 	 * @param N size of vector p
 	 */
-	void set_p_vector(DREAL* p, INT N);
+	void set_p_vector(DREAL* p, int32_t N);
 
 	/** set vector q
 	 *
 	 * @param q new vector q
 	 * @param N size of vector q
 	 */
-	void set_q_vector(DREAL* q, INT N);
+	void set_q_vector(DREAL* q, int32_t N);
 	
 	/** set matrix a
 	 *
@@ -158,7 +158,7 @@ public:
 	 * @param M dimension M of matrix a
 	 * @param N dimension N of matrix a
 	 */
-	void set_a(DREAL* a, INT M, INT N);
+	void set_a(DREAL* a, int32_t M, int32_t N);
 	
 	/** set a id
 	 *
@@ -166,7 +166,7 @@ public:
 	 * @param M dimension M of matrix a
 	 * @param N dimension N of matrix a
 	 */
-	void set_a_id(INT *a, INT M, INT N);
+	void set_a_id(int32_t *a, int32_t M, int32_t N);
 	
 	/** set a transition matrix
 	 *
@@ -174,7 +174,7 @@ public:
 	 * @param num_trans number of transitions
 	 * @param N dimension N of matrix a
 	 */
-	void set_a_trans_matrix(DREAL *a_trans, INT num_trans, INT N);
+	void set_a_trans_matrix(DREAL *a_trans, int32_t num_trans, int32_t N);
 
 	// content svm related setup functions
 	/** init SVM arrays
@@ -182,28 +182,28 @@ public:
 	 * @param p_num_degrees number of degrees
 	 * @param p_num_svms number of SVMs
 	 */
-	void init_svm_arrays(INT p_num_degrees, INT p_num_svms);
+	void init_svm_arrays(int32_t p_num_degrees, int32_t p_num_svms);
 
 	/** init word degree array
 	 *
 	 * @param p_word_degree_array new word degree array
 	 * @param num_elem number of array elements
 	 */
-	void init_word_degree_array(INT * p_word_degree_array, INT num_elem);
+	void init_word_degree_array(int32_t * p_word_degree_array, int32_t num_elem);
 
 	/** init cum num words array
 	 *
 	 * @param p_cum_num_words_array new cum num words array
 	 * @param num_elem number of array elements
 	 */
-	void init_cum_num_words_array(INT * p_cum_num_words_array, INT num_elem);
+	void init_cum_num_words_array(int32_t * p_cum_num_words_array, int32_t num_elem);
 
 	/** init num words array
 	 *
 	 * @param p_num_words_array new num words array
 	 * @param num_elem number of array elements
 	 */
-	void init_num_words_array(INT * p_num_words_array, INT num_elem);
+	void init_num_words_array(int32_t * p_num_words_array, int32_t num_elem);
 
 	/** init mod words array
 	 *
@@ -211,21 +211,21 @@ public:
 	 * @param num_elem number of array elements
 	 * @param num_columns number of columns
 	 */
-	void init_mod_words_array(INT * p_mod_words_array, INT num_elem, INT num_columns);
+	void init_mod_words_array(int32_t * p_mod_words_array, int32_t num_elem, int32_t num_columns);
 
 	/** init sign words array
 	 *
 	 * @param p_sign_words_array new sign words array
 	 * @param num_elem number of array elements
 	 */
-	void init_sign_words_array(bool * p_sign_words_array, INT num_elem);
+	void init_sign_words_array(bool * p_sign_words_array, int32_t num_elem);
 
 	/** init string words array
 	 *
 	 * @param p_string_words_array new string words array
 	 * @param num_elem number of array elements
 	 */
-	void init_string_words_array(INT * p_string_words_array, INT num_elem);
+	void init_string_words_array(int32_t * p_string_words_array, int32_t num_elem);
 
 	/** check SVM arrays
 	 * call this function to check consistency
@@ -241,7 +241,7 @@ public:
 	 * @param N dimension N
 	 * @param seq_len length of sequence
 	 */
-	void best_path_set_seq(DREAL *seq, INT N, INT seq_len);
+	void best_path_set_seq(DREAL *seq, int32_t N, int32_t seq_len);
 
 	/** set best path seq3d
 	 *
@@ -250,14 +250,14 @@ public:
 	 * @param seq_len length of sequence
 	 * @param max_num_signals maximal number of signals
 	 */
-	void best_path_set_seq3d(DREAL *seq, INT p_N, INT seq_len, INT max_num_signals);
+	void best_path_set_seq3d(DREAL *seq, int32_t p_N, int32_t seq_len, int32_t max_num_signals);
 
 	/** set best path pos
 	 *
 	 * @param pos the position
 	 * @param seq_len length of sequence
 	 */
-	void best_path_set_pos(INT *pos, INT seq_len);
+	void best_path_set_pos(int32_t *pos, int32_t seq_len);
 
 	/** set best path orf info
 	 * only for best_path_trans
@@ -266,7 +266,7 @@ public:
 	 * @param m dimension m
 	 * @param n dimension n
 	 */
-	void best_path_set_orf_info(INT *orf_info, INT m, INT n);
+	void best_path_set_orf_info(int32_t *orf_info, int32_t m, int32_t n);
 
 	/** set best path segment sum weights
 	 * only for best_path_2struct
@@ -275,7 +275,7 @@ public:
 	 * @param num_states number of states
 	 * @param seq_len length of sequence
 	 */
-	void best_path_set_segment_sum_weights(DREAL *segment_sum_weights, INT num_states, INT seq_len);
+	void best_path_set_segment_sum_weights(DREAL *segment_sum_weights, int32_t num_states, int32_t seq_len);
 
 	/** set best path Plif list
 	 *
@@ -289,7 +289,7 @@ public:
 	 * @param m dimension m of matrix
 	 * @param n dimension n of matrix
 	 */
-	void best_path_set_plif_id_matrix(INT *plif_id_matrix, INT m, INT n);
+	void best_path_set_plif_id_matrix(int32_t *plif_id_matrix, int32_t m, int32_t n);
 
 	/** set best path plif state signal matrix
 	 *
@@ -297,7 +297,7 @@ public:
 	 * @param m dimension m of matrix
 	 * @param n dimension n of matrix
 	 */
-	void best_path_set_plif_state_signal_matrix(INT *plif_id_matrix, INT m, INT n);
+	void best_path_set_plif_state_signal_matrix(int32_t *plif_id_matrix, int32_t m, int32_t n);
 
 	/** set best path genesstr
 	 *
@@ -305,7 +305,7 @@ public:
 	 * @param genestr_len length of gene string
 	 * @param genestr_num number of gene strings, typically 1
 	 */
-	void best_path_set_genestr(char* genestr, INT genestr_len, INT genestr_num);
+	void best_path_set_genestr(char* genestr, int32_t genestr_len, int32_t genestr_num);
 
 	// additional best_path_trans_deriv functions
 	/** set best path my state sequence
@@ -313,21 +313,21 @@ public:
 	 * @param my_state_seq my state sequence
 	 * @param seq_len length of sequence
 	 */
-	void best_path_set_my_state_seq(INT* my_state_seq, INT seq_len);
+	void best_path_set_my_state_seq(int32_t* my_state_seq, int32_t seq_len);
 
 	/** set best path my position sequence
 	 *
 	 * @param my_pos_seq my position sequence
 	 * @param seq_len length of sequence
 	 */
-	void best_path_set_my_pos_seq(INT* my_pos_seq, INT seq_len);
+	void best_path_set_my_pos_seq(int32_t* my_pos_seq, int32_t seq_len);
 
 	/** set best path single gene string
 	 *
 	 * @param genestr gene string
 	 * @param genestr_len length of gene string
 	 */
-	inline void best_path_set_single_genestr(char* genestr, INT genestr_len)
+	inline void best_path_set_single_genestr(char* genestr, int32_t genestr_len)
 	{
 		SG_DEBUG("genestrpy: %d", genestr_len);
 		best_path_set_genestr(genestr, genestr_len, 1);
@@ -339,7 +339,7 @@ public:
 	 * @param dict_len length of dictionary weights
 	 * @param n dimension n
 	 */
-	void best_path_set_dict_weights(DREAL* dictionary_weights, INT dict_len, INT n);
+	void best_path_set_dict_weights(DREAL* dictionary_weights, int32_t dict_len, int32_t n);
 
 	/** set best path segment loss
 	 *
@@ -347,7 +347,7 @@ public:
 	 * @param num_segment_id1 number of segment id1
 	 * @param num_segment_id2 number of segment id2
 	 */
-	void best_path_set_segment_loss(DREAL * segment_loss, INT num_segment_id1, INT num_segment_id2);
+	void best_path_set_segment_loss(DREAL * segment_loss, int32_t num_segment_id1, int32_t num_segment_id2);
 
 	/** set best path segmend ids mask
 	 *
@@ -355,7 +355,7 @@ public:
 	 * @param segment_mask segment mask
 	 * @param m dimension m
 	 */
-	void best_path_set_segment_ids_mask(INT* segment_ids, DREAL* segment_mask, INT m);
+	void best_path_set_segment_ids_mask(int32_t* segment_ids, DREAL* segment_mask, int32_t m);
 
 	// best_path functions
 	/** best path call
@@ -363,7 +363,7 @@ public:
 	 * @param nbest nbest
 	 * @param use_orf whether to use orf
 	 */
-	void best_path_call(INT nbest, bool use_orf);
+	void best_path_call(int32_t nbest, bool use_orf);
 
 	/** best path derivative call */
 	void best_path_deriv_call();
@@ -372,19 +372,19 @@ public:
 	 *
 	 * @param nbest nbest
 	 */
-	void best_path_2struct_call(INT nbest);
+	void best_path_2struct_call(int32_t nbest);
 
 	/** best path simple call
 	 *
 	 * @param nbest nbest
 	 */
-	void best_path_simple_call(INT nbest);
+	void best_path_simple_call(int32_t nbest);
 
 	/** best path derivative call
 	 *
 	 * @param nbest nbest
 	 */
-	void best_path_deriv_call(INT nbest);
+	void best_path_deriv_call(int32_t nbest);
 	
 	// best_path result retrieval functions
 	/** best path get scores
@@ -392,7 +392,7 @@ public:
 	 * @param scores scores
 	 * @param n dimension n
 	 */
-	void best_path_get_scores(DREAL **scores, INT *n);
+	void best_path_get_scores(DREAL **scores, int32_t *n);
 
 	/** best path get states
 	 *
@@ -400,7 +400,7 @@ public:
 	 * @param m dimension m
 	 * @param n dimension n
 	 */
-	void best_path_get_states(INT **states, INT *m, INT *n);
+	void best_path_get_states(int32_t **states, int32_t *m, int32_t *n);
 
 	/** best path get positions
 	 *
@@ -408,7 +408,7 @@ public:
 	 * @param m dimension m
 	 * @param n dimension n
 	 */
-	void best_path_get_positions(INT **positions, INT *m, INT *n);
+	void best_path_get_positions(int32_t **positions, int32_t *m, int32_t *n);
 
 	//best_path_trans_deriv result retrieval functions
 	/** get best path losses
@@ -416,7 +416,7 @@ public:
 	 * @param my_losses my losses
 	 * @param seq_len length of sequence
 	 */
-	void best_path_get_losses(DREAL** my_losses, INT* seq_len);
+	void best_path_get_losses(DREAL** my_losses, int32_t* seq_len);
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -436,11 +436,11 @@ public:
 	 * @param use_orf whether orf shall be used
 	 */
 	template <short int nbest, bool with_loss, bool with_multiple_sequences>
-	void best_path_trans(const DREAL *seq, INT seq_len, const INT *pos,
-						 const INT *orf_info, CPlifBase **PLif_matrix,
-						 CPlifBase **Plif_state_signals, INT max_num_signals,
-						 INT genestr_num,
-						 DREAL *prob_nbest, INT *my_state_seq, INT *my_pos_seq,
+	void best_path_trans(const DREAL *seq, int32_t seq_len, const int32_t *pos,
+						 const int32_t *orf_info, CPlifBase **PLif_matrix,
+						 CPlifBase **Plif_state_signals, int32_t max_num_signals,
+						 int32_t genestr_num,
+						 DREAL *prob_nbest, int32_t *my_state_seq, int32_t *my_pos_seq,
 						 bool use_orf);
 
 	/** best path trans derivative
@@ -458,9 +458,9 @@ public:
 	 * @param max_num_signals maximal number of signals
 	 * @param genestr_num number of gene strings
 	 */
-	void best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *my_scores, DREAL* my_losses, INT my_seq_len,
-					const DREAL *seq_array, INT seq_len, const INT *pos, CPlifBase **Plif_matrix,
-					CPlifBase **Plif_state_signals, INT max_num_signals, INT genestr_num);
+	void best_path_trans_deriv(int32_t *my_state_seq, int32_t *my_pos_seq, DREAL *my_scores, DREAL* my_losses, int32_t my_seq_len,
+					const DREAL *seq_array, int32_t seq_len, const int32_t *pos, CPlifBase **Plif_matrix,
+					CPlifBase **Plif_state_signals, int32_t max_num_signals, int32_t genestr_num);
 	
 	/** best path 2struct
 	 *
@@ -478,12 +478,12 @@ public:
 	 * @param dict_len length of dictionary weights
 	 * @param segment_sum_weights segment sum weights
 	 */
-	void best_path_2struct(const DREAL *seq, INT seq_len, const INT *pos,
+	void best_path_2struct(const DREAL *seq, int32_t seq_len, const int32_t *pos,
 						   CPlifBase **Plif_matrix,
-						   const char *genestr, INT genestr_len,
+						   const char *genestr, int32_t genestr_len,
 						   SHORT nbest,
-						   DREAL *prob_nbest, INT *my_state_seq, INT *my_pos_seq,
-						   DREAL *dictionary_weights, INT dict_len, DREAL *segment_sum_weights);
+						   DREAL *prob_nbest, int32_t *my_state_seq, int32_t *my_pos_seq,
+						   DREAL *dictionary_weights, int32_t dict_len, DREAL *segment_sum_weights);
 
 	/** best path trans simple
 	 *
@@ -493,8 +493,8 @@ public:
 	 * @param prob_nbest prob(ability?) nbest
 	 * @param my_state_seq my state seq
 	 */
-	void best_path_trans_simple(const DREAL *seq, INT seq_len, SHORT nbest,
-								DREAL *prob_nbest, INT *my_state_seq);
+	void best_path_trans_simple(const DREAL *seq, int32_t seq_len, SHORT nbest,
+								DREAL *prob_nbest, int32_t *my_state_seq);
 
 
 
@@ -583,9 +583,9 @@ public:
 	 * @param dictionary_weights dictionary weights
 	 * @param dict_len lenght of dictionary
 	 */
-	void precompute_content_values(uint16_t*** wordstr, const INT *pos,
-		const INT num_cand_pos, const INT genestr_len,
-		DREAL *dictionary_weights, INT dict_len);
+	void precompute_content_values(uint16_t*** wordstr, const int32_t *pos,
+		const int32_t num_cand_pos, const int32_t genestr_len,
+		DREAL *dictionary_weights, int32_t dict_len);
 
 	/** create word string from char*
 	 * Jonas
@@ -595,21 +595,21 @@ public:
 	 * @param genestr_len length of gene string
 	 * @param wordstr word strings
 	 */
-	void create_word_string(const char* genestr, INT genestr_num, INT genestr_len, uint16_t*** wordstr);
+	void create_word_string(const char* genestr, int32_t genestr_num, int32_t genestr_len, uint16_t*** wordstr);
 
 	/** precompute stop codons
 	 *
 	 * @param genestr gene string
 	 * @param genestr_len length of gene string
 	 */
-	void precompute_stop_codons(const char* genestr, INT genestr_len);
+	void precompute_stop_codons(const char* genestr, int32_t genestr_len);
 
 	/** set genestr len
 	 *
 	 * @param genestr_len length of gene string
 	 *
 	 */
-	void set_genestr_len(INT genestr_len);
+	void set_genestr_len(int32_t genestr_len);
 
 	/** access function for matrix a
 	 *
@@ -646,9 +646,9 @@ protected:
 	 * @param svm_values SVM values
 	 * @param frame frame
 	 */
-	inline void lookup_content_svm_values(const INT from_state,
-		const INT to_state, const INT from_pos, const INT to_pos,
-		DREAL* svm_values, INT frame);
+	inline void lookup_content_svm_values(const int32_t from_state,
+		const int32_t to_state, const int32_t from_pos, const int32_t to_pos,
+		DREAL* svm_values, int32_t frame);
 
 	/** lookup tiling Plif values
 	 *
@@ -657,14 +657,14 @@ protected:
 	 * @param len length
 	 * @param svm_values SVM values
 	 */
-	inline void lookup_tiling_plif_values(const INT from_state,
-		const INT to_state, const INT len, DREAL* svm_values);
+	inline void lookup_tiling_plif_values(const int32_t from_state,
+		const int32_t to_state, const int32_t len, DREAL* svm_values);
 
 	/** find frame
 	 *
 	 * @param from_state from state
 	 */
-	inline INT find_frame(const INT from_state);
+	inline int32_t find_frame(const int32_t from_state);
 
 	/** raw intensities interval query
 	 *
@@ -673,8 +673,8 @@ protected:
 	 * @param intensities intensities
 	 * @return an integer
 	 */
-	inline INT raw_intensities_interval_query(
-		const INT from_pos, const INT to_pos, DREAL* intensities);
+	inline int32_t raw_intensities_interval_query(
+		const int32_t from_pos, const int32_t to_pos, DREAL* intensities);
 
 	/** translate from single order
 	 *
@@ -684,8 +684,8 @@ protected:
 	 * @param order order
 	 * @param max_val maximum number of bits, e.g. 2 for DNA
 	 */
-	void translate_from_single_order(uint16_t* obs, INT sequence_length, INT start,
-		INT order, INT max_val=2);
+	void translate_from_single_order(uint16_t* obs, int32_t sequence_length, int32_t start,
+		int32_t order, int32_t max_val=2);
 
 	/** reset SVM value
 	 *
@@ -693,7 +693,7 @@ protected:
 	 * @param last_svm_pos last SVM position
 	 * @param svm_value value to set
 	 */
-	void reset_svm_value(INT pos, INT & last_svm_pos, DREAL * svm_value);
+	void reset_svm_value(int32_t pos, int32_t & last_svm_pos, DREAL * svm_value);
 
 	/** extend SVM value
 	 *
@@ -702,7 +702,7 @@ protected:
 	 * @param last_svm_pos lsat SVM position
 	 * @param svm_value value to set
 	 */
-	void extend_svm_value(uint16_t* wordstr, INT pos, INT &last_svm_pos,
+	void extend_svm_value(uint16_t* wordstr, int32_t pos, int32_t &last_svm_pos,
 		DREAL* svm_value);
 
 	/** reset segment sum value
@@ -712,8 +712,8 @@ protected:
 	 * @param last_segment_sum_pos last segment sum position
 	 * @param segment_sum_value value to set
 	 */
-	void reset_segment_sum_value(INT num_states, INT pos,
-		INT & last_segment_sum_pos, DREAL * segment_sum_value);
+	void reset_segment_sum_value(int32_t num_states, int32_t pos,
+		int32_t & last_segment_sum_pos, DREAL * segment_sum_value);
 
 	/** extend segment sum value
 	 *
@@ -724,20 +724,20 @@ protected:
 	 * @param last_segment_sum_pos last segment sum position
 	 * @param segment_sum_value value to set
 	 */
-	void extend_segment_sum_value(DREAL *segment_sum_weights, INT seqlen,
-		INT num_states, INT pos, INT &last_segment_sum_pos,
+	void extend_segment_sum_value(DREAL *segment_sum_weights, int32_t seqlen,
+		int32_t num_states, int32_t pos, int32_t &last_segment_sum_pos,
 		DREAL* segment_sum_value);
 
 	/** SVM values */
 	struct svm_values_struct
 	{
 		/** maximum lookback */
-		INT maxlookback;
+		int32_t maxlookback;
 		/** sequence length */
-		INT seqlen;
+		int32_t seqlen;
 
 		/** start position */
-		INT* start_pos;
+		int32_t* start_pos;
 		/** SVM values normalized */
 		DREAL ** svm_values_unnormalized;
 		/** SVM values */
@@ -745,11 +745,11 @@ protected:
 		/** word used */
 		bool *** word_used;
 		/** number of unique words */
-		INT **num_unique_words;
+		int32_t **num_unique_words;
 	};
 
-	//void reset_svm_values(INT pos, INT * last_svm_pos, DREAL * svm_value) ;
-	//void extend_svm_values(uint16_t** wordstr, INT pos, INT *last_svm_pos, DREAL* svm_value) ;
+	//void reset_svm_values(int32_t pos, int32_t * last_svm_pos, DREAL * svm_value) ;
+	//void extend_svm_values(uint16_t** wordstr, int32_t pos, int32_t *last_svm_pos, DREAL* svm_value) ;
 	/** init SVM values
 	 *
 	 * @param svs SVM values
@@ -757,8 +757,8 @@ protected:
 	 * @param seqlen length of sequence
 	 * @param howmuchlookback how far to look back
 	 */
-	void init_svm_values(struct svm_values_struct & svs, INT start_pos,
-		INT seqlen, INT howmuchlookback);
+	void init_svm_values(struct svm_values_struct & svs, int32_t start_pos,
+		int32_t seqlen, int32_t howmuchlookback);
 
 	/** clear SVM values
 	 *
@@ -773,7 +773,7 @@ protected:
 	 * @param t_end t end
 	 * @param svs SVM values
 	 */
-	void find_svm_values_till_pos(uint16_t*** wordstr, const INT *pos, INT t_end,
+	void find_svm_values_till_pos(uint16_t*** wordstr, const int32_t *pos, int32_t t_end,
 		struct svm_values_struct &svs);
 
 	/** find SVM values till position
@@ -783,7 +783,7 @@ protected:
 	 * @param t_end t end
 	 * @param svs SVM values
 	 */
-	void find_svm_values_till_pos(uint16_t** wordstr, const INT *pos, INT t_end,
+	void find_svm_values_till_pos(uint16_t** wordstr, const int32_t *pos, int32_t t_end,
 		struct svm_values_struct &svs);
 
 	/** update SVM values till position
@@ -794,8 +794,8 @@ protected:
 	 * @param prev_t_end previous t end
 	 * @param svs SVM values
 	 */
-	void update_svm_values_till_pos(uint16_t*** wordstr, const INT *pos, INT t_end,
-		INT prev_t_end, struct svm_values_struct &svs);
+	void update_svm_values_till_pos(uint16_t*** wordstr, const int32_t *pos, int32_t t_end,
+		int32_t prev_t_end, struct svm_values_struct &svs);
 
 	/** extend orf
 	 *
@@ -805,21 +805,21 @@ protected:
 	 * @param last_pos last position
 	 * @param to to
 	 */
-	bool extend_orf(INT orf_from, INT orf_to, INT start, INT &last_pos, INT to);
+	bool extend_orf(int32_t orf_from, int32_t orf_to, int32_t start, int32_t &last_pos, int32_t to);
 
 	/** segment loss */
 	struct segment_loss_struct
 	{
 		/** maximum lookback */
-		INT maxlookback;
+		int32_t maxlookback;
 		/** sequence length */
-		INT seqlen;
+		int32_t seqlen;
 		/** segments changed */
-		INT *segments_changed;
+		int32_t *segments_changed;
 		/** numb segment ID */
 		DREAL *num_segment_id;
 		/** length of segmend ID */
-		INT *length_segment_id ;
+		int32_t *length_segment_id ;
 	};
 
 	/** init segment loss
@@ -828,8 +828,8 @@ protected:
 	 * @param seqlen length of sequence
 	 * @param howmuchlookback how far to look back
 	 */
-	void init_segment_loss(struct segment_loss_struct & loss, INT seqlen,
-		INT howmuchlookback);
+	void init_segment_loss(struct segment_loss_struct & loss, int32_t seqlen,
+		int32_t howmuchlookback);
 
 	/** clear segment loss
 	 *
@@ -848,7 +848,7 @@ protected:
 	 * @return last value
 	 */
 	DREAL extend_segment_loss(struct segment_loss_struct & loss,
-		const INT * pos_array, INT segment_id, INT pos, INT& last_pos,
+		const int32_t * pos_array, int32_t segment_id, int32_t pos, int32_t& last_pos,
 		DREAL &last_value);
 
 	/** find segment loss till pos
@@ -859,8 +859,8 @@ protected:
 	 * @param segment_mask segmend mask
 	 * @param loss segment loss
 	 */
-	void find_segment_loss_till_pos(const INT * pos, INT t_end,
-		CArray<INT>& segment_ids, CArray<DREAL>& segment_mask,
+	void find_segment_loss_till_pos(const int32_t * pos, int32_t t_end,
+		CArray<int32_t>& segment_ids, CArray<DREAL>& segment_mask,
 		struct segment_loss_struct& loss);
 
 	
@@ -869,10 +869,10 @@ protected:
 	 */
 	//@{
 	/// number of states
-	INT N;
+	int32_t N;
 
 	/// transition matrix
-	CArray2<INT> transition_matrix_a_id;
+	CArray2<int32_t> transition_matrix_a_id;
 	CArray2<DREAL> transition_matrix_a;
 	CArray2<DREAL> transition_matrix_a_deriv;
 
@@ -892,77 +892,77 @@ protected:
 	DREAL * dict_weights_array;
 
 	/** number of degress */
-	INT num_degrees;
+	int32_t num_degrees;
 	/** number of SVMs */
-	INT num_svms;
+	int32_t num_svms;
 	/** number of strings */
-	INT num_strings;
+	int32_t num_strings;
 	
 	/** word degree */
-	CArray<INT> word_degree;
+	CArray<int32_t> word_degree;
 	/** cum num words */
-	CArray<INT> cum_num_words;
+	CArray<int32_t> cum_num_words;
 	/** cum num words array */
-	INT * cum_num_words_array;
+	int32_t * cum_num_words_array;
 	/** num words */
-	CArray<INT> num_words;
+	CArray<int32_t> num_words;
 	/** num words array */
-	INT * num_words_array;
+	int32_t * num_words_array;
 	/** mod words */
-	CArray2<INT> mod_words;
+	CArray2<int32_t> mod_words;
 	/** mod words array */
-	INT * mod_words_array;
+	int32_t * mod_words_array;
 	/** sign words */
 	CArray<bool> sign_words;
 	/** sign words array */
 	bool * sign_words_array;
 	/** string words */
-	CArray<INT> string_words;
+	CArray<int32_t> string_words;
 	/** string words array */
-	INT * string_words_array;
+	int32_t * string_words_array;
 
-//	CArray3<INT> word_used ;
-//	INT *word_used_array ;
+//	CArray3<int32_t> word_used ;
+//	int32_t *word_used_array ;
 //	CArray2<DREAL> svm_values_unnormalized ;
 	/** SVM start position */
-	CArray<INT> svm_pos_start;
+	CArray<int32_t> svm_pos_start;
 	/** number of unique words */
-	CArray<INT> num_unique_words;
+	CArray<int32_t> num_unique_words;
 	/** SVM arrays clean */
 	bool svm_arrays_clean;
 
 	/** number of SVMs single */
-	INT num_svms_single;
+	int32_t num_svms_single;
 	/** word degree single */
-	INT word_degree_single;
+	int32_t word_degree_single;
 	/** cum num words single */
-	INT cum_num_words_single;
+	int32_t cum_num_words_single;
 	/** num words single */
-	INT num_words_single;
+	int32_t num_words_single;
 
 	/** word used single */
 	CArray<bool> word_used_single;
 	/** SVM value unnormalised single */
 	CArray<DREAL> svm_value_unnormalized_single;
 	/** number of unique words single */
-	INT num_unique_words_single;
+	int32_t num_unique_words_single;
 
 	/** max a id */
-	INT max_a_id;
+	int32_t max_a_id;
 	
 	// control info
 	/** m step */
-	INT m_step;
+	int32_t m_step;
 	/** m call */
-	INT m_call;
+	int32_t m_call;
 
 	// input arguments
 	/** m sequence */
 	CArray3<DREAL> m_seq;
 	/** m position */
-	CArray<INT> m_pos;
+	CArray<int32_t> m_pos;
 	/** m orf info */
-	CArray2<INT> m_orf_info;
+	CArray2<int32_t> m_orf_info;
 	/** m segment sum weights */
 	CArray2<DREAL> m_segment_sum_weights;
 	/** m Plif list */
@@ -978,13 +978,13 @@ protected:
 	/** m segment loss */
 	CArray3<DREAL> m_segment_loss;
 	/** m segment IDs */
-	CArray<INT> m_segment_ids;
+	CArray<int32_t> m_segment_ids;
 	/** m segment mask */
 	CArray<DREAL> m_segment_mask;
 	/** m my state seq */
-	CArray<INT> m_my_state_seq;
+	CArray<int32_t> m_my_state_seq;
 	/** m my position sequence */
-	CArray<INT> m_my_pos_seq;
+	CArray<int32_t> m_my_pos_seq;
 	/** m my scores */
 	CArray<DREAL> m_my_scores;
 	/** m my losses */
@@ -994,9 +994,9 @@ protected:
 	/** m scores */
 	CArray<DREAL> m_scores;
 	/** m states */
-	CArray2<INT> m_states;
+	CArray2<int32_t> m_states;
 	/** m positions */
-	CArray2<INT> m_positions;
+	CArray2<int32_t> m_positions;
 
 	/** storeage of stop codons
 	 *  array of size length(sequence)
@@ -1015,24 +1015,24 @@ protected:
 	/** raw intensities */
 	DREAL* m_raw_intensities;
 	/** prope position */
-	INT* m_probe_pos;
+	int32_t* m_probe_pos;
 	/** number of probes */
-	INT m_num_probes;
+	int32_t m_num_probes;
 	/** use tiling */
 	bool m_use_tiling;
 	/** length of gene string */
-	INT m_genestr_len;
+	int32_t m_genestr_len;
 };
 
-inline INT CDynProg::raw_intensities_interval_query(const INT from_pos, const INT to_pos, DREAL* intensities)
+inline int32_t CDynProg::raw_intensities_interval_query(const int32_t from_pos, const int32_t to_pos, DREAL* intensities)
 {
 	ASSERT(from_pos<to_pos);
 	//SG_PRINT("m_num_probes:%i, m_raw_intensities[1]:%f, m_probe_pos[1]:%i \n",m_num_probes, m_raw_intensities[10], m_probe_pos[10]);
-	INT num_intensities = 0;
-	INT* p_tiling_pos  = m_probe_pos;
+	int32_t num_intensities = 0;
+	int32_t* p_tiling_pos  = m_probe_pos;
 	DREAL* p_tiling_data = m_raw_intensities;
-	INT last_pos;
-	INT num = 0;
+	int32_t last_pos;
+	int32_t num = 0;
 	while (*p_tiling_pos<to_pos)
 	{
 		if (*p_tiling_pos>=from_pos)
@@ -1051,12 +1051,12 @@ inline INT CDynProg::raw_intensities_interval_query(const INT from_pos, const IN
 	}
 	return num_intensities;
 }
-inline void CDynProg::lookup_content_svm_values(const INT from_state, const INT to_state, const INT from_pos, const INT to_pos, DREAL* svm_values, INT frame)
+inline void CDynProg::lookup_content_svm_values(const int32_t from_state, const int32_t to_state, const int32_t from_pos, const int32_t to_pos, DREAL* svm_values, int32_t frame)
 {
 //	ASSERT(from_state<to_state);
 //	if (!(from_pos<to_pos))
 //		SG_ERROR("from_pos!<to_pos, from_pos: %i to_pos: %i \n",from_pos,to_pos);
-	for (INT i=0;i<4;i++)
+	for (int32_t i=0;i<4;i++)
 	{
 		DREAL to_val   = m_precomputed_svm_values.get_element(i,  to_state);
 		DREAL from_val = m_precomputed_svm_values.get_element(i,from_state);
@@ -1068,19 +1068,19 @@ inline void CDynProg::lookup_content_svm_values(const INT from_state, const INT 
 		svm_values[4] = 1e10;
 		svm_values[5] = 1e10;
 		svm_values[6] = 1e10;
-		INT global_frame = from_pos%3;
-        	INT row = ((global_frame+frame)%3)+4;
+		int32_t global_frame = from_pos%3;
+        	int32_t row = ((global_frame+frame)%3)+4;
 		//SG_PRINT("global_frame:%i row:%i frame:%i \n", global_frame, row, frame);
 		DREAL to_val   = m_precomputed_svm_values.get_element(row,  to_state);
 		DREAL from_val = m_precomputed_svm_values.get_element(row,from_state);
 		svm_values[frame+4] = (to_val-from_val)/(to_pos-from_pos);
 	}
 }
-inline void CDynProg::lookup_tiling_plif_values(const INT from_state, const INT to_state, const INT len, DREAL* svm_values)
+inline void CDynProg::lookup_tiling_plif_values(const int32_t from_state, const int32_t to_state, const int32_t len, DREAL* svm_values)
 {
 	ASSERT(from_state<to_state);
 	ASSERT(len>0);
-	for (INT i=num_svms;i<2*num_svms;i++)
+	for (int32_t i=num_svms;i<2*num_svms;i++)
 	{
 		//svm_values[i]=(m_precomputed_tiling_values.get_element(i-num_svms,to_state)-m_precomputed_tiling_values.get_element(i-num_svms,from_state))/len;
 		svm_values[i]=(m_precomputed_tiling_values.get_element(i-num_svms,to_state)-m_precomputed_tiling_values.get_element(i-num_svms,from_state));

@@ -100,7 +100,7 @@ class CConstKernel: public CKernel
 		 * @param col dummy col
 		 * @return computed kernel function (const value)
 		 */
-		inline virtual DREAL compute(INT row, INT col)
+		inline virtual DREAL compute(int32_t row, int32_t col)
 		{
 			return const_value;
 		}

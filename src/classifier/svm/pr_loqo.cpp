@@ -55,27 +55,28 @@ void nrerror(char error_text[])
    ***************************************************************/
 
 #ifdef HAVE_LAPACK
-bool choldc(double* a, int n, double* p)
+bool choldc(double* a, int32_t n, double* p)
 {
 	if (n<=0)
 		return false;
 
 	double* a2=new double[n*n];
 
-	for (int i=0; i<n; i++)
+	for (int32_t i=0; i<n; i++)
 	{
-		for (int j=0; j<n; j++)
+		for (int32_t j=0; j<n; j++)
 			a2[n*i+j]=a[n*i+j];
 	}
 
-	int result=clapack_dpotrf(CblasRowMajor, CblasUpper, n, a2, n);
+	/* int for calling external lib */
+	int result=clapack_dpotrf(CblasRowMajor, CblasUpper, (int) n, a2, (int) n);
 
-	for (int i=0; i<n; i++)
+	for (int32_t i=0; i<n; i++)
 		p[i]=a2[(n+1)*i];
 
-	for (int i=0; i<n; i++)
+	for (int32_t i=0; i<n; i++)
 	{
-		for (int j=i+1; j<n; j++)
+		for (int32_t j=i+1; j<n; j++)
 		{
 			a[n*j+i]=a2[n*i+j];
 		}
@@ -89,10 +90,10 @@ bool choldc(double* a, int n, double* p)
 	return result==0;
 }
 #else
-bool choldc(double a[], int n, double p[])
+bool choldc(double a[], int32_t n, double p[])
 {
 	void nrerror(char error_text[]);
-	int i, j, k;
+	int32_t i, j, k;
 	double sum;
 
 	for (i = 0; i < n; i++)
@@ -125,9 +126,9 @@ bool choldc(double a[], int n, double p[])
 }
 #endif
 
-void cholsb(double a[], int n, double p[], double b[], double x[])
+void cholsb(double a[], int32_t n, double p[], double b[], double x[])
 {
-  int i, k;
+  int32_t i, k;
   double sum;
 
   for (i=0; i<n; i++) {
@@ -148,9 +149,9 @@ void cholsb(double a[], int n, double p[], double b[], double x[])
   backsubstitution, hence we provide these two routines separately 
   ***************************************************************/
 
-void chol_forward(double a[], int n, double p[], double b[], double x[])
+void chol_forward(double a[], int32_t n, double p[], double b[], double x[])
 {
-  int i, k;
+  int32_t i, k;
   double sum;
 
   for (i=0; i<n; i++) {
@@ -160,9 +161,9 @@ void chol_forward(double a[], int n, double p[], double b[], double x[])
   }
 }
 
-void chol_backward(double a[], int n, double p[], double b[], double x[])
+void chol_backward(double a[], int32_t n, double p[], double b[], double x[])
 {
-  int i, k;
+  int32_t i, k;
   double sum;
 
   for (i=n-1; i>=0; i--) {
@@ -197,12 +198,11 @@ void chol_backward(double a[], int n, double p[], double b[], double x[])
   in our case)
   ***************************************************************/
 
-bool solve_reduced(int n, int m, double h_x[], double h_y[], 
-		   double a[], double x_x[], double x_y[],
-		   double c_x[], double c_y[],
-		   double workspace[], int step)
+bool solve_reduced(
+	int32_t n, int32_t m, double h_x[], double h_y[], double a[], double x_x[],
+	double x_y[], double c_x[], double c_y[], double workspace[], int32_t step)
 {
-  int i,j,k;
+  int32_t i,j,k;
 
   double *p_x;
   double *p_y;
@@ -260,9 +260,9 @@ bool solve_reduced(int n, int m, double h_x[], double h_y[],
   elegant. 
   ***************************************************************/
 
-void matrix_vector(int n, double m[], double x[], double y[])
+void matrix_vector(int32_t n, double m[], double x[], double y[])
 {
-  int i, j;
+  int32_t i, j;
 
   for (i=0; i<n; i++) {
     y[i] = m[(n+1) * i] * x[i];
@@ -287,10 +287,11 @@ void matrix_vector(int n, double m[], double x[], double y[])
   positivity of the slacks.
   ***************************************************************/
 
-int pr_loqo(int n, int m, double c[], double h_x[], double a[], double b[],
-	    double l[], double u[], double primal[], double dual[], 
-	    int verb, double sigfig_max, int counter_max, 
-	    double margin, double bound, int restart) 
+int32_t pr_loqo(
+	int32_t n, int32_t m, double c[], double h_x[], double a[], double b[],
+	double l[], double u[], double primal[], double dual[], int32_t verb,
+	double sigfig_max, int32_t counter_max, double margin, double bound,
+	int32_t restart)
 {
   /* the knobs to be tuned ... */
   /* double margin = -0.95;	   we will go up to 95% of the
@@ -346,11 +347,11 @@ int pr_loqo(int n, int m, double c[], double h_x[], double a[], double b[],
   double primal_obj, dual_obj;
   double mu;
   double alfa=-1;
-  int counter = 0;
+  int32_t counter = 0;
 
-  int status = STILL_RUNNING;
+  int32_t status = STILL_RUNNING;
 
-  int i,j;
+  int32_t i,j;
 
   /* memory allocation */
   workspace = (double*) malloc((n*(m+2)+2*m)*sizeof(double));

@@ -44,13 +44,13 @@ CSubGradientSVM::~CSubGradientSVM()
 }
 
 /*
-INT CSubGradientSVM::find_active(INT num_feat, INT num_vec, INT& num_active, INT& num_bound)
+int32_t CSubGradientSVM::find_active(int32_t num_feat, int32_t num_vec, int32_t& num_active, int32_t& num_bound)
 {
-	INT delta_active=0;
+	int32_t delta_active=0;
 	num_active=0;
 	num_bound=0;
 
-	for (INT i=0; i<num_vec; i++)
+	for (int32_t i=0; i<num_vec; i++)
 	{
 		active[i]=0;
 
@@ -76,14 +76,14 @@ INT CSubGradientSVM::find_active(INT num_feat, INT num_vec, INT& num_active, INT
 }
 */
 
-INT CSubGradientSVM::find_active(INT num_feat, INT num_vec, INT& num_active, INT& num_bound)
+int32_t CSubGradientSVM::find_active(int32_t num_feat, int32_t num_vec, int32_t& num_active, int32_t& num_bound)
 {
 	delta_bound=0;
 	delta_active=0;
 	num_active=0;
 	num_bound=0;
 
-	for (INT i=0; i<num_vec; i++)
+	for (int32_t i=0; i<num_vec; i++)
 	{
 		active[i]=0;
 
@@ -123,7 +123,7 @@ INT CSubGradientSVM::find_active(INT num_feat, INT num_vec, INT& num_active, INT
 	num_active=0;
 	num_bound=0;
 
-	for (INT i=0; i<num_vec; i++)
+	for (int32_t i=0; i<num_vec; i++)
 	{
 		tmp_proj[i]=CMath::abs(proj[i]-1);
 		tmp_proj_idx[i]=i;
@@ -144,7 +144,7 @@ INT CSubGradientSVM::find_active(INT num_feat, INT num_vec, INT& num_active, INT
 	{
 		autoselected_epsilon=epsilon;
 
-		INT i=0;
+		int32_t i=0;
 		while (i < num_vec && tmp_proj[i] <= autoselected_epsilon)
 			i++;
 
@@ -153,7 +153,7 @@ INT CSubGradientSVM::find_active(INT num_feat, INT num_vec, INT& num_active, INT
 		if (i>=qpsize_max && autoselected_epsilon>epsilon) //qpsize limit
 		{
 			SG_INFO("qpsize limit (%d) reached\n", qpsize_max);
-			INT num_in_qp=i;
+			int32_t num_in_qp=i;
 			while (--i>=0 && num_in_qp>=qpsize_max)
 			{
 				if (tmp_proj[i] < autoselected_epsilon)
@@ -167,7 +167,7 @@ INT CSubGradientSVM::find_active(INT num_feat, INT num_vec, INT& num_active, INT
 		}
 	}
 
-	for (INT i=0; i<num_vec; i++)
+	for (int32_t i=0; i<num_vec; i++)
 	{
 		active[i]=0;
 
@@ -197,10 +197,10 @@ INT CSubGradientSVM::find_active(INT num_feat, INT num_vec, INT& num_active, INT
 }
 
 
-void CSubGradientSVM::update_active(INT num_feat, INT num_vec)
+void CSubGradientSVM::update_active(int32_t num_feat, int32_t num_vec)
 
 {
-	for (INT i=0; i<num_vec; i++)
+	for (int32_t i=0; i<num_vec; i++)
 	{
 		if (active[i]==1 && old_active[i]!=1)
 		{
@@ -219,15 +219,15 @@ void CSubGradientSVM::update_active(INT num_feat, INT num_vec)
 	CMath::swap(active,old_active);
 }
 
-DREAL CSubGradientSVM::line_search(INT num_feat, INT num_vec)
+DREAL CSubGradientSVM::line_search(int32_t num_feat, int32_t num_vec)
 {
 	DREAL sum_B = 0;
 	DREAL A_zero = 0.5*CMath::dot(grad_w, grad_w, num_feat);
 	DREAL B_zero = -CMath::dot(w, grad_w, num_feat);
 
-	INT num_hinge=0;
+	int32_t num_hinge=0;
 
-	for (INT i=0; i<num_vec; i++)
+	for (int32_t i=0; i<num_vec; i++)
 	{
 		DREAL p=get_label(i)*features->dense_dot(1.0, i, grad_w, num_feat, grad_b);
 		grad_proj[i]=p;
@@ -261,7 +261,7 @@ DREAL CSubGradientSVM::line_search(INT num_feat, INT num_vec)
 	DREAL old_grad_val = grad_val;
 	DREAL old_alpha = alpha;
 
-	for (INT i=1; i < num_hinge && grad_val < 0; i++)
+	for (int32_t i=1; i < num_hinge && grad_val < 0; i++)
 	{
 		alpha = hinge_point[i];
 		grad_val = 2*A_zero*alpha + B_zero + sum_B;
@@ -285,7 +285,7 @@ DREAL CSubGradientSVM::line_search(INT num_feat, INT num_vec)
 	return alpha;
 }
 
-DREAL CSubGradientSVM::compute_min_subgradient(INT num_feat, INT num_vec, INT num_active, INT num_bound)
+DREAL CSubGradientSVM::compute_min_subgradient(int32_t num_feat, int32_t num_vec, int32_t num_active, int32_t num_bound)
 {
 	DREAL dir_deriv=0;
 
@@ -298,7 +298,7 @@ DREAL CSubGradientSVM::compute_min_subgradient(INT num_feat, INT num_vec, INT nu
 		if (num_bound>=qpsize_max && num_it_noimprovement!=10) // if qp gets to large, lets just choose a random beta
 		{
 			//SG_PRINT("qpsize too large  (%d>=%d) choosing random subgradient/beta\n", num_bound, qpsize_max);
-			for (INT i=0; i<num_bound; i++)
+			for (int32_t i=0; i<num_bound; i++)
 				beta[i]=CMath::random(0.0,1.0);
 		}
 		else
@@ -310,12 +310,12 @@ DREAL CSubGradientSVM::compute_min_subgradient(INT num_feat, INT num_vec, INT nu
 			if (use_bias)
 				bias_const=1;
 
-			for (INT i=0; i<num_bound; i++)
+			for (int32_t i=0; i<num_bound; i++)
 			{
-				for (INT j=i; j<num_bound; j++)
+				for (int32_t j=i; j<num_bound; j++)
 				{
-					INT alen=0;
-					INT blen=0;
+					int32_t alen=0;
+					int32_t blen=0;
 					bool afree=false;
 					bool bfree=false;
 
@@ -367,7 +367,7 @@ DREAL CSubGradientSVM::compute_min_subgradient(INT num_feat, INT num_vec, INT nu
 		CMath::add(grad_w, 1.0, w, -1.0, sum_CXy_active, num_feat);
 		grad_b = -sum_Cy_active;
 
-		for (INT i=0; i<num_bound; i++)
+		for (int32_t i=0; i<num_bound; i++)
 		{
 			features->add_to_dense_vec(-C1*beta[i]*get_label(idx_bound[i]), idx_bound[i], grad_w, num_feat);
 			if (use_bias)
@@ -375,7 +375,7 @@ DREAL CSubGradientSVM::compute_min_subgradient(INT num_feat, INT num_vec, INT nu
 		}
 
 		dir_deriv = CMath::dot(grad_w, v, num_feat) - grad_b*sum_Cy_active;
-		for (INT i=0; i<num_bound; i++)
+		for (int32_t i=0; i<num_bound; i++)
 		{
 			DREAL val= C1*get_label(idx_bound[i])*features->dense_dot(1.0, idx_bound[i], grad_w, num_feat, grad_b);
 			dir_deriv += CMath::max(0.0, val);
@@ -392,11 +392,11 @@ DREAL CSubGradientSVM::compute_min_subgradient(INT num_feat, INT num_vec, INT nu
 	return dir_deriv;
 }
 
-DREAL CSubGradientSVM::compute_objective(INT num_feat, INT num_vec)
+DREAL CSubGradientSVM::compute_objective(int32_t num_feat, int32_t num_vec)
 {
 	DREAL result= 0.5 * CMath::dot(w,w, num_feat);
 	
-	for (INT i=0; i<num_vec; i++)
+	for (int32_t i=0; i<num_vec; i++)
 	{
 		if (proj[i]<1.0)
 			result += C1 * (1.0-proj[i]);
@@ -405,18 +405,18 @@ DREAL CSubGradientSVM::compute_objective(INT num_feat, INT num_vec)
 	return result;
 }
 
-void CSubGradientSVM::compute_projection(INT num_feat, INT num_vec)
+void CSubGradientSVM::compute_projection(int32_t num_feat, int32_t num_vec)
 {
-	for (INT i=0; i<num_vec; i++)
+	for (int32_t i=0; i<num_vec; i++)
 		proj[i]=get_label(i)*features->dense_dot(1.0, i, w, num_feat, bias);
 }
 
-void CSubGradientSVM::update_projection(DREAL alpha, INT num_vec)
+void CSubGradientSVM::update_projection(DREAL alpha, int32_t num_vec)
 {
 	CMath::vec1_plus_scalar_times_vec2(proj,-alpha, grad_proj, num_vec);
 }
 
-void CSubGradientSVM::init(INT num_vec, INT num_feat)
+void CSubGradientSVM::init(int32_t num_vec, int32_t num_feat)
 {
 	// alloc normal and bias inited with 0
 	delete[] w;
@@ -449,8 +449,8 @@ void CSubGradientSVM::init(INT num_vec, INT num_feat)
 	tmp_proj=new DREAL[num_vec];
 	memset(proj,0,sizeof(DREAL)*num_vec);
 
-	tmp_proj_idx= new INT[num_vec];
-	memset(tmp_proj_idx,0,sizeof(INT)*num_vec);
+	tmp_proj_idx= new int32_t[num_vec];
+	memset(tmp_proj_idx,0,sizeof(int32_t)*num_vec);
 
 	grad_proj= new DREAL[num_vec];
 	memset(grad_proj,0,sizeof(DREAL)*num_vec);
@@ -458,8 +458,8 @@ void CSubGradientSVM::init(INT num_vec, INT num_feat)
 	hinge_point= new DREAL[num_vec];
 	memset(hinge_point,0,sizeof(DREAL)*num_vec);
 
-	hinge_idx= new INT[num_vec];
-	memset(hinge_idx,0,sizeof(INT)*num_vec);
+	hinge_idx= new int32_t[num_vec];
+	memset(hinge_idx,0,sizeof(int32_t)*num_vec);
 
 	active=new uint8_t[num_vec];
 	memset(active,0,sizeof(uint8_t)*num_vec);
@@ -467,11 +467,11 @@ void CSubGradientSVM::init(INT num_vec, INT num_feat)
 	old_active=new uint8_t[num_vec];
 	memset(old_active,0,sizeof(uint8_t)*num_vec);
 
-	idx_bound=new INT[num_vec];
-	memset(idx_bound,0,sizeof(INT)*num_vec);
+	idx_bound=new int32_t[num_vec];
+	memset(idx_bound,0,sizeof(int32_t)*num_vec);
 
-	idx_active=new INT[num_vec];
-	memset(idx_active,0,sizeof(INT)*num_vec);
+	idx_active=new int32_t[num_vec];
+	memset(idx_active,0,sizeof(int32_t)*num_vec);
 
 	Z=new DREAL[qpsize_limit*qpsize_limit];
 	memset(Z,0,sizeof(DREAL)*qpsize_limit*qpsize_limit);
@@ -537,17 +537,17 @@ bool CSubGradientSVM::train()
 	ASSERT(labels);
 	ASSERT(get_features());
 
-	INT num_iterations=0;
-	INT num_train_labels=labels->get_num_labels();
-	INT num_feat=features->get_num_features();
-	INT num_vec=features->get_num_vectors();
+	int32_t num_iterations=0;
+	int32_t num_train_labels=labels->get_num_labels();
+	int32_t num_feat=features->get_num_features();
+	int32_t num_vec=features->get_num_vectors();
 
 	ASSERT(num_vec==num_train_labels);
 
 	init(num_vec, num_feat);
 
-	INT num_active=0;
-	INT num_bound=0;
+	int32_t num_active=0;
+	int32_t num_bound=0;
 	DREAL alpha=0;
 	DREAL dir_deriv=0;
 	DREAL obj=0;

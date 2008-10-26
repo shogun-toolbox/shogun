@@ -28,13 +28,13 @@ CCplex::~CCplex()
 	cleanup();
 }
 
-bool CCplex::init(E_PROB_TYPE typ, INT timeout)
+bool CCplex::init(E_PROB_TYPE typ, int32_t timeout)
 {
 	problem_type=typ;
 
 	while (env==NULL)
 	{
-		int status = 1;
+		int status = 1; /* for calling external lib */
 		env = CPXopenCPLEX (&status);
 
 		if ( env == NULL )
@@ -82,14 +82,14 @@ bool CCplex::init(E_PROB_TYPE typ, INT timeout)
 	return (lp != NULL) && (env != NULL);
 }
 
-bool CCplex::setup_subgradientlpm_QP(DREAL C, CLabels* labels, CSparseFeatures<DREAL>* features, INT* idx_bound, INT num_bound,
-		INT* w_zero, INT num_zero,
-		DREAL* vee, INT num_dim,
+bool CCplex::setup_subgradientlpm_QP(DREAL C, CLabels* labels, CSparseFeatures<DREAL>* features, int32_t* idx_bound, int32_t num_bound,
+		int32_t* w_zero, int32_t num_zero,
+		DREAL* vee, int32_t num_dim,
 		bool use_bias)
 {
 	const int cmatsize=10*1024*1024; //no more than 10mil. elements
 	bool result=false;
-	INT num_variables=num_dim + num_bound+num_zero; // xi, beta
+	int32_t num_variables=num_dim + num_bound+num_zero; // xi, beta
 
 	ASSERT(num_dim>0);
 	ASSERT(num_dim>0);
@@ -104,7 +104,7 @@ bool CCplex::setup_subgradientlpm_QP(DREAL C, CLabels* labels, CSparseFeatures<D
 	int* cmatind=new int[cmatsize];
 	double* cmatval=new double[cmatsize];
 
-	for (INT i=0; i<num_variables; i++)
+	for (int32_t i=0; i<num_variables; i++)
 	{
 		obj[i]=0;
 
@@ -120,8 +120,8 @@ bool CCplex::setup_subgradientlpm_QP(DREAL C, CLabels* labels, CSparseFeatures<D
 		}
 	}
 
-	INT offs=0;
-	for (INT i=0; i<num_variables; i++)
+	int32_t offs=0;
+	for (int32_t i=0; i<num_variables; i++)
 	{
 		if (i<num_dim) //sum_xi
 		{
@@ -144,8 +144,8 @@ bool CCplex::setup_subgradientlpm_QP(DREAL C, CLabels* labels, CSparseFeatures<D
 		}
 		else // Z_x*beta_x
 		{
-			INT idx=idx_bound[i-num_dim-num_zero];
-			INT vlen=0;
+			int32_t idx=idx_bound[i-num_dim-num_zero];
+			int32_t vlen=0;
 			bool vfree=false;
 			//SG_PRINT("idx=%d\n", idx);
 			TSparseEntry<DREAL>* vec=features->get_sparse_feature_vector(idx, vlen, vfree);
@@ -158,7 +158,7 @@ bool CCplex::setup_subgradientlpm_QP(DREAL C, CLabels* labels, CSparseFeatures<D
 
 			if (vlen>0)
 			{
-				for (INT j=0; j<vlen; j++)
+				for (int32_t j=0; j<vlen; j++)
 				{
 					cmatind[offs]=vec[j].feat_index;
 					cmatval[offs]=-val*vec[j].entry;
@@ -219,7 +219,7 @@ bool CCplex::setup_subgradientlpm_QP(DREAL C, CLabels* labels, CSparseFeatures<D
 
 	DREAL diag=2.0;
 
-	for (INT i=0; i<num_variables; i++)
+	for (int32_t i=0; i<num_variables; i++)
 	{
 		if (i<num_dim) //|| (!use_bias && i<num_dim)) //xi
 		//if ((i<num_dim-1) || (!use_bias && i<num_dim)) //xi
@@ -256,10 +256,10 @@ bool CCplex::setup_subgradientlpm_QP(DREAL C, CLabels* labels, CSparseFeatures<D
 	return result;
 }
 
-bool CCplex::setup_lpboost(DREAL C, INT num_cols)
+bool CCplex::setup_lpboost(DREAL C, int32_t num_cols)
 {
 	init(E_LINEAR);
-	INT status = CPXsetintparam (env, CPX_PARAM_LPMETHOD, 1); //primal simplex
+	int32_t status = CPXsetintparam (env, CPX_PARAM_LPMETHOD, 1); //primal simplex
 	if (status)
 		SG_ERROR( "Failure to select dual lp optimization, error %d.\n", status);
 
@@ -267,7 +267,7 @@ bool CCplex::setup_lpboost(DREAL C, INT num_cols)
 	double* lb=new double[num_cols];
 	double* ub=new double[num_cols];
 
-	for (INT i=0; i<num_cols; i++)
+	for (int32_t i=0; i<num_cols; i++)
 	{
 		obj[i]=-1;
 		lb[i]=0;
@@ -287,10 +287,10 @@ bool CCplex::setup_lpboost(DREAL C, INT num_cols)
 	return status==0;
 }
 
-bool CCplex::add_lpboost_constraint(DREAL factor, TSparseEntry<DREAL>* h, INT len, INT ulen, CLabels* label)
+bool CCplex::add_lpboost_constraint(DREAL factor, TSparseEntry<DREAL>* h, int32_t len, int32_t ulen, CLabels* label)
 {
-	int amatbeg[1];
-	int amatind[len+1];
+	int amatbeg[1]; /* for calling external lib */
+	int amatind[len+1]; /* for calling external lib */
 	double amatval[len+1];
 	double rhs[1];
 	char sense[1];
@@ -299,15 +299,15 @@ bool CCplex::add_lpboost_constraint(DREAL factor, TSparseEntry<DREAL>* h, INT le
 	rhs[0]=1;
 	sense[0]='L';
 
-	for (INT i=0; i<len; i++)
+	for (int32_t i=0; i<len; i++)
 	{
-		INT idx=h[i].feat_index;
+		int32_t idx=h[i].feat_index;
 		DREAL val=factor*h[i].entry;
 		amatind[i]=idx;
 		amatval[i]=label->get_label(idx)*val;
 	}
 
-	INT status = CPXaddrows (env, lp, 0, 1, len, rhs, sense, amatbeg, amatind, amatval, NULL, NULL);
+	int32_t status = CPXaddrows (env, lp, 0, 1, len, rhs, sense, amatbeg, amatind, amatval, NULL, NULL);
 
 	if ( status ) 
 		SG_ERROR( "Failed to add the new row.\n");
@@ -319,13 +319,13 @@ bool CCplex::setup_lpm(DREAL C, CSparseFeatures<DREAL>* x, CLabels* y, bool use_
 {
 	ASSERT(x);
 	ASSERT(y);
-	INT num_vec=y->get_num_labels();
-	INT num_feat=x->get_num_features();
+	int32_t num_vec=y->get_num_labels();
+	int32_t num_feat=x->get_num_features();
 	LONG nnz=x->get_num_nonzero_entries();
 
 	//number of variables: b,w+,w-,xi concatenated
-	INT num_dims=1+2*num_feat+num_vec;
-	INT num_constraints=num_vec; 
+	int32_t num_dims=1+2*num_feat+num_vec;
+	int32_t num_constraints=num_vec; 
 
 	DREAL* lb=new DREAL[num_dims];
 	DREAL* ub=new DREAL[num_dims];
@@ -340,7 +340,7 @@ bool CCplex::setup_lpm(DREAL C, CSparseFeatures<DREAL>* x, CLabels* y, bool use_
 	int* amatind=new int[amatsize];
 	double* amatval= new double[amatsize];
 
-	for (INT i=0; i<num_dims; i++)
+	for (int32_t i=0; i<num_dims; i++)
 	{
 		if (i==0) //b
 		{
@@ -370,7 +370,7 @@ bool CCplex::setup_lpm(DREAL C, CSparseFeatures<DREAL>* x, CLabels* y, bool use_
 		}
 	}
 
-	for (INT i=0; i<num_constraints; i++)
+	for (int32_t i=0; i<num_constraints; i++)
 		b[i]=-1;
 
 	char* sense=new char[num_constraints];
@@ -383,7 +383,7 @@ bool CCplex::setup_lpm(DREAL C, CSparseFeatures<DREAL>* x, CLabels* y, bool use_
 	amatbeg[0]=offs;
 	amatcnt[0]=num_vec;
 
-	for (INT i=0; i<num_vec; i++)
+	for (int32_t i=0; i<num_vec; i++)
 	{
 		amatind[offs]=i;
 		amatval[offs]=-y->get_label(i);
@@ -391,19 +391,19 @@ bool CCplex::setup_lpm(DREAL C, CSparseFeatures<DREAL>* x, CLabels* y, bool use_
 	}
 
 	//w+ and w- part of A
-	INT num_sfeat=0;
-	INT num_svec=0;
+	int32_t num_sfeat=0;
+	int32_t num_svec=0;
 	TSparse<DREAL>* sfeat= x->get_transposed(num_sfeat, num_svec);
 	ASSERT(sfeat);
 
-	for (INT i=0; i<num_svec; i++)
+	for (int32_t i=0; i<num_svec; i++)
 	{
 		amatbeg[i+1]=offs;
 		amatcnt[i+1]=sfeat[i].num_feat_entries;
 
-		for (INT j=0; j<sfeat[i].num_feat_entries; j++)
+		for (int32_t j=0; j<sfeat[i].num_feat_entries; j++)
 		{
-			INT row=sfeat[i].features[j].feat_index;
+			int32_t row=sfeat[i].features[j].feat_index;
 			DREAL val=sfeat[i].features[j].entry;
 
 			amatind[offs]=row;
@@ -412,14 +412,14 @@ bool CCplex::setup_lpm(DREAL C, CSparseFeatures<DREAL>* x, CLabels* y, bool use_
 		}
 	}
 
-	for (INT i=0; i<num_svec; i++)
+	for (int32_t i=0; i<num_svec; i++)
 	{
 		amatbeg[num_svec+i+1]=offs;
 		amatcnt[num_svec+i+1]=sfeat[i].num_feat_entries;
 
-		for (INT j=0; j<sfeat[i].num_feat_entries; j++)
+		for (int32_t j=0; j<sfeat[i].num_feat_entries; j++)
 		{
-			INT row=sfeat[i].features[j].feat_index;
+			int32_t row=sfeat[i].features[j].feat_index;
 			DREAL val=sfeat[i].features[j].entry;
 
 			amatind[offs]=row;
@@ -431,7 +431,7 @@ bool CCplex::setup_lpm(DREAL C, CSparseFeatures<DREAL>* x, CLabels* y, bool use_
 	x->clean_tsparse(sfeat, num_svec);
 
 	//xi part of A
-	for (INT i=0; i<num_vec; i++)
+	for (int32_t i=0; i<num_vec; i++)
 	{
 		amatbeg[1+2*num_feat+i]=offs;
 		amatcnt[1+2*num_feat+i]=1;
@@ -440,7 +440,7 @@ bool CCplex::setup_lpm(DREAL C, CSparseFeatures<DREAL>* x, CLabels* y, bool use_
 		offs++;
 	}
 
-	INT status = CPXsetintparam (env, CPX_PARAM_LPMETHOD, 1); //barrier
+	int32_t status = CPXsetintparam (env, CPX_PARAM_LPMETHOD, 1); //barrier
 	if (status)
 		SG_ERROR( "Failure to select barrier optimization, error %d.\n", status);
 	CPXsetintparam (env, CPX_PARAM_SCRIND, CPX_ON);
@@ -467,7 +467,7 @@ bool CCplex::cleanup()
 
 	if (lp)
 	{
-		INT status = CPXfreeprob(env, &lp);
+		int32_t status = CPXfreeprob(env, &lp);
 		lp = NULL;
 		lp_initialized = false;
 
@@ -479,7 +479,7 @@ bool CCplex::cleanup()
 
 	if (env)
 	{
-		INT status = CPXcloseCPLEX (&env);
+		int32_t status = CPXcloseCPLEX (&env);
 		env=NULL;
 		
 		if (status)
@@ -495,7 +495,7 @@ bool CCplex::cleanup()
 	return result;
 }
 
-bool CCplex::dense_to_cplex_sparse(DREAL* H, INT rows, INT cols, int* &qmatbeg, int* &qmatcnt, int* &qmatind, double* &qmatval)
+bool CCplex::dense_to_cplex_sparse(DREAL* H, int32_t rows, int32_t cols, int* &qmatbeg, int* &qmatcnt, int* &qmatind, double* &qmatval)
 {
 	qmatbeg=new int[cols];
 	qmatcnt=new int[cols];
@@ -510,18 +510,18 @@ bool CCplex::dense_to_cplex_sparse(DREAL* H, INT rows, INT cols, int* &qmatbeg, 
 		return false;
 	}
 
-	for (INT i=0; i<cols; i++)
+	for (int32_t i=0; i<cols; i++)
 	{
 		qmatcnt[i]=rows;
 		qmatbeg[i]=i*rows;
-		for (INT j=0; j<rows; j++)
+		for (int32_t j=0; j<rows; j++)
 			qmatind[i*rows+j]=j;
 	}
 
 	return true;
 }
 
-bool CCplex::setup_lp(DREAL* objective, DREAL* constraints_mat, INT rows, INT cols, DREAL* rhs, DREAL* lb, DREAL* ub)
+bool CCplex::setup_lp(DREAL* objective, DREAL* constraints_mat, int32_t rows, int32_t cols, DREAL* rhs, DREAL* lb, DREAL* ub)
 {
 	bool result=false;
 
@@ -569,7 +569,7 @@ bool CCplex::setup_lp(DREAL* objective, DREAL* constraints_mat, INT rows, INT co
 	return result;
 }
 
-bool CCplex::setup_qp(DREAL* H, INT dim)
+bool CCplex::setup_qp(DREAL* H, int32_t dim)
 {
 	int* qmatbeg=NULL;
 	int* qmatcnt=NULL;
@@ -591,9 +591,9 @@ bool CCplex::setup_qp(DREAL* H, INT dim)
 
 bool CCplex::optimize(DREAL* sol, DREAL* lambda)
 {
-	int      solnstat;
+	int      solnstat; /* for calling external lib */
 	double   objval;
-	int status=1;
+	int status=1; /* for calling external lib */
 
 	if (problem_type==E_QP)
 		status = CPXqpopt (env, lp);

@@ -99,7 +99,7 @@ CGUIClassifier::~CGUIClassifier()
 	delete classifier;
 }
 
-bool CGUIClassifier::new_classifier(char* name, INT d, INT from_d)
+bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
 {
 	if (strcmp(name,"LIBSVM_ONECLASS")==0)
 	{
@@ -355,7 +355,7 @@ bool CGUIClassifier::train_svm()
 	if (!ui->ui_kernel->is_initialized() || !kernel->get_lhs())
 		SG_ERROR("Kernel not initialized.\n");
 
-	INT num_vec=kernel->get_lhs()->get_num_vectors();
+	int32_t num_vec=kernel->get_lhs()->get_num_vectors();
 	if (!oneclass && trainlabels->get_num_labels() != num_vec)
 		SG_ERROR("Number of train labels (%d) and training vectors (%d) differs!\n", trainlabels->get_num_labels(), num_vec);
 
@@ -389,7 +389,7 @@ bool CGUIClassifier::train_svm()
 	return result;
 }
 
-bool CGUIClassifier::train_clustering(INT k, INT max_iter)
+bool CGUIClassifier::train_clustering(int32_t k, int32_t max_iter)
 {
 	bool result=false;
 	CDistance* distance=ui->ui_distance->get_distance();
@@ -422,7 +422,7 @@ bool CGUIClassifier::train_clustering(INT k, INT max_iter)
 	return result;
 }
 
-bool CGUIClassifier::train_knn(INT k)
+bool CGUIClassifier::train_knn(int32_t k)
 {
 	CLabels* trainlabels=ui->ui_labels->get_train_labels();
 	CDistance* distance=ui->ui_distance->get_distance();
@@ -587,10 +587,10 @@ bool CGUIClassifier::test(char* filename_out, char* filename_roc)
 
 	CLabels* predictions= classifier->classify();
 
-	INT len=0;
+	int32_t len=0;
 	DREAL* output= predictions->get_labels(len);
-	INT total=testfeatures->get_num_vectors();
-	INT* label=testlabels->get_int_labels(len);
+	int32_t total=testfeatures->get_num_vectors();
+	int32_t* label=testlabels->get_int_labels(len);
 	ASSERT(label);
 
 	SG_DEBUG("len:%d total:%d\n", len, total);
@@ -665,7 +665,7 @@ bool CGUIClassifier::save(char* param)
 	return result;
 }
 
-bool CGUIClassifier::set_perceptron_parameters(DREAL learnrate, INT maxiter)
+bool CGUIClassifier::set_perceptron_parameters(DREAL learnrate, int32_t maxiter)
 {
 	if (learnrate<=0)
 		perceptron_learnrate=0.01;
@@ -726,7 +726,7 @@ bool CGUIClassifier::set_svm_one_class_nu(DREAL nu)
 	return true;
 }
 
-bool CGUIClassifier::set_svm_mkl_parameters(DREAL weight_epsilon, DREAL C_mkl, INT mkl_norm)
+bool CGUIClassifier::set_svm_mkl_parameters(DREAL weight_epsilon, DREAL C_mkl, int32_t mkl_norm)
 {
 	if (weight_epsilon<0)
 		svm_weight_epsilon=1e-4;
@@ -763,7 +763,7 @@ bool CGUIClassifier::set_svm_C(DREAL C1, DREAL C2)
 	return true;
 }
 
-bool CGUIClassifier::set_svm_qpsize(INT qpsize)
+bool CGUIClassifier::set_svm_qpsize(int32_t qpsize)
 {
 	if (qpsize<2)
 		svm_qpsize=41;
@@ -774,7 +774,7 @@ bool CGUIClassifier::set_svm_qpsize(INT qpsize)
 	return true;
 }
 
-bool CGUIClassifier::set_svm_max_qpsize(INT max_qpsize)
+bool CGUIClassifier::set_svm_max_qpsize(int32_t max_qpsize)
 {
 	if (max_qpsize<50)
 		svm_max_qpsize=50;
@@ -785,7 +785,7 @@ bool CGUIClassifier::set_svm_max_qpsize(INT max_qpsize)
 	return true;
 }
 
-bool CGUIClassifier::set_svm_bufsize(INT bufsize)
+bool CGUIClassifier::set_svm_bufsize(int32_t bufsize)
 {
 	if (svm_bufsize<0)
 		svm_bufsize=3000;
@@ -930,8 +930,8 @@ CLabels* CGUIClassifier::classify_kernelmachine(CLabels* output)
 	return classifier->classify(output);
 }
 
-bool CGUIClassifier::get_trained_classifier(DREAL* &weights, INT &rows, INT &cols,
-		DREAL*& bias, INT& brows, INT& bcols)
+bool CGUIClassifier::get_trained_classifier(DREAL* &weights, int32_t &rows, int32_t &cols,
+		DREAL*& bias, int32_t& brows, int32_t& bcols)
 {
 	ASSERT(classifier);
 
@@ -981,8 +981,8 @@ bool CGUIClassifier::get_trained_classifier(DREAL* &weights, INT &rows, INT &col
 	return false;
 }
 
-bool CGUIClassifier::get_svm(DREAL* &weights, INT& rows, INT& cols,
-		DREAL*& bias, INT& brows, INT& bcols)
+bool CGUIClassifier::get_svm(DREAL* &weights, int32_t& rows, int32_t& cols,
+		DREAL*& bias, int32_t& brows, int32_t& bcols)
 {
 	CSVM* svm=(CSVM*) classifier;
 
@@ -997,7 +997,7 @@ bool CGUIClassifier::get_svm(DREAL* &weights, INT& rows, INT& cols,
 		cols=2;
 		weights=new DREAL[rows*cols];
 
-		for (int i=0; i<rows; i++)
+		for (int32_t i=0; i<rows; i++)
 		{
 			weights[i]=svm->get_alpha(i);
 			weights[i+rows]=svm->get_support_vector(i);
@@ -1009,8 +1009,8 @@ bool CGUIClassifier::get_svm(DREAL* &weights, INT& rows, INT& cols,
 	return false;
 }
 
-bool CGUIClassifier::get_clustering(DREAL* &centers, INT& rows, INT& cols,
-		DREAL*& radi, INT& brows, INT& bcols)
+bool CGUIClassifier::get_clustering(DREAL* &centers, int32_t& rows, int32_t& cols,
+		DREAL*& radi, int32_t& brows, int32_t& bcols)
 {
 	if (!classifier)
 		return false;
@@ -1037,10 +1037,10 @@ bool CGUIClassifier::get_clustering(DREAL* &centers, INT& rows, INT& cols,
 			bcols=1;
 			clustering->get_merge_distance(radi, brows);
 
-			INT* p=NULL;
+			int32_t* p=NULL;
 			clustering->get_pairs(p, rows, cols);
 			centers=new DREAL[rows*cols]; // FIXME memleak
-			for (INT i=0; i<rows*cols; i++)
+			for (int32_t i=0; i<rows*cols; i++)
 				centers[i]=(DREAL) p[i];
 
 			break;
@@ -1053,8 +1053,8 @@ bool CGUIClassifier::get_clustering(DREAL* &centers, INT& rows, INT& cols,
 	return true;
 }
 
-bool CGUIClassifier::get_linear(DREAL* &weights, INT& rows, INT& cols,
-		DREAL*& bias, INT& brows, INT& bcols)
+bool CGUIClassifier::get_linear(DREAL* &weights, int32_t& rows, int32_t& cols,
+		DREAL*& bias, int32_t& brows, int32_t& bcols)
 {
 	CLinearClassifier* linear=(CLinearClassifier*) classifier;
 
@@ -1071,8 +1071,8 @@ bool CGUIClassifier::get_linear(DREAL* &weights, INT& rows, INT& cols,
 	return true;
 }
 
-bool CGUIClassifier::get_sparse_linear(DREAL* &weights, INT& rows, INT& cols,
-		DREAL*& bias, INT& brows, INT& bcols)
+bool CGUIClassifier::get_sparse_linear(DREAL* &weights, int32_t& rows, int32_t& cols,
+		DREAL*& bias, int32_t& brows, int32_t& bcols)
 {
 	CSparseLinearClassifier* linear=(CSparseLinearClassifier*) classifier;
 
@@ -1203,7 +1203,7 @@ CLabels* CGUIClassifier::classify_sparse_linear(CLabels* output)
 	return classifier->classify(output);
 }
 
-bool CGUIClassifier::classify_example(INT idx, DREAL &result)
+bool CGUIClassifier::classify_example(int32_t idx, DREAL &result)
 {
 	CFeatures* trainfeatures=ui->ui_features->get_train_features();
 	CFeatures* testfeatures=ui->ui_features->get_test_features();

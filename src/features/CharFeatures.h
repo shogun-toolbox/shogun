@@ -27,14 +27,14 @@ class CCharFeatures : public CSimpleFeatures<char>
 		 * @param alpha alphabet (type) to use
 		 * @param size cache size
 		 */
-		CCharFeatures(EAlphabet alpha, INT size=0);
+		CCharFeatures(EAlphabet alpha, int32_t size=0);
 
 		/** constructor
 		 *
 		 * @param alpha alphabet to use
 		 * @param size cache size
 		 */
-		CCharFeatures(CAlphabet* alpha, INT size=0);
+		CCharFeatures(CAlphabet* alpha, int32_t size=0);
 
 		/** copy constructor */
 		CCharFeatures(const CCharFeatures & orig);
@@ -46,7 +46,7 @@ class CCharFeatures : public CSimpleFeatures<char>
 		 * @param num_feat number of features in matrix
 		 * @param num_vec number of vectors in matrix
 		 */
-		CCharFeatures(EAlphabet alphabet, char* feature_matrix, INT num_feat, INT num_vec);
+		CCharFeatures(EAlphabet alphabet, char* feature_matrix, int32_t num_feat, int32_t num_vec);
 
 		/** constructor
 		 *
@@ -74,7 +74,7 @@ class CCharFeatures : public CSimpleFeatures<char>
 		 * @param num_feat number of features
 		 * @param num_vec number of vectors
 		 */
-		inline virtual void copy_feature_matrix(char* src, INT num_feat, INT num_vec)
+		inline virtual void copy_feature_matrix(char* src, int32_t num_feat, int32_t num_vec)
 		{
 			CSimpleFeatures<char>::copy_feature_matrix(src, num_feat, num_vec);
 		}

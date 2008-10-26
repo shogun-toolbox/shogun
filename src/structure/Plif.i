@@ -5,8 +5,8 @@
 %rename(Plif) CPlif;
 
 #ifdef HAVE_PYTHON
-%apply (DREAL* IN_ARRAY1, INT DIM1) {(DREAL* p_limits, INT p_len)};
-%apply (DREAL* IN_ARRAY1, INT DIM1) {(DREAL* p_penalties, INT p_len)};
+%apply (DREAL* IN_ARRAY1, int32_t DIM1) {(DREAL* p_limits, int32_t p_len)};
+%apply (DREAL* IN_ARRAY1, int32_t DIM1) {(DREAL* p_penalties, int32_t p_len)};
 #endif
 
 %include "structure/PlifBase.i" 

@@ -34,7 +34,7 @@
 #include <pthread.h>
 #endif
 
-CKernel::CKernel(INT size)
+CKernel::CKernel(int32_t size)
 : CSGObject(), kernel_matrix(NULL), lhs(NULL),
 	rhs(NULL), combined_kernel_weight(1), optimization_initialized(false),
 	opt_type(FASTBUTMEMHUNGRY), properties(KP_NONE), normalizer(NULL)
@@ -54,7 +54,7 @@ CKernel::CKernel(INT size)
 }
 
 
-CKernel::CKernel(CFeatures* p_lhs, CFeatures* p_rhs, INT size) : CSGObject(),
+CKernel::CKernel(CFeatures* p_lhs, CFeatures* p_rhs, int32_t size) : CSGObject(),
 	kernel_matrix(NULL), lhs(NULL), rhs(NULL), combined_kernel_weight(1),
 	optimization_initialized(false), opt_type(FASTBUTMEMHUNGRY),
 	properties(KP_NONE), normalizer(NULL)
@@ -83,7 +83,7 @@ CKernel::~CKernel()
 	SG_INFO("Kernel deleted (%p).\n", this);
 }
 
-void CKernel::get_kernel_matrix(DREAL** dst, INT* m, INT* n)
+void CKernel::get_kernel_matrix(DREAL** dst, int32_t* m, int32_t* n)
 {
 	ASSERT(dst && m && n);
 
@@ -93,13 +93,13 @@ void CKernel::get_kernel_matrix(DREAL** dst, INT* m, INT* n)
 
 	if (f1 && f2)
 	{
-		INT num_vec1=f1->get_num_vectors();
-		INT num_vec2=f2->get_num_vectors();
+		int32_t num_vec1=f1->get_num_vectors();
+		int32_t num_vec2=f2->get_num_vectors();
 		*m=num_vec1;
 		*n=num_vec2;
 
 		LONG total_num = num_vec1 * num_vec2;
-		INT num_done = 0;
+		int32_t num_done = 0;
 		SG_DEBUG( "returning kernel matrix of size %dx%d\n", num_vec1, num_vec2);
 
 		result=(DREAL*) malloc(sizeof(DREAL)*total_num);
@@ -107,9 +107,9 @@ void CKernel::get_kernel_matrix(DREAL** dst, INT* m, INT* n)
 
 		if ( (f1 == f2) && (num_vec1 == num_vec2) )
 		{
-			for (INT i=0; i<num_vec1; i++)
+			for (int32_t i=0; i<num_vec1; i++)
 			{
-				for (INT j=i; j<num_vec1; j++)
+				for (int32_t j=i; j<num_vec1; j++)
 				{
 					double v=kernel(i,j);
 
@@ -128,9 +128,9 @@ void CKernel::get_kernel_matrix(DREAL** dst, INT* m, INT* n)
 		}
 		else
 		{
-			for (INT i=0; i<num_vec1; i++)
+			for (int32_t i=0; i<num_vec1; i++)
 			{
-				for (INT j=0; j<num_vec2; j++)
+				for (int32_t j=0; j<num_vec2; j++)
 				{
 					result[i+j*num_vec1]=kernel(i,j) ;
 
@@ -150,8 +150,8 @@ void CKernel::get_kernel_matrix(DREAL** dst, INT* m, INT* n)
 	*dst=result;
 }
 
-SHORTREAL* CKernel::get_kernel_matrix_shortreal(int &num_vec1, int &num_vec2,
-		SHORTREAL* target)
+SHORTREAL* CKernel::get_kernel_matrix_shortreal(
+	int32_t &num_vec1, int32_t &num_vec2, SHORTREAL* target)
 {
 	SHORTREAL* result = NULL;
 	CFeatures* f1 = lhs;
@@ -166,7 +166,7 @@ SHORTREAL* CKernel::get_kernel_matrix_shortreal(int &num_vec1, int &num_vec2,
 		num_vec1=f1->get_num_vectors();
 		num_vec2=f2->get_num_vectors();
 		LONG total_num = num_vec1 * num_vec2;
-		int num_done = 0;
+		int32_t num_done = 0;
 
 		SG_DEBUG( "returning kernel matrix of size %dx%d\n", num_vec1, num_vec2);
 
@@ -177,9 +177,9 @@ SHORTREAL* CKernel::get_kernel_matrix_shortreal(int &num_vec1, int &num_vec2,
 
 		if (f1==f2 && num_vec1==num_vec2)
 		{
-			for (int i=0; i<num_vec1; i++)
+			for (int32_t i=0; i<num_vec1; i++)
 			{
-				for (int j=i; j<num_vec1; j++)
+				for (int32_t j=i; j<num_vec1; j++)
 				{
 					double v=kernel(i,j);
 
@@ -198,9 +198,9 @@ SHORTREAL* CKernel::get_kernel_matrix_shortreal(int &num_vec1, int &num_vec2,
 		}
 		else
 		{
-			for (int i=0; i<num_vec1; i++)
+			for (int32_t i=0; i<num_vec1; i++)
 			{
-				for (int j=0; j<num_vec2; j++)
+				for (int32_t j=0; j<num_vec2; j++)
 				{
 					result[i+j*num_vec1]=kernel(i,j) ;
 
@@ -220,7 +220,8 @@ SHORTREAL* CKernel::get_kernel_matrix_shortreal(int &num_vec1, int &num_vec2,
 	return result;
 }
 
-DREAL* CKernel::get_kernel_matrix_real(int &num_vec1, int &num_vec2, DREAL* target)
+DREAL* CKernel::get_kernel_matrix_real(
+	int32_t &num_vec1, int32_t &num_vec2, DREAL* target)
 {
 	DREAL* result = NULL;
 	CFeatures* f1 = lhs;
@@ -235,7 +236,7 @@ DREAL* CKernel::get_kernel_matrix_real(int &num_vec1, int &num_vec2, DREAL* targ
 		num_vec1=f1->get_num_vectors();
 		num_vec2=f2->get_num_vectors();
 		LONG total_num = num_vec1 * num_vec2;
-		int num_done = 0;
+		int32_t num_done = 0;
 
 		SG_DEBUG( "returning kernel matrix of size %dx%d\n", num_vec1, num_vec2);
 
@@ -246,9 +247,9 @@ DREAL* CKernel::get_kernel_matrix_real(int &num_vec1, int &num_vec2, DREAL* targ
 
 		if (f1==f2 && num_vec1==num_vec2)
 		{
-			for (int i=0; i<num_vec1; i++)
+			for (int32_t i=0; i<num_vec1; i++)
 			{
-				for (int j=i; j<num_vec1; j++)
+				for (int32_t j=i; j<num_vec1; j++)
 				{
 					double v=kernel(i,j);
 
@@ -267,9 +268,9 @@ DREAL* CKernel::get_kernel_matrix_real(int &num_vec1, int &num_vec2, DREAL* targ
 		}
 		else
 		{
-			for (int i=0; i<num_vec1; i++)
+			for (int32_t i=0; i<num_vec1; i++)
 			{
-				for (int j=0; j<num_vec2; j++)
+				for (int32_t j=0; j<num_vec2; j++)
 				{
 					result[i+j*num_vec1]=kernel(i,j) ;
 
@@ -359,14 +360,14 @@ void CKernel::cleanup()
 #ifdef USE_SVMLIGHT
 /****************************** Cache handling *******************************/
 
-void CKernel::kernel_cache_init(INT buffsize, bool regression_hack)
+void CKernel::kernel_cache_init(int32_t buffsize, bool regression_hack)
 {
 	ASSERT(lhs);
 
-	INT totdoc=lhs->get_num_vectors();
+	int32_t totdoc=lhs->get_num_vectors();
 	ASSERT(totdoc>0);
 	ULONG buffer_size=0;
-	INT i;
+	int32_t i;
 
 	//in regression the additional constraints are made by doubling the training data
 	if (regression_hack)
@@ -381,15 +382,15 @@ void CKernel::kernel_cache_init(INT buffsize, bool regression_hack)
 	//make sure it fits in the *signed* KERNELCACHE_IDX type
 	ASSERT(buffer_size < (((ULONG) 1) << (sizeof(KERNELCACHE_IDX)*8-1)));
 
-	kernel_cache.index = new INT[totdoc];
-	kernel_cache.occu = new INT[totdoc];
-	kernel_cache.lru = new INT[totdoc];
-	kernel_cache.invindex = new INT[totdoc];
-	kernel_cache.active2totdoc = new INT[totdoc];
-	kernel_cache.totdoc2active = new INT[totdoc];
+	kernel_cache.index = new int32_t[totdoc];
+	kernel_cache.occu = new int32_t[totdoc];
+	kernel_cache.lru = new int32_t[totdoc];
+	kernel_cache.invindex = new int32_t[totdoc];
+	kernel_cache.active2totdoc = new int32_t[totdoc];
+	kernel_cache.totdoc2active = new int32_t[totdoc];
 	kernel_cache.buffer = new KERNELCACHE_ELEM[buffer_size];
 	kernel_cache.buffsize=buffer_size;
-	kernel_cache.max_elems=(INT) (kernel_cache.buffsize/totdoc);
+	kernel_cache.max_elems=(int32_t) (kernel_cache.buffsize/totdoc);
 
 	if(kernel_cache.max_elems>totdoc) {
 		kernel_cache.max_elems=totdoc;
@@ -414,12 +415,12 @@ void CKernel::kernel_cache_init(INT buffsize, bool regression_hack)
 	kernel_cache.time=0;  
 } 
 
-void CKernel::get_kernel_row(INT docnum, INT *active2dnum, DREAL *buffer, bool full_line)
+void CKernel::get_kernel_row(int32_t docnum, int32_t *active2dnum, DREAL *buffer, bool full_line)
 {
-	INT i,j;
+	int32_t i,j;
 	KERNELCACHE_IDX start;
 
-	int num_vectors = lhs->get_num_vectors();
+	int32_t num_vectors = lhs->get_num_vectors();
 	if (docnum>=num_vectors)
 		docnum=2*num_vectors-1-docnum;
 
@@ -467,12 +468,12 @@ void CKernel::get_kernel_row(INT docnum, INT *active2dnum, DREAL *buffer, bool f
 
 
 // Fills cache for the row m
-void CKernel::cache_kernel_row(INT m)
+void CKernel::cache_kernel_row(int32_t m)
 {
-	register INT j,k,l;
+	register int32_t j,k,l;
 	register KERNELCACHE_ELEM *cache;
 
-	int num_vectors = lhs->get_num_vectors();
+	int32_t num_vectors = lhs->get_num_vectors();
 
 	if (m>=num_vectors)
 		m=2*num_vectors-1-m;
@@ -502,13 +503,13 @@ void CKernel::cache_kernel_row(INT m)
 
 void* CKernel::cache_multiple_kernel_row_helper(void* p)
 {
-	INT j,k,l;
+	int32_t j,k,l;
 	S_KTHREAD_PARAM* params = (S_KTHREAD_PARAM*) p;
 
-	for (INT i=params->start; i<params->end; i++)
+	for (int32_t i=params->start; i<params->end; i++)
 	{
 		KERNELCACHE_ELEM* cache=params->cache[i];
-		INT m = params->uncached_rows[i];
+		int32_t m = params->uncached_rows[i];
 		l=params->kernel_cache->totdoc2active[m];
 
 		for(j=0;j<params->kernel_cache->activenum;j++)  // fill cache 
@@ -530,36 +531,36 @@ void* CKernel::cache_multiple_kernel_row_helper(void* p)
 }
 
 // Fills cache for the rows in key 
-void CKernel::cache_multiple_kernel_rows(INT* rows, INT num_rows)
+void CKernel::cache_multiple_kernel_rows(int32_t* rows, int32_t num_rows)
 {
 #ifndef WIN32
 	if (parallel.get_num_threads()<2)
 	{
 #endif
-		for(INT i=0;i<num_rows;i++) 
+		for(int32_t i=0;i<num_rows;i++) 
 			cache_kernel_row(rows[i]);
 #ifndef WIN32
 	}
 	else
 	{
 		// fill up kernel cache 
-		INT uncached_rows[num_rows];
+		int32_t uncached_rows[num_rows];
 		KERNELCACHE_ELEM* cache[num_rows];
 		pthread_t threads[parallel.get_num_threads()-1];
 		S_KTHREAD_PARAM params[parallel.get_num_threads()-1];
-		INT num_threads=parallel.get_num_threads()-1;
-		INT num_vec=lhs->get_num_vectors();
+		int32_t num_threads=parallel.get_num_threads()-1;
+		int32_t num_vec=lhs->get_num_vectors();
 		ASSERT(num_vec>0);
 		uint8_t* needs_computation=new uint8_t[num_vec];
 		memset(needs_computation, 0, sizeof(uint8_t)*num_vec);
-		INT step=0;
-		INT num=0;
-		INT end=0;
+		int32_t step=0;
+		int32_t num=0;
+		int32_t end=0;
 
 		// allocate cachelines if necessary
-		for (INT i=0; i<num_rows; i++)
+		for (int32_t i=0; i<num_rows; i++)
 		{
-			INT idx=rows[i];
+			int32_t idx=rows[i];
 			if (kernel_cache_check(idx))
 				continue;
 
@@ -586,7 +587,7 @@ void CKernel::cache_multiple_kernel_rows(INT* rows, INT num_rows)
 				step=1;
 			}
 
-			for (INT t=0; t<num_threads; t++)
+			for (int32_t t=0; t<num_threads; t++)
 			{
 				params[t].kernel = this;
 				params[t].kernel_cache = &kernel_cache;
@@ -624,7 +625,7 @@ void CKernel::cache_multiple_kernel_rows(INT* rows, INT num_rows)
 		cache_multiple_kernel_row_helper(&last_param);
 
 
-		for (INT t=0; t<num_threads; t++)
+		for (int32_t t=0; t<num_threads; t++)
 		{
 			if (pthread_join(threads[t], NULL) != 0)
 				SG_WARNING( "pthread_join failed\n");
@@ -637,13 +638,13 @@ void CKernel::cache_multiple_kernel_rows(INT* rows, INT num_rows)
 
 // remove numshrink columns in the cache
 // which correspond to examples marked
-void CKernel::kernel_cache_shrink(INT totdoc, INT numshrink, INT *after)
+void CKernel::kernel_cache_shrink(int32_t totdoc, int32_t numshrink, int32_t *after)
 {                           
-	register INT i,j,jj,scount;     // 0 in after.
+	register int32_t i,j,jj,scount;     // 0 in after.
 	KERNELCACHE_IDX from=0,to=0;
-	INT *keep;
+	int32_t *keep;
 
-	keep=new INT[totdoc];
+	keep=new int32_t[totdoc];
 	for(j=0;j<totdoc;j++) {
 		keep[j]=1;
 	}
@@ -682,7 +683,7 @@ void CKernel::kernel_cache_shrink(INT totdoc, INT numshrink, INT *after)
 		}
 	}
 
-	kernel_cache.max_elems=(INT)(kernel_cache.buffsize/kernel_cache.activenum);
+	kernel_cache.max_elems=(int32_t)(kernel_cache.buffsize/kernel_cache.activenum);
 	if(kernel_cache.max_elems>totdoc) {
 		kernel_cache.max_elems=totdoc;
 	}
@@ -693,7 +694,7 @@ void CKernel::kernel_cache_shrink(INT totdoc, INT numshrink, INT *after)
 
 void CKernel::kernel_cache_reset_lru()
 {
-	INT maxlru=0,k;
+	int32_t maxlru=0,k;
 
 	for(k=0;k<kernel_cache.max_elems;k++) {
 		if(maxlru < kernel_cache.lru[k]) 
@@ -716,9 +717,9 @@ void CKernel::kernel_cache_cleanup()
 	memset(&kernel_cache, 0x0, sizeof(KERNEL_CACHE));
 }
 
-INT CKernel::kernel_cache_malloc()
+int32_t CKernel::kernel_cache_malloc()
 {
-  INT i;
+  int32_t i;
 
   if(kernel_cache_space_available()) {
     for(i=0;i<kernel_cache.max_elems;i++) {
@@ -732,7 +733,7 @@ INT CKernel::kernel_cache_malloc()
   return(-1);
 }
 
-void CKernel::kernel_cache_free(INT cacheidx)
+void CKernel::kernel_cache_free(int32_t cacheidx)
 {
 	kernel_cache.occu[cacheidx]=0;
 	kernel_cache.elems--;
@@ -740,9 +741,9 @@ void CKernel::kernel_cache_free(INT cacheidx)
 
 // remove least recently used cache
 // element
-INT CKernel::kernel_cache_free_lru()  
+int32_t CKernel::kernel_cache_free_lru()  
 {                                     
-  register INT k,least_elem=-1,least_time;
+  register int32_t k,least_elem=-1,least_time;
 
   least_time=kernel_cache.time+1;
   for(k=0;k<kernel_cache.max_elems;k++) {
@@ -765,9 +766,9 @@ INT CKernel::kernel_cache_free_lru()
 
 // Get a free cache entry. In case cache is full, the lru
 // element is removed.
-KERNELCACHE_ELEM* CKernel::kernel_cache_clean_and_malloc(INT cacheidx)
+KERNELCACHE_ELEM* CKernel::kernel_cache_clean_and_malloc(int32_t cacheidx)
 {             
-	INT result;
+	int32_t result;
 	if((result = kernel_cache_malloc()) == -1) {
 		if(kernel_cache_free_lru()) {
 			result = kernel_cache_malloc();
@@ -790,19 +791,19 @@ bool CKernel::load(char* fname)
 
 bool CKernel::save(char* fname)
 {
-	INT i=0;
-	INT num_left=lhs->get_num_vectors();
-	INT num_right=rhs->get_num_vectors();
+	int32_t i=0;
+	int32_t num_left=lhs->get_num_vectors();
+	int32_t num_right=rhs->get_num_vectors();
 	KERNELCACHE_IDX num_total=num_left*num_right;
 
 	CFile f(fname, 'w', F_DREAL);
 
-    for (INT l=0; l< (INT) num_left && f.is_ok(); l++)
+    for (int32_t l=0; l< (int32_t) num_left && f.is_ok(); l++)
 	{
-		for (INT r=0; r< (INT) num_right && f.is_ok(); r++)
+		for (int32_t r=0; r< (int32_t) num_right && f.is_ok(); r++)
 		{
 			if (!(i % (num_total/10+1)))
-				SG_PRINT("%02d%%.", (int) (100.0*i/num_total));
+				SG_PRINT("%02d%%.", (int32_t) (100.0*i/num_total));
 			else if (!(i % (num_total/200+1)))
 				SG_PRINT(".");
 
@@ -1017,7 +1018,7 @@ void CKernel::list_kernel()
 	SG_INFO( "\n");
 }
 
-bool CKernel::init_optimization(INT count, INT *IDX, DREAL * weights)
+bool CKernel::init_optimization(int32_t count, int32_t *IDX, DREAL * weights)
 {
    SG_ERROR( "kernel does not support linadd optimization\n");
 	return false ;
@@ -1029,18 +1030,18 @@ bool CKernel::delete_optimization()
 	return false;
 }
 
-DREAL CKernel::compute_optimized(INT vector_idx)
+DREAL CKernel::compute_optimized(int32_t vector_idx)
 {
    SG_ERROR( "kernel does not support linadd optimization\n");
 	return 0;
 }
 
-void CKernel::compute_batch(INT num_vec, INT* vec_idx, DREAL* target, INT num_suppvec, INT* IDX, DREAL* weights, DREAL factor)
+void CKernel::compute_batch(int32_t num_vec, int32_t* vec_idx, DREAL* target, int32_t num_suppvec, int32_t* IDX, DREAL* weights, DREAL factor)
 {
    SG_ERROR( "kernel does not support batch computation\n");
 }
 
-void CKernel::add_to_normal(INT vector_idx, DREAL weight)
+void CKernel::add_to_normal(int32_t vector_idx, DREAL weight)
 {
    SG_ERROR( "kernel does not support linadd optimization, add_to_normal not implemented\n");
 }
@@ -1050,23 +1051,23 @@ void CKernel::clear_normal()
    SG_ERROR( "kernel does not support linadd optimization, clear_normal not implemented\n");
 }
 
-INT CKernel::get_num_subkernels()
+int32_t CKernel::get_num_subkernels()
 {
 	return 1;
 }
 
-void CKernel::compute_by_subkernel(INT vector_idx, DREAL * subkernel_contrib)
+void CKernel::compute_by_subkernel(int32_t vector_idx, DREAL * subkernel_contrib)
 {
    SG_ERROR( "kernel compute_by_subkernel not implemented\n");
 }
 
-const DREAL* CKernel::get_subkernel_weights(INT &num_weights)
+const DREAL* CKernel::get_subkernel_weights(int32_t &num_weights)
 {
 	num_weights=1 ;
 	return &combined_kernel_weight ;
 }
 
-void CKernel::set_subkernel_weights(DREAL* weights, INT num_weights)
+void CKernel::set_subkernel_weights(DREAL* weights, int32_t num_weights)
 {
 	combined_kernel_weight = weights[0] ;
 	if (num_weights!=1)
@@ -1075,11 +1076,11 @@ void CKernel::set_subkernel_weights(DREAL* weights, INT num_weights)
 
 bool CKernel::init_optimization_svm(CSVM * svm)
 {
-	INT num_suppvec=svm->get_num_support_vectors();
-	INT* sv_idx=new INT[num_suppvec];
+	int32_t num_suppvec=svm->get_num_support_vectors();
+	int32_t* sv_idx=new int32_t[num_suppvec];
 	DREAL* sv_weight=new DREAL[num_suppvec];
 
-	for (INT i=0; i<num_suppvec; i++)
+	for (int32_t i=0; i<num_suppvec; i++)
 	{
 		sv_idx[i]    = svm->get_support_vector(i);
 		sv_weight[i] = svm->get_alpha(i);

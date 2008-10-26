@@ -12,13 +12,13 @@
 #include "lib/common.h"
 #include "lib/File.h"
 
-CCharFeatures::CCharFeatures(EAlphabet a, INT size)
+CCharFeatures::CCharFeatures(EAlphabet a, int32_t size)
 : CSimpleFeatures<char>(size)
 {
 	alphabet=new CAlphabet(a);
 }
 
-CCharFeatures::CCharFeatures(CAlphabet* a, INT size)
+CCharFeatures::CCharFeatures(CAlphabet* a, int32_t size)
 : CSimpleFeatures<char>(size)
 {
 	alphabet= new CAlphabet(a);
@@ -30,7 +30,7 @@ CCharFeatures::CCharFeatures(const CCharFeatures & orig)
 	alphabet=orig.alphabet;
 }
 
-CCharFeatures::CCharFeatures(EAlphabet a, char* fm, INT num_feat, INT num_vec)
+CCharFeatures::CCharFeatures(EAlphabet a, char* fm, int32_t num_feat, int32_t num_vec)
 : CSimpleFeatures<char>(fm, num_feat, num_vec)
 {
 	alphabet=new CAlphabet(a);
@@ -77,9 +77,9 @@ bool CCharFeatures::load(char* fname)
 
 		if (length && (num_vectors*linelen==length))
 		{
-			for (INT lines=0; lines<num_vectors; lines++)
+			for (int32_t lines=0; lines<num_vectors; lines++)
 			{
-				for (INT columns=0; columns<num_features; columns++)
+				for (int32_t columns=0; columns<num_features; columns++)
 					feature_matrix[lines*num_features+columns]=feature_matrix[lines*linelen+columns];
 
 				if (feature_matrix[lines*linelen+num_features]!='\n')

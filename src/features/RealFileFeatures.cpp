@@ -15,7 +15,7 @@
 #include <stdio.h>
 #include <string.h>
 
-CRealFileFeatures::CRealFileFeatures(INT size, char* fname) : CRealFeatures(size)
+CRealFileFeatures::CRealFileFeatures(int32_t size, char* fname) : CRealFeatures(size)
 {
 	working_file=fopen(fname, "r");
 	working_filename=strdup(fname);
@@ -29,7 +29,7 @@ CRealFileFeatures::CRealFileFeatures(INT size, char* fname) : CRealFeatures(size
 	status=load_base_data();
 }
 
-CRealFileFeatures::CRealFileFeatures(INT size, FILE* file) : CRealFeatures(size), working_file(file), working_filename(NULL)
+CRealFileFeatures::CRealFileFeatures(int32_t size, FILE* file) : CRealFeatures(size), working_file(file), working_filename(NULL)
 {
 	ASSERT(working_file);
 	intlen=0;
@@ -55,12 +55,12 @@ CRealFileFeatures::CRealFileFeatures(const CRealFileFeatures & orig): CRealFeatu
 		working_filename=strdup(orig.working_filename);
 	if (orig.labels && get_num_vectors())
 	{
-		labels=new int[get_num_vectors()];
-		memcpy(labels, orig.labels, sizeof(int)*get_num_vectors()); 
+		labels=new int32_t[get_num_vectors()];
+		memcpy(labels, orig.labels, sizeof(int32_t)*get_num_vectors());
 	}
 }
 
-DREAL* CRealFileFeatures::compute_feature_vector(INT num, INT &len, DREAL* target)
+DREAL* CRealFileFeatures::compute_feature_vector(int32_t num, int32_t &len, DREAL* target)
 {
 	ASSERT(num<num_vectors);
 	len=num_features;
@@ -85,7 +85,7 @@ DREAL* CRealFileFeatures::load_feature_matrix()
 
 	SG_INFO( "loading... be patient.\n");
 
-	for (INT i=0; i<(INT) num_vectors; i++)
+	for (int32_t i=0; i<(int32_t) num_vectors; i++)
 	{
 		if (!(i % (num_vectors/10+1)))
 			SG_PRINT( "%02d%%.", (int) (100.0*i/num_vectors));
@@ -99,7 +99,7 @@ DREAL* CRealFileFeatures::load_feature_matrix()
 	return feature_matrix;
 }
 
-INT CRealFileFeatures::get_label(INT idx)
+int32_t CRealFileFeatures::get_label(int32_t idx)
 {
 	ASSERT(idx<num_vectors);
 	if (labels)

@@ -27,7 +27,7 @@ class CShortFeatures : public CSimpleFeatures<SHORT>
 		 *
 		 * @param size cache size
 		 */
-		CShortFeatures(INT size=0);
+		CShortFeatures(int32_t size=0);
 
 		/** copy constructor */
 		CShortFeatures(const CShortFeatures & orig);
@@ -39,7 +39,7 @@ class CShortFeatures : public CSimpleFeatures<SHORT>
 		 * @param num_feat number of features
 		 * @param num_vec number of vectors
 		 */
-		inline CShortFeatures(SHORT* src, INT num_feat, INT num_vec): CSimpleFeatures<SHORT>(0)
+		inline CShortFeatures(SHORT* src, int32_t num_feat, int32_t num_vec): CSimpleFeatures<SHORT>(0)
 		{
 			CSimpleFeatures<SHORT>::copy_feature_matrix(src, num_feat, num_vec);
 		}
@@ -58,7 +58,7 @@ class CShortFeatures : public CSimpleFeatures<SHORT>
 		 * @param gap gap
 		 * @return if obtaining was successful
 		 */
-		bool obtain_from_char_features(CCharFeatures* cf, INT start, INT order, INT gap=0);
+		bool obtain_from_char_features(CCharFeatures* cf, int32_t start, int32_t order, int32_t gap=0);
 
 		/** get feature type
 		 *
@@ -74,7 +74,7 @@ class CShortFeatures : public CSimpleFeatures<SHORT>
 		 * @param num_feat number of features
 		 * @param num_vec number of vectors
 		 */
-		inline virtual void copy_feature_matrix(SHORT* src, INT num_feat, INT num_vec)
+		inline virtual void copy_feature_matrix(SHORT* src, int32_t num_feat, int32_t num_vec)
 		{
 			CSimpleFeatures<SHORT>::copy_feature_matrix(src, num_feat, num_vec);
 		}
@@ -102,6 +102,6 @@ class CShortFeatures : public CSimpleFeatures<SHORT>
 		 * @param max_val maximum value
 		 * @param gap gap
 		 */
-		void translate_from_single_order(SHORT* obs, INT sequence_length, INT start, INT order, INT max_val, INT gap);
+		void translate_from_single_order(SHORT* obs, int32_t sequence_length, int32_t start, int32_t order, int32_t max_val, int32_t gap);
 };
 #endif

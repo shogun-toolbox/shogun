@@ -28,14 +28,14 @@ class CByteFeatures : public CSimpleFeatures<uint8_t>
 		 * @param alpha alphabet (type) to use
 		 * @param size cache size
 		 */
-		CByteFeatures(EAlphabet alpha, INT size=0);
+		CByteFeatures(EAlphabet alpha, int32_t size=0);
 
 		/** constructor
 		 *
 		 * @param alpha alphabet to use
 		 * @param size cache size
 		 */
-		CByteFeatures(CAlphabet* alpha, INT size=0);
+		CByteFeatures(CAlphabet* alpha, int32_t size=0);
 
 		/** copy constructor */
 		CByteFeatures(const CByteFeatures & orig);
@@ -47,7 +47,7 @@ class CByteFeatures : public CSimpleFeatures<uint8_t>
 		 * @param num_feat number of features in matrix
 		 * @param num_vec number of vectors in matrix
 		 */
-        CByteFeatures(EAlphabet alphabet, uint8_t* feature_matrix, INT num_feat, INT num_vec);
+        CByteFeatures(EAlphabet alphabet, uint8_t* feature_matrix, int32_t num_feat, int32_t num_vec);
 
 		/** constructor
 		 *
@@ -75,7 +75,7 @@ class CByteFeatures : public CSimpleFeatures<uint8_t>
 		 * @param num_feat number of features
 		 * @param num_vec number of vectors
 		 */
-		inline virtual void copy_feature_matrix(uint8_t* src, INT num_feat, INT num_vec)
+		inline virtual void copy_feature_matrix(uint8_t* src, int32_t num_feat, int32_t num_vec)
 		{
 			CSimpleFeatures<uint8_t>::copy_feature_matrix(src, num_feat, num_vec);
 		}

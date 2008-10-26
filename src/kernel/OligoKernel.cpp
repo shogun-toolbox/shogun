@@ -21,7 +21,8 @@
 
 using namespace std;
 
-COligoKernel::COligoKernel(INT cache_sz, INT kmer_len, DREAL w) : CStringKernel<char>(cache_sz), k(kmer_len), width(w)
+COligoKernel::COligoKernel(int32_t cache_sz, int32_t kmer_len, DREAL w)
+: CStringKernel<char>(cache_sz), k(kmer_len), width(w)
 {
 	set_normalizer(new CSqrtDiagKernelNormalizer());
 }
@@ -37,54 +38,56 @@ bool COligoKernel::init(CFeatures* l, CFeatures* r)
 	return init_normalizer();
 }
 
-bool COligoKernel::cmpOligos_( pair<int, double> a, pair<int, double> b ) 
+bool COligoKernel::cmpOligos_(pair<int32_t, double> a, pair<int32_t, double> b)
 {
 	return (a.second < b.second);
 }
 
 void COligoKernel::encodeOligo(const string& sequence,
-		unsigned int k_mer_length,
+		uint32_t k_mer_length,
 		const string& allowed_characters,
-		vector< pair<int, double> >& values)
+		vector< pair<int32_t, double> >& values)
 {
 	double oligo_value = 0.;
 	double factor      = 1.;
-	map<string::value_type, unsigned int> residue_values;
-	unsigned int counter = 0;
-	unsigned int number_of_residues = allowed_characters.size();
-	unsigned int sequence_length = sequence.size();
+	map<string::value_type, uint32_t> residue_values;
+	uint32_t counter = 0;
+	uint32_t number_of_residues = allowed_characters.size();
+	uint32_t sequence_length = sequence.size();
 	bool sequence_ok = true;
 
 	// checking if sequence contains illegal characters
-	for (unsigned int i = 0; i < sequence.size(); ++i)
+	for (uint32_t i = 0; i < sequence.size(); ++i)
 	{
 		if (allowed_characters.find(sequence.at(i)) == string::npos)
 			sequence_ok = false;
 	}
 
 	if (sequence_ok && k_mer_length <= sequence_length)
-	{	
-		values.resize(sequence_length - k_mer_length + 1, pair<int, double>());
-		for (unsigned int i = 0; i < number_of_residues; ++i)
+	{
+		values.resize(sequence_length - k_mer_length + 1,
+			pair<int32_t, double>());
+		for (uint32_t i = 0; i < number_of_residues; ++i)
 		{	
 			residue_values.insert(make_pair(allowed_characters[i], counter));
 			++counter;
 		}
-		for (int k = k_mer_length - 1; k >= 0; k--)
+		for (uint32_t k = k_mer_length - 1; k >= 0; k--)
 		{
 			oligo_value += factor * residue_values[sequence[k]];
 			factor *= number_of_residues;
 		}
-		factor /= number_of_residues;	
+		factor /= number_of_residues;
 		counter = 0;
 		values[counter].first = 1;
 		values[counter].second = oligo_value;
 		++counter;
 
-		for (unsigned int j = 1; j < sequence_length - k_mer_length + 1; j++)
+		for (uint32_t j = 1; j < sequence_length - k_mer_length + 1; j++)
 		{
 			oligo_value -= factor * residue_values[sequence[j - 1]];
-			oligo_value = oligo_value * number_of_residues + residue_values[sequence[j + k_mer_length - 1]];
+			oligo_value = oligo_value * number_of_residues +
+				residue_values[sequence[j + k_mer_length - 1]];
 
 			values[counter].first = j + 1;
 			values[counter].second = oligo_value ;
@@ -98,48 +101,50 @@ void COligoKernel::encodeOligo(const string& sequence,
 	}	
 }
 
-void COligoKernel::getSequences(const vector<string>& sequences, 
-		unsigned int k_mer_length, 
-		const string& allowed_characters, 
-		vector< vector< pair<int, double> > >& encoded_sequences)
+void COligoKernel::getSequences(const vector<string>& sequences,
+		uint32_t k_mer_length,
+		const string& allowed_characters,
+		vector< vector< pair<int32_t, double> > >& encoded_sequences)
 {
-	vector< pair<int, double> > temp_vector;
-	encoded_sequences.resize(sequences.size(), vector< pair<int, double> >());
+	vector< pair<int32_t, double> > temp_vector;
+	encoded_sequences.resize(sequences.size(),
+		vector< pair<int32_t, double> >());
 
-	for (unsigned int i = 0; i < sequences.size(); ++i)
+	for (uint32_t i = 0; i < sequences.size(); ++i)
 	{
 		encodeOligo(sequences[i], k_mer_length, allowed_characters, temp_vector);
 		encoded_sequences[i] = temp_vector;
 	}
 }
 
-void COligoKernel::getExpFunctionCache(double sigma, unsigned int sequence_length, vector<double>& cache)
+void COligoKernel::getExpFunctionCache(
+	double sigma, uint32_t sequence_length, vector<double>& cache)
 {
 	cache.resize(sequence_length, 0.);
 	cache[0] = 1;
-	for (unsigned int i = 1; i < sequence_length - 1; i++)
+	for (uint32_t i = 1; i < sequence_length - 1; i++)
 	{
 		cache[i] = exp((-1 / (4.0 * sigma * sigma)) * i * i);
 	}
 }
 
-double COligoKernel::kernelOligoFast(const vector< pair<int, double> >& x, 
-		const vector< pair<int, double> >& y,
+double COligoKernel::kernelOligoFast(const vector< pair<int32_t, double> >& x,
+		const vector< pair<int32_t, double> >& y,
 		const vector<double>& gauss_table,
-		int max_distance)
+		int32_t max_distance)
 {
 	double kernel = 0;
-	int    i1     = 0;
-	int    i2     = 0;
-	int    c1     = 0;
-	unsigned int x_size = x.size();
-	unsigned int y_size = y.size();
+	int32_t  i1     = 0;
+	int32_t  i2     = 0;
+	int32_t  c1     = 0;
+	uint32_t x_size = x.size();
+	uint32_t y_size = y.size();
 
-	while ((unsigned int) i1 < x_size && (unsigned int) i2 < y_size)
+	while ((uint32_t) i1 < x_size && (uint32_t) i2 < y_size)
 	{
 		if (x[i1].second == y[i2].second)
 		{
-			if (max_distance < 0 
+			if (max_distance < 0
 					|| (abs(x[i1].first - y[i2].first)) <= max_distance)
 			{
 				kernel += gauss_table.at(abs((x[i1].first - y[i2].first)));
@@ -205,29 +210,30 @@ double COligoKernel::kernelOligoFast(const vector< pair<int, double> >& x,
 }		
 
 
-double COligoKernel::kernelOligo(const vector< pair<int, double> >&    x, 
-		const vector< pair<int, double> >&    y,
-		double 			              sigma_square)
+double COligoKernel::kernelOligo(
+		const vector< pair<int32_t, double> >& x,
+		const vector< pair<int32_t, double> >& y,
+		double sigma_square)
 {
-	double kernel = 0;
-	int    i1     = 0;
-	int    i2     = 0;
-	int    c1     = 0;
-	unsigned int x_size = x.size();
-	unsigned int y_size = y.size();
+	double   kernel = 0;
+	int32_t  i1     = 0;
+	int32_t  i2     = 0;
+	int32_t  c1     = 0;
+	uint32_t x_size = x.size();
+	uint32_t y_size = y.size();
 
-	while ((unsigned int) i1 < x_size && (unsigned int) i2 < y_size)
+	while ((uint32_t) i1 < x_size && (uint32_t) i2 < y_size)
 	{
 		if (x[i1].second == y[i2].second)
 		{
 			kernel += exp(-1 * (x[i1].first - y[i2].first) * (x[i1].first - y[i2].first) / (4 * sigma_square));
 
-			if (((unsigned int) i1+1) < x_size && x[i1].second == x[i1 + 1].second)
+			if (((uint32_t) i1+1) < x_size && x[i1].second == x[i1 + 1].second)
 			{
 				i1++;
 				c1++;
 			}
-			else if (((unsigned int) i2+1) <y_size && y[i2].second == y[i2 + 1].second)
+			else if (((uint32_t) i2+1) <y_size && y[i2].second == y[i2 + 1].second)
 			{
 				i2++;
 				i1 -= c1;
@@ -252,13 +258,13 @@ double COligoKernel::kernelOligo(const vector< pair<int, double> >&    x,
 	return kernel;
 }		
 
-DREAL COligoKernel::compute(INT idx_a, INT idx_b)
+DREAL COligoKernel::compute(int32_t idx_a, int32_t idx_b)
 {
-	INT alen, blen;
+	int32_t alen, blen;
 	char* avec=((CStringFeatures<char>*) lhs)->get_feature_vector(idx_a, alen);
 	char* bvec=((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen);
-	vector< pair<int,double> > aenc;
-	vector< pair<int,double> > benc;
+	vector< pair<int32_t, double> > aenc;
+	vector< pair<int32_t, double> > benc;
 	encodeOligo(string(avec, alen), k, "ACGT", aenc);
 	encodeOligo(string(bvec, alen), k, "ACGT", benc);
 	DREAL result=kernelOligo(aenc, benc, width);

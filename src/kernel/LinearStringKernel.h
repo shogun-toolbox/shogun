@@ -88,7 +88,7 @@ class CLinearStringKernel: public CStringKernel<char>
 		 * @param alphas alphas
 		 * @return if optimization was successful
 		 */
-		virtual bool init_optimization(INT num_suppvec, INT* sv_idx,
+		virtual bool init_optimization(int32_t num_suppvec, int32_t* sv_idx,
 			DREAL* alphas);
 
 		/** delete optimization
@@ -102,7 +102,7 @@ class CLinearStringKernel: public CStringKernel<char>
 	 	* @param idx index to compute
 	 	* @return optimized value at given index
 	 	*/
-		virtual DREAL compute_optimized(INT idx);
+		virtual DREAL compute_optimized(int32_t idx);
 
 		/** clear normal */
 		virtual void clear_normal();
@@ -112,7 +112,7 @@ class CLinearStringKernel: public CStringKernel<char>
 		 * @param idx where to add
 		 * @param weight what to add
 		 */
-		virtual void add_to_normal(INT idx, DREAL weight);
+		virtual void add_to_normal(int32_t idx, DREAL weight);
 
 	protected:
 		/** compute kernel function for features a and b
@@ -123,7 +123,7 @@ class CLinearStringKernel: public CStringKernel<char>
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		virtual DREAL compute(INT idx_a, INT idx_b);
+		virtual DREAL compute(int32_t idx_a, int32_t idx_b);
 
 	protected:
 		/** normal vector (used in case of optimized kernel) */

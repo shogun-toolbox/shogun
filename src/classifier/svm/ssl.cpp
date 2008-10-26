@@ -41,7 +41,7 @@ void ssl_train(struct data *Data,
 	vector_int    *Subset  = new vector_int[1];
 	initialize(Subset,Data->m);
 	// call the right algorithm
-	int optimality = 0;
+	int32_t optimality = 0;
 	switch(Options->algo)
 	{
 		case -1:
@@ -71,53 +71,53 @@ void ssl_train(struct data *Data,
 	delete[] Subset->vec;
     delete[] Subset;
 	return;
-} 
-int CGLS(const struct data *Data, 
-		const struct options *Options, 
-		const struct vector_int *Subset, 
-		struct vector_double *Weights,
-		struct vector_double *Outputs)
+}
+
+int32_t CGLS(
+	const struct data *Data, const struct options *Options,
+	const struct vector_int *Subset, struct vector_double *Weights,
+	struct vector_double *Outputs)
 {
 	SG_SDEBUG("CGLS starting...");
 
 	/* Disassemble the structures */
-	int active = Subset->d;
-	int *J = Subset->vec;
+	int32_t active = Subset->d;
+	int32_t *J = Subset->vec;
 	CSparseFeatures<DREAL>* features=Data->features;
 	double *Y = Data->Y;
 	double *C = Data->C;
-	int n  = Data->n;
+	int32_t n  = Data->n;
 	double lambda = Options->lambda;
-	int cgitermax = Options->cgitermax;
+	int32_t cgitermax = Options->cgitermax;
 	double epsilon = Options->epsilon;
 	double *beta = Weights->vec;
 	double *o  = Outputs->vec; 
 	// initialize z 
 	double *z = new double[active];
 	double *q = new double[active];
-	int ii=0;
-	for(int i = active ; i-- ;){
+	int32_t ii=0;
+	for (int32_t i = active ; i-- ;){
 		ii=J[i];      
 		z[i]  = C[ii]*(Y[ii] - o[ii]);
 	}
 	double *r = new double[n];
-	for(int i = n ; i-- ;)
+	for (int32_t i = n ; i-- ;)
 		r[i] = 0.0;
-	for(register int j=0; j < active; j++)
+	for (register int32_t j=0; j < active; j++)
 	{
 		ii=J[j];
-		INT num_entries=0;
+		int32_t num_entries=0;
 		bool free_vec=false;
 
 		TSparseEntry<DREAL>* vec=features->get_sparse_feature_vector(ii, num_entries, free_vec);
-		for (int i=0; i<num_entries; i++)
+		for (int32_t i=0; i<num_entries; i++)
 			r[vec[i].feat_index]+= vec[i].entry*z[j];
 		features->free_sparse_feature_vector(vec, num_entries, free_vec);
 		r[n-1]+=Options->bias*z[j]; //bias (modelled as last dim)
 	}
 	double *p = new double[n];   
 	double omega1 = 0.0;
-	for(int i = n ; i-- ;)
+	for (int32_t i = n ; i-- ;)
 	{
 		r[i] -= lambda*beta[i];
 		p[i] = r[i];
@@ -129,8 +129,8 @@ int CGLS(const struct data *Data,
 	double scale = 0.0;
 	double omega_z=0.0;
 	double gamma = 0.0;
-	int cgiter = 0;
-	int optimality = 0;
+	int32_t cgiter = 0;
+	int32_t optimality = 0;
 	double epsilon2 = epsilon*epsilon;   
 	// iterate
 	while(cgiter < cgitermax)
@@ -138,13 +138,13 @@ int CGLS(const struct data *Data,
 		cgiter++;
 		omega_q=0.0;
 		double t=0.0;
-		register int i,j; 
+		register int32_t i,j;
 		// #pragma omp parallel for private(i,j)
-		for(i=0; i < active; i++)
+		for (i=0; i < active; i++)
 		{
 			ii=J[i];
 			t=0.0;
-			INT num_entries=0;
+			int32_t num_entries=0;
 			bool free_vec=false;
 			TSparseEntry<DREAL>* vec=features->get_sparse_feature_vector(ii,
 					num_entries, free_vec);
@@ -157,24 +157,24 @@ int CGLS(const struct data *Data,
 		}       
 		gamma = omega1/(lambda*omega_p + omega_q);    
 		inv_omega2 = 1/omega1;     
-		for(i = n ; i-- ;)
+		for (i = n ; i-- ;)
 		{
 			r[i] = 0.0;
 			beta[i] += gamma*p[i];
 		} 
 		omega_z=0.0;
-		for(i = active ; i-- ;)
+		for (i = active ; i-- ;)
 		{
 			ii=J[i];
 			o[ii] += gamma*q[i];
 			z[i] -= gamma*C[ii]*q[i];
 			omega_z+=z[i]*z[i];
 		} 
-		for(j=0; j < active; j++)
+		for (j=0; j < active; j++)
 		{
 			ii=J[j];
 			t=z[j];
-			INT num_entries=0;
+			int32_t num_entries=0;
 			bool free_vec=false;
 
 			TSparseEntry<DREAL>* vec=features->get_sparse_feature_vector(ii, num_entries, free_vec);
@@ -184,7 +184,7 @@ int CGLS(const struct data *Data,
 			r[n-1]+=Options->bias*t; //bias (modelled as last dim)
 		}
 		omega1 = 0.0;
-		for(i = n ; i-- ;)
+		for (i = n ; i-- ;)
 		{
 			r[i] -= lambda*beta[i];
 			omega1 += r[i]*r[i];
@@ -211,18 +211,18 @@ int CGLS(const struct data *Data,
 	delete[] p;
 	return optimality;
 }
-int L2_SVM_MFN(const struct data *Data, 
-		struct options *Options, 
-		struct vector_double *Weights,
-		struct vector_double *Outputs,
-		int ini)
-{ 
+
+int32_t L2_SVM_MFN(
+	const struct data *Data, struct options *Options,
+	struct vector_double *Weights, struct vector_double *Outputs,
+	int32_t ini)
+{
 	/* Disassemble the structures */  
 	CSparseFeatures<DREAL>* features=Data->features;
 	double *Y = Data->Y;
 	double *C = Data->C;
-	int n  = Data->n;
-	int m  = Data->m;
+	int32_t n  = Data->n;
+	int32_t m  = Data->m;
 	double lambda = Options->lambda;
 	double epsilon;
 	double *w = Weights->vec;
@@ -231,7 +231,7 @@ int L2_SVM_MFN(const struct data *Data,
 	double F = 0.0;
 	double diff=0.0;
 	vector_int *ActiveSubset = new vector_int[1];
-	ActiveSubset->vec = new int[m];
+	ActiveSubset->vec = new int32_t[m];
 	ActiveSubset->d = m;
 	// initialize
 	if(ini==0) {
@@ -240,11 +240,11 @@ int L2_SVM_MFN(const struct data *Data,
 		Options->epsilon=BIG_EPSILON;
 	}
 	else {epsilon = Options->epsilon;}  
-	for(int i=0;i<n;i++) F+=w[i]*w[i];
+	for (int32_t i=0;i<n;i++) F+=w[i]*w[i];
 	F=0.5*lambda*F;        
-	int active=0;
-	int inactive=m-1; // l-1      
-	for(int i=0; i<m ; i++)
+	int32_t active=0;
+	int32_t inactive=m-1; // l-1      
+	for (int32_t i=0; i<m ; i++)
 	{ 
 		diff=1-Y[i]*o[i];
 		if(diff>0)
@@ -260,9 +260,9 @@ int L2_SVM_MFN(const struct data *Data,
 		}   
 	}
 	ActiveSubset->d=active;        
-	int iter=0;
-	int opt=0;
-	int opt2=0;
+	int32_t iter=0;
+	int32_t opt=0;
+	int32_t opt2=0;
 	vector_double *Weights_bar = new vector_double[1];
 	vector_double *Outputs_bar = new vector_double[1];
 	double *w_bar = new double[n];
@@ -273,27 +273,27 @@ int L2_SVM_MFN(const struct data *Data,
 	Outputs_bar->d=m;
 	double delta=0.0;
 	double t=0.0;
-	int ii = 0;
+	int32_t ii = 0;
 	while(iter<MFNITERMAX)
 	{
 		iter++;
 		SG_SDEBUG("L2_SVM_MFN Iteration# %d (%d active examples, objective_value = %f)\n", iter, active, F);
-		for(int i=n; i-- ;) 
+		for (int32_t i=n; i-- ;)
 			w_bar[i]=w[i];
-		for(int i=m; i-- ;)  
+		for (int32_t i=m; i-- ;)
 			o_bar[i]=o[i];
 		
 		opt=CGLS(Data,Options,ActiveSubset,Weights_bar,Outputs_bar);
-		for(register int i=active; i < m; i++) 
+		for(register int32_t i=active; i < m; i++) 
 		{
 			ii=ActiveSubset->vec[i];   
 			t=0.0;
 
-			INT num_entries=0;
+			int32_t num_entries=0;
 			bool free_vec=false;
 
 			TSparseEntry<DREAL>* vec=features->get_sparse_feature_vector(ii, num_entries, free_vec);
-			for (int j=0; j<num_entries; j++)
+			for (int32_t j=0; j<num_entries; j++)
 				t+=vec[j].entry*w_bar[vec[j].feat_index];
 			features->free_sparse_feature_vector(vec, num_entries, free_vec);
 			t+=Options->bias*w_bar[n-1]; //bias (modelled as last dim)
@@ -302,7 +302,7 @@ int L2_SVM_MFN(const struct data *Data,
 		}
 		if(ini==0) {Options->cgitermax=CGITERMAX; ini=1;};
 		opt2=1;
-		for(int i=0;i<m;i++)
+		for (int32_t i=0;i<m;i++)
 		{ 
 			ii=ActiveSubset->vec[i];
 			if(i<active)
@@ -322,9 +322,9 @@ int L2_SVM_MFN(const struct data *Data,
 			}
 			else
 			{
-				for(int i=n; i-- ;) 
+				for (int32_t i=n; i-- ;)
 					w[i]=w_bar[i];      
-				for(int i=m; i-- ;)
+				for (int32_t i=m; i-- ;)
 					o[i]=o_bar[i]; 
 				delete[] ActiveSubset->vec;
 				delete[] ActiveSubset;
@@ -340,14 +340,14 @@ int L2_SVM_MFN(const struct data *Data,
 		SG_SDEBUG("LINE_SEARCH delta = %f\n", delta);
 		F_old=F;
 		F=0.0;
-		for(int i=n; i-- ;){ 
+		for (int32_t i=n; i-- ;) {
 			w[i]+=delta*(w_bar[i]-w[i]);
 			F+=w[i]*w[i];
 		}
 		F=0.5*lambda*F;      
 		active=0;
 		inactive=m-1;  
-		for(int i=0; i<m ; i++)
+		for (int32_t i=0; i<m ; i++)
 		{
 			o[i]+=delta*(o_bar[i]-o[i]);
 			diff=1-Y[i]*o[i];
@@ -387,13 +387,13 @@ double line_search(double *w,
 		double *o_bar, 
 		double *Y, 
 		double *C,
-		int d, /* data dimensionality -- 'n' */
-		int l) /* number of examples */                  
+		int32_t d, /* data dimensionality -- 'n' */
+		int32_t l) /* number of examples */
 {                       
 	double omegaL = 0.0;
 	double omegaR = 0.0;
 	double diff=0.0;   
-	for(int i=d; i--; )
+	for(int32_t i=d; i--; )
 	{
 		diff=w_bar[i]-w[i];  
 		omegaL+=w[i]*diff;
@@ -403,8 +403,8 @@ double line_search(double *w,
 	omegaR=lambda*omegaR;
 	double L=0.0;
 	double R=0.0;
-	int ii=0;
-	for(int i=0;i<l;i++)
+	int32_t ii=0;
+	for (int32_t i=0;i<l;i++)
 	{
 		if(Y[i]*o[i]<1)
 		{
@@ -416,8 +416,8 @@ double line_search(double *w,
 	L+=omegaL;
 	R+=omegaR;
 	Delta* deltas=new Delta[l];    
-	int p=0;
-	for(int i=0;i<l;i++)
+	int32_t p=0;
+	for(int32_t i=0;i<l;i++)
 	{ 
 		diff=Y[i]*(o_bar[i]-o[i]);
 
@@ -444,7 +444,7 @@ double line_search(double *w,
 	}
 	std::sort(deltas,deltas+p);            
 	double delta_prime=0.0;  
-	for(int i=0;i<p;i++)
+	for (int32_t i=0;i<p;i++)
 	{
 		delta_prime = L + deltas[i].delta*(R-L);       
 		if(delta_prime>=0)
@@ -456,11 +456,11 @@ double line_search(double *w,
 	}   
 	delete [] deltas;
 	return (-L/(R-L));
-} 
-int TSVM_MFN(const struct data *Data, 
-		struct options *Options, 
-		struct vector_double *Weights,
-		struct vector_double *Outputs)
+}
+
+int32_t TSVM_MFN(
+	const struct data *Data, struct options *Options,
+	struct vector_double *Weights, struct vector_double *Outputs)
 {
 	/* Setup labeled-only examples and train L2_SVM_MFN */
 	struct data *Data_Labeled = new data[1];
@@ -471,22 +471,22 @@ int TSVM_MFN(const struct data *Data,
 	L2_SVM_MFN(Data_Labeled, Options, Weights,Outputs_Labeled,0);
 	///FIXME Clear(Data_Labeled);
 	/* Use this weight vector to classify R*u unlabeled examples as
-	   positive*/   
-	int p=0,q=0; 
+	   positive*/
+	int32_t p=0,q=0;
 	double t=0.0;
-	int *JU = new int[Data->u];
+	int32_t *JU = new int32_t[Data->u];
 	double *ou = new double[Data->u];
 	double lambda_0 = TSVM_LAMBDA_SMALL;
-	for(int i=0;i<Data->m;i++)
+	for (int32_t i=0;i<Data->m;i++)
 	{
 		if(Data->Y[i]==0.0)
 		{
 			t=0.0;
-			INT num_entries=0;
+			int32_t num_entries=0;
 			bool free_vec=false;
 
 			TSparseEntry<DREAL>* vec=Data->features->get_sparse_feature_vector(i, num_entries, free_vec);
-			for (int j=0; j<num_entries; j++)
+			for (int32_t j=0; j<num_entries; j++)
 				t+=vec[j].entry*Weights->vec[vec[j].feat_index];
 			Data->features->free_sparse_feature_vector(vec, num_entries, free_vec);
 			t+=Options->bias*Weights->vec[Data->n-1]; //bias (modelled as last dim)
@@ -504,27 +504,27 @@ int TSVM_MFN(const struct data *Data,
 			p++;   
 		}
 	}
-	std::nth_element(ou,ou+int((1-Options->R)*Data->u-1),ou+Data->u);
-	double thresh=*(ou+int((1-Options->R)*Data->u)-1);
+	std::nth_element(ou,ou+int32_t((1-Options->R)*Data->u-1),ou+Data->u);
+	double thresh=*(ou+int32_t((1-Options->R)*Data->u)-1);
 	delete [] ou;
-	for(int i=0;i<Data->u;i++)
+	for (int32_t i=0;i<Data->u;i++)
 	{  
 		if(Outputs->vec[JU[i]]>thresh)
 			Data->Y[JU[i]]=1.0;
 		else
 			Data->Y[JU[i]]=-1.0;
 	}
-	for(int i=0;i<Data->n;i++)
+	for (int32_t i=0;i<Data->n;i++)
 		Weights->vec[i]=0.0;
-	for(int i=0;i<Data->m;i++)
+	for (int32_t i=0;i<Data->m;i++)
 		Outputs->vec[i]=0.0;
 	L2_SVM_MFN(Data,Options,Weights,Outputs,0); 
-	int num_switches=0;
-	int s=0;
-	int last_round=0;
+	int32_t num_switches=0;
+	int32_t s=0;
+	int32_t last_round=0;
 	while(lambda_0 <= Options->lambda_u)
-	{   
-		int iter2=0;
+	{
+		int32_t iter2=0;
 		while(1){
 			s=switch_labels(Data->Y,Outputs->vec,JU,Data->u,Options->S);
 			if(s==0) break;
@@ -538,7 +538,7 @@ int TSVM_MFN(const struct data *Data,
 		if(last_round==1) break;
 		lambda_0=TSVM_ANNEALING_RATE*lambda_0;
 		if(lambda_0 >= Options->lambda_u) {lambda_0 = Options->lambda_u; last_round=1;} 
-		for(int i=0;i<Data->u;i++)
+		for (int32_t i=0;i<Data->u;i++)
 			Data->C[JU[i]]=lambda_0*1.0/Data->u;       
 		SG_SDEBUG("****** lambda0 increased to %f%% of lambda_u = %f ************************\n", lambda_0*100/Options->lambda_u, Options->lambda_u);
 		SG_SDEBUG("Optimizing weights\n");
@@ -546,27 +546,28 @@ int TSVM_MFN(const struct data *Data,
 	}
 	SG_SDEBUG("Total Number of Switches = %d\n", num_switches);
 	/* reset labels */
-	for(int i=0;i<Data->u;i++) Data->Y[JU[i]] = 0.0;
+	for (int32_t i=0;i<Data->u;i++) Data->Y[JU[i]] = 0.0;
 	double F = transductive_cost(norm_square(Weights),Data->Y,Outputs->vec,Outputs->d,Options->lambda,Options->lambda_u);
 	SG_SDEBUG("Objective Value = %f\n",F);
 	delete [] JU;
 	return num_switches;
 }
-int switch_labels(double* Y, double* o, int* JU, int u, int S)
-{     
-	int npos=0;
-	int nneg=0;
-	for(int i=0;i<u;i++)
+
+int32_t switch_labels(double* Y, double* o, int32_t* JU, int32_t u, int32_t S)
+{
+	int32_t npos=0;
+	int32_t nneg=0;
+	for (int32_t i=0;i<u;i++)
 	{
 		if((Y[JU[i]]>0) && (o[JU[i]]<1.0)) npos++;   
 		if((Y[JU[i]]<0) && (-o[JU[i]]<1.0)) nneg++;        
 	}     
 	Delta* positive=new Delta[npos];
 	Delta* negative=new Delta[nneg];  
-	int p=0;
-	int n=0;
-	int ii=0;
-	for(int i=0;i<u;i++)
+	int32_t p=0;
+	int32_t n=0;
+	int32_t ii=0;
+	for (int32_t i=0;i<u;i++)
 	{
 		ii=JU[i];
 		if((Y[ii]>0.0) && (o[ii]<1.0)) {
@@ -583,7 +584,7 @@ int switch_labels(double* Y, double* o, int* JU, int u, int S)
 	}
 	std::sort(positive,positive+npos);
 	std::sort(negative,negative+nneg);  
-	int s=-1;
+	int32_t s=-1;
 	while(1)
 	{
 		s++;    
@@ -597,13 +598,12 @@ int switch_labels(double* Y, double* o, int* JU, int u, int S)
 	return s;
 }
 
-int DA_S3VM(struct data *Data, 
-		struct options *Options, 
-		struct vector_double *Weights,
-		struct vector_double *Outputs)
+int32_t DA_S3VM(
+	struct data *Data, struct options *Options, struct vector_double *Weights,
+	struct vector_double *Outputs)
 {
 	double T = DA_INIT_TEMP*Options->lambda_u;
-	int iter1 = 0, iter2 =0;
+	int32_t iter1 = 0, iter2 =0;
 	double *p = new double[Data->u];
 	double *q = new double[Data->u];
 	double *g = new double[Data->u];
@@ -615,12 +615,12 @@ int DA_S3VM(struct data *Data,
 	double kl_divergence = 1.0;
 	/*initialize */
 	SG_SDEBUG("Initializing weights, p");
-	for(int i=0;i<Data->u; i++)
+	for (int32_t i=0;i<Data->u; i++)
 		p[i] = Options->R;
 	/* record which examples are unlabeled */
-	int *JU = new int[Data->u];
-	int j=0;
-	for(int i=0;i<Data->m;i++)
+	int32_t *JU = new int32_t[Data->u];
+	int32_t j=0;
+	for(int32_t i=0;i<Data->m;i++)
 	{
 		if(Data->Y[i]==0.0)
 		{JU[j]=i;j++;}
@@ -629,9 +629,9 @@ int DA_S3VM(struct data *Data,
 	optimize_w(Data,p,Options,Weights,Outputs,0);  
 	F = transductive_cost(norm_square(Weights),Data->Y,Outputs->vec,Outputs->d,Options->lambda,Options->lambda_u);
 	F_min = F;
-	for(int i=0;i<Weights->d;i++)
+	for (int32_t i=0;i<Weights->d;i++)
 		w_min[i]=w[i];
-	for(int i=0;i<Outputs->d;i++)
+	for (int32_t i=0;i<Outputs->d;i++)
 		o_min[i]=o[i];
 	while((iter1 < DA_OUTER_ITERMAX) && (H > Options->epsilon))
 	{
@@ -641,7 +641,7 @@ int DA_S3VM(struct data *Data,
 		while((iter2 < DA_INNER_ITERMAX) && (kl_divergence > Options->epsilon)) 
 		{
 			iter2++;
-			for(int i=0;i<Data->u;i++)
+			for (int32_t i=0;i<Data->u;i++)
 			{
 				q[i]=p[i];
 				g[i] = Options->lambda_u*((o[JU[i]] > 1 ? 0 : (1 - o[JU[i]])*(1 - o[JU[i]])) - (o[JU[i]]< -1 ? 0 : (1 + o[JU[i]])*(1 + o[JU[i]]))); 
@@ -655,9 +655,9 @@ int DA_S3VM(struct data *Data,
 			if(F < F_min)
 			{
 				F_min = F;
-				for(int i=0;i<Weights->d;i++)
+				for (int32_t i=0;i<Weights->d;i++)
 					w_min[i]=w[i];
-				for(int i=0;i<Outputs->d;i++)
+				for (int32_t i=0;i<Outputs->d;i++)
 					o_min[i]=o[i];
 			}
 			SG_SDEBUG("***** outer_iter = %d  T = %g  inner_iter = %d  kl = %g  cost = %g *****\n",iter1,T,iter2,kl_divergence,F); 
@@ -666,9 +666,9 @@ int DA_S3VM(struct data *Data,
 		SG_SDEBUG("***** Finished outer_iter = %d T = %g  Entropy = %g ***\n", iter1,T,H);
 		T = T/DA_ANNEALING_RATE;
 	}
-	for(int i=0;i<Weights->d;i++)
+	for (int32_t i=0;i<Weights->d;i++)
 		w[i]=w_min[i];
-	for(int i=0;i<Outputs->d;i++)
+	for (int32_t i=0;i<Outputs->d;i++)
 		o[i]=o_min[i];
 	/* may want to reset the original Y */ 
 	delete [] p; 
@@ -680,31 +680,29 @@ int DA_S3VM(struct data *Data,
 	SG_SINFO("(min) Objective Value = %f", F_min);
 	return 1;
 }
-int optimize_w(const struct data *Data, 
-		const double *p,
-		struct options *Options, 
-		struct vector_double *Weights,
-		struct vector_double *Outputs,
-		int ini)
-{ 
-	int i,j;
+
+int32_t optimize_w(
+	const struct data *Data, const double *p, struct options *Options,
+	struct vector_double *Weights, struct vector_double *Outputs, int32_t ini)
+{
+	int32_t i,j;
 	CSparseFeatures<DREAL>* features=Data->features;
-	int n  = Data->n;
-	int m  = Data->m;
-	int u  = Data->u;
+	int32_t n  = Data->n;
+	int32_t m  = Data->m;
+	int32_t u  = Data->u;
 	double lambda = Options->lambda;
 	double epsilon;
 	double *w = Weights->vec;
 	double *o = new double[m+u];
 	double *Y = new double[m+u];
 	double *C = new double[m+u];
-	int *labeled_indices = new int[m];
+	int32_t *labeled_indices = new int32_t[m];
 	double F_old = 0.0;
 	double F = 0.0;
 	double diff=0.0;
 	double lambda_u_by_u = Options->lambda_u/u;
 	vector_int *ActiveSubset = new vector_int[1];
-	ActiveSubset->vec = new int[m];
+	ActiveSubset->vec = new int32_t[m];
 	ActiveSubset->d = m;
 	// initialize
 	if(ini==0) 
@@ -716,8 +714,8 @@ int optimize_w(const struct data *Data,
 
 	for(i=0;i<n;i++) F+=w[i]*w[i];
 	F=lambda*F;        
-	int active=0;
-	int inactive=m-1; // l-1      
+	int32_t active=0;
+	int32_t inactive=m-1; // l-1      
 	double temp1;
 	double temp2;
 
@@ -783,9 +781,9 @@ int optimize_w(const struct data *Data,
 	}
 	F=0.5*F;
 	ActiveSubset->d=active;
-	int iter=0;
-	int opt=0;
-	int opt2=0;
+	int32_t iter=0;
+	int32_t opt=0;
+	int32_t opt2=0;
 	vector_double *Weights_bar = new vector_double[1];
 	vector_double *Outputs_bar = new vector_double[1];
 	double *w_bar = new double[n];
@@ -796,7 +794,7 @@ int optimize_w(const struct data *Data,
 	Outputs_bar->d=m; /* read only the top m ; bottom u will be copies */
 	double delta=0.0;
 	double t=0.0;
-	int ii = 0;
+	int32_t ii = 0;
 	while(iter<MFNITERMAX)
 	{
 		iter++;
@@ -811,7 +809,7 @@ int optimize_w(const struct data *Data,
 		{
 			ii=ActiveSubset->vec[i];   
 			t=0.0;
-			INT num_entries=0;
+			int32_t num_entries=0;
 			bool free_vec=false;
 
 			TSparseEntry<DREAL>* vec=features->get_sparse_feature_vector(ii, num_entries, free_vec);
@@ -968,14 +966,15 @@ int optimize_w(const struct data *Data,
 	SG_SINFO("L2_SVM_MFN converged in %d iterations", iter);
 	return 0;
 }
-void optimize_p(const double* g, int u, double T, double r, double* p)
+
+void optimize_p(const double* g, int32_t u, double T, double r, double* p)
 {
-	int iter=0;
+	int32_t iter=0;
 	double epsilon=1e-10;
-	int maxiter=500; 
+	int32_t maxiter=500; 
 	double nu_minus=g[0];
 	double nu_plus=g[0];
-	for(int i=0;i<u;i++)
+	for (int32_t i=0;i<u;i++)
 	{
 		if(g[i]<nu_minus) nu_minus=g[i]; 
 		if(g[i]>nu_plus) nu_plus=g[i];
@@ -989,7 +988,7 @@ void optimize_p(const double* g, int u, double T, double r, double* p)
 	double BnuPrime=0.0;
 	double s=0.0;
 	double tmp=0.0;
-	for(int i=0;i<u;i++)
+	for (int32_t i=0;i<u;i++)
 	{
 		s=exp((g[i]-nu)/T);
 		if(!(isinf(s)))
@@ -1014,7 +1013,7 @@ void optimize_p(const double* g, int u, double T, double r, double* p)
 			nu=nuHat; 
 		Bnu=0.0;
 		BnuPrime=0.0;
-		for(int i=0;i<u;i++)
+		for(int32_t i=0;i<u;i++)
 		{
 			s=exp((g[i]-nu)/T);
 			if(!(isinf(s)))
@@ -1037,7 +1036,7 @@ void optimize_p(const double* g, int u, double T, double r, double* p)
 	if(CMath::abs(Bnu)>epsilon)
 		SG_SWARNING("Warning (Root): root not found to required precision\n");
 
-	for(int i=0;i<u;i++)
+	for (int32_t i=0;i<u;i++)
 	{
 		s=exp((g[i]-nu)/T);
 		if(isinf(s)) p[i]=0.0;
@@ -1045,11 +1044,14 @@ void optimize_p(const double* g, int u, double T, double r, double* p)
 	}
 	SG_SINFO(" root (nu) = %f B(nu) = %f", nu, Bnu);
 }
-double transductive_cost(double normWeights,double *Y, double *Outputs, int m, double lambda,double lambda_u)
+
+double transductive_cost(
+	double normWeights, double *Y, double *Outputs, int32_t m, double lambda,
+	double lambda_u)
 {
 	double F1=0.0,F2=0.0, o=0.0, y=0.0; 
-	int u=0,l=0;
-	for(int i=0;i<m;i++)
+	int32_t u=0,l=0;
+	for (int32_t i=0;i<m;i++)
 	{
 		o=Outputs[i];
 		y=Y[i];
@@ -1063,11 +1065,11 @@ double transductive_cost(double normWeights,double *Y, double *Outputs, int m, d
 	return F;
 }
 
-double entropy(const double *p, int u)
+double entropy(const double *p, int32_t u)
 {
 	double h=0.0;
-	double q=0.0; 
-	for(int i=0;i<u;i++)
+	double q=0.0;
+	for (int32_t i=0;i<u;i++)
 	{
 		q=p[i];
 		if(q>0 && q<1)
@@ -1075,13 +1077,14 @@ double entropy(const double *p, int u)
 	}
 	return h/u;
 }
-double KL(const double *p, const double *q, int u)
+
+double KL(const double *p, const double *q, int32_t u)
 {
 	double h=0.0;
 	double p1=0.0;
 	double q1=0.0;
 	double g=0.0;
-	for(int i=0;i<u;i++)
+	for (int32_t i=0;i<u;i++)
 	{
 		p1=p[i];
 		q1=q[i];
@@ -1095,45 +1098,49 @@ double KL(const double *p, const double *q, int u)
 	}
 	return h/u;   
 }
+
 /********************** UTILITIES ********************/
 double norm_square(const vector_double *A)
 {
 	double x=0.0, t=0.0;
-	for(int i=0;i<A->d;i++)
+	for(int32_t i=0;i<A->d;i++)
 	{
 		t=A->vec[i];
 		x+=t*t;
 	}
 	return x;
-} 
-void initialize(struct vector_double *A, int k, double a)
+}
+
+void initialize(struct vector_double *A, int32_t k, double a)
 {
 	double *vec = new double[k];
-	for(int i=0;i<k;i++)
+	for (int32_t i=0;i<k;i++)
 		vec[i]=a;
 	A->vec = vec;
 	A->d   = k;
 	return;
 }
-void initialize(struct vector_int *A, int k)
-{  
-	int *vec = new int[k];
-	for(int i=0;i<k;i++)
+
+void initialize(struct vector_int *A, int32_t k)
+{
+	int32_t *vec = new int32_t[k];
+	for(int32_t i=0;i<k;i++)
 		vec[i]=i; 
 	A->vec = vec;
 	A->d   = k;
 	return;
 }
+
 void GetLabeledData(struct data *D, const struct data *Data)
 {
 	/*FIXME
-	int *J = new int[Data->l];
+	int32_t *J = new int[Data->l];
 	D->C   = new double[Data->l];
 	D->Y   = new double[Data->l];
-	int nz=0;
-	int k=0;
-	int rowptrs_=Data->l;
-	for(int i=0;i<Data->m;i++)
+	int32_t nz=0;
+	int32_t k=0;
+	int32_t rowptrs_=Data->l;
+	for(int32_t i=0;i<Data->m;i++)
 	{
 		if(Data->Y[i]!=0.0)
 		{
@@ -1145,13 +1152,13 @@ void GetLabeledData(struct data *D, const struct data *Data)
 		}
 	}  
 	D->val    = new double[nz];
-	D->colind = new int[nz]; 
-	D->rowptr = new int[rowptrs_+1];
+	D->colind = new int32_t[nz]; 
+	D->rowptr = new int32_trowptrs_+1];
 	nz=0;
-	for(int i=0;i<Data->l;i++)
+	for(int32_t i=0;i<Data->l;i++)
 	{
 		D->rowptr[i]=nz;
-		for(int j=Data->rowptr[J[i]];j<Data->rowptr[J[i]+1];j++)
+		for(int32_t j=Data->rowptr[J[i]];j<Data->rowptr[J[i]+1];j++)
 		{
 			D->val[nz] = Data->val[j];
 			D->colind[nz] = Data->colind[j];

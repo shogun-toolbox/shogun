@@ -16,13 +16,13 @@
 #include "features/Features.h"
 #include "features/RealFeatures.h"
 
-CSigmoidKernel::CSigmoidKernel(INT size, DREAL g, DREAL c)
+CSigmoidKernel::CSigmoidKernel(int32_t size, DREAL g, DREAL c)
 : CSimpleKernel<DREAL>(size),gamma(g), coef0(c)
 {
 }
 
 CSigmoidKernel::CSigmoidKernel(
-	CRealFeatures* l, CRealFeatures* r, INT size, DREAL g, DREAL c)
+	CRealFeatures* l, CRealFeatures* r, int32_t size, DREAL g, DREAL c)
 : CSimpleKernel<DREAL>(size),gamma(g), coef0(c)
 {
 	init(l,r);
@@ -53,9 +53,9 @@ bool CSigmoidKernel::save_init(FILE* dest)
 	return false;
 }
 
-DREAL CSigmoidKernel::compute(INT idx_a, INT idx_b)
+DREAL CSigmoidKernel::compute(int32_t idx_a, int32_t idx_b)
 {
-	INT alen, blen;
+	int32_t alen, blen;
 	bool afree, bfree;
 
 	double* avec=((CRealFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
@@ -65,11 +65,11 @@ DREAL CSigmoidKernel::compute(INT idx_a, INT idx_b)
 #ifndef HAVE_LAPACK
 	DREAL result=0;
 	{
-		for (INT i=0; i<alen; i++)
+		for (int32_t i=0; i<alen; i++)
 			result+=avec[i]*bvec[i];
 	}
 #else
-	INT skip=1;
+	int32_t skip=1;
 	DREAL result = cblas_ddot(alen, avec, skip, bvec, skip);
 #endif
 

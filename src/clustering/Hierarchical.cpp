@@ -22,9 +22,9 @@
 struct pair
 {
 	/** index 1 */
-	int idx1;
+	int32_t idx1;
 	/** index 2 */
-	int idx2;
+	int32_t idx2;
 };
 
 CHierarchical::CHierarchical()
@@ -33,7 +33,7 @@ CHierarchical::CHierarchical()
 {
 }
 
-CHierarchical::CHierarchical(INT merges_, CDistance* d)
+CHierarchical::CHierarchical(int32_t merges_, CDistance* d)
 : CDistanceMachine(), merges(merges_), dimensions(0), assignment(NULL),
 	table_size(0), pairs(NULL), merge_distance(NULL)
 {
@@ -53,30 +53,30 @@ bool CHierarchical::train()
 	CFeatures* lhs=distance->get_lhs();
 	ASSERT(lhs);
 
-	INT num=lhs->get_num_vectors();
+	int32_t num=lhs->get_num_vectors();
 	ASSERT(num>0);
 
-	const INT num_pairs=num*(num-1)/2;
+	const int32_t num_pairs=num*(num-1)/2;
 
 	delete[] merge_distance;
 	merge_distance=new DREAL[num];
 	CMath::fill_vector(merge_distance, num, -1.0);
 
 	delete[] assignment;
-	assignment=new INT[num];
+	assignment=new int32_t[num];
 	CMath::range_fill_vector(assignment, num);
 
 	delete[] pairs;
-	pairs=new INT[2*num];
+	pairs=new int32_t[2*num];
 	CMath::fill_vector(pairs, 2*num, -1);
 
 	pair* index=new pair[num_pairs];
 	DREAL* distances=new DREAL[num_pairs];
 
-	INT offs=0;
-	for (INT i=0; i<num; i++)
+	int32_t offs=0;
+	for (int32_t i=0; i<num; i++)
 	{
-		for (INT j=i+1; j<num; j++)
+		for (int32_t j=i+1; j<num; j++)
 		{
 			distances[offs]=distance->distance(i,j);
 			index[offs].idx1=i;
@@ -89,18 +89,18 @@ bool CHierarchical::train()
 	CMath::qsort_index<DREAL,pair>(distances, index, (num-1)*num/2);
 	//CMath::display_vector(distances, (num-1)*num/2, "dists");
 
-	INT k=-1;
-	INT l=0;
+	int32_t k=-1;
+	int32_t l=0;
 	for (; l<num && (num-l)>=merges && k<num_pairs-1; l++)
 	{
 		while (k<num_pairs-1)
 		{
 			k++;
 
-			INT i=index[k].idx1;
-			INT j=index[k].idx2;
-			INT c1=assignment[i];
-			INT c2=assignment[j];
+			int32_t i=index[k].idx1;
+			int32_t j=index[k].idx2;
+			int32_t c1=assignment[i];
+			int32_t c2=assignment[j];
 
 			if (c1==c2)
 				continue;
@@ -119,8 +119,8 @@ bool CHierarchical::train()
 			}
 			merge_distance[l]=distances[k];
 
-			INT c=num+l;
-			for (INT m=0; m<num; m++)
+			int32_t c=num+l;
+			for (int32_t m=0; m<num; m++)
 			{
 				if (assignment[m] == c1 || assignment[m] == c2)
 					assignment[m] = c;

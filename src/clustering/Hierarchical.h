@@ -43,7 +43,7 @@ class CHierarchical : public CDistanceMachine
 		 * @param merges the merges
 		 * @param d distance
 		 */
-		CHierarchical(INT merges, CDistance* d);
+		CHierarchical(int32_t merges, CDistance* d);
 		virtual ~CHierarchical();
 
 		/** get classifier type
@@ -76,7 +76,7 @@ class CHierarchical : public CDistanceMachine
 		 *
 		 * @param m new merges
 		 */
-		inline void set_merges(INT m)
+		inline void set_merges(int32_t m)
 		{
 			ASSERT(m>0);
 			merges=m;
@@ -86,7 +86,7 @@ class CHierarchical : public CDistanceMachine
 		 *
 		 * @return merges
 		 */
-		inline INT get_merges()
+		inline int32_t get_merges()
 		{
 			return merges;
 		}
@@ -96,7 +96,7 @@ class CHierarchical : public CDistanceMachine
 		 * @param assign current assignment is stored in here
 		 * @param num number of assignments is stored in here
 		 */
-		inline void get_assignment(INT*& assign, INT& num)
+		inline void get_assignment(int32_t*& assign, int32_t& num)
 		{
 			assign=assignment;
 			num=table_size;
@@ -107,7 +107,7 @@ class CHierarchical : public CDistanceMachine
 		 * @param dist current merge distance is stored in here
 		 * @param num number of merge distances is stored in here
 		 */
-		inline void get_merge_distance(DREAL*& dist, INT& num)
+		inline void get_merge_distance(DREAL*& dist, int32_t& num)
 		{
 			dist=merge_distance;
 			num=merges;
@@ -118,7 +118,7 @@ class CHierarchical : public CDistanceMachine
 		 * @param dist current merge distances is stored in here
 		 * @param num number of merge distances is stored in here
 		 */
-		inline void get_merge_distances(DREAL** dist, INT* num)
+		inline void get_merge_distances(DREAL** dist, int32_t* num)
 		{
 			size_t sz=sizeof(*merge_distance)*merges;
 			*dist=(DREAL*) malloc(sz);
@@ -134,7 +134,7 @@ class CHierarchical : public CDistanceMachine
 		 * @param rows number of rows is stored in here
 		 * @param num number of pairs is stored in here
 		 */
-		inline void get_pairs(INT*& tuples, INT& rows, INT& num)
+		inline void get_pairs(int32_t*& tuples, int32_t& rows, int32_t& num)
 		{
 			tuples=pairs;
 			rows=2;
@@ -147,11 +147,11 @@ class CHierarchical : public CDistanceMachine
 		 * @param rows number of rows is stored in here
 		 * @param num number of pairs is stored in here
 		 */
-		inline void get_cluster_pairs(INT** tuples, INT* rows, INT* num)
+		inline void get_cluster_pairs(int32_t** tuples, int32_t* rows, int32_t* num)
 		{
 			*rows=2;
 			size_t sz=sizeof(*pairs)*(*rows)*merges;
-			*tuples=(INT*) malloc(sz);
+			*tuples=(int32_t*) malloc(sz);
 			ASSERT(*tuples);
 
 			memcpy(*tuples, pairs, sz);
@@ -160,22 +160,22 @@ class CHierarchical : public CDistanceMachine
 
 	protected:
 		/// the number of merges in hierarchical clustering
-		INT merges;
+		int32_t merges;
 
 		/// number of dimensions
-		INT dimensions;
+		int32_t dimensions;
 
 		/// size of assignment table
-		INT assignment_size;
+		int32_t assignment_size;
 
 		/// cluster assignment for the num_points
-		INT* assignment;
+		int32_t* assignment;
 
 		/// size of the below tables
-		INT table_size;
+		int32_t table_size;
 
 		/// tuples of i/j
-		INT* pairs;
+		int32_t* pairs;
 
 		/// distance at which pair i/j was added
 		DREAL* merge_distance;

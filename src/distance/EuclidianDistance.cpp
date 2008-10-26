@@ -53,9 +53,9 @@ bool CEuclidianDistance::save_init(FILE* dest)
 	return false;
 }
 
-DREAL CEuclidianDistance::compute(INT idx_a, INT idx_b)
+DREAL CEuclidianDistance::compute(int32_t idx_a, int32_t idx_b)
 {
-	INT alen, blen;
+	int32_t alen, blen;
 	bool afree, bfree;
 	DREAL result=0;
 
@@ -63,7 +63,7 @@ DREAL CEuclidianDistance::compute(INT idx_a, INT idx_b)
 	DREAL* bvec=((CRealFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
 	ASSERT(alen==blen);
 
-	for (INT i=0; i<alen; i++)
+	for (int32_t i=0; i<alen; i++)
 		result+=CMath::sq(avec[i] - bvec[i]);
 
 	((CRealFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);

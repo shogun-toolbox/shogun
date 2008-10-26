@@ -13,9 +13,9 @@
 l2_lr_fun::l2_lr_fun(const problem *p, double Cp, double Cn)
 : function()
 {
-	int i;
-	int l=p->l;
-	int *y=p->y;
+	int32_t i;
+	int32_t l=p->l;
+	int32_t *y=p->y;
 
 	this->prob = p;
 
@@ -42,11 +42,11 @@ l2_lr_fun::~l2_lr_fun()
 
 double l2_lr_fun::fun(double *w)
 {
-	int i;
+	int32_t i;
 	double f=0;
-	int *y=prob->y;
-	int l=prob->l;
-	int n=prob->n;
+	int32_t *y=prob->y;
+	int32_t l=prob->l;
+	int32_t n=prob->n;
 
 	Xv(w, z);
 	for(i=0;i<l;i++)
@@ -67,10 +67,10 @@ double l2_lr_fun::fun(double *w)
 
 void l2_lr_fun::grad(double *w, double *g)
 {
-	int i;
-	int *y=prob->y;
-	int l=prob->l;
-	int n=prob->n;
+	int32_t i;
+	int32_t *y=prob->y;
+	int32_t l=prob->l;
+	int32_t n=prob->n;
 
 	for(i=0;i<l;i++)
 	{
@@ -84,16 +84,16 @@ void l2_lr_fun::grad(double *w, double *g)
 		g[i] = w[i] + g[i];
 }
 
-int l2_lr_fun::get_nr_variable(void)
+int32_t l2_lr_fun::get_nr_variable(void)
 {
 	return prob->n;
 }
 
 void l2_lr_fun::Hv(double *s, double *Hs)
 {
-	int i;
-	int l=prob->l;
-	int n=prob->n;
+	int32_t i;
+	int32_t l=prob->l;
+	int32_t n=prob->n;
 	double *wa = new double[l];
 
 	Xv(s, wa);
@@ -108,13 +108,13 @@ void l2_lr_fun::Hv(double *s, double *Hs)
 
 void l2_lr_fun::Xv(double *v, double *res_Xv)
 {
-	int l=prob->l;
-	int n=prob->n;
+	int32_t l=prob->l;
+	int32_t n=prob->n;
 
 	if (prob->use_bias)
 		n--;
 
-	for (int i=0;i<l;i++)
+	for (int32_t i=0;i<l;i++)
 	{
 		res_Xv[i]=prob->x->dense_dot(1.0, i, v, n, 0);
 
@@ -125,15 +125,15 @@ void l2_lr_fun::Xv(double *v, double *res_Xv)
 
 void l2_lr_fun::XTv(double *v, double *res_XTv)
 {
-	int l=prob->l;
-	int n=prob->n;
+	int32_t l=prob->l;
+	int32_t n=prob->n;
 
 	if (prob->use_bias)
 		n--;
 
 	memset(res_XTv, 0, sizeof(double)*prob->n);
 
-	for (int i=0;i<l;i++)
+	for (int32_t i=0;i<l;i++)
 	{
 		prob->x->add_to_dense_vec(v[i], i, res_XTv, n);
 
@@ -145,16 +145,16 @@ void l2_lr_fun::XTv(double *v, double *res_XTv)
 l2loss_svm_fun::l2loss_svm_fun(const problem *p, double Cp, double Cn)
 : function()
 {
-	int i;
-	int l=p->l;
-	int *y=p->y;
+	int32_t i;
+	int32_t l=p->l;
+	int32_t *y=p->y;
 
 	this->prob = p;
 
 	z = new double[l];
 	D = new double[l];
 	C = new double[l];
-	I = new int[l];
+	I = new int32_t[l];
 
 	for (i=0; i<l; i++)
 	{
@@ -175,11 +175,11 @@ l2loss_svm_fun::~l2loss_svm_fun()
 
 double l2loss_svm_fun::fun(double *w)
 {
-	int i;
+	int32_t i;
 	double f=0;
-	int *y=prob->y;
-	int l=prob->l;
-	int n=prob->n;
+	int32_t *y=prob->y;
+	int32_t l=prob->l;
+	int32_t n=prob->n;
 
 	Xv(w, z);
 	for(i=0;i<l;i++)
@@ -199,10 +199,10 @@ double l2loss_svm_fun::fun(double *w)
 
 void l2loss_svm_fun::grad(double *w, double *g)
 {
-	int i;
-	int *y=prob->y;
-	int l=prob->l;
-	int n=prob->n;
+	int32_t i;
+	int32_t *y=prob->y;
+	int32_t l=prob->l;
+	int32_t n=prob->n;
 
 	sizeI = 0;
 	for (i=0;i<l;i++)
@@ -218,16 +218,16 @@ void l2loss_svm_fun::grad(double *w, double *g)
 		g[i] = w[i] + 2*g[i];
 }
 
-int l2loss_svm_fun::get_nr_variable(void)
+int32_t l2loss_svm_fun::get_nr_variable(void)
 {
 	return prob->n;
 }
 
 void l2loss_svm_fun::Hv(double *s, double *Hs)
 {
-	int i;
-	int l=prob->l;
-	int n=prob->n;
+	int32_t i;
+	int32_t l=prob->l;
+	int32_t n=prob->n;
 	double *wa = new double[l];
 
 	subXv(s, wa);
@@ -242,13 +242,13 @@ void l2loss_svm_fun::Hv(double *s, double *Hs)
 
 void l2loss_svm_fun::Xv(double *v, double *res_Xv)
 {
-	int l=prob->l;
-	int n=prob->n;
+	int32_t l=prob->l;
+	int32_t n=prob->n;
 
 	if (prob->use_bias)
 		n--;
 
-	for(int i=0;i<l;i++)
+	for (int32_t i=0;i<l;i++)
 	{
 		res_Xv[i]=prob->x->dense_dot(1.0, i, v, n, 0);
 
@@ -259,12 +259,12 @@ void l2loss_svm_fun::Xv(double *v, double *res_Xv)
 
 void l2loss_svm_fun::subXv(double *v, double *res_Xv)
 {
-	int n=prob->n;
+	int32_t n=prob->n;
 
 	if (prob->use_bias)
 		n--;
 
-	for(int i=0;i<sizeI;i++)
+	for (int32_t i=0;i<sizeI;i++)
 	{
 		res_Xv[i]=prob->x->dense_dot(1.0, I[i], v, n, 0);
 
@@ -275,13 +275,13 @@ void l2loss_svm_fun::subXv(double *v, double *res_Xv)
 
 void l2loss_svm_fun::subXTv(double *v, double *XTv)
 {
-	int n=prob->n;
+	int32_t n=prob->n;
 
 	if (prob->use_bias)
 		n--;
 
 	memset(XTv, 0, sizeof(double)*prob->n);
-	for(int i=0;i<sizeI;i++)
+	for (int32_t i=0;i<sizeI;i++)
 	{
 		prob->x->add_to_dense_vec(v[i], I[i], XTv, n);
 		

@@ -56,7 +56,7 @@ class CGUIKernel : public CSGObject
 	bool clean_kernel();
 #ifdef USE_SVMLIGHT
 	/** resize kernel cache */
-	bool resize_kernel_cache(INT size);
+	bool resize_kernel_cache(int32_t size);
 #endif //USE_SVMLIGHT
 	/** set optimization type */
 	bool set_optimization_type(char* opt_type);
@@ -69,90 +69,90 @@ class CGUIKernel : public CSGObject
 #ifdef HAVE_MINDY
 	/** create a new MindyGram kernel */
 	CKernel* CGUIKernel::create_mindygram(
-		INT size=10, char* meas_str=NULL, char* norm_str=NULL,
+		int32_t size=10, char* meas_str=NULL, char* norm_str=NULL,
 		DREAL width=1, char* param_str=NULL)
 #endif
 
 	/** create Oligo kernel */
-	CKernel* create_oligo(INT size, INT k, DREAL width);
+	CKernel* create_oligo(int32_t size, int32_t k, DREAL width);
 	/** create a new Diag kernel */
-	CKernel* create_diag(INT size=10, DREAL diag=1);
+	CKernel* create_diag(int32_t size=10, DREAL diag=1);
 	/** create a new Const kernel */
-	CKernel* create_const(INT size=10, DREAL c=1);
+	CKernel* create_const(int32_t size=10, DREAL c=1);
 	/** create a new Custom kernel */
 	CKernel* create_custom();
 	/** create a new GaussianShift kernel */
 	CKernel* create_gaussianshift(
-		INT size=10, DREAL width=1, INT max_shift=0, INT shift_step=1);
+		int32_t size=10, DREAL width=1, int32_t max_shift=0, int32_t shift_step=1);
 	/** create a new SparseGaussian kernel */
-	CKernel* create_sparsegaussian(INT size=10, DREAL width=1);
+	CKernel* create_sparsegaussian(int32_t size=10, DREAL width=1);
 	/** create a new Gaussian kernel */
-	CKernel* create_gaussian(INT size=10, DREAL width=1);
+	CKernel* create_gaussian(int32_t size=10, DREAL width=1);
 	/** create a new Sigmoid kernel */
-	CKernel* create_sigmoid(INT size=10, DREAL gamma=0.01, DREAL coef0=0);
+	CKernel* create_sigmoid(int32_t size=10, DREAL gamma=0.01, DREAL coef0=0);
 	/** create a new SparsePoly kernel */
-	CKernel* create_sparsepoly(INT size=10, INT degree=2,
+	CKernel* create_sparsepoly(int32_t size=10, int32_t degree=2,
 			bool inhomogene=false, bool normalize=true);
 	/** create a new Poly kernel */
-	CKernel* create_poly(INT size=10, INT degree=2,
+	CKernel* create_poly(int32_t size=10, int32_t degree=2,
 			bool inhomogene=false, bool normalize=true);
 	/** create a new (Simple)LocalityImprovedString kernel */
 	CKernel* create_localityimprovedstring(
-		INT size=10, INT length=3, INT inner_degree=3,
-		INT outer_degree=1, EKernelType ktype=K_LOCALITYIMPROVED);
+		int32_t size=10, int32_t length=3, int32_t inner_degree=3,
+		int32_t outer_degree=1, EKernelType ktype=K_LOCALITYIMPROVED);
 	/** create a new WeightedDegreeString kernel */
 	CKernel* create_weighteddegreestring(
-		INT size=10, INT order=3, INT max_mismatch=1,
-		bool use_normalization=true, INT mkl_stepsize=1,
-		bool block_computation=true, INT single_degree=-1);
+		int32_t size=10, int32_t order=3, int32_t max_mismatch=1,
+		bool use_normalization=true, int32_t mkl_stepsize=1,
+		bool block_computation=true, int32_t single_degree=-1);
 	/** create a new WeightedDegreePositionString kernel */
 	CKernel* create_weighteddegreepositionstring(
-		INT size=10, INT order=3, INT max_mismatch=1, INT length=0,
-		INT center=0, DREAL step=1);
+		int32_t size=10, int32_t order=3, int32_t max_mismatch=1, int32_t length=0,
+		int32_t center=0, DREAL step=1);
 	CKernel* create_weighteddegreepositionstring3(
-		INT size=10, INT order=3, INT max_mismatch=1,
-		INT* shifts=NULL, INT length=0, INT mkl_stepsize=1,
+		int32_t size=10, int32_t order=3, int32_t max_mismatch=1,
+		int32_t* shifts=NULL, int32_t length=0, int32_t mkl_stepsize=1,
 		DREAL* position_weights=NULL);
 	CKernel* create_weighteddegreepositionstring2(
-		INT size=10, INT order=3, INT max_mismatch=1,
-		INT* shifts=NULL, INT length=0, bool use_normalization=true);
+		int32_t size=10, int32_t order=3, int32_t max_mismatch=1,
+		int32_t* shifts=NULL, int32_t length=0, bool use_normalization=true);
 	/** create a new LocalAlignmentString kernel */
-	CKernel* create_localalignmentstring(INT size=10);
+	CKernel* create_localalignmentstring(int32_t size=10);
 	/** create a new FixedDegreeString kernel */
-	CKernel* create_fixeddegreestring(INT size=10, INT d=3);
+	CKernel* create_fixeddegreestring(int32_t size=10, int32_t d=3);
 	/** create a new Chi2 kernel */
-	CKernel* create_chi2(INT size=10, DREAL width=1);
+	CKernel* create_chi2(int32_t size=10, DREAL width=1);
 	/** create a new WeightedCommWord/CommWord/CommULongString kernel */
 	CKernel* create_commstring(
-		INT size=10, bool use_sign=false, char* norm_str=NULL,
+		int32_t size=10, bool use_sign=false, char* norm_str=NULL,
 		EKernelType ktype=K_WEIGHTEDCOMMWORDSTRING);
 	/** create a new MatchWordString kernel */
-	CKernel* create_matchwordstring(INT size=10, INT d=3, bool normalize=true);
+	CKernel* create_matchwordstring(int32_t size=10, int32_t d=3, bool normalize=true);
 	/** create a new PolyMatchString kernel */
-	CKernel* create_polymatchstring(INT size=10,
-			INT degree=2, bool inhomogene=false, bool normalize=true);
+	CKernel* create_polymatchstring(int32_t size=10,
+			int32_t degree=2, bool inhomogene=false, bool normalize=true);
 	/** create a new PolyMatchWordString kernel */
-	CKernel* create_polymatchwordstring(INT size=10,
-			INT degree=2, bool inhomogene=false, bool normalize=true);
+	CKernel* create_polymatchwordstring(int32_t size=10,
+			int32_t degree=2, bool inhomogene=false, bool normalize=true);
 	/** create a new SalzbergWord kernel */
-	CKernel* create_salzbergword(INT size=10);
+	CKernel* create_salzbergword(int32_t size=10);
 	/** create a new HistogramWord kernel */
-	CKernel* create_histogramword(INT size=10);
+	CKernel* create_histogramword(int32_t size=10);
 	/** create a new LinearByte kernel */
-	CKernel* create_linearbyte(INT size=10, DREAL scale=-1);
+	CKernel* create_linearbyte(int32_t size=10, DREAL scale=-1);
 	/** create a new LinearWord kernel */
-	CKernel* create_linearword(INT size=10, DREAL scale=-1);
+	CKernel* create_linearword(int32_t size=10, DREAL scale=-1);
 	/** create a new LinearString kernel */
-	CKernel* create_linearstring(INT size=10, DREAL scale=-1);
+	CKernel* create_linearstring(int32_t size=10, DREAL scale=-1);
 	/** create a new Linear kernel */
-	CKernel* create_linear(INT size=10, DREAL scale=-1);
+	CKernel* create_linear(int32_t size=10, DREAL scale=-1);
 	/** create a new SparseLinear kernel */
-	CKernel* create_sparselinear(INT size=10, DREAL scale=-1);
+	CKernel* create_sparselinear(int32_t size=10, DREAL scale=-1);
 	/** create a new Distance kernel */
-	CKernel* create_distance(INT size=10, DREAL width=1);
+	CKernel* create_distance(int32_t size=10, DREAL width=1);
 	/** create a new Combined kernel */
 	CKernel* create_combined(
-		INT size=10, bool append_subkernel_weights=false);
+		int32_t size=10, bool append_subkernel_weights=false);
 
 
  protected:
@@ -161,7 +161,7 @@ class CGUIKernel : public CSGObject
 	bool initialized;
 
  private:
-	DREAL* get_weights(INT order, INT max_mismatch);
+	DREAL* get_weights(int32_t order, int32_t max_mismatch);
 
 };
 #endif //HAVE_SWIG

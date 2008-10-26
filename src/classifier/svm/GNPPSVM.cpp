@@ -33,11 +33,11 @@ bool CGNPPSVM::train()
 	ASSERT(kernel);
 	ASSERT(labels && labels->get_num_labels());
 
-	INT num_data=labels->get_num_labels();
+	int32_t num_data=labels->get_num_labels();
 	SG_INFO("%d trainlabels\n", num_data);
 
 	DREAL* vector_y = new double[num_data];
-	for (int i=0; i<num_data; i++)
+	for (int32_t i=0; i<num_data; i++)
 	{
 		if (get_labels()->get_label(i)==+1)
 			vector_y[i]=1;
@@ -48,7 +48,7 @@ bool CGNPPSVM::train()
 	}
 
 	DREAL C=get_C1();
-	INT tmax=1000000000;
+	int32_t tmax=1000000000;
 	DREAL tolabs=0;
 	DREAL tolrel=epsilon;
 
@@ -57,7 +57,7 @@ bool CGNPPSVM::train()
 		reg_const=1/C;
 
 	DREAL* diagK=new DREAL[num_data];
-	for(INT i=0; i<num_data; i++) {
+	for(int32_t i=0; i<num_data; i++) {
 		diagK[i]=2*kernel->kernel(i,i)+reg_const;
 	}
 
@@ -66,9 +66,9 @@ bool CGNPPSVM::train()
 	memset(vector_c, 0, num_data*sizeof(DREAL));
 
 	DREAL thlb=10000000000.0;
-	INT t=0;
+	int32_t t=0;
 	DREAL* History=NULL;
-	INT verb=0;
+	int32_t verb=0;
 	DREAL aHa11, aHa22;
 
 	CGNPPLib npp(vector_y,kernel,num_data, reg_const);
@@ -77,11 +77,11 @@ bool CGNPPSVM::train()
 			tmax, tolabs, tolrel, thlb, alpha, &t, &aHa11, &aHa22, 
 			&History, verb ); 
 
-	INT num_sv = 0;
+	int32_t num_sv = 0;
 	DREAL nconst = History[INDEX(1,t,2)];
 	DREAL trnerr = 0; /* counter of training error */
 
-	for(INT i = 0; i < num_data; i++ )
+	for(int32_t i = 0; i < num_data; i++ )
 	{
 		if( alpha[i] != 0 ) num_sv++;
 		if(vector_y[i] == 1) 
@@ -102,8 +102,8 @@ bool CGNPPSVM::train()
 	CSVM::set_objective(nconst);
 
 	set_bias(b);
-	INT j = 0;
-	for (int i=0; i<num_data; i++)
+	int32_t j = 0;
+	for (int32_t i=0; i<num_data; i++)
 	{
 		if( alpha[i] !=0)
 		{

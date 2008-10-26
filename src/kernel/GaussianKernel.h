@@ -32,7 +32,7 @@ class CGaussianKernel: public CSimpleKernel<DREAL>
 		 * @param size cache size
 		 * @param width width
 		 */
-		CGaussianKernel(INT size, DREAL width);
+		CGaussianKernel(int32_t size, DREAL width);
 
 		/** constructor
 		 *
@@ -42,7 +42,7 @@ class CGaussianKernel: public CSimpleKernel<DREAL>
 		 * @param size cache size
 		 */
 		CGaussianKernel(CRealFeatures* l, CRealFeatures* r,
-			DREAL width, INT size=10);
+			DREAL width, int32_t size=10);
 
 		virtual ~CGaussianKernel();
 
@@ -89,7 +89,7 @@ class CGaussianKernel: public CSimpleKernel<DREAL>
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		virtual DREAL compute(INT idx_a, INT idx_b);
+		virtual DREAL compute(int32_t idx_a, int32_t idx_b);
 
 	protected:
 		/** width */

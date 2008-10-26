@@ -13,7 +13,7 @@
 #include "features/StringFeatures.h"
 #include "lib/io.h"
 
-CFKFeatures::CFKFeatures(INT size, CHMM* p, CHMM* n)
+CFKFeatures::CFKFeatures(int32_t size, CHMM* p, CHMM* n)
 : CRealFeatures(size)
 {
 	pos_prob=NULL;
@@ -33,11 +33,11 @@ CFKFeatures::~CFKFeatures()
 	SG_UNREF(neg);
 }
 
-double CFKFeatures::deriv_a(double a, INT dimension)
+double CFKFeatures::deriv_a(double a, int32_t dimension)
 {
 	CStringFeatures<uint16_t> *Obs=pos->get_observations() ;
 	double deriv=0.0 ;
-	INT i=dimension ;
+	int32_t i=dimension ;
 
 	if (dimension==-1)
 	{
@@ -88,7 +88,7 @@ double CFKFeatures::set_opt_a(double a)
 		SG_INFO( "estimating a.\n");
 		pos_prob=new double[pos->get_observations()->get_num_vectors()];
 		neg_prob=new double[pos->get_observations()->get_num_vectors()];
-		for (INT i=0; i<pos->get_observations()->get_num_vectors(); i++)
+		for (int32_t i=0; i<pos->get_observations()->get_num_vectors(); i++)
 		{
 			pos_prob[i]=pos->model_probability(i) ;
 			neg_prob[i]=neg->model_probability(i) ;
@@ -138,7 +138,7 @@ void CFKFeatures::set_models(CHMM* p, CHMM* n)
 		num_features=1+pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M()) ;
 }
 
-DREAL* CFKFeatures::compute_feature_vector(INT num, INT &len, DREAL* target)
+DREAL* CFKFeatures::compute_feature_vector(int32_t num, int32_t &len, DREAL* target)
 {
   DREAL* featurevector=target;
   
@@ -153,9 +153,9 @@ DREAL* CFKFeatures::compute_feature_vector(INT num, INT &len, DREAL* target)
   return featurevector;
 }
 
-void CFKFeatures::compute_feature_vector(DREAL* featurevector, INT num, INT& len)
+void CFKFeatures::compute_feature_vector(DREAL* featurevector, int32_t num, int32_t& len)
 {
-	INT i,j,p=0,x=num;
+	int32_t i,j,p=0,x=num;
 
 	double posx=pos->model_probability(x);
 	double negx=neg->model_probability(x);
@@ -204,7 +204,7 @@ DREAL* CFKFeatures::set_feature_matrix()
 	ASSERT(neg);
 	ASSERT(neg->get_observations());
 
-	INT len=0;
+	int32_t len=0;
 	num_features=1+ pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M());
 
 	num_vectors=pos->get_observations()->get_num_vectors();
@@ -216,7 +216,7 @@ DREAL* CFKFeatures::set_feature_matrix()
 
 	SG_INFO( "calculating FK feature matrix\n");
 
-	for (INT x=0; x<num_vectors; x++)
+	for (int32_t x=0; x<num_vectors; x++)
 	{
 		if (!(x % (num_vectors/10+1)))
 			SG_DEBUG("%02d%%.", (int) (100.0*x/num_vectors));

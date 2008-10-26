@@ -76,7 +76,7 @@ template<> inline EFeatureType CSimpleDistance<ULONG>::get_feature_type() { retu
  *
  * @return feature type INT
  */
-template<> inline EFeatureType CSimpleDistance<INT>::get_feature_type() { return F_INT; }
+template<> inline EFeatureType CSimpleDistance<int32_t>::get_feature_type() { return F_INT; }
 
 /** get feature type the WORD distance can deal with
  *

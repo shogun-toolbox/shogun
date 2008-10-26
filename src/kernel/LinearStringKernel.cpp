@@ -59,18 +59,18 @@ void CLinearStringKernel::clear_normal()
 	memset(normal, 0, lhs->get_num_vectors()*sizeof(DREAL));
 }
 
-void CLinearStringKernel::add_to_normal(INT idx, DREAL weight)
+void CLinearStringKernel::add_to_normal(int32_t idx, DREAL weight)
 {
-	INT vlen;
+	int32_t vlen;
 	char* vec = ((CStringFeatures<char>*) lhs)->get_feature_vector(idx, vlen);
 
-	for (INT i=0; i<vlen; i++)
+	for (int32_t i=0; i<vlen; i++)
 		normal[i] += weight*normalizer->normalize_lhs(vec[i], idx);
 }
 
-DREAL CLinearStringKernel::compute(INT idx_a, INT idx_b)
+DREAL CLinearStringKernel::compute(int32_t idx_a, int32_t idx_b)
 {
-	INT alen, blen;
+	int32_t alen, blen;
 
 	char *avec = ((CStringFeatures<char>*) lhs)->get_feature_vector(idx_a, alen);
 	char *bvec = ((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen);
@@ -79,12 +79,12 @@ DREAL CLinearStringKernel::compute(INT idx_a, INT idx_b)
 	return CMath::dot(avec, bvec, alen);
 }
 
-bool CLinearStringKernel::init_optimization(INT num_suppvec, INT *sv_idx,
+bool CLinearStringKernel::init_optimization(int32_t num_suppvec, int32_t *sv_idx,
 		DREAL *alphas)
 {
-	INT i, alen;
+	int32_t i, alen;
 
-	int num_feat = ((CStringFeatures<char>*) lhs)->get_max_vector_length();
+	int32_t num_feat = ((CStringFeatures<char>*) lhs)->get_max_vector_length();
 	ASSERT(num_feat);
 
 	normal = new DREAL[num_feat];
@@ -96,7 +96,7 @@ bool CLinearStringKernel::init_optimization(INT num_suppvec, INT *sv_idx,
 		char *avec = ((CStringFeatures<char>*) lhs)->get_feature_vector(sv_idx[i], alen);
 		ASSERT(avec);
 
-		for (INT j = 0; j<num_feat; j++)
+		for (int32_t j = 0; j<num_feat; j++)
 			normal[j] += alphas[i]*normalizer->normalize_lhs(((double) avec[j]), sv_idx[i]);
 	}
 	set_is_initialized(true);
@@ -111,9 +111,9 @@ bool CLinearStringKernel::delete_optimization()
 	return true;
 }
 
-DREAL CLinearStringKernel::compute_optimized(INT idx_b)
+DREAL CLinearStringKernel::compute_optimized(int32_t idx_b)
 {
-	INT blen;
+	int32_t blen;
 	char* bvec = ((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen);
 
 	return normalizer->normalize_rhs(CMath::dot(normal, bvec, blen), idx_b);

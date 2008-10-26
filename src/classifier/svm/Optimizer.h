@@ -24,9 +24,9 @@
 /** quadratic program */
 typedef struct quadratic_program {
   /** number of variables */
-  INT   opt_n;
+  int32_t   opt_n;
   /** number of linear equality constraints */
-  INT   opt_m;
+  int32_t   opt_m;
   /** linear equality constraint */
   double *opt_ce;
   /** linear equality constraint */
@@ -44,5 +44,5 @@ typedef struct quadratic_program {
 } QP;
 
 /* interface to QP-solver */
-double *optimize_qp(QP *qp,double *epsilon_crit, INT nx,double *threshold, INT& svm_maxqpsize);
+double *optimize_qp(QP *qp,double *epsilon_crit, int32_t nx,double *threshold, int32_t& svm_maxqpsize);
 #endif

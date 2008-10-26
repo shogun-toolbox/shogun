@@ -217,8 +217,8 @@ int require_dimensions(PyObject* ary, int exact_dimensions) {
  *
  * This family of typemaps allows pure input C arguments of the form
  *
- *     (type* IN_ARRAY1, int DIM1)
- *     (type* IN_ARRAY2, int DIM1, int DIM2)
+ *     (type* IN_ARRAY1, int32_t DIM1)
+ *     (type* IN_ARRAY2, int32_t DIM1, int32_t DIM2)
  *
  * where "type" is any type supported by the numpy module, to be
  * called in python with an argument list of a single array (or any
@@ -226,21 +226,21 @@ int require_dimensions(PyObject* ary, int exact_dimensions) {
  * to produce an arrayof te specified shape).  This can be applied to
  * a existing functions using the %apply directive:
  *
- *     %apply (double* IN_ARRAY1, int DIM1) {double* series, int length}
- *     %apply (double* IN_ARRAY2, int DIM1, int DIM2) {double* mx, int rows, int cols}
- *     double sum(double* series, int length);
- *     double max(double* mx, int rows, int cols);
+ *     %apply (double* IN_ARRAY1, int32_t DIM1) {double* series, int32_t length}
+ *     %apply (double* IN_ARRAY2, int32_t DIM1, int32_t DIM2) {double* mx, int32_t rows, int32_t cols}
+ *     double sum(double* series, int32_t length);
+ *     double max(double* mx, int32_t rows, int32_t cols);
  *
  * or with
  *
- *     double sum(double* IN_ARRAY1, int DIM1);
- *     double max(double* IN_ARRAY2, int DIM1, int DIM2);
+ *     double sum(double* IN_ARRAY1, int32_t DIM1);
+ *     double max(double* IN_ARRAY2, int32_t DIM1, int32_t DIM2);
  */
 
 /* One dimensional input arrays */
 %define TYPEMAP_IN1(type,typecode)
 %typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER)
-        (type* IN_ARRAY1, INT DIM1)
+        (type* IN_ARRAY1, int32_t DIM1)
 {
     $1 = (
             ($input && PyList_Check($input) && PyList_Size($input)>0) ||
@@ -248,7 +248,7 @@ int require_dimensions(PyObject* ary, int exact_dimensions) {
          ) ? 1 : 0;
 }
 
-%typemap(in) (type* IN_ARRAY1, INT DIM1)
+%typemap(in) (type* IN_ARRAY1, int32_t DIM1)
              (PyObject* array=NULL, int is_new_object)
 {
     array = make_contiguous($input, &is_new_object, 1,typecode);
@@ -258,7 +258,7 @@ int require_dimensions(PyObject* ary, int exact_dimensions) {
     $1 = (type*) PyArray_BYTES(array);
     $2 = PyArray_DIM(array,0);
 }
-%typemap(freearg) (type* IN_ARRAY1, INT DIM1) {
+%typemap(freearg) (type* IN_ARRAY1, int32_t DIM1) {
   if (is_new_object$argnum && array$argnum) Py_DECREF(array$argnum);
 }
 %enddef
@@ -269,7 +269,7 @@ TYPEMAP_IN1(char,          NPY_STRING )
 TYPEMAP_IN1(uint8_t,       NPY_UINT8 )
 TYPEMAP_IN1(SHORT,         NPY_INT16)
 TYPEMAP_IN1(uint16_t,      NPY_UINT16 )
-TYPEMAP_IN1(INT,           NPY_INT32 )
+TYPEMAP_IN1(int32_t,       NPY_INT32 )
 TYPEMAP_IN1(uint32_t,      NPY_UINT32 )
 TYPEMAP_IN1(LONG,          NPY_INT64 )
 TYPEMAP_IN1(ULONG,         NPY_UINT64 )
@@ -283,13 +283,13 @@ TYPEMAP_IN1(PyObject,      NPY_OBJECT)
  /* Two dimensional input arrays */
 %define TYPEMAP_IN2(type,typecode)
 %typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER)
-        (type* IN_ARRAY2, INT DIM1, INT DIM2)
+        (type* IN_ARRAY2, int32_t DIM1, int32_t DIM2)
 {
     $1 = (is_array($input) && array_dimensions($input)==2 &&
             array_type($input) == typecode) ? 1 : 0;
 }
 
-%typemap(in) (type* IN_ARRAY2, INT DIM1, INT DIM2)
+%typemap(in) (type* IN_ARRAY2, int32_t DIM1, int32_t DIM2)
             (PyObject* array=NULL, int is_new_object)
 {
     array = make_contiguous($input, &is_new_object, 2,typecode);
@@ -300,7 +300,7 @@ TYPEMAP_IN1(PyObject,      NPY_OBJECT)
     $2 = PyArray_DIM(array,0);
     $3 = PyArray_DIM(array,1);
 }
-%typemap(freearg) (type* IN_ARRAY2, INT DIM1, INT DIM2) {
+%typemap(freearg) (type* IN_ARRAY2, int32_t DIM1, int32_t DIM2) {
   if (is_new_object$argnum && array$argnum) Py_DECREF(array$argnum);
 }
 %enddef
@@ -311,7 +311,7 @@ TYPEMAP_IN2(char,          NPY_STRING )
 TYPEMAP_IN2(uint8_t,       NPY_UINT8 )
 TYPEMAP_IN2(SHORT,         NPY_INT16)
 TYPEMAP_IN2(uint16_t,      NPY_UINT16 )
-TYPEMAP_IN2(INT,           NPY_INT32 )
+TYPEMAP_IN2(int32_t,       NPY_INT32 )
 TYPEMAP_IN2(uint32_t,      NPY_UINT32 )
 TYPEMAP_IN2(LONG,          NPY_INT64 )
 TYPEMAP_IN2(ULONG,         NPY_UINT64 )
@@ -327,29 +327,29 @@ TYPEMAP_IN2(PyObject,      NPY_OBJECT)
  *
  * This family of typemaps allows input/output C arguments of the form
  *
- *     (type* INPLACE_ARRAY1, int DIM1)
- *     (type* INPLACE_ARRAY2, int DIM1, int DIM2)
+ *     (type* INPLACE_ARRAY1, int32_t DIM1)
+ *     (type* INPLACE_ARRAY2, int32_t DIM1, int32_t DIM2)
  *
  * where "type" is any type supported by the numpy module, to be
  * called in python with an argument list of a single contiguous
  * numpy array.  This can be applied to an existing function using
  * the %apply directive:
  *
- *     %apply (double* INPLACE_ARRAY1, int DIM1) {double* series, int length}
- *     %apply (double* INPLACE_ARRAY2, int DIM1, int DIM2) {double* mx, int rows, int cols}
- *     void negate(double* series, int length);
- *     void normalize(double* mx, int rows, int cols);
+ *     %apply (double* INPLACE_ARRAY1, int32_t DIM1) {double* series, int32_t length}
+ *     %apply (double* INPLACE_ARRAY2, int32_t DIM1, int32_t DIM2) {double* mx, int32_t rows, int32_t cols}
+ *     void negate(double* series, int32_t length);
+ *     void normalize(double* mx, int32_t rows, int32_t cols);
  *     
  *
  * or with
  *
- *     void sum(double* INPLACE_ARRAY1, int DIM1);
- *     void sum(double* INPLACE_ARRAY2, int DIM1, int DIM2);
+ *     void sum(double* INPLACE_ARRAY1, int32_t DIM1);
+ *     void sum(double* INPLACE_ARRAY2, int32_t DIM1, int32_t DIM2);
  */
 
  /* One dimensional input/output arrays */
 %define TYPEMAP_INPLACE1(type,typecode)
-%typemap(in) (type* INPLACE_ARRAY1, INT DIM1) (PyObject* temp=NULL) {
+%typemap(in) (type* INPLACE_ARRAY1, int32_t DIM1) (PyObject* temp=NULL) {
   int i;
   temp = obj_to_array_no_conversion($input,typecode);
   if (!temp  || !require_contiguous(temp)) SWIG_fail;
@@ -365,7 +365,7 @@ TYPEMAP_INPLACE1(char,          NPY_STRING )
 TYPEMAP_INPLACE1(uint8_t,       NPY_UINT8 )
 TYPEMAP_INPLACE1(SHORT,         NPY_INT16)
 TYPEMAP_INPLACE1(uint16_t,      NPY_UINT16 )
-TYPEMAP_INPLACE1(INT,           NPY_INT32 )
+TYPEMAP_INPLACE1(int32_t,       NPY_INT32 )
 TYPEMAP_INPLACE1(uint32_t,      NPY_UINT32 )
 TYPEMAP_INPLACE1(LONG,          NPY_INT64 )
 TYPEMAP_INPLACE1(ULONG,         NPY_UINT64 )
@@ -378,7 +378,7 @@ TYPEMAP_INPLACE1(PyObject,      NPY_OBJECT)
 
  /* Two dimensional input/output arrays */
 %define TYPEMAP_INPLACE2(type,typecode)
-  %typemap(in) (type* INPLACE_ARRAY2, INT DIM1, INT DIM2) (PyObject* temp=NULL) {
+  %typemap(in) (type* INPLACE_ARRAY2, int32_t DIM1, int32_t DIM2) (PyObject* temp=NULL) {
   temp = obj_to_array_no_conversion($input,typecode);
   if (!temp || !require_contiguous(temp)) SWIG_fail;
   $1 = (type*) PyArray_BYTES(temp);
@@ -393,7 +393,7 @@ TYPEMAP_INPLACE2(char,          NPY_STRING )
 TYPEMAP_INPLACE2(uint8_t,       NPY_UINT8 )
 TYPEMAP_INPLACE2(SHORT,         NPY_INT16)
 TYPEMAP_INPLACE2(uint16_t,      NPY_UINT16 )
-TYPEMAP_INPLACE2(INT,           NPY_INT32 )
+TYPEMAP_INPLACE2(int32_t,       NPY_INT32 )
 TYPEMAP_INPLACE2(uint32_t,      NPY_UINT32 )
 TYPEMAP_INPLACE2(LONG,          NPY_INT64 )
 TYPEMAP_INPLACE2(ULONG,         NPY_UINT64 )
@@ -416,10 +416,10 @@ TYPEMAP_INPLACE2(PyObject,      NPY_OBJECT)
  * numpy array.  This can be applied to an existing function using
  * the %apply directive:
  *
- *     %apply (double* ARRAYOUT_ARRAY[ANY] {double series, int length}
- *     %apply (double* ARRAYOUT_ARRAY[ANY][ANY]) {double* mx, int rows, int cols}
- *     void negate(double* series, int length);
- *     void normalize(double* mx, int rows, int cols);
+ *     %apply (double* ARRAYOUT_ARRAY[ANY] {double series, int32_t length}
+ *     %apply (double* ARRAYOUT_ARRAY[ANY][ANY]) {double* mx, int32_t rows, int32_t cols}
+ *     void negate(double* series, int32_t length);
+ *     void normalize(double* mx, int32_t rows, int32_t cols);
  *     
  *
  * or with
@@ -449,7 +449,7 @@ TYPEMAP_ARRAYOUT1(char,          NPY_STRING )
 TYPEMAP_ARRAYOUT1(uint8_t,       NPY_UINT8 )
 TYPEMAP_ARRAYOUT1(SHORT,         NPY_INT16)
 TYPEMAP_ARRAYOUT1(uint16_t,      NPY_UINT16 )
-TYPEMAP_ARRAYOUT1(INT,           NPY_INT32 )
+TYPEMAP_ARRAYOUT1(int32_t,       NPY_INT32 )
 TYPEMAP_ARRAYOUT1(uint32_t,      NPY_UINT32 )
 TYPEMAP_ARRAYOUT1(LONG,          NPY_INT64 )
 TYPEMAP_ARRAYOUT1(ULONG,         NPY_UINT64 )
@@ -462,7 +462,7 @@ TYPEMAP_ARRAYOUT1(PyObject,      NPY_OBJECT)
 
  /* Two dimensional input/output arrays */
 %define TYPEMAP_ARRAYOUT2(type,typecode)
-  %typemap(in) (type* ARRAYOUT_ARRAY2, INT DIM1, INT DIM2) (PyObject* temp=NULL) {
+  %typemap(in) (type* ARRAYOUT_ARRAY2, int32_t DIM1, int32_t DIM2) (PyObject* temp=NULL) {
   temp = obj_to_array_no_conversion($input,typecode);
   if (!temp || !require_contiguous(temp)) SWIG_fail;
   $1 = (type*) PyArray_BYTES(temp);
@@ -477,7 +477,7 @@ TYPEMAP_ARRAYOUT2(char,          NPY_STRING )
 TYPEMAP_ARRAYOUT2(uint8_t,       NPY_UINT8 )
 TYPEMAP_ARRAYOUT2(SHORT,         NPY_INT16)
 TYPEMAP_ARRAYOUT2(uint16_t,      NPY_UINT16 )
-TYPEMAP_ARRAYOUT2(INT,           NPY_INT32 )
+TYPEMAP_ARRAYOUT2(int32_t,           NPY_INT32 )
 TYPEMAP_ARRAYOUT2(uint32_t,      NPY_UINT32 )
 TYPEMAP_ARRAYOUT2(LONG,          NPY_INT64 )
 TYPEMAP_ARRAYOUT2(ULONG,         NPY_UINT64 )
@@ -499,25 +499,25 @@ TYPEMAP_ARRAYOUT2(PyObject,      NPY_OBJECT)
  * numpy array.  This can be applied to an existing function using
  * the %apply directive:
  *
- *     %apply (DREAL** ARGOUT_ARRAY1, {(DREAL** series, INT* len)}
- *     %apply (DREAL** ARGOUT_ARRAY2, {(DREAL** matrix, INT* d1, INT* d2)}
+ *     %apply (DREAL** ARGOUT_ARRAY1, {(DREAL** series, int32_t* len)}
+ *     %apply (DREAL** ARGOUT_ARRAY2, {(DREAL** matrix, int32_t* d1, int32_t* d2)}
  *
  * with
  *
- *     void sum(DREAL* series, INT* len);
- *     void sum(DREAL** series, INT* len);
- *     void sum(DREAL** matrix, INT* d1, INT* d2);
+ *     void sum(DREAL* series, int32_t* len);
+ *     void sum(DREAL** series, int32_t* len);
+ *     void sum(DREAL** matrix, int32_t* d1, int32_t* d2);
  *
  * where sum mallocs the array and assigns dimensions and the pointer
  *
  */
 %define TYPEMAP_ARGOUT1(type,typecode)
-%typemap(in, numinputs=0) (type** ARGOUT1, INT* DIM1) {
+%typemap(in, numinputs=0) (type** ARGOUT1, int32_t* DIM1) {
     $1 = (type**) malloc(sizeof(type*));
-    $2 = (INT*) malloc(sizeof(INT));
+    $2 = (int32_t*) malloc(sizeof(int32_t));
 }
 
-%typemap(argout) (type** ARGOUT1, INT* DIM1) {
+%typemap(argout) (type** ARGOUT1, int32_t* DIM1) {
     npy_intp dims= (npy_intp) *$2;
 
     PyArray_Descr* descr=PyArray_DescrFromType(typecode);
@@ -539,7 +539,7 @@ TYPEMAP_ARGOUT1(char,          NPY_STRING )
 TYPEMAP_ARGOUT1(uint8_t,       NPY_UINT8 )
 TYPEMAP_ARGOUT1(SHORT,         NPY_INT16)
 TYPEMAP_ARGOUT1(uint16_t,      NPY_UINT16 )
-TYPEMAP_ARGOUT1(INT,           NPY_INT32 )
+TYPEMAP_ARGOUT1(int32_t,           NPY_INT32 )
 TYPEMAP_ARGOUT1(uint32_t,      NPY_UINT32 )
 TYPEMAP_ARGOUT1(LONG,          NPY_INT64 )
 TYPEMAP_ARGOUT1(ULONG,         NPY_UINT64 )
@@ -551,13 +551,13 @@ TYPEMAP_ARGOUT1(PyObject,      NPY_OBJECT)
 #undef TYPEMAP_ARGOUT1
 
 %define TYPEMAP_ARGOUT2(type,typecode)
-%typemap(in, numinputs=0) (type** ARGOUT2, INT* DIM1, INT* DIM2) {
+%typemap(in, numinputs=0) (type** ARGOUT2, int32_t* DIM1, int32_t* DIM2) {
     $1 = (type**) malloc(sizeof(type*));
-    $2 = (INT*) malloc(sizeof(INT));
-    $3 = (INT*) malloc(sizeof(INT));
+    $2 = (int32_t*) malloc(sizeof(int32_t));
+    $3 = (int32_t*) malloc(sizeof(int32_t));
 }
 
-%typemap(argout) (type** ARGOUT2, INT* DIM1, INT* DIM2) {
+%typemap(argout) (type** ARGOUT2, int32_t* DIM1, int32_t* DIM2) {
     npy_intp dims[2]= {(npy_intp) *$2, (npy_intp) *$3};
     PyArray_Descr* descr=PyArray_DescrFromType(typecode);
     if (descr && $1)
@@ -578,7 +578,7 @@ TYPEMAP_ARGOUT2(char,          NPY_STRING )
 TYPEMAP_ARGOUT2(uint8_t,       NPY_UINT8 )
 TYPEMAP_ARGOUT2(SHORT,         NPY_INT16)
 TYPEMAP_ARGOUT2(uint16_t,      NPY_UINT16 )
-TYPEMAP_ARGOUT2(INT,           NPY_INT32 )
+TYPEMAP_ARGOUT2(int32_t,           NPY_INT32 )
 TYPEMAP_ARGOUT2(uint32_t,      NPY_UINT32 )
 TYPEMAP_ARGOUT2(LONG,          NPY_INT64 )
 TYPEMAP_ARGOUT2(ULONG,         NPY_UINT64 )
@@ -590,23 +590,23 @@ TYPEMAP_ARGOUT2(PyObject,      NPY_OBJECT)
 #undef TYPEMAP_ARGOUT2
 
 /* input typemap for CStringFeatures<char> */
-%typemap(in) (T_STRING<char>* strings, INT num_strings, INT max_len)
+%typemap(in) (T_STRING<char>* strings, int32_t num_strings, int32_t max_len)
 {
     PyObject* list=(PyObject*) $input;
     /* Check if is a list */
     if (!list || PyList_Check(list) || PyList_Size(list)==0)
     {
-        INT size=PyList_Size(list);
+        int32_t size=PyList_Size(list);
         T_STRING<char>* strings=new T_STRING<char>[size];
 
-        INT max_len=0;
+        int32_t max_len=0;
 
-        for (int i=0; i<size; i++)
+        for (int32_t i=0; i<size; i++)
         {
             PyObject *o = PyList_GetItem(list,i);
             if (PyString_Check(o))
             {
-                INT len=PyString_Size(o);
+                int32_t len=PyString_Size(o);
                 max_len=CMath::max(len,max_len);
                 const char* str=PyString_AsString(o);
 
@@ -623,7 +623,7 @@ TYPEMAP_ARGOUT2(PyObject,      NPY_OBJECT)
             {
                 PyErr_SetString(PyExc_TypeError,"all elements in list must be strings");
 
-                for (INT j=0; j<i; j++)
+                for (int32_t j=0; j<i; j++)
                     delete[] strings[i].string;
                 delete[] strings;
                 SWIG_fail;

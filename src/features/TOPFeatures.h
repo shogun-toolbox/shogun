@@ -19,26 +19,26 @@
 struct T_HMM_INDIZES
 {
 	/** index p */
-	INT* idx_p;
+	int32_t* idx_p;
 	/** index q */
-	INT* idx_q;
+	int32_t* idx_q;
 	/** index a rows */
-	INT* idx_a_rows;
+	int32_t* idx_a_rows;
 	/** index a cols */
-	INT* idx_a_cols;
+	int32_t* idx_a_cols;
 	/** index b rows */
-	INT* idx_b_rows;
+	int32_t* idx_b_rows;
 	/** index b cols */
-	INT* idx_b_cols;
+	int32_t* idx_b_cols;
 
 	/** number p */
-	INT num_p;
+	int32_t num_p;
 	/** number q */
-	INT num_q;
+	int32_t num_q;
 	/** number a */
-	INT num_a;
+	int32_t num_a;
 	/** number b */
-	INT num_b;
+	int32_t num_b;
 };
 
 /** The class TOPFeatures implements TOP kernel features obtained from
@@ -67,7 +67,7 @@ class CTOPFeatures : public CRealFeatures
 		 * @param neglin if negative HMM is of linear shape
 		 * @param poslin if positive HMM is of linear shape
 		 */
-		CTOPFeatures(INT size, CHMM* p, CHMM* n, bool neglin, bool poslin);
+		CTOPFeatures(int32_t size, CHMM* p, CHMM* n, bool neglin, bool poslin);
 
 		/** copy constructor */
 		CTOPFeatures(const CTOPFeatures &orig);
@@ -91,7 +91,7 @@ class CTOPFeatures : public CRealFeatures
 		 *
 		 * @return number of features
 		 */
-		INT compute_num_features();
+		int32_t compute_num_features();
 
 		/** compute relevant indices
 		 *
@@ -109,7 +109,7 @@ class CTOPFeatures : public CRealFeatures
 		 * @param target
 		 * @return something floaty
 		 */
-		virtual DREAL* compute_feature_vector(INT num, INT& len, DREAL* target=NULL);
+		virtual DREAL* compute_feature_vector(int32_t num, int32_t& len, DREAL* target=NULL);
 
 		/** computes the feature vector to the address addr
 		 *
@@ -117,7 +117,7 @@ class CTOPFeatures : public CRealFeatures
 		 * @param num num
 		 * @param len len
 		 */
-		void compute_feature_vector(DREAL* addr, INT num, INT& len);
+		void compute_feature_vector(DREAL* addr, int32_t num, int32_t& len);
 
 	protected:
 		/** positive HMM */

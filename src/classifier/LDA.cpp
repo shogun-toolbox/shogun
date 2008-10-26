@@ -39,21 +39,21 @@ bool CLDA::train()
 {
 	ASSERT(labels);
 	ASSERT(features);
-	INT num_train_labels=0;
-	INT* train_labels=labels->get_int_labels(num_train_labels);
+	int32_t num_train_labels=0;
+	int32_t* train_labels=labels->get_int_labels(num_train_labels);
 	ASSERT(train_labels);
 
-	INT num_feat=features->get_num_features();
-	INT num_vec=features->get_num_vectors();
+	int32_t num_feat=features->get_num_features();
+	int32_t num_vec=features->get_num_vectors();
 	ASSERT(num_vec==num_train_labels);
 
-	INT* classidx_neg=new INT[num_vec];
-	INT* classidx_pos=new INT[num_vec];
+	int32_t* classidx_neg=new int32_t[num_vec];
+	int32_t* classidx_pos=new int32_t[num_vec];
 
-	INT i=0;
-	INT j=0;
-	INT num_neg=0;
-	INT num_pos=0;
+	int32_t i=0;
+	int32_t j=0;
+	int32_t num_neg=0;
+	int32_t num_pos=0;
 	for (i=0; i<num_train_labels; i++)
 	{
 		if (train_labels[i]==-1)
@@ -89,7 +89,7 @@ bool CLDA::train()
 	//mean neg
 	for (i=0; i<num_neg; i++)
 	{
-		INT vlen;
+		int32_t vlen;
 		bool vfree;
 		double* vec=features->get_feature_vector(classidx_neg[i], vlen, vfree);
 		ASSERT(vec);
@@ -116,7 +116,7 @@ bool CLDA::train()
 	//mean pos
 	for (i=0; i<num_pos; i++)
 	{
-		INT vlen;
+		int32_t vlen;
 		bool vfree;
 		double* vec=features->get_feature_vector(classidx_pos[i], vlen, vfree);
 		ASSERT(vec);

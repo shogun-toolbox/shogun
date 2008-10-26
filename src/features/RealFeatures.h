@@ -28,7 +28,7 @@ class CRealFeatures : public CSimpleFeatures<DREAL>
 		 *
 		 * @param size cache size
 		 */
-		CRealFeatures(INT size=0) : CSimpleFeatures<DREAL>(size) {}
+		CRealFeatures(int32_t size=0) : CSimpleFeatures<DREAL>(size) {}
 
 		/** copy constructor */
 		CRealFeatures(const CRealFeatures & orig) :
@@ -41,7 +41,7 @@ class CRealFeatures : public CSimpleFeatures<DREAL>
 		 * @param num_feat number of features
 		 * @param num_vec number of vectors
 		 */
-		inline CRealFeatures(DREAL* src, INT num_feat, INT num_vec): CSimpleFeatures<DREAL>(0)
+		inline CRealFeatures(DREAL* src, int32_t num_feat, int32_t num_vec): CSimpleFeatures<DREAL>(0)
 		{
 			CSimpleFeatures<DREAL>::copy_feature_matrix(src, num_feat, num_vec);
 		}
@@ -70,7 +70,7 @@ class CRealFeatures : public CSimpleFeatures<DREAL>
 		 * @param d1 dimension 1 of matrix
 		 * @param d2 dimension 2 of matrix
 		 */
-		inline virtual void get_fm(DREAL** dst, INT* d1, INT* d2)
+		inline virtual void get_fm(DREAL** dst, int32_t* d1, int32_t* d2)
 		{
 			CSimpleFeatures<DREAL>::get_fm(dst, d1, d2);
 		}
@@ -83,7 +83,7 @@ class CRealFeatures : public CSimpleFeatures<DREAL>
 		 * @param num_feat number of features
 		 * @param num_vec number of vectors
 		 */
-		inline virtual void copy_feature_matrix(DREAL* src, INT num_feat, INT num_vec)
+		inline virtual void copy_feature_matrix(DREAL* src, int32_t num_feat, int32_t num_vec)
 		{
 			CSimpleFeatures<DREAL>::copy_feature_matrix(src, num_feat, num_vec);
 		}
