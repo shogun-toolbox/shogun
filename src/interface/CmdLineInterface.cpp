@@ -643,7 +643,7 @@ SET_MATRIX(set_word_matrix, INTSXP, INTEGER, uint16_t, int, "Word")
 */
 
 
-void CCmdLineInterface::set_real_sparsematrix(const TSparse<DREAL>* matrix, int32_t num_feat, int32_t num_vec, LONG nnz)
+void CCmdLineInterface::set_real_sparsematrix(const TSparse<DREAL>* matrix, int32_t num_feat, int32_t num_vec, int64_t nnz)
 {
 	const char* filename=set_arg_increment();
 	if (!filename)

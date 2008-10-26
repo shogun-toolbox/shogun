@@ -330,9 +330,9 @@ class CMath : public CSGObject
 		}
 #endif
 
-		static inline LONG factorial(int32_t n)
+		static inline int64_t factorial(int32_t n)
 		{
-			LONG res=1 ;
+			int64_t res=1;
 			for (int i=2; i<=n; i++)
 				res*=i ;
 			return res ;
@@ -355,7 +355,7 @@ class CMath : public CSGObject
 #endif
 		}
 
-		static inline LONG random()
+		static inline int64_t random()
 		{
 #if defined(CYGWIN) || defined(__INTERIX)
 			return rand();
@@ -424,14 +424,14 @@ class CMath : public CSGObject
 			return perm;
 		}
 
-		static inline LONG nchoosek(int32_t n, int32_t k)
+		static inline int64_t nchoosek(int32_t n, int32_t k)
 		{
-			long res=1 ;
+			int64_t res=1;
 
 			for (int32_t i=n-k+1; i<=n; i++)
-				res*=i ;
+				res*=i;
 
-			return res/factorial(k) ;
+			return res/factorial(k);
 		}
 
 		/// x=x+alpha*y
@@ -472,7 +472,7 @@ class CMath : public CSGObject
 		}
 
 		/// compute dot product between v1 and v2 (for 64bit ints)
-		static inline DREAL dot(const LONG* v1, const LONG* v2, int32_t n)
+		static inline DREAL dot(const int64_t* v1, const int64_t* v2, int32_t n)
 		{
 			DREAL r=0;
 			for (int32_t i=0; i<n; i++)

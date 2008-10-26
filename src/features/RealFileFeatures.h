@@ -89,6 +89,6 @@ class CRealFileFeatures: public CRealFeatures
 		/** preprocd */
 		uint32_t preprocd;
 		/** filepos */
-		LONG filepos;
+		int64_t filepos;
 };
 #endif

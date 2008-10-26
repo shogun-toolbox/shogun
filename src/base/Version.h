@@ -77,7 +77,7 @@ public:
 		return version_year;
 	}
 
-	static inline LONG get_version_in_minutes()
+	static inline int64_t get_version_in_minutes()
 	{
 		return ((((version_year)*12 + version_month)*30 + version_day)* 24 + version_hour)*60 + version_minute;
 	}

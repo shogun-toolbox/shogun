@@ -1256,7 +1256,7 @@ bool CSGInterface::cmd_get_features()
 			{
 				case F_DREAL:
 				{
-					LONG nnz=((CSparseFeatures<DREAL>*) feat)->
+					int64_t nnz=((CSparseFeatures<DREAL>*) feat)->
 						get_num_nonzero_entries();
 					int32_t num_feat=0;
 					int32_t num_vec=0;

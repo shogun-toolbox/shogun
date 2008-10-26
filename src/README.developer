@@ -122,7 +122,7 @@ TYPES:
 	uint16_t	(16bit unsigned short)
 	uint32_t	(32bit unsinged int)
 	int32_t		(32bit int)
-	LONG		(64bit int)
+	int64_t		(64bit int)
 	DREAL		(double)
 	LONGREAL	(long double)
 

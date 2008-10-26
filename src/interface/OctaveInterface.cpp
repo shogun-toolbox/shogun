@@ -207,10 +207,10 @@ void COctaveInterface::function_name(sg_type*& array, int32_t*& dims, int32_t& n
 																					\
 	num_dims = (int32_t) mat_feat.ndims();												\
 	oct_type m = mat_feat.oct_converter();											\
-	LONG total_size=mat_feat.length();												\
+	int64_t total_size=mat_feat.length();												\
 	array=new sg_type[total_size];													\
 																					\
-	for (LONG i=0; i<total_size; i++)												\
+	for (int64_t i=0; i<total_size; i++)												\
 		array[i]= (sg_type) m(i);													\
 }
 GET_NDARRAY(get_byte_ndarray, is_uint8_type, uint8NDArray, uint8_array_value, uint8_t, uint8_t, "Byte")
@@ -231,11 +231,11 @@ void COctaveInterface::get_real_sparsematrix(TSparse<DREAL>*& matrix, int32_t& n
 	SparseMatrix sm = mat_feat.sparse_matrix_value ();
 	num_vec=sm.cols();
 	num_feat=sm.rows();
-	LONG nnz=sm.nelem();
+	int64_t nnz=sm.nelem();
 
 	matrix=new TSparse<DREAL>[num_vec];
 
-	LONG offset=0;
+	int64_t offset=0;
 	for (int32_t i=0; i<num_vec; i++)
 	{
 		int32_t len=sm.cidx(i+1)-sm.cidx(i);
@@ -404,11 +404,11 @@ SET_MATRIX(set_real_matrix, Matrix, DREAL, DREAL, "Double Precision")
 SET_MATRIX(set_word_matrix, uint16NDArray, uint16_t, uint16_t, "Word")
 #undef SET_MATRIX
 
-void COctaveInterface::set_real_sparsematrix(const TSparse<DREAL>* matrix, int32_t num_feat, int32_t num_vec, LONG nnz)
+void COctaveInterface::set_real_sparsematrix(const TSparse<DREAL>* matrix, int32_t num_feat, int32_t num_vec, int64_t nnz)
 {
 	SparseMatrix sm((octave_idx_type) num_feat, (octave_idx_type) num_vec, (octave_idx_type) nnz);
 
-	LONG offset=0;
+	int64_t offset=0;
 	for (int32_t i=0; i<num_vec; i++)
 	{
 		int32_t len=matrix[i].num_feat_entries;

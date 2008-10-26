@@ -65,7 +65,7 @@ DREAL CFixedDegreeStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	// can only deal with strings of same length
 	ASSERT(alen==blen);
 
-	LONG sum = 0;
+	int64_t sum = 0;
 	for (int32_t i = 0; i<alen-degree+1; i++)
 	{
 		bool match = true;

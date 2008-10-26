@@ -321,7 +321,7 @@ bool CCplex::setup_lpm(DREAL C, CSparseFeatures<DREAL>* x, CLabels* y, bool use_
 	ASSERT(y);
 	int32_t num_vec=y->get_num_labels();
 	int32_t num_feat=x->get_num_features();
-	LONG nnz=x->get_num_nonzero_entries();
+	int64_t nnz=x->get_num_nonzero_entries();
 
 	//number of variables: b,w+,w-,xi concatenated
 	int32_t num_dims=1+2*num_feat+num_vec;
@@ -333,7 +333,7 @@ bool CCplex::setup_lpm(DREAL C, CSparseFeatures<DREAL>* x, CLabels* y, bool use_
 	DREAL* b=new DREAL[num_dims];
 
 	//number of non zero entries in A (b,w+,w-,xi)
-	LONG amatsize=((LONG) num_vec)+nnz+nnz+num_vec; 
+	int64_t amatsize=((int64_t) num_vec)+nnz+nnz+num_vec; 
 
 	int* amatbeg=new int[num_dims];
 	int* amatcnt=new int[num_dims];
@@ -377,7 +377,7 @@ bool CCplex::setup_lpm(DREAL C, CSparseFeatures<DREAL>* x, CLabels* y, bool use_
 	memset(sense,'L',sizeof(char)*num_constraints);
 
 	//construct A
-	LONG offs=0;
+	int64_t offs=0;
 
 	//b part of A
 	amatbeg[0]=offs;
@@ -447,7 +447,7 @@ bool CCplex::setup_lpm(DREAL C, CSparseFeatures<DREAL>* x, CLabels* y, bool use_
 
 	bool result = CPXcopylp(env, lp, num_dims, num_constraints, CPX_MIN, 
 			f, b, sense, amatbeg, amatcnt, amatind, amatval, lb, ub, NULL) == 0;
-	
+
 
 	delete[] amatval;
 	delete[] amatcnt;

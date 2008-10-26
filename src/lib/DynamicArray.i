@@ -12,7 +12,7 @@
 %template(DynamicWordArray) CDynamicArray<uint16_t>;
 %template(DynamicIntArray) CDynamicArray<int32_t>;
 %template(DynamicUIntArray) CDynamicArray<uint32_t>;
-%template(DynamicLongArray) CDynamicArray<LONG>;
+%template(DynamicLongArray) CDynamicArray<int64_t>;
 %template(DynamicULongArray) CDynamicArray<uint64_t>;
 %template(DynamicShortRealArray) CDynamicArray<SHORTREAL>;
 %template(DynamicRealArray) CDynamicArray<DREAL>;

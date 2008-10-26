@@ -147,56 +147,56 @@ class CAlphabet : public CSGObject
 		 * @param p string
 		 * @param len length of string
 		 */
-		void add_string_to_histogram(char* p, LONG len);
+		void add_string_to_histogram(char* p, int64_t len);
 
 		/** make histogram for whole string
 		 *
 		 * @param p string
 		 * @param len length of string
 		 */
-		void add_string_to_histogram(uint8_t* p, LONG len);
+		void add_string_to_histogram(uint8_t* p, int64_t len);
 
 		/** make histogram for whole string
 		 *
 		 * @param p string
 		 * @param len length of string
 		 */
-		void add_string_to_histogram(SHORT* p, LONG len);
+		void add_string_to_histogram(SHORT* p, int64_t len);
 
 		/** make histogram for whole string
 		 *
 		 * @param p string
 		 * @param len length of string
 		 */
-		void add_string_to_histogram(uint16_t* p, LONG len);
+		void add_string_to_histogram(uint16_t* p, int64_t len);
 
 		/** make histogram for whole string
 		 *
 		 * @param p string
 		 * @param len length of string
 		 */
-		void add_string_to_histogram(int32_t* p, LONG len);
+		void add_string_to_histogram(int32_t* p, int64_t len);
 
 		/** make histogram for whole string
 		 *
 		 * @param p string
 		 * @param len length of string
 		 */
-		void add_string_to_histogram(uint32_t* p, LONG len);
+		void add_string_to_histogram(uint32_t* p, int64_t len);
 
 		/** make histogram for whole string
 		 *
 		 * @param p string
 		 * @param len length of string
 		 */
-		void add_string_to_histogram(LONG* p, LONG len);
+		void add_string_to_histogram(int64_t* p, int64_t len);
 
 		/** make histogram for whole string
 		 *
 		 * @param p string
 		 * @param len length of string
 		 */
-		void add_string_to_histogram(uint64_t* p, LONG len);
+		void add_string_to_histogram(uint64_t* p, int64_t len);
 
 		/** add element to histogram
 		 *
@@ -215,19 +215,19 @@ class CAlphabet : public CSGObject
 		 * @param h where the histogram will be stored
 		 * @param len length of histogram
 		 */
-		inline void get_hist(LONG** h, int32_t* len)
+		inline void get_hist(int64_t** h, int32_t* len)
 		{
 			int32_t hist_size=(1 << (sizeof(uint8_t)*8));
 			ASSERT(h && len);
-			*h=(LONG*) malloc(sizeof(LONG)*hist_size);
+			*h=(int64_t*) malloc(sizeof(int64_t)*hist_size);
 			ASSERT(*h);
 			*len=hist_size;
 			ASSERT(*len);
-			memcpy(*h, &histogram[0], sizeof(LONG)*hist_size);
+			memcpy(*h, &histogram[0], sizeof(int64_t)*hist_size);
 		}
 
 		/// get pointer to histogram
-		inline const LONG* get_histogram()
+		inline const int64_t* get_histogram()
 		{
 			return &histogram[0];
 		}
@@ -311,6 +311,6 @@ class CAlphabet : public CSGObject
 		/** maptable to char */
 		uint8_t maptable_to_char[1 << (sizeof(uint8_t)*8)];
 		/** histogram */
-		LONG histogram[1 << (sizeof(uint8_t)*8)];
+		int64_t histogram[1 << (sizeof(uint8_t)*8)];
 };
 #endif

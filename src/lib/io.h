@@ -273,9 +273,9 @@ class CIO
 		/** target file */
 		FILE* target;
 		/** last progress time */
-		LONG last_progress_time;
+		int64_t last_progress_time;
 		/** progress start time */
-		LONG progress_start_time;
+		int64_t progress_start_time;
 		/** last progress */
 		DREAL last_progress;
 		/** if progress bar shall be shown */

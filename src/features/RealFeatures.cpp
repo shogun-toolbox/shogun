@@ -18,7 +18,7 @@ bool CRealFeatures::load(char* fname)
 	num_vectors=1;
     num_features=0;
 	CFile f(fname, 'r', F_DREAL);
-	LONG numf=0 ;
+	int64_t numf=0;
 	free_feature_matrix();
 	feature_matrix=f.load_real_data(NULL, numf);
 	num_features=numf;

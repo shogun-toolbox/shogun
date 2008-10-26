@@ -515,7 +515,7 @@ class CSGInterface : public CSGObject
 		virtual void set_short_matrix(const SHORT* matrix, int32_t num_feat, int32_t num_vec)=0;
 		virtual void set_word_matrix(const uint16_t* matrix, int32_t num_feat, int32_t num_vec)=0;
 
-		virtual void set_real_sparsematrix(const TSparse<DREAL>* matrix, int32_t num_feat, int32_t num_vec, LONG nnz)=0;
+		virtual void set_real_sparsematrix(const TSparse<DREAL>* matrix, int32_t num_feat, int32_t num_vec, int64_t nnz)=0;
 
 		/*  future versions might support types other than DREAL
 		

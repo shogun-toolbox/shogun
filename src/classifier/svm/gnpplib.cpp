@@ -37,8 +37,8 @@ CGNPPLib::CGNPPLib(DREAL* vector_y, CKernel* kernel, int32_t num_data, DREAL reg
   m_vector_y = vector_y;
   m_kernel = kernel;
 
-  Cache_Size = ((LONG) kernel->get_cache_size())*1024*1024/(sizeof(DREAL)*num_data);
-  Cache_Size = CMath::min(Cache_Size, (LONG) num_data);
+  Cache_Size = ((int64_t) kernel->get_cache_size())*1024*1024/(sizeof(DREAL)*num_data);
+  Cache_Size = CMath::min(Cache_Size, (int64_t) num_data);
 
   SG_INFO("using %d kernel cache lines\n", Cache_Size);
   ASSERT(Cache_Size>=2);

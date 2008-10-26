@@ -10,7 +10,7 @@
 %template(SparseWordFeatures) CSparseFeatures<uint16_t>;
 %template(SparseIntFeatures) CSparseFeatures<int32_t>;
 %template(SparseUIntFeatures) CSparseFeatures<uint32_t>;
-%template(SparseLongFeatures) CSparseFeatures<LONG>;
+%template(SparseLongFeatures) CSparseFeatures<int64_t>;
 %template(SparseUlongFeatures) CSparseFeatures<uint64_t>;
 %template(SparseRealFeatures) CSparseFeatures<DREAL>;
 %template(SparseShortRealFeatures) CSparseFeatures<SHORTREAL>;

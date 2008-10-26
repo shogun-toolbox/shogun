@@ -231,7 +231,7 @@ template <class ST> class CSimpleFeatures: public CFeatures
 		{
 			ASSERT(feature_matrix);
 
-			LONG num=num_features*num_vectors;
+			int64_t num=num_features*num_vectors;
 			*d1=num_features;
 			*d2=num_vectors;
 			*dst=(ST*) malloc(sizeof(ST)*num);
@@ -282,8 +282,8 @@ template <class ST> class CSimpleFeatures: public CFeatures
 		virtual void copy_feature_matrix(ST* src, int32_t num_feat, int32_t num_vec)
 		{
 			free_feature_matrix();
-			feature_matrix=new ST[((LONG) num_feat)*num_vec];
-			memcpy(feature_matrix, src, (sizeof(ST)*((LONG) num_feat)*num_vec));
+			feature_matrix=new ST[((int64_t) num_feat)*num_vec];
+			memcpy(feature_matrix, src, (sizeof(ST)*((int64_t) num_feat)*num_vec));
 
 			num_features=num_feat;
 			num_vectors=num_vec;

@@ -40,12 +40,10 @@
 /// Type SHORT is 2 bytes in size
 typedef short int SHORT;
 
-/// Type LONG is 8 bytes in size
 #ifndef SUNOS
 #include <stdint.h>
-typedef int64_t LONG;
 #else
-typedef long LONG;
+typedef long int64_t;
 typedef unsigned long uint64_t;
 typedef unsigned long long int uintmax_t;
 typedef unsigned char uint8_t;
@@ -70,7 +68,7 @@ typedef long double LONGREAL;
 	typedef DREAL KERNELCACHE_ELEM;
 #endif
 
-typedef LONG KERNELCACHE_IDX;
+typedef int64_t KERNELCACHE_IDX;
 
 //@}
 

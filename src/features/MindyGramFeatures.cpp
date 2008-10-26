@@ -121,7 +121,7 @@ void CMindyGramFeatures::trim_max(double max)
 bool CMindyGramFeatures::load(char * fname)
 {
 	SG_INFO( "Loading strings from %s\n", fname);
-	LONG len = 0;
+	int64_t len = 0;
 	char *s, *t;
 
 	CFile f(fname, 'r', F_CHAR);
@@ -134,7 +134,7 @@ bool CMindyGramFeatures::load(char * fname)
 
 	/* Count strings terminated by \n */
 	num_vectors = 0;
-	for (LONG i = 0; i < len; i++)
+	for (int64_t i = 0; i < len; i++)
 		if (data[i] == '\n')
 			SG_INFO( "File contains %ld string vectors\n",
 					num_vectors);
@@ -147,7 +147,7 @@ bool CMindyGramFeatures::load(char * fname)
 
 	/* Extract grams from strings */
 	t = s = data;
-	for (LONG i = 0; i < num_vectors; i++, t++) {
+	for (int64_t i = 0; i < num_vectors; i++, t++) {
 		if (*t != '\n')
 			continue;
 

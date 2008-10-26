@@ -75,7 +75,7 @@ CFile::~CFile()
 	file=NULL;
 }
 
-int32_t* CFile::load_int_data(int32_t* target, LONG& num)
+int32_t* CFile::load_int_data(int32_t* target, int64_t& num)
 {
 	ASSERT(expected_type==F_INT);
 	CSimpleFile<int32_t> f(filename, file);
@@ -84,7 +84,7 @@ int32_t* CFile::load_int_data(int32_t* target, LONG& num)
 	return target;
 }
 
-bool CFile::save_int_data(int32_t* src, LONG num)
+bool CFile::save_int_data(int32_t* src, int64_t num)
 {
 	ASSERT(expected_type==F_INT);
 	CSimpleFile<int32_t> f(filename, file);
@@ -92,7 +92,7 @@ bool CFile::save_int_data(int32_t* src, LONG num)
 	return status;
 }
 
-DREAL* CFile::load_real_data(DREAL* target, LONG& num)
+DREAL* CFile::load_real_data(DREAL* target, int64_t& num)
 {
 	ASSERT(expected_type==F_DREAL);
 	CSimpleFile<DREAL> f(filename, file);
@@ -101,7 +101,7 @@ DREAL* CFile::load_real_data(DREAL* target, LONG& num)
 	return target;
 }
 
-SHORTREAL* CFile::load_shortreal_data(SHORTREAL* target, LONG& num)
+SHORTREAL* CFile::load_shortreal_data(SHORTREAL* target, int64_t& num)
 {
 	ASSERT(expected_type==F_SHORTREAL);
 	CSimpleFile<SHORTREAL> f(filename, file);
@@ -110,7 +110,7 @@ SHORTREAL* CFile::load_shortreal_data(SHORTREAL* target, LONG& num)
 	return target;
 }
 
-bool CFile::save_real_data(DREAL* src, LONG num)
+bool CFile::save_real_data(DREAL* src, int64_t num)
 {
 	ASSERT(expected_type==F_DREAL);
 	CSimpleFile<DREAL> f(filename, file);
@@ -118,7 +118,7 @@ bool CFile::save_real_data(DREAL* src, LONG num)
 	return status;
 }
 
-bool CFile::save_shortreal_data(SHORTREAL* src, LONG num)
+bool CFile::save_shortreal_data(SHORTREAL* src, int64_t num)
 {
 	ASSERT(expected_type==F_SHORTREAL);
 	CSimpleFile<SHORTREAL> f(filename, file);
@@ -126,7 +126,7 @@ bool CFile::save_shortreal_data(SHORTREAL* src, LONG num)
 	return status;
 }
 
-char* CFile::load_char_data(char* target, LONG& num)
+char* CFile::load_char_data(char* target, int64_t& num)
 {
 	ASSERT(expected_type==F_CHAR);
 	CSimpleFile<char> f(filename, file);
@@ -135,7 +135,7 @@ char* CFile::load_char_data(char* target, LONG& num)
 	return target;
 }
 
-bool CFile::save_char_data(char* src, LONG num)
+bool CFile::save_char_data(char* src, int64_t num)
 {
 	ASSERT(expected_type==F_CHAR);
 	CSimpleFile<char> f(filename, file);
@@ -143,7 +143,7 @@ bool CFile::save_char_data(char* src, LONG num)
 	return status;
 }
 
-uint8_t* CFile::load_byte_data(uint8_t* target, LONG& num)
+uint8_t* CFile::load_byte_data(uint8_t* target, int64_t& num)
 {
 	ASSERT(expected_type==F_BYTE);
 	CSimpleFile<uint8_t> f(filename, file);
@@ -152,7 +152,7 @@ uint8_t* CFile::load_byte_data(uint8_t* target, LONG& num)
 	return target;
 }
 
-bool CFile::save_byte_data(uint8_t* src, LONG num)
+bool CFile::save_byte_data(uint8_t* src, int64_t num)
 {
 	ASSERT(expected_type==F_BYTE);
 	CSimpleFile<uint8_t> f(filename, file);
@@ -160,7 +160,7 @@ bool CFile::save_byte_data(uint8_t* src, LONG num)
 	return status;
 }
 
-uint16_t* CFile::load_word_data(uint16_t* target, LONG& num)
+uint16_t* CFile::load_word_data(uint16_t* target, int64_t& num)
 {
 	ASSERT(expected_type==F_WORD);
 	CSimpleFile<uint16_t> f(filename, file);
@@ -169,7 +169,7 @@ uint16_t* CFile::load_word_data(uint16_t* target, LONG& num)
 	return target;
 }
 
-bool CFile::save_word_data(uint16_t* src, LONG num)
+bool CFile::save_word_data(uint16_t* src, int64_t num)
 {
 	ASSERT(expected_type==F_WORD);
 	CSimpleFile<uint16_t> f(filename, file);
@@ -177,7 +177,7 @@ bool CFile::save_word_data(uint16_t* src, LONG num)
 	return status;
 }
 
-SHORT* CFile::load_short_data(SHORT* target, LONG& num)
+SHORT* CFile::load_short_data(SHORT* target, int64_t& num)
 {
 	ASSERT(expected_type==F_SHORT);
 	CSimpleFile<SHORT> f(filename, file);
@@ -186,7 +186,7 @@ SHORT* CFile::load_short_data(SHORT* target, LONG& num)
 	return target;
 }
 
-bool CFile::save_short_data(SHORT* src, LONG num)
+bool CFile::save_short_data(SHORT* src, int64_t num)
 {
 	ASSERT(expected_type==F_SHORT);
 	CSimpleFile<SHORT> f(filename, file);

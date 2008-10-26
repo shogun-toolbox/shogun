@@ -163,7 +163,7 @@ void CIO::progress(DREAL current_val, DREAL min_val, DREAL max_val, int32_t deci
 	if (!show_progress)
 		return;
 
-	LONG runtime = CTime::get_runtime() ;
+	int64_t runtime = CTime::get_runtime();
 
 	char str[1000];
 	DREAL v=-1, estimate=0, total_estimate=0 ;
@@ -213,7 +213,7 @@ void CIO::absolute_progress(DREAL current_val, DREAL val, DREAL min_val, DREAL m
 	if (!show_progress)
 		return;
 
-	LONG runtime = CTime::get_runtime() ;
+	int64_t runtime = CTime::get_runtime();
 
 	char str[1000];
 	DREAL v=-1, estimate=0, total_estimate=0 ;

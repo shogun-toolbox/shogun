@@ -544,14 +544,14 @@ template <class ST> class CSparseFeatures : public CFeatures
 
 			if (fm)
 			{
-				for (LONG i=0; i<num_feat*num_vec; i++)
+				for (int64_t i=0; i<num_feat*num_vec; i++)
 					fm[i]=0;
 
 				for (int32_t v=0; v<num_vec; v++)
 				{
 					for (int32_t f=0; f<sparse_feature_matrix[v].num_feat_entries; f++)
 					{
-						LONG offs= (sparse_feature_matrix[v].vec_index * num_feat) + sparse_feature_matrix[v].features[f].feat_index;
+						int64_t offs= (sparse_feature_matrix[v].vec_index * num_feat) + sparse_feature_matrix[v].features[f].feat_index;
 						fm[offs]= sparse_feature_matrix[v].features[f].entry;
 					}
 				}
@@ -591,7 +591,7 @@ template <class ST> class CSparseFeatures : public CFeatures
 					num_feat_entries[i]=0;
 					for (int32_t j=0; j< num_feat; j++)
 					{
-						if (ffm[i*((LONG) num_feat) + j] != 0)
+						if (ffm[i*((int64_t) num_feat) + j] != 0)
 							num_feat_entries[i]++;
 					}
 				}
@@ -623,7 +623,7 @@ template <class ST> class CSparseFeatures : public CFeatures
 
 								for (int32_t j=0; j< num_feat; j++)
 								{
-									LONG pos= i*num_feat + j;
+									int64_t pos= i*num_feat + j;
 
 									if (ffm[pos] != 0)
 									{
@@ -769,9 +769,9 @@ template <class ST> class CSparseFeatures : public CFeatures
 		 *
 		 * @return number of non-zero entries in sparse feature matrix
 		 */
-		LONG get_num_nonzero_entries()
+		int64_t get_num_nonzero_entries()
 		{
-			LONG num=0;
+			int64_t num=0;
 			for (int32_t i=0; i<num_vectors; i++)
 				num+=sparse_feature_matrix[i].num_feat_entries;
 
@@ -1169,7 +1169,7 @@ template<> inline EFeatureType CSparseFeatures<uint32_t>::get_feature_type()
  *
  * @return feature type LONG
  */
-template<> inline EFeatureType CSparseFeatures<LONG>::get_feature_type()
+template<> inline EFeatureType CSparseFeatures<int64_t>::get_feature_type()
 {
 	return F_LONG;
 }

@@ -512,7 +512,7 @@ char* CCommWordStringKernel::compute_consensus(int32_t &result_len, int32_t num_
 	CStringFeatures<uint16_t>* str=((CStringFeatures<uint16_t>*) lhs);
 	int32_t num_words=(int32_t) str->get_num_symbols();
 	int32_t num_feat=str->get_max_vector_length();
-	LONG total_len=((LONG) num_feat) * num_words;
+	int64_t total_len=((int64_t) num_feat) * num_words;
 	CAlphabet* alpha=((CStringFeatures<uint16_t>*) lhs)->get_alphabet();
 	ASSERT(alpha);
 	int32_t num_bits=alpha->get_num_bits();
@@ -528,7 +528,7 @@ char* CCommWordStringKernel::compute_consensus(int32_t &result_len, int32_t num_
 	int32_t* bt=new int32_t[total_len];
 	DREAL* score=new DREAL[total_len];
 
-	for (LONG i=0; i<total_len; i++)
+	for (int64_t i=0; i<total_len; i++)
 	{
 		bt[i]=-1;
 		score[i]=0;

@@ -5663,7 +5663,7 @@ bool CHMM::permutation_entropy(int32_t window_width, int32_t sequence_number)
 			uint16_t* obs=p_observations->get_feature_vector(sequence_number, sequence_length);
 
 			int32_t histsize=get_M();
-			LONG* hist=new LONG[histsize];
+			int64_t* hist=new int64_t[histsize];
 			int32_t i,j;
 
 			for (i=0; i<sequence_length-window_width; i++)

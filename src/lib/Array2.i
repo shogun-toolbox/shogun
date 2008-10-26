@@ -11,7 +11,7 @@
 %template(WordArray2) CArray2<uint16_t>;
 %template(IntArray2) CArray2<int32_t>;
 %template(UIntArray2) CArray2<uint32_t>;
-%template(LongArray2) CArray2<LONG>;
+%template(LongArray2) CArray2<int64_t>;
 %template(ULongArray2) CArray2<uint64_t>;
 %template(ShortRealArray2) CArray2<SHORTREAL>;
 %template(RealArray2) CArray2<DREAL>;

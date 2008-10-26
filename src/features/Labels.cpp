@@ -159,7 +159,7 @@ bool CLabels::load(char* fname)
 	num_labels=0;
 
 	CFile f(fname, 'r', F_DREAL);
-	LONG num_lab=0;
+	int64_t num_lab=0;
 	labels=f.load_real_data(NULL, num_lab);
 	num_labels=num_lab;
 

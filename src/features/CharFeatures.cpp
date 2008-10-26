@@ -52,8 +52,8 @@ CCharFeatures::~CCharFeatures()
 bool CCharFeatures::load(char* fname)
 {
 	SG_INFO( "loading...\n");
-    LONG length=0;
-	LONG linelen=0;
+	int64_t length=0;
+	int64_t linelen=0;
 
 	CFile f(fname, 'r', F_CHAR);
 	free_feature_matrix();

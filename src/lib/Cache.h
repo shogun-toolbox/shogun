@@ -30,7 +30,7 @@ template<class T> class CCache : public CSGObject
 	struct TEntry
 	{
 		/** usage count */
-		LONG usage_count;
+		int64_t usage_count;
 		/** if entry is locked */
 		bool locked;
 		/** cached object */
@@ -41,14 +41,14 @@ template<class T> class CCache : public CSGObject
 	/** constructor
 	 *
 	 * create a cache in which num_entries objects can be cached
-	 * whose lookup table of sizeof(LONG)*num_entries
+	 * whose lookup table of sizeof(int64_t)*num_entries
 	 * must fit into memory
 	 *
 	 * @param cache_size cache size in Megabytes
 	 * @param obj_size object size
 	 * @param num_entries number of cached objects
 	 */
-	CCache(LONG cache_size, LONG obj_size, LONG num_entries)
+	CCache(int64_t cache_size, int64_t obj_size, int64_t num_entries)
 	: CSGObject()
 	{
 		if (cache_size==0 || obj_size==0 || num_entries==0)
@@ -64,7 +64,7 @@ template<class T> class CCache : public CSGObject
 		}
 
 		entry_size=obj_size;
-		nr_cache_lines=CMath::min((LONG) (cache_size*1024*1024/obj_size/sizeof(T)), num_entries+1);
+		nr_cache_lines=CMath::min((int64_t) (cache_size*1024*1024/obj_size/sizeof(T)), num_entries+1);
 
 		SG_INFO("creating %d cache lines (total size: %ld byte)\n", nr_cache_lines, nr_cache_lines*obj_size*sizeof(T));
 		cache_block=new T[obj_size*nr_cache_lines];
@@ -75,7 +75,7 @@ template<class T> class CCache : public CSGObject
 		ASSERT(lookup_table);
 		ASSERT(cache_table);
 
-		LONG i;
+		int64_t i;
 		for (i=0; i<nr_cache_lines; i++)
 			cache_table[i]=NULL;
 
@@ -104,7 +104,7 @@ template<class T> class CCache : public CSGObject
 	 * @param number number of object to check for
 	 * @return if an object is cached
 	 */
-	inline bool is_cached(LONG number)
+	inline bool is_cached(int64_t number)
 	{
 		return (lookup_table && lookup_table[number].obj);
 	}
@@ -114,7 +114,7 @@ template<class T> class CCache : public CSGObject
 	 * @param number number of object to lock and get
 	 * @return cache entry or NULL when not cached
 	 */
-	inline T* lock_entry(LONG number)
+	inline T* lock_entry(int64_t number)
 	{
 		if (lookup_table)
 		{
@@ -130,7 +130,7 @@ template<class T> class CCache : public CSGObject
 	 *
 	 * @param number number of object to unlock
 	 */
-	inline void unlock_entry(LONG number)
+	inline void unlock_entry(int64_t number)
 	{
 		if (lookup_table)
 			lookup_table[number].locked=false;
@@ -143,17 +143,17 @@ template<class T> class CCache : public CSGObject
 	 * @param number number of object to unlock
 	 * @return address of a free cache entry
 	 */
-	T* set_entry(LONG number)
+	T* set_entry(int64_t number)
 	{
 		if (lookup_table)
 		{
 			// first look for the element with smallest usage count
-			//LONG min_idx=((nr_cache_lines-1)*random())/(RAND_MAX+1); //avoid the last elem and the scratch line
-			LONG min_idx=0;
-			LONG min=-1;
+			//int64_t min_idx=((nr_cache_lines-1)*random())/(RAND_MAX+1); //avoid the last elem and the scratch line
+			int64_t min_idx=0;
+			int64_t min=-1;
 			bool found_free_line=false;
 
-			LONG start=0;
+			int64_t start=0;
 			for (start=0; start<nr_cache_lines; start++)
 			{
 				if (!cache_table[start])
@@ -175,7 +175,7 @@ template<class T> class CCache : public CSGObject
 				}
 			}
 
-			for (LONG i=start; i<nr_cache_lines; i++)
+			for (int64_t i=start; i<nr_cache_lines; i++)
 			{
 				if (!cache_table[i])
 				{
@@ -186,7 +186,7 @@ template<class T> class CCache : public CSGObject
 				}
 				else
 				{
-					LONG v=cache_table[i]->usage_count;
+					int64_t v=cache_table[i]->usage_count;
 
 					if (v<min && !cache_table[i]->locked)
 					{
@@ -227,9 +227,9 @@ template<class T> class CCache : public CSGObject
 	/** if cache is full */
 	bool cache_is_full;
 	/** size of one entry */
-	LONG entry_size;
+	int64_t entry_size;
 	/** number of cache lines */
-	LONG nr_cache_lines;
+	int64_t nr_cache_lines;
 	/** lookup table */
 	TEntry* lookup_table;
 	/** cache table containing cached objects */

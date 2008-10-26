@@ -74,7 +74,7 @@ public:
 	 * @param num number of data elements
 	 * @return loaded data
 	 */
-	int32_t*   load_int_data(int32_t* target, LONG& num);
+	int32_t*   load_int_data(int32_t* target, int64_t& num);
 
 	/** load real data
 	 *
@@ -82,7 +82,7 @@ public:
 	 * @param num number of data elements
 	 * @return loaded data
 	 */
-	DREAL*  load_real_data(DREAL* target, LONG& num);
+	DREAL*  load_real_data(DREAL* target, int64_t& num);
 
 	/** load shortreal data
 	 *
@@ -90,7 +90,7 @@ public:
 	 * @param num number of data elements
 	 * @return loaded data
 	 */
-	SHORTREAL*  load_shortreal_data(SHORTREAL* target, LONG& num);
+	SHORTREAL*  load_shortreal_data(SHORTREAL* target, int64_t& num);
 
 	/** load char data
 	 *
@@ -98,7 +98,7 @@ public:
 	 * @param num number of data elements
 	 * @return loaded data
 	 */
-	char*  load_char_data(char* target, LONG& num);
+	char*  load_char_data(char* target, int64_t& num);
 
 	/** load byte data
 	 *
@@ -106,7 +106,7 @@ public:
 	 * @param num number of data elements
 	 * @return loaded data
 	 */
-	uint8_t*  load_byte_data(uint8_t* target, LONG& num);
+	uint8_t*  load_byte_data(uint8_t* target, int64_t& num);
 
 	/** load word data
 	 *
@@ -114,7 +114,7 @@ public:
 	 * @param num number of data elements
 	 * @return loaded data
 	 */
-	uint16_t*  load_word_data(uint16_t* target, LONG& num);
+	uint16_t*  load_word_data(uint16_t* target, int64_t& num);
 
 	/** load short data
 	 *
@@ -122,7 +122,7 @@ public:
 	 * @param num number of data elements
 	 * @return loaded data
 	 */
-	SHORT* load_short_data(SHORT* target, LONG& num);
+	SHORT* load_short_data(SHORT* target, int64_t& num);
 
 	/** save integer data
 	 *
@@ -130,7 +130,7 @@ public:
 	 * @param num number of data elements
 	 * @return whether operation was successful
 	 */
-	bool save_int_data(int32_t* src, LONG num);
+	bool save_int_data(int32_t* src, int64_t num);
 
 	/** save real data
 	 *
@@ -138,7 +138,7 @@ public:
 	 * @param num number of data elements
 	 * @return whether operation was successful
 	 */
-	bool save_real_data(DREAL* src, LONG num);
+	bool save_real_data(DREAL* src, int64_t num);
 
 	/** save shortreal data
 	 *
@@ -146,7 +146,7 @@ public:
 	 * @param num number of data elements
 	 * @return whether operation was successful
 	 */
-	bool save_shortreal_data(SHORTREAL* src, LONG num);
+	bool save_shortreal_data(SHORTREAL* src, int64_t num);
 
 	/** save char data
 	 *
@@ -154,7 +154,7 @@ public:
 	 * @param num number of data elements
 	 * @return whether operation was successful
 	 */
-	bool save_char_data(char* src, LONG num);
+	bool save_char_data(char* src, int64_t num);
 
 	/** save byte data
 	 *
@@ -162,7 +162,7 @@ public:
 	 * @param num number of data elements
 	 * @return whether operation was successful
 	 */
-	bool save_byte_data(uint8_t* src, LONG num);
+	bool save_byte_data(uint8_t* src, int64_t num);
 
 	/** save word data
 	 *
@@ -170,7 +170,7 @@ public:
 	 * @param num number of data elements
 	 * @return whether operation was successful
 	 */
-	bool save_word_data(uint16_t* src, LONG num);
+	bool save_word_data(uint16_t* src, int64_t num);
 
 	/** save short data
 	 *
@@ -178,7 +178,7 @@ public:
 	 * @param num number of data elements
 	 * @return whether operation was successful
 	 */
-	bool save_short_data(SHORT* src, LONG num);
+	bool save_short_data(SHORT* src, int64_t num);
 
 	/** check if status is ok
 	 *

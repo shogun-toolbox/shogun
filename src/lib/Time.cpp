@@ -31,7 +31,7 @@ clock_t CTime::cur_runtime(bool verbose)
 {
 	clock_t cur_time=clock();
 	if (verbose)
-		SG_INFO( "current %ld\n", (LONG) cur_time);
+		SG_INFO( "current %ld\n", (int64_t) cur_time);
 	return cur_time;
 }
 
@@ -39,7 +39,7 @@ clock_t CTime::cur_runtime_diff(bool verbose)
 {
 	clock_t diff=clock()-start_runtime;
 	if (verbose)
-		SG_INFO( "current diff %ld\n", (LONG) diff);
+		SG_INFO( "current diff %ld\n", (int64_t) diff);
 	return diff;
 }
 
@@ -58,7 +58,7 @@ double CTime::start(bool verbose)
 	start_time=get_curtime();
 
 	if (verbose)
-		SG_INFO( "start %ld\n", (LONG) start_time);
+		SG_INFO( "start %ld\n", (int64_t) start_time);
 	return start_time;
 }
 
@@ -85,6 +85,6 @@ double CTime::stop(bool verbose)
 	stop_time=get_curtime();
 
 	if (verbose)
-		SG_INFO( "stop %ld\n", (LONG) stop_time);
+		SG_INFO( "stop %ld\n", (int64_t) stop_time);
 	return stop_time;
 }

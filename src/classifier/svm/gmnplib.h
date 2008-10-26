@@ -102,7 +102,7 @@ tmax, tolabs, tolrel, th, &alpha, &t, &History );
 		/** first kernel inx */
 		int32_t first_kernel_inx;
 		/** cache size */
-		LONG Cache_Size;
+		int64_t Cache_Size;
 		/** num data */
 		int32_t m_num_data;
 		/** reg const */

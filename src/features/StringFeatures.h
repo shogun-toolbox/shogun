@@ -391,7 +391,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		virtual bool load(char* fname)
 		{
 			SG_INFO( "loading...\n");
-			LONG length=0;
+			int64_t length=0;
 			max_string_length=0;
 
 			CFile f(fname, 'r', F_CHAR);
@@ -944,7 +944,7 @@ template <class ST> class CStringFeatures : public CFeatures
 				}         
 
 				uint64_t mask=0;
-				for (int32_t i=0; i< (LONG) max_val; i++)
+				for (int32_t i=0; i< (int64_t) max_val; i++)
 					mask=(mask<<1) | 1;
 
 				for (int32_t i=0; i<256; i++)
@@ -1292,7 +1292,7 @@ template<> inline EFeatureType CStringFeatures<uint32_t>::get_feature_type()
  *
  * @return feature type LONG
  */
-template<> inline EFeatureType CStringFeatures<LONG>::get_feature_type()
+template<> inline EFeatureType CStringFeatures<int64_t>::get_feature_type()
 {
 	return F_LONG;
 }

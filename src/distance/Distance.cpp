@@ -155,7 +155,7 @@ void CDistance::get_distance_matrix(DREAL** dst, int32_t* m, int32_t* n)
 		*m=num_vec1;
 		*n=num_vec2;
 
-		LONG total_num=num_vec1*num_vec2;
+		int64_t total_num=num_vec1*num_vec2;
 		int32_t num_done=0;
 		SG_DEBUG("returning distance matrix of size %dx%d\n", num_vec1, num_vec2);
 
@@ -221,7 +221,7 @@ SHORTREAL* CDistance::get_distance_matrix_shortreal(
 
 		num_vec1=f1->get_num_vectors();
 		num_vec2=f2->get_num_vectors();
-		LONG total_num=num_vec1*num_vec2;
+		int64_t total_num=num_vec1*num_vec2;
 		int32_t num_done=0;
 
 		SG_DEBUG("returning distance matrix of size %dx%d\n", num_vec1, num_vec2);
@@ -290,7 +290,7 @@ DREAL* CDistance::get_distance_matrix_real(
 
 		num_vec1=f1->get_num_vectors();
 		num_vec2=f2->get_num_vectors();
-		LONG total_num=num_vec1*num_vec2;
+		int64_t total_num=num_vec1*num_vec2;
 		int32_t num_done=0;
 
 		SG_DEBUG("returning distance matrix of size %dx%d\n", num_vec1, num_vec2);

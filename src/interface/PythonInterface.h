@@ -86,7 +86,7 @@ class CPythonInterface : public CSGInterface
 		virtual void get_short_ndarray(SHORT*& array, int32_t*& dims, int32_t& num_dims);
 		virtual void get_word_ndarray(uint16_t*& array, int32_t*& dims, int32_t& num_dims);
 
-		virtual void set_real_sparsematrix(const TSparse<DREAL>* matrix, int32_t num_feat, int32_t num_vec, LONG nnz);
+		virtual void set_real_sparsematrix(const TSparse<DREAL>* matrix, int32_t num_feat, int32_t num_vec, int64_t nnz);
 
 		virtual void set_byte_string_list(const T_STRING<uint8_t>* strings, int32_t num_str);
 		virtual void set_char_string_list(const T_STRING<char>* strings, int32_t num_str);

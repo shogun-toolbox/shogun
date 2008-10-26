@@ -64,7 +64,7 @@ bool CGUIHMM::baum_welch_train()
 		SG_ERROR("Features must be STRING of type WORD.\n");
 
 	CStringFeatures<uint16_t>* sf=(CStringFeatures<uint16_t>*) trainfeatures;
-	SG_DEBUG("Stringfeatures have %ld orig_symbols %ld symbols %d order %ld max_symbols\n",  (LONG) sf->get_original_num_symbols(), (LONG) sf->get_num_symbols(), sf->get_order(), (LONG) sf->get_max_num_symbols());
+	SG_DEBUG("Stringfeatures have %ld orig_symbols %ld symbols %d order %ld max_symbols\n",  (int64_t) sf->get_original_num_symbols(), (int64_t) sf->get_num_symbols(), sf->get_order(), (int64_t) sf->get_max_num_symbols());
 
 	working->set_observations(sf);
 

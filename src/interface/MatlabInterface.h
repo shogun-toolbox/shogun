@@ -95,7 +95,7 @@ class CMatlabInterface : public CSGInterface
 		virtual void set_short_matrix(const SHORT* matrix, int32_t num_feat, int32_t num_vec);
 		virtual void set_word_matrix(const uint16_t* matrix, int32_t num_feat, int32_t num_vec);
 
-		virtual void set_real_sparsematrix(const TSparse<DREAL>* matrix, int32_t num_feat, int32_t num_vec, LONG nnz);
+		virtual void set_real_sparsematrix(const TSparse<DREAL>* matrix, int32_t num_feat, int32_t num_vec, int64_t nnz);
 
 		/*  future versions might support types other than DREAL
 		

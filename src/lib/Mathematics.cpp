@@ -261,7 +261,7 @@ int32_t CMath::calcroc(DREAL* fp, DREAL* tp, DREAL* output, int32_t* label, int3
 	}
 
 	//start with fp=1.0 tp=1.0 which is posidx=0, negidx=0
-	//everything right of {pos,neg}idx is considered to beLONG to +1
+	//everything right of {pos,neg}idx is considered to belong to +1
 	int32_t posidx=0;
 	int32_t negidx=0;
 	int32_t iteration=1;
@@ -474,7 +474,7 @@ void CMath::display_vector(int32_t* vector, int32_t n, const char* name)
 }
 
 template <>
-void CMath::display_vector(LONG* vector, int32_t n, const char* name)
+void CMath::display_vector(int64_t* vector, int32_t n, const char* name)
 {
 	ASSERT(n>=0);
 	SG_SPRINT("%s=[", name);

@@ -112,7 +112,7 @@ class CSalzbergWordStringKernel: public CStringKernel<uint16_t>
 		 * @return computed kernel function at indices a,b
 		 */
 		DREAL compute(int32_t idx_a, int32_t idx_b);
-		//	DREAL compute_slow(LONG idx_a, LONG idx_b);
+		//	DREAL compute_slow(int64_t idx_a, int64_t idx_b);
 
 		/** compute index of given symbol at given position
 		 *

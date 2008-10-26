@@ -8,7 +8,7 @@
 %feature("autodoc", "get_hist(self) -> numpy 1dim array of int") get_hist;
 #endif
 
-%apply (LONG** ARGOUT1, int32_t* DIM1) {(LONG** h, int32_t* len)};
+%apply (int64_t** ARGOUT1, int32_t* DIM1) {(int64_t** h, int32_t* len)};
 
 %rename(Alphabet) CAlphabet;
 

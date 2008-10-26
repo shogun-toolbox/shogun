@@ -202,7 +202,7 @@ void CPythonInterface::function_name(sg_type*& array, int32_t*& dims, int32_t& n
 	}																		\
 																			\
  	num_dims=py_mat->nd;													\
-	LONG total_size=0;														\
+	int64_t total_size=0;														\
 																			\
 	dims=new int32_t[num_dims];													\
 	for (int32_t d=0; d<num_dims; d++)											\
@@ -214,7 +214,7 @@ void CPythonInterface::function_name(sg_type*& array, int32_t*& dims, int32_t& n
 	array=new sg_type[total_size]; 											\
 																			\
 	char* data=py_mat->data; 												\
-	for (LONG i=0; i<total_size; i++) 										\
+	for (int64_t i=0; i<total_size; i++) 										\
 		array[i]=*(((if_type*)(data))+i);									\
 }
 
@@ -248,10 +248,10 @@ void CPythonInterface::function_name(TSparse<sg_type>*& matrix, int32_t& num_fea
 	matrix=new TSparse<sg_type>[num_vec]; 									\
 	if_type* data=(if_type*) py_mat->data; 									\
  																			\
-	LONG nzmax=mxGetNzmax(mx_mat); 											\
+	int64_t nzmax=mxGetNzmax(mx_mat); 											\
 	mwIndex* ir=mxGetIr(mx_mat); 											\
 	mwIndex* jc=mxGetJc(mx_mat); 											\
-	LONG offset=0; 															\
+	int64_t offset=0; 															\
 	for (int32_t i=0; i<num_vec; i++) 											\
 	{ 																		\
 		int32_t len=jc[i+1]-jc[i]; 												\
@@ -467,7 +467,7 @@ SET_MATRIX(set_word_matrix, NPY_USHORT, uint16_t, unsigned short, "Word")
 #undef SET_MATRIX
 
 #define SET_SPARSEMATRIX(function_name, py_type, sg_type, if_type, error_string)	\
-void CPythonInterface::function_name(const TSparse<sg_type>* matrix, int32_t num_feat, int32_t num_vec, LONG nnz)	\
+void CPythonInterface::function_name(const TSparse<sg_type>* matrix, int32_t num_feat, int32_t num_vec, int64_t nnz)	\
 {																			\
 	/* no sparse available yet */ \
 	return; \
@@ -483,7 +483,7 @@ void CPythonInterface::function_name(const TSparse<sg_type>* matrix, int32_t num
 																			\
 	mwIndex* ir=mxGetIr(mx_mat);											\
 	mwIndex* jc=mxGetJc(mx_mat);											\
-	LONG offset=0;															\
+	int64_t offset=0;															\
 	for (int32_t i=0; i<num_vec; i++)											\
 	{																		\
 		int32_t len=matrix[i].num_feat_entries;									\

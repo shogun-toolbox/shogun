@@ -45,7 +45,7 @@ template <class T> class CSimpleFile : public CSGObject
 		 * @param num number of read elements
 		 * @return loaded target or NULL if unsuccessful
 		 */
-		T* load(T* target, LONG& num=0)
+		T* load(T* target, int64_t& num=0)
 		{
 			if (status)
 			{
@@ -54,7 +54,7 @@ template <class T> class CSimpleFile : public CSGObject
 				if (num==0)
 				{
 					bool seek_status=true;
-					LONG cur_pos=ftell(file);
+					int64_t cur_pos=ftell(file);
 
 					if (cur_pos!=-1)
 					{
@@ -91,13 +91,13 @@ template <class T> class CSimpleFile : public CSGObject
 					if (target)
 					{
 						size_t num_read=fread((void*) target, sizeof(T), num, file);
-						status=((LONG) num_read == num);
+						status=((int64_t) num_read == num);
 
 						if (!status)
-							SG_ERROR( "only %ld of %ld entries read. io error\n", (LONG) num_read, num);
+							SG_ERROR( "only %ld of %ld entries read. io error\n", (int64_t) num_read, num);
 					}
 					else
-						SG_ERROR( "failed to allocate memory while trying to read %ld entries from file \"s\"\n", (LONG) num, filename);
+						SG_ERROR( "failed to allocate memory while trying to read %ld entries from file \"s\"\n", (int64_t) num, filename);
 				}
 				return target;
 			}
@@ -114,7 +114,7 @@ template <class T> class CSimpleFile : public CSGObject
 		 * @param num number of elements to write
 		 * @return if saving was successful
 		 */
-		bool save(T* target, LONG num)
+		bool save(T* target, int64_t num)
 		{
 			if (status)
 			{
