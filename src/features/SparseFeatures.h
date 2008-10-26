@@ -1178,7 +1178,7 @@ template<> inline EFeatureType CSparseFeatures<LONG>::get_feature_type()
  *
  * @return feature type ULONG
  */
-template<> inline EFeatureType CSparseFeatures<ULONG>::get_feature_type()
+template<> inline EFeatureType CSparseFeatures<uint64_t>::get_feature_type()
 {
 	return F_ULONG;
 }

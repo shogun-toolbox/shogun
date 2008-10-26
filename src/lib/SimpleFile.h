@@ -126,7 +126,8 @@ template <class T> class CSimpleFile : public CSGObject
 
 					if (target)
 					{
-						status=(fwrite((void*) target, sizeof(T), num, file) == (unsigned long) num);
+						status=(fwrite((void*) target, sizeof(T), num, file)==
+							(size_t) num);
 					}
 				}
 			}

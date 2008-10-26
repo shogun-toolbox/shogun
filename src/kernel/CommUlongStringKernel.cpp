@@ -15,7 +15,7 @@
 #include "lib/io.h"
 
 CCommUlongStringKernel::CCommUlongStringKernel(int32_t size, bool us)
-: CStringKernel<ULONG>(size), use_sign(us)
+: CStringKernel<uint64_t>(size), use_sign(us)
 {
 	properties |= KP_LINADD;
 	clear_normal();
@@ -24,8 +24,9 @@ CCommUlongStringKernel::CCommUlongStringKernel(int32_t size, bool us)
 }
 
 CCommUlongStringKernel::CCommUlongStringKernel(
-	CStringFeatures<ULONG>* l, CStringFeatures<ULONG>* r, bool us, int32_t size)
-: CStringKernel<ULONG>(size), use_sign(us)
+	CStringFeatures<uint64_t>* l, CStringFeatures<uint64_t>* r, bool us,
+	int32_t size)
+: CStringKernel<uint64_t>(size), use_sign(us)
 {
 	properties |= KP_LINADD;
 	clear_normal();
@@ -63,7 +64,7 @@ void CCommUlongStringKernel::remove_rhs()
 
 bool CCommUlongStringKernel::init(CFeatures* l, CFeatures* r)
 {
-	CStringKernel<ULONG>::init(l,r);
+	CStringKernel<uint64_t>::init(l,r);
 	return init_normalizer();
 }
 
@@ -83,12 +84,12 @@ bool CCommUlongStringKernel::save_init(FILE* dest)
 {
 	return false;
 }
-  
+
 DREAL CCommUlongStringKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	int32_t alen, blen;
-	ULONG* avec=((CStringFeatures<ULONG>*) lhs)->get_feature_vector(idx_a, alen);
-	ULONG* bvec=((CStringFeatures<ULONG>*) rhs)->get_feature_vector(idx_b, blen);
+	uint64_t* avec=((CStringFeatures<uint64_t>*) lhs)->get_feature_vector(idx_a, alen);
+	uint64_t* bvec=((CStringFeatures<uint64_t>*) rhs)->get_feature_vector(idx_b, blen);
 
 	DREAL result=0;
 
@@ -101,7 +102,7 @@ DREAL CCommUlongStringKernel::compute(int32_t idx_a, int32_t idx_b)
 		{
 			if (avec[left_idx]==bvec[right_idx])
 			{
-				ULONG sym=avec[left_idx];
+				uint64_t sym=avec[left_idx];
 
 				while (left_idx< alen && avec[left_idx]==sym)
 					left_idx++;
@@ -126,7 +127,7 @@ DREAL CCommUlongStringKernel::compute(int32_t idx_a, int32_t idx_b)
 				int32_t old_left_idx=left_idx;
 				int32_t old_right_idx=right_idx;
 
-				ULONG sym=avec[left_idx];
+				uint64_t sym=avec[left_idx];
 
 				while (left_idx< alen && avec[left_idx]==sym)
 					left_idx++;
@@ -153,13 +154,15 @@ void CCommUlongStringKernel::add_to_normal(int32_t vec_idx, DREAL weight)
 	int32_t k=0;
 	int32_t last_j=0;
 	int32_t len=-1;
-	ULONG* vec=((CStringFeatures<ULONG>*) lhs)->get_feature_vector(vec_idx, len);
+	uint64_t* vec=((CStringFeatures<uint64_t>*) lhs)->get_feature_vector(vec_idx, len);
 
 	if (vec && len>0)
 	{
 		//use malloc not new [] as DynamicArray uses it
-		ULONG* dic= (ULONG*) malloc((len+dictionary.get_num_elements())*sizeof(ULONG));
-		DREAL* dic_weights= (DREAL*) malloc((len+dictionary.get_num_elements())*sizeof(DREAL));
+		uint64_t* dic= (uint64_t*) malloc(
+			(len+dictionary.get_num_elements())*sizeof(uint64_t));
+		DREAL* dic_weights= (DREAL*) malloc(
+			(len+dictionary.get_num_elements())*sizeof(DREAL));
 
 		if (use_sign)
 		{
@@ -268,7 +271,8 @@ DREAL CCommUlongStringKernel::compute_optimized(int32_t i)
 
 
 	int32_t alen = -1;
-	ULONG* avec=((CStringFeatures<ULONG>*) rhs)->get_feature_vector(i, alen);
+	uint64_t* avec=((CStringFeatures<uint64_t>*) rhs)->
+		get_feature_vector(i, alen);
 
 	if (avec && alen>0)
 	{

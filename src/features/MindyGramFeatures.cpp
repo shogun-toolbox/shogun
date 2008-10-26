@@ -84,7 +84,7 @@ void CMindyGramFeatures::set_feature_vector(int32_t i, gram_t * g)
  * @param b Buffer to hold gram of at least 65 bytes
  * @return gram (e.g. an n-gram or word)
  */
-ULONG CMindyGramFeatures::get_feature(int32_t i, int32_t j)
+uint64_t CMindyGramFeatures::get_feature(int32_t i, int32_t j)
 {
 	ASSERT(vectors && i<num_vectors);
 	ASSERT(j<(signed) vectors[i]->num);

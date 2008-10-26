@@ -41,14 +41,13 @@
 typedef short int SHORT;
 
 /// Type LONG is 8 bytes in size
-/// Type ULONG is 8 bytes in size
 #ifndef SUNOS
 #include <stdint.h>
 typedef int64_t LONG;
-typedef uint64_t ULONG;
 #else
 typedef long LONG;
-typedef unsigned long ULONG;
+typedef unsigned long uint64_t;
+typedef unsigned long long int uintmax_t;
 typedef unsigned char uint8_t;
 typedef unsigned short int uint16_t;
 typedef unsigned int uint32_t;

@@ -64,7 +64,7 @@ template<> inline EFeatureType CStringDistance<DREAL>::get_feature_type() { retu
  *
  * @return feature type ULONG
  */
-template<> inline EFeatureType CStringDistance<ULONG>::get_feature_type() { return F_ULONG; }
+template<> inline EFeatureType CStringDistance<uint64_t>::get_feature_type() { return F_ULONG; }
 
 /** get feature type the INT distance can deal with
  *

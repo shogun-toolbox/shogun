@@ -99,12 +99,16 @@ class CGUIFeatures : public CSGObject
 		CRealFeatures* convert_simple_char_to_simple_align(CCharFeatures* src, DREAL gap_cost=0);
 		CRealFeatures* convert_simple_word_to_simple_salzberg(CWordFeatures* src);
 
-		CStringFeatures<uint16_t>* convert_string_char_to_string_word(CStringFeatures<char>* src);
-		CStringFeatures<ULONG>* convert_string_char_to_string_ulong(CStringFeatures<char>* src);
-		CTOPFeatures* convert_string_word_to_simple_top(CStringFeatures<uint16_t>* src);
-		CFKFeatures* convert_string_word_to_simple_fk(CStringFeatures<uint16_t>* src);
-
-		CRealFeatures* convert_sparse_real_to_simple_real(CSparseFeatures<DREAL>* src);
+		CStringFeatures<uint16_t>* convert_string_char_to_string_word(
+			CStringFeatures<char>* src);
+		CStringFeatures<uint64_t>* convert_string_char_to_string_ulong(
+			CStringFeatures<char>* src);
+		CTOPFeatures* convert_string_word_to_simple_top(
+			CStringFeatures<uint16_t>* src);
+		CFKFeatures* convert_string_word_to_simple_fk(
+			CStringFeatures<uint16_t>* src);
+		CRealFeatures* convert_sparse_real_to_simple_real(
+			CSparseFeatures<DREAL>* src);
 
 		template <class CT, class ST>
 		CStringFeatures<ST>* convert_string_char_to_string_generic(CStringFeatures<CT>* src, int32_t order=1, int32_t start=0, int32_t gap=0, char rev='f')

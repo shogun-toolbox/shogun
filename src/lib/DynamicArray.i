@@ -13,7 +13,7 @@
 %template(DynamicIntArray) CDynamicArray<int32_t>;
 %template(DynamicUIntArray) CDynamicArray<uint32_t>;
 %template(DynamicLongArray) CDynamicArray<LONG>;
-%template(DynamicULongArray) CDynamicArray<ULONG>;
+%template(DynamicULongArray) CDynamicArray<uint64_t>;
 %template(DynamicShortRealArray) CDynamicArray<SHORTREAL>;
 %template(DynamicRealArray) CDynamicArray<DREAL>;
 %template(DynamicPlifArray) CDynamicArray<CPlifBase*>;

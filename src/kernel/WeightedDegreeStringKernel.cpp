@@ -157,7 +157,7 @@ bool CWeightedDegreeStringKernel::init(CFeatures* l, CFeatures* r)
 	alphabet=new CAlphabet(sf_l->get_alphabet());
 	CAlphabet* ralphabet=(sf_r->get_alphabet());
 	if (!((alphabet->get_alphabet()==DNA) || (alphabet->get_alphabet()==RNA)))
-		properties &= ((ULONG) (-1)) ^ (KP_LINADD | KP_BATCHEVALUATION);
+		properties &= ((uint64_t) (-1)) ^ (KP_LINADD | KP_BATCHEVALUATION);
 
 	ASSERT(ralphabet->get_alphabet()==alphabet->get_alphabet());
 	SG_UNREF(ralphabet);

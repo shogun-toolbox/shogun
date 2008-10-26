@@ -432,7 +432,7 @@ void* CWDSVMOcas::compute_output_helper(void* ptr)
 
 			/*for (int32_t i=0; i<nData>>3; i++) // fastest on 64bit: 1.5s
 			{
-				ULONG x=((ULONG*) vec)[i];
+				uint64_t x=((uint64_t*) vec)[i];
 				int32_t ii=i<<3;
 				val[ii]=val[ii]*alphabet_size + (x&255);
 				val[ii+1]=val[ii+1]*alphabet_size + ((x>>8)&255);

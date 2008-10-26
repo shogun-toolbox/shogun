@@ -125,7 +125,7 @@ class CMindyGramFeatures : public CFeatures
         /* Feature and vector functions */
         gram_t *get_feature_vector(int32_t i);
         void set_feature_vector(int32_t i, gram_t * g);
-        ULONG get_feature(int32_t i, int32_t j);
+        uint64_t get_feature(int32_t i, int32_t j);
         int32_t get_vector_length(int32_t i);
         void trim_max(double m);
 

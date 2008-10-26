@@ -12,6 +12,7 @@
 
 #include "lib/ShogunException.h"
 #include "lib/memory.h"
+#include "lib/common.h"
 
 
 void* operator new(size_t size) throw (std::bad_alloc)
@@ -22,7 +23,7 @@ void* operator new(size_t size) throw (std::bad_alloc)
 		const size_t buf_len=128;
 		char buf[buf_len];
 		size_t written=snprintf(buf, buf_len,
-			"Out of memory error, tried to allocate %lld bytes using new().\n", (unsigned long long int) size);
+			"Out of memory error, tried to allocate %lld bytes using new().\n", (uintmax_t) size);
 		if (written<buf_len)
 			throw ShogunException(buf);
 		else
@@ -47,7 +48,7 @@ void* operator new[](size_t size)
 		const size_t buf_len=128;
 		char buf[buf_len];
 		size_t written=snprintf(buf, buf_len,
-			"Out of memory error, tried to allocate %lld bytes using new[].\n", (unsigned long long int) size);
+			"Out of memory error, tried to allocate %lld bytes using new[].\n", (uintmax_t) size);
 		if (written<buf_len)
 			throw ShogunException(buf);
 		else

@@ -389,7 +389,7 @@ bool CGUIPreProc::preproc_all_features(CFeatures* f, bool force)
 				case F_WORD:
 					return ((CStringFeatures<uint16_t>*) f)->apply_preproc(force);
 				case F_ULONG:
-					return ((CStringFeatures<ULONG>*) f)->apply_preproc(force);
+					return ((CStringFeatures<uint64_t>*) f)->apply_preproc(force);
 				default:
 					io.not_implemented();
 			}

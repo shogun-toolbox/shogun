@@ -40,7 +40,7 @@
  * improvement here when a whole set of sequences is ADDed) using sorted lists.
  *
  */
-class CCommUlongStringKernel: public CStringKernel<ULONG>
+class CCommUlongStringKernel: public CStringKernel<uint64_t>
 {
 	public:
 		/** constructor
@@ -58,7 +58,7 @@ class CCommUlongStringKernel: public CStringKernel<ULONG>
 		 * @param size cache size
 		 */
 		CCommUlongStringKernel(
-			CStringFeatures<ULONG>* l, CStringFeatures<ULONG>* r,
+			CStringFeatures<uint64_t>* l, CStringFeatures<uint64_t>* r,
 			bool use_sign=false,
 			int32_t size=10);
 
@@ -134,8 +134,9 @@ class CCommUlongStringKernel: public CStringKernel<ULONG>
 		 * @param weight weight
 		 * @param vec_idx vector index
 		 */
-		inline void merge_dictionaries(int32_t &t, int32_t j, int32_t &k, ULONG* vec,
-				ULONG* dic, DREAL* dic_weights, DREAL weight, int32_t vec_idx)
+		inline void merge_dictionaries(
+			int32_t& t, int32_t j, int32_t& k, uint64_t* vec, uint64_t* dic,
+			DREAL* dic_weights, DREAL weight, int32_t vec_idx)
 		{
 			while (k<dictionary.get_num_elements() && dictionary[k] < vec[j-1])
 			{
@@ -187,7 +188,7 @@ class CCommUlongStringKernel: public CStringKernel<ULONG>
 		 * @param dict dictionary will be stored in here
 		 * @param dweights dictionary weights will be stored in here
 		 */
-		void get_dictionary(int32_t &dsize, ULONG*& dict, DREAL*& dweights) 
+		void get_dictionary(int32_t &dsize, uint64_t*& dict, DREAL*& dweights)
 		{
 			dsize=dictionary.get_num_elements();
 			dict=dictionary.get_array();
@@ -207,7 +208,7 @@ class CCommUlongStringKernel: public CStringKernel<ULONG>
 
 	protected:
 		/** dictionary */
-		CDynamicArray<ULONG> dictionary;
+		CDynamicArray<uint64_t> dictionary;
 		/** dictionary weights */
 		CDynamicArray<DREAL> dictionary_weights;
 

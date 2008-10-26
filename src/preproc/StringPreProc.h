@@ -49,7 +49,7 @@ template <class ST> class CStringPreProc : public CPreProc
 		inline virtual EFeatureType get_feature_type();
 };
 
-template<> inline EFeatureType CStringPreProc<ULONG>::get_feature_type()
+template<> inline EFeatureType CStringPreProc<uint64_t>::get_feature_type()
 {
 	return F_ULONG;
 }

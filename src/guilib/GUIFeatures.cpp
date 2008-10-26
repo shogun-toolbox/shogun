@@ -130,7 +130,7 @@ bool CGUIFeatures::load(
 		}
 		else if (strncmp(type, "ULONG", 5)==0)
 		{
-			*f_ptr=new CStringFeatures<ULONG>(filename);
+			*f_ptr=new CStringFeatures<uint64_t>(filename);
 		}
 		else
 		{
@@ -252,7 +252,7 @@ bool CGUIFeatures::obtain_by_sliding_window(
 		case F_WORD:
 			return ( ((CStringFeatures<uint16_t>*) features)->obtain_by_sliding_window(winsize, shift, skip)>0);
 		case F_ULONG:
-			return ( ((CStringFeatures<ULONG>*) features)->obtain_by_sliding_window(winsize, shift, skip)>0);
+			return ( ((CStringFeatures<uint64_t>*) features)->obtain_by_sliding_window(winsize, shift, skip)>0);
 		default:
 			SG_SERROR("Unsupported string features type.\n");
 			return false;

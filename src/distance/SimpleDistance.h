@@ -70,7 +70,7 @@ template<> inline EFeatureType CSimpleDistance<DREAL>::get_feature_type() { retu
  *
  * @return feature type ULONG
  */
-template<> inline EFeatureType CSimpleDistance<ULONG>::get_feature_type() { return F_ULONG; }
+template<> inline EFeatureType CSimpleDistance<uint64_t>::get_feature_type() { return F_ULONG; }
 
 /** get feature type the INT distance can deal with
  *

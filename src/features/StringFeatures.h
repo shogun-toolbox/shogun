@@ -943,7 +943,7 @@ template <class ST> class CStringFeatures : public CFeatures
 						features[line].length=0 ;
 				}         
 
-				ULONG mask=0;
+				uint64_t mask=0;
 				for (int32_t i=0; i< (LONG) max_val; i++)
 					mask=(mask<<1) | 1;
 
@@ -1301,7 +1301,7 @@ template<> inline EFeatureType CStringFeatures<LONG>::get_feature_type()
  *
  * @return feature type ULONG
  */
-template<> inline EFeatureType CStringFeatures<ULONG>::get_feature_type()
+template<> inline EFeatureType CStringFeatures<uint64_t>::get_feature_type()
 {
 	return F_ULONG;
 }

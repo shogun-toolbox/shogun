@@ -40,7 +40,7 @@
 struct ConsensusEntry
 {
 	/** string */
-	ULONG string;
+	uint64_t string;
 	/** score */
 	SHORTREAL score;
 	/** bt */
@@ -352,7 +352,8 @@ template <class Trie> class CTrie : public CSGObject
 		 * @param weights weights
 		 * @return cumulative score
 		 */
-		DREAL get_cumulative_score(int32_t pos, ULONG seq, int32_t deg, DREAL* weights);
+		DREAL get_cumulative_score(
+			int32_t pos, uint64_t seq, int32_t deg, DREAL* weights);
 
 		/** fill backtracking table recursion
 		 *
@@ -363,7 +364,9 @@ template <class Trie> class CTrie : public CSGObject
 		 * @param table table of concensus entries
 		 * @param weights weights
 		 */
-		void fill_backtracking_table_recursion(Trie* tree, int32_t depth, ULONG seq, DREAL value, CDynamicArray<ConsensusEntry>* table, DREAL* weights);
+		void fill_backtracking_table_recursion(
+			Trie* tree, int32_t depth, uint64_t seq, DREAL value,
+			CDynamicArray<ConsensusEntry>* table, DREAL* weights);
 
 		/** fill backtracking table
 		 *
@@ -1939,7 +1942,9 @@ void CTrie<Trie>::compute_by_tree_helper(int32_t* vec, int32_t len,
 }
 
 	template <class Trie>
-void CTrie<Trie>::fill_backtracking_table_recursion(Trie* tree, int32_t depth, ULONG seq, DREAL value, CDynamicArray<ConsensusEntry>* table, DREAL* weights)
+void CTrie<Trie>::fill_backtracking_table_recursion(
+	Trie* tree, int32_t depth, uint64_t seq, DREAL value,
+	CDynamicArray<ConsensusEntry>* table, DREAL* weights)
 {
 	DREAL w=1.0;
 
@@ -1961,7 +1966,7 @@ void CTrie<Trie>::fill_backtracking_table_recursion(Trie* tree, int32_t depth, U
 				ConsensusEntry entry;
 				entry.bt=-1;
 				entry.score=value+v;
-				entry.string=seq | ((ULONG) sym) << (2*(degree-depth-1));
+				entry.string=seq | ((uint64_t) sym) << (2*(degree-depth-1));
 
 				table->append_element(entry);
 			}
@@ -1971,7 +1976,7 @@ void CTrie<Trie>::fill_backtracking_table_recursion(Trie* tree, int32_t depth, U
 	{
 		for (int32_t sym=0; sym<4; sym++)
 		{
-			ULONG str=seq | ((ULONG) sym) << (2*(degree-depth-1));
+			uint64_t str=seq | ((uint64_t) sym) << (2*(degree-depth-1));
 			if (tree->children[sym] != NO_CHILD)
 				fill_backtracking_table_recursion(&TreeMem[tree->children[sym]], depth+1, str, value, table, weights);
 		}
@@ -1979,7 +1984,8 @@ void CTrie<Trie>::fill_backtracking_table_recursion(Trie* tree, int32_t depth, U
 }
 
 	template <class Trie>
-DREAL CTrie<Trie>::get_cumulative_score(int32_t pos, ULONG seq, int32_t deg, DREAL* weights)
+DREAL CTrie<Trie>::get_cumulative_score(
+	int32_t pos, uint64_t seq, int32_t deg, DREAL* weights)
 {
 	DREAL result=0.0;
 
@@ -2017,7 +2023,7 @@ void CTrie<Trie>::fill_backtracking_table(int32_t pos, CDynamicArray<ConsensusEn
 
 	Trie* t = &TreeMem[trees[pos]];
 
-	fill_backtracking_table_recursion(t, 0, (ULONG) 0, 0.0, cur, weights);
+	fill_backtracking_table_recursion(t, 0, (uint64_t) 0, 0.0, cur, weights);
 
 
 	if (cumulative)
@@ -2041,8 +2047,8 @@ void CTrie<Trie>::fill_backtracking_table(int32_t pos, CDynamicArray<ConsensusEn
 
 		for (int32_t i=0; i<num_cur; i++)
 		{
-			//ULONG str_cur_old= cur->get_element(i).string;
-			ULONG str_cur= cur->get_element(i).string >> 2;
+			//uint64_t str_cur_old= cur->get_element(i).string;
+			uint64_t str_cur= cur->get_element(i).string >> 2;
 			//SG_PRINT("...cur:0x%0llx cur_noprfx:0x%0llx...\n", str_cur_old, str_cur);
 
 			int32_t bt=-1;
@@ -2050,9 +2056,10 @@ void CTrie<Trie>::fill_backtracking_table(int32_t pos, CDynamicArray<ConsensusEn
 
 			for (int32_t j=0; j<num_prev; j++)
 			{
-				//ULONG str_prev_old= prev->get_element(j).string;
-				ULONG mask=((((ULONG)0)-1) ^ (((ULONG) 3) << (2*(degree-1))));
-				ULONG str_prev=  mask & prev->get_element(j).string;
+				//uint64_t str_prev_old= prev->get_element(j).string;
+				uint64_t mask=
+					((((uint64_t)0)-1) ^ (((uint64_t) 3) << (2*(degree-1))));
+				uint64_t str_prev=  mask & prev->get_element(j).string;
 				//SG_PRINT("...prev:0x%0llx prev_nosfx:0x%0llx mask:%0llx...\n", str_prev_old, str_prev,mask);
 
 				if (str_cur == str_prev)

@@ -77,7 +77,7 @@ template<> inline EFeatureType CSimplePreProc<uint8_t>::get_feature_type()
 	return F_BYTE;
 }
 
-template<> inline EFeatureType CSimplePreProc<ULONG>::get_feature_type()
+template<> inline EFeatureType CSimplePreProc<uint64_t>::get_feature_type()
 {
 	return F_ULONG;
 }

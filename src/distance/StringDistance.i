@@ -8,4 +8,4 @@
 %template(StringWordDistance) CStringDistance<uint16_t>;
 %template(StringCharDistance) CStringDistance<char>;
 %template(StringIntDistance) CStringDistance<int32_t>;
-%template(StringUlongDistance) CStringDistance<ULONG>;
+%template(StringUlongDistance) CStringDistance<uint64_t>;

@@ -23,7 +23,7 @@
  * a binary higher order representation first (cf. obtain_from_*() functions in
  * CStringFeatures)
  */
-class CSortUlongString : public CStringPreProc<ULONG>
+class CSortUlongString : public CStringPreProc<uint64_t>
 {
 public:
 	/** default constructor */
@@ -51,6 +51,6 @@ public:
 
 	/// apply preproc on single feature vector
 	/// result in feature matrix
-	virtual ULONG* apply_to_string(ULONG* f, int32_t &len);
+	virtual uint64_t* apply_to_string(uint64_t* f, int32_t &len);
 };
 #endif

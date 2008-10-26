@@ -82,7 +82,7 @@ template<> inline EFeatureType CSimpleKernel<DREAL>::get_feature_type() { return
 
 template<> inline EFeatureType CSimpleKernel<SHORTREAL>::get_feature_type() { return F_SHORTREAL; }
 
-template<> inline EFeatureType CSimpleKernel<ULONG>::get_feature_type() { return F_ULONG; }
+template<> inline EFeatureType CSimpleKernel<uint64_t>::get_feature_type() { return F_ULONG; }
 
 template<> inline EFeatureType CSimpleKernel<int32_t>::get_feature_type() { return F_INT; }
 

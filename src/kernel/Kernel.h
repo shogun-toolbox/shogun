@@ -718,7 +718,7 @@ class CKernel : public CSGObject
 		EOptimizationType opt_type;
 
 		/** kernel properties */
-		ULONG  properties;
+		uint64_t  properties;
 
 		/** normalize the kernel(i,j) function based on this normalization
 		 * function */

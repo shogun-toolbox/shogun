@@ -502,7 +502,7 @@ template<> inline EFeatureType CSimpleFeatures<uint16_t>::get_feature_type()
  *
  * @return feature type ULONG
  */
-template<> inline EFeatureType CSimpleFeatures<ULONG>::get_feature_type()
+template<> inline EFeatureType CSimpleFeatures<uint64_t>::get_feature_type()
 {
 	return F_ULONG;
 }

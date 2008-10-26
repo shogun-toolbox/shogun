@@ -12,7 +12,7 @@ REPLACEMENTS=[
 	[' int32_t', '  int'],
 	[' uint32_t', ' int'],
 	[' LONG', ' int'],
-	[' ULONG', ' int'],
+	[' uint64_t', ' int'],
 	[' uint8_t', ' int'],
 	[' SHORT', ' int'],
 	[' uint16_t', ' int'],

@@ -16,7 +16,7 @@
 %apply (int32_t** ARGOUT1, int32_t* DIM1) {(int32_t** dst, int32_t* len)};
 %apply (uint32_t** ARGOUT1, int32_t* DIM1) {(uint32_t** dst, int32_t* len)};
 %apply (LONG** ARGOUT1, int32_t* DIM1) {(LONG** dst, int32_t* len)};
-%apply (ULONG** ARGOUT1, int32_t* DIM1) {(ULONG** dst, int32_t* len)};
+%apply (uint64_t** ARGOUT1, int32_t* DIM1) {(uint64_t** dst, int32_t* len)};
 
 %include "features/StringFeatures.h"
 
@@ -75,11 +75,11 @@
         self->CStringFeatures<LONG>::get_string(dst,len);
     }
 };
-%extend CStringFeatures<ULONG>
+%extend CStringFeatures<uint64_t>
 {
-    void get_str(ULONG** dst, int32_t* len)
+    void get_str(uint64_t** dst, int32_t* len)
     {
-        self->CStringFeatures<ULONG>::get_string(dst,len);
+        self->CStringFeatures<uint64_t>::get_string(dst,len);
     }
 };
 
@@ -90,4 +90,4 @@
 %template(StringIntFeatures) CStringFeatures<int32_t>;
 %template(StringUIntFeatures) CStringFeatures<uint32_t>;
 %template(StringLongFeatures) CStringFeatures<LONG>;
-%template(StringUlongFeatures) CStringFeatures<ULONG>;
+%template(StringUlongFeatures) CStringFeatures<uint64_t>;

@@ -201,7 +201,7 @@ bool CWeightedDegreePositionStringKernel::init(CFeatures* l, CFeatures* r)
 	alphabet= new CAlphabet(sf_l->get_alphabet());
 	CAlphabet* ralphabet=sf_r->get_alphabet();
 	if (!((alphabet->get_alphabet()==DNA) || (alphabet->get_alphabet()==RNA)))
-		properties &= ((ULONG) (-1)) ^ (KP_LINADD | KP_BATCHEVALUATION);
+		properties &= ((uint64_t) (-1)) ^ (KP_LINADD | KP_BATCHEVALUATION);
 
 	ASSERT(ralphabet->get_alphabet()==alphabet->get_alphabet());
 	SG_UNREF(ralphabet);
@@ -1597,7 +1597,7 @@ char* CWeightedDegreePositionStringKernel::compute_consensus(int32_t &num_feat, 
 			max_score=sc;
 		}
 	}
-	ULONG endstr=table[num_tables-1]->get_element(max_idx).string;
+	uint64_t endstr=table[num_tables-1]->get_element(max_idx).string;
 
 	SG_INFO("max_idx:%d num_el:%d num_feat:%d num_tables:%d max_score:%f\n", max_idx, num_elements, num_feat, num_tables, max_score);
 

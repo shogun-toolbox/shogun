@@ -1690,7 +1690,7 @@ bool CSGInterface::cmd_convert()
 				}
 				else if (strmatch(to_type, "ULONG"))
 				{
-					result=ui_features->convert_string_char_to_string_generic<char,ULONG>(
+					result=ui_features->convert_string_char_to_string_generic<char,uint64_t>(
 					(CStringFeatures<char>*) features, order, start,
 						gap, rev);
 				}
@@ -1762,7 +1762,7 @@ bool CSGInterface::cmd_convert()
 				}
 				else if (strmatch(to_type, "ULONG"))
 				{
-					result=ui_features->convert_string_char_to_string_generic<uint8_t,ULONG>(
+					result=ui_features->convert_string_char_to_string_generic<uint8_t,uint64_t>(
 						(CStringFeatures<uint8_t>*) features, order, start,
 						gap, rev);
 				}
@@ -1907,7 +1907,7 @@ bool CSGInterface::cmd_obtain_from_position_list()
 		}
 		case F_ULONG:
 		{
-			success=(((CStringFeatures<ULONG>*) features)->
+			success=(((CStringFeatures<uint64_t>*) features)->
 				obtain_by_position_list(winsize, &positions, skip)>0);
 			break;
 		}

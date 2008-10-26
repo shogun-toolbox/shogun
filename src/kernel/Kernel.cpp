@@ -366,21 +366,21 @@ void CKernel::kernel_cache_init(int32_t buffsize, bool regression_hack)
 
 	int32_t totdoc=lhs->get_num_vectors();
 	ASSERT(totdoc>0);
-	ULONG buffer_size=0;
+	uint64_t buffer_size=0;
 	int32_t i;
 
 	//in regression the additional constraints are made by doubling the training data
 	if (regression_hack)
 		totdoc*=2;
 
-	buffer_size=((ULONG) buffsize)*1024*1024/sizeof(KERNELCACHE_ELEM);
-	if (buffer_size>((ULONG) totdoc)*totdoc)
-		buffer_size=((ULONG) totdoc)*totdoc;
+	buffer_size=((uint64_t) buffsize)*1024*1024/sizeof(KERNELCACHE_ELEM);
+	if (buffer_size>((uint64_t) totdoc)*totdoc)
+		buffer_size=((uint64_t) totdoc)*totdoc;
 
 	SG_INFO( "using a kernel cache of size %lld MB (%lld bytes) for %s Kernel\n", buffer_size*sizeof(KERNELCACHE_ELEM)/1024/1024, buffer_size*sizeof(KERNELCACHE_ELEM), get_name());
 
 	//make sure it fits in the *signed* KERNELCACHE_IDX type
-	ASSERT(buffer_size < (((ULONG) 1) << (sizeof(KERNELCACHE_IDX)*8-1)));
+	ASSERT(buffer_size < (((uint64_t) 1) << (sizeof(KERNELCACHE_IDX)*8-1)));
 
 	kernel_cache.index = new int32_t[totdoc];
 	kernel_cache.occu = new int32_t[totdoc];

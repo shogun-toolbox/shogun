@@ -71,7 +71,7 @@ template <class ST> class CStringKernel : public CKernel
 
 template<> inline EFeatureType CStringKernel<DREAL>::get_feature_type() { return F_DREAL; }
 
-template<> inline EFeatureType CStringKernel<ULONG>::get_feature_type() { return F_ULONG; }
+template<> inline EFeatureType CStringKernel<uint64_t>::get_feature_type() { return F_ULONG; }
 
 template<> inline EFeatureType CStringKernel<int32_t>::get_feature_type() { return F_INT; }
 
