@@ -401,7 +401,7 @@ template <class ST> class CStringFeatures : public CFeatures
 
 			if (f.is_ok())
 			{
-				for (long i=0; i<length; i++)
+				for (int64_t i=0; i<length; i++)
 				{
 					if (feature_matrix[i]=='\n')
 						num_vectors++;
@@ -410,7 +410,7 @@ template <class ST> class CStringFeatures : public CFeatures
 				SG_INFO( "file contains %ld vectors\n", num_vectors);
 				features= new T_STRING<ST>[num_vectors];
 
-				long index=0;
+				int64_t index=0;
 				for (int32_t lines=0; lines<num_vectors; lines++)
 				{
 					char* p=&feature_matrix[index];
@@ -621,7 +621,7 @@ template <class ST> class CStringFeatures : public CFeatures
 						if (f)
 						{
 							ST* str=new ST[filesize];
-							SG_DEBUG("%s:%ld\n", fname, (long int) filesize);
+							SG_DEBUG("%s:%ld\n", fname, (int64_t) filesize);
 							fread(str, sizeof(ST), filesize, f);
 							strings[num].string=str;
 							strings[num].length=filesize;

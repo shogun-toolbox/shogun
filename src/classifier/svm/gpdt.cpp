@@ -170,7 +170,7 @@ int32_t prescan_document(char *file, int32_t *lines, int32_t *vlen, int32_t *ll)
   FILE    *fl;
   int32_t ic;
   char    c;
-  long    current_length, current_vlen;
+  int64_t    current_length, current_vlen;
 
   if ((fl = fopen (file, "r")) == NULL)
       return(-1);

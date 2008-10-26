@@ -73,7 +73,7 @@ template <class S, class T> inline void clone(T*& dst, S* src, int32_t n)
 class Cache
 {
 public:
-	Cache(int32_t l, long int size);
+	Cache(int32_t l, int64_t size);
 	~Cache();
 
 	// request data [0,len)
@@ -83,7 +83,7 @@ public:
 	void swap_index(int32_t i, int32_t j);	// future_option
 private:
 	int32_t l;
-	long int size;
+	int64_t size;
 	struct head_t
 	{
 		head_t *prev, *next;	// a cicular list
@@ -97,12 +97,12 @@ private:
 	void lru_insert(head_t *h);
 };
 
-Cache::Cache(int32_t l_, long int size_):l(l_),size(size_)
+Cache::Cache(int32_t l_, int64_t size_):l(l_),size(size_)
 {
 	head = (head_t *)calloc(l,sizeof(head_t));	// initialized to 0
 	size /= sizeof(Qfloat);
 	size -= l * sizeof(head_t) / sizeof(Qfloat);
-	size = max(size, (long int) 2*l);	// cache must be large enough for two columns
+	size = max(size, (int64_t) 2*l);	// cache must be large enough for two columns
 	lru_head.next = lru_head.prev = &lru_head;
 }
 
@@ -1145,7 +1145,7 @@ public:
 	:Kernel(prob.l, prob.x, param)
 	{
 		clone(y,y_,prob.l);
-		cache = new Cache(prob.l,(long int)(param.cache_size*(1l<<20)));
+		cache = new Cache(prob.l,(int64_t)(param.cache_size*(1l<<20)));
 		QD = new Qfloat[prob.l];
 		for(int32_t i=0;i<prob.l;i++)
 			QD[i]= (Qfloat)kernel_function(i,i);
@@ -1194,7 +1194,7 @@ public:
 	ONE_CLASS_Q(const svm_problem& prob, const svm_parameter& param)
 	:Kernel(prob.l, prob.x, param)
 	{
-		cache = new Cache(prob.l,(long int)(param.cache_size*(1l<<20)));
+		cache = new Cache(prob.l,(int64_t)(param.cache_size*(1l<<20)));
 		QD = new Qfloat[prob.l];
 		for(int32_t i=0;i<prob.l;i++)
 			QD[i]= (Qfloat)kernel_function(i,i);
@@ -1241,7 +1241,7 @@ public:
 	:Kernel(prob.l, prob.x, param)
 	{
 		l = prob.l;
-		cache = new Cache(l,(long int)(param.cache_size*(1l<<20)));
+		cache = new Cache(l,(int64_t)(param.cache_size*(1l<<20)));
 		QD = new Qfloat[2*l];
 		sign = new schar[2*l];
 		index = new int32_t[2*l];

@@ -100,11 +100,11 @@ int8_t CGNPPLib::gnpp_mdm(double *diag_H,
   double *tmp_ptr;
   double *col_u, *col_v;
   double *col_v1, *col_v2;
-  long u1=0, u2=0;
-  long v1, v2;
-  long i;
-  long t;
-  long History_size;
+  int64_t u1=0, u2=0;
+  int64_t v1, v2;
+  int64_t i;
+  int64_t t;
+  int64_t History_size;
   int8_t exitflag;
 
   /* ------------------------------------------------------------ */
@@ -366,11 +366,11 @@ int8_t CGNPPLib::gnpp_imdm(double *diag_H,
   double *tmp_ptr;
   double *col_u, *col_v;
   double *col_v1, *col_v2;
-  long u1=0, u2=0;
-  long v1, v2;
-  long i;
-  long t;
-  long History_size;
+  int64_t u1=0, u2=0;
+  int64_t v1, v2;
+  int64_t i;
+  int64_t t;
+  int64_t History_size;
   int8_t exitflag;
   int8_t which_case;
 
@@ -666,12 +666,12 @@ int8_t CGNPPLib::gnpp_imdm(double *diag_H,
 }
 
 
-DREAL* CGNPPLib::get_col( long a, long b ) 
+DREAL* CGNPPLib::get_col(int64_t a, int64_t b)
 {
   double *col_ptr;
   double y;
-  long i;
-  long inx;
+  int64_t i;
+  int64_t inx;
 
   inx = -1;
   for( i=0; i < Cache_Size; i++ ) {

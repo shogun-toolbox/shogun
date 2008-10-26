@@ -86,7 +86,7 @@ class CGNPPLib: public CSGObject
    * @param b b
    * @return something floaty
    */
-  DREAL* get_col( long a, long b );
+  DREAL* get_col(int64_t a, int64_t b);
 
   /** kernel columns */
   DREAL** kernel_columns;

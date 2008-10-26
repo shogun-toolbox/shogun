@@ -435,7 +435,7 @@ public:
 	 * @param my_pos_seq my pos seq
 	 * @param use_orf whether orf shall be used
 	 */
-	template <short int nbest, bool with_loss, bool with_multiple_sequences>
+	template <int16_t nbest, bool with_loss, bool with_multiple_sequences>
 	void best_path_trans(const DREAL *seq, int32_t seq_len, const int32_t *pos,
 						 const int32_t *orf_info, CPlifBase **PLif_matrix,
 						 CPlifBase **Plif_state_signals, int32_t max_num_signals,

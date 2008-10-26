@@ -34,7 +34,7 @@ bool CMPDSVM::train()
 	//const DREAL nu=0.32;
 	const DREAL alpha_eps=1e-12;
 	const DREAL eps=get_epsilon();
-	const long int maxiter = 1L<<30;
+	const int64_t maxiter = 1L<<30;
 	//const bool nustop=false;
 	//const int32_t k=2;
 	const int32_t n=labels->get_num_labels();
@@ -43,7 +43,7 @@ bool CMPDSVM::train()
 	const DREAL d = get_C1(); //CSVC
 	const DREAL primaleps=eps;
 	const DREAL dualeps=eps*n; //heuristic
-	long int niter=0;
+	int64_t niter=0;
 
 	kernel_cache = new CCache<KERNELCACHE_ELEM>(kernel->get_cache_size(), n, n);
 	DREAL* alphas=new DREAL[n];

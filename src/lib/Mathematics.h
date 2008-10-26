@@ -74,7 +74,7 @@ template <class T> struct radix_stack_t
 	/** Number of grams in pile */
 	size_t sn;
 	/** Byte in current focus */
-	unsigned short si;
+	uint16_t si;
 };
 
 ///** pair */
@@ -619,13 +619,13 @@ class CMath : public CSGObject
 			}
 
 		template <class T>
-			static inline uint8_t byte(T word, unsigned short p)
+			static inline uint8_t byte(T word, uint16_t p)
 			{
 				return (word >> (sizeof(T)-p-1) * 8) & 0xff;
 			}
 
 		template <class T>
-			static void radix_sort_helper(T* array, size_t size, unsigned short i)
+			static void radix_sort_helper(T* array, size_t size, uint16_t i)
 			{
 				static size_t count[256], nc, cmin;
 				T *ak;
@@ -687,7 +687,7 @@ class CMath : public CSGObject
 							}
 
 							if (i < sizeof(T)-1)
-								radix_push(ak, *cp, (unsigned short) (i + 1));
+								radix_push(ak, *cp, (uint16_t) (i + 1));
 						}
 						pile[cp - count] = ak += *cp;
 						nc--;

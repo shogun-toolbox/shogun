@@ -1150,12 +1150,12 @@ DREAL CDynProg::best_path_no_b(int32_t max_iter, int32_t &best_iter, int32_t *my
 	return best_iter_prob ;
 }
 
-void CDynProg::best_path_no_b_trans(int32_t max_iter, int32_t &max_best_iter, short int nbest, DREAL *prob_nbest, int32_t *my_paths)
+void CDynProg::best_path_no_b_trans(int32_t max_iter, int32_t &max_best_iter, int16_t nbest, DREAL *prob_nbest, int32_t *my_paths)
 {
 	//T_STATES *psi=new T_STATES[max_iter*N*nbest] ;
 	CArray3<T_STATES> psi(max_iter, N, nbest) ;
-	CArray3<short int> ktable(max_iter, N, nbest) ;
-	CArray2<short int> ktable_ends(max_iter, nbest) ;
+	CArray3<int16_t> ktable(max_iter, N, nbest) ;
+	CArray2<int16_t> ktable_ends(max_iter, nbest) ;
 
 	CArray<DREAL> tempvv(nbest*N) ;
 	CArray<int32_t> tempii(nbest*N) ;
@@ -1172,7 +1172,7 @@ void CDynProg::best_path_no_b_trans(int32_t max_iter, int32_t &max_best_iter, sh
 		for (T_STATES i=0; i<N; i++)
 		{
 			delta->element(i,0) = get_p(i) ;
-			for (short int k=1; k<nbest; k++)
+			for (int16_t k=1; k<nbest; k++)
 			{
 				delta->element(i,k)=-CMath::INFTY ;
 				ktable.element(0,i,k)=0 ;
@@ -1192,7 +1192,7 @@ void CDynProg::best_path_no_b_trans(int32_t max_iter, int32_t &max_best_iter, sh
 			const DREAL *elem_val = trans_list_forward_val[j] ;
 			
 			int32_t list_len=0 ;
-			for (short int diff=0; diff<nbest; diff++)
+			for (int16_t diff=0; diff<nbest; diff++)
 			{
 				for (int32_t i=0; i<num_elem; i++)
 				{
@@ -1205,7 +1205,7 @@ void CDynProg::best_path_no_b_trans(int32_t max_iter, int32_t &max_best_iter, sh
 			}
 			CMath::qsort_index(tempvv.get_array(), tempii.get_array(), list_len) ;
 			
-			for (short int k=0; k<nbest; k++)
+			for (int16_t k=0; k<nbest; k++)
 			{
 				if (k<list_len)
 				{
@@ -1228,7 +1228,7 @@ void CDynProg::best_path_no_b_trans(int32_t max_iter, int32_t &max_best_iter, sh
 		
 		{ //termination
 			int32_t list_len = 0 ;
-			for (short int diff=0; diff<nbest; diff++)
+			for (int16_t diff=0; diff<nbest; diff++)
 			{
 				for (T_STATES i=0; i<N; i++)
 				{
@@ -1239,7 +1239,7 @@ void CDynProg::best_path_no_b_trans(int32_t max_iter, int32_t &max_best_iter, sh
 			}
 			CMath::qsort_index(tempvv.get_array(), tempii.get_array(), list_len) ;
 			
-			for (short int k=0; k<nbest; k++)
+			for (int16_t k=0; k<nbest; k++)
 			{
 				delta_end.element(t-1,k) = -tempvv[k] ;
 				path_ends.element(t-1,k) = (tempii[k]%N) ;
@@ -1252,13 +1252,13 @@ void CDynProg::best_path_no_b_trans(int32_t max_iter, int32_t &max_best_iter, sh
 		max_best_iter=0 ;
 		
 		CArray<DREAL> sort_delta_end(max_iter*nbest) ;
-		CArray<short int> sort_k(max_iter*nbest) ;
+		CArray<int16_t> sort_k(max_iter*nbest) ;
 		CArray<int32_t> sort_t(max_iter*nbest) ;
 		CArray<int32_t> sort_idx(max_iter*nbest) ;
 		
 		int32_t i=0 ;
 		for (int32_t iter=0; iter<max_iter-1; iter++)
-			for (short int k=0; k<nbest; k++)
+			for (int16_t k=0; k<nbest; k++)
 			{
 				sort_delta_end[i]=-delta_end.element(iter,k) ;
 				sort_k[i]=k ;
@@ -1269,9 +1269,9 @@ void CDynProg::best_path_no_b_trans(int32_t max_iter, int32_t &max_best_iter, sh
 		
 		CMath::qsort_index(sort_delta_end.get_array(), sort_idx.get_array(), (max_iter-1)*nbest) ;
 
-		for (short int n=0; n<nbest; n++)
+		for (int16_t n=0; n<nbest; n++)
 		{
-			short int k=sort_k[sort_idx[n]] ;
+			int16_t k=sort_k[sort_idx[n]] ;
 			int32_t iter=sort_t[sort_idx[n]] ;
 			prob_nbest[n]=-sort_delta_end[n] ;
 
@@ -1282,7 +1282,7 @@ void CDynProg::best_path_no_b_trans(int32_t max_iter, int32_t &max_best_iter, sh
 			ASSERT(iter<max_iter) ;
 			
 			paths.element(iter,n) = path_ends.element(iter-1, k) ;
-			short int q   = ktable_ends.element(iter-1, k) ;
+			int16_t q   = ktable_ends.element(iter-1, k) ;
 			
 			for (int32_t t = iter; t>0; t--)
 			{
@@ -1401,7 +1401,7 @@ void CDynProg::extend_segment_sum_value(DREAL *segment_sum_weights, int32_t seql
 void CDynProg::best_path_2struct(const DREAL *seq_array, int32_t seq_len, const int32_t *pos,
 							 CPlifBase **Plif_matrix, 
 							 const char *genestr, int32_t genestr_len,
-							 short int nbest, 
+							 int16_t nbest, 
 							 DREAL *prob_nbest, int32_t *my_state_seq, int32_t *my_pos_seq,
 							 DREAL *dictionary_weights, int32_t dict_len, DREAL *segment_sum_weights)
 {
@@ -1442,7 +1442,7 @@ void CDynProg::best_path_2struct(const DREAL *seq_array, int32_t seq_len, const 
 	
 	const int32_t look_back_buflen = (max_look_back+1)*nbest*N ;
 	//SG_DEBUG("look_back_buflen=%i\n", look_back_buflen) ;
-	const DREAL mem_use = (DREAL)(seq_len*N*nbest*(sizeof(T_STATES)+sizeof(short int)+sizeof(int32_t))+
+	const DREAL mem_use = (DREAL)(seq_len*N*nbest*(sizeof(T_STATES)+sizeof(int16_t)+sizeof(int32_t))+
 								look_back_buflen*(2*sizeof(DREAL)+sizeof(int32_t))+
 								seq_len*(sizeof(T_STATES)+sizeof(int32_t))+
 								genestr_len*sizeof(bool))/(1024*1024)
@@ -1460,12 +1460,12 @@ void CDynProg::best_path_2struct(const DREAL *seq_array, int32_t seq_len, const 
 		
 	CArray3<DREAL> delta(max_look_back+1, N, nbest) ;
 	CArray3<T_STATES> psi(seq_len,N,nbest) ;
-	CArray3<short int> ktable(seq_len,N,nbest) ;
+	CArray3<int16_t> ktable(seq_len,N,nbest) ;
 	CArray3<int32_t> ptable(seq_len,N,nbest) ;
 
 	CArray<DREAL> delta_end(nbest) ;
 	CArray<T_STATES> path_ends(nbest) ;
-	CArray<short int> ktable_end(nbest) ;
+	CArray<int16_t> ktable_end(nbest) ;
 
 	CArray<DREAL> tempvv(look_back_buflen) ;
 	CArray<int32_t> tempii(look_back_buflen) ;
@@ -1503,7 +1503,7 @@ void CDynProg::best_path_2struct(const DREAL *seq_array, int32_t seq_len, const 
 			psi.element(0,i,0)   = 0 ;
 			ktable.element(0,i,0)  = 0 ;
 			ptable.element(0,i,0)  = 0 ;
-			for (short int k=1; k<nbest; k++)
+			for (int16_t k=1; k<nbest; k++)
 			{
 				delta.element(0,i,k)    = -CMath::INFTY ;
 				psi.element(0,i,0)      = 0 ;
@@ -1524,7 +1524,7 @@ void CDynProg::best_path_2struct(const DREAL *seq_array, int32_t seq_len, const 
 		{
 			if (seq.element(j,t)<-1e20)
 			{ // if we cannot observe the symbol here, then we can omit the rest
-				for (short int k=0; k<nbest; k++)
+				for (int16_t k=0; k<nbest; k++)
 				{
 					delta.element(t%max_look_back,j,k)    = seq.element(j,t) ;
 					psi.element(t,j,k)      = 0 ;
@@ -1566,7 +1566,7 @@ void CDynProg::best_path_2struct(const DREAL *seq_array, int32_t seq_len, const 
 						DREAL pen_val = 0.0 ;
 						if (penalty)
 							pen_val=penalty->lookup_penalty(pos[t]-pos[ts], svm_value) + segment_sum_value[j] ;
-						for (short int diff=0; diff<nbest; diff++)
+						for (int16_t diff=0; diff<nbest; diff++)
 						{
 							DREAL  val        = delta.element(ts%max_look_back,ii,diff) + elem_val[i] ;
 							val             += pen_val ;
@@ -1580,7 +1580,7 @@ void CDynProg::best_path_2struct(const DREAL *seq_array, int32_t seq_len, const 
 				}
 				CMath::nmin<int32_t>(tempvv.get_array(), tempii.get_array(), list_len, nbest) ;
 				
-				for (short int k=0; k<nbest; k++)
+				for (int16_t k=0; k<nbest; k++)
 				{
 					if (k<list_len)
 					{
@@ -1603,7 +1603,7 @@ void CDynProg::best_path_2struct(const DREAL *seq_array, int32_t seq_len, const 
 	
 	{ //termination
 		int32_t list_len = 0 ;
-		for (short int diff=0; diff<nbest; diff++)
+		for (int16_t diff=0; diff<nbest; diff++)
 		{
 			for (T_STATES i=0; i<N; i++)
 			{
@@ -1615,7 +1615,7 @@ void CDynProg::best_path_2struct(const DREAL *seq_array, int32_t seq_len, const 
 		
 		CMath::nmin(tempvv.get_array(), tempii.get_array(), list_len, nbest) ;
 		
-		for (short int k=0; k<nbest; k++)
+		for (int16_t k=0; k<nbest; k++)
 		{
 			delta_end.element(k) = -tempvv[k] ;
 			path_ends.element(k) = (tempii[k]%N) ;
@@ -1624,13 +1624,13 @@ void CDynProg::best_path_2struct(const DREAL *seq_array, int32_t seq_len, const 
 	}
 	
 	{ //state sequence backtracking		
-		for (short int k=0; k<nbest; k++)
+		for (int16_t k=0; k<nbest; k++)
 		{
 			prob_nbest[k]= delta_end.element(k) ;
 			
 			int32_t i         = 0 ;
 			state_seq[i]  = path_ends.element(k) ;
-			short int q   = ktable_end.element(k) ;
+			int16_t q   = ktable_end.element(k) ;
 			pos_seq[i]    = seq_len-1 ;
 
 			while (pos_seq[i]>0)
@@ -2251,7 +2251,7 @@ bool CDynProg::extend_orf(int32_t orf_from, int32_t orf_to, int32_t start, int32
 	return true ;
 }
 
-template <short int nbest, bool with_loss, bool with_multiple_sequences>
+template <int16_t nbest, bool with_loss, bool with_multiple_sequences>
 void CDynProg::best_path_trans(const DREAL *seq_array, int32_t seq_len, const int32_t *pos, 
 							   const int32_t *orf_info_array, CPlifBase **Plif_matrix, 
 							   CPlifBase **Plif_state_signals, int32_t max_num_signals, int32_t genestr_num, 
@@ -2385,7 +2385,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, int32_t seq_len, const in
 	SG_DEBUG("maxlook: %d N: %d nbest: %d \n", max_look_back, N, nbest);
 	const int32_t look_back_buflen = (max_look_back*N+1)*nbest ;
 	SG_DEBUG("look_back_buflen=%i\n", look_back_buflen) ;
-	const DREAL mem_use = (DREAL)(seq_len*N*nbest*(sizeof(T_STATES)+sizeof(short int)+sizeof(int32_t))+
+	const DREAL mem_use = (DREAL)(seq_len*N*nbest*(sizeof(T_STATES)+sizeof(int16_t)+sizeof(int32_t))+
 								  look_back_buflen*(2*sizeof(DREAL)+sizeof(int32_t))+
 								  seq_len*(sizeof(T_STATES)+sizeof(int32_t))+
 								  m_genestr_len*sizeof(bool))/(1024*1024);
@@ -2412,7 +2412,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, int32_t seq_len, const in
 	psi.set_name("psi");
 	//psi.zero() ;
 	
-	CArray3<short int> ktable(seq_len, N, nbest) ;
+	CArray3<int16_t> ktable(seq_len, N, nbest) ;
 	ktable.set_name("ktable");
 	//ktable.zero() ;
 	
@@ -2428,7 +2428,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, int32_t seq_len, const in
 	path_ends.set_name("path_ends");
 	//path_ends.zero() ;
 	
-	CArray<short int> ktable_end(nbest) ;
+	CArray<int16_t> ktable_end(nbest) ;
 	ktable_end.set_name("ktable_end");
 	//ktable_end.zero() ;
 
@@ -2563,7 +2563,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, int32_t seq_len, const in
 			if (nbest>1)
 				ktable.element(0,i,0)  = 0 ;
 			ptable.element(0,i,0)  = 0 ;
-			for (short int k=1; k<nbest; k++)
+			for (int16_t k=1; k<nbest; k++)
 			{
 				int32_t dim1, dim2, dim3 ;
 				delta.get_array_size(dim1, dim2, dim3) ;
@@ -2631,7 +2631,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, int32_t seq_len, const in
 		{
 			if (seq.element(j,t)<=-1e20)
 			{ // if we cannot observe the symbol here, then we can omit the rest
-				for (short int k=0; k<nbest; k++)
+				for (int16_t k=0; k<nbest; k++)
 				{
 					delta.element(delta_array, t, j, k, seq_len, N)    = seq.element(j,t) ;
 					psi.element(t,j,k)      = 0 ;
@@ -2753,7 +2753,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, int32_t seq_len, const in
 							}
 							else
 							{
-								for (short int diff=0; diff<nbest; diff++)
+								for (int16_t diff=0; diff<nbest; diff++)
 								{
 									DREAL  val        = elem_val[i]  ;
 									val              += pen_val ;
@@ -2804,9 +2804,9 @@ void CDynProg::best_path_trans(const DREAL *seq_array, int32_t seq_len, const in
 				int32_t numEnt = fixed_list_len;
 				
 				double minusscore;
-				long int fromtjk;
+				int64_t fromtjk;
 				
-				for (short int k=0; k<nbest; k++)
+				for (int16_t k=0; k<nbest; k++)
 				{
 					if (k<numEnt)
 					{
@@ -2846,7 +2846,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, int32_t seq_len, const in
 
 	{ //termination
 		int32_t list_len = 0 ;
-		for (short int diff=0; diff<nbest; diff++)
+		for (int16_t diff=0; diff<nbest; diff++)
 		{
 			for (T_STATES i=0; i<N; i++)
 			{
@@ -2858,7 +2858,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, int32_t seq_len, const in
 		
 		CMath::nmin(oldtempvv.get_array(), oldtempii.get_array(), list_len, nbest) ;
 		
-		for (short int k=0; k<nbest; k++)
+		for (int16_t k=0; k<nbest; k++)
 		{
 			delta_end.element(k) = -oldtempvv[k] ;
 			path_ends.element(k) = (oldtempii[k]%N) ;
@@ -2868,13 +2868,13 @@ void CDynProg::best_path_trans(const DREAL *seq_array, int32_t seq_len, const in
 	}
 	
 	{ //state sequence backtracking		
-		for (short int k=0; k<nbest; k++)
+		for (int16_t k=0; k<nbest; k++)
 		{
 			prob_nbest[k]= delta_end.element(k) ;
 			
 			int32_t i         = 0 ;
 			state_seq[i]  = path_ends.element(k) ;
-			short int q   = 0 ;
+			int16_t q   = 0 ;
 			if (nbest>1)
 				q=ktable_end.element(k) ;
 			pos_seq[i]    = seq_len-1 ;
@@ -3175,7 +3175,7 @@ void CDynProg::best_path_trans_deriv(int32_t *my_state_seq, int32_t *my_pos_seq,
 
 
 void CDynProg::best_path_trans_simple(
-	const DREAL *seq_array, int32_t seq_len, short int nbest,
+	const DREAL *seq_array, int32_t seq_len, int16_t nbest,
 	DREAL *prob_nbest, int32_t *my_state_seq)
 {
 	if (!svm_arrays_clean)
@@ -3192,12 +3192,12 @@ void CDynProg::best_path_trans_simple(
 
 	CArray3<DREAL> delta(max_look_back, N, nbest) ;
 	CArray3<T_STATES> psi(seq_len, N, nbest) ;
-	CArray3<short int> ktable(seq_len,N,nbest) ;
+	CArray3<int16_t> ktable(seq_len,N,nbest) ;
 	CArray3<int32_t> ptable(seq_len,N,nbest) ;
 
 	CArray<DREAL> delta_end(nbest) ;
 	CArray<T_STATES> path_ends(nbest) ;
-	CArray<short int> ktable_end(nbest) ;
+	CArray<int16_t> ktable_end(nbest) ;
 
 	CArray<DREAL> oldtempvv(look_back_buflen) ;
 	CArray<int32_t> oldtempii(look_back_buflen) ;
@@ -3213,7 +3213,7 @@ void CDynProg::best_path_trans_simple(
 			psi.element(0,i,0)   = 0 ;
 			ktable.element(0,i,0)  = 0 ;
 			ptable.element(0,i,0)  = 0 ;
-			for (short int k=1; k<nbest; k++)
+			for (int16_t k=1; k<nbest; k++)
 			{
 				delta.element(0,i,k)    = -CMath::INFTY ;
 				psi.element(0,i,0)      = 0 ;                  // <--- what's this for?
@@ -3230,7 +3230,7 @@ void CDynProg::best_path_trans_simple(
 		{
 			if (seq.element(j,t)<-1e20)
 			{ // if we cannot observe the symbol here, then we can omit the rest
-				for (short int k=0; k<nbest; k++)
+				for (int16_t k=0; k<nbest; k++)
 				{
 					delta.element(t%max_look_back,j,k)    = seq.element(j,t) ;
 					psi.element(t,j,k)      = 0 ;
@@ -3259,7 +3259,7 @@ void CDynProg::best_path_trans_simple(
 						{
 
 						  
-						  for (short int diff=0; diff<nbest; diff++)
+						  for (int16_t diff=0; diff<nbest; diff++)
 						    {
 						      DREAL  val        = delta.element(ts%max_look_back,ii,diff) + elem_val[i] ;
 						      DREAL mval = -val;
@@ -3278,9 +3278,9 @@ void CDynProg::best_path_trans_simple(
 				numEnt = old_list_len;
 
 				double minusscore;
-				long int fromtjk;
+				int64_t fromtjk;
 
-				for (short int k=0; k<nbest; k++)
+				for (int16_t k=0; k<nbest; k++)
 				{
 					if (k<numEnt)
 					{
@@ -3308,7 +3308,7 @@ void CDynProg::best_path_trans_simple(
 	
 	{ //termination
 		int32_t list_len = 0 ;
-		for (short int diff=0; diff<nbest; diff++)
+		for (int16_t diff=0; diff<nbest; diff++)
 		{
 			for (T_STATES i=0; i<N; i++)
 			{
@@ -3320,7 +3320,7 @@ void CDynProg::best_path_trans_simple(
 		
 		CMath::nmin(oldtempvv.get_array(), oldtempii.get_array(), list_len, nbest) ;
 		
-		for (short int k=0; k<nbest; k++)
+		for (int16_t k=0; k<nbest; k++)
 		{
 			delta_end.element(k) = -oldtempvv[k] ;
 			path_ends.element(k) = (oldtempii[k]%N) ;
@@ -3329,13 +3329,13 @@ void CDynProg::best_path_trans_simple(
 	}
 	
 	{ //state sequence backtracking		
-		for (short int k=0; k<nbest; k++)
+		for (int16_t k=0; k<nbest; k++)
 		{
 			prob_nbest[k]= delta_end.element(k) ;
 			
 			int32_t i         = 0 ;
 			state_seq[i]  = path_ends.element(k) ;
-			short int q   = ktable_end.element(k) ;
+			int16_t q   = ktable_end.element(k) ;
 			pos_seq[i]    = seq_len-1 ;
 
 			while (pos_seq[i]>0)
