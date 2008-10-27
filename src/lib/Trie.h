@@ -42,7 +42,7 @@ struct ConsensusEntry
 	/** string */
 	uint64_t string;
 	/** score */
-	SHORTREAL score;
+	float32_t score;
 	/** bt */
 	int32_t bt;
 };
@@ -61,7 +61,7 @@ struct POIMTrie
 	union
 	{
 		/** child weights */
-		SHORTREAL child_weights[4];
+		float32_t child_weights[4];
 		/** children */
 		int32_t children[4];
 		/** sequence */
@@ -90,7 +90,7 @@ struct DNATrie
 	union
 	{
 		/** child weights */
-		SHORTREAL child_weights[4];
+		float32_t child_weights[4];
 		/** children */
 		int32_t children[4];
 		/** sequence */
@@ -236,7 +236,7 @@ template <class Trie> class CTrie : public CSGObject
 		 *                                      weights shall be applied
 		 */
 		void add_to_trie(
-			int32_t i, int32_t seq_offset, int32_t* vec, float alpha,
+			int32_t i, int32_t seq_offset, int32_t* vec, float32_t alpha,
 			DREAL *weights, bool degree_times_position_weights);
 
 		/** compute absolute weights tree
@@ -1424,8 +1424,8 @@ void CTrie<Trie>::count( const DREAL w, const int32_t depth, const struct TreePa
 
 	template <class Trie>
 void CTrie<Trie>::add_to_trie(
-	int32_t i, int32_t seq_offset, int32_t * vec, float alpha, DREAL *weights,
-	bool degree_times_position_weights)
+	int32_t i, int32_t seq_offset, int32_t * vec, float32_t alpha,
+	DREAL *weights, bool degree_times_position_weights)
 {
 	int32_t tree = trees[i] ;
 	//ASSERT(seq_offset==0) ;

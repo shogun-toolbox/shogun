@@ -99,7 +99,7 @@ class CLocalAlignmentStringKernel: public CStringKernel<char>
 		 * @param p2 parameter 2
 		 * @return logarithmic sum as floating point
 		 */
-		float LogSum2(float p1, float p2);
+		float32_t LogSum2(float32_t p1, float32_t p2);
 
 		/** initialize */
 		void initialize();

@@ -174,8 +174,8 @@ class CKernel : public CSGObject
 		 * @param target target for kernel matrix
 		 * @return the kernel matrix
 		 */
-		virtual SHORTREAL* get_kernel_matrix_shortreal(
-			int32_t &m, int32_t &n, SHORTREAL* target);
+		virtual float32_t* get_kernel_matrix_shortreal(
+			int32_t &m, int32_t &n, float32_t* target);
 
 		/** initialize kernel
 		 *  e.g. setup lhs/rhs of kernel, precompute normalization

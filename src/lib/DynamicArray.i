@@ -14,6 +14,6 @@
 %template(DynamicUIntArray) CDynamicArray<uint32_t>;
 %template(DynamicLongArray) CDynamicArray<int64_t>;
 %template(DynamicULongArray) CDynamicArray<uint64_t>;
-%template(DynamicShortRealArray) CDynamicArray<SHORTREAL>;
+%template(DynamicShortRealArray) CDynamicArray<float32_t>;
 %template(DynamicRealArray) CDynamicArray<DREAL>;
 %template(DynamicPlifArray) CDynamicArray<CPlifBase*>;

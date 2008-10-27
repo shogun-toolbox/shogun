@@ -2456,7 +2456,7 @@ void CHMM::output_model(bool verbose)
 			{
 				checksum= CMath::logarithmic_sum(checksum, get_a(i,j));
 
-				SG_INFO( "a(%02i,%02i)=%1.4f ",i,j, (float) exp(get_a(i,j)));
+				SG_INFO( "a(%02i,%02i)=%1.4f ",i,j, (float32_t) exp(get_a(i,j)));
 
 				if (j % 4 == 3)
 					SG_PRINT( "\n");
@@ -2473,7 +2473,7 @@ void CHMM::output_model(bool verbose)
 		for (i=0; i<N; i++)
 		{
 			checksum= CMath::logarithmic_sum(checksum, get_p(i));
-			SG_INFO( "p(%02i)=%1.4f ",i, (float) exp(get_p(i)));
+			SG_INFO( "p(%02i)=%1.4f ",i, (float32_t) exp(get_p(i)));
 			if (i % 4 == 3)
 				SG_PRINT( "\n");
 		}
@@ -2488,7 +2488,7 @@ void CHMM::output_model(bool verbose)
 		for (i=0; i<N; i++)
 		{
 			checksum= CMath::logarithmic_sum(checksum, get_q(i));
-			SG_INFO("q(%02i)=%1.4f ",i, (float) exp(get_q(i)));
+			SG_INFO("q(%02i)=%1.4f ",i, (float32_t) exp(get_q(i)));
 			if (i % 4 == 3)
 				SG_INFO("\n");
 		}
@@ -2505,7 +2505,7 @@ void CHMM::output_model(bool verbose)
 			for (j=0; j<M; j++)
 			{
 				checksum=CMath::logarithmic_sum(checksum, get_b(i,j));
-				SG_INFO("b(%02i,%02i)=%1.4f ",i,j, (float) exp(get_b(i,j)));
+				SG_INFO("b(%02i,%02i)=%1.4f ",i,j, (float32_t) exp(get_b(i,j)));
 				if (j % 4 == 3)
 					SG_PRINT("\n");
 			}
@@ -2546,7 +2546,7 @@ void CHMM::output_model_defined(bool verbose)
 				SG_PRINT("\n");
 			}
 
-			SG_INFO("a(%02i,%02i)=%1.4f ",model->get_learn_a(i,0), model->get_learn_a(i,1), (float) exp(get_a(model->get_learn_a(i,0), model->get_learn_a(i,1))));
+			SG_INFO("a(%02i,%02i)=%1.4f ",model->get_learn_a(i,0), model->get_learn_a(i,1), (float32_t) exp(get_a(model->get_learn_a(i,0), model->get_learn_a(i,1))));
 			i++;
 		}
 
@@ -2562,7 +2562,7 @@ void CHMM::output_model_defined(bool verbose)
 				SG_PRINT("\n");
 			}
 
-			SG_INFO("b(%02i,%02i)=%1.4f ",model->get_learn_b(i,0),model->get_learn_b(i,1), (float) exp(get_b(model->get_learn_b(i,0),model->get_learn_b(i,1))));
+			SG_INFO("b(%02i,%02i)=%1.4f ",model->get_learn_b(i,0),model->get_learn_b(i,1), (float32_t) exp(get_b(model->get_learn_b(i,0),model->get_learn_b(i,1))));
 			i++;
 		}
 
@@ -4166,7 +4166,7 @@ bool CHMM::save_model(FILE* file)
 {
 	bool result=false;
 	int32_t i,j;
-	const float NAN_REPLACEMENT = (float) CMath::ALMOST_NEG_INFTY ;
+	const float32_t NAN_REPLACEMENT = (float32_t) CMath::ALMOST_NEG_INFTY ;
 
 	if (file)
 	{
@@ -4305,8 +4305,8 @@ bool CHMM::save_likelihood_bin(FILE* file)
 	{
 		for (int32_t dim=0; dim<p_observations->get_num_vectors(); dim++)
 		{
-			float prob= (float) model_probability(dim);
-			fwrite(&prob, sizeof(float), 1, file);
+			float32_t prob= (float32_t) model_probability(dim);
+			fwrite(&prob, sizeof(float32_t), 1, file);
 		}
 		result=true;
 	}
@@ -4333,7 +4333,7 @@ bool CHMM::save_likelihood(FILE* file)
 	return result;
 }
 
-#define FLOATWRITE(file, value) { float rrr=float(value); fwrite(&rrr, sizeof(float), 1, file); num_floats++;}
+#define FLOATWRITE(file, value) { float32_t rrr=float32_t(value); fwrite(&rrr, sizeof(float32_t), 1, file); num_floats++;}
 
 bool CHMM::save_model_bin(FILE* file)
 {
@@ -4343,8 +4343,8 @@ bool CHMM::save_model_bin(FILE* file)
 		if (file)
 		{
 			// write id
-			FLOATWRITE(file, (float)CMath::INFTY);	  
-			FLOATWRITE(file, (float) 1);	  
+			FLOATWRITE(file, (float32_t)CMath::INFTY);	  
+			FLOATWRITE(file, (float32_t) 1);	  
 
 			//derivates log(dp),log(dq)
 			for (i=0; i<N; i++)
@@ -4367,16 +4367,16 @@ bool CHMM::save_model_bin(FILE* file)
 			SG_INFO( "wrote %i parameters for b\n",N*M) ;
 
 			// write id
-			FLOATWRITE(file, (float)CMath::INFTY);	  
-			FLOATWRITE(file, (float) 3);	  
+			FLOATWRITE(file, (float32_t)CMath::INFTY);	  
+			FLOATWRITE(file, (float32_t) 3);	  
 
 			// write number of parameters
-			FLOATWRITE(file, (float) N);	  
-			FLOATWRITE(file, (float) N);	  
-			FLOATWRITE(file, (float) N*N);	  
-			FLOATWRITE(file, (float) N*M);	  
-			FLOATWRITE(file, (float) N);	  
-			FLOATWRITE(file, (float) M);	  
+			FLOATWRITE(file, (float32_t) N);	  
+			FLOATWRITE(file, (float32_t) N);	  
+			FLOATWRITE(file, (float32_t) N*N);	  
+			FLOATWRITE(file, (float32_t) N*M);	  
+			FLOATWRITE(file, (float32_t) N);	  
+			FLOATWRITE(file, (float32_t) M);	  
 		} ;
 	} 
 	else
@@ -4385,8 +4385,8 @@ bool CHMM::save_model_bin(FILE* file)
 		{
 			int32_t num_p, num_q, num_a, num_b ;
 			// write id
-			FLOATWRITE(file, (float)CMath::INFTY);	  
-			FLOATWRITE(file, (float) 2);	  
+			FLOATWRITE(file, (float32_t)CMath::INFTY);	  
+			FLOATWRITE(file, (float32_t) 2);	  
 
 			for (i=0; model->get_learn_p(i)>=0; i++)
 				FLOATWRITE(file, get_p(model->get_learn_p(i)));	  
@@ -4403,8 +4403,8 @@ bool CHMM::save_model_bin(FILE* file)
 			{
 				i=model->get_learn_a(q,0) ;
 				j=model->get_learn_a(q,1) ;
-				FLOATWRITE(file, (float)i);
-				FLOATWRITE(file, (float)j);
+				FLOATWRITE(file, (float32_t)i);
+				FLOATWRITE(file, (float32_t)j);
 				FLOATWRITE(file, get_a(i,j));
 			} ;
 			num_a=q ;
@@ -4414,24 +4414,24 @@ bool CHMM::save_model_bin(FILE* file)
 			{
 				i=model->get_learn_b(q,0) ;
 				j=model->get_learn_b(q,1) ;
-				FLOATWRITE(file, (float)i);
-				FLOATWRITE(file, (float)j);
+				FLOATWRITE(file, (float32_t)i);
+				FLOATWRITE(file, (float32_t)j);
 				FLOATWRITE(file, get_b(i,j));
 			} ;
 			num_b=q ;
 			SG_INFO( "wrote %i parameters for b\n",num_b) ;
 
 			// write id
-			FLOATWRITE(file, (float)CMath::INFTY);	  
-			FLOATWRITE(file, (float) 3);	  
+			FLOATWRITE(file, (float32_t)CMath::INFTY);	  
+			FLOATWRITE(file, (float32_t) 3);	  
 
 			// write number of parameters
-			FLOATWRITE(file, (float) num_p);	  
-			FLOATWRITE(file, (float) num_q);	  
-			FLOATWRITE(file, (float) num_a);	  
-			FLOATWRITE(file, (float) num_b);	  
-			FLOATWRITE(file, (float) N);	  
-			FLOATWRITE(file, (float) M);	  
+			FLOATWRITE(file, (float32_t) num_p);	  
+			FLOATWRITE(file, (float32_t) num_q);	  
+			FLOATWRITE(file, (float32_t) num_a);	  
+			FLOATWRITE(file, (float32_t) num_b);	  
+			FLOATWRITE(file, (float32_t) N);	  
+			FLOATWRITE(file, (float32_t) M);	  
 		} ;
 	} ;
 	return true ;
@@ -5576,7 +5576,7 @@ void CHMM::set_observations(CStringFeatures<uint16_t>* obs, CHMM* lambda)
 		{
 			this->reused_caches=false;
 #ifdef USE_HMMPARALLEL_STRUCTURES
-			SG_INFO( "allocating mem for path-table of size %.2f Megabytes (%d*%d) each:\n", ((float)max_T)*N*sizeof(T_STATES)/(1024*1024), max_T, N);
+			SG_INFO( "allocating mem for path-table of size %.2f Megabytes (%d*%d) each:\n", ((float32_t)max_T)*N*sizeof(T_STATES)/(1024*1024), max_T, N);
 			for (int32_t i=0; i<parallel.get_num_threads(); i++)
 			{
 				if ((states_per_observation_psi[i]=new T_STATES[max_T*N])!=NULL)
@@ -5586,7 +5586,7 @@ void CHMM::set_observations(CStringFeatures<uint16_t>* obs, CHMM* lambda)
 				path[i]=new T_STATES[max_T];
 			}
 #else // no USE_HMMPARALLEL_STRUCTURES 
-			SG_INFO( "allocating mem of size %.2f Megabytes (%d*%d) for path-table ....", ((float)max_T)*N*sizeof(T_STATES)/(1024*1024), max_T, N);
+			SG_INFO( "allocating mem of size %.2f Megabytes (%d*%d) for path-table ....", ((float32_t)max_T)*N*sizeof(T_STATES)/(1024*1024), max_T, N);
 			if ((states_per_observation_psi=new T_STATES[max_T*N]) != NULL)
 				SG_DONE();
 			else
@@ -5595,7 +5595,7 @@ void CHMM::set_observations(CStringFeatures<uint16_t>* obs, CHMM* lambda)
 			path=new T_STATES[max_T];
 #endif // USE_HMMPARALLEL_STRUCTURES
 #ifdef USE_HMMCACHE
-			SG_INFO( "allocating mem for caches each of size %.2f Megabytes (%d*%d) ....\n", ((float)max_T)*N*sizeof(T_ALPHA_BETA_TABLE)/(1024*1024), max_T, N);
+			SG_INFO( "allocating mem for caches each of size %.2f Megabytes (%d*%d) ....\n", ((float32_t)max_T)*N*sizeof(T_ALPHA_BETA_TABLE)/(1024*1024), max_T, N);
 
 #ifdef USE_HMMPARALLEL_STRUCTURES
 			for (int32_t i=0; i<parallel.get_num_threads(); i++)

@@ -89,7 +89,7 @@ public:
   /** ix */
   int32_t  **ix;
   /** x */
-  float  **x;
+  float32_t  **x;
   /** nor */
   double *nor;
   /** sigma */
@@ -128,7 +128,7 @@ public:
    * @param dim dim
    */
   void SetData(
-	float **x_, int32_t **ix_, int32_t *lx_, int32_t ell, int32_t dim);
+	float32_t **x_, int32_t **ix_, int32_t *lx_, int32_t ell, int32_t dim);
 
   /** set subproblem
    *
@@ -180,7 +180,7 @@ private:
   int32_t    vauxRow;
   int32_t    IsSubproblem;
   int32_t    ell, dim;
-  float  *vaux;
+  float32_t  *vaux;
 
   double dot     (int32_t i, int32_t j);
 };

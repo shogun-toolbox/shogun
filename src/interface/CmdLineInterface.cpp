@@ -286,7 +286,7 @@ void CCmdLineInterface::get_int_vector(int32_t*& vec, int32_t& len)
 		*/
 }
 
-void CCmdLineInterface::get_shortreal_vector(SHORTREAL*& vec, int32_t& len)
+void CCmdLineInterface::get_shortreal_vector(float32_t*& vec, int32_t& len)
 {
 	vec=NULL;
 	len=0;
@@ -362,7 +362,7 @@ void CCmdLineInterface::get_int_matrix(int32_t*& matrix, int32_t& num_feat, int3
 	num_vec=0;
 }
 
-void CCmdLineInterface::get_shortreal_matrix(SHORTREAL*& matrix, int32_t& num_feat, int32_t& num_vec)
+void CCmdLineInterface::get_shortreal_matrix(float32_t*& matrix, int32_t& num_feat, int32_t& num_vec)
 {
 	matrix=NULL;
 	num_feat=0;
@@ -411,7 +411,7 @@ void CCmdLineInterface::get_int_ndarray(int32_t*& array, int32_t*& dims, int32_t
 {
 }
 
-void CCmdLineInterface::get_shortreal_ndarray(SHORTREAL*& array, int32_t*& dims, int32_t& num_dims)
+void CCmdLineInterface::get_shortreal_ndarray(float32_t*& array, int32_t*& dims, int32_t& num_dims)
 {
 }
 
@@ -538,7 +538,7 @@ void CCmdLineInterface::set_int_vector(const int32_t* vec, int32_t len)
 {
 }
 
-void CCmdLineInterface::set_shortreal_vector(const SHORTREAL* vec, int32_t len)
+void CCmdLineInterface::set_shortreal_vector(const float32_t* vec, int32_t len)
 {
 }
 
@@ -578,7 +578,7 @@ void CCmdLineInterface::function_name(const sg_type* vec, int32_t len)	\
 SET_VECTOR(set_byte_vector, INTSXP, INTEGER, uint8_t, int, "Byte")
 SET_VECTOR(set_int_vector, INTSXP, INTEGER, int32_t, int, "Integer")
 SET_VECTOR(set_short_vector, INTSXP, INTEGER, int16_t, int, "Short")
-SET_VECTOR(set_shortreal_vector, XP, REAL, SHORTREAL, float, "Single Precision")
+SET_VECTOR(set_shortreal_vector, XP, REAL, float32_t, float, "Single Precision")
 SET_VECTOR(set_real_vector, XP, REAL, DREAL, double, "Double Precision")
 SET_VECTOR(set_word_vector, INTSXP, INTEGER, uint16_t, int, "Word")
 #undef SET_VECTOR
@@ -597,7 +597,7 @@ void CCmdLineInterface::set_int_matrix(const int32_t* matrix, int32_t num_feat, 
 void CCmdLineInterface::set_short_matrix(const int16_t* matrix, int32_t num_feat, int32_t num_vec)
 {
 }
-void CCmdLineInterface::set_shortreal_matrix(const SHORTREAL* matrix, int32_t num_feat, int32_t num_vec)
+void CCmdLineInterface::set_shortreal_matrix(const float32_t* matrix, int32_t num_feat, int32_t num_vec)
 {
 }
 void CCmdLineInterface::set_real_matrix(const DREAL* matrix, int32_t num_feat, int32_t num_vec)
@@ -636,7 +636,7 @@ void CCmdLineInterface::function_name(const sg_type* matrix, int32_t num_feat, i
 SET_MATRIX(set_byte_matrix, INTSXP, INTEGER, uint8_t, int, "Byte")
 SET_MATRIX(set_int_matrix, INTSXP, INTEGER, int32_t, int, "Integer")
 SET_MATRIX(set_short_matrix, INTSXP, INTEGER, int16_t, int, "Short")
-SET_MATRIX(set_shortreal_matrix, XP, REAL, SHORTREAL, float, "Single Precision")
+SET_MATRIX(set_shortreal_matrix, XP, REAL, float32_t, float, "Single Precision")
 SET_MATRIX(set_real_matrix, XP, REAL, DREAL, double, "Double Precision")
 SET_MATRIX(set_word_matrix, INTSXP, INTEGER, uint16_t, int, "Word")
 #undef SET_MATRIX

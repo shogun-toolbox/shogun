@@ -150,10 +150,10 @@ void CKernel::get_kernel_matrix(DREAL** dst, int32_t* m, int32_t* n)
 	*dst=result;
 }
 
-SHORTREAL* CKernel::get_kernel_matrix_shortreal(
-	int32_t &num_vec1, int32_t &num_vec2, SHORTREAL* target)
+float32_t* CKernel::get_kernel_matrix_shortreal(
+	int32_t &num_vec1, int32_t &num_vec2, float32_t* target)
 {
-	SHORTREAL* result = NULL;
+	float32_t* result = NULL;
 	CFeatures* f1 = lhs;
 	CFeatures* f2 = rhs;
 
@@ -173,7 +173,7 @@ SHORTREAL* CKernel::get_kernel_matrix_shortreal(
 		if (target)
 			result=target;
 		else
-			result=new SHORTREAL[total_num];
+			result=new float32_t[total_num];
 
 		if (f1==f2 && num_vec1==num_vec2)
 		{

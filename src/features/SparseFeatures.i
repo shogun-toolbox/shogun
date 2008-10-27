@@ -13,5 +13,5 @@
 %template(SparseLongFeatures) CSparseFeatures<int64_t>;
 %template(SparseUlongFeatures) CSparseFeatures<uint64_t>;
 %template(SparseRealFeatures) CSparseFeatures<DREAL>;
-%template(SparseShortRealFeatures) CSparseFeatures<SHORTREAL>;
+%template(SparseShortRealFeatures) CSparseFeatures<float32_t>;
 %template(SparseLongRealFeatures) CSparseFeatures<LONGREAL>;

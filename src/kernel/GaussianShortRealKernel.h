@@ -24,7 +24,7 @@
  *
  * where \f$\tau\f$ is the kernel width.
  */
-class CGaussianShortRealKernel: public CSimpleKernel<SHORTREAL>
+class CGaussianShortRealKernel: public CSimpleKernel<float32_t>
 {
 	public:
 		/** constructor

@@ -142,7 +142,7 @@ void CLocalAlignmentStringKernel::init_logsum(void){
   int32_t i;
   for (i = 0; i < LOGSUM_TBL; i++) 
     logsum_lookup[i] = (int32_t) (INTSCALE*
-			       (log(1.+exp( (float) -i/INTSCALE))));
+			       (log(1.+exp( (float32_t) -i/INTSCALE))));
 }
 
 int32_t CLocalAlignmentStringKernel::LogSum(int32_t p1, int32_t p2)
@@ -164,7 +164,7 @@ int32_t CLocalAlignmentStringKernel::LogSum(int32_t p1, int32_t p2)
 }
 
 
-float CLocalAlignmentStringKernel::LogSum2(float p1, float p2)
+float32_t CLocalAlignmentStringKernel::LogSum2(float32_t p1, float32_t p2)
 {
   if (p1 > p2)
     return (p1-p2 > 50.) ? p1 : p1 + log(1. + exp(p2-p1));
@@ -345,7 +345,7 @@ DREAL CLocalAlignmentStringKernel::LAkernelcompute(int32_t* aaX, int32_t* aaY, /
 	delete[] logY2;
 
   /* Return the logarithm of the kernel */
-  return (float)LOGP(aux,aux2)/INTSCALE;
+  return (float32_t)LOGP(aux,aux2)/INTSCALE;
 }
 
 /********************/

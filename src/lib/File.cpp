@@ -101,10 +101,10 @@ DREAL* CFile::load_real_data(DREAL* target, int64_t& num)
 	return target;
 }
 
-SHORTREAL* CFile::load_shortreal_data(SHORTREAL* target, int64_t& num)
+float32_t* CFile::load_shortreal_data(float32_t* target, int64_t& num)
 {
 	ASSERT(expected_type==F_SHORTREAL);
-	CSimpleFile<SHORTREAL> f(filename, file);
+	CSimpleFile<float32_t> f(filename, file);
 	target=f.load(target, num);
 	status=(target!=NULL);
 	return target;
@@ -118,10 +118,10 @@ bool CFile::save_real_data(DREAL* src, int64_t num)
 	return status;
 }
 
-bool CFile::save_shortreal_data(SHORTREAL* src, int64_t num)
+bool CFile::save_shortreal_data(float32_t* src, int64_t num)
 {
 	ASSERT(expected_type==F_SHORTREAL);
-	CSimpleFile<SHORTREAL> f(filename, file);
+	CSimpleFile<float32_t> f(filename, file);
 	status=f.save(src, num);
 	return status;
 }

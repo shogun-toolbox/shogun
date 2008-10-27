@@ -197,12 +197,12 @@ void CIO::progress(DREAL current_val, DREAL min_val, DREAL max_val, int32_t deci
 	if (estimate/100>120)
 	{
 		snprintf(str, sizeof(str), "%%s %%%d.%df%%%%    %%1.1f minutes remaining    %%1.1f minutes total    \r",decimals+3, decimals);
-		message(M_MESSAGEONLY, str, prefix, v, (float)estimate/100/60, (float)total_estimate/100/60);
+		message(M_MESSAGEONLY, str, prefix, v, (float32_t)estimate/100/60, (float32_t)total_estimate/100/60);
 	}
 	else
 	{
 		snprintf(str, sizeof(str), "%%s %%%d.%df%%%%    %%1.1f seconds remaining    %%1.1f seconds total    \r",decimals+3, decimals);
-		message(M_MESSAGEONLY, str, prefix, v, (float)estimate/100, (float)total_estimate/100);
+		message(M_MESSAGEONLY, str, prefix, v, (float32_t)estimate/100, (float32_t)total_estimate/100);
 	}
 
     fflush(target);
@@ -247,12 +247,12 @@ void CIO::absolute_progress(DREAL current_val, DREAL val, DREAL min_val, DREAL m
 	if (estimate/100>120)
 	{
 		snprintf(str, sizeof(str), "%%s %%%d.%df    %%1.1f minutes remaining    %%1.1f minutes total    \r",decimals+3, decimals);
-		message(M_MESSAGEONLY, str, prefix, current_val, (float)estimate/100/60, (float)total_estimate/100/60);
+		message(M_MESSAGEONLY, str, prefix, current_val, (float32_t)estimate/100/60, (float32_t)total_estimate/100/60);
 	}
 	else
 	{
 		snprintf(str, sizeof(str), "%%s %%%d.%df    %%1.1f seconds remaining    %%1.1f seconds total    \r",decimals+3, decimals);
-		message(M_MESSAGEONLY, str, prefix, current_val, (float)estimate/100, (float)total_estimate/100);
+		message(M_MESSAGEONLY, str, prefix, current_val, (float32_t)estimate/100, (float32_t)total_estimate/100);
 	}
 
     fflush(target);

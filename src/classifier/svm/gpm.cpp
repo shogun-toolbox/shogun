@@ -106,8 +106,8 @@ int32_t InnerProjector(
  *** Optim. Meth. Soft. 20, 2005, 353-378)                                  ***
  ******************************************************************************/
 int32_t gvpm(
-	int32_t Projector, int32_t n, float *vecA, double *b, double c, double e,
-	int32_t *iy, double *x, double tol, int32_t *ls, int32_t *proj)
+	int32_t Projector, int32_t n, float32_t *vecA, double *b, double c,
+	double e, int32_t *iy, double *x, double tol, int32_t *ls, int32_t *proj)
 {
   int32_t i, j, iter, it, it2, luv, info;
   double  gd, max, normd, dAd, lam, lamnew, alpha, kktlam, ak, bk;
@@ -161,7 +161,7 @@ int32_t gvpm(
   /* compute g = A*x + b in sparse form          *
    * (inline computation for better perfomrance) */
   {
-    float *tempA;
+    float32_t *tempA;
 
     it = 0;
     for (i = 0; i < n; i++)
@@ -219,7 +219,7 @@ int32_t gvpm(
       /* compute Ad = A*d  or  Ad = Ay-t depending on their sparsity  *
        * (inline computation for better perfomrance)                  */
       {
-         float *tempA;
+         float32_t *tempA;
 
          it = it2 = 0;
          for (i = 0; i < n; i++)
@@ -443,7 +443,7 @@ Clean:
  *** Upper Bounds"; Math. Prog. to appear)                                  ***
  ******************************************************************************/
 int32_t FletcherAlg2A(
-	int32_t Projector, int32_t n, float *vecA, double *b, double c,
+	int32_t Projector, int32_t n, float32_t *vecA, double *b, double c,
 	double e, int32_t *iy, double *x, double tol, int32_t *ls, int32_t *proj)
 {
   int32_t i, j, iter, it, it2, luv, info, lscount = 0, projcount = 0;
@@ -499,7 +499,7 @@ int32_t FletcherAlg2A(
   // g = A*x + b;
   // SparseProd(n, t, A, x, ipt);
   {
-    float *tempA;
+    float32_t *tempA;
 
     it = 0;
     for (i = 0; i < n; i++)
@@ -568,7 +568,7 @@ int32_t FletcherAlg2A(
 
       /* compute Ad = A*d  or  Ad = A*y - t depending on their sparsity */
       {
-         float *tempA;
+         float32_t *tempA;
 
          it = it2 = 0;
          for (i = 0; i < n; i++)
@@ -782,14 +782,14 @@ Clean:
 /*** Encapsulating method to call the chosen Gradient Projection Method     ***/
 /******************************************************************************/
 int32_t gpm_solver(
-	int32_t Solver, int32_t Projector, int32_t n, float *A, double *b,
+	int32_t Solver, int32_t Projector, int32_t n, float32_t *A, double *b,
 	double c, double e, int32_t *iy, double *x, double tol, int32_t *ls,
 	int32_t *proj)
 {
   /*** Uncomment the following if you need to scale the QP Hessian matrix
    *** before calling the chosen solver
   int32_t    i, j;
-  float  *ptrA;
+  float32_t  *ptrA;
   double max, s;
 
   max = fabs(A[0][0]);
@@ -801,7 +801,7 @@ int32_t gpm_solver(
   ptrA = vecA;
   for (i = 0; i < n; i++)
       for (j = 0;j < n; j++)
-          *ptrA++ = (float)(A[i][j]*s);
+          *ptrA++ = (float32_t)(A[i][j]*s);
 
   if (Solver == SOLVER_FLETCHER)
       j = FletcherAlg2A(n, vecA, b, c/s, e/s, iy, x, tol, ls);

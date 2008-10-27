@@ -212,7 +212,7 @@ int32_t QPproblem::ReadGPDTBinary(char *fName)
 {
   int32_t   i, v;
   int32_t   **data_ix, *data_lx;
-  float **data_x;
+  float32_t **data_x;
   FILE  *fp = fopen(fName, "rb");
 
   if (fp == NULL) return -1;
@@ -229,7 +229,7 @@ int32_t QPproblem::ReadGPDTBinary(char *fName)
 
   data_lx = (int32_t *) malloc(ell*sizeof(int32_t));
   data_ix = (int32_t **) malloc(ell*sizeof(int32_t *));
-  data_x  = (float **) malloc(ell*sizeof(int32_t *));
+  data_x  = (float32_t **) malloc(ell*sizeof(float32_t *));
   y       = (int32_t *) malloc(ell*sizeof(int32_t));
 
   fread(data_lx, ell, 4, fp);
@@ -238,7 +238,7 @@ int32_t QPproblem::ReadGPDTBinary(char *fName)
   for (i = 0; i < ell; i++)
   {
        data_ix[i] = (int32_t *)malloc(data_lx[i]*sizeof(int32_t));
-       data_x[i]  = (float *)malloc(data_lx[i]*sizeof(float));
+       data_x[i]  = (float32_t *)malloc(data_lx[i]*sizeof(float32_t));
        fread(data_ix[i], data_lx[i], 4, fp);
        fread(data_x[i],  data_lx[i], 4, fp);
   }
@@ -264,8 +264,8 @@ int32_t QPproblem::ReadSVMFile(char *f1_input)
   int32_t i, j, ell_space, vlen, max_row_length;
   int32_t *line_ix;
   int32_t **data_ix, *data_lx;
-  float  *line_x;
-  float  **data_x;
+  float32_t  *line_x;
+  float32_t  **data_x;
   FILE   *fp1_in;
 
   /*** read the data global information ***/
@@ -281,11 +281,11 @@ int32_t QPproblem::ReadSVMFile(char *f1_input)
   ell     = 0;
   data_lx = (int32_t *) malloc(ell_space*sizeof(int32_t));
   data_ix = (int32_t **) malloc(ell_space*sizeof(int32_t *));
-  data_x  = (float **) malloc(ell_space*sizeof(float *  ));
+  data_x  = (float32_t **) malloc(ell_space*sizeof(float32_t *  ));
   y       = (int32_t *) malloc(ell_space*sizeof(int32_t));
   line    = (char   *) malloc(max_row_length*sizeof(char));
   line_ix = (int32_t *) malloc(vlen*sizeof(int32_t));
-  line_x  = (float  *) malloc(vlen*sizeof(float         ));
+  line_x  = (float32_t  *) malloc(vlen*sizeof(float32_t         ));
 
   /*** open the training data file for input ***/
   fp1_in = fopen(f1_input, "r");
@@ -323,10 +323,10 @@ int32_t QPproblem::ReadSVMFile(char *f1_input)
       if (data_lx[ell] > 0)  // read in a nontrivial sample
       {
           data_ix[ell] = (int32_t *) malloc(data_lx[ell]*sizeof(int32_t));
-          data_x[ell]  = (float *) malloc(data_lx[ell]*sizeof(float));
+          data_x[ell]  = (float32_t *) malloc(data_lx[ell]*sizeof(float32_t));
 
           memcpy(data_ix[ell], line_ix, data_lx[ell]*sizeof(int32_t));
-          memcpy(data_x[ell],  line_x,  data_lx[ell]*sizeof(float));
+          memcpy(data_x[ell],  line_x,  data_lx[ell]*sizeof(float32_t));
 
           if (dim < (data_ix[ell][data_lx[ell]-1] + 1))
               dim = data_ix[ell][data_lx[ell]-1] + 1;
@@ -334,7 +334,7 @@ int32_t QPproblem::ReadSVMFile(char *f1_input)
       else
       {
           data_ix[ell]    = (int32_t *) malloc(sizeof(int32_t));
-          data_x[ell]     = (float *) malloc(sizeof(float));
+          data_x[ell]     = (float32_t *) malloc(sizeof(float32_t));
           *(data_ix[ell]) = 0;
           *(data_x[ell])  = 0.0;
       }
@@ -419,15 +419,15 @@ sKernel::sKernel (CKernel* k, int32_t l)
 /*** Set the problem data for kernel evaluation                             ***/
 /******************************************************************************/
 void sKernel::SetData(
-	float **x_, int32_t **ix_, int32_t *lx_, int32_t _ell, int32_t _dim)
+	float32_t **x_, int32_t **ix_, int32_t *lx_, int32_t _ell, int32_t _dim)
 {
   int32_t i, j, k;
 
   dim  = _dim;
   ell  = _ell;
   nor  = (double *)malloc(ell*sizeof(double));
-  vaux = (float  *)malloc(dim*sizeof(float ));
-  memset(vaux, 0, dim*sizeof(float));
+  vaux = (float32_t  *)malloc(dim*sizeof(float32_t ));
+  memset(vaux, 0, dim*sizeof(float32_t));
 
   IsSubproblem = 0;
   x  = x_;
@@ -458,12 +458,12 @@ void sKernel::SetSubproblem(sKernel* ker, int32_t len, int32_t *perm)
 
   /* arrays allocations */
   nor  = (double *) malloc(len*sizeof(double));
-  vaux = (float  *) malloc(ker->dim*sizeof(float));
-  memset(vaux, 0, ker->dim*sizeof(float));
+  vaux = (float32_t  *) malloc(ker->dim*sizeof(float32_t));
+  memset(vaux, 0, ker->dim*sizeof(float32_t));
 
   lx = (int32_t *) malloc(len * sizeof(int32_t));
   ix = (int32_t **) malloc(len * sizeof(int32_t *));
-  x  = (float **) malloc(len * sizeof(float *));
+  x  = (float32_t **) malloc(len * sizeof(float32_t *));
   IsSubproblem = 1;
 
   for (k = 0; k < len; k++)

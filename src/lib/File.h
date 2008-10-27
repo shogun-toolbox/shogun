@@ -90,7 +90,7 @@ public:
 	 * @param num number of data elements
 	 * @return loaded data
 	 */
-	SHORTREAL*  load_shortreal_data(SHORTREAL* target, int64_t& num);
+	float32_t*  load_shortreal_data(float32_t* target, int64_t& num);
 
 	/** load char data
 	 *
@@ -146,7 +146,7 @@ public:
 	 * @param num number of data elements
 	 * @return whether operation was successful
 	 */
-	bool save_shortreal_data(SHORTREAL* src, int64_t num);
+	bool save_shortreal_data(float32_t* src, int64_t num);
 
 	/** save char data
 	 *

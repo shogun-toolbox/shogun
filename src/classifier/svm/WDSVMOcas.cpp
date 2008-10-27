@@ -24,7 +24,7 @@
 
 struct wdocas_thread_params_output
 {
-	SHORTREAL* out;
+	float32_t* out;
 	int32_t* val;
 	double* output;
 	CWDSVMOcas* wdocas;
@@ -35,7 +35,7 @@ struct wdocas_thread_params_output
 struct wdocas_thread_params_add
 {
 	CWDSVMOcas* wdocas;
-	SHORTREAL* new_a;
+	float32_t* new_a;
 	uint32_t* new_cut;
 	int32_t start;
 	int32_t end;
@@ -100,7 +100,7 @@ int32_t CWDSVMOcas::set_wd_weights()
 {
 	ASSERT(degree>0 && degree<=8);
 	delete[] wd_weights;
-	wd_weights=new SHORTREAL[degree];
+	wd_weights=new float32_t[degree];
 	delete[] w_offsets;
 	w_offsets=new int32_t[degree];
 	int32_t w_dim_single_c=0;
@@ -142,21 +142,21 @@ bool CWDSVMOcas::train()
 	ASSERT(num_vec>0);
 
 	delete[] w;
-	w=new SHORTREAL[w_dim];
-	memset(w, 0, w_dim*sizeof(SHORTREAL));
+	w=new float32_t[w_dim];
+	memset(w, 0, w_dim*sizeof(float32_t));
 
 	delete[] old_w;
-	old_w=new SHORTREAL[w_dim];
-	memset(old_w, 0, w_dim*sizeof(SHORTREAL));
+	old_w=new float32_t[w_dim];
+	memset(old_w, 0, w_dim*sizeof(float32_t));
 	bias=0;
 
-	cuts=new SHORTREAL*[bufsize];
+	cuts=new float32_t*[bufsize];
 	memset(cuts, 0, sizeof(*cuts)*bufsize);
 
 /////speed tests/////
 	/*double* tmp = new double[num_vec];
 	double start=CTime::get_curtime();
-	CMath::random_vector(w, w_dim, (SHORTREAL) 0, (SHORTREAL) 1000);
+	CMath::random_vector(w, w_dim, (float32_t) 0, (float32_t) 1000);
 	compute_output(tmp, this);
 	start=CTime::get_curtime()-start;
 	SG_PRINT("timing:%f\n", start);
@@ -212,8 +212,8 @@ double CWDSVMOcas::update_W( double t, void* ptr )
   double sq_norm_W = 0;         
   CWDSVMOcas* o = (CWDSVMOcas*) ptr;
   uint32_t nDim = (uint32_t) o->w_dim;
-  SHORTREAL* W=o->w;
-  SHORTREAL* oldW=o->old_w;
+  float32_t* W=o->w;
+  float32_t* oldW=o->old_w;
 
   for(uint32_t j=0; j <nDim; j++)
   {
@@ -245,15 +245,15 @@ void* CWDSVMOcas::add_new_cut_helper( void* ptr)
 	int32_t* w_offsets = o->w_offsets;
 	DREAL* y = o->lab;
 	int32_t alphabet_size = o->alphabet_size;
-	SHORTREAL* wd_weights = o->wd_weights;
+	float32_t* wd_weights = o->wd_weights;
 	int32_t degree = o->degree;
 	CStringFeatures<uint8_t>* f = o->features;
 	DREAL normalization_const = o->normalization_const;
 
 	// temporary vector
-	SHORTREAL* new_a = p->new_a;
-	//SHORTREAL* new_a = new SHORTREAL[nDim];
-	//memset(new_a, 0, sizeof(SHORTREAL)*nDim);
+	float32_t* new_a = p->new_a;
+	//float32_t* new_a = new float32_t[nDim];
+	//memset(new_a, 0, sizeof(float32_t)*nDim);
 
 	int32_t* val=new int32_t[cut_length];
 	for (int32_t j=start; j<end; j++)
@@ -266,7 +266,7 @@ void* CWDSVMOcas::add_new_cut_helper( void* ptr)
 		for (int32_t k=0; k<lim; k++)
 		{
 			uint8_t* vec = f->get_feature_vector(j+k, len);
-			SHORTREAL wd = wd_weights[k]/normalization_const;
+			float32_t wd = wd_weights[k]/normalization_const;
 
 			for(uint32_t i=0; i < cut_length; i++) 
 			{
@@ -291,13 +291,13 @@ void CWDSVMOcas::add_new_cut( double *new_col_H,
 	CWDSVMOcas* o = (CWDSVMOcas*) ptr;
 	int32_t string_length = o->string_length;
 	uint32_t nDim=(uint32_t) o->w_dim;
-	SHORTREAL** cuts=o->cuts;
+	float32_t** cuts=o->cuts;
 
 	uint32_t i;
 	wdocas_thread_params_add* params_add=new wdocas_thread_params_add[o->parallel.get_num_threads()];
 	pthread_t* threads=new pthread_t[o->parallel.get_num_threads()];
-	SHORTREAL* new_a=new SHORTREAL[nDim];
-	memset(new_a, 0, sizeof(SHORTREAL)*nDim);
+	float32_t* new_a=new float32_t[nDim];
+	memset(new_a, 0, sizeof(float32_t)*nDim);
 
 	int32_t t;
 	int32_t nthreads=o->parallel.get_num_threads()-1;
@@ -337,14 +337,14 @@ void CWDSVMOcas::add_new_cut( double *new_col_H,
 	params_add[t].end = string_length;
 	params_add[t].cut_length = cut_length;
 	add_new_cut_helper(&params_add[t]);
-	//SHORTREAL* new_a=params_add[t].new_a;
+	//float32_t* new_a=params_add[t].new_a;
 
 	for (t=0; t<nthreads; t++)
 	{
 		if (pthread_join(threads[t], NULL) != 0)
 			SG_SWARNING( "pthread_join failed\n");
 
-		//SHORTREAL* a=params_add[t].new_a;
+		//float32_t* a=params_add[t].new_a;
 		//for (i=0; i<nDim; i++)
 		//	new_a[i]+=a[i];
 		//delete[] a;
@@ -379,7 +379,7 @@ void* CWDSVMOcas::compute_output_helper(void* ptr)
 	CWDSVMOcas* o = p->wdocas;
 	int32_t start = p->start;
 	int32_t end = p->end;
-	SHORTREAL* out = p->out;
+	float32_t* out = p->out;
 	double* output = p->output;
 	int32_t* val = p->val;
 
@@ -389,8 +389,8 @@ void* CWDSVMOcas::compute_output_helper(void* ptr)
 	int32_t string_length = o->string_length;
 	int32_t alphabet_size = o->alphabet_size;
 	int32_t* w_offsets = o->w_offsets;
-	SHORTREAL* wd_weights = o->wd_weights;
-	SHORTREAL* w= o->w;
+	float32_t* wd_weights = o->wd_weights;
+	float32_t* w= o->w;
 
 	DREAL* y = o->lab;
 	DREAL normalization_const = o->normalization_const;
@@ -408,7 +408,7 @@ void* CWDSVMOcas::compute_output_helper(void* ptr)
 		for (int32_t k=0; k<lim; k++)
 		{
 			uint8_t* vec=f->get_feature_vector(j+k, len);
-			SHORTREAL wd = wd_weights[k];
+			float32_t wd = wd_weights[k];
 
 			for (int32_t i=start; i<end; i++) // quite fast 1.9s
 			{
@@ -470,9 +470,9 @@ void CWDSVMOcas::compute_output( double *output, void* ptr )
 	wdocas_thread_params_output* params_output=new wdocas_thread_params_output[o->parallel.get_num_threads()];
 	pthread_t* threads = new pthread_t[o->parallel.get_num_threads()];
 
-	SHORTREAL* out=new SHORTREAL[nData];
+	float32_t* out=new float32_t[nData];
 	int32_t* val=new int32_t[nData];
-	memset(out, 0, sizeof(SHORTREAL)*nData);
+	memset(out, 0, sizeof(float32_t)*nData);
 
 	int32_t t;
 	int32_t nthreads=o->parallel.get_num_threads()-1;
@@ -537,15 +537,15 @@ void CWDSVMOcas::compute_W( double *sq_norm_W, double *dp_WoldW, double *alpha, 
 	CWDSVMOcas* o = (CWDSVMOcas*) ptr;
 	uint32_t nDim= (uint32_t) o->w_dim;
 	CMath::swap(o->w, o->old_w);
-	SHORTREAL* W=o->w;
-	SHORTREAL* oldW=o->old_w;
-	SHORTREAL** cuts=o->cuts;
-	memset(W, 0, sizeof(SHORTREAL)*nDim);
+	float32_t* W=o->w;
+	float32_t* oldW=o->old_w;
+	float32_t** cuts=o->cuts;
+	memset(W, 0, sizeof(float32_t)*nDim);
 
 	for (uint32_t i=0; i<nSel; i++)
 	{
 		if (alpha[i] > 0)
-			CMath::vec1_plus_scalar_times_vec2(W, (SHORTREAL) alpha[i], cuts[i], nDim);
+			CMath::vec1_plus_scalar_times_vec2(W, (float32_t) alpha[i], cuts[i], nDim);
 	}
 
 	*sq_norm_W = CMath::dot(W,W, nDim);

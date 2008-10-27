@@ -716,7 +716,7 @@ int32_t QPproblem::Preprocess1(sKernel* kernel, int32_t *aux, int32_t *sv)
   int32_t    n, i, off, j, k, ll;
   int32_t    nsv, nbsv;
   int32_t    *sv_loc, *bsv_loc, *sp_y;
-  float  *sp_D=NULL;
+  float32_t  *sp_D=NULL;
   double *sp_alpha, *sp_h;
 
   s  = ell;
@@ -738,7 +738,7 @@ int32_t QPproblem::Preprocess1(sKernel* kernel, int32_t *aux, int32_t *sv)
   sp_y     = (int32_t *)malloc(sl*sizeof(int32_t));
 
   if (sl < 500)
-      sp_D = (float *)malloc(sl*sl * sizeof(float));
+      sp_D = (float32_t *)malloc(sl*sl * sizeof(float32_t));
 
   for (i = 0; i < sl; i++)
        sp_h[i] = -1.0;
@@ -770,7 +770,7 @@ int32_t QPproblem::Preprocess1(sKernel* kernel, int32_t *aux, int32_t *sv)
               for (k = j; k < ll; k++)
                   sp_D[k*sl + j] = sp_D[j*sl + k]
                                  = y[aux[j+off]] * y[aux[k+off]]
-                                   * (float)kernel->Get(aux[j+off], aux[k+off]);
+                                   * (float32_t)kernel->Get(aux[j+off], aux[k+off]);
           }
 
           memset(sp_alpha, 0, sl*sizeof(double));
@@ -874,7 +874,7 @@ double QPproblem::gpdtsolve(double *solution)
   int32_t  nzin, nzout;
   int32_t *sp_y;               /* labels vector                             */
   int32_t *indnzin, *indnzout; /* nonzero components indices vectors        */
-  float     *sp_D;               /* quadratic part of the objective function  */
+  float32_t     *sp_D;               /* quadratic part of the objective function  */
   double    *sp_h, *sp_hloc,     /* linear part of the objective function     */
             *sp_alpha,*stloc;    /* variables and gradient updating vectors   */
   double    sp_e, aux, fval, tau_proximal_this, dfval;
@@ -986,7 +986,7 @@ double QPproblem::gpdtsolve(double *solution)
   }
 
   sp_y     = (int32_t *)malloc(chunk_size*sizeof(int32_t));
-  sp_D     = (float  *)malloc(chunk_size*chunk_size * sizeof(float));
+  sp_D     = (float32_t  *)malloc(chunk_size*chunk_size * sizeof(float32_t));
   sp_alpha = (double *)malloc(chunk_size*sizeof(double            ));
   sp_h     = (double *)malloc(chunk_size*sizeof(double            ));
   sp_hloc  = (double *)malloc(chunk_size*sizeof(double            ));
@@ -1066,18 +1066,18 @@ double QPproblem::gpdtsolve(double *solution)
           else if (incom[i] == -1)
               for (j = 0; j <= i; j++)
                   sp_D[i*chunk_size + j] = sp_y[i]*sp_y[j]
-                                           * (float)KER->Get(iin, index_in[j]);
+                                           * (float32_t)KER->Get(iin, index_in[j]);
           else
           {
               for (j = 0; j < i; j++)
                   if (incom[j] == -1)
                       sp_D[i*chunk_size + j]
-                         = sp_y[i]*sp_y[j] * (float)KER->Get(iin, index_in[j]);
+                         = sp_y[i]*sp_y[j] * (float32_t)KER->Get(iin, index_in[j]);
                   else
                       sp_D[i*chunk_size + j]
                          = sp_D[incom[j]*chunk_size + incom[i]];
               sp_D[i*chunk_size + i]
-                  = sp_y[i]*sp_y[i] * (float)KER->Get(iin, index_in[i]);
+                  = sp_y[i]*sp_y[i] * (float32_t)KER->Get(iin, index_in[i]);
           }
       }
       for (i = 0; i < chunk_size; i++)
@@ -1136,7 +1136,7 @@ double QPproblem::gpdtsolve(double *solution)
       {
           vau[i]                  = sp_D[i*chunk_size + i];
           sp_h[i]                -= tau_proximal_this * alpha_in(i);
-          sp_D[i*chunk_size + i] += (float)tau_proximal_this;
+          sp_D[i*chunk_size + i] += (float32_t)tau_proximal_this;
       }
 
       if (kktold < delta*100)
@@ -1186,7 +1186,7 @@ double QPproblem::gpdtsolve(double *solution)
       /*** Proximal point modification: second type ***/
 
       for (i = 0; i < chunk_size; i++)
-          sp_D[i*chunk_size + i] = (float)vau[i];
+          sp_D[i*chunk_size + i] = (float32_t)vau[i];
       tau_proximal_this = 0.0;
       if (tau_proximal < 0.0)
       {

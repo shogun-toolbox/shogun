@@ -36,14 +36,14 @@ class CPythonInterface : public CSGInterface
 		virtual void get_char_vector(char*& vector, int32_t& len);
 		virtual void get_int_vector(int32_t*& vector, int32_t& len);
 		virtual void get_real_vector(DREAL*& vector, int32_t& len);
-		virtual void get_shortreal_vector(SHORTREAL*& vector, int32_t& len);
+		virtual void get_shortreal_vector(float32_t*& vector, int32_t& len);
 		virtual void get_short_vector(int16_t*& vector, int32_t& len);
 		virtual void get_word_vector(uint16_t*& vector, int32_t& len);
 
 		virtual void get_byte_matrix(uint8_t*& matrix, int32_t& num_feat, int32_t& num_vec);
 		virtual void get_char_matrix(char*& matrix, int32_t& num_feat, int32_t& num_vec);
 		virtual void get_int_matrix(int32_t*& matrix, int32_t& num_feat, int32_t& num_vec);
-		virtual void get_shortreal_matrix(SHORTREAL*& matrix, int32_t& num_feat, int32_t& num_vec);
+		virtual void get_shortreal_matrix(float32_t*& matrix, int32_t& num_feat, int32_t& num_vec);
 		virtual void get_real_matrix(DREAL*& matrix, int32_t& num_feat, int32_t& num_vec);
 		virtual void get_short_matrix(int16_t*& matrix, int32_t& num_feat, int32_t& num_vec);
 		virtual void get_word_matrix(uint16_t*& matrix, int32_t& num_feat, int32_t& num_vec);
@@ -65,7 +65,7 @@ class CPythonInterface : public CSGInterface
 		virtual void set_byte_vector(const uint8_t* vector, int32_t len);
 		virtual void set_char_vector(const char* vector, int32_t len);
 		virtual void set_int_vector(const int32_t* vector, int32_t len);
-		virtual void set_shortreal_vector(const SHORTREAL* vector, int32_t len);
+		virtual void set_shortreal_vector(const float32_t* vector, int32_t len);
 		virtual void set_real_vector(const DREAL* vector, int32_t len);
 		virtual void set_short_vector(const int16_t* vector, int32_t len);
 		virtual void set_word_vector(const uint16_t* vector, int32_t len);
@@ -73,7 +73,7 @@ class CPythonInterface : public CSGInterface
 		virtual void set_byte_matrix(const uint8_t* matrix, int32_t num_feat, int32_t num_vec);
 		virtual void set_char_matrix(const char* matrix, int32_t num_feat, int32_t num_vec);
 		virtual void set_int_matrix(const int32_t* matrix, int32_t num_feat, int32_t num_vec);
-		virtual void set_shortreal_matrix(const SHORTREAL* matrix, int32_t num_feat, int32_t num_vec);
+		virtual void set_shortreal_matrix(const float32_t* matrix, int32_t num_feat, int32_t num_vec);
 		virtual void set_real_matrix(const DREAL* matrix, int32_t num_feat, int32_t num_vec);
 		virtual void set_short_matrix(const int16_t* matrix, int32_t num_feat, int32_t num_vec);
 		virtual void set_word_matrix(const uint16_t* matrix, int32_t num_feat, int32_t num_vec);
@@ -81,7 +81,7 @@ class CPythonInterface : public CSGInterface
 		virtual void get_byte_ndarray(uint8_t*& array, int32_t*& dims, int32_t& num_dims);
 		virtual void get_char_ndarray(char*& array, int32_t*& dims, int32_t& num_dims);
 		virtual void get_int_ndarray(int32_t*& array, int32_t*& dims, int32_t& num_dims);
-		virtual void get_shortreal_ndarray(SHORTREAL*& array, int32_t*& dims, int32_t& num_dims);
+		virtual void get_shortreal_ndarray(float32_t*& array, int32_t*& dims, int32_t& num_dims);
 		virtual void get_real_ndarray(DREAL*& array, int32_t*& dims, int32_t& num_dims);
 		virtual void get_short_ndarray(int16_t*& array, int32_t*& dims, int32_t& num_dims);
 		virtual void get_word_ndarray(uint16_t*& array, int32_t*& dims, int32_t& num_dims);

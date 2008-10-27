@@ -273,7 +273,7 @@ class CWDSVMOcas : public CClassifier
 		/** from degree */
 		int32_t from_degree;
 		/** wd weights */
-		SHORTREAL* wd_weights;
+		float32_t* wd_weights;
 		/** num vectors */
 		int32_t num_vec;
 		/** length of string in vector */
@@ -293,15 +293,15 @@ class CWDSVMOcas : public CClassifier
 		/** w dim of a single char */
 		int32_t w_dim_single_char;
 		/** w */
-		SHORTREAL* w;
+		float32_t* w;
 		/** old w*/
-		SHORTREAL* old_w;
+		float32_t* old_w;
 		/** nDim big */
 		DREAL* tmp_a_buf;
 		/** labels */
 		DREAL* lab;
 
 		/** cuts */
-		SHORTREAL** cuts;
+		float32_t** cuts;
 };
 #endif

@@ -51,8 +51,11 @@ typedef unsigned long long int uintmax_t;
 #endif
 
 
-/// Type SHORTREAL is 4 bytes in size
-typedef float SHORTREAL;
+/**
+ * Implementations tend to follow IEEE754
+ * @see http://ieeexplore.ieee.org/xpl/freeabs_all.jsp?arnumber=4610935
+ */
+typedef float float32_t;
 
 /// Type DREAL is 8 bytes in size
 typedef double DREAL;
@@ -61,7 +64,7 @@ typedef double DREAL;
 typedef long double LONGREAL;
 
 #ifdef USE_SHORTREAL_KERNELCACHE
-	typedef SHORTREAL KERNELCACHE_ELEM;
+	typedef float32_t KERNELCACHE_ELEM;
 #else
 	typedef DREAL KERNELCACHE_ELEM;
 #endif

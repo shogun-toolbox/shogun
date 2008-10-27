@@ -36,7 +36,7 @@ bool CShortRealFeatures::save(char* fname)
 {
 	int32_t len;
 	bool free;
-	SHORTREAL* fv;
+	float32_t* fv;
 
 	CFile f(fname, 'w', F_SHORTREAL);
 
@@ -53,7 +53,7 @@ bool CShortRealFeatures::save(char* fname)
 	}
 
 	if (f.is_ok())
-		SG_INFO( "%d vectors with %d features each successfully written (filesize: %ld)\n", num_vectors, num_features, num_vectors*num_features*sizeof(SHORTREAL));
+		SG_INFO( "%d vectors with %d features each successfully written (filesize: %ld)\n", num_vectors, num_features, num_vectors*num_features*sizeof(float32_t));
 
     return true;
 }

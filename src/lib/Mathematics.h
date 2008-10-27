@@ -206,7 +206,7 @@ class CMath : public CSGObject
 			}
 
 		/// x^0.5
-		static inline SHORTREAL sqrt(SHORTREAL x)
+		static inline float32_t sqrt(float32_t x)
 		{
 			return ::sqrtf(x);
 		}
@@ -371,9 +371,9 @@ class CMath : public CSGObject
 			return ret ;
 		}
 
-		static inline SHORTREAL random(SHORTREAL min_value, SHORTREAL max_value)
+		static inline float32_t random(float32_t min_value, float32_t max_value)
 		{
-			SHORTREAL ret = min_value + ((max_value-min_value) * (random() / (1.0*RAND_MAX)));
+			float32_t ret = min_value + ((max_value-min_value) * (random() / (1.0*RAND_MAX)));
 
 			if (ret<min_value || ret>max_value)
 				SG_SPRINT("min_value:%10.10f value: %10.10f max_value:%10.10f", min_value, ret, max_value);
@@ -458,7 +458,8 @@ class CMath : public CSGObject
 		}
 
 		/// compute dot product between v1 and v2 (blas optimized)
-		static inline SHORTREAL dot(const SHORTREAL* v1, const SHORTREAL* v2, int32_t n)
+		static inline float32_t dot(
+			const float32_t* v1, const float32_t* v2, int32_t n)
 		{
 			DREAL r=0;
 #ifdef HAVE_LAPACK

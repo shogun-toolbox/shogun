@@ -1585,7 +1585,7 @@ char* CWeightedDegreePositionStringKernel::compute_consensus(int32_t &num_feat, 
 
 	//backtracking start
 	int32_t max_idx=-1;
-	SHORTREAL max_score=0;
+	float32_t max_score=0;
 	int32_t num_elements=table[num_tables-1]->get_num_elements();
 
 	for (int32_t i=0; i<num_elements; i++)

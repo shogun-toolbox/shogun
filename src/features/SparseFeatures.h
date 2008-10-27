@@ -1196,7 +1196,7 @@ template<> inline EFeatureType CSparseFeatures<DREAL>::get_feature_type()
  *
  * @return feature type SHORTREAL
  */
-template<> inline EFeatureType CSparseFeatures<SHORTREAL>::get_feature_type()
+template<> inline EFeatureType CSparseFeatures<float32_t>::get_feature_type()
 {
 	return F_SHORTREAL;
 }

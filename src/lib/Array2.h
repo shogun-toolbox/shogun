@@ -242,7 +242,7 @@ template <class T> class CArray2: public CArray<T>
 			{
 				CArray<T>::SG_PRINT( "element(%d,:) = [ ",i);
 				for (int32_t j=0; j<dim2_size; j++)
-					CArray<T>::SG_PRINT( "%1.1f,", (float) element(i,j));
+					CArray<T>::SG_PRINT( "%1.1f,", (float32_t) element(i,j));
 				CArray<T>::SG_PRINT( " ]\n");
 			}
 		}

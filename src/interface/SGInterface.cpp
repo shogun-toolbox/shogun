@@ -1232,7 +1232,7 @@ bool CSGInterface::cmd_get_features()
 
 				case F_SHORTREAL:
 				{
-					SHORTREAL* fmatrix=((CShortRealFeatures *) feat)->get_feature_matrix(num_feat, num_vec);
+					float32_t* fmatrix=((CShortRealFeatures *) feat)->get_feature_matrix(num_feat, num_vec);
 					set_shortreal_matrix(fmatrix, num_feat, num_vec);
 					break;
 				}
@@ -1402,7 +1402,7 @@ bool CSGInterface::do_set_features(bool add)
 
 		case DENSE_SHORTREAL:
 		{
-			SHORTREAL* fmatrix=NULL;
+			float32_t* fmatrix=NULL;
 			get_shortreal_matrix(fmatrix, num_feat, num_vec);
 
 			feat=new CShortRealFeatures(0);

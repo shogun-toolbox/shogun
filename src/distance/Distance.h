@@ -122,8 +122,8 @@ class CDistance : public CSGObject
 		 * @param target target matrix
 		 * @return target matrix
 		 */
-		virtual SHORTREAL* get_distance_matrix_shortreal(
-			int32_t &m,int32_t &n,SHORTREAL* target);
+		virtual float32_t* get_distance_matrix_shortreal(
+			int32_t &m,int32_t &n,float32_t* target);
 
 		/** init distance
 		 *
@@ -261,7 +261,7 @@ class CDistance : public CSGObject
 		/** FIXME: precompute matrix should be dropped, handling
 		 * should be via customdistance
 		 */
-		SHORTREAL * precomputed_matrix;
+		float32_t * precomputed_matrix;
 
 		/** FIXME: precompute matrix should be dropped, handling
 		 * should be via customdistance

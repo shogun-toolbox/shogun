@@ -366,7 +366,7 @@ template <class T> class CArray : public CSGObject
 		{
 			display_size();
 			for (int32_t i=0; i<array_size; i++)
-				SG_PRINT("%1.1f,", (float)array[i]);
+				SG_PRINT("%1.1f,", (float32_t)array[i]);
 			SG_PRINT("\n");
 		}
 

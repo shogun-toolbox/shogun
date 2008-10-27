@@ -484,7 +484,7 @@ void CMath::display_vector(int64_t* vector, int32_t n, const char* name)
 }
 
 template <>
-void CMath::display_vector(SHORTREAL* vector, int32_t n, const char* name)
+void CMath::display_vector(float32_t* vector, int32_t n, const char* name)
 {
 	ASSERT(n>=0);
 	SG_SPRINT("%s=[", name);

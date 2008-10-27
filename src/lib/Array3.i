@@ -13,5 +13,5 @@
 %template(UIntArray3) CArray3<uint32_t>;
 %template(LongArray3) CArray3<int64_t>;
 %template(ULongArray3) CArray3<uint64_t>;
-%template(ShortRealArray3) CArray3<SHORTREAL>;
+%template(ShortRealArray3) CArray3<float32_t>;
 %template(RealArray3) CArray3<DREAL>;

@@ -18,18 +18,18 @@
  * matrix.  It inherits its functionality from CSimpleFeatures, which should be
  * consulted for further reference.
  */
-class CShortRealFeatures: public CSimpleFeatures<SHORTREAL>
+class CShortRealFeatures: public CSimpleFeatures<float32_t>
 {
 	public:
 		/** constructor
 		 *
 		 * @param size cache size
 		 */
-		CShortRealFeatures(int32_t size=0) : CSimpleFeatures<SHORTREAL>(size) {}
+		CShortRealFeatures(int32_t size=0) : CSimpleFeatures<float32_t>(size) {}
 
 		/** copy constructor */
 		CShortRealFeatures(const CShortRealFeatures & orig) :
-			CSimpleFeatures<SHORTREAL>(orig) {}
+			CSimpleFeatures<float32_t>(orig) {}
 
         /** constructor that copies feature matrix from
          * pointer num_feat,num_vec pair
@@ -38,17 +38,17 @@ class CShortRealFeatures: public CSimpleFeatures<SHORTREAL>
 		 * @param num_feat number of features
 		 * @param num_vec number of vectors
 		 */
-        inline CShortRealFeatures(SHORTREAL* src, int32_t num_feat, int32_t num_vec) :
-            CSimpleFeatures<SHORTREAL>(0)
+        inline CShortRealFeatures(float32_t* src, int32_t num_feat, int32_t num_vec) :
+            CSimpleFeatures<float32_t>(0)
 		{
-			CSimpleFeatures<SHORTREAL>::copy_feature_matrix(src, num_feat, num_vec);
+			CSimpleFeatures<float32_t>::copy_feature_matrix(src, num_feat, num_vec);
 		}
 
 		/** constructor
 		 *
 		 * @param fname filename to load features from
 		 */
-		CShortRealFeatures(char* fname) : CSimpleFeatures<SHORTREAL>(fname)
+		CShortRealFeatures(char* fname) : CSimpleFeatures<float32_t>(fname)
 		{
 			load(fname);
 		}
@@ -59,9 +59,9 @@ class CShortRealFeatures: public CSimpleFeatures<SHORTREAL>
 		 * @param d1 dimension 1 of matrix
 		 * @param d2 dimension 2 of matrix
 		 */
-		inline virtual void get_fm(SHORTREAL** dst, int32_t* d1, int32_t* d2)
+		inline virtual void get_fm(float32_t** dst, int32_t* d1, int32_t* d2)
 		{
-			CSimpleFeatures<SHORTREAL>::get_fm(dst, d1, d2);
+			CSimpleFeatures<float32_t>::get_fm(dst, d1, d2);
 		}
 
 		/** copy feature matrix
@@ -72,9 +72,9 @@ class CShortRealFeatures: public CSimpleFeatures<SHORTREAL>
 		 * @param num_feat number of features
 		 * @param num_vec number of vectors
 		 */
-		inline virtual void copy_feature_matrix(SHORTREAL* src, int32_t num_feat, int32_t num_vec)
+		inline virtual void copy_feature_matrix(float32_t* src, int32_t num_feat, int32_t num_vec)
 		{
-			CSimpleFeatures<SHORTREAL>::copy_feature_matrix(src, num_feat, num_vec);
+			CSimpleFeatures<float32_t>::copy_feature_matrix(src, num_feat, num_vec);
 		}
 
 		/** load features from file

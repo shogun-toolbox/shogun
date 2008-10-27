@@ -47,7 +47,7 @@ class CCustomKernel: public CKernel
 		 * @param target target for kernel matrix
 		 * @return the kernel matrix
 		 */
-		virtual SHORTREAL* get_kernel_matrix_shortreal(int32_t &m, int32_t &n, SHORTREAL* target=NULL);
+		virtual float32_t* get_kernel_matrix_shortreal(int32_t &m, int32_t &n, float32_t* target=NULL);
 
 		/** initialize kernel with dummy features
 		 *
@@ -169,7 +169,7 @@ class CCustomKernel: public CKernel
 
 	protected:
 		/** kernel matrix */
-		SHORTREAL* kmatrix;
+		float32_t* kmatrix;
 		/** number of rows */
 		int32_t num_rows;
 		/** number of columns */
