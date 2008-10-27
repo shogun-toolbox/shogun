@@ -7,7 +7,7 @@ import os
 REPLACEMENTS=[
 	[' DREAL', ' float'],
 	[' float32_t', ' float'],
-	[' LONGREAL', ' float'],
+	[' float128_t', ' float'],
 	[' double', ' float'],
 	[' int32_t', '  int'],
 	[' uint32_t', ' int'],

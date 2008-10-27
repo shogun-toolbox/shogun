@@ -218,7 +218,7 @@ class CMath : public CSGObject
 		}
 
 		/// x^0.5
-		static inline LONGREAL sqrt(LONGREAL x)
+		static inline float128_t sqrt(float128_t x)
 		{
 			//fall back to double precision sqrt if sqrtl is not
 			//available
@@ -231,14 +231,14 @@ class CMath : public CSGObject
 
 
 		/// x^n
-		static inline long double powl(long double x, long double n)
+		static inline float128_t powl(float128_t x, float128_t n)
 		{
 			//fall back to double precision pow if powl is not
 			//available
 #ifdef HAVE_POWL
-			return ::powl(x, n);
+			return ::powl((long double) x, (long double) n);
 #else
-			return ::pow(x, n);
+			return ::pow((double) x, (double) n);
 #endif
 		}
 

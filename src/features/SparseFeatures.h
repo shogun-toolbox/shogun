@@ -1205,7 +1205,7 @@ template<> inline EFeatureType CSparseFeatures<float32_t>::get_feature_type()
  *
  * @return feature type LONGREAL
  */
-template<> inline EFeatureType CSparseFeatures<LONGREAL>::get_feature_type()
+template<> inline EFeatureType CSparseFeatures<float128_t>::get_feature_type()
 {
 	return F_LONGREAL;
 }

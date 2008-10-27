@@ -318,19 +318,19 @@ template <class ST> class CStringFeatures : public CFeatures
 
 		/** get number of symbols
 		 *
-		 * Note: LONGREAL sounds weird, but LONG is not long enough
+		 * Note: float128_t sounds weird, but LONG is not long enough
 		 *
 		 * @return number of symbols
 		 */
-		inline LONGREAL get_num_symbols() { return num_symbols; }
+		inline float128_t get_num_symbols() { return num_symbols; }
 
 		/** get maximum number of symbols
 		 *
-		 * Note: LONGREAL sounds weird, but LONG is not long enough
+		 * Note: float128_t sounds weird, but LONG is not long enough
 		 *
 		 * @return maximum number of symbols
 		 */
-		inline LONGREAL get_max_num_symbols() { return CMath::powl(2,sizeof(ST)*8); }
+		inline float128_t get_max_num_symbols() { return CMath::powl(2,sizeof(ST)*8); }
 
 		// these functions are necessary to find out about a former conversion process
 
@@ -338,7 +338,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 *
 		 * @return original number of symbols
 		 */
-		inline LONGREAL get_original_num_symbols() { return original_num_symbols; }
+		inline float128_t get_original_num_symbols() { return original_num_symbols; }
 
 		/** order used for higher order mapping
 		 *
@@ -913,12 +913,12 @@ template <class ST> class CStringFeatures : public CFeatures
 				int32_t max_val=alpha->get_num_bits();
 
 				if (p_order>1)
-					num_symbols=CMath::powl((long double) 2, (long double) max_val*p_order);
+					num_symbols=CMath::powl((float128_t) 2, (float128_t) max_val*p_order);
 				else
 					num_symbols=original_num_symbols;
 				SG_INFO( "max_val (bit): %d order: %d -> results in num_symbols: %.0Lf\n", max_val, p_order, num_symbols);
 
-				if ( ((long double) num_symbols) > CMath::powl(((long double) 2),((long double) sizeof(ST)*8)) )
+				if ( ((float128_t) num_symbols) > CMath::powl(((float128_t) 2),((float128_t) sizeof(ST)*8)) )
 				{
 					SG_ERROR( "symbol does not fit into datatype \"%c\" (%d)\n", (char) max_val, (int) max_val);
 					return false;
@@ -1219,10 +1219,10 @@ template <class ST> class CStringFeatures : public CFeatures
 		int32_t max_string_length;
 
 		/// number of used symbols
-		LONGREAL num_symbols;
+		float128_t num_symbols;
 
 		/// original number of used symbols (before higher order mapping)
-		LONGREAL original_num_symbols;
+		float128_t original_num_symbols;
 
 		/// order used in higher order mapping
 		int32_t order;
