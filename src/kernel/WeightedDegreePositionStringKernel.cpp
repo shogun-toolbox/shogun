@@ -1036,7 +1036,7 @@ bool CWeightedDegreePositionStringKernel::init_block_weights_from_wd()
 		for (k=0; k<degree; k++)
 			block_weights[k]=
 				(-pow(k, 3)+(3*degree-3)*pow(k, 2)+(9*degree-2)*k+6*degree) /
-				(3*deg*(degree+1));
+				(3*degree*(degree+1));
 		for (k=degree; k<seq_length; k++)
 			block_weights[k]=(-degree+3*k+4)/3;
 	}

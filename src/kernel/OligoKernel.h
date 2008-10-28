@@ -40,6 +40,7 @@ class COligoKernel : public CStringKernel<char>
 {
 	public:
 		/** Constructor
+		 * @param cache_size cache size for kernel
 		 * @param k k-mer length
 		 * @param width sigma^2
 		 */
