@@ -119,7 +119,7 @@ class CLinearWordKernel: public CSimpleKernel<uint16_t>
 
 	protected:
 		/** normal vector (used in case of optimized kernel) */
-		double* normal;
+		float64_t* normal;
 };
 
 #endif /* _LINEARWORDKERNEL_H__ */

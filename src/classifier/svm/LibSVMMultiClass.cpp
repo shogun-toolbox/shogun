@@ -35,7 +35,7 @@ bool CLibSVMMultiClass::train()
 	problem.l=labels->get_num_labels();
 	SG_INFO( "%d trainlabels, %d classes\n", problem.l, num_classes);
 
-	problem.y=new double[problem.l];
+	problem.y=new float64_t[problem.l];
 	problem.x=new struct svm_node*[problem.l];
 	x_space=new struct svm_node[2*problem.l];
 

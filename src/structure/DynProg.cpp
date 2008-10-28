@@ -1403,7 +1403,7 @@ void CDynProg::extend_svm_value(
 		last_svm_pos=pos ;
 		if (did_something)
 			for (int32_t s=0; s<num_svms; s++)
-				svm_value[s]= svm_value_unnormalized_single[s]/sqrt((double)num_unique_words_single) ;  // full normalization
+				svm_value[s]= svm_value_unnormalized_single[s]/sqrt((float64_t)num_unique_words_single) ;  // full normalization
 	}
 	else
 	{
@@ -1746,7 +1746,7 @@ void CDynProg::extend_svm_values(uint16_t** wordstr, int32_t pos, int32_t *last_
 			svm_value[s]=0.0 ;
 			for (int32_t j=0; j<num_degrees; j++)
 				if (num_unique_words[j]>0)
-					svm_value[s]+= svm_values_unnormalized.element(j,s)/sqrt((double)num_unique_words[j]) ;  // full normalization
+					svm_value[s]+= svm_values_unnormalized.element(j,s)/sqrt((float64_t)num_unique_words[j]) ;  // full normalization
 		}
 }
 */
@@ -2125,13 +2125,13 @@ void CDynProg::find_svm_values_till_pos(
 			offset = plen*num_svms ;
 			for (int32_t s=0; s<num_svms; s++)
 			{
-				double normalization_factor = 1.0;
+				float64_t normalization_factor = 1.0;
 				if (my_num_unique_words[s] > 0)
 				{
 					if (sign_words_array[s])
-						normalization_factor = sqrt((double)my_num_unique_words[s]);
+						normalization_factor = sqrt((float64_t)my_num_unique_words[s]);
 					else
-						normalization_factor = (double)my_num_unique_words[s];
+						normalization_factor = (float64_t)my_num_unique_words[s];
 				}
 
 				if (j==0)
@@ -2231,13 +2231,13 @@ void CDynProg::find_svm_values_till_pos(
 			offset = plen*num_svms ;
 			for (int32_t s=0; s<num_svms; s++)
 			{
-				double normalization_factor = 1.0;
+				float64_t normalization_factor = 1.0;
 				if (my_num_unique_words[s] > 0)
 				{
 					if (sign_words_array[s])
-						normalization_factor = sqrt((double)my_num_unique_words[s]);
+						normalization_factor = sqrt((float64_t)my_num_unique_words[s]);
 					else
-						normalization_factor = (double)my_num_unique_words[s];
+						normalization_factor = (float64_t)my_num_unique_words[s];
 				}
 
 				if (j==0)
@@ -2859,7 +2859,7 @@ void CDynProg::best_path_trans(
 				
 				int32_t numEnt = fixed_list_len;
 				
-				double minusscore;
+				float64_t minusscore;
 				int64_t fromtjk;
 				
 				for (int16_t k=0; k<nbest; k++)
@@ -3335,7 +3335,7 @@ void CDynProg::best_path_trans_simple(
 				int32_t numEnt = 0;
 				numEnt = old_list_len;
 
-				double minusscore;
+				float64_t minusscore;
 				int64_t fromtjk;
 
 				for (int16_t k=0; k<nbest; k++)

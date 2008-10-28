@@ -49,34 +49,34 @@ class CTime : public CSGObject
 		 * @param verbose if time difference shall be printed
 		 * @return time difference between start and NOW in seconds
 		 */
-		double cur_runtime_diff_sec(bool verbose=false);
+		float64_t cur_runtime_diff_sec(bool verbose=false);
 
 		/** start the counter
 		 *
 		 * @param verbose if start time shall be printed
 		 * @return start time in seconds
 		 */
-		double start(bool verbose=false);
+		float64_t start(bool verbose=false);
 
 		/** get time difference between start and NOW in seconds
 		 *
 		 * @param verbose if time difference shall be printed
 		 * @return time difference between start and NOW in seconds
 		 */
-		double cur_time_diff(bool verbose=false);
+		float64_t cur_time_diff(bool verbose=false);
 
 		/** get time difference between start and stop in seconds
 		 *
 		 * @param verbose if time difference shall be printed
 		 * @return time difference between start and stop in seconds
 		 */
-		double time_diff_sec(bool verbose=false);
+		float64_t time_diff_sec(bool verbose=false);
 
 		/** stop the counter
 		 * @param verbose if stop time shall be printed
 		 * @return stop time in seconds
 		 */
-		double stop(bool verbose=false);
+		float64_t stop(bool verbose=false);
 
 		/** get runtime
 		 *
@@ -86,18 +86,18 @@ class CTime : public CSGObject
 		{
 			clock_t start_runtime = clock();
 			return(
-				(int64_t)((double)start_runtime*100.0/(double)CLOCKS_PER_SEC));
+				(int64_t) ((float64_t)start_runtime*100.0/(float64_t)CLOCKS_PER_SEC));
 		}
 
 		/** get current time in seconds
 		 *
 		 * @return current time in seconds
 		 */
-		static double get_curtime()
+		static float64_t get_curtime()
 		{
 			timeval tv;
 			if (gettimeofday(&tv, NULL)==0)
-				return tv.tv_sec+((double)(tv.tv_usec))/1e6;
+				return (float64_t) (tv.tv_sec+((double)(tv.tv_usec))/1e6);
 			else
 				return 0.0;
 		}
@@ -107,8 +107,8 @@ class CTime : public CSGObject
 		clock_t start_runtime;
 
 		/** start time */
-		double start_time;
+		float64_t start_time;
 		/** stop time */
-		double stop_time;
+		float64_t stop_time;
 };
 #endif

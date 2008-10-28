@@ -508,8 +508,8 @@ template <class Trie> class CTrie : public CSGObject
 			if (TreeMemPtr+10 < TreeMemPtrMax)
 				return;
 			SG_DEBUG( "Extending TreeMem from %i to %i elements\n",
-					TreeMemPtrMax, (int32_t) ((double)TreeMemPtrMax*1.2));
-			TreeMemPtrMax = (int32_t) ((double)TreeMemPtrMax*1.2);
+					TreeMemPtrMax, (int32_t) ((float64_t)TreeMemPtrMax*1.2));
+			TreeMemPtrMax = (int32_t) ((float64_t)TreeMemPtrMax*1.2);
 			TreeMem = (Trie*) realloc(TreeMem,
 					TreeMemPtrMax*sizeof(Trie));
 			if (!TreeMem)

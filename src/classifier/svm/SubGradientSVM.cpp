@@ -21,8 +21,8 @@
 
 #undef DEBUG_SUBGRADIENTSVM
 
-extern double sparsity;
-double tim;
+extern float64_t sparsity;
+float64_t tim;
 
 CSubGradientSVM::CSubGradientSVM()
 : CSparseLinearClassifier(), C1(1), C2(1), epsilon(1e-5), qpsize(42),
@@ -562,7 +562,7 @@ bool CSubGradientSVM::train()
 	compute_projection(num_feat, num_vec);
 
 	CTime time;
-	double loop_time=0;
+	float64_t loop_time=0;
 	while (!(CSignal::cancel_computations()))
 	{
 		CTime t;

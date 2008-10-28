@@ -94,9 +94,9 @@ class CSigmoidKernel: public CSimpleKernel<float64_t>
 
 	protected:
 		/** gamma */
-		double gamma;
+		float64_t gamma;
 		/** coefficient 0 */
-		double coef0;
+		float64_t coef0;
 };
 
 #endif /* _SIGMOIDKERNEL_H__ */

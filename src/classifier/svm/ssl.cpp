@@ -84,23 +84,23 @@ int32_t CGLS(
 	int32_t active = Subset->d;
 	int32_t *J = Subset->vec;
 	CSparseFeatures<float64_t>* features=Data->features;
-	double *Y = Data->Y;
-	double *C = Data->C;
+	float64_t *Y = Data->Y;
+	float64_t *C = Data->C;
 	int32_t n  = Data->n;
-	double lambda = Options->lambda;
+	float64_t lambda = Options->lambda;
 	int32_t cgitermax = Options->cgitermax;
-	double epsilon = Options->epsilon;
-	double *beta = Weights->vec;
-	double *o  = Outputs->vec; 
+	float64_t epsilon = Options->epsilon;
+	float64_t *beta = Weights->vec;
+	float64_t *o  = Outputs->vec; 
 	// initialize z 
-	double *z = new double[active];
-	double *q = new double[active];
+	float64_t *z = new float64_t[active];
+	float64_t *q = new float64_t[active];
 	int32_t ii=0;
 	for (int32_t i = active ; i-- ;){
 		ii=J[i];      
 		z[i]  = C[ii]*(Y[ii] - o[ii]);
 	}
-	double *r = new double[n];
+	float64_t *r = new float64_t[n];
 	for (int32_t i = n ; i-- ;)
 		r[i] = 0.0;
 	for (register int32_t j=0; j < active; j++)
@@ -115,29 +115,29 @@ int32_t CGLS(
 		features->free_sparse_feature_vector(vec, num_entries, free_vec);
 		r[n-1]+=Options->bias*z[j]; //bias (modelled as last dim)
 	}
-	double *p = new double[n];   
-	double omega1 = 0.0;
+	float64_t *p = new float64_t[n];   
+	float64_t omega1 = 0.0;
 	for (int32_t i = n ; i-- ;)
 	{
 		r[i] -= lambda*beta[i];
 		p[i] = r[i];
 		omega1 += r[i]*r[i];
 	}   
-	double omega_p = omega1;
-	double omega_q = 0.0;
-	double inv_omega2 = 1/omega1;
-	double scale = 0.0;
-	double omega_z=0.0;
-	double gamma = 0.0;
+	float64_t omega_p = omega1;
+	float64_t omega_q = 0.0;
+	float64_t inv_omega2 = 1/omega1;
+	float64_t scale = 0.0;
+	float64_t omega_z=0.0;
+	float64_t gamma = 0.0;
 	int32_t cgiter = 0;
 	int32_t optimality = 0;
-	double epsilon2 = epsilon*epsilon;   
+	float64_t epsilon2 = epsilon*epsilon;   
 	// iterate
 	while(cgiter < cgitermax)
 	{
 		cgiter++;
 		omega_q=0.0;
-		double t=0.0;
+		float64_t t=0.0;
 		register int32_t i,j;
 		// #pragma omp parallel for private(i,j)
 		for (i=0; i < active; i++)
@@ -219,17 +219,17 @@ int32_t L2_SVM_MFN(
 {
 	/* Disassemble the structures */  
 	CSparseFeatures<float64_t>* features=Data->features;
-	double *Y = Data->Y;
-	double *C = Data->C;
+	float64_t *Y = Data->Y;
+	float64_t *C = Data->C;
 	int32_t n  = Data->n;
 	int32_t m  = Data->m;
-	double lambda = Options->lambda;
-	double epsilon;
-	double *w = Weights->vec;
-	double *o = Outputs->vec; 
-	double F_old = 0.0;
-	double F = 0.0;
-	double diff=0.0;
+	float64_t lambda = Options->lambda;
+	float64_t epsilon;
+	float64_t *w = Weights->vec;
+	float64_t *o = Outputs->vec; 
+	float64_t F_old = 0.0;
+	float64_t F = 0.0;
+	float64_t diff=0.0;
 	vector_int *ActiveSubset = new vector_int[1];
 	ActiveSubset->vec = new int32_t[m];
 	ActiveSubset->d = m;
@@ -265,14 +265,14 @@ int32_t L2_SVM_MFN(
 	int32_t opt2=0;
 	vector_double *Weights_bar = new vector_double[1];
 	vector_double *Outputs_bar = new vector_double[1];
-	double *w_bar = new double[n];
-	double *o_bar = new double[m];
+	float64_t *w_bar = new float64_t[n];
+	float64_t *o_bar = new float64_t[m];
 	Weights_bar->vec=w_bar;
 	Outputs_bar->vec=o_bar;
 	Weights_bar->d=n;
 	Outputs_bar->d=m;
-	double delta=0.0;
-	double t=0.0;
+	float64_t delta=0.0;
+	float64_t t=0.0;
 	int32_t ii = 0;
 	while(iter<MFNITERMAX)
 	{
@@ -380,19 +380,19 @@ int32_t L2_SVM_MFN(
 	return 0;
 }
 
-double line_search(double *w, 
-		double *w_bar,
-		double lambda,
-		double *o, 
-		double *o_bar, 
-		double *Y, 
-		double *C,
+float64_t line_search(float64_t *w, 
+		float64_t *w_bar,
+		float64_t lambda,
+		float64_t *o, 
+		float64_t *o_bar, 
+		float64_t *Y, 
+		float64_t *C,
 		int32_t d, /* data dimensionality -- 'n' */
 		int32_t l) /* number of examples */
 {                       
-	double omegaL = 0.0;
-	double omegaR = 0.0;
-	double diff=0.0;   
+	float64_t omegaL = 0.0;
+	float64_t omegaR = 0.0;
+	float64_t diff=0.0;   
 	for(int32_t i=d; i--; )
 	{
 		diff=w_bar[i]-w[i];  
@@ -401,8 +401,8 @@ double line_search(double *w,
 	}
 	omegaL=lambda*omegaL;
 	omegaR=lambda*omegaR;
-	double L=0.0;
-	double R=0.0;
+	float64_t L=0.0;
+	float64_t R=0.0;
 	int32_t ii=0;
 	for (int32_t i=0;i<l;i++)
 	{
@@ -443,7 +443,7 @@ double line_search(double *w,
 		}
 	}
 	std::sort(deltas,deltas+p);            
-	double delta_prime=0.0;  
+	float64_t delta_prime=0.0;  
 	for (int32_t i=0;i<p;i++)
 	{
 		delta_prime = L + deltas[i].delta*(R-L);       
@@ -473,10 +473,10 @@ int32_t TSVM_MFN(
 	/* Use this weight vector to classify R*u unlabeled examples as
 	   positive*/
 	int32_t p=0,q=0;
-	double t=0.0;
+	float64_t t=0.0;
 	int32_t *JU = new int32_t[Data->u];
-	double *ou = new double[Data->u];
-	double lambda_0 = TSVM_LAMBDA_SMALL;
+	float64_t *ou = new float64_t[Data->u];
+	float64_t lambda_0 = TSVM_LAMBDA_SMALL;
 	for (int32_t i=0;i<Data->m;i++)
 	{
 		if(Data->Y[i]==0.0)
@@ -505,7 +505,7 @@ int32_t TSVM_MFN(
 		}
 	}
 	std::nth_element(ou,ou+int32_t((1-Options->R)*Data->u-1),ou+Data->u);
-	double thresh=*(ou+int32_t((1-Options->R)*Data->u)-1);
+	float64_t thresh=*(ou+int32_t((1-Options->R)*Data->u)-1);
 	delete [] ou;
 	for (int32_t i=0;i<Data->u;i++)
 	{  
@@ -547,13 +547,13 @@ int32_t TSVM_MFN(
 	SG_SDEBUG("Total Number of Switches = %d\n", num_switches);
 	/* reset labels */
 	for (int32_t i=0;i<Data->u;i++) Data->Y[JU[i]] = 0.0;
-	double F = transductive_cost(norm_square(Weights),Data->Y,Outputs->vec,Outputs->d,Options->lambda,Options->lambda_u);
+	float64_t F = transductive_cost(norm_square(Weights),Data->Y,Outputs->vec,Outputs->d,Options->lambda,Options->lambda_u);
 	SG_SDEBUG("Objective Value = %f\n",F);
 	delete [] JU;
 	return num_switches;
 }
 
-int32_t switch_labels(double* Y, double* o, int32_t* JU, int32_t u, int32_t S)
+int32_t switch_labels(float64_t* Y, float64_t* o, int32_t* JU, int32_t u, int32_t S)
 {
 	int32_t npos=0;
 	int32_t nneg=0;
@@ -602,17 +602,17 @@ int32_t DA_S3VM(
 	struct data *Data, struct options *Options, struct vector_double *Weights,
 	struct vector_double *Outputs)
 {
-	double T = DA_INIT_TEMP*Options->lambda_u;
+	float64_t T = DA_INIT_TEMP*Options->lambda_u;
 	int32_t iter1 = 0, iter2 =0;
-	double *p = new double[Data->u];
-	double *q = new double[Data->u];
-	double *g = new double[Data->u];
-	double F,F_min;
-	double *w_min = new double[Data->n];
-	double *o_min = new double[Data->m];
-	double *w = Weights->vec;
-	double *o = Outputs->vec;
-	double kl_divergence = 1.0;
+	float64_t *p = new float64_t[Data->u];
+	float64_t *q = new float64_t[Data->u];
+	float64_t *g = new float64_t[Data->u];
+	float64_t F,F_min;
+	float64_t *w_min = new float64_t[Data->n];
+	float64_t *o_min = new float64_t[Data->m];
+	float64_t *w = Weights->vec;
+	float64_t *o = Outputs->vec;
+	float64_t kl_divergence = 1.0;
 	/*initialize */
 	SG_SDEBUG("Initializing weights, p");
 	for (int32_t i=0;i<Data->u; i++)
@@ -625,7 +625,7 @@ int32_t DA_S3VM(
 		if(Data->Y[i]==0.0)
 		{JU[j]=i;j++;}
 	}  
-	double H = entropy(p,Data->u);
+	float64_t H = entropy(p,Data->u);
 	optimize_w(Data,p,Options,Weights,Outputs,0);  
 	F = transductive_cost(norm_square(Weights),Data->Y,Outputs->vec,Outputs->d,Options->lambda,Options->lambda_u);
 	F_min = F;
@@ -682,7 +682,7 @@ int32_t DA_S3VM(
 }
 
 int32_t optimize_w(
-	const struct data *Data, const double *p, struct options *Options,
+	const struct data *Data, const float64_t *p, struct options *Options,
 	struct vector_double *Weights, struct vector_double *Outputs, int32_t ini)
 {
 	int32_t i,j;
@@ -690,17 +690,17 @@ int32_t optimize_w(
 	int32_t n  = Data->n;
 	int32_t m  = Data->m;
 	int32_t u  = Data->u;
-	double lambda = Options->lambda;
-	double epsilon;
-	double *w = Weights->vec;
-	double *o = new double[m+u];
-	double *Y = new double[m+u];
-	double *C = new double[m+u];
+	float64_t lambda = Options->lambda;
+	float64_t epsilon;
+	float64_t *w = Weights->vec;
+	float64_t *o = new float64_t[m+u];
+	float64_t *Y = new float64_t[m+u];
+	float64_t *C = new float64_t[m+u];
 	int32_t *labeled_indices = new int32_t[m];
-	double F_old = 0.0;
-	double F = 0.0;
-	double diff=0.0;
-	double lambda_u_by_u = Options->lambda_u/u;
+	float64_t F_old = 0.0;
+	float64_t F = 0.0;
+	float64_t diff=0.0;
+	float64_t lambda_u_by_u = Options->lambda_u/u;
 	vector_int *ActiveSubset = new vector_int[1];
 	ActiveSubset->vec = new int32_t[m];
 	ActiveSubset->d = m;
@@ -716,8 +716,8 @@ int32_t optimize_w(
 	F=lambda*F;        
 	int32_t active=0;
 	int32_t inactive=m-1; // l-1      
-	double temp1;
-	double temp2;
+	float64_t temp1;
+	float64_t temp2;
 
 	j = 0;
 	for(i=0; i<m ; i++)
@@ -786,14 +786,14 @@ int32_t optimize_w(
 	int32_t opt2=0;
 	vector_double *Weights_bar = new vector_double[1];
 	vector_double *Outputs_bar = new vector_double[1];
-	double *w_bar = new double[n];
-	double *o_bar = new double[m+u];
+	float64_t *w_bar = new float64_t[n];
+	float64_t *o_bar = new float64_t[m+u];
 	Weights_bar->vec=w_bar;
 	Outputs_bar->vec=o_bar;
 	Weights_bar->d=n;
 	Outputs_bar->d=m; /* read only the top m ; bottom u will be copies */
-	double delta=0.0;
-	double t=0.0;
+	float64_t delta=0.0;
+	float64_t t=0.0;
 	int32_t ii = 0;
 	while(iter<MFNITERMAX)
 	{
@@ -967,27 +967,28 @@ int32_t optimize_w(
 	return 0;
 }
 
-void optimize_p(const double* g, int32_t u, double T, double r, double* p)
+void optimize_p(
+	const float64_t* g, int32_t u, float64_t T, float64_t r, float64_t* p)
 {
 	int32_t iter=0;
-	double epsilon=1e-10;
+	float64_t epsilon=1e-10;
 	int32_t maxiter=500; 
-	double nu_minus=g[0];
-	double nu_plus=g[0];
+	float64_t nu_minus=g[0];
+	float64_t nu_plus=g[0];
 	for (int32_t i=0;i<u;i++)
 	{
 		if(g[i]<nu_minus) nu_minus=g[i]; 
 		if(g[i]>nu_plus) nu_plus=g[i];
 	};
 
-	double b=T*log((1-r)/r);
+	float64_t b=T*log((1-r)/r);
 	nu_minus-=b;
 	nu_plus-=b;
-	double nu=(nu_plus+nu_minus)/2;
-	double Bnu=0.0;
-	double BnuPrime=0.0;
-	double s=0.0;
-	double tmp=0.0;
+	float64_t nu=(nu_plus+nu_minus)/2;
+	float64_t Bnu=0.0;
+	float64_t BnuPrime=0.0;
+	float64_t s=0.0;
+	float64_t tmp=0.0;
 	for (int32_t i=0;i<u;i++)
 	{
 		s=exp((g[i]-nu)/T);
@@ -1001,7 +1002,7 @@ void optimize_p(const double* g, int32_t u, double T, double r, double* p)
 	Bnu=Bnu/u;
 	Bnu-=r;
 	BnuPrime=BnuPrime/(T*u);
-	double nuHat=0.0;
+	float64_t nuHat=0.0;
 	while((CMath::abs(Bnu)>epsilon) && (iter < maxiter))
 	{
 		iter++;
@@ -1045,11 +1046,11 @@ void optimize_p(const double* g, int32_t u, double T, double r, double* p)
 	SG_SINFO(" root (nu) = %f B(nu) = %f", nu, Bnu);
 }
 
-double transductive_cost(
-	double normWeights, double *Y, double *Outputs, int32_t m, double lambda,
-	double lambda_u)
+float64_t transductive_cost(
+	float64_t normWeights, float64_t *Y, float64_t *Outputs, int32_t m,
+	float64_t lambda, float64_t lambda_u)
 {
-	double F1=0.0,F2=0.0, o=0.0, y=0.0; 
+	float64_t F1=0.0,F2=0.0, o=0.0, y=0.0; 
 	int32_t u=0,l=0;
 	for (int32_t i=0;i<m;i++)
 	{
@@ -1060,15 +1061,15 @@ double transductive_cost(
 		else
 		{F2 += y*o > 1 ? 0 : (1-y*o)*(1-y*o); l++;}   
 	}
-	double F;
+	float64_t F;
 	F = 0.5*(lambda*normWeights + lambda_u*F1/u + F2/l);
 	return F;
 }
 
-double entropy(const double *p, int32_t u)
+float64_t entropy(const float64_t *p, int32_t u)
 {
-	double h=0.0;
-	double q=0.0;
+	float64_t h=0.0;
+	float64_t q=0.0;
 	for (int32_t i=0;i<u;i++)
 	{
 		q=p[i];
@@ -1078,12 +1079,12 @@ double entropy(const double *p, int32_t u)
 	return h/u;
 }
 
-double KL(const double *p, const double *q, int32_t u)
+float64_t KL(const float64_t *p, const float64_t *q, int32_t u)
 {
-	double h=0.0;
-	double p1=0.0;
-	double q1=0.0;
-	double g=0.0;
+	float64_t h=0.0;
+	float64_t p1=0.0;
+	float64_t q1=0.0;
+	float64_t g=0.0;
 	for (int32_t i=0;i<u;i++)
 	{
 		p1=p[i];
@@ -1100,9 +1101,9 @@ double KL(const double *p, const double *q, int32_t u)
 }
 
 /********************** UTILITIES ********************/
-double norm_square(const vector_double *A)
+float64_t norm_square(const vector_double *A)
 {
-	double x=0.0, t=0.0;
+	float64_t x=0.0, t=0.0;
 	for(int32_t i=0;i<A->d;i++)
 	{
 		t=A->vec[i];
@@ -1111,9 +1112,9 @@ double norm_square(const vector_double *A)
 	return x;
 }
 
-void initialize(struct vector_double *A, int32_t k, double a)
+void initialize(struct vector_double *A, int32_t k, float64_t a)
 {
-	double *vec = new double[k];
+	float64_t *vec = new float64_t[k];
 	for (int32_t i=0;i<k;i++)
 		vec[i]=a;
 	A->vec = vec;
@@ -1135,8 +1136,8 @@ void GetLabeledData(struct data *D, const struct data *Data)
 {
 	/*FIXME
 	int32_t *J = new int[Data->l];
-	D->C   = new double[Data->l];
-	D->Y   = new double[Data->l];
+	D->C   = new float64_t[Data->l];
+	D->Y   = new float64_t[Data->l];
 	int32_t nz=0;
 	int32_t k=0;
 	int32_t rowptrs_=Data->l;
@@ -1151,7 +1152,7 @@ void GetLabeledData(struct data *D, const struct data *Data)
 			k++;
 		}
 	}  
-	D->val    = new double[nz];
+	D->val    = new float64_t[nz];
 	D->colind = new int32_t[nz]; 
 	D->rowptr = new int32_trowptrs_+1];
 	nz=0;

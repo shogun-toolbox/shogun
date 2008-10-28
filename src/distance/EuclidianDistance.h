@@ -118,7 +118,7 @@ class CEuclidianDistance: public CRealDistance
 
 	protected:
 		/** applied scaling factor */
-		double scale;
+		float64_t scale;
 		/** if application of sqrt on matrix computation is disabled */
 		bool disable_sqrt;
 };

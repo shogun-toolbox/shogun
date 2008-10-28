@@ -38,18 +38,19 @@ bool COligoKernel::init(CFeatures* l, CFeatures* r)
 	return init_normalizer();
 }
 
-bool COligoKernel::cmpOligos_(pair<int32_t, double> a, pair<int32_t, double> b)
+bool COligoKernel::cmpOligos_(
+	pair<int32_t, float64_t> a, pair<int32_t, float64_t> b)
 {
 	return (a.second < b.second);
 }
 
-void COligoKernel::encodeOligo(const string& sequence,
-		uint32_t k_mer_length,
-		const string& allowed_characters,
-		vector< pair<int32_t, double> >& values)
+void COligoKernel::encodeOligo(
+	const string& sequence, uint32_t k_mer_length,
+	const string& allowed_characters,
+	vector< pair<int32_t, float64_t> >& values)
 {
-	double oligo_value = 0.;
-	double factor      = 1.;
+	float64_t oligo_value = 0.;
+	float64_t factor      = 1.;
 	map<string::value_type, uint32_t> residue_values;
 	uint32_t counter = 0;
 	uint32_t number_of_residues = allowed_characters.size();
@@ -66,7 +67,7 @@ void COligoKernel::encodeOligo(const string& sequence,
 	if (sequence_ok && k_mer_length <= sequence_length)
 	{
 		values.resize(sequence_length - k_mer_length + 1,
-			pair<int32_t, double>());
+			pair<int32_t, float64_t>());
 		for (uint32_t i = 0; i < number_of_residues; ++i)
 		{	
 			residue_values.insert(make_pair(allowed_characters[i], counter));
@@ -101,14 +102,14 @@ void COligoKernel::encodeOligo(const string& sequence,
 	}	
 }
 
-void COligoKernel::getSequences(const vector<string>& sequences,
-		uint32_t k_mer_length,
-		const string& allowed_characters,
-		vector< vector< pair<int32_t, double> > >& encoded_sequences)
+void COligoKernel::getSequences(
+	const vector<string>& sequences, uint32_t k_mer_length,
+	const string& allowed_characters,
+	vector< vector< pair<int32_t, float64_t> > >& encoded_sequences)
 {
-	vector< pair<int32_t, double> > temp_vector;
+	vector< pair<int32_t, float64_t> > temp_vector;
 	encoded_sequences.resize(sequences.size(),
-		vector< pair<int32_t, double> >());
+		vector< pair<int32_t, float64_t> >());
 
 	for (uint32_t i = 0; i < sequences.size(); ++i)
 	{
@@ -118,7 +119,7 @@ void COligoKernel::getSequences(const vector<string>& sequences,
 }
 
 void COligoKernel::getExpFunctionCache(
-	double sigma, uint32_t sequence_length, vector<double>& cache)
+	float64_t sigma, uint32_t sequence_length, vector<float64_t>& cache)
 {
 	cache.resize(sequence_length, 0.);
 	cache[0] = 1;
@@ -128,12 +129,12 @@ void COligoKernel::getExpFunctionCache(
 	}
 }
 
-double COligoKernel::kernelOligoFast(const vector< pair<int32_t, double> >& x,
-		const vector< pair<int32_t, double> >& y,
-		const vector<double>& gauss_table,
-		int32_t max_distance)
+float64_t COligoKernel::kernelOligoFast(
+	const vector< pair<int32_t, float64_t> >& x,
+	const vector< pair<int32_t, float64_t> >& y,
+	const vector<float64_t>& gauss_table, int32_t max_distance)
 {
-	double kernel = 0;
+	float64_t kernel = 0;
 	int32_t  i1     = 0;
 	int32_t  i2     = 0;
 	int32_t  c1     = 0;
@@ -210,12 +211,12 @@ double COligoKernel::kernelOligoFast(const vector< pair<int32_t, double> >& x,
 }		
 
 
-double COligoKernel::kernelOligo(
-		const vector< pair<int32_t, double> >& x,
-		const vector< pair<int32_t, double> >& y,
-		double sigma_square)
+float64_t COligoKernel::kernelOligo(
+		const vector< pair<int32_t, float64_t> >& x,
+		const vector< pair<int32_t, float64_t> >& y,
+		float64_t sigma_square)
 {
-	double   kernel = 0;
+	float64_t   kernel = 0;
 	int32_t  i1     = 0;
 	int32_t  i2     = 0;
 	int32_t  c1     = 0;
@@ -263,8 +264,8 @@ float64_t COligoKernel::compute(int32_t idx_a, int32_t idx_b)
 	int32_t alen, blen;
 	char* avec=((CStringFeatures<char>*) lhs)->get_feature_vector(idx_a, alen);
 	char* bvec=((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen);
-	vector< pair<int32_t, double> > aenc;
-	vector< pair<int32_t, double> > benc;
+	vector< pair<int32_t, float64_t> > aenc;
+	vector< pair<int32_t, float64_t> > benc;
 	encodeOligo(string(avec, alen), k, "ACGT", aenc);
 	encodeOligo(string(bvec, alen), k, "ACGT", benc);
 	float64_t result=kernelOligo(aenc, benc, width);

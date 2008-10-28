@@ -30,7 +30,7 @@ CGPBTSVM::~CGPBTSVM()
 
 bool CGPBTSVM::train()
 {
-	double     *solution;                     /* store the solution found       */
+	float64_t     *solution;                     /* store the solution found       */
 	QPproblem  prob;                          /* object containing the solvers  */
 
 	ASSERT(kernel);
@@ -74,7 +74,7 @@ bool CGPBTSVM::train()
 
 	//  /*** compute the number of cache rows up to maxmw Mb. ***/
 	if (prob.preprocess_size == -1)
-		prob.preprocess_size = (int32_t) ( (double)prob.chunk_size * 1.5 );
+		prob.preprocess_size = (int32_t) ( (float64_t)prob.chunk_size * 1.5 );
 
 	if (prob.projection_projector == -1)
 	{
@@ -83,7 +83,7 @@ bool CGPBTSVM::train()
 	}
 
 	/*** compute the problem solution *******************************************/
-	solution = new double[prob.ell];
+	solution = new float64_t[prob.ell];
 	prob.gpdtsolve(solution);
 	/****************************************************************************/
 

@@ -472,14 +472,16 @@ class CHMM : public CDistribution
 		 * @param PSEUDO Pseudo Value
 		 */
 
-		CHMM(int32_t N, int32_t M, CModel* model, float64_t PSEUDO);
+		CHMM(
+			int32_t N, int32_t M, CModel* model, float64_t PSEUDO);
 		CHMM(
 			CStringFeatures<uint16_t>* obs, int32_t N, int32_t M,
 			float64_t PSEUDO);
-		CHMM(int32_t N, double* p, double* q, double* a);
 		CHMM(
-			int32_t N, double* p, double* q, int32_t num_trans,
-			double* a_trans);
+			int32_t N, float64_t* p, float64_t* q, float64_t* a);
+		CHMM(
+			int32_t N, float64_t* p, float64_t* q, int32_t num_trans,
+			float64_t* a_trans);
 
 		/** Constructor - Initialization from model file.
 		 * @param model_file Filehandle to a hmm model file (*.mod)

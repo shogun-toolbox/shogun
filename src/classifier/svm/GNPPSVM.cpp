@@ -36,7 +36,7 @@ bool CGNPPSVM::train()
 	int32_t num_data=labels->get_num_labels();
 	SG_INFO("%d trainlabels\n", num_data);
 
-	float64_t* vector_y = new double[num_data];
+	float64_t* vector_y = new float64_t[num_data];
 	for (int32_t i=0; i<num_data; i++)
 	{
 		if (get_labels()->get_label(i)==+1)

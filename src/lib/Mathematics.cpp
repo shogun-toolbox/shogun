@@ -377,7 +377,7 @@ uint32_t CMath::crc32(uint8_t *data, int32_t len)
     return ~result; 
 }
 
-double CMath::mutual_info(float64_t* p1, float64_t* p2, int32_t len)
+float64_t CMath::mutual_info(float64_t* p1, float64_t* p2, int32_t len)
 {
 	double e=0;
 
@@ -385,27 +385,27 @@ double CMath::mutual_info(float64_t* p1, float64_t* p2, int32_t len)
 		for (int32_t j=0; j<len; j++)
 			e+=exp(p2[j*len+i])*(p2[j*len+i]-p1[i]-p1[j]);
 
-	return e;
+	return (float64_t) e;
 }
 
-double CMath::relative_entropy(float64_t* p, float64_t* q, int32_t len)
+float64_t CMath::relative_entropy(float64_t* p, float64_t* q, int32_t len)
 {
 	double e=0;
 
 	for (int32_t i=0; i<len; i++)
 		e+=exp(p[i])*(p[i]-q[i]);
 
-	return e;
+	return (float64_t) e;
 }
 
-double CMath::entropy(float64_t* p, int32_t len)
+float64_t CMath::entropy(float64_t* p, int32_t len)
 {
 	double e=0;
 
 	for (int32_t i=0; i<len; i++)
 		e-=exp(p[i])*p[i];
 
-	return e;
+	return (float64_t) e;
 }
 
 

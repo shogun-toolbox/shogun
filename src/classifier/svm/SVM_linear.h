@@ -34,15 +34,15 @@ struct parameter
 
 	/* these are for training only */
 	/** stopping criteria */
-	double eps;
+	float64_t eps;
 	/** C */
-	double C;
+	float64_t C;
 	/** number of weights */
 	int32_t nr_weight;
 	/** weight label */
 	int32_t *weight_label;
 	/** weight */
-	double* weight;
+	float64_t* weight;
 };
 
 /** model */
@@ -55,11 +55,11 @@ struct model
 	/** number of features */
 	int32_t nr_feature;
 	/** w */
-	double *w;
+	float64_t *w;
 	/** label of each class (label[n]) */
 	int32_t *label;
 	/** bias */
-	double bias;
+	float64_t bias;
 };
 
 struct model* train(const struct problem *prob, const struct parameter *param);
@@ -69,11 +69,11 @@ void cross_validation(
 
 int32_t predict_values(
 	const struct model *model_, const struct feature_node *x,
-	double* dec_values);
+	float64_t* dec_values);
 int32_t predict(const struct model *model_, const struct feature_node *x);
 int32_t predict_probability(
 	const struct model *model_, const struct feature_node *x,
-	double* prob_estimates);
+	float64_t* prob_estimates);
 
 int32_t save_model(const char *model_file_name, const struct model *model_);
 struct model *load_model(const char *model_file_name);
@@ -101,7 +101,7 @@ public:
 	 * @param Cp Cp
 	 * @param Cn Cn
 	 */
-	l2loss_svm_fun(const problem *prob, double Cp, double Cn);
+	l2loss_svm_fun(const problem *prob, float64_t Cp, float64_t Cn);
 	~l2loss_svm_fun();
 	
 	/** fun
@@ -109,21 +109,21 @@ public:
 	 * @param w w
 	 * @return something floaty
 	 */
-	double fun(double *w);
+	float64_t fun(float64_t *w);
 	
 	/** grad
 	 *
 	 * @param w w
 	 * @param g g
 	 */
-	void grad(double *w, double *g);
+	void grad(float64_t *w, float64_t *g);
 
 	/** Hv
 	 *
 	 * @param s s
 	 * @param Hs Hs
 	 */
-	void Hv(double *s, double *Hs);
+	void Hv(float64_t *s, float64_t *Hs);
 
 	/** get number of variables
 	 *
@@ -132,13 +132,13 @@ public:
 	int32_t get_nr_variable(void);
 
 private:
-	void Xv(double *v, double *Xv);
-	void subXv(double *v, double *Xv);
-	void subXTv(double *v, double *XTv);
+	void Xv(float64_t *v, float64_t *Xv);
+	void subXv(float64_t *v, float64_t *Xv);
+	void subXTv(float64_t *v, float64_t *XTv);
 
-	double *C;
-	double *z;
-	double *D;
+	float64_t *C;
+	float64_t *z;
+	float64_t *D;
 	int32_t *I;
 	int32_t sizeI;
 	const problem *prob;
@@ -154,7 +154,7 @@ public:
 	 * @param Cp Cp
 	 * @param Cn Cn
 	 */
-	l2_lr_fun(const problem *prob, double Cp, double Cn);
+	l2_lr_fun(const problem *prob, float64_t Cp, float64_t Cn);
 	~l2_lr_fun();
 
 	/** fun
@@ -162,31 +162,31 @@ public:
 	 * @param w w
 	 * @return something floaty
 	 */
-	double fun(double *w);
+	float64_t fun(float64_t *w);
 	
 	/** grad
 	 *
 	 * @param w w
 	 * @param g g
 	 */
-	void grad(double *w, double *g);
+	void grad(float64_t *w, float64_t *g);
 
 	/** Hv
 	 *
 	 * @param s s
 	 * @param Hs Hs
 	 */
-	void Hv(double *s, double *Hs);
+	void Hv(float64_t *s, float64_t *Hs);
 
 	int32_t get_nr_variable(void);
 
 private:
-	void Xv(double *v, double *Xv);
-	void XTv(double *v, double *XTv);
+	void Xv(float64_t *v, float64_t *Xv);
+	void XTv(float64_t *v, float64_t *XTv);
 
-	double *C;
-	double *z;
-	double *D;
+	float64_t *C;
+	float64_t *z;
+	float64_t *D;
 	const problem *prob;
 };
 #endif //HAVE_LAPACK

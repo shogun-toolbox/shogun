@@ -60,7 +60,7 @@ class CAvgDiagKernelNormalizer : public CKernelNormalizer
 				k->lhs=old_lhs;
 				k->rhs=old_lhs;
 
-				double sum=0;
+				float64_t sum=0;
 				for (int32_t i=0; i<num; i++)
 					sum+=k->compute(i, i);
 

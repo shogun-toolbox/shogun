@@ -9,7 +9,7 @@
 #include "lib/Mathematics.h"
 #include "classifier/svm/Tron.h"
 
-CTron::CTron(const function *f, double e, int32_t it)
+CTron::CTron(const function *f, float64_t e, int32_t it)
 : CSGObject()
 {
 	this->fun_obj=const_cast<function *>(f);
@@ -21,23 +21,23 @@ CTron::~CTron()
 {
 }
 
-void CTron::tron(double *w)
+void CTron::tron(float64_t *w)
 {
 	// Parameters for updating the iterates.
-	double eta0 = 1e-4, eta1 = 0.25, eta2 = 0.75;
+	float64_t eta0 = 1e-4, eta1 = 0.25, eta2 = 0.75;
 
 	// Parameters for updating the trust region size delta.
-	double sigma1 = 0.25, sigma2 = 0.5, sigma3 = 4;
+	float64_t sigma1 = 0.25, sigma2 = 0.5, sigma3 = 4;
 
 	int n = (int) fun_obj->get_nr_variable(); /* for calling external lib */
 	int32_t i, cg_iter;
-	double delta, snorm, one=1.0;
-	double alpha, f, fnew, prered, actred, gs;
+	float64_t delta, snorm, one=1.0;
+	float64_t alpha, f, fnew, prered, actred, gs;
 	int search = 1, iter = 1, inc = 1; /* for calling external lib */
-	double *s = new double[n];
-	double *r = new double[n];
-	double *w_new = new double[n];
-	double *g = new double[n];
+	float64_t *s = new float64_t[n];
+	float64_t *r = new float64_t[n];
+	float64_t *w_new = new float64_t[n];
+	float64_t *g = new float64_t[n];
 
 	for (i=0; i<n; i++)
 		w[i] = 0;
@@ -45,8 +45,8 @@ void CTron::tron(double *w)
         f = fun_obj->fun(w);
 	fun_obj->grad(w, g);
 	delta = cblas_dnrm2(n, g, inc);
-	double gnorm1 = delta;
-	double gnorm = gnorm1;
+	float64_t gnorm1 = delta;
+	float64_t gnorm = gnorm1;
 
 	if (gnorm <= eps*gnorm1)
 		search = 0;
@@ -57,7 +57,7 @@ void CTron::tron(double *w)
 	{
 		cg_iter = trcg(delta, g, s, r);
 
-		memcpy(w_new, w, sizeof(double)*n);
+		memcpy(w_new, w, sizeof(float64_t)*n);
 		cblas_daxpy(n, one, s, inc, w_new, inc);
 
 		gs = cblas_ddot(n, g, inc, s, inc);
@@ -93,7 +93,7 @@ void CTron::tron(double *w)
 		if (actred > eta0*prered)
 		{
 			iter++;
-			memcpy(w, w_new, sizeof(double)*n);
+			memcpy(w, w_new, sizeof(float64_t)*n);
 			f = fnew;
 		        fun_obj->grad(w, g);
 
@@ -125,15 +125,15 @@ void CTron::tron(double *w)
 	delete[] s;
 }
 
-int32_t CTron::trcg(double delta, double *g, double *s, double *r)
+int32_t CTron::trcg(float64_t delta, float64_t *g, float64_t *s, float64_t *r)
 {
 	int32_t i, cg_iter;
 	int inc = 1; /* for calling external lib */
 	int n = (int) fun_obj->get_nr_variable(); /* for calling external lib */
-	double one = 1;
-	double *d = new double[n];
-	double *Hd = new double[n];
-	double rTr, rnewTrnew, alpha, beta, cgtol;
+	float64_t one = 1;
+	float64_t *d = new float64_t[n];
+	float64_t *Hd = new float64_t[n];
+	float64_t rTr, rnewTrnew, alpha, beta, cgtol;
 
 	for (i=0; i<n; i++)
 	{
@@ -160,11 +160,11 @@ int32_t CTron::trcg(double delta, double *g, double *s, double *r)
 			alpha = -alpha;
 			cblas_daxpy(n, alpha, d, inc, s, inc);
 
-			double std = cblas_ddot(n, s, inc, d, inc);
-			double sts = cblas_ddot(n, s, inc, s, inc);
-			double dtd = cblas_ddot(n, d, inc, d, inc);
-			double dsq = delta*delta;
-			double rad = sqrt(std*std + dtd*(dsq-sts));
+			float64_t std = cblas_ddot(n, s, inc, d, inc);
+			float64_t sts = cblas_ddot(n, s, inc, s, inc);
+			float64_t dtd = cblas_ddot(n, d, inc, d, inc);
+			float64_t dsq = delta*delta;
+			float64_t rad = sqrt(std*std + dtd*(dsq-sts));
 			if (std >= 0)
 				alpha = (dsq - sts)/(std + rad);
 			else
@@ -189,9 +189,9 @@ int32_t CTron::trcg(double delta, double *g, double *s, double *r)
 	return(cg_iter);
 }
 
-double CTron::norm_inf(int32_t n, double *x)
+float64_t CTron::norm_inf(int32_t n, float64_t *x)
 {
-	double dmax = CMath::abs(x[0]);
+	float64_t dmax = CMath::abs(x[0]);
 	for (int32_t i=1; i<n; i++)
 		if (CMath::abs(x[i]) >= dmax)
 			dmax = CMath::abs(x[i]);

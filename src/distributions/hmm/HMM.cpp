@@ -186,7 +186,7 @@ CHMM::CHMM(
 	set_observations(obs);
 }
 
-CHMM::CHMM(int32_t p_N, double* p, double* q, double* a)
+CHMM::CHMM(int32_t p_N, float64_t* p, float64_t* q, float64_t* a)
 : CDistribution(), iterations(150), epsilon(1e-4), conv_it(5)
 {
 	this->N=p_N;
@@ -235,7 +235,8 @@ CHMM::CHMM(int32_t p_N, double* p, double* q, double* a)
 }
 
 CHMM::CHMM(
-	int32_t p_N, double* p, double* q, int32_t num_trans, double* a_trans)
+	int32_t p_N, float64_t* p, float64_t* q, int32_t num_trans,
+	float64_t* a_trans)
 : CDistribution(), iterations(150), epsilon(1e-4), conv_it(5)
 {
 	model=NULL ;
@@ -2454,7 +2455,7 @@ void CHMM::output_model(bool verbose)
 
 	//generic info
 	SG_INFO( "log(Pr[O|model])=%e, #states: %i, #observationssymbols: %i, #observations: %ix%i\n", 
-			(double)((p_observations) ? model_probability() : -CMath::INFTY), 
+			(float64_t)((p_observations) ? model_probability() : -CMath::INFTY), 
 			N, M, ((p_observations) ? p_observations->get_max_vector_length() : 0), ((p_observations) ? p_observations->get_num_vectors() : 0));
 
 	if (verbose)
@@ -2539,7 +2540,7 @@ void CHMM::output_model_defined(bool verbose)
 
 	//generic info
 	SG_INFO("log(Pr[O|model])=%e, #states: %i, #observationssymbols: %i, #observations: %ix%i\n", 
-			(double)((p_observations) ? model_probability() : -CMath::INFTY), 
+			(float64_t)((p_observations) ? model_probability() : -CMath::INFTY), 
 			N, M, ((p_observations) ? p_observations->get_max_vector_length() : 0), ((p_observations) ? p_observations->get_num_vectors() : 0));
 
 	if (verbose)
@@ -3277,7 +3278,7 @@ bool CHMM::load_model(FILE* file)
 				case GET_a:
 					if (value=='=')
 					{
-						double f;
+						float64_t f;
 
 						transition_matrix_a=new float64_t[N*N];
 						open_bracket(file);
@@ -3289,7 +3290,7 @@ bool CHMM::load_model(FILE* file)
 							{
 
 								if (fscanf( file, "%le", &f ) != 1)
-									error(line, "double expected");
+									error(line, "float64_t expected");
 								else
 									set_a(i,j, f);
 
@@ -3311,7 +3312,7 @@ bool CHMM::load_model(FILE* file)
 				case GET_b:
 					if (value=='=')
 					{
-						double f;
+						float64_t f;
 
 						observation_matrix_b=new float64_t[N*M];	
 						open_bracket(file);
@@ -3323,7 +3324,7 @@ bool CHMM::load_model(FILE* file)
 							{
 
 								if (fscanf( file, "%le", &f ) != 1)
-									error(line, "double expected");
+									error(line, "float64_t expected");
 								else
 									set_b(i,j, f);
 
@@ -3345,14 +3346,14 @@ bool CHMM::load_model(FILE* file)
 				case GET_p:
 					if (value=='=')
 					{
-						double f;
+						float64_t f;
 
 						initial_state_distribution_p=new float64_t[N];
 						open_bracket(file);
 						for (i=0; i<this->N ; i++)
 						{
 							if (fscanf( file, "%le", &f ) != 1)
-								error(line, "double expected");
+								error(line, "float64_t expected");
 							else
 								set_p(i, f);
 
@@ -3368,14 +3369,14 @@ bool CHMM::load_model(FILE* file)
 				case GET_q:
 					if (value=='=')
 					{
-						double f;
+						float64_t f;
 
 						end_state_distribution_q=new float64_t[N];
 						open_bracket(file);
 						for (i=0; i<this->N ; i++)
 						{
 							if (fscanf( file, "%le", &f ) != 1)
-								error(line, "double expected");
+								error(line, "float64_t expected");
 							else
 								set_q(i, f);
 
@@ -5689,11 +5690,12 @@ bool CHMM::permutation_entropy(int32_t window_width, int32_t sequence_number)
 					hist[*ptr++]++;
 				}
 
-				double perm_entropy=0;
-
+				float64_t perm_entropy=0;
 				for (j=0; j<get_M(); j++)
 				{
-					double p=(((float64_t)hist[j])+PSEUDO)/(window_width+get_M()*PSEUDO);
+					float64_t p=
+						(((float64_t) hist[j])+PSEUDO)/
+						(window_width+get_M()*PSEUDO);
 					perm_entropy+=p*log(p);
 				}
 

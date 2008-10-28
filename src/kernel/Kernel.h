@@ -566,7 +566,7 @@ class CKernel : public CSGObject
 		 *
 		 * @param nw new combined kernel weight
 		 */
-		inline void set_combined_kernel_weight(double nw) { combined_kernel_weight=nw; }
+		inline void set_combined_kernel_weight(float64_t nw) { combined_kernel_weight=nw; }
 
 		/** get number of subkernels
 		 *

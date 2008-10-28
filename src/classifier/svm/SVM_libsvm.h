@@ -55,7 +55,7 @@ struct svm_problem
 	/** l */
 	int32_t l;
 	/** y */
-	double *y;
+	float64_t *y;
 	/** SVM node x */
 	struct svm_node **x;
 };
@@ -75,27 +75,27 @@ struct svm_parameter
 	/** for poly */
 	int32_t degree;
 	/** for poly/rbf/sigmoid */
-	double gamma;
+	float64_t gamma;
 	/** for poly/sigmoid */
-	double coef0;
+	float64_t coef0;
 
 	/* these are for training only */
 	/** in MB */
-	double cache_size;
+	float64_t cache_size;
 	/** stopping criteria */
-	double eps;
+	float64_t eps;
 	/** for C_SVC, EPSILON_SVR and NU_SVR */
-	double C;
+	float64_t C;
 	/** for C_SVC */
 	int32_t nr_weight;
 	/** for C_SVC */
 	int32_t *weight_label;
 	/** for C_SVC */
-	double* weight;
+	float64_t* weight;
 	/** for NU_SVC, ONE_CLASS, and NU_SVR */
-	double nu;
+	float64_t nu;
 	/** for EPSILON_SVR */
-	double p;
+	float64_t p;
 	/** use the shrinking heuristics */
 	int32_t shrinking;
 };
@@ -112,9 +112,9 @@ struct svm_model
 	/** SVs (SV[l]) */
 	svm_node **SV;
 	/** coefficients for SVs in decision functions (sv_coef[n-1][l]) */
-	double **sv_coef;
+	float64_t **sv_coef;
 	/** constants in decision functions (rho[n*(n-1)/2]) */
-	double *rho;
+	float64_t *rho;
 
 	// for classification only
 
@@ -130,15 +130,15 @@ struct svm_model
 	*/
 	int32_t free_sv;
 	/** objective */
-	double objective;
+	float64_t objective;
 };
 
 
 
-struct svm_model *svm_train(const struct svm_problem *prob,
-			    const struct svm_parameter *param);
+struct svm_model *svm_train(
+	const struct svm_problem *prob, const struct svm_parameter *param);
 
-double svm_predict(const struct svm_model *model, const struct svm_node *x);
+float64_t svm_predict(const struct svm_model *model, const struct svm_node *x);
 
 void svm_destroy_model(struct svm_model *model);
 

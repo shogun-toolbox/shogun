@@ -88,6 +88,7 @@ class COligoKernel : public CStringKernel<char>
 
 
 		virtual float64_t compute(int32_t x, int32_t y);
+
 	protected:
 		/**
 		 * @brief encodes the signals of the sequence
@@ -102,10 +103,10 @@ class COligoKernel : public CStringKernel<char>
 		 * Example: The value of k_mer CG for the allowed characters ACGT
 		 * would be 1 * n^1 + 2 * n^0 = 6.
 		 */
-		static void encodeOligo(const std::string& sequence,
-				uint32_t k_mer_length,
-				const std::string& allowed_characters,
-				std::vector< std::pair<int32_t, double> >&   values);
+		static void encodeOligo(
+			const std::string& sequence, uint32_t k_mer_length,
+			const std::string& allowed_characters,
+			std::vector< std::pair<int32_t, float64_t> >&   values);
 
 		/**
 		  @brief encodes all sequences with the encodeOligo function and stores
@@ -114,10 +115,10 @@ class COligoKernel : public CStringKernel<char>
 		  This function encodes the sequences of 'sequences' via the
 		  function encodeOligo.
 		  */
-		static void getSequences(const std::vector<std::string>& sequences,
-				uint32_t k_mer_length,
-				const std::string& allowed_characters,
-				std::vector< std::vector< std::pair<int32_t, double> > >& encoded_sequences);
+		static void getSequences(
+			const std::vector<std::string>& sequences,
+			uint32_t k_mer_length, const std::string& allowed_characters,
+			std::vector< std::vector< std::pair<int32_t, float64_t> > >& encoded_sequences);
 
 		/**
 		  @brief prepares the exp function cache of the oligo kernel
@@ -129,8 +130,9 @@ class COligoKernel : public CStringKernel<char>
 		  the corresponding values of the e-function. These values 
 		  can then be used in kernelOligoFast.
 		  */
-		static void getExpFunctionCache(double sigma,
-			uint32_t sequence_length, std::vector<double>&  cache);
+		static void getExpFunctionCache(
+			float64_t sigma, uint32_t sequence_length,
+			std::vector<float64_t>&  cache);
 
 		/**
 		  @brief returns the value of the oligo kernel for sequences 'x' and 'y'
@@ -147,10 +149,10 @@ class COligoKernel : public CStringKernel<char>
 		  added to the kernel value. This approximation is switched
 		  off by default (max_distance < 0).
 		  */
-		static double kernelOligoFast(
-			const std::vector< std::pair<int32_t, double> >& x,
-			const std::vector< std::pair<int32_t, double> >& y,
-			const std::vector<double>& exp_cache,
+		static float64_t kernelOligoFast(
+			const std::vector< std::pair<int32_t, float64_t> >& x,
+			const std::vector< std::pair<int32_t, float64_t> >& y,
+			const std::vector<float64_t>& exp_cache,
 			int32_t max_distance = -1);
 
 		/**
@@ -160,14 +162,14 @@ class COligoKernel : public CStringKernel<char>
 		  which was introduced by Meinicke et al. in 2004. 'x' and
 		  'y' have to be encoded by encodeOligo. 
 		  */
-		static double kernelOligo(
-			const std::vector< std::pair<int32_t, double> >& x,
-			const std::vector< std::pair<int32_t, double> >& y,
-			double sigma_square);
+		static float64_t kernelOligo(
+			const std::vector< std::pair<int32_t, float64_t> >& x,
+			const std::vector< std::pair<int32_t, float64_t> >& y,
+			float64_t sigma_square);
 
 	private: 
-		static bool cmpOligos_(std::pair<int32_t, double> a,
-			std::pair<int32_t, double> b );
+		static bool cmpOligos_(std::pair<int32_t, float64_t> a,
+			std::pair<int32_t, float64_t> b );
 
 	protected:
 		/** member variable k */

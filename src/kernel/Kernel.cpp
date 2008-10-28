@@ -111,7 +111,7 @@ void CKernel::get_kernel_matrix(float64_t** dst, int32_t* m, int32_t* n)
 			{
 				for (int32_t j=i; j<num_vec1; j++)
 				{
-					double v=kernel(i,j);
+					float64_t v=kernel(i,j);
 
 					result[i+j*num_vec1]=v;
 					result[j+i*num_vec1]=v;
@@ -181,7 +181,7 @@ float32_t* CKernel::get_kernel_matrix_shortreal(
 			{
 				for (int32_t j=i; j<num_vec1; j++)
 				{
-					double v=kernel(i,j);
+					float64_t v=kernel(i,j);
 
 					result[i+j*num_vec1]=v;
 					result[j+i*num_vec1]=v;
@@ -251,7 +251,7 @@ float64_t* CKernel::get_kernel_matrix_real(
 			{
 				for (int32_t j=i; j<num_vec1; j++)
 				{
-					double v=kernel(i,j);
+					float64_t v=kernel(i,j);
 
 					result[i+j*num_vec1]=v;
 					result[j+i*num_vec1]=v;
@@ -810,7 +810,7 @@ bool CKernel::save(char* fname)
 			else if (!(i % (num_total/200+1)))
 				SG_PRINT(".");
 
-			double k=kernel(l,r);
+			float64_t k=kernel(l,r);
 			f.save_real_data(&k, 1);
 
 			i++;

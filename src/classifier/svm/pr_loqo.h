@@ -74,10 +74,10 @@
  */
 
 int32_t pr_loqo(
-	int32_t n, int32_t m, double c[], double h_x[], double a[], double b[],
-	double l[], double u[], double primal[], double dual[],
-	int32_t verb, double sigfig_max, int32_t counter_max,
-	double margin, double bound, int32_t restart);
+	int32_t n, int32_t m, float64_t c[], float64_t h_x[], float64_t a[],
+	float64_t b[], float64_t l[], float64_t u[], float64_t primal[],
+	float64_t dual[], int32_t verb, float64_t sigfig_max, int32_t counter_max,
+	float64_t margin, float64_t bound, int32_t restart);
 
 /* 
  * compile with

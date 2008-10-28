@@ -17,7 +17,7 @@ public:
 	 * @param w w
 	 * @return something floaty
 	 */
-	virtual double fun(double *w) = 0 ;
+	virtual float64_t fun(float64_t *w) = 0 ;
 
 	/** grad
 	 *
@@ -26,7 +26,7 @@ public:
 	 * @param w w
 	 * @param g g
 	 */
-	virtual void grad(double *w, double *g) = 0 ;
+	virtual void grad(float64_t *w, float64_t *g) = 0 ;
 
 	/** Hv
 	 *
@@ -35,7 +35,7 @@ public:
 	 * @param s s
 	 * @param Hs hs
 	 */
-	virtual void Hv(double *s, double *Hs) = 0 ;
+	virtual void Hv(float64_t *s, float64_t *Hs) = 0 ;
 
 	/** get nr variable
 	 *
@@ -58,20 +58,21 @@ public:
 	 * @param eps eps
 	 * @param max_iter max iter
 	 */
-	CTron(const function *fun_obj, double eps = 0.1, int32_t max_iter = 1000);
+	CTron(
+		const function *fun_obj, float64_t eps = 0.1, int32_t max_iter = 1000);
 	~CTron();
 
 	/** tron
 	 *
 	 * @param w w
 	 */
-	void tron(double *w);
+	void tron(float64_t *w);
 
 private:
-	int32_t trcg(double delta, double *g, double *s, double *r);
-	double norm_inf(int32_t n, double *x);
+	int32_t trcg(float64_t delta, float64_t *g, float64_t *s, float64_t *r);
+	float64_t norm_inf(int32_t n, float64_t *x);
 
-	double eps;
+	float64_t eps;
 	int32_t max_iter;
 	function *fun_obj;
 };

@@ -107,7 +107,7 @@ int32_t CMindyGramFeatures::get_vector_length(int32_t i)
  * Trims the features to a maximum value
  * @param i Maximum value
  */
-void CMindyGramFeatures::trim_max(double max)
+void CMindyGramFeatures::trim_max(float64_t max)
 {
 	for (int32_t i = 0; i < num_vectors; i++)
 		gram_trim_max(vectors[i], max);

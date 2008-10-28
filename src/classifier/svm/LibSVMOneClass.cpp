@@ -47,7 +47,7 @@ bool CLibSVMOneClass::train()
 	}
 
 	int32_t weights_label[2]={-1,+1};
-	double weights[2]={1.0,get_C2()/get_C1()};
+	float64_t weights[2]={1.0,get_C2()/get_C1()};
 
 	param.svm_type=ONE_CLASS; // C SVM
 	param.kernel_type = LINEAR;

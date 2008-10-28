@@ -32,7 +32,7 @@ class CSparseGaussianKernel: public CSparseKernel<float64_t>
 		 * @param size cache size
 		 * @param width width
 		 */
-		CSparseGaussianKernel(int32_t size, double width);
+		CSparseGaussianKernel(int32_t size, float64_t width);
 
 		/** constructor
 		 *
@@ -42,7 +42,7 @@ class CSparseGaussianKernel: public CSparseKernel<float64_t>
 		 */
 		CSparseGaussianKernel(
 			CSparseFeatures<float64_t>* l, CSparseFeatures<float64_t>* r,
-			double width);
+			float64_t width);
 
 		virtual ~CSparseGaussianKernel();
 
@@ -102,7 +102,7 @@ class CSparseGaussianKernel: public CSparseKernel<float64_t>
 
 	protected:
 		/** width */
-		double width;
+		float64_t width;
 		/** squared left-hand side */
 		float64_t* sq_lhs;
 		/** squared right-hand side */

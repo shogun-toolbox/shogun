@@ -27,7 +27,7 @@
 typedef struct {
 		char *name;			/* Name of parameter */
 		int32_t idx;		/* Index in param array (see sm.h) */
-		double val;			/* Default value */
+		float64_t val;			/* Default value */
 		char *descr;		/* Description */
 } param_spec_t;
 

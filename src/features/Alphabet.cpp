@@ -112,7 +112,7 @@ bool CAlphabet::set_alphabet(EAlphabet alpha)
 			break;
 	}
 
-	num_bits=(int32_t) ceil(log((double) num_symbols)/log((double) 2));
+	num_bits=(int32_t) ceil(log((float64_t) num_symbols)/log((float64_t) 2));
 	init_map_table();
     clear_histogram();
 
@@ -473,7 +473,7 @@ int32_t CAlphabet::get_num_bits_in_histogram()
 {
 	int32_t num_sym=get_num_symbols_in_histogram();
 	if (num_sym>0)
-		return (int32_t) ceil(log((double) num_sym)/log((double) 2));
+		return (int32_t) ceil(log((float64_t) num_sym)/log((float64_t) 2));
 	else
 		return 0;
 }

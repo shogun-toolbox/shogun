@@ -62,8 +62,10 @@ float64_t CPolyKernel::compute(int32_t idx_a, int32_t idx_b)
   bool afree=false;
   bool bfree=false;
 
-  double* avec=((CRealFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
-  double* bvec=((CRealFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
+  float64_t* avec=
+	((CRealFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
+  float64_t* bvec=
+	((CRealFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
   ASSERT(alen==blen);
 
   float64_t result=CMath::dot(avec, bvec, alen);

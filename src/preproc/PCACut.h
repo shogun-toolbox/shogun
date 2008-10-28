@@ -41,7 +41,7 @@ class CPCACut : public CSimplePreProc<float64_t>
 		 * @param do_whitening do whitening
 		 * @param thresh threshold
 		 */
-		CPCACut(int32_t do_whitening=0, double thresh=1e-6);
+		CPCACut(int32_t do_whitening=0, float64_t thresh=1e-6);
 		virtual ~CPCACut();
 
 		/// initialize preprocessor from features
@@ -70,7 +70,7 @@ class CPCACut : public CSimplePreProc<float64_t>
 		/** num old dim */
 		int32_t num_old_dim;
 		/** mean */
-		double *mean ;
+		float64_t *mean ;
 
 		/// true when already initialized
 		bool initialized;
@@ -78,7 +78,7 @@ class CPCACut : public CSimplePreProc<float64_t>
 		/** do whitening */
 		int32_t do_whitening;
 		/** thresh */
-		double thresh;
+		float64_t thresh;
 };
 #endif
 #endif

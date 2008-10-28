@@ -74,7 +74,7 @@ template <class ST> class CSimpleFeatures: public CFeatures
 			{
 				free_feature_matrix();
 				feature_matrix=new ST(num_vectors*num_features);
-				memcpy(feature_matrix, orig.feature_matrix, sizeof(double)*num_vectors*num_features);
+				memcpy(feature_matrix, orig.feature_matrix, sizeof(float64_t)*num_vectors*num_features);
 			}
 		}
 

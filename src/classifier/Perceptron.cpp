@@ -65,7 +65,7 @@ bool CPerceptron::train()
 				converged=false;
 				int32_t vlen;
 				bool vfree;
-				double* vec=features->get_feature_vector(i, vlen, vfree);
+				float64_t* vec=features->get_feature_vector(i, vlen, vfree);
 
 				bias+=learn_rate*train_labels[i];
 				for (int32_t j=0; j<num_feat; j++)

@@ -27,7 +27,8 @@ CSVMOcas::CSVMOcas(E_SVM_TYPE type)
 	old_w=NULL;
 }
 
-CSVMOcas::CSVMOcas(float64_t C, CSparseFeatures<float64_t>* traindat, CLabels* trainlab)
+CSVMOcas::CSVMOcas(
+	float64_t C, CSparseFeatures<float64_t>* traindat, CLabels* trainlab)
 : CSparseLinearClassifier(), use_bias(false), bufsize(3000), C1(C), C2(C),
 	epsilon(1e-3)
 {
@@ -73,8 +74,8 @@ bool CSVMOcas::train()
 	cp_index=new uint32_t*[bufsize];
 	cp_nz_dims=new uint32_t[bufsize];
 
-	double TolAbs=0;
-	double QPBound=0;
+	float64_t TolAbs=0;
+	float64_t QPBound=0;
 	int32_t Method=0;
 	if (method == SVM_OCAS)
 		Method = 1;
@@ -131,13 +132,13 @@ bool CSVMOcas::train()
   sq_norm_W = W'*W;
 
   ---------------------------------------------------------------------------------*/
-double CSVMOcas::update_W( double t, void* ptr )
+float64_t CSVMOcas::update_W( float64_t t, void* ptr )
 {
-  double sq_norm_W = 0;         
+  float64_t sq_norm_W = 0;         
   CSVMOcas* o = (CSVMOcas*) ptr;
   uint32_t nDim = (uint32_t) o->w_dim;
-  double* W=o->w;
-  double* oldW=o->old_w;
+  float64_t* W=o->w;
+  float64_t* oldW=o->old_w;
 
   for(uint32_t j=0; j <nDim; j++)
   {
@@ -156,11 +157,9 @@ double CSVMOcas::update_W( double t, void* ptr )
     sparse_A(:,nSel+1) = new_a;
 
   ---------------------------------------------------------------------------------*/
-void CSVMOcas::add_new_cut( double *new_col_H, 
-                  uint32_t *new_cut, 
-                  uint32_t cut_length, 
-                  uint32_t nSel,
-				  void* ptr)
+void CSVMOcas::add_new_cut(
+	float64_t *new_col_H, uint32_t *new_cut, uint32_t cut_length,
+	uint32_t nSel, void* ptr)
 {
 	CSVMOcas* o = (CSVMOcas*) ptr;
 	CSparseFeatures<float64_t>* f = o->get_features();
@@ -171,12 +170,12 @@ void CSVMOcas::add_new_cut( double *new_col_H,
 	uint32_t** c_idx = o->cp_index;
 	uint32_t* c_nzd = o->cp_nz_dims;
 
-	double sq_norm_a;
+	float64_t sq_norm_a;
 	uint32_t i, j, nz_dims;
 
 	/* temporary vector */
-	double* new_a = o->tmp_a_buf;
-	memset(new_a, 0, sizeof(double)*nDim);
+	float64_t* new_a = o->tmp_a_buf;
+	memset(new_a, 0, sizeof(float64_t)*nDim);
 
 	for(i=0; i < cut_length; i++) 
 		f->add_to_dense_vec(y[new_cut[i]], new_cut[i], new_a, nDim);
@@ -196,7 +195,7 @@ void CSVMOcas::add_new_cut( double *new_col_H,
 	if(nz_dims > 0)
 	{
 		c_idx[nSel]=new uint32_t[nz_dims];
-		c_val[nSel]=new double[nz_dims];
+		c_val[nSel]=new float64_t[nz_dims];
 
 		uint32_t idx=0;
 		for(j=0; j < nDim; j++ )
@@ -213,7 +212,7 @@ void CSVMOcas::add_new_cut( double *new_col_H,
 
 	for(i=0; i < nSel; i++)
 	{
-		double tmp = 0;
+		float64_t tmp = 0;
 		for(j=0; j < c_nzd[i]; j++)
 			tmp += new_a[c_idx[i][j]]*c_val[i][j];
 
@@ -224,7 +223,7 @@ void CSVMOcas::add_new_cut( double *new_col_H,
 	//CMath::display_vector((float64_t*) c_val[nSel], nz_dims, "c_val");
 }
 
-void CSVMOcas::sort( double* vals, uint32_t* idx, uint32_t size)
+void CSVMOcas::sort(float64_t* vals, uint32_t* idx, uint32_t size)
 {
 	CMath::qsort_index(vals, idx, size);
 }
@@ -234,7 +233,7 @@ void CSVMOcas::sort( double* vals, uint32_t* idx, uint32_t size)
 
   output = data_X'*W;
   ----------------------------------------------------------------------*/
-void CSVMOcas::compute_output( double *output, void* ptr )
+void CSVMOcas::compute_output(float64_t *output, void* ptr)
 {
 	CSVMOcas* o = (CSVMOcas*) ptr;
 	CSparseFeatures<float64_t>* f=o->get_features();
@@ -255,14 +254,16 @@ void CSVMOcas::compute_output( double *output, void* ptr )
   dp_WoldW = W'*oldW';
 
   ----------------------------------------------------------------------*/
-void CSVMOcas::compute_W( double *sq_norm_W, double *dp_WoldW, double *alpha, uint32_t nSel, void* ptr )
+void CSVMOcas::compute_W(
+	float64_t *sq_norm_W, float64_t *dp_WoldW, float64_t *alpha, uint32_t nSel,
+	void* ptr )
 {
 	CSVMOcas* o = (CSVMOcas*) ptr;
 	uint32_t nDim= (uint32_t) o->w_dim;
 	CMath::swap(o->w, o->old_w);
-	double* W=o->w;
-	double* oldW=o->old_w;
-	memset(W, 0, sizeof(double)*nDim);
+	float64_t* W=o->w;
+	float64_t* oldW=o->old_w;
+	memset(W, 0, sizeof(float64_t)*nDim);
 
 	float64_t** c_val = o->cp_value;
 	uint32_t** c_idx = o->cp_index;

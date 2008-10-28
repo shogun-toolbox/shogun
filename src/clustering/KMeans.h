@@ -190,15 +190,15 @@ class CKMeans : public CDistanceMachine
 		 * @param m m
 		 */
 		void sqdist(
-			double * x, CRealFeatures* y, double *z, int32_t n1, int32_t offs,
-			int32_t n2, int32_t m);
+			float64_t* x, CRealFeatures* y, float64_t *z, int32_t n1,
+			int32_t offs, int32_t n2, int32_t m);
 
 		/** clustknb
 		 *
 		 * @param use_old_mus if old mus shall be used
 		 * @param mus_start mus start
 		 */
-		void clustknb(bool use_old_mus, double *mus_start);
+		void clustknb(bool use_old_mus, float64_t *mus_start);
 
 	protected:
 		/// maximum number of iterations

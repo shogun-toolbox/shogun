@@ -89,7 +89,7 @@ bool CSVM::load(FILE* modelfl)
 	bool result=true;
 	char char_buffer[1024];
 	int32_t int_buffer;
-	double double_buffer;
+	float64_t double_buffer;
 	int32_t line_number=1;
 
 	if (fscanf(modelfl,"%4s\n", char_buffer)==EOF)

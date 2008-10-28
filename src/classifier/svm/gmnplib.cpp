@@ -138,7 +138,7 @@ CGMNPLib::~CGMNPLib()
 ------------------------------------------------------------ */
 float64_t* CGMNPLib::get_kernel_col( int32_t a )
 {
-  double *col_ptr;
+  float64_t *col_ptr;
   int32_t i;
   int32_t inx;
 
@@ -190,16 +190,16 @@ void CGMNPLib::get_indices2( int32_t *index, int32_t *c, int32_t i )
 float64_t* CGMNPLib::get_col( int32_t a, int32_t b )
 {
   int32_t i;
-  double *col_ptr;
-  double *ker_ptr;
-  double value;
+  float64_t *col_ptr;
+  float64_t *ker_ptr;
+  float64_t value;
   int32_t i1,c1,i2,c2;
 
   col_ptr = virt_columns[first_virt_inx++];
   if( first_virt_inx >= 3 ) first_virt_inx = 0;
 
   get_indices2( &i1, &c1, a );
-  ker_ptr = (double*) get_kernel_col( i1 );
+  ker_ptr = (float64_t*) get_kernel_col( i1 );
 
   for( i=0; i < m_num_virt_data; i++ ) {
     get_indices2( &i2, &c2, i );
@@ -235,29 +235,29 @@ float64_t* CGMNPLib::get_col( int32_t a, int32_t b )
                   tmax, tolabs, tolrel, th, &alpha, &t, &History );
 -------------------------------------------------------------- */
 
-int8_t CGMNPLib::gmnp_imdm(double *vector_c,
+int8_t CGMNPLib::gmnp_imdm(float64_t *vector_c,
             int32_t dim, 
             int32_t tmax,
-            double tolabs,
-            double tolrel,
-            double th,
-            double *alpha,
+            float64_t tolabs,
+            float64_t tolrel,
+            float64_t th,
+            float64_t *alpha,
             int32_t  *ptr_t,
-            double **ptr_History,
+            float64_t **ptr_History,
             int32_t verb)
 {
-  double LB;
-  double UB;
-  double aHa, ac;
-  double tmp, tmp1;
-  double Huu, Huv, Hvv;
-  double min_beta, beta;
-  double max_improv, improv;
-  double lambda;
-  double *History;
-  double *Ha;
-  double *tmp_ptr;
-  double *col_u, *col_v;
+  float64_t LB;
+  float64_t UB;
+  float64_t aHa, ac;
+  float64_t tmp, tmp1;
+  float64_t Huu, Huv, Hvv;
+  float64_t min_beta, beta;
+  float64_t max_improv, improv;
+  float64_t lambda;
+  float64_t *History;
+  float64_t *Ha;
+  float64_t *tmp_ptr;
+  float64_t *col_u, *col_v;
   int32_t u=0;
   int32_t v=0;
   int32_t new_u=0;
@@ -270,11 +270,11 @@ int8_t CGMNPLib::gmnp_imdm(double *vector_c,
   /* Initialization                                               */
   /* ------------------------------------------------------------ */
 
-  Ha = new double[dim];
+  Ha = new float64_t[dim];
   if( Ha == NULL ) SG_ERROR("Not enough memory.");
 
   History_size = (tmax < HISTORY_BUF ) ? tmax+1 : HISTORY_BUF;
-  History = new double[History_size*2];
+  History = new float64_t[History_size*2];
   if( History == NULL ) SG_ERROR("Not enough memory.");
 
   /* inx = argmin(0.5*diag_H + vector_c ); */
@@ -286,7 +286,7 @@ int8_t CGMNPLib::gmnp_imdm(double *vector_c,
     }
   }
 
-  col_v = (double*)get_col(v,-1);
+  col_v = (float64_t*)get_col(v,-1);
 
   for( min_beta = PLUS_INF, i = 0; i < dim; i++ ) 
   {
@@ -326,12 +326,12 @@ int8_t CGMNPLib::gmnp_imdm(double *vector_c,
   /* Main optimization loop                                       */
   /* ------------------------------------------------------------ */
 
-  col_u = (double*)get_col(u,-1);
+  col_u = (float64_t*)get_col(u,-1);
   while( exitflag == -1 ) 
   {
     t++;     
 
-    col_v = (double*)get_col(v,u);
+    col_v = (float64_t*)get_col(v,u);
 
     /* Adaptation rule and update */
     Huu = diag_H[u];
@@ -368,7 +368,7 @@ int8_t CGMNPLib::gmnp_imdm(double *vector_c,
 
     LB = min_beta - 0.5*aHa; 
     u = new_u;    
-    col_u = (double*)get_col(u,-1);
+    col_u = (float64_t*)get_col(u,-1);
 
     /* search for optimal v while u is fixed */
     for( max_improv =  MINUS_INF, i = 0; i < dim; i++ ) {
@@ -409,7 +409,7 @@ int8_t CGMNPLib::gmnp_imdm(double *vector_c,
       History[INDEX(1,t,2)] = UB;
     }
     else {
-      tmp_ptr = new double[(History_size+HISTORY_BUF)*2];
+      tmp_ptr = new float64_t[(History_size+HISTORY_BUF)*2];
       if( tmp_ptr == NULL ) SG_ERROR("Not enough memory.");
       for( i = 0; i < History_size; i++ ) {
         tmp_ptr[INDEX(0,i,2)] = History[INDEX(0,i,2)];
@@ -447,9 +447,9 @@ int8_t CGMNPLib::gmnp_imdm(double *vector_c,
   Retures (a,b)-th element of the virtual kernel matrix 
   of size [num_virt_data x num_virt_data]. 
 ------------------------------------------------------------ */
-double CGMNPLib::kernel_fce( int32_t a, int32_t b )
+float64_t CGMNPLib::kernel_fce( int32_t a, int32_t b )
 {
-  double value;
+  float64_t value;
   int32_t i1,c1,i2,c2;
 
   get_indices2( &i1, &c1, a );

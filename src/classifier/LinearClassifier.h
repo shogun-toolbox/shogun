@@ -31,7 +31,7 @@ class CLinearClassifier : public CClassifier
 		{
 			int32_t vlen;
 			bool vfree;
-			double* vec=features->get_feature_vector(vec_idx, vlen, vfree);
+			float64_t* vec=features->get_feature_vector(vec_idx, vlen, vfree);
 			float64_t result=CMath::dot(w,vec,vlen);
 			features->free_feature_vector(vec, vec_idx, vfree);
 

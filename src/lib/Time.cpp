@@ -43,9 +43,9 @@ clock_t CTime::cur_runtime_diff(bool verbose)
 	return diff;
 }
 
-double CTime::cur_runtime_diff_sec(bool verbose)
+float64_t CTime::cur_runtime_diff_sec(bool verbose)
 {
-	double diff_s = ((double)(clock() - start_runtime)) / CLOCKS_PER_SEC;
+	float64_t diff_s = ((float64_t)(clock() - start_runtime)) / CLOCKS_PER_SEC;
 	if (verbose)
 		SG_INFO( "%2.1f seconds\n", diff_s);
 
@@ -53,7 +53,7 @@ double CTime::cur_runtime_diff_sec(bool verbose)
 }
 
 
-double CTime::start(bool verbose)
+float64_t CTime::start(bool verbose)
 {
 	start_time=get_curtime();
 
@@ -62,25 +62,25 @@ double CTime::start(bool verbose)
 	return start_time;
 }
 
-double CTime::cur_time_diff(bool verbose)
+float64_t CTime::cur_time_diff(bool verbose)
 {
-	double diff_s = get_curtime()-start_time;
+	float64_t diff_s = get_curtime()-start_time;
 	if (verbose)
 		SG_INFO( "%2.1f seconds\n", diff_s);
 
 	return diff_s;
 }
 
-double CTime::time_diff_sec(bool verbose)
+float64_t CTime::time_diff_sec(bool verbose)
 {
-	double diff_s = stop_time - start_time;
+	float64_t diff_s = stop_time - start_time;
 	if (verbose)
 		SG_INFO( "%2.1f seconds\n", diff_s);
 
 	return diff_s;
 }
 
-double CTime::stop(bool verbose)
+float64_t CTime::stop(bool verbose)
 {
 	stop_time=get_curtime();
 

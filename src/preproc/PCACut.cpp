@@ -25,7 +25,7 @@
 #include "features/RealFeatures.h"
 #include "lib/io.h"
 
-CPCACut::CPCACut(int32_t do_whitening_, double thresh_)
+CPCACut::CPCACut(int32_t do_whitening_, float64_t thresh_)
 : CSimplePreProc<float64_t>("PCACut", "PCAC"), T(NULL), num_dim(0), mean(NULL),
 	initialized(false), do_whitening(do_whitening_), thresh(thresh_)
 {
@@ -50,7 +50,7 @@ bool CPCACut::init(CFeatures* f)
 		int32_t num_features=((CRealFeatures*)f)->get_num_features() ;
 		SG_INFO("num_examples: %ld num_features: %ld \n", num_vectors, num_features);
 		delete[] mean ;
-		mean=new double[num_features+1] ;
+		mean=new float64_t[num_features+1] ;
 
 		int32_t i,j;
 
@@ -78,7 +78,7 @@ bool CPCACut::init(CFeatures* f)
 
 		SG_DONE();
 		SG_DEBUG("Computing covariance matrix... of size %.2f M\n", num_features*num_features/1024.0/1024.0);
-		double *cov=new double[num_features*num_features];
+		float64_t *cov=new float64_t[num_features*num_features];
 
 		for (j=0; j<num_features*num_features; j++)
 			cov[j]=0.0 ;
@@ -121,7 +121,7 @@ bool CPCACut::init(CFeatures* f)
 		int32_t info;
 		int32_t ord= num_features;
 		int32_t lda= num_features;
-		double* eigenvalues=new double[num_features] ;
+		float64_t* eigenvalues=new float64_t[num_features] ;
 
 		for (i=0; i<num_features; i++)
 			eigenvalues[i]=0;
@@ -189,7 +189,7 @@ float64_t* CPCACut::apply_to_feature_matrix(CFeatures* f)
 	{
 		SG_INFO("Preprocessing feature matrix\n");
 		float64_t* res= new float64_t[num_dim];
-		double* sub_mean= new double[num_features];
+		float64_t* sub_mean= new float64_t[num_features];
 
 		for (int32_t vec=0; vec<num_vectors; vec++)
 		{
@@ -225,13 +225,7 @@ float64_t* CPCACut::apply_to_feature_vector(float64_t* f, int32_t &len)
 	for (int32_t i=0; i<len; i++)
 		sub_mean[i]=f[i]-mean[i];
 
-	cblas_dgemv(CblasColMajor, CblasNoTrans, num_dim, len, 1.0 , T, num_dim, sub_mean, 1, 0, ret, 1) ;
-	//void cblas_dgemv(const enum CBLAS_ORDER order,
-	//                 const enum CBLAS_TRANSPOSE TransA, const int M, const int N,
-	//                 const double alpha, const double *A, const int lda,
-	//                 const double *X, const int incX, const double beta,
-	//                 double *Y, const int incY);
-	//
+	cblas_dgemv(CblasColMajor, CblasNoTrans, num_dim, len, 1.0 , T, num_dim, sub_mean, 1, 0, ret, 1);
 
 	delete[] sub_mean ;
 	len=num_dim ;
@@ -246,11 +240,11 @@ bool CPCACut::load_init_data(FILE* src)
 	ASSERT(fread(&num_old_dim, sizeof(int), 1, src)==1);
 	delete[] mean;
 	delete[] T;
-	mean=new double[num_dim];
-	T=new double[num_dim*num_old_dim];
+	mean=new float64_t[num_dim];
+	T=new float64_t[num_dim*num_old_dim];
 	ASSERT (mean!=NULL && T!=NULL);
-	ASSERT(fread(mean, sizeof(double), num_old_dim, src)==(uint32_t) num_old_dim);
-	ASSERT(fread(T, sizeof(double), num_dim*num_old_dim, src)==(uint32_t) num_old_dim*num_dim);
+	ASSERT(fread(mean, sizeof(float64_t), num_old_dim, src)==(uint32_t) num_old_dim);
+	ASSERT(fread(T, sizeof(float64_t), num_dim*num_old_dim, src)==(uint32_t) num_old_dim*num_dim);
 	return true;
 }
 
@@ -259,8 +253,8 @@ bool CPCACut::save_init_data(FILE* dst)
 {
 	ASSERT(fwrite(&num_dim, sizeof(int), 1, dst)==1);
 	ASSERT(fwrite(&num_old_dim, sizeof(int), 1, dst)==1);
-	ASSERT(fwrite(mean, sizeof(double), num_old_dim, dst)==(uint32_t) num_old_dim);
-	ASSERT(fwrite(T, sizeof(double), num_dim*num_old_dim, dst)==(uint32_t) num_old_dim*num_dim);
+	ASSERT(fwrite(mean, sizeof(float64_t), num_old_dim, dst)==(uint32_t) num_old_dim);
+	ASSERT(fwrite(T, sizeof(float64_t), num_dim*num_old_dim, dst)==(uint32_t) num_old_dim*num_dim);
 	return true;
 }
 #endif // HAVE_LAPACK

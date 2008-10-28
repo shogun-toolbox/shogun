@@ -72,35 +72,35 @@ CGNPPLib::~CGNPPLib()
  Usage: exitflag = gnpp_mdm( diag_H, vector_c, vector_y,
        dim, tmax, tolabs, tolrel, th, &alpha, &t, &aHa11, &aHa22, &History );
 -------------------------------------------------------------- */
-int8_t CGNPPLib::gnpp_mdm(double *diag_H,
-                       double *vector_c,
-                       double *vector_y,
+int8_t CGNPPLib::gnpp_mdm(float64_t *diag_H,
+                       float64_t *vector_c,
+                       float64_t *vector_y,
                        int32_t dim,
                        int32_t tmax,
-                       double tolabs,
-                       double tolrel,
-                       double th,
-                       double *alpha,
+                       float64_t tolabs,
+                       float64_t tolrel,
+                       float64_t th,
+                       float64_t *alpha,
                        int32_t  *ptr_t,
-                       double *ptr_aHa11,
-                       double *ptr_aHa22,
-                       double **ptr_History,
+                       float64_t *ptr_aHa11,
+                       float64_t *ptr_aHa22,
+                       float64_t **ptr_History,
                        int32_t verb)
 {
-  double LB;
-  double UB;
-  double aHa11, aHa12, aHa22, ac1, ac2;
-  double tmp;
-  double Huu, Huv, Hvv;
-  double min_beta1, max_beta1, min_beta2, max_beta2, beta;
-  double lambda;
-  double delta1, delta2;
-  double *History;
-  double *Ha1;
-  double *Ha2;
-  double *tmp_ptr;
-  double *col_u, *col_v;
-  double *col_v1, *col_v2;
+  float64_t LB;
+  float64_t UB;
+  float64_t aHa11, aHa12, aHa22, ac1, ac2;
+  float64_t tmp;
+  float64_t Huu, Huv, Hvv;
+  float64_t min_beta1, max_beta1, min_beta2, max_beta2, beta;
+  float64_t lambda;
+  float64_t delta1, delta2;
+  float64_t *History;
+  float64_t *Ha1;
+  float64_t *Ha2;
+  float64_t *tmp_ptr;
+  float64_t *col_u, *col_v;
+  float64_t *col_v1, *col_v2;
   int64_t u1=0, u2=0;
   int64_t v1, v2;
   int64_t i;
@@ -129,8 +129,8 @@ int8_t CGNPPLib::gnpp_mdm(double *diag_H,
     i++;
   }
 
-  col_v1 = (double*)get_col(v1,-1);
-  col_v2 = (double*)get_col(v2,v1);
+  col_v1 = (float64_t*)get_col(v1,-1);
+  col_v2 = (float64_t*)get_col(v2,v1);
   
   aHa12 = col_v1[v2];
   aHa11 = diag_H[v1];
@@ -192,8 +192,8 @@ int8_t CGNPPLib::gnpp_mdm(double *diag_H,
 
     if( delta1 > delta2 ) 
     {
-      col_u = (double*)get_col(u1,-1);
-      col_v = (double*)get_col(v1,u1);
+      col_u = (float64_t*)get_col(u1,-1);
+      col_v = (float64_t*)get_col(v1,u1);
 
       Huu = diag_H[u1];
       Hvv = diag_H[v1];
@@ -232,8 +232,8 @@ int8_t CGNPPLib::gnpp_mdm(double *diag_H,
     }
     else
     {
-      col_u = (double*)get_col(u2,-1);
-      col_v = (double*)get_col(v2,u2);
+      col_u = (float64_t*)get_col(u2,-1);
+      col_v = (float64_t*)get_col(v2,u2);
 
       Huu = diag_H[u2];
       Hvv = diag_H[v2];
@@ -337,36 +337,36 @@ int8_t CGNPPLib::gnpp_mdm(double *diag_H,
  Usage: exitflag = gnpp_imdm( diag_H, vector_c, vector_y,
        dim, tmax, tolabs, tolrel, th, &alpha, &t, &aHa11, &aHa22, &History );
 -------------------------------------------------------------- */
-int8_t CGNPPLib::gnpp_imdm(double *diag_H,
-            double *vector_c,
-            double *vector_y,
+int8_t CGNPPLib::gnpp_imdm(float64_t *diag_H,
+            float64_t *vector_c,
+            float64_t *vector_y,
             int32_t dim,
             int32_t tmax,
-            double tolabs,
-            double tolrel,
-            double th,
-            double *alpha,
+            float64_t tolabs,
+            float64_t tolrel,
+            float64_t th,
+            float64_t *alpha,
             int32_t  *ptr_t,
-            double *ptr_aHa11,
-            double *ptr_aHa22,
-            double **ptr_History,
+            float64_t *ptr_aHa11,
+            float64_t *ptr_aHa22,
+            float64_t **ptr_History,
             int32_t verb)
 {
-  double LB;
-  double UB;
-  double aHa11, aHa12, aHa22, ac1, ac2;
-  double tmp;
-  double Huu, Huv, Hvv;
-  double min_beta1, max_beta1, min_beta2, max_beta2, beta;
-  double lambda;
-  double delta1, delta2;
-  double improv, max_improv;
-  double *History;
-  double *Ha1;
-  double *Ha2;
-  double *tmp_ptr;
-  double *col_u, *col_v;
-  double *col_v1, *col_v2;
+  float64_t LB;
+  float64_t UB;
+  float64_t aHa11, aHa12, aHa22, ac1, ac2;
+  float64_t tmp;
+  float64_t Huu, Huv, Hvv;
+  float64_t min_beta1, max_beta1, min_beta2, max_beta2, beta;
+  float64_t lambda;
+  float64_t delta1, delta2;
+  float64_t improv, max_improv;
+  float64_t *History;
+  float64_t *Ha1;
+  float64_t *Ha2;
+  float64_t *tmp_ptr;
+  float64_t *col_u, *col_v;
+  float64_t *col_v1, *col_v2;
   int64_t u1=0, u2=0;
   int64_t v1, v2;
   int64_t i;
@@ -396,8 +396,8 @@ int8_t CGNPPLib::gnpp_imdm(double *diag_H,
     i++;
   }
 
-  col_v1 = (double*)get_col(v1,-1);
-  col_v2 = (double*)get_col(v2,v1);
+  col_v1 = (float64_t*)get_col(v1,-1);
+  col_v2 = (float64_t*)get_col(v2,v1);
   
   aHa12 = col_v1[v2];
   aHa11 = diag_H[v1];
@@ -446,13 +446,13 @@ int8_t CGNPPLib::gnpp_imdm(double *diag_H,
   if( delta1 > delta2 ) 
   {
      which_case = 1;
-     col_u = (double*)get_col(u1,v1);
+     col_u = (float64_t*)get_col(u1,v1);
      col_v = col_v1;
   }
   else
   {
      which_case = 2;
-     col_u = (double*)get_col(u2,v2);
+     col_u = (float64_t*)get_col(u2,v2);
      col_v = col_v2;
   }
 
@@ -553,7 +553,7 @@ int8_t CGNPPLib::gnpp_imdm(double *diag_H,
 
     if( delta1 > delta2 ) 
     {
-       col_u = (double*)get_col(u1,-1);
+       col_u = (float64_t*)get_col(u1,-1);
 
       /* search for optimal v while u is fixed */
       for( max_improv =  MINUS_INF, i = 0; i < dim; i++ ) {
@@ -576,14 +576,14 @@ int8_t CGNPPLib::gnpp_imdm(double *diag_H,
           }
         }
       }
-      col_v = (double*)get_col(v1,u1);
+      col_v = (float64_t*)get_col(v1,u1);
       delta1 = Ha1[v1] + Ha2[v1] + vector_c[v1] - min_beta1;
       which_case = 1;
       
     }
     else
     {
-       col_u = (double*)get_col(u2,-1);
+       col_u = (float64_t*)get_col(u2,-1);
 
       /* search for optimal v while u is fixed */
       for( max_improv =  MINUS_INF, i = 0; i < dim; i++ ) {
@@ -607,7 +607,7 @@ int8_t CGNPPLib::gnpp_imdm(double *diag_H,
         }
       }
 
-      col_v = (double*)get_col(v2,u2);
+      col_v = (float64_t*)get_col(v2,u2);
       delta2 = Ha1[v2] + Ha2[v2] + vector_c[v2] - min_beta2;
       which_case = 2;
     }
@@ -669,8 +669,8 @@ int8_t CGNPPLib::gnpp_imdm(double *diag_H,
 
 float64_t* CGNPPLib::get_col(int64_t a, int64_t b)
 {
-  double *col_ptr;
-  double y;
+  float64_t *col_ptr;
+  float64_t y;
   int64_t i;
   int64_t inx;
 

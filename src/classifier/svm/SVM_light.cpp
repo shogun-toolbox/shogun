@@ -473,7 +473,7 @@ int32_t CSVMLight::get_runtime()
 {
   clock_t start;
   start = clock();
-  return((int32_t)((double)start*100.0/(double)CLOCKS_PER_SEC));
+  return((int32_t)((float64_t)start*100.0/(float64_t)CLOCKS_PER_SEC));
 }
 
 void CSVMLight::svm_learn()
@@ -481,7 +481,7 @@ void CSVMLight::svm_learn()
 	int32_t *inconsistent, i;
 	int32_t inconsistentnum;
 	int32_t misclassified,upsupvecnum;
-	double maxdiff, *lin, *c, *a;
+	float64_t maxdiff, *lin, *c, *a;
 	int32_t runtime_start,runtime_end;
 	int32_t iterations;
 	int32_t trainpos=0, trainneg=0 ;
@@ -507,8 +507,8 @@ void CSVMLight::svm_learn()
 	for (i=0; i<totdoc; i++)
 		docs[i]=i;
 
-	double *xi_fullset; /* buffer for storing xi on full sample in loo */
-	double *a_fullset;  /* buffer for storing alpha on full sample in loo */
+	float64_t *xi_fullset; /* buffer for storing xi on full sample in loo */
+	float64_t *a_fullset;  /* buffer for storing alpha on full sample in loo */
 	TIMING timing_profile;
 	SHRINK_STATE shrink_state;
 
@@ -530,18 +530,18 @@ void CSVMLight::svm_learn()
 	init_shrink_state(&shrink_state,totdoc,(int32_t)MAXSHRINK);
 
 	inconsistent = new int32_t[totdoc];
-	c = new double[totdoc];
-	a = new double[totdoc];
-	a_fullset = new double[totdoc];
-	xi_fullset = new double[totdoc];
-	lin = new double[totdoc];
-	learn_parm->svm_cost = new double[totdoc];
+	c = new float64_t[totdoc];
+	a = new float64_t[totdoc];
+	a_fullset = new float64_t[totdoc];
+	xi_fullset = new float64_t[totdoc];
+	lin = new float64_t[totdoc];
+	learn_parm->svm_cost = new float64_t[totdoc];
 
 	delete[] model->supvec;
 	delete[] model->alpha;
 	delete[] model->index;
 	model->supvec = new int32_t[totdoc+2];
-	model->alpha = new double[totdoc+2];
+	model->alpha = new float64_t[totdoc+2];
 	model->index = new int32_t[totdoc+2];
 
 	model->at_upper_bound=0;
@@ -570,12 +570,12 @@ void CSVMLight::svm_learn()
 
 		if(label[i] > 0) {
 			learn_parm->svm_cost[i]=learn_parm->svm_c*learn_parm->svm_costratio*
-				fabs((double)label[i]);
+				fabs((float64_t)label[i]);
 			label[i]=1;
 			trainpos++;
 		}
 		else if(label[i] < 0) {
-			learn_parm->svm_cost[i]=learn_parm->svm_c*fabs((double)label[i]);
+			learn_parm->svm_cost[i]=learn_parm->svm_c*fabs((float64_t)label[i]);
 			label[i]=-1;
 			trainneg++;
 		}
@@ -683,7 +683,7 @@ void CSVMLight::svm_learn()
 
 		misclassified=0;
 		for (i=0;(i<totdoc);i++) { /* get final statistic */
-			if((lin[i]-model->b)*(double)label[i] <= 0.0) 
+			if((lin[i]-model->b)*(float64_t)label[i] <= 0.0) 
 				misclassified++;
 		}
 
@@ -722,8 +722,8 @@ void CSVMLight::svm_learn()
 int32_t CSVMLight::optimize_to_convergence(int32_t* docs, int32_t* label, int32_t totdoc, 
 			     SHRINK_STATE *shrink_state,
 			     int32_t *inconsistent,
-			     double *a, double *lin, double *c, 
-			     TIMING *timing_profile, double *maxdiff, 
+			     float64_t *a, float64_t *lin, float64_t *c, 
+			     TIMING *timing_profile, float64_t *maxdiff, 
 			     int32_t heldout, int32_t retrain)
      /* docs: Training vectors (x-part) */
      /* label: Training labels/value (y-part, zero if test example for
@@ -747,18 +747,18 @@ int32_t CSVMLight::optimize_to_convergence(int32_t* docs, int32_t* label, int32_
   int32_t misclassified,supvecnum=0,*active2dnum,inactivenum;
   int32_t *working2dnum,*selexam;
   int32_t activenum;
-  double criterion, eq;
-  double *a_old;
+  float64_t criterion, eq;
+  float64_t *a_old;
   int32_t t0=0,t1=0,t2=0,t3=0,t4=0,t5=0,t6=0; /* timing */
   int32_t transductcycle;
   int32_t transduction;
-  double epsilon_crit_org; 
-  double bestmaxdiff;
-  double worstmaxdiff;
+  float64_t epsilon_crit_org; 
+  float64_t bestmaxdiff;
+  float64_t worstmaxdiff;
   int32_t   bestmaxdiffiter,terminate;
   bool reactivated=false;
 
-  double *selcrit;  /* buffer for sorting */        
+  float64_t *selcrit;  /* buffer for sorting */        
   float64_t *aicache;  /* buffer to keep one row of hessian */
   QP qp;            /* buffer for one quadratic program */
 
@@ -774,19 +774,19 @@ int32_t CSVMLight::optimize_to_convergence(int32_t* docs, int32_t* label, int32_
   chosen = new int32_t[totdoc];
   last_suboptimal_at =new int32_t[totdoc];
   key =new int32_t[totdoc+11];
-  selcrit =new double[totdoc];
+  selcrit =new float64_t[totdoc];
   selexam =new int32_t[totdoc];
-  a_old =new double[totdoc];
+  a_old =new float64_t[totdoc];
   aicache =new float64_t[totdoc];
   working2dnum =new int32_t[totdoc+11];
   active2dnum =new int32_t[totdoc+11];
-  qp.opt_ce =new double[learn_parm->svm_maxqpsize];
-  qp.opt_ce0 =new double[1];
-  qp.opt_g =new double[learn_parm->svm_maxqpsize*learn_parm->svm_maxqpsize];
-  qp.opt_g0 =new double[learn_parm->svm_maxqpsize];
-  qp.opt_xinit =new double[learn_parm->svm_maxqpsize];
-  qp.opt_low=new double[learn_parm->svm_maxqpsize];
-  qp.opt_up=new double[learn_parm->svm_maxqpsize];
+  qp.opt_ce =new float64_t[learn_parm->svm_maxqpsize];
+  qp.opt_ce0 =new float64_t[1];
+  qp.opt_g =new float64_t[learn_parm->svm_maxqpsize*learn_parm->svm_maxqpsize];
+  qp.opt_g0 =new float64_t[learn_parm->svm_maxqpsize];
+  qp.opt_xinit =new float64_t[learn_parm->svm_maxqpsize];
+  qp.opt_low=new float64_t[learn_parm->svm_maxqpsize];
+  qp.opt_up=new float64_t[learn_parm->svm_maxqpsize];
 
   choosenum=0;
   inconsistentnum=0;
@@ -1123,18 +1123,20 @@ int32_t CSVMLight::optimize_to_convergence(int32_t* docs, int32_t* label, int32_
   return(iteration);
 }
 
-double CSVMLight::compute_objective_function(double *a, double *lin, double *c, double eps, int32_t *label, int32_t totdoc)
+float64_t CSVMLight::compute_objective_function(
+	float64_t *a, float64_t *lin, float64_t *c, float64_t eps, int32_t *label,
+	int32_t totdoc)
      /* Return value of objective function. */
      /* Works only relative to the active variables! */
 {
   /* calculate value of objective function */
-  double criterion=0;
+  float64_t criterion=0;
 
   for (int32_t i=0;i<totdoc;i++)
-	  criterion=criterion+(eps-(double)label[i]*c[i])*a[i]+0.5*a[i]*label[i]*lin[i];
+	  criterion=criterion+(eps-(float64_t)label[i]*c[i])*a[i]+0.5*a[i]*label[i]*lin[i];
 
 
-  /*double check=0;
+  /*float64_t check=0;
   for (int32_t i=0;i<totdoc;i++)
   {
 	  check+=a[i]*eps-a[i]*label[i];
@@ -1164,7 +1166,8 @@ void CSVMLight::add_to_index(int32_t *index, int32_t elem)
   index[i+1]=-1;
 }
 
-int32_t CSVMLight::compute_index(int32_t *binfeature, int32_t range, int32_t *index)
+int32_t CSVMLight::compute_index(
+	int32_t *binfeature, int32_t range, int32_t *index)
      /* create an inverted index of binfeature */
 {               
   register int32_t i,ii;
@@ -1183,17 +1186,15 @@ int32_t CSVMLight::compute_index(int32_t *binfeature, int32_t range, int32_t *in
 }
 
 
-void CSVMLight::optimize_svm(int32_t* docs, int32_t* label,
-		  int32_t *exclude_from_eq_const, double eq_target,
-		  int32_t *chosen, int32_t *active2dnum,
-		  int32_t totdoc, int32_t *working2dnum, int32_t varnum, 
-		  double *a, double *lin, double *c,
-		  float64_t *aicache, QP *qp, 
-		  double *epsilon_crit_target)
+void CSVMLight::optimize_svm(
+	int32_t* docs, int32_t* label, int32_t *exclude_from_eq_const,
+	float64_t eq_target, int32_t *chosen, int32_t *active2dnum, int32_t totdoc,
+	int32_t *working2dnum, int32_t varnum, float64_t *a, float64_t *lin,
+	float64_t *c, float64_t *aicache, QP *qp, float64_t *epsilon_crit_target)
      /* Do optimization on the working set. */
 {
     int32_t i;
-    double *a_v;
+    float64_t *a_v;
 
     //compute_matrices_for_optimization_parallel(docs,label,
 	//										   exclude_from_eq_const,eq_target,chosen,
@@ -1222,12 +1223,11 @@ void CSVMLight::optimize_svm(int32_t* docs, int32_t* label,
       a[working2dnum[i]]=a_v[i];
 }
 
-void CSVMLight::compute_matrices_for_optimization_parallel(int32_t* docs, int32_t* label, 
-														   int32_t *exclude_from_eq_const, double eq_target,
-														   int32_t *chosen, int32_t *active2dnum, 
-														   int32_t *key, double *a, double *lin, double *c, 
-														   int32_t varnum, int32_t totdoc,
-														   float64_t *aicache, QP *qp)
+void CSVMLight::compute_matrices_for_optimization_parallel(
+	int32_t* docs, int32_t* label, int32_t *exclude_from_eq_const,
+	float64_t eq_target, int32_t *chosen, int32_t *active2dnum, int32_t *key,
+	float64_t *a, float64_t *lin, float64_t *c, int32_t varnum, int32_t totdoc,
+	float64_t *aicache, QP *qp)
 {
 	if (parallel.get_num_threads()<=1)
 	{
@@ -1239,7 +1239,7 @@ void CSVMLight::compute_matrices_for_optimization_parallel(int32_t* docs, int32_
 	else
 	{
 		register int32_t ki,kj,i,j;
-		register double kernel_temp;
+		register float64_t kernel_temp;
 
 		qp->opt_n=varnum;
 		qp->opt_ce0[0]=-eq_target; /* compute the constant for equality constraint */
@@ -1311,7 +1311,7 @@ void CSVMLight::compute_matrices_for_optimization_parallel(int32_t* docs, int32_
 			kernel_temp=Kval[Knum] ;
 			Knum++ ;
 			/* compute linear part of objective function */
-			qp->opt_g0[i]-=(kernel_temp*a[ki]*(double)label[ki]); 
+			qp->opt_g0[i]-=(kernel_temp*a[ki]*(float64_t)label[ki]); 
 			/* compute quadratic part of objective function */
 			qp->opt_g[varnum*i+i]=kernel_temp;
 
@@ -1320,11 +1320,11 @@ void CSVMLight::compute_matrices_for_optimization_parallel(int32_t* docs, int32_
 				kernel_temp=Kval[Knum] ;
 				Knum++ ;
 				/* compute linear part of objective function */
-				qp->opt_g0[i]-=(kernel_temp*a[kj]*(double)label[kj]);
-				qp->opt_g0[j]-=(kernel_temp*a[ki]*(double)label[ki]); 
+				qp->opt_g0[i]-=(kernel_temp*a[kj]*(float64_t)label[kj]);
+				qp->opt_g0[j]-=(kernel_temp*a[ki]*(float64_t)label[ki]); 
 				/* compute quadratic part of objective function */
-				qp->opt_g[varnum*i+j]=(double)label[ki]*(double)label[kj]*kernel_temp;
-				qp->opt_g[varnum*j+i]=qp->opt_g[varnum*i+j];//(double)label[ki]*(double)label[kj]*kernel_temp;
+				qp->opt_g[varnum*i+j]=(float64_t)label[ki]*(float64_t)label[kj]*kernel_temp;
+				qp->opt_g[varnum*j+i]=qp->opt_g[varnum*i+j];//(float64_t)label[ki]*(float64_t)label[kj]*kernel_temp;
 			}
 
 			if(verbosity>=3) {
@@ -1342,7 +1342,7 @@ void CSVMLight::compute_matrices_for_optimization_parallel(int32_t* docs, int32_
 			/* assure starting at feasible point */
 			qp->opt_xinit[i]=a[key[i]];
 			/* set linear part of objective function */
-			qp->opt_g0[i]=(learn_parm->eps-(double)label[key[i]]*c[key[i]])+qp->opt_g0[i]*(double)label[key[i]];    
+			qp->opt_g0[i]=(learn_parm->eps-(float64_t)label[key[i]]*c[key[i]])+qp->opt_g0[i]*(float64_t)label[key[i]];    
 		}
 
 		if(verbosity>=3) {
@@ -1352,15 +1352,14 @@ void CSVMLight::compute_matrices_for_optimization_parallel(int32_t* docs, int32_
 #endif
 }
 
-void CSVMLight::compute_matrices_for_optimization(int32_t* docs, int32_t* label, 
-												  int32_t *exclude_from_eq_const, double eq_target,
-												  int32_t *chosen, int32_t *active2dnum, 
-												  int32_t *key, double *a, double *lin, double *c, 
-												  int32_t varnum, int32_t totdoc,
-												  float64_t *aicache, QP *qp)
+void CSVMLight::compute_matrices_for_optimization(
+	int32_t* docs, int32_t* label, int32_t *exclude_from_eq_const,
+	float64_t eq_target, int32_t *chosen, int32_t *active2dnum, int32_t *key,
+	float64_t *a, float64_t *lin, float64_t *c, int32_t varnum, int32_t totdoc,
+	float64_t *aicache, QP *qp)
 {
   register int32_t ki,kj,i,j;
-  register double kernel_temp;
+  register float64_t kernel_temp;
 
   qp->opt_n=varnum;
   qp->opt_ce0[0]=-eq_target; /* compute the constant for equality constraint */
@@ -1390,7 +1389,7 @@ void CSVMLight::compute_matrices_for_optimization(int32_t* docs, int32_t* label,
 	  
 	  kernel_temp=compute_kernel(docs[ki], docs[ki]); 
 	  /* compute linear part of objective function */
-	  qp->opt_g0[i]-=(kernel_temp*a[ki]*(double)label[ki]); 
+	  qp->opt_g0[i]-=(kernel_temp*a[ki]*(float64_t)label[ki]); 
 	  /* compute quadratic part of objective function */
 	  qp->opt_g[varnum*i+i]=kernel_temp;
 	  
@@ -1399,11 +1398,11 @@ void CSVMLight::compute_matrices_for_optimization(int32_t* docs, int32_t* label,
 		  kernel_temp=compute_kernel(docs[ki], docs[kj]);
 
 		  /* compute linear part of objective function */
-		  qp->opt_g0[i]-=(kernel_temp*a[kj]*(double)label[kj]);
-		  qp->opt_g0[j]-=(kernel_temp*a[ki]*(double)label[ki]); 
+		  qp->opt_g0[i]-=(kernel_temp*a[kj]*(float64_t)label[kj]);
+		  qp->opt_g0[j]-=(kernel_temp*a[ki]*(float64_t)label[ki]); 
 		  /* compute quadratic part of objective function */
-		  qp->opt_g[varnum*i+j]=(double)label[ki]*(double)label[kj]*kernel_temp;
-		  qp->opt_g[varnum*j+i]=qp->opt_g[varnum*i+j];//(double)label[ki]*(double)label[kj]*kernel_temp;
+		  qp->opt_g[varnum*i+j]=(float64_t)label[ki]*(float64_t)label[kj]*kernel_temp;
+		  qp->opt_g[varnum*j+i]=qp->opt_g[varnum*i+j];//(float64_t)label[ki]*(float64_t)label[kj]*kernel_temp;
 	  }
 	  
 	  if(verbosity>=3) {
@@ -1417,7 +1416,7 @@ void CSVMLight::compute_matrices_for_optimization(int32_t* docs, int32_t* label,
 	  /* assure starting at feasible point */
 	  qp->opt_xinit[i]=a[key[i]];
 	  /* set linear part of objective function */
-	  qp->opt_g0[i]=(learn_parm->eps-(double)label[key[i]]*c[key[i]])+qp->opt_g0[i]*(double)label[key[i]];    
+	  qp->opt_g0[i]=(learn_parm->eps-(float64_t)label[key[i]]*c[key[i]])+qp->opt_g0[i]*(float64_t)label[key[i]];    
   }
   
   if(verbosity>=3) {
@@ -1426,14 +1425,14 @@ void CSVMLight::compute_matrices_for_optimization(int32_t* docs, int32_t* label,
 }
 
 
-int32_t CSVMLight::calculate_svm_model(int32_t* docs, int32_t *label,
-			 double *lin, double *a, double *a_old, double *c, 
-			 int32_t *working2dnum, int32_t *active2dnum)
+int32_t CSVMLight::calculate_svm_model(
+	int32_t* docs, int32_t *label, float64_t *lin, float64_t *a,
+	float64_t *a_old, float64_t *c, int32_t *working2dnum, int32_t *active2dnum)
      /* Compute decision function based on current values */
      /* of alpha. */
 {
   int32_t i,ii,pos,b_calculated=0,first_low,first_high;
-  double ex_c,b_temp,b_low,b_high;
+  float64_t ex_c,b_temp,b_low,b_high;
 
   if(verbosity>=3) {
    SG_DEBUG( "Calculating model...");
@@ -1455,14 +1454,14 @@ int32_t CSVMLight::calculate_svm_model(int32_t* docs, int32_t *label,
     }
     else if((a_old[i]==0) && (a[i]>0)) { /* add to model */
       model->supvec[model->sv_num]=docs[i];
-      model->alpha[model->sv_num]=a[i]*(double)label[i];
+      model->alpha[model->sv_num]=a[i]*(float64_t)label[i];
       model->index[i]=model->sv_num;
       (model->sv_num)++;
     }
     else if(a_old[i]==a[i]) { /* nothing to do */
     }
     else {  /* just update alpha */
-      model->alpha[model->index[i]]=a[i]*(double)label[i];
+      model->alpha[model->index[i]]=a[i]*(float64_t)label[i];
     }
       
     ex_c=learn_parm->svm_cost[i]-learn_parm->epsilon_a;
@@ -1475,7 +1474,7 @@ int32_t CSVMLight::calculate_svm_model(int32_t* docs, int32_t *label,
 
     if((!b_calculated) 
        && (a[i]>learn_parm->epsilon_a) && (a[i]<ex_c)) {   /* calculate b */
-     	model->b=((double)label[i]*learn_parm->eps-c[i]+lin[i]); 
+     	model->b=((float64_t)label[i]*learn_parm->eps-c[i]+lin[i]); 
 	b_calculated=1;
     }
   }      
@@ -1544,16 +1543,15 @@ int32_t CSVMLight::calculate_svm_model(int32_t* docs, int32_t *label,
   return(model->sv_num-1); /* have to substract one, since element 0 is empty*/
 }
 
-int32_t CSVMLight::check_optimality(int32_t* label,
-		      double *a, double *lin, double *c, int32_t totdoc, 
-		      double *maxdiff, double epsilon_crit_org, int32_t *misclassified, 
-		      int32_t *inconsistent, int32_t *active2dnum,
-		      int32_t *last_suboptimal_at, 
-		      int32_t iteration)
+int32_t CSVMLight::check_optimality(
+	int32_t* label, float64_t *a, float64_t *lin, float64_t *c, int32_t totdoc,
+	float64_t *maxdiff, float64_t epsilon_crit_org, int32_t *misclassified,
+	int32_t *inconsistent, int32_t *active2dnum, int32_t *last_suboptimal_at,
+	int32_t iteration)
      /* Check KT-conditions */
 {
   int32_t i,ii,retrain;
-  double dist,ex_c,target;
+  float64_t dist,ex_c,target;
 
   if (kernel->has_property(KP_LINADD) && get_linadd_enabled())
 	  learn_parm->epsilon_shrink=-learn_parm->epsilon_crit+epsilon_crit_org;
@@ -1564,9 +1562,9 @@ int32_t CSVMLight::check_optimality(int32_t* label,
   (*misclassified)=0;
   for (ii=0;(i=active2dnum[ii])>=0;ii++) {
 	  if((!inconsistent[i]) && label[i]) {
-		  dist=(lin[i]-model->b)*(double)label[i];/* 'distance' from
+		  dist=(lin[i]-model->b)*(float64_t)label[i];/* 'distance' from
 													 hyperplane*/
-		  target=-(learn_parm->eps-(double)label[i]*c[i]);
+		  target=-(learn_parm->eps-(float64_t)label[i]*c[i]);
 		  ex_c=learn_parm->svm_cost[i]-learn_parm->epsilon_a;
 		  if(dist <= 0) {       
 			  (*misclassified)++;  /* does not work due to deactivation of var */
@@ -1606,11 +1604,10 @@ int32_t CSVMLight::check_optimality(int32_t* label,
   return(retrain);
 }
 
-void CSVMLight::update_linear_component_mkl(int32_t* docs, int32_t* label, 
-											int32_t *active2dnum, double *a, 
-											double *a_old, int32_t *working2dnum, 
-											int32_t totdoc,
-											double *lin, float64_t *aicache)
+void CSVMLight::update_linear_component_mkl(
+	int32_t* docs, int32_t* label, int32_t *active2dnum, float64_t *a,
+	float64_t *a_old, int32_t *working2dnum, int32_t totdoc, float64_t *lin,
+	float64_t *aicache)
 {
 	int32_t num = kernel->get_num_vec_rhs();
 	int32_t num_weights = -1;
@@ -1636,7 +1633,7 @@ void CSVMLight::update_linear_component_mkl(int32_t* docs, int32_t* label,
 				{
 					kn->get_kernel_row(i,NULL,aicache, true);
 					for (j=0;j<num;j++)
-						W[j*num_kernels+n]+=(a[i]-a_old[i])*aicache[j]*(double)label[i];
+						W[j*num_kernels+n]+=(a[i]-a_old[i])*aicache[j]*(float64_t)label[i];
 				}
 			}
 			kn = k->get_next_kernel(kn) ;
@@ -1664,7 +1661,7 @@ void CSVMLight::update_linear_component_mkl(int32_t* docs, int32_t* label,
 				if(a[i] != a_old[i]) 
 				{
 					for (int32_t j=0;j<num;j++) 
-						W[j*num_kernels+n]+=(a[i]-a_old[i])*kernel->kernel(i,j)*(double)label[i];
+						W[j*num_kernels+n]+=(a[i]-a_old[i])*kernel->kernel(i,j)*(float64_t)label[i];
 				}
 			}
 			w1[n]=0.0 ;
@@ -1723,9 +1720,9 @@ void CSVMLight::update_linear_component_mkl(int32_t* docs, int32_t* label,
 			SG_INFO( "creating LP\n") ;
 
 			int32_t NUMCOLS = 2*num_kernels + 1 ;
-			double   obj[NUMCOLS];
-			double   lb[NUMCOLS];
-			double   ub[NUMCOLS];
+			double   obj[NUMCOLS]; /* for calling external lib */
+			double   lb[NUMCOLS]; /* for calling external lib */
+			double   ub[NUMCOLS]; /* for calling external lib */
 
 			for (int32_t i=0; i<2*num_kernels; i++)
 			{
@@ -1748,13 +1745,13 @@ void CSVMLight::update_linear_component_mkl(int32_t* docs, int32_t* label,
             SG_ERROR( "%s", errmsg);
 			}
 			
-			// add constraint sum(w)=1 ;
-			SG_INFO( "adding the first row\n") ;
-			int initial_rmatbeg[1] ; /* for calling external lib */
-			int initial_rmatind[num_kernels+1] ; /* for calling external lib */
-			double initial_rmatval[num_kernels+1] ;
-			double initial_rhs[1] ;
-			char initial_sense[1] ;
+			// add constraint sum(w)=1;
+			SG_INFO( "adding the first row\n");
+			int initial_rmatbeg[1]; /* for calling external lib */
+			int initial_rmatind[num_kernels+1]; /* for calling external lib */
+			double initial_rmatval[num_kernels+1]; /* for calling ext lib */
+			double initial_rhs[1]; /* for calling external lib */
+			char initial_sense[1];
 			
 			 // 1-norm MKL
 			if (mkl_norm==1)
@@ -1810,13 +1807,13 @@ void CSVMLight::update_linear_component_mkl(int32_t* docs, int32_t* label,
 			{
 				for (int32_t q=0; q<num_kernels-1; q++)
 				{
-					// add constraint w[i]-w[i+1]<s[i] ;
-					// add constraint w[i+1]-w[i]<s[i] ;
-					int rmatbeg[1] ; /* for calling external lib */
-					int rmatind[3] ; /* for calling external lib */
-					double rmatval[3] ;
-					double rhs[1] ;
-					char sense[1] ;
+					// add constraint w[i]-w[i+1]<s[i];
+					// add constraint w[i+1]-w[i]<s[i];
+					int rmatbeg[1]; /* for calling external lib */
+					int rmatind[3]; /* for calling external lib */
+					double rmatval[3]; /* for calling external lib */
+					double rhs[1]; /* for calling external lib */
+					char sense[1];
 					
 					rmatbeg[0] = 0;
 					rhs[0]=0 ;     // rhs=0 ;
@@ -1856,11 +1853,11 @@ void CSVMLight::update_linear_component_mkl(int32_t* docs, int32_t* label,
 		{ // add the new row
 			//SG_INFO( "add the new row\n") ;
 			
-			int rmatbeg[1] ;
-			int rmatind[num_kernels+1] ;
-			double rmatval[num_kernels+1] ;
-			double rhs[1] ;
-			char sense[1] ;
+			int rmatbeg[1]; /* for calling external lib */
+			int rmatind[num_kernels+1]; /* for calling external lib */
+			double rmatval[num_kernels+1]; /* for calling external lib */
+			double rhs[1]; /* for calling external lib */
+			char sense[1];
 			
 			rmatbeg[0] = 0;
 			if (mkl_norm==1)
@@ -2022,11 +2019,10 @@ void CSVMLight::update_linear_component_mkl(int32_t* docs, int32_t* label,
 }
 
 
-void CSVMLight::update_linear_component_mkl_linadd(int32_t* docs, int32_t* label, 
-												   int32_t *active2dnum, double *a, 
-												   double *a_old, int32_t *working2dnum, 
-												   int32_t totdoc,
-												   double *lin, float64_t *aicache)
+void CSVMLight::update_linear_component_mkl_linadd(
+	int32_t* docs, int32_t* label, int32_t *active2dnum, float64_t *a,
+	float64_t *a_old, int32_t *working2dnum, int32_t totdoc, float64_t *lin,
+	float64_t *aicache)
 {
 	// kernel with LP_LINADD property is assumed to have 
 	// compute_by_subkernel functions
@@ -2055,7 +2051,7 @@ void CSVMLight::update_linear_component_mkl_linadd(int32_t* docs, int32_t* label
 		kernel->clear_normal();
 		for (int32_t ii=0, i=0;(i=working2dnum[ii])>=0;ii++) {
 			if(a[i] != a_old[i]) {
-				kernel->add_to_normal(docs[i], (a[i]-a_old[i])*(double)label[i]);
+				kernel->add_to_normal(docs[i], (a[i]-a_old[i])*(float64_t)label[i]);
 			}
 		}
 
@@ -2142,9 +2138,9 @@ void CSVMLight::update_linear_component_mkl_linadd(int32_t* docs, int32_t* label
 			SG_INFO( "creating LP\n") ;
 			
 			int32_t NUMCOLS = 2*num_kernels + 1 ;
-			double   obj[NUMCOLS];
-			double   lb[NUMCOLS];
-			double   ub[NUMCOLS];
+			double   obj[NUMCOLS]; /* for calling external lib */
+			double   lb[NUMCOLS]; /* for calling external lib */
+			double   ub[NUMCOLS]; /* for calling external lib */
 
 			for (int32_t i=0; i<2*num_kernels; i++)
 			{
@@ -2169,11 +2165,11 @@ void CSVMLight::update_linear_component_mkl_linadd(int32_t* docs, int32_t* label
 
 			// add constraint sum(w)=1 ;
 			SG_INFO( "adding the first row\n") ;
-			int initial_rmatbeg[1] ; /* for calling external lib */
-			int initial_rmatind[num_kernels+1] ; /* for calling external lib */
-			double initial_rmatval[num_kernels+1] ;
-			double initial_rhs[1] ;
-			char initial_sense[1] ;
+			int initial_rmatbeg[1]; /* for calling external lib */
+			int initial_rmatind[num_kernels+1]; /* for calling external lib */
+			double initial_rmatval[num_kernels+1]; /* for calling ext lib */
+			double initial_rhs[1]; /* for calling external lib */
+			char initial_sense[1];
 			
 			 // 1-norm MKL
 			if (mkl_norm==1)
@@ -2229,13 +2225,13 @@ void CSVMLight::update_linear_component_mkl_linadd(int32_t* docs, int32_t* label
 			{
 				for (int32_t q=0; q<num_kernels-1; q++)
 				{
-					// add constraint w[i]-w[i+1]<s[i] ;
-					// add constraint w[i+1]-w[i]<s[i] ;
-					int rmatbeg[1] ; /* for calling external lib */
-					int rmatind[3] ; /* for calling external lib */
-					double rmatval[3] ;
-					double rhs[1] ;
-					char sense[1] ;
+					// add constraint w[i]-w[i+1]<s[i];
+					// add constraint w[i+1]-w[i]<s[i];
+					int rmatbeg[1]; /* for calling external lib */
+					int rmatind[3]; /* for calling external lib */
+					double rmatval[3]; /* for calling external lib */
+					double rhs[1]; /* for calling external lib */
+					char sense[1];
 					
 					rmatbeg[0] = 0;
 					rhs[0]=0 ;     // rhs=0 ;
@@ -2275,11 +2271,11 @@ void CSVMLight::update_linear_component_mkl_linadd(int32_t* docs, int32_t* label
 		{ // add the new row
 			//SG_INFO( "add the new row\n") ;
 			
-			int rmatbeg[1] ;
-			int rmatind[num_kernels+1] ;
-			double rmatval[num_kernels+1] ;
-			double rhs[1] ;
-			char sense[1] ;
+			int rmatbeg[1]; /* for calling external lib */
+			int rmatind[num_kernels+1]; /* for calling external lib */
+			double rmatval[num_kernels+1]; /* for calling external lib */
+			double rhs[1]; /* for calling external lib */
+			char sense[1];
 			
 			rmatbeg[0] = 0;
 			if (mkl_norm==1)
@@ -2440,11 +2436,10 @@ void CSVMLight::update_linear_component_mkl_linadd(int32_t* docs, int32_t* label
 	delete[] sumw;
 }
 
-void CSVMLight::update_linear_component(int32_t* docs, int32_t* label, 
-										int32_t *active2dnum, double *a, 
-										double *a_old, int32_t *working2dnum, 
-										int32_t totdoc,
-										double *lin, float64_t *aicache, double* c)
+void CSVMLight::update_linear_component(
+	int32_t* docs, int32_t* label, int32_t *active2dnum, float64_t *a,
+	float64_t *a_old, int32_t *working2dnum, int32_t totdoc, float64_t *lin,
+	float64_t *aicache, float64_t* c)
      /* keep track of the linear component */
      /* lin of the gradient etc. by updating */
      /* based on the change of the variables */
@@ -2466,7 +2461,7 @@ void CSVMLight::update_linear_component(int32_t* docs, int32_t* label,
 			int32_t num_working=0;
 			for (ii=0;(i=working2dnum[ii])>=0;ii++) {
 				if(a[i] != a_old[i]) {
-					kernel->add_to_normal(docs[i], (a[i]-a_old[i])*(double)label[i]);
+					kernel->add_to_normal(docs[i], (a[i]-a_old[i])*(float64_t)label[i]);
 					num_working++;
 				}
 			}
@@ -2527,7 +2522,7 @@ void CSVMLight::update_linear_component(int32_t* docs, int32_t* label,
 				if(a[i] != a_old[i]) {
 					kernel->get_kernel_row(i,active2dnum,aicache);
 					for (ii=0;(j=active2dnum[ii])>=0;ii++)
-						lin[j]+=(a[i]-a_old[i])*aicache[j]*(double)label[i];
+						lin[j]+=(a[i]-a_old[i])*aicache[j]*(float64_t)label[i];
 				}
 			}
 		}
@@ -2537,24 +2532,18 @@ void CSVMLight::update_linear_component(int32_t* docs, int32_t* label,
 
 /*************************** Working set selection ***************************/
 
-int32_t CSVMLight::select_next_qp_subproblem_grad(int32_t* label, 
-											   double *a, double *lin, 
-											   double *c, int32_t totdoc, 
-											   int32_t qp_size, 
-											   int32_t *inconsistent, 
-											   int32_t *active2dnum, 
-											   int32_t *working2dnum, 
-											   double *selcrit, 
-											   int32_t *select, 
-											   int32_t cache_only,
-											   int32_t *key, int32_t *chosen)
+int32_t CSVMLight::select_next_qp_subproblem_grad(
+	int32_t* label, float64_t *a, float64_t *lin, float64_t *c, int32_t totdoc,
+	int32_t qp_size, int32_t *inconsistent, int32_t *active2dnum,
+	int32_t *working2dnum, float64_t *selcrit, int32_t *select,
+	int32_t cache_only, int32_t *key, int32_t *chosen)
 	/* Use the feasible direction approach to select the next
 	   qp-subproblem (see chapter 'Selecting a good working set'). If
 	   'cache_only' is true, then the variables are selected only among
 	   those for which the kernel evaluations are cached. */
 {
 	int32_t choosenum,i,j,k,activedoc,inum,valid;
-	double s;
+	float64_t s;
 	
 	for (inum=0;working2dnum[inum]>=0;inum++); /* find end of index */
 	choosenum=0;
@@ -2578,7 +2567,7 @@ int32_t CSVMLight::select_next_qp_subproblem_grad(int32_t* label,
 		   && (label[j])
 		   && (!inconsistent[j]))
 		{
-			selcrit[activedoc]=(double)label[j]*(learn_parm->eps-(double)label[j]*c[j]+(double)label[j]*lin[j]);
+			selcrit[activedoc]=(float64_t)label[j]*(learn_parm->eps-(float64_t)label[j]*c[j]+(float64_t)label[j]*lin[j]);
 			key[activedoc]=j;
 			activedoc++;
 		}
@@ -2615,8 +2604,8 @@ int32_t CSVMLight::select_next_qp_subproblem_grad(int32_t* label,
 		   && (label[j])
 		   && (!inconsistent[j])) 
 		{
-			selcrit[activedoc]=-(double)label[j]*(learn_parm->eps-(double)label[j]*c[j]+(double)label[j]*lin[j]);
-			/*  selcrit[activedoc]=-(double)(label[j]*(-1.0+(double)label[j]*lin[j])); */
+			selcrit[activedoc]=-(float64_t)label[j]*(learn_parm->eps-(float64_t)label[j]*c[j]+(float64_t)label[j]*lin[j]);
+			/*  selcrit[activedoc]=-(float64_t)(label[j]*(-1.0+(float64_t)label[j]*lin[j])); */
 			key[activedoc]=j;
 			activedoc++;
 		}
@@ -2635,25 +2624,18 @@ int32_t CSVMLight::select_next_qp_subproblem_grad(int32_t* label,
 	return(choosenum);
 }
 
-int32_t CSVMLight::select_next_qp_subproblem_rand(int32_t* label, 
-				    double *a, double *lin, 
-				    double *c, int32_t totdoc, 
-				    int32_t qp_size, 
-				    int32_t *inconsistent, 
-				    int32_t *active2dnum, 
-				    int32_t *working2dnum, 
-				    double *selcrit, 
-				    int32_t *select, 
-				    int32_t *key, 
-				    int32_t *chosen, 
-				    int32_t iteration)
+int32_t CSVMLight::select_next_qp_subproblem_rand(
+	int32_t* label, float64_t *a, float64_t *lin, float64_t *c, int32_t totdoc,
+	int32_t qp_size, int32_t *inconsistent, int32_t *active2dnum,
+	int32_t *working2dnum, float64_t *selcrit, int32_t *select, int32_t *key,
+	int32_t *chosen, int32_t iteration)
 /* Use the feasible direction approach to select the next
    qp-subproblem (see section 'Selecting a good working set'). Chooses
    a feasible direction at (pseudo) random to help jump over numerical
    problem. */
 {
   int32_t choosenum,i,j,k,activedoc,inum;
-  double s;
+  float64_t s;
 
   for (inum=0;working2dnum[inum]>=0;inum++); /* find end of index */
   choosenum=0;
@@ -2712,8 +2694,8 @@ int32_t CSVMLight::select_next_qp_subproblem_rand(int32_t* label,
 
 
 
-void CSVMLight::select_top_n(double *selcrit, int32_t range, int32_t* select,
-		  int32_t n)
+void CSVMLight::select_top_n(
+	float64_t *selcrit, int32_t range, int32_t* select, int32_t n)
 {
   register int32_t i,j;
 
@@ -2748,18 +2730,18 @@ void CSVMLight::select_top_n(double *selcrit, int32_t range, int32_t* select,
 
 /******************************** Shrinking  *********************************/
 
-void CSVMLight::init_shrink_state(SHRINK_STATE *shrink_state, int32_t totdoc,
-		       int32_t maxhistory)
+void CSVMLight::init_shrink_state(
+	SHRINK_STATE *shrink_state, int32_t totdoc, int32_t maxhistory)
 {
   int32_t i;
 
   shrink_state->deactnum=0;
   shrink_state->active = new int32_t[totdoc];
   shrink_state->inactive_since = new int32_t[totdoc];
-  shrink_state->a_history = new double*[maxhistory];
+  shrink_state->a_history = new float64_t*[maxhistory];
   shrink_state->maxhistory=maxhistory;
-  shrink_state->last_lin = new double[totdoc];
-  shrink_state->last_a = new double[totdoc];
+  shrink_state->last_lin = new float64_t[totdoc];
+  shrink_state->last_a = new float64_t[totdoc];
 
   for (i=0;i<totdoc;i++) { 
     shrink_state->active[i]=1;
@@ -2780,22 +2762,16 @@ void CSVMLight::shrink_state_cleanup(SHRINK_STATE *shrink_state)
   delete[] (shrink_state->last_lin);
 }
 
-int32_t CSVMLight::shrink_problem(SHRINK_STATE *shrink_state, 
-		    int32_t *active2dnum, 
-		    int32_t *last_suboptimal_at, 
-		    int32_t iteration, 
-		    int32_t totdoc, 
-		    int32_t minshrink, 
-		    double *a, 
-		    int32_t *inconsistent,
-			double* c,
-			double* lin,
-			int* label)
+int32_t CSVMLight::shrink_problem(
+	SHRINK_STATE *shrink_state, int32_t *active2dnum,
+	int32_t *last_suboptimal_at, int32_t iteration, int32_t totdoc,
+	int32_t minshrink, float64_t *a, int32_t *inconsistent, float64_t* c,
+	float64_t* lin, int* label)
      /* Shrink some variables away.  Do the shrinking only if at least
         minshrink variables can be removed. */
 {
   int32_t i,ii,change,activenum,lastiter;
-  double *a_old=NULL;
+  float64_t *a_old=NULL;
   
   activenum=0;
   change=0;
@@ -2819,7 +2795,7 @@ int32_t CSVMLight::shrink_problem(SHRINK_STATE *shrink_state,
 
 	  if (!(kernel->has_property(KP_LINADD) && get_linadd_enabled())) { /*  non-linear case save alphas */
 	 
-		  a_old=new double[totdoc];
+		  a_old=new float64_t[totdoc];
 		  shrink_state->a_history[shrink_state->deactnum]=a_old;
 		  for (i=0;i<totdoc;i++) {
 			  a_old[i]=a[i];
@@ -2902,30 +2878,23 @@ void* CSVMLight::reactivate_inactive_examples_vanilla_helper(void* p)
 
 		k->get_kernel_row(i,inactive2dnum,aicache);
 		for (int32_t jj=0;(j=inactive2dnum[jj])>=0;jj++)
-			lin[j]+=(a[i]-a_old[i])*aicache[j]*(double)label[i];
+			lin[j]+=(a[i]-a_old[i])*aicache[j]*(float64_t)label[i];
 	}
 	return NULL;
 }
 
-void CSVMLight::reactivate_inactive_examples(int32_t* label, 
-				  double *a, 
-				  SHRINK_STATE *shrink_state, 
-				  double *lin, 
-				  double *c, 
-				  int32_t totdoc, 
-				  int32_t iteration, 
-				  int32_t *inconsistent, 
-				  int32_t* docs, 
-				  float64_t *aicache, 
-				  double *maxdiff)
+void CSVMLight::reactivate_inactive_examples(
+	int32_t* label, float64_t *a, SHRINK_STATE *shrink_state, float64_t *lin,
+	float64_t *c, int32_t totdoc, int32_t iteration, int32_t *inconsistent,
+	int32_t* docs, float64_t *aicache, float64_t *maxdiff)
      /* Make all variables active again which had been removed by
         shrinking. */
      /* Computes lin for those variables from scratch. */
 {
   register int32_t i,j,ii,jj,t,*changed2dnum,*inactive2dnum;
   int32_t *changed,*inactive;
-  register double *a_old,dist;
-  double ex_c,target;
+  register float64_t *a_old,dist;
+  float64_t ex_c,target;
 
   if (kernel->has_property(KP_LINADD) && get_linadd_enabled()) { /* special linear case */
 	  a_old=shrink_state->last_a;    
@@ -2938,7 +2907,7 @@ void CSVMLight::reactivate_inactive_examples(int32_t* label,
 		  int32_t num_modified=0;
 		  for (i=0;i<totdoc;i++) {
 			  if(a[i] != a_old[i]) {
-				  kernel->add_to_normal(docs[i], ((a[i]-a_old[i])*(double)label[i]));
+				  kernel->add_to_normal(docs[i], ((a[i]-a_old[i])*(float64_t)label[i]));
 				  a_old[i]=a[i];
 				  num_modified++;
 			  }
@@ -3006,7 +2975,7 @@ void CSVMLight::reactivate_inactive_examples(int32_t* label,
 		  {
 			  if(a[i] != a_old[i]) 
 			  {
-				  alphas[num_suppvec] = (a[i]-a_old[i])*(double)label[i];
+				  alphas[num_suppvec] = (a[i]-a_old[i])*(float64_t)label[i];
 				  idx[num_suppvec] = i ;
 				  a_old[i] = a[i] ;
 				  num_suppvec++ ;
@@ -3087,7 +3056,7 @@ void CSVMLight::reactivate_inactive_examples(int32_t* label,
 			  for (ii=0;(i=changed2dnum[ii])>=0;ii++) {
 				  kernel->get_kernel_row(i,inactive2dnum,aicache);
 				  for (jj=0;(j=inactive2dnum[jj])>=0;jj++)
-					  lin[j]+=(a[i]-a_old[i])*aicache[j]*(double)label[i];
+					  lin[j]+=(a[i]-a_old[i])*aicache[j]*(float64_t)label[i];
 			  }
 		  }
 #ifndef WIN32
@@ -3166,8 +3135,8 @@ void CSVMLight::reactivate_inactive_examples(int32_t* label,
   for (i=0;i<totdoc;i++) {
     shrink_state->inactive_since[i]=shrink_state->deactnum-1;
     if(!inconsistent[i]) {
-      dist=(lin[i]-model->b)*(double)label[i];
-      target=-(learn_parm->eps-(double)label[i]*c[i]);
+      dist=(lin[i]-model->b)*(float64_t)label[i];
+      target=-(learn_parm->eps-(float64_t)label[i]*c[i]);
       ex_c=learn_parm->svm_cost[i]-learn_parm->epsilon_a;
       if((a[i]>learn_parm->epsilon_a) && (dist > target)) {
 	if((dist-target)>(*maxdiff))  /* largest violation */

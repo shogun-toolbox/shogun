@@ -293,8 +293,8 @@ bool CCplex::add_lpboost_constraint(
 {
 	int amatbeg[1]; /* for calling external lib */
 	int amatind[len+1]; /* for calling external lib */
-	double amatval[len+1];
-	double rhs[1];
+	double amatval[len+1]; /* for calling external lib */
+	double rhs[1]; /* for calling external lib */
 	char sense[1];
 
 	amatbeg[0]=0;
@@ -338,10 +338,10 @@ bool CCplex::setup_lpm(
 	//number of non zero entries in A (b,w+,w-,xi)
 	int64_t amatsize=((int64_t) num_vec)+nnz+nnz+num_vec; 
 
-	int* amatbeg=new int[num_dims];
-	int* amatcnt=new int[num_dims];
-	int* amatind=new int[amatsize];
-	double* amatval= new double[amatsize];
+	int* amatbeg=new int[num_dims]; /* for calling external lib */
+	int* amatcnt=new int[num_dims]; /* for calling external lib */
+	int* amatind=new int[amatsize]; /* for calling external lib */
+	double* amatval= new double[amatsize]; /* for calling external lib */
 
 	for (int32_t i=0; i<num_dims; i++)
 	{

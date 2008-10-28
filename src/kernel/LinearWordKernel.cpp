@@ -135,10 +135,10 @@ float64_t CLinearWordKernel::compute_optimized(int32_t idx_b)
 
 	uint16_t* bvec=((CWordFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
 
-	double result=0;
+	float64_t result=0;
 	{
 		for (int32_t i=0; i<blen; i++)
-			result+= normal[i] * ((double) bvec[i]);
+			result+= normal[i] * ((float64_t) bvec[i]);
 	}
 
 	((CWordFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);

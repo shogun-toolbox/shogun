@@ -36,7 +36,7 @@
 #define REGULARIZEBIAS 0
 
 inline
-double loss(double z)
+float64_t loss(float64_t z)
 {
 #if LOSS == LOGLOSS
 	if (z >= 0)
@@ -68,17 +68,17 @@ double loss(double z)
 }
 
 inline
-double dloss(double z)
+float64_t dloss(float64_t z)
 {
 #if LOSS == LOGLOSS
 	if (z < 0)
 		return 1 / (exp(z) + 1);
-	double ez = exp(-z);
+	float64_t ez = exp(-z);
 	return ez / (ez + 1);
 #elif LOSS == LOGLOSSMARGIN
 	if (z < 1)
 		return 1 / (exp(z-1) + 1);
-	double ez = exp(1-z);
+	float64_t ez = exp(1-z);
 	return ez / (ez + 1);
 #elif LOSS == SMOOTHHINGELOSS
 	if (z < 0)

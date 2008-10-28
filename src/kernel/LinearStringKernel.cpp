@@ -97,7 +97,10 @@ bool CLinearStringKernel::init_optimization(
 		ASSERT(avec);
 
 		for (int32_t j = 0; j<num_feat; j++)
-			normal[j] += alphas[i]*normalizer->normalize_lhs(((double) avec[j]), sv_idx[i]);
+		{
+			normal[j] += alphas[i]*
+				normalizer->normalize_lhs(((float64_t) avec[j]), sv_idx[i]);
+		}
 	}
 	set_is_initialized(true);
 	return true;

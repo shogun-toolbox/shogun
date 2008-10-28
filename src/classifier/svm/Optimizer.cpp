@@ -33,28 +33,28 @@ int32_t verbosity=1;
 
 /* /////////////////////////////////////////////////////////////// */
 
-double *optimize_qp();
-double *primal=0,*dual=0;
-double init_margin=0.15;
+float64_t *optimize_qp();
+float64_t *primal=0,*dual=0;
+float64_t init_margin=0.15;
 int32_t   init_iter=500,precision_violations=0;
-double model_b;
-double opt_precision=DEF_PRECISION;
+float64_t model_b;
+float64_t opt_precision=DEF_PRECISION;
 
 /* /////////////////////////////////////////////////////////////// */
 
 /* start the optimizer and return the optimal values */
-double *optimize_qp(
-		QP *qp, double *epsilon_crit, int32_t nx, double *threshold,
+float64_t *optimize_qp(
+		QP *qp, float64_t *epsilon_crit, int32_t nx, float64_t *threshold,
 		int32_t& svm_maxqpsize)
 {
 	register int32_t i, j, result;
-	double margin, obj_before, obj_after;
-	double sigdig, dist, epsilon_loqo;
+	float64_t margin, obj_before, obj_after;
+	float64_t sigdig, dist, epsilon_loqo;
 	int32_t iter;
 
 	if(!primal) { /* allocate memory at first call */
-		primal=new double[nx*3];
-		dual=new double[nx*2+1];
+		primal=new float64_t[nx*3];
+		dual=new float64_t[nx*2+1];
 	}
 
 	if(verbosity>=4) { /* really verbose */
@@ -96,13 +96,13 @@ double *optimize_qp(
 		sigdig=-log10(opt_precision);
 
 		result=pr_loqo((int32_t)qp->opt_n,(int32_t)qp->opt_m,
-				(double *)qp->opt_g0,(double *)qp->opt_g,
-				(double *)qp->opt_ce,(double *)qp->opt_ce0,
-				(double *)qp->opt_low,(double *)qp->opt_up,
-				(double *)primal,(double *)dual,
+				(float64_t *)qp->opt_g0,(float64_t *)qp->opt_g,
+				(float64_t *)qp->opt_ce,(float64_t *)qp->opt_ce0,
+				(float64_t *)qp->opt_low,(float64_t *)qp->opt_up,
+				(float64_t *)primal,(float64_t *)dual,
 				(int32_t)(verbosity-2),
-				(double)sigdig,(int32_t)iter,
-				(double)margin,(double)(qp->opt_up[0])/4.0,(int32_t)0);
+				(float64_t)sigdig,(int32_t)iter,
+				(float64_t)margin,(float64_t)(qp->opt_up[0])/4.0,(int32_t)0);
 
 		if(isnan(dual[0])) {     /* check for choldc problem */
 			if(verbosity>=2) {

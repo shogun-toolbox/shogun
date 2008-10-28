@@ -59,7 +59,7 @@ bool CSVMLin::train()
 	Data.nz=num_feat+1;
 	Data.Y=train_labels;
 	Data.features=get_features();
-	Data.C = new double[Data.l];
+	Data.C = new float64_t[Data.l];
 
 	Options.algo = SVM;
 	Options.lambda=1/(2*get_C1());

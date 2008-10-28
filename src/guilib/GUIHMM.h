@@ -99,7 +99,7 @@ class CGUIHMM : public CSGObject
 		float64_t one_class_classify_example(int32_t idx);
 
 	protected:
-		bool converge(double x, double y);
+		bool converge(float64_t x, float64_t y);
 		void switch_model(CHMM** m1, CHMM** m2);
 
 		CHMM* working;

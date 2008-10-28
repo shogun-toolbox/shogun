@@ -114,7 +114,7 @@ class CSparseLinearKernel: public CSparseKernel<float64_t>
 		 * @param len length of normal vector will be stored here
 		 * @return the normal vector
 		 */
-		inline const double* get_normal(int32_t& len)
+		inline const float64_t* get_normal(int32_t& len)
 		{
 			len=normal_length;
 			return normal;

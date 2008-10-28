@@ -43,19 +43,19 @@ class CGNPPLib: public CSGObject
      Usage: exitflag = gnpp_mdm(diag_H, vector_c, vector_y,
      dim, tmax, tolabs, tolrel, th, &alpha, &t, &aHa11, &aHa22, &History );
      -------------------------------------------------------------- */
-  int8_t gnpp_mdm(double *diag_H,
-               double *vector_c,
-               double *vector_y,
+  int8_t gnpp_mdm(float64_t *diag_H,
+               float64_t *vector_c,
+               float64_t *vector_y,
                int32_t dim,
                int32_t tmax,
-               double tolabs,
-               double tolrel,
-               double th,
-               double *alpha,
+               float64_t tolabs,
+               float64_t tolrel,
+               float64_t th,
+               float64_t *alpha,
                int32_t  *ptr_t,
-               double *ptr_aHa11,
-               double *ptr_aHa22,
-               double **ptr_History,
+               float64_t *ptr_aHa11,
+               float64_t *ptr_aHa22,
+               float64_t **ptr_History,
                int32_t verb);
 
   /** --------------------------------------------------------------
@@ -64,19 +64,19 @@ class CGNPPLib: public CSGObject
      Usage: exitflag = gnpp_imdm( diag_H, vector_c, vector_y,
      dim, tmax, tolabs, tolrel, th, &alpha, &t, &aHa11, &aHa22, &History );
      -------------------------------------------------------------- */
-  int8_t gnpp_imdm(double *diag_H,
-                double *vector_c,
-                double *vector_y,
+  int8_t gnpp_imdm(float64_t *diag_H,
+                float64_t *vector_c,
+                float64_t *vector_y,
                 int32_t dim, 
                 int32_t tmax,
-                double tolabs,
-                double tolrel,
-                double th,
-                double *alpha,
+                float64_t tolabs,
+                float64_t tolrel,
+                float64_t th,
+                float64_t *alpha,
                 int32_t  *ptr_t, 
-                double *ptr_aHa11,
-                double *ptr_aHa22,
-                double **ptr_History,
+                float64_t *ptr_aHa11,
+                float64_t *ptr_aHa22,
+                float64_t **ptr_History,
                 int32_t verb);
 
  protected:

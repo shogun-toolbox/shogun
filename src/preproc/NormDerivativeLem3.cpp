@@ -68,8 +68,8 @@ float64_t* CNormDerivativeLem3::apply_to_feature_vector(
 //#ifdef JaaHau
 // //this is the normalization used in jaahau
 //    int32_t o_p=1;
-//    double sum_p=0;
-//    double sum_q=0;
+//    float64_t sum_p=0;
+//    float64_t sum_q=0;
 //    //first do positive model
 //    for (i=0; i<pos->get_N(); i++)
 //    {
@@ -78,7 +78,7 @@ float64_t* CNormDerivativeLem3::apply_to_feature_vector(
 //	featurevector[p]=exp(pos->model_derivative_q(i, x)-posx);
 //	sum_q=exp(pos->get_q(i))*featurevector[p++];
 //
-//	double sum_a=0;
+//	float64_t sum_a=0;
 //	for (j=0; j<pos->get_N(); j++)
 //	{
 //	    featurevector[p]=exp(pos->model_derivative_a(i, j, x)-posx);
@@ -88,7 +88,7 @@ float64_t* CNormDerivativeLem3::apply_to_feature_vector(
 //	for (j=0; j<pos->get_N(); j++)
 //	    featurevector[p++]-=sum_a;
 //
-//	double sum_b=0;
+//	float64_t sum_b=0;
 //	for (j=0; j<pos->get_M(); j++)
 //	{
 //	    featurevector[p]=exp(pos->model_derivative_b(i, j, x)-posx);
@@ -115,7 +115,7 @@ float64_t* CNormDerivativeLem3::apply_to_feature_vector(
 //	featurevector[p]=-exp(neg->model_derivative_q(i, x)-negx);
 //	sum_q=exp(neg->get_q(i))*featurevector[p++];
 //
-//	double sum_a=0;
+//	float64_t sum_a=0;
 //	for (j=0; j<neg->get_N(); j++)
 //	{
 //	    featurevector[p]=-exp(neg->model_derivative_a(i, j, x)-negx);
@@ -125,7 +125,7 @@ float64_t* CNormDerivativeLem3::apply_to_feature_vector(
 //	for (j=0; j<neg->get_N(); j++)
 //	    featurevector[p++]-=sum_a;
 //
-//	double sum_b=0;
+//	float64_t sum_b=0;
 //	for (j=0; j<neg->get_M(); j++)
 //	{
 //	    featurevector[p]=-exp(neg->model_derivative_b(i, j, x)-negx);

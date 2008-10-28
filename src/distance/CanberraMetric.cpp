@@ -58,8 +58,10 @@ float64_t CCanberraMetric::compute(int32_t idx_a, int32_t idx_b)
 	int32_t alen, blen;
 	bool afree, bfree;
 
-	double* avec=((CRealFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
-	double* bvec=((CRealFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
+	float64_t* avec=
+		((CRealFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
+	float64_t* bvec=
+		((CRealFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
 
 	ASSERT(alen==blen);
 

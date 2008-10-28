@@ -62,7 +62,7 @@
 
 #define INDEX(ROW,COL,DIM) ((COL*DIM)+ROW)
 
-double sparsity=0;
+float64_t sparsity=0;
 
 CQPBSVMLib::CQPBSVMLib(
 	float64_t* H, int32_t n, float64_t* f, int32_t m, float64_t UB)
@@ -594,8 +594,8 @@ int32_t CQPBSVMLib::qpbsvm_gauss_seidel(float64_t *x,
 		if (x[i]==0.0 || x[i]==1.0)
 			atbound++;
 	}
-	SG_PRINT("atbound:%d of %d (%2.2f%%)\n", atbound, m_dim, ((double) 100.0*atbound)/m_dim);
-	sparsity+=((double) 100.0*atbound)/m_dim;
+	SG_PRINT("atbound:%d of %d (%2.2f%%)\n", atbound, m_dim, ((float64_t) 100.0*atbound)/m_dim);
+	sparsity+=((float64_t) 100.0*atbound)/m_dim;
 	*ptr_t=0;
 	*ptr_History=NULL;
 	return 0;
@@ -625,8 +625,8 @@ int32_t CQPBSVMLib::qpbsvm_gradient_descent(float64_t *x,
 		if (x[i]==0.0 || x[i]==1.0)
 			atbound++;
 	}
-	SG_PRINT("atbound:%d of %d (%2.2f%%)\n", atbound, m_dim, ((double) 100.0*atbound)/m_dim);
-	sparsity+=((double) 100.0*atbound)/m_dim;
+	SG_PRINT("atbound:%d of %d (%2.2f%%)\n", atbound, m_dim, ((float64_t) 100.0*atbound)/m_dim);
+	sparsity+=((float64_t) 100.0*atbound)/m_dim;
 	*ptr_t=0;
 	*ptr_History=NULL;
 	return 0;

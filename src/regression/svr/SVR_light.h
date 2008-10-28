@@ -93,8 +93,8 @@ class CSVRLight: public CSVMLight
 		 * @param label label
 		 * @param totdoc totdoc
 		 */
-		virtual double compute_objective_function(
-			double *a, double *lin, double *c, double eps,
+		virtual float64_t compute_objective_function(
+			float64_t *a, float64_t *lin, float64_t *c, float64_t eps,
 			int32_t *label, int32_t totdoc);
 
 		/** update linear component
@@ -112,9 +112,9 @@ class CSVRLight: public CSVMLight
 		 */
 		virtual void update_linear_component(
 			int32_t* docs, int32_t *label,
-			int32_t *active2dnum, double *a, double* a_old,
+			int32_t *active2dnum, float64_t *a, float64_t* a_old,
 			int32_t *working2dnum, int32_t totdoc,
-			double *lin, float64_t *aicache, double* c);
+			float64_t *lin, float64_t *aicache, float64_t* c);
 
 
 		/** update linear component MKL
@@ -132,9 +132,9 @@ class CSVRLight: public CSVMLight
 		 */
 		virtual void update_linear_component_mkl(
 			int32_t* docs, int32_t *label,
-			int32_t *active2dnum, double *a, double* a_old,
+			int32_t *active2dnum, float64_t *a, float64_t* a_old,
 			int32_t *working2dnum, int32_t totdoc,
-			double *lin, float64_t *aicache, double* c);
+			float64_t *lin, float64_t *aicache, float64_t* c);
 
 		/** update linear component MKL linadd
 		 *
@@ -151,9 +151,9 @@ class CSVRLight: public CSVMLight
 		 */
 		virtual void update_linear_component_mkl_linadd(
 			int32_t* docs, int32_t *label,
-			int32_t *active2dnum, double *a, double* a_old,
+			int32_t *active2dnum, float64_t *a, float64_t* a_old,
 			int32_t *working2dnum, int32_t totdoc,
-			double *lin, float64_t *aicache, double* c);
+			float64_t *lin, float64_t *aicache, float64_t* c);
 
 		/** reactivate inactive examples
 		 *
@@ -170,11 +170,11 @@ class CSVRLight: public CSVMLight
 		 * @param maxdiff maxdiff
 		 */
 		virtual void reactivate_inactive_examples(
-			int32_t *label,double *a,SHRINK_STATE *shrink_state,
-			double *lin, double *c, int32_t totdoc,int32_t iteration,
+			int32_t *label,float64_t *a,SHRINK_STATE *shrink_state,
+			float64_t *lin, float64_t *c, int32_t totdoc,int32_t iteration,
 			int32_t *inconsistent,
 			int32_t *docs,float64_t *aicache,
-			double* maxdiff) ;
+			float64_t* maxdiff);
 
 	protected:
 		/** thread helper for update linear component linadd

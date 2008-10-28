@@ -81,6 +81,7 @@ public:
 	// (p >= len if nothing needs to be filled)
 	int32_t get_data(const int32_t index, Qfloat **data, int32_t len);
 	void swap_index(int32_t i, int32_t j);	// future_option
+
 private:
 	int32_t l;
 	int64_t size;
@@ -218,7 +219,7 @@ public:
 		if(x_square) swap(x_square[i],x_square[j]);
 	}
 
-	inline double kernel_function(int32_t i, int32_t j) const
+	inline float64_t kernel_function(int32_t i, int32_t j) const
 	{
 		return kernel->kernel(x[i]->index,x[j]->index);
 	}
@@ -226,17 +227,17 @@ public:
 private:
 	CKernel* kernel;
 	const svm_node **x;
-	double *x_square;
+	float64_t *x_square;
 
 	// svm_parameter
 	const int32_t kernel_type;
 	const int32_t degree;
-	const double gamma;
-	const double coef0;
+	const float64_t gamma;
+	const float64_t coef0;
 };
 
 Kernel::Kernel(int32_t l, svm_node * const * x_, const svm_parameter& param)
-:kernel_type(param.kernel_type), degree(param.degree),
+: kernel_type(param.kernel_type), degree(param.degree),
  gamma(param.gamma), coef0(param.coef0)
 {
 	clone(x,x_,l);
@@ -274,34 +275,36 @@ public:
 	virtual ~Solver() {};
 
 	struct SolutionInfo {
-		double obj;
-		double rho;
-		double upper_bound_p;
-		double upper_bound_n;
-		double r;	// for Solver_NU
+		float64_t obj;
+		float64_t rho;
+		float64_t upper_bound_p;
+		float64_t upper_bound_n;
+		float64_t r;	// for Solver_NU
 	};
 
-	void Solve(int32_t l, const QMatrix& Q, const double *p_, const schar *y_,
-		   double *alpha_, double Cp, double Cn, double eps,
-		   SolutionInfo* si, int32_t shrinking);
+	void Solve(
+		int32_t l, const QMatrix& Q, const float64_t *p_, const schar *y_,
+		float64_t *alpha_, float64_t Cp, float64_t Cn, float64_t eps,
+		SolutionInfo* si, int32_t shrinking);
+
 protected:
 	int32_t active_size;
 	schar *y;
-	double *G;		// gradient of objective function
+	float64_t *G;		// gradient of objective function
 	enum { LOWER_BOUND, UPPER_BOUND, FREE };
 	char *alpha_status;	// LOWER_BOUND, UPPER_BOUND, FREE
-	double *alpha;
+	float64_t *alpha;
 	const QMatrix *Q;
 	const Qfloat *QD;
-	double eps;
-	double Cp,Cn;
-	double *p;
+	float64_t eps;
+	float64_t Cp,Cn;
+	float64_t *p;
 	int32_t *active_set;
-	double *G_bar;		// gradient, if we treat free variables as 0
+	float64_t *G_bar;		// gradient, if we treat free variables as 0
 	int32_t l;
 	bool unshrinked;	// XXX
 
-	double get_C(int32_t i)
+	float64_t get_C(int32_t i)
 	{
 		return (y[i] > 0)? Cp : Cn;
 	}
@@ -318,11 +321,11 @@ protected:
 	bool is_free(int32_t i) { return alpha_status[i] == FREE; }
 	void swap_index(int32_t i, int32_t j);
 	void reconstruct_gradient();
-	virtual int32_t select_working_set(int32_t &i, int32_t &j, double &gap);
-	virtual double calculate_rho();
+	virtual int32_t select_working_set(int32_t &i, int32_t &j, float64_t &gap);
+	virtual float64_t calculate_rho();
 	virtual void do_shrinking();
 private:
-	bool be_shrunken(int32_t i, double Gmax1, double Gmax2);
+	bool be_shrunken(int32_t i, float64_t Gmax1, float64_t Gmax2);
 };
 
 void Solver::swap_index(int32_t i, int32_t j)
@@ -351,15 +354,16 @@ void Solver::reconstruct_gradient()
 		if(is_free(i))
 		{
 			const Qfloat *Q_i = Q->get_Q(i,l);
-			double alpha_i = alpha[i];
+			float64_t alpha_i = alpha[i];
 			for(int32_t j=active_size;j<l;j++)
 				G[j] += alpha_i * Q_i[j];
 		}
 }
 
-void Solver::Solve(int32_t p_l, const QMatrix& p_Q, const double *p_p,
-	const schar *p_y, double *p_alpha, double p_Cp, double p_Cn, double p_eps,
-	SolutionInfo* p_si, int32_t shrinking)
+void Solver::Solve(
+	int32_t p_l, const QMatrix& p_Q, const float64_t *p_p,
+	const schar *p_y, float64_t *p_alpha, float64_t p_Cp, float64_t p_Cn,
+	float64_t p_eps, SolutionInfo* p_si, int32_t shrinking)
 {
 	this->l = p_l;
 	this->Q = &p_Q;
@@ -389,8 +393,8 @@ void Solver::Solve(int32_t p_l, const QMatrix& p_Q, const double *p_p,
 
 	// initialize gradient
 	{
-		G = new double[l];
-		G_bar = new double[l];
+		G = new float64_t[l];
+		G_bar = new float64_t[l];
 		int32_t i;
 		for(i=0;i<l;i++)
 		{
@@ -401,7 +405,7 @@ void Solver::Solve(int32_t p_l, const QMatrix& p_Q, const double *p_p,
 			if(!is_lower_bound(i))
 			{
 				const Qfloat *Q_i = Q->get_Q(i,l);
-				double alpha_i = alpha[i];
+				float64_t alpha_i = alpha[i];
 				int32_t j;
 				for(j=0;j<l;j++)
 					G[j] += alpha_i*Q_i[j];
@@ -428,7 +432,7 @@ void Solver::Solve(int32_t p_l, const QMatrix& p_Q, const double *p_p,
 		}
 
 		int32_t i,j;
-		double gap;
+		float64_t gap;
 		if(select_working_set(i,j, gap)!=0)
 		{
 			// reconstruct the whole gradient
@@ -451,19 +455,19 @@ void Solver::Solve(int32_t p_l, const QMatrix& p_Q, const double *p_p,
 		const Qfloat *Q_i = Q->get_Q(i,active_size);
 		const Qfloat *Q_j = Q->get_Q(j,active_size);
 
-		double C_i = get_C(i);
-		double C_j = get_C(j);
+		float64_t C_i = get_C(i);
+		float64_t C_j = get_C(j);
 
-		double old_alpha_i = alpha[i];
-		double old_alpha_j = alpha[j];
+		float64_t old_alpha_i = alpha[i];
+		float64_t old_alpha_j = alpha[j];
 
 		if(y[i]!=y[j])
 		{
-			double quad_coef = Q_i[i]+Q_j[j]+2*Q_i[j];
+			float64_t quad_coef = Q_i[i]+Q_j[j]+2*Q_i[j];
 			if (quad_coef <= 0)
 				quad_coef = TAU;
-			double delta = (-G[i]-G[j])/quad_coef;
-			double diff = alpha[i] - alpha[j];
+			float64_t delta = (-G[i]-G[j])/quad_coef;
+			float64_t diff = alpha[i] - alpha[j];
 			alpha[i] += delta;
 			alpha[j] += delta;
 			
@@ -502,11 +506,11 @@ void Solver::Solve(int32_t p_l, const QMatrix& p_Q, const double *p_p,
 		}
 		else
 		{
-			double quad_coef = Q_i[i]+Q_j[j]-2*Q_i[j];
+			float64_t quad_coef = Q_i[i]+Q_j[j]-2*Q_i[j];
 			if (quad_coef <= 0)
 				quad_coef = TAU;
-			double delta = (G[i]-G[j])/quad_coef;
-			double sum = alpha[i] + alpha[j];
+			float64_t delta = (G[i]-G[j])/quad_coef;
+			float64_t sum = alpha[i] + alpha[j];
 			alpha[i] -= delta;
 			alpha[j] += delta;
 
@@ -546,8 +550,8 @@ void Solver::Solve(int32_t p_l, const QMatrix& p_Q, const double *p_p,
 
 		// update G
 
-		double delta_alpha_i = alpha[i] - old_alpha_i;
-		double delta_alpha_j = alpha[j] - old_alpha_j;
+		float64_t delta_alpha_i = alpha[i] - old_alpha_i;
+		float64_t delta_alpha_j = alpha[j] - old_alpha_j;
 		
 		for(int32_t k=0;k<active_size;k++)
 		{
@@ -592,7 +596,7 @@ void Solver::Solve(int32_t p_l, const QMatrix& p_Q, const double *p_p,
 
 	// calculate objective value
 	{
-		double v = 0;
+		float64_t v = 0;
 		int32_t i;
 		for(i=0;i<l;i++)
 			v += alpha[i] * (G[i] + p[i]);
@@ -621,7 +625,8 @@ void Solver::Solve(int32_t p_l, const QMatrix& p_Q, const double *p_p,
 }
 
 // return 1 if already optimal, return 0 otherwise
-int32_t Solver::select_working_set(int32_t &out_i, int32_t &out_j, double &gap)
+int32_t Solver::select_working_set(
+	int32_t &out_i, int32_t &out_j, float64_t &gap)
 {
 	// return i,j such that
 	// i: maximizes -y_i * grad(f)_i, i in I_up(\alpha)
@@ -629,11 +634,11 @@ int32_t Solver::select_working_set(int32_t &out_i, int32_t &out_j, double &gap)
 	//    (if quadratic coefficient <= 0, replace it with tau)
 	//    -y_j*grad(f)_j < -y_i*grad(f)_i, j in I_low(\alpha)
 	
-	double Gmax = -INF;
-	double Gmax2 = -INF;
+	float64_t Gmax = -INF;
+	float64_t Gmax2 = -INF;
 	int32_t Gmax_idx = -1;
 	int32_t Gmin_idx = -1;
-	double obj_diff_min = INF;
+	float64_t obj_diff_min = INF;
 
 	for(int32_t t=0;t<active_size;t++)
 		if(y[t]==+1)
@@ -666,13 +671,13 @@ int32_t Solver::select_working_set(int32_t &out_i, int32_t &out_j, double &gap)
 		{
 			if (!is_lower_bound(j))
 			{
-				double grad_diff=Gmax+G[j];
+				float64_t grad_diff=Gmax+G[j];
 				if (G[j] >= Gmax2)
 					Gmax2 = G[j];
 				if (grad_diff > 0)
 				{
-					double obj_diff; 
-					double quad_coef=Q_i[i]+QD[j]-2*y[i]*Q_i[j];
+					float64_t obj_diff; 
+					float64_t quad_coef=Q_i[i]+QD[j]-2*y[i]*Q_i[j];
 					if (quad_coef > 0)
 						obj_diff = -(grad_diff*grad_diff)/quad_coef;
 					else
@@ -690,13 +695,13 @@ int32_t Solver::select_working_set(int32_t &out_i, int32_t &out_j, double &gap)
 		{
 			if (!is_upper_bound(j))
 			{
-				double grad_diff= Gmax-G[j];
+				float64_t grad_diff= Gmax-G[j];
 				if (-G[j] >= Gmax2)
 					Gmax2 = -G[j];
 				if (grad_diff > 0)
 				{
-					double obj_diff; 
-					double quad_coef=Q_i[i]+QD[j]+2*y[i]*Q_i[j];
+					float64_t obj_diff; 
+					float64_t quad_coef=Q_i[i]+QD[j]+2*y[i]*Q_i[j];
 					if (quad_coef > 0)
 						obj_diff = -(grad_diff*grad_diff)/quad_coef;
 					else
@@ -721,7 +726,7 @@ int32_t Solver::select_working_set(int32_t &out_i, int32_t &out_j, double &gap)
 	return 0;
 }
 
-bool Solver::be_shrunken(int32_t i, double Gmax1, double Gmax2)
+bool Solver::be_shrunken(int32_t i, float64_t Gmax1, float64_t Gmax2)
 {
 	if(is_upper_bound(i))
 	{
@@ -744,8 +749,8 @@ bool Solver::be_shrunken(int32_t i, double Gmax1, double Gmax2)
 void Solver::do_shrinking()
 {
 	int32_t i;
-	double Gmax1 = -INF;		// max { -y_i * grad(f)_i | i in I_up(\alpha) }
-	double Gmax2 = -INF;		// max { y_i * grad(f)_i | i in I_low(\alpha) }
+	float64_t Gmax1 = -INF;		// max { -y_i * grad(f)_i | i in I_up(\alpha) }
+	float64_t Gmax2 = -INF;		// max { y_i * grad(f)_i | i in I_low(\alpha) }
 
 	// find maximal violating pair first
 	for(i=0;i<active_size;i++)
@@ -818,14 +823,14 @@ void Solver::do_shrinking()
 		}
 }
 
-double Solver::calculate_rho()
+float64_t Solver::calculate_rho()
 {
-	double r;
+	float64_t r;
 	int32_t nr_free = 0;
-	double ub = INF, lb = -INF, sum_free = 0;
+	float64_t ub = INF, lb = -INF, sum_free = 0;
 	for(int32_t i=0;i<active_size;i++)
 	{
-		double yG = y[i]*G[i];
+		float64_t yG = y[i]*G[i];
 
 		if(is_upper_bound(i))
 		{
@@ -865,24 +870,27 @@ class Solver_NU : public Solver
 {
 public:
 	Solver_NU() {}
-	void Solve(int32_t p_l, const QMatrix& p_Q, const double *p_p,
-		const schar *p_y, double* p_alpha, double p_Cp, double p_Cn,
-		double p_eps, SolutionInfo* p_si, int32_t shrinking)
+	void Solve(
+		int32_t p_l, const QMatrix& p_Q, const float64_t *p_p,
+		const schar *p_y, float64_t* p_alpha, float64_t p_Cp, float64_t p_Cn,
+		float64_t p_eps, SolutionInfo* p_si, int32_t shrinking)
 	{
 		this->si = p_si;
 		Solver::Solve(p_l,p_Q,p,p_y,p_alpha,p_Cp,p_Cn,p_eps,p_si,shrinking);
 	}
 private:
 	SolutionInfo *si;
-	int32_t select_working_set(int32_t &i, int32_t &j, double &gap);
-	double calculate_rho();
-	bool be_shrunken(int32_t i, double Gmax1, double Gmax2, double Gmax3, double Gmax4);
+	int32_t select_working_set(int32_t &i, int32_t &j, float64_t &gap);
+	float64_t calculate_rho();
+	bool be_shrunken(
+		int32_t i, float64_t Gmax1, float64_t Gmax2, float64_t Gmax3,
+		float64_t Gmax4);
 	void do_shrinking();
 };
 
 // return 1 if already optimal, return 0 otherwise
 int32_t Solver_NU::select_working_set(
-	int32_t &out_i, int32_t &out_j, double &gap)
+	int32_t &out_i, int32_t &out_j, float64_t &gap)
 {
 	// return i,j such that y_i = y_j and
 	// i: maximizes -y_i * grad(f)_i, i in I_up(\alpha)
@@ -890,16 +898,16 @@ int32_t Solver_NU::select_working_set(
 	//    (if quadratic coefficient <= 0, replace it with tau)
 	//    -y_j*grad(f)_j < -y_i*grad(f)_i, j in I_low(\alpha)
 
-	double Gmaxp = -INF;
-	double Gmaxp2 = -INF;
+	float64_t Gmaxp = -INF;
+	float64_t Gmaxp2 = -INF;
 	int32_t Gmaxp_idx = -1;
 
-	double Gmaxn = -INF;
-	double Gmaxn2 = -INF;
+	float64_t Gmaxn = -INF;
+	float64_t Gmaxn2 = -INF;
 	int32_t Gmaxn_idx = -1;
 
 	int32_t Gmin_idx = -1;
-	double obj_diff_min = INF;
+	float64_t obj_diff_min = INF;
 
 	for(int32_t t=0;t<active_size;t++)
 		if(y[t]==+1)
@@ -936,13 +944,13 @@ int32_t Solver_NU::select_working_set(
 		{
 			if (!is_lower_bound(j))	
 			{
-				double grad_diff=Gmaxp+G[j];
+				float64_t grad_diff=Gmaxp+G[j];
 				if (G[j] >= Gmaxp2)
 					Gmaxp2 = G[j];
 				if (grad_diff > 0)
 				{
-					double obj_diff; 
-					double quad_coef = Q_ip[ip]+QD[j]-2*Q_ip[j];
+					float64_t obj_diff; 
+					float64_t quad_coef = Q_ip[ip]+QD[j]-2*Q_ip[j];
 					if (quad_coef > 0)
 						obj_diff = -(grad_diff*grad_diff)/quad_coef;
 					else
@@ -960,13 +968,13 @@ int32_t Solver_NU::select_working_set(
 		{
 			if (!is_upper_bound(j))
 			{
-				double grad_diff=Gmaxn-G[j];
+				float64_t grad_diff=Gmaxn-G[j];
 				if (-G[j] >= Gmaxn2)
 					Gmaxn2 = -G[j];
 				if (grad_diff > 0)
 				{
-					double obj_diff; 
-					double quad_coef = Q_in[in]+QD[j]-2*Q_in[j];
+					float64_t obj_diff; 
+					float64_t quad_coef = Q_in[in]+QD[j]-2*Q_in[j];
 					if (quad_coef > 0)
 						obj_diff = -(grad_diff*grad_diff)/quad_coef;
 					else
@@ -996,7 +1004,8 @@ int32_t Solver_NU::select_working_set(
 }
 
 bool Solver_NU::be_shrunken(
-	int32_t i, double Gmax1, double Gmax2, double Gmax3, double Gmax4)
+	int32_t i, float64_t Gmax1, float64_t Gmax2, float64_t Gmax3,
+	float64_t Gmax4)
 {
 	if(is_upper_bound(i))
 	{
@@ -1018,10 +1027,10 @@ bool Solver_NU::be_shrunken(
 
 void Solver_NU::do_shrinking()
 {
-	double Gmax1 = -INF;	// max { -y_i * grad(f)_i | y_i = +1, i in I_up(\alpha) }
-	double Gmax2 = -INF;	// max { y_i * grad(f)_i | y_i = +1, i in I_low(\alpha) }
-	double Gmax3 = -INF;	// max { -y_i * grad(f)_i | y_i = -1, i in I_up(\alpha) }
-	double Gmax4 = -INF;	// max { y_i * grad(f)_i | y_i = -1, i in I_low(\alpha) }
+	float64_t Gmax1 = -INF;	// max { -y_i * grad(f)_i | y_i = +1, i in I_up(\alpha) }
+	float64_t Gmax2 = -INF;	// max { y_i * grad(f)_i | y_i = +1, i in I_low(\alpha) }
+	float64_t Gmax3 = -INF;	// max { -y_i * grad(f)_i | y_i = -1, i in I_up(\alpha) }
+	float64_t Gmax4 = -INF;	// max { y_i * grad(f)_i | y_i = -1, i in I_low(\alpha) }
 
 	// find maximal violating pair first
 	int32_t i;
@@ -1085,12 +1094,12 @@ void Solver_NU::do_shrinking()
 		}
 }
 
-double Solver_NU::calculate_rho()
+float64_t Solver_NU::calculate_rho()
 {
 	int32_t nr_free1 = 0,nr_free2 = 0;
-	double ub1 = INF, ub2 = INF;
-	double lb1 = -INF, lb2 = -INF;
-	double sum_free1 = 0, sum_free2 = 0;
+	float64_t ub1 = INF, ub2 = INF;
+	float64_t lb1 = -INF, lb2 = -INF;
+	float64_t sum_free1 = 0, sum_free2 = 0;
 
 	for(int32_t i=0; i<active_size; i++)
 	{
@@ -1120,7 +1129,7 @@ double Solver_NU::calculate_rho()
 		}
 	}
 
-	double r1,r2;
+	float64_t r1,r2;
 	if(nr_free1 > 0)
 		r1 = sum_free1/nr_free1;
 	else
@@ -1299,6 +1308,7 @@ public:
 		delete[] buffer[1];
 		delete[] QD;
 	}
+
 private:
 	int32_t l;
 	Cache *cache;
@@ -1314,10 +1324,10 @@ private:
 //
 static void solve_c_svc(
 	const svm_problem *prob, const svm_parameter* param,
-	double *alpha, Solver::SolutionInfo* si, double Cp, double Cn)
+	float64_t *alpha, Solver::SolutionInfo* si, float64_t Cp, float64_t Cn)
 {
 	int32_t l = prob->l;
-	double *minus_ones = new double[l];
+	float64_t *minus_ones = new float64_t[l];
 	schar *y = new schar[l];
 
 	int32_t i;
@@ -1333,7 +1343,7 @@ static void solve_c_svc(
 	s.Solve(l, SVC_Q(*prob,*param,y), minus_ones, y,
 		alpha, Cp, Cn, param->eps, si, param->shrinking);
 
-	double sum_alpha=0;
+	float64_t sum_alpha=0;
 	for(i=0;i<l;i++)
 		sum_alpha += alpha[i];
 
@@ -1349,11 +1359,11 @@ static void solve_c_svc(
 
 static void solve_nu_svc(
 	const svm_problem *prob, const svm_parameter *param,
-	double *alpha, Solver::SolutionInfo* si)
+	float64_t *alpha, Solver::SolutionInfo* si)
 {
 	int32_t i;
 	int32_t l = prob->l;
-	double nu = param->nu;
+	float64_t nu = param->nu;
 
 	schar *y = new schar[l];
 
@@ -1363,8 +1373,8 @@ static void solve_nu_svc(
 		else
 			y[i] = -1;
 
-	double sum_pos = nu*l/2;
-	double sum_neg = nu*l/2;
+	float64_t sum_pos = nu*l/2;
+	float64_t sum_neg = nu*l/2;
 
 	for(i=0;i<l;i++)
 		if(y[i] == +1)
@@ -1378,7 +1388,7 @@ static void solve_nu_svc(
 			sum_neg -= alpha[i];
 		}
 
-	double *zeros = new double[l];
+	float64_t *zeros = new float64_t[l];
 
 	for(i=0;i<l;i++)
 		zeros[i] = 0;
@@ -1386,7 +1396,7 @@ static void solve_nu_svc(
 	Solver_NU s;
 	s.Solve(l, SVC_Q(*prob,*param,y), zeros, y,
 		alpha, 1.0, 1.0, param->eps, si,  param->shrinking);
-	double r = si->r;
+	float64_t r = si->r;
 
 	SG_SINFO("C = %f\n",1/r);
 
@@ -1404,10 +1414,10 @@ static void solve_nu_svc(
 
 static void solve_one_class(
 	const svm_problem *prob, const svm_parameter *param,
-	double *alpha, Solver::SolutionInfo* si)
+	float64_t *alpha, Solver::SolutionInfo* si)
 {
 	int32_t l = prob->l;
-	double *zeros = new double[l];
+	float64_t *zeros = new float64_t[l];
 	schar *ones = new schar[l];
 	int32_t i;
 
@@ -1436,11 +1446,11 @@ static void solve_one_class(
 
 static void solve_epsilon_svr(
 	const svm_problem *prob, const svm_parameter *param,
-	double *alpha, Solver::SolutionInfo* si)
+	float64_t *alpha, Solver::SolutionInfo* si)
 {
 	int32_t l = prob->l;
-	double *alpha2 = new double[2*l];
-	double *linear_term = new double[2*l];
+	float64_t *alpha2 = new float64_t[2*l];
+	float64_t *linear_term = new float64_t[2*l];
 	schar *y = new schar[2*l];
 	int32_t i;
 
@@ -1459,7 +1469,7 @@ static void solve_epsilon_svr(
 	s.Solve(2*l, SVR_Q(*prob,*param), linear_term, y,
 		alpha2, param->C, param->C, param->eps, si, param->shrinking);
 
-	double sum_alpha = 0;
+	float64_t sum_alpha = 0;
 	for(i=0;i<l;i++)
 	{
 		alpha[i] = alpha2[i] - alpha2[i+l];
@@ -1474,16 +1484,16 @@ static void solve_epsilon_svr(
 
 static void solve_nu_svr(
 	const svm_problem *prob, const svm_parameter *param,
-	double *alpha, Solver::SolutionInfo* si)
+	float64_t *alpha, Solver::SolutionInfo* si)
 {
 	int32_t l = prob->l;
-	double C = param->C;
-	double *alpha2 = new double[2*l];
-	double *linear_term = new double[2*l];
+	float64_t C = param->C;
+	float64_t *alpha2 = new float64_t[2*l];
+	float64_t *linear_term = new float64_t[2*l];
 	schar *y = new schar[2*l];
 	int32_t i;
 
-	double sum = C * param->nu * l / 2;
+	float64_t sum = C * param->nu * l / 2;
 	for(i=0;i<l;i++)
 	{
 		alpha2[i] = alpha2[i+l] = min(sum,C);
@@ -1515,16 +1525,16 @@ static void solve_nu_svr(
 //
 struct decision_function
 {
-	double *alpha;
-	double rho;	
-	double objective;
+	float64_t *alpha;
+	float64_t rho;	
+	float64_t objective;
 };
 
 decision_function svm_train_one(
 	const svm_problem *prob, const svm_parameter *param,
-	double Cp, double Cn)
+	float64_t Cp, float64_t Cn)
 {
-	double *alpha = Malloc(double,prob->l);
+	float64_t *alpha = Malloc(float64_t, prob->l);
 	Solver::SolutionInfo si;
 	switch(param->svm_type)
 	{
@@ -1660,9 +1670,9 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 		model->nr_class = 2;
 		model->label = NULL;
 		model->nSV = NULL;
-		model->sv_coef = Malloc(double *,1);
+		model->sv_coef = Malloc(float64_t *,1);
 		decision_function f = svm_train_one(prob,param,0,0);
-		model->rho = Malloc(double,1);
+		model->rho = Malloc(float64_t, 1);
 		model->rho[0] = f.rho;
 		model->objective = f.objective;
 
@@ -1672,7 +1682,7 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 			if(fabs(f.alpha[i]) > 0) ++nSV;
 		model->l = nSV;
 		model->SV = Malloc(svm_node *,nSV);
-		model->sv_coef[0] = Malloc(double,nSV);
+		model->sv_coef[0] = Malloc(float64_t, nSV);
 		int32_t j = 0;
 		for(i=0;i<prob->l;i++)
 			if(fabs(f.alpha[i]) > 0)
@@ -1703,7 +1713,7 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 
 		// calculate weighted C
 
-		double *weighted_C = Malloc(double, nr_class);
+		float64_t *weighted_C = Malloc(float64_t,  nr_class);
 		for(i=0;i<nr_class;i++)
 			weighted_C[i] = param->C;
 		for(i=0;i<param->nr_weight;i++)
@@ -1734,7 +1744,7 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 				int32_t ci = count[i], cj = count[j];
 				sub_prob.l = ci+cj;
 				sub_prob.x = Malloc(svm_node *,sub_prob.l);
-				sub_prob.y = Malloc(double,sub_prob.l+1); //dirty hack to surpress valgrind err
+				sub_prob.y = Malloc(float64_t, sub_prob.l+1); //dirty hack to surpress valgrind err
 
 				int32_t k;
 				for(k=0;k<ci;k++)
@@ -1770,7 +1780,7 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 		for(i=0;i<nr_class;i++)
 			model->label[i] = label[i];
 		
-		model->rho = Malloc(double,nr_class*(nr_class-1)/2);
+		model->rho = Malloc(float64_t, nr_class*(nr_class-1)/2);
 		for(i=0;i<nr_class*(nr_class-1)/2;i++)
 			model->rho[i] = f[i].rho;
 
@@ -1803,9 +1813,9 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 		for(i=1;i<nr_class;i++)
 			nz_start[i] = nz_start[i-1]+nz_count[i-1];
 
-		model->sv_coef = Malloc(double *,nr_class-1);
+		model->sv_coef = Malloc(float64_t *,nr_class-1);
 		for(i=0;i<nr_class-1;i++)
-			model->sv_coef[i] = Malloc(double,total_sv);
+			model->sv_coef[i] = Malloc(float64_t, total_sv);
 
 		p = 0;
 		for(i=0;i<nr_class;i++)
@@ -1878,7 +1888,8 @@ void svm_destroy_param(svm_parameter* param)
 	free(param->weight);
 }
 
-const char *svm_check_parameter(const svm_problem *prob, const svm_parameter *param)
+const char *svm_check_parameter(
+	const svm_problem *prob, const svm_parameter *param)
 {
 	// svm_type
 

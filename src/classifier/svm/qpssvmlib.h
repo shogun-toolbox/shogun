@@ -8,15 +8,15 @@
  */
 
 int8_t qpssvm_solver(const void* (*get_col)(uint32_t),
-                  double *diag_H,
-                  double *f,
-                  double b,
+                  float64_t *diag_H,
+                  float64_t *f,
+                  float64_t b,
                   uint16_t *I,
-                  double *x,
+                  float64_t *x,
                   uint32_t n,
                   uint32_t tmax,
-                  double tolabs,
-                  double tolrel,
-                  double *QP,
-                  double *QD,
+                  float64_t tolabs,
+                  float64_t tolrel,
+                  float64_t *QP,
+                  float64_t *QD,
                   uint32_t verb);

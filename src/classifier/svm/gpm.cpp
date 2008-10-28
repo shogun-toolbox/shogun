@@ -86,8 +86,8 @@ extern uint32_t Randnext;
 #define ThRandPos ((Randnext = Randnext * 1103515245L + 12345L) & 0x7fffffff)
 
 int32_t InnerProjector(
-	int32_t method, int32_t n, int32_t *iy, double e, double *qk, double l,
-	double u, double *x, double &lambda);
+	int32_t method, int32_t n, int32_t *iy, float64_t e, float64_t *qk, float64_t l,
+	float64_t u, float64_t *x, float64_t &lambda);
 
 /* Uncomment if you want to allocate vectors on the stack  *
  * instead of the heap. On some architectures this helps   *
@@ -106,44 +106,45 @@ int32_t InnerProjector(
  *** Optim. Meth. Soft. 20, 2005, 353-378)                                  ***
  ******************************************************************************/
 int32_t gvpm(
-	int32_t Projector, int32_t n, float32_t *vecA, double *b, double c,
-	double e, int32_t *iy, double *x, double tol, int32_t *ls, int32_t *proj)
+	int32_t Projector, int32_t n, float32_t *vecA, float64_t *b, float64_t c,
+	float64_t e, int32_t *iy, float64_t *x, float64_t tol, int32_t *ls,
+	int32_t *proj)
 {
   int32_t i, j, iter, it, it2, luv, info;
-  double  gd, max, normd, dAd, lam, lamnew, alpha, kktlam, ak, bk;
+  float64_t  gd, max, normd, dAd, lam, lamnew, alpha, kktlam, ak, bk;
 
   int32_t lscount = 0, projcount = 0;
-  double  eps     = 1.0e-16;
-  double  DELTAsv, ProdDELTAsv;
-  double  lam_ext;
+  float64_t  eps     = 1.0e-16;
+  float64_t  DELTAsv, ProdDELTAsv;
+  float64_t  lam_ext;
 
   /* solver-specific settings */
 #ifdef VPM_ADA
   int32_t     nc = 1, ia1 = -1;
-  double  alpha1, alpha2;
+  float64_t  alpha1, alpha2;
 #endif
 
   /* allocation-dependant settings */
 #ifdef VARIABLES_ON_STACK
 
   int32_t     ipt[in], ipt2[in], uv[in];
-  double  g[in], y[in], tempv[in], d[in], Ad[in], t[in];
+  float64_t  g[in], y[in], tempv[in], d[in], Ad[in], t[in];
 
 #else
 
   int32_t     *ipt, *ipt2, *uv;
-  double  *g, *y, *tempv, *d, *Ad, *t;
+  float64_t  *g, *y, *tempv, *d, *Ad, *t;
 
   /*** array allocations ***/
   ipt   = (int32_t *) malloc(n * sizeof(int32_t));
   ipt2  = (int32_t *) malloc(n * sizeof(int32_t));
   uv    = (int32_t *) malloc(n * sizeof(int32_t));
-  g     = (double *)malloc(n * sizeof(double));
-  y     = (double *)malloc(n * sizeof(double));
-  d     = (double *)malloc(n * sizeof(double));
-  Ad    = (double *)malloc(n * sizeof(double));
-  t     = (double *)malloc(n * sizeof(double));
-  tempv = (double *)malloc(n * sizeof(double));
+  g     = (float64_t *)malloc(n * sizeof(float64_t));
+  y     = (float64_t *)malloc(n * sizeof(float64_t));
+  d     = (float64_t *)malloc(n * sizeof(float64_t));
+  Ad    = (float64_t *)malloc(n * sizeof(float64_t));
+  t     = (float64_t *)malloc(n * sizeof(float64_t));
+  tempv = (float64_t *)malloc(n * sizeof(float64_t));
 
 #endif
 
@@ -168,7 +169,7 @@ int32_t gvpm(
         if (fabs(x[i]) > ProdDELTAsv*1e-2)
             ipt[it++] = i;
 
-    memset(t, 0, n*sizeof(double));
+    memset(t, 0, n*sizeof(float64_t));
     for (i = 0; i < it; i++)
     {
         tempA = vecA + ipt[i]*n;
@@ -229,7 +230,7 @@ int32_t gvpm(
              if (fabs(y[i]) > ProdDELTAsv)
                  ipt2[it2++] = i;
 
-         memset(Ad, 0, n*sizeof(double));
+         memset(Ad, 0, n*sizeof(float64_t));
          if (it < it2) // Ad = A*d
          {
              for (i = 0; i < it; i++)
@@ -443,43 +444,44 @@ Clean:
  *** Upper Bounds"; Math. Prog. to appear)                                  ***
  ******************************************************************************/
 int32_t FletcherAlg2A(
-	int32_t Projector, int32_t n, float32_t *vecA, double *b, double c,
-	double e, int32_t *iy, double *x, double tol, int32_t *ls, int32_t *proj)
+	int32_t Projector, int32_t n, float32_t *vecA, float64_t *b, float64_t c,
+	float64_t e, int32_t *iy, float64_t *x, float64_t tol, int32_t *ls,
+	int32_t *proj)
 {
   int32_t i, j, iter, it, it2, luv, info, lscount = 0, projcount = 0;
-  double gd, max, ak, bk, akold, bkold, lamnew, alpha, kktlam, lam_ext;
-  double eps     = 1.0e-16;
-  double DELTAsv, ProdDELTAsv;
+  float64_t gd, max, ak, bk, akold, bkold, lamnew, alpha, kktlam, lam_ext;
+  float64_t eps     = 1.0e-16;
+  float64_t DELTAsv, ProdDELTAsv;
 
   /*** variables for the adaptive nonmonotone linesearch ***/
   int32_t L, llast;
-  double fr, fbest, fv, fc, fv0;
+  float64_t fr, fbest, fv, fc, fv0;
 
   /*** allocation-dependant settings ***/
 #ifdef VARIABLES_ON_STACK
 
   int32_t ipt[in], ipt2[in], uv[in];
-  double g[in], y[in], tempv[in], d[in], Ad[in], t[in],
+  float64_t g[in], y[in], tempv[in], d[in], Ad[in], t[in],
          xplus[in], tplus[in], sk[in], yk[in];
 #else
 
   int32_t *ipt, *ipt2, *uv;
-  double *g, *y, *tempv, *d, *Ad, *t, *xplus, *tplus, *sk, *yk;
+  float64_t *g, *y, *tempv, *d, *Ad, *t, *xplus, *tplus, *sk, *yk;
 
   /*** arrays allocation ***/
   ipt   = (int32_t *)malloc(n * sizeof(int32_t));
   ipt2  = (int32_t *)malloc(n * sizeof(int32_t));
   uv    = (int32_t *)malloc(n * sizeof(int32_t));
-  g     = (double *)malloc(n * sizeof(double));
-  y     = (double *)malloc(n * sizeof(double));
-  tempv = (double *)malloc(n * sizeof(double));
-  d     = (double *)malloc(n * sizeof(double));
-  Ad    = (double *)malloc(n * sizeof(double));
-  t     = (double *)malloc(n * sizeof(double));
-  xplus = (double *)malloc(n * sizeof(double));
-  tplus = (double *)malloc(n * sizeof(double));
-  sk    = (double *)malloc(n * sizeof(double));
-  yk    = (double *)malloc(n * sizeof(double));
+  g     = (float64_t *)malloc(n * sizeof(float64_t));
+  y     = (float64_t *)malloc(n * sizeof(float64_t));
+  tempv = (float64_t *)malloc(n * sizeof(float64_t));
+  d     = (float64_t *)malloc(n * sizeof(float64_t));
+  Ad    = (float64_t *)malloc(n * sizeof(float64_t));
+  t     = (float64_t *)malloc(n * sizeof(float64_t));
+  xplus = (float64_t *)malloc(n * sizeof(float64_t));
+  tplus = (float64_t *)malloc(n * sizeof(float64_t));
+  sk    = (float64_t *)malloc(n * sizeof(float64_t));
+  yk    = (float64_t *)malloc(n * sizeof(float64_t));
 
 #endif
 
@@ -506,7 +508,7 @@ int32_t FletcherAlg2A(
         if (fabs(x[i]) > ProdDELTAsv)
             ipt[it++] = i;
 
-    memset(t, 0, n*sizeof(double));
+    memset(t, 0, n*sizeof(float64_t));
     for (i = 0; i < it; i++)
     {
          tempA = vecA + ipt[i] * n;
@@ -578,7 +580,7 @@ int32_t FletcherAlg2A(
              if (fabs(y[i]) > ProdDELTAsv)
                  ipt2[it2++] = i;
 
-         memset(Ad, 0, n*sizeof(double));
+         memset(Ad, 0, n*sizeof(float64_t));
          if (it < it2) // compute Ad = A*d
          {
             for (i = 0; i < it; i++)
@@ -782,15 +784,15 @@ Clean:
 /*** Encapsulating method to call the chosen Gradient Projection Method     ***/
 /******************************************************************************/
 int32_t gpm_solver(
-	int32_t Solver, int32_t Projector, int32_t n, float32_t *A, double *b,
-	double c, double e, int32_t *iy, double *x, double tol, int32_t *ls,
-	int32_t *proj)
+	int32_t Solver, int32_t Projector, int32_t n, float32_t *A, float64_t *b,
+	float64_t c, float64_t e, int32_t *iy, float64_t *x, float64_t tol,
+	int32_t *ls, int32_t *proj)
 {
   /*** Uncomment the following if you need to scale the QP Hessian matrix
    *** before calling the chosen solver
   int32_t    i, j;
   float32_t  *ptrA;
-  double max, s;
+  float64_t max, s;
 
   max = fabs(A[0][0]);
   for (i = 1; i < n; i++)
@@ -825,19 +827,19 @@ int32_t gpm_solver(
  *** Constrained Quadratic Programs Subject to Lower and Upper Bounds";     ***
  *** Math. Prog. to appear)                                                 ***
  ******************************************************************************/
-double ProjectR(
-	double *x, int32_t n, double lambda, int32_t *a, double b, double *c,
-	double l, double u)
+float64_t ProjectR(
+	float64_t *x, int32_t n, float64_t lambda, int32_t *a, float64_t b,
+	float64_t *c, float64_t l, float64_t u)
 {
   int32_t i;
-  double r = 0.0;
+  float64_t r = 0.0;
 
   for (i = 0; i < n; i++)
   {
-      x[i] = -c[i] + lambda*(double)a[i];
+      x[i] = -c[i] + lambda*(float64_t)a[i];
       if (x[i] >= u) x[i] = u;
       else if (x[i] < l) x[i] = l;
-      r += (double)a[i]*x[i];
+      r += (float64_t)a[i]*x[i];
   }
 
   return (r - b);
@@ -854,15 +856,15 @@ double ProjectR(
  ***                                l <= x <= u                             ***
  ******************************************************************************/
 int32_t ProjectDai(
-	int32_t n, int32_t *a, double b, double *c, double l, double u, double *x,
-	double &lam_ext)
+	int32_t n, int32_t *a, float64_t b, float64_t *c, float64_t l, float64_t u,
+	float64_t *x, float64_t &lam_ext)
 {
-  double lambda, lambdal, lambdau, dlambda, lambda_new, tol_lam;
-  double r, rl, ru, s, tol_r;
+  float64_t lambda, lambdal, lambdau, dlambda, lambda_new, tol_lam;
+  float64_t r, rl, ru, s, tol_r;
   int32_t iter;
 
   tol_lam = 1.0e-11;
-  tol_r   = 1.0e-10 * sqrt((u-l)*(double)n);
+  tol_r   = 1.0e-10 * sqrt((u-l)*(float64_t)n);
   lambda  = lam_ext;
   dlambda = 0.5;
   iter    = 1;
@@ -982,10 +984,10 @@ int32_t ProjectDai(
   return (iter);
 }
 
-#define SWAP(a,b) { register double t=(a);(a)=(b);(b)=t; }
+#define SWAP(a,b) { register float64_t t=(a);(a)=(b);(b)=t; }
 
 /*** Median computation using Quick Select ***/
-double quick_select(double *arr, int32_t n)
+float64_t quick_select(float64_t *arr, int32_t n)
 {
   int32_t low, high;
   int32_t median;
@@ -1046,34 +1048,34 @@ double quick_select(double *arr, int32_t n)
  ******************************************************************************/
 
 int32_t Pardalos(
-	int32_t n, int32_t *iy, double e, double *qk, double low, double up,
-	double *x)
+	int32_t n, int32_t *iy, float64_t e, float64_t *qk, float64_t low,
+	float64_t up, float64_t *x)
 {
   int32_t i, l, iter; /* conters    */
   int32_t luv, lxint; /* dimensions */
-  double d, xmin, xmax, xmold, xmid, xx, ts, sw, s, s1, testsum;
+  float64_t d, xmin, xmax, xmold, xmid, xx, ts, sw, s, s1, testsum;
 
   /*** allocation-dependant settings ***/
 #ifdef VARIABLES_ON_STACK
   int32_t uv[in], uvt[in];
-  double xint[2*in+2], xint2[2*in+2], a[in], b[in], at[in], bt[in];
-  double newdia[in], newdt[in];
+  float64_t xint[2*in+2], xint2[2*in+2], a[in], b[in], at[in], bt[in];
+  float64_t newdia[in], newdt[in];
 #else
 
   int32_t *uv, *uvt;
-  double *xint, *xint2, *a, *b, *at, *bt, *newdia, *newdt;
+  float64_t *xint, *xint2, *a, *b, *at, *bt, *newdia, *newdt;
 
   /*** arrays allocation ***/
   uv     = (int32_t *) malloc(n * sizeof(int32_t));
   uvt    = (int32_t *) malloc(n * sizeof(int32_t));
-  a      = (double *)malloc(n * sizeof(double        ));
-  b      = (double *)malloc(n * sizeof(double        ));
-  at     = (double *)malloc(n * sizeof(double        ));
-  bt     = (double *)malloc(n * sizeof(double        ));
-  newdia = (double *)malloc(n * sizeof(double        ));
-  newdt  = (double *)malloc(n * sizeof(double        ));
-  xint   = (double *)malloc((2*n + 2) * sizeof(double));
-  xint2  = (double *)malloc((2*n + 2) * sizeof(double));
+  a      = (float64_t *)malloc(n * sizeof(float64_t        ));
+  b      = (float64_t *)malloc(n * sizeof(float64_t        ));
+  at     = (float64_t *)malloc(n * sizeof(float64_t        ));
+  bt     = (float64_t *)malloc(n * sizeof(float64_t        ));
+  newdia = (float64_t *)malloc(n * sizeof(float64_t        ));
+  newdt  = (float64_t *)malloc(n * sizeof(float64_t        ));
+  xint   = (float64_t *)malloc((2*n + 2) * sizeof(float64_t));
+  xint2  = (float64_t *)malloc((2*n + 2) * sizeof(float64_t));
 
 #endif
 
@@ -1156,7 +1158,7 @@ int32_t Pardalos(
          if((xint[i] >= xmin) && (xint[i] <= xmax))
             xint2[l++] = xint[i];
      lxint = l;
-     memcpy(xint, xint2, lxint*sizeof(double));
+     memcpy(xint, xint2, lxint*sizeof(float64_t));
 
      l = 0;
      for (i = 0; i < luv; i++)
@@ -1215,8 +1217,8 @@ int32_t Pardalos(
 /*** Wrapper method to call the selected inner projector                    ***/
 /******************************************************************************/
 int32_t InnerProjector(
-	int32_t method, int32_t n, int32_t *iy, double e, double *qk, double l,
-	double u, double *x, double &lambda)
+	int32_t method, int32_t n, int32_t *iy, float64_t e, float64_t *qk,
+	float64_t l, float64_t u, float64_t *x, float64_t &lambda)
 {
   if (method == 0)
       return Pardalos(n, iy, e, qk, l, u, x);

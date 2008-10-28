@@ -151,11 +151,11 @@ void CSVRLight::svr_learn()
 	int32_t *inconsistent, i, j;
 	int32_t inconsistentnum;
 	int32_t upsupvecnum;
-	double maxdiff, *lin, *c, *a;
+	float64_t maxdiff, *lin, *c, *a;
 	int32_t runtime_start,runtime_end;
 	int32_t iterations;
-	double *xi_fullset; /* buffer for storing xi on full sample in loo */
-	double *a_fullset;  /* buffer for storing alpha on full sample in loo */
+	float64_t *xi_fullset; /* buffer for storing xi on full sample in loo */
+	float64_t *a_fullset;  /* buffer for storing alpha on full sample in loo */
 	TIMING timing_profile;
 	SHRINK_STATE shrink_state;
 	int32_t* label;
@@ -168,7 +168,7 @@ void CSVRLight::svr_learn()
 	// set up regression problem in standard form
 	docs=new int32_t[2*totdoc];
 	label=new int32_t[2*totdoc];
-	c = new double[2*totdoc];
+	c = new float64_t[2*totdoc];
 
   for(i=0;i<totdoc;i++) {   
 	  docs[i]=i;
@@ -234,17 +234,17 @@ void CSVRLight::svr_learn()
 	init_shrink_state(&shrink_state,totdoc,(int32_t)MAXSHRINK);
 
 	inconsistent = new int32_t[totdoc];
-	a = new double[totdoc];
-	a_fullset = new double[totdoc];
-	xi_fullset = new double[totdoc];
-	lin = new double[totdoc];
-	learn_parm->svm_cost = new double[totdoc];
+	a = new float64_t[totdoc];
+	a_fullset = new float64_t[totdoc];
+	xi_fullset = new float64_t[totdoc];
+	lin = new float64_t[totdoc];
+	learn_parm->svm_cost = new float64_t[totdoc];
 
 	delete[] model->supvec;
 	delete[] model->alpha;
 	delete[] model->index;
 	model->supvec = new int32_t[totdoc+2];
-	model->alpha = new double[totdoc+2];
+	model->alpha = new float64_t[totdoc+2];
 	model->index = new int32_t[totdoc+2];
 
 	model->at_upper_bound=0;
@@ -271,10 +271,10 @@ void CSVRLight::svr_learn()
 
 		if(label[i] > 0) {
 			learn_parm->svm_cost[i]=learn_parm->svm_c*learn_parm->svm_costratio*
-				fabs((double)label[i]);
+				fabs((float64_t)label[i]);
 		}
 		else if(label[i] < 0) {
-			learn_parm->svm_cost[i]=learn_parm->svm_c*fabs((double)label[i]);
+			learn_parm->svm_cost[i]=learn_parm->svm_c*fabs((float64_t)label[i]);
 		}
 		else
 			ASSERT(false);
@@ -340,17 +340,17 @@ void CSVRLight::svr_learn()
 	buffer_numcols = NULL ;
 }
 
-double CSVRLight::compute_objective_function(
-	double *a, double *lin, double *c, double eps, int32_t *label,
+float64_t CSVRLight::compute_objective_function(
+	float64_t *a, float64_t *lin, float64_t *c, float64_t eps, int32_t *label,
 	int32_t totdoc)
 {
   /* calculate value of objective function */
-  double criterion=0;
+  float64_t criterion=0;
 
   for(int32_t i=0;i<totdoc;i++)
-	  criterion+=(eps-(double)label[i]*c[i])*a[i]+0.5*a[i]*label[i]*lin[i];
+	  criterion+=(eps-(float64_t)label[i]*c[i])*a[i]+0.5*a[i]*label[i]*lin[i];
 
-  /* double check=0;
+  /* float64_t check=0;
   for(int32_t i=0;i<totdoc;i++)
   {
 	  check+=a[i]*eps-a[i]*label[i]*c[i];
@@ -366,9 +366,9 @@ double CSVRLight::compute_objective_function(
 
 
 void CSVRLight::update_linear_component_mkl(
-	int32_t* docs, int32_t* label, int32_t *active2dnum, double *a,
-	double *a_old, int32_t *working2dnum, int32_t totdoc, double *lin,
-	float64_t *aicache, double* c)
+	int32_t* docs, int32_t* label, int32_t *active2dnum, float64_t *a,
+	float64_t *a_old, int32_t *working2dnum, int32_t totdoc, float64_t *lin,
+	float64_t *aicache, float64_t* c)
 {
 	int32_t num         = totdoc;
 	int32_t num_weights = -1;
@@ -393,7 +393,7 @@ void CSVRLight::update_linear_component_mkl(
 				{
 					kn->get_kernel_row(i,NULL,aicache, true);
 					for(j=0;j<num;j++) 
-						W[j*num_kernels+n]+=(a[i]-a_old[i])*aicache[regression_fix_index(j)]*(double)label[i];
+						W[j*num_kernels+n]+=(a[i]-a_old[i])*aicache[regression_fix_index(j)]*(float64_t)label[i];
 				}
 			}
 			kn = k->get_next_kernel(kn) ;
@@ -421,7 +421,7 @@ void CSVRLight::update_linear_component_mkl(
 				if(a[i] != a_old[i]) 
 				{
 					for(int32_t j=0;j<num;j++) 
-						W[j*num_kernels+n]+=(a[i]-a_old[i])*kernel->kernel(regression_fix_index(i),regression_fix_index(j))*(double)label[i];
+						W[j*num_kernels+n]+=(a[i]-a_old[i])*kernel->kernel(regression_fix_index(i),regression_fix_index(j))*(float64_t)label[i];
 				}
 			}
 			w1[n]=0.0 ;
@@ -473,10 +473,10 @@ void CSVRLight::update_linear_component_mkl(
 		{
 			SG_INFO( "creating LP\n") ;
 			
-			int32_t NUMCOLS = 2*num_kernels + 1 ;
-			double   obj[NUMCOLS];
-			double   lb[NUMCOLS];
-			double   ub[NUMCOLS];
+			int NUMCOLS = 2*num_kernels + 1; /* for calling external lib */
+			double   obj[NUMCOLS]; /* for calling external lib */
+			double   lb[NUMCOLS]; /* for calling external lib */
+			double   ub[NUMCOLS]; /* for calling external lib */
 			for (int32_t i=0; i<2*num_kernels; i++)
 			{
 				obj[i]=0 ;
@@ -498,12 +498,12 @@ void CSVRLight::update_linear_component_mkl(
 				SG_ERROR( "%s", errmsg);
 			}
 			
-			// add constraint sum(w)=1 ;
-			int initial_rmatbeg[1] ; /* for calling external lib */
-			int initial_rmatind[num_kernels+1] ; /* for calling external lib */
-			double initial_rmatval[num_kernels+1] ;
-			double initial_rhs[1] ;
-			char initial_sense[1] ;
+			// add constraint sum(w)=1;
+			int initial_rmatbeg[1]; /* for calling external lib */
+			int initial_rmatind[num_kernels+1]; /* for calling external lib */
+			double initial_rmatval[num_kernels+1]; /* for calling external lib */
+			double initial_rhs[1]; /* for calling external lib */
+			char initial_sense[1];
 			
 			initial_rmatbeg[0] = 0;
 			initial_rhs[0]=1 ;     // rhs=1 ;
@@ -530,13 +530,13 @@ void CSVRLight::update_linear_component_mkl(
 				for (int32_t q=0; q<num_kernels-1; q++)
 				{
 					//fprintf(stderr,"q=%i\n", q) ;
-					// add constraint w[i]-w[i+1]<s[i] ;
-					// add constraint w[i+1]-w[i]<s[i] ;
-					int rmatbeg[1] ; /* for calling external lib */
-					int rmatind[3] ; /* for calling external lib */
-					double rmatval[3] ;
-					double rhs[1] ;
-					char sense[1] ;
+					// add constraint w[i]-w[i+1]<s[i];
+					// add constraint w[i+1]-w[i]<s[i];
+					int rmatbeg[1]; /* for calling external lib */
+					int rmatind[3]; /* for calling external lib */
+					double rmatval[3]; /* for calling external lib */
+					double rhs[1]; /* for calling external lib */
+					char sense[1];
 					
 					rmatbeg[0] = 0;
 					rhs[0]=0 ;     // rhs=1 ;
@@ -578,11 +578,11 @@ void CSVRLight::update_linear_component_mkl(
 		{ // add the new row
 			//SG_INFO( "add the new row\n") ;
 			
-			int rmatbeg[1] ; /* for calling external lib */
-			int rmatind[num_kernels+1] ; /* for calling external lib */
-			double rmatval[num_kernels+1] ;
-			double rhs[1] ;
-			char sense[1] ;
+			int rmatbeg[1]; /* for calling external lib */
+			int rmatind[num_kernels+1]; /* for calling external lib */
+			double rmatval[num_kernels+1]; /* for calling external lib */
+			double rhs[1]; /* for calling external lib */
+			char sense[1];
 			
 			rmatbeg[0] = 0;
 			rhs[0]=0 ;
@@ -710,9 +710,9 @@ void CSVRLight::update_linear_component_mkl(
 
 
 void CSVRLight::update_linear_component_mkl_linadd(
-	int32_t* docs, int32_t* label, int32_t *active2dnum, double *a,
-	double *a_old, int32_t *working2dnum, int32_t totdoc, double *lin,
-	float64_t *aicache, double* c)
+	int32_t* docs, int32_t* label, int32_t *active2dnum, float64_t *a,
+	float64_t *a_old, int32_t *working2dnum, int32_t totdoc, float64_t *lin,
+	float64_t *aicache, float64_t* c)
 {
 	// kernel with LP_LINADD property is assumed to have 
 	// compute_by_subkernel functions
@@ -740,7 +740,7 @@ void CSVRLight::update_linear_component_mkl_linadd(
 		kernel->clear_normal();
 		for(int32_t ii=0, i=0;(i=working2dnum[ii])>=0;ii++) {
 			if(a[i] != a_old[i]) {
-				kernel->add_to_normal(regression_fix_index(docs[i]), (a[i]-a_old[i])*(double)label[i]);
+				kernel->add_to_normal(regression_fix_index(docs[i]), (a[i]-a_old[i])*(float64_t)label[i]);
 			}
 		}
 		
@@ -790,10 +790,10 @@ void CSVRLight::update_linear_component_mkl_linadd(
 		{
 			SG_INFO( "creating LP\n") ;
 			
-			int32_t NUMCOLS = 2*num_kernels + 1 ;
-			double   obj[NUMCOLS];
-			double   lb[NUMCOLS];
-			double   ub[NUMCOLS];
+			int NUMCOLS = 2*num_kernels + 1; /* for calling external lib */
+			double   obj[NUMCOLS]; /* for calling external lib */
+			double   lb[NUMCOLS]; /* for calling external lib */
+			double   ub[NUMCOLS]; /* for calling external lib */
 			for (int32_t i=0; i<2*num_kernels; i++)
 			{
 				obj[i]=0 ;
@@ -815,13 +815,13 @@ void CSVRLight::update_linear_component_mkl_linadd(
 				SG_ERROR( "%s", errmsg);
 			}
 			
-			// add constraint sum(w)=1 ;
-			SG_INFO( "add the first row\n") ;
-			int initial_rmatbeg[1] ;
-			int initial_rmatind[num_kernels+1] ;
-			double initial_rmatval[num_kernels+1] ;
-			double initial_rhs[1] ;
-			char initial_sense[1] ;
+			// add constraint sum(w)=1;
+			SG_INFO( "add the first row\n");
+			int initial_rmatbeg[1]; /* for calling external lib */
+			int initial_rmatind[num_kernels+1]; /* for calling external lib */
+			double initial_rmatval[num_kernels+1]; /* for calling ext lib */
+			double initial_rhs[1]; /* for calling external lib */
+			char initial_sense[1];
 			
 			initial_rmatbeg[0] = 0;
 			initial_rhs[0]=1 ;     // rhs=1 ;
@@ -846,13 +846,13 @@ void CSVRLight::update_linear_component_mkl_linadd(
 			{
 				for (int32_t q=0; q<num_kernels-1; q++)
 				{
-					// add constraint w[i]-w[i+1]<s[i] ;
-					// add constraint w[i+1]-w[i]<s[i] ;
-					int rmatbeg[1] ;
-					int rmatind[3] ;
-					double rmatval[3] ;
-					double rhs[1] ;
-					char sense[1] ;
+					// add constraint w[i]-w[i+1]<s[i];
+					// add constraint w[i+1]-w[i]<s[i];
+					int rmatbeg[1]; /* for calling external lib */
+					int rmatind[3]; /* for calling external lib */
+					double rmatval[3]; /* for calling external lib */
+					double rhs[1]; /* for calling external lib */
+					char sense[1];
 					
 					rmatbeg[0] = 0;
 					rhs[0]=0 ;     // rhs=1 ;
@@ -891,11 +891,11 @@ void CSVRLight::update_linear_component_mkl_linadd(
 		
 		{ // add the new row
 			
-			int rmatbeg[1] ;
-			int rmatind[num_kernels+1] ;
-			double rmatval[num_kernels+1] ;
-			double rhs[1] ;
-			char sense[1] ;
+			int rmatbeg[1]; /* for calling external lib */
+			int rmatind[num_kernels+1]; /* for calling external lib */
+			double rmatval[num_kernels+1]; /* for calling external lib */
+			double rhs[1]; /* for calling external lib */
+			char sense[1];
 			
 			rmatbeg[0] = 0;
 			rhs[0]=0 ;
@@ -1036,9 +1036,9 @@ void* CSVRLight::update_linear_component_linadd_helper(void *params_)
 
 
 void CSVRLight::update_linear_component(
-	int32_t* docs, int32_t* label, int32_t *active2dnum, double *a,
-	double *a_old, int32_t *working2dnum, int32_t totdoc, double *lin,
-	float64_t *aicache, double* c)
+	int32_t* docs, int32_t* label, int32_t *active2dnum, float64_t *a,
+	float64_t *a_old, int32_t *working2dnum, int32_t totdoc, float64_t *lin,
+	float64_t *aicache, float64_t* c)
      /* keep track of the linear component */
      /* lin of the gradient etc. by updating */
      /* based on the change of the variables */
@@ -1060,7 +1060,7 @@ void CSVRLight::update_linear_component(
 			int32_t num_working=0;
 			for(ii=0;(i=working2dnum[ii])>=0;ii++) {
 				if(a[i] != a_old[i]) {
-					kernel->add_to_normal(regression_fix_index(docs[i]), (a[i]-a_old[i])*(double)label[i]);
+					kernel->add_to_normal(regression_fix_index(docs[i]), (a[i]-a_old[i])*(float64_t)label[i]);
 					num_working++;
 				}
 			}
@@ -1123,7 +1123,7 @@ void CSVRLight::update_linear_component(
 				if(a[i] != a_old[i]) {
 					kernel->get_kernel_row(i,active2dnum,aicache);
 					for(ii=0;(j=active2dnum[ii])>=0;ii++)
-						lin[j]+=(a[i]-a_old[i])*aicache[j]*(double)label[i];
+						lin[j]+=(a[i]-a_old[i])*aicache[j]*(float64_t)label[i];
 				}
 			}
 		}
@@ -1132,17 +1132,17 @@ void CSVRLight::update_linear_component(
 
 
 void CSVRLight::reactivate_inactive_examples(
-	int32_t* label, double *a, SHRINK_STATE *shrink_state, double *lin,
-	double *c, int32_t totdoc, int32_t iteration, int32_t *inconsistent,
-	int32_t* docs, float64_t *aicache, double *maxdiff)
+	int32_t* label, float64_t *a, SHRINK_STATE *shrink_state, float64_t *lin,
+	float64_t *c, int32_t totdoc, int32_t iteration, int32_t *inconsistent,
+	int32_t* docs, float64_t *aicache, float64_t *maxdiff)
      /* Make all variables active again which had been removed by
         shrinking. */
      /* Computes lin for those variables from scratch. */
 {
   register int32_t i=0,j,ii=0,jj,t,*changed2dnum,*inactive2dnum;
   int32_t *changed,*inactive;
-  register double *a_old,dist;
-  double ex_c,target;
+  register float64_t *a_old,dist;
+  float64_t ex_c,target;
 
   if (kernel->has_property(KP_LINADD) && get_linadd_enabled()) { /* special linear case */
 	  a_old=shrink_state->last_a;    
@@ -1151,7 +1151,7 @@ void CSVRLight::reactivate_inactive_examples(
 	  int32_t num_modified=0;
 	  for(i=0;i<totdoc;i++) {
 		  if(a[i] != a_old[i]) {
-			  kernel->add_to_normal(regression_fix_index(docs[i]), ((a[i]-a_old[i])*(double)label[i]));
+			  kernel->add_to_normal(regression_fix_index(docs[i]), ((a[i]-a_old[i])*(float64_t)label[i]));
 			  a_old[i]=a[i];
 			  num_modified++;
 		  }
@@ -1189,7 +1189,7 @@ void CSVRLight::reactivate_inactive_examples(
 		  for(ii=0;(i=changed2dnum[ii])>=0;ii++) {
 			  CKernelMachine::kernel->get_kernel_row(i,inactive2dnum,aicache);
 			  for(jj=0;(j=inactive2dnum[jj])>=0;jj++)
-				  lin[j]+=(a[i]-a_old[i])*aicache[j]*(double)label[i];
+				  lin[j]+=(a[i]-a_old[i])*aicache[j]*(float64_t)label[i];
 		  }
 	  }
 	  delete[] changed;
@@ -1202,8 +1202,8 @@ void CSVRLight::reactivate_inactive_examples(
   for(i=0;i<totdoc;i++) {
     shrink_state->inactive_since[i]=shrink_state->deactnum-1;
     if(!inconsistent[i]) {
-      dist=(lin[i]-model->b)*(double)label[i];
-      target=-(learn_parm->eps-(double)label[i]*c[i]);
+      dist=(lin[i]-model->b)*(float64_t)label[i];
+      target=-(learn_parm->eps-(float64_t)label[i]*c[i]);
       ex_c=learn_parm->svm_cost[i]-learn_parm->epsilon_a;
       if((a[i]>learn_parm->epsilon_a) && (dist > target)) {
 	if((dist-target)>(*maxdiff))  /* largest violation */

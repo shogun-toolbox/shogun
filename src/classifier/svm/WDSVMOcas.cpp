@@ -26,7 +26,7 @@ struct wdocas_thread_params_output
 {
 	float32_t* out;
 	int32_t* val;
-	double* output;
+	float64_t* output;
 	CWDSVMOcas* wdocas;
 	int32_t start;
 	int32_t end;
@@ -156,8 +156,8 @@ bool CWDSVMOcas::train()
 	memset(cuts, 0, sizeof(*cuts)*bufsize);
 
 /////speed tests/////
-	/*double* tmp = new double[num_vec];
-	double start=CTime::get_curtime();
+	/*float64_t* tmp = new float64_t[num_vec];
+	float64_t start=CTime::get_curtime();
 	CMath::random_vector(w, w_dim, (float32_t) 0, (float32_t) 1000);
 	compute_output(tmp, this);
 	start=CTime::get_curtime()-start;
@@ -165,8 +165,8 @@ bool CWDSVMOcas::train()
 	delete[] tmp;
 	exit(1);*/
 /////speed tests/////
-	double TolAbs=0;
-	double QPBound=0;
+	float64_t TolAbs=0;
+	float64_t QPBound=0;
 	uint8_t Method=0;
 	if (method == SVM_OCAS)
 		Method = 1;
@@ -209,9 +209,9 @@ bool CWDSVMOcas::train()
   sq_norm_W = W'*W;
 
   ---------------------------------------------------------------------------------*/
-double CWDSVMOcas::update_W( double t, void* ptr )
+float64_t CWDSVMOcas::update_W( float64_t t, void* ptr )
 {
-  double sq_norm_W = 0;         
+  float64_t sq_norm_W = 0;         
   CWDSVMOcas* o = (CWDSVMOcas*) ptr;
   uint32_t nDim = (uint32_t) o->w_dim;
   float32_t* W=o->w;
@@ -284,11 +284,9 @@ void* CWDSVMOcas::add_new_cut_helper( void* ptr)
 	return NULL;
 }
 
-void CWDSVMOcas::add_new_cut( double *new_col_H, 
-                  uint32_t *new_cut, 
-                  uint32_t cut_length, 
-                  uint32_t nSel,
-				  void* ptr)
+void CWDSVMOcas::add_new_cut(
+	float64_t *new_col_H, uint32_t *new_cut, uint32_t cut_length,
+	uint32_t nSel, void* ptr)
 {
 	CWDSVMOcas* o = (CWDSVMOcas*) ptr;
 	int32_t string_length = o->string_length;
@@ -365,7 +363,7 @@ void CWDSVMOcas::add_new_cut( double *new_col_H,
 	delete[] params_add;
 }
 
-void CWDSVMOcas::sort( double* vals, uint32_t* idx, uint32_t size)
+void CWDSVMOcas::sort( float64_t* vals, uint32_t* idx, uint32_t size)
 {
 	CMath::qsort_index(vals, idx, size);
 }
@@ -382,7 +380,7 @@ void* CWDSVMOcas::compute_output_helper(void* ptr)
 	int32_t start = p->start;
 	int32_t end = p->end;
 	float32_t* out = p->out;
-	double* output = p->output;
+	float64_t* output = p->output;
 	int32_t* val = p->val;
 
 	CStringFeatures<uint8_t>* f=o->get_features();
@@ -465,7 +463,7 @@ void* CWDSVMOcas::compute_output_helper(void* ptr)
 	return NULL;
 }
 
-void CWDSVMOcas::compute_output( double *output, void* ptr )
+void CWDSVMOcas::compute_output( float64_t *output, void* ptr )
 {
 	CWDSVMOcas* o = (CWDSVMOcas*) ptr;
 	int32_t nData=o->num_vec;
@@ -534,7 +532,9 @@ void CWDSVMOcas::compute_output( double *output, void* ptr )
   dp_WoldW = W'*oldW';
 
   ----------------------------------------------------------------------*/
-void CWDSVMOcas::compute_W( double *sq_norm_W, double *dp_WoldW, double *alpha, uint32_t nSel, void* ptr )
+void CWDSVMOcas::compute_W(
+	float64_t *sq_norm_W, float64_t *dp_WoldW, float64_t *alpha, uint32_t nSel,
+	void* ptr)
 {
 	CWDSVMOcas* o = (CWDSVMOcas*) ptr;
 	uint32_t nDim= (uint32_t) o->w_dim;

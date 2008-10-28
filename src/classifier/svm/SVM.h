@@ -342,7 +342,7 @@ class CSVM : public CKernelMachine
 
 			if (num>0)
 			{
-				svm_model.alpha= new double[num];
+				svm_model.alpha= new float64_t[num];
 				svm_model.svs= new int32_t[num];
 				return (svm_model.alpha!=NULL && svm_model.svs!=NULL);
 			}

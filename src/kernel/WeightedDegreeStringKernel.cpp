@@ -669,7 +669,7 @@ bool CWeightedDegreeStringKernel::init_block_weights_from_wd()
 
 	if (block_weights)
 	{
-		double deg=degree;
+		float64_t deg=degree;
 		int32_t k;
 		for (k=0; k<degree ; k++)
 			block_weights[k]=(-pow(k,3) + (3*deg-3)*pow(k,2) + (9*deg-2)*k + 6*deg) / (3*deg*(deg+1));
@@ -744,7 +744,7 @@ bool CWeightedDegreeStringKernel::init_block_weights_sqpoly()
 	if (block_weights)
 	{
 		for (int32_t i=1; i<degree+1 ; i++)
-			block_weights[i-1]=((double) i)*i;
+			block_weights[i-1]=((float64_t) i)*i;
 
 		for (int32_t i=degree+1; i<seq_length+1 ; i++)
 			block_weights[i-1]=i;
@@ -761,7 +761,7 @@ bool CWeightedDegreeStringKernel::init_block_weights_cubicpoly()
 	if (block_weights)
 	{
 		for (int32_t i=1; i<degree+1 ; i++)
-			block_weights[i-1]=((double) i)*i*i;
+			block_weights[i-1]=((float64_t) i)*i*i;
 
 		for (int32_t i=degree+1; i<seq_length+1 ; i++)
 			block_weights[i-1]=i;
@@ -778,7 +778,7 @@ bool CWeightedDegreeStringKernel::init_block_weights_exp()
 	if (block_weights)
 	{
 		for (int32_t i=1; i<degree+1 ; i++)
-			block_weights[i-1]=exp(((double) i/10.0));
+			block_weights[i-1]=exp(((float64_t) i/10.0));
 
 		for (int32_t i=degree+1; i<seq_length+1 ; i++)
 			block_weights[i-1]=i;

@@ -226,15 +226,15 @@ int require_dimensions(PyObject* ary, int exact_dimensions) {
  * to produce an arrayof te specified shape).  This can be applied to
  * a existing functions using the %apply directive:
  *
- *     %apply (double* IN_ARRAY1, int32_t DIM1) {double* series, int32_t length}
- *     %apply (double* IN_ARRAY2, int32_t DIM1, int32_t DIM2) {double* mx, int32_t rows, int32_t cols}
- *     double sum(double* series, int32_t length);
- *     double max(double* mx, int32_t rows, int32_t cols);
+ *     %apply (float64_t* IN_ARRAY1, int32_t DIM1) {float64_t* series, int32_t length}
+ *     %apply (float64_t* IN_ARRAY2, int32_t DIM1, int32_t DIM2) {float64_t* mx, int32_t rows, int32_t cols}
+ *     float64_t sum(float64_t* series, int32_t length);
+ *     float64_t max(float64_t* mx, int32_t rows, int32_t cols);
  *
  * or with
  *
- *     double sum(double* IN_ARRAY1, int32_t DIM1);
- *     double max(double* IN_ARRAY2, int32_t DIM1, int32_t DIM2);
+ *     float64_t sum(float64_t* IN_ARRAY1, int32_t DIM1);
+ *     float64_t max(float64_t* IN_ARRAY2, int32_t DIM1, int32_t DIM2);
  */
 
 /* One dimensional input arrays */
@@ -335,16 +335,16 @@ TYPEMAP_IN2(PyObject,      NPY_OBJECT)
  * numpy array.  This can be applied to an existing function using
  * the %apply directive:
  *
- *     %apply (double* INPLACE_ARRAY1, int32_t DIM1) {double* series, int32_t length}
- *     %apply (double* INPLACE_ARRAY2, int32_t DIM1, int32_t DIM2) {double* mx, int32_t rows, int32_t cols}
- *     void negate(double* series, int32_t length);
- *     void normalize(double* mx, int32_t rows, int32_t cols);
+ *     %apply (float64_t* INPLACE_ARRAY1, int32_t DIM1) {float64_t* series, int32_t length}
+ *     %apply (float64_t* INPLACE_ARRAY2, int32_t DIM1, int32_t DIM2) {float64_t* mx, int32_t rows, int32_t cols}
+ *     void negate(float64_t* series, int32_t length);
+ *     void normalize(float64_t* mx, int32_t rows, int32_t cols);
  *     
  *
  * or with
  *
- *     void sum(double* INPLACE_ARRAY1, int32_t DIM1);
- *     void sum(double* INPLACE_ARRAY2, int32_t DIM1, int32_t DIM2);
+ *     void sum(float64_t* INPLACE_ARRAY1, int32_t DIM1);
+ *     void sum(float64_t* INPLACE_ARRAY2, int32_t DIM1, int32_t DIM2);
  */
 
  /* One dimensional input/output arrays */
@@ -416,16 +416,16 @@ TYPEMAP_INPLACE2(PyObject,      NPY_OBJECT)
  * numpy array.  This can be applied to an existing function using
  * the %apply directive:
  *
- *     %apply (double* ARRAYOUT_ARRAY[ANY] {double series, int32_t length}
- *     %apply (double* ARRAYOUT_ARRAY[ANY][ANY]) {double* mx, int32_t rows, int32_t cols}
- *     void negate(double* series, int32_t length);
- *     void normalize(double* mx, int32_t rows, int32_t cols);
+ *     %apply (float64_t* ARRAYOUT_ARRAY[ANY] {float64_t series, int32_t length}
+ *     %apply (float64_t* ARRAYOUT_ARRAY[ANY][ANY]) {float64_t* mx, int32_t rows, int32_t cols}
+ *     void negate(float64_t* series, int32_t length);
+ *     void normalize(float64_t* mx, int32_t rows, int32_t cols);
  *     
  *
  * or with
  *
- *     void sum(double* ARRAYOUT_ARRAY[ANY]);
- *     void sum(double* ARRAYOUT_ARRAY[ANY][ANY]);
+ *     void sum(float64_t* ARRAYOUT_ARRAY[ANY]);
+ *     void sum(float64_t* ARRAYOUT_ARRAY[ANY][ANY]);
  */
 
  /* One dimensional input/output arrays */

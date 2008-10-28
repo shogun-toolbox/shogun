@@ -13,7 +13,7 @@
  * 14-nov-2007, VF, timing statistics added
  * ----------------------------------------------------------------------*/
 
-#include <stdint.h>
+#include "lib/common.h"
 
 /** ocas return value */
 typedef struct {
@@ -24,23 +24,23 @@ typedef struct {
   /** number of non-zero Lagrangeans (effective number of CPs) */
   uint32_t nNZAlpha;
   /** number of training errors */
-  double trn_err;
+  float64_t trn_err;
   /** primal objective value */
-  double Q_P;
+  float64_t Q_P;
   /** dual objective value */
-  double Q_D;
+  float64_t Q_D;
   /** time spent in computing outputs */
-  double output_time;
+  float64_t output_time;
   /** time spent in sorting */
-  double sort_time;
+  float64_t sort_time;
   /** time spent in adding examples to compute cutting planes */
-  double add_time;
+  float64_t add_time;
   /** time spent in computing parameter vector  */
-  double w_time;
+  float64_t w_time;
   /** time spend in inner QP solver  */
-  double solver_time;
+  float64_t solver_time;
   /** total time spent in svm_ocas_solver */
-  double ocas_time;
+  float64_t ocas_time;
 
   /** 1 .. ocas.Q_P - ocas.Q_D <= TolRel*ABS(ocas.Q_P)
    *  2 .. ocas.Q_P - ocas.Q_D <= TolAbs
@@ -50,18 +50,18 @@ typedef struct {
 } ocas_return_value_T;
 
 ocas_return_value_T svm_ocas_solver(
-		double C,            /* regularizarion constant */
+		float64_t C,            /* regularizarion constant */
 		uint32_t nData,      /* number of exmaples */
-		double TolRel,       /* halts if 1-Q_P/Q_D <= TolRel */
-		double TolAbs,       /* halts if Q_P-Q_D <= TolRel */
-		double QPBound,      /* halts if QP <= QPBound */
+		float64_t TolRel,       /* halts if 1-Q_P/Q_D <= TolRel */
+		float64_t TolAbs,       /* halts if Q_P-Q_D <= TolRel */
+		float64_t QPBound,      /* halts if QP <= QPBound */
 		uint32_t BufSize,    /* maximal number of buffered cutting planes  */
 		uint8_t Method,      /* 0..standard CP (SVM-Perf,BMRM), 1..OCAS */
-		void (*compute_W)(double*, double*, double*, uint32_t, void*),
-		double (*update_W)(double, void*),
-		void (*add_new_cut)(double*, uint32_t*, uint32_t, uint32_t, void*),
-		void (*compute_output)( double*, void* ),
-		void (*sort)(double*, uint32_t*, uint32_t),
+		void (*compute_W)(float64_t*, float64_t*, float64_t*, uint32_t, void*),
+		float64_t (*update_W)(float64_t, void*),
+		void (*add_new_cut)(float64_t*, uint32_t*, uint32_t, uint32_t, void*),
+		void (*compute_output)( float64_t*, void* ),
+		void (*sort)(float64_t*, uint32_t*, uint32_t),
 		void* user_data);
 
-void qsort_index(double* value, uint32_t* index, uint32_t size);
+void qsort_index(float64_t* value, uint32_t* index, uint32_t size);

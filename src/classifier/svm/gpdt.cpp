@@ -425,7 +425,7 @@ void sKernel::SetData(
 
   dim  = _dim;
   ell  = _ell;
-  nor  = (double *)malloc(ell*sizeof(double));
+  nor  = (float64_t *)malloc(ell*sizeof(float64_t));
   vaux = (float32_t  *)malloc(dim*sizeof(float32_t ));
   memset(vaux, 0, dim*sizeof(float32_t));
 
@@ -445,7 +445,7 @@ void sKernel::SetData(
   {
       nor[i] = 0.0;
       for (j = 0; j < lx[i]; j++)
-          nor[i] += (double)(x[i][j]*x[i][j]);
+          nor[i] += (float64_t)(x[i][j]*x[i][j]);
   }
 }
 
@@ -457,7 +457,7 @@ void sKernel::SetSubproblem(sKernel* ker, int32_t len, int32_t *perm)
   int32_t k;
 
   /* arrays allocations */
-  nor  = (double *) malloc(len*sizeof(double));
+  nor  = (float64_t *) malloc(len*sizeof(float64_t));
   vaux = (float32_t  *) malloc(ker->dim*sizeof(float32_t));
   memset(vaux, 0, ker->dim*sizeof(float32_t));
 

@@ -75,9 +75,9 @@ bool CKMeans::save(FILE* dstfile)
 
 struct thread_data
 {
-	double* x;
+	float64_t* x;
 	CRealFeatures* y;
-	double* z;
+	float64_t* z;
 	int32_t n1, n2, m;
 	int32_t js, je; /* defines the matrix stripe */
 	int32_t offs;
@@ -86,9 +86,9 @@ struct thread_data
 void *sqdist_thread_func(void * P)
 {
 	struct thread_data *TD=(struct thread_data*) P;
-	double* x=TD->x;
+	float64_t* x=TD->x;
 	CRealFeatures* y=TD->y;
-	double* z=TD->z;
+	float64_t* z=TD->z;
 	int32_t n1=TD->n1,
 		m=TD->m,
 		js=TD->js,
@@ -100,11 +100,11 @@ void *sqdist_thread_func(void * P)
 	{
 		int32_t vlen=0;
 		bool vfree=false;
-		double* vec=y->get_feature_vector(j+offs, vlen, vfree);
+		float64_t* vec=y->get_feature_vector(j+offs, vlen, vfree);
 
 		for (i=0; i<n1; i++)
 		{
-			double sum=0;
+			float64_t sum=0;
 			for (k=0; k<m; k++) 
 				sum = sum + CMath::sq(x[i*m + k] - vec[k]);
 			z[j*n1 + i] = sum;
@@ -116,7 +116,7 @@ void *sqdist_thread_func(void * P)
 } 
 
 void CKMeans::sqdist(
-	double* x, CRealFeatures* y, double* z, int32_t n1, int32_t offs,
+	float64_t* x, CRealFeatures* y, float64_t* z, int32_t n1, int32_t offs,
 	int32_t n2, int32_t m)
 {
 	const int32_t num_threads=parallel.get_num_threads();
@@ -160,7 +160,7 @@ void CKMeans::sqdist(
 	}
 }
 
-void CKMeans::clustknb(bool use_old_mus, double *mus_start)
+void CKMeans::clustknb(bool use_old_mus, float64_t *mus_start)
 {
 	ASSERT(distance && distance->get_feature_type()==F_DREAL);
 	CRealFeatures* lhs = (CRealFeatures*) distance->get_lhs();
@@ -179,13 +179,13 @@ void CKMeans::clustknb(bool use_old_mus, double *mus_start)
 	mus=new float64_t[XDimk];
 
 	int32_t *ClList = (int32_t*) calloc(XSize, sizeof(int32_t));
-	double *weights_set = (double*) calloc(k, sizeof(double));
-	double *oldmus = (double*) calloc(XDimk, sizeof(double));
-	double *dists = (double*) calloc(k*XSize, sizeof(double));
+	float64_t *weights_set = (float64_t*) calloc(k, sizeof(float64_t));
+	float64_t *oldmus = (float64_t*) calloc(XDimk, sizeof(float64_t));
+	float64_t *dists = (float64_t*) calloc(k*XSize, sizeof(float64_t));
 
 	int32_t vlen=0;
 	bool vfree=false;
-	double* vec=NULL;
+	float64_t* vec=NULL;
 
 	/* ClList=zeros(XSize,1) ; */
 	for (i=0; i<XSize; i++) ClList[i]=0;
@@ -219,7 +219,7 @@ void CKMeans::clustknb(bool use_old_mus, double *mus_start)
 		{
 			const int32_t Cl=CMath::random(0, k-1);
 			int32_t j;
-			double weight=Weights[i];
+			float64_t weight=Weights[i];
 
 			weights_set[Cl]+=weight;
 			ClList[i]=Cl;
@@ -248,7 +248,7 @@ void CKMeans::clustknb(bool use_old_mus, double *mus_start)
 
 		for (i=0; i<XSize; i++)
 		{
-			double mini=dists[i*k];
+			float64_t mini=dists[i*k];
 			int32_t Cl = 0, j;
 
 			for (j=1; j<k; j++)
@@ -267,7 +267,7 @@ void CKMeans::clustknb(bool use_old_mus, double *mus_start)
 		for (i=0; i<XSize; i++) 
 		{
 			const int32_t Cl = ClList[i];
-			double weight=Weights[i];
+			float64_t weight=Weights[i];
 			weights_set[Cl]+=weight;
 #ifndef MUSRECALC
 			vec=lhs->get_feature_vector(i, vlen, vfree);
@@ -312,7 +312,7 @@ void CKMeans::clustknb(bool use_old_mus, double *mus_start)
 		{
 			int32_t j;
 			int32_t Cl=ClList[i];
-			double weight=Weights[i];
+			float64_t weight=Weights[i];
 
 			vec=lhs->get_feature_vector(i, vlen, vfree);
 
@@ -337,7 +337,7 @@ void CKMeans::clustknb(bool use_old_mus, double *mus_start)
 			const int32_t Pat= CMath::random(0, XSize-1);
 			const int32_t ClList_Pat=ClList[Pat];
 			int32_t imini, j;
-			double mini, weight;
+			float64_t mini, weight;
 
 			weight=Weights[Pat];
 
@@ -397,8 +397,8 @@ void CKMeans::clustknb(bool use_old_mus, double *mus_start)
 	/* compute the ,,variances'' of the clusters */
 	for (i=0; i<k; i++)
 	{
-		double rmin1=0;
-		double rmin2=0;
+		float64_t rmin1=0;
+		float64_t rmin2=0;
 
 		bool first_round=true;
 
@@ -407,7 +407,7 @@ void CKMeans::clustknb(bool use_old_mus, double *mus_start)
 			if (j!=i)
 			{
 				int32_t l;
-				double dist = 0;
+				float64_t dist = 0;
 
 				for (l=0; l<dimensions; l++)
 					dist+=CMath::sq(mus[i*dimensions+l]-mus[j*dimensions+l]);

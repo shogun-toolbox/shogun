@@ -74,7 +74,7 @@ void CLinearKernel::add_to_normal(int32_t idx, float64_t weight)
 {
 	int32_t vlen;
 	bool vfree;
-	double* vec=((CRealFeatures*) lhs)->get_feature_vector(idx, vlen, vfree);
+	float64_t* vec=((CRealFeatures*) lhs)->get_feature_vector(idx, vlen, vfree);
 
 	for (int32_t i=0; i<vlen; i++)
 		normal[i]+= weight*normalizer->normalize_lhs(vec[i], idx);
@@ -89,8 +89,10 @@ float64_t CLinearKernel::compute(int32_t idx_a, int32_t idx_b)
   int32_t alen, blen;
   bool afree, bfree;
 
-  double* avec=((CRealFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
-  double* bvec=((CRealFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
+  float64_t* avec=
+	((CRealFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
+  float64_t* bvec=
+	((CRealFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
 
   ASSERT(alen==blen);
 
@@ -130,7 +132,7 @@ float64_t CLinearKernel::compute_optimized(int32_t idx)
 
 	int32_t vlen;
 	bool vfree;
-	double* vec=((CRealFeatures*) rhs)->get_feature_vector(idx, vlen, vfree);
+	float64_t* vec=((CRealFeatures*) rhs)->get_feature_vector(idx, vlen, vfree);
 	ASSERT(vlen==normal_length);
 	float64_t result=CMath::dot(normal,vec, vlen);
 	((CRealFeatures*) rhs)->free_feature_vector(vec, idx, vfree);

@@ -158,7 +158,7 @@ float64_t CSimpleLocalityImprovedStringKernel::dot_pyr (const char* const x1,
 		if (i>0)
 			conv += ((x1[i+PYRAL-1] == x2[i+PYRAL-1]) ? 1 : 0 ) - 
 				((x1[i-1] == x2[i-1]) ? 1 : 0);
-		{ /* potencing of conv -- double is faster*/
+		{ /* potencing of conv -- float64_t is faster*/
 		register float64_t conv2 = conv;
 		pot2 = (DEGREE1_1) ? 1.0 : conv2;
 			if (DEGREE1_1n)
@@ -203,6 +203,6 @@ float64_t CSimpleLocalityImprovedStringKernel::compute(
 	float64_t dpt;
 
 	dpt = dot_pyr(avec, bvec, alen, length, inner_degree, outer_degree, pyramid_weights);
-	dpt = dpt / pow((double)alen, (double)outer_degree);
+	dpt = dpt / pow((float64_t)alen, (float64_t)outer_degree);
 	return (float64_t) dpt;
 }

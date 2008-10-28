@@ -33,47 +33,47 @@ CFKFeatures::~CFKFeatures()
 	SG_UNREF(neg);
 }
 
-double CFKFeatures::deriv_a(double a, int32_t dimension)
+float64_t CFKFeatures::deriv_a(float64_t a, int32_t dimension)
 {
 	CStringFeatures<uint16_t> *Obs=pos->get_observations() ;
-	double deriv=0.0 ;
+	float64_t deriv=0.0 ;
 	int32_t i=dimension ;
 
 	if (dimension==-1)
 	{
 		for (i=0; i<Obs->get_num_vectors(); i++)
 		{
-			//double pp=pos->model_probability(i) ;
-			//double pn=neg->model_probability(i) ;
-			double pp=(pos_prob) ? pos_prob[i] : pos->model_probability(i);
-			double pn=(neg_prob) ? neg_prob[i] : neg->model_probability(i);
-			double sub=pp ;
+			//float64_t pp=pos->model_probability(i) ;
+			//float64_t pn=neg->model_probability(i) ;
+			float64_t pp=(pos_prob) ? pos_prob[i] : pos->model_probability(i);
+			float64_t pn=(neg_prob) ? neg_prob[i] : neg->model_probability(i);
+			float64_t sub=pp ;
 			if (pn>pp) sub=pn ;
 			pp-=sub ;
 			pn-=sub ;
 			pp=exp(pp) ;
 			pn=exp(pn) ;
-			double p=a*pp+(1-a)*pn ;
+			float64_t p=a*pp+(1-a)*pn ;
 			deriv+=(pp-pn)/p ;
 
-			/*double d1=(pp-pn)/p ;
+			/*float64_t d1=(pp-pn)/p ;
 			  pp=exp(pos->model_probability(i)) ;
 			  pn=exp(neg->model_probability(i)) ;
 			  p=a*pp+(1-a)*pn ;
-			  double d2=(pp-pn)/p ;
+			  float64_t d2=(pp-pn)/p ;
 			  fprintf(stderr, "d1=%e  d2=%e,  d1-d2=%e\n",d1,d2) ;*/
 		} ;
 	} else
 	{
-		double pp=pos->model_probability(i) ;
-		double pn=neg->model_probability(i) ;
-		double sub=pp ;
+		float64_t pp=pos->model_probability(i) ;
+		float64_t pn=neg->model_probability(i) ;
+		float64_t sub=pp ;
 		if (pn>pp) sub=pn ;
 		pp-=sub ;
 		pn-=sub ;
 		pp=exp(pp) ;
 		pn=exp(pn) ;
-		double p=a*pp+(1-a)*pn ;
+		float64_t p=a*pp+(1-a)*pn ;
 		deriv+=(pp-pn)/p ;
 	} ;
 
@@ -81,25 +81,25 @@ double CFKFeatures::deriv_a(double a, int32_t dimension)
 }
 
 
-double CFKFeatures::set_opt_a(double a)
+float64_t CFKFeatures::set_opt_a(float64_t a)
 {
 	if (a==-1)
 	{
 		SG_INFO( "estimating a.\n");
-		pos_prob=new double[pos->get_observations()->get_num_vectors()];
-		neg_prob=new double[pos->get_observations()->get_num_vectors()];
+		pos_prob=new float64_t[pos->get_observations()->get_num_vectors()];
+		neg_prob=new float64_t[pos->get_observations()->get_num_vectors()];
 		for (int32_t i=0; i<pos->get_observations()->get_num_vectors(); i++)
 		{
 			pos_prob[i]=pos->model_probability(i) ;
 			neg_prob[i]=neg->model_probability(i) ;
 		}
 
-		double la=0;
-		double ua=1;
+		float64_t la=0;
+		float64_t ua=1;
 		a=(la+ua)/2;
 		while (CMath::abs(ua-la)>1e-6)
 		{
-			double da=deriv_a(a);
+			float64_t da=deriv_a(a);
 			if (da>0)
 				la=a;
 			if (da<=0)
@@ -163,13 +163,14 @@ void CFKFeatures::compute_feature_vector(
 {
 	int32_t i,j,p=0,x=num;
 
-	double posx=pos->model_probability(x);
-	double negx=neg->model_probability(x);
+	float64_t posx=pos->model_probability(x);
+	float64_t negx=neg->model_probability(x);
 
 	len=1+pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M());
 
 	featurevector[p++] = deriv_a(weight_a, x);
-	double px=CMath::logarithmic_sum(posx+log(weight_a),negx+log(1-weight_a)) ;
+	float64_t px=CMath::logarithmic_sum(
+		posx+log(weight_a),negx+log(1-weight_a));
 
 	//first do positive model
 	for (i=0; i<pos->get_N(); i++)
@@ -216,7 +217,7 @@ float64_t* CFKFeatures::set_feature_matrix()
 	num_vectors=pos->get_observations()->get_num_vectors();
 	ASSERT(num_vectors);
 
-	SG_INFO( "allocating FK feature cache of size %.2fM\n", sizeof(double)*num_features*num_vectors/1024.0/1024.0);
+	SG_INFO( "allocating FK feature cache of size %.2fM\n", sizeof(float64_t)*num_features*num_vectors/1024.0/1024.0);
 	free_feature_matrix();
 	feature_matrix=new float64_t[num_features*num_vectors];
 

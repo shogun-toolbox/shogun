@@ -46,8 +46,8 @@ bool CPruneVarSubMean::init(CFeatures* p_f)
 		idx=NULL;
 		std=NULL;
 
-		mean=new double[num_features];
-		double* var=new double[num_features];
+		mean=new float64_t[num_features];
+		float64_t* var=new float64_t[num_features];
 		int32_t i,j;
 
 		for (i=0; i<num_features; i++)

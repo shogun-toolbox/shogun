@@ -121,7 +121,7 @@ class CSVMOcas : public CSparseLinearClassifier
 		 * @param ptr ptr
 		 */
 		static void compute_W(
-			double *sq_norm_W, double *dp_WoldW, double *alpha,
+			float64_t *sq_norm_W, float64_t *dp_WoldW, float64_t *alpha,
 			uint32_t nSel, void* ptr);
 
 		/** update W
@@ -130,7 +130,7 @@ class CSVMOcas : public CSparseLinearClassifier
 		 * @param ptr ptr
 		 * @return something floaty
 		 */
-		static double update_W(double t, void* ptr );
+		static float64_t update_W(float64_t t, void* ptr );
 
 		/** add new cut
 		 *
@@ -141,7 +141,7 @@ class CSVMOcas : public CSparseLinearClassifier
 		 * @param ptr ptr
 		 */
 		static void add_new_cut(
-			double *new_col_H, uint32_t *new_cut, uint32_t cut_length,
+			float64_t *new_col_H, uint32_t *new_cut, uint32_t cut_length,
 			uint32_t nSel, void* ptr );
 
 		/** compute output
@@ -149,7 +149,7 @@ class CSVMOcas : public CSparseLinearClassifier
 		 * @param output output
 		 * @param ptr ptr
 		 */
-		static void compute_output( double *output, void* ptr );
+		static void compute_output( float64_t *output, void* ptr );
 
 		/** sort
 		 *
@@ -157,7 +157,7 @@ class CSVMOcas : public CSparseLinearClassifier
 		 * @param idx idx
 		 * @param size size
 		 */
-		static void sort( double* vals, uint32_t* idx, uint32_t size);
+		static void sort( float64_t* vals, uint32_t* idx, uint32_t size);
 
 
 	protected:

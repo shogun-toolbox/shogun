@@ -91,7 +91,8 @@ bool CLDA::train()
 	{
 		int32_t vlen;
 		bool vfree;
-		double* vec=features->get_feature_vector(classidx_neg[i], vlen, vfree);
+		float64_t* vec=
+			features->get_feature_vector(classidx_neg[i], vlen, vfree);
 		ASSERT(vec);
 
 		for (j=0; j<vlen; j++)
@@ -118,7 +119,8 @@ bool CLDA::train()
 	{
 		int32_t vlen;
 		bool vfree;
-		double* vec=features->get_feature_vector(classidx_pos[i], vlen, vfree);
+		float64_t* vec=
+			features->get_feature_vector(classidx_pos[i], vlen, vfree);
 		ASSERT(vec);
 
 		for (j=0; j<vlen; j++)
@@ -142,7 +144,7 @@ bool CLDA::train()
 
 	float64_t trace=CMath::trace(scatter, num_feat, num_feat);
 
-	double s=1.0-m_gamma;
+	float64_t s=1.0-m_gamma;
 
 	for (i=0; i<num_feat*num_feat; i++)
 		scatter[i]*=s;

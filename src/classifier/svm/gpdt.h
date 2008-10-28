@@ -91,17 +91,17 @@ public:
   /** x */
   float32_t  **x;
   /** nor */
-  double *nor;
+  float64_t *nor;
   /** sigma */
-  double sigma;
+  float64_t sigma;
   /** degree */
-  double degree;
+  float64_t degree;
   /** normalization factor */
-  double norm;
+  float64_t norm;
   /** c poly */
-  double c_poly;
+  float64_t c_poly;
   /** kernel evaluations */
-  double KernelEvaluations;
+  float64_t KernelEvaluations;
 
   /** call kernel fun
    *
@@ -109,7 +109,7 @@ public:
    * @param j
    * @return something floaty
    */
-  double (sKernel::*kernel_fun)(int32_t i, int32_t j);
+  float64_t (sKernel::*kernel_fun)(int32_t i, int32_t j);
 
   /** constructor
    *
@@ -144,7 +144,7 @@ public:
    * @param j index j
    * @return item from kernel at index i, j
    */
-  double Get(int32_t i, int32_t j)
+  float64_t Get(int32_t i, int32_t j)
   {
     KernelEvaluations += 1.0F;
     return kernel->kernel(i, j);
@@ -156,7 +156,7 @@ public:
    * @param j j
    * @param mul mul
    */
-  void   Add           (double *v, int32_t j, double mul);
+  void   Add           (float64_t *v, int32_t j, float64_t mul);
 
   /** prod something
    *
@@ -164,7 +164,7 @@ public:
    * @param j j
    * @return something floaty
    */
-  double Prod          (double *v, int32_t j);
+  float64_t Prod          (float64_t *v, int32_t j);
 
   /** get kernel
    *
@@ -182,7 +182,7 @@ private:
   int32_t    ell, dim;
   float32_t  *vaux;
 
-  double dot     (int32_t i, int32_t j);
+  float64_t dot     (int32_t i, int32_t j);
 };
 
 void SplitParts (

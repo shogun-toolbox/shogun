@@ -82,7 +82,7 @@ class CFKFeatures: public CRealFeatures
 		 * @param a a
 		 * @return something floaty
 		 */
-		double set_opt_a(double a=-1);
+		float64_t set_opt_a(float64_t a=-1);
 
 		/** get weight_a
 		 *
@@ -114,7 +114,7 @@ class CFKFeatures: public CRealFeatures
 		 * @param a a
 		 * @param dimension dimension
 		 */
-		double deriv_a(double a, int32_t dimension=-1) ;
+		float64_t deriv_a(float64_t a, int32_t dimension=-1) ;
 
 	protected:
 		/** positive HMM */
@@ -122,9 +122,9 @@ class CFKFeatures: public CRealFeatures
 		/** negative HMM */
 		CHMM* neg;
 		/** positive prob */
-		double* pos_prob;
+		float64_t* pos_prob;
 		/** negative prob */
-		double* neg_prob;
+		float64_t* neg_prob;
 		/** weight a */
 		float64_t weight_a;
 };

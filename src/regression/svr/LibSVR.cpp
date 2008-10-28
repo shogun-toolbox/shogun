@@ -45,7 +45,7 @@ bool CLibSVR::train()
 	problem.l=labels->get_num_labels();
 	SG_INFO( "%d trainlabels\n", problem.l);
 
-	problem.y=new double[problem.l];
+	problem.y=new float64_t[problem.l];
 	problem.x=new struct svm_node*[problem.l];
 	x_space=new struct svm_node[2*problem.l];
 
@@ -58,7 +58,7 @@ bool CLibSVR::train()
 	}
 
 	int32_t weights_label[2]={-1,+1};
-	double weights[2]={1.0,get_C2()/get_C1()};
+	float64_t weights[2]={1.0,get_C2()/get_C1()};
 
 	param.svm_type=EPSILON_SVR; // epsilon SVR
 	param.kernel_type = LINEAR;

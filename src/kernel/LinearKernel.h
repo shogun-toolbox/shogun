@@ -112,7 +112,7 @@ class CLinearKernel: public CSimpleKernel<float64_t>
 		 * @param len where length of normal vector will be stored
 		 * @return normal vector
 		 */
-		inline const double* get_normal(int32_t& len)
+		inline const float64_t* get_normal(int32_t& len)
 		{
 			if (lhs && normal)
 			{

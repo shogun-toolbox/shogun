@@ -89,7 +89,7 @@ bool CDistance::save(char* fname)
 			else if (!(i % (num_total/200+1)))
 				SG_PRINT( ".");
 
-			double k=distance(l,r);
+			float64_t k=distance(l,r);
 			f.save_real_data(&k, 1);
 
 			i++;
@@ -168,7 +168,7 @@ void CDistance::get_distance_matrix(float64_t** dst, int32_t* m, int32_t* n)
 			{
 				for (int32_t j=i; j<num_vec1; j++)
 				{
-					double v=distance(i,j);
+					float64_t v=distance(i,j);
 
 					result[i+j*num_vec1]=v;
 					result[j+i*num_vec1]=v;
@@ -237,7 +237,7 @@ float32_t* CDistance::get_distance_matrix_shortreal(
 			{
 				for (int32_t j=i; j<num_vec1; j++)
 				{
-					double v=distance(i,j);
+					float64_t v=distance(i,j);
 
 					result[i+j*num_vec1]=v;
 					result[j+i*num_vec1]=v;
@@ -306,7 +306,7 @@ float64_t* CDistance::get_distance_matrix_real(
 			{
 				for (int32_t j=i; j<num_vec1; j++)
 				{
-					double v=distance(i,j);
+					float64_t v=distance(i,j);
 
 					result[i+j*num_vec1]=v;
 					result[j+i*num_vec1]=v;

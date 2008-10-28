@@ -15,13 +15,13 @@
 #include "lib/io.h"
 
 CGaussianShiftKernel::CGaussianShiftKernel(
-	int32_t size, double w, int32_t ms, int32_t ss)
+	int32_t size, float64_t w, int32_t ms, int32_t ss)
 : CGaussianKernel(size, w), max_shift(ms), shift_step(ss)
 {
 }
 
 CGaussianShiftKernel::CGaussianShiftKernel(
-	CRealFeatures* l, CRealFeatures* r, double w, int32_t ms, int32_t ss,
+	CRealFeatures* l, CRealFeatures* r, float64_t w, int32_t ms, int32_t ss,
 	int32_t size)
 : CGaussianKernel(l, r, w, size), max_shift(ms), shift_step(ss)
 {
@@ -37,8 +37,10 @@ float64_t CGaussianShiftKernel::compute(int32_t idx_a, int32_t idx_b)
 	int32_t alen, blen;
 	bool afree, bfree;
 
-	double* avec=((CRealFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
-	double* bvec=((CRealFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
+	float64_t* avec=
+		((CRealFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
+	float64_t* bvec=
+		((CRealFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
 	ASSERT(alen==blen);
 
 	float64_t result = 0.0 ;

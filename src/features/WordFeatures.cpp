@@ -85,7 +85,7 @@ bool CWordFeatures::obtain_from_char_features(
 	delete[] hist;
 
 	//number of bits the maximum value in feature matrix requires to get stored
-	max_val= (int32_t) ceil(log((double) max_val+1)/log((double) 2));
+	max_val= (int32_t) ceil(log((float64_t) max_val+1)/log((float64_t) 2));
 	num_symbols=1<<(max_val*p_order);
 
 	SG_INFO( "max_val (bit): %d order: %d -> results in num_symbols: %d\n", max_val, p_order, num_symbols);

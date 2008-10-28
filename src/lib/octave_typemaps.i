@@ -29,15 +29,15 @@
  * to produce an arrayof te specified shape).  This can be applied to
  * a existing functions using the %apply directive:
  *
- *     %apply (double* IN_ARRAY1, int32_t DIM1) {double* series, int32_t length}
- *     %apply (double* IN_ARRAY2, int32_t DIM1, int32_t DIM2) {double* mx, int32_t rows, int32_t cols}
- *     double sum(double* series, int32_t length);
- *     double max(double* mx, int32_t rows, int32_t cols);
+ *     %apply (float64_t* IN_ARRAY1, int32_t DIM1) {float64_t* series, int32_t length}
+ *     %apply (float64_t* IN_ARRAY2, int32_t DIM1, int32_t DIM2) {float64_t* mx, int32_t rows, int32_t cols}
+ *     float64_t sum(float64_t* series, int32_t length);
+ *     float64_t max(float64_t* mx, int32_t rows, int32_t cols);
  *
  * or with
  *
- *     double sum(double* IN_ARRAY1, int32_t DIM1);
- *     double max(double* IN_ARRAY2, int32_t DIM1, int32_t DIM2);
+ *     float64_t sum(float64_t* IN_ARRAY1, int32_t DIM1);
+ *     float64_t max(float64_t* IN_ARRAY2, int32_t DIM1, int32_t DIM2);
  */
 
 /* One dimensional input arrays */

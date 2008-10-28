@@ -31,7 +31,7 @@
 
 static const uint32_t QPSolverMaxIter = 10000000;
 
-static double *H;
+static float64_t *H;
 static uint32_t BufSize;
 
 /*----------------------------------------------------------------------
@@ -45,11 +45,11 @@ static const void *get_col( uint32_t i)
 /*----------------------------------------------------------------------
   Returns time of the day in seconds. 
   ----------------------------------------------------------------------*/
-static double get_time()
+static float64_t get_time()
 {
 	struct timeval tv;
 	if (gettimeofday(&tv, NULL)==0)
-		return tv.tv_sec+((double)(tv.tv_usec))/1e6;
+		return (float64_t) (tv.tv_sec+((double)(tv.tv_usec))/1e6);
 	else
 		return 0.0;
 }
@@ -58,32 +58,32 @@ static double get_time()
   SVM-Ocas solver.
   ----------------------------------------------------------------------*/
 ocas_return_value_T svm_ocas_solver(
-            double C,
+            float64_t C,
             uint32_t nData, 
-            double TolRel,
-            double TolAbs,
-            double QPBound,
+            float64_t TolRel,
+            float64_t TolAbs,
+            float64_t QPBound,
             uint32_t _BufSize,
             uint8_t Method,
-            void (*compute_W)(double*, double*, double*, uint32_t, void*),
-            double (*update_W)(double, void*),
-            void (*add_new_cut)(double*, uint32_t*, uint32_t, uint32_t, void*),
-            void (*compute_output)(double*, void* ),
-            void (*sort)(double*, uint32_t*, uint32_t),
+            void (*compute_W)(float64_t*, float64_t*, float64_t*, uint32_t, void*),
+            float64_t (*update_W)(float64_t, void*),
+            void (*add_new_cut)(float64_t*, uint32_t*, uint32_t, uint32_t, void*),
+            void (*compute_output)(float64_t*, void* ),
+            void (*sort)(float64_t*, uint32_t*, uint32_t),
 			void* user_data) 
 {
   ocas_return_value_T ocas;
-  double *b, *alpha, *diag_H;
-  double *output, *old_output;
-  double xi, sq_norm_W, QPSolverTolRel, dot_prod_WoldW, dummy, sq_norm_oldW;
-  double A0, B0, GradVal, t, t1=0, t2=0, *Ci, *Bi, *hpf;
-  double start_time;
+  float64_t *b, *alpha, *diag_H;
+  float64_t *output, *old_output;
+  float64_t xi, sq_norm_W, QPSolverTolRel, dot_prod_WoldW, dummy, sq_norm_oldW;
+  float64_t A0, B0, GradVal, t, t1=0, t2=0, *Ci, *Bi, *hpf;
+  float64_t start_time;
   uint32_t *hpi;
   uint32_t cut_length;
   uint32_t i, *new_cut;
   uint16_t *I;
   int8_t qp_exitflag;
-  double gap;
+  float64_t gap;
 
   ocas.ocas_time = get_time();
   ocas.solver_time = 0;
@@ -110,7 +110,7 @@ ocas_return_value_T svm_ocas_solver(
   Bi=NULL;
 
   /* Hessian matrix contains dot product of normal vectors of selected cutting planes */
-  H = (double*)OCAS_CALLOC(BufSize*BufSize,sizeof(double));
+  H = (float64_t*)OCAS_CALLOC(BufSize*BufSize,sizeof(float64_t));
   if(H == NULL)
   {
 	  ocas.exitflag=-2;
@@ -118,14 +118,14 @@ ocas_return_value_T svm_ocas_solver(
   }
   
   /* bias of cutting planes */
-  b = (double*)OCAS_CALLOC(BufSize,sizeof(double));
+  b = (float64_t*)OCAS_CALLOC(BufSize,sizeof(float64_t));
   if(b == NULL)
   {
 	  ocas.exitflag=-2;
 	  goto cleanup;
   }
 
-  alpha = (double*)OCAS_CALLOC(BufSize,sizeof(double));
+  alpha = (float64_t*)OCAS_CALLOC(BufSize,sizeof(float64_t));
   if(alpha == NULL)
   {
 	  ocas.exitflag=-2;
@@ -149,21 +149,21 @@ ocas_return_value_T svm_ocas_solver(
 
   for(i=0; i< BufSize; i++) I[i] = 1;
 
-  diag_H = (double*)OCAS_CALLOC(BufSize,sizeof(double));
+  diag_H = (float64_t*)OCAS_CALLOC(BufSize,sizeof(float64_t));
   if(diag_H == NULL)
   {
 	  ocas.exitflag=-2;
 	  goto cleanup;
   }
 
-  output = (double*)OCAS_CALLOC(nData,sizeof(double));
+  output = (float64_t*)OCAS_CALLOC(nData,sizeof(float64_t));
   if(output == NULL)
   {
 	  ocas.exitflag=-2;
 	  goto cleanup;
   }
 
-  old_output = (double*)OCAS_CALLOC(nData,sizeof(double));
+  old_output = (float64_t*)OCAS_CALLOC(nData,sizeof(float64_t));
   if(old_output == NULL)
   {
 	  ocas.exitflag=-2;
@@ -171,7 +171,7 @@ ocas_return_value_T svm_ocas_solver(
   }
 
   /* array of hinge points used in line-serach  */
-  hpf = (double*) OCAS_CALLOC(nData, sizeof(hpf[0]));
+  hpf = (float64_t*) OCAS_CALLOC(nData, sizeof(hpf[0]));
   if(hpf == NULL)
   {
 	  ocas.exitflag=-2;
@@ -186,14 +186,14 @@ ocas_return_value_T svm_ocas_solver(
   }
 
   /* vectors Ci, Bi are used in the line search procedure */
-  Ci = (double*)OCAS_CALLOC(nData,sizeof(double));
+  Ci = (float64_t*)OCAS_CALLOC(nData,sizeof(float64_t));
   if(Ci == NULL)
   {
 	  ocas.exitflag=-2;
 	  goto cleanup;
   }
 
-  Bi = (double*)OCAS_CALLOC(nData,sizeof(double));
+  Bi = (float64_t*)OCAS_CALLOC(nData,sizeof(float64_t));
   if(Bi == NULL)
   {
 	  ocas.exitflag=-2;
@@ -224,7 +224,7 @@ ocas_return_value_T svm_ocas_solver(
     ocas.nIter++;
 
     /* append a new cut to the buffer and update H */
-    b[ocas.nCutPlanes] = -(double)cut_length;
+    b[ocas.nCutPlanes] = -(float64_t)cut_length;
 
     start_time = get_time();
 
@@ -298,7 +298,7 @@ ocas_return_value_T svm_ocas_solver(
         A0 = sq_norm_W -2*dot_prod_WoldW + sq_norm_oldW;
         B0 = dot_prod_WoldW - sq_norm_oldW;
 
-        memcpy( old_output, output, sizeof(double)*nData );
+        memcpy( old_output, output, sizeof(float64_t)*nData );
 
         start_time = get_time();
         compute_output( output, user_data );
@@ -311,7 +311,7 @@ ocas_return_value_T svm_ocas_solver(
           Ci[i] = C*(1-old_output[i]);
           Bi[i] = C*(old_output[i] - output[i]);
 
-          double val;
+          float64_t val;
           if(Bi[i] != 0)
             val = -Ci[i]/Bi[i];
           else
@@ -336,7 +336,7 @@ ocas_return_value_T svm_ocas_solver(
         sort(hpf, hpi, num_hp);
         ocas.sort_time += get_time() - start_time;
 
-          double t_new, GradVal_new;
+          float64_t t_new, GradVal_new;
           i = 0;
           while( GradVal < 0 && i < num_hp )
           {
@@ -435,9 +435,9 @@ cleanup:
 /*----------------------------------------------------------------------
  Sort array value and index in asceding order according to value.
   ----------------------------------------------------------------------*/
-static void swapf(double* a, double* b)
+static void swapf(float64_t* a, float64_t* b)
 {
-	double dummy=*b;
+	float64_t dummy=*b;
 	*b=*a;
 	*a=dummy;
 }
@@ -449,7 +449,7 @@ static void swapi(uint32_t* a, uint32_t* b)
 	*a=dummy;
 }
 
-void qsort_index(double* value, uint32_t* index, uint32_t size)
+void qsort_index(float64_t* value, uint32_t* index, uint32_t size)
 {
 	if (size==2)
 	{
@@ -460,7 +460,7 @@ void qsort_index(double* value, uint32_t* index, uint32_t size)
 		}
 		return;
 	}
-	double split=value[size/2];
+	float64_t split=value[size/2];
 
 	uint32_t left=0;
 	uint32_t right=size-1;

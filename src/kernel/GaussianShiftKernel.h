@@ -39,7 +39,8 @@ class CGaussianShiftKernel: public CGaussianKernel
 		 * @param max_shift maximum shift
 		 * @param shift_step shift step
 		 */
-		CGaussianShiftKernel(int32_t size, double width, int32_t max_shift,
+		CGaussianShiftKernel(
+			int32_t size, float64_t width, int32_t max_shift,
 			int32_t shift_step);
 
 		/** constructor
@@ -51,8 +52,10 @@ class CGaussianShiftKernel: public CGaussianKernel
 		 * @param shift_step shift step
 		 * @param size cache size
 		 */
-		CGaussianShiftKernel(CRealFeatures* l, CRealFeatures* r,
-			double width, int32_t max_shift, int32_t shift_step, int32_t size=10);
+		CGaussianShiftKernel(
+			CRealFeatures* l, CRealFeatures* r,
+			float64_t width, int32_t max_shift, int32_t shift_step,
+			int32_t size=10);
 
 		virtual ~CGaussianShiftKernel();
 

@@ -284,7 +284,7 @@ bool CMultiClassSVM::load(FILE* modelfl)
 	bool result=true;
 	char char_buffer[1024];
 	int32_t int_buffer;
-	double double_buffer;
+	float64_t double_buffer;
 	int32_t line_number=1;
 	int32_t svm_idx=-1;
 

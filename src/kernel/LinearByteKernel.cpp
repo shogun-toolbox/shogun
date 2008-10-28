@@ -109,7 +109,7 @@ bool CLinearByteKernel::init_optimization(
 		ASSERT(avec);
 
 		for (int32_t j=0; j<num_feat; j++)
-			normal[j]+= alphas[i] * normalizer->normalize_lhs(((double) avec[j]), sv_idx[i]);
+			normal[j]+= alphas[i] * normalizer->normalize_lhs(((float64_t) avec[j]), sv_idx[i]);
 
 		((CByteFeatures*) lhs)->free_feature_vector(avec, 0, afree);
 	}
@@ -135,10 +135,10 @@ float64_t CLinearByteKernel::compute_optimized(int32_t idx_b)
 
 	uint8_t* bvec=((CByteFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
 
-	double result=0;
+	float64_t result=0;
 	{
 		for (int32_t i=0; i<blen; i++)
-			result+= normal[i] * ((double) bvec[i]);
+			result+= normal[i] * ((float64_t) bvec[i]);
 	}
 
 	((CByteFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);

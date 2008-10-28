@@ -96,7 +96,7 @@ FILE        *fp;
 /* utility routines prototyping */
 void quick_si (int32_t a[], int32_t k);
 void quick_s3 (int32_t a[], int32_t k, int32_t ia[]);
-void quick_s2 (double a[], int32_t k, int32_t ia[]);
+void quick_s2 (float64_t a[], int32_t k, int32_t ia[]);
 
 /******************************************************************************/
 /*** Class for caching strategy implementation                              ***/
@@ -329,7 +329,7 @@ int32_t QPproblem::optimal()
    ***********************************************************************/
   register int32_t i, j, margin_sv_number, z, k, s, kin, z1, znew=0, nnew;
 
-  double gx_i, aux, s1, s2;
+  float64_t gx_i, aux, s1, s2;
 
   /* sort -y*grad and store in ing the swaps done */
   for (j = 0; j < ell; j++)
@@ -717,7 +717,7 @@ int32_t QPproblem::Preprocess1(sKernel* kernel, int32_t *aux, int32_t *sv)
   int32_t    nsv, nbsv;
   int32_t    *sv_loc, *bsv_loc, *sp_y;
   float32_t  *sp_D=NULL;
-  double *sp_alpha, *sp_h;
+  float64_t *sp_alpha, *sp_h;
 
   s  = ell;
   /* divide the s elements into n blocks smaller than preprocess_size */
@@ -733,8 +733,8 @@ int32_t QPproblem::Preprocess1(sKernel* kernel, int32_t *aux, int32_t *sv)
 
   sv_loc   = (int32_t *) malloc(s*sizeof(int32_t));
   bsv_loc  = (int32_t *)malloc(s*sizeof(int32_t));
-  sp_alpha = (double *)malloc(sl*sizeof(double));
-  sp_h     = (double *)malloc(sl*sizeof(double));
+  sp_alpha = (float64_t *)malloc(sl*sizeof(float64_t));
+  sp_h     = (float64_t *)malloc(sl*sizeof(float64_t));
   sp_y     = (int32_t *)malloc(sl*sizeof(int32_t));
 
   if (sl < 500)
@@ -742,7 +742,7 @@ int32_t QPproblem::Preprocess1(sKernel* kernel, int32_t *aux, int32_t *sv)
 
   for (i = 0; i < sl; i++)
        sp_h[i] = -1.0;
-  memset(alpha, 0, ell*sizeof(double));
+  memset(alpha, 0, ell*sizeof(float64_t));
 
   /* randomly reorder the component to select */
   for (i = 0; i < ell; i++)
@@ -773,7 +773,7 @@ int32_t QPproblem::Preprocess1(sKernel* kernel, int32_t *aux, int32_t *sv)
                                    * (float32_t)kernel->Get(aux[j+off], aux[k+off]);
           }
 
-          memset(sp_alpha, 0, sl*sizeof(double));
+          memset(sp_alpha, 0, sl*sizeof(float64_t));
 
           /* call the gradient projection QP solver */
           gpm_solver(projection_solver, projection_projector, ll, sp_D, sp_h,
@@ -783,8 +783,8 @@ int32_t QPproblem::Preprocess1(sKernel* kernel, int32_t *aux, int32_t *sv)
       {
           QPproblem p2;
           p2.Subproblem(*this, ll, aux + off);
-          p2.chunk_size     = (int32_t) ((double)chunk_size / sqrt((double)n));
-          p2.q              = (int32_t) ((double)q / sqrt((double)n));
+          p2.chunk_size     = (int32_t) ((float64_t)chunk_size / sqrt((float64_t)n));
+          p2.q              = (int32_t) ((float64_t)q / sqrt((float64_t)n));
           p2.maxmw          = ll*ll*4 / (1024 * 1024);
           if (p2.maxmw > maxmw / 2)
               p2.maxmw = maxmw / 2;
@@ -866,7 +866,7 @@ int32_t QPproblem::Preprocess1(sKernel* kernel, int32_t *aux, int32_t *sv)
 /******************************************************************************/
 /*** Compute the QP problem solution                                        ***/
 /******************************************************************************/
-double QPproblem::gpdtsolve(double *solution)
+float64_t QPproblem::gpdtsolve(float64_t *solution)
 {
   int32_t i, j, k, z, iin, jin, nit, tot_vpm_iter, lsCount;
   int32_t tot_vpm_secant, projCount, proximal_count;
@@ -875,12 +875,12 @@ double QPproblem::gpdtsolve(double *solution)
   int32_t *sp_y;               /* labels vector                             */
   int32_t *indnzin, *indnzout; /* nonzero components indices vectors        */
   float32_t     *sp_D;               /* quadratic part of the objective function  */
-  double    *sp_h, *sp_hloc,     /* linear part of the objective function     */
+  float64_t    *sp_h, *sp_hloc,     /* linear part of the objective function     */
             *sp_alpha,*stloc;    /* variables and gradient updating vectors   */
-  double    sp_e, aux, fval, tau_proximal_this, dfval;
-  double    *vau;
-  double    *weight;
-  double    tot_prep_time, tot_vpm_time, tot_st_time, total_time;
+  float64_t    sp_e, aux, fval, tau_proximal_this, dfval;
+  float64_t    *vau;
+  float64_t    *weight;
+  float64_t    tot_prep_time, tot_vpm_time, tot_st_time, total_time;
   sCache    *Cache;
   cachetype *ptmw;
   clock_t   t, ti;
@@ -898,16 +898,16 @@ double QPproblem::gpdtsolve(double *solution)
   kktold = 10000.0;
   if (delta <= 5e-3)
   {
-      if ( (chunk_size <= 20) | ((double)chunk_size/ell <= 0.001) )
+      if ( (chunk_size <= 20) | ((float64_t)chunk_size/ell <= 0.001) )
           DELTAvpm = delta * 0.1;
-      else if ( (chunk_size <= 200) | ((double)chunk_size/ell <= 0.005) )
+      else if ( (chunk_size <= 200) | ((float64_t)chunk_size/ell <= 0.005) )
           DELTAvpm = delta * 0.5;
       else
           DELTAvpm = delta;
   }
   else
   {
-      if ( (chunk_size <= 200) | ((double)chunk_size/ell <= 0.005) )
+      if ( (chunk_size <= 200) | ((float64_t)chunk_size/ell <= 0.005) )
           DELTAvpm = (1e-3 < delta*0.1) ? 1e-3 : delta*0.1;
       else
           DELTAvpm = 5e-3;
@@ -933,9 +933,9 @@ double QPproblem::gpdtsolve(double *solution)
   index_in  = (int32_t *) malloc(chunk_size*sizeof(int32_t));
   index_out = (int32_t *) malloc(ell*sizeof(int32_t));
   indnzout  = (int32_t *) malloc(nb*sizeof(int32_t));
-  alpha     = (double *)malloc(ell*sizeof(double    ));
+  alpha     = (float64_t *)malloc(ell*sizeof(float64_t    ));
 
-  memset(alpha, 0, ell*sizeof(double));
+  memset(alpha, 0, ell*sizeof(float64_t));
   memset(ing,   0, ell*sizeof(int32_t));
 
   if (verbosity > 0 && PreprocessMode != 0)
@@ -959,7 +959,7 @@ double QPproblem::gpdtsolve(double *solution)
   t = clock() - t;
   if (verbosity > 0 && PreprocessMode != 0)
   {
-      SG_INFO( "  Time for setup: %.2lf\n", (double)t/CLOCKS_PER_SEC);
+      SG_INFO( "  Time for setup: %.2lf\n", (float64_t)t/CLOCKS_PER_SEC);
       SG_INFO(
               "\n\n*********** Begin decomposition technique...\n");
   }
@@ -972,11 +972,11 @@ double QPproblem::gpdtsolve(double *solution)
   indnzin  = (int32_t *)malloc(chunk_size*sizeof(int32_t));
   inold    = (int32_t *)malloc(chunk_size*sizeof(int32_t));
   incom    = (int32_t *)malloc(chunk_size*sizeof(int32_t));
-  vau      = (double *)malloc(ell*sizeof(double    ));
-  grad     = (double *)malloc(ell*sizeof(double    ));
-  weight   = (double *)malloc(dim*sizeof(double    ));
-  st       = (double *)malloc(ell*sizeof(double    ));
-  stloc    = (double *)malloc(ell*sizeof(double    ));
+  vau      = (float64_t *)malloc(ell*sizeof(float64_t    ));
+  grad     = (float64_t *)malloc(ell*sizeof(float64_t    ));
+  weight   = (float64_t *)malloc(dim*sizeof(float64_t    ));
+  st       = (float64_t *)malloc(ell*sizeof(float64_t    ));
+  stloc    = (float64_t *)malloc(ell*sizeof(float64_t    ));
 
   for (i = 0; i < ell; i++)
   {
@@ -987,9 +987,9 @@ double QPproblem::gpdtsolve(double *solution)
 
   sp_y     = (int32_t *)malloc(chunk_size*sizeof(int32_t));
   sp_D     = (float32_t  *)malloc(chunk_size*chunk_size * sizeof(float32_t));
-  sp_alpha = (double *)malloc(chunk_size*sizeof(double            ));
-  sp_h     = (double *)malloc(chunk_size*sizeof(double            ));
-  sp_hloc  = (double *)malloc(chunk_size*sizeof(double            ));
+  sp_alpha = (float64_t *)malloc(chunk_size*sizeof(float64_t            ));
+  sp_h     = (float64_t *)malloc(chunk_size*sizeof(float64_t            ));
+  sp_hloc  = (float64_t *)malloc(chunk_size*sizeof(float64_t            ));
 
   for (i = 0; i < chunk_size; i++)
       cec[index_in[i]] = cec[index_in[i]]+1;
@@ -1018,9 +1018,9 @@ double QPproblem::gpdtsolve(double *solution)
       if ((nit % 10) == 9)
       {
           if ((t-ti) > 0)
-              total_time += (double)(t-ti) / CLOCKS_PER_SEC;
+              total_time += (float64_t)(t-ti) / CLOCKS_PER_SEC;
           else
-              total_time += (double)(ti-t) / CLOCKS_PER_SEC;
+              total_time += (float64_t)(ti-t) / CLOCKS_PER_SEC;
           ti = t;
       }
 
@@ -1118,10 +1118,10 @@ double QPproblem::gpdtsolve(double *solution)
     t = clock() - t;
     if (verbosity > 1)
         SG_INFO(
-                "  Preparation Time: %.2lf\n", (double)t/CLOCKS_PER_SEC);
+                "  Preparation Time: %.2lf\n", (float64_t)t/CLOCKS_PER_SEC);
     else if (verbosity > 0)
-        SG_INFO( "  %8.2lf |", (double)t/CLOCKS_PER_SEC);
-    tot_prep_time += (double)t/CLOCKS_PER_SEC;
+        SG_INFO( "  %8.2lf |", (float64_t)t/CLOCKS_PER_SEC);
+    tot_prep_time += (float64_t)t/CLOCKS_PER_SEC;
 
     /*** Proximal point modification: first type ***/
 
@@ -1170,17 +1170,17 @@ double QPproblem::gpdtsolve(double *solution)
       t = clock() - t;
       tot_vpm_iter   += i;
       tot_vpm_secant += projCount;
-      tot_vpm_time   += (double)t/CLOCKS_PER_SEC;
+      tot_vpm_time   += (float64_t)t/CLOCKS_PER_SEC;
       if (verbosity > 1)
       {
           SG_INFO("  Solver it: %d", i);
           SG_INFO(", ls: %d", lsCount);
-          SG_INFO(", time: %.2lf\n", (double)t/CLOCKS_PER_SEC);
+          SG_INFO(", time: %.2lf\n", (float64_t)t/CLOCKS_PER_SEC);
       }
       else if (verbosity > 0)
       {
           SG_INFO("    %6d", i);
-          SG_INFO(" |    %8.2lf |", (double)t/CLOCKS_PER_SEC);
+          SG_INFO(" |    %8.2lf |", (float64_t)t/CLOCKS_PER_SEC);
       }
 
       /*** Proximal point modification: second type ***/
@@ -1274,7 +1274,7 @@ double QPproblem::gpdtsolve(double *solution)
             }
             if (verbosity > 1)
                 SG_INFO(
-                 "  G*x0 time: %.2lf\n", (double)(clock()-ti2)/CLOCKS_PER_SEC);
+                 "  G*x0 time: %.2lf\n", (float64_t)(clock()-ti2)/CLOCKS_PER_SEC);
         }
     }
 
@@ -1283,10 +1283,10 @@ double QPproblem::gpdtsolve(double *solution)
     t = clock() - t;
     if (verbosity > 1)
         SG_INFO(
-                "  Gradient updating time: %.2lf\n", (double)t/CLOCKS_PER_SEC);
+                "  Gradient updating time: %.2lf\n", (float64_t)t/CLOCKS_PER_SEC);
     else if (verbosity > 0)
-        SG_INFO( "  %8.2lf |", (double)t/CLOCKS_PER_SEC);
-    tot_st_time += (double)t/CLOCKS_PER_SEC;
+        SG_INFO( "  %8.2lf |", (float64_t)t/CLOCKS_PER_SEC);
+    tot_st_time += (float64_t)t/CLOCKS_PER_SEC;
 
     /*** global updating of the solution vector ***/
     for (i = 0; i < chunk_size; i++)
@@ -1311,12 +1311,12 @@ double QPproblem::gpdtsolve(double *solution)
 
   t = clock();
   if ((t-ti) > 0)
-      total_time += (double)(t-ti) / CLOCKS_PER_SEC;
+      total_time += (float64_t)(t-ti) / CLOCKS_PER_SEC;
   else
-      total_time += (double)(ti-t) / CLOCKS_PER_SEC;
+      total_time += (float64_t)(ti-t) / CLOCKS_PER_SEC;
   ti = t;
 
-  memcpy(solution, alpha, ell * sizeof(double));
+  memcpy(solution, alpha, ell * sizeof(float64_t));
 
   /* objective function evaluation */
   fval = 0.0;
@@ -1453,10 +1453,10 @@ void quick_si(int32_t a[], int32_t n)
 /******************************************************************************/
 /*** Quick sort for real vectors returning also the exchanges               ***/
 /******************************************************************************/
-void quick_s2(double a[], int32_t n, int32_t ia[])
+void quick_s2(float64_t a[], int32_t n, int32_t ia[])
 {
   int32_t     i, j, s, d, l, iw, ps[20], pd[20];
-  double  x, w;
+  float64_t  x, w;
 
   l     = 0;
   ps[0] = 0;

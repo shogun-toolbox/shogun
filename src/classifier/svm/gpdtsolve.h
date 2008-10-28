@@ -40,17 +40,17 @@ public:
   /** y */
   int32_t    *y;
   /** delta sv */
-  double DELTAsv;
+  float64_t DELTAsv;
   /** q */
   int32_t     q;
   /** max mw */
   int32_t     maxmw;
   /** c const */
-  double  c_const;
+  float64_t  c_const;
   /** bee */
-  double  bee;
+  float64_t  bee;
   /** delta */
-  double  delta;
+  float64_t  delta;
   /** linadd */
   bool linadd;
 
@@ -69,9 +69,9 @@ public:
   /** verbosity */
   int32_t     verbosity;
   /** tau proximal */
-  double  tau_proximal;
+  float64_t  tau_proximal;
   /** objective value */
-  double objective_value;
+  float64_t objective_value;
 
 // ----------------- Public Methods ---------------
   /** constructor */
@@ -114,14 +114,14 @@ public:
    * @param solution
    * @return something floaty
    */
-  double  gpdtsolve      (double *solution);
+  float64_t  gpdtsolve      (float64_t *solution);
 
   /** solve pgpdt
    *
    * @param solution
    * @return something floaty
    */
-  double  pgpdtsolve     (double *solution);
+  float64_t  pgpdtsolve     (float64_t *solution);
 
   /** check if lineadd is enabled
    *
@@ -143,10 +143,10 @@ private:
   int32_t    my_chunk_size;  // chunk_size for the current processor
   int32_t    my_spD_offset;  // offset of the current processor into sp_D matrix
   int32_t    recvl[32], displ[32];
-  double kktold;
-  double DELTAvpm, InitialDELTAvpm, DELTAkin;
-  double *alpha;
-  double *grad, *st;
+  float64_t kktold;
+  float64_t DELTAvpm, InitialDELTAvpm, DELTAkin;
+  float64_t *alpha;
+  float64_t *grad, *st;
 
 // ----------------- Private Methods ---------------
 private:

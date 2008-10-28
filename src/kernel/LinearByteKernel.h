@@ -120,7 +120,7 @@ class CLinearByteKernel: public CSimpleKernel<uint8_t>
 
 	protected:
 		/** normal vector (used in case of optimized kernel) */
-		double* normal;
+		float64_t* normal;
 };
 
 #endif /* _LINEARBYTEKERNEL_H__ */

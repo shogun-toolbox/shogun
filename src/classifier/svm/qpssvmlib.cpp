@@ -45,17 +45,17 @@ Description:
 Inputs/Outputs:
 
  const void* (*get_col)(uint32_t) retunr pointer to i-th column of H
- diag_H [double n x n] diagonal of H.
- f [double n x 1] is an arbitrary vector.
- b [double 1 x 1] scalar
+ diag_H [float64_t n x n] diagonal of H.
+ f [float64_t n x 1] is an arbitrary vector.
+ b [float64_t 1 x 1] scalar
  I [uint16_T n x 1] Indices (1..max(I)); max(I) <= n
- x [double n x 1] solution vector (inital solution).
+ x [float64_t n x 1] solution vector (inital solution).
  n [uint32_t 1 x 1] dimension of H.
  tmax [uint32_t 1 x 1] Max number of steps.
- tolrel [double 1 x 1] Relative tolerance.
- tolabs [double 1 x 1] Absolute tolerance.
+ tolrel [float64_t 1 x 1] Relative tolerance.
+ tolabs [float64_t 1 x 1] Absolute tolerance.
  t [uint32_t 1 x 1] Number of iterations.
- History [double 2 x t] Value of LB and UB wrt. number of iterations.
+ History [float64_t 2 x t] Value of LB and UB wrt. number of iterations.
  verb [int 1 x 1] if > 0 then prints info every verb-th iteation.
 
  For more info refer to TBA
@@ -84,31 +84,31 @@ Inputs/Outputs:
          tolabs, tolrel, &QP, &QD, verb );   
 -------------------------------------------------------------- */
 int8_t qpssvm_solver(const void* (*get_col)(uint32_t),
-                  double *diag_H,
-                  double *f,
-                  double b,
+                  float64_t *diag_H,
+                  float64_t *f,
+                  float64_t b,
                   uint16_t *I,
-                  double *x,
+                  float64_t *x,
                   uint32_t n,
                   uint32_t tmax,
-                  double tolabs,
-                  double tolrel,
-                  double *QP,
-                  double *QD,
+                  float64_t tolabs,
+                  float64_t tolrel,
+                  float64_t *QP,
+                  float64_t *QD,
                   uint32_t verb)
 {
-  double *x_nequ;
-  double *d;
-  double *col_u, *col_v;
-  double LB;
-  double UB;
-  double tmp;
-  double improv;
-  double tmp_num;
-  double tmp_den=0;
-  double tau=0;
-  double delta;
-  double yu;
+  float64_t *x_nequ;
+  float64_t *d;
+  float64_t *col_u, *col_v;
+  float64_t LB;
+  float64_t UB;
+  float64_t tmp;
+  float64_t improv;
+  float64_t tmp_num;
+  float64_t tmp_den=0;
+  float64_t tau=0;
+  float64_t delta;
+  float64_t yu;
   uint32_t *inx;
   uint32_t *nk;
   uint32_t m;
@@ -133,7 +133,7 @@ int8_t qpssvm_solver(const void* (*get_col)(uint32_t),
   for( i=0, m=0; i < n; i++ ) m = MAX(m,I[i]);
 
   /* alloc and initialize x_nequ */
-  x_nequ = (double*) OCAS_CALLOC(m, sizeof(double));
+  x_nequ = (float64_t*) OCAS_CALLOC(m, sizeof(float64_t));
   if( x_nequ == NULL )
   {
 	  exitflag=-2;
@@ -164,7 +164,7 @@ int8_t qpssvm_solver(const void* (*get_col)(uint32_t),
   }
     
   /* alloc d [n x 1] */
-  d = (double*) OCAS_CALLOC(n, sizeof(double));
+  d = (float64_t*) OCAS_CALLOC(n, sizeof(float64_t));
   if( d == NULL )
   {
 	  exitflag=-2;
@@ -174,7 +174,7 @@ int8_t qpssvm_solver(const void* (*get_col)(uint32_t),
   /* d = H*x + f; */
   for( i=0; i < n; i++ ) {
     if( x[i] > 0 ) {
-      col_u = (double*)get_col(i);
+      col_u = (float64_t*)get_col(i);
       for( j=0; j < n; j++ ) {
           d[j] += col_u[j]*x[i];
       }
@@ -242,7 +242,7 @@ int8_t qpssvm_solver(const void* (*get_col)(uint32_t),
          
          if( yu > 0 ) 
          {
-           col_u = (double*)get_col(u);      
+           col_u = (float64_t*)get_col(u);      
 
            improv = -OCAS_PLUS_INF;
            for( j=0; j < nk[k]; j++ ) {
@@ -294,7 +294,7 @@ int8_t qpssvm_solver(const void* (*get_col)(uint32_t),
            } else {
             
              /* updating with the best line segment */
-             col_v = (double*)get_col(v);
+             col_v = (float64_t*)get_col(v);
              for( i = 0; i < n; i++ ) {             
                d[i] += x[v]*tau*(col_u[i]-col_v[i]);
              }
@@ -331,7 +331,7 @@ int8_t qpssvm_solver(const void* (*get_col)(uint32_t),
            }
 
            /* updating with the best line segment */
-           col_v = (double*)get_col(v);
+           col_v = (float64_t*)get_col(v);
            for( i = 0; i < n; i++ ) {             
              d[i] -= x[v]*tau*col_v[i];
            }
@@ -371,7 +371,7 @@ int8_t qpssvm_solver(const void* (*get_col)(uint32_t),
 
     if( verb > 0 && (exitflag > 0 || (t % verb)==0 ))
     {
-        double gap=(UB!=0) ? (UB-LB)/ABS(UB) : 0;
+        float64_t gap=(UB!=0) ? (UB-LB)/ABS(UB) : 0;
         SG_SABS_PROGRESS(gap, -CMath::log10(gap), -CMath::log10(1), -CMath::log10(tolrel), 6);
     }
 

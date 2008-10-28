@@ -94,8 +94,10 @@ void CTOPFeatures::compute_feature_vector(
 	int32_t i,j,p=0,x=num;
 	int32_t idx=0;
 
-	double posx=(poslinear) ? (pos->linear_model_probability(x)) : (pos->model_probability(x));
-	double negx=(neglinear) ? (neg->linear_model_probability(x)) : (neg->model_probability(x));
+	float64_t posx=(poslinear) ?
+		(pos->linear_model_probability(x)) : (pos->model_probability(x));
+	float64_t negx=(neglinear) ?
+		(neg->linear_model_probability(x)) : (neg->model_probability(x));
 
 	len=get_num_features();
 
@@ -185,7 +187,7 @@ float64_t* CTOPFeatures::set_feature_matrix()
 	ASSERT(pos->get_observations());
 
 	num_vectors=pos->get_observations()->get_num_vectors();
-	SG_INFO( "allocating top feature cache of size %.2fM\n", sizeof(double)*num_features*num_vectors/1024.0/1024.0);
+	SG_INFO( "allocating top feature cache of size %.2fM\n", sizeof(float64_t)*num_features*num_vectors/1024.0/1024.0);
 	delete[] feature_matrix;
 	feature_matrix=new float64_t[num_features*num_vectors];
 	if (!feature_matrix)

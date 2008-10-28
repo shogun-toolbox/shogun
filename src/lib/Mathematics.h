@@ -264,7 +264,7 @@ class CMath : public CSGObject
 
 		static inline float64_t pow(float64_t x, float64_t n)
 		{
-			return ::pow(x, n);
+			return ::pow((double) x, (double) n);
 		}
 
 		static inline float64_t log10(float64_t v)
@@ -923,14 +923,15 @@ class CMath : public CSGObject
 
 		/// returns the mutual information of p which is given in logspace
 		/// where p,q are given in logspace
-		static double mutual_info(float64_t* p1, float64_t* p2, int32_t len);
+		static float64_t mutual_info(float64_t* p1, float64_t* p2, int32_t len);
 
 		/// returns the relative entropy H(P||Q), 
 		/// where p,q are given in logspace
-		static double relative_entropy(float64_t* p, float64_t* q, int32_t len);
+		static float64_t relative_entropy(
+			float64_t* p, float64_t* q, int32_t len);
 
 		/// returns entropy of p which is given in logspace
-		static double entropy(float64_t* p, int32_t len);
+		static float64_t entropy(float64_t* p, int32_t len);
 
 		/// returns number generator seed
 		inline static uint32_t get_seed()
@@ -1067,8 +1068,8 @@ void* CMath::parallel_qsort_index(void* p)
 		}
 		return NULL;
 	}
-	/*double split=output[(((uint64_t) size)*rand())/(((uint64_t)RAND_MAX)+1)];*/
-	double split=output[size/2];
+	/*float64_t split=output[(((uint64_t) size)*rand())/(((uint64_t)RAND_MAX)+1)];*/
+	float64_t split=output[size/2];
 
 	int32_t left=0;
 	int32_t right=size-1;

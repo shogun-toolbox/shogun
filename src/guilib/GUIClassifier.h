@@ -101,23 +101,23 @@ class CGUIClassifier : public CSGObject
 	protected:
 		CSGInterface* ui;
 		CClassifier* classifier;
-		double max_train_time;
+		float64_t max_train_time;
 
-		double perceptron_learnrate;
+		float64_t perceptron_learnrate;
 		int32_t perceptron_maxiter;
 
 		int32_t svm_qpsize;
 		int32_t svm_bufsize;
 		int32_t svm_max_qpsize;
 		int32_t svm_mkl_norm;
-		double svm_weight_epsilon;
-		double svm_epsilon;
-		double svm_tube_epsilon;
-		double svm_nu;
-		double svm_C1;
-		double svm_C2;
-		double svm_C_mkl;
-		double krr_tau;
+		float64_t svm_weight_epsilon;
+		float64_t svm_epsilon;
+		float64_t svm_tube_epsilon;
+		float64_t svm_nu;
+		float64_t svm_C1;
+		float64_t svm_C2;
+		float64_t svm_C_mkl;
+		float64_t krr_tau;
 		bool svm_use_bias;
 		bool svm_use_mkl;
 		bool svm_use_batch_computation;

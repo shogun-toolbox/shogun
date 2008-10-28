@@ -36,7 +36,9 @@ class CWDSVMOcas : public CClassifier
 		 * @param traindat training features
 		 * @param trainlab labels for training features
 		 */
-		CWDSVMOcas(float64_t C, int32_t d, int32_t from_d, CStringFeatures<uint8_t>* traindat, CLabels* trainlab);
+		CWDSVMOcas(
+			float64_t C, int32_t d, int32_t from_d,
+			CStringFeatures<uint8_t>* traindat, CLabels* trainlab);
 		virtual ~CWDSVMOcas();
 
 		/** get classifier type
@@ -123,7 +125,11 @@ class CWDSVMOcas : public CClassifier
 		 * @param d degree
 		 * @param from_d from degree
 		 */
-		inline void set_degree(int32_t d, int32_t from_d) { degree=d; from_degree=from_d;}
+		inline void set_degree(int32_t d, int32_t from_d)
+		{
+			degree=d;
+			from_degree=from_d;
+		}
 
 		/** get degree
 		 *
@@ -202,7 +208,9 @@ class CWDSVMOcas : public CClassifier
 		 * @param nSel nSel
 		 * @param ptr ptr
 		 */
-		static void compute_W( double *sq_norm_W, double *dp_WoldW, double *alpha, uint32_t nSel, void* ptr );
+		static void compute_W(
+			float64_t *sq_norm_W, float64_t *dp_WoldW, float64_t *alpha,
+			uint32_t nSel, void* ptr );
 
 		/** update W
 		 *
@@ -210,7 +218,7 @@ class CWDSVMOcas : public CClassifier
 		 * @param ptr ptr
 		 * @return something floaty
 		 */
-		static double update_W(double t, void* ptr );
+		static float64_t update_W(float64_t t, void* ptr );
 
 		/** helper function for adding a new cut
 		 *
@@ -227,7 +235,9 @@ class CWDSVMOcas : public CClassifier
 		 * @param nSel nSel
 		 * @param ptr ptr
 		 */
-		static void add_new_cut( double *new_col_H, uint32_t *new_cut, uint32_t cut_length, uint32_t nSel, void* ptr );
+		static void add_new_cut(
+			float64_t *new_col_H, uint32_t *new_cut, uint32_t cut_length,
+			uint32_t nSel, void* ptr );
 
 		/** helper function for computing the output
 		 *
@@ -241,7 +251,7 @@ class CWDSVMOcas : public CClassifier
 		 * @param output output
 		 * @param ptr ptr
 		 */
-		static void compute_output( double *output, void* ptr );
+		static void compute_output( float64_t *output, void* ptr );
 
 		/** sort
 		 *
@@ -249,7 +259,7 @@ class CWDSVMOcas : public CClassifier
 		 * @param idx idx
 		 * @param size size
 		 */
-		static void sort( double* vals, uint32_t* idx, uint32_t size);
+		static void sort( float64_t* vals, uint32_t* idx, uint32_t size);
 
 
 	protected:

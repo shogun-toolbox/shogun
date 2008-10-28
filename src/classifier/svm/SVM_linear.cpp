@@ -10,7 +10,7 @@
 #include "classifier/svm/SVM_linear.h"
 #include "classifier/svm/Tron.h"
 
-l2_lr_fun::l2_lr_fun(const problem *p, double Cp, double Cn)
+l2_lr_fun::l2_lr_fun(const problem *p, float64_t Cp, float64_t Cn)
 : function()
 {
 	int32_t i;
@@ -19,9 +19,9 @@ l2_lr_fun::l2_lr_fun(const problem *p, double Cp, double Cn)
 
 	this->prob = p;
 
-	z = new double[l];
-	D = new double[l];
-	C = new double[l];
+	z = new float64_t[l];
+	D = new float64_t[l];
+	C = new float64_t[l];
 
 	for (i=0; i<l; i++)
 	{
@@ -40,10 +40,10 @@ l2_lr_fun::~l2_lr_fun()
 }
 
 
-double l2_lr_fun::fun(double *w)
+float64_t l2_lr_fun::fun(float64_t *w)
 {
 	int32_t i;
-	double f=0;
+	float64_t f=0;
 	int32_t *y=prob->y;
 	int32_t l=prob->l;
 	int32_t n=prob->n;
@@ -51,7 +51,7 @@ double l2_lr_fun::fun(double *w)
 	Xv(w, z);
 	for(i=0;i<l;i++)
 	{
-	        double yz = y[i]*z[i];
+	        float64_t yz = y[i]*z[i];
 		if (yz >= 0)
 		        f += C[i]*log(1 + exp(-yz));
 		else
@@ -65,7 +65,7 @@ double l2_lr_fun::fun(double *w)
 	return(f);
 }
 
-void l2_lr_fun::grad(double *w, double *g)
+void l2_lr_fun::grad(float64_t *w, float64_t *g)
 {
 	int32_t i;
 	int32_t *y=prob->y;
@@ -89,12 +89,12 @@ int32_t l2_lr_fun::get_nr_variable(void)
 	return prob->n;
 }
 
-void l2_lr_fun::Hv(double *s, double *Hs)
+void l2_lr_fun::Hv(float64_t *s, float64_t *Hs)
 {
 	int32_t i;
 	int32_t l=prob->l;
 	int32_t n=prob->n;
-	double *wa = new double[l];
+	float64_t *wa = new float64_t[l];
 
 	Xv(s, wa);
 	for(i=0;i<l;i++)
@@ -106,7 +106,7 @@ void l2_lr_fun::Hv(double *s, double *Hs)
 	delete[] wa;
 }
 
-void l2_lr_fun::Xv(double *v, double *res_Xv)
+void l2_lr_fun::Xv(float64_t *v, float64_t *res_Xv)
 {
 	int32_t l=prob->l;
 	int32_t n=prob->n;
@@ -123,7 +123,7 @@ void l2_lr_fun::Xv(double *v, double *res_Xv)
 	}
 }
 
-void l2_lr_fun::XTv(double *v, double *res_XTv)
+void l2_lr_fun::XTv(float64_t *v, float64_t *res_XTv)
 {
 	int32_t l=prob->l;
 	int32_t n=prob->n;
@@ -131,7 +131,7 @@ void l2_lr_fun::XTv(double *v, double *res_XTv)
 	if (prob->use_bias)
 		n--;
 
-	memset(res_XTv, 0, sizeof(double)*prob->n);
+	memset(res_XTv, 0, sizeof(float64_t)*prob->n);
 
 	for (int32_t i=0;i<l;i++)
 	{
@@ -142,7 +142,7 @@ void l2_lr_fun::XTv(double *v, double *res_XTv)
 	}
 }
 
-l2loss_svm_fun::l2loss_svm_fun(const problem *p, double Cp, double Cn)
+l2loss_svm_fun::l2loss_svm_fun(const problem *p, float64_t Cp, float64_t Cn)
 : function()
 {
 	int32_t i;
@@ -151,9 +151,9 @@ l2loss_svm_fun::l2loss_svm_fun(const problem *p, double Cp, double Cn)
 
 	this->prob = p;
 
-	z = new double[l];
-	D = new double[l];
-	C = new double[l];
+	z = new float64_t[l];
+	D = new float64_t[l];
+	C = new float64_t[l];
 	I = new int32_t[l];
 
 	for (i=0; i<l; i++)
@@ -173,10 +173,10 @@ l2loss_svm_fun::~l2loss_svm_fun()
 	delete[] I;
 }
 
-double l2loss_svm_fun::fun(double *w)
+float64_t l2loss_svm_fun::fun(float64_t *w)
 {
 	int32_t i;
-	double f=0;
+	float64_t f=0;
 	int32_t *y=prob->y;
 	int32_t l=prob->l;
 	int32_t n=prob->n;
@@ -185,7 +185,7 @@ double l2loss_svm_fun::fun(double *w)
 	for(i=0;i<l;i++)
 	{
 	        z[i] = y[i]*z[i];
-		double d = z[i]-1;
+		float64_t d = z[i]-1;
 		if (d < 0)
 			f += C[i]*d*d;
 	}
@@ -197,7 +197,7 @@ double l2loss_svm_fun::fun(double *w)
 	return(f);
 }
 
-void l2loss_svm_fun::grad(double *w, double *g)
+void l2loss_svm_fun::grad(float64_t *w, float64_t *g)
 {
 	int32_t i;
 	int32_t *y=prob->y;
@@ -223,12 +223,12 @@ int32_t l2loss_svm_fun::get_nr_variable(void)
 	return prob->n;
 }
 
-void l2loss_svm_fun::Hv(double *s, double *Hs)
+void l2loss_svm_fun::Hv(float64_t *s, float64_t *Hs)
 {
 	int32_t i;
 	int32_t l=prob->l;
 	int32_t n=prob->n;
-	double *wa = new double[l];
+	float64_t *wa = new float64_t[l];
 
 	subXv(s, wa);
 	for(i=0;i<sizeI;i++)
@@ -240,7 +240,7 @@ void l2loss_svm_fun::Hv(double *s, double *Hs)
 	delete[] wa;
 }
 
-void l2loss_svm_fun::Xv(double *v, double *res_Xv)
+void l2loss_svm_fun::Xv(float64_t *v, float64_t *res_Xv)
 {
 	int32_t l=prob->l;
 	int32_t n=prob->n;
@@ -257,7 +257,7 @@ void l2loss_svm_fun::Xv(double *v, double *res_Xv)
 	}
 }
 
-void l2loss_svm_fun::subXv(double *v, double *res_Xv)
+void l2loss_svm_fun::subXv(float64_t *v, float64_t *res_Xv)
 {
 	int32_t n=prob->n;
 
@@ -273,14 +273,14 @@ void l2loss_svm_fun::subXv(double *v, double *res_Xv)
 	}
 }
 
-void l2loss_svm_fun::subXTv(double *v, double *XTv)
+void l2loss_svm_fun::subXTv(float64_t *v, float64_t *XTv)
 {
 	int32_t n=prob->n;
 
 	if (prob->use_bias)
 		n--;
 
-	memset(XTv, 0, sizeof(double)*prob->n);
+	memset(XTv, 0, sizeof(float64_t)*prob->n);
 	for (int32_t i=0;i<sizeI;i++)
 	{
 		prob->x->add_to_dense_vec(v[i], I[i], XTv, n);

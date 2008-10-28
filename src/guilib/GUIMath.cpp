@@ -50,9 +50,10 @@ void CGUIMath::evaluate_results(
 	if (pointeven!=-1)
 	{
 		// rounding necessary due to (although very small) numerical deviations
-		double correct=CMath::round(possize*tp[pointeven]+(1.0-fp[pointeven])*negsize);
-		double fpo=CMath::round(fp[pointeven]*negsize);
-		double fne=CMath::round((1-tp[pointeven])*possize);
+		float64_t correct=CMath::round(
+			possize*tp[pointeven]+(1.0-fp[pointeven])*negsize);
+		float64_t fpo=CMath::round(fp[pointeven]*negsize);
+		float64_t fne=CMath::round((1-tp[pointeven])*possize);
 		SG_INFO( "classified:\n");
 		SG_INFO( "total: %i pos: %i, neg: %i\n", possize+negsize, possize, negsize);
 		SG_INFO( "\tcorrect:%i\n", int32_t (correct));

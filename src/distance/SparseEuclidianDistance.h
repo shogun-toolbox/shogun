@@ -83,7 +83,7 @@ class CSparseEuclidianDistance: public CSparseDistance<float64_t>
 
 	protected:
 		/** applied scaling factor */
-		double scale;
+		float64_t scale;
 
 		/** squared left-hand side */
 		float64_t* sq_lhs;

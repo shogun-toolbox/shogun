@@ -51,15 +51,15 @@ class CGMNPLib: public CSGObject
 Usage: exitflag = gmnp_imdm( &get_col, diag_H, vector_c, dim,  
 tmax, tolabs, tolrel, th, &alpha, &t, &History );
 -------------------------------------------------------------- */
-		int8_t gmnp_imdm(double *vector_c,
+		int8_t gmnp_imdm(float64_t *vector_c,
 				int32_t dim,
 				int32_t tmax,
-				double tolabs,
-				double tolrel,
-				double th,
-				double *alpha,
+				float64_t tolabs,
+				float64_t tolrel,
+				float64_t th,
+				float64_t *alpha,
 				int32_t  *ptr_t,
-				double **ptr_History,
+				float64_t **ptr_History,
 				int32_t verb);
 
 		/** get indices2
@@ -92,7 +92,7 @@ tmax, tolabs, tolrel, th, &alpha, &t, &History );
 		 * @param b b
 		 * @return something floaty
 		 */
-		double kernel_fce( int32_t a, int32_t b );
+		float64_t kernel_fce( int32_t a, int32_t b );
 
 	protected:
 		/** diag H */

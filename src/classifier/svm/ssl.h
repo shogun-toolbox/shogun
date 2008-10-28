@@ -54,9 +54,9 @@ struct data
 	/** features */
 	CSparseFeatures<float64_t>* features;
 	/** labels */
-	double *Y;
+	float64_t *Y;
 	/** cost associated with each example */
-	double *C;
+	float64_t *C;
 };
 
 /** defines a vector of doubles */
@@ -65,7 +65,7 @@ struct vector_double
 	/** number of elements */
 	int32_t d;
 	/** ptr to vector elements*/
-	double *vec;
+	float64_t *vec;
 };
 
 /** defines a vector of ints for index subsets */
@@ -86,28 +86,28 @@ struct options
 	/** regularization parameter */
 	int32_t algo;
 	/** regularization parameter */
-	double lambda;
+	float64_t lambda;
 	/** regularization parameter over unlabeled examples */
-	double lambda_u;
+	float64_t lambda_u;
 	/** maximum number of TSVM switches per fixed-weight label optimization */
 	int32_t S;
 	/** expected fraction of unlabeled examples in positive class */
-	double R;
+	float64_t R;
 	/** cost for positive examples */
-	double Cp;
+	float64_t Cp;
 	/** cost for negative examples */
-	double Cn;
+	float64_t Cn;
 
 	/*  internal optimization options */
 	/** all tolerances */
-	double epsilon;
+	float64_t epsilon;
 	/** max iterations for CGLS */
 	int32_t cgitermax;
 	/** max iterations for L2_SVM_MFN */
 	int32_t mfnitermax;
 
 	/** 1.0 if bias is to be used, 0.0 otherwise */
-	double bias;
+	float64_t bias;
 };
 
 /** used in line search */
@@ -117,7 +117,7 @@ class Delta {
 		Delta() { delta=0.0; index=0;s=0; }
 
 		/** delta */
-		double delta;
+		float64_t delta;
 		/** index */
 		int32_t index;
 		/** s */
@@ -129,13 +129,13 @@ inline bool operator<(const Delta& a , const Delta& b)
 	return (a.delta < b.delta);
 }
 
-void initialize(struct vector_double *A, int32_t k, double a);
+void initialize(struct vector_double *A, int32_t k, float64_t a);
 /* initializes a vector_double to be of length k, all elements set to a */
 void initialize(struct vector_int *A, int32_t k);
 /* initializes a vector_int to be of length k, elements set to 1,2..k. */
 void GetLabeledData(struct data *Data_Labeled, const struct data *Data); 
 /* extracts labeled data from Data and copies it into Data_Labeled */
-double norm_square(const vector_double *A); /* returns squared length of A */
+float64_t norm_square(const vector_double *A); /* returns squared length of A */
 
 /* ssl_train: takes data, options, uninitialized weight and output
    vector_doubles, routes it to the algorithm */
@@ -167,14 +167,14 @@ int32_t L2_SVM_MFN(
 	struct vector_double *Outputs,
 	int32_t ini); /* use ini=0 if no good starting guess for Weights, else 1 */
 
-double line_search(
-	double *w,
-	double *w_bar,
-	double lambda,
-	double *o,
-	double *o_bar,
-	double *Y,
-	double *C,
+float64_t line_search(
+	float64_t *w,
+	float64_t *w_bar,
+	float64_t lambda,
+	float64_t *o,
+	float64_t *o_bar,
+	float64_t *Y,
+	float64_t *C,
 	int32_t d,
 	int32_t l);
 
@@ -188,8 +188,8 @@ int32_t TSVM_MFN(
 	struct vector_double *Outputs);
 
 int32_t switch_labels(
-	double* Y,
-	double* o,
+	float64_t* Y,
+	float64_t* o,
 	int32_t* JU,
 	int32_t u,
 	int32_t S);
@@ -201,26 +201,28 @@ int32_t DA_S3VM(
 	struct vector_double *Weights,
 	struct vector_double *Outputs);
 
-void optimize_p(const double* g, int32_t u, double T, double r, double*p);
+void optimize_p(
+	const float64_t* g, int32_t u, float64_t T, float64_t r, float64_t*p);
 
 int32_t optimize_w(
 	const struct data *Data,
-	const  double *p,
+	const  float64_t *p,
 	struct options *Options,
 	struct vector_double *Weights,
 	struct vector_double *Outputs,
 	int32_t ini);
 
-double transductive_cost(
-	double normWeights,
-	double *Y,
-	double *Outputs,
+float64_t transductive_cost(
+	float64_t normWeights,
+	float64_t *Y,
+	float64_t *Outputs,
 	int32_t m,
-	double lambda,
-	double lambda_u);
+	float64_t lambda,
+	float64_t lambda_u);
 
-double entropy(const  double *p, int32_t u);
+float64_t entropy(const  float64_t *p, int32_t u);
 
-double KL(const  double *p, const  double *q, int32_t u); /* KL-divergence */
+/* KL-divergence */
+float64_t KL(const  float64_t *p, const  float64_t *q, int32_t u);
 
 #endif

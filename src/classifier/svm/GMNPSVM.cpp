@@ -43,7 +43,7 @@ bool CGMNPSVM::train()
 
 	SG_INFO( "%d trainlabels, %d classes\n", num_data, num_classes);
 
-	float64_t* vector_y = new double[num_data];
+	float64_t* vector_y = new float64_t[num_data];
 	for (int32_t i=0; i<num_data; i++)
 		vector_y[i]= labels->get_label(i)+1;
 

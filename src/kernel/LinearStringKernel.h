@@ -127,7 +127,7 @@ class CLinearStringKernel: public CStringKernel<char>
 
 	protected:
 		/** normal vector (used in case of optimized kernel) */
-		double* normal;
+		float64_t* normal;
 };
 
 #endif /* _LINEARSTRINGKERNEL_H___ */

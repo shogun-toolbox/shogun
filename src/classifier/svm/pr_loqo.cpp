@@ -55,12 +55,12 @@ void nrerror(char error_text[])
    ***************************************************************/
 
 #ifdef HAVE_LAPACK
-bool choldc(double* a, int32_t n, double* p)
+bool choldc(float64_t* a, int32_t n, float64_t* p)
 {
 	if (n<=0)
 		return false;
 
-	double* a2=new double[n*n];
+	float64_t* a2=new float64_t[n*n];
 
 	for (int32_t i=0; i<n; i++)
 	{
@@ -90,11 +90,11 @@ bool choldc(double* a, int32_t n, double* p)
 	return result==0;
 }
 #else
-bool choldc(double a[], int32_t n, double p[])
+bool choldc(float64_t a[], int32_t n, float64_t p[])
 {
 	void nrerror(char error_text[]);
 	int32_t i, j, k;
-	double sum;
+	float64_t sum;
 
 	for (i = 0; i < n; i++)
 	{
@@ -126,10 +126,11 @@ bool choldc(double a[], int32_t n, double p[])
 }
 #endif
 
-void cholsb(double a[], int32_t n, double p[], double b[], double x[])
+void cholsb(
+	float64_t a[], int32_t n, float64_t p[], float64_t b[], float64_t x[])
 {
   int32_t i, k;
-  double sum;
+  float64_t sum;
 
   for (i=0; i<n; i++) {
     sum=b[i];
@@ -149,10 +150,11 @@ void cholsb(double a[], int32_t n, double p[], double b[], double x[])
   backsubstitution, hence we provide these two routines separately 
   ***************************************************************/
 
-void chol_forward(double a[], int32_t n, double p[], double b[], double x[])
+void chol_forward(
+	float64_t a[], int32_t n, float64_t p[], float64_t b[], float64_t x[])
 {
   int32_t i, k;
-  double sum;
+  float64_t sum;
 
   for (i=0; i<n; i++) {
     sum=b[i];
@@ -161,10 +163,11 @@ void chol_forward(double a[], int32_t n, double p[], double b[], double x[])
   }
 }
 
-void chol_backward(double a[], int32_t n, double p[], double b[], double x[])
+void chol_backward(
+	float64_t a[], int32_t n, float64_t p[], float64_t b[], float64_t x[])
 {
   int32_t i, k;
-  double sum;
+  float64_t sum;
 
   for (i=n-1; i>=0; i--) {
     sum=b[i];
@@ -190,7 +193,7 @@ void chol_backward(double a[], int32_t n, double p[], double b[], double x[])
   if you want to speed tune anything in the code here's the right
   place to do so: about 95% of the time is being spent in
   here. something like an iterative refinement would be nice,
-  especially when switching from double to single precision. if you
+  especially when switching from float64_t to single precision. if you
   have a fast parallel cholesky use it instead of the numrec
   implementations.
 
@@ -199,16 +202,17 @@ void chol_backward(double a[], int32_t n, double p[], double b[], double x[])
   ***************************************************************/
 
 bool solve_reduced(
-	int32_t n, int32_t m, double h_x[], double h_y[], double a[], double x_x[],
-	double x_y[], double c_x[], double c_y[], double workspace[], int32_t step)
+	int32_t n, int32_t m, float64_t h_x[], float64_t h_y[], float64_t a[],
+	float64_t x_x[], float64_t x_y[], float64_t c_x[], float64_t c_y[],
+	float64_t workspace[], int32_t step)
 {
   int32_t i,j,k;
 
-  double *p_x;
-  double *p_y;
-  double *t_a;
-  double *t_c;
-  double *t_y;
+  float64_t *p_x;
+  float64_t *p_y;
+  float64_t *t_a;
+  float64_t *t_c;
+  float64_t *t_y;
 
   p_x = workspace;		/* together n + m + n*m + n + m = n*(m+2)+2*m */
   p_y = p_x + n;
@@ -260,7 +264,7 @@ bool solve_reduced(
   elegant. 
   ***************************************************************/
 
-void matrix_vector(int32_t n, double m[], double x[], double y[])
+void matrix_vector(int32_t n, float64_t m[], float64_t x[], float64_t y[])
 {
   int32_t i, j;
 
@@ -288,65 +292,65 @@ void matrix_vector(int32_t n, double m[], double x[], double y[])
   ***************************************************************/
 
 int32_t pr_loqo(
-	int32_t n, int32_t m, double c[], double h_x[], double a[], double b[],
-	double l[], double u[], double primal[], double dual[], int32_t verb,
-	double sigfig_max, int32_t counter_max, double margin, double bound,
-	int32_t restart)
+	int32_t n, int32_t m, float64_t c[], float64_t h_x[], float64_t a[],
+	float64_t b[], float64_t l[], float64_t u[], float64_t primal[],
+	float64_t dual[], int32_t verb, float64_t sigfig_max, int32_t counter_max,
+	float64_t margin, float64_t bound, int32_t restart)
 {
   /* the knobs to be tuned ... */
-  /* double margin = -0.95;	   we will go up to 95% of the
+  /* float64_t margin = -0.95;	   we will go up to 95% of the
 				   distance between old variables and zero */
-  /* double bound = 10;		   preset value for the start. small
+  /* float64_t bound = 10;		   preset value for the start. small
 				   values give good initial
 				   feasibility but may result in slow
 				   convergence afterwards: we're too
 				   close to zero */
   /* to be allocated */
-  double *workspace;
-  double *diag_h_x;
-  double *h_y;
-  double *c_x;
-  double *c_y;
-  double *h_dot_x;
-  double *rho;
-  double *nu;
-  double *tau;
-  double *sigma;
-  double *gamma_z;
-  double *gamma_s;  
+  float64_t *workspace;
+  float64_t *diag_h_x;
+  float64_t *h_y;
+  float64_t *c_x;
+  float64_t *c_y;
+  float64_t *h_dot_x;
+  float64_t *rho;
+  float64_t *nu;
+  float64_t *tau;
+  float64_t *sigma;
+  float64_t *gamma_z;
+  float64_t *gamma_s;  
 
-  double *hat_nu;
-  double *hat_tau;
+  float64_t *hat_nu;
+  float64_t *hat_tau;
 
-  double *delta_x;
-  double *delta_y;
-  double *delta_s;
-  double *delta_z;
-  double *delta_g;
-  double *delta_t;
+  float64_t *delta_x;
+  float64_t *delta_y;
+  float64_t *delta_s;
+  float64_t *delta_z;
+  float64_t *delta_g;
+  float64_t *delta_t;
 
-  double *d;
+  float64_t *d;
 
   /* from the header - pointers into primal and dual */
-  double *x;
-  double *y;
-  double *g;
-  double *z;
-  double *s;
-  double *t;  
+  float64_t *x;
+  float64_t *y;
+  float64_t *g;
+  float64_t *z;
+  float64_t *s;
+  float64_t *t;  
 
   /* auxiliary variables */
-  double b_plus_1;
-  double c_plus_1;
+  float64_t b_plus_1;
+  float64_t c_plus_1;
 
-  double x_h_x;
-  double primal_inf;
-  double dual_inf;
+  float64_t x_h_x;
+  float64_t primal_inf;
+  float64_t dual_inf;
 
-  double sigfig;
-  double primal_obj, dual_obj;
-  double mu;
-  double alfa=-1;
+  float64_t sigfig;
+  float64_t primal_obj, dual_obj;
+  float64_t mu;
+  float64_t alfa=-1;
   int32_t counter = 0;
 
   int32_t status = STILL_RUNNING;
@@ -354,32 +358,32 @@ int32_t pr_loqo(
   int32_t i,j;
 
   /* memory allocation */
-  workspace = (double*) malloc((n*(m+2)+2*m)*sizeof(double));
-  diag_h_x  = (double*) malloc(n*sizeof(double));
-  h_y       = (double*) malloc(m*m*sizeof(double));
-  c_x       = (double*) malloc(n*sizeof(double));
-  c_y       = (double*) malloc(m*sizeof(double));
-  h_dot_x   = (double*) malloc(n*sizeof(double));
+  workspace = (float64_t*) malloc((n*(m+2)+2*m)*sizeof(float64_t));
+  diag_h_x  = (float64_t*) malloc(n*sizeof(float64_t));
+  h_y       = (float64_t*) malloc(m*m*sizeof(float64_t));
+  c_x       = (float64_t*) malloc(n*sizeof(float64_t));
+  c_y       = (float64_t*) malloc(m*sizeof(float64_t));
+  h_dot_x   = (float64_t*) malloc(n*sizeof(float64_t));
 
-  rho       = (double*) malloc(m*sizeof(double));
-  nu        = (double*) malloc(n*sizeof(double));
-  tau       = (double*) malloc(n*sizeof(double));
-  sigma     = (double*) malloc(n*sizeof(double));
+  rho       = (float64_t*) malloc(m*sizeof(float64_t));
+  nu        = (float64_t*) malloc(n*sizeof(float64_t));
+  tau       = (float64_t*) malloc(n*sizeof(float64_t));
+  sigma     = (float64_t*) malloc(n*sizeof(float64_t));
 
-  gamma_z   = (double*) malloc(n*sizeof(double));
-  gamma_s   = (double*) malloc(n*sizeof(double));
+  gamma_z   = (float64_t*) malloc(n*sizeof(float64_t));
+  gamma_s   = (float64_t*) malloc(n*sizeof(float64_t));
 
-  hat_nu    = (double*) malloc(n*sizeof(double));
-  hat_tau   = (double*) malloc(n*sizeof(double));
+  hat_nu    = (float64_t*) malloc(n*sizeof(float64_t));
+  hat_tau   = (float64_t*) malloc(n*sizeof(float64_t));
 
-  delta_x   = (double*) malloc(n*sizeof(double));
-  delta_y   = (double*) malloc(m*sizeof(double));
-  delta_s   = (double*) malloc(n*sizeof(double));
-  delta_z   = (double*) malloc(n*sizeof(double));
-  delta_g   = (double*) malloc(n*sizeof(double));
-  delta_t   = (double*) malloc(n*sizeof(double));
+  delta_x   = (float64_t*) malloc(n*sizeof(float64_t));
+  delta_y   = (float64_t*) malloc(m*sizeof(float64_t));
+  delta_s   = (float64_t*) malloc(n*sizeof(float64_t));
+  delta_z   = (float64_t*) malloc(n*sizeof(float64_t));
+  delta_g   = (float64_t*) malloc(n*sizeof(float64_t));
+  delta_t   = (float64_t*) malloc(n*sizeof(float64_t));
 
-  d         = (double*) malloc(n*sizeof(double));
+  d         = (float64_t*) malloc(n*sizeof(float64_t));
 
   /* pointers into the external variables */
   x = primal;			/* n */
