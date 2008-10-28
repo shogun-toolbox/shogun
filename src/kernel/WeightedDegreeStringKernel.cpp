@@ -669,12 +669,13 @@ bool CWeightedDegreeStringKernel::init_block_weights_from_wd()
 
 	if (block_weights)
 	{
-		float64_t deg=degree;
 		int32_t k;
-		for (k=0; k<degree ; k++)
-			block_weights[k]=(-pow(k,3) + (3*deg-3)*pow(k,2) + (9*deg-2)*k + 6*deg) / (3*deg*(deg+1));
-		for (k=degree; k<seq_length ; k++)
-			block_weights[k]=(-deg+3*k+4)/3;
+		for (k=0; k<degree; k++)
+			block_weights[k]=
+				(-pow(k, 3)+(3*degree-3)*pow(k, 2)+(9*degree-2)*k+6*degree) /
+				(3*degree*(degree+1));
+		for (k=degree; k<seq_length; k++)
+			block_weights[k]=(-degree+3*k+4)/3;
 	}
 
 	return (block_weights!=NULL);
