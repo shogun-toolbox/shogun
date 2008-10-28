@@ -30,7 +30,7 @@
  * Tanimoto coefficient</a>
  * @see CCosineDistance
  */
-class CTanimotoDistance: public CSimpleDistance<DREAL>
+class CTanimotoDistance: public CSimpleDistance<float64_t>
 {
 	public:
 		/** default constructor */
@@ -85,7 +85,7 @@ class CTanimotoDistance: public CSimpleDistance<DREAL>
 		/// compute distance for features a and b
 		/// idx_{a,b} denote the index of the feature vectors
 		/// in the corresponding feature object
-		virtual DREAL compute(int32_t idx_a, int32_t idx_b);
+		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
 };
 
 #endif /* _TANIMOTODISTANCE_H___ */

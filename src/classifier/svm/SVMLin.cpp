@@ -21,7 +21,8 @@ CSVMLin::CSVMLin()
 {
 }
 
-CSVMLin::CSVMLin(DREAL C, CSparseFeatures<DREAL>* traindat, CLabels* trainlab)
+CSVMLin::CSVMLin(
+	float64_t C, CSparseFeatures<float64_t>* traindat, CLabels* trainlab)
 : CSparseLinearClassifier(), C1(C), C2(C), epsilon(1e-5), use_bias(true)
 {
 	set_features(traindat);
@@ -39,7 +40,7 @@ bool CSVMLin::train()
 	ASSERT(get_features());
 
 	int32_t num_train_labels=0;
-	DREAL* train_labels=labels->get_labels(num_train_labels);
+	float64_t* train_labels=labels->get_labels(num_train_labels);
 	int32_t num_feat=features->get_num_features();
 	int32_t num_vec=features->get_num_vectors();
 
@@ -86,7 +87,7 @@ bool CSVMLin::train()
 	ssl_train(&Data, &Options, &Weights, &Outputs);
 	ASSERT(Weights.vec && Weights.d==num_feat+1);
 
-	DREAL sgn=train_labels[0];
+	float64_t sgn=train_labels[0];
 	for (int32_t i=0; i<num_feat+1; i++)
 		Weights.vec[i]*=sgn;
 

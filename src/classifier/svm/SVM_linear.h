@@ -21,7 +21,7 @@ struct problem
 	/** y */
 	int32_t *y;
 	/** sparse features x */
-	CSparseFeatures<DREAL>* x;
+	CSparseFeatures<float64_t>* x;
 	/** if bias shall be used */
 	bool use_bias;
 };

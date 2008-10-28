@@ -17,7 +17,7 @@ CLibSVMOneClass::CLibSVMOneClass()
 {
 }
 
-CLibSVMOneClass::CLibSVMOneClass(DREAL C, CKernel* k)
+CLibSVMOneClass::CLibSVMOneClass(float64_t C, CKernel* k)
 : CSVM(C, k, NULL), model(NULL)
 {
 }

@@ -85,13 +85,13 @@ bool CCommUlongStringKernel::save_init(FILE* dest)
 	return false;
 }
 
-DREAL CCommUlongStringKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t CCommUlongStringKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	int32_t alen, blen;
 	uint64_t* avec=((CStringFeatures<uint64_t>*) lhs)->get_feature_vector(idx_a, alen);
 	uint64_t* bvec=((CStringFeatures<uint64_t>*) rhs)->get_feature_vector(idx_b, blen);
 
-	DREAL result=0;
+	float64_t result=0;
 
 	int32_t left_idx=0;
 	int32_t right_idx=0;
@@ -135,7 +135,7 @@ DREAL CCommUlongStringKernel::compute(int32_t idx_a, int32_t idx_b)
 				while (right_idx< blen && bvec[right_idx]==sym)
 					right_idx++;
 
-				result+=((DREAL) (left_idx-old_left_idx)) * ((DREAL) (right_idx-old_right_idx));
+				result+=((float64_t) (left_idx-old_left_idx)) * ((float64_t) (right_idx-old_right_idx));
 			}
 			else if (avec[left_idx]<bvec[right_idx])
 				left_idx++;
@@ -147,7 +147,7 @@ DREAL CCommUlongStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	return result;
 }
 
-void CCommUlongStringKernel::add_to_normal(int32_t vec_idx, DREAL weight)
+void CCommUlongStringKernel::add_to_normal(int32_t vec_idx, float64_t weight)
 {
 	int32_t t=0;
 	int32_t j=0;
@@ -161,8 +161,8 @@ void CCommUlongStringKernel::add_to_normal(int32_t vec_idx, DREAL weight)
 		//use malloc not new [] as DynamicArray uses it
 		uint64_t* dic= (uint64_t*) malloc(
 			(len+dictionary.get_num_elements())*sizeof(uint64_t));
-		DREAL* dic_weights= (DREAL*) malloc(
-			(len+dictionary.get_num_elements())*sizeof(DREAL));
+		float64_t* dic_weights= (float64_t*) malloc(
+			(len+dictionary.get_num_elements())*sizeof(float64_t));
 
 		if (use_sign)
 		{
@@ -220,7 +220,8 @@ void CCommUlongStringKernel::clear_normal()
 	set_is_initialized(false);
 }
 
-bool CCommUlongStringKernel::init_optimization(int32_t count, int32_t *IDX, DREAL * weights) 
+bool CCommUlongStringKernel::init_optimization(
+	int32_t count, int32_t *IDX, float64_t * weights)
 {
 	clear_normal();
 
@@ -256,9 +257,9 @@ bool CCommUlongStringKernel::delete_optimization()
 
 // binary search for each feature. trick: as features are sorted save last found idx in old_idx and
 // only search in the remainder of the dictionary
-DREAL CCommUlongStringKernel::compute_optimized(int32_t i) 
+float64_t CCommUlongStringKernel::compute_optimized(int32_t i)
 { 
-	DREAL result = 0;
+	float64_t result = 0;
 	int32_t j, last_j=0;
 	int32_t old_idx = 0;
 

@@ -55,7 +55,7 @@ class CSVM : public CKernelMachine
 		 * @param k the Kernel object
 		 * @param lab the Label object
 		 */
-		CSVM(DREAL C, CKernel* k, CLabels* lab);
+		CSVM(float64_t C, CKernel* k, CLabels* lab);
 		virtual ~CSVM();
 
 		/** set default values for members a SVM object
@@ -76,7 +76,7 @@ class CSVM : public CKernelMachine
 		 *
 		 * @param nue new nu
 		 */
-		inline void set_nu(DREAL nue) { nu=nue; }
+		inline void set_nu(float64_t nue) { nu=nue; }
 
 		/** set C
 		 *
@@ -86,31 +86,31 @@ class CSVM : public CKernelMachine
 		 * Note that not all SVMs support this (however at least CLibSVM and
 		 * CSVMLight do)
 		 */
-		inline void set_C(DREAL c1, DREAL c2) { C1=c1; C2=c2; }
+		inline void set_C(float64_t c1, float64_t c2) { C1=c1; C2=c2; }
 
 		/** set epsilon for weights
 		 *
 		 * @param eps new weight_epsilon
 		 */
-		inline void set_weight_epsilon(DREAL eps) { weight_epsilon=eps; }
+		inline void set_weight_epsilon(float64_t eps) { weight_epsilon=eps; }
 
 		/** set epsilon
 		 *
 		 * @param eps new epsilon
 		 */
-		inline void set_epsilon(DREAL eps) { epsilon=eps; }
+		inline void set_epsilon(float64_t eps) { epsilon=eps; }
 
 		/** set tube epsilon
 		 *
 		 * @param eps new tube epsilon
 		 */
-		inline void set_tube_epsilon(DREAL eps) { tube_epsilon=eps; }
+		inline void set_tube_epsilon(float64_t eps) { tube_epsilon=eps; }
 
 		/** set C mkl
 		 *
 		 * @param C new C_mkl
 		 */
-		inline void set_C_mkl(DREAL C) { C_mkl = C; }
+		inline void set_C_mkl(float64_t C) { C_mkl = C; }
 
 		/** set mkl norm
 		 *
@@ -145,31 +145,31 @@ class CSVM : public CKernelMachine
 		 *
 		 * @return epsilon for weights
 		 */
-		inline DREAL get_weight_epsilon() { return weight_epsilon; }
+		inline float64_t get_weight_epsilon() { return weight_epsilon; }
 
 		/** get epsilon
 		 *
 		 * @return epsilon
 		 */
-		inline DREAL get_epsilon() { return epsilon; }
+		inline float64_t get_epsilon() { return epsilon; }
 
 		/** get nu
 		 *
 		 * @return nu
 		 */
-		inline DREAL get_nu() { return nu; }
+		inline float64_t get_nu() { return nu; }
 
 		/** get C1
 		 *
 		 * @return C1
 		 */
-		inline DREAL get_C1() { return C1; }
+		inline float64_t get_C1() { return C1; }
 
 		/** get C2
 		 *
 		 * @return C2
 		 */
-		inline DREAL get_C2() { return C2; }
+		inline float64_t get_C2() { return C2; }
 
 		/** get qpsize
 		 *
@@ -193,7 +193,7 @@ class CSVM : public CKernelMachine
 		 * @param idx index of alpha
 		 * @return alpha
 		 */
-		inline DREAL get_alpha(int32_t idx)
+		inline float64_t get_alpha(int32_t idx)
 		{
 			ASSERT(svm_model.alpha && idx<svm_model.num_svs);
 			return svm_model.alpha[idx];
@@ -221,7 +221,7 @@ class CSVM : public CKernelMachine
 		 * @param val new value of alpha vector
 		 * @return if operation was successful
 		 */
-		inline bool set_alpha(int32_t idx, DREAL val)
+		inline bool set_alpha(int32_t idx, float64_t val)
 		{
 			if (svm_model.alpha && idx<svm_model.num_svs)
 				svm_model.alpha[idx]=val;
@@ -235,7 +235,7 @@ class CSVM : public CKernelMachine
 		 *
 		 * @return bias
 		 */
-		inline DREAL get_bias()
+		inline float64_t get_bias()
 		{
 			return svm_model.b;
 		}
@@ -244,7 +244,7 @@ class CSVM : public CKernelMachine
 		 *
 		 * @param bias new bias
 		 */
-		inline void set_bias(DREAL bias)
+		inline void set_bias(float64_t bias)
 		{
 			svm_model.b=bias;
 		}
@@ -263,7 +263,7 @@ class CSVM : public CKernelMachine
 		 * @param alphas array with all alphas to set
 		 * @param d number of alphas (== number of support vectors)
 		 */
-		void set_alphas(DREAL* alphas, int32_t d)
+		void set_alphas(float64_t* alphas, int32_t d)
 		{
 			ASSERT(alphas);
 			ASSERT(d==svm_model.num_svs);
@@ -312,7 +312,7 @@ class CSVM : public CKernelMachine
 		 * @param alphas array to contain a copy of the alphas
 		 * @param d1 number of alphas in the array
 		 */
-		void get_alphas(DREAL** alphas, int32_t* d1)
+		void get_alphas(float64_t** alphas, int32_t* d1)
 		{
 			int32_t nsv = get_num_support_vectors();
 
@@ -322,7 +322,7 @@ class CSVM : public CKernelMachine
 
 			if (nsv>0)
 			{
-				*alphas = (DREAL*) malloc(nsv*sizeof(DREAL));
+				*alphas = (float64_t*) malloc(nsv*sizeof(float64_t));
 				for(int32_t i=0; i<nsv; i++)
 					(*alphas)[i] = get_alpha(i);
 			}
@@ -394,13 +394,13 @@ class CSVM : public CKernelMachine
 		 *
 		 * @return computed objective
 		 */
-		DREAL compute_objective();
+		float64_t compute_objective();
 
 		/** set objective
 		 *
 		 * @param v objective
 		 */
-		inline void set_objective(DREAL v)
+		inline void set_objective(float64_t v)
 		{
 			objective=v;
 		}
@@ -409,7 +409,7 @@ class CSVM : public CKernelMachine
 		 *
 		 * @return objective
 		 */
-		inline DREAL get_objective()
+		inline float64_t get_objective()
 		{
 			return objective;
 		}
@@ -432,7 +432,7 @@ class CSVM : public CKernelMachine
 		 * @param num which example to classify
 		 * @return classified value
 		 */
-		virtual DREAL classify_example(int32_t num);
+		virtual float64_t classify_example(int32_t num);
 
 		/** classify example helper, used in threads
 		 *
@@ -447,9 +447,9 @@ class CSVM : public CKernelMachine
 		struct TModel
 		{
 			/** bias b */
-			DREAL b;
+			float64_t b;
 			/** array of coefficients alpha */
-			DREAL* alpha;
+			float64_t* alpha;
 			/** array of support vectors */
 			int32_t* svs;
 			/** number of support vectors */
@@ -461,23 +461,23 @@ class CSVM : public CKernelMachine
 		/** if SVM is loaded */
 		bool svm_loaded;
 		/** epsilon for multiple kernel learning */
-		DREAL weight_epsilon;
+		float64_t weight_epsilon;
 		/** epsilon */
-		DREAL epsilon;
+		float64_t epsilon;
 		/** tube epsilon for support vector regression*/
-		DREAL tube_epsilon;
+		float64_t tube_epsilon;
 		/** nu */
-		DREAL nu;
+		float64_t nu;
 		/** C1 regularization const*/
-		DREAL C1;
+		float64_t C1;
 		/** C2 */
-		DREAL C2;
+		float64_t C2;
 		/** norm used in mkl, can be 1 or 2 */
 		int32_t  mkl_norm;
 		/** C_mkl */
-		DREAL C_mkl;
+		float64_t C_mkl;
 		/** objective */
-		DREAL objective;
+		float64_t objective;
 		/** qpsize */
 		int32_t qpsize;
 		/** if bias shall be used */

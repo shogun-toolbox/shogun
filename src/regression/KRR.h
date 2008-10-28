@@ -59,14 +59,14 @@ class CKRR : public CKernelMachine
 		 * @param k kernel
 		 * @param lab labels
 		 */
-		CKRR(DREAL tau, CKernel* k, CLabels* lab);
+		CKRR(float64_t tau, CKernel* k, CLabels* lab);
 		virtual ~CKRR();
 
 		/** set regularization constant
 		 *
 		 * @param t new tau
 		 */
-		inline void set_tau(DREAL t) { tau = t; };
+		inline void set_tau(float64_t t) { tau = t; };
 
 		/** train regression
 		 *
@@ -86,7 +86,7 @@ class CKRR : public CKernelMachine
 		 * @param num which example to classify
 		 * @return result
 		 */
-		virtual DREAL classify_example(int32_t num);
+		virtual float64_t classify_example(int32_t num);
 
 		/** load regression from file
 		 *
@@ -113,9 +113,9 @@ class CKRR : public CKernelMachine
 
 	private:
 		/** alpha */
-		DREAL *alpha;
+		float64_t *alpha;
 		/** regularization parameter tau */
-		DREAL tau;
+		float64_t tau;
 };
 
 #endif /* HAVE_LAPACK */

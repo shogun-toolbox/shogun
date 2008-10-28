@@ -30,7 +30,8 @@ CSubGradientSVM::CSubGradientSVM()
 {
 }
 
-CSubGradientSVM::CSubGradientSVM(DREAL C, CSparseFeatures<DREAL>* traindat, CLabels* trainlab)
+CSubGradientSVM::CSubGradientSVM(
+	float64_t C, CSparseFeatures<float64_t>* traindat, CLabels* trainlab)
 : CSparseLinearClassifier(), C1(C), C2(C), epsilon(1e-5), qpsize(42),
 	qpsize_max(2000), use_bias(false), delta_active(0), delta_bound(0)
 {
@@ -76,7 +77,8 @@ int32_t CSubGradientSVM::find_active(int32_t num_feat, int32_t num_vec, int32_t&
 }
 */
 
-int32_t CSubGradientSVM::find_active(int32_t num_feat, int32_t num_vec, int32_t& num_active, int32_t& num_bound)
+int32_t CSubGradientSVM::find_active(
+	int32_t num_feat, int32_t num_vec, int32_t& num_active, int32_t& num_bound)
 {
 	delta_bound=0;
 	delta_active=0;
@@ -198,7 +200,6 @@ int32_t CSubGradientSVM::find_active(int32_t num_feat, int32_t num_vec, int32_t&
 
 
 void CSubGradientSVM::update_active(int32_t num_feat, int32_t num_vec)
-
 {
 	for (int32_t i=0; i<num_vec; i++)
 	{
@@ -219,17 +220,17 @@ void CSubGradientSVM::update_active(int32_t num_feat, int32_t num_vec)
 	CMath::swap(active,old_active);
 }
 
-DREAL CSubGradientSVM::line_search(int32_t num_feat, int32_t num_vec)
+float64_t CSubGradientSVM::line_search(int32_t num_feat, int32_t num_vec)
 {
-	DREAL sum_B = 0;
-	DREAL A_zero = 0.5*CMath::dot(grad_w, grad_w, num_feat);
-	DREAL B_zero = -CMath::dot(w, grad_w, num_feat);
+	float64_t sum_B = 0;
+	float64_t A_zero = 0.5*CMath::dot(grad_w, grad_w, num_feat);
+	float64_t B_zero = -CMath::dot(w, grad_w, num_feat);
 
 	int32_t num_hinge=0;
 
 	for (int32_t i=0; i<num_vec; i++)
 	{
-		DREAL p=get_label(i)*features->dense_dot(1.0, i, grad_w, num_feat, grad_b);
+		float64_t p=get_label(i)*features->dense_dot(1.0, i, grad_w, num_feat, grad_b);
 		grad_proj[i]=p;
 		if (p!=0)
 		{
@@ -246,8 +247,8 @@ DREAL CSubGradientSVM::line_search(int32_t num_feat, int32_t num_vec)
 	CMath::qsort_index(hinge_point, hinge_idx, num_hinge);
 
 
-	DREAL alpha = hinge_point[0];
-	DREAL grad_val = 2*A_zero*alpha + B_zero + sum_B;
+	float64_t alpha = hinge_point[0];
+	float64_t grad_val = 2*A_zero*alpha + B_zero + sum_B;
 
 	//CMath::display_vector(grad_w, num_feat, "grad_w");
 	//CMath::display_vector(grad_proj, num_vec, "grad_proj");
@@ -258,8 +259,8 @@ DREAL CSubGradientSVM::line_search(int32_t num_feat, int32_t num_vec)
 	//SG_PRINT("alpha=%f\n", alpha);
 	//SG_PRINT("grad_val=%f\n", grad_val);
 
-	DREAL old_grad_val = grad_val;
-	DREAL old_alpha = alpha;
+	float64_t old_grad_val = grad_val;
+	float64_t old_alpha = alpha;
 
 	for (int32_t i=1; i < num_hinge && grad_val < 0; i++)
 	{
@@ -269,7 +270,7 @@ DREAL CSubGradientSVM::line_search(int32_t num_feat, int32_t num_vec)
 		if (grad_val > 0)
 		{
 			ASSERT(old_grad_val-grad_val != 0);
-			DREAL gamma = -grad_val/(old_grad_val-grad_val);
+			float64_t gamma = -grad_val/(old_grad_val-grad_val);
 			alpha = old_alpha*gamma + (1-gamma)*alpha;
 		}
 		else
@@ -285,9 +286,10 @@ DREAL CSubGradientSVM::line_search(int32_t num_feat, int32_t num_vec)
 	return alpha;
 }
 
-DREAL CSubGradientSVM::compute_min_subgradient(int32_t num_feat, int32_t num_vec, int32_t num_active, int32_t num_bound)
+float64_t CSubGradientSVM::compute_min_subgradient(
+	int32_t num_feat, int32_t num_vec, int32_t num_active, int32_t num_bound)
 {
-	DREAL dir_deriv=0;
+	float64_t dir_deriv=0;
 
 	if (num_bound > 0)
 	{
@@ -303,9 +305,9 @@ DREAL CSubGradientSVM::compute_min_subgradient(int32_t num_feat, int32_t num_vec
 		}
 		else
 		{
-			memset(beta, 0, sizeof(DREAL)*num_bound);
+			memset(beta, 0, sizeof(float64_t)*num_bound);
 
-			DREAL bias_const=0;
+			float64_t bias_const=0;
 
 			if (use_bias)
 				bias_const=1;
@@ -319,8 +321,8 @@ DREAL CSubGradientSVM::compute_min_subgradient(int32_t num_feat, int32_t num_vec
 					bool afree=false;
 					bool bfree=false;
 
-					TSparseEntry<DREAL>* avec=features->get_sparse_feature_vector(idx_bound[i], alen, afree);
-					TSparseEntry<DREAL>* bvec=features->get_sparse_feature_vector(idx_bound[j], blen, bfree);
+					TSparseEntry<float64_t>* avec=features->get_sparse_feature_vector(idx_bound[i], alen, afree);
+					TSparseEntry<float64_t>* bvec=features->get_sparse_feature_vector(idx_bound[j], blen, bfree);
 
 					Z[i*num_bound+j]= 2.0*C1*C1*get_label(idx_bound[i])*get_label(idx_bound[j])* 
 						(features->sparse_dot(1.0, avec,alen, bvec,blen) + bias_const);
@@ -377,7 +379,7 @@ DREAL CSubGradientSVM::compute_min_subgradient(int32_t num_feat, int32_t num_vec
 		dir_deriv = CMath::dot(grad_w, v, num_feat) - grad_b*sum_Cy_active;
 		for (int32_t i=0; i<num_bound; i++)
 		{
-			DREAL val= C1*get_label(idx_bound[i])*features->dense_dot(1.0, idx_bound[i], grad_w, num_feat, grad_b);
+			float64_t val= C1*get_label(idx_bound[i])*features->dense_dot(1.0, idx_bound[i], grad_w, num_feat, grad_b);
 			dir_deriv += CMath::max(0.0, val);
 		}
 	}
@@ -392,9 +394,9 @@ DREAL CSubGradientSVM::compute_min_subgradient(int32_t num_feat, int32_t num_vec
 	return dir_deriv;
 }
 
-DREAL CSubGradientSVM::compute_objective(int32_t num_feat, int32_t num_vec)
+float64_t CSubGradientSVM::compute_objective(int32_t num_feat, int32_t num_vec)
 {
-	DREAL result= 0.5 * CMath::dot(w,w, num_feat);
+	float64_t result= 0.5 * CMath::dot(w,w, num_feat);
 	
 	for (int32_t i=0; i<num_vec; i++)
 	{
@@ -411,7 +413,7 @@ void CSubGradientSVM::compute_projection(int32_t num_feat, int32_t num_vec)
 		proj[i]=get_label(i)*features->dense_dot(1.0, i, w, num_feat, bias);
 }
 
-void CSubGradientSVM::update_projection(DREAL alpha, int32_t num_vec)
+void CSubGradientSVM::update_projection(float64_t alpha, int32_t num_vec)
 {
 	CMath::vec1_plus_scalar_times_vec2(proj,-alpha, grad_proj, num_vec);
 }
@@ -420,8 +422,8 @@ void CSubGradientSVM::init(int32_t num_vec, int32_t num_feat)
 {
 	// alloc normal and bias inited with 0
 	delete[] w;
-	w=new DREAL[num_feat];
-	memset(w,0,sizeof(DREAL)*num_feat);
+	w=new float64_t[num_feat];
+	memset(w,0,sizeof(float64_t)*num_feat);
 	//CMath::random_vector(w, num_feat, -1.0, 1.0);
 	bias=0;
 	num_it_noimprovement=0;
@@ -429,34 +431,34 @@ void CSubGradientSVM::init(int32_t num_vec, int32_t num_feat)
 	set_w(w, num_feat);
 	qpsize_limit=5000;
 
-	grad_w=new DREAL[num_feat];
-	memset(grad_w,0,sizeof(DREAL)*num_feat);
+	grad_w=new float64_t[num_feat];
+	memset(grad_w,0,sizeof(float64_t)*num_feat);
 
-	sum_CXy_active=new DREAL[num_feat];
-	memset(sum_CXy_active,0,sizeof(DREAL)*num_feat);
+	sum_CXy_active=new float64_t[num_feat];
+	memset(sum_CXy_active,0,sizeof(float64_t)*num_feat);
 
-	v=new DREAL[num_feat];
-	memset(v,0,sizeof(DREAL)*num_feat);
+	v=new float64_t[num_feat];
+	memset(v,0,sizeof(float64_t)*num_feat);
 
-	old_v=new DREAL[num_feat];
-	memset(old_v,0,sizeof(DREAL)*num_feat);
+	old_v=new float64_t[num_feat];
+	memset(old_v,0,sizeof(float64_t)*num_feat);
 
 	sum_Cy_active=0;
 
-	proj= new DREAL[num_vec];
-	memset(proj,0,sizeof(DREAL)*num_vec);
+	proj= new float64_t[num_vec];
+	memset(proj,0,sizeof(float64_t)*num_vec);
 
-	tmp_proj=new DREAL[num_vec];
-	memset(proj,0,sizeof(DREAL)*num_vec);
+	tmp_proj=new float64_t[num_vec];
+	memset(proj,0,sizeof(float64_t)*num_vec);
 
 	tmp_proj_idx= new int32_t[num_vec];
 	memset(tmp_proj_idx,0,sizeof(int32_t)*num_vec);
 
-	grad_proj= new DREAL[num_vec];
-	memset(grad_proj,0,sizeof(DREAL)*num_vec);
+	grad_proj= new float64_t[num_vec];
+	memset(grad_proj,0,sizeof(float64_t)*num_vec);
 
-	hinge_point= new DREAL[num_vec];
-	memset(hinge_point,0,sizeof(DREAL)*num_vec);
+	hinge_point= new float64_t[num_vec];
+	memset(hinge_point,0,sizeof(float64_t)*num_vec);
 
 	hinge_idx= new int32_t[num_vec];
 	memset(hinge_idx,0,sizeof(int32_t)*num_vec);
@@ -473,23 +475,23 @@ void CSubGradientSVM::init(int32_t num_vec, int32_t num_feat)
 	idx_active=new int32_t[num_vec];
 	memset(idx_active,0,sizeof(int32_t)*num_vec);
 
-	Z=new DREAL[qpsize_limit*qpsize_limit];
-	memset(Z,0,sizeof(DREAL)*qpsize_limit*qpsize_limit);
+	Z=new float64_t[qpsize_limit*qpsize_limit];
+	memset(Z,0,sizeof(float64_t)*qpsize_limit*qpsize_limit);
 
-	Zv=new DREAL[qpsize_limit];
-	memset(Zv,0,sizeof(DREAL)*qpsize_limit);
+	Zv=new float64_t[qpsize_limit];
+	memset(Zv,0,sizeof(float64_t)*qpsize_limit);
 
-	beta=new DREAL[qpsize_limit];
-	memset(beta,0,sizeof(DREAL)*qpsize_limit);
+	beta=new float64_t[qpsize_limit];
+	memset(beta,0,sizeof(float64_t)*qpsize_limit);
 
-	old_Z=new DREAL[qpsize_limit*qpsize_limit];
-	memset(old_Z,0,sizeof(DREAL)*qpsize_limit*qpsize_limit);
+	old_Z=new float64_t[qpsize_limit*qpsize_limit];
+	memset(old_Z,0,sizeof(float64_t)*qpsize_limit*qpsize_limit);
 
-	old_Zv=new DREAL[qpsize_limit];
-	memset(old_Zv,0,sizeof(DREAL)*qpsize_limit);
+	old_Zv=new float64_t[qpsize_limit];
+	memset(old_Zv,0,sizeof(float64_t)*qpsize_limit);
 
-	old_beta=new DREAL[qpsize_limit];
-	memset(old_beta,0,sizeof(DREAL)*qpsize_limit);
+	old_beta=new float64_t[qpsize_limit];
+	memset(old_beta,0,sizeof(float64_t)*qpsize_limit);
 
 }
 
@@ -548,9 +550,9 @@ bool CSubGradientSVM::train()
 
 	int32_t num_active=0;
 	int32_t num_bound=0;
-	DREAL alpha=0;
-	DREAL dir_deriv=0;
-	DREAL obj=0;
+	float64_t alpha=0;
+	float64_t dir_deriv=0;
+	float64_t obj=0;
 	delta_active=num_vec;
 	last_it_noimprovement=-1;
 
@@ -594,7 +596,7 @@ bool CSubGradientSVM::train()
 
 		if (num_it_noimprovement==10 || num_bound<qpsize_max)
 		{
-			DREAL norm_grad=CMath::dot(grad_w, grad_w, num_feat) +
+			float64_t norm_grad=CMath::dot(grad_w, grad_w, num_feat) +
 				grad_b*grad_b;
 
 #ifdef DEBUG_SUBGRADIENTSVM

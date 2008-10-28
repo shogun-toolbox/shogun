@@ -35,8 +35,9 @@ class CMindyGramKernel: public CKernel
 {
 	public:
 		/* Constructors */
-		CMindyGramKernel(int32_t ch, char *measure, DREAL width);
-		CMindyGramKernel(CFeatures *l, CFeatures *r, char *measure, DREAL width);
+		CMindyGramKernel(int32_t ch, char *measure, float64_t width);
+		CMindyGramKernel(
+			CFeatures *l, CFeatures *r, char *measure, float64_t width);
 		virtual ~CMindyGramKernel();
 
 		/* Set options */
@@ -60,10 +61,11 @@ class CMindyGramKernel: public CKernel
 		inline virtual const char* get_name() { return "MindyGram"; }
 
 		/* Optimization functions */
-		virtual bool init_optimization(int32_t count, int32_t *IDX, DREAL * weights);
+		virtual bool init_optimization(
+			int32_t count, int32_t *IDX, float64_t * weights);
 		virtual bool delete_optimization();
-		virtual DREAL compute_optimized(int32_t idx);
-		virtual void add_to_normal(int32_t idx, DREAL weight);
+		virtual float64_t compute_optimized(int32_t idx);
+		virtual void add_to_normal(int32_t idx, float64_t weight);
 		virtual void clear_normal();
 
 		/* Load and ysave functions */
@@ -72,7 +74,7 @@ class CMindyGramKernel: public CKernel
 
 	protected:
 		/* Kernel function */
-		DREAL compute(int32_t idx_a, int32_t idx_b);
+		float64_t compute(int32_t idx_a, int32_t idx_b);
 
 	private:
 		/* Name of similartiy measure */
@@ -88,7 +90,7 @@ class CMindyGramKernel: public CKernel
 		/* MD5 cache size */
 		size_t cache;
 		/* Kernel width */
-		DREAL width;
+		float64_t width;
 
 };
 #endif /* _MINDYGRAMKERNEL_H__ */

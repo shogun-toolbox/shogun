@@ -37,7 +37,7 @@ bool CRealFeatures::save(char* fname)
 {
 	int32_t len;
 	bool free;
-	DREAL* fv;
+	float64_t* fv;
 
 	CFile f(fname, 'w', F_DREAL);
 
@@ -54,13 +54,13 @@ bool CRealFeatures::save(char* fname)
 	}
 
 	if (f.is_ok())
-		SG_INFO( "%d vectors with %d features each successfully written (filesize: %ld)\n", num_vectors, num_features, num_vectors*num_features*sizeof(DREAL));
+		SG_INFO( "%d vectors with %d features each successfully written (filesize: %ld)\n", num_vectors, num_features, num_vectors*num_features*sizeof(float64_t));
 
     return true;
 }
 
 
-bool CRealFeatures::Align_char_features(CCharFeatures* cf, CCharFeatures* Ref, DREAL gapCost)
+bool CRealFeatures::Align_char_features(CCharFeatures* cf, CCharFeatures* Ref, float64_t gapCost)
 {
 	ASSERT(cf);
 
@@ -69,7 +69,7 @@ bool CRealFeatures::Align_char_features(CCharFeatures* cf, CCharFeatures* Ref, D
 
 	int32_t len=num_vectors*num_features;
 	free_feature_matrix();
-	feature_matrix=new DREAL[len];
+	feature_matrix=new float64_t[len];
 	int32_t num_cf_feat=0;
 	int32_t num_cf_vec=0;
 	int32_t num_ref_feat=0;

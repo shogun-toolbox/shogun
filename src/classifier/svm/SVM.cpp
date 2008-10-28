@@ -36,7 +36,7 @@ CSVM::CSVM(int32_t num_sv)
 	set_defaults(num_sv);
 }
 
-CSVM::CSVM(DREAL C, CKernel* k, CLabels* lab)
+CSVM::CSVM(float64_t C, CKernel* k, CLabels* lab)
 : CKernelMachine()
 {
 	set_defaults();
@@ -227,7 +227,7 @@ bool CSVM::init_kernel_optimization()
 	if (kernel && kernel->has_property(KP_LINADD) && num_sv>0)
 	{
 		int32_t * sv_idx    = new int32_t[num_sv] ;
-		DREAL* sv_weight = new DREAL[num_sv] ;
+		float64_t* sv_weight = new float64_t[num_sv] ;
 
 		for(int32_t i=0; i<num_sv; i++)
 		{
@@ -305,10 +305,10 @@ CLabels* CSVM::classify(CLabels* lab)
 		{
 			ASSERT(get_num_support_vectors()>0);
 			int32_t* sv_idx=new int32_t[get_num_support_vectors()];
-			DREAL* sv_weight=new DREAL[get_num_support_vectors()];
+			float64_t* sv_weight=new float64_t[get_num_support_vectors()];
 			int32_t* idx=new int32_t[num_vectors];
-			DREAL* output=new DREAL[num_vectors];
-			memset(output, 0, sizeof(DREAL)*num_vectors);
+			float64_t* output=new float64_t[num_vectors];
+			memset(output, 0, sizeof(float64_t)*num_vectors);
 
 			//compute output for all vectors v[0]...v[num_vectors-1]
 			for (int32_t i=0; i<num_vectors; i++)
@@ -392,18 +392,18 @@ CLabels* CSVM::classify(CLabels* lab)
 	return lab;
 }
 
-DREAL CSVM::classify_example(int32_t num)
+float64_t CSVM::classify_example(int32_t num)
 {
 	ASSERT(kernel);
 
 	if (kernel->has_property(KP_LINADD) && (kernel->get_is_initialized()))
 	{
-		DREAL dist = kernel->compute_optimized(num);
+		float64_t dist = kernel->compute_optimized(num);
 		return (dist+get_bias());
 	}
 	else
 	{
-		DREAL dist=0;
+		float64_t dist=0;
 		for(int32_t i=0; i<get_num_support_vectors(); i++)
 			dist+=kernel->kernel(get_support_vector(i), num)*get_alpha(i);
 
@@ -412,7 +412,7 @@ DREAL CSVM::classify_example(int32_t num)
 }
 
 
-DREAL CSVM::compute_objective()
+float64_t CSVM::compute_objective()
 {
 	int32_t n=get_num_support_vectors();
 

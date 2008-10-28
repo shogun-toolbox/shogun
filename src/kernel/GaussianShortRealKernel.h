@@ -32,7 +32,7 @@ class CGaussianShortRealKernel: public CSimpleKernel<float32_t>
 		 * @param size cache size
 		 * @param width width
 		 */
-		CGaussianShortRealKernel(int32_t size, DREAL width);
+		CGaussianShortRealKernel(int32_t size, float64_t width);
 
 		/** constructor
 		 *
@@ -42,7 +42,7 @@ class CGaussianShortRealKernel: public CSimpleKernel<float32_t>
 		 * @param size cache size
 		 */
 		CGaussianShortRealKernel(CShortRealFeatures* l, CShortRealFeatures* r,
-			DREAL width, int32_t size=10);
+			float64_t width, int32_t size=10);
 
 		virtual ~CGaussianShortRealKernel();
 
@@ -89,11 +89,11 @@ class CGaussianShortRealKernel: public CSimpleKernel<float32_t>
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		virtual DREAL compute(int32_t idx_a, int32_t idx_b);
+		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
 
 	protected:
 		/** width */
-		DREAL width;
+		float64_t width;
 };
 
 #endif /* _GAUSSIANSHORTREALKERNEL_H__ */

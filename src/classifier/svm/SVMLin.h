@@ -29,7 +29,9 @@ class CSVMLin : public CSparseLinearClassifier
 		 * @param traindat training features
 		 * @param trainlab labels for features
 		 */
-		CSVMLin(DREAL C, CSparseFeatures<DREAL>* traindat, CLabels* trainlab);
+		CSVMLin(
+			float64_t C, CSparseFeatures<float64_t>* traindat,
+			CLabels* trainlab);
 		virtual ~CSVMLin();
 
 		/** get classifier type
@@ -46,19 +48,19 @@ class CSVMLin : public CSparseLinearClassifier
 		 * @param c1 new C1
 		 * @param c2 new C2
 		 */
-		inline void set_C(DREAL c1, DREAL c2) { C1=c1; C2=c2; }
+		inline void set_C(float64_t c1, float64_t c2) { C1=c1; C2=c2; }
 
 		/** get C1
 		 *
 		 * @return C1
 		 */
-		inline DREAL get_C1() { return C1; }
+		inline float64_t get_C1() { return C1; }
 
 		/** get C2
 		 *
 		 * @return C2
 		 */
-		inline DREAL get_C2() { return C2; }
+		inline float64_t get_C2() { return C2; }
 
 		/** set if bias shall be enabled
 		 *
@@ -76,21 +78,21 @@ class CSVMLin : public CSparseLinearClassifier
 		 *
 		 * @param eps new epsilon
 		 */
-		inline void set_epsilon(DREAL eps) { epsilon=eps; }
+		inline void set_epsilon(float64_t eps) { epsilon=eps; }
 
 		/** get epsilon
 		 *
 		 * @return epsilon
 		 */
-		inline DREAL get_epsilon() { return epsilon; }
+		inline float64_t get_epsilon() { return epsilon; }
 
 	protected:
 		/** C1 */
-		DREAL C1;
+		float64_t C1;
 		/** C2 */
-		DREAL C2;
+		float64_t C2;
 		/** epsilon */
-		DREAL epsilon;
+		float64_t epsilon;
 
 		/** if bias is used */
 		bool use_bias;

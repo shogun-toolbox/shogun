@@ -29,7 +29,7 @@ class CLibSVM : public CSVM
 		 * @param k kernel
 		 * @param lab labels
 		 */
-		CLibSVM(DREAL C, CKernel* k, CLabels* lab);
+		CLibSVM(float64_t C, CKernel* k, CLabels* lab);
 
 		virtual ~CLibSVM();
 

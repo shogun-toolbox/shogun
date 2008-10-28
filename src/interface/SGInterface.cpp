@@ -1211,7 +1211,7 @@ bool CSGInterface::cmd_get_features()
 
 				case F_DREAL:
 				{
-					DREAL* fmatrix=((CRealFeatures *) feat)->get_feature_matrix(num_feat, num_vec);
+					float64_t* fmatrix=((CRealFeatures *) feat)->get_feature_matrix(num_feat, num_vec);
 					set_real_matrix(fmatrix, num_feat, num_vec);
 					break;
 				}
@@ -1256,11 +1256,11 @@ bool CSGInterface::cmd_get_features()
 			{
 				case F_DREAL:
 				{
-					int64_t nnz=((CSparseFeatures<DREAL>*) feat)->
+					int64_t nnz=((CSparseFeatures<float64_t>*) feat)->
 						get_num_nonzero_entries();
 					int32_t num_feat=0;
 					int32_t num_vec=0;
-					TSparse<DREAL>* fmatrix=((CSparseFeatures<DREAL>*) feat)->get_sparse_feature_matrix(num_feat, num_vec);
+					TSparse<float64_t>* fmatrix=((CSparseFeatures<float64_t>*) feat)->get_sparse_feature_matrix(num_feat, num_vec);
 					SG_INFO("sparse matrix has %d feats, %d vecs and %d nnz elemements\n", num_feat, num_vec, nnz);
 
 					set_real_sparsematrix(fmatrix, num_feat, num_vec, nnz);
@@ -1347,18 +1347,18 @@ bool CSGInterface::do_set_features(bool add)
 	{
 		case SPARSE_REAL:
 		{
-			TSparse<DREAL>* fmatrix=NULL;
+			TSparse<float64_t>* fmatrix=NULL;
 			get_real_sparsematrix(fmatrix, num_feat, num_vec);
 
-			feat=new CSparseFeatures<DREAL>(0);
-			((CSparseFeatures<DREAL>*) feat)->
+			feat=new CSparseFeatures<float64_t>(0);
+			((CSparseFeatures<float64_t>*) feat)->
 				set_sparse_feature_matrix(fmatrix, num_feat, num_vec);
 			break;
 		}
 
 		case DENSE_REAL:
 		{
-			DREAL* fmatrix=NULL;
+			float64_t* fmatrix=NULL;
 			get_real_matrix(fmatrix, num_feat, num_vec);
 
 			feat=new CRealFeatures(0);
@@ -1603,7 +1603,7 @@ bool CSGInterface::cmd_convert()
 				}
 				else if (strmatch(to_type, "ALIGN") && m_nrhs==8)
 				{
-					DREAL gap_cost=get_real_from_real_or_str();
+					float64_t gap_cost=get_real_from_real_or_str();
 					result=ui_features->convert_simple_char_to_simple_align(
 						(CCharFeatures*) features, gap_cost);
 				}
@@ -1638,7 +1638,7 @@ bool CSGInterface::cmd_convert()
 				strmatch(to_type, "REAL"))
 			{
 				result=ui_features->convert_sparse_real_to_simple_real(
-					(CSparseFeatures<DREAL>*) features);
+					(CSparseFeatures<float64_t>*) features);
 			}
 			else
 				io.not_implemented();
@@ -1706,7 +1706,7 @@ bool CSGInterface::cmd_convert()
 				char* embed=get_str_from_str_or_direct(len);
 				int32_t nlen=get_int_from_int_or_str(len);
 				char* delim=get_str_from_str_or_direct(len);
-				DREAL maxv=get_real_from_real_or_str(len);
+				float64_t maxv=get_real_from_real_or_str(len);
 
 				result=ui_features.convert_string_char_to_mindy_grams<char>(
 					(CStringFeatures<uint8_t>*) features, alph, embed,
@@ -1778,7 +1778,7 @@ bool CSGInterface::cmd_convert()
 				char* embed=get_str_from_str_or_direct(len);
 				int32_t nlen=get_int_from_int_or_str(len);
 				char* delim=get_str_from_str_or_direct(len);
-				DREAL maxv=get_real_from_real_or_str(len);
+				float64_t maxv=get_real_from_real_or_str(len);
 
 				result=ui_features.convert_string_char_to_mindy_grams<uint8_t>(
 					(CStringFeatures<uint8_t>*) features, alph, embed,
@@ -1983,7 +1983,7 @@ bool CSGInterface::cmd_set_labels()
 		SG_ERROR("Unknown target, neither TRAIN nor TEST.\n");
 	}
 
-	DREAL* lab=NULL;
+	float64_t* lab=NULL;
 	int32_t len=0;
 	get_real_vector(lab, len);
 
@@ -2034,7 +2034,7 @@ bool CSGInterface::cmd_get_labels()
 		SG_ERROR("No labels.\n");
 
 	int32_t num_labels=labels->get_num_labels();
-	DREAL* lab=new DREAL[num_labels];
+	float64_t* lab=new float64_t[num_labels];
 
 	for (int32_t i=0; i<num_labels ; i++)
 		lab[i]=labels->get_label(i);
@@ -2056,7 +2056,7 @@ bool CSGInterface::cmd_set_kernel_normalization()
 	int32_t len=0;
 	char* normalization=get_string(len);
 
-	DREAL c=0;
+	float64_t c=0;
 
 	if (m_nrhs==3)
 		c=get_real();
@@ -2081,7 +2081,7 @@ bool CSGInterface::cmd_add_kernel()
 	if (m_nrhs<3 || !create_return_values(0))
 		return false;
 
-	DREAL weight=get_real_from_real_or_str();
+	float64_t weight=get_real_from_real_or_str();
 	// adjust m_nrhs to play well with checks in create_kernel
 	m_nrhs--;
 	CKernel* kernel=create_kernel();
@@ -2121,7 +2121,7 @@ CKernel* CSGInterface::create_kernel()
 			return NULL;
 
 		int32_t size=get_int_from_int_or_str();
-		DREAL width=1;
+		float64_t width=1;
 		if (m_nrhs>3)
 			width=get_real_from_real_or_str();
 
@@ -2134,7 +2134,7 @@ CKernel* CSGInterface::create_kernel()
 
 		char* dtype=get_str_from_str_or_direct(len);
 		int32_t size=get_int_from_int_or_str();
-		DREAL scale=-1;
+		float64_t scale=-1;
 		if (m_nrhs==5)
 			scale=get_real_from_real_or_str();
 
@@ -2282,7 +2282,7 @@ CKernel* CSGInterface::create_kernel()
 		if (strmatch(dtype, "REAL"))
 		{
 			int32_t size=get_int_from_int_or_str();
-			DREAL width=1;
+			float64_t width=1;
 
 			if (m_nrhs>4)
 				width=get_real_from_real_or_str();
@@ -2333,7 +2333,7 @@ CKernel* CSGInterface::create_kernel()
 		{
 			int32_t size=get_int_from_int_or_str();
 			int32_t k=get_int_from_int_or_str();
-			DREAL w=get_real_from_real_or_str();
+			float64_t w=get_real_from_real_or_str();
 
 			kernel=ui_kernel->create_oligo(size, k, w);
 		}
@@ -2390,7 +2390,7 @@ CKernel* CSGInterface::create_kernel()
 			get_int_vector_from_int_vector_or_str(shifts, l);
 			ASSERT(l==length);
 
-			DREAL* position_weights=NULL;
+			float64_t* position_weights=NULL;
 			if (m_nrhs>9+length)
 			{
 				get_real_vector_from_real_vector_or_str(
@@ -2419,7 +2419,7 @@ CKernel* CSGInterface::create_kernel()
 			int32_t max_mismatch=0;
 			int32_t length=0;
 			int32_t center=0;
-			DREAL step=1;
+			float64_t step=1;
 
 			if (m_nrhs>4)
 			{
@@ -2589,8 +2589,8 @@ CKernel* CSGInterface::create_kernel()
 		if (strmatch(dtype, "REAL"))
 		{
 			int32_t size=get_int_from_int_or_str();
-			DREAL gamma=0.01;
-			DREAL coef0=0;
+			float64_t gamma=0.01;
+			float64_t coef0=0;
 
 			if (m_nrhs>4)
 			{
@@ -2612,7 +2612,7 @@ CKernel* CSGInterface::create_kernel()
 
 		char* dtype=get_str_from_str_or_direct(len);
 		int32_t size=get_int_from_int_or_str();
-		DREAL width=1;
+		float64_t width=1;
 		if (m_nrhs>4)
 			width=get_real_from_real_or_str();
 
@@ -2632,7 +2632,7 @@ CKernel* CSGInterface::create_kernel()
 		if (strmatch(dtype, "REAL"))
 		{
 			int32_t size=get_int_from_int_or_str();
-			DREAL width=get_real_from_real_or_str();
+			float64_t width=get_real_from_real_or_str();
 			int32_t max_shift=get_int_from_int_or_str();
 			int32_t shift_step=get_int_from_int_or_str();
 
@@ -2655,7 +2655,7 @@ CKernel* CSGInterface::create_kernel()
 		if (strmatch(dtype, "REAL"))
 		{
 			int32_t size=get_int_from_int_or_str();
-			DREAL c=1;
+			float64_t c=1;
 			if (m_nrhs>4)
 				c=get_real_from_real_or_str();
 
@@ -2673,7 +2673,7 @@ CKernel* CSGInterface::create_kernel()
 		if (strmatch(dtype, "REAL"))
 		{
 			int32_t size=get_int_from_int_or_str();
-			DREAL diag=1;
+			float64_t diag=1;
 			if (m_nrhs>4)
 				diag=get_real_from_real_or_str();
 
@@ -2692,7 +2692,7 @@ CKernel* CSGInterface::create_kernel()
 		int32_t size=get_int_from_int_or_str();
 		char* meas_str=get_str_from_str_or_direct(len);
 		char* norm_str=get_str_from_str_or_direct(len);
-		DREAL width=get_real_from_real_or_str();
+		float64_t width=get_real_from_real_or_str();
 		char* param_str=get_str_from_str_or_direct(len);
 
 		kernel=ui_kernel.create_mindygram(
@@ -2783,7 +2783,7 @@ bool CSGInterface::cmd_get_kernel_matrix()
 
 	int32_t num_vec_lhs=0;
 	int32_t num_vec_rhs=0;
-	DREAL* kmatrix=NULL;
+	float64_t* kmatrix=NULL;
 	kmatrix=kernel->get_kernel_matrix_real(num_vec_lhs, num_vec_rhs, kmatrix);
 
 	set_real_matrix(kmatrix, num_vec_lhs, num_vec_rhs);
@@ -2813,7 +2813,7 @@ bool CSGInterface::cmd_set_custom_kernel()
 	if (kernel->get_kernel_type()!=K_CUSTOM)
 		SG_ERROR("Not a custom kernel.\n");
 
-	DREAL* kmatrix=NULL;
+	float64_t* kmatrix=NULL;
 	int32_t num_feat=0;
 	int32_t num_vec=0;
 	get_real_matrix(kmatrix, num_feat, num_vec);
@@ -2877,7 +2877,7 @@ bool CSGInterface::cmd_set_WD_position_weights()
 	}
 
 	bool success=false;
-	DREAL* weights=NULL;
+	float64_t* weights=NULL;
 	int32_t dim=0;
 	int32_t len=0;
 	get_real_matrix(weights, dim, len);
@@ -2966,7 +2966,7 @@ bool CSGInterface::cmd_get_subkernel_weights()
 		SG_ERROR("Invalid kernel.\n");
 
 	EKernelType ktype=kernel->get_kernel_type();
-	const DREAL* weights=NULL;
+	const float64_t* weights=NULL;
 
 	if (ktype==K_COMBINED)
 	{
@@ -3010,7 +3010,7 @@ bool CSGInterface::cmd_set_subkernel_weights()
 		SG_ERROR("No kernel.\n");
 
 	bool success=false;
-	DREAL* weights=NULL;
+	float64_t* weights=NULL;
 	int32_t dim=0;
 	int32_t len=0;
 	get_real_matrix(weights, dim, len);
@@ -3067,7 +3067,7 @@ bool CSGInterface::cmd_set_subkernel_weights_combined()
 		SG_ERROR("Only works for combined kernels.\n");
 
 	bool success=false;
-	DREAL* weights=NULL;
+	float64_t* weights=NULL;
 	int32_t dim=0;
 	int32_t len=0;
 	get_real_matrix(weights, dim, len);
@@ -3135,7 +3135,7 @@ bool CSGInterface::cmd_set_last_subkernel_weights()
 		SG_ERROR("No last kernel.\n");
 
 	bool success=false;
-	DREAL* weights=NULL;
+	float64_t* weights=NULL;
 	int32_t dim=0;
 	int32_t len=0;
 	get_real_matrix(weights, dim, len);
@@ -3198,7 +3198,7 @@ bool CSGInterface::cmd_get_WD_position_weights()
 	}
 
 	int32_t len=0;
-	const DREAL* position_weights;
+	const float64_t* position_weights;
 
 	if (kernel->get_kernel_type()==K_WEIGHTEDDEGREE)
 		position_weights=((CWeightedDegreeStringKernel*) kernel)->get_position_weights(len);
@@ -3235,14 +3235,14 @@ bool CSGInterface::cmd_get_last_subkernel_weights()
 	if (ktype==K_COMBINED)
 	{
 		int32_t num_weights=0;
-		const DREAL* weights=
+		const float64_t* weights=
 			((CCombinedKernel*) kernel)->get_subkernel_weights(num_weights);
 
 		set_real_vector(weights, num_weights);
 		return true;
 	}
 
-	DREAL* weights=NULL;
+	float64_t* weights=NULL;
 	if (ktype==K_WEIGHTEDDEGREE)
 		weights=((CWeightedDegreeStringKernel*) kernel)->
 			get_degree_weights(degree, len);
@@ -3300,7 +3300,7 @@ bool CSGInterface::cmd_compute_by_subkernels()
 
 	int32_t num_feat=degree*len;
 	int32_t num=num_feat*num_vec;
-	DREAL* result=new DREAL[num];
+	float64_t* result=new float64_t[num];
 
 	for (int32_t i=0; i<num; i++)
 		result[i]=0;
@@ -3363,7 +3363,7 @@ bool CSGInterface::cmd_get_kernel_optimization()
 
 			int32_t num_suppvec=svm->get_num_support_vectors();
 			int32_t* sv_idx=new int32_t[num_suppvec];
-			DREAL* sv_weight=new DREAL[num_suppvec];
+			float64_t* sv_weight=new float64_t[num_suppvec];
 			int32_t num_feat=0;
 			int32_t num_sym=0;
 
@@ -3373,7 +3373,7 @@ bool CSGInterface::cmd_get_kernel_optimization()
 				sv_weight[i]=svm->get_alpha(i);
 			}
 
-			DREAL* position_weights=k->extract_w(max_order, num_feat,
+			float64_t* position_weights=k->extract_w(max_order, num_feat,
 				num_sym, NULL, num_suppvec, sv_idx, sv_weight);
 			delete[] sv_idx;
 			delete[] sv_weight;
@@ -3389,7 +3389,7 @@ bool CSGInterface::cmd_get_kernel_optimization()
 		{
 			CCommWordStringKernel* k=(CCommWordStringKernel*) kernel;
 			int32_t len=0;
-			DREAL* weights;
+			float64_t* weights;
 			k->get_dictionary(len, weights);
 
 			set_real_vector(weights, len);
@@ -3399,7 +3399,7 @@ bool CSGInterface::cmd_get_kernel_optimization()
 		{
 			CLinearKernel* k=(CLinearKernel*) kernel;
 			int32_t len=0;
-			const DREAL* weights=k->get_normal(len);
+			const float64_t* weights=k->get_normal(len);
 
 			set_real_vector(weights, len);
 			return true;
@@ -3408,7 +3408,7 @@ bool CSGInterface::cmd_get_kernel_optimization()
 		{
 			CSparseLinearKernel* k=(CSparseLinearKernel*) kernel;
 			int32_t len=0;
-			const DREAL* weights=k->get_normal(len);
+			const float64_t* weights=k->get_normal(len);
 
 			set_real_vector(weights, len);
 			return true;
@@ -3481,8 +3481,8 @@ bool CSGInterface::cmd_set_prior_probs()
 	if (kernel->get_kernel_type()!=K_SALZBERG)
 		SG_ERROR("SalzbergWordStringKernel required for setting prior probs!\n");
 
-	DREAL pos_probs=get_real_from_real_or_str();
-	DREAL neg_probs=get_real_from_real_or_str();
+	float64_t pos_probs=get_real_from_real_or_str();
+	float64_t neg_probs=get_real_from_real_or_str();
 
 	kernel->set_prior_probs(pos_probs, neg_probs);
 
@@ -3499,7 +3499,7 @@ bool CSGInterface::cmd_set_prior_probs_from_labels()
 	if (kernel->get_kernel_type()!=K_SALZBERG)
 	SG_ERROR("SalzbergWordStringKernel required for setting prior probs!\n");
 
-	DREAL* lab=NULL;
+	float64_t* lab=NULL;
 	int32_t len=0;
 	get_real_vector(lab, len);
 
@@ -3543,7 +3543,7 @@ bool CSGInterface::cmd_set_distance()
 
 	if (strmatch(type, "MINKOWSKI") && m_nrhs==4)
 	{
-		DREAL k=get_real_from_real_or_str();
+		float64_t k=get_real_from_real_or_str();
 		distance=ui_distance->create_minkowski(k);
 	}
 	else if (strmatch(type, "MANHATTAN"))
@@ -3636,7 +3636,7 @@ bool CSGInterface::cmd_get_distance_matrix()
 
 	int32_t num_vec_lhs=0;
 	int32_t num_vec_rhs=0;
-	DREAL* dmatrix=NULL;
+	float64_t* dmatrix=NULL;
 	dmatrix=distance->get_distance_matrix_real(num_vec_lhs, num_vec_rhs, dmatrix);
 
 	set_real_matrix(dmatrix, num_vec_lhs, num_vec_rhs);
@@ -3663,7 +3663,7 @@ bool CSGInterface::cmd_get_SPEC_consensus()
 	ASSERT(svm);
 	int32_t num_suppvec=svm->get_num_support_vectors();
 	int32_t* sv_idx=new int32_t[num_suppvec];
-	DREAL* sv_weight=new DREAL[num_suppvec];
+	float64_t* sv_weight=new float64_t[num_suppvec];
 	int32_t num_feat=0;
 
 	for (int32_t i=0; i<num_suppvec; i++)
@@ -3701,7 +3701,7 @@ bool CSGInterface::cmd_get_SPEC_scoring()
 	ASSERT(svm);
 	int32_t num_suppvec=svm->get_num_support_vectors();
 	int32_t* sv_idx=new int32_t[num_suppvec];
-	DREAL* sv_weight=new DREAL[num_suppvec];
+	float64_t* sv_weight=new float64_t[num_suppvec];
 	int32_t num_feat=0;
 	int32_t num_sym=0;
 
@@ -3717,7 +3717,7 @@ bool CSGInterface::cmd_get_SPEC_scoring()
 		max_order=1;
 	}
 
-	DREAL* position_weights=NULL;
+	float64_t* position_weights=NULL;
 	if (ktype==K_COMMWORDSTRING)
 		position_weights=((CCommWordStringKernel*) kernel)->compute_scoring(
 			max_order, num_feat, num_sym, NULL,
@@ -3750,7 +3750,7 @@ bool CSGInterface::cmd_get_WD_consensus()
 	ASSERT(svm);
 	int32_t num_suppvec=svm->get_num_support_vectors();
 	int32_t* sv_idx=new int32_t[num_suppvec];
-	DREAL* sv_weight=new DREAL[num_suppvec];
+	float64_t* sv_weight=new float64_t[num_suppvec];
 	int32_t num_feat=0;
 
 	for (int32_t i=0; i<num_suppvec; i++)
@@ -3776,7 +3776,7 @@ bool CSGInterface::cmd_compute_POIM_WD()
 		return false;
 
 	int32_t max_order=get_int();
-	DREAL* distribution=NULL;
+	float64_t* distribution=NULL;
 	int32_t num_dfeat=0;
 	int32_t num_dvec=0;
 	get_real_matrix(distribution, num_dfeat, num_dvec);
@@ -3809,7 +3809,7 @@ bool CSGInterface::cmd_compute_POIM_WD()
 		ASSERT(svm);
 		int32_t num_suppvec=svm->get_num_support_vectors();
 		int32_t* sv_idx=new int32_t[num_suppvec];
-		DREAL* sv_weight=new DREAL[num_suppvec];
+		float64_t* sv_weight=new float64_t[num_suppvec];
 
 		for (int32_t i=0; i<num_suppvec; i++)
 		{
@@ -3825,7 +3825,7 @@ bool CSGInterface::cmd_compute_POIM_WD()
 		}
 		*/
 
-		DREAL* position_weights;
+		float64_t* position_weights;
 		position_weights=((CWeightedDegreePositionStringKernel*) kernel)->compute_POIM(
 				max_order, seqlen, num_sym, NULL,
 				num_suppvec, sv_idx, sv_weight, distribution);
@@ -3855,7 +3855,7 @@ bool CSGInterface::cmd_compute_POIM_WD()
 	ASSERT(svm);
 	int32_t num_suppvec=svm->get_num_support_vectors();
 	int32_t* sv_idx=new int32_t[num_suppvec];
-	DREAL* sv_weight=new DREAL[num_suppvec];
+	float64_t* sv_weight=new float64_t[num_suppvec];
 	int32_t num_feat=0;
 	int32_t num_sym=0;
 
@@ -3871,7 +3871,7 @@ bool CSGInterface::cmd_compute_POIM_WD()
 		max_order=1;
 	}
 
-	DREAL* position_weights=
+	float64_t* position_weights=
 		((CWeightedDegreePositionStringKernel*) kernel)->compute_scoring(
 			max_order, num_feat, num_sym, NULL, num_suppvec, sv_idx, sv_weight);
 	delete[] sv_idx;
@@ -3900,7 +3900,7 @@ bool CSGInterface::cmd_classify()
 		SG_ERROR("Classify failed\n");
 
 	int32_t num_vec=labels->get_num_labels();
-	DREAL* result=new DREAL[num_vec];
+	float64_t* result=new float64_t[num_vec];
 	for (int32_t i=0; i<num_vec; i++)
 		result[i]=labels->get_label(i);
 	delete labels;
@@ -3917,7 +3917,7 @@ bool CSGInterface::cmd_classify_example()
 		return false;
 
 	int32_t idx=get_int();
-	DREAL result=0;
+	float64_t result=0;
 
 	if (!ui_classifier->classify_example(idx, result))
 		SG_ERROR("Classify_example failed.\n");
@@ -3932,8 +3932,8 @@ bool CSGInterface::cmd_get_classifier()
 	if (m_nrhs!=1 || !create_return_values(2))
 		return false;
 
-	DREAL* bias=NULL;
-	DREAL* weights=NULL;
+	float64_t* bias=NULL;
+	float64_t* weights=NULL;
 	int32_t rows=0;
 	int32_t cols=0;
 	int32_t brows=0;
@@ -4016,9 +4016,9 @@ bool CSGInterface::cmd_set_svm()
 	if (m_nrhs!=3 || !create_return_values(0))
 		return false;
 
-	DREAL bias=get_real();
+	float64_t bias=get_real();
 
-	DREAL* alphas=NULL;
+	float64_t* alphas=NULL;
 	int32_t num_feat_alphas=0;
 	int32_t num_vec_alphas=0;
 	get_real_matrix(alphas, num_feat_alphas, num_vec_alphas);
@@ -4124,7 +4124,7 @@ bool CSGInterface::cmd_train_classifier()
 
 		case CT_LDA:
 		{
-			DREAL gamma=0;
+			float64_t gamma=0;
 			if (m_nrhs==2)
 				gamma=get_real_from_real_or_str();
 
@@ -4183,7 +4183,7 @@ bool CSGInterface::cmd_set_perceptron_parameters()
 	if (m_nrhs!=3 || !create_return_values(0))
 		return false;
 
-	DREAL lernrate=get_real_from_real_or_str();
+	float64_t lernrate=get_real_from_real_or_str();
 	int32_t maxiter=get_int_from_int_or_str();
 
 	return ui_classifier->set_perceptron_parameters(lernrate, maxiter);
@@ -4224,8 +4224,8 @@ bool CSGInterface::cmd_set_svm_C()
 	if (m_nrhs<2 || !create_return_values(0))
 		return false;
 
-	DREAL C1=get_real_from_real_or_str();
-	DREAL C2=C1;
+	float64_t C1=get_real_from_real_or_str();
+	float64_t C2=C1;
 
 	if (m_nrhs==3)
 		C2=get_real_from_real_or_str();
@@ -4238,7 +4238,7 @@ bool CSGInterface::cmd_set_svm_epsilon()
 	if (m_nrhs!=2 || !create_return_values(0))
 		return false;
 
-	DREAL epsilon=get_real_from_real_or_str();
+	float64_t epsilon=get_real_from_real_or_str();
 
 	return ui_classifier->set_svm_epsilon(epsilon);
 }
@@ -4248,7 +4248,7 @@ bool CSGInterface::cmd_set_svr_tube_epsilon()
 	if (m_nrhs!=2 || !create_return_values(0))
 		return false;
 
-	DREAL tube_epsilon=get_real_from_real_or_str();
+	float64_t tube_epsilon=get_real_from_real_or_str();
 
 	return ui_classifier->set_svr_tube_epsilon(tube_epsilon);
 }
@@ -4258,7 +4258,7 @@ bool CSGInterface::cmd_set_svm_one_class_nu()
 	if (m_nrhs!=2 || !create_return_values(0))
 		return false;
 
-	DREAL nu=get_real_from_real_or_str();
+	float64_t nu=get_real_from_real_or_str();
 
 	return ui_classifier->set_svm_one_class_nu(nu);
 }
@@ -4268,8 +4268,8 @@ bool CSGInterface::cmd_set_svm_mkl_parameters()
 	if (m_nrhs<3 || m_nrhs>4 || !create_return_values(0))
 		return false;
 
-	DREAL weight_epsilon=get_real_from_real_or_str();
-	DREAL C_mkl=get_real_from_real_or_str();
+	float64_t weight_epsilon=get_real_from_real_or_str();
+	float64_t C_mkl=get_real_from_real_or_str();
 	int32_t mkl_norm=1;
 	
 	if (m_nrhs==4)
@@ -4286,7 +4286,7 @@ bool CSGInterface::cmd_set_max_train_time()
 	if (m_nrhs!=2 || !create_return_values(0))
 		return false;
 
-	DREAL max_train_time=get_real_from_real_or_str();
+	float64_t max_train_time=get_real_from_real_or_str();
 
 	return ui_classifier->set_max_train_time(max_train_time);
 }
@@ -4347,7 +4347,7 @@ bool CSGInterface::cmd_set_krr_tau()
 	if (m_nrhs!=2 || !create_return_values(0))
 		return false;
 
-	DREAL tau=get_real_from_real_or_str();
+	float64_t tau=get_real_from_real_or_str();
 
 	return ui_classifier->set_krr_tau(tau);
 }
@@ -4388,7 +4388,7 @@ bool CSGInterface::cmd_add_preproc()
 	else if (strmatch(type, "PCACUT") && m_nrhs==4)
 	{
 		bool do_whitening=get_bool_from_bool_or_str();
-		DREAL threshold=get_real_from_real_or_str();
+		float64_t threshold=get_real_from_real_or_str();
 
 		preproc=ui_preproc->create_pcacut(do_whitening, threshold);
 	}
@@ -4472,8 +4472,8 @@ bool CSGInterface::cmd_new_plugin_estimator()
 	if (m_nrhs<2 || !create_return_values(0))
 		return false;
 
-	DREAL pos_pseudo=get_real_from_real_or_str();
-	DREAL neg_pseudo=get_real_from_real_or_str();
+	float64_t pos_pseudo=get_real_from_real_or_str();
+	float64_t neg_pseudo=get_real_from_real_or_str();
 
 	return ui_pluginestimate->new_estimator(pos_pseudo, neg_pseudo);
 }
@@ -4508,7 +4508,7 @@ bool CSGInterface::cmd_plugin_estimate_classify_example()
 		return false;
 
 	int32_t idx=get_int();
-	DREAL result=ui_pluginestimate->classify_example(idx);
+	float64_t result=ui_pluginestimate->classify_example(idx);
 
 	set_real_vector(&result, 1);
 	return true;
@@ -4524,7 +4524,7 @@ bool CSGInterface::cmd_plugin_estimate_classify()
 		SG_ERROR("No features found.\n");
 
 	int32_t num_vec=feat->get_num_vectors();
-	DREAL* result=new DREAL[num_vec];
+	float64_t* result=new float64_t[num_vec];
 	CLabels* labels=ui_pluginestimate->classify();
 	for (int32_t i=0; i<num_vec; i++)
 		result[i]=labels->get_label(i);
@@ -4541,7 +4541,7 @@ bool CSGInterface::cmd_set_plugin_estimate()
 	if (m_nrhs!=3 || !create_return_values(0))
 		return false;
 
-	DREAL* emission_probs=NULL;
+	float64_t* emission_probs=NULL;
 	int32_t num_probs=0;
 	int32_t num_vec=0;
 	get_real_matrix(emission_probs, num_probs, num_vec);
@@ -4549,10 +4549,10 @@ bool CSGInterface::cmd_set_plugin_estimate()
 	if (num_vec!=2)
 		SG_ERROR("Need at least 1 set of positive and 1 set of negative params.\n");
 
-	DREAL* pos_params=emission_probs;
-	DREAL* neg_params=&(emission_probs[num_probs]);
+	float64_t* pos_params=emission_probs;
+	float64_t* neg_params=&(emission_probs[num_probs]);
 
-	DREAL* model_sizes=NULL;
+	float64_t* model_sizes=NULL;
 	int32_t len=0;
 	get_real_vector(model_sizes, len);
 
@@ -4572,8 +4572,8 @@ bool CSGInterface::cmd_get_plugin_estimate()
 	if (m_nrhs!=1 || !create_return_values(2))
 		return false;
 
-	DREAL* pos_params=NULL;
-	DREAL* neg_params=NULL;
+	float64_t* pos_params=NULL;
+	float64_t* neg_params=NULL;
 	int32_t num_params=0;
 	int32_t seq_length=0;
 	int32_t num_symbols=0;
@@ -4584,7 +4584,7 @@ bool CSGInterface::cmd_get_plugin_estimate()
 
 	num_params=seq_length*num_symbols;
 
-	DREAL* result=new DREAL[num_params*2];
+	float64_t* result=new float64_t[num_params*2];
 	for (int32_t i=0; i<num_params; i++)
 		result[i]=pos_params[i];
 	for (int32_t i=0; i<num_params; i++)
@@ -4593,9 +4593,9 @@ bool CSGInterface::cmd_get_plugin_estimate()
 	set_real_matrix(result, num_params, 2);
 	delete[] result;
 
-	DREAL model_sizes[2];
-	model_sizes[0]=(DREAL) seq_length;
-	model_sizes[1]=(DREAL) num_symbols;
+	float64_t model_sizes[2];
+	model_sizes[0]=(float64_t) seq_length;
+	model_sizes[1]=(float64_t) num_symbols;
 	set_real_vector(model_sizes, 2);
 
 	return true;
@@ -4607,7 +4607,7 @@ bool CSGInterface::cmd_convergence_criteria()
 		return false;
 
 	int32_t num_iterations=get_int_from_int_or_str();
-	DREAL epsilon=get_real_from_real_or_str();
+	float64_t epsilon=get_real_from_real_or_str();
 
 	return ui_hmm->convergence_criteria(num_iterations, epsilon);
 }
@@ -4628,7 +4628,7 @@ bool CSGInterface::cmd_add_states()
 		return false;
 
 	int32_t num_states=get_int_from_int_or_str();
-	DREAL value=get_real_from_real_or_str();
+	float64_t value=get_real_from_real_or_str();
 
 	return ui_hmm->add_states(num_states, value);
 }
@@ -4649,7 +4649,7 @@ bool CSGInterface::cmd_relative_entropy()
 	if (m_nrhs!=1 || !create_return_values(1))
 		return false;
 
-	DREAL* entropy=NULL;
+	float64_t* entropy=NULL;
 	int32_t len=0;
 	bool success=ui_hmm->relative_entropy(entropy, len);
 	if (!success)
@@ -4666,7 +4666,7 @@ bool CSGInterface::cmd_entropy()
 	if (m_nrhs!=1 || !create_return_values(1))
 		return false;
 
-	DREAL* entropy=NULL;
+	float64_t* entropy=NULL;
 	int32_t len=0;
 	bool success=ui_hmm->entropy(entropy, len);
 	if (!success)
@@ -4756,7 +4756,7 @@ bool CSGInterface::do_hmm_classify(bool linear, bool one_class)
 	if (!labels)
 		return false;
 
-	DREAL* result=new DREAL[num_vec];
+	float64_t* result=new float64_t[num_vec];
 	for (int32_t i=0; i<num_vec; i++)
 		result[i]=labels->get_label(i);
 	delete labels;
@@ -4783,7 +4783,7 @@ bool CSGInterface::do_hmm_classify_example(bool one_class)
 		return false;
 
 	int32_t idx=get_int();
-	DREAL result=0;
+	float64_t result=0;
 
 	if (one_class)
 		result=ui_hmm->one_class_classify_example(idx);
@@ -4820,7 +4820,7 @@ bool CSGInterface::cmd_hmm_likelihood()
 	if (!h)
 		SG_ERROR("No HMM.\n");
 
-	DREAL likelihood=h->model_probability();
+	float64_t likelihood=h->model_probability();
 	set_real(likelihood);
 
 	return true;
@@ -4877,7 +4877,7 @@ bool CSGInterface::cmd_get_viterbi_path()
 		return false;
 
 	SG_DEBUG( "computing viterbi path for vector %d (length %d)\n", dim, num_feat);
-	DREAL likelihood=0;
+	float64_t likelihood=0;
 	T_STATES* path=h->get_path(dim, likelihood);
 
 	set_word_vector(path, num_feat);
@@ -4974,21 +4974,21 @@ bool CSGInterface::cmd_append_hmm()
 	if (!old_h)
 		SG_ERROR("No current HMM set.\n");
 
-	DREAL* p=NULL;
+	float64_t* p=NULL;
 	int32_t N_p=0;
 	get_real_vector(p, N_p);
 
-	DREAL* q=NULL;
+	float64_t* q=NULL;
 	int32_t N_q=0;
 	get_real_vector(q, N_q);
 
-	DREAL* a=NULL;
+	float64_t* a=NULL;
 	int32_t M_a=0;
 	int32_t N_a=0;
 	get_real_matrix(a, M_a, N_a);
 	int32_t N=N_a;
 
-	DREAL* b=NULL;
+	float64_t* b=NULL;
 	int32_t M_b=0;
 	int32_t N_b=0;
 	get_real_matrix(b, M_b, N_b);
@@ -5095,21 +5095,21 @@ bool CSGInterface::cmd_set_hmm()
 	if (m_nrhs!=5 || !create_return_values(0))
 		return false;
 
-	DREAL* p=NULL;
+	float64_t* p=NULL;
 	int32_t N_p=0;
 	get_real_vector(p, N_p);
 
-	DREAL* q=NULL;
+	float64_t* q=NULL;
 	int32_t N_q=0;
 	get_real_vector(q, N_q);
 
-	DREAL* a=NULL;
+	float64_t* a=NULL;
 	int32_t M_a=0;
 	int32_t N_a=0;
 	get_real_matrix(a, M_a, N_a);
 	int32_t N=N_a;
 
-	DREAL* b=NULL;
+	float64_t* b=NULL;
 	int32_t M_b=0;
 	int32_t N_b=0;
 	get_real_matrix(b, M_b, N_b);
@@ -5167,7 +5167,7 @@ bool CSGInterface::cmd_set_chop()
 	if (m_nrhs!=2 || !create_return_values(0))
 		return false;
 
-	DREAL value=get_real_from_real_or_str();
+	float64_t value=get_real_from_real_or_str();
 	return ui_hmm->chop(value);
 }
 
@@ -5176,7 +5176,7 @@ bool CSGInterface::cmd_set_pseudo()
 	if (m_nrhs!=2 || !create_return_values(0))
 		return false;
 
-	DREAL value=get_real_from_real_or_str();
+	float64_t value=get_real_from_real_or_str();
 	return ui_hmm->set_pseudo(value);
 }
 
@@ -5211,8 +5211,8 @@ bool CSGInterface::cmd_get_hmm()
 	int32_t M=h->get_M();
 	int32_t i=0;
 	int32_t j=0;
-	DREAL* p=new DREAL[N];
-	DREAL* q=new DREAL[N];
+	float64_t* p=new float64_t[N];
+	float64_t* q=new float64_t[N];
 
 	for (i=0; i<N; i++)
 	{
@@ -5225,14 +5225,14 @@ bool CSGInterface::cmd_get_hmm()
 	set_real_vector(q, N);
 	delete[] q;
 
-	DREAL* a=new DREAL[N*N];
+	float64_t* a=new float64_t[N*N];
 	for (i=0; i<N; i++)
 		for (j=0; j<N; j++)
 			a[i+j*N]=h->get_a(i, j);
 	set_real_matrix(a, N, N);
 	delete[] a;
 
-	DREAL* b=new DREAL[N*M];
+	float64_t* b=new float64_t[N*M];
 	for (i=0; i<N; i++)
 		for (j=0; j<M; j++)
 			b[i+j*N]=h->get_b(i, j);
@@ -5306,13 +5306,13 @@ bool CSGInterface::cmd_set_plif_struct()
 	// ARG 4
 	int32_t Nlimits=0;
 	int32_t Mlimits=0;
-	DREAL* all_limits; 
+	float64_t* all_limits;
 	get_real_matrix(all_limits, Mlimits, Nlimits);
 
 	// ARG 5
 	int32_t Npenalties=0;
 	int32_t Mpenalties=0;
-	DREAL* all_penalties;
+	float64_t* all_penalties;
 	get_real_matrix(all_penalties, Mpenalties, Npenalties);
 
 	// ARG 6
@@ -5323,12 +5323,12 @@ bool CSGInterface::cmd_set_plif_struct()
 
 	// ARG 7
 	int32_t Nmin=0;
-	DREAL* min_values;
+	float64_t* min_values;
 	get_real_vector(min_values,Nmin);
 
 	// ARG 8
 	int32_t Nmax=0;
-	DREAL* max_values;
+	float64_t* max_values;
 	get_real_vector(max_values,Nmax);
 
 	// ARG 9
@@ -5381,12 +5381,12 @@ bool CSGInterface::cmd_get_plif_struct()
 
 	
 	int32_t* ids = new int32_t[N];
-	DREAL* max_values = new DREAL[N];
-	DREAL* min_values = new DREAL[N];
+	float64_t* max_values = new float64_t[N];
+	float64_t* min_values = new float64_t[N];
 	T_STRING<char>* names = new T_STRING<char>[N];
 	T_STRING<char>* all_transform = new T_STRING<char>[N];
-	DREAL* all_limits = new DREAL[N*M];
-	DREAL* all_penalties = new DREAL[N*M];
+	float64_t* all_limits = new float64_t[N*M];
+	float64_t* all_penalties = new float64_t[N*M];
 	bool* all_use_cache = new bool[N];
 	int32_t* all_use_svm = new int32_t[N];
 	bool* all_do_calc = new bool[N];
@@ -5395,8 +5395,8 @@ bool CSGInterface::cmd_get_plif_struct()
 		ids[i]=PEN[i]->get_id();
 		names[i].string = PEN[i]->get_name();
 		names[i].length = strlen(PEN[i]->get_name());
-		DREAL* limits = PEN[i]->get_plif_limits();
-		DREAL* penalties = PEN[i]->get_plif_penalties();
+		float64_t* limits = PEN[i]->get_plif_limits();
+		float64_t* penalties = PEN[i]->get_plif_penalties();
 		for (int32_t j=0;j<M;j++)
 		{
 			all_limits[i*M+j]=limits[j];
@@ -5431,7 +5431,7 @@ bool CSGInterface::cmd_set_model()
 	// content svm weights
 	int32_t Nweights=0;
 	int32_t num_svms=0;
-	DREAL* weights;
+	float64_t* weights;
 	get_real_matrix(weights, Nweights, num_svms);
 	ui_structure->set_content_svm_weights(weights,Nweights, num_svms);
 
@@ -5443,7 +5443,7 @@ bool CSGInterface::cmd_set_model()
 	// plifs (#states x #states x 3 or 4)
 	int32_t numDim=0;
 	int32_t* Dim=0;
-	DREAL* penalties_array;
+	float64_t* penalties_array;
 	get_real_ndarray(penalties_array,Dim,numDim);
 	ASSERT(numDim==3);
 	ASSERT(Dim[0]==Dim[1]);
@@ -5511,7 +5511,7 @@ bool CSGInterface::cmd_set_feature_matrix()
 	// feature matrix (#states x #feature_positions x max_num_signals)
 	int32_t* Dims=0;
 	int32_t numDims=0;
-	DREAL* features;
+	float64_t* features;
 	get_real_ndarray(features, Dims, numDims);
 	
 	ASSERT(numDims==3)
@@ -5547,7 +5547,7 @@ bool CSGInterface::cmd_precompute_content_svms()
 
 
 	int32_t Npos = ui_structure->get_num_positions();
-	DREAL* weights = ui_structure->get_content_svm_weights();
+	float64_t* weights = ui_structure->get_content_svm_weights();
 	int32_t Mweights = h->get_num_svms();
 	int32_t Nweights = ui_structure->get_num_svm_weights();
 	uint16_t** wordstr[Mweights];
@@ -5566,7 +5566,7 @@ bool CSGInterface::cmd_precompute_tiling_features()
 	CDynProg* h  = ui_structure->get_dyn_prog();
 
 	int32_t Nintensities=0;
-	DREAL* intensities;
+	float64_t* intensities;
 	get_real_vector(intensities, Nintensities);
 
 	int32_t Nprobe_pos=0;
@@ -5588,7 +5588,7 @@ bool CSGInterface::cmd_best_path_trans()
 
 	int32_t num_states = h->get_num_states();
 	int32_t* feat_dims = ui_structure->get_feature_dims();
-	DREAL* features = (ui_structure->get_feature_matrix(false));
+	float64_t* features = (ui_structure->get_feature_matrix(false));
 	int32_t* all_pos = ui_structure->get_all_positions();
 	int32_t num_pos = ui_structure->get_num_positions();
 	int32_t* orf_info = ui_structure->get_orf_info();
@@ -5598,7 +5598,7 @@ bool CSGInterface::cmd_best_path_trans()
 	// ARG 1
 	// transitions from initial state (#states x 1)
 	int32_t Np=0;
-	DREAL* p;
+	float64_t* p;
 	get_real_vector(p, Np);
 	if (Np!=num_states)
 		SG_ERROR("# transitions from initial state (%i) does not match # states (%i)\n", Np, num_states);
@@ -5606,7 +5606,7 @@ bool CSGInterface::cmd_best_path_trans()
 	// ARG 2
 	// transitions to end state (#states x 1)
 	int32_t Nq=0;
-	DREAL* q;
+	float64_t* q;
 	get_real_vector(q, Nq);
 	if (Nq!=num_states)
 		SG_ERROR("# transitions to end state (%i) does not match # states (%i)\n", Nq, num_states);
@@ -5632,14 +5632,14 @@ bool CSGInterface::cmd_best_path_trans()
 	// regions of the true path
 	int32_t Nseg_path=0;
 	int32_t Mseg_path=0;
-	DREAL* seg_path;
+	float64_t* seg_path;
 	get_real_matrix(seg_path,Nseg_path,Mseg_path);
 
 	// ARG 5
 	// links for transitions (#transitions x 4)
 	int32_t Na_trans=0;
 	int32_t num_a_trans=0;
-	DREAL* a_trans;
+	float64_t* a_trans;
 	get_real_matrix(a_trans, num_a_trans, Na_trans);
 
 	// ARG 6
@@ -5648,7 +5648,7 @@ bool CSGInterface::cmd_best_path_trans()
 	// and one for nucleotide loss
 	int32_t Nloss=0;
 	int32_t Mloss=0;
-	DREAL* loss;
+	float64_t* loss;
 	get_real_matrix(loss, Nloss,Mloss);
 	
 	int32_t M = ui_structure->get_num_positions();
@@ -5688,11 +5688,11 @@ bool CSGInterface::cmd_best_path_trans()
 	int32_t *my_pos = new int32_t[M*(nbest+nother)] ;
 	memset(my_pos, -1, M*(nbest+nother)*sizeof(int32_t)) ;
 	
-	DREAL* p_prob = new DREAL[nbest+nother];
+	float64_t* p_prob = new float64_t[nbest+nother];
 	if (seg_path!=NULL)
 	{
 		int32_t *segment_ids = new int32_t[M] ;
-		DREAL *segment_mask = new DREAL[M] ;
+		float64_t *segment_mask = new float64_t[M] ;
 		for (int32_t i=0; i<M; i++)
 		{
 		        segment_ids[i] = (int32_t)seg_path[2*i] ;
@@ -5705,11 +5705,11 @@ bool CSGInterface::cmd_best_path_trans()
 	}
 	else
 	{
-		DREAL zero2[2] = {0.0, 0.0} ;
+		float64_t zero2[2] = {0.0, 0.0} ;
 		h->best_path_set_segment_loss(zero2, 2, 1) ;
 		//fprintf(stderr, "M=%i\n", M) ;
 		int32_t *izeros = new int32_t[M] ;
-		DREAL *dzeros = new DREAL[M] ;
+		float64_t *dzeros = new float64_t[M] ;
 		for (int32_t i=0; i<M; i++)
 		{
 			izeros[i]=0 ;
@@ -5753,8 +5753,8 @@ bool CSGInterface::cmd_best_path_trans()
 	//delete h ;
 
 	// transcribe result
-	DREAL* d_my_path= new DREAL[(nbest+nother)*M];
-	DREAL* d_my_pos= new DREAL[(nbest+nother)*M];
+	float64_t* d_my_path= new float64_t[(nbest+nother)*M];
+	float64_t* d_my_pos= new float64_t[(nbest+nother)*M];
 	
 	for (int32_t k=0; k<(nbest+nother); k++)
 	{
@@ -5782,9 +5782,9 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 
 	int32_t num_states = ui_structure->get_num_states();
 	int32_t* feat_dims = ui_structure->get_feature_dims();
-	//DREAL* features = (ui_structure->get_feature_matrix(true));
-	DREAL* features = (ui_structure->get_feature_matrix(false));
-	//CArray3<DREAL> features(d_feat, feat_dims[0], feat_dims[1], feat_dims[2], true, true);
+	//float64_t* features = (ui_structure->get_feature_matrix(true));
+	float64_t* features = (ui_structure->get_feature_matrix(false));
+	//CArray3<float64_t> features(d_feat, feat_dims[0], feat_dims[1], feat_dims[2], true, true);
 	//features.set_name("features");
 	int32_t* all_pos = ui_structure->get_all_positions();
 	int32_t num_pos = ui_structure->get_num_positions();
@@ -5798,7 +5798,7 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 	// ARG 1
 	// transitions from initial state (#states x 1)
 	int32_t Np=0;
-	DREAL* p;
+	float64_t* p;
 	get_real_vector(p, Np);
 	if (Np!=num_states)
 		SG_ERROR("Np!=num_states; Np:%i num_states:%i",Np,num_states);
@@ -5806,7 +5806,7 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 	// ARG 2
 	// transitions to end state (#states x 1)
 	int32_t Nq=0;
-	DREAL* q;
+	float64_t* q;
 	get_real_vector(q, Nq);
 	if (Nq!=num_states)
 		SG_ERROR("Nq!=num_states; Nq:%i num_states:%i",Nq,num_states);
@@ -5818,14 +5818,14 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 	// regions of the true path
 	int32_t Nseg_path=0;
 	int32_t Mseg_path=0;
-	DREAL* seg_path;
+	float64_t* seg_path;
 	get_real_matrix(seg_path,Nseg_path,Mseg_path);
 
 	// ARG 4
 	// links for transitions (#transitions x 4)
 	int32_t Na_trans=0;
 	int32_t num_a_trans=0;
-	DREAL* a_trans;
+	float64_t* a_trans;
 	get_real_matrix(a_trans, num_a_trans, Na_trans);
 
 	// ARG 5
@@ -5834,7 +5834,7 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 	// and one for nucleotide loss
 	int32_t Nloss=0;
 	int32_t Mloss=0;
-	DREAL* loss;
+	float64_t* loss;
 	get_real_matrix(loss, Nloss,Mloss);
 	
 	int32_t M = ui_structure->get_num_positions();
@@ -5909,7 +5909,7 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 			if (seg_path!=NULL)
 			{
 				int32_t *segment_ids = new int32_t[M] ;
-				DREAL *segment_mask = new DREAL[M] ;
+				float64_t *segment_mask = new float64_t[M] ;
 				for (int32_t i=0; i<M; i++)
 				{
 				        segment_ids[i] = (int32_t)seg_path[2*i] ;
@@ -5922,11 +5922,11 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 			}
 			else
 			{
-				DREAL zero2[2] = {0.0, 0.0} ;
+				float64_t zero2[2] = {0.0, 0.0} ;
 				h->best_path_set_segment_loss(zero2, 2, 1) ;
 				//fprintf(stderr, "M=%i\n", M) ;
 				int32_t *izeros = new int32_t[M] ;
-				DREAL *dzeros = new DREAL[M] ;
+				float64_t *dzeros = new float64_t[M] ;
 				for (int32_t i=0; i<M; i++)
 				{
 					izeros[i]=0 ;
@@ -5938,14 +5938,14 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 			}
 				
 	
-			DREAL* p_Plif_deriv = new DREAL[(max_plif_id+1)*max_plif_len];
-			CArray2<DREAL> a_Plif_deriv(p_Plif_deriv, max_plif_id+1, max_plif_len, false, false) ;
+			float64_t* p_Plif_deriv = new float64_t[(max_plif_id+1)*max_plif_len];
+			CArray2<float64_t> a_Plif_deriv(p_Plif_deriv, max_plif_id+1, max_plif_len, false, false) ;
 
-			DREAL* p_A_deriv   = new DREAL[num_states*num_states];
-			DREAL* p_p_deriv   = new DREAL[num_states];
-			DREAL* p_q_deriv   = new DREAL[num_states];
-			DREAL* p_my_scores = new DREAL[Nmypos_seq];
-			DREAL* p_my_losses = new DREAL[Nmypos_seq];
+			float64_t* p_A_deriv   = new float64_t[num_states*num_states];
+			float64_t* p_p_deriv   = new float64_t[num_states];
+			float64_t* p_q_deriv   = new float64_t[num_states];
+			float64_t* p_my_scores = new float64_t[Nmypos_seq];
+			float64_t* p_my_losses = new float64_t[Nmypos_seq];
 			
 			h->best_path_trans_deriv(my_path, my_pos, p_my_scores, p_my_losses, Nmypos_seq, features, 
 						 num_pos, all_pos, PEN_matrix, PEN_state_signal, feat_dims[2], genestr_num) ;
@@ -5961,7 +5961,7 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 			for (int32_t id=0; id<=max_plif_id; id++)
 			{
 				int32_t len=0 ;
-				const DREAL * deriv = PEN[id]->get_cum_derivative(len) ;
+				const float64_t * deriv = PEN[id]->get_cum_derivative(len) ;
 				//fprintf(stderr, "len=%i, max_plif_len=%i\n", len, max_plif_len) ;
 				ASSERT(len<=max_plif_len) ;
 				for (int32_t j=0; j<max_plif_len; j++)
@@ -5999,15 +5999,15 @@ bool CSGInterface::cmd_best_path_no_b()
 	if (m_nrhs!=5 || !create_return_values(2))
 		return false;
 
-	DREAL* p=NULL;
+	float64_t* p=NULL;
 	int32_t N_p=0;
 	get_real_vector(p, N_p);
 
-	DREAL* q=NULL;
+	float64_t* q=NULL;
 	int32_t N_q=0;
 	get_real_vector(q, N_q);
 
-	DREAL* a=NULL;
+	float64_t* a=NULL;
 	int32_t M_a=0;
 	int32_t N_a=0;
 	get_real_matrix(a, M_a, N_a);
@@ -6027,7 +6027,7 @@ bool CSGInterface::cmd_best_path_no_b()
 
 	int32_t* path=new int32_t[max_iter];
 	int32_t best_iter=0;
-	DREAL prob=h->best_path_no_b(max_iter, best_iter, path);
+	float64_t prob=h->best_path_no_b(max_iter, best_iter, path);
 	delete h;
 
 	set_real(prob);
@@ -6042,20 +6042,20 @@ bool CSGInterface::cmd_best_path_trans_simple()
 	if (m_nrhs!=6 || !create_return_values(2))
 		return false;
 
-	DREAL* p=NULL;
+	float64_t* p=NULL;
 	int32_t N_p=0;
 	get_real_vector(p, N_p);
 
-	DREAL* q=NULL;
+	float64_t* q=NULL;
 	int32_t N_q=0;
 	get_real_vector(q, N_q);
 
-	DREAL* cmd_trans=NULL;
+	float64_t* cmd_trans=NULL;
 	int32_t M_cmd_trans=0;
 	int32_t N_cmd_trans=0;
 	get_real_matrix(cmd_trans, M_cmd_trans, N_cmd_trans);
 
-	DREAL* seq=NULL;
+	float64_t* seq=NULL;
 	int32_t M_seq=0;
 	int32_t N_seq=0;
 	get_real_matrix(seq, M_seq, N_seq);
@@ -6075,7 +6075,7 @@ bool CSGInterface::cmd_best_path_trans_simple()
 
 	int32_t* path=new int32_t[N_seq*nbest];
 	memset(path, -1, N_seq*nbest*sizeof(int32_t));
-	DREAL* prob=new DREAL[nbest];
+	float64_t* prob=new float64_t[nbest];
 
 	h->best_path_trans_simple(seq, N_seq, nbest, prob, path);
 	delete h;
@@ -6095,15 +6095,15 @@ bool CSGInterface::cmd_best_path_no_b_trans()
 	if (m_nrhs!=6 || !create_return_values(2))
 		return false;
 
-	DREAL* p=NULL;
+	float64_t* p=NULL;
 	int32_t N_p=0;
 	get_real_vector(p, N_p);
 
-	DREAL* q=NULL;
+	float64_t* q=NULL;
 	int32_t N_q=0;
 	get_real_vector(q, N_q);
 
-	DREAL* cmd_trans=NULL;
+	float64_t* cmd_trans=NULL;
 	int32_t M_cmd_trans=0;
 	int32_t N_cmd_trans=0;
 	get_real_matrix(cmd_trans, M_cmd_trans, N_cmd_trans);
@@ -6128,7 +6128,7 @@ bool CSGInterface::cmd_best_path_no_b_trans()
 	int32_t* path=new int32_t[(max_iter+1)*nbest];
 	memset(path, -1, (max_iter+1)*nbest*sizeof(int32_t));
 	int32_t max_best_iter=0;
-	DREAL* prob=new DREAL[nbest];
+	float64_t* prob=new float64_t[nbest];
 
 	h->best_path_no_b_trans(max_iter, max_best_iter, nbest, prob, path);
 	delete h;
@@ -6252,7 +6252,7 @@ bool CSGInterface::cmd_set_threshold()
 	if (m_nrhs!=2 || !create_return_values(0))
 		return false;
 
-	DREAL value=get_real_from_real_or_str();
+	float64_t value=get_real_from_real_or_str();
 
 	ui_math->set_threshold(value);
 	return true;
@@ -6287,7 +6287,7 @@ bool CSGInterface::cmd_translate_string()
 	if (m_nrhs!=4 || !create_return_values(1))
 		return false;
 
-	DREAL* string=NULL;
+	float64_t* string=NULL;
 	int32_t len;
 	get_real_vector(string, len);
 
@@ -6336,9 +6336,9 @@ bool CSGInterface::cmd_translate_string()
 		obs[i]=value;
 	}
 
-	DREAL* real_obs=new DREAL[len];
+	float64_t* real_obs=new float64_t[len];
 	for (i=start; i<len; i++)
-		real_obs[i-start]=(DREAL) obs[i];
+		real_obs[i-start]=(float64_t) obs[i];
 	delete[] obs;
 
 	set_real_vector(real_obs, len);
@@ -6755,13 +6755,13 @@ int32_t CSGInterface::get_int_from_int_or_str()
 		return get_int();
 }
 
-DREAL CSGInterface::get_real_from_real_or_str()
+float64_t CSGInterface::get_real_from_real_or_str()
 {
 	if (m_legacy_strptr)
 	{
 		int32_t len=0;
 		char* str=get_str_from_str(len);
-		DREAL val=strtod(str, NULL);
+		float64_t val=strtod(str, NULL);
 
 		delete[] str;
 		return val;
@@ -6811,7 +6811,8 @@ void CSGInterface::get_int_vector_from_int_vector_or_str(int32_t*& vector, int32
 		get_int_vector(vector, len);
 }
 
-void CSGInterface::get_real_vector_from_real_vector_or_str(DREAL*& vector, int32_t& len)
+void CSGInterface::get_real_vector_from_real_vector_or_str(
+	float64_t*& vector, int32_t& len)
 {
 	if (m_legacy_strptr)
 	{
@@ -6822,7 +6823,7 @@ void CSGInterface::get_real_vector_from_real_vector_or_str(DREAL*& vector, int32
 			return;
 		}
 
-		vector=new DREAL[len];
+		vector=new float64_t[len];
 		char* str=NULL;
 		int32_t slen=0;
 		for (int32_t i=0; i<len; i++)

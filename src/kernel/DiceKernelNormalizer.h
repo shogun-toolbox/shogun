@@ -73,9 +73,10 @@ class CTanimotoKernelNormalizer : public CKernelNormalizer
 		 * @param idx_lhs index of left hand side vector
 		 * @param idx_rhs index of right hand side vector
 		 */
-		inline virtual DREAL normalize(DREAL value, int32_t idx_lhs, int32_t idx_rhs)
+		inline virtual float64_t normalize(
+			float64_t value, int32_t idx_lhs, int32_t idx_rhs)
 		{
-			DREAL diag_sum=diag_lhs[idx_lhs]*diag_rhs[idx_rhs];
+			float64_t diag_sum=diag_lhs[idx_lhs]*diag_rhs[idx_rhs];
 			return 2*value/diag_sum;
 		}
 
@@ -83,7 +84,7 @@ class CTanimotoKernelNormalizer : public CKernelNormalizer
 		 * @param value value of a component of the left hand side feature vector
 		 * @param idx_lhs index of left hand side vector
 		 */
-		inline virtual DREAL normalize_lhs(DREAL value, int32_t idx_lhs)
+		inline virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs)
 		{
 			SG_ERROR("linadd not supported with Dice normalization.\n");
 			return 0;
@@ -93,7 +94,7 @@ class CTanimotoKernelNormalizer : public CKernelNormalizer
 		 * @param value value of a component of the right hand side feature vector
 		 * @param idx_rhs index of right hand side vector
 		 */
-		inline virtual DREAL normalize_rhs(DREAL value, int32_t idx_rhs)
+		inline virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs)
 		{
 			SG_ERROR("linadd not supported with Dice normalization.\n");
 			return 0;
@@ -104,10 +105,10 @@ class CTanimotoKernelNormalizer : public CKernelNormalizer
 		 * alloc and compute the vector containing the square root of the
 		 * diagonal elements of this kernel.
 		 */
-		bool alloc_and_compute_diag(CKernel* k, DREAL* &v, int32_t num)
+		bool alloc_and_compute_diag(CKernel* k, float64_t* &v, int32_t num)
 		{
 			delete[] v;
-			v=new DREAL[num];
+			v=new float64_t[num];
 
 			for (int32_t i=0; i<num; i++)
 			{
@@ -130,9 +131,9 @@ class CTanimotoKernelNormalizer : public CKernelNormalizer
 
     protected:
 		/** diagonal left-hand side */
-		DREAL* diag_lhs;
+		float64_t* diag_lhs;
 		/** diagonal right-hand side */
-		DREAL* diag_rhs;
+		float64_t* diag_rhs;
 		/** flat if optimized diagonal computation is used */
 		bool use_optimized_diagonal_computation;
 };

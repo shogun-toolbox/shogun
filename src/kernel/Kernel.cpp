@@ -83,11 +83,11 @@ CKernel::~CKernel()
 	SG_INFO("Kernel deleted (%p).\n", this);
 }
 
-void CKernel::get_kernel_matrix(DREAL** dst, int32_t* m, int32_t* n)
+void CKernel::get_kernel_matrix(float64_t** dst, int32_t* m, int32_t* n)
 {
 	ASSERT(dst && m && n);
 
-	DREAL* result = NULL;
+	float64_t* result = NULL;
 	CFeatures* f1 = lhs;
 	CFeatures* f2 = rhs;
 
@@ -102,7 +102,7 @@ void CKernel::get_kernel_matrix(DREAL** dst, int32_t* m, int32_t* n)
 		int32_t num_done = 0;
 		SG_DEBUG( "returning kernel matrix of size %dx%d\n", num_vec1, num_vec2);
 
-		result=(DREAL*) malloc(sizeof(DREAL)*total_num);
+		result=(float64_t*) malloc(sizeof(float64_t)*total_num);
 		ASSERT(result);
 
 		if ( (f1 == f2) && (num_vec1 == num_vec2) )
@@ -220,10 +220,10 @@ float32_t* CKernel::get_kernel_matrix_shortreal(
 	return result;
 }
 
-DREAL* CKernel::get_kernel_matrix_real(
-	int32_t &num_vec1, int32_t &num_vec2, DREAL* target)
+float64_t* CKernel::get_kernel_matrix_real(
+	int32_t &num_vec1, int32_t &num_vec2, float64_t* target)
 {
-	DREAL* result = NULL;
+	float64_t* result = NULL;
 	CFeatures* f1 = lhs;
 	CFeatures* f2 = rhs;
 
@@ -243,7 +243,7 @@ DREAL* CKernel::get_kernel_matrix_real(
 		if (target)
 			result=target;
 		else
-			result=new DREAL[total_num];
+			result=new float64_t[total_num];
 
 		if (f1==f2 && num_vec1==num_vec2)
 		{
@@ -415,7 +415,8 @@ void CKernel::kernel_cache_init(int32_t buffsize, bool regression_hack)
 	kernel_cache.time=0;  
 } 
 
-void CKernel::get_kernel_row(int32_t docnum, int32_t *active2dnum, DREAL *buffer, bool full_line)
+void CKernel::get_kernel_row(
+	int32_t docnum, int32_t *active2dnum, float64_t *buffer, bool full_line)
 {
 	int32_t i,j;
 	KERNELCACHE_IDX start;
@@ -437,7 +438,7 @@ void CKernel::get_kernel_row(int32_t docnum, int32_t *active2dnum, DREAL *buffer
 				if(kernel_cache.totdoc2active[j] >= 0)
 					buffer[j]=kernel_cache.buffer[start+kernel_cache.totdoc2active[j]];
 				else
-					buffer[j]=(DREAL) kernel(docnum, j);
+					buffer[j]=(float64_t) kernel(docnum, j);
 			}
 		}
 		else
@@ -447,7 +448,7 @@ void CKernel::get_kernel_row(int32_t docnum, int32_t *active2dnum, DREAL *buffer
 				if(kernel_cache.totdoc2active[j] >= 0)
 					buffer[j]=kernel_cache.buffer[start+kernel_cache.totdoc2active[j]];
 				else
-					buffer[j]=(DREAL) kernel(docnum, j);
+					buffer[j]=(float64_t) kernel(docnum, j);
 			}
 		}
 	}
@@ -638,7 +639,8 @@ void CKernel::cache_multiple_kernel_rows(int32_t* rows, int32_t num_rows)
 
 // remove numshrink columns in the cache
 // which correspond to examples marked
-void CKernel::kernel_cache_shrink(int32_t totdoc, int32_t numshrink, int32_t *after)
+void CKernel::kernel_cache_shrink(
+	int32_t totdoc, int32_t numshrink, int32_t *after)
 {                           
 	register int32_t i,j,jj,scount;     // 0 in after.
 	KERNELCACHE_IDX from=0,to=0;
@@ -683,7 +685,8 @@ void CKernel::kernel_cache_shrink(int32_t totdoc, int32_t numshrink, int32_t *af
 		}
 	}
 
-	kernel_cache.max_elems=(int32_t)(kernel_cache.buffsize/kernel_cache.activenum);
+	kernel_cache.max_elems=
+		(int32_t)(kernel_cache.buffsize/kernel_cache.activenum);
 	if(kernel_cache.max_elems>totdoc) {
 		kernel_cache.max_elems=totdoc;
 	}
@@ -1018,7 +1021,8 @@ void CKernel::list_kernel()
 	SG_INFO( "\n");
 }
 
-bool CKernel::init_optimization(int32_t count, int32_t *IDX, DREAL * weights)
+bool CKernel::init_optimization(
+	int32_t count, int32_t *IDX, float64_t * weights)
 {
    SG_ERROR( "kernel does not support linadd optimization\n");
 	return false ;
@@ -1030,18 +1034,20 @@ bool CKernel::delete_optimization()
 	return false;
 }
 
-DREAL CKernel::compute_optimized(int32_t vector_idx)
+float64_t CKernel::compute_optimized(int32_t vector_idx)
 {
    SG_ERROR( "kernel does not support linadd optimization\n");
 	return 0;
 }
 
-void CKernel::compute_batch(int32_t num_vec, int32_t* vec_idx, DREAL* target, int32_t num_suppvec, int32_t* IDX, DREAL* weights, DREAL factor)
+void CKernel::compute_batch(
+	int32_t num_vec, int32_t* vec_idx, float64_t* target, int32_t num_suppvec,
+	int32_t* IDX, float64_t* weights, float64_t factor)
 {
    SG_ERROR( "kernel does not support batch computation\n");
 }
 
-void CKernel::add_to_normal(int32_t vector_idx, DREAL weight)
+void CKernel::add_to_normal(int32_t vector_idx, float64_t weight)
 {
    SG_ERROR( "kernel does not support linadd optimization, add_to_normal not implemented\n");
 }
@@ -1056,18 +1062,19 @@ int32_t CKernel::get_num_subkernels()
 	return 1;
 }
 
-void CKernel::compute_by_subkernel(int32_t vector_idx, DREAL * subkernel_contrib)
+void CKernel::compute_by_subkernel(
+	int32_t vector_idx, float64_t * subkernel_contrib)
 {
    SG_ERROR( "kernel compute_by_subkernel not implemented\n");
 }
 
-const DREAL* CKernel::get_subkernel_weights(int32_t &num_weights)
+const float64_t* CKernel::get_subkernel_weights(int32_t &num_weights)
 {
 	num_weights=1 ;
 	return &combined_kernel_weight ;
 }
 
-void CKernel::set_subkernel_weights(DREAL* weights, int32_t num_weights)
+void CKernel::set_subkernel_weights(float64_t* weights, int32_t num_weights)
 {
 	combined_kernel_weight = weights[0] ;
 	if (num_weights!=1)
@@ -1078,7 +1085,7 @@ bool CKernel::init_optimization_svm(CSVM * svm)
 {
 	int32_t num_suppvec=svm->get_num_support_vectors();
 	int32_t* sv_idx=new int32_t[num_suppvec];
-	DREAL* sv_weight=new DREAL[num_suppvec];
+	float64_t* sv_weight=new float64_t[num_suppvec];
 
 	for (int32_t i=0; i<num_suppvec; i++)
 	{

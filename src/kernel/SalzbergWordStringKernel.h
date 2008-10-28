@@ -51,7 +51,7 @@ class CSalzbergWordStringKernel: public CStringKernel<uint16_t>
 		 * @param pos_prior_ positive prior
 		 * @param neg_prior_ negative prior
 		 */
-		void set_prior_probs(DREAL pos_prior_, DREAL neg_prior_)
+		void set_prior_probs(float64_t pos_prior_, float64_t neg_prior_)
 		{
 			pos_prior=pos_prior_ ;
 			neg_prior=neg_prior_ ;
@@ -111,8 +111,8 @@ class CSalzbergWordStringKernel: public CStringKernel<uint16_t>
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		DREAL compute(int32_t idx_a, int32_t idx_b);
-		//	DREAL compute_slow(int64_t idx_a, int64_t idx_b);
+		float64_t compute(int32_t idx_a, int32_t idx_b);
+		//	float64_t compute_slow(int64_t idx_a, int64_t idx_b);
 
 		/** compute index of given symbol at given position
 		 *
@@ -130,30 +130,30 @@ class CSalzbergWordStringKernel: public CStringKernel<uint16_t>
 		CPluginEstimate* estimate;
 
 		/** mean */
-		DREAL* mean;
+		float64_t* mean;
 		/** variance */
-		DREAL* variance;
+		float64_t* variance;
 
 		/** sqrt diagonal of left-hand side */
-		DREAL* sqrtdiag_lhs;
+		float64_t* sqrtdiag_lhs;
 		/** sqrt diagonal of right-hand side */
-		DREAL* sqrtdiag_rhs;
+		float64_t* sqrtdiag_rhs;
 
 		/** ld mean left-hand side */
-		DREAL* ld_mean_lhs;
+		float64_t* ld_mean_lhs;
 		/** ld mean right-hand side */
-		DREAL* ld_mean_rhs;
+		float64_t* ld_mean_rhs;
 
 		/** number of params */
 		int32_t num_params;
 		/** number of symbols */
 		int32_t num_symbols;
 		/** sum m2 s2 */
-		DREAL sum_m2_s2;
+		float64_t sum_m2_s2;
 		/** positive prior */
-		DREAL pos_prior;
+		float64_t pos_prior;
 		/** negative prior */
-		DREAL neg_prior;
+		float64_t neg_prior;
 		/** if kernel is initialized */
 		bool initialized;
 };

@@ -13,7 +13,8 @@
 #include "lib/io.h"
 #include "lib/Mathematics.h"
 
-CTOPFeatures::CTOPFeatures(int32_t size, CHMM* p, CHMM* n, bool neglin, bool poslin)
+CTOPFeatures::CTOPFeatures(
+	int32_t size, CHMM* p, CHMM* n, bool neglin, bool poslin)
 : CRealFeatures(size), neglinear(neglin), poslinear(poslin)
 {
 	memset(&pos_relevant_indizes, 0, sizeof(pos_relevant_indizes));
@@ -71,12 +72,13 @@ void CTOPFeatures::set_models(CHMM* p, CHMM* n)
 	SG_DEBUG( "pos_feat=[%i,%i,%i,%i],neg_feat=[%i,%i,%i,%i] -> %i features\n", pos->get_N(), pos->get_N(), pos->get_N()*pos->get_N(), pos->get_N()*pos->get_M(), neg->get_N(), neg->get_N(), neg->get_N()*neg->get_N(), neg->get_N()*neg->get_M(),num_features) ;
 }
 
-DREAL* CTOPFeatures::compute_feature_vector(int32_t num, int32_t &len, DREAL* target)
+float64_t* CTOPFeatures::compute_feature_vector(
+	int32_t num, int32_t &len, float64_t* target)
 {
-	DREAL* featurevector=target;
+	float64_t* featurevector=target;
 
 	if (!featurevector) 
-		featurevector=new DREAL[get_num_features()];
+		featurevector=new float64_t[get_num_features()];
 
 	if (!featurevector)
 		return NULL;
@@ -86,7 +88,8 @@ DREAL* CTOPFeatures::compute_feature_vector(int32_t num, int32_t &len, DREAL* ta
 	return featurevector;
 }
 
-void CTOPFeatures::compute_feature_vector(DREAL* featurevector, int32_t num, int32_t& len)
+void CTOPFeatures::compute_feature_vector(
+	float64_t* featurevector, int32_t num, int32_t& len)
 {
 	int32_t i,j,p=0,x=num;
 	int32_t idx=0;
@@ -172,7 +175,7 @@ void CTOPFeatures::compute_feature_vector(DREAL* featurevector, int32_t num, int
 	}
 }
 
-DREAL* CTOPFeatures::set_feature_matrix()
+float64_t* CTOPFeatures::set_feature_matrix()
 {
 	int32_t len=0;
 
@@ -184,7 +187,7 @@ DREAL* CTOPFeatures::set_feature_matrix()
 	num_vectors=pos->get_observations()->get_num_vectors();
 	SG_INFO( "allocating top feature cache of size %.2fM\n", sizeof(double)*num_features*num_vectors/1024.0/1024.0);
 	delete[] feature_matrix;
-	feature_matrix=new DREAL[num_features*num_vectors];
+	feature_matrix=new float64_t[num_features*num_vectors];
 	if (!feature_matrix)
 	{
       SG_ERROR( "allocation not successful!");

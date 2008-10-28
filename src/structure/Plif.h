@@ -46,15 +46,17 @@ class CPlif: public CPlifBase
 		 * @param d_values d values
 		 * @return the penalty
 		 */
-		DREAL lookup_penalty_svm(DREAL p_value, DREAL *d_values) const;
+		float64_t lookup_penalty_svm(
+			float64_t p_value, float64_t *d_values) const;
 
-		/** lookup penalty DREAL
+		/** lookup penalty float64_t
 		 *
 		 * @param p_value value
 		 * @param svm_values SVM values
 		 * @return the penalty
 		 */
-		DREAL lookup_penalty(DREAL p_value, DREAL* svm_values) const;
+		float64_t lookup_penalty(
+			float64_t p_value, float64_t* svm_values) const;
 
 		/** lookup penalty int32_t
 		 *
@@ -62,14 +64,14 @@ class CPlif: public CPlifBase
 		 * @param svm_values SVM values
 		 * @return the penalty
 		 */
-		DREAL lookup_penalty(int32_t p_value, DREAL* svm_values) const;
+		float64_t lookup_penalty(int32_t p_value, float64_t* svm_values) const;
 
 		/** lookup
 		 *
 		 * @param p_value value
 		 * @return a penalty
 		 */
-		inline DREAL lookup(DREAL p_value)
+		inline float64_t lookup(float64_t p_value)
 		{
 			ASSERT(use_svm == 0);
 			return lookup_penalty(p_value, NULL);
@@ -83,21 +85,22 @@ class CPlif: public CPlifBase
 		 * @param p_value value
 		 * @param svm_values SVM values
 		 */
-		void penalty_add_derivative_svm(DREAL p_value, DREAL* svm_values) ;
+		void penalty_add_derivative_svm(
+			float64_t p_value, float64_t* svm_values) ;
 
 		/** penalty add derivative
 		 *
 		 * @param p_value value
 		 * @param svm_values SVM values
 		 */
-		void penalty_add_derivative(DREAL p_value, DREAL* svm_values) ;
+		void penalty_add_derivative(float64_t p_value, float64_t* svm_values);
 
 		/** get cum derivative
 		 *
 		 * @param p_len len
 		 * @return cum derivative
 		 */
-		const DREAL * get_cum_derivative(int32_t & p_len) const
+		const float64_t * get_cum_derivative(int32_t & p_len) const
 		{
 			p_len = len;
 			return cum_derivatives;
@@ -216,7 +219,8 @@ class CPlif: public CPlifBase
 		 * @param p_limits limit
 		 * @param p_penalties penalties
 		 */
-		void set_plif(int32_t p_len, DREAL *p_limits, DREAL* p_penalties)
+		void set_plif(
+			int32_t p_len, float64_t *p_limits, float64_t* p_penalties)
 		{
 			len=p_len;
 			delete[] limits;
@@ -225,9 +229,9 @@ class CPlif: public CPlifBase
 			delete[] cache;
 			cache=NULL;
 
-			limits=new DREAL[len];
-			penalties=new DREAL[len];
-			cum_derivatives=new DREAL[len];
+			limits=new float64_t[len];
+			penalties=new float64_t[len];
+			cum_derivatives=new float64_t[len];
 
 			for (int32_t i=0; i<len; i++)
 			{
@@ -251,9 +255,9 @@ class CPlif: public CPlifBase
 				delete[] penalties;
 				delete[] cum_derivatives;
 				SG_DEBUG( "set_plif len=%i\n", p_len);
-				limits=new DREAL[len];
-				penalties=new DREAL[len];
-				cum_derivatives=new DREAL[len];
+				limits=new float64_t[len];
+				penalties=new float64_t[len];
+				cum_derivatives=new float64_t[len];
 			}
 			delete[] cache;
 			cache=NULL;
@@ -270,7 +274,7 @@ class CPlif: public CPlifBase
 		 * @param p_limits limits
 		 * @param p_len len
 		 */
-		void set_plif_limits(DREAL* p_limits, int32_t p_len)
+		void set_plif_limits(float64_t* p_limits, int32_t p_len)
 		{
 			delete[] cache;
 			cache=NULL;
@@ -286,7 +290,7 @@ class CPlif: public CPlifBase
 		 *
 		 * @return limits
 		 */
-		DREAL* get_plif_limits()
+		float64_t* get_plif_limits()
 		{
 			return limits;
 		}
@@ -296,7 +300,7 @@ class CPlif: public CPlifBase
 		 * @param p_penalties penalties
 		 * @param p_len len
 		 */
-		void set_plif_penalty(DREAL* p_penalties, int32_t p_len)
+		void set_plif_penalty(float64_t* p_penalties, int32_t p_len)
 		{
 			delete[] cache;
 			cache=NULL;
@@ -311,7 +315,7 @@ class CPlif: public CPlifBase
  		 *	
  		 * @return plif penalty
  		 */ 
-		DREAL* get_plif_penalties()
+		float64_t* get_plif_penalties()
 		{
 			return penalties;
 		}
@@ -319,7 +323,7 @@ class CPlif: public CPlifBase
 		 *
 		 * @param p_max_value maximum value
 		 */
-		inline void set_max_value(DREAL p_max_value)
+		inline void set_max_value(float64_t p_max_value)
 		{
 			delete[] cache;
 			cache=NULL;
@@ -330,7 +334,7 @@ class CPlif: public CPlifBase
 		 *
 		 * @return maximum value
 		 */
-		virtual DREAL get_max_value() const
+		virtual float64_t get_max_value() const
 		{
 			return max_value;
 		}
@@ -339,7 +343,7 @@ class CPlif: public CPlifBase
 		 *
 		 * @param p_min_value minimum value
 		 */
-		inline void set_min_value(DREAL p_min_value)
+		inline void set_min_value(float64_t p_min_value)
 		{
 			delete[] cache;
 			cache=NULL;
@@ -350,7 +354,7 @@ class CPlif: public CPlifBase
 		 *
 		 * @return minimum value
 		 */
-		virtual DREAL get_min_value() const
+		virtual float64_t get_min_value() const
 		{
 			return min_value;
 		}
@@ -408,17 +412,17 @@ class CPlif: public CPlifBase
 		/** len */
 		int32_t len;
 		/** limits */
-		DREAL *limits;
+		float64_t *limits;
 		/** penalties */
-		DREAL *penalties;
+		float64_t *penalties;
 		/** cum derivatives */
-		DREAL *cum_derivatives;
+		float64_t *cum_derivatives;
 		/** maximum value */
-		DREAL max_value;
+		float64_t max_value;
 		/** minimum value */
-		DREAL min_value;
+		float64_t min_value;
 		/** cache */
-		DREAL *cache;
+		float64_t *cache;
 		/** transform type */
 		enum ETransformType transform;
 		/** id */
@@ -436,9 +440,10 @@ class CPlif: public CPlifBase
 };
 
 #ifdef HAVE_MATLAB
-CPlif** read_penalty_struct_from_cell(const mxArray * mx_penalty_info, int32_t P) ;
+CPlif** read_penalty_struct_from_cell(
+	const mxArray * mx_penalty_info, int32_t P);
 #endif
 
-void delete_penalty_struct(CPlif** PEN, int32_t P) ;
+void delete_penalty_struct(CPlif** PEN, int32_t P);
 
 #endif

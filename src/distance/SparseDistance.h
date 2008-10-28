@@ -61,7 +61,7 @@ template <class ST> class CSparseDistance : public CDistance
  *
  * @return feature type DREAL
  */
-template<> inline EFeatureType CSparseDistance<DREAL>::get_feature_type() { return F_DREAL; }
+template<> inline EFeatureType CSparseDistance<float64_t>::get_feature_type() { return F_DREAL; }
 
 /** get feature type the ULONG distance can deal with
  *

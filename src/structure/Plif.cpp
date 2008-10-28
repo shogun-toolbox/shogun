@@ -74,6 +74,7 @@ bool CPlif::set_transform_type(const char *type_str)
 	}
 	return true ;
 }
+
 void CPlif::init_penalty_struct_cache()
 {
 	if (!use_cache)
@@ -83,7 +84,7 @@ void CPlif::init_penalty_struct_cache()
 	if (max_value<=0)
 		return ;
 
-	DREAL* local_cache=new DREAL[ ((int32_t) max_value) + 2] ;
+	float64_t* local_cache=new float64_t[ ((int32_t) max_value) + 2] ;
 	
 	if (local_cache)
 	{
@@ -98,8 +99,7 @@ void CPlif::init_penalty_struct_cache()
 	this->cache=local_cache ;
 }
 
-	
-void CPlif::set_name(char *p_name) 
+void CPlif::set_name(char *p_name)
 {
 	delete[] name ;
 	name=new char[strlen(p_name)+1] ;
@@ -107,7 +107,8 @@ void CPlif::set_name(char *p_name)
 }
 
 #ifdef HAVE_MATLAB
-CPlif** read_penalty_struct_from_cell(const mxArray * mx_penalty_info, int32_t P)
+CPlif** read_penalty_struct_from_cell(
+	const mxArray * mx_penalty_info, int32_t P)
 {
 	//P = mxGetN(mx_penalty_info) ;
 	//fprintf(stderr, "p=%i size=%i\n", P, P*sizeof(CPlif)) ;
@@ -280,10 +281,11 @@ void delete_penalty_struct(CPlif** PEN, int32_t P)
 	delete[] PEN ;
 }
 
-DREAL CPlif::lookup_penalty_svm(DREAL p_value, DREAL *d_values) const
-{	
+float64_t CPlif::lookup_penalty_svm(
+	float64_t p_value, float64_t *d_values) const
+{
 	ASSERT(use_svm>0);
-	DREAL d_value=d_values[use_svm-1] ;
+	float64_t d_value=d_values[use_svm-1] ;
 #ifdef PLIF_DEBUG
 	SG_PRINT("%s.lookup_penalty_svm(%f)\n", get_name(), d_value) ;
 #endif
@@ -312,7 +314,7 @@ DREAL CPlif::lookup_penalty_svm(DREAL p_value, DREAL *d_values) const
 	}
 	
 	int32_t idx = 0 ;
-	DREAL ret ;
+	float64_t ret ;
 	for (int32_t i=0; i<len; i++)
 		if (limits[i]<=d_value)
 			idx++ ;
@@ -342,7 +344,7 @@ DREAL CPlif::lookup_penalty_svm(DREAL p_value, DREAL *d_values) const
 	return ret ;
 }
 
-DREAL CPlif::lookup_penalty(int32_t p_value, DREAL* svm_values) const
+float64_t CPlif::lookup_penalty(int32_t p_value, float64_t* svm_values) const
 {
 	if (use_svm)
 		return lookup_penalty_svm(p_value, svm_values) ;
@@ -353,14 +355,14 @@ DREAL CPlif::lookup_penalty(int32_t p_value, DREAL* svm_values) const
 		return p_value;
 	if (cache!=NULL && (p_value>=0) && (p_value<=max_value))
 	{
-		DREAL ret=cache[p_value] ;
+		float64_t ret=cache[p_value] ;
 		return ret ;
 	}
-	return lookup_penalty((DREAL) p_value, svm_values) ;
+	return lookup_penalty((float64_t) p_value, svm_values) ;
 }
 
-DREAL CPlif::lookup_penalty(DREAL p_value, DREAL* svm_values) const
-{	
+float64_t CPlif::lookup_penalty(float64_t p_value, float64_t* svm_values) const
+{
 	if (use_svm)
 		return lookup_penalty_svm(p_value, svm_values) ;
 
@@ -375,7 +377,7 @@ DREAL CPlif::lookup_penalty(DREAL p_value, DREAL* svm_values) const
 	if (!do_calc)
 		return p_value;
 
-	DREAL d_value = (DREAL) p_value ;
+	float64_t d_value = (float64_t) p_value ;
 	switch (transform)
 	{
 	case T_LINEAR:
@@ -402,7 +404,7 @@ DREAL CPlif::lookup_penalty(DREAL p_value, DREAL* svm_values) const
 #endif
 
 	int32_t idx = 0 ;
-	DREAL ret ;
+	float64_t ret ;
 	for (int32_t i=0; i<len; i++)
 		if (limits[i]<=d_value)
 			idx++ ;
@@ -440,7 +442,7 @@ void CPlif::penalty_clear_derivative()
 		cum_derivatives[i]=0.0 ;
 }
 
-void CPlif::penalty_add_derivative(DREAL p_value, DREAL* svm_values) 
+void CPlif::penalty_add_derivative(float64_t p_value, float64_t* svm_values)
 {
 	if (use_svm)
 	{
@@ -452,7 +454,7 @@ void CPlif::penalty_add_derivative(DREAL p_value, DREAL* svm_values)
 	{
 		return ;
 	}
-	DREAL d_value = (DREAL) p_value ;
+	float64_t d_value = (float64_t) p_value ;
 	switch (transform)
 	{
 	case T_LINEAR:
@@ -492,10 +494,10 @@ void CPlif::penalty_add_derivative(DREAL p_value, DREAL* svm_values)
 	}
 }
 
-void CPlif::penalty_add_derivative_svm(DREAL p_value, DREAL *d_values) 
-{	
+void CPlif::penalty_add_derivative_svm(float64_t p_value, float64_t *d_values)
+{
 	ASSERT(use_svm>0);
-	DREAL d_value=d_values[use_svm-1] ;
+	float64_t d_value=d_values[use_svm-1] ;
 
 	if (d_value<-1e+20)
 		return;
@@ -538,6 +540,7 @@ void CPlif::penalty_add_derivative_svm(DREAL p_value, DREAL *d_values)
 		cum_derivatives[idx-1]+=(limits[idx]-d_value)/(limits[idx]-limits[idx-1]) ;
 	}
 }
+
 void CPlif::get_used_svms(int32_t* num_svms, int32_t* svm_ids)
 {
 	if (use_svm)
@@ -547,14 +550,13 @@ void CPlif::get_used_svms(int32_t* num_svms, int32_t* svm_ids)
 	}
 	SG_PRINT("->use_svm:%i plif_id:%i name:%s trans_type:%s  ",use_svm, get_id(), get_name(), get_transform_type());
 }
+
 bool CPlif::get_do_calc()
 {
 	return do_calc;
 }
+
 void CPlif::set_do_calc(bool b)
 {
 	do_calc = b;;
 }
-
-
-

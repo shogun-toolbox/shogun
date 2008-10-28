@@ -28,7 +28,7 @@
  * @see K. Rieck, P. Laskov. Linear-Time Computation of Similarity Measures 
  * for Sequential Data. Journal of Machine Learning Research, 9:23--48,2008.
  */
-class CChiSquareDistance: public CSimpleDistance<DREAL>
+class CChiSquareDistance: public CSimpleDistance<float64_t>
 {
 	public:
 		/** default constructor */
@@ -83,7 +83,7 @@ class CChiSquareDistance: public CSimpleDistance<DREAL>
 		/// compute distance for features a and b
 		/// idx_{a,b} denote the index of the feature vectors
 		/// in the corresponding feature object
-		virtual DREAL compute(int32_t idx_a, int32_t idx_b);
+		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
 };
 
 #endif /* _CHISQUAREDISTANCE_H___ */

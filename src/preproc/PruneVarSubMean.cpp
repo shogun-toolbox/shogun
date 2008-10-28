@@ -17,7 +17,7 @@
 #include "lib/Mathematics.h"
 
 CPruneVarSubMean::CPruneVarSubMean(bool divide)
-: CSimplePreProc<DREAL>("PruneVarSubMean","PVSM"), idx(NULL), mean(NULL),
+: CSimplePreProc<float64_t>("PruneVarSubMean","PVSM"), idx(NULL), mean(NULL),
 	std(NULL), num_idx(0), divide_by_std(divide), initialized(false)
 {
 }
@@ -60,7 +60,7 @@ bool CPruneVarSubMean::init(CFeatures* p_f)
 		for (i=0; i<num_examples; i++)
 		{
 			int32_t len ; bool free ;
-			DREAL* feature=f->get_feature_vector(i, len, free) ;
+			float64_t* feature=f->get_feature_vector(i, len, free) ;
 
 			for (j=0; j<len; j++)
 				mean[j]+=feature[j];
@@ -75,7 +75,7 @@ bool CPruneVarSubMean::init(CFeatures* p_f)
 		for (i=0; i<num_examples; i++)
 		{
 			int32_t len ; bool free ;
-			DREAL* feature=f->get_feature_vector(i, len, free) ;
+			float64_t* feature=f->get_feature_vector(i, len, free) ;
 
 			for (j=0; j<num_features; j++)
 				var[j]+=(mean[j]-feature[j])*(mean[j]-feature[j]) ;
@@ -101,8 +101,8 @@ bool CPruneVarSubMean::init(CFeatures* p_f)
 
 		delete[] idx ;
 		idx=new int[num_ok];
-		DREAL* new_mean=new DREAL[num_ok];
-		std=new DREAL[num_ok];
+		float64_t* new_mean=new float64_t[num_ok];
+		std=new float64_t[num_ok];
 
 		for (j=0; j<num_ok; j++)
 		{
@@ -137,20 +137,20 @@ void CPruneVarSubMean::cleanup()
 /// apply preproc on feature matrix
 /// result in feature matrix
 /// return pointer to feature_matrix, i.e. f->get_feature_matrix();
-DREAL* CPruneVarSubMean::apply_to_feature_matrix(CFeatures* f)
+float64_t* CPruneVarSubMean::apply_to_feature_matrix(CFeatures* f)
 {
 	ASSERT(initialized);
 
 	int32_t num_vectors=0;
 	int32_t num_features=0;
-	DREAL* m=((CRealFeatures*) f)->get_feature_matrix(num_features, num_vectors);
+	float64_t* m=((CRealFeatures*) f)->get_feature_matrix(num_features, num_vectors);
 
 	SG_INFO( "get Feature matrix: %ix%i\n", num_vectors, num_features);
 	SG_INFO( "Preprocessing feature matrix\n");
 	for (int32_t vec=0; vec<num_vectors; vec++)
 	{
-		DREAL* v_src=&m[num_features*vec];
-		DREAL* v_dst=&m[num_idx*vec];
+		float64_t* v_src=&m[num_features*vec];
+		float64_t* v_dst=&m[num_idx*vec];
 
 		if (divide_by_std)
 		{
@@ -173,13 +173,13 @@ DREAL* CPruneVarSubMean::apply_to_feature_matrix(CFeatures* f)
 
 /// apply preproc on single feature vector
 /// result in feature matrix
-DREAL* CPruneVarSubMean::apply_to_feature_vector(DREAL* f, int32_t &len)
+float64_t* CPruneVarSubMean::apply_to_feature_vector(float64_t* f, int32_t &len)
 {
-	DREAL* ret=NULL;
+	float64_t* ret=NULL;
 
 	if (initialized)
 	{
-		ret=new DREAL[num_idx] ;
+		ret=new float64_t[num_idx] ;
 
 		if (divide_by_std)
 		{
@@ -195,7 +195,7 @@ DREAL* CPruneVarSubMean::apply_to_feature_vector(DREAL* f, int32_t &len)
 	}
 	else
 	{
-		ret=new DREAL[len] ;
+		ret=new float64_t[len] ;
 		for (int32_t i=0; i<len; i++)
 			ret[i]=f[i];
 	}
@@ -216,12 +216,12 @@ bool CPruneVarSubMean::load_init_data(FILE* src)
 	delete[] idx;
 	delete[] std;
 	idx=new int32_t[num_idx];
-	mean=new DREAL[num_idx];
-	std=new DREAL[num_idx];
+	mean=new float64_t[num_idx];
+	std=new float64_t[num_idx];
 	ASSERT (mean!=NULL && idx!=NULL && std!=NULL);
 	ASSERT(fread(idx, sizeof(int32_t), num_idx, src)==(size_t) num_idx);
-	ASSERT(fread(mean, sizeof(DREAL), num_idx, src)==(size_t) num_idx);
-	ASSERT(fread(std, sizeof(DREAL), num_idx, src)==(size_t) num_idx);
+	ASSERT(fread(mean, sizeof(float64_t), num_idx, src)==(size_t) num_idx);
+	ASSERT(fread(std, sizeof(float64_t), num_idx, src)==(size_t) num_idx);
 
 	result=true;
 	divide_by_std=(divide==1);

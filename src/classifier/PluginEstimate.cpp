@@ -16,7 +16,7 @@
 #include "classifier/PluginEstimate.h"
 
 
-CPluginEstimate::CPluginEstimate(DREAL pos_pseudo, DREAL neg_pseudo)
+CPluginEstimate::CPluginEstimate(float64_t pos_pseudo, float64_t neg_pseudo)
 : CClassifier(), m_pos_pseudo(1e-10), m_neg_pseudo(1e-10),
 	pos_model(NULL), neg_model(NULL), features(NULL)
 {
@@ -81,7 +81,7 @@ CLabels* CPluginEstimate::classify(CLabels* result)
 	return result;
 }
 
-DREAL CPluginEstimate::classify_example(int32_t vec_idx)
+float64_t CPluginEstimate::classify_example(int32_t vec_idx)
 {
 	ASSERT(features);
 
@@ -91,6 +91,6 @@ DREAL CPluginEstimate::classify_example(int32_t vec_idx)
 	if ((!pos_model) || (!neg_model))
 		SG_ERROR( "model(s) not assigned\n");
 	  
-	DREAL result=pos_model->get_log_likelihood_example(vector, len) - neg_model->get_log_likelihood_example(vector, len);
+	float64_t result=pos_model->get_log_likelihood_example(vector, len) - neg_model->get_log_likelihood_example(vector, len);
 	return result;
 }

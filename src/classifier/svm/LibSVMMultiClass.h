@@ -30,7 +30,7 @@ class CLibSVMMultiClass : public CMultiClassSVM
 		 * @param k kernel
 		 * @param lab labels
 		 */
-		CLibSVMMultiClass(DREAL C, CKernel* k, CLabels* lab);
+		CLibSVMMultiClass(float64_t C, CKernel* k, CLabels* lab);
 		virtual ~CLibSVMMultiClass();
 
 		/** train SVM

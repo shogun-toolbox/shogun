@@ -55,7 +55,7 @@ bool CPolyMatchStringKernel::save_init(FILE *dest)
 	return false;
 }
 
-DREAL CPolyMatchStringKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t CPolyMatchStringKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	int32_t i, alen, blen, sum;
 

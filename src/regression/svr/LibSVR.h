@@ -58,7 +58,7 @@ class CLibSVR : public CSVM
 		 * @param k kernel
 		 * @param lab labels
 		 */
-		CLibSVR(DREAL C, DREAL epsilon, CKernel* k, CLabels* lab);
+		CLibSVR(float64_t C, float64_t epsilon, CKernel* k, CLabels* lab);
 		virtual ~CLibSVR();
 
 		/** train regression

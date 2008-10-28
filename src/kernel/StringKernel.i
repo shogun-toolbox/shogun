@@ -4,7 +4,7 @@
 
 %include "kernel/StringKernel.h" 
 
-%template(StringRealKernel) CStringKernel<DREAL>;
+%template(StringRealKernel) CStringKernel<float64_t>;
 %template(StringWordKernel) CStringKernel<uint16_t>;
 %template(StringCharKernel) CStringKernel<char>;
 %template(StringIntKernel) CStringKernel<int32_t>;

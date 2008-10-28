@@ -202,12 +202,12 @@ void CLocalAlignmentStringKernel::initialize(void)
 
 
 
-DREAL CLocalAlignmentStringKernel::LAkernelcompute(int32_t* aaX, int32_t* aaY, /* Implementation of the
-								convolution kernel which generalizes the Smith-Waterman algorithm */
-		/* the two amino-acid sequences (as sequences of indexes in [0..NAA-1] indicating the
-		 * position of the amino-acid in the variable 'aaList') */
-		int32_t nX, int32_t nY /* the lengths of both sequences */
-		)
+/* Implementation of the
+ * convolution kernel which generalizes the Smith-Waterman algorithm
+ */
+float64_t CLocalAlignmentStringKernel::LAkernelcompute(
+	int32_t* aaX, int32_t* aaY, /* the two amino-acid sequences (as sequences of indexes in [0..NAA-1] indicating the position of the amino-acid in the variable 'aaList') */
+	int32_t nX, int32_t nY /* the lengths of both sequences */)
 {
    register int32_t
     i,j,                /* loop indexes */
@@ -355,7 +355,7 @@ DREAL CLocalAlignmentStringKernel::LAkernelcompute(int32_t* aaX, int32_t* aaY, /
 
 /* Return the log-probability of two sequences x and y under a pair HMM model */
 /* x and y are strings of aminoacid letters, e.g., "AABRS" */
-DREAL CLocalAlignmentStringKernel::compute(int32_t idx_x, int32_t idx_y)
+float64_t CLocalAlignmentStringKernel::compute(int32_t idx_x, int32_t idx_y)
 {
   int32_t *aax,*aay;  /* to convert x and y into sequences of amino-acid indexes */
   int32_t lx=0,ly=0;       /* lengths of x and y */
@@ -394,7 +394,7 @@ DREAL CLocalAlignmentStringKernel::compute(int32_t idx_x, int32_t idx_y)
 
 
   /* Compute the pair HMM score */
-  DREAL result=LAkernelcompute(aax,aay,lx,ly);
+  float64_t result=LAkernelcompute(aax,aay,lx,ly);
 
   /* Release memory */
   free(aax);

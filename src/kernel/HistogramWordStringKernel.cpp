@@ -79,9 +79,9 @@ bool CHistogramWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 	delete[] plo_lhs ;
 	plo_lhs=NULL ;
 
-	sqrtdiag_lhs= new DREAL[l->get_num_vectors()];
-	ld_mean_lhs = new DREAL[l->get_num_vectors()];
-	plo_lhs     = new DREAL[l->get_num_vectors()];
+	sqrtdiag_lhs= new float64_t[l->get_num_vectors()];
+	ld_mean_lhs = new float64_t[l->get_num_vectors()];
+	plo_lhs     = new float64_t[l->get_num_vectors()];
 
 	for (i=0; i<l->get_num_vectors(); i++)
 		sqrtdiag_lhs[i]=1;
@@ -94,18 +94,18 @@ bool CHistogramWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 	}
 	else
 	{
-		sqrtdiag_rhs=new DREAL[r->get_num_vectors()];
+		sqrtdiag_rhs=new float64_t[r->get_num_vectors()];
 		for (i=0; i<r->get_num_vectors(); i++)
 			sqrtdiag_rhs[i]=1;
 
-		ld_mean_rhs=new DREAL[r->get_num_vectors()];
-		plo_rhs=new DREAL[r->get_num_vectors()];
+		ld_mean_rhs=new float64_t[r->get_num_vectors()];
+		plo_rhs=new float64_t[r->get_num_vectors()];
 	}
 
-	DREAL* l_plo_lhs=plo_lhs;
-	DREAL* l_plo_rhs=plo_rhs;
-	DREAL* l_ld_mean_lhs=ld_mean_lhs;
-	DREAL* l_ld_mean_rhs=ld_mean_rhs;
+	float64_t* l_plo_lhs=plo_lhs;
+	float64_t* l_plo_rhs=plo_rhs;
+	float64_t* l_ld_mean_lhs=ld_mean_lhs;
+	float64_t* l_ld_mean_rhs=ld_mean_rhs;
 
 	//from our knowledge first normalize variance to 1 and then norm=1 does the job
 	if (!initialized)
@@ -132,9 +132,9 @@ bool CHistogramWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 		num_params2++;
 
 		delete[] mean;
-		mean=new DREAL[num_params2];
+		mean=new float64_t[num_params2];
 		delete[] variance;
-		variance=new DREAL[num_params2];
+		variance=new float64_t[num_params2];
 
 		for (i=0; i<num_params2; i++)
 		{
@@ -207,7 +207,7 @@ bool CHistogramWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 	{
 		int32_t alen ;
 		uint16_t* avec = l->get_feature_vector(i, alen);
-		DREAL  result=0 ;
+		float64_t  result=0 ;
 		for (int32_t j=0; j<alen; j++)
 		{
 			int32_t a_idx = compute_index(j, avec[j]) ;
@@ -229,7 +229,7 @@ bool CHistogramWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 		{
 			int32_t alen ;
 			uint16_t* avec=r->get_feature_vector(i, alen);
-			DREAL  result=0 ;
+			float64_t  result=0 ;
 			for (int32_t j=0; j<alen; j++)
 			{
 				int32_t a_idx = compute_index(j, avec[j]) ;
@@ -345,7 +345,7 @@ bool CHistogramWordStringKernel::save_init(FILE* dest)
 
 
 
-DREAL CHistogramWordStringKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t CHistogramWordStringKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	int32_t alen, blen;
 	uint16_t* avec=((CStringFeatures<uint16_t>*) lhs)->get_feature_vector(idx_a, alen);
@@ -353,7 +353,7 @@ DREAL CHistogramWordStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	// can only deal with strings of same length
 	ASSERT(alen==blen);
 
-	DREAL result = plo_lhs[idx_a]*plo_rhs[idx_b]/variance[0];
+	float64_t result = plo_lhs[idx_a]*plo_rhs[idx_b]/variance[0];
 	result+= sum_m2_s2 ; // does not contain 0-th element
 
 	for (int32_t i=0; i<alen; i++)
@@ -361,7 +361,7 @@ DREAL CHistogramWordStringKernel::compute(int32_t idx_a, int32_t idx_b)
 		if (avec[i]==bvec[i])
 		{
 			int32_t a_idx = compute_index(i, avec[i]) ;
-			DREAL dd = estimate->log_derivative_pos_obsolete(avec[i], i) ;
+			float64_t dd = estimate->log_derivative_pos_obsolete(avec[i], i) ;
 			result   += dd*dd/variance[a_idx] ;
 			dd        = estimate->log_derivative_neg_obsolete(avec[i], i) ;
 			result   += dd*dd/variance[a_idx+num_params] ;
@@ -374,7 +374,7 @@ DREAL CHistogramWordStringKernel::compute(int32_t idx_a, int32_t idx_b)
 
 	//fprintf(stderr, "%ld : %ld -> %f\n",idx_a, idx_b, result) ;
 #ifdef BLABLA
-	DREAL result2 = compute_slow(idx_a, idx_b) ;
+	float64_t result2 = compute_slow(idx_a, idx_b) ;
 	if (fabs(result - result2)>1e-10)
 	{
 		fprintf(stderr, "new=%e  old = %e  diff = %e\n", result, result2, result - result2) ;
@@ -386,7 +386,7 @@ DREAL CHistogramWordStringKernel::compute(int32_t idx_a, int32_t idx_b)
 
 #ifdef BLABLA
 
-DREAL CHistogramWordStringKernel::compute_slow(int32_t idx_a, int32_t idx_b)
+float64_t CHistogramWordStringKernel::compute_slow(int32_t idx_a, int32_t idx_b)
 {
 	int32_t alen, blen;
 	uint16_t* avec=((CStringFeatures<uint16_t>*) lhs)->get_feature_vector(idx_a, alen);
@@ -394,7 +394,7 @@ DREAL CHistogramWordStringKernel::compute_slow(int32_t idx_a, int32_t idx_b)
 	// can only deal with strings of same length
 	ASSERT(alen==blen);
 
-	DREAL result=(estimate->posterior_log_odds_obsolete(avec, alen)-mean[0])*
+	float64_t result=(estimate->posterior_log_odds_obsolete(avec, alen)-mean[0])*
 		(estimate->posterior_log_odds_obsolete(bvec, blen)-mean[0])/(variance[0]);
 	result+= sum_m2_s2 ; // does not contain 0-th element
 
@@ -405,7 +405,7 @@ DREAL CHistogramWordStringKernel::compute_slow(int32_t idx_a, int32_t idx_b)
 
 		if (avec[i]==bvec[i])
 		{
-			DREAL dd = estimate->log_derivative_pos_obsolete(avec[i], i) ;
+			float64_t dd = estimate->log_derivative_pos_obsolete(avec[i], i) ;
 			result   += dd*dd/variance[a_idx] ;
 			dd        = estimate->log_derivative_neg_obsolete(avec[i], i) ;
 			result   += dd*dd/variance[a_idx+num_params] ;

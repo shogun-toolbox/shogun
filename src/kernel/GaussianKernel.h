@@ -24,7 +24,7 @@
  *
  * where \f$\tau\f$ is the kernel width.
  */
-class CGaussianKernel: public CSimpleKernel<DREAL>
+class CGaussianKernel: public CSimpleKernel<float64_t>
 {
 	public:
 		/** constructor
@@ -32,7 +32,7 @@ class CGaussianKernel: public CSimpleKernel<DREAL>
 		 * @param size cache size
 		 * @param width width
 		 */
-		CGaussianKernel(int32_t size, DREAL width);
+		CGaussianKernel(int32_t size, float64_t width);
 
 		/** constructor
 		 *
@@ -42,7 +42,7 @@ class CGaussianKernel: public CSimpleKernel<DREAL>
 		 * @param size cache size
 		 */
 		CGaussianKernel(CRealFeatures* l, CRealFeatures* r,
-			DREAL width, int32_t size=10);
+			float64_t width, int32_t size=10);
 
 		virtual ~CGaussianKernel();
 
@@ -89,11 +89,11 @@ class CGaussianKernel: public CSimpleKernel<DREAL>
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		virtual DREAL compute(int32_t idx_a, int32_t idx_b);
+		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
 
 	protected:
 		/** width */
-		DREAL width;
+		float64_t width;
 };
 
 #endif /* _GAUSSIANKERNEL_H__ */

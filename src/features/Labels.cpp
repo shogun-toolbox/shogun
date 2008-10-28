@@ -25,12 +25,12 @@ CLabels::CLabels()
 CLabels::CLabels(int32_t num_lab)
 : CSGObject(), num_labels(num_lab)
 {
-	labels=new DREAL[num_lab];
+	labels=new float64_t[num_lab];
 	for (int32_t i=0; i<num_lab; i++)
 		labels[i]=0;
 }
 
-CLabels::CLabels(DREAL* p_labels, int32_t len)
+CLabels::CLabels(float64_t* p_labels, int32_t len)
 : CSGObject()
 {
 	labels = NULL;
@@ -55,13 +55,13 @@ CLabels::~CLabels()
 	labels=NULL;
 }
 
-void CLabels::set_labels(DREAL* p_labels, int32_t len)
+void CLabels::set_labels(float64_t* p_labels, int32_t len)
 {
 	ASSERT(len>0);
 	num_labels=len;
 
 	delete[] labels;
-	labels=new DREAL[len];
+	labels=new float64_t[len];
 
 	for (int32_t i=0; i<len; i++)
 		labels[i]=p_labels[i];
@@ -96,13 +96,13 @@ int32_t CLabels::get_num_classes()
 	return num_classes+1;
 }
 
-DREAL* CLabels::get_labels(int32_t &len)
+float64_t* CLabels::get_labels(int32_t &len)
 {
 	len=num_labels;
 
 	if (num_labels>0)
 	{
-		DREAL* _labels=new DREAL[num_labels] ;
+		float64_t* _labels=new float64_t[num_labels] ;
 		for (int32_t i=0; i<len; i++)
 			_labels[i]=get_label(i) ;
 		return _labels ;
@@ -111,7 +111,7 @@ DREAL* CLabels::get_labels(int32_t &len)
 		return NULL;
 }
 
-void CLabels::get_labels(DREAL** p_labels, int32_t* len)
+void CLabels::get_labels(float64_t** p_labels, int32_t* len)
 {
 	ASSERT(p_labels && len);
 	*p_labels=NULL;
@@ -119,7 +119,7 @@ void CLabels::get_labels(DREAL** p_labels, int32_t* len)
 
 	if (num_labels>0)
 	{
-		*p_labels=(DREAL*) malloc(sizeof(DREAL)*num_labels);
+		*p_labels=(float64_t*) malloc(sizeof(float64_t)*num_labels);
 
 		for (int32_t i=0; i<num_labels; i++)
 			(*p_labels)[i]=get_label(i);
@@ -146,7 +146,7 @@ void CLabels::set_int_labels(int32_t * mylabels, int32_t len)
 	num_labels = len ;
 	delete[] labels ;
 	
-	labels = new DREAL[num_labels] ;
+	labels = new float64_t[num_labels] ;
 	for (int32_t i=0; i<num_labels; i++)
 		set_int_label(i, mylabels[i]) ;
 }

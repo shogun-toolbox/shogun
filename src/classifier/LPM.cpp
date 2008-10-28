@@ -37,12 +37,12 @@ bool CLPM::train()
 
 	ASSERT(num_vec==num_train_labels);
 	delete[] w;
-	w=new DREAL[num_feat];
+	w=new float64_t[num_feat];
 	w_dim=num_feat;
 
 	int32_t num_params=1+2*num_feat+num_vec; //b,w+,w-,xi
-	DREAL* params=new DREAL[num_params];
-	memset(params,0,sizeof(DREAL)*num_params);
+	float64_t* params=new float64_t[num_params];
+	memset(params,0,sizeof(float64_t)*num_params);
 
 	CCplex solver;
 	solver.init(E_LINEAR);

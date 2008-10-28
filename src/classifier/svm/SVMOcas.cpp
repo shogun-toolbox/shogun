@@ -27,7 +27,7 @@ CSVMOcas::CSVMOcas(E_SVM_TYPE type)
 	old_w=NULL;
 }
 
-CSVMOcas::CSVMOcas(DREAL C, CSparseFeatures<DREAL>* traindat, CLabels* trainlab)
+CSVMOcas::CSVMOcas(float64_t C, CSparseFeatures<float64_t>* traindat, CLabels* trainlab)
 : CSparseLinearClassifier(), use_bias(false), bufsize(3000), C1(C), C2(C),
 	epsilon(1e-3)
 {
@@ -60,16 +60,16 @@ bool CSVMOcas::train()
 	ASSERT(num_vec>0);
 
 	delete[] w;
-	w=new DREAL[w_dim];
-	memset(w, 0, w_dim*sizeof(DREAL));
+	w=new float64_t[w_dim];
+	memset(w, 0, w_dim*sizeof(float64_t));
 
 	delete[] old_w;
-	old_w=new DREAL[w_dim];
-	memset(old_w, 0, w_dim*sizeof(DREAL));
+	old_w=new float64_t[w_dim];
+	memset(old_w, 0, w_dim*sizeof(float64_t));
 	bias=0;
 
-	tmp_a_buf=new DREAL[w_dim];
-	cp_value=new DREAL*[bufsize];
+	tmp_a_buf=new float64_t[w_dim];
+	cp_value=new float64_t*[bufsize];
 	cp_index=new uint32_t*[bufsize];
 	cp_nz_dims=new uint32_t[bufsize];
 
@@ -163,11 +163,11 @@ void CSVMOcas::add_new_cut( double *new_col_H,
 				  void* ptr)
 {
 	CSVMOcas* o = (CSVMOcas*) ptr;
-	CSparseFeatures<DREAL>* f = o->get_features();
+	CSparseFeatures<float64_t>* f = o->get_features();
 	uint32_t nDim=(uint32_t) o->w_dim;
-	DREAL* y = o->lab;
+	float64_t* y = o->lab;
 
-	DREAL** c_val = o->cp_value;
+	float64_t** c_val = o->cp_value;
 	uint32_t** c_idx = o->cp_index;
 	uint32_t* c_nzd = o->cp_nz_dims;
 
@@ -221,7 +221,7 @@ void CSVMOcas::add_new_cut( double *new_col_H,
 	}
 	//CMath::display_vector(new_col_H, nSel+1, "new_col_H");
 	//CMath::display_vector((int32_t*) c_idx[nSel], (int32_t) nz_dims, "c_idx");
-	//CMath::display_vector((DREAL*) c_val[nSel], nz_dims, "c_val");
+	//CMath::display_vector((float64_t*) c_val[nSel], nz_dims, "c_val");
 }
 
 void CSVMOcas::sort( double* vals, uint32_t* idx, uint32_t size)
@@ -237,10 +237,10 @@ void CSVMOcas::sort( double* vals, uint32_t* idx, uint32_t size)
 void CSVMOcas::compute_output( double *output, void* ptr )
 {
 	CSVMOcas* o = (CSVMOcas*) ptr;
-	CSparseFeatures<DREAL>* f=o->get_features();
+	CSparseFeatures<float64_t>* f=o->get_features();
 	int32_t nData=f->get_num_vectors();
 
-	DREAL* y = o->lab;
+	float64_t* y = o->lab;
 	f->dense_dot_range(output, 0, nData, y, o->w, o->w_dim, 0.0);
 	//CMath::display_vector(o->w, o->w_dim, "w");
 	//CMath::display_vector(output, nData, "out");
@@ -264,7 +264,7 @@ void CSVMOcas::compute_W( double *sq_norm_W, double *dp_WoldW, double *alpha, ui
 	double* oldW=o->old_w;
 	memset(W, 0, sizeof(double)*nDim);
 
-	DREAL** c_val = o->cp_value;
+	float64_t** c_val = o->cp_value;
 	uint32_t** c_idx = o->cp_index;
 	uint32_t* c_nzd = o->cp_nz_dims;
 

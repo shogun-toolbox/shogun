@@ -20,16 +20,17 @@ CCanberraWordDistance::CCanberraWordDistance()
 {
 	SG_DEBUG("CCanberraWordDistance created");
 	dictionary_size= 1<<(sizeof(uint16_t)*8);
-	dictionary_weights = new DREAL[dictionary_size];
+	dictionary_weights = new float64_t[dictionary_size];
 	SG_DEBUG( "using dictionary of %d bytes\n", dictionary_size);
 }
 
-CCanberraWordDistance::CCanberraWordDistance(CStringFeatures<uint16_t>* l, CStringFeatures<uint16_t>* r)
+CCanberraWordDistance::CCanberraWordDistance(
+	CStringFeatures<uint16_t>* l, CStringFeatures<uint16_t>* r)
 : CStringDistance<uint16_t>()
 {
 	SG_DEBUG("CCanberraWordDistance created");
 	dictionary_size= 1<<(sizeof(uint16_t)*8);
-	dictionary_weights = new DREAL[dictionary_size];
+	dictionary_weights = new float64_t[dictionary_size];
 	SG_DEBUG( "using dictionary of %d bytes\n", dictionary_size);
 
 	init(l, r);
@@ -41,7 +42,7 @@ CCanberraWordDistance::~CCanberraWordDistance()
 
 	delete[] dictionary_weights;
 }
-  
+
 bool CCanberraWordDistance::init(CFeatures* l, CFeatures* r)
 {
 	return CStringDistance<uint16_t>::init(l,r);
@@ -60,15 +61,17 @@ bool CCanberraWordDistance::save_init(FILE* dest)
 {
 	return false;
 }
-  
-DREAL CCanberraWordDistance::compute(int32_t idx_a, int32_t idx_b)
+
+float64_t CCanberraWordDistance::compute(int32_t idx_a, int32_t idx_b)
 {
 	int32_t alen, blen;
 
-	uint16_t* avec=((CStringFeatures<uint16_t>*) lhs)->get_feature_vector(idx_a, alen);
-	uint16_t* bvec=((CStringFeatures<uint16_t>*) rhs)->get_feature_vector(idx_b, blen);
+	uint16_t* avec=((CStringFeatures<uint16_t>*) lhs)->
+		get_feature_vector(idx_a, alen);
+	uint16_t* bvec=((CStringFeatures<uint16_t>*) rhs)->
+		get_feature_vector(idx_b, blen);
 
-	DREAL result=0;
+	float64_t result=0;
 
 	int32_t left_idx=0;
 	int32_t right_idx=0;
@@ -87,8 +90,11 @@ DREAL CCanberraWordDistance::compute(int32_t idx_a, int32_t idx_b)
 			while (right_idx< blen && bvec[right_idx]==sym)
 				right_idx++;
 
-			result += CMath::abs( (DREAL) ((left_idx-old_left_idx) - (right_idx-old_right_idx)) )/
-						( (DREAL) ((left_idx-old_left_idx) + (right_idx-old_right_idx)) );
+			result +=
+				CMath::abs((float64_t)
+					((left_idx-old_left_idx)-(right_idx-old_right_idx)))/
+				((float64_t)
+					((left_idx-old_left_idx) + (right_idx-old_right_idx)));
 		}
 		else if (avec[left_idx]<bvec[right_idx])
 		{

@@ -273,7 +273,8 @@ class CCombinedKernel : public CKernel
 		 * @param weights weights
 		 * @return if initializing was successful
 		 */
-		virtual bool init_optimization(int32_t count, int32_t *IDX, DREAL * weights);
+		virtual bool init_optimization(
+			int32_t count, int32_t *IDX, float64_t * weights);
 
 		/** delete optimization
 		 *
@@ -286,7 +287,7 @@ class CCombinedKernel : public CKernel
 		 * @param idx index to compute
 		 * @return optimized value at given index
 		 */
-		virtual DREAL compute_optimized(int32_t idx);
+		virtual float64_t compute_optimized(int32_t idx);
 
 		/** computes output for a batch of examples in an optimized fashion (favorable if kernel supports it,
 		 * i.e. has KP_BATCHEVALUATION.
@@ -294,7 +295,10 @@ class CCombinedKernel : public CKernel
 		 * in vec_idx are added. therefore make sure that it is initialized with ZERO. the following num_suppvec,
 		 * IDX, alphas arguments are the number of support vectors, their indices and weights
 		 */
-		virtual void compute_batch(int32_t num_vec, int32_t* vec_idx, DREAL* target, int32_t num_suppvec, int32_t* IDX, DREAL* alphas, DREAL factor=1.0);
+		virtual void compute_batch(
+			int32_t num_vec, int32_t* vec_idx, float64_t* target,
+			int32_t num_suppvec, int32_t* IDX, float64_t* alphas,
+			float64_t factor=1.0);
 
 		/** helper for compute optimized kernel
 		 *
@@ -318,14 +322,16 @@ class CCombinedKernel : public CKernel
 		 * @param IDX IDX
 		 * @param weights weights
 		 */
-		void emulate_compute_batch(CKernel* k, int32_t num_vec, int32_t* vec_idx, DREAL* target, int32_t num_suppvec, int32_t* IDX, DREAL* weights);
+		void emulate_compute_batch(
+			CKernel* k, int32_t num_vec, int32_t* vec_idx, float64_t* target,
+			int32_t num_suppvec, int32_t* IDX, float64_t* weights);
 
 		/** add to normal vector
 		 *
 		 * @param idx where to add
 		 * @param weight what to add
 		 */
-		virtual void add_to_normal(int32_t idx, DREAL weight);
+		virtual void add_to_normal(int32_t idx, float64_t weight);
 
 		/** clear normal vector */
 		virtual void clear_normal();
@@ -335,21 +341,23 @@ class CCombinedKernel : public CKernel
 		 * @param idx index
 		 * @param subkernel_contrib subkernel contribution
 		 */
-		virtual void compute_by_subkernel(int32_t idx, DREAL * subkernel_contrib);
+		virtual void compute_by_subkernel(
+			int32_t idx, float64_t * subkernel_contrib);
 
 		/** get subkernel weights
 		 *
 		 * @param num_weights where number of weights is stored
 		 * @return subkernel weights
 		 */
-		virtual const DREAL* get_subkernel_weights(int32_t& num_weights);
+		virtual const float64_t* get_subkernel_weights(int32_t& num_weights);
 
 		/** set subkernel weights
 		 *
 		 * @param weights new subkernel weights
 		 * @param num_weights number of subkernel weights
 		 */
-		virtual void set_subkernel_weights(DREAL* weights, int32_t num_weights);
+		virtual void set_subkernel_weights(
+			float64_t* weights, int32_t num_weights);
 
 		/** set optimization type
 		 *
@@ -367,7 +375,7 @@ class CCombinedKernel : public CKernel
 		 * @param y y
 		 * @return computed kernel function
 		 */
-		virtual DREAL compute(int32_t x, int32_t y);
+		virtual float64_t compute(int32_t x, int32_t y);
 
 	protected:
 		/** list of kernels */
@@ -377,9 +385,9 @@ class CCombinedKernel : public CKernel
 		/** support vector index */
 		int32_t*  sv_idx;
 		/** support vector weights */
-		DREAL* sv_weight;
+		float64_t* sv_weight;
 		/** subkernel weights buffers */
-		DREAL* subkernel_weights_buffer;
+		float64_t* subkernel_weights_buffer;
 		/** if subkernel weights are appended */
 		bool append_subkernel_weights;
 };

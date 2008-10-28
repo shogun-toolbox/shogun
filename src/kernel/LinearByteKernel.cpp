@@ -61,7 +61,7 @@ void CLinearByteKernel::clear_normal()
 		normal[i]=0;
 }
 
-void CLinearByteKernel::add_to_normal(int32_t idx, DREAL weight)
+void CLinearByteKernel::add_to_normal(int32_t idx, float64_t weight)
 {
 	int32_t vlen;
 	bool vfree;
@@ -72,8 +72,8 @@ void CLinearByteKernel::add_to_normal(int32_t idx, DREAL weight)
 
 	((CByteFeatures*) lhs)->free_feature_vector(vec, idx, vfree);
 }
-  
-DREAL CLinearByteKernel::compute(int32_t idx_a, int32_t idx_b)
+
+float64_t CLinearByteKernel::compute(int32_t idx_a, int32_t idx_b)
 {
   int32_t alen, blen;
   bool afree, bfree;
@@ -82,7 +82,7 @@ DREAL CLinearByteKernel::compute(int32_t idx_a, int32_t idx_b)
   uint8_t* bvec=((CByteFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
   ASSERT(alen==blen);
 
-  DREAL result=CMath::dot(avec,bvec, alen);
+  float64_t result=CMath::dot(avec,bvec, alen);
 
   ((CByteFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
   ((CByteFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
@@ -90,7 +90,8 @@ DREAL CLinearByteKernel::compute(int32_t idx_a, int32_t idx_b)
   return result;
 }
 
-bool CLinearByteKernel::init_optimization(int32_t num_suppvec, int32_t* sv_idx, DREAL* alphas)
+bool CLinearByteKernel::init_optimization(
+	int32_t num_suppvec, int32_t* sv_idx, float64_t* alphas)
 {
 	int32_t alen;
 	bool afree;
@@ -98,7 +99,7 @@ bool CLinearByteKernel::init_optimization(int32_t num_suppvec, int32_t* sv_idx, 
 	int32_t num_feat=((CByteFeatures*) lhs)->get_num_features();
 	ASSERT(num_feat);
 
-	normal=new DREAL[num_feat];
+	normal=new float64_t[num_feat];
 	for (int32_t i=0; i<num_feat; i++)
 		normal[i]=0;
 
@@ -127,7 +128,7 @@ bool CLinearByteKernel::delete_optimization()
 	return true;
 }
 
-DREAL CLinearByteKernel::compute_optimized(int32_t idx_b) 
+float64_t CLinearByteKernel::compute_optimized(int32_t idx_b)
 {
 	int32_t blen;
 	bool bfree;

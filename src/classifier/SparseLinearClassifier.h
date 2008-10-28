@@ -31,7 +31,7 @@ class CSparseLinearClassifier : public CClassifier
 		virtual CLabels* classify(CLabels* output=NULL);
 
 		/// get output for example "vec_idx"
-		virtual inline DREAL classify_example(int32_t vec_idx)
+		virtual inline float64_t classify_example(int32_t vec_idx)
 		{
 			return features->dense_dot(1.0, vec_idx, w, w_dim, bias);
 		}
@@ -41,14 +41,14 @@ class CSparseLinearClassifier : public CClassifier
 		 * @param dst_w store w in this argument
 		 * @param dst_dims dimension of w
 		 */
-		inline void get_w(DREAL** dst_w, int32_t* dst_dims)
+		inline void get_w(float64_t** dst_w, int32_t* dst_dims)
 		{
 			ASSERT(dst_w && dst_dims);
 			ASSERT(w && w_dim>0);
 			*dst_dims=w_dim;
-			*dst_w=(DREAL*) malloc(sizeof(DREAL) * (*dst_dims));
+			*dst_w=(float64_t*) malloc(sizeof(float64_t) * (*dst_dims));
 			ASSERT(*dst_w);
-			memcpy(*dst_w, w, sizeof(DREAL) * (*dst_dims));
+			memcpy(*dst_w, w, sizeof(float64_t) * (*dst_dims));
 		}
 
 		/** set w
@@ -56,7 +56,7 @@ class CSparseLinearClassifier : public CClassifier
 		 * @param src_w new w
 		 * @param src_w_dim dimension of new w
 		 */
-		inline void set_w(DREAL* src_w, int32_t src_w_dim)
+		inline void set_w(float64_t* src_w, int32_t src_w_dim)
 		{
 			w=src_w;
 			w_dim=src_w_dim;
@@ -66,7 +66,7 @@ class CSparseLinearClassifier : public CClassifier
 		 *
 		 * @param b new bias
 		 */
-		inline void set_bias(DREAL b)
+		inline void set_bias(float64_t b)
 		{
 			bias=b;
 		}
@@ -75,7 +75,7 @@ class CSparseLinearClassifier : public CClassifier
 		 *
 		 * @return bias
 		 */
-		inline DREAL get_bias()
+		inline float64_t get_bias()
 		{
 			return bias;
 		}
@@ -84,7 +84,7 @@ class CSparseLinearClassifier : public CClassifier
 		 *
 		 * @param feat features to set
 		 */
-		inline void set_features(CSparseFeatures<DREAL>* feat)
+		inline void set_features(CSparseFeatures<float64_t>* feat)
 		{
 			SG_UNREF(features);
 			SG_REF(feat);
@@ -95,16 +95,16 @@ class CSparseLinearClassifier : public CClassifier
 		 *
 		 * @return features
 		 */
-		inline CSparseFeatures<DREAL>* get_features() { SG_REF(features); return features; }
+		inline CSparseFeatures<float64_t>* get_features() { SG_REF(features); return features; }
 
 	protected:
 		/** dimension of w */
 		int32_t w_dim;
 		/** w */
-		DREAL* w;
+		float64_t* w;
 		/** bias */
-		DREAL bias;
+		float64_t bias;
 		/** features */
-		CSparseFeatures<DREAL>* features;
+		CSparseFeatures<float64_t>* features;
 };
 #endif

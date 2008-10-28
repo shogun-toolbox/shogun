@@ -37,31 +37,31 @@ class CLPBoost : public CSparseLinearClassifier
 		bool init(int32_t num_vec);
 		void cleanup();
 
-		inline void set_C(DREAL c1, DREAL c2) { C1=c1; C2=c2; }
+		inline void set_C(float64_t c1, float64_t c2) { C1=c1; C2=c2; }
 
-		inline DREAL get_C1() { return C1; }
-		inline DREAL get_C2() { return C2; }
+		inline float64_t get_C1() { return C1; }
+		inline float64_t get_C2() { return C2; }
 
 		inline void set_bias_enabled(bool enable_bias) { use_bias=enable_bias; }
 		inline bool get_bias_enabled() { return use_bias; }
 
-		inline void set_epsilon(DREAL eps) { epsilon=eps; }
-		inline DREAL get_epsilon() { return epsilon; }
+		inline void set_epsilon(float64_t eps) { epsilon=eps; }
+		inline float64_t get_epsilon() { return epsilon; }
 
-		DREAL find_max_violator(int32_t& max_dim);
+		float64_t find_max_violator(int32_t& max_dim);
 
 	protected:
-		DREAL C1;
-		DREAL C2;
+		float64_t C1;
+		float64_t C2;
 		bool use_bias;
-		DREAL epsilon;
+		float64_t epsilon;
 
-		DREAL* u;
+		float64_t* u;
 		CDynamicArray<int32_t>* dim;
 
 		int32_t num_sfeat;
 		int32_t num_svec;
-		TSparse<DREAL>* sfeat;
+		TSparse<float64_t>* sfeat;
 
 };
 #endif //USE_CPLEX

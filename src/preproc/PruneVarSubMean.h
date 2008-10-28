@@ -23,7 +23,7 @@
  * that have zero variance. It will optionally normalize standard deviation of
  * features to 1 (by dividing by standard deviation of the feature)
  */
-class CPruneVarSubMean : public CSimplePreProc<DREAL>
+class CPruneVarSubMean : public CSimplePreProc<float64_t>
 {
 	public:
 		/** constructor
@@ -47,19 +47,19 @@ class CPruneVarSubMean : public CSimplePreProc<DREAL>
 		/// apply preproc on feature matrix
 		/// result in feature matrix
 		/// return pointer to feature_matrix, i.e. f->get_feature_matrix();
-		virtual DREAL* apply_to_feature_matrix(CFeatures* f);
+		virtual float64_t* apply_to_feature_matrix(CFeatures* f);
 
 		/// apply preproc on single feature vector
 		/// result in feature matrix
-		virtual DREAL* apply_to_feature_vector(DREAL* f, int32_t &len);
+		virtual float64_t* apply_to_feature_vector(float64_t* f, int32_t &len);
 
 	protected:
 		/** idx */
 		int32_t* idx;
 		/** mean */
-		DREAL* mean;
+		float64_t* mean;
 		/** std */
-		DREAL* std;
+		float64_t* std;
 		/** num idx */
 		int32_t num_idx;
 		/** divide by std */

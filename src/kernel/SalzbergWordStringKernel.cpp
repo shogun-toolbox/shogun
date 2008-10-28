@@ -69,8 +69,8 @@ bool CSalzbergWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 	delete[] ld_mean_lhs;
 	ld_mean_lhs=NULL;
 
-	sqrtdiag_lhs=new DREAL[l->get_num_vectors()];
-	ld_mean_lhs=new DREAL[l->get_num_vectors()];
+	sqrtdiag_lhs=new float64_t[l->get_num_vectors()];
+	ld_mean_lhs=new float64_t[l->get_num_vectors()];
 
 	for (i=0; i<l->get_num_vectors(); i++)
 		sqrtdiag_lhs[i]=1;
@@ -82,15 +82,15 @@ bool CSalzbergWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 	}
 	else
 	{
-		sqrtdiag_rhs=new DREAL[r->get_num_vectors()];
+		sqrtdiag_rhs=new float64_t[r->get_num_vectors()];
 		for (i=0; i<r->get_num_vectors(); i++)
 			sqrtdiag_rhs[i]=1;
 
-		ld_mean_rhs=new DREAL[r->get_num_vectors()];
+		ld_mean_rhs=new float64_t[r->get_num_vectors()];
 	}
 
-	DREAL* l_ld_mean_lhs=ld_mean_lhs;
-	DREAL* l_ld_mean_rhs=ld_mean_rhs;
+	float64_t* l_ld_mean_lhs=ld_mean_lhs;
+	float64_t* l_ld_mean_rhs=ld_mean_rhs;
 
 	//from our knowledge first normalize variance to 1 and then norm=1 does the job
 	if (!initialized)
@@ -114,9 +114,9 @@ bool CSalzbergWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 
 		delete[] variance;
 		delete[] mean;
-		mean=new DREAL[num_params];
+		mean=new float64_t[num_params];
 		ASSERT(mean);
-		variance=new DREAL[num_params];
+		variance=new float64_t[num_params];
 		ASSERT(variance);
 
 		for (i=0; i<num_params; i++)
@@ -135,9 +135,9 @@ bool CSalzbergWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 			for (int32_t j=0; j<len; j++)
 			{
 				int32_t idx=compute_index(j, vec[j]);
-				DREAL theta_p = 1/estimate->log_derivative_pos_obsolete(vec[j], j) ;
-				DREAL theta_n = 1/estimate->log_derivative_neg_obsolete(vec[j], j) ;
-				DREAL value   = (theta_p/(pos_prior*theta_p+neg_prior*theta_n)) ;
+				float64_t theta_p = 1/estimate->log_derivative_pos_obsolete(vec[j], j) ;
+				float64_t theta_n = 1/estimate->log_derivative_neg_obsolete(vec[j], j) ;
+				float64_t value   = (theta_p/(pos_prior*theta_p+neg_prior*theta_n)) ;
 
 				mean[idx]   += value/num_vectors ;
 			}
@@ -158,9 +158,9 @@ bool CSalzbergWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 						variance[idx]+=mean[idx]*mean[idx]/num_vectors;
 					else
 					{
-						DREAL theta_p = 1/estimate->log_derivative_pos_obsolete(vec[j], j) ;
-						DREAL theta_n = 1/estimate->log_derivative_neg_obsolete(vec[j], j) ;
-						DREAL value = (theta_p/(pos_prior*theta_p+neg_prior*theta_n)) ;
+						float64_t theta_p = 1/estimate->log_derivative_pos_obsolete(vec[j], j) ;
+						float64_t theta_n = 1/estimate->log_derivative_neg_obsolete(vec[j], j) ;
+						float64_t value = (theta_p/(pos_prior*theta_p+neg_prior*theta_n)) ;
 
 						variance[idx] += CMath::sq(value-mean[idx])/num_vectors;
 					}
@@ -188,13 +188,13 @@ bool CSalzbergWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 	{
 		int32_t alen ;
 		uint16_t* avec=l->get_feature_vector(i, alen);
-		DREAL  result=0 ;
+		float64_t  result=0 ;
 		for (int32_t j=0; j<alen; j++)
 		{
 			int32_t a_idx = compute_index(j, avec[j]) ;
-			DREAL theta_p = 1/estimate->log_derivative_pos_obsolete(avec[j], j) ;
-			DREAL theta_n = 1/estimate->log_derivative_neg_obsolete(avec[j], j) ;
-			DREAL value = (theta_p/(pos_prior*theta_p+neg_prior*theta_n)) ;
+			float64_t theta_p = 1/estimate->log_derivative_pos_obsolete(avec[j], j) ;
+			float64_t theta_n = 1/estimate->log_derivative_neg_obsolete(avec[j], j) ;
+			float64_t value = (theta_p/(pos_prior*theta_p+neg_prior*theta_n)) ;
 
 			if (variance[a_idx]!=0)
 				result-=value*mean[a_idx]/variance[a_idx];
@@ -210,13 +210,15 @@ bool CSalzbergWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 		{
 			int32_t alen ;
 			uint16_t* avec=r->get_feature_vector(i, alen);
-			DREAL  result=0 ;
+			float64_t  result=0 ;
 			for (int32_t j=0; j<alen; j++)
 			{
 				int32_t a_idx = compute_index(j, avec[j]) ;
-				DREAL theta_p = 1/estimate->log_derivative_pos_obsolete(avec[j], j) ;
-				DREAL theta_n = 1/estimate->log_derivative_neg_obsolete(avec[j], j) ;
-				DREAL value = (theta_p/(pos_prior*theta_p+neg_prior*theta_n)) ;
+				float64_t theta_p=1/estimate->log_derivative_pos_obsolete(
+					avec[j], j) ;
+				float64_t theta_n=1/estimate->log_derivative_neg_obsolete(
+					avec[j], j) ;
+				float64_t value=(theta_p/(pos_prior*theta_p+neg_prior*theta_n));
 
 				result -= value*mean[a_idx]/variance[a_idx] ;
 			}
@@ -307,7 +309,7 @@ bool CSalzbergWordStringKernel::save_init(FILE* dest)
 
 
 
-DREAL CSalzbergWordStringKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t CSalzbergWordStringKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	int32_t alen, blen;
 	uint16_t* avec=((CStringFeatures<uint16_t>*) lhs)->get_feature_vector(idx_a, alen);
@@ -315,7 +317,7 @@ DREAL CSalzbergWordStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	// can only deal with strings of same length
 	ASSERT(alen==blen);
 
-	DREAL result = sum_m2_s2 ; // does not contain 0-th element
+	float64_t result = sum_m2_s2 ; // does not contain 0-th element
 
 	for (int32_t i=0; i<alen; i++)
 	{
@@ -323,9 +325,9 @@ DREAL CSalzbergWordStringKernel::compute(int32_t idx_a, int32_t idx_b)
 		{
 			int32_t a_idx = compute_index(i, avec[i]) ;
 
-			DREAL theta_p = 1/estimate->log_derivative_pos_obsolete(avec[i], i) ;
-			DREAL theta_n = 1/estimate->log_derivative_neg_obsolete(avec[i], i) ;
-			DREAL value = (theta_p/(pos_prior*theta_p+neg_prior*theta_n)) ;
+			float64_t theta_p = 1/estimate->log_derivative_pos_obsolete(avec[i], i) ;
+			float64_t theta_n = 1/estimate->log_derivative_neg_obsolete(avec[i], i) ;
+			float64_t value = (theta_p/(pos_prior*theta_p+neg_prior*theta_n)) ;
 
 			result   += value*value/variance[a_idx] ;
 		}
@@ -353,10 +355,10 @@ void CSalzbergWordStringKernel::set_prior_probs_from_labels(CLabels* labels)
 	}
 
 	SG_INFO("priors: pos=%1.3f (%i)  neg=%1.3f (%i)\n",
-		(DREAL) num_pos/(num_pos+num_neg), num_pos,
-		(DREAL) num_neg/(num_pos+num_neg), num_neg);
+		(float64_t) num_pos/(num_pos+num_neg), num_pos,
+		(float64_t) num_neg/(num_pos+num_neg), num_neg);
 
 	set_prior_probs(
-		(DREAL)num_pos/(num_pos+num_neg),
-		(DREAL)num_neg/(num_pos+num_neg));
+		(float64_t)num_pos/(num_pos+num_neg),
+		(float64_t)num_neg/(num_pos+num_neg));
 }

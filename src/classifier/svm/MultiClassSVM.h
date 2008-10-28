@@ -40,7 +40,8 @@ class CMultiClassSVM : public CSVM
 		 * @param k kernel
 		 * @param lab labels
 		 */
-		CMultiClassSVM(EMultiClassSVM type, DREAL C, CKernel* k, CLabels* lab);
+		CMultiClassSVM(
+			EMultiClassSVM type, float64_t C, CKernel* k, CLabels* lab);
 		virtual ~CMultiClassSVM();
 
 		/** create multiclass SVM
@@ -95,7 +96,7 @@ class CMultiClassSVM : public CSVM
 		 * @param num number of example to classify
 		 * @return resulting classification
 		 */
-		virtual DREAL classify_example(int32_t num);
+		virtual float64_t classify_example(int32_t num);
 
 		/** classify one vs rest
 		 *
@@ -109,7 +110,7 @@ class CMultiClassSVM : public CSVM
 		 * @param num number of example of classify
 		 * @return resulting classification
 		 */
-		DREAL classify_example_one_vs_rest(int32_t num);
+		float64_t classify_example_one_vs_rest(int32_t num);
 
 		/** classify one vs one
 		 *
@@ -123,7 +124,7 @@ class CMultiClassSVM : public CSVM
 		 * @param num number of example of classify
 		 * @return resulting classification
 		 */
-		DREAL classify_example_one_vs_one(int32_t num);
+		float64_t classify_example_one_vs_one(int32_t num);
 
 		/** load a Multiclass SVM from file
 		 * @param svm_file the file handle

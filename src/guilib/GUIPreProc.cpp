@@ -64,7 +64,7 @@ CPreProc* CGUIPreProc::create_prunevarsubmean(bool divide_by_std)
 	return preproc;
 }
 
-CPreProc* CGUIPreProc::create_pcacut(bool do_whitening, DREAL threshold)
+CPreProc* CGUIPreProc::create_pcacut(bool do_whitening, float64_t threshold)
 {
 #ifdef HAVE_LAPACK
 	CPreProc* preproc=new CPCACut(do_whitening, threshold);
@@ -398,7 +398,7 @@ bool CGUIPreProc::preproc_all_features(CFeatures* f, bool force)
 			switch (f->get_feature_type())
 			{
 				case F_DREAL:
-					return ((CSparseFeatures<DREAL>*) f)->apply_preproc(force);
+					return ((CSparseFeatures<float64_t>*) f)->apply_preproc(force);
 				default:
 					io.not_implemented();
 			};

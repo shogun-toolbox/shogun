@@ -41,14 +41,16 @@ char file_buffer[FBUFSIZE];
 /// directory name buffer
 char directory_name[FBUFSIZE];
 
-CIO::CIO() : target(stdout), last_progress_time(0), progress_start_time(0),
+CIO::CIO()
+: target(stdout), last_progress_time(0), progress_start_time(0),
 	last_progress(1), show_progress(false), loglevel(M_WARN)
 {
 }
 
-CIO::CIO(const CIO& orig) : target(orig.get_target()), last_progress_time(0),
-	progress_start_time(0), last_progress(1), show_progress(orig.get_show_progress()),
-	loglevel(orig.get_loglevel())
+CIO::CIO(const CIO& orig)
+: target(orig.get_target()), last_progress_time(0),
+	progress_start_time(0), last_progress(1),
+	show_progress(orig.get_show_progress()), loglevel(orig.get_loglevel())
 {
 }
 
@@ -158,7 +160,9 @@ void CIO::buffered_message(EMessageType prio, const char *fmt, ... ) const
 	va_end(list);
 }
 
-void CIO::progress(DREAL current_val, DREAL min_val, DREAL max_val, int32_t decimals, const char* prefix)
+void CIO::progress(
+	float64_t current_val, float64_t min_val, float64_t max_val,
+	int32_t decimals, const char* prefix)
 {
 	if (!show_progress)
 		return;
@@ -166,7 +170,7 @@ void CIO::progress(DREAL current_val, DREAL min_val, DREAL max_val, int32_t deci
 	int64_t runtime = CTime::get_runtime();
 
 	char str[1000];
-	DREAL v=-1, estimate=0, total_estimate=0 ;
+	float64_t v=-1, estimate=0, total_estimate=0 ;
 
 	if (max_val-min_val>0.0)
 		v=100*(current_val-min_val+1)/(max_val-min_val+1);
@@ -208,7 +212,9 @@ void CIO::progress(DREAL current_val, DREAL min_val, DREAL max_val, int32_t deci
     fflush(target);
 }
 
-void CIO::absolute_progress(DREAL current_val, DREAL val, DREAL min_val, DREAL max_val, int32_t decimals, const char* prefix)
+void CIO::absolute_progress(
+	float64_t current_val, float64_t val, float64_t min_val, float64_t max_val,
+	int32_t decimals, const char* prefix)
 {
 	if (!show_progress)
 		return;
@@ -216,7 +222,7 @@ void CIO::absolute_progress(DREAL current_val, DREAL val, DREAL min_val, DREAL m
 	int64_t runtime = CTime::get_runtime();
 
 	char str[1000];
-	DREAL v=-1, estimate=0, total_estimate=0 ;
+	float64_t v=-1, estimate=0, total_estimate=0 ;
 
 	if (max_val-min_val>0)
 		v=100*(val-min_val+1)/(max_val-min_val+1);

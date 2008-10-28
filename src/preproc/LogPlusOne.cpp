@@ -15,7 +15,7 @@
 #include "lib/Mathematics.h"
 
 CLogPlusOne::CLogPlusOne()
-: CSimplePreProc<DREAL>("LogPlusOne", "LG+1")
+: CSimplePreProc<float64_t>("LogPlusOne", "LG+1")
 {
 }
 
@@ -53,16 +53,16 @@ bool CLogPlusOne::save(FILE* f)
 /// apply preproc on feature matrix
 /// result in feature matrix
 /// return pointer to feature_matrix, i.e. f->get_feature_matrix();
-DREAL* CLogPlusOne::apply_to_feature_matrix(CFeatures* f)
+float64_t* CLogPlusOne::apply_to_feature_matrix(CFeatures* f)
 {
 	int32_t i,j;
 	int32_t num_vec;
 	int32_t num_feat;
-	DREAL* matrix=((CRealFeatures*) f)->get_feature_matrix(num_feat, num_vec);
+	float64_t* matrix=((CRealFeatures*) f)->get_feature_matrix(num_feat, num_vec);
 
 	for (i=0; i<num_vec; i++)
 	{
-		DREAL* vec=&matrix[i*num_feat];
+		float64_t* vec=&matrix[i*num_feat];
 
 		for (j=0; j<num_feat; j++)
 			vec[j]=log(vec[j]+1);
@@ -72,9 +72,9 @@ DREAL* CLogPlusOne::apply_to_feature_matrix(CFeatures* f)
 
 /// apply preproc on single feature vector
 /// result in feature matrix
-DREAL* CLogPlusOne::apply_to_feature_vector(DREAL* f, int32_t& len)
+float64_t* CLogPlusOne::apply_to_feature_vector(float64_t* f, int32_t& len)
 {
-	DREAL* vec=new DREAL[len];
+	float64_t* vec=new float64_t[len];
 	int32_t i=0;
 
 	for (i=0; i<len; i++)

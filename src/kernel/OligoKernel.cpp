@@ -21,7 +21,7 @@
 
 using namespace std;
 
-COligoKernel::COligoKernel(int32_t cache_sz, int32_t kmer_len, DREAL w)
+COligoKernel::COligoKernel(int32_t cache_sz, int32_t kmer_len, float64_t w)
 : CStringKernel<char>(cache_sz), k(kmer_len), width(w)
 {
 	set_normalizer(new CSqrtDiagKernelNormalizer());
@@ -258,7 +258,7 @@ double COligoKernel::kernelOligo(
 	return kernel;
 }		
 
-DREAL COligoKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t COligoKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	int32_t alen, blen;
 	char* avec=((CStringFeatures<char>*) lhs)->get_feature_vector(idx_a, alen);
@@ -267,7 +267,7 @@ DREAL COligoKernel::compute(int32_t idx_a, int32_t idx_b)
 	vector< pair<int32_t, double> > benc;
 	encodeOligo(string(avec, alen), k, "ACGT", aenc);
 	encodeOligo(string(bvec, alen), k, "ACGT", benc);
-	DREAL result=kernelOligo(aenc, benc, width);
+	float64_t result=kernelOligo(aenc, benc, width);
 	return result;
 }
 

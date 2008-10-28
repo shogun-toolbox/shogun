@@ -48,10 +48,11 @@ class CQPBSVMLib: public CSGObject
 		 * @param m size of vector f
 		 * @param UB UB
 		 */
-		CQPBSVMLib(DREAL* H, int32_t n, DREAL* f, int32_t m, DREAL UB=1.0);
+		CQPBSVMLib(
+			float64_t* H, int32_t n, float64_t* f, int32_t m, float64_t UB=1.0);
 
 		/// result has to be allocated & zeroed
-		int32_t solve_qp(DREAL* result, int32_t len);
+		int32_t solve_qp(float64_t* result, int32_t len);
 
 		/** set solver
 		 *
@@ -70,57 +71,71 @@ class CQPBSVMLib: public CSGObject
 		 * @param col col to get
 		 * @return col indexed by col
 		 */
-		inline DREAL* get_col(int32_t col)
+		inline float64_t* get_col(int32_t col)
 		{
 			return &m_H[m_dim*col];
 		}
 
 		/** Usage: exitflag = qpbsvm_sca(UB, dim, tmax,
 		tolabs, tolrel, tolKKT, x, Nabla, &t, &History, verb ) */
-		int32_t qpbsvm_sca(DREAL *x, DREAL *Nabla, int32_t *ptr_t, DREAL **ptr_History, int32_t verb);
+		int32_t qpbsvm_sca(
+			float64_t *x, float64_t *Nabla, int32_t *ptr_t,
+			float64_t **ptr_History, int32_t verb);
 		/** Usage: exitflag = qpbsvm_scas(UB, dim, tmax,
 		tolabs, tolrel, tolKKT, x, Nabla, &t, &History, verb ) */
-		int32_t qpbsvm_scas(DREAL *x, DREAL *Nabla, int32_t *ptr_t, DREAL **ptr_History, int32_t verb);
+		int32_t qpbsvm_scas(
+			float64_t *x, float64_t *Nabla, int32_t *ptr_t,
+			float64_t **ptr_History, int32_t verb);
 		/** Usage: exitflag = qpbsvm_scamv(UB, dim, tmax,
 		tolabs, tolrel, tolKKT, x, Nabla, &t, &History, verb ) */
-		int32_t qpbsvm_scamv(DREAL *x, DREAL *Nabla, int32_t *ptr_t, DREAL **ptr_History, int32_t verb);
+		int32_t qpbsvm_scamv(
+			float64_t *x, float64_t *Nabla, int32_t *ptr_t,
+			float64_t **ptr_History, int32_t verb);
 		/** Usage: exitflag = qpbsvm_prloqo(UB, dim, tmax,
 		tolabs, tolrel, tolKKT, x, Nabla, &t, &History, verb ) */
-		int32_t qpbsvm_prloqo(DREAL *x, DREAL *Nabla, int32_t *ptr_t, DREAL **ptr_History, int32_t verb);
+		int32_t qpbsvm_prloqo(
+			float64_t *x, float64_t *Nabla, int32_t *ptr_t,
+			float64_t **ptr_History, int32_t verb);
 		/** Usage: exitflag = qpbsvm_gauss_seidel(UB, dim, tmax,
 		tolabs, tolrel, tolKKT, x, Nabla, &t, &History, verb ) */
-		int32_t qpbsvm_gauss_seidel(DREAL *x, DREAL *Nabla, int32_t *ptr_t, DREAL **ptr_History, int32_t verb);
+		int32_t qpbsvm_gauss_seidel(
+			float64_t *x, float64_t *Nabla, int32_t *ptr_t,
+			float64_t **ptr_History, int32_t verb);
 		/** Usage: exitflag = qpbsvm_gradient_descent(UB, dim, tmax,
 		tolabs, tolrel, tolKKT, x, Nabla, &t, &History, verb ) */
-		int32_t qpbsvm_gradient_descent(DREAL *x, DREAL *Nabla, int32_t *ptr_t, DREAL **ptr_History, int32_t verb);
+		int32_t qpbsvm_gradient_descent(
+			float64_t *x, float64_t *Nabla, int32_t *ptr_t,
+			float64_t **ptr_History, int32_t verb);
 #ifdef USE_CPLEX
 		/** Usage: exitflag = qpbsvm_cplex(UB, dim, tmax,
 		tolabs, tolrel, tolKKT, x, Nabla, &t, &History, verb ) */
-		int32_t qpbsvm_cplex(DREAL *x, DREAL *Nabla, int32_t *ptr_t, DREAL **ptr_History, int32_t verb);
+		int32_t qpbsvm_cplex(
+			float64_t *x, float64_t *Nabla, int32_t *ptr_t,
+			float64_t **ptr_History, int32_t verb);
 #endif
 
 	protected:
 		/** matrix H */
-		DREAL* m_H;
+		float64_t* m_H;
 		/** diagonal of H */
-		DREAL* m_diag_H;
+		float64_t* m_diag_H;
 		/** dim */
 		int32_t m_dim;
 
 		/** vector f */
-		DREAL* m_f;
+		float64_t* m_f;
 
 		/** UB */
-		DREAL m_UB;
+		float64_t m_UB;
 
 		/** tmax */
 		int32_t m_tmax;
 		/** tolabs */
-		DREAL m_tolabs;
+		float64_t m_tolabs;
 		/** tolrel */
-		DREAL m_tolrel;
+		float64_t m_tolrel;
 		/** tolKKT */
-		DREAL m_tolKKT;
+		float64_t m_tolKKT;
 		/** solver */
 		E_QPB_SOLVER m_solver;
 };

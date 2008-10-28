@@ -73,7 +73,7 @@ TYPEMAP_IN1(is_char_matrix, charMatrix, char_matrix_value, char, char, "Char")
 TYPEMAP_IN1(is_int32_type, int32NDArray, uint8_array_value, int32_t, int32_t, "Integer")
 TYPEMAP_IN1(is_int16_type, int16NDArray, uint8_array_value, int16_t, int16_t, "Short")
 TYPEMAP_IN1(is_single_type, Matrix, matrix_value, float32_t, float32_t, "Single Precision")
-TYPEMAP_IN1(is_double_type, Matrix, matrix_value, DREAL, DREAL, "Double Precision")
+TYPEMAP_IN1(is_double_type, Matrix, matrix_value, float64_t, float64_t, "Double Precision")
 TYPEMAP_IN1(is_uint16_type, uint16NDArray, uint16_array_value, uint16_t, uint16_t, "Word")
 #undef TYPEMAP_IN1
 
@@ -110,7 +110,7 @@ TYPEMAP_IN2(is_char_matrix, charMatrix, char_matrix_value, char, char, "Char")
 TYPEMAP_IN2(is_int32_type, int32NDArray, uint8_array_value, int32_t, int32_t, "Integer")
 TYPEMAP_IN2(is_int16_type, int16NDArray, uint8_array_value, int16_t, int16_t, "Short")
 TYPEMAP_IN2(is_single_type, Matrix, matrix_value, float32_t, float32_t, "Single Precision")
-TYPEMAP_IN2(is_double_type, Matrix, matrix_value, DREAL, DREAL, "Double Precision")
+TYPEMAP_IN2(is_double_type, Matrix, matrix_value, float64_t, float64_t, "Double Precision")
 TYPEMAP_IN2(is_uint16_type, uint16NDArray, uint16_array_value, uint16_t, uint16_t, "Word")
 #undef TYPEMAP_IN2
 
@@ -125,14 +125,14 @@ TYPEMAP_IN2(is_uint16_type, uint16NDArray, uint16_array_value, uint16_t, uint16_
  * numpy array.  This can be applied to an existing function using
  * the %apply directive:
  *
- *     %apply (DREAL** ARGOUT_ARRAY1, {(DREAL** series, int32_t* len)}
- *     %apply (DREAL** ARGOUT_ARRAY2, {(DREAL** matrix, int32_t* d1, int32_t* d2)}
+ *     %apply (float64_t** ARGOUT_ARRAY1, {(float64_t** series, int32_t* len)}
+ *     %apply (float64_t** ARGOUT_ARRAY2, {(float64_t** matrix, int32_t* d1, int32_t* d2)}
  *
  * with
  *
- *     void sum(DREAL* series, int32_t* len);
- *     void sum(DREAL** series, int32_t* len);
- *     void sum(DREAL** matrix, int32_t* d1, int32_t* d2);
+ *     void sum(float64_t* series, int32_t* len);
+ *     void sum(float64_t** series, int32_t* len);
+ *     void sum(float64_t** matrix, int32_t* d1, int32_t* d2);
  *
  * where sum mallocs the array and assigns dimensions and the pointer
  *
@@ -165,7 +165,7 @@ TYPEMAP_ARGOUT1(charMatrix, char, char, "Char")
 TYPEMAP_ARGOUT1(int32NDArray, int32_t, int32_t, "Integer")
 TYPEMAP_ARGOUT1(int16NDArray, int16_t, int16_t, "Short")
 TYPEMAP_ARGOUT1(Matrix, float32_t, float32_t, "Single Precision")
-TYPEMAP_ARGOUT1(Matrix, DREAL, DREAL, "Double Precision")
+TYPEMAP_ARGOUT1(Matrix, float64_t, float64_t, "Double Precision")
 TYPEMAP_ARGOUT1(uint16NDArray, uint16_t, uint16_t, "Word")
 
 #undef TYPEMAP_ARGOUT1
@@ -203,7 +203,7 @@ TYPEMAP_ARGOUT2(charMatrix, char, char, "Char")
 TYPEMAP_ARGOUT2(int32NDArray, int32_t, int32_t, "Integer")
 TYPEMAP_ARGOUT2(int16NDArray, int16_t, int16_t, "Short")
 TYPEMAP_ARGOUT2(Matrix, float32_t, float32_t, "Single Precision")
-TYPEMAP_ARGOUT2(Matrix, DREAL, DREAL, "Double Precision")
+TYPEMAP_ARGOUT2(Matrix, float64_t, float64_t, "Double Precision")
 TYPEMAP_ARGOUT2(uint16NDArray, uint16_t, uint16_t, "Word")
 #undef TYPEMAP_ARGOUT2
 

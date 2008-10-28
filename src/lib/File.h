@@ -82,7 +82,7 @@ public:
 	 * @param num number of data elements
 	 * @return loaded data
 	 */
-	DREAL*  load_real_data(DREAL* target, int64_t& num);
+	float64_t*  load_real_data(float64_t* target, int64_t& num);
 
 	/** load shortreal data
 	 *
@@ -138,7 +138,7 @@ public:
 	 * @param num number of data elements
 	 * @return whether operation was successful
 	 */
-	bool save_real_data(DREAL* src, int64_t num);
+	bool save_real_data(float64_t* src, int64_t num);
 
 	/** save shortreal data
 	 *
@@ -202,7 +202,8 @@ public:
 	 * @param num_vec number of vectors in matrix
 	 * @return if reading was successful
 	 */
-	bool read_real_valued_sparse(TSparse<DREAL>*& matrix, int32_t& num_feat, int32_t& num_vec);
+	bool read_real_valued_sparse(
+		TSparse<float64_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
 
 	/** write sparse real valued features in svm light format
 	 *
@@ -211,7 +212,8 @@ public:
 	 * @param num_vec number of vectros in matrix
 	 * @return if writing was successful
 	 */
-	bool write_real_valued_sparse(const TSparse<DREAL>* matrix, int32_t num_feat, int32_t num_vec);
+	bool write_real_valued_sparse(
+		const TSparse<float64_t>* matrix, int32_t num_feat, int32_t num_vec);
 
 	/** read dense real valued features, simple ascii format
 	 * e.g. 1.0 1.1 0.2 
@@ -224,7 +226,8 @@ public:
 	 * @param num_vec number of vectors in matrix
 	 * @return if reading was successful
 	 */
-	bool read_real_valued_dense(DREAL*& matrix, int32_t& num_feat, int32_t& num_vec);
+	bool read_real_valued_dense(
+		float64_t*& matrix, int32_t& num_feat, int32_t& num_vec);
 
 	/** write dense real valued features, simple ascii format
 	 *
@@ -233,7 +236,8 @@ public:
 	 * @param num_vec number of vectros in matrix
 	 * @return if writing was successful
 	 */
-	bool write_real_valued_dense(const DREAL* matrix, int32_t num_feat, int32_t num_vec);
+	bool write_real_valued_dense(
+		const float64_t* matrix, int32_t num_feat, int32_t num_vec);
 
 	/** read char string features, simple ascii format
 	 * e.g. foo bar

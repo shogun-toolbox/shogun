@@ -106,7 +106,7 @@ class CKMeans : public CDistanceMachine
 		 *
 		 * @return maximum number of iterations
 		 */
-		inline DREAL get_max_iter()
+		inline float64_t get_max_iter()
 		{
 			return max_iter;
 		}
@@ -116,7 +116,7 @@ class CKMeans : public CDistanceMachine
 		 * @param radi current radi are stored in here
 		 * @param num number of radi is stored in here
 		 */
-		inline void get_radi(DREAL*& radi, int32_t& num)
+		inline void get_radi(float64_t*& radi, int32_t& num)
 		{
 			radi=R;
 			num=k;
@@ -128,7 +128,7 @@ class CKMeans : public CDistanceMachine
 		 * @param dim dimensions are stored in here
 		 * @param num number of centers is stored in here
 		 */
-		inline void get_centers(DREAL*& centers, int32_t& dim, int32_t& num)
+		inline void get_centers(float64_t*& centers, int32_t& dim, int32_t& num)
 		{
 			centers=mus;
 			dim=dimensions;
@@ -140,10 +140,10 @@ class CKMeans : public CDistanceMachine
 		 * @param radii current radiuses are stored in here
 		 * @param num number of radiuses is stored in here
 		 */
-		inline void get_radiuses(DREAL** radii, int32_t* num)
+		inline void get_radiuses(float64_t** radii, int32_t* num)
 		{
 			size_t sz=sizeof(*R)*k;
-			*radii=(DREAL*) malloc(sz);
+			*radii=(float64_t*) malloc(sz);
 			ASSERT(*radii);
 
 			memcpy(*radii, R, sz);
@@ -156,10 +156,11 @@ class CKMeans : public CDistanceMachine
 		 * @param dim dimensions are stored in here
 		 * @param num number of centers is stored in here
 		 */
-		inline void get_cluster_centers(DREAL** centers, int32_t* dim, int32_t* num)
+		inline void get_cluster_centers(
+			float64_t** centers, int32_t* dim, int32_t* num)
 		{
 			size_t sz=sizeof(*mus)*dimensions*k;
-			*centers=(DREAL*) malloc(sz);
+			*centers=(float64_t*) malloc(sz);
 			ASSERT(*centers);
 
 			memcpy(*centers, mus, sz);
@@ -210,14 +211,14 @@ class CKMeans : public CDistanceMachine
 		int32_t dimensions;
 
 		/// radi of the clusters (size k)
-		DREAL* R;
+		float64_t* R;
 		
 		/// centers of the clusters (size dimensions x k)
-		DREAL* mus;
+		float64_t* mus;
 
 	private:
 		/// weighting over the train data
-		DREAL* Weights;
+		float64_t* Weights;
 };
 #endif
 

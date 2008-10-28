@@ -16,12 +16,12 @@
 #include "features/RealFeatures.h"
 
 CTanimotoDistance::CTanimotoDistance()
-: CSimpleDistance<DREAL>()
+: CSimpleDistance<float64_t>()
 {
 }
 
 CTanimotoDistance::CTanimotoDistance(CRealFeatures* l, CRealFeatures* r)
-: CSimpleDistance<DREAL>()
+: CSimpleDistance<float64_t>()
 {
 	init(l, r);
 }
@@ -33,7 +33,7 @@ CTanimotoDistance::~CTanimotoDistance()
 
 bool CTanimotoDistance::init(CFeatures* l, CFeatures* r)
 {
-	bool result=CSimpleDistance<DREAL>::init(l,r);
+	bool result=CSimpleDistance<float64_t>::init(l,r);
 
 	return result;
 }
@@ -52,7 +52,7 @@ bool CTanimotoDistance::save_init(FILE* dest)
 	return false;
 }
 
-DREAL CTanimotoDistance::compute(int32_t idx_a, int32_t idx_b)
+float64_t CTanimotoDistance::compute(int32_t idx_a, int32_t idx_b)
 {
 	int32_t alen, blen;
 	bool afree, bfree;
@@ -62,10 +62,10 @@ DREAL CTanimotoDistance::compute(int32_t idx_a, int32_t idx_b)
 
 	ASSERT(alen==blen);
 
-	DREAL s=0;
-	DREAL d=0;
-	DREAL nx=0;
-	DREAL ny=0;
+	float64_t s=0;
+	float64_t d=0;
+	float64_t nx=0;
+	float64_t ny=0;
 	{
 		for (int32_t i=0; i<alen; i++)
 		{

@@ -72,7 +72,7 @@ CLabels* CKNN::classify(CLabels* output)
 	ASSERT(k<=num_lab);
 
 	//distances to train data and working buffer of train_labels
-	DREAL* dists=new DREAL[num_train_labels];
+	float64_t* dists=new float64_t[num_train_labels];
 	int32_t* train_lab=new int32_t[num_train_labels];
 
 	///histogram of classes and returned output

@@ -28,7 +28,7 @@ class CGUIClassifier : public CSGObject
 		/** create new classifier */
 		bool new_classifier(char* name, int32_t d=6, int32_t from_d=40);
 		/** set maximum train time */
-		bool set_max_train_time(DREAL max);
+		bool set_max_train_time(float64_t max);
 		/** test classifier */
 		bool test(char* filename_out=NULL, char* filename_roc=NULL);
 		/** load classifier from file */
@@ -40,42 +40,48 @@ class CGUIClassifier : public CSGObject
 		CLabels* classify_linear(CLabels* output=NULL);
 		CLabels* classify_sparse_linear(CLabels* output=NULL);
 		CLabels* classify_byte_linear(CLabels* output=NULL);
-		bool classify_example(int32_t idx, DREAL& result);
+		bool classify_example(int32_t idx, float64_t& result);
 		inline CClassifier* get_classifier() { return classifier; }
 
-		bool get_trained_classifier(DREAL* &weights, int32_t& rows,
-				int32_t& cols, DREAL*& bias, int32_t& brows, int32_t& bcols);
-		bool get_svm(DREAL* &weights, int32_t& rows, int32_t& cols,
-				DREAL*& bias, int32_t& brows, int32_t& bcols);
-		bool get_linear(DREAL* &weights, int32_t& rows, int32_t& cols,
-				DREAL*& bias, int32_t& brows, int32_t& bcols);
-		bool get_sparse_linear(DREAL* &weights, int32_t& rows, int32_t& cols,
-				DREAL*& bias, int32_t& brows, int32_t& bcols);
-		bool get_clustering(DREAL* &weights, int32_t& rows, int32_t& cols,
-				DREAL*& bias, int32_t& brows, int32_t& bcols);
+		bool get_trained_classifier(
+			float64_t* &weights, int32_t& rows, int32_t& cols,
+			float64_t*& bias, int32_t& brows, int32_t& bcols);
+		bool get_svm(
+			float64_t* &weights, int32_t& rows, int32_t& cols,
+			float64_t*& bias, int32_t& brows, int32_t& bcols);
+		bool get_linear(
+			float64_t* &weights, int32_t& rows, int32_t& cols,
+			float64_t*& bias, int32_t& brows, int32_t& bcols);
+		bool get_sparse_linear(
+			float64_t* &weights, int32_t& rows, int32_t& cols,
+			float64_t*& bias, int32_t& brows, int32_t& bcols);
+		bool get_clustering(
+			float64_t* &weights, int32_t& rows, int32_t& cols,
+			float64_t*& bias, int32_t& brows, int32_t& bcols);
 
 		/// perceptron learnrate & maxiter
-		bool set_perceptron_parameters(DREAL lernrate, int32_t maxiter);
+		bool set_perceptron_parameters(float64_t lernrate, int32_t maxiter);
 
 		/// SVM functions
-		bool set_svm_C(DREAL C1, DREAL C2);
+		bool set_svm_C(float64_t C1, float64_t C2);
 		bool set_svm_bufsize(int32_t bufsize);
 		bool set_svm_qpsize(int32_t qpsize);
 		bool set_svm_max_qpsize(int32_t max_qpsize);
 		bool set_svm_mkl_enabled(bool enabled);
 		bool set_svm_shrinking_enabled(bool enabled);
-		bool set_svm_one_class_nu(DREAL nu);
+		bool set_svm_one_class_nu(float64_t nu);
 		bool set_svm_batch_computation_enabled(bool enabled);
 		bool set_do_auc_maximization(bool do_auc);
 		bool set_svm_linadd_enabled(bool enabled);
 		bool set_svm_bias_enabled(bool enabled);
-		bool set_svm_epsilon(DREAL epsilon);
-		bool set_svr_tube_epsilon(DREAL tube_epsilon);
-		bool set_svm_mkl_parameters(DREAL weight_epsilon, DREAL C_mkl, int32_t mkl_norm);
+		bool set_svm_epsilon(float64_t epsilon);
+		bool set_svr_tube_epsilon(float64_t tube_epsilon);
+		bool set_svm_mkl_parameters(
+			float64_t weight_epsilon, float64_t C_mkl, int32_t mkl_norm);
 		bool set_svm_precompute_enabled(int32_t precompute);
 
 		/** set KRR's tau */
-		bool set_krr_tau(DREAL tau=1);
+		bool set_krr_tau(float64_t tau=1);
 
 		/** train SVM */
 		bool train_svm();
@@ -86,7 +92,7 @@ class CGUIClassifier : public CSGObject
 		/** train linear classifier
 		 * @param gamma gamma parameter of LDA
 		 */
-		bool train_linear(DREAL gamma=0);
+		bool train_linear(float64_t gamma=0);
 		/** train sparse linear classifier */
 		bool train_sparse_linear();
 		/** train WD OCAS */

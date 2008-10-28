@@ -15,11 +15,11 @@
 #include "lib/common.h"
 
 /** class RealDistance */
-class CRealDistance : public CSimpleDistance<DREAL>
+class CRealDistance : public CSimpleDistance<float64_t>
 {
 	public:
 		/** default constructor */
-		CRealDistance() : CSimpleDistance<DREAL>() {}
+		CRealDistance() : CSimpleDistance<float64_t>() {}
 
 		/** init distance
 		 *
@@ -29,7 +29,7 @@ class CRealDistance : public CSimpleDistance<DREAL>
 		 */
 		virtual bool init(CFeatures* l, CFeatures* r)
 		{
-			CSimpleDistance<DREAL>::init(l,r);
+			CSimpleDistance<float64_t>::init(l,r);
 
 			ASSERT(l->get_feature_type()==F_DREAL);
 			ASSERT(r->get_feature_type()==F_DREAL);

@@ -440,7 +440,7 @@ class CSGInterface : public CSGObject
 		virtual IFType get_argument_type()=0;
 
 		virtual int32_t get_int()=0;
-		virtual DREAL get_real()=0;
+		virtual float64_t get_real()=0;
 		virtual bool get_bool()=0;
 
 		virtual char* get_string(int32_t& len)=0;
@@ -450,32 +450,47 @@ class CSGInterface : public CSGObject
 		virtual void get_byte_vector(uint8_t*& vector, int32_t& len)=0;
 		virtual void get_char_vector(char*& vector, int32_t& len)=0;
 		virtual void get_int_vector(int32_t*& vector, int32_t& len)=0;
-		virtual void get_real_vector(DREAL*& vector, int32_t& len)=0;
+		virtual void get_real_vector(float64_t*& vector, int32_t& len)=0;
 		virtual void get_shortreal_vector(float32_t*& vector, int32_t& len)=0;
 		virtual void get_short_vector(int16_t*& vector, int32_t& len)=0;
 		virtual void get_word_vector(uint16_t*& vector, int32_t& len)=0;
 
 
-		virtual void get_byte_matrix(uint8_t*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
-		virtual void get_char_matrix(char*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
-		virtual void get_int_matrix(int32_t*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
-		virtual void get_shortreal_matrix(float32_t*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
-		virtual void get_real_matrix(DREAL*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
-		virtual void get_short_matrix(int16_t*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
-		virtual void get_word_matrix(uint16_t*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
+		virtual void get_byte_matrix(
+			uint8_t*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
+		virtual void get_char_matrix(
+			char*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
+		virtual void get_int_matrix(
+			int32_t*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
+		virtual void get_shortreal_matrix(
+			float32_t*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
+		virtual void get_real_matrix(
+			float64_t*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
+		virtual void get_short_matrix(
+			int16_t*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
+		virtual void get_word_matrix(
+			uint16_t*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
 
-		virtual void get_byte_ndarray(uint8_t*& array, int32_t*& dims, int32_t& num_dims)=0;
-		virtual void get_char_ndarray(char*& array, int32_t*& dims, int32_t& num_dims)=0;
-		virtual void get_int_ndarray(int32_t*& array, int32_t*& dims, int32_t& num_dims)=0;
-		virtual void get_shortreal_ndarray(float32_t*& array, int32_t*& dims, int32_t& num_dims)=0;
-		virtual void get_real_ndarray(DREAL*& array, int32_t*& dims, int32_t& num_dims)=0;
-		virtual void get_short_ndarray(int16_t*& array, int32_t*& dims, int32_t& num_dims)=0;
-		virtual void get_word_ndarray(uint16_t*& array, int32_t*& dims, int32_t& num_dims)=0;
+		virtual void get_byte_ndarray(
+			uint8_t*& array, int32_t*& dims, int32_t& num_dims)=0;
+		virtual void get_char_ndarray(
+			char*& array, int32_t*& dims, int32_t& num_dims)=0;
+		virtual void get_int_ndarray(
+			int32_t*& array, int32_t*& dims, int32_t& num_dims)=0;
+		virtual void get_shortreal_ndarray(
+			float32_t*& array, int32_t*& dims, int32_t& num_dims)=0;
+		virtual void get_real_ndarray(
+			float64_t*& array, int32_t*& dims, int32_t& num_dims)=0;
+		virtual void get_short_ndarray(
+			int16_t*& array, int32_t*& dims, int32_t& num_dims)=0;
+		virtual void get_word_ndarray(
+			uint16_t*& array, int32_t*& dims, int32_t& num_dims)=0;
 
 
-		virtual void get_real_sparsematrix(TSparse<DREAL>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
+		virtual void get_real_sparsematrix(
+			TSparse<float64_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
 
-		/*  future versions might support types other than DREAL
+		/*  future versions might support types other than float64_t
 		
 		virtual void get_byte_sparsematrix(TSparse<uint8_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
 		virtual void get_char_sparsematrix(TSparse<char>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
@@ -484,40 +499,60 @@ class CSGInterface : public CSGObject
 		virtual void get_short_sparsematrix(TSparse<int16_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
 		virtual void get_word_sparsematrix(TSparse<uint16_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0; */
 
-		virtual void get_byte_string_list(T_STRING<uint8_t>*& strings, int32_t& num_str, int32_t& max_string_len)=0;
-		virtual void get_char_string_list(T_STRING<char>*& strings, int32_t& num_str, int32_t& max_string_len)=0;
-		virtual void get_int_string_list(T_STRING<int32_t>*& strings, int32_t& num_str, int32_t& max_string_len)=0;
-		virtual void get_short_string_list(T_STRING<int16_t>*& strings, int32_t& num_str, int32_t& max_string_len)=0;
-		virtual void get_word_string_list(T_STRING<uint16_t>*& strings, int32_t& num_str, int32_t& max_string_len)=0;
+		virtual void get_byte_string_list(
+			T_STRING<uint8_t>*& strings, int32_t& num_str,
+			int32_t& max_string_len)=0;
+		virtual void get_char_string_list(
+			T_STRING<char>*& strings, int32_t& num_str,
+			int32_t& max_string_len)=0;
+		virtual void get_int_string_list(
+			T_STRING<int32_t>*& strings, int32_t& num_str,
+			int32_t& max_string_len)=0;
+		virtual void get_short_string_list(
+			T_STRING<int16_t>*& strings, int32_t& num_str,
+			int32_t& max_string_len)=0;
+		virtual void get_word_string_list(
+			T_STRING<uint16_t>*& strings, int32_t& num_str,
+			int32_t& max_string_len)=0;
 
 
 		/** set functions - to pass data from shogun to the target interface */
 		virtual bool create_return_values(int32_t num_val)=0;
 
 		virtual void set_int(int32_t scalar)=0;
-		virtual void set_real(DREAL scalar)=0;
+		virtual void set_real(float64_t scalar)=0;
 		virtual void set_bool(bool scalar)=0;
 
 		virtual void set_byte_vector(const uint8_t* vector, int32_t len)=0;
 		virtual void set_char_vector(const char* vector, int32_t len)=0;
 		virtual void set_int_vector(const int32_t* vector, int32_t len)=0;
-		virtual void set_shortreal_vector(const float32_t* vector, int32_t len)=0;
-		virtual void set_real_vector(const DREAL* vector, int32_t len)=0;
+		virtual void set_shortreal_vector(
+			const float32_t* vector, int32_t len)=0;
+		virtual void set_real_vector(const float64_t* vector, int32_t len)=0;
 		virtual void set_short_vector(const int16_t* vector, int32_t len)=0;
 		virtual void set_word_vector(const uint16_t* vector, int32_t len)=0;
 
 
-		virtual void set_byte_matrix(const uint8_t* matrix, int32_t num_feat, int32_t num_vec)=0;
-		virtual void set_char_matrix(const char* matrix, int32_t num_feat, int32_t num_vec)=0;
-		virtual void set_int_matrix(const int32_t* matrix, int32_t num_feat, int32_t num_vec)=0;
-		virtual void set_shortreal_matrix(const float32_t* matrix, int32_t num_feat, int32_t num_vec)=0;
-		virtual void set_real_matrix(const DREAL* matrix, int32_t num_feat, int32_t num_vec)=0;
-		virtual void set_short_matrix(const int16_t* matrix, int32_t num_feat, int32_t num_vec)=0;
-		virtual void set_word_matrix(const uint16_t* matrix, int32_t num_feat, int32_t num_vec)=0;
+		virtual void set_byte_matrix(
+			const uint8_t* matrix, int32_t num_feat, int32_t num_vec)=0;
+		virtual void set_char_matrix(
+			const char* matrix, int32_t num_feat, int32_t num_vec)=0;
+		virtual void set_int_matrix(
+			const int32_t* matrix, int32_t num_feat, int32_t num_vec)=0;
+		virtual void set_shortreal_matrix(
+			const float32_t* matrix, int32_t num_feat, int32_t num_vec)=0;
+		virtual void set_real_matrix(
+			const float64_t* matrix, int32_t num_feat, int32_t num_vec)=0;
+		virtual void set_short_matrix(
+			const int16_t* matrix, int32_t num_feat, int32_t num_vec)=0;
+		virtual void set_word_matrix(
+			const uint16_t* matrix, int32_t num_feat, int32_t num_vec)=0;
 
-		virtual void set_real_sparsematrix(const TSparse<DREAL>* matrix, int32_t num_feat, int32_t num_vec, int64_t nnz)=0;
+		virtual void set_real_sparsematrix(
+			const TSparse<float64_t>* matrix, int32_t num_feat,
+			int32_t num_vec, int64_t nnz)=0;
 
-		/*  future versions might support types other than DREAL
+		/*  future versions might support types other than float64_t
 		
 		virtual void set_byte_sparsematrix(const TSparse<uint8_t>* matrix, int32_t num_feat, int32_t num_vec)=0;
 		virtual void set_char_sparsematrix(const TSparse<char>* matrix, int32_t num_feat, int32_t num_vec)=0;
@@ -527,11 +562,16 @@ class CSGInterface : public CSGObject
 		virtual void set_word_sparsematrix(const TSparse<uint16_t>* matrix, int32_t num_feat, int32_t num_vec)=0; */
 
 
-		virtual void set_byte_string_list(const T_STRING<uint8_t>* strings, int32_t num_str)=0;
-		virtual void set_char_string_list(const T_STRING<char>* strings, int32_t num_str)=0;
-		virtual void set_int_string_list(const T_STRING<int32_t>* strings, int32_t num_str)=0;
-		virtual void set_short_string_list(const T_STRING<int16_t>* strings, int32_t num_str)=0;
-		virtual void set_word_string_list(const T_STRING<uint16_t>* strings, int32_t num_str)=0;
+		virtual void set_byte_string_list(
+			const T_STRING<uint8_t>* strings, int32_t num_str)=0;
+		virtual void set_char_string_list(
+			const T_STRING<char>* strings, int32_t num_str)=0;
+		virtual void set_int_string_list(
+			const T_STRING<int32_t>* strings, int32_t num_str)=0;
+		virtual void set_short_string_list(
+			const T_STRING<int16_t>* strings, int32_t num_str)=0;
+		virtual void set_word_string_list(
+			const T_STRING<uint16_t>* strings, int32_t num_str)=0;
 
 		/// general interface handler
 		bool handle();
@@ -595,10 +635,12 @@ class CSGInterface : public CSGObject
 		/** legacy-related stuff - anybody got a better idea? */
 		char* get_str_from_str_or_direct(int32_t& len);
 		int32_t get_int_from_int_or_str();
-		DREAL get_real_from_real_or_str();
+		float64_t get_real_from_real_or_str();
 		bool get_bool_from_bool_or_str();
-		void get_int_vector_from_int_vector_or_str(int32_t*& vector, int32_t& len);
-		void get_real_vector_from_real_vector_or_str(DREAL*& vector, int32_t& len);
+		void get_int_vector_from_int_vector_or_str(
+			int32_t*& vector, int32_t& len);
+		void get_real_vector_from_real_vector_or_str(
+			float64_t*& vector, int32_t& len);
 		int32_t get_vector_len_from_str(int32_t expected_len=0);
 		char* get_str_from_str(int32_t& len);
 		int32_t get_num_args_in_str();

@@ -55,8 +55,8 @@ extern "C" {
 struct S_THREAD_PARAM_REACTIVATE_LINADD
 {
 	CKernel* kernel;
-	DREAL* lin;
-	DREAL* last_lin;
+	float64_t* lin;
+	float64_t* last_lin;
 	int32_t* active;
 	int32_t* docs;
 	int32_t start;
@@ -66,10 +66,10 @@ struct S_THREAD_PARAM_REACTIVATE_LINADD
 struct S_THREAD_PARAM_REACTIVATE_VANILLA
 {
 	CKernel* kernel;
-	DREAL* lin;
-	DREAL* aicache;
-	DREAL* a;
-	DREAL* a_old;
+	float64_t* lin;
+	float64_t* aicache;
+	float64_t* a;
+	float64_t* a_old;
 	int32_t* changed2dnum;
 	int32_t* inactive2dnum;
 	int32_t* label;
@@ -79,8 +79,8 @@ struct S_THREAD_PARAM_REACTIVATE_VANILLA
 
 struct S_THREAD_PARAM 
 {
-	DREAL * lin ;
-	DREAL* W;
+	float64_t * lin ;
+	float64_t* W;
 	int32_t start, end;
 	int32_t * active2dnum ;
 	int32_t * docs ;
@@ -89,7 +89,7 @@ struct S_THREAD_PARAM
 
 struct S_THREAD_PARAM_KERNEL 
 {
-	DREAL *Kval ;
+	float64_t *Kval ;
 	int32_t *KI, *KJ ;
 	int32_t start, end;
     CKernel * kernel;
@@ -138,7 +138,7 @@ CSVMLight::CSVMLight()
 	set_kernel(NULL);
 }
 
-CSVMLight::CSVMLight(DREAL C, CKernel* k, CLabels* lab)
+CSVMLight::CSVMLight(float64_t C, CKernel* k, CLabels* lab)
 : CSVM(C, k, lab)
 {
 	init();
@@ -384,7 +384,7 @@ bool CSVMLight::train()
 	ASSERT(kernel->get_num_vec_lhs()==labels->get_num_labels());
 
 	// MKL stuff
-	buffer_num = new DREAL[kernel->get_num_vec_rhs()];
+	buffer_num = new float64_t[kernel->get_num_vec_rhs()];
 	delete[] buffer_numcols ;
 	buffer_numcols = NULL ;
 
@@ -499,7 +499,7 @@ void CSVMLight::svm_learn()
 
 	if (kernel->has_property(KP_KERNCOMBINATION))
 	{
-		W = new DREAL[totdoc*kernel->get_num_subkernels()];
+		W = new float64_t[totdoc*kernel->get_num_subkernels()];
 		for (i=0; i<totdoc*kernel->get_num_subkernels(); i++)
 			W[i]=0;
 	}
@@ -591,7 +591,7 @@ void CSVMLight::svm_learn()
 		SG_INFO( "Computing starting state...");
     }
 
-	DREAL* alpha = new DREAL[totdoc];
+	float64_t* alpha = new float64_t[totdoc];
 
 	for (i=0; i<totdoc; i++)
 		alpha[i]=0;
@@ -601,7 +601,7 @@ void CSVMLight::svm_learn()
 	
     int32_t* index = new int32_t[totdoc];
     int32_t* index2dnum = new int32_t[totdoc+11];
-    DREAL* aicache = new DREAL[totdoc];
+    float64_t* aicache = new float64_t[totdoc];
     for (i=0;i<totdoc;i++) {    /* create full index and clip alphas */
       index[i]=1;
       alpha[i]=fabs(alpha[i]);
@@ -759,7 +759,7 @@ int32_t CSVMLight::optimize_to_convergence(int32_t* docs, int32_t* label, int32_
   bool reactivated=false;
 
   double *selcrit;  /* buffer for sorting */        
-  DREAL *aicache;  /* buffer to keep one row of hessian */
+  float64_t *aicache;  /* buffer to keep one row of hessian */
   QP qp;            /* buffer for one quadratic program */
 
   epsilon_crit_org=learn_parm->epsilon_crit; /* save org */
@@ -777,7 +777,7 @@ int32_t CSVMLight::optimize_to_convergence(int32_t* docs, int32_t* label, int32_
   selcrit =new double[totdoc];
   selexam =new int32_t[totdoc];
   a_old =new double[totdoc];
-  aicache =new DREAL[totdoc];
+  aicache =new float64_t[totdoc];
   working2dnum =new int32_t[totdoc+11];
   active2dnum =new int32_t[totdoc+11];
   qp.opt_ce =new double[learn_parm->svm_maxqpsize];
@@ -1188,7 +1188,7 @@ void CSVMLight::optimize_svm(int32_t* docs, int32_t* label,
 		  int32_t *chosen, int32_t *active2dnum,
 		  int32_t totdoc, int32_t *working2dnum, int32_t varnum, 
 		  double *a, double *lin, double *c,
-		  DREAL *aicache, QP *qp, 
+		  float64_t *aicache, QP *qp, 
 		  double *epsilon_crit_target)
      /* Do optimization on the working set. */
 {
@@ -1227,7 +1227,7 @@ void CSVMLight::compute_matrices_for_optimization_parallel(int32_t* docs, int32_
 														   int32_t *chosen, int32_t *active2dnum, 
 														   int32_t *key, double *a, double *lin, double *c, 
 														   int32_t varnum, int32_t totdoc,
-														   DREAL *aicache, QP *qp)
+														   float64_t *aicache, QP *qp)
 {
 	if (parallel.get_num_threads()<=1)
 	{
@@ -1263,7 +1263,7 @@ void CSVMLight::compute_matrices_for_optimization_parallel(int32_t* docs, int32_
 		int32_t *KI=new int32_t[varnum*varnum] ;
 		int32_t *KJ=new int32_t[varnum*varnum] ;
 		int32_t Knum=0 ;
-		DREAL *Kval = new DREAL[varnum*(varnum+1)/2] ;
+		float64_t *Kval = new float64_t[varnum*(varnum+1)/2] ;
 		for (i=0;i<varnum;i++) {
 			ki=key[i];
 			KI[Knum]=docs[ki] ;
@@ -1357,7 +1357,7 @@ void CSVMLight::compute_matrices_for_optimization(int32_t* docs, int32_t* label,
 												  int32_t *chosen, int32_t *active2dnum, 
 												  int32_t *key, double *a, double *lin, double *c, 
 												  int32_t varnum, int32_t totdoc,
-												  DREAL *aicache, QP *qp)
+												  float64_t *aicache, QP *qp)
 {
   register int32_t ki,kj,i,j;
   register double kernel_temp;
@@ -1610,16 +1610,16 @@ void CSVMLight::update_linear_component_mkl(int32_t* docs, int32_t* label,
 											int32_t *active2dnum, double *a, 
 											double *a_old, int32_t *working2dnum, 
 											int32_t totdoc,
-											double *lin, DREAL *aicache)
+											double *lin, float64_t *aicache)
 {
 	int32_t num = kernel->get_num_vec_rhs();
 	int32_t num_weights = -1;
 	int32_t num_kernels = kernel->get_num_subkernels() ;
-	const DREAL* w   = kernel->get_subkernel_weights(num_weights);
+	const float64_t* w   = kernel->get_subkernel_weights(num_weights);
 
 	ASSERT(num_weights==num_kernels);
-	DREAL* sumw=new DREAL[num_kernels];
-	DREAL suma=-17;
+	float64_t* sumw=new float64_t[num_kernels];
+	float64_t suma=-17;
 
 	if ((kernel->get_kernel_type()==K_COMBINED) && 
 			 (!((CCombinedKernel*)kernel)->get_append_subkernel_weights()))// for combined kernel
@@ -1645,8 +1645,8 @@ void CSVMLight::update_linear_component_mkl(int32_t* docs, int32_t* label,
 	}
 	else // hope the kernel is fast ...
 	{
-		DREAL* w_backup = new DREAL[num_kernels] ;
-		DREAL* w1 = new DREAL[num_kernels] ;
+		float64_t* w_backup = new float64_t[num_kernels] ;
+		float64_t* w1 = new float64_t[num_kernels] ;
 		
 		// backup and set to zero
 		for (int32_t i=0; i<num_kernels; i++)
@@ -1677,9 +1677,9 @@ void CSVMLight::update_linear_component_mkl(int32_t* docs, int32_t* label,
 		delete[] w1 ;
 	}
 	
-	DREAL mkl_objective=0;
+	float64_t mkl_objective=0;
 #ifdef HAVE_LAPACK
-	DREAL *alphay  = buffer_num ;
+	float64_t *alphay  = buffer_num ;
 	suma = 0 ;
 	
 	for (int32_t i=0; i<num; i++)
@@ -1904,13 +1904,13 @@ void CSVMLight::update_linear_component_mkl(int32_t* docs, int32_t* label,
 			num_rows = cur_numrows ;
 			
 			if (!buffer_numcols)
-				buffer_numcols  = new DREAL[cur_numcols] ;
+				buffer_numcols  = new float64_t[cur_numcols] ;
 					
-			DREAL *x     = buffer_numcols ;
-			DREAL *slack = new DREAL[cur_numrows] ;
-			DREAL *pi    = NULL;
+			float64_t *x     = buffer_numcols ;
+			float64_t *slack = new float64_t[cur_numrows] ;
+			float64_t *pi    = NULL;
 			if (use_mkl==1)
-				pi=new DREAL[cur_numrows];
+				pi=new float64_t[cur_numrows];
 			
 			if ( x     == NULL ||
 				 slack == NULL ||
@@ -1919,7 +1919,7 @@ void CSVMLight::update_linear_component_mkl(int32_t* docs, int32_t* label,
             SG_ERROR( "Could not allocate memory for solution.\n");
 			}
 			int32_t solstat = 0 ;
-			DREAL objval = 0 ;
+			float64_t objval = 0 ;
 
 			if (mkl_norm==1)
 				status = CPXsolution (env, lp, &solstat, &objval, x, pi, slack, NULL);
@@ -1933,7 +1933,7 @@ void CSVMLight::update_linear_component_mkl(int32_t* docs, int32_t* label,
 			if (solution_ok)
 			{
 				/* 1 norm mkl */
-				DREAL max_slack = -CMath::INFTY ;
+				float64_t max_slack = -CMath::INFTY ;
 				int32_t max_idx = -1 ;
 				int32_t start_row = 1 ;
 				if (C_mkl!=0.0)
@@ -2026,21 +2026,21 @@ void CSVMLight::update_linear_component_mkl_linadd(int32_t* docs, int32_t* label
 												   int32_t *active2dnum, double *a, 
 												   double *a_old, int32_t *working2dnum, 
 												   int32_t totdoc,
-												   double *lin, DREAL *aicache)
+												   double *lin, float64_t *aicache)
 {
 	// kernel with LP_LINADD property is assumed to have 
 	// compute_by_subkernel functions
 	int32_t num = kernel->get_num_vec_rhs();
 	int32_t num_weights = -1;
 	int32_t num_kernels = kernel->get_num_subkernels() ;
-	const DREAL* w   = kernel->get_subkernel_weights(num_weights);
+	const float64_t* w   = kernel->get_subkernel_weights(num_weights);
 	
 	ASSERT(num_weights==num_kernels);
-	DREAL* sumw = new DREAL[num_kernels];
-	DREAL suma=-17;
+	float64_t* sumw = new float64_t[num_kernels];
+	float64_t suma=-17;
 	{
-		DREAL* w_backup = new DREAL[num_kernels] ;
-		DREAL* w1 = new DREAL[num_kernels] ;
+		float64_t* w_backup = new float64_t[num_kernels] ;
+		float64_t* w1 = new float64_t[num_kernels] ;
 
 		// backup and set to one
 		for (int32_t i=0; i<num_kernels; i++)
@@ -2096,9 +2096,9 @@ void CSVMLight::update_linear_component_mkl_linadd(int32_t* docs, int32_t* label
 		delete[] w1;
 	}
 
-	DREAL mkl_objective=0;
+	float64_t mkl_objective=0;
 #ifdef HAVE_LAPACK
-	DREAL *alphay  = buffer_num;
+	float64_t *alphay  = buffer_num;
 	
 	for (int32_t i=0; i<num; i++)
 	{
@@ -2323,13 +2323,13 @@ void CSVMLight::update_linear_component_mkl_linadd(int32_t* docs, int32_t* label
 			num_rows = cur_numrows ;
 			
 			if (!buffer_numcols)
-				buffer_numcols  = new DREAL[cur_numcols] ;
+				buffer_numcols  = new float64_t[cur_numcols] ;
 					
-			DREAL *x     = buffer_numcols ;
-			DREAL *slack = new DREAL[cur_numrows] ;
-			DREAL *pi    = new DREAL[cur_numrows] ;
+			float64_t *x     = buffer_numcols ;
+			float64_t *slack = new float64_t[cur_numrows] ;
+			float64_t *pi    = new float64_t[cur_numrows] ;
 			if (use_mkl==1)
-				pi=new DREAL[cur_numrows];
+				pi=new float64_t[cur_numrows];
 			
 			if ( x     == NULL ||
 				 slack == NULL ||
@@ -2338,7 +2338,7 @@ void CSVMLight::update_linear_component_mkl_linadd(int32_t* docs, int32_t* label
             SG_ERROR( "Could not allocate memory for solution.\n");
 			}
 			int32_t solstat = 0 ;
-			DREAL objval = 0 ;
+			float64_t objval = 0 ;
 
 			if (mkl_norm==1)
 				status = CPXsolution (env, lp, &solstat, &objval, x, pi, slack, NULL);
@@ -2352,7 +2352,7 @@ void CSVMLight::update_linear_component_mkl_linadd(int32_t* docs, int32_t* label
 			if (solution_ok)
 			{
 				/* 1 norm mkl */
-				DREAL max_slack = -CMath::INFTY ;
+				float64_t max_slack = -CMath::INFTY ;
 				int32_t max_idx = -1 ;
 				int32_t start_row = 1 ;
 				if (C_mkl!=0.0)
@@ -2444,7 +2444,7 @@ void CSVMLight::update_linear_component(int32_t* docs, int32_t* label,
 										int32_t *active2dnum, double *a, 
 										double *a_old, int32_t *working2dnum, 
 										int32_t totdoc,
-										double *lin, DREAL *aicache, double* c)
+										double *lin, float64_t *aicache, double* c)
      /* keep track of the linear component */
      /* lin of the gradient etc. by updating */
      /* based on the change of the variables */
@@ -2852,8 +2852,8 @@ void* CSVMLight::reactivate_inactive_examples_linadd_helper(void* p)
 	S_THREAD_PARAM_REACTIVATE_LINADD* params = (S_THREAD_PARAM_REACTIVATE_LINADD*) p;
 
 	CKernel* k = params->kernel;
-	DREAL* lin = params->lin;
-	DREAL* last_lin = params->last_lin;
+	float64_t* lin = params->lin;
+	float64_t* last_lin = params->last_lin;
 	int32_t* active = params->active;
 	int32_t* docs = params->docs;
 	int32_t start = params->start;
@@ -2884,10 +2884,10 @@ void* CSVMLight::reactivate_inactive_examples_vanilla_helper(void* p)
 	ASSERT(params->label);
 
 	CKernel* k = params->kernel;
-	DREAL* lin = params->lin;
-	DREAL* aicache = params->aicache;
-	DREAL* a= params->a;
-	DREAL* a_old = params->a_old;
+	float64_t* lin = params->lin;
+	float64_t* aicache = params->aicache;
+	float64_t* a= params->a;
+	float64_t* a_old = params->a_old;
 	int32_t* changed2dnum = params->changed2dnum;
 	int32_t* inactive2dnum = params->inactive2dnum;
 	int32_t* label = params->label;
@@ -2916,7 +2916,7 @@ void CSVMLight::reactivate_inactive_examples(int32_t* label,
 				  int32_t iteration, 
 				  int32_t *inconsistent, 
 				  int32_t* docs, 
-				  DREAL *aicache, 
+				  float64_t *aicache, 
 				  double *maxdiff)
      /* Make all variables active again which had been removed by
         shrinking. */
@@ -2998,7 +2998,7 @@ void CSVMLight::reactivate_inactive_examples(int32_t* label,
 	  }
 	  else 
 	  {
-		  DREAL *alphas = new DREAL[totdoc] ;
+		  float64_t *alphas = new float64_t[totdoc] ;
 		  int32_t *idx = new int32_t[totdoc] ;
 		  int32_t num_suppvec=0 ;
 
@@ -3030,8 +3030,8 @@ void CSVMLight::reactivate_inactive_examples(int32_t* label,
 
 			  if (num_inactive>0)
 			  {
-				  DREAL* dest = new DREAL[num_inactive];
-				  memset(dest, 0, sizeof(DREAL)*num_inactive);
+				  float64_t* dest = new float64_t[num_inactive];
+				  memset(dest, 0, sizeof(float64_t)*num_inactive);
 
 				  kernel->compute_batch(num_inactive, inactive_idx, dest, num_suppvec, idx, alphas);
 
@@ -3105,10 +3105,10 @@ void CSVMLight::reactivate_inactive_examples(int32_t* label,
 				  int32_t step= num_changed/num_threads;
 
 				  // alloc num_threads many tmp buffers
-				  DREAL* tmp_lin=new DREAL[totdoc*num_threads];
-				  memset(tmp_lin, 0, sizeof(DREAL)*((size_t) totdoc)*num_threads);
-				  DREAL* tmp_aicache=new DREAL[totdoc*num_threads];
-				  memset(tmp_aicache, 0, sizeof(DREAL)*((size_t) totdoc)*num_threads);
+				  float64_t* tmp_lin=new float64_t[totdoc*num_threads];
+				  memset(tmp_lin, 0, sizeof(float64_t)*((size_t) totdoc)*num_threads);
+				  float64_t* tmp_aicache=new float64_t[totdoc*num_threads];
+				  memset(tmp_aicache, 0, sizeof(float64_t)*((size_t) totdoc)*num_threads);
 
 				  int32_t thr;
 				  for (thr=0; thr<num_threads-1; thr++)

@@ -35,7 +35,7 @@ class CAvgDiagKernelNormalizer : public CKernelNormalizer
 		 * @param c scale parameter, if <= 0 scaling will be computed from the
 		 * avg of the kernel diagonal elements
 		 */
-		CAvgDiagKernelNormalizer(DREAL c=0.0)
+		CAvgDiagKernelNormalizer(float64_t c=0.0)
 		{
 			scale=c;
 		}
@@ -77,7 +77,8 @@ class CAvgDiagKernelNormalizer : public CKernelNormalizer
 		 * @param idx_lhs index of left hand side vector
 		 * @param idx_rhs index of right hand side vector
 		 */
-		inline virtual DREAL normalize(DREAL value, int32_t idx_lhs, int32_t idx_rhs)
+		inline virtual float64_t normalize(
+			float64_t value, int32_t idx_lhs, int32_t idx_rhs)
 		{
 			return value/scale;
 		}
@@ -86,7 +87,7 @@ class CAvgDiagKernelNormalizer : public CKernelNormalizer
 		 * @param value value of a component of the left hand side feature vector
 		 * @param idx_lhs index of left hand side vector
 		 */
-		inline virtual DREAL normalize_lhs(DREAL value, int32_t idx_lhs)
+		inline virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs)
 		{
 			return value/sqrt(scale);
 		}
@@ -95,14 +96,14 @@ class CAvgDiagKernelNormalizer : public CKernelNormalizer
 		 * @param value value of a component of the right hand side feature vector
 		 * @param idx_rhs index of right hand side vector
 		 */
-		inline virtual DREAL normalize_rhs(DREAL value, int32_t idx_rhs)
+		inline virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs)
 		{
 			return value/sqrt(scale);
 		}
 
 	protected:
 		/// the constant scaling factor (avg of diagonal or user given const)
-		DREAL scale;
+		float64_t scale;
 };
 
 #endif

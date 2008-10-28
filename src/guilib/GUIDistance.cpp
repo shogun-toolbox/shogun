@@ -280,7 +280,7 @@ CDistance* CGUIDistance::create_generic(EDistanceType type)
 	return dist;
 }
 
-CDistance* CGUIDistance::create_minkowski(DREAL k)
+CDistance* CGUIDistance::create_minkowski(float64_t k)
 {
 	CDistance* dist=new CMinkowskiMetric(k);
 	if (dist)

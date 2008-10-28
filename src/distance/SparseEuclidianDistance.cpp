@@ -15,13 +15,13 @@
 #include "features/SparseFeatures.h"
 
 CSparseEuclidianDistance::CSparseEuclidianDistance()
-: CSparseDistance<DREAL>(), sq_lhs(NULL), sq_rhs(NULL)
+: CSparseDistance<float64_t>(), sq_lhs(NULL), sq_rhs(NULL)
 {
 }
 
 CSparseEuclidianDistance::CSparseEuclidianDistance(
-	CSparseFeatures<DREAL>* l, CSparseFeatures<DREAL>* r)
-: CSparseDistance<DREAL>(), sq_lhs(NULL), sq_rhs(NULL)
+	CSparseFeatures<float64_t>* l, CSparseFeatures<float64_t>* r)
+: CSparseDistance<float64_t>(), sq_lhs(NULL), sq_rhs(NULL)
 {
 	init(l, r);
 }
@@ -33,19 +33,19 @@ CSparseEuclidianDistance::~CSparseEuclidianDistance()
 
 bool CSparseEuclidianDistance::init(CFeatures* l, CFeatures* r)
 {
-	CSparseDistance<DREAL>::init(l, r);
+	CSparseDistance<float64_t>::init(l, r);
 
 	cleanup();
 
-	sq_lhs=new DREAL[lhs->get_num_vectors()];
-	sq_lhs=((CSparseFeatures<DREAL>*) lhs)->compute_squared(sq_lhs);
+	sq_lhs=new float64_t[lhs->get_num_vectors()];
+	sq_lhs=((CSparseFeatures<float64_t>*) lhs)->compute_squared(sq_lhs);
 
 	if (lhs==rhs)
 		sq_rhs=sq_lhs;
 	else
 	{
-		sq_rhs=new DREAL[rhs->get_num_vectors()];
-		sq_rhs=((CSparseFeatures<DREAL>*) rhs)->compute_squared(sq_rhs);
+		sq_rhs=new float64_t[rhs->get_num_vectors()];
+		sq_rhs=((CSparseFeatures<float64_t>*) rhs)->compute_squared(sq_rhs);
 	}
 
 	return true;
@@ -71,9 +71,11 @@ bool CSparseEuclidianDistance::save_init(FILE* dest)
 	return false;
 }
 
-DREAL CSparseEuclidianDistance::compute(int32_t idx_a, int32_t idx_b)
+float64_t CSparseEuclidianDistance::compute(int32_t idx_a, int32_t idx_b)
 {
-	DREAL result=((CSparseFeatures<DREAL>*) lhs)->compute_squared_norm((CSparseFeatures<DREAL>*) lhs, sq_lhs, idx_a, (CSparseFeatures<DREAL>*) rhs, sq_rhs, idx_b);
+	float64_t result=((CSparseFeatures<float64_t>*) lhs)->compute_squared_norm(
+		(CSparseFeatures<float64_t>*) lhs, sq_lhs, idx_a,
+		(CSparseFeatures<float64_t>*) rhs, sq_rhs, idx_b);
 
 	return CMath::sqrt(result);
 }

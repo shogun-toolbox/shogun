@@ -15,7 +15,7 @@
 #include "features/RealFeatures.h"
 
 CNormOne::CNormOne()
-: CSimplePreProc<DREAL>("NormOne", "NRM1")
+: CSimplePreProc<float64_t>("NormOne", "NRM1")
 {
 }
 
@@ -52,16 +52,16 @@ bool CNormOne::save(FILE* f)
 /// apply preproc on feature matrix
 /// result in feature matrix
 /// return pointer to feature_matrix, i.e. f->get_feature_matrix();
-DREAL* CNormOne::apply_to_feature_matrix(CFeatures* f)
+float64_t* CNormOne::apply_to_feature_matrix(CFeatures* f)
 {
 	int32_t num_vec;
 	int32_t num_feat;
-	DREAL* matrix=((CRealFeatures*) f)->get_feature_matrix(num_feat, num_vec);
+	float64_t* matrix=((CRealFeatures*) f)->get_feature_matrix(num_feat, num_vec);
 
 	for (int32_t i=0; i<num_vec; i++)
 	{
-		DREAL* vec=&matrix[i*num_feat];
-		DREAL norm=CMath::sqrt(CMath::dot(vec, vec, num_feat));
+		float64_t* vec=&matrix[i*num_feat];
+		float64_t norm=CMath::sqrt(CMath::dot(vec, vec, num_feat));
 		CMath::scale_vector(1.0/norm, vec, num_feat);
 	}
 	return matrix;
@@ -69,10 +69,10 @@ DREAL* CNormOne::apply_to_feature_matrix(CFeatures* f)
 
 /// apply preproc on single feature vector
 /// result in feature matrix
-DREAL* CNormOne::apply_to_feature_vector(DREAL* f, int32_t& len)
+float64_t* CNormOne::apply_to_feature_vector(float64_t* f, int32_t& len)
 {
-	DREAL* vec=new DREAL[len];
-	DREAL norm=CMath::sqrt(CMath::dot(f, f, len));
+	float64_t* vec=new float64_t[len];
+	float64_t norm=CMath::sqrt(CMath::dot(f, f, len));
 
 	for (int32_t i=0; i<len; i++)
 		vec[i]=f[i]/norm;

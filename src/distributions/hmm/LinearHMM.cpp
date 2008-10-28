@@ -53,7 +53,8 @@ bool CLinearHMM::train()
 	{
 		int32_t len;
 
-		uint16_t* vector=((CStringFeatures<uint16_t>*) features)->get_feature_vector(vec, len);
+		uint16_t* vector=((CStringFeatures<uint16_t>*) features)->
+			get_feature_vector(vec, len);
 
 		//just count the symbols per position -> transition_probsogram
 		for (int32_t feat=0; feat<len ; feat++)
@@ -61,22 +62,30 @@ bool CLinearHMM::train()
 	}
 
 	//trade memory for speed
-	transition_probs=new DREAL[num_params];
-	log_transition_probs=new DREAL[num_params];
+	transition_probs=new float64_t[num_params];
+	log_transition_probs=new float64_t[num_params];
 
 	for (i=0;i<sequence_length;i++)
 	{
 		for (int32_t j=0; j<num_symbols; j++)
 		{
-			DREAL sum=0;
-			int32_t offs=i*num_symbols+((CStringFeatures<uint16_t> *) features)->get_masked_symbols((uint16_t)j,(uint8_t) 254);
-			int32_t original_num_symbols=(int32_t) ((CStringFeatures<uint16_t> *) features)->get_original_num_symbols();
+			float64_t sum=0;
+			int32_t offs=i*num_symbols+
+				((CStringFeatures<uint16_t> *) features)->
+					get_masked_symbols((uint16_t)j,(uint8_t) 254);
+			int32_t original_num_symbols=(int32_t)
+				((CStringFeatures<uint16_t> *) features)->
+					get_original_num_symbols();
 
 			for (int32_t k=0; k<original_num_symbols; k++)
 				sum+=int_transition_probs[offs+k];
 
-			transition_probs[i*num_symbols+j]=(int_transition_probs[i*num_symbols+j]+pseudo_count)/(sum+((CStringFeatures<uint16_t> *) features)->get_original_num_symbols()*pseudo_count);
-			log_transition_probs[i*num_symbols+j]=log(transition_probs[i*num_symbols+j]);
+			transition_probs[i*num_symbols+j]=
+				(int_transition_probs[i*num_symbols+j]+pseudo_count)/
+				(sum+((CStringFeatures<uint16_t> *) features)->
+					get_original_num_symbols()*pseudo_count);
+			log_transition_probs[i*num_symbols+j]=
+				log(transition_probs[i*num_symbols+j]);
 		}
 	}
 
@@ -84,7 +93,8 @@ bool CLinearHMM::train()
 	return true;
 }
 
-bool CLinearHMM::train(const int32_t* indizes, int32_t num_indizes, DREAL pseudo)
+bool CLinearHMM::train(
+	const int32_t* indizes, int32_t num_indizes, float64_t pseudo)
 {
 	delete[] transition_probs;
 	delete[] log_transition_probs;
@@ -99,8 +109,11 @@ bool CLinearHMM::train(const int32_t* indizes, int32_t num_indizes, DREAL pseudo
 	{
 		int32_t len;
 
-		ASSERT(indizes[vec]>=0 && indizes[vec]<((CStringFeatures<uint16_t>*) features)->get_num_vectors());
-		uint16_t* vector=((CStringFeatures<uint16_t>*) features)->get_feature_vector(indizes[vec], len);
+		ASSERT(indizes[vec]>=0 &&
+			indizes[vec]<((CStringFeatures<uint16_t>*) features)->
+				get_num_vectors());
+		uint16_t* vector=((CStringFeatures<uint16_t>*) features)->
+			get_feature_vector(indizes[vec], len);
 
 		//just count the symbols per position -> transition_probsogram
 		//
@@ -109,15 +122,17 @@ bool CLinearHMM::train(const int32_t* indizes, int32_t num_indizes, DREAL pseudo
 	}
 
 	//trade memory for speed
-	transition_probs=new DREAL[num_params];
-	log_transition_probs=new DREAL[num_params];
+	transition_probs=new float64_t[num_params];
+	log_transition_probs=new float64_t[num_params];
 
 	for (i=0;i<sequence_length;i++)
 	{
 		for (int32_t j=0; j<num_symbols; j++)
 		{
-			DREAL sum=0;
-			int32_t original_num_symbols= (int32_t) ((CStringFeatures<uint16_t> *) features)->get_original_num_symbols();
+			float64_t sum=0;
+			int32_t original_num_symbols=(int32_t)
+				((CStringFeatures<uint16_t> *) features)->
+					get_original_num_symbols();
 			for (int32_t k=0; k<original_num_symbols; k++)
 			{
 				sum+=int_transition_probs[i*num_symbols+
@@ -125,8 +140,12 @@ bool CLinearHMM::train(const int32_t* indizes, int32_t num_indizes, DREAL pseudo
 						get_masked_symbols((uint16_t)j,(uint8_t) 254)+k];
 			}
 
-			transition_probs[i*num_symbols+j]=(int_transition_probs[i*num_symbols+j]+pseudo)/(sum+((CStringFeatures<uint16_t>*) features)->get_original_num_symbols()*pseudo);
-			log_transition_probs[i*num_symbols+j]=log(transition_probs[i*num_symbols+j]);
+			transition_probs[i*num_symbols+j]=
+				(int_transition_probs[i*num_symbols+j]+pseudo)/
+				(sum+((CStringFeatures<uint16_t>*) features)->
+					get_original_num_symbols()*pseudo);
+			log_transition_probs[i*num_symbols+j]=
+				log(transition_probs[i*num_symbols+j]);
 		}
 	}
 
@@ -134,9 +153,9 @@ bool CLinearHMM::train(const int32_t* indizes, int32_t num_indizes, DREAL pseudo
 	return true;
 }
 
-DREAL CLinearHMM::get_log_likelihood_example(uint16_t* vector, int32_t len)
+float64_t CLinearHMM::get_log_likelihood_example(uint16_t* vector, int32_t len)
 {
-	DREAL result=log_transition_probs[vector[0]];
+	float64_t result=log_transition_probs[vector[0]];
 
 	for (int32_t i=1; i<len; i++)
 		result+=log_transition_probs[i*num_symbols+vector[i]];
@@ -144,11 +163,12 @@ DREAL CLinearHMM::get_log_likelihood_example(uint16_t* vector, int32_t len)
 	return result;
 }
 
-DREAL CLinearHMM::get_log_likelihood_example(int32_t num_example)
+float64_t CLinearHMM::get_log_likelihood_example(int32_t num_example)
 {
 	int32_t len;
-	uint16_t* vector=((CStringFeatures<uint16_t>*) features)->get_feature_vector(num_example, len);
-	DREAL result=log_transition_probs[vector[0]];
+	uint16_t* vector=((CStringFeatures<uint16_t>*) features)->
+		get_feature_vector(num_example, len);
+	float64_t result=log_transition_probs[vector[0]];
 
 	for (int32_t i=1; i<len; i++)
 		result+=log_transition_probs[i*num_symbols+vector[i]];
@@ -156,9 +176,9 @@ DREAL CLinearHMM::get_log_likelihood_example(int32_t num_example)
 	return result;
 }
 
-DREAL CLinearHMM::get_likelihood_example(uint16_t* vector, int32_t len)
+float64_t CLinearHMM::get_likelihood_example(uint16_t* vector, int32_t len)
 {
-	DREAL result=transition_probs[vector[0]];
+	float64_t result=transition_probs[vector[0]];
 
 	for (int32_t i=1; i<len; i++)
 		result*=transition_probs[i*num_symbols+vector[i]];
@@ -166,11 +186,12 @@ DREAL CLinearHMM::get_likelihood_example(uint16_t* vector, int32_t len)
 	return result;
 }
 
-DREAL CLinearHMM::get_log_derivative(int32_t num_param, int32_t num_example)
+float64_t CLinearHMM::get_log_derivative(int32_t num_param, int32_t num_example)
 {
 	int32_t len;
-	uint16_t* vector=((CStringFeatures<uint16_t>*) features)->get_feature_vector(num_example, len);
-	DREAL result=0;
+	uint16_t* vector=((CStringFeatures<uint16_t>*) features)->
+		get_feature_vector(num_example, len);
+	float64_t result=0;
 	int32_t position=num_param/num_symbols;
 	ASSERT(position>=0 && position<len);
 	uint16_t sym=(uint16_t) (num_param-position*num_symbols);
@@ -181,26 +202,26 @@ DREAL CLinearHMM::get_log_derivative(int32_t num_param, int32_t num_example)
 	return result;
 }
 
-void CLinearHMM::get_transition_probs(DREAL** dst, int32_t* num)
+void CLinearHMM::get_transition_probs(float64_t** dst, int32_t* num)
 {
 	*num=num_params;
 	size_t sz=sizeof(*transition_probs)*(*num);
-	*dst=(DREAL*) malloc(sz);
+	*dst=(float64_t*) malloc(sz);
 	ASSERT(dst);
 
 	memcpy(*dst, transition_probs, sz);
 }
 
-bool CLinearHMM::set_transition_probs(const DREAL* src, int32_t num)
+bool CLinearHMM::set_transition_probs(const float64_t* src, int32_t num)
 {
 	if (num!=-1)
 		ASSERT(num==num_params);
 
 	if (!log_transition_probs)
-		log_transition_probs=new DREAL[num_params];
+		log_transition_probs=new float64_t[num_params];
 
 	if (!transition_probs)
-		transition_probs=new DREAL[num_params];
+		transition_probs=new float64_t[num_params];
 
 	for (int32_t i=0; i<num_params; i++)
 	{
@@ -211,26 +232,26 @@ bool CLinearHMM::set_transition_probs(const DREAL* src, int32_t num)
 	return true;
 }
 
-void CLinearHMM::get_log_transition_probs(DREAL** dst, int32_t* num)
+void CLinearHMM::get_log_transition_probs(float64_t** dst, int32_t* num)
 {
 	*num=num_params;
 	size_t sz=sizeof(*log_transition_probs)*(*num);
-	*dst=(DREAL*) malloc(sz);
+	*dst=(float64_t*) malloc(sz);
 	ASSERT(dst);
 
 	memcpy(*dst, log_transition_probs, sz);
 }
 
-bool CLinearHMM::set_log_transition_probs(const DREAL* src, int32_t num)
+bool CLinearHMM::set_log_transition_probs(const float64_t* src, int32_t num)
 {
 	if (num!=-1)
 		ASSERT(num==num_params);
 
 	if (!log_transition_probs)
-		log_transition_probs=new DREAL[num_params];
+		log_transition_probs=new float64_t[num_params];
 
 	if (!transition_probs)
-		transition_probs=new DREAL[num_params];
+		transition_probs=new float64_t[num_params];
 
 	for (int32_t i=0; i< num_params; i++)
 	{

@@ -25,7 +25,7 @@
  *     k'({\bf x}, {\bf x'})=\frac{k({\bf x}, {\bf x'})}{\sqrt{k({\bf x}, {\bf x})k({\bf x'}, {\bf x'})}}
  * \f]
  */
-class CSparsePolyKernel: public CSparseKernel<DREAL>
+class CSparsePolyKernel: public CSparseKernel<float64_t>
 {
 	public:
 		/** constructor
@@ -37,7 +37,7 @@ class CSparsePolyKernel: public CSparseKernel<DREAL>
 		 * @param inhom is inhomogeneous
 		 */
 		CSparsePolyKernel(
-			CSparseFeatures<DREAL>* l, CSparseFeatures<DREAL>* r,
+			CSparseFeatures<float64_t>* l, CSparseFeatures<float64_t>* r,
 			int32_t size, int32_t d, bool inhom);
 
 		/** constructor
@@ -102,7 +102,7 @@ class CSparsePolyKernel: public CSparseKernel<DREAL>
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		virtual DREAL compute(int32_t idx_a, int32_t idx_b);
+		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
 
 	protected:
 		/** degree */

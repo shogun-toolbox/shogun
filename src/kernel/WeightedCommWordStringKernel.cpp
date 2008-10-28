@@ -13,7 +13,8 @@
 #include "features/StringFeatures.h"
 #include "lib/io.h"
 
-CWeightedCommWordStringKernel::CWeightedCommWordStringKernel(int32_t size, bool us)
+CWeightedCommWordStringKernel::CWeightedCommWordStringKernel(
+	int32_t size, bool us)
 : CCommWordStringKernel(size, us), degree(0), weights(NULL)
 {
 	init_dictionary(1<<(sizeof(uint16_t)*9));
@@ -21,7 +22,8 @@ CWeightedCommWordStringKernel::CWeightedCommWordStringKernel(int32_t size, bool 
 }
 
 CWeightedCommWordStringKernel::CWeightedCommWordStringKernel(
-	CStringFeatures<uint16_t>* l, CStringFeatures<uint16_t>* r, bool us, int32_t size)
+	CStringFeatures<uint16_t>* l, CStringFeatures<uint16_t>* r, bool us,
+	int32_t size)
 : CCommWordStringKernel(size, us), degree(0), weights(NULL)
 {
 	init_dictionary(1<<(sizeof(uint16_t)*9));
@@ -53,13 +55,14 @@ void CWeightedCommWordStringKernel::cleanup()
 
 	CCommWordStringKernel::cleanup();
 }
+
 bool CWeightedCommWordStringKernel::set_wd_weights()
 {
 	delete[] weights;
-	weights=new DREAL[degree];
+	weights=new float64_t[degree];
 
 	int32_t i;
-	DREAL sum=0;
+	float64_t sum=0;
 	for (i=0; i<degree; i++)
 	{
 		weights[i]=degree-i;
@@ -71,18 +74,19 @@ bool CWeightedCommWordStringKernel::set_wd_weights()
 	return weights!=NULL;
 }
 
-bool CWeightedCommWordStringKernel::set_weights(DREAL* w, int32_t d)
+bool CWeightedCommWordStringKernel::set_weights(float64_t* w, int32_t d)
 {
 	ASSERT(d==degree);
 
 	delete[] weights;
-	weights=new DREAL[degree];
+	weights=new float64_t[degree];
 	for (int32_t i=0; i<degree; i++)
 		weights[i]=w[i];
 	return true;
 }
   
-DREAL CWeightedCommWordStringKernel::compute_helper(int32_t idx_a, int32_t idx_b, bool do_sort)
+float64_t CWeightedCommWordStringKernel::compute_helper(
+	int32_t idx_a, int32_t idx_b, bool do_sort)
 {
 	int32_t alen, blen;
 
@@ -126,7 +130,7 @@ DREAL CWeightedCommWordStringKernel::compute_helper(int32_t idx_a, int32_t idx_b
 		}
 	}
 
-	DREAL result=0;
+	float64_t result=0;
 	uint8_t mask=0;
 
 	for (int32_t d=0; d<degree; d++)
@@ -171,7 +175,8 @@ DREAL CWeightedCommWordStringKernel::compute_helper(int32_t idx_a, int32_t idx_b
 	return result;
 }
 
-void CWeightedCommWordStringKernel::add_to_normal(int32_t vec_idx, DREAL weight)
+void CWeightedCommWordStringKernel::add_to_normal(
+	int32_t vec_idx, float64_t weight)
 {
 	int32_t len=-1;
 	CStringFeatures<uint16_t>* s=(CStringFeatures<uint16_t>*) lhs;
@@ -205,12 +210,12 @@ void CWeightedCommWordStringKernel::merge_normal()
 	CStringFeatures<uint16_t>* s=(CStringFeatures<uint16_t>*) rhs;
 	uint32_t num_symbols=(uint32_t) s->get_num_symbols();
 	int32_t dic_size=1<<(sizeof(uint16_t)*8);
-	DREAL* dic=new DREAL[dic_size];
-	memset(dic, 0, sizeof(DREAL)*dic_size);
+	float64_t* dic=new float64_t[dic_size];
+	memset(dic, 0, sizeof(float64_t)*dic_size);
 
 	for (uint32_t sym=0; sym<num_symbols; sym++)
 	{
-		DREAL result=0;
+		float64_t result=0;
 		uint8_t mask=0;
 		int32_t offs=0;
 		for (int32_t d=0; d<degree; d++)
@@ -225,18 +230,18 @@ void CWeightedCommWordStringKernel::merge_normal()
 	}
 
 	init_dictionary(1<<(sizeof(uint16_t)*8));
-	memcpy(dictionary_weights, dic, sizeof(DREAL)*dic_size);
+	memcpy(dictionary_weights, dic, sizeof(float64_t)*dic_size);
 	delete[] dic;
 }
 
-DREAL CWeightedCommWordStringKernel::compute_optimized(int32_t i) 
+float64_t CWeightedCommWordStringKernel::compute_optimized(int32_t i)
 { 
 	if (!get_is_initialized())
 		SG_ERROR( "CCommWordStringKernel optimization not initialized\n");
 
 	ASSERT(use_sign==false);
 
-	DREAL result=0;
+	float64_t result=0;
 	int32_t len=-1;
 	CStringFeatures<uint16_t>* s=(CStringFeatures<uint16_t>*) rhs;
 	uint16_t* vec=s->get_feature_vector(i, len);
@@ -262,22 +267,23 @@ DREAL CWeightedCommWordStringKernel::compute_optimized(int32_t i)
 	return result;
 }
 
-DREAL* CWeightedCommWordStringKernel::compute_scoring(int32_t max_degree, int32_t& num_feat,
-		int32_t& num_sym, DREAL* target, int32_t num_suppvec, int32_t* IDX, DREAL* alphas, bool do_init)
+float64_t* CWeightedCommWordStringKernel::compute_scoring(
+	int32_t max_degree, int32_t& num_feat, int32_t& num_sym, float64_t* target,
+	int32_t num_suppvec, int32_t* IDX, float64_t* alphas, bool do_init)
 {
 	if (do_init)
 		CCommWordStringKernel::init_optimization(num_suppvec, IDX, alphas);
 
 	int32_t dic_size=1<<(sizeof(uint16_t)*9);
-	DREAL* dic=new DREAL[dic_size];
-	memcpy(dic, dictionary_weights, sizeof(DREAL)*dic_size);
+	float64_t* dic=new float64_t[dic_size];
+	memcpy(dic, dictionary_weights, sizeof(float64_t)*dic_size);
 
 	merge_normal();
-	DREAL* result=CCommWordStringKernel::compute_scoring(max_degree, num_feat,
+	float64_t* result=CCommWordStringKernel::compute_scoring(max_degree, num_feat,
 			num_sym, target, num_suppvec, IDX, alphas, false);
 
 	init_dictionary(1<<(sizeof(uint16_t)*9));
-	memcpy(dictionary_weights,dic,  sizeof(DREAL)*dic_size);
+	memcpy(dictionary_weights,dic,  sizeof(float64_t)*dic_size);
 	delete[] dic;
 
 	return result;

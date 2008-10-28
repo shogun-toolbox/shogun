@@ -50,7 +50,8 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		 * @param max_mismatch maximum mismatch
 		 * @param mkl_stepsize MKL stepsize
 		 */
-		CWeightedDegreePositionStringKernel(int32_t size, int32_t degree,
+		CWeightedDegreePositionStringKernel(
+			int32_t size, int32_t degree,
 			int32_t max_mismatch=0, int32_t mkl_stepsize=1);
 
 		/** constructor
@@ -63,8 +64,9 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		 * @param shift_len number of shifts
 		 * @param mkl_stepsize MKL stepsize
 		 */
-		CWeightedDegreePositionStringKernel(int32_t size, DREAL* weights,
-			int32_t degree, int32_t max_mismatch, int32_t* shift, int32_t shift_len,
+		CWeightedDegreePositionStringKernel(
+			int32_t size, float64_t* weights, int32_t degree,
+			int32_t max_mismatch, int32_t* shift, int32_t shift_len,
 			int32_t mkl_stepsize=1);
 
 		/** constructor
@@ -74,8 +76,7 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		 * @param degree degree
 		 */
 		CWeightedDegreePositionStringKernel(
-			CStringFeatures<char>* l, CStringFeatures<char>* r,
-			int32_t degree);
+			CStringFeatures<char>* l, CStringFeatures<char>* r, int32_t degree);
 
 		virtual ~CWeightedDegreePositionStringKernel();
 
@@ -114,7 +115,7 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		 *
 		 * @return name WeightedDegreePos
 		 */
-		virtual const char* get_name() { return "WeightedDegreePos" ; } ;
+		virtual const char* get_name() { return "WeightedDegreePos"; }
 
 		/** initialize optimization
 		 *
@@ -123,7 +124,8 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		 * @param alphas alphas
 		 * @return if initializing was successful
 		 */
-		inline virtual bool init_optimization(int32_t p_count, int32_t *IDX, DREAL * alphas)
+		inline virtual bool init_optimization(
+			int32_t p_count, int32_t *IDX, float64_t * alphas)
 		{ 
 			return init_optimization(p_count, IDX, alphas, -1);
 		}
@@ -139,8 +141,9 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		 * @param upto_tree up to this tree
 		 * @return if initializing was successful
 		 */
-		virtual bool init_optimization(int32_t count, int32_t *IDX, DREAL * alphas,
-			int32_t tree_num, int32_t upto_tree=-1);
+		virtual bool init_optimization(
+			int32_t count, int32_t *IDX, float64_t * alphas, int32_t tree_num,
+			int32_t upto_tree=-1);
 
 		/** delete optimization
 		 *
@@ -153,7 +156,7 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 	 	* @param idx index to compute
 	 	* @return optimized value at given index
 	 	*/
-		inline virtual DREAL compute_optimized(int32_t idx)
+		inline virtual float64_t compute_optimized(int32_t idx)
 		{ 
 			ASSERT(get_is_initialized());
 			ASSERT(alphabet);
@@ -177,8 +180,10 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		 * @param alphas alphas
 		 * @param factor factor
 		 */
-		virtual void compute_batch(int32_t num_vec, int32_t* vec_idx, DREAL* target,
-			int32_t num_suppvec, int32_t* IDX, DREAL* alphas, DREAL factor=1.0);
+		virtual void compute_batch(
+			int32_t num_vec, int32_t* vec_idx, float64_t* target,
+			int32_t num_suppvec, int32_t* IDX, float64_t* alphas,
+			float64_t factor=1.0);
 
 		/** clear normal
 		 * subkernel functionality
@@ -209,7 +214,7 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		 * @param idx where to add
 		 * @param weight what to add
 		 */
-		inline virtual void add_to_normal(int32_t idx, DREAL weight)
+		inline virtual void add_to_normal(int32_t idx, float64_t weight)
 		{
 			add_example_to_tree(idx, weight);
 			set_is_initialized(true);
@@ -233,7 +238,8 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		 * @param idx index
 		 * @param subkernel_contrib subkernel contribution
 		 */
-		inline void compute_by_subkernel(int32_t idx, DREAL * subkernel_contrib)
+		inline void compute_by_subkernel(
+			int32_t idx, float64_t * subkernel_contrib)
 		{ 
 			if (get_is_initialized())
 			{
@@ -249,12 +255,12 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		 * @param num_weights number of weights will be stored here
 		 * @return subkernel weights
 		 */
-		inline const DREAL* get_subkernel_weights(int32_t& num_weights)
+		inline const float64_t* get_subkernel_weights(int32_t& num_weights)
 		{
 			num_weights = get_num_subkernels() ;
 
 			delete[] weights_buffer ;
-			weights_buffer = new DREAL[num_weights] ;
+			weights_buffer = new float64_t[num_weights] ;
 
 			if (position_weights!=NULL)
 				for (int32_t i=0; i<num_weights; i++)
@@ -271,7 +277,8 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		 * @param weights2 weights
 		 * @param num_weights2 number of weights
 		 */
-		inline void set_subkernel_weights(DREAL* weights2, int32_t num_weights2)
+		inline void set_subkernel_weights(
+			float64_t* weights2, int32_t num_weights2)
 		{
 			int32_t num_weights = get_num_subkernels() ;
 			if (num_weights!=num_weights2)
@@ -306,7 +313,7 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		 * @param len len
 		 * @return computed abs weights
 		 */
-		DREAL* compute_abs_weights(int32_t & len);
+		float64_t* compute_abs_weights(int32_t & len);
 
 		/** check if tree is initialized
 		 *
@@ -331,7 +338,7 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		 * @param d degree weights will be stored here
 		 * @param len number of degree weights will be stored here
 		 */
-		inline DREAL *get_degree_weights(int32_t& d, int32_t& len)
+		inline float64_t *get_degree_weights(int32_t& d, int32_t& len)
 		{
 			d=degree;
 			len=length;
@@ -343,7 +350,7 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		 * @param num_weights number of weights will be stored here
 		 * @return weights
 		 */
-		inline DREAL *get_weights(int32_t& num_weights)
+		inline float64_t *get_weights(int32_t& num_weights)
 		{
 			if (position_weights!=NULL)
 			{
@@ -362,7 +369,7 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		 * @param len number of position weights will be stored here
 		 * @return position weights
 		 */
-		inline DREAL *get_position_weights(int32_t& len)
+		inline float64_t *get_position_weights(int32_t& len)
 		{
 			len=seq_length;
 			return position_weights;
@@ -381,7 +388,7 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		 * @param d degree
 		 * @param len number of weights
 		 */
-		virtual bool set_weights(DREAL* weights, int32_t d, int32_t len=0);
+		virtual bool set_weights(float64_t* weights, int32_t d, int32_t len=0);
 
 		/** set wd weights
 		 *
@@ -395,7 +402,8 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		 * @param len number of position weights
 		 * @return if setting was successful
 		 */
-		virtual bool set_position_weights(DREAL* position_weights, int32_t len=0);
+		virtual bool set_position_weights(
+			float64_t* position_weights, int32_t len=0);
 
 		/** set position weights for left-hand side
 		 *
@@ -404,7 +412,7 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		 * @param num num
 		 * @return if setting was successful
 		 */
-		bool set_position_weights_lhs(DREAL* pws, int32_t len, int32_t num);
+		bool set_position_weights_lhs(float64_t* pws, int32_t len, int32_t num);
 
 		/** set position weights for right-hand side
 		 *
@@ -413,7 +421,7 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		 * @param num num
 		 * @return if setting was successful
 		 */
-		bool set_position_weights_rhs(DREAL* pws, int32_t len, int32_t num);
+		bool set_position_weights_rhs(float64_t* pws, int32_t len, int32_t num);
 
 		/** initialize block weights
 		 *
@@ -479,33 +487,48 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		 *
 		 * @return if deleting was successful
 		 */
-		bool delete_position_weights() { delete[] position_weights ; position_weights=NULL ; return true ; } ;
+		bool delete_position_weights()
+		{
+			delete[] position_weights;
+			position_weights=NULL;
+			return true;
+		}
 
 		/** delete position weights left-hand side
 		 *
 		 * @return if deleting was successful
 		 */
-		bool delete_position_weights_lhs() { delete[] position_weights_lhs ; position_weights_lhs=NULL ; return true ; } ;
+		bool delete_position_weights_lhs()
+		{
+			delete[] position_weights_lhs;
+			position_weights_lhs=NULL;
+			return true;
+		}
 
 		/** delete position weights right-hand side
 		 *
 		 * @return if deleting was successful
 		 */
-		bool delete_position_weights_rhs() { delete[] position_weights_rhs ; position_weights_rhs=NULL ; return true ; } ;
+		bool delete_position_weights_rhs()
+		{
+			delete[] position_weights_rhs;
+			position_weights_rhs=NULL;
+			return true;
+		}
 
 		/** compute by tree
 		 *
 		 * @param idx index
 		 * @return computed value
 		 */
-		virtual DREAL compute_by_tree(int32_t idx);
+		virtual float64_t compute_by_tree(int32_t idx);
 
 		/** compute by tree
 		 *
 		 * @param idx index
 		 * @param LevelContrib level contribution
 		 */
-		virtual void compute_by_tree(int32_t idx, DREAL* LevelContrib);
+		virtual void compute_by_tree(int32_t idx, float64_t* LevelContrib);
 
 		/** compute positional scoring function, which assigns a
 		 * weight per position, per symbol in the sequence
@@ -519,8 +542,10 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		 * @param weights weights
 		 * @return computed scores
 		 */
-		DREAL* compute_scoring(int32_t max_degree, int32_t& num_feat, int32_t& num_sym,
-			DREAL* target, int32_t num_suppvec, int32_t* IDX, DREAL* weights);
+		float64_t* compute_scoring(
+			int32_t max_degree, int32_t& num_feat, int32_t& num_sym,
+			float64_t* target, int32_t num_suppvec, int32_t* IDX,
+			float64_t* weights);
 
 		/** compute consensus string
 		 *
@@ -530,8 +555,9 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		 * @param alphas alphas
 		 * @return consensus string
 		 */
-		char* compute_consensus(int32_t &num_feat, int32_t num_suppvec, int32_t* IDX,
-			DREAL* alphas);
+		char* compute_consensus(
+			int32_t &num_feat, int32_t num_suppvec, int32_t* IDX,
+			float64_t* alphas);
 
 		/** extract w
 		 *
@@ -544,8 +570,10 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		 * @param alphas alphas
 		 * @return w
 		 */
-		DREAL* extract_w( int32_t max_degree, int32_t& num_feat, int32_t& num_sym,
-			DREAL* w_result, int32_t num_suppvec, int32_t* IDX, DREAL* alphas);
+		float64_t* extract_w(
+			int32_t max_degree, int32_t& num_feat, int32_t& num_sym,
+			float64_t* w_result, int32_t num_suppvec, int32_t* IDX,
+			float64_t* alphas);
 
 		/** compute POIM
 		 *
@@ -559,8 +587,10 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		 * @param distrib distribution
 		 * @return computed POIMs
 		 */
-		DREAL* compute_POIM( int32_t max_degree, int32_t& num_feat, int32_t& num_sym,
-			DREAL* poim_result, int32_t num_suppvec, int32_t* IDX, DREAL* alphas, DREAL* distrib );
+		float64_t* compute_POIM(
+			int32_t max_degree, int32_t& num_feat, int32_t& num_sym,
+			float64_t* poim_result, int32_t num_suppvec, int32_t* IDX,
+			float64_t* alphas, float64_t* distrib);
 
 		/** prepare POIM2
 		 *
@@ -568,7 +598,8 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		 * @param num_sym number of symbols
 		 * @param distrib distribution
 		 */
-		void prepare_POIM2(DREAL* distrib, int32_t num_sym, int32_t num_feat);		
+		void prepare_POIM2(
+			float64_t* distrib, int32_t num_sym, int32_t num_feat);
 
 		/** compute POIM2
 		 *
@@ -583,7 +614,7 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		 * @param poim POIMs (returned)
 		 * @param result_len (returned)
 		 */
-		void get_POIM2(DREAL** poim, int32_t* result_len);
+		void get_POIM2(float64_t** poim, int32_t* result_len);
 
 		/// cleanup POIM2
 		void cleanup_POIM2();
@@ -597,7 +628,8 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		 * @param idx index
 		 * @param weight weight
 		 */
-		virtual void add_example_to_tree(int32_t idx, DREAL weight);
+		virtual void add_example_to_tree(
+			int32_t idx, float64_t weight);
 
 		/** add example to single tree
 		 *
@@ -605,7 +637,8 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		 * @param weight weight
 		 * @param tree_num which tree
 		 */
-		void add_example_to_single_tree(int32_t idx, DREAL weight, int32_t tree_num);
+		void add_example_to_single_tree(
+			int32_t idx, float64_t weight, int32_t tree_num);
 
 		/** compute kernel function for features a and b
 		 * idx_{a,b} denote the index of the feature vectors
@@ -615,7 +648,7 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		virtual DREAL compute(int32_t idx_a, int32_t idx_b);
+		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
 
 		/** compute with mismatch
 		 *
@@ -625,8 +658,8 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		 * @param blen length of vector b
 		 * @return computed value
 		 */
-		DREAL compute_with_mismatch(char* avec, int32_t alen,
-			char* bvec, int32_t blen);
+		float64_t compute_with_mismatch(
+			char* avec, int32_t alen, char* bvec, int32_t blen);
 
 		/** compute without mismatch
 		 *
@@ -636,8 +669,8 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		 * @param blen length of vector b
 		 * @return computed value
 		 */
-		DREAL compute_without_mismatch(char* avec, int32_t alen,
-			char* bvec, int32_t blen);
+		float64_t compute_without_mismatch(
+			char* avec, int32_t alen, char* bvec, int32_t blen);
 
 		/** compute without mismatch matrix
 		 *
@@ -647,8 +680,8 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		 * @param blen length of vector b
 		 * @return computed value
 		 */
-		DREAL compute_without_mismatch_matrix(char* avec, int32_t alen,
-			char* bvec, int32_t blen);
+		float64_t compute_without_mismatch_matrix(
+			char* avec, int32_t alen, char* bvec, int32_t blen);
 
 		/** compute without mismatch position weights
 		 *
@@ -660,27 +693,27 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		 * @param blen length of vector b
 		 * @return computed value
 		 */
-		DREAL compute_without_mismatch_position_weights(
-			char* avec, DREAL *posweights_lhs, int32_t alen,
-			char* bvec, DREAL *posweights_rhs, int32_t blen);
+		float64_t compute_without_mismatch_position_weights(
+			char* avec, float64_t *posweights_lhs, int32_t alen,
+			char* bvec, float64_t *posweights_rhs, int32_t blen);
 
 		/** remove lhs from kernel */
 		virtual void remove_lhs();
 
 	protected:
 		/** weights */
-		DREAL* weights;
+		float64_t* weights;
 		/** position weights */
-		DREAL* position_weights;
+		float64_t* position_weights;
 		/** position weights left-hand side */
-		DREAL* position_weights_lhs;
+		float64_t* position_weights_lhs;
 		/** position weights right-hand side */
-		DREAL* position_weights_rhs;
+		float64_t* position_weights_rhs;
 		/** position mask */
 		bool* position_mask;
 
 		/** weights buffer */
-		DREAL* weights_buffer;
+		float64_t* weights_buffer;
 		/** MKL stepsize */
 		int32_t mkl_stepsize;
 
@@ -707,10 +740,10 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		/** number of external block weights */
 		int32_t num_block_weights_external;
 		/** external block weights */
-		DREAL* block_weights_external;
+		float64_t* block_weights_external;
 
 		/** (internal) block weights */
-		DREAL* block_weights;
+		float64_t* block_weights;
 		/** WeightedDegree kernel type */
 		EWDKernType type;
 		/** which degree */
@@ -727,9 +760,9 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		bool use_poim_tries;
 
 		/** temporary memory for the interface to the poim functions */ 
-		DREAL* m_poim_distrib;
+		float64_t* m_poim_distrib;
 		/** temporary memory for the interface to the poim functions */ 
-		DREAL* m_poim;
+		float64_t* m_poim;
 
 		/** number of symbols */
 		int32_t m_poim_num_sym;

@@ -28,7 +28,7 @@
  *  A summation element has range [0,1]. Note that \f$d(x,0)=d(0,x')=n\f$ 
  *  and \f$d(0,0)=0\f$.
  */
-class CCanberraMetric: public CSimpleDistance<DREAL>
+class CCanberraMetric: public CSimpleDistance<float64_t>
 {
 	public:
 		/** default constructor */
@@ -83,7 +83,7 @@ class CCanberraMetric: public CSimpleDistance<DREAL>
 		/// compute distance for features a and b
 		/// idx_{a,b} denote the index of the feature vectors
 		/// in the corresponding feature object
-		virtual DREAL compute(int32_t idx_a, int32_t idx_b);
+		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
 };
 
 #endif /* _CANBERRAMETRIC_H__ */

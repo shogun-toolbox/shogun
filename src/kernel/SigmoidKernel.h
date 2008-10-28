@@ -20,7 +20,7 @@
  * k({\bf x},{\bf x'})=\mbox{tanh}(\gamma {\bf x}\cdot{\bf x'}+c)
  * \f]
  */
-class CSigmoidKernel: public CSimpleKernel<DREAL>
+class CSigmoidKernel: public CSimpleKernel<float64_t>
 {
 	public:
 		/** constructor
@@ -29,7 +29,7 @@ class CSigmoidKernel: public CSimpleKernel<DREAL>
 		 * @param gamma gamma
 		 * @param coef0 coefficient 0
 		 */
-		CSigmoidKernel(int32_t size, DREAL gamma, DREAL coef0);
+		CSigmoidKernel(int32_t size, float64_t gamma, float64_t coef0);
 
 		/** constructor
 		 *
@@ -40,7 +40,7 @@ class CSigmoidKernel: public CSimpleKernel<DREAL>
 		 * @param coef0 coefficient 0
 		 */
 		CSigmoidKernel(CRealFeatures* l, CRealFeatures* r, int32_t size,
-			DREAL gamma, DREAL coef0);
+			float64_t gamma, float64_t coef0);
 
 		virtual ~CSigmoidKernel();
 
@@ -90,7 +90,7 @@ class CSigmoidKernel: public CSimpleKernel<DREAL>
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		virtual DREAL compute(int32_t idx_a, int32_t idx_b);
+		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
 
 	protected:
 		/** gamma */

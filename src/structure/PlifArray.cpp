@@ -57,8 +57,9 @@ void CPlifArray::clear()
 	max_value = 1e6 ;
 }
 
-DREAL CPlifArray::lookup_penalty(DREAL p_value, DREAL* svm_values) const 
-{	
+float64_t CPlifArray::lookup_penalty(
+	float64_t p_value, float64_t* svm_values) const
+{
 	//min_value = -1e6 ;
 	//max_value = 1e6 ;
 	if (p_value<min_value || p_value>max_value)
@@ -66,14 +67,15 @@ DREAL CPlifArray::lookup_penalty(DREAL p_value, DREAL* svm_values) const
 		//SG_WARNING("lookup_penalty: p_value: %i min_value: %f, max_value: %f\n",p_value, min_value, max_value);
 		return -CMath::INFTY ;
 	}
-	DREAL ret = 0.0 ;
+	float64_t ret = 0.0 ;
 	for (int32_t i=0; i<m_array.get_num_elements(); i++)
 		ret += m_array[i]->lookup_penalty(p_value, svm_values) ;
 	return ret ;
 } 
 
-DREAL CPlifArray::lookup_penalty(int32_t p_value, DREAL* svm_values) const 
-{	
+float64_t CPlifArray::lookup_penalty(
+	int32_t p_value, float64_t* svm_values) const
+{
 	//min_value = -1e6 ;
 	//max_value = 1e6 ;
 	if (p_value<min_value || p_value>max_value)
@@ -81,10 +83,10 @@ DREAL CPlifArray::lookup_penalty(int32_t p_value, DREAL* svm_values) const
 		//SG_WARNING("lookup_penalty: p_value: %i min_value: %f, max_value: %f\n",p_value, min_value, max_value);
 		return -CMath::INFTY ;
 	}
-	DREAL ret = 0.0 ;
+	float64_t ret = 0.0 ;
 	for (int32_t i=0; i<m_array.get_num_elements(); i++)
 	{
-		DREAL val = m_array[i]->lookup_penalty(p_value, svm_values) ;
+		float64_t val = m_array[i]->lookup_penalty(p_value, svm_values) ;
 		ret += val ;
 #ifdef PLIFARRAY_DEBUG
 		CPlif * plif = (CPlif*)m_array[i] ;
@@ -101,15 +103,16 @@ void CPlifArray::penalty_clear_derivative()
 {
 	for (int32_t i=0; i<m_array.get_num_elements(); i++)
 		m_array[i]->penalty_clear_derivative() ;
-} 
+}
 
-void CPlifArray::penalty_add_derivative(DREAL p_value, DREAL* svm_values)
+void CPlifArray::penalty_add_derivative(
+	float64_t p_value, float64_t* svm_values)
 {
 	for (int32_t i=0; i<m_array.get_num_elements(); i++)
 		m_array[i]->penalty_add_derivative(p_value, svm_values) ;
 }
 
-bool CPlifArray::uses_svm_values() const 
+bool CPlifArray::uses_svm_values() const
 {
 	for (int32_t i=0; i<m_array.get_num_elements(); i++)
 		if (m_array[i]->uses_svm_values())
@@ -117,7 +120,7 @@ bool CPlifArray::uses_svm_values() const
 	return false ;
 }
 
-int32_t CPlifArray::get_max_id() const 
+int32_t CPlifArray::get_max_id() const
 {
 	int32_t max_id = 0 ;
 	for (int32_t i=0; i<m_array.get_num_elements(); i++)
@@ -134,5 +137,3 @@ void CPlifArray::get_used_svms(int32_t* num_svms, int32_t* svm_ids)
 	}
 	SG_PRINT("\n");
 }
-
-

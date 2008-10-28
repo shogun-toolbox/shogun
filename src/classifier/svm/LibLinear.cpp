@@ -25,7 +25,8 @@ CLibLinear::CLibLinear(LIBLINEAR_LOSS l)
 	C2=1;
 }
 
-CLibLinear::CLibLinear(DREAL C, CSparseFeatures<DREAL>* traindat, CLabels* trainlab)
+CLibLinear::CLibLinear(
+	float64_t C, CSparseFeatures<float64_t>* traindat, CLabels* trainlab)
 : CSparseLinearClassifier(), C1(C), C2(C), use_bias(true), epsilon(1e-5)
 {
 	set_features(traindat);
@@ -44,7 +45,7 @@ bool CLibLinear::train()
 	ASSERT(get_features());
 	ASSERT(labels->is_two_class_labeling());
 
-	CSparseFeatures<DREAL>* sfeat=(CSparseFeatures<DREAL>*) features;
+	CSparseFeatures<float64_t>* sfeat=(CSparseFeatures<float64_t>*) features;
 
 	int32_t num_train_labels=labels->get_num_labels();
 	int32_t num_feat=features->get_num_features();
@@ -53,21 +54,21 @@ bool CLibLinear::train()
 	ASSERT(num_vec==num_train_labels);
 	delete[] w;
 	if (use_bias)
-		w=new DREAL[num_feat+1];
+		w=new float64_t[num_feat+1];
 	else
-		w=new DREAL[num_feat+0];
+		w=new float64_t[num_feat+0];
 	w_dim=num_feat;
 
 	problem prob;
 	if (use_bias)
 	{
 		prob.n=w_dim+1;
-		memset(w, 0, sizeof(DREAL)*(w_dim+1));
+		memset(w, 0, sizeof(float64_t)*(w_dim+1));
 	}
 	else
 	{
 		prob.n=w_dim;
-		memset(w, 0, sizeof(DREAL)*(w_dim+0));
+		memset(w, 0, sizeof(float64_t)*(w_dim+0));
 	}
 	prob.l=num_vec;
 	prob.x=sfeat;
@@ -98,7 +99,7 @@ bool CLibLinear::train()
 	{
 		CTron tron_obj(fun_obj, epsilon);
 		tron_obj.tron(w);
-		DREAL sgn=prob.y[0];
+		float64_t sgn=prob.y[0];
 
 		for (int32_t i=0; i<w_dim; i++)
 			w[i]*=sgn;

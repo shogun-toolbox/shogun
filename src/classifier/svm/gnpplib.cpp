@@ -29,7 +29,8 @@
 #define INDEX(ROW,COL,DIM) ((COL*DIM)+ROW)
 
 
-CGNPPLib::CGNPPLib(DREAL* vector_y, CKernel* kernel, int32_t num_data, DREAL reg_const)
+CGNPPLib::CGNPPLib(
+	float64_t* vector_y, CKernel* kernel, int32_t num_data, float64_t reg_const)
 : CSGObject()
 {
   m_reg_const = reg_const;
@@ -37,19 +38,19 @@ CGNPPLib::CGNPPLib(DREAL* vector_y, CKernel* kernel, int32_t num_data, DREAL reg
   m_vector_y = vector_y;
   m_kernel = kernel;
 
-  Cache_Size = ((int64_t) kernel->get_cache_size())*1024*1024/(sizeof(DREAL)*num_data);
+  Cache_Size = ((int64_t) kernel->get_cache_size())*1024*1024/(sizeof(float64_t)*num_data);
   Cache_Size = CMath::min(Cache_Size, (int64_t) num_data);
 
   SG_INFO("using %d kernel cache lines\n", Cache_Size);
   ASSERT(Cache_Size>=2);
 
   /* allocates memory for kernel cache */
-  kernel_columns = new DREAL*[Cache_Size];
-  cache_index = new DREAL[Cache_Size];
+  kernel_columns = new float64_t*[Cache_Size];
+  cache_index = new float64_t[Cache_Size];
 
   for(int32_t i = 0; i < Cache_Size; i++ ) 
   {
-    kernel_columns[i] = new DREAL[num_data];
+    kernel_columns[i] = new float64_t[num_data];
     cache_index[i] = -2;
   }
   first_kernel_inx = 0;
@@ -111,13 +112,13 @@ int8_t CGNPPLib::gnpp_mdm(double *diag_H,
   /* Initialization                                               */
   /* ------------------------------------------------------------ */
 
-  Ha1 = new DREAL[dim];
+  Ha1 = new float64_t[dim];
   if( Ha1 == NULL ) SG_ERROR("Not enough memory.\n");
-  Ha2 = new DREAL[dim];
+  Ha2 = new float64_t[dim];
   if( Ha2 == NULL ) SG_ERROR("Not enough memory.\n");
 
   History_size = (tmax < HISTORY_BUF ) ? tmax+1 : HISTORY_BUF;
-  History = new DREAL[History_size*2];
+  History = new float64_t[History_size*2];
   if( History == NULL ) SG_ERROR("Not enough memory.\n");
 
   /* inx1 = firts of find( y ==1 ), inx2 = firts of find( y ==2 ) */
@@ -293,7 +294,7 @@ int8_t CGNPPLib::gnpp_mdm(double *diag_H,
       History[INDEX(1,t,2)] = UB;
     }
     else {
-      tmp_ptr = new DREAL[(History_size+HISTORY_BUF)*2];
+      tmp_ptr = new float64_t[(History_size+HISTORY_BUF)*2];
       if( tmp_ptr == NULL ) SG_ERROR("Not enough memory.\n");
       for( i = 0; i < History_size; i++ ) {
         tmp_ptr[INDEX(0,i,2)] = History[INDEX(0,i,2)];
@@ -378,13 +379,13 @@ int8_t CGNPPLib::gnpp_imdm(double *diag_H,
   /* Initialization                                               */
   /* ------------------------------------------------------------ */
 
-  Ha1 = new DREAL[dim];
+  Ha1 = new float64_t[dim];
   if( Ha1 == NULL ) SG_ERROR("Not enough memory.\n");
-  Ha2 = new DREAL[dim];
+  Ha2 = new float64_t[dim];
   if( Ha2 == NULL ) SG_ERROR("Not enough memory.\n");
 
   History_size = (tmax < HISTORY_BUF ) ? tmax+1 : HISTORY_BUF;
-  History = new DREAL[History_size*2];
+  History = new float64_t[History_size*2];
   if( History == NULL ) SG_ERROR("Not enough memory.\n");
 
   /* inx1 = firts of find( y ==1 ), inx2 = firts of find( y ==2 ) */
@@ -629,7 +630,7 @@ int8_t CGNPPLib::gnpp_imdm(double *diag_H,
       History[INDEX(1,t,2)] = UB;
     }
     else {
-      tmp_ptr = new DREAL[(History_size+HISTORY_BUF)*2];
+      tmp_ptr = new float64_t[(History_size+HISTORY_BUF)*2];
       if( tmp_ptr == NULL ) SG_ERROR("Not enough memory.\n");
       for( i = 0; i < History_size; i++ ) {
         tmp_ptr[INDEX(0,i,2)] = History[INDEX(0,i,2)];
@@ -666,7 +667,7 @@ int8_t CGNPPLib::gnpp_imdm(double *diag_H,
 }
 
 
-DREAL* CGNPPLib::get_col(int64_t a, int64_t b)
+float64_t* CGNPPLib::get_col(int64_t a, int64_t b)
 {
   double *col_ptr;
   double y;

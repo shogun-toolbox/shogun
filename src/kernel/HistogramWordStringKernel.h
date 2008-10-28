@@ -86,7 +86,7 @@ class CHistogramWordStringKernel: public CStringKernel<uint16_t>
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		DREAL compute(int32_t idx_a, int32_t idx_b);
+		float64_t compute(int32_t idx_a, int32_t idx_b);
 
 		/** compute index
 		 *
@@ -104,24 +104,24 @@ class CHistogramWordStringKernel: public CStringKernel<uint16_t>
 		CPluginEstimate* estimate;
 
 		/** mean */
-		DREAL* mean;
+		float64_t* mean;
 		/** variance */
-		DREAL* variance;
+		float64_t* variance;
 
 		/** sqrt diagonal of left-hand side */
-		DREAL* sqrtdiag_lhs;
+		float64_t* sqrtdiag_lhs;
 		/** sqrt diagonal of right-hand side */
-		DREAL* sqrtdiag_rhs;
+		float64_t* sqrtdiag_rhs;
 
 		/** ld mean left-hand side */
-		DREAL* ld_mean_lhs;
+		float64_t* ld_mean_lhs;
 		/** ld mean right-hand side */
-		DREAL* ld_mean_rhs;
+		float64_t* ld_mean_rhs;
 
 		/** plo left-hand side */
-		DREAL* plo_lhs;
+		float64_t* plo_lhs;
 		/** plo right-hand side */
-		DREAL* plo_rhs;
+		float64_t* plo_rhs;
 
 		/** number of parameters */
 		int32_t num_params;
@@ -130,7 +130,7 @@ class CHistogramWordStringKernel: public CStringKernel<uint16_t>
 		/** number of symbols */
 		int32_t num_symbols;
 		/** sum m2 s2 */
-		DREAL sum_m2_s2;
+		float64_t sum_m2_s2;
 
 		/** if kernel is initialized */
 		bool initialized;

@@ -55,7 +55,9 @@ CWDSVMOcas::CWDSVMOcas(E_SVM_TYPE type)
 	normalization_const=1.0;
 }
 
-CWDSVMOcas::CWDSVMOcas(DREAL C, int32_t d, int32_t from_d, CStringFeatures<uint8_t>* traindat, CLabels* trainlab)
+CWDSVMOcas::CWDSVMOcas(
+	float64_t C, int32_t d, int32_t from_d, CStringFeatures<uint8_t>* traindat,
+	CLabels* trainlab)
 : CClassifier(), use_bias(false), bufsize(3000), C1(C), C2(C), epsilon(1e-3),
 	degree(d), from_degree(from_d)
 {
@@ -243,12 +245,12 @@ void* CWDSVMOcas::add_new_cut_helper( void* ptr)
 	uint32_t cut_length=p->cut_length;
 	uint32_t* new_cut=p->new_cut;
 	int32_t* w_offsets = o->w_offsets;
-	DREAL* y = o->lab;
+	float64_t* y = o->lab;
 	int32_t alphabet_size = o->alphabet_size;
 	float32_t* wd_weights = o->wd_weights;
 	int32_t degree = o->degree;
 	CStringFeatures<uint8_t>* f = o->features;
-	DREAL normalization_const = o->normalization_const;
+	float64_t normalization_const = o->normalization_const;
 
 	// temporary vector
 	float32_t* new_a = p->new_a;
@@ -392,8 +394,8 @@ void* CWDSVMOcas::compute_output_helper(void* ptr)
 	float32_t* wd_weights = o->wd_weights;
 	float32_t* w= o->w;
 
-	DREAL* y = o->lab;
-	DREAL normalization_const = o->normalization_const;
+	float64_t* y = o->lab;
+	float64_t normalization_const = o->normalization_const;
 
 
 	for (int32_t j=0; j<string_length; j++)

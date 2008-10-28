@@ -16,7 +16,7 @@
 #include "features/SparseFeatures.h"
 
 /** class SparseEucldianDistance */
-class CSparseEuclidianDistance: public CSparseDistance<DREAL>
+class CSparseEuclidianDistance: public CSparseDistance<float64_t>
 {
 	public:
 		/** default constructor */
@@ -27,7 +27,8 @@ class CSparseEuclidianDistance: public CSparseDistance<DREAL>
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 */
-		CSparseEuclidianDistance(CSparseFeatures<DREAL>* l, CSparseFeatures<DREAL>* r);
+		CSparseEuclidianDistance(
+			CSparseFeatures<float64_t>* l, CSparseFeatures<float64_t>* r);
 		virtual ~CSparseEuclidianDistance();
 
 		/** init distance
@@ -77,7 +78,7 @@ class CSparseEuclidianDistance: public CSparseDistance<DREAL>
 		/// compute kernel function for features a and b
 		/// idx_{a,b} denote the index of the feature vectors
 		/// in the corresponding feature object
-		virtual DREAL compute(int32_t idx_a, int32_t idx_b);
+		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
 		/*    compute_kernel*/
 
 	protected:
@@ -85,9 +86,9 @@ class CSparseEuclidianDistance: public CSparseDistance<DREAL>
 		double scale;
 
 		/** squared left-hand side */
-		DREAL* sq_lhs;
+		float64_t* sq_lhs;
 		/** squared right-hand side */
-		DREAL* sq_rhs;
+		float64_t* sq_rhs;
 
 };
 

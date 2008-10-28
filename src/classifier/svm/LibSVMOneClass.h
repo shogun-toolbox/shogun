@@ -29,7 +29,7 @@ class CLibSVMOneClass : public CSVM
 		 * @param C constant C
 		 * @param k kernel
 		 */
-		CLibSVMOneClass(DREAL C, CKernel* k);
+		CLibSVMOneClass(float64_t C, CKernel* k);
 		virtual ~CLibSVMOneClass();
 
 		/** train SVM */

@@ -42,7 +42,7 @@ class CGHMM : public CDistribution
 		 * @param param_num which param
 		 * @result logarithm of given model parameter
 		 */
-		virtual DREAL get_log_model_parameter(int32_t param_num);
+		virtual float64_t get_log_model_parameter(int32_t param_num);
 
 		/** get logarithm of one example's derivative's likelihood
 		 *
@@ -50,13 +50,13 @@ class CGHMM : public CDistribution
 		 * @param num_example which example
 		 * @return logarithm of example's derivative's likelihood
 		 */
-		virtual DREAL get_log_derivative(int32_t param_num, int32_t num_example);
+		virtual float64_t get_log_derivative(int32_t param_num, int32_t num_example);
 
 		/** get logarithm of one example's likelihood
 		 *
 		 * @param num_example which example
 		 * @return logarithm of example's likelihood
 		 */
-		virtual DREAL get_log_likelihood_example(int32_t num_example);
+		virtual float64_t get_log_likelihood_example(int32_t num_example);
 };
 #endif

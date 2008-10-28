@@ -22,15 +22,18 @@ class CGUIMath : public CSGObject
 {
 	public:
 		CGUIMath(CSGInterface* interface);
-		void evaluate_results(DREAL* output, int32_t* label, int32_t total, FILE* outputfile=NULL, FILE* rocfile=NULL);
-		void current_results(DREAL* output, int32_t* label, int32_t total, FILE* outputfile=NULL);
-
-		void set_threshold(DREAL value);
+		void evaluate_results(
+			float64_t* output, int32_t* label, int32_t total,
+			FILE* outputfile=NULL, FILE* rocfile=NULL);
+		void current_results(
+			float64_t* output, int32_t* label, int32_t total,
+			FILE* outputfile=NULL);
+		void set_threshold(float64_t value);
 		void init_random(uint32_t initseed=0);
 
 	protected:
 		CSGInterface* ui;
-		DREAL threshold;
+		float64_t threshold;
 };
 #endif //HAVE_SWIG
 #endif

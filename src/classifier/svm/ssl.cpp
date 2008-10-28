@@ -83,7 +83,7 @@ int32_t CGLS(
 	/* Disassemble the structures */
 	int32_t active = Subset->d;
 	int32_t *J = Subset->vec;
-	CSparseFeatures<DREAL>* features=Data->features;
+	CSparseFeatures<float64_t>* features=Data->features;
 	double *Y = Data->Y;
 	double *C = Data->C;
 	int32_t n  = Data->n;
@@ -109,7 +109,7 @@ int32_t CGLS(
 		int32_t num_entries=0;
 		bool free_vec=false;
 
-		TSparseEntry<DREAL>* vec=features->get_sparse_feature_vector(ii, num_entries, free_vec);
+		TSparseEntry<float64_t>* vec=features->get_sparse_feature_vector(ii, num_entries, free_vec);
 		for (int32_t i=0; i<num_entries; i++)
 			r[vec[i].feat_index]+= vec[i].entry*z[j];
 		features->free_sparse_feature_vector(vec, num_entries, free_vec);
@@ -146,7 +146,7 @@ int32_t CGLS(
 			t=0.0;
 			int32_t num_entries=0;
 			bool free_vec=false;
-			TSparseEntry<DREAL>* vec=features->get_sparse_feature_vector(ii,
+			TSparseEntry<float64_t>* vec=features->get_sparse_feature_vector(ii,
 					num_entries, free_vec);
 			for (j=0; j<num_entries; j++)
 				t+=vec[j].entry*p[vec[j].feat_index];
@@ -177,7 +177,7 @@ int32_t CGLS(
 			int32_t num_entries=0;
 			bool free_vec=false;
 
-			TSparseEntry<DREAL>* vec=features->get_sparse_feature_vector(ii, num_entries, free_vec);
+			TSparseEntry<float64_t>* vec=features->get_sparse_feature_vector(ii, num_entries, free_vec);
 			for (i=0; i<num_entries; i++)
 				r[vec[i].feat_index]+= vec[i].entry*t;
 			features->free_sparse_feature_vector(vec, num_entries, free_vec);
@@ -218,7 +218,7 @@ int32_t L2_SVM_MFN(
 	int32_t ini)
 {
 	/* Disassemble the structures */  
-	CSparseFeatures<DREAL>* features=Data->features;
+	CSparseFeatures<float64_t>* features=Data->features;
 	double *Y = Data->Y;
 	double *C = Data->C;
 	int32_t n  = Data->n;
@@ -292,7 +292,7 @@ int32_t L2_SVM_MFN(
 			int32_t num_entries=0;
 			bool free_vec=false;
 
-			TSparseEntry<DREAL>* vec=features->get_sparse_feature_vector(ii, num_entries, free_vec);
+			TSparseEntry<float64_t>* vec=features->get_sparse_feature_vector(ii, num_entries, free_vec);
 			for (int32_t j=0; j<num_entries; j++)
 				t+=vec[j].entry*w_bar[vec[j].feat_index];
 			features->free_sparse_feature_vector(vec, num_entries, free_vec);
@@ -485,7 +485,7 @@ int32_t TSVM_MFN(
 			int32_t num_entries=0;
 			bool free_vec=false;
 
-			TSparseEntry<DREAL>* vec=Data->features->get_sparse_feature_vector(i, num_entries, free_vec);
+			TSparseEntry<float64_t>* vec=Data->features->get_sparse_feature_vector(i, num_entries, free_vec);
 			for (int32_t j=0; j<num_entries; j++)
 				t+=vec[j].entry*Weights->vec[vec[j].feat_index];
 			Data->features->free_sparse_feature_vector(vec, num_entries, free_vec);
@@ -686,7 +686,7 @@ int32_t optimize_w(
 	struct vector_double *Weights, struct vector_double *Outputs, int32_t ini)
 {
 	int32_t i,j;
-	CSparseFeatures<DREAL>* features=Data->features;
+	CSparseFeatures<float64_t>* features=Data->features;
 	int32_t n  = Data->n;
 	int32_t m  = Data->m;
 	int32_t u  = Data->u;
@@ -812,7 +812,7 @@ int32_t optimize_w(
 			int32_t num_entries=0;
 			bool free_vec=false;
 
-			TSparseEntry<DREAL>* vec=features->get_sparse_feature_vector(ii, num_entries, free_vec);
+			TSparseEntry<float64_t>* vec=features->get_sparse_feature_vector(ii, num_entries, free_vec);
 			for (j=0; j<num_entries; j++)
 				t+=vec[j].entry*w_bar[vec[j].feat_index];
 			features->free_sparse_feature_vector(vec, num_entries, free_vec);

@@ -27,7 +27,7 @@ class CGNPPSVM : public CSVM
 		 * @param k kernel
 		 * @param lab labels
 		 */
-		CGNPPSVM(DREAL C, CKernel* k, CLabels* lab);
+		CGNPPSVM(float64_t C, CKernel* k, CLabels* lab);
 
 		virtual ~CGNPPSVM();
 

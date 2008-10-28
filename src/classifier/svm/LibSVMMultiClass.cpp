@@ -16,7 +16,7 @@ CLibSVMMultiClass::CLibSVMMultiClass()
 {
 }
 
-CLibSVMMultiClass::CLibSVMMultiClass(DREAL C, CKernel* k, CLabels* lab)
+CLibSVMMultiClass::CLibSVMMultiClass(float64_t C, CKernel* k, CLabels* lab)
 : CMultiClassSVM(ONE_VS_ONE, C, k, lab), model(NULL)
 {
 }
@@ -94,12 +94,12 @@ bool CLibSVMMultiClass::train()
 			{
 				int32_t k, l;
 
-				DREAL sgn=1;
+				float64_t sgn=1;
 				if (model->label[i]>model->label[j])
 					sgn=-1;
 
 				int32_t num_sv=model->nSV[i]+model->nSV[j];
-				DREAL bias=-model->rho[s];
+				float64_t bias=-model->rho[s];
 
 				ASSERT(num_sv>0);
 				ASSERT(model->sv_coef[i] && model->sv_coef[j-1]);

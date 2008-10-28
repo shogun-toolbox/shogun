@@ -39,7 +39,9 @@ class CLibLinear : public CSparseLinearClassifier
 		 * @param traindat training features
 		 * @param trainlab training labels
 		 */
-		CLibLinear(DREAL C, CSparseFeatures<DREAL>* traindat, CLabels* trainlab);
+		CLibLinear(
+			float64_t C, CSparseFeatures<float64_t>* traindat,
+			CLabels* trainlab);
 
 		virtual ~CLibLinear();
 
@@ -57,31 +59,31 @@ class CLibLinear : public CSparseLinearClassifier
 		 * @param c1 C1
 		 * @param c2 C2
 		 */
-		inline void set_C(DREAL c1, DREAL c2) { C1=c1; C2=c2; }
+		inline void set_C(float64_t c1, float64_t c2) { C1=c1; C2=c2; }
 
 		/** get C1
 		 *
 		 * @return C1
 		 */
-		inline DREAL get_C1() { return C1; }
+		inline float64_t get_C1() { return C1; }
 
 		/** get C2
 		 *
 		 * @return C2
 		 */
-		inline DREAL get_C2() { return C2; }
+		inline float64_t get_C2() { return C2; }
 
 		/** set epsilon
 		 *
 		 * @param eps new epsilon
 		 */
-		inline void set_epsilon(DREAL eps) { epsilon=eps; }
+		inline void set_epsilon(float64_t eps) { epsilon=eps; }
 
 		/** get epsilon
 		 *
 		 * @return epsilon
 		 */
-		inline DREAL get_epsilon() { return epsilon; }
+		inline float64_t get_epsilon() { return epsilon; }
 
 		/** set if bias shall be enabled
 		 *
@@ -97,13 +99,13 @@ class CLibLinear : public CSparseLinearClassifier
 
 	protected:
 		/** C1 */
-		DREAL C1;
+		float64_t C1;
 		/** C2 */
-		DREAL C2;
+		float64_t C2;
 		/** if bias shall be used */
 		bool use_bias;
 		/** epsilon */
-		DREAL epsilon;
+		float64_t epsilon;
 
 		/** loss */
 		LIBLINEAR_LOSS loss;

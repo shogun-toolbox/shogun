@@ -14,8 +14,8 @@
 #endif //HAVE_PYTHON
 
 %apply (int32_t** ARGOUT1, int32_t* DIM1) {(int32_t** svs, int32_t* num)};
-%apply (DREAL** ARGOUT1, int32_t* DIM1) {(DREAL** alphas, int32_t* d1)};
-%apply (DREAL* IN_ARRAY1, int32_t DIM1) {(DREAL* alphas, int32_t d)};
+%apply (float64_t** ARGOUT1, int32_t* DIM1) {(float64_t** alphas, int32_t* d1)};
+%apply (float64_t* IN_ARRAY1, int32_t DIM1) {(float64_t* alphas, int32_t d)};
 %apply (int32_t* IN_ARRAY1, int32_t DIM1) {(int32_t* svs, int32_t d)};
 
 #ifndef HAVE_PYTHON

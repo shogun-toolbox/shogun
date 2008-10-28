@@ -17,7 +17,7 @@ CLibSVR::CLibSVR()
 	model=NULL;
 }
 
-CLibSVR::CLibSVR(DREAL C, DREAL eps, CKernel* k, CLabels* lab)
+CLibSVR::CLibSVR(float64_t C, float64_t eps, CKernel* k, CLabels* lab)
 : CSVM()
 {
 	model=NULL;

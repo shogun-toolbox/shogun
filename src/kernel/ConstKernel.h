@@ -29,7 +29,7 @@ class CConstKernel: public CKernel
 		 *
 		 * @param c constant c
 		 */
-		CConstKernel(DREAL c);
+		CConstKernel(float64_t c);
 
 		/** constructor
 		 *
@@ -37,7 +37,7 @@ class CConstKernel: public CKernel
 		 * @param r features of right-hand side
 		 * @param c constant c
 		 */
-		CConstKernel(CFeatures* l, CFeatures *r, DREAL c);
+		CConstKernel(CFeatures* l, CFeatures *r, float64_t c);
 
 		virtual ~CConstKernel();
 
@@ -100,14 +100,14 @@ class CConstKernel: public CKernel
 		 * @param col dummy col
 		 * @return computed kernel function (const value)
 		 */
-		inline virtual DREAL compute(int32_t row, int32_t col)
+		inline virtual float64_t compute(int32_t row, int32_t col)
 		{
 			return const_value;
 		}
 
 	protected:
 		/** const value */
-		DREAL const_value;
+		float64_t const_value;
 };
 
 #endif /* _CONSTKERNEL_H__ */

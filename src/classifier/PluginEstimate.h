@@ -24,7 +24,7 @@ class CPluginEstimate: public CClassifier
 		 * @param pos_pseudo pseudo for positive model
 		 * @param neg_pseudo pseudo for negative model
 		 */
-		CPluginEstimate(DREAL pos_pseudo=1e-10, DREAL neg_pseudo=1e-10);
+		CPluginEstimate(float64_t pos_pseudo=1e-10, float64_t neg_pseudo=1e-10);
 		virtual ~CPluginEstimate();
 
 		/** train the estimate
@@ -54,7 +54,7 @@ class CPluginEstimate: public CClassifier
 		virtual CStringFeatures<uint16_t>* get_features() { SG_REF(features); return features; }
 
 		/// classify the test feature vector indexed by vec_idx
-		DREAL classify_example(int32_t vec_idx);
+		float64_t classify_example(int32_t vec_idx);
 
 		/** obsolete posterior log odds
 		 *
@@ -62,7 +62,8 @@ class CPluginEstimate: public CClassifier
 		 * @param len len
 		 * @return something floaty
 		 */
-		inline DREAL posterior_log_odds_obsolete(uint16_t* vector, int32_t len)
+		inline float64_t posterior_log_odds_obsolete(
+			uint16_t* vector, int32_t len)
 		{
 			return pos_model->get_log_likelihood_example(vector, len) - neg_model->get_log_likelihood_example(vector, len);
 		}
@@ -73,7 +74,8 @@ class CPluginEstimate: public CClassifier
 		 * @param position position
 		 * @return log odd at position
 		 */
-		inline DREAL get_parameterwise_log_odds(uint16_t obs, int32_t position)
+		inline float64_t get_parameterwise_log_odds(
+			uint16_t obs, int32_t position)
 		{
 			return pos_model->get_positional_log_parameter(obs, position) - neg_model->get_positional_log_parameter(obs, position);
 		}
@@ -84,7 +86,7 @@ class CPluginEstimate: public CClassifier
 		 * @param pos position
 		 * @return positive log derivative
 		 */
-		inline DREAL log_derivative_pos_obsolete(uint16_t obs, int32_t pos)
+		inline float64_t log_derivative_pos_obsolete(uint16_t obs, int32_t pos)
 		{
 			return pos_model->get_log_derivative_obsolete(obs, pos);
 		}
@@ -95,7 +97,7 @@ class CPluginEstimate: public CClassifier
 		 * @param pos position
 		 * @return negative log derivative
 		 */
-		inline DREAL log_derivative_neg_obsolete(uint16_t obs, int32_t pos)
+		inline float64_t log_derivative_neg_obsolete(uint16_t obs, int32_t pos)
 		{
 			return neg_model->get_log_derivative_obsolete(obs, pos);
 		}
@@ -108,7 +110,9 @@ class CPluginEstimate: public CClassifier
 		 * @param num_symbols numbe of symbols
 		 * @return if operation was successful
 		 */
-		inline bool get_model_params(DREAL*& pos_params, DREAL*& neg_params, int32_t &seq_length, int32_t &num_symbols)
+		inline bool get_model_params(
+			float64_t*& pos_params, float64_t*& neg_params,
+			int32_t &seq_length, int32_t &num_symbols)
 		{
 			int32_t num;
 
@@ -134,7 +138,9 @@ class CPluginEstimate: public CClassifier
 		 * @param seq_length sequence length
 		 * @param num_symbols numbe of symbols
 		 */
-		inline void set_model_params(const DREAL* pos_params, const DREAL* neg_params, int32_t seq_length, int32_t num_symbols)
+		inline void set_model_params(
+			const float64_t* pos_params, const float64_t* neg_params,
+			int32_t seq_length, int32_t num_symbols)
 		{
 			int32_t num_params;
 
@@ -171,9 +177,9 @@ class CPluginEstimate: public CClassifier
 
 	protected:
 		/** pseudo count for positive class */
-		DREAL m_pos_pseudo;
+		float64_t m_pos_pseudo;
 		/** pseudo count for negative class */
-		DREAL m_neg_pseudo;
+		float64_t m_neg_pseudo;
 
 		/** positive model */
 		CLinearHMM* pos_model;

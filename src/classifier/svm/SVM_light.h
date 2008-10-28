@@ -220,7 +220,7 @@ class CSVMLight : public CSVM
    * @param k kernel
    * @param lab labels
    */
-  CSVMLight(DREAL C, CKernel* k, CLabels* lab);
+  CSVMLight(float64_t C, CKernel* k, CLabels* lab);
   virtual ~CSVMLight();
 
   /** init SVM */
@@ -330,7 +330,7 @@ class CSVMLight : public CSVM
 		  int32_t *exclude_from_eq_const, double eq_target,
 		  int32_t *chosen, int32_t *active2dnum,
 		  int32_t totdoc, int32_t *working2dnum, int32_t varnum,
-		  double *a, double *lin, double *c, DREAL *aicache, QP *qp,
+		  double *a, double *lin, double *c, float64_t *aicache, QP *qp,
 		  double *epsilon_crit_target);
 
   /** compute matrices for optimization
@@ -354,7 +354,7 @@ class CSVMLight : public CSVM
 										 int32_t *exclude_from_eq_const, double eq_target,
 										 int32_t *chosen, int32_t *active2dnum,
 										 int32_t *key, double *a, double *lin, double *c,
-										 int32_t varnum, int32_t totdoc, DREAL *aicache, QP *qp);
+										 int32_t varnum, int32_t totdoc, float64_t *aicache, QP *qp);
 
   /** compute matrices for optimization in parallel
    *
@@ -377,7 +377,7 @@ class CSVMLight : public CSVM
 												  int32_t *exclude_from_eq_const, double eq_target,
 												  int32_t *chosen, int32_t *active2dnum,
 												  int32_t *key, double *a, double *lin, double *c,
-												  int32_t varnum, int32_t totdoc, DREAL *aicache, QP *qp);
+												  int32_t varnum, int32_t totdoc, float64_t *aicache, QP *qp);
 
   /** calculate SVM model
    *
@@ -430,7 +430,7 @@ class CSVMLight : public CSVM
   virtual void update_linear_component(int32_t* docs, int32_t *label,
 							   int32_t *active2dnum, double *a, double* a_old,
 							   int32_t *working2dnum, int32_t totdoc,
-							   double *lin, DREAL *aicache, double* c);
+							   double *lin, float64_t *aicache, double* c);
 
   // MKL stuff
   /** update linear component MKL
@@ -448,7 +448,7 @@ class CSVMLight : public CSVM
   void update_linear_component_mkl(int32_t* docs, int32_t *label,
 								   int32_t *active2dnum, double *a, double* a_old,
 								   int32_t *working2dnum, int32_t totdoc,
-								   double *lin, DREAL *aicache);
+								   double *lin, float64_t *aicache);
 
   /** update linear component MKL
    *
@@ -465,7 +465,7 @@ class CSVMLight : public CSVM
   void update_linear_component_mkl_linadd(int32_t* docs, int32_t *label,
 										  int32_t *active2dnum, double *a, double* a_old,
 										  int32_t *working2dnum, int32_t totdoc,
-										  double *lin, DREAL *aicache);
+										  double *lin, float64_t *aicache);
 
   /** select next qp subproblem grad
    *
@@ -574,7 +574,7 @@ class CSVMLight : public CSVM
   virtual void   reactivate_inactive_examples(int32_t *label,double *a,SHRINK_STATE *shrink_state,
 				      double *lin, double *c, int32_t totdoc,int32_t iteration,
 				      int32_t *inconsistent,
-				      int32_t *docs,DREAL *aicache,
+				      int32_t *docs,float64_t *aicache,
 				      double* maxdiff);
 
 protected:
@@ -584,7 +584,7 @@ protected:
 	* @param j at index j
 	* @return computed kernel item at index i, j
 	*/
-	inline virtual DREAL compute_kernel(int32_t i, int32_t j)
+	inline virtual float64_t compute_kernel(int32_t i, int32_t j)
 	{
 		return kernel->kernel(i, j);
 	}
@@ -657,25 +657,25 @@ protected:
   /** Matrix that stores the contribution by each kernel for each example (for
    * current alphas)
    */
-  DREAL* W;
+  float64_t* W;
   /** current margin */
-  DREAL rho;
+  float64_t rho;
   /** current relative w gap */
-  DREAL w_gap;
+  float64_t w_gap;
   /** regularization parameter for w smoothing */
-  DREAL lp_C;
+  float64_t lp_C;
   /** number of iteration */
   int32_t count;
   /** current alpha gap */
-  DREAL mymaxdiff;
+  float64_t mymaxdiff;
   /** number of alpha constraint rows */
   int32_t num_rows;
   /** number of active alpha constraint rows */
   int32_t num_active_rows;
   /** a buffer of length num */
-  DREAL *buffer_num;
+  float64_t *buffer_num;
   /** a buffer of length num_cols */
-  DREAL *buffer_numcols;
+  float64_t *buffer_numcols;
   /** if kernel cache is used */
   bool use_kernel_cache;
 

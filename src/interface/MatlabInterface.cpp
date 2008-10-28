@@ -113,7 +113,7 @@ int32_t CMatlabInterface::get_int()
 	return int32_t(s);
 }
 
-DREAL CMatlabInterface::get_real()
+float64_t CMatlabInterface::get_real()
 {
 	const mxArray* f=get_arg_increment();
 	if (!f || !mxIsNumeric(f) || mxGetN(f)!=1 || mxGetM(f)!=1)
@@ -182,7 +182,7 @@ GET_VECTOR(get_char_vector, "char", char, mxChar, "Char")
 GET_VECTOR(get_int_vector, "int32", int32_t, int, "Integer")
 GET_VECTOR(get_short_vector, "int16", int16_t, short, "Short")
 GET_VECTOR(get_shortreal_vector, "single", float32_t, float, "Single Precision")
-GET_VECTOR(get_real_vector, "double", DREAL, double, "Double Precision")
+GET_VECTOR(get_real_vector, "double", float64_t, double, "Double Precision")
 GET_VECTOR(get_word_vector, "uint16", uint16_t, unsigned short, "Word")
 #undef GET_VECTOR
 
@@ -209,7 +209,7 @@ GET_MATRIX(get_char_matrix, "char", char, mxChar, "Char")
 GET_MATRIX(get_int_matrix, "int32", int32_t, int, "Integer")
 GET_MATRIX(get_short_matrix, "int16", int16_t, short, "Short")
 GET_MATRIX(get_shortreal_matrix, "single", float32_t, float, "Single Precision")
-GET_MATRIX(get_real_matrix, "double", DREAL, double, "Double Precision")
+GET_MATRIX(get_real_matrix, "double", float64_t, double, "Double Precision")
 GET_MATRIX(get_word_matrix, "uint16", uint16_t, unsigned short, "Word")
 #undef GET_MATRIX
 
@@ -240,7 +240,7 @@ GET_NDARRAY(get_char_ndarray, "char", char, mxChar, "Char")
 GET_NDARRAY(get_int_ndarray, "int32", int32_t, int, "Integer")
 GET_NDARRAY(get_short_ndarray, "int16", int16_t, short, "Short")
 GET_NDARRAY(get_shortreal_ndarray, "single", float32_t, float, "Single Precision")
-GET_NDARRAY(get_real_ndarray, "double", DREAL, double, "Double Precision")
+GET_NDARRAY(get_real_ndarray, "double", float64_t, double, "Double Precision")
 GET_NDARRAY(get_word_ndarray, "uint16", uint16_t, unsigned short, "Word")
 #undef GET_NDARRAY
 
@@ -287,8 +287,8 @@ void CMatlabInterface::function_name(TSparse<sg_type>*& matrix, int32_t& num_fea
 	ASSERT(offset==nzmax); 																\
 }
 
-GET_SPARSEMATRIX(get_real_sparsematrix, "double", DREAL, double, "Double Precision")
-/*  future versions might support types other than DREAL
+GET_SPARSEMATRIX(get_real_sparsematrix, "double", float64_t, double, "Double Precision")
+/*  future versions might support types other than float64_t
 GET_SPARSEMATRIX(get_byte_sparsematrix, "uint8", uint8_t, uint8_t, "Byte")
 GET_SPARSEMATRIX(get_char_sparsematrix, "char", char, mxChar, "Char")
 GET_SPARSEMATRIX(get_int_sparsematrix, "int32", int32_t, int, "Integer")
@@ -393,7 +393,7 @@ void CMatlabInterface::set_int(int32_t scalar)
 	set_arg_increment(o);
 }
 
-void CMatlabInterface::set_real(DREAL scalar)
+void CMatlabInterface::set_real(float64_t scalar)
 {
 	mxArray* o=mxCreateNumericMatrix(1, 1, mxDOUBLE_CLASS, mxREAL);
 	if (!o)
@@ -441,7 +441,7 @@ SET_VECTOR(set_char_vector, mxCHAR_CLASS, char, mxChar, "Char")
 SET_VECTOR(set_int_vector, mxINT32_CLASS, int32_t, int, "Integer")
 SET_VECTOR(set_short_vector, mxINT16_CLASS, int16_t, short, "Short")
 SET_VECTOR(set_shortreal_vector, mxSINGLE_CLASS, float32_t, float, "Single Precision")
-SET_VECTOR(set_real_vector, mxDOUBLE_CLASS, DREAL, double, "Double Precision")
+SET_VECTOR(set_real_vector, mxDOUBLE_CLASS, float64_t, double, "Double Precision")
 SET_VECTOR(set_word_vector, mxUINT16_CLASS, uint16_t, unsigned short, "Word")
 #undef SET_VECTOR
 
@@ -470,7 +470,7 @@ SET_MATRIX(set_char_matrix, mxCHAR_CLASS, char, mxChar, "Char")
 SET_MATRIX(set_int_matrix, mxINT32_CLASS, int32_t, int, "Integer")
 SET_MATRIX(set_short_matrix, mxINT16_CLASS, int16_t, short, "Short")
 SET_MATRIX(set_shortreal_matrix, mxSINGLE_CLASS, float32_t, float, "Single Precision")
-SET_MATRIX(set_real_matrix, mxDOUBLE_CLASS, DREAL, double, "Double Precision")
+SET_MATRIX(set_real_matrix, mxDOUBLE_CLASS, float64_t, double, "Double Precision")
 SET_MATRIX(set_word_matrix, mxUINT16_CLASS, uint16_t, unsigned short, "Word")
 #undef SET_MATRIX
 
@@ -505,7 +505,7 @@ void CMatlabInterface::function_name(const TSparse<sg_type>* matrix, int32_t num
 	set_arg_increment(mx_mat);												\
 }
 
-SET_SPARSEMATRIX(set_real_sparsematrix, mxDOUBLE_CLASS, DREAL, double, "Double Precision")
+SET_SPARSEMATRIX(set_real_sparsematrix, mxDOUBLE_CLASS, float64_t, double, "Double Precision")
 
 /* future version might support this
 SET_SPARSEMATRIX(set_byte_sparsematrix, mxUINT8_CLASS, uint8_t, uint8_t, "Byte")

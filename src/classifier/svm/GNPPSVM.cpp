@@ -19,7 +19,7 @@ CGNPPSVM::CGNPPSVM()
 {
 }
 
-CGNPPSVM::CGNPPSVM(DREAL C, CKernel* k, CLabels* lab)
+CGNPPSVM::CGNPPSVM(float64_t C, CKernel* k, CLabels* lab)
 : CSVM(C, k, lab)
 {
 }
@@ -36,7 +36,7 @@ bool CGNPPSVM::train()
 	int32_t num_data=labels->get_num_labels();
 	SG_INFO("%d trainlabels\n", num_data);
 
-	DREAL* vector_y = new double[num_data];
+	float64_t* vector_y = new double[num_data];
 	for (int32_t i=0; i<num_data; i++)
 	{
 		if (get_labels()->get_label(i)==+1)
@@ -47,29 +47,29 @@ bool CGNPPSVM::train()
 			SG_ERROR("label unknown (%f)\n", get_labels()->get_label(i));
 	}
 
-	DREAL C=get_C1();
+	float64_t C=get_C1();
 	int32_t tmax=1000000000;
-	DREAL tolabs=0;
-	DREAL tolrel=epsilon;
+	float64_t tolabs=0;
+	float64_t tolrel=epsilon;
 
-	DREAL reg_const=0;
+	float64_t reg_const=0;
 	if (C!=0)
 		reg_const=1/C;
 
-	DREAL* diagK=new DREAL[num_data];
+	float64_t* diagK=new float64_t[num_data];
 	for(int32_t i=0; i<num_data; i++) {
 		diagK[i]=2*kernel->kernel(i,i)+reg_const;
 	}
 
-	DREAL* alpha=new DREAL[num_data];
-	DREAL* vector_c=new DREAL[num_data];
-	memset(vector_c, 0, num_data*sizeof(DREAL));
+	float64_t* alpha=new float64_t[num_data];
+	float64_t* vector_c=new float64_t[num_data];
+	memset(vector_c, 0, num_data*sizeof(float64_t));
 
-	DREAL thlb=10000000000.0;
+	float64_t thlb=10000000000.0;
 	int32_t t=0;
-	DREAL* History=NULL;
+	float64_t* History=NULL;
 	int32_t verb=0;
-	DREAL aHa11, aHa22;
+	float64_t aHa11, aHa22;
 
 	CGNPPLib npp(vector_y,kernel,num_data, reg_const);
 
@@ -78,8 +78,8 @@ bool CGNPPSVM::train()
 			&History, verb ); 
 
 	int32_t num_sv = 0;
-	DREAL nconst = History[INDEX(1,t,2)];
-	DREAL trnerr = 0; /* counter of training error */
+	float64_t nconst = History[INDEX(1,t,2)];
+	float64_t trnerr = 0; /* counter of training error */
 
 	for(int32_t i = 0; i < num_data; i++ )
 	{
@@ -96,7 +96,7 @@ bool CGNPPSVM::train()
 		}
 	}
 
-	DREAL b = 0.5*(aHa22 - aHa11)/nconst;;
+	float64_t b = 0.5*(aHa22 - aHa11)/nconst;;
 
 	create_new_model(num_sv);
 	CSVM::set_objective(nconst);

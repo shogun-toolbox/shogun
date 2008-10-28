@@ -79,7 +79,7 @@ class CClassifier : public CSGObject
 		 * @param num which example to classify
 		 * @return infinite float value
 		 */
-		virtual DREAL classify_example(int32_t num) { return CMath::INFTY; }
+		virtual float64_t classify_example(int32_t num) { return CMath::INFTY; }
 
 		/** load Classifier from file
 		 *
@@ -121,19 +121,19 @@ class CClassifier : public CSGObject
 		 * @param i index of label to get
 		 * @return value of label at index i
 		 */
-		virtual inline DREAL get_label(int32_t i) { return labels->get_label(i); }
+		virtual inline float64_t get_label(int32_t i) { return labels->get_label(i); }
 
 		/** set maximum training time
 		 *
 		 * @param t maximimum training time
 		 */
-		inline void set_max_train_time(DREAL t) { max_train_time=t; }
+		inline void set_max_train_time(float64_t t) { max_train_time=t; }
 
 		/** get maximum training time
 		 *
 		 * @return maximum training time
 		 */
-		inline DREAL get_max_train_time() { return max_train_time; }
+		inline float64_t get_max_train_time() { return max_train_time; }
 
 		/** get classifier type
 		 *
@@ -143,7 +143,7 @@ class CClassifier : public CSGObject
 
 	protected:
 		/** maximum training time */
-		DREAL max_train_time;
+		float64_t max_train_time;
 
 		/** labels */
 		CLabels* labels;

@@ -25,7 +25,7 @@
  *     k'({\bf x}, {\bf x'})=\frac{k({\bf x}, {\bf x'})}{\sqrt{k({\bf x}, {\bf x})k({\bf x'}, {\bf x'})}}
  * \f]
  */
-class CPolyKernel: public CSimpleKernel<DREAL>
+class CPolyKernel: public CSimpleKernel<float64_t>
 {
 	public:
 		/** constructor
@@ -95,7 +95,7 @@ class CPolyKernel: public CSimpleKernel<DREAL>
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		virtual DREAL compute(int32_t idx_a, int32_t idx_b);
+		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
 
 	protected:
 		/** degree */

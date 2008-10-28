@@ -18,12 +18,12 @@
 #include "lib/Mathematics.h"
 #include "lib/lapack.h"
 
-CLDA::CLDA(DREAL gamma)
+CLDA::CLDA(float64_t gamma)
 : CLinearClassifier(), m_gamma(gamma)
 {
 }
 
-CLDA::CLDA(DREAL gamma, CRealFeatures* traindat, CLabels* trainlab)
+CLDA::CLDA(float64_t gamma, CRealFeatures* traindat, CLabels* trainlab)
 : CLinearClassifier(), m_gamma(gamma)
 {
 	set_features(traindat);
@@ -74,17 +74,17 @@ bool CLDA::train()
 	}
 
 	delete[] w;
-	w=new DREAL[num_feat];
+	w=new float64_t[num_feat];
 	w_dim=num_feat;
 
-	DREAL* mean_neg=new DREAL[num_feat];
-	memset(mean_neg,0,num_feat*sizeof(DREAL));
+	float64_t* mean_neg=new float64_t[num_feat];
+	memset(mean_neg,0,num_feat*sizeof(float64_t));
 
-	DREAL* mean_pos=new DREAL[num_feat];
-	memset(mean_pos,0,num_feat*sizeof(DREAL));
+	float64_t* mean_pos=new float64_t[num_feat];
+	memset(mean_pos,0,num_feat*sizeof(float64_t));
 
-	DREAL* scatter=new DREAL[num_feat*num_feat];
-	DREAL* buffer=new DREAL[num_feat*CMath::max(num_neg, num_pos)];
+	float64_t* scatter=new float64_t[num_feat*num_feat];
+	float64_t* buffer=new float64_t[num_feat*CMath::max(num_neg, num_pos)];
 
 	//mean neg
 	for (i=0; i<num_neg; i++)
@@ -140,7 +140,7 @@ bool CLDA::train()
 	}
 	cblas_dgemm(CblasColMajor, CblasNoTrans, CblasTrans, num_feat, num_feat, num_pos, 1.0/(num_train_labels-1), buffer, num_feat, buffer, num_feat, 1.0/(num_train_labels-1), scatter, num_feat);
 
-	DREAL trace=CMath::trace(scatter, num_feat, num_feat);
+	float64_t trace=CMath::trace(scatter, num_feat, num_feat);
 
 	double s=1.0-m_gamma;
 
@@ -150,10 +150,10 @@ bool CLDA::train()
 	for (i=0; i<num_feat; i++)
 		scatter[i*num_feat+i]+= trace*m_gamma/num_feat;
 
-	DREAL* inv_scatter= CMath::pinv(scatter, num_feat, num_feat, NULL);
+	float64_t* inv_scatter= CMath::pinv(scatter, num_feat, num_feat, NULL);
 
-	DREAL* w_pos=buffer;
-	DREAL* w_neg=&buffer[num_feat];
+	float64_t* w_pos=buffer;
+	float64_t* w_neg=&buffer[num_feat];
 
 	cblas_dsymv(CblasColMajor, CblasUpper, num_feat, 1.0, inv_scatter, num_feat, mean_pos, 1, 0, w_pos, 1);
 	cblas_dsymv(CblasColMajor, CblasUpper, num_feat, 1.0, inv_scatter, num_feat, mean_neg, 1, 0, w_neg, 1);

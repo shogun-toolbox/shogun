@@ -63,7 +63,9 @@ class CLinearHMM : public CDistribution
 		 * @param pseudo_count pseudo count
 		 * @return if training was successful
 		 */
-		bool train(const int32_t* indizes, int32_t num_indizes, DREAL pseudo_count);
+		bool train(
+			const int32_t* indizes, int32_t num_indizes,
+			float64_t pseudo_count);
 
 		/** get logarithm of one example's likelihood
 		 *
@@ -71,7 +73,7 @@ class CLinearHMM : public CDistribution
 		 * @param len length of vector
 		 * @return logarithm of likelihood
 		 */
-		DREAL get_log_likelihood_example(uint16_t* vector, int32_t len);
+		float64_t get_log_likelihood_example(uint16_t* vector, int32_t len);
 
 		/** get one example's likelihood
 		 *
@@ -79,14 +81,14 @@ class CLinearHMM : public CDistribution
 		 * @param len length of vector
 		 * @return likelihood
 		 */
-		DREAL get_likelihood_example(uint16_t* vector, int32_t len);
+		float64_t get_likelihood_example(uint16_t* vector, int32_t len);
 
 		/** get logarithm of one example's likelihood
 		 *
 		 * @param num_example which example
 		 * @return logarithm of example's likelihood
 		 */
-		virtual DREAL get_log_likelihood_example(int32_t num_example);
+		virtual float64_t get_log_likelihood_example(int32_t num_example);
 
 		/** get logarithm of one example's derivative's likelihood
 		 *
@@ -94,7 +96,8 @@ class CLinearHMM : public CDistribution
 		 * @param num_example which example
 		 * @return logarithm of example's derivative
 		 */
-		virtual DREAL get_log_derivative(int32_t num_param, int32_t num_example);
+		virtual float64_t get_log_derivative(
+			int32_t num_param, int32_t num_example);
 
 		/** obsolete get logarithm of one example's derivative's
 		 *  likelihood
@@ -102,7 +105,8 @@ class CLinearHMM : public CDistribution
 		 * @param obs observation
 		 * @param pos position
 		 */
-		virtual inline DREAL get_log_derivative_obsolete(uint16_t obs, int32_t pos)
+		virtual inline float64_t get_log_derivative_obsolete(
+			uint16_t obs, int32_t pos)
 		{
 			return 1.0/transition_probs[pos*num_symbols+obs];
 		}
@@ -113,7 +117,8 @@ class CLinearHMM : public CDistribution
 		 * @param len length
 		 * @param pos position
 		 */
-		virtual inline DREAL get_derivative_obsolete(uint16_t* vector, int32_t len, int32_t pos)
+		virtual inline float64_t get_derivative_obsolete(
+			uint16_t* vector, int32_t len, int32_t pos)
 		{
 			ASSERT(pos<len);
 			return get_likelihood_example(vector, len)/transition_probs[pos*num_symbols+vector[pos]];
@@ -143,7 +148,8 @@ class CLinearHMM : public CDistribution
 		 * @param position position
 		 * @return positional log parameter
 		 */
-		virtual inline DREAL get_positional_log_parameter(uint16_t obs, int32_t position)
+		virtual inline float64_t get_positional_log_parameter(
+			uint16_t obs, int32_t position)
 		{
 			return log_transition_probs[position*num_symbols+obs];
 		}
@@ -153,7 +159,7 @@ class CLinearHMM : public CDistribution
 		 * @param num_param which param
 		 * @result logarithm of given model parameter
 		 */
-		virtual inline DREAL get_log_model_parameter(int32_t num_param)
+		virtual inline float64_t get_log_model_parameter(int32_t num_param)
 		{
 			ASSERT(log_transition_probs);
 			ASSERT(num_param<num_params);
@@ -168,7 +174,7 @@ class CLinearHMM : public CDistribution
 		 * @param num where number of logarithm of transition probs
 		 *        will be stored
 		 */
-		virtual void get_log_transition_probs(DREAL** dst, int32_t* num);
+		virtual void get_log_transition_probs(float64_t** dst, int32_t* num);
 
 		/** set logarithm of all transition probs
 		 *
@@ -176,14 +182,15 @@ class CLinearHMM : public CDistribution
 		 * @param num number of logarithms of transition probs
 		 * @return if setting was succesful
 		 */
-		virtual bool set_log_transition_probs(const DREAL* src, int32_t num);
+		virtual bool set_log_transition_probs(
+			const float64_t* src, int32_t num);
 
 		/** get all transition probs
 		 *
 		 * @param dst where transition probs will be stored
 		 * @param num where number of transition probs will be stored
 		 */
-		virtual void get_transition_probs(DREAL** dst, int32_t* num);
+		virtual void get_transition_probs(float64_t** dst, int32_t* num);
 
 		/** set all transition probs
 		 *
@@ -191,7 +198,7 @@ class CLinearHMM : public CDistribution
 		 * @param num number of transition probs
 		 * @return if setting was succesful
 		 */
-		virtual bool set_transition_probs(const DREAL* src, int32_t num);
+		virtual bool set_transition_probs(const float64_t* src, int32_t num);
 
 	protected:
 		/** examples' sequence length */
@@ -201,8 +208,8 @@ class CLinearHMM : public CDistribution
 		/** number of parameters */
 		int32_t num_params;
 		/** transition probs */
-		DREAL* transition_probs;
+		float64_t* transition_probs;
 		/** logarithm of transition probs */
-		DREAL* log_transition_probs;
+		float64_t* log_transition_probs;
 };
 #endif

@@ -44,7 +44,7 @@ class CPerceptron : public CLinearClassifier
 		virtual bool train();
 
 		/// set learn rate of gradient descent training algorithm
-		inline void set_learn_rate(DREAL r)
+		inline void set_learn_rate(float64_t r)
 		{
 			learn_rate=r;
 		}
@@ -57,7 +57,7 @@ class CPerceptron : public CLinearClassifier
 
 	protected:
 		/** learning rate */
-		DREAL learn_rate;
+		float64_t learn_rate;
 		/** maximum number of iterations */
 		int32_t max_iter;
 };

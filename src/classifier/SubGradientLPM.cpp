@@ -33,7 +33,8 @@ CSubGradientLPM::CSubGradientLPM()
 {
 }
 
-CSubGradientLPM::CSubGradientLPM(DREAL C, CSparseFeatures<DREAL>* traindat, CLabels* trainlab)
+CSubGradientLPM::CSubGradientLPM(
+	float64_t C, CSparseFeatures<float64_t>* traindat, CLabels* trainlab)
 : CSparseLinearClassifier(), C1(C), C2(C), epsilon(1e-5), qpsize(42),
 	qpsize_max(2000), use_bias(false), delta_active(0), delta_bound(0)
 {
@@ -47,7 +48,8 @@ CSubGradientLPM::~CSubGradientLPM()
 	cleanup();
 }
 
-int32_t CSubGradientLPM::find_active(int32_t num_feat, int32_t num_vec, int32_t& num_active, int32_t& num_bound)
+int32_t CSubGradientLPM::find_active(
+	int32_t num_feat, int32_t num_vec, int32_t& num_active, int32_t& num_bound)
 {
 	//delta_active=0;
 	//num_active=0;
@@ -238,16 +240,16 @@ void CSubGradientLPM::update_active(int32_t num_feat, int32_t num_vec)
 	CMath::swap(active,old_active);
 }
 
-DREAL CSubGradientLPM::line_search(int32_t num_feat, int32_t num_vec)
+float64_t CSubGradientLPM::line_search(int32_t num_feat, int32_t num_vec)
 {
 	int32_t num_hinge=0;
-	DREAL alpha=0;
-	DREAL sgrad=0;
+	float64_t alpha=0;
+	float64_t sgrad=0;
 
-	DREAL* A=new DREAL[num_feat+num_vec];
-	DREAL* B=new DREAL[num_feat+num_vec];
-	DREAL* C=new DREAL[num_feat+num_vec];
-	DREAL* D=new DREAL[num_feat+num_vec];
+	float64_t* A=new float64_t[num_feat+num_vec];
+	float64_t* B=new float64_t[num_feat+num_vec];
+	float64_t* C=new float64_t[num_feat+num_vec];
+	float64_t* D=new float64_t[num_feat+num_vec];
 
 	for (int32_t i=0; i<num_feat+num_vec; i++)
 	{
@@ -260,7 +262,7 @@ DREAL CSubGradientLPM::line_search(int32_t num_feat, int32_t num_vec)
 		}
 		else
 		{
-			DREAL p=get_label(i-num_feat)*features->dense_dot(1.0, i-num_feat, grad_w, num_feat, grad_b);
+			float64_t p=get_label(i-num_feat)*features->dense_dot(1.0, i-num_feat, grad_w, num_feat, grad_b);
 			grad_proj[i-num_feat]=p;
 			
 			A[i]=0;
@@ -321,9 +323,10 @@ DREAL CSubGradientLPM::line_search(int32_t num_feat, int32_t num_vec)
 	return alpha;
 }
 
-DREAL CSubGradientLPM::compute_min_subgradient(int32_t num_feat, int32_t num_vec, int32_t num_active, int32_t num_bound)
+float64_t CSubGradientLPM::compute_min_subgradient(
+	int32_t num_feat, int32_t num_vec, int32_t num_active, int32_t num_bound)
 {
-	DREAL dir_deriv=0;
+	float64_t dir_deriv=0;
 	solver->init(E_QP);
 
 	if (zero_idx+num_bound > 0)
@@ -355,7 +358,7 @@ DREAL CSubGradientLPM::compute_min_subgradient(int32_t num_feat, int32_t num_vec
 
 		for (int32_t i=0; i<num_bound; i++)
 		{
-			DREAL val= C1*get_label(idx_bound[i])*features->dense_dot(1.0, idx_bound[i], beta, num_feat, beta[num_feat]);
+			float64_t val= C1*get_label(idx_bound[i])*features->dense_dot(1.0, idx_bound[i], beta, num_feat, beta[num_feat]);
 			dir_deriv += CMath::max(0.0, val);
 		}
 
@@ -406,9 +409,9 @@ DREAL CSubGradientLPM::compute_min_subgradient(int32_t num_feat, int32_t num_vec
 	return dir_deriv;
 }
 
-DREAL CSubGradientLPM::compute_objective(int32_t num_feat, int32_t num_vec)
+float64_t CSubGradientLPM::compute_objective(int32_t num_feat, int32_t num_vec)
 {
-	DREAL result= CMath::sum_abs(w, num_feat);
+	float64_t result= CMath::sum_abs(w, num_feat);
 	
 	for (int32_t i=0; i<num_vec; i++)
 	{
@@ -425,7 +428,7 @@ void CSubGradientLPM::compute_projection(int32_t num_feat, int32_t num_vec)
 		proj[i]=get_label(i)*features->dense_dot(1.0, i, w, num_feat, bias);
 }
 
-void CSubGradientLPM::update_projection(DREAL alpha, int32_t num_vec)
+void CSubGradientLPM::update_projection(float64_t alpha, int32_t num_vec)
 {
 	CMath::vec1_plus_scalar_times_vec2(proj,-alpha, grad_proj, num_vec);
 }
@@ -434,7 +437,7 @@ void CSubGradientLPM::init(int32_t num_vec, int32_t num_feat)
 {
 	// alloc normal and bias inited with 0
 	delete[] w;
-	w=new DREAL[num_feat];
+	w=new float64_t[num_feat];
 	for (int32_t i=0; i<num_feat; i++)
 		w[i]=1.0;
 	//CMath::random_vector(w, num_feat, -1.0, 1.0);
@@ -452,28 +455,28 @@ void CSubGradientLPM::init(int32_t num_vec, int32_t num_feat)
 	w_neg=new int32_t[num_feat];
 	memset(w_neg,0,sizeof(int32_t)*num_feat);
 
-	grad_w=new DREAL[num_feat+1];
-	memset(grad_w,0,sizeof(DREAL)*(num_feat+1));
+	grad_w=new float64_t[num_feat+1];
+	memset(grad_w,0,sizeof(float64_t)*(num_feat+1));
 
-	sum_CXy_active=new DREAL[num_feat];
-	memset(sum_CXy_active,0,sizeof(DREAL)*num_feat);
+	sum_CXy_active=new float64_t[num_feat];
+	memset(sum_CXy_active,0,sizeof(float64_t)*num_feat);
 
 	sum_Cy_active=0;
 
-	proj=new DREAL[num_vec];
-	memset(proj,0,sizeof(DREAL)*num_vec);
+	proj=new float64_t[num_vec];
+	memset(proj,0,sizeof(float64_t)*num_vec);
 
-	tmp_proj=new DREAL[num_vec];
-	memset(proj,0,sizeof(DREAL)*num_vec);
+	tmp_proj=new float64_t[num_vec];
+	memset(proj,0,sizeof(float64_t)*num_vec);
 
 	tmp_proj_idx=new int32_t[num_vec];
 	memset(tmp_proj_idx,0,sizeof(int32_t)*num_vec);
 
-	grad_proj=new DREAL[num_vec];
-	memset(grad_proj,0,sizeof(DREAL)*num_vec);
+	grad_proj=new float64_t[num_vec];
+	memset(grad_proj,0,sizeof(float64_t)*num_vec);
 
-	hinge_point=new DREAL[num_vec+num_feat];
-	memset(hinge_point,0,sizeof(DREAL)*(num_vec+num_feat));
+	hinge_point=new float64_t[num_vec+num_feat];
+	memset(hinge_point,0,sizeof(float64_t)*(num_vec+num_feat));
 
 	hinge_idx=new int32_t[num_vec+num_feat];
 	memset(hinge_idx,0,sizeof(int32_t)*(num_vec+num_feat));
@@ -490,8 +493,8 @@ void CSubGradientLPM::init(int32_t num_vec, int32_t num_feat)
 	idx_active=new int32_t[num_vec];
 	memset(idx_active,0,sizeof(int32_t)*num_vec);
 
-	beta=new DREAL[num_feat+1+num_feat+num_vec];
-	memset(beta,0,sizeof(DREAL)*num_feat+1+num_feat+num_vec);
+	beta=new float64_t[num_feat+1+num_feat+num_vec];
+	memset(beta,0,sizeof(float64_t)*num_feat+1+num_feat+num_vec);
 
 	solver=new CCplex();
 }
@@ -554,9 +557,9 @@ bool CSubGradientLPM::train()
 
 	int32_t num_active=0;
 	int32_t num_bound=0;
-	DREAL alpha=0;
-	DREAL dir_deriv=0;
-	DREAL obj=0;
+	float64_t alpha=0;
+	float64_t dir_deriv=0;
+	float64_t obj=0;
 	delta_active=num_vec;
 	last_it_noimprovement=-1;
 
@@ -600,7 +603,7 @@ bool CSubGradientLPM::train()
 
 		if (num_it_noimprovement==10 || num_bound<qpsize_max)
 		{
-			DREAL norm_grad=CMath::dot(grad_w, grad_w, num_feat) +
+			float64_t norm_grad=CMath::dot(grad_w, grad_w, num_feat) +
 				grad_b*grad_b;
 
 			SG_PRINT("CHECKING OPTIMALITY CONDITIONS: "

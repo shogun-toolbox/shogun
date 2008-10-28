@@ -49,7 +49,7 @@ bool CMatchWordStringKernel::save_init(FILE* dest)
 	return false;
 }
   
-DREAL CMatchWordStringKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t CMatchWordStringKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	int32_t alen, blen;
 
@@ -58,7 +58,7 @@ DREAL CMatchWordStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	// can only deal with strings of same length
 	ASSERT(alen==blen);
 
-	DREAL sum=0;
+	float64_t sum=0;
 	for (int32_t i=0; i<alen; i++)
 		sum+= (avec[i]==bvec[i]) ? 1 : 0;
 

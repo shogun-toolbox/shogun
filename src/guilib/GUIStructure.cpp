@@ -18,10 +18,12 @@
 #include "structure/Plif.h"
 
 
-CGUIStructure::CGUIStructure(CSGInterface* ui_) : ui(ui_), m_PEN(NULL), m_num_plifs(0), m_num_limits(0), 
-	m_num_states(0), m_dp(NULL), m_plif_matrix(NULL), m_feature_matrix(NULL), m_feature_dims(NULL), 
-	m_num_positions(0), m_all_positions(0), m_content_svm_weights(0), m_num_svm_weights(0), 
-	m_state_signals(NULL), m_orf_info(NULL), m_use_orf(true), m_mod_words(NULL)
+CGUIStructure::CGUIStructure(CSGInterface* ui_)
+: ui(ui_), m_PEN(NULL), m_num_plifs(0), m_num_limits(0),
+	m_num_states(0), m_dp(NULL), m_plif_matrix(NULL), m_feature_matrix(NULL),
+	m_feature_dims(NULL), m_num_positions(0), m_all_positions(0),
+	m_content_svm_weights(0), m_num_svm_weights(0), m_state_signals(NULL),
+	m_orf_info(NULL), m_use_orf(true), m_mod_words(NULL)
 {
 }
 
@@ -29,10 +31,11 @@ CGUIStructure::~CGUIStructure()
 {
 }
 
-bool CGUIStructure::set_plif_struct(int32_t N, int32_t M, DREAL* all_limits,
-				DREAL* all_penalties, int32_t* ids, T_STRING<char>* names,
-				DREAL* min_values, DREAL* max_values, bool* all_use_cache,
-				int32_t* all_use_svm, T_STRING<char>* all_transform)
+bool CGUIStructure::set_plif_struct(
+	int32_t N, int32_t M, float64_t* all_limits, float64_t* all_penalties,
+	int32_t* ids, T_STRING<char>* names, float64_t* min_values,
+	float64_t* max_values, bool* all_use_cache, int32_t* all_use_svm,
+	T_STRING<char>* all_transform)
 {
 	// cleanup 
 	//SG_PRINT("set_plif_struct, N:%i\n",N);
@@ -50,8 +53,8 @@ bool CGUIStructure::set_plif_struct(int32_t N, int32_t M, DREAL* all_limits,
 
 	for (int32_t i=0; i<N; i++)
 	{
-		DREAL* limits = new DREAL[M];
-		DREAL* penalties = new DREAL[M];
+		float64_t* limits = new float64_t[M];
+		float64_t* penalties = new float64_t[M];
 		for (int32_t k=0; k<M; k++)
 		{
 			limits[k] = all_limits[i*M+k];
@@ -83,7 +86,9 @@ bool CGUIStructure::set_plif_struct(int32_t N, int32_t M, DREAL* all_limits,
 
 	return true;
 }
-bool CGUIStructure::compute_plif_matrix(DREAL* penalties_array, int32_t* Dim, int32_t numDims)
+
+bool CGUIStructure::compute_plif_matrix(
+	float64_t* penalties_array, int32_t* Dim, int32_t numDims)
 {
 	CPlif** PEN = get_PEN();
 	int32_t num_states = Dim[0];
@@ -96,7 +101,7 @@ bool CGUIStructure::compute_plif_matrix(DREAL* penalties_array, int32_t* Dim, in
 
         m_plif_matrix = new CPlifBase*[num_states*num_states] ;
 	//SG_PRINT("m_plif_matrix: %p \n",m_plif_matrix);
-        CArray3<DREAL> penalties(penalties_array, num_states, num_states, Dim[2], false, true) ;
+        CArray3<float64_t> penalties(penalties_array, num_states, num_states, Dim[2], false, true) ;
 
         for (int32_t i=0; i<num_states; i++)
         {
@@ -144,14 +149,16 @@ bool CGUIStructure::compute_plif_matrix(DREAL* penalties_array, int32_t* Dim, in
                 }
 		//SG_PRINT("\n");
         }
-//	DREAL tmp[] = {0,0,0,0,0,0,0,0,0};
+//	float64_t tmp[] = {0,0,0,0,0,0,0,0,0};
 //	for (int32_t i=0;i<num_states;i++)
 //                for (int32_t j=0; j<num_states; j++)
 //			if (m_plif_matrix[i+j*num_states]!=NULL)
 //				SG_PRINT("1 m_plif_matrix[%i]->lookup_penalty(): %f\n",i+j*num_states, m_plif_matrix[i+j*num_states]->lookup_penalty(0,tmp));
 	return true;
 }
-bool  CGUIStructure::set_signal_plifs(int32_t* state_signals, int32_t feat_dim3, int32_t num_states )
+
+bool  CGUIStructure::set_signal_plifs(
+	int32_t* state_signals, int32_t feat_dim3, int32_t num_states)
 {
 	int32_t Nplif = get_num_plifs();
 	CPlif** PEN = get_PEN();

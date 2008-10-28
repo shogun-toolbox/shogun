@@ -30,7 +30,7 @@ class CSqrtDiagKernelNormalizer : public CKernelNormalizer
 		 * @param use_opt_diag - some kernels support faster diagonal compuation
 		 * via compute_diag(idx), this flag enables this
 		 */
-		CSqrtDiagKernelNormalizer(bool use_opt_diag=false) : sqrtdiag_lhs(NULL),
+		CSqrtDiagKernelNormalizer(bool use_opt_diag=false): sqrtdiag_lhs(NULL),
 			sqrtdiag_rhs(NULL), use_optimized_diagonal_computation(use_opt_diag)
 		{
 		}
@@ -74,9 +74,10 @@ class CSqrtDiagKernelNormalizer : public CKernelNormalizer
 		 * @param idx_lhs index of left hand side vector
 		 * @param idx_rhs index of right hand side vector
 		 */
-		inline virtual DREAL normalize(DREAL value, int32_t idx_lhs, int32_t idx_rhs)
+		inline virtual float64_t normalize(
+			float64_t value, int32_t idx_lhs, int32_t idx_rhs)
 		{
-			DREAL sqrt_both=sqrtdiag_lhs[idx_lhs]*sqrtdiag_rhs[idx_rhs];
+			float64_t sqrt_both=sqrtdiag_lhs[idx_lhs]*sqrtdiag_rhs[idx_rhs];
 			return value/sqrt_both;
 		}
 
@@ -84,7 +85,7 @@ class CSqrtDiagKernelNormalizer : public CKernelNormalizer
 		 * @param value value of a component of the left hand side feature vector
 		 * @param idx_lhs index of left hand side vector
 		 */
-		inline virtual DREAL normalize_lhs(DREAL value, int32_t idx_lhs)
+		inline virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs)
 		{
 			return value/sqrtdiag_lhs[idx_lhs];
 		}
@@ -93,7 +94,7 @@ class CSqrtDiagKernelNormalizer : public CKernelNormalizer
 		 * @param value value of a component of the right hand side feature vector
 		 * @param idx_rhs index of right hand side vector
 		 */
-		inline virtual DREAL normalize_rhs(DREAL value, int32_t idx_rhs)
+		inline virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs)
 		{
 			return value/sqrtdiag_rhs[idx_rhs];
 		}
@@ -103,10 +104,10 @@ class CSqrtDiagKernelNormalizer : public CKernelNormalizer
 		 * alloc and compute the vector containing the square root of the
 		 * diagonal elements of this kernel.
 		 */
-		bool alloc_and_compute_diag(CKernel* k, DREAL* &v, int32_t num)
+		bool alloc_and_compute_diag(CKernel* k, float64_t* &v, int32_t num)
 		{
 			delete[] v;
-			v=new DREAL[num];
+			v=new float64_t[num];
 
 			for (int32_t i=0; i<num; i++)
 			{
@@ -129,9 +130,9 @@ class CSqrtDiagKernelNormalizer : public CKernelNormalizer
 
     protected:
 		/** sqrt diagonal left-hand side */
-		DREAL* sqrtdiag_lhs;
+		float64_t* sqrtdiag_lhs;
 		/** sqrt diagonal right-hand side */
-		DREAL* sqrtdiag_rhs;
+		float64_t* sqrtdiag_rhs;
 		/** f optimized diagonal computation is used */
 		bool use_optimized_diagonal_computation;
 };

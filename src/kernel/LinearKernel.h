@@ -20,7 +20,7 @@
  * k({\bf x},{\bf x'})= \frac{1}{scale}{\bf x}\cdot {\bf x'}
  * \f]
  */
-class CLinearKernel: public CSimpleKernel<DREAL>
+class CLinearKernel: public CSimpleKernel<float64_t>
 {
 	public:
 		/** constructor
@@ -81,7 +81,8 @@ class CLinearKernel: public CSimpleKernel<DREAL>
 		 * @param alphas alphas
 		 * @return if optimization was successful
 		 */
-		virtual bool init_optimization(int32_t num_suppvec, int32_t* sv_idx, DREAL* alphas);
+		virtual bool init_optimization(
+			int32_t num_suppvec, int32_t* sv_idx, float64_t* alphas);
 
 		/** delete optimization
 		 *
@@ -94,7 +95,7 @@ class CLinearKernel: public CSimpleKernel<DREAL>
 	 	* @param idx index to compute
 	 	* @return optimized value at given index
 	 	*/
-		virtual DREAL compute_optimized(int32_t idx);
+		virtual float64_t compute_optimized(int32_t idx);
 
 		/** clear normal vector */
 		virtual void clear_normal();
@@ -104,7 +105,7 @@ class CLinearKernel: public CSimpleKernel<DREAL>
 		 * @param idx where to add
 		 * @param weight what to add
 		 */
-		virtual void add_to_normal(int32_t idx, DREAL weight);
+		virtual void add_to_normal(int32_t idx, float64_t weight);
 
 		/** get normal
 		 *
@@ -130,15 +131,15 @@ class CLinearKernel: public CSimpleKernel<DREAL>
 		 * @param dst_w store w in this argument
 		 * @param dst_dims dimension of w
 		 */
-		inline void get_w(DREAL** dst_w, int32_t* dst_dims)
+		inline void get_w(float64_t** dst_w, int32_t* dst_dims)
 		{
 			ASSERT(lhs && normal);
 			int32_t len = ((CRealFeatures*) lhs)->get_num_features();
 			ASSERT(dst_w && dst_dims);
 			*dst_dims=len;
-			*dst_w=(DREAL*) malloc(sizeof(DREAL)*(*dst_dims));
+			*dst_w=(float64_t*) malloc(sizeof(float64_t)*(*dst_dims));
 			ASSERT(*dst_w);
-			memcpy(*dst_w, normal, sizeof(DREAL) * (*dst_dims));
+			memcpy(*dst_w, normal, sizeof(float64_t) * (*dst_dims));
 		}
 
 		/** set normal vector (swig compatible)
@@ -146,11 +147,11 @@ class CLinearKernel: public CSimpleKernel<DREAL>
 		 * @param src_w new w
 		 * @param src_w_dim dimension of new w - must fit dim of lhs
 		 */
-		inline void set_w(DREAL* src_w, int32_t src_w_dim)
+		inline void set_w(float64_t* src_w, int32_t src_w_dim)
 		{
 			ASSERT(lhs && src_w_dim==((CRealFeatures*) lhs)->get_num_features());
 			clear_normal();
-			memcpy(normal, src_w, sizeof(DREAL) * src_w_dim);
+			memcpy(normal, src_w, sizeof(float64_t) * src_w_dim);
 		}
 
 	protected:
@@ -162,11 +163,11 @@ class CLinearKernel: public CSimpleKernel<DREAL>
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		virtual DREAL compute(int32_t idx_a, int32_t idx_b);
+		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
 
 	protected:
 		/** normal vector (used in case of optimized kernel) */
-		DREAL* normal;
+		float64_t* normal;
 		/** length of normal vector */
 		int32_t normal_length;
 };

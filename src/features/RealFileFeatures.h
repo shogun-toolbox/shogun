@@ -44,7 +44,7 @@ class CRealFileFeatures: public CRealFeatures
 		 *
 		 * @return loaded feature matrix
 		 */
-		virtual DREAL* load_feature_matrix();
+		virtual float64_t* load_feature_matrix();
 
 		/** get label at given index
 		 *
@@ -61,7 +61,8 @@ class CRealFileFeatures: public CRealFeatures
 		 * @param len len
 		 * @param target target
 		 */
-		virtual DREAL* compute_feature_vector(int32_t num, int32_t& len, DREAL* target=NULL);
+		virtual float64_t* compute_feature_vector(
+			int32_t num, int32_t& len, float64_t* target=NULL);
 
 		/** load base data
 		 *

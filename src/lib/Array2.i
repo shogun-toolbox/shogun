@@ -14,4 +14,4 @@
 %template(LongArray2) CArray2<int64_t>;
 %template(ULongArray2) CArray2<uint64_t>;
 %template(ShortRealArray2) CArray2<float32_t>;
-%template(RealArray2) CArray2<DREAL>;
+%template(RealArray2) CArray2<float64_t>;

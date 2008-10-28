@@ -59,7 +59,7 @@ void CLinearWordKernel::clear_normal()
 	CMath::fill_vector(normal, num, 0.0);
 }
 
-void CLinearWordKernel::add_to_normal(int32_t idx, DREAL weight)
+void CLinearWordKernel::add_to_normal(int32_t idx, float64_t weight)
 {
 	int32_t vlen;
 	bool vfree;
@@ -70,8 +70,8 @@ void CLinearWordKernel::add_to_normal(int32_t idx, DREAL weight)
 
 	((CWordFeatures*) lhs)->free_feature_vector(vec, idx, vfree);
 }
-  
-DREAL CLinearWordKernel::compute(int32_t idx_a, int32_t idx_b)
+
+float64_t CLinearWordKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	int32_t alen, blen;
 	bool afree, bfree;
@@ -82,7 +82,7 @@ DREAL CLinearWordKernel::compute(int32_t idx_a, int32_t idx_b)
 		idx_b, blen, bfree);
 	ASSERT(alen==blen);
 
-	DREAL result=CMath::dot(avec, bvec, alen);
+	float64_t result=CMath::dot(avec, bvec, alen);
 
 	((CWordFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
 	((CWordFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
@@ -90,7 +90,8 @@ DREAL CLinearWordKernel::compute(int32_t idx_a, int32_t idx_b)
 	return result;
 }
 
-bool CLinearWordKernel::init_optimization(int32_t num_suppvec, int32_t* sv_idx, DREAL* alphas)
+bool CLinearWordKernel::init_optimization(
+	int32_t num_suppvec, int32_t* sv_idx, float64_t* alphas)
 {
 	int32_t alen;
 	bool afree;
@@ -98,7 +99,7 @@ bool CLinearWordKernel::init_optimization(int32_t num_suppvec, int32_t* sv_idx, 
 	int32_t num_feat=((CWordFeatures*) lhs)->get_num_features();
 	ASSERT(num_feat);
 
-	normal=new DREAL[num_feat];
+	normal=new float64_t[num_feat];
 	CMath::fill_vector(normal, num_feat, 0.0);
 
 	for (int32_t i=0; i<num_suppvec; i++)
@@ -109,7 +110,7 @@ bool CLinearWordKernel::init_optimization(int32_t num_suppvec, int32_t* sv_idx, 
 
 		for (int32_t j=0; j<num_feat; j++)
 			normal[j]+=alphas[i] * normalizer->normalize_lhs(
-				((DREAL) avec[j]), sv_idx[i]);
+				((float64_t) avec[j]), sv_idx[i]);
 
 		((CWordFeatures*) lhs)->free_feature_vector(avec, 0, afree);
 	}
@@ -127,7 +128,7 @@ bool CLinearWordKernel::delete_optimization()
 	return true;
 }
 
-DREAL CLinearWordKernel::compute_optimized(int32_t idx_b) 
+float64_t CLinearWordKernel::compute_optimized(int32_t idx_b) 
 {
 	int32_t blen;
 	bool bfree;

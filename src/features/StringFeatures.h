@@ -1310,7 +1310,7 @@ template<> inline EFeatureType CStringFeatures<uint64_t>::get_feature_type()
  *
  * @return feature type DREAL
  */
-template<> inline EFeatureType CStringFeatures<DREAL>::get_feature_type()
+template<> inline EFeatureType CStringFeatures<float64_t>::get_feature_type()
 {
 	return F_DREAL;
 }

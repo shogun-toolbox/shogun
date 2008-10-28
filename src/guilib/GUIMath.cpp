@@ -22,7 +22,7 @@ CGUIMath::CGUIMath(CSGInterface* ui_)
 {
 }
 
-void CGUIMath::set_threshold(DREAL value)
+void CGUIMath::set_threshold(float64_t value)
 {
 	SG_INFO("Old threshold: %f.\n", threshold);
 	threshold=value;
@@ -34,12 +34,14 @@ void CGUIMath::init_random(uint32_t initseed)
 	CMath::init_random(initseed);
 }
 
-void CGUIMath::evaluate_results(DREAL* output, int32_t* label, int32_t total, FILE* outputfile, FILE* rocfile)
+void CGUIMath::evaluate_results(
+	float64_t* output, int32_t* label, int32_t total, FILE* outputfile,
+	FILE* rocfile)
 {
 	current_results(output, label, total, outputfile);
 
-	DREAL* fp= new DREAL[total];	
-	DREAL* tp= new DREAL[total];	
+	float64_t* fp= new float64_t[total];
+	float64_t* tp= new float64_t[total];
 	int32_t possize=0;
 	int32_t negsize=0;
 	int32_t size=total;
@@ -63,7 +65,8 @@ void CGUIMath::evaluate_results(DREAL* output, int32_t* label, int32_t total, FI
 	delete[] tp;
 }
 
-void CGUIMath::current_results(DREAL* output, int32_t* label, int32_t total, FILE* outputfile)
+void CGUIMath::current_results(
+	float64_t* output, int32_t* label, int32_t total, FILE* outputfile)
 {
 	int32_t fp=0;
 	int32_t fn=0;

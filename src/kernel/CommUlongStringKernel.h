@@ -108,7 +108,8 @@ class CCommUlongStringKernel: public CStringKernel<uint64_t>
 		 * @param weights weights
 		 * @return if initializing was successful
 		 */
-		virtual bool init_optimization(int32_t count, int32_t* IDX, DREAL* weights);
+		virtual bool init_optimization(
+			int32_t count, int32_t* IDX, float64_t* weights);
 
 		/** delete optimization
 		 *
@@ -121,7 +122,7 @@ class CCommUlongStringKernel: public CStringKernel<uint64_t>
 	 	* @param idx index to compute
 	 	* @return optimized value at given index
 	 	*/
-		virtual DREAL compute_optimized(int32_t idx);
+		virtual float64_t compute_optimized(int32_t idx);
 
 		/** merge dictionaries
 		 *
@@ -136,7 +137,7 @@ class CCommUlongStringKernel: public CStringKernel<uint64_t>
 		 */
 		inline void merge_dictionaries(
 			int32_t& t, int32_t j, int32_t& k, uint64_t* vec, uint64_t* dic,
-			DREAL* dic_weights, DREAL weight, int32_t vec_idx)
+			float64_t* dic_weights, float64_t weight, int32_t vec_idx)
 		{
 			while (k<dictionary.get_num_elements() && dictionary[k] < vec[j-1])
 			{
@@ -165,7 +166,7 @@ class CCommUlongStringKernel: public CStringKernel<uint64_t>
 		 * @param idx where to add
 		 * @param weight what to add
 		 */
-		virtual void add_to_normal(int32_t idx, DREAL weight);
+		virtual void add_to_normal(int32_t idx, float64_t weight);
 
 		/** clear normal */
 		virtual void clear_normal();
@@ -188,7 +189,8 @@ class CCommUlongStringKernel: public CStringKernel<uint64_t>
 		 * @param dict dictionary will be stored in here
 		 * @param dweights dictionary weights will be stored in here
 		 */
-		void get_dictionary(int32_t &dsize, uint64_t*& dict, DREAL*& dweights)
+		void get_dictionary(
+			int32_t &dsize, uint64_t*& dict, float64_t*& dweights)
 		{
 			dsize=dictionary.get_num_elements();
 			dict=dictionary.get_array();
@@ -204,13 +206,13 @@ class CCommUlongStringKernel: public CStringKernel<uint64_t>
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		DREAL compute(int32_t idx_a, int32_t idx_b);
+		float64_t compute(int32_t idx_a, int32_t idx_b);
 
 	protected:
 		/** dictionary */
 		CDynamicArray<uint64_t> dictionary;
 		/** dictionary weights */
-		CDynamicArray<DREAL> dictionary_weights;
+		CDynamicArray<float64_t> dictionary_weights;
 
 		/** if sign shall be used */
 		bool use_sign;

@@ -4,7 +4,7 @@
 
 %include "distance/StringDistance.h" 
 
-%template(StringRealDistance) CStringDistance<DREAL>;
+%template(StringRealDistance) CStringDistance<float64_t>;
 %template(StringWordDistance) CStringDistance<uint16_t>;
 %template(StringCharDistance) CStringDistance<char>;
 %template(StringIntDistance) CStringDistance<int32_t>;

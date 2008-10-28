@@ -16,12 +16,12 @@
 #include "features/RealFeatures.h"
 
 CCosineDistance::CCosineDistance()
-: CSimpleDistance<DREAL>()
+: CSimpleDistance<float64_t>()
 {
 }
 
 CCosineDistance::CCosineDistance(CRealFeatures* l, CRealFeatures* r)
-: CSimpleDistance<DREAL>()
+: CSimpleDistance<float64_t>()
 {
 	init(l, r);
 }
@@ -33,7 +33,7 @@ CCosineDistance::~CCosineDistance()
 
 bool CCosineDistance::init(CFeatures* l, CFeatures* r)
 {
-	bool result=CSimpleDistance<DREAL>::init(l,r);
+	bool result=CSimpleDistance<float64_t>::init(l,r);
 
 	return result;
 }
@@ -52,7 +52,7 @@ bool CCosineDistance::save_init(FILE* dest)
 	return false;
 }
 
-DREAL CCosineDistance::compute(int32_t idx_a, int32_t idx_b)
+float64_t CCosineDistance::compute(int32_t idx_a, int32_t idx_b)
 {
 	int32_t alen, blen;
 	bool afree, bfree;
@@ -61,10 +61,10 @@ DREAL CCosineDistance::compute(int32_t idx_a, int32_t idx_b)
 	double* bvec=((CRealFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
 
 	ASSERT(alen==blen);
-	DREAL s=0;
-	DREAL ab=0;
-	DREAL sa=0;
-	DREAL sb=0;
+	float64_t s=0;
+	float64_t ab=0;
+	float64_t sa=0;
+	float64_t sb=0;
 	{
 		for (int32_t i=0; i<alen; i++)
 		{

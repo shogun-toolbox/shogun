@@ -31,7 +31,7 @@
  * @see <a href="http://en.wikipedia.org/wiki/Manhattan_distance">
  * Wikipedia: Manhattan distance</a>
  */
-class CManhattanMetric: public CSimpleDistance<DREAL>
+class CManhattanMetric: public CSimpleDistance<float64_t>
 {
 	public:
 		/** default constructor */
@@ -86,7 +86,7 @@ class CManhattanMetric: public CSimpleDistance<DREAL>
 		/// compute distance for features a and b
 		/// idx_{a,b} denote the index of the feature vectors
 		/// in the corresponding feature object
-		virtual DREAL compute(int32_t idx_a, int32_t idx_b);
+		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
 };
 
 #endif /* _MANHATTANMETRIC_H___ */

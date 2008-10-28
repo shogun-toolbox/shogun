@@ -64,7 +64,8 @@
 
 double sparsity=0;
 
-CQPBSVMLib::CQPBSVMLib(DREAL* H, int32_t n, DREAL* f, int32_t m, DREAL UB)
+CQPBSVMLib::CQPBSVMLib(
+	float64_t* H, int32_t n, float64_t* f, int32_t m, float64_t UB)
 : CSGObject()
 {
 	ASSERT(H && n>0);
@@ -86,21 +87,21 @@ CQPBSVMLib::~CQPBSVMLib()
 	delete[] m_diag_H;
 }
 
-int32_t CQPBSVMLib::solve_qp(DREAL* result, int32_t len)
+int32_t CQPBSVMLib::solve_qp(float64_t* result, int32_t len)
 {
 	int32_t status = -1;
 	ASSERT(len==m_dim);
-	DREAL* Nabla=new DREAL[m_dim];
+	float64_t* Nabla=new float64_t[m_dim];
 	for (int32_t i=0; i<m_dim; i++)
 		Nabla[i]=m_f[i];
 
 	delete[] m_diag_H;
-	m_diag_H=new DREAL[m_dim];
+	m_diag_H=new float64_t[m_dim];
 
 	for (int32_t i=0; i<m_dim; i++)
 		m_diag_H[i]=m_H[i*m_dim+i];
 
-	DREAL* History=NULL;
+	float64_t* History=NULL;
 	int32_t t;
 	int32_t verb=0;
 
@@ -150,22 +151,22 @@ Usage: exitflag = qpbsvm_sca(m_UB, m_dim, m_tmax,
                m_tolabs, m_tolrel, m_tolKKT, x, Nabla, &t, &History, verb )
 
 -------------------------------------------------------------- */
-int32_t CQPBSVMLib::qpbsvm_sca(DREAL *x,
-	        DREAL *Nabla,
+int32_t CQPBSVMLib::qpbsvm_sca(float64_t *x,
+	        float64_t *Nabla,
             int32_t   *ptr_t,
-            DREAL **ptr_History,
+            float64_t **ptr_History,
             int32_t   verb)
 {
-  DREAL *History;
-  DREAL *col_H;
-  DREAL *tmp_ptr;
-  DREAL x_old;
-  DREAL delta_x;
-  DREAL xHx;
-  DREAL Q_P;
-  DREAL Q_D;
-  DREAL xf;
-  DREAL xi_sum;
+  float64_t *History;
+  float64_t *col_H;
+  float64_t *tmp_ptr;
+  float64_t x_old;
+  float64_t delta_x;
+  float64_t xHx;
+  float64_t Q_P;
+  float64_t Q_D;
+  float64_t xf;
+  float64_t xi_sum;
   int32_t History_size;
   int32_t t;
   int32_t i, j;
@@ -179,8 +180,8 @@ int32_t CQPBSVMLib::qpbsvm_sca(DREAL *x,
   t = 0;
 
   History_size = (m_tmax < HISTORY_BUF ) ? m_tmax+1 : HISTORY_BUF;
-  History=new DREAL[History_size*2];
-  memset(History, 0, sizeof(DREAL)*History_size*2);
+  History=new float64_t[History_size*2];
+  memset(History, 0, sizeof(float64_t)*History_size*2);
 
   /* compute Q_P and Q_D */
   xHx = 0;
@@ -216,7 +217,7 @@ int32_t CQPBSVMLib::qpbsvm_sca(DREAL *x,
         /* update Nabla */
         delta_x = x[i] - x_old;
         if( delta_x != 0 ) {
-          col_H = (DREAL*)get_col(i);
+          col_H = (float64_t*)get_col(i);
           for(j = 0; j < m_dim; j++ ) {
             Nabla[j] += col_H[j]*delta_x;
           }
@@ -260,8 +261,8 @@ int32_t CQPBSVMLib::qpbsvm_sca(DREAL *x,
       History[INDEX(1,t,2)] = Q_D;
     }
     else {
-      tmp_ptr=new DREAL[(History_size+HISTORY_BUF)*2];
-      memset(tmp_ptr, 0, sizeof(DREAL)*(History_size+HISTORY_BUF)*2);
+      tmp_ptr=new float64_t[(History_size+HISTORY_BUF)*2];
+      memset(tmp_ptr, 0, sizeof(float64_t)*(History_size+HISTORY_BUF)*2);
 
       for( i = 0; i < History_size; i++ ) {
         tmp_ptr[INDEX(0,i,2)] = History[INDEX(0,i,2)];
@@ -291,26 +292,26 @@ Usage: exitflag = qpbsvm_scas(m_UB, m_dim, m_tmax,
                m_tolabs, m_tolrel, m_tolKKT, x, Nabla, &t, &History, verb )
 
 -------------------------------------------------------------- */
-int32_t CQPBSVMLib::qpbsvm_scas(DREAL *x,
-	        DREAL *Nabla,
+int32_t CQPBSVMLib::qpbsvm_scas(float64_t *x,
+	        float64_t *Nabla,
             int32_t   *ptr_t,
-            DREAL **ptr_History,
+            float64_t **ptr_History,
             int32_t   verb)
 {
-  DREAL *History;
-  DREAL *col_H;
-  DREAL *tmp_ptr;
-  DREAL x_old;
-  DREAL x_new;
-  DREAL delta_x;
-  DREAL max_x=CMath::INFTY;
-  DREAL xHx;
-  DREAL Q_P;
-  DREAL Q_D;
-  DREAL xf;
-  DREAL xi_sum;
-  DREAL max_update;
-  DREAL curr_update;
+  float64_t *History;
+  float64_t *col_H;
+  float64_t *tmp_ptr;
+  float64_t x_old;
+  float64_t x_new;
+  float64_t delta_x;
+  float64_t max_x=CMath::INFTY;
+  float64_t xHx;
+  float64_t Q_P;
+  float64_t Q_D;
+  float64_t xf;
+  float64_t xi_sum;
+  float64_t max_update;
+  float64_t curr_update;
   int32_t History_size;
   int32_t t;
   int32_t i, j;
@@ -325,8 +326,8 @@ int32_t CQPBSVMLib::qpbsvm_scas(DREAL *x,
   t = 0;
 
   History_size = (m_tmax < HISTORY_BUF ) ? m_tmax+1 : HISTORY_BUF;
-  History=new DREAL[History_size*2];
-  memset(History, 0, sizeof(DREAL)*History_size*2);
+  History=new float64_t[History_size*2];
+  memset(History, 0, sizeof(float64_t)*History_size*2);
 
   /* compute Q_P and Q_D */
   xHx = 0;
@@ -377,7 +378,7 @@ int32_t CQPBSVMLib::qpbsvm_scas(DREAL *x,
     /* update Nabla */
     delta_x = max_x - x_old;
     if( delta_x != 0 ) {
-      col_H = (DREAL*)get_col(max_i);
+      col_H = (float64_t*)get_col(max_i);
       for(j = 0; j < m_dim; j++ ) {
         Nabla[j] += col_H[j]*delta_x;
       }
@@ -418,8 +419,8 @@ int32_t CQPBSVMLib::qpbsvm_scas(DREAL *x,
       History[INDEX(1,t,2)] = Q_D;
     }
     else {
-      tmp_ptr=new DREAL[(History_size+HISTORY_BUF)*2];
-      memset(tmp_ptr, 0, (History_size+HISTORY_BUF)*2*sizeof(DREAL));
+      tmp_ptr=new float64_t[(History_size+HISTORY_BUF)*2];
+      memset(tmp_ptr, 0, (History_size+HISTORY_BUF)*2*sizeof(float64_t));
       for( i = 0; i < History_size; i++ ) {
         tmp_ptr[INDEX(0,i,2)] = History[INDEX(0,i,2)];
         tmp_ptr[INDEX(1,i,2)] = History[INDEX(1,i,2)];
@@ -445,18 +446,18 @@ Usage: exitflag = qpbsvm_scamv(m_UB, m_dim, m_tmax,
                m_tolabs, m_tolrel, m_tolKKT, x, Nabla, &t, &History, verb )
 
 -------------------------------------------------------------- */
-int32_t CQPBSVMLib::qpbsvm_scamv(DREAL *x,
-	        DREAL *Nabla,
+int32_t CQPBSVMLib::qpbsvm_scamv(float64_t *x,
+	        float64_t *Nabla,
             int32_t   *ptr_t,
-            DREAL **ptr_History,
+            float64_t **ptr_History,
             int32_t   verb)
 {
-  DREAL *History;
-  DREAL *col_H;
-  DREAL delta_x;
-  DREAL x_new;
-  DREAL max_viol;
-  DREAL fval;
+  float64_t *History;
+  float64_t *col_H;
+  float64_t delta_x;
+  float64_t x_new;
+  float64_t max_viol;
+  float64_t fval;
   int32_t t;
   int32_t i;
   int32_t u=-1;
@@ -500,15 +501,15 @@ int32_t CQPBSVMLib::qpbsvm_scamv(DREAL *x,
       delta_x = x_new - x[u];
       x[u] = x_new;
 
-      col_H = (DREAL*)get_col(u);
+      col_H = (float64_t*)get_col(u);
       for(i = 0; i < m_dim; i++ ) {
         Nabla[i] += col_H[i]*delta_x;
       }
     }
   }
 
-  History=new DREAL[(t+1)*2];
-  memset(History, 0, sizeof(DREAL)*(t+1)*2);
+  History=new float64_t[(t+1)*2];
+  memset(History, 0, sizeof(float64_t)*(t+1)*2);
 
   fval = 0;
   for(fval = 0, i = 0; i < m_dim; i++ ) {
@@ -532,17 +533,17 @@ Usage: exitflag = qpbsvm_prloqo(m_UB, m_dim, m_tmax,
                m_tolabs, m_tolrel, m_tolKKT, x, Nabla, &t, &History, verb )
 
 -------------------------------------------------------------- */
-int32_t CQPBSVMLib::qpbsvm_prloqo(DREAL *x,
-	        DREAL *Nabla,
+int32_t CQPBSVMLib::qpbsvm_prloqo(float64_t *x,
+	        float64_t *Nabla,
             int32_t   *ptr_t,
-            DREAL **ptr_History,
+            float64_t **ptr_History,
             int32_t   verb)
 {
-	DREAL* lb=new DREAL[m_dim];
-	DREAL* ub=new DREAL[m_dim];
-	DREAL* primal=new DREAL[3*m_dim];
-	DREAL* dual=new DREAL[1+2*m_dim];
-	DREAL* a=new DREAL[m_dim];
+	float64_t* lb=new float64_t[m_dim];
+	float64_t* ub=new float64_t[m_dim];
+	float64_t* primal=new float64_t[3*m_dim];
+	float64_t* dual=new float64_t[1+2*m_dim];
+	float64_t* a=new float64_t[m_dim];
 
 	for (int32_t i=0; i<m_dim; i++)
 	{
@@ -551,7 +552,7 @@ int32_t CQPBSVMLib::qpbsvm_prloqo(DREAL *x,
 		ub[i]=m_UB;
 	}
 
-	DREAL b=0;
+	float64_t b=0;
 
 	CMath::display_vector(m_f, m_dim, "m_f");
 	int32_t result=pr_loqo(m_dim, 1, m_f, m_H, a, &b, lb, ub, primal, dual,
@@ -568,10 +569,10 @@ int32_t CQPBSVMLib::qpbsvm_prloqo(DREAL *x,
 	return result;
 }
 
-int32_t CQPBSVMLib::qpbsvm_gauss_seidel(DREAL *x,
-	        DREAL *Nabla,
+int32_t CQPBSVMLib::qpbsvm_gauss_seidel(float64_t *x,
+	        float64_t *Nabla,
             int32_t   *ptr_t,
-            DREAL **ptr_History,
+            float64_t **ptr_History,
             int32_t   verb)
 {
 	for (int32_t i=0; i<m_dim; i++)
@@ -600,10 +601,10 @@ int32_t CQPBSVMLib::qpbsvm_gauss_seidel(DREAL *x,
 	return 0;
 }
 
-int32_t CQPBSVMLib::qpbsvm_gradient_descent(DREAL *x,
-	        DREAL *Nabla,
+int32_t CQPBSVMLib::qpbsvm_gradient_descent(float64_t *x,
+	        float64_t *Nabla,
             int32_t   *ptr_t,
-            DREAL **ptr_History,
+            float64_t **ptr_History,
             int32_t   verb)
 {
 	for (int32_t i=0; i<m_dim; i++)
@@ -638,14 +639,14 @@ Usage: exitflag = qpbsvm_prloqo(m_UB, m_dim, m_tmax,
                m_tolabs, m_tolrel, m_tolKKT, x, Nabla, &t, &History, verb )
 
 -------------------------------------------------------------- */
-int32_t CQPBSVMLib::qpbsvm_cplex(DREAL *x,
-	        DREAL *Nabla,
+int32_t CQPBSVMLib::qpbsvm_cplex(float64_t *x,
+	        float64_t *Nabla,
             int32_t   *ptr_t,
-            DREAL **ptr_History,
+            float64_t **ptr_History,
             int32_t   verb)
 {
-	DREAL* lb=new DREAL[m_dim];
-	DREAL* ub=new DREAL[m_dim];
+	float64_t* lb=new float64_t[m_dim];
+	float64_t* ub=new float64_t[m_dim];
 
 	for (int32_t i=0; i<m_dim; i++)
 	{

@@ -83,14 +83,14 @@ class CWeightedCommWordStringKernel: public CCommWordStringKernel
 	 	* @param idx index to compute
 	 	* @return optimized value at given index
 	 	*/
-		virtual DREAL compute_optimized(int32_t idx);
+		virtual float64_t compute_optimized(int32_t idx);
 
 		/** add to normal
 		 *
 		 * @param idx where to add
 		 * @param weight what to add
 		 */
-		virtual void add_to_normal(int32_t idx, DREAL weight);
+		virtual void add_to_normal(int32_t idx, float64_t weight);
 
 		/** merge normal */
 		void merge_normal();
@@ -107,7 +107,7 @@ class CWeightedCommWordStringKernel: public CCommWordStringKernel
 		 * @param d degree (must match number of weights)
 		 * @return if setting was successful
 		 */
-		bool set_weights(DREAL* w, int32_t d);
+		bool set_weights(float64_t* w, int32_t d);
 
 		/** return what type of kernel we are
 		 *
@@ -139,9 +139,10 @@ class CWeightedCommWordStringKernel: public CCommWordStringKernel
 		 * @param do_init if initialization shall be performed
 		 * @return computed score
 		 */
-		virtual DREAL* compute_scoring(int32_t max_degree, int32_t& num_feat,
-			int32_t& num_sym, DREAL* target, int32_t num_suppvec, int32_t* IDX,
-			DREAL* alphas, bool do_init=true);
+		virtual float64_t* compute_scoring(
+			int32_t max_degree, int32_t& num_feat, int32_t& num_sym,
+			float64_t* target, int32_t num_suppvec, int32_t* IDX,
+			float64_t* alphas, bool do_init=true);
 
 	protected:
 		/** helper for compute
@@ -150,13 +151,14 @@ class CWeightedCommWordStringKernel: public CCommWordStringKernel
 		 * @param idx_b index b
 		 * @param do_sort if sorting shall be performed
 		 */
-		virtual DREAL compute_helper(int32_t idx_a, int32_t idx_b, bool do_sort);
+		virtual float64_t compute_helper(
+			int32_t idx_a, int32_t idx_b, bool do_sort);
 
 		/** degree */
 		int32_t degree;
 
 		/** weights for each of the subkernels of degree 1...d */
-		DREAL* weights;
+		float64_t* weights;
 };
 
 #endif /* _WEIGHTEDCOMMWORDSTRINGKERNEL_H__ */

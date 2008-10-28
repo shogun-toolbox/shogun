@@ -30,7 +30,7 @@
  * @see <a href="http://en.wikipedia.org/wiki/Kullback-Leibler_divergence">
  * Wikipedia: Kullback-Leibler divergence</a>             
  */
-class CJensenMetric: public CSimpleDistance<DREAL>
+class CJensenMetric: public CSimpleDistance<float64_t>
 {
 	public:
 		/** default constructor */
@@ -85,7 +85,7 @@ class CJensenMetric: public CSimpleDistance<DREAL>
 		/// compute distance for features a and b
 		/// idx_{a,b} denote the index of the feature vectors
 		/// in the corresponding feature object
-		virtual DREAL compute(int32_t idx_a, int32_t idx_b);
+		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
 };
 
 #endif /* _JENSENMETRIC_H___ */

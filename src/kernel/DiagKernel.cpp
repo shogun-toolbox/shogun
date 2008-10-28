@@ -14,12 +14,12 @@
 #include "kernel/DiagKernel.h"
 #include "lib/io.h"
 
-CDiagKernel::CDiagKernel(int32_t size, DREAL d)
+CDiagKernel::CDiagKernel(int32_t size, float64_t d)
 : CKernel(size), diag(d)
 {
 }
 
-CDiagKernel::CDiagKernel(CFeatures* l, CFeatures* r, DREAL d)
+CDiagKernel::CDiagKernel(CFeatures* l, CFeatures* r, float64_t d)
 : CKernel(10), diag(d)
 {
 	init(l, r);

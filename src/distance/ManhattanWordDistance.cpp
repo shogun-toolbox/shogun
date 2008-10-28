@@ -20,7 +20,7 @@ CManhattanWordDistance::CManhattanWordDistance()
 {
 	SG_DEBUG("CManhattanWordDistance created");
 	dictionary_size= 1<<(sizeof(uint16_t)*8);
-	dictionary_weights = new DREAL[dictionary_size];
+	dictionary_weights = new float64_t[dictionary_size];
 	SG_DEBUG( "using dictionary of %d bytes\n", dictionary_size);
 }
 
@@ -30,7 +30,7 @@ CManhattanWordDistance::CManhattanWordDistance(
 {
 	SG_DEBUG("CManhattanWordDistance created");
 	dictionary_size= 1<<(sizeof(uint16_t)*8);
-	dictionary_weights = new DREAL[dictionary_size];
+	dictionary_weights = new float64_t[dictionary_size];
 	SG_DEBUG( "using dictionary of %d bytes\n", dictionary_size);
 
 	init(l, r);
@@ -63,12 +63,14 @@ bool CManhattanWordDistance::save_init(FILE* dest)
 	return false;
 }
 
-DREAL CManhattanWordDistance::compute(int32_t idx_a, int32_t idx_b)
+float64_t CManhattanWordDistance::compute(int32_t idx_a, int32_t idx_b)
 {
 	int32_t alen, blen;
 
-	uint16_t* avec=((CStringFeatures<uint16_t>*) lhs)->get_feature_vector(idx_a, alen);
-	uint16_t* bvec=((CStringFeatures<uint16_t>*) rhs)->get_feature_vector(idx_b, blen);
+	uint16_t* avec=((CStringFeatures<uint16_t>*) lhs)->
+		get_feature_vector(idx_a, alen);
+	uint16_t* bvec=((CStringFeatures<uint16_t>*) rhs)->
+		get_feature_vector(idx_b, blen);
 
 	int32_t result=0;
 

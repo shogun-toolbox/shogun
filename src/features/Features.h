@@ -57,7 +57,7 @@ class CFeatures;
  * implements only very weak interfaces to
  *
  * - duplicate the Feature object
- * - obtain the feature type (like DREALs, int16_t ...)
+ * - obtain the feature type (like F_DREAL, F_SHORT ...)
  * - obtain the feature class (like Simple dense matrices, sparse or strings)
  * - obtain the number of feature "vectors"
  *

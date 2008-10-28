@@ -83,7 +83,7 @@ template <class T> struct radix_stack_t
 struct thread_qsort
 {
 	/** output */
-	DREAL* output;
+	float64_t* output;
 	/** index */
 	int32_t* index;
 	/** size */
@@ -165,17 +165,17 @@ class CMath : public CSGObject
 		/// crc32
 		static uint32_t crc32(uint8_t *data, int32_t len);
 
-		static inline DREAL round(DREAL d)
+		static inline float64_t round(float64_t d)
 		{
 			return ::floor(d+0.5);
 		}
 
-		static inline DREAL floor(DREAL d)
+		static inline float64_t floor(float64_t d)
 		{
 			return ::floor(d);
 		}
 
-		static inline DREAL ceil(DREAL d)
+		static inline float64_t ceil(float64_t d)
 		{
 			return ::ceil(d);
 		}
@@ -212,7 +212,7 @@ class CMath : public CSGObject
 		}
 
 		/// x^0.5
-		static inline DREAL sqrt(DREAL x)
+		static inline float64_t sqrt(float64_t x)
 		{
 			return ::sqrt(x);
 		}
@@ -252,44 +252,46 @@ class CMath : public CSGObject
 			return result;
 		}
 
-		static inline DREAL pow(DREAL x, int32_t n)
+		static inline float64_t pow(float64_t x, int32_t n)
 		{
 			ASSERT(n>=0);
-			DREAL result=1;
+			float64_t result=1;
 			while (n--)
 				result*=x;
 
 			return result;
 		}
 
-		static inline DREAL pow(DREAL x, DREAL n)
+		static inline float64_t pow(float64_t x, float64_t n)
 		{
 			return ::pow(x, n);
 		}
 
-		static inline DREAL log10(DREAL v)
+		static inline float64_t log10(float64_t v)
 		{
 			return ::log(v)/::log(10.0);
 		}
 
 #ifdef HAVE_LOG2
-		static inline DREAL log2(DREAL v)
+		static inline float64_t log2(float64_t v)
 		{
 			return ::log2(v);
 		}
 #else
-		static inline DREAL log2(DREAL v)
+		static inline float64_t log2(float64_t v)
 		{
 			return ::log(v)/::log(2.0);
 		}
 #endif //HAVE_LOG2
 
-		static inline DREAL log(DREAL v)
+		static inline float64_t log(float64_t v)
 		{
 			return ::log(v);
 		}
 
-		template <class T> static void transpose_matrix(T*& matrix, int32_t& num_feat, int32_t& num_vec)
+		template <class T>
+		static void transpose_matrix(
+			T*& matrix, int32_t& num_feat, int32_t& num_vec)
 		{
 			T* transposed=new T[num_vec*num_feat];
 			for (int32_t i=0; i<num_vec; i++)
@@ -307,22 +309,27 @@ class CMath : public CSGObject
 #ifdef HAVE_LAPACK
 		/// return the pseudo inverse for matrix
 		/// when matrix has shape (rows, cols) the pseudo inverse has (cols, rows)
-		static DREAL* pinv(DREAL* matrix, int32_t rows, int32_t cols, DREAL* target=NULL);
+		static float64_t* pinv(
+			float64_t* matrix, int32_t rows, int32_t cols,
+			float64_t* target=NULL);
 
 
 		//C := alpha*op( A )*op( B ) + beta*C
 		//op( X ) = X   or   op( X ) = X',
-		static inline void dgemm(double alpha, const double* A, int rows, int cols, CBLAS_TRANSPOSE transposeA,
-				double *B, int cols_B, CBLAS_TRANSPOSE transposeB,
-				double beta, double *C)
+		static inline void dgemm(
+			double alpha, const double* A, int rows, int cols,
+			CBLAS_TRANSPOSE transposeA, double *B, int cols_B,
+			CBLAS_TRANSPOSE transposeB, double beta, double *C)
 		{
 			cblas_dgemm(CblasColMajor, transposeA, transposeB, rows, cols, cols_B,
 					alpha, A, cols, B, cols_B, beta, C, cols);
 		}
 
 		//y := alpha*A*x + beta*y,   or   y := alpha*A'*x + beta*y,
-		static inline void dgemv(double alpha, const double *A, int rows, int cols, const CBLAS_TRANSPOSE transposeA,
-				const double* X, double beta, double* Y)
+		static inline void dgemv(
+			double alpha, const double *A, int rows, int cols,
+			const CBLAS_TRANSPOSE transposeA, const double* X, double beta,
+			double* Y)
 		{
 			cblas_dgemv(CblasColMajor, transposeA,
 					rows, cols, alpha, A, cols,
@@ -381,9 +388,9 @@ class CMath : public CSGObject
 			return ret;
 		}
 
-		static inline DREAL random(DREAL min_value, DREAL max_value)
+		static inline float64_t random(float64_t min_value, float64_t max_value)
 		{
-			DREAL ret = min_value + ((max_value-min_value) * (random() / (1.0*RAND_MAX)));
+			float64_t ret = min_value + ((max_value-min_value) * (random() / (1.0*RAND_MAX)));
 
 			if (ret<min_value || ret>max_value)
 				SG_SPRINT("min_value:%10.10f value: %10.10f max_value:%10.10f", min_value, ret, max_value);
@@ -444,9 +451,9 @@ class CMath : public CSGObject
 			}
 
 		/// compute dot product between v1 and v2 (blas optimized)
-		static inline DREAL dot(const DREAL* v1, const DREAL* v2, int32_t n)
+		static inline float64_t dot(const float64_t* v1, const float64_t* v2, int32_t n)
 		{
-			DREAL r=0;
+			float64_t r=0;
 #ifdef HAVE_LAPACK
 			int32_t skip=1;
 			r = cblas_ddot(n, v1, skip, v2, skip);
@@ -461,7 +468,7 @@ class CMath : public CSGObject
 		static inline float32_t dot(
 			const float32_t* v1, const float32_t* v2, int32_t n)
 		{
-			DREAL r=0;
+			float64_t r=0;
 #ifdef HAVE_LAPACK
 			int32_t skip=1;
 			r = cblas_sdot(n, v1, skip, v2, skip);
@@ -473,58 +480,65 @@ class CMath : public CSGObject
 		}
 
 		/// compute dot product between v1 and v2 (for 64bit ints)
-		static inline DREAL dot(const int64_t* v1, const int64_t* v2, int32_t n)
+		static inline float64_t dot(
+			const int64_t* v1, const int64_t* v2, int32_t n)
 		{
-			DREAL r=0;
+			float64_t r=0;
 			for (int32_t i=0; i<n; i++)
-				r+=((DREAL) v1[i])*v2[i];
+				r+=((float64_t) v1[i])*v2[i];
 
 			return r;
 		}
 
 		/// compute dot product between v1 and v2 (for 16bit unsigned ints)
-		static inline DREAL dot(const uint16_t* v1, const uint16_t* v2, int32_t n)
+		static inline float64_t dot(
+			const uint16_t* v1, const uint16_t* v2, int32_t n)
 		{
-			DREAL r=0;
+			float64_t r=0;
 			for (int32_t i=0; i<n; i++)
-				r+=((DREAL) v1[i])*v2[i];
+				r+=((float64_t) v1[i])*v2[i];
 
 			return r;
 		}
 
 		/// compute dot product between v1 and v2 (for 8bit (un)signed ints)
-		static inline DREAL dot(const char* v1, const char* v2, int32_t n)
+		static inline float64_t dot(
+			const char* v1, const char* v2, int32_t n)
 		{
-			DREAL r=0;
+			float64_t r=0;
 			for (int32_t i=0; i<n; i++)
-				r+=((DREAL) v1[i])*v2[i];
+				r+=((float64_t) v1[i])*v2[i];
 
 			return r;
 		}
 
 		/// compute dot product between v1 and v2 (for 8bit (un)signed ints)
-		static inline DREAL dot(const uint8_t* v1, const uint8_t* v2, int32_t n)
+		static inline float64_t dot(
+			const uint8_t* v1, const uint8_t* v2, int32_t n)
 		{
-			DREAL r=0;
+			float64_t r=0;
 			for (int32_t i=0; i<n; i++)
-				r+=((DREAL) v1[i])*v2[i];
+				r+=((float64_t) v1[i])*v2[i];
 
 			return r;
 		}
 
 		/// compute dot product between v1 and v2
-		static inline DREAL dot(const DREAL* v1, const char* v2, int32_t n)
+		static inline float64_t dot(
+			const float64_t* v1, const char* v2, int32_t n)
 		{
-			DREAL r=0;
+			float64_t r=0;
 			for (int32_t i=0; i<n; i++)
-				r+=((DREAL) v1[i])*v2[i];
+				r+=((float64_t) v1[i])*v2[i];
 
 			return r;
 		}
 
 		/// target=alpha*vec1 + beta*vec2
 		template <class T>
-			static inline void add(T* target, T alpha, const T* v1, T beta, const T* v2, int32_t len)
+			static inline void add(
+				T* target, T alpha, const T* v1, T beta, const T* v2,
+				int32_t len)
 			{
 				for (int32_t i=0; i<len; i++)
 					target[i]=alpha*v1[i]+beta*v2[i];
@@ -581,20 +595,21 @@ class CMath : public CSGObject
 				return result;
 			}
 
-		static inline DREAL mean(DREAL* vec, int32_t len)
+		static inline float64_t mean(float64_t* vec, int32_t len)
 		{
 			ASSERT(vec);
 			ASSERT(len>0);
 
-			DREAL mean=0;
+			float64_t mean=0;
 			for (int32_t i=0; i<len; i++)
 				mean+=vec[i];
 			return mean/len;
 		}
 
-		static inline DREAL trace(DREAL* mat, int32_t cols, int32_t rows)
+		static inline float64_t trace(
+			float64_t* mat, int32_t cols, int32_t rows)
 		{
-			DREAL trace=0;
+			float64_t trace=0;
 			for (int32_t i=0; i<rows; i++)
 				trace+=mat[i*cols+i];
 			return trace;
@@ -603,8 +618,8 @@ class CMath : public CSGObject
 		/** performs a bubblesort on a given matrix a.
 		 * it is sorted in ascending order from top to bottom
 		 * and left to right */
-		static void sort(int32_t *a, int32_t cols, int32_t sort_col=0) ;
-		static void sort(DREAL *a, int32_t*idx, int32_t N) ;
+		static void sort(int32_t *a, int32_t cols, int32_t sort_col=0);
+		static void sort(float64_t *a, int32_t*idx, int32_t N);
 
 		/*
 		 * Inline function to extract the byte at position p (from left)
@@ -783,10 +798,12 @@ class CMath : public CSGObject
 			}
 
 		/// display vector (useful for debugging)
-		template <class T> static void display_vector(T* vector, int32_t n, const char* name="vector");
+		template <class T> static void display_vector(
+			T* vector, int32_t n, const char* name="vector");
 
 		/// display matrix (useful for debugging)
-		template <class T> static void display_matrix(T* matrix, int32_t rows, int32_t cols, const char* name="matrix");
+		template <class T> static void display_matrix(
+			T* matrix, int32_t rows, int32_t cols, const char* name="matrix");
 
 		/** performs a quicksort on an array output of length size
 		 * it is sorted in ascending order 
@@ -805,22 +822,24 @@ class CMath : public CSGObject
 		 * matlab alike [sorted,index]=sort(output) 
 		 */
 		template <class T1,class T2>
-			static void qsort_backward_index(T1* output, T2* index, int32_t size);
+			static void qsort_backward_index(
+				T1* output, T2* index, int32_t size);
 
 		/* finds the smallest element in output and puts that element as the 
 		   first element  */
 		template <class T>
-			static void min(DREAL* output, T* index, int32_t size);
+			static void min(float64_t* output, T* index, int32_t size);
 
 		/* finds the n smallest elements in output and puts these elements as the 
 		   first n elements  */
 		template <class T>
-			static void nmin(DREAL* output, T* index, int32_t size, int32_t n);
+			static void nmin(
+				float64_t* output, T* index, int32_t size, int32_t n);
 
-		/* performs a inplace unique of a vector of type T using quicksort 
+		/* performs a inplace unique of a vector of type T using quicksort
 		 * returns the new number of elements */
 		template <class T>
-			static int32_t unique(T* output, int32_t size) 
+			static int32_t unique(T* output, int32_t size)
 			{
 				qsort(output, size);
 				int32_t i,j=0 ;
@@ -875,7 +894,8 @@ class CMath : public CSGObject
 		 * is returned
 		 * note: a successor is not mandatory */
 		template <class T>
-			static int32_t binary_search_max_lower_equal(T* output, int32_t size, T elem)
+			static int32_t binary_search_max_lower_equal(
+				T* output, int32_t size, T elem)
 			{
 				int32_t ind = binary_search_helper(output, size, elem);
 
@@ -888,25 +908,29 @@ class CMath : public CSGObject
 
 		/// align two sequences seq1 & seq2 of length l1 and l2 using gapCost
 		/// return alignment cost
-		static DREAL Align(char * seq1, char* seq2, int32_t l1, int32_t l2, DREAL gapCost);
+		static float64_t Align(
+			char * seq1, char* seq2, int32_t l1, int32_t l2, float64_t gapCost);
 
 		/** calculates ROC into (fp,tp)
 		 * from output and label of length size 
 		 * returns index with smallest error=fp+fn
 		 */
-		static int32_t calcroc(DREAL* fp, DREAL* tp, DREAL* output, int32_t* label, int32_t& size, int32_t& possize, int32_t& negsize, DREAL& tresh, FILE* rocfile);
+		static int32_t calcroc(
+			float64_t* fp, float64_t* tp, float64_t* output, int32_t* label,
+			int32_t& size, int32_t& possize, int32_t& negsize,
+			float64_t& tresh, FILE* rocfile);
 		//@}
 
 		/// returns the mutual information of p which is given in logspace
 		/// where p,q are given in logspace
-		static double mutual_info(DREAL* p1, DREAL* p2, int32_t len);
+		static double mutual_info(float64_t* p1, float64_t* p2, int32_t len);
 
 		/// returns the relative entropy H(P||Q), 
 		/// where p,q are given in logspace
-		static double relative_entropy(DREAL* p, DREAL* q, int32_t len);
+		static double relative_entropy(float64_t* p, float64_t* q, int32_t len);
 
 		/// returns entropy of p which is given in logspace
-		static double entropy(DREAL* p, int32_t len);
+		static double entropy(float64_t* p, int32_t len);
 
 		/// returns number generator seed
 		inline static uint32_t get_seed()
@@ -926,9 +950,9 @@ class CMath : public CSGObject
 		 * and b min(p,q).
 		 */
 #ifdef USE_LOGCACHE
-		static inline DREAL logarithmic_sum(DREAL p, DREAL q)
+		static inline float64_t logarithmic_sum(float64_t p, float64_t q)
 		{
-			DREAL diff;
+			float64_t diff;
 
 			if (!finite(p))
 				return q;
@@ -952,9 +976,10 @@ class CMath : public CSGObject
 						/// determine accuracy, such that the thing fits into MAX_LOG_TABLE_SIZE, needs logrange as argument
 						static int32_t determine_logaccuracy(int32_t range);
 #else
-						static inline DREAL logarithmic_sum(DREAL p, DREAL q)
+						static inline float64_t logarithmic_sum(
+							float64_t p, float64_t q)
 						{
-						DREAL diff;
+						float64_t diff;
 
 						if (!finite(p))
 							return q;
@@ -972,7 +997,8 @@ class CMath : public CSGObject
 				 * each of the elements to some variable. Instead array neighbours are summed up until one element remains.
 				 * Whilst the number of additions remains the same, the error is only in the order of log(N) instead N.
 				 */
-				static inline DREAL logarithmic_sum_array(DREAL *p, int32_t len)
+				static inline float64_t logarithmic_sum_array(
+					float64_t *p, int32_t len)
 				{
 					if (len<=2)
 					{
@@ -984,7 +1010,7 @@ class CMath : public CSGObject
 					}
 					else
 					{
-						register DREAL *pp=p ;
+						register float64_t *pp=p ;
 						if (len%2==1) pp++ ;
 						for (register int32_t j=0; j < len>>1; j++)
 							pp[j]=logarithmic_sum(pp[j<<1], pp[1+(j<<1)]) ;
@@ -997,11 +1023,11 @@ class CMath : public CSGObject
 				/**@name constants*/
 				//@{
 				/// infinity
-				static const DREAL INFTY;
-				static const DREAL ALMOST_INFTY;
+				static const float64_t INFTY;
+				static const float64_t ALMOST_INFTY;
 
 				/// almost neg (log) infinity
-				static const DREAL ALMOST_NEG_INFTY;
+				static const float64_t ALMOST_NEG_INFTY;
 
 				/// range for logtable: log(1+exp(x))  -LOGRANGE <= x <= 0
 				static int32_t LOGRANGE;
@@ -1016,7 +1042,7 @@ class CMath : public CSGObject
 				//@}
 	protected:
 				///table with log-values
-				static DREAL* logtable;	
+				static float64_t* logtable;	
 #endif
 				static char* rand_state;
 };
@@ -1203,7 +1229,7 @@ void CMath::qsort_backward_index(T1* output, T2* index, int32_t size)
 }
 
 	template <class T> 
-void CMath::nmin(DREAL* output, T* index, int32_t size, int32_t n)
+void CMath::nmin(float64_t* output, T* index, int32_t size, int32_t n)
 {
 	if (6*n*size<13*size*CMath::log(size))
 		for (int32_t i=0; i<n; i++)
@@ -1214,11 +1240,11 @@ void CMath::nmin(DREAL* output, T* index, int32_t size, int32_t n)
 
 /* move the smallest entry in the array to the beginning */
 	template <class T>
-void CMath::min(DREAL* output, T* index, int32_t size)
+void CMath::min(float64_t* output, T* index, int32_t size)
 {
 	if (size<=1)
 		return;
-	DREAL min_elem=output[0];
+	float64_t min_elem=output[0];
 	int32_t min_index=0;
 	for (int32_t i=1; i<size; i++)
 	{

@@ -92,10 +92,10 @@ bool CFile::save_int_data(int32_t* src, int64_t num)
 	return status;
 }
 
-DREAL* CFile::load_real_data(DREAL* target, int64_t& num)
+float64_t* CFile::load_real_data(float64_t* target, int64_t& num)
 {
 	ASSERT(expected_type==F_DREAL);
-	CSimpleFile<DREAL> f(filename, file);
+	CSimpleFile<float64_t> f(filename, file);
 	target=f.load(target, num);
 	status=(target!=NULL);
 	return target;
@@ -110,10 +110,10 @@ float32_t* CFile::load_shortreal_data(float32_t* target, int64_t& num)
 	return target;
 }
 
-bool CFile::save_real_data(DREAL* src, int64_t num)
+bool CFile::save_real_data(float64_t* src, int64_t num)
 {
 	ASSERT(expected_type==F_DREAL);
-	CSimpleFile<DREAL> f(filename, file);
+	CSimpleFile<float64_t> f(filename, file);
 	status=f.save(src, num);
 	return status;
 }
@@ -237,7 +237,8 @@ bool CFile::write_header()
 		return false;
 }
 
-template <class T> void CFile::append_item(CDynamicArray<T>* items, char* ptr_data, char* ptr_item)
+template <class T> void CFile::append_item(
+	CDynamicArray<T>* items, char* ptr_data, char* ptr_item)
 {
 	size_t len=(ptr_data-ptr_item)/sizeof(char);
 	char* item=new char[len+1];
@@ -248,7 +249,8 @@ template <class T> void CFile::append_item(CDynamicArray<T>* items, char* ptr_da
 	items->append_element(item);
 }
 
-bool CFile::read_real_valued_dense(DREAL*& matrix, int32_t& num_feat, int32_t& num_vec)
+bool CFile::read_real_valued_dense(
+	float64_t*& matrix, int32_t& num_feat, int32_t& num_vec)
 {
 	ASSERT(expected_type==F_DREAL);
 
@@ -306,7 +308,7 @@ bool CFile::read_real_valued_dense(DREAL*& matrix, int32_t& num_feat, int32_t& n
 	delete[] data;
 
 	// now copy data into matrix
-	matrix=new DREAL[num_vec*num_feat];
+	matrix=new float64_t[num_vec*num_feat];
 	for (int32_t i=0; i<num_vec; i++)
 	{
 		for (int32_t j=0; j<num_feat; j++)
@@ -322,7 +324,8 @@ bool CFile::read_real_valued_dense(DREAL*& matrix, int32_t& num_feat, int32_t& n
 	return true;
 }
 
-bool CFile::write_real_valued_dense(const DREAL* matrix, int32_t num_feat, int32_t num_vec)
+bool CFile::write_real_valued_dense(
+	const float64_t* matrix, int32_t num_feat, int32_t num_vec)
 {
 	if (!(file && matrix))
 		SG_ERROR("File or matrix invalid.\n");
@@ -331,7 +334,7 @@ bool CFile::write_real_valued_dense(const DREAL* matrix, int32_t num_feat, int32
 	{
 		for (int32_t j=0; j<num_vec; j++)
 		{
-			DREAL v=matrix[num_feat*j+i];
+			float64_t v=matrix[num_feat*j+i];
 			if (j==num_vec-1)
 				fprintf(file, "%f\n", v);
 			else
@@ -342,7 +345,8 @@ bool CFile::write_real_valued_dense(const DREAL* matrix, int32_t num_feat, int32
 	return true;
 }
 
-bool CFile::read_real_valued_sparse(TSparse<DREAL>*& matrix, int32_t& num_feat, int32_t& num_vec)
+bool CFile::read_real_valued_sparse(
+	TSparse<float64_t>*& matrix, int32_t& num_feat, int32_t& num_vec)
 {
 	size_t blocksize=1024*1024;
 	size_t required_blocksize=blocksize;
@@ -383,7 +387,7 @@ bool CFile::read_real_valued_sparse(TSparse<DREAL>*& matrix, int32_t& num_feat, 
 		delete[] dummy;
 		blocksize=required_blocksize;
 		dummy = new uint8_t[blocksize+1]; //allow setting of '\0' at EOL
-		matrix=new TSparse<DREAL>[num_vec];
+		matrix=new TSparse<float64_t>[num_vec];
 
 		rewind(file);
 		sz=blocksize;
@@ -430,7 +434,7 @@ bool CFile::read_real_valued_sparse(TSparse<DREAL>*& matrix, int32_t& num_feat, 
 								dims, len, len, (const char*) data);
 					}
 
-					TSparseEntry<DREAL>* feat=new TSparseEntry<DREAL>[dims];
+					TSparseEntry<float64_t>* feat=new TSparseEntry<float64_t>[dims];
 
 					//skip label part
 					size_t j=0;
@@ -470,7 +474,7 @@ bool CFile::read_real_valued_sparse(TSparse<DREAL>*& matrix, int32_t& num_feat, 
 								if (data[j]==' ' || data[j]=='\n')
 								{
 									data[j]='\0';
-									feat[d].entry=(DREAL) atof((const char*) start);
+									feat[d].entry=(float64_t) atof((const char*) start);
 									d++;
 									break;
 								}
@@ -479,7 +483,7 @@ bool CFile::read_real_valued_sparse(TSparse<DREAL>*& matrix, int32_t& num_feat, 
 							if (j==len)
 							{
 								data[j]='\0';
-								feat[dims-1].entry=(DREAL) atof((const char*) start);
+								feat[dims-1].entry=(float64_t) atof((const char*) start);
 							}
 
 							j++;
@@ -505,14 +509,15 @@ bool CFile::read_real_valued_sparse(TSparse<DREAL>*& matrix, int32_t& num_feat, 
 	return true;
 }
 
-bool CFile::write_real_valued_sparse(const TSparse<DREAL>* matrix, int32_t num_feat, int32_t num_vec)
+bool CFile::write_real_valued_sparse(
+	const TSparse<float64_t>* matrix, int32_t num_feat, int32_t num_vec)
 {
 	if (!(file && matrix))
 		SG_ERROR("File or matrix invalid.\n");
 
 	for (int32_t i=0; i<num_vec; i++)
 	{
-		TSparseEntry<DREAL>* vec = matrix[i].features;
+		TSparseEntry<float64_t>* vec = matrix[i].features;
 		int32_t len=matrix[i].num_feat_entries;
 
 		for (int32_t j=0; j<len; j++)
@@ -528,7 +533,8 @@ bool CFile::write_real_valued_sparse(const TSparse<DREAL>* matrix, int32_t num_f
 }
 
 
-bool CFile::read_char_valued_strings(T_STRING<char>*& strings, int32_t& num_str, int32_t& max_string_len)
+bool CFile::read_char_valued_strings(
+	T_STRING<char>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 	bool result=false;
 
@@ -628,7 +634,8 @@ bool CFile::read_char_valued_strings(T_STRING<char>*& strings, int32_t& num_str,
 	return result;
 }
 
-bool CFile::write_char_valued_strings(const T_STRING<char>* strings, int32_t num_str)
+bool CFile::write_char_valued_strings(
+	const T_STRING<char>* strings, int32_t num_str)
 {
 	if (!(file && strings))
 		SG_ERROR("File or strings invalid.\n");

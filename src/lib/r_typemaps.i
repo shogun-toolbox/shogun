@@ -65,7 +65,7 @@
 %enddef
 
 TYPEMAP_IN1(INTSXP, INTEGER, int32_t, "Integer")
-TYPEMAP_IN1(REALSXP, REAL, DREAL, "Double Precision")
+TYPEMAP_IN1(REALSXP, REAL, float64_t, "Double Precision")
 #undef TYPEMAP_IN1
 
 %define TYPEMAP_IN2(r_type, r_cast, sg_type, error_string)
@@ -93,7 +93,7 @@ TYPEMAP_IN1(REALSXP, REAL, DREAL, "Double Precision")
 %enddef
 
 TYPEMAP_IN2(INTSXP, INTEGER, int32_t, "Integer")
-TYPEMAP_IN2(REALSXP, REAL, DREAL, "Double Precision")
+TYPEMAP_IN2(REALSXP, REAL, float64_t, "Double Precision")
 #undef TYPEMAP_IN2
 
 /* TYPEMAP_ARGOUT macros
@@ -107,14 +107,14 @@ TYPEMAP_IN2(REALSXP, REAL, DREAL, "Double Precision")
  * numpy array.  This can be applied to an existing function using
  * the %apply directive:
  *
- *     %apply (DREAL** ARGOUT_ARRAY1, {(DREAL** series, int32_t* len)}
- *     %apply (DREAL** ARGOUT_ARRAY2, {(DREAL** matrix, int32_t* d1, int32_t* d2)}
+ *     %apply (float64_t** ARGOUT_ARRAY1, {(float64_t** series, int32_t* len)}
+ *     %apply (float64_t** ARGOUT_ARRAY2, {(float64_t** matrix, int32_t* d1, int32_t* d2)}
  *
  * with
  *
- *     void sum(DREAL* series, int32_t* len);
- *     void sum(DREAL** series, int32_t* len);
- *     void sum(DREAL** matrix, int32_t* d1, int32_t* d2);
+ *     void sum(float64_t* series, int32_t* len);
+ *     void sum(float64_t** series, int32_t* len);
+ *     void sum(float64_t** matrix, int32_t* d1, int32_t* d2);
  *
  * where sum mallocs the array and assigns dimensions and the pointer
  *
@@ -143,7 +143,7 @@ TYPEMAP_ARGOUT1(INTSXP, INTEGER, uint8_t, int, "Byte")
 TYPEMAP_ARGOUT1(INTSXP, INTEGER, int32_t, int, "Integer")
 TYPEMAP_ARGOUT1(INTSXP, INTEGER, int16_t, int, "Short")
 TYPEMAP_ARGOUT1(REALSXP, REAL, float32_t, float, "Single Precision")
-TYPEMAP_ARGOUT1(REALSXP, REAL, DREAL, double, "Double Precision")
+TYPEMAP_ARGOUT1(REALSXP, REAL, float64_t, double, "Double Precision")
 TYPEMAP_ARGOUT1(INTSXP, INTEGER, uint16_t, int, "Word")
 #undef TYPEMAP_ARGOUT1
 
@@ -175,7 +175,7 @@ TYPEMAP_ARGOUT2(INTSXP, INTEGER, uint8_t, int, "Byte")
 TYPEMAP_ARGOUT2(INTSXP, INTEGER, int32_t, int, "Integer")
 TYPEMAP_ARGOUT2(INTSXP, INTEGER, int16_t, int, "Short")
 TYPEMAP_ARGOUT2(REALSXP, REAL, float32_t, float, "Single Precision")
-TYPEMAP_ARGOUT2(REALSXP, REAL, DREAL, double, "Double Precision")
+TYPEMAP_ARGOUT2(REALSXP, REAL, float64_t, double, "Double Precision")
 TYPEMAP_ARGOUT2(INTSXP, INTEGER, uint16_t, int, "Word")
 #undef TYPEMAP_ARGOUT2
 

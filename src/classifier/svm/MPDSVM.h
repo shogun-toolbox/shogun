@@ -27,7 +27,7 @@ class CMPDSVM : public CSVM
 		 * @param k kernel
 		 * @param lab labels
 		 */
-		CMPDSVM(DREAL C, CKernel* k, CLabels* lab);
+		CMPDSVM(float64_t C, CKernel* k, CLabels* lab);
 		virtual ~CMPDSVM();
 
 		/** train SVM */
@@ -46,7 +46,7 @@ class CMPDSVM : public CSVM
 		 * @param j index of H
 		 * @return computed H at index i,j
 		 */
-		inline DREAL compute_H(int32_t i, int32_t j)
+		inline float64_t compute_H(int32_t i, int32_t j)
 		{
 			return labels->get_label(i)*labels->get_label(j)*kernel->kernel(i,j);
 		}

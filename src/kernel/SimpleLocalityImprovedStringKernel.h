@@ -106,9 +106,9 @@ class CSimpleLocalityImprovedStringKernel: public CStringKernel<char>
 		 * @param pyra pyramid
 		 * @return dot product of pyramid (?)
 		 */
-		DREAL dot_pyr (const char* const x1, const char* const x2,
+		float64_t dot_pyr (const char* const x1, const char* const x2,
 				const int32_t NOF_NTS, const int32_t NTWIDTH,
-				const int32_t DEGREE1, const int32_t DEGREE2, DREAL *pyra);
+				const int32_t DEGREE1, const int32_t DEGREE2, float64_t *pyra);
 
 	protected:
 		/** compute kernel function for features a and b
@@ -119,7 +119,7 @@ class CSimpleLocalityImprovedStringKernel: public CStringKernel<char>
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		DREAL compute(int32_t idx_a, int32_t idx_b);
+		float64_t compute(int32_t idx_a, int32_t idx_b);
 
 	protected:
 		/** length */
@@ -129,7 +129,7 @@ class CSimpleLocalityImprovedStringKernel: public CStringKernel<char>
 		/** outer degree */
 		int32_t outer_degree;
 		/** pyramid weights */
-		DREAL *pyramid_weights;
+		float64_t *pyramid_weights;
 };
 
 #endif /* _SIMPLELOCALITYIMPROVEDSTRINGKERNEL_H___ */

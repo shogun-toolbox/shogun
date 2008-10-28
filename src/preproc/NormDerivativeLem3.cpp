@@ -14,7 +14,7 @@
 #include "features/RealFeatures.h"
 
 CNormDerivativeLem3::CNormDerivativeLem3()
-: CSimplePreProc<DREAL>("NormDerivativeLem3", "NDL3")
+: CSimplePreProc<float64_t>("NormDerivativeLem3", "NDL3")
 {
 }
 
@@ -51,14 +51,15 @@ bool CNormDerivativeLem3::save(FILE* f)
 /// apply preproc on feature matrix
 /// result in feature matrix
 /// return pointer to feature_matrix, i.e. f->get_feature_matrix();
-DREAL* CNormDerivativeLem3::apply_to_feature_matrix(CFeatures* f)
+float64_t* CNormDerivativeLem3::apply_to_feature_matrix(CFeatures* f)
 {
 	return NULL;
 }
 
 /// apply preproc on single feature vector
 /// result in feature matrix
-DREAL* CNormDerivativeLem3::apply_to_feature_vector(DREAL* f, int32_t len)
+float64_t* CNormDerivativeLem3::apply_to_feature_vector(
+	float64_t* f, int32_t len)
 {
 	return NULL;
 }

@@ -274,7 +274,7 @@ TYPEMAP_IN1(uint32_t,      NPY_UINT32 )
 TYPEMAP_IN1(int64_t,       NPY_INT64 )
 TYPEMAP_IN1(uint64_t,      NPY_UINT64 )
 TYPEMAP_IN1(float32_t,     NPY_FLOAT32 )
-TYPEMAP_IN1(DREAL,         NPY_FLOAT64)
+TYPEMAP_IN1(float64_t,     NPY_FLOAT64)
 TYPEMAP_IN1(float128_t,    NPY_FLOAT128)
 TYPEMAP_IN1(PyObject,      NPY_OBJECT)
 
@@ -316,7 +316,7 @@ TYPEMAP_IN2(uint32_t,      NPY_UINT32 )
 TYPEMAP_IN2(int64_t,       NPY_INT64 )
 TYPEMAP_IN2(uint64_t,      NPY_UINT64 )
 TYPEMAP_IN2(float32_t,     NPY_FLOAT32 )
-TYPEMAP_IN2(DREAL,         NPY_FLOAT64)
+TYPEMAP_IN2(float64_t,     NPY_FLOAT64)
 TYPEMAP_IN2(float128_t,    NPY_FLOAT128)
 TYPEMAP_IN2(PyObject,      NPY_OBJECT)
 
@@ -370,7 +370,7 @@ TYPEMAP_INPLACE1(uint32_t,      NPY_UINT32 )
 TYPEMAP_INPLACE1(int64_t,       NPY_INT64 )
 TYPEMAP_INPLACE1(uint64_t,      NPY_UINT64 )
 TYPEMAP_INPLACE1(float32_t,     NPY_FLOAT32 )
-TYPEMAP_INPLACE1(DREAL,         NPY_FLOAT64)
+TYPEMAP_INPLACE1(float64_t,     NPY_FLOAT64)
 TYPEMAP_INPLACE1(float128_t,    NPY_FLOAT128)
 TYPEMAP_INPLACE1(PyObject,      NPY_OBJECT)
 
@@ -398,7 +398,7 @@ TYPEMAP_INPLACE2(uint32_t,      NPY_UINT32 )
 TYPEMAP_INPLACE2(int64_t,       NPY_INT64 )
 TYPEMAP_INPLACE2(uint64_t,      NPY_UINT64 )
 TYPEMAP_INPLACE2(float32_t,     NPY_FLOAT32 )
-TYPEMAP_INPLACE2(DREAL,         NPY_FLOAT64)
+TYPEMAP_INPLACE2(float64_t,     NPY_FLOAT64)
 TYPEMAP_INPLACE2(float128_t,    NPY_FLOAT128)
 TYPEMAP_INPLACE2(PyObject,      NPY_OBJECT)
 
@@ -454,7 +454,7 @@ TYPEMAP_ARRAYOUT1(uint32_t,      NPY_UINT32 )
 TYPEMAP_ARRAYOUT1(int64_t,       NPY_INT64 )
 TYPEMAP_ARRAYOUT1(uint64_t,      NPY_UINT64 )
 TYPEMAP_ARRAYOUT1(float32_t,     NPY_FLOAT32 )
-TYPEMAP_ARRAYOUT1(DREAL,         NPY_FLOAT64)
+TYPEMAP_ARRAYOUT1(float64_t,     NPY_FLOAT64)
 TYPEMAP_ARRAYOUT1(float128_t,    NPY_FLOAT128)
 TYPEMAP_ARRAYOUT1(PyObject,      NPY_OBJECT)
 
@@ -482,7 +482,7 @@ TYPEMAP_ARRAYOUT2(uint32_t,      NPY_UINT32 )
 TYPEMAP_ARRAYOUT2(int64_t,       NPY_INT64 )
 TYPEMAP_ARRAYOUT2(uint64_t,      NPY_UINT64 )
 TYPEMAP_ARRAYOUT2(float32_t,     NPY_FLOAT32 )
-TYPEMAP_ARRAYOUT2(DREAL,         NPY_FLOAT64)
+TYPEMAP_ARRAYOUT2(float64_t,     NPY_FLOAT64)
 TYPEMAP_ARRAYOUT2(float128_t,    NPY_FLOAT128)
 TYPEMAP_ARRAYOUT2(PyObject,      NPY_OBJECT)
 
@@ -499,14 +499,14 @@ TYPEMAP_ARRAYOUT2(PyObject,      NPY_OBJECT)
  * numpy array.  This can be applied to an existing function using
  * the %apply directive:
  *
- *     %apply (DREAL** ARGOUT_ARRAY1, {(DREAL** series, int32_t* len)}
- *     %apply (DREAL** ARGOUT_ARRAY2, {(DREAL** matrix, int32_t* d1, int32_t* d2)}
+ *     %apply (float64_t** ARGOUT_ARRAY1, {(float64_t** series, int32_t* len)}
+ *     %apply (float64_t** ARGOUT_ARRAY2, {(float64_t** matrix, int32_t* d1, int32_t* d2)}
  *
  * with
  *
- *     void sum(DREAL* series, int32_t* len);
- *     void sum(DREAL** series, int32_t* len);
- *     void sum(DREAL** matrix, int32_t* d1, int32_t* d2);
+ *     void sum(float64_t* series, int32_t* len);
+ *     void sum(float64_t** series, int32_t* len);
+ *     void sum(float64_t** matrix, int32_t* d1, int32_t* d2);
  *
  * where sum mallocs the array and assigns dimensions and the pointer
  *
@@ -544,7 +544,7 @@ TYPEMAP_ARGOUT1(uint32_t,      NPY_UINT32 )
 TYPEMAP_ARGOUT1(int64_t,       NPY_INT64 )
 TYPEMAP_ARGOUT1(uint64_t,      NPY_UINT64 )
 TYPEMAP_ARGOUT1(float32_t,     NPY_FLOAT32 )
-TYPEMAP_ARGOUT1(DREAL,         NPY_FLOAT64)
+TYPEMAP_ARGOUT1(float64_t,     NPY_FLOAT64)
 TYPEMAP_ARGOUT1(float128_t,    NPY_FLOAT128)
 TYPEMAP_ARGOUT1(PyObject,      NPY_OBJECT)
 
@@ -583,7 +583,7 @@ TYPEMAP_ARGOUT2(uint32_t,      NPY_UINT32 )
 TYPEMAP_ARGOUT2(int64_t,       NPY_INT64 )
 TYPEMAP_ARGOUT2(uint64_t,      NPY_UINT64 )
 TYPEMAP_ARGOUT2(float32_t,     NPY_FLOAT32 )
-TYPEMAP_ARGOUT2(DREAL,         NPY_FLOAT64)
+TYPEMAP_ARGOUT2(float64_t,     NPY_FLOAT64)
 TYPEMAP_ARGOUT2(float128_t,    NPY_FLOAT128)
 TYPEMAP_ARGOUT2(PyObject,      NPY_OBJECT)
 

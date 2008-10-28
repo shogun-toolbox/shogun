@@ -26,7 +26,7 @@
  * \f]
  *
  * */
-class CChi2Kernel: public CSimpleKernel<DREAL>
+class CChi2Kernel: public CSimpleKernel<float64_t>
 {
 	public:
 		/** constructor
@@ -34,7 +34,7 @@ class CChi2Kernel: public CSimpleKernel<DREAL>
 		 * @param size cache size
 		 * @param width width
 		 */
-		CChi2Kernel(int32_t size, DREAL width);
+		CChi2Kernel(int32_t size, float64_t width);
 
 		/** constructor
 		 *
@@ -43,8 +43,8 @@ class CChi2Kernel: public CSimpleKernel<DREAL>
 		 * @param width width
 		 * @param size cache size
 		 */
-		CChi2Kernel(CRealFeatures* l, CRealFeatures* r,
-			DREAL width, int32_t size);
+		CChi2Kernel(
+			CRealFeatures* l, CRealFeatures* r, float64_t width, int32_t size);
 
 		virtual ~CChi2Kernel();
 
@@ -91,11 +91,11 @@ class CChi2Kernel: public CSimpleKernel<DREAL>
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		virtual DREAL compute(int32_t idx_a, int32_t idx_b);
+		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
 
 	protected:
 		/** width */
-		DREAL width;
+		float64_t width;
 };
 
 #endif /* _CHI2KERNEL_H__ */

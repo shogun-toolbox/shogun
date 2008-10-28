@@ -15,7 +15,7 @@
 #include "kernel/DistanceKernel.h"
 #include "features/RealFeatures.h"
 
-CDistanceKernel::CDistanceKernel(int32_t size, DREAL w ,CDistance* d)
+CDistanceKernel::CDistanceKernel(int32_t size, float64_t w, CDistance* d)
 : CKernel(size), distance(d), width(w)
 {
 	ASSERT(distance);
@@ -23,7 +23,7 @@ CDistanceKernel::CDistanceKernel(int32_t size, DREAL w ,CDistance* d)
 }
 
 CDistanceKernel::CDistanceKernel(
-	CFeatures *l, CFeatures *r, DREAL w , CDistance* d)
+	CFeatures *l, CFeatures *r, float64_t w , CDistance* d)
 : CKernel(10), distance(d), width(w)
 {
 	ASSERT(distance);
@@ -47,9 +47,9 @@ bool CDistanceKernel::init(CFeatures* l, CFeatures* r)
 	return init_normalizer();
 }
 
-DREAL CDistanceKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t CDistanceKernel::compute(int32_t idx_a, int32_t idx_b)
 {
-	DREAL result=distance->distance(idx_a, idx_b);
+	float64_t result=distance->distance(idx_a, idx_b);
 	return exp(-result/width);
 }
 

@@ -21,24 +21,24 @@ CDistribution::~CDistribution()
 {
 }
 
-DREAL CDistribution::get_log_likelihood_sample()
+float64_t CDistribution::get_log_likelihood_sample()
 {
 	ASSERT(features);
 
-	DREAL sum=0;
+	float64_t sum=0;
 	for (int32_t i=0; i<features->get_num_vectors(); i++)
 		sum+=get_log_likelihood_example(i);
 
 	return sum/features->get_num_vectors();
 }
 
-void CDistribution::get_log_likelihood(DREAL **dst, int32_t *num)
+void CDistribution::get_log_likelihood(float64_t **dst, int32_t *num)
 {
 	ASSERT(features);
 
 	*num=features->get_num_vectors();
-	size_t sz=sizeof(DREAL)*(*num);
-	*dst=(DREAL*) malloc(sz);
+	size_t sz=sizeof(float64_t)*(*num);
+	*dst=(float64_t*) malloc(sz);
 	ASSERT(dst);
 
 	for (int32_t i=0; i<(*num); i++)

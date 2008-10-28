@@ -99,14 +99,14 @@ double dloss(double z)
 
 
 
-CSVMSGD::CSVMSGD(double C)
+CSVMSGD::CSVMSGD(float64_t C)
 : CSparseLinearClassifier(), t(1), C1(C), C2(C),
 	wscale(1), bscale(1), epochs(5), skip(1000), count(1000), use_bias(true),
 	use_regularized_bias(false)
 {
 }
 
-CSVMSGD::CSVMSGD(DREAL C, CSparseFeatures<DREAL>* traindat, CLabels* trainlab)
+CSVMSGD::CSVMSGD(float64_t C, CSparseFeatures<float64_t>* traindat, CLabels* trainlab)
 : CSparseLinearClassifier(), t(1), C1(C), C2(C), wscale(1), bscale(1),
 	epochs(5), skip(1000), count(1000), use_bias(true),
 	use_regularized_bias(false)
@@ -137,18 +137,18 @@ bool CSVMSGD::train()
 	ASSERT(num_vec>0);
 
 	delete[] w;
-	w=new DREAL[w_dim];
-	memset(w, 0, w_dim*sizeof(DREAL));
+	w=new float64_t[w_dim];
+	memset(w, 0, w_dim*sizeof(float64_t));
 	bias=0;
 
-	DREAL lambda= 1.0/(C1*num_vec);
+	float64_t lambda= 1.0/(C1*num_vec);
 
 	// Shift t in order to have a 
 	// reasonable initial learning rate.
 	// This assumes |x| \approx 1.
-	DREAL maxw = 1.0 / sqrt(lambda);
-	DREAL typw = sqrt(maxw);
-	DREAL eta0 = typw / CMath::max(1.0,dloss(-typw));
+	float64_t maxw = 1.0 / sqrt(lambda);
+	float64_t typw = sqrt(maxw);
+	float64_t eta0 = typw / CMath::max(1.0,dloss(-typw));
 	t = 1 / (eta0 * lambda);
 
 	SG_INFO("lambda=%f, epochs=%d, eta0=%f\n", lambda, epochs, eta0);
@@ -163,15 +163,15 @@ bool CSVMSGD::train()
 		count = skip;
 		for (int32_t i=0; i<num_vec; i++)
 		{
-			DREAL eta = 1.0 / (lambda * t);
-			DREAL y = labels->get_label(i);
-			DREAL z = y * features->dense_dot(1.0, i, w, w_dim, bias);
+			float64_t eta = 1.0 / (lambda * t);
+			float64_t y = labels->get_label(i);
+			float64_t z = y * features->dense_dot(1.0, i, w, w_dim, bias);
 
 #if LOSS < LOGLOSS
 			if (z < 1)
 #endif
 			{
-				DREAL etd = eta * dloss(z);
+				float64_t etd = eta * dloss(z);
 				features->add_to_dense_vec(etd * y / wscale, i, w, w_dim);
 
 				if (use_bias)
@@ -184,7 +184,7 @@ bool CSVMSGD::train()
 
 			if (--count <= 0)
 			{
-				DREAL r = 1 - eta * lambda * skip;
+				float64_t r = 1 - eta * lambda * skip;
 				if (r < 0.8)
 					r = pow(1 - eta * lambda, skip);
 				CMath::scale_vector(r, w, w_dim);
@@ -194,7 +194,7 @@ bool CSVMSGD::train()
 		}
 	}
 
-	DREAL wnorm =  CMath::dot(w,w, w_dim);
+	float64_t wnorm =  CMath::dot(w,w, w_dim);
 	SG_INFO("Norm: %.6f, Bias: %.6f\n", wnorm, bias);
 
 	return true;
@@ -209,15 +209,15 @@ void CSVMSGD::calibrate()
 	ASSERT(num_vec>0);
 	ASSERT(c_dim>0);
 
-	DREAL* c=new DREAL[c_dim];
-	memset(c, 0, c_dim*sizeof(DREAL));
+	float64_t* c=new float64_t[c_dim];
+	memset(c, 0, c_dim*sizeof(float64_t));
 
 	SG_INFO("Estimating sparsity and bscale num_vec=%d num_feat=%d.\n", num_vec, c_dim);
 
 	// compute average gradient size
 	int32_t n = 0;
-	DREAL m = 0;
-	DREAL r = 0;
+	float64_t m = 0;
+	float64_t r = 0;
 
 	for (int32_t j=0; j<num_vec && m<=1000; j++, n++)
 	{

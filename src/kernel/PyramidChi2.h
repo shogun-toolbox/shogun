@@ -19,7 +19,7 @@
 //TODO: port to CCombinedKernel (if it is the appropriate) as the pyramid is a weighted linear combination of kernels
 
 ///Pyramid Kernel over Chi2 matched histograms
-class CPyramidChi2 : public CSimpleKernel<DREAL>
+class CPyramidChi2 : public CSimpleKernel<float64_t>
 {
 public:
 
@@ -33,9 +33,10 @@ public:
 	 * @param weights2 weights2
 	 * @param numweights2 numweights2
 	 */
-	CPyramidChi2(int32_t size, DREAL width2,
+	CPyramidChi2(
+		int32_t size, float64_t width2,
 		int32_t* pyramidlevels2, int32_t numlevels2,
-		int32_t  numbinsinhistogram2, DREAL* weights2, int32_t numweights2);
+		int32_t  numbinsinhistogram2, float64_t* weights2, int32_t numweights2);
 
 	/** constructor
 	 *
@@ -49,9 +50,10 @@ public:
 	 * @param weights2 weights2
 	 * @param numweights2 numweights2
 	 */
-	CPyramidChi2(CRealFeatures* l, CRealFeatures* r, int32_t size, DREAL width2,
+	CPyramidChi2(
+		CRealFeatures* l, CRealFeatures* r, int32_t size, float64_t width2,
 		int32_t* pyramidlevels2, int32_t numlevels2,
-		int32_t  numbinsinhistogram2, DREAL* weights2, int32_t numweights2);
+		int32_t  numbinsinhistogram2, float64_t* weights2, int32_t numweights2);
 
 	/** init
 	 *
@@ -103,11 +105,11 @@ protected:
 	 * @param idx_b index of feature vector b
 	 * @return computed kernel function
 	 */
-	virtual DREAL compute(int32_t idx_a, int32_t idx_b);
+	virtual float64_t compute(int32_t idx_a, int32_t idx_b);
 
 protected:
 	/** width */
-	DREAL width;
+	float64_t width;
 	/** pyramidlevels */
 	int32_t* pyramidlevels;
 
@@ -116,7 +118,7 @@ protected:
 	/** numbinsinhistogram */
 	int32_t numbinsinhistogram;
 	/** weights */
-	DREAL* weights;
+	float64_t* weights;
 
 	/** length of vector weights */
 	int32_t numweights;

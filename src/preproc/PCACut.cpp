@@ -26,7 +26,7 @@
 #include "lib/io.h"
 
 CPCACut::CPCACut(int32_t do_whitening_, double thresh_)
-: CSimplePreProc<DREAL>("PCACut", "PCAC"), T(NULL), num_dim(0), mean(NULL),
+: CSimplePreProc<float64_t>("PCACut", "PCAC"), T(NULL), num_dim(0), mean(NULL),
 	initialized(false), do_whitening(do_whitening_), thresh(thresh_)
 {
 }
@@ -65,7 +65,7 @@ bool CPCACut::init(CFeatures* f)
 		{
 			int32_t len;
 			bool free;
-			DREAL* vec=((CRealFeatures*) f)->get_feature_vector(i, len, free);
+			float64_t* vec=((CRealFeatures*) f)->get_feature_vector(i, len, free);
 			for (j=0; j<num_features; j++)
 				mean[j]+= vec[j];
 
@@ -91,7 +91,7 @@ bool CPCACut::init(CFeatures* f)
 			int32_t len;
 			bool free;
 
-			DREAL* vec=((CRealFeatures*) f)->get_feature_vector(i, len, free) ;
+			float64_t* vec=((CRealFeatures*) f)->get_feature_vector(i, len, free) ;
 
 			for (int32_t jj=0; jj<num_features; jj++)
 				vec[jj]-=mean[jj] ;
@@ -140,7 +140,7 @@ bool CPCACut::init(CFeatures* f)
 		SG_INFO("Done\nReducing from %i to %i features..", num_features, num_dim) ;
 
 		delete[] T;
-		T=new DREAL[num_dim*num_features];
+		T=new float64_t[num_dim*num_features];
 		num_old_dim=num_features;
 
 		if (do_whitening)
@@ -177,18 +177,18 @@ void CPCACut::cleanup()
 /// apply preproc on feature matrix
 /// result in feature matrix
 /// return pointer to feature_matrix, i.e. f->get_feature_matrix();
-DREAL* CPCACut::apply_to_feature_matrix(CFeatures* f)
+float64_t* CPCACut::apply_to_feature_matrix(CFeatures* f)
 {
 	int32_t num_vectors=0;
 	int32_t num_features=0;
 
-	DREAL* m=((CRealFeatures*) f)->get_feature_matrix(num_features, num_vectors);
+	float64_t* m=((CRealFeatures*) f)->get_feature_matrix(num_features, num_vectors);
 	SG_INFO("get Feature matrix: %ix%i\n", num_vectors, num_features) ;
 
 	if (m)
 	{
 		SG_INFO("Preprocessing feature matrix\n");
-		DREAL* res= new DREAL[num_dim];
+		float64_t* res= new float64_t[num_dim];
 		double* sub_mean= new double[num_features];
 
 		for (int32_t vec=0; vec<num_vectors; vec++)
@@ -201,7 +201,7 @@ DREAL* CPCACut::apply_to_feature_matrix(CFeatures* f)
 			cblas_dgemv(CblasColMajor, CblasNoTrans, num_dim, num_features, 1.0,
 					T, num_dim, sub_mean, 1, 0, res, 1); 
 
-			DREAL* m_transformed=&m[num_dim*vec];
+			float64_t* m_transformed=&m[num_dim*vec];
 			for (i=0; i<num_dim; i++)
 				m_transformed[i]=m[i];
 		}
@@ -218,10 +218,10 @@ DREAL* CPCACut::apply_to_feature_matrix(CFeatures* f)
 
 /// apply preproc on single feature vector
 /// result in feature matrix
-DREAL* CPCACut::apply_to_feature_vector(DREAL* f, int32_t &len)
+float64_t* CPCACut::apply_to_feature_vector(float64_t* f, int32_t &len)
 {
-	DREAL *ret=new DREAL[num_dim];
-	DREAL *sub_mean=new DREAL[len];
+	float64_t *ret=new float64_t[num_dim];
+	float64_t *sub_mean=new float64_t[len];
 	for (int32_t i=0; i<len; i++)
 		sub_mean[i]=f[i]-mean[i];
 

@@ -16,7 +16,7 @@ CLibSVM::CLibSVM()
 {
 }
 
-CLibSVM::CLibSVM(DREAL C, CKernel* k, CLabels* lab)
+CLibSVM::CLibSVM(float64_t C, CKernel* k, CLabels* lab)
 : CSVM(C, k, lab), model(NULL)
 {
 }
@@ -90,7 +90,7 @@ bool CLibSVM::train()
 		create_new_model(num_sv);
 		CSVM::set_objective(model->objective);
 
-		DREAL sgn=model->label[0];
+		float64_t sgn=model->label[0];
 
 		set_bias(-sgn*model->rho[0]);
 

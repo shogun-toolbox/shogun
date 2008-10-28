@@ -9,8 +9,8 @@
 %feature("autodoc", "get_centers(self) -> numpy 2dim array of float") get_centers;
 #endif
 
-%apply (DREAL** ARGOUT1, int32_t* DIM1) {(DREAL** radii, int32_t* num)};
-%apply (DREAL** ARGOUT2, int32_t* DIM1, int32_t* DIM2) {(DREAL** centers, int32_t* dim, int32_t* num)};
+%apply (float64_t** ARGOUT1, int32_t* DIM1) {(float64_t** radii, int32_t* num)};
+%apply (float64_t** ARGOUT2, int32_t* DIM1, int32_t* DIM2) {(float64_t** centers, int32_t* dim, int32_t* num)};
 
 %rename(KMeans) CKMeans;
 

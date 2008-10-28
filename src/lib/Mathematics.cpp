@@ -42,11 +42,11 @@ int32_t CMath::LOGACCURACY         = 0; // 100000 steps per integer
 
 int32_t CMath::LOGRANGE            = 0; // range for logtable: log(1+exp(x))  -25 <= x <= 0
 
-const DREAL CMath::INFTY            =  -log(0.0);	// infinity
-const DREAL CMath::ALMOST_INFTY		=  +1e+20;		//a large number
-const DREAL CMath::ALMOST_NEG_INFTY =  -1000;	
+const float64_t CMath::INFTY            =  -log(0.0);	// infinity
+const float64_t CMath::ALMOST_INFTY		=  +1e+20;		//a large number
+const float64_t CMath::ALMOST_NEG_INFTY =  -1000;	
 #ifdef USE_LOGCACHE
-DREAL* CMath::logtable = NULL;
+float64_t* CMath::logtable = NULL;
 #endif
 char* CMath::rand_state = NULL;
 uint32_t CMath::seed = 0;
@@ -67,14 +67,14 @@ CMath::CMath()
     LOGRANGE=CMath::determine_logrange();
     LOGACCURACY=CMath::determine_logaccuracy(LOGRANGE);
 #ifndef HAVE_SWIG
-    SG_PRINT( "initializing log-table (size=%i*%i*%i=%2.1fMB) ... ) ",LOGRANGE,LOGACCURACY,sizeof(DREAL),LOGRANGE*LOGACCURACY*sizeof(DREAL)/(1024.0*1024.0)) ;
+    SG_PRINT( "initializing log-table (size=%i*%i*%i=%2.1fMB) ... ) ",LOGRANGE,LOGACCURACY,sizeof(float64_t),LOGRANGE*LOGACCURACY*sizeof(float64_t)/(1024.0*1024.0)) ;
 #endif 
    
-    CMath::logtable=new DREAL[LOGRANGE*LOGACCURACY];
+    CMath::logtable=new float64_t[LOGRANGE*LOGACCURACY];
     init_log_table();
 #else
 	int32_t i=0;
-	while ((DREAL)log(1+((DREAL)exp(-DREAL(i)))))
+	while ((float64_t)log(1+((float64_t)exp(-float64_t(i)))))
 		i++;
 #ifndef HAVE_SWIG
     SG_PRINT("determined range for x in log(1+exp(-x)) is:%d )\n", i);
@@ -97,11 +97,11 @@ CMath::~CMath()
 int32_t CMath::determine_logrange()
 {
     int32_t i;
-    DREAL acc=0;
+    float64_t acc=0;
     for (i=0; i<50; i++)
     {
-	acc=((DREAL)log(1+((DREAL)exp(-DREAL(i)))));
-	if (acc<=(DREAL)LOG_TABLE_PRECISION)
+	acc=((float64_t)log(1+((float64_t)exp(-float64_t(i)))));
+	if (acc<=(float64_t)LOG_TABLE_PRECISION)
 	    break;
     }
 
@@ -111,7 +111,7 @@ int32_t CMath::determine_logrange()
 
 int32_t CMath::determine_logaccuracy(int32_t range)
 {
-    range=MAX_LOG_TABLE_SIZE/range/((int)sizeof(DREAL));
+    range=MAX_LOG_TABLE_SIZE/range/((int)sizeof(float64_t));
     SG_INFO( "determined accuracy for x in table log(1+exp(-x)) is:%d (error:%G)\n",range,1.0/(double) range);
     return range;
 }
@@ -120,7 +120,7 @@ int32_t CMath::determine_logaccuracy(int32_t range)
 void CMath::init_log_table()
 {
   for (int32_t i=0; i< LOGACCURACY*LOGRANGE; i++)
-    logtable[i]=log(1+exp(DREAL(-i)/DREAL(LOGACCURACY)));
+    logtable[i]=log(1+exp(float64_t(-i)/float64_t(LOGACCURACY)));
 }
 #endif
 
@@ -144,9 +144,8 @@ void CMath::sort(int32_t *a, int32_t cols, int32_t sort_col)
   } ;
 } 
 
-void CMath::sort(DREAL *a, int32_t* idx, int32_t N) 
+void CMath::sort(float64_t *a, int32_t* idx, int32_t N) 
 {
-
 	int32_t changed=1;
 	while (changed)
 	{
@@ -161,17 +160,18 @@ void CMath::sort(DREAL *a, int32_t* idx, int32_t N)
 			} ;
 		} ;
 	} ;
-	 
-} 
+ 
+}
 
-DREAL CMath::Align(char * seq1, char* seq2, int32_t l1, int32_t l2, DREAL gapCost)
+float64_t CMath::Align(
+	char* seq1, char* seq2, int32_t l1, int32_t l2, float64_t gapCost)
 {
-  DREAL actCost=0 ;
+  float64_t actCost=0 ;
   int32_t i1, i2 ;
-  DREAL* const gapCosts1 = new DREAL[ l1 ];
-  DREAL* const gapCosts2 = new DREAL[ l2 ];
-  DREAL* costs2_0 = new DREAL[ l2 + 1 ];
-  DREAL* costs2_1 = new DREAL[ l2 + 1 ];
+  float64_t* const gapCosts1 = new float64_t[ l1 ];
+  float64_t* const gapCosts2 = new float64_t[ l2 ];
+  float64_t* costs2_0 = new float64_t[ l2 + 1 ];
+  float64_t* costs2_1 = new float64_t[ l2 + 1 ];
 
   // initialize borders
   for( i1 = 0; i1 < l1; ++i1 ) {
@@ -188,10 +188,10 @@ DREAL CMath::Align(char * seq1, char* seq2, int32_t l1, int32_t l2, DREAL gapCos
     actCost = costs2_0[ 0 ] + gapCosts1[ i1 ];
     costs2_1[ 0 ] = actCost;
     for( i2 = 0; i2 < l2; ++i2 ) {
-      const DREAL actMatch = costs2_0[ i2 ] + ( seq1[i1] == seq2[i2] );
-      const DREAL actGap1 = costs2_0[ i2+1 ] + gapCosts1[ i1 ];
-      const DREAL actGap2 = actCost + gapCosts2[ i2 ];
-      const DREAL actGap = min( actGap1, actGap2 );
+      const float64_t actMatch = costs2_0[ i2 ] + ( seq1[i1] == seq2[i2] );
+      const float64_t actGap1 = costs2_0[ i2+1 ] + gapCosts1[ i1 ];
+      const float64_t actGap2 = actCost + gapCosts2[ i2 ];
+      const float64_t actGap = min( actGap1, actGap2 );
       actCost = min( actMatch, actGap );
       costs2_1[ i2+1 ] = actCost;
     }
@@ -208,7 +208,10 @@ DREAL CMath::Align(char * seq1, char* seq2, int32_t l1, int32_t l2, DREAL gapCos
 
 //plot x- axis false positives (fp) 1-Specificity
 //plot y- axis true positives (tp) Sensitivity
-int32_t CMath::calcroc(DREAL* fp, DREAL* tp, DREAL* output, int32_t* label, int32_t& size, int32_t& possize, int32_t& negsize, DREAL& tresh, FILE* rocfile)
+int32_t CMath::calcroc(
+	float64_t* fp, float64_t* tp, float64_t* output, int32_t* label,
+	int32_t& size, int32_t& possize, int32_t& negsize, float64_t& tresh,
+	FILE* rocfile)
 {
 	int32_t left=0;
 	int32_t right=size-1;
@@ -235,23 +238,23 @@ int32_t CMath::calcroc(DREAL* fp, DREAL* tp, DREAL* output, int32_t* label, int3
 	// neg/pos sizes
 	negsize=left;
 	possize=size-left;
-	DREAL* negout=output;
-	DREAL* posout=&output[left];
+	float64_t* negout=output;
+	float64_t* posout=&output[left];
 
 	// sort the pos and neg outputs separately
 	qsort(negout, negsize);
 	qsort(posout, possize);
 
 	// set minimum+maximum values for decision-treshhold
-	DREAL minimum=min(negout[0], posout[0]);
-	DREAL maximum=minimum;
+	float64_t minimum=min(negout[0], posout[0]);
+	float64_t maximum=minimum;
 	if (negsize>0)
 		maximum=max(maximum,negout[negsize-1]);
 	if (possize>0)
 		maximum=max(maximum,posout[possize-1]);
 
-	DREAL treshhold=minimum;
-	DREAL old_treshhold=treshhold;
+	float64_t treshhold=minimum;
+	float64_t old_treshhold=treshhold;
 
 	//clear array.
 	for (i=0; i<size; i++)
@@ -267,7 +270,7 @@ int32_t CMath::calcroc(DREAL* fp, DREAL* tp, DREAL* output, int32_t* label, int3
 	int32_t iteration=1;
 	int32_t returnidx=-1;
 
-	DREAL minerr=10;
+	float64_t minerr=10;
 
 	while (iteration < size && treshhold<=maximum)
 	{
@@ -319,8 +322,8 @@ int32_t CMath::calcroc(DREAL* fp, DREAL* tp, DREAL* output, int32_t* label, int3
 		}
 
 		//calc tp,fp
-		tp[iteration]=(possize-posidx)/(DREAL (possize));
-		fp[iteration]=(negsize-negidx)/(DREAL (negsize));
+		tp[iteration]=(possize-posidx)/(float64_t (possize));
+		fp[iteration]=(negsize-negidx)/(float64_t (negsize));
 
 		//choose point with minimal error
 		if (minerr > negsize*fp[iteration]/size+(1-tp[iteration])*possize/size )
@@ -340,8 +343,8 @@ int32_t CMath::calcroc(DREAL* fp, DREAL* tp, DREAL* output, int32_t* label, int3
 	{
 		const char id[]="ROC";
 		fwrite(id, sizeof(char), sizeof(id), rocfile);
-		fwrite(fp, sizeof(DREAL), size, rocfile);
-		fwrite(tp, sizeof(DREAL), size, rocfile);
+		fwrite(fp, sizeof(float64_t), size, rocfile);
+		fwrite(tp, sizeof(float64_t), size, rocfile);
 	}
 
 	return returnidx;
@@ -374,7 +377,7 @@ uint32_t CMath::crc32(uint8_t *data, int32_t len)
     return ~result; 
 }
 
-double CMath::mutual_info(DREAL* p1, DREAL* p2, int32_t len)
+double CMath::mutual_info(float64_t* p1, float64_t* p2, int32_t len)
 {
 	double e=0;
 
@@ -385,7 +388,7 @@ double CMath::mutual_info(DREAL* p1, DREAL* p2, int32_t len)
 	return e;
 }
 
-double CMath::relative_entropy(DREAL* p, DREAL* q, int32_t len)
+double CMath::relative_entropy(float64_t* p, float64_t* q, int32_t len)
 {
 	double e=0;
 
@@ -395,7 +398,7 @@ double CMath::relative_entropy(DREAL* p, DREAL* q, int32_t len)
 	return e;
 }
 
-double CMath::entropy(DREAL* p, int32_t len)
+double CMath::entropy(float64_t* p, int32_t len)
 {
 	double e=0;
 
@@ -416,10 +419,11 @@ double CMath::entropy(DREAL* p, int32_t len)
 //decomposition A = UDV^T , by  A^+ = V(D+)U^T.
 
 #ifdef HAVE_LAPACK
-DREAL* CMath::pinv(DREAL* matrix, int32_t rows, int32_t cols, DREAL* target)
+float64_t* CMath::pinv(
+	float64_t* matrix, int32_t rows, int32_t cols, float64_t* target)
 {
 	if (!target)
-		target=new DREAL[rows*cols];
+		target=new float64_t[rows*cols];
 
 	char jobu='A';
 	char jobvt='A';
@@ -494,7 +498,7 @@ void CMath::display_vector(float32_t* vector, int32_t n, const char* name)
 }
 
 template <>
-void CMath::display_vector(DREAL* vector, int32_t n, const char* name)
+void CMath::display_vector(float64_t* vector, int32_t n, const char* name)
 {
 	ASSERT(n>=0);
 	SG_SPRINT("%s=[", name);
@@ -504,7 +508,8 @@ void CMath::display_vector(DREAL* vector, int32_t n, const char* name)
 }
 
 template <>
-void CMath::display_matrix(int32_t* matrix, int32_t rows, int32_t cols, const char* name)
+void CMath::display_matrix(
+	int32_t* matrix, int32_t rows, int32_t cols, const char* name)
 {
 	ASSERT(rows>=0 && cols>=0);
 	SG_SPRINT("%s=[\n", name);
@@ -520,7 +525,8 @@ void CMath::display_matrix(int32_t* matrix, int32_t rows, int32_t cols, const ch
 }
 
 template <>
-void CMath::display_matrix(DREAL* matrix, int32_t rows, int32_t cols, const char* name)
+void CMath::display_matrix(
+	float64_t* matrix, int32_t rows, int32_t cols, const char* name)
 {
 	ASSERT(rows>=0 && cols>=0);
 	SG_SPRINT("%s=[\n", name);

@@ -27,12 +27,12 @@ class CLinearClassifier : public CClassifier
 		virtual ~CLinearClassifier();
 
 		/// get output for example "vec_idx"
-		virtual inline DREAL classify_example(int32_t vec_idx)
+		virtual inline float64_t classify_example(int32_t vec_idx)
 		{
 			int32_t vlen;
 			bool vfree;
 			double* vec=features->get_feature_vector(vec_idx, vlen, vfree);
-			DREAL result=CMath::dot(w,vec,vlen);
+			float64_t result=CMath::dot(w,vec,vlen);
 			features->free_feature_vector(vec, vec_idx, vfree);
 
 			return result+bias;
@@ -43,14 +43,14 @@ class CLinearClassifier : public CClassifier
 		 * @param dst_w store w in this argument
 		 * @param dst_dims dimension of w
 		 */
-		inline void get_w(DREAL** dst_w, int32_t* dst_dims)
+		inline void get_w(float64_t** dst_w, int32_t* dst_dims)
 		{
 			ASSERT(dst_w && dst_dims);
 			ASSERT(w && features);
 			*dst_dims=features->get_num_features();
-			*dst_w=(DREAL*) malloc(sizeof(DREAL)*(*dst_dims));
+			*dst_w=(float64_t*) malloc(sizeof(float64_t)*(*dst_dims));
 			ASSERT(*dst_w);
-			memcpy(*dst_w, w, sizeof(DREAL) * (*dst_dims));
+			memcpy(*dst_w, w, sizeof(float64_t) * (*dst_dims));
 		}
 
 		/** set w
@@ -58,7 +58,7 @@ class CLinearClassifier : public CClassifier
 		 * @param src_w new w
 		 * @param src_w_dim dimension of new w
 		 */
-		inline void set_w(DREAL* src_w, int32_t src_w_dim)
+		inline void set_w(float64_t* src_w, int32_t src_w_dim)
 		{
 			w=src_w;
 			w_dim=src_w_dim;
@@ -68,7 +68,7 @@ class CLinearClassifier : public CClassifier
 		 *
 		 * @param b new bias
 		 */
-		inline void set_bias(DREAL b)
+		inline void set_bias(float64_t b)
 		{
 			bias=b;
 		}
@@ -77,7 +77,7 @@ class CLinearClassifier : public CClassifier
 		 *
 		 * @return bias
 		 */
-		inline DREAL get_bias()
+		inline float64_t get_bias()
 		{
 			return bias;
 		}
@@ -124,9 +124,9 @@ class CLinearClassifier : public CClassifier
 		/** dimension of w */
 		int32_t w_dim;
 		/** w */
-		DREAL* w;
+		float64_t* w;
 		/** bias */
-		DREAL bias;
+		float64_t bias;
 		/** features */
 		CRealFeatures* features;
 };

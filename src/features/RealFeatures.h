@@ -21,18 +21,18 @@
  * matrix.  It inherits its functionality from CSimpleFeatures, which should be
  * consulted for further reference.
  */
-class CRealFeatures : public CSimpleFeatures<DREAL>
+class CRealFeatures : public CSimpleFeatures<float64_t>
 {
 	public:
 		/** constructor
 		 *
 		 * @param size cache size
 		 */
-		CRealFeatures(int32_t size=0) : CSimpleFeatures<DREAL>(size) {}
+		CRealFeatures(int32_t size=0) : CSimpleFeatures<float64_t>(size) {}
 
 		/** copy constructor */
 		CRealFeatures(const CRealFeatures & orig) :
-			CSimpleFeatures<DREAL>(orig) {}
+			CSimpleFeatures<float64_t>(orig) {}
 
         /** constructor that copies feature matrix from
          * pointer num_feat,num_vec pair
@@ -41,16 +41,19 @@ class CRealFeatures : public CSimpleFeatures<DREAL>
 		 * @param num_feat number of features
 		 * @param num_vec number of vectors
 		 */
-		inline CRealFeatures(DREAL* src, int32_t num_feat, int32_t num_vec): CSimpleFeatures<DREAL>(0)
+		inline CRealFeatures(
+			float64_t* src, int32_t num_feat, int32_t num_vec)
+		: CSimpleFeatures<float64_t>(0)
 		{
-			CSimpleFeatures<DREAL>::copy_feature_matrix(src, num_feat, num_vec);
+			CSimpleFeatures<float64_t>::copy_feature_matrix(
+				src, num_feat, num_vec);
 		}
 
 		/** constructor
 		 *
 		 * @param fname filename to load features from
 		 */
-		CRealFeatures(char* fname) : CSimpleFeatures<DREAL>(fname)
+		CRealFeatures(char* fname) : CSimpleFeatures<float64_t>(fname)
 		{
 			load(fname);
 		}
@@ -62,7 +65,8 @@ class CRealFeatures : public CSimpleFeatures<DREAL>
 		 * @param gapCost gap cost
 		 * @return if aligning was successful
 		 */
-		bool Align_char_features(CCharFeatures* cf, CCharFeatures* Ref, DREAL gapCost) ;
+		bool Align_char_features(
+			CCharFeatures* cf, CCharFeatures* Ref, float64_t gapCost);
 
 		/** get feature matrix
 		 *
@@ -70,9 +74,9 @@ class CRealFeatures : public CSimpleFeatures<DREAL>
 		 * @param d1 dimension 1 of matrix
 		 * @param d2 dimension 2 of matrix
 		 */
-		inline virtual void get_fm(DREAL** dst, int32_t* d1, int32_t* d2)
+		inline virtual void get_fm(float64_t** dst, int32_t* d1, int32_t* d2)
 		{
-			CSimpleFeatures<DREAL>::get_fm(dst, d1, d2);
+			CSimpleFeatures<float64_t>::get_fm(dst, d1, d2);
 		}
 
 		/** copy feature matrix
@@ -83,9 +87,11 @@ class CRealFeatures : public CSimpleFeatures<DREAL>
 		 * @param num_feat number of features
 		 * @param num_vec number of vectors
 		 */
-		inline virtual void copy_feature_matrix(DREAL* src, int32_t num_feat, int32_t num_vec)
+		inline virtual void copy_feature_matrix(
+			float64_t* src, int32_t num_feat, int32_t num_vec)
 		{
-			CSimpleFeatures<DREAL>::copy_feature_matrix(src, num_feat, num_vec);
+			CSimpleFeatures<float64_t>::copy_feature_matrix(
+				src, num_feat, num_vec);
 		}
 
 		/** load features from file

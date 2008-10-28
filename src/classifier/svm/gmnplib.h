@@ -36,7 +36,9 @@ class CGMNPLib: public CSGObject
 		 * @param num_classes number of classes
 		 * @param reg_const reg const
 		 */
-		CGMNPLib(DREAL* vector_y, CKernel* kernel, int32_t num_data, int32_t num_virtual_data, int32_t num_classes, DREAL reg_const);
+		CGMNPLib(
+			float64_t* vector_y, CKernel* kernel, int32_t num_data,
+			int32_t num_virtual_data, int32_t num_classes, float64_t reg_const);
 
 		~CGMNPLib();
 
@@ -74,7 +76,7 @@ tmax, tolabs, tolrel, th, &alpha, &t, &History );
 		 * @param a a
 		 * @return col at a
 		 */
-		DREAL *get_kernel_col( int32_t a );
+		float64_t *get_kernel_col( int32_t a );
 
 		/** get col
 		 *
@@ -82,7 +84,7 @@ tmax, tolabs, tolrel, th, &alpha, &t, &History );
 		 * @param b b
 		 * @return col at a, b
 		 */
-		DREAL* get_col( int32_t a, int32_t b );
+		float64_t* get_col( int32_t a, int32_t b );
 
 		/** kernel fce
 		 *
@@ -94,11 +96,11 @@ tmax, tolabs, tolrel, th, &alpha, &t, &History );
 
 	protected:
 		/** diag H */
-		DREAL* diag_H;
+		float64_t* diag_H;
 		/** kernel columns */
-		DREAL** kernel_columns;
+		float64_t** kernel_columns;
 		/** cache index */
-		DREAL* cache_index;
+		float64_t* cache_index;
 		/** first kernel inx */
 		int32_t first_kernel_inx;
 		/** cache size */
@@ -106,16 +108,16 @@ tmax, tolabs, tolrel, th, &alpha, &t, &History );
 		/** num data */
 		int32_t m_num_data;
 		/** reg const */
-		DREAL m_reg_const;
+		float64_t m_reg_const;
 		/** vectory */
-		DREAL* m_vector_y;
+		float64_t* m_vector_y;
 		/** kernel */
 		CKernel* m_kernel;
 
 		/** index of first used column */
 		int32_t first_virt_inx;
 		/** cache for three columns */
-		DREAL *virt_columns[3];
+		float64_t *virt_columns[3];
 		/** number of virt data */
 		int32_t m_num_virt_data;
 		/** number of classes */

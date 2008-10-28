@@ -4,7 +4,7 @@
 
 %include "kernel/SimpleKernel.h"
 
-%template(RealKernel) CSimpleKernel<DREAL>;
+%template(RealKernel) CSimpleKernel<float64_t>;
 %template(ShortRealKernel) CSimpleKernel<float32_t>;
 %template(WordKernel) CSimpleKernel<uint16_t>;
 %template(CharKernel) CSimpleKernel<char>;

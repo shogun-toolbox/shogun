@@ -55,7 +55,7 @@ bool CPolyMatchWordStringKernel::save_init(FILE* dest)
 	return false;
 }
 
-DREAL CPolyMatchWordStringKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t CPolyMatchWordStringKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	int32_t alen, blen;
 
@@ -72,7 +72,7 @@ DREAL CPolyMatchWordStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	if (inhomogene)
 		sum+=1;
 
-	DREAL result=sum;
+	float64_t result=sum;
 
 	for (int32_t j=1; j<degree; j++)
 		result*=sum;

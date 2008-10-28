@@ -30,7 +30,7 @@ class CGUIPluginEstimate : public CSGObject
 		~CGUIPluginEstimate();
 
 		/** create new estimator */
-		bool new_estimator(DREAL pos, DREAL neg);
+		bool new_estimator(float64_t pos, float64_t neg);
 		/** train estimator */
 		bool train();
 		bool marginalized_train(char* param);
@@ -42,14 +42,14 @@ class CGUIPluginEstimate : public CSGObject
 		inline CPluginEstimate* get_estimator() { return estimator; }
 
 		CLabels* classify(CLabels* output=NULL);
-		DREAL classify_example(int32_t idx);
+		float64_t classify_example(int32_t idx);
 
 	protected:
 		CSGInterface* ui;
 
 		CPluginEstimate* estimator;
-		DREAL pos_pseudo;
-		DREAL neg_pseudo;
+		float64_t pos_pseudo;
+		float64_t neg_pseudo;
 };
 #endif //HAVE_SWIG
 #endif

@@ -52,7 +52,7 @@ bool CKMeans::train()
 	ASSERT(lhs);
 	int32_t num=lhs->get_num_vectors();
 
-	Weights=new DREAL[num];
+	Weights=new float64_t[num];
 	for (int32_t i=0; i<num; i++)
 		Weights[i]=1.0;
 
@@ -165,7 +165,7 @@ void CKMeans::clustknb(bool use_old_mus, double *mus_start)
 	ASSERT(distance && distance->get_feature_type()==F_DREAL);
 	CRealFeatures* lhs = (CRealFeatures*) distance->get_lhs();
 	ASSERT(lhs && lhs->get_num_features()>0 && lhs->get_num_vectors()>0);
-	
+
 	int32_t XSize=lhs->get_num_vectors();
 	dimensions=lhs->get_num_features();
 	int32_t i, changed=1;
@@ -173,10 +173,10 @@ void CKMeans::clustknb(bool use_old_mus, double *mus_start)
 	int32_t iter=0;
 
 	delete[] R;
-	R=new DREAL[k];
+	R=new float64_t[k];
 
 	delete[] mus;
-	mus=new DREAL[XDimk];
+	mus=new float64_t[XDimk];
 
 	int32_t *ClList = (int32_t*) calloc(XSize, sizeof(int32_t));
 	double *weights_set = (double*) calloc(k, sizeof(double));

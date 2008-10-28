@@ -21,7 +21,7 @@
  * \f]
  *
  */
-class CSparseLinearKernel: public CSparseKernel<DREAL>
+class CSparseLinearKernel: public CSparseKernel<float64_t>
 {
 	public:
 		/** constructor
@@ -34,7 +34,7 @@ class CSparseLinearKernel: public CSparseKernel<DREAL>
 		 * @param r features of right-hand side
 		 */
 		CSparseLinearKernel(
-			CSparseFeatures<DREAL>* l, CSparseFeatures<DREAL>* r);
+			CSparseFeatures<float64_t>* l, CSparseFeatures<float64_t>* r);
 
 		virtual ~CSparseLinearKernel();
 
@@ -84,7 +84,7 @@ class CSparseLinearKernel: public CSparseKernel<DREAL>
 		 * @return if optimization was successful
 		 */
 		virtual bool init_optimization(int32_t num_suppvec, int32_t* sv_idx,
-			DREAL* alphas);
+			float64_t* alphas);
 
 		/** delete optimization
 		 *
@@ -97,7 +97,7 @@ class CSparseLinearKernel: public CSparseKernel<DREAL>
 	 	* @param idx index to compute
 	 	* @return optimized value at given index
 	 	*/
-		virtual DREAL compute_optimized(int32_t idx);
+		virtual float64_t compute_optimized(int32_t idx);
 
 		/** clear normal */
 		virtual void clear_normal();
@@ -107,7 +107,7 @@ class CSparseLinearKernel: public CSparseKernel<DREAL>
 		 * @param idx where to add
 		 * @param weight what to add
 		 */
-		virtual void add_to_normal(int32_t idx, DREAL weight);
+		virtual void add_to_normal(int32_t idx, float64_t weight);
 
 		/** get normal
 		 *
@@ -129,11 +129,11 @@ class CSparseLinearKernel: public CSparseKernel<DREAL>
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		virtual DREAL compute(int32_t idx_a, int32_t idx_b);
+		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
 
 	protected:
 		/** normal vector (used in case of optimized kernel) */
-		DREAL* normal;
+		float64_t* normal;
 		/** length of normal vector */
 		int32_t normal_length;
 };

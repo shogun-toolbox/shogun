@@ -208,13 +208,13 @@ int32_t CCmdLineInterface::get_int()
 	return value;
 }
 
-DREAL CCmdLineInterface::get_real()
+float64_t CCmdLineInterface::get_real()
 {
 	const char* r=get_arg_increment();
 	if (!r)
 		SG_ERROR("Expected Scalar Real as argument %d\n", m_rhs_counter);
 
-	DREAL value=-1;
+	float64_t value=-1;
 	int32_t num=sscanf(r, "%lf", &value);
 	if (num!=1)
 		SG_ERROR("Expected Scalar Real as argument %d\n", m_rhs_counter);
@@ -292,7 +292,7 @@ void CCmdLineInterface::get_shortreal_vector(float32_t*& vec, int32_t& len)
 	len=0;
 }
 
-void CCmdLineInterface::get_real_vector(DREAL*& vec, int32_t& len)
+void CCmdLineInterface::get_real_vector(float64_t*& vec, int32_t& len)
 {
 	vec=NULL;
 	len=0;
@@ -369,7 +369,7 @@ void CCmdLineInterface::get_shortreal_matrix(float32_t*& matrix, int32_t& num_fe
 	num_vec=0;
 }
 
-void CCmdLineInterface::get_real_matrix(DREAL*& matrix, int32_t& num_feat, int32_t& num_vec)
+void CCmdLineInterface::get_real_matrix(float64_t*& matrix, int32_t& num_feat, int32_t& num_vec)
 {
 	const char* filename=get_arg_increment();
 	if (!filename)
@@ -415,7 +415,7 @@ void CCmdLineInterface::get_shortreal_ndarray(float32_t*& array, int32_t*& dims,
 {
 }
 
-void CCmdLineInterface::get_real_ndarray(DREAL*& array, int32_t*& dims, int32_t& num_dims)
+void CCmdLineInterface::get_real_ndarray(float64_t*& array, int32_t*& dims, int32_t& num_dims)
 {
 }
 
@@ -427,7 +427,7 @@ void CCmdLineInterface::get_word_ndarray(uint16_t*& array, int32_t*& dims, int32
 {
 }
 
-void CCmdLineInterface::get_real_sparsematrix(TSparse<DREAL>*& matrix, int32_t& num_feat, int32_t& num_vec)
+void CCmdLineInterface::get_real_sparsematrix(TSparse<float64_t>*& matrix, int32_t& num_feat, int32_t& num_vec)
 {
 	const char* filename=get_arg_increment();
 	if (!filename)
@@ -511,7 +511,7 @@ void CCmdLineInterface::set_int(int32_t scalar)
 	//set_arg_increment(ScalarInteger(scalar));
 }
 
-void CCmdLineInterface::set_real(DREAL scalar)
+void CCmdLineInterface::set_real(float64_t scalar)
 {
 	//set_arg_increment(ScalarReal(scalar));
 }
@@ -542,7 +542,7 @@ void CCmdLineInterface::set_shortreal_vector(const float32_t* vec, int32_t len)
 {
 }
 
-void CCmdLineInterface::set_real_vector(const DREAL* vec, int32_t len)
+void CCmdLineInterface::set_real_vector(const float64_t* vec, int32_t len)
 {
 	const char* filename=set_arg_increment();
 	if (!filename)
@@ -579,7 +579,7 @@ SET_VECTOR(set_byte_vector, INTSXP, INTEGER, uint8_t, int, "Byte")
 SET_VECTOR(set_int_vector, INTSXP, INTEGER, int32_t, int, "Integer")
 SET_VECTOR(set_short_vector, INTSXP, INTEGER, int16_t, int, "Short")
 SET_VECTOR(set_shortreal_vector, XP, REAL, float32_t, float, "Single Precision")
-SET_VECTOR(set_real_vector, XP, REAL, DREAL, double, "Double Precision")
+SET_VECTOR(set_real_vector, XP, REAL, float64_t, double, "Double Precision")
 SET_VECTOR(set_word_vector, INTSXP, INTEGER, uint16_t, int, "Word")
 #undef SET_VECTOR
 */
@@ -600,7 +600,7 @@ void CCmdLineInterface::set_short_matrix(const int16_t* matrix, int32_t num_feat
 void CCmdLineInterface::set_shortreal_matrix(const float32_t* matrix, int32_t num_feat, int32_t num_vec)
 {
 }
-void CCmdLineInterface::set_real_matrix(const DREAL* matrix, int32_t num_feat, int32_t num_vec)
+void CCmdLineInterface::set_real_matrix(const float64_t* matrix, int32_t num_feat, int32_t num_vec)
 {
 	const char* filename=set_arg_increment();
 	if (!filename)
@@ -637,13 +637,13 @@ SET_MATRIX(set_byte_matrix, INTSXP, INTEGER, uint8_t, int, "Byte")
 SET_MATRIX(set_int_matrix, INTSXP, INTEGER, int32_t, int, "Integer")
 SET_MATRIX(set_short_matrix, INTSXP, INTEGER, int16_t, int, "Short")
 SET_MATRIX(set_shortreal_matrix, XP, REAL, float32_t, float, "Single Precision")
-SET_MATRIX(set_real_matrix, XP, REAL, DREAL, double, "Double Precision")
+SET_MATRIX(set_real_matrix, XP, REAL, float64_t, double, "Double Precision")
 SET_MATRIX(set_word_matrix, INTSXP, INTEGER, uint16_t, int, "Word")
 #undef SET_MATRIX
 */
 
 
-void CCmdLineInterface::set_real_sparsematrix(const TSparse<DREAL>* matrix, int32_t num_feat, int32_t num_vec, int64_t nnz)
+void CCmdLineInterface::set_real_sparsematrix(const TSparse<float64_t>* matrix, int32_t num_feat, int32_t num_vec, int64_t nnz)
 {
 	const char* filename=set_arg_increment();
 	if (!filename)

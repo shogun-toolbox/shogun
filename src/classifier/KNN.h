@@ -58,7 +58,7 @@ class CKNN : public CDistanceMachine
 		virtual CLabels* classify(CLabels* output=NULL);
 
 		/// get output for example "vec_idx"
-		virtual DREAL classify_example(int32_t vec_idx)
+		virtual float64_t classify_example(int32_t vec_idx)
 		{
 			SG_ERROR( "for performance reasons use classify() instead of classify_example\n");
 			return 0;
@@ -82,7 +82,7 @@ class CKNN : public CDistanceMachine
 		 *
 		 * @param p_k new k
 		 */
-		inline void set_k(DREAL p_k)
+		inline void set_k(float64_t p_k)
 		{
 			ASSERT(p_k>0);
 			this->k=p_k;
@@ -92,14 +92,14 @@ class CKNN : public CDistanceMachine
 		 *
 		 * @return k
 		 */
-		inline DREAL get_k()
+		inline float64_t get_k()
 		{
 			return k;
 		}
 
 	protected:
 		/// the k parameter in KNN
-		DREAL k;
+		float64_t k;
 
 		///	number of classes (i.e. number of values labels can take)
 		int32_t num_classes;

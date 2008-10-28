@@ -124,7 +124,7 @@ TYPES:
 	int32_t		(32bit int)
 	int64_t		(64bit int)
 	float32_t	(32bit float)
-	DREAL		(double)
+	float64_t	(64bit float)
 	float128_t	(128bit float)
 
 	exceptions: file IO / matlab interface

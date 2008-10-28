@@ -56,15 +56,13 @@ typedef unsigned long long int uintmax_t;
  * @see http://ieeexplore.ieee.org/xpl/freeabs_all.jsp?arnumber=4610935
  */
 typedef float float32_t;
+typedef double float64_t;
 typedef long double float128_t;
-
-/// Type DREAL is 8 bytes in size
-typedef double DREAL;
 
 #ifdef USE_SHORTREAL_KERNELCACHE
 	typedef float32_t KERNELCACHE_ELEM;
 #else
-	typedef DREAL KERNELCACHE_ELEM;
+	typedef float64_t KERNELCACHE_ELEM;
 #endif
 
 typedef int64_t KERNELCACHE_IDX;

@@ -29,7 +29,7 @@ class CGPBTSVM : public CSVM
 		 * @param k kernel
 		 * @param lab labels
 		 */
-		CGPBTSVM(DREAL C, CKernel* k, CLabels* lab);
+		CGPBTSVM(float64_t C, CKernel* k, CLabels* lab);
 		virtual ~CGPBTSVM();
 
 		/** train SVM

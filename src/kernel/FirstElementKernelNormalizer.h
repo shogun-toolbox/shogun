@@ -59,7 +59,8 @@ class CFirstElementKernelNormalizer : public CKernelNormalizer
 		 * @param idx_lhs index of left hand side vector
 		 * @param idx_rhs index of right hand side vector
 		 */
-		inline virtual DREAL normalize(DREAL value, int32_t idx_lhs, int32_t idx_rhs)
+		inline virtual float64_t normalize(
+			float64_t value, int32_t idx_lhs, int32_t idx_rhs)
 		{
 			return value/scale;
 		}
@@ -68,7 +69,7 @@ class CFirstElementKernelNormalizer : public CKernelNormalizer
 		 * @param value value of a component of the left hand side feature vector
 		 * @param idx_lhs index of left hand side vector
 		 */
-		inline virtual DREAL normalize_lhs(DREAL value, int32_t idx_lhs)
+		inline virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs)
 		{
 			return value/sqrt(scale);
 		}
@@ -77,14 +78,14 @@ class CFirstElementKernelNormalizer : public CKernelNormalizer
 		 * @param value value of a component of the right hand side feature vector
 		 * @param idx_rhs index of right hand side vector
 		 */
-		inline virtual DREAL normalize_rhs(DREAL value, int32_t idx_rhs)
+		inline virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs)
 		{
 			return value/sqrt(scale);
 		}
 
 	protected:
 		/// scale constant obtained from k(0,0)
-		DREAL scale;
+		float64_t scale;
 };
 
 #endif

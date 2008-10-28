@@ -112,7 +112,7 @@ class CLocalAlignmentStringKernel: public CStringKernel<char>
 		 * @param nY nY
 		 * @return computed value
 		 */
-		DREAL LAkernelcompute(
+		float64_t LAkernelcompute(
 			int32_t* aaX, int32_t* aaY, int32_t nX, int32_t nY);
 
 	protected:
@@ -124,7 +124,7 @@ class CLocalAlignmentStringKernel: public CStringKernel<char>
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		virtual DREAL compute(int32_t idx_a, int32_t idx_b);
+		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
 
 	protected:
 		/** if kernel is initialized */

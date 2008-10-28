@@ -23,7 +23,7 @@ class CPlifBase : public CSGObject
 		CPlifBase() {};
 		virtual ~CPlifBase() {};
 
-		/** lookup penalty DREAL
+		/** lookup penalty float64_t
 		 *
 		 * abstract base method
 		 *
@@ -31,7 +31,8 @@ class CPlifBase : public CSGObject
 		 * @param svm_values SVM values
 		 * @return penalty
 		 */
-		virtual DREAL lookup_penalty(DREAL p_value, DREAL* svm_values) const =0;
+		virtual float64_t lookup_penalty(
+			float64_t p_value, float64_t* svm_values) const =0;
 
 		/** lookup penalty int32_t
 		 *
@@ -41,7 +42,8 @@ class CPlifBase : public CSGObject
 		 * @param svm_values SVM values
 		 * @return penalty
 		 */
-		virtual DREAL lookup_penalty(int32_t p_value, DREAL* svm_values) const =0;
+		virtual float64_t lookup_penalty(
+			int32_t p_value, float64_t* svm_values) const =0;
 
 		/** penalty clear derivative
 		 *
@@ -56,7 +58,8 @@ class CPlifBase : public CSGObject
 		 * @param p_value value
 		 * @param svm_values SVM values
 		 */
-		virtual void penalty_add_derivative(DREAL p_value, DREAL* svm_values)=0 ;
+		virtual void penalty_add_derivative(
+			float64_t p_value, float64_t* svm_values)=0 ;
 
 		/** get maximum value
 		 *
@@ -64,7 +67,7 @@ class CPlifBase : public CSGObject
 		 *
 		 * @return maximum value
 		 */
-		virtual DREAL get_max_value() const = 0;
+		virtual float64_t get_max_value() const = 0;
 
 		/** get minimum value
 		 *
@@ -72,7 +75,7 @@ class CPlifBase : public CSGObject
 		 *
 		 * @return minimum value
 		 */
-		virtual DREAL get_min_value() const = 0;
+		virtual float64_t get_min_value() const = 0;
 
 		/** get SVM_ids and number of SVMs used
 		 *

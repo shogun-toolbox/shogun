@@ -113,7 +113,7 @@ int32_t COctaveInterface::get_int()
 	return int32_t(s);
 }
 
-DREAL COctaveInterface::get_real()
+float64_t COctaveInterface::get_real()
 {
 	const octave_value f=get_arg_increment();
 	if (!f.is_real_scalar())
@@ -168,7 +168,7 @@ GET_VECTOR(get_char_vector, is_char_matrix, charMatrix, char_matrix_value, char,
 GET_VECTOR(get_int_vector, is_int32_type, int32NDArray, uint8_array_value, int32_t, int32_t, "Integer")
 GET_VECTOR(get_short_vector, is_int16_type, int16NDArray, uint8_array_value, int16_t, int16_t, "Short")
 GET_VECTOR(get_shortreal_vector, is_single_type, Matrix, matrix_value, float32_t, float32_t, "Single Precision")
-GET_VECTOR(get_real_vector, is_double_type, Matrix, matrix_value, DREAL, DREAL, "Double Precision")
+GET_VECTOR(get_real_vector, is_double_type, Matrix, matrix_value, float64_t, float64_t, "Double Precision")
 GET_VECTOR(get_word_vector, is_uint16_type, uint16NDArray, uint16_array_value, uint16_t, uint16_t, "Word")
 #undef GET_VECTOR
 
@@ -194,7 +194,7 @@ GET_MATRIX(get_char_matrix, is_char_matrix, charMatrix, char_matrix_value, char,
 GET_MATRIX(get_int_matrix, is_int32_type, int32NDArray, uint8_array_value, int32_t, int32_t, "Integer")
 GET_MATRIX(get_short_matrix, is_int16_type, int16NDArray, uint8_array_value, int16_t, int16_t, "Short")
 GET_MATRIX(get_shortreal_matrix, is_single_type, Matrix, matrix_value, float32_t, float32_t, "Single Precision")
-GET_MATRIX(get_real_matrix, is_double_type, Matrix, matrix_value, DREAL, DREAL, "Double Precision")
+GET_MATRIX(get_real_matrix, is_double_type, Matrix, matrix_value, float64_t, float64_t, "Double Precision")
 GET_MATRIX(get_word_matrix, is_uint16_type, uint16NDArray, uint16_array_value, uint16_t, uint16_t, "Word")
 #undef GET_MATRIX
 
@@ -218,11 +218,11 @@ GET_NDARRAY(get_char_ndarray, is_char_matrix, charMatrix, char_matrix_value, cha
 GET_NDARRAY(get_int_ndarray, is_int32_type, int32NDArray, uint8_array_value, int32_t, int32_t, "Integer")
 GET_NDARRAY(get_short_ndarray, is_int16_type, int16NDArray, uint8_array_value, int16_t, int16_t, "Short")
 GET_NDARRAY(get_shortreal_ndarray, is_single_type, Matrix, matrix_value, float32_t, float32_t, "Single Precision")
-GET_NDARRAY(get_real_ndarray, is_double_type, Matrix, matrix_value, DREAL, DREAL, "Double Precision")
+GET_NDARRAY(get_real_ndarray, is_double_type, Matrix, matrix_value, float64_t, float64_t, "Double Precision")
 GET_NDARRAY(get_word_ndarray, is_uint16_type, uint16NDArray, uint16_array_value, uint16_t, uint16_t, "Word")
 #undef GET_NDARRAY
 
-void COctaveInterface::get_real_sparsematrix(TSparse<DREAL>*& matrix, int32_t& num_feat, int32_t& num_vec)
+void COctaveInterface::get_real_sparsematrix(TSparse<float64_t>*& matrix, int32_t& num_feat, int32_t& num_vec)
 {
 	const octave_value mat_feat=get_arg_increment();
 	if (!mat_feat.is_sparse_type() || !(mat_feat.is_double_type()))
@@ -233,7 +233,7 @@ void COctaveInterface::get_real_sparsematrix(TSparse<DREAL>*& matrix, int32_t& n
 	num_feat=sm.rows();
 	int64_t nnz=sm.nelem();
 
-	matrix=new TSparse<DREAL>[num_vec];
+	matrix=new TSparse<float64_t>[num_vec];
 
 	int64_t offset=0;
 	for (int32_t i=0; i<num_vec; i++)
@@ -244,7 +244,7 @@ void COctaveInterface::get_real_sparsematrix(TSparse<DREAL>*& matrix, int32_t& n
 
 		if (len>0)
 		{
-			matrix[i].features=new TSparseEntry<DREAL>[len];
+			matrix[i].features=new TSparseEntry<float64_t>[len];
 
 			for (int32_t j=0; j<len; j++)
 			{
@@ -350,7 +350,7 @@ void COctaveInterface::set_int(int32_t scalar)
 	set_arg_increment(o);
 }
 
-void COctaveInterface::set_real(DREAL scalar)
+void COctaveInterface::set_real(float64_t scalar)
 {
 	octave_value o(scalar);
 	set_arg_increment(o);
@@ -378,7 +378,7 @@ SET_VECTOR(set_char_vector, charMatrix, char, char, "Char")
 SET_VECTOR(set_int_vector, int32NDArray, int32_t, int32_t, "Integer")
 SET_VECTOR(set_short_vector, int16NDArray, int16_t, int16_t, "Short")
 SET_VECTOR(set_shortreal_vector, Matrix, float32_t, float32_t, "Single Precision")
-SET_VECTOR(set_real_vector, Matrix, DREAL, DREAL, "Double Precision")
+SET_VECTOR(set_real_vector, Matrix, float64_t, float64_t, "Double Precision")
 SET_VECTOR(set_word_vector, uint16NDArray, uint16_t, uint16_t, "Word")
 #undef SET_VECTOR
 
@@ -400,11 +400,11 @@ SET_MATRIX(set_char_matrix, charMatrix, char, char, "Char")
 SET_MATRIX(set_int_matrix, int32NDArray, int32_t, int32_t, "Integer")
 SET_MATRIX(set_short_matrix, int16NDArray, int16_t, int16_t, "Short")
 SET_MATRIX(set_shortreal_matrix, Matrix, float32_t, float32_t, "Single Precision")
-SET_MATRIX(set_real_matrix, Matrix, DREAL, DREAL, "Double Precision")
+SET_MATRIX(set_real_matrix, Matrix, float64_t, float64_t, "Double Precision")
 SET_MATRIX(set_word_matrix, uint16NDArray, uint16_t, uint16_t, "Word")
 #undef SET_MATRIX
 
-void COctaveInterface::set_real_sparsematrix(const TSparse<DREAL>* matrix, int32_t num_feat, int32_t num_vec, int64_t nnz)
+void COctaveInterface::set_real_sparsematrix(const TSparse<float64_t>* matrix, int32_t num_feat, int32_t num_vec, int64_t nnz)
 {
 	SparseMatrix sm((octave_idx_type) num_feat, (octave_idx_type) num_vec, (octave_idx_type) nnz);
 

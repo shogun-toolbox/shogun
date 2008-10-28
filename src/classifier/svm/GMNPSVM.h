@@ -27,7 +27,7 @@ class CGMNPSVM : public CMultiClassSVM
 		 * @param k kernel
 		 * @param lab labels
 		 */
-		CGMNPSVM(DREAL C, CKernel* k, CLabels* lab);
+		CGMNPSVM(float64_t C, CKernel* k, CLabels* lab);
 		virtual ~CGMNPSVM();
 
 		/** train SVM */

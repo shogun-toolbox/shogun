@@ -16,12 +16,12 @@
 #include "features/RealFeatures.h"
 
 CChebyshewMetric::CChebyshewMetric()
-: CSimpleDistance<DREAL>()
+: CSimpleDistance<float64_t>()
 {
 }
 
 CChebyshewMetric::CChebyshewMetric(CRealFeatures* l, CRealFeatures* r)
-: CSimpleDistance<DREAL>()
+: CSimpleDistance<float64_t>()
 {
 	init(l, r);
 }
@@ -33,7 +33,7 @@ CChebyshewMetric::~CChebyshewMetric()
 
 bool CChebyshewMetric::init(CFeatures* l, CFeatures* r)
 {
-	bool result=CSimpleDistance<DREAL>::init(l,r);
+	bool result=CSimpleDistance<float64_t>::init(l,r);
 
 	return result;
 }
@@ -52,7 +52,7 @@ bool CChebyshewMetric::save_init(FILE* dest)
 	return false;
 }
 
-DREAL CChebyshewMetric::compute(int32_t idx_a, int32_t idx_b)
+float64_t CChebyshewMetric::compute(int32_t idx_a, int32_t idx_b)
 {
 	int32_t alen, blen;
 	bool afree, bfree;
@@ -62,7 +62,7 @@ DREAL CChebyshewMetric::compute(int32_t idx_a, int32_t idx_b)
 
 	ASSERT(alen==blen);
 
-	DREAL result=DBL_MIN;
+	float64_t result=DBL_MIN;
 
 	for (int32_t i=0; i<alen; i++)
 		result=CMath::max(result, fabs(avec[i]-bvec[i]));

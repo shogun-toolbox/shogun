@@ -36,7 +36,7 @@ class CWDSVMOcas : public CClassifier
 		 * @param traindat training features
 		 * @param trainlab labels for training features
 		 */
-		CWDSVMOcas(DREAL C, int32_t d, int32_t from_d, CStringFeatures<uint8_t>* traindat, CLabels* trainlab);
+		CWDSVMOcas(float64_t C, int32_t d, int32_t from_d, CStringFeatures<uint8_t>* traindat, CLabels* trainlab);
 		virtual ~CWDSVMOcas();
 
 		/** get classifier type
@@ -56,31 +56,31 @@ class CWDSVMOcas : public CClassifier
 		 * @param c1 new C1
 		 * @param c2 new C2
 		 */
-		inline void set_C(DREAL c1, DREAL c2) { C1=c1; C2=c2; }
+		inline void set_C(float64_t c1, float64_t c2) { C1=c1; C2=c2; }
 
 		/** get C1
 		 *
 		 * @return C1
 		 */
-		inline DREAL get_C1() { return C1; }
+		inline float64_t get_C1() { return C1; }
 
 		/** get C2
 		 *
 		 * @return C2
 		 */
-		inline DREAL get_C2() { return C2; }
+		inline float64_t get_C2() { return C2; }
 
 		/** set epsilon
 		 *
 		 * @param eps new epsilon
 		 */
-		inline void set_epsilon(DREAL eps) { epsilon=eps; }
+		inline void set_epsilon(float64_t eps) { epsilon=eps; }
 
 		/** get epsilon
 		 *
 		 * @return epsilon
 		 */
-		inline DREAL get_epsilon() { return epsilon; }
+		inline float64_t get_epsilon() { return epsilon; }
 
 		/** set features
 		 *
@@ -143,14 +143,14 @@ class CWDSVMOcas : public CClassifier
 		 * @param num number of example to classify
 		 * @return classified result
 		 */
-		inline virtual DREAL classify_example(int32_t num)
+		inline virtual float64_t classify_example(int32_t num)
 		{
 			ASSERT(features);
 			if (!wd_weights)
 				set_wd_weights();
 
 			int32_t len=0;
-			DREAL sum=0;
+			float64_t sum=0;
 			uint8_t* vec=features->get_feature_vector(num, len);
 			ASSERT(len==string_length);
 
@@ -184,7 +184,7 @@ class CWDSVMOcas : public CClassifier
 		 *
 		 * @return normalization const
 		 */
-		inline DREAL get_normalization_const() { return normalization_const; }
+		inline float64_t get_normalization_const() { return normalization_const; }
 
 
 	protected:
@@ -260,11 +260,11 @@ class CWDSVMOcas : public CClassifier
 		/** buffer size */
 		int32_t bufsize;
 		/** C1 */
-		DREAL C1;
+		float64_t C1;
 		/** C2 */
-		DREAL C2;
+		float64_t C2;
 		/** epsilon */
-		DREAL epsilon;
+		float64_t epsilon;
 		/** method */
 		E_SVM_TYPE method;
 
@@ -282,10 +282,10 @@ class CWDSVMOcas : public CClassifier
 		int32_t alphabet_size;
 
 		/** normalization const */
-		DREAL normalization_const;
+		float64_t normalization_const;
 
 		/** bias */
-		DREAL bias;
+		float64_t bias;
 		/** w offsets */
 		int32_t* w_offsets;
 		/** w dim */
@@ -297,9 +297,9 @@ class CWDSVMOcas : public CClassifier
 		/** old w*/
 		float32_t* old_w;
 		/** nDim big */
-		DREAL* tmp_a_buf;
+		float64_t* tmp_a_buf;
 		/** labels */
-		DREAL* lab;
+		float64_t* lab;
 
 		/** cuts */
 		float32_t** cuts;

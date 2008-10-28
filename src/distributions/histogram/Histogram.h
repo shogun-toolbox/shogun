@@ -46,7 +46,7 @@ class CHistogram : public CDistribution
 		 * @param num_param which param
 		 * @result logarithm of given model parameter
 		 */
-		virtual DREAL get_log_model_parameter(int32_t num_param);
+		virtual float64_t get_log_model_parameter(int32_t num_param);
 
 		/** get logarithm of one example's derivative's likelihood
 		 *
@@ -54,21 +54,22 @@ class CHistogram : public CDistribution
 		 * @param num_example which example
 		 * @return logarithm of example's derivative's likelihood
 		 */
-		virtual DREAL get_log_derivative(int32_t num_param, int32_t num_example);
+		virtual float64_t get_log_derivative(
+			int32_t num_param, int32_t num_example);
 
 		/** get logarithm of one example's likelihood
 		 *
 		 * @param num_example which example
 		 * @return logarithm of example's likelihood
 		 */
-		virtual DREAL get_log_likelihood_example(int32_t num_example);
+		virtual float64_t get_log_likelihood_example(int32_t num_example);
 
 		/** set histogram
 		 *
 		 * @param src new histogram
 		 * @param num number of values in histogram
 		 */
-		virtual bool set_histogram(DREAL* src, int32_t num);
+		virtual bool set_histogram(float64_t* src, int32_t num);
 
 		/** get histogram
 		 *
@@ -76,10 +77,10 @@ class CHistogram : public CDistribution
 		 * @param num where number of values in histogram will be
 		 *        stored
 		 */
-		virtual void get_histogram(DREAL** dst, int32_t* num);
+		virtual void get_histogram(float64_t** dst, int32_t* num);
 
 	protected:
 		/** histogram */
-		DREAL* hist;
+		float64_t* hist;
 };
 #endif

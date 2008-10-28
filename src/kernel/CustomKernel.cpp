@@ -67,7 +67,8 @@ CCustomKernel::~CCustomKernel()
 	cleanup();
 }
 
-float32_t* CCustomKernel::get_kernel_matrix_shortreal(int32_t &num_vec1, int32_t &num_vec2, float32_t* target)
+float32_t* CCustomKernel::get_kernel_matrix_shortreal(
+	int32_t &num_vec1, int32_t &num_vec2, float32_t* target)
 {
 	if (target == NULL)
 		return CKernel::get_kernel_matrix_shortreal(num_vec1, num_vec2, target);
@@ -120,7 +121,8 @@ bool CCustomKernel::save_init(FILE* dest)
 	return false;
 }
 
-bool CCustomKernel::set_triangle_kernel_matrix_from_triangle(const DREAL* km, int32_t len)
+bool CCustomKernel::set_triangle_kernel_matrix_from_triangle(
+	const float64_t* km, int32_t len)
 {
 	ASSERT(km);
 	ASSERT(len>0);
@@ -149,7 +151,8 @@ bool CCustomKernel::set_triangle_kernel_matrix_from_triangle(const DREAL* km, in
 	return true;
 }
 
-bool CCustomKernel::set_triangle_kernel_matrix_from_full(const DREAL* km, int32_t rows, int32_t cols)
+bool CCustomKernel::set_triangle_kernel_matrix_from_full(
+	const float64_t* km, int32_t rows, int32_t cols)
 {
 	ASSERT(rows==cols);
 
@@ -171,7 +174,8 @@ bool CCustomKernel::set_triangle_kernel_matrix_from_full(const DREAL* km, int32_
 	return true;
 }
 
-bool CCustomKernel::set_full_kernel_matrix_from_full(const DREAL* km, int32_t rows, int32_t cols)
+bool CCustomKernel::set_full_kernel_matrix_from_full(
+	const float64_t* km, int32_t rows, int32_t cols)
 {
 	cleanup_custom();
 	SG_DEBUG( "using custom kernel of size %dx%d\n", rows,cols);

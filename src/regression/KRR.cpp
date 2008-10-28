@@ -23,7 +23,7 @@ CKRR::CKRR()
 	tau=1e-6;
 }
 
-CKRR::CKRR(DREAL t, CKernel* k, CLabels* lab)
+CKRR::CKRR(float64_t t, CKernel* k, CLabels* lab)
 : CKernelMachine()
 {
 	tau=t;
@@ -48,7 +48,7 @@ bool CKRR::train()
 	// Get kernel matrix
 	int32_t m=0;
 	int32_t n=0;
-	DREAL *K = kernel->get_kernel_matrix_real(m, n, NULL);
+	float64_t *K = kernel->get_kernel_matrix_real(m, n, NULL);
 	ASSERT(K && m>0 && n>0);
 
 	for(int32_t i=0; i < n; i++)
@@ -85,9 +85,9 @@ CLabels* CKRR::classify(CLabels* output)
 		// Get kernel matrix
 		int32_t m=0;
 		int32_t n=0;
-		DREAL* K=kernel->get_kernel_matrix_real(m, n, NULL);
+		float64_t* K=kernel->get_kernel_matrix_real(m, n, NULL);
 		ASSERT(K && m>0 && n>0);
-		DREAL* Yh=new DREAL[n];
+		float64_t* Yh=new float64_t[n];
 
 		// predict
 		// K is symmetric, CblasColMajor is same as CblasRowMajor 
@@ -108,7 +108,7 @@ CLabels* CKRR::classify(CLabels* output)
 	return NULL;
 }
 
-DREAL CKRR::classify_example(int32_t num)
+float64_t CKRR::classify_example(int32_t num)
 {
 	ASSERT(kernel);
 
@@ -116,9 +116,9 @@ DREAL CKRR::classify_example(int32_t num)
 	int32_t m=0;
 	int32_t n=0;
 	// TODO: use get_kernel_column instead of computing the whole matrix!
-	DREAL* K=kernel->get_kernel_matrix_real(m, n, NULL);
+	float64_t* K=kernel->get_kernel_matrix_real(m, n, NULL);
 	ASSERT(K && m>0 && n>0);
-	DREAL Yh;
+	float64_t Yh;
 
 	// predict
 	Yh = CMath::dot(K + m*num, alpha, m);

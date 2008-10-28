@@ -108,7 +108,7 @@ bool CGUIFeatures::load(
 	{
 		if (strncmp(type, "REAL", 4)==0)
 		{
-			*f_ptr=new CStringFeatures<DREAL>(filename);
+			*f_ptr=new CStringFeatures<float64_t>(filename);
 		}
 		else if (strncmp(type, "BYTE", 4)==0)
 		{
@@ -343,7 +343,8 @@ bool CGUIFeatures::set_convert_features(CFeatures* features, char* target)
 	return true;
 }
 
-CSparseFeatures<DREAL>* CGUIFeatures::convert_simple_real_to_sparse_real(CRealFeatures* src)
+CSparseFeatures<float64_t>* CGUIFeatures::convert_simple_real_to_sparse_real(
+	CRealFeatures* src)
 {
 	if (src &&
 		src->get_feature_class()==C_SIMPLE &&
@@ -351,10 +352,10 @@ CSparseFeatures<DREAL>* CGUIFeatures::convert_simple_real_to_sparse_real(CRealFe
 	{
 		//create sparse features with 0 cache
 		SG_INFO("Attempting to convert dense feature matrix to a sparse one.\n");
-		CSparseFeatures<DREAL>* target=new CSparseFeatures<DREAL>(0);
+		CSparseFeatures<float64_t>* target=new CSparseFeatures<float64_t>(0);
 		int32_t num_f=0;
 		int32_t num_v=0;
-		DREAL* feats=src->get_feature_matrix(num_f, num_v);
+		float64_t* feats=src->get_feature_matrix(num_f, num_v);
 		if (target->set_full_feature_matrix(feats, num_f, num_v))
 			return target;
 
@@ -366,7 +367,8 @@ CSparseFeatures<DREAL>* CGUIFeatures::convert_simple_real_to_sparse_real(CRealFe
 	return NULL;
 }
 
-CStringFeatures<char>* CGUIFeatures::convert_simple_char_to_string_char(CCharFeatures* src)
+CStringFeatures<char>* CGUIFeatures::convert_simple_char_to_string_char(
+	CCharFeatures* src)
 {
 	if (src && src->get_feature_class()==C_SIMPLE)
 	{
@@ -408,7 +410,8 @@ CStringFeatures<char>* CGUIFeatures::convert_simple_char_to_string_char(CCharFea
 	return NULL;
 }
 
-CRealFeatures* CGUIFeatures::convert_simple_word_to_simple_salzberg(CWordFeatures* src)
+CRealFeatures* CGUIFeatures::convert_simple_word_to_simple_salzberg(
+	CWordFeatures* src)
 {
 	CPluginEstimate* pie=ui->ui_pluginestimate->get_estimator();
 
@@ -420,7 +423,7 @@ CRealFeatures* CGUIFeatures::convert_simple_word_to_simple_salzberg(CWordFeature
 		CRealFeatures* target=new CRealFeatures(0);
 		int32_t num_feat=src->get_num_features();
 		int32_t num_vec=src->get_num_vectors();
-		DREAL* fm=new DREAL[num_vec*num_feat];
+		float64_t* fm=new float64_t[num_vec*num_feat];
 
 		if (fm)
 		{
@@ -449,7 +452,8 @@ CRealFeatures* CGUIFeatures::convert_simple_word_to_simple_salzberg(CWordFeature
 }
 
 
-CTOPFeatures* CGUIFeatures::convert_string_word_to_simple_top(CStringFeatures<uint16_t>* src)
+CTOPFeatures* CGUIFeatures::convert_string_word_to_simple_top(
+	CStringFeatures<uint16_t>* src)
 {
 	CTOPFeatures* tf=NULL;
 
@@ -481,7 +485,8 @@ CTOPFeatures* CGUIFeatures::convert_string_word_to_simple_top(CStringFeatures<ui
 	return tf;
 }
 
-CFKFeatures* CGUIFeatures::convert_string_word_to_simple_fk(CStringFeatures<uint16_t>* src)
+CFKFeatures* CGUIFeatures::convert_string_word_to_simple_fk(
+	CStringFeatures<uint16_t>* src)
 {
 	CFKFeatures* fkf=NULL;
 
@@ -518,7 +523,8 @@ CFKFeatures* CGUIFeatures::convert_string_word_to_simple_fk(CStringFeatures<uint
 }
 
 
-CRealFeatures* CGUIFeatures::convert_sparse_real_to_simple_real(CSparseFeatures<DREAL>* src)
+CRealFeatures* CGUIFeatures::convert_sparse_real_to_simple_real(
+	CSparseFeatures<float64_t>* src)
 {
 	if (src &&
 		src->get_feature_class()==C_SPARSE &&
@@ -531,7 +537,7 @@ CRealFeatures* CGUIFeatures::convert_sparse_real_to_simple_real(CSparseFeatures<
 		{
 			int32_t num_f=0;
 			int32_t num_v=0;
-			DREAL* feats=src->get_full_feature_matrix(num_f, num_v);
+			float64_t* feats=src->get_full_feature_matrix(num_f, num_v);
 			rf->set_feature_matrix(feats, num_f, num_v);
 			return rf;
 		}
@@ -571,7 +577,8 @@ CWordFeatures* CGUIFeatures::convert_simple_char_to_simple_word(
 	return NULL;
 }
 
-CShortFeatures* CGUIFeatures::convert_simple_char_to_simple_short(CCharFeatures* src, int32_t order, int32_t start, int32_t gap)
+CShortFeatures* CGUIFeatures::convert_simple_char_to_simple_short(
+	CCharFeatures* src, int32_t order, int32_t start, int32_t gap)
 {
 	if (src &&
 		src->get_feature_class()==C_SIMPLE &&
@@ -599,7 +606,8 @@ CShortFeatures* CGUIFeatures::convert_simple_char_to_simple_short(CCharFeatures*
 	return NULL;
 }
 
-CRealFeatures* CGUIFeatures::convert_simple_char_to_simple_align(CCharFeatures* src, DREAL gap_cost)
+CRealFeatures* CGUIFeatures::convert_simple_char_to_simple_align(
+	CCharFeatures* src, float64_t gap_cost)
 {
 	if (src &&
 		src->get_feature_class()==C_SIMPLE &&

@@ -39,7 +39,7 @@ param_spec_t p_map[] = {
  * @param meas Similarity measure to use
  * @param w Kernel width
  */
-CMindyGramKernel::CMindyGramKernel(int32_t ch, char *meas, DREAL w)
+CMindyGramKernel::CMindyGramKernel(int32_t ch, char *meas, float64_t w)
 : CKernel(ch)
 {
 	/* Init attributes */
@@ -75,7 +75,7 @@ CMindyGramKernel::CMindyGramKernel(int32_t ch, char *meas, DREAL w)
 }
 
 CMindyGramKernel::CMindyGramKernel(
-	CFeatures* l, CFeatures* r, char *m, DREAL w)
+	CFeatures* l, CFeatures* r, char *m, float64_t w)
 : CKernel(10), measure(m), width(w)
 {
 	/* Check for similarity coefficients */
@@ -258,14 +258,14 @@ bool CMindyGramKernel::init(CFeatures* l, CFeatures* r)
  * @param j Index to rhs vector
  * @param kernel value
  */
-DREAL CMindyGramKernel::compute(int32_t i, int32_t j)
+float64_t CMindyGramKernel::compute(int32_t i, int32_t j)
 {
     /* Cast things to mindy gram features */
     CMindyGramFeatures *lm = (CMindyGramFeatures *) lhs;
     CMindyGramFeatures *rm = (CMindyGramFeatures *) rhs;
 
     /* Call (internal) mindy comparison function */
-    DREAL result = gram_cmp(kernel, lm->get_feature_vector(i),
+    float64_t result = gram_cmp(kernel, lm->get_feature_vector(i),
         rm->get_feature_vector(j));
     
     /* Compute similartiy coefficients and convert to distance */
@@ -295,7 +295,7 @@ DREAL CMindyGramKernel::compute(int32_t i, int32_t j)
  * @param i Index of feature vector
  * @param w Weight for addition (usually alpha_i)
  */
-void CMindyGramKernel::add_to_normal(int32_t i, DREAL w)
+void CMindyGramKernel::add_to_normal(int32_t i, float64_t w)
 {
     /* Add indexed vector to normal */
     CMindyGramFeatures *lm = (CMindyGramFeatures *) lhs;
@@ -327,7 +327,7 @@ void CMindyGramKernel::clear_normal()
  * @param is Array of indices in left-hand side of data
  * @param ws Array of weights
  */
-bool CMindyGramKernel::init_optimization(int32_t n, int32_t *is, DREAL * ws)
+bool CMindyGramKernel::init_optimization(int32_t n, int32_t *is, float64_t * ws)
 {
     /* Delete old optimization */
     delete_optimization();
@@ -368,7 +368,7 @@ bool CMindyGramKernel::delete_optimization()
  * @param i Index of feature vector on the right-hand side
  * @return kernel value for normal and feature vector
  */
-DREAL CMindyGramKernel::compute_optimized(int32_t i)
+float64_t CMindyGramKernel::compute_optimized(int32_t i)
 {
     if (!get_is_initialized()) {
         SG_ERROR( "MindyGramKernel optimization not initialized\n");
@@ -376,7 +376,7 @@ DREAL CMindyGramKernel::compute_optimized(int32_t i)
     }
 
     CMindyGramFeatures *rm = (CMindyGramFeatures *) rhs;
-    DREAL result = gram_cmp(kernel, rm->get_feature_vector(i), normal);
+    float64_t result = gram_cmp(kernel, rm->get_feature_vector(i), normal);
 
 	return normalizer->normalize_rhs(result, i);
 }

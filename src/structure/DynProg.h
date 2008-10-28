@@ -49,7 +49,7 @@ private:
 	T_STATES trans_list_len;
 	T_STATES **trans_list_forward;
 	T_STATES *trans_list_forward_cnt;
-	DREAL **trans_list_forward_val;
+	float64_t **trans_list_forward_val;
 	int32_t **trans_list_forward_id;
 	bool mem_initialized;
 
@@ -57,16 +57,16 @@ private:
 	CTime MyTime;
 	CTime MyTime2;
 	
-	DREAL segment_init_time;
-	DREAL segment_pos_time;
-	DREAL segment_clean_time;
-	DREAL segment_extend_time;
-	DREAL orf_time;
-	DREAL content_time;
-	DREAL content_penalty_time;
-	DREAL svm_init_time;
-	DREAL svm_pos_time;
-	DREAL svm_clean_time;
+	float64_t segment_init_time;
+	float64_t segment_pos_time;
+	float64_t segment_clean_time;
+	float64_t segment_extend_time;
+	float64_t orf_time;
+	float64_t content_time;
+	float64_t content_penalty_time;
+	float64_t svm_init_time;
+	float64_t svm_pos_time;
+	float64_t svm_clean_time;
 #endif
 	
 public:
@@ -85,7 +85,8 @@ public:
 	 *
 	 * @return best path no b
 	 */
-	DREAL best_path_no_b(int32_t max_iter, int32_t & best_iter, int32_t *my_path);
+	float64_t best_path_no_b(
+		int32_t max_iter, int32_t & best_iter, int32_t *my_path);
 
 	/** best path no b transition
 	 *
@@ -95,7 +96,9 @@ public:
 	 * @param prob_nbest prob_nbest
 	 * @param my_paths my paths
 	 */
-	void best_path_no_b_trans(int32_t max_iter, int32_t & max_best_iter, int16_t nbest, DREAL *prob_nbest, int32_t *my_paths);
+	void best_path_no_b_trans(
+		int32_t max_iter, int32_t & max_best_iter, int16_t nbest,
+		float64_t *prob_nbest, int32_t *my_paths);
 	
 	// model related functions
 	/** set number of states
@@ -126,7 +129,9 @@ public:
 	 *  @param num_probes number of probes
 	 *  @param seq_len: number of candidate positions
 	 */
-	void init_tiling_data(int32_t* probe_pos, DREAL* intensities, const int32_t num_probes, const int32_t seq_len);
+	void init_tiling_data(
+		int32_t* probe_pos, float64_t* intensities, const int32_t num_probes,
+		const int32_t seq_len);
 
 	/** precompute tiling Plifs
 	 *
@@ -136,21 +141,24 @@ public:
 	 * @param seq_len sequence length
 	 * @param pos pos
 	 */
-	void precompute_tiling_plifs(CPlif** PEN, const int32_t* tiling_plif_ids, const int32_t num_tiling_plifs, const int32_t seq_len, const int32_t* pos);	
+	void precompute_tiling_plifs(
+		CPlif** PEN, const int32_t* tiling_plif_ids,
+		const int32_t num_tiling_plifs, const int32_t seq_len,
+		const int32_t* pos);
 
 	/** set vector p
 	 *
 	 * @param p new vector p
 	 * @param N size of vector p
 	 */
-	void set_p_vector(DREAL* p, int32_t N);
+	void set_p_vector(float64_t* p, int32_t N);
 
 	/** set vector q
 	 *
 	 * @param q new vector q
 	 * @param N size of vector q
 	 */
-	void set_q_vector(DREAL* q, int32_t N);
+	void set_q_vector(float64_t* q, int32_t N);
 	
 	/** set matrix a
 	 *
@@ -158,7 +166,7 @@ public:
 	 * @param M dimension M of matrix a
 	 * @param N dimension N of matrix a
 	 */
-	void set_a(DREAL* a, int32_t M, int32_t N);
+	void set_a(float64_t* a, int32_t M, int32_t N);
 	
 	/** set a id
 	 *
@@ -174,7 +182,7 @@ public:
 	 * @param num_trans number of transitions
 	 * @param N dimension N of matrix a
 	 */
-	void set_a_trans_matrix(DREAL *a_trans, int32_t num_trans, int32_t N);
+	void set_a_trans_matrix(float64_t *a_trans, int32_t num_trans, int32_t N);
 
 	// content svm related setup functions
 	/** init SVM arrays
@@ -196,7 +204,8 @@ public:
 	 * @param p_cum_num_words_array new cum num words array
 	 * @param num_elem number of array elements
 	 */
-	void init_cum_num_words_array(int32_t * p_cum_num_words_array, int32_t num_elem);
+	void init_cum_num_words_array(
+		int32_t * p_cum_num_words_array, int32_t num_elem);
 
 	/** init num words array
 	 *
@@ -211,7 +220,8 @@ public:
 	 * @param num_elem number of array elements
 	 * @param num_columns number of columns
 	 */
-	void init_mod_words_array(int32_t * p_mod_words_array, int32_t num_elem, int32_t num_columns);
+	void init_mod_words_array(
+		int32_t * p_mod_words_array, int32_t num_elem, int32_t num_columns);
 
 	/** init sign words array
 	 *
@@ -225,7 +235,8 @@ public:
 	 * @param p_string_words_array new string words array
 	 * @param num_elem number of array elements
 	 */
-	void init_string_words_array(int32_t * p_string_words_array, int32_t num_elem);
+	void init_string_words_array(
+		int32_t * p_string_words_array, int32_t num_elem);
 
 	/** check SVM arrays
 	 * call this function to check consistency
@@ -241,7 +252,7 @@ public:
 	 * @param N dimension N
 	 * @param seq_len length of sequence
 	 */
-	void best_path_set_seq(DREAL *seq, int32_t N, int32_t seq_len);
+	void best_path_set_seq(float64_t *seq, int32_t N, int32_t seq_len);
 
 	/** set best path seq3d
 	 *
@@ -250,7 +261,8 @@ public:
 	 * @param seq_len length of sequence
 	 * @param max_num_signals maximal number of signals
 	 */
-	void best_path_set_seq3d(DREAL *seq, int32_t p_N, int32_t seq_len, int32_t max_num_signals);
+	void best_path_set_seq3d(
+		float64_t *seq, int32_t p_N, int32_t seq_len, int32_t max_num_signals);
 
 	/** set best path pos
 	 *
@@ -275,7 +287,8 @@ public:
 	 * @param num_states number of states
 	 * @param seq_len length of sequence
 	 */
-	void best_path_set_segment_sum_weights(DREAL *segment_sum_weights, int32_t num_states, int32_t seq_len);
+	void best_path_set_segment_sum_weights(
+		float64_t *segment_sum_weights, int32_t num_states, int32_t seq_len);
 
 	/** set best path Plif list
 	 *
@@ -289,7 +302,8 @@ public:
 	 * @param m dimension m of matrix
 	 * @param n dimension n of matrix
 	 */
-	void best_path_set_plif_id_matrix(int32_t *plif_id_matrix, int32_t m, int32_t n);
+	void best_path_set_plif_id_matrix(
+		int32_t *plif_id_matrix, int32_t m, int32_t n);
 
 	/** set best path plif state signal matrix
 	 *
@@ -297,7 +311,8 @@ public:
 	 * @param m dimension m of matrix
 	 * @param n dimension n of matrix
 	 */
-	void best_path_set_plif_state_signal_matrix(int32_t *plif_id_matrix, int32_t m, int32_t n);
+	void best_path_set_plif_state_signal_matrix(
+		int32_t *plif_id_matrix, int32_t m, int32_t n);
 
 	/** set best path genesstr
 	 *
@@ -305,7 +320,8 @@ public:
 	 * @param genestr_len length of gene string
 	 * @param genestr_num number of gene strings, typically 1
 	 */
-	void best_path_set_genestr(char* genestr, int32_t genestr_len, int32_t genestr_num);
+	void best_path_set_genestr(
+		char* genestr, int32_t genestr_len, int32_t genestr_num);
 
 	// additional best_path_trans_deriv functions
 	/** set best path my state sequence
@@ -339,7 +355,8 @@ public:
 	 * @param dict_len length of dictionary weights
 	 * @param n dimension n
 	 */
-	void best_path_set_dict_weights(DREAL* dictionary_weights, int32_t dict_len, int32_t n);
+	void best_path_set_dict_weights(
+		float64_t* dictionary_weights, int32_t dict_len, int32_t n);
 
 	/** set best path segment loss
 	 *
@@ -347,7 +364,9 @@ public:
 	 * @param num_segment_id1 number of segment id1
 	 * @param num_segment_id2 number of segment id2
 	 */
-	void best_path_set_segment_loss(DREAL * segment_loss, int32_t num_segment_id1, int32_t num_segment_id2);
+	void best_path_set_segment_loss(
+		float64_t * segment_loss, int32_t num_segment_id1,
+		int32_t num_segment_id2);
 
 	/** set best path segmend ids mask
 	 *
@@ -355,7 +374,8 @@ public:
 	 * @param segment_mask segment mask
 	 * @param m dimension m
 	 */
-	void best_path_set_segment_ids_mask(int32_t* segment_ids, DREAL* segment_mask, int32_t m);
+	void best_path_set_segment_ids_mask(
+		int32_t* segment_ids, float64_t* segment_mask, int32_t m);
 
 	// best_path functions
 	/** best path call
@@ -392,7 +412,7 @@ public:
 	 * @param scores scores
 	 * @param n dimension n
 	 */
-	void best_path_get_scores(DREAL **scores, int32_t *n);
+	void best_path_get_scores(float64_t **scores, int32_t *n);
 
 	/** best path get states
 	 *
@@ -416,7 +436,7 @@ public:
 	 * @param my_losses my losses
 	 * @param seq_len length of sequence
 	 */
-	void best_path_get_losses(DREAL** my_losses, int32_t* seq_len);
+	void best_path_get_losses(float64_t** my_losses, int32_t* seq_len);
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -436,12 +456,12 @@ public:
 	 * @param use_orf whether orf shall be used
 	 */
 	template <int16_t nbest, bool with_loss, bool with_multiple_sequences>
-	void best_path_trans(const DREAL *seq, int32_t seq_len, const int32_t *pos,
-						 const int32_t *orf_info, CPlifBase **PLif_matrix,
-						 CPlifBase **Plif_state_signals, int32_t max_num_signals,
-						 int32_t genestr_num,
-						 DREAL *prob_nbest, int32_t *my_state_seq, int32_t *my_pos_seq,
-						 bool use_orf);
+	void best_path_trans(
+		const float64_t *seq, int32_t seq_len, const int32_t *pos,
+		const int32_t *orf_info, CPlifBase **PLif_matrix,
+		CPlifBase **Plif_state_signals, int32_t max_num_signals,
+		int32_t genestr_num, float64_t *prob_nbest, int32_t *my_state_seq,
+		int32_t *my_pos_seq, bool use_orf);
 
 	/** best path trans derivative
 	 *
@@ -458,9 +478,12 @@ public:
 	 * @param max_num_signals maximal number of signals
 	 * @param genestr_num number of gene strings
 	 */
-	void best_path_trans_deriv(int32_t *my_state_seq, int32_t *my_pos_seq, DREAL *my_scores, DREAL* my_losses, int32_t my_seq_len,
-					const DREAL *seq_array, int32_t seq_len, const int32_t *pos, CPlifBase **Plif_matrix,
-					CPlifBase **Plif_state_signals, int32_t max_num_signals, int32_t genestr_num);
+	void best_path_trans_deriv(
+		int32_t *my_state_seq, int32_t *my_pos_seq, float64_t *my_scores,
+		float64_t* my_losses, int32_t my_seq_len, const float64_t *seq_array,
+		int32_t seq_len, const int32_t *pos, CPlifBase **Plif_matrix,
+		CPlifBase **Plif_state_signals, int32_t max_num_signals,
+		int32_t genestr_num);
 	
 	/** best path 2struct
 	 *
@@ -478,12 +501,12 @@ public:
 	 * @param dict_len length of dictionary weights
 	 * @param segment_sum_weights segment sum weights
 	 */
-	void best_path_2struct(const DREAL *seq, int32_t seq_len, const int32_t *pos,
-						   CPlifBase **Plif_matrix,
-						   const char *genestr, int32_t genestr_len,
-						   int16_t nbest,
-						   DREAL *prob_nbest, int32_t *my_state_seq, int32_t *my_pos_seq,
-						   DREAL *dictionary_weights, int32_t dict_len, DREAL *segment_sum_weights);
+	void best_path_2struct(
+		const float64_t *seq, int32_t seq_len, const int32_t *pos,
+		CPlifBase **Plif_matrix, const char *genestr, int32_t genestr_len,
+		int16_t nbest, float64_t *prob_nbest, int32_t *my_state_seq,
+		int32_t *my_pos_seq, float64_t *dictionary_weights, int32_t dict_len,
+		float64_t *segment_sum_weights);
 
 	/** best path trans simple
 	 *
@@ -493,8 +516,9 @@ public:
 	 * @param prob_nbest prob(ability?) nbest
 	 * @param my_state_seq my state seq
 	 */
-	void best_path_trans_simple(const DREAL *seq, int32_t seq_len, int16_t nbest,
-								DREAL *prob_nbest, int32_t *my_state_seq);
+	void best_path_trans_simple(
+		const float64_t *seq, int32_t seq_len, int16_t nbest,
+		float64_t *prob_nbest, int32_t *my_state_seq);
 
 
 
@@ -508,7 +532,7 @@ public:
 	 * @param offset index 0...N-1
 	 * @param value value to be set
 	 */
-	inline void set_q(T_STATES offset, DREAL value)
+	inline void set_q(T_STATES offset, float64_t value)
 	{
 		end_state_distribution_q[offset]=value;
 	}
@@ -517,7 +541,7 @@ public:
 	 * @param offset index 0...N-1
 	 * @param value value to be set
 	 */
-	inline void set_p(T_STATES offset, DREAL value)
+	inline void set_p(T_STATES offset, float64_t value)
 	{
 		initial_state_distribution_p[offset]=value;
 	}
@@ -528,7 +552,7 @@ public:
 	 * @param column column in matrix 0...N-1
 	 * @param value value to be set
 	 */
-	inline void set_a(T_STATES line_, T_STATES column, DREAL value)
+	inline void set_a(T_STATES line_, T_STATES column, float64_t value)
 	{
 	  transition_matrix_a.element(line_,column)=value; // look also best_path!
 	}
@@ -538,7 +562,7 @@ public:
 	 * @param offset index 0...N-1
 	 * @return value at offset
 	 */
-	inline DREAL get_q(T_STATES offset) const
+	inline float64_t get_q(T_STATES offset) const
 	{
 		return end_state_distribution_q[offset];
 	}
@@ -548,7 +572,7 @@ public:
 	 * @param offset index 0...N-1
 	 * @return value at offset
 	 */
-	inline DREAL get_q_deriv(T_STATES offset) const
+	inline float64_t get_q_deriv(T_STATES offset) const
 	{
 		return end_state_distribution_q_deriv[offset];
 	}
@@ -558,7 +582,7 @@ public:
 	 * @param offset index 0...N-1
 	 * @return value at offset
 	 */
-	inline DREAL get_p(T_STATES offset) const
+	inline float64_t get_p(T_STATES offset) const
 	{
 		return initial_state_distribution_p[offset];
 	}
@@ -568,7 +592,7 @@ public:
 	 * @param offset index 0...N-1
 	 * @return value at offset
 	 */
-	inline DREAL get_p_deriv(T_STATES offset) const
+	inline float64_t get_p_deriv(T_STATES offset) const
 	{
 		return initial_state_distribution_p_deriv[offset];
 	}
@@ -583,9 +607,10 @@ public:
 	 * @param dictionary_weights dictionary weights
 	 * @param dict_len lenght of dictionary
 	 */
-	void precompute_content_values(uint16_t*** wordstr, const int32_t *pos,
-		const int32_t num_cand_pos, const int32_t genestr_len,
-		DREAL *dictionary_weights, int32_t dict_len);
+	void precompute_content_values(
+		uint16_t*** wordstr, const int32_t *pos, const int32_t num_cand_pos,
+		const int32_t genestr_len, float64_t *dictionary_weights,
+		int32_t dict_len);
 
 	/** create word string from char*
 	 * Jonas
@@ -595,7 +620,9 @@ public:
 	 * @param genestr_len length of gene string
 	 * @param wordstr word strings
 	 */
-	void create_word_string(const char* genestr, int32_t genestr_num, int32_t genestr_len, uint16_t*** wordstr);
+	void create_word_string(
+		const char* genestr, int32_t genestr_num, int32_t genestr_len,
+		uint16_t*** wordstr);
 
 	/** precompute stop codons
 	 *
@@ -617,7 +644,7 @@ public:
 	 * @param column column in matrix 0...N-1
 	 * @return value at position line colum
 	 */
-	inline DREAL get_a(T_STATES line_, T_STATES column) const
+	inline float64_t get_a(T_STATES line_, T_STATES column) const
 	{
 	  return transition_matrix_a.element(line_,column); // look also best_path()!
 	}
@@ -628,7 +655,7 @@ public:
 	 * @param column column in matrix 0...N-1
 	 * @return value at position line colum
 	 */
-	inline DREAL get_a_deriv(T_STATES line_, T_STATES column) const
+	inline float64_t get_a_deriv(T_STATES line_, T_STATES column) const
 	{
 	  return transition_matrix_a_deriv.element(line_,column); // look also best_path()!
 	}
@@ -646,9 +673,10 @@ protected:
 	 * @param svm_values SVM values
 	 * @param frame frame
 	 */
-	inline void lookup_content_svm_values(const int32_t from_state,
-		const int32_t to_state, const int32_t from_pos, const int32_t to_pos,
-		DREAL* svm_values, int32_t frame);
+	inline void lookup_content_svm_values(
+		const int32_t from_state, const int32_t to_state,
+		const int32_t from_pos, const int32_t to_pos, float64_t* svm_values,
+		int32_t frame);
 
 	/** lookup tiling Plif values
 	 *
@@ -657,8 +685,9 @@ protected:
 	 * @param len length
 	 * @param svm_values SVM values
 	 */
-	inline void lookup_tiling_plif_values(const int32_t from_state,
-		const int32_t to_state, const int32_t len, DREAL* svm_values);
+	inline void lookup_tiling_plif_values(
+		const int32_t from_state, const int32_t to_state, const int32_t len,
+		float64_t* svm_values);
 
 	/** find frame
 	 *
@@ -674,7 +703,7 @@ protected:
 	 * @return an integer
 	 */
 	inline int32_t raw_intensities_interval_query(
-		const int32_t from_pos, const int32_t to_pos, DREAL* intensities);
+		const int32_t from_pos, const int32_t to_pos, float64_t* intensities);
 
 	/** translate from single order
 	 *
@@ -684,8 +713,9 @@ protected:
 	 * @param order order
 	 * @param max_val maximum number of bits, e.g. 2 for DNA
 	 */
-	void translate_from_single_order(uint16_t* obs, int32_t sequence_length, int32_t start,
-		int32_t order, int32_t max_val=2);
+	void translate_from_single_order(
+		uint16_t* obs, int32_t sequence_length, int32_t start, int32_t order,
+		int32_t max_val=2);
 
 	/** reset SVM value
 	 *
@@ -693,7 +723,8 @@ protected:
 	 * @param last_svm_pos last SVM position
 	 * @param svm_value value to set
 	 */
-	void reset_svm_value(int32_t pos, int32_t & last_svm_pos, DREAL * svm_value);
+	void reset_svm_value(
+		int32_t pos, int32_t & last_svm_pos, float64_t * svm_value);
 
 	/** extend SVM value
 	 *
@@ -702,8 +733,9 @@ protected:
 	 * @param last_svm_pos lsat SVM position
 	 * @param svm_value value to set
 	 */
-	void extend_svm_value(uint16_t* wordstr, int32_t pos, int32_t &last_svm_pos,
-		DREAL* svm_value);
+	void extend_svm_value(
+		uint16_t* wordstr, int32_t pos, int32_t &last_svm_pos,
+		float64_t* svm_value);
 
 	/** reset segment sum value
 	 *
@@ -712,8 +744,9 @@ protected:
 	 * @param last_segment_sum_pos last segment sum position
 	 * @param segment_sum_value value to set
 	 */
-	void reset_segment_sum_value(int32_t num_states, int32_t pos,
-		int32_t & last_segment_sum_pos, DREAL * segment_sum_value);
+	void reset_segment_sum_value(
+		int32_t num_states, int32_t pos, int32_t & last_segment_sum_pos,
+		float64_t * segment_sum_value);
 
 	/** extend segment sum value
 	 *
@@ -724,9 +757,10 @@ protected:
 	 * @param last_segment_sum_pos last segment sum position
 	 * @param segment_sum_value value to set
 	 */
-	void extend_segment_sum_value(DREAL *segment_sum_weights, int32_t seqlen,
-		int32_t num_states, int32_t pos, int32_t &last_segment_sum_pos,
-		DREAL* segment_sum_value);
+	void extend_segment_sum_value(
+		float64_t *segment_sum_weights, int32_t seqlen, int32_t num_states,
+		int32_t pos, int32_t &last_segment_sum_pos,
+		float64_t* segment_sum_value);
 
 	/** SVM values */
 	struct svm_values_struct
@@ -739,17 +773,17 @@ protected:
 		/** start position */
 		int32_t* start_pos;
 		/** SVM values normalized */
-		DREAL ** svm_values_unnormalized;
+		float64_t ** svm_values_unnormalized;
 		/** SVM values */
-		DREAL * svm_values;
+		float64_t * svm_values;
 		/** word used */
 		bool *** word_used;
 		/** number of unique words */
 		int32_t **num_unique_words;
 	};
 
-	//void reset_svm_values(int32_t pos, int32_t * last_svm_pos, DREAL * svm_value) ;
-	//void extend_svm_values(uint16_t** wordstr, int32_t pos, int32_t *last_svm_pos, DREAL* svm_value) ;
+	//void reset_svm_values(int32_t pos, int32_t * last_svm_pos, float64_t * svm_value) ;
+	//void extend_svm_values(uint16_t** wordstr, int32_t pos, int32_t *last_svm_pos, float64_t* svm_value) ;
 	/** init SVM values
 	 *
 	 * @param svs SVM values
@@ -757,8 +791,9 @@ protected:
 	 * @param seqlen length of sequence
 	 * @param howmuchlookback how far to look back
 	 */
-	void init_svm_values(struct svm_values_struct & svs, int32_t start_pos,
-		int32_t seqlen, int32_t howmuchlookback);
+	void init_svm_values(
+		struct svm_values_struct & svs, int32_t start_pos, int32_t seqlen,
+		int32_t howmuchlookback);
 
 	/** clear SVM values
 	 *
@@ -773,7 +808,8 @@ protected:
 	 * @param t_end t end
 	 * @param svs SVM values
 	 */
-	void find_svm_values_till_pos(uint16_t*** wordstr, const int32_t *pos, int32_t t_end,
+	void find_svm_values_till_pos(
+		uint16_t*** wordstr, const int32_t *pos, int32_t t_end,
 		struct svm_values_struct &svs);
 
 	/** find SVM values till position
@@ -783,7 +819,8 @@ protected:
 	 * @param t_end t end
 	 * @param svs SVM values
 	 */
-	void find_svm_values_till_pos(uint16_t** wordstr, const int32_t *pos, int32_t t_end,
+	void find_svm_values_till_pos(
+		uint16_t** wordstr, const int32_t *pos, int32_t t_end,
 		struct svm_values_struct &svs);
 
 	/** update SVM values till position
@@ -794,7 +831,8 @@ protected:
 	 * @param prev_t_end previous t end
 	 * @param svs SVM values
 	 */
-	void update_svm_values_till_pos(uint16_t*** wordstr, const int32_t *pos, int32_t t_end,
+	void update_svm_values_till_pos(
+		uint16_t*** wordstr, const int32_t *pos, int32_t t_end,
 		int32_t prev_t_end, struct svm_values_struct &svs);
 
 	/** extend orf
@@ -805,7 +843,9 @@ protected:
 	 * @param last_pos last position
 	 * @param to to
 	 */
-	bool extend_orf(int32_t orf_from, int32_t orf_to, int32_t start, int32_t &last_pos, int32_t to);
+	bool extend_orf(
+		int32_t orf_from, int32_t orf_to, int32_t start, int32_t &last_pos,
+		int32_t to);
 
 	/** segment loss */
 	struct segment_loss_struct
@@ -817,7 +857,7 @@ protected:
 		/** segments changed */
 		int32_t *segments_changed;
 		/** numb segment ID */
-		DREAL *num_segment_id;
+		float64_t *num_segment_id;
 		/** length of segmend ID */
 		int32_t *length_segment_id ;
 	};
@@ -828,7 +868,8 @@ protected:
 	 * @param seqlen length of sequence
 	 * @param howmuchlookback how far to look back
 	 */
-	void init_segment_loss(struct segment_loss_struct & loss, int32_t seqlen,
+	void init_segment_loss(
+		struct segment_loss_struct & loss, int32_t seqlen,
 		int32_t howmuchlookback);
 
 	/** clear segment loss
@@ -847,9 +888,10 @@ protected:
 	 * @param last_value last value
 	 * @return last value
 	 */
-	DREAL extend_segment_loss(struct segment_loss_struct & loss,
-		const int32_t * pos_array, int32_t segment_id, int32_t pos, int32_t& last_pos,
-		DREAL &last_value);
+	float64_t extend_segment_loss(
+		struct segment_loss_struct & loss, const int32_t * pos_array,
+		int32_t segment_id, int32_t pos, int32_t& last_pos,
+		float64_t &last_value);
 
 	/** find segment loss till pos
 	 *
@@ -859,9 +901,9 @@ protected:
 	 * @param segment_mask segmend mask
 	 * @param loss segment loss
 	 */
-	void find_segment_loss_till_pos(const int32_t * pos, int32_t t_end,
-		CArray<int32_t>& segment_ids, CArray<DREAL>& segment_mask,
-		struct segment_loss_struct& loss);
+	void find_segment_loss_till_pos(
+		const int32_t * pos, int32_t t_end, CArray<int32_t>& segment_ids,
+		CArray<float64_t>& segment_mask, struct segment_loss_struct& loss);
 
 	
 	/**@name model specific variables.
@@ -873,23 +915,23 @@ protected:
 
 	/// transition matrix
 	CArray2<int32_t> transition_matrix_a_id;
-	CArray2<DREAL> transition_matrix_a;
-	CArray2<DREAL> transition_matrix_a_deriv;
+	CArray2<float64_t> transition_matrix_a;
+	CArray2<float64_t> transition_matrix_a_deriv;
 
 	/// initial distribution of states
-	CArray<DREAL> initial_state_distribution_p;
-	CArray<DREAL> initial_state_distribution_p_deriv;
+	CArray<float64_t> initial_state_distribution_p;
+	CArray<float64_t> initial_state_distribution_p_deriv;
 
 	/// distribution of end-states
-	CArray<DREAL> end_state_distribution_q;
-	CArray<DREAL> end_state_distribution_q_deriv;
+	CArray<float64_t> end_state_distribution_q;
+	CArray<float64_t> end_state_distribution_q_deriv;
 
 	//@}
 	
 	/** dict weights */
-	CArray2<DREAL> dict_weights;
+	CArray2<float64_t> dict_weights;
 	/** dict weights array */
-	DREAL * dict_weights_array;
+	float64_t * dict_weights_array;
 
 	/** number of degress */
 	int32_t num_degrees;
@@ -923,7 +965,7 @@ protected:
 
 //	CArray3<int32_t> word_used ;
 //	int32_t *word_used_array ;
-//	CArray2<DREAL> svm_values_unnormalized ;
+//	CArray2<float64_t> svm_values_unnormalized ;
 	/** SVM start position */
 	CArray<int32_t> svm_pos_start;
 	/** number of unique words */
@@ -943,7 +985,7 @@ protected:
 	/** word used single */
 	CArray<bool> word_used_single;
 	/** SVM value unnormalised single */
-	CArray<DREAL> svm_value_unnormalized_single;
+	CArray<float64_t> svm_value_unnormalized_single;
 	/** number of unique words single */
 	int32_t num_unique_words_single;
 
@@ -958,13 +1000,13 @@ protected:
 
 	// input arguments
 	/** m sequence */
-	CArray3<DREAL> m_seq;
+	CArray3<float64_t> m_seq;
 	/** m position */
 	CArray<int32_t> m_pos;
 	/** m orf info */
 	CArray2<int32_t> m_orf_info;
 	/** m segment sum weights */
-	CArray2<DREAL> m_segment_sum_weights;
+	CArray2<float64_t> m_segment_sum_weights;
 	/** m Plif list */
 	CArray<CPlifBase*> m_plif_list;
 	/** m PEN */
@@ -974,25 +1016,25 @@ protected:
 	/** m genestr */
 	CArray2<char> m_genestr;
 	/** m dict weights */
-	CArray2<DREAL> m_dict_weights;
+	CArray2<float64_t> m_dict_weights;
 	/** m segment loss */
-	CArray3<DREAL> m_segment_loss;
+	CArray3<float64_t> m_segment_loss;
 	/** m segment IDs */
 	CArray<int32_t> m_segment_ids;
 	/** m segment mask */
-	CArray<DREAL> m_segment_mask;
+	CArray<float64_t> m_segment_mask;
 	/** m my state seq */
 	CArray<int32_t> m_my_state_seq;
 	/** m my position sequence */
 	CArray<int32_t> m_my_pos_seq;
 	/** m my scores */
-	CArray<DREAL> m_my_scores;
+	CArray<float64_t> m_my_scores;
 	/** m my losses */
-	CArray<DREAL> m_my_losses;
+	CArray<float64_t> m_my_losses;
 
 	// output arguments
 	/** m scores */
-	CArray<DREAL> m_scores;
+	CArray<float64_t> m_scores;
 	/** m states */
 	CArray2<int32_t> m_states;
 	/** m positions */
@@ -1007,13 +1049,13 @@ protected:
 	 *  array for storage of content svm values
 	 * Jonas
 	 */
-	CArray2<DREAL> m_precomputed_svm_values;
+	CArray2<float64_t> m_precomputed_svm_values;
 
 	/** precomputed tiling values */
-	CArray2<DREAL> m_precomputed_tiling_values;
+	CArray2<float64_t> m_precomputed_tiling_values;
 
 	/** raw intensities */
-	DREAL* m_raw_intensities;
+	float64_t* m_raw_intensities;
 	/** prope position */
 	int32_t* m_probe_pos;
 	/** number of probes */
@@ -1024,13 +1066,14 @@ protected:
 	int32_t m_genestr_len;
 };
 
-inline int32_t CDynProg::raw_intensities_interval_query(const int32_t from_pos, const int32_t to_pos, DREAL* intensities)
+inline int32_t CDynProg::raw_intensities_interval_query(
+	const int32_t from_pos, const int32_t to_pos, float64_t* intensities)
 {
 	ASSERT(from_pos<to_pos);
 	//SG_PRINT("m_num_probes:%i, m_raw_intensities[1]:%f, m_probe_pos[1]:%i \n",m_num_probes, m_raw_intensities[10], m_probe_pos[10]);
 	int32_t num_intensities = 0;
 	int32_t* p_tiling_pos  = m_probe_pos;
-	DREAL* p_tiling_data = m_raw_intensities;
+	float64_t* p_tiling_data = m_raw_intensities;
 	int32_t last_pos;
 	int32_t num = 0;
 	while (*p_tiling_pos<to_pos)
@@ -1051,15 +1094,18 @@ inline int32_t CDynProg::raw_intensities_interval_query(const int32_t from_pos, 
 	}
 	return num_intensities;
 }
-inline void CDynProg::lookup_content_svm_values(const int32_t from_state, const int32_t to_state, const int32_t from_pos, const int32_t to_pos, DREAL* svm_values, int32_t frame)
+
+inline void CDynProg::lookup_content_svm_values(
+	const int32_t from_state, const int32_t to_state, const int32_t from_pos,
+	const int32_t to_pos, float64_t* svm_values, int32_t frame)
 {
 //	ASSERT(from_state<to_state);
 //	if (!(from_pos<to_pos))
 //		SG_ERROR("from_pos!<to_pos, from_pos: %i to_pos: %i \n",from_pos,to_pos);
 	for (int32_t i=0;i<4;i++)
 	{
-		DREAL to_val   = m_precomputed_svm_values.get_element(i,  to_state);
-		DREAL from_val = m_precomputed_svm_values.get_element(i,from_state);
+		float64_t to_val   = m_precomputed_svm_values.get_element(i,  to_state);
+		float64_t from_val = m_precomputed_svm_values.get_element(i,from_state);
 		svm_values[i]=(to_val-from_val)/(to_pos-from_pos);
 	}
 	// find the correct row with precomputed 
@@ -1071,12 +1117,15 @@ inline void CDynProg::lookup_content_svm_values(const int32_t from_state, const 
 		int32_t global_frame = from_pos%3;
         	int32_t row = ((global_frame+frame)%3)+4;
 		//SG_PRINT("global_frame:%i row:%i frame:%i \n", global_frame, row, frame);
-		DREAL to_val   = m_precomputed_svm_values.get_element(row,  to_state);
-		DREAL from_val = m_precomputed_svm_values.get_element(row,from_state);
+		float64_t to_val   = m_precomputed_svm_values.get_element(row,  to_state);
+		float64_t from_val = m_precomputed_svm_values.get_element(row,from_state);
 		svm_values[frame+4] = (to_val-from_val)/(to_pos-from_pos);
 	}
 }
-inline void CDynProg::lookup_tiling_plif_values(const int32_t from_state, const int32_t to_state, const int32_t len, DREAL* svm_values)
+
+inline void CDynProg::lookup_tiling_plif_values(
+	const int32_t from_state, const int32_t to_state, const int32_t len,
+	float64_t* svm_values)
 {
 	ASSERT(from_state<to_state);
 	ASSERT(len>0);

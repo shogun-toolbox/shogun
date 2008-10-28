@@ -42,20 +42,20 @@ bool CSimpleLocalityImprovedStringKernel::init(CFeatures* l, CFeatures* r)
 	if (!result)
 		return false;
 	int32_t num_features = ((CStringFeatures<char>*) l)->get_max_vector_length();
-	pyramid_weights = new DREAL[num_features];
+	pyramid_weights = new float64_t[num_features];
 	ASSERT(pyramid_weights);
 	SG_INFO("initializing pyramid weights: size=%ld length=%i\n",
 		num_features, length);
 
 	const int32_t PYRAL = 2 * length - 1; // total window length
-	DREAL PYRAL_pot;
+	float64_t PYRAL_pot;
 	int32_t DEGREE1_1  = (inner_degree & 0x1)==0;
 	int32_t DEGREE1_1n = (inner_degree & ~0x1)!=0;
 	int32_t DEGREE1_2  = (inner_degree & 0x2)!=0;
 	int32_t DEGREE1_3  = (inner_degree & ~0x3)!=0;
 	int32_t DEGREE1_4  = (inner_degree & 0x4)!=0;
 	{
-	DREAL PYRAL_ = PYRAL;
+	float64_t PYRAL_ = PYRAL;
 	PYRAL_pot = DEGREE1_1 ? 1.0 : PYRAL_;
 	if (DEGREE1_1n)
 	{
@@ -76,7 +76,7 @@ bool CSimpleLocalityImprovedStringKernel::init(CFeatures* l, CFeatures* r)
 	{
 	int32_t j;
 	for (j = 0; j < pyra_len; j++)
-		pyramid_weights[j] = 4*((DREAL)((j < pyra_len2)? j+1 : pyra_len-j))/((DREAL)pyra_len);
+		pyramid_weights[j] = 4*((float64_t)((j < pyra_len2)? j+1 : pyra_len-j))/((float64_t)pyra_len);
 	for (j = 0; j < pyra_len; j++)
 		pyramid_weights[j] /= PYRAL_pot;
 	}
@@ -102,21 +102,21 @@ bool CSimpleLocalityImprovedStringKernel::save_init(FILE* dest)
 	return false;
 }
 
-DREAL CSimpleLocalityImprovedStringKernel::dot_pyr (const char* const x1,
+float64_t CSimpleLocalityImprovedStringKernel::dot_pyr (const char* const x1,
 	     const char* const x2, const int32_t NOF_NTS, const int32_t NTWIDTH,
-	     const int32_t DEGREE1, const int32_t DEGREE2, DREAL *pyra)
+	     const int32_t DEGREE1, const int32_t DEGREE2, float64_t *pyra)
 {
 	const int32_t PYRAL = 2*NTWIDTH-1; // total window length
 	int32_t pyra_len, pyra_len2;
-	DREAL pot, PYRAL_pot;
-	DREAL sum;
+	float64_t pot, PYRAL_pot;
+	float64_t sum;
 	int32_t DEGREE1_1 = (DEGREE1 & 0x1)==0;
 	int32_t DEGREE1_1n = (DEGREE1 & ~0x1)!=0;
 	int32_t DEGREE1_2 = (DEGREE1 & 0x2)!=0;
 	int32_t DEGREE1_3 = (DEGREE1 & ~0x3)!=0;
 	int32_t DEGREE1_4 = (DEGREE1 & 0x4)!=0;
 	{
-	DREAL PYRAL_ = PYRAL;
+	float64_t PYRAL_ = PYRAL;
 	PYRAL_pot = DEGREE1_1 ? 1.0 : PYRAL_;
 	if (DEGREE1_1n)
 	{
@@ -138,7 +138,7 @@ DREAL CSimpleLocalityImprovedStringKernel::dot_pyr (const char* const x1,
 	{
 	int32_t j;
 	for (j = 0; j < pyra_len; j++)
-		pyra[j] = 4*((DREAL)((j < pyra_len2) ? j+1 : pyra_len-j))/((DREAL)pyra_len);
+		pyra[j] = 4*((float64_t)((j < pyra_len2) ? j+1 : pyra_len-j))/((float64_t)pyra_len);
 	for (j = 0; j < pyra_len; j++)
 		pyra[j] /= PYRAL_pot;
 	}
@@ -154,12 +154,12 @@ DREAL CSimpleLocalityImprovedStringKernel::dot_pyr (const char* const x1,
 
 	for (i = 0; i < NOF_NTS-PYRAL+1; i++)
 	{
-		register DREAL pot2;
+		register float64_t pot2;
 		if (i>0)
 			conv += ((x1[i+PYRAL-1] == x2[i+PYRAL-1]) ? 1 : 0 ) - 
 				((x1[i-1] == x2[i-1]) ? 1 : 0);
 		{ /* potencing of conv -- double is faster*/
-		register DREAL conv2 = conv;
+		register float64_t conv2 = conv;
 		pot2 = (DEGREE1_1) ? 1.0 : conv2;
 			if (DEGREE1_1n)
 			{
@@ -189,7 +189,8 @@ DREAL CSimpleLocalityImprovedStringKernel::dot_pyr (const char* const x1,
 	return pot;
 }
 
-DREAL CSimpleLocalityImprovedStringKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t CSimpleLocalityImprovedStringKernel::compute(
+	int32_t idx_a, int32_t idx_b)
 {
 	int32_t alen, blen;
 
@@ -199,9 +200,9 @@ DREAL CSimpleLocalityImprovedStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	// can only deal with strings of same length
 	ASSERT(alen==blen);
 
-	DREAL dpt;
+	float64_t dpt;
 
 	dpt = dot_pyr(avec, bvec, alen, length, inner_degree, outer_degree, pyramid_weights);
 	dpt = dpt / pow((double)alen, (double)outer_degree);
-	return (DREAL) dpt;
+	return (float64_t) dpt;
 }

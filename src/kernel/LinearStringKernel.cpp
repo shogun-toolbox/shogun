@@ -56,10 +56,10 @@ bool CLinearStringKernel::save_init(FILE *dest)
 
 void CLinearStringKernel::clear_normal()
 {
-	memset(normal, 0, lhs->get_num_vectors()*sizeof(DREAL));
+	memset(normal, 0, lhs->get_num_vectors()*sizeof(float64_t));
 }
 
-void CLinearStringKernel::add_to_normal(int32_t idx, DREAL weight)
+void CLinearStringKernel::add_to_normal(int32_t idx, float64_t weight)
 {
 	int32_t vlen;
 	char* vec = ((CStringFeatures<char>*) lhs)->get_feature_vector(idx, vlen);
@@ -68,7 +68,7 @@ void CLinearStringKernel::add_to_normal(int32_t idx, DREAL weight)
 		normal[i] += weight*normalizer->normalize_lhs(vec[i], idx);
 }
 
-DREAL CLinearStringKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t CLinearStringKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	int32_t alen, blen;
 
@@ -79,15 +79,15 @@ DREAL CLinearStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	return CMath::dot(avec, bvec, alen);
 }
 
-bool CLinearStringKernel::init_optimization(int32_t num_suppvec, int32_t *sv_idx,
-		DREAL *alphas)
+bool CLinearStringKernel::init_optimization(
+	int32_t num_suppvec, int32_t *sv_idx, float64_t *alphas)
 {
 	int32_t i, alen;
 
 	int32_t num_feat = ((CStringFeatures<char>*) lhs)->get_max_vector_length();
 	ASSERT(num_feat);
 
-	normal = new DREAL[num_feat];
+	normal = new float64_t[num_feat];
 	ASSERT(normal);
 	clear_normal();
 
@@ -111,7 +111,7 @@ bool CLinearStringKernel::delete_optimization()
 	return true;
 }
 
-DREAL CLinearStringKernel::compute_optimized(int32_t idx_b)
+float64_t CLinearStringKernel::compute_optimized(int32_t idx_b)
 {
 	int32_t blen;
 	char* bvec = ((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen);

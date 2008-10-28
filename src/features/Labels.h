@@ -37,7 +37,7 @@ class CLabels : public CSGObject
 		 * @param labels labels to set
 		 * @param len number of labels
 		 */
-		CLabels(DREAL* labels, int32_t len);
+		CLabels(float64_t* labels, int32_t len);
 
 		/** constructor
 		 *
@@ -66,7 +66,7 @@ class CLabels : public CSGObject
 		 * @param label value of label
 		 * @return if setting was successful
 		 */
-		inline bool set_label(int32_t idx, DREAL label)
+		inline bool set_label(int32_t idx, float64_t label)
 		{ 
 			if (labels && idx<num_labels)
 			{
@@ -87,7 +87,7 @@ class CLabels : public CSGObject
 		{ 
 			if (labels && idx<num_labels)
 			{
-				labels[idx]= (DREAL) label;
+				labels[idx]= (float64_t) label;
 				return true;
 			}
 			else 
@@ -99,7 +99,7 @@ class CLabels : public CSGObject
 		 * @param idx index of label to get
 		 * @return value of label
 		 */
-		inline DREAL get_label(int32_t idx)
+		inline float64_t get_label(int32_t idx)
 		{
 			if (labels && idx<num_labels)
 				return labels[idx];
@@ -116,7 +116,7 @@ class CLabels : public CSGObject
 		{
 			if (labels && idx<num_labels)
 			{
-				ASSERT(labels[idx]== ((DREAL) ((int32_t) labels[idx])));
+				ASSERT(labels[idx]== ((float64_t) ((int32_t) labels[idx])));
 				return ((int32_t) labels[idx]);
 			}
 			else
@@ -143,21 +143,21 @@ class CLabels : public CSGObject
 		 * @param len number of labels
 		 * @return the labels
 		 */
-		DREAL* get_labels(int32_t &len);
+		float64_t* get_labels(int32_t &len);
 		
 		/** get labels (swig compatible)
 		 *
 		 * @param labels where labels will be stored in
 		 * @param len where number of labels will be stored in
 		 */
-		void get_labels(DREAL** labels, int32_t* len);
+		void get_labels(float64_t** labels, int32_t* len);
 
 		/** set labels
 		 *
 		 * @param labels labels to set
 		 * @param len number of labels
 		 */
-		void set_labels(DREAL* labels, int32_t len);
+		void set_labels(float64_t* labels, int32_t len);
 
 		/** get INT label vector
 		 * caller has to clean up
@@ -184,6 +184,6 @@ class CLabels : public CSGObject
 		/** number of labels */
 		int32_t num_labels;
 		/** the labels */
-		DREAL* labels;
+		float64_t* labels;
 };
 #endif

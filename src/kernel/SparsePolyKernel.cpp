@@ -15,14 +15,15 @@
 #include "features/SparseFeatures.h"
 
 CSparsePolyKernel::CSparsePolyKernel(int32_t size, int32_t d, bool i)
-: CSparseKernel<DREAL>(size), degree(d), inhomogene(i)
+: CSparseKernel<float64_t>(size), degree(d), inhomogene(i)
 {
 	set_normalizer(new CSqrtDiagKernelNormalizer());
 }
 
 CSparsePolyKernel::CSparsePolyKernel(
-	CSparseFeatures<DREAL>* l, CSparseFeatures<DREAL>* r, int32_t size, int32_t d, bool i)
-: CSparseKernel<DREAL>(size),degree(d),inhomogene(i)
+	CSparseFeatures<float64_t>* l, CSparseFeatures<float64_t>* r,
+	int32_t size, int32_t d, bool i)
+: CSparseKernel<float64_t>(size),degree(d),inhomogene(i)
 {
 	set_normalizer(new CSqrtDiagKernelNormalizer());
 	init(l,r);
@@ -35,7 +36,7 @@ CSparsePolyKernel::~CSparsePolyKernel()
 
 bool CSparsePolyKernel::init(CFeatures* l, CFeatures* r)
 {
-	CSparseKernel<DREAL>::init(l,r);
+	CSparseKernel<float64_t>::init(l,r);
 	return init_normalizer();
 }
   
@@ -53,26 +54,28 @@ bool CSparsePolyKernel::save_init(FILE* dest)
 {
 	return false;
 }
-  
-DREAL CSparsePolyKernel::compute(int32_t idx_a, int32_t idx_b)
+
+float64_t CSparsePolyKernel::compute(int32_t idx_a, int32_t idx_b)
 {
   int32_t alen=0;
   int32_t blen=0;
   bool afree=false;
   bool bfree=false;
 
-  TSparseEntry<DREAL>* avec=((CSparseFeatures<DREAL>*) lhs)->get_sparse_feature_vector(idx_a, alen, afree);
-  TSparseEntry<DREAL>* bvec=((CSparseFeatures<DREAL>*) rhs)->get_sparse_feature_vector(idx_b, blen, bfree);
+  TSparseEntry<float64_t>* avec=((CSparseFeatures<float64_t>*) lhs)->
+  	get_sparse_feature_vector(idx_a, alen, afree);
+  TSparseEntry<float64_t>* bvec=((CSparseFeatures<float64_t>*) rhs)->
+  	get_sparse_feature_vector(idx_b, blen, bfree);
 
-  DREAL result=((CSparseFeatures<DREAL>*) lhs)->sparse_dot(1.0,avec, alen, bvec, blen);
+  float64_t result=((CSparseFeatures<float64_t>*) lhs)->sparse_dot(1.0,avec, alen, bvec, blen);
 
   if (inhomogene)
 	  result+=1;
 
   result=CMath::pow(result, degree);
 
-  ((CSparseFeatures<DREAL>*) lhs)->free_feature_vector(avec, idx_a, afree);
-  ((CSparseFeatures<DREAL>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+  ((CSparseFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
+  ((CSparseFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
   return result;
 }

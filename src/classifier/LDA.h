@@ -25,7 +25,7 @@ class CLDA : public CLinearClassifier
 		 *
 		 * @param gamma gamma
 		 */
-		CLDA(DREAL gamma=0);
+		CLDA(float64_t gamma=0);
 
 		/** constructor
 		 *
@@ -33,14 +33,14 @@ class CLDA : public CLinearClassifier
 		 * @param traindat training features
 		 * @param trainlab labels for training features
 		 */
-		CLDA(DREAL gamma, CRealFeatures* traindat, CLabels* trainlab);
+		CLDA(float64_t gamma, CRealFeatures* traindat, CLabels* trainlab);
 		virtual ~CLDA();
 
 		/** set gamme
 		 *
 		 * @param gamma the new gamma
 		 */
-		inline void set_gamma(DREAL gamma)
+		inline void set_gamma(float64_t gamma)
 		{
 			m_gamma=gamma;
 		}
@@ -49,7 +49,7 @@ class CLDA : public CLinearClassifier
 		 *
 		 * @return gamma
 		 */
-		inline DREAL get_gamma()
+		inline float64_t get_gamma()
 		{
 			return m_gamma;
 		}
@@ -71,7 +71,7 @@ class CLDA : public CLinearClassifier
 
 	protected:
 		/** gamma */
-		DREAL m_gamma;
+		float64_t m_gamma;
 };
 #endif
 #endif

@@ -57,7 +57,7 @@ class CFKFeatures: public CRealFeatures
 		 *
 		 * @param a weight a
 		 */
-		inline void set_a(DREAL a)
+		inline void set_a(float64_t a)
 		{
 			weight_a=a;
 		}
@@ -66,7 +66,7 @@ class CFKFeatures: public CRealFeatures
 		 *
 		 * @return weight a
 		 */
-		inline DREAL get_a()
+		inline float64_t get_a()
 		{
 			return weight_a;
 		}
@@ -75,7 +75,7 @@ class CFKFeatures: public CRealFeatures
 		 *
 		 * @return something floaty
 		 */
-		virtual DREAL* set_feature_matrix();
+		virtual float64_t* set_feature_matrix();
 
 		/** set opt a
 		 *
@@ -88,7 +88,7 @@ class CFKFeatures: public CRealFeatures
 		 *
 		 * @return weight_a
 		 */
-		inline DREAL get_weight_a() { return weight_a; };
+		inline float64_t get_weight_a() { return weight_a; };
 
 	protected:
 		/** compute feature vector
@@ -98,7 +98,8 @@ class CFKFeatures: public CRealFeatures
 		 * @param target
 		 * @return something floaty
 		 */
-		virtual DREAL* compute_feature_vector(int32_t num, int32_t& len, DREAL* target=NULL);
+		virtual float64_t* compute_feature_vector(
+			int32_t num, int32_t& len, float64_t* target=NULL);
 
 		/** computes the feature vector to the address addr
 		 *
@@ -106,7 +107,7 @@ class CFKFeatures: public CRealFeatures
 		 * @param num num
 		 * @param len len
 		 */
-		void compute_feature_vector(DREAL* addr, int32_t num, int32_t& len);
+		void compute_feature_vector(float64_t* addr, int32_t num, int32_t& len);
 
 		/** deriv a
 		 *
@@ -125,6 +126,6 @@ class CFKFeatures: public CRealFeatures
 		/** negative prob */
 		double* neg_prob;
 		/** weight a */
-		DREAL weight_a;
+		float64_t weight_a;
 };
 #endif

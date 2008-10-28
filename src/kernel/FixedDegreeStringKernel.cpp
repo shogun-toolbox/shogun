@@ -55,7 +55,7 @@ bool CFixedDegreeStringKernel::save_init(FILE* dest)
 	return false;
 }
 
-DREAL CFixedDegreeStringKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t CFixedDegreeStringKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	int32_t alen, blen;
 

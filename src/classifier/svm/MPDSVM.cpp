@@ -18,7 +18,7 @@ CMPDSVM::CMPDSVM()
 {
 }
 
-CMPDSVM::CMPDSVM(DREAL C, CKernel* k, CLabels* lab)
+CMPDSVM::CMPDSVM(float64_t C, CKernel* k, CLabels* lab)
 : CSVM(C, k, lab)
 {
 }
@@ -31,38 +31,38 @@ bool CMPDSVM::train()
 {
 	ASSERT(labels);
 	ASSERT(kernel && kernel->has_features());
-	//const DREAL nu=0.32;
-	const DREAL alpha_eps=1e-12;
-	const DREAL eps=get_epsilon();
+	//const float64_t nu=0.32;
+	const float64_t alpha_eps=1e-12;
+	const float64_t eps=get_epsilon();
 	const int64_t maxiter = 1L<<30;
 	//const bool nustop=false;
 	//const int32_t k=2;
 	const int32_t n=labels->get_num_labels();
 	ASSERT(n>0);
-	//const DREAL d = 1.0/n/nu; //NUSVC
-	const DREAL d = get_C1(); //CSVC
-	const DREAL primaleps=eps;
-	const DREAL dualeps=eps*n; //heuristic
+	//const float64_t d = 1.0/n/nu; //NUSVC
+	const float64_t d = get_C1(); //CSVC
+	const float64_t primaleps=eps;
+	const float64_t dualeps=eps*n; //heuristic
 	int64_t niter=0;
 
 	kernel_cache = new CCache<KERNELCACHE_ELEM>(kernel->get_cache_size(), n, n);
-	DREAL* alphas=new DREAL[n];
-	DREAL* dalphas=new DREAL[n];
-	//DREAL* hessres=new DREAL[2*n];
-	DREAL* hessres=new DREAL[n];
-	//DREAL* F=new DREAL[2*n];
-	DREAL* F=new DREAL[n];
+	float64_t* alphas=new float64_t[n];
+	float64_t* dalphas=new float64_t[n];
+	//float64_t* hessres=new float64_t[2*n];
+	float64_t* hessres=new float64_t[n];
+	//float64_t* F=new float64_t[2*n];
+	float64_t* F=new float64_t[n];
 
-	//DREAL hessest[2]={0,0};
-	//DREAL hstep[2];
-	//DREAL etas[2]={0,0};
-	//DREAL detas[2]={0,1}; //NUSVC
-	DREAL etas=0;
-	DREAL detas=0;   //CSVC
-	DREAL hessest=0;
-	DREAL hstep;
+	//float64_t hessest[2]={0,0};
+	//float64_t hstep[2];
+	//float64_t etas[2]={0,0};
+	//float64_t detas[2]={0,1}; //NUSVC
+	float64_t etas=0;
+	float64_t detas=0;   //CSVC
+	float64_t hessest=0;
+	float64_t hstep;
 
-	const DREAL stopfac = 1;
+	const float64_t stopfac = 1;
 
 	bool primalcool;
 	bool dualcool;
@@ -85,9 +85,9 @@ bool CMPDSVM::train()
 	while (niter++ < maxiter)
 	{
 		int32_t maxpidx=-1;
-		DREAL maxpviol = -1;
-		//DREAL maxdviol = CMath::abs(detas[0]);
-		DREAL maxdviol = CMath::abs(detas);
+		float64_t maxpviol = -1;
+		//float64_t maxdviol = CMath::abs(detas[0]);
+		float64_t maxdviol = CMath::abs(detas);
 		bool free_alpha=false;
 
 		//if (CMath::abs(detas[1])> maxdviol)
@@ -96,7 +96,7 @@ bool CMPDSVM::train()
 		// compute kkt violations with correct sign ...
 		for (int32_t i=0; i<n; i++)
 		{
-			DREAL v=CMath::abs(dalphas[i]);
+			float64_t v=CMath::abs(dalphas[i]);
 
 			if (alphas[i] > 0 && alphas[i] < d)
 				free_alpha=true;
@@ -130,7 +130,7 @@ bool CMPDSVM::train()
 
 		if (niter%10000 == 0)
 		{
-			DREAL obj=0;
+			float64_t obj=0;
 
 			for (int32_t i=0; i<n; i++)
 			{
@@ -170,7 +170,7 @@ bool CMPDSVM::train()
 		//hessest[1]-=F[maxpidx+n]*hstep[1];
 
 		// do primal updates ..
-		DREAL tmpalpha = alphas[maxpidx] - dalphas[maxpidx]/compute_H(maxpidx,maxpidx);
+		float64_t tmpalpha = alphas[maxpidx] - dalphas[maxpidx]/compute_H(maxpidx,maxpidx);
 
 		if (tmpalpha > d-alpha_eps) 
 			tmpalpha = d;
@@ -179,7 +179,7 @@ bool CMPDSVM::train()
 			tmpalpha = 0;
 
 		// update alphas & dalphas & detas ...
-		DREAL alphachange = tmpalpha - alphas[maxpidx];
+		float64_t alphachange = tmpalpha - alphas[maxpidx];
 		alphas[maxpidx] = tmpalpha;
 
 		KERNELCACHE_ELEM* h=lock_kernel_row(maxpidx);
@@ -199,8 +199,8 @@ bool CMPDSVM::train()
 		// if at primal minimum, do eta update ...            
 		if (primalcool)
 		{
-			//DREAL etachange[2] = { detas[0]/hessest[0] , detas[1]/hessest[1] };
-			DREAL etachange = detas/hessest;
+			//float64_t etachange[2] = { detas[0]/hessest[0] , detas[1]/hessest[1] };
+			float64_t etachange = detas/hessest;
 
 			etas+=etachange;        
 			//etas[0]+=etachange[0];        

@@ -35,7 +35,7 @@ class CGUIDistance : public CSGObject
 	/** create generic distance given by type */
 	CDistance* create_generic(EDistanceType type);
 	/** create Minkowski Metric */
-	CDistance* create_minkowski(DREAL k=3);
+	CDistance* create_minkowski(float64_t k=3);
 	/** create HammingWord Distance */
 	CDistance* create_hammingword(bool use_sign=false);
 

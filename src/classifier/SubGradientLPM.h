@@ -27,22 +27,24 @@ class CSubGradientLPM : public CSparseLinearClassifier
 {
 	public:
 		CSubGradientLPM();
-		CSubGradientLPM(DREAL C, CSparseFeatures<DREAL>* traindat, CLabels* trainlab);
+		CSubGradientLPM(
+			float64_t C, CSparseFeatures<float64_t>* traindat,
+			CLabels* trainlab);
 		virtual ~CSubGradientLPM();
 
 		virtual inline EClassifierType get_classifier_type() { return CT_SUBGRADIENTLPM; }
 		virtual bool train();
 
-		inline void set_C(DREAL c1, DREAL c2) { C1=c1; C2=c2; }
+		inline void set_C(float64_t c1, float64_t c2) { C1=c1; C2=c2; }
 
-		inline DREAL get_C1() { return C1; }
-		inline DREAL get_C2() { return C2; }
+		inline float64_t get_C1() { return C1; }
+		inline float64_t get_C2() { return C2; }
 
 		inline void set_bias_enabled(bool enable_bias) { use_bias=enable_bias; }
 		inline bool get_bias_enabled() { return use_bias; }
 
-		inline void set_epsilon(DREAL eps) { epsilon=eps; }
-		inline DREAL get_epsilon() { return epsilon; }
+		inline void set_epsilon(float64_t eps) { epsilon=eps; }
+		inline float64_t get_epsilon() { return epsilon; }
 
 		inline void set_qpsize(int32_t q) { qpsize=q; }
 		inline int32_t get_qpsize() { return qpsize; }
@@ -53,27 +55,31 @@ class CSubGradientLPM : public CSparseLinearClassifier
 	protected:
 		/// returns number of changed constraints for precision work_epsilon
 		/// and fills active array
-		int32_t find_active(int32_t num_feat, int32_t num_vec, int32_t& num_active, int32_t& num_bound);
+		int32_t find_active(
+			int32_t num_feat, int32_t num_vec, int32_t& num_active,
+			int32_t& num_bound);
 
 		/// swaps the active / old_active and computes idx_active, idx_bound
 		/// and sum_CXy_active arrays and the sum_Cy_active variable
 		void update_active(int32_t num_feat, int32_t num_vec);
 
 		/// compute svm objective
-		DREAL compute_objective(int32_t num_feat, int32_t num_vec);
+		float64_t compute_objective(int32_t num_feat, int32_t num_vec);
 
 		/// compute minimum norm subgradient
 		/// return norm of minimum norm subgradient
-		DREAL compute_min_subgradient(int32_t num_feat, int32_t num_vec, int32_t num_active, int32_t num_bound);
+		float64_t compute_min_subgradient(
+			int32_t num_feat, int32_t num_vec, int32_t num_active,
+			int32_t num_bound);
 
 		///performs a line search to determine step size
-		DREAL line_search(int32_t num_feat, int32_t num_vec);
+		float64_t line_search(int32_t num_feat, int32_t num_vec);
 
 		/// compute projection
 		void compute_projection(int32_t num_feat, int32_t num_vec);
 
 		/// only computes updates on the projection
-		void update_projection(DREAL alpha, int32_t num_vec);
+		void update_projection(float64_t alpha, int32_t num_vec);
 
 		/// alloc helper arrays
 		void init(int32_t num_vec, int32_t num_feat);
@@ -82,11 +88,11 @@ class CSubGradientLPM : public CSparseLinearClassifier
 		void cleanup();
 
 	protected:
-		DREAL C1;
-		DREAL C2;
-		DREAL epsilon;
-		DREAL work_epsilon;
-		DREAL autoselected_epsilon;
+		float64_t C1;
+		float64_t C2;
+		float64_t epsilon;
+		float64_t work_epsilon;
+		float64_t autoselected_epsilon;
 		int32_t qpsize;
 		int32_t qpsize_max;
 		int32_t qpsize_limit;
@@ -102,15 +108,15 @@ class CSubGradientLPM : public CSparseLinearClassifier
 		int32_t* idx_bound;
 		int32_t delta_active;
 		int32_t delta_bound;
-		DREAL* proj;
-		DREAL* tmp_proj;
+		float64_t* proj;
+		float64_t* tmp_proj;
 		int32_t* tmp_proj_idx;
 		
 		//vector of length num_feat
-		DREAL* sum_CXy_active;
-		DREAL* v;
-		DREAL* old_v;
-		DREAL sum_Cy_active;
+		float64_t* sum_CXy_active;
+		float64_t* v;
+		float64_t* old_v;
+		float64_t sum_Cy_active;
 
 		//vector of length num_feat
 		int32_t pos_idx;
@@ -119,14 +125,14 @@ class CSubGradientLPM : public CSparseLinearClassifier
 		int32_t* w_pos;
 		int32_t* w_zero;
 		int32_t* w_neg;
-		DREAL* grad_w;
-		DREAL grad_b;
-		DREAL* grad_proj;
-		DREAL* hinge_point;
+		float64_t* grad_w;
+		float64_t grad_b;
+		float64_t* grad_proj;
+		float64_t* hinge_point;
 		int32_t* hinge_idx;
 
 		//vectors/sym matrix of size qpsize_limit
-		DREAL* beta;
+		float64_t* beta;
 
 		CCplex* solver;
 };

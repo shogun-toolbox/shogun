@@ -75,7 +75,9 @@ gmnplib.c: Library of solvers for Generalized Minimal Norm Problem (GMNP).
 #define KDELTA(A,B) (A==B)
 #define KDELTA4(A1,A2,A3,A4) ((A1==A2)||(A1==A3)||(A1==A4)||(A2==A3)||(A2==A4)||(A3==A4))
 
-CGMNPLib::CGMNPLib(DREAL* vector_y, CKernel* kernel, int32_t num_data, int32_t num_virt_data, int32_t num_classes, DREAL reg_const)
+CGMNPLib::CGMNPLib(
+	float64_t* vector_y, CKernel* kernel, int32_t num_data,
+	int32_t num_virt_data, int32_t num_classes, float64_t reg_const)
 : CSGObject()
 {
   m_num_classes=num_classes;
@@ -85,19 +87,19 @@ CGMNPLib::CGMNPLib(DREAL* vector_y, CKernel* kernel, int32_t num_data, int32_t n
   m_vector_y = vector_y;
   m_kernel = kernel;
 
-  Cache_Size = ((int64_t) kernel->get_cache_size())*1024*1024/(sizeof(DREAL)*num_data);
+  Cache_Size = ((int64_t) kernel->get_cache_size())*1024*1024/(sizeof(float64_t)*num_data);
   Cache_Size = CMath::min(Cache_Size, (int64_t) num_data);
 
   SG_INFO("using %d kernel cache lines\n", Cache_Size);
   ASSERT(Cache_Size>=2);
 
   /* allocates memory for kernel cache */
-  kernel_columns = new DREAL*[Cache_Size];
-  cache_index = new DREAL[Cache_Size];
+  kernel_columns = new float64_t*[Cache_Size];
+  cache_index = new float64_t[Cache_Size];
 
-  for(int32_t i = 0; i < Cache_Size; i++ ) 
+  for(int32_t i = 0; i < Cache_Size; i++ )
   {
-    kernel_columns[i] = new DREAL[num_data];
+    kernel_columns[i] = new float64_t[num_data];
     cache_index[i] = -2;
   }
   first_kernel_inx = 0;
@@ -106,11 +108,11 @@ CGMNPLib::CGMNPLib(DREAL* vector_y, CKernel* kernel, int32_t num_data, int32_t n
 
   for(int32_t i = 0; i < 3; i++ )
   {
-    virt_columns[i] = new DREAL[num_virt_data];
+    virt_columns[i] = new float64_t[num_virt_data];
   }
   first_virt_inx = 0;
 
-  diag_H = new DREAL[num_virt_data];
+  diag_H = new float64_t[num_virt_data];
 
   for(int32_t i = 0; i < num_virt_data; i++ )
 	  diag_H[i] = kernel_fce(i,i);
@@ -134,7 +136,7 @@ CGMNPLib::~CGMNPLib()
   Returns pointer at a-th column of the kernel matrix.
   This function maintains FIFO cache of kernel columns.
 ------------------------------------------------------------ */
-DREAL* CGMNPLib::get_kernel_col( int32_t a ) 
+float64_t* CGMNPLib::get_kernel_col( int32_t a )
 {
   double *col_ptr;
   int32_t i;
@@ -185,7 +187,7 @@ void CGMNPLib::get_indices2( int32_t *index, int32_t *c, int32_t i )
    updating but b is from (a(t-2), a(t-1)) where a=a(t) and
    thus FIFO with three columns does not have to take care od b.)
 ------------------------------------------------------------ */
-DREAL* CGMNPLib::get_col( int32_t a, int32_t b )
+float64_t* CGMNPLib::get_col( int32_t a, int32_t b )
 {
   int32_t i;
   double *col_ptr;

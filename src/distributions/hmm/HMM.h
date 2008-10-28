@@ -30,7 +30,7 @@ class CHMM;
 //@{
 
 /// type for alpha/beta caching table
-typedef DREAL T_ALPHA_BETA_TABLE;
+typedef float64_t T_ALPHA_BETA_TABLE;
 
 /// type for alpha/beta table
 struct T_ALPHA_BETA
@@ -45,7 +45,7 @@ struct T_ALPHA_BETA
 	bool updated;
 
 	/// sum over all paths == model_probability for this dimension
-	DREAL sum;
+	float64_t sum;
 };
 
 /** type that is used for states.
@@ -146,25 +146,25 @@ class CModel
 		}
 
 		/// get value out of const_a_val vector
-		inline DREAL get_const_a_val(int32_t line) const
+		inline float64_t get_const_a_val(int32_t line) const
 		{
 			return const_a_val[line];
 		}
 
 		/// get value out of const_b_val vector
-		inline DREAL get_const_b_val(int32_t line) const 
+		inline float64_t get_const_b_val(int32_t line) const 
 		{
 			return const_b_val[line];
 		}
 
 		/// get value out of const_p_val vector
-		inline DREAL get_const_p_val(int32_t offset) const 
+		inline float64_t get_const_p_val(int32_t offset) const 
 		{
 			return const_p_val[offset];
 		}
 
 		/// get value out of const_q_val vector
-		inline DREAL get_const_q_val(int32_t offset) const
+		inline float64_t get_const_q_val(int32_t offset) const
 		{
 			return const_q_val[offset];
 		}
@@ -234,31 +234,32 @@ class CModel
 		}
 
 		/// set value in const_a_val vector
-		inline void set_const_a_val(int32_t offset, DREAL value)
+		inline void set_const_a_val(int32_t offset, float64_t value)
 		{
 			const_a_val[offset]=value;
 		}
 
 		/// set value in const_b_val vector
-		inline void set_const_b_val(int32_t offset, DREAL value)
+		inline void set_const_b_val(int32_t offset, float64_t value)
 		{
 			const_b_val[offset]=value;
 		}
 
 		/// set value in const_p_val vector
-		inline void set_const_p_val(int32_t offset, DREAL value)
+		inline void set_const_p_val(int32_t offset, float64_t value)
 		{
 			const_p_val[offset]=value;
 		}
 
 		/// set value in const_q_val vector
-		inline void set_const_q_val(int32_t offset, DREAL value)
+		inline void set_const_q_val(int32_t offset, float64_t value)
 		{
 			const_q_val[offset]=value;
 		}
 #ifdef FIX_POS
 		/// set value in fix_pos_state vector
-		inline void set_fix_pos_state(int32_t pos, T_STATES state, T_STATES num_states, char value)
+		inline void set_fix_pos_state(
+			int32_t pos, T_STATES state, T_STATES num_states, char value)
 		{
 #ifdef HMM_DEBUG
 			if ((pos<0)||(pos*num_states+state>65336))
@@ -282,7 +283,7 @@ class CModel
 		const static char FIX_DEFAULT ;
 
 		/// DISALLOWED_PENALTY - states in FIX_DISALLOWED will be penalized with this value
-		const static DREAL DISALLOWED_PENALTY ;
+		const static float64_t DISALLOWED_PENALTY ;
 #endif
 	protected:
 		/**@name learn arrays.
@@ -324,16 +325,16 @@ class CModel
 
 
 		/// values for transitions that have constant probability
-		DREAL* const_a_val;
+		float64_t* const_a_val;
 
 		/// values for emissions that have constant probability
-		DREAL* const_b_val;
+		float64_t* const_b_val;
 
 		/// values for start states that have constant probability
-		DREAL* const_p_val;
+		float64_t* const_p_val;
 
 		/// values for end states that have constant probability
-		DREAL* const_q_val;		
+		float64_t* const_q_val;		
 
 #ifdef FIX_POS
 		/** states in whose the model has to be at specific times/states which the model has to avoid.
@@ -362,7 +363,7 @@ class CHMM : public CDistribution
 		T_STATES trans_list_len ;
 		T_STATES **trans_list_forward  ;
 		T_STATES *trans_list_forward_cnt  ;
-		DREAL **trans_list_forward_val ;
+		float64_t **trans_list_forward_val ;
 		T_STATES **trans_list_backward  ;
 		T_STATES *trans_list_backward_cnt  ;
 		bool mem_initialized ;
@@ -376,7 +377,7 @@ class CHMM : public CDistribution
 			int32_t dim_start;
 			int32_t dim_stop;
 
-			DREAL prob_sum;
+			float64_t prob_sum;
 		};
 
 		/// Datatype that is used in parrallel baum welch model estimation
@@ -387,13 +388,13 @@ class CHMM : public CDistribution
 			int32_t dim_start;
 			int32_t dim_stop;
 
-			DREAL ret;
-			DREAL prob;
+			float64_t ret;
+			float64_t prob;
 
-			DREAL* p_buf;
-			DREAL* q_buf;
-			DREAL* a_buf;
-			DREAL* b_buf;
+			float64_t* p_buf;
+			float64_t* q_buf;
+			float64_t* a_buf;
+			float64_t* b_buf;
 		};
 
 		inline T_ALPHA_BETA & ALPHA_CACHE(int32_t dim) {
@@ -401,12 +402,12 @@ class CHMM : public CDistribution
 		inline T_ALPHA_BETA & BETA_CACHE(int32_t dim) {
 			return beta_cache[dim%parallel.get_num_threads()] ; } ;
 #ifdef USE_LOGSUMARRAY 
-		inline DREAL* ARRAYS(int32_t dim) {
+		inline float64_t* ARRAYS(int32_t dim) {
 			return arrayS[dim%parallel.get_num_threads()] ; } ;
 #endif
-		inline DREAL* ARRAYN1(int32_t dim) {
+		inline float64_t* ARRAYN1(int32_t dim) {
 			return arrayN1[dim%parallel.get_num_threads()] ; } ;
-		inline DREAL* ARRAYN2(int32_t dim) {
+		inline float64_t* ARRAYN2(int32_t dim) {
 			return arrayN2[dim%parallel.get_num_threads()] ; } ;
 		inline T_STATES* STATES_PER_OBSERVATION_PSI(int32_t dim) {
 			return states_per_observation_psi[dim%parallel.get_num_threads()] ; } ;
@@ -424,12 +425,12 @@ class CHMM : public CDistribution
 		inline T_ALPHA_BETA & BETA_CACHE(int32_t /*dim*/) {
 			return beta_cache ; } ;
 #ifdef USE_LOGSUMARRAY
-		inline DREAL* ARRAYS(int32_t dim) {
+		inline float64_t* ARRAYS(int32_t dim) {
 			return arrayS ; } ;
 #endif
-		inline DREAL* ARRAYN1(int32_t /*dim*/) {
+		inline float64_t* ARRAYN1(int32_t /*dim*/) {
 			return arrayN1 ; } ;
-		inline DREAL* ARRAYN2(int32_t /*dim*/) {
+		inline float64_t* ARRAYN2(int32_t /*dim*/) {
 			return arrayN2 ; } ;
 		inline T_STATES* STATES_PER_OBSERVATION_PSI(int32_t /*dim*/) {
 			return states_per_observation_psi ; } ;
@@ -447,7 +448,7 @@ class CHMM : public CDistribution
 		 * @param x value to check against y
 		 * @param y value to check against x
 		 */
-		bool converge(DREAL x, DREAL y);
+		bool converge(float64_t x, float64_t y);
 
 		/** Switch models
 		 * @param m1 model one
@@ -471,9 +472,10 @@ class CHMM : public CDistribution
 		 * @param PSEUDO Pseudo Value
 		 */
 
-		CHMM(int32_t N, int32_t M, CModel* model, DREAL PSEUDO);
+		CHMM(int32_t N, int32_t M, CModel* model, float64_t PSEUDO);
 		CHMM(
-			CStringFeatures<uint16_t>* obs, int32_t N, int32_t M, DREAL PSEUDO);
+			CStringFeatures<uint16_t>* obs, int32_t N, int32_t M,
+			float64_t PSEUDO);
 		CHMM(int32_t N, double* p, double* q, double* a);
 		CHMM(
 			int32_t N, double* p, double* q, int32_t num_trans,
@@ -483,7 +485,7 @@ class CHMM : public CDistribution
 		 * @param model_file Filehandle to a hmm model file (*.mod)
 		 * @param PSEUDO Pseudo Value
 		 */
-		CHMM(FILE* model_file, DREAL PSEUDO);
+		CHMM(FILE* model_file, float64_t PSEUDO);
 
 		/// Constructor - Clone model h
 		CHMM(CHMM* h);
@@ -493,9 +495,9 @@ class CHMM : public CDistribution
 
 		virtual inline bool train() { return false; }
 		virtual inline int32_t get_num_model_parameters() { return N*(N+M+2); }
-		virtual DREAL get_log_model_parameter(int32_t num_param);
-		virtual DREAL get_log_derivative(int32_t num_param, int32_t num_example);
-		virtual DREAL get_log_likelihood_example(int32_t num_example)
+		virtual float64_t get_log_model_parameter(int32_t num_param);
+		virtual float64_t get_log_derivative(int32_t num_param, int32_t num_example);
+		virtual float64_t get_log_likelihood_example(int32_t num_example)
 		{
 			return model_probability(num_example);
 		}
@@ -505,7 +507,7 @@ class CHMM : public CDistribution
 		 * @param PSEUDO Pseudo Value
 		 * @param model_file Filehandle to a hmm model file (*.mod)
 		 */
-		bool initialize(CModel* model, DREAL PSEUDO, FILE* model_file=NULL);
+		bool initialize(CModel* model, float64_t PSEUDO, FILE* model_file=NULL);
 		//@}
 
 		/// allocates memory that depends on N
@@ -525,8 +527,9 @@ class CHMM : public CDistribution
 		 * @param state i
 		 * @param dimension dimension of observation (observations are a matrix, where a row stands for one dimension i.e. 0_0,O_1,...,O_{T-1} 
 		 */
-		DREAL forward_comp(int32_t time, int32_t state, int32_t dimension);
-		DREAL forward_comp_old(int32_t time, int32_t state, int32_t dimension);
+		float64_t forward_comp(int32_t time, int32_t state, int32_t dimension);
+		float64_t forward_comp_old(
+			int32_t time, int32_t state, int32_t dimension);
 
 		/** backward algorithm.
 		 * calculates Pr[O_t+1,O_t+2, ..., O_T-1| q_time=S_i, lambda] for 0<= time <= T-1
@@ -535,15 +538,16 @@ class CHMM : public CDistribution
 		 * @param state i
 		 * @param dimension dimension of observation (observations are a matrix, where a row stands for one dimension i.e. 0_0,O_1,...,O_{T-1} 
 		 */
-		DREAL backward_comp(int32_t time, int32_t state, int32_t dimension);
-		DREAL backward_comp_old(int32_t time, int32_t state, int32_t dimension);
+		float64_t backward_comp(int32_t time, int32_t state, int32_t dimension);
+		float64_t backward_comp_old(
+			int32_t time, int32_t state, int32_t dimension);
 
 #ifndef NOVIT
 		/** calculates probability of best state sequence s_0,...,s_T-1 AND path itself using viterbi algorithm.
 		 * The path can be found in the array PATH(dimension)[0..T-1] afterwards
 		 * @param dimension dimension of observation for which the most probable path is calculated (observations are a matrix, where a row stands for one dimension i.e. 0_0,O_1,...,O_{T-1} 
 		 */
-		DREAL best_path(int32_t dimension);
+		float64_t best_path(int32_t dimension);
 		inline uint16_t get_best_path_state(int32_t dim, int32_t t)
 		{
 			ASSERT(PATH(dim));
@@ -553,10 +557,10 @@ class CHMM : public CDistribution
 
 		/// calculates probability that observations were generated 
 		/// by the model using forward algorithm.
-		DREAL model_probability_comp() ;
+		float64_t model_probability_comp() ;
 
 		/// inline proxy for model probability.
-		inline DREAL model_probability(int32_t dimension=-1)
+		inline float64_t model_probability(int32_t dimension=-1)
 		{
 			//for faster calculation cache model probability
 			if (dimension==-1)
@@ -575,12 +579,12 @@ class CHMM : public CDistribution
 		 * @param dimension dimension for which probability is calculated
 		 * @return model probability
 		 */
-		inline DREAL linear_model_probability(int32_t dimension)
+		inline float64_t linear_model_probability(int32_t dimension)
 		{
-			DREAL lik=0;
+			float64_t lik=0;
 			int32_t len=0;
 			uint16_t* o=p_observations->get_feature_vector(dimension, len);
-			DREAL* obs_b=observation_matrix_b;
+			float64_t* obs_b=observation_matrix_b;
 
 			ASSERT(N==len);
 
@@ -592,7 +596,7 @@ class CHMM : public CDistribution
 			return lik;
 
 			// sorry, the above code is the speed optimized version of :
-			/*	DREAL lik=0;
+			/*	float64_t lik=0;
 
 				for (int32_t i=0; i<N; i++)
 				lik+=get_b(i, p_observations->get_feature(dimension, i));
@@ -607,8 +611,8 @@ class CHMM : public CDistribution
 		 */
 		inline bool set_iterations(int32_t num) { iterations=num; return true; }
 		inline int32_t get_iterations() { return iterations; }
-		inline bool set_epsilon (DREAL eps) { epsilon=eps; return true; }
-		inline DREAL get_epsilon() { return epsilon; }
+		inline bool set_epsilon (float64_t eps) { epsilon=eps; return true; }
+		inline float64_t get_epsilon() { return epsilon; }
 
 		/** interface for e.g. GUIHMM to run BaumWelch or Viterbi training
 		 * @param type type of BaumWelch/Viterbi training
@@ -626,7 +630,9 @@ class CHMM : public CDistribution
 		void estimate_model_baum_welch_trans(CHMM* train);
 
 #ifdef USE_HMMPARALLEL_STRUCTURES
-		void ab_buf_comp(DREAL* p_buf, DREAL* q_buf, DREAL* a_buf, DREAL* b_buf, int32_t dim) ;
+		void ab_buf_comp(
+			float64_t* p_buf, float64_t* q_buf, float64_t* a_buf,
+			float64_t* b_buf, int32_t dim) ;
 #endif
 
 		/** uses baum-welch-algorithm to train the defined transitions etc.
@@ -674,14 +680,15 @@ class CHMM : public CDistribution
 		/// increases the number of states by num_states
 		/// the new a/b/p/q values are given the value default_val
 		/// where 0<=default_val<=1
-		void add_states(int32_t num_states, DREAL default_val=0);
+		void add_states(int32_t num_states, float64_t default_val=0);
 
 		/// appends the append_model to the current hmm, i.e.
 		/// two extra states are created. one is the end state of
 		/// the current hmm with outputs cur_out (of size M) and
 		/// the other state is the start state of the append_model.
 		/// transition probability from state 1 to states 1 is 1
-		bool append_model(CHMM* append_model, DREAL* cur_out, DREAL* app_out);
+		bool append_model(
+			CHMM* append_model, float64_t* cur_out, float64_t* app_out);
 
 		/// appends the append_model to the current hmm, here
 		/// no extra states are created. former q_i are multiplied by q_ji
@@ -689,7 +696,7 @@ class CHMM : public CDistribution
 		bool append_model(CHMM* append_model);
 
 		/// set any model parameter with probability smaller than value to ZERO
-		void chop(DREAL value);
+		void chop(float64_t value);
 
 		/// convert model to log probabilities
 		void convert_to_log();
@@ -728,13 +735,13 @@ class CHMM : public CDistribution
 		} 
 
 		/// returns current pseudo value
-		inline DREAL get_pseudo() const
+		inline float64_t get_pseudo() const
 		{
 			return PSEUDO ;
 		}
 
 		/// sets current pseudo value
-		inline void set_pseudo(DREAL pseudo) 
+		inline void set_pseudo(float64_t pseudo) 
 		{
 			PSEUDO=pseudo ;
 		}
@@ -749,7 +756,10 @@ class CHMM : public CDistribution
 		 * @param dim dimension of observation
 		 * @param bw true for model_probability false for best_path
 		 */
-		DREAL prefetch(int32_t dim, bool bw, DREAL* p_buff=NULL, DREAL* q_buf=NULL, DREAL* a_buf=NULL, DREAL* b_buf=NULL) ;
+		float64_t prefetch(
+			int32_t dim, bool bw, float64_t* p_buff=NULL,
+			float64_t* q_buf=NULL, float64_t* a_buf=NULL,
+			float64_t* b_buf=NULL) ;
 #endif
 
 #ifdef FIX_POS
@@ -832,24 +842,24 @@ class CHMM : public CDistribution
 		 learn_q= [ int32_t, ... , int32_t, -1 ];
 
 
-		 const_a=[ [int32_t,int32_t,DREAL];
-		 [int32_t,int32_t,DREAL];
-		 [int32_t,int32_t,DREAL];
+		 const_a=[ [int32_t,int32_t,float64_t];
+		 [int32_t,int32_t,float64_t];
+		 [int32_t,int32_t,float64_t];
 		 ........
-		 [int32_t,int32_t,DREAL];
+		 [int32_t,int32_t,float64_t];
 		 [-1,-1,-1];
 		 ];
 
-		 const_b=[ [int32_t,int32_t,int32_t,...,int32_t,DREAL];
-		 [int32_t,int32_t,int32_t,...,int32_t,DREAL];
+		 const_b=[ [int32_t,int32_t,int32_t,...,int32_t,float64_t];
+		 [int32_t,int32_t,int32_t,...,int32_t,float64_t];
 		 [int32_t,int32_t,int32_t,...,int32_t,<DOUBLE];
 		 ........
-		 [int32_t,int32_t,int32_t,...,int32_t,DREAL];
+		 [int32_t,int32_t,int32_t,...,int32_t,float64_t];
 		 [-1,-1,-1];
 		 ];
 
-		 const_p[]=[ [int32_t, DREAL], ... , [int32_t,DREAL], [-1,-1] ];
-		 const_q[]=[ [int32_t, DREAL], ... , [int32_t,DREAL], [-1,-1] ];
+		 const_p[]=[ [int32_t, float64_t], ... , [int32_t,float64_t], [-1,-1] ];
+		 const_q[]=[ [int32_t, float64_t], ... , [int32_t,float64_t], [-1,-1] ];
 
 		 * @param file filehandle to definitions file
 		 * @param verbose true for verbose messages
@@ -874,21 +884,21 @@ class CHMM : public CDistribution
 		 N=int32_t;
 		 M=int32_t;
 
-		 p=[DREAL,DREAL...DREAL];
-		 q=[DREAL,DREAL...DREAL];
+		 p=[float64_t,float64_t...float64_t];
+		 q=[float64_t,float64_t...float64_t];
 
-		 a=[ [DREAL,DREAL...DREAL];
-		 [DREAL,DREAL...DREAL];
-		 [DREAL,DREAL...DREAL];
-		 [DREAL,DREAL...DREAL];
-		 [DREAL,DREAL...DREAL];
+		 a=[ [float64_t,float64_t...float64_t];
+		 [float64_t,float64_t...float64_t];
+		 [float64_t,float64_t...float64_t];
+		 [float64_t,float64_t...float64_t];
+		 [float64_t,float64_t...float64_t];
 		 ];
 
-		 b=[ [DREAL,DREAL...DREAL];
-		 [DREAL,DREAL...DREAL];
-		 [DREAL,DREAL...DREAL];
-		 [DREAL,DREAL...DREAL];
-		 [DREAL,DREAL...DREAL];
+		 b=[ [float64_t,float64_t...float64_t];
+		 [float64_t,float64_t...float64_t];
+		 [float64_t,float64_t...float64_t];
+		 [float64_t,float64_t...float64_t];
+		 [float64_t,float64_t...float64_t];
 		 ];
 		 * @param file filehandle to model file
 		 */
@@ -923,7 +933,7 @@ class CHMM : public CDistribution
 		 * @param prob likelihood of path
 		 * @return viterbi path
 		 */
-		T_STATES* get_path(int32_t dim, DREAL& prob);
+		T_STATES* get_path(int32_t dim, float64_t& prob);
 
 		/** save viterbi path in ascii format
 		 * @param file filehandle
@@ -973,7 +983,7 @@ class CHMM : public CDistribution
 		 * @param offset index 0...N-1
 		 * @param value value to be set
 		 */
-		inline void set_q(T_STATES offset, DREAL value)
+		inline void set_q(T_STATES offset, float64_t value)
 		{
 #ifdef HMM_DEBUG
 			if (offset>=N)
@@ -986,7 +996,7 @@ class CHMM : public CDistribution
 		 * @param offset index 0...N-1
 		 * @param value value to be set
 		 */
-		inline void set_p(T_STATES offset, DREAL value)
+		inline void set_p(T_STATES offset, float64_t value)
 		{
 #ifdef HMM_DEBUG
 			if (offset>=N)
@@ -1000,7 +1010,7 @@ class CHMM : public CDistribution
 		 * @param column column in matrix 0...N-1
 		 * @param value value to be set
 		 */
-		inline void set_A(T_STATES line_, T_STATES column, DREAL value)
+		inline void set_A(T_STATES line_, T_STATES column, float64_t value)
 		{
 #ifdef HMM_DEBUG
 			if ((line_>N)||(column>N))
@@ -1014,7 +1024,7 @@ class CHMM : public CDistribution
 		 * @param column column in matrix 0...N-1
 		 * @param value value to be set
 		 */
-		inline void set_a(T_STATES line_, T_STATES column, DREAL value)
+		inline void set_a(T_STATES line_, T_STATES column, float64_t value)
 		{
 #ifdef HMM_DEBUG
 			if ((line_>N)||(column>N))
@@ -1028,7 +1038,7 @@ class CHMM : public CDistribution
 		 * @param column column in matrix 0...M-1
 		 * @param value value to be set
 		 */
-		inline void set_B(T_STATES line_, uint16_t column, DREAL value)
+		inline void set_B(T_STATES line_, uint16_t column, float64_t value)
 		{
 #ifdef HMM_DEBUG
 			if ((line_>=N)||(column>=M))
@@ -1042,7 +1052,7 @@ class CHMM : public CDistribution
 		 * @param column column in matrix 0...M-1
 		 * @param value value to be set
 		 */
-		inline void set_b(T_STATES line_, uint16_t column, DREAL value)
+		inline void set_b(T_STATES line_, uint16_t column, float64_t value)
 		{
 #ifdef HMM_DEBUG
 			if ((line_>=N)||(column>=M))
@@ -1058,7 +1068,8 @@ class CHMM : public CDistribution
 		 * @param value value to be set
 		 * @param dimension dimension of observations 0...DIMENSION-1
 		 */
-		inline void set_psi(int32_t time, T_STATES state, T_STATES value, int32_t dimension)
+		inline void set_psi(
+			int32_t time, T_STATES state, T_STATES value, int32_t dimension)
 		{
 #ifdef HMM_DEBUG
 			if ((time>=p_observations->get_max_vector_length())||(state>N))
@@ -1072,7 +1083,7 @@ class CHMM : public CDistribution
 		 * @param offset index 0...N-1
 		 * @return value at offset
 		 */
-		inline DREAL get_q(T_STATES offset) const 
+		inline float64_t get_q(T_STATES offset) const 
 		{
 #ifdef HMM_DEBUG
 			if (offset>=N)
@@ -1085,7 +1096,7 @@ class CHMM : public CDistribution
 		 * @param offset index 0...N-1
 		 * @return value at offset
 		 */
-		inline DREAL get_p(T_STATES offset) const 
+		inline float64_t get_p(T_STATES offset) const 
 		{
 #ifdef HMM_DEBUG
 			if (offset>=N)
@@ -1099,7 +1110,7 @@ class CHMM : public CDistribution
 		 * @param column column in matrix 0...N-1
 		 * @return value at position line colum
 		 */
-		inline DREAL get_A(T_STATES line_, T_STATES column) const
+		inline float64_t get_A(T_STATES line_, T_STATES column) const
 		{
 #ifdef HMM_DEBUG
 			if ((line_>N)||(column>N))
@@ -1113,7 +1124,7 @@ class CHMM : public CDistribution
 		 * @param column column in matrix 0...N-1
 		 * @return value at position line colum
 		 */
-		inline DREAL get_a(T_STATES line_, T_STATES column) const
+		inline float64_t get_a(T_STATES line_, T_STATES column) const
 		{
 #ifdef HMM_DEBUG
 			if ((line_>N)||(column>N))
@@ -1127,7 +1138,7 @@ class CHMM : public CDistribution
 		 * @param column column in matrix 0...M-1
 		 * @return value at position line colum
 		 */
-		inline DREAL get_B(T_STATES line_, uint16_t column) const
+		inline float64_t get_B(T_STATES line_, uint16_t column) const
 		{
 #ifdef HMM_DEBUG
 			if ((line_>=N)||(column>=M))
@@ -1141,7 +1152,7 @@ class CHMM : public CDistribution
 		 * @param column column in matrix 0...M-1
 		 * @return value at position line colum
 		 */
-		inline DREAL get_b(T_STATES line_, uint16_t column) const 
+		inline float64_t get_b(T_STATES line_, uint16_t column) const 
 		{
 #ifdef HMM_DEBUG
 			if ((line_>=N)||(column>=M))
@@ -1158,7 +1169,8 @@ class CHMM : public CDistribution
 		 * @param dimension dimension of observations 0...DIMENSION-1
 		 * @return state at specified time and position
 		 */
-		inline T_STATES get_psi(int32_t time, T_STATES state, int32_t dimension) const
+		inline T_STATES get_psi(
+			int32_t time, T_STATES state, int32_t dimension) const
 		{
 #ifdef HMM_DEBUG
 			if ((time>=p_observations->get_max_vector_length())||(state>N))
@@ -1180,7 +1192,7 @@ class CHMM : public CDistribution
 		int32_t N;
 
 		/// define pseudocounts against overfitting
-		DREAL PSEUDO;
+		float64_t PSEUDO;
 
 		// line number during processing input files
 		int32_t line;
@@ -1192,40 +1204,40 @@ class CHMM : public CDistribution
 		CModel* model;
 
 		/// matrix  of absolute counts of transitions 
-		DREAL* transition_matrix_A;
+		float64_t* transition_matrix_A;
 
 		/// matrix of absolute counts of observations within each state
-		DREAL* observation_matrix_B;
+		float64_t* observation_matrix_B;
 
 		/// transition matrix 
-		DREAL* transition_matrix_a;
+		float64_t* transition_matrix_a;
 
 		/// initial distribution of states
-		DREAL* initial_state_distribution_p;
+		float64_t* initial_state_distribution_p;
 
 		/// distribution of end-states
-		DREAL* end_state_distribution_q;		
+		float64_t* end_state_distribution_q;		
 
 		/// distribution of observations within each state
-		DREAL* observation_matrix_b;	
+		float64_t* observation_matrix_b;	
 
 		/// convergence criterion iterations
 		int32_t iterations;
 		int32_t iteration_count;
 
 		/// convergence criterion epsilon
-		DREAL epsilon;
+		float64_t epsilon;
 		int32_t conv_it;
 
 #ifndef NOVIT		
 		/// probability of best path
-		DREAL all_pat_prob; 
+		float64_t all_pat_prob; 
 
 		/// probability of best path
-		DREAL pat_prob;	
+		float64_t pat_prob;	
 #endif // NOVIT
 		/// probability of model
-		DREAL mod_prob;	
+		float64_t mod_prob;	
 
 		/// true if model probability is up to date
 		bool mod_prob_updated;	
@@ -1252,23 +1264,23 @@ class CHMM : public CDistribution
 
 #ifdef USE_HMMPARALLEL_STRUCTURES
 		/** array of size N*parallel.get_num_threads() for temporary calculations */
-		DREAL** arrayN1 /*[parallel.get_num_threads()]*/ ;
+		float64_t** arrayN1 /*[parallel.get_num_threads()]*/ ;
 		/** array of size N*parallel.get_num_threads() for temporary calculations */
-		DREAL** arrayN2 /*[parallel.get_num_threads()]*/ ;
+		float64_t** arrayN2 /*[parallel.get_num_threads()]*/ ;
 #else //USE_HMMPARALLEL_STRUCTURES
 		/** array of size N for temporary calculations */
-		DREAL* arrayN1;
+		float64_t* arrayN1;
 		/** array of size N for temporary calculations */
-		DREAL* arrayN2;
+		float64_t* arrayN2;
 #endif //USE_HMMPARALLEL_STRUCTURES
 
 #ifdef USE_LOGSUMARRAY
 #ifdef USE_HMMPARALLEL_STRUCTURES
 		/** array for for temporary calculations of log_sum */
-		DREAL** arrayS /*[parallel.get_num_threads()]*/;
+		float64_t** arrayS /*[parallel.get_num_threads()]*/;
 #else
 		/** array for for temporary calculations of log_sum */
-		DREAL* arrayS;
+		float64_t* arrayS;
 #endif // USE_HMMPARALLEL_STRUCTURES
 #endif // USE_LOGSUMARRAY
 
@@ -1355,13 +1367,15 @@ class CHMM : public CDistribution
 		//@{
 
 		/// calculates probability of being in state i at time t for dimension
-inline DREAL state_probability(int32_t time, int32_t state, int32_t dimension)
+inline float64_t state_probability(
+	int32_t time, int32_t state, int32_t dimension)
 {
 	return forward(time, state, dimension) + backward(time, state, dimension) - model_probability(dimension);
 }
 
 /// calculates probability of being in state i at time t and state j at time t+1 for dimension
-inline DREAL transition_probability(int32_t time, int32_t state_i, int32_t state_j, int32_t dimension)
+inline float64_t transition_probability(
+	int32_t time, int32_t state_i, int32_t state_j, int32_t dimension)
 {
 	return forward(time, state_i, dimension) + 
 		backward(time+1, state_j, dimension) + 
@@ -1377,9 +1391,10 @@ inline DREAL transition_probability(int32_t time, int32_t state_i, int32_t state
 
 /** computes log dp(lambda)/d b_ij for linear model
 */
-inline DREAL linear_model_derivative(T_STATES i, uint16_t j, int32_t dimension)
+inline float64_t linear_model_derivative(
+	T_STATES i, uint16_t j, int32_t dimension)
 {
-	DREAL der=0;
+	float64_t der=0;
 
 	for (int32_t k=0; k<N; k++)
 	{
@@ -1393,7 +1408,7 @@ inline DREAL linear_model_derivative(T_STATES i, uint16_t j, int32_t dimension)
 /** computes log dp(lambda)/d p_i. 
  * backward path downto time 0 multiplied by observing first symbol in path at state i
  */
-inline DREAL model_derivative_p(T_STATES i, int32_t dimension)
+inline float64_t model_derivative_p(T_STATES i, int32_t dimension)
 {
 	return backward(0,i,dimension)+get_b(i, p_observations->get_feature(dimension, 0));		
 }
@@ -1401,15 +1416,15 @@ inline DREAL model_derivative_p(T_STATES i, int32_t dimension)
 /** computes log dp(lambda)/d q_i. 
  * forward path upto time T-1
  */
-inline DREAL model_derivative_q(T_STATES i, int32_t dimension)
+inline float64_t model_derivative_q(T_STATES i, int32_t dimension)
 {
 	return forward(p_observations->get_vector_length(dimension)-1,i,dimension) ;
 }
 
 /// computes log dp(lambda)/d a_ij. 
-inline DREAL model_derivative_a(T_STATES i, T_STATES j, int32_t dimension)
+inline float64_t model_derivative_a(T_STATES i, T_STATES j, int32_t dimension)
 {
-	DREAL sum=-CMath::INFTY;
+	float64_t sum=-CMath::INFTY;
 	for (int32_t t=0; t<p_observations->get_vector_length(dimension)-1; t++)
 		sum= CMath::logarithmic_sum(sum, forward(t, i, dimension) + backward(t+1, j, dimension) + get_b(j, p_observations->get_feature(dimension,t+1)));
 
@@ -1418,9 +1433,9 @@ inline DREAL model_derivative_a(T_STATES i, T_STATES j, int32_t dimension)
 
 
 /// computes log dp(lambda)/d b_ij. 
-inline DREAL model_derivative_b(T_STATES i, uint16_t j, int32_t dimension)
+inline float64_t model_derivative_b(T_STATES i, uint16_t j, int32_t dimension)
 {
-	DREAL sum=-CMath::INFTY;
+	float64_t sum=-CMath::INFTY;
 	for (int32_t t=0; t<p_observations->get_vector_length(dimension); t++)
 	{
 		if (p_observations->get_feature(dimension,t)==j)
@@ -1441,28 +1456,28 @@ inline DREAL model_derivative_b(T_STATES i, uint16_t j, int32_t dimension)
 //@{
 
 ///computes d log p(lambda,best_path)/d p_i
-inline DREAL path_derivative_p(T_STATES i, int32_t dimension)
+inline float64_t path_derivative_p(T_STATES i, int32_t dimension)
 {
 	best_path(dimension);
 	return (i==PATH(dimension)[0]) ? (exp(-get_p(PATH(dimension)[0]))) : (0) ;
 }
 
 /// computes d log p(lambda,best_path)/d q_i
-inline DREAL path_derivative_q(T_STATES i, int32_t dimension)
+inline float64_t path_derivative_q(T_STATES i, int32_t dimension)
 {
 	best_path(dimension);
 	return (i==PATH(dimension)[p_observations->get_vector_length(dimension)-1]) ? (exp(-get_q(PATH(dimension)[p_observations->get_vector_length(dimension)-1]))) : 0 ;
 }
 
 /// computes d log p(lambda,best_path)/d a_ij
-inline DREAL path_derivative_a(T_STATES i, T_STATES j, int32_t dimension)
+inline float64_t path_derivative_a(T_STATES i, T_STATES j, int32_t dimension)
 {
 	prepare_path_derivative(dimension) ;
 	return (get_A(i,j)==0) ? (0) : (get_A(i,j)*exp(-get_a(i,j))) ;
 }
 
 /// computes d log p(lambda,best_path)/d b_ij
-inline DREAL path_derivative_b(T_STATES i, uint16_t j, int32_t dimension)
+inline float64_t path_derivative_b(T_STATES i, uint16_t j, int32_t dimension)
 {
 	prepare_path_derivative(dimension) ;
 	return (get_B(i,j)==0) ? (0) : (get_B(i,j)*exp(-get_b(i,j))) ;
@@ -1528,7 +1543,7 @@ inline void prepare_path_derivative(int32_t dim)
 //@}
 
 /// inline proxies for forward pass
-inline DREAL forward(int32_t time, int32_t state, int32_t dimension)
+inline float64_t forward(int32_t time, int32_t state, int32_t dimension)
 {
 	if (time<1)
 		time=0;
@@ -1548,7 +1563,7 @@ inline DREAL forward(int32_t time, int32_t state, int32_t dimension)
 } ;
 
 /// inline proxies for backward pass
-inline DREAL backward(int32_t time, int32_t state, int32_t dimension)
+inline float64_t backward(int32_t time, int32_t state, int32_t dimension)
 {
 	if (BETA_CACHE(dimension).table && (dimension==BETA_CACHE(dimension).dimension) && (BETA_CACHE(dimension).updated))
 	{

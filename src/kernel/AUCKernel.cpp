@@ -29,7 +29,7 @@ CAUCKernel::~CAUCKernel()
 {
 	cleanup();
 }
-  
+
 bool CAUCKernel::init(CFeatures* l, CFeatures* r)
 {
 	CSimpleKernel<uint16_t>::init(l, r);
@@ -46,8 +46,8 @@ bool CAUCKernel::save_init(FILE* dest)
 {
 	return false;
 }
-  
-DREAL CAUCKernel::compute(int32_t idx_a, int32_t idx_b)
+
+float64_t CAUCKernel::compute(int32_t idx_a, int32_t idx_b)
 {
   int32_t alen, blen;
   bool afree, bfree;
@@ -60,7 +60,7 @@ DREAL CAUCKernel::compute(int32_t idx_a, int32_t idx_b)
 
   ASSERT(subkernel && subkernel->has_features());
 
-  DREAL k11,k12,k21,k22;
+  float64_t k11,k12,k21,k22;
   int32_t idx_a1=avec[0], idx_a2=avec[1], idx_b1=bvec[0], idx_b2=bvec[1];
 
   k11 = subkernel->kernel(idx_a1,idx_b1);
@@ -68,7 +68,7 @@ DREAL CAUCKernel::compute(int32_t idx_a, int32_t idx_b)
   k21 = subkernel->kernel(idx_a2,idx_b1);
   k22 = subkernel->kernel(idx_a2,idx_b2);
 
-  DREAL result = k11+k22-k21-k12;
+  float64_t result = k11+k22-k21-k12;
 
   ((CWordFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
   ((CWordFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);

@@ -16,13 +16,14 @@
 #include "features/RealFeatures.h"
 
 CPolyKernel::CPolyKernel(int32_t size, int32_t d, bool i)
-: CSimpleKernel<DREAL>(size), degree(d), inhomogene(i)
+: CSimpleKernel<float64_t>(size), degree(d), inhomogene(i)
 {
 	set_normalizer(new CSqrtDiagKernelNormalizer());
 }
 
-CPolyKernel::CPolyKernel(CRealFeatures* l, CRealFeatures* r, int32_t d, bool i, int32_t size)
-: CSimpleKernel<DREAL>(size), degree(d), inhomogene(i)
+CPolyKernel::CPolyKernel(
+	CRealFeatures* l, CRealFeatures* r, int32_t d, bool i, int32_t size)
+: CSimpleKernel<float64_t>(size), degree(d), inhomogene(i)
 {
 	set_normalizer(new CSqrtDiagKernelNormalizer());
 	init(l,r);
@@ -35,7 +36,7 @@ CPolyKernel::~CPolyKernel()
 
 bool CPolyKernel::init(CFeatures* l, CFeatures* r)
 {
-	CSimpleKernel<DREAL>::init(l,r);
+	CSimpleKernel<float64_t>::init(l,r);
 	return init_normalizer();
 }
 
@@ -53,8 +54,8 @@ bool CPolyKernel::save_init(FILE* dest)
 {
 	return false;
 }
-  
-DREAL CPolyKernel::compute(int32_t idx_a, int32_t idx_b)
+
+float64_t CPolyKernel::compute(int32_t idx_a, int32_t idx_b)
 {
   int32_t alen=0;
   int32_t blen=0;
@@ -65,7 +66,7 @@ DREAL CPolyKernel::compute(int32_t idx_a, int32_t idx_b)
   double* bvec=((CRealFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
   ASSERT(alen==blen);
 
-  DREAL result=CMath::dot(avec, bvec, alen);
+  float64_t result=CMath::dot(avec, bvec, alen);
 
   if (inhomogene)
 	  result+=1;

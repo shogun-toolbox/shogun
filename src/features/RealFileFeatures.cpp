@@ -15,7 +15,8 @@
 #include <stdio.h>
 #include <string.h>
 
-CRealFileFeatures::CRealFileFeatures(int32_t size, char* fname) : CRealFeatures(size)
+CRealFileFeatures::CRealFileFeatures(int32_t size, char* fname)
+: CRealFeatures(size)
 {
 	working_file=fopen(fname, "r");
 	working_filename=strdup(fname);
@@ -29,7 +30,8 @@ CRealFileFeatures::CRealFileFeatures(int32_t size, char* fname) : CRealFeatures(
 	status=load_base_data();
 }
 
-CRealFileFeatures::CRealFileFeatures(int32_t size, FILE* file) : CRealFeatures(size), working_file(file), working_filename(NULL)
+CRealFileFeatures::CRealFileFeatures(int32_t size, FILE* file)
+: CRealFeatures(size), working_file(file), working_filename(NULL)
 {
 	ASSERT(working_file);
 	intlen=0;
@@ -48,8 +50,8 @@ CRealFileFeatures::~CRealFileFeatures()
 	delete[] labels;
 }
 
-CRealFileFeatures::CRealFileFeatures(const CRealFileFeatures & orig): CRealFeatures(orig), 
-	working_file(orig.working_file), status(orig.status)
+CRealFileFeatures::CRealFileFeatures(const CRealFileFeatures & orig)
+: CRealFeatures(orig), working_file(orig.working_file), status(orig.status)
 {
 	if (orig.working_filename)
 		working_filename=strdup(orig.working_filename);
@@ -60,20 +62,21 @@ CRealFileFeatures::CRealFileFeatures(const CRealFileFeatures & orig): CRealFeatu
 	}
 }
 
-DREAL* CRealFileFeatures::compute_feature_vector(int32_t num, int32_t &len, DREAL* target)
+float64_t* CRealFileFeatures::compute_feature_vector(
+	int32_t num, int32_t &len, float64_t* target)
 {
 	ASSERT(num<num_vectors);
 	len=num_features;
-	DREAL* featurevector=target;
+	float64_t* featurevector=target;
 	if (!featurevector)
-		featurevector=new DREAL[num_features];
+		featurevector=new float64_t[num_features];
 	ASSERT(working_file);
 	fseek(working_file, filepos+num_features*doublelen*num, SEEK_SET);
 	ASSERT(fread(featurevector, doublelen, num_features, working_file)==(size_t) num_features);
 	return featurevector;
 }
 
-DREAL* CRealFileFeatures::load_feature_matrix()
+float64_t* CRealFileFeatures::load_feature_matrix()
 {
 	ASSERT(working_file);
 	fseek(working_file, filepos, SEEK_SET);
@@ -81,7 +84,7 @@ DREAL* CRealFileFeatures::load_feature_matrix()
 
 	SG_INFO( "allocating feature matrix of size %.2fM\n", sizeof(double)*num_features*num_vectors/1024.0/1024.0);
 	free_feature_matrix();
-	feature_matrix=new DREAL[num_features*num_vectors];
+	feature_matrix=new float64_t[num_features*num_vectors];
 
 	SG_INFO( "loading... be patient.\n");
 

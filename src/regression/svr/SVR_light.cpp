@@ -37,7 +37,7 @@ extern "C" {
 
 struct S_THREAD_PARAM
 {
-	DREAL* lin;
+	float64_t* lin;
 	int32_t start, end;
 	int32_t* active2dnum;
 	int32_t* docs;
@@ -45,7 +45,7 @@ struct S_THREAD_PARAM
     int32_t num_vectors;
 };
 
-CSVRLight::CSVRLight(DREAL C, DREAL eps, CKernel* k, CLabels* lab)
+CSVRLight::CSVRLight(float64_t C, float64_t eps, CKernel* k, CLabels* lab)
 : CSVMLight(C, k, lab)
 {
 	set_tube_epsilon(eps);
@@ -182,7 +182,7 @@ void CSVRLight::svr_learn()
   totdoc*=2;
 
   // MKL stuff
-  buffer_num = new DREAL[totdoc];
+  buffer_num = new float64_t[totdoc];
   buffer_numcols = NULL;
 
   //prepare kernel cache for regression (i.e. cachelines are twice of current size)
@@ -220,7 +220,7 @@ void CSVRLight::svr_learn()
 
 	if (kernel->has_property(KP_KERNCOMBINATION))
 	{
-		W = new DREAL[totdoc*kernel->get_num_subkernels()];
+		W = new float64_t[totdoc*kernel->get_num_subkernels()];
 		for (i=0; i<totdoc*kernel->get_num_subkernels(); i++)
 			W[i]=0;
 	}
@@ -340,8 +340,9 @@ void CSVRLight::svr_learn()
 	buffer_numcols = NULL ;
 }
 
-double CSVRLight::compute_objective_function(double *a, double *lin, double *c,
-                  double eps, int32_t *label, int32_t totdoc)
+double CSVRLight::compute_objective_function(
+	double *a, double *lin, double *c, double eps, int32_t *label,
+	int32_t totdoc)
 {
   /* calculate value of objective function */
   double criterion=0;
@@ -364,19 +365,18 @@ double CSVRLight::compute_objective_function(double *a, double *lin, double *c,
 }
 
 
-void CSVRLight::update_linear_component_mkl(int32_t* docs, int32_t* label, 
-											int32_t *active2dnum, double *a, 
-											double *a_old, int32_t *working2dnum, 
-											int32_t totdoc,
-											double *lin, DREAL *aicache, double* c)
+void CSVRLight::update_linear_component_mkl(
+	int32_t* docs, int32_t* label, int32_t *active2dnum, double *a,
+	double *a_old, int32_t *working2dnum, int32_t totdoc, double *lin,
+	float64_t *aicache, double* c)
 {
 	int32_t num         = totdoc;
 	int32_t num_weights = -1;
 	int32_t num_kernels = kernel->get_num_subkernels() ;
-	const DREAL* w  = kernel->get_subkernel_weights(num_weights);
+	const float64_t* w  = kernel->get_subkernel_weights(num_weights);
 
 	ASSERT(num_weights==num_kernels);
-	DREAL* sumw=new DREAL[num_kernels];
+	float64_t* sumw=new float64_t[num_kernels];
 
 	if ((kernel->get_kernel_type()==K_COMBINED) && 
 			 (!((CCombinedKernel*)kernel)->get_append_subkernel_weights()))// for combined kernel
@@ -402,8 +402,8 @@ void CSVRLight::update_linear_component_mkl(int32_t* docs, int32_t* label,
 	}
 	else // hope the kernel is fast ...
 	{
-		DREAL* w_backup = new DREAL[num_kernels] ;
-		DREAL* w1 = new DREAL[num_kernels] ;
+		float64_t* w_backup = new float64_t[num_kernels] ;
+		float64_t* w1 = new float64_t[num_kernels] ;
 		
 		// backup and set to zero
 		for (int32_t i=0; i<num_kernels; i++)
@@ -434,10 +434,10 @@ void CSVRLight::update_linear_component_mkl(int32_t* docs, int32_t* label,
 		delete[] w1 ;
 	}
 	
-	DREAL mkl_objective=0;
+	float64_t mkl_objective=0;
 #ifdef HAVE_LAPACK
-	DREAL *alphay  = buffer_num ;
-	DREAL sumalpha = 0 ;
+	float64_t *alphay  = buffer_num ;
+	float64_t sumalpha = 0 ;
 	
 	for (int32_t i=0; i<num; i++)
 	{
@@ -614,11 +614,11 @@ void CSVRLight::update_linear_component_mkl(int32_t* docs, int32_t* label,
 			num_rows = cur_numrows ;
 			
 			if (!buffer_numcols)
-				buffer_numcols  = new DREAL[cur_numcols] ;
+				buffer_numcols  = new float64_t[cur_numcols] ;
 					
-			DREAL *x     = buffer_numcols ;
-			DREAL *slack = new DREAL[cur_numrows] ;
-			DREAL *pi    = new DREAL[cur_numrows] ;
+			float64_t *x     = buffer_numcols ;
+			float64_t *slack = new float64_t[cur_numrows] ;
+			float64_t *pi    = new float64_t[cur_numrows] ;
 			
 			if ( x     == NULL ||
 				 slack == NULL ||
@@ -627,7 +627,7 @@ void CSVRLight::update_linear_component_mkl(int32_t* docs, int32_t* label,
 				SG_ERROR( "Could not allocate memory for solution.\n") ;
 			}
 			int solstat = 0 ;
-			DREAL objval = 0 ;
+			float64_t objval = 0 ;
 			status = CPXsolution (env, lp, &solstat, &objval, x, pi, slack, NULL);
 			int32_t solution_ok = (!status) ;
 			if ( status ) {
@@ -637,7 +637,7 @@ void CSVRLight::update_linear_component_mkl(int32_t* docs, int32_t* label,
 			num_active_rows=0 ;
 			if (solution_ok)
 			{
-				DREAL max_slack = -CMath::INFTY ;
+				float64_t max_slack = -CMath::INFTY ;
 				int32_t max_idx = -1 ;
 				int32_t start_row = 1 ;
 				if (C_mkl!=0.0)
@@ -678,7 +678,7 @@ void CSVRLight::update_linear_component_mkl(int32_t* docs, int32_t* label,
 	}
 #endif
 	
-	const DREAL* w_new   = kernel->get_subkernel_weights(num_weights);
+	const float64_t* w_new   = kernel->get_subkernel_weights(num_weights);
 	// update lin
 #ifdef HAVE_LAPACK
 	cblas_dgemv(CblasColMajor,
@@ -709,24 +709,23 @@ void CSVRLight::update_linear_component_mkl(int32_t* docs, int32_t* label,
 }
 
 
-void CSVRLight::update_linear_component_mkl_linadd(int32_t* docs, int32_t* label, 
-												   int32_t *active2dnum, double *a, 
-												   double *a_old, int32_t *working2dnum, 
-												   int32_t totdoc,
-												   double *lin, DREAL *aicache, double* c)
+void CSVRLight::update_linear_component_mkl_linadd(
+	int32_t* docs, int32_t* label, int32_t *active2dnum, double *a,
+	double *a_old, int32_t *working2dnum, int32_t totdoc, double *lin,
+	float64_t *aicache, double* c)
 {
 	// kernel with LP_LINADD property is assumed to have 
 	// compute_by_subkernel functions
 	int32_t num         = totdoc;
 	int32_t num_weights = -1;
 	int32_t num_kernels = kernel->get_num_subkernels() ;
-	const DREAL* w   = kernel->get_subkernel_weights(num_weights);
+	const float64_t* w   = kernel->get_subkernel_weights(num_weights);
 	
 	ASSERT(num_weights==num_kernels);
-	DREAL* sumw=new DREAL[num_kernels];
+	float64_t* sumw=new float64_t[num_kernels];
 	{
-		DREAL* w_backup=new DREAL[num_kernels];
-		DREAL* w1=new DREAL[num_kernels];
+		float64_t* w_backup=new float64_t[num_kernels];
+		float64_t* w1=new float64_t[num_kernels];
 
 		// backup and set to one
 		for (int32_t i=0; i<num_kernels; i++)
@@ -755,9 +754,9 @@ void CSVRLight::update_linear_component_mkl_linadd(int32_t* docs, int32_t* label
 		delete[] w_backup ;
 		delete[] w1 ;
 	}
-	DREAL mkl_objective=0;
+	float64_t mkl_objective=0;
 #ifdef HAVE_LAPACK
-	DREAL sumalpha = 0 ;
+	float64_t sumalpha = 0 ;
 	
 	for (int32_t i=0; i<num; i++)
 		sumalpha+=a[i]*(learn_parm->eps-label[i]*c[i]);
@@ -928,11 +927,11 @@ void CSVRLight::update_linear_component_mkl_linadd(int32_t* docs, int32_t* label
 			num_rows = cur_numrows ;
 			
 			if (!buffer_numcols)
-				buffer_numcols  = new DREAL[cur_numcols] ;
+				buffer_numcols  = new float64_t[cur_numcols] ;
 					
-			DREAL *x     = buffer_numcols ;
-			DREAL *slack = new DREAL[cur_numrows] ;
-			DREAL *pi    = new DREAL[cur_numrows] ;
+			float64_t *x     = buffer_numcols ;
+			float64_t *slack = new float64_t[cur_numrows] ;
+			float64_t *pi    = new float64_t[cur_numrows] ;
 			
 			if ( x     == NULL ||
 				 slack == NULL ||
@@ -941,7 +940,7 @@ void CSVRLight::update_linear_component_mkl_linadd(int32_t* docs, int32_t* label
 				SG_ERROR( "Could not allocate memory for solution.\n") ;
 			}
 			int solstat = 0 ;
-			DREAL objval = 0 ;
+			float64_t objval = 0 ;
 			status = CPXsolution (env, lp, &solstat, &objval, x, pi, slack, NULL);
 			int32_t solution_ok = (!status) ;
 			if ( status ) {
@@ -951,7 +950,7 @@ void CSVRLight::update_linear_component_mkl_linadd(int32_t* docs, int32_t* label
 			num_active_rows=0 ;
 			if (solution_ok)
 			{
-				DREAL max_slack = -CMath::INFTY ;
+				float64_t max_slack = -CMath::INFTY ;
 				int32_t max_idx = -1 ;
 				int32_t start_row = 1 ;
 				if (C_mkl!=0.0)
@@ -1036,11 +1035,10 @@ void* CSVRLight::update_linear_component_linadd_helper(void *params_)
 }
 
 
-void CSVRLight::update_linear_component(int32_t* docs, int32_t* label, 
-										int32_t *active2dnum, double *a, 
-										double *a_old, int32_t *working2dnum, 
-										int32_t totdoc,
-										double *lin, DREAL *aicache, double* c)
+void CSVRLight::update_linear_component(
+	int32_t* docs, int32_t* label, int32_t *active2dnum, double *a,
+	double *a_old, int32_t *working2dnum, int32_t totdoc, double *lin,
+	float64_t *aicache, double* c)
      /* keep track of the linear component */
      /* lin of the gradient etc. by updating */
      /* based on the change of the variables */
@@ -1133,17 +1131,10 @@ void CSVRLight::update_linear_component(int32_t* docs, int32_t* label,
 }
 
 
-void CSVRLight::reactivate_inactive_examples(int32_t* label, 
-				  double *a, 
-				  SHRINK_STATE *shrink_state, 
-				  double *lin, 
-				  double *c, 
-				  int32_t totdoc, 
-				  int32_t iteration, 
-				  int32_t *inconsistent, 
-				  int32_t* docs, 
-				  DREAL *aicache, 
-				  double *maxdiff)
+void CSVRLight::reactivate_inactive_examples(
+	int32_t* label, double *a, SHRINK_STATE *shrink_state, double *lin,
+	double *c, int32_t totdoc, int32_t iteration, int32_t *inconsistent,
+	int32_t* docs, float64_t *aicache, double *maxdiff)
      /* Make all variables active again which had been removed by
         shrinking. */
      /* Computes lin for those variables from scratch. */

@@ -30,7 +30,9 @@ class CSubGradientSVM : public CSparseLinearClassifier
 		 * @param traindat training features
 		 * @param trainlab labels for training features
 		 */
-		CSubGradientSVM(DREAL C, CSparseFeatures<DREAL>* traindat, CLabels* trainlab);
+		CSubGradientSVM(
+			float64_t C, CSparseFeatures<float64_t>* traindat,
+			CLabels* trainlab);
 		virtual ~CSubGradientSVM();
 
 		/** get classifier type
@@ -50,19 +52,19 @@ class CSubGradientSVM : public CSparseLinearClassifier
 		 * @param c1 new C1
 		 * @param c2 new C2
 		 */
-		inline void set_C(DREAL c1, DREAL c2) { C1=c1; C2=c2; }
+		inline void set_C(float64_t c1, float64_t c2) { C1=c1; C2=c2; }
 
 		/** get C1
 		 *
 		 * @return C1
 		 */
-		inline DREAL get_C1() { return C1; }
+		inline float64_t get_C1() { return C1; }
 
 		/** get C2
 		 *
 		 * @return C2
 		 */
-		inline DREAL get_C2() { return C2; }
+		inline float64_t get_C2() { return C2; }
 
 		/** set if bias shall be enabled
 		 *
@@ -80,13 +82,13 @@ class CSubGradientSVM : public CSparseLinearClassifier
 		 *
 		 * @param eps new epsilon
 		 */
-		inline void set_epsilon(DREAL eps) { epsilon=eps; }
+		inline void set_epsilon(float64_t eps) { epsilon=eps; }
 
 		/** get epsilon
 		 *
 		 * @return epsilon
 		 */
-		inline DREAL get_epsilon() { return epsilon; }
+		inline float64_t get_epsilon() { return epsilon; }
 
 		/** set qpsize
 		 *
@@ -115,27 +117,31 @@ class CSubGradientSVM : public CSparseLinearClassifier
 	protected:
 		/// returns number of changed constraints for precision work_epsilon
 		/// and fills active array
-		int32_t find_active(int32_t num_feat, int32_t num_vec, int32_t& num_active, int32_t& num_bound);
+		int32_t find_active(
+			int32_t num_feat, int32_t num_vec, int32_t& num_active,
+			int32_t& num_bound);
 
 		/// swaps the active / old_active and computes idx_active, idx_bound
 		/// and sum_CXy_active arrays and the sum_Cy_active variable
 		void update_active(int32_t num_feat, int32_t num_vec);
 
 		/// compute svm objective
-		DREAL compute_objective(int32_t num_feat, int32_t num_vec);
+		float64_t compute_objective(int32_t num_feat, int32_t num_vec);
 
 		/// compute minimum norm subgradient
 		/// return norm of minimum norm subgradient
-		DREAL compute_min_subgradient(int32_t num_feat, int32_t num_vec, int32_t num_active, int32_t num_bound);
+		float64_t compute_min_subgradient(
+			int32_t num_feat, int32_t num_vec, int32_t num_active,
+			int32_t num_bound);
 
 		///performs a line search to determine step size
-		DREAL line_search(int32_t num_feat, int32_t num_vec);
+		float64_t line_search(int32_t num_feat, int32_t num_vec);
 
 		/// compute projection
 		void compute_projection(int32_t num_feat, int32_t num_vec);
 
 		/// only computes updates on the projection
-		void update_projection(DREAL alpha, int32_t num_vec);
+		void update_projection(float64_t alpha, int32_t num_vec);
 
 		/// alloc helper arrays
 		void init(int32_t num_vec, int32_t num_feat);
@@ -145,15 +151,15 @@ class CSubGradientSVM : public CSparseLinearClassifier
 
 	protected:
 		/** C1 */
-		DREAL C1;
+		float64_t C1;
 		/** C2 */
-		DREAL C2;
+		float64_t C2;
 		/** epsilon */
-		DREAL epsilon;
+		float64_t epsilon;
 		/** work epsilon */
-		DREAL work_epsilon;
+		float64_t work_epsilon;
 		/** autoselected epsilon */
-		DREAL autoselected_epsilon;
+		float64_t autoselected_epsilon;
 		/** qpsize */
 		int32_t qpsize;
 		/** maximum qpsize */
@@ -182,47 +188,47 @@ class CSubGradientSVM : public CSparseLinearClassifier
 		/** delta bound */
 		int32_t delta_bound;
 		/** proj */
-		DREAL* proj;
+		float64_t* proj;
 		/** tmp proj*/
-		DREAL* tmp_proj;
+		float64_t* tmp_proj;
 		/** tmp proj index */
 		int32_t* tmp_proj_idx;
 		
 		//vector of length num_feat
 		/** sum CXy active */
-		DREAL* sum_CXy_active;
+		float64_t* sum_CXy_active;
 		/** v */
-		DREAL* v;
+		float64_t* v;
 		/** old v */
-		DREAL* old_v;
+		float64_t* old_v;
 		/** sum Cy active */
-		DREAL sum_Cy_active;
+		float64_t sum_Cy_active;
 
 		//vector of length num_feat
 		/** grad w */
-		DREAL* grad_w;
+		float64_t* grad_w;
 		/** grad b */
-		DREAL grad_b;
+		float64_t grad_b;
 		/** grad proj */
-		DREAL* grad_proj;
+		float64_t* grad_proj;
 		/** hinge point */
-		DREAL* hinge_point;
+		float64_t* hinge_point;
 		/** hinge index */
 		int32_t* hinge_idx;
 
 		//vectors/sym matrix of size qpsize_limit
 		/** beta */
-		DREAL* beta;
+		float64_t* beta;
 		/** old beta */
-		DREAL* old_beta;
+		float64_t* old_beta;
 		/** Zv */
-		DREAL* Zv;
+		float64_t* Zv;
 		/** old Zv */
-		DREAL* old_Zv;
+		float64_t* old_Zv;
 		/** Z */
-		DREAL* Z;
+		float64_t* Z;
 		/** old Z */
-		DREAL* old_Z;
+		float64_t* old_Z;
 };
 #endif
 

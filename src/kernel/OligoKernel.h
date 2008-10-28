@@ -43,7 +43,7 @@ class COligoKernel : public CStringKernel<char>
 		 * @param k k-mer length
 		 * @param width sigma^2
 		 */
-		COligoKernel(int32_t cache_size, int32_t k, DREAL width);
+		COligoKernel(int32_t cache_size, int32_t k, float64_t width);
 
 		/** Destructor */
 		~COligoKernel();
@@ -87,7 +87,7 @@ class COligoKernel : public CStringKernel<char>
 		virtual const char* get_name() { return "Oligo"; }
 
 
-		virtual DREAL compute(int32_t x, int32_t y);
+		virtual float64_t compute(int32_t x, int32_t y);
 	protected:
 		/**
 		 * @brief encodes the signals of the sequence
@@ -173,6 +173,6 @@ class COligoKernel : public CStringKernel<char>
 		/** member variable k */
 		int32_t k;
 		/** width of kernel */
-		DREAL width;
+		float64_t width;
 };
 #endif // KERNEL_OLIGO_H

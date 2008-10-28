@@ -76,7 +76,7 @@ int32_t CRInterface::get_int()
 	return INTEGER(CAR(i))[0];
 }
 
-DREAL CRInterface::get_real()
+float64_t CRInterface::get_real()
 {
 	SEXP f=get_arg_increment();
 	if (f == R_NilValue || TYPEOF(CAR(f)) != REALSXP || nrows(CAR(f))!=1 || ncols(CAR(f))!=1)
@@ -146,18 +146,18 @@ void CRInterface::get_shortreal_vector(float32_t*& vec, int32_t& len)
 	len=0;
 }
 
-void CRInterface::get_real_vector(DREAL*& vec, int32_t& len)
+void CRInterface::get_real_vector(float64_t*& vec, int32_t& len)
 {
 	SEXP rvec=CAR(get_arg_increment());
 	if( TYPEOF(rvec) != REALSXP && TYPEOF(rvec) != INTSXP )
 		SG_ERROR("Expected Double Vector as argument %d\n", m_rhs_counter);
 
 	len=LENGTH(rvec);
-	vec=new DREAL[len];
+	vec=new float64_t[len];
 	ASSERT(vec);
 
 	for (int32_t i=0; i<len; i++)
-		vec[i]= (DREAL) REAL(rvec)[i];
+		vec[i]= (float64_t) REAL(rvec)[i];
 }
 
 void CRInterface::get_short_vector(int16_t*& vec, int32_t& len)
@@ -189,7 +189,7 @@ void CRInterface::get_shortreal_matrix(float32_t*& matrix, int32_t& num_feat, in
 {
 }
 
-void CRInterface::get_real_matrix(DREAL*& matrix, int32_t& num_feat, int32_t& num_vec)
+void CRInterface::get_real_matrix(float64_t*& matrix, int32_t& num_feat, int32_t& num_vec)
 {
 	SEXP feat=CAR(get_arg_increment());
 	if( TYPEOF(feat) != REALSXP && TYPEOF(feat) != INTSXP )
@@ -197,13 +197,13 @@ void CRInterface::get_real_matrix(DREAL*& matrix, int32_t& num_feat, int32_t& nu
 
 	num_vec = ncols(feat);
 	num_feat = nrows(feat);
-	matrix=new DREAL[num_vec*num_feat];
+	matrix=new float64_t[num_vec*num_feat];
 	ASSERT(matrix);
 
 	for (int32_t i=0; i<num_vec; i++)
 	{
 		for (int32_t j=0; j<num_feat; j++)
-			matrix[i*num_feat+j]= (DREAL) REAL(feat)[i*num_feat+j];
+			matrix[i*num_feat+j]= (float64_t) REAL(feat)[i*num_feat+j];
 	}
 }
 
@@ -231,7 +231,7 @@ void CRInterface::get_shortreal_ndarray(float32_t*& array, int32_t*& dims, int32
 {
 }
 
-void CRInterface::get_real_ndarray(DREAL*& array, int32_t*& dims, int32_t& num_dims)
+void CRInterface::get_real_ndarray(float64_t*& array, int32_t*& dims, int32_t& num_dims)
 {
 }
 
@@ -243,7 +243,7 @@ void CRInterface::get_word_ndarray(uint16_t*& array, int32_t*& dims, int32_t& nu
 {
 }
 
-void CRInterface::get_real_sparsematrix(TSparse<DREAL>*& matrix, int32_t& num_feat, int32_t& num_vec)
+void CRInterface::get_real_sparsematrix(TSparse<float64_t>*& matrix, int32_t& num_feat, int32_t& num_vec)
 {
 }
 
@@ -334,7 +334,7 @@ void CRInterface::set_int(int32_t scalar)
 	set_arg_increment(ScalarInteger(scalar));
 }
 
-void CRInterface::set_real(DREAL scalar)
+void CRInterface::set_real(float64_t scalar)
 {
 	set_arg_increment(ScalarReal(scalar));
 }
@@ -367,7 +367,7 @@ SET_VECTOR(set_byte_vector, INTSXP, INTEGER, uint8_t, int, "Byte")
 SET_VECTOR(set_int_vector, INTSXP, INTEGER, int32_t, int, "Integer")
 SET_VECTOR(set_short_vector, INTSXP, INTEGER, int16_t, int, "Short")
 SET_VECTOR(set_shortreal_vector, REALSXP, REAL, float32_t, float, "Single Precision")
-SET_VECTOR(set_real_vector, REALSXP, REAL, DREAL, double, "Double Precision")
+SET_VECTOR(set_real_vector, REALSXP, REAL, float64_t, double, "Double Precision")
 SET_VECTOR(set_word_vector, INTSXP, INTEGER, uint16_t, int, "Word")
 #undef SET_VECTOR
 
@@ -394,11 +394,11 @@ SET_MATRIX(set_byte_matrix, INTSXP, INTEGER, uint8_t, int, "Byte")
 SET_MATRIX(set_int_matrix, INTSXP, INTEGER, int32_t, int, "Integer")
 SET_MATRIX(set_short_matrix, INTSXP, INTEGER, int16_t, int, "Short")
 SET_MATRIX(set_shortreal_matrix, REALSXP, REAL, float32_t, float, "Single Precision")
-SET_MATRIX(set_real_matrix, REALSXP, REAL, DREAL, double, "Double Precision")
+SET_MATRIX(set_real_matrix, REALSXP, REAL, float64_t, double, "Double Precision")
 SET_MATRIX(set_word_matrix, INTSXP, INTEGER, uint16_t, int, "Word")
 #undef SET_MATRIX
 
-void CRInterface::set_real_sparsematrix(const TSparse<DREAL>* matrix, int32_t num_feat, int32_t num_vec, int64_t nnz)
+void CRInterface::set_real_sparsematrix(const TSparse<float64_t>* matrix, int32_t num_feat, int32_t num_vec, int64_t nnz)
 {
 	// R does not support sparse matrices yet
 }

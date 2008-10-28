@@ -4,7 +4,7 @@
 
 %include "features/SimpleFeatures.h" 
 
-%template(SimpleRealFeatures) CSimpleFeatures<DREAL>;
+%template(SimpleRealFeatures) CSimpleFeatures<float64_t>;
 %template(SimpleShortRealFeatures) CSimpleFeatures<float32_t>;
 %template(SimpleByteFeatures) CSimpleFeatures<uint8_t>;
 %template(SimpleWordFeatures) CSimpleFeatures<uint16_t>;

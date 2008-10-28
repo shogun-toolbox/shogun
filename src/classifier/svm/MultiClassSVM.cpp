@@ -17,7 +17,8 @@ CMultiClassSVM::CMultiClassSVM(EMultiClassSVM type)
 {
 }
 
-CMultiClassSVM::CMultiClassSVM(EMultiClassSVM type, DREAL C, CKernel* k, CLabels* lab)
+CMultiClassSVM::CMultiClassSVM(
+	EMultiClassSVM type, float64_t C, CKernel* k, CLabels* lab)
 : CSVM(C, k, lab), multiclass_type(type), m_num_svms(0), m_svms(NULL)
 {
 }
@@ -185,11 +186,11 @@ CLabels* CMultiClassSVM::classify_one_vs_rest(CLabels* result)
 		for (int32_t i=0; i<num_vectors; i++)
 		{
 			int32_t winner=0;
-			DREAL max_out=outputs[0]->get_label(i);
+			float64_t max_out=outputs[0]->get_label(i);
 
 			for (int32_t j=1; j<m_num_svms; j++)
 			{
-				DREAL out=outputs[j]->get_label(i);
+				float64_t out=outputs[j]->get_label(i);
 
 				if (out>max_out)
 				{
@@ -209,7 +210,7 @@ CLabels* CMultiClassSVM::classify_one_vs_rest(CLabels* result)
 	return result;
 }
 
-DREAL CMultiClassSVM::classify_example(int32_t num)
+float64_t CMultiClassSVM::classify_example(int32_t num)
 {
 	if (multiclass_type==ONE_VS_REST)
 		return classify_example_one_vs_rest(num);
@@ -221,12 +222,12 @@ DREAL CMultiClassSVM::classify_example(int32_t num)
 	return 0;
 }
 
-DREAL CMultiClassSVM::classify_example_one_vs_rest(int32_t num)
+float64_t CMultiClassSVM::classify_example_one_vs_rest(int32_t num)
 {
 	ASSERT(m_num_svms>0);
-	DREAL* outputs=new DREAL[m_num_svms];
+	float64_t* outputs=new float64_t[m_num_svms];
 	int32_t winner=0;
-	DREAL max_out=m_svms[0]->classify_example(num);
+	float64_t max_out=m_svms[0]->classify_example(num);
 
 	for (int32_t i=1; i<m_num_svms; i++)
 	{
@@ -242,7 +243,7 @@ DREAL CMultiClassSVM::classify_example_one_vs_rest(int32_t num)
 	return winner;
 }
 
-DREAL CMultiClassSVM::classify_example_one_vs_one(int32_t num)
+float64_t CMultiClassSVM::classify_example_one_vs_one(int32_t num)
 {
 	ASSERT(m_num_svms>0);
 	ASSERT(m_num_svms==m_num_classes*(m_num_classes-1)/2);

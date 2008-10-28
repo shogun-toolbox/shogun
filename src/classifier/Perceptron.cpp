@@ -42,8 +42,8 @@ bool CPerceptron::train()
 	ASSERT(num_vec==num_train_labels);
 	delete[] w;
 	w_dim=num_feat;
-	w=new DREAL[num_feat];
-	DREAL* output=new DREAL[num_vec];
+	w=new float64_t[num_feat];
+	float64_t* output=new float64_t[num_vec];
 
 	//start with uniform w, bias=0
 	bias=0;
@@ -60,7 +60,7 @@ bool CPerceptron::train()
 
 		for (int32_t i=0; i<num_vec; i++)
 		{
-			if (CMath::sign<DREAL>(output[i]) != train_labels[i])
+			if (CMath::sign<float64_t>(output[i]) != train_labels[i])
 			{
 				converged=false;
 				int32_t vlen;

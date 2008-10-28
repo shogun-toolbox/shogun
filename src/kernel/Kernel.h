@@ -127,7 +127,7 @@ class CKernel : public CSGObject
 		 * @param idx_b index of feature vector b
 		 * @return computed kernel function
 		 */
-		inline DREAL kernel(int32_t idx_a, int32_t idx_b)
+		inline float64_t kernel(int32_t idx_a, int32_t idx_b)
 		{
 			if (idx_a < 0 || idx_b <0)
 				return 0;
@@ -155,7 +155,7 @@ class CKernel : public CSGObject
 		 * @param m dimension m of matrix
 		 * @param n dimension n of matrix
 		 */
-		void get_kernel_matrix(DREAL** dst, int32_t* m, int32_t* n);
+		void get_kernel_matrix(float64_t** dst, int32_t* m, int32_t* n);
 
 		/** get kernel matrix real
 		 *
@@ -164,8 +164,8 @@ class CKernel : public CSGObject
 		 * @param target the kernel matrix
 		 * @return the kernel matrix
 		 */
-		virtual DREAL* get_kernel_matrix_real(
-			int32_t &m, int32_t &n, DREAL* target);
+		virtual float64_t* get_kernel_matrix_real(
+			int32_t &m, int32_t &n, float64_t* target);
 
 		/** get kernel matrix shortreal
 		 *
@@ -381,7 +381,8 @@ class CKernel : public CSGObject
 		 * @param buffer buffer
 		 * @param full_line full line
 		 */
-		void get_kernel_row(int32_t docnum, int32_t *active2dnum, DREAL *buffer,
+		void get_kernel_row(
+			int32_t docnum, int32_t *active2dnum, float64_t *buffer,
 			bool full_line=false);
 
 		/** cache kernel row
@@ -406,7 +407,8 @@ class CKernel : public CSGObject
 		 * @param num_shrink number of shrink
 		 * @param after after
 		 */
-		void kernel_cache_shrink(int32_t totdoc, int32_t num_shrink, int32_t *after);
+		void kernel_cache_shrink(
+			int32_t totdoc, int32_t num_shrink, int32_t *after);
 
 		/** resize kernel cache
 		 *
@@ -491,7 +493,7 @@ class CKernel : public CSGObject
 		 * @param vector_idx index
 		 * @param weight weight
 		 */
-		virtual void add_to_normal(int32_t vector_idx, DREAL weight);
+		virtual void add_to_normal(int32_t vector_idx, float64_t weight);
 
 		/** get optimization type
 		 *
@@ -518,7 +520,8 @@ class CKernel : public CSGObject
 		 * @param weights weights
 		 * @return if initializing was successful
 		 */
-		virtual bool init_optimization(int32_t count, int32_t *IDX, DREAL *weights);
+		virtual bool init_optimization(
+			int32_t count, int32_t *IDX, float64_t *weights);
 
 		/** delete optimization
 		 *
@@ -538,7 +541,7 @@ class CKernel : public CSGObject
 		 * @param vector_idx index to compute
 		 * @return optimized value at given index
 		 */
-		virtual DREAL compute_optimized(int32_t vector_idx);
+		virtual float64_t compute_optimized(int32_t vector_idx);
 
 		/** computes output for a batch of examples in an optimized fashion
 		 * (favorable if kernel supports it, i.e. has KP_BATCHEVALUATION.  to
@@ -548,13 +551,16 @@ class CKernel : public CSGObject
 		 * alphas arguments are the number of support vectors, their indices
 		 * and weights
 		 */
-		virtual void compute_batch(int32_t num_vec, int32_t* vec_idx, DREAL* target, int32_t num_suppvec, int32_t* IDX, DREAL* alphas, DREAL factor=1.0);
+		virtual void compute_batch(
+			int32_t num_vec, int32_t* vec_idx, float64_t* target,
+			int32_t num_suppvec, int32_t* IDX, float64_t* alphas,
+			float64_t factor=1.0);
 
 		/** get combined kernel weight
 		 *
 		 * @return combined kernel weight
 		 */
-		inline DREAL get_combined_kernel_weight() { return combined_kernel_weight; }
+		inline float64_t get_combined_kernel_weight() { return combined_kernel_weight; }
 
 		/** set combined kernel weight
 		 *
@@ -573,21 +579,23 @@ class CKernel : public CSGObject
 		 * @param vector_idx index
 		 * @param subkernel_contrib subkernel contribution
 		 */
-		virtual void compute_by_subkernel(int32_t vector_idx, DREAL * subkernel_contrib);
+		virtual void compute_by_subkernel(
+			int32_t vector_idx, float64_t * subkernel_contrib);
 
 		/** get subkernel weights
 		 *
 		 * @param num_weights number of weights will be stored here
 		 * @return subkernel weights
 		 */
-		virtual const DREAL* get_subkernel_weights(int32_t& num_weights);
+		virtual const float64_t* get_subkernel_weights(int32_t& num_weights);
 
 		/** set subkernel weights
 		 *
 		 * @param weights subkernel weights
 		 * @param num_weights number of weights
 		 */
-		virtual void set_subkernel_weights(DREAL* weights, int32_t num_weights);
+		virtual void set_subkernel_weights(
+			float64_t* weights, int32_t num_weights);
 
 	protected:
 		/** set property
@@ -624,7 +632,7 @@ class CKernel : public CSGObject
 		 * @param y index b
 		 * @return computed kernel function at indices a,b
 		 */
-		virtual DREAL compute(int32_t x, int32_t y)=0;
+		virtual float64_t compute(int32_t x, int32_t y)=0;
 
 #ifdef USE_SVMLIGHT
 		/**@ cache kernel evalutations to improve speed
@@ -708,7 +716,7 @@ class CKernel : public CSGObject
 		CFeatures* rhs;
 
 		/** combined kernel weight */
-		DREAL combined_kernel_weight;
+		float64_t combined_kernel_weight;
 
 		/** if optimization is initialized */
 		bool optimization_initialized;

@@ -57,14 +57,14 @@ class CGUIHMM : public CSGObject
 		/** append HMM/model for CmdlineInterface */
 		bool append_model(char* filename, int32_t base1=-1, int32_t base2=-1);
 		/** add states to HMM */
-		bool add_states(int32_t num_states=1, DREAL value=0);
+		bool add_states(int32_t num_states=1, float64_t value=0);
 		/** set HMM as POS/NEG/TEST */
 		bool set_hmm_as(char* target);
 		/** set HMM pseudo */
-		bool set_pseudo(DREAL pseudo);
+		bool set_pseudo(float64_t pseudo);
 		/** set convergence criteria */
 		bool convergence_criteria(
-			int32_t num_iterations=100, DREAL epsilon=0.001);
+			int32_t num_iterations=100, float64_t epsilon=0.001);
 		/** output HMM */
 		bool output_hmm();
 		/** output HMM defined */
@@ -80,9 +80,9 @@ class CGUIHMM : public CSGObject
 		/** HMM likelihood */
 		bool likelihood();
 		/** chop HMM */
-		bool chop(DREAL value);
-		bool relative_entropy(DREAL*& values, int32_t& len);
-		bool entropy(DREAL*& values, int32_t& len);
+		bool chop(float64_t value);
+		bool relative_entropy(float64_t*& values, int32_t& len);
+		bool entropy(float64_t*& values, int32_t& len);
 		/** define permutation entropy */
 		bool permutation_entropy(int32_t width=0, int32_t seq_num=-1);
 		inline CHMM* get_pos() { return pos; }
@@ -90,13 +90,13 @@ class CGUIHMM : public CSGObject
 		inline CHMM* get_test() { return test; }
 		inline void set_current(CHMM* h) { working=h; }
 		inline CHMM* get_current() { return working; }
-		inline DREAL get_pseudo() { return PSEUDO; }
+		inline float64_t get_pseudo() { return PSEUDO; }
 
 		CLabels* classify(CLabels* output=NULL);
-		DREAL classify_example(int32_t idx);
+		float64_t classify_example(int32_t idx);
 		CLabels* one_class_classify(CLabels* output=NULL);
 		CLabels* linear_one_class_classify(CLabels* output=NULL);
-		DREAL one_class_classify_example(int32_t idx);
+		float64_t one_class_classify_example(int32_t idx);
 
 	protected:
 		bool converge(double x, double y);
@@ -108,7 +108,7 @@ class CGUIHMM : public CSGObject
 		CHMM* neg;
 		CHMM* test;
 
-		DREAL PSEUDO;
+		float64_t PSEUDO;
 		int32_t M;
 
 	protected:

@@ -35,7 +35,7 @@ class CSVMSGD : public CSparseLinearClassifier
 		 *
 		 * @param C constant C
 		 */
-		CSVMSGD(DREAL C);
+		CSVMSGD(float64_t C);
 
 		/** constructor
 		 *
@@ -43,7 +43,9 @@ class CSVMSGD : public CSparseLinearClassifier
 		 * @param traindat training features
 		 * @param trainlab labels for training features
 		 */
-		CSVMSGD(DREAL C, CSparseFeatures<DREAL>* traindat, CLabels* trainlab);
+		CSVMSGD(
+			float64_t C, CSparseFeatures<float64_t>* traindat,
+			CLabels* trainlab);
 
 		~CSVMSGD();
 
@@ -64,19 +66,19 @@ class CSVMSGD : public CSparseLinearClassifier
 		 * @param c1 new C1
 		 * @param c2 new C2
 		 */
-		inline void set_C(DREAL c1, DREAL c2) { C1=c1; C2=c2; }
+		inline void set_C(float64_t c1, float64_t c2) { C1=c1; C2=c2; }
 
 		/** get C1
 		 *
 		 * @return C1
 		 */
-		inline DREAL get_C1() { return C1; }
+		inline float64_t get_C1() { return C1; }
 
 		/** get C2
 		 *
 		 * @return C2
 		 */
-		inline DREAL get_C2() { return C2; }
+		inline float64_t get_C2() { return C2; }
 
 		/** set epochs
 		 *
@@ -119,11 +121,11 @@ class CSVMSGD : public CSparseLinearClassifier
 		void calibrate();
 
 	private:
-		DREAL t;
-		DREAL C1;
-		DREAL C2;
-		DREAL wscale;
-		DREAL bscale;
+		float64_t t;
+		float64_t C1;
+		float64_t C2;
+		float64_t wscale;
+		float64_t bscale;
 		int32_t epochs;
 		int32_t skip;
 		int32_t count;

@@ -31,7 +31,7 @@ CGUIPluginEstimate::~CGUIPluginEstimate()
 	delete estimator;
 }
 
-bool CGUIPluginEstimate::new_estimator(DREAL pos, DREAL neg)
+bool CGUIPluginEstimate::new_estimator(float64_t pos, float64_t neg)
 {
 	delete estimator;
 	estimator=new CPluginEstimate(pos, neg);
@@ -107,7 +107,7 @@ bool CGUIPluginEstimate::test(char* filename_out, char* filename_roc)
 	SG_INFO("Starting estimator testing.\n");
 	estimator->set_features((CStringFeatures<uint16_t>*) testfeatures);
 	int32_t len=0;
-	DREAL* output=estimator->classify()->get_labels(len);
+	float64_t* output=estimator->classify()->get_labels(len);
 
 	int32_t total=testfeatures->get_num_vectors();
 	int32_t* label=testlabels->get_int_labels(len);
@@ -161,7 +161,7 @@ CLabels* CGUIPluginEstimate::classify(CLabels* output)
 	return estimator->classify(output);
 }
 
-DREAL CGUIPluginEstimate::classify_example(int32_t idx)
+float64_t CGUIPluginEstimate::classify_example(int32_t idx)
 {
 	CFeatures* testfeatures=ui->ui_features->get_test_features();
 

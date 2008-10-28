@@ -49,13 +49,15 @@ public:
 
 	// A = [ E Z_w Z_x ] dim(A)=(num_dim+1, num_dim+1 + num_zero + num_bound)
 	// (+1 for bias!)
-	bool setup_subgradientlpm_QP(DREAL C, CLabels* labels, CSparseFeatures<DREAL>* features, int32_t* idx_bound, int32_t num_bound,
-			int32_t* w_zero, int32_t num_zero,
-			DREAL* vee, int32_t num_dim,
-			bool use_bias);
+	bool setup_subgradientlpm_QP(
+		float64_t C, CLabels* labels, CSparseFeatures<float64_t>* features,
+		int32_t* idx_bound, int32_t num_bound, int32_t* w_zero,
+		int32_t num_zero, float64_t* vee, int32_t num_dim, bool use_bias);
 
-	bool setup_lpboost(DREAL C, int32_t num_cols);
-	bool add_lpboost_constraint(DREAL factor, TSparseEntry<DREAL>* h, int32_t len, int32_t ulen, CLabels* label);
+	bool setup_lpboost(float64_t C, int32_t num_cols);
+	bool add_lpboost_constraint(
+		float64_t factor, TSparseEntry<float64_t>* h, int32_t len,
+		int32_t ulen, CLabels* label);
 
 	/// given N sparse inputs x_i, and corresponding labels y_i i=0...N-1
 	/// create the following 1-norm SVM problem & transfer to cplex
@@ -93,7 +95,8 @@ public:
 	/// 	dim(A)=(n,1+2*dim+n)
 	/// 
 	/// b =  -1 -1 -1 -1 ... 
-	bool setup_lpm(DREAL C, CSparseFeatures<DREAL>* x, CLabels* y, bool use_bias);
+	bool setup_lpm(
+		float64_t C, CSparseFeatures<float64_t>* x, CLabels* y, bool use_bias);
 
 	/// call this to setup linear part
 	///
@@ -102,18 +105,22 @@ public:
 	/// w.r.t. x
 	/// s.t. constraint_mat*x <= rhs
 	/// lb[i] <= x[i] <= ub[i] for all i
-	bool setup_lp(DREAL* objective, DREAL* constraints_mat, int32_t rows, int32_t cols, DREAL* rhs, DREAL* lb, DREAL* ub);
+	bool setup_lp(
+		float64_t* objective, float64_t* constraints_mat, int32_t rows,
+		int32_t cols, float64_t* rhs, float64_t* lb, float64_t* ub);
 
 
 	/// call this to setup quadratic part H
 	/// x'*H*x
 	/// call setup_lp before (to setup the linear part / linear constraints)
-	bool setup_qp(DREAL* H, int32_t dim);
-	bool optimize(DREAL* sol, DREAL* lambda=NULL);
+	bool setup_qp(float64_t* H, int32_t dim);
+	bool optimize(float64_t* sol, float64_t* lambda=NULL);
 
-	bool dense_to_cplex_sparse(DREAL* H, int32_t rows, int32_t cols, int* &qmatbeg, int* &qmatcnt, int* &qmatind, double* &qmatval);
+	bool dense_to_cplex_sparse(
+		float64_t* H, int32_t rows, int32_t cols, int* &qmatbeg, int* &qmatcnt,
+		int* &qmatind, double* &qmatval);
 
-	inline bool set_time_limit(DREAL seconds)
+	inline bool set_time_limit(float64_t seconds)
 	{
 		return CPXsetdblparam (env, CPX_PARAM_TILIM, seconds) == 0;
 	}

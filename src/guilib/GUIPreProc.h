@@ -33,7 +33,7 @@ class CGUIPreProc : public CSGObject
 		/** create preproc PruneVarSubMean */
 		CPreProc* create_prunevarsubmean(bool divide_by_std=false);
 		/** create preproc PCACUT */
-		CPreProc* create_pcacut(bool do_whitening, DREAL threshold);
+		CPreProc* create_pcacut(bool do_whitening, float64_t threshold);
 
 		/** add new preproc to list */
 		bool add_preproc(CPreProc* preproc);

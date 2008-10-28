@@ -6,7 +6,7 @@
 
 %include "preproc/SimplePreProc.h"
 
-%template(SimpleRealPreProc) CSimplePreProc<DREAL>;
+%template(SimpleRealPreProc) CSimplePreProc<float64_t>;
 %template(SimpleUlongPreProc) CSimplePreProc<uint64_t>;
 %template(SimpleWordPreProc) CSimplePreProc<uint16_t>;
 %template(SimpleShortPreProc) CSimplePreProc<int16_t>;

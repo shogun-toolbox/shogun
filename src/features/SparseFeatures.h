@@ -783,7 +783,7 @@ template <class ST> class CSparseFeatures : public CFeatures
 		 * @param sq the square for each vector is stored in here
 		 * @return the square for each vector
 		 */
-		DREAL* compute_squared(DREAL* sq)
+		float64_t* compute_squared(float64_t* sq)
 		{
 			ASSERT(sq);
 
@@ -793,12 +793,12 @@ template <class ST> class CSparseFeatures : public CFeatures
 			for (int32_t i=0; i<this->get_num_vectors(); i++)
 			{
 				sq[i]=0;
-				TSparseEntry<DREAL>* vec = ((CSparseFeatures<DREAL>*) this)->get_sparse_feature_vector(i, len, do_free);
+				TSparseEntry<float64_t>* vec = ((CSparseFeatures<float64_t>*) this)->get_sparse_feature_vector(i, len, do_free);
 
 				for (int32_t j=0; j<len; j++)
 					sq[i] += vec[j].entry * vec[j].entry;
 
-				((CSparseFeatures<DREAL>*) this)->free_feature_vector(vec, i, do_free);
+				((CSparseFeatures<float64_t>*) this)->free_feature_vector(vec, i, do_free);
 			}
 
 			return sq;
@@ -816,7 +816,7 @@ template <class ST> class CSparseFeatures : public CFeatures
 		 * @param sq_rhs squared values of right-hand side
 		 * @param idx_b index of right-hand side's vector to compute
 		 */
-		DREAL compute_squared_norm(CSparseFeatures<DREAL>* lhs, DREAL* sq_lhs, int32_t idx_a, CSparseFeatures<DREAL>* rhs, DREAL* sq_rhs, int32_t idx_b)
+		float64_t compute_squared_norm(CSparseFeatures<float64_t>* lhs, float64_t* sq_lhs, int32_t idx_a, CSparseFeatures<float64_t>* rhs, float64_t* sq_rhs, int32_t idx_b)
 		{
 			int32_t i,j;
 			int32_t alen, blen;
@@ -824,12 +824,12 @@ template <class ST> class CSparseFeatures : public CFeatures
 			ASSERT(lhs);
 			ASSERT(rhs);
 
-			TSparseEntry<DREAL>* avec=lhs->get_sparse_feature_vector(idx_a, alen, afree);
-			TSparseEntry<DREAL>* bvec=rhs->get_sparse_feature_vector(idx_b, blen, bfree);
+			TSparseEntry<float64_t>* avec=lhs->get_sparse_feature_vector(idx_a, alen, afree);
+			TSparseEntry<float64_t>* bvec=rhs->get_sparse_feature_vector(idx_b, blen, bfree);
 			ASSERT(avec);
 			ASSERT(bvec);
 
-			DREAL result=sq_lhs[idx_a]+sq_rhs[idx_b];
+			float64_t result=sq_lhs[idx_a]+sq_rhs[idx_b];
 
 			if (alen<=blen)
 			{
@@ -866,8 +866,8 @@ template <class ST> class CSparseFeatures : public CFeatures
 				}
 			}
 
-			((CSparseFeatures<DREAL>*) lhs)->free_feature_vector(avec, idx_a, afree);
-			((CSparseFeatures<DREAL>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+			((CSparseFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
+			((CSparseFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
 			return CMath::abs(result);
 		}
@@ -1187,7 +1187,7 @@ template<> inline EFeatureType CSparseFeatures<uint64_t>::get_feature_type()
  *
  * @return feature type DREAL
  */
-template<> inline EFeatureType CSparseFeatures<DREAL>::get_feature_type()
+template<> inline EFeatureType CSparseFeatures<float64_t>::get_feature_type()
 {
 	return F_DREAL;
 }

@@ -59,7 +59,7 @@ bool CHierarchical::train()
 	const int32_t num_pairs=num*(num-1)/2;
 
 	delete[] merge_distance;
-	merge_distance=new DREAL[num];
+	merge_distance=new float64_t[num];
 	CMath::fill_vector(merge_distance, num, -1.0);
 
 	delete[] assignment;
@@ -71,7 +71,7 @@ bool CHierarchical::train()
 	CMath::fill_vector(pairs, 2*num, -1);
 
 	pair* index=new pair[num_pairs];
-	DREAL* distances=new DREAL[num_pairs];
+	float64_t* distances=new float64_t[num_pairs];
 
 	int32_t offs=0;
 	for (int32_t i=0; i<num; i++)
@@ -86,7 +86,7 @@ bool CHierarchical::train()
 		SG_PROGRESS(i, 0, num-1);
 	}
 
-	CMath::qsort_index<DREAL,pair>(distances, index, (num-1)*num/2);
+	CMath::qsort_index<float64_t,pair>(distances, index, (num-1)*num/2);
 	//CMath::display_vector(distances, (num-1)*num/2, "dists");
 
 	int32_t k=-1;

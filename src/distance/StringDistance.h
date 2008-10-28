@@ -58,7 +58,7 @@ template <class ST> class CStringDistance : public CDistance
  *
  * @return feature type DREAL
  */
-template<> inline EFeatureType CStringDistance<DREAL>::get_feature_type() { return F_DREAL; }
+template<> inline EFeatureType CStringDistance<float64_t>::get_feature_type() { return F_DREAL; }
 
 /** get feature type the ULONG distance can deal with
  *

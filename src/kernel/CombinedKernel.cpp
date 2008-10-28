@@ -28,12 +28,12 @@
 struct S_THREAD_PARAM
 {
 	CKernel* kernel;
-	DREAL* result;
+	float64_t* result;
 	int32_t* vec_idx;
 	int32_t start;
 	int32_t end;
 	/// required only for non optimized kernels
-	DREAL* weights;
+	float64_t* weights;
 	int32_t* IDX;
 	int32_t num_suppvec;
 };
@@ -49,7 +49,8 @@ CCombinedKernel::CCombinedKernel(int32_t size, bool asw)
 		SG_INFO( "(subkernel weights are appended)\n") ;
 }
 
-CCombinedKernel::CCombinedKernel(CCombinedFeatures *l, CCombinedFeatures *r, bool asw)
+CCombinedKernel::CCombinedKernel(
+	CCombinedFeatures *l, CCombinedFeatures *r, bool asw)
 : CKernel(10), sv_count(0), sv_idx(NULL), sv_weight(NULL),
 	subkernel_weights_buffer(NULL), append_subkernel_weights(asw)
 {
@@ -215,9 +216,9 @@ void CCombinedKernel::list_kernels()
 	SG_INFO( "END COMBINED KERNEL LIST - ");
 }
 
-DREAL CCombinedKernel::compute(int32_t x, int32_t y)
+float64_t CCombinedKernel::compute(int32_t x, int32_t y)
 {
-	DREAL result=0;
+	float64_t result=0;
 	CListElement<CKernel*> * current = NULL ;	
 	CKernel* k=get_first_kernel(current);
 	while (k)
@@ -231,7 +232,7 @@ DREAL CCombinedKernel::compute(int32_t x, int32_t y)
 }
 
 bool CCombinedKernel::init_optimization(
-	int32_t count, int32_t *IDX, DREAL *weights)
+	int32_t count, int32_t *IDX, float64_t *weights)
 {
 	SG_DEBUG( "initializing CCombinedKernel optimization\n");
 
@@ -267,7 +268,7 @@ bool CCombinedKernel::init_optimization(
 		SG_WARNING( "some kernels in the kernel-list are not optimized\n");
 
 		sv_idx=new int32_t[count];
-		sv_weight=new DREAL[count];
+		sv_weight=new float64_t[count];
 		sv_count=count;
 		for (int32_t i=0; i<count; i++)
 		{
@@ -305,7 +306,9 @@ bool CCombinedKernel::delete_optimization()
 	return true;
 }
 
-void CCombinedKernel::compute_batch(int32_t num_vec, int32_t* vec_idx, DREAL* result, int32_t num_suppvec, int32_t* IDX, DREAL* weights, DREAL factor)
+void CCombinedKernel::compute_batch(
+	int32_t num_vec, int32_t* vec_idx, float64_t* result, int32_t num_suppvec,
+	int32_t* IDX, float64_t* weights, float64_t factor)
 {
 	ASSERT(rhs);
 	ASSERT(num_vec<=rhs->get_num_vectors())
@@ -342,7 +345,7 @@ void* CCombinedKernel::compute_optimized_kernel_helper(void* p)
 	S_THREAD_PARAM* params= (S_THREAD_PARAM*) p;
 	int32_t* vec_idx=params->vec_idx;
 	CKernel* k=params->kernel;
-	DREAL* result=params->result;
+	float64_t* result=params->result;
 
 	for (int32_t i=params->start; i<params->end; i++)
 		result[i] += k->get_combined_kernel_weight()*k->compute_optimized(vec_idx[i]);
@@ -355,14 +358,14 @@ void* CCombinedKernel::compute_kernel_helper(void* p)
 	S_THREAD_PARAM* params= (S_THREAD_PARAM*) p;
 	int32_t* vec_idx=params->vec_idx;
 	CKernel* k=params->kernel;
-	DREAL* result=params->result;
-	DREAL* weights=params->weights;
+	float64_t* result=params->result;
+	float64_t* weights=params->weights;
 	int32_t* IDX=params->IDX;
 	int32_t num_suppvec=params->num_suppvec;
 
 	for (int32_t i=params->start; i<params->end; i++)
 	{
-		DREAL sub_result=0;
+		float64_t sub_result=0;
 		for (int32_t j=0; j<num_suppvec; j++)
 			sub_result += weights[j] * k->kernel(IDX[j], vec_idx[i]);
 
@@ -372,7 +375,9 @@ void* CCombinedKernel::compute_kernel_helper(void* p)
 	return NULL;
 }
 
-void CCombinedKernel::emulate_compute_batch(CKernel* k, int32_t num_vec, int32_t* vec_idx, DREAL* result, int32_t num_suppvec, int32_t* IDX, DREAL* weights)
+void CCombinedKernel::emulate_compute_batch(
+	CKernel* k, int32_t num_vec, int32_t* vec_idx, float64_t* result,
+	int32_t num_suppvec, int32_t* IDX, float64_t* weights)
 {
 	ASSERT(k);
 	ASSERT(result);
@@ -495,7 +500,7 @@ void CCombinedKernel::emulate_compute_batch(CKernel* k, int32_t num_vec, int32_t
 	}
 }
 
-DREAL CCombinedKernel::compute_optimized(int32_t idx)
+float64_t CCombinedKernel::compute_optimized(int32_t idx)
 { 		  
 	if (!get_is_initialized())
 	{
@@ -503,7 +508,7 @@ DREAL CCombinedKernel::compute_optimized(int32_t idx)
 		return 0;
 	}
 	
-	DREAL result=0;
+	float64_t result=0;
 
 	CListElement<CKernel*> *current=NULL;
 	CKernel *k=get_first_kernel(current);
@@ -523,7 +528,7 @@ DREAL CCombinedKernel::compute_optimized(int32_t idx)
 
 			if (k->get_combined_kernel_weight()!=0)
 			{ // compute the usual way for any non-optimized kernel
-				DREAL sub_result=0;
+				float64_t sub_result=0;
 				for (int32_t j=0; j<sv_count; j++)
 					sub_result += sv_weight[j] * k->kernel(sv_idx[j], idx);
 
@@ -537,7 +542,7 @@ DREAL CCombinedKernel::compute_optimized(int32_t idx)
 	return result;
 }
 
-void CCombinedKernel::add_to_normal(int32_t idx, DREAL weight) 
+void CCombinedKernel::add_to_normal(int32_t idx, float64_t weight)
 { 
 	CListElement<CKernel*> * current = NULL ;	
 	CKernel* k = get_first_kernel(current);
@@ -563,7 +568,8 @@ void CCombinedKernel::clear_normal()
 	set_is_initialized(true) ;
 }
 
-void CCombinedKernel::compute_by_subkernel(int32_t idx, DREAL * subkernel_contrib)
+void CCombinedKernel::compute_by_subkernel(
+	int32_t idx, float64_t * subkernel_contrib)
 {
 	if (append_subkernel_weights)
 	{
@@ -598,11 +604,11 @@ void CCombinedKernel::compute_by_subkernel(int32_t idx, DREAL * subkernel_contri
 	}
 }
 
-const DREAL* CCombinedKernel::get_subkernel_weights(int32_t& num_weights)
+const float64_t* CCombinedKernel::get_subkernel_weights(int32_t& num_weights)
 {
 	num_weights = get_num_subkernels() ;
 	delete[] subkernel_weights_buffer ;
-	subkernel_weights_buffer = new DREAL[num_weights] ;
+	subkernel_weights_buffer = new float64_t[num_weights] ;
 
 	if (append_subkernel_weights)
 	{
@@ -612,7 +618,7 @@ const DREAL* CCombinedKernel::get_subkernel_weights(int32_t& num_weights)
 		while(k)
 		{
 			int32_t num = -1 ;
-			const DREAL *w = k->get_subkernel_weights(num);
+			const float64_t *w = k->get_subkernel_weights(num);
 			ASSERT(num==k->get_num_subkernels());
 			for (int32_t j=0; j<num; j++)
 				subkernel_weights_buffer[i+j]=w[j] ;
@@ -636,7 +642,8 @@ const DREAL* CCombinedKernel::get_subkernel_weights(int32_t& num_weights)
 	return subkernel_weights_buffer ;
 }
 
-void CCombinedKernel::set_subkernel_weights(DREAL* weights, int32_t num_weights)
+void CCombinedKernel::set_subkernel_weights(
+	float64_t* weights, int32_t num_weights)
 {
 	if (append_subkernel_weights)
 	{

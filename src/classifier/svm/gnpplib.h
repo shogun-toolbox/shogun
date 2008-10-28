@@ -34,7 +34,7 @@ class CGNPPLib: public CSGObject
    * @param num_data number of data
    * @param reg_const reg const
    */
-  CGNPPLib(DREAL* vector_y, CKernel* kernel, int32_t num_data, DREAL reg_const);
+  CGNPPLib(float64_t* vector_y, CKernel* kernel, int32_t num_data, float64_t reg_const);
   ~CGNPPLib();
 
   /** --------------------------------------------------------------
@@ -86,12 +86,12 @@ class CGNPPLib: public CSGObject
    * @param b b
    * @return something floaty
    */
-  DREAL* get_col(int64_t a, int64_t b);
+  float64_t* get_col(int64_t a, int64_t b);
 
   /** kernel columns */
-  DREAL** kernel_columns;
+  float64_t** kernel_columns;
   /** cache index */
-  DREAL* cache_index;
+  float64_t* cache_index;
   /** first kernel inx */
   int32_t first_kernel_inx;
   /** cache size */
@@ -99,9 +99,9 @@ class CGNPPLib: public CSGObject
   /** num data */
   int32_t m_num_data;
   /** reg const */
-  DREAL m_reg_const;
+  float64_t m_reg_const;
   /** vector y */
-  DREAL* m_vector_y;
+  float64_t* m_vector_y;
   /** kernel */
   CKernel* m_kernel;
 

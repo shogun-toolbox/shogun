@@ -23,7 +23,7 @@ CGMNPSVM::CGMNPSVM()
 {
 }
 
-CGMNPSVM::CGMNPSVM(DREAL C, CKernel* k, CLabels* lab)
+CGMNPSVM::CGMNPSVM(float64_t C, CKernel* k, CLabels* lab)
 : CMultiClassSVM(ONE_VS_REST, C, k, lab)
 {
 }
@@ -43,27 +43,27 @@ bool CGMNPSVM::train()
 
 	SG_INFO( "%d trainlabels, %d classes\n", num_data, num_classes);
 
-	DREAL* vector_y = new double[num_data];
+	float64_t* vector_y = new double[num_data];
 	for (int32_t i=0; i<num_data; i++)
 		vector_y[i]= labels->get_label(i)+1;
 
-	DREAL C = get_C1();
+	float64_t C = get_C1();
 	int32_t tmax = 1000000000;
-	DREAL tolabs = 0;
-	DREAL tolrel = epsilon;
+	float64_t tolabs = 0;
+	float64_t tolrel = epsilon;
 
-	DREAL reg_const=0;
+	float64_t reg_const=0;
 	if( C!=0 )
 		reg_const = 1/(2*C);
 
 
-	DREAL* alpha = new DREAL[num_virtual_data];
-	DREAL* vector_c = new DREAL[num_virtual_data];
-	memset(vector_c, 0, num_virtual_data*sizeof(DREAL));
+	float64_t* alpha = new float64_t[num_virtual_data];
+	float64_t* vector_c = new float64_t[num_virtual_data];
+	memset(vector_c, 0, num_virtual_data*sizeof(float64_t));
 
-	DREAL thlb = 10000000000.0;
+	float64_t thlb = 10000000000.0;
 	int32_t t = 0;
-	DREAL* History = NULL;
+	float64_t* History = NULL;
 	int32_t verb = 0;
 
 	CGMNPLib mnp(vector_y,kernel,num_data, num_virtual_data, num_classes, reg_const);
@@ -72,12 +72,12 @@ bool CGMNPSVM::train()
 			tolabs, tolrel, thlb, alpha, &t, &History, verb );
 
 	/* matrix alpha [num_classes x num_data] */
-	DREAL* all_alphas= new DREAL[num_classes*num_data];
-	memset(all_alphas,0,num_classes*num_data*sizeof(DREAL));
+	float64_t* all_alphas= new float64_t[num_classes*num_data];
+	memset(all_alphas,0,num_classes*num_data*sizeof(float64_t));
 
 	/* bias vector b [num_classes x 1] */
-	DREAL* all_bs=new DREAL[num_classes];
-	memset(all_bs,0,num_classes*sizeof(DREAL));
+	float64_t* all_bs=new float64_t[num_classes];
+	memset(all_bs,0,num_classes*sizeof(float64_t));
 
 	/* compute alpha/b from virt_data */
 	for(int32_t i=0; i < num_classes; i++ )

@@ -107,7 +107,7 @@ class CHierarchical : public CDistanceMachine
 		 * @param dist current merge distance is stored in here
 		 * @param num number of merge distances is stored in here
 		 */
-		inline void get_merge_distance(DREAL*& dist, int32_t& num)
+		inline void get_merge_distance(float64_t*& dist, int32_t& num)
 		{
 			dist=merge_distance;
 			num=merges;
@@ -118,10 +118,10 @@ class CHierarchical : public CDistanceMachine
 		 * @param dist current merge distances is stored in here
 		 * @param num number of merge distances is stored in here
 		 */
-		inline void get_merge_distances(DREAL** dist, int32_t* num)
+		inline void get_merge_distances(float64_t** dist, int32_t* num)
 		{
 			size_t sz=sizeof(*merge_distance)*merges;
-			*dist=(DREAL*) malloc(sz);
+			*dist=(float64_t*) malloc(sz);
 			ASSERT(*dist);
 
 			memcpy(*dist, merge_distance, sz);
@@ -147,7 +147,8 @@ class CHierarchical : public CDistanceMachine
 		 * @param rows number of rows is stored in here
 		 * @param num number of pairs is stored in here
 		 */
-		inline void get_cluster_pairs(int32_t** tuples, int32_t* rows, int32_t* num)
+		inline void get_cluster_pairs(
+			int32_t** tuples, int32_t* rows, int32_t* num)
 		{
 			*rows=2;
 			size_t sz=sizeof(*pairs)*(*rows)*merges;
@@ -178,6 +179,6 @@ class CHierarchical : public CDistanceMachine
 		int32_t* pairs;
 
 		/// distance at which pair i/j was added
-		DREAL* merge_distance;
+		float64_t* merge_distance;
 };
 #endif

@@ -87,7 +87,7 @@ int32_t CPythonInterface::get_int()
 	return PyInt_AS_LONG(i);
 }
 
-DREAL CPythonInterface::get_real()
+float64_t CPythonInterface::get_real()
 {
 	const PyObject* f=get_arg_increment();
 	if (!f || !PyFloat_Check(f))
@@ -147,7 +147,7 @@ GET_VECTOR(get_char_vector, NPY_CHAR, char, char, "Char")
 GET_VECTOR(get_int_vector, NPY_INT, int32_t, int, "Integer")
 GET_VECTOR(get_short_vector, NPY_SHORT, int16_t, short, "Short")
 GET_VECTOR(get_shortreal_vector, NPY_FLOAT, float32_t, float, "Single Precision")
-GET_VECTOR(get_real_vector, NPY_DOUBLE, DREAL, double, "Double Precision")
+GET_VECTOR(get_real_vector, NPY_DOUBLE, float64_t, double, "Double Precision")
 GET_VECTOR(get_word_vector, NPY_USHORT, uint16_t, unsigned short, "Word")
 #undef GET_VECTOR
 
@@ -186,7 +186,7 @@ GET_MATRIX(get_char_matrix, NPY_CHAR, char, char, "Char")
 GET_MATRIX(get_int_matrix, NPY_INT, int32_t, int, "Integer")
 GET_MATRIX(get_short_matrix, NPY_SHORT, int16_t, short, "Short")
 GET_MATRIX(get_shortreal_matrix, NPY_FLOAT, float32_t, float, "Single Precision")
-GET_MATRIX(get_real_matrix, NPY_DOUBLE, DREAL, double, "Double Precision")
+GET_MATRIX(get_real_matrix, NPY_DOUBLE, float64_t, double, "Double Precision")
 GET_MATRIX(get_word_matrix, NPY_USHORT, uint16_t, unsigned short, "Word")
 #undef GET_MATRIX
 
@@ -223,7 +223,7 @@ GET_NDARRAY(get_char_ndarray, NPY_CHAR, char, char, "Char")
 GET_NDARRAY(get_int_ndarray, NPY_INT, int32_t, int, "Integer")
 GET_NDARRAY(get_short_ndarray, NPY_SHORT, int16_t, short, "Short")
 GET_NDARRAY(get_shortreal_ndarray, NPY_FLOAT, float32_t, float, "Single Precision")
-GET_NDARRAY(get_real_ndarray, NPY_DOUBLE, DREAL, double, "Double Precision")
+GET_NDARRAY(get_real_ndarray, NPY_DOUBLE, float64_t, double, "Double Precision")
 GET_NDARRAY(get_word_ndarray, NPY_USHORT, uint16_t, unsigned short, "Word")
 #undef GET_NDARRAY
 
@@ -275,8 +275,8 @@ void CPythonInterface::function_name(TSparse<sg_type>*& matrix, int32_t& num_fea
 	*/ \
 }
 
-GET_SPARSEMATRIX(get_real_sparsematrix, NPY_DOUBLE, DREAL, double, "Double Precision")
-/*  future versions might support types other than DREAL
+GET_SPARSEMATRIX(get_real_sparsematrix, NPY_DOUBLE, float64_t, double, "Double Precision")
+/*  future versions might support types other than float64_t
 GET_SPARSEMATRIX(get_byte_sparsematrix, "uint8", uint8_t, uint8_t, "Byte")
 GET_SPARSEMATRIX(get_char_sparsematrix, "char", char, mxChar, "Char")
 GET_SPARSEMATRIX(get_int_sparsematrix, "int32", int32_t, int, "Integer")
@@ -385,7 +385,7 @@ void CPythonInterface::set_int(int32_t scalar)
 	set_arg_increment(o);
 }
 
-void CPythonInterface::set_real(DREAL scalar)
+void CPythonInterface::set_real(float64_t scalar)
 {
 	PyObject* o=Py_BuildValue("d", scalar);
 	if (!o)
@@ -430,7 +430,7 @@ SET_VECTOR(set_char_vector, NPY_CHAR, char, char, "Char")
 SET_VECTOR(set_int_vector, NPY_INT, int32_t, int, "Integer")
 SET_VECTOR(set_short_vector, NPY_SHORT, int16_t, short, "Short")
 SET_VECTOR(set_shortreal_vector, NPY_FLOAT, float32_t, float, "Single Precision")
-SET_VECTOR(set_real_vector, NPY_DOUBLE, DREAL, double, "Double Precision")
+SET_VECTOR(set_real_vector, NPY_DOUBLE, float64_t, double, "Double Precision")
 SET_VECTOR(set_word_vector, NPY_USHORT, uint16_t, unsigned short, "Word")
 #undef SET_VECTOR
 
@@ -462,7 +462,7 @@ SET_MATRIX(set_char_matrix, NPY_CHAR, char, char, "Char")
 SET_MATRIX(set_int_matrix, NPY_INT, int32_t, int, "Integer")
 SET_MATRIX(set_short_matrix, NPY_SHORT, int16_t, short, "Short")
 SET_MATRIX(set_shortreal_matrix, NPY_FLOAT, float32_t, float, "Single Precision")
-SET_MATRIX(set_real_matrix, NPY_DOUBLE, DREAL, double, "Double Precision")
+SET_MATRIX(set_real_matrix, NPY_DOUBLE, float64_t, double, "Double Precision")
 SET_MATRIX(set_word_matrix, NPY_USHORT, uint16_t, unsigned short, "Word")
 #undef SET_MATRIX
 
@@ -501,7 +501,7 @@ void CPythonInterface::function_name(const TSparse<sg_type>* matrix, int32_t num
 	*/ \
 }
 
-SET_SPARSEMATRIX(set_real_sparsematrix, NPY_DOUBLE, DREAL, double, "Double Precision")
+SET_SPARSEMATRIX(set_real_sparsematrix, NPY_DOUBLE, float64_t, double, "Double Precision")
 
 /* future version might support this
 SET_SPARSEMATRIX(set_byte_sparsematrix, mxUINT8_CLASS, uint8_t, uint8_t, "Byte")

@@ -47,7 +47,7 @@
 #include <string.h>
 #include <stdarg.h>
 typedef KERNELCACHE_ELEM Qfloat;
-typedef DREAL schar;
+typedef float64_t schar;
 #ifndef min
 template <class T> inline T min(T x,T y) { return (x<y)?x:y; }
 #endif

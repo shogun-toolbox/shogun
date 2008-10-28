@@ -85,7 +85,7 @@ class CTOPFeatures : public CRealFeatures
 		 *
 		 * @return something floaty
 		 */
-		virtual DREAL* set_feature_matrix();
+		virtual float64_t* set_feature_matrix();
 
 		/** compute number of features
 		 *
@@ -109,7 +109,8 @@ class CTOPFeatures : public CRealFeatures
 		 * @param target
 		 * @return something floaty
 		 */
-		virtual DREAL* compute_feature_vector(int32_t num, int32_t& len, DREAL* target=NULL);
+		virtual float64_t* compute_feature_vector(
+			int32_t num, int32_t& len, float64_t* target=NULL);
 
 		/** computes the feature vector to the address addr
 		 *
@@ -117,7 +118,7 @@ class CTOPFeatures : public CRealFeatures
 		 * @param num num
 		 * @param len len
 		 */
-		void compute_feature_vector(DREAL* addr, int32_t num, int32_t& len);
+		void compute_feature_vector(float64_t* addr, int32_t num, int32_t& len);
 
 	protected:
 		/** positive HMM */

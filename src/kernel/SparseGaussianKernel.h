@@ -24,7 +24,7 @@
  *
  * where \f$\tau\f$ is the kernel width.
  */
-class CSparseGaussianKernel: public CSparseKernel<DREAL>
+class CSparseGaussianKernel: public CSparseKernel<float64_t>
 {
 	public:
 		/** constructor
@@ -41,7 +41,7 @@ class CSparseGaussianKernel: public CSparseKernel<DREAL>
 		 * @param width width
 		 */
 		CSparseGaussianKernel(
-			CSparseFeatures<DREAL>* l, CSparseFeatures<DREAL>* r,
+			CSparseFeatures<float64_t>* l, CSparseFeatures<float64_t>* r,
 			double width);
 
 		virtual ~CSparseGaussianKernel();
@@ -98,15 +98,15 @@ class CSparseGaussianKernel: public CSparseKernel<DREAL>
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		virtual DREAL compute(int32_t idx_a, int32_t idx_b);
+		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
 
 	protected:
 		/** width */
 		double width;
 		/** squared left-hand side */
-		DREAL* sq_lhs;
+		float64_t* sq_lhs;
 		/** squared right-hand side */
-		DREAL* sq_rhs;
+		float64_t* sq_rhs;
 };
 
 #endif /* _SPARSEGAUSSIANKERNEL_H__ */

@@ -82,7 +82,7 @@ enum E_STATE
 const char CModel::FIX_DISALLOWED=0 ;
 const char CModel::FIX_ALLOWED=1 ;
 const char CModel::FIX_DEFAULT=-1 ;
-const DREAL CModel::DISALLOWED_PENALTY=CMath::ALMOST_NEG_INFTY ;
+const float64_t CModel::DISALLOWED_PENALTY=CMath::ALMOST_NEG_INFTY ;
 #endif
 
 CModel::CModel()
@@ -91,10 +91,10 @@ CModel::CModel()
 	const_b=new int[ARRAY_SIZE];
 	const_p=new int[ARRAY_SIZE];
 	const_q=new int[ARRAY_SIZE];
-	const_a_val=new DREAL[ARRAY_SIZE];			///////static fixme 
-	const_b_val=new DREAL[ARRAY_SIZE];
-	const_p_val=new DREAL[ARRAY_SIZE];
-	const_q_val=new DREAL[ARRAY_SIZE];
+	const_a_val=new float64_t[ARRAY_SIZE];			///////static fixme 
+	const_b_val=new float64_t[ARRAY_SIZE];
+	const_p_val=new float64_t[ARRAY_SIZE];
+	const_q_val=new float64_t[ARRAY_SIZE];
 
 
 	learn_a=new int[ARRAY_SIZE];
@@ -159,7 +159,7 @@ CHMM::CHMM(CHMM* h)
 	set_observations(h->get_observations());
 }
 
-CHMM::CHMM(int32_t p_N, int32_t p_M, CModel* p_model, DREAL p_PSEUDO)
+CHMM::CHMM(int32_t p_N, int32_t p_M, CModel* p_model, float64_t p_PSEUDO)
 : CDistribution(), iterations(150), epsilon(1e-4), conv_it(5)
 {
 	this->N=p_N;
@@ -171,7 +171,9 @@ CHMM::CHMM(int32_t p_N, int32_t p_M, CModel* p_model, DREAL p_PSEUDO)
 	status=initialize(p_model, p_PSEUDO);
 }
 
-CHMM::CHMM(CStringFeatures<uint16_t>* obs, int32_t p_N, int32_t p_M, DREAL p_PSEUDO)
+CHMM::CHMM(
+	CStringFeatures<uint16_t>* obs, int32_t p_N, int32_t p_M,
+	float64_t p_PSEUDO)
 : CDistribution(), iterations(150), epsilon(1e-4), conv_it(5)
 {
 	this->N=p_N;
@@ -232,7 +234,8 @@ CHMM::CHMM(int32_t p_N, double* p, double* q, double* a)
 //	this->invalidate_model();
 }
 
-CHMM::CHMM(int32_t p_N, double* p, double* q, int32_t num_trans, double* a_trans)
+CHMM::CHMM(
+	int32_t p_N, double* p, double* q, int32_t num_trans, double* a_trans)
 : CDistribution(), iterations(150), epsilon(1e-4), conv_it(5)
 {
 	model=NULL ;
@@ -274,7 +277,7 @@ CHMM::CHMM(int32_t p_N, double* p, double* q, int32_t num_trans, double* a_trans
 	trans_list_forward_cnt=NULL ;
 	trans_list_len = N ;
 	trans_list_forward = new T_STATES*[N] ;
-	trans_list_forward_val = new DREAL*[N] ;
+	trans_list_forward_val = new float64_t*[N] ;
 	trans_list_forward_cnt = new T_STATES[N] ;
 	
 	int32_t start_idx=0;
@@ -287,11 +290,13 @@ CHMM::CHMM(int32_t p_N, double* p, double* q, int32_t num_trans, double* a_trans
 			start_idx++;
 			
 			if (start_idx>1 && start_idx<num_trans)
-				ASSERT(a_trans[start_idx+num_trans-1]<=a_trans[start_idx+num_trans]);
+				ASSERT(a_trans[start_idx+num_trans-1]<=
+					a_trans[start_idx+num_trans]);
 		}
 		
 		if (start_idx>1 && start_idx<num_trans)
-			ASSERT(a_trans[start_idx+num_trans-1]<=a_trans[start_idx+num_trans]);
+			ASSERT(a_trans[start_idx+num_trans-1]<=
+				a_trans[start_idx+num_trans]);
 		
 		int32_t len=start_idx-old_start_idx;
 		ASSERT(len>=0);
@@ -301,7 +306,7 @@ CHMM::CHMM(int32_t p_N, double* p, double* q, int32_t num_trans, double* a_trans
 		if (len>0)
 		{
 			trans_list_forward[j]     = new T_STATES[len] ;
-			trans_list_forward_val[j] = new DREAL[len] ;
+			trans_list_forward_val[j] = new float64_t[len] ;
 		}
 		else
 		{
@@ -314,7 +319,7 @@ CHMM::CHMM(int32_t p_N, double* p, double* q, int32_t num_trans, double* a_trans
 	{
 		int32_t from = (int32_t)a_trans[i+num_trans] ;
 		int32_t to   = (int32_t)a_trans[i] ;
-		DREAL val = a_trans[i+num_trans*2] ;
+		float64_t val = a_trans[i+num_trans*2] ;
 		
 		ASSERT(from>=0 && from<N);
 		ASSERT(to>=0 && to<N);
@@ -336,7 +341,7 @@ CHMM::CHMM(int32_t p_N, double* p, double* q, int32_t num_trans, double* a_trans
 }
 
 
-CHMM::CHMM(FILE* model_file, DREAL p_PSEUDO)
+CHMM::CHMM(FILE* model_file, float64_t p_PSEUDO)
 : CDistribution(), iterations(150), epsilon(1e-4), conv_it(5)
 {
 	SG_INFO( "hmm is using %i separate tables\n",  parallel.get_num_threads()) ;
@@ -433,12 +438,13 @@ CHMM::~CHMM()
 bool CHMM::alloc_state_dependend_arrays()
 {
 
-	if (!transition_matrix_a && !observation_matrix_b && !initial_state_distribution_p && !end_state_distribution_q)
+	if (!transition_matrix_a && !observation_matrix_b &&
+		!initial_state_distribution_p && !end_state_distribution_q)
 	{
-		transition_matrix_a=new DREAL[N*N];
-		observation_matrix_b=new DREAL[N*M];	
-		initial_state_distribution_p=new DREAL[N];
-		end_state_distribution_q=new DREAL[N];
+		transition_matrix_a=new float64_t[N*N];
+		observation_matrix_b=new float64_t[N*M];	
+		initial_state_distribution_p=new float64_t[N];
+		end_state_distribution_q=new float64_t[N];
 		init_model_random();
 		convert_to_log();
 	}
@@ -446,24 +452,24 @@ bool CHMM::alloc_state_dependend_arrays()
 #ifdef USE_HMMPARALLEL_STRUCTURES
 	for (int32_t i=0; i<parallel.get_num_threads(); i++)
 	{
-		arrayN1[i]=new DREAL[N];
-		arrayN2[i]=new DREAL[N];
+		arrayN1[i]=new float64_t[N];
+		arrayN2[i]=new float64_t[N];
 	}
 #else //USE_HMMPARALLEL_STRUCTURES
-	arrayN1=new DREAL[N];
-	arrayN2=new DREAL[N];
+	arrayN1=new float64_t[N];
+	arrayN2=new float64_t[N];
 #endif //USE_HMMPARALLEL_STRUCTURES
 
 #ifdef LOG_SUMARRAY
 #ifdef USE_HMMPARALLEL_STRUCTURES
 	for (int32_t i=0; i<parallel.get_num_threads(); i++)
-		arrayS[i]=new DREAL[(int32_t)(this->N/2+1)];
+		arrayS[i]=new float64_t[(int32_t)(this->N/2+1)];
 #else //USE_HMMPARALLEL_STRUCTURES
-	arrayS=new DREAL[(int32_t)(this->N/2+1)];
+	arrayS=new float64_t[(int32_t)(this->N/2+1)];
 #endif //USE_HMMPARALLEL_STRUCTURES
 #endif //LOG_SUMARRAY
-	transition_matrix_A=new DREAL[this->N*this->N];
-	observation_matrix_B=new DREAL[this->N*this->M];
+	transition_matrix_A=new float64_t[this->N*this->N];
+	observation_matrix_B=new float64_t[this->N*this->M];
 
 	if (p_observations)
 	{
@@ -479,8 +485,9 @@ bool CHMM::alloc_state_dependend_arrays()
 
 	this->invalidate_model();
 
-	return ((transition_matrix_A != NULL) && (observation_matrix_B != NULL) && 
-			(transition_matrix_a != NULL) && (observation_matrix_b != NULL) && (initial_state_distribution_p != NULL) &&
+	return ((transition_matrix_A != NULL) && (observation_matrix_B != NULL) &&
+			(transition_matrix_a != NULL) && (observation_matrix_b != NULL) &&
+			(initial_state_distribution_p != NULL) &&
 			(end_state_distribution_q != NULL));
 }
 
@@ -519,7 +526,7 @@ void CHMM::free_state_dependend_arrays()
 	end_state_distribution_q=NULL;
 }
 
-bool CHMM::initialize(CModel* m, DREAL pseudo, FILE* modelfile)
+bool CHMM::initialize(CModel* m, float64_t pseudo, FILE* modelfile)
 {
 	//yes optimistic
 	bool files_ok=true;
@@ -592,13 +599,13 @@ bool CHMM::initialize(CModel* m, DREAL pseudo, FILE* modelfile)
 #endif //USE_HMMPARALLEL_STRUCTURES
 
 #ifdef USE_HMMPARALLEL_STRUCTURES
-	arrayN1=new P_DREAL[parallel.get_num_threads()];
-	arrayN2=new P_DREAL[parallel.get_num_threads()];
+	arrayN1=new P_float64_t[parallel.get_num_threads()];
+	arrayN2=new P_float64_t[parallel.get_num_threads()];
 #endif //USE_HMMPARALLEL_STRUCTURES
 
 #ifdef LOG_SUMARRAY
 #ifdef USE_HMMPARALLEL_STRUCTURES
-	arrayS=new P_DREAL[parallel.get_num_threads()] ;	  
+	arrayS=new P_float64_t[parallel.get_num_threads()] ;	  
 #endif // USE_HMMPARALLEL_STRUCTURES
 #endif //LOG_SUMARRAY
 
@@ -619,7 +626,7 @@ bool CHMM::initialize(CModel* m, DREAL pseudo, FILE* modelfile)
 //forward algorithm
 //calculates Pr[O_0,O_1, ..., O_t, q_time=S_i| lambda] for 0<= time <= T-1
 //Pr[O|lambda] for time > T
-DREAL CHMM::forward_comp(int32_t time, int32_t state, int32_t dimension)
+float64_t CHMM::forward_comp(int32_t time, int32_t state, int32_t dimension)
 {
   T_ALPHA_BETA_TABLE* alpha_new;
   T_ALPHA_BETA_TABLE* alpha;
@@ -657,7 +664,7 @@ DREAL CHMM::forward_comp(int32_t time, int32_t state, int32_t dimension)
 	  for (int32_t j=0; j<N; j++)
 	    {
 	      register int32_t i, num = trans_list_forward_cnt[j] ;
-	      DREAL sum=-CMath::INFTY;  
+	      float64_t sum=-CMath::INFTY;  
 	      for (i=0; i < num; i++)
 		{
 		  int32_t ii = trans_list_forward[j][i] ;
@@ -684,7 +691,7 @@ DREAL CHMM::forward_comp(int32_t time, int32_t state, int32_t dimension)
       if (time<p_observations->get_vector_length(dimension))
 	{
 	  register int32_t i, num=trans_list_forward_cnt[state];
-	  register DREAL sum=-CMath::INFTY; 
+	  register float64_t sum=-CMath::INFTY; 
 	  for (i=0; i<num; i++)
 	    {
 	      int32_t ii = trans_list_forward[state][i] ;
@@ -697,7 +704,7 @@ DREAL CHMM::forward_comp(int32_t time, int32_t state, int32_t dimension)
 	{
 	  // termination
 	  register int32_t i ; 
-	  DREAL sum ; 
+	  float64_t sum ; 
 	  sum=-CMath::INFTY; 
 	  for (i=0; i<N; i++)		 	                      //sum over all paths
 	    sum=CMath::logarithmic_sum(sum, alpha[i] + get_q(i));     //to get model probability
@@ -723,7 +730,7 @@ DREAL CHMM::forward_comp(int32_t time, int32_t state, int32_t dimension)
 //forward algorithm
 //calculates Pr[O_0,O_1, ..., O_t, q_time=S_i| lambda] for 0<= time <= T-1
 //Pr[O|lambda] for time > T
-DREAL CHMM::forward_comp_old(int32_t time, int32_t state, int32_t dimension)
+float64_t CHMM::forward_comp_old(int32_t time, int32_t state, int32_t dimension)
 {
 	T_ALPHA_BETA_TABLE* alpha_new;
 	T_ALPHA_BETA_TABLE* alpha;
@@ -771,7 +778,7 @@ DREAL CHMM::forward_comp_old(int32_t time, int32_t state, int32_t dimension)
 				else
 					alpha_new[j]=get_b(j, p_observations->get_feature(dimension,t))+CMath::logarithmic_sum_array(ARRAYS(dimension), N>>1) ;
 #else //USE_LOGSUMARRAY
-				DREAL sum=-CMath::INFTY;  
+				float64_t sum=-CMath::INFTY;  
 				for (i=0; i<N; i++)
 					sum= CMath::logarithmic_sum(sum, alpha[i] + get_a(i,j));
 
@@ -807,7 +814,7 @@ DREAL CHMM::forward_comp_old(int32_t time, int32_t state, int32_t dimension)
 			else
 				return get_b(state, p_observations->get_feature(dimension,time))+CMath::logarithmic_sum_array(ARRAYS(dimension), N>>1) ;
 #else //USE_LOGSUMARRAY
-			register DREAL sum=-CMath::INFTY; 
+			register float64_t sum=-CMath::INFTY; 
 			for (i=0; i<N; i++)
 				sum= CMath::logarithmic_sum(sum, alpha[i] + get_a(i, state));
 
@@ -818,7 +825,7 @@ DREAL CHMM::forward_comp_old(int32_t time, int32_t state, int32_t dimension)
 		{
 			// termination
 			register int32_t i ; 
-			DREAL sum ; 
+			float64_t sum ; 
 #ifdef USE_LOGSUMARRAY
 			for (i=0; i<(N>>1); i++)
 				ARRAYS(dimension)[i]=CMath::logarithmic_sum(alpha[i<<1] + get_q(i<<1),
@@ -855,7 +862,7 @@ DREAL CHMM::forward_comp_old(int32_t time, int32_t state, int32_t dimension)
 //backward algorithm
 //calculates Pr[O_t+1,O_t+2, ..., O_T| q_time=S_i, lambda] for 0<= time <= T-1
 //Pr[O|lambda] for time >= T
-DREAL CHMM::backward_comp(int32_t time, int32_t state, int32_t dimension)
+float64_t CHMM::backward_comp(int32_t time, int32_t state, int32_t dimension)
 {
   T_ALPHA_BETA_TABLE* beta_new;
   T_ALPHA_BETA_TABLE* beta;
@@ -893,7 +900,7 @@ DREAL CHMM::backward_comp(int32_t time, int32_t state, int32_t dimension)
 	  for (register int32_t i=0; i<N; i++)
 	    {
 	      register int32_t j, num=trans_list_backward_cnt[i] ;
-	      DREAL sum=-CMath::INFTY; 
+	      float64_t sum=-CMath::INFTY; 
 	      for (j=0; j<num; j++)
 		{
 		  int32_t jj = trans_list_backward[i][j] ;
@@ -918,7 +925,7 @@ DREAL CHMM::backward_comp(int32_t time, int32_t state, int32_t dimension)
       if (time>=0)
 	{
 	  register int32_t j, num=trans_list_backward_cnt[state] ;
-	  DREAL sum=-CMath::INFTY; 
+	  float64_t sum=-CMath::INFTY; 
 	  for (j=0; j<num; j++)
 	    {
 	      int32_t jj = trans_list_backward[state][j] ;
@@ -930,7 +937,7 @@ DREAL CHMM::backward_comp(int32_t time, int32_t state, int32_t dimension)
 	{
 	  if (BETA_CACHE(dimension).table)
 	    {
-	      DREAL sum=-CMath::INFTY; 
+	      float64_t sum=-CMath::INFTY; 
 	      for (register int32_t j=0; j<N; j++)
 		sum= CMath::logarithmic_sum(sum, get_p(j) + get_b(j, p_observations->get_feature(dimension,0))+beta[j]);
 	      BETA_CACHE(dimension).sum=sum;
@@ -944,7 +951,7 @@ DREAL CHMM::backward_comp(int32_t time, int32_t state, int32_t dimension)
 	    }
 	  else
 	    {
-	      DREAL sum=-CMath::INFTY; // apply LOG_SUM_ARRAY -- no cache ... does not make very sense anyway...
+	      float64_t sum=-CMath::INFTY; // apply LOG_SUM_ARRAY -- no cache ... does not make very sense anyway...
 	      for (register int32_t j=0; j<N; j++)
 		sum= CMath::logarithmic_sum(sum, get_p(j) + get_b(j, p_observations->get_feature(dimension,0))+beta[j]);
 	      return sum;
@@ -954,7 +961,8 @@ DREAL CHMM::backward_comp(int32_t time, int32_t state, int32_t dimension)
 }
 
 
-DREAL CHMM::backward_comp_old(int32_t time, int32_t state, int32_t dimension)
+float64_t CHMM::backward_comp_old(
+	int32_t time, int32_t state, int32_t dimension)
 {
 	T_ALPHA_BETA_TABLE* beta_new;
 	T_ALPHA_BETA_TABLE* beta;
@@ -1003,7 +1011,7 @@ DREAL CHMM::backward_comp_old(int32_t time, int32_t state, int32_t dimension)
 				else
 					beta_new[i]=CMath::logarithmic_sum_array(ARRAYS(dimension), N>>1) ;
 #else //USE_LOGSUMARRAY				
-				DREAL sum=-CMath::INFTY; 
+				float64_t sum=-CMath::INFTY; 
 				for (j=0; j<N; j++)
 					sum= CMath::logarithmic_sum(sum, get_a(i, j) + get_b(j, p_observations->get_feature(dimension,t)) + beta[j]);
 
@@ -1038,7 +1046,7 @@ DREAL CHMM::backward_comp_old(int32_t time, int32_t state, int32_t dimension)
 			else
 				return CMath::logarithmic_sum_array(ARRAYS(dimension), N>>1) ;
 #else //USE_LOGSUMARRAY
-			DREAL sum=-CMath::INFTY; 
+			float64_t sum=-CMath::INFTY; 
 			for (j=0; j<N; j++)
 				sum= CMath::logarithmic_sum(sum, get_a(state, j) + get_b(j, p_observations->get_feature(dimension,time+1))+beta[j]);
 
@@ -1059,7 +1067,7 @@ DREAL CHMM::backward_comp_old(int32_t time, int32_t state, int32_t dimension)
 				else
 					BETA_CACHE(dimension).sum=CMath::logarithmic_sum_array(ARRAYS(dimension), N>>1) ;
 #else //USE_LOGSUMARRAY
-				DREAL sum=-CMath::INFTY; 
+				float64_t sum=-CMath::INFTY; 
 				for (register int32_t j=0; j<N; j++)
 					sum= CMath::logarithmic_sum(sum, get_p(j) + get_b(j, p_observations->get_feature(dimension,0))+beta[j]);
 				BETA_CACHE(dimension).sum=sum;
@@ -1074,7 +1082,7 @@ DREAL CHMM::backward_comp_old(int32_t time, int32_t state, int32_t dimension)
 			}
 			else
 			{
-				DREAL sum=-CMath::INFTY; // apply LOG_SUM_ARRAY -- no cache ... does not make very sense anyway...
+				float64_t sum=-CMath::INFTY; // apply LOG_SUM_ARRAY -- no cache ... does not make very sense anyway...
 				for (register int32_t j=0; j<N; j++)
 					sum= CMath::logarithmic_sum(sum, get_p(j) + get_b(j, p_observations->get_feature(dimension,0))+beta[j]);
 				return sum;
@@ -1086,7 +1094,7 @@ DREAL CHMM::backward_comp_old(int32_t time, int32_t state, int32_t dimension)
 #ifndef NOVIT
 //calculates probability  of best path through the model lambda AND path itself
 //using viterbi algorithm
-DREAL CHMM::best_path(int32_t dimension)
+float64_t CHMM::best_path(int32_t dimension)
 {
 	if (!p_observations)
 		return -1;
@@ -1096,7 +1104,7 @@ DREAL CHMM::best_path(int32_t dimension)
 		if (!all_path_prob_updated)
 		{
 			SG_INFO( "computing full viterbi likelihood\n") ;
-			DREAL sum = 0 ;
+			float64_t sum = 0 ;
 			for (int32_t i=0; i<p_observations->get_num_vectors(); i++)
 				sum+=best_path(i) ;
 			sum /= p_observations->get_num_vectors() ;
@@ -1118,8 +1126,8 @@ DREAL CHMM::best_path(int32_t dimension)
 		return pat_prob;
 	else
 	{
-		register DREAL* delta= ARRAYN2(dimension);
-		register DREAL* delta_new= ARRAYN1(dimension);
+		register float64_t* delta= ARRAYN2(dimension);
+		register float64_t* delta_new= ARRAYN1(dimension);
 
 		{ //initialization
 			for (register int32_t i=0; i<N; i++)
@@ -1130,22 +1138,22 @@ DREAL CHMM::best_path(int32_t dimension)
 		} 
 
 #ifdef USE_PATHDEBUG
-		DREAL worst=-CMath::INFTY/4 ;
+		float64_t worst=-CMath::INFTY/4 ;
 #endif
 		//recursion
 		for (register int32_t t=1; t<p_observations->get_vector_length(dimension); t++)
 		{
-			register DREAL* dummy;
+			register float64_t* dummy;
 			register int32_t NN=N ;
 			for (register int32_t j=0; j<NN; j++)
 			{
-				register DREAL * matrix_a=&transition_matrix_a[j*N] ; // sorry for that
-				register DREAL maxj=delta[0] + matrix_a[0];
+				register float64_t * matrix_a=&transition_matrix_a[j*N] ; // sorry for that
+				register float64_t maxj=delta[0] + matrix_a[0];
 				register int32_t argmax=0;
 
 				for (register int32_t i=1; i<NN; i++)
 				{
-					register DREAL temp = delta[i] + matrix_a[i];
+					register float64_t temp = delta[i] + matrix_a[i];
 
 					if (temp>maxj)
 					{
@@ -1165,7 +1173,7 @@ DREAL CHMM::best_path(int32_t dimension)
 			}
 
 #ifdef USE_PATHDEBUG
-			DREAL best=log(0) ;
+			float64_t best=log(0) ;
 			for (int32_t jj=0; jj<N; jj++)
 				if (delta_new[jj]>best)
 					best=delta_new[jj] ;
@@ -1184,12 +1192,12 @@ DREAL CHMM::best_path(int32_t dimension)
 
 
 		{ //termination
-			register DREAL maxj=delta[0]+get_q(0);
+			register float64_t maxj=delta[0]+get_q(0);
 			register int32_t argmax=0;
 
 			for (register int32_t i=1; i<N; i++)
 			{
-				register DREAL temp=delta[i]+get_q(i);
+				register float64_t temp=delta[i]+get_q(i);
 
 				if (temp>maxj)
 				{
@@ -1218,7 +1226,7 @@ DREAL CHMM::best_path(int32_t dimension)
 #endif // NOVIT
 
 #ifndef USE_HMMPARALLEL
-DREAL CHMM::model_probability_comp()
+float64_t CHMM::model_probability_comp()
 {
 	//for faster calculation cache model probability
 	mod_prob=0 ;
@@ -1231,7 +1239,7 @@ DREAL CHMM::model_probability_comp()
 
 #else
 
-DREAL CHMM::model_probability_comp() 
+float64_t CHMM::model_probability_comp() 
 {
 	pthread_t *threads=new pthread_t[parallel.get_num_threads()];
 	S_MODEL_PROB_PARAM *params=new S_MODEL_PROB_PARAM[parallel.get_num_threads()];
@@ -1255,7 +1263,7 @@ DREAL CHMM::model_probability_comp()
 	{
 		void* ret;
 		pthread_join(threads[cpu], &ret);
-		mod_prob+=(DREAL) ret;
+		mod_prob+=(float64_t) ret;
 	}
 
 	delete[] threads;
@@ -1269,21 +1277,21 @@ void* CHMM::bw_dim_prefetch(void * params)
 {
 	CHMM* hmm=((S_THREAD_PARAM*)params)->hmm ;
 	int32_t dim=((S_THREAD_PARAM*)params)->dim ;
-	DREAL*p_buf=((S_THREAD_PARAM*)params)->p_buf ;
-	DREAL*q_buf=((S_THREAD_PARAM*)params)->q_buf ;
-	DREAL*a_buf=((S_THREAD_PARAM*)params)->a_buf ;
-	DREAL*b_buf=((S_THREAD_PARAM*)params)->b_buf ;
+	float64_t*p_buf=((S_THREAD_PARAM*)params)->p_buf ;
+	float64_t*q_buf=((S_THREAD_PARAM*)params)->q_buf ;
+	float64_t*a_buf=((S_THREAD_PARAM*)params)->a_buf ;
+	float64_t*b_buf=((S_THREAD_PARAM*)params)->b_buf ;
 	((S_THREAD_PARAM*)params)->ret = hmm->prefetch(dim, true, p_buf, q_buf, a_buf, b_buf) ;
 	return NULL ;
 }
 
-DREAL CHMM::model_prob_thread(void* params)
+float64_t CHMM::model_prob_thread(void* params)
 {
 	CHMM* hmm=((S_THREAD_PARAM*)params)->hmm ;
 	int32_t dim_start=((S_THREAD_PARAM*)params)->dim_start;
 	int32_t dim_stop=((S_THREAD_PARAM*)params)->dim_stop;
 
-	DREAL prob=0;
+	float64_t prob=0;
 	for (int32_t dim=dim_start; dim<dim_stop; dim++)
 		hmm->model_probability(dim);
 
@@ -1295,10 +1303,10 @@ void* CHMM::bw_dim_prefetch(void * params)
 {
 	CHMM* hmm=((S_THREAD_PARAM*)params)->hmm ;
 	int32_t dim=((S_THREAD_PARAM*)params)->dim ;
-	DREAL*p_buf=((S_THREAD_PARAM*)params)->p_buf ;
-	DREAL*q_buf=((S_THREAD_PARAM*)params)->q_buf ;
-	DREAL*a_buf=((S_THREAD_PARAM*)params)->a_buf ;
-	DREAL*b_buf=((S_THREAD_PARAM*)params)->b_buf ;
+	float64_t*p_buf=((S_THREAD_PARAM*)params)->p_buf ;
+	float64_t*q_buf=((S_THREAD_PARAM*)params)->q_buf ;
+	float64_t*a_buf=((S_THREAD_PARAM*)params)->a_buf ;
+	float64_t*b_buf=((S_THREAD_PARAM*)params)->b_buf ;
 	((S_THREAD_PARAM*)params)->ret = hmm->prefetch(dim, true, p_buf, q_buf, a_buf, b_buf) ;
 	return NULL ;
 }
@@ -1313,13 +1321,15 @@ void* CHMM::vit_dim_prefetch(void * params)
 } ;
 #endif // NOVIT
 
-DREAL CHMM::prefetch(int32_t dim, bool bw, DREAL* p_buf, DREAL* q_buf, DREAL* a_buf, DREAL* b_buf)
+float64_t CHMM::prefetch(
+	int32_t dim, bool bw, float64_t* p_buf, float64_t* q_buf, float64_t* a_buf,
+	float64_t* b_buf)
 {
 	if (bw)
 	{
 		forward_comp(p_observations->get_vector_length(dim), N-1, dim) ;
 		backward_comp(p_observations->get_vector_length(dim), N-1, dim) ;
-		DREAL modprob=model_probability(dim) ;
+		float64_t modprob=model_probability(dim) ;
 		ab_buf_comp(p_buf, q_buf, a_buf, b_buf, dim) ;
 		return modprob ;
 	} 
@@ -1333,14 +1343,16 @@ DREAL CHMM::prefetch(int32_t dim, bool bw, DREAL* p_buf, DREAL* q_buf, DREAL* a_
 
 #ifdef USE_HMMPARALLEL
 
-void CHMM::ab_buf_comp(DREAL* p_buf, DREAL* q_buf, DREAL *a_buf, DREAL* b_buf, int32_t dim)
+void CHMM::ab_buf_comp(
+	float64_t* p_buf, float64_t* q_buf, float64_t *a_buf, float64_t* b_buf,
+	int32_t dim)
 {
 	int32_t i,j,t ;
-	DREAL a_sum;
-	DREAL b_sum;
-	DREAL prob=0;	//model probability for dim
+	float64_t a_sum;
+	float64_t b_sum;
+	float64_t prob=0;	//model probability for dim
 
-	DREAL dimmodprob=model_probability(dim);
+	float64_t dimmodprob=model_probability(dim);
 
 	for (i=0; i<N; i++)
 	{
@@ -1381,8 +1393,8 @@ void CHMM::ab_buf_comp(DREAL* p_buf, DREAL* q_buf, DREAL *a_buf, DREAL* b_buf, i
 void CHMM::estimate_model_baum_welch(CHMM* train)
 {
 	int32_t i,j,t,cpu;
-	DREAL a_sum, b_sum;	//numerator
-	DREAL fullmodprob=0;	//for all dims
+	float64_t a_sum, b_sum;	//numerator
+	float64_t fullmodprob=0;	//for all dims
 
 	//clear actual model a,b,p,q are used as numerator
 	for (i=0; i<N; i++)
@@ -1413,10 +1425,10 @@ void CHMM::estimate_model_baum_welch(CHMM* train)
 
 	for (i=0; i<parallel.get_num_threads(); i++)
 	{
-		params[i].p_buf=new DREAL[N];
-		params[i].q_buf=new DREAL[N];
-		params[i].a_buf=new DREAL[N*N];
-		params[i].b_buf=new DREAL[N*M];
+		params[i].p_buf=new float64_t[N];
+		params[i].q_buf=new float64_t[N];
+		params[i].a_buf=new float64_t[N*N];
+		params[i].b_buf=new float64_t[N*M];
 	} ;
 
 	for (cpu=0; cpu<parallel.get_num_threads(); cpu++)
@@ -1484,9 +1496,9 @@ void CHMM::estimate_model_baum_welch(CHMM* train)
 void CHMM::estimate_model_baum_welch(CHMM* estimate)
 {
 	int32_t i,j,t,dim;
-	DREAL a_sum, b_sum;	//numerator
-	DREAL dimmodprob=0;	//model probability for dim
-	DREAL fullmodprob=0;	//for all dims
+	float64_t a_sum, b_sum;	//numerator
+	float64_t dimmodprob=0;	//model probability for dim
+	float64_t fullmodprob=0;	//for all dims
 
 	//clear actual model a,b,p,q are used as numerator
 	for (i=0; i<N; i++)
@@ -1571,9 +1583,9 @@ void CHMM::estimate_model_baum_welch(CHMM* estimate)
 void CHMM::estimate_model_baum_welch_trans(CHMM* estimate)
 {
 	int32_t i,j,t,dim;
-	DREAL a_sum;	//numerator
-	DREAL dimmodprob=0;	//model probability for dim
-	DREAL fullmodprob=0;	//for all dims
+	float64_t a_sum;	//numerator
+	float64_t dimmodprob=0;	//model probability for dim
+	float64_t fullmodprob=0;	//for all dims
 
 	//clear actual model a,b,p,q are used as numerator
 	for (i=0; i<N; i++)
@@ -1640,9 +1652,9 @@ void CHMM::estimate_model_baum_welch_trans(CHMM* estimate)
 void CHMM::estimate_model_baum_welch_old(CHMM* estimate)
 {
 	int32_t i,j,t,dim;
-	DREAL a_sum, b_sum;	//numerator
-	DREAL dimmodprob=0;	//model probability for dim
-	DREAL fullmodprob=0;	//for all dims
+	float64_t a_sum, b_sum;	//numerator
+	float64_t dimmodprob=0;	//model probability for dim
+	float64_t fullmodprob=0;	//for all dims
 
 	//clear actual model a,b,p,q are used as numerator
 	for (i=0; i<N; i++)
@@ -1725,11 +1737,11 @@ void CHMM::estimate_model_baum_welch_old(CHMM* estimate)
 void CHMM::estimate_model_baum_welch(CHMM* estimate)
 {
 	int32_t i,j,t,dim;
-	DREAL a_sum, b_sum;	//numerator
-	DREAL dimmodprob=0;	//model probability for dim
-	DREAL fullmodprob=0;	//for all dims
+	float64_t a_sum, b_sum;	//numerator
+	float64_t dimmodprob=0;	//model probability for dim
+	float64_t fullmodprob=0;	//for all dims
 
-	const DREAL MIN_RAND=23e-3;
+	const float64_t MIN_RAND=23e-3;
 
 	SG_DEBUG( "M:%d\n",M);
 
@@ -1836,11 +1848,11 @@ void CHMM::estimate_model_baum_welch(CHMM* estimate)
 void CHMM::estimate_model_baum_welch(CHMM* estimate)
 {
 	int32_t i,j,t,dim;
-	DREAL a_sum, b_sum;	//numerator
-	DREAL dimmodprob=0;	//model probability for dim
-	DREAL fullmodprob=0;	//for all dims
+	float64_t a_sum, b_sum;	//numerator
+	float64_t dimmodprob=0;	//model probability for dim
+	float64_t fullmodprob=0;	//for all dims
 
-	const DREAL MIN_RAND=23e-3;
+	const float64_t MIN_RAND=23e-3;
 	static bool bla=true;
 
 	if ((bla) && estimate->get_q(N-1)>-0.00001)
@@ -1953,12 +1965,12 @@ void CHMM::estimate_model_baum_welch(CHMM* estimate)
 void CHMM::estimate_model_baum_welch_defined(CHMM* estimate)
 {
 	int32_t i,j,old_i,k,t,dim;
-	DREAL a_sum_num, b_sum_num;		//numerator
-	DREAL a_sum_denom, b_sum_denom;	//denominator
-	DREAL dimmodprob=-CMath::INFTY;	//model probability for dim
-	DREAL fullmodprob=0;			//for all dims
-	DREAL* A=ARRAYN1(0);
-	DREAL* B=ARRAYN2(0);
+	float64_t a_sum_num, b_sum_num;		//numerator
+	float64_t a_sum_denom, b_sum_denom;	//denominator
+	float64_t dimmodprob=-CMath::INFTY;	//model probability for dim
+	float64_t fullmodprob=0;			//for all dims
+	float64_t* A=ARRAYN1(0);
+	float64_t* B=ARRAYN2(0);
 
 	//clear actual model a,b,p,q are used as numerator
 	//A,B as denominator for a,b
@@ -2128,9 +2140,9 @@ void CHMM::estimate_model_baum_welch_defined(CHMM* estimate)
 void CHMM::estimate_model_viterbi(CHMM* estimate)
 {
 	int32_t i,j,t;
-	DREAL sum;
-	DREAL* P=ARRAYN1(0);
-	DREAL* Q=ARRAYN2(0);
+	float64_t sum;
+	float64_t* P=ARRAYN1(0);
+	float64_t* Q=ARRAYN2(0);
 
 	path_deriv_updated=false ;
 
@@ -2147,7 +2159,7 @@ void CHMM::estimate_model_viterbi(CHMM* estimate)
 		Q[i]=PSEUDO;
 	}
 
-	DREAL allpatprob=0 ;
+	float64_t allpatprob=0 ;
 
 #ifdef USE_HMMPARALLEL
 	pthread_t *threads=new pthread_t[parallel.get_num_threads()] ;
@@ -2253,9 +2265,9 @@ void CHMM::estimate_model_viterbi(CHMM* estimate)
 void CHMM::estimate_model_viterbi_defined(CHMM* estimate)
 {
 	int32_t i,j,k,t;
-	DREAL sum;
-	DREAL* P=ARRAYN1(0);
-	DREAL* Q=ARRAYN2(0);
+	float64_t sum;
+	float64_t* P=ARRAYN1(0);
+	float64_t* Q=ARRAYN2(0);
 
 	path_deriv_updated=false ;
 
@@ -2277,7 +2289,7 @@ void CHMM::estimate_model_viterbi_defined(CHMM* estimate)
 	S_THREAD_PARAM *params=new S_THREAD_PARAM[parallel.get_num_threads()] ;
 #endif
 
-	DREAL allpatprob=0.0 ;
+	float64_t allpatprob=0.0 ;
 	for (int32_t dim=0; dim<p_observations->get_num_vectors(); dim++)
 	{
 
@@ -2329,7 +2341,7 @@ void CHMM::estimate_model_viterbi_defined(CHMM* estimate)
 #endif
 
 	//estimate->invalidate_model() ;
-	//DREAL q=estimate->best_path(-1) ;
+	//float64_t q=estimate->best_path(-1) ;
 
 	allpatprob/=p_observations->get_num_vectors() ;
 	estimate->all_pat_prob=allpatprob ;
@@ -2438,7 +2450,7 @@ void CHMM::estimate_model_viterbi_defined(CHMM* estimate)
 void CHMM::output_model(bool verbose)
 {
 	int32_t i,j;
-	DREAL checksum;
+	float64_t checksum;
 
 	//generic info
 	SG_INFO( "log(Pr[O|model])=%e, #states: %i, #observationssymbols: %i, #observations: %ix%i\n", 
@@ -2623,9 +2635,9 @@ void CHMM::convert_to_log()
 //init model with random values
 void CHMM::init_model_random()
 {
-	const DREAL MIN_RAND=23e-3;
+	const float64_t MIN_RAND=23e-3;
 
-	DREAL sum;
+	float64_t sum;
 	int32_t i,j;
 
 	//initialize a with random values
@@ -2690,8 +2702,8 @@ void CHMM::init_model_random()
 void CHMM::init_model_defined()
 {
 	int32_t i,j,k,r;
-	DREAL sum;
-	const DREAL MIN_RAND=23e-3;
+	float64_t sum;
+	const float64_t MIN_RAND=23e-3;
 
 	//initialize a with zeros
 	for (i=0; i<N; i++)
@@ -2713,7 +2725,7 @@ void CHMM::init_model_defined()
 
 
 	//initialize a values that have to be learned
-	DREAL *R=new DREAL[N] ;
+	float64_t *R=new float64_t[N] ;
 	for (r=0; r<N; r++) R[r]=CMath::random(MIN_RAND,1.0);
 	i=0; sum=0; k=i; 
 	j=model->get_learn_a(i,0);
@@ -2741,7 +2753,7 @@ void CHMM::init_model_defined()
 	delete[] R ; R=NULL ;
 
 	//initialize b values that have to be learned
-	R=new DREAL[M] ;
+	R=new float64_t[M] ;
 	for (r=0; r<M; r++) R[r]=CMath::random(MIN_RAND,1.0);
 	i=0; sum=0; k=0 ;
 	j=model->get_learn_b(i,0);
@@ -3141,7 +3153,7 @@ bool CHMM::get_numbuffer(FILE* file, char* buffer, int32_t length)
    N=<int32_t>;	
    M=<int32_t>;
 
-   p=[<DREAL>,<DREAL>...<DOUBLE>];
+   p=[<float64_t>,<float64_t>...<DOUBLE>];
    q=[<DOUBLE>,<DOUBLE>...<DOUBLE>];
 
    a=[ [<DOUBLE>,<DOUBLE>...<DOUBLE>];
@@ -3267,7 +3279,7 @@ bool CHMM::load_model(FILE* file)
 					{
 						double f;
 
-						transition_matrix_a=new DREAL[N*N];
+						transition_matrix_a=new float64_t[N*N];
 						open_bracket(file);
 						for (i=0; i<this->N; i++)
 						{
@@ -3301,7 +3313,7 @@ bool CHMM::load_model(FILE* file)
 					{
 						double f;
 
-						observation_matrix_b=new DREAL[N*M];	
+						observation_matrix_b=new float64_t[N*M];	
 						open_bracket(file);
 						for (i=0; i<this->N; i++)
 						{
@@ -3335,7 +3347,7 @@ bool CHMM::load_model(FILE* file)
 					{
 						double f;
 
-						initial_state_distribution_p=new DREAL[N];
+						initial_state_distribution_p=new float64_t[N];
 						open_bracket(file);
 						for (i=0; i<this->N ; i++)
 						{
@@ -3358,7 +3370,7 @@ bool CHMM::load_model(FILE* file)
 					{
 						double f;
 
-						end_state_distribution_q=new DREAL[N];
+						end_state_distribution_q=new float64_t[N];
 						open_bracket(file);
 						for (i=0; i<this->N ; i++)
 						{
@@ -3829,7 +3841,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool init)
 							else
 								if (get_numbuffer(file, buffer, 10))	//get num
 								{
-									DREAL dvalue=atof(buffer);
+									float64_t dvalue=atof(buffer);
 									model->set_const_a_val((int32_t)i/2 - 1, dvalue);
 									if (dvalue<0)
 									{
@@ -3900,7 +3912,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool init)
 									}
 									else if (j==2)
 									{
-										DREAL dvalue=atof(buffer);
+										float64_t dvalue=atof(buffer);
 										model->set_const_b_val((int32_t)(i-1)/2, dvalue);
 										if (dvalue<0)
 										{
@@ -3991,7 +4003,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool init)
 							else
 								if (get_numbuffer(file, buffer, 10))	//get num
 								{
-									DREAL dvalue=atof(buffer);
+									float64_t dvalue=atof(buffer);
 									model->set_const_p_val(i++, dvalue);
 									if (dvalue<0)
 									{
@@ -4062,7 +4074,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool init)
 							else
 								if (get_numbuffer(file, buffer, 10))	//get num
 								{
-									DREAL dvalue=atof(buffer);
+									float64_t dvalue=atof(buffer);
 									model->set_const_q_val(i++, dvalue);
 									if (dvalue<0)
 									{
@@ -4259,7 +4271,7 @@ bool CHMM::save_model(FILE* file)
 }
 
 #ifndef NOVIT
-T_STATES* CHMM::get_path(int32_t dim, DREAL& prob)
+T_STATES* CHMM::get_path(int32_t dim, float64_t& prob)
 {
 	T_STATES* result = NULL;
 
@@ -4282,7 +4294,7 @@ bool CHMM::save_path(FILE* file)
 	    {
 	      if (dim%100==0)
 		SG_PRINT( "%i..", dim) ;
-	      DREAL prob = best_path(dim);
+	      float64_t prob = best_path(dim);
 	      fprintf(file,"%i. path probability:%e\nstate sequence:\n", dim, prob);
 	      for (int32_t i=0; i<p_observations->get_vector_length(dim)-1; i++)
 		fprintf(file,"%d ", PATH(dim)[i]);
@@ -4441,7 +4453,7 @@ bool CHMM::save_model_bin(FILE* file)
 bool CHMM::save_path_derivatives(FILE* logfile)
 {
 	int32_t dim,i,j;
-	DREAL prob;
+	float64_t prob;
 
 	if (logfile)
 	{
@@ -4490,10 +4502,10 @@ bool CHMM::save_path_derivatives_bin(FILE* logfile)
 {
 	bool result=false;
 	int32_t dim,i,j,q;
-	DREAL prob=0 ;
+	float64_t prob=0 ;
 	int32_t num_floats=0 ;
 
-	DREAL sum_prob=0.0 ;
+	float64_t sum_prob=0.0 ;
 	if (!model)
 		SG_WARNING( "No definitions loaded -- writing derivatives of all weights\n") ;
 	else
@@ -4618,7 +4630,7 @@ bool CHMM::save_model_derivatives_bin(FILE* file)
 		} ;
 #endif
 
-		DREAL prob=model_probability(dim) ;
+		float64_t prob=model_probability(dim) ;
 		if (!model)
 		{
 			if (file)
@@ -4741,7 +4753,7 @@ bool CHMM::save_model_derivatives(FILE* file)
 bool CHMM::check_model_derivatives_combined()
 {
 	//	bool result=false;
-	const DREAL delta=5e-4 ;
+	const float64_t delta=5e-4 ;
 
 	int32_t i ;
 	//derivates log(da)
@@ -4749,24 +4761,24 @@ bool CHMM::check_model_derivatives_combined()
 		{
 		for (int32_t j=0; j<N; j++)
 		{
-		DREAL old_a=get_a(i,j) ;
+		float64_t old_a=get_a(i,j) ;
 
 		set_a(i,j, log(exp(old_a)-delta)) ;
 		invalidate_model() ;
-		DREAL prob_old=exp(model_probability(-1)*p_observations->get_num_vectors()) ;
+		float64_t prob_old=exp(model_probability(-1)*p_observations->get_num_vectors()) ;
 
 		set_a(i,j, log(exp(old_a)+delta)) ;
 		invalidate_model() ; 
-		DREAL prob_new=exp(model_probability(-1)*p_observations->get_num_vectors());
+		float64_t prob_new=exp(model_probability(-1)*p_observations->get_num_vectors());
 
-		DREAL deriv = (prob_new-prob_old)/(2*delta) ;
+		float64_t deriv = (prob_new-prob_old)/(2*delta) ;
 
 		set_a(i,j, old_a) ;
 		invalidate_model() ;
 
-		DREAL prod_prob=model_probability(-1)*p_observations->get_num_vectors() ;
+		float64_t prod_prob=model_probability(-1)*p_observations->get_num_vectors() ;
 
-		DREAL deriv_calc=0 ;
+		float64_t deriv_calc=0 ;
 		for (int32_t dim=0; dim<p_observations->get_num_vectors(); dim++)
 		deriv_calc+=exp(model_derivative_a(i, j, dim)+
 		prod_prob-model_probability(dim)) ;
@@ -4779,22 +4791,22 @@ bool CHMM::check_model_derivatives_combined()
 	{
 		for (int32_t j=0; j<M; j++)
 		{
-			DREAL old_b=get_b(i,j) ;
+			float64_t old_b=get_b(i,j) ;
 
 			set_b(i,j, log(exp(old_b)-delta)) ;
 			invalidate_model() ;
-			DREAL prob_old=(model_probability(-1)*p_observations->get_num_vectors()) ;
+			float64_t prob_old=(model_probability(-1)*p_observations->get_num_vectors()) ;
 
 			set_b(i,j, log(exp(old_b)+delta)) ;
 			invalidate_model() ; 
-			DREAL prob_new=(model_probability(-1)*p_observations->get_num_vectors());
+			float64_t prob_new=(model_probability(-1)*p_observations->get_num_vectors());
 
-			DREAL deriv = (prob_new-prob_old)/(2*delta) ;
+			float64_t deriv = (prob_new-prob_old)/(2*delta) ;
 
 			set_b(i,j, old_b) ;
 			invalidate_model() ;
 
-			DREAL deriv_calc=0 ;
+			float64_t deriv_calc=0 ;
 			for (int32_t dim=0; dim<p_observations->get_num_vectors(); dim++)
 			{
 				deriv_calc+=exp(model_derivative_b(i, j, dim)-model_probability(dim)) ;
@@ -4811,7 +4823,7 @@ bool CHMM::check_model_derivatives_combined()
 bool CHMM::check_model_derivatives()
 {
 	bool result=false;
-	const DREAL delta=3e-4 ;
+	const float64_t delta=3e-4 ;
 
 	for (int32_t dim=0; dim<p_observations->get_num_vectors(); dim++)
 	{	
@@ -4821,21 +4833,21 @@ bool CHMM::check_model_derivatives()
 		{
 			for (int32_t j=0; j<N; j++)
 			{
-				DREAL old_a=get_a(i,j) ;
+				float64_t old_a=get_a(i,j) ;
 
 				set_a(i,j, log(exp(old_a)-delta)) ;
 				invalidate_model() ;
-				DREAL prob_old=exp(model_probability(dim)) ;
+				float64_t prob_old=exp(model_probability(dim)) ;
 
 				set_a(i,j, log(exp(old_a)+delta)) ;
 				invalidate_model() ;
-				DREAL prob_new=exp(model_probability(dim));
+				float64_t prob_new=exp(model_probability(dim));
 
-				DREAL deriv = (prob_new-prob_old)/(2*delta) ;
+				float64_t deriv = (prob_new-prob_old)/(2*delta) ;
 
 				set_a(i,j, old_a) ;
 				invalidate_model() ;
-				DREAL deriv_calc=exp(model_derivative_a(i, j, dim)) ;
+				float64_t deriv_calc=exp(model_derivative_a(i, j, dim)) ;
 
 				SG_DEBUG( "da(%i,%i) = %e:%e\t (%1.5f%%)\n", i,j, deriv_calc,  deriv, 100.0*(deriv-deriv_calc)/deriv_calc);		
 				invalidate_model() ;
@@ -4845,21 +4857,21 @@ bool CHMM::check_model_derivatives()
 		{
 			for (int32_t j=0; j<M; j++)
 			{
-				DREAL old_b=get_b(i,j) ;
+				float64_t old_b=get_b(i,j) ;
 
 				set_b(i,j, log(exp(old_b)-delta)) ;
 				invalidate_model() ;
-				DREAL prob_old=exp(model_probability(dim)) ;
+				float64_t prob_old=exp(model_probability(dim)) ;
 
 				set_b(i,j, log(exp(old_b)+delta)) ;
 				invalidate_model() ;		    
-				DREAL prob_new=exp(model_probability(dim));
+				float64_t prob_new=exp(model_probability(dim));
 
-				DREAL deriv = (prob_new-prob_old)/(2*delta) ;
+				float64_t deriv = (prob_new-prob_old)/(2*delta) ;
 
 				set_b(i,j, old_b) ;
 				invalidate_model() ;
-				DREAL deriv_calc=exp(model_derivative_b(i, j, dim));
+				float64_t deriv_calc=exp(model_derivative_b(i, j, dim));
 
 				SG_DEBUG( "db(%i,%i) = %e:%e\t (%1.5f%%)\n", i,j, deriv_calc, deriv, 100.0*(deriv-deriv_calc)/(deriv_calc));		
 			} ;
@@ -4868,41 +4880,41 @@ bool CHMM::check_model_derivatives()
 #ifdef TEST
 		for (i=0; i<N; i++)
 		{
-			DREAL old_p=get_p(i) ;
+			float64_t old_p=get_p(i) ;
 
 			set_p(i, log(exp(old_p)-delta)) ;
 			invalidate_model() ;
-			DREAL prob_old=exp(model_probability(dim)) ;
+			float64_t prob_old=exp(model_probability(dim)) ;
 
 			set_p(i, log(exp(old_p)+delta)) ;
 			invalidate_model() ;		
-			DREAL prob_new=exp(model_probability(dim));
-			DREAL deriv = (prob_new-prob_old)/(2*delta) ;
+			float64_t prob_new=exp(model_probability(dim));
+			float64_t deriv = (prob_new-prob_old)/(2*delta) ;
 
 			set_p(i, old_p) ;
 			invalidate_model() ;
-			DREAL deriv_calc=exp(model_derivative_p(i, dim));
+			float64_t deriv_calc=exp(model_derivative_p(i, dim));
 
 			//if (fabs(deriv_calc_old-deriv)>1e-4)
 			SG_DEBUG( "dp(%i) = %e:%e\t (%1.5f%%)\n", i, deriv_calc, deriv, 100.0*(deriv-deriv_calc)/deriv_calc);		
 		} ;
 		for (i=0; i<N; i++)
 		{
-			DREAL old_q=get_q(i) ;
+			float64_t old_q=get_q(i) ;
 
 			set_q(i, log(exp(old_q)-delta)) ;
 			invalidate_model() ;
-			DREAL prob_old=exp(model_probability(dim)) ;
+			float64_t prob_old=exp(model_probability(dim)) ;
 
 			set_q(i, log(exp(old_q)+delta)) ;
 			invalidate_model() ;		
-			DREAL prob_new=exp(model_probability(dim));
+			float64_t prob_new=exp(model_probability(dim));
 
-			DREAL deriv = (prob_new-prob_old)/(2*delta) ;
+			float64_t deriv = (prob_new-prob_old)/(2*delta) ;
 
 			set_q(i, old_q) ;
 			invalidate_model() ;		
-			DREAL deriv_calc=exp(model_derivative_q(i, dim)); 
+			float64_t deriv_calc=exp(model_derivative_q(i, dim)); 
 
 			//if (fabs(deriv_calc_old-deriv)>1e-4)
 			SG_DEBUG( "dq(%i) = %e:%e\t (%1.5f%%)\n", i, deriv_calc, deriv, 100.0*(deriv-deriv_calc)/deriv_calc);		
@@ -4916,7 +4928,7 @@ bool CHMM::check_model_derivatives()
 bool CHMM::check_path_derivatives()
 {
 	bool result=false;
-	const DREAL delta=1e-4 ;
+	const float64_t delta=1e-4 ;
 
 	for (int32_t dim=0; dim<p_observations->get_num_vectors(); dim++)
 	{	
@@ -4926,21 +4938,21 @@ bool CHMM::check_path_derivatives()
 		{
 			for (int32_t j=0; j<N; j++)
 			{
-				DREAL old_a=get_a(i,j) ;
+				float64_t old_a=get_a(i,j) ;
 
 				set_a(i,j, log(exp(old_a)-delta)) ;
 				invalidate_model() ;
-				DREAL prob_old=best_path(dim) ;
+				float64_t prob_old=best_path(dim) ;
 
 				set_a(i,j, log(exp(old_a)+delta)) ;
 				invalidate_model() ;
-				DREAL prob_new=best_path(dim);
+				float64_t prob_new=best_path(dim);
 
-				DREAL deriv = (prob_new-prob_old)/(2*delta) ;
+				float64_t deriv = (prob_new-prob_old)/(2*delta) ;
 
 				set_a(i,j, old_a) ;
 				invalidate_model() ;
-				DREAL deriv_calc=path_derivative_a(i, j, dim) ;
+				float64_t deriv_calc=path_derivative_a(i, j, dim) ;
 
 				SG_DEBUG( "da(%i,%i) = %e:%e\t (%1.5f%%)\n", i,j, deriv_calc,  deriv, 100.0*(deriv-deriv_calc)/deriv_calc);		
 			} ;
@@ -4949,21 +4961,21 @@ bool CHMM::check_path_derivatives()
 		{
 			for (int32_t j=0; j<M; j++)
 			{
-				DREAL old_b=get_b(i,j) ;
+				float64_t old_b=get_b(i,j) ;
 
 				set_b(i,j, log(exp(old_b)-delta)) ;
 				invalidate_model() ;
-				DREAL prob_old=best_path(dim) ;
+				float64_t prob_old=best_path(dim) ;
 
 				set_b(i,j, log(exp(old_b)+delta)) ;
 				invalidate_model() ;		    
-				DREAL prob_new=best_path(dim);
+				float64_t prob_new=best_path(dim);
 
-				DREAL deriv = (prob_new-prob_old)/(2*delta) ;
+				float64_t deriv = (prob_new-prob_old)/(2*delta) ;
 
 				set_b(i,j, old_b) ;
 				invalidate_model() ;
-				DREAL deriv_calc=path_derivative_b(i, j, dim);
+				float64_t deriv_calc=path_derivative_b(i, j, dim);
 
 				SG_DEBUG( "db(%i,%i) = %e:%e\t (%1.5f%%)\n", i,j, deriv_calc, deriv, 100.0*(deriv-deriv_calc)/(deriv_calc));		
 			} ;
@@ -4971,41 +4983,41 @@ bool CHMM::check_path_derivatives()
 
 		for (i=0; i<N; i++)
 		{
-			DREAL old_p=get_p(i) ;
+			float64_t old_p=get_p(i) ;
 
 			set_p(i, log(exp(old_p)-delta)) ;
 			invalidate_model() ;
-			DREAL prob_old=best_path(dim) ;
+			float64_t prob_old=best_path(dim) ;
 
 			set_p(i, log(exp(old_p)+delta)) ;
 			invalidate_model() ;		
-			DREAL prob_new=best_path(dim);
-			DREAL deriv = (prob_new-prob_old)/(2*delta) ;
+			float64_t prob_new=best_path(dim);
+			float64_t deriv = (prob_new-prob_old)/(2*delta) ;
 
 			set_p(i, old_p) ;
 			invalidate_model() ;
-			DREAL deriv_calc=path_derivative_p(i, dim);
+			float64_t deriv_calc=path_derivative_p(i, dim);
 
 			//if (fabs(deriv_calc_old-deriv)>1e-4)
 			SG_DEBUG( "dp(%i) = %e:%e\t (%1.5f%%)\n", i, deriv_calc, deriv, 100.0*(deriv-deriv_calc)/deriv_calc);		
 		} ;
 		for (i=0; i<N; i++)
 		{
-			DREAL old_q=get_q(i) ;
+			float64_t old_q=get_q(i) ;
 
 			set_q(i, log(exp(old_q)-delta)) ;
 			invalidate_model() ;
-			DREAL prob_old=best_path(dim) ;
+			float64_t prob_old=best_path(dim) ;
 
 			set_q(i, log(exp(old_q)+delta)) ;
 			invalidate_model() ;		
-			DREAL prob_new=best_path(dim);
+			float64_t prob_new=best_path(dim);
 
-			DREAL deriv = (prob_new-prob_old)/(2*delta) ;
+			float64_t deriv = (prob_new-prob_old)/(2*delta) ;
 
 			set_q(i, old_q) ;
 			invalidate_model() ;		
-			DREAL deriv_calc=path_derivative_q(i, dim); 
+			float64_t deriv_calc=path_derivative_q(i, dim); 
 
 			//if (fabs(deriv_calc_old-deriv)>1e-4)
 			SG_DEBUG( "dq(%i) = %e:%e\t (%1.5f%%)\n", i, deriv_calc, deriv, 100.0*(deriv-deriv_calc)/deriv_calc);		
@@ -5019,15 +5031,15 @@ bool CHMM::check_path_derivatives()
 void CHMM::normalize(bool keep_dead_states)
 {
 	int32_t i,j;
-	const DREAL INF=-1e10;
-	DREAL sum_p =INF;
+	const float64_t INF=-1e10;
+	float64_t sum_p =INF;
 
 	for (i=0; i<N; i++)
 	{
 		sum_p=CMath::logarithmic_sum(sum_p, get_p(i));
 
-		DREAL sum_b =INF;
-		DREAL sum_a =get_q(i);
+		float64_t sum_b =INF;
+		float64_t sum_a =get_q(i);
 
 		for (j=0; j<N; j++)
 			sum_a=CMath::logarithmic_sum(sum_a, get_a(i,j));
@@ -5061,11 +5073,11 @@ bool CHMM::append_model(CHMM* app_model)
 	SG_DEBUG( "old N:%d M:%d\n", app_model->get_N(), app_model->get_M());
 	if (app_model->get_M() == get_M())
 	{
-		DREAL* n_p=new DREAL[N+num_states];
-		DREAL* n_q=new DREAL[N+num_states];
-		DREAL* n_a=new DREAL[(N+num_states)*(N+num_states)];
+		float64_t* n_p=new float64_t[N+num_states];
+		float64_t* n_q=new float64_t[N+num_states];
+		float64_t* n_a=new float64_t[(N+num_states)*(N+num_states)];
 		//SG_PRINT("size n_b: %d\n", (N+num_states)*M);
-		DREAL* n_b=new DREAL[(N+num_states)*M];
+		float64_t* n_b=new float64_t[(N+num_states)*M];
 
 		//clear n_x 
 		for (i=0; i<N+num_states; i++)
@@ -5143,7 +5155,7 @@ bool CHMM::append_model(CHMM* app_model)
 	return result;
 }
 
-bool CHMM::append_model(CHMM* app_model, DREAL* cur_out, DREAL* app_out)
+bool CHMM::append_model(CHMM* app_model, float64_t* cur_out, float64_t* app_out)
 {
 	bool result=false;
 	const int32_t num_states=app_model->get_N()+2;
@@ -5151,11 +5163,11 @@ bool CHMM::append_model(CHMM* app_model, DREAL* cur_out, DREAL* app_out)
 
 	if (app_model->get_M() == get_M())
 	{
-		DREAL* n_p=new DREAL[N+num_states];
-		DREAL* n_q=new DREAL[N+num_states];
-		DREAL* n_a=new DREAL[(N+num_states)*(N+num_states)];
+		float64_t* n_p=new float64_t[N+num_states];
+		float64_t* n_q=new float64_t[N+num_states];
+		float64_t* n_a=new float64_t[(N+num_states)*(N+num_states)];
 		//SG_PRINT("size n_b: %d\n", (N+num_states)*M);
-		DREAL* n_b=new DREAL[(N+num_states)*M];
+		float64_t* n_b=new float64_t[(N+num_states)*M];
 
 		//clear n_x 
 		for (i=0; i<N+num_states; i++)
@@ -5251,17 +5263,17 @@ bool CHMM::append_model(CHMM* app_model, DREAL* cur_out, DREAL* app_out)
 }
 
 
-void CHMM::add_states(int32_t num_states, DREAL default_value)
+void CHMM::add_states(int32_t num_states, float64_t default_value)
 {
 	int32_t i,j;
-	const DREAL MIN_RAND=1e-2; //this is the range of the random values for the new variables
-	const DREAL MAX_RAND=2e-1;
+	const float64_t MIN_RAND=1e-2; //this is the range of the random values for the new variables
+	const float64_t MAX_RAND=2e-1;
 
-	DREAL* n_p=new DREAL[N+num_states];
-	DREAL* n_q=new DREAL[N+num_states];
-	DREAL* n_a=new DREAL[(N+num_states)*(N+num_states)];
+	float64_t* n_p=new float64_t[N+num_states];
+	float64_t* n_q=new float64_t[N+num_states];
+	float64_t* n_a=new float64_t[(N+num_states)*(N+num_states)];
 	//SG_PRINT("size n_b: %d\n", (N+num_states)*M);
-	DREAL* n_b=new DREAL[(N+num_states)*M];
+	float64_t* n_b=new float64_t[(N+num_states)*M];
 
 	// warning pay attention to the ordering of 
 	// transition_matrix_a, observation_matrix_b !!!
@@ -5311,7 +5323,7 @@ void CHMM::add_states(int32_t num_states, DREAL default_value)
 	normalize();
 }
 
-void CHMM::chop(DREAL value)
+void CHMM::chop(float64_t value)
 {
 	for (int32_t i=0; i<N; i++)
 	{
@@ -5430,7 +5442,7 @@ bool CHMM::linear_train(bool right_align)
 		{
 			for (int32_t j=0; j<get_M(); j++)
 			{
-				DREAL sum=0;
+				float64_t sum=0;
 				int32_t offs=i*get_M()+ p_observations->get_masked_symbols((uint16_t) j, (uint8_t) 254);
 
 				for (int32_t k=0; k<p_observations->get_original_num_symbols(); k++)
@@ -5681,7 +5693,7 @@ bool CHMM::permutation_entropy(int32_t window_width, int32_t sequence_number)
 
 				for (j=0; j<get_M(); j++)
 				{
-					double p=(((DREAL)hist[j])+PSEUDO)/(window_width+get_M()*PSEUDO);
+					double p=(((float64_t)hist[j])+PSEUDO)/(window_width+get_M()*PSEUDO);
 					perm_entropy+=p*log(p);
 				}
 
@@ -5696,7 +5708,7 @@ bool CHMM::permutation_entropy(int32_t window_width, int32_t sequence_number)
 		return false;
 }
 
-DREAL CHMM::get_log_derivative(int32_t num_param, int32_t num_example)
+float64_t CHMM::get_log_derivative(int32_t num_param, int32_t num_example)
 {
 	if (num_param<N)
 		return model_derivative_p(num_param, num_example);
@@ -5721,7 +5733,7 @@ DREAL CHMM::get_log_derivative(int32_t num_param, int32_t num_example)
 	return -1;
 }
 
-DREAL CHMM::get_log_model_parameter(int32_t num_param)
+float64_t CHMM::get_log_model_parameter(int32_t num_param)
 {
 	if (num_param<N)
 		return get_p(num_param);
@@ -5738,10 +5750,10 @@ DREAL CHMM::get_log_model_parameter(int32_t num_param)
 
 
 //convergence criteria  -tobeadjusted-
-bool CHMM::converge(DREAL x, DREAL y)
+bool CHMM::converge(float64_t x, float64_t y)
 {
-	DREAL diff=y-x;
-	DREAL absdiff=fabs(diff);
+	float64_t diff=y-x;
+	float64_t absdiff=fabs(diff);
 
 	SG_INFO( "\n #%03d\tbest result so far: %G (eps: %f)", iteration_count, y, diff);
 
@@ -5776,9 +5788,9 @@ bool CHMM::baum_welch_viterbi_train(BaumWelchViterbiType type)
 {
 	CHMM* estimate=new CHMM(this);
 	CHMM* working=this;
-	DREAL prob_max=-CMath::INFTY;
-	DREAL prob=-CMath::INFTY;
-	DREAL prob_train=CMath::ALMOST_NEG_INFTY;
+	float64_t prob_max=-CMath::INFTY;
+	float64_t prob=-CMath::INFTY;
+	float64_t prob_train=CMath::ALMOST_NEG_INFTY;
 	iteration_count=iterations;
 
 	while (!converge(prob, prob_train))

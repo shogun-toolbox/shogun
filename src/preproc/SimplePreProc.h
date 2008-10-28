@@ -52,7 +52,7 @@ template <class ST> class CSimplePreProc : public CPreProc
 		inline virtual EFeatureType get_feature_type();
 };
 
-template<> inline EFeatureType CSimplePreProc<DREAL>::get_feature_type()
+template<> inline EFeatureType CSimplePreProc<float64_t>::get_feature_type()
 {
 	return F_DREAL;
 }

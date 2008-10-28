@@ -15,13 +15,14 @@
 #include "features/Features.h"
 #include "features/RealFeatures.h"
 
-CMinkowskiMetric::CMinkowskiMetric(DREAL k_)
-: CSimpleDistance<DREAL>(), k(k_)
+CMinkowskiMetric::CMinkowskiMetric(float64_t k_)
+: CSimpleDistance<float64_t>(), k(k_)
 {
 }
 
-CMinkowskiMetric::CMinkowskiMetric(CRealFeatures* l, CRealFeatures* r, DREAL k_)
-: CSimpleDistance<DREAL>(), k(k_)
+CMinkowskiMetric::CMinkowskiMetric(
+	CRealFeatures* l, CRealFeatures* r, float64_t k_)
+: CSimpleDistance<float64_t>(), k(k_)
 {
 	init(l, r);
 }
@@ -33,7 +34,7 @@ CMinkowskiMetric::~CMinkowskiMetric()
 
 bool CMinkowskiMetric::init(CFeatures* l, CFeatures* r)
 {
-	bool result=CSimpleDistance<DREAL>::init(l,r);
+	bool result=CSimpleDistance<float64_t>::init(l,r);
 
 	return result;
 }
@@ -52,7 +53,7 @@ bool CMinkowskiMetric::save_init(FILE* dest)
 	return false;
 }
 
-DREAL CMinkowskiMetric::compute(int32_t idx_a, int32_t idx_b)
+float64_t CMinkowskiMetric::compute(int32_t idx_a, int32_t idx_b)
 {
 	int32_t alen, blen;
 	bool afree, bfree;
@@ -62,8 +63,8 @@ DREAL CMinkowskiMetric::compute(int32_t idx_a, int32_t idx_b)
 
 	ASSERT(alen==blen);
 
-	DREAL absTmp = 0;
-	DREAL result=0;
+	float64_t absTmp = 0;
+	float64_t result=0;
 	{
 		for (int32_t i=0; i<alen; i++)
 		{

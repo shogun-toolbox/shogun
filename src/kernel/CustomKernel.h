@@ -47,7 +47,8 @@ class CCustomKernel: public CKernel
 		 * @param target target for kernel matrix
 		 * @return the kernel matrix
 		 */
-		virtual float32_t* get_kernel_matrix_shortreal(int32_t &m, int32_t &n, float32_t* target=NULL);
+		virtual float32_t* get_kernel_matrix_shortreal(
+			int32_t &m, int32_t &n, float32_t* target=NULL);
 
 		/** initialize kernel with dummy features
 		 *
@@ -118,7 +119,8 @@ class CCustomKernel: public CKernel
 		 * @param len denotes the size of the array and should match len=cols*(cols+1)/2
 		 * @return if setting was successful
 		 */
-		bool set_triangle_kernel_matrix_from_triangle(const DREAL* km, int32_t len);
+		bool set_triangle_kernel_matrix_from_triangle(
+			const float64_t* km, int32_t len);
 
 		/** set kernel matrix (only elements from upper triangle)
 		 * from squared matrix
@@ -128,7 +130,8 @@ class CCustomKernel: public CKernel
 		 * @param cols number of cols in matrix
 		 * @return if setting was successful
 		 */
-		bool set_triangle_kernel_matrix_from_full(const DREAL* km, int32_t rows, int32_t cols);
+		bool set_triangle_kernel_matrix_from_full(
+			const float64_t* km, int32_t rows, int32_t cols);
 
 		/** set full kernel matrix from full kernel matrix
 		 *
@@ -137,7 +140,8 @@ class CCustomKernel: public CKernel
 		 * @param cols number of cols in matrix
 		 * @return if setting was successful
 		 */
-		bool set_full_kernel_matrix_from_full(const DREAL* km, int32_t rows, int32_t cols);
+		bool set_full_kernel_matrix_from_full(
+			const float64_t* km, int32_t rows, int32_t cols);
 
 	protected:
 		/** compute kernel function
@@ -146,7 +150,7 @@ class CCustomKernel: public CKernel
 		 * @param col col
 		 * @return computed kernel function
 		 */
-		inline virtual DREAL compute(int32_t row, int32_t col)
+		inline virtual float64_t compute(int32_t row, int32_t col)
 		{
 			ASSERT(row<num_rows);
 			ASSERT(col<num_cols);

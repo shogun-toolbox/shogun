@@ -19,7 +19,7 @@
 
 /** Preprocessor NormDerivativeLem3, performs the normalization used in Lemma3
  * in Jaakola Hausslers Fischer Kernel paper <b>currently not implemented</b>*/
-class CNormDerivativeLem3 : public CSimplePreProc<DREAL>
+class CNormDerivativeLem3 : public CSimplePreProc<float64_t>
 {
 	public:
 		/** default constructor */
@@ -38,10 +38,10 @@ class CNormDerivativeLem3 : public CSimplePreProc<DREAL>
 		/// apply preproc on feature matrix
 		/// result in feature matrix
 		/// return pointer to feature_matrix, i.e. f->get_feature_matrix();
-		virtual DREAL* apply_to_feature_matrix(CFeatures* f);
+		virtual float64_t* apply_to_feature_matrix(CFeatures* f);
 
 		/// apply preproc on single feature vector
 		/// result in feature matrix
-		virtual DREAL* apply_to_feature_vector(DREAL* f, int32_t len);
+		virtual float64_t* apply_to_feature_vector(float64_t* f, int32_t len);
 };
 #endif

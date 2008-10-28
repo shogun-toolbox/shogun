@@ -31,11 +31,11 @@
 template <class Trie> struct S_THREAD_PARAM 
 {
 	int32_t* vec;
-	DREAL* result;
-	DREAL* weights;
+	float64_t* result;
+	float64_t* weights;
 	CWeightedDegreePositionStringKernel* kernel;
 	CTrie<Trie>* tries;
-	DREAL factor;
+	float64_t factor;
 	int32_t j;
 	int32_t start;
 	int32_t end;
@@ -65,7 +65,8 @@ CWeightedDegreePositionStringKernel::CWeightedDegreePositionStringKernel(
 }
 
 CWeightedDegreePositionStringKernel::CWeightedDegreePositionStringKernel(
-	int32_t size, DREAL* w, int32_t d, int32_t mm, int32_t* s, int32_t sl, int32_t mkls)
+	int32_t size, float64_t* w, int32_t d, int32_t mm, int32_t* s, int32_t sl,
+	int32_t mkls)
 : CStringKernel<char>(size), weights(NULL), position_weights(NULL),
 	position_weights_lhs(NULL), position_weights_rhs(NULL),
 	weights_buffer(NULL), mkl_stepsize(mkls), degree(d), length(0),
@@ -78,7 +79,7 @@ CWeightedDegreePositionStringKernel::CWeightedDegreePositionStringKernel(
 {
 	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
 
-	weights=new DREAL[d*(1+max_mismatch)];
+	weights=new float64_t[d*(1+max_mismatch)];
 	for (int32_t i=0; i<d*(1+max_mismatch); i++)
 		weights[i]=w[i];
 
@@ -243,7 +244,9 @@ bool CWeightedDegreePositionStringKernel::save_init(FILE* dest)
 	return false;
 }
 
-bool CWeightedDegreePositionStringKernel::init_optimization(int32_t p_count, int32_t * IDX, DREAL * alphas, int32_t tree_num, int32_t upto_tree)
+bool CWeightedDegreePositionStringKernel::init_optimization(
+	int32_t p_count, int32_t * IDX, float64_t * alphas, int32_t tree_num,
+	int32_t upto_tree)
 {
 	ASSERT(position_weights_lhs==NULL);
 	ASSERT(position_weights_rhs==NULL);
@@ -312,10 +315,11 @@ bool CWeightedDegreePositionStringKernel::delete_optimization()
 	return false;
 }
 
-DREAL CWeightedDegreePositionStringKernel::compute_with_mismatch(char* avec, int32_t alen, char* bvec, int32_t blen) 
+float64_t CWeightedDegreePositionStringKernel::compute_with_mismatch(
+	char* avec, int32_t alen, char* bvec, int32_t blen)
 {
-	DREAL max_shift_vec[max_shift];
-    DREAL sum0=0 ;
+	float64_t max_shift_vec[max_shift];
+    float64_t sum0=0 ;
     for (int32_t i=0; i<max_shift; i++)
 		max_shift_vec[i]=0 ;
 	
@@ -326,7 +330,7 @@ DREAL CWeightedDegreePositionStringKernel::compute_with_mismatch(char* avec, int
 			continue ;
 		
 		int32_t mismatches=0;
-		DREAL sumi = 0.0 ;
+		float64_t sumi = 0.0 ;
 		for (int32_t j=0; (j<degree) && (i+j<alen); j++)
 		{
 			if (avec[i+j]!=bvec[i+j])
@@ -350,7 +354,7 @@ DREAL CWeightedDegreePositionStringKernel::compute_with_mismatch(char* avec, int
 			if ((position_weights!=NULL) && (position_weights[i]==0.0) && (position_weights[i+k]==0.0))
 				continue ;
 			
-			DREAL sumi1 = 0.0 ;
+			float64_t sumi1 = 0.0 ;
 			// shift in sequence a
 			int32_t mismatches=0;
 			for (int32_t j=0; (j<degree) && (i+j+k<alen); j++)
@@ -363,7 +367,7 @@ DREAL CWeightedDegreePositionStringKernel::compute_with_mismatch(char* avec, int
 				} ;
 				sumi1 += weights[j+degree*mismatches];
 			}
-			DREAL sumi2 = 0.0 ;
+			float64_t sumi2 = 0.0 ;
 			// shift in sequence b
 			mismatches=0;
 			for (int32_t j=0; (j<degree) && (i+j+k<alen); j++)
@@ -383,17 +387,18 @@ DREAL CWeightedDegreePositionStringKernel::compute_with_mismatch(char* avec, int
 		} ;
     }
 	
-    DREAL result = sum0 ;
+    float64_t result = sum0 ;
     for (int32_t i=0; i<max_shift; i++)
 		result += max_shift_vec[i]/(2*(i+1)) ;
 	
     return result ;
 }
 
-DREAL CWeightedDegreePositionStringKernel::compute_without_mismatch(char* avec, int32_t alen, char* bvec, int32_t blen) 
+float64_t CWeightedDegreePositionStringKernel::compute_without_mismatch(
+	char* avec, int32_t alen, char* bvec, int32_t blen) 
 {
-	DREAL max_shift_vec[max_shift];
-	DREAL sum0=0 ;
+	float64_t max_shift_vec[max_shift];
+	float64_t sum0=0 ;
 	for (int32_t i=0; i<max_shift; i++)
 		max_shift_vec[i]=0 ;
 
@@ -403,7 +408,7 @@ DREAL CWeightedDegreePositionStringKernel::compute_without_mismatch(char* avec, 
 		if ((position_weights!=NULL) && (position_weights[i]==0.0))
 			continue ;
 
-		DREAL sumi = 0.0 ;
+		float64_t sumi = 0.0 ;
 		for (int32_t j=0; (j<degree) && (i+j<alen); j++)
 		{
 			if (avec[i+j]!=bvec[i+j])
@@ -423,7 +428,7 @@ DREAL CWeightedDegreePositionStringKernel::compute_without_mismatch(char* avec, 
 			if ((position_weights!=NULL) && (position_weights[i]==0.0) && (position_weights[i+k]==0.0))
 				continue ;
 
-			DREAL sumi1 = 0.0 ;
+			float64_t sumi1 = 0.0 ;
 			// shift in sequence a
 			for (int32_t j=0; (j<degree) && (i+j+k<alen); j++)
 			{
@@ -431,7 +436,7 @@ DREAL CWeightedDegreePositionStringKernel::compute_without_mismatch(char* avec, 
 					break ;
 				sumi1 += weights[j];
 			}
-			DREAL sumi2 = 0.0 ;
+			float64_t sumi2 = 0.0 ;
 			// shift in sequence b
 			for (int32_t j=0; (j<degree) && (i+j+k<alen); j++)
 			{
@@ -446,17 +451,18 @@ DREAL CWeightedDegreePositionStringKernel::compute_without_mismatch(char* avec, 
 		} ;
 	}
 
-	DREAL result = sum0 ;
+	float64_t result = sum0 ;
 	for (int32_t i=0; i<max_shift; i++)
 		result += max_shift_vec[i]/(2*(i+1)) ;
 
 	return result ;
 }
 
-DREAL CWeightedDegreePositionStringKernel::compute_without_mismatch_matrix(char* avec, int32_t alen, char* bvec, int32_t blen) 
+float64_t CWeightedDegreePositionStringKernel::compute_without_mismatch_matrix(
+	char* avec, int32_t alen, char* bvec, int32_t blen) 
 {
-	DREAL max_shift_vec[max_shift];
-	DREAL sum0=0 ;
+	float64_t max_shift_vec[max_shift];
+	float64_t sum0=0 ;
 	for (int32_t i=0; i<max_shift; i++)
 		max_shift_vec[i]=0 ;
 
@@ -465,7 +471,7 @@ DREAL CWeightedDegreePositionStringKernel::compute_without_mismatch_matrix(char*
 	{
 		if ((position_weights!=NULL) && (position_weights[i]==0.0))
 			continue ;
-		DREAL sumi = 0.0 ;
+		float64_t sumi = 0.0 ;
 		for (int32_t j=0; (j<degree) && (i+j<alen); j++)
 		{
 			if (avec[i+j]!=bvec[i+j])
@@ -485,7 +491,7 @@ DREAL CWeightedDegreePositionStringKernel::compute_without_mismatch_matrix(char*
 			if ((position_weights!=NULL) && (position_weights[i]==0.0) && (position_weights[i+k]==0.0))
 				continue ;
 
-			DREAL sumi1 = 0.0 ;
+			float64_t sumi1 = 0.0 ;
 			// shift in sequence a
 			for (int32_t j=0; (j<degree) && (i+j+k<alen); j++)
 			{
@@ -493,7 +499,7 @@ DREAL CWeightedDegreePositionStringKernel::compute_without_mismatch_matrix(char*
 					break ;
 				sumi1 += weights[i*degree+j];
 			}
-			DREAL sumi2 = 0.0 ;
+			float64_t sumi2 = 0.0 ;
 			// shift in sequence b
 			for (int32_t j=0; (j<degree) && (i+j+k<alen); j++)
 			{
@@ -508,17 +514,19 @@ DREAL CWeightedDegreePositionStringKernel::compute_without_mismatch_matrix(char*
 		} ;
 	}
 
-	DREAL result = sum0 ;
+	float64_t result = sum0 ;
 	for (int32_t i=0; i<max_shift; i++)
 		result += max_shift_vec[i]/(2*(i+1)) ;
 
 	return result ;
 }
 
-DREAL CWeightedDegreePositionStringKernel::compute_without_mismatch_position_weights(char* avec, DREAL* pos_weights_lhs, int32_t alen, char* bvec, DREAL* pos_weights_rhs, int32_t blen) 
+float64_t CWeightedDegreePositionStringKernel::compute_without_mismatch_position_weights(
+	char* avec, float64_t* pos_weights_lhs, int32_t alen, char* bvec,
+	float64_t* pos_weights_rhs, int32_t blen)
 {
-	DREAL max_shift_vec[max_shift];
-	DREAL sum0=0 ;
+	float64_t max_shift_vec[max_shift];
+	float64_t sum0=0 ;
 	for (int32_t i=0; i<max_shift; i++)
 		max_shift_vec[i]=0 ;
 
@@ -528,9 +536,9 @@ DREAL CWeightedDegreePositionStringKernel::compute_without_mismatch_position_wei
 		if ((position_weights!=NULL) && (position_weights[i]==0.0))
 			continue ;
 
-		DREAL sumi = 0.0 ;
-	    DREAL posweight_lhs = 0.0 ;
-	    DREAL posweight_rhs = 0.0 ;
+		float64_t sumi = 0.0 ;
+	    float64_t posweight_lhs = 0.0 ;
+	    float64_t posweight_rhs = 0.0 ;
 		for (int32_t j=0; (j<degree) && (i+j<alen); j++)
 		{
 			posweight_lhs += pos_weights_lhs[i+j] ;
@@ -554,9 +562,9 @@ DREAL CWeightedDegreePositionStringKernel::compute_without_mismatch_position_wei
 				continue ;
 
 			// shift in sequence a	
-			DREAL sumi1 = 0.0 ;
-			DREAL posweight_lhs = 0.0 ;
-			DREAL posweight_rhs = 0.0 ;
+			float64_t sumi1 = 0.0 ;
+			float64_t posweight_lhs = 0.0 ;
+			float64_t posweight_rhs = 0.0 ;
 			for (int32_t j=0; (j<degree) && (i+j+k<alen); j++)
 			{
 				posweight_lhs += pos_weights_lhs[i+j+k] ;
@@ -566,7 +574,7 @@ DREAL CWeightedDegreePositionStringKernel::compute_without_mismatch_position_wei
 				sumi1 += weights[j]*(posweight_lhs/(j+1))*(posweight_rhs/(j+1)) ;
 			}
 			// shift in sequence b
-			DREAL sumi2 = 0.0 ;
+			float64_t sumi2 = 0.0 ;
 			posweight_lhs = 0.0 ;
 			posweight_rhs = 0.0 ;
 			for (int32_t j=0; (j<degree) && (i+j+k<alen); j++)
@@ -584,7 +592,7 @@ DREAL CWeightedDegreePositionStringKernel::compute_without_mismatch_position_wei
 		} ;
 	}
 
-	DREAL result = sum0 ;
+	float64_t result = sum0 ;
 	for (int32_t i=0; i<max_shift; i++)
 		result += max_shift_vec[i]/(2*(i+1)) ;
 
@@ -592,7 +600,8 @@ DREAL CWeightedDegreePositionStringKernel::compute_without_mismatch_position_wei
 }
 
 
-DREAL CWeightedDegreePositionStringKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t CWeightedDegreePositionStringKernel::compute(
+	int32_t idx_a, int32_t idx_b)
 {
 	int32_t alen, blen;
 
@@ -602,7 +611,7 @@ DREAL CWeightedDegreePositionStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	ASSERT(alen==blen);
 	ASSERT(shift_len==alen);
 
-	DREAL result = 0 ;
+	float64_t result = 0 ;
 	if (position_weights_lhs!=NULL || position_weights_rhs!=NULL)
 	{
 		ASSERT(max_mismatch==0);
@@ -619,7 +628,8 @@ DREAL CWeightedDegreePositionStringKernel::compute(int32_t idx_a, int32_t idx_b)
 }
 
 
-void CWeightedDegreePositionStringKernel::add_example_to_tree(int32_t idx, DREAL alpha)
+void CWeightedDegreePositionStringKernel::add_example_to_tree(
+	int32_t idx, float64_t alpha)
 {
 	ASSERT(position_weights_lhs==NULL);
 	ASSERT(position_weights_rhs==NULL);
@@ -654,7 +664,7 @@ void CWeightedDegreePositionStringKernel::add_example_to_tree(int32_t idx, DREAL
 
 		for (int32_t s=max_s; s>=0; s--)
 		{
-			DREAL alpha_pw = normalizer->normalize_lhs((s==0) ? (alpha) : (alpha/(2.0*s)), idx);
+			float64_t alpha_pw = normalizer->normalize_lhs((s==0) ? (alpha) : (alpha/(2.0*s)), idx);
 			TRIES(add_to_trie(i, s, vec, alpha_pw, weights, (length!=0))) ;
 			//fprintf(stderr, "tree=%i, s=%i, example=%i, alpha_pw=%1.2f\n", i, s, idx, alpha_pw) ;
 
@@ -670,7 +680,8 @@ void CWeightedDegreePositionStringKernel::add_example_to_tree(int32_t idx, DREAL
 	tree_initialized=true ;
 }
 
-void CWeightedDegreePositionStringKernel::add_example_to_single_tree(int32_t idx, DREAL alpha, int32_t tree_num) 
+void CWeightedDegreePositionStringKernel::add_example_to_single_tree(
+	int32_t idx, float64_t alpha, int32_t tree_num) 
 {
 	ASSERT(position_weights_lhs==NULL);
 	ASSERT(position_weights_rhs==NULL);
@@ -698,7 +709,7 @@ void CWeightedDegreePositionStringKernel::add_example_to_single_tree(int32_t idx
 
 	for (int32_t s=max_s; s>=0; s--)
 	{
-		DREAL alpha_pw = normalizer->normalize_lhs((s==0) ? (alpha) : (alpha/(2.0*s)), idx);
+		float64_t alpha_pw = normalizer->normalize_lhs((s==0) ? (alpha) : (alpha/(2.0*s)), idx);
 		tries.add_to_trie(tree_num, s, vec, alpha_pw, weights, (length!=0)) ;
 		//fprintf(stderr, "tree=%i, s=%i, example=%i, alpha_pw=%1.2f\n", tree_num, s, idx, alpha_pw) ;
 	} 
@@ -710,7 +721,7 @@ void CWeightedDegreePositionStringKernel::add_example_to_single_tree(int32_t idx
 			int32_t s=tree_num-i;
 			if ((i+s<len) && (s>=1) && (s<=shift[i]))
 			{
-				DREAL alpha_pw = normalizer->normalize_lhs((s==0) ? (alpha) : (alpha/(2.0*s)), idx);
+				float64_t alpha_pw = normalizer->normalize_lhs((s==0) ? (alpha) : (alpha/(2.0*s)), idx);
 				tries.add_to_trie(tree_num, -s, vec, alpha_pw, weights, (length!=0)) ; 
 				//fprintf(stderr, "tree=%i, s=%i, example=%i, alpha_pw=%1.2f\n", tree_num, -s, idx, alpha_pw) ;
 			}
@@ -720,14 +731,14 @@ void CWeightedDegreePositionStringKernel::add_example_to_single_tree(int32_t idx
 	tree_initialized=true ;
 }
 
-DREAL CWeightedDegreePositionStringKernel::compute_by_tree(int32_t idx)
+float64_t CWeightedDegreePositionStringKernel::compute_by_tree(int32_t idx)
 {
 	ASSERT(position_weights_lhs==NULL);
 	ASSERT(position_weights_rhs==NULL);
 	ASSERT(alphabet);
 	ASSERT(alphabet->get_alphabet()==DNA || alphabet->get_alphabet()==RNA);
 
-	DREAL sum=0;
+	float64_t sum=0;
 	int32_t len=0;
 	char* char_vec=((CStringFeatures<char>*) rhs)->get_feature_vector(idx, len);
 	ASSERT(max_mismatch==0);
@@ -756,7 +767,8 @@ DREAL CWeightedDegreePositionStringKernel::compute_by_tree(int32_t idx)
 	return normalizer->normalize_rhs(sum, idx);
 }
 
-void CWeightedDegreePositionStringKernel::compute_by_tree(int32_t idx, DREAL* LevelContrib)
+void CWeightedDegreePositionStringKernel::compute_by_tree(
+	int32_t idx, float64_t* LevelContrib)
 {
 	ASSERT(position_weights_lhs==NULL);
 	ASSERT(position_weights_rhs==NULL);
@@ -795,12 +807,14 @@ void CWeightedDegreePositionStringKernel::compute_by_tree(int32_t idx, DREAL* Le
 	delete[] vec ;
 }
 
-DREAL* CWeightedDegreePositionStringKernel::compute_abs_weights(int32_t &len)
+float64_t* CWeightedDegreePositionStringKernel::compute_abs_weights(
+	int32_t &len)
 {
 	return tries.compute_abs_weights(len);
 }
 
-bool CWeightedDegreePositionStringKernel::set_shifts(int32_t* shift_, int32_t shift_len_)
+bool CWeightedDegreePositionStringKernel::set_shifts(
+	int32_t* shift_, int32_t shift_len_)
 {
 	delete[] shift;
 
@@ -829,11 +843,11 @@ bool CWeightedDegreePositionStringKernel::set_wd_weights()
 	ASSERT(degree>0);
 
 	delete[] weights;
-	weights=new DREAL[degree];
+	weights=new float64_t[degree];
 	if (weights)
 	{
 		int32_t i;
-		DREAL sum=0;
+		float64_t sum=0;
 		for (i=0; i<degree; i++)
 		{
 			weights[i]=degree-i;
@@ -862,7 +876,8 @@ bool CWeightedDegreePositionStringKernel::set_wd_weights()
 		return false;
 }
 
-bool CWeightedDegreePositionStringKernel::set_weights(DREAL* ws, int32_t d, int32_t len)
+bool CWeightedDegreePositionStringKernel::set_weights(
+	float64_t* ws, int32_t d, int32_t len)
 {
 	SG_DEBUG("degree = %i  d=%i\n", degree, d);
 	degree=d;
@@ -872,7 +887,7 @@ bool CWeightedDegreePositionStringKernel::set_weights(DREAL* ws, int32_t d, int3
 		len=1;
 
 	delete[] weights;
-	weights=new DREAL[d*len];
+	weights=new float64_t[d*len];
 
 	if (weights)
 	{
@@ -884,7 +899,8 @@ bool CWeightedDegreePositionStringKernel::set_weights(DREAL* ws, int32_t d, int3
 		return false;
 }
 
-bool CWeightedDegreePositionStringKernel::set_position_weights(DREAL* pws, int32_t len)
+bool CWeightedDegreePositionStringKernel::set_position_weights(
+	float64_t* pws, int32_t len)
 {
 	fprintf(stderr, "len=%i\n", len);
 
@@ -904,7 +920,7 @@ bool CWeightedDegreePositionStringKernel::set_position_weights(DREAL* pws, int32
 		return false;
 	}
 	delete[] position_weights;
-	position_weights=new DREAL[len];
+	position_weights=new float64_t[len];
 	tries.set_position_weights(position_weights);
 
 	if (position_weights)
@@ -917,7 +933,7 @@ bool CWeightedDegreePositionStringKernel::set_position_weights(DREAL* pws, int32
 		return false;
 }
 
-bool CWeightedDegreePositionStringKernel::set_position_weights_lhs(DREAL* pws, int32_t len, int32_t num)
+bool CWeightedDegreePositionStringKernel::set_position_weights_lhs(float64_t* pws, int32_t len, int32_t num)
 {
 	fprintf(stderr, "lhs %i %i %i\n", len, num, seq_length);
 
@@ -948,7 +964,7 @@ bool CWeightedDegreePositionStringKernel::set_position_weights_lhs(DREAL* pws, i
 	}
 	
 	delete[] position_weights_lhs;
-	position_weights_lhs=new DREAL[len*num];
+	position_weights_lhs=new float64_t[len*num];
 	if (position_weights_lhs)
 	{
 		for (int32_t i=0; i<len*num; i++)
@@ -959,7 +975,8 @@ bool CWeightedDegreePositionStringKernel::set_position_weights_lhs(DREAL* pws, i
 		return false;
 }
 
-bool CWeightedDegreePositionStringKernel::set_position_weights_rhs(DREAL* pws, int32_t len, int32_t num)
+bool CWeightedDegreePositionStringKernel::set_position_weights_rhs(
+	float64_t* pws, int32_t len, int32_t num)
 {
 	fprintf(stderr, "rhs %i %i %i\n", len, num, seq_length);
 	if (len==0)
@@ -997,7 +1014,7 @@ bool CWeightedDegreePositionStringKernel::set_position_weights_rhs(DREAL* pws, i
 		}
 
 	delete[] position_weights_rhs;
-	position_weights_rhs=new DREAL[len*num];
+	position_weights_rhs=new float64_t[len*num];
 	if (position_weights_rhs)
 	{
 		for (int32_t i=0; i<len*num; i++)
@@ -1011,7 +1028,7 @@ bool CWeightedDegreePositionStringKernel::set_position_weights_rhs(DREAL* pws, i
 bool CWeightedDegreePositionStringKernel::init_block_weights_from_wd()
 {
 	delete[] block_weights;
-	block_weights=new DREAL[CMath::max(seq_length,degree)];
+	block_weights=new float64_t[CMath::max(seq_length,degree)];
 
 	if (block_weights)
 	{
@@ -1030,7 +1047,7 @@ bool CWeightedDegreePositionStringKernel::init_block_weights_from_wd_external()
 {
 	ASSERT(weights);
 	delete[] block_weights;
-	block_weights=new DREAL[CMath::max(seq_length,degree)];
+	block_weights=new float64_t[CMath::max(seq_length,degree)];
 
 	if (block_weights)
 	{
@@ -1043,7 +1060,7 @@ bool CWeightedDegreePositionStringKernel::init_block_weights_from_wd_external()
 		{
 			block_weights[i]=block_weights[i-1];
 
-			DREAL contrib=0;
+			float64_t contrib=0;
 			for (int32_t j=0; j<CMath::min(degree,i+1); j++)
 				contrib+=weights[j];
 
@@ -1057,7 +1074,7 @@ bool CWeightedDegreePositionStringKernel::init_block_weights_from_wd_external()
 bool CWeightedDegreePositionStringKernel::init_block_weights_const()
 {
 	delete[] block_weights;
-	block_weights=new DREAL[seq_length];
+	block_weights=new float64_t[seq_length];
 
 	if (block_weights)
 	{
@@ -1071,7 +1088,7 @@ bool CWeightedDegreePositionStringKernel::init_block_weights_const()
 bool CWeightedDegreePositionStringKernel::init_block_weights_linear()
 {
 	delete[] block_weights;
-	block_weights=new DREAL[seq_length];
+	block_weights=new float64_t[seq_length];
 
 	if (block_weights)
 	{
@@ -1085,7 +1102,7 @@ bool CWeightedDegreePositionStringKernel::init_block_weights_linear()
 bool CWeightedDegreePositionStringKernel::init_block_weights_sqpoly()
 {
 	delete[] block_weights;
-	block_weights=new DREAL[seq_length];
+	block_weights=new float64_t[seq_length];
 
 	if (block_weights)
 	{
@@ -1102,7 +1119,7 @@ bool CWeightedDegreePositionStringKernel::init_block_weights_sqpoly()
 bool CWeightedDegreePositionStringKernel::init_block_weights_cubicpoly()
 {
 	delete[] block_weights;
-	block_weights=new DREAL[seq_length];
+	block_weights=new float64_t[seq_length];
 
 	if (block_weights)
 	{
@@ -1119,7 +1136,7 @@ bool CWeightedDegreePositionStringKernel::init_block_weights_cubicpoly()
 bool CWeightedDegreePositionStringKernel::init_block_weights_exp()
 {
 	delete[] block_weights;
-	block_weights=new DREAL[seq_length];
+	block_weights=new float64_t[seq_length];
 
 	if (block_weights)
 	{
@@ -1136,7 +1153,7 @@ bool CWeightedDegreePositionStringKernel::init_block_weights_exp()
 bool CWeightedDegreePositionStringKernel::init_block_weights_log()
 {
 	delete[] block_weights;
-	block_weights=new DREAL[seq_length];
+	block_weights=new float64_t[seq_length];
 
 	if (block_weights)
 	{
@@ -1155,7 +1172,7 @@ bool CWeightedDegreePositionStringKernel::init_block_weights_external()
 	if (block_weights_external && (seq_length == num_block_weights_external) )
 	{
 		delete[] block_weights;
-		block_weights=new DREAL[seq_length];
+		block_weights=new float64_t[seq_length];
 
 		if (block_weights)
 		{
@@ -1204,12 +1221,12 @@ void* CWeightedDegreePositionStringKernel::compute_batch_helper(void* p)
 	int32_t j=params->j;
 	CWeightedDegreePositionStringKernel* wd=params->kernel;
 	CTrie<DNATrie>* tries=params->tries;
-	DREAL* weights=params->weights;
+	float64_t* weights=params->weights;
 	int32_t length=params->length;
 	int32_t max_shift=params->max_shift;
 	int32_t* vec=params->vec;
-	DREAL* result=params->result;
-	DREAL factor=params->factor;
+	float64_t* result=params->result;
+	float64_t factor=params->factor;
 	int32_t* shift=params->shift;
 	int32_t* vec_idx=params->vec_idx;
 
@@ -1254,7 +1271,9 @@ void* CWeightedDegreePositionStringKernel::compute_batch_helper(void* p)
 	return NULL;
 }
 
-void CWeightedDegreePositionStringKernel::compute_batch(int32_t num_vec, int32_t* vec_idx, DREAL* result, int32_t num_suppvec, int32_t* IDX, DREAL* alphas, DREAL factor)
+void CWeightedDegreePositionStringKernel::compute_batch(
+	int32_t num_vec, int32_t* vec_idx, float64_t* result, int32_t num_suppvec,
+	int32_t* IDX, float64_t* alphas, float64_t factor)
 {
 	ASSERT(alphabet);
 	ASSERT(alphabet->get_alphabet()==DNA || alphabet->get_alphabet()==RNA);
@@ -1362,7 +1381,9 @@ void CWeightedDegreePositionStringKernel::compute_batch(int32_t num_vec, int32_t
 	create_empty_tries();
 }
 
-DREAL* CWeightedDegreePositionStringKernel::compute_scoring(int32_t max_degree, int32_t& num_feat, int32_t& num_sym, DREAL* result, int32_t num_suppvec, int32_t* IDX, DREAL* alphas)
+float64_t* CWeightedDegreePositionStringKernel::compute_scoring(
+	int32_t max_degree, int32_t& num_feat, int32_t& num_sym, float64_t* result,
+	int32_t num_suppvec, int32_t* IDX, float64_t* alphas)
 {
 	ASSERT(position_weights_lhs==NULL);
 	ASSERT(position_weights_rhs==NULL);
@@ -1378,9 +1399,9 @@ DREAL* CWeightedDegreePositionStringKernel::compute_scoring(int32_t max_degree, 
 
 	// === variables
 	int32_t* nofsKmers=new int32_t[max_degree];
-	DREAL** C=new DREAL*[max_degree];
-	DREAL** L=new DREAL*[max_degree];
-	DREAL** R=new DREAL*[max_degree];
+	float64_t** C=new float64_t*[max_degree];
+	float64_t** L=new float64_t*[max_degree];
+	float64_t** R=new float64_t*[max_degree];
 
 	int32_t i;
 	int32_t k;
@@ -1393,7 +1414,7 @@ DREAL* CWeightedDegreePositionStringKernel::compute_scoring(int32_t max_degree, 
 		const int32_t tabSize=nofsKmers[k]*num_feat;
 		bigtabSize+=tabSize;
 	}
-	result=new DREAL[bigtabSize];
+	result=new float64_t[bigtabSize];
 
 	// --- auxilliary tables
 	int32_t tabOffs=0;
@@ -1401,8 +1422,8 @@ DREAL* CWeightedDegreePositionStringKernel::compute_scoring(int32_t max_degree, 
 	{
 		const int32_t tabSize = nofsKmers[k] * num_feat;
 		C[k] = &result[tabOffs];
-		L[k] = new DREAL[ tabSize ];
-		R[k] = new DREAL[ tabSize ];
+		L[k] = new float64_t[ tabSize ];
+		R[k] = new float64_t[ tabSize ];
 		tabOffs+=tabSize;
 		for(i = 0; i < tabSize; i++ )
 		{
@@ -1413,7 +1434,7 @@ DREAL* CWeightedDegreePositionStringKernel::compute_scoring(int32_t max_degree, 
 	}
 
 	// --- tree parsing info
-	DREAL* margFactors=new DREAL[degree];
+	float64_t* margFactors=new float64_t[degree];
 
 	int32_t* x = new int32_t[ degree+1 ];
 	int32_t* substrs = new int32_t[ degree+1 ];
@@ -1516,7 +1537,8 @@ DREAL* CWeightedDegreePositionStringKernel::compute_scoring(int32_t max_degree, 
 	return result;
 }
 
-char* CWeightedDegreePositionStringKernel::compute_consensus(int32_t &num_feat, int32_t num_suppvec, int32_t* IDX, DREAL* alphas)
+char* CWeightedDegreePositionStringKernel::compute_consensus(
+	int32_t &num_feat, int32_t num_suppvec, int32_t* IDX, float64_t* alphas)
 {
 	ASSERT(position_weights_lhs==NULL);
 	ASSERT(position_weights_rhs==NULL);
@@ -1590,7 +1612,7 @@ char* CWeightedDegreePositionStringKernel::compute_consensus(int32_t &num_feat, 
 
 	for (int32_t i=0; i<num_elements; i++)
 	{
-		DREAL sc=table[num_tables-1]->get_element(i).score;
+		float64_t sc=table[num_tables-1]->get_element(i).score;
 		if (sc>max_score || max_idx==-1)
 		{
 			max_idx=i;
@@ -1632,7 +1654,9 @@ char* CWeightedDegreePositionStringKernel::compute_consensus(int32_t &num_feat, 
 }
 
 
-DREAL* CWeightedDegreePositionStringKernel::extract_w( int32_t max_degree, int32_t& num_feat, int32_t& num_sym, DREAL* w_result, int32_t num_suppvec, int32_t* IDX, DREAL* alphas )
+float64_t* CWeightedDegreePositionStringKernel::extract_w(
+	int32_t max_degree, int32_t& num_feat, int32_t& num_sym,
+	float64_t* w_result, int32_t num_suppvec, int32_t* IDX, float64_t* alphas)
 {
   delete_optimization();
   use_poim_tries=true;
@@ -1649,7 +1673,7 @@ DREAL* CWeightedDegreePositionStringKernel::extract_w( int32_t max_degree, int32
   // === general variables
   static const int32_t NUM_SYMS = poim_tries.NUM_SYMS;
   const int32_t seqLen = num_feat;
-  DREAL** subs;
+  float64_t** subs;
   int32_t i;
   int32_t k;
   //int32_t y;
@@ -1668,12 +1692,12 @@ DREAL* CWeightedDegreePositionStringKernel::extract_w( int32_t max_degree, int32
   }
   // --- allocate memory
   const int32_t bigTabSize = offset;
-  w_result=new DREAL[bigTabSize];
+  w_result=new float64_t[bigTabSize];
   for (i=0; i<bigTabSize; ++i)
     w_result[i]=0;
 
   // --- set pointers for tables
-  subs = new DREAL*[ max_degree ];
+  subs = new float64_t*[ max_degree ];
   ASSERT( subs != NULL );
   for( k = 0; k < max_degree; ++k ) {
     subs[k] = &w_result[ offsets[k] ];
@@ -1693,7 +1717,10 @@ DREAL* CWeightedDegreePositionStringKernel::extract_w( int32_t max_degree, int32
   return w_result;
 }
 
-DREAL* CWeightedDegreePositionStringKernel::compute_POIM( int32_t max_degree, int32_t& num_feat, int32_t& num_sym, DREAL* poim_result, int32_t num_suppvec, int32_t* IDX, DREAL* alphas, DREAL* distrib )
+float64_t* CWeightedDegreePositionStringKernel::compute_POIM(
+	int32_t max_degree, int32_t& num_feat, int32_t& num_sym,
+	float64_t* poim_result, int32_t num_suppvec, int32_t* IDX,
+	float64_t* alphas, float64_t* distrib )
 {
   delete_optimization();
   use_poim_tries=true;
@@ -1711,7 +1738,7 @@ DREAL* CWeightedDegreePositionStringKernel::compute_POIM( int32_t max_degree, in
   // === general variables
   static const int32_t NUM_SYMS = poim_tries.NUM_SYMS;
   const int32_t seqLen = num_feat;
-  DREAL** subs;
+  float64_t** subs;
   int32_t i;
   int32_t k;
 
@@ -1767,12 +1794,12 @@ DREAL* CWeightedDegreePositionStringKernel::compute_POIM( int32_t max_degree, in
   }
   // --- allocate memory
   const int32_t bigTabSize=offset;
-  poim_result=new DREAL[bigTabSize];
+  poim_result=new float64_t[bigTabSize];
   for (i=0; i<bigTabSize; ++i )
     poim_result[i]=0;
 
   // --- set pointers for tables
-  subs=new DREAL*[max_degree];
+  subs=new float64_t*[max_degree];
   for (k=0; k<max_degree; ++k)
     subs[k]=&poim_result[offsets[k]];
 
@@ -1790,10 +1817,10 @@ DREAL* CWeightedDegreePositionStringKernel::compute_POIM( int32_t max_degree, in
       const int32_t nofKmers1 = (int32_t) pow( NUM_SYMS, k );
       const int32_t nofKmers0 = nofKmers1 * NUM_SYMS;
       for( i = 0; i < seqLen; ++i ) {
-	DREAL* const subs_k2i1 = ( k>1 && i<seqLen-1 ) ? &subs[k-2][(i+1)*nofKmers2] : NULL;
-	DREAL* const subs_k1i1 = ( i < seqLen-1 ) ? &subs[k-1][(i+1)*nofKmers1] : NULL;
-	DREAL* const subs_k1i0 = & subs[ k-1 ][ i*nofKmers1 ];
-	DREAL* const subs_k0i  = & subs[ k-0 ][ i*nofKmers0 ];
+	float64_t* const subs_k2i1 = ( k>1 && i<seqLen-1 ) ? &subs[k-2][(i+1)*nofKmers2] : NULL;
+	float64_t* const subs_k1i1 = ( i < seqLen-1 ) ? &subs[k-1][(i+1)*nofKmers1] : NULL;
+	float64_t* const subs_k1i0 = & subs[ k-1 ][ i*nofKmers1 ];
+	float64_t* const subs_k0i  = & subs[ k-0 ][ i*nofKmers0 ];
 	int32_t y0;
 	for( y0 = 0; y0 < nofKmers0; ++y0 ) {
 	  const int32_t y1l = y0 / NUM_SYMS;
@@ -1826,23 +1853,25 @@ DREAL* CWeightedDegreePositionStringKernel::compute_POIM( int32_t max_degree, in
 }
 
 
-void CWeightedDegreePositionStringKernel::prepare_POIM2(DREAL* distrib, int32_t num_sym, int32_t num_feat)
+void CWeightedDegreePositionStringKernel::prepare_POIM2(
+	float64_t* distrib, int32_t num_sym, int32_t num_feat)
 {
 	free(m_poim_distrib);
-	m_poim_distrib=(DREAL*)malloc(num_sym*num_feat*sizeof(DREAL));
+	m_poim_distrib=(float64_t*)malloc(num_sym*num_feat*sizeof(float64_t));
 	ASSERT(m_poim_distrib);
 
-	memcpy(m_poim_distrib, distrib, num_sym*num_feat*sizeof(DREAL));
+	memcpy(m_poim_distrib, distrib, num_sym*num_feat*sizeof(float64_t));
 	m_poim_num_sym=num_sym;
 	m_poim_num_feat=num_feat;
 }
 
-void CWeightedDegreePositionStringKernel::compute_POIM2(int32_t max_degree, CSVM* svm)
+void CWeightedDegreePositionStringKernel::compute_POIM2(
+	int32_t max_degree, CSVM* svm)
 {
 	ASSERT(svm);
 	int32_t num_suppvec=svm->get_num_support_vectors();
 	int32_t* sv_idx=new int32_t[num_suppvec];
-	DREAL* sv_weight=new DREAL[num_suppvec];
+	float64_t* sv_weight=new float64_t[num_suppvec];
 
 	for (int32_t i=0; i<num_suppvec; i++)
 	{
@@ -1871,11 +1900,12 @@ void CWeightedDegreePositionStringKernel::compute_POIM2(int32_t max_degree, CSVM
 	delete[] sv_idx;
 }
 
-void CWeightedDegreePositionStringKernel::get_POIM2(DREAL** poim, int32_t* result_len)
+void CWeightedDegreePositionStringKernel::get_POIM2(
+	float64_t** poim, int32_t* result_len)
 {
-	*poim=(DREAL*) malloc(m_poim_result_len*sizeof(DREAL));
+	*poim=(float64_t*) malloc(m_poim_result_len*sizeof(float64_t));
 	ASSERT(*poim);
-	memcpy(*poim, m_poim, m_poim_result_len*sizeof(DREAL)) ;
+	memcpy(*poim, m_poim, m_poim_result_len*sizeof(float64_t)) ;
 	*result_len=m_poim_result_len ;
 }
 

@@ -140,11 +140,11 @@ void CDistance::do_precompute_matrix()
 	SG_DONE();
 }
 
-void CDistance::get_distance_matrix(DREAL** dst, int32_t* m, int32_t* n)
+void CDistance::get_distance_matrix(float64_t** dst, int32_t* m, int32_t* n)
 {
 	ASSERT(dst && m && n);
 
-	DREAL* result = NULL;
+	float64_t* result = NULL;
 	CFeatures* f1 = lhs;
 	CFeatures* f2 = rhs;
 
@@ -159,7 +159,7 @@ void CDistance::get_distance_matrix(DREAL** dst, int32_t* m, int32_t* n)
 		int32_t num_done=0;
 		SG_DEBUG("returning distance matrix of size %dx%d\n", num_vec1, num_vec2);
 
-		result=(DREAL*) malloc(total_num*sizeof(DREAL));
+		result=(float64_t*) malloc(total_num*sizeof(float64_t));
 		ASSERT(result);
 
 		if ( (f1 == f2) && (num_vec1 == num_vec2) )
@@ -276,10 +276,10 @@ float32_t* CDistance::get_distance_matrix_shortreal(
 	return result;
 }
 
-DREAL* CDistance::get_distance_matrix_real(
-	int32_t &num_vec1, int32_t &num_vec2, DREAL* target)
+float64_t* CDistance::get_distance_matrix_real(
+	int32_t &num_vec1, int32_t &num_vec2, float64_t* target)
 {
-	DREAL* result = NULL;
+	float64_t* result = NULL;
 	CFeatures* f1 = lhs;
 	CFeatures* f2 = rhs;
 
@@ -298,7 +298,7 @@ DREAL* CDistance::get_distance_matrix_real(
 		if (target)
 			result=target;
 		else
-			result=new DREAL[total_num];
+			result=new float64_t[total_num];
 
 		if ( (f1 == f2) && (num_vec1 == num_vec2) )
 		{

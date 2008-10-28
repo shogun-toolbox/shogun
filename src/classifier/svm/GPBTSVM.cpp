@@ -18,7 +18,7 @@ CGPBTSVM::CGPBTSVM()
 {
 }
 
-CGPBTSVM::CGPBTSVM(DREAL C, CKernel* k, CLabels* lab)
+CGPBTSVM::CGPBTSVM(float64_t C, CKernel* k, CLabels* lab)
 : CSVM(C, k, lab), model(NULL)
 {
 }

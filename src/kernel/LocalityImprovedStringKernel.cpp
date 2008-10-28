@@ -22,7 +22,8 @@ CLocalityImprovedStringKernel::CLocalityImprovedStringKernel(
 }
 
 CLocalityImprovedStringKernel::CLocalityImprovedStringKernel(
-	CStringFeatures<char>* l, CStringFeatures<char>* r, int32_t len, int32_t id, int32_t od)
+	CStringFeatures<char>* l, CStringFeatures<char>* r, int32_t len,
+	int32_t id, int32_t od)
 : CStringKernel<char>(10), length(len), inner_degree(id), outer_degree(od)
 {
 	SG_INFO( "LIK with parms: l=%d, id=%d, od=%d created!\n", len, id, od);
@@ -51,7 +52,7 @@ bool CLocalityImprovedStringKernel::save_init(FILE* dest)
 	return false;
 }
 
-DREAL CLocalityImprovedStringKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t CLocalityImprovedStringKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	int32_t alen, blen;
 
@@ -61,21 +62,21 @@ DREAL CLocalityImprovedStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	ASSERT(alen==blen && alen>0);
 
 	int32_t i,t;
-	DREAL* match=new DREAL[alen];
+	float64_t* match=new float64_t[alen];
 
 	// initialize match table 1 -> match;  0 -> no match
 	for (i = 0; i<alen; i++)
 		match[i] = (avec[i] == bvec[i])? 1 : 0;
 
-	DREAL outer_sum = 0;
+	float64_t outer_sum = 0;
 
 	for (t = 0; t<alen-length; t++)
 	{
-		DREAL sum = 0;
+		float64_t sum = 0;
 		for (i = 0; i<length && t+i+length+1<alen; i++)
 			sum += (i+1)*match[t+i]+(length-i)*match[t+i+length+1];
 		//add middle element + normalize with sum_i=0^2l+1 i = (2l+1)(l+1)
-		DREAL inner_sum = (sum + (length+1)*match[t+length]) / ((2*length+1)*(length+1));
+		float64_t inner_sum = (sum + (length+1)*match[t+length]) / ((2*length+1)*(length+1));
 		inner_sum = pow(inner_sum, inner_degree + 1);
 		outer_sum += inner_sum;
 	}

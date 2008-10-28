@@ -138,22 +138,28 @@ void CFKFeatures::set_models(CHMM* p, CHMM* n)
 		num_features=1+pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M()) ;
 }
 
-DREAL* CFKFeatures::compute_feature_vector(int32_t num, int32_t &len, DREAL* target)
+float64_t* CFKFeatures::compute_feature_vector(
+	int32_t num, int32_t &len, float64_t* target)
 {
-  DREAL* featurevector=target;
-  
-  if (!featurevector)
-	featurevector=new DREAL[ 1+pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M()) ];
-  
-  if (!featurevector)
-    return NULL;
-  
-  compute_feature_vector(featurevector, num, len);
+	float64_t* featurevector=target;
 
-  return featurevector;
+	if (!featurevector)
+		featurevector=new float64_t[
+			1+
+			pos->get_N()*(1+pos->get_N()+1+pos->get_M())+
+			neg->get_N()*(1+neg->get_N()+1+neg->get_M())
+		];
+
+	if (!featurevector)
+		return NULL;
+
+	compute_feature_vector(featurevector, num, len);
+
+	return featurevector;
 }
 
-void CFKFeatures::compute_feature_vector(DREAL* featurevector, int32_t num, int32_t& len)
+void CFKFeatures::compute_feature_vector(
+	float64_t* featurevector, int32_t num, int32_t& len)
 {
 	int32_t i,j,p=0,x=num;
 
@@ -197,7 +203,7 @@ void CFKFeatures::compute_feature_vector(DREAL* featurevector, int32_t num, int3
 	}
 }
 
-DREAL* CFKFeatures::set_feature_matrix()
+float64_t* CFKFeatures::set_feature_matrix()
 {
 	ASSERT(pos);
 	ASSERT(pos->get_observations());
@@ -212,7 +218,7 @@ DREAL* CFKFeatures::set_feature_matrix()
 
 	SG_INFO( "allocating FK feature cache of size %.2fM\n", sizeof(double)*num_features*num_vectors/1024.0/1024.0);
 	free_feature_matrix();
-	feature_matrix=new DREAL[num_features*num_vectors];
+	feature_matrix=new float64_t[num_features*num_vectors];
 
 	SG_INFO( "calculating FK feature matrix\n");
 

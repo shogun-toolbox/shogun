@@ -5,7 +5,7 @@ import os
 
 # has to be ordered tuple
 REPLACEMENTS=[
-	[' DREAL', ' float'],
+	[' float64_t', ' float'],
 	[' float32_t', ' float'],
 	[' float128_t', ' float'],
 	[' double', ' float'],

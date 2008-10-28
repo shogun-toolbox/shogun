@@ -52,7 +52,7 @@ struct data
 	int32_t nz;
 
 	/** features */
-	CSparseFeatures<DREAL>* features;
+	CSparseFeatures<float64_t>* features;
 	/** labels */
 	double *Y;
 	/** cost associated with each example */

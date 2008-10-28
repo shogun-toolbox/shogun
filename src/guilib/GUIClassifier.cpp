@@ -447,7 +447,7 @@ bool CGUIClassifier::train_knn(int32_t k)
 	return result;
 }
 
-bool CGUIClassifier::train_linear(DREAL gamma)
+bool CGUIClassifier::train_linear(float64_t gamma)
 {
 	CFeatures* trainfeatures=ui->ui_features->get_train_features();
 	CLabels* trainlabels=ui->ui_labels->get_train_labels();
@@ -537,7 +537,7 @@ bool CGUIClassifier::train_sparse_linear()
 		((CSubGradientSVM*) classifier)->set_C(svm_C1, svm_C2);
 
 	((CSparseLinearClassifier*) classifier)->set_labels(trainlabels);
-	((CSparseLinearClassifier*) classifier)->set_features((CSparseFeatures<DREAL>*) trainfeatures);
+	((CSparseLinearClassifier*) classifier)->set_features((CSparseFeatures<float64_t>*) trainfeatures);
 	result=((CSparseLinearClassifier*) classifier)->train();
 
 	return result;
@@ -588,7 +588,7 @@ bool CGUIClassifier::test(char* filename_out, char* filename_roc)
 	CLabels* predictions= classifier->classify();
 
 	int32_t len=0;
-	DREAL* output= predictions->get_labels(len);
+	float64_t* output= predictions->get_labels(len);
 	int32_t total=testfeatures->get_num_vectors();
 	int32_t* label=testlabels->get_int_labels(len);
 	ASSERT(label);
@@ -665,7 +665,8 @@ bool CGUIClassifier::save(char* param)
 	return result;
 }
 
-bool CGUIClassifier::set_perceptron_parameters(DREAL learnrate, int32_t maxiter)
+bool CGUIClassifier::set_perceptron_parameters(
+	float64_t learnrate, int32_t maxiter)
 {
 	if (learnrate<=0)
 		perceptron_learnrate=0.01;
@@ -681,7 +682,7 @@ bool CGUIClassifier::set_perceptron_parameters(DREAL learnrate, int32_t maxiter)
 	return true;
 }
 
-bool CGUIClassifier::set_svm_epsilon(DREAL epsilon)
+bool CGUIClassifier::set_svm_epsilon(float64_t epsilon)
 {
 	if (epsilon<0)
 		svm_epsilon=1e-4;
@@ -692,7 +693,7 @@ bool CGUIClassifier::set_svm_epsilon(DREAL epsilon)
 	return true;
 }
 
-bool CGUIClassifier::set_max_train_time(DREAL max)
+bool CGUIClassifier::set_max_train_time(float64_t max)
 {
 	if (max>0)
 	{
@@ -705,7 +706,7 @@ bool CGUIClassifier::set_max_train_time(DREAL max)
 	return true;
 }
 
-bool CGUIClassifier::set_svr_tube_epsilon(DREAL tube_epsilon)
+bool CGUIClassifier::set_svr_tube_epsilon(float64_t tube_epsilon)
 {
 	if (tube_epsilon<0)
 		svm_tube_epsilon=1e-2;
@@ -717,7 +718,7 @@ bool CGUIClassifier::set_svr_tube_epsilon(DREAL tube_epsilon)
 	return true;
 }
 
-bool CGUIClassifier::set_svm_one_class_nu(DREAL nu)
+bool CGUIClassifier::set_svm_one_class_nu(float64_t nu)
 {
 	if (nu<0 || nu>1)
 		svm_nu=0.5;
@@ -726,7 +727,8 @@ bool CGUIClassifier::set_svm_one_class_nu(DREAL nu)
 	return true;
 }
 
-bool CGUIClassifier::set_svm_mkl_parameters(DREAL weight_epsilon, DREAL C_mkl, int32_t mkl_norm)
+bool CGUIClassifier::set_svm_mkl_parameters(
+	float64_t weight_epsilon, float64_t C_mkl, int32_t mkl_norm)
 {
 	if (weight_epsilon<0)
 		svm_weight_epsilon=1e-4;
@@ -746,7 +748,7 @@ bool CGUIClassifier::set_svm_mkl_parameters(DREAL weight_epsilon, DREAL C_mkl, i
 	return true;
 }
 
-bool CGUIClassifier::set_svm_C(DREAL C1, DREAL C2)
+bool CGUIClassifier::set_svm_C(float64_t C1, float64_t C2)
 {
 	if (C1<0)
 		svm_C1=1.0;
@@ -930,8 +932,9 @@ CLabels* CGUIClassifier::classify_kernelmachine(CLabels* output)
 	return classifier->classify(output);
 }
 
-bool CGUIClassifier::get_trained_classifier(DREAL* &weights, int32_t &rows, int32_t &cols,
-		DREAL*& bias, int32_t& brows, int32_t& bcols)
+bool CGUIClassifier::get_trained_classifier(
+	float64_t* &weights, int32_t &rows, int32_t &cols, float64_t*& bias,
+	int32_t& brows, int32_t& bcols)
 {
 	ASSERT(classifier);
 
@@ -981,8 +984,9 @@ bool CGUIClassifier::get_trained_classifier(DREAL* &weights, int32_t &rows, int3
 	return false;
 }
 
-bool CGUIClassifier::get_svm(DREAL* &weights, int32_t& rows, int32_t& cols,
-		DREAL*& bias, int32_t& brows, int32_t& bcols)
+bool CGUIClassifier::get_svm(
+	float64_t* &weights, int32_t& rows, int32_t& cols, float64_t*& bias,
+	int32_t& brows, int32_t& bcols)
 {
 	CSVM* svm=(CSVM*) classifier;
 
@@ -990,12 +994,12 @@ bool CGUIClassifier::get_svm(DREAL* &weights, int32_t& rows, int32_t& cols,
 	{
 		brows=1;
 		bcols=1;
-		bias=new DREAL[1];
+		bias=new float64_t[1];
 		*bias=svm->get_bias();
 
 		rows=svm->get_num_support_vectors();
 		cols=2;
-		weights=new DREAL[rows*cols];
+		weights=new float64_t[rows*cols];
 
 		for (int32_t i=0; i<rows; i++)
 		{
@@ -1009,8 +1013,9 @@ bool CGUIClassifier::get_svm(DREAL* &weights, int32_t& rows, int32_t& cols,
 	return false;
 }
 
-bool CGUIClassifier::get_clustering(DREAL* &centers, int32_t& rows, int32_t& cols,
-		DREAL*& radi, int32_t& brows, int32_t& bcols)
+bool CGUIClassifier::get_clustering(
+	float64_t* &centers, int32_t& rows, int32_t& cols, float64_t*& radi,
+	int32_t& brows, int32_t& bcols)
 {
 	if (!classifier)
 		return false;
@@ -1039,9 +1044,9 @@ bool CGUIClassifier::get_clustering(DREAL* &centers, int32_t& rows, int32_t& col
 
 			int32_t* p=NULL;
 			clustering->get_pairs(p, rows, cols);
-			centers=new DREAL[rows*cols]; // FIXME memleak
+			centers=new float64_t[rows*cols]; // FIXME memleak
 			for (int32_t i=0; i<rows*cols; i++)
-				centers[i]=(DREAL) p[i];
+				centers[i]=(float64_t) p[i];
 
 			break;
 		}
@@ -1053,15 +1058,16 @@ bool CGUIClassifier::get_clustering(DREAL* &centers, int32_t& rows, int32_t& col
 	return true;
 }
 
-bool CGUIClassifier::get_linear(DREAL* &weights, int32_t& rows, int32_t& cols,
-		DREAL*& bias, int32_t& brows, int32_t& bcols)
+bool CGUIClassifier::get_linear(
+	float64_t* &weights, int32_t& rows, int32_t& cols, float64_t*& bias,
+	int32_t& brows, int32_t& bcols)
 {
 	CLinearClassifier* linear=(CLinearClassifier*) classifier;
 
 	if (!linear)
 		return false;
 
-	bias=new DREAL[1];
+	bias=new float64_t[1];
 	*bias=linear->get_bias();
 	brows=1;
 	bcols=1;
@@ -1071,15 +1077,16 @@ bool CGUIClassifier::get_linear(DREAL* &weights, int32_t& rows, int32_t& cols,
 	return true;
 }
 
-bool CGUIClassifier::get_sparse_linear(DREAL* &weights, int32_t& rows, int32_t& cols,
-		DREAL*& bias, int32_t& brows, int32_t& bcols)
+bool CGUIClassifier::get_sparse_linear(
+	float64_t* &weights, int32_t& rows, int32_t& cols, float64_t*& bias,
+	int32_t& brows, int32_t& bcols)
 {
 	CSparseLinearClassifier* linear=(CSparseLinearClassifier*) classifier;
 
 	if (!linear)
 		return false;
 
-	bias=new DREAL[1];
+	bias=new float64_t[1];
 	*bias=linear->get_bias();
 	brows=1;
 	bcols=1;
@@ -1198,12 +1205,12 @@ CLabels* CGUIClassifier::classify_sparse_linear(CLabels* output)
 		return false ;
 	}
 
-	((CSparseLinearClassifier*) classifier)->set_features((CSparseFeatures<DREAL>*) testfeatures);
+	((CSparseLinearClassifier*) classifier)->set_features((CSparseFeatures<float64_t>*) testfeatures);
 	SG_INFO("starting linear classifier testing\n") ;
 	return classifier->classify(output);
 }
 
-bool CGUIClassifier::classify_example(int32_t idx, DREAL &result)
+bool CGUIClassifier::classify_example(int32_t idx, float64_t &result)
 {
 	CFeatures* trainfeatures=ui->ui_features->get_train_features();
 	CFeatures* testfeatures=ui->ui_features->get_test_features();
@@ -1239,7 +1246,7 @@ bool CGUIClassifier::classify_example(int32_t idx, DREAL &result)
 }
 
 
-bool CGUIClassifier::set_krr_tau(DREAL tau)
+bool CGUIClassifier::set_krr_tau(float64_t tau)
 {
 #ifdef HAVE_LAPACK
 	krr_tau=tau;

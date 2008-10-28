@@ -78,7 +78,7 @@ template <class ST> class CSimpleKernel : public CKernel
 };
 
 
-template<> inline EFeatureType CSimpleKernel<DREAL>::get_feature_type() { return F_DREAL; }
+template<> inline EFeatureType CSimpleKernel<float64_t>::get_feature_type() { return F_DREAL; }
 
 template<> inline EFeatureType CSimpleKernel<float32_t>::get_feature_type() { return F_SHORTREAL; }
 

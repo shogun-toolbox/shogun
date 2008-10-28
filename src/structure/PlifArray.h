@@ -42,19 +42,21 @@ class CPlifArray: public CPlifBase
 			return m_array.get_num_elements();
 		}
 
-		/** lookup penalty DREAL
+		/** lookup penalty float64_t
 		 *
 		 * @param p_value value
 		 * @param svm_values SVM values
 		 */
-		virtual DREAL lookup_penalty(DREAL p_value, DREAL* svm_values) const;
+		virtual float64_t lookup_penalty(
+			float64_t p_value, float64_t* svm_values) const;
 
 		/** lookup penalty int32_t
 		 *
 		 * @param p_value value
 		 * @param svm_values SVM values
 		 */
-		virtual DREAL lookup_penalty(int32_t p_value, DREAL* svm_values) const;
+		virtual float64_t lookup_penalty(
+			int32_t p_value, float64_t* svm_values) const;
 
 		/** penalty clear derivative */
 		virtual void penalty_clear_derivative();
@@ -64,13 +66,14 @@ class CPlifArray: public CPlifBase
 		 * @param p_value value
 		 * @param svm_values SVM values
 		 */
-		virtual void penalty_add_derivative(DREAL p_value, DREAL* svm_values);
+		virtual void penalty_add_derivative(
+			float64_t p_value, float64_t* svm_values);
 
 		/** get maximum value
 		 *
 		 * @return maximum value
 		 */
-		virtual DREAL get_max_value() const
+		virtual float64_t get_max_value() const
 		{
 			return max_value;
 		}
@@ -79,7 +82,7 @@ class CPlifArray: public CPlifBase
 		 *
 		 * @return minumum value
 		 */
-		virtual DREAL get_min_value() const
+		virtual float64_t get_min_value() const
 		{
 			return min_value;
 		}
@@ -97,13 +100,14 @@ class CPlifArray: public CPlifBase
 		virtual int32_t get_max_id() const;
 
 		void get_used_svms(int32_t* num_svms, int32_t* svm_ids);
+
 	protected:
 		/** plif array */
 		CDynamicArray<CPlifBase*> m_array;
 		/** maximum value */
-		DREAL max_value;
+		float64_t max_value;
 		/** minimum value */
-		DREAL min_value;
+		float64_t min_value;
 };
 
 #endif

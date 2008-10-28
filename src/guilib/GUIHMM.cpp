@@ -184,7 +184,7 @@ bool CGUIHMM::one_class_test(
 	CLabels* lab=ui->ui_labels->get_test_labels();
 	int32_t total=obs->get_num_vectors();
 	ASSERT(lab && total==lab->get_num_labels());
-	DREAL* output=new DREAL[total];
+	float64_t* output=new float64_t[total];
 	int32_t* label=new int32_t[total];
 
 	for (int32_t dim=0; dim<total; dim++)
@@ -262,7 +262,7 @@ bool CGUIHMM::hmm_classify(char* param)
 
 			int32_t total=o->get_num_vectors();
 
-			DREAL* output = new DREAL[total];	
+			float64_t* output = new float64_t[total];	
 			int32_t* label= new int32_t[total];	
 
 			SG_INFO( "classifying using neg %s hmm vs. pos %s hmm\n", neglinear ? "linear" : "", poslinear ? "linear" : "");
@@ -336,7 +336,7 @@ bool CGUIHMM::hmm_test(
 	neg->set_observations(o);
 	int32_t total=o->get_num_vectors();
 	ASSERT(lab && total==lab->get_num_labels());
-	DREAL* output=new DREAL[total];
+	float64_t* output=new float64_t[total];
 	int32_t* label=new int32_t[total];
 
 	SG_INFO("Testing using neg %s hmm vs. pos %s hmm\n", is_neg_linear ? "linear" : "", is_pos_linear ? "linear" : "");
@@ -392,7 +392,7 @@ CLabels* CGUIHMM::classify(CLabels* result)
 	return result;
 }
 
-DREAL CGUIHMM::classify_example(int32_t idx)
+float64_t CGUIHMM::classify_example(int32_t idx)
 {
 	CStringFeatures<uint16_t>* obs= (CStringFeatures<uint16_t>*) ui->
 		ui_features->get_test_features();
@@ -404,7 +404,7 @@ DREAL CGUIHMM::classify_example(int32_t idx)
 	pos->set_observations(obs);
 	neg->set_observations(obs);
 
-	DREAL result=pos->model_probability(idx) - neg->model_probability(idx);
+	float64_t result=pos->model_probability(idx) - neg->model_probability(idx);
 	//pos->set_observations(old_pos);
 	//neg->set_observations(old_neg);
 	return result;
@@ -455,7 +455,7 @@ CLabels* CGUIHMM::linear_one_class_classify(CLabels* result)
 }
 
 
-DREAL CGUIHMM::one_class_classify_example(int32_t idx)
+float64_t CGUIHMM::one_class_classify_example(int32_t idx)
 {
 	ASSERT(working);
 
@@ -468,7 +468,7 @@ DREAL CGUIHMM::one_class_classify_example(int32_t idx)
 	pos->set_observations(obs);
 	neg->set_observations(obs);
 
-	DREAL result=working->model_probability(idx);
+	float64_t result=working->model_probability(idx);
 	//working->set_observations(old_pos);
 	return result;
 }
@@ -498,8 +498,8 @@ bool CGUIHMM::append_model(char* filename, int32_t base1, int32_t base2)
 	SG_DEBUG("h %d , M: %d\n", h, h->get_M());
 	if (base1!=-1 && base2!=-1)
 	{
-		DREAL* cur_o=new DREAL[h->get_M()];
-		DREAL* app_o=new DREAL[h->get_M()];
+		float64_t* cur_o=new float64_t[h->get_M()];
+		float64_t* app_o=new float64_t[h->get_M()];
 
 		for (int32_t i=0; i<h->get_M(); i++)
 		{
@@ -527,7 +527,7 @@ bool CGUIHMM::append_model(char* filename, int32_t base1, int32_t base2)
 	return true;
 }
 
-bool CGUIHMM::add_states(int32_t num_states, DREAL value)
+bool CGUIHMM::add_states(int32_t num_states, float64_t value)
 {
 	if (!working)
 		SG_ERROR("Create HMM first.\n");
@@ -537,14 +537,14 @@ bool CGUIHMM::add_states(int32_t num_states, DREAL value)
 	return true;
 }
 
-bool CGUIHMM::set_pseudo(DREAL pseudo)
+bool CGUIHMM::set_pseudo(float64_t pseudo)
 {
 	PSEUDO=pseudo;
 	SG_INFO("Current setting: pseudo=%e.\n", PSEUDO);
 	return true;
 }
 
-bool CGUIHMM::convergence_criteria(int32_t num_iterations, DREAL epsilon)
+bool CGUIHMM::convergence_criteria(int32_t num_iterations, float64_t epsilon)
 {
 	if (!working)
 		SG_ERROR("Create HMM first.\n");
@@ -718,7 +718,7 @@ bool CGUIHMM::save_path(char* filename, bool is_binary)
 	return result;
 }
 
-bool CGUIHMM::chop(DREAL value)
+bool CGUIHMM::chop(float64_t value)
 {
 	if (!working)
 		SG_ERROR("Create HMM first.\n");
@@ -783,7 +783,7 @@ bool CGUIHMM::normalize(bool keep_dead_states)
 	return true;
 }
 
-bool CGUIHMM::relative_entropy(DREAL*& values, int32_t& len)
+bool CGUIHMM::relative_entropy(float64_t*& values, int32_t& len)
 {
 	if (!pos || !neg)
 		SG_ERROR("Set pos and neg HMM first!\n");
@@ -795,11 +795,11 @@ bool CGUIHMM::relative_entropy(DREAL*& values, int32_t& len)
 	if (pos_M!=neg_M || pos_N!=neg_N)
 		SG_ERROR("Pos and neg HMM's differ in number of emissions or states.\n");
 
-	DREAL* p=new DREAL[pos_M];
-	DREAL* q=new DREAL[neg_M];
+	float64_t* p=new float64_t[pos_M];
+	float64_t* q=new float64_t[neg_M];
 
 	delete[] values;
-	values=new DREAL[pos_N];
+	values=new float64_t[pos_N];
 
 	for (int32_t i=0; i<pos_N; i++)
 	{
@@ -818,17 +818,17 @@ bool CGUIHMM::relative_entropy(DREAL*& values, int32_t& len)
 	return true;
 }
 
-bool CGUIHMM::entropy(DREAL*& values, int32_t& len)
+bool CGUIHMM::entropy(float64_t*& values, int32_t& len)
 {
 	if (!working)
 		SG_ERROR("Create HMM first!\n");
 
 	int32_t n=working->get_N();
 	int32_t m=working->get_M();
-	DREAL* p=new DREAL[m];
+	float64_t* p=new float64_t[m];
 
 	delete[] values;
-	values=new DREAL[n];
+	values=new float64_t[n];
 
 	for (int32_t i=0; i<n; i++)
 	{

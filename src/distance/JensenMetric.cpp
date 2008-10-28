@@ -16,12 +16,12 @@
 #include "features/RealFeatures.h"
 
 CJensenMetric::CJensenMetric()
-: CSimpleDistance<DREAL>()
+: CSimpleDistance<float64_t>()
 {
 }
 
 CJensenMetric::CJensenMetric(CRealFeatures* l, CRealFeatures* r)
-: CSimpleDistance<DREAL>()
+: CSimpleDistance<float64_t>()
 {
 	init(l, r);
 }
@@ -33,7 +33,7 @@ CJensenMetric::~CJensenMetric()
 
 bool CJensenMetric::init(CFeatures* l, CFeatures* r)
 {
-	bool result=CSimpleDistance<DREAL>::init(l,r);
+	bool result=CSimpleDistance<float64_t>::init(l,r);
 
 	return result;
 }
@@ -52,7 +52,7 @@ bool CJensenMetric::save_init(FILE* dest)
 	return false;
 }
 
-DREAL CJensenMetric::compute(int32_t idx_a, int32_t idx_b)
+float64_t CJensenMetric::compute(int32_t idx_a, int32_t idx_b)
 {
 	int32_t alen, blen;
 	bool afree, bfree;
@@ -62,8 +62,8 @@ DREAL CJensenMetric::compute(int32_t idx_a, int32_t idx_b)
 
 	ASSERT(alen==blen);
 
-	DREAL absTmp = 0;
-	DREAL result=0;
+	float64_t absTmp = 0;
+	float64_t result=0;
 	{
 		for (int32_t i=0; i<alen; i++)
 		{

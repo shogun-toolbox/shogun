@@ -439,7 +439,7 @@ template <class ST> class CSimpleFeatures: public CFeatures
  *
  * @return feature type DREAL
  */
-template<> inline EFeatureType CSimpleFeatures<DREAL>::get_feature_type()
+template<> inline EFeatureType CSimpleFeatures<float64_t>::get_feature_type()
 {
 	return F_DREAL;
 }

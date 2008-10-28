@@ -28,7 +28,7 @@ class CIdentityKernelNormalizer : public CKernelNormalizer
 		}
 
 		/** initialization of the normalizer (if needed)
-         * @param k kernel */
+		 * @param k kernel */
 		virtual bool init(CKernel* k)
 		{
 			return true;
@@ -39,7 +39,8 @@ class CIdentityKernelNormalizer : public CKernelNormalizer
 		 * @param idx_lhs index of left hand side vector
 		 * @param idx_rhs index of right hand side vector
 		 */
-		inline virtual DREAL normalize(DREAL value, int32_t idx_lhs, int32_t idx_rhs)
+		inline virtual float64_t normalize(
+				float64_t value, int32_t idx_lhs, int32_t idx_rhs)
 		{
 			return value;
 		}
@@ -48,19 +49,19 @@ class CIdentityKernelNormalizer : public CKernelNormalizer
 		 * @param value value of a component of the left hand side feature vector
 		 * @param idx_lhs index of left hand side vector
 		 */
-		inline virtual DREAL normalize_lhs(DREAL value, int32_t idx_lhs)
-        {
-            return value;
-        }
+		inline virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs)
+		{
+			return value;
+		}
 
 		/** normalize only the right hand side vector
 		 * @param value value of a component of the right hand side feature vector
 		 * @param idx_rhs index of right hand side vector
 		 */
-		inline virtual DREAL normalize_rhs(DREAL value, int32_t idx_rhs)
-        {
-            return value;
-        }
+		inline virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs)
+		{
+			return value;
+		}
 };
 
 #endif
