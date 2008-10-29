@@ -12,6 +12,7 @@ deps=dict();
 deps['carrays.i']=[]
 deps['cpointer.i']=[]
 deps['exception.i']=[]
+deps['stdint.i']=[]
 deps['lib/Library_doxygen.i']=[]
 deps['features/Features_doxygen.i']=[]
 deps['classifier/Classifier_doxygen.i']=[]
