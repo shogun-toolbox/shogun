@@ -73,7 +73,7 @@ void COligoKernel::encodeOligo(
 			residue_values.insert(make_pair(allowed_characters[i], counter));
 			++counter;
 		}
-		for (uint32_t k = k_mer_length - 1; k >= 0; k--)
+		for (int32_t k = k_mer_length - 1; k >= 0; k--)
 		{
 			oligo_value += factor * residue_values[sequence[k]];
 			factor *= number_of_residues;
