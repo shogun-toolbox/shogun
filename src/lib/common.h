@@ -38,6 +38,7 @@
 //@{
 
 #ifdef SUNOS
+typedef char uint8_t;
 typedef short int int16_t;
 typedef int int32_t;
 typedef long int64_t;
