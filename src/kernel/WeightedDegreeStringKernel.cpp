@@ -670,12 +670,13 @@ bool CWeightedDegreeStringKernel::init_block_weights_from_wd()
 	if (block_weights)
 	{
 		int32_t k;
+		float64_t d=degree; // use float to evade rounding errors below
+
 		for (k=0; k<degree; k++)
 			block_weights[k]=
-				(-pow(k, 3)+(3*degree-3)*pow(k, 2)+(9*degree-2)*k+6*degree) /
-				(3*degree*(degree+1));
+				(-pow(k, 3)+(3*d-3)*pow(k, 2)+(9*d-2)*k+6*d)/(3*d*(d+1));
 		for (k=degree; k<seq_length; k++)
-			block_weights[k]=(-degree+3*k+4)/3;
+			block_weights[k]=(-d+3*k+4)/3;
 	}
 
 	return (block_weights!=NULL);
