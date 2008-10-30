@@ -4,13 +4,12 @@ Common operations on features
 
 import shogun.Features as features
 import shogun.PreProc as preproc
-import shogun.Library as library
 
 WORDSTRING_ORDER=3
 WORDSTRING_GAP=0
 WORDSTRING_REVERSE=False
 
-def get_simple (ftype, data, alphabet=library.DNA, sparse=False):
+def get_simple (ftype, data, alphabet=features.DNA, sparse=False):
 	"""Return SimpleFeatures.
 
 	@param ftype Feature type, e.g. Real, Byte
@@ -41,7 +40,7 @@ def get_simple (ftype, data, alphabet=library.DNA, sparse=False):
 	else:
 		return {'train':train, 'test':test}
 
-def get_string (ftype, data, alphabet=library.DNA):
+def get_string (ftype, data, alphabet=features.DNA):
 	"""Return StringFeatures.
 
 	@param ftype Feature type, e.g. Real, Byte
@@ -57,7 +56,7 @@ def get_string (ftype, data, alphabet=library.DNA):
 
 	return {'train':train, 'test':test}
 
-def get_string_complex (ftype, data, alphabet=library.DNA,
+def get_string_complex (ftype, data, alphabet=features.DNA,
 	order=WORDSTRING_ORDER, gap=WORDSTRING_GAP, reverse=WORDSTRING_REVERSE):
 	"""Return complex StringFeatures.
 

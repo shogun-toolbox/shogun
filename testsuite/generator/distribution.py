@@ -2,7 +2,7 @@
 
 import numpy
 import shogun.Distribution as distribution
-import shogun.Library as library
+import shogun.Features as features
 
 from shogun.Library import Math_init_random
 from dataop import INIT_RANDOM
@@ -126,7 +126,7 @@ def _run_hmm ():
 
 	params['data']=dataop.get_cubes(params['num_examples'],1)
 	feats=featop.get_string_complex(
-		'Word', params['data'], eval('library.'+params['alphabet']),
+		'Word', params['data'], eval('features.'+params['alphabet']),
 		params['order'])
 	hmm=distribution.HMM(
 		feats['train'], params['N'], params['M'], params['pseudo'])

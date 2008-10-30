@@ -3,9 +3,8 @@ Generator for Kernel
 """
 
 import numpy
-import shogun.Library as library
 import shogun.Kernel as kernel
-from shogun.Features import CombinedFeatures, TOPFeatures, FKFeatures
+from shogun.Features import CombinedFeatures, TOPFeatures, FKFeatures, CUBE, RAWBYTE
 from shogun.Classifier import PluginEstimate
 from shogun.Distance import CanberraMetric
 from shogun.Distribution import HMM, Model, LinearHMM, BW_NORMAL
@@ -289,7 +288,7 @@ def _run_feats_byte ():
 	"""Run kernel with ByteFeatures."""
 
 	data=dataop.get_rand(dattype=numpy.ubyte)
-	feats=featop.get_simple('Byte', data, library.RAWBYTE)
+	feats=featop.get_simple('Byte', data, RAWBYTE)
 	normalizer=kernel.AvgDiagKernelNormalizer(-1)
 
 	_compute('LinearByte', feats, data, normalizer)
@@ -417,7 +416,7 @@ def _run_top_fisher ():
 
 	feats={}
 	wordfeats=featop.get_string_complex('Word', params['data'],
-		eval('library.'+params['alphabet']),
+		eval(params['alphabet']),
 		params['order'], params['gap'], params['reverse'])
 	pos=HMM(wordfeats['train'],
 		params['N'], params['M'], params['pseudo'])
