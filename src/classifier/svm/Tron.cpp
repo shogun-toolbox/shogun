@@ -27,17 +27,19 @@ void CTron::tron(float64_t *w)
 	float64_t eta0 = 1e-4, eta1 = 0.25, eta2 = 0.75;
 
 	// Parameters for updating the trust region size delta.
-	float64_t sigma1 = 0.25, sigma2 = 0.5, sigma3 = 4;
+	float64_t sigma1 = 0.25, sigma2 = 0.5, sigma3 = 4.;
 
-	int n = (int) fun_obj->get_nr_variable(); /* for calling external lib */
 	int32_t i, cg_iter;
 	float64_t delta, snorm, one=1.0;
 	float64_t alpha, f, fnew, prered, actred, gs;
-	int search = 1, iter = 1, inc = 1; /* for calling external lib */
-	float64_t *s = new float64_t[n];
-	float64_t *r = new float64_t[n];
-	float64_t *w_new = new float64_t[n];
-	float64_t *g = new float64_t[n];
+
+	/* calling external lib */
+	int n = (int) fun_obj->get_nr_variable();
+	int search = 1, iter = 1, inc = 1;
+	double *s = new double[n];
+	double *r = new double[n];
+	double *w_new = new double[n];
+	double *g = new double[n];
 
 	for (i=0; i<n; i++)
 		w[i] = 0;
@@ -125,15 +127,16 @@ void CTron::tron(float64_t *w)
 	delete[] s;
 }
 
-int32_t CTron::trcg(float64_t delta, float64_t *g, float64_t *s, float64_t *r)
+int32_t CTron::trcg(float64_t delta, double* g, double* s, double* r)
 {
-	int32_t i, cg_iter;
-	int inc = 1; /* for calling external lib */
-	int n = (int) fun_obj->get_nr_variable(); /* for calling external lib */
-	float64_t one = 1;
-	float64_t *d = new float64_t[n];
-	float64_t *Hd = new float64_t[n];
-	float64_t rTr, rnewTrnew, alpha, beta, cgtol;
+	/* calling external lib */
+	int i, cg_iter;
+	int n = (int) fun_obj->get_nr_variable();
+	int inc = 1;
+	double one = 1;
+	double *Hd = new double[n];
+	double *d = new double[n];
+	double rTr, rnewTrnew, alpha, beta, cgtol;
 
 	for (i=0; i<n; i++)
 	{
@@ -141,7 +144,7 @@ int32_t CTron::trcg(float64_t delta, float64_t *g, float64_t *s, float64_t *r)
 		r[i] = -g[i];
 		d[i] = r[i];
 	}
-	cgtol = 0.1*cblas_dnrm2(n, g, inc);
+	cgtol = 0.1* cblas_dnrm2(n, g, inc);
 
 	cg_iter = 0;
 	rTr = cblas_ddot(n, r, inc, r, inc);
@@ -160,11 +163,11 @@ int32_t CTron::trcg(float64_t delta, float64_t *g, float64_t *s, float64_t *r)
 			alpha = -alpha;
 			cblas_daxpy(n, alpha, d, inc, s, inc);
 
-			float64_t std = cblas_ddot(n, s, inc, d, inc);
-			float64_t sts = cblas_ddot(n, s, inc, s, inc);
-			float64_t dtd = cblas_ddot(n, d, inc, d, inc);
-			float64_t dsq = delta*delta;
-			float64_t rad = sqrt(std*std + dtd*(dsq-sts));
+			double std = cblas_ddot(n, s, inc, d, inc);
+			double sts = cblas_ddot(n, s, inc, s, inc);
+			double dtd = cblas_ddot(n, d, inc, d, inc);
+			double dsq = delta*delta;
+			double rad = sqrt(std*std + dtd*(dsq-sts));
 			if (std >= 0)
 				alpha = (dsq - sts)/(std + rad);
 			else

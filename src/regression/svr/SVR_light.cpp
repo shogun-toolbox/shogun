@@ -373,6 +373,7 @@ void CSVRLight::update_linear_component_mkl(
 	int32_t num         = totdoc;
 	int32_t num_weights = -1;
 	int32_t num_kernels = kernel->get_num_subkernels() ;
+	int nk = (int) num_kernels; /* calling external lib */
 	const float64_t* w  = kernel->get_subkernel_weights(num_weights);
 
 	ASSERT(num_weights==num_kernels);
@@ -448,8 +449,8 @@ void CSVRLight::update_linear_component_mkl(
 	for (int32_t i=0; i<num_kernels; i++)
 		sumw[i]=sumalpha ;
 	
-	cblas_dgemv(CblasColMajor, CblasNoTrans, num_kernels, num,
-				0.5, W, num_kernels, alphay, 1, 1.0, sumw, 1) ;
+	cblas_dgemv(CblasColMajor, CblasNoTrans, nk, (int) num, 0.5, (double*) W,
+		nk, (double*) alphay, 1, 1.0, (double*) sumw, 1);
 	
 	for (int32_t i=0; i<num_kernels; i++)
 		mkl_objective+=w[i]*sumw[i] ;
@@ -473,10 +474,10 @@ void CSVRLight::update_linear_component_mkl(
 		{
 			SG_INFO( "creating LP\n") ;
 			
-			int NUMCOLS = 2*num_kernels + 1; /* for calling external lib */
-			double   obj[NUMCOLS]; /* for calling external lib */
-			double   lb[NUMCOLS]; /* for calling external lib */
-			double   ub[NUMCOLS]; /* for calling external lib */
+			int NUMCOLS = 2*num_kernels + 1; /* calling external lib */
+			double   obj[NUMCOLS]; /* calling external lib */
+			double   lb[NUMCOLS]; /* calling external lib */
+			double   ub[NUMCOLS]; /* calling external lib */
 			for (int32_t i=0; i<2*num_kernels; i++)
 			{
 				obj[i]=0 ;
@@ -499,10 +500,10 @@ void CSVRLight::update_linear_component_mkl(
 			}
 			
 			// add constraint sum(w)=1;
-			int initial_rmatbeg[1]; /* for calling external lib */
-			int initial_rmatind[num_kernels+1]; /* for calling external lib */
-			double initial_rmatval[num_kernels+1]; /* for calling external lib */
-			double initial_rhs[1]; /* for calling external lib */
+			int initial_rmatbeg[1]; /* calling external lib */
+			int initial_rmatind[num_kernels+1]; /* calling external lib */
+			double initial_rmatval[num_kernels+1]; /* calling external lib */
+			double initial_rhs[1]; /* calling external lib */
 			char initial_sense[1];
 			
 			initial_rmatbeg[0] = 0;
@@ -532,10 +533,10 @@ void CSVRLight::update_linear_component_mkl(
 					//fprintf(stderr,"q=%i\n", q) ;
 					// add constraint w[i]-w[i+1]<s[i];
 					// add constraint w[i+1]-w[i]<s[i];
-					int rmatbeg[1]; /* for calling external lib */
-					int rmatind[3]; /* for calling external lib */
-					double rmatval[3]; /* for calling external lib */
-					double rhs[1]; /* for calling external lib */
+					int rmatbeg[1]; /* calling external lib */
+					int rmatind[3]; /* calling external lib */
+					double rmatval[3]; /* calling external lib */
+					double rhs[1]; /* calling external lib */
 					char sense[1];
 					
 					rmatbeg[0] = 0;
@@ -578,10 +579,10 @@ void CSVRLight::update_linear_component_mkl(
 		{ // add the new row
 			//SG_INFO( "add the new row\n") ;
 			
-			int rmatbeg[1]; /* for calling external lib */
-			int rmatind[num_kernels+1]; /* for calling external lib */
-			double rmatval[num_kernels+1]; /* for calling external lib */
-			double rhs[1]; /* for calling external lib */
+			int rmatbeg[1]; /* calling external lib */
+			int rmatind[num_kernels+1]; /* calling external lib */
+			double rmatval[num_kernels+1]; /* calling external lib */
+			double rhs[1]; /* calling external lib */
 			char sense[1];
 			
 			rmatbeg[0] = 0;
@@ -609,31 +610,32 @@ void CSVRLight::update_linear_component_mkl(
 				SG_ERROR( "Failed to optimize LP.\n");
 			
 			// obtain solution
-			int cur_numrows = CPXgetnumrows (env, lp);
-			int cur_numcols = CPXgetnumcols (env, lp);
-			num_rows = cur_numrows ;
+			int32_t cur_numrows=(int32_t) CPXgetnumrows(env, lp);
+			int32_t cur_numcols=(int32_t) CPXgetnumcols(env, lp);
+			num_rows=cur_numrows;
 			
 			if (!buffer_numcols)
-				buffer_numcols  = new float64_t[cur_numcols] ;
-					
-			float64_t *x     = buffer_numcols ;
-			float64_t *slack = new float64_t[cur_numrows] ;
-			float64_t *pi    = new float64_t[cur_numrows] ;
-			
-			if ( x     == NULL ||
-				 slack == NULL ||
-				 pi    == NULL   ) {
-				status = CPXERR_NO_MEMORY;
-				SG_ERROR( "Could not allocate memory for solution.\n") ;
+				buffer_numcols=new float64_t[cur_numcols];
+
+			float64_t *x=buffer_numcols;
+			float64_t *slack=new float64_t[cur_numrows];
+			float64_t *pi=new float64_t[cur_numrows];
+
+			if (x==NULL || slack==NULL || pi==NULL)
+			{
+				status=CPXERR_NO_MEMORY;
+				SG_ERROR("Could not allocate memory for solution.\n");
 			}
-			int solstat = 0 ;
-			float64_t objval = 0 ;
-			status = CPXsolution (env, lp, &solstat, &objval, x, pi, slack, NULL);
-			int32_t solution_ok = (!status) ;
-			if ( status ) {
+
+			/* calling external lib */
+			int solstat=0;
+			float64_t objval=0;
+			status=CPXsolution(env, lp, &solstat, &objval, (double*) x,
+				(double*) pi, (double*) slack, NULL);
+			int32_t solution_ok=!status;
+			if (status)
 				SG_ERROR( "Failed to obtain solution.\n");
-			}
-			
+
 			num_active_rows=0 ;
 			if (solution_ok)
 			{
@@ -681,9 +683,8 @@ void CSVRLight::update_linear_component_mkl(
 	const float64_t* w_new   = kernel->get_subkernel_weights(num_weights);
 	// update lin
 #ifdef HAVE_LAPACK
-	cblas_dgemv(CblasColMajor,
-				CblasTrans, num_kernels, num,
-				1.0, W, num_kernels, w_new, 1, 0.0, lin,1);
+	cblas_dgemv(CblasColMajor, CblasTrans, nk, (int) num, 1.0, (double*) W,
+		nk, (double*) w_new, 1, 0.0, (double*) lin, 1);
 #else
 	for(int32_t i=0; i<num; i++)
 		lin[i]=0 ;
@@ -719,6 +720,7 @@ void CSVRLight::update_linear_component_mkl_linadd(
 	int32_t num         = totdoc;
 	int32_t num_weights = -1;
 	int32_t num_kernels = kernel->get_num_subkernels() ;
+	int nk = (int) num_kernels; /* calling external lib */
 	const float64_t* w   = kernel->get_subkernel_weights(num_weights);
 	
 	ASSERT(num_weights==num_kernels);
@@ -764,8 +766,8 @@ void CSVRLight::update_linear_component_mkl_linadd(
 	for (int32_t i=0; i<num_kernels; i++)
 		sumw[i]=-sumalpha ;
 	
-	cblas_dgemv(CblasColMajor, CblasNoTrans, num_kernels, num,
-				0.5, W, num_kernels, a, 1, 1.0, sumw, 1) ;
+	cblas_dgemv(CblasColMajor, CblasNoTrans, nk, (int) num, 0.5, (double*) W,
+		nk, (double*) a, 1, 1.0, (double*) sumw, 1);
 	
 	for (int32_t i=0; i<num_kernels; i++)
 		mkl_objective+=w[i]*sumw[i] ;
@@ -790,10 +792,10 @@ void CSVRLight::update_linear_component_mkl_linadd(
 		{
 			SG_INFO( "creating LP\n") ;
 			
-			int NUMCOLS = 2*num_kernels + 1; /* for calling external lib */
-			double   obj[NUMCOLS]; /* for calling external lib */
-			double   lb[NUMCOLS]; /* for calling external lib */
-			double   ub[NUMCOLS]; /* for calling external lib */
+			int NUMCOLS = 2*num_kernels + 1; /* calling external lib */
+			double   obj[NUMCOLS]; /* calling external lib */
+			double   lb[NUMCOLS]; /* calling external lib */
+			double   ub[NUMCOLS]; /* calling external lib */
 			for (int32_t i=0; i<2*num_kernels; i++)
 			{
 				obj[i]=0 ;
@@ -817,10 +819,10 @@ void CSVRLight::update_linear_component_mkl_linadd(
 			
 			// add constraint sum(w)=1;
 			SG_INFO( "add the first row\n");
-			int initial_rmatbeg[1]; /* for calling external lib */
-			int initial_rmatind[num_kernels+1]; /* for calling external lib */
-			double initial_rmatval[num_kernels+1]; /* for calling ext lib */
-			double initial_rhs[1]; /* for calling external lib */
+			int initial_rmatbeg[1]; /* calling external lib */
+			int initial_rmatind[num_kernels+1]; /* calling external lib */
+			double initial_rmatval[num_kernels+1]; /* calling ext lib */
+			double initial_rhs[1]; /* calling external lib */
 			char initial_sense[1];
 			
 			initial_rmatbeg[0] = 0;
@@ -848,10 +850,10 @@ void CSVRLight::update_linear_component_mkl_linadd(
 				{
 					// add constraint w[i]-w[i+1]<s[i];
 					// add constraint w[i+1]-w[i]<s[i];
-					int rmatbeg[1]; /* for calling external lib */
-					int rmatind[3]; /* for calling external lib */
-					double rmatval[3]; /* for calling external lib */
-					double rhs[1]; /* for calling external lib */
+					int rmatbeg[1]; /* calling external lib */
+					int rmatind[3]; /* calling external lib */
+					double rmatval[3]; /* calling external lib */
+					double rhs[1]; /* calling external lib */
 					char sense[1];
 					
 					rmatbeg[0] = 0;
@@ -891,10 +893,10 @@ void CSVRLight::update_linear_component_mkl_linadd(
 		
 		{ // add the new row
 			
-			int rmatbeg[1]; /* for calling external lib */
-			int rmatind[num_kernels+1]; /* for calling external lib */
-			double rmatval[num_kernels+1]; /* for calling external lib */
-			double rhs[1]; /* for calling external lib */
+			int rmatbeg[1]; /* calling external lib */
+			int rmatind[num_kernels+1]; /* calling external lib */
+			double rmatval[num_kernels+1]; /* calling external lib */
+			double rhs[1]; /* calling external lib */
 			char sense[1];
 			
 			rmatbeg[0] = 0;
@@ -922,31 +924,32 @@ void CSVRLight::update_linear_component_mkl_linadd(
 				SG_ERROR( "Failed to optimize LP.\n");
 			
 			// obtain solution
-			int32_t cur_numrows = CPXgetnumrows (env, lp);
-			int32_t cur_numcols = CPXgetnumcols (env, lp);
-			num_rows = cur_numrows ;
+			int32_t cur_numrows=(int32_t) CPXgetnumrows(env, lp);
+			int32_t cur_numcols=(int32_t) CPXgetnumcols (env, lp);
+			num_rows=cur_numrows;
 			
 			if (!buffer_numcols)
-				buffer_numcols  = new float64_t[cur_numcols] ;
-					
-			float64_t *x     = buffer_numcols ;
-			float64_t *slack = new float64_t[cur_numrows] ;
-			float64_t *pi    = new float64_t[cur_numrows] ;
-			
-			if ( x     == NULL ||
-				 slack == NULL ||
-				 pi    == NULL   ) {
-				status = CPXERR_NO_MEMORY;
-				SG_ERROR( "Could not allocate memory for solution.\n") ;
+				buffer_numcols=new float64_t[cur_numcols];
+
+			float64_t* x=buffer_numcols;
+			float64_t* slack=new float64_t[cur_numrows];
+			float64_t* pi=new float64_t[cur_numrows];
+
+			if (x==NULL || slack==NULL || pi==NULL)
+			{
+				status=CPXERR_NO_MEMORY;
+				SG_ERROR("Could not allocate memory for solution.\n");
 			}
-			int solstat = 0 ;
-			float64_t objval = 0 ;
-			status = CPXsolution (env, lp, &solstat, &objval, x, pi, slack, NULL);
-			int32_t solution_ok = (!status) ;
-			if ( status ) {
+
+			/* calling external lib */
+			int solstat=0;
+			float64_t objval=0;
+			status=CPXsolution(env, lp, &solstat, &objval, (double*) x,
+				(double*) pi, (double*) slack, NULL);
+			int32_t solution_ok=!status;
+			if (status)
 				SG_ERROR( "Failed to obtain solution.\n");
-			}
-			
+
 			num_active_rows=0 ;
 			if (solution_ok)
 			{
@@ -993,9 +996,8 @@ void CSVRLight::update_linear_component_mkl_linadd(
 	
 	// update lin
 #ifdef HAVE_LAPACK
-	cblas_dgemv(CblasColMajor,
-				CblasTrans, num_kernels, num,
-				1.0, W, num_kernels, w, 1, 0.0, lin,1);
+	cblas_dgemv(CblasColMajor, CblasTrans, nk, (int) num, 1.0, (double*) W,
+		nk, (double*) w, 1, 0.0, (double*) lin, 1);
 #else
 	for(int32_t i=0; i<num; i++)
 		lin[i]=0 ;

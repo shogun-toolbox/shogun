@@ -69,7 +69,7 @@ public:
 	void tron(float64_t *w);
 
 private:
-	int32_t trcg(float64_t delta, float64_t *g, float64_t *s, float64_t *r);
+	int32_t trcg(float64_t delta, double* g, double* s, double* r);
 	float64_t norm_inf(int32_t n, float64_t *x);
 
 	float64_t eps;

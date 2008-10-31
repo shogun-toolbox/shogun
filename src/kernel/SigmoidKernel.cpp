@@ -71,8 +71,9 @@ float64_t CSigmoidKernel::compute(int32_t idx_a, int32_t idx_b)
 			result+=avec[i]*bvec[i];
 	}
 #else
-	int32_t skip=1;
-	float64_t result = cblas_ddot(alen, avec, skip, bvec, skip);
+	int skip=1; /* calling external lib */
+	float64_t result = cblas_ddot(
+		(int) alen, (double*) avec, skip, (double*) bvec, skip);
 #endif
 
 	((CRealFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);

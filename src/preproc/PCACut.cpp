@@ -97,8 +97,10 @@ bool CPCACut::init(CFeatures* f)
 				vec[jj]-=mean[jj] ;
 
 			/// A = 1.0*xy^T+A blas
-			cblas_dger(CblasColMajor, num_features,num_features, 1.0, vec, 1, 
-					vec, 1, cov, (int)num_features) ;
+			int nf = (int) num_features; /* calling external lib */
+			double* vec_double = (double*) vec; /* calling external lib */
+			cblas_dger(CblasColMajor, nf, nf, 1.0, vec_double, 1, vec_double,
+				1, (double*) cov, nf);
 
 			//for (int32_t k=0; k<num_features; k++)
 			//	for (int32_t l=0; l<num_features; l++)
@@ -127,7 +129,9 @@ bool CPCACut::init(CFeatures* f)
 			eigenvalues[i]=0;
 
 		// lapack sym matrix eigenvalues+vectors
-		wrap_dsyev(V, U, ord, cov, lda, eigenvalues, &info);
+		wrap_dsyev(V, U, (int) ord, (double*) cov, (int) lda,
+			(double*) eigenvalues, (int*) &info);
+
 
 		num_dim=0;
 		for (i=0; i<num_features; i++)
@@ -198,8 +202,9 @@ float64_t* CPCACut::apply_to_feature_matrix(CFeatures* f)
 			for (i=0; i<num_features; i++)
 				sub_mean[i]=m[num_features*vec+i]-mean[i] ;
 
-			cblas_dgemv(CblasColMajor, CblasNoTrans, num_dim, num_features, 1.0,
-					T, num_dim, sub_mean, 1, 0, res, 1); 
+			int nd = (int) num_dim; /* calling external lib */
+			cblas_dgemv(CblasColMajor, CblasNoTrans, nd, (int) num_features,
+				1.0, T, nd, (double*) sub_mean, 1, 0, (double*) res, 1);
 
 			float64_t* m_transformed=&m[num_dim*vec];
 			for (i=0; i<num_dim; i++)
@@ -225,7 +230,9 @@ float64_t* CPCACut::apply_to_feature_vector(float64_t* f, int32_t &len)
 	for (int32_t i=0; i<len; i++)
 		sub_mean[i]=f[i]-mean[i];
 
-	cblas_dgemv(CblasColMajor, CblasNoTrans, num_dim, len, 1.0 , T, num_dim, sub_mean, 1, 0, ret, 1);
+	int nd = (int) num_dim;  /* calling external lib */
+	cblas_dgemv(CblasColMajor, CblasNoTrans, nd, (int) len, 1.0, (double*) T,
+		nd, (double*) sub_mean, 1, 0, (double*) ret, 1);
 
 	delete[] sub_mean ;
 	len=num_dim ;

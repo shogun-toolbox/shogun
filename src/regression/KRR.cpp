@@ -93,7 +93,10 @@ CLabels* CKRR::classify(CLabels* output)
 		// K is symmetric, CblasColMajor is same as CblasRowMajor 
 		// and used that way in the origin call:
 		// dgemv('T', m, n, 1.0, K, m, alpha, 1, 0.0, Yh, 1);
-		cblas_dgemv(CblasColMajor, CblasTrans, m, n, 1.0, K, m, alpha, 1, 0.0, Yh, 1);
+		int m_int = (int) m;
+		int n_int = (int) n;
+		cblas_dgemv(CblasColMajor, CblasTrans, m_int, n_int, 1.0, (double*) K,
+			m_int, (double*) alpha, 1, 0.0, (double*) Yh, 1);
 
 		delete[] K;
 

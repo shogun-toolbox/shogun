@@ -83,8 +83,10 @@ bool CLDA::train()
 	float64_t* mean_pos=new float64_t[num_feat];
 	memset(mean_pos,0,num_feat*sizeof(float64_t));
 
-	float64_t* scatter=new float64_t[num_feat*num_feat];
-	float64_t* buffer=new float64_t[num_feat*CMath::max(num_neg, num_pos)];
+	/* calling external lib */
+	double* scatter=new double[num_feat*num_feat];
+	double* buffer=new double[num_feat*CMath::max(num_neg, num_pos)];
+	int nf = (int) num_feat;
 
 	//mean neg
 	for (i=0; i<num_neg; i++)
@@ -112,7 +114,8 @@ bool CLDA::train()
 		for (j=0; j<num_feat; j++)
 			buffer[num_feat*i+j]-=mean_neg[j];
 	}
-	cblas_dgemm(CblasColMajor, CblasNoTrans, CblasTrans, num_feat, num_feat, num_neg, 1.0, buffer, num_feat, buffer, num_feat, 0, scatter, num_feat);
+	cblas_dgemm(CblasColMajor, CblasNoTrans, CblasTrans, nf, nf,
+		(int) num_neg, 1.0, buffer, nf, buffer, nf, 0, scatter, nf);
 	
 	//mean pos
 	for (i=0; i<num_pos; i++)
@@ -140,25 +143,29 @@ bool CLDA::train()
 		for (j=0; j<num_feat; j++)
 			buffer[num_feat*i+j]-=mean_pos[j];
 	}
-	cblas_dgemm(CblasColMajor, CblasNoTrans, CblasTrans, num_feat, num_feat, num_pos, 1.0/(num_train_labels-1), buffer, num_feat, buffer, num_feat, 1.0/(num_train_labels-1), scatter, num_feat);
+	cblas_dgemm(CblasColMajor, CblasNoTrans, CblasTrans, nf, nf, (int) num_pos,
+		1.0/(num_train_labels-1), buffer, nf, buffer, nf,
+		1.0/(num_train_labels-1), scatter, nf);
 
-	float64_t trace=CMath::trace(scatter, num_feat, num_feat);
+	float64_t trace=CMath::trace((float64_t*) scatter, num_feat, num_feat);
 
-	float64_t s=1.0-m_gamma;
-
+	double s=1.0-m_gamma; /* calling external lib; indirectly */
 	for (i=0; i<num_feat*num_feat; i++)
 		scatter[i]*=s;
 
 	for (i=0; i<num_feat; i++)
 		scatter[i*num_feat+i]+= trace*m_gamma/num_feat;
 
-	float64_t* inv_scatter= CMath::pinv(scatter, num_feat, num_feat, NULL);
+	double* inv_scatter= (double*) CMath::pinv(
+		scatter, num_feat, num_feat, NULL);
 
 	float64_t* w_pos=buffer;
 	float64_t* w_neg=&buffer[num_feat];
 
-	cblas_dsymv(CblasColMajor, CblasUpper, num_feat, 1.0, inv_scatter, num_feat, mean_pos, 1, 0, w_pos, 1);
-	cblas_dsymv(CblasColMajor, CblasUpper, num_feat, 1.0, inv_scatter, num_feat, mean_neg, 1, 0, w_neg, 1);
+	cblas_dsymv(CblasColMajor, CblasUpper, nf, 1.0, inv_scatter, nf,
+		(double*) mean_pos, 1, 0., (double*) w_pos, 1);
+	cblas_dsymv(CblasColMajor, CblasUpper, nf, 1.0, inv_scatter, nf,
+		(double*) mean_neg, 1, 0, (double*) w_neg, 1);
 	
 	bias=0.5*(CMath::dot(w_neg, mean_neg, num_feat)-CMath::dot(w_pos, mean_pos, num_feat));
 	for (i=0; i<num_feat; i++)
