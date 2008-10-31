@@ -585,19 +585,6 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		void add_example_to_single_tree_mismatch(
 			int32_t idx, float64_t weight, int32_t tree_num);
 
-		/** add example to tree mismatch recursion
-		 *
-		 * @param tree tree
-		 * @param alpha alpha
-		 * @param vec vector
-		 * @param len_rem length of rem
-		 * @param depth_rec depth rec
-		 * @param mismatch_rec mismatch rec
-		 */
-		void add_example_to_tree_mismatch_recursion(
-			DNATrie *tree, float64_t alpha, int32_t *vec, int32_t len_rem,
-			int32_t depth_rec, int32_t mismatch_rec);
-
 		/** compute by tree
 		 *
 		 * @param idx index
