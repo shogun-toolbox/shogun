@@ -1,14 +1,13 @@
 Explanation of directory content
 ================================
 
-README   - this file
-Makefile - to create release archives
-src      - shogun source code
-doc      - documentation (to be built using doxygen)
-examples - example files for all interfaces
-
-testsuite - the shogun test suite
-
+README       - this file
+Makefile     - to create release archives
+src          - shogun source code
+doc          - documentation (to be built using doxygen)
+examples     - example files for all interfaces
+applications - applications of shogun
+testsuite    - the shogun test suite
 
 The following table depicts the status of each interface available in shogun:
 
@@ -22,7 +21,7 @@ The following table depicts the status of each interface available in shogun:
 +------------------+-----------------------------------------------------------+
 |python-modular    | mature (no known problems)                                |
 |octave-modular    | quite mature (no known problems but very new)             |
-|r-modular         | beta quality (leaking memory)                             |
+|r-modular         | alpha quality (leaking memory)                            |
 |libshogun         | currently experimental (no known problems, but interface  |
 |                  | subject to change)                                        |
 +==================+===========================================================+
