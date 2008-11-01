@@ -124,13 +124,14 @@ char* CPythonInterface::get_string(int32_t& len)
 }
 
 #define GET_VECTOR(function_name, py_type, sg_type, if_type, error_string)	\
-void CPythonInterface::function_name(sg_type*& vector, int32_t& len)			\
+void CPythonInterface::function_name(sg_type*& vector, int32_t& len)		\
 { 																			\
 	const PyArrayObject* py_vec=(PyArrayObject *) get_arg_increment();		\
-	if (!py_vec || !PyArray_Check(py_vec) || py_vec->nd!=1 ||				\
+	if (!py_vec || !PyArray_Check(py_vec) ||								\
+			!PyArray_ISCONTIGUOUS(py_vec) || py_vec->nd!=1 ||				\
 			PyArray_TYPE(py_vec)!=py_type)									\
 	{																		\
-		SG_ERROR("Expected " error_string " Vector as argument %d\n",		\
+		SG_ERROR("Expected contigous " error_string " Vector as argument %d\n",		\
 			m_rhs_counter); 												\
 	}																		\
 																			\
@@ -138,7 +139,7 @@ void CPythonInterface::function_name(sg_type*& vector, int32_t& len)			\
 	vector=new sg_type[len];												\
 	if_type* data=(if_type*) py_vec->data;									\
 																			\
-	for (int32_t i=0; i<len; i++)												\
+	for (int32_t i=0; i<len; i++)											\
 			vector[i]=data[i];												\
 }
 
@@ -156,10 +157,10 @@ GET_VECTOR(get_word_vector, NPY_USHORT, uint16_t, unsigned short, "Word")
 void CPythonInterface::function_name(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec)	\
 { 																			\
 	const PyArrayObject* py_mat=(PyArrayObject *) get_arg_increment(); 		\
-	if (!py_mat || !PyArray_Check(py_mat) || 								\
+	if (!py_mat||!PyArray_Check(py_mat)||!PyArray_ISCONTIGUOUS(py_vec)|| 	\
 			PyArray_TYPE(py_mat)!=py_type || py_mat->nd!=2) 				\
 	{																		\
-		SG_ERROR("Expected " error_string " Matrix as argument %d\n",		\
+		SG_ERROR("Expected contigous " error_string " Matrix as argument %d\n",		\
 			m_rhs_counter); 												\
 	}																		\
  																			\
@@ -169,10 +170,10 @@ void CPythonInterface::function_name(sg_type*& matrix, int32_t& num_feat, int32_
 	char* data=py_mat->data; 												\
 	npy_intp* strides= py_mat->strides; 									\
 	npy_intp d2_offs=0;														\
-	for (int32_t i=0; i<num_feat; i++) 											\
+	for (int32_t i=0; i<num_feat; i++) 										\
 	{																		\
 		npy_intp offs=d2_offs;												\
-		for (int32_t j=0; j<num_vec; j++) 										\
+		for (int32_t j=0; j<num_vec; j++) 									\
 		{																	\
 			matrix[i+j*num_feat]=*((if_type*)(data+offs));					\
 			offs+=strides[1];												\
