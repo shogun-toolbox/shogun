@@ -127,7 +127,7 @@ char* CPythonInterface::get_string(int32_t& len)
 void CPythonInterface::function_name(sg_type*& vector, int32_t& len)		\
 { 																			\
 	const PyArrayObject* py_vec=(PyArrayObject *) get_arg_increment();		\
-	if (!py_vec || !PyArray_Check(py_vec) | py_vec->nd!=1 ||				\
+	if (!py_vec || !PyArray_Check(py_vec) || py_vec->nd!=1 ||				\
 			PyArray_TYPE(py_vec)!=py_type)									\
 	{																		\
 		SG_ERROR("Expected " error_string " Vector as argument %d\n",		\
@@ -137,12 +137,12 @@ void CPythonInterface::function_name(sg_type*& vector, int32_t& len)		\
 	len=py_vec->dimensions[0]; 												\
 	npy_intp stride_offs= py_vec->strides[0];								\
 	vector=new sg_type[len];												\
-	if_type* data=(if_type*) py_vec->data;									\
+	char* data=(char*) py_vec->data;										\
 	npy_intp offs=0;														\
 																			\
 	for (int32_t i=0; i<len; i++)											\
 	{																		\
-		vector[i]=data[offs];												\
+		vector[i]=*((if_type*)(data+offs));									\
 		offs+=stride_offs;													\
 	}																		\
 }
