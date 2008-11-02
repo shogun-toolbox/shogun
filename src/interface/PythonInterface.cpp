@@ -127,20 +127,24 @@ char* CPythonInterface::get_string(int32_t& len)
 void CPythonInterface::function_name(sg_type*& vector, int32_t& len)		\
 { 																			\
 	const PyArrayObject* py_vec=(PyArrayObject *) get_arg_increment();		\
-	if (!py_vec || !PyArray_Check(py_vec) ||								\
-			!PyArray_ISCONTIGUOUS(py_vec) || py_vec->nd!=1 ||				\
+	if (!py_vec || !PyArray_Check(py_vec) | py_vec->nd!=1 ||				\
 			PyArray_TYPE(py_vec)!=py_type)									\
 	{																		\
-		SG_ERROR("Expected contigous " error_string " Vector as argument %d\n",		\
+		SG_ERROR("Expected " error_string " Vector as argument %d\n",		\
 			m_rhs_counter); 												\
 	}																		\
 																			\
 	len=py_vec->dimensions[0]; 												\
+	npy_intp stride_offs= py_vec->strides[0];								\
 	vector=new sg_type[len];												\
 	if_type* data=(if_type*) py_vec->data;									\
+	npy_intp offs=0;														\
 																			\
 	for (int32_t i=0; i<len; i++)											\
-			vector[i]=data[i];												\
+	{																		\
+		vector[i]=data[offs];												\
+		offs+=stride_offs;													\
+	}																		\
 }
 
 GET_VECTOR(get_byte_vector, NPY_BYTE, uint8_t, uint8_t, "Byte")
@@ -157,10 +161,10 @@ GET_VECTOR(get_word_vector, NPY_USHORT, uint16_t, unsigned short, "Word")
 void CPythonInterface::function_name(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec)	\
 { 																			\
 	const PyArrayObject* py_mat=(PyArrayObject *) get_arg_increment(); 		\
-	if (!py_mat||!PyArray_Check(py_mat)||!PyArray_ISCONTIGUOUS(py_vec)|| 	\
+	if (!py_mat || !PyArray_Check(py_mat) ||								\
 			PyArray_TYPE(py_mat)!=py_type || py_mat->nd!=2) 				\
 	{																		\
-		SG_ERROR("Expected contigous " error_string " Matrix as argument %d\n",		\
+		SG_ERROR("Expected " error_string " Matrix as argument %d\n",		\
 			m_rhs_counter); 												\
 	}																		\
  																			\
