@@ -142,7 +142,7 @@ class CWDSVMOcas : public CClassifier
 		 * @param output resulting labels
 		 * @return resulting labels
 		 */
-		CLabels* classify(CLabels* output);
+		CLabels* classify(CLabels* output=NULL);
 
 		/** classify one example
 		 *
@@ -158,6 +158,7 @@ class CWDSVMOcas : public CClassifier
 			int32_t len=0;
 			float64_t sum=0;
 			uint8_t* vec=features->get_feature_vector(num, len);
+			SG_INFO("len %d, string_length %d\n", len, string_length);
 			ASSERT(len==string_length);
 
 			for (int32_t j=0; j<string_length; j++)
