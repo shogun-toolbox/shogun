@@ -5,12 +5,13 @@ import shogun.Library as library
 import shogun.Classifier as classifier
 from shogun.Kernel import *
 from shogun.Distance import EuclidianDistance
-from shogun.Features import Labels
+from shogun.Features import Labels, RAWDNA
 
 import fileop
 import featop
 import dataop
 import config
+
 
 def _get_outdata (name, params):
 	"""Return data to be written into the testcase's file.
@@ -29,6 +30,7 @@ def _get_outdata (name, params):
 		'name':name,
 		'init_random':dataop.INIT_RANDOM,
 		'data_train':numpy.matrix(params['data']['train']),
+		#'data_train':params['data']['train'],
 		'data_test':numpy.matrix(params['data']['test']),
 		'classifier_accuracy':config.CLASSIFIER[name][0],
 		'classifier_type':ctype,
@@ -43,6 +45,7 @@ def _get_outdata (name, params):
 		'max_iter', 'learn_rate',
 		'k',
 		'gamma',
+		'degree',
 		'linadd_enabled', 'batch_enabled'
 	]
 	for opt in optional:
@@ -59,11 +62,35 @@ def _get_outdata (name, params):
 		dparams=fileop.get_outdata(
 			params['dname'], config.C_DISTANCE, params['dargs'])
 		outdata.update(dparams)
+	elif ctype=='wdsvmocas':
+		outdata['feature_class']='string'
+		outdata['feature_type']='Byte'
+		outdata['alphabet']='RAWDNA'
+		outdata['seqlen']=dataop.NUM_VEC_TEST
+
+		pdt=params['data']['train']
+		odt=outdata['data_train'].tolist()[0]
+		for i in xrange(len(pdt)):
+			print 'len pdt', len(pdt[i]), 'len odt', len(odt[i])
+			print pdt[i], '   ', odt[i]
+			ordstr=''
+			for c in pdt[i]:
+				ordstr+=str(ord(c))
+			ordstr+='   '
+			for c in odt[i]:
+				ordstr+=str(ord(c))
+			print ordstr
+			print ''
+		print 'done get_outdata'
+
+
 	else:
 		outdata['feature_class']='simple'
 		outdata['feature_type']='Real'
 		outdata['data_type']='double'
+
 	return outdata
+
 
 ##########################################################################
 # svm
@@ -95,8 +122,12 @@ def _get_svm (name, labels, params):
 			return svm(params['C'], params['kernel'])
 		else:
 			return svm(params['C'], params['kernel'], labels)
+	elif ctype=='wdsvmocas':
+		return svm(params['C'], params['degree'], params['degree'],
+			params['feats']['train'], labels)
 	else:
 		return svm(params['C'], params['feats']['train'], labels)
+
 
 def _compute_svm (name, labels, params):
 	"""Perform computations on SVM.
@@ -148,13 +179,14 @@ def _compute_svm (name, labels, params):
 
 		params['kernel'].init(
 			params['feats']['train'], params['feats']['test'])
-	elif ctype=='linear':
+	elif ctype=='linear' or ctype=='wdsvmocas':
 		svm.set_features(params['feats']['test'])
 
 	params['classified']=svm.classify().get_labels()
 
 	outdata=_get_outdata(name, params)
 	fileop.write(config.C_CLASSIFIER, outdata)
+
 
 def _loop_svm (svms, params):
 	"""Loop through SVM computations, only slightly differing in parameters.
@@ -205,6 +237,7 @@ def _loop_svm (svms, params):
 
 		parms['num_threads']=16
 		_compute_svm(name, labels, parms)
+
 
 def _run_svm_kernel ():
 	"""Run all kernel-based SVMs."""
@@ -289,6 +322,7 @@ def _run_svm_linear ():
 	params['max_train_time']=.5 # up to 2. does not improve test results :(
 	_loop_svm(svms, params)
 
+
 ##########################################################################
 # other classifiers
 ##########################################################################
@@ -321,6 +355,7 @@ def _run_perceptron ():
 	outdata=_get_outdata(name, params)
 	fileop.write(config.C_CLASSIFIER, outdata)
 
+
 def _run_knn ():
 	"""Run K-Nearest-Neighbour classifier.
 	"""
@@ -349,6 +384,7 @@ def _run_knn ():
 	outdata=_get_outdata(name, params)
 	fileop.write(config.C_CLASSIFIER, outdata)
 
+
 def _run_lda ():
 	"""Run Linear Discriminant Analysis classifier."""
 
@@ -372,6 +408,20 @@ def _run_lda ():
 	outdata=_get_outdata(name, params)
 	fileop.write(config.C_CLASSIFIER, outdata)
 
+
+def _run_wdsvmocas ():
+	"""Run Weighted Degree SVM Ocas classifier."""
+
+	name='WDSVMOcas'
+	params={
+		'degree': 1,
+		'bias_enabled': False,
+		'data': dataop.get_rawdna(),
+	}
+	params['feats']=featop.get_string('Byte', params['data'], RAWDNA)
+	_loop_svm([name], params)
+
+
 ##########################################################################
 # public
 ##########################################################################
@@ -379,11 +429,10 @@ def _run_lda ():
 def run ():
 	"""Run generator for all classifiers."""
 
-	_run_svm_kernel()
-	_run_svm_linear()
-	_run_knn()
-	_run_lda()
-	_run_perceptron()
-
-
+#	_run_svm_kernel()
+#	_run_svm_linear()
+#	_run_knn()
+#	_run_lda()
+#	_run_perceptron()
+	_run_wdsvmocas()
 

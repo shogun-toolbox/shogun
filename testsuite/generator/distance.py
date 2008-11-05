@@ -60,7 +60,7 @@ def _run_feats_real ():
 def _run_feats_string_complex ():
 	"""Run distances with complex StringFeatures, like WordString."""
 
-	data=dataop.get_dna(len_seq_test_add=42)
+	data=dataop.get_dna(num_vec_test=dataop.NUM_VEC_TRAIN+42)
 	feats=featop.get_string_complex('Word', data)
 
 	_compute('CanberraWordDistance', feats, data)

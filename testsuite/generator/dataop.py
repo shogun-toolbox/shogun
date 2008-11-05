@@ -2,6 +2,7 @@
 
 import sys
 import md5
+import string
 import numpy
 import numpy.random as random
 from shogun.Features import Labels
@@ -43,7 +44,6 @@ def get_rand (dattype=numpy.double, num_feats=_NUM_FEATS, dim_square=False,
 	@return Dict which contains the random numbers
 	"""
 
-	#random.seed(_get_seed())
 
 	if dim_square:
 		num_feats=num_vec_train=num_vec_test=dim_square
@@ -95,7 +95,6 @@ def get_clouds (num_clouds, num_feats=_NUM_FEATS):
 	@return Dict which contains the random numbers
 	"""
 
-	#random.seed(_get_seed())
 	clouds={}
 
 	data=[random.rand(num_feats, NUM_VEC_TRAIN)+x/2 for x in xrange(num_clouds)]
@@ -123,7 +122,6 @@ def get_cubes (num_train=4, num_test=8):
 	rep=5
 	weight=1
 
-	#random.seed(_get_seed())
 
 	sequence={'train':list(), 'test':list()}
 	num={'train': num_train, 'test': num_test}
@@ -165,7 +163,6 @@ def get_labels (num, ltype='twoclass'):
 	@return Tuple to contain the labels as numbers in a tuple and labels as objects digestable for Shogun.
 	"""
 
-	#random.seed(_get_seed())
 	labels=[]
 	if ltype=='twoclass':
 		labels.append(random.rand(num).round()*2-1)
@@ -180,32 +177,44 @@ def get_labels (num, ltype='twoclass'):
 	return labels
 
 
-def get_dna (len_seq_test_add=0):
-	"""Return a random DNA sequence.
+def get_rawdna():
+	"""Return a RAWDNA sequence with number of vectors == length of sequence.
 
-	@param len_seq_test_add Additional length of the sequence of characters in the test data, used by some distances.
 	@return Dict of tuples of DNA sequences.
 	"""
 
-	#random.seed(_get_seed())
+	# num_vec_train == num_vec_test == len_seq
+	dna=get_dna(NUM_VEC_TEST, NUM_VEC_TEST, NUM_VEC_TEST)
+	table=string.maketrans('ACGT', '\0\1\2\3')
+	dna['train']=[x.translate(table) for x in dna['train']]
+	dna['test']=[x.translate(table) for x in dna['test']]
+
+	return dna
+
+
+def get_dna (
+	num_vec_train=NUM_VEC_TRAIN, num_vec_test=NUM_VEC_TEST, len_seq=LEN_SEQ):
+	"""Return a random DNA sequence.
+
+	@param num_vec_train number of training vectors
+	@param num_vec_test number of test vectors
+	@param len_seq sequence length
+	@return Dict of tuples of DNA sequences.
+	"""
+
 	acgt=numpy.array(['A', 'C', 'G','T'])
 	len_acgt=len(acgt)
-	rand_train=[]
-	rand_test=[]
 
-	for i in xrange(NUM_VEC_TRAIN):
-		str1=[]
-		str2=[]
-		for j in range(LEN_SEQ):
-			str1.append(acgt[numpy.floor(len_acgt*random.rand())])
-			str2.append(acgt[numpy.floor(len_acgt*random.rand())])
-		rand_train.append(''.join(str1))
-	rand_test.append(''.join(str2))
-	
-	for i in xrange(NUM_VEC_TEST-NUM_VEC_TRAIN):
-		str1=[]
-		for j in range(LEN_SEQ+len_seq_test_add):
-			str1.append(acgt[numpy.floor(len_acgt*random.rand())])
-	rand_test.append(''.join(str1))
+	train=[
+		''.join([
+			acgt[numpy.floor(len_acgt*random.rand())] for j in xrange(len_seq)
+		]) for i in xrange(num_vec_train)
+	]
 
-	return {'train': rand_train, 'test': rand_test}
+	test=[
+		''.join([
+			acgt[numpy.floor(len_acgt*random.rand())] for j in xrange(len_seq)
+		]) for i in xrange(num_vec_test)
+	]
+
+	return {'train': train, 'test': test}
