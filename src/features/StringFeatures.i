@@ -39,6 +39,11 @@
     {
         self->CStringFeatures<uint8_t>::get_string(dst,len);
     }
+
+    bool set_string_features(T_STRING<uint8_t>* strings, int32_t num_strings, int32_t max_len)
+    {
+        return self->CStringFeatures<uint8_t>::set_features(strings, num_strings, max_len);
+    }
 };
 %extend CStringFeatures<int16_t>
 {

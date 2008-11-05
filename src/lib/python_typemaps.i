@@ -589,18 +589,18 @@ TYPEMAP_ARGOUT2(PyObject,      NPY_OBJECT)
 
 #undef TYPEMAP_ARGOUT2
 
-/* input typemap for CStringFeatures<char> */
-%typemap(in) (T_STRING<char>* strings, int32_t num_strings, int32_t max_len)
-{
+
+/* input typemap for CStringFeatures */
+%define TYPEMAP_STRINGFEATURES_IN(type,typecode)
+%typemap(in) (T_STRING<type>* strings, int32_t num_strings, int32_t max_len) {
     PyObject* list=(PyObject*) $input;
     /* Check if is a list */
     if (!list || PyList_Check(list) || PyList_Size(list)==0)
     {
         int32_t size=PyList_Size(list);
-        T_STRING<char>* strings=new T_STRING<char>[size];
+        T_STRING<type>* strings=new T_STRING<type>[size];
 
         int32_t max_len=0;
-
         for (int32_t i=0; i<size; i++)
         {
             PyObject *o = PyList_GetItem(list,i);
@@ -615,13 +615,13 @@ TYPEMAP_ARGOUT2(PyObject,      NPY_OBJECT)
 
                 if (len>0)
                 {
-                    strings[i].string=new char[len];
+                    strings[i].string=new type[len];
                     memcpy(strings[i].string, str, len);
                 }
             }
             else
             {
-                PyErr_SetString(PyExc_TypeError,"all elements in list must be strings");
+                PyErr_SetString(PyExc_TypeError, "all elements in list must be strings");
 
                 for (int32_t j=0; j<i; j++)
                     delete[] strings[i].string;
@@ -638,6 +638,11 @@ TYPEMAP_ARGOUT2(PyObject,      NPY_OBJECT)
         PyErr_SetString(PyExc_TypeError,"not a/empty list");
         return NULL;
     }
-
 }
+%enddef
+
+TYPEMAP_STRINGFEATURES_IN(char,          NPY_STRING )
+TYPEMAP_STRINGFEATURES_IN(uint8_t,       NPY_UINT8 )
+#undef TYPEMAP_STRINGFEATURES_IN
+
 #endif
