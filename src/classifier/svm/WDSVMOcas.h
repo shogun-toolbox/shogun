@@ -197,7 +197,7 @@ class CWDSVMOcas : public CClassifier
 	protected:
 		/** set wd weights
 		 *
-		 * @return something inty
+		 * @return w_dim_single_c
 		 */
 		int32_t set_wd_weights();
 

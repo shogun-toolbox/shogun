@@ -65,7 +65,7 @@ CWDSVMOcas::CWDSVMOcas(
 	old_w=NULL;
 	method=SVM_OCAS;
 	features=traindat;
-	CClassifier::labels=trainlab;
+	set_labels(trainlab);
 	wd_weights=NULL;
 	w_offsets=NULL;
 	normalization_const=1.0;
@@ -132,7 +132,7 @@ bool CWDSVMOcas::train()
 	lab=labels->get_labels(num_train_labels);
 
 	w_dim_single_char=set_wd_weights();
-	CMath::display_vector(wd_weights, degree, "wd_weights");
+	//CMath::display_vector(wd_weights, degree, "wd_weights");
 	SG_DEBUG("w_dim_single_char=%d\n", w_dim_single_char);
 	w_dim=string_length*w_dim_single_char;
 	SG_DEBUG("cutting plane has %d dims\n", w_dim);
