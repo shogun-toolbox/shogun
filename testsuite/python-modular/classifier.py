@@ -31,6 +31,31 @@ def _get_machine (indata, feats):
 
 	return machine
 
+
+def _get_results_alpha_and_sv(indata, classifier):
+	if not indata.has_key('classifier_alphas') and \
+		not indata.has_key('classifier_support_vectors') and \
+		not indata.has_key('classifier_alphas0') and \
+		not indata.has_key('classifier_support_vectors0'):
+		return None, None
+
+	if indata['classifier_labeltype']=='series':
+		a=0
+		sv=0
+		for i in xrange(classifier.get_num_svms()):
+			subsvm=classifier.get_svm(i)
+			a+=max(abs(subsvm.get_alphas()-indata['classifier_alphas'+str(i)]))
+			sv+=max(abs(subsvm.get_support_vectors()- \
+				indata['classifier_support_vectors'+str(i)]))
+	else:
+		a=max(abs(classifier.get_alphas()- \
+			indata['classifier_alphas']))
+		sv=max(abs(classifier.get_support_vectors()- \
+				indata['classifier_support_vectors']))
+
+	return a, sv
+
+
 def _get_results (indata, classifier, machine=None, feats=None):
 	res={
 		'alphas':0,
@@ -41,12 +66,8 @@ def _get_results (indata, classifier, machine=None, feats=None):
 
 	if indata.has_key('classifier_bias'):
 		res['bias']=abs(classifier.get_bias()-indata['classifier_bias'])
-	if indata.has_key('classifier_alphas'):
-		res['alphas']=max(abs(classifier.get_alphas()- \
-			indata['classifier_alphas']))
-	if indata.has_key('classifier_support_vectors'):
-		res['sv']=max(abs(classifier.get_support_vectors()- \
-			indata['classifier_support_vectors']))
+
+	res['alphas'], res['sv'] = _get_results_alpha_and_sv(indata, classifier)
 
 	ctype=indata['classifier_type']
 	if ctype=='kernel' or ctype=='knn':
@@ -56,7 +77,6 @@ def _get_results (indata, classifier, machine=None, feats=None):
 
 	res['classified']=max(abs(
 		classifier.classify().get_labels()-indata['classifier_classified']))
-
 	return res
 
 def _classifier (indata):

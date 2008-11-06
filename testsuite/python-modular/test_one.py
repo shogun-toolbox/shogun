@@ -57,8 +57,13 @@ def _test_mfile (fnam):
 		elif param.startswith('km_') or param.startswith('dm_'):
 			indata[param]=_read_matrix(line)
 		elif param.find('data_train')>-1 or param.find('data_test')>-1:
-			# data_{train,test} might also be prepended by *subkernel*
+			# data_{train,test} might be prepended by 'subkernelX_'
 			indata[param]=_read_matrix(line)
+		elif param=='classifier_alphas' or param=='classifier_support_vectors':
+			try:
+				indata[param]=eval(line.split('=')[1])
+			except SyntaxError: # might be MultiClass SVM and hence matrix
+				indata[param]=_read_matrix(line)
 		elif param=='clustering_centers' or param=='clustering_pairs':
 			indata[param]=_read_matrix(line)
 		else:
