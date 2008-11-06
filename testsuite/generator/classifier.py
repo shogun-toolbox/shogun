@@ -1,5 +1,6 @@
 """Generator for Classifier"""
 
+import types
 import numpy
 import shogun.Library as library
 import shogun.Classifier as classifier
@@ -11,6 +12,38 @@ import fileop
 import featop
 import dataop
 import config
+
+
+def _get_outdata_optional (outdata, params):
+	"""Return optional outdata.
+	"""
+
+	optional=['num_threads', 'classified',
+		'alphas', 'bias','support_vectors', 'labels',
+		'C', 'epsilon',
+		'bias_enabled',
+		'tube_epsilon',
+		'max_train_time',
+		'max_iter', 'learn_rate',
+		'k',
+		'gamma',
+		'degree',
+		'linadd_enabled', 'batch_enabled'
+	]
+
+	for opt in optional:
+		if params.has_key(opt):
+			if opt=='alphas' or opt=='support_vectors':
+				# do yuckiness to be compatible to others than python
+				if type(params[opt][0])==types.ListType:
+					for i in xrange(len(params[opt])):
+						outdata['classifier_'+opt+str(i)]=params[opt][i]
+				else:
+					outdata['classifier_'+opt]=params[opt]
+			else:
+				outdata['classifier_'+opt]=params[opt]
+
+	return outdata
 
 
 def _get_outdata (name, params):
@@ -30,27 +63,13 @@ def _get_outdata (name, params):
 		'name':name,
 		'init_random':dataop.INIT_RANDOM,
 		'data_train':numpy.matrix(params['data']['train']),
-		#'data_train':params['data']['train'],
 		'data_test':numpy.matrix(params['data']['test']),
 		'classifier_accuracy':config.CLASSIFIER[name][0],
 		'classifier_type':ctype,
+		'classifier_labeltype':config.CLASSIFIER[name][2]
 	}
 
-	optional=['num_threads', 'classified',
-		'alphas', 'bias','support_vectors', 'labels',
-		'C', 'epsilon',
-		'bias_enabled',
-		'tube_epsilon',
-		'max_train_time',
-		'max_iter', 'learn_rate',
-		'k',
-		'gamma',
-		'degree',
-		'linadd_enabled', 'batch_enabled'
-	]
-	for opt in optional:
-		if params.has_key(opt):
-			outdata['classifier_'+opt]=params[opt]
+	outdata=_get_outdata_optional(outdata, params)
 
 	if ctype=='kernel':
 		outdata['kernel_name']=params['kname']
@@ -68,20 +87,20 @@ def _get_outdata (name, params):
 		outdata['alphabet']='RAWDNA'
 		outdata['seqlen']=dataop.NUM_VEC_TEST
 
-		pdt=params['data']['train']
-		odt=outdata['data_train'].tolist()[0]
-		for i in xrange(len(pdt)):
-			print 'len pdt', len(pdt[i]), 'len odt', len(odt[i])
-			print pdt[i], '   ', odt[i]
-			ordstr=''
-			for c in pdt[i]:
-				ordstr+=str(ord(c))
-			ordstr+='   '
-			for c in odt[i]:
-				ordstr+=str(ord(c))
-			print ordstr
-			print ''
-		print 'done get_outdata'
+#		pdt=params['data']['train']
+#		odt=outdata['data_train'].tolist()[0]
+#		for i in xrange(len(pdt)):
+#			print 'len pdt', len(pdt[i]), 'len odt', len(odt[i])
+#			print pdt[i], '   ', odt[i]
+#			ordstr=''
+#			for c in pdt[i]:
+#				ordstr+=str(ord(c))
+#			ordstr+='   '
+#			for c in odt[i]:
+#				ordstr+=str(ord(c))
+#			print ordstr
+#			print ''
+#		print 'done get_outdata'
 
 
 	else:
@@ -129,6 +148,31 @@ def _get_svm (name, labels, params):
 		return svm(params['C'], params['feats']['train'], labels)
 
 
+def _get_svm_alpha_and_sv (svm, ltype):
+	"""Return alphas and support vectors for given (MultiClass) SVM.
+
+	@param svm (MultiClass) SVM to retrieve alphas from
+	@param ltype label type of SVM
+	@return 2-element list with list (matrix) of alphas and list (matrix) of
+	        support vectors
+	"""
+
+	if ltype=='series':
+		a=[]
+		sv=[]
+		for i in xrange(svm.get_num_svms()):
+			subsvm=svm.get_svm(i)
+			a.append(subsvm.get_alphas().tolist())
+			sv.append(subsvm.get_support_vectors().tolist())
+		#a=numpy.matrix((numpy.array(a)))
+		#sv=numpy.matrix(numpy.array(sv))
+	else:
+		a=svm.get_alphas()
+		sv=svm.get_support_vectors()
+
+	return a, sv
+
+
 def _compute_svm (name, labels, params):
 	"""Perform computations on SVM.
 
@@ -169,16 +213,9 @@ def _compute_svm (name, labels, params):
 		params['bias']=svm.get_bias()
 
 	if ctype=='kernel':
-		alphas=svm.get_alphas()
-		if len(alphas)>0:
-			params['alphas']=alphas
-
-		support_vectors=svm.get_support_vectors()
-		if len(support_vectors)>0:
-			params['support_vectors']=support_vectors
-
-		params['kernel'].init(
-			params['feats']['train'], params['feats']['test'])
+		params['alphas'], params['support_vectors']= \
+			_get_svm_alpha_and_sv(svm, config.CLASSIFIER[name][2])
+		params['kernel'].init(params['feats']['train'], params['feats']['test'])
 	elif ctype=='linear' or ctype=='wdsvmocas':
 		svm.set_features(params['feats']['test'])
 
@@ -263,7 +300,6 @@ def _run_svm_kernel ():
 	params['kernel']=LinearKernel()
 	params['kernel'].set_normalizer(AvgDiagKernelNormalizer(-1))
 	params['kernel'].init(params['feats']['train'], params['feats']['train'])
-
 	_loop_svm(svms, params)
 
 	params['data']=dataop.get_dna()
@@ -429,10 +465,10 @@ def _run_wdsvmocas ():
 def run ():
 	"""Run generator for all classifiers."""
 
-#	_run_svm_kernel()
-#	_run_svm_linear()
-#	_run_knn()
-#	_run_lda()
-#	_run_perceptron()
-	_run_wdsvmocas()
+	_run_svm_kernel()
+	_run_svm_linear()
+	_run_knn()
+	_run_lda()
+	_run_perceptron()
+#	_run_wdsvmocas()
 
