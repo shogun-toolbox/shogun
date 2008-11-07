@@ -33,25 +33,29 @@ def _get_machine (indata, feats):
 
 
 def _get_results_alpha_and_sv(indata, classifier):
-	if not indata.has_key('classifier_alphas') and \
-		not indata.has_key('classifier_support_vectors') and \
-		not indata.has_key('classifier_alphas0') and \
-		not indata.has_key('classifier_support_vectors0'):
+	if not indata.has_key('classifier_alpha_sum') and \
+		not indata.has_key('classifier_sv_sum'):
 		return None, None
 
+	a=0
+	sv=0
 	if indata['classifier_labeltype']=='series':
-		a=0
-		sv=0
 		for i in xrange(classifier.get_num_svms()):
 			subsvm=classifier.get_svm(i)
-			a+=max(abs(subsvm.get_alphas()-indata['classifier_alphas'+str(i)]))
-			sv+=max(abs(subsvm.get_support_vectors()- \
-				indata['classifier_support_vectors'+str(i)]))
+			for item in subsvm.get_alphas().tolist():
+				a+=item
+			for item in subsvm.get_support_vectors().tolist():
+				sv+=item
+
+		a=abs(a-indata['classifier_alpha_sum'])
+		sv=abs(sv-indata['classifier_sv_sum'])
 	else:
-		a=max(abs(classifier.get_alphas()- \
-			indata['classifier_alphas']))
-		sv=max(abs(classifier.get_support_vectors()- \
-				indata['classifier_support_vectors']))
+		for item in classifier.get_alphas().tolist():
+			a+=item
+		a=abs(a-indata['classifier_alpha_sum'])
+		for item in classifier.get_support_vectors().tolist():
+			sv+=item
+		sv=abs(sv-indata['classifier_sv_sum'])
 
 	return a, sv
 

@@ -41,21 +41,24 @@ def _regression (indata):
 
 	alphas=0
 	bias=0
-	support_vectors=0
+	sv=0
 	if indata.has_key('regression_bias'):
 		bias=abs(regression.get_bias()-indata['regression_bias'])
 	if indata.has_key('regression_alphas'):
-		alphas=max(abs(regression.get_alphas()-indata['regression_alphas']))
+		for item in regression.get_alphas().tolist():
+			alphas+=item
+		alphas=abs(alphas-indata['regression_alphas'])
 	if indata.has_key('regression_support_vectors'):
-		support_vectors=max(abs(regression.get_support_vectors()-
-			indata['regression_support_vectors']))
+		for item in inregression.get_support_vectors().tolist():
+			sv+=item
+		sv=abs(sv-indata['regression_support_vectors'])
 
 	kernel.init(feats['train'], feats['test'])
 	classified=max(abs(
 		regression.classify().get_labels()-indata['regression_classified']))
 
 	return util.check_accuracy(indata['regression_accuracy'], alphas=alphas,
-		bias=bias, support_vectors=support_vectors, classified=classified)
+		bias=bias, support_vectors=sv, classified=classified)
 
 ########################################################################
 # public
