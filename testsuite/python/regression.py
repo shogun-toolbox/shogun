@@ -37,14 +37,18 @@ def _evaluate (indata):
 		[bias, weights]=sg('get_svm')
 		weights=weights.T
 		bias=abs(bias-indata['regression_bias'])
-		alphas=max(abs(weights[0]-indata['regression_alphas']))
-		sv=max(abs(weights[1]-indata['regression_support_vectors']))
+		for item in weights[0].tolist():
+			alphas+=item
+		alphas=abs(alphas-indata['regression_alpha_sum'])
+		for item in weights[1].tolist():
+			sv+=item
+		sv=abs(sv-indata['regression_sv_sum'])
 
 	sg('init_kernel', 'TEST')
 	classified=max(abs(sg('classify')-indata['regression_classified']))
 
 	return util.check_accuracy(indata['regression_accuracy'],
-		alphas=alphas, bias=bias, sv=sv, classified=classified)
+		alphas=alphas, bias=bias, support_vectors=sv, classified=classified)
 
 
 ########################################################################

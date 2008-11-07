@@ -52,6 +52,36 @@ def _train (indata):
 		sg('train_classifier')
 
 
+def _get_alpha_and_sv(indata):
+	if not indata.has_key('classifier_alpha_sum') and \
+		not indata.has_key('classifier_sv_sum'):
+		return None, None
+
+	a=0
+	sv=0
+	if indata['classifier_labeltype']=='series':
+		for i in xrange(sg('get_num_svms')):
+			[dump, weights]=sg('get_svm', i)
+			weights=weights.T
+			for item in weights[0].tolist():
+				a+=item
+			for item in weights[1].tolist():
+				sv+=item
+		a=abs(a-indata['classifier_alpha_sum'])
+		sv=abs(sv-indata['classifier_sv_sum'])
+	else:
+		[dump, weights]=sg('get_svm')
+		weights=weights.T
+		for item in weights[0].tolist():
+			a+=item
+		a=abs(a-indata['classifier_alpha_sum'])
+		for item in weights[1].tolist():
+			sv+=item
+		sv=abs(sv-indata['classifier_sv_sum'])
+
+	return a, sv
+
+
 def _evaluate (indata):
 	alphas=0
 	bias=0
@@ -62,21 +92,21 @@ def _evaluate (indata):
 	elif indata['classifier_type']=='lda':
 		pass
 	else:
-		if indata.has_key('classifier_bias') and indata.has_key('classifier_alphas'):
+		if indata['classifier_labeltype'] != 'series' and \
+			indata.has_key('classifier_bias'):
 			[b, weights]=sg('get_svm')
 			weights=weights.T
 			bias=abs(b-indata['classifier_bias'])
-			alphas=max(abs(weights[0]-indata['classifier_alphas']))
 
-			if indata.has_key('classifier_support_vectors'):
-				sv=max(abs(weights[1]-indata['classifier_support_vectors']))
+		alphas, sv=_get_alpha_and_sv(indata)
+
 
 		sg('init_kernel', 'TEST')
 
 	classified=max(abs(sg('classify')-indata['classifier_classified']))
 
 	return util.check_accuracy(indata['classifier_accuracy'],
-		alphas=alphas, bias=bias, sv=sv, classified=classified)
+		alphas=alphas, bias=bias, support_vectors=sv, classified=classified)
 
 ########################################################################
 # public
