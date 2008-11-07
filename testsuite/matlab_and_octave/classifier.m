@@ -85,12 +85,37 @@ function y = classifier(filename)
 	elseif strcmp(classifier_type, 'lda')==1
 		0; % nop
 	else
-		if ~isempty(classifier_bias) && ~isempty(classifier_alphas)
+		if ~isempty(classifier_bias) && strcmp(classifier_labeltype, 'series')~=1
 			[bias, weights]=sg('get_svm');
 			bias=abs(bias-classifier_bias);
-			weights=weights';
-			alphas=max(abs(weights(1:1,:)-classifier_alphas));
-			sv=max(abs(weights(2:2,:)-classifier_support_vectors));
+		end
+
+		if ~isempty(classifier_alpha_sum) && ~isempty(classifier_sv_sum)
+			if strcmp(classifier_labeltype, 'series')==1
+				for i = 0:sg('get_num_svms')-1
+					[dump, weights]=sg('get_svm', i);
+					weights=weights';
+					for j = 1:length(weights(1:1, :))
+						alphas=alphas+weights(1:1, j:j);
+					end
+					for j = 1:length(weights(2:2, :))
+						sv=sv+weights(2:2, j:j);
+					end
+				end
+				alphas=abs(alphas-classifier_alpha_sum);
+				sv=abs(sv-classifier_sv_sum);
+			else
+				[dump, weights]=sg('get_svm');
+				weights=weights';
+				for i = 1:length(weights(1:1, :))
+					alphas=alphas+weights(1:1, i:i);
+				end
+				alphas=abs(alphas-classifier_alpha_sum);
+				for i = 1:length(weights(2:2, :))
+					sv=sv+weights(2:2, i:i);
+				end
+				sv=abs(sv-classifier_sv_sum);
+			end
 		end
 
 		if strcmp(classifier_type, 'kernel')==1

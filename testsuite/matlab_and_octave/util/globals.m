@@ -78,9 +78,10 @@ global distance_arg0_k;
 
 global classifier_type;
 global classifier_labels;
+global classifier_labeltype;
 global classifier_bias;
-global classifier_alphas;
-global classifier_support_vectors;
+global classifier_alpha_sum;
+global classifier_sv_sum;
 global classifier_epsilon;
 global classifier_tube_epsilon;
 global classifier_max_train_time;
@@ -103,8 +104,8 @@ global regression_epsilon;
 global regression_tube_epsilon;
 global regression_tau;
 global regression_bias;
-global regression_alphas;
-global regression_support_vectors;
+global regression_alpha_sum;
+global regression_sv_sum;
 global regression_classified;
 global regression_accuracy;
 

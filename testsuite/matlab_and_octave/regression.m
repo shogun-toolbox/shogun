@@ -44,8 +44,14 @@ function y = regression(filename)
 		[bias, weights]=sg('get_svm');
 		bias=abs(bias-regression_bias);
 		weights=weights';
-		alphas=max(abs(weights(1:1,:)-regression_alphas));
-		sv=max(abs(weights(2:2,:)-regression_support_vectors));
+		for i = 1:length(weights(1:1, :))
+			alphas=alphas+weights(1:1, i:i);
+		end
+		alphas=abs(alphas-regression_alpha_sum);
+		for i = 1:length(weights(2:2, :))
+			sv=sv+weights(2:2, i:i);
+		end
+		sv=abs(sv-regression_sv_sum);
 	end
 
 	sg('init_kernel', 'TEST');
