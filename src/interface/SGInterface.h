@@ -172,6 +172,8 @@ class CSGInterface : public CSGObject
 		bool cmd_save_classifier();
 		/** get SVM */
 		bool cmd_get_svm();
+		/** get number of SVMs in MultiClass */
+		bool cmd_get_num_svms();
 		/** set SVM */
 		bool cmd_set_svm();
 		/** classify */

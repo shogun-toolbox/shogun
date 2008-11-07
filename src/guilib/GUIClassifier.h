@@ -45,16 +45,24 @@ class CGUIClassifier : public CSGObject
 
 		bool get_trained_classifier(
 			float64_t* &weights, int32_t& rows, int32_t& cols,
-			float64_t*& bias, int32_t& brows, int32_t& bcols);
+			float64_t*& bias, int32_t& brows, int32_t& bcols,
+			int32_t idx=-1); // which SVM in MultiClass
+
+		/** get number of SVMs in MultiClass */
+		int32_t get_num_svms();
 		bool get_svm(
 			float64_t* &weights, int32_t& rows, int32_t& cols,
-			float64_t*& bias, int32_t& brows, int32_t& bcols);
+			float64_t*& bias, int32_t& brows, int32_t& bcols,
+			int32_t idx=-1); // which SVM in MultiClass
+
 		bool get_linear(
 			float64_t* &weights, int32_t& rows, int32_t& cols,
 			float64_t*& bias, int32_t& brows, int32_t& bcols);
+
 		bool get_sparse_linear(
 			float64_t* &weights, int32_t& rows, int32_t& cols,
 			float64_t*& bias, int32_t& brows, int32_t& bcols);
+
 		bool get_clustering(
 			float64_t* &weights, int32_t& rows, int32_t& cols,
 			float64_t*& bias, int32_t& brows, int32_t& bcols);

@@ -20,6 +20,7 @@
 #define N_TRANSLATE_STRING					"translate_string"
 #define N_GET_HMM							"get_hmm"
 #define N_GET_VITERBI_PATH					"get_viterbi_path"
+#define N_GET_NUM_SVMS						"get_num_svms"
 #define N_GET_SVM							"get_svm"
 #define N_GET_CLASSIFIER					"get_classifier"
 #define N_GET_CLUSTERING					"get_clustering"

@@ -865,6 +865,7 @@ bool CGUIClassifier::set_do_auc_maximization(bool do_auc)
 	return true;
 }
 
+
 CLabels* CGUIClassifier::classify(CLabels* output)
 {
 	ASSERT(classifier);
@@ -934,7 +935,8 @@ CLabels* CGUIClassifier::classify_kernelmachine(CLabels* output)
 
 bool CGUIClassifier::get_trained_classifier(
 	float64_t* &weights, int32_t &rows, int32_t &cols, float64_t*& bias,
-	int32_t& brows, int32_t& bcols)
+	int32_t& brows, int32_t& bcols,
+	int32_t idx) // which SVM for MultiClass
 {
 	ASSERT(classifier);
 
@@ -953,7 +955,7 @@ bool CGUIClassifier::get_trained_classifier(
 		case CT_LIBSVMONECLASS:
 		case CT_SVRLIGHT:
 		case CT_KRR:
-			return get_svm(weights, rows, cols, bias, brows, bcols);
+			return get_svm(weights, rows, cols, bias, brows, bcols, idx);
 			break;
 		case CT_PERCEPTRON:
 		case CT_LDA:
@@ -984,11 +986,22 @@ bool CGUIClassifier::get_trained_classifier(
 	return false;
 }
 
+
+int32_t CGUIClassifier::get_num_svms()
+{
+	ASSERT(classifier);
+	return ((CMultiClassSVM*) classifier)->get_num_svms();
+}
+
+
 bool CGUIClassifier::get_svm(
 	float64_t* &weights, int32_t& rows, int32_t& cols, float64_t*& bias,
-	int32_t& brows, int32_t& bcols)
+	int32_t& brows, int32_t& bcols, int32_t idx)
 {
 	CSVM* svm=(CSVM*) classifier;
+
+	if (idx>-1) // should be MultiClassSVM
+		svm=((CMultiClassSVM*) svm)->get_svm(idx);
 
 	if (svm)
 	{

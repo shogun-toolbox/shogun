@@ -344,7 +344,7 @@ CSGInterfaceMethod sg_methods[]=
 	{
 		N_GET_CLASSIFIER,
 		(&CSGInterface::cmd_get_classifier),
-		USAGE_O(N_GET_CLASSIFIER, "bias, weights")
+		USAGE_IO(N_GET_CLASSIFIER, "[index in case of MultiClassSVM]", "bias" USAGE_COMMA "weights")
 	},
 	{
 		N_GET_CLUSTERING,
@@ -390,9 +390,14 @@ CSGInterfaceMethod sg_methods[]=
 		USAGE_I(N_SAVE_CLASSIFIER, "filename")
 	},
 	{
+		N_GET_NUM_SVMS,
+		(&CSGInterface::cmd_get_num_svms),
+		USAGE_O(N_GET_NUM_SVMS, "number of SVMs in MultiClassSVM")
+	},
+	{
 		N_GET_SVM,
 		(&CSGInterface::cmd_get_svm),
-		USAGE_O(N_GET_SVM, "bias" USAGE_COMMA "alphas")
+		USAGE_IO(N_GET_SVM, "[index in case of MultiClassSVM]", "bias" USAGE_COMMA "alphas")
 	},
 	{
 		N_SET_SVM,
@@ -3929,8 +3934,12 @@ bool CSGInterface::cmd_classify_example()
 
 bool CSGInterface::cmd_get_classifier()
 {
-	if (m_nrhs!=1 || !create_return_values(2))
+	if (m_nrhs<1 || m_nrhs>2 || !create_return_values(2))
 		return false;
+
+	int32_t idx=-1;
+	if (m_nrhs==2)
+		idx=get_int();
 
 	float64_t* bias=NULL;
 	float64_t* weights=NULL;
@@ -3939,7 +3948,8 @@ bool CSGInterface::cmd_get_classifier()
 	int32_t brows=0;
 	int32_t bcols=0;
 
-	if (!ui_classifier->get_trained_classifier(weights, rows, cols, bias, brows, bcols))
+	if (!ui_classifier->get_trained_classifier(
+		weights, rows, cols, bias, brows, bcols, idx))
 		return false;
 
 	//SG_PRINT("brows %d, bcols %d\n", brows, bcols);
@@ -4005,6 +4015,18 @@ bool CSGInterface::cmd_load_classifier()
 	delete[] type;
 	return success;
 }
+
+
+bool CSGInterface::cmd_get_num_svms()
+{
+	if (m_nrhs!=1 || !create_return_values(1))
+		return false;
+
+	set_int(ui_classifier->get_num_svms());
+
+	return true;
+}
+
 
 bool CSGInterface::cmd_get_svm()
 {
