@@ -104,20 +104,41 @@ function y = classifier(filename)
 
 	classifier.train();
 
-	alphas=0;
 	bias=0;
-	sv=0;
 	if ~isempty(classifier_bias)
 		bias=classifier.get_bias();
 		bias=abs(bias-classifier_bias);
 	end
-	if ~isempty(classifier_alphas)
-		alphas=classifier.get_alphas();
-		alphas=max(abs(alphas-classifier_alphas));
-	end
-	if ~isempty(classifier_support_vectors)
-		sv=classifier.get_support_vectors();
-		sv=max(abs(sv-classifier_support_vectors));
+
+	alphas=0;
+	sv=0;
+	if ~isempty(classifier_alpha_sum) && ~isempty(classifier_sv_sum)
+		if strcmp(classifier_labeltype, 'series')==1
+			for i = 0:classifier.get_num_svms()-1
+				subsvm=classifier.get_svm(i);
+				tmp=subsvm.get_alphas();
+				for j = 1:length(tmp)
+					alphas=alphas+tmp(j:j);
+				end
+				tmp=subsvm.get_support_vectors();
+				for j = 1:length(tmp)
+					sv=sv+tmp(j:j);
+				end
+			end
+			alphas=abs(alphas-classifier_alpha_sum);
+			sv=abs(sv-classifier_sv_sum);
+		else
+			tmp=classifier.get_alphas();
+			for i = 1:length(tmp)
+				alphas=alphas+tmp(i:i);
+			end
+			alphas=abs(alphas-classifier_alpha_sum);
+			tmp=classifier.get_support_vectors();
+			for i = 1:length(tmp)
+				sv=sv+tmp(i:i);
+			end
+			sv=abs(sv-classifier_sv_sum);
+		end
 	end
 
 	if strcmp(classifier_type, 'knn')==1

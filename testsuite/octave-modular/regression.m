@@ -40,16 +40,25 @@ function y = regression(filename)
 	regression.parallel.set_num_threads(regression_num_threads);
 	regression.train();
 
-	alphas=0;
 	bias=0;
-	sv=0;
 	if ~isempty(regression_bias)
 		bias=regression.get_bias();
 		bias=abs(bias-regression_bias);
-		alphas=regression.get_alphas();
-		alphas=max(abs(alphas-regression_alphas));
-		sv=regression.get_support_vectors();
-		sv=max(abs(sv-regression_support_vectors));
+	end
+
+	alphas=0;
+	sv=0;
+	if ~isempty(regression_alpha_sum) && ~isempty(regression_sv_sum)
+			tmp=regression.get_alphas();
+			for i = 1:length(tmp)
+				alphas=alphas+tmp(i:i);
+			end
+			alphas=abs(alphas-regression_alpha_sum);
+			tmp=regression.get_support_vectors();
+			for i = 1:length(tmp)
+				sv=sv+tmp(i:i);
+			end
+			sv=abs(sv-regression_sv_sum);
 	end
 
 	kernel.init(feats_train, feats_test);
