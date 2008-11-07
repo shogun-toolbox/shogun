@@ -32,7 +32,7 @@ def _get_outdata_optional (outdata, params):
 	]
 
 	for opt in optional:
-		if params.has_key(opt):
+		if params.has_key(opt) and params[opt] is not None:
 			outdata['classifier_'+opt]=params[opt]
 
 	return outdata
@@ -51,6 +51,7 @@ def _get_outdata (name, params):
 	"""
 
 	ctype=config.CLASSIFIER[name][1]
+	ltype=config.CLASSIFIER[name][2]
 	outdata={
 		'name':name,
 		'init_random':dataop.INIT_RANDOM,
@@ -58,8 +59,9 @@ def _get_outdata (name, params):
 		'data_test':numpy.matrix(params['data']['test']),
 		'classifier_accuracy':config.CLASSIFIER[name][0],
 		'classifier_type':ctype,
-		'classifier_labeltype':config.CLASSIFIER[name][2]
 	}
+	if ltype is not None:
+		outdata['classifier_labeltype']=ltype
 
 	outdata=_get_outdata_optional(outdata, params)
 
