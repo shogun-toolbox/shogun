@@ -96,12 +96,16 @@ def _is_excluded_from_filename (key):
 		key=='init_random' or
 		key=='regression_type' or
 		key=='regression_bias' or
+		key=='regression_alpha_sum' or
+		key=='regression_sv_sum' or
 		key=='distribution_likelihood' or
 		key=='distribution_derivatives' or
 		key=='distribution_best_path' or
 		key=='distribution_best_path_state' or
 		key=='classifier_bias' or
 		key=='classifier_labeltype' or
+		key=='classifier_alpha_sum' or
+		key=='classifier_sv_sum' or
 		key=='classifier_type'):
 		return True
 	else:

@@ -19,7 +19,7 @@ def _get_outdata_optional (outdata, params):
 	"""
 
 	optional=['num_threads', 'classified',
-		'alphas', 'bias','support_vectors', 'labels',
+		'bias', 'alpha_sum', 'sv_sum', 'labels',
 		'C', 'epsilon',
 		'bias_enabled',
 		'tube_epsilon',
@@ -33,15 +33,7 @@ def _get_outdata_optional (outdata, params):
 
 	for opt in optional:
 		if params.has_key(opt):
-			if opt=='alphas' or opt=='support_vectors':
-				# do yuckiness to be compatible to others than python
-				if type(params[opt][0])==types.ListType:
-					for i in xrange(len(params[opt])):
-						outdata['classifier_'+opt+str(i)]=params[opt][i]
-				else:
-					outdata['classifier_'+opt]=params[opt]
-			else:
-				outdata['classifier_'+opt]=params[opt]
+			outdata['classifier_'+opt]=params[opt]
 
 	return outdata
 
@@ -148,27 +140,31 @@ def _get_svm (name, labels, params):
 		return svm(params['C'], params['feats']['train'], labels)
 
 
-def _get_svm_alpha_and_sv (svm, ltype):
-	"""Return alphas and support vectors for given (MultiClass) SVM.
+def _get_svm_sum_alpha_and_sv (svm, ltype):
+	"""Return sums of alphas and support vectors for given (MultiClass) SVM.
+		Since alphas and support vectors are only used for comparison, it is
+		alright to only regard their sums. Especially in case of
+		MultiClassSVMs it makes test files smaller and easier to comprehend.
 
 	@param svm (MultiClass) SVM to retrieve alphas from
 	@param ltype label type of SVM
-	@return 2-element list with list (matrix) of alphas and list (matrix) of
-	        support vectors
+	@return 2-element list with sums of alphas and support vectors
 	"""
 
+	a=0
+	sv=0
 	if ltype=='series':
-		a=[]
-		sv=[]
 		for i in xrange(svm.get_num_svms()):
 			subsvm=svm.get_svm(i)
-			a.append(subsvm.get_alphas().tolist())
-			sv.append(subsvm.get_support_vectors().tolist())
-		#a=numpy.matrix((numpy.array(a)))
-		#sv=numpy.matrix(numpy.array(sv))
+			for item in subsvm.get_alphas().tolist():
+				a+=item
+			for item in subsvm.get_support_vectors().tolist():
+				sv+=item
 	else:
-		a=svm.get_alphas()
-		sv=svm.get_support_vectors()
+		for item in svm.get_alphas().tolist():
+			a+=item
+		for item in svm.get_support_vectors().tolist():
+			sv+=item
 
 	return a, sv
 
@@ -213,8 +209,8 @@ def _compute_svm (name, labels, params):
 		params['bias']=svm.get_bias()
 
 	if ctype=='kernel':
-		params['alphas'], params['support_vectors']= \
-			_get_svm_alpha_and_sv(svm, config.CLASSIFIER[name][2])
+		params['alpha_sum'], params['sv_sum']= \
+			_get_svm_sum_alpha_and_sv(svm, config.CLASSIFIER[name][2])
 		params['kernel'].init(params['feats']['train'], params['feats']['test'])
 	elif ctype=='linear' or ctype=='wdsvmocas':
 		svm.set_features(params['feats']['test'])

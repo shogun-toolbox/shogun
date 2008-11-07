@@ -33,7 +33,7 @@ def _get_outdata (name, params):
 	}
 
 	optional=['labels', 'num_threads', 'classified',
-		'bias', 'alphas', 'support_vectors', 'C', 'epsilon', 'tube_epsilon',
+		'bias', 'alpha_sum', 'sv_sum', 'C', 'epsilon', 'tube_epsilon',
 		'tau',
 	]
 	for opt in optional:
@@ -76,8 +76,12 @@ def _compute (name, params):
 
 	if rtype=='svm':
 		params['bias']=regression.get_bias()
-		params['alphas']=regression.get_alphas()
-		params['support_vectors']=regression.get_support_vectors()
+		params['alpha_sum']=0
+		for item in regression.get_alphas().tolist():
+			params['alpha_sum']+=item
+		params['sv_sum']=0
+		for item in regression.get_support_vectors():
+			params['sv_sum']+=item
 
 	params['kernel'].init(params['feats']['train'], params['feats']['test'])
 	params['classified']=regression.classify().get_labels()
