@@ -40,8 +40,14 @@ regression <- function(filename) {
 		bias <- abs(res[[1]]-regression_bias)
 
 		weights <- t(res[[2]])
-		alphas <- max(abs(weights[1,]-regression_alphas))
-		sv <- max(abs(weights[2,]-regression_support_vectors))
+		for (i in 1:length(weights[1,]) ){
+			alphas <= alphas + weights[1, i]
+		}
+		alphas <- abs(alphas-regression_alpha_sum)
+		for (i in 1:length(weights[2,])) {
+			sv <- sv + weights[2, i]
+		}
+		sv <- abs(sv-regression_sv_sum)
 	}
 
 	sg('init_kernel', 'TEST')

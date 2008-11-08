@@ -75,14 +75,35 @@ classifier <- function(filename) {
 	} else if (regexpr('lda', classifier_type)>0) {
 		0 # nop
 	} else {
-		if (exists('regression_bias')) {
+		if (exists('classifier_bias') && regexpr('series', classifier_labeltype)<=0) {
 			res <- sg('get_svm')
+			bias <- abs(res[[1]]-classifier_bias)
+		}
 
-			bias <- abs(res[[1]]-regression_bias)
-
-			weights <- t(res[[2]])
-			alphas <- max(abs(weights[1,]-regression_alphas))
-			sv <- max(abs(weights[2,]-regression_support_vectors))
+		if (exists('classifier_alpha_sum') && exists('classifier_sv_sum')) {
+			if (regexpr('series', classifier_labeltype)>0) {
+				for (i in 0:(sg('get_num_svms')-1)) {
+					weights <- t(sg('get_svm', i)[[2]])
+					for (j in 1:length(weights[1,])) {
+						alphas <- alphas + weights[1, j]
+					}
+					for (j in 1:length(weights[2,])) {
+						sv <- sv + weights[2, j]
+					}
+				}
+				alphas <- abs(alphas-classifier_alpha_sum)
+				sv <- abs(sv-classifier_sv_sum)
+			} else {
+				weights <- t(sg('get_svm')[[2]])
+				for (i in 1:length(weights[1,]) ){
+					alphas <= alphas + weights[1, i]
+				}
+				alphas <- abs(alphas-classifier_alpha_sum)
+				for (i in 1:length(weights[2,])) {
+					sv <- sv + weights[2, i]
+				}
+				sv <- abs(sv-classifier_sv_sum)
+			}
 		}
 
 		sg('init_kernel', 'TEST')
