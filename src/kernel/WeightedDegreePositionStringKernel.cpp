@@ -902,7 +902,7 @@ bool CWeightedDegreePositionStringKernel::set_weights(
 bool CWeightedDegreePositionStringKernel::set_position_weights(
 	float64_t* pws, int32_t len)
 {
-	fprintf(stderr, "len=%i\n", len);
+	//fprintf(stderr, "len=%i\n", len);
 
 	if (len==0)
 	{
@@ -935,7 +935,7 @@ bool CWeightedDegreePositionStringKernel::set_position_weights(
 
 bool CWeightedDegreePositionStringKernel::set_position_weights_lhs(float64_t* pws, int32_t len, int32_t num)
 {
-	fprintf(stderr, "lhs %i %i %i\n", len, num, seq_length);
+	//fprintf(stderr, "lhs %i %i %i\n", len, num, seq_length);
 
 	if (position_weights_rhs==position_weights_lhs)
 		position_weights_rhs=NULL;
@@ -978,7 +978,7 @@ bool CWeightedDegreePositionStringKernel::set_position_weights_lhs(float64_t* pw
 bool CWeightedDegreePositionStringKernel::set_position_weights_rhs(
 	float64_t* pws, int32_t len, int32_t num)
 {
-	fprintf(stderr, "rhs %i %i %i\n", len, num, seq_length);
+	//fprintf(stderr, "rhs %i %i %i\n", len, num, seq_length);
 	if (len==0)
 	{
 		if (position_weights_rhs==position_weights_lhs)
