@@ -2223,7 +2223,7 @@ void CSVMLight::update_linear_component_mkl_linadd(
 				initial_rmatval[num_kernels]=0 ;
 
 				status=CPXaddqconstr(env, lp, 0, num_kernels+1, 1.0, 'L', NULL,
-					NULL, initial_rmatind, initial_rmatind, initial_rmatval,u
+					NULL, initial_rmatind, initial_rmatind, initial_rmatval,
 					NULL);
 			}
 
