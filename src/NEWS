@@ -8,11 +8,9 @@
 		  argument.
 		- Removed a few stderr debug outputs.
 	* Features:
-		- Include support for GLPK and lpsolve as alternatives to CPLEX.
 		- Testsuite now covers subSVMs in MultiClassSVMs, static interfaces
 		  now support commands GET_NUM_SVMS and GET_SVM for MultiClassSVMs.
 	* Bugfixes:
-		- Potential fix for MultiClassSVM as reported by Alexander Binder.
 		- Fix for contigous arrays/vectors in interface for Python modular.
 		- Fixed improper assignment of labels in constructor of WDSVMOcas
 		  leading to segfaults on destruction in (python) modular interface.
