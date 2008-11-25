@@ -75,13 +75,13 @@ classifier <- function(filename) {
 	} else if (regexpr('lda', classifier_type)>0) {
 		0 # nop
 	} else {
-		if (exists('classifier_bias') && regexpr('series', classifier_labeltype)<=0) {
+		if (exists('classifier_bias') && exists('classifier_labeltype') && regexpr('series', classifier_labeltype)<=0) {
 			res <- sg('get_svm')
 			bias <- abs(res[[1]]-classifier_bias)
 		}
 
 		if (exists('classifier_alpha_sum') && exists('classifier_sv_sum')) {
-			if (regexpr('series', classifier_labeltype)>0) {
+			if (exists('classifier_labeltype') && regexpr('series', classifier_labeltype)>0) {
 				for (i in 0:(sg('get_num_svms')-1)) {
 					weights <- t(sg('get_svm', i)[[2]])
 					for (j in 1:length(weights[1,])) {
@@ -96,7 +96,7 @@ classifier <- function(filename) {
 			} else {
 				weights <- t(sg('get_svm')[[2]])
 				for (i in 1:length(weights[1,]) ){
-					alphas <= alphas + weights[1, i]
+					alphas <- alphas + weights[1, i]
 				}
 				alphas <- abs(alphas-classifier_alpha_sum)
 				for (i in 1:length(weights[2,])) {

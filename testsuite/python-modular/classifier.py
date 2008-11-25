@@ -39,7 +39,8 @@ def _get_results_alpha_and_sv(indata, classifier):
 
 	a=0
 	sv=0
-	if indata['classifier_labeltype']=='series':
+	if indata.has_key('classifier_labeltype') and \
+		indata['classifier_labeltype']=='series':
 		for i in xrange(classifier.get_num_svms()):
 			subsvm=classifier.get_svm(i)
 			for item in subsvm.get_alphas().tolist():

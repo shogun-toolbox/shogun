@@ -59,7 +59,8 @@ def _get_alpha_and_sv(indata):
 
 	a=0
 	sv=0
-	if indata['classifier_labeltype']=='series':
+	if indata.has_key('classifier_labeltype') and \
+		indata['classifier_labeltype']=='series':
 		for i in xrange(sg('get_num_svms')):
 			[dump, weights]=sg('get_svm', i)
 			weights=weights.T
@@ -92,7 +93,8 @@ def _evaluate (indata):
 	elif indata['classifier_type']=='lda':
 		pass
 	else:
-		if indata['classifier_labeltype'] != 'series' and \
+		if indata.has_key('classifier_labeltype') and \
+			indata['classifier_labeltype'] != 'series' and \
 			indata.has_key('classifier_bias'):
 			[b, weights]=sg('get_svm')
 			weights=weights.T
