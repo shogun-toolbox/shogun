@@ -399,7 +399,7 @@ endif
 endif
 
 ChangeLog:
-	@if [ -n "`which svn2c`" ]; then \
+	@if [ -n "`which svn2cl`" ]; then \
 		svn2cl --group-by-day --authors=.authors 2>/dev/null; \
 	else \
 		echo "Need svn2cl (from subversion-tools) to update ChangeLog!"; \
