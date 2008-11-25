@@ -45,7 +45,8 @@ MAINVERSION := $(shell awk '/Release/{print $$5;exit}' src/NEWS)
 VERSIONBASE := $(shell echo $(MAINVERSION) | cut -f 1-2 -d '.')
 EXTRAVERSION := 
 RELEASENAME := shogun-$(MAINVERSION)$(EXTRAVERSION)
-SVNVERSION = $(shell svn info | grep Revision: | cut -d ' ' -f 2)
+SVNVERSION := $(shell svn info | grep Revision: | cut -d ' ' -f 2)
+LOGFILE := 'prepare-release.log'
 
 stop:
 	@echo
@@ -91,54 +92,57 @@ sed -i '/^SVMlight:$$/,/^$$/c\\' $(DESTDIR)/src/LICENSE
 # We assume that a release is always created from a SVN working copy.
 
 prepare-release:
-	svn update
+	@if [ -f $(LOGFILE) ]; then rm -f $(LOGFILE); fi
+	svn update | tee --append $(LOGFILE)
 	#update changelog
-	svn stat
-	@echo "Please check output of 'svn stat'. Press any key to continue or Ctrl-C to abort."
+	svn stat | tee --append $(LOGFILE)
+	@echo | tee --append $(LOGFILE)
+	@echo "Please check output of 'svn stat'." | tee --append $(LOGFILE)
+	@echo "Press ENTER to continue or Ctrl-C to abort." | tee --append $(LOGFILE)
 	@read foobar
-	(cd src;  rm -f ChangeLog ; $(MAKE) ChangeLog ; svn ci -m "updated changelog")
+	(cd src;  rm -f ChangeLog ; $(MAKE) ChangeLog ; svn ci -m "updated changelog") | tee --append $(LOGFILE)
 	#static interfaces
-	+$(MAKE) -C src distclean
-	( cd src && ./configure --interface=cmdline )
-	+$(MAKE) -C src 
-	+$(MAKE) -C src install DESTDIR=/tmp/
-	+$(MAKE) -C src reference DESTDIR=/tmp/
-	+$(MAKE) -C src tests DESTDIR=/tmp/
-	+$(MAKE) -C src distclean
-	( cd src && ./configure --interface=octave )
-	+$(MAKE) -C src 
-	+$(MAKE) -C src install DESTDIR=/tmp/
-	+$(MAKE) -C src reference DESTDIR=/tmp/
-	+$(MAKE) -C src tests DESTDIR=/tmp/
-	+$(MAKE) -C src distclean
-	( cd src && ./configure --interface=python )
-	+$(MAKE) -C src 
-	+$(MAKE) -C src install DESTDIR=/tmp/
-	+$(MAKE) -C src reference DESTDIR=/tmp/
-	+$(MAKE) -C src tests DESTDIR=/tmp/
-	+$(MAKE) -C src distclean
-	( cd src && ./configure --interface=r )
-	+$(MAKE) -C src 
-	+$(MAKE) -C src install DESTDIR=/tmp/
-	+$(MAKE) -C src reference DESTDIR=/tmp/
-	+$(MAKE) -C src tests DESTDIR=/tmp/
+	+$(MAKE) -C src distclean | tee --append $(LOGFILE)
+	( cd src && ./configure --interface=cmdline ) | tee --append $(LOGFILE)
+	+$(MAKE) -C src | tee --append $(LOGFILE)
+	+$(MAKE) -C src install DESTDIR=/tmp/ | tee --append $(LOGFILE)
+	+$(MAKE) -C src reference DESTDIR=/tmp/ | tee --append $(LOGFILE)
+	+$(MAKE) -C src tests DESTDIR=/tmp/ | tee --append $(LOGFILE)
+	+$(MAKE) -C src distclean | tee --append $(LOGFILE)
+	( cd src && ./configure --interface=octave ) | tee --append $(LOGFILE)
+	+$(MAKE) -C src | tee --append $(LOGFILE)
+	+$(MAKE) -C src install DESTDIR=/tmp/ | tee --append $(LOGFILE)
+	+$(MAKE) -C src reference DESTDIR=/tmp/ | tee --append $(LOGFILE)
+	+$(MAKE) -C src tests DESTDIR=/tmp/ | tee --append $(LOGFILE)
+	+$(MAKE) -C src distclean | tee --append $(LOGFILE)
+	( cd src && ./configure --interface=python ) | tee --append $(LOGFILE)
+	+$(MAKE) -C src  | tee --append $(LOGFILE)
+	+$(MAKE) -C src install DESTDIR=/tmp/ | tee --append $(LOGFILE)
+	+$(MAKE) -C src reference DESTDIR=/tmp/ | tee --append $(LOGFILE)
+	+$(MAKE) -C src tests DESTDIR=/tmp/ | tee --append $(LOGFILE)
+	+$(MAKE) -C src distclean | tee --append $(LOGFILE)
+	( cd src && ./configure --interface=r ) | tee --append $(LOGFILE)
+	+$(MAKE) -C src  | tee --append $(LOGFILE)
+	+$(MAKE) -C src install DESTDIR=/tmp/ | tee --append $(LOGFILE)
+	+$(MAKE) -C src reference DESTDIR=/tmp/ | tee --append $(LOGFILE)
+	+$(MAKE) -C src tests DESTDIR=/tmp/ | tee --append $(LOGFILE)
 	#modular interfaces
-	+$(MAKE) -C src distclean
-	( cd src && ./configure --interface=octave-modular )
-	+$(MAKE) -C src 
-	+$(MAKE) -C src install DESTDIR=/tmp/
-	+$(MAKE) -C src tests DESTDIR=/tmp/
-	+$(MAKE) -C src distclean
-	( cd src && ./configure --interface=python-modular )
-	+$(MAKE) -C src 
-	+$(MAKE) -C src install DESTDIR=/tmp/
-	+$(MAKE) -C src tests DESTDIR=/tmp/
-	+$(MAKE) -C src distclean
-	( cd src && ./configure --interface=r-modular )
-	+$(MAKE) -C src 
-	+$(MAKE) -C src install DESTDIR=/tmp/
-	+$(MAKE) -C src tests DESTDIR=/tmp/
-	(cd doc; svn ci -m "updated reference documentation")
+	+$(MAKE) -C src distclean | tee --append $(LOGFILE)
+	( cd src && ./configure --interface=octave-modular ) | tee --append $(LOGFILE)
+	+$(MAKE) -C src  | tee --append $(LOGFILE)
+	+$(MAKE) -C src install DESTDIR=/tmp/ | tee --append $(LOGFILE)
+	+$(MAKE) -C src tests DESTDIR=/tmp/ | tee --append $(LOGFILE)
+	+$(MAKE) -C src distclean | tee --append $(LOGFILE)
+	( cd src && ./configure --interface=python-modular  | tee --append $(LOGFILE))
+	+$(MAKE) -C src  | tee --append $(LOGFILE)
+	+$(MAKE) -C src install DESTDIR=/tmp/ | tee --append $(LOGFILE)
+	+$(MAKE) -C src tests DESTDIR=/tmp/ | tee --append $(LOGFILE)
+	+$(MAKE) -C src distclean | tee --append $(LOGFILE)
+	( cd src && ./configure --interface=r-modular ) | tee --append $(LOGFILE)
+	+$(MAKE) -C src  | tee --append $(LOGFILE)
+	+$(MAKE) -C src install DESTDIR=/tmp/ | tee --append $(LOGFILE)
+	+$(MAKE) -C src tests DESTDIR=/tmp/ | tee --append $(LOGFILE)
+	(cd doc; svn ci -m "updated reference documentation") | tee --append $(LOGFILE)
 
 release: src/lib/versionstring.h $(DESTDIR)/src/lib/versionstring.h
 	tar -c -f $(DESTDIR).tar -C .. $(RELEASENAME)
