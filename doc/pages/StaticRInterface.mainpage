@@ -57,7 +57,7 @@
 \arg \b svm_classify \verbatim [result] <- sg('svm_classify') \endverbatim
 \arg \b classify_example \verbatim [result] <- sg('classify_example', feature_vector_index) \endverbatim
 \arg \b svm_classify_example \verbatim [result] <- sg('svm_classify_example', feature_vector_index) \endverbatim
-\arg \b get_classifier \verbatim [bias, weights] <- sg('get_classifier') \endverbatim
+\arg \b get_classifier \verbatim [bias, weights] <- sg('get_classifier', [index in case of MultiClassSVM]) \endverbatim
 \arg \b get_clustering \verbatim [radi, centers|merge_distances, pairs] <- sg('get_clustering') \endverbatim
 \arg \b new_svm \verbatim sg('new_svm', 'LIBSVM_ONECLASS|LIBSVM_MULTICLASS|LIBSVM|SVMLIGHT|LIGHT|SVMLIN|GPBTSVM|MPDSVM|GNPPSVM|GMNPSVM|SUBGRADIENTSVM|WDSVMOCAS|SVMOCAS|SVMSGD|SVMBMRM|SVMPERF|KERNELPERCEPTRON|PERCEPTRON|LIBLINEAR_LR|LIBLINEAR_L2|LDA|LPM|LPBOOST|SUBGRADIENTLPM|KNN') \endverbatim
 \arg \b new_classifier \verbatim sg('new_classifier', 'LIBSVM_ONECLASS|LIBSVM_MULTICLASS|LIBSVM|SVMLIGHT|LIGHT|SVMLIN|GPBTSVM|MPDSVM|GNPPSVM|GMNPSVM|SUBGRADIENTSVM|WDSVMOCAS|SVMOCAS|SVMSGD|SVMBMRM|SVMPERF|KERNELPERCEPTRON|PERCEPTRON|LIBLINEAR_LR|LIBLINEAR_L2|LDA|LPM|LPBOOST|SUBGRADIENTLPM|KNN') \endverbatim
@@ -65,7 +65,8 @@
 \arg \b new_clustering \verbatim sg('new_clustering', 'KMEANS|HIERARCHICAL') \endverbatim
 \arg \b load_classifier \verbatim [filename, type] <- sg('load_classifier') \endverbatim
 \arg \b save_classifier \verbatim sg('save_classifier', filename) \endverbatim
-\arg \b get_svm \verbatim [bias, alphas] <- sg('get_svm') \endverbatim
+\arg \b get_num_svms \verbatim [number of SVMs in MultiClassSVM] <- sg('get_num_svms') \endverbatim
+\arg \b get_svm \verbatim [bias, alphas] <- sg('get_svm', [index in case of MultiClassSVM]) \endverbatim
 \arg \b set_svm \verbatim sg('set_svm', bias, alphas) \endverbatim
 \arg \b get_svm_objective \verbatim [objective] <- sg('get_svm_objective') \endverbatim
 \arg \b do_auc_maximization \verbatim sg('do_auc_maximization', 'auc') \endverbatim

@@ -57,7 +57,7 @@
 \arg \b svm_classify \verbatim result = svm_classify \endverbatim
 \arg \b classify_example \verbatim result = classify_example feature_vector_index \endverbatim
 \arg \b svm_classify_example \verbatim result = svm_classify_example feature_vector_index \endverbatim
-\arg \b get_classifier \verbatim bias, weights = get_classifier \endverbatim
+\arg \b get_classifier \verbatim bias weights = get_classifier [index in case of MultiClassSVM] \endverbatim
 \arg \b get_clustering \verbatim radi centers|merge_distances pairs = get_clustering \endverbatim
 \arg \b new_svm \verbatim new_svm LIBSVM_ONECLASS|LIBSVM_MULTICLASS|LIBSVM|SVMLIGHT|LIGHT|SVMLIN|GPBTSVM|MPDSVM|GNPPSVM|GMNPSVM|SUBGRADIENTSVM|WDSVMOCAS|SVMOCAS|SVMSGD|SVMBMRM|SVMPERF|KERNELPERCEPTRON|PERCEPTRON|LIBLINEAR_LR|LIBLINEAR_L2|LDA|LPM|LPBOOST|SUBGRADIENTLPM|KNN \endverbatim
 \arg \b new_classifier \verbatim new_classifier LIBSVM_ONECLASS|LIBSVM_MULTICLASS|LIBSVM|SVMLIGHT|LIGHT|SVMLIN|GPBTSVM|MPDSVM|GNPPSVM|GMNPSVM|SUBGRADIENTSVM|WDSVMOCAS|SVMOCAS|SVMSGD|SVMBMRM|SVMPERF|KERNELPERCEPTRON|PERCEPTRON|LIBLINEAR_LR|LIBLINEAR_L2|LDA|LPM|LPBOOST|SUBGRADIENTLPM|KNN \endverbatim
@@ -65,7 +65,8 @@
 \arg \b new_clustering \verbatim new_clustering KMEANS|HIERARCHICAL \endverbatim
 \arg \b load_classifier \verbatim filename type = load_classifier \endverbatim
 \arg \b save_classifier \verbatim save_classifier filename \endverbatim
-\arg \b get_svm \verbatim bias alphas = get_svm \endverbatim
+\arg \b get_num_svms \verbatim number of SVMs in MultiClassSVM = get_num_svms \endverbatim
+\arg \b get_svm \verbatim bias alphas = get_svm [index in case of MultiClassSVM] \endverbatim
 \arg \b set_svm \verbatim set_svm bias alphas \endverbatim
 \arg \b get_svm_objective \verbatim objective = get_svm_objective \endverbatim
 \arg \b do_auc_maximization \verbatim do_auc_maximization auc \endverbatim
