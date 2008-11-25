@@ -1,5 +1,9 @@
 2008-11-25  Sebastian Henschel <shogun@kodeaffe.de>
 
+	* ChangeLog, Makefile: - Improved handling of ChangeLog creation a
+	  little bit.
+	* Makefile: updated changelog
+	* Makefile: updated changelog
 	* NEWS: - removed immature NEWS items.
 	* NEWS: - updated NEWS in preparation for release 0.6.7.
 
