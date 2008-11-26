@@ -138,7 +138,7 @@ targets:
 	@egrep '^[a-z]+:' Makefile | grep -v '\.o:' | sed -e 's/:.*//g' -e 's/out//g' -e 's/end//g' -e 's/^/     /g' | sort | uniq
 
 distclean: clean
-		@rm -f .config tags lib/config.h lib/versionstring.h
+		@rm -f .config tags lib/config.h
 swigclean:
 	@rm -f $(shell find -name "*_wrap.h" -o -name "*_wrap.cxx.o" -o -name "*_wrap.cxx" 2>/dev/null) 
 
@@ -249,7 +249,7 @@ endif #octave+swig
 endif #python+swig
 
 dep:	depend
-depend:		.config lib/versionstring.h
+depend:		.config
 ifeq (makedepend,$(MAKEDEPEND))
 	-$(MAKEDEPEND) $(DEFINES) $(INCLUDES) \
 		$(shell find $(SRCDIR) -mindepth 2 -name "*.$(EXT_SRC_CPP)" ) $(MAKEDEPENDOPTS) | \
@@ -269,7 +269,7 @@ ifeq (r-modular,$(INTERFACE))
 	bash -c "( for i in \`grep '.so:' .depend | cut -f 1 -d ':'\` ; do echo \`echo \$$i | sed s/.so/.R:/\` \$$i ; done ) >>.depend"
 endif
 
-.depend:	.config lib/versionstring.h
+.depend:	.config
 ifeq (makedepend,$(MAKEDEPEND))
 	-$(MAKEDEPEND) $(DEFINES) $(INCLUDES) \
 		$(shell find $(SRCDIR) -mindepth 2 -name "*.$(EXT_SRC_CPP)" ) $(MAKEDEPENDOPTS) | \
@@ -406,7 +406,7 @@ ChangeLog:
 		exit 1; \
 	fi
 
-$(OBJFILES): .config .depend lib/versionstring.h ChangeLog
+$(OBJFILES): .config .depend ChangeLog
 
 ifeq (yes,$(USE_SWIG))
 ifeq (r-modular,$(INTERFACE))
