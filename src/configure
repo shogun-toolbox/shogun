@@ -1919,6 +1919,23 @@ fi
 
 set_opts()
 {
+	echocheck "Integer Word Size"
+cat > $TMPC << EOF
+#include <stdint.h>
+int main(void) { return __WORDSIZE; }
+EOF
+
+	"$COMP_C" $INCLUDES "$TMPC" -o ./"$TMPO"
+	./"$TMPO"
+	WORDSIZE=$?
+	rm -f ./"$TMPO" "$TMPC"
+
+	echores "$WORDSIZE"
+	if test "$WORDSIZE" = 64
+	then
+		DEFINES="$DEFINES -DSWIGWORDSIZE64"
+	fi
+
 	if darwin
 	then
 		if test "$_matlab" = yes
