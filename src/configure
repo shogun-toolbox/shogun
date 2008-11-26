@@ -1919,7 +1919,7 @@ fi
 
 set_opts()
 {
-	echocheck "Integer Word Size"
+	echocheck "Word Size"
 cat > $TMPC << EOF
 #include <stdint.h>
 int main(void) { return __WORDSIZE; }
@@ -1930,7 +1930,7 @@ EOF
 	WORDSIZE=$?
 	rm -f ./"$TMPO" "$TMPC"
 
-	echores "$WORDSIZE"
+	echores "$WORDSIZE bit"
 	if test "$WORDSIZE" = 64
 	then
 		DEFINES="$DEFINES -DSWIGWORDSIZE64"
