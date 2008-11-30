@@ -10,60 +10,10 @@ from dataop import INIT_RANDOM
 import fileop
 import featop
 import dataop
-import config
+import category
 
-def _get_outdata (name, params):
-	"""Return data to be written into the testcase's file.
+PREFIX='distribution_'
 
-	After computations and such, the gathered data is structured and
-	put into one data structure which can conveniently be written to a
-	file that will represent the testcase.
-	
-	@param name Distribution method's name
-	@param params Gathered data
-	@return Dict containing testcase data to be written to file
-	"""
-
-	ddata=config.DISTRIBUTION[name]
-	outdata={
-		'name':name,
-		'data_train':numpy.matrix(params['data']['train']),
-		'data_test':numpy.matrix(params['data']['test']),
-		'data_class':ddata[0][0],
-		'data_type':ddata[0][1],
-		'feature_class':ddata[1][0],
-		'feature_type':ddata[1][1],
-		'init_random':dataop.INIT_RANDOM,
-		'distribution_accuracy':ddata[2],
-	}
-
-	if ddata[1][0]=='string' or (ddata[1][0]=='simple' and ddata[1][1]=='Char'):
-		outdata['alphabet']='DNA'
-		outdata['seqlen']=dataop.LEN_SEQ
-	elif ddata[1][0]=='string_complex':
-		if params.has_key('order'):
-			outdata['order']=params['order']
-		else:
-			outdata['order']=featop.WORDSTRING_ORDER
-
-		if params.has_key('alphabet'):
-			outdata['alphabet']=params['alphabet']
-		else:
-			outdata['alphabet']='DNA'
-
-		outdata['gap']=featop.WORDSTRING_GAP
-		outdata['reverse']=featop.WORDSTRING_REVERSE
-		outdata['seqlen']=dataop.LEN_SEQ
-		outdata['feature_obtain']=ddata[1][2]
-
-	optional=['N', 'M', 'pseudo', 'num_examples',
-		'derivatives', 'likelihood',
-		'best_path', 'best_path_state']
-	for opt in optional:
-		if params.has_key(opt):
-			outdata['distribution_'+opt]=params[opt]
-
-	return outdata
 
 def _get_derivatives (dist, num_vec):
 	"""Return the sum of all log_derivatives of a distribution.
@@ -84,6 +34,7 @@ def _get_derivatives (dist, num_vec):
 
 	return derivatives
 
+
 def _run (name):
 	"""Run generator for a specific distribution method.
 
@@ -94,20 +45,27 @@ def _run (name):
 	Math_init_random(INIT_RANDOM)
 
 	params={
+		'name': name,
+		'accuracy': 1e-7,
 		'data':dataop.get_dna(),
+		'alphabet': 'DNA',
+		'feature_class': 'string_complex',
+		'feature_type': 'Word'
 	}
-	feats=featop.get_string_complex('Word', params['data'])
+	output=fileop.get_output(category.DISTRIBUTION, params)
+	feats=featop.get_features(
+		params['feature_class'], params['feature_type'], params['data'])
 
-	fun=eval('distribution.'+name)
-	dist=fun(feats['train'])
+	dfun=eval('distribution.'+name)
+	dist=dfun(feats['train'])
 	dist.train()
 
-	params['likelihood']=dist.get_log_likelihood_sample()
-	params['derivatives']=_get_derivatives(
+	output[PREFIX+'likelihood']=dist.get_log_likelihood_sample()
+	output[PREFIX+'derivatives']=_get_derivatives(
 		dist, feats['train'].get_num_vectors())
 
-	outdata=_get_outdata(name, params)
-	fileop.write(config.C_DISTRIBUTION, outdata)
+	fileop.write(category.DISTRIBUTION, output)
+
 
 def _run_hmm ():
 	"""Run generator for Hidden-Markov-Model."""
@@ -115,38 +73,44 @@ def _run_hmm ():
 	# put some constantness into randomness
 	Math_init_random(INIT_RANDOM)
 
+	num_examples=4
 	params={
-		'N':3,
-		'M':6,
-		'num_examples':4,
-		'pseudo':1e-10,
-		'order':1,
-		'alphabet':'CUBE',
+		'name': 'HMM',
+		'accuracy': 1e-6,
+		'N': 3,
+		'M': 6,
+		'num_examples': num_examples,
+		'pseudo': 1e-10,
+		'order': 1,
+		'alphabet': 'CUBE',
+		'feature_class': 'string_complex',
+		'feature_type': 'Word',
+		'data': dataop.get_cubes(num_examples, 1)
 	}
+	output=fileop.get_output(category.DISTRIBUTION, params)
 
-	params['data']=dataop.get_cubes(params['num_examples'],1)
-	feats=featop.get_string_complex(
-		'Word', params['data'], eval('features.'+params['alphabet']),
-		params['order'])
+	feats=featop.get_features(
+		params['feature_class'], params['feature_type'], params['data'],
+		eval('features.'+params['alphabet']), params['order'])
+
 	hmm=distribution.HMM(
 		feats['train'], params['N'], params['M'], params['pseudo'])
 	hmm.train()
 	hmm.baum_welch_viterbi_train(distribution.BW_NORMAL)
 
-	params['likelihood']=hmm.get_log_likelihood_sample()
-	params['derivatives']=_get_derivatives(
+	output[PREFIX+'likelihood']=hmm.get_log_likelihood_sample()
+	output[PREFIX+'derivatives']=_get_derivatives(
 		hmm, feats['train'].get_num_vectors())
 
-
-	params['best_path']=0
-	params['best_path_state']=0
-	for i in xrange(params['num_examples']):
-		params['best_path']+=hmm.best_path(i)
+	output[PREFIX+'best_path']=0
+	output[PREFIX+'best_path_state']=0
+	for i in xrange(num_examples):
+		output[PREFIX+'best_path']+=hmm.best_path(i)
 		for j in xrange(params['N']):
-			params['best_path_state']+=hmm.get_best_path_state(i, j)
+			output[PREFIX+'best_path_state']+=hmm.get_best_path_state(i, j)
 
-	outdata=_get_outdata('HMM', params)
-	fileop.write(config.C_DISTRIBUTION, outdata)
+	fileop.write(category.DISTRIBUTION, output)
+
 
 def run ():
 	"""Run generator for all distribution methods."""

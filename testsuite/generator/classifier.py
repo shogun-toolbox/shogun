@@ -1,6 +1,5 @@
 """Generator for Classifier"""
 
-import types
 import numpy
 import shogun.Library as library
 import shogun.Classifier as classifier
@@ -11,76 +10,10 @@ from shogun.Features import Labels, RAWDNA
 import fileop
 import featop
 import dataop
-import config
+import category
 
 
-def _get_outdata_optional (outdata, params):
-	"""Return optional outdata.
-	"""
-
-	optional=['num_threads', 'classified',
-		'bias', 'alpha_sum', 'sv_sum', 'labels',
-		'C', 'epsilon',
-		'bias_enabled',
-		'tube_epsilon',
-		'max_train_time',
-		'max_iter', 'learn_rate',
-		'k',
-		'gamma',
-		'degree',
-		'linadd_enabled', 'batch_enabled'
-	]
-
-	for opt in optional:
-		if params.has_key(opt) and params[opt] is not None:
-			outdata['classifier_'+opt]=params[opt]
-
-	return outdata
-
-
-def _get_outdata (name, params):
-	"""Return data to be written into the testcase's file.
-
-	After computations and such, the gathered data is structured and
-	put into one data structure which can conveniently be written to a
-	file that will represent the testcase.
-	
-	@param name Classifier's name
-	@param params Gathered data
-	@return Dict containing testcase data to be written to file
-	"""
-
-	ctype=config.CLASSIFIER[name][1]
-	ltype=config.CLASSIFIER[name][2]
-	outdata={
-		'name':name,
-		'init_random':dataop.INIT_RANDOM,
-		'data_train':numpy.matrix(params['data']['train']),
-		'data_test':numpy.matrix(params['data']['test']),
-		'classifier_accuracy':config.CLASSIFIER[name][0],
-		'classifier_type':ctype,
-	}
-	if ltype is not None:
-		outdata['classifier_labeltype']=ltype
-
-	outdata=_get_outdata_optional(outdata, params)
-
-	if ctype=='kernel':
-		outdata['kernel_name']=params['kname']
-		kparams=fileop.get_outdata(params['kname'],
-			config.C_KERNEL, params['kargs'])
-		outdata.update(kparams)
-	elif ctype=='knn':
-		outdata['distance_name']=params['dname']
-		dparams=fileop.get_outdata(
-			params['dname'], config.C_DISTANCE, params['dargs'])
-		outdata.update(dparams)
-	elif ctype=='wdsvmocas':
-		outdata['feature_class']='string'
-		outdata['feature_type']='Byte'
-		outdata['alphabet']='RAWDNA'
-		outdata['seqlen']=dataop.NUM_VEC_TEST
-
+# WDSVMOcas debugging:
 #		pdt=params['data']['train']
 #		odt=outdata['data_train'].tolist()[0]
 #		for i in xrange(len(pdt)):
@@ -96,20 +29,11 @@ def _get_outdata (name, params):
 #			print ''
 #		print 'done get_outdata'
 
-
-	else:
-		outdata['feature_class']='simple'
-		outdata['feature_type']='Real'
-		outdata['data_type']='double'
-
-	return outdata
-
-
 ##########################################################################
 # svm
 ##########################################################################
 
-def _get_svm (name, labels, params):
+def _get_svm (params, labels, feats, kernel):
 	"""Return an SVM object.
 
 	This function instantiates an SVM depending on the parameters.
@@ -121,25 +45,23 @@ def _get_svm (name, labels, params):
 	"""
 
 	try:
-		svm=eval('classifier.'+name)
+		svm=eval('classifier.'+params['name'])
 	except AttributeError, e:
 		return False
 
-	ctype=config.CLASSIFIER[name][1]
-	if ctype=='kernel':
-		params['kernel'].parallel.set_num_threads(params['num_threads'])
-		params['kernel'].init(
-			params['feats']['train'], params['feats']['train'])
+	if params['type']=='kernel':
+		kernel.parallel.set_num_threads(params['num_threads'])
+		kernel.init(feats['train'], feats['train'])
 
 		if labels is None:
-			return svm(params['C'], params['kernel'])
+			return svm(params['C'], kernel)
 		else:
-			return svm(params['C'], params['kernel'], labels)
-	elif ctype=='wdsvmocas':
+			return svm(params['C'], kernel, labels)
+	elif params['type']=='wdsvmocas':
 		return svm(params['C'], params['degree'], params['degree'],
-			params['feats']['train'], labels)
+			feats['train'], labels)
 	else:
-		return svm(params['C'], params['feats']['train'], labels)
+		return svm(params['C'], feats['train'], labels)
 
 
 def _get_svm_sum_alpha_and_sv (svm, ltype):
@@ -171,18 +93,20 @@ def _get_svm_sum_alpha_and_sv (svm, ltype):
 	return a, sv
 
 
-def _compute_svm (name, labels, params):
+def _compute_svm (params, labels, feats, kernel, pout):
 	"""Perform computations on SVM.
 
 	Perform all necessary computations on SVM and gather the output.
 
-	@param name Name of the SVM to instantiate
-	@param labels Labels to be used for the SVM (if at all!)
-	@param params Misc parameters for the SVM's constructor
+	@param params misc parameters for the SVM's constructor
+	@param labels labels to be used for the SVM (if at all)
+	@param feats features to the SVM
+	@param kernel kernel for kernel-SVMs
+	@param pout previously gathered output data ready to be written to file
 	"""
 
-	svm=_get_svm(name, labels, params)
-	if svm is False:
+	svm=_get_svm(params, labels, feats, kernel)
+	if not svm:
 		return
 
 	svm.parallel.set_num_threads(params['num_threads'])
@@ -205,156 +129,208 @@ def _compute_svm (name, labels, params):
 
 	svm.train()
 
-	ctype=config.CLASSIFIER[name][1]
 	if ((params.has_key('bias_enabled') and params['bias_enabled']) or
-		ctype=='kernel'):
+		params['type']=='kernel'):
 		params['bias']=svm.get_bias()
 
-	if ctype=='kernel':
+	if params['type']=='kernel':
 		params['alpha_sum'], params['sv_sum']= \
-			_get_svm_sum_alpha_and_sv(svm, config.CLASSIFIER[name][2])
-		params['kernel'].init(params['feats']['train'], params['feats']['test'])
-	elif ctype=='linear' or ctype=='wdsvmocas':
-		svm.set_features(params['feats']['test'])
+			_get_svm_sum_alpha_and_sv(svm, params['label_type'])
+		kernel.init(feats['train'], feats['test'])
+	elif params['type']=='linear' or params['type']=='wdsvmocas':
+		svm.set_features(feats['test'])
 
 	params['classified']=svm.classify().get_labels()
 
-	outdata=_get_outdata(name, params)
-	fileop.write(config.C_CLASSIFIER, outdata)
+	output=fileop.get_output(category.CLASSIFIER, params)
+	if pout:
+		output.update(pout)
+	fileop.write(category.CLASSIFIER, output)
 
 
-def _loop_svm (svms, params):
+def _loop_svm (svms, params, feats, kernel=None, pout=None):
 	"""Loop through SVM computations, only slightly differing in parameters.
 
-	Loop through SVM computations with little variations in the parameters for the SVM. Not necessarily used by all SVMs in this generator.
+	Loop through SVM computations with little variations in the parameters for
+	the SVM. Not necessarily used by all SVMs in this generator.
 
-	@param svms Names of the svms to loop through
-	@param params Parameters to the SVM
+	@param svms tuple of SVM names to loop through
+	@param params parameters to the SVMs
+	@param feats features to the SVMs
+	@param kernel kernel for kernel-based SVMs
+	@param pout previously gathered output data ready to be written to file
 	"""
 
 	for name in svms:
-		ctype=config.CLASSIFIER[name][1]
-		ltype=config.CLASSIFIER[name][2]
-
-		parms={
-			'num_threads':1,
-			'C':.017,
-			'epsilon':1e-5,
-		}
-		# FIXME: a bit hackish to set accuracy this way
-		config.CLASSIFIER[name][0]=parms['epsilon']*10
+		parms={ 'name': name, 'num_threads': 1, 'C': .017, 'epsilon': 1e-5 }
+		parms['accuracy']=parms['epsilon']*10
 		parms.update(params)
 
-		if ctype=='kernel':
+		if params['type']=='kernel':
 			parms['tube_epsilon']=1e-2
 
-		if ltype is not None:
+		if params['label_type'] is not None:
 			parms['labels'], labels=dataop.get_labels(
-				params['feats']['train'].get_num_vectors(), ltype)
+				feats['train'].get_num_vectors(), params['label_type'])
 		else:
 			labels=None
 
-		_compute_svm(name, labels, parms)
+		_compute_svm(parms, labels, feats, kernel, pout)
 		parms['C']=.23
-		_compute_svm(name, labels, parms)
+		_compute_svm(parms, labels, feats, kernel, pout)
 		parms['C']=1.5
-		_compute_svm(name, labels, parms)
+		_compute_svm(parms, labels, feats, kernel, pout)
 		parms['C']=30
-		#_compute_svm(name, labels, parms)
-		#parms['epsilon']=1e-4
-		# FIXME: a bit hackish to set accuracy this way
-		#config.CLASSIFIER[name][0]=parms['epsilon']*10
-		_compute_svm(name, labels, parms)
+		_compute_svm(parms, labels, feats, kernel, pout)
 
-		if ctype=='kernel':
+		if params['type']=='kernel':
 			parms['tube_epsilon']=1e-3
-			_compute_svm(name, labels, parms)
+			_compute_svm(parms, labels, feats, kernel, pout)
 
 		parms['num_threads']=16
-		_compute_svm(name, labels, parms)
+		_compute_svm(parms, labels, feats, kernel, pout)
 
 
 def _run_svm_kernel ():
 	"""Run all kernel-based SVMs."""
 
-	svms=['SVMLight', 'LibSVM', 'GPBTSVM', 'MPDSVM', 'LibSVMOneClass']
-	params={
-		'kname':'Gaussian',
-		'kargs':[1.5],
+	kparams={
+		'name': 'Gaussian',
+		'args': {'key': ('width',), 'val': (1.5,)},
+		'feature_class': 'simple',
+		'feature_type': 'Real',
+		'data': dataop.get_clouds(2)
 	}
-	params['data']=dataop.get_clouds(2)
-	params['feats']=featop.get_simple('Real', params['data'])
-	params['kernel']=GaussianKernel(10, *params['kargs'])
-	_loop_svm(svms, params)
+	feats=featop.get_features(
+		kparams['feature_class'], kparams['feature_type'], kparams['data'])
+	kernel=GaussianKernel(10, *kparams['args']['val'])
+	output=fileop.get_output(category.KERNEL, kparams)
 
-	svms=['LibSVMMultiClass', 'GMNPSVM']
-	params['data']=dataop.get_clouds(3)
-	params['feats']=featop.get_simple('Real', params['data'])
-	_loop_svm(svms, params)
+	svms=('SVMLight', 'LibSVM', 'GPBTSVM', 'MPDSVM')
+	params={
+		'type': 'kernel',
+		'label_type': 'twoclass'
+	}
+	_loop_svm(svms, params, feats, kernel, output)
 
-	svms=['SVMLight', 'GPBTSVM']
-	params['kargs']=[]
-	params['kname']='Linear'
-	params['kernel']=LinearKernel()
-	params['kernel'].set_normalizer(AvgDiagKernelNormalizer(-1))
-	params['kernel'].init(params['feats']['train'], params['feats']['train'])
-	_loop_svm(svms, params)
+	svms=('LibSVMOneClass',)
+	params['label_type']=None
+	_loop_svm(svms, params, feats, kernel, output)
 
-	params['data']=dataop.get_dna()
+	svms=('LibSVMMultiClass', 'GMNPSVM')
+	params['label_type']='series'
+	kparams['data']=dataop.get_clouds(3)
+	feats=featop.get_features(
+		kparams['feature_class'], kparams['feature_type'], kparams['data'])
+	output=fileop.get_output(category.KERNEL, kparams)
+	_loop_svm(svms, params, feats, kernel, output)
 
-	params['kargs']=[False]
-	params['kname']='CommWordString'
-	params['feats']=featop.get_string_complex('Word', params['data'])
-	params['kernel']=CommWordStringKernel(10, *params['kargs'])
-	_loop_svm(svms, params)
+	svms=('SVMLight', 'GPBTSVM')
+	params['label_type']='twoclass'
+	kparams={
+		'name': 'Linear',
+		'feature_class': 'simple',
+		'feature_type': 'Real',
+		'data': dataop.get_clouds(2),
+		'normalizer': AvgDiagKernelNormalizer()
+	}
+	feats=featop.get_features(
+		kparams['feature_class'], kparams['feature_type'], kparams['data'])
+	kernel=LinearKernel()
+	kernel.set_normalizer(kparams['normalizer'])
+	output=fileop.get_output(category.KERNEL, kparams)
+	_loop_svm(svms, params, feats, kernel, output)
 
-	params['kname']='CommUlongString'
-	params['feats']=featop.get_string_complex('Ulong', params['data'])
-	params['kernel']=CommUlongStringKernel(10, *params['kargs'])
-	_loop_svm(svms, params)
+	kparams={
+		'name': 'CommWordString',
+		'args': {'key': ('use_sign',), 'val': (False,)},
+		'data': dataop.get_dna(),
+		'feature_class': 'string_complex',
+		'feature_type': 'Word'
+	}
+	feats=featop.get_features(
+		kparams['feature_class'], kparams['feature_type'], kparams['data'])
+	kernel=CommWordStringKernel(10, *kparams['args']['val'])
+	output=fileop.get_output(category.KERNEL, kparams)
+	_loop_svm(svms, params, feats, kernel, output)
 
-	params['feats']=featop.get_string('Char', params['data'])
-	params['kname']='WeightedDegreeString'
-	params['kargs']=[3]
-	params['kernel']=WeightedDegreeStringKernel(*params['kargs'])
-	_loop_svm(svms, params)
+	kparams={
+		'name': 'CommUlongString',
+		'args': {'key': ('use_sign',), 'val': (False,)},
+		'data': dataop.get_dna(),
+		'feature_class': 'string_complex',
+		'feature_type': 'Ulong'
+	}
+	feats=featop.get_features(
+		kparams['feature_class'], kparams['feature_type'], kparams['data'])
+	kernel=CommUlongStringKernel(10, *kparams['args']['val'])
+	output=fileop.get_output(category.KERNEL, kparams)
+	_loop_svm(svms, params, feats, kernel, output)
+
+	kparams={
+		'name': 'WeightedDegreeString',
+		'args': {'key': ('degree',), 'val': (3,)},
+		'data': dataop.get_dna(),
+		'feature_class': 'string',
+		'feature_type': 'Char'
+	}
+	feats=featop.get_features(
+		kparams['feature_class'], kparams['feature_type'], kparams['data'])
+	kernel=WeightedDegreeStringKernel(*kparams['args']['val'])
+	output=fileop.get_output(category.KERNEL, kparams)
+	_loop_svm(svms, params, feats, kernel, output)
 	params['linadd_enabled']=True
-	_loop_svm(svms, params)
+	_loop_svm(svms, params, feats, kernel, output)
 	params['batch_enabled']=True
-	_loop_svm(svms, params)
+	_loop_svm(svms, params, feats, kernel, output)
+
+	kparams={
+		'name': 'WeightedDegreePositionString',
+		'args': {'key': ('degree',), 'val': (20,)},
+		'data': dataop.get_dna(),
+		'feature_class': 'string',
+		'feature_type': 'Char'
+	}
+	feats=featop.get_features(
+		kparams['feature_class'], kparams['feature_type'], kparams['data'])
+	kernel=WeightedDegreePositionStringKernel(10, *kparams['args']['val'])
+	output=fileop.get_output(category.KERNEL, kparams)
 	del params['linadd_enabled']
 	del params['batch_enabled']
-
-	params['kname']='WeightedDegreePositionString'
-	params['kargs']=[20]
-	params['kernel']=WeightedDegreePositionStringKernel(10, *params['kargs'])
-	_loop_svm(svms, params)
+	_loop_svm(svms, params, feats, kernel, output)
 	params['linadd_enabled']=True
-	_loop_svm(svms, params)
+	_loop_svm(svms, params, feats, kernel, output)
 	params['batch_enabled']=True
-	_loop_svm(svms, params)
+	_loop_svm(svms, params, feats, kernel, output)
 
 
 def _run_svm_linear ():
 	"""Run all SVMs based on (Sparse) Linear Classifiers."""
 
-	svms=['SVMOcas']
 	params={
-		'data':dataop.get_clouds(2),
-		'bias_enabled':False,
+		'type': 'linear',
+		'bias_enabled': False,
+		'data': dataop.get_clouds(2),
+		'feature_class': 'simple',
+		'feature_type': 'Real',
+		'label_type': 'twoclass'
 	}
-	params['feats']=featop.get_simple('Real', params['data'], sparse=True)
-	_loop_svm(svms, params)
+	feats=featop.get_features(
+		params['feature_class'], params['feature_type'],
+		params['data'], sparse=True)
 
-	svms=['LibLinear', 'SVMLin', 'SVMSGD']
+	svms=('SVMOcas',)
+	_loop_svm(svms, params, feats)
+
+	svms=('LibLinear', 'SVMLin', 'SVMSGD')
 	params['bias_enabled']=True
-	_loop_svm(svms, params)
+	_loop_svm(svms, params, feats)
 
 	# SubGradientSVM needs max_train_time to terminate
-	svms=['SubGradientSVM']
+	svms=('SubGradientSVM',)
 	params['bias_enabled']=False
 	params['max_train_time']=.5 # up to 2. does not improve test results :(
-	_loop_svm(svms, params)
+	_loop_svm(svms, params, feats)
 
 
 ##########################################################################
@@ -364,17 +340,22 @@ def _run_svm_linear ():
 def _run_perceptron ():
 	"""Run Perceptron classifier."""
 
-	name='Perceptron'
 	params={
-		'num_threads':1,
-		'learn_rate':.1,
-		'max_iter':1000,
-		'data':dataop.get_clouds(2)
+		'name': 'Perceptron',
+		'type': 'perceptron',
+		'num_threads': 1,
+		'learn_rate': .1,
+		'max_iter': 1000,
+		'data': dataop.get_clouds(2),
+		'feature_class': 'simple',
+		'feature_type': 'Real',
+		'label_type': 'twoclass',
+		'accuracy': 1e-7
 	}
-	feats=featop.get_simple('Real', params['data'])
+	feats=featop.get_features(
+		params['feature_class'], params['feature_type'], params['data'])
 	num_vec=feats['train'].get_num_vectors()
-	params['labels'], labels=dataop.get_labels(num_vec,
-		config.CLASSIFIER[name][2])
+	params['labels'], labels=dataop.get_labels(num_vec, params['label_type'])
 
 	perceptron=classifier.Perceptron(feats['train'], labels)
 	perceptron.parallel.set_num_threads(params['num_threads'])
@@ -386,27 +367,36 @@ def _run_perceptron ():
 	perceptron.set_features(feats['test'])
 	params['classified']=perceptron.classify().get_labels()
 
-	outdata=_get_outdata(name, params)
-	fileop.write(config.C_CLASSIFIER, outdata)
+	output=fileop.get_output(category.CLASSIFIER, params)
+	fileop.write(category.CLASSIFIER, output)
 
 
 def _run_knn ():
 	"""Run K-Nearest-Neighbour classifier.
 	"""
 
-	name='KNN'
 	params={
-		'num_threads':1,
-		'k':3,
-		'dname':'EuclidianDistance',
-		'dargs':[],
-		'data':dataop.get_clouds(2),
+		'name': 'EuclidianDistance',
+		'data': dataop.get_clouds(2),
+		'feature_class': 'simple',
+		'feature_type': 'Real'
 	}
-	feats=featop.get_simple('Real', params['data'])
-	fun=eval(params['dname'])
-	distance=fun(feats['train'], feats['train'], *params['dargs'])
+	feats=featop.get_features(
+		params['feature_class'], params['feature_type'], params['data'])
+	dfun=eval(params['name'])
+	distance=dfun(feats['train'], feats['train'])
+	output=fileop.get_output(category.DISTANCE, params)
+
+	params={
+		'name': 'KNN',
+		'type': 'knn',
+		'num_threads': 1,
+		'k': 3,
+		'label_type': 'twoclass',
+		'accuracy': 1e-8
+	}
 	params['labels'], labels=dataop.get_labels(
-		feats['train'].get_num_vectors(), config.CLASSIFIER[name][2])
+		feats['train'].get_num_vectors(), params['label_type'])
 
 	knn=classifier.KNN(params['k'], distance, labels)
 	knn.parallel.set_num_threads(params['num_threads'])
@@ -415,22 +405,28 @@ def _run_knn ():
 	distance.init(feats['train'], feats['test'])
 	params['classified']=knn.classify().get_labels()
 
-	outdata=_get_outdata(name, params)
-	fileop.write(config.C_CLASSIFIER, outdata)
+	output.update(fileop.get_output(category.CLASSIFIER, params))
+	fileop.write(category.CLASSIFIER, output)
 
 
 def _run_lda ():
 	"""Run Linear Discriminant Analysis classifier."""
 
-	name='LDA'
 	params={
-		'gamma':.1,
-		'num_threads':1,
-		'data':dataop.get_clouds(2),
+		'name': 'LDA',
+		'type': 'lda',
+		'gamma': 0.1,
+		'num_threads': 1,
+		'data': dataop.get_clouds(2),
+		'feature_class': 'simple',
+		'feature_type': 'Real',
+		'label_type': 'twoclass',
+		'accuracy': 1e-7
 	}
-	feats=featop.get_simple('Real', params['data'])
+	feats=featop.get_features(
+		params['feature_class'], params['feature_type'], params['data'])
 	params['labels'], labels=dataop.get_labels(
-		feats['train'].get_num_vectors(), config.CLASSIFIER[name][2])
+		feats['train'].get_num_vectors(), params['label_type'])
 
 	lda=classifier.LDA(params['gamma'], feats['train'], labels)
 	lda.parallel.set_num_threads(params['num_threads'])
@@ -439,21 +435,28 @@ def _run_lda ():
 	lda.set_features(feats['test'])
 	params['classified']=lda.classify().get_labels()
 
-	outdata=_get_outdata(name, params)
-	fileop.write(config.C_CLASSIFIER, outdata)
+	output=fileop.get_output(category.CLASSIFIER, params)
+	fileop.write(category.CLASSIFIER, output)
 
 
 def _run_wdsvmocas ():
 	"""Run Weighted Degree SVM Ocas classifier."""
 
-	name='WDSVMOcas'
+	svms=('WDSVMOcas')
 	params={
+		'type': 'wdsvmocas',
 		'degree': 1,
 		'bias_enabled': False,
 		'data': dataop.get_rawdna(),
+		'feature_class': 'string',
+		'feature_type': 'Byte',
+		'alphabet': 'RAWDNA',
+		'label_type': 'twoclass'
 	}
-	params['feats']=featop.get_string('Byte', params['data'], RAWDNA)
-	_loop_svm([name], params)
+	feats=featop.get_features(
+		params['feature_class'], params['feature_type'],
+		params['data'], params['alphabet'])
+	_loop_svm(svms, params, feats)
 
 
 ##########################################################################

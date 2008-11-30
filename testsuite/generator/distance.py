@@ -1,72 +1,110 @@
 """Generator for Distance"""
 
-import numpy
 import shogun.Distance as distance
 
 import fileop
 import dataop
 import featop
-import config
+import category
 
-def _compute (name, feats, data, *args):
+
+def _compute (feats, params):
 	"""Compute a distance and gather result data.
 
-	@param name Name of the distance
 	@param feats Train and test features
-	@param data Train and test data (for output)
-	@param *args variable argument list for distance's constructor
+	@param params dict with parameters to distance
 	"""
 
-	fun=eval('distance.'+name)
-	dist=fun(feats['train'], feats['train'], *args)
+	fun=eval('distance.'+params['name'])
+	if params.has_key('args'):
+		dist=fun(feats['train'], feats['train'], *params['args']['val'])
+	else:
+		dist=fun(feats['train'], feats['train'])
 	dm_train=dist.get_distance_matrix()
 	dist.init(feats['train'], feats['test'])
 	dm_test=dist.get_distance_matrix()
 
-	outdata={
-		'name':name,
-		'dm_train':dm_train,
-		'dm_test':dm_test,
-		'data_train':numpy.matrix(data['train']),
-		'data_test':numpy.matrix(data['test'])
+	output={
+		'distance_matrix_train':dm_train,
+		'distance_matrix_test':dm_test,
 	}
-	outdata.update(fileop.get_outdata(name, config.C_DISTANCE, args))
+	output.update(fileop.get_output(category.DISTANCE, params))
 
-	fileop.write(config.C_DISTANCE, outdata)
+	fileop.write(category.DISTANCE, output)
 
 def _run_feats_real ():
 	"""Run distances with RealFeatures."""
 
-	data=dataop.get_rand()
-	feats=featop.get_simple('Real', data)
+	params={
+		'accuracy': 1e-8,
+		'feature_class': 'simple',
+		'feature_type': 'Real',
+		'data': dataop.get_rand()
+	}
+	feats=featop.get_features(
+		params['feature_class'], params['feature_type'], params['data'])
 
-	_compute('EuclidianDistance', feats, data)
-	_compute('CanberraMetric', feats, data)
-	_compute('ChebyshewMetric', feats, data)
-	_compute('GeodesicMetric', feats, data)
-	_compute('JensenMetric', feats, data)
-	_compute('ManhattanMetric', feats, data)
-	_compute('BrayCurtisDistance', feats, data)
-	_compute('ChiSquareDistance', feats, data)
-	_compute('CosineDistance', feats, data)
-	_compute('TanimotoDistance', feats, data)
-	_compute('ManhattanMetric', feats, data)
-	_compute('ManhattanMetric', feats, data)
-	_compute('MinkowskiMetric', feats, data, 1.3)
+	params['name']='EuclidianDistance'
+	_compute(feats, params)
+	params['name']='CanberraMetric'
+	_compute(feats, params)
+	params['name']='ChebyshewMetric'
+	_compute(feats, params)
+	params['name']='GeodesicMetric'
+	_compute(feats, params)
+	params['name']='JensenMetric'
+	_compute(feats, params)
+	params['name']='ManhattanMetric'
+	_compute(feats, params)
+	params['name']='BrayCurtisDistance'
+	_compute(feats, params)
+	params['name']='ChiSquareDistance'
+	_compute(feats, params)
+	params['name']='CosineDistance'
+	_compute(feats, params)
+	params['name']='TanimotoDistance'
+	_compute(feats, params)
+	params['name']='ManhattanMetric'
+	_compute(feats, params)
+	params['name']='MinkowskiMetric'
+	params['args']={'key': ('k',), 'val': (1.3,)}
+	_compute(feats, params)
 
-	feats=featop.get_simple('Real', data, sparse=True)
-	_compute('SparseEuclidianDistance', feats, data)
+	params['name']='SparseEuclidianDistance'
+	params['accuracy']=1e-7
+	del params['args']
+	feats=featop.get_features(
+		params['feature_class'], params['feature_type'],
+		params['data'], sparse=True)
+	_compute(feats, params)
+
 
 def _run_feats_string_complex ():
 	"""Run distances with complex StringFeatures, like WordString."""
 
-	data=dataop.get_dna(num_vec_test=dataop.NUM_VEC_TRAIN+42)
-	feats=featop.get_string_complex('Word', data)
+	params={
+		'accuracy': 1e-7,
+		'feature_class': 'string_complex',
+		'feature_type': 'Word',
+		'data': dataop.get_dna(num_vec_test=dataop.NUM_VEC_TRAIN+42)
+	}
+	feats=featop.get_features(
+		params['feature_class'], params['feature_type'], params['data'])
 
-	_compute('CanberraWordDistance', feats, data)
-	_compute('HammingWordDistance', feats, data, False)
-	_compute('HammingWordDistance', feats, data, True)
-	_compute('ManhattanWordDistance', feats, data)
+	params['name']='CanberraWordDistance'
+	_compute(feats, params)
+
+	params['accuracy']=1e-8
+	params['name']='ManhattanWordDistance'
+	_compute(feats, params)
+
+	params['name']='HammingWordDistance'
+	params['args']={'key': ('use_sign',), 'val': (False,)}
+	_compute(feats, params)
+	params['name']='HammingWordDistance'
+	params['args']={'key': ('use_sign',), 'val': (True,)}
+	_compute(feats, params)
+
 
 def run ():
 	"""Run generator for all distances."""

@@ -1,80 +1,43 @@
 """Generator for Regression"""
 
-import numpy
 import shogun.Regression as regression
 from shogun.Kernel import GaussianKernel
 
 import fileop
 import featop
 import dataop
-import config
+import category
 
 
-def _get_outdata (name, params):
-	"""Return data to be written into the testcase's file.
+def _compute (params, feats, kernel, pout):
+	"""
+	Compute a regression and gather result data.
 
-	After computations and such, the gathered data is structured and
-	put into one data structure which can conveniently be written to a
-	file that will represent the testcase.
-	
-	@param name Regression method's name
-	@param params Gathered data
-	@return Dict containing testcase data to be written to file
+	@param params misc parameters for the regression method
+	@param feats features of the kernel/regression
+	@param kernel kernel
+	@param pout previously gathered data from kernel ready to be written to file
 	"""
 
-	rtype=config.REGRESSION[name][1]
-	outdata={
-		'name':name,
-		'data_train':numpy.matrix(params['data']['train']),
-		'data_test':numpy.matrix(params['data']['test']),
-		'init_random':dataop.INIT_RANDOM,
-		'regression_accuracy':config.REGRESSION[name][0],
-		'regression_type':rtype,
-	}
-
-	optional=['labels', 'num_threads', 'classified',
-		'bias', 'alpha_sum', 'sv_sum', 'C', 'epsilon', 'tube_epsilon',
-		'tau',
-	]
-	for opt in optional:
-		if params.has_key(opt):
-			outdata['regression_'+opt]=params[opt]
-
-	outdata['kernel_name']=params['kname']
-	kparams=fileop.get_outdata(params['kname'], config.C_KERNEL,
-		params['kargs'])
-	outdata.update(kparams)
-
-	return outdata
-
-def _compute (name, params):
-	"""Compute a regression and gather result data.
-
-	@param name Name of the regression method
-	@param params Misc parameters for the regression method's constructor
-	"""
-
-	rtype=config.REGRESSION[name][1]
-	params['kernel'].parallel.set_num_threads(params['num_threads'])
-	params['kernel'].init(params['feats']['train'], params['feats']['train'])
-	params['labels'], labels=dataop.get_labels(
-		params['feats']['train'].get_num_vectors())
+	kernel.parallel.set_num_threads(params['num_threads'])
+	kernel.init(feats['train'], feats['train'])
+	params['labels'], labels=dataop.get_labels(feats['train'].get_num_vectors())
 
 	try:
-		fun=eval('regression.'+name)
+		fun=eval('regression.'+params['name'])
 	except AttributeError:
 		return
 
-	if rtype=='svm':
-		regression=fun(params['C'], params['epsilon'], params['kernel'], labels)
+	if params['type']=='svm':
+		regression=fun(params['C'], params['epsilon'], kernel, labels)
 		regression.set_tube_epsilon(params['tube_epsilon'])
 	else:
-		regression=fun(params['tau'], params['kernel'], labels)
+		regression=fun(params['tau'], kernel, labels)
 	regression.parallel.set_num_threads(params['num_threads'])
 
 	regression.train()
 
-	if rtype=='svm':
+	if params['type']=='svm':
 		params['bias']=regression.get_bias()
 		params['alpha_sum']=0
 		for item in regression.get_alphas().tolist():
@@ -83,54 +46,56 @@ def _compute (name, params):
 		for item in regression.get_support_vectors():
 			params['sv_sum']+=item
 
-	params['kernel'].init(params['feats']['train'], params['feats']['test'])
+	kernel.init(feats['train'], feats['test'])
 	params['classified']=regression.classify().get_labels()
 
-	outdata=_get_outdata(name, params)
-	fileop.write(config.C_REGRESSION, outdata)
+	output=pout.copy()
+	output.update(fileop.get_output(category.REGRESSION, params))
+	fileop.write(category.REGRESSION, output)
 
-def _loop (regressions, params):
-	"""Loop through regression computations, only slightly differing in parameters.
-	@param regressions Names of the regression methods to loop through
-	@param params Parameters of the regression method
+
+def _loop (regressions, feats, kernel, pout):
+	"""
+	Loop through regression computations, only slightly differing in parameters.
+
+	@param regressions names of the regression methods to loop through
+	@param feats features of the kernel/regression
+	@param kernel kernel
+	@param pout previously gathered data from kernel ready to be written to file
 	"""
 
-	for name in regressions:
-		rtype=config.REGRESSION[name][1]
-		parms={'num_threads':1}
-		parms.update(params)
-		if rtype=='svm':
-			parms['C']=.017
-			parms['epsilon']=1e-5
-			# FIXME: a bit hackish to set accuracy this way
-			config.REGRESSION[name][0]=parms['epsilon']*10
-			parms['tube_epsilon']=1e-2
-			_compute(name, parms)
-			parms['C']=.23
-			_compute(name, parms)
-			parms['C']=1.5
-			_compute(name, parms)
-			parms['C']=30
-			_compute(name, parms)
-			parms['epsilon']=1e-4
-			# FIXME: a bit hackish to set accuracy this way
-			config.REGRESSION[name][0]=parms['epsilon']*10
-			_compute(name, parms)
-			parms['tube_epsilon']=1e-3
-			_compute(name, parms)
-		elif rtype=='kernelmachine':
-			parms['tau']=1e-6
-			_compute(name, parms)
-			parms['tau']=1e-5
-			_compute(name, parms)
+	for r in regressions:
+		r['num_threads']=1
+		if r['type']=='svm':
+			r['C']=.017
+			r['epsilon']=1e-5
+			r['accuracy']=r['epsilon']*10
+			r['tube_epsilon']=1e-2
+			_compute(r, feats, kernel, pout)
+			r['C']=.23
+			_compute(r, feats, kernel, pout)
+			r['C']=1.5
+			_compute(r, feats, kernel, pout)
+			r['C']=30
+			_compute(r, feats, kernel, pout)
+			r['epsilon']=1e-4
+			r['accuracy']=r['epsilon']*10
+			_compute(r, feats, kernel, pout)
+			r['tube_epsilon']=1e-3
+			_compute(r, feats, kernel, pout)
+		elif r['type']=='kernelmachine':
+			r['tau']=1e-6
+			_compute(r, feats, kernel, pout)
+			r['tau']=1e-5
+			_compute(r, feats, kernel, pout)
 		else:
 			continue
 
 		# BUG in SVRLight:
 		# glibc detected *** /usr/bin/python: free(): invalid next size (fast)
-		if name!='SVRLight':
-			parms['num_threads']=16
-			_compute(name, parms)
+		if r['name']!='SVRLight':
+			r['num_threads']=16
+			_compute(r, feats, kernel, pout)
 
 ##########################################################################
 # public
@@ -139,13 +104,22 @@ def _loop (regressions, params):
 def run ():
 	"""Run generator for all regression methods."""
 
-	regressions=['SVRLight', 'LibSVR', 'KRR']
+	regressions=(
+		{'name': 'SVRLight', 'type': 'svm', 'accuracy': 1e-6},
+		{'name': 'LibSVR', 'type': 'svm', 'accuracy': 1e-6},
+		{'name': 'KRR', 'type': 'kernelmachine', 'accuracy': 1e-8},
+	)
+
 	params={
-		'kname':'Gaussian',
-		'kargs':[1.5],
-		'data':dataop.get_rand(),
+		'name': 'Gaussian',
+		'args': {'key': ('width',), 'val': (1.5,)},
+		'feature_class': 'simple',
+		'feature_type': 'Real',
+		'data': dataop.get_rand()
 	}
-	params['feats']=featop.get_simple('Real', params['data'])
-	params['kernel']=GaussianKernel(10, *params['kargs'])
-	_loop(regressions, params)
+	output=fileop.get_output(category.KERNEL, params)
+	feats=featop.get_simple('Real', params['data'])
+	kernel=GaussianKernel(10, *params['args']['val'])
+
+	_loop(regressions, feats, kernel, output)
 

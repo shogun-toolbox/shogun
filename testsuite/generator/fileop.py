@@ -1,37 +1,14 @@
 """Common operations related to file handling"""
 
 import os
+from numpy import int, long, float, double, ushort, uint16, ubyte, short, matrix
 
 import featop
 import dataop
-import config
-from numpy import int, long, float, double, ushort, uint16, ubyte, short
+import category
 
 DIR_OUTPUT='data'
 EXT_OUTPUT='.m'
-
-
-def _get_str_category (category):
-	"""Returns the string representation of given category.
-
-	@param category ID of a category
-	@return String of the category or empty string if ID was invalid
-	"""
-
-	table={
-		config.C_KERNEL:'kernel',
-		config.C_DISTANCE:'distance',
-		config.C_CLASSIFIER:'classifier',
-		config.C_CLUSTERING:'clustering',
-		config.C_DISTRIBUTION:'distribution',
-		config.C_REGRESSION:'regression',
-		config.C_PREPROC:'preproc',
-	}
-
-	try:
-		return table[category]
-	except IndexError:
-		return ''
 
 
 def _get_matrix (name, kmatrix):
@@ -83,15 +60,17 @@ def _get_matrix (name, kmatrix):
 
 
 def _is_excluded_from_filename (key):
-	"""Determine if given key's value shall not be part of the filename.
+	"""
+	Determine if given key's value shall not be part of the filename.
 
-	@param key Name of the value to check for.
-	@return True if shall be excluded, false otherwise
+	@param key name of the value to check for.
+	@return true if to be excluded, false otherwise
 	"""
 
 	if (key.find('feature_')!=-1 or
 		key.find('accuracy')!=-1 or
 		key.find('data_')!=-1 or
+		key.find('normalizer')!=-1 or
 		key=='name' or
 		key=='init_random' or
 		key=='regression_type' or
@@ -103,7 +82,7 @@ def _is_excluded_from_filename (key):
 		key=='distribution_best_path' or
 		key=='distribution_best_path_state' or
 		key=='classifier_bias' or
-		key=='classifier_labeltype' or
+		key=='classifier_label_type' or
 		key=='classifier_alpha_sum' or
 		key=='classifier_sv_sum' or
 		key=='classifier_type'):
@@ -112,19 +91,24 @@ def _is_excluded_from_filename (key):
 		return False
 
 
-def _get_filename (category, outdata):
-	"""Return filename for testcase data's output.
+def _get_filename (catID, out):
+	"""
+	Return filename for testcase data's output.
 
-	@param category ID of the category
-	@param outdata data to be written into file
-	@return String with the filename
+	@param catID ID of the category
+	@param out data to be written into file
+	@return string with the filename
 	"""
 
 	params=[]
 
-	for key, val in outdata.iteritems():
+	name=category.get_name(catID)
+	for key, val in out.iteritems():
 		if _is_excluded_from_filename(key):
 			continue
+		if key==name:
+			continue
+
 		cname=val.__class__.__name__
 		if cname=='bool' or cname=='float' or cname=='int' or cname=='str':
 			val=str(val)
@@ -135,26 +119,176 @@ def _get_filename (category, outdata):
 	params='_'.join(params).replace('.', '')
 	if len(params)>0:
 		params='_'+params
-	else: # problems with one interface (FIXME: find out which) otherwise
+	else: # otherwise problems with one interface (FIXME: find out which)
 		params='_fnord'
 
-	return DIR_OUTPUT+os.sep+_get_str_category(category)+os.sep+ \
-		outdata['name']+params+EXT_OUTPUT
+	dir=DIR_OUTPUT+os.sep+category.get_as_string(catID)+os.sep
+	return dir+out[name]+params+EXT_OUTPUT
+
+
+def _loop_args(args, prefix):
+	"""
+	Loop through all arguments in given dict and add to appropriately to
+	output data.
+
+	@param params various clustering parameters
+	@param prefix prefix for parameter's name, e.g. 'preproc_'
+	@return dict containing testcase data ready to be written to file
+	"""
+
+	out={}
+	for i in xrange(len(args['key'])):
+		try:
+			name=prefix+'arg'+str(i)+'_'+args['key'][i]
+		except IndexError:
+			break
+
+		cname=args['val'][i].__class__.__name__
+		if cname=='int' or cname=='float' or cname=='bool' or cname=='str':
+			out[name]=args['val'][i]
+		else:
+			out[name]=cname
+
+	return out
+
+
+def _get_output_classifier (params, prefix=''):
+	"""
+	Classifier-specific gathering of output data
+	
+	@param params various classifier parameters
+	@param prefix prefix for parameter's name, e.g. 'classifier_'
+	@return dict containing testcase data ready to be written to file
+	"""
+
+	out={}
+	for key, val in params.iteritems():
+		if key!='data' and val is not None:
+			out[prefix+key]=val
+
+	return out
+
+
+def _get_output_clustering (params, prefix=''):
+	"""
+	Clustering-specific gathering of output data
+	
+	@param params various clustering parameters
+	@param prefix prefix for parameter's name, e.g. 'clustering_'
+	@return dict containing testcase data ready to be written to file
+	"""
+
+	out={}
+	for key, val in params.iteritems():
+		out[prefix+key]=val
+
+	return out
+
+
+def _get_output_distance (params, prefix=''):
+	"""
+	Distance-specific gathering of outdata
+	
+	@param params various distance parameters
+	@param prefix prefix for parameter's name, e.g. 'subkernel'
+	@return dict containing testcase data ready to be written to file
+	"""
+
+	if not params.has_key('args'):
+		return {}
+
+	return _loop_args(params['args'], prefix)
+
+
+def _get_output_distribution (params, prefix=''):
+	"""
+	Clustering-specific gathering of output data
+	
+	@param params various clustering parameters
+	@param prefix prefix for parameter's name, e.g. 'clustering_'
+	@return dict containing testcase data ready to be written to file
+	"""
+
+	out={}
+	for key, val in params.iteritems():
+		if key!='data' and val is not None:
+			out[prefix+key]=val
+
+	return out
+
+
+def _get_output_kernel (params, prefix=''):
+	"""
+	Kernel-specific gathering of outdata
+	
+	@param params various kernel parameters
+	@param prefix prefix for parameter's name, e.g. 'subkernel'
+	@return dict containing testcase data ready to be written to file
+	"""
+
+	out={}
+
+	if params.has_key('normalizer'):
+		out[prefix+'normalizer']=params['normalizer'].__class__.__name__
+
+	if not params.has_key('args'):
+		return out
+
+	if params['name']=='AUC':
+		# remove element 'subkernel'
+		params['args']['key']=(params['args']['key'][0],)
+
+	out.update(_loop_args(params['args'], prefix))
+	return  out
+
+
+def _get_output_preproc (params, prefix=''):
+	"""
+	Preproc-specific gathering of output data
+	
+	@param params various preproc parameters
+	@param prefix prefix for parameter's name, e.g. 'preproc_'
+	@return dict containing testcase data ready to be written to file
+	"""
+
+	if not params.has_key('args'):
+		return {}
+
+	return _loop_args(params['args'], prefix)
+
+
+def _get_output_regression (params, prefix=''):
+	"""
+	Regression-specific gathering of output data
+	
+	@param params various regression parameters
+	@param prefix prefix for parameter's name, e.g. 'regression_'
+	@return dict containing testcase data ready to be written to file
+	"""
+
+	out={}
+	for key, val in params.iteritems():
+		out[prefix+key]=val
+
+	return out
+
+
 
 ############################################################################
 # public
 ############################################################################
 
-def write (category, outdata):
-	"""Write given testcase data to a file.
+def write (catID, out):
+	"""
+	Write given testcase data to a file.
 
-	@param category ID of the category, like C_KERNEL
-	@param outdata data to be written into file
+	@param cat ID of the category, like category.KERNEL
+	@param out data to be written into file
 	@return Success of operation
 	"""
 
-	fnam=_get_filename(category, outdata)
-	print 'Writing for '+_get_str_category(category).upper()+': '+ \
+	fnam=_get_filename(catID, out)
+	print 'Writing for '+category.get_as_string(catID).upper()+': '+ \
 		os.path.basename(fnam)
 
 	dirname=os.path.dirname(fnam)
@@ -162,7 +296,7 @@ def write (category, outdata):
 		os.mkdir(dirname)
 
 	mfile=open(fnam, mode='w')
-	for key, val in outdata.iteritems():
+	for key, val in out.iteritems():
 		cname=val.__class__.__name__
 		if cname=='bool' or cname=='str':
 			mfile.write("%s = '%s';\n"%(key, val))
@@ -174,8 +308,10 @@ def write (category, outdata):
 
 	return True
 
+
 def clean_dir_outdata ():
-	"""Remove all old testdata files.
+	"""
+	Remove all old testdata files.
 
 	@return Success of operation
 	"""
@@ -199,84 +335,87 @@ def clean_dir_outdata ():
 
 	return success
 
-def get_args (prefix, names, args, offset=0):
-	"""Return argument list for kernel/distance to be written to a file.
 
-	@param prefix Prefix for argument's name, like 'subkernel'
-	@param names Names of the arguments
-	@param args Values of the arguments
-	@param offset Offset from argument conter, used for e.g. subkernels
-	@return Dict with data on arguments ready to be written to file
+def get_output (catID, params, prefix=''):
 	"""
+	Return output data to be written into the testcase's file.
 
-	outdata={}
-
-	for i in xrange(len(args)):
-		try:
-			name=prefix+'_arg'+str(i+offset)+'_'+names[i]
-		except IndexError:
-			break
-
-		cname=args[i].__class__.__name__
-		if cname=='int' or cname=='float' or cname=='bool' or cname=='str':
-			outdata[name]=args[i]
-		else:
-			outdata[name]=cname
-
-	return outdata
-
-# prefix and offset are necessary for subkernels
-def get_outdata (name, category, args=(), prefix='', offset=0):
-	"""Return data to be written into the testcase's file.
-
-	After computations and such, the gathered data is structured and
+	After computations, the gathered data is structured and
 	put into one data structure which can conveniently be written to a
 	file that will represent the testcase.
 	
-	@param name Kernel/Distance's name
-	@param category ID of the category, like C_DISTANCE
-	@param args argument list of the item in question
-	@param prefix Prefix for argument's name, like 'subkernel'
-	@param offset Offset from argument conter, used for e.g. subkernels
+	@param catID ID of entity's category, e.g. category.DISTANCE
+	@param params hash with parameters to entity
+	@param prefix prefix for parameter's name, e.g. 'subkernel'
 	@return Dict containing testcase data ready to be written to file
 	"""
 
-	if category==config.C_KERNEL:
-		data=config.KERNEL[name]
-		prefix_arg=prefix+'kernel'
-	elif category==config.C_DISTANCE:
-		data=config.DISTANCE[name]
-		prefix_arg=prefix+'distance'
+	out={}
+	prefix=category.get_as_string(catID)+'_'+prefix
+	if catID==category.CLASSIFIER:
+		out=_get_output_classifier(params, prefix)
+	elif catID==category.CLUSTERING:
+		out=_get_output_distribution(params, prefix)
+	elif catID==category.DISTANCE:
+		out=_get_output_distance(params, prefix)
+	elif catID==category.DISTRIBUTION:
+		out=_get_output_distribution(params, prefix)
+	elif catID==category.KERNEL:
+		out=_get_output_kernel(params, prefix)
+	elif catID==category.PREPROC:
+		out=_get_output_preproc(params, prefix)
+	elif catID==category.REGRESSION:
+		out=_get_output_regression(params, prefix)
 	else:
-		return {}
+		return out
 
-	outdata={}
+	out[prefix+'name']=params['name']
+	if params.has_key('accuracy'):
+		out[prefix+'accuracy']=params['accuracy']
 
-	# general params
-	outdata[prefix+'data_class']=data[0][0]
-	outdata[prefix+'data_type']=data[0][1]
-	outdata[prefix+'feature_class']=data[1][0]
-	outdata[prefix+'feature_type']=data[1][1]
-	outdata[prefix+'accuracy']=data[3]
+	# example data
+	if params.has_key('data'):
+		out[prefix+'data_train']=matrix(params['data']['train'])
+		out[prefix+'data_test']=matrix(params['data']['test'])
+
 
 	# params wrt feature class & type
-	if data[1][0]=='string' or (data[1][0]=='simple' and data[1][1]=='Char'):
-		outdata[prefix+'alphabet']='DNA'
-		outdata[prefix+'seqlen']=dataop.LEN_SEQ
-	elif data[1][0]=='simple' and data[1][1]=='Byte':
-		outdata[prefix+'alphabet']='RAWBYTE'
-		outdata[prefix+'seqlen']=dataop.LEN_SEQ
-	elif data[1][0]=='string_complex':
-		outdata[prefix+'order']=featop.WORDSTRING_ORDER
-		outdata[prefix+'gap']=featop.WORDSTRING_GAP
-		outdata[prefix+'reverse']=featop.WORDSTRING_REVERSE
-		outdata[prefix+'alphabet']='DNA'
-		outdata[prefix+'seqlen']=dataop.LEN_SEQ
-		outdata[prefix+'feature_obtain']=data[1][2]
+	if params.has_key('feature_class'):
+		fclass=params['feature_class']
+		ftype=params['feature_type']
+		out[prefix+'feature_class']=fclass
+		out[prefix+'feature_type']=ftype
 
-	if args!=(): # arguments, if any
-		outdata.update(get_args(prefix_arg, data[2], args, offset))
+		if fclass=='string' or (fclass=='simple' and ftype=='Char'):
+			out[prefix+'alphabet']='DNA'
+			out[prefix+'seqlen']=dataop.LEN_SEQ
 
-	outdata['init_random']=dataop.INIT_RANDOM
+		elif fclass=='simple' and ftype=='Byte':
+			out[prefix+'alphabet']='RAWBYTE'
+			out[prefix+'seqlen']=dataop.LEN_SEQ
 
-	return outdata
+		elif fclass=='string_complex':
+			if params.has_key('alphabet'):
+				out[prefix+'alphabet']=params['alphabet']
+			else:
+				out[prefix+'alphabet']='DNA'
+			if params.has_key('order'):
+				out[prefix+'order']=params['order']
+			else:
+				out[prefix+'order']=featop.WORDSTRING_ORDER
+			if params.has_key('gap'):
+				out[prefix+'gap']=params['gap']
+			else:
+				out[prefix+'gap']=featop.WORDSTRING_GAP
+			if params.has_key('reverse'):
+				out[prefix+'reverse']=params['reverse']
+			else:
+				out[prefix+'reverse']=featop.WORDSTRING_REVERSE
+			if params.has_key('seqlen'):
+				out[prefix+'seqlen']=params['seqlen']
+			else:
+				out[prefix+'seqlen']=dataop.LEN_SEQ
+
+	out['init_random']=dataop.INIT_RANDOM
+
+	return out

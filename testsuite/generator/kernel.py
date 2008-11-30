@@ -1,5 +1,9 @@
 """
 Generator for Kernel
+
+A word about args: it is organised as two correlated tuples, because the
+order of the elements of dicts in Python is arbitrary, meaning that the item
+added first might be the last when iterating over the dict.
 """
 
 import numpy
@@ -8,123 +12,199 @@ from shogun.Features import CombinedFeatures, TOPFeatures, FKFeatures, CUBE, RAW
 from shogun.Classifier import PluginEstimate
 from shogun.Distance import CanberraMetric
 from shogun.Distribution import HMM, Model, LinearHMM, BW_NORMAL
-
 from shogun.Library import Math_init_random
-from dataop import INIT_RANDOM
 
 import fileop
 import featop
 import dataop
-import config
+import category
+
 
 ##################################################################
-## subkernel funs
+## compute funcs
 ##################################################################
 
-def _compute_subkernels (name, feats, kern, outdata):
-	"""Compute for kernel handling subkernels.
+def _compute_pie (feats, params):
+	"""Compute a kernel with PluginEstimate.
+
+	@param feats kernel features
+	@param params dict containing various kernel parameters
+	"""
+
+	output=fileop.get_output(category.KERNEL, params)
+
+	lab, labels=dataop.get_labels(feats['train'].get_num_vectors())
+	output['classifier_labels']=lab
+	pie=PluginEstimate()
+	pie.set_labels(labels)
+	pie.set_features(feats['train'])
+	pie.train()
+
+	kfun=eval('kernel.'+params['name']+'Kernel')
+	kern=kfun(feats['train'], feats['train'], pie)
+	output['kernel_matrix_train']=kern.get_kernel_matrix()
+	kern.init(feats['train'], feats['test'])
+	pie.set_features(feats['test'])
+	output['kernel_matrix_test']=kern.get_kernel_matrix()
+
+	classified=pie.classify().get_labels()
+	output['classifier_classified']=classified
+
+	fileop.write(category.KERNEL, output)
+
+
+def _compute_top_fisher (feats, pout):
+	"""Compute PolyKernel with TOP or FKFeatures
+
+	@param feats features of the kernel
+	@param pout previously gathered data ready to be written to file
+	"""
+
+	params={
+		'name': 'Poly',
+		'accuracy': 1e-6,
+		'args': {
+			'key': ('size', 'degree', 'inhomogene'),
+			'val': (10, 1, False)
+		}
+	}
+	output=fileop.get_output(category.KERNEL, params)
+	output.update(pout)
+
+	kfun=eval('kernel.'+params['name']+'Kernel')
+	kern=kfun(feats['train'], feats['train'], *params['args']['val'])
+	output['kernel_matrix_train']=kern.get_kernel_matrix()
+	kern.init(feats['train'], feats['test'])
+	output['kernel_matrix_test']=kern.get_kernel_matrix()
+
+	fileop.write(category.KERNEL, output)
+
+
+def _compute (feats, params, pout=None):
+	"""
+	Compute a kernel and write gathered data to file.
 
 	@param name name of the kernel
 	@param feats features of the kernel
-	@param kernel instantiated kernel
-	@param outdata already gathered data for output into testcase file
+	@param params dict with parameters to kernel
+	@param pout previously gathered data ready to be written to file
 	"""
 
-	outdata['name']=name
+	output=fileop.get_output(category.KERNEL, params)
+	if pout:
+		output.update(pout)
+
+	kfun=eval('kernel.'+params['name']+'Kernel')
+	if params.has_key('args'):
+		kern=kfun(*params['args']['val'])
+	else:
+		kern=kfun()
+
+	if params.has_key('normalizer'):
+		kern.set_normalizer(params['normalizer'])
 	kern.init(feats['train'], feats['train'])
-	outdata['km_train']=kern.get_kernel_matrix()
+
+	output['kernel_matrix_train']=kern.get_kernel_matrix()
 	kern.init(feats['train'], feats['test'])
-	outdata['km_test']=kern.get_kernel_matrix()
-	outdata.update(fileop.get_outdata(name, config.C_KERNEL))
+	output['kernel_matrix_test']=kern.get_kernel_matrix()
 
-	fileop.write(config.C_KERNEL, outdata)
+	fileop.write(category.KERNEL, output)
 
-def _get_subkernel_args (subkernel):
-	"""Return argument list for a subkernel.
 
-	@param subkernel tuple containing data relevant to a subkernel
-	"""
-
-	args=''
-	i=0
-	while 1:
-		try:
-			args+=', '+(str(subkernel[1+i]))
-			i+=1
-		except IndexError:
-			break
-
-	return args
-
-def _get_subkernel_outdata (subkernel, data, num):
-	"""Return data to be written into the testcase's file for a subkernel
-
-	@param subkernel tuple containing data relevant to a subkernel
-	@param data train and test data
-	@param num index number of the subkernel for identification in
-	           file
-	"""
-
-	prefix='subkernel'+num+'_'
-	outdata={}
-
-	outdata[prefix+'name']=subkernel[0]
-	#FIXME: size soon to be removed from constructor
-	outdata[prefix+'kernel_arg0_size']=10
-	outdata[prefix+'data_train']=numpy.matrix(data['train'])
-	outdata[prefix+'data_test']=numpy.matrix(data['test'])
-	outdata.update(fileop.get_outdata(
-		subkernel[0], config.C_KERNEL, subkernel[1:], prefix, 1))
-
-	return outdata
+##################################################################
+## run funcs
+##################################################################
 
 def _run_auc ():
 	"""Run AUC kernel."""
 
-	data=dataop.get_rand()
-	feats=featop.get_simple('Real', data)
-	width=1.5
-	subkernels=[['Gaussian', width]]
-	subk=kernel.GaussianKernel(feats['train'], feats['test'], width)
-	outdata=_get_subkernel_outdata(subkernels[0], data, '0')
+	# handle subkernel
+	params={
+		'name': 'Gaussian',
+		'data': dataop.get_rand(),
+		'feature_class': 'simple',
+		'feature_type': 'Real',
+		'args': {'key': ('size', 'width'), 'val': (10, 1.7)}
+	}
+	feats=featop.get_features(
+		params['feature_class'], params['feature_type'], params['data'])
+	subk=kernel.GaussianKernel(*params['args']['val'])
+	subk.init(feats['train'], feats['test'])
+	output=fileop.get_output(category.KERNEL, params, 'subkernel0_')
 
-	data=dataop.get_rand(numpy.ushort, num_feats=2,
-		max_train=dataop.NUM_VEC_TRAIN, max_test=dataop.NUM_VEC_TEST)
-	feats=featop.get_simple('Word', data)
-	#FIXME: size soon to be removed from constructor
-	kern=kernel.AUCKernel(10, subk)
-	outdata['data_train']=numpy.matrix(data['train'])
-	outdata['data_test']=numpy.matrix(data['test'])
+	# handle AUC
+	params={
+		'name': 'AUC',
+		'data': dataop.get_rand(numpy.ushort, num_feats=2,
+			max_train=dataop.NUM_VEC_TRAIN, max_test=dataop.NUM_VEC_TEST),
+		'feature_class': 'simple',
+		'feature_type': 'Word',
+		'accuracy': 1e-8,
+		'args': {'key': ('size', 'subkernel'), 'val': (10, subk)}
+	}
+	feats=featop.get_features(
+		params['feature_class'], params['feature_type'], params['data'])
+	_compute(feats, params, output)
 
-	_compute_subkernels('AUC', feats, kern, outdata)
 
 def _run_combined ():
 	"""Run Combined kernel."""
 
 	kern=kernel.CombinedKernel()
-	feats={'train':CombinedFeatures(), 'test':CombinedFeatures()}
-	subkernels=[
-		['FixedDegreeString', 3],
-		['PolyMatchString', 3, True],
-		['LocalAlignmentString'],
+	feats={'train': CombinedFeatures(), 'test': CombinedFeatures()}
+	output={}
+	params={
+		'name': 'Combined',
+		'accuracy': 1e-7
+	}
+	subkdata=[
+		{
+			'name': 'FixedDegreeString',
+			'feature_class': 'string',
+			'feature_type': 'Char',
+			'args': {'key': ('size', 'degree'), 'val': (10, 3)}
+		},
+		{
+			'name': 'PolyMatchString',
+			'feature_class': 'string',
+			'feature_type': 'Char',
+			'args': {
+				'key': ('size', 'degree', 'inhomogene'),
+				'val': (10, 3, True)
+			}
+		},
+		{
+			'name': 'LocalAlignmentString',
+			'feature_class': 'string',
+			'feature_type': 'Char',
+			'args': {'key': ('size',), 'val': (10,)}
+		}
 	]
-	outdata={}
 
-	for i in range(0, len(subkernels)):
-		kdata=config.KERNEL[subkernels[i][0]]
-		args=_get_subkernel_args(subkernels[i])
-		#FIXME: cache size (10) soon to be removed from constructor
-		subk=eval('kernel.'+subkernels[i][0]+'Kernel(10'+args+')')
+	i=0
+	for sd in subkdata:
+		kfun=eval('kernel.'+sd['name']+'Kernel')
+		subk=kfun(*sd['args']['val'])
+		sd['data']=dataop.get_dna()
+		subkfeats=featop.get_features(
+			sd['feature_class'], sd['feature_type'], sd['data'])
+		output.update(
+			fileop.get_output(category.KERNEL, sd, 'subkernel'+str(i)+'_'))
+
 		kern.append_kernel(subk)
-		data_subk=eval('dataop.get_'+kdata[0][0]+'('+kdata[0][1]+')')
-		feats_subk=eval(
-			'featop.get_'+kdata[1][0]+"('"+kdata[1][1]+"', data_subk)")
-		feats['train'].append_feature_obj(feats_subk['train'])
-		feats['test'].append_feature_obj(feats_subk['test'])
-		outdata.update(_get_subkernel_outdata(
-			subkernels[i], data_subk, str(i)))
+		feats['train'].append_feature_obj(subkfeats['train'])
+		feats['test'].append_feature_obj(subkfeats['test'])
 
-	_compute_subkernels('Combined', feats, kern, outdata)
+		i+=1
+
+	output.update(fileop.get_output(category.KERNEL, params))
+	kern.init(feats['train'], feats['train'])
+	output['kernel_matrix_train']=kern.get_kernel_matrix()
+	kern.init(feats['train'], feats['test'])
+	output['kernel_matrix_test']=kern.get_kernel_matrix()
+
+	fileop.write(category.KERNEL, output)
+
 
 def _run_subkernels ():
 	"""Run all kernels handling subkernels."""
@@ -132,122 +212,20 @@ def _run_subkernels ():
 	_run_auc()
 	_run_combined()
 
-##################################################################
-## compute/kernel funcs
-##################################################################
-
-def _compute (name, feats, data, normalizer, *args):
-	"""Compute a kernel and gather data.
-
-	@param name name of the kernel
-	@param feats features of the kernel
-	@param data train and test data
-	@param *args variable argument list for kernel's constructor
-	"""
-
-	fun=eval('kernel.'+name+'Kernel')
-	kern=fun(feats['train'], feats['train'], *args)
-	if normalizer:
-		kern.set_normalizer(normalizer)
-
-	kern.init(feats['train'], feats['train'])
-	km_train=kern.get_kernel_matrix()
-	kern.init(feats['train'], feats['test'])
-	km_test=kern.get_kernel_matrix()
-
-	outdata={
-		'name':name,
-		'km_train':km_train,
-		'km_test':km_test,
-		'data_train':numpy.matrix(data['train']),
-		'data_test':numpy.matrix(data['test'])
-	}
-	outdata.update(fileop.get_outdata(name, config.C_KERNEL, args))
-
-	fileop.write(config.C_KERNEL, outdata)
-
-def _compute_pie (name, feats, data):
-	"""Compute a kernel with PluginEstimate.
-
-	@param name Name of the kernel
-	@param feats Features of the kernel
-	@param data Train and test data
-	"""
-
-	pie=PluginEstimate()
-	fun=eval('kernel.'+name+'Kernel')
-
-	lab, labels=dataop.get_labels(feats['train'].get_num_vectors())
-	pie.set_labels(labels)
-	pie.set_features(feats['train'])
-	pie.train()
-	kern=fun(feats['train'], feats['train'], pie)
-	km_train=kern.get_kernel_matrix()
-
-	kern.init(feats['train'], feats['test'])
-	pie.set_features(feats['test'])
-	km_test=kern.get_kernel_matrix()
-	classified=pie.classify().get_labels()
-
-	outdata={
-		'name':name,
-		'km_train':km_train,
-		'km_test':km_test,
-		'data_train':numpy.matrix(data['train']),
-		'data_test':numpy.matrix(data['test']),
-		'classifier_labels':lab,
-		'classifier_classified':classified
-	}
-	outdata.update(fileop.get_outdata(name, config.C_KERNEL))
-
-	fileop.write(config.C_KERNEL, outdata)
-
-def _compute_top_fisher (feats, params):
-	"""Compute PolyKernel with TOP or FKFeatures
-
-	@param feats features of the kernel
-	@param params various parameters necessary for feature creation
-	"""
-
-	name='Poly'
-	kern=kernel.PolyKernel(feats['train'], feats['train'],
-		*params['kargs'])
-	km_train=kern.get_kernel_matrix()
-	kern.init(feats['train'], feats['test'])
-	km_test=kern.get_kernel_matrix()
-
-	outdata={
-		'name':name,
-		'name_features':
-			feats['train'].__class__.__name__.replace('Features', ''),
-		'km_train':km_train,
-		'km_test':km_test,
-		'data_train':numpy.matrix(params['data']['train']),
-		'data_test':numpy.matrix(params['data']['test'])
-	}
-
-	for key, value in params.iteritems():
-		if key!='data' and key!='kargs':
-			outdata[key]=value
-
-	outdata.update(fileop.get_outdata(
-		name, config.C_KERNEL, params['kargs']))
-	outdata['feature_type']='Word'
-	outdata['feature_class']='string_complex'
-	outdata['feature_obtain']='Char'
-	fileop.write(config.C_KERNEL, outdata)
-
-##################################################################
-## run funcs
-##################################################################
 
 def _run_custom ():
 	"""Run Custom kernel."""
 
+	params={
+		'name': 'Custom',
+		'accuracy': 1e-7,
+		'feature_class': 'simple',
+		'feature_type': 'Real'
+	}
 	dim_square=7
-	name='Custom'
 	data=dataop.get_rand(dim_square=dim_square)
-	feats=featop.get_simple('Real', data)
+	feats=featop.get_features(
+		params['feature_class'], params['feature_type'], data)
 	data=data['train']
 	symdata=data+data.T
 
@@ -262,185 +240,349 @@ def _run_custom ():
 	kern.set_full_kernel_matrix_from_full(data)
 	km_fullfull=kern.get_kernel_matrix()
 
-	outdata={
-		'name':name,
-		'km_triangletriangle':km_triangletriangle,
-		'km_fulltriangle':km_fulltriangle,
-		'km_fullfull':km_fullfull,
-		'symdata':numpy.matrix(symdata),
-		'data':numpy.matrix(data),
-		'dim_square':dim_square
+	output={
+		'kernel_matrix_triangletriangle': km_triangletriangle,
+		'kernel_matrix_fulltriangle': km_fulltriangle,
+		'kernel_matrix_fullfull': km_fullfull,
+		'kernel_symdata': numpy.matrix(symdata),
+		'kernel_data': numpy.matrix(data),
+		'kernel_dim_square': dim_square
 	}
-	outdata.update(fileop.get_outdata(name, config.C_KERNEL))
+	output.update(fileop.get_output(category.KERNEL, params))
 
-	fileop.write(config.C_KERNEL, outdata)
+	fileop.write(category.KERNEL, output)
+
 
 def _run_distance ():
 	"""Run distance kernel."""
 
-	data=dataop.get_rand()
-	feats=featop.get_simple('Real', data)
-	distance=CanberraMetric()
-	normalizer=False
-	_compute('Distance', feats, data, normalizer, 1.7, distance)
+	params={
+		'name': 'Distance',
+		'accuracy': 1e-9,
+		'feature_class': 'simple',
+		'feature_type': 'Real',
+		'data': dataop.get_rand(),
+		'args': {
+			'key': ('size', 'width', 'distance'),
+			'val': (10, 1.7, CanberraMetric())
+		}
+	}
+	feats=featop.get_features(
+		params['feature_class'], params['feature_type'], params['data'])
+
+	_compute(feats, params)
+
 
 def _run_feats_byte ():
 	"""Run kernel with ByteFeatures."""
 
-	data=dataop.get_rand(dattype=numpy.ubyte)
-	feats=featop.get_simple('Byte', data, RAWBYTE)
-	normalizer=kernel.AvgDiagKernelNormalizer(-1)
+	params={
+		'name': 'LinearByte',
+		'accuracy': 1e-8,
+		'feature_class': 'simple',
+		'feature_type': 'Byte',
+		'data': dataop.get_rand(dattype=numpy.ubyte),
+		'normalizer': kernel.AvgDiagKernelNormalizer()
+	}
+	feats=featop.get_features(params['feature_class'], params['feature_type'],
+		params['data'], RAWBYTE)
 
-	_compute('LinearByte', feats, data, normalizer)
+	_compute(feats, params)
+
 
 def _run_mindygram ():
 	"""Run Mindygram kernel."""
 	return
 
-	data=dataop.get_dna()
-	feats={'train':MindyGramFeatures('DNA', 'freq', '%20.,', 0),
-		'test':MindyGramFeatures('DNA', 'freq', '%20.,', 0)}
-	normalizer=False
+	params={
+		'name': 'MindyGram',
+		'accuracy': 1e-8,
+		'data': dataop.get_dna(),
+		'feature_class': 'mindy',
+		'args': {'key': ('measure', 'width'), 'val': ('MEASURE', 1.5)}
+	}
+	feats={
+		'train': MindyGramFeatures('DNA', 'freq', '%20.,', 0),
+		'test': MindyGramFeatures('DNA', 'freq', '%20.,', 0)
+	}
 
-	_compute('MindyGram', feats, data, normalizer, 'MEASURE', 1.5)
+	_compute(feats, params)
+
 
 def _run_feats_real ():
 	"""Run kernel with RealFeatures."""
 
-	data=dataop.get_rand()
-	feats=featop.get_simple('Real', data)
-	sparsefeats=featop.get_simple('Real', data, sparse=True)
-	normalizer=False
+	params={
+		'data': dataop.get_rand(),
+		'accuracy': 1e-8,
+		'feature_class': 'simple',
+		'feature_type': 'Real'
+	}
+	feats=featop.get_features(
+		params['feature_class'], params['feature_type'], params['data'])
+	sparsefeats=featop.get_features(
+		params['feature_class'], params['feature_type'],
+		params['data'], sparse=True)
 
-	_compute('Chi2', feats, data, normalizer, 1.2, 10)
-	_compute('Const', feats, data, normalizer, 23.)
-	_compute('Diag', feats, data, normalizer, 23.)
-	_compute('Gaussian', feats, data, normalizer, 1.3)
-	_compute('GaussianShift', feats, data, normalizer, 1.3, 2, 1)
-	_compute('SparseGaussian', sparsefeats, data, normalizer, 1.3)
-	_compute('Sigmoid', feats, data, normalizer, 10, 1.1, 1.3)
-	_compute('Sigmoid', feats, data, normalizer, 10, 0.5, 0.7)
-	_compute('Poly', feats, data, normalizer, 3, True, True)
-	_compute('Poly', feats, data, normalizer, 3, False, True)
-	_compute('SparsePoly', sparsefeats, data, normalizer, 10, 3, True)
-	_compute('SparsePoly', sparsefeats, data, normalizer, 10, 3, False)
+	params['name']='Gaussian'
+	params['args']={'key': ('size', 'width',), 'val': (10, 1.3)}
+	_compute(feats, params)
 
-	normalizer=kernel.IdentityKernelNormalizer()
-	_compute('Poly', feats, data, normalizer, 3, True, False)
-	_compute('Poly', feats, data, normalizer, 3, False, False)
+	params['name']='GaussianShift'
+	params['args']={
+		'key': ('size', 'width', 'max_shift', 'shift_step'),
+		'val': (10, 1.3, 2, 1)
+	}
+	_compute(feats, params)
 
-	normalizer=kernel.AvgDiagKernelNormalizer(-1)
-	_compute('Linear', feats, data, normalizer)
-	_compute('SparseLinear', sparsefeats, data, normalizer)
+	params['name']='SparseGaussian'
+	params['args']={'key': ('size', 'width'), 'val': (10, 1.7)}
+	_compute(sparsefeats, params)
+
+	params['accuracy']=0
+	params['name']='Const'
+	params['args']={'key': ('c',), 'val': (23.,)}
+	_compute(feats, params)
+
+	params['name']='Diag'
+	params['args']={'key': ('size', 'diag'), 'val': (10, 23.)}
+	_compute(feats, params)
+
+	params['accuracy']=1e-9
+	params['name']='Sigmoid'
+	params['args']={
+		'key': ('size', 'gamma', 'coef0'),
+		'val': (10, 1.1, 1.3)
+	}
+	_compute(feats, params)
+	params['args']['val']=(10, 0.5, 0.7)
+	_compute(feats, params)
+
+	params['name']='Chi2'
+	params['args']={'key': ('size', 'width'), 'val': (10, 1.2)}
+	_compute(feats, params)
+
+	params['accuracy']=1e-8
+	params['name']='SparsePoly'
+	params['args']={
+		'key': ('size', 'degree', 'inhomogene'),
+		'val': (10, 3, True)
+	}
+	_compute(sparsefeats, params)
+	params['args']['val']=(10, 3, False)
+	_compute(sparsefeats, params)
+
+	params['name']='Poly'
+	params['normalizer']=kernel.SqrtDiagKernelNormalizer()
+	params['args']={
+		'key': ('size', 'degree', 'inhomogene'),
+		'val': (10, 3, True)
+	}
+	_compute(feats, params)
+	params['args']['val']=(10, 3, False)
+	_compute(feats, params)
+
+	params['normalizer']=kernel.AvgDiagKernelNormalizer()
+	del params['args']
+	params['name']='Linear'
+	_compute(feats, params)
+	params['name']='SparseLinear'
+	_compute(sparsefeats, params)
 
 
 def _run_feats_string ():
 	"""Run kernel with StringFeatures."""
 
-	data=dataop.get_dna()
-	feats=featop.get_string('Char', data)
-	normalizer=False
+	params = {
+		'accuracy': 1e-9,
+		'data': dataop.get_dna(),
+		'feature_class': 'string',
+		'feature_type': 'Char',
+	}
+	feats=featop.get_features(
+		params['feature_class'], params['feature_type'], params['data'])
 
-	_compute('FixedDegreeString', feats, data, normalizer, 3)
-	_compute('LocalAlignmentString', feats, data, normalizer)
-	_compute('PolyMatchString', feats, data, normalizer, 3, True)
-	_compute('PolyMatchString', feats, data, normalizer, 3, False)
-	_compute('SimpleLocalityImprovedString', feats, data, normalizer, 5, 7, 5)
-	_compute('WeightedDegreeString', feats, data, normalizer, 20)
-	_compute('WeightedDegreeString', feats, data, normalizer, 1)
-	_compute('WeightedDegreePositionString', feats, data, normalizer, 20)
-	_compute('WeightedDegreePositionString', feats, data, normalizer, 1)
+	params['name']='FixedDegreeString'
+	params['args']={'key': ('size', 'degree'), 'val': (10, 3)}
+	_compute(feats, params)
 
-	normalizer=kernel.AvgDiagKernelNormalizer(-1)
-	_compute('LinearString', feats, data, normalizer)
+	params['accuracy']=0
+	params['name']='LocalAlignmentString'
+	params['args']={'key': ('size',), 'val': (10,)}
+	_compute(feats, params)
 
+	params['accuracy']=1e-10
+	params['name']='PolyMatchString'
+	params['args']={
+		'key': ('size', 'degree', 'inhomogene'),
+		'val': (10, 3, True)
+	}
+	_compute(feats, params)
+	params['args']['val']=(10, 3, False)
+	_compute(feats, params)
+
+	params['accuracy']=1e-15
+	params['name']='SimpleLocalityImprovedString'
+	params['args']={
+		'key': ('size', 'length', 'inner_degree', 'outer_degree'),
+		'val': (10, 5, 7, 5)
+	}
+	_compute(feats, params)
 	# buggy:
-	#_compute('LocalityImprovedString', feats, data, normalizer, 51, 5, 7)
+	#params['name']='LocalityImprovedString'
+	#_compute(feats, params)
+
+	params['name']='WeightedDegreeString'
+	params['accuracy']=1e-9
+	params['args']={'key': ('degree',), 'val': (20,)}
+	_compute(feats, params)
+	params['args']={'key': ('degree',), 'val': (1,)}
+	_compute(feats, params)
+
+	params['name']='WeightedDegreePositionString'
+	params['args']={'key': ('size', 'degree'), 'val': (10, 20)}
+	_compute(feats, params)
+	params['args']={'key': ('size', 'degree'), 'val': (10, 1)}
+	_compute(feats, params)
+
+	params['name']='LinearString'
+	params['accuracy']=1e-8
+	params['normalizer']=kernel.AvgDiagKernelNormalizer()
+	del params['args']
+	_compute(feats, params)
 
 
 def _run_feats_word ():
 	"""Run kernel with WordFeatures."""
 
 	maxval=42
-	data=dataop.get_rand(dattype=numpy.ushort,
-		max_train=maxval, max_test=maxval)
-	feats=featop.get_simple('Word', data)
-	normalizer=kernel.AvgDiagKernelNormalizer(-1)
+	params={
+		'name': 'LinearWord',
+		'accuracy': 1e-8,
+		'feature_class': 'simple',
+		'feature_type': 'Word',
+		'data': dataop.get_rand(
+			dattype=numpy.ushort, max_train=maxval, max_test=maxval),
+		'normalizer': kernel.AvgDiagKernelNormalizer()
+	}
+	feats=featop.get_features(
+		params['feature_class'], params['feature_type'], params['data'])
 
-	_compute('LinearWord', feats, data, normalizer)
+	_compute(feats, params)
+
 
 def _run_feats_string_complex ():
 	"""Run kernel with complex StringFeatures."""
 
-	data=dataop.get_dna()
-	wordfeats=featop.get_string_complex('Word', data)
-	ulongfeats=featop.get_string_complex('Ulong', data)
-	normalizer=False
+	params={
+		'data': dataop.get_dna(),
+		'feature_class': 'string_complex'
+	}
 
-	_compute('CommWordString', wordfeats, data, normalizer, False)
-	_compute('CommUlongString', ulongfeats, data, normalizer, False)
-	_compute('WeightedCommWordString', wordfeats, data, normalizer, False)
-	_compute('PolyMatchWordString', wordfeats, data, normalizer, 3, True)
-	_compute('PolyMatchWordString', wordfeats, data, normalizer, 3, False)
-	_compute('MatchWordString', wordfeats, data, normalizer, 3)
+	params['feature_type']='Word'
+	wordfeats=featop.get_features(
+		params['feature_class'], params['feature_type'], params['data'])
+
+	params['name']='CommWordString'
+	params['accuracy']=1e-9
+	params['args']={'key': ('size', 'use_sign'), 'val': (10, False)}
+	_compute(wordfeats, params)
+	params['name']='WeightedCommWordString'
+	_compute(wordfeats, params)
+
+	params['name']='PolyMatchWordString'
+	params['accuracy']=1e-10
+	params['args']={
+		'key': ('size', 'degree', 'inhomogene'),
+		'val': (10, 3, True)
+	}
+	_compute(wordfeats, params)
+	params['args']['val']=(10, 3, False)
+	_compute(wordfeats, params)
+
+	params['name']='MatchWordString'
+	params['args']={'key': ('size', 'degree'), 'val': (10, 3)}
+	_compute(wordfeats, params)
+
+	params['feature_type']='Ulong'
+	params['accuracy']=1e-9
+	ulongfeats=featop.get_features(
+		params['feature_class'], params['feature_type'], params['data'])
+	params['name']='CommUlongString'
+	params['args']={'key': ('size', 'use_sign'), 'val': (10, False)}
+	_compute(ulongfeats, params)
 
 
 def _run_pie ():
 	"""Run kernel with PluginEstimate."""
 
-	data=dataop.get_dna()
-	feats=featop.get_string_complex('Word', data)
+	params={
+		'data': dataop.get_dna(),
+		'accuracy': 1e-6,
+		'feature_class': 'string_complex',
+		'feature_type': 'Word'
+	}
+	feats=featop.get_features(
+		params['feature_class'], params['feature_type'], params['data'])
 
-	_compute_pie('HistogramWordString', feats, data)
-	_compute_pie('SalzbergWordString', feats, data)
+	params['name']='HistogramWordString'
+	_compute_pie(feats, params)
+	params['name']='SalzbergWordString'
+	_compute_pie(feats, params)
+
 
 def _run_top_fisher ():
 	"""Run Linear Kernel with {Top,Fisher}Features."""
 
 	# put some constantness into randomness
-	Math_init_random(INIT_RANDOM)
+	Math_init_random(dataop.INIT_RANDOM)
 
+	data=dataop.get_cubes(4, 8)
+	prefix='topfk_'
 	params={
-		'N':3,
-		'M':6,
-		'pseudo':1e-1,
-		'order':1,
-		'gap':0,
-		'reverse':False,
-		'num_train_examples':4,
-		'num_test_examples':8,
-		'alphabet':'CUBE'
+		prefix+'N': 3,
+		prefix+'M': 6,
+		prefix+'pseudo': 1e-1,
+		prefix+'order': 1,
+		prefix+'gap': 0,
+		prefix+'reverse': False,
+		prefix+'alphabet': 'CUBE',
+		prefix+'feature_class': 'string_complex',
+		prefix+'feature_type': 'Word',
+		prefix+'data_train': numpy.matrix(data['train']),
+		prefix+'data_test': numpy.matrix(data['test'])
 	}
-	params['data']=dataop.get_cubes(params['num_train_examples'], params['num_test_examples'])
-	params['kargs']=[1, False, True]
 
+	wordfeats=featop.get_features(
+		params[prefix+'feature_class'], params[prefix+'feature_type'],
+		data, eval(params[prefix+'alphabet']),
+		params[prefix+'order'], params[prefix+'gap'], params[prefix+'reverse'])
+	pos_train=HMM(wordfeats['train'],
+		params[prefix+'N'], params[prefix+'M'], params[prefix+'pseudo'])
+	pos_train.train()
+	pos_train.baum_welch_viterbi_train(BW_NORMAL)
+	neg_train=HMM(wordfeats['train'],
+		params[prefix+'N'], params[prefix+'M'], params[prefix+'pseudo'])
+	neg_train.train()
+	neg_train.baum_welch_viterbi_train(BW_NORMAL)
+	pos_test=HMM(pos_train)
+	pos_test.set_observations(wordfeats['test'])
+	neg_test=HMM(neg_train)
+	neg_test.set_observations(wordfeats['test'])
 	feats={}
-	wordfeats=featop.get_string_complex('Word', params['data'],
-		eval(params['alphabet']),
-		params['order'], params['gap'], params['reverse'])
-	pos=HMM(wordfeats['train'],
-		params['N'], params['M'], params['pseudo'])
-	pos.train()
-	pos.baum_welch_viterbi_train(BW_NORMAL)
-	neg=HMM(wordfeats['train'],
-		params['N'], params['M'], params['pseudo'])
-	neg.train()
-	neg.baum_welch_viterbi_train(BW_NORMAL)
-	pos_clone=HMM(pos)
-	neg_clone=HMM(neg)
-	pos_clone.set_observations(wordfeats['test'])
-	neg_clone.set_observations(wordfeats['test'])
 
-	feats['train']=TOPFeatures(10, pos, neg, False, False)
-	feats['test']=TOPFeatures(10, pos_clone, neg_clone, False, False)
+	feats['train']=TOPFeatures(10, pos_train, neg_train, False, False)
+	feats['test']=TOPFeatures(10, pos_test, neg_test, False, False)
+	params[prefix+'name']='TOP'
 	_compute_top_fisher(feats, params)
 
-	feats['train']=FKFeatures(10, pos, neg)
+	feats['train']=FKFeatures(10, pos_train, neg_train)
 	feats['train'].set_opt_a(-1) #estimate prior
-
-	feats['test']=FKFeatures(10, pos_clone, neg_clone)
+	feats['test']=FKFeatures(10, pos_test, neg_test)
 	feats['test'].set_a(feats['train'].get_a()) #use prior from training data
+	params[prefix+'name']='FK'
 	_compute_top_fisher(feats, params)
+
 
 def run ():
 	"""Run generator for all kernels."""

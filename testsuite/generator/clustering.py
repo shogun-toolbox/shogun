@@ -6,70 +6,47 @@ from shogun.Distance import EuclidianDistance
 import shogun.Clustering as clustering
 
 from shogun.Library import Math_init_random
-from dataop import INIT_RANDOM
 
 import fileop
 import featop
 import dataop
-from config import CLUSTERING, C_CLUSTERING, C_DISTANCE
+import category
 
-def _get_outdata (name, params):
-	"""Return data to be written into the testcase's file.
-
-	After computations and such, the gathered data is structured and
-	put into one data structure which can conveniently be written to a
-	file that will represent the testcase.
-	
-	@param name Clustering method's name
-	@param params Gathered data
-	@return Dict containing testcase data to be written to file
-	"""
-
-	outdata={
-		'name':name,
-		'data_train':matrix(params['data']['train']),
-		'data_test':matrix(params['data']['test']),
-		'clustering_accuracy':CLUSTERING[name][0],
-		'init_random':dataop.INIT_RANDOM,
-	}
-
-	optional=['k', 'radi', 'centers', 'merges', 'merge_distance', 'pairs']
-	for opt in optional:
-		if params.has_key(opt):
-			outdata['clustering_'+opt]=params[opt]
-
-	outdata['distance_name']=params['dname']
-	dparams=fileop.get_outdata(params['dname'], C_DISTANCE, params['dargs'])
-	outdata.update(dparams)
-
-	return outdata
 
 def _run (name, first_arg):
-	"""Run generator for a specific clustering method.
+	"""
+	Run generator for a specific clustering method.
 
 	@param name Name of the clustering method to run.
 	@param first_arg First argument to the clustering's constructor; so far, only this distinguishes the instantion of the different methods.
 	"""
 
 	# put some constantness into randomness
-	Math_init_random(INIT_RANDOM)
+	Math_init_random(dataop.INIT_RANDOM)
+
+	num_clouds=3
+	params={
+		'name': 'EuclidianDistance',
+		'data': dataop.get_clouds(num_clouds, 5),
+		'feature_class': 'simple',
+		'feature_type': 'Real'
+	}
+	feats=featop.get_features(
+		params['feature_class'], params['feature_type'], params['data'])
+	dfun=eval(params['name'])
+	distance=dfun(feats['train'], feats['train'])
+	output=fileop.get_output(category.DISTANCE, params)
 
 	params={
-		first_arg:3,
-		'dname':'EuclidianDistance',
-		'dargs':[],
+		'name': name,
+		'accuracy': 1e-8,
+		first_arg: num_clouds
 	}
-	params['data']=dataop.get_clouds(params[first_arg], 5)
-	feats=featop.get_simple('Real', params['data'])
-	dfun=eval(params['dname'])
-	distance=dfun(feats['train'], feats['train'], *params['dargs'])
-
 	fun=eval('clustering.'+name)
 	clustering=fun(params[first_arg], distance)
 	clustering.train()
 
 	distance.init(feats['train'], feats['test'])
-
 	if name=='KMeans':
 		params['radi']=clustering.get_radiuses()
 		params['centers']=clustering.get_cluster_centers()
@@ -77,8 +54,8 @@ def _run (name, first_arg):
 		params['merge_distance']=clustering.get_merge_distances()
 		params['pairs']=clustering.get_cluster_pairs()
 
-	outdata=_get_outdata(name, params)
-	fileop.write(C_CLUSTERING, outdata)
+	output.update(fileop.get_output(category.CLUSTERING, params))
+	fileop.write(category.CLUSTERING, output)
 
 
 def run ():

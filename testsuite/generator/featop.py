@@ -9,6 +9,18 @@ WORDSTRING_ORDER=3
 WORDSTRING_GAP=0
 WORDSTRING_REVERSE=False
 
+
+def get_features(fclass, ftype, data, *args, **kwargs):
+	if fclass=='simple':
+		return get_simple(ftype, data, *args, **kwargs)
+	elif fclass=='string':
+		return get_string(ftype, data, *args, **kwargs)
+	elif fclass=='string_complex':
+		return get_string_complex(ftype, data, *args, **kwargs)
+	else:
+		raise ValueError, 'Unknown feature class %s.'%fclass
+
+
 def get_simple (ftype, data, alphabet=features.DNA, sparse=False):
 	"""Return SimpleFeatures.
 
@@ -40,6 +52,7 @@ def get_simple (ftype, data, alphabet=features.DNA, sparse=False):
 	else:
 		return {'train':train, 'test':test}
 
+
 def get_string (ftype, data, alphabet=features.DNA):
 	"""Return StringFeatures.
 
@@ -55,6 +68,7 @@ def get_string (ftype, data, alphabet=features.DNA):
 	test.set_string_features(data['test'])
 
 	return {'train':train, 'test':test}
+
 
 def get_string_complex (ftype, data, alphabet=features.DNA,
 	order=WORDSTRING_ORDER, gap=WORDSTRING_GAP, reverse=WORDSTRING_REVERSE):
@@ -88,6 +102,7 @@ def get_string_complex (ftype, data, alphabet=features.DNA,
 		return add_preproc(name, feats)
 	else:
 		return feats
+
 
 def add_preproc (name, feats, *args):
 	"""Add a preprocessor to the given features.
