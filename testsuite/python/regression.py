@@ -8,10 +8,11 @@ import util
 
 
 def _set_regression (indata):
-	sg('threads', indata['regression_num_threads'])
-	sg('set_labels', 'TRAIN', double(indata['regression_labels']))
+	prefix='regression_'
+	sg('threads', indata[prefix+'num_threads'])
+	sg('set_labels', 'TRAIN', double(indata[prefix+'labels']))
 
-	rname=util.fix_regression_name_inconsistency(indata['name'])
+	rname=util.fix_regression_name_inconsistency(indata[prefix+'name'])
 	sg('new_regression', rname)
 
 
@@ -57,7 +58,7 @@ def _evaluate (indata):
 
 def test (indata):
 	try:
-		util.set_features(indata)
+		util.set_features(indata, 'kernel_')
 	except NotImplementedError, e:
 		print e
 		return True

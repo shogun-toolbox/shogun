@@ -6,22 +6,23 @@ from sg import sg
 import util
 
 
-def _evaluate (indata):
+def _evaluate (indata, prefix):
 	util.set_and_train_kernel(indata)
 
 	kmatrix=sg('get_kernel_matrix')
-	ktrain=max(abs(indata['km_train']-kmatrix).flat)
+	km_train=max(abs(indata['kernel_matrix_train']-kmatrix).flat)
 
 	sg('init_kernel', 'TEST')
 	kmatrix=sg('get_kernel_matrix')
-	ktest=max(abs(indata['km_test']-kmatrix).flat)
+	km_test=max(abs(indata['kernel_matrix_test']-kmatrix).flat)
 
-	return util.check_accuracy(indata['accuracy'], ktrain=ktrain, ktest=ktest)
+	return util.check_accuracy(
+		indata[prefix+'accuracy'], km_train=km_train, km_test=km_test)
 
 
-def _set_preproc (indata):
-	pname=util.fix_preproc_name_inconsistency(indata['name'])
-	args=util.get_args(indata, 'preproc_arg')
+def _set_preproc (indata, prefix):
+	pname=util.fix_preproc_name_inconsistency(indata[prefix+'name'])
+	args=util.get_args(indata, prefix)
 
 	sg('add_preproc', pname, *args)
 	sg('attach_preproc', 'TRAIN')
@@ -33,13 +34,14 @@ def _set_preproc (indata):
 ########################################################################
 
 def test (indata):
+	prefix='kernel_'
 	try:
-		util.set_features(indata)
+		util.set_features(indata, prefix)
 	except NotImplementedError, e:
 		print e
 		return True
 
-	_set_preproc(indata)
+	_set_preproc(indata, 'preproc_')
 
-	return _evaluate(indata)
+	return _evaluate(indata, prefix)
 
