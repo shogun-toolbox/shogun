@@ -11,21 +11,27 @@ function y = classifier(filename)
 	%eval(filename);
 
 	% b0rked, skip these
-	if strcmp(name, 'Perceptron')==1 || strcmp(name, 'SubGradientSVM')==1
-		fprintf('%s currently does not have nice data.\n', name);
-		return;
-	end
-
-	if ~set_features()
+	if strcmp(classifier_name, 'Perceptron')==1 || strcmp(classifier_name, 'SubGradientSVM')==1
+		fprintf('%s currently does not have nice data.\n', classifier_name);
 		return;
 	end
 
 	if strcmp(classifier_type, 'kernel')==1
+		if ~set_features('kernel_')
+			return;
+		end
 		if ~set_kernel()
 			return;
 		end
 	elseif strcmp(classifier_type, 'knn')==1
+		if ~set_features('distance_')
+			return;
+		end
 		if ~set_distance()
+			return;
+		end
+	else
+		if ~set_features('classifier_')
 			return;
 		end
 	end
@@ -34,7 +40,7 @@ function y = classifier(filename)
 		sg('set_labels', 'TRAIN', classifier_labels);
 	end
 
-	cname=fix_classifier_name_inconsistency(name);
+	cname=fix_classifier_name_inconsistency(classifier_name);
 	try
 		sg('new_classifier', cname);
 	catch
@@ -85,13 +91,13 @@ function y = classifier(filename)
 	elseif strcmp(classifier_type, 'lda')==1
 		0; % nop
 	else
-		if ~isempty(classifier_bias) && strcmp(classifier_labeltype, 'series')~=1
+		if ~isempty(classifier_bias) && strcmp(classifier_label_type, 'series')~=1
 			[bias, weights]=sg('get_svm');
 			bias=abs(bias-classifier_bias);
 		end
 
 		if ~isempty(classifier_alpha_sum) && ~isempty(classifier_sv_sum)
-			if strcmp(classifier_labeltype, 'series')==1
+			if strcmp(classifier_label_type, 'series')==1
 				for i = 0:sg('get_num_svms')-1
 					[dump, weights]=sg('get_svm', i);
 					weights=weights';

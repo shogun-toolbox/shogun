@@ -1,14 +1,8 @@
 function y = set_distance()
 	global distance_name;
-	global name;
-	global feature_type;
-	ftype=upper(feature_type);
-
-	if ~isempty(distance_name)
-		dname=fix_distance_name_inconsistency(distance_name);
-	else
-		dname=fix_distance_name_inconsistency(name);
-	end
+	global distance_feature_type;
+	ftype=upper(distance_feature_type);
+	dname=fix_distance_name_inconsistency(distance_name);
 
 	if strcmp(dname, 'HAMMING')==1
 		global distance_arg0_use_sign;

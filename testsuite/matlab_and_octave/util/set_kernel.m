@@ -1,20 +1,17 @@
 function y = set_kernel()
 	global kernel_name;
-	global name;
-	global feature_type;
+	global kernel_feature_type;
 	global kernel_arg0_size;
 	global kernel_arg1_size;
+	global kernel_normalizer;
 	y=false;
 
-	is_sparse=false;
-	if ~isempty(kernel_name)
-		kname=fix_kernel_name_inconsistency(kernel_name);
+	if findstr('Sparse', kernel_name)
+		is_sparse=true;
 	else
-		if findstr('Sparse', name)
-			is_sparse=true;
-		end
-		kname=fix_kernel_name_inconsistency(name);
+		is_sparse=false;
 	end
+	kname=fix_kernel_name_inconsistency(kernel_name);
 
 	if strcmp(kname, 'AUC')==1 || strcmp(kname, 'CUSTOM')==1
 		fprintf('Kernel %s not supported yet!\n', kname);
@@ -30,37 +27,48 @@ function y = set_kernel()
 	end
 
 
-	% this sux awfully, but dunno how to do it differently here :(
-	ftype=upper(feature_type);
+	if ~isempty(kernel_feature_type)
+		ftype=upper(kernel_feature_type);
+	else
+		ftype='UNKNOWN';
+	end
+
+	% this endless list sux, but dunno how to do it differently here :(
 	if strcmp(kname, 'SIGMOID')==1
 		global kernel_arg1_gamma;
 		global kernel_arg2_coef0;
 		sg('set_kernel', kname, ftype, size_cache, kernel_arg1_gamma, kernel_arg2_coef0);
 
 	elseif strcmp(kname, 'CHI2')==1
-		global kernel_arg0_width;
-		sg('set_kernel', kname, ftype, size_cache, kernel_arg0_width);
+		global kernel_arg1_width;
+		sg('set_kernel', kname, ftype, size_cache, kernel_arg1_width);
 
 	elseif strcmp(kname, 'CONST')==1
 		global kernel_arg0_c;
 		sg('set_kernel', kname, ftype, size_cache, kernel_arg0_c);
 
 	elseif strcmp(kname, 'DIAG')==1
-		global kernel_arg0_diag;
-		sg('set_kernel', kname, ftype, size_cache, kernel_arg0_diag);
+		global kernel_arg1_diag;
+		sg('set_kernel', kname, ftype, size_cache, kernel_arg1_diag);
 
 	elseif strcmp(kname, 'GAUSSIANSHIFT')==1
-		global kernel_arg0_width;
-		global kernel_arg1_max_shift;
-		global kernel_arg2_shift_step;
-		sg('set_kernel', kname, ftype, size_cache, kernel_arg0_width, kernel_arg1_max_shift, kernel_arg2_shift_step);
+		global kernel_arg1_width;
+		global kernel_arg2_max_shift;
+		global kernel_arg3_shift_step;
+		sg('set_kernel', kname, ftype, size_cache, kernel_arg1_width, kernel_arg2_max_shift, kernel_arg3_shift_step);
 
 	elseif strcmp(kname, 'GAUSSIAN')==1
 		global kernel_arg0_width;
+		global kernel_arg1_width;
+		if ~isempty(kernel_arg0_width)
+			width=kernel_arg0_width;
+		else
+			width=kernel_arg1_width;
+		end
 		if is_sparse
 			ftype=strcat('SPARSE', ftype);
 		end
-		sg('set_kernel', kname, ftype, size_cache, kernel_arg0_width);
+		sg('set_kernel', kname, ftype, size_cache, width);
 
 	elseif strcmp(kname, 'LINEAR')==1
 		global kernel_arg0_scale;
@@ -73,10 +81,10 @@ function y = set_kernel()
 		sg('set_kernel', kname, ftype, size_cache, kernel_arg0_scale);
 
 	elseif strcmp(kname, 'POLYMATCH')==1 || strcmp(kname, 'POLYMATCHWORD')==1
-		global kernel_arg0_degree;
-		global kernel_arg1_inhomogene;
+		global kernel_arg1_degree;
+		global kernel_arg2_inhomogene;
 		sg('set_kernel', kname, ftype, size_cache, ...
-			kernel_arg0_degree, tobool(kernel_arg1_inhomogene));
+			kernel_arg1_degree, tobool(kernel_arg2_inhomogene));
 
 	elseif strcmp(kname, 'POLY')==1
 		if is_sparse
@@ -88,30 +96,35 @@ function y = set_kernel()
 			sg('set_kernel', kname, ftype, size_cache, ...
 				degree, tobool(inhomogene));
 		else
-			global kernel_arg0_degree;
-			global kernel_arg1_inhomogene;
-			global kernel_arg2_use_normalization;
-			degree=kernel_arg0_degree;
-			inhomogene=kernel_arg1_inhomogene;
-			use_normalization=kernel_arg2_use_normalization;
-			sg('set_kernel', kname, ftype, size_cache, ...
-				degree, tobool(inhomogene), tobool(use_normalization));
+			global kernel_arg1_degree;
+			global kernel_arg2_inhomogene;
+			degree=kernel_arg1_degree;
+			inhomogene=tobool(kernel_arg2_inhomogene);
+			sg('set_kernel', kname, ftype, size_cache, degree, inhomogene);
 		end
 
 	elseif strcmp(kname, 'MATCH')==1
-		global kernel_arg0_degree;
-		sg('set_kernel', kname, ftype, size_cache, kernel_arg0_degree);
+		global kernel_arg1_degree;
+		sg('set_kernel', kname, ftype, size_cache, kernel_arg1_degree);
 
 	elseif findstr(kname, 'COMMSTRING') % normal + WEIGHTED
-		global kernel_arg0_use_sign;
-		global kernel_arg1_normalization;
-		norm=fix_normalization_inconsistency(kernel_arg1_normalization);
-		sg('set_kernel', kname, ftype, size_cache, ...
-				tobool(kernel_arg0_use_sign), norm);
+		global kernel_arg1_use_sign;
+		if ~isempty(kernel_arg1_use_sign)
+			sg('set_kernel', kname, ftype, size_cache, ...
+				tobool(kernel_arg1_use_sign));
+		else
+			sg('set_kernel', kname, ftype, size_cache);
+		end
 
 	elseif findstr(kname, 'DEGREE') % FIXED + WEIGHTED
 		global kernel_arg0_degree;
-		sg('set_kernel', kname, ftype, size_cache, kernel_arg0_degree);
+		global kernel_arg1_degree;
+		if ~isempty(kernel_arg0_degree)
+			degree=kernel_arg0_degree;
+		else
+			degree=kernel_arg1_degree;
+		end
+		sg('set_kernel', kname, ftype, size_cache, degree);
 
 	elseif strcmp(kname, 'HISTOGRAM')==1 || strcmp(kname, 'SALZBERG')==1
 		global classifier_labels;
@@ -124,61 +137,67 @@ function y = set_kernel()
 		sg('set_kernel', kname, ftype, size_cache);
 
 	elseif strcmp(kname, 'DISTANCE')==1
-		global kernel_arg1_distance;
-		global kernel_arg0_width;
-		dname=fix_distance_name_inconsistency(kernel_arg1_distance);
+		global kernel_arg2_distance;
+		global kernel_arg1_width;
+		dname=fix_distance_name_inconsistency(kernel_arg2_distance);
 		% FIXME: REAL is cheating and will break in the future
 		sg('set_distance', dname, 'REAL');
-		sg('set_kernel', kname, size_cache, kernel_arg0_width);
+		sg('set_kernel', kname, size_cache, kernel_arg1_width);
 
 	elseif strcmp(kname, 'LOCALALIGNMENT')==1
 		sg('set_kernel', kname, ftype, size_cache);
 
 	elseif findstr(kname, 'LIK')
-		global kernel_arg0_length;
-		global kernel_arg1_inner_degree;
-		global kernel_arg2_outer_degree;
+		global kernel_arg1_length;
+		global kernel_arg2_inner_degree;
+		global kernel_arg3_outer_degree;
 		sg('set_kernel', kname, ftype, size_cache, ...
-			kernel_arg0_length, kernel_arg1_inner_degree, ...
-			kernel_arg2_outer_degree);
+			kernel_arg1_length, ...
+			kernel_arg2_inner_degree, ...
+			kernel_arg3_outer_degree);
 
 	elseif strcmp(kname, 'COMBINED')
 		% this will break when test file is changed!
-		global subkernel0_name;
-		global subkernel0_feature_type;
-		global subkernel0_kernel_arg0_size;
-		global subkernel0_kernel_arg1_degree;
-		global subkernel1_name;
-		global subkernel1_feature_type;
-		global subkernel1_kernel_arg0_size;
-		global subkernel1_kernel_arg1_degree;
-		global subkernel1_kernel_arg2_inhomogene;
-		global subkernel2_name;
-		global subkernel2_feature_type;
-		global subkernel2_kernel_arg0_size;
+		global kernel_subkernel0_name;
+		global kernel_subkernel0_feature_type;
+		global kernel_subkernel0_arg0_size;
+		global kernel_subkernel0_arg1_degree;
+		global kernel_subkernel1_name;
+		global kernel_subkernel1_feature_type;
+		global kernel_subkernel1_arg0_size;
+		global kernel_subkernel1_arg1_degree;
+		global kernel_subkernel1_arg2_inhomogene;
+		global kernel_subkernel2_name;
+		global kernel_subkernel2_feature_type;
+		global kernel_subkernel2_arg0_size;
 
 		sg('set_kernel', 'COMBINED', size_cache);
 
-		subkernel_name=fix_kernel_name_inconsistency(subkernel0_name);
+		subkernel_name=fix_kernel_name_inconsistency(kernel_subkernel0_name);
 		sg('add_kernel', 1., subkernel_name, ...
-			upper(subkernel0_feature_type), ...
-			subkernel0_kernel_arg0_size, ...
-			subkernel0_kernel_arg1_degree);
+			upper(kernel_subkernel0_feature_type), ...
+			kernel_subkernel0_arg0_size, ...
+			kernel_subkernel0_arg1_degree);
 
-		subkernel_name=fix_kernel_name_inconsistency(subkernel1_name);
+		subkernel_name=fix_kernel_name_inconsistency(kernel_subkernel1_name);
 		sg('add_kernel', 1., subkernel_name, ...
-			upper(subkernel1_feature_type), ...
-			subkernel1_kernel_arg0_size, ...
-			subkernel1_kernel_arg1_degree, ...
-			tobool(subkernel1_kernel_arg2_inhomogene));
+			upper(kernel_subkernel1_feature_type), ...
+			kernel_subkernel1_arg0_size, ...
+			kernel_subkernel1_arg1_degree, ...
+			tobool(kernel_subkernel1_arg2_inhomogene));
 
-		subkernel_name=fix_kernel_name_inconsistency(subkernel2_name);
+		subkernel_name=fix_kernel_name_inconsistency(kernel_subkernel2_name);
 		sg('add_kernel', 1., subkernel_name, ...
-			upper(subkernel2_feature_type), ...
-			subkernel2_kernel_arg0_size);
+			upper(kernel_subkernel2_feature_type), ...
+			kernel_subkernel2_arg0_size);
 
 	else
 		error('Unknown kernel %s!\n', kname);
+	end
+
+	if ~isempty(kernel_normalizer)
+		nname=fix_normalizer_name_inconsistency(kernel_normalizer);
+		sg('set_kernel_normalization', nname);
 	end
 
 	sg('init_kernel', 'TRAIN');

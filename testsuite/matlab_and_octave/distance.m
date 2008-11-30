@@ -6,7 +6,7 @@ function y = distance(filename)
 	eval('globals'); % ugly hack to have vars from filename as globals
 	eval(filename);
 
-	if ~set_features()
+	if ~set_features('distance_')
 		return;
 	end
 
@@ -15,11 +15,11 @@ function y = distance(filename)
 	end
 
 	dmatrix=sg('get_distance_matrix');
-	dtrain=max(max(abs(dm_train-dmatrix)));
+	dm_train=max(max(abs(distance_matrix_train-dmatrix)));
 
 	sg('init_distance', 'TEST');
 	dmatrix=sg('get_distance_matrix');
-	dtest=max(max(abs(dm_test-dmatrix)));
+	dm_test=max(max(abs(distance_matrix_test-dmatrix)));
 
-	data={'distance', dtrain, dtest};
-	y=check_accuracy(accuracy, data);
+	data={'distance', dm_train, dm_test};
+	y=check_accuracy(distance_accuracy, data);

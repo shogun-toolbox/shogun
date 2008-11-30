@@ -9,12 +9,12 @@ function y = distribution(filename)
 	sg('init_random', init_random);
 	rand('state', init_random);
 
-	if ~set_features()
+	if ~set_features('distribution_')
 		return;
 	end
 
 
-	if strcmp(name, 'HMM')==1
+	if strcmp(distribution_name, 'HMM')==1
 		sg('new_hmm', distribution_N, distribution_M);
 		sg('bw');
 	else

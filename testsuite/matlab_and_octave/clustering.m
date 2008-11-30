@@ -10,7 +10,7 @@ function y = clustering(filename)
 	% not working correctly in matlab
 	rand('state', init_random);
 
-	if ~set_features()
+	if ~set_features('distance_')
 		return;
 	end
 
@@ -18,7 +18,7 @@ function y = clustering(filename)
 		return;
 	end
 
-	cname=fix_clustering_name_inconsistency(name);
+	cname=fix_clustering_name_inconsistency(clustering_name);
 	sg('new_clustering', cname);
 
 	if ~isempty(clustering_max_iter)

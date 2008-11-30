@@ -1,13 +1,22 @@
-function y = set_features()
-	global name;
-	global name_features;
+function y = set_features(prefix)
+	eval(sprintf(['global ', prefix, 'name']));
+	eval(sprintf(['global ', prefix, 'feature_type']));
+	eval(sprintf(['global ', prefix, 'feature_class']));
+	eval(sprintf(['global ', prefix, 'alphabet']));
+	eval(sprintf(['global ', prefix, 'data_train']));
+	eval(sprintf(['global ', prefix, 'data_test']));
+	global feats_train;
+	global feats_test;
+	global topfk_name;
+	global kernel_data;
 	global classifier_type;
-	global alphabet;
-	global data_train;
-	global data_test;
-	global data_type;
-	global feature_type;
-	global data;
+
+	name=eval(sprintf([prefix, 'name']));
+	feature_type=eval(sprintf([prefix, 'feature_type']));
+	feature_class=eval(sprintf([prefix, 'feature_class']));
+	alphabet=eval(sprintf([prefix, 'alphabet']));
+	data_train=eval(sprintf([prefix, 'data_train']));
+	data_test=eval(sprintf([prefix, 'data_test']));
 	y=false;
 
 	if findstr('Sparse', name)
@@ -22,63 +31,63 @@ function y = set_features()
 		return;
 	end
 
-	if ~isempty(name_features)
-		fprintf('Features %s not yet supported!\n', name_features);
+	if ~isempty(topfk_name)
+		fprintf('Features %s not yet supported!\n', topfk_name);
 		return;
 	end
 
 	if strcmp(name, 'Combined')==1
-		global subkernel0_alphabet;
-		global subkernel0_data_train;
-		global subkernel0_data_test;
-		global subkernel1_alphabet;
-		global subkernel1_data_train;
-		global subkernel1_data_test;
-		global subkernel2_alphabet;
-		global subkernel2_data_train;
-		global subkernel2_data_test;
+		global kernel_subkernel0_alphabet;
+		global kernel_subkernel0_data_train;
+		global kernel_subkernel0_data_test;
+		global kernel_subkernel1_alphabet;
+		global kernel_subkernel1_data_train;
+		global kernel_subkernel1_data_test;
+		global kernel_subkernel2_alphabet;
+		global kernel_subkernel2_data_train;
+		global kernel_subkernel2_data_test;
 
-		if isempty(subkernel0_alphabet)
-			sg('add_features', 'TRAIN', subkernel0_data_train);
-			sg('add_features', 'TEST', subkernel0_data_test);
+		if isempty(kernel_subkernel0_alphabet)
+			sg('add_features', 'TRAIN', kernel_subkernel0_data_train);
+			sg('add_features', 'TEST', kernel_subkernel0_data_test);
 		else
 			sg('add_features', 'TRAIN', ...
-				subkernel0_data_train, subkernel0_alphabet);
+				kernel_subkernel0_data_train, kernel_subkernel0_alphabet);
 			sg('add_features', 'TEST', ...
-				subkernel0_data_test, subkernel0_alphabet);
+				kernel_subkernel0_data_test, kernel_subkernel0_alphabet);
 		end
 
-		if isempty(subkernel1_alphabet)
-			sg('add_features', 'TRAIN', subkernel1_data_train);
-			sg('add_features', 'TEST', subkernel1_data_test);
+		if isempty(kernel_subkernel1_alphabet)
+			sg('add_features', 'TRAIN', kernel_subkernel1_data_train);
+			sg('add_features', 'TEST', kernel_subkernel1_data_test);
 		else
 			sg('add_features', 'TRAIN', ...
-				subkernel1_data_train, subkernel1_alphabet);
+				kernel_subkernel1_data_train, kernel_subkernel1_alphabet);
 			sg('add_features', 'TEST', ...
-				subkernel1_data_test, subkernel1_alphabet);
+				kernel_subkernel1_data_test, kernel_subkernel1_alphabet);
 		end
 
-		if isempty(subkernel2_alphabet)
-			sg('add_features', 'TRAIN', subkernel2_data_train);
-			sg('add_features', 'TEST', subkernel2_data_test);
+		if isempty(kernel_subkernel2_alphabet)
+			sg('add_features', 'TRAIN', kernel_subkernel2_data_train);
+			sg('add_features', 'TEST', kernel_subkernel2_data_test);
 		else
 			sg('add_features', 'TRAIN', ...
-				subkernel2_data_train, subkernel2_alphabet);
+				kernel_subkernel2_data_train, kernel_subkernel2_alphabet);
 			sg('add_features', 'TEST', ...
-				subkernel2_data_test, subkernel2_alphabet);
+				kernel_subkernel2_data_test, kernel_subkernel2_alphabet);
 		end
 
 	elseif ~isempty(alphabet)
 		sg('set_features', 'TRAIN', data_train, alphabet);
 		sg('set_features', 'TEST', data_test, alphabet);
 
-	elseif ~isempty(data)
-		sg('set_features', 'TRAIN', data);
-		sg('set_features', 'TEST', data);
+	elseif ~isempty(kernel_data)
+		sg('set_features', 'TRAIN', kernel_data);
+		sg('set_features', 'TEST', kernel_data);
 
 	else
 		fname='double';
-		if strcmp(data_type, 'ushort')==1
+		if strcmp(feature_type, 'Word')==1
 			fname='uint16';
 		elseif strcmp(classifier_type, 'linear')==1
 			fname='sparse';
@@ -95,5 +104,5 @@ function y = set_features()
 		sg('set_features', 'TEST', feval(fname, data_test));
 	end
 
-	convert_features_and_add_preproc();
+	convert_features_and_add_preproc(prefix);
 	y=true;

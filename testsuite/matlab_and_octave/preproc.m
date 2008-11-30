@@ -6,11 +6,11 @@ function y = preproc(filename)
 	eval('globals'); % ugly hack to have vars from filename as globals
 	eval(filename);
 
-	if ~set_features()
+	if ~set_features('kernel_')
 		return;
 	end
 
-	pname=fix_preproc_name_inconsistency(name);
+	pname=fix_preproc_name_inconsistency(preproc_name);
 	if strcmp(pname, 'PRUNEVARSUBMEAN')==1
 		sg('add_preproc', pname, tobool(preproc_arg0_divide));
 	else
@@ -25,11 +25,11 @@ function y = preproc(filename)
 	end
 
 	kmatrix=sg('get_kernel_matrix');
-	ktrain=max(max(abs(km_train-kmatrix)));
+	km_train=max(max(abs(kernel_matrix_train-kmatrix)));
 
 	sg('init_kernel', 'TEST');
 	kmatrix=sg('get_kernel_matrix');
-	ktest=max(max(abs(km_test-kmatrix)));
+	km_test=max(max(abs(kernel_matrix_test-kmatrix)));
 
-	data={'kernel', ktrain, ktest};
-	y=check_accuracy(accuracy, data);
+	data={'kernel', km_train, km_test};
+	y=check_accuracy(kernel_accuracy, data);

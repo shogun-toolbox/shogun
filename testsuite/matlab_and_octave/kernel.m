@@ -9,7 +9,7 @@ function y = kernel(filename)
 	system('rm -f testscript.m'); %avoid ultra long filenames (>63 chars)
 	%eval(filename);
 
-	if ~set_features()
+	if ~set_features('kernel_')
 		return;
 	end
 
@@ -18,11 +18,11 @@ function y = kernel(filename)
 	end
 
 	kmatrix=sg('get_kernel_matrix');
-	ktrain=max(max(abs(km_train-kmatrix)));
+	km_train=max(max(abs(kernel_matrix_train-kmatrix)));
 
 	sg('init_kernel', 'TEST');
 	kmatrix=sg('get_kernel_matrix');
-	ktest=max(max(abs(km_test-kmatrix)));
+	km_test=max(max(abs(kernel_matrix_test-kmatrix)));
 
-	data={'kernel', ktrain, ktest};
-	y=check_accuracy(accuracy, data);
+	data={'kernel', km_train, km_test};
+	y=check_accuracy(kernel_accuracy, data);
