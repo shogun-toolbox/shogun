@@ -1,25 +1,32 @@
-function y = set_features()
-	global name;
-	global name_features;
-	global feature_type;
-	global feature_class;
-	global alphabet;
-	global data_train;
-	global data_test;
+function y = set_features(prefix)
+	eval(sprintf(['global ', prefix, 'name']));
+	eval(sprintf(['global ', prefix, 'feature_type']));
+	eval(sprintf(['global ', prefix, 'feature_class']));
+	eval(sprintf(['global ', prefix, 'alphabet']));
+	eval(sprintf(['global ', prefix, 'data_train']));
+	eval(sprintf(['global ', prefix, 'data_test']));
 	global feats_train;
 	global feats_test;
+	global topfk_name;
+
+	name=eval(sprintf([prefix, 'name']));
+	feature_type=eval(sprintf([prefix, 'feature_type']));
+	feature_class=eval(sprintf([prefix, 'feature_class']));
+	alphabet=eval(sprintf([prefix, 'alphabet']));
+	data_train=eval(sprintf([prefix, 'data_train']));
+	data_test=eval(sprintf([prefix, 'data_test']));
 	y=false;
 	size_cache=10;
 
 	if strcmp(name, 'Combined')==1
 		% this will break when subkernels in data file are changed
 		% it blindly assumes that all features are StringChar
-		global subkernel0_data_train;
-		global subkernel0_data_test;
-		global subkernel1_data_train;
-		global subkernel1_data_test;
-		global subkernel2_data_train;
-		global subkernel2_data_test;
+		global kernel_subkernel0_data_train;
+		global kernel_subkernel0_data_test;
+		global kernel_subkernel1_data_train;
+		global kernel_subkernel1_data_test;
+		global kernel_subkernel2_data_train;
+		global kernel_subkernel2_data_test;
 		global CombinedFeatures;
 		global StringCharFeatures;
 		global DNA;
@@ -28,61 +35,61 @@ function y = set_features()
 		feats_test=CombinedFeatures();
 
 		feat=StringCharFeatures(DNA);
-		feat.set_string_features(subkernel0_data_train);
+		feat.set_string_features(kernel_subkernel0_data_train);
 		feats_train.append_feature_obj(feat);
 		feat=StringCharFeatures(DNA);
-		feat.set_string_features(subkernel0_data_test);
+		feat.set_string_features(kernel_subkernel0_data_test);
 		feats_test.append_feature_obj(feat);
 
 		feat=StringCharFeatures(DNA);
-		feat.set_string_features(subkernel1_data_train);
+		feat.set_string_features(kernel_subkernel1_data_train);
 		feats_train.append_feature_obj(feat);
 		feat=StringCharFeatures(DNA);
-		feat.set_string_features(subkernel1_data_test);
+		feat.set_string_features(kernel_subkernel1_data_test);
 		feats_test.append_feature_obj(feat);
 
 		feat=StringCharFeatures(DNA);
-		feat.set_string_features(subkernel2_data_train);
+		feat.set_string_features(kernel_subkernel2_data_train);
 		feats_train.append_feature_obj(feat);
 		feat=StringCharFeatures(DNA);
-		feat.set_string_features(subkernel2_data_test);
+		feat.set_string_features(kernel_subkernel2_data_test);
 		feats_test.append_feature_obj(feat);
 
 	elseif strcmp(name, 'Custom')==1
-		global data;
+		global kernel_data;
 		global RealFeatures;
-		feats_train=RealFeatures(data);
-		feats_test=RealFeatures(data);
+		feats_train=RealFeatures(kernel_data);
+		feats_test=RealFeatures(kernel_data);
 
-	elseif strcmp(name_features, 'FK')==1
-		global pos;
-		global pos_clone;
-		global neg;
-		global neg_clone;
+	elseif strcmp(topfk_name, 'FK')==1
+		global pos_train;
+		global pos_test;
+		global neg_train;
+		global neg_test;
+		global FKFeatures;
 
-		if !set_pos_and_neg()
+		if !set_pos_and_neg('topfk_')
 			return;
 		end
 
-		global FKFeatures;
-		feats_train=FKFeatures(size_cache, pos, neg);
+		feats_train=FKFeatures(size_cache, pos_train, neg_train);
 		feats_train.set_opt_a(-1); %estimate prior
-		feats_test=FKFeatures(size_cache, pos_clone, neg_clone);
+		feats_test=FKFeatures(size_cache, pos_test, neg_test);
 		feats_test.set_a(feats_train.get_a()); %use prior from training data
 
-	elseif strcmp(name_features, 'TOP')==1
-		global pos;
-		global pos_clone;
-		global neg;
-		global neg_clone;
+	elseif strcmp(topfk_name, 'TOP')==1
+		global pos_train;
+		global pos_test;
+		global neg_train;
+		global neg_test;
+		global TOPFeatures;
 
-		if !set_pos_and_neg()
+		if !set_pos_and_neg('topfk_')
 			return;
 		end
 
-		global TOPFeatures;
-		feats_train=TOPFeatures(size_cache, pos, neg, false, false);
-		feats_test=TOPFeatures(size_cache, pos_clone, neg_clone, false, false);
+		feats_train=TOPFeatures(size_cache, pos_train, neg_train, false, false);
+		feats_test=TOPFeatures(size_cache, pos_test, neg_test, false, false);
 
 	else
 		global classifier_type;
@@ -150,7 +157,7 @@ function y = set_features()
 			feats_test.set_string_features(data_test);
 
 			if strcmp(feature_class, 'string_complex')==1
-				convert_features_and_add_preproc();
+				convert_features_and_add_preproc(prefix);
 			end
 
 		else

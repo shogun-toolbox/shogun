@@ -7,16 +7,22 @@ function y = classifier(filename)
 	eval('globals'); % ugly hack to have vars from filename as globals
 	eval(filename);
 
-	if ~set_features()
-		return;
-	end
-
 	if strcmp(classifier_type, 'kernel')==1
+		if ~set_features('kernel_')
+			return;
+		end
 		if ~set_kernel()
 			return;
 		end
 	elseif strcmp(classifier_type, 'knn')==1
+		if ~set_features('distance_')
+			return;
+		end
 		if ~set_distance()
+			return;
+		end
+	else
+		if ~set_features('classifier_')
 			return;
 		end
 	end
@@ -25,39 +31,39 @@ function y = classifier(filename)
 		lab=Labels(classifier_labels);
 	end
 
-	if strcmp(name, 'GMNPSVM')==1
+	if strcmp(classifier_name, 'GMNPSVM')==1
 		classifier=GMNPSVM(classifier_C, kernel, lab);
 
-	elseif strcmp(name, 'GPBTSVM')==1
+	elseif strcmp(classifier_name, 'GPBTSVM')==1
 		classifier=GPBTSVM(classifier_C, kernel, lab);
 
-	elseif strcmp(name, 'KNN')==1
+	elseif strcmp(classifier_name, 'KNN')==1
 		classifier=KNN(classifier_k, distance, lab);
 
-	elseif strcmp(name, 'LDA')==1
+	elseif strcmp(classifier_name, 'LDA')==1
 		classifier=LDA(classifier_gamma, feats_train, lab);
 
-	elseif strcmp(name, 'LibLinear')==1
+	elseif strcmp(classifier_name, 'LibLinear')==1
 		classifier=LibLinear(classifier_C, feats_train, lab);
 
-	elseif strcmp(name, 'LibSVMMultiClass')==1
+	elseif strcmp(classifier_name, 'LibSVMMultiClass')==1
 		classifier=LibSVMMultiClass(classifier_C, kernel, lab);
 
-	elseif strcmp(name, 'LibSVMOneClass')==1
+	elseif strcmp(classifier_name, 'LibSVMOneClass')==1
 		classifier=LibSVMOneClass(classifier_C, kernel);
 
-	elseif strcmp(name, 'LibSVM')==1
+	elseif strcmp(classifier_name, 'LibSVM')==1
 		classifier=LibSVM(classifier_C, kernel, lab);
 
-	elseif strcmp(name, 'MPDSVM')==1
+	elseif strcmp(classifier_name, 'MPDSVM')==1
 		classifier=MPDSVM(classifier_C, kernel, lab);
 
-	elseif strcmp(name, 'Perceptron')==1
+	elseif strcmp(classifier_name, 'Perceptron')==1
 		classifier=Perceptron(feats_train, lab);
 		classifier.set_learn_rate(classifier_learn_rate);
 		classifier.set_max_iter(classifier_max_iter);
 
-	elseif strcmp(name, 'SVMLight')==1
+	elseif strcmp(classifier_name, 'SVMLight')==1
 		try
 			classifier=SVMLight(classifier_C, kernel, lab);
 		catch
@@ -65,16 +71,16 @@ function y = classifier(filename)
 			return;
 		end
 
-	elseif strcmp(name, 'SVMLin')==1
+	elseif strcmp(classifier_name, 'SVMLin')==1
 		classifier=SVMLin(classifier_C, feats_train, lab);
 
-	elseif strcmp(name, 'SVMOcas')==1
+	elseif strcmp(classifier_name, 'SVMOcas')==1
 		classifier=SVMOcas(classifier_C, feats_train, lab);
 
-	elseif strcmp(name, 'SVMSGD')==1
+	elseif strcmp(classifier_name, 'SVMSGD')==1
 		classifier=SVMSGD(classifier_C, feats_train, lab);
 
-	elseif strcmp(name, 'SubGradientSVM')==1
+	elseif strcmp(classifier_name, 'SubGradientSVM')==1
 		classifier=SubGradientSVM(classifier_C, feats_train, lab);
 
 	else
@@ -85,7 +91,7 @@ function y = classifier(filename)
 	if strcmp(classifier_type, 'linear')==1 && ~isempty(classifier_bias)
 		classifier.set_bias_enabled(true);
 	end
-	if ~isempty(classifier_epsilon) && strcmp(name, 'SVMSGD')!=1
+	if ~isempty(classifier_epsilon) && strcmp(classifier_name, 'SVMSGD')!=1
 		classifier.set_epsilon(classifier_epsilon);
 	end
 	if ~isempty(classifier_tube_epsilon)
@@ -113,7 +119,7 @@ function y = classifier(filename)
 	alphas=0;
 	sv=0;
 	if ~isempty(classifier_alpha_sum) && ~isempty(classifier_sv_sum)
-		if strcmp(classifier_labeltype, 'series')==1
+		if strcmp(classifier_label_type, 'series')==1
 			for i = 0:classifier.get_num_svms()-1
 				subsvm=classifier.get_svm(i);
 				tmp=subsvm.get_alphas();

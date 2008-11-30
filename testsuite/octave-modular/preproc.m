@@ -8,21 +8,21 @@ function y = preproc(filename)
 	eval('globals'); % ugly hack to have vars from filename as globals
 	eval(filename);
 
-	if strcmp(name, 'LogPlusOne')==1
+	if strcmp(preproc_name, 'LogPlusOne')==1
 		preproc=LogPlusOne();
-	elseif strcmp(name, 'NormOne')==1
+	elseif strcmp(preproc_name, 'NormOne')==1
 		preproc=NormOne();
-	elseif strcmp(name, 'PruneVarSubMean')==1
+	elseif strcmp(preproc_name, 'PruneVarSubMean')==1
 		preproc=PruneVarSubMean(tobool(preproc_arg0_divide));
-	elseif strcmp(name, 'SortUlongString')==1
+	elseif strcmp(preproc_name, 'SortUlongString')==1
 		preproc=SortUlongString();
-	elseif strcmp(name, 'SortWordString')==1
+	elseif strcmp(preproc_name, 'SortWordString')==1
 		preproc=SortWordString();
 	else
-		error('Unsupported preproc %s', name);
+		error('Unsupported preproc %s', preproc_name);
 	end
 
-	if ~set_features()
+	if ~set_features('kernel_')
 		return;
 	end
 
@@ -36,9 +36,9 @@ function y = preproc(filename)
 		return;
 	end
 
-	ktrain=max(max(abs(km_train-kernel.get_kernel_matrix())));
+	km_train=max(max(abs(kernel_matrix_train-kernel.get_kernel_matrix())));
 	kernel.init(feats_train, feats_test);
-	ktest=max(max(abs(km_test-kernel.get_kernel_matrix())));
+	km_test=max(max(abs(kernel_matrix_test-kernel.get_kernel_matrix())));
 
-	data={'kernel', ktrain, ktest};
-	y=check_accuracy(accuracy, data);
+	data={'kernel', km_train, km_test};
+	y=check_accuracy(kernel_accuracy, data);

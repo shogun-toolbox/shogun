@@ -6,8 +6,9 @@ function y = regression(filename)
 
 	eval('globals'); % ugly hack to have vars from filename as globals
 	eval(filename);
+	prefix='regression_';
 
-	if ~set_features()
+	if ~set_features('kernel_')
 		return;
 	end
 	if ~set_kernel()
@@ -17,14 +18,14 @@ function y = regression(filename)
 
 	lab=Labels(regression_labels);
 
-	if strcmp(name, 'KRR')==1
+	if strcmp(regression_name, 'KRR')==1
 		regression=KRR(regression_tau, kernel, lab);
 
-	elseif strcmp(name, 'LibSVR')==1
+	elseif strcmp(regression_name, 'LibSVR')==1
 		regression=LibSVR(regression_C, regression_epsilon, kernel, lab);
 		regression.set_tube_epsilon(regression_tube_epsilon);
 
-	elseif strcmp(name, 'SVRLight')==1
+	elseif strcmp(regression_name, 'SVRLight')==1
 		try
 			regression=SVRLight(regression_C, regression_epsilon, kernel, lab);
 			regression.set_tube_epsilon(regression_tube_epsilon);
@@ -34,7 +35,7 @@ function y = regression(filename)
 		end
 
 	else
-		error('Unsupported regression %s!', name);
+		error('Unsupported regression %s!', regression_name);
 	end
 
 	regression.parallel.set_num_threads(regression_num_threads);

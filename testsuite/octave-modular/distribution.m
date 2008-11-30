@@ -7,27 +7,27 @@ function y = distribution(filename)
 	eval('globals'); % ugly hack to have vars from filename as globals
 	eval(filename);
 
-	if ~set_features()
+	if ~set_features('distribution_')
 		return;
 	end
 
-	if strcmp(name, 'Histogram')==1
+	if strcmp(distribution_name, 'Histogram')==1
 		distribution=Histogram(feats_train);
 		distribution.train();
 
-	elseif strcmp(name, 'HMM')==1
+	elseif strcmp(distribution_name, 'HMM')==1
 		global BW_NORMAL;
 		distribution=HMM(feats_train,
 			distribution_N, distribution_M, distribution_pseudo);
 		distribution.train();
 		distribution.baum_welch_viterbi_train(BW_NORMAL);
 
-	elseif strcmp(name, 'LinearHMM')==1
+	elseif strcmp(distribution_name, 'LinearHMM')==1
 		distribution=LinearHMM(feats_train);
 		distribution.train();
 
 	else
-		error('Unsupported distribution %s!', name);
+		error('Unsupported distribution %s!', distribution_name);
 	end
 
 

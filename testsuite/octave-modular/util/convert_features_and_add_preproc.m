@@ -1,8 +1,12 @@
-function y = convert_features_and_add_preproc()
-	global order;
-	global gap;
-	global reverse;
-	global feature_type;
+function y = convert_features_and_add_preproc(prefix)
+	eval(sprintf(['global ', prefix, 'order']));
+	eval(sprintf(['global ', prefix, 'gap']));
+	eval(sprintf(['global ', prefix, 'reverse']));
+	eval(sprintf(['global ', prefix, 'feature_type']));
+	order=eval(sprintf([prefix, 'order']));
+	gap=eval(sprintf([prefix, 'gap']));
+	reverse=eval(sprintf([prefix, 'reverse']));
+	feature_type=eval(sprintf([prefix, 'feature_type']));
 	global feats_train;
 	global feats_test;
 	y=false;

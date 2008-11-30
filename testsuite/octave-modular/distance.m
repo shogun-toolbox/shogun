@@ -8,16 +8,16 @@ function y = distance(filename)
 	eval('globals'); % ugly hack to have vars from filename as globals
 	eval(filename);
 
-	if ~set_features()
+	if ~set_features('distance_')
 		return;
 	end
 	if ~set_distance()
 		return;
 	end
 
-	dtrain=max(max(abs(dm_train-distance.get_distance_matrix())));
+	dm_train=max(max(abs(distance_matrix_train-distance.get_distance_matrix())));
 	distance.init(feats_train, feats_test);
-	dtest=max(max(abs(dm_test-distance.get_distance_matrix())));
+	dm_test=max(max(abs(distance_matrix_test-distance.get_distance_matrix())));
 
-	data={'distance', dtrain, dtest};
-	y=check_accuracy(accuracy, data);
+	data={'distance', dm_train, dm_test};
+	y=check_accuracy(distance_accuracy, data);

@@ -10,14 +10,14 @@ function y = clustering(filename)
 	Math_init_random(init_random);
 	rand('state', init_random);
 
-	if ~set_features()
+	if ~set_features('distance_')
 		return;
 	end
 	if ~set_distance()
 		return;
 	end
 
-	if strcmp(name, 'KMeans')==1
+	if strcmp(clustering_name, 'KMeans')==1
 		clustering=KMeans(clustering_k, distance);
 		clustering.train();
 
@@ -29,7 +29,7 @@ function y = clustering(filename)
 		data={'kmeans', centers, radi};
 		y=check_accuracy(clustering_accuracy, data);
 
-	elseif strcmp(name, 'Hierarchical')==1
+	elseif strcmp(clustering_name, 'Hierarchical')==1
 		clustering=Hierarchical(clustering_merges, distance);
 		clustering.train();
 
@@ -42,5 +42,5 @@ function y = clustering(filename)
 		data={'hierarchical', merge_distances, pairs};
 		y=check_accuracy(clustering_accuracy, data);
 	else
-		error('Unsupported clustering %s', name);
+		error('Unsupported clustering %s', clustering_name);
 	end

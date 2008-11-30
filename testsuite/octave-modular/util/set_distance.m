@@ -1,18 +1,15 @@
 function y = set_distance()
 	global distance_name;
-	global name;
 	global feats_train;
 	global feats_test;
 	global distance;
-	global kernel_arg1_distance;
+	global kernel_arg2_distance;
 	y=false;
 
-	if !isempty(distance_name)
-		dname=distance_name;
-	elseif !isempty(kernel_arg1_distance)
-		dname=kernel_arg1_distance;
+	if ~isempty(kernel_arg2_distance)
+		dname=kernel_arg2_distance;
 	else
-		dname=name;
+		dname=distance_name;
 	end
 
 	if strcmp(dname, 'BrayCurtisDistance')==1
