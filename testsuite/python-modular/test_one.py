@@ -52,9 +52,10 @@ def _test_mfile (fnam):
 		if param=='name':
 			name=line.split('=')[1].strip().split("'")[1]
 			indata[param]=name
-		elif param=='symdata' or param=='data':
+		elif param=='kernel_symdata' or param=='kernel_data':
 			indata[param]=_read_matrix(line)
-		elif param.startswith('km_') or param.startswith('dm_'):
+		elif param.startswith('kernel_matrix') or \
+			param.startswith('distance_matrix'):
 			indata[param]=_read_matrix(line)
 		elif param.find('data_train')>-1 or param.find('data_test')>-1:
 			# data_{train,test} might be prepended by 'subkernelX_'

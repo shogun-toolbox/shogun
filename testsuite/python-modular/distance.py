@@ -6,19 +6,29 @@ from shogun.Distance import *
 
 import util
 
-def _distance (indata, feats):
-	fun=eval(indata['name'])
-	args=util.get_args(indata, 'distance_arg')
 
-	distance=fun(feats['train'], feats['train'], *args)
-	dtrain=max(abs(indata['dm_train']-distance.get_distance_matrix()).flat)
+def _distance (indata):
+	prefix='distance_'
+	feats=util.get_features(indata, prefix)
+
+	dfun=eval(indata[prefix+'name'])
+	dargs=util.get_args(indata, prefix)
+	distance=dfun(feats['train'], feats['train'], *dargs)
+
+	dm_train=max(abs(
+		indata[prefix+'matrix_train']-distance.get_distance_matrix()).flat)
 	distance.init(feats['train'], feats['test'])
-	dtest=max(abs(indata['dm_test']-distance.get_distance_matrix()).flat)
+	dm_test=max(abs(
+		indata[prefix+'matrix_test']-distance.get_distance_matrix()).flat)
 
-	return util.check_accuracy(indata['accuracy'], dtrain=dtrain, dtest=dtest)
+	return util.check_accuracy(
+		indata[prefix+'accuracy'], dm_train=dm_train, dm_test=dm_test)
+
+
+########################################################################
+# public
+########################################################################
 
 def test (indata):
-	fun=eval('util.get_feats_'+indata['feature_class'])
-	feats=fun(indata)
-	return _distance(indata, feats)
+	return _distance(indata)
 

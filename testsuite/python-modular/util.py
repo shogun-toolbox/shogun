@@ -24,11 +24,18 @@ def check_accuracy (accuracy, **kwargs):
 
 	return True
 
-def get_args (indata, ident):
-	# python dicts are not ordered, so we have to look at the number in
-	# the parameter's name and insert items appropriately into an
-	# ordered list
 
+def get_args (indata, prefix=''):
+	"""
+	Slightly esoteric function to build a tuple to be used as argument to
+	constructor calls.
+
+	Python dicts are not ordered, so we have to look at the number in
+	the parameter's name and insert items appropriately into an
+	ordered list
+	"""
+
+	ident=prefix+'arg'
 	# need to pregenerate list for using indices in loop
 	args=len(indata)*[None]
 
@@ -53,87 +60,103 @@ def get_args (indata, ident):
 	return filter(lambda arg: arg is not None, args)
 
 
-# the kernel lists here are highly dependent on how the generator sets
-# them up, be careful!
-def get_normalizer (kname, do_normalize):
-	name=['Poly']
-	if kname in name and not do_normalize:
-		return IdentityKernelNormalizer()
-
-	name=['Linear', 'SparseLinear', 'LinearString', 'LinearWord', 'LinearByte']
-	if kname in name:
-		return AvgDiagKernelNormalizer(-1)
-
-	return False
+def get_features(indata, prefix=''):
+	if indata[prefix+'feature_class']=='simple':
+		return get_feats_simple(indata, prefix)
+	elif indata[prefix+'feature_class']=='string':
+		return get_feats_string(indata, prefix)
+	elif indata[prefix+'feature_class']=='string_complex':
+		return get_feats_string_complex(indata, prefix)
+	else:
+		raise ValueError, \
+			'Unknown feature class %s!'%indata[prefix+'feature_class']
 
 
-def get_feats_simple (indata):
+def get_feats_simple (indata, prefix=''):
+	ftype=indata[prefix+'feature_type']
+
 	# have to explicitely set data type for numpy if not real
-	data_train=indata['data_train'].astype(eval(indata['data_type']))
-	data_test=indata['data_test'].astype(eval(indata['data_type']))
+	as_types={
+		'Byte': ubyte,
+		'Real': double,
+		'Word': ushort
+	}
+	data_train=indata[prefix+'data_train'].astype(as_types[ftype])
+	data_test=indata[prefix+'data_test'].astype(as_types[ftype])
 
-	if indata['feature_type']=='Byte' or indata['feature_type']=='Char':
-		alphabet=eval(indata['alphabet'])
-		ftrain=eval(indata['feature_type']+"Features(alphabet)")
-		ftest=eval(indata['feature_type']+"Features(alphabet)")
+	if ftype=='Byte' or ftype=='Char':
+		alphabet=eval(indata[prefix+'alphabet'])
+		ftrain=eval(ftype+'Features(alphabet)')
+		ftest=eval(ftype+'Features(alphabet)')
 		ftrain.copy_feature_matrix(data_train)
 		ftest.copy_feature_matrix(data_test)
 	else:
-		ftrain=eval(indata['feature_type']+"Features(data_train)")
-		ftest=eval(indata['feature_type']+"Features(data_test)")
+		ftrain=eval(ftype+'Features(data_train)')
+		ftest=eval(ftype+'Features(data_test)')
 
-	if (indata['name'].find('Sparse')!=-1 or (
-		indata.has_key('classifier_type') and indata['classifier_type']=='linear')):
-		sparse_train=eval('Sparse'+indata['feature_type']+'Features()')
+	if (indata[prefix+'name'].find('Sparse')!=-1 or (
+		indata.has_key('classifier_type') and \
+			indata['classifier_type']=='linear')):
+		sparse_train=eval('Sparse'+ftype+'Features()')
 		sparse_train.obtain_from_simple(ftrain)
 
-		sparse_test=eval('Sparse'+indata['feature_type']+'Features()')
+		sparse_test=eval('Sparse'+ftype+'Features()')
 		sparse_test.obtain_from_simple(ftest)
 
 		return {'train':sparse_train, 'test':sparse_test}
 	else:
 		return {'train':ftrain, 'test':ftest}
 
-def get_feats_string (indata):
-	feats={'train':StringCharFeatures(eval(indata['alphabet'])),
-		'test':StringCharFeatures(eval(indata['alphabet']))}
-	feats['train'].set_string_features(list(indata['data_train'][0]))
-	feats['test'].set_string_features(list(indata['data_test'][0]))
+
+def get_feats_string (indata, prefix=''):
+	feats={
+		'train': StringCharFeatures(eval(indata[prefix+'alphabet'])),
+		'test': StringCharFeatures(eval(indata[prefix+'alphabet']))
+	}
+	feats['train'].set_string_features(list(indata[prefix+'data_train'][0]))
+	feats['test'].set_string_features(list(indata[prefix+'data_test'][0]))
 
 	return feats
 
-def get_feats_string_complex (indata):
-	alphabet=eval(indata['alphabet'])
-	feats={'train':StringCharFeatures(alphabet),
-		'test':StringCharFeatures(alphabet)}
+
+def get_feats_string_complex (indata, prefix=''):
+	alphabet=eval(indata[prefix+'alphabet'])
+	feats={
+		'train': StringCharFeatures(alphabet),
+		'test': StringCharFeatures(alphabet)
+	}
 
 	if alphabet==CUBE: # data_{train,test} ints due to test.py:_read_matrix
-		data_train=[str(x) for x in list(indata['data_train'][0])]
-		data_test=[str(x) for x in list(indata['data_test'][0])]
+		data_train=[str(x) for x in list(indata[prefix+'data_train'][0])]
+		data_test=[str(x) for x in list(indata[prefix+'data_test'][0])]
 	else:
-		data_train=list(indata['data_train'][0])
-		data_test=list(indata['data_test'][0])
+		data_train=list(indata[prefix+'data_train'][0])
+		data_test=list(indata[prefix+'data_test'][0])
 
 	feats['train'].set_string_features(data_train)
 	feats['test'].set_string_features(data_test)
 
-	feat=eval('String'+indata['feature_type']+ \
+	feat=eval('String'+indata[prefix+'feature_type']+ \
 		"Features(feats['train'].get_alphabet())")
-	feat.obtain_from_char(feats['train'], indata['order']-1, indata['order'],
-		indata['gap'], eval(indata['reverse']))
+	feat.obtain_from_char(feats['train'], indata[prefix+'order']-1,
+		indata[prefix+'order'], indata[prefix+'gap'],
+		eval(indata[prefix+'reverse']))
 	feats['train']=feat
 
-	feat=eval('String'+indata['feature_type']+ \
+	feat=eval('String'+indata[prefix+'feature_type']+ \
 		"Features(feats['train'].get_alphabet())")
-	feat.obtain_from_char(feats['test'], indata['order']-1, indata['order'],
-		indata['gap'], eval(indata['reverse']))
+	feat.obtain_from_char(feats['test'], indata[prefix+'order']-1,
+		indata[prefix+'order'], indata[prefix+'gap'],
+		eval(indata[prefix+'reverse']))
 	feats['test']=feat
 
-	if indata['feature_type']=='Word' or indata['feature_type']=='Ulong':
-		name='Sort'+indata['feature_type']+'String'
+	if indata[prefix+'feature_type']=='Word' or \
+		indata[prefix+'feature_type']=='Ulong':
+		name='Sort'+indata[prefix+'feature_type']+'String'
 		return add_preproc(name, feats)
 	else:
 		return feats
+
 
 def add_preproc (name, feats, *args):
 	fun=eval(name)

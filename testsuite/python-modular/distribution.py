@@ -7,17 +7,17 @@ from shogun.Distribution import *
 import util
 
 def _distribution (indata):
-	fun=eval('util.get_feats_'+indata['feature_class'])
-	feats=fun(indata)
+	prefix='distribution_'
+	feats=util.get_features(indata, prefix)
 
-	if indata['name']=='HMM':
-		distribution=HMM(feats['train'], indata['distribution_N'],
-			indata['distribution_M'], indata['distribution_pseudo'])
+	if indata[prefix+'name']=='HMM':
+		distribution=HMM(feats['train'], indata[prefix+'N'],
+			indata[prefix+'M'], indata[prefix+'pseudo'])
 		distribution.train()
 		distribution.baum_welch_viterbi_train(BW_NORMAL)
 	else:
-		fun=eval(indata['name'])
-		distribution=fun(feats['train'])
+		dfun=eval(indata[prefix+'name'])
+		distribution=dfun(feats['train'])
 		distribution.train()
 
 	likelihood=distribution.get_log_likelihood_sample()
@@ -30,27 +30,28 @@ def _distribution (indata):
 			if val!=-inf and val!=nan: # only consider sparse matrix!
 				derivatives+=val
 
-	derivatives=abs(derivatives-indata['distribution_derivatives'])
-	likelihood=abs(likelihood-indata['distribution_likelihood'])
+	derivatives=abs(derivatives-indata[prefix+'derivatives'])
+	likelihood=abs(likelihood-indata[prefix+'likelihood'])
 
-	if indata['name']=='HMM':
+	if indata[prefix+'name']=='HMM':
 		best_path=0
 		best_path_state=0
-		for i in xrange(indata['distribution_num_examples']):
+		for i in xrange(indata[prefix+'num_examples']):
 			best_path+=distribution.best_path(i)
-			for j in xrange(indata['distribution_N']):
+			for j in xrange(indata[prefix+'N']):
 				best_path_state+=distribution.get_best_path_state(i, j)
 
-		best_path=abs(best_path-indata['distribution_best_path'])
+		best_path=abs(best_path-indata[prefix+'best_path'])
 		best_path_state=abs(best_path_state-\
-			indata['distribution_best_path_state'])
+			indata[prefix+'best_path_state'])
 
-		return util.check_accuracy(indata['distribution_accuracy'],
+		return util.check_accuracy(indata[prefix+'accuracy'],
 			derivatives=derivatives, likelihood=likelihood,
 			best_path=best_path, best_path_state=best_path_state)
 	else:
-		return util.check_accuracy(indata['distribution_accuracy'],
+		return util.check_accuracy(indata[prefix+'accuracy'],
 			derivatives=derivatives, likelihood=likelihood)
+
 
 ########################################################################
 # public

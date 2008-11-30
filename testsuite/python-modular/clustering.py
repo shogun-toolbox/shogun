@@ -4,9 +4,9 @@ Test Clustering
 
 from shogun.Distance import EuclidianDistance
 from shogun.Clustering import *
-#from shogun.Library import Math_init_random
 
 import util
+
 
 def _clustering (indata):
 	if indata.has_key('clustering_k'):
@@ -16,20 +16,15 @@ def _clustering (indata):
 	else:
 		return False
 
-	fun=eval('util.get_feats_'+indata['feature_class'])
-	feats=fun(indata)
-
-	dargs=util.get_args(indata, 'distance_arg')
+	feats=util.get_features(indata, 'distance_')
 	dfun=eval(indata['distance_name'])
-	distance=dfun(feats['train'], feats['train'], *dargs)
+	distance=dfun(feats['train'], feats['train'])
 
-	fun=eval(indata['name'])
-	clustering=fun(first_arg, distance)
-	#Math_init_random(indata['init_random'])
+	cfun=eval(indata['clustering_name'])
+	clustering=cfun(first_arg, distance)
 	clustering.train()
 
 	distance.init(feats['train'], feats['test'])
-
 	if indata.has_key('clustering_radi'):
 		radi=max(abs(clustering.get_radiuses()-indata['clustering_radi']))
 		centers=max(abs(clustering.get_cluster_centers()- \
@@ -45,6 +40,7 @@ def _clustering (indata):
 			merge_distance=merge_distance, pairs=pairs)
 	else:
 		return util.check_accuracy(indata['clustering_accuracy'])
+
 
 ########################################################################
 # public

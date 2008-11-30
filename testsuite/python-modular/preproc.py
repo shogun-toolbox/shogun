@@ -6,30 +6,37 @@ from shogun.Kernel import *
 
 import util
 
+
 ########################################################################
 # kernel computation
 ########################################################################
 
-def _kernel (indata, feats):
-	fun=eval(indata['kernel_name']+'Kernel')
-	args=util.get_args(indata, 'kernel_arg')
+def _kernel (indata):
+	prefix='kernel_'
+	feats=util.get_features(indata, prefix)
+	kfun=eval(indata[prefix+'name']+'Kernel')
+	kargs=util.get_args(indata, prefix)
 
-	kernel=fun(feats['train'], feats['train'], *args)
-	ktrain=max(abs(indata['km_train']-kernel.get_kernel_matrix()).flat)
+	prefix='preproc_'
+	pargs=util.get_args(indata, prefix)
+	feats=util.add_preproc(indata[prefix+'name'], feats, *pargs)
+
+	prefix='kernel_'
+	kernel=kfun(feats['train'], feats['train'], *kargs)
+	km_train=max(abs(
+		indata[prefix+'matrix_train']-kernel.get_kernel_matrix()).flat)
 	kernel.init(feats['train'], feats['test'])
-	ktest=max(abs(indata['km_test']-kernel.get_kernel_matrix()).flat)
+	km_test=max(abs(
+		indata[prefix+'matrix_test']-kernel.get_kernel_matrix()).flat)
 
-	return util.check_accuracy(indata['accuracy'], ktrain=ktrain, ktest=ktest)
+	return util.check_accuracy(
+		indata[prefix+'accuracy'], km_train=km_train, km_test=km_test)
+
 
 ########################################################################
 # public
 ########################################################################
 
 def test (indata):
-	fun=eval('util.get_feats_'+indata['feature_class'])
-	feats=fun(indata)
-	args=util.get_args(indata, 'preproc_arg')
-	feats=util.add_preproc(indata['name'], feats, *args)
-
-	return _kernel(indata, feats)
+	return _kernel(indata)
 
