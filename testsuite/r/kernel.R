@@ -3,7 +3,7 @@ kernel <- function() {
 	source('util/set_kernel.R')
 	source('util/check_accuracy.R')
 
-	if (!set_features()) {
+	if (!set_features('kernel_')) {
 		return(TRUE)
 	}
 
@@ -12,14 +12,14 @@ kernel <- function() {
 	}
 
 	kmatrix <- sg('get_kernel_matrix')
-	ktrain <- max(max(abs(km_train-kmatrix)))
+	km_train <- max(max(abs(kernel_matrix_train-kmatrix)))
 
 	sg('init_kernel', 'TEST')
 	kmatrix <- sg('get_kernel_matrix')
-	ktest <- max(max(abs(km_test-kmatrix)))
+	km_test <- max(max(abs(kernel_matrix_test-kmatrix)))
 
-	data <- list(ktrain, ktest)
-	return(check_accuracy(accuracy, 'kernel', data))
+	data <- list(km_train, km_test)
+	return(check_accuracy(kernel_accuracy, 'kernel', data))
 }
 
 # vim: set filetype=R

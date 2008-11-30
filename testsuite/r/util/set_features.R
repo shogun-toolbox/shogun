@@ -1,5 +1,14 @@
-set_features <- function() {
+set_features <- function(prefix) {
 	source('util/convert_features_and_add_preproc.R')
+
+	name <- eval(parse(text=paste(prefix, 'name', sep='')))
+	if (exists(paste(prefix, 'alphabet', sep=''))) {
+		alphabet <- eval(parse(text=paste(prefix, 'alphabet', sep='')))
+	}
+	if (exists(paste(prefix, 'data_train', sep=''))) {
+		data_train <- eval(parse(text=paste(prefix, 'data_train', sep='')))
+		data_test <- eval(parse(text=paste(prefix, 'data_test', sep='')))
+	}
 
 	if (regexpr('Sparse', name)>0) {
 		print('Sparse features not supported yet!')
@@ -20,8 +29,8 @@ set_features <- function() {
 		}
 	}
 
-	if (exists('name_features')) {
-		print(paste('Features', name_features, 'not supported yet!'))
+	if (exists('topfk_name')) {
+		print(paste('Features', topfk_name, 'not supported yet!'))
 		return(FALSE)
 	}
 
@@ -29,34 +38,34 @@ set_features <- function() {
 	sg('clean_features', 'TEST')
 
 	if (regexpr('Combined', name)>0) {
-		if (exists('subkernel0_alphabet')) {
+		if (exists('kernel_subkernel0_alphabet')) {
 			sg('add_features', 'TRAIN',
-				subkernel0_data_train, subkernel0_alphabet)
+				kernel_subkernel0_data_train, kernel_subkernel0_alphabet)
 			sg('add_features', 'TEST',
-				subkernel0_data_test, subkernel0_alphabet)
+				kernel_subkernel0_data_test, kernel_subkernel0_alphabet)
 		} else {
-			sg('add_features', 'TRAIN', subkernel0_data_train)
-			sg('add_features', 'TEST', subkernel0_data_test)
+			sg('add_features', 'TRAIN', kernel_subkernel0_data_train)
+			sg('add_features', 'TEST', kernel_subkernel0_data_test)
 		}
 
-		if (exists('subkernel1_alphabet')) {
+		if (exists('kernel_subkernel1_alphabet')) {
 			sg('add_features', 'TRAIN',
-				subkernel1_data_train, subkernel1_alphabet)
+				kernel_subkernel1_data_train, kernel_subkernel1_alphabet)
 			sg('add_features', 'TEST',
-				subkernel1_data_test, subkernel1_alphabet)
+				kernel_subkernel1_data_test, kernel_subkernel1_alphabet)
 		} else {
-			sg('add_features', 'TRAIN', subkernel1_data_train)
-			sg('add_features', 'TEST', subkernel1_data_test)
+			sg('add_features', 'TRAIN', kernel_subkernel1_data_train)
+			sg('add_features', 'TEST', kernel_subkernel1_data_test)
 		}
 
-		if (exists('subkernel2_alphabet')) {
+		if (exists('kernel_subkernel2_alphabet')) {
 			sg('add_features', 'TRAIN',
-				subkernel2_data_train, subkernel2_alphabet)
+				kernel_subkernel2_data_train, kernel_subkernel2_alphabet)
 			sg('add_features', 'TEST',
-				subkernel2_data_test, subkernel2_alphabet)
+				kernel_subkernel2_data_test, kernel_subkernel2_alphabet)
 		} else {
-			sg('add_features', 'TRAIN', subkernel2_data_train)
-			sg('add_features', 'TEST', subkernel2_data_test)
+			sg('add_features', 'TRAIN', kernel_subkernel2_data_train)
+			sg('add_features', 'TEST', kernel_subkernel2_data_test)
 		}
 	}
 
@@ -66,8 +75,9 @@ set_features <- function() {
 	}
 
 	else if (exists('data_train')) {
-		if (regexpr('double', data_type)<0) {
-			print(paste('No support for data type', data_type, 'in R!'))
+		ftype <- eval(parse(text=paste(prefix, 'feature_type', sep='')))
+		if (regexpr('Real', ftype)<0) {
+			print(paste('No support for feature type', ftype, 'in R!'))
 			return(FALSE)
 		}
 
@@ -76,11 +86,11 @@ set_features <- function() {
 	}
 
 	else {
-		sg('set_features', 'TRAIN', data)
-		sg('set_features', 'TEST', data)
+		sg('set_features', 'TRAIN', kernel_data)
+		sg('set_features', 'TEST', kernel_data)
 	}
 
-	convert_features_and_add_preproc()
+	convert_features_and_add_preproc(prefix)
 
 	return(TRUE)
 }

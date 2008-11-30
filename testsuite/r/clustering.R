@@ -4,7 +4,7 @@ clustering <- function(filename) {
 	source('util/check_accuracy.R')
 	source('util/fix_clustering_name_inconsistency.R')
 
-	if (!set_features()) {
+	if (!set_features('distance_')) {
 		return(TRUE)
 	}
 
@@ -12,7 +12,7 @@ clustering <- function(filename) {
 		return(TRUE)
 	}
 
-	cname <- fix_clustering_name_inconsistency(name)
+	cname <- fix_clustering_name_inconsistency(clustering_name)
 	sg('new_clustering', cname)
 
 	if (exists('clustering_max_iter')) {
@@ -35,10 +35,6 @@ clustering <- function(filename) {
 	if (exists('clustering_radi')) {
 		res <- sg('get_clustering')
 		radi <- t(res[[1]])
-		print('radi')
-		print(radi)
-		print('clustering_radi')
-		print(clustering_radi)
 		radi <- max(abs(radi-clustering_radi))
 		centers <- max(max(abs(res[[2]]-clustering_centers)))
 

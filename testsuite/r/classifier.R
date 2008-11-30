@@ -5,20 +5,26 @@ classifier <- function(filename) {
 	source('util/check_accuracy.R')
 	source('util/fix_classifier_name_inconsistency.R')
 
-	if (regexpr('Perceptron', name)>0) { # b0rked, skip it
-		return(TRUE)
-	}
-
-	if (!set_features()) {
+	if (regexpr('Perceptron', classifier_name)>0) { # b0rked, skip it
 		return(TRUE)
 	}
 
 	if (regexpr('kernel', classifier_type)>0) {
+		if (!set_features('kernel_')) {
+			return(TRUE)
+		}
 		if (!set_kernel()) {
 			return(TRUE)
 		}
 	} else if (regexpr('knn', classifier_type)>0) {
+		if (!set_features('distance_')) {
+			return(TRUE)
+		}
 		if (!set_distance()) {
+			return(TRUE)
+		}
+	} else {
+		if (!set_features('classifier_')) {
 			return(TRUE)
 		}
 	}
@@ -27,7 +33,7 @@ classifier <- function(filename) {
 		sg('set_labels', 'TRAIN', classifier_labels)
 	}
 
-	cname <- fix_classifier_name_inconsistency(name)
+	cname <- fix_classifier_name_inconsistency(classifier_name)
 	try(sg('new_classifier', cname))
 
 	if (exists('classifier_bias')) {
@@ -75,13 +81,13 @@ classifier <- function(filename) {
 	} else if (regexpr('lda', classifier_type)>0) {
 		0 # nop
 	} else {
-		if (exists('classifier_bias') && exists('classifier_labeltype') && regexpr('series', classifier_labeltype)<=0) {
+		if (exists('classifier_bias') && exists('classifier_label_type') && regexpr('series', classifier_label_type)<=0) {
 			res <- sg('get_svm')
 			bias <- abs(res[[1]]-classifier_bias)
 		}
 
 		if (exists('classifier_alpha_sum') && exists('classifier_sv_sum')) {
-			if (exists('classifier_labeltype') && regexpr('series', classifier_labeltype)>0) {
+			if (exists('classifier_label_type') && regexpr('series', classifier_label_type)>0) {
 				for (i in 0:(sg('get_num_svms')-1)) {
 					weights <- t(sg('get_svm', i)[[2]])
 					for (j in 1:length(weights[1,])) {

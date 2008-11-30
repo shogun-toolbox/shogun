@@ -2,13 +2,8 @@ set_distance <- function() {
 	source('util/tobool.R')
 	source('util/fix_distance_name_inconsistency.R')
 
-	if (exists('distance_name')) {
-		dname <- fix_distance_name_inconsistency(distance_name)
-	} else {
-		dname <- fix_distance_name_inconsistency(name)
-	}
-
-	ftype <- toupper(feature_type)
+	dname <- fix_distance_name_inconsistency(distance_name)
+	ftype <- toupper(distance_feature_type)
 
 	if (regexpr('HAMMING', dname)>0) {
 		sg('set_distance', dname, ftype, tobool(distance_arg0_use_sign));

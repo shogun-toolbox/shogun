@@ -3,7 +3,7 @@ distance <- function(filename) {
 	source('util/set_distance.R')
 	source('util/check_accuracy.R')
 
-	if (!set_features()) {
+	if (!set_features('distance_')) {
 		return(TRUE)
 	}
 
@@ -12,12 +12,12 @@ distance <- function(filename) {
 	}
 
 	dmatrix <- sg('get_distance_matrix')
-	dtrain <- max(max(abs(dm_train-dmatrix)))
+	dm_train <- max(max(abs(distance_matrix_train-dmatrix)))
 
 	sg('init_distance', 'TEST')
 	dmatrix <- sg('get_distance_matrix')
-	dtest <- max(max(abs(dm_test-dmatrix)))
+	dm_test <- max(max(abs(distance_matrix_test-dmatrix)))
 
-	data <- list(dtrain, dtest)
-	return(check_accuracy(accuracy, 'distance', data))
+	data <- list(dm_train, dm_test)
+	return(check_accuracy(distance_accuracy, 'distance', data))
 }

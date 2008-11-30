@@ -1,16 +1,20 @@
-convert_features_and_add_preproc <- function() {
-	if (!exists('order', mode='numeric')) {
+convert_features_and_add_preproc <- function(prefix) {
+	if (!exists(paste(prefix, 'order', sep=''), mode='numeric')) {
 		return(FALSE)
 	}
 
-	if (regexpr('Ulong', feature_type)>0) {
+	ftype=eval(parse(text=paste(prefix, 'feature_type', sep='')))
+	if (regexpr('Ulong', ftype)>0) {
 		type <- 'ULONG'
-	} else if (regexpr('Word', feature_type)>0) {
+	} else if (regexpr('Word', ftype)>0) {
 		type='WORD'
 	} else {
 		return(FALSE)
 	}
 
+	order=eval(parse(text=paste(prefix, 'order', sep='')))
+	gap=eval(parse(text=paste(prefix, 'gap', sep='')))
+	reverse=eval(parse(text=paste(prefix, 'reverse', sep='')))
 	sg('add_preproc', paste('SORT', type, 'STRING', sep=''))
 	sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', type,
 		order, order-1, gap, reverse)
