@@ -7,6 +7,8 @@ function y = distribution(filename)
 	eval('globals'); % ugly hack to have vars from filename as globals
 	eval(filename);
 
+	Math_init_random(init_random);
+
 	if ~set_features('distribution_')
 		return;
 	end

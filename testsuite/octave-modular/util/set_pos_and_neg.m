@@ -13,7 +13,9 @@ function y = set_pos_and_neg(prefix)
 	global CUBE;
 	global HMM;
 	global BW_NORMAL;
+	global init_random;
 
+	Math_init_random(init_random);
 	N=eval(sprintf([prefix, 'N']));
 	M=eval(sprintf([prefix, 'M']));
 	pseudo=eval(sprintf([prefix, 'pseudo']));

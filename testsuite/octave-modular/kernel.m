@@ -7,8 +7,6 @@ function y = kernel(filename)
 	eval('globals'); % ugly hack to have vars from filename as globals
 	eval(filename);
 
-	Math_init_random(init_random);
-
 	if ~set_features('kernel_')
 		return;
 	end

@@ -1,3 +1,5 @@
+global init_random;
+
 global feats_train;
 global feats_test;
 
