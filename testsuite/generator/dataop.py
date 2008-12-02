@@ -4,29 +4,16 @@ import sys
 import md5
 import string
 import numpy
-import numpy.random as random
+from numpy import random, round
 from shogun.Features import Labels
 
 NUM_VEC_TRAIN=11
 NUM_VEC_TEST=17
 LEN_SEQ=60
 INIT_RANDOM=42
+DIGITS_ROUND=7
 
 _NUM_FEATS=11
-
-
-def _get_seed ():
-	"""Return a somewhat constant seed.
-
-	Need a seed which is always the same for the current entity (kernel,
-	distance, etc) to be computed, but at least different between modules
-	the seed will only change if the module's filename or the name of the
-	function in which the entitity is computed will change.
-	"""
-
-	fcode=sys._getframe(2).f_code
-	hash=reduce(lambda x,y:x+y, map(ord, fcode.co_name+fcode.co_filename))
-	return hash
 
 
 def get_rand (dattype=numpy.double, num_feats=_NUM_FEATS, dim_square=False,
@@ -53,8 +40,8 @@ def get_rand (dattype=numpy.double, num_feats=_NUM_FEATS, dim_square=False,
 
 	if dattype==numpy.double:
 		return {
-			'train':random.rand(num_feats, num_vec_train),
-			'test':random.rand(num_feats, num_vec_test)
+			'train':round(random.rand(num_feats, num_vec_train), DIGITS_ROUND),
+			'test':round(random.rand(num_feats, num_vec_test), DIGITS_ROUND)
 		}
 	elif dattype==numpy.chararray:
 		ord_a=ord('A')
@@ -100,10 +87,12 @@ def get_clouds (num_clouds, num_feats=_NUM_FEATS):
 	data=[random.rand(num_feats, NUM_VEC_TRAIN)+x/2 for x in xrange(num_clouds)]
 	clouds['train']=numpy.concatenate(data, axis=1)
 	clouds['train']=numpy.array([random.permutation(x) for x in clouds['train']])
+	clouds['train']=round(clouds['train'], DIGITS_ROUND)
 
 	data=[random.rand(num_feats, NUM_VEC_TEST)+x/2 for x in xrange(num_clouds)]
 	clouds['test']=numpy.concatenate(data, axis=1)
 	clouds['test']=numpy.array([random.permutation(x) for x in clouds['test']])
+	clouds['test']=round(clouds['test'], DIGITS_ROUND)
 
 	return clouds
 
