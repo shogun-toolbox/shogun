@@ -1279,8 +1279,8 @@ void CSVMLight::compute_matrices_for_optimization_parallel(
 		}
 		ASSERT(Knum<=varnum*(varnum+1)/2);
 
-		pthread_t threads[parallel.get_num_threads()-1];
-		S_THREAD_PARAM_KERNEL params[parallel.get_num_threads()-1];
+		pthread_t* threads = new pthread_t[parallel.get_num_threads()-1];
+		S_THREAD_PARAM_KERNEL* params = new S_THREAD_PARAM_KERNEL[parallel.get_num_threads()-1];
 		int32_t step= Knum/parallel.get_num_threads();
 		//SG_DEBUG( "\nkernel-step size: %i\n", step) ;
 		for (int32_t t=0; t<parallel.get_num_threads()-1; t++)
@@ -1298,6 +1298,9 @@ void CSVMLight::compute_matrices_for_optimization_parallel(
 
 		for (int32_t t=0; t<parallel.get_num_threads()-1; t++)
 			pthread_join(threads[t], NULL);
+
+		delete[] params;
+		delete[] threads;
 
 		Knum=0 ;
 		for (i=0;i<varnum;i++) {
@@ -2073,8 +2076,8 @@ void CSVMLight::update_linear_component_mkl_linadd(
 #ifndef WIN32
 		else
 		{
-			pthread_t threads[parallel.get_num_threads()-1];
-			S_THREAD_PARAM params[parallel.get_num_threads()-1];
+			pthread_t* threads = new pthread_t[parallel.get_num_threads()-1];
+			S_THREAD_PARAM* params = new S_THREAD_PARAM[parallel.get_num_threads()-1];
 			int32_t step= num/parallel.get_num_threads();
 
 			for (int32_t t=0; t<parallel.get_num_threads()-1; t++)
@@ -2091,6 +2094,9 @@ void CSVMLight::update_linear_component_mkl_linadd(
 
 			for (int32_t t=0; t<parallel.get_num_threads()-1; t++)
 				pthread_join(threads[t], NULL);
+
+			delete[] params;
+			delete[] threads;
 		}
 #endif
 
@@ -2491,8 +2497,8 @@ void CSVMLight::update_linear_component(
 					int32_t num_elem = 0 ;
 					for (jj=0;(j=active2dnum[jj])>=0;jj++) num_elem++ ;
 
-					pthread_t threads[parallel.get_num_threads()-1] ;
-					S_THREAD_PARAM params[parallel.get_num_threads()-1] ;
+					pthread_t* threads = new pthread_t[parallel.get_num_threads()-1] ;
+					S_THREAD_PARAM* params = new S_THREAD_PARAM[parallel.get_num_threads()-1] ;
 					int32_t start = 0 ;
 					int32_t step = num_elem/parallel.get_num_threads();
 					int32_t end = step ;
@@ -2516,6 +2522,9 @@ void CSVMLight::update_linear_component(
 					void* ret;
 					for (int32_t t=0; t<parallel.get_num_threads()-1; t++)
 						pthread_join(threads[t], &ret) ;
+
+					delete[] params;
+					delete[] threads;
 				}
 #endif
 			}
@@ -2943,8 +2952,8 @@ void CSVMLight::reactivate_inactive_examples(
 #ifndef WIN32
 			  else
 			  {
-				  pthread_t threads[num_threads-1];
-				  S_THREAD_PARAM_REACTIVATE_LINADD params[num_threads];
+				  pthread_t* threads = new pthread_t[num_threads-1];
+				  S_THREAD_PARAM_REACTIVATE_LINADD* params = new S_THREAD_PARAM_REACTIVATE_LINADD[num_threads];
 				  int32_t step= totdoc/num_threads;
 
 				  for (t=0; t<num_threads-1; t++)
@@ -2971,6 +2980,8 @@ void CSVMLight::reactivate_inactive_examples(
 				  for (t=0; t<num_threads-1; t++)
 					  pthread_join(threads[t], NULL);
 
+				  delete[] threads;
+				  delete[] params;
 			  }
 #endif
 
@@ -3080,8 +3091,8 @@ void CSVMLight::reactivate_inactive_examples(
 			
 			  if (num_changed>0)
 			  {
-				  pthread_t threads[num_threads-1];
-				  S_THREAD_PARAM_REACTIVATE_VANILLA params[num_threads];
+				  pthread_t* threads= new pthread_t[num_threads-1];
+				  S_THREAD_PARAM_REACTIVATE_VANILLA* params = new S_THREAD_PARAM_REACTIVATE_VANILLA[num_threads];
 				  int32_t step= num_changed/num_threads;
 
 				  // alloc num_threads many tmp buffers
@@ -3132,6 +3143,8 @@ void CSVMLight::reactivate_inactive_examples(
 
 				  delete[] tmp_lin;
 				  delete[] tmp_aicache;
+				  delete[] threads;
+				  delete[] params;
 			  }
 		  }
 #endif
