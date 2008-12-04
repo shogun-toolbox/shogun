@@ -19,7 +19,7 @@
  * on word-features (makes sense for strings of same length mapped to word
  * features). It is computed as
  * \f[
- * k({\bf x},{\bf x'})= \sum_{i=0}^L I(x_i=x'_i)+c)^d
+ * k({\bf x},{\bf x'})= (\sum_{i=0}^L I(x_i=x'_i)+c)^d
  * \f]
  *
  * where I is the indicator function which evaluates to 1 if its argument is
