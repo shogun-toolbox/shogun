@@ -13,8 +13,8 @@ aa=(round(len/2-num_a/2)):(round(len/2+num_a/2-1));
 C=1;
 
 %Weighted Degree kernel parameters
-order=5;
-max_order=5;
+order=4;   % of spectrum kernel
+max_order=4;  % of POIMs
 
 rand('state',1);
 acgt='ACGT';
@@ -144,6 +144,7 @@ l=0;
 for i=1:max_order,
 	L=l+4^i;
 	x{i}=W((l+1):L);
+	x{i} = x{i} - mean(x{i});
 	l=L;
 	X(i)=max(abs(x{i}));
 end
@@ -160,3 +161,20 @@ for i=1:max_order,
 	%foo
 	max(abs(foo(:,1)-foo(:,2)))
 end
+
+
+for i=1:max_order,
+	figure(200+i);
+	t1= x{i};
+	t2 = xx{i}';
+	[m1,i1] = max( t1 );
+	[m2,i2] = max( t2 );
+	assert( i1 == i2 );
+	t1(i1) = [];
+	t2(i2) = [];
+	plot( t1, t2, 'LineStyle', 'none', 'Marker', 'x', 'LineWidth', 2, 'MarkerSize', 5 );
+	grid on;
+	fprintf( 'scaling %.2f\n', m1/m2 );
+end
+
+
