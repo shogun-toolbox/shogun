@@ -53,39 +53,39 @@ class CIO;
 
 // printf like funktions (with additional severity level)
 // for object derived from CSGObject
-#define SG_DEBUG(x...) CSGObject::io.message(M_DEBUG,x)
-#define SG_INFO(x...) CSGObject::io.message(M_INFO,x)
-#define SG_WARNING(x...) CSGObject::io.message(M_WARN,x)
-#define SG_ERROR(x...) CSGObject::io.message(M_ERROR,x)
-#define SG_PRINT(x...) CSGObject::io.message(M_MESSAGEONLY,x)
+#define SG_DEBUG(...) CSGObject::io.message(M_DEBUG, __VA_ARGS__)
+#define SG_INFO(...) CSGObject::io.message(M_INFO, __VA_ARGS__)
+#define SG_WARNING(...) CSGObject::io.message(M_WARN, __VA_ARGS__)
+#define SG_ERROR(...) CSGObject::io.message(M_ERROR, __VA_ARGS__)
+#define SG_PRINT(...) CSGObject::io.message(M_MESSAGEONLY, __VA_ARGS__)
 #define SG_NOTIMPLEMENTED CSGObject::io.not_implemented()
 
-#define SG_PROGRESS(x...) CSGObject::io.progress(x)
-#define SG_ABS_PROGRESS(x...) CSGObject::io.absolute_progress(x)
+#define SG_PROGRESS(...) CSGObject::io.progress(__VA_ARGS__)
+#define SG_ABS_PROGRESS(...) CSGObject::io.absolute_progress(__VA_ARGS__)
 #define SG_DONE() CSGObject::io.done()
 
 #ifndef HAVE_SWIG
 extern CIO* sg_io;
 // printf like function using the global sg_io object
-#define SG_SDEBUG(x...) sg_io->message(M_DEBUG,x)
-#define SG_SINFO(x...) sg_io->message(M_INFO,x)
-#define SG_SWARNING(x...) sg_io->message(M_WARN,x)
-#define SG_SERROR(x...) sg_io->message(M_ERROR,x)
-#define SG_SPRINT(x...) sg_io->message(M_MESSAGEONLY,x)
-#define SG_SPROGRESS(x...) sg_io->progress(x)
-#define SG_SABS_PROGRESS(x...) sg_io->absolute_progress(x)
+#define SG_SDEBUG(...) sg_io->message(M_DEBUG,__VA_ARGS__)
+#define SG_SINFO(...) sg_io->message(M_INFO,__VA_ARGS__)
+#define SG_SWARNING(...) sg_io->message(M_WARN,__VA_ARGS__)
+#define SG_SERROR(...) sg_io->message(M_ERROR,__VA_ARGS__)
+#define SG_SPRINT(...) sg_io->message(M_MESSAGEONLY,__VA_ARGS__)
+#define SG_SPROGRESS(...) sg_io->progress(__VA_ARGS__)
+#define SG_SABS_PROGRESS(...) sg_io->absolute_progress(__VA_ARGS__)
 #define SG_SDONE() sg_io->done()
 #define SG_SNOTIMPLEMENTED sg_io->not_implemented()
 #else
 extern CIO sg_io;
 // printf like function using the global sg_io object
-#define SG_SDEBUG(x...) sg_io.message(M_DEBUG,x)
-#define SG_SINFO(x...) sg_io.message(M_INFO,x)
-#define SG_SWARNING(x...) sg_io.message(M_WARN,x)
-#define SG_SERROR(x...) sg_io.message(M_ERROR,x)
-#define SG_SPRINT(x...) sg_io.message(M_MESSAGEONLY,x)
-#define SG_SPROGRESS(x...) sg_io.progress(x)
-#define SG_SABS_PROGRESS(x...) sg_io.absolute_progress(x)
+#define SG_SDEBUG(...) sg_io.message(M_DEBUG, __VA_ARGS__)
+#define SG_SINFO(...) sg_io.message(M_INFO, __VA_ARGS__)
+#define SG_SWARNING(...) sg_io.message(M_WARN, __VA_ARGS__)
+#define SG_SERROR(...) sg_io.message(M_ERROR, __VA_ARGS__)
+#define SG_SPRINT(...) sg_io.message(M_MESSAGEONLY, __VA_ARGS__)
+#define SG_SPROGRESS(...) sg_io.progress(__VA_ARGS__)
+#define SG_SABS_PROGRESS(...) sg_io.absolute_progress(__VA_ARGS__)
 #define SG_SDONE() sg_io.done()
 #define SG_SNOTIMPLEMENTED sg_io.not_implemented()
 #endif
