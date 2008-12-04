@@ -1,4 +1,4 @@
-set_kernel <- function() {
+get_kernel <- function() {
 	source('util/tobool.R')
 	source('util/fix_kernel_name_inconsistency.R')
 	source('util/fix_normalizer_name_inconsistency.R')
