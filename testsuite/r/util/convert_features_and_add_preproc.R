@@ -3,18 +3,18 @@ convert_features_and_add_preproc <- function(prefix) {
 		return(FALSE)
 	}
 
-	ftype=eval(parse(text=paste(prefix, 'feature_type', sep='')))
+	ftype <- eval(parse(text=paste(prefix, 'feature_type', sep='')))
 	if (regexpr('Ulong', ftype)>0) {
 		type <- 'ULONG'
 	} else if (regexpr('Word', ftype)>0) {
-		type='WORD'
+		type <- 'WORD'
 	} else {
 		return(FALSE)
 	}
 
-	order=eval(parse(text=paste(prefix, 'order', sep='')))
-	gap=eval(parse(text=paste(prefix, 'gap', sep='')))
-	reverse=eval(parse(text=paste(prefix, 'reverse', sep='')))
+	order <- eval(parse(text=paste(prefix, 'order', sep='')))
+	gap <- eval(parse(text=paste(prefix, 'gap', sep='')))
+	reverse <- eval(parse(text=paste(prefix, 'reverse', sep='')))
 	sg('add_preproc', paste('SORT', type, 'STRING', sep=''))
 	sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', type,
 		order, order-1, gap, reverse)
