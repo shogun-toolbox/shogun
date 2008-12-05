@@ -9,6 +9,9 @@ check_accuracy <- function(accuracy, type, data) {
 		print(paste('merge_distances:', data[1], ', pairs:', data[2], '<--- accuracy', accuracy))
 	} else if (regexpr(type, 'kernel')>0) {
 		print(paste('ktrain:', data[1], ', ktest:', data[2], '<--- accuracy', accuracy))
+	} else if (regexpr(type, 'custom')>0) {
+		print(paste('triangletriangle:', data[1], ', fulltriangle:', data[2],
+			', fullfull:', data[3], '<--- accuracy', accuracy))
 	} else if (regexpr(type, 'kmeans')>0) {
 		print(paste('centers:', data[1], ', radi:', data[2], '<--- accuracy', accuracy))
 	} else {

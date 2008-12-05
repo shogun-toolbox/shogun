@@ -4,15 +4,14 @@ distance <- function(filename) {
 	source('util/check_accuracy.R')
 
 	feats <- get_features('distance_')
-	if (typeof(feats)=='logical' && !feats) {
+	if (typeof(feats)=='logical') {
 		return(TRUE)
 	}
 
 	distance <- get_distance(feats)
-	if (typeof(distance)=='logical' && !distance) {
+	if (typeof(distance)=='logical') {
 		return(TRUE)
 	}
-
 
 	dmatrix <- distance$get_distance_matrix()
 	dm_train <- max(max(abs(distance_matrix_train-dmatrix)))

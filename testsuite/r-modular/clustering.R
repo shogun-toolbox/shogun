@@ -4,12 +4,12 @@ clustering <- function(filename) {
 	source('util/check_accuracy.R')
 
 	feats <- get_features('distance_')
-	if (typeof(feats)=='logical' && !feats) {
+	if (typeof(feats)=='logical') {
 		return(TRUE)
 	}
 
 	distance <- get_distance(feats)
-	if (typeof(distance)=='logical' && !distance) {
+	if (typeof(distance)=='logical') {
 		return(TRUE)
 	}
 
