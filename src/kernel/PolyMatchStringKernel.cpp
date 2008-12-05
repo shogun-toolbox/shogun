@@ -68,5 +68,5 @@ float64_t CPolyMatchStringKernel::compute(int32_t idx_a, int32_t idx_b)
 		if (avec[i]==bvec[i])
 			sum++;
 	}
-	return pow(sum, degree);
+	return CMath::pow((float64_t) sum, degree);
 }

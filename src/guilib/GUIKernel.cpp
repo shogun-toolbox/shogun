@@ -369,7 +369,7 @@ float64_t* CGUIKernel::get_weights(int32_t order, int32_t max_mismatch)
 			if (j<i+1)
 			{
 				int32_t nk=CMath::nchoosek(i+1, j);
-				weights[i+j*order]=weights[i]/(nk*pow(3, j));
+				weights[i+j*order]=weights[i]/(nk*CMath::pow(3, j));
 			}
 			else
 				weights[i+j*order]=0;

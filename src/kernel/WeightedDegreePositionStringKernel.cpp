@@ -318,7 +318,7 @@ bool CWeightedDegreePositionStringKernel::delete_optimization()
 float64_t CWeightedDegreePositionStringKernel::compute_with_mismatch(
 	char* avec, int32_t alen, char* bvec, int32_t blen)
 {
-	float64_t max_shift_vec[max_shift];
+	float64_t* max_shift_vec= new float64_t[max_shift];
     float64_t sum0=0 ;
     for (int32_t i=0; i<max_shift; i++)
 		max_shift_vec[i]=0 ;
@@ -391,13 +391,14 @@ float64_t CWeightedDegreePositionStringKernel::compute_with_mismatch(
     for (int32_t i=0; i<max_shift; i++)
 		result += max_shift_vec[i]/(2*(i+1)) ;
 	
+	delete[] max_shift_vec;
     return result ;
 }
 
 float64_t CWeightedDegreePositionStringKernel::compute_without_mismatch(
 	char* avec, int32_t alen, char* bvec, int32_t blen) 
 {
-	float64_t max_shift_vec[max_shift];
+	float64_t* max_shift_vec = new float64_t[max_shift];
 	float64_t sum0=0 ;
 	for (int32_t i=0; i<max_shift; i++)
 		max_shift_vec[i]=0 ;
@@ -455,13 +456,14 @@ float64_t CWeightedDegreePositionStringKernel::compute_without_mismatch(
 	for (int32_t i=0; i<max_shift; i++)
 		result += max_shift_vec[i]/(2*(i+1)) ;
 
+	delete[] max_shift_vec;
 	return result ;
 }
 
 float64_t CWeightedDegreePositionStringKernel::compute_without_mismatch_matrix(
 	char* avec, int32_t alen, char* bvec, int32_t blen) 
 {
-	float64_t max_shift_vec[max_shift];
+	float64_t* max_shift_vec = new float64_t[max_shift];
 	float64_t sum0=0 ;
 	for (int32_t i=0; i<max_shift; i++)
 		max_shift_vec[i]=0 ;
@@ -518,6 +520,7 @@ float64_t CWeightedDegreePositionStringKernel::compute_without_mismatch_matrix(
 	for (int32_t i=0; i<max_shift; i++)
 		result += max_shift_vec[i]/(2*(i+1)) ;
 
+	delete[] max_shift_vec;
 	return result ;
 }
 
@@ -525,7 +528,7 @@ float64_t CWeightedDegreePositionStringKernel::compute_without_mismatch_position
 	char* avec, float64_t* pos_weights_lhs, int32_t alen, char* bvec,
 	float64_t* pos_weights_rhs, int32_t blen)
 {
-	float64_t max_shift_vec[max_shift];
+	float64_t* max_shift_vec = new float64_t[max_shift];
 	float64_t sum0=0 ;
 	for (int32_t i=0; i<max_shift; i++)
 		max_shift_vec[i]=0 ;
@@ -596,6 +599,7 @@ float64_t CWeightedDegreePositionStringKernel::compute_without_mismatch_position
 	for (int32_t i=0; i<max_shift; i++)
 		result += max_shift_vec[i]/(2*(i+1)) ;
 
+	delete[] max_shift_vec;
 	return result ;
 }
 
@@ -863,7 +867,7 @@ bool CWeightedDegreePositionStringKernel::set_wd_weights()
 				if (j<i+1)
 				{
 					int32_t nk=CMath::nchoosek(i+1, j);
-					weights[i+j*degree]=weights[i]/(nk*pow(3,j));
+					weights[i+j*degree]=weights[i]/(nk*CMath::pow(3.0,j));
 				}
 				else
 					weights[i+j*degree]= 0;
@@ -1037,7 +1041,7 @@ bool CWeightedDegreePositionStringKernel::init_block_weights_from_wd()
 
 		for (k=0; k<degree; k++)
 			block_weights[k]=
-				(-pow(k, 3)+(3*d-3)*pow(k, 2)+(9*d-2)*k+6*d)/(3*d*(d+1));
+				(-CMath::pow(k, 3)+(3*d-3)*CMath::pow(k, 2)+(9*d-2)*k+6*d)/(3*d*(d+1));
 		for (k=degree; k<seq_length; k++)
 			block_weights[k]=(-d+3*k+4)/3;
 	}
@@ -1160,10 +1164,10 @@ bool CWeightedDegreePositionStringKernel::init_block_weights_log()
 	if (block_weights)
 	{
 		for (int32_t i=1; i<degree+1 ; i++)
-			block_weights[i-1]=pow(log(i),2);
+			block_weights[i-1]=CMath::pow(CMath::log((float64_t) i),2);
 
 		for (int32_t i=degree+1; i<seq_length+1 ; i++)
-			block_weights[i-1]=i-degree+1+pow(log(degree+1),2);
+			block_weights[i-1]=i-degree+1+CMath::pow(CMath::log(degree+1.0),2);
 	}
 
 	return (block_weights!=NULL);
@@ -1412,7 +1416,7 @@ float64_t* CWeightedDegreePositionStringKernel::compute_scoring(
 	int32_t bigtabSize=0;
 	for (k=0; k<max_degree; ++k )
 	{
-		nofsKmers[k]=(int32_t) pow(num_sym, k+1);
+		nofsKmers[k]=(int32_t) CMath::pow(num_sym, k+1);
 		const int32_t tabSize=nofsKmers[k]*num_feat;
 		bigtabSize+=tabSize;
 	}
@@ -1487,7 +1491,7 @@ float64_t* CWeightedDegreePositionStringKernel::compute_scoring(
 		// --- add partial overlap scores
 		if( k > 0 ) {
 			const int32_t j = k - 1;
-			const int32_t nofJmers = (int32_t) pow( num_sym, j+1 );
+			const int32_t nofJmers = (int32_t) CMath::pow( num_sym, j+1 );
 			for(int32_t p = 0; p < num_feat; ++p ) {
 				const int32_t offsetJ = nofJmers * p;
 				const int32_t offsetJ1 = nofJmers * (p+1);
@@ -1688,7 +1692,7 @@ float64_t* CWeightedDegreePositionStringKernel::extract_w(
   offset = 0;
   for( k = 0; k < max_degree; ++k ) {
     offsets[k] = offset;
-    const int32_t nofsKmers = (int32_t) pow( NUM_SYMS, k+1 );
+    const int32_t nofsKmers = (int32_t) CMath::pow( NUM_SYMS, k+1 );
     const int32_t tabSize = nofsKmers * seqLen;
     offset += tabSize;
   }
@@ -1790,7 +1794,7 @@ float64_t* CWeightedDegreePositionStringKernel::compute_POIM(
   offset = 0;
   for( k = 0; k < max_degree; ++k ) {
     offsets[k] = offset;
-    const int32_t nofsKmers = (int32_t) pow( NUM_SYMS, k+1 );
+    const int32_t nofsKmers = (int32_t) CMath::pow( NUM_SYMS, k+1 );
     const int32_t tabSize = nofsKmers * seqLen;
     offset += tabSize;
   }
@@ -1815,8 +1819,8 @@ float64_t* CWeightedDegreePositionStringKernel::compute_POIM(
   if( debug==0 || debug==1 ) {
     poim_tries.POIMs_extract_W( subs, max_degree );
     for( k = 1; k < max_degree; ++k ) {
-      const int32_t nofKmers2 = ( k > 1 ) ? (int32_t) pow(NUM_SYMS,k-1) : 0;
-      const int32_t nofKmers1 = (int32_t) pow( NUM_SYMS, k );
+      const int32_t nofKmers2 = ( k > 1 ) ? (int32_t) CMath::pow(NUM_SYMS,k-1) : 0;
+      const int32_t nofKmers1 = (int32_t) CMath::pow( NUM_SYMS, k );
       const int32_t nofKmers0 = nofKmers1 * NUM_SYMS;
       for( i = 0; i < seqLen; ++i ) {
 	float64_t* const subs_k2i1 = ( k>1 && i<seqLen-1 ) ? &subs[k-2][(i+1)*nofKmers2] : NULL;

@@ -5572,12 +5572,13 @@ bool CSGInterface::cmd_precompute_content_svms()
 	float64_t* weights = ui_structure->get_content_svm_weights();
 	int32_t Mweights = h->get_num_svms();
 	int32_t Nweights = ui_structure->get_num_svm_weights();
-	uint16_t** wordstr[Mweights];
+	uint16_t*** wordstr = new uint16_t**[Mweights];
 	h->create_word_string(seq, (int32_t) 1, Nseq, wordstr);
 	h->init_content_svm_value_array(Npos);
 	h->precompute_content_values(wordstr, all_pos, Npos, Nseq, weights, Nweights*Mweights);
 	h->set_genestr_len(Nseq);
 	SG_DEBUG("precompute_content_svms done\n");
+	delete[] wordstr;
 	return true;
 }
 bool CSGInterface::cmd_precompute_tiling_features()
@@ -6214,6 +6215,7 @@ bool CSGInterface::cmd_system()
 bool CSGInterface::cmd_exit()
 {
 	exit(0);
+	return 0; //never reached but necessary to keep sun compiler happy
 }
 
 bool CSGInterface::cmd_exec()

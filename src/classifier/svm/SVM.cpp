@@ -349,8 +349,8 @@ CLabels* CSVM::classify(CLabels* lab)
 #ifndef WIN32
 			else
 			{
-				pthread_t threads[num_threads-1];
-				S_THREAD_PARAM params[num_threads];
+				pthread_t* threads = new pthread_t[num_threads-1];
+				S_THREAD_PARAM* params = new S_THREAD_PARAM[num_threads];
 				int32_t step= num_vectors/num_threads;
 
 				int32_t t;
@@ -375,6 +375,9 @@ CLabels* CSVM::classify(CLabels* lab)
 
 				for (t=0; t<num_threads-1; t++)
 					pthread_join(threads[t], NULL);
+
+				delete[] params;
+				delete[] threads;
 			}
 #endif
 		}

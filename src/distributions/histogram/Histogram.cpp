@@ -109,7 +109,7 @@ float64_t CHistogram::get_log_derivative(int32_t num_param, int32_t num_example)
 		}
 
 		if (num_occurences>0)
-			deriv+=log(num_occurences)-hist[num_param];
+			deriv+=CMath::log((float64_t) num_occurences)-hist[num_param];
 		else
 			deriv=-CMath::INFTY;
 

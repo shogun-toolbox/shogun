@@ -404,8 +404,8 @@ void CCombinedKernel::emulate_compute_batch(
 #ifndef WIN32
 			else
 			{
-				pthread_t threads[num_threads-1];
-				S_THREAD_PARAM params[num_threads];
+				pthread_t* threads = new pthread_t[num_threads-1];
+				S_THREAD_PARAM* params = new S_THREAD_PARAM[num_threads];
 				int32_t step= num_vec/num_threads;
 
 				int32_t t;
@@ -430,6 +430,8 @@ void CCombinedKernel::emulate_compute_batch(
 				for (t=0; t<num_threads-1; t++)
 					pthread_join(threads[t], NULL);
 
+				delete[] params;
+				delete[] threads;
 			}
 #endif
 
@@ -462,8 +464,8 @@ void CCombinedKernel::emulate_compute_batch(
 #ifndef WIN32
 			else
 			{
-				pthread_t threads[num_threads-1];
-				S_THREAD_PARAM params[num_threads];
+				pthread_t* threads = new pthread_t[num_threads-1];
+				S_THREAD_PARAM* params = new S_THREAD_PARAM[num_threads];
 				int32_t step= num_vec/num_threads;
 
 				int32_t t;
@@ -494,6 +496,8 @@ void CCombinedKernel::emulate_compute_batch(
 				for (t=0; t<num_threads-1; t++)
 					pthread_join(threads[t], NULL);
 
+				delete[] params;
+				delete[] threads;
 			}
 #endif
 		}

@@ -545,10 +545,10 @@ void CKernel::cache_multiple_kernel_rows(int32_t* rows, int32_t num_rows)
 	else
 	{
 		// fill up kernel cache 
-		int32_t uncached_rows[num_rows];
-		KERNELCACHE_ELEM* cache[num_rows];
-		pthread_t threads[parallel.get_num_threads()-1];
-		S_KTHREAD_PARAM params[parallel.get_num_threads()-1];
+		int32_t* uncached_rows = new int32_t[num_rows];
+		KERNELCACHE_ELEM** cache = new KERNELCACHE_ELEM*[num_rows];
+		pthread_t* threads = new pthread_t[parallel.get_num_threads()-1];
+		S_KTHREAD_PARAM* params = new S_KTHREAD_PARAM[parallel.get_num_threads()-1];
 		int32_t num_threads=parallel.get_num_threads()-1;
 		int32_t num_vec=lhs->get_num_vectors();
 		ASSERT(num_vec>0);
@@ -633,6 +633,10 @@ void CKernel::cache_multiple_kernel_rows(int32_t* rows, int32_t num_rows)
 		}
 
 		delete[] needs_computation;
+		delete[] params;
+		delete[] threads;
+		delete[] cache;
+		delete[] uncached_rows;
 	}
 #endif
 }

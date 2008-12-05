@@ -584,7 +584,7 @@ bool CWeightedDegreeStringKernel::set_wd_weights_by_type(EWDKernType p_type)
 				if (j<i+1)
 				{
 					int32_t nk=CMath::nchoosek(i+1, j);
-					weights[i+j*degree]=weights[i]/(nk*pow(3,j));
+					weights[i+j*degree]=weights[i]/(nk*CMath::pow(3.0,j));
 				}
 				else
 					weights[i+j*degree]= 0;
@@ -674,7 +674,7 @@ bool CWeightedDegreeStringKernel::init_block_weights_from_wd()
 
 		for (k=0; k<degree; k++)
 			block_weights[k]=
-				(-pow(k, 3)+(3*d-3)*pow(k, 2)+(9*d-2)*k+6*d)/(3*d*(d+1));
+				(-CMath::pow(k, 3)+(3*d-3)*CMath::pow(k, 2)+(9*d-2)*k+6*d)/(3*d*(d+1));
 		for (k=degree; k<seq_length; k++)
 			block_weights[k]=(-d+3*k+4)/3;
 	}
@@ -797,10 +797,10 @@ bool CWeightedDegreeStringKernel::init_block_weights_log()
 	if (block_weights)
 	{
 		for (int32_t i=1; i<degree+1 ; i++)
-			block_weights[i-1]=pow(log(i),2);
+			block_weights[i-1]=CMath::pow(CMath::log((float64_t) i),2);
 
 		for (int32_t i=degree+1; i<seq_length+1 ; i++)
-			block_weights[i-1]=i-degree+1+pow(log(degree+1),2);
+			block_weights[i-1]=i-degree+1+CMath::pow(CMath::log(degree+1.0),2);
 	}
 
 	return (block_weights!=NULL);
@@ -941,8 +941,8 @@ void CWeightedDegreeStringKernel::compute_batch(
 		for (int32_t j=0; j<num_feat && !CSignal::cancel_computations(); j++)
 		{
 			init_optimization(num_suppvec, IDX, alphas, j);
-			pthread_t threads[num_threads-1];
-			S_THREAD_PARAM params[num_threads];
+			pthread_t* threads = new pthread_t[num_threads-1];
+			S_THREAD_PARAM* params = new S_THREAD_PARAM[num_threads];
 			int32_t step= num_vec/num_threads;
 			int32_t t;
 
@@ -977,6 +977,9 @@ void CWeightedDegreeStringKernel::compute_batch(
 			for (t=0; t<num_threads-1; t++)
 				pthread_join(threads[t], NULL);
 			SG_PROGRESS(j,0,num_feat);
+
+			delete[] params;
+			delete[] threads;
 		}
 	}
 #endif

@@ -121,8 +121,8 @@ void CKMeans::sqdist(
 {
 	const int32_t num_threads=parallel.get_num_threads();
 	int32_t nc, n2_nc = n2/num_threads;
-	struct thread_data TD[num_threads];
-	pthread_t tid[num_threads];
+	thread_data* TD = new thread_data[num_threads];
+	pthread_t* tid = new pthread_t[num_threads];
 	void *status;
 
 	/* prepare the structure */
@@ -158,6 +158,9 @@ void CKMeans::sqdist(
 		TD[0].js=0 ; TD[0].je=n2;
 		sqdist_thread_func((void *)&TD[0]);
 	}
+
+	delete[] tid;
+	delete[] TD;
 }
 
 void CKMeans::clustknb(bool use_old_mus, float64_t *mus_start)

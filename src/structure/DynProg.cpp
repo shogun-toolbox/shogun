@@ -274,8 +274,8 @@ void CDynProg::precompute_tiling_plifs(
 	}*/
 	ASSERT(num_tiling_plifs==num_svms)
 
-	float64_t tiling_plif[num_svms];
-	float64_t svm_value[2*num_svms];
+	float64_t* tiling_plif = new float64_t[num_svms];
+	float64_t* svm_value = new float64_t[2*num_svms];
 	for (int32_t i=0; i<num_svms; i++)
 		tiling_plif[i]=0.0;
 
@@ -310,6 +310,8 @@ void CDynProg::precompute_tiling_plifs(
 	//int32_t nummm = raw_intensities_interval_query(1000, 1025, intensities);
 	//SG_PRINT("nummm:%i\n",nummm);
 
+	delete[] svm_value;
+	delete[] tiling_plif;
 }
 
 void CDynProg::create_word_string(
@@ -3044,7 +3046,7 @@ void CDynProg::best_path_trans_deriv(
 	//transition_matrix_a_id.display_array() ;
 	
 	{ // compute derivatives for given path
-		float64_t svm_value[2*num_svms] ;
+		float64_t* svm_value = new float64_t[2*num_svms] ;
 		for (int32_t s=0; s<2*num_svms; s++)
 			svm_value[s]=0 ;
 		
@@ -3166,7 +3168,7 @@ void CDynProg::best_path_trans_deriv(
 				{
 					for (int32_t s=0;s<num_svms;s++)
 						svm_value[s]=-CMath::INFTY;
-					float64_t intensities[m_num_probes];
+					float64_t* intensities = new float64_t[m_num_probes];
 					int32_t num_intensities = raw_intensities_interval_query(pos[from_pos], pos[to_pos],intensities);
 					//SG_PRINT("pos[from_pos]:%i, pos[to_pos]:%i, num_intensities:%i\n",pos[from_pos],pos[to_pos], num_intensities);
 					for (int32_t k=0;k<num_intensities;k++)
@@ -3176,6 +3178,8 @@ void CDynProg::best_path_trans_deriv(
 						PEN.element(to_state, from_state)->penalty_add_derivative(-CMath::INFTY, svm_value) ;	
 						
 					}
+
+					delete[] intensities;
 				}
 			}
 #ifdef DYNPROG_DEBUG
@@ -3226,6 +3230,7 @@ void CDynProg::best_path_trans_deriv(
 //#endif
 		clear_svm_values(svs);
 		clear_segment_loss(loss);
+		delete[] svm_value;
 	}
 
 	

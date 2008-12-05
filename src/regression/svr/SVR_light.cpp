@@ -1081,8 +1081,8 @@ void CSVRLight::update_linear_component(
 					int32_t num_elem = 0 ;
 					for(jj=0;(j=active2dnum[jj])>=0;jj++) num_elem++ ;
 
-					pthread_t threads[parallel.get_num_threads()-1] ;
-					S_THREAD_PARAM params[parallel.get_num_threads()-1] ;
+					pthread_t* threads = new pthread_t[parallel.get_num_threads()-1] ;
+					S_THREAD_PARAM* params = new S_THREAD_PARAM[parallel.get_num_threads()-1] ;
 					int32_t start = 0 ;
 					int32_t step = num_elem/parallel.get_num_threads() ;
 					int32_t end = step ;
@@ -1108,6 +1108,9 @@ void CSVRLight::update_linear_component(
 					void* ret;
 					for (int32_t t=0; t<parallel.get_num_threads()-1; t++)
 						pthread_join(threads[t], &ret) ;
+
+					delete[] params;
+					delete[] threads;
 				}
 #endif
 			}

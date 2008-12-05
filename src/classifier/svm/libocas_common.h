@@ -2,8 +2,8 @@
 #include "lib/io.h"
 
 #define OCAS_PLUS_INF CMath::INFTY
-#define OCAS_CALLOC(x...) calloc(x)
-#define OCAS_FREE(x...) free(x)
+#define OCAS_CALLOC(...) calloc(__VA_ARGS__)
+#define OCAS_FREE(...) free(__VA_ARGS__)
 
 #define INDEX2(ROW,COL,NUM_ROWS) ((COL)*(NUM_ROWS)+(ROW))
 #define MIN(A,B) ((A) > (B) ? (B) : (A))
