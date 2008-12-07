@@ -84,7 +84,7 @@ function y = classifier(filename)
 		classifier=SubGradientSVM(classifier_C, feats_train, lab);
 
 	else
-		error('Unsupported classifier %s', name);
+		error('Unsupported classifier %s', classifier_name);
 	end
 
 	classifier.parallel.set_num_threads(classifier_num_threads);
