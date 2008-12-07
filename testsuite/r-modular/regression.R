@@ -1,58 +1,65 @@
 regression <- function(filename) {
-	return(TRUE)
-
-	source('util/set_features.R')
-	source('util/set_kernel.R')
+	source('util/get_features.R')
+	source('util/get_kernel.R')
 	source('util/check_accuracy.R')
 	source('util/tobool.R')
 
-	if (!set_features('kernel_')) {
+	feats <- get_features('kernel_')
+	if (typeof(feats)=='logical') {
+		return(TRUE)
+	}
+	kernel <- get_kernel(feats)
+	if (typeof(kernel)=='logical') {
 		return(TRUE)
 	}
 
-	if (!set_kernel()) {
-		return(TRUE);
-	}
+	regression_num_threads <- as.integer(regression_num_threads)
+	kernel$parallel$set_num_threads(kernel$parallel, regression_num_threads)
+	lab <- Labels(as.real(regression_labels))
 
-	sg('threads', regression_num_threads)
-	sg('set_labels', 'TRAIN', regression_labels)
-
-	rname <- fix_regression_name_inconsistency(regression_name)
-	try(sg('new_regression', rname))
-
-	if (regexpr('svm', regression_type)>0) {
-		sg('c', regression_C)
-		sg('svm_epsilon', regression_epsilon)
-		sg('svr_tube_epsilon', regression_tube_epsilon)
-	} else if (regexpr('kernelmachine', regression_type)>0) {
-		sg('krr_tau', regression_tau)
+	if (regexpr('KRR', regression_name)>0) {
+		regression <- KRR(regression_tau, kernel, lab)
+	} else if (regexpr('LibSVR', regression_name)>0) {
+		regression <- LibSVR(regression_C, regression_epsilon, kernel, lab)
+		regression$set_tube_epsilon(regression, regression_tube_epsilon)
+	} else if (regexpr('SVRLight', regression_name)) {
+		try(regression <- SVRLight(
+			regression_C, regression_epsilon, kernel, lab))
+		regression$set_tube_epsilon(regression, regression_tube_epsilon)
 	} else {
-		print('Incomplete regression data!')
+		print(paste('Unsupported regression', regression_name))
+		return(FALSE)
 	}
 
-	sg('train_regression')
+	regression$parallel$set_num_threads(
+		regression$parallel, regression_num_threads)
+	regression$train(regression)
+
+	bias <- 0
+	if (exists('regression_bias')) {
+		bias <- abs(regression$get_bias()-regression_bias)
+	}
 
 	alphas <- 0
-	bias <- 0
 	sv <- 0
-	if (exists('regression_bias')) {
-		res <- sg('get_svm')
-
-		bias <- abs(res[[1]]-regression_bias)
-
-		weights <- t(res[[2]])
-		for (i in 1:length(weights[1,]) ){
-			alphas <= alphas + weights[1, i]
+	if (exists('regression_alpha_sum')) {
+		tmp <- regression$get_alphas()
+		for (i in 1:length(tmp) ){
+			alphas <= alphas + tmp[i]
 		}
 		alphas <- abs(alphas-regression_alpha_sum)
-		for (i in 1:length(weights[2,])) {
-			sv <- sv + weights[2, i]
+
+		tmp <- regression$get_support_vectors()
+		for (i in 1:length(tmp)) {
+			sv <- sv + tmp[i]
 		}
 		sv <- abs(sv-regression_sv_sum)
 	}
 
-	sg('init_kernel', 'TEST')
-	classified <- max(abs(sg('classify')-regression_classified))
+	kernel$init(kernel, feats[[1]], feats[[2]])
+	classified <- regression$classify(regression)
+	classified <- max(abs(
+		classified$get_labels(classified)-regression_classified))
 
 	data <- list(alphas, bias, sv, classified)
 	return(check_accuracy(regression_accuracy, 'classifier', data))
