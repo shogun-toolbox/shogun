@@ -13,27 +13,27 @@ fm_train_cube <- as.matrix(read.table('../data/fm_train_cube.dat', colClasses=c(
 # Histogram
 print('Histogram')
 
-order=as.integer(3)
-start=as.integer(order-1)
-gap=as.integer(0)
-reverse=FALSE
+order <- as.integer(3)
+start <- as.integer(order-1)
+gap <- as.integer(0)
+reverse <- FALSE
 
-charfeat=StringCharFeatures("DNA")
-charfeat$set_string_features(charfeat, fm_train_dna)
+charfeat <- StringCharFeatures("DNA")
+dump <- charfeat$set_string_features(charfeat, fm_train_dna)
 feats=StringWordFeatures(charfeat$get_alphabet())
-feats$obtain_from_char(feats, charfeat, start, order, gap, reverse)
+dump <- feats$obtain_from_char(feats, charfeat, start, order, gap, reverse)
 preproc=SortWordString()
-preproc$init(preproc, feats)
-feats$add_preproc(feats, preproc)
-feats$apply_preproc(feats)
+dump <- preproc$init(preproc, feats)
+dump <- feats$add_preproc(feats, preproc)
+dump <- feats$apply_preproc(feats)
 
 histo=Histogram(feats)
-histo$train()
+dump <- histo$train()
 
-histo$get_histogram()
+dump <- histo$get_histogram()
 
-num_examples=feats$get_num_vectors()
-num_param=histo$get_num_model_parameters()
+num_examples <- feats$get_num_vectors()
+num_param <- histo$get_num_model_parameters()
 
 # commented out as this is quite time consuming
 #derivs=matrix(0,num_param, num_examples)
@@ -44,82 +44,85 @@ num_param=histo$get_num_model_parameters()
 #		derivs[j,i]=histo$get_log_derivative(histo, j, i)
 #	}
 #}
-histo$get_log_likelihood(histo, 0)
-histo$get_log_likelihood_sample()
+dump <- histo$get_log_likelihood(histo, as.integer(0))
+dump <- histo$get_log_likelihood_sample()
 
 # Linear HMM
 print('LinearHMM')
 
-order=3
-gap=0
-reverse=FALSE
+order <- as.integer(3)
+start <- as.integer(order-1)
+gap <- as.integer(0)
+reverse <- FALSE
 
-charfeat=StringCharFeatures("DNA")
-charfeat$set_string_features(charfeat, fm_train_dna)
-feats=StringWordFeatures(charfeat$get_alphabet())
-feats$obtain_from_char(feats, charfeat, order-1, order, gap, reverse)
-preproc=SortWordString()
-preproc$init(preproc, feats)
-feats$add_preproc(feats, preproc)
-feats$apply_preproc(feats)
+charfeat <- StringCharFeatures("DNA")
+dump <- charfeat$set_string_features(charfeat, fm_train_dna)
+feats <- StringWordFeatures(charfeat$get_alphabet())
+dump <- feats$obtain_from_char(feats, charfeat, start, order, gap, reverse)
+preproc <- SortWordString()
+dump <- preproc$init(preproc, feats)
+dump <- feats$add_preproc(feats, preproc)
+dump <- feats$apply_preproc(feats)
 
-hmm=LinearHMM(feats)
-hmm$train(hmm)
+hmm <- LinearHMM(feats)
+dump <- hmm$train(hmm)
 
-hmm$get_transition_probs()
+dump <- hmm$get_transition_probs()
 
-num_examples=feats$get_num_vectors()
-num_param=hmm$get_num_model_parameters()
-derivs=matrix(0,num_param, num_examples)
+num_examples <- feats$get_num_vectors()
+num_param <- hmm$get_num_model_parameters()
+derivs <- matrix(0, num_param, num_examples)
 
 for (i in 0:(num_examples-1))
 {
 	for (j in 0:(num_param-1))
 	{
-		derivs[j,i]=hmm$get_log_derivative(hmm, j, i)
+		derivs[j,i] <- hmm$get_log_derivative(hmm, j, i)
 	}
 }
 
-hmm$get_log_likelihood(hmm, 0)
-hmm$get_log_likelihood_sample()
+dump <- hmm$get_log_likelihood(hmm, as.integer(0))
+dump <- hmm$get_log_likelihood_sample()
 
 # HMM
 print('HMM')
 
-N=3
-M=6
-pseudo=1e-1
-order=1
-gap=0
-reverse=FALSE
-num_examples=2
-charfeat=StringCharFeatures("CUBE")
-charfeat$set_string_features(charfeat, fm_train_cube)
-feats=StringWordFeatures(charfeat$get_alphabet())
-feats$obtain_from_char(feats, charfeat, order-1, order, gap, reverse)
-preproc=SortWordString()
-preproc$init(preproc, feats)
-feats$add_preproc(feats, preproc)
-feats$apply_preproc(feats)
+N <- as.integer(3)
+M <- as.integer(6)
+pseudo <- 1e-1
+order <- as.integer(1)
+start <- as.integer(order-1)
+gap <- as.integer(0)
+reverse <- FALSE
+num_examples <- as.integer(2)
 
-hmm=HMM(feats, N, M, pseudo)
-hmm$train(hmm)
-hmm$baum_welch_viterbi_train(hmm, "BW_NORMAL")
+charfeat <- StringCharFeatures("CUBE")
+dump <- charfeat$set_string_features(charfeat, fm_train_cube)
+feats <- StringWordFeatures(charfeat$get_alphabet())
+dump <- feats$obtain_from_char(feats, charfeat, start, order, gap, reverse)
+preproc <- SortWordString()
+dump <- preproc$init(preproc, feats)
+dump <- feats$add_preproc(feats, preproc)
+dump <- feats$apply_preproc(feats)
 
-num_examples=feats$get_num_vectors()
-num_param=hmm$get_num_model_parameters()
+hmm <- HMM(feats, N, M, pseudo)
+dump <- hmm$train(hmm)
+dump <- hmm$baum_welch_viterbi_train(hmm, "BW_NORMAL")
 
-derivs=matrix(0,num_param, num_examples)
+num_examples <- feats$get_num_vectors()
+num_param <- hmm$get_num_model_parameters()
+
+derivs <- matrix(0, num_param, num_examples)
 for (i in 0:(num_examples-1))
 {
 	for (j in 0:(num_param-1))
 	{
-		derivs[j,i]=hmm$get_log_derivative(hmm, j, i)
+		derivs[j,i] <- hmm$get_log_derivative(hmm, j, i)
 	}
 }
 
-best_path=0
-best_path_state=0
+best_path <- 0
+best_path_state <- 0
 
 for (i in 0:(num_examples-1))
 {
@@ -130,5 +133,5 @@ for (i in 0:(num_examples-1))
 	}
 }
 
-hmm$get_log_likelihood(hmm, 0)
-hmm$get_log_likelihood_sample()
+dump <- hmm$get_log_likelihood(hmm, as.integer(0))
+dump <- hmm$get_log_likelihood_sample()

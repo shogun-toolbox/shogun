@@ -17,7 +17,7 @@ dosvrlight <- function()
 
 	feats_train <- RealFeatures(fm_train)
 	feats_test <- RealFeatures(fm_test)
-	width <- 2.1;
+	width <- 2.1
 	kernel <- GaussianKernel(feats_train, feats_train, width)
 
 	C <- 0.017
@@ -27,11 +27,11 @@ dosvrlight <- function()
 	labels <- Labels(label_train)
 
 	svr <- SVRLight(C, epsilon, kernel, labels)
-	svr$set_tube_epsilon(svr, tube_epsilon)
-	svr$parallel$set_num_threads(svr$parallel, num_threads)
-	svr$train()
+	dump <- svr$set_tube_epsilon(svr, tube_epsilon)
+	dump <- svr$parallel$set_num_threads(svr$parallel, num_threads)
+	dump <- svr$train()
 
-	kernel$init(kernel, feats_train, feats_test)
+	dump <- kernel$init(kernel, feats_train, feats_test)
 	outlab <- svr$classify(svr)
 	out <- outlab$get_labels(outlab)
 }
@@ -53,11 +53,11 @@ num_threads <- as.integer(3)
 labels <- Labels(label_train)
 
 svr <- LibSVR(C, epsilon, kernel, labels)
-svr$set_tube_epsilon(svr, tube_epsilon)
-svr$parallel$set_num_threads(svr$parallel, num_threads);
-svr$train();
+dump <- svr$set_tube_epsilon(svr, tube_epsilon)
+dump <- svr$parallel$set_num_threads(svr$parallel, num_threads);
+dump <- svr$train();
 
-kernel$init(kernel, feats_train, feats_test);
+dump <- kernel$init(kernel, feats_train, feats_test);
 outlab <- svr$classify(svr)
 out <- outlab$get_labels(outlab);
 
@@ -79,9 +79,9 @@ num_threads <- as.integer(1)
 labels <- Labels(label_train)
 
 krr <- KRR(tau, kernel, labels)
-krr$parallel$set_num_threads(krr$parallel, num_threads)
-krr$train()
+dump <- krr$parallel$set_num_threads(krr$parallel, num_threads)
+dump <- krr$train()
 
-kernel$init(kernel, feats_train, feats_test)
+dump <- kernel$init(kernel, feats_train, feats_test)
 outlab <- krr$classify(krr)
 out <- outlab$get_labels(outlab)

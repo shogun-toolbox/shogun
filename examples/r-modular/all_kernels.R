@@ -47,7 +47,7 @@ size_cache <- as.integer(10)
 kernel <- Chi2Kernel(feats_train, feats_train, width, size_cache)
 
 km_train <- kernel$get_kernel_matrix()
-kernel$init(kernel, feats_train, feats_test)
+dump <- kernel$init(kernel, feats_train, feats_test)
 km_test <- kernel$get_kernel_matrix()
 
 # const
@@ -60,7 +60,7 @@ c <- 23.
 kernel <- ConstKernel(feats_train, feats_train, c)
 
 km_train <- kernel$get_kernel_matrix()
-kernel$init(kernel, feats_train, feats_test)
+dump <- kernel$init(kernel, feats_train, feats_test)
 km_test <- kernel$get_kernel_matrix()
 
 # diag
@@ -73,7 +73,7 @@ diag <- 23.
 kernel <- DiagKernel(feats_train, feats_train, diag)
 
 km_train <- kernel$get_kernel_matrix()
-kernel$init(kernel, feats_train, feats_test)
+dump <- kernel$init(kernel, feats_train, feats_test)
 km_test <- kernel$get_kernel_matrix()
 
 # gaussian
@@ -86,7 +86,7 @@ width <- 1.9
 kernel <- GaussianKernel(feats_train, feats_train, width)
 
 km_train <- kernel$get_kernel_matrix()
-kernel$init(kernel, feats_train, feats_test)
+dump <- kernel$init(kernel, feats_train, feats_test)
 km_test <- kernel$get_kernel_matrix()
 
 # gaussian_shift
@@ -102,7 +102,7 @@ kernel <- GaussianShiftKernel(
 	feats_train, feats_train, width, max_shift, shift_step)
 
 km_train <- kernel$get_kernel_matrix()
-kernel$init(kernel, feats_train, feats_test)
+dump <- kernel$init(kernel, feats_train, feats_test)
 km_test <- kernel$get_kernel_matrix()
 
 # linear
@@ -113,11 +113,11 @@ feats_test <- RealFeatures(fm_test_real)
 scale <- 1.2
 
 kernel <- LinearKernel()
-kernel$set_normalizer(kernel, AvgDiagKernelNormalizer(scale))
-kernel$init(kernel, feats_train, feats_train)
+dump <- kernel$set_normalizer(kernel, AvgDiagKernelNormalizer(scale))
+dump <- kernel$init(kernel, feats_train, feats_train)
 
 km_train <- kernel$get_kernel_matrix()
-kernel$init(kernel, feats_train, feats_test)
+dump <- kernel$init(kernel, feats_train, feats_test)
 km_test <- kernel$get_kernel_matrix()
 
 # poly
@@ -132,7 +132,7 @@ kernel <- PolyKernel(
 	feats_train, feats_train, degree, inhomogene)
 
 km_train <- kernel$get_kernel_matrix()
-kernel$init(kernel, feats_train, feats_test)
+dump <- kernel$init(kernel, feats_train, feats_test)
 km_test <- kernel$get_kernel_matrix()
 
 # sigmoid
@@ -147,7 +147,7 @@ coef0 <- 1.3
 kernel <- SigmoidKernel(feats_train, feats_train, size_cache, gamma, coef0)
 
 km_train <- kernel$get_kernel_matrix()
-kernel$init(kernel, feats_train, feats_test)
+dump <- kernel$init(kernel, feats_train, feats_test)
 km_test <- kernel$get_kernel_matrix()
 
 ###########################################################################
@@ -159,16 +159,16 @@ print('SparseGaussian')
 
 feat <- RealFeatures(fm_train_real)
 feats_train <- SparseRealFeatures()
-feats_train$obtain_from_simple(feats_train, feat)
+dump <- feats_train$obtain_from_simple(feats_train, feat)
 feat <- RealFeatures(fm_test_real)
 feats_test <- SparseRealFeatures()
-feats_test$obtain_from_simple(feats_test, feat)
+dump <- feats_test$obtain_from_simple(feats_test, feat)
 width <- 1.1
 
 kernel <- SparseGaussianKernel(feats_train, feats_train, width)
 
 km_train <- kernel$get_kernel_matrix()
-kernel$init(kernel, feats_train, feats_test)
+dump <- kernel$init(kernel, feats_train, feats_test)
 km_test <- kernel$get_kernel_matrix()
 
 # sparse_linear
@@ -176,19 +176,19 @@ print('SparseLinear')
 
 feat <- RealFeatures(fm_train_real)
 feats_train <- SparseRealFeatures()
-feats_train$obtain_from_simple(feats_train, feat)
+dump <- feats_train$obtain_from_simple(feats_train, feat)
 feat <- RealFeatures(fm_test_real)
 feats_test <- SparseRealFeatures()
-feats_test$obtain_from_simple(feats_test, feat)
+dump <- feats_test$obtain_from_simple(feats_test, feat)
 scale <- 1.1
 
 kernel <- SparseLinearKernel()
-kernel$set_normalizer(kernel, AvgDiagKernelNormalizer(scale))
-kernel$init(kernel, feats_train, feats_train)
+dump <- kernel$set_normalizer(kernel, AvgDiagKernelNormalizer(scale))
+dump <- kernel$init(kernel, feats_train, feats_train)
 
 
 km_train <- kernel$get_kernel_matrix()
-kernel$init(kernel, feats_train, feats_test)
+dump <- kernel$init(kernel, feats_train, feats_test)
 km_test <- kernel$get_kernel_matrix()
 
 # sparse_poly
@@ -196,10 +196,10 @@ print('SparsePoly')
 
 feat <- RealFeatures(fm_train_real)
 feats_train <- SparseRealFeatures()
-feats_train$obtain_from_simple(feats_train, feat)
+dump <- feats_train$obtain_from_simple(feats_train, feat)
 feat <- RealFeatures(fm_test_real)
 feats_test <- SparseRealFeatures()
-feats_test$obtain_from_simple(feats_test, feat)
+dump <- feats_test$obtain_from_simple(feats_test, feat)
 size_cache <- as.integer(10)
 degree <- as.integer(3)
 inhomogene <- TRUE
@@ -208,7 +208,7 @@ kernel <- SparsePolyKernel(feats_train, feats_train, size_cache, degree,
 	inhomogene)
 
 km_train <- kernel$get_kernel_matrix()
-kernel$init(kernel, feats_train, feats_test)
+dump <- kernel$init(kernel, feats_train, feats_test)
 km_test <- kernel$get_kernel_matrix()
 
 ###########################################################################
@@ -266,105 +266,105 @@ km_test <- kernel$get_kernel_matrix()
 print('FixedDegreeString')
 
 feats_train <- StringCharFeatures("DNA")
-feats_train$set_string_features(feats_train, fm_train_dna)
+dump <- feats_train$set_string_features(feats_train, fm_train_dna)
 feats_test <- StringCharFeatures("DNA")
-feats_test$set_string_features(feats_test, fm_test_dna)
-degree <- 3
+dump <- feats_test$set_string_features(feats_test, fm_test_dna)
+degree <- as.integer(3)
 
 kernel <- FixedDegreeStringKernel(feats_train, feats_train, degree)
 
 km_train <- kernel$get_kernel_matrix()
-kernel$init(kernel, feats_train, feats_test)
+dump <- kernel$init(kernel, feats_train, feats_test)
 km_test <- kernel$get_kernel_matrix()
 
 # linear_string
 print('LinearString')
 
 feats_train <- StringCharFeatures("DNA")
-feats_train$set_string_features(feats_train, fm_train_dna)
+dump <- feats_train$set_string_features(feats_train, fm_train_dna)
 feats_test <- StringCharFeatures("DNA")
-feats_test$set_string_features(feats_test, fm_test_dna)
+dump <- feats_test$set_string_features(feats_test, fm_test_dna)
 
 kernel <- LinearStringKernel(feats_train, feats_train)
 
 km_train <- kernel$get_kernel_matrix()
-kernel$init(kernel, feats_train, feats_test)
+dump <- kernel$init(kernel, feats_train, feats_test)
 km_test <- kernel$get_kernel_matrix()
 
 # local_alignment_strin
 print('LocalAlignmentString')
 
 feats_train <- StringCharFeatures("DNA")
-feats_train$set_string_features(feats_train, fm_train_dna)
+dump <- feats_train$set_string_features(feats_train, fm_train_dna)
 feats_test <- StringCharFeatures("DNA")
-feats_test$set_string_features(feats_test, fm_test_dna)
+dump <- feats_test$set_string_features(feats_test, fm_test_dna)
 
 kernel <- LocalAlignmentStringKernel(feats_train, feats_train)
 
 km_train <- kernel$get_kernel_matrix()
-kernel$init(kernel, feats_train, feats_test)
+dump <- kernel$init(kernel, feats_train, feats_test)
 km_test <- kernel$get_kernel_matrix()
 
 # oligo_string
 print('OligoString')
 
 feats_train <- StringCharFeatures("DNA")
-feats_train$set_string_features(feats_train, fm_train_dna)
+dump <- feats_train$set_string_features(feats_train, fm_train_dna)
 feats_test <- StringCharFeatures("DNA")
-feats_test$set_string_features(feats_test, fm_test_dna)
-k <- 3
+dump <- feats_test$set_string_features(feats_test, fm_test_dna)
+k <- as.integer(3)
 width <- 1.2
-size_cache <- 10
+size_cache <- as.integer(10)
 
 kernel <- OligoKernel(size_cache,  k, width)
-kernel$init(kernel, feats_train, feats_train)
+dump <- kernel$init(kernel, feats_train, feats_train)
 
 km_train <- kernel$get_kernel_matrix()
-kernel$init(kernel, feats_train, feats_test)
+dump <- kernel$init(kernel, feats_train, feats_test)
 km_test <- kernel$get_kernel_matrix()
 
 # poly_match_string
 print('PolyMatchString')
 
 feats_train <- StringCharFeatures("DNA")
-feats_train$set_string_features(feats_train, fm_train_dna)
+dump <- feats_train$set_string_features(feats_train, fm_train_dna)
 feats_test <- StringCharFeatures("DNA")
-feats_test$set_string_features(feats_test, fm_test_dna)
-degree <- 3
+dump <- feats_test$set_string_features(feats_test, fm_test_dna)
+degree <- as.integer(3)
 inhomogene <- FALSE
 
 kernel <- PolyMatchStringKernel(feats_train, feats_train, degree, inhomogene)
 
 km_train <- kernel$get_kernel_matrix()
-kernel$init(kernel, feats_train, feats_test)
+dump <- kernel$init(kernel, feats_train, feats_test)
 km_test <- kernel$get_kernel_matrix()
 
 # simple_locality_improved_string
 print('SimpleLocalityImprovedString')
 
 feats_train <- StringCharFeatures("DNA")
-feats_train$set_string_features(feats_train, fm_train_dna)
+dump <- feats_train$set_string_features(feats_train, fm_train_dna)
 feats_test <- StringCharFeatures("DNA")
-feats_test$set_string_features(feats_test, fm_test_dna)
-l <- 5
-inner_degree <- 5
-outer_degree <- 7
+dump <- feats_test$set_string_features(feats_test, fm_test_dna)
+l <- as.integer(5)
+inner_degree <- as.integer(5)
+outer_degree <- as.integer(7)
 
 kernel <- SimpleLocalityImprovedStringKernel(
 	feats_train, feats_train, l, inner_degree, outer_degree)
 
 km_train <- kernel$get_kernel_matrix()
-kernel$init(kernel, feats_train, feats_test)
+dump <- kernel$init(kernel, feats_train, feats_test)
 km_test <- kernel$get_kernel_matrix()
 
 # weighted_degree_string
 print('WeightedDegreeString')
 
 feats_train <- StringCharFeatures("DNA")
-feats_train$set_string_features(feats_train, fm_train_dna)
+dump <- feats_train$set_string_features(feats_train, fm_train_dna)
 feats_test <- StringCharFeatures("DNA")
-feats_test$set_string_features(feats_test, fm_test_dna)
-degree <- 20
+dump <- feats_test$set_string_features(feats_test, fm_test_dna)
+degree <- as.integer(20)
 
 kernel <- WeightedDegreeStringKernel(feats_train, feats_train, degree)
 
@@ -373,42 +373,42 @@ kernel <- WeightedDegreeStringKernel(feats_train, feats_train, degree)
 #kernel$set_wd_weights(weights)
 
 km_train <- kernel$get_kernel_matrix()
-kernel$init(kernel, feats_train, feats_test)
+dump <- kernel$init(kernel, feats_train, feats_test)
 km_test <- kernel$get_kernel_matrix()
 
 # weighted_degree_position_string
 print('WeightedDegreePositionString')
 
 feats_train <- StringCharFeatures("DNA")
-feats_train$set_string_features(feats_train, fm_train_dna)
+dump <- feats_train$set_string_features(feats_train, fm_train_dna)
 feats_test <- StringCharFeatures("DNA")
-feats_test$set_string_features(feats_test, fm_test_dna)
-degree <- 20
+dump <- feats_test$set_string_features(feats_test, fm_test_dna)
+degree <- as.integer(20)
 
 kernel <- WeightedDegreePositionStringKernel(feats_train, feats_train, degree)
 
 #kernel$set_shifts(zeros(len(fm_train_dna[0]), dtype <- int))
 
 km_train <- kernel$get_kernel_matrix()
-kernel$init(kernel, feats_train, feats_test)
+dump <- kernel$init(kernel, feats_train, feats_test)
 km_test <- kernel$get_kernel_matrix()
 
 # locality_improved_string
 print('LocalityImprovedString')
 
 feats_train <- StringCharFeatures("DNA")
-feats_train$set_string_features(feats_train, fm_train_dna)
+dump <- feats_train$set_string_features(feats_train, fm_train_dna)
 feats_test <- StringCharFeatures("DNA")
-feats_test$set_string_features(feats_test, fm_test_dna)
-l <- 5
-inner_degree <- 5
-outer_degree <- 7
+dump <- feats_test$set_string_features(feats_test, fm_test_dna)
+l <- as.integer(5)
+inner_degree <- as.integer(5)
+outer_degree <- as.integer(7)
 
 kernel <- LocalityImprovedStringKernel(
 	feats_train, feats_train, l, inner_degree, outer_degree)
 
 km_train <- kernel$get_kernel_matrix()
-kernel$init(kernel, feats_train, feats_test)
+dump <- kernel$init(kernel, feats_train, feats_test)
 km_test <- kernel$get_kernel_matrix()
 
 ###########################################################################
@@ -418,95 +418,98 @@ km_test <- kernel$get_kernel_matrix()
 # comm_word_string
 print('CommWordString')
 
-order <- 3
-gap <- 0
+order <- as.integer(3)
+gap <- as.integer(0)
+start <- as.integer(order-1)
 reverse <- FALSE
 
 charfeat <- StringCharFeatures("DNA")
-charfeat$set_string_features(charfeat, fm_train_dna)
+dump <- charfeat$set_string_features(charfeat, fm_train_dna)
 feats_train <- StringWordFeatures(charfeat$get_alphabet())
-feats_train$obtain_from_char(feats_train, charfeat, order-1, order, gap, reverse)
+dump <- feats_train$obtain_from_char(feats_train, charfeat, start, order, gap, reverse)
 preproc <- SortWordString()
-preproc$init(preproc, feats_train)
-feats_train$add_preproc(feats_train, preproc)
-feats_train$apply_preproc(feats_train)
+dump <- preproc$init(preproc, feats_train)
+dump <- feats_train$add_preproc(feats_train, preproc)
+dump <- feats_train$apply_preproc(feats_train)
 
 charfeat <- StringCharFeatures("DNA")
-charfeat$set_string_features(charfeat, fm_test_dna)
+dump <- charfeat$set_string_features(charfeat, fm_test_dna)
 feats_test <- StringWordFeatures(charfeat$get_alphabet())
-feats_test$obtain_from_char(feats_test, charfeat, order-1, order, gap, reverse)
-feats_test$add_preproc(feats_test, preproc)
-feats_test$apply_preproc(feats_test)
+dump <- feats_test$obtain_from_char(feats_test, charfeat, start, order, gap, reverse)
+dump <- feats_test$add_preproc(feats_test, preproc)
+dump <- feats_test$apply_preproc(feats_test)
 
 use_sign <- FALSE
 
 kernel <- CommWordStringKernel(feats_train, feats_train, use_sign)
 
 km_train <- kernel$get_kernel_matrix()
-kernel$init(kernel, feats_train, feats_test)
+dump <- kernel$init(kernel, feats_train, feats_test)
 km_test <- kernel$get_kernel_matrix()
 
 # weighted_comm_word_string
 print('WeightedCommWordString')
 
-order <- 3
-gap <- 0
+order <- as.integer(3)
+start <- as.integer(order-1)
+gap <- as.integer(0)
 reverse <- TRUE
 
 charfeat <- StringCharFeatures("DNA")
-charfeat$set_string_features(charfeat, fm_train_dna)
+dump <- charfeat$set_string_features(charfeat, fm_train_dna)
 feats_train <- StringWordFeatures(charfeat$get_alphabet())
-feats_train$obtain_from_char(feats_train, charfeat, order-1, order, gap, reverse)
+dump <- feats_train$obtain_from_char(feats_train, charfeat, start, order, gap, reverse)
 preproc <- SortWordString()
-preproc$init(preproc, feats_train)
-feats_train$add_preproc(feats_train, preproc)
-feats_train$apply_preproc(feats_train)
+dump <- preproc$init(preproc, feats_train)
+dump <- feats_train$add_preproc(feats_train, preproc)
+dump <- feats_train$apply_preproc(feats_train)
 
 charfeat <- StringCharFeatures("DNA")
-charfeat$set_string_features(charfeat, fm_test_dna)
+dump <- charfeat$set_string_features(charfeat, fm_test_dna)
 feats_test <- StringWordFeatures(charfeat$get_alphabet())
-feats_test$obtain_from_char(feats_test, charfeat, order-1, order, gap, reverse)
-feats_test$add_preproc(feats_test, preproc)
-feats_test$apply_preproc(feats_test)
+dump <- feats_test$obtain_from_char(feats_test, charfeat, start, order, gap, reverse)
+dump <- feats_test$add_preproc(feats_test, preproc)
+dump <- feats_test$apply_preproc(feats_test)
 
 use_sign <- FALSE
 
 kernel <- WeightedCommWordStringKernel(feats_train, feats_train, use_sign)
 
 km_train <- kernel$get_kernel_matrix()
-kernel$init(kernel, feats_train, feats_test)
+dump <- kernel$init(kernel, feats_train, feats_test)
 km_test <- kernel$get_kernel_matrix()
 
 # comm_ulong_string
 print('CommUlongString')
 
-order <- 3
-gap <- 0
+order <- as.integer(3)
+start <- as.integer(order-1)
+gap <- as.integer(0)
 reverse <- FALSE
 
 charfeat <- StringCharFeatures("DNA")
-charfeat$set_string_features(charfeat, fm_train_dna)
+dump <- charfeat$set_string_features(charfeat, fm_train_dna)
 feats_train <- StringUlongFeatures(charfeat$get_alphabet())
-feats_train$obtain_from_char(feats_train, charfeat, order-1, order, gap, reverse)
+dump <- feats_train$obtain_from_char(feats_train, charfeat, start, order, gap, reverse)
 preproc <- SortUlongString()
-preproc$init(preproc, feats_train)
-feats_train$add_preproc(feats_train, preproc)
-feats_train$apply_preproc(feats_train)
+dump <- preproc$init(preproc, feats_train)
+dump <- feats_train$add_preproc(feats_train, preproc)
+dump <- feats_train$apply_preproc(feats_train)
 
 
 charfeat <- StringCharFeatures("DNA")
-charfeat$set_string_features(charfeat, fm_test_dna)
+dump <- charfeat$set_string_features(charfeat, fm_test_dna)
 feats_test <- StringUlongFeatures(charfeat$get_alphabet())
-feats_test$obtain_from_char(feats_test, charfeat, order-1, order, gap, reverse)
-feats_test$add_preproc(feats_test, preproc)
-feats_test$apply_preproc(feats_test)
+dump <- feats_test$obtain_from_char(feats_test, charfeat, start, order, gap, reverse)
+dump <- feats_test$add_preproc(feats_test, preproc)
+dump <- feats_test$apply_preproc(feats_test)
 
 use_sign <- FALSE
 
 kernel <- CommUlongStringKernel(feats_train, feats_train, use_sign)
 
 km_train <- kernel$get_kernel_matrix()
-kernel$init(kernel, feats_train, feats_test)
+dump <- kernel$init(kernel, feats_train, feats_test)
 km_test <- kernel$get_kernel_matrix()
 
 ###########################################################################
@@ -545,7 +548,7 @@ distance <- EuclidianDistance()
 kernel <- DistanceKernel(feats_train, feats_test, width, distance)
 
 km_train <- kernel$get_kernel_matrix()
-kernel$init(kernel, feats_train, feats_test)
+dump <- kernel$init(kernel, feats_train, feats_test)
 km_test <- kernel$get_kernel_matrix()
 
 # auc
@@ -579,114 +582,116 @@ feats_test <- CombinedFeatures()
 
 subkfeats_train <- RealFeatures(fm_train_real)
 subkfeats_test <- RealFeatures(fm_test_real)
-subkernel <- GaussianKernel(10, 1.6)
-feats_train$append_feature_obj(feats_train, subkfeats_train)
-feats_test$append_feature_obj(feats_test, subkfeats_test)
-kernel$append_kernel(kernel, subkernel)
+subkernel <- GaussianKernel(as.integer(10), 1.6)
+dump <- feats_train$append_feature_obj(feats_train, subkfeats_train)
+dump <- feats_test$append_feature_obj(feats_test, subkfeats_test)
+dump <- kernel$append_kernel(kernel, subkernel)
 
 subkfeats_train <- StringCharFeatures("DNA")
-subkfeats_train$set_string_features(subkfeats_train, fm_train_dna)
+dump <- subkfeats_train$set_string_features(subkfeats_train, fm_train_dna)
 subkfeats_test <- StringCharFeatures("DNA")
-subkfeats_test$set_string_features(subkfeats_test, fm_test_dna)
-degree <- 3
-subkernel <- FixedDegreeStringKernel(10, degree)
-feats_train$append_feature_obj(feats_train, subkfeats_train)
-feats_test$append_feature_obj(feats_test, subkfeats_test)
-kernel$append_kernel(kernel, subkernel)
+dump <- subkfeats_test$set_string_features(subkfeats_test, fm_test_dna)
+degree <- as.integer(3)
+subkernel <- FixedDegreeStringKernel(as.integer(10), degree)
+dump <- feats_train$append_feature_obj(feats_train, subkfeats_train)
+dump <- feats_test$append_feature_obj(feats_test, subkfeats_test)
+dump <- kernel$append_kernel(kernel, subkernel)
 
 subkfeats_train <- StringCharFeatures("DNA")
-subkfeats_train$set_string_features(subkfeats_train, fm_train_dna)
+dump <- subkfeats_train$set_string_features(subkfeats_train, fm_train_dna)
 subkfeats_test <- StringCharFeatures("DNA")
-subkfeats_test$set_string_features(subkfeats_test, fm_test_dna)
-subkernel <- LocalAlignmentStringKernel(10)
-feats_train$append_feature_obj(feats_train, subkfeats_train)
-feats_test$append_feature_obj(feats_test, subkfeats_test)
-kernel$append_kernel(kernel, subkernel)
+dump <- subkfeats_test$set_string_features(subkfeats_test, fm_test_dna)
+subkernel <- LocalAlignmentStringKernel(as.integer(10))
+dump <- feats_train$append_feature_obj(feats_train, subkfeats_train)
+dump <- feats_test$append_feature_obj(feats_test, subkfeats_test)
+dump <- kernel$append_kernel(kernel, subkernel)
 
-kernel$init(kernel, feats_train, feats_train)
+dump <- kernel$init(kernel, feats_train, feats_train)
 km_train <- kernel$get_kernel_matrix()
-kernel$init(kernel, feats_train, feats_test)
+dump <- kernel$init(kernel, feats_train, feats_test)
 km_test <- kernel$get_kernel_matrix()
 
 # plugin_estimate
 print('PluginEstimate w/ HistogramWord')
 
-order <- 3
-gap <- 0
+order <- as.integer(3)
+start <- as.integer(order-1)
+gap <- as.integer(0)
 reverse <- FALSE
 
 charfeat <- StringCharFeatures("DNA")
-charfeat$set_string_features(charfeat, fm_train_dna)
+dump <- charfeat$set_string_features(charfeat, fm_train_dna)
 feats_train <- StringWordFeatures(charfeat$get_alphabet())
-feats_train$obtain_from_char(feats_train, charfeat, order-1, order, gap, reverse)
+dump <- feats_train$obtain_from_char(feats_train, charfeat, start, order, gap, reverse)
 
 charfeat <- StringCharFeatures("DNA")
-charfeat$set_string_features(charfeat, fm_test_dna)
+dump <- charfeat$set_string_features(charfeat, fm_test_dna)
 feats_test <- StringWordFeatures(charfeat$get_alphabet())
-feats_test$obtain_from_char(feats_test, charfeat, order-1, order, gap, reverse)
+dump <- feats_test$obtain_from_char(feats_test, charfeat, start, order, gap, reverse)
 
 pie <- PluginEstimate()
 labels <- Labels(label_train_dna)
-pie$set_labels(pie, labels)
-pie$set_features(pie, feats_train)
-pie$train()
+dump <- pie$set_labels(pie, labels)
+dump <- pie$set_features(pie, feats_train)
+dump <- pie$train()
 
 kernel <- HistogramWordStringKernel(feats_train, feats_train, pie)
 km_train <- kernel$get_kernel_matrix()
 
-kernel$init(kernel, feats_train, feats_test)
-pie$set_features(pie, feats_test)
+dump <- kernel$init(kernel, feats_train, feats_test)
+dump <- pie$set_features(pie, feats_test)
 km_test <- kernel$get_kernel_matrix()
 
 # top_fisher
 print('TOP/Fisher on PolyKernel')
 
-N <- 3
-M <- 6
+N <- as.integer(3)
+M <- as.integer(6)
 pseudo <- 1e-1
-order <- 1
-gap <- 0
+order <- as.integer(1)
+start <- as.integer(order-1)
+gap <- as.integer(0)
 reverse <- FALSE
 
 charfeat <- StringCharFeatures("CUBE")
-charfeat$set_string_features(charfeat, fm_train_cube)
+dump <- charfeat$set_string_features(charfeat, fm_train_cube)
 wordfeats_train <- StringWordFeatures(charfeat$get_alphabet())
-wordfeats_train$obtain_from_char(wordfeats_train, charfeat, order-1, order, gap, reverse)
+dump <- wordfeats_train$obtain_from_char(wordfeats_train, charfeat, start, order, gap, reverse)
 preproc <- SortWordString()
-preproc$init(preproc, wordfeats_train)
-wordfeats_train$add_preproc(wordfeats_train, preproc)
-wordfeats_train$apply_preproc(wordfeats_train)
+dump <- preproc$init(preproc, wordfeats_train)
+dump <- wordfeats_train$add_preproc(wordfeats_train, preproc)
+dump <- wordfeats_train$apply_preproc(wordfeats_train)
 
 charfeat <- StringCharFeatures("CUBE")
-charfeat$set_string_features(charfeat, fm_test_cube)
+dump <- charfeat$set_string_features(charfeat, fm_test_cube)
 wordfeats_test <- StringWordFeatures(charfeat$get_alphabet())
-wordfeats_test$obtain_from_char(wordfeats_test, charfeat, order-1, order, gap, reverse)
-wordfeats_test$add_preproc(wordfeats_test, preproc)
-wordfeats_test$apply_preproc(wordfeats_test)
+dump <- wordfeats_test$obtain_from_char(wordfeats_test, charfeat, start, order, gap, reverse)
+dump <- wordfeats_test$add_preproc(wordfeats_test, preproc)
+dump <- wordfeats_test$apply_preproc(wordfeats_test)
 
 pos <- HMM(wordfeats_train, N, M, pseudo)
-pos$train()
-pos$baum_welch_viterbi_train(pos, "BW_NORMAL")
+dump <- pos$train()
+dump <- pos$baum_welch_viterbi_train(pos, "BW_NORMAL")
 neg <- HMM(wordfeats_train, N, M, pseudo)
-neg$train()
-neg$baum_welch_viterbi_train(neg, "BW_NORMAL")
+dump <- neg$train()
+dump <- neg$baum_welch_viterbi_train(neg, "BW_NORMAL")
 pos_clone <- HMM(pos)
 neg_clone <- HMM(neg)
-pos_clone$set_observations(pos_clone, wordfeats_test)
-neg_clone$set_observations(neg_clone, wordfeats_test)
+dump <- pos_clone$set_observations(pos_clone, wordfeats_test)
+dump <- neg_clone$set_observations(neg_clone, wordfeats_test)
 
-feats_train <- TOPFeatures(10, pos, neg, FALSE, FALSE)
-feats_test <- TOPFeatures(10, pos_clone, neg_clone, FALSE, FALSE)
-kernel <- PolyKernel(feats_train, feats_train, 1, FALSE)
+feats_train <- TOPFeatures(size_cache, pos, neg, FALSE, FALSE)
+feats_test <- TOPFeatures(size_cache, pos_clone, neg_clone, FALSE, FALSE)
+kernel <- PolyKernel(feats_train, feats_train, as.integer(1), FALSE)
 km_train <- kernel$get_kernel_matrix()
-kernel$init(kernel, feats_train, feats_test)
+dump <- kernel$init(kernel, feats_train, feats_test)
 km_test <- kernel$get_kernel_matrix()
 
-feats_train <- FKFeatures(10, pos, neg)
-feats_train$set_opt_a(feats_train, -1); #estimate prior
-feats_test <- FKFeatures(10, pos_clone, neg_clone)
-feats_test$set_a(feats_test, feats_train$get_a()); #use prior from training data
-kernel <- PolyKernel(feats_train, feats_train, 1, FALSE)
+feats_train <- FKFeatures(size_cache, pos, neg)
+dump <- feats_train$set_opt_a(feats_train, -1); #estimate prior
+feats_test <- FKFeatures(size_cache, pos_clone, neg_clone)
+dump <- feats_test$set_a(feats_test, feats_train$get_a()); #use prior from training data
+kernel <- PolyKernel(feats_train, feats_train, as.integer(1), FALSE)
 km_train <- kernel$get_kernel_matrix()
-kernel$init(kernel, feats_train, feats_test)
+dump <- kernel$init(kernel, feats_train, feats_test)
 km_test <- kernel$get_kernel_matrix()

@@ -14,9 +14,9 @@ feats_test <- RealFeatures(fm_train)
 distance <- EuclidianDistance(feats_train, feats_train)
 
 kmeans <- KMeans(k, distance)
-kmeans$train()
+dump <- kmeans$train()
 
-distance$init(distance, feats_train, feats_test)
+dump <- distance$init(distance, feats_train, feats_test)
 c <- kmeans$get_cluster_centers()
 r <- kmeans$get_radiuses()
 
@@ -29,8 +29,8 @@ feats_test <- RealFeatures(fm_train)
 distance <- EuclidianDistance(feats_train, feats_train)
 
 hierarchical <- Hierarchical(merges, distance)
-hierarchical$train()
+dump <- hierarchical$train()
 
-distance$init(distance, feats_train, feats_test)
+dump <- distance$init(distance, feats_train, feats_test)
 mdist <- hierarchical$get_merge_distances()
 pairs <- hierarchical$get_cluster_pairs()

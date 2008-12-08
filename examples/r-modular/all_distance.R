@@ -21,7 +21,7 @@ feats_test <- RealFeatures(fm_test_real)
 distance <- BrayCurtisDistance(feats_train, feats_train)
 
 dm_train <- distance$get_distance_matrix()
-distance$init(distance, feats_train, feats_test)
+dump <- distance$init(distance, feats_train, feats_test)
 dm_test <- distance$get_distance_matrix()
 
 
@@ -34,7 +34,7 @@ feats_test <- RealFeatures(fm_test_real)
 distance <- EuclidianDistance(feats_train, feats_train)
 
 dm_train <- distance$get_distance_matrix()
-distance$init(distance, feats_train, feats_test)
+dump <- distance$init(distance, feats_train, feats_test)
 dm_test <- distance$get_distance_matrix()
 
 # norm squared distance
@@ -47,7 +47,7 @@ distance <- EuclidianDistance(feats_train, feats_train)
 dump <- distance$set_disable_sqrt(distance,TRUE)
 
 dm_train <- distance$get_distance_matrix()
-distance$init(distance, feats_train, feats_test)
+dump <- distance$init(distance, feats_train, feats_test)
 dm_test <- distance$get_distance_matrix()
 
 # canberra metric
@@ -59,7 +59,7 @@ feats_test <- RealFeatures(fm_test_real)
 distance <- CanberraMetric(feats_train, feats_train)
 
 dm_train <- distance$get_distance_matrix()
-distance$init(distance, feats_train, feats_test)
+dump <- distance$init(distance, feats_train, feats_test)
 dm_test <- distance$get_distance_matrix()
 
 # chebyshew metric
@@ -71,7 +71,7 @@ feats_test <- RealFeatures(fm_test_real)
 distance <- ChebyshewMetric(feats_train, feats_train)
 
 dm_train <- distance$get_distance_matrix()
-distance$init(distance, feats_train, feats_test)
+dump <- distance$init(distance, feats_train, feats_test)
 dm_test <- distance$get_distance_matrix()
 
 # chi square distance
@@ -83,7 +83,7 @@ feats_test <- RealFeatures(fm_test_real)
 distance <- ChiSquareDistance(feats_train, feats_train)
 
 dm_train <- distance$get_distance_matrix()
-distance$init(distance, feats_train, feats_test)
+dump <- distance$init(distance, feats_train, feats_test)
 dm_test <- distance$get_distance_matrix()
 
 # cosine distance
@@ -95,7 +95,7 @@ feats_test <- RealFeatures(fm_test_real)
 distance <- CosineDistance(feats_train, feats_train)
 
 dm_train <- distance$get_distance_matrix()
-distance$init(distance, feats_train, feats_test)
+dump <- distance$init(distance, feats_train, feats_test)
 dm_test <- distance$get_distance_matrix()
 
 
@@ -108,7 +108,7 @@ feats_test <- RealFeatures(fm_test_real)
 distance <- GeodesicMetric(feats_train, feats_train)
 
 dm_train <- distance$get_distance_matrix()
-distance$init(distance, feats_train, feats_test)
+dump <- distance$init(distance, feats_train, feats_test)
 dm_test <- distance$get_distance_matrix()
 
 # jensen metric
@@ -120,7 +120,7 @@ feats_test <- RealFeatures(fm_test_real)
 distance <- JensenMetric(feats_train, feats_train)
 
 dm_train <- distance$get_distance_matrix()
-distance$init(distance, feats_train, feats_test)
+dump <- distance$init(distance, feats_train, feats_test)
 dm_test <- distance$get_distance_matrix()
 
 # manhattan metric
@@ -132,7 +132,7 @@ feats_test <- RealFeatures(fm_test_real)
 distance <- ManhattanMetric(feats_train, feats_train)
 
 dm_train <- distance$get_distance_matrix()
-distance$init(distance, feats_train, feats_test)
+dump <- distance$init(distance, feats_train, feats_test)
 dm_test <- distance$get_distance_matrix()
 
 # minkowski metric
@@ -145,7 +145,7 @@ feats_test <- RealFeatures(fm_test_real)
 distance <- MinkowskiMetric(feats_train, feats_train, k)
 
 dm_train <- distance$get_distance_matrix()
-distance$init(distance, feats_train, feats_test)
+dump <- distance$init(distance, feats_train, feats_test)
 dm_test <- distance$get_distance_matrix()
 
 # tanimoto distance
@@ -157,7 +157,7 @@ feats_test <- RealFeatures(fm_test_real)
 distance <- TanimotoDistance(feats_train, feats_train)
 
 dm_train <- distance$get_distance_matrix()
-distance$init(distance, feats_train, feats_test)
+dump <- distance$init(distance, feats_train, feats_test)
 dm_test <- distance$get_distance_matrix()
 
 
@@ -166,15 +166,15 @@ print('SparseEuclidianDistance')
 
 realfeat <- RealFeatures(fm_train_real)
 feats_train <- SparseRealFeatures()
-feats_train$obtain_from_simple(feats_train, realfeat)
+dump <- feats_train$obtain_from_simple(feats_train, realfeat)
 realfeat <- RealFeatures(fm_test_real)
 feats_test <- SparseRealFeatures()
-feats_test$obtain_from_simple(feats_test, realfeat)
+dump <- feats_test$obtain_from_simple(feats_test, realfeat)
 
 distance <- SparseEuclidianDistance(feats_train, feats_train)
 
 dm_train <- distance$get_distance_matrix()
-distance$init(distance, feats_train, feats_test)
+dump <- distance$init(distance, feats_train, feats_test)
 dm_test <- distance$get_distance_matrix()
 
 
@@ -185,88 +185,91 @@ dm_test <- distance$get_distance_matrix()
 # canberra word distance
 print('CanberraWordDistance')
 
-order <- 3
-gap <- 0
+order <- as.integer(3)
+start <- as.integer(order-1)
+gap <- as.integer(0)
 reverse <- FALSE
 
 charfeat <- StringCharFeatures("DNA")
-charfeat$set_string_features(charfeat, fm_train_dna)
+dump <- charfeat$set_string_features(charfeat, fm_train_dna)
 feats_train <- StringWordFeatures(charfeat$get_alphabet())
-feats_train$obtain_from_char(feats_train, charfeat, order-1, order, gap, reverse)
+dump <- feats_train$obtain_from_char(feats_train, charfeat, start, order, gap, reverse)
 preproc <- SortWordString()
-preproc$init(preproc, feats_train)
-feats_train$add_preproc(feats_train, preproc)
-feats_train$apply_preproc(feats_train)
+dump <- preproc$init(preproc, feats_train)
+dump <- feats_train$add_preproc(feats_train, preproc)
+dump <- feats_train$apply_preproc(feats_train)
 
 charfeat <- StringCharFeatures("DNA")
-charfeat$set_string_features(charfeat, fm_test_dna)
+dump <- charfeat$set_string_features(charfeat, fm_test_dna)
 feats_test <- StringWordFeatures(charfeat$get_alphabet())
-feats_test$obtain_from_char(feats_test, charfeat, order-1, order, gap, reverse)
-feats_test$add_preproc(feats_test, preproc)
-feats_test$apply_preproc(feats_test)
+dump <- feats_test$obtain_from_char(feats_test, charfeat, start, order, gap, reverse)
+dump <- feats_test$add_preproc(feats_test, preproc)
+dump <- feats_test$apply_preproc(feats_test)
 
 distance <- CanberraWordDistance(feats_train, feats_train)
 
 dm_train <- distance$get_distance_matrix()
-distance$init(distance, feats_train, feats_test)
+dump <- distance$init(distance, feats_train, feats_test)
 dm_test <- distance$get_distance_matrix()
 
 # hamming word distance
 print('HammingWordDistance')
 
-order <- 3
-gap <- 0
+order <- as.integer(3)
+start <- as.integer(order-1)
+gap <- as.integer(0)
 reverse <- FALSE
 
 charfeat <- StringCharFeatures("DNA")
-charfeat$set_string_features(charfeat, fm_train_dna)
+dump <- charfeat$set_string_features(charfeat, fm_train_dna)
 feats_train <- StringWordFeatures(charfeat$get_alphabet())
-feats_train$obtain_from_char(feats_train, charfeat, order-1, order, gap, reverse)
+dump <- feats_train$obtain_from_char(feats_train, charfeat, start, order, gap, reverse)
 preproc <- SortWordString()
-preproc$init(preproc, feats_train)
-feats_train$add_preproc(feats_train, preproc)
-feats_train$apply_preproc(feats_train)
+dump <- preproc$init(preproc, feats_train)
+dump <- feats_train$add_preproc(feats_train, preproc)
+dump <- feats_train$apply_preproc(feats_train)
 
 charfeat <- StringCharFeatures("DNA")
-charfeat$set_string_features(charfeat, fm_test_dna)
+dump <- charfeat$set_string_features(charfeat, fm_test_dna)
 feats_test <- StringWordFeatures(charfeat$get_alphabet())
-feats_test$obtain_from_char(feats_test, charfeat, order-1, order, gap, reverse)
-feats_test$add_preproc(feats_test, preproc)
-feats_test$apply_preproc(feats_test)
+dump <- feats_test$obtain_from_char(feats_test, charfeat, start, order, gap, reverse)
+dump <- feats_test$add_preproc(feats_test, preproc)
+dump <- feats_test$apply_preproc(feats_test)
 
 use_sign <- FALSE
 
 distance <- HammingWordDistance(feats_train, feats_train, use_sign)
 
 dm_train <- distance$get_distance_matrix()
-distance$init(distance, feats_train, feats_test)
+dump <- distance$init(distance, feats_train, feats_test)
 dm_test <- distance$get_distance_matrix()
 
 # manhattan word distance
 print('ManhattanWordDistance')
 
-order <- 3
-gap <- 0
+order <- as.integer(3)
+start <- as.integer(order-1)
+gap <- as.integer(0)
 reverse <- FALSE
 
 charfeat <- StringCharFeatures("DNA")
-charfeat$set_string_features(charfeat, fm_train_dna)
+dump <- charfeat$set_string_features(charfeat, fm_train_dna)
 feats_train <- StringWordFeatures(charfeat$get_alphabet())
-feats_train$obtain_from_char(feats_train, charfeat, order-1, order, gap, reverse)
+dump <- feats_train$obtain_from_char(feats_train, charfeat, start, order, gap, reverse)
 preproc <- SortWordString()
-preproc$init(preproc, feats_train)
-feats_train$add_preproc(feats_train, preproc)
-feats_train$apply_preproc(feats_train)
+dump <- preproc$init(preproc, feats_train)
+dump <- feats_train$add_preproc(feats_train, preproc)
+dump <- feats_train$apply_preproc(feats_train)
 
 charfeat <- StringCharFeatures("DNA")
-charfeat$set_string_features(charfeat, fm_test_dna)
+dump <- charfeat$set_string_features(charfeat, fm_test_dna)
 feats_test <- StringWordFeatures(charfeat$get_alphabet())
-feats_test$obtain_from_char(feats_test, charfeat, order-1, order, gap, reverse)
-feats_test$add_preproc(feats_test, preproc)
-feats_test$apply_preproc(feats_test)
+dump <- feats_test$obtain_from_char(feats_test, charfeat, start, order, gap, reverse)
+dump <- feats_test$add_preproc(feats_test, preproc)
+dump <- feats_test$apply_preproc(feats_test)
 
 distance <- ManhattanWordDistance(feats_train, feats_train)
 
 dm_train <- distance$get_distance_matrix()
-distance$init(distance, feats_train, feats_test)
+dump <- distance$init(distance, feats_train, feats_test)
 dm_test <- distance$get_distance_matrix()
