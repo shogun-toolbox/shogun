@@ -81,8 +81,10 @@ def _get_results (indata, prefix, classifier, machine=None, feats=None):
 	ctype=indata[prefix+'type']
 	if ctype=='kernel' or ctype=='knn':
 		machine.init(feats['train'], feats['test'])
-	elif ctype=='linear' or ctype=='perceptron' or ctype=='lda':
-		classifier.set_features(feats['test'])
+	else:
+		ctypes=('linear', 'perceptron', 'lda', 'wdsvmocas')
+		if ctype in ctypes:
+			classifier.set_features(feats['test'])
 
 	res['classified']=max(abs(
 		classifier.classify().get_labels()-indata[prefix+'classified']))
@@ -120,6 +122,9 @@ def _classifier (indata):
 			classifier=fun(indata[prefix+'gamma'], feats['train'], labels)
 		elif ctype=='perceptron':
 			classifier=fun(feats['train'], labels)
+		elif ctype=='wdsvmocas':
+			classifier=fun(indata[prefix+'C'], indata[prefix+'degree'],
+				indata[prefix+'degree'], feats['train'], labels)
 		else:
 			return False
 	else:

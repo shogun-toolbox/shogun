@@ -109,9 +109,11 @@ def get_feats_simple (indata, prefix=''):
 
 
 def get_feats_string (indata, prefix=''):
+	ftype=indata[prefix+'feature_type']
+	alphabet=eval(indata[prefix+'alphabet'])
 	feats={
-		'train': StringCharFeatures(eval(indata[prefix+'alphabet'])),
-		'test': StringCharFeatures(eval(indata[prefix+'alphabet']))
+		'train': eval('String'+ftype+'Features(alphabet)'),
+		'test': eval('String'+ftype+'Features(alphabet)')
 	}
 	feats['train'].set_string_features(list(indata[prefix+'data_train'][0]))
 	feats['test'].set_string_features(list(indata[prefix+'data_test'][0]))
