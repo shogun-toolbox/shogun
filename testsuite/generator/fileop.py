@@ -387,7 +387,10 @@ def get_output (catID, params, prefix=''):
 		out[prefix+'feature_type']=ftype
 
 		if fclass=='string' or (fclass=='simple' and ftype=='Char'):
-			out[prefix+'alphabet']='DNA'
+			if params.has_key('alphabet'):
+				out[prefix+'alphabet']=params['alphabet']
+			else:
+				out[prefix+'alphabet']='DNA'
 			out[prefix+'seqlen']=dataop.LEN_SEQ
 
 		elif fclass=='simple' and ftype=='Byte':

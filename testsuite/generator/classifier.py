@@ -13,22 +13,6 @@ import dataop
 import category
 
 
-# WDSVMOcas debugging:
-#		pdt=params['data']['train']
-#		odt=outdata['data_train'].tolist()[0]
-#		for i in xrange(len(pdt)):
-#			print 'len pdt', len(pdt[i]), 'len odt', len(odt[i])
-#			print pdt[i], '   ', odt[i]
-#			ordstr=''
-#			for c in pdt[i]:
-#				ordstr+=str(ord(c))
-#			ordstr+='   '
-#			for c in odt[i]:
-#				ordstr+=str(ord(c))
-#			print ordstr
-#			print ''
-#		print 'done get_outdata'
-
 ##########################################################################
 # svm
 ##########################################################################
@@ -442,7 +426,7 @@ def _run_lda ():
 def _run_wdsvmocas ():
 	"""Run Weighted Degree SVM Ocas classifier."""
 
-	svms=('WDSVMOcas')
+	svms=('WDSVMOcas',)
 	params={
 		'type': 'wdsvmocas',
 		'degree': 1,
@@ -455,7 +439,7 @@ def _run_wdsvmocas ():
 	}
 	feats=featop.get_features(
 		params['feature_class'], params['feature_type'],
-		params['data'], params['alphabet'])
+		params['data'], eval(params['alphabet']))
 	_loop_svm(svms, params, feats)
 
 
@@ -471,5 +455,5 @@ def run ():
 	_run_knn()
 	_run_lda()
 	_run_perceptron()
-#	_run_wdsvmocas()
+	_run_wdsvmocas()
 

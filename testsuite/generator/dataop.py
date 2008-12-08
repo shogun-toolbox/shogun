@@ -166,6 +166,12 @@ def get_labels (num, ltype='twoclass'):
 	return labels
 
 
+def _replace_ending_nullbyte(str):
+	strlist=list(str)
+	if strlist[-1]=='\0':
+		strlist[-1]='\1'
+	return ''.join(strlist)
+
 def get_rawdna():
 	"""Return a RAWDNA sequence with number of vectors == length of sequence.
 
@@ -177,6 +183,10 @@ def get_rawdna():
 	table=string.maketrans('ACGT', '\0\1\2\3')
 	dna['train']=[x.translate(table) for x in dna['train']]
 	dna['test']=[x.translate(table) for x in dna['test']]
+
+	# numpy.matrix() chops off 0-bytes, so we'll have to cheat a little
+	dna['train']=[_replace_ending_nullbyte(x) for x in dna['train']]
+	dna['test']=[_replace_ending_nullbyte(x) for x in dna['test']]
 
 	return dna
 
