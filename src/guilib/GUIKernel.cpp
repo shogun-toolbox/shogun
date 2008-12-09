@@ -427,16 +427,16 @@ CKernel* CGUIKernel::create_commstring(
 	SG_DEBUG("created WeightedCommWord/CommWord/CommUlongStringKernel (%p) with size %d, use_sign  %d norm_str %s.\n", kern, size, use_sign, norm_str);
 
 
-	if (strncmp(normstr, "NO", 4)==0)
+	if (strncmp(norm_str, "NO", 4)==0)
 	{
 		kern->set_normalizer(new CIdentityKernelNormalizer());
 	}
-	else if (strncmp(normalization,"FULL", 4)==0)
+	else if (strncmp(norm_str, "FULL", 4)==0)
 	{
 		//nop, as this one is default
 	}
 	else
-		SG_ERROR("Unsupported Normalizer requested, supports only FULL and NO\n")
+		SG_ERROR("Unsupported Normalizer requested, supports only FULL and NO\n");
 
 	return kern;
 }
