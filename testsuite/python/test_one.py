@@ -96,7 +96,10 @@ def _read_matrix (line):
 				if y.find('.')!=-1:
 					lis.append(float(y))
 				else:
-					lis.append(int(y))
+					try:
+						lis.append(int(y))
+					except ValueError: # not int, RAWDNA?
+						lis.append(y)
 		lis2d.append(lis)
 
 	return array(lis2d)

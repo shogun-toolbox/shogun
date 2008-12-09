@@ -2,7 +2,7 @@
 Utilities for testing
 """
 
-from numpy import double, ushort, ubyte
+from numpy import double, ushort, ubyte, matrix
 from sg import sg
 
 SIZE_CACHE=10
@@ -69,10 +69,11 @@ def set_features (indata, prefix):
 	indata_test=indata[prefix+'data_test']
 
 	if indata.has_key(prefix+'alphabet'):
-		if indata[prefix+'alphabet']=='RAWBYTE':
+		alphabet=indata[prefix+'alphabet']
+		if alphabet=='RAWBYTE':
 			raise NotImplementedError, 'Alphabet RAWBYTE not supported yet.'
 
-		if indata[prefix+'alphabet']=='CUBE':
+		if alphabet=='CUBE':
 			data_train=[str(x) for x in list(indata_train[0])]
 			data_test=[str(x) for x in list(indata_test[0])]
 		else:
@@ -81,6 +82,12 @@ def set_features (indata, prefix):
 
 		sg('set_features', 'TRAIN', data_train, indata[prefix+'alphabet'])
 		sg('set_features', 'TEST', data_test, indata[prefix+'alphabet'])
+
+		if alphabet=='RAWDNA':
+			raise NotImplementedError, 'Alphabet RAWDNA not supported yet.'
+			# conversion to StringByte not implemented yet :(
+			sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'BYTE')
+			sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'BYTE')
 
 	elif indata.has_key('data'): # CustomKernel
 		sg('set_features', 'TRAIN',
