@@ -200,6 +200,13 @@ function y = set_kernel()
 		global LocalAlignmentStringKernel;
 		kernel=LocalAlignmentStringKernel(feats_train, feats_train);
 
+	elseif strcmp(kname, 'Oligo')==1
+		global OligoKernel;
+		global kernel_arg1_k;
+		global kernel_arg2_width;
+		kernel=OligoKernel(size_cache, kernel_arg1_k, kernel_arg2_width);
+		kernel.init(feats_train, feats_train);
+
 	elseif strcmp(kname, 'PolyMatchString')==1
 		global PolyMatchStringKernel;
 		global kernel_arg1_degree;

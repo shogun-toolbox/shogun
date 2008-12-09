@@ -63,6 +63,12 @@ set_kernel <- function() {
 		}
 	}
 
+	else if (regexpr('OLIGO', kname)>0) {
+		sg('set_kernel', kname, ftype, size_cache,
+			kernel_arg1_k, kernel_arg2_width)
+	}
+
+
 	else if (regexpr('POLYMATCH', kname)>0) {
 		sg('set_kernel', kname, ftype, size_cache,
 			kernel_arg1_degree, tobool(kernel_arg2_inhomogene))

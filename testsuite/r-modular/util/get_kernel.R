@@ -166,6 +166,14 @@ get_kernel <- function(feats) {
 			feats[[1]], feats[[1]], as.integer(kernel_arg1_degree)))
 	}
 
+	else if (regexpr('^Oligo', kname)>0) {
+		kernel <- OligoKernel(size_cache,
+			as.integer(kernel_arg1_k), kernel_arg2_width)
+		kernel$init(kernel, feats[[1]], feats[[1]])
+		return(kernel)
+	}
+
+
 	else if (regexpr('^PolyMatchString', kname)>0) {
 		return(PolyMatchStringKernel(
 			feats[[1]], feats[[1]],

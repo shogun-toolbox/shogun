@@ -156,6 +156,12 @@ function y = set_kernel()
 			kernel_arg2_inner_degree, ...
 			kernel_arg3_outer_degree);
 
+	elseif strcmp(kname, 'OLIGO')==1
+		global kernel_arg1_k;
+		global kernel_arg2_width;
+		sg('set_kernel', kname, ftype, size_cache, ...
+			kernel_arg1_k, kernel_arg2_width);
+
 	elseif strcmp(kname, 'COMBINED')
 		% this will break when test file is changed!
 		global kernel_subkernel0_name;

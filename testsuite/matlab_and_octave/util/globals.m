@@ -28,6 +28,7 @@ global kernel_arg2_distance;
 global kernel_arg1_inhomogene;
 global kernel_arg2_inhomogene;
 global kernel_arg2_inner_degree;
+global kernel_arg1_k;
 global kernel_arg1_length;
 global kernel_arg2_max_shift;
 global kernel_arg1_normalization;
@@ -39,6 +40,7 @@ global kernel_arg1_size;
 global kernel_arg1_use_sign;
 global kernel_arg0_width;
 global kernel_arg1_width;
+global kernel_arg2_width;
 
 global kernel_subkernel0_name;
 global kernel_subkernel0_accuracy;
