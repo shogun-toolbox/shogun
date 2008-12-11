@@ -85,8 +85,7 @@ public:
 	 *
 	 * @return best path no b
 	 */
-	float64_t best_path_no_b(
-		int32_t max_iter, int32_t & best_iter, int32_t *my_path);
+	float64_t best_path_no_b(int32_t max_iter, int32_t & best_iter, int32_t *my_path);
 
 	/** best path no b transition
 	 *
@@ -96,9 +95,7 @@ public:
 	 * @param prob_nbest prob_nbest
 	 * @param my_paths my paths
 	 */
-	void best_path_no_b_trans(
-		int32_t max_iter, int32_t & max_best_iter, int16_t nbest,
-		float64_t *prob_nbest, int32_t *my_paths);
+	void best_path_no_b_trans(int32_t max_iter, int32_t & max_best_iter, int16_t nbest, float64_t *prob_nbest, int32_t *my_paths);
 	
 	// model related functions
 	/** set number of states
@@ -129,9 +126,7 @@ public:
 	 *  @param num_probes number of probes
 	 *  @param seq_len: number of candidate positions
 	 */
-	void init_tiling_data(
-		int32_t* probe_pos, float64_t* intensities, const int32_t num_probes,
-		const int32_t seq_len);
+	void init_tiling_data(int32_t* probe_pos, float64_t* intensities, const int32_t num_probes, const int32_t seq_len);
 
 	/** precompute tiling Plifs
 	 *
@@ -141,11 +136,14 @@ public:
 	 * @param seq_len sequence length
 	 * @param pos pos
 	 */
-	void precompute_tiling_plifs(
-		CPlif** PEN, const int32_t* tiling_plif_ids,
-		const int32_t num_tiling_plifs, const int32_t seq_len,
-		const int32_t* pos);
+	void precompute_tiling_plifs(CPlif** PEN, const int32_t* tiling_plif_ids, const int32_t num_tiling_plifs, const int32_t seq_len, const int32_t* pos);	
 
+	/** append rows to linear features array
+ 	 * 
+ 	 * @param num_new_feat number of new rows to add
+ 	 * @param seq_len number of columns (must be equal to the existing num of cols)
+ 	 */
+	void resize_lin_feat(int32_t num_new_feat, int32_t seq_len);
 	/** set vector p
 	 *
 	 * @param p new vector p
@@ -204,8 +202,7 @@ public:
 	 * @param p_cum_num_words_array new cum num words array
 	 * @param num_elem number of array elements
 	 */
-	void init_cum_num_words_array(
-		int32_t * p_cum_num_words_array, int32_t num_elem);
+	void init_cum_num_words_array(int32_t * p_cum_num_words_array, int32_t num_elem);
 
 	/** init num words array
 	 *
@@ -220,8 +217,7 @@ public:
 	 * @param num_elem number of array elements
 	 * @param num_columns number of columns
 	 */
-	void init_mod_words_array(
-		int32_t * p_mod_words_array, int32_t num_elem, int32_t num_columns);
+	void init_mod_words_array(int32_t * p_mod_words_array, int32_t num_elem, int32_t num_columns);
 
 	/** init sign words array
 	 *
@@ -235,8 +231,7 @@ public:
 	 * @param p_string_words_array new string words array
 	 * @param num_elem number of array elements
 	 */
-	void init_string_words_array(
-		int32_t * p_string_words_array, int32_t num_elem);
+	void init_string_words_array(int32_t * p_string_words_array, int32_t num_elem);
 
 	/** check SVM arrays
 	 * call this function to check consistency
@@ -261,8 +256,7 @@ public:
 	 * @param seq_len length of sequence
 	 * @param max_num_signals maximal number of signals
 	 */
-	void best_path_set_seq3d(
-		float64_t *seq, int32_t p_N, int32_t seq_len, int32_t max_num_signals);
+	void best_path_set_seq3d(float64_t *seq, int32_t p_N, int32_t seq_len, int32_t max_num_signals);
 
 	/** set best path pos
 	 *
@@ -287,8 +281,7 @@ public:
 	 * @param num_states number of states
 	 * @param seq_len length of sequence
 	 */
-	void best_path_set_segment_sum_weights(
-		float64_t *segment_sum_weights, int32_t num_states, int32_t seq_len);
+	void best_path_set_segment_sum_weights(float64_t *segment_sum_weights, int32_t num_states, int32_t seq_len);
 
 	/** set best path Plif list
 	 *
@@ -302,8 +295,7 @@ public:
 	 * @param m dimension m of matrix
 	 * @param n dimension n of matrix
 	 */
-	void best_path_set_plif_id_matrix(
-		int32_t *plif_id_matrix, int32_t m, int32_t n);
+	void best_path_set_plif_id_matrix(int32_t *plif_id_matrix, int32_t m, int32_t n);
 
 	/** set best path plif state signal matrix
 	 *
@@ -311,8 +303,7 @@ public:
 	 * @param m dimension m of matrix
 	 * @param n dimension n of matrix
 	 */
-	void best_path_set_plif_state_signal_matrix(
-		int32_t *plif_id_matrix, int32_t m, int32_t n);
+	void best_path_set_plif_state_signal_matrix(int32_t *plif_id_matrix, int32_t m, int32_t n);
 
 	/** set best path genesstr
 	 *
@@ -320,8 +311,7 @@ public:
 	 * @param genestr_len length of gene string
 	 * @param genestr_num number of gene strings, typically 1
 	 */
-	void best_path_set_genestr(
-		char* genestr, int32_t genestr_len, int32_t genestr_num);
+	void best_path_set_genestr(char* genestr, int32_t genestr_len, int32_t genestr_num);
 
 	// additional best_path_trans_deriv functions
 	/** set best path my state sequence
@@ -355,8 +345,7 @@ public:
 	 * @param dict_len length of dictionary weights
 	 * @param n dimension n
 	 */
-	void best_path_set_dict_weights(
-		float64_t* dictionary_weights, int32_t dict_len, int32_t n);
+	void best_path_set_dict_weights(float64_t* dictionary_weights, int32_t dict_len, int32_t n);
 
 	/** set best path segment loss
 	 *
@@ -364,9 +353,7 @@ public:
 	 * @param num_segment_id1 number of segment id1
 	 * @param num_segment_id2 number of segment id2
 	 */
-	void best_path_set_segment_loss(
-		float64_t * segment_loss, int32_t num_segment_id1,
-		int32_t num_segment_id2);
+	void best_path_set_segment_loss(float64_t * segment_loss, int32_t num_segment_id1, int32_t num_segment_id2);
 
 	/** set best path segmend ids mask
 	 *
@@ -374,8 +361,7 @@ public:
 	 * @param segment_mask segment mask
 	 * @param m dimension m
 	 */
-	void best_path_set_segment_ids_mask(
-		int32_t* segment_ids, float64_t* segment_mask, int32_t m);
+	void best_path_set_segment_ids_mask(int32_t* segment_ids, float64_t* segment_mask, int32_t m);
 
 	// best_path functions
 	/** best path call
@@ -456,12 +442,12 @@ public:
 	 * @param use_orf whether orf shall be used
 	 */
 	template <int16_t nbest, bool with_loss, bool with_multiple_sequences>
-	void best_path_trans(
-		const float64_t *seq, int32_t seq_len, const int32_t *pos,
-		const int32_t *orf_info, CPlifBase **PLif_matrix,
-		CPlifBase **Plif_state_signals, int32_t max_num_signals,
-		int32_t genestr_num, float64_t *prob_nbest, int32_t *my_state_seq,
-		int32_t *my_pos_seq, bool use_orf);
+	void best_path_trans(const float64_t *seq, int32_t seq_len, const int32_t *pos,
+						 const int32_t *orf_info, CPlifBase **PLif_matrix,
+						 CPlifBase **Plif_state_signals, int32_t max_num_signals,
+						 int32_t genestr_num,
+						 float64_t *prob_nbest, int32_t *my_state_seq, int32_t *my_pos_seq,
+						 bool use_orf);
 
 	/** best path trans derivative
 	 *
@@ -478,12 +464,9 @@ public:
 	 * @param max_num_signals maximal number of signals
 	 * @param genestr_num number of gene strings
 	 */
-	void best_path_trans_deriv(
-		int32_t *my_state_seq, int32_t *my_pos_seq, float64_t *my_scores,
-		float64_t* my_losses, int32_t my_seq_len, const float64_t *seq_array,
-		int32_t seq_len, const int32_t *pos, CPlifBase **Plif_matrix,
-		CPlifBase **Plif_state_signals, int32_t max_num_signals,
-		int32_t genestr_num);
+	void best_path_trans_deriv(int32_t *my_state_seq, int32_t *my_pos_seq, float64_t *my_scores, float64_t* my_losses, int32_t my_seq_len,
+					const float64_t *seq_array, int32_t seq_len, const int32_t *pos, CPlifBase **Plif_matrix,
+					CPlifBase **Plif_state_signals, int32_t max_num_signals, int32_t genestr_num);
 	
 	/** best path 2struct
 	 *
@@ -501,12 +484,12 @@ public:
 	 * @param dict_len length of dictionary weights
 	 * @param segment_sum_weights segment sum weights
 	 */
-	void best_path_2struct(
-		const float64_t *seq, int32_t seq_len, const int32_t *pos,
-		CPlifBase **Plif_matrix, const char *genestr, int32_t genestr_len,
-		int16_t nbest, float64_t *prob_nbest, int32_t *my_state_seq,
-		int32_t *my_pos_seq, float64_t *dictionary_weights, int32_t dict_len,
-		float64_t *segment_sum_weights);
+	void best_path_2struct(const float64_t *seq, int32_t seq_len, const int32_t *pos,
+						   CPlifBase **Plif_matrix,
+						   const char *genestr, int32_t genestr_len,
+						   int16_t nbest,
+						   float64_t *prob_nbest, int32_t *my_state_seq, int32_t *my_pos_seq,
+						   float64_t *dictionary_weights, int32_t dict_len, float64_t *segment_sum_weights);
 
 	/** best path trans simple
 	 *
@@ -516,9 +499,8 @@ public:
 	 * @param prob_nbest prob(ability?) nbest
 	 * @param my_state_seq my state seq
 	 */
-	void best_path_trans_simple(
-		const float64_t *seq, int32_t seq_len, int16_t nbest,
-		float64_t *prob_nbest, int32_t *my_state_seq);
+	void best_path_trans_simple(const float64_t *seq, int32_t seq_len, int16_t nbest,
+								float64_t *prob_nbest, int32_t *my_state_seq);
 
 
 
@@ -607,10 +589,9 @@ public:
 	 * @param dictionary_weights dictionary weights
 	 * @param dict_len lenght of dictionary
 	 */
-	void precompute_content_values(
-		uint16_t*** wordstr, const int32_t *pos, const int32_t num_cand_pos,
-		const int32_t genestr_len, float64_t *dictionary_weights,
-		int32_t dict_len);
+	void precompute_content_values(uint16_t*** wordstr, const int32_t *pos,
+		const int32_t num_cand_pos, const int32_t genestr_len,
+		float64_t *dictionary_weights, int32_t dict_len);
 
 	/** create word string from char*
 	 * Jonas
@@ -620,9 +601,7 @@ public:
 	 * @param genestr_len length of gene string
 	 * @param wordstr word strings
 	 */
-	void create_word_string(
-		const char* genestr, int32_t genestr_num, int32_t genestr_len,
-		uint16_t*** wordstr);
+	void create_word_string(const char* genestr, int32_t genestr_num, int32_t genestr_len, uint16_t*** wordstr);
 
 	/** precompute stop codons
 	 *
@@ -673,10 +652,9 @@ protected:
 	 * @param svm_values SVM values
 	 * @param frame frame
 	 */
-	inline void lookup_content_svm_values(
-		const int32_t from_state, const int32_t to_state,
-		const int32_t from_pos, const int32_t to_pos, float64_t* svm_values,
-		int32_t frame);
+	inline void lookup_content_svm_values(const int32_t from_state,
+		const int32_t to_state, const int32_t from_pos, const int32_t to_pos,
+		float64_t* svm_values, int32_t frame);
 
 	/** lookup tiling Plif values
 	 *
@@ -685,9 +663,8 @@ protected:
 	 * @param len length
 	 * @param svm_values SVM values
 	 */
-	inline void lookup_tiling_plif_values(
-		const int32_t from_state, const int32_t to_state, const int32_t len,
-		float64_t* svm_values);
+	inline void lookup_tiling_plif_values(const int32_t from_state,
+		const int32_t to_state, const int32_t len, float64_t* svm_values);
 
 	/** find frame
 	 *
@@ -703,7 +680,7 @@ protected:
 	 * @return an integer
 	 */
 	inline int32_t raw_intensities_interval_query(
-		const int32_t from_pos, const int32_t to_pos, float64_t* intensities);
+		const int32_t from_pos, const int32_t to_pos, float64_t* intensities, int32_t type);
 
 	/** translate from single order
 	 *
@@ -713,9 +690,8 @@ protected:
 	 * @param order order
 	 * @param max_val maximum number of bits, e.g. 2 for DNA
 	 */
-	void translate_from_single_order(
-		uint16_t* obs, int32_t sequence_length, int32_t start, int32_t order,
-		int32_t max_val=2);
+	void translate_from_single_order(uint16_t* obs, int32_t sequence_length, int32_t start,
+		int32_t order, int32_t max_val=2);
 
 	/** reset SVM value
 	 *
@@ -723,8 +699,7 @@ protected:
 	 * @param last_svm_pos last SVM position
 	 * @param svm_value value to set
 	 */
-	void reset_svm_value(
-		int32_t pos, int32_t & last_svm_pos, float64_t * svm_value);
+	void reset_svm_value(int32_t pos, int32_t & last_svm_pos, float64_t * svm_value);
 
 	/** extend SVM value
 	 *
@@ -733,8 +708,7 @@ protected:
 	 * @param last_svm_pos lsat SVM position
 	 * @param svm_value value to set
 	 */
-	void extend_svm_value(
-		uint16_t* wordstr, int32_t pos, int32_t &last_svm_pos,
+	void extend_svm_value(uint16_t* wordstr, int32_t pos, int32_t &last_svm_pos,
 		float64_t* svm_value);
 
 	/** reset segment sum value
@@ -744,9 +718,8 @@ protected:
 	 * @param last_segment_sum_pos last segment sum position
 	 * @param segment_sum_value value to set
 	 */
-	void reset_segment_sum_value(
-		int32_t num_states, int32_t pos, int32_t & last_segment_sum_pos,
-		float64_t * segment_sum_value);
+	void reset_segment_sum_value(int32_t num_states, int32_t pos,
+		int32_t & last_segment_sum_pos, float64_t * segment_sum_value);
 
 	/** extend segment sum value
 	 *
@@ -757,9 +730,8 @@ protected:
 	 * @param last_segment_sum_pos last segment sum position
 	 * @param segment_sum_value value to set
 	 */
-	void extend_segment_sum_value(
-		float64_t *segment_sum_weights, int32_t seqlen, int32_t num_states,
-		int32_t pos, int32_t &last_segment_sum_pos,
+	void extend_segment_sum_value(float64_t *segment_sum_weights, int32_t seqlen,
+		int32_t num_states, int32_t pos, int32_t &last_segment_sum_pos,
 		float64_t* segment_sum_value);
 
 	/** SVM values */
@@ -791,9 +763,8 @@ protected:
 	 * @param seqlen length of sequence
 	 * @param howmuchlookback how far to look back
 	 */
-	void init_svm_values(
-		struct svm_values_struct & svs, int32_t start_pos, int32_t seqlen,
-		int32_t howmuchlookback);
+	void init_svm_values(struct svm_values_struct & svs, int32_t start_pos,
+		int32_t seqlen, int32_t howmuchlookback);
 
 	/** clear SVM values
 	 *
@@ -808,8 +779,7 @@ protected:
 	 * @param t_end t end
 	 * @param svs SVM values
 	 */
-	void find_svm_values_till_pos(
-		uint16_t*** wordstr, const int32_t *pos, int32_t t_end,
+	void find_svm_values_till_pos(uint16_t*** wordstr, const int32_t *pos, int32_t t_end,
 		struct svm_values_struct &svs);
 
 	/** find SVM values till position
@@ -819,8 +789,7 @@ protected:
 	 * @param t_end t end
 	 * @param svs SVM values
 	 */
-	void find_svm_values_till_pos(
-		uint16_t** wordstr, const int32_t *pos, int32_t t_end,
+	void find_svm_values_till_pos(uint16_t** wordstr, const int32_t *pos, int32_t t_end,
 		struct svm_values_struct &svs);
 
 	/** update SVM values till position
@@ -831,8 +800,7 @@ protected:
 	 * @param prev_t_end previous t end
 	 * @param svs SVM values
 	 */
-	void update_svm_values_till_pos(
-		uint16_t*** wordstr, const int32_t *pos, int32_t t_end,
+	void update_svm_values_till_pos(uint16_t*** wordstr, const int32_t *pos, int32_t t_end,
 		int32_t prev_t_end, struct svm_values_struct &svs);
 
 	/** extend orf
@@ -843,9 +811,7 @@ protected:
 	 * @param last_pos last position
 	 * @param to to
 	 */
-	bool extend_orf(
-		int32_t orf_from, int32_t orf_to, int32_t start, int32_t &last_pos,
-		int32_t to);
+	bool extend_orf(int32_t orf_from, int32_t orf_to, int32_t start, int32_t &last_pos, int32_t to);
 
 	/** segment loss */
 	struct segment_loss_struct
@@ -868,8 +834,7 @@ protected:
 	 * @param seqlen length of sequence
 	 * @param howmuchlookback how far to look back
 	 */
-	void init_segment_loss(
-		struct segment_loss_struct & loss, int32_t seqlen,
+	void init_segment_loss(struct segment_loss_struct & loss, int32_t seqlen,
 		int32_t howmuchlookback);
 
 	/** clear segment loss
@@ -888,9 +853,8 @@ protected:
 	 * @param last_value last value
 	 * @return last value
 	 */
-	float64_t extend_segment_loss(
-		struct segment_loss_struct & loss, const int32_t * pos_array,
-		int32_t segment_id, int32_t pos, int32_t& last_pos,
+	float64_t extend_segment_loss(struct segment_loss_struct & loss,
+		const int32_t * pos_array, int32_t segment_id, int32_t pos, int32_t& last_pos,
 		float64_t &last_value);
 
 	/** find segment loss till pos
@@ -901,9 +865,9 @@ protected:
 	 * @param segment_mask segmend mask
 	 * @param loss segment loss
 	 */
-	void find_segment_loss_till_pos(
-		const int32_t * pos, int32_t t_end, CArray<int32_t>& segment_ids,
-		CArray<float64_t>& segment_mask, struct segment_loss_struct& loss);
+	void find_segment_loss_till_pos(const int32_t * pos, int32_t t_end,
+		CArray<int32_t>& segment_ids, CArray<float64_t>& segment_mask,
+		struct segment_loss_struct& loss);
 
 	
 	/**@name model specific variables.
@@ -1046,46 +1010,45 @@ protected:
 	CArray<bool> m_genestr_stop;
 
 	/**
-	 *  array for storage of content svm values
+	 *  array for storage of precomputed linear features linge content svm values or pliffed tiling data
 	 * Jonas
 	 */
-	CArray2<float64_t> m_precomputed_svm_values;
+	CArray2<float64_t> m_lin_feat;
+	/**number of  linear features*/ 
+	//int32_t m_num_lin_feat;
 
-	/** precomputed tiling values */
-	CArray2<float64_t> m_precomputed_tiling_values;
 
 	/** raw intensities */
 	float64_t* m_raw_intensities;
 	/** prope position */
 	int32_t* m_probe_pos;
 	/** number of probes */
-	int32_t m_num_probes;
-	/** use tiling */
-	bool m_use_tiling;
+	int32_t* m_num_probes_cum;
+	/** num lin feat plifs cum */
+	int32_t* m_num_lin_feat_plifs_cum;
+	/** number of additional data tracks like tiling, RNA-Seq, ...*/
+	int32_t m_num_raw_data;
 	/** length of gene string */
 	int32_t m_genestr_len;
 };
 
-inline int32_t CDynProg::raw_intensities_interval_query(
-	const int32_t from_pos, const int32_t to_pos, float64_t* intensities)
+inline int32_t CDynProg::raw_intensities_interval_query(const int32_t from_pos, const int32_t to_pos, float64_t* intensities, int32_t type)
 {
 	ASSERT(from_pos<to_pos);
-	//SG_PRINT("m_num_probes:%i, m_raw_intensities[1]:%f, m_probe_pos[1]:%i \n",m_num_probes, m_raw_intensities[10], m_probe_pos[10]);
 	int32_t num_intensities = 0;
-	int32_t* p_tiling_pos  = m_probe_pos;
-	float64_t* p_tiling_data = m_raw_intensities;
+	int32_t* p_tiling_pos  = &m_probe_pos[m_num_probes_cum[type-1]];
+	float64_t* p_tiling_data = &m_raw_intensities[m_num_probes_cum[type-1]];
 	int32_t last_pos;
-	int32_t num = 0;
+	int32_t num = m_num_probes_cum[type-1];
 	while (*p_tiling_pos<to_pos)
 	{
 		if (*p_tiling_pos>=from_pos)
 		{
 			intensities[num_intensities] = *p_tiling_data;
 			num_intensities++;
-			//SG_PRINT("*p_tiling_data:%f, *p_tiling_pos:%i\n",*p_tiling_data,*p_tiling_pos);
 		}
 		num++;
-		if (num>=m_num_probes)
+		if (num>=m_num_probes_cum[type])
 			break;
 		last_pos = *p_tiling_pos;
 		p_tiling_pos++;
@@ -1094,19 +1057,22 @@ inline int32_t CDynProg::raw_intensities_interval_query(
 	}
 	return num_intensities;
 }
-
-inline void CDynProg::lookup_content_svm_values(
-	const int32_t from_state, const int32_t to_state, const int32_t from_pos,
-	const int32_t to_pos, float64_t* svm_values, int32_t frame)
+inline void CDynProg::lookup_content_svm_values(const int32_t from_state, const int32_t to_state, const int32_t from_pos, const int32_t to_pos, float64_t* svm_values, int32_t frame)
 {
 //	ASSERT(from_state<to_state);
 //	if (!(from_pos<to_pos))
 //		SG_ERROR("from_pos!<to_pos, from_pos: %i to_pos: %i \n",from_pos,to_pos);
-	for (int32_t i=0;i<4;i++)
+	for (int32_t i=0;i<num_svms;i++)
 	{
-		float64_t to_val   = m_precomputed_svm_values.get_element(i,  to_state);
-		float64_t from_val = m_precomputed_svm_values.get_element(i,from_state);
+		float64_t to_val   = m_lin_feat.get_element(i,  to_state);
+		float64_t from_val = m_lin_feat.get_element(i,from_state);
 		svm_values[i]=(to_val-from_val)/(to_pos-from_pos);
+	}
+	for (int32_t i=num_svms;i<m_num_lin_feat_plifs_cum[m_num_raw_data];i++)
+	{
+		float64_t to_val   = m_lin_feat.get_element(i,  to_state);
+		float64_t from_val = m_lin_feat.get_element(i,from_state);
+		svm_values[i]=to_val-from_val;
 	}
 	// find the correct row with precomputed 
 	if (frame!=-1)
@@ -1116,24 +1082,9 @@ inline void CDynProg::lookup_content_svm_values(
 		svm_values[6] = 1e10;
 		int32_t global_frame = from_pos%3;
         	int32_t row = ((global_frame+frame)%3)+4;
-		//SG_PRINT("global_frame:%i row:%i frame:%i \n", global_frame, row, frame);
-		float64_t to_val   = m_precomputed_svm_values.get_element(row,  to_state);
-		float64_t from_val = m_precomputed_svm_values.get_element(row,from_state);
+		float64_t to_val   = m_lin_feat.get_element(row,  to_state);
+		float64_t from_val = m_lin_feat.get_element(row,from_state);
 		svm_values[frame+4] = (to_val-from_val)/(to_pos-from_pos);
-	}
-}
-
-inline void CDynProg::lookup_tiling_plif_values(
-	const int32_t from_state, const int32_t to_state, const int32_t len,
-	float64_t* svm_values)
-{
-	ASSERT(from_state<to_state);
-	ASSERT(len>0);
-	for (int32_t i=num_svms;i<2*num_svms;i++)
-	{
-		//svm_values[i]=(m_precomputed_tiling_values.get_element(i-num_svms,to_state)-m_precomputed_tiling_values.get_element(i-num_svms,from_state))/len;
-		svm_values[i]=(m_precomputed_tiling_values.get_element(i-num_svms,to_state)-m_precomputed_tiling_values.get_element(i-num_svms,from_state));
-		//svm_values[i]=0.0;
 	}
 }
 #endif
