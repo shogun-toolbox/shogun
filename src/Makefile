@@ -202,7 +202,8 @@ ifeq (libshogun,$(INTERFACE))
 install: $(TARGET)
 	install -d -m755 $(DESTDIR)$(LIBDIR)
 	install -d -m755 "$(DESTDIR)$(INCDIR)/shogun"
-	install -m755 $(TARGET) $(DESTDIR)$(LIBDIR)
+	install -m755 libshogun.so $(DESTDIR)$(LIBDIR)
+	install -m755 libshogun.a $(DESTDIR)$(LIBDIR)
 
 	find ./ -mindepth 1 -type d ! -wholename '*.svn*' \
 		-exec install -d -m755 "$(DESTDIR)$(INCDIR)/shogun/"\{\} \;
@@ -418,8 +419,14 @@ else #r-modular
 $(TARGET): $(OBJFILES) $(SRCFILES) $(HEADERFILES) $(SWIGSRCFILES) $(SWIGDOCFILES) $(SWIGLIBFILES) 
 endif #r-modular
 else
+ifeq (libshogun,$(INTERFACE))
+$(TARGET): $(OBJFILES) $(SRCFILES) $(HEADERFILES)
+	$(LINK) $(shell find $(SRCDIR) -mindepth 2 -name "*.$(EXT_OBJ_CPP)" -o -name "*.$(EXT_OBJ_C)" 2>/dev/null) $(LINKFLAGS) -o libshogun.so $(POSTLINKFLAGS)
+	-ar rs libshogun.a $(shell find $(SRCDIR) -mindepth 2 -name "*.$(EXT_OBJ_CPP)" -o -name "*.$(EXT_OBJ_C)" 2>/dev/null)
+else
 $(TARGET): $(OBJFILES) $(SRCFILES) $(HEADERFILES)
 	$(LINK) $(shell find $(SRCDIR) -mindepth 2 -name "*.$(EXT_OBJ_CPP)" -o -name "*.$(EXT_OBJ_C)" 2>/dev/null) $(LINKFLAGS) -o $@ $(POSTLINKFLAGS)
+endif
 	#removeconfighunk
 endif #swig
 
