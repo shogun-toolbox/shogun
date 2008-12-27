@@ -16,7 +16,6 @@
 
 #include <vector>
 #include <string>
-#include <utility>
 
 /**
  * This class offers access to the Oligo Kernel introduced 

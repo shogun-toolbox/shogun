@@ -14,10 +14,8 @@
 #include "features/StringFeatures.h"
 
 #include <map>
-#include <cmath>
 #include <vector>
 #include <algorithm>
-#include <iostream>
 
 using namespace std;
 
