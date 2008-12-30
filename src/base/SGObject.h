@@ -5,7 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 2008 Soeren Sonnenburg
- * Copyright (C) 2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 2008 Fraunhofer Institute FIRST and Max Planck Society
  */
 
 #ifndef __SGOBJECT_H__
