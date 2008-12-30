@@ -56,6 +56,10 @@
 extern "C" int	finite(double);
 #endif
 
+#ifdef DARWIN
+#define finite isfinite
+#endif
+
 /* Size of RNG seed */
 #define RNG_SEED_SIZE 256
 
