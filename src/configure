@@ -1920,6 +1920,11 @@ fi
 
 set_opts()
 {
+	if echo " $MACHINE " | grep -q 'iPhone' >/dev/null
+	then
+		POSTLINKCMD="ldid -S"
+	fi
+
 	echocheck "Word Size"
 cat > $TMPC << EOF
 #include <stdint.h>
@@ -1927,6 +1932,7 @@ int main(void) { return __WORDSIZE; }
 EOF
 
 	"$COMP_C" $INCLUDES "$TMPC" -o ./"$TMPO"
+	$POSTLINKCMD ./"$TMPO"
 	./"$TMPO"
 	WORDSIZE=$?
 	rm -f ./"$TMPO" "$TMPC"
@@ -2841,11 +2847,6 @@ EOF
 	then
 		HAVE_CMDLINE='#define HAVE_CMDLINE 1'
 		DEFINES="$DEFINES -DHAVE_CMDLINE"
-	fi
-
-	if echo " $MACHINE " | grep -q 'iPhone' >/dev/null
-	then
-		POSTLINKCMD="ldid -S"
 	fi
 }
 
