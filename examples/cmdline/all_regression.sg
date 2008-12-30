@@ -53,7 +53,6 @@ set_kernel GAUSSIAN REAL 10 2.1
 set_features TRAIN ../data/fm_train_real.dat
 set_labels TRAIN ../data/label_train_twoclass.dat
 new_regression KRR
-svr_tube_epsilon 1e-2
 krr_tau 1.2
 c 0.017
 

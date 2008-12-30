@@ -708,6 +708,12 @@ bool CGUIClassifier::set_max_train_time(float64_t max)
 
 bool CGUIClassifier::set_svr_tube_epsilon(float64_t tube_epsilon)
 {
+	if (classifier->get_classifier_type() != CT_LIBSVR &&
+			classifier->get_classifier_type() != CT_SVRLIGHT)
+	{
+		SG_ERROR("Underlying method not capable of SV-regression\n");
+	}
+
 	if (tube_epsilon<0)
 		svm_tube_epsilon=1e-2;
 	svm_tube_epsilon=tube_epsilon;
