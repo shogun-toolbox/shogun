@@ -5,6 +5,7 @@ VERSION=`grep "SHOGUN Release version" NEWS 2>&1 | cut -c 27- | head -n 1`
 [ -n "$VERSION" ] && echo "Running configure for SHOGUN version $VERSION"
 
 # some hopefully reasonable defaults
+POSTLINKCMD="true"
 MAKEDEPEND="gcc -MM"
 MAKEDEPENDOPTS=""
 SRCDIR="`dirname $0`"
@@ -2841,6 +2842,11 @@ EOF
 		HAVE_CMDLINE='#define HAVE_CMDLINE 1'
 		DEFINES="$DEFINES -DHAVE_CMDLINE"
 	fi
+
+	if echo " $MACHINE " | grep -q 'iPhone' >/dev/null
+	then
+		POSTLINKCMD="ldid -S"
+	fi
 }
 
 #write the actual config
@@ -2894,6 +2900,7 @@ COMPFLAGS_CPP	= ${COMPFLAGS_CPP}
 COMPFLAGS_SWIG_CPP	= ${COMPFLAGS_SWIG_CPP}
 INCLUDES		= ${INCLUDES}
 LINK			= ${LINK}
+POSTLINKCMD		= ${POSTLINKCMD}
 LINKFLAGS 		= ${LINKFLAGS}
 POSTLINKFLAGS	= ${POSTLINKFLAGS}
 PREFIX			= ${_prefix}

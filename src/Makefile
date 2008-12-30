@@ -426,6 +426,7 @@ $(TARGET): $(OBJFILES) $(SRCFILES) $(HEADERFILES)
 else
 $(TARGET): $(OBJFILES) $(SRCFILES) $(HEADERFILES)
 	$(LINK) $(shell find $(SRCDIR) -mindepth 2 -name "*.$(EXT_OBJ_CPP)" -o -name "*.$(EXT_OBJ_C)" 2>/dev/null) $(LINKFLAGS) -o $@ $(POSTLINKFLAGS)
+	$(POSTLINKCMD) $@
 endif
 	#removeconfighunk
 endif #swig
