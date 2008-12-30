@@ -3116,7 +3116,7 @@ void CDynProg::best_path_trans_deriv(
 	//transition_matrix_a_id.display_array() ;
 	
 	{ // compute derivatives for given path
-		float64_t svm_value[m_num_lin_feat_plifs_cum[m_num_raw_data]] ;
+		float64_t* svm_value = new float64_t[m_num_lin_feat_plifs_cum[m_num_raw_data]];
 		for (int32_t s=0; s<m_num_lin_feat_plifs_cum[m_num_raw_data]; s++)
 			svm_value[s]=0 ;
 		
