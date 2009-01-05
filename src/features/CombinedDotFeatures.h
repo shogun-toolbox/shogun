@@ -1,0 +1,125 @@
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Written (W) 2009 Soeren Sonnenburg
+ * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ */
+
+#ifndef _COMBINEDDOTFEATURES_H___
+#define _COMBINEDDOTFEATURES_H___
+
+#include "lib/common.h"
+#include "lib/DynamicArray.h"
+#include "features/DotFeatures.h"
+
+/** Features that allow stacking of a number of DotFeatures.
+ *
+ * They transparently provide all the operations of DotFeatures, i.e.
+ *
+ * - a way to obtain the dimensionality of the feature space, i.e. \f$\mbox{dim}({\cal X})\f$
+ *
+ * - dot product between feature vectors:
+ *
+ *   \f[r = {\bf x} \cdot {\bf x'}\f]
+ *
+ * - dot product between feature vector and a dense vector \f${\bf z}\f$:
+ *
+ *   \f[r = {\bf x} \cdot {\bf z}\f]
+ *
+ * - multiplication with a scalar \f$\alpha\f$ and addition on to a dense vector \f${\bf z}\f$:
+ *
+ *   \f[${\bf z'} = \alpha {\bf x} + {\bf z}\f]
+ * 
+ */
+class CCombinedDotFeatures : public CDotFeatures
+{
+	/** constructor */
+	CCombinedDotFeatures();
+
+	/** copy constructor */
+	CCombinedDotFeatures(const CCombinedDotFeatures & orig)
+		: CFeatures(orig), num_vectors(orig.num_vectors),
+		num_dimensions(orig.num_dimensions),
+	{
+		SG_NOTIMPLEMENTED
+	}
+
+	/** destructor */
+	~CCombinedDotFeatures();
+
+	inline virtual int32_t get_num_vectors()
+	{
+		return num_vectors;
+	}
+
+	/** obtain the dimensionality of the feature space
+	 *
+	 * @return dimensionality
+	 */
+	virtual int32_t get_dim_feature_space();
+
+	/** compute dot product between vector1 and vector2,
+	 * appointed by their indices
+	 *
+	 * @param vec_idx1 index of first vector
+	 * @param vec_idx2 index of second vector
+	 */
+	virtual float64_t dot(int32_t vec_idx1, int32_t vec_idx2);
+
+	/** compute dot product between vector1 and a dense vector
+	 *
+	 * @param vec_idx1 index of first vector
+	 * @param vec2 pointer to real valued vector
+	 * @param vec2_len length of real valued vector
+	 */
+	virtual float64_t dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len);
+
+	/** add vector 1 multiplied with alpha to dense vector2
+	 *
+	 * @param alpha scalar alpha
+	 * @param vec_idx1 index of first vector
+	 * @param vec2 pointer to real valued vector
+	 * @param vec2_len length of real valued vector
+	 */
+	virtual float64_t add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len);
+
+	/** get feature type
+	 *
+	 * @return templated feature type
+	 */
+	inline virtual EFeatureType get_feature_type()
+	{
+		return F_DREAL;
+	}
+
+	/** get feature class
+	 *
+	 * @return feature class
+	 */
+	inline virtual EFeatureClass get_feature_class()
+	{
+		return C_COMBINED_DOT;
+	}
+
+	inline virtual int32_t get_size()
+	{
+		return sizeof(float64_t);
+	}
+
+	/** duplicate feature object
+	 *
+	 * @return feature object
+	 */
+	virtual CCombinedDotFeatures* duplicate() const
+	{
+		return new CCombinedDotFeatures(*this);
+	}
+
+	protected:
+		int32_t num_vectors;
+		int32_t num_dimensions;
+};
+#endif // _DOTFEATURES_H___
