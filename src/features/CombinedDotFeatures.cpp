@@ -13,7 +13,7 @@
 
 CCombinedDotFeatures::CCombinedDotFeatures() : CDotFeatures()
 {
-	feature_list=new CList<CFeatures*>(true);
+	feature_list=new CList<CDotFeatures*>(true);
 }
 
 CCombinedDotFeatures::CCombinedDotFeatures(const CCombinedDotFeatures & orig)
@@ -37,8 +37,8 @@ void CCombinedDotFeatures::list_feature_objs()
 	SG_INFO( "BEGIN COMBINED FEATURES LIST - ");
 	this->list_feature_obj();
 
-	CListElement<CFeatures*> * current = NULL ;
-	CFeatures* f=get_first_feature_obj(current);
+	CListElement<CDotFeatures*> * current = NULL ;
+	CDotFeatures* f=get_first_feature_obj(current);
 
 	while (f)
 	{
@@ -51,14 +51,14 @@ void CCombinedDotFeatures::list_feature_objs()
 
 int32_t CCombinedDotFeatures::get_dim_feature_space()
 {
-	CListElement<CFeatures*> * current = NULL ;
-	CFeatures* f=get_first_feature_obj(current);
+	CListElement<CDotFeatures*> * current = NULL ;
+	CDotFeatures* f=get_first_feature_obj(current);
 
 	int32_t dim=0;
 
 	while (f)
 	{
-		dim+= ((CDotFeatures*) f)->get_dim_feature_space();
+		dim+= f->get_dim_feature_space();
 		f=get_next_feature_obj(current);
 	}
 
@@ -69,12 +69,12 @@ float64_t CCombinedDotFeatures::dot(int32_t vec_idx1, int32_t vec_idx2)
 {
 	float64_t result=0;
 
-	CListElement<CFeatures*> * current = NULL ;
-	CFeatures* f=get_first_feature_obj(current);
+	CListElement<CDotFeatures*> * current = NULL ;
+	CDotFeatures* f=get_first_feature_obj(current);
 
 	while (f)
 	{
-		result += ((CDotFeatures*) f)->dot(vec_idx1, vec_idx2);
+		result += f->dot(vec_idx1, vec_idx2);
 		f=get_next_feature_obj(current);
 	}
 
@@ -85,12 +85,14 @@ float64_t CCombinedDotFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec
 {
 	float64_t result=0;
 
-	CListElement<CFeatures*> * current = NULL ;
-	CFeatures* f=get_first_feature_obj(current);
+	CListElement<CDotFeatures*> * current = NULL ;
+	CDotFeatures* f=get_first_feature_obj(current);
+	uint32_t offs=0;
 
 	while (f)
 	{
-		result += ((CDotFeatures*) f)->dense_dot(vec_idx1, vec2, vec2_len);
+		result += f->dense_dot(vec_idx1, vec2+offs, vec2_len);
+		offs += f->get_dim_feature_space();
 		f=get_next_feature_obj(current);
 	}
 
@@ -99,12 +101,14 @@ float64_t CCombinedDotFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec
 
 void CCombinedDotFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val)
 {
-	CListElement<CFeatures*> * current = NULL ;
-	CFeatures* f=get_first_feature_obj(current);
+	CListElement<CDotFeatures*> * current = NULL ;
+	CDotFeatures* f=get_first_feature_obj(current);
+	uint32_t offs=0;
 
 	while (f)
 	{
-		((CDotFeatures*) f)->add_to_dense_vec(alpha, vec_idx1, vec2, vec2_len, abs_val);
+		f->add_to_dense_vec(alpha, vec_idx1, vec2+offs, vec2_len, abs_val);
+		offs += f->get_dim_feature_space();
 		f=get_next_feature_obj(current);
 	}
 }

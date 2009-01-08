@@ -971,10 +971,13 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @return if length of each vector in this feature object equals the
 		 * given length.
 		 */
-		bool have_same_length(int32_t len)
+		bool have_same_length(int32_t len=-1)
 		{
-			if (len!=get_max_vector_length())
-				return false;
+			if (len!=-1)
+			{
+				if (len!=get_max_vector_length())
+					return false;
+			}
 
 			for (int32_t i=0; i<num_vectors; i++)
 			{

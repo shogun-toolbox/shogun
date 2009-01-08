@@ -119,9 +119,9 @@ class CCombinedDotFeatures : public CDotFeatures
 		 *
 		 * @return first feature object
 		 */
-		inline CFeatures* get_first_feature_obj()
+		inline CDotFeatures* get_first_feature_obj()
 		{
-			CFeatures* f=feature_list->get_first_element();
+			CDotFeatures* f=feature_list->get_first_element();
 			SG_REF(f);
 			return f;
 		}
@@ -131,9 +131,9 @@ class CCombinedDotFeatures : public CDotFeatures
 		 * @param current list of features
 		 * @return first feature object
 		 */
-		inline CFeatures* get_first_feature_obj(CListElement<CFeatures*>*&current)
+		inline CDotFeatures* get_first_feature_obj(CListElement<CDotFeatures*>*&current)
 		{
-			CFeatures* f=feature_list->get_first_element(current);
+			CDotFeatures* f=feature_list->get_first_element(current);
 			SG_REF(f);
 			return f;
 		}
@@ -142,9 +142,9 @@ class CCombinedDotFeatures : public CDotFeatures
 		 *
 		 * @return next feature object
 		 */
-		inline CFeatures* get_next_feature_obj()
+		inline CDotFeatures* get_next_feature_obj()
 		{
-			CFeatures* f=feature_list->get_next_element();
+			CDotFeatures* f=feature_list->get_next_element();
 			SG_REF(f);
 			return f;
 		}
@@ -154,9 +154,9 @@ class CCombinedDotFeatures : public CDotFeatures
 		 * @param current list of features
 		 * @return next feature object
 		 */
-		inline CFeatures* get_next_feature_obj(CListElement<CFeatures*>*&current)
+		inline CDotFeatures* get_next_feature_obj(CListElement<CDotFeatures*>*&current)
 		{
-			CFeatures* f=feature_list->get_next_element(current);
+			CDotFeatures* f=feature_list->get_next_element(current);
 			SG_REF(f);
 			return f;
 		}
@@ -165,9 +165,9 @@ class CCombinedDotFeatures : public CDotFeatures
 		 *
 		 * @return last feature object
 		 */
-		inline CFeatures* get_last_feature_obj()
+		inline CDotFeatures* get_last_feature_obj()
 		{
-			CFeatures* f=feature_list->get_last_element();
+			CDotFeatures* f=feature_list->get_last_element();
 			SG_REF(f);
 			return f;
 		}
@@ -177,7 +177,7 @@ class CCombinedDotFeatures : public CDotFeatures
 		 * @param obj feature object to insert
 		 * @return if inserting was successful
 		 */
-		inline bool insert_feature_obj(CFeatures* obj)
+		inline bool insert_feature_obj(CDotFeatures* obj)
 		{
 			ASSERT(obj);
 			SG_REF(obj);
@@ -189,7 +189,7 @@ class CCombinedDotFeatures : public CDotFeatures
 		 * @param obj feature object to append
 		 * @return if appending was successful
 		 */
-		inline bool append_feature_obj(CFeatures* obj)
+		inline bool append_feature_obj(CDotFeatures* obj)
 		{
 			ASSERT(obj);
 			SG_REF(obj);
@@ -202,7 +202,7 @@ class CCombinedDotFeatures : public CDotFeatures
 		 */
 		inline bool delete_feature_obj()
 		{
-			CFeatures* f=feature_list->delete_element();
+			CDotFeatures* f=feature_list->delete_element();
 			if (f)
 			{
 				SG_UNREF(f);
@@ -223,7 +223,7 @@ class CCombinedDotFeatures : public CDotFeatures
 
 	protected:
 		/** feature list */
-		CList<CFeatures*>* feature_list;
+		CList<CDotFeatures*>* feature_list;
 
 		int32_t num_vectors;
 		int32_t num_dimensions;
