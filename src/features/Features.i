@@ -33,6 +33,7 @@
 %include "base/SGObject.i"
 %include "features/Features.h" 
 %include "features/StringFeatures.i"
+%include "features/DotFeatures.h" 
 %include "features/SparseFeatures.i"
 %include "features/SimpleFeatures.i" 
 %include "features/DummyFeatures.i" 
@@ -45,6 +46,7 @@
 %include "features/RealFeatures.i"
 %include "features/ShortRealFeatures.i"
 %include "features/CombinedFeatures.i"
+%include "features/CombinedDotFeatures.i"
 %include "features/MindyGramFeatures.i"
 %include "features/Labels.i"
 

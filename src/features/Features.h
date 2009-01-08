@@ -76,7 +76,7 @@ class CFeatures : public CSGObject
 		 *
 		 * @param size cache size
 		 */
-		CFeatures(int32_t size);
+		CFeatures(int32_t size=0);
 
 		/** copy constructor */
 		CFeatures(const CFeatures& orig);

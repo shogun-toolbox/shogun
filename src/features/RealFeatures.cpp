@@ -92,3 +92,5 @@ bool CRealFeatures::Align_char_features(CCharFeatures* cf, CCharFeatures* Ref, f
 	SG_INFO( "created %i x %i matrix (0x%p)\n", num_features, num_vectors, feature_matrix) ;
 	return true;
 }
+
+

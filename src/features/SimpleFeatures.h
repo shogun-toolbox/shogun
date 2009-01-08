@@ -18,7 +18,7 @@
 #include "lib/io.h"
 #include "lib/Cache.h"
 #include "preproc/SimplePreProc.h"
-#include "features/Features.h"
+#include "features/DotFeatures.h"
 
 #include <string.h>
 
@@ -52,7 +52,7 @@ template <class ST> class CSimplePreProc;
  * 64bit Fisher Kernel (FK) features from HMM - CTOPFeatures
  * 32bit Integer matrix - CIntFeatures
  */
-template <class ST> class CSimpleFeatures: public CFeatures
+template <class ST> class CSimpleFeatures: public CDotFeatures
 {
 	public:
 		/** constructor
@@ -60,12 +60,12 @@ template <class ST> class CSimpleFeatures: public CFeatures
 		 * @param size cache size
 		 */
 		CSimpleFeatures(int32_t size=0)
-		: CFeatures(size), num_vectors(0), num_features(0),
+		: CDotFeatures(size), num_vectors(0), num_features(0),
 			feature_matrix(NULL), feature_cache(NULL) {}
 
 		/** copy constructor */
 		CSimpleFeatures(const CSimpleFeatures & orig)
-		: CFeatures(orig), num_vectors(orig.num_vectors),
+		: CDotFeatures(orig), num_vectors(orig.num_vectors),
 			num_features(orig.num_features),
 			feature_matrix(orig.feature_matrix),
 			feature_cache(orig.feature_cache)
@@ -85,7 +85,7 @@ template <class ST> class CSimpleFeatures: public CFeatures
 		 * @param num_vec number of vectors in matrix
 		 */
 		CSimpleFeatures(ST* fm, int32_t num_feat, int32_t num_vec)
-		: CFeatures(0), num_vectors(0), num_features(0),
+		: CDotFeatures(0), num_vectors(0), num_features(0),
 			feature_matrix(NULL), feature_cache(NULL)
 		{
 			set_feature_matrix(fm, num_feat, num_vec);
@@ -98,7 +98,7 @@ template <class ST> class CSimpleFeatures: public CFeatures
 		 * @param fname filename to load features from
 		 */
 		CSimpleFeatures(char* fname)
-		: CFeatures(fname), num_vectors(0), num_features(0),
+		: CDotFeatures(fname), num_vectors(0), num_features(0),
 			feature_matrix(NULL), feature_cache(NULL) {}
 
 		/** duplicate feature object
@@ -404,6 +404,80 @@ template <class ST> class CSimpleFeatures: public CFeatures
 				return false;
 		}
 
+		/** obtain the dimensionality of the feature space
+		 *
+		 * (not mix this up with the dimensionality of the input space, usually
+		 * obtained via get_num_features())
+		 *
+		 * @return dimensionality
+		 */
+		virtual int32_t get_dim_feature_space()
+		{
+			return num_features;
+		}
+
+		/** compute dot product between vector1 and vector2,
+		 * appointed by their indices
+		 *
+		 * @param vec_idx1 index of first vector
+		 * @param vec_idx2 index of second vector
+		 */
+		virtual float64_t dot(int32_t vec_idx1, int32_t vec_idx2)
+		{
+			int32_t alen, blen;
+			bool afree, bfree;
+
+			ST* avec= get_feature_vector(vec_idx1, alen, afree);
+			ST* bvec= get_feature_vector(vec_idx2, blen, bfree);
+
+			float64_t result=CMath::dot(avec, bvec, alen);
+
+			free_feature_vector(avec, vec_idx1, afree);
+			free_feature_vector(bvec, vec_idx2, bfree);
+
+			return result;
+		}
+
+		/** compute dot product between vector1 and a dense vector
+		 *
+		 * @param vec_idx1 index of first vector
+		 * @param vec2 pointer to real valued vector
+		 * @param vec2_len length of real valued vector
+		 */
+		virtual float64_t dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len);
+
+		/** add vector 1 multiplied with alpha to dense vector2
+		 *
+		 * @param alpha scalar alpha
+		 * @param vec_idx1 index of first vector
+		 * @param vec2 pointer to real valued vector
+		 * @param vec2_len length of real valued vector
+		 */
+		virtual void add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val=false)
+		{
+			ASSERT(vec2_len == num_features);
+
+			int32_t vlen;
+			bool vfree;
+			ST* vec1=get_feature_vector(vec_idx1, vlen, vfree);
+
+			ASSERT(vlen == num_features);
+
+			if (abs_val)
+			{
+				for (int32_t i=0 ; i<num_features; i++)
+					vec2[i]+=alpha*CMath::abs(vec1[i]);
+			}
+			else
+			{
+				for (int32_t i=0 ; i<num_features; i++)
+					vec2[i]+=alpha*vec1[i];
+			}
+
+			free_feature_vector(vec1, vec_idx1, vfree);
+		}
+
+
 	protected:
 		/** compute feature vector for sample num
 		 * if target is set the vector is written to target
@@ -505,5 +579,154 @@ template<> inline EFeatureType CSimpleFeatures<uint16_t>::get_feature_type()
 template<> inline EFeatureType CSimpleFeatures<uint64_t>::get_feature_type()
 {
 	return F_ULONG;
+}
+
+template<> inline float64_t CSimpleFeatures<float64_t>:: dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
+{
+	ASSERT(vec2_len == num_features);
+
+	int32_t vlen;
+	bool vfree;
+	float64_t* vec1= get_feature_vector(vec_idx1, vlen, vfree);
+
+	ASSERT(vlen == num_features);
+	float64_t result=CMath::dot(vec1, vec2, num_features);
+
+	free_feature_vector(vec1, vec_idx1, vfree);
+
+	return result;
+}
+
+template<> inline float64_t CSimpleFeatures<float32_t>:: dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
+{
+	ASSERT(vec2_len == num_features);
+
+	int32_t vlen;
+	bool vfree;
+	float32_t* vec1= get_feature_vector(vec_idx1, vlen, vfree);
+
+	ASSERT(vlen == num_features);
+	float64_t result=0;
+
+	for (int32_t i=0 ; i<num_features; i++)
+		result+=vec1[i]*vec2[i];
+
+	free_feature_vector(vec1, vec_idx1, vfree);
+
+	return result;
+}
+
+template<> inline float64_t CSimpleFeatures<int16_t>:: dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
+{
+	ASSERT(vec2_len == num_features);
+
+	int32_t vlen;
+	bool vfree;
+	int16_t* vec1= get_feature_vector(vec_idx1, vlen, vfree);
+
+	ASSERT(vlen == num_features);
+	float64_t result=0;
+
+	for (int32_t i=0 ; i<num_features; i++)
+		result+=vec1[i]*vec2[i];
+
+	free_feature_vector(vec1, vec_idx1, vfree);
+
+	return result;
+}
+
+template<> inline float64_t CSimpleFeatures<char>:: dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
+{
+	ASSERT(vec2_len == num_features);
+
+	int32_t vlen;
+	bool vfree;
+	char* vec1= get_feature_vector(vec_idx1, vlen, vfree);
+
+	ASSERT(vlen == num_features);
+	float64_t result=0;
+
+	for (int32_t i=0 ; i<num_features; i++)
+		result+=vec1[i]*vec2[i];
+
+	free_feature_vector(vec1, vec_idx1, vfree);
+
+	return result;
+}
+
+template<> inline float64_t CSimpleFeatures<uint8_t>:: dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
+{
+	ASSERT(vec2_len == num_features);
+
+	int32_t vlen;
+	bool vfree;
+	uint8_t* vec1= get_feature_vector(vec_idx1, vlen, vfree);
+
+	ASSERT(vlen == num_features);
+	float64_t result=0;
+
+	for (int32_t i=0 ; i<num_features; i++)
+		result+=vec1[i]*vec2[i];
+
+	free_feature_vector(vec1, vec_idx1, vfree);
+
+	return result;
+}
+
+template<> inline float64_t CSimpleFeatures<int32_t>:: dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
+{
+	ASSERT(vec2_len == num_features);
+
+	int32_t vlen;
+	bool vfree;
+	int32_t* vec1= get_feature_vector(vec_idx1, vlen, vfree);
+
+	ASSERT(vlen == num_features);
+	float64_t result=0;
+
+	for (int32_t i=0 ; i<num_features; i++)
+		result+=vec1[i]*vec2[i];
+
+	free_feature_vector(vec1, vec_idx1, vfree);
+
+	return result;
+}
+
+template<> inline float64_t CSimpleFeatures<uint16_t>:: dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
+{
+	ASSERT(vec2_len == num_features);
+
+	int32_t vlen;
+	bool vfree;
+	uint16_t* vec1= get_feature_vector(vec_idx1, vlen, vfree);
+
+	ASSERT(vlen == num_features);
+	float64_t result=0;
+
+	for (int32_t i=0 ; i<num_features; i++)
+		result+=vec1[i]*vec2[i];
+
+	free_feature_vector(vec1, vec_idx1, vfree);
+
+	return result;
+}
+
+template<> inline float64_t CSimpleFeatures<uint64_t>:: dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
+{
+	ASSERT(vec2_len == num_features);
+
+	int32_t vlen;
+	bool vfree;
+	uint64_t* vec1= get_feature_vector(vec_idx1, vlen, vfree);
+
+	ASSERT(vlen == num_features);
+	float64_t result=0;
+
+	for (int32_t i=0 ; i<num_features; i++)
+		result+=vec1[i]*vec2[i];
+
+	free_feature_vector(vec1, vec_idx1, vfree);
+
+	return result;
 }
 #endif

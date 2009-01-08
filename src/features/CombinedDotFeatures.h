@@ -12,8 +12,9 @@
 #define _COMBINEDDOTFEATURES_H___
 
 #include "lib/common.h"
-#include "lib/DynamicArray.h"
+#include "lib/List.h"
 #include "features/DotFeatures.h"
+#include "features/Features.h"
 
 /** Features that allow stacking of a number of DotFeatures.
  *
@@ -36,89 +37,194 @@
  */
 class CCombinedDotFeatures : public CDotFeatures
 {
-	/** constructor */
-	CCombinedDotFeatures();
+	public:
+		/** constructor */
+		CCombinedDotFeatures();
 
-	/** copy constructor */
-	CCombinedDotFeatures(const CCombinedDotFeatures & orig)
-		: CFeatures(orig), num_vectors(orig.num_vectors),
-		num_dimensions(orig.num_dimensions),
-	{
-		SG_NOTIMPLEMENTED
-	}
+		/** copy constructor */
+		CCombinedDotFeatures(const CCombinedDotFeatures & orig);
 
-	/** destructor */
-	~CCombinedDotFeatures();
+		/** destructor */
+		virtual ~CCombinedDotFeatures();
 
-	inline virtual int32_t get_num_vectors()
-	{
-		return num_vectors;
-	}
+		inline virtual int32_t get_num_vectors()
+		{
+			return num_vectors;
+		}
 
-	/** obtain the dimensionality of the feature space
-	 *
-	 * @return dimensionality
-	 */
-	virtual int32_t get_dim_feature_space();
+		/** obtain the dimensionality of the feature space
+		 *
+		 * @return dimensionality
+		 */
+		virtual int32_t get_dim_feature_space();
 
-	/** compute dot product between vector1 and vector2,
-	 * appointed by their indices
-	 *
-	 * @param vec_idx1 index of first vector
-	 * @param vec_idx2 index of second vector
-	 */
-	virtual float64_t dot(int32_t vec_idx1, int32_t vec_idx2);
+		/** compute dot product between vector1 and vector2,
+		 * appointed by their indices
+		 *
+		 * @param vec_idx1 index of first vector
+		 * @param vec_idx2 index of second vector
+		 */
+		virtual float64_t dot(int32_t vec_idx1, int32_t vec_idx2);
 
-	/** compute dot product between vector1 and a dense vector
-	 *
-	 * @param vec_idx1 index of first vector
-	 * @param vec2 pointer to real valued vector
-	 * @param vec2_len length of real valued vector
-	 */
-	virtual float64_t dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len);
+		/** compute dot product between vector1 and a dense vector
+		 *
+		 * @param vec_idx1 index of first vector
+		 * @param vec2 pointer to real valued vector
+		 * @param vec2_len length of real valued vector
+		 */
+		virtual float64_t dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len);
 
-	/** add vector 1 multiplied with alpha to dense vector2
-	 *
-	 * @param alpha scalar alpha
-	 * @param vec_idx1 index of first vector
-	 * @param vec2 pointer to real valued vector
-	 * @param vec2_len length of real valued vector
-	 */
-	virtual float64_t add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len);
+		/** add vector 1 multiplied with alpha to dense vector2
+		 *
+		 * @param alpha scalar alpha
+		 * @param vec_idx1 index of first vector
+		 * @param vec2 pointer to real valued vector
+		 * @param vec2_len length of real valued vector
+		 */
+		virtual void add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val=false);
 
-	/** get feature type
-	 *
-	 * @return templated feature type
-	 */
-	inline virtual EFeatureType get_feature_type()
-	{
-		return F_DREAL;
-	}
+		/** get feature type
+		 *
+		 * @return templated feature type
+		 */
+		inline virtual EFeatureType get_feature_type()
+		{
+			return F_DREAL;
+		}
 
-	/** get feature class
-	 *
-	 * @return feature class
-	 */
-	inline virtual EFeatureClass get_feature_class()
-	{
-		return C_COMBINED_DOT;
-	}
+		/** get feature class
+		 *
+		 * @return feature class
+		 */
+		inline virtual EFeatureClass get_feature_class()
+		{
+			return C_COMBINED_DOT;
+		}
 
-	inline virtual int32_t get_size()
-	{
-		return sizeof(float64_t);
-	}
+		inline virtual int32_t get_size()
+		{
+			return sizeof(float64_t);
+		}
 
-	/** duplicate feature object
-	 *
-	 * @return feature object
-	 */
-	virtual CCombinedDotFeatures* duplicate() const
-	{
-		return new CCombinedDotFeatures(*this);
-	}
+		/** duplicate feature object
+		 *
+		 * @return feature object
+		 */
+		virtual CFeatures* duplicate() const;
+
+		/** list feature objects */
+		void list_feature_objs();
+
+		/** get first feature object
+		 *
+		 * @return first feature object
+		 */
+		inline CFeatures* get_first_feature_obj()
+		{
+			CFeatures* f=feature_list->get_first_element();
+			SG_REF(f);
+			return f;
+		}
+
+		/** get first feature object
+		 *
+		 * @param current list of features
+		 * @return first feature object
+		 */
+		inline CFeatures* get_first_feature_obj(CListElement<CFeatures*>*&current)
+		{
+			CFeatures* f=feature_list->get_first_element(current);
+			SG_REF(f);
+			return f;
+		}
+
+		/** get next feature object
+		 *
+		 * @return next feature object
+		 */
+		inline CFeatures* get_next_feature_obj()
+		{
+			CFeatures* f=feature_list->get_next_element();
+			SG_REF(f);
+			return f;
+		}
+
+		/** get next feature object
+		 *
+		 * @param current list of features
+		 * @return next feature object
+		 */
+		inline CFeatures* get_next_feature_obj(CListElement<CFeatures*>*&current)
+		{
+			CFeatures* f=feature_list->get_next_element(current);
+			SG_REF(f);
+			return f;
+		}
+
+		/** get last feature object
+		 *
+		 * @return last feature object
+		 */
+		inline CFeatures* get_last_feature_obj()
+		{
+			CFeatures* f=feature_list->get_last_element();
+			SG_REF(f);
+			return f;
+		}
+
+		/** insert feature object
+		 *
+		 * @param obj feature object to insert
+		 * @return if inserting was successful
+		 */
+		inline bool insert_feature_obj(CFeatures* obj)
+		{
+			ASSERT(obj);
+			SG_REF(obj);
+			return feature_list->insert_element(obj);
+		}
+
+		/** append feature object
+		 *
+		 * @param obj feature object to append
+		 * @return if appending was successful
+		 */
+		inline bool append_feature_obj(CFeatures* obj)
+		{
+			ASSERT(obj);
+			SG_REF(obj);
+			return feature_list->append_element(obj);
+		}
+
+		/** delete feature object
+		 *
+		 * @return if deleting was succesful
+		 */
+		inline bool delete_feature_obj()
+		{
+			CFeatures* f=feature_list->delete_element();
+			if (f)
+			{
+				SG_UNREF(f);
+				return true;
+			}
+			else
+				return false;
+		}
+
+		/** get number of feature objects
+		 *
+		 * @return number of feature objects
+		 */
+		inline int32_t get_num_feature_obj()
+		{
+			return feature_list->get_num_elements();
+		}
 
 	protected:
+		/** feature list */
+		CList<CFeatures*>* feature_list;
+
 		int32_t num_vectors;
 		int32_t num_dimensions;
 };

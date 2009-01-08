@@ -33,51 +33,69 @@
  */
 class CDotFeatures : public CFeatures
 {
+	public:
 
-	/** obtain the dimensionality of the feature space
-	 *
-	 * (not mix this up with the dimensionality of the input space, usually
-	 * obtained via get_num_features())
-	 *
-	 * @return dimensionality
-	 */
-	virtual int32_t get_dim_feature_space()=0;
+		/** constructor
+		 *
+		 * @param size cache size
+		 */
+		CDotFeatures(int32_t size=0) : CFeatures(size) { }
 
-	/** compute dot product between vector1 and vector2,
-	 * appointed by their indices
-	 *
-	 * @param vec_idx1 index of first vector
-	 * @param vec_idx2 index of second vector
-	 */
-	virtual float64_t dot(int32_t vec_idx1, int32_t vec_idx2)=0;
+		/** copy constructor */
+		CDotFeatures(const CDotFeatures & orig) : CFeatures(orig)  {}
 
-	/** compute dot product between vector1 and a dense vector
-	 *
-	 * @param vec_idx1 index of first vector
-	 * @param vec2 pointer to real valued vector
-	 * @param vec2_len length of real valued vector
-	 */
-	virtual float64_t dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)=0;
+		/** constructor
+		 *
+		 * @param fname filename to load features from
+		 */
+		CDotFeatures(char* fname) : CFeatures(fname) {}
 
-	/** add vector 1 multiplied with alpha to dense vector2
-	 *
-	 * @param alpha scalar alpha
-	 * @param vec_idx1 index of first vector
-	 * @param vec2 pointer to real valued vector
-	 * @param vec2_len length of real valued vector
-	 */
-	virtual float64_t add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len)=0;
+		virtual ~CDotFeatures() { }
 
-	/** Compute the dot product for a range of vectors. This function makes use of dense_dot
-	 *
-	 * @param output result for the given vector range
-	 * @param start start vector range from this idx
-	 * @param stop stop vector range at this idx
-	 * @param alphas scalars to multiply with, may be NULL
-	 * @param vec dense vector to compute dot product with
-	 * @param dim length of the dense vector
-	 * @param b bias
-	 */
-	virtual void dense_dot_range(float64_t* output, int32_t start, int32_t stop, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b);
+		/** obtain the dimensionality of the feature space
+		 *
+		 * (not mix this up with the dimensionality of the input space, usually
+		 * obtained via get_num_features())
+		 *
+		 * @return dimensionality
+		 */
+		virtual int32_t get_dim_feature_space()=0;
+
+		/** compute dot product between vector1 and vector2,
+		 * appointed by their indices
+		 *
+		 * @param vec_idx1 index of first vector
+		 * @param vec_idx2 index of second vector
+		 */
+		virtual float64_t dot(int32_t vec_idx1, int32_t vec_idx2)=0;
+
+		/** compute dot product between vector1 and a dense vector
+		 *
+		 * @param vec_idx1 index of first vector
+		 * @param vec2 pointer to real valued vector
+		 * @param vec2_len length of real valued vector
+		 */
+		virtual float64_t dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)=0;
+
+		/** add vector 1 multiplied with alpha to dense vector2
+		 *
+		 * @param alpha scalar alpha
+		 * @param vec_idx1 index of first vector
+		 * @param vec2 pointer to real valued vector
+		 * @param vec2_len length of real valued vector
+		 */
+		virtual void add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val=false)=0;
+
+		/** Compute the dot product for a range of vectors. This function makes use of dense_dot
+		 *
+		 * @param output result for the given vector range
+		 * @param start start vector range from this idx
+		 * @param stop stop vector range at this idx
+		 * @param alphas scalars to multiply with, may be NULL
+		 * @param vec dense vector to compute dot product with
+		 * @param dim length of the dense vector
+		 * @param b bias
+		 */
+		virtual void dense_dot_range(float64_t* output, int32_t start, int32_t stop, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b);
 };
 #endif // _DOTFEATURES_H___

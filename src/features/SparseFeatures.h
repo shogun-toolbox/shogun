@@ -23,8 +23,8 @@
 
 #include "features/Labels.h"
 #include "features/Features.h"
+#include "features/DotFeatures.h"
 #include "features/SimpleFeatures.h"
-#include "features/RealFeatures.h"
 #include "preproc/SparsePreProc.h"
 
 template <class ST> class CSparsePreProc;
@@ -62,7 +62,7 @@ template <class ST> struct TSparse
  * like sparse matrices of real valued, integer, byte etc type.
  */
 
-template <class ST> class CSparseFeatures : public CFeatures
+template <class ST> class CSparseFeatures : public CDotFeatures
 {
 	public:
 		/** constructor
@@ -70,13 +70,13 @@ template <class ST> class CSparseFeatures : public CFeatures
 		 * @param size cache size
 		 */
 		CSparseFeatures(int32_t size=0)
-		: CFeatures(size), num_vectors(0), num_features(0),
+		: CDotFeatures(size), num_vectors(0), num_features(0),
 			sparse_feature_matrix(NULL), feature_cache(NULL)
 		{}
 
 		/** copy constructor */
 		CSparseFeatures(const CSparseFeatures & orig)
-		: CFeatures(orig), num_vectors(orig.num_vectors),
+		: CDotFeatures(orig), num_vectors(orig.num_vectors),
 			num_features(orig.num_features),
 			sparse_feature_matrix(orig.sparse_feature_matrix),
 			feature_cache(orig.feature_cache)
@@ -100,7 +100,7 @@ template <class ST> class CSparseFeatures : public CFeatures
 		 * @param fname filename to load features from
 		 */
 		CSparseFeatures(char* fname)
-		: CFeatures(fname), num_vectors(0), num_features(0),
+		: CDotFeatures(fname), num_vectors(0), num_features(0),
 			sparse_feature_matrix(NULL), feature_cache(NULL)
 		{}
 
@@ -374,7 +374,7 @@ template <class ST> class CSparseFeatures : public CFeatures
 		 @param dim length of the dense vector
 		 @param abs_val if true, do dense+=alpha*abs(sparse)
 		 */
-		void add_to_dense_vec(ST alpha, int32_t num, ST* vec, int32_t dim, bool abs_val=false)
+		void add_to_dense_vec(float64_t alpha, int32_t num, float64_t* vec, int32_t dim, bool abs_val=false)
 		{
 			ASSERT(vec);
 			ASSERT(dim==num_features);
@@ -1076,6 +1076,66 @@ template <class ST> class CSparseFeatures : public CFeatures
 				return true;
 			}
 			return false;
+		}
+
+		/** obtain the dimensionality of the feature space
+		 *
+		 * (not mix this up with the dimensionality of the input space, usually
+		 * obtained via get_num_features())
+		 *
+		 * @return dimensionality
+		 */
+		virtual int32_t get_dim_feature_space()
+		{
+			return num_features;
+		}
+
+		/** compute dot product between vector1 and vector2,
+		 * appointed by their indices
+		 *
+		 * @param vec_idx1 index of first vector
+		 * @param vec_idx2 index of second vector
+		 */
+		virtual float64_t dot(int32_t vec_idx1, int32_t vec_idx2)
+		{
+			bool afree, bfree;
+			int32_t alen, blen;
+			TSparseEntry<ST>* avec=get_sparse_feature_vector(vec_idx1, alen, afree);
+			TSparseEntry<ST>* bvec=get_sparse_feature_vector(vec_idx2, blen, bfree);
+
+			float64_t result=sparse_dot(1, avec, alen, bvec, blen);
+
+			free_sparse_feature_vector(avec, vec_idx1, afree);
+			free_sparse_feature_vector(bvec, vec_idx2, bfree);
+
+			return result;
+		}
+
+		/** compute dot product between vector1 and a dense vector
+		 *
+		 * @param vec_idx1 index of first vector
+		 * @param vec2 pointer to real valued vector
+		 * @param vec2_len length of real valued vector
+		 */
+		virtual float64_t dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
+		{
+			ASSERT(vec2);
+			ASSERT(vec2_len==num_features);
+			float64_t result=0;
+
+			bool vfree;
+			int32_t vlen;
+			TSparseEntry<ST>* sv=get_sparse_feature_vector(vec_idx1, vlen, vfree);
+
+			if (sv)
+			{
+				for (int32_t i=0; i<vlen; i++)
+					result+=vec2[sv[i].feat_index]*sv[i].entry;
+			}
+
+			free_sparse_feature_vector(sv, vec_idx1, vfree);
+
+			return result;
 		}
 
 	protected:
