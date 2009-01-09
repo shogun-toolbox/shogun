@@ -126,6 +126,15 @@ function y = classifier(filename)
 		end
 	end
 
+	if strcmp(classifier_name, 'WDSVMOcas')==1
+		converted=sg('get_features', 'TRAIN');
+		for i = 1:length(classifier_data_train)
+			[classifier_data_train(i), converted(i)]
+		end
+		classified=sg('classify')
+		classifier_classified
+	end
+
 	classified=max(abs(sg('classify')-classifier_classified));
 
 	data={'classifier', alphas, bias, sv, classified};

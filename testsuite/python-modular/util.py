@@ -124,8 +124,8 @@ def get_feats_string (indata, prefix=''):
 def get_feats_string_complex (indata, prefix=''):
 	alphabet=eval(indata[prefix+'alphabet'])
 	feats={
-		'train': StringCharFeatures(alphabet),
-		'test': StringCharFeatures(alphabet)
+		'train': StringCharFeatures(DNA),
+		'test': StringCharFeatures(DNA)
 	}
 
 	if alphabet==CUBE: # data_{train,test} ints due to test.py:_read_matrix
@@ -139,14 +139,14 @@ def get_feats_string_complex (indata, prefix=''):
 	feats['test'].set_string_features(data_test)
 
 	feat=eval('String'+indata[prefix+'feature_type']+ \
-		"Features(feats['train'].get_alphabet())")
+		"Features(alphabet)")
 	feat.obtain_from_char(feats['train'], indata[prefix+'order']-1,
 		indata[prefix+'order'], indata[prefix+'gap'],
 		eval(indata[prefix+'reverse']))
 	feats['train']=feat
 
 	feat=eval('String'+indata[prefix+'feature_type']+ \
-		"Features(feats['train'].get_alphabet())")
+		"Features(alphabet)")
 	feat.obtain_from_char(feats['test'], indata[prefix+'order']-1,
 		indata[prefix+'order'], indata[prefix+'gap'],
 		eval(indata[prefix+'reverse']))

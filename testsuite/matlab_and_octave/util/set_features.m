@@ -78,8 +78,15 @@ function y = set_features(prefix)
 		end
 
 	elseif ~isempty(alphabet)
-		sg('set_features', 'TRAIN', data_train, alphabet);
-		sg('set_features', 'TEST', data_test, alphabet);
+		if strcmp(alphabet, 'RAWDNA')==1
+			sg('set_features', 'TRAIN', data_train, 'DNA');
+			sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'BYTE');
+			sg('set_features', 'TEST', data_test, 'DNA');
+			sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'BYTE');
+		else
+			sg('set_features', 'TRAIN', data_train, alphabet);
+			sg('set_features', 'TEST', data_test, alphabet);
+		end
 
 	elseif ~isempty(kernel_data)
 		sg('set_features', 'TRAIN', kernel_data);

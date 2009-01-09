@@ -73,22 +73,23 @@ def set_features (indata, prefix):
 		if alphabet=='RAWBYTE':
 			raise NotImplementedError, 'Alphabet RAWBYTE not supported yet.'
 
-		if alphabet=='CUBE':
+		if alphabet=='RAWDNA':
+			data_train=list(indata_train[0])
+			sg('set_features', 'TRAIN', data_train, 'DNA')
+			sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'BYTE')
+			data_test=list(indata_test[0])
+			sg('set_features', 'TEST', data_test, 'DNA')
+			sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'BYTE')
+		elif alphabet=='CUBE':
 			data_train=[str(x) for x in list(indata_train[0])]
+			sg('set_features', 'TRAIN', data_train, alphabet)
 			data_test=[str(x) for x in list(indata_test[0])]
-		#elif alphabet=='RAWDNA':
-			#raise NotImplementedError, 'Alphabet RAWDNA not supported yet.'
-		#	data_train=[]
-		#	for vector in indata_train[0]:
-		#		data_train.append(ubyte([ord(example) for example in vector]))
+			sg('set_features', 'TEST', data_test, alphabet)
 		else:
 			data_train=list(indata_train[0])
+			sg('set_features', 'TRAIN', data_train, alphabet)
 			data_test=list(indata_test[0])
-
-		print str(data_train[0])
-		sg('loglevel', 'DEBUG')
-		sg('set_features', 'TRAIN', data_train, indata[prefix+'alphabet'])
-		sg('set_features', 'TEST', data_test, indata[prefix+'alphabet'])
+			sg('set_features', 'TEST', data_test, alphabet)
 
 	elif indata.has_key('data'): # CustomKernel
 		sg('set_features', 'TRAIN',
