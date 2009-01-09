@@ -62,22 +62,22 @@ float64_t CWDFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_
 void CWDFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val)
 {
 	/*
-		int32_t lim=CMath::min(degree, string_length-j);
-		int32_t len;
+	int32_t lim=CMath::min(degree, string_length-j);
+	int32_t len;
 
-		for (int32_t k=0; k<lim; k++)
+	for (int32_t k=0; k<lim; k++)
+	{
+		uint8_t* vec = f->get_feature_vector(j+k, len);
+		float32_t wd = wd_weights[k]/normalization_const;
+
+		for(uint32_t i=0; i < cut_length; i++) 
 		{
-			uint8_t* vec = f->get_feature_vector(j+k, len);
-			float32_t wd = wd_weights[k]/normalization_const;
-
-			for(uint32_t i=0; i < cut_length; i++) 
-			{
-				val[i]=val[i]*alphabet_size + vec[new_cut[i]];
-				new_a[offs+val[i]]+=wd * y[new_cut[i]];
-			}
-			offs+=w_offsets[k];
+			val[i]=val[i]*alphabet_size + vec[new_cut[i]];
+			vec2[offs+val[i]]+=wd * y[new_cut[i]];
 		}
-	}*/
+		offs+=w_offsets[k];
+	}
+	*/
 }
 
 int32_t CWDFeatures::set_wd_weights()
