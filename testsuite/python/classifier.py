@@ -22,8 +22,6 @@ def _set_classifier (indata, prefix):
 
 	if indata.has_key(prefix+'epsilon'):
 		sg('svm_epsilon', indata[prefix+'epsilon'])
-	if indata.has_key(prefix+'tube_epsilon'):
-		sg('svr_tube_epsilon', indata[prefix+'tube_epsilon'])
 	if indata.has_key(prefix+'max_train_time'):
 		sg('svm_max_train_time', indata[prefix+'max_train_time'])
 	if indata.has_key(prefix+'linadd_enabled'):

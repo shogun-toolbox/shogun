@@ -144,8 +144,6 @@ def _classifier (indata):
 			classifier.set_epsilon(indata[prefix+'epsilon'])
 		except AttributeError:
 			pass
-	if indata.has_key(prefix+'tube_epsilon'):
-		classifier.set_tube_epsilon(indata[prefix+'tube_epsilon'])
 	if indata.has_key(prefix+'max_train_time'):
 		classifier.set_max_train_time(indata[prefix+'max_train_time'])
 	if indata.has_key(prefix+'linadd_enabled'):

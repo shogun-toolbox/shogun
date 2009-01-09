@@ -45,9 +45,6 @@ classifier <- function(filename) {
 	if (exists('classifier_epsilon')) {
 		sg('svm_epsilon', classifier_epsilon)
 	}
-	if (exists('classifier_tube_epsilon')) {
-		sg('svr_tube_epsilon', classifier_tube_epsilon)
-	}
 	if (exists('classifier_max_train_time')) {
 		sg('svm_max_train_time', classifier_max_train_time)
 	}

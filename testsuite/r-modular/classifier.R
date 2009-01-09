@@ -82,9 +82,6 @@ classifier <- function(filename) {
 			classifier$set_epsilon(classifier, classifier_epsilon)
 		}
 	}
-	if (exists('classifier_tube_epsilon')) {
-		classifier$set_tube_epsilon(classifier, classifier_tube_epsilon)
-	}
 	if (exists('classifier_max_train_time')) {
 		classifier$set_max_train_time(classifier, classifier_max_train_time)
 	}

@@ -76,18 +76,19 @@ def set_features (indata, prefix):
 		if alphabet=='CUBE':
 			data_train=[str(x) for x in list(indata_train[0])]
 			data_test=[str(x) for x in list(indata_test[0])]
+		#elif alphabet=='RAWDNA':
+			#raise NotImplementedError, 'Alphabet RAWDNA not supported yet.'
+		#	data_train=[]
+		#	for vector in indata_train[0]:
+		#		data_train.append(ubyte([ord(example) for example in vector]))
 		else:
 			data_train=list(indata_train[0])
 			data_test=list(indata_test[0])
 
+		print str(data_train[0])
+		sg('loglevel', 'DEBUG')
 		sg('set_features', 'TRAIN', data_train, indata[prefix+'alphabet'])
 		sg('set_features', 'TEST', data_test, indata[prefix+'alphabet'])
-
-		if alphabet=='RAWDNA':
-			raise NotImplementedError, 'Alphabet RAWDNA not supported yet.'
-			# conversion to StringByte not implemented yet :(
-			sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'BYTE')
-			sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'BYTE')
 
 	elif indata.has_key('data'): # CustomKernel
 		sg('set_features', 'TRAIN',

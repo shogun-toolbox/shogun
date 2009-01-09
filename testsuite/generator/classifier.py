@@ -99,8 +99,6 @@ def _compute_svm (params, labels, feats, kernel, pout):
 	except AttributeError: #SGD does not have an accuracy parameter
 		pass
 
-	if params.has_key('tube_epsilon'):
-		svm.set_tube_epsilon(params['tube_epsilon'])
 	if params.has_key('bias_enabled'):
 		svm.set_bias_enabled(params['bias_enabled'])
 	if params.has_key('max_train_time'):
@@ -150,9 +148,6 @@ def _loop_svm (svms, params, feats, kernel=None, pout=None):
 		parms['accuracy']=parms['epsilon']*10
 		parms.update(params)
 
-		if params['type']=='kernel':
-			parms['tube_epsilon']=1e-2
-
 		if params['label_type'] is not None:
 			parms['labels'], labels=dataop.get_labels(
 				feats['train'].get_num_vectors(), params['label_type'])
@@ -168,7 +163,6 @@ def _loop_svm (svms, params, feats, kernel=None, pout=None):
 		_compute_svm(parms, labels, feats, kernel, pout)
 
 		if params['type']=='kernel':
-			parms['tube_epsilon']=1e-3
 			_compute_svm(parms, labels, feats, kernel, pout)
 
 		parms['num_threads']=16

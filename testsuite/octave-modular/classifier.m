@@ -94,9 +94,6 @@ function y = classifier(filename)
 	if ~isempty(classifier_epsilon) && strcmp(classifier_name, 'SVMSGD')!=1
 		classifier.set_epsilon(classifier_epsilon);
 	end
-	if ~isempty(classifier_tube_epsilon)
-		classifier.set_tube_epsilon(classifier_tube_epsilon);
-	end
 	if ~isempty(classifier_max_train_time)
 		classifier.set_max_train_time(classifier_max_train_time);
 	end
