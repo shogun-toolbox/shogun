@@ -24,9 +24,9 @@ class CSpecFeatures : public CDotFeatures
 
 		/** constructor
 		 *
-		 * @param str stringfeatures (of bytes)
+		 * @param str stringfeatures (of words)
 		 */
-		CSpecFeatures(CStringFeatures<uint8_t>* str);
+		CSpecFeatures(CStringFeatures<uint16_t>* str);
 		virtual ~CSpecFeatures();
 
 		/** obtain the dimensionality of the feature space
@@ -79,18 +79,14 @@ class CSpecFeatures : public CDotFeatures
 
 
 	protected:
-		CStringFeatures<uint8_t>* strings;
+		CStringFeatures<uint16_t>* strings;
 
 		/** degree */
 		int32_t degree;
 		/** from degree */
 		int32_t from_degree;
-		/** length of string in vector */
-		int32_t string_length;
 		/** size of alphabet */
 		int32_t alphabet_size;
-		/** w offsets */
-		int32_t* w_offsets;
 		/** w dim */
 		int32_t w_dim;
 };

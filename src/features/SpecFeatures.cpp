@@ -11,12 +11,11 @@
 #include "features/SpecFeatures.h"
 #include "lib/io.h"
 
-CSpecFeatures::CSpecFeatures(CStringFeatures<uint8_t>* str) : CDotFeatures()
+CSpecFeatures::CSpecFeatures(CStringFeatures<uint16_t>* str) : CDotFeatures()
 {
 	ASSERT(str);
 
 	strings=str;
-	string_length=str->get_max_vector_length();
 }
 
 CSpecFeatures::~CSpecFeatures()
