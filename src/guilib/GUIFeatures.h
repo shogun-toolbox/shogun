@@ -119,20 +119,35 @@ class CGUIFeatures : public CSGObject
 		template <class CT, class ST>
 		CStringFeatures<ST>* convert_string_char_to_string_generic(
 			CStringFeatures<CT>* src,
-			int32_t order=1, int32_t start=0, int32_t gap=0, char rev='f')
+			int32_t order=1, int32_t start=0, int32_t gap=0, char rev='f', CAlphabet* alpha=NULL)
 		{
 			if (src && src->get_feature_class()==C_STRING)
 			{
 				//create dense features with 0 cache
 				SG_INFO("Converting CT STRING features to ST STRING ones (order=%i).\n",order);
+				bool free_alpha=false;
+				
+				if (!alpha)
+				{
+					CAlphabet* a = src->get_alphabet();
 
-				CStringFeatures<ST>* sf=new CStringFeatures<ST>(new CAlphabet(src->get_alphabet()));
+					if ( a && a->get_alphabet() == DNA )
+						alpha=new CAlphabet(RAWDNA);
+					else
+						alpha=new CAlphabet(src->get_alphabet());
+
+					free_alpha=true;
+				}
+
+				CStringFeatures<ST>* sf=new CStringFeatures<ST>(alpha);
 				if (sf && sf->obtain_from_char_features(src, start, order, gap, rev=='r'))
 				{
 					SG_INFO("Conversion was successful.\n");
 					return sf;
 				}
 
+				if (free_alpha)
+					delete alpha;
 				delete sf;
 			}
 			else
