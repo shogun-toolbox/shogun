@@ -31,13 +31,11 @@ if exist('SVMLight')
 
 	C=0.017;
 	epsilon=1e-5;
-	tube_epsilon=1e-2;
 	num_threads=3;
 	labels=Labels(label_train_dna);
 
 	svm=SVMLight(C, kernel, labels);
 	svm.set_epsilon(epsilon);
-	svm.set_tube_epsilon(tube_epsilon);
 	svm.parallel.set_num_threads(num_threads);
 	svm.train();
 
@@ -58,13 +56,11 @@ kernel=GaussianKernel(feats_train, feats_train, width);
 
 C=0.017;
 epsilon=1e-5;
-tube_epsilon=1e-2;
 num_threads=2;
 labels=Labels(label_train_twoclass);
 
 svm=LibSVM(C, kernel, labels);
 svm.set_epsilon(epsilon);
-svm.set_tube_epsilon(tube_epsilon);
 svm.parallel.set_num_threads(num_threads);
 svm.train();
 
@@ -81,13 +77,11 @@ kernel=GaussianKernel(feats_train, feats_train, width);
 
 C=0.017;
 epsilon=1e-5;
-tube_epsilon=1e-2;
 num_threads=2;
 labels=Labels(label_train_twoclass);
 
 svm=GPBTSVM(C, kernel, labels);
 svm.set_epsilon(epsilon);
-svm.set_tube_epsilon(tube_epsilon);
 svm.parallel.set_num_threads(num_threads);
 svm.train();
 
@@ -104,13 +98,11 @@ kernel=GaussianKernel(feats_train, feats_train, width);
 
 C=0.017;
 epsilon=1e-5;
-tube_epsilon=1e-2;
 num_threads=1;
 labels=Labels(label_train_twoclass);
 
 svm=MPDSVM(C, kernel, labels);
 svm.set_epsilon(epsilon);
-svm.set_tube_epsilon(tube_epsilon);
 svm.parallel.set_num_threads(num_threads);
 svm.train();
 
@@ -127,13 +119,11 @@ kernel=GaussianKernel(feats_train, feats_train, width);
 
 C=0.017;
 epsilon=1e-5;
-tube_epsilon=1e-2;
 num_threads=8;
 labels=Labels(label_train_multiclass);
 
 svm=LibSVMMultiClass(C, kernel, labels);
 svm.set_epsilon(epsilon);
-svm.set_tube_epsilon(tube_epsilon);
 svm.parallel.set_num_threads(num_threads);
 svm.train();
 
@@ -150,12 +140,10 @@ kernel=GaussianKernel(feats_train, feats_train, width);
 
 C=0.017;
 epsilon=1e-5;
-tube_epsilon=1e-2;
 num_threads=4;
 
 svm=LibSVMOneClass(C, kernel);
 svm.set_epsilon(epsilon);
-svm.set_tube_epsilon(tube_epsilon);
 svm.parallel.set_num_threads(num_threads);
 svm.train();
 
@@ -172,13 +160,11 @@ kernel=GaussianKernel(feats_train, feats_train, width);
 
 C=0.017;
 epsilon=1e-5;
-tube_epsilon=1e-2;
 num_threads=1;
 labels=Labels(label_train_multiclass);
 
 svm=GMNPSVM(C, kernel, labels);
 svm.set_epsilon(epsilon);
-svm.set_tube_epsilon(tube_epsilon);
 svm.parallel.set_num_threads(num_threads);
 svm.train();
 
@@ -202,13 +188,11 @@ kernel=WeightedDegreeStringKernel(feats_train, feats_train, degree);
 
 C=0.017;
 epsilon=1e-5;
-tube_epsilon=1e-2;
 num_threads=2;
 labels=Labels(label_train_dna);
 
 svm=LibSVM(C, kernel, labels);
 svm.set_epsilon(epsilon);
-svm.set_tube_epsilon(tube_epsilon);
 svm.parallel.set_num_threads(num_threads);
 svm.train();
 

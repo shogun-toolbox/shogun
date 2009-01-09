@@ -29,13 +29,11 @@ dosvmlight <- function()
 
 	C <- 0.017
 	epsilon <- 1e-5
-	tube_epsilon <- 1e-2
 	num_threads <- as.integer(3)
 	labels <- Labels(as.real(label_train_dna))
 
 	svm <- SVMLight(C, kernel, labels)
 	dump <- svm$set_epsilon(svm, epsilon)
-	dump <- svm$set_tube_epsilon(svm, tube_epsilon)
 	dump <- svm$parallel$set_num_threads(svm$parallel, num_threads)
 	dump <- svm$train()
 
@@ -56,13 +54,11 @@ kernel <- GaussianKernel(feats_train, feats_train, width)
 
 C <- 0.017
 epsilon <- 1e-5
-tube_epsilon <- 1e-2
 num_threads <- as.integer(2)
 labels <- Labels(label_train_twoclass)
 
 svm <- LibSVM(C, kernel, labels)
 dump <- svm$set_epsilon(svm, epsilon)
-dump <- svm$set_tube_epsilon(svm, tube_epsilon)
 dump <- svm$parallel$set_num_threads(svm$parallel, num_threads)
 dump <- svm$train()
 
@@ -80,13 +76,11 @@ kernel <- GaussianKernel(feats_train, feats_train, width)
 
 C <- 0.017
 epsilon <- 1e-5
-tube_epsilon <- 1e-2
 num_threads <- as.integer(2)
 labels <- Labels(label_train_twoclass)
 
 svm <- GPBTSVM(C, kernel, labels)
 dump <- svm$set_epsilon(svm, epsilon)
-dump <- svm$set_tube_epsilon(svm, tube_epsilon)
 dump <- svm$parallel$set_num_threads(svm$parallel, num_threads)
 dump <- svm$train()
 
@@ -104,13 +98,11 @@ kernel <- GaussianKernel(feats_train, feats_train, width)
 
 C <- 0.017
 epsilon <- 1e-5
-tube_epsilon <- 1e-2
 num_threads <- as.integer(1)
 labels <- Labels(label_train_twoclass)
 
 svm <- MPDSVM(C, kernel, labels)
 dump <- svm$set_epsilon(svm, epsilon)
-dump <- svm$set_tube_epsilon(svm, tube_epsilon)
 dump <- svm$parallel$set_num_threads(svm$parallel, num_threads)
 dump <- svm$train()
 
@@ -128,13 +120,11 @@ kernel <- GaussianKernel(feats_train, feats_train, width)
 
 C <- 0.017
 epsilon <- 1e-5
-tube_epsilon <- 1e-2
 num_threads <- as.integer(8)
 labels <- Labels(label_train_multiclass)
 
 svm <- LibSVMMultiClass(C, kernel, labels)
 dump <- svm$set_epsilon(svm, epsilon)
-dump <- svm$set_tube_epsilon(svm, tube_epsilon)
 dump <- svm$parallel$set_num_threads(svm$parallel, num_threads)
 dump <- svm$train()
 
@@ -152,12 +142,10 @@ kernel <- GaussianKernel(feats_train, feats_train, width)
 
 C <- 0.017
 epsilon <- 1e-5
-tube_epsilon <- 1e-2
 num_threads <- as.integer(4)
 
 svm <- LibSVMOneClass(C, kernel)
 dump <- svm$set_epsilon(svm, epsilon)
-dump <- svm$set_tube_epsilon(svm, tube_epsilon)
 dump <- svm$parallel$set_num_threads(svm$parallel, num_threads)
 dump <- svm$train()
 
@@ -175,13 +163,11 @@ kernel <- GaussianKernel(feats_train, feats_train, width)
 
 C <- 0.017
 epsilon <- 1e-5
-tube_epsilon <- 1e-2
 num_threads <- as.integer(1)
 labels <- Labels(label_train_multiclass)
 
 svm <- GMNPSVM(C, kernel, labels)
 dump <- svm$set_epsilon(svm, epsilon)
-dump <- svm$set_tube_epsilon(svm, tube_epsilon)
 dump <- svm$parallel$set_num_threads(svm$parallel, num_threads)
 dump <- svm$train()
 
@@ -206,13 +192,11 @@ kernel <- WeightedDegreeStringKernel(feats_train, feats_train, degree)
 
 C <- 0.017
 epsilon <- 1e-5
-tube_epsilon <- 1e-2
 num_threads <- as.integer(2)
 labels <- Labels(label_train_dna)
 
 svm <- LibSVM(C, kernel, labels)
 dump <- svm$set_epsilon(svm, epsilon)
-dump <- svm$set_tube_epsilon(svm, tube_epsilon)
 dump <- svm$parallel$set_num_threads(svm$parallel, num_threads)
 dump <- svm$train()
 
