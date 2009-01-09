@@ -13,10 +13,10 @@
 #include "lib/Mathematics.h"
 #include "lib/Signal.h"
 #include "lib/Time.h"
-#include "classifier/SparseLinearClassifier.h"
+#include "classifier/LinearClassifier.h"
 #include "classifier/svm/SubGradientSVM.h"
 #include "classifier/svm/qpbsvmlib.h"
-#include "features/SparseFeatures.h"
+#include "features/DotFeatures.h"
 #include "features/Labels.h"
 
 #undef DEBUG_SUBGRADIENTSVM
@@ -25,14 +25,14 @@ extern float64_t sparsity;
 float64_t tim;
 
 CSubGradientSVM::CSubGradientSVM()
-: CSparseLinearClassifier(), C1(1), C2(1), epsilon(1e-5), qpsize(42),
+: CLinearClassifier(), C1(1), C2(1), epsilon(1e-5), qpsize(42),
 	qpsize_max(2000), use_bias(false), delta_active(0), delta_bound(0)
 {
 }
 
 CSubGradientSVM::CSubGradientSVM(
-	float64_t C, CSparseFeatures<float64_t>* traindat, CLabels* trainlab)
-: CSparseLinearClassifier(), C1(C), C2(C), epsilon(1e-5), qpsize(42),
+	float64_t C, CDotFeatures* traindat, CLabels* trainlab)
+: CLinearClassifier(), C1(C), C2(C), epsilon(1e-5), qpsize(42),
 	qpsize_max(2000), use_bias(false), delta_active(0), delta_bound(0)
 {
 	set_features(traindat);
@@ -230,7 +230,7 @@ float64_t CSubGradientSVM::line_search(int32_t num_feat, int32_t num_vec)
 
 	for (int32_t i=0; i<num_vec; i++)
 	{
-		float64_t p=get_label(i)*features->dense_dot(1.0, i, grad_w, num_feat, grad_b);
+		float64_t p=get_label(i)*(features->dense_dot(i, grad_w, num_feat)+grad_b);
 		grad_proj[i]=p;
 		if (p!=0)
 		{
@@ -316,25 +316,15 @@ float64_t CSubGradientSVM::compute_min_subgradient(
 			{
 				for (int32_t j=i; j<num_bound; j++)
 				{
-					int32_t alen=0;
-					int32_t blen=0;
-					bool afree=false;
-					bool bfree=false;
-
-					TSparseEntry<float64_t>* avec=features->get_sparse_feature_vector(idx_bound[i], alen, afree);
-					TSparseEntry<float64_t>* bvec=features->get_sparse_feature_vector(idx_bound[j], blen, bfree);
-
 					Z[i*num_bound+j]= 2.0*C1*C1*get_label(idx_bound[i])*get_label(idx_bound[j])* 
-						(features->sparse_dot(1.0, avec,alen, bvec,blen) + bias_const);
+						(features->dot(idx_bound[i], idx_bound[j]) + bias_const);
 
 					Z[j*num_bound+i]=Z[i*num_bound+j];
 
-					features->free_feature_vector(avec, idx_bound[i], afree);
-					features->free_feature_vector(bvec, idx_bound[j], bfree);
 				}
 
 				Zv[i]=-2.0*C1*get_label(idx_bound[i])* 
-					features->dense_dot(1.0, idx_bound[i], v, num_feat, -sum_Cy_active);
+					(features->dense_dot(idx_bound[i], v, num_feat)-sum_Cy_active);
 			}
 
 			//CMath::display_matrix(Z, num_bound, num_bound, "Z");
@@ -379,7 +369,7 @@ float64_t CSubGradientSVM::compute_min_subgradient(
 		dir_deriv = CMath::dot(grad_w, v, num_feat) - grad_b*sum_Cy_active;
 		for (int32_t i=0; i<num_bound; i++)
 		{
-			float64_t val= C1*get_label(idx_bound[i])*features->dense_dot(1.0, idx_bound[i], grad_w, num_feat, grad_b);
+			float64_t val= C1*get_label(idx_bound[i])*(features->dense_dot(idx_bound[i], grad_w, num_feat)+grad_b);
 			dir_deriv += CMath::max(0.0, val);
 		}
 	}
@@ -410,7 +400,7 @@ float64_t CSubGradientSVM::compute_objective(int32_t num_feat, int32_t num_vec)
 void CSubGradientSVM::compute_projection(int32_t num_feat, int32_t num_vec)
 {
 	for (int32_t i=0; i<num_vec; i++)
-		proj[i]=get_label(i)*features->dense_dot(1.0, i, w, num_feat, bias);
+		proj[i]=get_label(i)*(features->dense_dot(i, w, num_feat)+bias);
 }
 
 void CSubGradientSVM::update_projection(float64_t alpha, int32_t num_vec)
@@ -541,7 +531,7 @@ bool CSubGradientSVM::train()
 
 	int32_t num_iterations=0;
 	int32_t num_train_labels=labels->get_num_labels();
-	int32_t num_feat=features->get_num_features();
+	int32_t num_feat=features->get_dim_feature_space();
 	int32_t num_vec=features->get_num_vectors();
 
 	ASSERT(num_vec==num_train_labels);

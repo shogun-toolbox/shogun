@@ -18,7 +18,7 @@
 #include "lib/Cplex.h"
 
 CLPM::CLPM()
-: CSparseLinearClassifier(), C1(1), C2(1), use_bias(true), epsilon(1e-3)
+: CLinearClassifier(), C1(1), C2(1), use_bias(true), epsilon(1e-3)
 {
 }
 
@@ -32,7 +32,7 @@ bool CLPM::train()
 	ASSERT(labels);
 	ASSERT(features);
 	int32_t num_train_labels=labels->get_num_labels();
-	int32_t num_feat=features->get_num_features();
+	int32_t num_feat=features->get_dim_feature_space();
 	int32_t num_vec=features->get_num_vectors();
 
 	ASSERT(num_vec==num_train_labels);
@@ -47,7 +47,7 @@ bool CLPM::train()
 	CCplex solver;
 	solver.init(E_LINEAR);
 	SG_INFO("C=%f\n", C1);
-	solver.setup_lpm(C1, features, labels, get_bias_enabled());
+	solver.setup_lpm(C1, (CSparseFeatures<float64_t>*) features, labels, get_bias_enabled());
 	if (get_max_train_time()>0)
 		solver.set_time_limit(get_max_train_time());
 	bool result=solver.optimize(params);

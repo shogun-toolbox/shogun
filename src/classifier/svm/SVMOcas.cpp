@@ -13,14 +13,14 @@
 #include "lib/Mathematics.h"
 #include "lib/Time.h"
 #include "base/Parallel.h"
-#include "classifier/SparseLinearClassifier.h"
+#include "classifier/LinearClassifier.h"
 #include "classifier/svm/SVMOcas.h"
 #include "classifier/svm/libocas.h"
-#include "features/SparseFeatures.h"
+#include "features/DotFeatures.h"
 #include "features/Labels.h"
 
 CSVMOcas::CSVMOcas(E_SVM_TYPE type)
-: CSparseLinearClassifier(), use_bias(false), bufsize(3000), C1(1), C2(1),
+: CLinearClassifier(), use_bias(false), bufsize(3000), C1(1), C2(1),
 	epsilon(1e-3), method(type)
 {
 	w=NULL;
@@ -28,8 +28,8 @@ CSVMOcas::CSVMOcas(E_SVM_TYPE type)
 }
 
 CSVMOcas::CSVMOcas(
-	float64_t C, CSparseFeatures<float64_t>* traindat, CLabels* trainlab)
-: CSparseLinearClassifier(), use_bias(false), bufsize(3000), C1(C), C2(C),
+	float64_t C, CDotFeatures* traindat, CLabels* trainlab)
+: CLinearClassifier(), use_bias(false), bufsize(3000), C1(C), C2(C),
 	epsilon(1e-3)
 {
 	w=NULL;
@@ -54,7 +54,7 @@ bool CSVMOcas::train()
 
 	int32_t num_train_labels=0;
 	lab=labels->get_labels(num_train_labels);
-	w_dim=features->get_num_features();
+	w_dim=features->get_dim_feature_space();
 	int32_t num_vec=features->get_num_vectors();
 
 	ASSERT(num_vec==num_train_labels);
@@ -162,7 +162,7 @@ void CSVMOcas::add_new_cut(
 	uint32_t nSel, void* ptr)
 {
 	CSVMOcas* o = (CSVMOcas*) ptr;
-	CSparseFeatures<float64_t>* f = o->get_features();
+	CDotFeatures* f = o->get_features();
 	uint32_t nDim=(uint32_t) o->w_dim;
 	float64_t* y = o->lab;
 
@@ -236,7 +236,7 @@ void CSVMOcas::sort(float64_t* vals, uint32_t* idx, uint32_t size)
 void CSVMOcas::compute_output(float64_t *output, void* ptr)
 {
 	CSVMOcas* o = (CSVMOcas*) ptr;
-	CSparseFeatures<float64_t>* f=o->get_features();
+	CDotFeatures* f=o->get_features();
 	int32_t nData=f->get_num_vectors();
 
 	float64_t* y = o->lab;

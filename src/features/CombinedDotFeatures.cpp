@@ -112,3 +112,19 @@ void CCombinedDotFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, f
 		f=get_next_feature_obj(current);
 	}
 }
+
+
+int32_t CCombinedDotFeatures::get_nnz_features_for_vector(int32_t num)
+{
+	CListElement<CDotFeatures*> * current = NULL ;
+	CDotFeatures* f=get_first_feature_obj(current);
+	int32_t result=0;
+
+	while (f)
+	{
+		result+=f->get_nnz_features_for_vector(num);
+		f=get_next_feature_obj(current);
+	}
+
+	return result;
+}

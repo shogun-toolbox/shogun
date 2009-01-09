@@ -477,6 +477,16 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 			free_feature_vector(vec1, vec_idx1, vfree);
 		}
 
+		/** get number of non-zero features in vector
+		 *
+		 * @param num which vector
+		 * @return number of non-zero features in vector
+		 */
+		virtual inline int32_t get_nnz_features_for_vector(int32_t num)
+		{
+			return num_features;
+		}
+
 
 	protected:
 		/** compute feature vector for sample num

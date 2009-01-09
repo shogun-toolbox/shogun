@@ -83,6 +83,13 @@ class CCombinedDotFeatures : public CDotFeatures
 		 */
 		virtual void add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val=false);
 
+		/** get number of non-zero features in vector
+		 *
+		 * @param num which vector
+		 * @return number of non-zero features in vector
+		 */
+		virtual int32_t get_nnz_features_for_vector(int32_t num);
+
 		/** get feature type
 		 *
 		 * @return templated feature type

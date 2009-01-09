@@ -13,8 +13,8 @@
 #define _SVMOCAS_H___
 
 #include "lib/common.h"
-#include "classifier/SparseLinearClassifier.h"
-#include "features/SparseFeatures.h"
+#include "classifier/LinearClassifier.h"
+#include "features/DotFeatures.h"
 #include "features/Labels.h"
 
 enum E_SVM_TYPE
@@ -24,7 +24,7 @@ enum E_SVM_TYPE
 };
 
 /** class SVMOcas */
-class CSVMOcas : public CSparseLinearClassifier
+class CSVMOcas : public CLinearClassifier
 {
 	public:
 		/** constructor
@@ -40,7 +40,7 @@ class CSVMOcas : public CSparseLinearClassifier
 		 * @param trainlab labels for training features
 		 */
 		CSVMOcas(
-			float64_t C, CSparseFeatures<float64_t>* traindat,
+			float64_t C, CDotFeatures* traindat,
 			CLabels* trainlab);
 		virtual ~CSVMOcas();
 

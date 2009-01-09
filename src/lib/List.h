@@ -13,6 +13,7 @@
 #define _LIST_H_
 
 #include "lib/common.h"
+#include "base/SGObject.h"
 
 /** Class ListElement, defines how an element of the the list looks like */
 template <class T> class CListElement

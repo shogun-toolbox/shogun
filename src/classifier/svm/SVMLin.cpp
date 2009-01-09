@@ -12,18 +12,18 @@
 #include "features/Labels.h"
 #include "lib/Mathematics.h"
 #include "classifier/svm/ssl.h"
-#include "classifier/SparseLinearClassifier.h"
-#include "features/SparseFeatures.h"
+#include "classifier/LinearClassifier.h"
+#include "features/DotFeatures.h"
 #include "features/Labels.h"
 
 CSVMLin::CSVMLin()
-: CSparseLinearClassifier(), C1(1), C2(1), epsilon(1e-5), use_bias(true)
+: CLinearClassifier(), C1(1), C2(1), epsilon(1e-5), use_bias(true)
 {
 }
 
 CSVMLin::CSVMLin(
-	float64_t C, CSparseFeatures<float64_t>* traindat, CLabels* trainlab)
-: CSparseLinearClassifier(), C1(C), C2(C), epsilon(1e-5), use_bias(true)
+	float64_t C, CDotFeatures* traindat, CLabels* trainlab)
+: CLinearClassifier(), C1(C), C2(C), epsilon(1e-5), use_bias(true)
 {
 	set_features(traindat);
 	set_labels(trainlab);
@@ -41,7 +41,7 @@ bool CSVMLin::train()
 
 	int32_t num_train_labels=0;
 	float64_t* train_labels=labels->get_labels(num_train_labels);
-	int32_t num_feat=features->get_num_features();
+	int32_t num_feat=features->get_dim_feature_space();
 	int32_t num_vec=features->get_num_vectors();
 
 	ASSERT(num_vec==num_train_labels);
@@ -91,8 +91,8 @@ bool CSVMLin::train()
 	for (int32_t i=0; i<num_feat+1; i++)
 		Weights.vec[i]*=sgn;
 
-	CSparseLinearClassifier::set_w(Weights.vec, num_feat);
-	CSparseLinearClassifier::set_bias(Weights.vec[num_feat]);
+	set_w(Weights.vec, num_feat);
+	set_bias(Weights.vec[num_feat]);
 
 	delete[] Data.C;
 	delete[] train_labels;

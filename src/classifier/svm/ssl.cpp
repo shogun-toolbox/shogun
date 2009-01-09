@@ -83,7 +83,7 @@ int32_t CGLS(
 	/* Disassemble the structures */
 	int32_t active = Subset->d;
 	int32_t *J = Subset->vec;
-	CSparseFeatures<float64_t>* features=Data->features;
+	CDotFeatures* features=Data->features;
 	float64_t *Y = Data->Y;
 	float64_t *C = Data->C;
 	int32_t n  = Data->n;
@@ -105,14 +105,7 @@ int32_t CGLS(
 		r[i] = 0.0;
 	for (register int32_t j=0; j < active; j++)
 	{
-		ii=J[j];
-		int32_t num_entries=0;
-		bool free_vec=false;
-
-		TSparseEntry<float64_t>* vec=features->get_sparse_feature_vector(ii, num_entries, free_vec);
-		for (int32_t i=0; i<num_entries; i++)
-			r[vec[i].feat_index]+= vec[i].entry*z[j];
-		features->free_sparse_feature_vector(vec, num_entries, free_vec);
+		features->add_to_dense_vec(z[j], J[j], r, n-1);
 		r[n-1]+=Options->bias*z[j]; //bias (modelled as last dim)
 	}
 	float64_t *p = new float64_t[n];   
@@ -143,14 +136,7 @@ int32_t CGLS(
 		for (i=0; i < active; i++)
 		{
 			ii=J[i];
-			t=0.0;
-			int32_t num_entries=0;
-			bool free_vec=false;
-			TSparseEntry<float64_t>* vec=features->get_sparse_feature_vector(ii,
-					num_entries, free_vec);
-			for (j=0; j<num_entries; j++)
-				t+=vec[j].entry*p[vec[j].feat_index];
-			features->free_sparse_feature_vector(vec, num_entries, free_vec);
+			t=features->dense_dot(ii, p, n-1);
 			t+=Options->bias*p[n-1]; //bias (modelled as last dim)
 			q[i]=t;
 			omega_q += C[ii]*t*t;
@@ -172,15 +158,9 @@ int32_t CGLS(
 		} 
 		for (j=0; j < active; j++)
 		{
-			ii=J[j];
 			t=z[j];
-			int32_t num_entries=0;
-			bool free_vec=false;
 
-			TSparseEntry<float64_t>* vec=features->get_sparse_feature_vector(ii, num_entries, free_vec);
-			for (i=0; i<num_entries; i++)
-				r[vec[i].feat_index]+= vec[i].entry*t;
-			features->free_sparse_feature_vector(vec, num_entries, free_vec);
+			features->add_to_dense_vec(t, J[j], r, n-1);
 			r[n-1]+=Options->bias*t; //bias (modelled as last dim)
 		}
 		omega1 = 0.0;
@@ -218,7 +198,7 @@ int32_t L2_SVM_MFN(
 	int32_t ini)
 {
 	/* Disassemble the structures */  
-	CSparseFeatures<float64_t>* features=Data->features;
+	CDotFeatures* features=Data->features;
 	float64_t *Y = Data->Y;
 	float64_t *C = Data->C;
 	int32_t n  = Data->n;
@@ -287,15 +267,8 @@ int32_t L2_SVM_MFN(
 		for(register int32_t i=active; i < m; i++) 
 		{
 			ii=ActiveSubset->vec[i];   
-			t=0.0;
 
-			int32_t num_entries=0;
-			bool free_vec=false;
-
-			TSparseEntry<float64_t>* vec=features->get_sparse_feature_vector(ii, num_entries, free_vec);
-			for (int32_t j=0; j<num_entries; j++)
-				t+=vec[j].entry*w_bar[vec[j].feat_index];
-			features->free_sparse_feature_vector(vec, num_entries, free_vec);
+			t=features->dense_dot(ii, w_bar, n-1);
 			t+=Options->bias*w_bar[n-1]; //bias (modelled as last dim)
 
 			o_bar[ii]=t;
@@ -481,14 +454,7 @@ int32_t TSVM_MFN(
 	{
 		if(Data->Y[i]==0.0)
 		{
-			t=0.0;
-			int32_t num_entries=0;
-			bool free_vec=false;
-
-			TSparseEntry<float64_t>* vec=Data->features->get_sparse_feature_vector(i, num_entries, free_vec);
-			for (int32_t j=0; j<num_entries; j++)
-				t+=vec[j].entry*Weights->vec[vec[j].feat_index];
-			Data->features->free_sparse_feature_vector(vec, num_entries, free_vec);
+			t=Data->features->dense_dot(i, Weights->vec, Data->n-1);
 			t+=Options->bias*Weights->vec[Data->n-1]; //bias (modelled as last dim)
 
 			Outputs->vec[i]=t;
@@ -686,7 +652,7 @@ int32_t optimize_w(
 	struct vector_double *Weights, struct vector_double *Outputs, int32_t ini)
 {
 	int32_t i,j;
-	CSparseFeatures<float64_t>* features=Data->features;
+	CDotFeatures* features=Data->features;
 	int32_t n  = Data->n;
 	int32_t m  = Data->m;
 	int32_t u  = Data->u;
@@ -808,14 +774,7 @@ int32_t optimize_w(
 		for(i=active; i < m; i++) 
 		{
 			ii=ActiveSubset->vec[i];   
-			t=0.0;
-			int32_t num_entries=0;
-			bool free_vec=false;
-
-			TSparseEntry<float64_t>* vec=features->get_sparse_feature_vector(ii, num_entries, free_vec);
-			for (j=0; j<num_entries; j++)
-				t+=vec[j].entry*w_bar[vec[j].feat_index];
-			features->free_sparse_feature_vector(vec, num_entries, free_vec);
+			t=features->dense_dot(ii, w_bar, n-1);
 			t+=Options->bias*w_bar[n-1]; //bias (modelled as last dim)
 
 			o_bar[ii]=t;

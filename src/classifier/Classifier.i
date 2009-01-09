@@ -31,7 +31,6 @@
 %include "base/SGObject.i"
 %include "classifier/Classifier.h" 
 %include "classifier/LinearClassifier.i"
-%include "classifier/SparseLinearClassifier.i"
 %include "classifier/PluginEstimate.i"
 
 /* classifiers based on kernelmachine */

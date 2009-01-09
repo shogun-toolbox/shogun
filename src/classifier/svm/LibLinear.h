@@ -15,7 +15,7 @@
 
 #ifdef HAVE_LAPACK
 #include "lib/common.h"
-#include "classifier/SparseLinearClassifier.h"
+#include "classifier/LinearClassifier.h"
 
 enum LIBLINEAR_LOSS
 {
@@ -24,7 +24,7 @@ enum LIBLINEAR_LOSS
 };
 
 /** class to implement LibLinear */
-class CLibLinear : public CSparseLinearClassifier
+class CLibLinear : public CLinearClassifier
 {
 	public:
 		/** constructor
@@ -40,7 +40,7 @@ class CLibLinear : public CSparseLinearClassifier
 		 * @param trainlab training labels
 		 */
 		CLibLinear(
-			float64_t C, CSparseFeatures<float64_t>* traindat,
+			float64_t C, CDotFeatures* traindat,
 			CLabels* trainlab);
 
 		virtual ~CLibLinear();

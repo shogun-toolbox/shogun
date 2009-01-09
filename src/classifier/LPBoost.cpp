@@ -21,7 +21,7 @@
 #include "lib/Time.h"
 
 CLPBoost::CLPBoost()
-: CSparseLinearClassifier(), C1(1), C2(1), use_bias(true), epsilon(1e-3)
+: CLinearClassifier(), C1(1), C2(1), use_bias(true), epsilon(1e-3)
 {
 	u=NULL;
 	dim=NULL;
@@ -44,7 +44,7 @@ bool CLPBoost::init(int32_t num_vec)
 
 	dim=new CDynamicArray<int32_t>(100000);
 
-	sfeat= features->get_transposed(num_sfeat, num_svec);
+	sfeat= ((CSparseFeatures<float64_t>*) features)->get_transposed(num_sfeat, num_svec);
 
 	if (sfeat)
 		return true;
@@ -57,7 +57,7 @@ void CLPBoost::cleanup()
 	delete[] u;
 	u=NULL;
 
-	features->clean_tsparse(sfeat, num_svec);
+	((CSparseFeatures<float64_t>*) features)->clean_tsparse(sfeat, num_svec);
 	sfeat=NULL;
 
 	delete dim;
@@ -104,7 +104,7 @@ bool CLPBoost::train()
 	ASSERT(labels);
 	ASSERT(features);
 	int32_t num_train_labels=labels->get_num_labels();
-	int32_t num_feat=features->get_num_features();
+	int32_t num_feat=features->get_dim_feature_space();
 	int32_t num_vec=features->get_num_vectors();
 
 	ASSERT(num_vec==num_train_labels);

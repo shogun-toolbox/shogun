@@ -1,3 +1,26 @@
+2009-02-10 Soeren Sonnenburg <debian@nn7.de>
+
+	* SHOGUN Release version 0.7.0
+	* This release contains major feature enhancements and bugfixes:
+		- Implement DotFeatures and CombinedDotFeatures. DotFeatures need
+		  to provide dot-product and similar operations (hence the name).
+		  This enables training of linear methods with mixed datatypes
+		  (sparse and dense and other even the newly implemented string
+		  based SpecFeatures and WDFeatures).
+		- Support compilation on the iPhone :)
+		- Add an option to set wds kernel position weights.
+		- Build static libshogun.a for libshogun target.
+
+	* Cleanup:
+		- Remove WDSVMOcas as it is implemented now via a linear classifier
+		  and WDFeatures
+		- Remove SparseLinearClassifier: LinearClassifier is a drop-in
+		  replacement.
+	* Bugfixes:
+		- Fix regression for COMM* kernels (normalization argument was ignored).
+		- Use C99 variadic macros, instead of gcc's own variant.
+		- Disable lp_solve, it is not required right now.
+
 2008-11-25 Soeren Sonnenburg <debian@nn7.de>
 
 	* SHOGUN Release version 0.6.7

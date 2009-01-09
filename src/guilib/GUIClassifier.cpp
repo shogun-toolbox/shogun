@@ -33,7 +33,6 @@
 #include "classifier/KernelPerceptron.h"
 
 #include "classifier/LinearClassifier.h"
-#include "classifier/SparseLinearClassifier.h"
 
 #ifdef USE_SVMLIGHT
 #include "classifier/svm/SVM_light.h"
@@ -449,30 +448,57 @@ bool CGUIClassifier::train_knn(int32_t k)
 
 bool CGUIClassifier::train_linear(float64_t gamma)
 {
+	ASSERT(classifier);
+	EClassifierType ctype = classifier->get_classifier_type();
 	CFeatures* trainfeatures=ui->ui_features->get_train_features();
 	CLabels* trainlabels=ui->ui_labels->get_train_labels();
-
 	bool result=false;
 
 	if (!trainfeatures)
 		SG_ERROR("No trainfeatures available.\n");
+
 	if (trainfeatures->get_feature_class()!=C_SIMPLE ||
-		trainfeatures->get_feature_type()!=F_DREAL)
-		SG_ERROR("Trainfeatures are not of class SIMPLE type REAL.\n");
+			trainfeatures->get_feature_class()!=C_SPARSE)
+		SG_ERROR("Trainfeatures are not of class SIMPLE nor SPARSE.\n");
 
 	if (!trainlabels)
 		SG_ERROR("No labels available\n");
 
-	if (classifier->get_classifier_type()==CT_PERCEPTRON)
+	if (ctype==CT_PERCEPTRON)
 	{
 		((CPerceptron*) classifier)->set_learn_rate(perceptron_learnrate);
 		((CPerceptron*) classifier)->set_max_iter(perceptron_maxiter);
 	}
 
 #ifdef HAVE_LAPACK
-	if (classifier->get_classifier_type()==CT_LDA)
+	if (ctype==CT_LDA)
+	{
+		if (trainfeatures->get_feature_type()!=F_DREAL ||
+				trainfeatures->get_feature_class()!=C_SIMPLE)
+		SG_ERROR("LDA requires train features of class SIMPLE type REAL.\n");
 		((CLDA*) classifier)->set_gamma(gamma);
+	}
 #endif
+
+	if (ctype==CT_SVMOCAS)
+		((CSVMOcas*) classifier)->set_C(svm_C1, svm_C2);
+#ifdef HAVE_LAPACK
+	else if (ctype==CT_LIBLINEAR)
+		((CLibLinear*) classifier)->set_C(svm_C1, svm_C2);
+#endif
+	else if (ctype==CT_SVMLIN)
+		((CSVMLin*) classifier)->set_C(svm_C1, svm_C2);
+	else if (ctype==CT_SVMSGD)
+		((CSVMSGD*) classifier)->set_C(svm_C1, svm_C2);
+	else if (ctype==CT_SUBGRADIENTSVM)
+		((CSubGradientSVM*) classifier)->set_C(svm_C1, svm_C2);
+
+	else if (ctype==CT_LPM || ctype==CT_LPBOOST)
+	{
+		if (trainfeatures->get_feature_class()!=C_SPARSE ||
+				trainfeatures->get_feature_type()!=F_DREAL)
+			SG_ERROR("LPM and LPBOOST require trainfeatures of class SPARSE type REAL.\n");
+	}
 
 	((CLinearClassifier*) classifier)->set_labels(trainlabels);
 	((CLinearClassifier*) classifier)->set_features((CRealFeatures*) trainfeatures);
@@ -501,44 +527,6 @@ bool CGUIClassifier::train_wdocas()
 	((CWDSVMOcas*) classifier)->set_labels(trainlabels);
 	((CWDSVMOcas*) classifier)->set_features((CStringFeatures<uint8_t>*) trainfeatures);
 	result=((CWDSVMOcas*) classifier)->train();
-
-	return result;
-}
-
-bool CGUIClassifier::train_sparse_linear()
-{
-	EClassifierType ctype=classifier->get_classifier_type();
-	CFeatures* trainfeatures=ui->ui_features->get_train_features();
-	CLabels* trainlabels=ui->ui_labels->get_train_labels();
-
-	bool result=false;
-
-	if (!trainfeatures)
-		SG_ERROR("No trainfeatures available.\n");
-
-	if (trainfeatures->get_feature_class()!=C_SPARSE ||
-		trainfeatures->get_feature_type()!=F_DREAL)
-		SG_ERROR("Trainfeatures are not of class SPARSE type REAL.\n");
-
-	if (!trainlabels)
-		SG_ERROR("No labels available.\n");
-
-	if (ctype==CT_SVMOCAS)
-		((CSVMOcas*) classifier)->set_C(svm_C1, svm_C2);
-#ifdef HAVE_LAPACK
-	else if (ctype==CT_LIBLINEAR)
-		((CLibLinear*) classifier)->set_C(svm_C1, svm_C2);
-#endif
-	else if (ctype==CT_SVMLIN)
-		((CSVMLin*) classifier)->set_C(svm_C1, svm_C2);
-	else if (ctype==CT_SVMSGD)
-		((CSVMSGD*) classifier)->set_C(svm_C1, svm_C2);
-	else if (ctype==CT_SUBGRADIENTSVM)
-		((CSubGradientSVM*) classifier)->set_C(svm_C1, svm_C2);
-
-	((CSparseLinearClassifier*) classifier)->set_labels(trainlabels);
-	((CSparseLinearClassifier*) classifier)->set_features((CSparseFeatures<float64_t>*) trainfeatures);
-	result=((CSparseLinearClassifier*) classifier)->train();
 
 	return result;
 }
@@ -906,7 +894,7 @@ CLabels* CGUIClassifier::classify(CLabels* output)
 		case CT_LPBOOST:
 		case CT_SUBGRADIENTLPM:
 		case CT_LIBLINEAR:
-			return classify_sparse_linear(output);
+			return classify_linear(output);
 		case CT_WDSVMOCAS:
 			return classify_byte_linear(output);
 		default:
@@ -965,15 +953,6 @@ bool CGUIClassifier::get_trained_classifier(
 			break;
 		case CT_PERCEPTRON:
 		case CT_LDA:
-			return get_linear(weights, rows, cols, bias, brows, bcols);
-			break;
-		case CT_KMEANS:
-		case CT_HIERARCHICAL:
-			return get_clustering(weights, rows, cols, bias, brows, bcols);
-			break;
-		case CT_KNN:
-			SG_ERROR("not implemented");
-			break;
 		case CT_LPM:
 		case CT_LPBOOST:
 		case CT_SUBGRADIENTLPM:
@@ -983,7 +962,14 @@ bool CGUIClassifier::get_trained_classifier(
 		case CT_SVMPERF:
 		case CT_SUBGRADIENTSVM:
 		case CT_LIBLINEAR:
-			return get_sparse_linear(weights, rows, cols, bias, brows, bcols);
+			return get_linear(weights, rows, cols, bias, brows, bcols);
+			break;
+		case CT_KMEANS:
+		case CT_HIERARCHICAL:
+			return get_clustering(weights, rows, cols, bias, brows, bcols);
+			break;
+		case CT_KNN:
+			SG_ERROR("not implemented");
 			break;
 		default:
 			SG_ERROR("unknown classifier type\n");
@@ -1096,26 +1082,6 @@ bool CGUIClassifier::get_linear(
 	return true;
 }
 
-bool CGUIClassifier::get_sparse_linear(
-	float64_t* &weights, int32_t& rows, int32_t& cols, float64_t*& bias,
-	int32_t& brows, int32_t& bcols)
-{
-	CSparseLinearClassifier* linear=(CSparseLinearClassifier*) classifier;
-
-	if (!linear)
-		return false;
-
-	bias=new float64_t[1];
-	*bias=linear->get_bias();
-	brows=1;
-	bcols=1;
-
-	cols=1;
-	linear->get_w(&weights, &rows);
-	return true;
-}
-
-
 CLabels* CGUIClassifier::classify_distancemachine(CLabels* output)
 {
 	CFeatures* trainfeatures=ui->ui_features->get_train_features();
@@ -1165,10 +1131,11 @@ CLabels* CGUIClassifier::classify_linear(CLabels* output)
 		SG_ERROR("no test features available\n") ;
 		return NULL;
 	}
-	if (testfeatures->get_feature_class() != C_SIMPLE ||
+	if (!(testfeatures->get_feature_class() == C_SIMPLE ||
+			testfeatures->get_feature_class() == C_SPARSE) ||
 			testfeatures->get_feature_type() != F_DREAL )
 	{
-		SG_ERROR("testfeatures not of class SIMPLE type REAL\n") ;
+		SG_ERROR("testfeatures not of class SIMPLE or SPARSE type REAL\n") ;
 		return false ;
 	}
 
@@ -1199,32 +1166,6 @@ CLabels* CGUIClassifier::classify_byte_linear(CLabels* output)
 	}
 
 	((CWDSVMOcas*) classifier)->set_features((CStringFeatures<uint8_t>*) testfeatures);
-	SG_INFO("starting linear classifier testing\n") ;
-	return classifier->classify(output);
-}
-
-CLabels* CGUIClassifier::classify_sparse_linear(CLabels* output)
-{
-	CFeatures* testfeatures=ui->ui_features->get_test_features();
-
-	if (!classifier)
-	{
-		SG_ERROR("no svm available\n") ;
-		return NULL;
-	}
-	if (!testfeatures)
-	{
-		SG_ERROR("no test features available\n") ;
-		return NULL;
-	}
-	if (testfeatures->get_feature_class() != C_SPARSE ||
-			testfeatures->get_feature_type() != F_DREAL )
-	{
-		SG_ERROR("testfeatures not of class SPARSE type REAL\n") ;
-		return false ;
-	}
-
-	((CSparseLinearClassifier*) classifier)->set_features((CSparseFeatures<float64_t>*) testfeatures);
 	SG_INFO("starting linear classifier testing\n") ;
 	return classifier->classify(output);
 }

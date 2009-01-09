@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2008 Soeren Sonnenburg
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 1999-2009 Soeren Sonnenburg
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _LINEARCLASSIFIER_H__
@@ -13,7 +13,7 @@
 
 #include "lib/common.h"
 #include "features/Labels.h"
-#include "features/RealFeatures.h"
+#include "features/DotFeatures.h"
 #include "classifier/Classifier.h"
 
 #include <stdio.h>
@@ -29,13 +29,7 @@ class CLinearClassifier : public CClassifier
 		/// get output for example "vec_idx"
 		virtual inline float64_t classify_example(int32_t vec_idx)
 		{
-			int32_t vlen;
-			bool vfree;
-			float64_t* vec=features->get_feature_vector(vec_idx, vlen, vfree);
-			float64_t result=CMath::dot(w,vec,vlen);
-			features->free_feature_vector(vec, vec_idx, vfree);
-
-			return result+bias;
+			return features->dense_dot(vec_idx, w, w_dim) + bias;
 		}
 
 		/** get w
@@ -47,7 +41,7 @@ class CLinearClassifier : public CClassifier
 		{
 			ASSERT(dst_w && dst_dims);
 			ASSERT(w && features);
-			*dst_dims=features->get_num_features();
+			*dst_dims=features->get_dim_feature_space();
 			*dst_w=(float64_t*) malloc(sizeof(float64_t)*(*dst_dims));
 			ASSERT(*dst_w);
 			memcpy(*dst_w, w, sizeof(float64_t) * (*dst_dims));
@@ -107,7 +101,7 @@ class CLinearClassifier : public CClassifier
 		 *
 		 * @param feat features to set
 		 */
-		virtual inline void set_features(CRealFeatures* feat)
+		virtual inline void set_features(CDotFeatures* feat)
 		{
 			SG_UNREF(features);
 			SG_REF(feat);
@@ -118,7 +112,7 @@ class CLinearClassifier : public CClassifier
 		 *
 		 * @return features
 		 */
-		virtual CRealFeatures* get_features() { SG_REF(features); return features; }
+		virtual CDotFeatures* get_features() { SG_REF(features); return features; }
 
 	protected:
 		/** dimension of w */
@@ -128,6 +122,6 @@ class CLinearClassifier : public CClassifier
 		/** bias */
 		float64_t bias;
 		/** features */
-		CRealFeatures* features;
+		CDotFeatures* features;
 };
 #endif

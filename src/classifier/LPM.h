@@ -17,9 +17,9 @@
 #include <stdio.h>
 #include "lib/common.h"
 #include "features/Features.h"
-#include "classifier/SparseLinearClassifier.h"
+#include "classifier/LinearClassifier.h"
 
-class CLPM : public CSparseLinearClassifier
+class CLPM : public CLinearClassifier
 {
 	public:
 		CLPM();
@@ -30,6 +30,19 @@ class CLPM : public CSparseLinearClassifier
 		inline virtual EClassifierType get_classifier_type()
 		{
 			return CT_LPM;
+		}
+
+		/** set features
+		 *
+		 * @param feat features to set
+		 */
+		virtual inline void set_features(CDotFeatures* feat)
+		{
+			if (feat->get_feature_class() != C_SPARSE ||
+				feat->get_feature_type() != F_DREAL)
+				SG_ERROR("LPM requires SPARSE REAL valued features\n");
+
+			CLinearClassifier::set_features(feat);
 		}
 
 		inline void set_C(float64_t c1, float64_t c2) { C1=c1; C2=c2; }

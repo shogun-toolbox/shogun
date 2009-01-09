@@ -174,12 +174,12 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		}
 
 
-		/** get number of sparse features in vector
+		/** get number of non-zero features in vector
 		 *
 		 * @param num which vector
-		 * @return number of sparse features in vector
+		 * @return number of non-zero features in vector
 		 */
-		inline int32_t get_num_sparse_vec_features(int32_t num)
+		virtual inline int32_t get_nnz_features_for_vector(int32_t num)
 		{
 			bool vfree;
 			int32_t len;

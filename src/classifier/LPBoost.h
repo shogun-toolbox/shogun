@@ -19,9 +19,10 @@
 #include "lib/DynamicArray.h"
 
 #include "features/Features.h"
-#include "classifier/SparseLinearClassifier.h"
+#include "features/SparseFeatures.h"
+#include "classifier/LinearClassifier.h"
 
-class CLPBoost : public CSparseLinearClassifier
+class CLPBoost : public CLinearClassifier
 {
 	public:
 		CLPBoost();
@@ -36,6 +37,19 @@ class CLPBoost : public CSparseLinearClassifier
 
 		bool init(int32_t num_vec);
 		void cleanup();
+
+		/** set features
+		 *
+		 * @param feat features to set
+		 */
+		virtual inline void set_features(CDotFeatures* feat)
+		{
+			if (feat->get_feature_class() != C_SPARSE ||
+				feat->get_feature_type() != F_DREAL)
+				SG_ERROR("LPBoost requires SPARSE REAL valued features\n");
+
+			CLinearClassifier::set_features(feat);
+		}
 
 		inline void set_C(float64_t c1, float64_t c2) { C1=c1; C2=c2; }
 

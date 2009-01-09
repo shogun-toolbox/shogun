@@ -13,7 +13,7 @@
 
 #include <stdio.h>
 #include "lib/common.h"
-#include "features/Features.h"
+#include "features/DotFeatures.h"
 #include "classifier/LinearClassifier.h"
 
 /** class Perceptron */
@@ -28,7 +28,7 @@ class CPerceptron : public CLinearClassifier
 		 * @param traindat training features
 		 * @param trainlab labels for training features
 		 */
-		CPerceptron(CRealFeatures* traindat, CLabels* trainlab);
+		CPerceptron(CDotFeatures* traindat, CLabels* trainlab);
 		virtual ~CPerceptron();
 
 		/** get classifier type

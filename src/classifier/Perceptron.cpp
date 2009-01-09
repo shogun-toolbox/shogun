@@ -17,7 +17,7 @@ CPerceptron::CPerceptron()
 {
 }
 
-CPerceptron::CPerceptron(CRealFeatures* traindat, CLabels* trainlab)
+CPerceptron::CPerceptron(CDotFeatures* traindat, CLabels* trainlab)
 : CLinearClassifier(), learn_rate(.1), max_iter(1000)
 {
 	set_features(traindat);
@@ -36,7 +36,7 @@ bool CPerceptron::train()
 	int32_t iter=0;
 	int32_t num_train_labels=0;
 	int32_t* train_labels=labels->get_int_labels(num_train_labels);
-	int32_t num_feat=features->get_num_features();
+	int32_t num_feat=features->get_dim_feature_space();
 	int32_t num_vec=features->get_num_vectors();
 
 	ASSERT(num_vec==num_train_labels);
@@ -63,15 +63,8 @@ bool CPerceptron::train()
 			if (CMath::sign<float64_t>(output[i]) != train_labels[i])
 			{
 				converged=false;
-				int32_t vlen;
-				bool vfree;
-				float64_t* vec=features->get_feature_vector(i, vlen, vfree);
-
 				bias+=learn_rate*train_labels[i];
-				for (int32_t j=0; j<num_feat; j++)
-					w[j]+=  learn_rate*train_labels[i]*vec[j];
-
-				features->free_feature_vector(vec, i, vfree);
+				features->add_to_dense_vec(learn_rate*train_labels[i], i, w, w_dim);
 			}
 		}
 

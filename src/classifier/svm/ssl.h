@@ -35,7 +35,7 @@
 #define DA_OUTER_ITERMAX 30 /* maximum number of outer loops for DA */
 
 #include "lib/common.h"
-#include "features/SparseFeatures.h"
+#include "features/DotFeatures.h"
 
 /** Data: Input examples are stored in sparse (Compressed Row Storage) format */
 struct data
@@ -52,7 +52,7 @@ struct data
 	int32_t nz;
 
 	/** features */
-	CSparseFeatures<float64_t>* features;
+	CDotFeatures* features;
 	/** labels */
 	float64_t *Y;
 	/** cost associated with each example */

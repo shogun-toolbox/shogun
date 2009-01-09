@@ -19,16 +19,16 @@
 
 #include "lib/Cplex.h"
 
-#include "classifier/SparseLinearClassifier.h"
-#include "features/SparseFeatures.h"
+#include "classifier/LinearClassifier.h"
+#include "features/Features.h"
 #include "features/Labels.h"
 
-class CSubGradientLPM : public CSparseLinearClassifier
+class CSubGradientLPM : public CLinearClassifier
 {
 	public:
 		CSubGradientLPM();
 		CSubGradientLPM(
-			float64_t C, CSparseFeatures<float64_t>* traindat,
+			float64_t C, CDotFeatures* traindat,
 			CLabels* trainlab);
 		virtual ~CSubGradientLPM();
 

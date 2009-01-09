@@ -16,10 +16,10 @@
 #include "lib/Mathematics.h"
 #include "lib/Signal.h"
 #include "lib/Time.h"
-#include "classifier/SparseLinearClassifier.h"
+#include "classifier/LinearClassifier.h"
 #include "classifier/SubGradientLPM.h"
 #include "classifier/svm/qpbsvmlib.h"
-#include "features/SparseFeatures.h"
+#include "features/DotFeatures.h"
 #include "features/Labels.h"
 
 #define DEBUG_SUBGRADIENTLPM
@@ -28,17 +28,17 @@ extern float64_t sparsity;
 float64_t lpmtim;
 
 CSubGradientLPM::CSubGradientLPM()
-: CSparseLinearClassifier(), C1(1), C2(1), epsilon(1e-5), qpsize(42),
+: CLinearClassifier(), C1(1), C2(1), epsilon(1e-5), qpsize(42),
 	qpsize_max(2000), use_bias(false), delta_active(0), delta_bound(0)
 {
 }
 
 CSubGradientLPM::CSubGradientLPM(
-	float64_t C, CSparseFeatures<float64_t>* traindat, CLabels* trainlab)
-: CSparseLinearClassifier(), C1(C), C2(C), epsilon(1e-5), qpsize(42),
+	float64_t C, CDotFeatures* traindat, CLabels* trainlab)
+: CLinearClassifier(), C1(C), C2(C), epsilon(1e-5), qpsize(42),
 	qpsize_max(2000), use_bias(false), delta_active(0), delta_bound(0)
 {
-	CSparseLinearClassifier::features=traindat;
+	CLinearClassifier::features=traindat;
 	CClassifier::labels=trainlab;
 }
 
@@ -262,7 +262,7 @@ float64_t CSubGradientLPM::line_search(int32_t num_feat, int32_t num_vec)
 		}
 		else
 		{
-			float64_t p=get_label(i-num_feat)*features->dense_dot(1.0, i-num_feat, grad_w, num_feat, grad_b);
+			float64_t p=get_label(i-num_feat)*(features->dense_dot(i-num_feat, grad_w, num_feat)+grad_b);
 			grad_proj[i-num_feat]=p;
 			
 			A[i]=0;
@@ -343,7 +343,7 @@ float64_t CSubGradientLPM::compute_min_subgradient(
 
 		//CMath::display_vector(grad_w, num_feat+1, "grad_w");
 
-		solver->setup_subgradientlpm_QP(C1, labels, features, idx_bound, num_bound,
+		solver->setup_subgradientlpm_QP(C1, labels, (CSparseFeatures<float64_t>*) features, idx_bound, num_bound,
 				w_zero, zero_idx,
 				grad_w, num_feat+1,
 				use_bias);
@@ -358,7 +358,7 @@ float64_t CSubGradientLPM::compute_min_subgradient(
 
 		for (int32_t i=0; i<num_bound; i++)
 		{
-			float64_t val= C1*get_label(idx_bound[i])*features->dense_dot(1.0, idx_bound[i], beta, num_feat, beta[num_feat]);
+			float64_t val= C1*get_label(idx_bound[i])*(features->dense_dot(idx_bound[i], beta, num_feat)+ beta[num_feat]);
 			dir_deriv += CMath::max(0.0, val);
 		}
 
@@ -425,7 +425,7 @@ float64_t CSubGradientLPM::compute_objective(int32_t num_feat, int32_t num_vec)
 void CSubGradientLPM::compute_projection(int32_t num_feat, int32_t num_vec)
 {
 	for (int32_t i=0; i<num_vec; i++)
-		proj[i]=get_label(i)*features->dense_dot(1.0, i, w, num_feat, bias);
+		proj[i]=get_label(i)*(features->dense_dot(i, w, num_feat) + bias);
 }
 
 void CSubGradientLPM::update_projection(float64_t alpha, int32_t num_vec)
@@ -548,7 +548,7 @@ bool CSubGradientLPM::train()
 
 	int32_t num_iterations=0;
 	int32_t num_train_labels=labels->get_num_labels();
-	int32_t num_feat=features->get_num_features();
+	int32_t num_feat=features->get_dim_feature_space();
 	int32_t num_vec=features->get_num_vectors();
 
 	ASSERT(num_vec==num_train_labels);

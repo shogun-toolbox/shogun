@@ -5,7 +5,7 @@
 
 #ifdef HAVE_LAPACK
 #include "classifier/svm/Tron.h"
-#include "features/SparseFeatures.h"
+#include "features/DotFeatures.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -21,7 +21,7 @@ struct problem
 	/** y */
 	int32_t *y;
 	/** sparse features x */
-	CSparseFeatures<float64_t>* x;
+	CDotFeatures* x;
 	/** if bias shall be used */
 	bool use_bias;
 };

@@ -23,12 +23,12 @@
 */
 
 #include "lib/common.h"
-#include "classifier/SparseLinearClassifier.h"
-#include "features/SparseFeatures.h"
+#include "classifier/LinearClassifier.h"
+#include "features/DotFeatures.h"
 #include "features/Labels.h"
 
 /** class SVMSGD */
-class CSVMSGD : public CSparseLinearClassifier
+class CSVMSGD : public CLinearClassifier
 {
 	public:
 		/** constructor
@@ -44,7 +44,7 @@ class CSVMSGD : public CSparseLinearClassifier
 		 * @param trainlab labels for training features
 		 */
 		CSVMSGD(
-			float64_t C, CSparseFeatures<float64_t>* traindat,
+			float64_t C, CDotFeatures* traindat,
 			CLabels* trainlab);
 
 		~CSVMSGD();

@@ -97,5 +97,14 @@ class CDotFeatures : public CFeatures
 		 * @param b bias
 		 */
 		virtual void dense_dot_range(float64_t* output, int32_t start, int32_t stop, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b);
+
+		/** get number of non-zero features in vector
+		 *
+		 * (in case accurate estimates are too expensive overestimating is OK)
+		 *
+		 * @param num which vector
+		 * @return number of sparse features in vector
+		 */
+		virtual int32_t get_nnz_features_for_vector(int32_t num)=0;
 };
 #endif // _DOTFEATURES_H___

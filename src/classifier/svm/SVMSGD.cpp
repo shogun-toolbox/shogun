@@ -100,14 +100,14 @@ float64_t dloss(float64_t z)
 
 
 CSVMSGD::CSVMSGD(float64_t C)
-: CSparseLinearClassifier(), t(1), C1(C), C2(C),
+: CLinearClassifier(), t(1), C1(C), C2(C),
 	wscale(1), bscale(1), epochs(5), skip(1000), count(1000), use_bias(true),
 	use_regularized_bias(false)
 {
 }
 
-CSVMSGD::CSVMSGD(float64_t C, CSparseFeatures<float64_t>* traindat, CLabels* trainlab)
-: CSparseLinearClassifier(), t(1), C1(C), C2(C), wscale(1), bscale(1),
+CSVMSGD::CSVMSGD(float64_t C, CDotFeatures* traindat, CLabels* trainlab)
+: CLinearClassifier(), t(1), C1(C), C2(C), wscale(1), bscale(1),
 	epochs(5), skip(1000), count(1000), use_bias(true),
 	use_regularized_bias(false)
 {
@@ -130,7 +130,7 @@ bool CSVMSGD::train()
 	ASSERT(labels->is_two_class_labeling());
 
 	int32_t num_train_labels=labels->get_num_labels();
-	w_dim=features->get_num_features();
+	w_dim=features->get_dim_feature_space();
 	int32_t num_vec=features->get_num_vectors();
 
 	ASSERT(num_vec==num_train_labels);
@@ -165,7 +165,7 @@ bool CSVMSGD::train()
 		{
 			float64_t eta = 1.0 / (lambda * t);
 			float64_t y = labels->get_label(i);
-			float64_t z = y * features->dense_dot(1.0, i, w, w_dim, bias);
+			float64_t z = y * (features->dense_dot(i, w, w_dim) + bias);
 
 #if LOSS < LOGLOSS
 			if (z < 1)
@@ -204,7 +204,7 @@ void CSVMSGD::calibrate()
 { 
 	ASSERT(get_features());
 	int32_t num_vec=features->get_num_vectors();
-	int32_t c_dim=features->get_num_features();
+	int32_t c_dim=features->get_dim_feature_space();
 
 	ASSERT(num_vec>0);
 	ASSERT(c_dim>0);
@@ -221,7 +221,7 @@ void CSVMSGD::calibrate()
 
 	for (int32_t j=0; j<num_vec && m<=1000; j++, n++)
 	{
-		r += features->get_num_sparse_vec_features(j);
+		r += features->get_nnz_features_for_vector(j);
 		features->add_to_dense_vec(1, j, c, c_dim, true);
 
 		//waste cpu cycles for readability

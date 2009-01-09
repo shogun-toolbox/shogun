@@ -43,7 +43,7 @@ bool CLDA::train()
 	int32_t* train_labels=labels->get_int_labels(num_train_labels);
 	ASSERT(train_labels);
 
-	int32_t num_feat=features->get_num_features();
+	int32_t num_feat=features->get_dim_feature_space();
 	int32_t num_vec=features->get_num_vectors();
 	ASSERT(num_vec==num_train_labels);
 
@@ -88,13 +88,14 @@ bool CLDA::train()
 	double* buffer=new double[num_feat*CMath::max(num_neg, num_pos)];
 	int nf = (int) num_feat;
 
+	CRealFeatures* rf = (CRealFeatures*) features;
 	//mean neg
 	for (i=0; i<num_neg; i++)
 	{
 		int32_t vlen;
 		bool vfree;
 		float64_t* vec=
-			features->get_feature_vector(classidx_neg[i], vlen, vfree);
+			rf->get_feature_vector(classidx_neg[i], vlen, vfree);
 		ASSERT(vec);
 
 		for (j=0; j<vlen; j++)
@@ -103,7 +104,7 @@ bool CLDA::train()
 			buffer[num_feat*i+j]=vec[j];
 		}
 
-		features->free_feature_vector(vec, classidx_neg[i], vfree);
+		rf->free_feature_vector(vec, classidx_neg[i], vfree);
 	}
 
 	for (j=0; j<num_feat; j++)
@@ -123,7 +124,7 @@ bool CLDA::train()
 		int32_t vlen;
 		bool vfree;
 		float64_t* vec=
-			features->get_feature_vector(classidx_pos[i], vlen, vfree);
+			rf->get_feature_vector(classidx_pos[i], vlen, vfree);
 		ASSERT(vec);
 
 		for (j=0; j<vlen; j++)
@@ -132,7 +133,7 @@ bool CLDA::train()
 			buffer[num_feat*i+j]=vec[j];
 		}
 
-		features->free_feature_vector(vec, classidx_pos[i], vfree);
+		rf->free_feature_vector(vec, classidx_pos[i], vfree);
 	}
 
 	for (j=0; j<num_feat; j++)

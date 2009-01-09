@@ -15,6 +15,7 @@
 
 #ifdef HAVE_LAPACK
 #include "features/Features.h"
+#include "features/RealFeatures.h"
 #include "classifier/LinearClassifier.h"
 
 /** class LDA */
@@ -67,6 +68,19 @@ class CLDA : public CLinearClassifier
 		inline virtual EClassifierType get_classifier_type()
 		{
 			return CT_LDA;
+		}
+
+		/** set features
+		 *
+		 * @param feat features to set
+		 */
+		virtual inline void set_features(CDotFeatures* feat)
+		{
+			if (feat->get_feature_class() != C_SIMPLE ||
+				feat->get_feature_type() != F_DREAL)
+				SG_ERROR("LDA requires SIMPLE REAL valued features\n");
+
+			CLinearClassifier::set_features(feat);
 		}
 
 	protected:

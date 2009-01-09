@@ -116,7 +116,7 @@ void l2_lr_fun::Xv(float64_t *v, float64_t *res_Xv)
 
 	for (int32_t i=0;i<l;i++)
 	{
-		res_Xv[i]=prob->x->dense_dot(1.0, i, v, n, 0);
+		res_Xv[i]=prob->x->dense_dot(i, v, n);
 
 		if (prob->use_bias)
 			res_Xv[i]+=v[n];
@@ -250,7 +250,7 @@ void l2loss_svm_fun::Xv(float64_t *v, float64_t *res_Xv)
 
 	for (int32_t i=0;i<l;i++)
 	{
-		res_Xv[i]=prob->x->dense_dot(1.0, i, v, n, 0);
+		res_Xv[i]=prob->x->dense_dot(i, v, n);
 
 		if (prob->use_bias)
 			res_Xv[i]+=v[n];
@@ -266,7 +266,7 @@ void l2loss_svm_fun::subXv(float64_t *v, float64_t *res_Xv)
 
 	for (int32_t i=0;i<sizeI;i++)
 	{
-		res_Xv[i]=prob->x->dense_dot(1.0, I[i], v, n, 0);
+		res_Xv[i]=prob->x->dense_dot(I[i], v, n);
 
 		if (prob->use_bias)
 			res_Xv[i]+=v[n];

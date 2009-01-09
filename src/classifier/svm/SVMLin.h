@@ -12,12 +12,12 @@
 #define _SVMLIN_H___
 
 #include "lib/common.h"
-#include "classifier/SparseLinearClassifier.h"
-#include "features/SparseFeatures.h"
+#include "classifier/LinearClassifier.h"
+#include "features/DotFeatures.h"
 #include "features/Labels.h"
 
 /** class SVMLin */
-class CSVMLin : public CSparseLinearClassifier
+class CSVMLin : public CLinearClassifier
 {
 	public:
 		/** default constructor */
@@ -30,7 +30,7 @@ class CSVMLin : public CSparseLinearClassifier
 		 * @param trainlab labels for features
 		 */
 		CSVMLin(
-			float64_t C, CSparseFeatures<float64_t>* traindat,
+			float64_t C, CDotFeatures* traindat,
 			CLabels* trainlab);
 		virtual ~CSVMLin();
 

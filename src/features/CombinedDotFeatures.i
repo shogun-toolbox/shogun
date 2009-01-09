@@ -1,6 +1,6 @@
 %{
-    #include "features/CombinedDotFeatures.i" 
+    #include "features/CombinedDotFeatures.h" 
 %}
 
-%include "features/CombinedDotFeatures.i" 
+%include "features/CombinedDotFeatures.h" 
 

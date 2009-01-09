@@ -13,12 +13,12 @@
 #define _SUBGRADIENTSVM_H___
 
 #include "lib/common.h"
-#include "classifier/SparseLinearClassifier.h"
-#include "features/SparseFeatures.h"
+#include "classifier/LinearClassifier.h"
+#include "features/DotFeatures.h"
 #include "features/Labels.h"
 
 /** class SubGradientSVM */
-class CSubGradientSVM : public CSparseLinearClassifier
+class CSubGradientSVM : public CLinearClassifier
 {
 	public:
 		/** default constructor */
@@ -31,7 +31,7 @@ class CSubGradientSVM : public CSparseLinearClassifier
 		 * @param trainlab labels for training features
 		 */
 		CSubGradientSVM(
-			float64_t C, CSparseFeatures<float64_t>* traindat,
+			float64_t C, CDotFeatures* traindat,
 			CLabels* trainlab);
 		virtual ~CSubGradientSVM();
 

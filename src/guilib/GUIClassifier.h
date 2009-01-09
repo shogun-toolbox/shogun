@@ -38,7 +38,6 @@ class CGUIClassifier : public CSGObject
 		CLabels* classify_kernelmachine(CLabels* output=NULL);
 		CLabels* classify_distancemachine(CLabels* output=NULL);
 		CLabels* classify_linear(CLabels* output=NULL);
-		CLabels* classify_sparse_linear(CLabels* output=NULL);
 		CLabels* classify_byte_linear(CLabels* output=NULL);
 		bool classify_example(int32_t idx, float64_t& result);
 		inline CClassifier* get_classifier() { return classifier; }
@@ -56,10 +55,6 @@ class CGUIClassifier : public CSGObject
 			int32_t idx=-1); // which SVM in MultiClass
 
 		bool get_linear(
-			float64_t* &weights, int32_t& rows, int32_t& cols,
-			float64_t*& bias, int32_t& brows, int32_t& bcols);
-
-		bool get_sparse_linear(
 			float64_t* &weights, int32_t& rows, int32_t& cols,
 			float64_t*& bias, int32_t& brows, int32_t& bcols);
 

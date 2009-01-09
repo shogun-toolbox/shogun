@@ -14,10 +14,10 @@
 #include "classifier/svm/LibLinear.h"
 #include "classifier/svm/SVM_linear.h"
 #include "classifier/svm/Tron.h"
-#include "features/SparseFeatures.h"
+#include "features/DotFeatures.h"
 
 CLibLinear::CLibLinear(LIBLINEAR_LOSS l)
-: CSparseLinearClassifier()
+: CLinearClassifier()
 {
 	loss=l;
 	use_bias=false;
@@ -26,8 +26,8 @@ CLibLinear::CLibLinear(LIBLINEAR_LOSS l)
 }
 
 CLibLinear::CLibLinear(
-	float64_t C, CSparseFeatures<float64_t>* traindat, CLabels* trainlab)
-: CSparseLinearClassifier(), C1(C), C2(C), use_bias(true), epsilon(1e-5)
+	float64_t C, CDotFeatures* traindat, CLabels* trainlab)
+: CLinearClassifier(), C1(C), C2(C), use_bias(true), epsilon(1e-5)
 {
 	set_features(traindat);
 	set_labels(trainlab);
@@ -45,10 +45,8 @@ bool CLibLinear::train()
 	ASSERT(get_features());
 	ASSERT(labels->is_two_class_labeling());
 
-	CSparseFeatures<float64_t>* sfeat=(CSparseFeatures<float64_t>*) features;
-
 	int32_t num_train_labels=labels->get_num_labels();
-	int32_t num_feat=features->get_num_features();
+	int32_t num_feat=features->get_dim_feature_space();
 	int32_t num_vec=features->get_num_vectors();
 
 	ASSERT(num_vec==num_train_labels);
@@ -71,7 +69,7 @@ bool CLibLinear::train()
 		memset(w, 0, sizeof(float64_t)*(w_dim+0));
 	}
 	prob.l=num_vec;
-	prob.x=sfeat;
+	prob.x=features;
 	prob.y=new int[prob.l];
 	prob.use_bias=use_bias;
 

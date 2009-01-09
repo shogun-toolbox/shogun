@@ -784,9 +784,9 @@ class CHMM : public CDistribution
 		//@{
 		/** set new observations
 		 * sets the observation pointer and initializes observation-dependent caches
-		 * if lambda is given, then the caches of the model lambda are used
+		 * if hmm is given, then the caches of the model hmm are used
 		 */
-		void set_observations(CStringFeatures<uint16_t>* obs, CHMM* lambda=NULL);
+		void set_observations(CStringFeatures<uint16_t>* obs, CHMM* hmm=NULL);
 
 		/** set new observations
 		 * only set the observation pointer and drop caches if there were any

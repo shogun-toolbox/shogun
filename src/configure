@@ -45,7 +45,7 @@ else
   _gpl=yes
 fi
 _cplex=auto
-_lpsolve=auto
+_lpsolve=no
 _glpk=auto
 _doxygen=auto
 _wtiming=no

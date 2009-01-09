@@ -4141,9 +4141,6 @@ bool CSGInterface::cmd_train_classifier()
 			return ui_classifier->train_clustering(merges);
 		}
 
-		case CT_PERCEPTRON:
-			return ui_classifier->train_linear();
-
 		case CT_LDA:
 		{
 			float64_t gamma=0;
@@ -4153,6 +4150,7 @@ bool CSGInterface::cmd_train_classifier()
 			return ui_classifier->train_linear(gamma);
 		}
 
+		case CT_PERCEPTRON:
 		case CT_SVMLIN:
 		case CT_SVMPERF:
 		case CT_SUBGRADIENTSVM:
@@ -4162,7 +4160,7 @@ bool CSGInterface::cmd_train_classifier()
 		case CT_LPBOOST:
 		case CT_SUBGRADIENTLPM:
 		case CT_LIBLINEAR:
-			return ui_classifier->train_sparse_linear();
+			return ui_classifier->train_linear();
 
 		case CT_WDSVMOCAS:
 			return ui_classifier->train_wdocas();
