@@ -457,7 +457,7 @@ bool CGUIClassifier::train_linear(float64_t gamma)
 	if (!trainfeatures)
 		SG_ERROR("No trainfeatures available.\n");
 
-	if (trainfeatures->get_feature_class()!=C_SIMPLE ||
+	if (trainfeatures->get_feature_class()!=C_SIMPLE &&
 			trainfeatures->get_feature_class()!=C_SPARSE)
 		SG_ERROR("Trainfeatures are not of class SIMPLE nor SPARSE.\n");
 
