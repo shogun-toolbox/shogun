@@ -109,10 +109,6 @@ class CGUIFeatures : public CSGObject
 		CRealFeatures* convert_simple_word_to_simple_salzberg(
 			CWordFeatures* src);
 
-		CStringFeatures<uint16_t>* convert_string_char_to_string_word(
-			CStringFeatures<char>* src);
-		CStringFeatures<uint64_t>* convert_string_char_to_string_ulong(
-			CStringFeatures<char>* src);
 		CTOPFeatures* convert_string_word_to_simple_top(
 			CStringFeatures<uint16_t>* src);
 		CFKFeatures* convert_string_word_to_simple_fk(

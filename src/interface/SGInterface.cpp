@@ -1687,7 +1687,13 @@ bool CSGInterface::cmd_convert()
 					}
 				}
 
-				if (strmatch(to_type, "WORD"))
+				if (strmatch(to_type, "BYTE"))
+				{
+						result=ui_features->convert_string_char_to_string_generic<char,uint8_t>(
+						(CStringFeatures<char>*) features, order, start,
+						gap, rev);
+				}
+				else if (strmatch(to_type, "WORD"))
 				{
 						result=ui_features->convert_string_char_to_string_generic<char,uint16_t>(
 						(CStringFeatures<char>*) features, order, start,
@@ -4290,12 +4296,12 @@ bool CSGInterface::cmd_set_svm_mkl_parameters()
 
 	float64_t weight_epsilon=get_real_from_real_or_str();
 	float64_t C_mkl=get_real_from_real_or_str();
-	int32_t mkl_norm=1;
+	float64_t mkl_norm=1.0;
 	
 	if (m_nrhs==4)
 	{
-		mkl_norm=get_int_from_int_or_str();
-		ASSERT(mkl_norm==1 || mkl_norm==2);
+		mkl_norm=get_real_from_real_or_str();
+		ASSERT(mkl_norm>0);
 	}
 
 	return ui_classifier->set_svm_mkl_parameters(weight_epsilon, C_mkl, mkl_norm);
