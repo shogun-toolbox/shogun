@@ -80,7 +80,7 @@ class CGUIClassifier : public CSGObject
 		bool set_svm_epsilon(float64_t epsilon);
 		bool set_svr_tube_epsilon(float64_t tube_epsilon);
 		bool set_svm_mkl_parameters(
-			float64_t weight_epsilon, float64_t C_mkl, int32_t mkl_norm);
+			float64_t weight_epsilon, float64_t C_mkl, float64_t mkl_norm);
 		bool set_svm_precompute_enabled(int32_t precompute);
 
 		/** set KRR's tau */
@@ -112,7 +112,7 @@ class CGUIClassifier : public CSGObject
 		int32_t svm_qpsize;
 		int32_t svm_bufsize;
 		int32_t svm_max_qpsize;
-		int32_t svm_mkl_norm;
+		float64_t svm_mkl_norm;
 		float64_t svm_weight_epsilon;
 		float64_t svm_epsilon;
 		float64_t svm_tube_epsilon;

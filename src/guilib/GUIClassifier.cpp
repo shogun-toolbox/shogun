@@ -722,14 +722,14 @@ bool CGUIClassifier::set_svm_one_class_nu(float64_t nu)
 }
 
 bool CGUIClassifier::set_svm_mkl_parameters(
-	float64_t weight_epsilon, float64_t C_mkl, int32_t mkl_norm)
+	float64_t weight_epsilon, float64_t C_mkl, float64_t mkl_norm)
 {
 	if (weight_epsilon<0)
 		svm_weight_epsilon=1e-4;
 	if (C_mkl<0)
 		svm_C_mkl=0;
-	if (mkl_norm!=1 || mkl_norm!=2)
-		svm_mkl_norm=1;
+	if (mkl_norm<=0)
+		SG_ERROR("MKL norm > 0\n");
 
 	svm_weight_epsilon=weight_epsilon;
 	svm_C_mkl=C_mkl;

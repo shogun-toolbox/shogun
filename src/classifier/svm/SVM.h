@@ -116,10 +116,10 @@ class CSVM : public CKernelMachine
 		 *
 		 * @param norm new mkl norm (1 or 2)
 		 */
-		inline void set_mkl_norm(int32_t norm)
+		inline void set_mkl_norm(float64_t norm)
 		{
-			if (norm!=1 && norm!=2)
-				SG_ERROR("Only 1-and 2-norm supported\n");
+			if (norm<=0)
+				SG_ERROR("Norm must be > 0, e.g., 1-norm is the standard MKL; 2-norm nonsparse MKL\n");
 			mkl_norm = norm;
 		}
 
@@ -472,8 +472,8 @@ class CSVM : public CKernelMachine
 		float64_t C1;
 		/** C2 */
 		float64_t C2;
-		/** norm used in mkl, can be 1 or 2 */
-		int32_t  mkl_norm;
+		/** norm used in mkl must be > 0 */
+		float64_t mkl_norm;
 		/** C_mkl */
 		float64_t C_mkl;
 		/** objective */
