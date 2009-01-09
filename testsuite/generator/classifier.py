@@ -425,15 +425,21 @@ def _run_wdsvmocas ():
 		'type': 'wdsvmocas',
 		'degree': 1,
 		'bias_enabled': False,
-		'data': dataop.get_rawdna(),
-		'feature_class': 'string',
+		#'data': dataop.get_rawdna(),
+		'data': dataop.get_dna(
+			dataop.NUM_VEC_TRAIN, dataop.NUM_VEC_TRAIN, dataop.NUM_VEC_TRAIN),
+		'feature_class': 'string_complex',
 		'feature_type': 'Byte',
 		'alphabet': 'RAWDNA',
-		'label_type': 'twoclass'
+		'label_type': 'twoclass',
+		'order': 1,
+		'gap': 0,
+		'reverse': False
 	}
 	feats=featop.get_features(
 		params['feature_class'], params['feature_type'],
-		params['data'], eval(params['alphabet']))
+		params['data'], eval(params['alphabet']),
+		params['order'], params['gap'], params['reverse'])
 	_loop_svm(svms, params, feats)
 
 
@@ -444,10 +450,10 @@ def _run_wdsvmocas ():
 def run ():
 	"""Run generator for all classifiers."""
 
-	_run_svm_kernel()
-	_run_svm_linear()
-	_run_knn()
-	_run_lda()
-	_run_perceptron()
+#	_run_svm_kernel()
+#	_run_svm_linear()
+#	_run_knn()
+#	_run_lda()
+#	_run_perceptron()
 	_run_wdsvmocas()
 
