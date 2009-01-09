@@ -417,6 +417,10 @@ CKernel* CGUIKernel::create_commstring(
 	int32_t size, bool use_sign, char* norm_str, EKernelType ktype)
 {
 	CKernel* kern=NULL;
+
+	if (!norm_str)
+		norm_str= (char*) "FULL";
+
 	if (ktype==K_COMMULONGSTRING)
 		kern=new CCommUlongStringKernel(size, use_sign);
 	else if (ktype==K_COMMWORDSTRING)
@@ -427,7 +431,7 @@ CKernel* CGUIKernel::create_commstring(
 	SG_DEBUG("created WeightedCommWord/CommWord/CommUlongStringKernel (%p) with size %d, use_sign  %d norm_str %s.\n", kern, size, use_sign, norm_str);
 
 
-	if (strncmp(norm_str, "NO", 4)==0)
+	if (strncmp(norm_str, "NO", 2)==0)
 	{
 		kern->set_normalizer(new CIdentityKernelNormalizer());
 	}
