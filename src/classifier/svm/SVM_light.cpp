@@ -1613,6 +1613,7 @@ void CSVMLight::update_linear_component_mkl(
 	float64_t *a_old, int32_t *working2dnum, int32_t totdoc, float64_t *lin,
 	float64_t *aicache)
 {
+	int inner_iters=0;
 	int32_t num = kernel->get_num_vec_rhs();
 	int32_t num_weights = -1;
 	int32_t num_kernels = kernel->get_num_subkernels() ;
@@ -1750,7 +1751,7 @@ void CSVMLight::update_linear_component_mkl(
 			if ( status ) {
 				char  errmsg[1024];
 				CPXgeterrorstring (env, status, errmsg);
-            SG_ERROR( "%s", errmsg);
+				SG_ERROR( "%s", errmsg);
 			}
 			
 			// add constraint sum(w)=1;
@@ -1904,6 +1905,7 @@ void CSVMLight::update_linear_component_mkl(
 				SG_ERROR( "Failed to add the new row.\n");
 		}
 		
+		inner_iters=0;
 		int32_t status;
 		{ 
 
@@ -1914,10 +1916,11 @@ void CSVMLight::update_linear_component_mkl(
 			else // q-norm MKL
 			{
 				float64_t* beta=new float64_t[2*num_kernels+1];
+				float64_t objval_old=mkl_objective;
 				while (true)
 				{
-					int rows=CPXgetnumrows(env, lp);
-					int cols=CPXgetnumcols(env, lp);
+					//int rows=CPXgetnumrows(env, lp);
+					//int cols=CPXgetnumcols(env, lp);
 					//SG_PRINT("rows:%d, cols:%d (kernel:%d)\n", rows, cols, num_kernels);
 					status = CPXbaropt(env, lp);
 					if ( status ) 
@@ -1934,18 +1937,18 @@ void CSVMLight::update_linear_component_mkl(
 
 					CMath::scale_vector(1/CMath::qnorm(beta, num_kernels, mkl_norm), beta, num_kernels);
 
-					if (1-abs(mkl_objective/objval) <= weight_epsilon)
+					if (1-abs(objval/objval_old) < weight_epsilon)
 						break;
 
-					mkl_objective=objval;
+					objval_old=objval;
 					set_qnorm_constraints(beta, num_kernels);
 
+					inner_iters++;
 				}
 				delete[] beta;
 			}
 			if ( status ) 
 				SG_ERROR( "Failed to optimize Problem.\n");
-
 
 			// obtain solution
 			int32_t cur_numrows=(int32_t) CPXgetnumrows(env, lp);
@@ -2011,7 +2014,7 @@ void CSVMLight::update_linear_component_mkl(
 							}
 						}
 					}
-					else if (mkl_norm==2)
+					else // 2-norm or general q-norm
 					{
 						if ((CMath::abs(slack[i])<1e-6))
 							num_active_rows++ ;
@@ -2071,7 +2074,7 @@ void CSVMLight::update_linear_component_mkl(
 		int32_t start_row = 1 ;
 		if (C_mkl!=0.0)
 			start_row+=2*(num_kernels-1);
-		SG_DEBUG("\n%i. OBJ: %f  RHO: %f  wgap=%f agap=%f (activeset=%i; active rows=%i/%i)\n", count, mkl_objective,rho,w_gap,mymaxdiff,jj,num_active_rows,num_rows-start_row);
+		SG_DEBUG("\n%i. OBJ: %f  RHO: %f  wgap=%f agap=%f (activeset=%i; active rows=%i/%i; inner_iters=%d)\n", count, mkl_objective,rho,w_gap,mymaxdiff,jj,num_active_rows,num_rows-start_row, inner_iters);
 	}
 	
 	delete[] sumw;
