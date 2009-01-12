@@ -7,10 +7,10 @@
 		  This enables training of linear methods with mixed datatypes
 		  (sparse and dense and other even the newly implemented string
 		  based SpecFeatures and WDFeatures).
+		- Add q-norm MKL support.
 		- Support compilation on the iPhone :)
 		- Add an option to set wds kernel position weights.
 		- Build static libshogun.a for libshogun target.
-
 	* Cleanup:
 		- Remove WDSVMOcas as it is implemented now via a linear classifier
 		  and WDFeatures
