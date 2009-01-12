@@ -627,9 +627,9 @@ protected:
 	 */
 	static void* reactivate_inactive_examples_linadd_helper(void* p);
 
+#ifdef USE_CPLEX
 	void set_qnorm_constraints(float64_t* beta, int32_t num_kernels);
 
-#ifdef USE_CPLEX
 	/** init cplex
 	 *
 	 * @return if init was successful
