@@ -202,6 +202,25 @@ class CMath : public CSGObject
 				b=c;
 			}
 
+		/// || x ||_q^q
+		template <class T>
+			static inline T qsq(T* x, int32_t len, float64_t q)
+			{
+				float64_t result=0;
+				for (int32_t i=0; i<len; i++)
+					result+=CMath::pow(x[i], q);
+
+				return result;
+			}
+
+		/// || x ||_q
+		template <class T>
+			static inline T qnorm(T* x, int32_t len, float64_t q)
+			{
+				ASSERT(q!=0);
+				return CMath::pow(qsq(x, len, q), 1/q);
+			}
+
 		/// x^2
 		template <class T>
 			static inline T sq(T x)
@@ -402,6 +421,15 @@ class CMath : public CSGObject
 			return ret;
 		}
 
+		template <class T>
+			static T* clone_vector(T* vec, int32_t len)
+			{
+				T* result = new T[len];
+				for (int32_t i=0; i<len; i++)
+					result[i]=vec[i];
+
+				return result;
+			}
 		template <class T>
 			static void fill_vector(T* vec, int32_t len, T value)
 			{
@@ -629,6 +657,13 @@ class CMath : public CSGObject
 					result+=CMath::abs(vec[i]);
 
 				return result;
+			}
+
+		/// return sum(abs(vec))
+		template <class T>
+			static inline bool fequal(T x, T y, float64_t precision=1e-6)
+			{
+				return CMath::abs(x-y)<precision;
 			}
 
 		static inline float64_t mean(float64_t* vec, int32_t len)
