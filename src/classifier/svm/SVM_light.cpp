@@ -1807,12 +1807,12 @@ void CSVMLight::update_linear_component_mkl(
 
 					status = CPXaddqconstr (env, lp, 0, num_kernels+1, 1.0, 'L', NULL, NULL,
 							initial_rmatind, initial_rmatind, initial_rmatval, NULL);
-					CPXwriteprob (env, lp, "prob2.lp", NULL);
+					//CPXwriteprob (env, lp, "prob2.lp", NULL);
 				}
 				else // q-norm MKL
 				{
 					set_qnorm_constraints(w, num_kernels);
-					CPXwriteprob (env, lp, "probq.lp", NULL);
+					//CPXwriteprob (env, lp, "probq.lp", NULL);
 				}
 			}
 
@@ -1918,7 +1918,7 @@ void CSVMLight::update_linear_component_mkl(
 				{
 					int rows=CPXgetnumrows(env, lp);
 					int cols=CPXgetnumcols(env, lp);
-					SG_PRINT("rows:%d, cols:%d (kernel:%d)\n", rows, cols, num_kernels);
+					//SG_PRINT("rows:%d, cols:%d (kernel:%d)\n", rows, cols, num_kernels);
 					status = CPXbaropt(env, lp);
 					if ( status ) 
 						SG_ERROR( "Failed to optimize Problem.\n");
