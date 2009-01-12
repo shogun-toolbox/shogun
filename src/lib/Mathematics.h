@@ -422,7 +422,7 @@ class CMath : public CSGObject
 		}
 
 		template <class T>
-			static T* clone_vector(T* vec, int32_t len)
+			static T* clone_vector(const T* vec, int32_t len)
 			{
 				T* result = new T[len];
 				for (int32_t i=0; i<len; i++)

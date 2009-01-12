@@ -1618,12 +1618,12 @@ void CSVMLight::update_linear_component_mkl(
 	int32_t num_weights = -1;
 	int32_t num_kernels = kernel->get_num_subkernels() ;
 	int nk = (int) num_kernels; /* calling external lib */
-	float64_t* w_const   = (float64_t*) kernel->get_subkernel_weights(num_weights);
+	const float64_t* w_const   = kernel->get_subkernel_weights(num_weights);
 	float64_t* w =  CMath::clone_vector(w_const, num_weights);
 
+	ASSERT(num_weights==num_kernels);
 	CMath::scale_vector(1/CMath::qnorm(w, num_kernels, mkl_norm), w, num_kernels); //q-norm = 1
 
-	ASSERT(num_weights==num_kernels);
 	float64_t* sumw=new float64_t[num_kernels];
 	float64_t suma=-17;
 
@@ -1808,13 +1808,9 @@ void CSVMLight::update_linear_component_mkl(
 
 					status = CPXaddqconstr (env, lp, 0, num_kernels+1, 1.0, 'L', NULL, NULL,
 							initial_rmatind, initial_rmatind, initial_rmatval, NULL);
-					//CPXwriteprob (env, lp, "prob2.lp", NULL);
 				}
 				else // q-norm MKL
-				{
 					set_qnorm_constraints(w, num_kernels);
-					//CPXwriteprob (env, lp, "probq.lp", NULL);
-				}
 			}
 
 
@@ -1906,7 +1902,7 @@ void CSVMLight::update_linear_component_mkl(
 		}
 		
 		inner_iters=0;
-		int32_t status;
+		int status;
 		{ 
 
 			if (mkl_norm==1) // optimize 1 norm MKL
@@ -1947,6 +1943,7 @@ void CSVMLight::update_linear_component_mkl(
 				}
 				delete[] beta;
 			}
+
 			if ( status ) 
 				SG_ERROR( "Failed to optimize Problem.\n");
 
@@ -2087,15 +2084,20 @@ void CSVMLight::update_linear_component_mkl_linadd(
 	float64_t *a_old, int32_t *working2dnum, int32_t totdoc, float64_t *lin,
 	float64_t *aicache)
 {
+	int inner_iters=0;
+
 	// kernel with LP_LINADD property is assumed to have 
 	// compute_by_subkernel functions
 	int32_t num = kernel->get_num_vec_rhs();
 	int32_t num_weights = -1;
 	int32_t num_kernels = kernel->get_num_subkernels() ;
 	int nk = (int) num_kernels; /* calling external lib */
-	const float64_t* w   = kernel->get_subkernel_weights(num_weights);
-	
+	const float64_t* w_const   = kernel->get_subkernel_weights(num_weights);
+	float64_t* w =  CMath::clone_vector(w_const, num_weights);
+
 	ASSERT(num_weights==num_kernels);
+	CMath::scale_vector(1/CMath::qnorm(w, num_kernels, mkl_norm), w, num_kernels); //q-norm = 1
+
 	float64_t* sumw = new float64_t[num_kernels];
 	float64_t suma=-17;
 	{
@@ -2259,7 +2261,7 @@ void CSVMLight::update_linear_component_mkl_linadd(
 					initial_rmatind, initial_rmatval, NULL, NULL);
 
 			}
-			else // 2-norm MKL
+			else // 2 and q-norm MKL
 			{
 				initial_rmatbeg[0] = 0;
 				initial_rhs[0]=0 ;     // rhs=1 ;
@@ -2269,20 +2271,27 @@ void CSVMLight::update_linear_component_mkl_linadd(
 				initial_rmatval[0]=0 ;
 
 				status = CPXaddrows (env, lp, 0, 1, 1,
-					initial_rhs, initial_sense, initial_rmatbeg,
-					initial_rmatind, initial_rmatval, NULL, NULL);
+						initial_rhs, initial_sense, initial_rmatbeg,
+						initial_rmatind, initial_rmatval, NULL, NULL);
 
-				for (int32_t i=0; i<num_kernels; i++)
+				if (mkl_norm==2)
 				{
-					initial_rmatind[i]=i ;
-					initial_rmatval[i]=1 ;
-				}
-				initial_rmatind[num_kernels]=2*num_kernels ;
-				initial_rmatval[num_kernels]=0 ;
+					for (int32_t i=0; i<num_kernels; i++)
+					{
+						initial_rmatind[i]=i ;
+						initial_rmatval[i]=1 ;
+					}
+					initial_rmatind[num_kernels]=2*num_kernels ;
+					initial_rmatval[num_kernels]=0 ;
 
-				status=CPXaddqconstr(env, lp, 0, num_kernels+1, 1.0, 'L', NULL,
-					NULL, initial_rmatind, initial_rmatind, initial_rmatval,
-					NULL);
+					status=CPXaddqconstr(env, lp, 0, num_kernels+1, 1.0, 'L', NULL, NULL,
+							initial_rmatind, initial_rmatind, initial_rmatval, NULL);
+				}
+				else // q-norm MKL
+				{
+					set_qnorm_constraints(w, num_kernels);
+					//CPXwriteprob (env, lp, "probq.lp", NULL);
+				}
 			}
 
 			if (status)
@@ -2338,10 +2347,10 @@ void CSVMLight::update_linear_component_mkl_linadd(
 		{ // add the new row
 			//SG_INFO( "add the new row\n") ;
 			
-			int rmatbeg[1]; /* calling external lib */
-			int rmatind[num_kernels+1]; /* calling external lib */
-			double rmatval[num_kernels+1]; /* calling external lib */
-			double rhs[1]; /* calling external lib */
+			int rmatbeg[1];
+			int rmatind[num_kernels+1];
+			double rmatval[num_kernels+1];
+			double rhs[1];
 			char sense[1];
 			
 			rmatbeg[0] = 0;
@@ -2349,6 +2358,7 @@ void CSVMLight::update_linear_component_mkl_linadd(
 				rhs[0]=0 ;
 			else
 				rhs[0]=-suma ;
+
 			sense[0]='L' ;
 			
 			for (int32_t i=0; i<num_kernels; i++)
@@ -2368,13 +2378,48 @@ void CSVMLight::update_linear_component_mkl_linadd(
 				SG_ERROR( "Failed to add the new row.\n");
 		}
 		
+		inner_iters=0;
+		int status;
 		{
-			int status; /* calling external lib */
 
 			if (mkl_norm==1) // optimize 1 norm MKL
 				status=CPXlpopt(env, lp);
-			else // optimize 2 norm MKL
+			else if (mkl_norm==2) // optimize 2-norm MKL
 				status=CPXbaropt(env, lp);
+			else // q-norm MKL
+			{
+				float64_t* beta=new float64_t[2*num_kernels+1];
+				float64_t objval_old=mkl_objective;
+				while (true)
+				{
+					//int rows=CPXgetnumrows(env, lp);
+					//int cols=CPXgetnumcols(env, lp);
+					//SG_PRINT("rows:%d, cols:%d (kernel:%d)\n", rows, cols, num_kernels);
+					status = CPXbaropt(env, lp);
+					if ( status ) 
+						SG_ERROR( "Failed to optimize Problem.\n");
+
+					int solstat=0;
+					double objval=0;
+					status=CPXsolution(env, lp, &solstat, &objval,
+							(double*) beta, NULL, NULL, NULL);
+
+					if ( status )
+						SG_ERROR( "Failed to obtain solution.\n");
+
+
+					CMath::scale_vector(1/CMath::qnorm(beta, num_kernels, mkl_norm), beta, num_kernels);
+
+					if (1-abs(objval/objval_old) < weight_epsilon)
+						break;
+
+					objval_old=objval;
+					set_qnorm_constraints(beta, num_kernels);
+
+					inner_iters++;
+				}
+				delete[] beta;
+			}
 
 			if (status)
 				SG_ERROR( "Failed to optimize Problem.\n");
@@ -2404,11 +2449,16 @@ void CSVMLight::update_linear_component_mkl_linadd(
 			double objval=0;
 
 			if (mkl_norm==1)
+			{
 				status=CPXsolution(env, lp, &solstat, &objval, (double*) x,
 					(double*) pi, (double*) slack, NULL);
+			}
 			else
+			{
 				status=CPXsolution(env, lp, &solstat, &objval, (double*) x,
 					NULL, (double*) slack, NULL);
+			}
+
 			int32_t solution_ok = !status;
 			if (status)
 				SG_ERROR( "Failed to obtain solution.\n");
@@ -2438,7 +2488,7 @@ void CSVMLight::update_linear_component_mkl_linadd(
 							}
 						}
 					}
-					else if (mkl_norm==2)
+					else // 2-norm or general q-norm
 					{
 						if ((CMath::abs(slack[i])<1e-6))
 							num_active_rows++ ;
@@ -2499,10 +2549,11 @@ void CSVMLight::update_linear_component_mkl_linadd(
 		int32_t start_row = 1 ;
 		if (C_mkl!=0.0)
 			start_row+=2*(num_kernels-1);
-		SG_DEBUG("\n%i. OBJ: %f  RHO: %f  wgap=%f agap=%f (activeset=%i; active rows=%i/%i)\n", count, mkl_objective,rho,w_gap,mymaxdiff,jj,num_active_rows,num_rows-start_row);
+		SG_DEBUG("\n%i. OBJ: %f  RHO: %f  wgap=%f agap=%f (activeset=%i; active rows=%i/%i; inner_iters=%d)\n", count, mkl_objective,rho,w_gap,mymaxdiff,jj,num_active_rows,num_rows-start_row, inner_iters);
 	}
 	
 	delete[] sumw;
+	delete[] w;
 }
 
 void CSVMLight::update_linear_component(
