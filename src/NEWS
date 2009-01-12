@@ -11,6 +11,8 @@
 		- Support compilation on the iPhone :)
 		- Add an option to set wds kernel position weights.
 		- Build static libshogun.a for libshogun target.
+		- Testsuite can also test for modular R interface, added test for
+		  OligoKernel.
 	* Cleanup:
 		- Remove WDSVMOcas as it is implemented now via a linear classifier
 		  and WDFeatures
