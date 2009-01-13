@@ -1,5 +1,5 @@
 %{
-    #include "features/DotFeatures.i" 
+    #include "features/DotFeatures.h" 
 %}
 
-%include "features/DotFeatures.i" 
+%include "features/DotFeatures.h" 

@@ -29,7 +29,24 @@ CWDFeatures::~CWDFeatures()
 
 float64_t CWDFeatures::dot(int32_t vec_idx1, int32_t vec_idx2)
 {
-	return 0;
+	int32_t len1, len2;
+	uint8_t* vec1=strings->get_feature_vector(vec_idx1, len1);
+	uint8_t* vec2=strings->get_feature_vector(vec_idx2, len2);
+
+	ASSERT(len1==len2);
+
+	float64_t sum=0.0;
+
+	for (int32_t i=0; i<len1; i++)
+	{
+		for (int32_t j=0; (i+j<len1) && (j<degree); j++)
+		{
+			if (vec1[i+j]!=vec2[i+j])
+				break ;
+			sum += wd_weights[j];
+		}
+	}
+	return sum ;
 }
 
 float64_t CWDFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
@@ -62,23 +79,23 @@ float64_t CWDFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_
 
 void CWDFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val)
 {
-	/*
-	int32_t lim=CMath::min(degree, string_length-j);
+	int32_t lim=CMath::min(degree, string_length-vec_idx1);
 	int32_t len;
 
 	for (int32_t k=0; k<lim; k++)
 	{
-		uint8_t* vec = f->get_feature_vector(j+k, len);
+		uint8_t* vec = strings->get_feature_vector(vec_idx1+k, len);
 		float32_t wd = wd_weights[k]/normalization_const;
 
-		for(uint32_t i=0; i < cut_length; i++) 
+		uint32_t val=0;
+		uint32_t offs=0;
+		for (int32_t i=0; i < len; i++) 
 		{
-			val[i]=val[i]*alphabet_size + vec[new_cut[i]];
-			vec2[offs+val[i]]+=wd * y[new_cut[i]];
+			val=val*alphabet_size + vec[i];
+			vec2[offs+val]+=wd * vec[i];
 		}
 		offs+=w_offsets[k];
 	}
-	*/
 }
 
 void CWDFeatures::set_wd_weights()

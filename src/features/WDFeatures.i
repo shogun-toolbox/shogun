@@ -1,5 +1,5 @@
 %{
-    #include "features/WDFeatures.i" 
+    #include "features/WDFeatures.h" 
 %}
 
-%include "features/WDFeatures.i" 
+%include "features/WDFeatures.h" 

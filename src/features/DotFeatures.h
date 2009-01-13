@@ -39,7 +39,7 @@ class CDotFeatures : public CFeatures
 		 *
 		 * @param size cache size
 		 */
-		CDotFeatures(int32_t size=0) : CFeatures(size) { }
+		CDotFeatures(int32_t size=0) : CFeatures(size) { set_property(FP_DOT); }
 
 		/** copy constructor */
 		CDotFeatures(const CDotFeatures & orig) : CFeatures(orig)  {}

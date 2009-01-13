@@ -457,9 +457,8 @@ bool CGUIClassifier::train_linear(float64_t gamma)
 	if (!trainfeatures)
 		SG_ERROR("No trainfeatures available.\n");
 
-	if (trainfeatures->get_feature_class()!=C_SIMPLE &&
-			trainfeatures->get_feature_class()!=C_SPARSE)
-		SG_ERROR("Trainfeatures are not of class SIMPLE nor SPARSE.\n");
+	if (!trainfeatures->has_property(FP_DOT))
+		SG_ERROR("Trainfeatures not based on DotFeatures.\n");
 
 	if (!trainlabels)
 		SG_ERROR("No labels available\n");
@@ -1131,15 +1130,13 @@ CLabels* CGUIClassifier::classify_linear(CLabels* output)
 		SG_ERROR("no test features available\n") ;
 		return NULL;
 	}
-	if (!(testfeatures->get_feature_class() == C_SIMPLE ||
-			testfeatures->get_feature_class() == C_SPARSE) ||
-			testfeatures->get_feature_type() != F_DREAL )
+	if (!(testfeatures->has_property(FP_DOT)))
 	{
-		SG_ERROR("testfeatures not of class SIMPLE or SPARSE type REAL\n") ;
+		SG_ERROR("testfeatures not based on DotFeatures\n") ;
 		return false ;
 	}
 
-	((CLinearClassifier*) classifier)->set_features((CRealFeatures*) testfeatures);
+	((CLinearClassifier*) classifier)->set_features((CDotFeatures*) testfeatures);
 	SG_INFO("starting linear classifier testing\n") ;
 	return classifier->classify(output);
 }
