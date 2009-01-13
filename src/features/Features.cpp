@@ -16,7 +16,7 @@
 #include <string.h>
 
 CFeatures::CFeatures(int32_t size)
-: CSGObject(), cache_size(size), preproc(NULL), num_preproc(0),
+: CSGObject(), properties(FP_NONE), cache_size(size), preproc(NULL), num_preproc(0),
 	preprocessed(NULL)
 {
 	SG_INFO("Feature object created (%p)\n",this);

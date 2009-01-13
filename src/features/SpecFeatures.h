@@ -77,8 +77,14 @@ class CSpecFeatures : public CDotFeatures
 			return 0;
 		}
 
+	protected:
+		virtual void obtain_kmer_spectrum();
+		virtual void delete_kmer_spectrum();
 
 	protected:
+		/** number of strings */
+		int32_t num_strings;
+		/** strings */
 		CStringFeatures<uint16_t>* strings;
 
 		/** degree */
@@ -89,5 +95,10 @@ class CSpecFeatures : public CDotFeatures
 		int32_t alphabet_size;
 		/** w dim */
 		int32_t w_dim;
+
+		/** size of k-mer spectrum*/
+		int32_t spec_size;
+		/** k-mer counts for all strings */
+		int32_t** k_spectrum;
 };
 #endif // _SPECFEATURES_H___

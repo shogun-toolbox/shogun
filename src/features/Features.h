@@ -45,6 +45,12 @@ enum EFeatureClass
 	C_ANY = 1000
 };
 
+enum EFeatureProperty
+{
+	FP_NONE = 0,
+	FP_DOT = 1
+};
+
 
 #include "preproc/PreProc.h"
 class CPreProc;
@@ -216,7 +222,35 @@ class CFeatures : public CSGObject
 		 */
 		bool check_feature_compatibility(CFeatures* f);
 
+		/** check if features have given property
+		 *
+		 * @param p feature property
+		 * @return if features have given property
+		 */
+		inline bool has_property(EFeatureProperty p) { return (properties & p) != 0; }
+
+		/** set property
+		 *
+		 * @param p kernel property to set
+		 */
+		inline void set_property(EFeatureProperty p)
+		{
+			properties |= p;
+		}
+
+		/** unset property
+		 *
+		 * @param p kernel property to unset
+		 */
+		inline void unset_property(EFeatureProperty p)
+		{
+			properties &= (properties | p) ^ p;
+		}
+
 	private:
+		/** feature properties */
+		uint64_t  properties;
+
 		/// size of cache in MB
 		int32_t cache_size;
 

@@ -11,15 +11,16 @@
 #include "features/WDFeatures.h"
 #include "lib/io.h"
 
-CWDFeatures::CWDFeatures(CStringFeatures<uint8_t>* str) : CDotFeatures()
+CWDFeatures::CWDFeatures(CStringFeatures<uint8_t>* str,
+		int32_t order) : CDotFeatures()
 {
 	ASSERT(str);
 	ASSERT(str->have_same_length());
-
 	strings=str;
 	string_length=str->get_max_vector_length();
 
-	w_dim=set_wd_weights();
+	degree=order;
+	set_wd_weights();
 }
 
 CWDFeatures::~CWDFeatures()
@@ -80,22 +81,21 @@ void CWDFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t*
 	*/
 }
 
-int32_t CWDFeatures::set_wd_weights()
+void CWDFeatures::set_wd_weights()
 {
 	ASSERT(degree>0 && degree<=8);
 	delete[] wd_weights;
 	wd_weights=new float64_t[degree];
 	delete[] w_offsets;
 	w_offsets=new int32_t[degree];
-	int32_t w_dim_single_c=0;
+	w_dim=0;
 
 	for (int32_t i=0; i<degree; i++)
 	{
 		w_offsets[i]=CMath::pow(alphabet_size, i+1);
 		wd_weights[i]=sqrt(2.0*(from_degree-i)/(from_degree*(from_degree+1)));
-		w_dim_single_c+=w_offsets[i];
+		w_dim+=w_offsets[i];
 	}
-	return w_dim_single_c;
 }
 
 

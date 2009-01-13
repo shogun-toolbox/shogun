@@ -4,12 +4,12 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2008 Soeren Sonnenburg
+ * Written (W) 1999-2009 Soeren Sonnenburg
  * Written (W) 1999-2008 Gunnar Raetsch
  * Written (W) 2006 Fabio De Bona
  * Written (W) 2006 Konrad Rieck
  * Written (W) 2006-2008 Christian Gehl
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef __COMMON_H__
@@ -60,16 +60,6 @@ typedef float float32_t;
 typedef double float64_t;
 typedef long double float128_t;
 
-#ifdef USE_SHORTREAL_KERNELCACHE
-	typedef float32_t KERNELCACHE_ELEM;
-#else
-	typedef float64_t KERNELCACHE_ELEM;
-#endif
-
-typedef int64_t KERNELCACHE_IDX;
-
 //@}
-
-//#define TMP_DIR "/tmp/"
 
 #endif

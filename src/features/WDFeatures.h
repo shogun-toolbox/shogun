@@ -25,7 +25,7 @@ class CWDFeatures : public CDotFeatures
 		 *
 		 * @param str stringfeatures (of bytes)
 		 */
-		CWDFeatures(CStringFeatures<uint8_t>* str);
+		CWDFeatures(CStringFeatures<uint8_t>* str, int32_t order);
 		virtual ~CWDFeatures();
 
 		/** obtain the dimensionality of the feature space
@@ -84,7 +84,8 @@ class CWDFeatures : public CDotFeatures
 		/** set normalization constant */
 		void set_normalization_const();
 
-		int32_t set_wd_weights();
+		/** create wd kernel weighting heuristic */
+		void set_wd_weights();
 
 	protected:
 		CStringFeatures<uint8_t>* strings;

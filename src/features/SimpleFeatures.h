@@ -465,12 +465,12 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 
 			if (abs_val)
 			{
-				for (int32_t i=0 ; i<num_features; i++)
+				for (int32_t i=0; i<num_features; i++)
 					vec2[i]+=alpha*CMath::abs(vec1[i]);
 			}
 			else
 			{
-				for (int32_t i=0 ; i<num_features; i++)
+				for (int32_t i=0; i<num_features; i++)
 					vec2[i]+=alpha*vec1[i];
 			}
 

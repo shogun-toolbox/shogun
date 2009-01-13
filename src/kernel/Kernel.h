@@ -20,6 +20,14 @@
 #include "features/Features.h"
 #include "kernel/KernelNormalizer.h"
 
+#ifdef USE_SHORTREAL_KERNELCACHE
+	typedef float32_t KERNELCACHE_ELEM;
+#else
+	typedef float64_t KERNELCACHE_ELEM;
+#endif
+
+typedef int64_t KERNELCACHE_IDX;
+
 
 enum EOptimizationType
 {

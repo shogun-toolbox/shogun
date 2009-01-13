@@ -76,7 +76,7 @@ bool CDistance::save(char* fname)
 	int32_t i=0;
 	int32_t num_left=lhs->get_num_vectors();
 	int32_t num_right=rhs->get_num_vectors();
-	KERNELCACHE_IDX num_total=num_left*num_right;
+	int64_t num_total=num_left*num_right;
 
 	CFile f(fname, 'w', F_DREAL);
 
