@@ -525,7 +525,7 @@ Usage: $0 [OPTIONS]...
 Configuration:
   --interface=INTERFACE         configure shogun for interface
                                 cmdline, python-modular, python, r, r-modular
-								octave, octave-modular, matlab or libshogun
+                                octave, octave-modular, matlab or libshogun
   -h, -help, --help             display this help and exit
 
 Installation directories:
