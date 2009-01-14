@@ -72,11 +72,7 @@ class CWDFeatures : public CDotFeatures
 		 */
 		virtual inline int32_t get_nnz_features_for_vector(int32_t num)
 		{
-			int32_t dim=0;
-			for (int32_t i=0; i<degree; i++)
-				dim+=w_offsets[i]/alphabet_size;
-
-			return dim;
+			return w_dim/alphabet_size;
 		}
 
 
@@ -101,8 +97,6 @@ class CWDFeatures : public CDotFeatures
 		int32_t string_length;
 		/** size of alphabet */
 		int32_t alphabet_size;
-		/** w offsets */
-		int32_t* w_offsets;
 		/** w dim */
 		int32_t w_dim;
 		/** wd weights */

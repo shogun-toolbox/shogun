@@ -15,11 +15,10 @@ CSpecFeatures::CSpecFeatures(CStringFeatures<uint16_t>* str) : CDotFeatures()
 {
 	ASSERT(str);
 
-	strings=str;
-	num_strings = strings->get_num_vectors();
-	spec_size = strings->get_num_symbols();
+	num_strings = str->get_num_vectors();
+	spec_size = str->get_num_symbols();
 
-	obtain_kmer_spectrum();
+	obtain_kmer_spectrum(str);
 }
 
 CSpecFeatures::~CSpecFeatures()
@@ -68,7 +67,7 @@ void CSpecFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_
 	}
 }
 
-void CSpecFeatures::obtain_kmer_spectrum()
+void CSpecFeatures::obtain_kmer_spectrum(CStringFeatures<uint16_t>* str)
 {
 	k_spectrum= new int32_t*[num_strings];
 
@@ -78,7 +77,7 @@ void CSpecFeatures::obtain_kmer_spectrum()
 		memset(k_spectrum[i], 0, sizeof(int32_t)*spec_size);
 
 		int32_t len=0;
-		uint16_t* fv=strings->get_feature_vector(i, len);
+		uint16_t* fv=str->get_feature_vector(i, len);
 
 		for (int32_t j=0; j<len; j++)
 			k_spectrum[i][fv[j]]++;

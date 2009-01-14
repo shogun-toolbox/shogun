@@ -16,15 +16,19 @@ CWDFeatures::CWDFeatures(CStringFeatures<uint8_t>* str,
 {
 	ASSERT(str);
 	ASSERT(str->have_same_length());
+	SG_REF(strings);
+
 	strings=str;
 	string_length=str->get_max_vector_length();
 
 	degree=order;
 	set_wd_weights();
+	set_normalization_const();
 }
 
 CWDFeatures::~CWDFeatures()
 {
+	SG_UNREF(strings);
 }
 
 float64_t CWDFeatures::dot(int32_t vec_idx1, int32_t vec_idx2)
@@ -46,56 +50,59 @@ float64_t CWDFeatures::dot(int32_t vec_idx1, int32_t vec_idx2)
 			sum += wd_weights[j];
 		}
 	}
-	return sum ;
+	return sum;
 }
 
 float64_t CWDFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
 {
-/*	ASSERT(features);
-	if (!wd_weights)
-		set_wd_weights();
-
-	int32_t len=0;
 	float64_t sum=0;
-	uint8_t* vec=features->get_feature_vector(num, len);
-	SG_INFO("len %d, string_length %d\n", len, string_length);
-	ASSERT(len==string_length);
+	int32_t lim=CMath::min(degree, string_length);
+	int32_t len;
+	uint8_t* vec = strings->get_feature_vector(vec_idx1, len);
+	int32_t* val=new int32_t[len];
+	CMath::fill_vector(val, len, 0);
 
-	for (int32_t j=0; j<string_length; j++)
+	for (int32_t k=0; k<lim; k++)
 	{
-		int32_t offs=w_dim_single_char*j;
-		int32_t val=0;
-		for (int32_t k=0; (j+k<string_length) && (k<degree); k++)
+		float64_t wd = wd_weights[k]/normalization_const;
+		int32_t asize=alphabet_size;
+		int32_t offs=0;
+
+		for (int32_t i=0; i < len; i++) 
 		{
-			val=val*alphabet_size + vec[j+k];
-			sum+=wd_weights[k] * w[offs+val];
-			offs+=w_offsets[k];
+			val[i]=val[i]*alphabet_size*len + alphabet_size*i + vec[i];
+			sum+=vec2[offs+val[i]]*wd;
 		}
+		offs+=asize*len;
+		asize*=alphabet_size;
 	}
+	delete[] val;
 	return sum/normalization_const;
-	*/
-	return 0;
 }
 
 void CWDFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val)
 {
-	int32_t lim=CMath::min(degree, string_length-vec_idx1);
+	int32_t lim=CMath::min(degree, string_length);
 	int32_t len;
+	uint8_t* vec = strings->get_feature_vector(vec_idx1, len);
+	int32_t* val=new int32_t[len];
+	CMath::fill_vector(val, len, 0);
 
 	for (int32_t k=0; k<lim; k++)
 	{
-		uint8_t* vec = strings->get_feature_vector(vec_idx1+k, len);
-		float32_t wd = wd_weights[k]/normalization_const;
+		float64_t wd = alpha*wd_weights[k]/normalization_const;
+		int32_t asize=alphabet_size;
+		int32_t offs=0;
 
-		uint32_t val=0;
-		uint32_t offs=0;
 		for (int32_t i=0; i < len; i++) 
 		{
-			val=val*alphabet_size + vec[i];
-			vec2[offs+val]+=wd * vec[i];
+			val[i]=val[i]*alphabet_size*len + alphabet_size*i + vec[i];
+			vec2[offs+val[i]]+=wd;
 		}
-		offs+=w_offsets[k];
+		offs+=asize*len;
+		asize*=alphabet_size;
 	}
+	delete[] val;
 }
 
 void CWDFeatures::set_wd_weights()
@@ -103,15 +110,12 @@ void CWDFeatures::set_wd_weights()
 	ASSERT(degree>0 && degree<=8);
 	delete[] wd_weights;
 	wd_weights=new float64_t[degree];
-	delete[] w_offsets;
-	w_offsets=new int32_t[degree];
 	w_dim=0;
 
 	for (int32_t i=0; i<degree; i++)
 	{
-		w_offsets[i]=CMath::pow(alphabet_size, i+1);
+		w_dim+=CMath::pow(alphabet_size, i+1)*string_length;
 		wd_weights[i]=sqrt(2.0*(from_degree-i)/(from_degree*(from_degree+1)));
-		w_dim+=w_offsets[i];
 	}
 }
 

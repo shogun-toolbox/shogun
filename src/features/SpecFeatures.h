@@ -78,14 +78,12 @@ class CSpecFeatures : public CDotFeatures
 		}
 
 	protected:
-		virtual void obtain_kmer_spectrum();
-		virtual void delete_kmer_spectrum();
+		void obtain_kmer_spectrum(CStringFeatures<uint16_t>* str);
+		void delete_kmer_spectrum();
 
 	protected:
 		/** number of strings */
 		int32_t num_strings;
-		/** strings */
-		CStringFeatures<uint16_t>* strings;
 
 		/** degree */
 		int32_t degree;
