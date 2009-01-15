@@ -27,7 +27,17 @@ class CSpecFeatures : public CDotFeatures
 		 * @param str stringfeatures (of words)
 		 */
 		CSpecFeatures(CStringFeatures<uint16_t>* str);
+
+		/** copy constructor */
+		CSpecFeatures(const CSpecFeatures & orig);
+
 		virtual ~CSpecFeatures();
+
+		/** duplicate feature object
+		 *
+		 * @return feature object
+		 */
+		virtual CFeatures* duplicate() const;
 
 		/** obtain the dimensionality of the feature space
 		 *
@@ -75,6 +85,34 @@ class CSpecFeatures : public CDotFeatures
 		{
 			SG_NOTIMPLEMENTED;
 			return 0;
+		}
+
+		/** get feature type
+		 *
+		 * @return templated feature type
+		 */
+		inline virtual EFeatureType get_feature_type()
+		{
+			return F_UNKNOWN;
+		}
+
+		/** get feature class
+		 *
+		 * @return feature class
+		 */
+		inline virtual EFeatureClass get_feature_class()
+		{
+			return C_WD;
+		}
+
+		inline virtual int32_t get_num_vectors()
+		{
+			return num_strings;
+		}
+
+		inline virtual int32_t get_size()
+		{
+			return sizeof(float64_t);
 		}
 
 	protected:

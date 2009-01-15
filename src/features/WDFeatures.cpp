@@ -20,8 +20,20 @@ CWDFeatures::CWDFeatures(CStringFeatures<uint8_t>* str,
 
 	strings=str;
 	string_length=str->get_max_vector_length();
+	num_strings=str->get_num_vectors();
 
 	degree=order;
+	set_wd_weights();
+	set_normalization_const();
+}
+
+CWDFeatures::CWDFeatures(const CWDFeatures& orig)
+	: CDotFeatures(orig), strings(orig.strings), degree(orig.degree)
+{
+	SG_REF(strings);
+	string_length=strings->get_max_vector_length();
+	num_strings=strings->get_num_vectors();
+
 	set_wd_weights();
 	set_normalization_const();
 }
@@ -128,4 +140,9 @@ void CWDFeatures::set_normalization_const()
 
 	normalization_const=CMath::sqrt(normalization_const);
 	SG_DEBUG("normalization_const:%f\n", normalization_const);
+}
+
+CFeatures* CWDFeatures::duplicate() const
+{
+	return new CWDFeatures(*this);
 }

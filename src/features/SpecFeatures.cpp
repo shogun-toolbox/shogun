@@ -21,6 +21,15 @@ CSpecFeatures::CSpecFeatures(CStringFeatures<uint16_t>* str) : CDotFeatures()
 	obtain_kmer_spectrum(str);
 }
 
+CSpecFeatures::CSpecFeatures(const CSpecFeatures& orig) : CDotFeatures(orig), 
+	num_strings(orig.num_strings), degree(orig.degree), from_degree(orig.from_degree),
+	alphabet_size(orig.alphabet_size), w_dim(orig.w_dim), spec_size(orig.spec_size)
+{
+	k_spectrum= new int32_t*[num_strings];
+	for (int32_t i=0; i<num_strings; i++)
+		k_spectrum[i]=CMath::clone_vector(k_spectrum[i], spec_size);
+}
+
 CSpecFeatures::~CSpecFeatures()
 {
 	delete_kmer_spectrum();
@@ -91,4 +100,9 @@ void CSpecFeatures::delete_kmer_spectrum()
 
 	delete[] k_spectrum;
 	k_spectrum=NULL;
+}
+
+CFeatures* CSpecFeatures::duplicate() const
+{
+	return new CSpecFeatures(*this);
 }

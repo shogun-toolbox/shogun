@@ -26,6 +26,11 @@ class CWDFeatures : public CDotFeatures
 		 * @param str stringfeatures (of bytes)
 		 */
 		CWDFeatures(CStringFeatures<uint8_t>* str, int32_t order);
+
+		/** copy constructor */
+		CWDFeatures(const CWDFeatures & orig);
+
+		/** destructor */
 		virtual ~CWDFeatures();
 
 		/** obtain the dimensionality of the feature space
@@ -75,6 +80,40 @@ class CWDFeatures : public CDotFeatures
 			return w_dim/alphabet_size;
 		}
 
+		/** duplicate feature object
+		 *
+		 * @return feature object
+		 */
+		virtual CFeatures* duplicate() const;
+
+		/** get feature type
+		 *
+		 * @return templated feature type
+		 */
+		inline virtual EFeatureType get_feature_type()
+		{
+			return F_UNKNOWN;
+		}
+
+		/** get feature class
+		 *
+		 * @return feature class
+		 */
+		inline virtual EFeatureClass get_feature_class()
+		{
+			return C_WD;
+		}
+
+		inline virtual int32_t get_num_vectors()
+		{
+			return num_strings;
+		}
+
+		inline virtual int32_t get_size()
+		{
+			return sizeof(float64_t);
+		}
+
 
 	protected:
 		/** set normalization constant */
@@ -95,6 +134,8 @@ class CWDFeatures : public CDotFeatures
 		int32_t from_degree;
 		/** length of string in vector */
 		int32_t string_length;
+		/** number of strings */
+		int32_t num_strings;
 		/** size of alphabet */
 		int32_t alphabet_size;
 		/** w dim */

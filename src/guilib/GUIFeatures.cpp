@@ -548,6 +548,18 @@ CRealFeatures* CGUIFeatures::convert_sparse_real_to_simple_real(
 	return NULL;
 }
 
+CWDFeatures* CGUIFeatures::convert_string_byte_to_wd_dense(CStringFeatures<uint8_t>*
+			src, int32_t order)
+{
+	return new CWDFeatures(src, order);
+}
+
+CSpecFeatures* CGUIFeatures::convert_string_byte_to_spec_word(CStringFeatures<uint16_t>* src)
+{
+	return new CSpecFeatures(src);
+}
+
+
 CWordFeatures* CGUIFeatures::convert_simple_char_to_simple_word(
 	CCharFeatures* src, int32_t order, int32_t start, int32_t gap)
 {

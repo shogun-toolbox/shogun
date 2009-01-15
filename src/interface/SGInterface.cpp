@@ -1787,7 +1787,7 @@ bool CSGInterface::cmd_convert()
 			{
 				char* alph=get_str_from_str_or_direct(len);
 				char* embed=get_str_from_str_or_direct(len);
-				int32_t nlen=get_int_from_int_or_str(len);
+				int32_t nlen=get_int_from_int_or_str();
 				char* delim=get_str_from_str_or_direct(len);
 				float64_t maxv=get_real_from_real_or_str(len);
 
@@ -1800,6 +1800,12 @@ bool CSGInterface::cmd_convert()
 				delete[] delim;
 			}
 #endif
+			else if (strmatch(to_class, "WD") && strmatch(to_type, "DENSE") && m_nrhs==8)
+			{
+				int32_t order=get_int_from_int_or_str();
+				result=ui_features->convert_string_byte_to_wd_dense((CStringFeatures<uint8_t>*) features, order);
+
+			}
 			else
 				io.not_implemented();
 		} // from_type uint8_t
@@ -1811,7 +1817,12 @@ bool CSGInterface::cmd_convert()
 				result=ui_features->convert_string_word_to_simple_top(
 					(CStringFeatures<uint16_t>*) features);
 			}
-			else 
+			else if (strmatch(to_class, "SPEC") && strmatch(to_type, "WORD") && m_nrhs==8)
+			{
+				result=ui_features->convert_string_byte_to_spec_word((CStringFeatures<uint16_t>*) features);
+
+			}
+			else
 				io.not_implemented();
 		} // from_type WORD
 
