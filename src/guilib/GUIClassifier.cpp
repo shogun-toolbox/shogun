@@ -91,6 +91,8 @@ CGUIClassifier::CGUIClassifier(CSGInterface* ui_)
 
 	// KRR parameters
 	krr_tau=1;
+
+	solver_type=ST_AUTO;
 }
 
 CGUIClassifier::~CGUIClassifier()
@@ -329,6 +331,8 @@ bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
 		SG_ERROR("Unknown classifier %s.\n", name);
 		return false;
 	}
+
+	classifier->set_solver_type(solver_type);
 
 	return (classifier!=NULL);
 }
@@ -1214,6 +1218,42 @@ bool CGUIClassifier::set_krr_tau(float64_t tau)
 #else
 	return false;
 #endif
+}
+
+bool CGUIClassifier::set_solver(char* solver)
+{
+	ESolverType s=ST_AUTO;
+
+	if (strncmp(solver,"INTERNAL", 8)==0)
+	{
+		SG_INFO("Using INTERNAL solver.\n");
+		s=ST_INTERNAL;
+	}
+	else if (strncmp(solver,"AUTO", 4)==0)
+	{
+		SG_INFO("Automagically determining solver.\n");
+		s=ST_AUTO;
+	}
+#ifdef USE_CPLEX
+	else if (strncmp(solver, "CPLEX", 5)==0)
+	{
+		SG_INFO("USING CPLEX METHOD selected\n");
+		s=ST_CPLEX;
+	}
+#endif
+#ifdef USE_GLPK
+	else if (strncmp(solver,"GLPK", 4)==0)
+	{
+		SG_INFO("Using GLPK solver\n");
+		s=ST_GLPK;
+	}
+#endif
+	else
+		SG_ERROR("Unknown solver type, %s (not compiled in?)\n", solver);
+
+
+	solver_type=s;
+	return true;
 }
 
 #endif

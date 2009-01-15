@@ -284,6 +284,11 @@ CSGInterfaceMethod sg_methods[]=
 		USAGE_I(N_SET_KERNEL_OPTIMIZATION_TYPE, "USAGE_STR" "FASTBUTMEMHUNGRY|SLOWBUTMEMEFFICIENT" "USAGE_STR")
 	},
 	{
+		N_SET_SOLVER,
+		(&CSGInterface::cmd_set_solver),
+		USAGE_I(N_SET_SOLVER, "USAGE_STR" "AUTO|CPLEX|GLPK|INTERNAL" "USAGE_STR")
+	},
+	{
 		N_SET_PRIOR_PROBS,
 		(&CSGInterface::cmd_set_prior_probs),
 		USAGE_I(N_SET_PRIOR_PROBS, "USAGE_STR" "pos probs, neg_probs" "USAGE_STR")
@@ -3490,6 +3495,20 @@ bool CSGInterface::cmd_set_kernel_optimization_type()
 	bool success=ui_kernel->set_optimization_type(opt_type);
 
 	delete[] opt_type;
+	return success;
+}
+
+bool CSGInterface::cmd_set_solver()
+{
+	if (m_nrhs<2 || !create_return_values(0))
+		return false;
+
+	int32_t len=0;
+	char* solver=get_str_from_str_or_direct(len);
+
+	bool success=ui_classifier->set_solver(solver);
+
+	delete[] solver;
 	return success;
 }
 

@@ -47,9 +47,16 @@ enum EClassifierType
 	CT_HIERARCHICAL = 250,
 	CT_SVMOCAS = 260,
 	CT_WDSVMOCAS = 270,
-	CT_SVMSGD = 280,
+	CT_SVMSGD = 280
 };
 
+enum ESolverType
+{
+	ST_AUTO=0,
+	ST_CPLEX=1,
+	ST_GLPK=2,
+	ST_INTERNAL=3
+};
 
 /** class Classifier */
 class CClassifier : public CSGObject
@@ -141,12 +148,27 @@ class CClassifier : public CSGObject
 		 */
 		virtual inline EClassifierType get_classifier_type() { return CT_NONE; }
 
+		/** set solver type
+		 *
+		 * @param t solver
+		 */
+		inline void set_solver_type(ESolverType st) { solver_type=st; }
+
+		/** get solver type
+		 *
+		 * @return solver
+		 */
+		inline ESolverType get_solver_type() { return solver_type; }
+
 	protected:
 		/** maximum training time */
 		float64_t max_train_time;
 
 		/** labels */
 		CLabels* labels;
+
+		/** solver type */
+		ESolverType solver_type;
 };
 
 #endif // _CLASSIFIER_H__

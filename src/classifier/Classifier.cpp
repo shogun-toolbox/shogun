@@ -10,7 +10,8 @@
 
 #include "classifier/Classifier.h"
 
-CClassifier::CClassifier() : CSGObject(), max_train_time(0), labels(NULL)
+CClassifier::CClassifier() : CSGObject(), max_train_time(0), labels(NULL),
+	solver_type(ST_AUTO)
 {
 }
 

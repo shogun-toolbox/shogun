@@ -85,6 +85,8 @@ class CGUIClassifier : public CSGObject
 
 		/** set KRR's tau */
 		bool set_krr_tau(float64_t tau=1);
+		/** set solver type */
+		bool set_solver(char* solver);
 
 		/** train SVM */
 		bool train_svm();
@@ -130,6 +132,8 @@ class CGUIClassifier : public CSGObject
 		bool svm_use_precompute_subkernel_light;
 		bool svm_use_shrinking;
 		bool svm_do_auc_maximization;
+
+		ESolverType solver_type;
 };
 #endif //HAVE_SWIG
 #endif

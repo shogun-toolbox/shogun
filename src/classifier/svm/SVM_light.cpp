@@ -1641,6 +1641,7 @@ void CSVMLight::update_linear_component_mkl(
 	int nk = (int) num_kernels; /* calling external lib */
 	const float64_t* w_const   = kernel->get_subkernel_weights(num_weights);
 	float64_t* w =  CMath::clone_vector(w_const, num_weights);
+	float64_t* x_buffer = new float64_t[num_kernels];
 
 	ASSERT(num_weights==num_kernels);
 	CMath::scale_vector(1/CMath::qnorm(w, num_kernels, mkl_norm), w, num_kernels); //q-norm = 1
@@ -1741,14 +1742,13 @@ void CSVMLight::update_linear_component_mkl(
 
 	count++ ;
 
-	bool use_cplex=true;
-#ifdef USE_CPLEX
 	w_gap = CMath::abs(1-rho/mkl_objective) ;
 	
 	if ((w_gap >= 0.9999*get_weight_epsilon()))
 	{
-		if (use_cplex || mkl_norm == 1 )
+		if ( mkl_norm == 1 || get_solver_type()==ST_CPLEX)
 		{
+#ifdef USE_CPLEX
 			if (!lp_initialized)
 			{
 				SG_INFO( "creating LP\n") ;
@@ -2079,10 +2079,13 @@ void CSVMLight::update_linear_component_mkl(
 					w_gap = 0 ; // then something is wrong and we rather 
 				// stop sooner than later
 			}
+#else
+			SG_ERROR("Cplex not enabled at compile time\n");
+#endif
 		}
 		else
 		{
-			x = new float64_t[num_kernels];
+			x = x_buffer;
 			compute_optimal_betas_analytically( x, num_kernels, sumw );
 
 			rho=-suma;
@@ -2094,7 +2097,6 @@ void CSVMLight::update_linear_component_mkl(
 		kernel->set_subkernel_weights(x, num_kernels) ;
 		w_gap = CMath::abs(1-rho/mkl_objective) ;
 	}
-#endif
 	
 	// update lin
 #ifdef HAVE_LAPACK
@@ -2123,6 +2125,7 @@ void CSVMLight::update_linear_component_mkl(
 	
 	delete[] sumw;
 	delete[] w;
+	delete[] x_buffer;
 }
 
 
