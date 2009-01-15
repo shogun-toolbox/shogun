@@ -445,10 +445,8 @@ class CSVMLight : public CSVM
    * @param num_kernels number of kernels
    * @param sumw 1/2*alpha'*K_j*alpha for each kernel j
    */
-  void compute_optimal_betas_analytically(
-  float64_t* beta,
-  int num_kernels,
-  const float64_t* sumw);
+  void compute_optimal_betas_analytically( float64_t* beta, int num_kernels,
+		  const float64_t* sumw);
 
   /** update linear component MKL
    *

@@ -1739,85 +1739,60 @@ void CSVMLight::update_linear_component_mkl(
 #endif
 
 	count++ ;
+
+	bool use_cplex=true;
 #ifdef USE_CPLEX
 	w_gap = CMath::abs(1-rho/mkl_objective) ;
 	
 	if ((w_gap >= 0.9999*get_weight_epsilon()))
 	{
-		if (!lp_initialized)
+		if (use_cplex &&  mkl_norm > 1 )
 		{
-			SG_INFO( "creating LP\n") ;
-
-			int32_t NUMCOLS = 2*num_kernels + 1 ;
-			double   obj[NUMCOLS]; /* calling external lib */
-			double   lb[NUMCOLS]; /* calling external lib */
-			double   ub[NUMCOLS]; /* calling external lib */
-
-			for (int32_t i=0; i<2*num_kernels; i++)
+			if (!lp_initialized)
 			{
-				obj[i]=0 ;
-				lb[i]=0 ;
-				ub[i]=1 ;
-			}
+				SG_INFO( "creating LP\n") ;
 
-			for (int32_t i=num_kernels; i<2*num_kernels; i++)
-				obj[i]= C_mkl;
+				int32_t NUMCOLS = 2*num_kernels + 1 ;
+				double   obj[NUMCOLS]; /* calling external lib */
+				double   lb[NUMCOLS]; /* calling external lib */
+				double   ub[NUMCOLS]; /* calling external lib */
 
-			obj[2*num_kernels]=1 ;
-			lb[2*num_kernels]=-CPX_INFBOUND ;
-			ub[2*num_kernels]=CPX_INFBOUND ;
-			
-			int status = CPXnewcols (env, lp, NUMCOLS, obj, lb, ub, NULL, NULL);
-			if ( status ) {
-				char  errmsg[1024];
-				CPXgeterrorstring (env, status, errmsg);
-				SG_ERROR( "%s", errmsg);
-			}
-			
-			// add constraint sum(w)=1;
-			SG_INFO( "adding the first row\n");
-			int initial_rmatbeg[1]; /* calling external lib */
-			int initial_rmatind[num_kernels+1]; /* calling external lib */
-			double initial_rmatval[num_kernels+1]; /* calling ext lib */
-			double initial_rhs[1]; /* calling external lib */
-			char initial_sense[1];
-			
-			 // 1-norm MKL
-			if (mkl_norm==1)
-			{
-				initial_rmatbeg[0] = 0;
-				initial_rhs[0]=1 ;     // rhs=1 ;
-				initial_sense[0]='E' ; // equality
-
-				for (int32_t i=0; i<num_kernels; i++)
+				for (int32_t i=0; i<2*num_kernels; i++)
 				{
-					initial_rmatind[i]=i ;
-					initial_rmatval[i]=1 ;
+					obj[i]=0 ;
+					lb[i]=0 ;
+					ub[i]=1 ;
 				}
-				initial_rmatind[num_kernels]=2*num_kernels ;
-				initial_rmatval[num_kernels]=0 ;
 
-				status = CPXaddrows (env, lp, 0, 1, num_kernels+1, 
-						initial_rhs, initial_sense, initial_rmatbeg,
-						initial_rmatind, initial_rmatval, NULL, NULL);
+				for (int32_t i=num_kernels; i<2*num_kernels; i++)
+					obj[i]= C_mkl;
 
-			}
-			else // 2 and q-norm MKL
-			{
-				initial_rmatbeg[0] = 0;
-				initial_rhs[0]=0 ;     // rhs=1 ;
-				initial_sense[0]='L' ; // <=  (inequality)
+				obj[2*num_kernels]=1 ;
+				lb[2*num_kernels]=-CPX_INFBOUND ;
+				ub[2*num_kernels]=CPX_INFBOUND ;
 
-				initial_rmatind[0]=2*num_kernels ;
-				initial_rmatval[0]=0 ;
+				int status = CPXnewcols (env, lp, NUMCOLS, obj, lb, ub, NULL, NULL);
+				if ( status ) {
+					char  errmsg[1024];
+					CPXgeterrorstring (env, status, errmsg);
+					SG_ERROR( "%s", errmsg);
+				}
 
-				status = CPXaddrows (env, lp, 0, 1, 1, 
-						initial_rhs, initial_sense, initial_rmatbeg,
-						initial_rmatind, initial_rmatval, NULL, NULL);
+				// add constraint sum(w)=1;
+				SG_INFO( "adding the first row\n");
+				int initial_rmatbeg[1]; /* calling external lib */
+				int initial_rmatind[num_kernels+1]; /* calling external lib */
+				double initial_rmatval[num_kernels+1]; /* calling ext lib */
+				double initial_rhs[1]; /* calling external lib */
+				char initial_sense[1];
 
-
-				if (mkl_norm==2)
+				// 1-norm MKL
+				if (mkl_norm==1)
 				{
+					initial_rmatbeg[0] = 0;
+					initial_rhs[0]=1 ;     // rhs=1 ;
+					initial_sense[0]='E' ; // equality
+
 					for (int32_t i=0; i<num_kernels; i++)
 					{
 						initial_rmatind[i]=i ;
@@ -1826,260 +1801,293 @@ void CSVMLight::update_linear_component_mkl(
 					initial_rmatind[num_kernels]=2*num_kernels ;
 					initial_rmatval[num_kernels]=0 ;
 
-					status = CPXaddqconstr (env, lp, 0, num_kernels+1, 1.0, 'L', NULL, NULL,
-							initial_rmatind, initial_rmatind, initial_rmatval, NULL);
+					status = CPXaddrows (env, lp, 0, 1, num_kernels+1, 
+							initial_rhs, initial_sense, initial_rmatbeg,
+							initial_rmatind, initial_rmatval, NULL, NULL);
+
 				}
-			}
-
-
-			if ( status )
-				SG_ERROR( "Failed to add the first row.\n");
-
-			lp_initialized = true ;
-			
-			if (C_mkl!=0.0)
-			{
-				for (int32_t q=0; q<num_kernels-1; q++)
+				else // 2 and q-norm MKL
 				{
-					// add constraint w[i]-w[i+1]<s[i];
-					// add constraint w[i+1]-w[i]<s[i];
-					int rmatbeg[1]; /* calling external lib */
-					int rmatind[3]; /* calling external lib */
-					double rmatval[3]; /* calling external lib */
-					double rhs[1]; /* calling external lib */
-					char sense[1];
-					
-					rmatbeg[0] = 0;
-					rhs[0]=0 ;     // rhs=0 ;
-					sense[0]='L' ; // <=
-					rmatind[0]=q ;
-					rmatval[0]=1 ;
-					rmatind[1]=q+1 ;
-					rmatval[1]=-1 ;
-					rmatind[2]=num_kernels+q ;
-					rmatval[2]=-1 ;
-					status = CPXaddrows (env, lp, 0, 1, 3, 
-										 rhs, sense, rmatbeg,
-										 rmatind, rmatval, NULL, NULL);
-					if ( status )
-						SG_ERROR( "Failed to add a smothness row (1).\n");
-					
-					rmatbeg[0] = 0;
-					rhs[0]=0 ;     // rhs=0 ;
-					sense[0]='L' ; // <=
-					rmatind[0]=q ;
-					rmatval[0]=-1 ;
-					rmatind[1]=q+1 ;
-					rmatval[1]=1 ;
-					rmatind[2]=num_kernels+q ;
-					rmatval[2]=-1 ;
-					status = CPXaddrows (env, lp, 0, 1, 3, 
-										 rhs, sense, rmatbeg,
-										 rmatind, rmatval, NULL, NULL);
-					if ( status )
-						SG_ERROR( "Failed to add a smothness row (2).\n");
-				}
-			}
-		}
+					initial_rmatbeg[0] = 0;
+					initial_rhs[0]=0 ;     // rhs=1 ;
+					initial_sense[0]='L' ; // <=  (inequality)
 
-		SG_DEBUG( "*") ;
-		
-		{ // add the new row
-			//SG_INFO( "add the new row\n") ;
-			
-			int rmatbeg[1];
-			int rmatind[num_kernels+1];
-			double rmatval[num_kernels+1];
-			double rhs[1];
-			char sense[1];
-			
-			rmatbeg[0] = 0;
-			if (mkl_norm==1)
-				rhs[0]=0 ;
-			else
-				rhs[0]=-suma ;
+					initial_rmatind[0]=2*num_kernels ;
+					initial_rmatval[0]=0 ;
 
-			sense[0]='L' ;
-			
-			for (int32_t i=0; i<num_kernels; i++)
-			{
-				rmatind[i]=i ;
-				if (mkl_norm==1)
-					rmatval[i]=-(sumw[i]-suma) ;
-				else
-					rmatval[i]=-sumw[i];
-			}
-			rmatind[num_kernels]=2*num_kernels ;
-			rmatval[num_kernels]=-1 ;
-			
-			int32_t status = CPXaddrows (env, lp, 0, 1, num_kernels+1, 
-									 rhs, sense, rmatbeg,
-									 rmatind, rmatval, NULL, NULL);
-			if ( status ) 
-				SG_ERROR( "Failed to add the new row.\n");
-		}
-		
-		inner_iters=0;
-		int status;
-		{ 
+					status = CPXaddrows (env, lp, 0, 1, 1, 
+							initial_rhs, initial_sense, initial_rmatbeg,
+							initial_rmatind, initial_rmatval, NULL, NULL);
 
-			if (mkl_norm==1) // optimize 1 norm MKL
-				status = CPXlpopt (env, lp);
-			else if (mkl_norm==2) // optimize 2-norm MKL
-				status = CPXbaropt(env, lp);
-			else // q-norm MKL
-			{
-				float64_t* beta=new float64_t[2*num_kernels+1];
-				float64_t objval_old=mkl_objective;
-				for (int32_t i=0; i<num_kernels; i++)
-					beta[i]=w[i];
-				for (int32_t i=num_kernels; i<2*num_kernels+1; i++)
-					beta[i]=0;
 
-				while (true)
-				{
-					//int rows=CPXgetnumrows(env, lp);
-					//int cols=CPXgetnumcols(env, lp);
-					//SG_PRINT("rows:%d, cols:%d (kernel:%d)\n", rows, cols, num_kernels);
-					CMath::scale_vector(1/CMath::qnorm(beta, num_kernels, mkl_norm), beta, num_kernels);
-
-					set_qnorm_constraints(beta, num_kernels);
-
-					status = CPXbaropt(env, lp);
-					if ( status ) 
-						SG_ERROR( "Failed to optimize Problem.\n");
-
-					int solstat=0;
-					double objval=0;
-					status=CPXsolution(env, lp, &solstat, &objval,
-							(double*) beta, NULL, NULL, NULL);
-
-					if ( status )
+					if (mkl_norm==2)
 					{
-						CMath::display_vector(beta, num_kernels, "beta");
-						SG_ERROR( "Failed to obtain solution.\n");
+						for (int32_t i=0; i<num_kernels; i++)
+						{
+							initial_rmatind[i]=i ;
+							initial_rmatval[i]=1 ;
+						}
+						initial_rmatind[num_kernels]=2*num_kernels ;
+						initial_rmatval[num_kernels]=0 ;
+
+						status = CPXaddqconstr (env, lp, 0, num_kernels+1, 1.0, 'L', NULL, NULL,
+								initial_rmatind, initial_rmatind, initial_rmatval, NULL);
 					}
-
-					CMath::scale_vector(1/CMath::qnorm(beta, num_kernels, mkl_norm), beta, num_kernels);
-
-					//SG_PRINT("[%d] %f (%f)\n", inner_iters, objval, objval_old);
-					if ((1-abs(objval/objval_old) < 0.1*weight_epsilon)) // && (inner_iters>2))
-						break;
-
-					objval_old=objval;
-
-					inner_iters++;
 				}
-				delete[] beta;
-			}
 
-			if ( status ) 
-				SG_ERROR( "Failed to optimize Problem.\n");
 
-			// obtain solution
-			int32_t cur_numrows=(int32_t) CPXgetnumrows(env, lp);
-			int32_t cur_numcols=(int32_t) CPXgetnumcols(env, lp);
-			num_rows=cur_numrows;
-			
-			if (!buffer_numcols)
-				buffer_numcols=new float64_t[cur_numcols];
+				if ( status )
+					SG_ERROR( "Failed to add the first row.\n");
 
-			float64_t* x=buffer_numcols;
-			float64_t* slack=new float64_t[cur_numrows];
-			float64_t* pi=NULL;
-			if (use_mkl==1)
-				pi=new float64_t[cur_numrows];
+				lp_initialized = true ;
 
-			if (x==NULL || slack==NULL || pi==NULL)
-			{
-				status = CPXERR_NO_MEMORY;
-				SG_ERROR( "Could not allocate memory for solution.\n");
-			}
-
-			/* calling external lib */
-			int solstat=0;
-			double objval=0;
-
-			if (mkl_norm==1)
-			{
-				status=CPXsolution(env, lp, &solstat, &objval,
-					(double*) x, (double*) pi, (double*) slack, NULL);
-			}
-			else
-			{
-				status=CPXsolution(env, lp, &solstat, &objval,
-					(double*) x, NULL, (double*) slack, NULL);
-			}
-
-			int32_t solution_ok = (!status) ;
-			if ( status )
-				SG_ERROR( "Failed to obtain solution.\n");
-			
-			num_active_rows=0 ;
-			if (solution_ok)
-			{
-				/* 1 norm mkl */
-				float64_t max_slack = -CMath::INFTY ;
-				int32_t max_idx = -1 ;
-				int32_t start_row = 1 ;
 				if (C_mkl!=0.0)
-					start_row+=2*(num_kernels-1);
-
-				for (int32_t i = start_row; i < cur_numrows; i++)  // skip first
 				{
+					for (int32_t q=0; q<num_kernels-1; q++)
+					{
+						// add constraint w[i]-w[i+1]<s[i];
+						// add constraint w[i+1]-w[i]<s[i];
+						int rmatbeg[1]; /* calling external lib */
+						int rmatind[3]; /* calling external lib */
+						double rmatval[3]; /* calling external lib */
+						double rhs[1]; /* calling external lib */
+						char sense[1];
+
+						rmatbeg[0] = 0;
+						rhs[0]=0 ;     // rhs=0 ;
+						sense[0]='L' ; // <=
+						rmatind[0]=q ;
+						rmatval[0]=1 ;
+						rmatind[1]=q+1 ;
+						rmatval[1]=-1 ;
+						rmatind[2]=num_kernels+q ;
+						rmatval[2]=-1 ;
+						status = CPXaddrows (env, lp, 0, 1, 3, 
+								rhs, sense, rmatbeg,
+								rmatind, rmatval, NULL, NULL);
+						if ( status )
+							SG_ERROR( "Failed to add a smothness row (1).\n");
+
+						rmatbeg[0] = 0;
+						rhs[0]=0 ;     // rhs=0 ;
+						sense[0]='L' ; // <=
+						rmatind[0]=q ;
+						rmatval[0]=-1 ;
+						rmatind[1]=q+1 ;
+						rmatval[1]=1 ;
+						rmatind[2]=num_kernels+q ;
+						rmatval[2]=-1 ;
+						status = CPXaddrows (env, lp, 0, 1, 3, 
+								rhs, sense, rmatbeg,
+								rmatind, rmatval, NULL, NULL);
+						if ( status )
+							SG_ERROR( "Failed to add a smothness row (2).\n");
+					}
+				}
+			}
+
+			SG_DEBUG( "*") ;
+
+			{ // add the new row
+				//SG_INFO( "add the new row\n") ;
+
+				int rmatbeg[1];
+				int rmatind[num_kernels+1];
+				double rmatval[num_kernels+1];
+				double rhs[1];
+				char sense[1];
+
+				rmatbeg[0] = 0;
+				if (mkl_norm==1)
+					rhs[0]=0 ;
+				else
+					rhs[0]=-suma ;
+
+				sense[0]='L' ;
+
+				for (int32_t i=0; i<num_kernels; i++)
+				{
+					rmatind[i]=i ;
 					if (mkl_norm==1)
-					{
-						if ((pi[i]!=0))
-							num_active_rows++ ;
-						else
-						{
-							if (slack[i]>max_slack)
-							{
-								max_slack=slack[i] ;
-								max_idx=i ;
-							}
-						}
-					}
-					else // 2-norm or general q-norm
-					{
-						if ((CMath::abs(slack[i])<1e-6))
-							num_active_rows++ ;
-						else
-						{
-							if (slack[i]>max_slack)
-							{
-								max_slack=slack[i] ;
-								max_idx=i ;
-							}
-						}
-					}
+						rmatval[i]=-(sumw[i]-suma) ;
+					else
+						rmatval[i]=-sumw[i];
 				}
-				
-				// have at most max(100,num_active_rows*2) rows, if not, remove one
-				if ( (num_rows-start_row>CMath::max(100,2*num_active_rows)) && (max_idx!=-1))
+				rmatind[num_kernels]=2*num_kernels ;
+				rmatval[num_kernels]=-1 ;
+
+				int32_t status = CPXaddrows (env, lp, 0, 1, num_kernels+1, 
+						rhs, sense, rmatbeg,
+						rmatind, rmatval, NULL, NULL);
+				if ( status ) 
+					SG_ERROR( "Failed to add the new row.\n");
+			}
+
+			inner_iters=0;
+			int status;
+			{ 
+
+				if (mkl_norm==1) // optimize 1 norm MKL
+					status = CPXlpopt (env, lp);
+				else if (mkl_norm==2) // optimize 2-norm MKL
+					status = CPXbaropt(env, lp);
+				else // q-norm MKL
 				{
-					//SG_INFO( "-%i(%i,%i)",max_idx,start_row,num_rows) ;
-					status = CPXdelrows (env, lp, max_idx, max_idx) ;
-					if ( status ) 
-						SG_ERROR( "Failed to remove an old row.\n");
+					float64_t* beta=new float64_t[2*num_kernels+1];
+					float64_t objval_old=mkl_objective;
+					for (int32_t i=0; i<num_kernels; i++)
+						beta[i]=w[i];
+					for (int32_t i=num_kernels; i<2*num_kernels+1; i++)
+						beta[i]=0;
+
+					while (true)
+					{
+						//int rows=CPXgetnumrows(env, lp);
+						//int cols=CPXgetnumcols(env, lp);
+						//SG_PRINT("rows:%d, cols:%d (kernel:%d)\n", rows, cols, num_kernels);
+						CMath::scale_vector(1/CMath::qnorm(beta, num_kernels, mkl_norm), beta, num_kernels);
+
+						set_qnorm_constraints(beta, num_kernels);
+
+						status = CPXbaropt(env, lp);
+						if ( status ) 
+							SG_ERROR( "Failed to optimize Problem.\n");
+
+						int solstat=0;
+						double objval=0;
+						status=CPXsolution(env, lp, &solstat, &objval,
+								(double*) beta, NULL, NULL, NULL);
+
+						if ( status )
+						{
+							CMath::display_vector(beta, num_kernels, "beta");
+							SG_ERROR( "Failed to obtain solution.\n");
+						}
+
+						CMath::scale_vector(1/CMath::qnorm(beta, num_kernels, mkl_norm), beta, num_kernels);
+
+						//SG_PRINT("[%d] %f (%f)\n", inner_iters, objval, objval_old);
+						if ((1-abs(objval/objval_old) < 0.1*weight_epsilon)) // && (inner_iters>2))
+							break;
+
+						objval_old=objval;
+
+						inner_iters++;
+					}
+					delete[] beta;
 				}
 
-				//CMath::display_vector(x, num_kernels, "beta");
+				if ( status ) 
+					SG_ERROR( "Failed to optimize Problem.\n");
 
-				// set weights, store new rho and compute new w gap
-        if( mkl_norm > 1 ) {
-          //compute_optimal_betas_analytically( x, mkl_norm, num_kernels, sumw );
-        }
-				kernel->set_subkernel_weights(x, num_kernels) ;
-				rho = -x[2*num_kernels] ;
-				w_gap = CMath::abs(1-rho/mkl_objective) ;
-				
-				delete[] pi ;
-				delete[] slack ;
-			} else
-				w_gap = 0 ; // then something is wrong and we rather 
-				            // stop sooner than later
+				// obtain solution
+				int32_t cur_numrows=(int32_t) CPXgetnumrows(env, lp);
+				int32_t cur_numcols=(int32_t) CPXgetnumcols(env, lp);
+				num_rows=cur_numrows;
+
+				if (!buffer_numcols)
+					buffer_numcols=new float64_t[cur_numcols];
+
+				float64_t* x=buffer_numcols;
+				float64_t* slack=new float64_t[cur_numrows];
+				float64_t* pi=NULL;
+				if (use_mkl==1)
+					pi=new float64_t[cur_numrows];
+
+				if (x==NULL || slack==NULL || pi==NULL)
+				{
+					status = CPXERR_NO_MEMORY;
+					SG_ERROR( "Could not allocate memory for solution.\n");
+				}
+
+				/* calling external lib */
+				int solstat=0;
+				double objval=0;
+
+				if (mkl_norm==1)
+				{
+					status=CPXsolution(env, lp, &solstat, &objval,
+							(double*) x, (double*) pi, (double*) slack, NULL);
+				}
+				else
+				{
+					status=CPXsolution(env, lp, &solstat, &objval,
+							(double*) x, NULL, (double*) slack, NULL);
+				}
+
+				int32_t solution_ok = (!status) ;
+				if ( status )
+					SG_ERROR( "Failed to obtain solution.\n");
+
+				num_active_rows=0 ;
+				if (solution_ok)
+				{
+					/* 1 norm mkl */
+					float64_t max_slack = -CMath::INFTY ;
+					int32_t max_idx = -1 ;
+					int32_t start_row = 1 ;
+					if (C_mkl!=0.0)
+						start_row+=2*(num_kernels-1);
+
+					for (int32_t i = start_row; i < cur_numrows; i++)  // skip first
+					{
+						if (mkl_norm==1)
+						{
+							if ((pi[i]!=0))
+								num_active_rows++ ;
+							else
+							{
+								if (slack[i]>max_slack)
+								{
+									max_slack=slack[i] ;
+									max_idx=i ;
+								}
+							}
+						}
+						else // 2-norm or general q-norm
+						{
+							if ((CMath::abs(slack[i])<1e-6))
+								num_active_rows++ ;
+							else
+							{
+								if (slack[i]>max_slack)
+								{
+									max_slack=slack[i] ;
+									max_idx=i ;
+								}
+							}
+						}
+					}
+
+					// have at most max(100,num_active_rows*2) rows, if not, remove one
+					if ( (num_rows-start_row>CMath::max(100,2*num_active_rows)) && (max_idx!=-1))
+					{
+						//SG_INFO( "-%i(%i,%i)",max_idx,start_row,num_rows) ;
+						status = CPXdelrows (env, lp, max_idx, max_idx) ;
+						if ( status ) 
+							SG_ERROR( "Failed to remove an old row.\n");
+					}
+
+					//CMath::display_vector(x, num_kernels, "beta");
+
+					delete[] pi ;
+					delete[] slack ;
+
+				} else
+					w_gap = 0 ; // then something is wrong and we rather 
+				// stop sooner than later
+			}
 		}
+		else
+			compute_optimal_betas_analytically( x, mkl_norm, num_kernels, sumw );
+
+		// set weights, store new rho and compute new w gap
+		kernel->set_subkernel_weights(x, num_kernels) ;
+		rho = -x[2*num_kernels] ;
+		w_gap = CMath::abs(1-rho/mkl_objective) ;
+
+		delete[] pi ;
+		delete[] slack ;
 	}
 #endif
 	
