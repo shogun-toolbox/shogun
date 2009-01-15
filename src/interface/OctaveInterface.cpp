@@ -165,8 +165,8 @@ void COctaveInterface::function_name(sg_type*& vec, int32_t& len)						\
 }
 GET_VECTOR(get_byte_vector, is_uint8_type, uint8NDArray, uint8_array_value, uint8_t, uint8_t, "Byte")
 GET_VECTOR(get_char_vector, is_char_matrix, charMatrix, char_matrix_value, char, char, "Char")
-GET_VECTOR(get_int_vector, is_int32_type, int32NDArray, uint8_array_value, int32_t, int32_t, "Integer")
-GET_VECTOR(get_short_vector, is_int16_type, int16NDArray, uint8_array_value, int16_t, int16_t, "Short")
+GET_VECTOR(get_int_vector, is_int32_type, int32NDArray, int32_array_value, int32_t, int32_t, "Integer")
+GET_VECTOR(get_short_vector, is_int16_type, int16NDArray, int16_array_value, int16_t, int16_t, "Short")
 GET_VECTOR(get_shortreal_vector, is_single_type, Matrix, matrix_value, float32_t, float32_t, "Single Precision")
 GET_VECTOR(get_real_vector, is_double_type, Matrix, matrix_value, float64_t, float64_t, "Double Precision")
 GET_VECTOR(get_word_vector, is_uint16_type, uint16NDArray, uint16_array_value, uint16_t, uint16_t, "Word")
@@ -191,8 +191,8 @@ void COctaveInterface::function_name(sg_type*& matrix, int32_t& num_feat, int32_
 }
 GET_MATRIX(get_byte_matrix, is_uint8_type, uint8NDArray, uint8_array_value, uint8_t, uint8_t, "Byte")
 GET_MATRIX(get_char_matrix, is_char_matrix, charMatrix, char_matrix_value, char, char, "Char")
-GET_MATRIX(get_int_matrix, is_int32_type, int32NDArray, uint8_array_value, int32_t, int32_t, "Integer")
-GET_MATRIX(get_short_matrix, is_int16_type, int16NDArray, uint8_array_value, int16_t, int16_t, "Short")
+GET_MATRIX(get_int_matrix, is_int32_type, int32NDArray, int32_array_value, int32_t, int32_t, "Integer")
+GET_MATRIX(get_short_matrix, is_int16_type, int16NDArray, int16_array_value, int16_t, int16_t, "Short")
 GET_MATRIX(get_shortreal_matrix, is_single_type, Matrix, matrix_value, float32_t, float32_t, "Single Precision")
 GET_MATRIX(get_real_matrix, is_double_type, Matrix, matrix_value, float64_t, float64_t, "Double Precision")
 GET_MATRIX(get_word_matrix, is_uint16_type, uint16NDArray, uint16_array_value, uint16_t, uint16_t, "Word")
@@ -215,8 +215,8 @@ void COctaveInterface::function_name(sg_type*& array, int32_t*& dims, int32_t& n
 }
 GET_NDARRAY(get_byte_ndarray, is_uint8_type, uint8NDArray, uint8_array_value, uint8_t, uint8_t, "Byte")
 GET_NDARRAY(get_char_ndarray, is_char_matrix, charMatrix, char_matrix_value, char, char, "Char")
-GET_NDARRAY(get_int_ndarray, is_int32_type, int32NDArray, uint8_array_value, int32_t, int32_t, "Integer")
-GET_NDARRAY(get_short_ndarray, is_int16_type, int16NDArray, uint8_array_value, int16_t, int16_t, "Short")
+GET_NDARRAY(get_int_ndarray, is_int32_type, int32NDArray, int32_array_value, int32_t, int32_t, "Integer")
+GET_NDARRAY(get_short_ndarray, is_int16_type, int16NDArray, int16_array_value, int16_t, int16_t, "Short")
 GET_NDARRAY(get_shortreal_ndarray, is_single_type, Matrix, matrix_value, float32_t, float32_t, "Single Precision")
 GET_NDARRAY(get_real_ndarray, is_double_type, Matrix, matrix_value, float64_t, float64_t, "Double Precision")
 GET_NDARRAY(get_word_ndarray, is_uint16_type, uint16NDArray, uint16_array_value, uint16_t, uint16_t, "Word")
