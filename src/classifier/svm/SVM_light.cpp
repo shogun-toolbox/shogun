@@ -1746,7 +1746,7 @@ void CSVMLight::update_linear_component_mkl(
 	
 	if ((w_gap >= 0.9999*get_weight_epsilon()))
 	{
-		if (use_cplex &&  mkl_norm > 1 )
+		if (use_cplex || mkl_norm == 1 )
 		{
 			if (!lp_initialized)
 			{
