@@ -1829,8 +1829,6 @@ void CSVMLight::update_linear_component_mkl(
 					status = CPXaddqconstr (env, lp, 0, num_kernels+1, 1.0, 'L', NULL, NULL,
 							initial_rmatind, initial_rmatind, initial_rmatval, NULL);
 				}
-				else // q-norm MKL
-					set_qnorm_constraints(w, num_kernels);
 			}
 
 
@@ -1933,11 +1931,20 @@ void CSVMLight::update_linear_component_mkl(
 			{
 				float64_t* beta=new float64_t[2*num_kernels+1];
 				float64_t objval_old=mkl_objective;
+				for (int32_t i=0; i<num_kernels; i++)
+					beta[i]=w[i];
+				for (int32_t i=num_kernels; i<2*num_kernels+1; i++)
+					beta[i]=0;
+
 				while (true)
 				{
 					//int rows=CPXgetnumrows(env, lp);
 					//int cols=CPXgetnumcols(env, lp);
 					//SG_PRINT("rows:%d, cols:%d (kernel:%d)\n", rows, cols, num_kernels);
+					CMath::scale_vector(1/CMath::qnorm(beta, num_kernels, mkl_norm), beta, num_kernels);
+
+					set_qnorm_constraints(beta, num_kernels);
+
 					status = CPXbaropt(env, lp);
 					if ( status ) 
 						SG_ERROR( "Failed to optimize Problem.\n");
@@ -1948,16 +1955,18 @@ void CSVMLight::update_linear_component_mkl(
 							(double*) beta, NULL, NULL, NULL);
 
 					if ( status )
+					{
+						CMath::display_vector(beta, num_kernels, "beta");
 						SG_ERROR( "Failed to obtain solution.\n");
-
+					}
 
 					CMath::scale_vector(1/CMath::qnorm(beta, num_kernels, mkl_norm), beta, num_kernels);
 
-					if (1-abs(objval/objval_old) < weight_epsilon)
+					//SG_PRINT("[%d] %f (%f)\n", inner_iters, objval, objval_old);
+					if ((1-abs(objval/objval_old) < 0.1*weight_epsilon)) // && (inner_iters>2))
 						break;
 
 					objval_old=objval;
-					set_qnorm_constraints(beta, num_kernels);
 
 					inner_iters++;
 				}
@@ -2055,7 +2064,7 @@ void CSVMLight::update_linear_component_mkl(
 						SG_ERROR( "Failed to remove an old row.\n");
 				}
 
-				CMath::display_vector(x, num_kernels, "beta");
+				//CMath::display_vector(x, num_kernels, "beta");
 
 				// set weights, store new rho and compute new w gap
         if( mkl_norm > 1 ) {
@@ -3004,7 +3013,9 @@ void CSVMLight::set_qnorm_constraints(float64_t* beta, int32_t num_kernels)
 	float64_t* lin_term=new float64_t[num_kernels+1];
 	int* ind=new int[num_kernels+1];
 
+	//CMath::display_vector(beta, num_kernels, "beta");
 	double const_term = 1-CMath::qsq(beta, num_kernels, mkl_norm);
+	//SG_PRINT("const=%f\n", const_term);
 	ASSERT(CMath::fequal(const_term, 0.0));
 
 	for (int32_t i=0; i<num_kernels; i++)
