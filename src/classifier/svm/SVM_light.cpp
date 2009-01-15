@@ -1633,6 +1633,7 @@ void CSVMLight::update_linear_component_mkl(
 	float64_t *a_old, int32_t *working2dnum, int32_t totdoc, float64_t *lin,
 	float64_t *aicache)
 {
+	float64_t* x = NULL;
 	int inner_iters=0;
 	int32_t num = kernel->get_num_vec_rhs();
 	int32_t num_weights = -1;
@@ -1988,7 +1989,7 @@ void CSVMLight::update_linear_component_mkl(
 				if (!buffer_numcols)
 					buffer_numcols=new float64_t[cur_numcols];
 
-				float64_t* x=buffer_numcols;
+				x=buffer_numcols;
 				float64_t* slack=new float64_t[cur_numrows];
 				float64_t* pi=NULL;
 				if (use_mkl==1)
@@ -2070,6 +2071,7 @@ void CSVMLight::update_linear_component_mkl(
 
 					//CMath::display_vector(x, num_kernels, "beta");
 
+					rho = -x[2*num_kernels] ;
 					delete[] pi ;
 					delete[] slack ;
 
@@ -2079,15 +2081,18 @@ void CSVMLight::update_linear_component_mkl(
 			}
 		}
 		else
-			compute_optimal_betas_analytically( x, mkl_norm, num_kernels, sumw );
+		{
+			x = new float64_t[num_kernels];
+			compute_optimal_betas_analytically( x, num_kernels, sumw );
+
+			rho=-suma;
+			for (int32_t d=0; d<num_kernels; d++)
+				rho   += x[d]*(sumw[d]);
+		}
 
 		// set weights, store new rho and compute new w gap
 		kernel->set_subkernel_weights(x, num_kernels) ;
-		rho = -x[2*num_kernels] ;
 		w_gap = CMath::abs(1-rho/mkl_objective) ;
-
-		delete[] pi ;
-		delete[] slack ;
 	}
 #endif
 	
