@@ -1608,6 +1608,26 @@ int32_t CSVMLight::check_optimality(
   return(retrain);
 }
 
+
+void CSVMLight::compute_optimal_betas_analytically(
+  float64_t* beta,
+  int num_kernels,
+  const float64_t* sumw)
+{
+  const double r = 1.0 / ( mkl_norm - 1.0 );
+  double Z;
+  Z = 0.0;
+  for( int32_t n=0; n<num_kernels; n++ ) {
+    beta[n] = pow( sumw[n], r );
+    Z += pow( beta[n], mkl_norm );
+  }
+  Z = pow( Z, -1.0/mkl_norm );
+  for( int32_t n=0; n<num_kernels; n++ ) {
+    beta[n] *= Z;
+  }
+}
+
+
 void CSVMLight::update_linear_component_mkl(
 	int32_t* docs, int32_t* label, int32_t *active2dnum, float64_t *a,
 	float64_t *a_old, int32_t *working2dnum, int32_t totdoc, float64_t *lin,
@@ -2038,6 +2058,9 @@ void CSVMLight::update_linear_component_mkl(
 				CMath::display_vector(x, num_kernels, "beta");
 
 				// set weights, store new rho and compute new w gap
+        if( mkl_norm > 1 ) {
+          //compute_optimal_betas_analytically( x, mkl_norm, num_kernels, sumw );
+        }
 				kernel->set_subkernel_weights(x, num_kernels) ;
 				rho = -x[2*num_kernels] ;
 				w_gap = CMath::abs(1-rho/mkl_objective) ;

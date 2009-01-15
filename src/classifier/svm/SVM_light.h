@@ -438,6 +438,18 @@ class CSVMLight : public CSVM
 	float64_t *aicache, float64_t* c);
 
   // MKL stuff
+  /** given the alphas, compute the corresponding optimal betas
+   *
+   * @param beta return value
+   * @param mkl_norm norm imposed on betas, between 1 and +INF
+   * @param num_kernels number of kernels
+   * @param sumw 1/2*alpha'*K_j*alpha for each kernel j
+   */
+  void compute_optimal_betas_analytically(
+  float64_t* beta,
+  int num_kernels,
+  const float64_t* sumw);
+
   /** update linear component MKL
    *
    * @param docs docs
