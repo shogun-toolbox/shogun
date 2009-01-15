@@ -2035,6 +2035,8 @@ void CSVMLight::update_linear_component_mkl(
 						SG_ERROR( "Failed to remove an old row.\n");
 				}
 
+				CMath::display_vector(x, num_kernels, "beta");
+
 				// set weights, store new rho and compute new w gap
 				kernel->set_subkernel_weights(x, num_kernels) ;
 				rho = -x[2*num_kernels] ;
@@ -2969,7 +2971,7 @@ void* CSVMLight::reactivate_inactive_examples_linadd_helper(void* p)
 	return NULL;
 }
 
-#ifdef HAVE_CPLEX
+#ifdef USE_CPLEX
 void CSVMLight::set_qnorm_constraints(float64_t* beta, int32_t num_kernels)
 {
 	ASSERT(num_kernels>0);
@@ -3015,7 +3017,7 @@ void CSVMLight::set_qnorm_constraints(float64_t* beta, int32_t num_kernels)
 	delete[] lin_term;
 	delete[] ind;
 }
-#endif // HAVE_CPLEX
+#endif // USE_CPLEX
 
 void* CSVMLight::reactivate_inactive_examples_vanilla_helper(void* p)
 {
