@@ -488,7 +488,7 @@ void CSVRLight::update_linear_component_mkl(
 			lb[2*num_kernels]=-CPX_INFBOUND ;
 			ub[2*num_kernels]=CPX_INFBOUND ;
 			
-			int status = CPXnewcols (env, lp, NUMCOLS, obj, lb, ub, NULL, NULL);
+			int status = CPXnewcols (env, lp_cplex, NUMCOLS, obj, lb, ub, NULL, NULL);
 			if ( status ) {
 				char  errmsg[1024];
 				CPXgeterrorstring (env, status, errmsg);
@@ -514,7 +514,7 @@ void CSVRLight::update_linear_component_mkl(
 			initial_rmatind[num_kernels]=2*num_kernels ;
 			initial_rmatval[num_kernels]=0 ;
 			
-			status = CPXaddrows (env, lp, 0, 1, num_kernels+1, 
+			status = CPXaddrows (env, lp_cplex, 0, 1, num_kernels+1, 
 								 initial_rhs, initial_sense, initial_rmatbeg,
 								 initial_rmatind, initial_rmatval, NULL, NULL);
 			if ( status ) {
@@ -544,7 +544,7 @@ void CSVRLight::update_linear_component_mkl(
 					rmatval[1]=-1 ;
 					rmatind[2]=num_kernels+q ;
 					rmatval[2]=-1 ;
-					status = CPXaddrows (env, lp, 0, 1, 3, 
+					status = CPXaddrows (env, lp_cplex, 0, 1, 3, 
 										 rhs, sense, rmatbeg,
 										 rmatind, rmatval, NULL, NULL);
 					if ( status ) {
@@ -560,7 +560,7 @@ void CSVRLight::update_linear_component_mkl(
 					rmatval[1]=1 ;
 					rmatind[2]=num_kernels+q ;
 					rmatval[2]=-1 ;
-					status = CPXaddrows (env, lp, 0, 1, 3, 
+					status = CPXaddrows (env, lp_cplex, 0, 1, 3, 
 										 rhs, sense, rmatbeg,
 										 rmatind, rmatval, NULL, NULL);
 					if ( status ) {
@@ -593,7 +593,7 @@ void CSVRLight::update_linear_component_mkl(
 			rmatind[num_kernels]=2*num_kernels ;
 			rmatval[num_kernels]=-1 ;
 			
-			int status = CPXaddrows (env, lp, 0, 1, num_kernels+1, 
+			int status = CPXaddrows (env, lp_cplex, 0, 1, num_kernels+1, 
 									 rhs, sense, rmatbeg,
 									 rmatind, rmatval, NULL, NULL);
 			if ( status ) 
@@ -601,13 +601,13 @@ void CSVRLight::update_linear_component_mkl(
 		}
 		
 		{ // optimize
-			int status = CPXlpopt (env, lp);
+			int status = CPXlpopt (env, lp_cplex);
 			if ( status ) 
 				SG_ERROR( "Failed to optimize LP.\n");
 			
 			// obtain solution
-			int32_t cur_numrows=(int32_t) CPXgetnumrows(env, lp);
-			int32_t cur_numcols=(int32_t) CPXgetnumcols(env, lp);
+			int32_t cur_numrows=(int32_t) CPXgetnumrows(env, lp_cplex);
+			int32_t cur_numcols=(int32_t) CPXgetnumcols(env, lp_cplex);
 			num_rows=cur_numrows;
 			ASSERT(cur_numcols<=2*num_kernels+1);
 
@@ -623,7 +623,7 @@ void CSVRLight::update_linear_component_mkl(
 			/* calling external lib */
 			int solstat=0;
 			float64_t objval=0;
-			status=CPXsolution(env, lp, &solstat, &objval, (double*) beta,
+			status=CPXsolution(env, lp_cplex, &solstat, &objval, (double*) beta,
 				(double*) pi, (double*) slack, NULL);
 			int32_t solution_ok=!status;
 			if (status)
@@ -654,7 +654,7 @@ void CSVRLight::update_linear_component_mkl(
 				if ( (num_rows-start_row>CMath::max(100,2*num_active_rows)) && (max_idx!=-1))
 				{
 					//SG_INFO( "-%i(%i,%i)",max_idx,start_row,num_rows) ;
-					status = CPXdelrows (env, lp, max_idx, max_idx) ;
+					status = CPXdelrows (env, lp_cplex, max_idx, max_idx) ;
 					if ( status ) 
 						SG_ERROR( "Failed to remove an old row.\n");
 				}
@@ -807,7 +807,7 @@ void CSVRLight::update_linear_component_mkl_linadd(
 			lb[2*num_kernels]=-CPX_INFBOUND ;
 			ub[2*num_kernels]=CPX_INFBOUND ;
 			
-			int32_t status = CPXnewcols (env, lp, NUMCOLS, obj, lb, ub, NULL, NULL);
+			int32_t status = CPXnewcols (env, lp_cplex, NUMCOLS, obj, lb, ub, NULL, NULL);
 			if ( status ) {
 				char  errmsg[1024];
 				CPXgeterrorstring (env, status, errmsg);
@@ -834,7 +834,7 @@ void CSVRLight::update_linear_component_mkl_linadd(
 			initial_rmatind[num_kernels]=2*num_kernels ;
 			initial_rmatval[num_kernels]=0 ;
 			
-			status = CPXaddrows (env, lp, 0, 1, num_kernels+1, 
+			status = CPXaddrows (env, lp_cplex, 0, 1, num_kernels+1, 
 								 initial_rhs, initial_sense, initial_rmatbeg,
 								 initial_rmatind, initial_rmatval, NULL, NULL);
 			if ( status ) {
@@ -862,7 +862,7 @@ void CSVRLight::update_linear_component_mkl_linadd(
 					rmatval[1]=-1 ;
 					rmatind[2]=num_kernels+q ;
 					rmatval[2]=-1 ;
-					status = CPXaddrows (env, lp, 0, 1, 3, 
+					status = CPXaddrows (env, lp_cplex, 0, 1, 3, 
 										 rhs, sense, rmatbeg,
 										 rmatind, rmatval, NULL, NULL);
 					if ( status ) {
@@ -878,7 +878,7 @@ void CSVRLight::update_linear_component_mkl_linadd(
 					rmatval[1]=1 ;
 					rmatind[2]=num_kernels+q ;
 					rmatval[2]=-1 ;
-					status = CPXaddrows (env, lp, 0, 1, 3, 
+					status = CPXaddrows (env, lp_cplex, 0, 1, 3, 
 										 rhs, sense, rmatbeg,
 										 rmatind, rmatval, NULL, NULL);
 					if ( status ) {
@@ -908,7 +908,7 @@ void CSVRLight::update_linear_component_mkl_linadd(
 			rmatind[num_kernels]=2*num_kernels ;
 			rmatval[num_kernels]=-1 ;
 			
-			int32_t status = CPXaddrows (env, lp, 0, 1, num_kernels+1, 
+			int32_t status = CPXaddrows (env, lp_cplex, 0, 1, num_kernels+1, 
 									 rhs, sense, rmatbeg,
 									 rmatind, rmatval, NULL, NULL);
 			if ( status ) 
@@ -916,13 +916,13 @@ void CSVRLight::update_linear_component_mkl_linadd(
 		}
 		
 		{ // optimize
-			int32_t status = CPXlpopt (env, lp);
+			int32_t status = CPXlpopt (env, lp_cplex);
 			if ( status ) 
 				SG_ERROR( "Failed to optimize LP.\n");
 			
 			// obtain solution
-			int32_t cur_numrows=(int32_t) CPXgetnumrows(env, lp);
-			int32_t cur_numcols=(int32_t) CPXgetnumcols (env, lp);
+			int32_t cur_numrows=(int32_t) CPXgetnumrows(env, lp_cplex);
+			int32_t cur_numcols=(int32_t) CPXgetnumcols (env, lp_cplex);
 			num_rows=cur_numrows;
 			ASSERT(cur_numcols<=2*num_kernels+1);
 			
@@ -932,7 +932,7 @@ void CSVRLight::update_linear_component_mkl_linadd(
 			/* calling external lib */
 			int solstat=0;
 			float64_t objval=0;
-			status=CPXsolution(env, lp, &solstat, &objval, (double*) beta,
+			status=CPXsolution(env, lp_cplex, &solstat, &objval, (double*) beta,
 				(double*) pi, (double*) slack, NULL);
 			int32_t solution_ok=!status;
 			if (status)
@@ -963,7 +963,7 @@ void CSVRLight::update_linear_component_mkl_linadd(
 				if ( (num_rows-start_row>CMath::max(100,2*num_active_rows)) && (max_idx!=-1))
 				{
 					//SG_INFO( "-%i(%i,%i)",max_idx,start_row,num_rows) ;
-					status = CPXdelrows (env, lp, max_idx, max_idx) ;
+					status = CPXdelrows (env, lp_cplex, max_idx, max_idx) ;
 					if ( status ) 
 						SG_ERROR( "Failed to remove an old row.\n");
 				}
