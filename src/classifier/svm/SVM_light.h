@@ -43,6 +43,10 @@ extern "C" {
 }
 #endif
 
+#ifdef USE_GLPK
+#include <glpk.h>
+#endif
+
 # define VERSION       "V3.50 -- correct??"
 # define VERSION_DATE  "01.11.00 -- correct??"
 
@@ -443,7 +447,13 @@ class CSVMLight : public CSVM
    *
    * given the alphas, compute the corresponding optimal betas
    *
+   * @param beta new betas (kernel weights)
+   * @param old_beta old betas (previous kernel weights)
    * @param num_kernels number of kernels
+   * @param label (from svmlight label)
+   * @param active2dnum (from svmlight active2dnum)
+   * @param a (from svmlight alphas)
+   * @param lin (from svmlight linear components)
    * @param sumw 1/2*alpha'*K_j*alpha for each kernel j
    * @param suma (sum over alphas)
    * @param inner_iters number of required internal iterations
@@ -455,6 +465,8 @@ class CSVMLight : public CSVM
 
   /** given the alphas, compute the corresponding optimal betas
    *
+   * @param beta new betas (kernel weights)
+   * @param old_beta old betas (previous kernel weights)
    * @param num_kernels number of kernels
    * @param sumw 1/2*alpha'*K_j*alpha for each kernel j
    * @param suma (sum over alphas)
@@ -468,13 +480,32 @@ class CSVMLight : public CSVM
    * using a lp for 1-norm mkl, a qcqp for 2-norm mkl and an
    * iterated qcqp for general q-norm mkl.
    *
+   * @param beta new betas (kernel weights)
+   * @param old_beta old betas (previous kernel weights)
    * @param num_kernels number of kernels
    * @param sumw 1/2*alpha'*K_j*alpha for each kernel j
+   * @param suma (sum over alphas)
+   * @param inner_iters number of internal iterations (for statistics)
    *
    * @return new objective value
    */
   float64_t compute_optimal_betas_via_cplex(float64_t* beta, float64_t* old_beta, int num_kernels,
 		  const float64_t* sumw, float64_t suma, int32_t& inner_iters);
+
+  /** given the alphas, compute the corresponding optimal betas
+   * using a lp for 1-norm mkl
+   *
+   * @param beta new betas (kernel weights)
+   * @param old_beta old betas (previous kernel weights)
+   * @param num_kernels number of kernels
+   * @param sumw 1/2*alpha'*K_j*alpha for each kernel j
+   * @param suma (sum over alphas)
+   * @param inner_iters number of internal iterations (for statistics)
+   *
+   * @return new objective value
+   */
+  float64_t compute_optimal_betas_via_glpk(float64_t* beta, float64_t* old_beta,
+		  int num_kernels, const float64_t* sumw, float64_t suma, int32_t& inner_iters);
 
   /** update linear component MKL
    *
@@ -680,6 +711,12 @@ protected:
 	 */
 	bool cleanup_cplex();
 #endif
+
+#ifdef USE_GLPK
+	bool init_glpk();
+	bool cleanup_glpk();
+	inline bool check_lpx_status(LPX *lp);
+#endif
    
  protected:
   /** model */
@@ -723,11 +760,16 @@ protected:
   /** env */
   CPXENVptr     env;
   /** lp */
-  CPXLPptr      lp;
-  /** if lp is initialized */
-  bool          lp_initialized ;
-
+  CPXLPptr      lp_cplex;
 #endif
+
+#ifdef USE_GLPK
+  /** lp */
+  LPX* lp_glpk;
+#endif
+
+  /** if lp is initialized */
+  bool lp_initialized ;
 
 };
 #endif //USE_SVMLIGHT

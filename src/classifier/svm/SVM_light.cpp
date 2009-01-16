@@ -167,10 +167,15 @@ void CSVMLight::init()
 	lp_C = 0 ;
 	
 #ifdef USE_CPLEX
-	lp = NULL ;
+	lp_cplex = NULL ;
 	env = NULL ;
-	lp_initialized = false ;
 #endif
+
+#ifdef USE_GLPK
+	lp_glpk = NULL;
+#endif
+
+	lp_initialized = false ;
 }
 
 #ifdef USE_CPLEX
@@ -208,28 +213,28 @@ bool CSVMLight::init_cplex()
 				}	
 				else
 				{
-					lp = CPXcreateprob (env, &status, "light");
+					lp_cplex = CPXcreateprob (env, &status, "light");
 
-					if ( lp == NULL )
+					if ( lp_cplex == NULL )
 						SG_ERROR( "Failed to create LP.\n");
 					else
-						CPXchgobjsen (env, lp, CPX_MIN);  /* Problem is minimization */
+						CPXchgobjsen (env, lp_cplex, CPX_MIN);  /* Problem is minimization */
 				}
 			}
 		}
 	}
 
-	return (lp != NULL) && (env != NULL);
+	return (lp_cplex != NULL) && (env != NULL);
 }
 
 bool CSVMLight::cleanup_cplex()
 {
 	bool result=false;
 
-	if (lp)
+	if (lp_cplex)
 	{
-		int32_t status = CPXfreeprob(env, &lp);
-		lp = NULL;
+		int32_t status = CPXfreeprob(env, &lp_cplex);
+		lp_cplex = NULL;
 		lp_initialized = false;
 
 		if (status)
@@ -256,6 +261,42 @@ bool CSVMLight::cleanup_cplex()
 	return result;
 }
 #endif
+
+#ifdef USE_GLPK
+bool CSVMLight::init_glpk()
+{
+	lp_glpk = lpx_create_prob();
+	lpx_set_obj_dir(lp_glpk, LPX_MIN);
+	glp_term_out(GLP_OFF);
+	return (lp_glpk != NULL);
+}
+
+bool CSVMLight::cleanup_glpk()
+{
+	lp_initialized = false;
+	if (lp_glpk)
+		lpx_delete_prob(lp_glpk);
+	lp_glpk = NULL;
+	return true;
+}
+
+bool CSVMLight::check_lpx_status(LPX *lp)
+{
+	int status = lpx_get_status(lp);
+
+	if (status==LPX_INFEAS)
+	{
+		SG_PRINT("solution is infeasible!\n");
+		return false;
+	}
+	else if(status==LPX_NOFEAS)
+	{
+		SG_PRINT("problem has no feasible solution!\n");
+		return false;
+	}
+	return true;
+}
+#endif // USE_GLPK
 
 CSVMLight::~CSVMLight()
 {
@@ -395,6 +436,7 @@ bool CSVMLight::train()
 	SG_DEBUG( "kernel->has_property(KP_KERNCOMBINATION) = %i\n", kernel->has_property(KP_KERNCOMBINATION)) ;
 	SG_DEBUG( "kernel->has_property(KP_BATCHEVALUATION) = %i\n", kernel->has_property(KP_BATCHEVALUATION)) ;
 	SG_DEBUG( "kernel->get_optimization_type() = %s\n", kernel->get_optimization_type()==FASTBUTMEMHUNGRY ? "FASTBUTMEMHUNGRY" : "SLOWBUTMEMEFFICIENT" ) ;
+	SG_DEBUG( "get_solver_type() = %i\n", get_solver_type());
 	SG_DEBUG( "get_mkl_enabled() = %i\n", get_mkl_enabled()) ;
 	SG_DEBUG( "get_linadd_enabled() = %i\n", get_linadd_enabled()) ;
 	SG_DEBUG( "get_batch_computation_enabled() = %i\n", get_batch_computation_enabled()) ;
@@ -411,9 +453,13 @@ bool CSVMLight::train()
 
 	if (get_mkl_enabled())
 		init_cplex();
-#else
+#endif
+
+#ifdef USE_GLPK
+	cleanup_glpk();
+
 	if (get_mkl_enabled())
-      SG_ERROR( "CPLEX was disabled at compile-time\n");
+		init_glpk();
 #endif
 	
 	if (kernel->get_kernel_type() == K_COMBINED)
@@ -1645,10 +1691,20 @@ void CSVMLight::perform_mkl_step(float64_t* beta, float64_t* old_beta, int num_k
 	w_gap = CMath::abs(1-rho/mkl_objective) ;
 	if ((w_gap >= 0.9999*get_weight_epsilon()))
 	{
-		if ( mkl_norm == 1 || get_solver_type()==ST_CPLEX)
-			rho=compute_optimal_betas_via_cplex(beta, old_beta, num_kernels, sumw, suma, inner_iters);
+		if ( mkl_norm == 1)
+		{
+			if (get_solver_type()==ST_CPLEX)
+				rho=compute_optimal_betas_via_cplex(beta, old_beta, num_kernels, sumw, suma, inner_iters);
+			else
+				rho=compute_optimal_betas_via_glpk(beta, old_beta, num_kernels, sumw, suma, inner_iters);
+		}
 		else
-			rho=compute_optimal_betas_analytically(beta, num_kernels, sumw, suma);
+		{
+			if (get_solver_type()==ST_CPLEX)
+				rho=compute_optimal_betas_via_cplex(beta, old_beta, num_kernels, sumw, suma, inner_iters);
+			else
+				rho=compute_optimal_betas_analytically(beta, num_kernels, sumw, suma);
+		}
 
 		// set weights, store new rho and compute new w gap
 		kernel->set_subkernel_weights(beta, num_kernels) ;
@@ -1677,7 +1733,7 @@ void CSVMLight::perform_mkl_step(float64_t* beta, float64_t* old_beta, int num_k
 		int32_t start_row = 1 ;
 		if (C_mkl!=0.0)
 			start_row+=2*(num_kernels-1);
-		SG_DEBUG("\n%i. OBJ: %f  RHO: %f  wgap=%f agap=%f (activeset=%i; active rows=%i/%i; inner_iters=%d)\n", count, mkl_objective,rho,w_gap,mymaxdiff,jj,num_active_rows,num_rows-start_row, inner_iters);
+		SG_DEBUG("%i. OBJ: %f  RHO: %f  wgap=%f agap=%f (activeset=%i; active rows=%i/%i; inner_iters=%d)\n", count, mkl_objective,rho,w_gap,mymaxdiff,jj,num_active_rows,num_rows-start_row, inner_iters);
 	}
 }
 
@@ -1731,7 +1787,7 @@ float64_t CSVMLight::compute_optimal_betas_via_cplex(float64_t* x, float64_t* ol
 		lb[2*num_kernels]=-CPX_INFBOUND ;
 		ub[2*num_kernels]=CPX_INFBOUND ;
 
-		int status = CPXnewcols (env, lp, NUMCOLS, obj, lb, ub, NULL, NULL);
+		int status = CPXnewcols (env, lp_cplex, NUMCOLS, obj, lb, ub, NULL, NULL);
 		if ( status ) {
 			char  errmsg[1024];
 			CPXgeterrorstring (env, status, errmsg);
@@ -1761,7 +1817,7 @@ float64_t CSVMLight::compute_optimal_betas_via_cplex(float64_t* x, float64_t* ol
 			initial_rmatind[num_kernels]=2*num_kernels ;
 			initial_rmatval[num_kernels]=0 ;
 
-			status = CPXaddrows (env, lp, 0, 1, num_kernels+1, 
+			status = CPXaddrows (env, lp_cplex, 0, 1, num_kernels+1, 
 					initial_rhs, initial_sense, initial_rmatbeg,
 					initial_rmatind, initial_rmatval, NULL, NULL);
 
@@ -1775,7 +1831,7 @@ float64_t CSVMLight::compute_optimal_betas_via_cplex(float64_t* x, float64_t* ol
 			initial_rmatind[0]=2*num_kernels ;
 			initial_rmatval[0]=0 ;
 
-			status = CPXaddrows (env, lp, 0, 1, 1, 
+			status = CPXaddrows (env, lp_cplex, 0, 1, 1, 
 					initial_rhs, initial_sense, initial_rmatbeg,
 					initial_rmatind, initial_rmatval, NULL, NULL);
 
@@ -1790,7 +1846,7 @@ float64_t CSVMLight::compute_optimal_betas_via_cplex(float64_t* x, float64_t* ol
 				initial_rmatind[num_kernels]=2*num_kernels ;
 				initial_rmatval[num_kernels]=0 ;
 
-				status = CPXaddqconstr (env, lp, 0, num_kernels+1, 1.0, 'L', NULL, NULL,
+				status = CPXaddqconstr (env, lp_cplex, 0, num_kernels+1, 1.0, 'L', NULL, NULL,
 						initial_rmatind, initial_rmatind, initial_rmatval, NULL);
 			}
 		}
@@ -1822,7 +1878,7 @@ float64_t CSVMLight::compute_optimal_betas_via_cplex(float64_t* x, float64_t* ol
 				rmatval[1]=-1 ;
 				rmatind[2]=num_kernels+q ;
 				rmatval[2]=-1 ;
-				status = CPXaddrows (env, lp, 0, 1, 3, 
+				status = CPXaddrows (env, lp_cplex, 0, 1, 3, 
 						rhs, sense, rmatbeg,
 						rmatind, rmatval, NULL, NULL);
 				if ( status )
@@ -1837,7 +1893,7 @@ float64_t CSVMLight::compute_optimal_betas_via_cplex(float64_t* x, float64_t* ol
 				rmatval[1]=1 ;
 				rmatind[2]=num_kernels+q ;
 				rmatval[2]=-1 ;
-				status = CPXaddrows (env, lp, 0, 1, 3, 
+				status = CPXaddrows (env, lp_cplex, 0, 1, 3, 
 						rhs, sense, rmatbeg,
 						rmatind, rmatval, NULL, NULL);
 				if ( status )
@@ -1876,7 +1932,7 @@ float64_t CSVMLight::compute_optimal_betas_via_cplex(float64_t* x, float64_t* ol
 		rmatind[num_kernels]=2*num_kernels ;
 		rmatval[num_kernels]=-1 ;
 
-		int32_t status = CPXaddrows (env, lp, 0, 1, num_kernels+1, 
+		int32_t status = CPXaddrows (env, lp_cplex, 0, 1, num_kernels+1, 
 				rhs, sense, rmatbeg,
 				rmatind, rmatval, NULL, NULL);
 		if ( status ) 
@@ -1888,9 +1944,9 @@ float64_t CSVMLight::compute_optimal_betas_via_cplex(float64_t* x, float64_t* ol
 	{ 
 
 		if (mkl_norm==1) // optimize 1 norm MKL
-			status = CPXlpopt (env, lp);
+			status = CPXlpopt (env, lp_cplex);
 		else if (mkl_norm==2) // optimize 2-norm MKL
-			status = CPXbaropt(env, lp);
+			status = CPXbaropt(env, lp_cplex);
 		else // q-norm MKL
 		{
 			float64_t* beta=new float64_t[2*num_kernels+1];
@@ -1902,20 +1958,20 @@ float64_t CSVMLight::compute_optimal_betas_via_cplex(float64_t* x, float64_t* ol
 
 			while (true)
 			{
-				//int rows=CPXgetnumrows(env, lp);
-				//int cols=CPXgetnumcols(env, lp);
+				//int rows=CPXgetnumrows(env, lp_cplex);
+				//int cols=CPXgetnumcols(env, lp_cplex);
 				//SG_PRINT("rows:%d, cols:%d (kernel:%d)\n", rows, cols, num_kernels);
 				CMath::scale_vector(1/CMath::qnorm(beta, num_kernels, mkl_norm), beta, num_kernels);
 
 				set_qnorm_constraints(beta, num_kernels);
 
-				status = CPXbaropt(env, lp);
+				status = CPXbaropt(env, lp_cplex);
 				if ( status ) 
 					SG_ERROR( "Failed to optimize Problem.\n");
 
 				int solstat=0;
 				double objval=0;
-				status=CPXsolution(env, lp, &solstat, &objval,
+				status=CPXsolution(env, lp_cplex, &solstat, &objval,
 						(double*) beta, NULL, NULL, NULL);
 
 				if ( status )
@@ -1941,8 +1997,8 @@ float64_t CSVMLight::compute_optimal_betas_via_cplex(float64_t* x, float64_t* ol
 			SG_ERROR( "Failed to optimize Problem.\n");
 
 		// obtain solution
-		int32_t cur_numrows=(int32_t) CPXgetnumrows(env, lp);
-		int32_t cur_numcols=(int32_t) CPXgetnumcols(env, lp);
+		int32_t cur_numrows=(int32_t) CPXgetnumrows(env, lp_cplex);
+		int32_t cur_numcols=(int32_t) CPXgetnumcols(env, lp_cplex);
 		int32_t num_rows=cur_numrows;
 		ASSERT(cur_numcols<=2*num_kernels+1);
 
@@ -1963,12 +2019,12 @@ float64_t CSVMLight::compute_optimal_betas_via_cplex(float64_t* x, float64_t* ol
 
 		if (mkl_norm==1)
 		{
-			status=CPXsolution(env, lp, &solstat, &objval,
+			status=CPXsolution(env, lp_cplex, &solstat, &objval,
 					(double*) x, (double*) pi, (double*) slack, NULL);
 		}
 		else
 		{
-			status=CPXsolution(env, lp, &solstat, &objval,
+			status=CPXsolution(env, lp_cplex, &solstat, &objval,
 					(double*) x, NULL, (double*) slack, NULL);
 		}
 
@@ -2020,7 +2076,7 @@ float64_t CSVMLight::compute_optimal_betas_via_cplex(float64_t* x, float64_t* ol
 			if ( (num_rows-start_row>CMath::max(100,2*num_active_rows)) && (max_idx!=-1))
 			{
 				//SG_INFO( "-%i(%i,%i)",max_idx,start_row,num_rows) ;
-				status = CPXdelrows (env, lp, max_idx, max_idx) ;
+				status = CPXdelrows (env, lp_cplex, max_idx, max_idx) ;
 				if ( status ) 
 					SG_ERROR( "Failed to remove an old row.\n");
 			}
@@ -2041,6 +2097,152 @@ float64_t CSVMLight::compute_optimal_betas_via_cplex(float64_t* x, float64_t* ol
 	}
 #else
 	SG_ERROR("Cplex not enabled at compile time\n");
+#endif
+	return rho;
+}
+
+float64_t CSVMLight::compute_optimal_betas_via_glpk(float64_t* beta, float64_t* old_beta,
+		int num_kernels, const float64_t* sumw, float64_t suma, int32_t& inner_iters)
+{
+#ifdef USE_GLPK
+	int32_t NUMCOLS = 2*num_kernels + 1 ;
+	if (!lp_initialized)
+	{
+		SG_INFO( "initializing lp...");
+		//set obj function.
+		lpx_add_cols(lp_glpk, NUMCOLS);
+		for (int i=1; i<=2*num_kernels; i++)
+		{
+			lpx_set_obj_coef(lp_glpk, i, 0);
+			lpx_set_col_bnds(lp_glpk, i, LPX_DB, 0, 1);
+		}
+		for (int i=num_kernels+1; i<=2*num_kernels; i++)
+		{
+			lpx_set_obj_coef(lp_glpk, i, C_mkl);
+		}
+		lpx_set_obj_coef(lp_glpk, NUMCOLS, 1);
+		lpx_set_col_bnds(lp_glpk, NUMCOLS, LPX_FR, -CMath::INFTY, CMath::INFTY);
+
+		//add first row. sum[w]=1
+		int row_index = lpx_add_rows(lp_glpk, 1);
+		int ind[num_kernels+2];
+		float64_t val[num_kernels+1];
+		for (int i=1; i<=num_kernels; i++)
+		{
+			ind[i] = i;
+			val[i] = 1;
+		}
+		//			ind[num_kernels+1] = NUMCOLS;
+		//			val[num_kernels+1] = 0;
+		lpx_set_mat_row(lp_glpk, row_index, num_kernels, ind, val);
+		lpx_set_row_bnds(lp_glpk, row_index, LPX_FX, 1, 1);
+
+		lp_initialized = true;
+
+		if (C_mkl!=0.0)
+		{
+			for (int32_t q=1; q<num_kernels; q++)
+			{
+				int mat_ind[4];
+				float64_t mat_val[4];
+				int mat_row_index = lpx_add_rows(lp_glpk, 2);
+				mat_ind[1] = q;
+				mat_val[1] = 1;
+				mat_ind[2] = q+1; 
+				mat_val[2] = -1;
+				mat_ind[3] = num_kernels+q;
+				mat_val[3] = -1;
+				lpx_set_mat_row(lp_glpk, mat_row_index, 3, mat_ind, mat_val);
+				lpx_set_row_bnds(lp_glpk, mat_row_index, LPX_UP, 0, 0);
+				mat_val[1] = -1; 
+				mat_val[2] = 1;
+				lpx_set_mat_row(lp_glpk, mat_row_index+1, 3, mat_ind, mat_val);
+				lpx_set_row_bnds(lp_glpk, mat_row_index+1, LPX_UP, 0, 0);
+			}
+		}
+	}
+
+	int ind[num_kernels+2];
+	float64_t val[num_kernels+2];
+	int row_index = lpx_add_rows(lp_glpk, 1);
+	for (int32_t i=1; i<=num_kernels; i++)
+	{
+		ind[i] = i;
+		val[i] = -sumw[i-1];
+	}
+	ind[num_kernels+1] = 2*num_kernels+1;
+	val[num_kernels+1] = -1;
+	lpx_set_mat_row(lp_glpk, row_index, num_kernels+1, ind, val);
+	lpx_set_row_bnds(lp_glpk, row_index, LPX_UP, 0, 0);
+
+	//optimize
+	lpx_simplex(lp_glpk);
+	check_lpx_status(lp_glpk);	
+	int32_t cur_numrows = lpx_get_num_rows(lp_glpk);
+	int32_t cur_numcols = lpx_get_num_cols(lp_glpk);
+	int32_t num_rows=cur_numrows;
+	ASSERT(cur_numcols<=2*num_kernels+1);
+
+	float64_t *row_primal = new float64_t[cur_numrows];
+	float64_t *row_dual = new float64_t[cur_numrows];
+	float64_t *col_primal = beta;
+
+	for (int i=0; i<cur_numrows; i++)
+	{
+		row_primal[i] = lpx_get_row_prim(lp_glpk, i+1);
+		row_dual[i] = lpx_get_row_dual(lp_glpk, i+1);
+	}
+	for (int i=0; i<cur_numcols; i++)
+	{
+		col_primal[i] = lpx_get_col_prim(lp_glpk, i+1);
+	}
+
+	bool res = check_lpx_status(lp_glpk);
+	if (!res)
+		SG_ERROR("Failed to obtain solution.\n");
+
+	int32_t num_active_rows=0;
+	if(res)
+	{
+		float64_t max_slack = CMath::INFTY;
+		int32_t max_idx = -1;
+		int32_t start_row = 1;
+		if (C_mkl!=0.0)
+			start_row += 2*(num_kernels-1);
+
+		for (int32_t i= start_row; i<cur_numrows; i++)
+		{
+			if (row_dual[i]!=0)
+				num_active_rows++;
+			else
+			{
+				if (row_primal[i]>max_slack)
+				{
+					max_slack = row_primal[i];
+					max_idx = i;
+				}
+			}
+		}
+
+		if ((num_rows-start_row>CMath::max(100, 2*num_active_rows)) && max_idx!=-1)
+		{
+			int del_rows[2];
+			del_rows[1] = max_idx+1;
+			lpx_del_rows(lp_glpk, 1, del_rows);
+		}
+
+		rho = -col_primal[2*num_kernels];
+		delete[] row_dual;
+		delete[] row_primal;
+	}
+	else
+	{
+		/* then something is wrong and we rather 
+		   stop sooner than later */
+		rho = 1 ;
+	}
+#else
+	SG_ERROR("Glpk not enabled at compile time\n");
 #endif
 	return rho;
 }
@@ -2659,20 +2861,20 @@ void CSVMLight::set_qnorm_constraints(float64_t* beta, int32_t num_kernels)
 	lin_term[num_kernels]=0;
 
 	int status=0;
-	int num=CPXgetnumqconstrs (env, lp);
+	int num=CPXgetnumqconstrs (env, lp_cplex);
 
 	if (num>0)
 	{
-		status = CPXdelqconstrs (env, lp, 0, 0);
+		status = CPXdelqconstrs (env, lp_cplex, 0, 0);
 		ASSERT(!status);
 	}
 
-	status = CPXaddqconstr (env, lp, num_kernels+1, num_kernels+1, const_term, 'L', ind, lin_term,
+	status = CPXaddqconstr (env, lp_cplex, num_kernels+1, num_kernels+1, const_term, 'L', ind, lin_term,
 			ind, ind, hess_beta, NULL);
 	ASSERT(!status);
 
-	//CPXwriteprob (env, lp, "prob.lp", NULL);
-	//CPXqpwrite (env, lp, "prob.qp");
+	//CPXwriteprob (env, lp_cplex, "prob.lp", NULL);
+	//CPXqpwrite (env, lp_cplex, "prob.qp");
 
 	delete[] grad_beta;
 	delete[] hess_beta;
@@ -3012,4 +3214,5 @@ void CSVMLight::reactivate_inactive_examples(
 	  }
   }
 }
+
 #endif //USE_SVMLIGHT
