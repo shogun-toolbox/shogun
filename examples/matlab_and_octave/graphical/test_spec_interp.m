@@ -58,6 +58,7 @@ sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1);
 sg('add_preproc', 'SORTWORDSTRING') ;
 sg('attach_preproc', 'TRAIN') ;
 sg('set_kernel', 'COMMSTRING', 'WORD', cache, use_sign, normalization);
+sg('set_kernel_normalization', 'IDENTITY');
 
 sg('init_kernel', 'TRAIN');
 sg('new_svm', 'LIGHT');
