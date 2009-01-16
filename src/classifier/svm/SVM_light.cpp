@@ -267,7 +267,9 @@ bool CSVMLight::init_glpk()
 {
 	lp_glpk = lpx_create_prob();
 	lpx_set_obj_dir(lp_glpk, LPX_MIN);
+#ifdef GLP_OFF
 	glp_term_out(GLP_OFF);
+#endif
 	return (lp_glpk != NULL);
 }
 
