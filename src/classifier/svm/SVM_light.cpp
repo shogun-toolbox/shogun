@@ -2225,7 +2225,6 @@ float64_t CSVMLight::compute_optimal_betas_via_glpk(float64_t* beta, float64_t* 
 
 	float64_t *row_primal = new float64_t[cur_numrows];
 	float64_t *row_dual = new float64_t[cur_numrows];
-	float64_t *col_primal = beta;
 
 	for (int i=0; i<cur_numrows; i++)
 	{
@@ -2234,8 +2233,9 @@ float64_t CSVMLight::compute_optimal_betas_via_glpk(float64_t* beta, float64_t* 
 	}
 	for (int i=0; i<cur_numcols; i++)
 	{
-		col_primal[i] = lpx_get_col_prim(lp_glpk, i+1);
+		beta[i] = lpx_get_col_prim(lp_glpk, i+1);
 	}
+	//CMath::display_vector(beta, cur_numcols, "beta");
 
 	bool res = check_lpx_status(lp_glpk);
 	if (!res)
@@ -2256,7 +2256,7 @@ float64_t CSVMLight::compute_optimal_betas_via_glpk(float64_t* beta, float64_t* 
 				num_active_rows++;
 			else
 			{
-				if (row_primal[i]>max_slack)
+				if (row_primal[i]<max_slack)
 				{
 					max_slack = row_primal[i];
 					max_idx = i;

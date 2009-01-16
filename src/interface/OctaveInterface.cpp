@@ -131,6 +131,8 @@ bool COctaveInterface::get_bool()
 		return (b.double_value()!=0);
 	else
 		SG_ERROR("Expected Scalar Boolean as argument %d\n", m_rhs_counter);
+
+	return false;
 }
 
 char* COctaveInterface::get_string(int32_t& len)
