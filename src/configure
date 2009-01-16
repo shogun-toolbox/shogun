@@ -674,7 +674,7 @@ for ac_option do
   --enable-cplex)		_cplex=yes	;;
   --disable-lpsolve)	_lpsolve=no	;;
   --enable-lpsolve)		_lpsolve=yes;;
-  --diable-glpk)		_glpk=no;;
+  --disable-glpk)		_glpk=no;;
   --enable-glpk)		_glpk=yes;;
   --disable-doxygen)	_doxygen=no	;;
   --enable-doxygen)		_doxygen=yes	;;
