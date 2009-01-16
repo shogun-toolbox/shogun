@@ -125,8 +125,8 @@ float64_t CMatlabInterface::get_real()
 bool CMatlabInterface::get_bool()
 {
 	const mxArray* b=get_arg_increment();
-	if (mxIsLogicalScalar(b))
-		return mxIsLogicalScalarTrue(b);
+	if (mxIsLogical(b) && mxGetN(b)==1 && mxGetM(b)==1)
+		return mxGetLogicals(b)[0];
 	else if (mxIsNumeric(b))
 		return (mxGetScalar(b)!=0);
 	else
