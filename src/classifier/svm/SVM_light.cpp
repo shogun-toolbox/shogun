@@ -451,7 +451,8 @@ bool CSVMLight::train()
 #ifdef USE_CPLEX
 	cleanup_cplex();
 
-	if (get_mkl_enabled() && get_solver_type()==ST_CPLEX)
+	if (get_mkl_enabled() &&
+			(get_solver_type()==ST_CPLEX || get_solver_type()==ST_AUTO))
 		init_cplex();
 #endif
 
@@ -1694,17 +1695,24 @@ void CSVMLight::perform_mkl_step(float64_t* beta, float64_t* old_beta, int num_k
 	{
 		if ( mkl_norm == 1)
 		{
-			if (get_solver_type()==ST_CPLEX)
+#ifdef USE_CPLEX
+			if (get_solver_type()==ST_CPLEX || get_solver_type()==ST_AUTO)
 				rho=compute_optimal_betas_via_cplex(beta, old_beta, num_kernels, sumw, suma, inner_iters);
 			else
 				rho=compute_optimal_betas_via_glpk(beta, old_beta, num_kernels, sumw, suma, inner_iters);
+#else
+			if (get_solver_type()==ST_GLPK || get_solver_type()==ST_AUTO)
+				rho=compute_optimal_betas_via_glpk(beta, old_beta, num_kernels, sumw, suma, inner_iters);
+			else
+				rho=compute_optimal_betas_via_cplex(beta, old_beta, num_kernels, sumw, suma, inner_iters);
+#endif
 		}
 		else
 		{
-			if (get_solver_type()==ST_CPLEX)
+			if (get_solver_type()==ST_CPLEX || get_solver_type()==ST_AUTO)
 				rho=compute_optimal_betas_via_cplex(beta, old_beta, num_kernels, sumw, suma, inner_iters);
 			else
-				rho=compute_optimal_betas_analytically(beta, num_kernels, sumw, suma);
+				rho=compute_optimal_betas_analytically(beta, old_beta, num_kernels, sumw, suma);
 		}
 
 		// set weights, store new rho and compute new w gap
@@ -1739,12 +1747,16 @@ void CSVMLight::perform_mkl_step(float64_t* beta, float64_t* old_beta, int num_k
 }
 
 float64_t CSVMLight::compute_optimal_betas_analytically(float64_t* beta,
-		int32_t num_kernels, const float64_t* sumw, float64_t suma)
+		float64_t* old_beta, int32_t num_kernels,
+		const float64_t* sumw, float64_t suma)
 {
+	SG_DEBUG("MKL via ANALYTICAL\n");
+
 	const float64_t r = 1.0 / ( mkl_norm - 1.0 );
 	float64_t Z;
-	Z = 0.0;
 
+	/*
+	Z = 0;
 	for (int32_t n=0; n<num_kernels; n++ )
 	{
 		beta[n] = CMath::pow( sumw[n], r );
@@ -1755,6 +1767,31 @@ float64_t CSVMLight::compute_optimal_betas_analytically(float64_t* beta,
 	for (int32_t n=0; n<num_kernels; n++ )
 		beta[n] *= Z;
 
+	CMath::display_vector(beta, num_kernels, "beta_alex");
+	SG_PRINT("Z_alex=%f\n", Z);*/
+
+	// compute in log space
+	Z = CMath::log(0.0);
+	for (int32_t n=0; n<num_kernels; n++ )
+	{
+		ASSERT(sumw[n]>=0);
+		beta[n] = CMath::log(sumw[n])*r;
+		Z = CMath::logarithmic_sum(Z, beta[n]*mkl_norm);
+	}
+
+	Z *= -1.0/mkl_norm;
+	for (int32_t n=0; n<num_kernels; n++ )
+		beta[n] = CMath::exp(beta[n]+Z);
+
+	//CMath::display_vector(old_beta, num_kernels, "old_beta");
+	//CMath::display_vector(beta, num_kernels, "beta");
+	//CMath::display_vector(beta, num_kernels, "beta_log");
+	//SG_PRINT("Z_log=%f\n", Z);
+	//for (int32_t i=0; i<num_kernels; i++)
+		//beta[i]=(beta[i]+old_beta[i])/2;
+
+	//CMath::scale_vector(1/CMath::qnorm(beta, num_kernels, mkl_norm), beta, num_kernels);
+
 	float64_t obj=-suma;
 	for (int32_t d=0; d<num_kernels; d++)
 		obj   += beta[d]*(sumw[d]);
@@ -1764,6 +1801,8 @@ float64_t CSVMLight::compute_optimal_betas_analytically(float64_t* beta,
 float64_t CSVMLight::compute_optimal_betas_via_cplex(float64_t* x, float64_t* old_beta, int32_t num_kernels,
 		  const float64_t* sumw, float64_t suma, int32_t& inner_iters)
 {
+	SG_DEBUG("MKL via CPLEX\n");
+
 #ifdef USE_CPLEX
 	if (!lp_initialized)
 	{
@@ -1902,8 +1941,6 @@ float64_t CSVMLight::compute_optimal_betas_via_cplex(float64_t* x, float64_t* ol
 			}
 		}
 	}
-
-	SG_DEBUG( "*") ;
 
 	{ // add the new row
 		//SG_INFO( "add the new row\n") ;
@@ -2105,6 +2142,7 @@ float64_t CSVMLight::compute_optimal_betas_via_cplex(float64_t* x, float64_t* ol
 float64_t CSVMLight::compute_optimal_betas_via_glpk(float64_t* beta, float64_t* old_beta,
 		int num_kernels, const float64_t* sumw, float64_t suma, int32_t& inner_iters)
 {
+	SG_DEBUG("MKL via GLPK\n");
 	float64_t obj=-suma;
 #ifdef USE_GLPK
 	int32_t NUMCOLS = 2*num_kernels + 1 ;

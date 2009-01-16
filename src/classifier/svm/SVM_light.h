@@ -473,8 +473,8 @@ class CSVMLight : public CSVM
    *
    * @return new objective value
    */
-  float64_t compute_optimal_betas_analytically(float64_t* beta, int32_t num_kernels,
-		  const float64_t* sumw, float64_t suma);
+  float64_t compute_optimal_betas_analytically(float64_t* beta, float64_t* old_beta,
+		  int32_t num_kernels, const float64_t* sumw, float64_t suma);
 
   /** given the alphas, compute the corresponding optimal betas
    * using a lp for 1-norm mkl, a qcqp for 2-norm mkl and an

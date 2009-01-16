@@ -290,6 +290,11 @@ class CMath : public CSGObject
 			return ::pow((double) x, (double) n);
 		}
 
+		static inline float64_t exp(float64_t x)
+		{
+			return ::exp((double) x);
+		}
+
 		static inline float64_t log10(float64_t v)
 		{
 			return ::log(v)/::log(10.0);
