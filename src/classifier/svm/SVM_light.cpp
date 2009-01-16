@@ -451,14 +451,15 @@ bool CSVMLight::train()
 #ifdef USE_CPLEX
 	cleanup_cplex();
 
-	if (get_mkl_enabled())
+	if (get_mkl_enabled() && get_solver_type()==ST_CPLEX)
 		init_cplex();
 #endif
 
 #ifdef USE_GLPK
 	cleanup_glpk();
 
-	if (get_mkl_enabled())
+	if (get_mkl_enabled() && ( get_solver_type() == ST_GLPK ||
+				( mkl_norm == 1 && get_solver_type()==ST_AUTO)))
 		init_glpk();
 #endif
 	
@@ -2104,6 +2105,7 @@ float64_t CSVMLight::compute_optimal_betas_via_cplex(float64_t* x, float64_t* ol
 float64_t CSVMLight::compute_optimal_betas_via_glpk(float64_t* beta, float64_t* old_beta,
 		int num_kernels, const float64_t* sumw, float64_t suma, int32_t& inner_iters)
 {
+	float64_t obj=-suma;
 #ifdef USE_GLPK
 	int32_t NUMCOLS = 2*num_kernels + 1 ;
 	if (!lp_initialized)
@@ -2231,7 +2233,10 @@ float64_t CSVMLight::compute_optimal_betas_via_glpk(float64_t* beta, float64_t* 
 			lpx_del_rows(lp_glpk, 1, del_rows);
 		}
 
-		rho = -col_primal[2*num_kernels];
+		for (int32_t d=0; d<num_kernels; d++)
+			obj   += beta[d]*(sumw[d]);
+		return obj;
+
 		delete[] row_dual;
 		delete[] row_primal;
 	}
@@ -2239,12 +2244,12 @@ float64_t CSVMLight::compute_optimal_betas_via_glpk(float64_t* beta, float64_t* 
 	{
 		/* then something is wrong and we rather 
 		   stop sooner than later */
-		rho = 1 ;
+		obj = 1 ;
 	}
 #else
 	SG_ERROR("Glpk not enabled at compile time\n");
 #endif
-	return rho;
+	return obj;
 }
 
 
