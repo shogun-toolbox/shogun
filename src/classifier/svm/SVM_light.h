@@ -438,14 +438,28 @@ class CSVMLight : public CSVM
 	float64_t *aicache, float64_t* c);
 
   // MKL stuff
+
   /** given the alphas, compute the corresponding optimal betas
    *
-   * @param beta return value
-   * @param mkl_norm norm imposed on betas, between 1 and +INF
    * @param num_kernels number of kernels
    * @param sumw 1/2*alpha'*K_j*alpha for each kernel j
+   * @param suma (sum over alphas)
+   *
+   * @return new objective value
    */
-  void compute_optimal_betas_analytically( float64_t* beta, int num_kernels,
+  float64_t compute_optimal_betas_analytically(float64_t* beta, int32_t num_kernels,
+		  const float64_t* sumw, float64_t suma);
+
+  /** given the alphas, compute the corresponding optimal betas
+   * using a lp for 1-norm mkl, a qcqp for 2-norm mkl and an
+   * iterated qcqp for general q-norm mkl.
+   *
+   * @param num_kernels number of kernels
+   * @param sumw 1/2*alpha'*K_j*alpha for each kernel j
+   *
+   * @return new objective value
+   */
+  float64_t compute_optimal_betas_via_cplex(float64_t* beta, int num_kernels,
 		  const float64_t* sumw);
 
   /** update linear component MKL
@@ -688,14 +702,6 @@ protected:
   int32_t count;
   /** current alpha gap */
   float64_t mymaxdiff;
-  /** number of alpha constraint rows */
-  int32_t num_rows;
-  /** number of active alpha constraint rows */
-  int32_t num_active_rows;
-  /** a buffer of length num */
-  float64_t *buffer_num;
-  /** a buffer of length num_cols */
-  float64_t *buffer_numcols;
   /** if kernel cache is used */
   bool use_kernel_cache;
 

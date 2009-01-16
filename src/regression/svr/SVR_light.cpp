@@ -181,10 +181,6 @@ void CSVRLight::svr_learn()
   }
   totdoc*=2;
 
-  // MKL stuff
-  buffer_num = new float64_t[totdoc];
-  buffer_numcols = NULL;
-
   //prepare kernel cache for regression (i.e. cachelines are twice of current size)
   kernel->resize_kernel_cache( kernel->get_cache_size(), true);
 
@@ -216,7 +212,6 @@ void CSVRLight::svr_learn()
 	rho=0 ;
 	w_gap = 1 ;
 	count = 0 ;
-	num_rows=0 ;
 
 	if (kernel->has_property(KP_KERNCOMBINATION))
 	{
@@ -334,10 +329,6 @@ void CSVRLight::svr_learn()
 	delete[] lin;
 	delete[] learn_parm->svm_cost;
 	delete[] docs;
-	delete[] buffer_num;
-	buffer_num= NULL ;
-	delete[] buffer_numcols ;
-	buffer_numcols = NULL ;
 }
 
 float64_t CSVRLight::compute_objective_function(
@@ -378,6 +369,8 @@ void CSVRLight::update_linear_component_mkl(
 
 	ASSERT(num_weights==num_kernels);
 	float64_t* sumw=new float64_t[num_kernels];
+	int32_t num_active_rows=0;
+	int32_t num_rows=0;
 
 	if ((kernel->get_kernel_type()==K_COMBINED) && 
 			 (!((CCombinedKernel*)kernel)->get_append_subkernel_weights()))// for combined kernel
@@ -437,7 +430,7 @@ void CSVRLight::update_linear_component_mkl(
 	
 	float64_t mkl_objective=0;
 #ifdef HAVE_LAPACK
-	float64_t *alphay  = buffer_num ;
+	double* alphay  = new double[num];
 	float64_t sumalpha = 0 ;
 	
 	for (int32_t i=0; i<num; i++)
@@ -450,10 +443,12 @@ void CSVRLight::update_linear_component_mkl(
 		sumw[i]=sumalpha ;
 	
 	cblas_dgemv(CblasColMajor, CblasNoTrans, nk, (int) num, 0.5, (double*) W,
-		nk, (double*) alphay, 1, 1.0, (double*) sumw, 1);
+		nk, alphay, 1, 1.0, (double*) sumw, 1);
 	
 	for (int32_t i=0; i<num_kernels; i++)
 		mkl_objective+=w[i]*sumw[i] ;
+
+	delete[] alphay;
 #else
 	for (int32_t d=0; d<num_kernels; d++)
 	{
@@ -614,6 +609,7 @@ void CSVRLight::update_linear_component_mkl(
 			int32_t cur_numcols=(int32_t) CPXgetnumcols(env, lp);
 			num_rows=cur_numrows;
 			
+			ASSERT(xxx);
 			if (!buffer_numcols)
 				buffer_numcols=new float64_t[cur_numcols];
 
@@ -722,6 +718,8 @@ void CSVRLight::update_linear_component_mkl_linadd(
 	int32_t num_kernels = kernel->get_num_subkernels() ;
 	int nk = (int) num_kernels; /* calling external lib */
 	const float64_t* w   = kernel->get_subkernel_weights(num_weights);
+	int32_t num_active_rows=0;
+	int32_t num_rows=0;
 	
 	ASSERT(num_weights==num_kernels);
 	float64_t* sumw=new float64_t[num_kernels];
