@@ -366,6 +366,7 @@ void CSVRLight::update_linear_component_mkl(
 	int32_t num_kernels = kernel->get_num_subkernels() ;
 	int nk = (int) num_kernels; /* calling external lib */
 	const float64_t* w  = kernel->get_subkernel_weights(num_weights);
+	float64_t* beta = new float64_t[2*num_kernels+1];
 
 	ASSERT(num_weights==num_kernels);
 	float64_t* sumw=new float64_t[num_kernels];
@@ -608,16 +609,12 @@ void CSVRLight::update_linear_component_mkl(
 			int32_t cur_numrows=(int32_t) CPXgetnumrows(env, lp);
 			int32_t cur_numcols=(int32_t) CPXgetnumcols(env, lp);
 			num_rows=cur_numrows;
-			
-			ASSERT(xxx);
-			if (!buffer_numcols)
-				buffer_numcols=new float64_t[cur_numcols];
+			ASSERT(cur_numcols<=2*num_kernels+1);
 
-			float64_t *x=buffer_numcols;
 			float64_t *slack=new float64_t[cur_numrows];
 			float64_t *pi=new float64_t[cur_numrows];
 
-			if (x==NULL || slack==NULL || pi==NULL)
+			if (slack==NULL || pi==NULL)
 			{
 				status=CPXERR_NO_MEMORY;
 				SG_ERROR("Could not allocate memory for solution.\n");
@@ -626,7 +623,7 @@ void CSVRLight::update_linear_component_mkl(
 			/* calling external lib */
 			int solstat=0;
 			float64_t objval=0;
-			status=CPXsolution(env, lp, &solstat, &objval, (double*) x,
+			status=CPXsolution(env, lp, &solstat, &objval, (double*) beta,
 				(double*) pi, (double*) slack, NULL);
 			int32_t solution_ok=!status;
 			if (status)
@@ -663,8 +660,8 @@ void CSVRLight::update_linear_component_mkl(
 				}
 
 				// set weights, store new rho and compute new w gap
-				kernel->set_subkernel_weights(x, num_kernels) ;
-				rho = -x[2*num_kernels] ;
+				kernel->set_subkernel_weights(beta, num_kernels) ;
+				rho = -beta[2*num_kernels] ;
 				w_gap = CMath::abs(1-rho/mkl_objective) ;
 				
 				delete[] pi ;
@@ -703,6 +700,7 @@ void CSVRLight::update_linear_component_mkl(
 	}
 	
 	delete[] sumw;
+	delete[] beta;
 }
 
 
@@ -720,6 +718,7 @@ void CSVRLight::update_linear_component_mkl_linadd(
 	const float64_t* w   = kernel->get_subkernel_weights(num_weights);
 	int32_t num_active_rows=0;
 	int32_t num_rows=0;
+	float64_t* beta = new float64_t[2*num_kernels+1];
 	
 	ASSERT(num_weights==num_kernels);
 	float64_t* sumw=new float64_t[num_kernels];
@@ -925,24 +924,15 @@ void CSVRLight::update_linear_component_mkl_linadd(
 			int32_t cur_numrows=(int32_t) CPXgetnumrows(env, lp);
 			int32_t cur_numcols=(int32_t) CPXgetnumcols (env, lp);
 			num_rows=cur_numrows;
+			ASSERT(cur_numcols<=2*num_kernels+1);
 			
-			if (!buffer_numcols)
-				buffer_numcols=new float64_t[cur_numcols];
-
-			float64_t* x=buffer_numcols;
 			float64_t* slack=new float64_t[cur_numrows];
 			float64_t* pi=new float64_t[cur_numrows];
-
-			if (x==NULL || slack==NULL || pi==NULL)
-			{
-				status=CPXERR_NO_MEMORY;
-				SG_ERROR("Could not allocate memory for solution.\n");
-			}
 
 			/* calling external lib */
 			int solstat=0;
 			float64_t objval=0;
-			status=CPXsolution(env, lp, &solstat, &objval, (double*) x,
+			status=CPXsolution(env, lp, &solstat, &objval, (double*) beta,
 				(double*) pi, (double*) slack, NULL);
 			int32_t solution_ok=!status;
 			if (status)
@@ -979,8 +969,8 @@ void CSVRLight::update_linear_component_mkl_linadd(
 				}
 
 				// set weights, store new rho and compute new w gap
-				kernel->set_subkernel_weights(x, num_kernels) ;
-				rho = -x[2*num_kernels] ;
+				kernel->set_subkernel_weights(beta, num_kernels) ;
+				rho = -beta[2*num_kernels] ;
 				w_gap = CMath::abs(1-rho/mkl_objective) ;
 				
 				delete[] pi ;
@@ -1018,7 +1008,7 @@ void CSVRLight::update_linear_component_mkl_linadd(
 	}
 	
 	delete[] sumw;
-
+	delete[] beta;
 }
 
 

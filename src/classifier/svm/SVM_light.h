@@ -439,6 +439,20 @@ class CSVMLight : public CSVM
 
   // MKL stuff
 
+  /** perform single mkl iteration
+   *
+   * given the alphas, compute the corresponding optimal betas
+   *
+   * @param num_kernels number of kernels
+   * @param sumw 1/2*alpha'*K_j*alpha for each kernel j
+   * @param suma (sum over alphas)
+   * @param inner_iters number of required internal iterations
+   *
+   */
+  void perform_mkl_step(float64_t* beta, float64_t* old_beta, int num_kernels,
+		  int32_t* label, int32_t* active2dnum,
+		  float64_t* a, float64_t* lin, float64_t* sumw, int32_t& inner_iters);
+
   /** given the alphas, compute the corresponding optimal betas
    *
    * @param num_kernels number of kernels
@@ -459,8 +473,8 @@ class CSVMLight : public CSVM
    *
    * @return new objective value
    */
-  float64_t compute_optimal_betas_via_cplex(float64_t* beta, int num_kernels,
-		  const float64_t* sumw);
+  float64_t compute_optimal_betas_via_cplex(float64_t* beta, float64_t* old_beta, int num_kernels,
+		  const float64_t* sumw, float64_t suma, int32_t& inner_iters);
 
   /** update linear component MKL
    *

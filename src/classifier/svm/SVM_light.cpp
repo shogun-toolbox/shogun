@@ -1596,6 +1596,90 @@ int32_t CSVMLight::check_optimality(
   return(retrain);
 }
 
+void CSVMLight::perform_mkl_step(float64_t* beta, float64_t* old_beta, int num_kernels,
+		  int32_t* label, int32_t* active2dnum,
+		  float64_t* a, float64_t* lin, float64_t* sumw, int32_t& inner_iters)
+{
+	int32_t num_active_rows=0;
+	int32_t num_rows=0;
+	float64_t mkl_objective=0;
+	int nk = (int) num_kernels; /* calling external lib */
+	float64_t suma = 0 ;
+	int32_t num = kernel->get_num_vec_rhs();
+#ifdef HAVE_LAPACK
+	double* alphay  = new double[num];
+	
+	for (int32_t i=0; i<num; i++)
+	{
+		alphay[i]=a[i]*label[i];
+		suma+=a[i];
+	}
+
+	for (int32_t i=0; i<num_kernels; i++)
+		sumw[i]=0;
+	
+	cblas_dgemv(CblasColMajor, CblasNoTrans, num_kernels, (int) num, 0.5, (double*) W,
+		num_kernels, alphay, 1, 1.0, (double*) sumw, 1);
+
+	mkl_objective=-suma;
+	for (int32_t i=0; i<num_kernels; i++)
+		mkl_objective+=old_beta[i]*sumw[i];
+
+	delete[] alphay;
+#else
+	for (int32_t i=0; i<num; i++)
+		suma += a[i];
+
+	mkl_objective=-suma;
+	for (int32_t d=0; d<num_kernels; d++)
+	{
+		sumw[d]=0;
+		for (int32_t i=0; i<num; i++)
+			sumw[d] += a[i]*(0.5*label[i]*W[i*num_kernels+d]);
+		mkl_objective   += old_beta[d]*sumw[d];
+	}
+#endif
+	
+	count++ ;
+
+	w_gap = CMath::abs(1-rho/mkl_objective) ;
+	if ((w_gap >= 0.9999*get_weight_epsilon()))
+	{
+		if ( mkl_norm == 1 || get_solver_type()==ST_CPLEX)
+			rho=compute_optimal_betas_via_cplex(beta, old_beta, num_kernels, sumw, suma, inner_iters);
+		else
+			rho=compute_optimal_betas_analytically(beta, num_kernels, sumw, suma);
+
+		// set weights, store new rho and compute new w gap
+		kernel->set_subkernel_weights(beta, num_kernels) ;
+		w_gap = CMath::abs(1-rho/mkl_objective) ;
+	}
+
+	// update lin
+#ifdef HAVE_LAPACK
+	cblas_dgemv(CblasColMajor, CblasTrans, nk, (int) num, 1.0, (double*) W,
+		nk, (double*) old_beta, 1, 0.0, (double*) lin, 1);
+#else
+	for (int32_t i=0; i<num; i++)
+		lin[i]=0 ;
+	for (int32_t d=0; d<num_kernels; d++)
+		if (old_beta[d]!=0)
+			for (int32_t i=0; i<num; i++)
+				lin[i] += old_beta[d]*W[i*num_kernels+d] ;
+#endif
+	
+	// count actives
+	int32_t jj;
+	for (jj=0;active2dnum[jj]>=0;jj++);
+	
+	if (count%10==0)
+	{
+		int32_t start_row = 1 ;
+		if (C_mkl!=0.0)
+			start_row+=2*(num_kernels-1);
+		SG_DEBUG("\n%i. OBJ: %f  RHO: %f  wgap=%f agap=%f (activeset=%i; active rows=%i/%i; inner_iters=%d)\n", count, mkl_objective,rho,w_gap,mymaxdiff,jj,num_active_rows,num_rows-start_row, inner_iters);
+	}
+}
 
 float64_t CSVMLight::compute_optimal_betas_analytically(float64_t* beta,
 		int32_t num_kernels, const float64_t* sumw, float64_t suma)
@@ -1620,8 +1704,8 @@ float64_t CSVMLight::compute_optimal_betas_analytically(float64_t* beta,
 	return obj;
 }
 
-float64_t CSVMLight::compute_optimal_betas_via_cplex(float64_t* x, int32_t num_kernels,
-		  const float64_t* sumw)
+float64_t CSVMLight::compute_optimal_betas_via_cplex(float64_t* x, float64_t* old_beta, int32_t num_kernels,
+		  const float64_t* sumw, float64_t suma, int32_t& inner_iters)
 {
 #ifdef USE_CPLEX
 	if (!lp_initialized)
@@ -1810,9 +1894,9 @@ float64_t CSVMLight::compute_optimal_betas_via_cplex(float64_t* x, int32_t num_k
 		else // q-norm MKL
 		{
 			float64_t* beta=new float64_t[2*num_kernels+1];
-			float64_t objval_old=mkl_objective;
+			float64_t objval_old=1e-8; //some value to cause the loop to not terminate yet
 			for (int32_t i=0; i<num_kernels; i++)
-				beta[i]=w[i];
+				beta[i]=old_beta[i];
 			for (int32_t i=num_kernels; i<2*num_kernels+1; i++)
 				beta[i]=0;
 
@@ -1860,11 +1944,8 @@ float64_t CSVMLight::compute_optimal_betas_via_cplex(float64_t* x, int32_t num_k
 		int32_t cur_numrows=(int32_t) CPXgetnumrows(env, lp);
 		int32_t cur_numcols=(int32_t) CPXgetnumcols(env, lp);
 		int32_t num_rows=cur_numrows;
+		ASSERT(cur_numcols<=2*num_kernels+1);
 
-		if (!buffer_numcols)
-			buffer_numcols=new float64_t[cur_numcols];
-
-		x=buffer_numcols;
 		float64_t* slack=new float64_t[cur_numrows];
 		float64_t* pi=NULL;
 		if (use_mkl==1)
@@ -1895,7 +1976,7 @@ float64_t CSVMLight::compute_optimal_betas_via_cplex(float64_t* x, int32_t num_k
 		if ( status )
 			SG_ERROR( "Failed to obtain solution.\n");
 
-		num_active_rows=0 ;
+		int32_t num_active_rows=0 ;
 		if (solution_ok)
 		{
 			/* 1 norm mkl */
@@ -1974,19 +2055,15 @@ void CSVMLight::update_linear_component_mkl(
 	int32_t num = kernel->get_num_vec_rhs();
 	int32_t num_weights = -1;
 	int32_t num_kernels = kernel->get_num_subkernels() ;
-	int nk = (int) num_kernels; /* calling external lib */
-	const float64_t* w_const   = kernel->get_subkernel_weights(num_weights);
-	float64_t* w =  CMath::clone_vector(w_const, num_weights);
+	const float64_t* beta_const   = kernel->get_subkernel_weights(num_weights);
+	float64_t* old_beta =  CMath::clone_vector(beta_const, num_weights);
 	// large enough buffer for cplex + smoothness constraints
 	float64_t* beta = new float64_t[2*num_kernels+1];
-	int32_t num_active_rows=0;
-	int32_t num_rows=0;
 
 	ASSERT(num_weights==num_kernels);
-	CMath::scale_vector(1/CMath::qnorm(w, num_kernels, mkl_norm), w, num_kernels); //q-norm = 1
+	CMath::scale_vector(1/CMath::qnorm(old_beta, num_kernels, mkl_norm), old_beta, num_kernels); //q-norm = 1
 
 	float64_t* sumw=new float64_t[num_kernels];
-	float64_t suma=-17;
 
 	if ((kernel->get_kernel_type()==K_COMBINED) && 
 			 (!((CCombinedKernel*)kernel)->get_append_subkernel_weights()))// for combined kernel
@@ -2018,7 +2095,7 @@ void CSVMLight::update_linear_component_mkl(
 		// backup and set to zero
 		for (int32_t i=0; i<num_kernels; i++)
 		{
-			w_backup[i] = w[i] ;
+			w_backup[i] = old_beta[i] ;
 			w1[i]=0.0 ; 
 		}
 		for (int32_t n=0; n<num_kernels; n++)
@@ -2044,86 +2121,11 @@ void CSVMLight::update_linear_component_mkl(
 		delete[] w1 ;
 	}
 	
-	float64_t mkl_objective=0;
-#ifdef HAVE_LAPACK
-	double* alphay  = new double[num];
-	suma = 0 ;
-	
-	for (int32_t i=0; i<num; i++)
-	{
-		alphay[i]=a[i]*label[i] ;
-		suma+=a[i] ;
-	}
-
-	for (int32_t i=0; i<num_kernels; i++)
-		sumw[i]=0;
-
-	cblas_dgemv(CblasColMajor, CblasNoTrans, nk, (int) num, 0.5, (double*) W,
-		nk, alphay, 1, 1.0, (double*) sumw, 1);
-
-	mkl_objective=-suma;
-	for (int32_t i=0; i<num_kernels; i++)
-		mkl_objective+=w[i]*sumw[i] ;
-
-	delete[] alphay;
-#else
-	suma=0;
-	for (int32_t i=0; i<num; i++)
-		suma += a[i];
-
-	mkl_objective=-suma;
-	for (int32_t d=0; d<num_kernels; d++)
-	{
-		sumw[d]=0;
-		for (int32_t i=0; i<num; i++)
-			sumw[d] += a[i]*(0.5*label[i]*W[i*num_kernels+d]);
-		mkl_objective   += w[d]*(sumw[d]);
-	}
-#endif
-
-	count++ ;
-
-	w_gap = CMath::abs(1-rho/mkl_objective) ;
-	
-	if ((w_gap >= 0.9999*get_weight_epsilon()))
-	{
-		if ( mkl_norm == 1 || get_solver_type()==ST_CPLEX)
-			rho=compute_optimal_betas_via_cplex(beta, num_kernels, sumw );
-		else
-			rho=compute_optimal_betas_analytically(beta, num_kernels, sumw, suma);
-
-		// set weights, store new rho and compute new w gap
-		kernel->set_subkernel_weights(beta, num_kernels) ;
-		w_gap = CMath::abs(1-rho/mkl_objective) ;
-	}
-	
-	// update lin
-#ifdef HAVE_LAPACK
-	cblas_dgemv(CblasColMajor, CblasTrans, nk, (int) num, 1.0, (double*) W, nk,
-		(double*) w, 1, 0.0,  (double*) lin,1);
-#else
-	for (int32_t i=0; i<num; i++)
-		lin[i]=0 ;
-	for (int32_t d=0; d<num_kernels; d++)
-		if (w[d]!=0)
-			for (int32_t i=0; i<num; i++)
-				lin[i] += w[d]*W[i*num_kernels+d] ;
-#endif
-	
-	// count actives
-	int32_t jj ;
-	for (jj=0;active2dnum[jj]>=0;jj++);
-	
-	if (count%10==0)
-	{
-		int32_t start_row = 1 ;
-		if (C_mkl!=0.0)
-			start_row+=2*(num_kernels-1);
-		SG_DEBUG("\n%i. OBJ: %f  RHO: %f  wgap=%f agap=%f (activeset=%i; active rows=%i/%i; inner_iters=%d)\n", count, mkl_objective,rho,w_gap,mymaxdiff,jj,num_active_rows,num_rows-start_row, inner_iters);
-	}
+	perform_mkl_step(beta, old_beta, num_kernels, label, active2dnum,
+			a, lin, sumw, inner_iters);
 	
 	delete[] sumw;
-	delete[] w;
+	delete[] old_beta;
 	delete[] beta;
 }
 
@@ -2140,157 +2142,79 @@ void CSVMLight::update_linear_component_mkl_linadd(
 	int32_t num = kernel->get_num_vec_rhs();
 	int32_t num_weights = -1;
 	int32_t num_kernels = kernel->get_num_subkernels() ;
-	int nk = (int) num_kernels; /* calling external lib */
-	const float64_t* w_const   = kernel->get_subkernel_weights(num_weights);
-	float64_t* w =  CMath::clone_vector(w_const, num_weights);
+	const float64_t* beta_const   = kernel->get_subkernel_weights(num_weights);
+	float64_t* old_beta =  CMath::clone_vector(beta_const, num_weights);
 	// large enough buffer for cplex + smoothness constraints
 	float64_t* beta = new float64_t[2*num_kernels+1];
-	int32_t num_active_rows=0;
-	int32_t num_rows=0;
 
 	ASSERT(num_weights==num_kernels);
-	CMath::scale_vector(1/CMath::qnorm(w, num_kernels, mkl_norm), w, num_kernels); //q-norm = 1
+	CMath::scale_vector(1/CMath::qnorm(old_beta, num_kernels, mkl_norm), old_beta, num_kernels); //q-norm = 1
 
 	float64_t* sumw = new float64_t[num_kernels];
-	float64_t suma=-17;
+	float64_t* w_backup = new float64_t[num_kernels] ;
+	float64_t* w1 = new float64_t[num_kernels] ;
+
+	// backup and set to one
+	for (int32_t i=0; i<num_kernels; i++)
 	{
-		float64_t* w_backup = new float64_t[num_kernels] ;
-		float64_t* w1 = new float64_t[num_kernels] ;
+		w_backup[i] = old_beta[i] ;
+		w1[i]=1.0 ; 
+	}
+	// set the kernel weights
+	kernel->set_subkernel_weights(w1, num_weights) ;
 
-		// backup and set to one
-		for (int32_t i=0; i<num_kernels; i++)
-		{
-			w_backup[i] = w[i] ;
-			w1[i]=1.0 ; 
+	// create normal update (with changed alphas only)
+	kernel->clear_normal();
+	for (int32_t ii=0, i=0;(i=working2dnum[ii])>=0;ii++) {
+		if(a[i] != a_old[i]) {
+			kernel->add_to_normal(docs[i], (a[i]-a_old[i])*(float64_t)label[i]);
 		}
-		// set the kernel weights
-		kernel->set_subkernel_weights(w1, num_weights) ;
-		
-		// create normal update (with changed alphas only)
-		kernel->clear_normal();
-		for (int32_t ii=0, i=0;(i=working2dnum[ii])>=0;ii++) {
-			if(a[i] != a_old[i]) {
-				kernel->add_to_normal(docs[i], (a[i]-a_old[i])*(float64_t)label[i]);
-			}
-		}
-
-		if (parallel.get_num_threads() < 2)
-		{
-			// determine contributions of different kernels
-			for (int32_t i=0; i<num; i++)
-				kernel->compute_by_subkernel(i,&W[i*num_kernels]);
-		}
-#ifndef WIN32
-		else
-		{
-			pthread_t* threads = new pthread_t[parallel.get_num_threads()-1];
-			S_THREAD_PARAM* params = new S_THREAD_PARAM[parallel.get_num_threads()-1];
-			int32_t step= num/parallel.get_num_threads();
-
-			for (int32_t t=0; t<parallel.get_num_threads()-1; t++)
-			{
-				params[t].kernel = kernel;
-				params[t].W = W;
-				params[t].start = t*step;
-				params[t].end = (t+1)*step;
-				pthread_create(&threads[t], NULL, CSVMLight::update_linear_component_mkl_linadd_helper, (void*)&params[t]);
-			}
-
-			for (int32_t i=params[parallel.get_num_threads()-2].end; i<num; i++)
-				kernel->compute_by_subkernel(i,&W[i*num_kernels]);
-
-			for (int32_t t=0; t<parallel.get_num_threads()-1; t++)
-				pthread_join(threads[t], NULL);
-
-			delete[] params;
-			delete[] threads;
-		}
-#endif
-
-		// restore old weights
-		kernel->set_subkernel_weights(w_backup,num_weights);
-		
-		delete[] w_backup;
-		delete[] w1;
 	}
 
-	float64_t mkl_objective=0;
-#ifdef HAVE_LAPACK
-	double* alphay  = new double[num];
-	
-	for (int32_t i=0; i<num; i++)
+	if (parallel.get_num_threads() < 2)
 	{
-		alphay[i]=a[i]*label[i];
-		suma+=a[i];
-	}
-
-	for (int32_t i=0; i<num_kernels; i++)
-		sumw[i]=0;
-	
-	cblas_dgemv(CblasColMajor, CblasNoTrans, nk, (int) num, 0.5, (double*) W,
-		nk, alphay, 1, 1.0, (double*) sumw, 1);
-
-	mkl_objective=-suma;
-	for (int32_t i=0; i<num_kernels; i++)
-		mkl_objective+=w[i]*sumw[i];
-#else
-	suma=0;
-	for (int32_t i=0; i<num; i++)
-		suma += a[i];
-
-	mkl_objective=-suma;
-	for (int32_t d=0; d<num_kernels; d++)
-	{
-		sumw[d]=0;
+		// determine contributions of different kernels
 		for (int32_t i=0; i<num; i++)
-			sumw[d] += a[i]*(0.5*label[i]*W[i*num_kernels+d]);
-		mkl_objective   += w[d]*sumw[d];
+			kernel->compute_by_subkernel(i,&W[i*num_kernels]);
+	}
+#ifndef WIN32
+	else
+	{
+		pthread_t* threads = new pthread_t[parallel.get_num_threads()-1];
+		S_THREAD_PARAM* params = new S_THREAD_PARAM[parallel.get_num_threads()-1];
+		int32_t step= num/parallel.get_num_threads();
+
+		for (int32_t t=0; t<parallel.get_num_threads()-1; t++)
+		{
+			params[t].kernel = kernel;
+			params[t].W = W;
+			params[t].start = t*step;
+			params[t].end = (t+1)*step;
+			pthread_create(&threads[t], NULL, CSVMLight::update_linear_component_mkl_linadd_helper, (void*)&params[t]);
+		}
+
+		for (int32_t i=params[parallel.get_num_threads()-2].end; i<num; i++)
+			kernel->compute_by_subkernel(i,&W[i*num_kernels]);
+
+		for (int32_t t=0; t<parallel.get_num_threads()-1; t++)
+			pthread_join(threads[t], NULL);
+
+		delete[] params;
+		delete[] threads;
 	}
 #endif
-	
-	count++ ;
 
-	w_gap = CMath::abs(1-rho/mkl_objective) ;
-	
-	if ((w_gap >= 0.9999*get_weight_epsilon()))
-	{
-		if ( mkl_norm == 1 || get_solver_type()==ST_CPLEX)
-			rho=compute_optimal_betas_via_cplex(beta, num_kernels, sumw );
-		else
-			rho=compute_optimal_betas_analytically(beta, num_kernels, sumw, suma);
+	// restore old weights
+	kernel->set_subkernel_weights(w_backup,num_weights);
 
-		// set weights, store new rho and compute new w gap
-		kernel->set_subkernel_weights(beta, num_kernels) ;
-		w_gap = CMath::abs(1-rho/mkl_objective) ;
-	}
-	
-	// update lin
-#ifdef HAVE_LAPACK
-	cblas_dgemv(CblasColMajor, CblasTrans, nk, (int) num, 1.0, (double*) W,
-		nk, (double*) w, 1, 0.0, (double*) lin, 1);
-#else
-	for (int32_t i=0; i<num; i++)
-		lin[i]=0 ;
-	for (int32_t d=0; d<num_kernels; d++)
-		if (w[d]!=0)
-			for (int32_t i=0; i<num; i++)
-				lin[i] += w[d]*W[i*num_kernels+d] ;
-#endif
-	
-	// count actives
-	int32_t jj;
-	for (jj=0;active2dnum[jj]>=0;jj++);
-	
-	if (count%10==0)
-	{
-		int32_t start_row = 1 ;
-		if (C_mkl!=0.0)
-			start_row+=2*(num_kernels-1);
-		SG_DEBUG("\n%i. OBJ: %f  RHO: %f  wgap=%f agap=%f (activeset=%i; active rows=%i/%i; inner_iters=%d)\n", count, mkl_objective,rho,w_gap,mymaxdiff,jj,num_active_rows,num_rows-start_row, inner_iters);
-	}
+	delete[] w_backup;
+	delete[] w1;
+
+	perform_mkl_step(beta, old_beta, num_kernels, label, active2dnum,
+			a, lin, sumw, inner_iters);
 	
 	delete[] sumw;
-	delete[] w;
+	delete[] old_beta;
 	delete[] beta;
 }
 
