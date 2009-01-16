@@ -125,10 +125,12 @@ float64_t COctaveInterface::get_real()
 bool COctaveInterface::get_bool()
 {
 	const octave_value b=get_arg_increment();
-	if (!b.is_bool_scalar())
+	if (b.is_bool_scalar())
+		return b.bool_value();
+	else if (b.is_real_scalar())
+		return (b.double_value()!=0);
+	else
 		SG_ERROR("Expected Scalar Boolean as argument %d\n", m_rhs_counter);
-
-	return b.bool_value();
 }
 
 char* COctaveInterface::get_string(int32_t& len)
