@@ -314,27 +314,6 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 			return result;
 		}
 
-		/** compute the dot product for a range of vectors
-		 * alphas[i] * sparse[i]^T * w + b
-		 *
-		 * @param output result for the given vector range
-		 * @param start start vector range from this idx
-		 * @param stop stop vector range at this idx
-		 * @param alphas scalars to multiply with
-		 * @param vec dense vector to compute dot product with
-		 * @param dim length of the dense vector
-		 * @param b bias
-		 */
-		void dense_dot_range(ST* output, int32_t start, int32_t stop, ST* alphas, ST* vec, int32_t dim, ST b)
-		{
-			ASSERT(output);
-			ASSERT(start>=0);
-			ASSERT(stop<=num_vectors);
-
-			for (int32_t i=start; i<stop; i++)
-				output[i]=dense_dot(alphas[i], i, vec, dim, b);
-		}
-
 		/** compute the dot product between dense weights and a sparse feature vector
 		 * alpha * sparse^T * w + b
 		 *

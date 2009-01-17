@@ -13,4 +13,19 @@
 
 void CDotFeatures::dense_dot_range(float64_t* output, int32_t start, int32_t stop, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b)
 {
+	ASSERT(output);
+	ASSERT(start>=0);
+	ASSERT(start<=stop);
+	ASSERT(stop<=get_num_vectors());
+
+	if (alphas)
+	{
+		for (int32_t i=start; i<stop; i++)
+			output[i]=alphas[i]*dense_dot(i, vec, dim)+b;
+	}
+	else
+	{
+		for (int32_t i=start; i<stop; i++)
+			output[i]=alphas[i]*dense_dot(i, vec, dim)+b;
+	}
 }

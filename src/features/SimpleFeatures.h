@@ -424,16 +424,16 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 		 */
 		virtual float64_t dot(int32_t vec_idx1, int32_t vec_idx2)
 		{
-			int32_t alen, blen;
-			bool afree, bfree;
+			int32_t len1, len2;
+			bool free1, free2;
 
-			ST* avec= get_feature_vector(vec_idx1, alen, afree);
-			ST* bvec= get_feature_vector(vec_idx2, blen, bfree);
+			ST* vec1= get_feature_vector(vec_idx1, len1, free1);
+			ST* vec2= get_feature_vector(vec_idx2, len2, free2);
 
-			float64_t result=CMath::dot(avec, bvec, alen);
+			float64_t result=CMath::dot(vec1, vec2, len1);
 
-			free_feature_vector(avec, vec_idx1, afree);
-			free_feature_vector(bvec, vec_idx2, bfree);
+			free_feature_vector(vec1, vec_idx1, free1);
+			free_feature_vector(vec2, vec_idx2, free2);
 
 			return result;
 		}

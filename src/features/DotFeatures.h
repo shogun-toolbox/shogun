@@ -87,6 +87,7 @@ class CDotFeatures : public CFeatures
 		virtual void add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val=false)=0;
 
 		/** Compute the dot product for a range of vectors. This function makes use of dense_dot
+		 * alphas[i] * sparse[i]^T * w + b
 		 *
 		 * @param output result for the given vector range
 		 * @param start start vector range from this idx
