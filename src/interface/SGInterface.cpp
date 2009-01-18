@@ -91,6 +91,12 @@ CSGInterfaceMethod sg_methods[]=
 			USAGE_STR "TRAIN|TEST" USAGE_STR USAGE_COMMA "features[" USAGE_COMMA "DNABINFILE|<ALPHABET>]")
 	},
 	{
+		N_ADD_DOTFEATURES,
+		(&CSGInterface::cmd_add_dotfeatures),
+		USAGE_I(N_ADD_DOTFEATURES,
+			USAGE_STR "TRAIN|TEST" USAGE_STR USAGE_COMMA "features[" USAGE_COMMA "DNABINFILE|<ALPHABET>]")
+	},
+	{
 		N_SET_FEATURES,
 		(&CSGInterface::cmd_set_features),
 		USAGE_I(N_SET_FEATURES,
@@ -1328,7 +1334,15 @@ bool CSGInterface::cmd_add_features()
 	if ((m_nrhs!=3 && m_nrhs!=4) || !create_return_values(0))
 		return false;
 
-	return do_set_features(true);
+	return do_set_features(true, false);
+}
+
+bool CSGInterface::cmd_add_dotfeatures()
+{
+	if ((m_nrhs!=3 && m_nrhs!=4) || !create_return_values(0))
+		return false;
+
+	return do_set_features(true, true);
 }
 
 bool CSGInterface::cmd_set_features()
@@ -1336,10 +1350,10 @@ bool CSGInterface::cmd_set_features()
 	if ((m_nrhs!=3 && m_nrhs!=4) || !create_return_values(0))
 		return false;
 
-	return do_set_features(false);
+	return do_set_features(false, false);
 }
 
-bool CSGInterface::do_set_features(bool add)
+bool CSGInterface::do_set_features(bool add, bool check_dot)
 {
 	int32_t tlen=0;
 	char* target=get_string(tlen);
@@ -1498,19 +1512,29 @@ bool CSGInterface::do_set_features(bool add)
 			SG_ERROR("Wrong argument type %d.\n", get_argument_type());
 	}
 
+	if (check_dot && !feat->has_property(FP_DOT))
+	{
+		delete feat;
+		SG_ERROR("Feature type not supported by DOT Features\n");
+	}
+
 	if (strmatch(target, "TRAIN"))
 	{
-		if (add)
-			ui_features->add_train_features(feat);
-		else
+		if (!add)
 			ui_features->set_train_features(feat);
+		else if (check_dot)
+			ui_features->add_train_dotfeatures((CDotFeatures*) feat);
+		else
+			ui_features->add_train_features(feat);
 	}
 	else
 	{
-		if (add)
-			ui_features->add_test_features(feat);
-		else
+		if (!add)
 			ui_features->set_test_features(feat);
+		else if (check_dot)
+			ui_features->add_test_dotfeatures((CDotFeatures*) feat);
+		else
+			ui_features->add_test_features(feat);
 	}
 
 	delete[] target;

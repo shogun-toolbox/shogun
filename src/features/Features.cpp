@@ -169,6 +169,15 @@ void CFeatures::list_feature_obj()
 		case C_COMBINED:
 			SG_INFO( "C_COMBINED ");
 			break;
+		case C_COMBINED_DOT:
+			SG_INFO( "C_COMBINED_DOT ");
+			break;
+		case C_WD:
+			SG_INFO( "C_WD ");
+			break;
+		case C_SPEC:
+			SG_INFO( "C_SPEC ");
+			break;
 		case C_ANY:
 			SG_INFO( "C_ANY ");
 			break;
@@ -181,26 +190,38 @@ void CFeatures::list_feature_obj()
 		case F_UNKNOWN:
 			SG_INFO( "F_UNKNOWN \n");
 			break;
-		case F_DREAL:
-			SG_INFO( "F_REAL \n");
-			break;
-		case F_SHORT:
-			SG_INFO( "F_SHORT \n");
-			break;
 		case F_CHAR:
 			SG_INFO( "F_CHAR \n");
-			break;
-		case F_INT:
-			SG_INFO( "F_INT \n");
 			break;
 		case F_BYTE:
 			SG_INFO( "F_BYTE \n");
 			break;
+		case F_SHORT:
+			SG_INFO( "F_SHORT \n");
+			break;
 		case F_WORD:
 			SG_INFO( "F_WORD \n");
 			break;
+		case F_INT:
+			SG_INFO( "F_INT \n");
+			break;
+		case F_UINT:
+			SG_INFO( "F_UINT \n");
+			break;
+		case F_LONG:
+			SG_INFO( "F_LONG \n");
+			break;
 		case F_ULONG:
-			SG_INFO( "F_ULONG ");
+			SG_INFO( "F_ULONG \n");
+			break;
+		case F_SHORTREAL:
+			SG_INFO( "F_SHORTEAL \n");
+			break;
+		case F_DREAL:
+			SG_INFO( "F_DREAL \n");
+			break;
+		case F_LONGREAL:
+			SG_INFO( "F_LONGREAL \n");
 			break;
 		case F_ANY:
 			SG_INFO( "F_ANY \n");

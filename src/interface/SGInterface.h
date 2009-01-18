@@ -68,6 +68,8 @@ class CSGInterface : public CSGObject
 		bool cmd_get_features();
 		/** add features */
 		bool cmd_add_features();
+		/** add dot features */
+		bool cmd_add_dotfeatures();
 		/** set features */
 		bool cmd_set_features();
 		/** set reference features */
@@ -632,7 +634,7 @@ class CSGInterface : public CSGObject
 		/** helper function for hmm classify on 1 example */
 		bool do_hmm_classify_example(bool one_class=false);
 		/** helper function for add/set features */
-		bool do_set_features(bool add=false);
+		bool do_set_features(bool add=false, bool check_dot=false);
 		/** helper function to create a kernel */
 		CKernel* create_kernel();
 

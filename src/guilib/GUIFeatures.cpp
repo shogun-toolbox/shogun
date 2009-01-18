@@ -690,6 +690,59 @@ void CGUIFeatures::add_train_features(CFeatures* f)
 		SG_ERROR("appending feature object failed\n");
 }
 
+void CGUIFeatures::add_train_dotfeatures(CDotFeatures* f)
+{
+	ASSERT(f);
+	SG_PRINT("DOTFVEC %d\n", f->get_num_vectors());
+	invalidate_train();
+
+	if (!train_features)
+		train_features=new CCombinedDotFeatures();
+
+	if (train_features->get_feature_class()!=C_COMBINED_DOT)
+	{
+		if (!train_features->has_property(FP_DOT))
+			SG_ERROR("Trainfeatures not based on DotFeatures.\n");
+
+		CDotFeatures* first_elem=(CDotFeatures*) train_features;
+		train_features=new CCombinedDotFeatures();
+		((CCombinedDotFeatures*) train_features)->append_feature_obj(first_elem);
+		((CCombinedDotFeatures*) train_features)->list_feature_objs();
+	}
+
+	bool result=((CCombinedDotFeatures*) train_features)->append_feature_obj(f);
+	if (result)
+		((CCombinedDotFeatures*) train_features)->list_feature_objs();
+	else
+		SG_ERROR("appending dot feature object failed\n");
+}
+
+void CGUIFeatures::add_test_dotfeatures(CDotFeatures* f)
+{
+	ASSERT(f);
+	invalidate_test();
+
+	if (!test_features)
+		test_features=new CCombinedDotFeatures();
+
+	if (test_features->get_feature_class()!=C_COMBINED_DOT)
+	{
+		if (!test_features->has_property(FP_DOT))
+			SG_ERROR("Trainfeatures not based on DotFeatures.\n");
+
+		CDotFeatures* first_elem=(CDotFeatures*) test_features;
+		test_features=new CCombinedDotFeatures();
+		((CCombinedDotFeatures*) test_features)->append_feature_obj(first_elem);
+		((CCombinedDotFeatures*) test_features)->list_feature_objs();
+	}
+
+	bool result=((CCombinedDotFeatures*) test_features)->append_feature_obj(f);
+	if (result)
+		((CCombinedDotFeatures*) test_features)->list_feature_objs();
+	else
+		SG_ERROR("Appending feature object failed.\n");
+}
+
 void CGUIFeatures::add_test_features(CFeatures* f)
 {
 	ASSERT(f);

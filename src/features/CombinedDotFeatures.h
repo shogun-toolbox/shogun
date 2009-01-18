@@ -56,7 +56,10 @@ class CCombinedDotFeatures : public CDotFeatures
 		 *
 		 * @return dimensionality
 		 */
-		virtual int32_t get_dim_feature_space();
+		inline virtual int32_t get_dim_feature_space()
+		{
+			return  num_dimensions;
+		}
 
 		/** compute dot product between vector1 and vector2,
 		 * appointed by their indices
@@ -188,7 +191,9 @@ class CCombinedDotFeatures : public CDotFeatures
 		{
 			ASSERT(obj);
 			SG_REF(obj);
-			return feature_list->insert_element(obj);
+			bool result=feature_list->insert_element(obj);
+			update_dim_feature_space_and_num_vec();
+			return result;
 		}
 
 		/** append feature object
@@ -200,7 +205,9 @@ class CCombinedDotFeatures : public CDotFeatures
 		{
 			ASSERT(obj);
 			SG_REF(obj);
-			return feature_list->append_element(obj);
+			bool result=feature_list->append_element(obj);
+			update_dim_feature_space_and_num_vec();
+			return result;
 		}
 
 		/** delete feature object
@@ -213,6 +220,7 @@ class CCombinedDotFeatures : public CDotFeatures
 			if (f)
 			{
 				SG_UNREF(f);
+				update_dim_feature_space_and_num_vec();
 				return true;
 			}
 			else
@@ -227,6 +235,9 @@ class CCombinedDotFeatures : public CDotFeatures
 		{
 			return feature_list->get_num_elements();
 		}
+
+	protected:
+		void update_dim_feature_space_and_num_vec();
 
 	protected:
 		/** feature list */

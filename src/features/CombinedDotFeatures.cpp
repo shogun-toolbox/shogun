@@ -14,6 +14,7 @@
 CCombinedDotFeatures::CCombinedDotFeatures() : CDotFeatures()
 {
 	feature_list=new CList<CDotFeatures*>(true);
+	update_dim_feature_space_and_num_vec();
 }
 
 CCombinedDotFeatures::CCombinedDotFeatures(const CCombinedDotFeatures & orig)
@@ -34,7 +35,7 @@ CCombinedDotFeatures::~CCombinedDotFeatures()
 
 void CCombinedDotFeatures::list_feature_objs()
 {
-	SG_INFO( "BEGIN COMBINED FEATURES LIST - ");
+	SG_INFO( "BEGIN COMBINED DOTFEATURES LIST (%d, %d) - ", num_vectors, num_dimensions);
 	this->list_feature_obj();
 
 	CListElement<CDotFeatures*> * current = NULL ;
@@ -46,23 +47,34 @@ void CCombinedDotFeatures::list_feature_objs()
 		f=get_next_feature_obj(current);
 	}
 
-	SG_INFO( "END COMBINED FEATURES LIST - ");
+	SG_INFO( "END COMBINED DOTFEATURES LIST (%d, %d) - ", num_vectors, num_dimensions);
 }
 
-int32_t CCombinedDotFeatures::get_dim_feature_space()
+void CCombinedDotFeatures::update_dim_feature_space_and_num_vec()
 {
 	CListElement<CDotFeatures*> * current = NULL ;
 	CDotFeatures* f=get_first_feature_obj(current);
 
 	int32_t dim=0;
+	int32_t vec=-1;
 
 	while (f)
 	{
 		dim+= f->get_dim_feature_space();
+		if (vec==-1)
+			vec=f->get_num_vectors();
+		else if (vec != f->get_num_vectors())
+		{
+			f->list_feature_obj();
+			SG_ERROR("Number of vectors (%d) mismatches in above feature obj (%d)\n", vec, f->get_num_vectors());
+		}
+
 		f=get_next_feature_obj(current);
 	}
 
-	return dim;
+	num_dimensions=dim;
+	num_vectors=vec;
+	SG_DEBUG("vecs=%d, dims=%d\n", num_vectors, num_dimensions);
 }
 
 float64_t CCombinedDotFeatures::dot(int32_t vec_idx1, int32_t vec_idx2)
@@ -91,8 +103,9 @@ float64_t CCombinedDotFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec
 
 	while (f)
 	{
-		result += f->dense_dot(vec_idx1, vec2+offs, vec2_len);
-		offs += f->get_dim_feature_space();
+		int32_t dim = f->get_dim_feature_space();
+		result += f->dense_dot(vec_idx1, vec2+offs, dim);
+		offs += dim;
 		f=get_next_feature_obj(current);
 	}
 
@@ -107,8 +120,9 @@ void CCombinedDotFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, f
 
 	while (f)
 	{
-		f->add_to_dense_vec(alpha, vec_idx1, vec2+offs, vec2_len, abs_val);
-		offs += f->get_dim_feature_space();
+		int32_t dim = f->get_dim_feature_space();
+		f->add_to_dense_vec(alpha, vec_idx1, vec2+offs, dim, abs_val);
+		offs += dim;
 		f=get_next_feature_obj(current);
 	}
 }

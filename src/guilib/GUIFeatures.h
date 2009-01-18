@@ -29,6 +29,7 @@
 #include "features/RealFeatures.h"
 #include "features/SparseFeatures.h"
 #include "features/CombinedFeatures.h"
+#include "features/CombinedDotFeatures.h"
 #include "features/MindyGramFeatures.h"
 #include "features/WDFeatures.h"
 #include "features/SpecFeatures.h"
@@ -68,6 +69,8 @@ class CGUIFeatures : public CSGObject
 
 		void add_train_features(CFeatures* f);
 		void add_test_features(CFeatures* f);
+		void add_train_dotfeatures(CDotFeatures* f);
+		void add_test_dotfeatures(CDotFeatures* f);
 
 		/** delete last features from combined features */
 		bool del_last_features(char* target);

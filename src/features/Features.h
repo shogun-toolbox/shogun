@@ -43,7 +43,7 @@ enum EFeatureClass
 	C_MINDYGRAM = 50,
 	C_COMBINED_DOT = 60,
 	C_WD = 70,
-	C_SPEC = 70,
+	C_SPEC = 80,
 	C_ANY = 1000
 };
 
