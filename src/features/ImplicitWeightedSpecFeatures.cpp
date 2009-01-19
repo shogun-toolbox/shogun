@@ -150,36 +150,20 @@ void CImplicitWeightedSpecFeatures::add_to_dense_vec(float64_t alpha, int32_t ve
 
 	if (vec && len1>0)
 	{
-		if (abs_val)
+		for (int32_t j=0; j<len1; j++)
 		{
-			for (int32_t j=0; j<len1; j++)
+			uint8_t mask=0;
+			int32_t offs=0;
+			for (int32_t d=0; d<degree; d++)
 			{
-				uint8_t mask=0;
-				int32_t offs=0;
-				for (int32_t d=0; d<degree; d++)
-				{
-					mask = mask | (1 << (degree-d-1));
-					int32_t idx=strings->get_masked_symbols(vec[j], mask);
-					idx=strings->shift_symbol(idx, degree-d-1);
+				mask = mask | (1 << (degree-d-1));
+				int32_t idx=strings->get_masked_symbols(vec[j], mask);
+				idx=strings->shift_symbol(idx, degree-d-1);
+				if (abs_val)
 					vec2[offs + idx] += CMath::abs(alpha*spec_weights[d]);
-					offs+=strings->shift_offset(1,d+1);
-				}
-			}
-		}
-		else
-		{
-			for (int32_t j=0; j<len1; j++)
-			{
-				uint8_t mask=0;
-				int32_t offs=0;
-				for (int32_t d=0; d<degree; d++)
-				{
-					mask = mask | (1 << (degree-d-1));
-					int32_t idx=strings->get_masked_symbols(vec[j], mask);
-					idx=strings->shift_symbol(idx, degree-d-1);
+				else
 					vec2[offs + idx] += alpha*spec_weights[d];
-					offs+=strings->shift_offset(1,d+1);
-				}
+				offs+=strings->shift_offset(1,d+1);
 			}
 		}
 	}

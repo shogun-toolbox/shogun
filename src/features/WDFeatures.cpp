@@ -76,6 +76,9 @@ float64_t CWDFeatures::dot(int32_t vec_idx1, int32_t vec_idx2)
 
 float64_t CWDFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
 {
+	if (vec2_len != w_dim)
+		SG_ERROR("Dimensions don't match, vec2_dim=%d, w_dim=%d\n", vec2_len, w_dim);
+
 	float64_t sum=0;
 	int32_t lim=CMath::min(degree, string_length);
 	int32_t len;
@@ -83,19 +86,24 @@ float64_t CWDFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_
 	int32_t* val=new int32_t[len];
 	CMath::fill_vector(val, len, 0);
 
+	int32_t asize=alphabet_size;
+	int32_t asizem1=1;
+	int32_t offs=0;
+
 	for (int32_t k=0; k<lim; k++)
 	{
-		float64_t wd = wd_weights[k]/normalization_const;
-		int32_t asize=alphabet_size;
-		int32_t offs=0;
+		float64_t wd = wd_weights[k];
 
-		for (int32_t i=0; i < len; i++) 
+		int32_t o=offs;
+		for (int32_t i=0; i+k < len; i++) 
 		{
-			val[i]=val[i]*alphabet_size*len + alphabet_size*i + vec[i];
-			sum+=vec2[offs+val[i]]*wd;
+			val[i]+=asizem1*vec[i+k];
+			sum+=vec2[val[i]+o]*wd;
+			o+=asize;
 		}
 		offs+=asize*len;
 		asize*=alphabet_size;
+		asizem1*=alphabet_size;
 	}
 	delete[] val;
 	return sum/normalization_const;
@@ -103,25 +111,36 @@ float64_t CWDFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_
 
 void CWDFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val)
 {
+	if (vec2_len != w_dim)
+		SG_ERROR("Dimensions don't match, vec2_dim=%d, w_dim=%d\n", vec2_len, w_dim);
+
 	int32_t lim=CMath::min(degree, string_length);
 	int32_t len;
 	uint8_t* vec = strings->get_feature_vector(vec_idx1, len);
 	int32_t* val=new int32_t[len];
 	CMath::fill_vector(val, len, 0);
 
+	int32_t asize=alphabet_size;
+	int32_t asizem1=1;
+	int32_t offs=0;
+
 	for (int32_t k=0; k<lim; k++)
 	{
 		float64_t wd = alpha*wd_weights[k]/normalization_const;
-		int32_t asize=alphabet_size;
-		int32_t offs=0;
 
-		for (int32_t i=0; i < len; i++) 
+		if (abs_val)
+			wd=CMath::abs(wd);
+
+		int32_t o=offs;
+		for (int32_t i=0; i+k < len; i++) 
 		{
-			val[i]=val[i]*alphabet_size*len + alphabet_size*i + vec[i];
-			vec2[offs+val[i]]+=wd;
+			val[i]+=asizem1*vec[i+k];
+			vec2[val[i]+o]+=wd;
+			o+=asize;
 		}
 		offs+=asize*len;
 		asize*=alphabet_size;
+		asizem1*=alphabet_size;
 	}
 	delete[] val;
 }
@@ -137,7 +156,7 @@ void CWDFeatures::set_wd_weights()
 		w_dim+=CMath::pow(alphabet_size, i+1)*string_length;
 		wd_weights[i]=sqrt(2.0*(from_degree-i)/(from_degree*(from_degree+1)));
 	}
-	SG_DEBUG("created WDFeatures with d=%d (%d), dim=%d num=%d, len=%d\n", degree, from_degree, w_dim, num_strings, string_length);
+	SG_DEBUG("created WDFeatures with d=%d (%d), alphabetsize=%d, dim=%d num=%d, len=%d\n", degree, from_degree, alphabet_size, w_dim, num_strings, string_length);
 }
 
 
