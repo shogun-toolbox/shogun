@@ -25,8 +25,9 @@ class CSpecFeatures : public CDotFeatures
 		/** constructor
 		 *
 		 * @param str stringfeatures (of words)
+		 * @param normalize whether to use sqrtdiag normalization
 		 */
-		CSpecFeatures(CStringFeatures<uint16_t>* str);
+		CSpecFeatures(CStringFeatures<uint16_t>* str, bool normalize=true);
 
 		/** copy constructor */
 		CSpecFeatures(const CSpecFeatures & orig);
@@ -120,6 +121,8 @@ class CSpecFeatures : public CDotFeatures
 		void delete_kmer_spectrum();
 
 	protected:
+		/** use sqrtdiag normalization */
+		bool use_normalization;
 		/** number of strings */
 		int32_t num_strings;
 
@@ -133,6 +136,6 @@ class CSpecFeatures : public CDotFeatures
 		/** size of k-mer spectrum*/
 		int32_t spec_size;
 		/** k-mer counts for all strings */
-		int32_t** k_spectrum;
+		float64_t** k_spectrum;
 };
 #endif // _SPECFEATURES_H___

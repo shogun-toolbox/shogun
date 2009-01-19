@@ -1859,9 +1859,10 @@ bool CSGInterface::cmd_convert()
 				result=ui_features->convert_string_word_to_simple_top(
 					(CStringFeatures<uint16_t>*) features);
 			}
-			else if (strmatch(to_class, "SPEC") && strmatch(to_type, "WORD") && m_nrhs==6)
+			else if (strmatch(to_class, "SPEC") && strmatch(to_type, "WORD") && m_nrhs==7)
 			{
-				result=ui_features->convert_string_byte_to_spec_word((CStringFeatures<uint16_t>*) features);
+				bool use_norm=get_bool();
+				result=ui_features->convert_string_byte_to_spec_word((CStringFeatures<uint16_t>*) features, use_norm);
 
 			}
 			else

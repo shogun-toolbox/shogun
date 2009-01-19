@@ -120,7 +120,8 @@ class CGUIFeatures : public CSGObject
 			CStringFeatures<uint16_t>* src);
 		CRealFeatures* convert_sparse_real_to_simple_real(
 			CSparseFeatures<float64_t>* src);
-		CSpecFeatures* convert_string_byte_to_spec_word(CStringFeatures<uint16_t>* src);
+		CSpecFeatures* convert_string_byte_to_spec_word(
+				CStringFeatures<uint16_t>* src, bool use_norm);
 
 		template <class CT, class ST>
 		CStringFeatures<ST>* convert_string_char_to_string_generic(

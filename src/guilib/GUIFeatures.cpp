@@ -548,9 +548,10 @@ CRealFeatures* CGUIFeatures::convert_sparse_real_to_simple_real(
 	return NULL;
 }
 
-CSpecFeatures* CGUIFeatures::convert_string_byte_to_spec_word(CStringFeatures<uint16_t>* src)
+CSpecFeatures* CGUIFeatures::convert_string_byte_to_spec_word(
+		CStringFeatures<uint16_t>* src, bool use_norm)
 {
-	return new CSpecFeatures(src);
+	return new CSpecFeatures(src, use_norm);
 }
 
 
