@@ -54,4 +54,5 @@
 %include "features/FKFeatures.i"
 %include "features/TOPFeatures.i"
 %include "features/WDFeatures.i"
-%include "features/SpecFeatures.i"
+%include "features/ExplicitSpecFeatures.i"
+%include "features/ImplicitWeightedSpecFeatures.i"

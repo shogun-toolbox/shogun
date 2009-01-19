@@ -8,10 +8,10 @@
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "features/SpecFeatures.h"
+#include "features/ExplicitSpecFeatures.h"
 #include "lib/io.h"
 
-CSpecFeatures::CSpecFeatures(CStringFeatures<uint16_t>* str, bool normalize) : CDotFeatures()
+CExplicitSpecFeatures::CExplicitSpecFeatures(CStringFeatures<uint16_t>* str, bool normalize) : CDotFeatures()
 {
 	ASSERT(str);
 
@@ -24,21 +24,20 @@ CSpecFeatures::CSpecFeatures(CStringFeatures<uint16_t>* str, bool normalize) : C
 	SG_DEBUG("SPEC size=%d, num_str=%d\n", spec_size, num_strings);
 }
 
-CSpecFeatures::CSpecFeatures(const CSpecFeatures& orig) : CDotFeatures(orig), 
-	num_strings(orig.num_strings), degree(orig.degree), from_degree(orig.from_degree),
-	alphabet_size(orig.alphabet_size), spec_size(orig.spec_size)
+CExplicitSpecFeatures::CExplicitSpecFeatures(const CExplicitSpecFeatures& orig) : CDotFeatures(orig), 
+	num_strings(orig.num_strings), alphabet_size(orig.alphabet_size), spec_size(orig.spec_size)
 {
 	k_spectrum= new float64_t*[num_strings];
 	for (int32_t i=0; i<num_strings; i++)
 		k_spectrum[i]=CMath::clone_vector(k_spectrum[i], spec_size);
 }
 
-CSpecFeatures::~CSpecFeatures()
+CExplicitSpecFeatures::~CExplicitSpecFeatures()
 {
 	delete_kmer_spectrum();
 }
 
-float64_t CSpecFeatures::dot(int32_t vec_idx1, int32_t vec_idx2)
+float64_t CExplicitSpecFeatures::dot(int32_t vec_idx1, int32_t vec_idx2)
 {
 	ASSERT(vec_idx1 < num_strings);
 	ASSERT(vec_idx2 < num_strings);
@@ -48,7 +47,7 @@ float64_t CSpecFeatures::dot(int32_t vec_idx1, int32_t vec_idx2)
 	return CMath::dot(vec1, vec2, spec_size);
 }
 
-float64_t CSpecFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
+float64_t CExplicitSpecFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
 {
 	ASSERT(vec2_len == spec_size);
 	ASSERT(vec_idx1 < num_strings);
@@ -61,7 +60,7 @@ float64_t CSpecFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int3
 	return result;
 }
 
-void CSpecFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val)
+void CExplicitSpecFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val)
 {
 	ASSERT(vec2_len == spec_size);
 	ASSERT(vec_idx1 < num_strings);
@@ -79,7 +78,7 @@ void CSpecFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_
 	}
 }
 
-void CSpecFeatures::obtain_kmer_spectrum(CStringFeatures<uint16_t>* str)
+void CExplicitSpecFeatures::obtain_kmer_spectrum(CStringFeatures<uint16_t>* str)
 {
 	k_spectrum= new float64_t*[num_strings];
 
@@ -108,7 +107,7 @@ void CSpecFeatures::obtain_kmer_spectrum(CStringFeatures<uint16_t>* str)
 	}
 }
 
-void CSpecFeatures::delete_kmer_spectrum()
+void CExplicitSpecFeatures::delete_kmer_spectrum()
 {
 	for (int32_t i=0; i<num_strings; i++)
 		delete[] k_spectrum[i];
@@ -117,7 +116,7 @@ void CSpecFeatures::delete_kmer_spectrum()
 	k_spectrum=NULL;
 }
 
-CFeatures* CSpecFeatures::duplicate() const
+CFeatures* CExplicitSpecFeatures::duplicate() const
 {
-	return new CSpecFeatures(*this);
+	return new CExplicitSpecFeatures(*this);
 }

@@ -8,8 +8,8 @@
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#ifndef _SPECFEATURES_H___
-#define _SPECFEATURES_H___
+#ifndef _IMPLICITSPECFEATURES_H___
+#define _IMPLICITSPECFEATURES_H___
 
 #include "lib/common.h"
 #include "lib/io.h"
@@ -18,7 +18,7 @@
 
 template <class ST> class CStringFeatures;
 
-class CSpecFeatures : public CDotFeatures
+class CImplicitWeightedSpecFeatures : public CDotFeatures
 {
 	public:
 
@@ -27,12 +27,12 @@ class CSpecFeatures : public CDotFeatures
 		 * @param str stringfeatures (of words)
 		 * @param normalize whether to use sqrtdiag normalization
 		 */
-		CSpecFeatures(CStringFeatures<uint16_t>* str, bool normalize=true);
+		CImplicitWeightedSpecFeatures(CStringFeatures<uint16_t>* str, bool normalize=true);
 
 		/** copy constructor */
-		CSpecFeatures(const CSpecFeatures & orig);
+		CImplicitWeightedSpecFeatures(const CImplicitWeightedSpecFeatures & orig);
 
-		virtual ~CSpecFeatures();
+		virtual ~CImplicitWeightedSpecFeatures();
 
 		/** duplicate feature object
 		 *
@@ -116,26 +116,37 @@ class CSpecFeatures : public CDotFeatures
 			return sizeof(float64_t);
 		}
 
-	protected:
-		void obtain_kmer_spectrum(CStringFeatures<uint16_t>* str);
-		void delete_kmer_spectrum();
+		/** set weighted degree weights
+		 *
+		 * @return if setting was successful
+		 */
+		bool set_wd_weights();
+
+		/** set custom weights (swig compatible)
+		 *
+		 * @param w weights
+		 * @param d degree (must match number of weights)
+		 * @return if setting was successful
+		 */
+		bool set_weights(float64_t* w, int32_t d);
+
 
 	protected:
+		CStringFeatures<uint16_t>* strings;
+
 		/** use sqrtdiag normalization */
 		bool use_normalization;
 		/** number of strings */
 		int32_t num_strings;
-
-		/** degree */
-		int32_t degree;
-		/** from degree */
-		int32_t from_degree;
 		/** size of alphabet */
 		int32_t alphabet_size;
 
+		/** degree */
+		int32_t degree;
 		/** size of k-mer spectrum*/
 		int32_t spec_size;
-		/** k-mer counts for all strings */
-		float64_t** k_spectrum;
+
+		/** weights for each of the subkernels of degree 1...d */
+		float64_t* spec_weights;
 };
-#endif // _SPECFEATURES_H___
+#endif // _IMPLICITSPECFEATURES_H___
