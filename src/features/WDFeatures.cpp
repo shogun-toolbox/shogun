@@ -12,7 +12,7 @@
 #include "lib/io.h"
 
 CWDFeatures::CWDFeatures(CStringFeatures<uint8_t>* str,
-		int32_t order) : CDotFeatures()
+		int32_t order, int32_t from_order) : CDotFeatures()
 {
 	ASSERT(str);
 	ASSERT(str->have_same_length());
@@ -21,18 +21,27 @@ CWDFeatures::CWDFeatures(CStringFeatures<uint8_t>* str,
 	strings=str;
 	string_length=str->get_max_vector_length();
 	num_strings=str->get_num_vectors();
+	CAlphabet* alpha=str->get_alphabet();
+	alphabet_size=alpha->get_num_symbols();
+	SG_UNREF(alpha);
 
 	degree=order;
+	from_degree=from_order;
 	set_wd_weights();
 	set_normalization_const();
+
 }
 
 CWDFeatures::CWDFeatures(const CWDFeatures& orig)
-	: CDotFeatures(orig), strings(orig.strings), degree(orig.degree)
+	: CDotFeatures(orig), strings(orig.strings),
+	degree(orig.degree), from_degree(orig.from_degree)
 {
 	SG_REF(strings);
 	string_length=strings->get_max_vector_length();
 	num_strings=strings->get_num_vectors();
+	CAlphabet* alpha=strings->get_alphabet();
+	alphabet_size=alpha->get_num_symbols();
+	SG_UNREF(alpha);
 
 	set_wd_weights();
 	set_normalization_const();
@@ -120,7 +129,6 @@ void CWDFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t*
 void CWDFeatures::set_wd_weights()
 {
 	ASSERT(degree>0 && degree<=8);
-	delete[] wd_weights;
 	wd_weights=new float64_t[degree];
 	w_dim=0;
 
@@ -129,6 +137,7 @@ void CWDFeatures::set_wd_weights()
 		w_dim+=CMath::pow(alphabet_size, i+1)*string_length;
 		wd_weights[i]=sqrt(2.0*(from_degree-i)/(from_degree*(from_degree+1)));
 	}
+	SG_DEBUG("created WDFeatures with d=%d (%d), dim=%d num=%d, len=%d\n", degree, from_degree, w_dim, num_strings, string_length);
 }
 
 

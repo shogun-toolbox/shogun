@@ -120,8 +120,6 @@ class CGUIFeatures : public CSGObject
 			CStringFeatures<uint16_t>* src);
 		CRealFeatures* convert_sparse_real_to_simple_real(
 			CSparseFeatures<float64_t>* src);
-		CWDFeatures* convert_string_byte_to_wd_dense(CStringFeatures<uint8_t>*
-				src, int32_t order);
 		CSpecFeatures* convert_string_byte_to_spec_word(CStringFeatures<uint16_t>* src);
 
 		template <class CT, class ST>

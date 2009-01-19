@@ -257,7 +257,7 @@ CKernel* CGUIKernel::create_weighteddegreestring(
 
 	CKernel* kern=new CWeightedDegreeStringKernel(weights, order);
 
-	SG_DEBUG("created WeightedDegreeStringKernel (%p) with size %d, order %d, max_mismatch %d, use_normalization %d, mkl_stepsize %d, block_computation %d, single_degree %f.\n", kern, size, order, max_mismatch, mkl_stepsize, block_computation, single_degree);
+	SG_DEBUG("created WeightedDegreeStringKernel (%p) with size %d, order %d, max_mismatch %d, use_normalization %d, mkl_stepsize %d, block_computation %d, single_degree %f.\n", kern, size, order, max_mismatch, (int) use_normalization, mkl_stepsize, block_computation, single_degree);
 
 	if (!use_normalization)
 		kern->set_normalizer(new CIdentityKernelNormalizer());

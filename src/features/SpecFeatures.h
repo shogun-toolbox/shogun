@@ -48,7 +48,7 @@ class CSpecFeatures : public CDotFeatures
 		 */
 		inline virtual int32_t get_dim_feature_space()
 		{
-			return w_dim;
+			return spec_size;
 		}
 
 		/** compute dot product between vector1 and vector2,
@@ -129,8 +129,6 @@ class CSpecFeatures : public CDotFeatures
 		int32_t from_degree;
 		/** size of alphabet */
 		int32_t alphabet_size;
-		/** w dim */
-		int32_t w_dim;
 
 		/** size of k-mer spectrum*/
 		int32_t spec_size;

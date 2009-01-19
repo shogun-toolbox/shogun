@@ -978,6 +978,7 @@ template <class ST> class CStringFeatures : public CFeatures
 				if (len!=get_max_vector_length())
 					return false;
 			}
+			len = get_max_vector_length();
 
 			for (int32_t i=0; i<num_vectors; i++)
 			{

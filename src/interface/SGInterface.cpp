@@ -1347,7 +1347,7 @@ bool CSGInterface::cmd_add_dotfeatures()
 
 bool CSGInterface::cmd_set_features()
 {
-	if ((m_nrhs!=3 && m_nrhs!=4) || !create_return_values(0))
+	if ((m_nrhs!=3 && m_nrhs<4) || !create_return_values(0))
 		return false;
 
 	return do_set_features(false, false);
@@ -1482,9 +1482,11 @@ bool CSGInterface::do_set_features(bool add, bool check_dot)
 
 		case STRING_BYTE:
 		{
-			if (m_nrhs!=4)
+			if (m_nrhs<4)
 				SG_ERROR("Please specify alphabet!\n");
 
+			int32_t order=0;
+			int32_t from_order=0;
 			int32_t num_str=0;
 			int32_t max_str_len=0;
 			T_STRING<uint8_t>* fmatrix=NULL;
@@ -1493,7 +1495,22 @@ bool CSGInterface::do_set_features(bool add, bool check_dot)
 			int32_t alphabet_len=0;
 			char* alphabet_str=get_string(alphabet_len);
 			ASSERT(alphabet_str);
-			CAlphabet* alphabet=new CAlphabet(alphabet_str, alphabet_len);
+			CAlphabet* alphabet=NULL;
+			if (strmatch(alphabet_str, "RAWDNAWD"))
+			{
+				if (m_nrhs!=6)
+					SG_ERROR("Please specify alphabet, order, from_order\n");
+
+				alphabet=new CAlphabet(RAWDNA);
+				order=get_int();
+				from_order=get_int();
+			}
+			else
+			{
+				if (m_nrhs!=4)
+					SG_ERROR("Wrong number of arguments\n");
+				alphabet=new CAlphabet(alphabet_str, alphabet_len);
+			}
 			delete[] alphabet_str;
 
 			feat=new CStringFeatures<uint8_t>(alphabet);
@@ -1504,6 +1521,8 @@ bool CSGInterface::do_set_features(bool add, bool check_dot)
 				SG_ERROR("Couldnt set byte string features.\n");
 			}
 
+			if (order!=0)
+				feat = new CWDFeatures((CStringFeatures<uint8_t>*) feat, order, from_order);
 			delete alphabet;
 			break;
 		}
@@ -1829,12 +1848,6 @@ bool CSGInterface::cmd_convert()
 				delete[] delim;
 			}
 #endif
-			else if (strmatch(to_class, "WD") && strmatch(to_type, "DENSE") && m_nrhs==8)
-			{
-				int32_t order=get_int_from_int_or_str();
-				result=ui_features->convert_string_byte_to_wd_dense((CStringFeatures<uint8_t>*) features, order);
-
-			}
 			else
 				io.not_implemented();
 		} // from_type uint8_t
@@ -1846,7 +1859,7 @@ bool CSGInterface::cmd_convert()
 				result=ui_features->convert_string_word_to_simple_top(
 					(CStringFeatures<uint16_t>*) features);
 			}
-			else if (strmatch(to_class, "SPEC") && strmatch(to_type, "WORD") && m_nrhs==8)
+			else if (strmatch(to_class, "SPEC") && strmatch(to_type, "WORD") && m_nrhs==6)
 			{
 				result=ui_features->convert_string_byte_to_spec_word((CStringFeatures<uint16_t>*) features);
 

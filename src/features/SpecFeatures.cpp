@@ -19,11 +19,13 @@ CSpecFeatures::CSpecFeatures(CStringFeatures<uint16_t>* str) : CDotFeatures()
 	spec_size = str->get_num_symbols();
 
 	obtain_kmer_spectrum(str);
+
+	SG_DEBUG("SPEC size=%d, num_str=%d\n", spec_size, num_strings);
 }
 
 CSpecFeatures::CSpecFeatures(const CSpecFeatures& orig) : CDotFeatures(orig), 
 	num_strings(orig.num_strings), degree(orig.degree), from_degree(orig.from_degree),
-	alphabet_size(orig.alphabet_size), w_dim(orig.w_dim), spec_size(orig.spec_size)
+	alphabet_size(orig.alphabet_size), spec_size(orig.spec_size)
 {
 	k_spectrum= new int32_t*[num_strings];
 	for (int32_t i=0; i<num_strings; i++)

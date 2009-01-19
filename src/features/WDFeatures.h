@@ -24,8 +24,10 @@ class CWDFeatures : public CDotFeatures
 		/** constructor
 		 *
 		 * @param str stringfeatures (of bytes)
+		 * @param order of wd kernel
+		 * @param from_order use first order weights from higher order weighting
 		 */
-		CWDFeatures(CStringFeatures<uint8_t>* str, int32_t order);
+		CWDFeatures(CStringFeatures<uint8_t>* str, int32_t order, int32_t from_order);
 
 		/** copy constructor */
 		CWDFeatures(const CWDFeatures & orig);
