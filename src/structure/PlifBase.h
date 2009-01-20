@@ -98,5 +98,12 @@ class CPlifBase : public CSGObject
 		 * @return maximum ID
 		 */
 		virtual int32_t get_max_id() const = 0;
+
+		/** print PLIF
+		 *
+		 * abstract base method
+		 */
+		virtual void print() const = 0 ;
+
 };
 #endif
