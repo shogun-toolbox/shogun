@@ -38,8 +38,10 @@ Optionally you will need atlas and lapack (debian packages lapack3-dev,
 atlas3-headers atlas3-base-dev or atlas3-altivec-dev atlas3-sse2-dev)
 installed. Note that atlas/lapack is only supported under linux (high
 performance computing should be done under linux only anyway). In case
- atlas/lapack is unavailable, don't worry shogun will work without, though
-slightly slower versions are used.
+atlas/lapack is unavailable, don't worry most of shogun will work without,
+though slightly slower versions are used. For standard 1-norm
+multiple kernel learning (MKL) the GNU Linear Programming Kit (GLPK) version at
+least 4.29 or CPLEX is required.
 
 
 SPECIFIC BUILD INSTRUCTIONS

@@ -75,10 +75,10 @@ traindat(traindat=='G')=2;
 traindat(traindat=='T')=3;
 traindat=uint8(traindat);
 
-sg('set_features', 'TRAIN', traindat, 'RAWDNAWSPEC', order, order-1, normalize);
+sg('set_features', 'TRAIN', traindat, 'RAWDNA','WSPEC', order, order-1, normalize);
 sg('new_classifier', 'SVMOCAS');
 sg('train_classifier');
-sg('set_features', 'TEST', traindat, 'RAWDNAWSPEC', order, order-1, normalize);
+sg('set_features', 'TEST', traindat, 'RAWDNA','WSPEC', order, order-1, normalize);
 out=sg('classify');
 
 

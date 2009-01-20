@@ -105,14 +105,14 @@ out=sg('svm_classify');
 %roc=calcrocscore(out, testlab);
 
 sg('send_command', 'loglevel ALL');
-sg('set_features', 'TRAIN', traindat, 'RAWDNAWD', order, from_order);
+sg('set_features', 'TRAIN', traindat, 'RAWDNA', 'WD', order, from_order);
 sg('set_labels', 'TRAIN', trainlab);
 sg('c', C);
 sg('svm_epsilon', epsilon);
 sg('svm_use_bias', 0);
 sg('new_classifier', 'SVMOCAS');
 sg('train_classifier');
-sg('set_features', 'TEST', testdat, 'RAWDNAWD', order, from_order);
+sg('set_features', 'TEST', testdat, 'RAWDNA', 'WD', order, from_order);
 out_wdocas=sg('classify');
 
 max(abs(out-out_ref))

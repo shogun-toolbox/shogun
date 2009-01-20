@@ -1438,7 +1438,7 @@ bool CSGInterface::do_set_features(bool add, bool check_dot)
 
 		case STRING_CHAR:
 		{
-			if (m_nrhs!=4)
+			if (m_nrhs<4)
 				SG_ERROR("Please specify alphabet!\n");
 
 			int32_t num_str=0;
@@ -1462,6 +1462,7 @@ bool CSGInterface::do_set_features(bool add, bool check_dot)
 					delete feat;
 					SG_ERROR("Couldn't load DNA features from file.\n");
 				}
+				feat=create_custom_string_features((CStringFeatures<uint8_t>*) feat);
 			}
 			else
 			{
@@ -1486,12 +1487,8 @@ bool CSGInterface::do_set_features(bool add, bool check_dot)
 			if (m_nrhs<4)
 				SG_ERROR("Please specify alphabet!\n");
 
-			int32_t start=-1;
-			int32_t order=0;
-			int32_t from_order=0;
 			int32_t num_str=0;
 			int32_t max_str_len=0;
-			bool normalize=true;
 			T_STRING<uint8_t>* fmatrix=NULL;
 			get_byte_string_list(fmatrix, num_str, max_str_len);
 
@@ -1499,31 +1496,7 @@ bool CSGInterface::do_set_features(bool add, bool check_dot)
 			char* alphabet_str=get_string(alphabet_len);
 			ASSERT(alphabet_str);
 			CAlphabet* alphabet=NULL;
-			if (strmatch(alphabet_str, "RAWDNAWD"))
-			{
-				if (m_nrhs!=6)
-					SG_ERROR("Please specify alphabet, order, from_order\n");
-
-				alphabet=new CAlphabet(RAWDNA);
-				order=get_int();
-				from_order=get_int();
-			}
-			else if (strmatch(alphabet_str, "RAWDNAWSPEC"))
-			{
-				if (m_nrhs!=7)
-					SG_ERROR("Please specify alphabet, order, start, normalize\n");
-
-				alphabet=new CAlphabet(RAWDNA);
-				order=get_int();
-				start=get_int();
-				normalize=get_bool();
-			}
-			else
-			{
-				if (m_nrhs!=4)
-					SG_ERROR("Wrong number of arguments\n");
-				alphabet=new CAlphabet(alphabet_str, alphabet_len);
-			}
+			alphabet=new CAlphabet(alphabet_str, alphabet_len);
 			delete[] alphabet_str;
 
 			feat=new CStringFeatures<uint8_t>(alphabet);
@@ -1533,18 +1506,7 @@ bool CSGInterface::do_set_features(bool add, bool check_dot)
 				delete feat;
 				SG_ERROR("Couldnt set byte string features.\n");
 			}
-
-			if (order!=0 && from_order!=0)
-				feat = new CWDFeatures((CStringFeatures<uint8_t>*) feat, order, from_order);
-			else if (order!=0 && start!=-1)
-			{
-				CStringFeatures<uint16_t>* f=new CStringFeatures<uint16_t>(RAWDNA);
-				f->obtain_from_char_features((CStringFeatures<uint8_t>*) feat, start, order, 0, true);
-				f->add_preproc(new CSortWordString());
-				f->apply_preproc();
-				feat = new CImplicitWeightedSpecFeatures(f, normalize);
-			}
-			delete alphabet;
+			feat=create_custom_string_features((CStringFeatures<uint8_t>*) feat);
 			break;
 		}
 
@@ -2792,6 +2754,56 @@ CKernel* CSGInterface::create_kernel()
 	delete[] type;
 	SG_DEBUG("created kernel: %p\n", kernel);
 	return kernel;
+}
+
+
+CFeatures* CSGInterface::create_custom_string_features(CStringFeatures<uint8_t>* orig_feat)
+{
+	CFeatures* feat=orig_feat;
+
+	if (m_nrhs>4)
+	{
+		int32_t start=-1;
+		int32_t order=0;
+		int32_t from_order=0;
+		bool normalize=true;
+
+		int32_t feature_class_len=0;
+		char* feature_class_str=get_string(feature_class_len);
+		ASSERT(feature_class_str);
+		CAlphabet* alphabet=NULL;
+		if (strmatch(feature_class_str, "WD"))
+		{
+			if (m_nrhs!=7)
+				SG_ERROR("Please specify alphabet, WD, order, from_order\n");
+
+			alphabet=new CAlphabet(RAWDNA);
+			order=get_int();
+			from_order=get_int();
+			feat = new CWDFeatures((CStringFeatures<uint8_t>*) feat, order, from_order);
+		}
+		else if (strmatch(feature_class_str, "WSPEC"))
+		{
+			if (m_nrhs!=8)
+				SG_ERROR("Please specify alphabet, order, WSPEC, start, normalize\n");
+
+			alphabet=new CAlphabet(RAWDNA);
+			order=get_int();
+			start=get_int();
+			normalize=get_bool();
+			CStringFeatures<uint16_t>* sf=new CStringFeatures<uint16_t>(RAWDNA);
+			sf->obtain_from_char_features((CStringFeatures<uint8_t>*) feat, start, order, 0, true);
+			sf->add_preproc(new CSortWordString());
+			sf->apply_preproc();
+			delete feat;
+			feat = new CImplicitWeightedSpecFeatures(sf, normalize);
+		}
+		delete[] feature_class_str;
+
+		delete alphabet;
+	}
+
+	return feat;
 }
 
 bool CSGInterface::cmd_init_kernel()

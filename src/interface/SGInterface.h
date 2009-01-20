@@ -618,6 +618,18 @@ class CSGInterface : public CSGObject
 			return (strncmp(str, cmd, len)==0);
 		}
 
+		static bool strendswith(const char* str, const char* cmd)
+		{
+			size_t idx=strlen(str);
+			size_t len=strlen(cmd);
+
+			if (strlen(str) < len)
+				return false;
+
+			str=&str[idx-len];
+
+			return (strncmp(str, cmd, len)==0);
+		}
 		/// get command name like 'get_svm', 'new_hmm', etc.
 		char* get_command(int32_t &len)
 		{
@@ -638,6 +650,8 @@ class CSGInterface : public CSGObject
 		/** helper function to create a kernel */
 		CKernel* create_kernel();
 
+		/** helper function to create certain string features */
+		CFeatures* create_custom_string_features(CStringFeatures<uint8_t>* f);
 		/** legacy-related stuff - anybody got a better idea? */
 		char* get_str_from_str_or_direct(int32_t& len);
 		int32_t get_int_from_int_or_str();
