@@ -15,7 +15,8 @@
 /*   THIS INCLUDES THE FOLLOWING ADDITIONS                             */
 /*   Generic Kernel Interfacing: Soeren Sonnenburg                     */
 /*   Parallizations: Soeren Sonnenburg                                 */
-/*   Multiple Kernel Learning: Gunnar Raetsch, Soeren Sonnenburg       */
+/*   Multiple Kernel Learning: Gunnar Raetsch, Soeren Sonnenburg,      */
+/*                          Alexander Zien, Marius Kloft, Chen Guohua  */
 /*   Linadd Speedup: Gunnar Raetsch, Soeren Sonnenburg                 */
 /*                                                                     */
 /***********************************************************************/
@@ -267,9 +268,7 @@ bool CSVMLight::init_glpk()
 {
 	lp_glpk = lpx_create_prob();
 	lpx_set_obj_dir(lp_glpk, LPX_MIN);
-#ifdef GLP_OFF
 	glp_term_out(GLP_OFF);
-#endif
 	return (lp_glpk != NULL);
 }
 

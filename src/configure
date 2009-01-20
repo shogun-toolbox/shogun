@@ -2661,6 +2661,7 @@ cat >$TMPC<<EOF
 #include <glpk.h>
 int main()
 {
+	glp_term_out(GLP_OFF);
 	LPX* lp=lpx_create_prob();
 	lpx_delete_prob(lp);
 	return 0;
