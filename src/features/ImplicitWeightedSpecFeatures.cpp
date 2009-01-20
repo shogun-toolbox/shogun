@@ -18,11 +18,12 @@ CImplicitWeightedSpecFeatures::CImplicitWeightedSpecFeatures(CStringFeatures<uin
 	strings=str;
 	use_normalization=normalize;
 	num_strings = str->get_num_vectors();
-	spec_size = str->get_num_symbols();
+	alphabet_size = str->get_original_num_symbols();
 	degree=str->get_order();
 	set_wd_weights();
 
-	SG_DEBUG("SPEC size=%d, num_str=%d\n", spec_size, num_strings);
+	SG_DEBUG("WEIGHTED SPEC alphasz=%d, size=%d, num_str=%d\n", alphabet_size,
+			spec_size, num_strings);
 }
 
 bool CImplicitWeightedSpecFeatures::set_wd_weights()
@@ -31,8 +32,11 @@ bool CImplicitWeightedSpecFeatures::set_wd_weights()
 
 	int32_t i;
 	float64_t sum=0;
+	spec_size=0;
+
 	for (i=0; i<degree; i++)
 	{
+		spec_size+=CMath::pow(alphabet_size, i+1);
 		spec_weights[i]=degree-i;
 		sum+=spec_weights[i];
 	}
@@ -135,7 +139,7 @@ float64_t CImplicitWeightedSpecFeatures::dense_dot(int32_t vec_idx1, const float
 				mask = mask | (1 << (degree-d-1));
 				int32_t idx=strings->get_masked_symbols(vec[j], mask);
 				idx=strings->shift_symbol(idx, degree-d-1);
-				result += vec2[offs + idx];
+				result += vec2[offs + idx]*spec_weights[d];
 				offs+=strings->shift_offset(1,d+1);
 			}
 		}

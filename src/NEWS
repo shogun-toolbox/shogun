@@ -7,7 +7,8 @@
 		  This enables training of linear methods with mixed datatypes
 		  (sparse and dense and other even the newly implemented string
 		  based SpecFeatures and WDFeatures).
-		- Add q-norm MKL support.
+		- MKL now does not require CPLEX any longer.
+		- Add q-norm MKL support based on Newton.
 		- Add 1-norm MKL support based on GLPK.
 		- Support compilation on the iPhone :)
 		- Add an option to set wds kernel position weights.

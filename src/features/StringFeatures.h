@@ -326,7 +326,8 @@ template <class ST> class CStringFeatures : public CFeatures
 
 		/** get maximum number of symbols
 		 *
-		 * Note: float128_t sounds weird, but LONG is not long enough
+		 * Note: float128_t sounds weird, but int64_t is not long enough (and
+		 * there is no int128_t type)
 		 *
 		 * @return maximum number of symbols
 		 */

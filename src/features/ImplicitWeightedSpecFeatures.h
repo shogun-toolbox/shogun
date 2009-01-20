@@ -103,7 +103,7 @@ class CImplicitWeightedSpecFeatures : public CDotFeatures
 		 */
 		inline virtual EFeatureClass get_feature_class()
 		{
-			return C_WD;
+			return C_WEIGHTEDSPEC;
 		}
 
 		inline virtual int32_t get_num_vectors()

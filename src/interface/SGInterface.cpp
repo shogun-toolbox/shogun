@@ -26,6 +26,7 @@
 #include "features/ShortFeatures.h"
 #include "features/ShortRealFeatures.h"
 #include "features/WordFeatures.h"
+#include "preproc/SortWordString.h"
 
 #include "structure/Plif.h"
 #include "structure/PlifArray.h"
@@ -1485,10 +1486,12 @@ bool CSGInterface::do_set_features(bool add, bool check_dot)
 			if (m_nrhs<4)
 				SG_ERROR("Please specify alphabet!\n");
 
+			int32_t start=-1;
 			int32_t order=0;
 			int32_t from_order=0;
 			int32_t num_str=0;
 			int32_t max_str_len=0;
+			bool normalize=true;
 			T_STRING<uint8_t>* fmatrix=NULL;
 			get_byte_string_list(fmatrix, num_str, max_str_len);
 
@@ -1504,6 +1507,16 @@ bool CSGInterface::do_set_features(bool add, bool check_dot)
 				alphabet=new CAlphabet(RAWDNA);
 				order=get_int();
 				from_order=get_int();
+			}
+			else if (strmatch(alphabet_str, "RAWDNAWSPEC"))
+			{
+				if (m_nrhs!=7)
+					SG_ERROR("Please specify alphabet, order, start, normalize\n");
+
+				alphabet=new CAlphabet(RAWDNA);
+				order=get_int();
+				start=get_int();
+				normalize=get_bool();
 			}
 			else
 			{
@@ -1521,8 +1534,16 @@ bool CSGInterface::do_set_features(bool add, bool check_dot)
 				SG_ERROR("Couldnt set byte string features.\n");
 			}
 
-			if (order!=0)
+			if (order!=0 && from_order!=0)
 				feat = new CWDFeatures((CStringFeatures<uint8_t>*) feat, order, from_order);
+			else if (order!=0 && start!=-1)
+			{
+				CStringFeatures<uint16_t>* f=new CStringFeatures<uint16_t>(RAWDNA);
+				f->obtain_from_char_features((CStringFeatures<uint8_t>*) feat, start, order, 0, true);
+				f->add_preproc(new CSortWordString());
+				f->apply_preproc();
+				feat = new CImplicitWeightedSpecFeatures(f, normalize);
+			}
 			delete alphabet;
 			break;
 		}

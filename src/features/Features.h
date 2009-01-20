@@ -44,6 +44,7 @@ enum EFeatureClass
 	C_COMBINED_DOT = 60,
 	C_WD = 70,
 	C_SPEC = 80,
+	C_WEIGHTEDSPEC = 90,
 	C_ANY = 1000
 };
 
