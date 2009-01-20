@@ -408,6 +408,15 @@ class CPlif: public CPlifBase
 			return len;
 		}
 
+		/** print PLIF
+		 *
+		 * lists some properties of the PLIF
+		 */
+		virtual void print() const 
+		{
+			fprintf(stdout, "CPlif(min_value=%1.2f, max_value=%1.2f, use_svm=%i)\n", min_value, max_value, use_svm) ;
+		}
+
 	protected:
 		/** len */
 		int32_t len;
