@@ -472,14 +472,18 @@ template <class ST> class CStringFeatures : public CFeatures
 				max_string_length=0;
 
 				SG_INFO("counting line numbers in file %s\n", fname);
-				SG_DEBUG("block_size=%d\n", required_blocksize);
-				size_t sz=blocksize;
 				size_t block_offs=0;
 				size_t old_block_offs=0;
 				fseek(f, 0, SEEK_END);
 				size_t fsize=ftell(f);
 				rewind(f);
 
+				if (blocksize>fsize)
+					blocksize=fsize;
+
+				SG_DEBUG("block_size=%d file_size=%d\n", blocksize, fsize);
+
+				size_t sz=blocksize;
 				while (sz == blocksize)
 				{
 					sz=fread(dummy, sizeof(uint8_t), blocksize, f);
