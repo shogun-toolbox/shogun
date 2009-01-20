@@ -101,6 +101,20 @@ class CPlifArray: public CPlifBase
 
 		void get_used_svms(int32_t* num_svms, int32_t* svm_ids);
 
+		/** print PLIF
+		 *
+		 * lists all PLIFs in array
+		 */
+		virtual void print() const 
+		{
+			fprintf(stdout, "CPlifArray(num_elements=%i, min_value=%1.2f, max_value=%1.2f)\n", m_array.get_num_elements(), min_value, max_value) ;
+			for (int32_t i=0; i<m_array.get_num_elements(); i++)
+			{
+				fprintf(stdout, "%i. ", i) ;
+				m_array[i]->print() ;
+			}
+		}
+
 	protected:
 		/** plif array */
 		CDynamicArray<CPlifBase*> m_array;
