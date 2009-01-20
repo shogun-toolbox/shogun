@@ -3016,12 +3016,12 @@ bool CSGInterface::cmd_set_WD_position_weights()
 			if (strmatch(target, "TEST"))
 				is_train=false;
 		}
-
+		
 		if (dim!=1 && len>0)
 		{
 			delete[] target;
 			SG_ERROR("Dimension mismatch (should be 1 x seq_length or 0x0\n");
-		}
+			}
 
 		if (dim==0 && len==0)
 		{
