@@ -145,6 +145,24 @@ int32_t CCombinedDotFeatures::get_nnz_features_for_vector(int32_t num)
 	return result;
 }
 
+void CCombinedDotFeatures::get_subfeature_weights(float64_t** weights, int32_t* num_weights)
+{
+	*num_weights = get_num_feature_obj();
+	ASSERT(*num_weights > 0);
+
+	*weights=new float64_t[*num_weights];
+	float64_t* w = *weights;
+
+	CListElement<CDotFeatures*> * current = NULL;	
+	CDotFeatures* f = get_first_feature_obj(current);
+
+	while (f)
+	{
+		*w++=f->get_combined_feature_weight();
+		f = get_next_feature_obj(current);
+	}
+}
+
 void CCombinedDotFeatures::set_subfeature_weights(
 	float64_t* weights, int32_t num_weights)
 {
