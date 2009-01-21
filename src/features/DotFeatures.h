@@ -39,10 +39,14 @@ class CDotFeatures : public CFeatures
 		 *
 		 * @param size cache size
 		 */
-		CDotFeatures(int32_t size=0) : CFeatures(size) { set_property(FP_DOT); }
+		CDotFeatures(int32_t size=0) : CFeatures(size), combined_weight(1.0)
+		{
+			set_property(FP_DOT);
+		}
 
 		/** copy constructor */
-		CDotFeatures(const CDotFeatures & orig) : CFeatures(orig)  {}
+		CDotFeatures(const CDotFeatures & orig) :
+			CFeatures(orig), combined_weight(orig.combined_weight)  {}
 
 		/** constructor
 		 *
@@ -107,5 +111,20 @@ class CDotFeatures : public CFeatures
 		 * @return number of sparse features in vector
 		 */
 		virtual int32_t get_nnz_features_for_vector(int32_t num)=0;
+
+		/** get combined feature weight
+		 *
+		 * @return combined feature weight
+		 */
+		inline float64_t get_combined_feature_weight() { return combined_weight; }
+
+		/** set combined kernel weight
+		 *
+		 * @param nw new combined feature weight
+		 */
+		inline void set_combined_feature_weight(float64_t nw) { combined_weight=nw; }
+
+	protected:
+		float64_t combined_weight;
 };
 #endif // _DOTFEATURES_H___

@@ -246,6 +246,11 @@ CSGInterfaceMethod sg_methods[]=
 		USAGE_I(N_SET_SUBKERNEL_WEIGHTS_COMBINED, "W" USAGE_COMMA "idx")
 	},
 	{
+		N_SET_DOTFEATURE_WEIGHTS_COMBINED,
+		(&CSGInterface::cmd_set_dotfeature_weights_combined),
+		USAGE_I(N_SET_DOTFEATURE_WEIGHTS_COMBINED, "W" USAGE_COMMA "idx")
+	},
+	{
 		N_SET_LAST_SUBKERNEL_WEIGHTS,
 		(&CSGInterface::cmd_set_last_subkernel_weights),
 		USAGE_I(N_SET_LAST_SUBKERNEL_WEIGHTS, "W")
@@ -3215,6 +3220,41 @@ bool CSGInterface::cmd_set_subkernel_weights_combined()
 	}
 
 	return success;
+}
+
+bool CSGInterface::cmd_set_dotfeature_weights_combined()
+{
+	if (m_nrhs!=3 || !create_return_values(0))
+		return false;
+
+	int32_t tlen=0;
+	char* target=get_string(tlen);
+	CFeatures* features=NULL;
+
+	if (strmatch(target, "TRAIN"))
+		features=ui_features->get_train_features();
+	else if (strmatch(target, "TEST"))
+		features=ui_features->get_test_features();
+	else
+	{
+		delete[] target;
+		SG_ERROR("Unknown target, neither TRAIN nor TEST.\n");
+	}
+	delete[] target;
+
+	if (!features)
+		SG_ERROR("No features.\n");
+	if (features->get_feature_class()!=C_COMBINED_DOT)
+		SG_ERROR("Only works for combined dot features.\n");
+
+	float64_t* weights=NULL;
+	int32_t dim=0;
+	int32_t len=0;
+	get_real_matrix(weights, dim, len);
+
+	((CCombinedDotFeatures*) features)->set_subfeature_weights(weights, len);
+
+	return true;
 }
 
 bool CSGInterface::cmd_set_last_subkernel_weights()

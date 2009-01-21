@@ -121,6 +121,8 @@ class CSGInterface : public CSGObject
 		bool cmd_set_subkernel_weights();
 		/** set subkernel weights combined */
 		bool cmd_set_subkernel_weights_combined();
+		/** set dotfeature weights combined */
+		bool cmd_set_dotfeature_weights_combined();
 		/** set last subkernel weights */
 		bool cmd_set_last_subkernel_weights();
 		/** get WD position weights */

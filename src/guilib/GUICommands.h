@@ -33,6 +33,7 @@
 #define N_COMPUTE_BY_SUBKERNELS				"compute_by_subkernels"
 #define N_SET_SUBKERNEL_WEIGHTS				"set_subkernel_weights"
 #define N_SET_SUBKERNEL_WEIGHTS_COMBINED	"set_subkernel_weights_combined"
+#define N_SET_DOTFEATURE_WEIGHTS_COMBINED	"set_dotfeature_weights_combined"
 #define N_SET_LAST_SUBKERNEL_WEIGHTS		"set_last_subkernel_weights"
 #define N_SET_WD_POS_WEIGHTS				"set_WD_position_weights"
 #define N_GET_SUBKERNEL_WEIGHTS				"get_subkernel_weights"

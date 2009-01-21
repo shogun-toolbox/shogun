@@ -236,6 +236,14 @@ class CCombinedDotFeatures : public CDotFeatures
 			return feature_list->get_num_elements();
 		}
 
+		/** set subfeature weights
+		 *
+		 * @param weights new subfeature weights
+		 * @param num_weights number of subfeature weights
+		 */
+		virtual void set_subfeature_weights(
+			float64_t* weights, int32_t num_weights);
+
 	protected:
 		void update_dim_feature_space_and_num_vec();
 

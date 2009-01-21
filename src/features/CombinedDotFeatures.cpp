@@ -10,6 +10,7 @@
 
 #include "features/CombinedDotFeatures.h"
 #include "lib/io.h"
+#include "lib/Mathematics.h"
 
 CCombinedDotFeatures::CCombinedDotFeatures() : CDotFeatures()
 {
@@ -87,7 +88,7 @@ float64_t CCombinedDotFeatures::dot(int32_t vec_idx1, int32_t vec_idx2)
 
 	while (f)
 	{
-		result += f->dot(vec_idx1, vec_idx2);
+		result += f->dot(vec_idx1, vec_idx2)*CMath::sq(f->get_combined_feature_weight());
 		f=get_next_feature_obj(current);
 	}
 
@@ -105,7 +106,7 @@ float64_t CCombinedDotFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec
 	while (f)
 	{
 		int32_t dim = f->get_dim_feature_space();
-		result += f->dense_dot(vec_idx1, vec2+offs, dim);
+		result += f->dense_dot(vec_idx1, vec2+offs, dim)*f->get_combined_feature_weight();
 		offs += dim;
 		f=get_next_feature_obj(current);
 	}
@@ -122,7 +123,7 @@ void CCombinedDotFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, f
 	while (f)
 	{
 		int32_t dim = f->get_dim_feature_space();
-		f->add_to_dense_vec(alpha, vec_idx1, vec2+offs, dim, abs_val);
+		f->add_to_dense_vec(alpha*f->get_combined_feature_weight(), vec_idx1, vec2+offs, dim, abs_val);
 		offs += dim;
 		f=get_next_feature_obj(current);
 	}
@@ -142,4 +143,21 @@ int32_t CCombinedDotFeatures::get_nnz_features_for_vector(int32_t num)
 	}
 
 	return result;
+}
+
+void CCombinedDotFeatures::set_subfeature_weights(
+	float64_t* weights, int32_t num_weights)
+{
+	int32_t i=0 ;
+	CListElement<CDotFeatures*> * current = NULL ;	
+	CDotFeatures* f = get_first_feature_obj(current);
+
+	ASSERT(num_weights==get_num_feature_obj());
+
+	while(f)
+	{
+		f->set_combined_feature_weight(weights[i]);
+		f = get_next_feature_obj(current);
+		i++;
+	}
 }
