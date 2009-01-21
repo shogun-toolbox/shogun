@@ -48,6 +48,7 @@ void CCombinedDotFeatures::list_feature_objs()
 	}
 
 	SG_INFO( "END COMBINED DOTFEATURES LIST (%d, %d) - ", num_vectors, num_dimensions);
+	this->list_feature_obj();
 }
 
 void CCombinedDotFeatures::update_dim_feature_space_and_num_vec()

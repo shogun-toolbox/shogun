@@ -463,6 +463,7 @@ template <class ST> class CStringFeatures : public CFeatures
 			cleanup();
 
 			CAlphabet* alpha=new CAlphabet(DNA);
+			CAlphabet* alpha_bin=new CAlphabet(RAWDNA);
 
 			FILE* f=fopen(fname, "ro");
 
@@ -534,6 +535,7 @@ template <class ST> class CStringFeatures : public CFeatures
 									features[lines].string[j]=alpha->remap_to_bin(overflow[j]);
 								for (int32_t j=0; j<len; j++)
 									features[lines].string[j+overflow_len]=alpha->remap_to_bin(dummy[old_sz+j]);
+								alpha_bin->add_string_to_histogram(features[lines].string, features[lines].length);
 							}
 							else
 							{
@@ -541,6 +543,7 @@ template <class ST> class CStringFeatures : public CFeatures
 									features[lines].string[j]=overflow[j];
 								for (int32_t j=0; j<len; j++)
 									features[lines].string[j+overflow_len]=dummy[old_sz+j];
+								alpha->add_string_to_histogram(features[lines].string, features[lines].length);
 							}
 
 							// clear overflow
@@ -564,7 +567,6 @@ template <class ST> class CStringFeatures : public CFeatures
 			}
 
 			fclose(f);
-			delete alpha;
 			delete[] dummy;
 
 #ifdef HAVE_SWIG
@@ -573,9 +575,9 @@ template <class ST> class CStringFeatures : public CFeatures
 			delete alphabet;
 #endif
 			if (remap_to_bin)
-				alphabet = new CAlphabet(RAWDNA);
+				alphabet = alpha_bin;
 			else
-				alphabet = new CAlphabet(DNA);
+				alphabet = alpha;
 			SG_REF(alphabet);
 
 			return result;

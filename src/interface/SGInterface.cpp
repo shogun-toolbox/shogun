@@ -1332,7 +1332,7 @@ bool CSGInterface::cmd_get_features()
 
 bool CSGInterface::cmd_add_features()
 {
-	if ((m_nrhs!=3 && m_nrhs!=4) || !create_return_values(0))
+	if ((m_nrhs!=3 && m_nrhs<4) || !create_return_values(0))
 		return false;
 
 	return do_set_features(true, false);
@@ -1340,7 +1340,7 @@ bool CSGInterface::cmd_add_features()
 
 bool CSGInterface::cmd_add_dotfeatures()
 {
-	if ((m_nrhs!=3 && m_nrhs!=4) || !create_return_values(0))
+	if ((m_nrhs!=3 && m_nrhs<4) || !create_return_values(0))
 		return false;
 
 	return do_set_features(true, true);
@@ -2792,7 +2792,7 @@ CFeatures* CSGInterface::create_custom_string_features(CStringFeatures<uint8_t>*
 			start=get_int();
 			normalize=get_bool();
 			CStringFeatures<uint16_t>* sf=new CStringFeatures<uint16_t>(RAWDNA);
-			sf->obtain_from_char_features((CStringFeatures<uint8_t>*) feat, start, order, 0, true);
+			sf->obtain_from_char_features((CStringFeatures<uint8_t>*) feat, start, order, 0, normalize);
 			sf->add_preproc(new CSortWordString());
 			sf->apply_preproc();
 			delete feat;

@@ -178,6 +178,9 @@ void CFeatures::list_feature_obj()
 		case C_SPEC:
 			SG_INFO( "C_SPEC ");
 			break;
+		case C_WEIGHTEDSPEC:
+			SG_INFO( "C_WEIGHTEDSPEC ");
+			break;
 		case C_ANY:
 			SG_INFO( "C_ANY ");
 			break;
