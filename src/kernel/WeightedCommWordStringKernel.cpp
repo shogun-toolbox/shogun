@@ -69,7 +69,7 @@ bool CWeightedCommWordStringKernel::set_wd_weights()
 		sum+=weights[i];
 	}
 	for (i=0; i<degree; i++)
-		weights[i]/=sum;
+		weights[i]=CMath::sqrt(weights[i]/sum);
 
 	return weights!=NULL;
 }
@@ -81,7 +81,7 @@ bool CWeightedCommWordStringKernel::set_weights(float64_t* w, int32_t d)
 	delete[] weights;
 	weights=new float64_t[degree];
 	for (int32_t i=0; i<degree; i++)
-		weights[i]=w[i];
+		weights[i]=CMath::sqrt(w[i]);
 	return true;
 }
   
@@ -140,6 +140,7 @@ float64_t CWeightedCommWordStringKernel::compute_helper(
 
 		int32_t left_idx=0;
 		int32_t right_idx=0;
+		float64_t weight=weights[d]*weights[d];
 
 		while (left_idx < alen && right_idx < blen)
 		{
@@ -157,7 +158,7 @@ float64_t CWeightedCommWordStringKernel::compute_helper(
 				while (right_idx<blen && (bvec[right_idx] & masked) ==lsym)
 					right_idx++;
 
-				result+=weights[d]*(left_idx-old_left_idx)*(right_idx-old_right_idx);
+				result+=weight*(left_idx-old_left_idx)*(right_idx-old_right_idx);
 			}
 			else if (lsym<rsym)
 				left_idx++;
@@ -257,7 +258,7 @@ float64_t CWeightedCommWordStringKernel::compute_optimized(int32_t i)
 				mask = mask | (1 << (degree-d-1));
 				int32_t idx=s->get_masked_symbols(vec[j], mask);
 				idx=s->shift_symbol(idx, degree-d-1);
-				result += dictionary_weights[offs + idx];
+				result += dictionary_weights[offs + idx]*weights[d];
 				offs+=s->shift_offset(1,d+1);
 			}
 		}

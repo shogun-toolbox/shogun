@@ -130,12 +130,14 @@ class CImplicitWeightedSpecFeatures : public CDotFeatures
 		 */
 		bool set_weights(float64_t* w, int32_t d);
 
+	protected:
+		void compute_normalization_const();
 
 	protected:
 		CStringFeatures<uint16_t>* strings;
 
 		/** use sqrtdiag normalization */
-		bool use_normalization;
+		float64_t* normalization_factors;
 		/** number of strings */
 		int32_t num_strings;
 		/** size of alphabet */

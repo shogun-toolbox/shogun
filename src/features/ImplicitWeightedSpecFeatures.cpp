@@ -16,7 +16,8 @@ CImplicitWeightedSpecFeatures::CImplicitWeightedSpecFeatures(CStringFeatures<uin
 	ASSERT(str);
 	SG_REF(strings)
 	strings=str;
-	use_normalization=normalize;
+	normalization_factors=NULL;
+	spec_weights=NULL;
 	num_strings = str->get_num_vectors();
 	alphabet_size = str->get_original_num_symbols();
 	degree=str->get_order();
@@ -24,10 +25,25 @@ CImplicitWeightedSpecFeatures::CImplicitWeightedSpecFeatures(CStringFeatures<uin
 
 	SG_DEBUG("WEIGHTED SPEC alphasz=%d, size=%d, num_str=%d\n", alphabet_size,
 			spec_size, num_strings);
+
+	if (normalize)
+		compute_normalization_const();
+}
+
+void CImplicitWeightedSpecFeatures::compute_normalization_const()
+{
+	float64_t* factors=new float64_t[num_strings];
+
+	for (int32_t i=0; i<num_strings; i++)
+		factors[i]=1.0/CMath::sqrt(dot(i,i));
+
+	normalization_factors=factors;
+	//CMath::display_vector(normalization_factors, num_strings, "n");
 }
 
 bool CImplicitWeightedSpecFeatures::set_wd_weights()
 {
+	delete[] spec_weights;
 	spec_weights=new float64_t[degree];
 
 	int32_t i;
@@ -41,7 +57,7 @@ bool CImplicitWeightedSpecFeatures::set_wd_weights()
 		sum+=spec_weights[i];
 	}
 	for (i=0; i<degree; i++)
-		spec_weights[i]/=sum;
+		spec_weights[i]=CMath::sqrt(spec_weights[i]/sum);
 
 	return spec_weights!=NULL;
 }
@@ -53,7 +69,7 @@ bool CImplicitWeightedSpecFeatures::set_weights(float64_t* w, int32_t d)
 	delete[] spec_weights;
 	spec_weights=new float64_t[degree];
 	for (int32_t i=0; i<degree; i++)
-		spec_weights[i]=w[i];
+		spec_weights[i]=CMath::sqrt(w[i]);
 	return true;
 }
 
@@ -68,6 +84,8 @@ CImplicitWeightedSpecFeatures::CImplicitWeightedSpecFeatures(const CImplicitWeig
 CImplicitWeightedSpecFeatures::~CImplicitWeightedSpecFeatures()
 {
 	SG_UNREF(strings);
+	delete[] spec_weights;
+	delete[] normalization_factors;
 }
 
 float64_t CImplicitWeightedSpecFeatures::dot(int32_t vec_idx1, int32_t vec_idx2)
@@ -90,6 +108,7 @@ float64_t CImplicitWeightedSpecFeatures::dot(int32_t vec_idx1, int32_t vec_idx2)
 
 		int32_t left_idx=0;
 		int32_t right_idx=0;
+		float64_t weight=spec_weights[d]*spec_weights[d];
 
 		while (left_idx < len1 && right_idx < len2)
 		{
@@ -107,7 +126,7 @@ float64_t CImplicitWeightedSpecFeatures::dot(int32_t vec_idx1, int32_t vec_idx2)
 				while (right_idx<len2 && (vec2[right_idx] & masked) ==lsym)
 					right_idx++;
 
-				result+=spec_weights[d]*(left_idx-old_left_idx)*(right_idx-old_right_idx);
+				result+=weight*(left_idx-old_left_idx)*(right_idx-old_right_idx);
 			}
 			else if (lsym<rsym)
 				left_idx++;
@@ -116,7 +135,10 @@ float64_t CImplicitWeightedSpecFeatures::dot(int32_t vec_idx1, int32_t vec_idx2)
 		}
 	}
 
-	return result;
+	if (normalization_factors)
+		return result*normalization_factors[vec_idx1]*normalization_factors[vec_idx2];
+	else
+		return result;
 }
 
 float64_t CImplicitWeightedSpecFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
@@ -143,7 +165,13 @@ float64_t CImplicitWeightedSpecFeatures::dense_dot(int32_t vec_idx1, const float
 				offs+=strings->shift_offset(1,d+1);
 			}
 		}
+
+		if (normalization_factors)
+			result*=normalization_factors[vec_idx1];
 	}
+	else
+		SG_ERROR("huh?\n");
+
 	return result;
 }
 
@@ -151,6 +179,9 @@ void CImplicitWeightedSpecFeatures::add_to_dense_vec(float64_t alpha, int32_t ve
 {
 	int32_t len1=-1;
 	uint16_t* vec=strings->get_feature_vector(vec_idx1, len1);
+
+	if (normalization_factors)
+		alpha*=normalization_factors[vec_idx1];
 
 	if (vec && len1>0)
 	{
