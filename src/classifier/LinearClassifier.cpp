@@ -39,12 +39,14 @@ CLabels* CLinearClassifier::classify(CLabels* output)
 		ASSERT(num>0);
 		ASSERT(w_dim==features->get_dim_feature_space());
 
+		float64_t* out=new float64_t[num];
+		features->dense_dot_range(out, 0, num, NULL, w, w_dim, bias);
+
 		if (!output)
 			output=new CLabels(num);
-		ASSERT(output->get_num_labels()==num);
+		output->set_labels(out, num);
 
-		for (int32_t i=0; i<num; i++)
-			output->set_label(i, classify_example(i));
+		delete[] out;
 
 		return output;
 	}

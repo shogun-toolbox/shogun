@@ -103,6 +103,8 @@ class CDotFeatures : public CFeatures
 		 */
 		virtual void dense_dot_range(float64_t* output, int32_t start, int32_t stop, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b);
 
+		static void* dense_dot_range_helper(void* p);
+
 		/** get number of non-zero features in vector
 		 *
 		 * (in case accurate estimates are too expensive overestimating is OK)
@@ -124,6 +126,15 @@ class CDotFeatures : public CFeatures
 		 */
 		inline void set_combined_feature_weight(float64_t nw) { combined_weight=nw; }
 
+	protected:
+		inline void display_progress(int32_t start, int32_t stop, int32_t v)
+		{
+			int32_t num_vectors=stop-start;
+			int32_t i=v-start;
+
+			if ( (i% (num_vectors/100+1))== 0)
+				SG_PROGRESS(v, 0.0, num_vectors-1);
+		}
 	protected:
 		float64_t combined_weight;
 };
