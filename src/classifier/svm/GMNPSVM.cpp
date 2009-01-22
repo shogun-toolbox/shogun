@@ -42,11 +42,14 @@ bool CGMNPSVM::train()
 	int32_t num_virtual_data= num_data*(num_classes-1);
 
 	SG_INFO( "%d trainlabels, %d classes\n", num_data, num_classes);
-
+	
 	float64_t* vector_y = new float64_t[num_data];
 	for (int32_t i=0; i<num_data; i++)
+	{
 		vector_y[i]= labels->get_label(i)+1;
-
+		
+	}
+	
 	float64_t C = get_C1();
 	int32_t tmax = 1000000000;
 	float64_t tolabs = 0;
@@ -65,7 +68,7 @@ bool CGMNPSVM::train()
 	int32_t t = 0;
 	float64_t* History = NULL;
 	int32_t verb = 0;
-
+	
 	CGMNPLib mnp(vector_y,kernel,num_data, num_virtual_data, num_classes, reg_const);
 
 	mnp.gmnp_imdm(vector_c, num_virtual_data, tmax,
@@ -124,6 +127,16 @@ bool CGMNPSVM::train()
 		svm->set_bias(all_bs[i]);
 		set_svm(i, svm);
 	}
+	
+	basealphas.resize(num_classes, ::std::vector<float64_t>(num_data,0));
+	for(int j=0; j < num_virtual_data; j++ )
+	{
+		int inx1=0;
+		int inx2=0;
+
+		mnp.get_indices2( &inx1, &inx2, j );
+		basealphas[inx2-1][inx1]=alpha[j];
+	}	
 
 	delete[] vector_c;
 	delete[] alpha;
@@ -133,4 +146,9 @@ bool CGMNPSVM::train()
 	delete[] History;
 
 	return true;
+}
+
+void CGMNPSVM::getbasealphas(::std::vector< ::std::vector<float64_t> > & basealphas2)
+{
+	basealphas2=basealphas;
 }

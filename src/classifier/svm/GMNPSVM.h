@@ -11,6 +11,8 @@
 #ifndef _GMNPSVM_H___
 #define _GMNPSVM_H___
 
+#include <vector>
+
 #include "lib/common.h"
 #include "classifier/svm/MultiClassSVM.h"
 
@@ -38,5 +40,11 @@ class CGMNPSVM : public CMultiClassSVM
 		 * @return classifier type GMNPSVM
 		 */
 		virtual inline EClassifierType get_classifier_type() { return CT_GMNPSVM; }
+		
+		void getbasealphas(::std::vector< ::std::vector<float64_t> > & basealphas2);
+		
+	protected: 
+		::std::vector< ::std::vector<float64_t> > basealphas; // is the basic untransformed alpha, needed for MKL 
+		
 };
 #endif
