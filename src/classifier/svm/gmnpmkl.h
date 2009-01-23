@@ -1,15 +1,17 @@
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Written (W) 2009 Alexander Binder
+ * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ */
+
 #ifndef GMNPMKL_H_
 #define GMNPMKL_H_
 
-
-//#include <sstream>
 #include <vector>
-#include <cassert>
-
-//#include "glpk.h"
-//#if defined(USE_GLPK)
-//	#include "glpk.h"
-//#endif
 
 #include "lib/ShogunException.h"
 #include "GMNPSVM.h"
@@ -21,22 +23,19 @@
 #include "features/DummyFeatures.h"
 
 
-// CGMNPMKL is a class for a L1-norm (because there is with glpk a free oslver available) MKL for the multiclass svm CGMNPSVM
-// it is to be used as all other SVM routines with the set_kernel, set_C, set_labels, set_epsilon
-// its own parameters are 
-//thresh (L2 norm of subkernel weights for termination) and
-// maxiters (how many silp iterations at most in order to force termination)
+#ifdef USE_GLPK
+#include <glpk.h>
 
-//TODO: check what options to pass from CGMNPMKL to CGMNPSVM
-//set C_mkl?
-
-//TODO: clear types (float64_t, size_t, int)
-
-
-#if defined(USE_GLPK)
-	
-#include "glpk.h"
-
+/** CGMNPMKL is a class for a L1-norm (because there is with glpk a free solver
+ * available) MKL for the multiclass svm CGMNPSVM kit is to be used as all
+ * other SVM routines with the set_kernel, set_C, set_labels, set_epsilon
+ * its own parameters are thresh (L2 norm of subkernel weights for termination) and
+ * maxiters (how many silp iterations at most in order to force termination)
+ *
+ * TODO: check what options to pass from CGMNPMKL to CGMNPSVM
+ * set C_mkl?
+ * TODO: clear types (float64_t, size_t, int)
+ */
 class lpwrapper
 {
 public:
@@ -48,7 +47,10 @@ public:
 	
 	virtual void setup(const int32_t numkernels); 
 
-	// takes a set of alpha^t H alpha and -sum alpha and adds constraint32_t to the working set theta <= \beta^ (1) + -sumalpha  
+	/** takes a set of alpha^t H alpha and -sum alpha
+	 * and adds constraint32_t to the working set
+	 * theta <= \beta^ (1) + -sumalpha  
+	 */
 	virtual void addconstraint(const ::std::vector<float64_t> & normw2,
 			const float64_t sumofpositivealphas); 
 
@@ -67,14 +69,10 @@ public:
 	
 protected:
 	
-	//prohibit copying, copy constructor by declaring protected?
+	///prohibit copying, copy constructor by declaring protected?
 	glpkwrapper operator=(glpkwrapper & gl);
 	glpkwrapper(glpkwrapper & gl);
-//#if defined(USE_GLPK)
 	glp_prob* linearproblem;
-//#else
-	// nothing here
-//#endif	
 };
 
 #else
@@ -112,17 +110,9 @@ protected:
 	//prohibit copying, copy constructor by declaring protected?
 	glpkwrapper operator=(glpkwrapper & gl);
 	glpkwrapper(glpkwrapper & gl);
-//#if defined(USE_GLPK)
-//	glp_prob* linearproblem;
-//#else
-	// nothing here
-//#endif	
 };
 
-#endif
-
-
-
+#endif //USE_GLPK
 
 class glpkwrapper4CGMNPMKL: public glpkwrapper
 {
@@ -208,4 +198,4 @@ protected:
 	
 };
 
-#endif /*GMNPMKL_H_*/
+#endif // GMNPMKL_H_

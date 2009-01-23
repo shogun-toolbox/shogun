@@ -1,4 +1,14 @@
-#include "gmnpmkl.h"
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Written (W) 2009 Alexander Binder
+ * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ */
+
+#include "classifier/svm/gmnpmkl.h"
 
 lpwrapper::lpwrapper()
 {
@@ -151,8 +161,8 @@ void glpkwrapper4CGMNPMKL::addconstraint(const ::std::vector<float64_t> & normw2
 {
 #if defined(USE_GLPK)
 	
-	assert((int)normw2.size()==numkernels);
-	assert(sumofpositivealphas>=0);
+	ASSERT((int)normw2.size()==numkernels);
+	ASSERT(sumofpositivealphas>=0);
 
 	glp_add_rows(linearproblem,1);
 
@@ -201,8 +211,6 @@ void glpkwrapper4CGMNPMKL::addconstraint(const ::std::vector<float64_t> & normw2
 void glpkwrapper4CGMNPMKL::computeweights(std::vector<float64_t> & weights2)
 {
 #if defined(USE_GLPK)
-	//assert(true==addedconstraint);
-
 	weights2.resize(numkernels);
 
 	glp_simplex(linearproblem,NULL); // standard parameters
@@ -408,7 +416,7 @@ bool CGMNPMKL::evaluatefinishcriterion(const int32_t numberofsilpiterations)
 		wnew=weightshistory.back();
 		float64_t delta=0;
 		
-		assert(wold.size()==wnew.size());
+		ASSERT(wold.size()==wnew.size());
 		
 		for(size_t i=0;i< wnew.size();++i)
 		{
@@ -479,7 +487,7 @@ float64_t CGMNPMKL::getsumofsignfreealphas()
 	lab=NULL;
 	
 	
-	assert(trainlabels2.size()>0);
+	ASSERT(trainlabels2.size()>0);
 	float64_t sum=0;
 
 	for(int32_t nc=0; nc< labels->get_num_classes();++nc)
@@ -722,9 +730,6 @@ void CGMNPMKL::tester()
 	kernel1->set_full_kernel_matrix_from_full(ker1,x.size(), x.size());
 	kernel2->set_full_kernel_matrix_from_full(ker2,x.size(), x.size());
 	
-	//printf( "k1 %f %f  ",ker1[721],  kernel1->kernel(1,1) );
-	//printf( "k2 %f %f ", ker2[721], kernel2->kernel(1,1) );
-	
 	ker->append_kernel(kernel1);  	
 	ker->append_kernel(kernel2);  
 	
@@ -938,17 +943,6 @@ void CGMNPMKL::tester()
 	tl=NULL;
 	delete tr;
 	tr=NULL;
-	/*
-	//delete tkernel1;
-	tkernel1=NULL;
-	//delete tkernel2;
-	tkernel2=NULL;
-	*/
-	
-	
-	
-	
-	
 	
 	delete tsvm;
 	tsvm=NULL;
