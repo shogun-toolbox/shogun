@@ -156,8 +156,6 @@ public:
 	int32_t maxiters; // how many iters of silp at max or <0 to ignore this
 	int32_t lpwrappertype; // what kind of LP solver: 0 - glpk (default)
 
-	// testing routine
-	void tester();
 
 	
 protected:
@@ -191,8 +189,6 @@ protected:
 	
 	::std::vector< std::vector< float64_t> > weightshistory;
 	
-	//helper routine for void tester();
-	void getgauss(float64_t & y1, float64_t & y2);
 	
 	int32_t numdat,numcl,numker;
 	
