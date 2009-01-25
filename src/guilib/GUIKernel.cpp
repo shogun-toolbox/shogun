@@ -54,6 +54,7 @@
 #include "kernel/MindyGramKernel.h"
 #include "kernel/OligoKernel.h"
 #include "kernel/DistanceKernel.h"
+#include "kernel/TensorProductPairKernel.h"
 
 #include "kernel/AvgDiagKernelNormalizer.h"
 #include "kernel/FirstElementKernelNormalizer.h"
@@ -572,6 +573,18 @@ CKernel* CGUIKernel::create_sparselinear(int32_t size, float64_t scale)
 	kern->set_normalizer(new CAvgDiagKernelNormalizer(scale));
 
 	SG_DEBUG("created SparseLinearKernel (%p) with size %d and scale %f.\n", kern, size, scale);
+
+	return kern;
+}
+
+CKernel* CGUIKernel::create_tppk(int32_t size, float64_t* km, int32_t rows, int32_t cols)
+{
+	CCustomKernel* k=new CCustomKernel();
+	k->set_full_kernel_matrix_from_full(km, rows, cols);
+
+	CKernel* kern=new CTensorProductPairKernel(size, k);
+
+	SG_DEBUG("created TPPK (%p) with size %d and km %p, rows %d, cols %d.\n", kern, size, km, rows, cols);
 
 	return kern;
 }

@@ -92,6 +92,9 @@ class CGUIKernel : public CSGObject
 	/** create a new Sigmoid kernel */
 	CKernel* create_sigmoid(
 		int32_t size=10, float64_t gamma=0.01, float64_t coef0=0);
+	/** create a new TPP kernel */
+	CKernel* create_tppk(
+		int32_t size, float64_t* km, int32_t rows, int32_t cols);
 	/** create a new SparsePoly kernel */
 	CKernel* create_sparsepoly(
 		int32_t size=10, int32_t degree=2, bool inhomogene=false,

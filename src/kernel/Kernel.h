@@ -68,7 +68,8 @@ enum EKernelType
 	K_LOCALALIGNMENT = 230,
 	K_PYRAMIDCHI2 = 240,
 	K_OLIGO = 250,
-	K_MATCHWORD = 260
+	K_MATCHWORD = 260,
+	K_TPPK = 270
 };
 
 enum EKernelProperty

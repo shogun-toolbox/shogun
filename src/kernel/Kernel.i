@@ -49,6 +49,7 @@
 %include "kernel/SparseGaussianKernel.i"
 %include "kernel/SparseLinearKernel.i"
 %include "kernel/SparsePolyKernel.i"
+%include "kernel/TensorProductPairKernel.i"
 
 %include "kernel/Chi2Kernel.i"
 %include "kernel/AUCKernel.i"

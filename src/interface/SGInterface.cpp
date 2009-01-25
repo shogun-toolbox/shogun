@@ -2741,6 +2741,25 @@ CKernel* CSGInterface::create_kernel()
 		delete[] dtype;
 	}
 
+	else if (strmatch(type, "TPPK"))
+	{
+		if (m_nrhs==5)
+			return NULL;
+
+		char* dtype=get_str_from_str_or_direct(len);
+		if (strmatch(dtype, "INT"))
+		{
+			int32_t size=get_int_from_int_or_str();
+			float64_t* km=NULL;
+			int32_t rows=0;
+			int32_t cols=0;
+			get_real_matrix(km, rows, cols);
+			kernel=ui_kernel->create_tppk(size, km, rows, cols);
+		}
+
+		delete[] dtype;
+	}
+
 #ifdef HAVE_MINDY
 	else if (strmatch(type, "MINDYGRAM"))
 	{

@@ -315,13 +315,13 @@ CSVMLight::~CSVMLight()
 bool CSVMLight::setup_auc_maximization()
 {
 	SG_INFO( "setting up AUC maximization\n") ;
-	
+
 	// get the original labels
 	int32_t num=0;
 	ASSERT(labels);
 	int32_t* int_labels=labels->get_int_labels(num);
 	ASSERT(kernel->get_num_vec_rhs()==num);
-	
+
 	// count positive and negative
 	int32_t num_pos = 0 ;
 	int32_t num_neg = 0 ;
@@ -330,7 +330,7 @@ bool CSVMLight::setup_auc_maximization()
 			num_pos++ ;
 		else 
 			num_neg++ ;
-	
+
 	// create AUC features and labels (alternate labels)
 	int32_t num_auc = num_pos*num_neg ;
 	SG_INFO( "num_pos: %i  num_neg: %i  num_auc: %i\n", num_pos, num_neg, num_auc) ;
@@ -363,7 +363,7 @@ bool CSVMLight::setup_auc_maximization()
 	CLabels* lab_auc = new CLabels(num_auc) ;
 	lab_auc->set_int_labels(labels_auc, num_auc) ;
 	set_labels(lab_auc);
-	
+
 	// create feature object
 	CWordFeatures* f = new CWordFeatures((int32_t)0,0) ;
 	f->set_feature_matrix(features_auc, 2, num_auc) ;
@@ -1711,13 +1711,15 @@ void CSVMLight::perform_mkl_step(float64_t* beta, float64_t* old_beta, int num_k
 		}
 		else
 		{
-			if (get_solver_type()==ST_CPLEX || get_solver_type()==ST_AUTO) {
+			if (get_solver_type()==ST_CPLEX) {
 				rho=compute_optimal_betas_via_cplex(beta, old_beta, num_kernels, sumw, suma, inner_iters);
-      } else {
+			}
+			else
+			{
 				//rho=compute_optimal_betas_analytically(beta, old_beta, num_kernels, sumw, suma, mkl_objective);
 				//rho=compute_optimal_betas_gradient(beta, old_beta, num_kernels, sumw, suma, mkl_objective);
 				rho=compute_optimal_betas_newton(beta, old_beta, num_kernels, sumw, suma, mkl_objective);
-      }
+			}
 		}
 
 		// set weights, store new rho and compute new w gap

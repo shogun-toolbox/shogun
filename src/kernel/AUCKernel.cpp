@@ -17,16 +17,19 @@
 CAUCKernel::CAUCKernel(int32_t size, CKernel* s)
 : CSimpleKernel<uint16_t>(size), subkernel(s)
 {
+	SG_REF(subkernel);
 }
 
 CAUCKernel::CAUCKernel(CWordFeatures* l, CWordFeatures* r, CKernel* s)
 : CSimpleKernel<uint16_t>(10), subkernel(s)
 {
+	SG_REF(subkernel);
 	init(l, r);
 }
 
 CAUCKernel::~CAUCKernel()
 {
+	SG_UNREF(subkernel);
 	cleanup();
 }
 
