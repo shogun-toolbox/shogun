@@ -55,7 +55,7 @@ void CDotFeatures::dense_dot_range(float64_t* output, int32_t start, int32_t sto
 		params.vec=vec;
 		params.dim=dim;
 		params.bias=b;
-		params.progress=true;
+		params.progress=false; //true;
 		dense_dot_range_helper((void*) &params);
 #ifndef WIN32
 	}
@@ -90,7 +90,7 @@ void CDotFeatures::dense_dot_range(float64_t* output, int32_t start, int32_t sto
 		params[t].vec=vec;
 		params[t].dim=dim;
 		params[t].bias=b;
-		params[t].progress = true;
+		params[t].progress = false; //true;
 		dense_dot_range_helper((void*) &params[t]);
 
 		for (t=0; t<num_threads-1; t++)
