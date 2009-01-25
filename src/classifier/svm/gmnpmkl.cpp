@@ -481,7 +481,7 @@ float64_t CGMNPMKL::getsumofsignfreealphas()
 
 	std::vector<int> trainlabels2(labels->get_num_labels());
 	int32_t tmpint;
-	float64_t * lab=labels->get_labels ( tmpint);
+	int32_t * lab=labels->get_int_labels ( tmpint);
 	std::copy(lab,lab+labels->get_num_labels(), trainlabels2.begin());
 	delete[] lab;
 	lab=NULL;

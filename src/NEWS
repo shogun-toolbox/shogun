@@ -11,6 +11,7 @@
 		- Add q-norm MKL support based on Newton.
 		- Add 1-norm MKL support based on GLPK.
 		- Add multiclass MKL support based on the GMNP svm solver.
+		- Implement Tensor Product Pair Kernel (TPPK).
 		- Support compilation on the iPhone :)
 		- Add an option to set wds kernel position weights.
 		- Build static libshogun.a for libshogun target.
