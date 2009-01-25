@@ -2743,7 +2743,7 @@ CKernel* CSGInterface::create_kernel()
 
 	else if (strmatch(type, "TPPK"))
 	{
-		if (m_nrhs==5)
+		if (m_nrhs!=5)
 			return NULL;
 
 		char* dtype=get_str_from_str_or_direct(len);

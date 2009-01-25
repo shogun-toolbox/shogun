@@ -960,6 +960,9 @@ void CKernel::list_kernel()
 		case K_LOCALALIGNMENT:
 			SG_INFO( "K_LOCALALIGNMENT ");
 			break;
+		case K_TPPK:
+			SG_INFO( "K_TPPK ");
+			break;
 		default:
          SG_ERROR( "ERROR UNKNOWN KERNEL TYPE");
 			break;
