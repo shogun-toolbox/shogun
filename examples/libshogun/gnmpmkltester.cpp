@@ -332,9 +332,17 @@ void tester()
 	tker->append_kernel(tkernel1);  	
 	tker->append_kernel(tkernel2);  
 	
+	int32_t numweights;
+	float64_t* weights=tsvm-> getsubkernelweights(numweights);
 	
-	
+	SG_PRINT("test kernel weights (I always forget to set them)\n");
+	for(int32_t i=0; i< numweights;++i)
+	{
+		SG_PRINT("%f ", weights[i]);
+	}
+	SG_PRINT("\n");
 	//set kernel
+	tker->set_subkernel_weights(weights, numweights);
 	tsvm->set_kernel(tker);
 	
 	
@@ -386,6 +394,8 @@ void tester()
 	delete lab;
 	lab=NULL;
 
+	delete[] weights;
+	weights=NULL;
 	
 	SG_PRINT( "finished \n");
 }
