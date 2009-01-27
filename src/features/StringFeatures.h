@@ -482,7 +482,7 @@ template <class ST> class CStringFeatures : public CFeatures
 				if (blocksize>fsize)
 					blocksize=fsize;
 
-				SG_DEBUG("block_size=%d file_size=%d\n", blocksize, fsize);
+				SG_DEBUG("block_size=%ld file_size=%ld\n", blocksize, fsize);
 
 				size_t sz=blocksize;
 				while (sz == blocksize)

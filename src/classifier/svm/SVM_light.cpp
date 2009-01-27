@@ -2024,7 +2024,12 @@ float64_t CSVMLight::compute_optimal_betas_newton(float64_t* beta,
     const float64_t gqq1 = gamma * mkl_norm * (mkl_norm-1.0);
     Z = 0.0;
     for( p=0; p<num_kernels; ++p ) {
-      ASSERT( 0.0 <= old_beta[p] && old_beta[p] <= 1.0 );
+      if ( 0.0 > old_beta[p] || old_beta[p] > 1.0 )
+	  {
+		  CMath::display_vector(old_beta, num_kernels, "old_beta");
+		  CMath::display_vector(beta, num_kernels, "beta");
+		  SG_ERROR("old_beta out of range");
+	  }
       beta[p] = ( gamma*mkl_norm*CMath::pow(old_beta[p],mkl_norm) - sumw[p]*old_beta[p] )
         / ( 2.0*sumw[p] + gqq1*CMath::pow(old_beta[p],mkl_norm-1.0) );
       Z += beta[p] * beta[p];
