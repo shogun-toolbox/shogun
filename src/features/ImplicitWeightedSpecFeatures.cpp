@@ -14,8 +14,8 @@
 CImplicitWeightedSpecFeatures::CImplicitWeightedSpecFeatures(CStringFeatures<uint16_t>* str, bool normalize) : CDotFeatures()
 {
 	ASSERT(str);
-	SG_REF(strings)
 	strings=str;
+	SG_REF(strings)
 	normalization_factors=NULL;
 	spec_weights=NULL;
 	num_strings = str->get_num_vectors();
