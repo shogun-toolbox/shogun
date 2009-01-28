@@ -17,6 +17,8 @@ def get_features(fclass, ftype, data, *args, **kwargs):
 		return get_string(ftype, data, *args, **kwargs)
 	elif fclass=='string_complex':
 		return get_string_complex(ftype, data, *args, **kwargs)
+	elif fclass=='wd':
+		return get_wd(data, *args, **kwargs)
 	else:
 		raise ValueError, 'Unknown feature class %s.'%fclass
 
@@ -102,6 +104,31 @@ def get_string_complex (ftype, data, alphabet=features.DNA,
 		return add_preproc(name, feats)
 	else:
 		return feats
+
+
+def get_wd (data, order=WORDSTRING_ORDER):
+	"""Return WDFeatures.
+
+	@param data Train/test data for feature creation
+	@param order Order of the feature
+	@return Dict with WDFeatures train/test
+	"""
+
+	feats={}
+
+	charfeat=features.StringCharFeatures(features.DNA)
+	charfeat.set_string_features(data['train'])
+	bytefeat=features.StringByteFeatures(features.RAWDNA)
+	bytefeat.obtain_from_char(charfeat, 0, 1, 0, False)
+	feats['train']=features.WDFeatures(bytefeat, order, order)
+
+	charfeat=features.StringCharFeatures(features.DNA)
+	charfeat.set_string_features(data['test'])
+	bytefeat=features.StringByteFeatures(features.RAWDNA)
+	bytefeat.obtain_from_char(charfeat, 0, 1, 0, False)
+	feats['test']=features.WDFeatures(bytefeat, order, order)
+
+	return feats
 
 
 def add_preproc (name, feats, *args):

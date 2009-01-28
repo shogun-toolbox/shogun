@@ -117,6 +117,7 @@ global classifier_classified;
 global classifier_accuracy;
 global classifier_alpha_sum;
 global classifier_sv_sum;
+global classifier_order;
 
 global regression_name;
 global regression_num_threads;

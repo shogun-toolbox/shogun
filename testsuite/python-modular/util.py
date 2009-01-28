@@ -61,12 +61,15 @@ def get_args (indata, prefix=''):
 
 
 def get_features(indata, prefix=''):
-	if indata[prefix+'feature_class']=='simple':
+	fclass=prefix+'feature_class'
+	if indata[fclass]=='simple':
 		return get_feats_simple(indata, prefix)
-	elif indata[prefix+'feature_class']=='string':
+	elif indata[fclass]=='string':
 		return get_feats_string(indata, prefix)
-	elif indata[prefix+'feature_class']=='string_complex':
+	elif indata[fclass]=='string_complex':
 		return get_feats_string_complex(indata, prefix)
+	elif indata[fclass]=='wd':
+		return get_feats_wd(indata, prefix)
 	else:
 		raise ValueError, \
 			'Unknown feature class %s!'%indata[prefix+'feature_class']
@@ -158,6 +161,25 @@ def get_feats_string_complex (indata, prefix=''):
 		return add_preproc(name, feats)
 	else:
 		return feats
+
+
+def get_feats_wd (indata, prefix=''):
+	order=indata[prefix+'order']
+	feats={}
+
+	charfeat=StringCharFeatures(DNA)
+	charfeat.set_string_features(list(indata[prefix+'data_train'][0]))
+	bytefeat=StringByteFeatures(RAWDNA)
+	bytefeat.obtain_from_char(charfeat, 0, 1, 0, False)
+	feats['train']=WDFeatures(bytefeat, order, order)
+
+	charfeat=StringCharFeatures(DNA)
+	charfeat.set_string_features(list(indata[prefix+'data_test'][0]))
+	bytefeat=StringByteFeatures(RAWDNA)
+	bytefeat.obtain_from_char(charfeat, 0, 1, 0, False)
+	feats['test']=WDFeatures(bytefeat, order, order)
+
+	return feats
 
 
 def add_preproc (name, feats, *args):

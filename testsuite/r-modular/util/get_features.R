@@ -109,6 +109,23 @@ get_features <- function(prefix) {
 			if (regexpr('string_complex', feature_class)>0) {
 				return(convert_features_and_add_preproc(train, test, prefix))
 			}
+		} else if (regexpr('wd', feature_class)>0) {
+			order <- as.integer(eval(parse(text=paste(
+				prefix, 'order', sep=''))))
+
+			charfeat <- StringCharFeatures('DNA')
+			charfeat$set_string_features(charfeat, data_train)
+			bytefeat <- StringByteFeatures('RAWDNA')
+			bytefeat$obtain_from_char(bytefeat, charfeat,
+				as.integer(0), as.integer(1), as.integer(0), FALSE)
+			train <- WDFeatures(bytefeat, order, order)
+
+			charfeat <- StringCharFeatures('DNA')
+			charfeat$set_string_features(charfeat, data_test)
+			bytefeat <- StringByteFeatures('RAWDNA')
+			bytefeat$obtain_from_char(bytefeat, charfeat,
+				as.integer(0), as.integer(1), as.integer(0), FALSE)
+			test <- WDFeatures(bytefeat, order, order)
 		}
 		else {
 			print(paste('Unknown feature class', feature_class))

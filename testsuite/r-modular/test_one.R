@@ -9,7 +9,7 @@ for (i in 1:length(indata)) {
 
 # there is some randomness involved, alas this is
 # not working correctly in R
-dump <- Math_init_random(as.integer(init_random))
+dump <- Math_init_random(init_random)
 set.seed(init_random)
 
 path=strsplit(filename, '/', fixed=TRUE)

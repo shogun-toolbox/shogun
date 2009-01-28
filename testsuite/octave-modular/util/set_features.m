@@ -160,6 +160,27 @@ function y = set_features(prefix)
 				convert_features_and_add_preproc(prefix);
 			end
 
+		elseif strcmp(feature_class, 'wd')==1
+			global DNA;
+			global RAWDNA;
+			global StringCharFeatures;
+			global StringByteFeatures;
+			global WDFeatures;
+			eval(sprintf(['global ', prefix, 'order']));
+			order=eval(sprintf([prefix, 'order']));
+
+			charfeat=StringCharFeatures(DNA);
+			charfeat.set_string_features(data_train);
+			bytefeat=StringByteFeatures(RAWDNA);
+			bytefeat.obtain_from_char(charfeat, 0, 1, 0, false);
+			feats_train=WDFeatures(bytefeat, order, order);
+
+			charfeat=StringCharFeatures(DNA);
+			charfeat.set_string_features(data_test);
+			bytefeat=StringByteFeatures(RAWDNA);
+			bytefeat.obtain_from_char(charfeat, 0, 1, 0, false);
+			feats_test=WDFeatures(bytefeat, order, order);
+
 		else
 			error('Unknown feature class %s', feature_class);
 		end

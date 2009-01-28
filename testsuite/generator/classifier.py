@@ -297,9 +297,6 @@ def _run_svm_linear ():
 		params['feature_class'], params['feature_type'],
 		params['data'], sparse=True)
 
-	svms=('SVMOcas',)
-	_loop_svm(svms, params, feats)
-
 	svms=('LibLinear', 'SVMLin', 'SVMSGD')
 	params['bias_enabled']=True
 	_loop_svm(svms, params, feats)
@@ -309,6 +306,25 @@ def _run_svm_linear ():
 	params['bias_enabled']=False
 	params['max_train_time']=.5 # up to 2. does not improve test results :(
 	_loop_svm(svms, params, feats)
+
+	svms=('SVMOcas',)
+	_loop_svm(svms, params, feats)
+
+	params={
+		'type': 'linear',
+		'bias_enabled': False,
+		'label_type': 'twoclass',
+		'feature_class': 'wd',
+		'feature_type': 'Byte',
+		'data': dataop.get_dna(),
+		'alphabet': 'RAWDNA',
+		'order': 1
+	}
+	feats=featop.get_features(
+		params['feature_class'], params['feature_type'],
+		params['data'], params['order'])
+	_loop_svm(svms, params, feats)
+
 
 
 ##########################################################################
@@ -451,9 +467,9 @@ def run ():
 	"""Run generator for all classifiers."""
 
 #	_run_svm_kernel()
-#	_run_svm_linear()
+	_run_svm_linear()
 #	_run_knn()
 #	_run_lda()
 #	_run_perceptron()
-	_run_wdsvmocas()
+#	_run_wdsvmocas()
 
