@@ -240,6 +240,10 @@ void CSVMOcas::compute_output(float64_t *output, void* ptr)
 	int32_t nData=f->get_num_vectors();
 
 	float64_t* y = o->lab;
+
+	for (int32_t i=0; i<nData; i++)
+		output[i]=y[i];
+
 	f->dense_dot_range(output, 0, nData, y, o->w, o->w_dim, 0.0);
 	//CMath::display_vector(o->w, o->w_dim, "w");
 	//CMath::display_vector(output, nData, "out");
