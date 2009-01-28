@@ -16,7 +16,8 @@ cache_size = 50; % cache per kernel in MB
 svm_eps=1e-3;	 % svm epsilon
 mkl_eps=1e-3;	 % mkl epsilon
 
-no_obs = 2000;   % number of observations / data points (sum for train and test and both classes)
+no_obs = 50;     % number of observations / data points (sum for train and test and both classes)
+				 % 2000 was used in the paper
 k_star = 20;     % number of "leaves" of the stars
 alpha = 0.3;     % noise level of the data
 
@@ -34,8 +35,8 @@ randn('state', 17);
 %%%% Great loop: train MKL for every data set (the different distances between the stars)
 %%%%
 
-sg('loglevel', 'ALL');
-sg('echo', 'ON');
+%sg('loglevel', 'ALL');
+%sg('echo', 'ON');
 
 
 for kk = 1:size(radius_star,1)
@@ -101,7 +102,7 @@ for kk = 1:size(radius_star,1)
   sg('init_kernel', 'TEST');
   sg('set_threshold', 0);
   result.trainout(kk,:)=sg('classify');
-  result.trainerr(kk)  = mean(train_y~=sign(result.trainout(kk,:)));  
+  result.trainerr(kk)  = mean(train_y~=sign(result.trainout(kk,:)),2);  
 
   % calculate test error
 
@@ -115,7 +116,7 @@ for kk = 1:size(radius_star,1)
   sg('init_kernel', 'TEST');
   sg('set_threshold', 0);
   result.testout(kk,:)=sg('classify');
-  result.testerr(kk)  = mean(test_y~=sign(result.testout(kk,:)));    
+  result.testerr(kk)  = mean(test_y~=sign(result.testout(kk,:)),2);    
 	 
 end
 disp('done. now w contains the kernel weightings and result test/train outputs and errors')
