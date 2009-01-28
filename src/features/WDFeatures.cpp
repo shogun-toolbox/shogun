@@ -16,7 +16,7 @@ CWDFeatures::CWDFeatures(CStringFeatures<uint8_t>* str,
 {
 	ASSERT(str);
 	ASSERT(str->have_same_length());
-	SG_REF(strings);
+	SG_REF(str);
 
 	strings=str;
 	string_length=str->get_max_vector_length();
@@ -149,18 +149,13 @@ void CWDFeatures::set_wd_weights()
 {
 	ASSERT(degree>0 && degree<=8);
 	wd_weights=new float64_t[degree];
-	float64_t sum=0;
 	w_dim=0;
 
 	for (int32_t i=0; i<degree; i++)
 	{
 		w_dim+=CMath::pow(alphabet_size, i+1)*string_length;
-		wd_weights[i]=degree-i;
-		sum+=wd_weights[i];
+		wd_weights[i]=sqrt(2.0*(from_degree-i)/(from_degree*(from_degree+1)));
 	}
-	for (int32_t i=0; i<degree; i++)
-		wd_weights[i]=CMath::sqrt(wd_weights[i]/sum);
-
 	SG_DEBUG("created WDFeatures with d=%d (%d), alphabetsize=%d, dim=%d num=%d, len=%d\n", degree, from_degree, alphabet_size, w_dim, num_strings, string_length);
 }
 
