@@ -126,6 +126,10 @@ class CDotFeatures : public CFeatures
 		 */
 		inline void set_combined_feature_weight(float64_t nw) { combined_weight=nw; }
 
+		/** return feature matrix (in feature space)
+		 */
+		virtual void get_feature_matrix(float64_t** matrix, int32_t* d1, int32_t* d2);
+
 	protected:
 		inline void display_progress(int32_t start, int32_t stop, int32_t v)
 		{

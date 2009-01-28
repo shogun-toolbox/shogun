@@ -136,3 +136,25 @@ void* CDotFeatures::dense_dot_range_helper(void* p)
 
 	return NULL;
 }
+
+void CDotFeatures::get_feature_matrix(float64_t** matrix, int32_t* d1, int32_t* d2)
+{
+    int64_t offs=0;
+	int32_t num_vec=get_num_vectors();
+    int32_t dim=get_dim_feature_space();
+    ASSERT(num_vec>0);
+    ASSERT(dim>0);
+
+    int64_t sz=((uint64_t) num_vec)* dim;
+
+    *d1=dim;
+    *d2=num_vec;
+    *matrix=new float64_t[sz];
+    memset(*matrix, 0, sz*sizeof(float64_t));
+
+    for (int32_t i=0; i<num_vec; i++)
+    {
+		add_to_dense_vec(1.0, i, (*matrix)[offs], dim);
+        offs+=dim;
+    }
+}
