@@ -73,6 +73,7 @@ bool CSVMOcas::train()
 	cp_value=new float64_t*[bufsize];
 	cp_index=new uint32_t*[bufsize];
 	cp_nz_dims=new uint32_t[bufsize];
+	cp_bias=new float64_t[bufsize];
 
 	float64_t TolAbs=0;
 	float64_t QPBound=0;
@@ -177,8 +178,13 @@ void CSVMOcas::add_new_cut(
 	float64_t* new_a = o->tmp_a_buf;
 	memset(new_a, 0, sizeof(float64_t)*nDim);
 
+	cp_bias[nSel]=0;
+
 	for(i=0; i < cut_length; i++) 
+	{
 		f->add_to_dense_vec(y[new_cut[i]], new_cut[i], new_a, nDim);
+		cp_bias+=y[new_cut[i]];
+	}
 
 	/* compute new_a'*new_a and count number of non-zerou dimensions */
 	nz_dims = 0; 
@@ -242,7 +248,7 @@ void CSVMOcas::compute_output(float64_t *output, void* ptr)
 	float64_t* y = o->lab;
 
 	for (int32_t i=0; i<nData; i++)
-		output[i]=y[i];
+		output[i]=y[i]*bias;
 
 	f->dense_dot_range(output, 0, nData, y, o->w, o->w_dim, 0.0);
 	//CMath::display_vector(o->w, o->w_dim, "w");

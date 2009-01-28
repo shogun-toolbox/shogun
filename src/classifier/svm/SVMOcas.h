@@ -188,6 +188,7 @@ class CSVMOcas : public CLinearClassifier
 		uint32_t** cp_index;
 		/** cutting plane dimensions */
 		uint32_t* cp_nz_dims;
-
+		/** bias dimensions */
+		float64_t* cp_bias;
 };
 #endif
