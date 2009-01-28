@@ -1,0 +1,117 @@
+README testsuite
+================
+
+This document tries to explain how to use and extend the testsuite.
+Written January 2009 by Sebastian Henschel <shogun@kodeaffe.de>
+
+
+Usage
+-----
+
+There are two major functions:
+
+- Generate testcase data.
+   This is run seldomly, usually when new functionality has been added or
+   algorithmic bugs have been found. The generator is implemented in python
+   and uses SHOGUN's interface python-modular. The resulting files are in
+   matlab/octave format.
+
+   Just issue
+
+     ./generate_testdata.py
+
+   and all data files will be created in data/, within subdirectories
+   according to the category of which they are part of. This will not remove
+   previously created testcases, so you might want to run
+
+     ./generate_testdata.py clear
+
+   to remove these files.
+
+   If you want to (re)create only the testcases for a specific category, issue
+
+   ./generate_testdata.py <category>
+
+   where category is one of: classifier, clustering, distance, distribution,
+   kernel, preproc, regression.
+
+
+- Test your current iteration of SHOGUN against the previously created
+  testcases.
+   For that you have to change directory into the interface you want to test
+   against, e.g.
+
+     cd python-modular
+
+   There you can test against all testcases or all of one category or
+   individually.
+   To test against all, just issue
+
+     ./test_all.sh
+
+  To test against all of one category, issue
+
+    ./test_all.sh <category>
+
+  where category is one of: see above
+
+  To test individually, issue
+
+    ./test_one.py ../data/<category>/<testcase>.m (python)
+    ./test_one.sh ../data/<category>/<testcase>.m (matlab/octave/R)
+
+  If you run tests individually, you get to see more than ERROR in case
+  of failure.
+
+
+
+Extension
+---------
+
+Now that was easy, the difficult part is how to extend the beast. The overview
+given below is hopefully sufficient to help the uninitiated to succeed.
+
+- Generator
+   Change the working directory to generator/.
+
+   There are 4 modules to help with recurring operations:
+    1) category.py - defines the categories used, their names and
+        representation as number (as a sort of enum)
+    2) dataop.py - helps generating various random data, like numbers, DNA
+        sequences, random numbers structured in clouds, etc.
+    3) featop.py - helps creating feature objects out of the given data
+    4) fileop.py - helps preparing and writing the generated data to file.
+
+   The first task now is to define the category where you want your testcase
+   to be generated. If you should ever add another category, don't forget to
+   add it to the constant CATEGORIES in __init__.py and to update category.py
+   accordingly.
+   Each category module has a function run() which is called via __init__.py
+   and itself runs other run_* functions which group items together,
+   for instance kernels with Byte features, kernels with String features,
+   kernels that can handle subkernels, linear SVM classifiers, kernel-based
+   SVM classifiers and so on.
+   Basically each group function creates the necessary data and then
+   establishes a hash called params which contains all the parameters that are
+   necessary to run an item and must be written to file. This hash is
+   often modified while the group function is executed, depending on
+   which item is actually run. Sometimes it contains other hashes and tuples
+   like kernel parameters, sometimes it is just another integer. Each item's
+   parameters are defined either at the beginning of the group's run
+   function (if relevant to the whole group) or shortly before the item is
+   about to be run.
+   Usually, a compute_* function is then executed which actually feeds the
+   gathered data and parameters to SHOGUN and handles its output. Some
+   compute_* functions are relevant to only one group function, some are used
+   by several group functions, kernel.compute() is used by
+   kernel.run_feats_byte() and kernel.run_distance(), for example while
+   kernel.compute_pie() is only used by kernel.run_pie().
+   Classifiers (and regressions) are a bit different, because some of them run
+   through a loop function which feeds the compute function with different
+   values for C, number of threads, epsilon, etc., modifying the hash params
+   while doing so.
+   The compute_* functions interface with the fileop module to gather output
+   data and write it all to file. Afterwards the next group or category is
+   run or the generator has finished its job.
+
+
