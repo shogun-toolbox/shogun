@@ -151,9 +151,11 @@ bool CWDSVMOcas::train()
 	old_w=new float32_t[w_dim];
 	memset(old_w, 0, w_dim*sizeof(float32_t));
 	bias=0;
+	old_bias=0;
 
 	cuts=new float32_t*[bufsize];
 	memset(cuts, 0, sizeof(*cuts)*bufsize);
+	cp_bias=new float64_t[bufsize];
 
 /////speed tests/////
 	/*float64_t* tmp = new float64_t[num_vec];
@@ -216,12 +218,20 @@ float64_t CWDSVMOcas::update_W( float64_t t, void* ptr )
   uint32_t nDim = (uint32_t) o->w_dim;
   float32_t* W=o->w;
   float32_t* oldW=o->old_w;
+  float64_t bias=o->bias;
+  float64_t old_bias=bias;
 
   for(uint32_t j=0; j <nDim; j++)
   {
 	  W[j] = oldW[j]*(1-t) + t*W[j];
 	  sq_norm_W += W[j]*W[j];
   }          
+
+  bias=old_bias*(1-t) + t*bias;
+  sq_norm_W += CMath::sq(bias);
+
+  o->bias=bias;
+  o->old_bias=old_bias;
 
   return( sq_norm_W );
 }
@@ -292,6 +302,7 @@ void CWDSVMOcas::add_new_cut(
 	int32_t string_length = o->string_length;
 	uint32_t nDim=(uint32_t) o->w_dim;
 	float32_t** cuts=o->cuts;
+	float64_t* c_bias = o->cp_bias;
 
 	uint32_t i;
 	wdocas_thread_params_add* params_add=new wdocas_thread_params_add[o->parallel.get_num_threads()];
@@ -350,10 +361,17 @@ void CWDSVMOcas::add_new_cut(
 		//delete[] a;
 	}
 
+	c_bias[nSel]=0;
+	for(i=0; i < cut_length; i++) 
+	{
+		if (o->use_bias)
+			c_bias[nSel]+=o->lab[new_cut[i]];
+	}
+
 	// insert new_a into the last column of sparse_A
 	for(i=0; i < nSel; i++)
-		new_col_H[i] = CMath::dot(new_a, cuts[i], nDim);
-	new_col_H[nSel] = CMath::dot(new_a, new_a, nDim);
+		new_col_H[i] = CMath::dot(new_a, cuts[i], nDim) + c_bias[nSel]*c_bias[i];
+	new_col_H[nSel] = CMath::dot(new_a, new_a, nDim) + CMath::sq(c_bias[nSel]);
 
 	cuts[nSel]=new_a;
 	//CMath::display_vector(new_col_H, nSel+1, "new_col_H");
@@ -456,7 +474,7 @@ void* CWDSVMOcas::compute_output_helper(void* ptr)
 	}
 
 	for (int32_t i=start; i<end; i++)
-		output[i]=out[i]*y[i]/normalization_const;
+		output[i]=y[i]*o->bias + out[i]*y[i]/normalization_const;
 
 	//CMath::display_vector(o->w, o->w_dim, "w");
 	//CMath::display_vector(output, nData, "out");

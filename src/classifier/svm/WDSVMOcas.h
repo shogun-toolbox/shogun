@@ -297,6 +297,8 @@ class CWDSVMOcas : public CClassifier
 
 		/** bias */
 		float64_t bias;
+		/** old_bias */
+		float64_t old_bias;
 		/** w offsets */
 		int32_t* w_offsets;
 		/** w dim */
@@ -307,12 +309,12 @@ class CWDSVMOcas : public CClassifier
 		float32_t* w;
 		/** old w*/
 		float32_t* old_w;
-		/** nDim big */
-		float64_t* tmp_a_buf;
 		/** labels */
 		float64_t* lab;
 
 		/** cuts */
 		float32_t** cuts;
+		/** bias dimensions */
+		float64_t* cp_bias;
 };
 #endif

@@ -291,6 +291,7 @@ bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
 		delete classifier;
 		classifier= new CWDSVMOcas(SVM_OCAS);
 
+		((CWDSVMOcas*) classifier)->set_bias_enabled(svm_use_bias);
 		((CWDSVMOcas*) classifier)->set_degree(d, from_d);
 		((CWDSVMOcas*) classifier)->set_C(svm_C1, svm_C2);
 		((CWDSVMOcas*) classifier)->set_epsilon(svm_epsilon);

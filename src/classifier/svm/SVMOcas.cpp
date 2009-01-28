@@ -47,6 +47,7 @@ CSVMOcas::~CSVMOcas()
 bool CSVMOcas::train()
 {
 	SG_INFO("C=%f, epsilon=%f, bufsize=%d\n", get_C1(), get_epsilon(), bufsize);
+	SG_DEBUG("use_bias = %i\n", get_bias_enabled()) ;
 
 	ASSERT(labels);
 	ASSERT(get_features());
@@ -75,6 +76,7 @@ bool CSVMOcas::train()
 	cp_index=new uint32_t*[bufsize];
 	cp_nz_dims=new uint32_t[bufsize];
 	cp_bias=new float64_t[bufsize];
+	memset(cp_bias, 0, sizeof(float64_t)*bufsize);
 
 	float64_t TolAbs=0;
 	float64_t QPBound=0;
@@ -141,19 +143,14 @@ float64_t CSVMOcas::update_W( float64_t t, void* ptr )
   uint32_t nDim = (uint32_t) o->w_dim;
   float64_t* W=o->w;
   float64_t* oldW=o->old_w;
-  float64_t bias=o->bias;
-  float64_t old_bias=bias;
 
   for(uint32_t j=0; j <nDim; j++)
   {
 	  W[j] = oldW[j]*(1-t) + t*W[j];
 	  sq_norm_W += W[j]*W[j];
   }          
-  bias=old_bias*(1-t) + t*bias;
-  sq_norm_W += CMath::sq(bias);
-
-  o->bias=bias;
-  o->old_bias=old_bias;
+  o->bias=o->old_bias*(1-t) + t*o->bias;
+  sq_norm_W += CMath::sq(o->bias);
 
   return( sq_norm_W );
 }
@@ -187,8 +184,6 @@ void CSVMOcas::add_new_cut(
 	float64_t* new_a = o->tmp_a_buf;
 	memset(new_a, 0, sizeof(float64_t)*nDim);
 
-	c_bias[nSel]=0;
-
 	for(i=0; i < cut_length; i++) 
 	{
 		f->add_to_dense_vec(y[new_cut[i]], new_cut[i], new_a, nDim);
@@ -199,7 +194,7 @@ void CSVMOcas::add_new_cut(
 
 	/* compute new_a'*new_a and count number of non-zerou dimensions */
 	nz_dims = 0; 
-	sq_norm_a = 0;
+	sq_norm_a = CMath::sq(c_bias[nSel]);
 	for(j=0; j < nDim; j++ ) {
 		if(new_a[j] != 0) {
 			nz_dims++;
@@ -225,7 +220,7 @@ void CSVMOcas::add_new_cut(
 		}
 	}
 
-	new_col_H[nSel] = sq_norm_a + CMath::sq(c_bias[nSel]);
+	new_col_H[nSel] = sq_norm_a;
 
 	for(i=0; i < nSel; i++)
 	{
@@ -258,10 +253,10 @@ void CSVMOcas::compute_output(float64_t *output, void* ptr)
 
 	float64_t* y = o->lab;
 
-	for (int32_t i=0; i<nData; i++)
-		output[i]=y[i]*o->bias;
-
 	f->dense_dot_range(output, 0, nData, y, o->w, o->w_dim, 0.0);
+
+	for (int32_t i=0; i<nData; i++)
+		output[i]+=y[i]*o->bias;
 	//CMath::display_vector(o->w, o->w_dim, "w");
 	//CMath::display_vector(output, nData, "out");
 }
@@ -285,10 +280,13 @@ void CSVMOcas::compute_W(
 	float64_t* W=o->w;
 	float64_t* oldW=o->old_w;
 	memset(W, 0, sizeof(float64_t)*nDim);
+	float64_t old_bias=o->bias;
+	float64_t bias=0;
 
 	float64_t** c_val = o->cp_value;
 	uint32_t** c_idx = o->cp_index;
 	uint32_t* c_nzd = o->cp_nz_dims;
+	float64_t* c_bias = o->cp_bias;
 
 	for(uint32_t i=0; i<nSel; i++)
 	{
@@ -299,9 +297,13 @@ void CSVMOcas::compute_W(
 			for(uint32_t j=0; j < nz_dims; j++)
 				W[c_idx[i][j]] += alpha[i]*c_val[i][j];
 		}
+		bias += c_bias[i]*alpha[i];
 	}
 
-	*sq_norm_W = CMath::dot(W,W, nDim);
-	*dp_WoldW = CMath::dot(W,oldW, nDim);;
+	*sq_norm_W = CMath::dot(W,W, nDim) + CMath::sq(bias);
+	*dp_WoldW = CMath::dot(W,oldW, nDim) + bias*old_bias;
 	//SG_PRINT("nSel=%d sq_norm_W=%f dp_WoldW=%f\n", nSel, *sq_norm_W, *dp_WoldW);
+	
+	o->bias = bias;
+	o->old_bias = old_bias;
 }
