@@ -16,7 +16,7 @@ from shogun.Library import Math_init_random
 from dataop import INIT_RANDOM
 from fileop import clean_dir_outdata
 
-MODULES=['classifier', 'clustering', 'distance', 'distribution', 'kernel', \
+CATEGORIES=['classifier', 'clustering', 'distance', 'distribution', 'kernel', \
 	'regression', 'preproc']
 
 def run (argv):
@@ -30,33 +30,37 @@ def run (argv):
 	random.seed(INIT_RANDOM)
 
 	arglen=len(argv)
-	if arglen==2: # run given module
+	if arglen==2: # run given category
 		if argv[1]=='clear':
 			clean_dir_outdata()
 		else:
-			__import__(argv[1], globals(), locals());
-			module=eval(argv[1])
-			module.run()
+			try:
+				__import__(argv[1], globals(), locals());
+			except ImportError:
+				raise ImportError, 'Unknown category ' + argv[1]
+
+			category=eval(argv[1])
+			category.run()
 	else:
-		# run given modules by calling self again, one by one
+		# run given category by calling self again, one by one
 		# this is due to an issue somewhere with classifiers (atm) and
 		# 'static randomness'
 
 		if arglen==1:
 			command=argv[0]
-			mods=MODULES
+			cats=CATEGORIES
 		else:
 			command=argv.pop(0)
-			mods=argv
+			cats=argv
 
-		for mod in mods:
-			if not mod in MODULES:
-				mods=', '.join(MODULES)
-				msg="Unknown module: %s\nTry one of these: %s\n"%(mod, mods)
+		for cat in cats:
+			if not cat in CATEGORIES:
+				cats=', '.join(CATEGORIES)
+				msg="Unknown category: %s\nTry one of these: %s\n"%(cat, cats)
 				sys.stderr.write(msg)
 				sys.exit(1)
 
-			ret=os.system('%s %s' % (command, mod))
+			ret=os.system('%s %s' % (command, cat))
 			if ret!=0:
 				sys.exit(ret)
 
