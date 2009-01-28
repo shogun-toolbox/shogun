@@ -214,11 +214,11 @@ void CSVMOcas::add_new_cut(
 		}
 	}
 
-	new_col_H[nSel] = sq_norm_a;
+	new_col_H[nSel] = sq_norm_a + CMath::sq(cp_bias[nSel]);
 
 	for(i=0; i < nSel; i++)
 	{
-		float64_t tmp = 0;
+		float64_t tmp = cp_bias[nSel]*cp_bias[i];
 		for(j=0; j < c_nzd[i]; j++)
 			tmp += new_a[c_idx[i][j]]*c_val[i][j];
 
