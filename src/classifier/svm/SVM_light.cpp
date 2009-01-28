@@ -200,7 +200,8 @@ bool CSVMLight::init_cplex()
 		}
 		else
 		{
-			status = CPXsetintparam (env, CPX_PARAM_LPMETHOD, 2);
+			// select dual simplex based optimization
+			status = CPXsetintparam (env, CPX_PARAM_LPMETHOD, CPX_ALG_DUAL);
 			if ( status )
 			{
             SG_ERROR( "Failure to select dual lp optimization, error %d.\n", status);
@@ -268,6 +269,9 @@ bool CSVMLight::init_glpk()
 {
 	lp_glpk = lpx_create_prob();
 	lpx_set_obj_dir(lp_glpk, LPX_MIN);
+	lpx_set_int_parm(lp_glpk, LPX_K_DUAL, GLP_ON );
+	lpx_set_int_parm(lp_glpk, LPX_K_PRESOL, GLP_ON );
+
 	glp_term_out(GLP_OFF);
 	return (lp_glpk != NULL);
 }
@@ -2418,13 +2422,14 @@ float64_t CSVMLight::compute_optimal_betas_via_glpk(float64_t* beta, float64_t* 
 		int num_kernels, const float64_t* sumw, float64_t suma, int32_t& inner_iters)
 {
 	SG_DEBUG("MKL via GLPK\n");
-	float64_t obj=-suma;
+	float64_t obj=1.0;
 #ifdef USE_GLPK
 	int32_t NUMCOLS = 2*num_kernels + 1 ;
 	if (!lp_initialized)
 	{
-		SG_INFO( "initializing lp...");
-		//set obj function.
+		SG_INFO( "creating LP\n") ;
+
+		//set obj function, note glpk indexing is 1-based
 		lpx_add_cols(lp_glpk, NUMCOLS);
 		for (int i=1; i<=2*num_kernels; i++)
 		{
@@ -2436,19 +2441,19 @@ float64_t CSVMLight::compute_optimal_betas_via_glpk(float64_t* beta, float64_t* 
 			lpx_set_obj_coef(lp_glpk, i, C_mkl);
 		}
 		lpx_set_obj_coef(lp_glpk, NUMCOLS, 1);
-		lpx_set_col_bnds(lp_glpk, NUMCOLS, LPX_FR, -CMath::INFTY, CMath::INFTY);
+		lpx_set_col_bnds(lp_glpk, NUMCOLS, LPX_FR, 0,0); //unbound
 
 		//add first row. sum[w]=1
 		int row_index = lpx_add_rows(lp_glpk, 1);
 		int ind[num_kernels+2];
-		float64_t val[num_kernels+1];
+		float64_t val[num_kernels+2];
 		for (int i=1; i<=num_kernels; i++)
 		{
 			ind[i] = i;
 			val[i] = 1;
 		}
-		//			ind[num_kernels+1] = NUMCOLS;
-		//			val[num_kernels+1] = 0;
+		ind[num_kernels+1] = NUMCOLS;
+		val[num_kernels+1] = 0;
 		lpx_set_mat_row(lp_glpk, row_index, num_kernels, ind, val);
 		lpx_set_row_bnds(lp_glpk, row_index, LPX_FX, 1, 1);
 
@@ -2483,7 +2488,7 @@ float64_t CSVMLight::compute_optimal_betas_via_glpk(float64_t* beta, float64_t* 
 	for (int32_t i=1; i<=num_kernels; i++)
 	{
 		ind[i] = i;
-		val[i] = -sumw[i-1];
+		val[i] = -(sumw[i-1]-suma);
 	}
 	ind[num_kernels+1] = 2*num_kernels+1;
 	val[num_kernels+1] = -1;
@@ -2492,7 +2497,10 @@ float64_t CSVMLight::compute_optimal_betas_via_glpk(float64_t* beta, float64_t* 
 
 	//optimize
 	lpx_simplex(lp_glpk);
-	check_lpx_status(lp_glpk);	
+	bool res = check_lpx_status(lp_glpk);
+	if (!res)
+		SG_ERROR( "Failed to optimize Problem.\n");
+
 	int32_t cur_numrows = lpx_get_num_rows(lp_glpk);
 	int32_t cur_numcols = lpx_get_num_cols(lp_glpk);
 	int32_t num_rows=cur_numrows;
@@ -2510,11 +2518,8 @@ float64_t CSVMLight::compute_optimal_betas_via_glpk(float64_t* beta, float64_t* 
 	{
 		beta[i] = lpx_get_col_prim(lp_glpk, i+1);
 	}
-	//CMath::display_vector(beta, cur_numcols, "beta");
 
-	bool res = check_lpx_status(lp_glpk);
-	if (!res)
-		SG_ERROR("Failed to obtain solution.\n");
+	obj = -beta[2*num_kernels];
 
 	int32_t num_active_rows=0;
 	if(res)
@@ -2545,23 +2550,14 @@ float64_t CSVMLight::compute_optimal_betas_via_glpk(float64_t* beta, float64_t* 
 			del_rows[1] = max_idx+1;
 			lpx_del_rows(lp_glpk, 1, del_rows);
 		}
-
-		for (int32_t d=0; d<num_kernels; d++)
-			obj   += beta[d]*(sumw[d]);
-		return obj;
-
-		delete[] row_dual;
-		delete[] row_primal;
 	}
-	else
-	{
-		/* then something is wrong and we rather 
-		   stop sooner than later */
-		obj = 1 ;
-	}
+
+	delete[] row_dual;
+	delete[] row_primal;
 #else
 	SG_ERROR("Glpk not enabled at compile time\n");
 #endif
+
 	return obj;
 }
 
