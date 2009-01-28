@@ -68,6 +68,7 @@ bool CSVMOcas::train()
 	old_w=new float64_t[w_dim];
 	memset(old_w, 0, w_dim*sizeof(float64_t));
 	bias=0;
+	old_bias=0;
 
 	tmp_a_buf=new float64_t[w_dim];
 	cp_value=new float64_t*[bufsize];
@@ -140,12 +141,15 @@ float64_t CSVMOcas::update_W( float64_t t, void* ptr )
   uint32_t nDim = (uint32_t) o->w_dim;
   float64_t* W=o->w;
   float64_t* oldW=o->old_w;
+  float64_t old_bias=o->bias;
 
   for(uint32_t j=0; j <nDim; j++)
   {
 	  W[j] = oldW[j]*(1-t) + t*W[j];
 	  sq_norm_W += W[j]*W[j];
   }          
+  bias=old_bias*(1-t) + t*bias;
+  sq_norm_W += CMath::sq(bias);
 
   return( sq_norm_W );
 }
@@ -183,7 +187,9 @@ void CSVMOcas::add_new_cut(
 	for(i=0; i < cut_length; i++) 
 	{
 		f->add_to_dense_vec(y[new_cut[i]], new_cut[i], new_a, nDim);
-		cp_bias+=y[new_cut[i]];
+
+		if (use_bias)
+			cp_bias+=y[new_cut[i]];
 	}
 
 	/* compute new_a'*new_a and count number of non-zerou dimensions */

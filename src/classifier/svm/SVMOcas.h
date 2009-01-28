@@ -176,6 +176,8 @@ class CSVMOcas : public CLinearClassifier
 
 		/** old W */
 		float64_t* old_w;
+		/** old bias */
+		float64_t old_bias;
 		/** nDim big */
 		float64_t* tmp_a_buf;
 		/** labels */
