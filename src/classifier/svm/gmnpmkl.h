@@ -13,6 +13,7 @@
 
 #include <vector>
 
+#include "base/SGObject.h"
 #include "lib/ShogunException.h"
 #include "GMNPSVM.h"
 #include "kernel/Kernel.h" 
@@ -77,7 +78,7 @@ protected:
 
 #else
 
-class lpwrapper
+class lpwrapper : public CSGObject
 {
 public:
 	int32_t lpwrappertype; // 0 -glpk
