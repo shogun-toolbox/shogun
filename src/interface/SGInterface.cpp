@@ -5933,7 +5933,7 @@ bool CSGInterface::cmd_best_path_trans()
 	{
 		float64_t zero2[2] = {0.0, 0.0} ;
 		h->best_path_set_segment_loss(zero2, 2, 1) ;
-		//fprintf(stderr, "M=%i\n", M) ;
+		//SG_PRINT("M=%i\n", M) ;
 		int32_t *izeros = new int32_t[M] ;
 		float64_t *dzeros = new float64_t[M] ;
 		for (int32_t i=0; i<M; i++)
@@ -6150,7 +6150,7 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 			{
 				float64_t zero2[2] = {0.0, 0.0} ;
 				h->best_path_set_segment_loss(zero2, 2, 1) ;
-				//fprintf(stderr, "M=%i\n", M) ;
+				//SG_PRINT("M=%i\n", M) ;
 				int32_t *izeros = new int32_t[M] ;
 				float64_t *dzeros = new float64_t[M] ;
 				for (int32_t i=0; i<M; i++)
@@ -6188,7 +6188,7 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 			{
 				int32_t len=0 ;
 				const float64_t * deriv = PEN[id]->get_cum_derivative(len) ;
-				//fprintf(stderr, "len=%i, max_plif_len=%i\n", len, max_plif_len) ;
+				//SG_PRINT("len=%i, max_plif_len=%i\n", len, max_plif_len) ;
 				ASSERT(len<=max_plif_len) ;
 				for (int32_t j=0; j<max_plif_len; j++)
 					a_Plif_deriv.element(id, j)= deriv[j] ;

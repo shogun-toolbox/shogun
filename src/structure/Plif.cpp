@@ -111,7 +111,7 @@ CPlif** read_penalty_struct_from_cell(
 	const mxArray * mx_penalty_info, int32_t P)
 {
 	//P = mxGetN(mx_penalty_info) ;
-	//fprintf(stderr, "p=%i size=%i\n", P, P*sizeof(CPlif)) ;
+	//SG_PRINT("p=%i size=%i\n", P, P*sizeof(CPlif)) ;
 	
 	CPlif** PEN = new CPlif*[P] ;
 	for (int32_t i=0; i<P; i++)
@@ -119,7 +119,7 @@ CPlif** read_penalty_struct_from_cell(
 	
 	for (int32_t i=0; i<P; i++)
 	{
-		//fprintf(stderr, "i=%i/%i\n", i, P) ;
+		//SG_PRINT("i=%i/%i\n", i, P) ;
 		
 		const mxArray* mx_elem = mxGetCell(mx_penalty_info, i) ;
 		if (mx_elem==NULL || !mxIsStruct(mx_elem))
@@ -428,7 +428,7 @@ float64_t CPlif::lookup_penalty(float64_t p_value, float64_t* svm_values) const
 #endif
 	}
 	//if (p_value>=30 && p_value<150)
-	//fprintf(stderr, "%s %i(%i) -> %1.2f\n", PEN->name, p_value, idx, ret) ;
+	//SG_PRINT("%s %i(%i) -> %1.2f\n", PEN->name, p_value, idx, ret) ;
 #ifdef PLIF_DEBUG
 	SG_PRINT("  -> ret=%1.3f\n", ret) ;
 #endif

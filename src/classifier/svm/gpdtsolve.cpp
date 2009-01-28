@@ -1207,7 +1207,7 @@ float64_t QPproblem::gpdtsolve(float64_t *solution)
         {
           tau_proximal_this = -tau_proximal;
           if (verbosity > 0)
-            printf("tau threshold: %lf  ", -dfval/aux);
+            SG_DEBUG("tau threshold: %lf  ", -dfval/aux);
         }
       }
       proximal_count++;

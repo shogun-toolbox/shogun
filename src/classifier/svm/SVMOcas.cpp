@@ -20,7 +20,7 @@
 #include "features/Labels.h"
 
 CSVMOcas::CSVMOcas(E_SVM_TYPE type)
-: CLinearClassifier(), use_bias(false), bufsize(3000), C1(1), C2(1),
+: CLinearClassifier(), use_bias(true), bufsize(3000), C1(1), C2(1),
 	epsilon(1e-3), method(type)
 {
 	w=NULL;
@@ -29,7 +29,7 @@ CSVMOcas::CSVMOcas(E_SVM_TYPE type)
 
 CSVMOcas::CSVMOcas(
 	float64_t C, CDotFeatures* traindat, CLabels* trainlab)
-: CLinearClassifier(), use_bias(false), bufsize(3000), C1(C), C2(C),
+: CLinearClassifier(), use_bias(true), bufsize(3000), C1(C), C2(C),
 	epsilon(1e-3)
 {
 	w=NULL;

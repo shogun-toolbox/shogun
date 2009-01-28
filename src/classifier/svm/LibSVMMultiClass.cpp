@@ -68,10 +68,7 @@ bool CLibSVMMultiClass::train()
 	const char* error_msg = svm_check_parameter(&problem,&param);
 
 	if(error_msg)
-	{
-		fprintf(stderr,"Error: %s\n",error_msg);
-		exit(1);
-	}
+		SG_ERROR("Error: %s\n",error_msg);
 
 	model = svm_train(&problem, &param);
 

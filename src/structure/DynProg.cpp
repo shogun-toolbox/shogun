@@ -747,9 +747,9 @@ bool CDynProg::check_svm_arrays()
 			(mod_words.get_dim2()==2) &&
 			(sign_words.get_dim1()==num_svms) &&
             (string_words.get_dim1()==num_svms))
-			fprintf(stderr, "OK\n") ;
+			SG_PRINT("OK\n") ;
 		else
-			fprintf(stderr, "not OK\n") ;
+			SG_PRINT("not OK\n") ;
 
 		if (!(word_degree.get_dim1()==num_degrees))
 			SG_WARNING("SVM array: word_degree.get_dim1()!=num_degrees") ;
@@ -1639,7 +1639,7 @@ void CDynProg::best_path_2struct(
 	{
 		if (is_big && t%(seq_len/10000)==1)
 			SG_PROGRESS(t, 0, seq_len);
-		//fprintf(stderr, "%i\n", t) ;
+		//SG_PRINT("%i\n", t) ;
 		
 		for (T_STATES j=0; j<N; j++)
 		{
@@ -2173,7 +2173,7 @@ void CDynProg::find_svm_values_till_pos(
 		{
 			for (int32_t i=posprev-1 ; (i>=poscurrent) && (i>=0) ; i--)
 			{
-				//fprintf(stderr, "string_words_array[0]=%i (%ld), j=%i (%ld)  i=%i\n", string_words_array[0], wordstr[string_words_array[0]], j, wordstr[string_words_array[0]][j], i) ;
+				//SG_PRINT("string_words_array[0]=%i (%ld), j=%i (%ld)  i=%i\n", string_words_array[0], wordstr[string_words_array[0]], j, wordstr[string_words_array[0]][j], i) ;
 				
 				uint16_t word = wordstr[string_words_array[0]][j][i] ;
 				int32_t last_string = string_words_array[0] ;
@@ -2287,7 +2287,7 @@ void CDynProg::find_svm_values_till_pos(
 		{
 			for (int32_t i=posprev-1 ; (i>=poscurrent) && (i>=0) ; i--)
 			{
-				//fprintf(stderr, "string_words_array[0]=%i (%ld), j=%i (%ld)  i=%i\n", string_words_array[0], wordstr[string_words_array[0]], j, wordstr[string_words_array[0]][j], i) ;
+				//SG_PRINT("string_words_array[0]=%i (%ld), j=%i (%ld)  i=%i\n", string_words_array[0], wordstr[string_words_array[0]], j, wordstr[string_words_array[0]][j], i) ;
 				
 				uint16_t word = wordstr[j][i] ;
 				for (int32_t s=0; s<num_svms; s++)
@@ -2418,7 +2418,7 @@ void CDynProg::best_path_trans(
 	mod_words.display_array() ;
 	sign_words.display_array() ;
 	string_words.display_array() ;
-	fprintf(stderr, "use_orf = %i\n", use_orf) ;
+	SG_PRINT("use_orf = %i\n", use_orf) ;
 #endif
 	
 	int32_t max_look_back = 20000 ;
@@ -2749,7 +2749,7 @@ void CDynProg::best_path_trans(
 	{
 		if (is_big && t%(1+(seq_len/1000))==1)
 			SG_PROGRESS(t, 0, seq_len);
-		//fprintf(stderr, "%i\n", t) ;
+		//SG_PRINT("%i\n", t) ;
 
 		if (with_loss)
 		{
@@ -2793,7 +2793,7 @@ void CDynProg::best_path_trans(
 						if (pen!=NULL)
 							look_back=(int32_t) (CMath::ceil(pen->get_max_value()));
 						if (look_back>=1e6)
-							fprintf(stderr, "%i,%i -> %d from %ld\n", j, ii, look_back, (long)pen) ;
+							SG_PRINT("%i,%i -> %d from %ld\n", j, ii, look_back, (long)pen) ;
 						ASSERT(look_back<1e6);
 					}
 					//int32_t num_current_svms = trans_matrix_num_svms.element(j,ii);

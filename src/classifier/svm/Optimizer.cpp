@@ -57,25 +57,6 @@ float64_t *optimize_qp(
 		dual=new float64_t[nx*2+1];
 	}
 
-	if(verbosity>=4) { /* really verbose */
-		printf("\n\n");
-		for(i=0;i<qp->opt_n;i++) {
-			printf("%f: ",qp->opt_g0[i]);
-			for(j=0;j<qp->opt_n;j++) {
-				printf("%f ",qp->opt_g[i*qp->opt_n+j]);
-			}
-			printf(": a%d=%.10f < %f",i,qp->opt_xinit[i],qp->opt_up[i]);
-			printf(": y=%f\n",qp->opt_ce[i]);
-		}
-		for(j=0;j<qp->opt_m;j++) {
-			printf("EQ-%d: %f*a0",j,qp->opt_ce[j]);
-			for(i=1;i<qp->opt_n;i++) {
-				printf(" + %f*a%d",qp->opt_ce[i],i);
-			}
-			printf(" = %f\n\n",-qp->opt_ce0[0]);
-		}
-	}
-
 	obj_before=0; /* calculate objective before optimization */
 	for(i=0;i<qp->opt_n;i++) {
 		obj_before+=(qp->opt_g0[i]*qp->opt_xinit[i]);
@@ -144,7 +125,7 @@ float64_t *optimize_qp(
 		for(j=i;j<qp->opt_n;j++) {
 			dist+=(primal[j]*qp->opt_g[i*qp->opt_n+j]);
 		}
-		/*  printf("LOQO: a[%d]=%f, dist=%f, b=%f\n",i,primal[i],dist,dual[0]); */
+		/*  SG_SDEBUG("LOQO: a[%d]=%f, dist=%f, b=%f\n",i,primal[i],dist,dual[0]); */
 		if((primal[i]<(qp->opt_up[i]-epsilon_loqo)) && (dist < (1.0-(*epsilon_crit)))) {
 			epsilon_loqo=(qp->opt_up[i]-primal[i])*2.0;
 		}

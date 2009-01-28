@@ -412,9 +412,9 @@ class CPlif: public CPlifBase
 		 *
 		 * lists some properties of the PLIF
 		 */
-		virtual void print() const 
+		virtual void list_plif() const 
 		{
-			fprintf(stdout, "CPlif(min_value=%1.2f, max_value=%1.2f, use_svm=%i)\n", min_value, max_value, use_svm) ;
+			SG_PRINT("CPlif(min_value=%1.2f, max_value=%1.2f, use_svm=%i)\n", min_value, max_value, use_svm) ;
 		}
 
 	protected:

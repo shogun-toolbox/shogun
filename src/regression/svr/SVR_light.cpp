@@ -526,7 +526,6 @@ void CSVRLight::update_linear_component_mkl(
 			{
 				for (int32_t q=0; q<num_kernels-1; q++)
 				{
-					//fprintf(stderr,"q=%i\n", q) ;
 					// add constraint w[i]-w[i+1]<s[i];
 					// add constraint w[i+1]-w[i]<s[i];
 					int rmatbeg[1]; /* calling external lib */

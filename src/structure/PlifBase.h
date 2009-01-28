@@ -103,7 +103,7 @@ class CPlifBase : public CSGObject
 		 *
 		 * abstract base method
 		 */
-		virtual void print() const = 0 ;
+		virtual void list_plif() const = 0 ;
 
 };
 #endif

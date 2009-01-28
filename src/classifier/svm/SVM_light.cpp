@@ -1578,7 +1578,6 @@ int32_t CSVMLight::calculate_svm_model(
     }
     else {
       model->b=-(b_high+b_low)/2.0;  /* select b as the middle of range */
-      /* printf("\nb_low=%f, b_high=%f,b=%f\n",b_low,b_high,model->b); */
     }
   }
 
