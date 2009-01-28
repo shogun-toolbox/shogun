@@ -1,5 +1,7 @@
 This is the SHOGUN machine learning toolbox.
 
+(see INSTALL for first steps on installation and running shogun)
+
 INTRODUCTION
 
 The machine learning toolbox's focus is on large scale kernel methods and

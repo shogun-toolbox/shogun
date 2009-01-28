@@ -76,7 +76,7 @@ make
 a sg.oct file should be created. as a test start octave in the src/ directory
 and type
 
-addpath('../octave/examples')
+addpath('../examples/octave/graphical')
 svr_regression
 
 R
@@ -106,7 +106,7 @@ make
 
 A sg.so file should be created in the src/ directory:
 To test whether it is working try
-PYTHONPATH=`pwd` python ../python/examples/svm_classification.py
+PYTHONPATH=`pwd` python ../examples/python/graphical/svm_classification.py
 
 object oriented python/swig interface:
 ======================================
@@ -118,7 +118,7 @@ configure+compile shogun with:
   make
   sudo make install
 
-to test if it is working try python ../python/examples/numpy_svm_matplotlib.py
+to test if it is working try python ../examples/python-modular/graphical/svm.py
 
 BUILDING ON MACOSX
 
@@ -126,9 +126,6 @@ python:
 =======
 Get the precompiled binary packages
 python, matplotlib, NumPy and wxPython from http://pythonmac.org/packages/py24-fat/index.html
-
-Make sure you installed the XCode tools including X11 (such that makedepend
-/usr/X11R6/bin/makedepend exists).
 
 Note: On powerpc archs don't use gcc-4.0 / gcc-4.1 as it will fail with an internal compiler
 error. Try gcc-4.2 instead or disable optimization (using -O0).
@@ -150,7 +147,7 @@ make
 
 to test if it is working try:
 
-PYTHONPATH=`pwd` python ../python/examples/svm_classification.py
+PYTHONPATH=`pwd` python ../examples/python/graphical/svm_classification.py
 
 object oriented python/swig interface:
 ======================================
@@ -160,7 +157,7 @@ Follow the above instructions for python. Then use fink/darwinports to install s
 make
 sudo make install
 
-to test if it is working try python ../python/examples/numpy_svm_matplotlib.py
+to test if it is working try python ../examples/python-modular/graphical/svm.py
 
 octave:
 =======
@@ -177,7 +174,7 @@ make
 a sg.oct file should be created. as a test start octave in the src/ directory
 and type
 
-addpath('../octave/examples')
+addpath('../examples/octave/graphical')
 svr_regression
 
 standalone:
@@ -193,10 +190,14 @@ R:
 Install the full R package (e.g. the 93MB R-2.4.0.dmg image from
 http://cran.r-project.org/bin/macosx/ )
 
-then do the usual R CMD INSTALL <pkg>
+then do the usual
+
+./configure --interface=r
+make
+make install
 
 After starting the R aqua gui, choose File->Source File and select the
-shogun/R/examples/svm_classification.R example
+../examples/r/graphical/svm_classification.R example
 
 If that does not work out (send us a bug report) and also please try the following:
 
@@ -255,9 +256,9 @@ Instead of using library(sg) in your .R scripts you now have to use
 dyn.load('<path_to_shogun>/sg.dll')
 sg <- function(...) .External("sg",...,PACKAGE="sg").
 
-After this modification, The examples in R/examples should all work. To get
+After this modification, The examples in examples/r/ should all work. To get
 them to go start the R gui, choose File->Source R Code and select 
-shogun/R/examples/svr_regression.R  (as this example has no other package dependencies).
+../examples/r/graphical/svr_regression.R  (as this example has no other package dependencies).
 
 matlab:
 =======
@@ -292,7 +293,7 @@ octave:
 
 	cd src
 	octave
-	addpath('../octave/examples')
+	addpath('../examples/octave/graphical')
 	svr_regression
 
 
@@ -342,7 +343,7 @@ python:
 
   to test if it is working, try:
 	 cd src
-	 PYTHONPATH=`pwd` python ../python/examples/svm_classification.py
+	 PYTHONPATH=`pwd` python ../examples/python/graphical/svm_classification.py
 
 object oriented python/swig interface:
 ======================================
@@ -353,7 +354,7 @@ configure+compile shogun with:
   ./configure --interface=python-modular
   make install
 
-to test if it is working try python ../python/examples/numpy_svm_matplotlib.py
+to test if it is working try python ../examples/python/graphical/svm.py
 
 
 PROBLEMS
