@@ -156,6 +156,7 @@ bool CWDSVMOcas::train()
 	cuts=new float32_t*[bufsize];
 	memset(cuts, 0, sizeof(*cuts)*bufsize);
 	cp_bias=new float64_t[bufsize];
+	memset(cp_bias, 0, sizeof(float64_t)*bufsize);
 
 /////speed tests/////
 	/*float64_t* tmp = new float64_t[num_vec];
@@ -361,7 +362,6 @@ void CWDSVMOcas::add_new_cut(
 		//delete[] a;
 	}
 
-	c_bias[nSel]=0;
 	for(i=0; i < cut_length; i++) 
 	{
 		if (o->use_bias)
@@ -561,14 +561,22 @@ void CWDSVMOcas::compute_W(
 	float32_t* oldW=o->old_w;
 	float32_t** cuts=o->cuts;
 	memset(W, 0, sizeof(float32_t)*nDim);
+	float64_t* c_bias = o->cp_bias;
+	float64_t old_bias=o->bias;
+	float64_t bias=0;
 
 	for (uint32_t i=0; i<nSel; i++)
 	{
 		if (alpha[i] > 0)
 			CMath::vec1_plus_scalar_times_vec2(W, (float32_t) alpha[i], cuts[i], nDim);
+
+		bias += c_bias[i]*alpha[i];
 	}
 
-	*sq_norm_W = CMath::dot(W,W, nDim);
-	*dp_WoldW = CMath::dot(W,oldW, nDim);;
+	*sq_norm_W = CMath::dot(W,W, nDim) +CMath::sq(bias);
+	*dp_WoldW = CMath::dot(W,oldW, nDim) + bias*old_bias;;
 	//SG_PRINT("nSel=%d sq_norm_W=%f dp_WoldW=%f\n", nSel, *sq_norm_W, *dp_WoldW);
+
+	o->bias = bias;
+	o->old_bias = old_bias;
 }
