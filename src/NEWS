@@ -8,24 +8,23 @@
 		  (sparse and dense and other even the newly implemented string
 		  based SpecFeatures and WDFeatures).
 		- MKL now does not require CPLEX any longer.
-		- Add q-norm MKL support based on Newton.
+		- Add q-norm MKL support based on internal Newton implementation.
 		- Add 1-norm MKL support based on GLPK.
-		- Add multiclass MKL support based on the GMNP svm solver.
+		- Add multiclass MKL support based on the GLPK and the GMNP svm solver.
 		- Implement Tensor Product Pair Kernel (TPPK).
 		- Support compilation on the iPhone :)
 		- Add an option to set wds kernel position weights.
 		- Build static libshogun.a for libshogun target.
-		- Testsuite can also test for modular R interface, added test for
+		- Testsuite can also test the modular R interface, added test for
 		  OligoKernel.
-	* Cleanup:
-		- Remove WDSVMOcas as it is implemented now via a linear classifier
-		  and WDFeatures
+	* Cleanup and API Changes:
 		- Remove SparseLinearClassifier: LinearClassifier is a drop-in
 		  replacement.
+		- WDOcas and SVMOcas now have the bias term enabled by default
 	* Bugfixes:
 		- Fix regression for COMM* kernels (normalization argument was ignored).
 		- Use C99 variadic macros, instead of gcc's own variant.
-		- Disable lp_solve, it is not required right now.
+		- Disable lp_solve, it is not required as we are using GLPK now.
 
 2008-11-25 Soeren Sonnenburg <debian@nn7.de>
 
