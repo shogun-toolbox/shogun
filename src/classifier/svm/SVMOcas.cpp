@@ -141,7 +141,8 @@ float64_t CSVMOcas::update_W( float64_t t, void* ptr )
   uint32_t nDim = (uint32_t) o->w_dim;
   float64_t* W=o->w;
   float64_t* oldW=o->old_w;
-  float64_t old_bias=o->bias;
+  float64_t bias=o->bias;
+  float64_t old_bias=bias;
 
   for(uint32_t j=0; j <nDim; j++)
   {
@@ -150,6 +151,9 @@ float64_t CSVMOcas::update_W( float64_t t, void* ptr )
   }          
   bias=old_bias*(1-t) + t*bias;
   sq_norm_W += CMath::sq(bias);
+
+  o->bias=bias;
+  o->old_bias=old_bias;
 
   return( sq_norm_W );
 }
@@ -174,6 +178,7 @@ void CSVMOcas::add_new_cut(
 	float64_t** c_val = o->cp_value;
 	uint32_t** c_idx = o->cp_index;
 	uint32_t* c_nzd = o->cp_nz_dims;
+	float64_t* c_bias = o->cp_bias;
 
 	float64_t sq_norm_a;
 	uint32_t i, j, nz_dims;
@@ -182,14 +187,14 @@ void CSVMOcas::add_new_cut(
 	float64_t* new_a = o->tmp_a_buf;
 	memset(new_a, 0, sizeof(float64_t)*nDim);
 
-	cp_bias[nSel]=0;
+	c_bias[nSel]=0;
 
 	for(i=0; i < cut_length; i++) 
 	{
 		f->add_to_dense_vec(y[new_cut[i]], new_cut[i], new_a, nDim);
 
-		if (use_bias)
-			cp_bias+=y[new_cut[i]];
+		if (o->use_bias)
+			c_bias[nSel]+=y[new_cut[i]];
 	}
 
 	/* compute new_a'*new_a and count number of non-zerou dimensions */
@@ -220,11 +225,11 @@ void CSVMOcas::add_new_cut(
 		}
 	}
 
-	new_col_H[nSel] = sq_norm_a + CMath::sq(cp_bias[nSel]);
+	new_col_H[nSel] = sq_norm_a + CMath::sq(c_bias[nSel]);
 
 	for(i=0; i < nSel; i++)
 	{
-		float64_t tmp = cp_bias[nSel]*cp_bias[i];
+		float64_t tmp = c_bias[nSel]*c_bias[i];
 		for(j=0; j < c_nzd[i]; j++)
 			tmp += new_a[c_idx[i][j]]*c_val[i][j];
 
@@ -254,7 +259,7 @@ void CSVMOcas::compute_output(float64_t *output, void* ptr)
 	float64_t* y = o->lab;
 
 	for (int32_t i=0; i<nData; i++)
-		output[i]=y[i]*bias;
+		output[i]=y[i]*o->bias;
 
 	f->dense_dot_range(output, 0, nData, y, o->w, o->w_dim, 0.0);
 	//CMath::display_vector(o->w, o->w_dim, "w");
