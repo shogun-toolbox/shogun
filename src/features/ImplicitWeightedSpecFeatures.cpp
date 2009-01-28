@@ -148,18 +148,20 @@ float64_t CImplicitWeightedSpecFeatures::dense_dot(int32_t vec_idx1, const float
 
 	float64_t result=0;
 	int32_t len1=-1;
-	uint16_t* vec=strings->get_feature_vector(vec_idx1, len1);
+	uint16_t* vec1=strings->get_feature_vector(vec_idx1, len1);
 
-	if (vec && len1>0)
+	if (vec1 && len1>0)
 	{
 		for (int32_t j=0; j<len1; j++)
 		{
 			uint8_t mask=0;
 			int32_t offs=0;
+			uint16_t v=*vec1++;
+
 			for (int32_t d=0; d<degree; d++)
 			{
 				mask = mask | (1 << (degree-d-1));
-				int32_t idx=strings->get_masked_symbols(vec[j], mask);
+				int32_t idx=strings->get_masked_symbols(v, mask);
 				idx=strings->shift_symbol(idx, degree-d-1);
 				result += vec2[offs + idx]*spec_weights[d];
 				offs+=strings->shift_offset(1,d+1);
