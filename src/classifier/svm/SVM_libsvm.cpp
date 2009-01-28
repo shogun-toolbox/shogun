@@ -1723,7 +1723,7 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 				if(param->weight_label[i] == label[j])
 					break;
 			if(j == nr_class)
-				SG_WARNING("warning: class label %d specified in weight is not found\n", param->weight_label[i]);
+				SG_SWARNING("warning: class label %d specified in weight is not found\n", param->weight_label[i]);
 			else
 				weighted_C[j] *= param->weight[i];
 		}

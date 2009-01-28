@@ -68,7 +68,7 @@ bool CLibSVMOneClass::train()
 	const char* error_msg = svm_check_parameter(&problem,&param);
 
 	if(error_msg)
-		SG_ERROR(stderr,"Error: %s\n",error_msg);
+		SG_ERROR("Error: %s\n",error_msg);
 	
 	model = svm_train(&problem, &param);
 
