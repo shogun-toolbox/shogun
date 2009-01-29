@@ -17,6 +17,7 @@
 		- Build static libshogun.a for libshogun target.
 		- Testsuite can also test the modular R interface, added test for
 		  OligoKernel.
+		- Ocas and WDOcas can be used with a bias feature now.
 	* Cleanup and API Changes:
 		- Remove SparseLinearClassifier: LinearClassifier is a drop-in
 		  replacement.
