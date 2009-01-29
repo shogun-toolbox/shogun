@@ -65,6 +65,7 @@ There are two major functions:
 
 
 
+
 Extension
 ---------
 
@@ -115,3 +116,49 @@ given below is hopefully sufficient to help the uninitiated to succeed.
    run or the generator has finished its job.
 
 
+
+- Testers
+   Each interface has its own tester, although libshogun and cmdline have no
+   tester at all at the moment. Furthermore, there are 2 groups which run
+   somewhat similar code - the static and the dynamic interfaces.
+
+
+   Static interfaces (python/, matlab_and_octave/, r/):
+
+   Of course, the details are dependent on the actual interface, but all of
+   them have some utility functions (util.py, util/*) to check accuracy, set
+   features, set distances/kernels/classifiers and fixing some name
+   inconsistencies between static and modular interface. the generator uses
+   the modular interface and hence some names in the testcase files don't
+   match what the static interface understands. These utility functions are
+   common to all categories.
+   The aforementioned test_all scripts call a test_one script for each
+   testcase which takes care of converting the matlab/octave format of the
+   testcase file into a local format. It then calls a module from the
+   appropriate category. As in the generator, each category is represented in
+   one file, e.g.  kernel.py/kernel.m/kernel.R.
+   For python, the function test() is the entry point from which various
+   evaluate() functions are spawned, depending on the item to be tested. these
+   evaluations are similar to the generator's compute() functions, but instead
+   of writing the results and parameters too file, they are compared to the
+   results in the testcase file.
+   In octave/matlab, the main function of a category is named as the category.
+   Due to the nature of how global variables are handled in matlab/octave,
+   there is a file called util/globals.m which contains all possible variable
+   names that can be in the testcase files. So be aware that you might need to
+   update this file and also use 'global <varname>;' in the function where you
+   want to use it. It is cludgy indeed, but did seem to be the only way to
+   handle the problem with the limited capabilities of matlab and me.
+   The structure of the R files resembles the structure octave/matlab, but
+   in its own syntax of course and without the global variable cludge.
+
+
+   Modular interfaces (python-modular/, octave-modular/, r-modular/):
+
+   Essentially, the structure is the same as in the static interfaces with
+   the main difference being a different object handling in python/R as in
+   get_* functions to return the created objects instead of set_* where the
+   data is fed bit by bit into one big state machine called SHOGUN.
+   octave still uses set_* because it makes use of global variables which
+   might be able to converted to get_* as well. The inclined reader is
+   encouraged to try that.
