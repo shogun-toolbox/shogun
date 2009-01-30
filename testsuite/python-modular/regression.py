@@ -9,7 +9,7 @@ from shogun.Regression import *
 
 import util
 
-def _regression (indata):
+def _evaluate (indata):
 	prefix='kernel_'
 	feats=util.get_features(indata, prefix)
 	kargs=util.get_args(indata, prefix)
@@ -66,5 +66,5 @@ def _regression (indata):
 ########################################################################
 
 def test (indata):
-	return _regression(indata)
+	return _evaluate(indata)
 

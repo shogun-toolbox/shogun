@@ -91,7 +91,7 @@ def _get_results (indata, prefix, classifier, machine=None, feats=None):
 	return res
 
 
-def _classifier (indata):
+def _evaluate (indata):
 	prefix='classifier_'
 	ctype=indata[prefix+'type']
 	if indata[prefix+'name']=='KNN':
@@ -164,5 +164,5 @@ def _classifier (indata):
 ########################################################################
 
 def test (indata):
-	return _classifier(indata)
+	return _evaluate(indata)
 

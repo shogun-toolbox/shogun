@@ -7,7 +7,7 @@ from shogun.Distance import *
 import util
 
 
-def _distance (indata):
+def _evaluate (indata):
 	prefix='distance_'
 	feats=util.get_features(indata, prefix)
 
@@ -30,5 +30,5 @@ def _distance (indata):
 ########################################################################
 
 def test (indata):
-	return _distance(indata)
+	return _evaluate(indata)
 

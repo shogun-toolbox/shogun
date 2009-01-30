@@ -11,7 +11,7 @@ import util
 # kernel computation
 ########################################################################
 
-def _kernel (indata):
+def _evaluate (indata):
 	prefix='kernel_'
 	feats=util.get_features(indata, prefix)
 	kfun=eval(indata[prefix+'name']+'Kernel')
@@ -38,5 +38,5 @@ def _kernel (indata):
 ########################################################################
 
 def test (indata):
-	return _kernel(indata)
+	return _evaluate(indata)
 

@@ -6,7 +6,7 @@ from shogun.Distribution import *
 
 import util
 
-def _distribution (indata):
+def _evaluate (indata):
 	prefix='distribution_'
 	feats=util.get_features(indata, prefix)
 
@@ -58,5 +58,5 @@ def _distribution (indata):
 ########################################################################
 
 def test (indata):
-	return _distribution(indata)
+	return _evaluate(indata)
 

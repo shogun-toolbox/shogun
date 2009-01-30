@@ -8,7 +8,7 @@ from shogun.Clustering import *
 import util
 
 
-def _clustering (indata):
+def _evaluate (indata):
 	if indata.has_key('clustering_k'):
 		first_arg=indata['clustering_k']
 	elif indata.has_key('clustering_merges'):
@@ -47,5 +47,5 @@ def _clustering (indata):
 ########################################################################
 
 def test (indata):
-	return _clustering(indata)
+	return _evaluate(indata)
 

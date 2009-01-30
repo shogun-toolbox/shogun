@@ -16,7 +16,7 @@ import util
 # kernel computation
 ########################################################################
 
-def _kernel (indata, prefix):
+def _evaluate (indata, prefix):
 	feats=util.get_features(indata, prefix)
 	kfun=eval(indata[prefix+'name']+'Kernel')
 	kargs=util.get_args(indata, prefix)
@@ -69,7 +69,7 @@ def _get_subkernels (indata, prefix):
 	return subkernels
 
 
-def _kernel_combined (indata, prefix):
+def _evaluate_combined (indata, prefix):
 	kernel=CombinedKernel()
 	feats={'train':CombinedFeatures(), 'test':CombinedFeatures()}
 
@@ -91,7 +91,7 @@ def _kernel_combined (indata, prefix):
 		km_train=km_train, km_test=km_test)
 
 
-def _kernel_auc (indata, prefix):
+def _evaluate_auc (indata, prefix):
 	subk=_get_subkernels(indata, prefix)['0']
 	feats_subk=util.get_features(subk, '')
 	subk['kernel'].init(feats_subk['train'], feats_subk['test'])
@@ -113,7 +113,7 @@ def _kernel_auc (indata, prefix):
 		km_train=km_train, km_test=km_test)
 
 
-def _kernel_custom (indata, prefix):
+def _evaluate_custom (indata, prefix):
 	feats={
 		'train': RealFeatures(indata[prefix+'data']),
 		'test': RealFeatures(indata[prefix+'data'])
@@ -138,7 +138,7 @@ def _kernel_custom (indata, prefix):
 		fullfull=fullfull)
 
 
-def _kernel_pie (indata, prefix):
+def _evaluate_pie (indata, prefix):
 	pie=PluginEstimate()
 	feats=util.get_features(indata, prefix)
 	labels=Labels(double(indata['classifier_labels']))
@@ -162,7 +162,7 @@ def _kernel_pie (indata, prefix):
 		km_train=km_train, km_test=km_test, classified=classified)
 
 
-def _kernel_top_fisher (indata, prefix):
+def _evaluate_top_fisher (indata, prefix):
 	feats={}
 	wordfeats=util.get_features(indata, prefix)
 
@@ -210,18 +210,18 @@ def _kernel_top_fisher (indata, prefix):
 def test (indata):
 	prefix='topfk_'
 	if indata.has_key(prefix+'name'):
-		return _kernel_top_fisher(indata, prefix)
+		return _evaluate_top_fisher(indata, prefix)
 
 	prefix='kernel_'
 	names=['Combined', 'AUC', 'Custom']
 	for name in names:
 		if indata[prefix+'name']==name:
-			return eval('_kernel_'+name.lower()+'(indata, prefix)')
+			return eval('_evaluate_'+name.lower()+'(indata, prefix)')
 
 	names=['HistogramWordString', 'SalzbergWordString']
 	for name in names:
 		if indata[prefix+'name']==name:
-			return _kernel_pie(indata, prefix)
+			return _evaluate_pie(indata, prefix)
 
-	return _kernel(indata, prefix)
+	return _evaluate(indata, prefix)
 
