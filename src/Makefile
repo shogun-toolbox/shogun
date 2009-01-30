@@ -205,9 +205,9 @@ install: $(TARGET)
 	install -m755 libshogun.so $(DESTDIR)$(LIBDIR)
 	install -m755 libshogun.a $(DESTDIR)$(LIBDIR)
 
-	find ./ -mindepth 1 -type d ! -wholename '*.svn*' \
+	find ./ -mindepth 1 -type d ! \( -path '*.svn*' -o -name '*interface*' -o -name '*guilib*' -o -name '*doxygen*' \)\
 		-exec install -d -m755 "$(DESTDIR)$(INCDIR)/shogun/"\{\} \;
-	find ./ -mindepth 1 -type d ! \( -wholename '*.svn*' -o -name '*wrap*' \) \
+	find ./ -mindepth 1 -type d ! \( -path '*.svn*' -o -name '*wrap*' -o -name '*interface*' -o -name '*guilib*' -o -name '*doxygen*' \) \
 		-exec sh -c "install -m644 {}/*.h -t $(DESTDIR)$(INCDIR)/shogun/{}" \;
 # r
 else
