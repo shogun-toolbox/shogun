@@ -10,10 +10,6 @@
  */
 
 #include "lib/config.h"
-#include "lib/matlab.h"
-#include "lib/octave.h"
-#include "lib/r.h"
-#include "lib/python.h"
 
 #include "lib/io.h"
 #include "lib/ShogunException.h"
@@ -33,7 +29,7 @@
 #include <unistd.h>
 
 const EMessageType CIO::levels[NUM_LOG_LEVELS]={M_DEBUG, M_INFO, M_NOTICE, M_WARN, M_ERROR, M_CRITICAL, M_ALERT, M_EMERGENCY, M_MESSAGEONLY};
-const char* CIO::message_strings[NUM_LOG_LEVELS]={"[DEBUG] ", "[INFO] ", "[NOTICE] ", "\033[1;34m[WARN]\033[0m ", "\033[1;31m[ERROR]\033[0m ", "[CRITICAL] ", "[ALERT] ", "[EMERGENCY] ", ""};
+const char* CIO::message_strings[NUM_LOG_LEVELS]={"[DEBUG] \0", "[INFO] \0", "[NOTICE] \0", "\033[1;34m[WARN]\033[0m \0", "\033[1;31m[ERROR]\033[0m \0", "[CRITICAL] \0", "[ALERT] \0", "[EMERGENCY] \0", "\0"};
 
 /// file name buffer
 char file_buffer[FBUFSIZE];
@@ -57,107 +53,59 @@ CIO::CIO(const CIO& orig)
 void CIO::message(EMessageType prio, const char *fmt, ... ) const
 {
 	const char* msg_intro=get_msg_intro(prio);
-	if (!msg_intro)
-		return;
 
-	char str[4096];
-	va_list list;
-	va_start(list,fmt);
-	vsnprintf(str, sizeof(str), fmt, list);
-	va_end(list);
-
-	switch (prio)
+	if (msg_intro)
 	{
-		case M_DEBUG:
-		case M_INFO:
-		case M_NOTICE:
-		case M_MESSAGEONLY:
-#if defined(WIN32) && defined(HAVE_MATLAB)
-			fprintf(target, "%s", msg_intro);
-			mexPrintf("%s", str);
-#elif defined(HAVE_R)
-			if (target==stdout)
-			{
-				Rprintf((char*) "%s", msg_intro);
-				Rprintf((char*) "%s", str);
-			}
-			else
-			{
-				fprintf(target, "%s", msg_intro);
-				fprintf(target, "%s", str);
-			}
-#else
-			fprintf(target, "%s", msg_intro);
-			fprintf(target, "%s", str);
-#endif
-			break;
+		char str[4096];
+		snprintf(str, sizeof(str), "%s", msg_intro);
+		int len=strlen(msg_intro);
+		char* s=str+len;
 
-		case M_WARN:
-#if defined(HAVE_MATLAB)
-			mexWarnMsgTxt(str);
-#elif defined(HAVE_OCTAVE)
-			::warning(str);
-#elif defined(HAVE_PYTHON) // no check for swig necessary
-			PyErr_Warn(NULL, str);
-#elif defined(HAVE_R)
-			if (target==stdout)
-			{
-				Rprintf((char*) "%s", msg_intro);
-				Rprintf((char*) "%s", str);
-			}
-			else
-			{
-				fprintf(target, "%s", msg_intro);
-				fprintf(target, "%s", str);
-			}
-#else
-			fprintf(target, "%s", msg_intro);
-			fprintf(target, "%s", str);
-#endif
-			break;
+		va_list list;
+		va_start(list,fmt);
+		vsnprintf(s, sizeof(str)-len, fmt, list);
+		va_end(list);
 
-		case M_ERROR:
-		case M_CRITICAL:
-		case M_ALERT:
-		case M_EMERGENCY:
-#if defined(WIN32) && defined(HAVE_MATLAB)
-			mexPrintf("%s", str);
-#elif defined(HAVE_PYTHON)
-			// nop - str will be printed when exception is displayed in python
-#elif defined(HAVE_R)
-			if (target==stdout)
-			{
-				Rprintf((char*) "%s", msg_intro);
-				Rprintf((char*) "%s", str);
-			}
-			else
-			{
-				fprintf(target, "%s", msg_intro);
-				fprintf(target, "%s", str);
-			}
-#else
-			fprintf(target, "%s", str);
-#endif
-			throw ShogunException(str);
-			break;
-		default:
-			break;
+		switch (prio)
+		{
+			case M_DEBUG:
+			case M_INFO:
+			case M_NOTICE:
+			case M_MESSAGEONLY:
+				sg_print_message(target, s);
+				break;
+
+			case M_WARN:
+				sg_print_warning(target, s);
+				break;
+
+			case M_ERROR:
+			case M_CRITICAL:
+			case M_ALERT:
+			case M_EMERGENCY:
+				sg_print_error(target, str);
+				throw ShogunException(str);
+				break;
+			default:
+				break;
+		}
+
+		fflush(target);
 	}
-
-	fflush(target);
 }
 
 void CIO::buffered_message(EMessageType prio, const char *fmt, ... ) const
 {
 	const char* msg_intro=get_msg_intro(prio);
-	if (!msg_intro)
-		return;
 
-	fprintf(target, "%s", msg_intro);
-	va_list list;
-	va_start(list,fmt);
-	vfprintf(target,fmt,list);
-	va_end(list);
+	if (msg_intro)
+	{
+		fprintf(target, "%s", msg_intro);
+		va_list list;
+		va_start(list,fmt);
+		vfprintf(target,fmt,list);
+		va_end(list);
+	}
 }
 
 void CIO::progress(

@@ -19,15 +19,12 @@
 
 #include "lib/io.h"
 #include "lib/Signal.h"
-#include "lib/matlab.h"
-#include "lib/octave.h"
-#include "lib/python.h"
-#include "lib/r.h"
 
 int CSignal::signals[NUMTRAPPEDSIGS]={SIGINT, SIGURG};
 struct sigaction CSignal::oldsigaction[NUMTRAPPEDSIGS];
 bool CSignal::active=false;
 bool CSignal::cancel_computation=false;
+bool CSignal::cancel_immediately=false;
 
 CSignal::CSignal()
 : CSGObject()
@@ -37,12 +34,11 @@ CSignal::CSignal()
 CSignal::~CSignal()
 {
 	if (!unset_handler())
-		SG_SERROR("error uninitalizing signal handler\n");
+		SG_PRINT("error uninitalizing signal handler\n");
 }
 
 void CSignal::handler(int signal)
 {
-#if !defined(HAVE_SWIG) && (defined(HAVE_MATLAB) || defined(HAVE_OCTAVE) || defined(HAVE_R))
 	if (signal == SIGINT)
 	{
 		SG_SPRINT("\nImmediately return to prompt / Prematurely finish computations / Do nothing (I/P/D)? ");
@@ -51,39 +47,17 @@ void CSignal::handler(int signal)
 		if (answer == 'I')
 		{
 			unset_handler();
-#if defined(HAVE_MATLAB)
-			mexErrMsgTxt("sg stopped by SIGINT\n");
-#elif defined(HAVE_OCTAVE)
-			SG_PRINT("sg stopped by SIGINT\n");
-			BEGIN_INTERRUPT_IMMEDIATELY_IN_FOREIGN_CODE;
-			octave_throw_interrupt_exception();
-			END_INTERRUPT_IMMEDIATELY_IN_FOREIGN_CODE;
-#elif defined(HAVE_PYTHON)
-			SG_PRINT("sg stopped by SIGINT\n");
-			PyErr_SetInterrupt();
-			PyErr_CheckSignals();
-#elif defined(HAVE_R)
-			R_Suicide((char*) "sg stopped by SIGINT\n");
-#endif
+			sg_print_error(stdout, "sg stopped by SIGINT\n");
 		}
-		else
-		{
-			if (answer == 'P')
+		else if (answer == 'P')
 				cancel_computation=true;
-			else
-				SG_SPRINT("\n");
-		}
+		else
+			SG_SPRINT("Continuing...\n");
 	}
 	else if (signal == SIGURG)
 		cancel_computation=true;
 	else
-		SG_SERROR("unknown signal %d received\n", signal);
-#else
-	SG_SPRINT("\n");
-	SG_SERROR("sg stopped by SIGINT\n");
-	unset_handler();
-	exit(0);
-#endif
+		SG_SPRINT("unknown signal %d received\n", signal);
 }
 
 bool CSignal::set_handler()
@@ -108,7 +82,7 @@ bool CSignal::set_handler()
 		{
 			if (sigaction(signals[i], &act, &oldsigaction[i]))
 			{
-				SG_SWARNING("Error trapping signals!\n");
+				SG_SPRINT("Error trapping signals!\n");
 				for (int32_t j=i-1; j>=0; j--)
 					sigaction(signals[i], &oldsigaction[i], NULL);
 
@@ -134,7 +108,7 @@ bool CSignal::unset_handler()
 		{
 			if (sigaction(signals[i], &oldsigaction[i], NULL))
 			{
-				SG_SERROR("error uninitalizing signal handler for signal %d\n", signals[i]);
+				SG_SPRINT("error uninitalizing signal handler for signal %d\n", signals[i]);
 				result=false;
 			}
 		}
@@ -151,6 +125,15 @@ bool CSignal::unset_handler()
 void CSignal::clear_cancel()
 {
 	cancel_computation=false;
+	cancel_immediately=false;
+}
+
+void CSignal::set_cancel(bool immediately)
+{
+	cancel_computation=false;
+
+	if (immediately)
+		cancel_immediately=true;
 }
 
 void CSignal::clear()

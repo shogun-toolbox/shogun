@@ -19,6 +19,14 @@
 
 #include "lib/common.h"
 
+/// function called to print normal messages
+extern void sg_print_message(FILE* target, const char* str);
+
+/// function called to print warning messages
+extern void sg_print_warning(FILE* target, const char* str);
+
+/// function called to print error messages
+extern void sg_print_error(FILE* target, const char* str);
 
 /// The io libs output [DEBUG] etc in front of every message
 /// 'higher' messages filter output depending on the loglevel, i.e. CRITICAL messages

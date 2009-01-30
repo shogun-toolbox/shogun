@@ -12,6 +12,7 @@
 #define __SIGNAL__H_
 
 #include "lib/config.h"
+#include "lib/ShogunException.h"
 #include "base/SGObject.h"
 
 #ifndef WIN32
@@ -19,6 +20,8 @@
 #define NUMTRAPPEDSIGS 2
 
 #include "lib/python.h"
+
+extern bool sg_cancel_computations(bool &delayed, bool &immediately);
 
 /** Class Signal implements signal handling to e.g. allow ctrl+c to cancel a
  * long running process. This is done in two ways: 
@@ -64,29 +67,20 @@ class CSignal : public CSGObject
 		/** clear cancel flag signals */
 		static void clear_cancel();
 
+		/** set cancel flag signals */
+		static void set_cancel(bool immediately=false);
+
 		/** cancel computations
 		 *
-		 * @return if computations could be cancelled
+		 * @return if computations should be cancelled
 		 */
 		static inline bool cancel_computations()
 		{
-#ifdef HAVE_PYTHON
-			if (PyErr_CheckSignals())
-			{
-				SG_SPRINT("\nImmediately return to matlab prompt / Prematurely finish computations / Do nothing (I/P/D)? ");
-				char answer=fgetc(stdin);
+			sg_cancel_computations(cancel_computation, cancel_immediately);
 
-				if (answer == 'I')
-					SG_SERROR("shogun stopped by SIGINT\n");
-				else if (answer == 'P')
-				{
-					PyErr_Clear();
-					cancel_computation=true;
-				}
-				else
-					SG_SPRINT("\n");
-			}
-#endif
+			if (cancel_immediately)
+				throw ShogunException("Computations have been cancelled immediately");
+
 			return cancel_computation;
 		}
 
@@ -100,8 +94,11 @@ class CSignal : public CSGObject
 		/** active signal */
 		static bool active;
 
-		/** if computation is cancelled */
+		/** if computation should be cancelled */
 		static bool cancel_computation;
+
+		/** if shogun should return ASAP */
+		static bool cancel_immediately;
 };
 #endif // WIN32
 #endif // __SIGNAL__H_
