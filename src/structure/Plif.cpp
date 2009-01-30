@@ -8,15 +8,12 @@
  * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "lib/config.h"
 
 #include <stdio.h>
 #include <string.h>
 
+#include "lib/config.h"
 #include "lib/io.h"
-
-#include "lib/matlab.h"
-
 #include "structure/Plif.h"
 
 //#define PLIF_DEBUG
@@ -105,174 +102,6 @@ void CPlif::set_name(char *p_name)
 	name=new char[strlen(p_name)+1] ;
 	strcpy(name,p_name) ;
 }
-
-#ifdef HAVE_MATLAB
-CPlif** read_penalty_struct_from_cell(
-	const mxArray * mx_penalty_info, int32_t P)
-{
-	//P = mxGetN(mx_penalty_info) ;
-	//SG_PRINT("p=%i size=%i\n", P, P*sizeof(CPlif)) ;
-	
-	CPlif** PEN = new CPlif*[P] ;
-	for (int32_t i=0; i<P; i++)
-		PEN[i]=new CPlif() ;
-	
-	for (int32_t i=0; i<P; i++)
-	{
-		//SG_PRINT("i=%i/%i\n", i, P) ;
-		
-		const mxArray* mx_elem = mxGetCell(mx_penalty_info, i) ;
-		if (mx_elem==NULL || !mxIsStruct(mx_elem))
-		{
-			SG_SERROR("empty cell element\n") ;
-			delete[] PEN ;
-			return NULL ;
-		}
-		const mxArray* mx_id_field = mxGetField(mx_elem, 0, "id") ;
-		if (mx_id_field==NULL || !mxIsNumeric(mx_id_field) || 
-			mxGetN(mx_id_field)!=1 || mxGetM(mx_id_field)!=1)
-		{
-			SG_SERROR( "missing id field\n") ;
-			delete[] PEN;
-			return NULL ;
-		}
-		const mxArray* mx_limits_field = mxGetField(mx_elem, 0, "limits") ;
-		if (mx_limits_field==NULL || !mxIsNumeric(mx_limits_field) ||
-			mxGetM(mx_limits_field)!=1)
-		{
-			SG_SERROR( "missing limits field\n") ;
-			delete[] PEN ;
-			return NULL ;
-		}
-		int32_t len = mxGetN(mx_limits_field) ;
-		
-		const mxArray* mx_penalties_field = mxGetField(mx_elem, 0, "penalties") ;
-		if (mx_penalties_field==NULL || !mxIsNumeric(mx_penalties_field) ||
-			mxGetM(mx_penalties_field)!=1 || ((int32_t) mxGetN(mx_penalties_field))!=len)
-		{
-			SG_SERROR( "missing penalties field (%i)\n", i) ;
-			delete[] PEN ;
-			return NULL ;
-		}
-		const mxArray* mx_transform_field = mxGetField(mx_elem, 0, "transform") ;
-		if (mx_transform_field==NULL || !mxIsChar(mx_transform_field))
-		{
-			SG_SERROR( "missing transform field\n") ;
-			delete[] PEN;
-			return NULL ;
-		}
-		const mxArray* mx_name_field = mxGetField(mx_elem, 0, "name") ;
-		if (mx_name_field==NULL || !mxIsChar(mx_name_field))
-		{
-			SG_SERROR( "missing name field\n") ;
-			delete[] PEN;
-			return NULL ;
-		}
-		const mxArray* mx_max_value_field = mxGetField(mx_elem, 0, "max_value") ;
-		if (mx_max_value_field==NULL || !mxIsNumeric(mx_max_value_field) ||
-			mxGetM(mx_max_value_field)!=1 || mxGetN(mx_max_value_field)!=1)
-		{
-			SG_SERROR( "missing max_value field\n") ;
-			delete[] PEN;
-			return NULL ;
-		}
-		const mxArray* mx_min_value_field = mxGetField(mx_elem, 0, "min_value") ;
-		if (mx_min_value_field==NULL || !mxIsNumeric(mx_min_value_field) ||
-			mxGetM(mx_min_value_field)!=1 || mxGetN(mx_min_value_field)!=1)
-		{
-			SG_SERROR( "missing min_value field\n") ;
-			delete[] PEN;
-			return NULL ;
-		}
-		const mxArray* mx_use_svm_field = mxGetField(mx_elem, 0, "use_svm") ;
-		if (mx_use_svm_field==NULL || !mxIsNumeric(mx_use_svm_field) ||
-			mxGetM(mx_use_svm_field)!=1 || mxGetN(mx_use_svm_field)!=1)
-		{
-			SG_SERROR( "missing use_svm field\n") ;
-			delete[] PEN;
-			return NULL ;
-		}
-		int32_t use_svm = (int32_t) mxGetScalar(mx_use_svm_field) ;
-
-		const mxArray* mx_use_cache_field = mxGetField(mx_elem, 0, "use_cache") ;
-		if (mx_use_cache_field==NULL || !mxIsNumeric(mx_use_cache_field) ||
-			mxGetM(mx_use_cache_field)!=1 || mxGetN(mx_use_cache_field)!=1)
-		{
-			SG_SERROR( "missing use_cache field\n") ;
-			delete[] PEN;
-			return NULL ;
-		}
-		int32_t use_cache = (int32_t) mxGetScalar(mx_use_cache_field) ;
-
-		int32_t id = (int32_t) mxGetScalar(mx_id_field)-1 ;
-		if (i<0 || i>P-1)
-		{
-			SG_SERROR( "id out of range\n") ;
-			delete[] PEN;
-			return NULL ;
-		}
-		int32_t max_value = (int32_t) mxGetScalar(mx_max_value_field) ;
-		if (max_value<-1024*1024*100 || max_value>1024*1024*100)
-		{
-			SG_SERROR( "max_value out of range\n") ;
-			delete[] PEN;
-			return NULL ;
-		}
-		PEN[id]->set_max_value(max_value) ;
-
-		int32_t min_value = (int32_t) mxGetScalar(mx_min_value_field) ;
-		if (min_value<-1024*1024*100 || min_value>1024*1024*100)
-		{
-			SG_SERROR( "min_value out of range\n") ;
-			delete[] PEN;
-			return NULL ;
-		}
-		PEN[id]->set_min_value(min_value) ;
-		//SG_PRINT("id: %i, min_value: %i,  max_value: %i\n",id,min_value, max_value);
-		
-		if (PEN[id]->get_id()!=-1)
-		{
-			SG_SERROR( "penalty id already used\n") ;
-			delete[] PEN;
-			return NULL ;
-		}
-		PEN[id]->set_id(id) ;
-		
-		PEN[id]->set_use_svm(use_svm) ;
-		PEN[id]->set_use_cache(use_cache) ;
-
-		double * limits = mxGetPr(mx_limits_field) ;
-		double * penalties = mxGetPr(mx_penalties_field) ;
-		PEN[id]->set_plif(len, limits, penalties) ;
-		
-		char *transform_str = mxArrayToString(mx_transform_field) ;				
-		char *name_str = mxArrayToString(mx_name_field) ;				
-
-		if (!PEN[id]->set_transform_type(transform_str))
-		{
-			SG_SERROR( "transform type not recognized ('%s')\n", transform_str) ;
-			delete[] PEN;
-			mxFree(transform_str) ;
-			return NULL ;
-		}
-
-		PEN[id]->set_name(name_str) ;
-		PEN[id]->init_penalty_struct_cache() ;
-
-/*		if (PEN->cache)
-/			SG_SDEBUG( "penalty_info: name=%s id=%i points=%i min_value=%i max_value=%i transform='%s' (cache initialized)\n", PEN[id]->name,
-					PEN[id]->id, PEN[id]->len, PEN[id]->min_value, PEN[id]->max_value, transform_str) ;
-		else
-			SG_SDEBUG( "penalty_info: name=%s id=%i points=%i min_value=%i max_value=%i transform='%s'\n", PEN[id]->name,
-					PEN[id]->id, PEN[id]->len, PEN[id]->min_value, PEN[id]->max_value, transform_str) ;
-*/
-		
-		mxFree(transform_str) ;
-		mxFree(name_str) ;
-	}
-	return PEN ;
-}
-#endif
 
 void delete_penalty_struct(CPlif** PEN, int32_t P) 
 {
