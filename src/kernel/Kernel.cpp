@@ -333,9 +333,6 @@ bool CKernel::set_normalizer(CKernelNormalizer* n)
 {
 	SG_REF(n);
 	SG_UNREF(normalizer);
-#ifndef HAVE_SWIG
-	delete normalizer;
-#endif
 	normalizer=n;
 
 	return (normalizer!=NULL);

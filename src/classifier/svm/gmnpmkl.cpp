@@ -279,17 +279,6 @@ CGMNPMKL::CGMNPMKL(float64_t C, CKernel* k, CLabels* lab)
 
 CGMNPMKL::~CGMNPMKL()
 {
-
-	// to avoid leaks
-#if !defined(HAVE_SWIG) || defined(HAVE_R)
-	if(svm!=NULL)
-	{
-		CLabels* lb=svm->get_labels();
-		delete lb;
-		lb=NULL;
-	}
-#endif	
-	
 	delete svm;
 	svm=NULL;
 	delete lpw;
@@ -329,20 +318,7 @@ void CGMNPMKL::initsvm()
 {
 	ASSERT(labels);
 	
-	if(svm!=NULL)
-	{
-		// to avoid leaks
-	#if !defined(HAVE_SWIG) || defined(HAVE_R)
-		if(svm!=NULL)
-		{
-			CLabels* lb=svm->get_labels();
-			delete lb;
-			lb=NULL;
-		}
-	#endif	
-		
-		delete svm;
-	}
+	delete svm;
 	svm=new CGMNPSVM;
 	
 	svm->set_C(get_C1(),get_C2());
@@ -362,7 +338,6 @@ void CGMNPMKL::initsvm()
 	delete[] lb;
 	lb=NULL;
 
-	//is a leak if SWIG if false ==  #if defined(HAVE_SWIG) && !defined(HAVE_R)
 	svm->set_labels(newlab);
 	
 	newlab=NULL;

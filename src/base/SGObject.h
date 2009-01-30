@@ -19,13 +19,8 @@ class CSGObject;
 class CIO;
 
 // define reference counter macros
-#if defined(HAVE_SWIG) && !defined(HAVE_R)
 #define SG_REF(x) { if (x) x->ref(); }
 #define SG_UNREF(x) { if (x) x->unref(); } 
-#else
-#define SG_REF(x)
-#define SG_UNREF(x)
-#endif // HAVE_SWIG
 
 /** Class SGObject is the base class of all shogun objects. Apart from dealing
  * with reference counting that is used to manage shogung objects in memory
@@ -38,19 +33,25 @@ class CIO;
 class CSGObject
 {
 public:
-    virtual ~CSGObject()
-    {
-    }
-
-#ifdef HAVE_SWIG
-#ifndef HAVE_R
 	inline CSGObject() : refcount(0)
 	{
+		parallel = new CParallel();
+		io = new CIO();
+		version = new CVersion();
 	}
 
-	inline CSGObject(const CSGObject& orig)
-		: refcount(0) , parallel(orig.parallel), io(orig.io)
+	inline CSGObject(const CSGObject& orig) : refcount(0)
 	{
+		parallel = new CParallel(orig.parallel);
+		io = new CIO(orig.io);
+		version = new CVersion();
+	}
+
+    virtual ~CSGObject()
+	{
+		delete parallel;
+		delete io;
+		delete version;
 	}
 
 	inline int32_t ref()
@@ -85,35 +86,11 @@ public:
 
 private:
 	int32_t refcount;
-#else //HAVE_R
-	inline CSGObject()
-	{
-	}
-
-	inline CSGObject(const CSGObject& orig)
-		: parallel(orig.parallel), io(orig.io)
-	{
-	}
-#endif
+	bool static_io;
 
 public:
-	CParallel parallel;
-	CIO io;
-	CVersion version;
-#else // HAVE_SWIG
-public:
-	inline CSGObject()
-	{
-	}
-
-	inline CSGObject(const CSGObject& orig)
-	{
-	}
-
-public:
-	static CParallel parallel;
-	static CIO io;
-	static CVersion version;
-#endif // HAVE_SWIG
+	CParallel* parallel;
+	CIO* io;
+	CVersion* version;
 };
 #endif // __SGOBJECT_H__

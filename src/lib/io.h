@@ -61,18 +61,17 @@ class CIO;
 
 // printf like funktions (with additional severity level)
 // for object derived from CSGObject
-#define SG_DEBUG(...) CSGObject::io.message(M_DEBUG, __VA_ARGS__)
-#define SG_INFO(...) CSGObject::io.message(M_INFO, __VA_ARGS__)
-#define SG_WARNING(...) CSGObject::io.message(M_WARN, __VA_ARGS__)
-#define SG_ERROR(...) CSGObject::io.message(M_ERROR, __VA_ARGS__)
-#define SG_PRINT(...) CSGObject::io.message(M_MESSAGEONLY, __VA_ARGS__)
-#define SG_NOTIMPLEMENTED CSGObject::io.not_implemented()
+#define SG_DEBUG(...) CSGObject::io->message(M_DEBUG, __VA_ARGS__)
+#define SG_INFO(...) CSGObject::io->message(M_INFO, __VA_ARGS__)
+#define SG_WARNING(...) CSGObject::io->message(M_WARN, __VA_ARGS__)
+#define SG_ERROR(...) CSGObject::io->message(M_ERROR, __VA_ARGS__)
+#define SG_PRINT(...) CSGObject::io->message(M_MESSAGEONLY, __VA_ARGS__)
+#define SG_NOTIMPLEMENTED CSGObject::io->not_implemented()
 
-#define SG_PROGRESS(...) CSGObject::io.progress(__VA_ARGS__)
-#define SG_ABS_PROGRESS(...) CSGObject::io.absolute_progress(__VA_ARGS__)
-#define SG_DONE() CSGObject::io.done()
+#define SG_PROGRESS(...) CSGObject::io->progress(__VA_ARGS__)
+#define SG_ABS_PROGRESS(...) CSGObject::io->absolute_progress(__VA_ARGS__)
+#define SG_DONE() CSGObject::io->done()
 
-#ifndef HAVE_SWIG
 extern CIO* sg_io;
 // printf like function using the global sg_io object
 #define SG_SDEBUG(...) sg_io->message(M_DEBUG,__VA_ARGS__)
@@ -84,19 +83,6 @@ extern CIO* sg_io;
 #define SG_SABS_PROGRESS(...) sg_io->absolute_progress(__VA_ARGS__)
 #define SG_SDONE() sg_io->done()
 #define SG_SNOTIMPLEMENTED sg_io->not_implemented()
-#else
-extern CIO sg_io;
-// printf like function using the global sg_io object
-#define SG_SDEBUG(...) sg_io.message(M_DEBUG, __VA_ARGS__)
-#define SG_SINFO(...) sg_io.message(M_INFO, __VA_ARGS__)
-#define SG_SWARNING(...) sg_io.message(M_WARN, __VA_ARGS__)
-#define SG_SERROR(...) sg_io.message(M_ERROR, __VA_ARGS__)
-#define SG_SPRINT(...) sg_io.message(M_MESSAGEONLY, __VA_ARGS__)
-#define SG_SPROGRESS(...) sg_io.progress(__VA_ARGS__)
-#define SG_SABS_PROGRESS(...) sg_io.absolute_progress(__VA_ARGS__)
-#define SG_SDONE() sg_io.done()
-#define SG_SNOTIMPLEMENTED sg_io.not_implemented()
-#endif
 
 #define ASSERT(x) { if (!(x)) SG_SERROR("assertion %s failed in file %s line %d\n",#x, __FILE__, __LINE__);}
 
@@ -226,13 +212,8 @@ class CIO
 			show_progress=true;
 
 			// static functions like CSVM::classify_example_helper call SG_PROGRESS
-#ifndef HAVE_SWIG
 			if (sg_io!=this)
 				sg_io->enable_progress();
-#else
-			if (&sg_io!=this)
-				sg_io.enable_progress();
-#endif
 		}
 
 		/** disable progress bar */
@@ -241,13 +222,8 @@ class CIO
 			show_progress=false;
 
 			// static functions like CSVM::classify_example_helper call SG_PROGRESS
-#ifndef HAVE_SWIG
 			if (sg_io!=this)
 				sg_io->disable_progress();
-#else
-			if (&sg_io!=this)
-				sg_io.disable_progress();
-#endif
 		}
 
 		/** set directory name
