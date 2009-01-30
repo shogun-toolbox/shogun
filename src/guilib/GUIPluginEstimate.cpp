@@ -28,12 +28,12 @@ CGUIPluginEstimate::CGUIPluginEstimate(CSGInterface* ui_)
 
 CGUIPluginEstimate::~CGUIPluginEstimate()
 {
-	delete estimator;
+	SG_UNREF(estimator);
 }
 
 bool CGUIPluginEstimate::new_estimator(float64_t pos, float64_t neg)
 {
-	delete estimator;
+	SG_UNREF(estimator);
 	estimator=new CPluginEstimate(pos, neg);
 
 	if (!estimator)

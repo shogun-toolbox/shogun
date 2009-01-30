@@ -22,7 +22,7 @@ CGUITime::CGUITime(CSGInterface* ui_)
 
 CGUITime::~CGUITime()
 {
-	delete time;
+	SG_UNREF(time);
 }
 
 void CGUITime::start()

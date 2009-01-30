@@ -59,7 +59,7 @@ CGUIDistance::CGUIDistance(CSGInterface* ui_)
 
 CGUIDistance::~CGUIDistance()
 {
-	delete distance;
+	SG_UNREF(distance);
 }
 
 CDistance* CGUIDistance::get_distance()
@@ -71,7 +71,7 @@ bool CGUIDistance::set_distance(CDistance* dist)
 {
 	if (dist)
 	{
-		delete distance;
+		SG_UNREF(distance);
 		distance=dist;
 		SG_DEBUG("set new distance (%p).\n", dist);
 

@@ -97,77 +97,77 @@ CGUIClassifier::CGUIClassifier(CSGInterface* ui_)
 
 CGUIClassifier::~CGUIClassifier()
 {
-	delete classifier;
+	SG_UNREF(classifier);
 }
 
 bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
 {
 	if (strcmp(name,"LIBSVM_ONECLASS")==0)
 	{
-		delete classifier;
+		SG_UNREF(classifier);
 		classifier = new CLibSVMOneClass();
 		SG_INFO("created SVMlibsvm object for oneclass\n");
 	}
 	else if (strcmp(name,"LIBSVM_MULTICLASS")==0)
 	{
-		delete classifier;
+		SG_UNREF(classifier);
 		classifier = new CLibSVMMultiClass();
 		SG_INFO("created SVMlibsvm object for multiclass\n");
 	}
 	else if (strcmp(name,"LIBSVM")==0)
 	{
-		delete classifier;
+		SG_UNREF(classifier);
 		classifier= new CLibSVM();
 		SG_INFO("created SVMlibsvm object\n") ;
 	}
 #ifdef USE_SVMLIGHT
 	else if ((strcmp(name,"LIGHT")==0) || (strcmp(name,"SVMLIGHT")==0))
 	{
-		delete classifier;
+		SG_UNREF(classifier);
 		classifier= new CSVMLight();
 		SG_INFO("created SVMLight object\n") ;
 	}
 	else if (strcmp(name,"SVRLIGHT")==0)
 	{
-		delete classifier;
+		SG_UNREF(classifier);
 		classifier= new CSVRLight();
 		SG_INFO("created SVRLight object\n") ;
 	}
 #endif //USE_SVMLIGHT
 	else if (strcmp(name,"GPBTSVM")==0)
 	{
-		delete classifier;
+		SG_UNREF(classifier);
 		classifier= new CGPBTSVM();
 		SG_INFO("created GPBT-SVM object\n") ;
 	}
 	else if (strcmp(name,"MPDSVM")==0)
 	{
-		delete classifier;
+		SG_UNREF(classifier);
 		classifier= new CMPDSVM();
 		SG_INFO("created MPD-SVM object\n") ;
 	}
 	else if (strcmp(name,"GNPPSVM")==0)
 	{
-		delete classifier;
+		SG_UNREF(classifier);
 		classifier= new CGNPPSVM();
 		SG_INFO("created GNPP-SVM object\n") ;
 	}
 	else if (strcmp(name,"GMNPSVM")==0)
 	{
-		delete classifier;
+		SG_UNREF(classifier);
 		classifier= new CGMNPSVM();
 		SG_INFO("created GMNP-SVM object\n") ;
 	}
 	else if (strcmp(name,"LIBSVR")==0)
 	{
-		delete classifier;
+		SG_UNREF(classifier);
 		classifier= new CLibSVR();
 		SG_INFO("created SVRlibsvm object\n") ;
 	}
 #ifdef HAVE_LAPACK
 	else if (strcmp(name, "KRR")==0)
 	{
-		delete classifier;
+		SG_UNREF(classifier);
 		classifier=new CKRR(krr_tau, ui->ui_kernel->get_kernel(),
 			ui->ui_labels->get_train_labels());
 		SG_INFO("created KRR object %p\n", classifier);
@@ -175,20 +175,20 @@ bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
 #endif //HAVE_LAPACK
 	else if (strcmp(name,"KERNELPERCEPTRON")==0)
 	{
-		delete classifier;
+		SG_UNREF(classifier);
 		classifier= new CKernelPerceptron();
 		SG_INFO("created Kernel Perceptron object\n") ;
 	}
 	else if (strcmp(name,"PERCEPTRON")==0)
 	{
-		delete classifier;
+		SG_UNREF(classifier);
 		classifier= new CPerceptron();
 		SG_INFO("created Perceptron object\n") ;
 	}
 #ifdef HAVE_LAPACK
 	else if (strcmp(name,"LIBLINEAR_LR")==0)
 	{
-		delete classifier;
+		SG_UNREF(classifier);
 		classifier= new CLibLinear(LR);
 		((CLibLinear*) classifier)->set_C(svm_C1, svm_C2);
 		((CLibLinear*) classifier)->set_epsilon(svm_epsilon);
@@ -197,7 +197,7 @@ bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
 	}
 	else if (strcmp(name,"LIBLINEAR_L2")==0)
 	{
-		delete classifier;
+		SG_UNREF(classifier);
 		classifier= new CLibLinear(L2);
 		((CLibLinear*) classifier)->set_C(svm_C1, svm_C2);
 		((CLibLinear*) classifier)->set_epsilon(svm_epsilon);
@@ -206,7 +206,7 @@ bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
 	}
 	else if (strcmp(name,"LDA")==0)
 	{
-		delete classifier;
+		SG_UNREF(classifier);
 		classifier= new CLDA();
 		SG_INFO("created LDA object\n") ;
 	}
@@ -214,7 +214,7 @@ bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
 #ifdef USE_CPLEX
 	else if (strcmp(name,"LPM")==0)
 	{
-		delete classifier;
+		SG_UNREF(classifier);
 		classifier= new CLPM();
 		((CLPM*) classifier)->set_C(svm_C1, svm_C2);
 		((CLPM*) classifier)->set_epsilon(svm_epsilon);
@@ -224,7 +224,7 @@ bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
 	}
 	else if (strcmp(name,"LPBOOST")==0)
 	{
-		delete classifier;
+		SG_UNREF(classifier);
 		classifier= new CLPBoost();
 		((CLPBoost*) classifier)->set_C(svm_C1, svm_C2);
 		((CLPBoost*) classifier)->set_epsilon(svm_epsilon);
@@ -234,7 +234,7 @@ bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
 	}
 	else if (strcmp(name,"SUBGRADIENTLPM")==0)
 	{
-		delete classifier;
+		SG_UNREF(classifier);
 		classifier= new CSubGradientLPM();
 
 		((CSubGradientLPM*) classifier)->set_bias_enabled(svm_use_bias);
@@ -248,25 +248,25 @@ bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
 #endif //USE_CPLEX
 	else if (strncmp(name,"KNN", strlen("KNN"))==0)
 	{
-		delete classifier;
+		SG_UNREF(classifier);
 		classifier= new CKNN();
 		SG_INFO("created KNN object\n") ;
 	}
 	else if (strncmp(name,"KMEANS", strlen("KMEANS"))==0)
 	{
-		delete classifier;
+		SG_UNREF(classifier);
 		classifier= new CKMeans();
 		SG_INFO("created KMeans object\n") ;
 	}
 	else if (strncmp(name,"HIERARCHICAL", strlen("HIERARCHICAL"))==0)
 	{
-		delete classifier;
+		SG_UNREF(classifier);
 		classifier= new CHierarchical();
 		SG_INFO("created Hierarchical clustering object\n") ;
 	}
 	else if (strcmp(name,"SVMLIN")==0)
 	{
-		delete classifier;
+		SG_UNREF(classifier);
 		classifier= new CSVMLin();
 		((CSVMLin*) classifier)->set_C(svm_C1, svm_C2);
 		((CSVMLin*) classifier)->set_epsilon(svm_epsilon);
@@ -275,7 +275,7 @@ bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
 	}
 	else if (strcmp(name,"SUBGRADIENTSVM")==0)
 	{
-		delete classifier;
+		SG_UNREF(classifier);
 		classifier= new CSubGradientSVM();
 
 		((CSubGradientSVM*) classifier)->set_bias_enabled(svm_use_bias);
@@ -288,7 +288,7 @@ bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
 	}
 	else if (strncmp(name,"WDSVMOCAS", strlen("WDSVMOCAS"))==0)
 	{
-		delete classifier;
+		SG_UNREF(classifier);
 		classifier= new CWDSVMOcas(SVM_OCAS);
 
 		((CWDSVMOcas*) classifier)->set_bias_enabled(svm_use_bias);
@@ -300,7 +300,7 @@ bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
 	}
 	else if (strcmp(name,"SVMOCAS")==0)
 	{
-		delete classifier;
+		SG_UNREF(classifier);
 		classifier= new CSVMOcas(SVM_OCAS);
 
 		((CSVMOcas*) classifier)->set_C(svm_C1, svm_C2);
@@ -311,14 +311,14 @@ bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
 	}
 	else if (strcmp(name,"SVMSGD")==0)
 	{
-		delete classifier;
+		SG_UNREF(classifier);
 		classifier= new CSVMSGD(svm_C1);
 		((CSVMSGD*) classifier)->set_bias_enabled(svm_use_bias);
 		SG_INFO("created SVM SGD object\n") ;
 	}
 	else if (strcmp(name,"SVMBMRM")==0 || (strcmp(name,"SVMPERF")==0))
 	{
-		delete classifier;
+		SG_UNREF(classifier);
 		classifier= new CSVMOcas(SVM_BMRM);
 
 		((CSVMOcas*) classifier)->set_C(svm_C1, svm_C2);

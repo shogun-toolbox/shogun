@@ -48,14 +48,14 @@ template <class T> class CListElement
  * higher level objects pointers should be used. The list supports calling
  * delete() of an object that is to be removed from the list.
  */
-template <class T> class CList
+template <class T> class CList : public CSGObject
 {
 	public:
 		/** constructor
 		 *
 		 * @param p_delete_data if data shall be deleted
 		 */
-		CList(bool p_delete_data=false)
+		CList(bool p_delete_data=false) : CSGObject()
 		{
 			first  = NULL;
 			current = NULL;
@@ -70,13 +70,9 @@ template <class T> class CList
 			while (get_num_elements())
 			{
 				T d=delete_element();
-#ifdef HAVE_SWIG
+
 				if (delete_data)
 					SG_UNREF(d);
-#else
-				if (delete_data)
-					delete d;
-#endif
 			}
 		}
 

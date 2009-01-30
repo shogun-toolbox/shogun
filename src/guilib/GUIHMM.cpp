@@ -45,7 +45,7 @@ CGUIHMM::~CGUIHMM()
 
 bool CGUIHMM::new_hmm(int32_t n, int32_t m)
 {
-	delete working;
+	SG_UNREF(working);
 	working=new CHMM(n, m, NULL, PSEUDO);
 	M=m;
 	return true;
@@ -199,7 +199,7 @@ bool CGUIHMM::one_class_test(
 
 	delete[] output;
 	delete[] label;
-	delete obs;
+	SG_UNREF(obs);
 
 	if (file_roc)
 		fclose(file_roc);
@@ -487,7 +487,7 @@ bool CGUIHMM::append_model(char* filename, int32_t base1, int32_t base2)
 	CHMM* h=new CHMM(model_file,PSEUDO);
 	if (!h || !h->get_status())
 	{
-		delete h;
+		SG_UNREF(h);
 		fclose(model_file);
 		SG_ERROR("Reading file %s failed.\n", filename);
 	}
@@ -522,7 +522,7 @@ bool CGUIHMM::append_model(char* filename, int32_t base1, int32_t base2)
 	else
 		working->append_model(h);
 
-	delete h;
+	SG_UNREF(h);
 	SG_INFO("New model has %i states.\n", working->get_N());
 	return true;
 }
@@ -563,19 +563,19 @@ bool CGUIHMM::set_hmm_as(char* target)
 
 	if (strncmp(target, "POS", 3)==0)
 	{
-		delete pos;
+		SG_UNREF(pos);
 		pos=working;
 		working=NULL;
 	}
 	else if (strncmp(target, "NEG", 3)==0)
 	{
-		delete neg;
+		SG_UNREF(neg);
 		neg=working;
 		working=NULL;
 	}
 	else if (strncmp(target, "TEST", 4)==0)
 	{
-		delete test;
+		SG_UNREF(test);
 		test=working;
 		working=NULL;
 	}
@@ -593,7 +593,7 @@ bool CGUIHMM::load(char* filename)
 	if (!model_file)
 		SG_ERROR("Opening file %s failed.\n", filename);
 
-	delete working;
+	SG_UNREF(working);
 	working=new CHMM(model_file, PSEUDO);
 	fclose(model_file);
 

@@ -29,8 +29,8 @@ CGUILabels::CGUILabels(CSGInterface* ui_)
 
 CGUILabels::~CGUILabels()
 {
-	delete train_labels;
-	delete test_labels;
+	SG_UNREF(train_labels);
+	SG_UNREF(test_labels);
 }
 
 bool CGUILabels::load(char* filename, char* target)
@@ -46,7 +46,7 @@ bool CGUILabels::load(char* filename, char* target)
 
 	if (labels)
 	{
-		delete (labels);
+		SG_UNREF(labels);
 		labels=new CLabels(filename);
 
 		if (labels)

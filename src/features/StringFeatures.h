@@ -158,11 +158,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		{
 			cleanup();
 
-#ifdef HAVE_SWIG
 			SG_UNREF(alphabet);
-#else
-			delete alphabet;
-#endif
 		}
 
 		/** cleanup string features */
@@ -569,11 +565,8 @@ template <class ST> class CStringFeatures : public CFeatures
 			fclose(f);
 			delete[] dummy;
 
-#ifdef HAVE_SWIG
 			SG_UNREF(alphabet);
-#else
-			delete alphabet;
-#endif
+
 			if (remap_to_bin)
 				alphabet = alpha_bin;
 			else
@@ -678,11 +671,7 @@ template <class ST> class CStringFeatures : public CFeatures
 				{
 					cleanup();
 
-#ifdef HAVE_SWIG
 					SG_UNREF(alphabet);
-#else
-					delete alphabet;
-#endif
 					alphabet=alpha;
 					SG_REF(alphabet);
 

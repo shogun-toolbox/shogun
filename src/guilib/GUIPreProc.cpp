@@ -48,8 +48,8 @@ CGUIPreProc::CGUIPreProc(CSGInterface* ui_)
 
 CGUIPreProc::~CGUIPreProc()
 {
-	delete preprocs;
-	delete attached_preprocs_lists;
+	SG_UNREF(preprocs);
+	SG_UNREF(attached_preprocs_lists);
 }
 
 CPreProc* CGUIPreProc::create_prunevarsubmean(bool divide_by_std)
@@ -115,7 +115,7 @@ bool CGUIPreProc::add_preproc(CPreProc* preproc)
 
 bool CGUIPreProc::clean_preproc()
 {
-	delete preprocs;
+	SG_UNREF(preprocs);
 	preprocs=new CList<CPreProc*>(true);
 	return (preprocs!=NULL);
 }
@@ -125,8 +125,7 @@ bool CGUIPreProc::del_preproc()
 	SG_INFO("Deleting preproc %i/(%i).\n", preprocs->get_num_elements()-1, preprocs->get_num_elements());
 
 	CPreProc* preproc=preprocs->delete_element();
-	if (preproc)
-		delete preproc;
+	SG_UNREF(preproc);
 
 	return (preproc!=NULL);
 }

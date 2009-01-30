@@ -129,12 +129,12 @@ bool CGUIStructure::compute_plif_matrix(
                         }
                         if (plif_array->get_num_plifs()==0)
                         {
-                                delete plif_array ;
+                                SG_UNREF(plif_array);
                                 m_plif_matrix[i+j*num_states] = NULL ;
                         }
                         else if (plif_array->get_num_plifs()==1)
                         {
-                                delete plif_array ;
+                                SG_UNREF(plif_array);
                                 ASSERT(plif!=NULL) ;
                                 m_plif_matrix[i+j*num_states] = plif ;
                         }

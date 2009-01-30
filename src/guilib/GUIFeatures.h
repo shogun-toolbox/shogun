@@ -55,7 +55,7 @@ class CGUIFeatures : public CSGObject
 		inline bool set_train_features(CFeatures* f)
 		{ 
 			invalidate_train();
-			delete train_features;
+			SG_UNREF(train_features);
 			train_features=f;
 			return true;
 		}
@@ -63,7 +63,7 @@ class CGUIFeatures : public CSGObject
 		inline bool set_test_features(CFeatures* f)
 		{ 
 			invalidate_test();
-			delete test_features;
+			SG_UNREF(test_features);
 			test_features=f;
 			return true;
 		}
@@ -155,8 +155,8 @@ class CGUIFeatures : public CSGObject
 				}
 
 				if (free_alpha)
-					delete alpha;
-				delete sf;
+					SG_UNREF(alpha);
+				SG_UNREF(sf);
 			}
 			else
 				SG_ERROR("No features of class/type STRING/CT available.\n");

@@ -19,8 +19,8 @@ class CSGObject;
 class CIO;
 
 // define reference counter macros
-#define SG_REF(x) { if (x) x->ref(); }
-#define SG_UNREF(x) { if (x) x->unref(); } 
+#define SG_REF(x) { if (x) (x)->ref(); }
+#define SG_UNREF(x) { if (x) (x)->unref(); } 
 
 /** Class SGObject is the base class of all shogun objects. Apart from dealing
  * with reference counting that is used to manage shogung objects in memory
@@ -69,8 +69,6 @@ public:
 		if (refcount==0 || --refcount==0)
 		{
 			SG_DEBUG("unref():%ld obj:%p destroying\n", refcount, this);
-			//don't do this yet for static interfaces (as none is
-			//calling ref/unref properly)
 			delete this;
 			return 0;
 		}

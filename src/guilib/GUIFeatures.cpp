@@ -27,9 +27,9 @@ CGUIFeatures::CGUIFeatures(CSGInterface* ui_)
 
 CGUIFeatures::~CGUIFeatures()
 {
-	delete train_features;
-	delete test_features;
-	delete ref_features;
+	SG_UNREF(train_features);
+	SG_UNREF(test_features);
+	SG_UNREF(ref_features);
 }
 
 void CGUIFeatures::invalidate_train()
@@ -66,7 +66,7 @@ bool CGUIFeatures::load(
 	else
 		SG_ERROR("Unknown target %s, neither TRAIN nor TEST.\n", target);
 
-	delete (*f_ptr);
+	SG_UNREF(*f_ptr);
 	*f_ptr=NULL;
 
 	if (strncmp(fclass, "SIMPLE", 6)==0)
@@ -359,7 +359,7 @@ CSparseFeatures<float64_t>* CGUIFeatures::convert_simple_real_to_sparse_real(
 		if (target->set_full_feature_matrix(feats, num_f, num_v))
 			return target;
 
-		delete target;
+		SG_UNREF(target);
 	}
 	else
 		SG_ERROR("No SIMPLE DREAL features available.\n");
@@ -574,7 +574,7 @@ CWordFeatures* CGUIFeatures::convert_simple_char_to_simple_word(
 				return wf;
 			}
 
-			delete wf;
+			SG_UNREF(wf);
 		}
 	}
 	else
@@ -603,7 +603,7 @@ CShortFeatures* CGUIFeatures::convert_simple_char_to_simple_short(
 				return sf;
 			}
 
-			delete sf;
+			SG_UNREF(sf);
 		}
 	}
 	else
@@ -644,7 +644,7 @@ bool CGUIFeatures::set_reference_features(char* target)
 {
 	if (strncmp(target, "TRAIN", 5)==0)
 	{
-		delete ref_features;
+		SG_UNREF(ref_features);
 		ref_features=train_features;
 		train_features=NULL;
 		invalidate_train();
@@ -652,7 +652,7 @@ bool CGUIFeatures::set_reference_features(char* target)
 	}
 	else if (strncmp(target, "TEST", 4)==0)
 	{
-		delete ref_features;
+		SG_UNREF(ref_features);
 		ref_features=test_features;
 		test_features=NULL;
 		invalidate_test();

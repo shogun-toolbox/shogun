@@ -1110,17 +1110,17 @@ CSGInterface::CSGInterface()
 
 CSGInterface::~CSGInterface()
 {
-	delete ui_classifier;
-	delete ui_hmm;
-	delete ui_pluginestimate;
-	delete ui_kernel;
-	delete ui_preproc;
-	delete ui_features;
-	delete ui_labels;
-	delete ui_math;
-	delete ui_structure;
-	delete ui_time;
-	delete ui_distance;
+	SG_UNREF(ui_classifier);
+	SG_UNREF(ui_hmm);
+	SG_UNREF(ui_pluginestimate);
+	SG_UNREF(ui_kernel);
+	SG_UNREF(ui_preproc);
+	SG_UNREF(ui_features);
+	SG_UNREF(ui_labels);
+	SG_UNREF(ui_math);
+	SG_UNREF(ui_structure);
+	SG_UNREF(ui_time);
+	SG_UNREF(ui_distance);
 
 	if (file_out)
 		fclose(file_out);
@@ -1476,7 +1476,7 @@ bool CSGInterface::do_set_features(bool add, bool check_dot)
 
 				if (!((CStringFeatures<uint8_t>*) feat)->load_dna_file(fmatrix[0].string))
 				{
-					delete feat;
+					SG_UNREF(feat);
 					SG_ERROR("Couldn't load DNA features from file.\n");
 				}
 				feat=create_custom_string_features((CStringFeatures<uint8_t>*) feat);
@@ -1489,12 +1489,12 @@ bool CSGInterface::do_set_features(bool add, bool check_dot)
 				feat=new CStringFeatures<char>(alphabet);
 				if (!((CStringFeatures<char>*) feat)->set_features(fmatrix, num_str, max_str_len))
 				{
-					delete alphabet;
-					delete feat;
+					SG_UNREF(alphabet);
+					SG_UNREF(feat);
 					SG_ERROR("Couldnt set byte string features.\n");
 				}
 
-				delete alphabet;
+				SG_UNREF(alphabet);
 			}
 			break;
 		}
@@ -1519,8 +1519,8 @@ bool CSGInterface::do_set_features(bool add, bool check_dot)
 			feat=new CStringFeatures<uint8_t>(alphabet);
 			if (!((CStringFeatures<uint8_t>*) feat)->set_features(fmatrix, num_str, max_str_len))
 			{
-				delete alphabet;
-				delete feat;
+				SG_UNREF(alphabet);
+				SG_UNREF(feat);
 				SG_ERROR("Couldnt set byte string features.\n");
 			}
 			feat=create_custom_string_features((CStringFeatures<uint8_t>*) feat);
@@ -1533,7 +1533,7 @@ bool CSGInterface::do_set_features(bool add, bool check_dot)
 
 	if (check_dot && !feat->has_property(FP_DOT))
 	{
-		delete feat;
+		SG_UNREF(feat);
 		SG_ERROR("Feature type not supported by DOT Features\n");
 	}
 
@@ -2831,12 +2831,12 @@ CFeatures* CSGInterface::create_custom_string_features(CStringFeatures<uint8_t>*
 			sf->obtain_from_char_features((CStringFeatures<uint8_t>*) feat, start, order, 0, normalize);
 			sf->add_preproc(new CSortWordString());
 			sf->apply_preproc();
-			delete feat;
+			SG_UNREF(feat);
 			feat = new CImplicitWeightedSpecFeatures(sf, normalize);
 		}
 		delete[] feature_class_str;
 
-		delete alphabet;
+		SG_UNREF(alphabet);
 	}
 
 	return feat;
@@ -3730,7 +3730,7 @@ bool CSGInterface::cmd_set_prior_probs_from_labels()
 
 	kernel->set_prior_probs_from_labels(labels);
 
-	delete labels;
+	SG_UNREF(labels);
 	return true;
 }
 
@@ -4120,7 +4120,7 @@ bool CSGInterface::cmd_classify()
 	float64_t* result=new float64_t[num_vec];
 	for (int32_t i=0; i<num_vec; i++)
 		result[i]=labels->get_label(i);
-	delete labels;
+	SG_UNREF(labels);
 
 	set_real_vector(result, num_vec);
 	delete[] result;
@@ -4760,7 +4760,7 @@ bool CSGInterface::cmd_plugin_estimate_classify()
 	CLabels* labels=ui_pluginestimate->classify();
 	for (int32_t i=0; i<num_vec; i++)
 		result[i]=labels->get_label(i);
-	delete labels;
+	SG_UNREF(labels);
 
 	set_real_vector(result, num_vec);
 	delete[] result;
@@ -4991,7 +4991,7 @@ bool CSGInterface::do_hmm_classify(bool linear, bool one_class)
 	float64_t* result=new float64_t[num_vec];
 	for (int32_t i=0; i<num_vec; i++)
 		result[i]=labels->get_label(i);
-	delete labels;
+	SG_UNREF(labels);
 
 	set_real_vector(result, num_vec);
 	delete[] result;
@@ -5251,7 +5251,7 @@ bool CSGInterface::cmd_append_hmm()
 			h->set_b(i,j, b[i+j*N]);
 
 	old_h->append_model(h);
-	delete h;
+	SG_UNREF(h);
 
 	return true;
 }
@@ -5983,7 +5983,7 @@ bool CSGInterface::cmd_best_path_trans()
 	//delete[] PEN_matrix ;
 	//delete[] all_pos ;
 	//delete[] orf_info ;
-	//delete h ;
+	//SG_UNREF(h);
 
 	// transcribe result
 	float64_t* d_my_path= new float64_t[(nbest+nother)*M];
@@ -6206,7 +6206,7 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 			//delete[] PEN_matrix ;
 			//delete[] PEN_state_signal ;
 			//delete[] pos ;
-			//delete h ;
+			//SG_UNREF(h);
 
 			set_real_vector(p_p_deriv, num_states);
 			set_real_vector(p_q_deriv, num_states);
@@ -6261,7 +6261,7 @@ bool CSGInterface::cmd_best_path_no_b()
 	int32_t* path=new int32_t[max_iter];
 	int32_t best_iter=0;
 	float64_t prob=h->best_path_no_b(max_iter, best_iter, path);
-	delete h;
+	SG_UNREF(h);
 
 	set_real(prob);
 	set_int_vector(path, best_iter+1);
@@ -6311,7 +6311,7 @@ bool CSGInterface::cmd_best_path_trans_simple()
 	float64_t* prob=new float64_t[nbest];
 
 	h->best_path_trans_simple(seq, N_seq, nbest, prob, path);
-	delete h;
+	SG_UNREF(h);
 
 	set_real_vector(prob, nbest);
 	delete[] prob;
@@ -6364,7 +6364,7 @@ bool CSGInterface::cmd_best_path_no_b_trans()
 	float64_t* prob=new float64_t[nbest];
 
 	h->best_path_no_b_trans(max_iter, max_best_iter, nbest, prob, path);
-	delete h;
+	SG_UNREF(h);
 
 	set_real_vector(prob, nbest);
 	delete[] prob;
@@ -6584,25 +6584,25 @@ bool CSGInterface::cmd_translate_string()
 bool CSGInterface::cmd_clear()
 {
 	// reset guilib
-	delete ui_classifier;
+	SG_UNREF(ui_classifier);
 	ui_classifier=new CGUIClassifier(this);
-	delete ui_distance;
+	SG_UNREF(ui_distance);
 	ui_distance=new CGUIDistance(this);
-	delete ui_features;
+	SG_UNREF(ui_features);
 	ui_features=new CGUIFeatures(this);
-	delete ui_hmm;
+	SG_UNREF(ui_hmm);
 	ui_hmm=new CGUIHMM(this);
-	delete ui_kernel;
+	SG_UNREF(ui_kernel);
 	ui_kernel=new CGUIKernel(this);
-	delete ui_labels;
+	SG_UNREF(ui_labels);
 	ui_labels=new CGUILabels(this);
-	delete ui_math;
+	SG_UNREF(ui_math);
 	ui_math=new CGUIMath(this);
-	delete ui_pluginestimate;
+	SG_UNREF(ui_pluginestimate);
 	ui_pluginestimate=new CGUIPluginEstimate(this);
-	delete ui_preproc;
+	SG_UNREF(ui_preproc);
 	ui_preproc=new CGUIPreProc(this);
-	delete ui_time;
+	SG_UNREF(ui_time);
 	ui_time=new CGUITime(this);
 
 	return true;

@@ -73,7 +73,7 @@ CGUIKernel::CGUIKernel(CSGInterface* ui_)
 
 CGUIKernel::~CGUIKernel()
 {
-	delete kernel;
+	SG_UNREF(kernel);
 }
 
 CKernel* CGUIKernel::get_kernel()
@@ -657,7 +657,7 @@ bool CGUIKernel::set_kernel(CKernel* kern)
 	if (kern)
 	{
 		SG_DEBUG("deleting old kernel (%p).\n", kernel);
-		delete kernel;
+		SG_UNREF(kernel);
 		kernel=kern;
 		SG_DEBUG("set new kernel (%p).\n", kern);
 
@@ -843,7 +843,7 @@ bool CGUIKernel::add_kernel(CKernel* kern, float64_t weight)
 
 	if ((kernel==NULL) || (kernel && kernel->get_kernel_type()!=K_COMBINED))
 	{
-		delete kernel;
+		SG_UNREF(kernel);
 		kernel= new CCombinedKernel(20, false);
 	}
 
@@ -881,7 +881,7 @@ bool CGUIKernel::del_last_kernel()
 
 bool CGUIKernel::clean_kernel()
 {
-	delete kernel;
+	SG_UNREF(kernel);
 	kernel=NULL;
 	return true;
 }

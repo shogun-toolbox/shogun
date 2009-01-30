@@ -30,8 +30,8 @@ class CGUILabels : public CSGObject
 		CLabels *get_train_labels() { return train_labels; }
 		CLabels *get_test_labels() { return test_labels; }
 
-		bool set_train_labels(CLabels* lab) { delete train_labels; train_labels=lab; return true;}
-		bool set_test_labels(CLabels* lab) { delete test_labels; test_labels=lab; return true;}
+		bool set_train_labels(CLabels* lab) { SG_UNREF(train_labels); train_labels=lab; return true;}
+		bool set_test_labels(CLabels* lab) { SG_UNREF(test_labels); test_labels=lab; return true;}
 
 		/** load labels from file */
 		bool load(char* filename, char* target);

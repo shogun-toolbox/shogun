@@ -69,7 +69,7 @@ class CGUIStructure : public CSGObject
 
 		inline bool set_dyn_prog(CDynProg* h)
 		{
-			delete m_dp;
+			SG_UNREF(m_dp);
 			m_dp = h;
 			return true;
 		}
