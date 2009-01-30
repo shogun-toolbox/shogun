@@ -2033,8 +2033,15 @@ float64_t CSVMLight::compute_optimal_betas_newton(float64_t* beta,
 		  CMath::display_vector(beta, num_kernels, "beta");
 		  SG_ERROR("old_beta out of range");
 	  }
-      beta[p] = ( gamma*mkl_norm*CMath::pow(old_beta[p],mkl_norm) - sumw[p]*old_beta[p] )
-        / ( 2.0*sumw[p] + gqq1*CMath::pow(old_beta[p],mkl_norm-1.0) );
+	  float64_t t1=gamma*mkl_norm*CMath::pow(old_beta[p],mkl_norm) - sumw[p]*old_beta[p];
+	  float64_t t2 = 2.0*sumw[p] + gqq1*CMath::pow(old_beta[p],mkl_norm-1.0);
+
+	  if (t1 == 0.0)
+		  beta[p]=0.0;
+	  else
+		  beta[p]=t1/t2;
+      //beta[p] = ( gamma*mkl_norm*CMath::pow(old_beta[p],mkl_norm) - sumw[p]*old_beta[p] )
+       // / ( 2.0*sumw[p] + gqq1*CMath::pow(old_beta[p],mkl_norm-1.0) );
       Z += beta[p] * beta[p];
     }
     //CMath::display_vector( beta, num_kernels, "newton   " );
@@ -2057,7 +2064,7 @@ float64_t CSVMLight::compute_optimal_betas_newton(float64_t* beta,
 
   }
 
-	// CMath::display_vector(beta, num_kernels, "beta_alex");
+	//CMath::display_vector(beta, num_kernels, "beta_alex");
 	//SG_PRINT("Z_alex = %e\n", Z);
 	//CMath::display_vector( old_beta, num_kernels, "old_beta " );
 	//CMath::display_vector( beta,     num_kernels, "beta     " );
@@ -2072,7 +2079,6 @@ float64_t CSVMLight::compute_optimal_betas_newton(float64_t* beta,
 	for( p=0; p<num_kernels; ++p ) {
 		obj += beta[p] * (sumw[p]);
   }
-	//SG_PRINT( "OBJ = %f\n", obj );
 	return obj;
 }
 
