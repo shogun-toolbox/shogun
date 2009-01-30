@@ -55,10 +55,6 @@ template void CDynProg::best_path_trans<2,false,false>(
 	int32_t *my_pos_seq, bool use_orf);
 
 
-#ifdef SUNOS
-extern "C" int	finite(double);
-#endif
-
 //#define USE_TMP_ARRAYCLASS
 //#define DYNPROG_DEBUG
 
@@ -2476,7 +2472,7 @@ void CDynProg::best_path_trans(
 					if (PEN_state_signals.element(i,k)!=NULL)
 					{
 						// just one plif
-						if (finite(seq_input.element(i,j,k)))
+						if (CMath::finite(seq_input.element(i,j,k)))
 							seq.element(i,j) += PEN_state_signals.element(i,k)->lookup_penalty(seq_input.element(i,j,k), svm_value) ;
 						else
 							// keep infinity values

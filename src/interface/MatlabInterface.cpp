@@ -587,7 +587,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 			((CMatlabInterface*) interface)->reset(nlhs, plhs, nrhs, prhs);
 
 		if (!interface->handle())
-			SG_ERROR("Unknown command.\n");
+			SG_SERROR("Unknown command.\n");
 	}
 	catch (std::bad_alloc)
 	{

@@ -10,13 +10,14 @@
 
 #include "base/Parallel.h"
 
-CParallel::CParallel() : num_threads(1)
+CParallel::CParallel() : refcount(0), num_threads(1)
 {
 }
 
 CParallel::CParallel(const CParallel& orig)
 {
 	num_threads=orig.get_num_threads();
+	refcount=orig.refcount;
 }
 
 CParallel::~CParallel()

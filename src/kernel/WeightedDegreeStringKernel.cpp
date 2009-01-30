@@ -903,7 +903,7 @@ void CWeightedDegreeStringKernel::compute_batch(
 
 	int32_t num_feat=((CStringFeatures<char>*) rhs)->get_max_vector_length();
 	ASSERT(num_feat>0);
-	int32_t num_threads=parallel.get_num_threads();
+	int32_t num_threads=parallel->get_num_threads();
 	ASSERT(num_threads>0);
 	int32_t* vec=new int32_t[num_threads*num_feat];
 

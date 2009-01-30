@@ -54,31 +54,19 @@ uint32_t CMath::seed = 0;
 CMath::CMath()
 : CSGObject()
 {
-#ifndef HAVE_SWIG
-	CSGObject::version.print_version();
-#endif
 	CMath::rand_state=new char[RNG_SEED_SIZE];
 	init_random();
-#ifndef HAVE_SWIG
-	SG_PRINT("( seeding random number generator with %u (seed size %d))\n", seed, RNG_SEED_SIZE);
-#endif
 
 #ifdef USE_LOGCACHE
     LOGRANGE=CMath::determine_logrange();
     LOGACCURACY=CMath::determine_logaccuracy(LOGRANGE);
-#ifndef HAVE_SWIG
-    SG_PRINT( "initializing log-table (size=%i*%i*%i=%2.1fMB) ... ) ",LOGRANGE,LOGACCURACY,sizeof(float64_t),LOGRANGE*LOGACCURACY*sizeof(float64_t)/(1024.0*1024.0)) ;
-#endif 
-   
     CMath::logtable=new float64_t[LOGRANGE*LOGACCURACY];
     init_log_table();
 #else
 	int32_t i=0;
 	while ((float64_t)log(1+((float64_t)exp(-float64_t(i)))))
 		i++;
-#ifndef HAVE_SWIG
-    SG_PRINT("determined range for x in log(1+exp(-x)) is:%d )\n", i);
-#endif 
+
 	LOGRANGE=i;
 #endif 
 }

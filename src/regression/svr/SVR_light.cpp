@@ -1056,7 +1056,7 @@ void CSVRLight::update_linear_component(
 
 			if (num_working>0)
 			{
-				if (parallel.get_num_threads() < 2)
+				if (parallel->get_num_threads() < 2)
 				{
 					for(jj=0;(j=active2dnum[jj])>=0;jj++) {
 						lin[j]+=kernel->compute_optimized(regression_fix_index(docs[j]));
@@ -1068,13 +1068,13 @@ void CSVRLight::update_linear_component(
 					int32_t num_elem = 0 ;
 					for(jj=0;(j=active2dnum[jj])>=0;jj++) num_elem++ ;
 
-					pthread_t* threads = new pthread_t[parallel.get_num_threads()-1] ;
-					S_THREAD_PARAM* params = new S_THREAD_PARAM[parallel.get_num_threads()-1] ;
+					pthread_t* threads = new pthread_t[parallel->get_num_threads()-1] ;
+					S_THREAD_PARAM* params = new S_THREAD_PARAM[parallel->get_num_threads()-1] ;
 					int32_t start = 0 ;
-					int32_t step = num_elem/parallel.get_num_threads() ;
+					int32_t step = num_elem/parallel->get_num_threads() ;
 					int32_t end = step ;
 
-					for (int32_t t=0; t<parallel.get_num_threads()-1; t++)
+					for (int32_t t=0; t<parallel->get_num_threads()-1; t++)
 					{
 						params[t].kernel = kernel ;
 						params[t].lin = lin ;
@@ -1089,11 +1089,11 @@ void CSVRLight::update_linear_component(
 						pthread_create(&threads[t], NULL, update_linear_component_linadd_helper, (void*)&params[t]) ;
 					}
 
-					for(jj=params[parallel.get_num_threads()-2].end;(j=active2dnum[jj])>=0;jj++) {
+					for(jj=params[parallel->get_num_threads()-2].end;(j=active2dnum[jj])>=0;jj++) {
 						lin[j]+=kernel->compute_optimized(regression_fix_index(docs[j]));
 					}
 					void* ret;
-					for (int32_t t=0; t<parallel.get_num_threads()-1; t++)
+					for (int32_t t=0; t<parallel->get_num_threads()-1; t++)
 						pthread_join(threads[t], &ret) ;
 
 					delete[] params;

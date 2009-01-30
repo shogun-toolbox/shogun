@@ -119,7 +119,7 @@ void CKMeans::sqdist(
 	float64_t* x, CRealFeatures* y, float64_t* z, int32_t n1, int32_t offs,
 	int32_t n2, int32_t m)
 {
-	const int32_t num_threads=parallel.get_num_threads();
+	const int32_t num_threads=parallel->get_num_threads();
 	int32_t nc, n2_nc = n2/num_threads;
 	thread_data* TD = new thread_data[num_threads];
 	pthread_t* tid = new pthread_t[num_threads];

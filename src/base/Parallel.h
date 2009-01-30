@@ -60,7 +60,30 @@ public:
 		return num_threads;
 	}
 
-protected:
+	inline int32_t ref()
+	{
+		++refcount;
+		return refcount;
+	}
+
+	inline int32_t ref_count() const
+	{
+		return refcount;
+	}
+
+	inline int32_t unref()
+	{
+		if (refcount==0 || --refcount==0)
+		{
+			delete this;
+			return 0;
+		}
+		else
+			return refcount;
+	}
+
+private:
+	int32_t refcount;
 	int32_t num_threads;
 };
 #endif

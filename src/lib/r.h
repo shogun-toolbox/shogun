@@ -16,5 +16,10 @@ extern "C" {
 #include <R_ext/Error.h>
 }
 
+/* workaround compile bug in R-modular interface */
+#if defined(HAVE_R) && !defined(ScalarReal)
+#define ScalarReal      Rf_ScalarReal
+#endif
+
 #endif //__R_H__
 #endif //HAVE_R

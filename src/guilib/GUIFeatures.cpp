@@ -102,7 +102,7 @@ bool CGUIFeatures::load(
 	}
 	else if (strncmp(fclass, "SPARSE", 6)==0)
 	{
-		io.not_implemented();
+		SG_NOTIMPLEMENTED;
 	}
 	else if (strncmp(fclass, "STRING", 6)==0)
 	{

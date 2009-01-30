@@ -579,11 +579,11 @@ PyObject* sg(PyObject* self, PyObject* args)
 			((CPythonInterface*) interface)->reset(self, args);
 
 		if (!interface->handle())
-			SG_ERROR("Unknown command.\n");
+			SG_SERROR("Unknown command.\n");
 	}
 	catch (std::bad_alloc)
 	{
-		SG_PRINT("Out of memory error.\n");
+		SG_SPRINT("Out of memory error.\n");
 		return NULL;
 	}
 	catch (ShogunException e)

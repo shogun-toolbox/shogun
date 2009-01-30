@@ -295,10 +295,10 @@ CLabels* CSVM::classify(CLabels* lab)
 			lab=new CLabels(num_vectors);
 		SG_DEBUG( "computing output on %d test examples\n", num_vectors);
 
-		if (this->io.get_show_progress())
-			this->io.enable_progress();
+		if (io->get_show_progress())
+			io->enable_progress();
 		else
-			this->io.disable_progress();
+			io->disable_progress();
 
 		if (kernel->has_property(KP_BATCHEVALUATION) &&
 				get_batch_computation_enabled())
@@ -333,7 +333,7 @@ CLabels* CSVM::classify(CLabels* lab)
 		}
 		else
 		{
-			int32_t num_threads=parallel.get_num_threads();
+			int32_t num_threads=parallel->get_num_threads();
 			ASSERT(num_threads>0);
 
 			if (num_threads < 2)

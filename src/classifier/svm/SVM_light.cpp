@@ -431,7 +431,7 @@ bool CSVMLight::train()
 		kernel->clear_normal() ;
 
 	// output some info
-	SG_DEBUG( "threads = %i\n", parallel.get_num_threads()) ;
+	SG_DEBUG( "threads = %i\n", parallel->get_num_threads()) ;
 	SG_DEBUG( "qpsize = %i\n", learn_parm->svm_maxqpsize) ;
 	SG_DEBUG( "epsilon = %1.1e\n", learn_parm->epsilon_crit) ;
 	SG_DEBUG( "weight_epsilon = %1.1e\n", weight_epsilon) ;
@@ -1272,7 +1272,7 @@ void CSVMLight::compute_matrices_for_optimization_parallel(
 	float64_t *a, float64_t *lin, float64_t *c, int32_t varnum, int32_t totdoc,
 	float64_t *aicache, QP *qp)
 {
-	if (parallel.get_num_threads()<=1)
+	if (parallel->get_num_threads()<=1)
 	{
 		compute_matrices_for_optimization(docs, label, exclude_from_eq_const, eq_target,
 												   chosen, active2dnum, key, a, lin, c, 
@@ -1302,7 +1302,7 @@ void CSVMLight::compute_matrices_for_optimization_parallel(
 			qp->opt_g0[i]=lin[key[i]];
 		}
 
-		ASSERT(parallel.get_num_threads()>1);
+		ASSERT(parallel->get_num_threads()>1);
 		int32_t *KI=new int32_t[varnum*varnum] ;
 		int32_t *KJ=new int32_t[varnum*varnum] ;
 		int32_t Knum=0 ;
@@ -1322,11 +1322,11 @@ void CSVMLight::compute_matrices_for_optimization_parallel(
 		}
 		ASSERT(Knum<=varnum*(varnum+1)/2);
 
-		pthread_t* threads = new pthread_t[parallel.get_num_threads()-1];
-		S_THREAD_PARAM_KERNEL* params = new S_THREAD_PARAM_KERNEL[parallel.get_num_threads()-1];
-		int32_t step= Knum/parallel.get_num_threads();
+		pthread_t* threads = new pthread_t[parallel->get_num_threads()-1];
+		S_THREAD_PARAM_KERNEL* params = new S_THREAD_PARAM_KERNEL[parallel->get_num_threads()-1];
+		int32_t step= Knum/parallel->get_num_threads();
 		//SG_DEBUG( "\nkernel-step size: %i\n", step) ;
-		for (int32_t t=0; t<parallel.get_num_threads()-1; t++)
+		for (int32_t t=0; t<parallel->get_num_threads()-1; t++)
 		{
 			params[t].kernel = kernel;
 			params[t].start = t*step;
@@ -1336,10 +1336,10 @@ void CSVMLight::compute_matrices_for_optimization_parallel(
 			params[t].Kval=Kval ;
 			pthread_create(&threads[t], NULL, CSVMLight::compute_kernel_helper, (void*)&params[t]);
 		}
-		for (i=params[parallel.get_num_threads()-2].end; i<Knum; i++)
+		for (i=params[parallel->get_num_threads()-2].end; i<Knum; i++)
 			Kval[i]=kernel->kernel(KI[i],KJ[i]) ;
 
-		for (int32_t t=0; t<parallel.get_num_threads()-1; t++)
+		for (int32_t t=0; t<parallel->get_num_threads()-1; t++)
 			pthread_join(threads[t], NULL);
 
 		delete[] params;
@@ -2692,7 +2692,7 @@ void CSVMLight::update_linear_component_mkl_linadd(
 		}
 	}
 
-	if (parallel.get_num_threads() < 2)
+	if (parallel->get_num_threads() < 2)
 	{
 		// determine contributions of different kernels
 		for (int32_t i=0; i<num; i++)
@@ -2701,11 +2701,11 @@ void CSVMLight::update_linear_component_mkl_linadd(
 #ifndef WIN32
 	else
 	{
-		pthread_t* threads = new pthread_t[parallel.get_num_threads()-1];
-		S_THREAD_PARAM* params = new S_THREAD_PARAM[parallel.get_num_threads()-1];
-		int32_t step= num/parallel.get_num_threads();
+		pthread_t* threads = new pthread_t[parallel->get_num_threads()-1];
+		S_THREAD_PARAM* params = new S_THREAD_PARAM[parallel->get_num_threads()-1];
+		int32_t step= num/parallel->get_num_threads();
 
-		for (int32_t t=0; t<parallel.get_num_threads()-1; t++)
+		for (int32_t t=0; t<parallel->get_num_threads()-1; t++)
 		{
 			params[t].kernel = kernel;
 			params[t].W = W;
@@ -2714,10 +2714,10 @@ void CSVMLight::update_linear_component_mkl_linadd(
 			pthread_create(&threads[t], NULL, CSVMLight::update_linear_component_mkl_linadd_helper, (void*)&params[t]);
 		}
 
-		for (int32_t i=params[parallel.get_num_threads()-2].end; i<num; i++)
+		for (int32_t i=params[parallel->get_num_threads()-2].end; i<num; i++)
 			kernel->compute_by_subkernel(i,&W[i*num_kernels]);
 
-		for (int32_t t=0; t<parallel.get_num_threads()-1; t++)
+		for (int32_t t=0; t<parallel->get_num_threads()-1; t++)
 			pthread_join(threads[t], NULL);
 
 		delete[] params;
@@ -2771,7 +2771,7 @@ void CSVMLight::update_linear_component(
 
 			if (num_working>0)
 			{
-				if (parallel.get_num_threads() < 2)
+				if (parallel->get_num_threads() < 2)
 				{
 					for (jj=0;(j=active2dnum[jj])>=0;jj++) {
 						lin[j]+=kernel->compute_optimized(docs[j]);
@@ -2783,13 +2783,13 @@ void CSVMLight::update_linear_component(
 					int32_t num_elem = 0 ;
 					for (jj=0;(j=active2dnum[jj])>=0;jj++) num_elem++ ;
 
-					pthread_t* threads = new pthread_t[parallel.get_num_threads()-1] ;
-					S_THREAD_PARAM* params = new S_THREAD_PARAM[parallel.get_num_threads()-1] ;
+					pthread_t* threads = new pthread_t[parallel->get_num_threads()-1] ;
+					S_THREAD_PARAM* params = new S_THREAD_PARAM[parallel->get_num_threads()-1] ;
 					int32_t start = 0 ;
-					int32_t step = num_elem/parallel.get_num_threads();
+					int32_t step = num_elem/parallel->get_num_threads();
 					int32_t end = step ;
 
-					for (int32_t t=0; t<parallel.get_num_threads()-1; t++)
+					for (int32_t t=0; t<parallel->get_num_threads()-1; t++)
 					{
 						params[t].kernel = kernel ;
 						params[t].lin = lin ;
@@ -2802,11 +2802,11 @@ void CSVMLight::update_linear_component(
 						pthread_create(&threads[t], NULL, update_linear_component_linadd_helper, (void*)&params[t]) ;
 					}
 
-					for (jj=params[parallel.get_num_threads()-2].end;(j=active2dnum[jj])>=0;jj++) {
+					for (jj=params[parallel->get_num_threads()-2].end;(j=active2dnum[jj])>=0;jj++) {
 						lin[j]+=kernel->compute_optimized(docs[j]);
 					}
 					void* ret;
-					for (int32_t t=0; t<parallel.get_num_threads()-1; t++)
+					for (int32_t t=0; t<parallel->get_num_threads()-1; t++)
 						pthread_join(threads[t], &ret) ;
 
 					delete[] params;
@@ -3271,7 +3271,7 @@ void CSVMLight::reactivate_inactive_examples(
 		  
 		  if (num_modified>0)
 		  {
-			  int32_t num_threads=parallel.get_num_threads();
+			  int32_t num_threads=parallel->get_num_threads();
 			  ASSERT(num_threads>0);
 			  if (num_threads < 2)
 			  {
@@ -3406,7 +3406,7 @@ void CSVMLight::reactivate_inactive_examples(
 		  compute_index(changed,totdoc,changed2dnum);
 
 
-		  int32_t num_threads=parallel.get_num_threads();
+		  int32_t num_threads=parallel->get_num_threads();
 		  ASSERT(num_threads>0);
 
 		  if (num_threads < 2)

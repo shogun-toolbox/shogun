@@ -18,6 +18,11 @@
 #include "lib/Time.h"
 #include "lib/Mathematics.h"
 
+#include "lib/matlab.h"
+#include "lib/octave.h"
+#include "lib/python.h"
+#include "lib/r.h"
+
 #include <sys/types.h>
 #include <sys/stat.h>
 

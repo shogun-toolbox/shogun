@@ -593,9 +593,9 @@ template <class ST> class CStringFeatures : public CFeatures
 			struct dirent **namelist;
 			int32_t n;
 
-			io.set_dirname(dirname);
+			io->set_dirname(dirname);
 
-			n = scandir(dirname, &namelist, io.filter, alphasort);
+			n = scandir(dirname, &namelist, io->filter, alphasort);
 			if (n <= 0)
 			{
 				SG_ERROR( "error calling scandir\n");
@@ -615,7 +615,7 @@ template <class ST> class CStringFeatures : public CFeatures
 
 				for (int32_t i=0; i<n; i++)
 				{
-					char* fname=io.concat_filename(namelist[i]->d_name);
+					char* fname=io->concat_filename(namelist[i]->d_name);
 
 					struct stat s;
 					off_t filesize=0;

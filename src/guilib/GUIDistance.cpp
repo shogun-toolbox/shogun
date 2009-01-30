@@ -203,7 +203,7 @@ bool CGUIDistance::init_distance(char* target)
 	}
 	else
 	{
-		io.not_implemented();
+		SG_NOTIMPLEMENTED;
 		return false;
 	}
 

@@ -39,7 +39,7 @@ void CDotFeatures::dense_dot_range(float64_t* output, int32_t start, int32_t sto
 	int32_t num_vectors=stop-start;
 	ASSERT(num_vectors>0);
 
-	int32_t num_threads=parallel.get_num_threads();
+	int32_t num_threads=parallel->get_num_threads();
 	ASSERT(num_threads>0);
 
 #ifndef WIN32

@@ -532,7 +532,7 @@ void* CKernel::cache_multiple_kernel_row_helper(void* p)
 void CKernel::cache_multiple_kernel_rows(int32_t* rows, int32_t num_rows)
 {
 #ifndef WIN32
-	if (parallel.get_num_threads()<2)
+	if (parallel->get_num_threads()<2)
 	{
 #endif
 		for(int32_t i=0;i<num_rows;i++) 
@@ -544,9 +544,9 @@ void CKernel::cache_multiple_kernel_rows(int32_t* rows, int32_t num_rows)
 		// fill up kernel cache 
 		int32_t* uncached_rows = new int32_t[num_rows];
 		KERNELCACHE_ELEM** cache = new KERNELCACHE_ELEM*[num_rows];
-		pthread_t* threads = new pthread_t[parallel.get_num_threads()-1];
-		S_KTHREAD_PARAM* params = new S_KTHREAD_PARAM[parallel.get_num_threads()-1];
-		int32_t num_threads=parallel.get_num_threads()-1;
+		pthread_t* threads = new pthread_t[parallel->get_num_threads()-1];
+		S_KTHREAD_PARAM* params = new S_KTHREAD_PARAM[parallel->get_num_threads()-1];
+		int32_t num_threads=parallel->get_num_threads()-1;
 		int32_t num_vec=lhs->get_num_vectors();
 		ASSERT(num_vec>0);
 		uint8_t* needs_computation=new uint8_t[num_vec];
@@ -577,7 +577,7 @@ void CKernel::cache_multiple_kernel_rows(int32_t* rows, int32_t num_rows)
 
 		if (num>0)
 		{
-			step= num/parallel.get_num_threads();
+			step= num/parallel->get_num_threads();
 
 			if (step<1)
 			{

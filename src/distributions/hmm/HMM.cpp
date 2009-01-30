@@ -150,7 +150,7 @@ CModel::~CModel()
 CHMM::CHMM(CHMM* h)
 : CDistribution(), iterations(150), epsilon(1e-4), conv_it(5)
 {
-	SG_INFO( "hmm is using %i separate tables\n",  parallel.get_num_threads()) ;
+	SG_INFO( "hmm is using %i separate tables\n",  parallel->get_num_threads()) ;
 
 	this->N=h->get_N();
 	this->M=h->get_M();
@@ -166,7 +166,7 @@ CHMM::CHMM(int32_t p_N, int32_t p_M, CModel* p_model, float64_t p_PSEUDO)
 	this->M=p_M;
 	model=NULL ;
 
-	SG_INFO( "hmm is using %i separate tables\n",  parallel.get_num_threads()) ;
+	SG_INFO( "hmm is using %i separate tables\n",  parallel->get_num_threads()) ;
 
 	status=initialize(p_model, p_PSEUDO);
 }
@@ -180,7 +180,7 @@ CHMM::CHMM(
 	this->M=p_M;
 	model=NULL ;
 
-	SG_INFO( "hmm is using %i separate tables\n",  parallel.get_num_threads()) ;
+	SG_INFO( "hmm is using %i separate tables\n",  parallel->get_num_threads()) ;
 
 	initialize(model, p_PSEUDO);
 	set_observations(obs);
@@ -345,7 +345,7 @@ CHMM::CHMM(
 CHMM::CHMM(FILE* model_file, float64_t p_PSEUDO)
 : CDistribution(), iterations(150), epsilon(1e-4), conv_it(5)
 {
-	SG_INFO( "hmm is using %i separate tables\n",  parallel.get_num_threads()) ;
+	SG_INFO( "hmm is using %i separate tables\n",  parallel->get_num_threads()) ;
 
 	status=initialize(NULL, p_PSEUDO, model_file);
 }
@@ -385,7 +385,7 @@ CHMM::~CHMM()
 	if (!reused_caches)
 	{
 #ifdef USE_HMMPARALLEL_STRUCTURES
-		for (int32_t i=0; i<parallel.get_num_threads(); i++)
+		for (int32_t i=0; i<parallel->get_num_threads(); i++)
 		{
 			delete[] alpha_cache[i].table;
 			delete[] beta_cache[i].table;
@@ -413,7 +413,7 @@ CHMM::~CHMM()
 #ifdef USE_LOGSUMARRAY
 #ifdef USE_HMMPARALLEL_STRUCTURES
 	{
-		for (int32_t i=0; i<parallel.get_num_threads(); i++)
+		for (int32_t i=0; i<parallel->get_num_threads(); i++)
 			delete[] arrayS[i];
 		delete[] arrayS ;
 	} ;
@@ -428,7 +428,7 @@ CHMM::~CHMM()
 #ifdef USE_HMMPARALLEL_STRUCTURES
 		delete[] path_prob_updated ;
 		delete[] path_prob_dimension ;
-		for (int32_t i=0; i<parallel.get_num_threads(); i++)
+		for (int32_t i=0; i<parallel->get_num_threads(); i++)
 			delete[] path[i] ;
 #endif //USE_HMMPARALLEL_STRUCTURES
 		delete[] path;
@@ -451,7 +451,7 @@ bool CHMM::alloc_state_dependend_arrays()
 	}
 
 #ifdef USE_HMMPARALLEL_STRUCTURES
-	for (int32_t i=0; i<parallel.get_num_threads(); i++)
+	for (int32_t i=0; i<parallel->get_num_threads(); i++)
 	{
 		arrayN1[i]=new float64_t[N];
 		arrayN2[i]=new float64_t[N];
@@ -463,7 +463,7 @@ bool CHMM::alloc_state_dependend_arrays()
 
 #ifdef LOG_SUMARRAY
 #ifdef USE_HMMPARALLEL_STRUCTURES
-	for (int32_t i=0; i<parallel.get_num_threads(); i++)
+	for (int32_t i=0; i<parallel->get_num_threads(); i++)
 		arrayS[i]=new float64_t[(int32_t)(this->N/2+1)];
 #else //USE_HMMPARALLEL_STRUCTURES
 	arrayS=new float64_t[(int32_t)(this->N/2+1)];
@@ -495,7 +495,7 @@ bool CHMM::alloc_state_dependend_arrays()
 void CHMM::free_state_dependend_arrays()
 {
 #ifdef USE_HMMPARALLEL_STRUCTURES
-	for (int32_t i=0; i<parallel.get_num_threads(); i++)
+	for (int32_t i=0; i<parallel->get_num_threads(); i++)
 	{
 		delete[] arrayN1[i];
 		delete[] arrayN2[i];
@@ -550,11 +550,11 @@ bool CHMM::initialize(CModel* m, float64_t pseudo, FILE* modelfile)
 	this->reused_caches=false;
 
 #ifdef USE_HMMPARALLEL_STRUCTURES
-	alpha_cache=new T_ALPHA_BETA[parallel.get_num_threads()] ;
-	beta_cache=new T_ALPHA_BETA[parallel.get_num_threads()] ;
-	states_per_observation_psi=new P_STATES[parallel.get_num_threads()] ;
+	alpha_cache=new T_ALPHA_BETA[parallel->get_num_threads()] ;
+	beta_cache=new T_ALPHA_BETA[parallel->get_num_threads()] ;
+	states_per_observation_psi=new P_STATES[parallel->get_num_threads()] ;
 
-	for (int32_t i=0; i<parallel.get_num_threads(); i++)
+	for (int32_t i=0; i<parallel->get_num_threads(); i++)
 	{
 		this->alpha_cache[i].table=NULL;
 		this->beta_cache[i].table=NULL;
@@ -581,12 +581,12 @@ bool CHMM::initialize(CModel* m, float64_t pseudo, FILE* modelfile)
 		files_ok= files_ok && load_model(modelfile);
 
 #ifdef USE_HMMPARALLEL_STRUCTURES
-	path_prob_updated=new bool[parallel.get_num_threads()];
-	path_prob_dimension=new int[parallel.get_num_threads()];
+	path_prob_updated=new bool[parallel->get_num_threads()];
+	path_prob_dimension=new int[parallel->get_num_threads()];
 
-	path=new P_STATES[parallel.get_num_threads()];
+	path=new P_STATES[parallel->get_num_threads()];
 
-	for (int32_t i=0; i<parallel.get_num_threads(); i++)
+	for (int32_t i=0; i<parallel->get_num_threads(); i++)
 	{
 #ifndef NOVIT
 		this->path[i]=NULL;
@@ -600,13 +600,13 @@ bool CHMM::initialize(CModel* m, float64_t pseudo, FILE* modelfile)
 #endif //USE_HMMPARALLEL_STRUCTURES
 
 #ifdef USE_HMMPARALLEL_STRUCTURES
-	arrayN1=new P_float64_t[parallel.get_num_threads()];
-	arrayN2=new P_float64_t[parallel.get_num_threads()];
+	arrayN1=new P_float64_t[parallel->get_num_threads()];
+	arrayN2=new P_float64_t[parallel->get_num_threads()];
 #endif //USE_HMMPARALLEL_STRUCTURES
 
 #ifdef LOG_SUMARRAY
 #ifdef USE_HMMPARALLEL_STRUCTURES
-	arrayS=new P_float64_t[parallel.get_num_threads()] ;	  
+	arrayS=new P_float64_t[parallel->get_num_threads()] ;	  
 #endif // USE_HMMPARALLEL_STRUCTURES
 #endif //LOG_SUMARRAY
 
@@ -1242,17 +1242,17 @@ float64_t CHMM::model_probability_comp()
 
 float64_t CHMM::model_probability_comp() 
 {
-	pthread_t *threads=new pthread_t[parallel.get_num_threads()];
-	S_MODEL_PROB_PARAM *params=new S_MODEL_PROB_PARAM[parallel.get_num_threads()];
+	pthread_t *threads=new pthread_t[parallel->get_num_threads()];
+	S_MODEL_PROB_PARAM *params=new S_MODEL_PROB_PARAM[parallel->get_num_threads()];
 
 	SG_INFO( "computing full model probablity\n");
 	mod_prob=0;
 
-	for (int32_t cpu=0; cpu<parallel.get_num_threads(); cpu++)
+	for (int32_t cpu=0; cpu<parallel->get_num_threads(); cpu++)
 	{
 		params[cpu].hmm=this ;
-		params[cpu].dim_start= p_observations->get_num_vectors()*cpu/parallel.get_num_threads();
-		params[cpu].dim_stop= p_observations->get_num_vectors()*(cpu+1)/parallel.get_num_threads();
+		params[cpu].dim_start= p_observations->get_num_vectors()*cpu/parallel->get_num_threads();
+		params[cpu].dim_stop= p_observations->get_num_vectors()*(cpu+1)/parallel->get_num_threads();
 #ifdef SUNOS
 		thr_create(NULL,0,bw_dim_prefetch, (void*)&params[cpu], PTHREAD_SCOPE_SYSTEM, &threads[cpu]);
 #else // SUNOS
@@ -1260,7 +1260,7 @@ float64_t CHMM::model_probability_comp()
 #endif // SUNOS
 	}
 
-	for (cpu=0; cpu<parallel.get_num_threads(); cpu++)
+	for (cpu=0; cpu<parallel->get_num_threads(); cpu++)
 	{
 		void* ret;
 		pthread_join(threads[cpu], &ret);
@@ -1421,10 +1421,10 @@ void CHMM::estimate_model_baum_welch(CHMM* train)
 	      set_b(i,j,train->get_b(i,j));
 	}
 	
-	pthread_t *threads=new pthread_t[parallel.get_num_threads()] ;
-	S_THREAD_PARAM *params=new S_THREAD_PARAM[parallel.get_num_threads()] ;
+	pthread_t *threads=new pthread_t[parallel->get_num_threads()] ;
+	S_THREAD_PARAM *params=new S_THREAD_PARAM[parallel->get_num_threads()] ;
 
-	for (i=0; i<parallel.get_num_threads(); i++)
+	for (i=0; i<parallel->get_num_threads(); i++)
 	{
 		params[i].p_buf=new float64_t[N];
 		params[i].q_buf=new float64_t[N];
@@ -1432,11 +1432,11 @@ void CHMM::estimate_model_baum_welch(CHMM* train)
 		params[i].b_buf=new float64_t[N*M];
 	} ;
 
-	for (cpu=0; cpu<parallel.get_num_threads(); cpu++)
+	for (cpu=0; cpu<parallel->get_num_threads(); cpu++)
 	{
 		params[cpu].hmm=train;
-		params[cpu].dim_start=p_observations->get_num_vectors()*cpu / parallel.get_num_threads();
-		params[cpu].dim_stop= p_observations->get_num_vectors()*(cpu+1) / parallel.get_num_threads();
+		params[cpu].dim_start=p_observations->get_num_vectors()*cpu / parallel->get_num_threads();
+		params[cpu].dim_stop= p_observations->get_num_vectors()*(cpu+1) / parallel->get_num_threads();
 
 #ifdef SUNOS
 		thr_create(NULL,0, bw_dim_prefetch, (void*)&params[cpu], PTHREAD_SCOPE_SYSTEM, &threads[cpu]) ;
@@ -1445,11 +1445,11 @@ void CHMM::estimate_model_baum_welch(CHMM* train)
 #endif
 	}
 
-	for (cpu=0; cpu<parallel.get_num_threads(); cpu++)
+	for (cpu=0; cpu<parallel->get_num_threads(); cpu++)
 	  {
 	    void* ret;
 	    pthread_join(threads[cpu], &ret) ;
-	    //dimmodprob = params[dim%parallel.get_num_threads()].ret ;
+	    //dimmodprob = params[dim%parallel->get_num_threads()].ret ;
 	    
 	    for (i=0; i<N; i++)
 	      {
@@ -1469,7 +1469,7 @@ void CHMM::estimate_model_baum_welch(CHMM* train)
 	    fullmodprob+=params[cpu].prob;
 	  }
 
-	for (i=0; i<parallel.get_num_threads(); i++)
+	for (i=0; i<parallel->get_num_threads(); i++)
 	  {
 	    delete[] params[i].p_buf;
 	    delete[] params[i].q_buf;
@@ -2000,18 +2000,18 @@ void CHMM::estimate_model_baum_welch_defined(CHMM* estimate)
 	}
 
 #ifdef USE_HMMPARALLEL
-	pthread_t *threads=new pthread_t[parallel.get_num_threads()] ;
-	S_THREAD_PARAM *params=new S_THREAD_PARAM[parallel.get_num_threads()] ;
+	pthread_t *threads=new pthread_t[parallel->get_num_threads()] ;
+	S_THREAD_PARAM *params=new S_THREAD_PARAM[parallel->get_num_threads()] ;
 #endif
 
 	//change summation order to make use of alpha/beta caches
 	for (dim=0; dim<p_observations->get_num_vectors(); dim++)
 	{
 #ifdef USE_HMMPARALLEL
-		if (dim%parallel.get_num_threads()==0)
+		if (dim%parallel->get_num_threads()==0)
 		{
 			int32_t i ;
-			for (i=0; i<parallel.get_num_threads(); i++)
+			for (i=0; i<parallel->get_num_threads(); i++)
 				if (dim+i<p_observations->get_num_vectors())
 				{
 					params[i].hmm=estimate ;
@@ -2022,7 +2022,7 @@ void CHMM::estimate_model_baum_welch_defined(CHMM* estimate)
 					pthread_create(&threads[i], NULL, bw_dim_prefetch, (void*)&params[i]) ;
 #endif
 				} ;
-			for (i=0; i<parallel.get_num_threads(); i++)
+			for (i=0; i<parallel->get_num_threads(); i++)
 				if (dim+i<p_observations->get_num_vectors())
 				{
 					void * ret ;
@@ -2163,18 +2163,18 @@ void CHMM::estimate_model_viterbi(CHMM* estimate)
 	float64_t allpatprob=0 ;
 
 #ifdef USE_HMMPARALLEL
-	pthread_t *threads=new pthread_t[parallel.get_num_threads()] ;
-	S_THREAD_PARAM *params=new S_THREAD_PARAM[parallel.get_num_threads()] ;
+	pthread_t *threads=new pthread_t[parallel->get_num_threads()] ;
+	S_THREAD_PARAM *params=new S_THREAD_PARAM[parallel->get_num_threads()] ;
 #endif
 
 	for (int32_t dim=0; dim<p_observations->get_num_vectors(); dim++)
 	{
 
 #ifdef USE_HMMPARALLEL
-		if (dim%parallel.get_num_threads()==0)
+		if (dim%parallel->get_num_threads()==0)
 		{
 			int32_t i ;
-			for (i=0; i<parallel.get_num_threads(); i++)
+			for (i=0; i<parallel->get_num_threads(); i++)
 				if (dim+i<p_observations->get_num_vectors())
 				{
 					params[i].hmm=estimate ;
@@ -2185,7 +2185,7 @@ void CHMM::estimate_model_viterbi(CHMM* estimate)
 					pthread_create(&threads[i], NULL, vit_dim_prefetch, (void*)&params[i]) ;
 #endif
 				} ;
-			for (i=0; i<parallel.get_num_threads(); i++)
+			for (i=0; i<parallel->get_num_threads(); i++)
 				if (dim+i<p_observations->get_num_vectors())
 				{
 					void * ret ;
@@ -2286,8 +2286,8 @@ void CHMM::estimate_model_viterbi_defined(CHMM* estimate)
 	}
 
 #ifdef USE_HMMPARALLEL
-	pthread_t *threads=new pthread_t[parallel.get_num_threads()] ;
-	S_THREAD_PARAM *params=new S_THREAD_PARAM[parallel.get_num_threads()] ;
+	pthread_t *threads=new pthread_t[parallel->get_num_threads()] ;
+	S_THREAD_PARAM *params=new S_THREAD_PARAM[parallel->get_num_threads()] ;
 #endif
 
 	float64_t allpatprob=0.0 ;
@@ -2295,10 +2295,10 @@ void CHMM::estimate_model_viterbi_defined(CHMM* estimate)
 	{
 
 #ifdef USE_HMMPARALLEL
-		if (dim%parallel.get_num_threads()==0)
+		if (dim%parallel->get_num_threads()==0)
 		{
 			int32_t i ;
-			for (i=0; i<parallel.get_num_threads(); i++)
+			for (i=0; i<parallel->get_num_threads(); i++)
 				if (dim+i<p_observations->get_num_vectors())
 				{
 					params[i].hmm=estimate ;
@@ -2309,7 +2309,7 @@ void CHMM::estimate_model_viterbi_defined(CHMM* estimate)
 					pthread_create(&threads[i], NULL, vit_dim_prefetch, (void*)&params[i]) ;
 #endif //SUNOS
 				} ;
-			for (i=0; i<parallel.get_num_threads(); i++)
+			for (i=0; i<parallel->get_num_threads(); i++)
 				if (dim+i<p_observations->get_num_vectors())
 				{
 					void * ret ;
@@ -2981,7 +2981,7 @@ void CHMM::invalidate_model()
 
 #ifdef USE_HMMPARALLEL_STRUCTURES
 	{
-		for (int32_t i=0; i<parallel.get_num_threads(); i++)
+		for (int32_t i=0; i<parallel->get_num_threads(); i++)
 		{
 			this->alpha_cache[i].updated=false;
 			this->beta_cache[i].updated=false;
@@ -4595,8 +4595,8 @@ bool CHMM::save_model_derivatives_bin(FILE* file)
 		SG_INFO( "writing derivatives of changed weights only\n") ;
 
 #ifdef USE_HMMPARALLEL
-	pthread_t *threads=new pthread_t[parallel.get_num_threads()] ;
-	S_THREAD_PARAM *params=new S_THREAD_PARAM[parallel.get_num_threads()] ;
+	pthread_t *threads=new pthread_t[parallel->get_num_threads()] ;
+	S_THREAD_PARAM *params=new S_THREAD_PARAM[parallel->get_num_threads()] ;
 #endif
 
 	for (dim=0; dim<p_observations->get_num_vectors(); dim++)
@@ -4608,10 +4608,10 @@ bool CHMM::save_model_derivatives_bin(FILE* file)
 		} ;
 
 #ifdef USE_HMMPARALLEL
-		if (dim%parallel.get_num_threads()==0)
+		if (dim%parallel->get_num_threads()==0)
 		{
 			int32_t i ;
-			for (i=0; i<parallel.get_num_threads(); i++)
+			for (i=0; i<parallel->get_num_threads(); i++)
 				if (dim+i<p_observations->get_num_vectors())
 				{
 					params[i].hmm=this ;
@@ -4622,7 +4622,7 @@ bool CHMM::save_model_derivatives_bin(FILE* file)
 					pthread_create(&threads[i], NULL, bw_dim_prefetch, (void*)&params[i]) ;
 #endif // SUNOS
 				} ;
-			for (i=0; i<parallel.get_num_threads(); i++)
+			for (i=0; i<parallel->get_num_threads(); i++)
 				if (dim+i<p_observations->get_num_vectors())
 				{
 					void * ret ;
@@ -5476,7 +5476,7 @@ void CHMM::set_observation_nocache(CStringFeatures<uint16_t>* obs)
 	if (!reused_caches)
 	{
 #ifdef USE_HMMPARALLEL_STRUCTURES
-		for (int32_t i=0; i<parallel.get_num_threads(); i++) 
+		for (int32_t i=0; i<parallel->get_num_threads(); i++) 
 		{
 			delete[] alpha_cache[i].table;
 			delete[] beta_cache[i].table;
@@ -5532,7 +5532,7 @@ void CHMM::set_observations(CStringFeatures<uint16_t>* obs, CHMM* lambda)
 	if (!reused_caches)
 	{
 #ifdef USE_HMMPARALLEL_STRUCTURES
-		for (int32_t i=0; i<parallel.get_num_threads(); i++) 
+		for (int32_t i=0; i<parallel->get_num_threads(); i++) 
 		{
 			delete[] alpha_cache[i].table;
 			delete[] beta_cache[i].table;
@@ -5569,7 +5569,7 @@ void CHMM::set_observations(CStringFeatures<uint16_t>* obs, CHMM* lambda)
 		if (lambda)
 		{
 #ifdef USE_HMMPARALLEL_STRUCTURES
-			for (int32_t i=0; i<parallel.get_num_threads(); i++) 
+			for (int32_t i=0; i<parallel->get_num_threads(); i++) 
 			{
 				this->alpha_cache[i].table= lambda->alpha_cache[i].table;
 				this->beta_cache[i].table=	lambda->beta_cache[i].table;
@@ -5590,7 +5590,7 @@ void CHMM::set_observations(CStringFeatures<uint16_t>* obs, CHMM* lambda)
 			this->reused_caches=false;
 #ifdef USE_HMMPARALLEL_STRUCTURES
 			SG_INFO( "allocating mem for path-table of size %.2f Megabytes (%d*%d) each:\n", ((float32_t)max_T)*N*sizeof(T_STATES)/(1024*1024), max_T, N);
-			for (int32_t i=0; i<parallel.get_num_threads(); i++)
+			for (int32_t i=0; i<parallel->get_num_threads(); i++)
 			{
 				if ((states_per_observation_psi[i]=new T_STATES[max_T*N])!=NULL)
 					SG_DEBUG( "path_table[%i] successfully allocated\n",i) ;
@@ -5611,7 +5611,7 @@ void CHMM::set_observations(CStringFeatures<uint16_t>* obs, CHMM* lambda)
 			SG_INFO( "allocating mem for caches each of size %.2f Megabytes (%d*%d) ....\n", ((float32_t)max_T)*N*sizeof(T_ALPHA_BETA_TABLE)/(1024*1024), max_T, N);
 
 #ifdef USE_HMMPARALLEL_STRUCTURES
-			for (int32_t i=0; i<parallel.get_num_threads(); i++)
+			for (int32_t i=0; i<parallel->get_num_threads(); i++)
 			{
 				if ((alpha_cache[i].table=new T_ALPHA_BETA_TABLE[max_T*N])!=NULL)
 					SG_DEBUG( "alpha_cache[%i].table successfully allocated\n",i) ;
@@ -5637,7 +5637,7 @@ void CHMM::set_observations(CStringFeatures<uint16_t>* obs, CHMM* lambda)
 #endif // USE_HMMPARALLEL_STRUCTURES
 #else // USE_HMMCACHE
 #ifdef USE_HMMPARALLEL_STRUCTURES
-			for (int32_t i=0; i<parallel.get_num_threads(); i++)
+			for (int32_t i=0; i<parallel->get_num_threads(); i++)
 			{
 				alpha_cache[i].table=NULL ;
 				beta_cache[i].table=NULL ;

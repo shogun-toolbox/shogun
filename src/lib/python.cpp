@@ -1,5 +1,6 @@
 #include "lib/config.h"
 #include "lib/python.h"
+#include "lib/io.h"
 
 #include <stdio.h>
 

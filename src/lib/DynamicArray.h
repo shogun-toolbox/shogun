@@ -4,17 +4,12 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2008 Soeren Sonnenburg
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 1999-2009 Soeren Sonnenburg
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _DYNARRAY_H_
 #define _DYNARRAY_H_
-
-/* workaround compile bug in R-modular interface */
-#if defined(HAVE_R) && !defined(ScalarReal)
-#define ScalarReal      Rf_ScalarReal
-#endif
 
 #include "lib/common.h"
 #include "lib/Mathematics.h"

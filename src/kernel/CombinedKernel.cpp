@@ -388,7 +388,7 @@ void CCombinedKernel::emulate_compute_batch(
 		{
 			k->init_optimization(num_suppvec, IDX, weights);
 
-			int32_t num_threads=parallel.get_num_threads();
+			int32_t num_threads=parallel->get_num_threads();
 			ASSERT(num_threads>0);
 
 			if (num_threads < 2)
@@ -445,7 +445,7 @@ void CCombinedKernel::emulate_compute_batch(
 
 		if (k->get_combined_kernel_weight()!=0)
 		{ // compute the usual way for any non-optimized kernel
-			int32_t num_threads=parallel.get_num_threads();
+			int32_t num_threads=parallel->get_num_threads();
 			ASSERT(num_threads>0);
 
 			if (num_threads < 2)

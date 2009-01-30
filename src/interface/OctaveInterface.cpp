@@ -473,13 +473,13 @@ DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 			((COctaveInterface*) interface)->reset(prhs, nlhs);
 
 		if (!interface->handle())
-			SG_ERROR("Unknown command.\n");
+			SG_SERROR("Unknown command.\n");
 
 		return ((COctaveInterface*) interface)->get_return_values();
 	}
 	catch (std::bad_alloc)
 	{
-		SG_PRINT("Out of memory error.\n");
+		SG_SPRINT("Out of memory error.\n");
 		return octave_value_list();
 	}
 	catch (ShogunException e)

@@ -61,16 +61,16 @@ class CIO;
 
 // printf like funktions (with additional severity level)
 // for object derived from CSGObject
-#define SG_DEBUG(...) CSGObject::io->message(M_DEBUG, __VA_ARGS__)
-#define SG_INFO(...) CSGObject::io->message(M_INFO, __VA_ARGS__)
-#define SG_WARNING(...) CSGObject::io->message(M_WARN, __VA_ARGS__)
-#define SG_ERROR(...) CSGObject::io->message(M_ERROR, __VA_ARGS__)
-#define SG_PRINT(...) CSGObject::io->message(M_MESSAGEONLY, __VA_ARGS__)
-#define SG_NOTIMPLEMENTED CSGObject::io->not_implemented()
+#define SG_DEBUG(...) io->message(M_DEBUG, __VA_ARGS__)
+#define SG_INFO(...) io->message(M_INFO, __VA_ARGS__)
+#define SG_WARNING(...) io->message(M_WARN, __VA_ARGS__)
+#define SG_ERROR(...) io->message(M_ERROR, __VA_ARGS__)
+#define SG_PRINT(...) io->message(M_MESSAGEONLY, __VA_ARGS__)
+#define SG_NOTIMPLEMENTED io->not_implemented()
 
-#define SG_PROGRESS(...) CSGObject::io->progress(__VA_ARGS__)
-#define SG_ABS_PROGRESS(...) CSGObject::io->absolute_progress(__VA_ARGS__)
-#define SG_DONE() CSGObject::io->done()
+#define SG_PROGRESS(...) io->progress(__VA_ARGS__)
+#define SG_ABS_PROGRESS(...) io->absolute_progress(__VA_ARGS__)
+#define SG_DONE() io->done()
 
 extern CIO* sg_io;
 // printf like function using the global sg_io object
@@ -250,6 +250,29 @@ class CIO
 		 */
 		static int filter(CONST_DIRENT_T* d);
 
+
+		inline int32_t ref()
+		{
+			++refcount;
+			return refcount;
+		}
+
+		inline int32_t ref_count() const
+		{
+			return refcount;
+		}
+
+		inline int32_t unref()
+		{
+			if (refcount==0 || --refcount==0)
+			{
+				delete this;
+				return 0;
+			}
+			else
+				return refcount;
+		}
+
 	protected:
 		/** get message intro
 		 *
@@ -277,6 +300,9 @@ class CIO
 		static const EMessageType levels[NUM_LOG_LEVELS];
 		/** message strings */
 		static const char* message_strings[NUM_LOG_LEVELS];
+
+	private:
+		int32_t refcount;
 };
 
 #endif // __CIO_H__

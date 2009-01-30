@@ -82,6 +82,29 @@ public:
 		return ((((version_year)*12 + version_month)*30 + version_day)* 24 + version_hour)*60 + version_minute;
 	}
 
+	inline int32_t ref()
+	{
+		++refcount;
+		return refcount;
+	}
+
+	inline int32_t ref_count() const
+	{
+		return refcount;
+	}
+
+	inline int32_t unref()
+	{
+		if (refcount==0 || --refcount==0)
+		{
+			delete this;
+			return 0;
+		}
+		else
+			return refcount;
+	}
+
+protected:
 	static const char version_release[128];
 	static const char version_extra[128];
 
@@ -91,5 +114,7 @@ public:
 	static const int32_t version_day;
 	static const int32_t version_hour;
 	static const int32_t version_minute;
+private:
+	int32_t refcount;
 };
 #endif

@@ -1098,7 +1098,14 @@ CSGInterface::CSGInterface()
 	ui_time(new CGUITime(this)),
 	ui_structure(new CGUIStructure(this))
 {
+	version->print_version();
 	reset();
+	SG_PRINT("( seeding random number generator with %u (seed size %d))\n", CMath::rand_state, RNG_SEED_SIZE);
+#ifdef USE_LOGCACHE
+    SG_PRINT( "initializing log-table (size=%i*%i*%i=%2.1fMB) ... ) ",CMath::LOGRANGE,CMath::LOGACCURACY,sizeof(float64_t),CMath::LOGRANGE*CMath::LOGACCURACY*sizeof(float64_t)/(1024.0*1024.0)) ;
+#else
+    SG_PRINT("determined range for x in log(1+exp(-x)) is:%d )\n", CMath::LOGRANGE);
+#endif 
 }
 
 CSGInterface::~CSGInterface()
@@ -1612,7 +1619,7 @@ bool CSGInterface::cmd_convert()
 					((CRealFeatures*) features));
 			}
 			else
-				io.not_implemented();
+				SG_NOTIMPLEMENTED;
 		} // from_type REAL
 
 		else if (strmatch(from_type, "CHAR"))
@@ -1645,7 +1652,7 @@ bool CSGInterface::cmd_convert()
 							gap);
 					}
 					else
-						io.not_implemented();
+						SG_NOTIMPLEMENTED;
 				}
 				else if (strmatch(to_type, "ALIGN") && m_nrhs==8)
 				{
@@ -1654,10 +1661,10 @@ bool CSGInterface::cmd_convert()
 						(CCharFeatures*) features, gap_cost);
 				}
 				else
-					io.not_implemented();
+					SG_NOTIMPLEMENTED;
 			}
 			else
-				io.not_implemented();
+				SG_NOTIMPLEMENTED;
 		} // from_type CHAR
 
 		else if (strmatch(from_type, "WORD"))
@@ -1669,11 +1676,11 @@ bool CSGInterface::cmd_convert()
 					(CWordFeatures*) features);
 			}
 			else
-				io.not_implemented();
+				SG_NOTIMPLEMENTED;
 		} // from_type WORD
 
 		else
-			io.not_implemented();
+			SG_NOTIMPLEMENTED;
 	} // from_class SIMPLE
 
 	else if (strmatch(from_class, "SPARSE"))
@@ -1687,10 +1694,10 @@ bool CSGInterface::cmd_convert()
 					(CSparseFeatures<float64_t>*) features);
 			}
 			else
-				io.not_implemented();
+				SG_NOTIMPLEMENTED;
 		} // from_type REAL
 		else
-			io.not_implemented();
+			SG_NOTIMPLEMENTED;
 	} // from_class SPARSE
 
 	else if (strmatch(from_class, "STRING"))
@@ -1747,7 +1754,7 @@ bool CSGInterface::cmd_convert()
 						gap, rev);
 				}
 				else
-					io.not_implemented();
+					SG_NOTIMPLEMENTED;
 			}
 #ifdef HAVE_MINDY
 			else if (strmatch(to_class, "MINDYGRAM") &&
@@ -1770,7 +1777,7 @@ bool CSGInterface::cmd_convert()
 			}
 #endif
 			else
-				io.not_implemented();
+				SG_NOTIMPLEMENTED;
 		} // from_type CHAR
 
 		else if (strmatch(from_type, "BYTE"))
@@ -1819,7 +1826,7 @@ bool CSGInterface::cmd_convert()
 						gap, rev);
 				}
 				else
-					io.not_implemented();
+					SG_NOTIMPLEMENTED;
 			}
 #ifdef HAVE_MINDY
 			else if (strmatch(to_class, "MINDYGRAM") &&
@@ -1842,7 +1849,7 @@ bool CSGInterface::cmd_convert()
 			}
 #endif
 			else
-				io.not_implemented();
+				SG_NOTIMPLEMENTED;
 		} // from_type uint8_t
 
 		else if (strmatch(from_type, "WORD"))
@@ -1859,7 +1866,7 @@ bool CSGInterface::cmd_convert()
 
 			}
 			else
-				io.not_implemented();
+				SG_NOTIMPLEMENTED;
 		} // from_type WORD
 
 		else if (strmatch(to_class, "SIMPLE") && strmatch(to_type, "FK"))
@@ -1869,7 +1876,7 @@ bool CSGInterface::cmd_convert()
 		} // to_type FK
 
 		else
-			io.not_implemented();
+			SG_NOTIMPLEMENTED;
 
 	} // from_class STRING
 
@@ -2778,7 +2785,7 @@ CKernel* CSGInterface::create_kernel()
 #endif
 
 	else
-		io.not_implemented();
+		SG_NOTIMPLEMENTED;
 
 	delete[] type;
 	SG_DEBUG("created kernel: %p\n", kernel);
@@ -3814,7 +3821,7 @@ bool CSGInterface::cmd_set_distance()
 			distance=ui_distance->create_generic(D_SPARSEEUCLIDIAN);
 	}
 	else
-		io.not_implemented();
+		SG_NOTIMPLEMENTED;
 
 	delete[] type;
 	delete[] dtype;
@@ -4620,7 +4627,7 @@ bool CSGInterface::cmd_add_preproc()
 #endif
 
 	else
-		io.not_implemented();
+		SG_NOTIMPLEMENTED;
 
 	delete[] type;
 	return ui_preproc->add_preproc(preproc);
@@ -6460,15 +6467,15 @@ bool CSGInterface::cmd_set_output()
 	SG_INFO("Setting output file to: %s.\n", filename);
 
 	if (strmatch(filename, "STDERR"))
-		io.set_target(stderr);
+		io->set_target(stderr);
 	else if (strmatch(filename, "STDOUT"))
-		io.set_target(stdout);
+		io->set_target(stdout);
 	else
 	{
 		file_out=fopen(filename, "w");
 		if (!file_out)
 			SG_ERROR("Error opening output file %s.\n", filename);
-		io.set_target(file_out);
+		io->set_target(file_out);
 	}
 
 	return true;
@@ -6503,7 +6510,7 @@ bool CSGInterface::cmd_set_num_threads()
 
 	int32_t num_threads=get_int_from_int_or_str();
 
-	parallel.set_num_threads(num_threads);
+	parallel->set_num_threads(num_threads);
 	SG_INFO("Set number of threads to %d.\n", num_threads);
 
 	return true;
@@ -6659,21 +6666,21 @@ bool CSGInterface::cmd_loglevel()
 	char* level=get_str_from_str_or_direct(len);
 
 	if (strmatch(level, "ALL") || strmatch(level, "DEBUG"))
-		io.set_loglevel(M_DEBUG);
+		io->set_loglevel(M_DEBUG);
 	else if (strmatch(level, "INFO"))
-		io.set_loglevel(M_INFO);
+		io->set_loglevel(M_INFO);
 	else if (strmatch(level, "NOTICE"))
-		io.set_loglevel(M_NOTICE);
+		io->set_loglevel(M_NOTICE);
 	else if (strmatch(level, "WARN"))
-		io.set_loglevel(M_WARN);
+		io->set_loglevel(M_WARN);
 	else if (strmatch(level, "ERROR"))
-		io.set_loglevel(M_ERROR);
+		io->set_loglevel(M_ERROR);
 	else if (strmatch(level, "CRITICAL"))
-		io.set_loglevel(M_CRITICAL);
+		io->set_loglevel(M_CRITICAL);
 	else if (strmatch(level, "ALERT"))
-		io.set_loglevel(M_ALERT);
+		io->set_loglevel(M_ALERT);
 	else if (strmatch(level, "EMERGENCY"))
-		io.set_loglevel(M_EMERGENCY);
+		io->set_loglevel(M_EMERGENCY);
 	else
 		SG_ERROR("Unknown loglevel '%s'.\n", level);
 
@@ -6713,9 +6720,9 @@ bool CSGInterface::cmd_progress()
 	char* progress=get_str_from_str_or_direct(len);
 
 	if (strmatch(progress, "ON"))
-		io.enable_progress();
+		io->enable_progress();
 	else if (strmatch(progress, "OFF"))
-		io.disable_progress();
+		io->disable_progress();
 	else
 		SG_ERROR("arguments to progress are ON|OFF - found '%s'.\n", progress);
 
@@ -6730,7 +6737,7 @@ bool CSGInterface::cmd_get_version()
 	if (m_nrhs!=1 || !create_return_values(1))
 		return false;
 
-	set_int(version.get_version_revision());
+	set_int(version->get_version_revision());
 
 	return true;
 }

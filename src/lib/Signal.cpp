@@ -11,7 +11,12 @@
 #include "lib/config.h"
 
 #ifndef WIN32
+
+#include "lib/matlab.h"
+#include "lib/octave.h"
 #include "lib/python.h"
+#include "lib/r.h"
+
 
 #include <stdlib.h>
 #include <signal.h>

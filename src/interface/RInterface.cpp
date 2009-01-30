@@ -486,11 +486,11 @@ SEXP sg(SEXP args)
 			((CRInterface*) interface)->reset(args);
 
 		if (!interface->handle())
-			SG_ERROR("Unknown command.\n");
+			SG_SERROR("Unknown command.\n");
 	}
 	catch (std::bad_alloc)
 	{
-		SG_PRINT("Out of memory error.\n");
+		error("Out of memory error.\n");
 		return R_NilValue;
 	}
 	catch (ShogunException e)

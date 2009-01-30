@@ -380,7 +380,7 @@ bool CGUIPreProc::preproc_all_features(CFeatures* f, bool force)
 				case F_BYTE:
 					return ((CByteFeatures*) f)->apply_preproc(force);
 				default:
-					io.not_implemented();
+					SG_NOTIMPLEMENTED;
 			}
 			break;
 		case C_STRING:
@@ -391,7 +391,7 @@ bool CGUIPreProc::preproc_all_features(CFeatures* f, bool force)
 				case F_ULONG:
 					return ((CStringFeatures<uint64_t>*) f)->apply_preproc(force);
 				default:
-					io.not_implemented();
+					SG_NOTIMPLEMENTED;
 			}
 			break;
 		case C_SPARSE:
@@ -400,14 +400,14 @@ bool CGUIPreProc::preproc_all_features(CFeatures* f, bool force)
 				case F_DREAL:
 					return ((CSparseFeatures<float64_t>*) f)->apply_preproc(force);
 				default:
-					io.not_implemented();
+					SG_NOTIMPLEMENTED;
 			};
 			break;
 		case C_COMBINED:
 			SG_ERROR( "Combined feature objects cannot be preprocessed. Only its sub-feature objects!\n");
 			break;
 		default:
-			io.not_implemented();
+			SG_NOTIMPLEMENTED;
 	}
 
 	return false;

@@ -306,15 +306,15 @@ void CWDSVMOcas::add_new_cut(
 	float64_t* c_bias = o->cp_bias;
 
 	uint32_t i;
-	wdocas_thread_params_add* params_add=new wdocas_thread_params_add[o->parallel.get_num_threads()];
-	pthread_t* threads=new pthread_t[o->parallel.get_num_threads()];
+	wdocas_thread_params_add* params_add=new wdocas_thread_params_add[o->parallel->get_num_threads()];
+	pthread_t* threads=new pthread_t[o->parallel->get_num_threads()];
 	float32_t* new_a=new float32_t[nDim];
 	memset(new_a, 0, sizeof(float32_t)*nDim);
 
 	int32_t t;
-	int32_t nthreads=o->parallel.get_num_threads()-1;
+	int32_t nthreads=o->parallel->get_num_threads()-1;
 	int32_t end=0;
-	int32_t step= string_length/o->parallel.get_num_threads();
+	int32_t step= string_length/o->parallel->get_num_threads();
 
 	if (step<1)
 	{
@@ -485,17 +485,17 @@ void CWDSVMOcas::compute_output( float64_t *output, void* ptr )
 {
 	CWDSVMOcas* o = (CWDSVMOcas*) ptr;
 	int32_t nData=o->num_vec;
-	wdocas_thread_params_output* params_output=new wdocas_thread_params_output[o->parallel.get_num_threads()];
-	pthread_t* threads = new pthread_t[o->parallel.get_num_threads()];
+	wdocas_thread_params_output* params_output=new wdocas_thread_params_output[o->parallel->get_num_threads()];
+	pthread_t* threads = new pthread_t[o->parallel->get_num_threads()];
 
 	float32_t* out=new float32_t[nData];
 	int32_t* val=new int32_t[nData];
 	memset(out, 0, sizeof(float32_t)*nData);
 
 	int32_t t;
-	int32_t nthreads=o->parallel.get_num_threads()-1;
+	int32_t nthreads=o->parallel->get_num_threads()-1;
 	int32_t end=0;
-	int32_t step= nData/o->parallel.get_num_threads();
+	int32_t step= nData/o->parallel->get_num_threads();
 
 	if (step<1)
 	{

@@ -35,23 +35,20 @@ class CSGObject
 public:
 	inline CSGObject() : refcount(0)
 	{
-		parallel = new CParallel();
-		io = new CIO();
-		version = new CVersion();
+		set_global_objects();
 	}
 
-	inline CSGObject(const CSGObject& orig) : refcount(0)
+	inline CSGObject(const CSGObject& orig) : refcount(0), io(orig.io),
+		parallel(orig.parallel), version(orig.version)
 	{
-		parallel = new CParallel(orig.parallel);
-		io = new CIO(orig.io);
-		version = new CVersion();
+		set_global_objects();
 	}
 
     virtual ~CSGObject()
 	{
-		delete parallel;
-		delete io;
-		delete version;
+		SG_UNREF(parallel);
+		SG_UNREF(io);
+		SG_UNREF(version);
 	}
 
 	inline int32_t ref()
@@ -85,12 +82,15 @@ public:
 	}
 
 private:
+	void set_global_objects();
+
+private:
 	int32_t refcount;
 	bool static_io;
 
 public:
-	CParallel* parallel;
 	CIO* io;
+	CParallel* parallel;
 	CVersion* version;
 };
 #endif // __SGOBJECT_H__

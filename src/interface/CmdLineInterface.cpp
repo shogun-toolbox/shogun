@@ -939,11 +939,11 @@ int main(int argc, char* argv[])
 	}
 	catch (std::bad_alloc)
 	{
-		SG_PRINT("Out of memory error.\n");
+		SG_SPRINT("Out of memory error.\n");
 	}
 	catch (ShogunException e)
 	{
-		SG_PRINT("%s", e.get_exception_string());
+		SG_SPRINT("%s", e.get_exception_string());
 	}
 
 }
