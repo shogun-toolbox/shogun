@@ -44,14 +44,14 @@ char directory_name[FBUFSIZE];
 
 CIO::CIO()
 : target(stdout), last_progress_time(0), progress_start_time(0),
-	last_progress(1), show_progress(false), loglevel(M_WARN)
+	last_progress(1), show_progress(false), loglevel(M_WARN), refcount(0)
 {
 }
 
 CIO::CIO(const CIO& orig)
 : target(orig.get_target()), last_progress_time(0),
 	progress_start_time(0), last_progress(1),
-	show_progress(orig.get_show_progress()), loglevel(orig.get_loglevel())
+	show_progress(orig.get_show_progress()), loglevel(orig.get_loglevel()), refcount(0)
 {
 }
 

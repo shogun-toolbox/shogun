@@ -14,10 +14,9 @@ CParallel::CParallel() : refcount(0), num_threads(1)
 {
 }
 
-CParallel::CParallel(const CParallel& orig)
+CParallel::CParallel(const CParallel& orig) : refcount(0)
 {
 	num_threads=orig.get_num_threads();
-	refcount=orig.refcount;
 }
 
 CParallel::~CParallel()

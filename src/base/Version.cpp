@@ -21,7 +21,7 @@ const int32_t CVersion::version_minute = VERSION_MINUTE;
 const char CVersion::version_extra[128] = VERSION_EXTRA;
 const char CVersion::version_release[128] = VERSION_RELEASE;
 
-CVersion::CVersion()
+CVersion::CVersion() : refcount(0)
 {
 }
 
