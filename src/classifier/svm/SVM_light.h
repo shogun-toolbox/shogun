@@ -29,7 +29,6 @@
 #include "kernel/Kernel.h"
 #include "lib/Mathematics.h"
 #include "lib/common.h"
-#include "classifier/svm/Optimizer.h"
 
 #include <stdio.h>
 #include <ctype.h>
@@ -50,6 +49,7 @@ extern "C" {
 # define VERSION       "V3.50 -- correct??"
 # define VERSION_DATE  "01.11.00 -- correct??"
 
+# define DEF_PRECISION 1E-14
 # define MAXSHRINK 50000
 
 /** model */
@@ -86,6 +86,28 @@ float64_t xa_recall;
 /** xi/alpha estimates */
 float64_t xa_precision;
 };
+
+/** quadratic program */
+typedef struct quadratic_program {
+  /** number of variables */
+  int32_t   opt_n;
+  /** number of linear equality constraints */
+  int32_t   opt_m;
+  /** linear equality constraint */
+  float64_t *opt_ce;
+  /** linear equality constraint */
+  float64_t *opt_ce0;
+  /** hessian of objective */
+  float64_t *opt_g;
+  /** linear part of objective */
+  float64_t *opt_g0;
+  /** initial value for variables */
+  float64_t *opt_xinit;
+  /** low box constraint */
+  float64_t *opt_low;
+  /** up box constraint */
+  float64_t *opt_up;
+} QP;
 
 /** the type used for storing feature ids */
 typedef int32_t FNUM;
@@ -726,6 +748,10 @@ protected:
 #endif
 	/** @return object name */
 	inline virtual const char* get_name() { return "SVM_light"; }
+
+	/* interface to QP-solver */
+	float64_t *optimize_qp( QP *qp,float64_t *epsilon_crit, int32_t nx,
+			float64_t *threshold, int32_t& svm_maxqpsize);
    
  protected:
   /** model */
@@ -745,6 +771,10 @@ protected:
   float64_t model_b;
   /** opt precision */
   float64_t opt_precision;
+  /** primal */
+  float64_t* primal;
+  /** dual */
+  float64_t* dual;
 
   // MKL stuff
 
@@ -779,7 +809,6 @@ protected:
 
   /** if lp is initialized */
   bool lp_initialized ;
-
 };
 #endif //USE_SVMLIGHT
-#endif
+#endif //_SVMLight_H___
