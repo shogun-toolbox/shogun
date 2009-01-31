@@ -1392,7 +1392,7 @@ bool CSGInterface::do_set_features(bool add, bool check_dot)
 			TSparse<float64_t>* fmatrix=NULL;
 			get_real_sparsematrix(fmatrix, num_feat, num_vec);
 
-			feat=new CSparseFeatures<float64_t>(0);
+			feat=new CSparseFeatures<float64_t>();
 			((CSparseFeatures<float64_t>*) feat)->
 				set_sparse_feature_matrix(fmatrix, num_feat, num_vec);
 			break;
@@ -2060,6 +2060,7 @@ bool CSGInterface::cmd_set_labels()
 		if (!labels->set_label(i, lab[i]))
 			SG_ERROR("Couldn't set label %d (of %d): %f.\n", i, len, lab[i]);
 	}
+	delete[] lab;
 
 	if (strmatch(target, "TRAIN"))
 		ui_labels->set_train_labels(labels);
@@ -2372,6 +2373,8 @@ CKernel* CSGInterface::create_kernel()
 
 			kernel=ui_kernel->create_fixeddegreestring(size, d);
 		}
+
+		delete[] dtype;
 	}
 	else if (strmatch(type, "LOCALALIGNMENT"))
 	{
@@ -4167,9 +4170,12 @@ bool CSGInterface::cmd_get_classifier()
 	//SG_PRINT("brows %d, bcols %d\n", brows, bcols);
 	//CMath::display_matrix(bias, brows, bcols);
 	set_real_matrix(bias, brows, bcols);
+	delete[] bias;
+
 	//SG_PRINT("rows %d, cols %d\n", rows, cols);
 	//CMath::display_matrix(weights, rows, cols);
 	set_real_matrix(weights, rows, cols);
+	delete[] weights;
 
 	return true;
 }

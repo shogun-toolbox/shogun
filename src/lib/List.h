@@ -91,6 +91,8 @@ template <class T> class CList : public CSGObject
 			if (first != NULL)
 			{
 				current = first;
+				if (delete_data)
+					SG_REF(current->data);
 				return current->data;
 			}
 			else 
@@ -106,6 +108,8 @@ template <class T> class CList : public CSGObject
 			if (last != NULL)
 			{
 				current = last;
+				if (delete_data)
+					SG_REF(current->data);
 				return current->data;
 			}
 			else 
@@ -121,6 +125,8 @@ template <class T> class CList : public CSGObject
 			if ((current != NULL) && (current->next != NULL))
 			{
 				current = current->next;
+				if (delete_data)
+					SG_REF(current->data);
 				return current->data;
 			}
 			else
@@ -136,6 +142,8 @@ template <class T> class CList : public CSGObject
 			if ((current != NULL) && (current->prev != NULL))
 			{
 				current = current->prev;
+				if (delete_data)
+					SG_REF(current->data);
 				return current->data;
 			}
 			else
@@ -149,7 +157,11 @@ template <class T> class CList : public CSGObject
 		inline T get_current_element()
 		{
 			if (current != NULL)
+			{
+				if (delete_data)
+					SG_REF(current->data);
 				return current->data;
+			}
 			else 
 				return NULL;
 		}
@@ -168,6 +180,8 @@ template <class T> class CList : public CSGObject
 			if (first != NULL)
 			{
 				p_current = first;
+				if (delete_data)
+					SG_REF(p_current->data);
 				return p_current->data;
 			}
 			else
@@ -184,6 +198,8 @@ template <class T> class CList : public CSGObject
 			if (last != NULL)
 			{
 				p_current = last;
+				if (delete_data)
+					SG_REF(p_current->data);
 				return p_current->data;
 			}
 			else
@@ -200,6 +216,8 @@ template <class T> class CList : public CSGObject
 			if ((p_current != NULL) && (p_current->next != NULL))
 			{
 				p_current = p_current->next;
+				if (delete_data)
+					SG_REF(p_current->data);
 				return p_current->data;
 			}
 			else
@@ -216,6 +234,8 @@ template <class T> class CList : public CSGObject
 			if ((p_current != NULL) && (p_current->prev != NULL))
 			{
 				p_current = p_current->prev;
+				if (delete_data)
+					SG_REF(p_current->data);
 				return p_current->data;
 			}
 			else
@@ -230,7 +250,11 @@ template <class T> class CList : public CSGObject
 		inline T get_current_element(CListElement<T> *& p_current)
 		{
 			if (p_current != NULL)
+			{
+				if (delete_data)
+					SG_REF(p_current->data);
 				return p_current->data;
+			}
 			else 
 				return NULL;
 		}
@@ -245,8 +269,11 @@ template <class T> class CList : public CSGObject
 		{
 			if (current != NULL)    // none available, case is shattered in insert_element()
 			{
-				if (get_next_element())
+				T e=get_next_element();
+				if (e)
 				{
+					if (delete_data)
+						SG_UNREF(e);
 					// if successor exists use insert_element()
 					return insert_element(data);
 				}
@@ -262,6 +289,9 @@ template <class T> class CList : public CSGObject
 						last         = element;
 
 						num_elements++;
+
+						if (delete_data)
+							SG_REF(data);
 
 						return true;
 					}
@@ -281,6 +311,9 @@ template <class T> class CList : public CSGObject
 		inline bool insert_element(T data)
 		{
 			CListElement<T>* element;
+
+			if (delete_data)
+				SG_REF(data);
 
 			if (current == NULL)
 			{

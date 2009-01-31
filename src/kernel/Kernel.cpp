@@ -79,6 +79,7 @@ CKernel::~CKernel()
 		SG_ERROR("Kernel still initialized on destruction.\n");
 
 	remove_lhs_and_rhs();
+	SG_UNREF(normalizer);
 
 	SG_INFO("Kernel deleted (%p).\n", this);
 }

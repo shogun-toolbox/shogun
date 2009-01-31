@@ -796,6 +796,7 @@ class CHMM : public CDistribution
 		/// return observation pointer
 		inline CStringFeatures<uint16_t>* get_observations()
 		{
+			SG_REF(p_observations);
 			return p_observations;
 		}
 		//@}

@@ -56,6 +56,7 @@ class CGUIFeatures : public CSGObject
 		{ 
 			invalidate_train();
 			SG_UNREF(train_features);
+			SG_REF(f);
 			train_features=f;
 			return true;
 		}
@@ -64,6 +65,7 @@ class CGUIFeatures : public CSGObject
 		{ 
 			invalidate_test();
 			SG_UNREF(test_features);
+			SG_REF(f);
 			test_features=f;
 			return true;
 		}

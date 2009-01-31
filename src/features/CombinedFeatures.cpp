@@ -32,7 +32,7 @@ CFeatures* CCombinedFeatures::duplicate() const
 
 CCombinedFeatures::~CCombinedFeatures()
 {
-	delete feature_list;
+	SG_UNREF(feature_list);
 }
 
 void CCombinedFeatures::list_feature_objs()

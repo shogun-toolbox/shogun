@@ -186,6 +186,9 @@ class CDistance : public CSGObject
 		 */
 		inline CFeatures* get_rhs() { SG_REF(rhs); return rhs; };
 
+		/** remove lhs and rhs from distance */
+		virtual void remove_lhs_and_rhs();
+
 		/// takes all necessary steps if the lhs is removed from distance matrix
 		virtual void remove_lhs();
 

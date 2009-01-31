@@ -43,13 +43,11 @@ CGUIPreProc::CGUIPreProc(CSGInterface* ui_)
 : CSGObject(), ui(ui_)
 {
 	preprocs=new CList<CPreProc*>(true);
-	attached_preprocs_lists=new CList<CList<CPreProc*>*>(true);
 }
 
 CGUIPreProc::~CGUIPreProc()
 {
 	SG_UNREF(preprocs);
-	SG_UNREF(attached_preprocs_lists);
 }
 
 CPreProc* CGUIPreProc::create_prunevarsubmean(bool divide_by_std)
@@ -109,7 +107,8 @@ CPreProc* CGUIPreProc::create_generic(EPreProcType type)
 
 bool CGUIPreProc::add_preproc(CPreProc* preproc)
 {
-	preprocs->get_last_element();
+	CPreProc* p = preprocs->get_last_element();
+	SG_UNREF(p);
 	return preprocs->append_element(preproc);
 }
 
@@ -173,7 +172,8 @@ bool CGUIPreProc::load(char* filename)
 
 	if (result)
 	{
-		preprocs->get_last_element();
+		CPreProc* p=preprocs->get_last_element();
+		SG_UNREF(p);
 		result=preprocs->append_element(preproc);
 	}
 
@@ -204,6 +204,8 @@ bool CGUIPreProc::save(char* filename, int32_t num_preprocs)
 
 		if (file)
 			fclose(file);
+
+		SG_UNREF(preproc);
 	}
 	else
 		SG_ERROR("Create at least one preproc first.\n");
@@ -292,14 +294,9 @@ bool CGUIPreProc::attach_preproc(char* target, bool do_force)
 	else
 		SG_ERROR("Features not correctly assigned!\n");
 
-	/// when successful add preprocs to attached_preprocs list (for removal later)
-	/// and clean the current preproc list
+	/// when successful create new preproc list
 	if (result)
-	{
-		attached_preprocs_lists->get_last_element();
-		attached_preprocs_lists->append_element(preprocs);
-		preprocs=new CList<CPreProc*>(true);
-	}
+		clean_preproc();
 
 	return result;
 }
@@ -326,7 +323,8 @@ bool CGUIPreProc::preprocess_features(CFeatures* trainfeat, CFeatures* testfeat,
 				{
 					CPreProc* preproc = trainfeat->get_preproc(i);
 					preproc->init(trainfeat);
-					testfeat->add_preproc(trainfeat->get_preproc(i));
+					testfeat->add_preproc(preproc);
+					SG_UNREF(preproc);
 				}
 
 				preproc_all_features(testfeat, force);
@@ -342,12 +340,14 @@ bool CGUIPreProc::preprocess_features(CFeatures* trainfeat, CFeatures* testfeat,
 				trainfeat->add_preproc(preproc);
 
 				preproc_all_features(trainfeat, force);
+				SG_UNREF(preproc);
 			}
 
 			while ( (preproc = preprocs->get_next_element()) !=NULL )
 			{
 				preproc->init(trainfeat);
 				trainfeat->add_preproc(preproc);
+				SG_UNREF(preproc);
 
 				preproc_all_features(trainfeat, force);
 			}

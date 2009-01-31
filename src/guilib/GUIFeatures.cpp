@@ -43,7 +43,7 @@ void CGUIFeatures::invalidate_test()
 {
 	CKernel *k = ui->ui_kernel->get_kernel();
 	if (k)
-		k->remove_rhs() ;
+		k->remove_rhs();
 }
 
 bool CGUIFeatures::load(

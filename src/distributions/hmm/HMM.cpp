@@ -156,7 +156,7 @@ CHMM::CHMM(CHMM* h)
 	this->M=h->get_M();
 	status=initialize(NULL, h->get_pseudo());
 	this->copy_model(h);
-	set_observations(h->get_observations());
+	set_observations(h->p_observations);
 }
 
 CHMM::CHMM(int32_t p_N, int32_t p_M, CModel* p_model, float64_t p_PSEUDO)
@@ -482,6 +482,7 @@ bool CHMM::alloc_state_dependend_arrays()
 			set_observations(p_observations);
 		else
 			set_observation_nocache(p_observations);
+		SG_UNREF(p_observations);
 	}
 
 	this->invalidate_model();

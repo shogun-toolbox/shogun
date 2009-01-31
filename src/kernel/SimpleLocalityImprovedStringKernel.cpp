@@ -42,8 +42,9 @@ bool CSimpleLocalityImprovedStringKernel::init(CFeatures* l, CFeatures* r)
 	if (!result)
 		return false;
 	int32_t num_features = ((CStringFeatures<char>*) l)->get_max_vector_length();
+	delete[] pyramid_weights;
 	pyramid_weights = new float64_t[num_features];
-	ASSERT(pyramid_weights);
+
 	SG_INFO("initializing pyramid weights: size=%ld length=%i\n",
 		num_features, length);
 

@@ -20,7 +20,7 @@ class CIO;
 
 // define reference counter macros
 #define SG_REF(x) { if (x) (x)->ref(); }
-#define SG_UNREF(x) { if (x) (x)->unref(); } 
+#define SG_UNREF(x) { if (x) { if ((x)->unref()==0) (x)=0; } } 
 
 /** Class SGObject is the base class of all shogun objects. Apart from dealing
  * with reference counting that is used to manage shogung objects in memory

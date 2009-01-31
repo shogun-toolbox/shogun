@@ -72,6 +72,7 @@ bool CGUIDistance::set_distance(CDistance* dist)
 	if (dist)
 	{
 		SG_UNREF(distance);
+		SG_REF(dist);
 		distance=dist;
 		SG_DEBUG("set new distance (%p).\n", dist);
 

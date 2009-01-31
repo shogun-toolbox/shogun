@@ -45,6 +45,8 @@ CDistance::~CDistance()
 {
 	delete[] precomputed_matrix;
 	precomputed_matrix=NULL;
+
+	remove_lhs_and_rhs();
 }
 
 bool CDistance::init(CFeatures* l, CFeatures* r)
@@ -56,6 +58,14 @@ bool CDistance::init(CFeatures* l, CFeatures* r)
 	//make sure features are compatible
 	ASSERT(l->get_feature_class()==r->get_feature_class());
 	ASSERT(l->get_feature_type()==r->get_feature_type());
+
+	//remove references to previous features
+	remove_lhs_and_rhs();
+
+    //increase reference counts
+    SG_REF(l);
+    if (l!=r)
+        SG_REF(r);
 
 	lhs=l;
 	rhs=r;
@@ -100,6 +110,16 @@ bool CDistance::save(char* fname)
 		SG_INFO( "distance matrix of size %ld x %ld written \n", num_left, num_right);
 
     return (f.is_ok());
+}
+
+void CDistance::remove_lhs_and_rhs()
+{
+	if (rhs!=lhs)
+		SG_UNREF(rhs);
+	rhs = NULL;
+
+	SG_UNREF(lhs);
+	lhs = NULL;
 }
 
 void CDistance::remove_lhs()

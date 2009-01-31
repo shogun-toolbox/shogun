@@ -332,6 +332,7 @@ bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
 		SG_ERROR("Unknown classifier %s.\n", name);
 		return false;
 	}
+	SG_REF(classifier);
 
 	classifier->set_solver_type(solver_type);
 
