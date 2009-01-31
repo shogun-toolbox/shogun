@@ -37,6 +37,9 @@ class CGUILabels : public CSGObject
 		bool load(char* filename, char* target);
 		bool save(char* param);
 
+		/** @return object name */
+		inline virtual const char* get_name() { return "GUILabels"; }
+
 	protected:
 		CSGInterface* ui;
 		CLabels *train_labels;

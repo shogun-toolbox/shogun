@@ -102,6 +102,9 @@ class CTime : public CSGObject
 				return 0.0;
 		}
 
+		/** @return object name */
+		inline virtual const char* get_name() { return "Time"; }
+
 	protected:
 		/** start runtime */
 		clock_t start_runtime;

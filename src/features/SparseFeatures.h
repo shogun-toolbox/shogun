@@ -1117,6 +1117,9 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 			return result;
 		}
 
+		/** @return object name */
+		inline virtual const char* get_name() { return "SparseFeatures"; }
+
 	protected:
 		/** compute feature vector for sample num
 		 * if target is set the vector is written to target

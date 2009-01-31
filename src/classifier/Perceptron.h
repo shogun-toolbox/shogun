@@ -55,6 +55,9 @@ class CPerceptron : public CLinearClassifier
 			max_iter=i;
 		}
 
+		/** @return object name */
+		inline virtual const char* get_name() { return "Perceptron"; }
+
 	protected:
 		/** learning rate */
 		float64_t learn_rate;

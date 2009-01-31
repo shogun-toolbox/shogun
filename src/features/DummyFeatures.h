@@ -67,6 +67,9 @@ class CDummyFeatures : public CFeatures
 			return C_ANY;
 		}
 
+		/** @return object name */
+		inline virtual const char* get_name() { return "DummyFeatures"; }
+
 	protected:
 		/** number of feature vectors */
 		int32_t num_vectors;

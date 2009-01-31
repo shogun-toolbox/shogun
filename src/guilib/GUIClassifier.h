@@ -103,6 +103,9 @@ class CGUIClassifier : public CSGObject
 		/** train WD OCAS */
 		bool train_wdocas();
 
+		/** @return object name */
+		inline virtual const char* get_name() { return "GUIClassifier"; }
+
 	protected:
 		CSGInterface* ui;
 		CClassifier* classifier;

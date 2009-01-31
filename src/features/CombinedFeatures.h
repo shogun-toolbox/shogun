@@ -203,6 +203,9 @@ class CCombinedFeatures : public CFeatures
 			return feature_list->get_num_elements();
 		}
 
+		/** @return object name */
+		inline virtual const char* get_name() { return "CombinedFeatures"; }
+
 	protected:
 		/** feature list */
 		CList<CFeatures*>* feature_list;

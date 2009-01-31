@@ -273,6 +273,11 @@ class CAlphabet : public CSGObject
 		 */
 		static const char* get_alphabet_name(EAlphabet alphabet);
 
+
+		/** @return object name */
+		inline virtual const char* get_name() { return "Alphabet"; }
+
+
 	protected:
 		/** init map table */
 		void init_map_table();

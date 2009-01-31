@@ -441,6 +441,9 @@ class CSVM : public CKernelMachine
 		 */
 		static void* classify_example_helper(void* p);
 
+		/** @return object name */
+		inline virtual const char* get_name() { return "SVM"; }
+
 	protected:
 		/// an SVM is defined by support vectors, their coefficients alpha
 		/// and the bias b ( + CKernelMachine::kernel)

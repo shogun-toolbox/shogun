@@ -65,7 +65,7 @@ bool CGUIStructure::set_plif_struct(
 			SG_ERROR("plif id (%i)  exceeds array length (%i)\n",id,N);
 		m_PEN[id]->set_id(id);
 
-		m_PEN[id]->set_name(get_zero_terminated_string_copy(names[i]));
+		m_PEN[id]->set_plif_name(get_zero_terminated_string_copy(names[i]));
 		m_PEN[id]->set_min_value(min_values[i]);
 		m_PEN[id]->set_max_value(max_values[i]);
 		m_PEN[id]->set_use_cache(all_use_cache[i]);

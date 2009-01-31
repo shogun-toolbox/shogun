@@ -114,6 +114,9 @@ class CQPBSVMLib: public CSGObject
 			float64_t **ptr_History, int32_t verb);
 #endif
 
+		/** @return object name */
+		inline virtual const char* get_name() { return "QPBSVMLib"; }
+
 	protected:
 		/** matrix H */
 		float64_t* m_H;

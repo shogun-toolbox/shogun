@@ -163,6 +163,9 @@ class CCmdLineInterface : public CSGInterface
 			return element;
 		}
 
+		/** @return object name */
+		inline virtual const char* get_name() { return "CmdLineInterface"; }
+
 	private:
 		CDynamicArray<char*>* m_lhs;
 		CDynamicArray<char*>* m_rhs;

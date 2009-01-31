@@ -164,6 +164,8 @@ class CGUIKernel : public CSGObject
 	CKernel* create_combined(
 		int32_t size=10, bool append_subkernel_weights=false);
 
+	/** @return object name */
+	inline virtual const char* get_name() { return "GUIKernel"; }
 
  protected:
 	CKernel* kernel;

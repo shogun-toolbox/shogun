@@ -260,6 +260,9 @@ public:
 	 */
 	bool write_char_valued_strings(const T_STRING<char>* strings, int32_t num_str);
 
+	/** @return object name */
+	inline virtual const char* get_name() { return "File"; }
+
 protected:
 	/** read header
 	 *

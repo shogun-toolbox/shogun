@@ -192,6 +192,9 @@ class CGUIFeatures : public CSGObject
 		/** set reference features from target */
 		bool set_reference_features(char* target);
 
+		/** @return object name */
+		inline virtual const char* get_name() { return "GUIFeatures"; }
+
 	protected:
 		CSGInterface* ui;
 		CFeatures *train_features;

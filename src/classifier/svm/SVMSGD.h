@@ -116,6 +116,9 @@ class CSVMSGD : public CLinearClassifier
 		 */
 		inline bool get_regularized_bias_enabled() { return use_regularized_bias; }
 
+		/** @return object name */
+		inline virtual const char* get_name() { return "SVMSGD"; }
+
 	protected:
 		/** calibrate */
 		void calibrate();

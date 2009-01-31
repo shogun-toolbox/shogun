@@ -1183,6 +1183,9 @@ class CHMM : public CDistribution
 		}
 #endif //NOVIT
 		//@}
+
+		/** @return object name */
+		inline virtual const char* get_name() { return "HMM"; }
 	protected:
 		/**@name model specific variables.
 		 * these are p,q,a,b,N,M etc 

@@ -182,6 +182,9 @@ class CGUIStructure : public CSGObject
 		}
 		inline int32_t* get_mod_words() { return m_mod_words; }
 
+		/** @return object name */
+		inline virtual const char* get_name() { return "GUIStructure"; }
+
 	protected:
 		CSGInterface* ui;
 		CPlif** m_PEN;

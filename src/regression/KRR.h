@@ -111,6 +111,9 @@ class CKRR : public CKernelMachine
 			return CT_KRR;
 		}
 
+		/** @return object name */
+		inline virtual const char* get_name() { return "KRR"; }
+
 	private:
 		/** alpha */
 		float64_t *alpha;

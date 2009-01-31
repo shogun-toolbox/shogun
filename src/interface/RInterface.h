@@ -148,6 +148,9 @@ class CRInterface : public CSGInterface
 			m_lhs_counter++;
 		}
 
+		/** @return object name */
+		inline virtual const char* get_name() { return "RInterface"; }
+
 	private:
 		SEXP m_lhs;
 		SEXP m_rhs;

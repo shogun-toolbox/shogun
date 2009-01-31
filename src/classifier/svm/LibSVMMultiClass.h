@@ -45,6 +45,9 @@ class CLibSVMMultiClass : public CMultiClassSVM
 		 */
 		virtual inline EClassifierType get_classifier_type() { return CT_LIBSVMMULTICLASS; }
 
+		/** @return object name */
+		inline virtual const char* get_name() { return "LibSVMMultiClass"; }
+
 	protected:
 		/** SVM problem */
 		svm_problem problem;

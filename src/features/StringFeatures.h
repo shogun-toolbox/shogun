@@ -985,6 +985,9 @@ template <class ST> class CStringFeatures : public CFeatures
 			return true;
 		}
 
+		/** @return object name */
+		inline virtual const char* get_name() { return "StringFeatures"; }
+
 	protected:
 		/** translate from single order
 		 *

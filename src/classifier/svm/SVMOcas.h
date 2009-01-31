@@ -159,6 +159,8 @@ class CSVMOcas : public CLinearClassifier
 		 */
 		static void sort( float64_t* vals, uint32_t* idx, uint32_t size);
 
+		/** @return object name */
+		inline virtual const char* get_name() { return "SVMOcas"; }
 
 	protected:
 		/** if bias is used */

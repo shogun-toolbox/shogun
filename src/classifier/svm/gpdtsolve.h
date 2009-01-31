@@ -132,6 +132,9 @@ public:
     return linadd;
   }
 
+  /** @return object name */
+  inline virtual const char* get_name() { return "QProblem"; }
+
 // ----------------- Private Data  ---------------
 private:
   int32_t    dim;

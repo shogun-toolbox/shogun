@@ -53,6 +53,9 @@ class CRealFileFeatures: public CRealFeatures
 		 */
 		int32_t get_label(int32_t idx);
 
+		/** @return object name */
+		inline virtual const char* get_name() { return "RealFileFeatures"; }
+
 	protected:
 		/** compute feature vector for sample num
 		 * len is returned by reference

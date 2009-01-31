@@ -19,6 +19,9 @@
 		  OligoKernel.
 		- Ocas and WDOcas can be used with a bias feature now.
 	* Cleanup and API Changes:
+		- Shogun has been split up into libshogun and the static and modular
+		interfaces linking to it.
+		- Static interfaces now do proper reference counting.
 		- Remove SparseLinearClassifier: LinearClassifier is a drop-in
 		  replacement.
 		- WDOcas and SVMOcas now have the bias term enabled by default

@@ -343,12 +343,6 @@ class CKernel : public CSGObject
 		 */
 		virtual EFeatureClass get_feature_class()=0;
 
-		/** get the name of a kernel
-		 *
-		 * @return name of kernel
-		 */
-		virtual const char* get_name()=0 ;
-
 		/** set the size of the kernel cache
 		 *
 		 * @param size of kernel cache

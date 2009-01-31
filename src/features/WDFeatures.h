@@ -116,6 +116,8 @@ class CWDFeatures : public CDotFeatures
 			return sizeof(float64_t);
 		}
 
+		/** @return object name */
+		inline virtual const char* get_name() { return "WDFeatures"; }
 
 	protected:
 		/** set normalization constant */

@@ -149,6 +149,9 @@ class CSubGradientSVM : public CLinearClassifier
 		/// de-alloc helper arrays
 		void cleanup();
 
+		/** @return object name */
+		inline virtual const char* get_name() { return "SubGradientSVM"; }
+
 	protected:
 		/** C1 */
 		float64_t C1;

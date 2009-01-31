@@ -137,6 +137,10 @@ public:
 		return CPXqpwrite (env, lp, filename) == 0;
 #endif
 	}
+
+	/** @return object name */
+	inline virtual const char* get_name() { return "Cplex"; }
+
 protected:
   CPXENVptr     env;
   CPXLPptr      lp;

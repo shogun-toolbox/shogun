@@ -173,6 +173,9 @@ class COctaveInterface : public CSGInterface
 			m_lhs_counter++;
 		}
 
+		/** @return object name */
+		inline virtual const char* get_name() { return "OctaveInterface"; }
+
 	private:
 		octave_value_list m_lhs;
 		octave_value_list m_rhs;

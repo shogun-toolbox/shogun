@@ -156,6 +156,9 @@ class CMatlabInterface : public CSGInterface
 			return m_nlhs==num;
 		}
 
+		/** @return object name */
+		inline virtual const char* get_name() { return "MatlabInterface"; }
+
 	private:
 		const mxArray* get_arg_increment();
 		void set_arg_increment(mxArray* arg);

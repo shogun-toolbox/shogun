@@ -53,6 +53,9 @@ class CGUIPreProc : public CSGObject
 		 */
 		bool attach_preproc(char* target, bool do_force=false);
 
+		/** @return object name */
+		inline virtual const char* get_name() { return "GUIPreProc"; }
+
 	protected:
 		bool preprocess_features(CFeatures* trainfeat, CFeatures* testfeat, bool force);
 		bool preproc_all_features(CFeatures* f, bool force);

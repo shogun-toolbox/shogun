@@ -224,6 +224,10 @@ template<class T> class CCache : public CSGObject
 			return NULL;
 	}
 
+	/** @return object name */
+	inline virtual const char* get_name() { return "Cache"; }
+
+	protected:
 	/** if cache is full */
 	bool cache_is_full;
 	/** size of one entry */

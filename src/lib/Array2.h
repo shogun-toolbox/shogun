@@ -253,6 +253,9 @@ template <class T> class CArray2: public CArray<T>
 			CArray<T>::SG_PRINT( "2d-Array of size: %dx%d\n",dim1_size,dim2_size);
 		}
 
+		/** @return object name */
+		inline virtual const char* get_name() { return "Array2"; }
+
 	protected:
 		/** size of array's dimension 1 */
 		int32_t dim1_size;

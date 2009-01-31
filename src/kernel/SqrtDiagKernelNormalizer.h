@@ -128,6 +128,9 @@ class CSqrtDiagKernelNormalizer : public CKernelNormalizer
 			return (v!=NULL);
 		}
 
+		/** @return object name */
+		inline virtual const char* get_name() { return "SqrtDiagKernelNormalizer"; }
+
     protected:
 		/** sqrt diagonal left-hand side */
 		float64_t* sqrtdiag_lhs;

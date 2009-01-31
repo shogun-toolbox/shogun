@@ -83,6 +83,9 @@ class CLDA : public CLinearClassifier
 			CLinearClassifier::set_features(feat);
 		}
 
+		/** @return object name */
+		inline virtual const char* get_name() { return "LDA"; }
+
 	protected:
 		/** gamma */
 		float64_t m_gamma;

@@ -363,13 +363,13 @@ class CPlif: public CPlifBase
 		 *
 		 * @param p_name name
 		 */
-		void set_name(char *p_name);
+		void set_plif_name(char *p_name);
 
 		/** get name
 		 *
 		 * @return name
 		 */
-		inline char * get_name() const
+		inline char* get_plif_name() const
 		{
 			if (name)
 				return name;
@@ -416,6 +416,9 @@ class CPlif: public CPlifBase
 		{
 			SG_PRINT("CPlif(min_value=%1.2f, max_value=%1.2f, use_svm=%i)\n", min_value, max_value, use_svm) ;
 		}
+
+		/** @return object name */
+		inline virtual const char* get_name() { return "Plif"; }
 
 	protected:
 		/** len */

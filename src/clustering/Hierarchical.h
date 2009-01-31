@@ -159,6 +159,9 @@ class CHierarchical : public CDistanceMachine
 			*num=merges;
 		}
 
+		/** @return object name */
+		inline virtual const char* get_name() { return "Hierarchical"; }
+
 	protected:
 		/// the number of merges in hierarchical clustering
 		int32_t merges;

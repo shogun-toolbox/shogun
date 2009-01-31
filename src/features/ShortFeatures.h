@@ -103,5 +103,8 @@ class CShortFeatures : public CSimpleFeatures<int16_t>
 		 * @param gap gap
 		 */
 		void translate_from_single_order(int16_t* obs, int32_t sequence_length, int32_t start, int32_t order, int32_t max_val, int32_t gap);
+
+		/** @return object name */
+		inline virtual const char* get_name() { return "ShortFeatures"; }
 };
 #endif

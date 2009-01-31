@@ -96,7 +96,7 @@ void CPlif::init_penalty_struct_cache()
 	this->cache=local_cache ;
 }
 
-void CPlif::set_name(char *p_name)
+void CPlif::set_plif_name(char *p_name)
 {
 	delete[] name ;
 	name=new char[strlen(p_name)+1] ;

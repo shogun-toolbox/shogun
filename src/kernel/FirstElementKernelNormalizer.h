@@ -83,6 +83,9 @@ class CFirstElementKernelNormalizer : public CKernelNormalizer
 			return value/sqrt(scale);
 		}
 
+		/** @return object name */
+		inline virtual const char* get_name() { return "FirstElementKernelNormalizer"; }
+
 	protected:
 		/// scale constant obtained from k(0,0)
 		float64_t scale;

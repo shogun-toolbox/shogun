@@ -79,6 +79,9 @@ class CGNPPLib: public CSGObject
                 float64_t **ptr_History,
                 int32_t verb);
 
+  /** @return object name */
+  inline virtual const char* get_name() { return "GNPPLib"; }
+
  protected:
   /** get col
    *

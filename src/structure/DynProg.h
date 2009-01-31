@@ -869,7 +869,10 @@ protected:
 		CArray<int32_t>& segment_ids, CArray<float64_t>& segment_mask,
 		struct segment_loss_struct& loss);
 
+		/** @return object name */
+		inline virtual const char* get_name() { return "DynProg"; }
 	
+protected:
 	/**@name model specific variables.
 	 * these are p,q,a,b,N,M etc
 	 */

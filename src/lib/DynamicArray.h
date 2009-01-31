@@ -266,6 +266,9 @@ template <class T> class CDynamicArray : public CSGObject
 			return *this;
 		}
 
+		/** @return object name */
+		inline virtual const char* get_name() { return "DynamicArray"; }
+
 	protected:
 		/** shrink/grow step size */
 		int32_t resize_granularity;

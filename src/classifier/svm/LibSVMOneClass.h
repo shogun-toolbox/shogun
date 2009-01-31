@@ -41,6 +41,9 @@ class CLibSVMOneClass : public CSVM
 		 */
 		virtual inline EClassifierType get_classifier_type() { return CT_LIBSVMONECLASS; }
 
+		/** @return object name */
+		inline virtual const char* get_name() { return "LibSVMOneClass"; }
+
 	protected:
 		/** SVM problem */
 		svm_problem problem;

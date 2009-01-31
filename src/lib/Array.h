@@ -370,6 +370,9 @@ template <class T> class CArray : public CSGObject
 			SG_PRINT("\n");
 		}
 
+		/** @return object name */
+		inline virtual const char* get_name() { return "Array"; }
+
 	protected:
 		/** memory for dynamic array */
 		T* array;

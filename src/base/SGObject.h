@@ -51,33 +51,52 @@ public:
 		SG_UNREF(version);
 	}
 
+	/** increase reference counter
+	 *
+	 * @return reference count
+	 */
 	inline int32_t ref()
 	{
 		++refcount;
-		SG_DEBUG("ref():%ld obj:%p\n", refcount, this);
+		SG_DEBUG("ref() refcount %ld obj %s (%p) increased\n", refcount, this->get_name(), this);
 		return refcount;
 	}
 
+	/** display reference counter
+	 *
+	 * @return reference count
+	 */
 	inline int32_t ref_count() const
 	{
-		SG_DEBUG("ref_count(): refcount is: %d\n", refcount);
+		SG_DEBUG("ref_count(): refcount %d, obj %s (%p)\n", refcount);
 		return refcount;
 	}
 
+	/** decrement reference counter and deallocate object if refcount is zero
+	 * before or after decrementing it
+	 *
+	 * @return reference count
+	 */
 	inline int32_t unref()
 	{
 		if (refcount==0 || --refcount==0)
 		{
-			SG_DEBUG("unref():%ld obj:%p destroying\n", refcount, this);
+			SG_DEBUG("unref() refcount %ld, obj %s (%p) destroying\n", refcount, this->get_name(), this);
 			delete this;
 			return 0;
 		}
 		else
 		{
-			SG_DEBUG("unref():%ld obj:%p decreased\n", refcount, this);
+			SG_DEBUG("unref() refcount %ld obj %s (%p) decreased\n", refcount, this->get_name(), this);
 			return refcount;
 		}
 	}
+
+	/** get the name of a kernel
+	 *
+	 * @return name of object
+	 */
+	virtual const char* get_name()=0 ;
 
 private:
 	void set_global_objects();

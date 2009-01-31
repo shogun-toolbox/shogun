@@ -56,6 +56,9 @@ class CKernelPerceptron : public CKernelMachine
 		{
 			return CT_KERNELPERCEPTRON;
 		}
+
+		/** @return object name */
+		inline virtual const char* get_name() { return "KernelPerceptron"; }
 };
 #endif
 

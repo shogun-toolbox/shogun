@@ -62,6 +62,9 @@ class CIdentityKernelNormalizer : public CKernelNormalizer
 		{
 			return value;
 		}
+
+		/** @return object name */
+		inline virtual const char* get_name() { return "IdentityKernelNormalizer"; }
 };
 
 #endif

@@ -52,5 +52,8 @@ public:
 	/// apply preproc on single feature vector
 	/// result in feature matrix
 	virtual uint16_t* apply_to_string(uint16_t* f, int32_t &len);
+
+	/** @return object name */
+	inline virtual const char* get_name() { return "SortWordString"; }
 };
 #endif

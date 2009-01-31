@@ -62,6 +62,9 @@ class CPCACut : public CSimplePreProc<float64_t>
 		/// result in feature matrix
 		virtual float64_t* apply_to_feature_vector(float64_t* f, int32_t &len);
 
+		/** @return object name */
+		inline virtual const char* get_name() { return "PCACut"; }
+
 	protected:
 		/** T */
 		double* T ;

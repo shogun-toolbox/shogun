@@ -82,6 +82,9 @@ class CSignal : public CSGObject
 			return cancel_computation;
 		}
 
+		/** @return object name */
+		inline virtual const char* get_name() { return "Signal"; }
+
 	protected:
 		/** signals; handling external lib  */
 		static int signals[NUMTRAPPEDSIGS];

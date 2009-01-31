@@ -940,10 +940,14 @@ int main(int argc, char* argv[])
 	catch (std::bad_alloc)
 	{
 		SG_SPRINT("Out of memory error.\n");
+		delete interface;
+		return 2;
 	}
 	catch (ShogunException e)
 	{
 		SG_SPRINT("%s", e.get_exception_string());
+		delete interface;
+		return 3;
 	}
 
 }

@@ -151,6 +151,9 @@ class CWordFeatures : public CSimpleFeatures<uint16_t>
 		 */
 		void translate_from_single_order(uint16_t* obs, int32_t sequence_length, int32_t start, int32_t order, int32_t max_val, int32_t gap=0);
 
+		/** @return object name */
+		inline virtual const char* get_name() { return "WordFeatures"; }
+
 	protected:
 		/// number of used symbols
 		int32_t num_symbols;

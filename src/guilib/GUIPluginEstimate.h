@@ -44,6 +44,9 @@ class CGUIPluginEstimate : public CSGObject
 		CLabels* classify(CLabels* output=NULL);
 		float64_t classify_example(int32_t idx);
 
+		/** @return object name */
+		inline virtual const char* get_name() { return "GUIPluginEstimate"; }
+
 	protected:
 		CSGInterface* ui;
 

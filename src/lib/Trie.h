@@ -615,6 +615,9 @@ template <class Trie> class CTrie : public CSGObject
 			const float64_t valS, const float64_t valL, const float64_t valR,
 			const int32_t debug);
 
+		/** @return object name */
+		inline virtual const char* get_name() { return "Trie"; }
+
 	public:
 		/** number of symbols */
 		int32_t NUM_SYMS;

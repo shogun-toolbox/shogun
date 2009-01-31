@@ -724,6 +724,8 @@ protected:
 	bool cleanup_glpk();
 	inline bool check_lpx_status(LPX *lp);
 #endif
+	/** @return object name */
+	inline virtual const char* get_name() { return "SVM_light"; }
    
  protected:
   /** model */

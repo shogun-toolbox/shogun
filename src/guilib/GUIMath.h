@@ -31,6 +31,8 @@ class CGUIMath : public CSGObject
 		void set_threshold(float64_t value);
 		void init_random(uint32_t initseed=0);
 
+		/** @return object name */
+		inline virtual const char* get_name() { return "GUIMath"; }
 	protected:
 		CSGInterface* ui;
 		float64_t threshold;

@@ -251,6 +251,9 @@ class CCombinedDotFeatures : public CDotFeatures
 		virtual void set_subfeature_weights(
 			float64_t* weights, int32_t num_weights);
 
+		/** @return object name */
+		inline virtual const char* get_name() { return "CombinedDotFeatures"; }
+
 	protected:
 		void update_dim_feature_space_and_num_vec();
 

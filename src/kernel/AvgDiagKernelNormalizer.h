@@ -101,6 +101,9 @@ class CAvgDiagKernelNormalizer : public CKernelNormalizer
 			return value/sqrt(scale);
 		}
 
+		/** @return object name */
+		inline virtual const char* get_name() { return "AvgDiagKernelNormalizer"; }
+
 	protected:
 		/// the constant scaling factor (avg of diagonal or user given const)
 		float64_t scale;

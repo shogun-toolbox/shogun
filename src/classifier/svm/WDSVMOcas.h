@@ -262,6 +262,8 @@ class CWDSVMOcas : public CClassifier
 		 */
 		static void sort( float64_t* vals, uint32_t* idx, uint32_t size);
 
+		/** @return object name */
+		inline virtual const char* get_name() { return "WDSVMOcas"; }
 
 	protected:
 		/** features */

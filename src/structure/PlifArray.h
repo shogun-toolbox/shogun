@@ -115,6 +115,9 @@ class CPlifArray: public CPlifBase
 			}
 		}
 
+		/** @return object name */
+		inline virtual const char* get_name() { return "PlifArray"; }
+
 	protected:
 		/** plif array */
 		CDynamicArray<CPlifBase*> m_array;

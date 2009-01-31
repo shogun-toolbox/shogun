@@ -175,6 +175,9 @@ class CPluginEstimate: public CClassifier
 			return ( (pos_model!=NULL) && (neg_model!=NULL) );
 		}
 
+		/** @return object name */
+		inline virtual const char* get_name() { return "RealFeatures"; }
+
 	protected:
 		/** pseudo count for positive class */
 		float64_t m_pos_pseudo;
