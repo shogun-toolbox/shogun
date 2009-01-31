@@ -106,7 +106,7 @@ bool CSVRLight::train()
 	SG_DEBUG( "get_mkl_enabled() = %i\n", get_mkl_enabled()) ;
 	SG_DEBUG( "get_linadd_enabled() = %i\n", get_linadd_enabled()) ;
 	SG_DEBUG( "kernel->get_num_subkernels() = %i\n", kernel->get_num_subkernels()) ;
-	SG_DEBUG( "estimated time: %1.1f minutes\n", 5e-11*pow(kernel->get_num_subkernels(),2.22)*pow(kernel->get_rhs()->get_num_vectors(),1.68)*pow(CMath::log2(1/weight_epsilon),2.52)/60) ;
+	SG_DEBUG( "estimated time: %1.1f minutes\n", 5e-11*pow(kernel->get_num_subkernels(),2.22)*pow(kernel->get_num_vec_rhs(),1.68)*pow(CMath::log2(1/weight_epsilon),2.52)/60) ;
 
 	use_kernel_cache = !((kernel->get_kernel_type() == K_CUSTOM) ||
 						 (get_linadd_enabled() && kernel->has_property(KP_LINADD)));

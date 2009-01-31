@@ -1484,9 +1484,11 @@ bool CSGInterface::do_set_features(bool add, bool check_dot)
 			else
 			{
 				CAlphabet* alphabet=new CAlphabet(alphabet_str, alphabet_len);
+				SG_REF(alphabet);
 				delete[] alphabet_str;
 
 				feat=new CStringFeatures<char>(alphabet);
+
 				if (!((CStringFeatures<char>*) feat)->set_features(fmatrix, num_str, max_str_len))
 				{
 					SG_UNREF(alphabet);

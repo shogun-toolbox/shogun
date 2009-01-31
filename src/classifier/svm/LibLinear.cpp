@@ -42,7 +42,7 @@ CLibLinear::~CLibLinear()
 bool CLibLinear::train()
 {
 	ASSERT(labels);
-	ASSERT(get_features());
+	ASSERT(features);
 	ASSERT(labels->is_two_class_labeling());
 
 	int32_t num_train_labels=labels->get_num_labels();

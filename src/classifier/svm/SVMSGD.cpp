@@ -126,7 +126,7 @@ bool CSVMSGD::train()
 {
 	// allocate memory for w and initialize everyting w and bias with 0
 	ASSERT(labels);
-	ASSERT(get_features());
+	ASSERT(features);
 	ASSERT(labels->is_two_class_labeling());
 
 	int32_t num_train_labels=labels->get_num_labels();
@@ -202,7 +202,7 @@ bool CSVMSGD::train()
 
 void CSVMSGD::calibrate()
 { 
-	ASSERT(get_features());
+	ASSERT(features);
 	int32_t num_vec=features->get_num_vectors();
 	int32_t c_dim=features->get_dim_feature_space();
 

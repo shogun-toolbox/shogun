@@ -95,7 +95,8 @@ template <class ST> class CStringFeatures : public CFeatures
 			symbol_mask_table(NULL)
 	{
 		ASSERT(alpha);
-		alphabet=new CAlphabet(alpha);
+		SG_REF(alpha);
+		alphabet=alpha;
 		num_symbols=alphabet->get_num_symbols();
 		original_num_symbols=num_symbols;
 	}
@@ -112,7 +113,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		{
 			ASSERT(orig.single_string == NULL); //not implemented
 
-			alphabet=new CAlphabet(orig.alphabet);
+			alphabet=orig.alphabet;
 			SG_REF(alphabet);
 
 			if (orig.features)
@@ -682,7 +683,7 @@ template <class ST> class CStringFeatures : public CFeatures
 					return true;
 				}
 				else
-					delete alpha;
+					SG_UNREF(alpha);
 			}
 
 			return false;

@@ -50,7 +50,7 @@ bool CSVMOcas::train()
 	SG_DEBUG("use_bias = %i\n", get_bias_enabled()) ;
 
 	ASSERT(labels);
-	ASSERT(get_features());
+	ASSERT(features);
 	ASSERT(labels->is_two_class_labeling());
 
 	int32_t num_train_labels=0;
@@ -170,7 +170,7 @@ void CSVMOcas::add_new_cut(
 	uint32_t nSel, void* ptr)
 {
 	CSVMOcas* o = (CSVMOcas*) ptr;
-	CDotFeatures* f = o->get_features();
+	CDotFeatures* f = o->features;
 	uint32_t nDim=(uint32_t) o->w_dim;
 	float64_t* y = o->lab;
 
@@ -250,7 +250,7 @@ void CSVMOcas::sort(float64_t* vals, uint32_t* idx, uint32_t size)
 void CSVMOcas::compute_output(float64_t *output, void* ptr)
 {
 	CSVMOcas* o = (CSVMOcas*) ptr;
-	CDotFeatures* f=o->get_features();
+	CDotFeatures* f=o->features;
 	int32_t nData=f->get_num_vectors();
 
 	float64_t* y = o->lab;

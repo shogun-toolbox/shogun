@@ -31,7 +31,7 @@ CMultiClassSVM::~CMultiClassSVM()
 void CMultiClassSVM::cleanup()
 {
 	for (int32_t i=0; i<m_num_svms; i++)
-		delete m_svms[i];
+		SG_UNREF(m_svms[i]);
 	delete[] m_svms;
 
 	m_num_svms=0;
@@ -148,7 +148,7 @@ CLabels* CMultiClassSVM::classify_one_vs_one(CLabels* result)
 		delete[] votes;
 
 		for (int32_t i=0; i<m_num_svms; i++)
-			delete outputs[i];
+			SG_UNREF(outputs[i]);
 		delete[] outputs;
 	}
 
@@ -179,7 +179,7 @@ CLabels* CMultiClassSVM::classify_one_vs_rest(CLabels* result)
 		{
 			ASSERT(m_svms[i]);
 			m_svms[i]->set_kernel(kernel);
-			m_svms[i]->set_labels(get_labels());
+			m_svms[i]->set_labels(labels);
 			outputs[i]=m_svms[i]->classify();
 		}
 
@@ -203,7 +203,8 @@ CLabels* CMultiClassSVM::classify_one_vs_rest(CLabels* result)
 		}
 
 		for (int32_t i=0; i<m_num_svms; i++)
-			delete outputs[i];
+			SG_UNREF(outputs[i]);
+
 		delete[] outputs;
 	}
 

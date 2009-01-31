@@ -32,7 +32,8 @@ CCmdLineInterface::CCmdLineInterface()
 
 CCmdLineInterface::~CCmdLineInterface()
 {
-	delete m_rhs;
+	SG_UNREF(m_lhs);
+	SG_UNREF(m_rhs);
 }
 
 void CCmdLineInterface::reset(const char* line)
@@ -47,9 +48,9 @@ void CCmdLineInterface::reset(const char* line)
 	char delim_lhs[]="=, \t\n";
 	char delim_rhs[]=" \t\n";
 
-	delete m_lhs;
+	SG_UNREF(m_lhs);
 	m_lhs=NULL;
-	delete m_rhs;
+	SG_UNREF(m_rhs);
 	m_rhs=NULL;
 
 	// split lhs from rhs
@@ -851,7 +852,7 @@ int main(int argc, char* argv[])
 
 			}
 
-			delete interface;
+			SG_UNREF(interface);
 			return 0;
 		}
 
@@ -867,7 +868,7 @@ int main(int argc, char* argv[])
 			SG_SPRINT("if -i is specified shogun will listen on port 7367 from file\n");
 			SG_SPRINT("==hex(sg), *dangerous* as commands from any source are accepted\n\n");
 
-			delete interface;
+			SG_UNREF(interface);
 			return 1;
 		}
 
@@ -901,7 +902,7 @@ int main(int argc, char* argv[])
 				}
 			}
 			while (intf->parse_line(input));
-			delete interface;
+			SG_UNREF(interface);
 			return 0;
 		}
 #endif
@@ -914,7 +915,7 @@ int main(int argc, char* argv[])
 			if (!file)
 			{
 				SG_SERROR( "error opening/reading file: \"%s\"",argv[1]);
-				delete interface;
+				SG_UNREF(interface);
 				return 1;
 			}
 			else
@@ -926,12 +927,12 @@ int main(int argc, char* argv[])
 				catch (ShogunException e)
 				{
 					fclose(file);
-					delete interface;
+					SG_UNREF(interface);
 					return 1;
 				}
 
 				fclose(file);
-				delete interface;
+				SG_UNREF(interface);
 				return 0;
 			}
 		}
@@ -940,16 +941,15 @@ int main(int argc, char* argv[])
 	catch (std::bad_alloc)
 	{
 		SG_SPRINT("Out of memory error.\n");
-		delete interface;
+		SG_UNREF(interface);
 		return 2;
 	}
 	catch (ShogunException e)
 	{
 		SG_SPRINT("%s", e.get_exception_string());
-		delete interface;
+		SG_UNREF(interface);
 		return 3;
 	}
-
 }
 
 #endif // HAVE_CMDLINE

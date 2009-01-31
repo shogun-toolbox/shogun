@@ -73,11 +73,9 @@ class CMPDSVM : public CSVM
 			{
 				line=kernel_cache->set_entry(i);
 				ASSERT(line);
-				CLabels* l=CKernelMachine::get_labels();
-				ASSERT(l);
 
-				for (int32_t j=0; j<l->get_num_labels(); j++)
-					line[j]=(KERNELCACHE_ELEM) l->get_label(i)*l->get_label(j)*kernel->kernel(i,j);
+				for (int32_t j=0; j<labels->get_num_labels(); j++)
+					line[j]=(KERNELCACHE_ELEM) labels->get_label(i)*labels->get_label(j)*kernel->kernel(i,j);
 			}
 
 			return line;

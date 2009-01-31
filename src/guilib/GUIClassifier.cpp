@@ -357,10 +357,10 @@ bool CGUIClassifier::train_svm()
 	CKernel* kernel=ui->ui_kernel->get_kernel();
 	if (!kernel)
 		SG_ERROR("No kernel available.\n");
-	if (!ui->ui_kernel->is_initialized() || !kernel->get_lhs())
+	if (!ui->ui_kernel->is_initialized() || !kernel->has_features())
 		SG_ERROR("Kernel not initialized.\n");
 
-	int32_t num_vec=kernel->get_lhs()->get_num_vectors();
+	int32_t num_vec=kernel->get_num_vec_lhs();
 	if (!oneclass && trainlabels->get_num_labels() != num_vec)
 		SG_ERROR("Number of train labels (%d) and training vectors (%d) differs!\n", trainlabels->get_num_labels(), num_vec);
 

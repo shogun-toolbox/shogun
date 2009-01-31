@@ -260,7 +260,7 @@ CKernel* CGUIKernel::create_weighteddegreestring(
 
 	SG_DEBUG("created WeightedDegreeStringKernel (%p) with size %d, order %d, "
 			"max_mismatch %d, use_normalization %d, mkl_stepsize %d, "
-			"block_computation %d, single_degree %f.\n",
+			"block_computation %d, single_degree %d.\n",
 			kern, size, order, max_mismatch, (int) use_normalization, mkl_stepsize,
 			block_computation, single_degree);
 

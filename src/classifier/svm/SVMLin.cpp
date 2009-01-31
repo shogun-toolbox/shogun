@@ -37,7 +37,7 @@ CSVMLin::~CSVMLin()
 bool CSVMLin::train()
 {
 	ASSERT(labels);
-	ASSERT(get_features());
+	ASSERT(features);
 
 	int32_t num_train_labels=0;
 	float64_t* train_labels=labels->get_labels(num_train_labels);
@@ -58,7 +58,7 @@ bool CSVMLin::train()
 	Data.n=num_feat+1;
 	Data.nz=num_feat+1;
 	Data.Y=train_labels;
-	Data.features=get_features();
+	Data.features=features;
 	Data.C = new float64_t[Data.l];
 
 	Options.algo = SVM;
