@@ -396,7 +396,8 @@ km_test.txt = get_kernel_matrix
 
 % Combined
 print Combined
-
+clean_features TRAIN
+clean_features TEST
 set_kernel COMBINED 10
 
 add_kernel 1 LINEAR REAL 10
