@@ -2917,8 +2917,8 @@ bool CSGInterface::cmd_get_kernel_matrix()
 		return false;
 
 	CKernel* kernel=ui_kernel->get_kernel();
-	if (!kernel || !kernel->get_rhs() || !kernel->get_lhs())
-		SG_ERROR("No kernel defined.\n");
+	if (!kernel || !kernel->has_features())
+		SG_ERROR("No kernel defined or not initialized.\n");
 
 	int32_t num_vec_lhs=0;
 	int32_t num_vec_rhs=0;

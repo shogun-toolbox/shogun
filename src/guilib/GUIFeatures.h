@@ -144,9 +144,10 @@ class CGUIFeatures : public CSGObject
 					if ( a && a->get_alphabet() == DNA )
 						alpha=new CAlphabet(RAWDNA);
 					else
-						alpha=new CAlphabet(src->get_alphabet());
+						alpha=new CAlphabet(a);
 
 					free_alpha=true;
+					SG_UNREF(a);
 				}
 
 				CStringFeatures<ST>* sf=new CStringFeatures<ST>(alpha);

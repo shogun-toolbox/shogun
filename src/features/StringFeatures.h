@@ -732,11 +732,16 @@ template <class ST> class CStringFeatures : public CFeatures
 				if ( (!is_preprocessed(i) || force_preprocessing) )
 				{
 					set_preprocessed(i);
+					CStringPreProc<ST>* p = (CStringPreProc<ST>*) get_preproc(i);
+					SG_INFO( "preprocessing using preproc %s\n", p->get_name());
 
-					SG_INFO( "preprocessing using preproc %s\n", get_preproc(i)->get_name());
-
-					if (!((CStringPreProc<ST>*) get_preproc(i))->apply_to_string_features(this))
+					if (!p->apply_to_string_features(this))
+					{
+						SG_UNREF(p);
 						return false;
+					}
+					else 
+						SG_UNREF(p);
 				}
 			}
 			return true;
@@ -908,6 +913,8 @@ template <class ST> class CStringFeatures : public CFeatures
 
 				original_num_symbols=alpha->get_num_symbols();
 				int32_t max_val=alpha->get_num_bits();
+
+				SG_UNREF(alpha);
 
 				if (p_order>1)
 					num_symbols=CMath::powl((float128_t) 2, (float128_t) max_val*p_order);

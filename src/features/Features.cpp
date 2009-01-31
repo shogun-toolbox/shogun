@@ -78,7 +78,10 @@ int32_t CFeatures::add_preproc(CPreProc* p)
 CPreProc* CFeatures::get_preproc(int32_t num)
 { 
 	if (num<num_preproc)
+	{
+		SG_REF(preproc[num]);
 		return preproc[num];
+	}
 	else
 		return NULL;
 }

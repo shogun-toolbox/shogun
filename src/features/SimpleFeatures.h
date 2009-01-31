@@ -188,7 +188,9 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 
 					for (int32_t i=0; i<get_num_preproc(); i++)
 					{
-						tmp_feat_after=((CSimplePreProc<ST>*) get_preproc(i))->apply_to_feature_vector(tmp_feat_before, tmp_len);
+						CSimplePreProc<ST>* p = (CSimplePreProc<ST>*) get_preproc(i);
+						tmp_feat_after=p->apply_to_feature_vector(tmp_feat_before, tmp_len);
+						SG_UNREF(p);
 
 						if (i!=0)	// delete feature vector, except for the the first one, i.e., feat
 							delete[] tmp_feat_before;
@@ -306,10 +308,14 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 					if ( (!is_preprocessed(i) || force_preprocessing) )
 					{
 						set_preprocessed(i);
-
-						SG_INFO( "preprocessing using preproc %s\n", get_preproc(i)->get_name());
-						if (((CSimplePreProc<ST>*) get_preproc(i))->apply_to_feature_matrix(this) == NULL)
+						CSimplePreProc<ST>* p = (CSimplePreProc<ST>*) get_preproc(i);
+						SG_INFO( "preprocessing using preproc %s\n", p->get_name());
+						if (p->apply_to_feature_matrix(this) == NULL)
+						{
+							SG_UNREF(p);
 							return false;
+						}
+						SG_UNREF(p);
 					}
 				}
 				return true;

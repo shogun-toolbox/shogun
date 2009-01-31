@@ -40,7 +40,7 @@ CGUIHMM::CGUIHMM(CSGInterface* ui_)
 
 CGUIHMM::~CGUIHMM()
 {
-
+	SG_UNREF(working);
 }
 
 bool CGUIHMM::new_hmm(int32_t n, int32_t m)

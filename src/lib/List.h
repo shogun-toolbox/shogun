@@ -363,6 +363,9 @@ template <class T> class CList : public CSGObject
 
 			if (data)
 			{
+				if (delete_data)
+					SG_UNREF(data);
+
 				CListElement<T> *element = current;
 
 				if (element->prev)
