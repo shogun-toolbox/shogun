@@ -115,8 +115,8 @@ class CHierarchical : public CDistanceMachine
 
 		/** get merge distances (swig compatible)
 		 *
-		 * @param dist current merge distances is stored in here
-		 * @param num number of merge distances is stored in here
+		 * @param dist current merge distances are stored in here
+		 * @param num number of merge distances are stored in here
 		 */
 		inline void get_merge_distances(float64_t** dist, int32_t* num)
 		{

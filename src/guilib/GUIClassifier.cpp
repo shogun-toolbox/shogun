@@ -1037,10 +1037,16 @@ bool CGUIClassifier::get_clustering(
 			CKMeans* clustering=(CKMeans*) classifier;
 
 			bcols=1;
-			clustering->get_radi(radi, brows);
+			float64_t* r=NULL;
+			clustering->get_radi(r, brows);
+			radi=new float64_t[brows];
+			memcpy(radi, r, sizeof(float64_t)*brows);
 
 			cols=1;
-			clustering->get_centers(centers, rows, cols);
+			float64_t* c=NULL;
+			clustering->get_centers(c, rows, cols);
+			centers=new float64_t[rows*cols];
+			memcpy(centers, c, sizeof(float64_t)*rows*cols);
 			break;
 		}
 
@@ -1049,12 +1055,15 @@ bool CGUIClassifier::get_clustering(
 			CHierarchical* clustering=(CHierarchical*) classifier;
 
 			// radi == merge_distances, centers == pairs
+			float64_t* r=NULL;
 			bcols=1;
-			clustering->get_merge_distance(radi, brows);
+			clustering->get_merge_distance(r, brows);
+			radi=new float64_t[brows];
+			memcpy(radi, r, sizeof(float64_t)*brows);
 
 			int32_t* p=NULL;
 			clustering->get_pairs(p, rows, cols);
-			centers=new float64_t[rows*cols]; // FIXME memleak
+			centers=new float64_t[rows*cols];
 			for (int32_t i=0; i<rows*cols; i++)
 				centers[i]=(float64_t) p[i];
 
@@ -1083,7 +1092,12 @@ bool CGUIClassifier::get_linear(
 	bcols=1;
 
 	cols=1;
-	linear->get_w(&weights, &rows);
+	float64_t* w=NULL;
+	linear->get_w(w, rows);
+
+	weights= new float64_t[rows];
+	memcpy(weights, w, sizeof(float64_t)*rows);
+
 	return true;
 }
 

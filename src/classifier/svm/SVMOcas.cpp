@@ -119,6 +119,8 @@ bool CSVMOcas::train()
 	cp_index=NULL;
 	delete[] cp_nz_dims;
 	cp_nz_dims=NULL;
+	delete[] cp_bias;
+	cp_bias=NULL;
 
 	delete[] lab;
 	lab=NULL;

@@ -37,6 +37,18 @@ class CLinearClassifier : public CClassifier
 		 * @param dst_w store w in this argument
 		 * @param dst_dims dimension of w
 		 */
+		inline void get_w(float64_t*& dst_w, int32_t& dst_dims)
+		{
+			ASSERT(w && features);
+			dst_w=w;
+			dst_dims=features->get_dim_feature_space();
+		}
+
+		/** get w (swig compatible)
+		 *
+		 * @param dst_w store w in this argument
+		 * @param dst_dims dimension of w
+		 */
 		inline void get_w(float64_t** dst_w, int32_t* dst_dims)
 		{
 			ASSERT(dst_w && dst_dims);

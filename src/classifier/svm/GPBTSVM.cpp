@@ -38,10 +38,10 @@ bool CGPBTSVM::train()
 	ASSERT(labels->is_two_class_labeling());
 
 	int32_t num_lab = 0;
-	int32_t* lab=get_labels()->get_int_labels(num_lab);
+	int32_t* lab=labels->get_int_labels(num_lab);
 	prob.KER=new sKernel(kernel, num_lab);
 	prob.y=lab;
-	prob.ell=get_labels()->get_num_labels();
+	prob.ell=num_lab;
 	SG_INFO( "%d trainlabels\n", prob.ell);
 
 	//  /*** set options defaults ***/
@@ -113,7 +113,7 @@ bool CGPBTSVM::train()
 		if (solution[i] > prob.DELTAsv)
 		{
 			set_support_vector(k, i);
-			set_alpha(k++, solution[i]*get_labels()->get_label(i));
+			set_alpha(k++, solution[i]*labels->get_label(i));
 		}
 	}
 
