@@ -84,7 +84,7 @@ class CFirstElementKernelNormalizer : public CKernelNormalizer
 		}
 
 		/** @return object name */
-		inline virtual const char* get_name() { return "FirstElementKernelNormalizer"; }
+		inline virtual const char* get_name() const { return "FirstElementKernelNormalizer"; }
 
 	protected:
 		/// scale constant obtained from k(0,0)

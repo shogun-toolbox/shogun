@@ -201,7 +201,7 @@ class CKMeans : public CDistanceMachine
 		void clustknb(bool use_old_mus, float64_t *mus_start);
 
 		/** @return object name */
-		inline virtual const char* get_name() { return "KMeans"; }
+		inline virtual const char* get_name() const { return "KMeans"; }
 
 	protected:
 		/// maximum number of iterations

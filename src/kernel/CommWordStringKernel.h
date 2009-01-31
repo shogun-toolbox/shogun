@@ -100,7 +100,7 @@ class CCommWordStringKernel : public CStringKernel<uint16_t>
 		 *
 		 * @return name CommWordString
 		 */
-		virtual const char* get_name() { return "CommWordString"; }
+		virtual const char* get_name() const { return "CommWordString"; }
 
 		/** initialize dictionary
 		 *

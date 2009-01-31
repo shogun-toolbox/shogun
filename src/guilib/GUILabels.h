@@ -38,7 +38,7 @@ class CGUILabels : public CSGObject
 		bool save(char* param);
 
 		/** @return object name */
-		inline virtual const char* get_name() { return "GUILabels"; }
+		inline virtual const char* get_name() const { return "GUILabels"; }
 
 	protected:
 		CSGInterface* ui;

@@ -68,7 +68,7 @@ class CDummyFeatures : public CFeatures
 		}
 
 		/** @return object name */
-		inline virtual const char* get_name() { return "DummyFeatures"; }
+		inline virtual const char* get_name() const { return "DummyFeatures"; }
 
 	protected:
 		/** number of feature vectors */

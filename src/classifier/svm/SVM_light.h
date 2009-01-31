@@ -747,7 +747,7 @@ protected:
 	inline bool check_lpx_status(LPX *lp);
 #endif
 	/** @return object name */
-	inline virtual const char* get_name() { return "SVM_light"; }
+	inline virtual const char* get_name() const { return "SVM_light"; }
 
 	/* interface to QP-solver */
 	float64_t *optimize_qp( QP *qp,float64_t *epsilon_crit, int32_t nx,

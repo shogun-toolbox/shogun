@@ -45,7 +45,7 @@ class CGPBTSVM : public CSVM
 		virtual inline EClassifierType get_classifier_type() { return CT_GPBT; }
 
 		/** @return object name */
-		inline virtual const char* get_name() { return "GPBTSVM"; }
+		inline virtual const char* get_name() const { return "GPBTSVM"; }
 
 	protected:
 		/** SVM model */

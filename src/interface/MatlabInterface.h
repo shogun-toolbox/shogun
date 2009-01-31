@@ -157,7 +157,7 @@ class CMatlabInterface : public CSGInterface
 		}
 
 		/** @return object name */
-		inline virtual const char* get_name() { return "MatlabInterface"; }
+		inline virtual const char* get_name() const { return "MatlabInterface"; }
 
 	private:
 		const mxArray* get_arg_increment();

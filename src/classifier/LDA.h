@@ -84,7 +84,7 @@ class CLDA : public CLinearClassifier
 		}
 
 		/** @return object name */
-		inline virtual const char* get_name() { return "LDA"; }
+		inline virtual const char* get_name() const { return "LDA"; }
 
 	protected:
 		/** gamma */

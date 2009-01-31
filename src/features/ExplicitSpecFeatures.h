@@ -117,7 +117,7 @@ class CExplicitSpecFeatures : public CDotFeatures
 		}
 
 		/** @return object name */
-		inline virtual const char* get_name() { return "ExplicitSpecFeatures"; }
+		inline virtual const char* get_name() const { return "ExplicitSpecFeatures"; }
 
 	protected:
 		void obtain_kmer_spectrum(CStringFeatures<uint16_t>* str);

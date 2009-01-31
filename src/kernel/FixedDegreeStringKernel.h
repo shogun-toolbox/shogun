@@ -86,7 +86,7 @@ class CFixedDegreeStringKernel: public CStringKernel<char>
 		 *
 		 * @return name FixedDegree
 		 */
-		virtual const char* get_name() { return "FixedDegree"; }
+		virtual const char* get_name() const { return "FixedDegree"; }
 
 	protected:
 		/** compute kernel function for features a and b

@@ -80,7 +80,7 @@ class CCosineDistance: public CSimpleDistance<float64_t>
 		 *
 		 * @return name Cosine distance
 		 */
-		virtual const char* get_name() { return "Cosine distance"; }
+		virtual const char* get_name() const { return "Cosine distance"; }
 
 	protected:
 		/// compute distance for features a and b

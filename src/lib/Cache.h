@@ -225,7 +225,7 @@ template<class T> class CCache : public CSGObject
 	}
 
 	/** @return object name */
-	inline virtual const char* get_name() { return "Cache"; }
+	inline virtual const char* get_name() const { return "Cache"; }
 
 	protected:
 	/** if cache is full */

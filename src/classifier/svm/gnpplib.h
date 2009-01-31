@@ -80,7 +80,7 @@ class CGNPPLib: public CSGObject
                 int32_t verb);
 
   /** @return object name */
-  inline virtual const char* get_name() { return "GNPPLib"; }
+  inline virtual const char* get_name() const { return "GNPPLib"; }
 
  protected:
   /** get col

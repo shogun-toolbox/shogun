@@ -79,7 +79,7 @@ class CJensenMetric: public CSimpleDistance<float64_t>
 		 *
 		 * @return name Jensen-Metric
 		 */
-		virtual const char* get_name() { return "Jensen-Metric"; }
+		virtual const char* get_name() const { return "Jensen-Metric"; }
 
 	protected:
 		/// compute distance for features a and b

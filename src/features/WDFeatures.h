@@ -117,7 +117,7 @@ class CWDFeatures : public CDotFeatures
 		}
 
 		/** @return object name */
-		inline virtual const char* get_name() { return "WDFeatures"; }
+		inline virtual const char* get_name() const { return "WDFeatures"; }
 
 	protected:
 		/** set normalization constant */

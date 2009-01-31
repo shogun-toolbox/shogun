@@ -870,7 +870,7 @@ protected:
 		struct segment_loss_struct& loss);
 
 		/** @return object name */
-		inline virtual const char* get_name() { return "DynProg"; }
+		inline virtual const char* get_name() const { return "DynProg"; }
 	
 protected:
 	/**@name model specific variables.

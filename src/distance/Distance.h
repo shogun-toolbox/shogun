@@ -219,15 +219,6 @@ class CDistance : public CSGObject
 		 */
 		virtual EFeatureClass get_feature_class()=0;
 
-		/** get name of the distance
-		 *
-		 * abstrace base method
-		 *
-		 * @return name
-		 */
-		virtual const char* get_name()=0 ;
-
-
 		/** FIXME: precompute matrix should be dropped, handling
 		 * should be via customdistance
 		 *

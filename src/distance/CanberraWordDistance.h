@@ -67,7 +67,7 @@ class CCanberraWordDistance: public CStringDistance<uint16_t>
 		 *
 		 * @return name Chebyshew-Metric
 		 */
-		virtual const char* get_name() { return "CanberraWord"; }
+		virtual const char* get_name() const { return "CanberraWord"; }
 
 		/** get dictionary weights
 		 *

@@ -30,7 +30,7 @@ class CGUITime : public CSGObject
 		void stop();
 
 		/** @return object name */
-		inline virtual const char* get_name() { return "GUITime"; }
+		inline virtual const char* get_name() const { return "GUITime"; }
 	protected:
 		CSGInterface* ui;
 		CTime* time;

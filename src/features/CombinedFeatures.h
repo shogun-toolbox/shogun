@@ -65,9 +65,12 @@ class CCombinedFeatures : public CFeatures
 		 */
 		inline virtual int32_t get_num_vectors()
 		{
-			if (feature_list->get_current_element())
+			CFeatures* f=feature_list->get_current_element();
+			if (f)
 			{
-				return feature_list->get_current_element()->get_num_vectors();
+				int32_t n=f->get_num_vectors();
+				SG_UNREF(f);
+				return n;
 			}
 			else 
 				return 0;
@@ -79,9 +82,12 @@ class CCombinedFeatures : public CFeatures
 		 */
 		virtual int32_t get_size()
 		{
-			if (feature_list->get_current_element())
+			CFeatures* f=feature_list->get_current_element();
+			if (f)
 			{
-				return feature_list->get_current_element()->get_size();
+				int32_t s=f->get_size();
+				SG_UNREF(f)
+				return s;
 			}
 			else 
 				return 0;
@@ -103,9 +109,7 @@ class CCombinedFeatures : public CFeatures
 		 */
 		inline CFeatures* get_first_feature_obj()
 		{
-			CFeatures* f=feature_list->get_first_element();
-			SG_REF(f);
-			return f;
+			return feature_list->get_first_element();
 		}
 
 		/** get first feature object
@@ -115,9 +119,7 @@ class CCombinedFeatures : public CFeatures
 		 */
 		inline CFeatures* get_first_feature_obj(CListElement<CFeatures*>*&current)
 		{
-			CFeatures* f=feature_list->get_first_element(current);
-			SG_REF(f);
-			return f;
+			return feature_list->get_first_element(current);
 		}
 
 		/** get next feature object
@@ -126,9 +128,7 @@ class CCombinedFeatures : public CFeatures
 		 */
 		inline CFeatures* get_next_feature_obj()
 		{
-			CFeatures* f=feature_list->get_next_element();
-			SG_REF(f);
-			return f;
+			return feature_list->get_next_element();
 		}
 
 		/** get next feature object
@@ -138,9 +138,7 @@ class CCombinedFeatures : public CFeatures
 		 */
 		inline CFeatures* get_next_feature_obj(CListElement<CFeatures*>*&current)
 		{
-			CFeatures* f=feature_list->get_next_element(current);
-			SG_REF(f);
-			return f;
+			return feature_list->get_next_element(current);
 		}
 
 		/** get last feature object
@@ -149,9 +147,7 @@ class CCombinedFeatures : public CFeatures
 		 */
 		inline CFeatures* get_last_feature_obj()
 		{
-			CFeatures* f=feature_list->get_last_element();
-			SG_REF(f);
-			return f;
+			return feature_list->get_last_element();
 		}
 
 		/** insert feature object
@@ -162,7 +158,6 @@ class CCombinedFeatures : public CFeatures
 		inline bool insert_feature_obj(CFeatures* obj)
 		{
 			ASSERT(obj);
-			SG_REF(obj);
 			return feature_list->insert_element(obj);
 		}
 
@@ -174,7 +169,6 @@ class CCombinedFeatures : public CFeatures
 		inline bool append_feature_obj(CFeatures* obj)
 		{
 			ASSERT(obj);
-			SG_REF(obj);
 			return feature_list->append_element(obj);
 		}
 
@@ -204,7 +198,7 @@ class CCombinedFeatures : public CFeatures
 		}
 
 		/** @return object name */
-		inline virtual const char* get_name() { return "CombinedFeatures"; }
+		inline virtual const char* get_name() const { return "CombinedFeatures"; }
 
 	protected:
 		/** feature list */

@@ -198,9 +198,10 @@ bool CWeightedDegreePositionStringKernel::init(CFeatures* l, CFeatures* r)
 	if (rhs_changed && !sf_r->have_same_length(len))
 		SG_ERROR("All strings in WD kernel must have same length (rhs wrong)!\n");
 
-	delete alphabet;
-	alphabet= new CAlphabet(sf_l->get_alphabet());
+	SG_UNREF(alphabet);
+	alphabet= sf_l->get_alphabet();
 	CAlphabet* ralphabet=sf_r->get_alphabet();
+
 	if (!((alphabet->get_alphabet()==DNA) || (alphabet->get_alphabet()==RNA)))
 		properties &= ((uint64_t) (-1)) ^ (KP_LINADD | KP_BATCHEVALUATION);
 
@@ -228,7 +229,7 @@ void CWeightedDegreePositionStringKernel::cleanup()
 	seq_length = 0;
 	tree_initialized = false;
 
-	delete alphabet;
+	SG_UNREF(alphabet);
 	alphabet=NULL;
 
 	CKernel::cleanup();

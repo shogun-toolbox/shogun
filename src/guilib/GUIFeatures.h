@@ -75,8 +75,8 @@ class CGUIFeatures : public CSGObject
 		void add_train_dotfeatures(CDotFeatures* f);
 		void add_test_dotfeatures(CDotFeatures* f);
 
-		/** delete last features from combined features */
-		bool del_last_features(char* target);
+		/** delete last feature obj from combined features */
+		bool del_last_feature_obj(char* target);
 
 		void invalidate_train();
 		void invalidate_test();
@@ -194,7 +194,7 @@ class CGUIFeatures : public CSGObject
 		bool set_reference_features(char* target);
 
 		/** @return object name */
-		inline virtual const char* get_name() { return "GUIFeatures"; }
+		inline virtual const char* get_name() const { return "GUIFeatures"; }
 
 	protected:
 		CSGInterface* ui;

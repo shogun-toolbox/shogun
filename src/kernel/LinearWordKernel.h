@@ -71,7 +71,7 @@ class CLinearWordKernel: public CSimpleKernel<uint16_t>
 		 *
 		 * @return name Linear
 		 */
-		virtual const char* get_name() { return "Linear"; }
+		virtual const char* get_name() const { return "Linear"; }
 
 		/** initialize optimization
 		 *

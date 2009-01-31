@@ -73,7 +73,7 @@ class CSparseLinearKernel: public CSparseKernel<float64_t>
 		 *
 		 * @return name FixedDegree
 		 */
-		virtual const char* get_name() { return "SparseLinear" ; }
+		virtual const char* get_name() const { return "SparseLinear"; }
 
 		/** optimizable kernel, i.e. precompute normal vector and as phi(x) = x
 		 * do scalar product in input space

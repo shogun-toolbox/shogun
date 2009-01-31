@@ -136,7 +136,7 @@ class CMindyGramFeatures : public CFeatures
         EFeatureType get_feature_type() { return F_ULONG; }
 
 		/** @return object name */
-		inline virtual const char* get_name() { return "MindyGramFeatures"; }
+		inline virtual const char* get_name() const { return "MindyGramFeatures"; }
 
     protected:
         /* Import and load functions */

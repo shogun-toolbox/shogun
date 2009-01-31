@@ -176,6 +176,9 @@ class CSVRLight: public CSVMLight
 			int32_t *docs,float64_t *aicache,
 			float64_t* maxdiff);
 
+		/** @return object name */
+		inline virtual const char* get_name() const { return "SVR_light"; }
+
 	protected:
 		/** thread helper for update linear component linadd
 		 *

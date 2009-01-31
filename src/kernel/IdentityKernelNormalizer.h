@@ -64,7 +64,7 @@ class CIdentityKernelNormalizer : public CKernelNormalizer
 		}
 
 		/** @return object name */
-		inline virtual const char* get_name() { return "IdentityKernelNormalizer"; }
+		inline virtual const char* get_name() const { return "IdentityKernelNormalizer"; }
 };
 
 #endif

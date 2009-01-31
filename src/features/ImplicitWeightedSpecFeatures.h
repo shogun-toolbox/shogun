@@ -131,7 +131,7 @@ class CImplicitWeightedSpecFeatures : public CDotFeatures
 		bool set_weights(float64_t* w, int32_t d);
 
 		/** @return object name */
-		inline virtual const char* get_name() { return "ImplicitWeightedSpecFeatures"; }
+		inline virtual const char* get_name() const { return "ImplicitWeightedSpecFeatures"; }
 
 	protected:
 		void compute_normalization_const();

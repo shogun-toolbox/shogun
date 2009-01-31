@@ -133,7 +133,7 @@ public:
   }
 
   /** @return object name */
-  inline virtual const char* get_name() { return "QProblem"; }
+  inline virtual const char* get_name() const { return "QProblem"; }
 
 // ----------------- Private Data  ---------------
 private:

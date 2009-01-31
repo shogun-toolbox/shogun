@@ -67,7 +67,7 @@ class CManhattanWordDistance: public CStringDistance<uint16_t>
 		 *
 		 * @return name ManhattanWord
 		 */
-		virtual const char* get_name() { return "ManhattanWord"; }
+		virtual const char* get_name() const { return "ManhattanWord"; }
 
 		/** get dictionary weights
 		 *

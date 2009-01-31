@@ -40,7 +40,7 @@ class CMPDSVM : public CSVM
 		virtual inline EClassifierType get_classifier_type() { return CT_MPD; }
 
 		/** @return object name */
-		inline virtual const char* get_name() { return "MPDSVM"; }
+		inline virtual const char* get_name() const { return "MPDSVM"; }
 
 	protected:
 		/** compute H

@@ -101,7 +101,7 @@ class CByteFeatures : public CSimpleFeatures<uint8_t>
 		virtual bool save(char* fname);
 
 		/** @return object name */
-		inline virtual const char* get_name() { return "ByteFeatures"; }
+		inline virtual const char* get_name() const { return "ByteFeatures"; }
 
 	protected:
 		/** alphabet */

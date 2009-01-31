@@ -112,7 +112,7 @@ class CKRR : public CKernelMachine
 		}
 
 		/** @return object name */
-		inline virtual const char* get_name() { return "KRR"; }
+		inline virtual const char* get_name() const { return "KRR"; }
 
 	private:
 		/** alpha */

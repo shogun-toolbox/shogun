@@ -118,7 +118,7 @@ class CCombinedKernel : public CKernel
 		 *
 		 * @return name Combined
 		 */
-		virtual const char* get_name() { return "Combined"; }
+		virtual const char* get_name() const { return "Combined"; }
 
 		/** list kernels */
 		void list_kernels();
@@ -151,7 +151,10 @@ class CCombinedKernel : public CKernel
 		{
 			CKernel * k = get_first_kernel();
 			for (int32_t i=1; i<idx; i++)
-				k = get_next_kernel(k);
+			{
+				SG_UNREF(k);
+				k = get_next_kernel();
+			}
 			return k;
 		}
 
@@ -169,9 +172,8 @@ class CCombinedKernel : public CKernel
 		 * @param current
 		 * @return next kernel
 		 */
-		inline CKernel* get_next_kernel(const CKernel* current)
+		inline CKernel* get_next_kernel()
 		{
-			ASSERT(kernel_list->get_current_element()==current);
 			return kernel_list->get_next_element();
 		}
 
@@ -193,7 +195,6 @@ class CCombinedKernel : public CKernel
 		inline bool insert_kernel(CKernel* k)
 		{
 			ASSERT(k);
-			SG_REF(k);
 
 			if (!(k->has_property(KP_LINADD)))
 				unset_property(KP_LINADD);
@@ -209,7 +210,6 @@ class CCombinedKernel : public CKernel
 		inline bool append_kernel(CKernel* k)
 		{
 			ASSERT(k);
-			SG_REF(k);
 
 			if (!(k->has_property(KP_LINADD)))
 				unset_property(KP_LINADD);
@@ -248,11 +248,13 @@ class CCombinedKernel : public CKernel
 			{
 				int32_t num_subkernels = 0 ;
 				CListElement<CKernel*> *current = NULL ;
-				CKernel * kn = get_first_kernel(current) ;
-				while(kn)
+				CKernel * k = get_first_kernel(current) ;
+
+				while(k)
 				{
-					num_subkernels += kn->get_num_subkernels() ;
-					kn = get_next_kernel(current) ;
+					num_subkernels += k->get_num_subkernels() ;
+					SG_UNREF(k);
+					k = get_next_kernel(current) ;
 				}
 				return num_subkernels ;
 			}

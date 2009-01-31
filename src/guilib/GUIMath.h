@@ -32,7 +32,7 @@ class CGUIMath : public CSGObject
 		void init_random(uint32_t initseed=0);
 
 		/** @return object name */
-		inline virtual const char* get_name() { return "GUIMath"; }
+		inline virtual const char* get_name() const { return "GUIMath"; }
 	protected:
 		CSGInterface* ui;
 		float64_t threshold;

@@ -668,14 +668,19 @@ void CGUIFeatures::add_train_features(CFeatures* f)
 	invalidate_train();
 
 	if (!train_features)
+	{
 		train_features=new CCombinedFeatures();
+		SG_REF(train_features);
+	}
 
 	if (train_features->get_feature_class()!=C_COMBINED)
 	{
 		CFeatures* first_elem=train_features;
 		train_features=new CCombinedFeatures();
+		SG_REF(train_features);
 		((CCombinedFeatures*) train_features)->append_feature_obj(first_elem);
 		((CCombinedFeatures*) train_features)->list_feature_objs();
+		SG_UNREF(first_elem);
 	}
 
 	bool result=((CCombinedFeatures*) train_features)->append_feature_obj(f);
@@ -692,7 +697,10 @@ void CGUIFeatures::add_train_dotfeatures(CDotFeatures* f)
 	invalidate_train();
 
 	if (!train_features)
+	{
 		train_features=new CCombinedDotFeatures();
+		SG_REF(train_features);
+	}
 
 	if (train_features->get_feature_class()!=C_COMBINED_DOT)
 	{
@@ -701,8 +709,10 @@ void CGUIFeatures::add_train_dotfeatures(CDotFeatures* f)
 
 		CDotFeatures* first_elem=(CDotFeatures*) train_features;
 		train_features=new CCombinedDotFeatures();
+		SG_REF(train_features);
 		((CCombinedDotFeatures*) train_features)->append_feature_obj(first_elem);
 		((CCombinedDotFeatures*) train_features)->list_feature_objs();
+		SG_UNREF(first_elem);
 	}
 
 	bool result=((CCombinedDotFeatures*) train_features)->append_feature_obj(f);
@@ -718,7 +728,10 @@ void CGUIFeatures::add_test_dotfeatures(CDotFeatures* f)
 	invalidate_test();
 
 	if (!test_features)
+	{
 		test_features=new CCombinedDotFeatures();
+		SG_REF(test_features);
+	}
 
 	if (test_features->get_feature_class()!=C_COMBINED_DOT)
 	{
@@ -727,8 +740,10 @@ void CGUIFeatures::add_test_dotfeatures(CDotFeatures* f)
 
 		CDotFeatures* first_elem=(CDotFeatures*) test_features;
 		test_features=new CCombinedDotFeatures();
+		SG_REF(test_features);
 		((CCombinedDotFeatures*) test_features)->append_feature_obj(first_elem);
 		((CCombinedDotFeatures*) test_features)->list_feature_objs();
+		SG_UNREF(first_elem);
 	}
 
 	bool result=((CCombinedDotFeatures*) test_features)->append_feature_obj(f);
@@ -744,14 +759,19 @@ void CGUIFeatures::add_test_features(CFeatures* f)
 	invalidate_test();
 
 	if (!test_features)
+	{
 		test_features=new CCombinedFeatures();
+		SG_REF(test_features);
+	}
 
 	if (test_features->get_feature_class()!=C_COMBINED)
 	{
 		CFeatures* first_elem=test_features;
 		test_features=new CCombinedFeatures();
+		SG_REF(test_features);
 		((CCombinedFeatures*) test_features)->append_feature_obj(first_elem);
 		((CCombinedFeatures*) test_features)->list_feature_objs();
+		SG_UNREF(first_elem);
 	}
 
 	bool result=((CCombinedFeatures*) test_features)->append_feature_obj(f);
@@ -761,7 +781,7 @@ void CGUIFeatures::add_test_features(CFeatures* f)
 		SG_ERROR("Appending feature object failed.\n");
 }
 
-bool CGUIFeatures::del_last_features(char* target)
+bool CGUIFeatures::del_last_feature_obj(char* target)
 {
 	CCombinedFeatures* cf=NULL;
 	if (strncmp(target, "TRAIN", 5)==0)
@@ -785,10 +805,7 @@ bool CGUIFeatures::del_last_features(char* target)
 	else
 		SG_ERROR("Unknown target %s, neither TRAIN nor TEST.\n", target);
 
-	CFeatures* last=cf->get_last_feature_obj();
-	if (last)
-		return cf->delete_feature_obj();
-	else
+	if (!cf->delete_feature_obj())
 		SG_ERROR("No features available to delete.\n");
 
 	return false;

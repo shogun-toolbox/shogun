@@ -71,7 +71,7 @@ class CLinearByteKernel: public CSimpleKernel<uint8_t>
 		 *
 		 * @return name FixedDegree
 		 */
-		virtual const char* get_name() { return "Linear"; }
+		virtual const char* get_name() const { return "Linear"; }
 
 		/** optimizable kernel, i.e. precompute normal vector and as
 		 * phi(x) = x do scalar product in input space

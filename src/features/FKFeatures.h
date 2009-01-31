@@ -91,7 +91,7 @@ class CFKFeatures: public CRealFeatures
 		inline float64_t get_weight_a() { return weight_a; };
 
 		/** @return object name */
-		inline virtual const char* get_name() { return "FKFeatures"; }
+		inline virtual const char* get_name() const { return "FKFeatures"; }
 
 	protected:
 		/** compute feature vector

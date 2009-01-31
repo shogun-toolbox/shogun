@@ -275,7 +275,7 @@ class CAlphabet : public CSGObject
 
 
 		/** @return object name */
-		inline virtual const char* get_name() { return "Alphabet"; }
+		inline virtual const char* get_name() const { return "Alphabet"; }
 
 
 	protected:

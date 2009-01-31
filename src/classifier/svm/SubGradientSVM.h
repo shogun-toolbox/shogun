@@ -150,7 +150,7 @@ class CSubGradientSVM : public CLinearClassifier
 		void cleanup();
 
 		/** @return object name */
-		inline virtual const char* get_name() { return "SubGradientSVM"; }
+		inline virtual const char* get_name() const { return "SubGradientSVM"; }
 
 	protected:
 		/** C1 */

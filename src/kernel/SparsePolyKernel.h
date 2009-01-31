@@ -91,7 +91,7 @@ class CSparsePolyKernel: public CSparseKernel<float64_t>
 		 *
 		 * @return name SparsePoly
 		 */
-		virtual const char* get_name() { return "SparsePoly"; }
+		virtual const char* get_name() const { return "SparsePoly"; }
 
 	protected:
 		/** compute kernel function for features a and b

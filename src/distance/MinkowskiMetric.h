@@ -87,7 +87,7 @@ class CMinkowskiMetric: public CSimpleDistance<float64_t>
 		 *
 		 * @return name Minkowski-Metric
 		 */
-		virtual const char* get_name() { return "Minkowski-Metric"; }
+		virtual const char* get_name() const { return "Minkowski-Metric"; }
 
 	protected:
 		/// compute distance for features a and b

@@ -201,7 +201,7 @@ class CLinearHMM : public CDistribution
 		virtual bool set_transition_probs(const float64_t* src, int32_t num);
 
 		/** @return object name */
-		inline virtual const char* get_name() { return "LinearHMM"; }
+		inline virtual const char* get_name() const { return "LinearHMM"; }
 
 	protected:
 		/** examples' sequence length */

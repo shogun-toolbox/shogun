@@ -95,7 +95,7 @@ tmax, tolabs, tolrel, th, &alpha, &t, &History );
 		float64_t kernel_fce( int32_t a, int32_t b );
 
 		/** @return object name */
-		inline virtual const char* get_name() { return "GMNPLib"; }
+		inline virtual const char* get_name() const { return "GMNPLib"; }
 
 	protected:
 		/** diag H */

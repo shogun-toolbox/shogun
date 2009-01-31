@@ -98,7 +98,7 @@ class CLibLinear : public CLinearClassifier
 		inline bool get_bias_enabled() { return use_bias; }
 
 		/** @return object name */
-		inline virtual const char* get_name() { return "LibLinear"; }
+		inline virtual const char* get_name() const { return "LibLinear"; }
 
 	protected:
 		/** C1 */

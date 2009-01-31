@@ -91,6 +91,6 @@ class CIntFeatures: public CSimpleFeatures<int32_t>
 		virtual bool save(char* fname);
 
 		/** @return object name */
-		inline virtual const char* get_name() { return "IntFeatures"; }
+		inline virtual const char* get_name() const { return "IntFeatures"; }
 };
 #endif

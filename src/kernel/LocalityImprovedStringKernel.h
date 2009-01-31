@@ -84,7 +84,7 @@ class CLocalityImprovedStringKernel: public CStringKernel<char>
 		 *
 		 * @return name LocalityImproved
 		 */
-		virtual const char* get_name() { return "LocalityImproved"; }
+		virtual const char* get_name() const { return "LocalityImproved"; }
 
 	protected:
 		/** compute kernel function for features a and b

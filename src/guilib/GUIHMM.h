@@ -99,7 +99,7 @@ class CGUIHMM : public CSGObject
 		float64_t one_class_classify_example(int32_t idx);
 
 		/** @return object name */
-		inline virtual const char* get_name() { return "GUIHMM"; }
+		inline virtual const char* get_name() const { return "GUIHMM"; }
 
 	protected:
 		bool converge(float64_t x, float64_t y);

@@ -89,10 +89,7 @@ class CSimpleLocalityImprovedStringKernel: public CStringKernel<char>
 		 *
 		 * @return name SimpleLocalityImproved
 		 */
-		virtual const char *get_name()
-		{
-			return "SimpleLocalityImproved";
-		}
+		virtual const char* get_name() const { return "SimpleLocalityImproved"; }
 
 	private:
 		/** dot pyr

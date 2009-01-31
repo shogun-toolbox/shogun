@@ -171,7 +171,7 @@ class CPythonInterface : public CSGInterface
 		}
 
 		/** @return object name */
-		inline virtual const char* get_name() { return "PythonInterface"; }
+		inline virtual const char* get_name() const { return "PythonInterface"; }
 
 	private:
 		PyObject* m_lhs;

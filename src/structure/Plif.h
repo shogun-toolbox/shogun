@@ -418,7 +418,7 @@ class CPlif: public CPlifBase
 		}
 
 		/** @return object name */
-		inline virtual const char* get_name() { return "Plif"; }
+		inline virtual const char* get_name() const { return "Plif"; }
 
 	protected:
 		/** len */

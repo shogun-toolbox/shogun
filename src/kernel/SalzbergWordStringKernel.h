@@ -100,7 +100,7 @@ class CSalzbergWordStringKernel: public CStringKernel<uint16_t>
 		 *
 		 * @return name Salzberg
 		 */
-		virtual const char* get_name() { return "Salzberg" ; }
+		virtual const char* get_name() const { return "Salzberg" ; }
 
 	protected:
 		/** compute kernel function for features a and b

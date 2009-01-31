@@ -98,7 +98,7 @@ class CKNN : public CDistanceMachine
 		}
 
 		/** @return object name */
-		inline virtual const char* get_name() { return "KNN"; }
+		inline virtual const char* get_name() const { return "KNN"; }
 
 	protected:
 		/// the k parameter in KNN

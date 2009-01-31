@@ -82,7 +82,7 @@ class CTensorProductPairKernel: public CSimpleKernel<int32_t>
 		 *
 		 * @return name TPPK
 		 */
-		virtual const char* get_name() { return "TPPK" ; }
+		virtual const char* get_name() const { return "TPPK"; }
 
 	protected:
 		/** compute kernel function for features a and b

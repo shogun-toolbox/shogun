@@ -68,7 +68,7 @@ public:
 	 */
 	inline int32_t ref_count() const
 	{
-		SG_DEBUG("ref_count(): refcount %d, obj %s (%p)\n", refcount);
+		SG_DEBUG("ref_count(): refcount %d, obj %s (%p)\n", refcount, this->get_name(), this);
 		return refcount;
 	}
 
@@ -96,7 +96,7 @@ public:
 	 *
 	 * @return name of object
 	 */
-	virtual const char* get_name()=0 ;
+	virtual const char* get_name() const=0;
 
 private:
 	void set_global_objects();

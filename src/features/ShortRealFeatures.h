@@ -92,6 +92,6 @@ class CShortRealFeatures: public CSimpleFeatures<float32_t>
 		virtual bool save(char* fname);
 
 		/** @return object name */
-		inline virtual const char* get_name() { return "ShortRealFeatures"; }
+		inline virtual const char* get_name() const { return "ShortRealFeatures"; }
 };
 #endif

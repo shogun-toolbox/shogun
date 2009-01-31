@@ -69,7 +69,7 @@ class CGaussianShiftKernel: public CGaussianKernel
 		 *
 		 * @return name GaussianShift
 		 */
-		virtual const char* get_name() { return "GaussianShift"; }
+		virtual const char* get_name() const { return "GaussianShift"; }
 
 	protected:
 		/** compute kernel function for features a and b

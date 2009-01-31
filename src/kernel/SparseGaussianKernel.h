@@ -87,7 +87,7 @@ class CSparseGaussianKernel: public CSparseKernel<float64_t>
 		 *
 		 * @return name SparseGaussian
 		 */
-		virtual const char* get_name() { return "SparseGaussian" ; } ;
+		virtual const char* get_name() const { return "SparseGaussian"; }
 
 	protected:
 		/** compute kernel function for features a and b

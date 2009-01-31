@@ -93,7 +93,7 @@ class CEuclidianDistance: public CRealDistance
 		 *
 		 * @return name Euclidian
 		 */
-		virtual const char* get_name() { return "Euclidian"; }
+		virtual const char* get_name() const { return "Euclidian"; }
 
 		/** disable application of sqrt on matrix computation
 		 * the matrix can then also be named norm squared

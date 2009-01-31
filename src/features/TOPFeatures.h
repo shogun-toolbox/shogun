@@ -102,7 +102,7 @@ class CTOPFeatures : public CRealFeatures
 		bool compute_relevant_indizes(CHMM* hmm, T_HMM_INDIZES* hmm_idx);
 
 		/** @return object name */
-		inline virtual const char* get_name() { return "TOPFeatures"; }
+		inline virtual const char* get_name() const { return "TOPFeatures"; }
 
 	protected:
 		/** compute feature vector

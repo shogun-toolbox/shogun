@@ -129,7 +129,7 @@ class CSqrtDiagKernelNormalizer : public CKernelNormalizer
 		}
 
 		/** @return object name */
-		inline virtual const char* get_name() { return "SqrtDiagKernelNormalizer"; }
+		inline virtual const char* get_name() const { return "SqrtDiagKernelNormalizer"; }
 
     protected:
 		/** sqrt diagonal left-hand side */

@@ -149,7 +149,7 @@ class CRInterface : public CSGInterface
 		}
 
 		/** @return object name */
-		inline virtual const char* get_name() { return "RInterface"; }
+		inline virtual const char* get_name() const { return "RInterface"; }
 
 	private:
 		SEXP m_lhs;

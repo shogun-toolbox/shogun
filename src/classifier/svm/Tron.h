@@ -69,7 +69,7 @@ public:
 	void tron(float64_t *w);
 
 	/** @return object name */
-	inline virtual const char* get_name() { return "LibLinear"; }
+	inline virtual const char* get_name() const { return "LibLinear"; }
 
 private:
 	int32_t trcg(float64_t delta, double* g, double* s, double* r);

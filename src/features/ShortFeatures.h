@@ -105,6 +105,6 @@ class CShortFeatures : public CSimpleFeatures<int16_t>
 		void translate_from_single_order(int16_t* obs, int32_t sequence_length, int32_t start, int32_t order, int32_t max_val, int32_t gap);
 
 		/** @return object name */
-		inline virtual const char* get_name() { return "ShortFeatures"; }
+		inline virtual const char* get_name() const { return "ShortFeatures"; }
 };
 #endif

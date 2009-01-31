@@ -182,7 +182,7 @@ class CLabels : public CSGObject
 		inline int32_t get_num_labels() { return num_labels; }
 
 		/** @return object name */
-		inline virtual const char* get_name() { return "Labels"; }
+		inline virtual const char* get_name() const { return "Labels"; }
 
 	protected:
 		/** number of labels */

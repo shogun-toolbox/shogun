@@ -160,7 +160,7 @@ class CHierarchical : public CDistanceMachine
 		}
 
 		/** @return object name */
-		inline virtual const char* get_name() { return "Hierarchical"; }
+		inline virtual const char* get_name() const { return "Hierarchical"; }
 
 	protected:
 		/// the number of merges in hierarchical clustering

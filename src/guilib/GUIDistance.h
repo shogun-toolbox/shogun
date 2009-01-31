@@ -48,7 +48,7 @@ class CGUIDistance : public CSGObject
 	bool is_initialized() { return initialized; }
 
 	/** @return object name */
-	inline virtual const char* get_name() { return "GUIDistance"; }
+	inline virtual const char* get_name() const { return "GUIDistance"; }
 
  protected:
 	CDistance* distance;

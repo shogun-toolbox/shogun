@@ -78,7 +78,7 @@ class CGaussianKernel: public CSimpleKernel<float64_t>
 		 *
 		 * @return name Gaussian
 		 */
-		inline virtual const char* get_name() { return "GaussianKernel"; }
+		inline virtual const char* get_name() const { return "GaussianKernel"; }
 
 	protected:
 		/** compute kernel function for features a and b

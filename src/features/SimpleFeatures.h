@@ -494,7 +494,7 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 		}
 
 		/** @return object name */
-		inline virtual const char* get_name() { return "SimpleFeatures"; }
+		inline virtual const char* get_name() const { return "SimpleFeatures"; }
 
 	protected:
 		/** compute feature vector for sample num

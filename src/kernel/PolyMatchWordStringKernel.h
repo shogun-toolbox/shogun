@@ -87,7 +87,7 @@ class CPolyMatchWordStringKernel: public CStringKernel<uint16_t>
 		 *
 		 * @return name PolyMatchWord
 		 */
-		virtual const char* get_name() { return "PolyMatchWordString"; }
+		virtual const char* get_name() const { return "PolyMatchWordString"; }
 
 	protected:
 		/** compute kernel function for features a and b

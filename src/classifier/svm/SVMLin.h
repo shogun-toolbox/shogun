@@ -87,7 +87,7 @@ class CSVMLin : public CLinearClassifier
 		inline float64_t get_epsilon() { return epsilon; }
 
 		/** @return object name */
-		inline virtual const char* get_name() { return "SVMLin"; }
+		inline virtual const char* get_name() const { return "SVMLin"; }
 
 	protected:
 		/** C1 */

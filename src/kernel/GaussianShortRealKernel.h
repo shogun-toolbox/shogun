@@ -78,7 +78,7 @@ class CGaussianShortRealKernel: public CSimpleKernel<float32_t>
 		 *
 		 * @return name GaussianShortReal
 		 */
-		virtual const char* get_name() { return "GaussianShortReal"; }
+		virtual const char* get_name() const { return "GaussianShortReal"; }
 
 	protected:
 		/** compute kernel function for features a and b

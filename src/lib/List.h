@@ -396,7 +396,7 @@ template <class T> class CList : public CSGObject
 		}
 
 		/** @return object name */
-		inline virtual const char* get_name() { return "List"; }
+		inline virtual const char* get_name() const { return "List"; }
 
 	private:
 		/** if data is to be deleted on object destruction */

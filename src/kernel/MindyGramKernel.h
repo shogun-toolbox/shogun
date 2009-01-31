@@ -58,7 +58,7 @@ class CMindyGramKernel: public CKernel
 		inline virtual EKernelType get_kernel_type() { return K_MINDYGRAM; }
 		inline virtual EFeatureType get_feature_type() { return F_ULONG; }
 		inline virtual EFeatureClass get_feature_class() { return C_MINDYGRAM; }
-		inline virtual const char* get_name() { return "MindyGram"; }
+		inline virtual const char* get_name() const { return "MindyGram"; }
 
 		/* Optimization functions */
 		virtual bool init_optimization(

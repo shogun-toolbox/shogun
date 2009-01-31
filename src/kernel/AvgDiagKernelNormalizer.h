@@ -102,7 +102,7 @@ class CAvgDiagKernelNormalizer : public CKernelNormalizer
 		}
 
 		/** @return object name */
-		inline virtual const char* get_name() { return "AvgDiagKernelNormalizer"; }
+		inline virtual const char* get_name() const { return "AvgDiagKernelNormalizer"; }
 
 	protected:
 		/// the constant scaling factor (avg of diagonal or user given const)

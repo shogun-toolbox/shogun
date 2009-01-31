@@ -79,7 +79,7 @@ class CSigmoidKernel: public CSimpleKernel<float64_t>
 		 *
 		 * @return name Sigmoid
 		 */
-		virtual const char* get_name() { return "Sigmoid"; }
+		virtual const char* get_name() const { return "Sigmoid"; }
 
 	protected:
 		/** compute kernel function for features a and b

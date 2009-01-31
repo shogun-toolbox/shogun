@@ -103,7 +103,7 @@ class CTime : public CSGObject
 		}
 
 		/** @return object name */
-		inline virtual const char* get_name() { return "Time"; }
+		inline virtual const char* get_name() const { return "Time"; }
 
 	protected:
 		/** start runtime */

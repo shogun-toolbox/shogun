@@ -1584,7 +1584,7 @@ bool CSGInterface::cmd_del_last_features()
 
 	int32_t len=0;
 	char* target=get_str_from_str_or_direct(len);
-	bool success=ui_features->del_last_features(target);
+	bool success=ui_features->del_last_feature_obj(target);
 
 	delete[] target;
 	return success;

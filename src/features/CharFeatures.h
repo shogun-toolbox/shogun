@@ -94,7 +94,7 @@ class CCharFeatures : public CSimpleFeatures<char>
 		virtual bool save(char* fname);
 
 		/** @return object name */
-		inline virtual const char* get_name() { return "CharFeatures"; }
+		inline virtual const char* get_name() const { return "CharFeatures"; }
 
 	protected:
 		/** alphabet */

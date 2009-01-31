@@ -76,10 +76,7 @@ class CLocalAlignmentStringKernel: public CStringKernel<char>
 		 *
 		 * @return name LocalAlignment
 		 */
-		virtual const char* get_name()
-		{
-			return "LocalAlignment";
-		}
+		virtual const char* get_name() const { return "LocalAlignment"; }
 
 	private:
 		/** initialize logarithmic sum */

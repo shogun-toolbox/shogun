@@ -75,7 +75,7 @@ class CBrayCurtisDistance: public CSimpleDistance<float64_t>
 		 *
 		 * @return name Bray-Curtis distance
 		 */
-		virtual const char* get_name() { return "Bray-Curtis distance"; }
+		virtual const char* get_name() const { return "Bray-Curtis distance"; }
 
 	protected:
 		/// compute distance for features a and b

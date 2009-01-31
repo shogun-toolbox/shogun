@@ -109,6 +109,6 @@ class CRealFeatures : public CSimpleFeatures<float64_t>
 		virtual bool save(char* fname);
 
 		/** @return object name */
-		inline virtual const char* get_name() { return "RealFeatures"; }
+		inline virtual const char* get_name() const { return "RealFeatures"; }
 };
 #endif

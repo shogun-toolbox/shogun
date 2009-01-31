@@ -42,6 +42,9 @@ class CGMNPSVM : public CMultiClassSVM
 		virtual inline EClassifierType get_classifier_type() { return CT_GMNPSVM; }
 		
 		void getbasealphas(::std::vector< ::std::vector<float64_t> > & basealphas2);
+
+		/** @return object name */
+		inline virtual const char* get_name() const { return "GMNPSVM"; }
 		
 	protected: 
 		::std::vector< ::std::vector<float64_t> > basealphas; // is the basic untransformed alpha, needed for MKL 

@@ -774,6 +774,7 @@ bool CGUIKernel::init_kernel(char* target)
 	if (!strncmp(target, "TRAIN", 5))
 	{
 		CFeatures* train=ui->ui_features->get_train_features();
+
 		if (train)
 		{
 			EFeatureClass fclass=train->get_feature_class();
@@ -847,10 +848,19 @@ bool CGUIKernel::add_kernel(CKernel* kern, float64_t weight)
 	if (!kern)
 		SG_ERROR("Given kernel to add is invalid.\n");
 
-	if ((kernel==NULL) || (kernel && kernel->get_kernel_type()!=K_COMBINED))
+	if (!kernel)
 	{
-		SG_UNREF(kernel);
 		kernel= new CCombinedKernel(20, false);
+		SG_REF(kernel);
+	}
+
+	if (kernel->get_kernel_type()!=K_COMBINED)
+	{
+		CKernel* first_elem=kern;
+		kernel= new CCombinedKernel(20, false);
+		SG_REF(kernel);
+		((CCombinedKernel*) kernel)->append_kernel(first_elem);
+		SG_UNREF(first_elem);
 	}
 
 	if (!kernel)

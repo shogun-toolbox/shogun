@@ -77,7 +77,7 @@ class CCanberraMetric: public CSimpleDistance<float64_t>
 		 *
 		 * @return name Canberra-Metric
 		 */
-		virtual const char* get_name() { return "Canberra-Metric"; }
+		virtual const char* get_name() const { return "Canberra-Metric"; }
 
 	protected:
 		/// compute distance for features a and b
