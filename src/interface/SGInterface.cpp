@@ -3853,8 +3853,8 @@ bool CSGInterface::cmd_get_distance_matrix()
 		return false;
 
 	CDistance* distance=ui_distance->get_distance();
-	if (!distance || !distance->get_rhs() || !distance->get_lhs())
-		SG_ERROR("No distance defined.\n");
+	if (!distance || !distance->has_features())
+		SG_ERROR("No distance defined or not initialized.\n");
 
 	int32_t num_vec_lhs=0;
 	int32_t num_vec_rhs=0;

@@ -242,6 +242,48 @@ class CDistance : public CSGObject
 			}
 		}
 
+		/** get number of vectors of lhs features
+		 *
+		 * @return number of vectors of left-hand side
+		 */
+		inline int32_t get_num_vec_lhs()
+		{
+			if (!lhs)
+				return 0;
+			else
+				return lhs->get_num_vectors();
+		}
+
+		/** get number of vectors of rhs features
+		 *
+		 * @return number of vectors of right-hand side
+		 */
+		inline int32_t get_num_vec_rhs()
+		{
+			if (!rhs)
+				return 0;
+			else
+				return rhs->get_num_vectors();
+		}
+
+		/** test whether features have been assigned to lhs and rhs
+		 *
+		 * @return true if features are assigned
+		 */
+		inline bool has_features()
+		{
+			return lhs && rhs;
+		}
+
+		/** test whether features on lhs and rhs are the same
+		 *
+		 * @return true if features are the same
+		 */
+		inline bool lhs_equals_rhs()
+		{
+			return lhs==rhs;
+		}
+
 	protected:
 		/// compute distance function for features a and b
 		/// idx_{a,b} denote the index of the feature vectors

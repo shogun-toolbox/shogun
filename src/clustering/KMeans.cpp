@@ -51,6 +51,7 @@ bool CKMeans::train()
 	CRealFeatures* lhs=(CRealFeatures*) distance->get_lhs();
 	ASSERT(lhs);
 	int32_t num=lhs->get_num_vectors();
+	SG_UNREF(lhs);
 
 	Weights=new float64_t[num];
 	for (int32_t i=0; i<num; i++)
@@ -58,7 +59,6 @@ bool CKMeans::train()
 
 	clustknb(false, NULL);
 	delete[] Weights;
-	SG_UNREF(lhs);
 
 	return true;
 }
@@ -442,4 +442,5 @@ void CKMeans::clustknb(bool use_old_mus, float64_t *mus_start)
 	free(weights_set);
 	free(oldmus);
 	free(dists);
+	SG_UNREF(lhs);
 } 
