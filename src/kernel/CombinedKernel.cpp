@@ -95,8 +95,6 @@ bool CCombinedKernel::init(CFeatures* l, CFeatures* r)
 	CListElement<CKernel*>* current = NULL ;
 	k=get_first_kernel(current) ;
 
-	result = 1 ;
-	
 	if ( lf && rf && k)
 	{
 		while ( result && lf && rf && k )
@@ -125,8 +123,10 @@ bool CCombinedKernel::init(CFeatures* l, CFeatures* r)
 
 	if ((lf!=NULL) || (rf!=NULL) || (k!=NULL))
 	{
-		SG_INFO( "CombinedKernel: Number of features/kernels does not match - bailing out\n");
-		return false;
+		SG_UNREF(lf);
+		SG_UNREF(rf);
+		SG_UNREF(k);
+		SG_ERROR( "CombinedKernel: Number of features/kernels does not match - bailing out\n");
 	}
 	
 	init_normalizer();
@@ -137,12 +137,6 @@ void CCombinedKernel::remove_lhs()
 {
 	delete_optimization();
 
-#ifdef SVMLIGHT
-	if (lhs)
-		cache_reset() ;
-#endif
-	lhs=NULL ;
-	
 	CListElement<CKernel*> * current = NULL ;	
 	CKernel* k=get_first_kernel(current);
 
@@ -152,16 +146,11 @@ void CCombinedKernel::remove_lhs()
 		SG_UNREF(k);
 		k=get_next_kernel(current);
 	}
+	CKernel::remove_lhs();
 }
 
 void CCombinedKernel::remove_rhs()
 {
-#ifdef SVMLIGHT
-	if (rhs)
-		cache_reset() ;
-#endif
-	rhs=NULL ;
-
 	CListElement<CKernel*> * current = NULL ;	
 	CKernel* k=get_first_kernel(current);
 
@@ -171,6 +160,23 @@ void CCombinedKernel::remove_rhs()
 		SG_UNREF(k);
 		k=get_next_kernel(current);
 	}
+	CKernel::remove_rhs();
+}
+
+void CCombinedKernel::remove_lhs_and_rhs()
+{
+	delete_optimization();
+
+	CListElement<CKernel*> * current = NULL ;	
+	CKernel* k=get_first_kernel(current);
+
+	while (k)
+	{	
+		k->remove_lhs_and_rhs();
+		SG_UNREF(k);
+		k=get_next_kernel(current);
+	}
+	CKernel::remove_lhs_and_rhs();
 }
 
 void CCombinedKernel::cleanup()

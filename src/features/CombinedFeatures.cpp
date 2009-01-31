@@ -23,6 +23,7 @@ CCombinedFeatures::CCombinedFeatures()
 CCombinedFeatures::CCombinedFeatures(const CCombinedFeatures & orig)
 : CFeatures(0)
 {
+	feature_list=new CList<CFeatures*>(true);
 }
 
 CFeatures* CCombinedFeatures::duplicate() const
@@ -45,8 +46,8 @@ void CCombinedFeatures::list_feature_objs()
 
 	while (f)
 	{
-		SG_UNREF(f);
 		f->list_feature_obj();
+		SG_UNREF(f);
 		f=get_next_feature_obj(current);
 	}
 

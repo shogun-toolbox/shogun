@@ -268,6 +268,9 @@ class CCombinedKernel : public CKernel
 		/** remove rhs from kernel */
 		virtual void remove_rhs();
 
+		/** remove lhs and rhs from kernel */
+		void remove_lhs_and_rhs();
+
 		/** initialize optimization
 		 *
 		 * @param count count

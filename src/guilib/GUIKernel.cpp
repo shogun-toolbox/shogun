@@ -653,6 +653,8 @@ bool CGUIKernel::set_normalization(char* normalization, float64_t c)
 	else
 		SG_ERROR("Wrong kernel normalizer name.\n");
 
+	SG_UNREF(k);
+
 	return false;
 }
 

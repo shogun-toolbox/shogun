@@ -54,7 +54,7 @@ class CGUIFeatures : public CSGObject
 
 		inline bool set_train_features(CFeatures* f)
 		{ 
-			invalidate_train();
+			//invalidate_train();
 			SG_UNREF(train_features);
 			SG_REF(f);
 			train_features=f;
@@ -63,7 +63,7 @@ class CGUIFeatures : public CSGObject
 
 		inline bool set_test_features(CFeatures* f)
 		{ 
-			invalidate_test();
+			//invalidate_test();
 			SG_UNREF(test_features);
 			SG_REF(f);
 			test_features=f;
