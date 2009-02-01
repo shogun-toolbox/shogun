@@ -132,10 +132,7 @@ template <class T> class CArray : public CSGObject
 		 *
 		 * @return name
 		 */
-		inline const char* get_name() const
-		{
-			return name;
-		}
+		inline const char* get_name() const { return name; }
 
 		/** set name
 		 *
