@@ -154,6 +154,7 @@ clean: swigclean swigdocclean
 	@rm -f $(shell find . -type f -name '*.swp')
 	@rm -f $(shell find . -type f -name 'octave-core')
 	@rm -f sg.mex* shogun shogun.exe gmon.out .depend configure.log .cpuinfo ./configure-* cplex.log
+	@rm -f libshogun.a
 
 dist:	distclean
 	rm -f $(TAR).gz
