@@ -1,5 +1,5 @@
 %{
-    #include "clustering/KMeans.h"
+    #include <shogun/clustering/KMeans.h>
 %}
 
 %include "lib/swig_typemaps.i"
@@ -14,5 +14,5 @@
 
 %rename(KMeans) CKMeans;
 
-%include "clustering/KMeans.h"
+%include <shogun/clustering/KMeans.h>
 

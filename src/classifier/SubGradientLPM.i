@@ -1,7 +1,7 @@
 %{
- #include "classifier/SubGradientLPM.h" 
+ #include <shogun/classifier/SubGradientLPM.h>
 %}
 
 %rename(SubGradientLPM) CSubGradientLPM;
 
-%include "classifier/SubGradientLPM.h" 
+%include <shogun/classifier/SubGradientLPM.h>

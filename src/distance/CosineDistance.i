@@ -1,7 +1,7 @@
 %{
- #include "distance/CosineDistance.h"
+ #include <shogun/distance/CosineDistance.h>
 %}
 
 %rename(CosineDistance) CCosineDistance;
 
-%include "distance/CosineDistance.h"
+%include <shogun/distance/CosineDistance.h>

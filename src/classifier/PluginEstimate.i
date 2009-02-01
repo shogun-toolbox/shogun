@@ -1,7 +1,7 @@
 %{
- #include "classifier/PluginEstimate.h" 
+ #include <shogun/classifier/PluginEstimate.h> 
 %}
 
 %rename(PluginEstimate) CPluginEstimate;
 
-%include "classifier/PluginEstimate.h" 
+%include <shogun/classifier/PluginEstimate.h> 

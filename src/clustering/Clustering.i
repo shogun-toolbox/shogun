@@ -29,7 +29,7 @@
 %include "base/Parallel.i"
 %include "base/SGObject.i"
 
-%include "classifier/Classifier.h" 
+%include <shogun/classifier/Classifier.h> 
 %include "distance/DistanceMachine.i" 
 %include "clustering/KMeans.i"
 %include "clustering/Hierarchical.i"

@@ -1,5 +1,5 @@
 %{
-    #include "clustering/Hierarchical.h"
+    #include <shogun/clustering/Hierarchical.h>
 %}
 
 #ifdef HAVE_PYTHON
@@ -12,5 +12,5 @@
 
 %rename(Hierarchical) CHierarchical;
 
-%include "clustering/Hierarchical.h"
+%include <shogun/clustering/Hierarchical.h>
 

@@ -1,7 +1,7 @@
 %{
- #include "distance/CanberraMetric.h"
+ #include <shogun/distance/CanberraMetric.h>
 %}
 
 %rename(CanberraMetric) CCanberraMetric;
 
-%include "distance/CanberraMetric.h"
+%include <shogun/distance/CanberraMetric.h>

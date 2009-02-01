@@ -1,7 +1,7 @@
 %{
- #include "distance/CanberraWordDistance.h"
+ #include <shogun/distance/CanberraWordDistance.h>
 %}
 
 %rename(CanberraWordDistance) CCanberraWordDistance;
 
-%include "distance/CanberraWordDistance.h"
+%include <shogun/distance/CanberraWordDistance.h>

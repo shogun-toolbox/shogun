@@ -1,7 +1,7 @@
 %{
- #include "classifier/Perceptron.h" 
+ #include <shogun/classifier/Perceptron.h> 
 %}
 
 %rename(Perceptron) CPerceptron;
 
-%include "classifier/Perceptron.h" 
+%include <shogun/classifier/Perceptron.h> 

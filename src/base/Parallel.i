@@ -1,7 +1,7 @@
 %{
- #include "base/Parallel.h" 
+ #include <shogun/base/Parallel.h>
 %}
 
 %rename(Parallel) CParallel;
 
-%include "base/Parallel.h" 
+%include <shogun/base/Parallel.h>

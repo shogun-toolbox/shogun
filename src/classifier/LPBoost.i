@@ -1,7 +1,7 @@
 %{
- #include "classifier/LPBoost.h" 
+ #include <shogun/classifier/LPBoost.h> 
 %}
 
 %rename(LPBoost) CLPBoost;
 
-%include "classifier/LPBoost.h" 
+%include <shogun/classifier/LPBoost.h> 

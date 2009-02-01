@@ -1,7 +1,7 @@
 %{
- #include "classifier/LDA.h" 
+ #include <shogun/classifier/LDA.h>
 %}
 
 %rename(LDA) CLDA;
 
-%include "classifier/LDA.h" 
+%include <shogun/classifier/LDA.h>

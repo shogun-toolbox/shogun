@@ -1,7 +1,7 @@
 %{
- #include "classifier/LPM.h" 
+ #include <shogun/classifier/LPM.h>
 %}
 
 %rename(LPM) CLPM;
 
-%include "classifier/LPM.h" 
+%include <shogun/classifier/LPM.h>

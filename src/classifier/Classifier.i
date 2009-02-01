@@ -5,8 +5,8 @@
 %module(docstring=DOCSTR) Classifier
 %{
  #define SWIG_FILE_WITH_INIT
- #include "features/Labels.h" 
- #include "classifier/Classifier.h" 
+ #include <shogun/features/Labels.h>
+ #include <shogun/classifier/Classifier.h>
 %}
 
 #ifdef HAVE_DOXYGEN
@@ -29,7 +29,7 @@
 %include "base/Version.i"
 %include "base/Parallel.i"
 %include "base/SGObject.i"
-%include "classifier/Classifier.h" 
+%include <shogun/classifier/Classifier.h>
 %include "classifier/LinearClassifier.i"
 %include "classifier/PluginEstimate.i"
 

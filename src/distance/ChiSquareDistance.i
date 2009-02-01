@@ -1,7 +1,7 @@
 %{
- #include "distance/ChiSquareDistance.h"
+ #include <shogun/distance/ChiSquareDistance.h>
 %}
 
 %rename(ChiSquareDistance) CChiSquareDistance;
 
-%include "distance/ChiSquareDistance.h"
+%include <shogun/distance/ChiSquareDistance.h>

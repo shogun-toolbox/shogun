@@ -1,5 +1,5 @@
 %{
- #include "base/SGObject.h" 
+ #include <shogun/base/SGObject.h>
 %}
 
 #ifndef HAVE_R
@@ -9,4 +9,4 @@
 
 %rename(SGObject) CSGObject;
 
-%include "base/SGObject.h" 
+%include <shogun/base/SGObject.h>

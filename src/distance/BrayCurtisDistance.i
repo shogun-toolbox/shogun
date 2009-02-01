@@ -1,7 +1,7 @@
 %{
- #include "distance/BrayCurtisDistance.h"
+ #include <shogun/distance/BrayCurtisDistance.h>
 %}
 
 %rename(BrayCurtisDistance) CBrayCurtisDistance;
 
-%include "distance/BrayCurtisDistance.h"
+%include <shogun/distance/BrayCurtisDistance.h>
