@@ -1983,7 +1983,7 @@ EOF
 		then
 			true #nop	
 		else
-			LINKFLAGS="$LINKFLAGS -undefined error"
+			true #nop LINKFLAGS="$LINKFLAGS -undefined error"
 		fi
 	elif interix
 	then
@@ -1993,528 +1993,81 @@ EOF
 	then
 		true #nop
 	else
-		LINKFLAGS="$LINKFLAGS -Xlinker --no-undefined"
+		true #nop LINKFLAGS="$LINKFLAGS -Xlinker --no-undefined"
 	fi
+}
 
-cat > $TMPC << EOF
-#include <math.h>
-int main(void) { return 0; }
-EOF
-	echocheck "Math support (-lm)"
-	if cc_check -lm
-	then
-		LINKFLAGS="$LINKFLAGS -lm"
-		echores "yes"
-	else
-		echores "no"
-		die "could not find math library (libm)"
-	fi
-
-cat > $TMPC << EOF
-#include <math.h>
-int main(int argc, char** argv)
+test_modular()
 {
-	long double a=::powl((long double) argc, (long double) argc);
-	return (int) a;
-}
-EOF
-	echocheck "Math powl() support"
-	if cxx_check -lm
+	if test "$_swig" = yes || test "$_swig" = auto
 	then
-		HAVE_POWL='#define HAVE_POWL 1'
-		DEFINES="$DEFINES -DHAVE_POWL"
-		echores "yes"
-	else
-		echores "no - resorting to pow()"
-	fi
-
-cat > $TMPC << EOF
-#include <math.h>
-int main(int argc, char** argv)
-{
-	long double a=::sqrtl((long double) argc);
-	return (int) a;
-}
-EOF
-	echocheck "Math sqrtl() support"
-	if cxx_check -lm
-	then
-		HAVE_SQRTL='#define HAVE_SQRTL 1'
-		DEFINES="$DEFINES -DHAVE_SQRTL"
-		echores "yes"
-	else
-		echores "no - resorting to sqrt()"
-	fi
-
-cat > $TMPC << EOF
-#include <math.h>
-int main(int argc, char** argv)
-{
-	double a=::log2((double) argc);
-	return (int) a;
-}
-EOF
-	echocheck "Math log2() support"
-	if cxx_check -lm
-	then
-		HAVE_LOG2='#define HAVE_LOG2 1'
-		DEFINES="$DEFINES -DHAVE_LOG2"
-		echores "yes"
-	else
-		echores "no - resorting to emulation()"
-	fi
-
-cat > $TMPC << EOF
-#include <pthread.h>
-int main(void) { return 0; }
-EOF
-	echocheck "Posix threads support"
-	_pthread=no
-
-	for pthr in -pthread -lpthread
-	do
-		if cc_check $pthr
+		echocheck "SWIG"
+		if ${SWIG} -version >/dev/null 2>&1
 		then
-			COMPFLAGS_C="$COMPFLAGS_C $pthr"
-			COMPFLAGS_CPP="$COMPFLAGS_CPP $pthr"
-			LINKFLAGS="$LINKFLAGS $pthr"
-			_pthread=yes
-			break
-		fi
-	done
-
-	if test "$_pthread" = yes
-	then
-		echores "yes"
-	else
-		echores "no"
-		die "no posix threading support found (libpthread)"
-	fi
-
-	if test "$_mindy" = yes || test "$_mindy" = auto
-	then
-cat > $TMPC << EOF
-#include <mindy.h>
-int main(void) { return 0; }
-EOF
-		echocheck "Mindy support"
-		if cc_check -lmindy
-		then
-			HAVE_MINDY='#define HAVE_MINDY 1'
-			DEFINES="$DEFINES -DHAVE_MINDY"
-			LINKFLAGS="$LINKFLAGS -lmindy"
-			echores "yes"
-		else
-			echores "no - never mind"
-		fi
-	fi
-
-	if test "$_lapack" = yes || test "$_lapack" = auto
-	then
-cat > $TMPC << EOF
-#include <cblas.h>
-void dpotrf(char uplo, int n, double *a, int lda, int *info);
-
-int main(int argc, char** argv)
-{ 
-	char uplo = 'U';
-	int info=0;
-	int skip=argc;
-	int n=argc; double* a=0; double* v1=0; double* v2=0;
-	int lda=1;
-	dpotrf(uplo, n, a, lda, &info);
-	int r = cblas_ddot(n, v1, skip, v2, skip);
-	return 0;
-}
-EOF
-		echocheck "AMD ACML support"
-		if cc_check -lacml -lcblas -lgfortran
-		then
-			echores "yes"
-			HAVE_ACML='#define HAVE_ACML 1'
-			HAVE_LAPACK='#define HAVE_LAPACK 1'
-			DEFINES="$DEFINES -DHAVE_ACML -DHAVE_LAPACK"
-			LINKFLAGS="$LINKFLAGS -lacml -lcblas -lgfortran"
-		else
-			echores "no"
-
-cat > $TMPC << EOF
-#include <mkl_cblas.h>
-void dpotrf(char* uplo, int* n, double* a, int* lda, int* info);
-
-int main(int argc, char** argv)
-{ 
-	char uplo = 'U';
-	int info=0;
-	int skip=argc;
-	int n=argc; double* a=0; double* v1=0; double* v2=0;
-	int lda=1;
-	dpotrf(&uplo, &n, a, &lda, &info);
-	int r = cblas_ddot(n, v1, skip, v2, skip);
-	return 0;
-}
-EOF
-			echocheck "Intel MKL support"
-			if cc_check -lmkl -lguide -lmkl_lapack
+			if [ `${SWIG} -version 2>&1 | grep Version | cut -f 3 -d ' ' | cut -f 2 -d '.'` -ge 4 ] || \
+				[ `${SWIG} -version 2>&1 | grep Version | cut -f 3 -d ' ' | cut -f 3 -d '.'` -ge 29 ]
 			then
-				echores "yes"
-				HAVE_MKL='#define HAVE_MKL 1'
-				HAVE_LAPACK='#define HAVE_LAPACK 1'
-				DEFINES="$DEFINES -DHAVE_MKL -DHAVE_LAPACK"
-				LINKFLAGS="$LINKFLAGS -lmkl -lguide -lmkl_lapack"
-			else
-				if cc_check -lmkl -lguide -lmkl_lapack64
+				echores "`${SWIG} -version 2>&1 | grep Version | cut -f 3 -d ' '`"
+
+				HAVE_SWIG='#define HAVE_SWIG 1'
+				DEFINES="$DEFINES -DHAVE_SWIG"
+
+				USE_SWIG='yes'
+
+				if cygwin
 				then
-					echores "yes"
-					HAVE_MKL='#define HAVE_MKL 1'
-					HAVE_LAPACK='#define HAVE_LAPACK 1'
-					DEFINES="$DEFINES -DHAVE_MKL -DHAVE_LAPACK"
-					LINKFLAGS="$LINKFLAGS -lmkl -lguide -lmkl_lapack64"
+					EXT_LIB_SWIG=dll
+					POSTLINKFLAGS=$LINKFLAGS
+				fi
+			else
+				echores "`${SWIG} -version 2>&1 | grep Version | cut -f 3 -d ' '` ... too old version 1.3.29 or later required"
+				if test "$_swig" = yes ; then
+					die "swig outdated"
 				else
 					echores "no"
-
-cat > $TMPC << EOF
-#include <cblas.h>
-#include <clapack.h>
-
-int main(int argc, char** argv)
-{ 
-	int skip=argc;
-	int n=argc; double* a=0; double* v1=0; double* v2=0;
-	int result=clapack_dpotrf(CblasRowMajor, CblasUpper, n, a, n);
-	int r = cblas_ddot(n, v1, skip, v2, skip);
-	return 0;
-}
-EOF
-					echocheck "Atlas support"
-					if cc_check -llapack_atlas -llapack -lcblas
-					then
-						echores "yes"
-						HAVE_ATLAS='#define HAVE_ATLAS 1'
-						HAVE_LAPACK='#define HAVE_LAPACK 1'
-						DEFINES="$DEFINES -DHAVE_ATLAS -DHAVE_LAPACK"
-						LINKFLAGS="$LINKFLAGS -llapack_atlas -llapack -lcblas"
-					else
-						if cc_check -latlas -llapack -lcblas
-						then
-							echores "yes"
-							HAVE_ATLAS='#define HAVE_ATLAS 1'
-							HAVE_LAPACK='#define HAVE_LAPACK 1'
-							DEFINES="$DEFINES -DHAVE_ATLAS -DHAVE_LAPACK"
-							LINKFLAGS="$LINKFLAGS -latlas -llapack -lcblas"
-						else
-							echores "no"
-						fi
-
-cat > $TMPC << EOF
-#include <cblas.h>
-int dpotrf_(char* uplo, int* n, double* a, int* lda, int* info);
-int main(int argc, char** argv)
-{ 
-	char uplo = 'U';
-	int info=0;
-	int skip=argc;
-	int n=argc; double* a=0; double* v1=0; double* v2=0;
-	dpotrf_(uplo, &n, a, 1, &info);
-	int r = cblas_ddot(n, v1, skip, v2, skip);
-	return 0;
-}
-EOF
-						echocheck "Vanilla lapack and blas support"
-						if cc_check -llapack -lcblas
-						then
-							echores "yes"
-							HAVE_LAPACK='#define HAVE_LAPACK 1'
-							DEFINES="$DEFINES -DHAVE_LAPACK -DHAVE_LAPACK"
-							LINKFLAGS="$LINKFLAGS -llapack -lcblas"
-						else
-							if cc_check -llapack -lblas
-							then
-								echores "yes"
-								HAVE_LAPACK='#define HAVE_LAPACK 1'
-								DEFINES="$DEFINES -DHAVE_LAPACK -DHAVE_LAPACK"
-								LINKFLAGS="$LINKFLAGS -llapack -lblas"
-							else
-								echores "no"
-							fi
-						fi
-					fi
+					USE_SWIG='no'
 				fi
 			fi
-		fi
-	fi
 
-	if test "$_cplex" = yes || test "$_cplex" = auto
-	then
-cat > $TMPC << EOF
-#include <ilcplex/cplex.h>
-int main (int argc, char **argv)
-{
-	int status = argc;
-	CPXENVptr     env = NULL;
-	env = CPXopenCPLEX (&status);
-	status = CPXcloseCPLEX (&env);
-	return status;
-}
-EOF
-		echocheck "CPLEX support"
-		if echo quit | cplex >/dev/null 2>&1
-		then
-			CPLEXVER=`echo quit | cplex 2>&1 | grep ^ILOG | cut -d ' ' -f 3 | tr -d ','`
-			if [ -z "$CPLEXVER" ]
-			then
-				echores "no"
-			else
-				echores "$CPLEXVER"
-
-				echocheck "CPLEX developer files"
-				CPLEXLINKFLAGS="-lcplex"
-				CPLEXINCLUDES=""
-
-				if linux
-				then
-					CPLEXVER=`echo $CPLEXVER | cut -f 1 -d '.'``echo $CPLEXVER | cut -f 2 -d '.' | cut -c 1`
-					CPLEXPATH=`env | grep ^ILOG_LICENSE_FILE | cut -f 2 -d '=' | sed 's/ilog.*$/ilog/'`/cplex$CPLEXVER
-					if x86
-					then
-						for cpx_path in "$CPLEXPATH/lib/i86_linux2_glibc2.3_gcc3.2/static_pic" \
-							"$CPLEXPATH/lib/x86_RHEL3.0_3.2/static_pic" \
-							"$CPLEXPATH/lib/x86_rhel4.0_3.4/static_pic" \
-							"$CPLEXPATH/lib/x86_debian4.0_4.1/static_pic" \
-							"$CPLEXPATH/lib/x86_sles9.0_3.3/static_pic"
-						do
-							if test -d $cpx_path
-							then
-								CPLEXLINKFLAGS="-L$cpx_path -lcplex"
-								CPLEXINCLUDES="-I$CPLEXPATH/include"
-								break
-							fi
-						done
-					elif x86_64
-					then
-						for cpx_path in "$CPLEXPATH/lib/x86-64_RHEL3.0_3.2/static_pic" \
-							"$CPLEXPATH/lib/x86-64_rhel4.0_3.4/static_pic" \
-							"$CPLEXPATH/lib/x86-64_debian4.0_4.1/static_pic" \
-							"$CPLEXPATH/lib/x86-64_sles9.0_3.3/static_pic"
-						do
-							if test -d $cpx_path
-							then
-								CPLEXLINKFLAGS="-L$cpx_path -lcplex"
-								CPLEXINCLUDES="-I$CPLEXPATH/include"
-								break
-							fi
-						done
-					fi
-
-					if cc_check $CPLEXINCLUDES $CPLEXLINKFLAGS
-					then
-						echores "yes"
-						USE_CPLEX='#define USE_CPLEX 1'
-						DEFINES="$DEFINES -DUSE_CPLEX"
-						INCLUDES="$INCLUDES $CPLEXINCLUDES"
-						LINKFLAGS="$LINKFLAGS $CPLEXLINKFLAGS"
-						POSTLINKFLAGS="$POSTLINKFLAGS $CPLEXLINKFLAGS"
-					else
-						echores "no"
-					fi
-				else
-					die "non supported CPLEX architecture"
-				fi
-			fi
 		else
+			USE_SWIG="no"
 			echores "no"
-		fi
-	fi
-
-if test "$_glpk" = yes || test "$_glpk" = auto
-then
-cat >$TMPC<<EOF
-#include <glpk.h>
-int main()
-{
-glp_term_out(GLP_OFF);
-LPX* lp=lpx_create_prob();
-lpx_delete_prob(lp);
-return 0;
-}
-EOF
-	echocheck "GLPK"
-	GLPKLINKFLAGS="-lglpk -lm"
-	if cc_check $GLPKLINKFLAGS
-	then 
-		echores "yes"
-		USE_GLPK='#define USE_GLPK 1'
-		LINKFLAGS="$LINKFLAGS $GLPKLINKFLAGS"
-		DEFINES="$DEFINES -DUSE_GLPK"
-	else
-		echores "no"
-	fi
-fi
-
-if test "$_lpsolve" = yes || test "$_lpsolve" = auto
-then
-cat > $TMPC << EOF
-#include <lpsolve/lp_lib.h>
-int main (int argc, char **argv)
-{
-lprec* lp=make_lp(0,0);
-delete_lp(lp);
-return 0;
-}
-EOF
-	echocheck "lpsolve Developer Files"
-	LPSOLVELINKFLAGS="-L /usr/lib/lp_solve -llpsolve55"
-	if cc_check $LPSOLVELINKFLAGS
-	then 
-		echores "yes"
-		USE_LPSOLVE='#define USE_LPSOLVE 1'
-		LINKFLAGS="$LINKFLAGS $LPSOLVELINKFLAGS"
-		POSTLINKFLAGS="$POSTLINKFLAGS $LPSOLVELINKFLAGS"
-		DEFINES="$DEFINES -DUSE_LPSOLVE -DYY_NEVER_INTERACTIVE -DPARSER_LP -DINVERSE_ACTIVE=INVERSE_LUSOL -DRoleIsExternalInvEngine" 
-	else
-		echores "no"
-	fi
-fi
-
-
-if test "$_wtiming" = yes
-then
-	USE_W_TIMING='#define USE_W_TIMING 1'
-	DEFINES="$DEFINES -DUSE_W_TIMING"
-fi
-
-if test "$_largefile" = yes
-then
-	HAVE_LARGEFILE='#define HAVE_LARGEFILE 1'
-	DEFINES="$DEFINES -DHAVE_LARGEFILE"
-fi
-
-
-if test "$_swig" = yes || test "$_swig" = auto
-then
-	echocheck "SWIG"
-	if ${SWIG} -version >/dev/null 2>&1
-	then
-		if [ `${SWIG} -version 2>&1 | grep Version | cut -f 3 -d ' ' | cut -f 2 -d '.'` -ge 4 ] || \
-			[ `${SWIG} -version 2>&1 | grep Version | cut -f 3 -d ' ' | cut -f 3 -d '.'` -ge 29 ]
-		then
-			echores "`${SWIG} -version 2>&1 | grep Version | cut -f 3 -d ' '`"
-
-			HAVE_SWIG='#define HAVE_SWIG 1'
-			DEFINES="$DEFINES -DHAVE_SWIG"
-
-			USE_SWIG='yes'
-
-			if cygwin
-			then
-				EXT_LIB_SWIG=dll
-				POSTLINKFLAGS=$LINKFLAGS
-			fi
-		else
-			echores "`${SWIG} -version 2>&1 | grep Version | cut -f 3 -d ' '` ... too old version 1.3.29 or later required"
 			if test "$_swig" = yes ; then
-				die "swig outdated"
-			else
-				echores "no"
-				USE_SWIG='no'
+				die "cannot find swig executable in path"
 			fi
 		fi
-
 	else
-		USE_SWIG="no"
-		echores "no"
-		if test "$_swig" = yes ; then
-			die "cannot find swig executable in path"
+		USE_SWIG='no'
+	fi
+
+	if test "$USE_SWIG" = 'yes'
+	then
+		if test "$_doxygen" = yes
+		then
+			HAVE_DOXYGEN='#define HAVE_DOXYGEN 1'
+			DEFINES="$DEFINES -DHAVE_DOXYGEN"
+
+			USE_DOXYGEN='yes'
+		else
+			USE_DOXYGEN='no'
+		fi
+
+		if test "$USE_SWIG" = 'yes'
+		then
+			if test "$BUILD_OCTAVE" = 'yes'
+			then
+				BUILD_OCTAVE_MODULAR=yes
+			fi
+			if test "$BUILD_PYTHON" = 'yes'
+			then
+				BUILD_PYTHON_MODULAR=yes
+			fi
+			if test "$BUILD_R" = 'yes'
+			then
+				BUILD_R_MODULAR=yes
+			fi
 		fi
 	fi
-else
-	USE_SWIG='no'
-fi
-
-if test "$USE_SWIG" = 'yes'
-then
-	if test "$_doxygen" = yes
-	then
-		HAVE_DOXYGEN='#define HAVE_DOXYGEN 1'
-		DEFINES="$DEFINES -DHAVE_DOXYGEN"
-
-		USE_DOXYGEN='yes'
-	else
-		USE_DOXYGEN='no'
-	fi
-fi
-
-if test "$_logcache" = yes
-then
-	USE_LOGCACHE='#define USE_LOGCACHE 1'
-	DEFINES="$DEFINES -DUSE_LOGCACHE"
-fi
-
-if test "$_shortrealkernelcache" = yes
-then
-	USE_SHORTREAL_KERNELCACHE='#define USE_SHORTREAL_KERNELCACHE 1'
-	DEFINES="$DEFINES -DUSE_SHORTREAL_KERNELCACHE"
-fi
-
-if test "$_treemem" = yes
-then
-	USE_TREEMEM='#define USE_TREEMEM 1'
-	DEFINES="$DEFINES -DUSE_TREEMEM"
-fi
-
-if test "$_logsumarray" = yes
-then
-	USE_LOGSUMARRAY='#define USE_LOGSUMARRAY 1'
-	DEFINES="$DEFINES -DUSE_LOGSUMARRAY"
-fi
-
-if test "$_hmmparallel" = yes
-then
-	USE_HMMPARALLELSTRUCTURES='#define USE_HMMPARALLELSTRUCTURES 1'
-	DEFINES="$DEFINES -DUSE_HMMPARALLELSTRUCTURES"
-	USE_HMMPARALLEL='#define USE_HMMPARALLEL 1'
-	DEFINES="$DEFINES -DUSE_HMMPARALLEL"
-fi
-
-if test "$_bigstates" = yes
-then
-	USE_BIGSTATES='#define USE_BIGSTATES 1'
-	DEFINES="$DEFINES -DUSE_BIGSTATES"
-fi
-
-if test "$_hmmcache" = yes
-then
-	USE_HMMCACHE='#define USE_HMMCACHE 1'
-	DEFINES="$DEFINES -DUSE_HMMCACHE"
-fi
-
-if test "$_debug" = yes
-then
-	_hmmdebug=yes
-	_pathdebug=yes
-fi
-
-if test "$_hmmdebug" = yes
-then
-	USE_HMMDEBUG='#define USE_HMMDEBUG 1'
-	DEFINES="$DEFINES -DUSE_HMMDEBUG"
-fi
-
-if test "$_pathdebug" = yes
-then
-	USE_PATHDEBUG='#define USE_PATHDEBUG 1'
-	DEFINES="$DEFINES -DUSE_PATHDEBUG"
-fi
-
-if test "$_svm_light" = yes
-then
-	USE_SVMLIGHT='#define USE_SVMLIGHT 1'
-	DEFINES="$DEFINES -DUSE_SVMLIGHT"
-	GPL=""
-else
-	GPL='#define GPL 1'
-	DEFINES="$DEFINES -DGPL"
-fi
 }
 
 test_matlab()
@@ -2646,7 +2199,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 
 int main(void) { return 0; }
 EOF
-			if cc_check
+			if cc_check $COMPFLAGS_CPP_MATLAB $INCLUDES_MATLAB $LINKFLAGS_MATLAB
 			then
 				echores "yes"
 				BUILD_MATLAB=yes
@@ -2741,7 +2294,7 @@ EOF
 				COMPFLAGS_C_OCTAVE="$COMPFLAGS_C -fPIC"
 
 				echocheck "Octave Developer Files"
-				if LD_LIBRARY_PATH=`octave-config -p OCTLIBDIR` cxx_check
+				if LD_LIBRARY_PATH=`octave-config -p OCTLIBDIR` cxx_check $COMPFLAGS_CPP_OCTAVE $INCLUDES_OCTAVE $LINKFLAGS_OCTAVE
 				then
 					echores "yes"
 					BUILD_OCTAVE=yes
@@ -2840,7 +2393,7 @@ EOF
 				# they for some reason are not automgically pulled in
 				LINKFLAGS_PYTHON="-lutil -ldl $LINKFLAGS_PYTHON"
 				POSTLINKFLAGS_PYTHON="-lutil -ldl $POSTLINKFLAGS_PYTHON"
-				if cc_check
+				if cc_check $COMPFLAGS_CPP_PYTHON $INCLUDES_PYTHON $LINKFLAGS_PYTHON 
 				then
 					echores "yes"
 					SWIGFLAGS_PYTHON="-w473 -c++ -python"
@@ -2914,7 +2467,7 @@ static SEXP sg_helper(SEXP args)
 }
 EOF
 			echocheck "R Developer Files"
-			if cc_check
+			if cc_check $COMPFLAGS_CPP_R $INCLUDES_R $LINKFLAGS_R
 			then
 				echores "yes"
 				SWIGFLAGS="-w473 -c++ -r"
@@ -2967,8 +2520,473 @@ EOF
 			echores "yes (internal in source tree)"
 			rm -f shogun 
 			ln -s libshogun shogun
-			INCLUDES="$INCLUDES -I${SRCDIR}"
+			INCLUDES_LIBSHOGUN="$INCLUDES -I${SRCDIR}"
 			BUILD_LIBSHOGUN=yes
+
+cat > $TMPC << EOF
+#include <math.h>
+int main(void) { return 0; }
+EOF
+			echocheck "Math support (-lm)"
+			if cc_check -lm
+			then
+				LINKFLAGS="$LINKFLAGS -lm"
+				echores "yes"
+			else
+				echores "no"
+				die "could not find math library (libm)"
+			fi
+
+cat > $TMPC << EOF
+#include <math.h>
+int main(int argc, char** argv)
+{
+	long double a=::powl((long double) argc, (long double) argc);
+	return (int) a;
+}
+EOF
+			echocheck "Math powl() support"
+			if cxx_check -lm
+			then
+				HAVE_POWL='#define HAVE_POWL 1'
+				DEFINES="$DEFINES -DHAVE_POWL"
+				echores "yes"
+			else
+				echores "no - resorting to pow()"
+			fi
+
+cat > $TMPC << EOF
+#include <math.h>
+int main(int argc, char** argv)
+{
+	long double a=::sqrtl((long double) argc);
+	return (int) a;
+}
+EOF
+			echocheck "Math sqrtl() support"
+			if cxx_check -lm
+			then
+				HAVE_SQRTL='#define HAVE_SQRTL 1'
+				DEFINES="$DEFINES -DHAVE_SQRTL"
+				echores "yes"
+			else
+				echores "no - resorting to sqrt()"
+			fi
+
+cat > $TMPC << EOF
+#include <math.h>
+int main(int argc, char** argv)
+{
+	double a=::log2((double) argc);
+	return (int) a;
+}
+EOF
+			echocheck "Math log2() support"
+			if cxx_check -lm
+			then
+				HAVE_LOG2='#define HAVE_LOG2 1'
+				DEFINES="$DEFINES -DHAVE_LOG2"
+				echores "yes"
+			else
+				echores "no - resorting to emulation()"
+			fi
+
+cat > $TMPC << EOF
+#include <pthread.h>
+int main(void) { return 0; }
+EOF
+			echocheck "Posix threads support"
+			_pthread=no
+
+			for pthr in -pthread -lpthread
+			do
+				if cc_check $pthr
+				then
+					COMPFLAGS_C="$COMPFLAGS_C $pthr"
+					COMPFLAGS_CPP="$COMPFLAGS_CPP $pthr"
+					LINKFLAGS="$LINKFLAGS $pthr"
+					_pthread=yes
+					break
+				fi
+			done
+
+			if test "$_pthread" = yes
+			then
+				echores "yes"
+			else
+				echores "no"
+				die "no posix threading support found (libpthread)"
+			fi
+
+			if test "$_mindy" = yes || test "$_mindy" = auto
+			then
+cat > $TMPC << EOF
+#include <mindy.h>
+int main(void) { return 0; }
+EOF
+				echocheck "Mindy support"
+				if cc_check -lmindy
+				then
+					HAVE_MINDY='#define HAVE_MINDY 1'
+					DEFINES="$DEFINES -DHAVE_MINDY"
+					LINKFLAGS="$LINKFLAGS -lmindy"
+					echores "yes"
+				else
+					echores "no - never mind"
+				fi
+			fi
+
+			if test "$_lapack" = yes || test "$_lapack" = auto
+			then
+cat > $TMPC << EOF
+#include <cblas.h>
+void dpotrf(char uplo, int n, double *a, int lda, int *info);
+
+int main(int argc, char** argv)
+{ 
+	char uplo = 'U';
+	int info=0;
+	int skip=argc;
+	int n=argc; double* a=0; double* v1=0; double* v2=0;
+	int lda=1;
+	dpotrf(uplo, n, a, lda, &info);
+	int r = cblas_ddot(n, v1, skip, v2, skip);
+	return 0;
+}
+EOF
+				echocheck "AMD ACML support"
+				if cc_check -lacml -lcblas -lgfortran
+				then
+					echores "yes"
+					HAVE_ACML='#define HAVE_ACML 1'
+					HAVE_LAPACK='#define HAVE_LAPACK 1'
+					DEFINES="$DEFINES -DHAVE_ACML -DHAVE_LAPACK"
+					LINKFLAGS="$LINKFLAGS -lacml -lcblas -lgfortran"
+				else
+					echores "no"
+
+cat > $TMPC << EOF
+#include <mkl_cblas.h>
+void dpotrf(char* uplo, int* n, double* a, int* lda, int* info);
+
+int main(int argc, char** argv)
+{ 
+	char uplo = 'U';
+	int info=0;
+	int skip=argc;
+	int n=argc; double* a=0; double* v1=0; double* v2=0;
+	int lda=1;
+	dpotrf(&uplo, &n, a, &lda, &info);
+	int r = cblas_ddot(n, v1, skip, v2, skip);
+	return 0;
+}
+EOF
+					echocheck "Intel MKL support"
+					if cc_check -lmkl -lguide -lmkl_lapack
+					then
+						echores "yes"
+						HAVE_MKL='#define HAVE_MKL 1'
+						HAVE_LAPACK='#define HAVE_LAPACK 1'
+						DEFINES="$DEFINES -DHAVE_MKL -DHAVE_LAPACK"
+						LINKFLAGS="$LINKFLAGS -lmkl -lguide -lmkl_lapack"
+					else
+						if cc_check -lmkl -lguide -lmkl_lapack64
+						then
+							echores "yes"
+							HAVE_MKL='#define HAVE_MKL 1'
+							HAVE_LAPACK='#define HAVE_LAPACK 1'
+							DEFINES="$DEFINES -DHAVE_MKL -DHAVE_LAPACK"
+							LINKFLAGS="$LINKFLAGS -lmkl -lguide -lmkl_lapack64"
+						else
+							echores "no"
+
+cat > $TMPC << EOF
+#include <cblas.h>
+#include <clapack.h>
+
+int main(int argc, char** argv)
+{ 
+	int skip=argc;
+	int n=argc; double* a=0; double* v1=0; double* v2=0;
+	int result=clapack_dpotrf(CblasRowMajor, CblasUpper, n, a, n);
+	int r = cblas_ddot(n, v1, skip, v2, skip);
+	return 0;
+}
+EOF
+							echocheck "Atlas support"
+							if cc_check -llapack_atlas -llapack -lcblas
+							then
+								echores "yes"
+								HAVE_ATLAS='#define HAVE_ATLAS 1'
+								HAVE_LAPACK='#define HAVE_LAPACK 1'
+								DEFINES="$DEFINES -DHAVE_ATLAS -DHAVE_LAPACK"
+								LINKFLAGS="$LINKFLAGS -llapack_atlas -llapack -lcblas"
+							else
+								if cc_check -latlas -llapack -lcblas
+								then
+									echores "yes"
+									HAVE_ATLAS='#define HAVE_ATLAS 1'
+									HAVE_LAPACK='#define HAVE_LAPACK 1'
+									DEFINES="$DEFINES -DHAVE_ATLAS -DHAVE_LAPACK"
+									LINKFLAGS="$LINKFLAGS -latlas -llapack -lcblas"
+								else
+									echores "no"
+								fi
+
+cat > $TMPC << EOF
+#include <cblas.h>
+int dpotrf_(char* uplo, int* n, double* a, int* lda, int* info);
+int main(int argc, char** argv)
+{ 
+	char uplo = 'U';
+	int info=0;
+	int skip=argc;
+	int n=argc; double* a=0; double* v1=0; double* v2=0;
+	dpotrf_(uplo, &n, a, 1, &info);
+	int r = cblas_ddot(n, v1, skip, v2, skip);
+	return 0;
+}
+EOF
+								echocheck "Vanilla lapack and blas support"
+								if cc_check -llapack -lcblas
+								then
+									echores "yes"
+									HAVE_LAPACK='#define HAVE_LAPACK 1'
+									DEFINES="$DEFINES -DHAVE_LAPACK -DHAVE_LAPACK"
+									LINKFLAGS="$LINKFLAGS -llapack -lcblas"
+								else
+									if cc_check -llapack -lblas
+									then
+										echores "yes"
+										HAVE_LAPACK='#define HAVE_LAPACK 1'
+										DEFINES="$DEFINES -DHAVE_LAPACK -DHAVE_LAPACK"
+										LINKFLAGS="$LINKFLAGS -llapack -lblas"
+									else
+										echores "no"
+									fi
+								fi
+							fi
+						fi
+					fi
+				fi
+			fi
+
+			if test "$_cplex" = yes || test "$_cplex" = auto
+			then
+cat > $TMPC << EOF
+#include <ilcplex/cplex.h>
+int main (int argc, char **argv)
+{
+	int status = argc;
+	CPXENVptr     env = NULL;
+	env = CPXopenCPLEX (&status);
+	status = CPXcloseCPLEX (&env);
+	return status;
+}
+EOF
+				echocheck "CPLEX support"
+				if echo quit | cplex >/dev/null 2>&1
+				then
+					CPLEXVER=`echo quit | cplex 2>&1 | grep ^ILOG | cut -d ' ' -f 3 | tr -d ','`
+					if [ -z "$CPLEXVER" ]
+					then
+						echores "no"
+					else
+						echores "$CPLEXVER"
+
+						echocheck "CPLEX developer files"
+						CPLEXLINKFLAGS="-lcplex"
+						CPLEXINCLUDES=""
+
+						if linux
+						then
+							CPLEXVER=`echo $CPLEXVER | cut -f 1 -d '.'``echo $CPLEXVER | cut -f 2 -d '.' | cut -c 1`
+							CPLEXPATH=`env | grep ^ILOG_LICENSE_FILE | cut -f 2 -d '=' | sed 's/ilog.*$/ilog/'`/cplex$CPLEXVER
+							if x86
+							then
+								for cpx_path in "$CPLEXPATH/lib/i86_linux2_glibc2.3_gcc3.2/static_pic" \
+									"$CPLEXPATH/lib/x86_RHEL3.0_3.2/static_pic" \
+									"$CPLEXPATH/lib/x86_rhel4.0_3.4/static_pic" \
+									"$CPLEXPATH/lib/x86_debian4.0_4.1/static_pic" \
+									"$CPLEXPATH/lib/x86_sles9.0_3.3/static_pic"
+								do
+									if test -d $cpx_path
+									then
+										CPLEXLINKFLAGS="-L$cpx_path -lcplex"
+										CPLEXINCLUDES="-I$CPLEXPATH/include"
+										break
+									fi
+								done
+							elif x86_64
+							then
+								for cpx_path in "$CPLEXPATH/lib/x86-64_RHEL3.0_3.2/static_pic" \
+									"$CPLEXPATH/lib/x86-64_rhel4.0_3.4/static_pic" \
+									"$CPLEXPATH/lib/x86-64_debian4.0_4.1/static_pic" \
+									"$CPLEXPATH/lib/x86-64_sles9.0_3.3/static_pic"
+								do
+									if test -d $cpx_path
+									then
+										CPLEXLINKFLAGS="-L$cpx_path -lcplex"
+										CPLEXINCLUDES="-I$CPLEXPATH/include"
+										break
+									fi
+								done
+							fi
+
+							if cc_check $CPLEXINCLUDES $CPLEXLINKFLAGS
+							then
+								echores "yes"
+								USE_CPLEX='#define USE_CPLEX 1'
+								DEFINES="$DEFINES -DUSE_CPLEX"
+								INCLUDES="$INCLUDES $CPLEXINCLUDES"
+								LINKFLAGS="$LINKFLAGS $CPLEXLINKFLAGS"
+								POSTLINKFLAGS="$POSTLINKFLAGS $CPLEXLINKFLAGS"
+							else
+								echores "no"
+							fi
+						else
+							die "non supported CPLEX architecture"
+						fi
+					fi
+				else
+					echores "no"
+				fi
+			fi
+
+			if test "$_glpk" = yes || test "$_glpk" = auto
+			then
+cat >$TMPC<<EOF
+#include <glpk.h>
+int main()
+{
+glp_term_out(GLP_OFF);
+LPX* lp=lpx_create_prob();
+lpx_delete_prob(lp);
+return 0;
+}
+EOF
+				echocheck "GLPK"
+				GLPKLINKFLAGS="-lglpk -lm"
+				if cc_check $GLPKLINKFLAGS
+				then 
+					echores "yes"
+					USE_GLPK='#define USE_GLPK 1'
+					LINKFLAGS="$LINKFLAGS $GLPKLINKFLAGS"
+					DEFINES="$DEFINES -DUSE_GLPK"
+				else
+					echores "no"
+				fi
+			fi
+
+			if test "$_lpsolve" = yes || test "$_lpsolve" = auto
+			then
+cat > $TMPC << EOF
+#include <lpsolve/lp_lib.h>
+int main (int argc, char **argv)
+{
+lprec* lp=make_lp(0,0);
+delete_lp(lp);
+return 0;
+}
+EOF
+				echocheck "lpsolve Developer Files"
+				LPSOLVELINKFLAGS="-L /usr/lib/lp_solve -llpsolve55"
+				if cc_check $LPSOLVELINKFLAGS
+				then 
+					echores "yes"
+					USE_LPSOLVE='#define USE_LPSOLVE 1'
+					LINKFLAGS="$LINKFLAGS $LPSOLVELINKFLAGS"
+					POSTLINKFLAGS="$POSTLINKFLAGS $LPSOLVELINKFLAGS"
+					DEFINES="$DEFINES -DUSE_LPSOLVE -DYY_NEVER_INTERACTIVE -DPARSER_LP -DINVERSE_ACTIVE=INVERSE_LUSOL -DRoleIsExternalInvEngine" 
+				else
+					echores "no"
+				fi
+			fi
+
+			if test "$_largefile" = yes
+			then
+				HAVE_LARGEFILE='#define HAVE_LARGEFILE 1'
+				DEFINES="$DEFINES -DHAVE_LARGEFILE"
+			fi
+
+			if test "$_wtiming" = yes
+			then
+				USE_W_TIMING='#define USE_W_TIMING 1'
+				DEFINES="$DEFINES -DUSE_W_TIMING"
+			fi
+
+			if test "$_logcache" = yes
+			then
+				USE_LOGCACHE='#define USE_LOGCACHE 1'
+				DEFINES="$DEFINES -DUSE_LOGCACHE"
+			fi
+
+			if test "$_shortrealkernelcache" = yes
+			then
+				USE_SHORTREAL_KERNELCACHE='#define USE_SHORTREAL_KERNELCACHE 1'
+				DEFINES="$DEFINES -DUSE_SHORTREAL_KERNELCACHE"
+			fi
+
+			if test "$_treemem" = yes
+			then
+				USE_TREEMEM='#define USE_TREEMEM 1'
+				DEFINES="$DEFINES -DUSE_TREEMEM"
+			fi
+
+			if test "$_logsumarray" = yes
+			then
+				USE_LOGSUMARRAY='#define USE_LOGSUMARRAY 1'
+				DEFINES="$DEFINES -DUSE_LOGSUMARRAY"
+			fi
+
+			if test "$_hmmparallel" = yes
+			then
+				USE_HMMPARALLELSTRUCTURES='#define USE_HMMPARALLELSTRUCTURES 1'
+				DEFINES="$DEFINES -DUSE_HMMPARALLELSTRUCTURES"
+				USE_HMMPARALLEL='#define USE_HMMPARALLEL 1'
+				DEFINES="$DEFINES -DUSE_HMMPARALLEL"
+			fi
+
+			if test "$_bigstates" = yes
+			then
+				USE_BIGSTATES='#define USE_BIGSTATES 1'
+				DEFINES="$DEFINES -DUSE_BIGSTATES"
+			fi
+
+			if test "$_hmmcache" = yes
+			then
+				USE_HMMCACHE='#define USE_HMMCACHE 1'
+				DEFINES="$DEFINES -DUSE_HMMCACHE"
+			fi
+
+			if test "$_debug" = yes
+			then
+				_hmmdebug=yes
+				_pathdebug=yes
+			fi
+
+			if test "$_hmmdebug" = yes
+			then
+				USE_HMMDEBUG='#define USE_HMMDEBUG 1'
+				DEFINES="$DEFINES -DUSE_HMMDEBUG"
+			fi
+
+			if test "$_pathdebug" = yes
+			then
+				USE_PATHDEBUG='#define USE_PATHDEBUG 1'
+				DEFINES="$DEFINES -DUSE_PATHDEBUG"
+			fi
+
+			if test "$_svm_light" = yes
+			then
+				USE_SVMLIGHT='#define USE_SVMLIGHT 1'
+				DEFINES="$DEFINES -DUSE_SVMLIGHT"
+				GPL=""
+			else
+				GPL='#define GPL 1'
+				DEFINES="$DEFINES -DGPL"
+			fi
+
 		else
 			if cc_check
 			then
@@ -2982,7 +3000,7 @@ EOF
 			fi
 		fi
 		LIBSHOGUN_TARGET=libshogun.so
-		POSTLINKFLAGS="$POSTLINKFLAGS -shared -fPIC"
+		POSTLINKFLAGS_LIBSHOGUN="$POSTLINKFLAGS -shared -fPIC"
 	fi
 }
 
@@ -3170,10 +3188,32 @@ EOF
 
 type_buildinfo()
 {
+	intf=""
+
+	test "$BUILD_LIBSHOGUN" = yes && intf="$intf libshogun"
+	test "$BUILD_CMDLINE" = yes && intf="$intf cmdline"
+	test "$BUILD_MATLAB" = yes && intf="$intf matlab"
+	test "$BUILD_OCTAVE" = yes && intf="$intf octave"
+	test "$BUILD_R" = yes && intf="$intf r"
+	test "$BUILD_PYTHON" = yes && intf="$intf python"
+
+	test "$BUILD_OCTAVE_MODULAR" = yes && intf="$intf octave_modular"
+	test "$BUILD_R_MODULAR" = yes && intf="$intf r_modular"
+	test "$BUILD_PYTHON_MODULAR" = yes && intf="$intf python_modular"
+
+	cfgopts=""
+	if test -n "$CONFIGURE_OPTIONS"
+	then
+		cfgopts="with the following $CONFIGURE_OPTIONS"
+	fi
+
 	cat <<EOF
 
-SHOGUN was configured for $_interface interface with the following 
-$CONFIGURE_OPTIONS
+SHOGUN was configured for
+
+  $intf
+
+interface(s) $cfgopts
 
 type "make" now to compile
 
@@ -3200,6 +3240,7 @@ test_python
 test_r
 test_libshogun
 test_cmdline
+test_modular
 svmlight_warn_license
 write_dot_config "$SRCDIR/.config"
 write_config_h "$SRCDIR/config.h"
