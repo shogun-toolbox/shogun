@@ -3174,7 +3174,7 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 			{
 				DREAL nscore = PEN.element(to_state, from_state)->lookup_penalty(pos[to_pos]-pos[from_pos], svm_value) ;
 				my_scores[i] += nscore ;
-				if (nscore !=0)
+				if (false)// (nscore !=0)
 				{
 					for (INT s=0;s<m_num_lin_feat_plifs_cum[m_num_raw_data];s++)
 						SG_PRINT("svm_value: %f \n", svm_value[s]);
@@ -3204,7 +3204,7 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 				{
 					for (INT s=0;s<m_num_lin_feat_plifs_cum[m_num_raw_data];s++)
 						svm_value[s]=-CMath::INFTY;
-					DREAL intensities[m_num_probes_cum[d]];
+					DREAL* intensities = new DREAL[m_num_probes_cum[d]];
 					INT num_intensities = raw_intensities_interval_query(pos[from_pos], pos[to_pos],intensities, d);
 					//SG_PRINT("pos[from_pos]:%i, pos[to_pos]:%i, num_intensities:%i\n",pos[from_pos],pos[to_pos], num_intensities);
 					for (INT k=0;k<num_intensities;k++)
@@ -3221,6 +3221,7 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 						PEN.element(to_state, from_state)->penalty_add_derivative(-CMath::INFTY, svm_value) ;	
 						
 					}
+					delete[] intensities;
 				}
 			}
 #ifdef DYNPROG_DEBUG
@@ -3236,8 +3237,8 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 					SG_DEBUG( "%i. emmission penalty: to_state=%i to_pos=%i score=%1.2f (no signal plif)\n", i, to_state, to_pos, seq_input.element(to_state, to_pos, k)) ;
 #endif
 					my_scores[i] += seq_input.element(to_state, to_pos, k) ;
-					if (seq_input.element(to_state, to_pos, k) !=0)
-						SG_PRINT("features(%i,%i): %f\n",to_state,to_pos,seq_input.element(to_state, to_pos, k));
+					//if (seq_input.element(to_state, to_pos, k) !=0)
+					//	SG_PRINT("features(%i,%i): %f\n",to_state,to_pos,seq_input.element(to_state, to_pos, k));
 					break ;
 				}
 				if (PEN_state_signals.element(to_state, k)!=NULL)
@@ -3250,8 +3251,8 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 					//SG_PRINT("PEN_state_signals->id: ");
 					//PEN_state_signals.element(to_state, k)->get_used_svms(&num_current_svms, svm_ids);
 					//SG_PRINT("\n");
-					if (nscore != 0)
-						SG_PRINT( "%i. emmission penalty: to_state=%i to_pos=%i value=%1.2f score=%1.2f k=%i\n", i, to_state, to_pos, seq_input.element(to_state, to_pos, k), nscore, k) ;
+					//if (nscore != 0)
+						//SG_PRINT( "%i. emmission penalty: to_state=%i to_pos=%i value=%1.2f score=%1.2f k=%i\n", i, to_state, to_pos, seq_input.element(to_state, to_pos, k), nscore, k) ;
 #ifdef DYNPROG_DEBUG
 					SG_DEBUG( "%i. emmission penalty: to_state=%i to_pos=%i value=%1.2f score=%1.2f k=%i\n", i, to_state, to_pos, seq_input.element(to_state, to_pos, k), nscore, k) ;
 #endif
