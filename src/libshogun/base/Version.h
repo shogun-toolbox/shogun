@@ -27,7 +27,7 @@ public:
 
 	static inline void print_version()
 	{
-		SG_SPRINT("shogun (%s/%s/%s%d)\n\n", TARGET, MACHINE, VERSION_RELEASE, version_revision);
+		SG_SPRINT("libshogun (%s/%s%d)\n\n", MACHINE, VERSION_RELEASE, version_revision);
 		SG_SPRINT("Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max Planck Society\n");
 		SG_SPRINT("Written   (W) 2000-2008 Soeren Sonnenburg, Gunnar Raetsch et al.\n\n");
 #ifdef GPL

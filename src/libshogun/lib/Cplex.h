@@ -139,7 +139,7 @@ public:
 	}
 
 	/** @return object name */
-	inline virtual const char* get_name() { return "Cplex"; }
+	inline virtual const char* get_name() const { return "Cplex"; }
 
 protected:
   CPXENVptr     env;

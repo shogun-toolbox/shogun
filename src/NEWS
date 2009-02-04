@@ -1,6 +1,6 @@
 2009-02-10 Soeren Sonnenburg <debian@nn7.de>
 
-	* SHOGUN Release version 0.7.0
+	* SHOGUN Release version 0.7.0 (libshogun 0.0)
 	* This release contains major feature enhancements and bugfixes:
 		- Implement DotFeatures and CombinedDotFeatures. DotFeatures need
 		  to provide dot-product and similar operations (hence the name).

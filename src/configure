@@ -1,6 +1,7 @@
 #!/bin/bash
 
-VERSION=`grep "SHOGUN Release version" NEWS 2>&1 | cut -c 27- | head -n 1`
+VERSION=`grep "SHOGUN Release version" NEWS 2>&1 | cut -c 27- | cut -f 1 -d ' ' | head -n 1`
+SONAME=libshogun.`grep "SHOGUN Release version" NEWS 2>&1 | cut -f 2 -d '(' | cut -f 2 -d ' ' | tr -d ')' | head -n 1`
 
 [ -n "$VERSION" ] && echo "Running configure for SHOGUN version $VERSION"
 
@@ -32,11 +33,8 @@ EXT_OBJ_C=c.o
 
 #the defaults are
 _readline=auto
-_matlab=no
 _mindy=auto
-_R=no
-_python=no
-_octave=no
+_r=no
 if [ -e classifier/svm/SVM_light.cpp ]; then
   _svm_light=yes
   _gpl=no
@@ -56,7 +54,7 @@ _logsumarray=no
 _hmmparallel=no
 _largefile=yes
 _doxygen=auto
-_swig=no 
+_swig=auto
 _lapack=auto
 _bigstates=yes
 _hmmcache=yes
@@ -77,7 +75,8 @@ _octdir=""
 _inc_extra=""
 _ld_extra=""
 _optimizing=""
-_interface=""
+_interfaces=""
+_libshogun=auto _cmdline=auto _python=auto _octave=auto _matlab=auto _r=auto _python_modular=auto _octave_modular=auto _r_modular=auto 
 test -z "$INCLUDES" || _inc_extra="-I`echo $INCLUDES | sed 's,:, -I,g'`"
 test -z "$LIBS" || _ld_extra="-L`echo $LIBS | sed 's,:, -L,g'`"
 
@@ -91,12 +90,50 @@ COMPFLAGS_C=
 COMPFLAGS_CPP=
 test "$CFLAGS" && COMPFLAGS_C="$COMPFLAGS_C $CFLAGS"
 test "$CXXFLAGS" && COMPFLAGS_CPP="$COMPFLAGS_CPP $CXXFLAGS"
-INCLUDES=-I${SRCDIR}
+INCLUDES=-I${SRCDIR}/libshogun
 LINK=c++
+DEFINES=
 LINKFLAGS=
 POSTLINKFLAGS=
-DEFINES=
-TARGET="shogun"
+BUILD_OCTAVE_MODULAR=no
+BUILD_R_MODULAR=no
+BUILD_PYTHON_MODULAR=no
+
+BUILD_LIBSHOGUN=no
+LIBSHOGUN_TARGET=
+DEFINES_LIBSHOGUN=
+LINKFLAGS_LIBSHOGUN=
+POSTLINKFLAGS_LIBSHOGUN="-Xlinker -soname=$SONAME"
+
+BUILD_CMDLINE=no
+CMDLINE_TARGET=
+DEFINES_CMDLINE=
+LINKFLAGS_CMDLINE=
+POSTLINKFLAGS_CMDLINE=
+
+BUILD_MATLAB=no
+MATLAB_TARGET=
+DEFINES_MATLAB=
+LINKFLAGS_MATLAB=
+POSTLINKFLAGS_MATLAB=
+
+BUILD_OCTAVE=no
+OCTAVE_TARGET=
+DEFINES_OCTAVE=
+LINKFLAGS_OCTAVE=
+POSTLINKFLAGS_OCTAVE=
+
+BUILD_R=no
+R_TARGET=
+DEFINES_R=
+LINKFLAGS_R=
+POSTLINKFLAGS_R=
+
+BUILD_PYTHON=no
+PYTHON_TARGET=
+DEFINES_PYTHON=
+LINKFLAGS_PYTHON=
+POSTLINKFLAGS_PYTHON=
 
 # stuff needed for autodetections (definitely needs cleanup)
 TMPLOG="configure.log"
@@ -523,7 +560,8 @@ for parm in "$@" ; do
 Usage: $0 [OPTIONS]...
 
 Configuration:
-  --interface=INTERFACE         configure shogun for interface
+  --interfaces=INTERFACE1,INTERFACE2,...
+                                configure shogun for interface
                                 cmdline, python-modular, python, r, r-modular
                                 octave, octave-modular, matlab or libshogun
   -h, -help, --help             display this help and exit
@@ -600,8 +638,53 @@ _cpudetection=yes
 
 for ac_option do
   case "$ac_option" in
-  --interface=*)
-	_interface=`echo $ac_option | cut -d '=' -f 2`
+  --interfaces=*)
+	_libshogun=no
+	_cmdline=no
+	_python=no
+	_octave=no
+	_matlab=no
+	_r=no
+	_python_modular=no
+	_octave_modular=no
+	_r_modular=no
+
+	_interfaces=`echo $ac_option | cut -d '=' -f 2`
+    for intf in `echo $_interfaces | cut -d '=' -f 2 | tr ',' ' '`
+	do
+	  case "$intf" in
+	  libshogun)
+	  	_libshogun=yes
+		;;
+	  cmdline)
+	  	_cmdline=yes
+		;;
+	  python)
+	  	_python=yes
+		;;
+	  octave)
+	  	_octave=yes
+		;;
+	  matlab)
+	  	_matlab=yes
+		;;
+	  r)
+	  	_r=yes
+		;;
+	  python-modular)
+	  	_python_modular=yes
+		;;
+	  octave-modular)
+	  	_octave_modular=yes
+		;;
+	  r-modular)
+	  	_r_modular=yes
+		;;
+	  *)
+		die "Unknown interface: $intf"
+		;;
+	  esac
+	done
 	;;
   --target=*)
     _target=`echo $ac_option | cut -d '=' -f 2`
@@ -664,8 +747,6 @@ for ac_option do
   --enable-hmm-parallel)	_hmmparallel=yes	;;
   --disable-largefile)	_largefile=no	;;
   --enable-largefile)	_largefile=yes	;;
-  --enable-swig-python)	_swig=yes ; _python=yes	;;
-  --disable-swig-python)_swig=no ; _python=no ;;
   --enable-doxygen)		_doxygen=yes ;;
   --disable-doxygen)	_doxygen=no ;;
   --disable-lapack)		_lapack=no	;;
@@ -731,55 +812,6 @@ for ac_option do
     ;;
   esac
 done
-
-if test -z "$_interface"; then
-	cat <<EOF
-Please specify interface using
-
-    ./configure --interface=INTERFACE,
-see ./configure --help for supported interfaces
-EOF
-	die "no interface specified"
-fi
-
-if test "$_interface" = "cmdline"; then
-	echo "Enabling cmdline interface"
-	_cmdline=yes
-	_swig=no
-elif test "$_interface" = "python-modular"; then
-	echo "Enabling modular python interface"
-	_python=yes
-	_swig=yes
-elif test "$_interface" = "python"; then
-	echo "Enabling python interface"
-	_python=yes
-	_swig=no
-elif test "$_interface" = "r"; then
-	echo "Enabling R interface"
-	_R=yes
-	_swig=no
-elif test "$_interface" = "r-modular"; then
-	echo "Enabling modular R interface"
-	_R=yes
-	_swig=yes
-elif test "$_interface" = "octave"; then
-	echo "Enabling Octave interface"
-	_octave=yes
-	_swig=no
-elif test "$_interface" = "octave-modular"; then
-	echo "Enabling modular Octave interface"
-	_octave=yes
-	_swig=yes
-elif test "$_interface" = "matlab"; then
-	_matlab=yes
-	echo "Enabling Matlab(tm) interface"
-	_swig=no
-elif test "$_interface" = "libshogun"; then
-	echo "Enabling library interface"
-	_swig=no
-else
-	die "unknown interface, see ./configure --help for supported interfaces"
-fi
 
 #set install dirs
 test -z "$_bindir" && _bindir="$_prefix/bin"
@@ -1915,7 +1947,6 @@ fi
 	  COMPFLAGS_C="$COMPFLAGS_CPP -pg"
 	  LINKFLAGS="$LINKFLAGS -pg"
   fi
-
 }
 
 set_opts()
@@ -1948,7 +1979,7 @@ EOF
 		if test "$_matlab" = yes
 		then
 			true #nop	
-		elif test "$_R" = yes
+		elif test "$_r" = yes
 		then
 			true #nop	
 		else
@@ -2058,27 +2089,6 @@ EOF
 	else
 		echores "no"
 		die "no posix threading support found (libpthread)"
-	fi
-
-	if test "$_R" != yes -a "$_python" != yes -a "$_matlab" != yes -a "$_octave" != yes
-	then
-		if test "$_readline" = yes || test "$_readline" = auto;
-		then
-cat > $TMPC << EOF
-#include <readline/readline.h>
-int main(void) { return 0; }
-EOF
-			echocheck "Readline support"
-			if cc_check -lreadline >/dev/null 2>&1
-			then
-				HAVE_READLINE='#define HAVE_READLINE 1'
-				DEFINES="$DEFINES -DHAVE_READLINE"
-				LINKFLAGS="$LINKFLAGS -lreadline"
-				echores "yes"
-			else
-				echores "no"
-			fi
-		fi
 	fi
 
 	if test "$_mindy" = yes || test "$_mindy" = auto
@@ -2234,345 +2244,6 @@ EOF
 		fi
 	fi
 
-	if test "$_matlab" = yes
-	then
-		if win32
-		then
-			echocheck "Matlab"
-			matlab.exe /nosplash /minimize /r "fid=fopen('matlab_version.txt','wb');fprintf(fid,version);fclose(fid);quit"
-			if test -f matlab_version.txt
-			then
-				echores `cat matlab_version.txt`
-				matlab.exe /nosplash /minimize /r "system('env > matlab_path.txt');quit"
-				MATLAB_DIR=`grep '^_=' matlab_path.txt | cut -c 3- | sed 's#/bin/win32/matlab.exe##'`
-				MATLAB_SRCDIR="$MATLAB_DIR/extern/src"
-				MATLAB_INCDIR="$MATLAB_DIR/extern/include"
-				MATLAB_LIBDIR="$MATLAB_DIR/extern/lib"
-				MATLAB_BINDIR="$MATLAB_DIR/bin"
-			else
-				echores "no"
-				die "could not find matlab in path / matlab crashed"
-			fi
-
-		else
-			echocheck "Matlab"
-			if matlab -nojvm -nodisplay -r 'version;quit' >/dev/null 2>&1
-			then
-				 echores "`matlab -nojvm -nodisplay -r \"sprintf('ver:%s',version),quit\" | grep '^ver:' | cut -f '2-' -d ':'`"
-				 MATLAB_DIR=`echo "unix('env');quit" | matlab -nojvm -nodisplay | grep '^MATLAB=' | cut -c 8-`
-				 MATLAB_SRCDIR="$MATLAB_DIR/extern/src"
-				 MATLAB_INCDIR="$MATLAB_DIR/extern/include"
-				 MATLAB_LIBDIR="$MATLAB_DIR/extern/lib"
-				 MATLAB_BINDIR="$MATLAB_DIR/bin"
-			else
-				echores "no"
-				die "could not find matlab in path / matlab crashed"
-			fi
-		fi
-
-		HAVE_MATLAB='#define HAVE_MATLAB 1'
-		DEFINES="$DEFINES -DHAVE_MATLAB"
-
-		if osf1
-		then
-			COMPFLAGS_C="-DMATLAB_MEX_FILE$COMPFLAGS_C -shared -ieee -std1"
-			COMPFLAGS_CPP="-DMATLAB_MEX_FILE $COMPFLAGS_CPP -shared -ieee -std1"
-			LINKFLAGS="$LINKFLAGS -shared -Wl,-expect_unresolved,'*',-hidden,-exported_symbol,mexFunction,-exported_symbol,mexVersion,-exported_symbol,'__*' -L$MATLAB_BINDIR/alpha -lmx -lmex -lmat"
-			INCLUDES="$INCLUDES -I$MATLAB_INCDIR -I$MATLAB_SRCDIR"
-			TARGET="sg.mexaxp"
-		elif darwin
-		then
-		    INCLUDES="$INCLUDES -I$MATLAB_INCDIR -I$MATLAB_SRCDIR"
-			if ppc
-			then
-				LINKFLAGS="$LINKFLAGS -bundle -Wl,-flat_namespace -undefined suppress -Wl,-exported_symbols_list,$MATLAB_LIBDIR/mac/mexFunction.map -L$MATLAB_BINDIR/mac -lmx -lmex -lmat"
-				TARGET="sg.mexmac"
-			elif x86
-			then
-				DEFINES="$DEFINES -DMX_COMPAT_32"
-				COMPFLAGS_C="$COMPFLAGS_CPP -DMX_COMPAT_32"
-				COMPFLAGS_CPP="$COMPFLAGS_CPP -DMX_COMPAT_32"
-				LINKFLAGS="$LINKFLAGS -bundle -Wl,-flat_namespace -undefined suppress -Wl,-exported_symbols_list,$MATLAB_LIBDIR/maci/mexFunction.map -L$MATLAB_BINDIR/maci -lmx -lmex -lmat"
-				TARGET="sg.mexmaci"
-			else
-				die "non supported matlab architecture"
-			fi
-		elif linux
-		then
-			if x86_64
-			then
-				COMPFLAGS_C="$COMPFLAGS_C -fPIC -fno-omit-frame-pointer -ansi -D_GNU_SOURCE"
-				COMPFLAGS_CPP="$COMPFLAGS_CPP -fPIC -fno-omit-frame-pointer -ansi -D_GNU_SOURCE"
-				LINKFLAGS="$LINKFLAGS -shared -Wl,--version-script,$MATLAB_LIBDIR/glnxa64/mexFunction.map -Wl,--rpath-link,$MATLAB_BINDIR/glnxa64 -L$MATLAB_BINDIR/glnxa64 -lmx -lmex -lmat"
-				INCLUDES="$INCLUDES -I$MATLAB_INCDIR -I$MATLAB_SRCDIR"
-				TARGET="sg.mexa64"
-			elif x86
-			then
-				LINKFLAGS="$LINKFLAGS -shared -Wl,--version-script,$MATLAB_LIBDIR/glnx86/mexFunction.map -Wl,--rpath-link,$MATLAB_LIBDIR/glnx86 -L$MATLAB_BINDIR/glnx86 -lmx -lmex -lmat"
-				INCLUDES="$INCLUDES -I$MATLAB_INCDIR -I$MATLAB_SRCDIR"
-				TARGET="sg.mexglx"
-			else
-				die "matlab only supports x86_84 and x86 linux architectures"
-			fi
-		elif sunos
-		then
-				COMPFLAGS_C="$COMPFLAGS_C -KPIC -dalign -xlibmieee -D__EXTENSIONS__ -D_POSIX_C_SOURCE=199506L -mt -xs -g -xO3 -xlibmil"
-
-				COMPFLAGS_CPP="$COMPFLAGS_CPP -KPIC -dalign -xlibmieee -D__EXTENSIONS__ -D_POSIX_C_SOURCE=199506L -mt -library=stlport4,Crun -xs -g -xO3 -xlibmil"
-				LINKFLAGS="$LINKFLAGS -G -mt -M$MATLAB_LIBDIR/sol64/mexFunction.map -L$MATLAB_BINDIR/sol64 -lmx -lmex -lmat"
-				INCLUDES="$INCLUDES -I$MATLAB_INCDIR -I$MATLAB_SRCDIR"
-				TARGET="sg.mexs64"
-		elif cygwin
-		then
-cat >mexFunction.map <<EOF
-MEX {
-_mexFunction;
-_mexVersion;
-};
-EOF
-			COMPFLAGS_C="$COMPFLAGS_C -mno-cygwin -DMATLAB_MEX_FILE"
-			COMPFLAGS_CPP="$COMPFLAGS_CPP -mno-cygwin -DMATLAB_MEX_FILE"
-			LINKFLAGS="$LINKFLAGS -shared -mno-cygwin -Wl,--version-script,mexFunction.map -Wl,--rpath-link,$MATLAB_LIBDIR/win32 -L$MATLAB_BINDIR/win32 -lmx -lmex -lmat"
-			INCLUDES="$INCLUDES -I$MATLAB_INCDIR"
-			TARGET="sg.dll"
-		else
-			die "non supported matlab architecture"
-		fi
-
-		echocheck "Matlab developer support (-lmx -lmex -lmat)"
-cat > $TMPC << EOF
-#include <mex.h>
-#include <mexversion.c>
-void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
-{
-
-}
-
-int main(void) { return 0; }
-EOF
-		if cc_check
-		then
-			echores "yes"
-		else
-			echores "no"
-			die "could not find matlab developer files (e.g. mex.h)"
-		fi
-	fi
-
-	if test "$_octave" = yes
-	then
-		echocheck "Octave"
-		if echo version | octave >/dev/null 2>&1
-		then
-			VERSION="`echo version | octave | grep ans | cut -f 3- -d ' '`"
-			if [ `echo "$VERSION" | cut -f 1 -d '.'` -ge 3 ]
-			then
-				echores "$VERSION"
-			else
-				die "$VERSION - too old, at least octave version 3.0 required"
-			fi
-		else
-			echores "no"
-			die "could not find octave in path / octave crashed"
-		fi
-
-		echocheck "octave-config"
-		if test -n "`octave-config -p OCTLIBDIR`" && test -n "`octave-config -p OCTINCLUDEDIR`" && test -n "`octave-config -p INCLUDEDIR`"
-		then
-			test -n "$_octdir" || _octdir=`octave-config --print LOCALAPIOCTFILEDIR`
-			echores "yes"
-		else
-			echores "no"
-			die "could not find octave-config in path / octave-config crashed"
-		fi
-
-cat > $TMPC << EOF
-
-#include <octave/config.h>
-
-#include <octave/defun-dld.h>
-#include <octave/error.h>
-#include <octave/oct-obj.h>
-#include <octave/pager.h>
-#include <octave/symtab.h>
-#include <octave/variables.h>
-
-DEFUN_DLD (sg, prhs, nlhs, "shogun.")
-{
-	int nrhs = prhs.length();
-	octave_value_list plhs;
-}
-EOF
-		EXT_IF_SWIG='stop'
-		PRE_LIB_SWIG=
-		EXT_LIB_SWIG=oct
-		SWIGFLAGS="-w473 -c++ -octave"
-		HAVE_OCTAVE='#define HAVE_OCTAVE 1'
-		DEFINES="$DEFINES -DHAVE_OCTAVE"
-
-		if darwin
-		then
-			LINKFLAGS="-bundle -Wl,-flat_namespace -L`octave-config -p OCTLIBDIR` -loctinterp -loctave -lcruft $LINKFLAGS"
-		else
-			OCTLIBDIR=`octave-config -p OCTLIBDIR`
-			LINKFLAGS="-shared -L $OCTLIBDIR -loctinterp -loctave -lcruft $LINKFLAGS"
-		fi
-		TARGET="sg.oct"
-		INCLUDES="$INCLUDES -I`octave-config -p OCTINCLUDEDIR` -I`octave-config -p INCLUDEDIR`"
-		COMPFLAGS_CPP="$COMPFLAGS_CPP -fPIC"
-		COMPFLAGS_C="$COMPFLAGS_C -fPIC"
-
-		echocheck "Octave Developer Files"
-		if LD_LIBRARY_PATH=`octave-config -p OCTLIBDIR` cxx_check
-		then
-			echores "yes"
-		else
-			echores "no"
-			die "octave developer files missing"
-		fi
-	fi
-
-	if test "$_python" = yes
-	then
-		echocheck "Python numpy support"
-		if $PYTHON -c "import sys; import numpy" >/dev/null 2>&1
-		then
-			if [ `$PYTHON -c 'import numpy; print numpy.__version__' | cut -c 1` -gt 0 ]
-			then
-				echores "`$PYTHON -c 'import numpy; print numpy.__version__'`"
-			else
-				echores "`$PYTHON -c 'import numpy; print numpy.__version__'`... too old version 1.0 or later required"
-				die "python numpy outdated"
-			fi
-		else
-			echores "no"
-			die "python numpy package missing"
-		fi
-
-		EXT_IF_SWIG='.py'
-		HAVE_PYTHON='#define HAVE_PYTHON 1'
-		DEFINES="$DEFINES -DHAVE_PYTHON"
-		test -n "$_pyinclude" && _pyinclude="-I$_pyinclude"
-		test -n "$_pyinclude" || _pyinclude=`$PYTHON -c "import numpy; import sys; print '-I'+sys.prefix+'/include/python'+sys.version[0:3]+' -I'+numpy.get_include()"`
-		_pylibpath=""
-		#test -n "$_pylibpath" && _pylibpath="-I$_pylibpath"
-		#test -n "$_pylibpath" || _pylibpath=`$PYTHON -c "import sys; print '-L'+sys.exec_prefix+'/lib/python'+sys.version[0:3]+'/config'"`
-		test -n "$_pylibs" || _pylibs=`$PYTHON -c "import sys; print 'python'+sys.version[0:3]"`
-		INCLUDES="$_pyinclude $INCLUDES"
-		COMPFLAGS_CPP="-fno-strict-aliasing -fPIC $COMPFLAGS_CPP"
-		COMPFLAGS_C="-fno-strict-aliasing -fPIC $COMPFLAGS_C"
-		if darwin
-		then
-			LINKFLAGS="$_pylibpath -l$_pylibs -ldl -bundle -Wl,-flat_namespace $LINKFLAGS"
-			POSTLINKFLAGS="$_pylibpath -l$_pylibs -ldl -bundle -Wl,-flat_namespace $POSTLINKFLAGS"
-		else
-			LINKFLAGS="-shared $_pylibpath -l$_pylibs $LINKFLAGS"
-			POSTLINKFLAGS="-shared $_pylibpath -l$_pylibs $POSTLINKFLAGS"
-		fi
-
-		if win32
-		then
-			TARGET="sg.dll"
-		else
-			TARGET="sg.so"
-		fi
-
-cat > $TMPC << EOF
-#include <Python.h>
-#include <stdlib.h>
-#include <numpy/arrayobject.h>
-
-PyMODINIT_FUNC initsg(void)
-{
-	double* array=(double*) malloc(10*sizeof(double));
-	npy_intp* dims=(npy_intp*) malloc(sizeof(npy_int));
-	dims[0]=10;
-	Py_Initialize();
-	PyObject* outArray = PyArray_SimpleNewFromData(1, dims, NPY_DOUBLE, (void*)array);
-}
-
-PyMODINIT_FUNC initsg(void);
-EOF
-		echocheck "Python/Python Numpy Developer Files"
-		if cc_check
-		then
-			echores "yes"
-			SWIGFLAGS="-w473 -c++ -python"
-		else
-			# add -ldl and -lutil for some self compiled python versions as
-			# they for some reason are not automgically pulled in
-			LINKFLAGS="-lutil -ldl $LINKFLAGS"
-			POSTLINKFLAGS="-lutil -ldl $POSTLINKFLAGS"
-			if cc_check
-			then
-				echores "yes"
-				SWIGFLAGS="-w473 -c++ -python"
-			else
-				echores "no"
-				die "python/numpy developer files missing"
-			fi
-		fi
-	fi
-
-	if test "$_R" = yes
-	then
-		echocheck "R"
-		if ( echo 'version; quit()' | R --no-save ) >/dev/null 2>&1 
-		then
-			echores "`echo 'version; quit()' | R  --no-save 2>&1 | grep version\.string | cut -f 4 -d ' '`"
-			test -n "$_rdir" || _rdir=`echo '.libPaths()[1]' | R --no-save 2>/dev/null | grep '^\[1\]' | cut -f 2 -d '"'`
-			PRE_LIB_SWIG=
-			EXT_IF_SWIG='.R'
-		else
-			echores "no"
-			die "cannot find R executable in path"
-		fi
-
-		HAVE_R='#define HAVE_R 1'
-		DEFINES="$DEFINES -DHAVE_R"
-
-		if win32
-		then
-			RPATH=$(cygpath -u $(cygpath -d "`which R | sed 's#/bin/R##'`"))
-			TARGET="sg.dll"
-			COMPFLAGS_C="$COMPFLAGS_C -mno-cygwin"
-			COMPFLAGS_CPP="$COMPFLAGS_CPP -mno-cygwin"
-			INCLUDES="$INCLUDES -I$RPATH/include"
-			LINKFLAGS="$LINKFLAGS -L$RPATH/bin -lR -shared -mno-cygwin"
-		else
-			TARGET="sg.so"
-			#unset makeflags as R uses -w and that leads to screwed up R CMD config --ldflags
-			unset MAKEFLAGS MFLAGS
-			COMPFLAGS_C="$COMPFLAGS_C `R CMD config CPICFLAGS`"
-			COMPFLAGS_CPP="$COMPFLAGS_CPP `R CMD config CXXPICFLAGS`"
-			INCLUDES="$INCLUDES `R CMD config --cppflags`"
-			LINKFLAGS="$LINKFLAGS `R CMD config --ldflags` `R CMD config DYLIB_LDFLAGS`"
-		fi
-
-
-cat > $TMPC << EOF
-#include <R.h>
-#include <Rinternals.h>
-#include <R_ext/Rdynload.h>
-#include <Rdefines.h>
-
-static SEXP sg_helper(SEXP args)
-{
-	SEXP result=NEW_LOGICAL(args);
-	return result;
-}
-EOF
-		echocheck "R Developer Files"
-		if cc_check
-		then
-			echores "yes"
-			SWIGFLAGS="-w473 -c++ -r"
-		else
-			echores "no"
-			die "cannot find R developer files"
-		fi
-	fi
-
 	if test "$_cplex" = yes || test "$_cplex" = auto
 	then
 cat > $TMPC << EOF
@@ -2655,199 +2326,691 @@ EOF
 		fi
 	fi
 
-	if test "$_glpk" = yes || test "$_glpk" = auto
-	then
+if test "$_glpk" = yes || test "$_glpk" = auto
+then
 cat >$TMPC<<EOF
 #include <glpk.h>
 int main()
 {
-	glp_term_out(GLP_OFF);
-	LPX* lp=lpx_create_prob();
-	lpx_delete_prob(lp);
-	return 0;
+glp_term_out(GLP_OFF);
+LPX* lp=lpx_create_prob();
+lpx_delete_prob(lp);
+return 0;
 }
 EOF
-		echocheck "GLPK"
-		GLPKLINKFLAGS="-lglpk -lm"
-		if cc_check $GLPKLINKFLAGS
-		then 
-			echores "yes"
-			USE_GLPK='#define USE_GLPK 1'
-			LINKFLAGS="$LINKFLAGS $GLPKLINKFLAGS"
-			DEFINES="$DEFINES -DUSE_GLPK"
-		else
-			echores "no"
-		fi
+	echocheck "GLPK"
+	GLPKLINKFLAGS="-lglpk -lm"
+	if cc_check $GLPKLINKFLAGS
+	then 
+		echores "yes"
+		USE_GLPK='#define USE_GLPK 1'
+		LINKFLAGS="$LINKFLAGS $GLPKLINKFLAGS"
+		DEFINES="$DEFINES -DUSE_GLPK"
+	else
+		echores "no"
 	fi
+fi
 
-	if test "$_lpsolve" = yes || test "$_lpsolve" = auto
-	then
+if test "$_lpsolve" = yes || test "$_lpsolve" = auto
+then
 cat > $TMPC << EOF
 #include <lpsolve/lp_lib.h>
 int main (int argc, char **argv)
 {
-	lprec* lp=make_lp(0,0);
-	delete_lp(lp);
-	return 0;
+lprec* lp=make_lp(0,0);
+delete_lp(lp);
+return 0;
 }
 EOF
-		echocheck "lpsolve Developer Files"
-		LPSOLVELINKFLAGS="-L /usr/lib/lp_solve -llpsolve55"
-		if cc_check $LPSOLVELINKFLAGS
-		then 
-			echores "yes"
-			USE_LPSOLVE='#define USE_LPSOLVE 1'
-			LINKFLAGS="$LINKFLAGS $LPSOLVELINKFLAGS"
-			POSTLINKFLAGS="$POSTLINKFLAGS $LPSOLVELINKFLAGS"
-			DEFINES="$DEFINES -DUSE_LPSOLVE -DYY_NEVER_INTERACTIVE -DPARSER_LP -DINVERSE_ACTIVE=INVERSE_LUSOL -DRoleIsExternalInvEngine" 
+	echocheck "lpsolve Developer Files"
+	LPSOLVELINKFLAGS="-L /usr/lib/lp_solve -llpsolve55"
+	if cc_check $LPSOLVELINKFLAGS
+	then 
+		echores "yes"
+		USE_LPSOLVE='#define USE_LPSOLVE 1'
+		LINKFLAGS="$LINKFLAGS $LPSOLVELINKFLAGS"
+		POSTLINKFLAGS="$POSTLINKFLAGS $LPSOLVELINKFLAGS"
+		DEFINES="$DEFINES -DUSE_LPSOLVE -DYY_NEVER_INTERACTIVE -DPARSER_LP -DINVERSE_ACTIVE=INVERSE_LUSOL -DRoleIsExternalInvEngine" 
+	else
+		echores "no"
+	fi
+fi
+
+
+if test "$_wtiming" = yes
+then
+	USE_W_TIMING='#define USE_W_TIMING 1'
+	DEFINES="$DEFINES -DUSE_W_TIMING"
+fi
+
+if test "$_largefile" = yes
+then
+	HAVE_LARGEFILE='#define HAVE_LARGEFILE 1'
+	DEFINES="$DEFINES -DHAVE_LARGEFILE"
+fi
+
+
+if test "$_swig" = yes || test "$_swig" = auto
+then
+	echocheck "SWIG"
+	if ${SWIG} -version >/dev/null 2>&1
+	then
+		if [ `${SWIG} -version 2>&1 | grep Version | cut -f 3 -d ' ' | cut -f 2 -d '.'` -ge 4 ] || \
+			[ `${SWIG} -version 2>&1 | grep Version | cut -f 3 -d ' ' | cut -f 3 -d '.'` -ge 29 ]
+		then
+			echores "`${SWIG} -version 2>&1 | grep Version | cut -f 3 -d ' '`"
+
+			HAVE_SWIG='#define HAVE_SWIG 1'
+			DEFINES="$DEFINES -DHAVE_SWIG"
+
+			USE_SWIG='yes'
+
+			if cygwin
+			then
+				EXT_LIB_SWIG=dll
+				POSTLINKFLAGS=$LINKFLAGS
+			fi
 		else
-			echores "no"
+			echores "`${SWIG} -version 2>&1 | grep Version | cut -f 3 -d ' '` ... too old version 1.3.29 or later required"
+			if test "$_swig" = yes ; then
+				die "swig outdated"
+			else
+				echores "no"
+				USE_SWIG='no'
+			fi
+		fi
+
+	else
+		USE_SWIG="no"
+		echores "no"
+		if test "$_swig" = yes ; then
+			die "cannot find swig executable in path"
 		fi
 	fi
+else
+	USE_SWIG='no'
+fi
 
-
-	if test "$_wtiming" = yes
+if test "$USE_SWIG" = 'yes'
+then
+	if test "$_doxygen" = yes
 	then
-		USE_W_TIMING='#define USE_W_TIMING 1'
-		DEFINES="$DEFINES -DUSE_W_TIMING"
+		HAVE_DOXYGEN='#define HAVE_DOXYGEN 1'
+		DEFINES="$DEFINES -DHAVE_DOXYGEN"
+
+		USE_DOXYGEN='yes'
+	else
+		USE_DOXYGEN='no'
 	fi
+fi
 
-	if test "$_largefile" = yes
+if test "$_logcache" = yes
+then
+	USE_LOGCACHE='#define USE_LOGCACHE 1'
+	DEFINES="$DEFINES -DUSE_LOGCACHE"
+fi
+
+if test "$_shortrealkernelcache" = yes
+then
+	USE_SHORTREAL_KERNELCACHE='#define USE_SHORTREAL_KERNELCACHE 1'
+	DEFINES="$DEFINES -DUSE_SHORTREAL_KERNELCACHE"
+fi
+
+if test "$_treemem" = yes
+then
+	USE_TREEMEM='#define USE_TREEMEM 1'
+	DEFINES="$DEFINES -DUSE_TREEMEM"
+fi
+
+if test "$_logsumarray" = yes
+then
+	USE_LOGSUMARRAY='#define USE_LOGSUMARRAY 1'
+	DEFINES="$DEFINES -DUSE_LOGSUMARRAY"
+fi
+
+if test "$_hmmparallel" = yes
+then
+	USE_HMMPARALLELSTRUCTURES='#define USE_HMMPARALLELSTRUCTURES 1'
+	DEFINES="$DEFINES -DUSE_HMMPARALLELSTRUCTURES"
+	USE_HMMPARALLEL='#define USE_HMMPARALLEL 1'
+	DEFINES="$DEFINES -DUSE_HMMPARALLEL"
+fi
+
+if test "$_bigstates" = yes
+then
+	USE_BIGSTATES='#define USE_BIGSTATES 1'
+	DEFINES="$DEFINES -DUSE_BIGSTATES"
+fi
+
+if test "$_hmmcache" = yes
+then
+	USE_HMMCACHE='#define USE_HMMCACHE 1'
+	DEFINES="$DEFINES -DUSE_HMMCACHE"
+fi
+
+if test "$_debug" = yes
+then
+	_hmmdebug=yes
+	_pathdebug=yes
+fi
+
+if test "$_hmmdebug" = yes
+then
+	USE_HMMDEBUG='#define USE_HMMDEBUG 1'
+	DEFINES="$DEFINES -DUSE_HMMDEBUG"
+fi
+
+if test "$_pathdebug" = yes
+then
+	USE_PATHDEBUG='#define USE_PATHDEBUG 1'
+	DEFINES="$DEFINES -DUSE_PATHDEBUG"
+fi
+
+if test "$_svm_light" = yes
+then
+	USE_SVMLIGHT='#define USE_SVMLIGHT 1'
+	DEFINES="$DEFINES -DUSE_SVMLIGHT"
+	GPL=""
+else
+	GPL='#define GPL 1'
+	DEFINES="$DEFINES -DGPL"
+fi
+}
+
+test_matlab()
+{
+	if test "$_matlab" = yes || test "$_matlab" = auto
 	then
-		HAVE_LARGEFILE='#define HAVE_LARGEFILE 1'
-		DEFINES="$DEFINES -DHAVE_LARGEFILE"
-	fi
-
-
-	if test "$_swig" = yes
-	then
-		echocheck "SWIG"
-		if ${SWIG} -version >/dev/null 2>&1
+		if win32
 		then
-			if [ `${SWIG} -version 2>&1 | grep Version | cut -f 3 -d ' ' | cut -f 2 -d '.'` -ge 4 ] || \
-				[ `${SWIG} -version 2>&1 | grep Version | cut -f 3 -d ' ' | cut -f 3 -d '.'` -ge 29 ]
+			echocheck "Matlab"
+			matlab.exe /nosplash /minimize /r "fid=fopen('matlab_version.txt','wb');fprintf(fid,version);fclose(fid);quit"
+			if test -f matlab_version.txt
 			then
-				echores "`${SWIG} -version 2>&1 | grep Version | cut -f 3 -d ' '`"
+				echores `cat matlab_version.txt`
+				matlab.exe /nosplash /minimize /r "system('env > matlab_path.txt');quit"
+				MATLAB_DIR=`grep '^_=' matlab_path.txt | cut -c 3- | sed 's#/bin/win32/matlab.exe##'`
+				MATLAB_SRCDIR="$MATLAB_DIR/extern/src"
+				MATLAB_INCDIR="$MATLAB_DIR/extern/include"
+				MATLAB_LIBDIR="$MATLAB_DIR/extern/lib"
+				MATLAB_BINDIR="$MATLAB_DIR/bin"
+				HAVE_MATLAB='#define HAVE_MATLAB 1'
+				DEFINES_MATLAB="$DEFINES_MATLAB -DHAVE_MATLAB"
 			else
-				echores "`${SWIG} -version 2>&1 | grep Version | cut -f 3 -d ' '` ... too old version 1.3.29 or later required"
-				die "swig outdated"
+				echores "no"
+
+				if test "$_matlab" = yes
+				then
+					die "could not find matlab in path / matlab crashed"
+				fi
+			fi
+
+		else
+			echocheck "Matlab"
+			if matlab -nojvm -nodisplay -r 'version;quit' >/dev/null 2>&1
+			then
+				 echores "`matlab -nojvm -nodisplay -r \"sprintf('ver:%s',version),quit\" | grep '^ver:' | cut -f '2-' -d ':'`"
+				 MATLAB_DIR=`echo "unix('env');quit" | matlab -nojvm -nodisplay | grep '^MATLAB=' | cut -c 8-`
+				 MATLAB_SRCDIR="$MATLAB_DIR/extern/src"
+				 MATLAB_INCDIR="$MATLAB_DIR/extern/include"
+				 MATLAB_LIBDIR="$MATLAB_DIR/extern/lib"
+				 MATLAB_BINDIR="$MATLAB_DIR/bin"
+				 HAVE_MATLAB='#define HAVE_MATLAB 1'
+				 DEFINES_MATLAB="$DEFINES_MATLAB -DHAVE_MATLAB"
+			else
+				echores "no"
+
+				if test "$_matlab" = yes
+				then
+					die "could not find matlab in path / matlab crashed"
+				fi
+			fi
+		fi
+
+		if osf1
+		then
+			COMPFLAGS_C_MATLAB="-DMATLAB_MEX_FILE $COMPFLAGS_C_MATLAB -shared -ieee -std1"
+			COMPFLAGS_CPP_MATLAB="-DMATLAB_MEX_FILE $COMPFLAGS_CPP_MATLAB -shared -ieee -std1"
+			LINKFLAGS_MATLAB="$LINKFLAGS_MATLAB -shared -Wl,-expect_unresolved,'*',-hidden,-exported_symbol,mexFunction,-exported_symbol,mexVersion,-exported_symbol,'__*' -L$MATLAB_BINDIR/alpha -lmx -lmex -lmat"
+			INCLUDES_MATLAB="$INCLUDES_MATLAB -I$MATLAB_INCDIR -I$MATLAB_SRCDIR"
+			MATLAB_TARGET="sg.mexaxp"
+		elif darwin
+		then
+		    INCLUDES_MATLAB="$INCLUDES_MATLAB -I$MATLAB_INCDIR -I$MATLAB_SRCDIR"
+			if ppc
+			then
+				LINKFLAGS_MATLAB="$LINKFLAGS_MATLAB -bundle -Wl,-flat_namespace -undefined suppress -Wl,-exported_symbols_list,$MATLAB_LIBDIR/mac/mexFunction.map -L$MATLAB_BINDIR/mac -lmx -lmex -lmat"
+				MATLAB_TARGET="sg.mexmac"
+			elif x86
+			then
+				DEFINES_MATLAB="$DEFINES_MATLAB -DMX_COMPAT_32"
+				COMPFLAGS_C_MATLAB="$COMPFLAGS_CPP_MATLAB -DMX_COMPAT_32"
+				COMPFLAGS_CPP_MATLAB="$COMPFLAGS_CPP_MATLAB -DMX_COMPAT_32"
+				LINKFLAGS_MATLAB="$LINKFLAGS_MATLAB -bundle -Wl,-flat_namespace -undefined suppress -Wl,-exported_symbols_list,$MATLAB_LIBDIR/maci/mexFunction.map -L$MATLAB_BINDIR/maci -lmx -lmex -lmat"
+				MATLAB_TARGET="sg.mexmaci"
+			else
+				die "non supported matlab architecture"
+			fi
+		elif linux
+		then
+			if x86_64
+			then
+				COMPFLAGS_C_MATLAB="$COMPFLAGS_C_MATLAB -fPIC -fno-omit-frame-pointer -ansi -D_GNU_SOURCE"
+				COMPFLAGS_CPP_MATLAB="$COMPFLAGS_CPP_MATLAB -fPIC -fno-omit-frame-pointer -ansi -D_GNU_SOURCE"
+				LINKFLAGS_MATLAB="$LINKFLAGS_MATLAB -shared -Wl,--version-script,$MATLAB_LIBDIR/glnxa64/mexFunction.map -Wl,--rpath-link,$MATLAB_BINDIR/glnxa64 -L$MATLAB_BINDIR/glnxa64 -lmx -lmex -lmat"
+				INCLUDES_MATLAB="$INCLUDES_MATLAB -I$MATLAB_INCDIR -I$MATLAB_SRCDIR"
+				MATLAB_TARGET="sg.mexa64"
+			elif x86
+			then
+				LINKFLAGS_MATLAB="$LINKFLAGS_MATLAB -shared -Wl,--version-script,$MATLAB_LIBDIR/glnx86/mexFunction.map -Wl,--rpath-link,$MATLAB_LIBDIR/glnx86 -L$MATLAB_BINDIR/glnx86 -lmx -lmex -lmat"
+				INCLUDES_MATLAB="$INCLUDES_MATLAB -I$MATLAB_INCDIR -I$MATLAB_SRCDIR"
+				MATLAB_TARGET="sg.mexglx"
+			else
+				die "matlab only supports x86_84 and x86 linux architectures"
+			fi
+		elif sunos
+		then
+				COMPFLAGS_C=_MATLAB"$COMPFLAGS_C_MATLAB -KPIC -dalign -xlibmieee -D__EXTENSIONS__ -D_POSIX_C_SOURCE=199506L -mt -xs -g -xO3 -xlibmil"
+
+				COMPFLAGS_CPP_MATLAB="$COMPFLAGS_CPP_MATLAB -KPIC -dalign -xlibmieee -D__EXTENSIONS__ -D_POSIX_C_SOURCE=199506L -mt -library=stlport4,Crun -xs -g -xO3 -xlibmil"
+				LINKFLAGS_MATLAB="$LINKFLAGS_MATLAB -G -mt -M$MATLAB_LIBDIR/sol64/mexFunction.map -L$MATLAB_BINDIR/sol64 -lmx -lmex -lmat"
+				INCLUDES_MATLAB="$INCLUDES_MATLAB -I$MATLAB_INCDIR -I$MATLAB_SRCDIR"
+				MATLAB_TARGET="sg.mexs64"
+		elif cygwin
+		then
+cat >mexFunction.map <<EOF
+MEX {
+_mexFunction;
+_mexVersion;
+};
+EOF
+			COMPFLAGS_C_MATLAB="$COMPFLAGS_C_MATLAB -mno-cygwin -DMATLAB_MEX_FILE"
+			COMPFLAGS_CPP_MATLAB="$COMPFLAGS_CPP_MATLAB -mno-cygwin -DMATLAB_MEX_FILE"
+			LINKFLAGS_MATLAB="$LINKFLAGS_MATLAB -shared -mno-cygwin -Wl,--version-script,mexFunction.map -Wl,--rpath-link,$MATLAB_LIBDIR/win32 -L$MATLAB_BINDIR/win32 -lmx -lmex -lmat"
+			INCLUDES_MATLAB="$INCLUDES_MATLAB -I$MATLAB_INCDIR"
+			MATLAB_TARGET="sg.dll"
+		else
+			die "non supported matlab architecture"
+		fi
+
+		if test "$HAVE_MATLAB" = 1
+		then
+			echocheck "Matlab developer support (-lmx -lmex -lmat)"
+cat > $TMPC << EOF
+#include <mex.h>
+#include <mexversion.c>
+void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
+{
+
+}
+
+int main(void) { return 0; }
+EOF
+			if cc_check
+			then
+				echores "yes"
+				BUILD_MATLAB=yes
+			else
+				echores "no"
+				die "could not find matlab developer files (e.g. mex.h)"
+			fi
+		fi
+	fi
+}
+
+test_octave()
+{
+	if test "$_octave" = yes || test "$_octave" = auto
+	then
+		echocheck "Octave"
+		if echo version | octave >/dev/null 2>&1
+		then
+			VERSION="`echo version | octave | grep ans | cut -f 3- -d ' '`"
+			if [ `echo "$VERSION" | cut -f 1 -d '.'` -ge 3 ]
+			then
+				echores "$VERSION"
+			else
+				if test "$_octave" = yes
+				then
+					die "$VERSION - too old, at least octave version 3.0 required"
+				fi
+				echores "$VERSION - too old, at least octave version 3.0 required"
+				_octave = "no"
 			fi
 		else
 			echores "no"
-			die "cannot find swig executable in path"
+			if test "$_octave" = yes
+			then
+				die "could not find octave in path / octave crashed"
+			fi
+			_octave = "no"
 		fi
 
-		HAVE_SWIG='#define HAVE_SWIG 1'
-		DEFINES="$DEFINES -DHAVE_SWIG"
-
-		USE_SWIG='yes'
-
-		if cygwin
+		if test "$_octave" != no
 		then
-			EXT_LIB_SWIG=dll
-			POSTLINKFLAGS=$LINKFLAGS
+			echocheck "octave-config"
+			if test -n "`octave-config -p OCTLIBDIR`" && test -n "`octave-config -p OCTINCLUDEDIR`" && test -n "`octave-config -p INCLUDEDIR`"
+			then
+				test -n "$_octdir" || _octdir=`octave-config --print LOCALAPIOCTFILEDIR`
+				echores "yes"
+			else
+				echores "no"
+				if test "$_octave" = yes
+				then
+					die "could not find octave-config in path / octave-config crashed"
+				fi
+				_octave= "no"
+			fi
+
+			if test "$_octave" != no 
+			then
+cat > $TMPC << EOF
+
+#include <octave/config.h>
+
+#include <octave/defun-dld.h>
+#include <octave/error.h>
+#include <octave/oct-obj.h>
+#include <octave/pager.h>
+#include <octave/symtab.h>
+#include <octave/variables.h>
+
+DEFUN_DLD (sg, prhs, nlhs, "shogun.")
+{
+	int nrhs = prhs.length();
+	octave_value_list plhs;
+}
+EOF
+				EXT_IF_SWIG_OCTAVE='stop'
+				PRE_LIB_SWIG_OCTAVE=
+				EXT_LIB_SWIG_OCTAVE=oct
+				SWIGFLAGS_OCTAVE="-w473 -c++ -octave"
+				HAVE_OCTAVE='#define HAVE_OCTAVE 1'
+				DEFINES_OCTAVE="$DEFINES_OCTAVE -DHAVE_OCTAVE"
+
+				if darwin
+				then
+					LINKFLAGS_OCTAVE="-bundle -Wl,-flat_namespace -L`octave-config -p OCTLIBDIR` -loctinterp -loctave -lcruft $LINKFLAGS_OCTAVE"
+				else
+					OCTLIBDIR=`octave-config -p OCTLIBDIR`
+					LINKFLAGS_OCTAVE="-shared -L $OCTLIBDIR -loctinterp -loctave -lcruft $LINKFLAGS_OCTAVE"
+				fi
+				OCTAVE_TARGET="sg.oct"
+				INCLUDES_OCTAVE="$INCLUDES_OCTAVE -I`octave-config -p OCTINCLUDEDIR` -I`octave-config -p INCLUDEDIR`"
+				COMPFLAGS_CPP_OCTAVE="$COMPFLAGS_CPP -fPIC"
+				COMPFLAGS_C_OCTAVE="$COMPFLAGS_C -fPIC"
+
+				echocheck "Octave Developer Files"
+				if LD_LIBRARY_PATH=`octave-config -p OCTLIBDIR` cxx_check
+				then
+					echores "yes"
+					BUILD_OCTAVE=yes
+				else
+					echores "no"
+					if test "$_octave" = yes
+					then
+						die "octave developer files missing"
+					fi
+				fi
+			fi
 		fi
-	else
-		USE_SWIG='no'
 	fi
+}
 
-	if test "$USE_SWIG" = 'yes'
+test_python()
+{
+	if test "$_python" = yes || test "$_python" = auto
 	then
-		if test "$_doxygen" = yes
+		echocheck "Python numpy support"
+		if $PYTHON -c "import sys; import numpy" >/dev/null 2>&1
 		then
-			HAVE_DOXYGEN='#define HAVE_DOXYGEN 1'
-			DEFINES="$DEFINES -DHAVE_DOXYGEN"
-
-			USE_DOXYGEN='yes'
+			if [ `$PYTHON -c 'import numpy; print numpy.__version__' | cut -c 1` -gt 0 ]
+			then
+				echores "`$PYTHON -c 'import numpy; print numpy.__version__'`"
+			else
+				echores "`$PYTHON -c 'import numpy; print numpy.__version__'`... too old version 1.0 or later required"
+				if test "$_python" = yes
+				then
+					die "python numpy outdated"
+				fi
+				_python="no"
+			fi
 		else
-			USE_DOXYGEN='no'
+			echores "no"
+			if test "$_python" = yes
+			then
+				die "python numpy package missing"
+			fi
+			_python="no"
+		fi
+
+		if test "$_python" != no
+		then
+			EXT_IF_SWIG_PYTHON='.py'
+			HAVE_PYTHON='#define HAVE_PYTHON 1'
+			DEFINES_PYTHON="$DEFINES_PYTHON -DHAVE_PYTHON"
+			test -n "$_pyinclude" && _pyinclude="-I$_pyinclude"
+			test -n "$_pyinclude" || _pyinclude=`$PYTHON -c "import numpy; import sys; print '-I'+sys.prefix+'/include/python'+sys.version[0:3]+' -I'+numpy.get_include()"`
+			_pylibpath=""
+			#test -n "$_pylibpath" && _pylibpath="-I$_pylibpath"
+			#test -n "$_pylibpath" || _pylibpath=`$PYTHON -c "import sys; print '-L'+sys.exec_prefix+'/lib/python'+sys.version[0:3]+'/config'"`
+			test -n "$_pylibs" || _pylibs=`$PYTHON -c "import sys; print 'python'+sys.version[0:3]"`
+			INCLUDES_PYTHON="$_pyinclude $INCLUDES_PYTHON"
+			COMPFLAGS_CPP_PYTHON="-fno-strict-aliasing -fPIC $COMPFLAGS_CPP_PYTHON"
+			COMPFLAGS_C_PYTHON="-fno-strict-aliasing -fPIC $COMPFLAGS_C_PYTHON"
+			if darwin
+			then
+				LINKFLAGS_PYTHON="$_pylibpath -l$_pylibs -ldl -bundle -Wl,-flat_namespace $LINKFLAGS_PYTHON"
+				POSTLINKFLAGS_PYTHON="$_pylibpath -l$_pylibs -ldl -bundle -Wl,-flat_namespace $POSTLINKFLAGS_PYTHON"
+			else
+				LINKFLAGS_PYTHON="-shared $_pylibpath -l$_pylibs $LINKFLAGS_PYTHON"
+				POSTLINKFLAGS_PYTHON="-shared $_pylibpath -l$_pylibs $POSTLINKFLAGS_PYTHON"
+			fi
+
+			if win32
+			then
+				PYTHON_TARGET="sg.dll"
+			else
+				PYTHON_TARGET="sg.so"
+			fi
+
+cat > $TMPC << EOF
+#include <Python.h>
+#include <stdlib.h>
+#include <numpy/arrayobject.h>
+
+PyMODINIT_FUNC initsg(void)
+{
+	double* array=(double*) malloc(10*sizeof(double));
+	npy_intp* dims=(npy_intp*) malloc(sizeof(npy_int));
+	dims[0]=10;
+	Py_Initialize();
+	PyObject* outArray = PyArray_SimpleNewFromData(1, dims, NPY_DOUBLE, (void*)array);
+}
+
+PyMODINIT_FUNC initsg(void);
+EOF
+			echocheck "Python/Python Numpy Developer Files"
+			if cc_check
+			then
+				echores "yes"
+				SWIGFLAGS="-w473 -c++ -python"
+			else
+				# add -ldl and -lutil for some self compiled python versions as
+				# they for some reason are not automgically pulled in
+				LINKFLAGS_PYTHON="-lutil -ldl $LINKFLAGS_PYTHON"
+				POSTLINKFLAGS_PYTHON="-lutil -ldl $POSTLINKFLAGS_PYTHON"
+				if cc_check
+				then
+					echores "yes"
+					SWIGFLAGS_PYTHON="-w473 -c++ -python"
+					BUILD_PYTHON=yes
+				else
+					echores "no"
+					if test "$_python" = yes
+					then
+						die "python/numpy developer files missing"
+					fi
+				fi
+			fi
 		fi
 	fi
+}
 
-	if test "$_logcache" = yes
+test_r()
+{
+	if test "$_r" = yes || test "$_r" = auto
 	then
-		USE_LOGCACHE='#define USE_LOGCACHE 1'
-		DEFINES="$DEFINES -DUSE_LOGCACHE"
+		echocheck "R"
+		if ( echo 'version; quit()' | R --no-save ) >/dev/null 2>&1 
+		then
+			echores "`echo 'version; quit()' | R  --no-save 2>&1 | grep version\.string | cut -f 4 -d ' '`"
+			test -n "$_rdir" || _rdir=`echo '.libPaths()[1]' | R --no-save 2>/dev/null | grep '^\[1\]' | cut -f 2 -d '"'`
+			PRE_LIB_SWIG_R=
+			EXT_IF_SWIG_R='.R'
+		else
+			echores "no"
+			if test "$_r" = yes
+			then
+				die "cannot find R executable in path"
+			fi
+			_r=no
+		fi
+
+		if test "$_r" != no
+		then
+			HAVE_R='#define HAVE_R 1'
+			DEFINES_R="$DEFINES_R -DHAVE_R"
+
+			if win32
+			then
+				RPATH=$(cygpath -u $(cygpath -d "`which R | sed 's#/bin/R##'`"))
+				R_TARGET="sg.dll"
+				COMPFLAGS_C_R="$COMPFLAGS_C_R -mno-cygwin"
+				COMPFLAGS_CPP_R="$COMPFLAGS_CPP_R -mno-cygwin"
+				INCLUDES_R="$INCLUDES_R -I$RPATH/include"
+				LINKFLAGS_R="$LINKFLAGS_R -L$RPATH/bin -lR -shared -mno-cygwin"
+			else
+				R_TARGET="sg.so"
+				#unset makeflags as R uses -w and that leads to screwed up R CMD config --ldflags
+				unset MAKEFLAGS MFLAGS
+				COMPFLAGS_C_R="$COMPFLAGS_C_R `R CMD config CPICFLAGS`"
+				COMPFLAGS_CPP_R="$COMPFLAGS_CPP_R `R CMD config CXXPICFLAGS`"
+				INCLUDES_R="$INCLUDES_R `R CMD config --cppflags`"
+				LINKFLAGS_R="$LINKFLAGS_R `R CMD config --ldflags` `R CMD config DYLIB_LDFLAGS`"
+			fi
+
+
+cat > $TMPC << EOF
+#include <R.h>
+#include <Rinternals.h>
+#include <R_ext/Rdynload.h>
+#include <Rdefines.h>
+
+static SEXP sg_helper(SEXP args)
+{
+	SEXP result=NEW_LOGICAL(args);
+	return result;
+}
+EOF
+			echocheck "R Developer Files"
+			if cc_check
+			then
+				echores "yes"
+				SWIGFLAGS="-w473 -c++ -r"
+				BUILD_R=yes
+			else
+				echores "no"
+				if test "$_r" = yes
+				then
+					die "cannot find R developer files"
+				fi
+			fi
+		fi
 	fi
+}
 
-	if test "$_shortrealkernelcache" = yes
+test_libshogun()
+{
+	if test "$_libshogun" = yes || test "$_libshogun" = auto
 	then
-		USE_SHORTREAL_KERNELCACHE='#define USE_SHORTREAL_KERNELCACHE 1'
-		DEFINES="$DEFINES -DUSE_SHORTREAL_KERNELCACHE"
-	fi
 
-	if test "$_treemem" = yes
-	then
-		USE_TREEMEM='#define USE_TREEMEM 1'
-		DEFINES="$DEFINES -DUSE_TREEMEM"
-	fi
+cat > $TMPC << EOF
+#include <stdio.h>
+#include <shogun/kernel/GaussianKernel.h>
 
-	if test "$_logsumarray" = yes
-	then
-		USE_LOGSUMARRAY='#define USE_LOGSUMARRAY 1'
-		DEFINES="$DEFINES -DUSE_LOGSUMARRAY"
-	fi
+void sg_print_message(FILE* target, const char* str)
+{
+}
 
-	if test "$_hmmparallel" = yes
-	then
-		USE_HMMPARALLELSTRUCTURES='#define USE_HMMPARALLELSTRUCTURES 1'
-		DEFINES="$DEFINES -DUSE_HMMPARALLELSTRUCTURES"
-		USE_HMMPARALLEL='#define USE_HMMPARALLEL 1'
-		DEFINES="$DEFINES -DUSE_HMMPARALLEL"
-	fi
+void sg_print_warning(FILE* target, const char* str)
+{
+}
 
-	if test "$_bigstates" = yes
-	then
-		USE_BIGSTATES='#define USE_BIGSTATES 1'
-		DEFINES="$DEFINES -DUSE_BIGSTATES"
-	fi
+void sg_print_error(FILE* target, const char* str)
+{
+}
 
-	if test "$_hmmcache" = yes
-	then
-		USE_HMMCACHE='#define USE_HMMCACHE 1'
-		DEFINES="$DEFINES -DUSE_HMMCACHE"
-	fi
+void sg_cancel_computations(bool &delayed, bool &immediately)
+{
+}
 
-	if test "$_debug" = yes
-	then
-		_hmmdebug=yes
-		_pathdebug=yes
-	fi
+int main(int argc, char** argv)
+{
+	return 0;
+}
+EOF
+		echocheck "libshogun"
 
-	if test "$_hmmdebug" = yes
-	then
-		USE_HMMDEBUG='#define USE_HMMDEBUG 1'
-		DEFINES="$DEFINES -DUSE_HMMDEBUG"
-		TARGET="shogun-debug"
-	fi
-
-	if test "$_pathdebug" = yes
-	then
-		USE_PATHDEBUG='#define USE_PATHDEBUG 1'
-		DEFINES="$DEFINES -DUSE_PATHDEBUG"
-		TARGET="shogun-debug"
-	fi
-
-	if test "$_svm_light" = yes
-	then
-		USE_SVMLIGHT='#define USE_SVMLIGHT 1'
-		DEFINES="$DEFINES -DUSE_SVMLIGHT"
-		GPL=""
-	else
-		GPL='#define GPL 1'
-		DEFINES="$DEFINES -DGPL"
-	fi
-
-	if test "$_interface" = libshogun
-	then
-		TARGET=libshogun.so
+		if test -d libshogun
+		then
+			echores "yes (internal in source tree)"
+			rm -f shogun 
+			ln -s libshogun shogun
+			INCLUDES="$INCLUDES -I${SRCDIR}"
+			BUILD_LIBSHOGUN=yes
+		else
+			if cc_check
+			then
+				echores "yes (found installed)"
+			else
+				echores "no"
+				if test "$_libshogun" = yes
+				then
+					die "libshogun neither found installed in system include path nor locally"
+				fi
+			fi
+		fi
+		LIBSHOGUN_TARGET=libshogun.so
 		POSTLINKFLAGS="$POSTLINKFLAGS -shared -fPIC"
 	fi
+}
 
-	if test "$_cmdline" = yes
+test_cmdline()
+{
+	if test "$_cmdline" = yes || test "$_cmdline" = auto
 	then
+		BUILD_CMDLINE=yes
 		HAVE_CMDLINE='#define HAVE_CMDLINE 1'
 		DEFINES="$DEFINES -DHAVE_CMDLINE"
+
+		if test "$_readline" = yes || test "$_readline" = auto;
+		then
+cat > $TMPC << EOF
+#include <readline/readline.h>
+int main(void) { return 0; }
+EOF
+			echocheck "Readline support"
+			if cc_check -lreadline >/dev/null 2>&1
+			then
+				HAVE_READLINE='#define HAVE_READLINE 1'
+				DEFINES_CMDLINE="$DEFINES -DHAVE_READLINE"
+				LINKFLAGS_CMDLINE="$LINKFLAGS -lreadline"
+				echores "yes"
+			else
+				echores "no"
+			fi
+		fi
 	fi
 }
 
@@ -2863,8 +3026,23 @@ if test "$_cc_major" -ge "3" 2>/dev/null ; then
 	COMPFLAGS_CPP=`echo "$COMPFLAGS_CPP" | sed -e 's/\(-Wall\)/\1 -Wno-unused-parameter -Wformat -Wformat-security -Wimplicit -Wparentheses -Wshadow/'`
 fi
 
-cat > "$SRCDIR/.config" <<EOF
-INTERFACE		= ${_interface}
+cat > "$1" <<EOF
+SRCDIR			= ${SRCDIR}
+BUILD_LIBSHOGUN = ${BUILD_LIBSHOGUN}
+BUILD_CMDLINE	= ${BUILD_CMDLINE}
+BUILD_MATLAB	= ${BUILD_MATLAB}
+BUILD_OCTAVE	= ${BUILD_OCTAVE}
+BUILD_R			= ${BUILD_R}
+BUILD_PYTHON	= ${BUILD_PYTHON}
+BUILD_OCTAVE_MODULAR	= ${BUILD_OCTAVE_MODULAR}
+BUILD_R_MODULAR			= ${BUILD_R_MODULAR}
+BUILD_PYTHON_MODULAR	= ${BUILD_PYTHON_MODULAR}
+R_TARGET		= ${R_TARGET}
+LIBSHOGUN_TARGET= ${LIBSHOGUN_TARGET}
+CMDLINE_TARGET	= ${CMDLINE_TARGET}
+PYTHON_TARGET	= ${PYTHON_TARGET}
+OCTAVE_TARGET	= ${OCTAVE_TARGET}
+MATLAB_TARGET	= ${MATLAB_TARGET}
 MAKE 			= ${MAKE}
 MAKEDEPEND		= ${MAKEDEPEND}
 MAKEDEPENDOPTS	= ${MAKEDEPENDOPTS}
@@ -2886,7 +3064,6 @@ EXT_SRC_CPP 	= ${EXT_SRC_CPP}
 EXT_SRC_SWIG	= ${EXT_SRC_SWIG}
 KERNELNAME  	= ${KERNELNAME}
 MACHINE  		= ${MACHINE}
-TARGET			= ${TARGET}
 EXT_OBJ_CPP 	= ${EXT_OBJ_CPP}
 EXT_OBJ_C   	= ${EXT_OBJ_C}
 EXT_SRC_CPP 	= ${EXT_SRC_CPP}
@@ -2944,7 +3121,7 @@ EOF
 
 write_config_h()
 {
-cat >"$SRCDIR/lib/config.h" <<EOF
+cat >"$1" <<EOF
 $HAVE_READLINE
 $HAVE_MINDY
 $HAVE_PYTHON
@@ -2985,7 +3162,6 @@ $USE_W_TIMING
 #define $OS 1
 #define CONFIGURE_OPTIONS "$CONFIGURE_OPTIONS"
 #define MACHINE "$MACHINE"
-#define TARGET "$TARGET"
 #define COMPFLAGS_C	"$COMPFLAGS_C"
 #define COMPFLAGS_CPP "$COMPFLAGS_CPP"
 #define LINKFLAGS "$LINKFLAGS"
@@ -3018,8 +3194,15 @@ check_make
 check_doxygen
 determine_march_mtune
 set_opts
+test_octave
+test_matlab
+test_python
+test_r
+test_libshogun
+test_cmdline
 svmlight_warn_license
-write_dot_config
-write_config_h
+write_dot_config "$SRCDIR/.config"
+write_config_h "$SRCDIR/config.h"
+write_config_h "$SRCDIR/libshogun/lib/config.h"
 clean_up
 type_buildinfo

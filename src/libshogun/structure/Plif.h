@@ -15,8 +15,6 @@
 #include "lib/Mathematics.h"
 #include "structure/PlifBase.h"
 
-#include "lib/matlab.h"
-
 enum ETransformType
 {
 	T_LINEAR,
