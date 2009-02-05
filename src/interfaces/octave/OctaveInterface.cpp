@@ -1,4 +1,4 @@
-#include "lib/config.h"
+#include <shogun/lib/config.h>
 
 #if defined(HAVE_OCTAVE) && !defined(HAVE_SWIG)
 

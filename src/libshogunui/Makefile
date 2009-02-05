@@ -13,7 +13,7 @@ ifeq (../.config-local,$(wildcard ../.config-local))
 include ../.config-local
 endif
 
-INCLUDES += $(INCLUDES_LIBSHOGUNUI) -I../libshogun
+INCLUDES += $(INCLUDES_LIBSHOGUN) $(INCLUDES_LIBSHOGUNUI) -I../libshogun
 DEFINES += $(DEFINES_LIBSHOGUNUI)
 LINKFLAGS += $(LINKFLAGS_LIBSHOGUNUI)
 POSTLINKFLAGS += $(POSTLINKFLAGS_LIBSHOGUNUI)

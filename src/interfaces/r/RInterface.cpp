@@ -1,13 +1,13 @@
-#include "lib/config.h"
+#include <shogun/lib/config.h>
 
 #if defined(HAVE_R) && !defined(HAVE_SWIG)
 
-#include "interface/RInterface.h"
-#include "interface/SGInterface.h"
+#include "r/RInterface.h"
 
-#include "lib/ShogunException.h"
-#include "lib/io.h"
-#include "lib/r.h"
+#include <shogun/ui/SGInterface.h>
+#include <shogun/lib/ShogunException.h>
+#include <shogun/lib/io.h>
+#include <shogun/lib/r.h>
 
 extern CSGInterface* interface;
 

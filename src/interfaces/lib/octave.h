@@ -1,4 +1,4 @@
-#include "lib/config.h"
+#include <shogun/lib/config.h>
 
 #ifdef HAVE_OCTAVE
 

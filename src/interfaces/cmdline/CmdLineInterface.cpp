@@ -1,13 +1,13 @@
-#include "lib/config.h"
+#include <shogun/lib/config.h>
 
 #if defined(HAVE_CMDLINE)
 
-#include "static/CmdLineInterface.h"
-#include "static/SGInterface.h"
+#include "cmdline/CmdLineInterface.h"
 
-#include "lib/ShogunException.h"
-#include "lib/io.h"
-#include "lib/SimpleFile.h"
+#include <shogun/ui/SGInterface.h>
+#include <shogun/lib/ShogunException.h>
+#include <shogun/lib/io.h>
+#include <shogun/lib/SimpleFile.h>
 
 #ifdef HAVE_READLINE
 #include <readline/readline.h>

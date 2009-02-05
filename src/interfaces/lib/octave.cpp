@@ -1,4 +1,4 @@
-#include "lib/config.h"
+#include <shogun/lib/config.h>
 #include "lib/octave.h"
 
 #include <stdio.h>

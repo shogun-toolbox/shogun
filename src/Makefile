@@ -19,9 +19,9 @@ include .config-local
 endif
 
 just-do-it: 
-	make -C libshogun $@
-	make -C libshogunui $@
-	make -C interfaces $@
+	+make -C libshogun $@
+	+make -C libshogunui $@
+	+make -C interfaces $@
 else
 just-do-it:
 #runconfigurehunkstart
@@ -40,13 +40,13 @@ just-do-it:
 endif
 
 install: 
-	make -C libshogun $@
-	make -C libshogunui $@
-	make -C interfaces $@
+	+make -C libshogun $@
+	+make -C libshogunui $@
+	+make -C interfaces $@
 doc: 
-	make -C libshogun $@
-	make -C libshogunui $@
-	make -C interfaces $@
+	+make -C libshogun $@
+	+make -C libshogunui $@
+	+make -C interfaces $@
 
 SRCDIR = .
 
@@ -66,7 +66,7 @@ clean: swigclean swigdocclean
 	@rm -f $(shell find . -type f -name '*.oct')
 	@rm -f $(shell find . -type f -name '*.swp')
 	@rm -f $(shell find . -type f -name 'octave-core')
-	@rm -f sg.mex* shogun shogun.exe gmon.out .depend configure.log .cpuinfo ./configure-* cplex.log
+	@rm -f sg.mex* shogun shogun.exe gmon.out configure.log .cpuinfo ./configure-* cplex.log
 	@rm -f libshogun.a
 
 dist:	distclean

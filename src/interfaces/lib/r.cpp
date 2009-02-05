@@ -1,4 +1,5 @@
-#include "lib/config.h"
+#include <shogun/lib/config.h>
+
 #include "lib/r.h"
 
 #include <stdio.h>

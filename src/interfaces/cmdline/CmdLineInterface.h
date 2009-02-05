@@ -4,7 +4,7 @@
 #include "lib/config.h"
 
 #if defined(HAVE_CMDLINE)
-#include "static/SGInterface.h"
+#include <shogun/ui/SGInterface.h>
 
 #define CMDLINE_COMMENT0 '#'
 #define CMDLINE_COMMENT1 '%'

@@ -1,4 +1,4 @@
-#include "lib/config.h"
+#include <shogun/lib/config.h>
 #include "lib/matlab.h"
 
 #include <stdio.h>

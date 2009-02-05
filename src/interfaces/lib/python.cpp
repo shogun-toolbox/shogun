@@ -1,6 +1,7 @@
-#include "lib/config.h"
+#include <shogun/lib/config.h>
+#include <shogun/lib/io.h>
+
 #include "lib/python.h"
-#include "lib/io.h"
 
 #include <stdio.h>
 
