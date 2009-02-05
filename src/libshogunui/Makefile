@@ -13,24 +13,23 @@ ifeq (../.config-local,$(wildcard ../.config-local))
 include ../.config-local
 endif
 
-INCLUDES += $(INCLUDES_LIBSHOGUN)
-DEFINES += $(DEFINES_LIBSHOGUN)
-LINKFLAGS += $(LINKFLAGS_LIBSHOGUN)
-POSTLINKFLAGS += $(POSTLINKFLAGS_LIBSHOGUN)
+INCLUDES += $(INCLUDES_LIBSHOGUNUI) -I../libshogun
+DEFINES += $(DEFINES_LIBSHOGUNUI)
+LINKFLAGS += $(LINKFLAGS_LIBSHOGUNUI)
+POSTLINKFLAGS += $(POSTLINKFLAGS_LIBSHOGUNUI)
 
 SRCDIR = .
 
 # SRC/OBJFILES lie all in the subdir of SRCDIR
-SVNEntries = $(shell find $(SRCDIR) -name entries -type f)
 HEADERFILES	= $(shell find $(SRCDIR) -name "*.$(EXT_SRC_HEADER)" )
-SRCFILES 	= $(shell find $(SRCDIR) -mindepth 2 -name "*.$(EXT_SRC_C)" -o -name "*.$(EXT_SRC_CPP)")
-OBJFILES 	= $(patsubst %.$(EXT_SRC_CPP),%.$(EXT_OBJ_CPP), $(shell find $(SRCDIR) -mindepth 2 -name "*.$(EXT_SRC_CPP)")) $(patsubst %.$(EXT_SRC_C),%.$(EXT_OBJ_C), $(shell find $(SRCDIR) -mindepth 2 -name "*.$(EXT_SRC_C)"))
+SRCFILES 	= $(shell find $(SRCDIR) -name "*.$(EXT_SRC_C)" -o -name "*.$(EXT_SRC_CPP)")
+OBJFILES 	= $(patsubst %.$(EXT_SRC_CPP),%.$(EXT_OBJ_CPP), $(shell find $(SRCDIR) -name "*.$(EXT_SRC_CPP)")) $(patsubst %.$(EXT_SRC_C),%.$(EXT_OBJ_C), $(shell find $(SRCDIR) -name "*.$(EXT_SRC_C)"))
 
 .PHONY: all out clean end targets warn2err err2warn ctags depgen buildout buildend dist
 
 ifeq (.depend,$(wildcard .depend))
 include .depend
-just-do-it:	buildout $(LIBSHOGUN_TARGET) buildend
+just-do-it:	buildout $(LIBSHOGUNUI_TARGET) buildend
 else
 just-do-it:	depgen .depend
 		test -f .depend && $(MAKE)
@@ -43,11 +42,11 @@ depgen:	../.config
 
 buildout:
 	@echo ========================================================================================
-	@echo ==== Building shogun for platform $(KERNELNAME)-$(MACHINE) target $(LIBSHOGUN_TARGET)
+	@echo ==== Building shogun for platform $(KERNELNAME)-$(MACHINE) target $(LIBSHOGUNUI_TARGET)
 	@echo ==== opts: $(COMPFLAGS_CPP)
 	@echo ========================================================================================
 	@echo 
-buildend:	$(LIBSHOGUN_TARGET)	
+buildend:	$(LIBSHOGUNUI_TARGET)	
 	@echo 
 	@echo ============================================================
 	@echo ==== Done. Start with shogun.$(UNAME)
@@ -86,65 +85,58 @@ distclean: clean
 clean:
 	@rm -f $(shell find . -name "*.cpp.o" -o -name "*.c.o" -o -name "*.so" -o -name "*.dll" -o -name "*~" -o -name ".#*" 2>/dev/null)
 	@rm -f $(shell find . -type f -name '*.swp')
-	@rm -f libshogun.a libshogun.so*
-
-lib/versionstring.h:	$(SVNEntries)
-		sh ../.version.sh > $@
+	@rm -f libshogunui.a libshogunui.so*
 
 dist:	distclean
 	rm -f $(TAR).gz
 	tar -cvf $(TAR) -C ../../ shogun/src && gzip -9 $(TAR)
 
-install: $(LIBSHOGUN_TARGET)
+install: $(LIBSHOGUNUI_TARGET)
 	install -d -m755 $(DESTDIR)$(LIBDIR)
-	install -d -m755 "$(DESTDIR)$(INCDIR)/shogun"
-	install -m755 $(LIBSHOGUN_TARGET) $(DESTDIR)$(LIBDIR)
-	install -m755 libshogun.so $(DESTDIR)$(LIBDIR)
-	install -m755 libshogun.a $(DESTDIR)$(LIBDIR)
+	install -d -m755 "$(DESTDIR)$(INCDIR)/shogun/ui"
+	install -m755 $(LIBSHOGUNUI_TARGET) $(DESTDIR)$(LIBDIR)
+	install -m755 libshogunui.so $(DESTDIR)$(LIBDIR)
+	install -m755 libshogunui.a $(DESTDIR)$(LIBDIR)
+	install -m644 *.h -t "$(DESTDIR)$(INCDIR)/shogun/ui"
 
-	find ./ -mindepth 1 -type d ! \( -path '*.svn*' -o -name '*interface*' -o -name '*guilib*' -o -name '*doxygen*' \)\
-		-exec install -d -m755 "$(DESTDIR)$(INCDIR)/shogun/"\{\} \;
-	find ./ -mindepth 1 -type d ! \( -path '*.svn*' -o -name '*wrap*' -o -name '*interface*' -o -name '*guilib*' -o -name '*doxygen*' \) \
-		-exec sh -c "install -m644 {}/*.h -t $(DESTDIR)$(INCDIR)/shogun/{}" \;
+doc:
+		-@sed -i "s/PROJECT_NUMBER         = .*/PROJECT_NUMBER         = `sed -n 's/^#define VERSION_RELEASE "\(.*\)_"/\1/p' $@`/" ../doc/Doxyfile
+		cd ../doc && make
 
-doc:	lib/versionstring.h
-		-@sed -i "s/PROJECT_NUMBER         = .*/PROJECT_NUMBER         = `sed -n 's/^#define VERSION_RELEASE "\(.*\)_"/\1/p' $@`/" ../../doc/Doxyfile
-		cd ../../doc && make
-
-$(OBJFILES): ../.config .depend lib/versionstring.h ../ChangeLog
+$(OBJFILES): ../.config .depend ../ChangeLog
 
 dep:	depend
-depend:		../.config lib/versionstring.h
+depend:		../.config
 ifeq (makedepend,$(MAKEDEPEND))
 	-$(MAKEDEPEND) $(DEFINES) $(INCLUDES) \
-		$(shell find $(SRCDIR) -mindepth 2 -name "*.$(EXT_SRC_CPP)" ) $(MAKEDEPENDOPTS) | \
+		$(shell find $(SRCDIR) -name "*.$(EXT_SRC_CPP)" ) $(MAKEDEPENDOPTS) | \
 		sed -e 's/\.o:/.$(EXT_OBJ_CPP):/g' >.depend
 	-$(MAKEDEPEND) $(DEFINES) $(INCLUDES) \
-		$(shell find $(SRCDIR) -mindepth 2 -name "*.$(EXT_SRC_C)" ) $(MAKEDEPENDOPTS) | \
+		$(shell find $(SRCDIR) -name "*.$(EXT_SRC_C)" ) $(MAKEDEPENDOPTS) | \
 		sed -e 's/\.o:/.$(EXT_OBJ_C):/g' >>.depend
 else #gcc -MM
-	find $(SRCDIR) -mindepth 2 -name "*.$(EXT_SRC_C)" -o -name "*.$(EXT_SRC_CPP)" \
+	find $(SRCDIR) -name "*.$(EXT_SRC_C)" -o -name "*.$(EXT_SRC_CPP)" \
 	-exec $(MAKEDEPEND) $(DEFINES) $(INCLUDES) {} -MT {}.o \; >.depend
 endif
 
-.depend:	../.config lib/versionstring.h
+.depend:	../.config
 ifeq (makedepend,$(MAKEDEPEND))
 	-$(MAKEDEPEND) $(DEFINES) $(INCLUDES) \
-		$(shell find $(SRCDIR) -mindepth 2 -name "*.$(EXT_SRC_CPP)" ) $(MAKEDEPENDOPTS) | \
+		$(shell find $(SRCDIR) -name "*.$(EXT_SRC_CPP)" ) $(MAKEDEPENDOPTS) | \
 		sed -e 's/\.o:/.$(EXT_OBJ_CPP):/g' >.depend
 	-$(MAKEDEPEND) $(DEFINES) $(INCLUDES) \
-		$(shell find $(SRCDIR) -mindepth 2 -name "*.$(EXT_SRC_C)" ) $(MAKEDEPENDOPTS) | \
+		$(shell find $(SRCDIR) -name "*.$(EXT_SRC_C)" ) $(MAKEDEPENDOPTS) | \
 		sed -e 's/\.o:/.$(EXT_OBJ_C):/g' >>.depend
 else #gcc -MM
-	find $(SRCDIR) -mindepth 2 -name "*.$(EXT_SRC_C)" -o -name "*.$(EXT_SRC_CPP)" \
+	find $(SRCDIR) -name "*.$(EXT_SRC_C)" -o -name "*.$(EXT_SRC_CPP)" \
 	-exec $(MAKEDEPEND) $(DEFINES) $(INCLUDES) {} -MT {}.o \; >.depend
 endif
 
-$(LIBSHOGUN_TARGET): $(OBJFILES) $(SRCFILES) $(HEADERFILES)
-	$(LINK) $(shell find $(SRCDIR) -mindepth 2 -name "*.$(EXT_OBJ_CPP)" -o -name "*.$(EXT_OBJ_C)" 2>/dev/null) $(LINKFLAGS) -o $(LIBSHOGUN_TARGET) $(POSTLINKFLAGS)
-	-ar rs libshogun.a $(shell find $(SRCDIR) -mindepth 2 -name "*.$(EXT_OBJ_CPP)" -o -name "*.$(EXT_OBJ_C)" 2>/dev/null)
-	rm -f libshogun.so
-	ln -s $(LIBSHOGUN_TARGET) libshogun.so
+$(LIBSHOGUNUI_TARGET): $(OBJFILES) $(SRCFILES) $(HEADERFILES)
+	$(LINK) $(shell find $(SRCDIR) -name "*.$(EXT_OBJ_CPP)" -o -name "*.$(EXT_OBJ_C)" 2>/dev/null) $(LINKFLAGS) -o $(LIBSHOGUNUI_TARGET) $(POSTLINKFLAGS)
+	-ar rs libshogunui.a $(shell find $(SRCDIR) -name "*.$(EXT_OBJ_CPP)" -o -name "*.$(EXT_OBJ_C)" 2>/dev/null)
+	rm -f libshogunui.so
+	ln -s $(LIBSHOGUNUI_TARGET) libshogunui.so
 
 %.$(EXT_OBJ_CPP):	%.$(EXT_SRC_CPP)
 	$(COMP_CPP) $(COMPFLAGS_CPP) -c $(INCLUDES) -o $@ $<

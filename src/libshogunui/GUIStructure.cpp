@@ -8,15 +8,12 @@
  * Copyright (C) 2008 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "lib/config.h"
+#include "SGInterface.h"
+#include "GUIStructure.h"
 
-#ifndef HAVE_SWIG
-#include "lib/io.h"
-
-#include "interface/SGInterface.h"
-#include "guilib/GUIStructure.h"
-#include "structure/Plif.h"
-
+#include <shogun/lib/config.h>
+#include <shogun/lib/io.h>
+#include <shogun/structure/Plif.h>
 
 CGUIStructure::CGUIStructure(CSGInterface* ui_)
 : ui(ui_), m_PEN(NULL), m_num_plifs(0), m_num_limits(0),
@@ -181,4 +178,3 @@ bool  CGUIStructure::set_signal_plifs(
 	set_state_signals(PEN_state_signal);
 	return true;
 }
-#endif

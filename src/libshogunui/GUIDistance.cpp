@@ -9,45 +9,41 @@
  * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "lib/config.h"
+#include "GUIDistance.h"
+#include "SGInterface.h"
 
-#ifndef HAVE_SWIG
 #include <string.h>
 
-#include "lib/io.h"
+#include <shogun/lib/config.h>
+#include <shogun/lib/io.h>
 
-#include "interface/SGInterface.h"
-#include "guilib/GUIDistance.h"
+#include <shogun/distance/Distance.h>
+#include <shogun/distance/SimpleDistance.h>
+#include <shogun/distance/CanberraMetric.h>
+#include <shogun/distance/ChebyshewMetric.h>
+#include <shogun/distance/GeodesicMetric.h>
+#include <shogun/distance/JensenMetric.h>
+#include <shogun/distance/ManhattanMetric.h>
+#include <shogun/distance/MinkowskiMetric.h>
+#include <shogun/distance/CanberraWordDistance.h>
+#include <shogun/distance/ManhattanWordDistance.h>
+#include <shogun/distance/HammingWordDistance.h>
+#include <shogun/distance/EuclidianDistance.h>
+#include <shogun/distance/SparseEuclidianDistance.h>
+#include <shogun/distance/TanimotoDistance.h>
+#include <shogun/distance/ChiSquareDistance.h>
+#include <shogun/distance/CosineDistance.h>
+#include <shogun/distance/BrayCurtisDistance.h>
 
-#include "distance/Distance.h"
-#include "distance/SimpleDistance.h"
-
-#include "distance/CanberraMetric.h"
-#include "distance/ChebyshewMetric.h"
-#include "distance/GeodesicMetric.h"
-#include "distance/JensenMetric.h"
-#include "distance/ManhattanMetric.h"
-#include "distance/MinkowskiMetric.h"
-
-#include "distance/CanberraWordDistance.h"
-#include "distance/ManhattanWordDistance.h"
-#include "distance/HammingWordDistance.h"
-#include "distance/EuclidianDistance.h"
-#include "distance/SparseEuclidianDistance.h"
-#include "distance/TanimotoDistance.h"
-#include "distance/ChiSquareDistance.h"
-#include "distance/CosineDistance.h"
-#include "distance/BrayCurtisDistance.h"
-
-#include "features/RealFileFeatures.h"
-#include "features/TOPFeatures.h"
-#include "features/FKFeatures.h"
-#include "features/CharFeatures.h"
-#include "features/StringFeatures.h"
-#include "features/ByteFeatures.h"
-#include "features/ShortFeatures.h"
-#include "features/RealFeatures.h"
-#include "features/Features.h"
+#include <shogun/features/RealFileFeatures.h>
+#include <shogun/features/TOPFeatures.h>
+#include <shogun/features/FKFeatures.h>
+#include <shogun/features/CharFeatures.h>
+#include <shogun/features/StringFeatures.h>
+#include <shogun/features/ByteFeatures.h>
+#include <shogun/features/ShortFeatures.h>
+#include <shogun/features/RealFeatures.h>
+#include <shogun/features/Features.h>
 
 
 CGUIDistance::CGUIDistance(CSGInterface* ui_)
@@ -305,5 +301,3 @@ CDistance* CGUIDistance::create_hammingword(bool use_sign)
 
 	return dist;
 }
-
-#endif

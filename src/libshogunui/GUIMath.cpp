@@ -8,14 +8,12 @@
  * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "lib/config.h"
+#include "GUIMath.h"
+#include "SGInterface.h"
 
-#ifndef HAVE_SWIG
-#include "lib/io.h"
-#include "lib/Mathematics.h"
-
-#include "guilib/GUIMath.h"
-#include "interface/SGInterface.h"
+#include <shogun/lib/config.h>
+#include <shogun/lib/io.h>
+#include <shogun/lib/Mathematics.h>
 
 CGUIMath::CGUIMath(CSGInterface* ui_)
 : CSGObject(), ui(ui_), threshold(0.0)
@@ -117,4 +115,3 @@ void CGUIMath::current_results(
 				((double) fp)/((double) neg), (double) (pos-fn)/((double)pos), ((double) threshold));
 	}
 }
-#endif

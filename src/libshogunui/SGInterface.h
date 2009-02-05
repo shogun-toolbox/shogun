@@ -1,27 +1,24 @@
 #ifndef __SGINTERFACE__H_
 #define __SGINTERFACE__H_
 
-#include "lib/config.h"
+#include <shogun/lib/config.h>
+#include <shogun/lib/common.h>
+#include <shogun/base/SGObject.h>
+#include <shogun/features/StringFeatures.h>
+#include <shogun/features/SparseFeatures.h>
+#include <shogun/kernel/Kernel.h>
 
-#if !defined(HAVE_SWIG)
-
-#include "lib/common.h"
-#include "base/SGObject.h"
-#include "features/StringFeatures.h"
-#include "features/SparseFeatures.h"
-#include "kernel/Kernel.h"
-
-#include "guilib/GUIClassifier.h"
-#include "guilib/GUIDistance.h"
-#include "guilib/GUIFeatures.h"
-#include "guilib/GUIHMM.h"
-#include "guilib/GUIKernel.h"
-#include "guilib/GUILabels.h"
-#include "guilib/GUIMath.h"
-#include "guilib/GUIPluginEstimate.h"
-#include "guilib/GUIPreProc.h"
-#include "guilib/GUITime.h"
-#include "guilib/GUIStructure.h"
+#include "GUIClassifier.h"
+#include "GUIDistance.h"
+#include "GUIFeatures.h"
+#include "GUIHMM.h"
+#include "GUIKernel.h"
+#include "GUILabels.h"
+#include "GUIMath.h"
+#include "GUIPluginEstimate.h"
+#include "GUIPreProc.h"
+#include "GUITime.h"
+#include "GUIStructure.h"
 
 enum IFType
 {
@@ -696,5 +693,4 @@ typedef struct {
 	const char* usage_suffix;
 } CSGInterfaceMethod;
 
-#endif // !HAVE_SWIG
 #endif // __SGINTERFACE__H_

@@ -9,15 +9,12 @@
  * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "lib/config.h"
+#include "SGInterface.h"
+#include "GUIPluginEstimate.h"
 
-#ifndef HAVE_SWIG
-#include "lib/io.h"
-
-#include "interface/SGInterface.h"
-#include "guilib/GUIPluginEstimate.h"
-
-#include "features/StringFeatures.h"
+#include <shogun/lib/config.h>
+#include <shogun/lib/io.h>
+#include <shogun/features/StringFeatures.h>
 
 
 CGUIPluginEstimate::CGUIPluginEstimate(CSGInterface* ui_)
@@ -181,4 +178,3 @@ float64_t CGUIPluginEstimate::classify_example(int32_t idx)
 
 	return estimator->classify_example(idx);
 }
-#endif

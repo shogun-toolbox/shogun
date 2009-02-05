@@ -4,7 +4,7 @@
 #include "lib/config.h"
 
 #if defined(HAVE_CMDLINE)
-#include "interface/SGInterface.h"
+#include "static/SGInterface.h"
 
 #define CMDLINE_COMMENT0 '#'
 #define CMDLINE_COMMENT1 '%'

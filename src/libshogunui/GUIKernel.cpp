@@ -9,60 +9,54 @@
  * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "lib/config.h"
+#include "SGInterface.h"
+#include "GUIKernel.h"
+#include "GUIPluginEstimate.h"
 
-#ifndef HAVE_SWIG
+#include <shogun/lib/config.h>
+#include <shogun/lib/io.h>
+#include <shogun/kernel/Kernel.h>
+#include <shogun/kernel/CombinedKernel.h>
+#include <shogun/kernel/Chi2Kernel.h>
+#include <shogun/kernel/LinearKernel.h>
+#include <shogun/kernel/LinearByteKernel.h>
+#include <shogun/kernel/LinearStringKernel.h>
+#include <shogun/kernel/LinearWordKernel.h>
+#include <shogun/kernel/WeightedDegreeStringKernel.h>
+#include <shogun/kernel/WeightedDegreePositionStringKernel.h>
+#include <shogun/kernel/FixedDegreeStringKernel.h>
+#include <shogun/kernel/LocalityImprovedStringKernel.h>
+#include <shogun/kernel/SimpleLocalityImprovedStringKernel.h>
+#include <shogun/kernel/PolyKernel.h>
+#include <shogun/kernel/CustomKernel.h>
+#include <shogun/kernel/ConstKernel.h>
+#include <shogun/kernel/PolyMatchWordStringKernel.h>
+#include <shogun/kernel/PolyMatchStringKernel.h>
+#include <shogun/kernel/LocalAlignmentStringKernel.h>
+#include <shogun/kernel/MatchWordStringKernel.h>
+#include <shogun/kernel/CommWordStringKernel.h>
+#include <shogun/kernel/WeightedCommWordStringKernel.h>
+#include <shogun/kernel/CommUlongStringKernel.h>
+#include <shogun/kernel/HistogramWordStringKernel.h>
+#include <shogun/kernel/SalzbergWordStringKernel.h>
+#include <shogun/kernel/GaussianKernel.h>
+#include <shogun/kernel/GaussianShiftKernel.h>
+#include <shogun/kernel/SigmoidKernel.h>
+#include <shogun/kernel/SparseLinearKernel.h>
+#include <shogun/kernel/SparsePolyKernel.h>
+#include <shogun/kernel/SparseGaussianKernel.h>
+#include <shogun/kernel/DiagKernel.h>
+#include <shogun/kernel/MindyGramKernel.h>
+#include <shogun/kernel/OligoKernel.h>
+#include <shogun/kernel/DistanceKernel.h>
+#include <shogun/kernel/TensorProductPairKernel.h>
+#include <shogun/kernel/AvgDiagKernelNormalizer.h>
+#include <shogun/kernel/FirstElementKernelNormalizer.h>
+#include <shogun/kernel/IdentityKernelNormalizer.h>
+#include <shogun/kernel/SqrtDiagKernelNormalizer.h>
+#include <shogun/classifier/svm/SVM.h>
+
 #include <string.h>
-
-#include "lib/io.h"
-
-#include "interface/SGInterface.h"
-#include "guilib/GUIKernel.h"
-#include "guilib/GUIPluginEstimate.h"
-
-#include "kernel/Kernel.h"
-#include "kernel/CombinedKernel.h"
-#include "kernel/Chi2Kernel.h"
-#include "kernel/LinearKernel.h"
-#include "kernel/LinearByteKernel.h"
-#include "kernel/LinearStringKernel.h"
-#include "kernel/LinearWordKernel.h"
-#include "kernel/WeightedDegreeStringKernel.h"
-#include "kernel/WeightedDegreePositionStringKernel.h"
-#include "kernel/FixedDegreeStringKernel.h"
-#include "kernel/LocalityImprovedStringKernel.h"
-#include "kernel/SimpleLocalityImprovedStringKernel.h"
-#include "kernel/PolyKernel.h"
-#include "kernel/CustomKernel.h"
-#include "kernel/ConstKernel.h"
-#include "kernel/PolyMatchWordStringKernel.h"
-#include "kernel/PolyMatchStringKernel.h"
-#include "kernel/LocalAlignmentStringKernel.h"
-#include "kernel/MatchWordStringKernel.h"
-#include "kernel/CommWordStringKernel.h"
-#include "kernel/WeightedCommWordStringKernel.h"
-#include "kernel/CommUlongStringKernel.h"
-#include "kernel/HistogramWordStringKernel.h"
-#include "kernel/SalzbergWordStringKernel.h"
-#include "kernel/GaussianKernel.h"
-#include "kernel/GaussianShiftKernel.h"
-#include "kernel/SigmoidKernel.h"
-#include "kernel/SparseLinearKernel.h"
-#include "kernel/SparsePolyKernel.h"
-#include "kernel/SparseGaussianKernel.h"
-#include "kernel/DiagKernel.h"
-#include "kernel/MindyGramKernel.h"
-#include "kernel/OligoKernel.h"
-#include "kernel/DistanceKernel.h"
-#include "kernel/TensorProductPairKernel.h"
-
-#include "kernel/AvgDiagKernelNormalizer.h"
-#include "kernel/FirstElementKernelNormalizer.h"
-#include "kernel/IdentityKernelNormalizer.h"
-#include "kernel/SqrtDiagKernelNormalizer.h"
-
-#include "classifier/svm/SVM.h"
-
 
 CGUIKernel::CGUIKernel(CSGInterface* ui_)
 : CSGObject(), ui(ui_)
@@ -953,4 +947,3 @@ bool CGUIKernel::precompute_subkernels()
 
 	return ((CCombinedKernel*) kernel)->precompute_subkernels();
 }
-#endif

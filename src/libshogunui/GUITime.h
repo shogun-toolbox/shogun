@@ -11,12 +11,9 @@
 #ifndef __GUITIME__H_
 #define __GUITIME__H_
 
-#include "lib/config.h"
-
-#ifndef HAVE_SWIG
-
-#include "base/SGObject.h"
-#include "lib/Time.h"
+#include <shogun/lib/config.h>
+#include <shogun/lib/Time.h>
+#include <shogun/base/SGObject.h>
 
 class CSGInterface;
 
@@ -35,5 +32,4 @@ class CGUITime : public CSGObject
 		CSGInterface* ui;
 		CTime* time;
 };
-#endif //HAVE_SWIG
 #endif

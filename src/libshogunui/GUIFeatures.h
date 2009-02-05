@@ -12,28 +12,26 @@
 #ifndef __GUIFEATURES__H
 #define __GUIFEATURES__H
 
-#include "lib/config.h"
-#include "base/SGObject.h"
-
-#ifndef HAVE_SWIG
-#include "features/Labels.h"
-#include "features/Features.h"
-#include "features/RealFileFeatures.h"
-#include "features/TOPFeatures.h"
-#include "features/FKFeatures.h"
-#include "features/CharFeatures.h"
-#include "features/StringFeatures.h"
-#include "features/ByteFeatures.h"
-#include "features/WordFeatures.h"
-#include "features/ShortFeatures.h"
-#include "features/RealFeatures.h"
-#include "features/SparseFeatures.h"
-#include "features/CombinedFeatures.h"
-#include "features/CombinedDotFeatures.h"
-#include "features/MindyGramFeatures.h"
-#include "features/WDFeatures.h"
-#include "features/ExplicitSpecFeatures.h"
-#include "features/ImplicitWeightedSpecFeatures.h"
+#include <shogun/lib/config.h>
+#include <shogun/base/SGObject.h>
+#include <shogun/features/Labels.h>
+#include <shogun/features/Features.h>
+#include <shogun/features/RealFileFeatures.h>
+#include <shogun/features/TOPFeatures.h>
+#include <shogun/features/FKFeatures.h>
+#include <shogun/features/CharFeatures.h>
+#include <shogun/features/StringFeatures.h>
+#include <shogun/features/ByteFeatures.h>
+#include <shogun/features/WordFeatures.h>
+#include <shogun/features/ShortFeatures.h>
+#include <shogun/features/RealFeatures.h>
+#include <shogun/features/SparseFeatures.h>
+#include <shogun/features/CombinedFeatures.h>
+#include <shogun/features/CombinedDotFeatures.h>
+#include <shogun/features/MindyGramFeatures.h>
+#include <shogun/features/WDFeatures.h>
+#include <shogun/features/ExplicitSpecFeatures.h>
+#include <shogun/features/ImplicitWeightedSpecFeatures.h>
 
 class CSGInterface;
 
@@ -202,5 +200,4 @@ class CGUIFeatures : public CSGObject
 		CFeatures *test_features;
 		CFeatures *ref_features;
 };
-#endif
 #endif

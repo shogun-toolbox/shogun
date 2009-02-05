@@ -12,13 +12,10 @@
 #ifndef __GUIPREPROC_H__
 #define __GUIPREPROC_H__
 
-#include "lib/config.h"
-
-#ifndef HAVE_SWIG
-#include "base/SGObject.h"
-
-#include "preproc/PreProc.h"
-#include "lib/List.h"
+#include <shogun/lib/config.h>
+#include <shogun/lib/List.h>
+#include <shogun/base/SGObject.h>
+#include <shogun/preproc/PreProc.h>
 
 class CSGInterface;
 
@@ -63,5 +60,4 @@ class CGUIPreProc : public CSGObject
 		CList<CPreProc*>* preprocs;
 		CSGInterface* ui;
 };
-#endif //HAVE_SWIG
 #endif

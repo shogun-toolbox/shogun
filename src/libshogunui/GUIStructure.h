@@ -12,16 +12,12 @@
 #ifndef _GUISTRUCTURE_H__
 #define _GUISTRUCTURE_H__ 
 
-#include "lib/config.h"
-
-#ifndef HAVE_SWIG
-
-#include "base/SGObject.h"
-
-#include "structure/Plif.h"
-#include "structure/PlifArray.h"
-#include "structure/PlifBase.h"
-#include "structure/DynProg.h"
+#include <shogun/lib/config.h>
+#include <shogun/base/SGObject.h>
+#include <shogun/structure/Plif.h>
+#include <shogun/structure/PlifArray.h>
+#include <shogun/structure/PlifBase.h>
+#include <shogun/structure/DynProg.h>
 
 class CSGInterface;
 
@@ -204,6 +200,5 @@ class CGUIStructure : public CSGObject
 		bool m_use_orf;
 		int32_t* m_mod_words;
 };
-#endif //HAVE_SWIG
 #endif
 

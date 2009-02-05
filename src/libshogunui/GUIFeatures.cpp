@@ -9,15 +9,11 @@
  * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "lib/config.h"
+#include "GUIFeatures.h"
+#include "SGInterface.h"
 
-#ifndef HAVE_SWIG
-
-#include "lib/io.h"
-
-#include "guilib/GUIFeatures.h"
-#include "interface/SGInterface.h"
-
+#include <shogun/lib/config.h>
+#include <shogun/lib/io.h>
 
 CGUIFeatures::CGUIFeatures(CSGInterface* ui_)
 : CSGObject(), ui(ui_), train_features(NULL), test_features(NULL),
@@ -810,6 +806,3 @@ bool CGUIFeatures::del_last_feature_obj(char* target)
 
 	return false;
 }
-
-
-#endif

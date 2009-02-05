@@ -12,12 +12,10 @@
 #ifndef __GUIHMM__H
 #define __GUIHMM__H
 
-#include "lib/config.h"
-
-#ifndef HAVE_SWIG
-#include "base/SGObject.h"
-#include "distributions/hmm/HMM.h"
-#include "features/Labels.h"
+#include <shogun/lib/config.h>
+#include <shogun/base/SGObject.h>
+#include <shogun/distributions/hmm/HMM.h>
+#include <shogun/features/Labels.h>
 
 class CSGInterface;
 
@@ -117,5 +115,4 @@ class CGUIHMM : public CSGObject
 	protected:
 		CSGInterface* ui;
 };
-#endif //HAVE_SWIG
 #endif

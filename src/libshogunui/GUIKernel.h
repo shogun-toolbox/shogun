@@ -12,11 +12,9 @@
 #ifndef __GUIKERNEL__H
 #define __GUIKERNEL__H
 
-#include "lib/config.h"
-
-#ifndef HAVE_SWIG
-#include "base/SGObject.h"
-#include "kernel/Kernel.h"
+#include <shogun/lib/config.h>
+#include <shogun/base/SGObject.h>
+#include <shogun/kernel/Kernel.h>
 
 class CSGInterface;
 
@@ -176,5 +174,4 @@ class CGUIKernel : public CSGObject
 	float64_t* get_weights(int32_t order, int32_t max_mismatch);
 
 };
-#endif //HAVE_SWIG
 #endif

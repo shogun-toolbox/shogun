@@ -12,12 +12,9 @@
 #ifndef __GUILABELS__H_
 #define __GUILABELS__H_
 
-#include "lib/config.h"
-
-#ifndef HAVE_SWIG
-
-#include "base/SGObject.h"
-#include "features/Labels.h"
+#include <shogun/lib/config.h>
+#include <shogun/base/SGObject.h>
+#include <shogun/features/Labels.h>
 
 class CSGInterface;
 
@@ -45,5 +42,4 @@ class CGUILabels : public CSGObject
 		CLabels *train_labels;
 		CLabels *test_labels;
 };
-#endif //HAVE_SWIG
 #endif

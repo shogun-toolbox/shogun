@@ -12,12 +12,10 @@
 #ifndef __GUIDISTANCE_H__
 #define __GUIDISTANCE_H__
 
-#include "lib/config.h"
-
-#ifndef HAVE_SWIG
-#include "base/SGObject.h"
-#include "distance/Distance.h"
-#include "features/Features.h"
+#include <shogun/lib/config.h>
+#include <shogun/base/SGObject.h>
+#include <shogun/distance/Distance.h>
+#include <shogun/features/Features.h>
 
 class CSGInterface;
 
@@ -55,5 +53,4 @@ class CGUIDistance : public CSGObject
 	CSGInterface* ui;
 	bool initialized;
 };
-#endif //HAVE_SWIG
 #endif //__GUIDISTANCE_H__

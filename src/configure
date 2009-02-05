@@ -1,7 +1,8 @@
 #!/bin/bash
 
 VERSION=`grep "SHOGUN Release version" NEWS 2>&1 | cut -c 27- | cut -f 1 -d ' ' | head -n 1`
-SONAME=libshogun.`grep "SHOGUN Release version" NEWS 2>&1 | cut -f 2 -d '(' | cut -f 2 -d ' ' | tr -d ')' | head -n 1`
+SONAME_LIBSHOGUN=libshogun.`grep "SHOGUN Release version" NEWS 2>&1 | cut -f 2 -d '(' | cut -f 2 -d ' ' | tr -d ',' | head -n 1`
+SONAME_LIBSHOGUNUI=libshogunui.`grep "SHOGUN Release version" NEWS 2>&1 | cut -f 2 -d ',' | cut -f 3 -d ' ' | tr -d ')' | head -n 1`
 
 [ -n "$VERSION" ] && echo "Running configure for SHOGUN version $VERSION"
 
@@ -76,7 +77,17 @@ _inc_extra=""
 _ld_extra=""
 _optimizing=""
 _interfaces=""
-_libshogun=auto _cmdline=auto _python=auto _octave=auto _matlab=auto _r=auto _python_modular=auto _octave_modular=auto _r_modular=auto 
+_libshogun=auto
+_libshogunui=auto
+_cmdline=auto
+_python=auto
+_octave=auto
+_matlab=auto
+_r=auto
+_python_modular=auto
+_octave_modular=auto
+_r_modular=auto 
+
 test -z "$INCLUDES" || _inc_extra="-I`echo $INCLUDES | sed 's,:, -I,g'`"
 test -z "$LIBS" || _ld_extra="-L`echo $LIBS | sed 's,:, -L,g'`"
 
@@ -90,7 +101,7 @@ COMPFLAGS_C=
 COMPFLAGS_CPP=
 test "$CFLAGS" && COMPFLAGS_C="$COMPFLAGS_C $CFLAGS"
 test "$CXXFLAGS" && COMPFLAGS_CPP="$COMPFLAGS_CPP $CXXFLAGS"
-INCLUDES=-I${SRCDIR}/libshogun
+INCLUDES=
 LINK=c++
 DEFINES=
 LINKFLAGS=
@@ -100,13 +111,22 @@ BUILD_R_MODULAR=no
 BUILD_PYTHON_MODULAR=no
 
 BUILD_LIBSHOGUN=no
-LIBSHOGUN_TARGET=
+LIBSHOGUN_TARGET=$SONAME_LIBSHOGUN
 DEFINES_LIBSHOGUN=
+INCLUDES_LIBSHOGUN="-I../libshogun -I.."
 LINKFLAGS_LIBSHOGUN=
-POSTLINKFLAGS_LIBSHOGUN="-Xlinker -soname=$SONAME"
+POSTLINKFLAGS_LIBSHOGUN="-Xlinker -soname=$SONAME_LIBSHOGUN -shared -fPIC"
+
+BUILD_LIBSHOGUNUI=no
+LIBSHOGUNUI_TARGET=$SONAME_LIBSHOGUNUI
+DEFINES_LIBSHOGUNUI=
+INCLUDES_LIBSHOGUNUI="-I../libshogun -I.."
+LINKFLAGS_LIBSHOGUNUI="-L../libshogun -lshogun"
+POSTLINKFLAGS_LIBSHOGUNUI="-Xlinker -soname=$SONAME_LIBSHOGUNUI -shared -fPIC"
 
 BUILD_CMDLINE=no
-CMDLINE_TARGET=
+CMDLINE_TARGET=	
+DEFINES_CMDLINE=
 DEFINES_CMDLINE=
 LINKFLAGS_CMDLINE=
 POSTLINKFLAGS_CMDLINE=
@@ -114,11 +134,13 @@ POSTLINKFLAGS_CMDLINE=
 BUILD_MATLAB=no
 MATLAB_TARGET=
 DEFINES_MATLAB=
+DEFINES_MATLAB=
 LINKFLAGS_MATLAB=
 POSTLINKFLAGS_MATLAB=
 
 BUILD_OCTAVE=no
 OCTAVE_TARGET=
+DEFINES_OCTAVE=
 DEFINES_OCTAVE=
 LINKFLAGS_OCTAVE=
 POSTLINKFLAGS_OCTAVE=
@@ -126,11 +148,13 @@ POSTLINKFLAGS_OCTAVE=
 BUILD_R=no
 R_TARGET=
 DEFINES_R=
+DEFINES_R=
 LINKFLAGS_R=
 POSTLINKFLAGS_R=
 
 BUILD_PYTHON=no
 PYTHON_TARGET=
+DEFINES_PYTHON=
 DEFINES_PYTHON=
 LINKFLAGS_PYTHON=
 POSTLINKFLAGS_PYTHON=
@@ -640,6 +664,7 @@ for ac_option do
   case "$ac_option" in
   --interfaces=*)
 	_libshogun=no
+	_libshogunui=no
 	_cmdline=no
 	_python=no
 	_octave=no
@@ -655,6 +680,9 @@ for ac_option do
 	  case "$intf" in
 	  libshogun)
 	  	_libshogun=yes
+		;;
+	  libshogunui)
+	  	_libshogunui=yes
 		;;
 	  cmdline)
 	  	_cmdline=yes
@@ -2520,7 +2548,7 @@ EOF
 			echores "yes (internal in source tree)"
 			rm -f shogun 
 			ln -s libshogun shogun
-			INCLUDES_LIBSHOGUN="$INCLUDES -I${SRCDIR}"
+			INCLUDES="$INCLUDES -I${SRCDIR}"
 			BUILD_LIBSHOGUN=yes
 
 cat > $TMPC << EOF
@@ -2838,9 +2866,9 @@ EOF
 								echores "yes"
 								USE_CPLEX='#define USE_CPLEX 1'
 								DEFINES="$DEFINES -DUSE_CPLEX"
-								INCLUDES="$INCLUDES $CPLEXINCLUDES"
-								LINKFLAGS="$LINKFLAGS $CPLEXLINKFLAGS"
-								POSTLINKFLAGS="$POSTLINKFLAGS $CPLEXLINKFLAGS"
+								INCLUDES_LIBSHOGUN="$INCLUDES_LIBSHOGUN $CPLEXINCLUDES"
+								LINKFLAGS_LIBSHOGUN="$LINKFLAGS_LIBSHOGUN $CPLEXLINKFLAGS"
+								POSTLINKFLAGS_LIBSHOGUN="$POSTLINKFLAGS_LIBSHOGUN $CPLEXLINKFLAGS"
 							else
 								echores "no"
 							fi
@@ -2999,8 +3027,66 @@ EOF
 				fi
 			fi
 		fi
-		LIBSHOGUN_TARGET=libshogun.so
-		POSTLINKFLAGS_LIBSHOGUN="$POSTLINKFLAGS -shared -fPIC"
+	fi
+}
+
+test_libshogunui()
+{
+	if test "$_libshogunui" = yes || test "$_libshogunui" = auto
+	then
+
+cat > $TMPC << EOF
+#include <stdio.h>
+#include <shogun/ui/GUITime..h>
+
+void sg_print_message(FILE* target, const char* str)
+{
+}
+
+void sg_print_warning(FILE* target, const char* str)
+{
+}
+
+void sg_print_error(FILE* target, const char* str)
+{
+}
+
+void sg_cancel_computations(bool &delayed, bool &immediately)
+{
+}
+
+int main(int argc, char** argv)
+{
+	CGUITime* t;
+	return 0;
+}
+EOF
+		echocheck "libshogunui"
+
+		if test -d libshogunui
+		then
+			echores "yes (internal in source tree)"
+			rm -f ui
+			ln -s libshogunui ui
+			INCLUDES="$INCLUDES -I${SRCDIR}"
+			BUILD_LIBSHOGUNUI=yes
+
+cat > $TMPC << EOF
+#include <math.h>
+int main(void) { return 0; }
+EOF
+		else
+			if cc_check
+			then
+				echores "yes (found installed)"
+			else
+				echores "no"
+				if test "$_libshogunui" = yes
+				then
+					die "libshogunui neither found installed in system include path nor locally"
+				fi
+			fi
+		fi
 	fi
 }
 
@@ -3057,6 +3143,7 @@ BUILD_R_MODULAR			= ${BUILD_R_MODULAR}
 BUILD_PYTHON_MODULAR	= ${BUILD_PYTHON_MODULAR}
 R_TARGET		= ${R_TARGET}
 LIBSHOGUN_TARGET= ${LIBSHOGUN_TARGET}
+LIBSHOGUNUI_TARGET= ${LIBSHOGUNUI_TARGET}
 CMDLINE_TARGET	= ${CMDLINE_TARGET}
 PYTHON_TARGET	= ${PYTHON_TARGET}
 OCTAVE_TARGET	= ${OCTAVE_TARGET}
@@ -3091,15 +3178,52 @@ EXT_SWIG_DOXY  	= ${EXT_SWIG_DOXY}
 GDB				= ${GDB}
 COMP_C			= ${COMP_C}
 COMP_CPP		= ${COMP_CPP}
+
 DEFINES			=${DEFINES}
 COMPFLAGS_C		= ${COMPFLAGS_C}
 COMPFLAGS_CPP	= ${COMPFLAGS_CPP}
 COMPFLAGS_SWIG_CPP	= ${COMPFLAGS_SWIG_CPP}
 INCLUDES		= ${INCLUDES}
-LINK			= ${LINK}
-POSTLINKCMD		= ${POSTLINKCMD}
 LINKFLAGS 		= ${LINKFLAGS}
 POSTLINKFLAGS	= ${POSTLINKFLAGS}
+
+DEFINES_LIBSHOGUN		= ${DEFINES_LIBSHOGUN}
+INCLUDES_LIBSHOGUN		= ${INCLUDES_LIBSHOGUN}
+LINKFLAGS_LIBSHOGUN 	= ${LINKFLAGS_LIBSHOGUN}
+POSTLINKFLAGS_LIBSHOGUN	= ${POSTLINKFLAGS_LIBSHOGUN}
+
+DEFINES_LIBSHOGUNUI		= ${DEFINES_LIBSHOGUNUI}
+INCLUDES_LIBSHOGUNUI	= ${INCLUDES_LIBSHOGUNUI}
+LINKFLAGS_LIBSHOGUNUI 	= ${LINKFLAGS_LIBSHOGUNUI}
+POSTLINKFLAGS_LIBSHOGUNUI	= ${POSTLINKFLAGS_LIBSHOGUNUI}
+
+DEFINES_CMDLINE			= ${DEFINES_CMDLINE}
+INCLUDES_CMDLINE		= ${INCLUDES_CMDLINE}
+LINKFLAGS_CMDLINE 		= ${LINKFLAGS_CMDLINE}
+POSTLINKFLAGS_CMDLINE	= ${POSTLINKFLAGS_CMDLINE}
+
+DEFINES_MATLAB			= ${DEFINES_MATLAB}
+INCLUDES_MATLAB			= ${INCLUDES_MATLAB}
+LINKFLAGS_MATLAB 		= ${LINKFLAGS_MATLAB}
+POSTLINKFLAGS_MATLAB	= ${POSTLINKFLAGS_MATLAB}
+
+DEFINES_OCTAVE			= ${DEFINES_OCTAVE}
+INCLUDES_OCTAVE			= ${INCLUDES_OCTAVE}
+LINKFLAGS_OCTAVE 		= ${LINKFLAGS_OCTAVE}
+POSTLINKFLAGS_OCTAVE	= ${POSTLINKFLAGS_OCTAVE}
+
+DEFINES_R		= ${DEFINES_R}
+INCLUDES_R		= ${INCLUDES_R}
+LINKFLAGS_R 	= ${LINKFLAGS_R}
+POSTLINKFLAGS_R	= ${POSTLINKFLAGS_R}
+
+DEFINES_PYTHON		= ${DEFINES_PYTHON}
+INCLUDES_PYTHON		= ${INCLUDES_PYTHON}
+LINKFLAGS_PYTHON 	= ${LINKFLAGS_PYTHON}
+POSTLINKFLAGS_PYTHON= ${POSTLINKFLAGS_PYTHON}
+
+LINK			= ${LINK}
+POSTLINKCMD		= ${POSTLINKCMD}
 PREFIX			= ${_prefix}
 DESTDIR			= ${_destdir}
 BINDIR			= ${_bindir}
@@ -3239,6 +3363,7 @@ test_matlab
 test_python
 test_r
 test_libshogun
+test_libshogunui
 test_cmdline
 test_modular
 svmlight_warn_license

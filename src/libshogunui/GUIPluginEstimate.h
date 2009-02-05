@@ -12,13 +12,10 @@
 #ifndef _GUIPLUGINESTIMATE_H__
 #define _GUIPLUGINESTIMATE_H__ 
 
-#include "lib/config.h"
-
-#ifndef HAVE_SWIG
-#include "base/SGObject.h"
-
-#include "classifier/PluginEstimate.h"
-#include "features/Labels.h"
+#include <shogun/lib/config.h>
+#include <shogun/base/SGObject.h>
+#include <shogun/classifier/PluginEstimate.h>
+#include <shogun/features/Labels.h>
 
 class CSGInterface;
 
@@ -54,5 +51,4 @@ class CGUIPluginEstimate : public CSGObject
 		float64_t pos_pseudo;
 		float64_t neg_pseudo;
 };
-#endif //HAVE_SWIG
 #endif

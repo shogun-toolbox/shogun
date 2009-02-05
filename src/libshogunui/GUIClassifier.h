@@ -11,11 +11,9 @@
 #ifndef _GUICLASSIFIER_H__
 #define _GUICLASSIFIER_H__
 
-#include "lib/config.h"
-#include "base/SGObject.h"
-
-#ifndef HAVE_SWIG
-#include "classifier/Classifier.h"
+#include <shogun/lib/config.h>
+#include <shogun/base/SGObject.h>
+#include <shogun/classifier/Classifier.h>
 
 class CSGInterface;
 
@@ -138,5 +136,4 @@ class CGUIClassifier : public CSGObject
 
 		ESolverType solver_type;
 };
-#endif //HAVE_SWIG
 #endif

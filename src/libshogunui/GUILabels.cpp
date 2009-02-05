@@ -8,18 +8,14 @@
  * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "lib/config.h"
+#include "GUILabels.h"
+#include "SGInterface.h"
 
-#ifndef HAVE_SWIG
+#include <shogun/lib/config.h>
+#include <shogun/lib/io.h>
+#include <shogun/features/Labels.h>
+
 #include <string.h>
-
-#include "lib/io.h"
-
-#include "guilib/GUILabels.h"
-#include "interface/SGInterface.h"
-
-#include "features/Labels.h"
-
 
 
 CGUILabels::CGUILabels(CSGInterface* ui_)
@@ -70,4 +66,3 @@ bool CGUILabels::save(char* param)
 	bool result=false;
 	return result;
 }
-#endif

@@ -2,8 +2,8 @@
 
 #if defined(HAVE_CMDLINE)
 
-#include "interface/CmdLineInterface.h"
-#include "interface/SGInterface.h"
+#include "static/CmdLineInterface.h"
+#include "static/SGInterface.h"
 
 #include "lib/ShogunException.h"
 #include "lib/io.h"

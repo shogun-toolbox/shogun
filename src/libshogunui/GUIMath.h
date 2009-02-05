@@ -11,10 +11,8 @@
 #ifndef __GUIMATH__H__ 
 #define __GUIMATH__H__ 
 
-#include "lib/config.h"
-
-#ifndef HAVE_SWIG
-#include "base/SGObject.h"
+#include <shogun/lib/config.h>
+#include <shogun/base/SGObject.h>
 
 class CSGInterface;
 
@@ -37,5 +35,4 @@ class CGUIMath : public CSGObject
 		CSGInterface* ui;
 		float64_t threshold;
 };
-#endif //HAVE_SWIG
 #endif

@@ -9,32 +9,29 @@
  * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "lib/config.h"
+#include "GUIPreProc.h"
+#include "SGInterface.h"
 
-#ifndef HAVE_SWIG
-#include "lib/io.h"
-#include "lib/config.h"
-
-#include "guilib/GUIPreProc.h"
-#include "interface/SGInterface.h"
-
-#include "preproc/LogPlusOne.h"
-#include "preproc/NormOne.h"
-#include "preproc/PruneVarSubMean.h"
-#include "preproc/PCACut.h"
-#include "preproc/SortWordString.h"
-#include "preproc/SortUlongString.h"
-#include "features/RealFileFeatures.h"
-#include "features/TOPFeatures.h"
-#include "features/FKFeatures.h"
-#include "features/CharFeatures.h"
-#include "features/StringFeatures.h"
-#include "features/ByteFeatures.h"
-#include "features/ShortFeatures.h"
-#include "features/RealFeatures.h"
-#include "features/SparseFeatures.h"
-#include "features/CombinedFeatures.h"
-#include "features/Features.h"
+#include <shogun/lib/config.h>
+#include <shogun/lib/io.h>
+#include <shogun/lib/config.h>
+#include <shogun/preproc/LogPlusOne.h>
+#include <shogun/preproc/NormOne.h>
+#include <shogun/preproc/PruneVarSubMean.h>
+#include <shogun/preproc/PCACut.h>
+#include <shogun/preproc/SortWordString.h>
+#include <shogun/preproc/SortUlongString.h>
+#include <shogun/features/RealFileFeatures.h>
+#include <shogun/features/TOPFeatures.h>
+#include <shogun/features/FKFeatures.h>
+#include <shogun/features/CharFeatures.h>
+#include <shogun/features/StringFeatures.h>
+#include <shogun/features/ByteFeatures.h>
+#include <shogun/features/ShortFeatures.h>
+#include <shogun/features/RealFeatures.h>
+#include <shogun/features/SparseFeatures.h>
+#include <shogun/features/CombinedFeatures.h>
+#include <shogun/features/Features.h>
 
 #include <string.h>
 #include <stdio.h>
@@ -411,4 +408,3 @@ bool CGUIPreProc::preproc_all_features(CFeatures* f, bool force)
 
 	return false;
 }
-#endif

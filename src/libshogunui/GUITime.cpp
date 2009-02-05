@@ -8,11 +8,8 @@
  * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "lib/config.h"
-
-#ifndef HAVE_SWIG
-#include "guilib/GUITime.h"
-#include "interface/SGInterface.h"
+#include "SGInterface.h"
+#include "GUITime.h"
 
 CGUITime::CGUITime(CSGInterface* ui_)
 : CSGObject(), ui(ui_)
@@ -35,4 +32,3 @@ void CGUITime::stop()
 	time->stop();
 	time->time_diff_sec(true);
 }
-#endif

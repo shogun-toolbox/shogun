@@ -9,18 +9,15 @@
  * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "lib/config.h"
+#include "GUIHMM.h"
+#include "SGInterface.h"
 
-#ifndef HAVE_SWIG
+#include <shogun/lib/config.h>
+#include <shogun/lib/common.h>
+#include <shogun/features/StringFeatures.h>
+#include <shogun/features/Labels.h>
+
 #include <unistd.h>
-
-#include "lib/common.h"
-
-#include "guilib/GUIHMM.h"
-#include "interface/SGInterface.h"
-
-#include "features/StringFeatures.h"
-#include "features/Labels.h"
 
 #define TMP_DIR "/tmp/"
 
@@ -853,4 +850,3 @@ bool CGUIHMM::permutation_entropy(int32_t width, int32_t seq_num)
 
 	return working->permutation_entropy(width, seq_num);
 }
-#endif

@@ -8,56 +8,53 @@
  * Written (W) 1999-2008 Gunnar Raetsch
  * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
  */
+#include "GUIClassifier.h"
+#include "SGInterface.h"
 
-#include "lib/config.h"
+#include <shogun/lib/config.h>
+#include <shogun/lib/io.h>
 
-#ifndef HAVE_SWIG
-#include "lib/io.h"
+#include <shogun/features/SparseFeatures.h>
+#include <shogun/features/RealFileFeatures.h>
+#include <shogun/features/Labels.h>
 
-#include "guilib/GUIClassifier.h"
-#include "interface/SGInterface.h"
+#include <shogun/classifier/KNN.h>
+#include <shogun/clustering/KMeans.h>
+#include <shogun/clustering/Hierarchical.h>
+#include <shogun/classifier/PluginEstimate.h>
 
-#include "features/SparseFeatures.h"
-#include "features/RealFileFeatures.h"
-#include "features/Labels.h"
+#include <shogun/classifier/LDA.h>
+#include <shogun/classifier/LPM.h>
+#include <shogun/classifier/LPBoost.h>
+#include <shogun/classifier/Perceptron.h>
+#include <shogun/classifier/KernelPerceptron.h>
 
-#include "classifier/KNN.h"
-#include "clustering/KMeans.h"
-#include "clustering/Hierarchical.h"
-#include "classifier/PluginEstimate.h"
-
-#include "classifier/LDA.h"
-#include "classifier/LPM.h"
-#include "classifier/LPBoost.h"
-#include "classifier/Perceptron.h"
-#include "classifier/KernelPerceptron.h"
-
-#include "classifier/LinearClassifier.h"
+#include <shogun/classifier/LinearClassifier.h>
 
 #ifdef USE_SVMLIGHT
-#include "classifier/svm/SVM_light.h"
-#include "regression/svr/SVR_light.h"
+#include <shogun/classifier/svm/SVM_light.h>
+#include <shogun/regression/svr/SVR_light.h>
 #endif //USE_SVMLIGHT
 
-#include "classifier/svm/LibSVM.h"
-#include "classifier/svm/GPBTSVM.h"
-#include "classifier/svm/LibSVMOneClass.h"
-#include "classifier/svm/LibSVMMultiClass.h"
+#include <shogun/classifier/svm/LibSVM.h>
+#include <shogun/classifier/svm/GPBTSVM.h>
+#include <shogun/classifier/svm/LibSVMOneClass.h>
+#include <shogun/classifier/svm/LibSVMMultiClass.h>
 
-#include "regression/svr/LibSVR.h"
-#include "regression/KRR.h"
+#include <shogun/regression/svr/LibSVR.h>
+#include <shogun/regression/KRR.h>
 
-#include "classifier/svm/LibLinear.h"
-#include "classifier/svm/MPDSVM.h"
-#include "classifier/svm/GNPPSVM.h"
-#include "classifier/svm/GMNPSVM.h"
+#include <shogun/classifier/svm/LibLinear.h>
+#include <shogun/classifier/svm/MPDSVM.h>
+#include <shogun/classifier/svm/GNPPSVM.h>
+#include <shogun/classifier/svm/GMNPSVM.h>
 
-#include "classifier/svm/SVMLin.h"
-#include "classifier/svm/SubGradientSVM.h"
-#include "classifier/SubGradientLPM.h"
-#include "classifier/svm/SVMOcas.h"
-#include "classifier/svm/SVMSGD.h"
-#include "classifier/svm/WDSVMOcas.h"
+#include <shogun/classifier/svm/SVMLin.h>
+#include <shogun/classifier/svm/SubGradientSVM.h>
+#include <shogun/classifier/SubGradientLPM.h>
+#include <shogun/classifier/svm/SVMOcas.h>
+#include <shogun/classifier/svm/SVMSGD.h>
+#include <shogun/classifier/svm/WDSVMOcas.h>
 
 CGUIClassifier::CGUIClassifier(CSGInterface* ui_)
 : CSGObject(), ui(ui_)
@@ -1271,5 +1268,3 @@ bool CGUIClassifier::set_solver(char* solver)
 	solver_type=s;
 	return true;
 }
-
-#endif

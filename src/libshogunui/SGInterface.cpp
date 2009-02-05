@@ -1,37 +1,35 @@
-#include "lib/config.h"
+#include "GUICommands.h"
+#include "SGInterface.h"
+#include "SyntaxHighLight.h"
 
-#if !defined(HAVE_SWIG)
+#include <shogun/lib/config.h>
+#include <shogun/lib/ShogunException.h>
+#include <shogun/lib/Mathematics.h>
+#include <shogun/lib/Signal.h>
 
-#include "interface/SGInterface.h"
-#include "interface/SyntaxHighLight.h"
-#include "lib/ShogunException.h"
-#include "lib/Mathematics.h"
-#include "lib/Signal.h"
-#include "guilib/GUICommands.h"
+#include <shogun/classifier/svm/SVM.h>
+#include <shogun/kernel/WeightedDegreePositionStringKernel.h>
+#include <shogun/kernel/WeightedDegreeStringKernel.h>
+#include <shogun/kernel/CommWordStringKernel.h>
+#include <shogun/kernel/WeightedCommWordStringKernel.h>
+#include <shogun/kernel/LinearKernel.h>
+#include <shogun/kernel/SparseLinearKernel.h>
+#include <shogun/kernel/CombinedKernel.h>
+#include <shogun/kernel/CustomKernel.h>
+#include <shogun/kernel/SalzbergWordStringKernel.h>
+#include <shogun/features/ByteFeatures.h>
+#include <shogun/features/CharFeatures.h>
+#include <shogun/features/IntFeatures.h>
+#include <shogun/features/RealFeatures.h>
+#include <shogun/features/ShortFeatures.h>
+#include <shogun/features/ShortRealFeatures.h>
+#include <shogun/features/WordFeatures.h>
+#include <shogun/preproc/SortWordString.h>
 
-#include "classifier/svm/SVM.h"
-#include "kernel/WeightedDegreePositionStringKernel.h"
-#include "kernel/WeightedDegreeStringKernel.h"
-#include "kernel/CommWordStringKernel.h"
-#include "kernel/WeightedCommWordStringKernel.h"
-#include "kernel/LinearKernel.h"
-#include "kernel/SparseLinearKernel.h"
-#include "kernel/CombinedKernel.h"
-#include "kernel/CustomKernel.h"
-#include "kernel/SalzbergWordStringKernel.h"
-#include "features/ByteFeatures.h"
-#include "features/CharFeatures.h"
-#include "features/IntFeatures.h"
-#include "features/RealFeatures.h"
-#include "features/ShortFeatures.h"
-#include "features/ShortRealFeatures.h"
-#include "features/WordFeatures.h"
-#include "preproc/SortWordString.h"
-
-#include "structure/Plif.h"
-#include "structure/PlifArray.h"
-#include "structure/PlifBase.h"
-#include "structure/DynProg.h"
+#include <shogun/structure/Plif.h>
+#include <shogun/structure/PlifArray.h>
+#include <shogun/structure/PlifBase.h>
+#include <shogun/structure/DynProg.h>
 
 #include <ctype.h>
 
@@ -7217,5 +7215,3 @@ bool CSGInterface::handle()
 	delete[] command;
 	return success;
 }
-
-#endif // !HAVE_SWIG
