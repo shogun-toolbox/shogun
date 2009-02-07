@@ -1,6 +1,3 @@
-#include "lib/config.h"
-
-#ifdef HAVE_PYTHON
 #ifndef __PYTHON_H__
 #define __PYTHON_H__
 
@@ -11,5 +8,3 @@ extern "C" {
 }
 
 #endif //__PYTHON_H__
-#endif //HAVE_PYTHON
-

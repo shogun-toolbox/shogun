@@ -1,8 +1,10 @@
 #!/bin/bash
 
 VERSION=`grep "SHOGUN Release version" NEWS 2>&1 | cut -c 27- | cut -f 1 -d ' ' | head -n 1`
-SONAME_LIBSHOGUN=libshogun.`grep "SHOGUN Release version" NEWS 2>&1 | cut -f 2 -d '(' | cut -f 2 -d ' ' | tr -d ',' | head -n 1`
-SONAME_LIBSHOGUNUI=libshogunui.`grep "SHOGUN Release version" NEWS 2>&1 | cut -f 2 -d ',' | cut -f 3 -d ' ' | tr -d ')' | head -n 1`
+SONAME_LIBSHOGUN=libshogun.so.`grep "SHOGUN Release version" NEWS 2>&1 | cut -f 2 -d '(' | cut -f 2 -d ' ' | tr -d ',' | head -n 1 | cut -f 1 -d '.'`
+SONAME_LIBSHOGUNUI=libshogunui.so.`grep "SHOGUN Release version" NEWS 2>&1 | cut -f 2 -d ',' | cut -f 3 -d ' ' | tr -d ')' | head -n 1 | cut -f 1 -d '.'`
+LIBSHOGUNSO=libshogun.so.`grep "SHOGUN Release version" NEWS 2>&1 | cut -f 2 -d '(' | cut -f 2 -d ' ' | tr -d ',' | head -n 1`
+LIBSHOGUNUISO=libshogunui.so.`grep "SHOGUN Release version" NEWS 2>&1 | cut -f 2 -d ',' | cut -f 3 -d ' ' | tr -d ')' | head -n 1`
 
 [ -n "$VERSION" ] && echo "Running configure for SHOGUN version $VERSION"
 
@@ -106,56 +108,49 @@ LINK=c++
 DEFINES=
 LINKFLAGS=
 POSTLINKFLAGS=
-BUILD_OCTAVE_MODULAR=no
-BUILD_R_MODULAR=no
-BUILD_PYTHON_MODULAR=no
 
-BUILD_LIBSHOGUN=no
-LIBSHOGUN_TARGET=$SONAME_LIBSHOGUN
+INCLUDES_STATIC=
+LINKFLAGS_STATIC=
+
+LIBSHOGUN_TARGET=${LIBSHOGUNSO}
 DEFINES_LIBSHOGUN=
 INCLUDES_LIBSHOGUN="-I../libshogun -I.."
 LINKFLAGS_LIBSHOGUN=
 POSTLINKFLAGS_LIBSHOGUN="-Xlinker -soname=$SONAME_LIBSHOGUN -shared -fPIC"
 
-BUILD_LIBSHOGUNUI=no
-LIBSHOGUNUI_TARGET=$SONAME_LIBSHOGUNUI
+LIBSHOGUNUI_TARGET=$LIBSHOGUNUISO
 DEFINES_LIBSHOGUNUI=
 INCLUDES_LIBSHOGUNUI="-I../libshogun -I.."
 LINKFLAGS_LIBSHOGUNUI="-L../libshogun -lshogun"
 POSTLINKFLAGS_LIBSHOGUNUI="-Xlinker -soname=$SONAME_LIBSHOGUNUI -shared -fPIC"
 
-BUILD_CMDLINE=no
 CMDLINE_TARGET=	
 DEFINES_CMDLINE=
-DEFINES_CMDLINE=
+INCLUDES_CMDLINE=
 LINKFLAGS_CMDLINE=
 POSTLINKFLAGS_CMDLINE=
 
-BUILD_MATLAB=no
 MATLAB_TARGET=
 DEFINES_MATLAB=
-DEFINES_MATLAB=
+INCLUDES_MATLAB=
 LINKFLAGS_MATLAB=
 POSTLINKFLAGS_MATLAB=
 
-BUILD_OCTAVE=no
 OCTAVE_TARGET=
 DEFINES_OCTAVE=
-DEFINES_OCTAVE=
+INCLUDES_OCTAVE=
 LINKFLAGS_OCTAVE=
 POSTLINKFLAGS_OCTAVE=
 
-BUILD_R=no
 R_TARGET=
 DEFINES_R=
-DEFINES_R=
+INCLUDES_R=
 LINKFLAGS_R=
 POSTLINKFLAGS_R=
 
-BUILD_PYTHON=no
 PYTHON_TARGET=
 DEFINES_PYTHON=
-DEFINES_PYTHON=
+INCLUDES_PYTHON=
 LINKFLAGS_PYTHON=
 POSTLINKFLAGS_PYTHON=
 
@@ -2547,15 +2542,15 @@ test_modular()
 
 		if test "$USE_SWIG" = 'yes'
 		then
-			if test "$BUILD_OCTAVE" = 'yes'
+			if echo "$PARTS" | grep -q octave
 			then
 				BUILD_OCTAVE_MODULAR=yes
 			fi
-			if test "$BUILD_PYTHON" = 'yes'
+			if echo "$PARTS" | grep -q python
 			then
 				BUILD_PYTHON_MODULAR=yes
 			fi
-			if test "$BUILD_R" = 'yes'
+			if echo "$PARTS" | grep -q ' r'
 			then
 				BUILD_R_MODULAR=yes
 			fi
@@ -2576,7 +2571,7 @@ test_matlab()
 				echores `cat matlab_version.txt`
 				matlab.exe /nosplash /minimize /r "system('env > matlab_path.txt');quit"
 				MATLAB_DIR=`grep '^_=' matlab_path.txt | cut -c 3- | sed 's#/bin/win32/matlab.exe##'`
-				MATLAB_SRCDIR="$MATLAB_DIR/extern/src"
+				MATLAB_SmeRCDIR="$MATLAB_DIR/extern/src"
 				MATLAB_INCDIR="$MATLAB_DIR/extern/include"
 				MATLAB_LIBDIR="$MATLAB_DIR/extern/lib"
 				MATLAB_BINDIR="$MATLAB_DIR/bin"
@@ -2695,7 +2690,7 @@ EOF
 			if cc_check $COMPFLAGS_CPP_MATLAB $INCLUDES_MATLAB $LINKFLAGS_MATLAB
 			then
 				echores "yes"
-				BUILD_MATLAB=yes
+				PARTS="$PARTS matlab"
 			else
 				echores "no"
 				die "could not find matlab developer files (e.g. mex.h)"
@@ -2790,7 +2785,7 @@ EOF
 				if LD_LIBRARY_PATH=`octave-config -p OCTLIBDIR` cxx_check $COMPFLAGS_CPP_OCTAVE $INCLUDES_OCTAVE $LINKFLAGS_OCTAVE
 				then
 					echores "yes"
-					BUILD_OCTAVE=yes
+					PARTS="$PARTS octave"
 				else
 					echores "no"
 					if test "$_octave" = yes
@@ -2890,7 +2885,7 @@ EOF
 				then
 					echores "yes"
 					SWIGFLAGS_PYTHON="-w473 -c++ -python"
-					BUILD_PYTHON=yes
+					PARTS="$PARTS python"
 				else
 					echores "no"
 					if test "$_python" = yes
@@ -2964,7 +2959,7 @@ EOF
 			then
 				echores "yes"
 				SWIGFLAGS="-w473 -c++ -r"
-				BUILD_R=yes
+				PARTS="$PARTS r"
 			else
 				echores "no"
 				if test "$_r" = yes
@@ -3013,9 +3008,10 @@ EOF
 			echores "yes (internal in source tree)"
 			rm -f shogun 
 			ln -s libshogun shogun
-			INCLUDES="$INCLUDES -I${SRCDIR}"
-			BUILD_LIBSHOGUN=yes
-
+			INCLUDES="$INCLUDES -I${SRCDIR} -I.."
+			PARTS="$PARTS libshogun"
+			INCLUDES_STATIC="$INCLUDES_STATIC -I../libshogun"
+			LINKFLAGS_STATIC="$LINKFLAGS_STATIC -L../libshogun -lshogun"
 		else
 			if cc_check
 			then
@@ -3070,9 +3066,12 @@ EOF
 			rm -f ui
 			ln -s libshogunui ui
 			rm -f libshogunui/shogun
-			( cd libshogun ; ln -s .. shogun )
-			INCLUDES="$INCLUDES -I${SRCDIR}"
-			BUILD_LIBSHOGUNUI=yes
+			( cd libshogunui ; ln -s .. shogun )
+			INCLUDES="$INCLUDES -I${SRCDIR} -I.."
+			PARTS="$PARTS libshogunui"
+
+			INCLUDES_STATIC="$INCLUDES_STATIC -I../libshogunui"
+			LINKFLAGS_STATIC="$LINKFLAGS_STATIC -L../libshogunui -lshogunui"
 		else
 			if cc_check
 			then
@@ -3092,9 +3091,8 @@ test_cmdline()
 {
 	if test "$_cmdline" = yes || test "$_cmdline" = auto
 	then
-		BUILD_CMDLINE=yes
-		HAVE_CMDLINE='#define HAVE_CMDLINE 1'
-		DEFINES="$DEFINES -DHAVE_CMDLINE"
+		PARTS="$PARTS cmdline"
+		CMDLINE_TARGET=shogun
 
 		if test "$_readline" = yes || test "$_readline" = auto;
 		then
@@ -3106,8 +3104,8 @@ EOF
 			if cc_check -lreadline >/dev/null 2>&1
 			then
 				HAVE_READLINE='#define HAVE_READLINE 1'
-				DEFINES_CMDLINE="$DEFINES -DHAVE_READLINE"
-				LINKFLAGS_CMDLINE="$LINKFLAGS -lreadline"
+				DEFINES_CMDLINE="$DEFINES_CMDLINE -DHAVE_READLINE"
+				LINKFLAGS_CMDLINE="$LINKFLAGS_CMDLINE -lreadline"
 				echores "yes"
 			else
 				echores "no"
@@ -3130,15 +3128,7 @@ fi
 
 cat > "$1" <<EOF
 SRCDIR			= ${SRCDIR}
-BUILD_LIBSHOGUN = ${BUILD_LIBSHOGUN}
-BUILD_CMDLINE	= ${BUILD_CMDLINE}
-BUILD_MATLAB	= ${BUILD_MATLAB}
-BUILD_OCTAVE	= ${BUILD_OCTAVE}
-BUILD_R			= ${BUILD_R}
-BUILD_PYTHON	= ${BUILD_PYTHON}
-BUILD_OCTAVE_MODULAR	= ${BUILD_OCTAVE_MODULAR}
-BUILD_R_MODULAR			= ${BUILD_R_MODULAR}
-BUILD_PYTHON_MODULAR	= ${BUILD_PYTHON_MODULAR}
+PARTS			= ${PARTS}
 R_TARGET		= ${R_TARGET}
 LIBSHOGUN_TARGET= ${LIBSHOGUN_TARGET}
 LIBSHOGUNUI_TARGET= ${LIBSHOGUNUI_TARGET}
@@ -3185,6 +3175,8 @@ INCLUDES		= ${INCLUDES}
 LINKFLAGS 		= ${LINKFLAGS}
 POSTLINKFLAGS	= ${POSTLINKFLAGS}
 
+INCLUDES_STATIC			= ${INCLUDES_STATIC}
+LINKFLAGS_STATIC		= ${LINKFLAGS_STATIC}
 DEFINES_LIBSHOGUN		= ${DEFINES_LIBSHOGUN}
 INCLUDES_LIBSHOGUN		= ${INCLUDES_LIBSHOGUN}
 LINKFLAGS_LIBSHOGUN 	= ${LINKFLAGS_LIBSHOGUN}
@@ -3305,19 +3297,6 @@ EOF
 
 type_buildinfo()
 {
-	intf=""
-
-	test "$BUILD_LIBSHOGUN" = yes && intf="$intf libshogun"
-	test "$BUILD_CMDLINE" = yes && intf="$intf cmdline"
-	test "$BUILD_MATLAB" = yes && intf="$intf matlab"
-	test "$BUILD_OCTAVE" = yes && intf="$intf octave"
-	test "$BUILD_R" = yes && intf="$intf r"
-	test "$BUILD_PYTHON" = yes && intf="$intf python"
-
-	test "$BUILD_OCTAVE_MODULAR" = yes && intf="$intf octave_modular"
-	test "$BUILD_R_MODULAR" = yes && intf="$intf r_modular"
-	test "$BUILD_PYTHON_MODULAR" = yes && intf="$intf python_modular"
-
 	cfgopts=""
 	if test -n "$CONFIGURE_OPTIONS"
 	then
@@ -3328,7 +3307,7 @@ type_buildinfo()
 
 SHOGUN was configured for
 
-  $intf
+  $PARTS
 
 interface(s) $cfgopts
 
@@ -3351,17 +3330,16 @@ check_make
 check_doxygen
 determine_march_mtune
 set_opts
-test_octave
-test_matlab
-test_python
-test_r
 test_libshogun
 test_libshogunui
 test_cmdline
+test_python
+test_octave
+test_r
+test_matlab
 test_modular
 svmlight_warn_license
 write_dot_config "$SRCDIR/.config"
-write_config_h "$SRCDIR/config.h"
 write_config_h "$SRCDIR/libshogun/lib/config.h"
 clean_up
 type_buildinfo

@@ -1,29 +1,5 @@
-# include config options
-#
-#
-.SUFFIXES: .c .c.o .cpp .cpp.o .h .i .so .oct _wrap.cxx _wrap.cxx.o
-
-ifeq (GNU,$(shell make --version 2>&1 | grep GNU >/dev/null && echo GNU))
-MAKE=make
-else
-MAKE=gmake
-endif
-
-all:	just-do-it
-
-ifeq (.config,$(wildcard .config))
-include .config
-
-ifeq (.config-local,$(wildcard .config-local))
-include .config-local
-endif
-
-just-do-it: 
-	+make -C libshogun $@
-	+make -C libshogunui $@
-	+make -C interfaces $@
-else
-just-do-it:
+ifneq (.config,$(wildcard .config))
+all:
 #runconfigurehunkstart
 	@echo ==================
 	@echo SHOGUN - Makefile
@@ -37,46 +13,52 @@ just-do-it:
 	@echo
 	@exit 1
 #runconfigurehunkend
+else
+include .config
+ifeq (.config-local,$(wildcard .config-local))
+include .config-local
+endif
+PARTDEPS = $(foreach part, $(PARTS), $(part)/Makefile )
+all:  $(PARTDEPS)
+	@echo ============================================================
+	@echo ==== Building shogun for platform $(KERNELNAME)-$(MACHINE)
+	@echo ==== opts: $(COMPFLAGS_CPP)
+	@echo ============================================================
+	@echo 
+	+$(foreach part, $(PARTS), make -C $(part) $@ &&) true
+	@echo 
+	@echo ============================================================
+	@echo ==== Done. Check the subdirectories for binaries
+	@echo ============================================================
+	@echo 
 endif
 
-install: 
-	+make -C libshogun $@
-	+make -C libshogunui $@
-	+make -C interfaces $@
-doc: 
-	+make -C libshogun $@
-	+make -C libshogunui $@
-	+make -C interfaces $@
+install:  $(PARTDEPS)
+	+$(foreach part, $(PARTS), make -C $(part) $@ &&) true
 
-SRCDIR = .
+doc:  $(PARTDEPS)
+	+$(foreach part, $(PARTS), make -C $(part) $@ &&) true
 
 distclean: clean
-		@rm -f .config tags lib/config.h libshogun/lib/versionstring.h
-swigclean:
-	@rm -f $(shell find -name "*_wrap.h" -o -name "*_wrap.cxx.o" -o -name "*_wrap.cxx" 2>/dev/null) 
+	+$(foreach part, $(PARTS), make -C $(part) $@ &&) true
+	@rm -f .config tags ui shogun libshogunui/shogun
+	@rm -f */Makefile
 
-swigdocclean:
-	@rm -rf $(shell find -name doxygen_xml -o -name "*_doxygen.i" 2>/dev/null) 
-
-clean: swigclean swigdocclean
-	@rm -f $(shell find . -name "*.cpp.o" -o -name "*.c.o" -o -name "*.so" -o -name "*.dll" -o -name "*~" -o -name ".#*" 2>/dev/null)
-	@rm -f $(shell find . -type f -name '*.py*' ! -name '__*.py' ! -name '.*.py' | grep -v svn)
-	@rm -f $(shell find . -type f -name '*.R')
-	@rm -f $(shell find . -type f -name '*.RData')
-	@rm -f $(shell find . -type f -name '*.oct')
-	@rm -f $(shell find . -type f -name '*.swp')
-	@rm -f $(shell find . -type f -name 'octave-core')
-	@rm -f sg.mex* shogun shogun.exe gmon.out configure.log .cpuinfo ./configure-* cplex.log
-	@rm -f libshogun.a
+clean:  $(PARTDEPS)
+	+$(foreach part, $(PARTS), make -C $(part) $@ &&) true
+	@rm -f configure.log .cpuinfo ./configure-* cplex.log
 
 dist:	distclean
 	rm -f $(TAR).gz
 	tar -cvf $(TAR) -C ../../ shogun/src && gzip -9 $(TAR)
 
+$(PARTDEPS): Makefile.template
+	+$(foreach part, $(PARTS), cat Makefile.template | sed 's/TEMPLATE/$(shell echo $(part) | tr 'a-z' 'A-Z')/g' >$(part)/Makefile; )
+
 tests: run-testsuite check-examples
 
 # python-modular
-ifeq (python-modular,$(INTERFACE))
+ifeq (yes,$(INTERFACE))
 run-testsuite:
 		cd ../testsuite/$(INTERFACE) && ( PYTHON=$(PYTHON) PYTHONPATH="$(DESTDIR)$(PYDIR)" ./test_all.sh	)
 check-examples:

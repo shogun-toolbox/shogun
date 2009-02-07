@@ -1,9 +1,6 @@
-#include <shogun/lib/config.h>
-#include "lib/matlab.h"
-
+#include "matlab.h"
 #include <stdio.h>
 
-#ifdef HAVE_MATLAB
 void sg_print_message(FILE* target, const char* str)
 {
 	if (target==stdout)
@@ -31,4 +28,3 @@ void sg_print_error(FILE* target, const char* str)
 void sg_cancel_computations(bool &delayed, bool &immediately)
 {
 }
-#endif

@@ -1,13 +1,10 @@
-#include "lib/config.h"
-
-#if defined(HAVE_MATLAB) && !defined(HAVE_SWIG)
-
 #include <mexversion.c>
-#include "lib/matlab.h"
+#include "matlab.h"
+#include "MatlabInterface.h"
 
-#include "interface/MatlabInterface.h"
-#include "interface/SGInterface.h"
-#include "lib/ShogunException.h"
+#include <shogun/ui/SGInterface.h>
+#include <shogun/lib/ShogunException.h>
+#include <shogun/lib/config.h>
 
 extern CSGInterface* interface;
 
@@ -598,4 +595,3 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		mexErrMsgTxt(e.get_exception_string());
 	}
 }
-#endif // HAVE_MATLAB && !HAVE_SWIG

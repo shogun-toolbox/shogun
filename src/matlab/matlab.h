@@ -1,6 +1,3 @@
-#include <shogun/lib/config.h>
-
-#ifdef HAVE_MATLAB
 #include <mex.h>
 
 //use compatibility mode w/ matlab <7.x
@@ -11,5 +8,3 @@
 #define mxIsLogicalScalar(x) false
 #define mxIsLogicalScalarTrue(x) false
 #endif
-
-#endif //HAVE_MATLAB

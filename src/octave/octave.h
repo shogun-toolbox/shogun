@@ -1,7 +1,3 @@
-#include <shogun/lib/config.h>
-
-#ifdef HAVE_OCTAVE
-
 #ifndef __OCTAVE_H__
 #define __OCTAVE_H__
 #include <octave/config.h>
@@ -16,4 +12,3 @@
 #include <octave/Cell.h>
 
 #endif //__OCTAVE_H__
-#endif //HAVE_OCTAVE

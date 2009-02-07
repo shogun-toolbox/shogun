@@ -1,22 +1,19 @@
-#ifndef __OCTAVEINTERFACE__H_
-#define __OCTAVEINTERFACE__H_
+#ifndef __CMDLINEINTERFACE__H_
+#define __CMDLINEINTERFACE__H_
 
-#include "lib/config.h"
+#include <shogun/ui/SGInterface.h>
 
-#if defined(HAVE_OCTAVE) && !defined(HAVE_SWIG)
+#define CMDLINE_COMMENT0 '#'
+#define CMDLINE_COMMENT1 '%'
 
-#include "interface/SGInterface.h"
-#include "lib/memory.h"
-#include "lib/octave.h"
-
-class COctaveInterface : public CSGInterface
+class CCmdLineInterface : public CSGInterface
 {
 	public:
-		COctaveInterface(octave_value_list prhs, int32_t nlhs);
-		~COctaveInterface();
+		CCmdLineInterface();
+		~CCmdLineInterface();
 
 		/// reset to clean state
-		virtual void reset(octave_value_list prhs, int32_t nlhs);
+		virtual void reset(const char* line=NULL);
 
 		/** get functions - to pass data from the target interface to shogun */
 
@@ -69,12 +66,6 @@ class COctaveInterface : public CSGInterface
 
 		virtual void get_real_sparsematrix(
 			TSparse<float64_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
-		/*virtual void get_byte_sparsematrix(TSparse<uint8_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
-		virtual void get_char_sparsematrix(TSparse<char>*& matrix, int32_t& num_feat, int32_t& num_vec);
-		virtual void get_int_sparsematrix(TSparse<int32_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
-		virtual void get_shortreal_sparsematrix(TSparse<float32_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
-		virtual void get_short_sparsematrix(TSparse<int16_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
-		virtual void get_word_sparsematrix(TSparse<uint16_t>*& matrix, int32_t& num_feat, int32_t& num_vec);*/
 
 		virtual void get_byte_string_list(
 			T_STRING<uint8_t>*& strings, int32_t& num_str,
@@ -93,11 +84,11 @@ class COctaveInterface : public CSGInterface
 			int32_t& max_string_len);
 
 		/** set functions - to pass data from shogun to the target interface */
-
 		virtual void set_int(int32_t scalar);
 		virtual void set_real(float64_t scalar);
 		virtual void set_bool(bool scalar);
 
+		virtual bool create_return_values(int32_t num_val);
 		virtual void set_byte_vector(const uint8_t* vec, int32_t len);
 		virtual void set_char_vector(const char* vec, int32_t len);
 		virtual void set_int_vector(const int32_t* vec, int32_t len);
@@ -124,61 +115,56 @@ class COctaveInterface : public CSGInterface
 		virtual void set_real_sparsematrix(
 			const TSparse<float64_t>* matrix, int32_t num_feat,
 			int32_t num_vec, int64_t nnz);
-		/*
-		virtual void set_byte_sparsematrix(const TSparse<uint8_t>* matrix, int32_t num_feat, int32_t num_vec, int64_t nnz);
-		virtual void set_char_sparsematrix(const TSparse<char>* matrix, int32_t num_feat, int32_t num_vec, int64_t nnz);
-		virtual void set_int_sparsematrix(const TSparse<int32_t>* matrix, int32_t num_feat, int32_t num_vec, int64_t nnz);
-		virtual void set_shortreal_sparsematrix(const TSparse<float32_t>* matrix, int32_t num_feat, int32_t num_vec, int64_t nnz);
-		virtual void set_short_sparsematrix(const TSparse<int16_t>* matrix, int32_t num_feat, int32_t num_vec, int64_t nnz);
-		virtual void set_word_sparsematrix(const TSparse<uint16_t>* matrix, int32_t num_feat, int32_t num_vec, int64_t nnz);*/
 
-		void set_byte_string_list(
+		virtual void set_byte_string_list(
 			const T_STRING<uint8_t>* strings, int32_t num_str);
-		void set_char_string_list(
+		virtual void set_char_string_list(
 			const T_STRING<char>* strings, int32_t num_str);
-		void set_int_string_list(
+		virtual void set_int_string_list(
 			const T_STRING<int32_t>* strings, int32_t num_str);
-		void set_short_string_list(
+		virtual void set_short_string_list(
 			const T_STRING<int16_t>* strings, int32_t num_str);
-		void set_word_string_list(
+		virtual void set_word_string_list(
 			const T_STRING<uint16_t>* strings, int32_t num_str);
 
-		virtual bool create_return_values(int32_t num)
-		{
-			return m_nlhs==num;
-		}
+		void* get_return_values();
 
-		inline octave_value_list get_return_values()
-		{
-			return m_lhs;
-		}
+		/** determine if given line is a comment or empty */
+		bool skip_line(const char* line=NULL);
+
+		/// get line from file or stdin or...
+		char* get_line(FILE* infile=stdin, bool interactive_mode=true);
+
+		/// parse a single line
+		bool parse_line(char* line);
+
+		/// print interactive prompt
+		void print_prompt();
 
 	private:
-		const octave_value get_arg_increment()
+		const char* get_arg_increment()
 		{
-			octave_value retval;
 			ASSERT(m_rhs_counter>=0 && m_rhs_counter<m_nrhs+1); // +1 for action
-
-			retval=m_rhs(m_rhs_counter);
+			char* element=m_rhs->get_element(m_rhs_counter);
 			m_rhs_counter++;
 
-			return retval;
+			return element;
 		}
 
-		void set_arg_increment(octave_value arg)
+		const char* set_arg_increment()
 		{
-			ASSERT(m_lhs_counter>=0 && m_lhs_counter<m_nlhs);
-
-			m_lhs.append(arg);
+			ASSERT(m_lhs_counter>=0 && m_lhs_counter<m_nlhs+1); // +1 for action
+			char* element=m_lhs->get_element(m_lhs_counter);
 			m_lhs_counter++;
+
+			return element;
 		}
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "OctaveInterface"; }
+		inline virtual const char* get_name() const { return "CmdLineInterface"; }
 
 	private:
-		octave_value_list m_lhs;
-		octave_value_list m_rhs;
+		CDynamicArray<char*>* m_lhs;
+		CDynamicArray<char*>* m_rhs;
 };
-#endif // HAVE_OCTAVE && !HAVE_SWIG
-#endif // __OCTAVEINTERFACE__H_
+#endif // __CMDLINEINTERFACE__H_

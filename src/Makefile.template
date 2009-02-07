@@ -1,0 +1,114 @@
+.SUFFIXES: .c .c.o .cpp .cpp.o .h .i .so .a _wrap.cxx _wrap.cxx.o
+.PHONY: all out clean end targets warn2err err2warn ctags buildout buildend dist
+
+SRCDIR = .
+
+
+ifneq (../.config,$(wildcard ../.config))
+all:
+	@echo !!! Please run ./configure in the top level directory with the appropriate options first !!!
+else
+include ../.config
+ifeq (../.config-local,$(wildcard ../.config-local))
+include ../.config-local
+endif
+ifeq (libshogun,$(findstring libshogun,$(TEMPLATE_TARGET)))
+	LIBNAME=$(shell echo $(TEMPLATE_TARGET) | cut -f 1 -d '.')
+	SONAME=objdump -p $(TEMPLATE_TARGET) | grep SONAME | awk '{print $$2}'
+	OTHER_TARGETS=$(LIBNAME).a
+	LIBSYMLINKCMD=rm -f $(LIBNAME).so `$(SONAME)`; ln -s $(TEMPLATE_TARGET) `$(SONAME)` ; ln -s $(TEMPLATE_TARGET) $(LIBNAME).so
+else
+	INCLUDES += $(INCLUDES_STATIC)
+	LINKFLAGS += $(LINKFLAGS_STATIC)
+endif
+all:	$(TEMPLATE_TARGET) $(OTHER_TARGETS)
+endif
+
+INCLUDES += $(INCLUDES_TEMPLATE)
+COMPFLAGS_CPP += $(DEFINES_TEMPLATE)
+DEFINES += $(DEFINES_TEMPLATE)
+LINKFLAGS += $(LINKFLAGS_TEMPLATE)
+POSTLINKFLAGS += $(POSTLINKFLAGS_TEMPLATE)
+
+# SRC/OBJFILES lie all in the subdir of SRCDIR
+HEADERFILES	= $(shell find $(SRCDIR) -name "*.$(EXT_SRC_HEADER)" )
+SRCFILES 	= $(shell find $(SRCDIR) -name "*.$(EXT_SRC_C)" -o -name "*.$(EXT_SRC_CPP)")
+OBJFILES 	= $(patsubst %.$(EXT_SRC_CPP),%.$(EXT_OBJ_CPP), $(shell find $(SRCDIR) -name "*.$(EXT_SRC_CPP)")) $(patsubst %.$(EXT_SRC_C),%.$(EXT_OBJ_C), $(shell find $(SRCDIR) -name "*.$(EXT_SRC_C)"))
+
+warn2err: $(SRCFILES)
+	for i in $^ ; do cat $$i | sed 's/^\#warning/#error/g' >$$i.new ; mv $$i.new $$i ; done
+err2warn: $(SRCFILES)
+	for i in $^ ; do cat $$i | sed 's/^\#error/#warning/g' >$$i.new ; mv $$i.new $$i ; done
+
+ctags: tags
+
+tags:	$(SRCFILES)
+	ctags */*.$(EXT_SRC_CPP) */*.h */*.$(EXT_SRC_C)
+
+linecount:
+	@echo -n "C/C++ source code files (.cpp,.c):"
+	@cat $(SRCFILES) | grep -vc '^ *$$'
+	@echo -n "C/C++ header files (.h):"
+	@cat $(HEADERFILES) | grep -vc '^ *$$'
+	@echo -n "SWIG header files (.i):"
+	@cat $(SWIGIFILES) | grep -vc '^ *$$'
+	@echo -n "Total:"
+	@cat $(SRCFILES) $(HEADERFILES) $(SWIGIFILES) | grep -vc '^ *$$'
+
+targets:
+	@echo "=========="
+	@echo "=targets:="
+	@echo "=========="
+	@egrep '^[a-z]+:' Makefile | grep -v '\.o:' | sed -e 's/:.*//g' -e 's/out//g' -e 's/end//g' -e 's/^/     /g' | sort | uniq
+
+distclean: clean
+		@rm -f tags .depend
+
+clean:
+	@rm -f $(shell find . -name "*.cpp.o" -o -name "*.c.o")
+	@rm -f $(shell find . -name "*.a" -o -name "*.so*" -o -name "*.dll" -o -name "*~" -o -name ".#*")
+	@rm -f $(shell find . -type f -name '*.py' ! -name '__*.py' ! -name '.*.py' | grep -v svn)
+	@rm -f $(shell find . -type f -name '*.pyc' -o -name '*.R')
+	@rm -f $(shell find . -type f -name '*.RData')
+	@rm -f $(shell find . -type f -name '*.oct')
+	@rm -f $(shell find . -type f -name '*.swp')
+	@rm -f $(shell find . -type f -name 'octave-core')
+	@rm -f sg.mex* shogun shogun.exe gmon.out .depend configure.log .cpuinfo ./configure-* cplex.log
+	@rm -f $(TEMPLATE_TARGET)
+
+.depend:	../.config ../libshogun/lib/versionstring.h
+ifeq (makedepend,$(MAKEDEPEND))
+	-$(MAKEDEPEND) $(DEFINES) $(INCLUDES) \
+		$(shell find $(SRCDIR) -name "*.$(EXT_SRC_CPP)" ) $(MAKEDEPENDOPTS) | \
+		sed -e 's/\.o:/.$(EXT_OBJ_CPP):/g' >.depend
+	-$(MAKEDEPEND) $(DEFINES) $(INCLUDES) \
+		$(shell find $(SRCDIR) -name "*.$(EXT_SRC_C)" ) $(MAKEDEPENDOPTS) | \
+		sed -e 's/\.o:/.$(EXT_OBJ_C):/g' >>.depend
+else #gcc -MM
+	find $(SRCDIR) -name "*.$(EXT_SRC_C)" -o -name "*.$(EXT_SRC_CPP)" \
+	-exec $(MAKEDEPEND) $(DEFINES) $(INCLUDES) {} -MT {}.o \; >.depend
+endif
+
+$(OBJFILES): ../.config .depend Makefile ../libshogun/lib/versionstring.h ../ChangeLog
+
+$(TEMPLATE_TARGET): .depend $(OBJFILES) $(SRCFILES) $(HEADERFILES)
+	$(LINK) $(shell find $(SRCDIR) -name "*.$(EXT_OBJ_CPP)" -o -name "*.$(EXT_OBJ_C)" 2>/dev/null) $(LINKFLAGS) -o $@ $(POSTLINKFLAGS)
+	@$(POSTLINKCMD) $@
+	@$(LIBSYMLINKCMD)
+
+libshogun.a: .depend $(OBJFILES) $(SRCFILES) $(HEADERFILES)
+	-ar rcs $@ $(shell find $(SRCDIR) -name "*.$(EXT_OBJ_CPP)" -o -name "*.$(EXT_OBJ_C)" 2>/dev/null)
+
+libshogunui.a: .depend $(OBJFILES) $(SRCFILES) $(HEADERFILES)
+	-ar rcs $@ $(shell find $(SRCDIR) -name "*.$(EXT_OBJ_CPP)" -o -name "*.$(EXT_OBJ_C)" 2>/dev/null)
+
+%.$(EXT_OBJ_CPP):	%.$(EXT_SRC_CPP)
+	$(COMP_CPP) $(COMPFLAGS_CPP) -c $(INCLUDES) -o $@ $<
+
+%.$(EXT_OBJ_C):	%.$(EXT_SRC_C)
+	$(COMP_C) $(COMPFLAGS_C) -c $(INCLUDES) -o $@ $<
+
+# Do not include dependencies when they are about to be removed anyway.
+ifneq ($(MAKECMDGOALS),distclean)
+-include $(DEPS)
+endif

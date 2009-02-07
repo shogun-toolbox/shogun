@@ -1,11 +1,8 @@
-#include <shogun/lib/config.h>
+#include "python.h"
+
 #include <shogun/lib/io.h>
-
-#include "lib/python.h"
-
 #include <stdio.h>
 
-#ifdef HAVE_PYTHON
 void sg_print_message(FILE* target, const char* str)
 {
 	fprintf(target, "%s", str);
@@ -45,4 +42,3 @@ void sg_cancel_computations(bool &delayed, bool &immediately)
 			SG_SPRINT("\n");
 	}
 }
-#endif

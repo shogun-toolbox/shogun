@@ -1,10 +1,6 @@
-#include <shogun/lib/config.h>
-
-#include "lib/r.h"
-
+#include "r.h"
 #include <stdio.h>
 
-#ifdef HAVE_R
 void sg_print_message(FILE* target, const char* str)
 {
 	if (target==stdout)
@@ -33,5 +29,3 @@ void sg_cancel_computations(bool &delayed, bool &immediately)
 {
 			//R_Suicide((char*) "sg stopped by SIGINT\n");
 }
-#endif
-

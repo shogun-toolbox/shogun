@@ -1,15 +1,11 @@
 #ifndef __MATLABINTERFACE__H_
 #define __MATLABINTERFACE__H_
 
-#include "lib/config.h"
+#include "matlab.h"
 
-#if defined(HAVE_MATLAB) && !defined(HAVE_SWIG)
-
-#include "lib/matlab.h"
-#include "features/StringFeatures.h"
-
-#include "interface/SGInterface.h"
-
+#include <shogun/ui/SGInterface.h>
+#include <shogun/lib/config.h>
+#include <shogun/features/StringFeatures.h>
 
 class CMatlabInterface : public CSGInterface
 {
@@ -168,5 +164,4 @@ class CMatlabInterface : public CSGInterface
 		const mxArray** m_rhs;
 
 };
-#endif // HAVE_MATLAB && HAVE_SWIG
 #endif // __MATLABINTERFACE__H_

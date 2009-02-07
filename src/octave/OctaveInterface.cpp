@@ -1,14 +1,10 @@
-#include <shogun/lib/config.h>
+#include "octave.h"
+#include "OctaveInterface.h"
 
-#if defined(HAVE_OCTAVE) && !defined(HAVE_SWIG)
-
-#include "interface/OctaveInterface.h"
-#include "interface/SGInterface.h"
-
-#include "lib/ShogunException.h"
-#include "lib/io.h"
-#include "lib/octave.h"
-#include "lib/memory.h"
+#include <shogun/ui/SGInterface.h>
+#include <shogun/lib/ShogunException.h>
+#include <shogun/lib/io.h>
+#include <shogun/lib/memory.h>
 
 extern CSGInterface* interface;
 
@@ -488,4 +484,3 @@ DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 		return octave_value_list();
 	}
 }
-#endif // HAVE_OCTAVE && !HAVE_SWIG

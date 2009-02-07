@@ -1,13 +1,9 @@
-#include "lib/config.h"
+#include "PythonInterface.h"
+#include "python.h"
 
-#if defined(HAVE_PYTHON) && !defined(HAVE_SWIG)
-
-#include "lib/ShogunException.h"
-#include "lib/io.h"
-#include "lib/python.h"
-
-#include "interface/SGInterface.h"
-#include "interface/PythonInterface.h"
+#include <shogun/lib/ShogunException.h>
+#include <shogun/lib/io.h>
+#include <shogun/ui/SGInterface.h>
 
 extern "C" {
 #include <numpy/arrayobject.h>
@@ -620,5 +616,3 @@ PyMODINIT_FUNC initsg(void)
     Py_InitModule((char*) "sg", sg_pythonmethods);
 	import_array();
 }
-
-#endif // HAVE_PYTHON && !HAVE_SWIG

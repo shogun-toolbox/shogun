@@ -1,25 +1,19 @@
-#ifndef __PYTHONINTERFACE__H_
-#define __PYTHONINTERFACE__H_
+#ifndef __RINTERFACE__H_
+#define __RINTERFACE__H_
 
-#include "lib/config.h"
+#include <Rdefines.h>
 
-#if defined(HAVE_PYTHON) && !defined(HAVE_SWIG)
-#include "interface/SGInterface.h"
+#include <shogun/lib/common.h>
+#include <shogun/ui/SGInterface.h>
 
-#include "lib/python.h"
-
-extern "C" {
-#include <numpy/arrayobject.h>
-}
-
-class CPythonInterface : public CSGInterface
+class CRInterface : public CSGInterface
 {
 	public:
-		CPythonInterface(PyObject* self, PyObject* args);
-		~CPythonInterface();
+		CRInterface(SEXP prhs);
+		~CRInterface();
 
 		/// reset to clean state
-		virtual void reset(PyObject* self, PyObject* args);
+		virtual void reset(SEXP prhs);
 
 		/** get functions - to pass data from the target interface to shogun */
 
@@ -32,13 +26,13 @@ class CPythonInterface : public CSGInterface
 
 		virtual char* get_string(int32_t& len);
 
-		virtual void get_byte_vector(uint8_t*& vector, int32_t& len);
-		virtual void get_char_vector(char*& vector, int32_t& len);
-		virtual void get_int_vector(int32_t*& vector, int32_t& len);
-		virtual void get_real_vector(float64_t*& vector, int32_t& len);
-		virtual void get_shortreal_vector(float32_t*& vector, int32_t& len);
-		virtual void get_short_vector(int16_t*& vector, int32_t& len);
-		virtual void get_word_vector(uint16_t*& vector, int32_t& len);
+		virtual void get_byte_vector(uint8_t*& vec, int32_t& len);
+		virtual void get_char_vector(char*& vec, int32_t& len);
+		virtual void get_int_vector(int32_t*& vec, int32_t& len);
+		virtual void get_shortreal_vector(float32_t*& vec, int32_t& len);
+		virtual void get_real_vector(float64_t*& vec, int32_t& len);
+		virtual void get_short_vector(int16_t*& vec, int32_t& len);
+		virtual void get_word_vector(uint16_t*& vec, int32_t& len);
 
 		virtual void get_byte_matrix(
 			uint8_t*& matrix, int32_t& num_feat, int32_t& num_vec);
@@ -54,6 +48,21 @@ class CPythonInterface : public CSGInterface
 			int16_t*& matrix, int32_t& num_feat, int32_t& num_vec);
 		virtual void get_word_matrix(
 			uint16_t*& matrix, int32_t& num_feat, int32_t& num_vec);
+
+		virtual void get_byte_ndarray(
+			uint8_t*& array, int32_t*& dims, int32_t& num_dims);
+		virtual void get_char_ndarray(
+			char*& array, int32_t*& dims, int32_t& num_dims);
+		virtual void get_int_ndarray(
+			int32_t*& array, int32_t*& dims, int32_t& num_dims);
+		virtual void get_shortreal_ndarray(
+			float32_t*& array, int32_t*& dims, int32_t& num_dims);
+		virtual void get_real_ndarray(
+			float64_t*& array, int32_t*& dims, int32_t& num_dims);
+		virtual void get_short_ndarray(
+			int16_t*& array, int32_t*& dims, int32_t& num_dims);
+		virtual void get_word_ndarray(
+			uint16_t*& array, int32_t*& dims, int32_t& num_dims);
 
 		virtual void get_real_sparsematrix(
 			TSparse<float64_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
@@ -74,20 +83,19 @@ class CPythonInterface : public CSGInterface
 			T_STRING<uint16_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
 
-
 		/** set functions - to pass data from shogun to the target interface */
 		virtual void set_int(int32_t scalar);
 		virtual void set_real(float64_t scalar);
 		virtual void set_bool(bool scalar);
 
-		virtual void set_byte_vector(const uint8_t* vector, int32_t len);
-		virtual void set_char_vector(const char* vector, int32_t len);
-		virtual void set_int_vector(const int32_t* vector, int32_t len);
-		virtual void set_shortreal_vector(
-			const float32_t* vector, int32_t len);
-		virtual void set_real_vector(const float64_t* vector, int32_t len);
-		virtual void set_short_vector(const int16_t* vector, int32_t len);
-		virtual void set_word_vector(const uint16_t* vector, int32_t len);
+		virtual bool create_return_values(int32_t num_val);
+		virtual void set_byte_vector(const uint8_t* vec, int32_t len);
+		virtual void set_char_vector(const char* vec, int32_t len);
+		virtual void set_int_vector(const int32_t* vec, int32_t len);
+		virtual void set_shortreal_vector(const float32_t* vec, int32_t len);
+		virtual void set_real_vector(const float64_t* vec, int32_t len);
+		virtual void set_short_vector(const int16_t* vec, int32_t len);
+		virtual void set_word_vector(const uint16_t* vec, int32_t len);
 
 		virtual void set_byte_matrix(
 			const uint8_t* matrix, int32_t num_feat, int32_t num_vec);
@@ -104,21 +112,6 @@ class CPythonInterface : public CSGInterface
 		virtual void set_word_matrix(
 			const uint16_t* matrix, int32_t num_feat, int32_t num_vec);
 
-		virtual void get_byte_ndarray(
-			uint8_t*& array, int32_t*& dims, int32_t& num_dims);
-		virtual void get_char_ndarray(
-			char*& array, int32_t*& dims, int32_t& num_dims);
-		virtual void get_int_ndarray(
-			int32_t*& array, int32_t*& dims, int32_t& num_dims);
-		virtual void get_shortreal_ndarray(
-			float32_t*& array, int32_t*& dims, int32_t& num_dims);
-		virtual void get_real_ndarray(
-			float64_t*& array, int32_t*& dims, int32_t& num_dims);
-		virtual void get_short_ndarray(
-			int16_t*& array, int32_t*& dims, int32_t& num_dims);
-		virtual void get_word_ndarray(
-			uint16_t*& array, int32_t*& dims, int32_t& num_dims);
-
 		virtual void set_real_sparsematrix(
 			const TSparse<float64_t>* matrix, int32_t num_feat,
 			int32_t num_vec, int64_t nnz);
@@ -134,48 +127,30 @@ class CPythonInterface : public CSGInterface
 		virtual void set_word_string_list(
 			const T_STRING<uint16_t>* strings, int32_t num_str);
 
-		virtual bool create_return_values(int32_t num);
-
-		PyObject* get_return_values()
-		{
-            if (m_nlhs==1)
-            {
-                PyObject* retval=PyTuple_GET_ITEM(m_lhs, 0);
-                Py_INCREF(retval);
-                Py_DECREF(m_lhs);
-                m_lhs=retval;
-            }
-			return m_lhs;
-		}
+		SEXP get_return_values();
 
 	private:
-		const PyObject* get_arg_increment()
+		const SEXP get_arg_increment()
 		{
-			const PyObject* retval;
 			ASSERT(m_rhs_counter>=0 && m_rhs_counter<m_nrhs+1); // +1 for action
-			ASSERT(m_rhs);
-
-			retval=PyTuple_GET_ITEM(m_rhs, m_rhs_counter);
+			m_rhs=CDR(m_rhs);
 			m_rhs_counter++;
 
-			return retval;
+			return m_rhs;
 		}
 
-		void set_arg_increment(PyObject* arg)
+		void set_arg_increment(SEXP arg)
 		{
 			ASSERT(m_lhs_counter>=0 && m_lhs_counter<m_nlhs);
-			ASSERT(m_lhs);
-            //Py_INCREF(arg);
-			PyTuple_SET_ITEM(m_lhs, m_lhs_counter, arg);
+			SET_VECTOR_ELT(m_lhs, m_lhs_counter, arg);
 			m_lhs_counter++;
 		}
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "PythonInterface"; }
+		inline virtual const char* get_name() const { return "RInterface"; }
 
 	private:
-		PyObject* m_lhs;
-		PyObject* m_rhs;
+		SEXP m_lhs;
+		SEXP m_rhs;
 };
-#endif // HAVE_PYTHON && !HAVE_SWIG
-#endif // __PYTHONINTERFACE__H_
+#endif // __RINTERFACE__H_

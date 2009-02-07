@@ -1,13 +1,9 @@
-#include <shogun/lib/config.h>
-
-#if defined(HAVE_R) && !defined(HAVE_SWIG)
-
-#include "r/RInterface.h"
+#include "r.h"
+#include "RInterface.h"
 
 #include <shogun/ui/SGInterface.h>
 #include <shogun/lib/ShogunException.h>
 #include <shogun/lib/io.h>
-#include <shogun/lib/r.h>
 
 extern CSGInterface* interface;
 
@@ -508,5 +504,3 @@ SEXP sg(SEXP args)
 void R_unload_sg(DllInfo *info) { }
 
 } // extern "C"
-
-#endif // HAVE_R && !HAVE_SWIG

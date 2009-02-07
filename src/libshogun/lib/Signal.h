@@ -19,7 +19,7 @@
 #include <signal.h>
 #define NUMTRAPPEDSIGS 2
 
-extern bool sg_cancel_computations(bool &delayed, bool &immediately);
+extern void sg_cancel_computations(bool &delayed, bool &immediately);
 
 /** Class Signal implements signal handling to e.g. allow ctrl+c to cancel a
  * long running process. This is done in two ways: 

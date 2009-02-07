@@ -1,7 +1,3 @@
-#include <shogun/lib/config.h>
-
-#ifdef HAVE_R
-
 #ifndef __R_H__
 #define __R_H__
 
@@ -22,4 +18,3 @@ extern "C" {
 #endif
 
 #endif //__R_H__
-#endif //HAVE_R

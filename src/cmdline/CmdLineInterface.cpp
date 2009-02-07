@@ -1,13 +1,10 @@
+#include "CmdLineInterface.h"
+
 #include <shogun/lib/config.h>
-
-#if defined(HAVE_CMDLINE)
-
-#include "cmdline/CmdLineInterface.h"
-
-#include <shogun/ui/SGInterface.h>
 #include <shogun/lib/ShogunException.h>
 #include <shogun/lib/io.h>
 #include <shogun/lib/SimpleFile.h>
+#include <shogun/ui/SGInterface.h>
 
 #ifdef HAVE_READLINE
 #include <readline/readline.h>
@@ -951,5 +948,3 @@ int main(int argc, char* argv[])
 		return 3;
 	}
 }
-
-#endif // HAVE_CMDLINE
