@@ -25,10 +25,10 @@ all:  $(PARTDEPS)
 	@echo ==== opts: $(COMPFLAGS_CPP)
 	@echo ============================================================
 	@echo 
-	+$(foreach part, $(PARTS), make -C $(part) $@ &&) true
+	@+$(foreach part, $(PARTS), make -C $(part) $@ &&) true
 	@echo 
 	@echo ============================================================
-	@echo ==== Done. Check the subdirectories for binaries
+	@echo ==== Done. Check the subdirectories for binaries.
 	@echo ============================================================
 	@echo 
 endif
@@ -40,12 +40,12 @@ doc:  $(PARTDEPS)
 	+$(foreach part, $(PARTS), make -C $(part) $@ &&) true
 
 distclean: clean
-	+$(foreach part, $(PARTS), make -C $(part) $@ &&) true
+	@+$(foreach part, $(PARTS), make -C $(part) $@ &&) true
 	@rm -f .config tags ui shogun libshogunui/shogun
 	@rm -f */Makefile
 
 clean:  $(PARTDEPS)
-	+$(foreach part, $(PARTS), make -C $(part) $@ &&) true
+	@+$(foreach part, $(PARTS), make -C $(part) $@ &&) true
 	@rm -f configure.log .cpuinfo ./configure-* cplex.log
 
 dist:	distclean
@@ -53,7 +53,7 @@ dist:	distclean
 	tar -cvf $(TAR) -C ../../ shogun/src && gzip -9 $(TAR)
 
 $(PARTDEPS): Makefile.template
-	+$(foreach part, $(PARTS), cat Makefile.template | sed 's/TEMPLATE/$(shell echo $(part) | tr 'a-z' 'A-Z')/g' >$(part)/Makefile; )
+	@+$(foreach part, $(PARTS), cat Makefile.template | sed 's/TEMPLATE/$(shell echo $(part) | tr 'a-z' 'A-Z')/g' >$(part)/Makefile; )
 
 tests: run-testsuite check-examples
 

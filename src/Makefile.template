@@ -19,7 +19,12 @@ ifeq (libshogun,$(findstring libshogun,$(TEMPLATE_TARGET)))
 	LIBSYMLINKCMD=rm -f $(LIBNAME).so `$(SONAME)`; ln -s $(TEMPLATE_TARGET) `$(SONAME)` ; ln -s $(TEMPLATE_TARGET) $(LIBNAME).so
 else
 	INCLUDES += $(INCLUDES_STATIC)
+
+ifeq (sg.mex,$(findstring sg.mex,$(TEMPLATE_TARGET)))
+	LINKFLAGS += ../libshogunui/libshogunui.a ../libshogun/libshogun.a 
+else
 	LINKFLAGS += $(LINKFLAGS_STATIC)
+endif
 endif
 all:	$(TEMPLATE_TARGET) $(OTHER_TARGETS)
 endif
