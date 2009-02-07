@@ -9,12 +9,12 @@
  */
 
 #include "lib/config.h"
+
 #ifdef USE_SVMLIGHT
 
 #include "lib/io.h"
 #include "lib/lapack.h"
 #include "lib/Signal.h"
-#include "lib/python.h"
 #include "lib/Mathematics.h"
 #include "regression/svr/SVR_light.h"
 #include "kernel/KernelMachine.h"

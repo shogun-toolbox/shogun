@@ -38,7 +38,7 @@ EXT_OBJ_C=c.o
 _readline=auto
 _mindy=auto
 _r=no
-if [ -e classifier/svm/SVM_light.cpp ]; then
+if [ -e libshogun/classifier/svm/SVM_light.cpp ]; then
   _svm_light=yes
   _gpl=no
 else

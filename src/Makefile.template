@@ -30,8 +30,9 @@ all:	$(TEMPLATE_TARGET) $(OTHER_TARGETS)
 endif
 
 INCLUDES += $(INCLUDES_TEMPLATE)
-COMPFLAGS_CPP += $(DEFINES_TEMPLATE)
 DEFINES += $(DEFINES_TEMPLATE)
+COMPFLAGS_CPP += $(DEFINES)
+COMPFLAGS_C += $(DEFINES)
 LINKFLAGS += $(LINKFLAGS_TEMPLATE)
 POSTLINKFLAGS += $(POSTLINKFLAGS_TEMPLATE)
 
@@ -81,18 +82,93 @@ clean:
 	@rm -f sg.mex* shogun shogun.exe gmon.out .depend configure.log .cpuinfo ./configure-* cplex.log
 	@rm -f $(TEMPLATE_TARGET)
 
-.depend:	../.config ../libshogun/lib/versionstring.h
-ifeq (makedepend,$(MAKEDEPEND))
-	-$(MAKEDEPEND) $(DEFINES) $(INCLUDES) \
-		$(shell find $(SRCDIR) -name "*.$(EXT_SRC_CPP)" ) $(MAKEDEPENDOPTS) | \
-		sed -e 's/\.o:/.$(EXT_OBJ_CPP):/g' >.depend
-	-$(MAKEDEPEND) $(DEFINES) $(INCLUDES) \
-		$(shell find $(SRCDIR) -name "*.$(EXT_SRC_C)" ) $(MAKEDEPENDOPTS) | \
-		sed -e 's/\.o:/.$(EXT_OBJ_C):/g' >>.depend
-else #gcc -MM
-	find $(SRCDIR) -name "*.$(EXT_SRC_C)" -o -name "*.$(EXT_SRC_CPP)" \
-	-exec $(MAKEDEPEND) $(DEFINES) $(INCLUDES) {} -MT {}.o \; >.depend
-endif
+install-cmdline: $(TEMPLATE_TARGET)
+	install -d -m755 $(DESTDIR)$(BINDIR)
+	install -m755 $(TEMPLATE_TARGET) $(DESTDIR)$(BINDIR)
+
+install-libshogunui: $(TEMPLATE_TARGET)
+	install -d -m755 $(DESTDIR)$(LIBDIR)
+	install -d -m755 "$(DESTDIR)$(INCDIR)/shogun/ui"
+	install -m755 libshogunui.so* $(DESTDIR)$(LIBDIR)
+	install -m755 libshogunui.a $(DESTDIR)$(LIBDIR)
+	install -m644 *.h -t "$(DESTDIR)$(INCDIR)/shogun/ui"
+	find "$(DESTDIR)$(INCDIR)/shogun/ui" -name '*.h' -exec sed -i 's/#include "/#include <shogun\/ui\//' {} \;
+
+install-libshogun: $(TEMPLATE_TARGET)
+	install -d -m755 $(DESTDIR)$(LIBDIR)
+	install -d -m755 "$(DESTDIR)$(INCDIR)/shogun"
+	install -m755 libshogun.so* $(DESTDIR)$(LIBDIR)
+	install -m755 libshogun.a $(DESTDIR)$(LIBDIR)
+
+	find ./ -mindepth 1 -type d ! \( -path '*.svn*' -o -name '*interface*' -o -name '*guilib*' -o -name '*doxygen*' \)\
+		-exec install -d -m755 "$(DESTDIR)$(INCDIR)/shogun/"\{\} \;
+	find ./ -mindepth 1 -type d ! \( -path '*.svn*' -o -name '*wrap*' -o -name '*interface*' -o -name '*guilib*' -o -name '*doxygen*' \) \
+		-exec sh -c "install -m644 {}/*.h -t $(DESTDIR)$(INCDIR)/shogun/{}" \;
+	find "$(DESTDIR)$(INCDIR)/shogun/" -name '*.h' -exec sed -i 's/#include "/#include <shogun\//' {} \;
+
+install-python: $(TEMPLATE_TARGET)
+	install -d -m755 $(DESTDIR)$(PYDIR)
+	install -m755 $(TEMPLATE_TARGET) $(DESTDIR)$(PYDIR)
+
+install-octave: $(TEMPLATE_TARGET)
+	install -d -m755 $(DESTDIR)$(OCTDIR)
+	install -m755 $(TEMPLATE_TARGET) $(DESTDIR)$(OCTDIR)
+
+install-r: $(TEMPLATE_TARGET)
+	install -d -m755 $(DESTDIR)$(RDIR)/sg/demo
+	install -d -m755 $(DESTDIR)$(RDIR)/sg/libs
+	install -d -m755 $(DESTDIR)$(RDIR)/sg/Meta
+	install -d -m755 $(DESTDIR)$(RDIR)/sg/R
+	install -m755 $(TEMPLATE_TARGET) $(DESTDIR)$(RDIR)/sg/libs
+	install -m644 ../../examples/r/*.R ../../examples/r/graphical/*.R $(DESTDIR)$(RDIR)/sg/demo
+	./.r-install.sh $(DESTDIR)$(RDIR) sg
+
+install-matlab: $(TEMPLATE_TARGET)
+	@echo "The matlab interface needs to be installed"
+	@echo "using a different mechanism:"
+	@echo
+	@echo " just copy the sg.mex* to a <dir> of your choice"
+	@echo " and addpath <dir>"
+	@echo
+
+run-testsuite-libshogun:
+	true
+check-examples-libshogun:
+	true
+
+run-testsuite-libshogunui:
+	true
+check-examples-libshogunui:
+	true
+
+run-testsuite-python:
+		cd ../../testsuite/python && ( PYTHON=$(PYTHON) PYTHONPATH="$(DESTDIR)$(PYDIR)" ./test_all.sh	)
+check-examples-python:
+		cd ../../examples/python && ( PYTHON=$(PYTHON) PYTHONPATH="$(DESTDIR)$(PYDIR)" ./check.sh	)
+
+run-testsuite-r:
+	cd ../../testsuite/r && ( R_LIBS="$(DESTDIR)$(RDIR)" ./test_all.sh )
+check-examples-r:
+	cd ../../examples/r && ( R_LIBS="$(DESTDIR)$(RDIR)" ./check.sh )
+
+run-testsuite-cmdline:
+	cd ../../testsuite/cmdline && ( PATH="$(DESTDIR)$(BINDIR)"  ./test_all.sh )
+check-examples-cmdline:
+	cd ../../examples/cmdline && ( PATH="$(DESTDIR)$(BINDIR)"  ./check.sh )
+
+run-testsuite-octave:
+	cd ../../testsuite/octave && ( OCTAVE_LOADPATH="$(DESTDIR)$(OCTDIR):" ./test_all.sh - octave )
+check-examples-octave:
+	cd ../../examples/octave && ( OCTAVE_LOADPATH="$(DESTDIR)$(OCTDIR):" ./check.sh )
+
+run-testsuite-matlab:
+	cd ../../testsuite/matlab && ( ln -sf ../../src/$(TEMPLATE_TARGET) ; ./test_all.sh - matlab)
+check-examples-matlab:
+	cd ../../examples/matlab && ./check.sh
+
+doc-libshogun:	lib/versionstring.h
+		-@sed -i "s/PROJECT_NUMBER         = .*/PROJECT_NUMBER         = `sed -n 's/^#define VERSION_RELEASE "\(.*\)_"/\1/p' $@`/" ../../doc/Doxyfile
+		cd ../../doc && make
 
 $(OBJFILES): ../.config .depend Makefile ../libshogun/lib/versionstring.h ../ChangeLog
 
@@ -112,6 +188,22 @@ libshogunui.a: .depend $(OBJFILES) $(SRCFILES) $(HEADERFILES)
 
 %.$(EXT_OBJ_C):	%.$(EXT_SRC_C)
 	$(COMP_C) $(COMPFLAGS_C) -c $(INCLUDES) -o $@ $<
+
+
+# Generate dependecies.
+.depend:	../.config ../libshogun/lib/versionstring.h
+ifeq (makedepend,$(MAKEDEPEND))
+	-$(MAKEDEPEND) $(DEFINES) $(INCLUDES) \
+		$(shell find $(SRCDIR) -name "*.$(EXT_SRC_CPP)" ) $(MAKEDEPENDOPTS) | \
+		sed -e 's/\.o:/.$(EXT_OBJ_CPP):/g' >.depend
+	-$(MAKEDEPEND) $(DEFINES) $(INCLUDES) \
+		$(shell find $(SRCDIR) -name "*.$(EXT_SRC_C)" ) $(MAKEDEPENDOPTS) | \
+		sed -e 's/\.o:/.$(EXT_OBJ_C):/g' >>.depend
+else #gcc -MM
+	find $(SRCDIR) -name "*.$(EXT_SRC_C)" -o -name "*.$(EXT_SRC_CPP)" \
+	-exec $(MAKEDEPEND) $(DEFINES) $(INCLUDES) {} -MT {}.o \; >.depend
+endif
+
 
 # Do not include dependencies when they are about to be removed anyway.
 ifneq ($(MAKECMDGOALS),distclean)

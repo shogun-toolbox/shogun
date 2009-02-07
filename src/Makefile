@@ -34,7 +34,15 @@ all:  $(PARTDEPS)
 endif
 
 install:  $(PARTDEPS)
-	+$(foreach part, $(PARTS), make -C $(part) $@ &&) true
+	+$(foreach part, $(PARTS), make -C $(part) install-$(part) &&) true
+
+tests: run-testsuite check-examples
+
+run-testsuite: $(PARTDEPTS)
+	+$(foreach part, $(PARTS), make -C $(part) run-testsuite-$(part) &&) true
+
+check-examples: $(PARTDEPTS)
+	+$(foreach part, $(PARTS), make -C $(part) check-examples-$(part) &&) true
 
 doc:  $(PARTDEPS)
 	+$(foreach part, $(PARTS), make -C $(part) $@ &&) true
@@ -55,69 +63,6 @@ dist:	distclean
 $(PARTDEPS): Makefile.template
 	@+$(foreach part, $(PARTS), cat Makefile.template | sed 's/TEMPLATE/$(shell echo $(part) | tr 'a-z' 'A-Z')/g' >$(part)/Makefile; )
 
-tests: run-testsuite check-examples
-
-# python-modular
-ifeq (yes,$(INTERFACE))
-run-testsuite:
-		cd ../testsuite/$(INTERFACE) && ( PYTHON=$(PYTHON) PYTHONPATH="$(DESTDIR)$(PYDIR)" ./test_all.sh	)
-check-examples:
-		cd ../examples/$(INTERFACE) && ( PYTHON=$(PYTHON) PYTHONPATH="$(DESTDIR)$(PYDIR)" ./check.sh	)
-else
-ifeq (python,$(INTERFACE))
-run-testsuite:
-		cd ../testsuite/$(INTERFACE) && ( PYTHON=$(PYTHON) PYTHONPATH="$(DESTDIR)$(PYDIR)" ./test_all.sh	)
-check-examples:
-		cd ../examples/$(INTERFACE) && ( PYTHON=$(PYTHON) PYTHONPATH="$(DESTDIR)$(PYDIR)" ./check.sh	)
-else
-# R-modular
-ifeq (r-modular,$(INTERFACE))
-run-testsuite:
-		cd ../testsuite/$(INTERFACE) && ( R_LIBS="$(DESTDIR)$(RDIR)" ./test_all.sh )
-check-examples:
-		cd ../examples/$(INTERFACE) && ( R_LIBS="$(DESTDIR)$(RDIR)" ./check.sh )
-else
-# R
-ifeq (r,$(INTERFACE))
-run-testsuite:
-		cd ../testsuite/$(INTERFACE) && ( R_LIBS="$(DESTDIR)$(RDIR)" ./test_all.sh )
-check-examples:
-		cd ../examples/$(INTERFACE) && ( R_LIBS="$(DESTDIR)$(RDIR)" ./check.sh )
-else
-# Standalone
-ifeq (cmdline,$(INTERFACE))
-run-testsuite:
-		cd ../testsuite/$(INTERFACE) && ( PATH="$(DESTDIR)$(BINDIR)"  ./test_all.sh )
-check-examples:
-		cd ../examples/$(INTERFACE) && ( PATH="$(DESTDIR)$(BINDIR)"  ./check.sh )
-# Octave
-else
-ifeq (octave-modular,$(INTERFACE))
-run-testsuite:
-	cd ../testsuite/$(INTERFACE) && ( OCTAVE_LOADPATH="$(DESTDIR)$(OCTDIR)/shogun:" ./test_all.sh )
-check-examples:
-	cd ../examples/$(INTERFACE) && ( OCTAVE_LOADPATH="$(DESTDIR)$(OCTDIR)/shogun:" ./check.sh )
-else
-ifeq (octave,$(INTERFACE))
-run-testsuite:
-	cd ../testsuite/$(INTERFACE) && ( OCTAVE_LOADPATH="$(DESTDIR)$(OCTDIR):" ./test_all.sh - octave )
-check-examples:
-	cd ../examples/$(INTERFACE) && ( OCTAVE_LOADPATH="$(DESTDIR)$(OCTDIR):" ./check.sh )
-#Matlab
-else
-ifeq (matlab,$(INTERFACE))
-run-testsuite:
-	cd ../testsuite/$(INTERFACE) && ( ln -sf ../../src/$(TARGET) ; ./test_all.sh - matlab)
-check-examples:
-	cd ../examples/$(INTERFACE) && ./check.sh
-endif
-endif
-endif
-endif
-endif
-endif
-endif
-endif
 
 ChangeLog:
 	@if [ -n "`which svn2cl`" ]; then \
