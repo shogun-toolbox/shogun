@@ -10,7 +10,7 @@
 %include "common.i"
 
 #ifdef HAVE_DOXYGEN
-%include "clustering/Clustering_doxygen.i"
+%include "Clustering_doxygen.i"
 #endif
 
 #ifdef HAVE_PYTHON

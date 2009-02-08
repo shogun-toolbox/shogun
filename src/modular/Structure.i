@@ -12,7 +12,7 @@
 	  import_array();
 %}
 
-%include "python_typemaps.i"
+%include "swig_typemaps.i"
 #endif
 
 %include "common.i"
