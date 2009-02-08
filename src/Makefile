@@ -45,7 +45,7 @@ check-examples: $(PARTDEPTS)
 	+$(foreach part, $(PARTS), make -C $(part) check-examples-$(part) &&) true
 
 doc:  $(PARTDEPS)
-	+$(foreach part, $(PARTS), make -C $(part) $@ &&) true
+	+$(foreach part, $(PARTS), make -C $(part) doc-$(part) &&) true
 
 distclean: clean
 	@+$(foreach part, $(PARTS), make -C $(part) $@ &&) true

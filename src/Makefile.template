@@ -103,6 +103,13 @@ targets:
 distclean: clean
 		@rm -f tags .depend
 
+swigclean:
+	@rm -f $(shell find -name "*_wrap.h" -o -name "*_wrap.cxx.o" -o -name "*_wrap.cxx" 2>/dev/null) 
+
+swigdocclean:
+	@rm -rf $(shell find -name doxygen_xml -o -name "*_doxygen.i" 2>/dev/null) 
+
+
 clean:
 	@rm -f $(shell find . -name "*.cpp.o" -o -name "*.c.o")
 	@rm -f $(shell find . -name "*.a" -o -name "*.so*" -o -name "*.dll" -o -name "*~" -o -name ".#*")
@@ -169,6 +176,29 @@ install-matlab: $(TEMPLATE_TARGET)
 	@echo " and addpath <dir>"
 	@echo
 
+install-python_modular: $(TEMPLATE_TARGET)
+	install -d -m755 "$(DESTDIR)$(PYDIR)/shogun"
+	install -m644 $(SWIGLIBFILES) $(SWIGPYFILES) "$(DESTDIR)$(PYDIR)/shogun"
+	echo '__all__= [' > "$(DESTDIR)$(PYDIR)/shogun/__init__.py"
+	for i in $(SWIGPYFILES) ; do echo $$i | sed -e 's=.*/="=' -e 's/\.py/", /' >>$(DESTDIR)$(PYDIR)/shogun/__init__.py; done
+	echo ']' >> "$(DESTDIR)$(PYDIR)/shogun/__init__.py"
+
+install-r_modular: $(TEMPLATE_TARGET)
+	install -d -m755 $(DESTDIR)$(RDIR)/shogun/demo
+	install -d -m755 $(DESTDIR)$(RDIR)/shogun/libs
+	install -d -m755 $(DESTDIR)$(RDIR)/shogun/Meta
+	install -d -m755 $(DESTDIR)$(RDIR)/shogun/R
+	install -m644 ../examples/r-modular/*.R $(DESTDIR)$(RDIR)/shogun/demo
+	install -m755 */*.so $(DESTDIR)$(RDIR)/shogun/libs
+	install -m755 */*.RData $(DESTDIR)$(RDIR)/shogun/R
+	./.r-install.sh $(DESTDIR)$(RDIR) shogun
+
+install-octave_modular: $(TEMPLATE_TARGET)
+	install -d -m755 "$(DESTDIR)$(OCTDIR)/shogun"
+	install -m755 $(SWIGLIBFILES) "$(DESTDIR)$(OCTDIR)/shogun"
+	echo '%Initialize shogun by loading all of its modules' > "$(DESTDIR)$(OCTDIR)/shogun/init_shogun.m"
+	for i in $(SWIGLIBFILES) ; do echo $$i | sed -e 's=.*/==' -e 's/\.oct/;/' >>$(DESTDIR)$(OCTDIR)/shogun/init_shogun.m; done
+
 run-testsuite-libshogun:
 	true
 check-examples-libshogun:
@@ -180,9 +210,9 @@ check-examples-libshogunui:
 	true
 
 run-testsuite-python:
-		cd ../../testsuite/python && ( PYTHON=$(PYTHON) PYTHONPATH="$(DESTDIR)$(PYDIR)" ./test_all.sh	)
+	cd ../../testsuite/python && ( PYTHON=$(PYTHON) PYTHONPATH="$(DESTDIR)$(PYDIR)" ./test_all.sh	)
 check-examples-python:
-		cd ../../examples/python && ( PYTHON=$(PYTHON) PYTHONPATH="$(DESTDIR)$(PYDIR)" ./check.sh	)
+	cd ../../examples/python && ( PYTHON=$(PYTHON) PYTHONPATH="$(DESTDIR)$(PYDIR)" ./check.sh	)
 
 run-testsuite-r:
 	cd ../../testsuite/r && ( R_LIBS="$(DESTDIR)$(RDIR)" ./test_all.sh )
@@ -204,6 +234,21 @@ run-testsuite-matlab:
 check-examples-matlab:
 	cd ../../examples/matlab && ./check.sh
 
+run-testsuite-python_modular:
+	cd ../testsuite/python_modular && ( PYTHON=$(PYTHON) PYTHONPATH="$(DESTDIR)$(PYDIR)" ./test_all.sh    )
+check-examples-python_modular:
+	cd ../examples/python_modular && ( PYTHON=$(PYTHON) PYTHONPATH="$(DESTDIR)$(PYDIR)" ./check.sh    )
+
+run-testsuite-r_modular:
+	cd ../testsuite/r_modular && ( R_LIBS="$(DESTDIR)$(RDIR)" ./test_all.sh )
+check-examples-r_modular:
+	cd ../examples/r_modular && ( R_LIBS="$(DESTDIR)$(RDIR)" ./check.sh )
+
+run-testsuite-octave_modular:
+	cd ../testsuite/octave_modular && ( OCTAVE_LOADPATH="$(DESTDIR)$(OCTDIR)/shogun:" ./test_all.sh )
+check-examples-octave_modular:
+	cd ../examples/octave_modular && ( OCTAVE_LOADPATH="$(DESTDIR)$(OCTDIR)/shogun:" ./check.sh )
+
 lib/versionstring.h:    $(SVNEntries) 
 	        sh ../.version.sh > $@
 
@@ -211,6 +256,44 @@ doc-libshogun:	lib/versionstring.h
 		-@sed -i "s/PROJECT_NUMBER         = .*/PROJECT_NUMBER         = `sed -n 's/^#define VERSION_RELEASE "\(.*\)_"/\1/p' $@`/" ../../doc/Doxyfile
 		cd ../../doc && make
 
+doc-octave:
+	echo "/** \page staticoctave Static Matlab/Octave Interface Function Reference" >x
+	-echo "sg('set_output', 'y');sg('help','doxygen');" | \
+		( OCTAVE_LOADPATH="$(DESTDIR)$(OCTDIR)" octave )
+	echo "*/" >>y
+	cat x y >../doc/pages/StaticOctaveInterface.mainpage
+	rm -f x y
+
+doc-cmdline:
+	echo "/** \page staticcmdline Static Command Line Interface Function Reference" >x
+	-bash -c "echo -e \"set_output y\nhelp doxygen\n\"" | \
+		( PATH="$(DESTDIR)$(BINDIR)" shogun )
+	echo "*/" >>y
+	cat x y >../doc/pages/StaticCommandLineInterface.mainpage
+	rm -f x y
+
+doc-python:
+	echo "/** \page staticpython Static Python Interface Function Reference" >x
+	-bash -c "echo -e \"from sg import sg\nsg('set_output', 'y')\nsg('help','doxygen')\n\"" | \
+		( PYTHONPATH="$(DESTDIR)$(PYDIR)" python )
+	echo "*/" >>y
+	cat x y >../doc/pages/StaticPythonInterface.mainpage
+	rm -f x y
+
+doc-r:
+	echo "/** \page staticr Static R Interface Function Reference" >x
+	-echo "library(sg);sg('set_output', 'y');sg('help','doxygen');" | \
+		( R_PATH="$(DESTDIR)$(RDIR)" R --no-save)
+	echo "*/" >>y
+	cat x y >../doc/pages/StaticRInterface.mainpage
+	rm -f x y
+
+doc-matlab:
+	@echo "Check the octave documentation."
+	@echo
+	@echo " or just use sg('help') "
+	@echo
+	
 $(OBJFILES): ../.config .depend Makefile ../ChangeLog
 
 $(TEMPLATE_TARGET): .depend $(OBJFILES) $(SRCFILES) $(HEADERFILES) $(OTHERDEPS)
