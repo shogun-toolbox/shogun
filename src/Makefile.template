@@ -166,7 +166,7 @@ install-r: $(TEMPLATE_TARGET)
 	install -d -m755 $(DESTDIR)$(RDIR)/sg/R
 	install -m755 $(TEMPLATE_TARGET) $(DESTDIR)$(RDIR)/sg/libs
 	install -m644 ../../examples/r/*.R ../../examples/r/graphical/*.R $(DESTDIR)$(RDIR)/sg/demo
-	./.r-install.sh $(DESTDIR)$(RDIR) sg
+	../.r-install.sh $(DESTDIR)$(RDIR) sg
 
 install-matlab: $(TEMPLATE_TARGET)
 	@echo "The matlab interface needs to be installed"
@@ -188,10 +188,10 @@ install-r_modular: $(TEMPLATE_TARGET)
 	install -d -m755 $(DESTDIR)$(RDIR)/shogun/libs
 	install -d -m755 $(DESTDIR)$(RDIR)/shogun/Meta
 	install -d -m755 $(DESTDIR)$(RDIR)/shogun/R
-	install -m644 ../examples/r-modular/*.R $(DESTDIR)$(RDIR)/shogun/demo
-	install -m755 */*.so $(DESTDIR)$(RDIR)/shogun/libs
-	install -m755 */*.RData $(DESTDIR)$(RDIR)/shogun/R
-	./.r-install.sh $(DESTDIR)$(RDIR) shogun
+	install -m644 ../../examples/r_modular/*.R $(DESTDIR)$(RDIR)/shogun/demo
+	install -m755 *.so $(DESTDIR)$(RDIR)/shogun/libs
+	install -m755 *.RData $(DESTDIR)$(RDIR)/shogun/R
+	../.r-install.sh $(DESTDIR)$(RDIR) shogun
 
 install-octave_modular: $(TEMPLATE_TARGET)
 	install -d -m755 "$(DESTDIR)$(OCTDIR)/shogun"
@@ -256,6 +256,9 @@ doc-libshogun:	lib/versionstring.h
 		-@sed -i "s/PROJECT_NUMBER         = .*/PROJECT_NUMBER         = `sed -n 's/^#define VERSION_RELEASE "\(.*\)_"/\1/p' $@`/" ../../doc/Doxyfile
 		cd ../../doc && make
 
+doc-libshogunui:
+	true
+
 doc-octave:
 	echo "/** \page staticoctave Static Matlab/Octave Interface Function Reference" >x
 	-echo "sg('set_output', 'y');sg('help','doxygen');" | \
@@ -293,6 +296,15 @@ doc-matlab:
 	@echo
 	@echo " or just use sg('help') "
 	@echo
+
+doc-octave_modular:
+	true
+
+doc-python_modular:
+	true
+
+doc-r_modular:
+	true
 	
 $(OBJFILES): ../.config .depend Makefile ../ChangeLog
 
@@ -337,6 +349,10 @@ else
 	$(PYTHON) ../.scrub_docstrings.py $(EXT_IF_SWIG_TEMPLATE) $@
 endif
 
+# Do not include dependencies when they are about to be removed anyway.
+ifneq ($(MAKECMDGOALS),distclean)
+ifneq ($(MAKECMDGOALS),clean)
+
 # Generate dependecies.
 .depend:	../.config $(DEPDEPS)
 ifeq (makedepend,$(MAKEDEPEND))
@@ -357,8 +373,7 @@ endif
 
 endif
 
-
-# Do not include dependencies when they are about to be removed anyway.
-ifneq ($(MAKECMDGOALS),distclean)
+# Include dependecies.
 -include .depend
+endif
 endif

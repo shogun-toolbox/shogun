@@ -32,7 +32,7 @@
  *
  * - multiplication with a scalar \f$\alpha\f$ and addition on to a dense vector \f${\bf z}\f$:
  *
- *   \f[${\bf z'} = \alpha {\bf x} + {\bf z}\f]
+ *   \f[{\bf z'} = \alpha {\bf x} + {\bf z}\f]
  * 
  */
 class CCombinedDotFeatures : public CDotFeatures
