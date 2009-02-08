@@ -87,6 +87,9 @@ class CSubGradientLPM : public CLinearClassifier
 		/// de-alloc helper arrays
 		void cleanup();
 
+		/** @return object name */
+		inline virtual const char* get_name() const { return "SubGradientLPM"; }
+
 	protected:
 		float64_t C1;
 		float64_t C2;

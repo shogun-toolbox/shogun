@@ -56,6 +56,9 @@ class CLPM : public CLinearClassifier
 		inline void set_epsilon(float64_t eps) { epsilon=eps; }
 		inline float64_t get_epsilon() { return epsilon; }
 
+		/** @return object name */
+		inline virtual const char* get_name() const { return "LPM"; }
+
 	protected:
 		float64_t C1;
 		float64_t C2;

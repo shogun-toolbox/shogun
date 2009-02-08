@@ -33,6 +33,7 @@ EXT_OBJ_CPP=cpp.o
 EXT_OBJ_C=c.o
 
 #the defaults are
+_swig_version=0.0.0
 _readline=auto
 _mindy=auto
 _r=no
@@ -2490,8 +2491,9 @@ test_modular()
 		echocheck "SWIG"
 		if ${SWIG} -version >/dev/null 2>&1
 		then
-			if [ `${SWIG} -version 2>&1 | grep Version | cut -f 3 -d ' ' | cut -f 2 -d '.'` -ge 4 ] || \
-				[ `${SWIG} -version 2>&1 | grep Version | cut -f 3 -d ' ' | cut -f 3 -d '.'` -ge 29 ]
+			_swig_version=`swig -version 2>&1 | grep Version | cut -f 3 -d ' '`
+			if [ `echo $_swig_version | cut -f 2 -d '.'` -ge 4 ] || \
+				[ `echo $_swig_version | cut -f 3 -d '.'` -ge 29 ]
 			then
 				echores "`${SWIG} -version 2>&1 | grep Version | cut -f 3 -d ' '`"
 
@@ -2506,7 +2508,7 @@ test_modular()
 					POSTLINKFLAGS=$LINKFLAGS
 				fi
 			else
-				echores "`${SWIG} -version 2>&1 | grep Version | cut -f 3 -d ' '` ... too old version 1.3.29 or later required"
+				echores "`echo $_swig_version` ... too old version 1.3.29 or later required"
 				if test "$_swig" = yes ; then
 					die "swig outdated"
 				else
@@ -2542,9 +2544,16 @@ test_modular()
 		then
 			if echo "$PARTS" | grep -q octave
 			then
-				PARTS="$PARTS octave_modular"
-				OCTAVE_MODULAR_TARGET=octave_modular
-				
+				echocheck "SWIG Octave Support"
+				if [ `echo "$_swig_version" | cut -f 2 -d '.'` -ge 4 ] || \
+					[ `echo "$_swig_version" | cut -f 3 -d '.'` -ge 36 ]
+				then
+					PARTS="$PARTS octave_modular"
+					OCTAVE_MODULAR_TARGET=octave_modular
+					echores "yes"
+				else
+					echores "too old version 1.3.36 or later required"
+				fi
 			fi
 			if echo "$PARTS" | grep -q python
 			then
@@ -2553,8 +2562,16 @@ test_modular()
 			fi
 			if echo "$PARTS" | grep -q ' r'
 			then
-				PARTS="$PARTS r_modular"
-				R_MODULAR_TARGET=r_modular
+				echocheck "SWIG R Support"
+				if [ `echo $_swig_version | cut -f 2 -d '.'` -ge 4 ] || \
+					[ `echo $_swig_version | cut -f 3 -d '.'` -ge 37 ]
+				then
+					PARTS="$PARTS r_modular"
+					R_MODULAR_TARGET=r_modular
+					echores "yes"
+				else
+					echores "too old version 1.3.37 or later required"
+				fi
 			fi
 		fi
 	fi
@@ -2573,7 +2590,7 @@ test_matlab()
 				echores `cat matlab_version.txt`
 				matlab.exe /nosplash /minimize /r "system('env > matlab_path.txt');quit"
 				MATLAB_DIR=`grep '^_=' matlab_path.txt | cut -c 3- | sed 's#/bin/win32/matlab.exe##'`
-				MATLAB_SmeRCDIR="$MATLAB_DIR/extern/src"
+				MATLAB_SRCDIR="$MATLAB_DIR/extern/src"
 				MATLAB_INCDIR="$MATLAB_DIR/extern/include"
 				MATLAB_LIBDIR="$MATLAB_DIR/extern/lib"
 				MATLAB_BINDIR="$MATLAB_DIR/bin"
@@ -2730,7 +2747,7 @@ test_octave()
 					die "$VERSION - too old, at least octave version 3.0 required"
 				fi
 				echores "$VERSION - too old, at least octave version 3.0 required"
-				_octave = "no"
+				_octave="no"
 			fi
 		else
 			echores "no"
@@ -2738,7 +2755,7 @@ test_octave()
 			then
 				die "could not find octave in path / octave crashed"
 			fi
-			_octave = "no"
+			_octave="no"
 		fi
 
 		if test "$_octave" != no
@@ -2754,7 +2771,7 @@ test_octave()
 				then
 					die "could not find octave-config in path / octave-config crashed"
 				fi
-				_octave= "no"
+				_octave="no"
 			fi
 
 			if test "$_octave" != no 

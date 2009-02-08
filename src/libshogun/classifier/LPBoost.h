@@ -64,6 +64,9 @@ class CLPBoost : public CLinearClassifier
 
 		float64_t find_max_violator(int32_t& max_dim);
 
+		/** @return object name */
+		inline virtual const char* get_name() const { return "LPBoost"; }
+
 	protected:
 		float64_t C1;
 		float64_t C2;
