@@ -1,7 +1,7 @@
 %{
- #include "distance/DistanceMachine.h"
+ #include <shogun/distance/DistanceMachine.h>
 %}
 
-%include "lib/common.i"
+%include "common.i"
 
-%include "distance/DistanceMachine.h"
+%include <shogun/distance/DistanceMachine.h>

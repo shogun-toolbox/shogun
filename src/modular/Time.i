@@ -1,7 +1,7 @@
 %{
- #include "lib/Time.h" 
+ #include <shogun/lib/Time.h>
 %}
 
 %rename(Time) CTime;
 
-%include "lib/Time.h"
+%include <shogun/lib/Time.h>

@@ -1,6 +1,6 @@
 %{
- #include "kernel/HistogramWordStringKernel.h" 
+ #include <shogun/kernel/HistogramWordStringKernel.h>
 %}
 %rename(HistogramWordStringKernel) CHistogramWordStringKernel;
 
-%include "kernel/HistogramWordStringKernel.h" 
+%include <shogun/kernel/HistogramWordStringKernel.h>

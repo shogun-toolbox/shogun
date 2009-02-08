@@ -1,7 +1,7 @@
 %{
- #include "kernel/DiagKernel.h" 
+ #include <shogun/kernel/DiagKernel.h>
 %}
 
 %rename(DiagKernel) CDiagKernel;
 
-%include "kernel/DiagKernel.h" 
+%include <shogun/kernel/DiagKernel.h>

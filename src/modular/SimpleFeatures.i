@@ -1,8 +1,8 @@
 %{
-    #include "features/SimpleFeatures.h" 
+    #include <shogun/features/SimpleFeatures.h>
 %}
 
-%include "features/SimpleFeatures.h" 
+%include <shogun/features/SimpleFeatures.h>
 
 %template(SimpleRealFeatures) CSimpleFeatures<float64_t>;
 %template(SimpleShortRealFeatures) CSimpleFeatures<float32_t>;

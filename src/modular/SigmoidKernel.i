@@ -1,6 +1,6 @@
 %{
- #include "kernel/SigmoidKernel.h" 
+ #include <shogun/kernel/SigmoidKernel.h>
 %}
 
 %rename(SigmoidKernel) CSigmoidKernel;
-%include "kernel/SigmoidKernel.h" 
+%include <shogun/kernel/SigmoidKernel.h>

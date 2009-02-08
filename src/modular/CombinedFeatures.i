@@ -1,7 +1,7 @@
 %{
- #include "features/CombinedFeatures.h" 
+ #include <shogun/features/CombinedFeatures.h>
 %}
 
 %rename(CombinedFeatures) CCombinedFeatures;
 
-%include "features/CombinedFeatures.h" 
+%include <shogun/features/CombinedFeatures.h>

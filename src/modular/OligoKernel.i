@@ -1,7 +1,7 @@
 %{
-    #include "kernel/OligoKernel.h" 
+    #include <shogun/kernel/OligoKernel.h>
 %}
 
 %rename(OligoKernel) COligoKernel;
 
-%include "kernel/OligoKernel.h"
+%include <shogun/kernel/OligoKernel.h>

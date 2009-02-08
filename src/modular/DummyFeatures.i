@@ -1,7 +1,7 @@
 %{
- #include "features/DummyFeatures.h" 
+ #include <shogun/features/DummyFeatures.h>
 %}
 
 %rename(DummyFeatures) CDummyFeatures;
 
-%include "features/DummyFeatures.h" 
+%include <shogun/features/DummyFeatures.h>

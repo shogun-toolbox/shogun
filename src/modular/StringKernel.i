@@ -1,8 +1,8 @@
 %{
- #include "kernel/StringKernel.h" 
+ #include <shogun/kernel/StringKernel.h>
 %}
 
-%include "kernel/StringKernel.h" 
+%include <shogun/kernel/StringKernel.h>
 
 %template(StringRealKernel) CStringKernel<float64_t>;
 %template(StringWordKernel) CStringKernel<uint16_t>;

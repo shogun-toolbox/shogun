@@ -1,8 +1,7 @@
 %{
- #include "distance/MinkowskiMetric.h"
+ #include <shogun/distance/MinkowskiMetric.h>
 %}
 
 %rename(MinkowskiMetric) CMinkowskiMetric;
 
-%include "distance/MinkowskiMetric.h"
-
+%include <shogun/distance/MinkowskiMetric.h>

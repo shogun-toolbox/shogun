@@ -7,11 +7,11 @@
 #define SWIG_FILE_WITH_INIT
 %}
 
-%include "lib/common.i"
-%include "lib/swig_typemaps.i"
+%include "common.i"
+%include "swig_typemaps.i"
 
 #ifdef HAVE_DOXYGEN
-%include "evaluation/Evaluation_doxygen.i"
+%include "Evaluation_doxygen.i"
 #endif
 
 #ifdef HAVE_PYTHON
@@ -22,8 +22,8 @@
 
 %feature("autodoc","0");
 
-%include "lib/ShogunException.i"
-%include "lib/io.i"
-%include "base/SGObject.i"
+%include "ShogunException.i"
+%include "io.i"
+%include "SGObject.i"
 
-%include "evaluation/PerformanceMeasures.i"
+%include "PerformanceMeasures.i"

@@ -1,7 +1,7 @@
 %{
- #include "features/TOPFeatures.h" 
+ #include <shogun/features/TOPFeatures.h>
 %}
 
 %rename(TOPFeatures) CTOPFeatures;
 
-%include "features/TOPFeatures.h" 
+%include <shogun/features/TOPFeatures.h>

@@ -1,8 +1,8 @@
 %{
-    #include "preproc/SparsePreProc.h" 
+    #include <shogun/preproc/SparsePreProc.h>
 %}
 
 %rename(SparsePreProc) CSparsePreProc;
 
-%include "preproc/SparsePreProc.h"
+%include <shogun/preproc/SparsePreProc.h>
 

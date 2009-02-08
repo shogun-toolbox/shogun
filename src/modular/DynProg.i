@@ -1,5 +1,5 @@
 %{
- #include "structure/DynProg.h"
+ #include <shogun/structure/DynProg.h>
 %}
 
 %rename(DynProg) CDynProg;
@@ -53,4 +53,4 @@
 %apply (float64_t** ARGOUT1, int32_t* DIM1) {(float64_t** my_losses, int32_t* seq_len)}
 #endif
 
-%include "structure/DynProg.h"
+%include <shogun/structure/DynProg.h>

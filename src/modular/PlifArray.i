@@ -1,9 +1,9 @@
 %{
- #include "structure/PlifArray.h" 
+ #include <shogun/structure/PlifArray.h>
 %}
 
 %rename(PlifArray) CPlifArray;
 
 
-%include "structure/PlifBase.i" 
-%include "structure/PlifArray.h" 
+%include "PlifBase.i"
+%include <shogun/structure/PlifArray.h>

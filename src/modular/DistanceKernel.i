@@ -1,7 +1,7 @@
 %{
- #include "kernel/DistanceKernel.h" 
+ #include <shogun/kernel/DistanceKernel.h>
 %}
 
 %rename(DistanceKernel) CDistanceKernel;
 
-%include "kernel/DistanceKernel.h" 
+%include <shogun/kernel/DistanceKernel.h>

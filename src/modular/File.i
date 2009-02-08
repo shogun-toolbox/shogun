@@ -1,7 +1,7 @@
 %{
- #include "lib/File.h" 
+ #include <shogun/lib/File.h>
 %}
 
 %rename(File) CFile;
 
-%include "lib/File.h" 
+%include <shogun/lib/File.h>

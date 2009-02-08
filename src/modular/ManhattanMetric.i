@@ -1,8 +1,7 @@
 %{
- #include "distance/ManhattanMetric.h"
+ #include <shogun/distance/ManhattanMetric.h>
 %}
 
 %rename(ManhattanMetric) CManhattanMetric;
 
-%include "distance/ManhattanMetric.h"
-
+%include <shogun/distance/ManhattanMetric.h>

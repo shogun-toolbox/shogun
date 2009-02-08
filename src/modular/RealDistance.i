@@ -1,9 +1,9 @@
 %{
-    #include "distance/SimpleDistance.h" 
-    #include "distance/RealDistance.h" 
+    #include <shogun/distance/SimpleDistance.h>
+    #include <shogun/distance/RealDistance.h>
 %}
 
 %rename(RealDistance) CRealDistance;
 
-%include "distance/SimpleDistance.i"
-%include "distance/RealDistance.h"
+%include "SimpleDistance.i"
+%include <shogun/distance/RealDistance.h>

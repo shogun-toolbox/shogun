@@ -1,5 +1,5 @@
 %{
- #include "evaluation/PerformanceMeasures.h"
+ #include <shogun/evaluation/PerformanceMeasures.h>
 %}
 
 #ifdef HAVE_PYTHON
@@ -18,4 +18,4 @@
 
 %rename(PerformanceMeasures) CPerformanceMeasures;
 
-%include "evaluation/PerformanceMeasures.h"
+%include <shogun/evaluation/PerformanceMeasures.h>

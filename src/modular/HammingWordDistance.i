@@ -1,8 +1,8 @@
 %{
- #include "distance/HammingWordDistance.h"
+ #include <shogun/distance/HammingWordDistance.h>
 %}
 
 %rename(HammingWordDistance) CHammingWordDistance;
 
-%include "distance/HammingWordDistance.h"
+%include <shogun/distance/HammingWordDistance.h>
 

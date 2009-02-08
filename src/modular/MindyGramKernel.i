@@ -1,10 +1,10 @@
 #ifdef HAVE_MINDY
 
 %{
- #include "kernel/MindyGramKernel.h" 
+ #include <shogun/kernel/MindyGramKernel.h>
 %}
 
 %rename (MindyGramKernel) CMindyGramKernel;
 
-%include "kernel/MindyGramKernel.h" 
+%include <shogun/kernel/MindyGramKernel.h>
 #endif

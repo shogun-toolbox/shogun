@@ -4,32 +4,32 @@
 
 %module(docstring=DOCSTR) PreProc
 %{
-#include "preproc/PreProc.h"
+#include <shogun/preproc/PreProc.h>
 %}
 
 %rename(PreProc) CPreProc;
 %feature("autodoc","0");
 
 #ifdef HAVE_DOXYGEN
-%include "preproc/PreProc_doxygen.i"
+%include "PreProc_doxygen.i"
 #endif
 
-%include "lib/common.i"
-%include "lib/ShogunException.i"
-%include "lib/io.i"
-%include "base/Version.i"
-%include "base/Parallel.i"
-%include "base/SGObject.i"
-%include "preproc/PreProc.h"
+%include "common.i"
+%include "ShogunException.i"
+%include "io.i"
+%include "Version.i"
+%include "Parallel.i"
+%include "SGObject.i"
+%include <shogun/preproc/PreProc.h>
 
-%include "preproc/SimplePreProc.i"
-%include "preproc/StringPreProc.i"
+%include "SimplePreProc.i"
+%include "StringPreProc.i"
 
-%include "preproc/LogPlusOne.i"
-%include "preproc/NormDerivativeLem3.i"
-%include "preproc/NormOne.i"
-%include "preproc/PCACut.i"
-%include "preproc/PruneVarSubMean.i"
-%include "preproc/SortUlongString.i"
-%include "preproc/SortWordString.i"
-%include "preproc/SparsePreProc.i"
+%include "LogPlusOne.i"
+%include "NormDerivativeLem3.i"
+%include "NormOne.i"
+%include "PCACut.i"
+%include "PruneVarSubMean.i"
+%include "SortUlongString.i"
+%include "SortWordString.i"
+%include "SparsePreProc.i"

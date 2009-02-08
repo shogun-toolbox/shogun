@@ -19,14 +19,25 @@ ifeq (libshogun,$(findstring libshogun,$(TEMPLATE_TARGET)))
 	LIBSYMLINKCMD=rm -f $(LIBNAME).so `$(SONAME)`; ln -s $(TEMPLATE_TARGET) `$(SONAME)` ; ln -s $(TEMPLATE_TARGET) $(LIBNAME).so
 else
 	INCLUDES += $(INCLUDES_STATIC)
+	SWIGFLAGS += $(INCLUDES_STATIC) -I.. -I.
 
 ifeq (sg.mex,$(findstring sg.mex,$(TEMPLATE_TARGET)))
 	LINKFLAGS += ../libshogunui/libshogunui.a ../libshogun/libshogun.a 
 else
 	LINKFLAGS += $(LINKFLAGS_STATIC)
 endif
+
+ifeq (modular,$(findstring modular,$(TEMPLATE_TARGET)))
+SWIGDEPS = $(SWIGSRCFILES) $(SWIGDOCFILES) $(SWIGLIBFILES) 
 endif
-all:	$(TEMPLATE_TARGET) $(OTHER_TARGETS)
+
+ifeq (r_modular,$(TEMPLATE_TARGET))
+SWIGDEPS += $(SWIGRFILES) $(SWIGRDATAFILES)
+endif
+
+endif
+
+all: $(TEMPLATE_TARGET) $(OTHER_TARGETS) $(SWIGDEPS)
 endif
 
 INCLUDES += $(INCLUDES_TEMPLATE)
@@ -37,9 +48,24 @@ LINKFLAGS += $(LINKFLAGS_TEMPLATE)
 POSTLINKFLAGS += $(POSTLINKFLAGS_TEMPLATE)
 
 # SRC/OBJFILES lie all in the subdir of SRCDIR
+SVNEntries = $(shell find $(SRCDIR) -name entries -type f)
 HEADERFILES	= $(shell find $(SRCDIR) -name "*.$(EXT_SRC_HEADER)" )
 SRCFILES 	= $(shell find $(SRCDIR) -name "*.$(EXT_SRC_C)" -o -name "*.$(EXT_SRC_CPP)")
+
+ifeq (modular,$(findstring modular,$(TEMPLATE_TARGET)))
+OBJFILES 	= $(patsubst %.$(EXT_SRC_CPP),%.$(EXT_OBJ_CPP), $(shell find $(SRCDIR) -name "*.$(EXT_SRC_CPP)" )) $(patsubst %.$(EXT_SRC_C),%.$(EXT_OBJ_C), $(shell find $(SRCDIR) -name "*.$(EXT_SRC_C)" )) $(patsubst %.$(EXT_INP_SWIG),%$(EXT_OBJ_SWIG), $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -exec grep -le '^%module' {} \;))
+else
 OBJFILES 	= $(patsubst %.$(EXT_SRC_CPP),%.$(EXT_OBJ_CPP), $(shell find $(SRCDIR) -name "*.$(EXT_SRC_CPP)")) $(patsubst %.$(EXT_SRC_C),%.$(EXT_OBJ_C), $(shell find $(SRCDIR) -name "*.$(EXT_SRC_C)"))
+endif
+
+SWIGIFILES   	= $(shell find $(SRCDIR)/../modular -name "*.$(EXT_INP_SWIG)")
+SWIGSRCFILES 	= $(patsubst %.$(EXT_INP_SWIG),%$(EXT_SRC_SWIG), $(shell find $(SRCDIR)/../modular -name "*.$(EXT_INP_SWIG)" -exec grep -le '^%module' {} \;))
+SWIGDOCFILES 	= $(patsubst %.$(EXT_INP_SWIG),%$(EXT_SWIG_DOXY), $(shell find $(SRCDIR)/.. -name "*.$(EXT_INP_SWIG)" -exec grep -le '^%module' {} \;))
+SWIGLIBFILES 	= $(shell find $(SRCDIR)/.. -name "*.$(EXT_INP_SWIG)" -exec grep -le '^%module' {} \; | sed 's=/\([^/]*\.\)$(EXT_INP_SWIG)=/$(PRE_LIB_SWIG)\1$(EXT_LIB_SWIG)=' | sort)
+SWIGPYFILES 	= $(shell find $(SRCDIR)/.. -name "*.$(EXT_INP_SWIG)" -exec grep -le '^%module' {} \; | sed 's=/\([^/]*\.\)$(EXT_INP_SWIG)=/\1py=')
+SWIGRFILES 	= $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -exec grep -le '^%module' {} \; | sed 's=/\([^/]*\.\)$(EXT_INP_SWIG)=/\1R=')
+SWIGRDATAFILES 	= $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -exec grep -le '^%module' {} \; | sed 's=/\([^/]*\.\)$(EXT_INP_SWIG)=/\1RData=')
+TAR:=../shogun-$(shell date +%Y-%m-%d).tar
 
 warn2err: $(SRCFILES)
 	for i in $^ ; do cat $$i | sed 's/^\#warning/#error/g' >$$i.new ; mv $$i.new $$i ; done
@@ -172,7 +198,7 @@ doc-libshogun:	lib/versionstring.h
 
 $(OBJFILES): ../.config .depend Makefile ../libshogun/lib/versionstring.h ../ChangeLog
 
-$(TEMPLATE_TARGET): .depend $(OBJFILES) $(SRCFILES) $(HEADERFILES)
+$(TEMPLATE_TARGET): .depend $(OBJFILES) $(SRCFILES) $(HEADERFILES) $(SWIGDEPS)
 	$(LINK) $(shell find $(SRCDIR) -name "*.$(EXT_OBJ_CPP)" -o -name "*.$(EXT_OBJ_C)" 2>/dev/null) $(LINKFLAGS) -o $@ $(POSTLINKFLAGS)
 	@$(POSTLINKCMD) $@
 	@$(LIBSYMLINKCMD)
@@ -183,12 +209,35 @@ libshogun.a: .depend $(OBJFILES) $(SRCFILES) $(HEADERFILES)
 libshogunui.a: .depend $(OBJFILES) $(SRCFILES) $(HEADERFILES)
 	-ar rcs $@ $(shell find $(SRCDIR) -name "*.$(EXT_OBJ_CPP)" -o -name "*.$(EXT_OBJ_C)" 2>/dev/null)
 
+%.R: %.${EXT_LIB_SWIG}
+%.RData: %.R
+	echo 'f="$<"; fdata="$@"; source(f); save(list=ls(all=TRUE),file=fdata, compress=TRUE); q(save="no")' | R --no-save
+
+$(PRE_LIB_SWIG)%.${EXT_LIB_SWIG}:	%$(EXT_OBJ_SWIG)
+	$(LINK) $(LINKFLAGS) -o $@ $^ $(POSTLINKFLAGS)
+
+%${EXT_OBJ_SWIG}:	%$(EXT_SRC_SWIG)
+	$(COMP_CPP) $(COMPFLAGS_SWIG_CPP) -c $(INCLUDES) -o $@ $<
+
 %.$(EXT_OBJ_CPP):	%.$(EXT_SRC_CPP)
 	$(COMP_CPP) $(COMPFLAGS_CPP) -c $(INCLUDES) -o $@ $<
 
 %.$(EXT_OBJ_C):	%.$(EXT_SRC_C)
 	$(COMP_C) $(COMPFLAGS_C) -c $(INCLUDES) -o $@ $<
 
+ifeq (yes,$(USE_DOXYGEN))
+%${EXT_SRC_SWIG}:	%$(EXT_SWIG_DOXY) %.$(EXT_INP_SWIG)
+	$(SWIG) $(SWIGFLAGS) $(DEFINES) $*.$(EXT_INP_SWIG)
+	$(PYTHON) ../.scrub_docstrings.py $(EXT_IF_SWIG) $@
+
+%$(EXT_SWIG_DOXY): %$(EXT_DOXY)
+	$(DOXYGEN) $<
+	$(PYTHON) ../.doxy2swig.py --quiet --no-function-definition $(shell basename $< $(EXT_DOXY))/doxygen_xml/index.xml $@
+else
+%${EXT_SRC_SWIG}: %.$(EXT_INP_SWIG)
+	$(SWIG) $(SWIGFLAGS) $(DEFINES) $*.$(EXT_INP_SWIG)
+	$(PYTHON) ../.scrub_docstrings.py $(EXT_IF_SWIG) $@
+endif
 
 # Generate dependecies.
 .depend:	../.config ../libshogun/lib/versionstring.h
@@ -202,10 +251,13 @@ ifeq (makedepend,$(MAKEDEPEND))
 else #gcc -MM
 	find $(SRCDIR) -name "*.$(EXT_SRC_C)" -o -name "*.$(EXT_SRC_CPP)" \
 	-exec $(MAKEDEPEND) $(DEFINES) $(INCLUDES) {} -MT {}.o \; >.depend
+	( find . -name "*.$(EXT_INP_SWIG)" | cut -c 3- ; find ../shogun/ -name "*.h"  ) | \
+			$(PYTHON) ../.generate_link_dependencies.py "$(PRE_LIB_SWIG)" "$(EXT_LIB_SWIG)" >>.depend
+
 endif
 
 
 # Do not include dependencies when they are about to be removed anyway.
 ifneq ($(MAKECMDGOALS),distclean)
--include $(DEPS)
+-include .depend
 endif

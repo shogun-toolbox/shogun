@@ -1,8 +1,8 @@
 %{
- #include "features/SparseFeatures.h" 
+ #include <shogun/features/SparseFeatures.h>
 %}
 
-%include "features/SparseFeatures.h" 
+%include <shogun/features/SparseFeatures.h>
 
 %template(SparseCharFeatures) CSparseFeatures<char>;
 %template(SparseByteFeatures) CSparseFeatures<uint8_t>;

@@ -1,7 +1,7 @@
 %{
- #include "kernel/SparseGaussianKernel.h" 
+ #include <shogun/kernel/SparseGaussianKernel.h>
 %}
 
 %rename(SparseGaussianKernel) CSparseGaussianKernel;
 
-%include "kernel/SparseGaussianKernel.h" 
+%include <shogun/kernel/SparseGaussianKernel.h>

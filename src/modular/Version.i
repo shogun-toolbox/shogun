@@ -1,5 +1,5 @@
 %{
- #include "base/Version.h" 
+ #include <shogun/base/Version.h>
 %}
 
 %rename(Version) CVersion;

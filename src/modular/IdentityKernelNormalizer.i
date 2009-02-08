@@ -1,7 +1,7 @@
 %{
-    #include "kernel/IdentityKernelNormalizer.h" 
+    #include <shogun/kernel/IdentityKernelNormalizer.h>
 %}
 
 %rename(IdentityKernelNormalizer) CIdentityKernelNormalizer;
 
-%include "kernel/IdentityKernelNormalizer.h"
+%include <shogun/kernel/IdentityKernelNormalizer.h>

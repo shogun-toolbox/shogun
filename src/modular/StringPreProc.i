@@ -1,8 +1,8 @@
 %{
-#include "preproc/StringPreProc.h" 
+#include <shogun/preproc/StringPreProc.h>
 %}
 
-%include "preproc/StringPreProc.h" 
+%include <shogun/preproc/StringPreProc.h>
 
 %template(StringUlongPreProc) CStringPreProc<uint64_t>;
 %template(StringWordPreProc) CStringPreProc<uint16_t>;

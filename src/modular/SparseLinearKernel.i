@@ -1,7 +1,7 @@
 %{
- #include "kernel/SparseLinearKernel.h" 
+ #include <shogun/kernel/SparseLinearKernel.h>
 %}
 
 %rename(SparseLinearKernel) CSparseLinearKernel;
 
-%include "kernel/SparseLinearKernel.h" 
+%include <shogun/kernel/SparseLinearKernel.h>

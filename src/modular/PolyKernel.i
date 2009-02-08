@@ -1,7 +1,7 @@
 %{
- #include "kernel/PolyKernel.h" 
+ #include <shogun/kernel/PolyKernel.h>
 %}
 
 %rename(PolyKernel) CPolyKernel;
 
-%include "kernel/PolyKernel.h" 
+%include <shogun/kernel/PolyKernel.h>

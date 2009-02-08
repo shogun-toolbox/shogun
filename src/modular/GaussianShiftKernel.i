@@ -1,7 +1,7 @@
 %{
-    #include "kernel/GaussianShiftKernel.h" 
+    #include <shogun/kernel/GaussianShiftKernel.h>
 %}
 
 %rename(GaussianShiftKernel) CGaussianShiftKernel;
 
-%include "kernel/GaussianShiftKernel.h"
+%include <shogun/kernel/GaussianShiftKernel.h>

@@ -1,8 +1,7 @@
 %{
- #include "distance/JensenMetric.h"
+ #include <shogun/distance/JensenMetric.h>
 %}
 
 %rename(JensenMetric) CJensenMetric;
 
-%include "distance/JensenMetric.h"
-
+%include <shogun/distance/JensenMetric.h>

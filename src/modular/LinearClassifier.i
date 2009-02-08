@@ -5,7 +5,7 @@
 %newobject classify;
 %rename(LinearClassifier) CLinearClassifier;
 
-%include "lib/swig_typemaps.i"
+%include "swig_typemaps.i"
 
 #ifdef HAVE_PYTHON
 %feature("autodoc", "get_w(self) -> [] of float") get_w;
@@ -15,13 +15,13 @@
 %apply (float64_t* IN_ARRAY1, int32_t DIM1) {(float64_t* src_w, int32_t src_w_dim)};
 
 %include <shogun/classifier/LinearClassifier.h> 
-%include "classifier/Perceptron.i"
-%include "classifier/LDA.i"
-%include "classifier/svm/SVMLin.i"
-%include "classifier/svm/LibLinear.i"
-%include "classifier/svm/SubGradientSVM.i"
-%include "classifier/svm/SVMSGD.i"
-%include "classifier/SubGradientLPM.i"
-%include "classifier/svm/SVMOcas.i"
-%include "classifier/LPM.i"
-%include "classifier/LPBoost.i"
+%include "Perceptron.i"
+%include "LDA.i"
+%include "SVMLin.i"
+%include "LibLinear.i"
+%include "SubGradientSVM.i"
+%include "SVMSGD.i"
+%include "SubGradientLPM.i"
+%include "SVMOcas.i"
+%include "LPM.i"
+%include "LPBoost.i"

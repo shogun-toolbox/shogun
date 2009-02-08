@@ -1,7 +1,7 @@
 %{
- #include "distance/TanimotoDistance.h"
+ #include <shogun/distance/TanimotoDistance.h>
 %}
 
 %rename(TanimotoDistance) CTanimotoDistance;
 
-%include "distance/TanimotoDistance.h"
+%include <shogun/distance/TanimotoDistance.h>

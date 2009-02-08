@@ -1,7 +1,7 @@
 %{
- #include "classifier/Classifier.h" 
- #include "kernel/KernelMachine.h"
+ #include <shogun/classifier/Classifier.h>
+ #include <shogun/kernel/KernelMachine.h>
 %}
 
-%include "classifier/Classifier.h" 
-%include "kernel/KernelMachine.h"
+%include <shogun/classifier/Classifier.h>
+%include <shogun/kernel/KernelMachine.h>

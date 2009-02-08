@@ -6,14 +6,14 @@
 
 %{
 #define SWIG_FILE_WITH_INIT
-#include "features/Features.h" 
+#include <shogun/features/Features.h>
 #ifdef HAVE_R
 #include <Rdefines.h>
 #endif
 %}
 
 #ifdef HAVE_DOXYGEN
-%include "features/Features_doxygen.i"
+%include "Features_doxygen.i"
 #endif
 
 #ifdef HAVE_PYTHON
@@ -25,34 +25,34 @@
 %rename(Features) CFeatures;
 %feature("autodoc","0");
 
-%include "lib/common.i"
-%include "lib/ShogunException.i"
-%include "lib/io.i" 
-%include "base/Version.i"
-%include "base/Parallel.i"
-%include "base/SGObject.i"
-%include "features/Features.h" 
-%include "features/StringFeatures.i"
-%include "features/DotFeatures.i" 
-%include "features/SparseFeatures.i"
-%include "features/SimpleFeatures.i" 
-%include "features/DummyFeatures.i" 
+%include "common.i"
+%include "ShogunException.i"
+%include "io.i" 
+%include "Version.i"
+%include "Parallel.i"
+%include "SGObject.i"
+%include <shogun/features/Features.h>
+%include "StringFeatures.i"
+%include "DotFeatures.i" 
+%include "SparseFeatures.i"
+%include "SimpleFeatures.i" 
+%include "DummyFeatures.i" 
 
-%include "features/Alphabet.i"
-%include "features/CharFeatures.i"
-%include "features/ByteFeatures.i"
-%include "features/ShortFeatures.i"
-%include "features/WordFeatures.i"
-%include "features/RealFeatures.i"
-%include "features/ShortRealFeatures.i"
-%include "features/CombinedFeatures.i"
-%include "features/CombinedDotFeatures.i"
-%include "features/MindyGramFeatures.i"
-%include "features/Labels.i"
+%include "Alphabet.i"
+%include "CharFeatures.i"
+%include "ByteFeatures.i"
+%include "ShortFeatures.i"
+%include "WordFeatures.i"
+%include "RealFeatures.i"
+%include "ShortRealFeatures.i"
+%include "CombinedFeatures.i"
+%include "CombinedDotFeatures.i"
+%include "MindyGramFeatures.i"
+%include "Labels.i"
 
-%include "features/RealFileFeatures.i"
-%include "features/FKFeatures.i"
-%include "features/TOPFeatures.i"
-%include "features/WDFeatures.i"
-%include "features/ExplicitSpecFeatures.i"
-%include "features/ImplicitWeightedSpecFeatures.i"
+%include "RealFileFeatures.i"
+%include "FKFeatures.i"
+%include "TOPFeatures.i"
+%include "WDFeatures.i"
+%include "ExplicitSpecFeatures.i"
+%include "ImplicitWeightedSpecFeatures.i"

@@ -1,8 +1,8 @@
 %{
- #include "kernel/CommWordStringKernel.h" 
+ #include <shogun/kernel/CommWordStringKernel.h>
 %}
 
 %rename(CommWordStringKernel) CCommWordStringKernel;
 
-%include "kernel/StringKernel.i" 
-%include "kernel/CommWordStringKernel.h" 
+%include "StringKernel.i" 
+%include <shogun/kernel/CommWordStringKernel.h>

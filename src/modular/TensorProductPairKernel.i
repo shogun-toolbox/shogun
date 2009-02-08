@@ -1,7 +1,7 @@
 %{
-    #include "kernel/TensorProductPairKernel.h" 
+    #include <shogun/kernel/TensorProductPairKernel.h>
 %}
 
 %rename(TensorProductPairKernel) CTensorProductPairKernel;
 
-%include "kernel/TensorProductPairKernel.h"
+%include <shogun/kernel/TensorProductPairKernel.h>

@@ -10,7 +10,7 @@
 %}
 
 #ifdef HAVE_DOXYGEN
-%include "classifier/Classifier_doxygen.i"
+%include "Classifier_doxygen.i"
 #endif
 
 #ifdef HAVE_PYTHON
@@ -23,30 +23,30 @@
 %feature("autodoc","0");
 %rename(Classifier) CClassifier;
 
-%include "lib/common.i"
-%include "lib/ShogunException.i"
-%include "lib/io.i"
-%include "base/Version.i"
-%include "base/Parallel.i"
-%include "base/SGObject.i"
+%include "common.i"
+%include "ShogunException.i"
+%include "io.i"
+%include "Version.i"
+%include "Parallel.i"
+%include "SGObject.i"
 %include <shogun/classifier/Classifier.h>
-%include "classifier/LinearClassifier.i"
-%include "classifier/PluginEstimate.i"
+%include "LinearClassifier.i"
+%include "PluginEstimate.i"
 
 /* classifiers based on kernelmachine */
-%include "kernel/KernelMachine.i" 
-%include "classifier/KernelPerceptron.i"
-%include "classifier/svm/SVM.i"
-%include "classifier/svm/MultiClassSVM.i"
-%include "classifier/svm/LibSVM.i"
-%include "classifier/svm/LibSVMOneClass.i"
-%include "classifier/svm/GPBTSVM.i"
-%include "classifier/svm/GNPPSVM.i"
-%include "classifier/svm/MPDSVM.i"
+%include "KernelMachine.i" 
+%include "KernelPerceptron.i"
+%include "SVM.i"
+%include "MultiClassSVM.i"
+%include "LibSVM.i"
+%include "LibSVMOneClass.i"
+%include "GPBTSVM.i"
+%include "GNPPSVM.i"
+%include "MPDSVM.i"
 
 /* classifiers based on distancemachine */
-%include "distance/DistanceMachine.i" 
-%include "classifier/KNN.i"
+%include "DistanceMachine.i" 
+%include "KNN.i"
 
 /* classifiers using strings directly */
-%include "classifier/svm/WDSVMOcas.i"
+%include "WDSVMOcas.i"

@@ -1,8 +1,8 @@
 %{
-#include "preproc/SortWordString.h" 
+#include <shogun/preproc/SortWordString.h>
 %}
 
 %rename(SortWordString) CSortWordString;
 
-%include "preproc/StringPreProc.i" 
-%include "preproc/SortWordString.h" 
+%include "StringPreProc.i"
+%include <shogun/preproc/SortWordString.h>

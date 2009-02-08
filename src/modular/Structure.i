@@ -4,7 +4,7 @@
 %}
 
 #ifdef HAVE_DOXYGEN
-%include "structure/Structure_doxygen.i"
+%include "Structure_doxygen.i"
 #endif
 
 #ifdef HAVE_PYTHON
@@ -12,17 +12,17 @@
 	  import_array();
 %}
 
-%include "lib/python_typemaps.i"
+%include "python_typemaps.i"
 #endif
 
-%include "lib/common.i"
-%include "lib/ShogunException.i"
-%include "lib/io.i" 
-%include "base/Version.i"
-%include "base/Parallel.i"
-%include "base/SGObject.i"
+%include "common.i"
+%include "ShogunException.i"
+%include "io.i" 
+%include "Version.i"
+%include "Parallel.i"
+%include "SGObject.i"
 
-%include "structure/PlifBase.i"
-%include "structure/Plif.i"
-%include "structure/PlifArray.i"
-%include "structure/DynProg.i"
+%include "PlifBase.i"
+%include "Plif.i"
+%include "PlifArray.i"
+%include "DynProg.i"

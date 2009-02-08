@@ -1,7 +1,7 @@
 %{
- #include "lib/SimpleFile.h" 
+ #include <shogun/lib/SimpleFile.h>
 %}
 
 %rename(SimpleFile) CSimpleFile;
 
-%include "lib/SimpleFile.h" 
+%include <shogun/lib/SimpleFile.h>

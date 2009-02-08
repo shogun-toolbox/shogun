@@ -1,7 +1,7 @@
 %{
- #include "kernel/SimpleLocalityImprovedStringKernel.h"
+ #include <shogun/kernel/SimpleLocalityImprovedStringKernel.h>
 %}
 
 %rename(SimpleLocalityImprovedStringKernel) CSimpleLocalityImprovedStringKernel;
 
-%include "kernel/SimpleLocalityImprovedStringKernel.h"
+%include <shogun/kernel/SimpleLocalityImprovedStringKernel.h>

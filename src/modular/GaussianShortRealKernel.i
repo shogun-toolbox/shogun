@@ -1,7 +1,7 @@
 %{
-    #include "kernel/GaussianShortRealKernel.h" 
+    #include <shogun/kernel/GaussianShortRealKernel.h>
 %}
 
 %rename(GaussianShortRealKernel) CGaussianShortRealKernel;
 
-%include "kernel/GaussianShortRealKernel.h"
+%include <shogun/kernel/GaussianShortRealKernel.h>

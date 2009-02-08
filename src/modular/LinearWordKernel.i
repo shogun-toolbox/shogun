@@ -1,7 +1,7 @@
 %{
- #include "kernel/LinearWordKernel.h" 
+ #include <shogun/kernel/LinearWordKernel.h>
 %}
 
 %rename(LinearWordKernel) CLinearWordKernel;
 
-%include "kernel/LinearWordKernel.h" 
+%include <shogun/kernel/LinearWordKernel.h>

@@ -5,15 +5,15 @@
 %module(docstring=DOCSTR) Kernel
 %{
 #define SWIG_FILE_WITH_INIT
-#include "kernel/Kernel.h"
+#include <shogun/kernel/Kernel.h>
 %}
 
 #ifdef HAVE_DOXYGEN
-%include "kernel/Kernel_doxygen.i"
+%include "Kernel_doxygen.i"
 #endif
 
-%include "lib/common.i"
-%include "lib/swig_typemaps.i"
+%include "common.i"
+%include "swig_typemaps.i"
 
 #ifdef HAVE_PYTHON
 %init %{
@@ -27,59 +27,59 @@
 %rename(Kernel) CKernel;
 %feature("autodoc","0");
 
-%include "lib/ShogunException.i"
-%include "lib/io.i"
-%include "base/Version.i"
-%include "base/Parallel.i"
-%include "base/SGObject.i"
-%include "kernel/Kernel.h"
+%include "ShogunException.i"
+%include "io.i"
+%include "Version.i"
+%include "Parallel.i"
+%include "SGObject.i"
+%include <shogun/kernel/Kernel.h>
 
-%include "kernel/StringKernel.i" 
-%include "kernel/SimpleKernel.i"
-%include "kernel/SparseKernel.i"
+%include "StringKernel.i" 
+%include "SimpleKernel.i"
+%include "SparseKernel.i"
 
-%include "kernel/ConstKernel.i" 
-%include "kernel/DiagKernel.i" 
-%include "kernel/LinearKernel.i"
-%include "kernel/PolyKernel.i"
-%include "kernel/GaussianKernel.i"
-%include "kernel/GaussianShortRealKernel.i"
-%include "kernel/GaussianShiftKernel.i"
-%include "kernel/SigmoidKernel.i"
-%include "kernel/SparseGaussianKernel.i"
-%include "kernel/SparseLinearKernel.i"
-%include "kernel/SparsePolyKernel.i"
-%include "kernel/TensorProductPairKernel.i"
+%include "ConstKernel.i" 
+%include "DiagKernel.i" 
+%include "LinearKernel.i"
+%include "PolyKernel.i"
+%include "GaussianKernel.i"
+%include "GaussianShortRealKernel.i"
+%include "GaussianShiftKernel.i"
+%include "SigmoidKernel.i"
+%include "SparseGaussianKernel.i"
+%include "SparseLinearKernel.i"
+%include "SparsePolyKernel.i"
+%include "TensorProductPairKernel.i"
 
-%include "kernel/Chi2Kernel.i"
-%include "kernel/AUCKernel.i"
+%include "Chi2Kernel.i"
+%include "AUCKernel.i"
 
-%include "kernel/WeightedDegreeStringKernel.i" 
-%include "kernel/WeightedDegreePositionStringKernel.i" 
-%include "kernel/CommUlongStringKernel.i" 
-%include "kernel/CommWordStringKernel.i" 
-%include "kernel/WeightedCommWordStringKernel.i" 
-%include "kernel/MindyGramKernel.i"
-%include "kernel/OligoKernel.i"
-%include "kernel/FixedDegreeStringKernel.i"
-%include "kernel/HistogramWordStringKernel.i"
-%include "kernel/LinearByteKernel.i"
-%include "kernel/LinearStringKernel.i"
-%include "kernel/LocalAlignmentStringKernel.i"
-%include "kernel/LinearWordKernel.i"
+%include "WeightedDegreeStringKernel.i" 
+%include "WeightedDegreePositionStringKernel.i" 
+%include "CommUlongStringKernel.i" 
+%include "CommWordStringKernel.i" 
+%include "WeightedCommWordStringKernel.i" 
+%include "MindyGramKernel.i"
+%include "OligoKernel.i"
+%include "FixedDegreeStringKernel.i"
+%include "HistogramWordStringKernel.i"
+%include "LinearByteKernel.i"
+%include "LinearStringKernel.i"
+%include "LocalAlignmentStringKernel.i"
+%include "LinearWordKernel.i"
 
-%include "kernel/LocalityImprovedStringKernel.i"
-%include "kernel/PolyMatchStringKernel.i"
-%include "kernel/PolyMatchWordStringKernel.i"
-%include "kernel/SalzbergWordStringKernel.i"
-%include "kernel/SimpleLocalityImprovedStringKernel.i"
-%include "kernel/MatchWordStringKernel.i"
+%include "LocalityImprovedStringKernel.i"
+%include "PolyMatchStringKernel.i"
+%include "PolyMatchWordStringKernel.i"
+%include "SalzbergWordStringKernel.i"
+%include "SimpleLocalityImprovedStringKernel.i"
+%include "MatchWordStringKernel.i"
 
-%include "kernel/CombinedKernel.i"
-%include "kernel/CustomKernel.i"
-%include "kernel/DistanceKernel.i"
+%include "CombinedKernel.i"
+%include "CustomKernel.i"
+%include "DistanceKernel.i"
 
-%include "kernel/KernelNormalizer.i"
-%include "kernel/AvgDiagKernelNormalizer.i"
-%include "kernel/IdentityKernelNormalizer.i"
-%include "kernel/SqrtDiagKernelNormalizer.i"
+%include "KernelNormalizer.i"
+%include "AvgDiagKernelNormalizer.i"
+%include "IdentityKernelNormalizer.i"
+%include "SqrtDiagKernelNormalizer.i"

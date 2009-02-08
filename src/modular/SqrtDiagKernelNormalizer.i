@@ -1,7 +1,7 @@
 %{
-    #include "kernel/SqrtDiagKernelNormalizer.h" 
+    #include <shogun/kernel/SqrtDiagKernelNormalizer.h>
 %}
 
 %rename(SqrtDiagKernelNormalizer) CSqrtDiagKernelNormalizer;
 
-%include "kernel/SqrtDiagKernelNormalizer.h"
+%include <shogun/kernel/SqrtDiagKernelNormalizer.h>

@@ -1,8 +1,8 @@
 %{
- #include "features/StringFeatures.h"
+ #include <shogun/features/StringFeatures.h>
 %}
 
-%include "lib/swig_typemaps.i"
+%include "swig_typemaps.i"
 
 #ifdef HAVE_PYTHON
 %feature("autodoc", "get_str(self) -> numpy 1dim array of str\n\nUse this instead of get_string() which is not nicely wrapped") get_str;
@@ -18,7 +18,7 @@
 %apply (int64_t** ARGOUT1, int32_t* DIM1) {(int64_t** dst, int32_t* len)};
 %apply (uint64_t** ARGOUT1, int32_t* DIM1) {(uint64_t** dst, int32_t* len)};
 
-%include "features/StringFeatures.h"
+%include <shogun/features/StringFeatures.h>
 
 /* workaround broken typemap %apply on templated classes */
 %extend CStringFeatures<char>

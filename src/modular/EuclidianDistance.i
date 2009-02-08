@@ -1,7 +1,7 @@
 %{
- #include "distance/EuclidianDistance.h" 
+ #include <shogun/distance/EuclidianDistance.h>
 %}
 
 %rename(EuclidianDistance) CEuclidianDistance;
 
-%include "distance/EuclidianDistance.h" 
+%include <shogun/distance/EuclidianDistance.h>

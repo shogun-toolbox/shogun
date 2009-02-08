@@ -1,8 +1,8 @@
 %{
- #include "regression/KRR.h" 
+ #include <shogun/regression/KRR.h>
 %}
 
 %rename(KRR) CKRR;
 
-%include "kernel/KernelMachine.i"
-%include "regression/KRR.h" 
+%include "KernelMachine.i"
+%include <shogun/regression/KRR.h>

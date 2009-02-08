@@ -2,7 +2,7 @@
     #include <shogun/clustering/KMeans.h>
 %}
 
-%include "lib/swig_typemaps.i"
+%include "swig_typemaps.i"
 
 #ifdef HAVE_PYTHON
 %feature("autodoc", "get_radi(self) -> numpy 1dim array of float") get_radi;

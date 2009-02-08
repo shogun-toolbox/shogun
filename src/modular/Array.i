@@ -1,9 +1,9 @@
 %warnfilter(509) CArray;
 %{
- #include "lib/Array.h" 
+ #include <shogun/lib/Array.h>
 %}
 
-%include "lib/Array.h"
+%include <shogun/lib/Array.h>
 
 %template(CharArray) CArray<char>;
 %template(ByteArray) CArray<uint8_t>;

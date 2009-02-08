@@ -1,7 +1,7 @@
 %{
- #include "kernel/SparsePolyKernel.h" 
+ #include <shogun/kernel/SparsePolyKernel.h>
 %}
 
 %rename(SparsePolyKernel) CSparsePolyKernel;
 
-%include "kernel/SparsePolyKernel.h" 
+%include <shogun/kernel/SparsePolyKernel.h>

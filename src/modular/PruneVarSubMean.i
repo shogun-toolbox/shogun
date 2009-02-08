@@ -1,7 +1,7 @@
 %{
-    #include "preproc/PruneVarSubMean.h" 
+    #include <shogun/preproc/PruneVarSubMean.h>
 %}
 
 %rename(PruneVarSubMean) CPruneVarSubMean;
 
-%include "preproc/PruneVarSubMean.h"
+%include <shogun/preproc/PruneVarSubMean.h>

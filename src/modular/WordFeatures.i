@@ -1,8 +1,8 @@
 %{
- #include "features/WordFeatures.h"
+ #include <shogun/features/WordFeatures.h>
 %}
 
-%include "lib/swig_typemaps.i"
+%include "swig_typemaps.i"
 
 #ifdef HAVE_PYTHON
 %feature("autodoc", "get_fm(self) -> numpy 1dim array of int") get_fm;
@@ -13,4 +13,4 @@
 
 %rename(WordFeatures) CWordFeatures;
 
-%include "features/WordFeatures.h"
+%include <shogun/features/WordFeatures.h>

@@ -1,7 +1,7 @@
 %{
- #include "structure/PlifBase.h" 
+ #include <shogun/structure/PlifBase.h>
 %}
 
 %rename(PlifBase) CPlifBase;
 
-%include "structure/PlifBase.h" 
+%include <shogun/structure/PlifBase.h>

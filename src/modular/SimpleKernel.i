@@ -1,8 +1,8 @@
 %{
-   #include "kernel/SimpleKernel.h" 
+   #include <shogun/kernel/SimpleKernel.h>
 %}
 
-%include "kernel/SimpleKernel.h"
+%include <shogun/kernel/SimpleKernel.h>
 
 %template(RealKernel) CSimpleKernel<float64_t>;
 %template(ShortRealKernel) CSimpleKernel<float32_t>;

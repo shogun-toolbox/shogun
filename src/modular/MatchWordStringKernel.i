@@ -1,7 +1,7 @@
 %{
- #include "kernel/MatchWordStringKernel.h" 
+ #include <shogun/kernel/MatchWordStringKernel.h> 
 %}
 
 %rename(MatchWordStringKernel) CMatchWordStringKernel;
 
-%include "kernel/MatchWordStringKernel.h" 
+%include <shogun/kernel/MatchWordStringKernel.h>

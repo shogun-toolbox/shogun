@@ -1,7 +1,7 @@
 %{
- #include "features/RealFileFeatures.h" 
+ #include <shogun/features/RealFileFeatures.h>
 %}
 
 %rename(RealFileFeatures) CRealFileFeatures;
 
-%include "features/RealFileFeatures.h" 
+%include <shogun/features/RealFileFeatures.h>

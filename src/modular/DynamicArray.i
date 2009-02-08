@@ -1,10 +1,10 @@
 %{
- #include "lib/DynamicArray.h" 
- #include "structure/PlifBase.h"
+ #include <shogun/lib/DynamicArray.h>
+ #include <shogun/structure/PlifBase.h>
 %}
 
-%include "lib/DynamicArray.h"
-%include "structure/PlifBase.i"
+%include <shogun/lib/DynamicArray.h>
+%include "PlifBase.i"
 
 %template(DynamicCharArray) CDynamicArray<char>;
 %template(DynamicByteArray) CDynamicArray<uint8_t>;

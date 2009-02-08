@@ -1,7 +1,7 @@
 %{
-    #include "kernel/ConstKernel.h" 
+    #include <shogun/kernel/ConstKernel.h>
 %}
 
 %rename(ConstKernel) CConstKernel;
 
-%include "kernel/ConstKernel.h"
+%include <shogun/kernel/ConstKernel.h>

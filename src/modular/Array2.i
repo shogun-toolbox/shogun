@@ -1,9 +1,9 @@
 %warnfilter(509) CArray2;
 %{
- #include "lib/Array2.h" 
+ #include <shogun/lib/Array2.h>
 %}
 
-%include "lib/Array2.h"
+%include <shogun/lib/Array2.h>
 
 %template(CharArray2) CArray2<char>;
 %template(ByteArray2) CArray2<uint8_t>;

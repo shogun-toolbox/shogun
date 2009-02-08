@@ -1,8 +1,8 @@
 %{
- #include "kernel/SimpleKernel.h"
- #include "kernel/LinearByteKernel.h"
+ #include <shogun/kernel/SimpleKernel.h>
+ #include <shogun/kernel/LinearByteKernel.h>
 %}
 
 %rename(LinearByteKernel) CLinearByteKernel;
 
-%include "kernel/LinearByteKernel.h"
+%include <shogun/kernel/LinearByteKernel.h>

@@ -1,7 +1,7 @@
 %{
-    #include "kernel/DiceKernelNormalizer.h" 
+    #include <shogun/kernel/DiceKernelNormalizer.h>
 %}
 
 %rename(DiceKernelNormalizer) CDiceKernelNormalizer;
 
-%include "kernel/DiceKernelNormalizer.h"
+%include <shogun/kernel/DiceKernelNormalizer.h>

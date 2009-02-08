@@ -1,5 +1,5 @@
 %{
- #include "structure/Plif.h" 
+ #include <shogun/structure/Plif.h>
 %}
 
 %rename(Plif) CPlif;
@@ -9,5 +9,5 @@
 %apply (float64_t* IN_ARRAY1, int32_t DIM1) {(float64_t* p_penalties, int32_t p_len)};
 #endif
 
-%include "structure/PlifBase.i" 
-%include "structure/Plif.h" 
+%include "PlifBase.i" 
+%include <shogun/structure/Plif.h>

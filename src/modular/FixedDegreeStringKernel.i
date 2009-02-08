@@ -1,7 +1,7 @@
 %{
- #include "kernel/FixedDegreeStringKernel.h"
+ #include <shogun/kernel/FixedDegreeStringKernel.h>
 %}
 
 %rename(FixedDegreeStringKernel) CFixedDegreeStringKernel;
 
-%include "kernel/FixedDegreeStringKernel.h"
+%include <shogun/kernel/FixedDegreeStringKernel.h>

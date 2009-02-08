@@ -581,8 +581,8 @@ Usage: $0 [OPTIONS]...
 Configuration:
   --interfaces=INTERFACE1,INTERFACE2,...
                                 configure shogun for interface
-                                cmdline, python-modular, python, r, r-modular
-                                octave, octave-modular, matlab or libshogun
+                                cmdline, python_modular, python, r, r_modular
+                                octave, octave_modular, matlab or libshogun
   -h, -help, --help             display this help and exit
 
 Installation directories:
@@ -621,7 +621,7 @@ Optional features:
   --disable-svm-light 	        disable building of SVM-light and thus result in pure GPLv3 code [enabled]
 
 Miscellaneous options:
-  --disable-doxygen             disable documentation generation via doxygen for python-modular interface [enabled]
+  --disable-doxygen             disable documentation generation via doxygen for python_modular interface [enabled]
   --disable-cpudetection        disable cpu flags detection and corresponding optimization options [enabled]
   --enable-debug                enable debugging [disabled]
   --enable-path-debug	        enable viterbi path debugging [disabled]
@@ -694,13 +694,13 @@ for ac_option do
 	  r)
 	  	_r=yes
 		;;
-	  python-modular)
+	  python_modular)
 	  	_python_modular=yes
 		;;
-	  octave-modular)
+	  octave_modular)
 	  	_octave_modular=yes
 		;;
-	  r-modular)
+	  r_modular)
 	  	_r_modular=yes
 		;;
 	  *)
@@ -2544,15 +2544,19 @@ test_modular()
 		then
 			if echo "$PARTS" | grep -q octave
 			then
-				BUILD_OCTAVE_MODULAR=yes
+				PARTS="$PARTS octave_modular"
+				OCTAVE_MODULAR_TARGET=octave_modular
+				
 			fi
 			if echo "$PARTS" | grep -q python
 			then
-				BUILD_PYTHON_MODULAR=yes
+				PARTS="$PARTS python_modular"
+				PYTHON_MODULAR_TARGET=python_modular
 			fi
 			if echo "$PARTS" | grep -q ' r'
 			then
-				BUILD_R_MODULAR=yes
+				PARTS="$PARTS r_modular"
+				R_MODULAR_TARGET=r_modular
 			fi
 		fi
 	fi
@@ -3133,21 +3137,24 @@ write_dot_config()
 
 #enable additional warnings / -Wfloat-equal -W
 if test "$_cc_major" -ge "3" 2>/dev/null ; then
-	COMPFLAGS_C=`echo "$COMPFLAGS_C" | sed -e 's/\(-Wall\)/\1 -Wno-unused-parameter -Wformat -Wformat-security -Wimplicit -Wparentheses -Wshadow/'`
+	COMPFLAGS_C=`echo "$COMPFLAGS_C" | sed -e 's/\(-Wall\)/\1 -Wno-unused-parameter -Wformat -Wformat-security -Wimplicit -Wparentheses -Wshadow -Wunreachable-code/'`
 	COMPFLAGS_SWIG_CPP=`echo "$COMPFLAGS_CPP" | sed -e 's/-Wall//'`
-	COMPFLAGS_CPP=`echo "$COMPFLAGS_CPP" | sed -e 's/\(-Wall\)/\1 -Wno-unused-parameter -Wformat -Wformat-security -Wimplicit -Wparentheses -Wshadow/'`
+	COMPFLAGS_CPP=`echo "$COMPFLAGS_CPP" | sed -e 's/\(-Wall\)/\1 -Wno-unused-parameter -Wformat -Wformat-security -Wimplicit -Wparentheses -Wshadow -Wunreachable-code/'`
 fi
 
 cat > "$1" <<EOF
 SRCDIR			= ${SRCDIR}
 PARTS			= ${PARTS}
-R_TARGET		= ${R_TARGET}
 LIBSHOGUN_TARGET= ${LIBSHOGUN_TARGET}
 LIBSHOGUNUI_TARGET= ${LIBSHOGUNUI_TARGET}
 CMDLINE_TARGET	= ${CMDLINE_TARGET}
+R_TARGET		= ${R_TARGET}
 PYTHON_TARGET	= ${PYTHON_TARGET}
 OCTAVE_TARGET	= ${OCTAVE_TARGET}
 MATLAB_TARGET	= ${MATLAB_TARGET}
+R_MODULAR_TARGET		= ${R_MODULAR_TARGET}
+PYTHON_MODULAR_TARGET	= ${PYTHON_MODULAR_TARGET}
+OCTAVE_MODULAR_TARGET	= ${OCTAVE_MODULAR_TARGET}
 MAKE 			= ${MAKE}
 MAKEDEPEND		= ${MAKEDEPEND}
 MAKEDEPENDOPTS	= ${MAKEDEPENDOPTS}

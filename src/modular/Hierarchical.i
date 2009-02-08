@@ -13,4 +13,3 @@
 %rename(Hierarchical) CHierarchical;
 
 %include <shogun/clustering/Hierarchical.h>
-

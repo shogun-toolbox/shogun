@@ -1,7 +1,7 @@
 %{
-#include "kernel/LinearStringKernel.h"
+#include <shogun/kernel/LinearStringKernel.h>
 %}
 
 %rename(LinearStringKernel) CLinearStringKernel;
 
-%include "kernel/LinearStringKernel.h"
+%include <shogun/kernel/LinearStringKernel.h>

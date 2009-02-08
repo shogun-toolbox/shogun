@@ -1,8 +1,8 @@
 %{
- #include "kernel/CommUlongStringKernel.h" 
+ #include <shogun/kernel/CommUlongStringKernel.h>
 %}
 
 %rename(CommUlongStringKernel) CCommUlongStringKernel;
 
-%include "kernel/StringKernel.i" 
-%include "kernel/CommUlongStringKernel.h" 
+%include "StringKernel.i" 
+%include <shogun/kernel/CommUlongStringKernel.h>

@@ -1,5 +1,5 @@
 %{
- #include "lib/ShogunException.h"
+ #include <shogun/lib/ShogunException.h>
 %}
 
 %exception
@@ -20,5 +20,5 @@
 	}
 }
 
-%include "lib/ShogunException.h"
+%include <shogun/lib/ShogunException.h>
 %include "exception.i"

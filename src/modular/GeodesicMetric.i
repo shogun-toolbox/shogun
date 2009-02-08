@@ -1,7 +1,7 @@
 %{
- #include "distance/GeodesicMetric.h"
+ #include <shogun/distance/GeodesicMetric.h>
 %}
 
 %rename(GeodesicMetric) CGeodesicMetric;
 
-%include "distance/GeodesicMetric.h"
+%include <shogun/distance/GeodesicMetric.h>

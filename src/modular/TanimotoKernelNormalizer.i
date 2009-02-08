@@ -1,7 +1,7 @@
 %{
-    #include "kernel/TanimotoKernelNormalizer.h" 
+    #include <shogun/kernel/TanimotoKernelNormalizer.h>
 %}
 
 %rename(TanimotoKernelNormalizer) CTanimotoKernelNormalizer;
 
-%include "kernel/TanimotoKernelNormalizer.h"
+%include <shogun/kernel/TanimotoKernelNormalizer.h>

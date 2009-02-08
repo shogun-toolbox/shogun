@@ -7,7 +7,7 @@
 #define SWIG_FILE_WITH_INIT
 %}
 
-%include "lib/common.i"
+%include "common.i"
 
 #ifdef HAVE_DOXYGEN
 %include "clustering/Clustering_doxygen.i"
@@ -19,17 +19,17 @@
 %}
 #endif
 
-%include "lib/swig_typemaps.i"
+%include "swig_typemaps.i"
 
 %feature("autodoc","0");
 
-%include "lib/ShogunException.i"
-%include "lib/io.i"
-%include "base/Version.i"
-%include "base/Parallel.i"
-%include "base/SGObject.i"
+%include "ShogunException.i"
+%include "io.i"
+%include "Version.i"
+%include "Parallel.i"
+%include "SGObject.i"
 
 %include <shogun/classifier/Classifier.h> 
-%include "distance/DistanceMachine.i" 
-%include "clustering/KMeans.i"
-%include "clustering/Hierarchical.i"
+%include "DistanceMachine.i" 
+%include "KMeans.i"
+%include "Hierarchical.i"

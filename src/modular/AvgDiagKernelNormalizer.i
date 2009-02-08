@@ -1,7 +1,7 @@
 %{
-    #include "kernel/AvgDiagKernelNormalizer.h" 
+    #include <shogun/kernel/AvgDiagKernelNormalizer.h>
 %}
 
 %rename(AvgDiagKernelNormalizer) CAvgDiagKernelNormalizer;
 
-%include "kernel/AvgDiagKernelNormalizer.h"
+%include <shogun/kernel/AvgDiagKernelNormalizer.h>

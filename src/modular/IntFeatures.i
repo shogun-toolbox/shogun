@@ -1,9 +1,9 @@
 %{
-#include "features/SimpleFeatures.h"
-#include "features/IntFeatures.h"
+#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/IntFeatures.h>
 %}
 
-%include "lib/swig_typemaps.i"
+%include "swig_typemaps.i"
 
 #ifdef HAVE_PYTHON
 %feature("autodoc", "get_fm(self) -> numpy 1dim array of float") get_fm;
@@ -14,5 +14,5 @@
 
 %rename(IntFeatures) CIntFeatures;
 
-%include "features/SimpleFeatures.i"
-%include "features/IntFeatures.h"
+%include "SimpleFeatures.i"
+%include <shogun/features/IntFeatures.h>

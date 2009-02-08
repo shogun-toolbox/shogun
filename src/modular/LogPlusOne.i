@@ -1,7 +1,7 @@
 %{
-    #include "preproc/LogPlusOne.h" 
+    #include <shogun/preproc/LogPlusOne.h>
 %}
 
 %rename(LogPlusOne) CLogPlusOne;
 
-%include "preproc/LogPlusOne.h"
+%include <shogun/preproc/LogPlusOne.h>

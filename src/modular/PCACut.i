@@ -1,7 +1,7 @@
 %{
-    #include "preproc/PCACut.h" 
+    #include <shogun/preproc/PCACut.h>
 %}
 
 %rename(PCACut) CPCACut;
 
-%include "preproc/PCACut.h"
+%include <shogun/preproc/PCACut.h>

@@ -1,7 +1,7 @@
 %{
- #include "features/FKFeatures.h" 
+ #include <shogun/features/FKFeatures.h>
 %}
 
 %rename(FKFeatures) CFKFeatures;
 
-%include "features/FKFeatures.h" 
+%include <shogun/features/FKFeatures.h>

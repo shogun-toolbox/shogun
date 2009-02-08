@@ -1,7 +1,7 @@
 %{
- #include "kernel/LocalityImprovedStringKernel.h"
+ #include <shogun/kernel/LocalityImprovedStringKernel.h>
 %}
 
 %rename(LocalityImprovedStringKernel) CLocalityImprovedStringKernel;
 
-%include "kernel/LocalityImprovedStringKernel.h"
+%include <shogun/kernel/LocalityImprovedStringKernel.h>

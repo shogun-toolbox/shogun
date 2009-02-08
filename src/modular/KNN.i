@@ -5,5 +5,5 @@
 
 %rename(KNN) CKNN;
 
-%include "distance/DistanceMachine.i"
+%include "DistanceMachine.i"
 %include <shogun/classifier/KNN.h>

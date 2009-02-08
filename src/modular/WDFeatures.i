@@ -1,7 +1,7 @@
 %{
-    #include "features/WDFeatures.h" 
+    #include <shogun/features/WDFeatures.h>
 %}
 
 %rename(WDFeatures) CWDFeatures;
 
-%include "features/WDFeatures.h" 
+%include <shogun/features/WDFeatures.h>

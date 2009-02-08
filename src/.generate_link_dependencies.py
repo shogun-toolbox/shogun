@@ -7,7 +7,7 @@ except IndexError:
 	prefix='_'
 	suffix='so'
 
-incexpr=re.compile('^\s*[%#]include "(\S+)"',re.MULTILINE)
+incexpr=re.compile('^\s*[%#]include ("(\S+)"|<shogun/(\S+)>)',re.MULTILINE)
 deps=dict();
 deps['carrays.i']=[]
 deps['cpointer.i']=[]
@@ -20,11 +20,23 @@ deps['structure/Structure_doxygen.i']=[]
 deps['regression/Regression_doxygen.i']=[]
 deps['kernel/Kernel_doxygen.i']=[]
 deps['preproc/PreProc_doxygen.i']=[]
-deps['distributions/Distribution_doxygen.i']=[]
+deps['distribution/Distribution_doxygen.i']=[]
 deps['classifier/Classifier_doxygen.i']=[]
 deps['clustering/Clustering_doxygen.i']=[]
-deps['distance/Distance_doxygen.i']=[]
+deps['distrance/Distance_doxygen.i']=[]
 deps['evaluation/Evaluation_doxygen.i']=[]
+deps['Library_doxygen.i']=[]
+deps['Features_doxygen.i']=[]
+deps['Classifier_doxygen.i']=[]
+deps['Structure_doxygen.i']=[]
+deps['Regression_doxygen.i']=[]
+deps['Kernel_doxygen.i']=[]
+deps['PreProc_doxygen.i']=[]
+deps['Distribution_doxygen.i']=[]
+deps['Classifier_doxygen.i']=[]
+deps['Clustering_doxygen.i']=[]
+deps['Distance_doxygen.i']=[]
+deps['Evaluation_doxygen.i']=[]
 
 initial_deps=deps.copy()
 
@@ -48,8 +60,23 @@ def get_deps(f):
 files=sys.stdin.readlines()
 for f in files:
 	f=f[:-1]
-	deps[f]=re.findall(incexpr, file(f).read())
+	d=re.findall(incexpr, file(f).read())
+	dd=[]
+	for i in d:
+		if i[1]:
+			i=i[1]
+			if i.endswith('.h'):
+				i='../shogun/' + i
+		else:
+			i='../shogun/' + i[2]
 
+		dd.append(i)
+
+	deps[f]=dd
+	#print f,deps[f]
+	#import pdb
+	#pdb.set_trace()
+#'./../modular'
 #generate linker dependencies
 for f in deps.iterkeys():
 	if f[-1] == 'i' and not initial_deps.has_key(f):
@@ -58,6 +85,9 @@ for f in deps.iterkeys():
 			str2=os.path.join(os.path.dirname(f), os.path.basename(f)[:-2]) + '_wrap.cxx: ' + f
 
 			fdep=list();
+			#if not f.startswith('./../modular/'):
+			#	get_deps('./../modular/' + f)
+			#else:
 			get_deps(f)
 			for d in fdep:
 				if not initial_deps.has_key(d):

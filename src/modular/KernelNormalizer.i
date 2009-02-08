@@ -1,8 +1,8 @@
 %{
-    #include "kernel/KernelNormalizer.h" 
+    #include <shogun/kernel/KernelNormalizer.h>
 %}
 
 %rename(KernelNormalizer) CKernelNormalizer;
 
-%include "kernel/KernelNormalizer.h"
+%include <shogun/kernel/KernelNormalizer.h>
 

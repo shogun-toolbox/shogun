@@ -1,8 +1,8 @@
 %{
-#include "kernel/WeightedDegreePositionStringKernel.h"
+#include <shogun/kernel/WeightedDegreePositionStringKernel.h>
 %}
 
-%include "lib/swig_typemaps.i"
+%include "swig_typemaps.i"
 
 #ifdef HAVE_PYTHON
 %feature("autodoc", "get_POIM2(self) -> [] of float") get_POIM2;
@@ -16,5 +16,4 @@
 
 %rename(WeightedDegreePositionStringKernel) CWeightedDegreePositionStringKernel;
 
-%include "kernel/WeightedDegreePositionStringKernel.h"
-
+%include <shogun/kernel/WeightedDegreePositionStringKernel.h>
