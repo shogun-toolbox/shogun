@@ -13,7 +13,22 @@
 
 %{
 #include <shogun/lib/common.h>
-#include <shogun/lib/r.h>
+
+extern "C" {
+#include <R.h>
+#include <Rinternals.h>
+#include <Rdefines.h>
+#include <R_ext/Rdynload.h>
+#include <Rembedded.h>
+#include <Rinterface.h>
+#include <R_ext/RS.h>
+#include <R_ext/Error.h>
+}
+
+/* workaround compile bug in R-modular interface */
+#ifndef ScalarReal
+#define ScalarReal      Rf_ScalarReal
+#endif
 %}
 
 /* TYPEMAP_IN macros
