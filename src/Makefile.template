@@ -61,9 +61,9 @@ endif
 
 SWIGIFILES   	= $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)")
 SWIGSRCFILES 	= $(patsubst %.$(EXT_INP_SWIG),%$(EXT_SRC_SWIG), $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -exec grep -le '^%module' {} \;))
-SWIGDOCFILES 	= $(patsubst %.$(EXT_INP_SWIG),%$(EXT_SWIG_DOXY), $(shell find $(SRCDIR)/.. -name "*.$(EXT_INP_SWIG)" -exec grep -le '^%module' {} \;))
-SWIGLIBFILES 	= $(shell find $(SRCDIR)/.. -name "*.$(EXT_INP_SWIG)" -exec grep -le '^%module' {} \; | sed 's=/\([^/]*\.\)$(EXT_INP_SWIG)=/$(PRE_LIB_SWIG_TARGET)\1$(EXT_LIB_SWIG_TARGET)=' | sort)
-SWIGPYFILES 	= $(shell find $(SRCDIR)/.. -name "*.$(EXT_INP_SWIG)" -exec grep -le '^%module' {} \; | sed 's=/\([^/]*\.\)$(EXT_INP_SWIG)=/\1py=')
+SWIGDOCFILES 	= $(patsubst %.$(EXT_INP_SWIG),%$(EXT_SWIG_DOXY), $(shell find $(SRCDIR). -name "*.$(EXT_INP_SWIG)" -exec grep -le '^%module' {} \;))
+SWIGLIBFILES 	= $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -exec grep -le '^%module' {} \; | sed 's=/\([^/]*\.\)$(EXT_INP_SWIG)=/$(PRE_LIB_SWIG_TEMPLATE)\1$(EXT_LIB_SWIG_TEMPLATE)=' | sort)
+SWIGPYFILES 	= $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -exec grep -le '^%module' {} \; | sed 's=/\([^/]*\.\)$(EXT_INP_SWIG)=/\1py=')
 SWIGRFILES 	= $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -exec grep -le '^%module' {} \; | sed 's=/\([^/]*\.\)$(EXT_INP_SWIG)=/\1R=')
 SWIGRDATAFILES 	= $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -exec grep -le '^%module' {} \; | sed 's=/\([^/]*\.\)$(EXT_INP_SWIG)=/\1RData=')
 TAR:=../shogun-$(shell date +%Y-%m-%d).tar
@@ -108,7 +108,7 @@ clean:
 	@rm -f $(shell for i in `find . -type l -name '*.doxy'` ; do rm -rf `basename $$i .doxy` ; done)
 	@rm -f $(shell find . -type l -name '*.doxy')
 	@rm -f $(shell find . -type f -name '*doxygen.i')
-	@rm -f $(shell find . -type f -name '*wrap.cxx')
+	@rm -f $(shell find . -type f -name '*wrap.cxx*')
 	@rm -f $(shell find . -type f -name '*.swp')
 	@rm -f $(shell find . -type f -name 'octave-core')
 	@rm -f sg.mex* shogun shogun.exe gmon.out .depend configure.log .cpuinfo ./configure-* cplex.log
@@ -215,11 +215,11 @@ libshogun.a: .depend $(OBJFILES) $(SRCFILES) $(HEADERFILES)
 libshogunui.a: .depend $(OBJFILES) $(SRCFILES) $(HEADERFILES)
 	-ar rcs $@ $(shell find $(SRCDIR) -name "*.$(EXT_OBJ_CPP)" -o -name "*.$(EXT_OBJ_C)" 2>/dev/null)
 
-%.R: %.${EXT_LIB_SWIG_TARGET}
+%.R: %.${EXT_LIB_SWIG_TEMPLATE}
 %.RData: %.R
 	echo 'f="$<"; fdata="$@"; source(f); save(list=ls(all=TRUE),file=fdata, compress=TRUE); q(save="no")' | R --no-save
 
-$(PRE_LIB_SWIG_TARGET)%.${EXT_LIB_SWIG_TARGET}:	%$(EXT_OBJ_SWIG)
+$(PRE_LIB_SWIG_TEMPLATE)%.${EXT_LIB_SWIG_TEMPLATE}:	%$(EXT_OBJ_SWIG)
 	$(LINK) $(LINKFLAGS) -o $@ $^ $(POSTLINKFLAGS)
 
 %${EXT_OBJ_SWIG}:	%$(EXT_SRC_SWIG)
@@ -234,7 +234,7 @@ $(PRE_LIB_SWIG_TARGET)%.${EXT_LIB_SWIG_TARGET}:	%$(EXT_OBJ_SWIG)
 ifeq (yes,$(USE_DOXYGEN))
 %${EXT_SRC_SWIG}:	%$(EXT_SWIG_DOXY) %.$(EXT_INP_SWIG)
 	$(SWIG) $(SWIGFLAGS) $(DEFINES) $*.$(EXT_INP_SWIG)
-	$(PYTHON) ../.scrub_docstrings.py $(EXT_IF_SWIG_TARGET) $@
+	$(PYTHON) ../.scrub_docstrings.py $(EXT_IF_SWIG_TEMPLATE) $@
 
 %$(EXT_SWIG_DOXY): %$(EXT_DOXY)
 	$(DOXYGEN) $<
@@ -242,7 +242,7 @@ ifeq (yes,$(USE_DOXYGEN))
 else
 %${EXT_SRC_SWIG}: %.$(EXT_INP_SWIG)
 	$(SWIG) $(SWIGFLAGS) $(DEFINES) $*.$(EXT_INP_SWIG)
-	$(PYTHON) ../.scrub_docstrings.py $(EXT_IF_SWIG_TARGET) $@
+	$(PYTHON) ../.scrub_docstrings.py $(EXT_IF_SWIG_TEMPLATE) $@
 endif
 
 # Generate dependecies.
@@ -258,7 +258,7 @@ else #gcc -MM
 	find $(SRCDIR) -name "*.$(EXT_SRC_C)" -o -name "*.$(EXT_SRC_CPP)" \
 	-exec $(MAKEDEPEND) $(DEFINES) $(INCLUDES) {} -MT {}.o \; >.depend
 	( find . -name "*.$(EXT_INP_SWIG)" | cut -c 3- ; find ../shogun/ -name "*.h"  ) | \
-			$(PYTHON) ../.generate_link_dependencies.py "$(PRE_LIB_SWIG_TARGET)" "$(EXT_LIB_SWIG_TARGET)" >>.depend
+			$(PYTHON) ../.generate_link_dependencies.py "$(PRE_LIB_SWIG_TEMPLATE)" "$(EXT_LIB_SWIG_TEMPLATE)" >>.depend
 
 endif
 
