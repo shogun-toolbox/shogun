@@ -7,6 +7,7 @@
 \arg \b clean_features \verbatim sg('clean_features', 'TRAIN|TEST') \endverbatim
 \arg \b get_features \verbatim [features]=sg('get_features', 'TRAIN|TEST') \endverbatim
 \arg \b add_features \verbatim sg('add_features', 'TRAIN|TEST', features[, DNABINFILE|<ALPHABET>]) \endverbatim
+\arg \b add_dotfeatures \verbatim sg('add_dotfeatures', 'TRAIN|TEST', features[, DNABINFILE|<ALPHABET>]) \endverbatim
 \arg \b set_features \verbatim sg('set_features', 'TRAIN|TEST', features[, DNABINFILE|<ALPHABET>]) \endverbatim
 \arg \b set_ref_features \verbatim sg('set_ref_features', 'TRAIN|TEST') \endverbatim
 \arg \b del_last_features \verbatim sg('del_last_features', 'TRAIN|TEST') \endverbatim
@@ -34,6 +35,8 @@
 \arg \b get_subkernel_weights \verbatim [W]=sg('get_subkernel_weights') \endverbatim
 \arg \b set_subkernel_weights \verbatim sg('set_subkernel_weights', W) \endverbatim
 \arg \b set_subkernel_weights_combined \verbatim sg('set_subkernel_weights_combined', W, idx) \endverbatim
+\arg \b get_dotfeature_weights_combined \verbatim [W]=sg('get_dotfeature_weights_combined', 'TRAIN|TEST') \endverbatim
+\arg \b set_dotfeature_weights_combined \verbatim sg('set_dotfeature_weights_combined', W, idx) \endverbatim
 \arg \b set_last_subkernel_weights \verbatim sg('set_last_subkernel_weights', W) \endverbatim
 \arg \b get_WD_position_weights \verbatim [W]=sg('get_WD_position_weights') \endverbatim
 \arg \b get_last_subkernel_weights \verbatim [W]=sg('get_last_subkernel_weights') \endverbatim
@@ -43,6 +46,7 @@
 \arg \b delete_kernel_optimization \verbatim sg('delete_kernel_optimization') \endverbatim
 \arg \b use_diagonal_speedup \verbatim sg('use_diagonal_speedup', USAGE_STR0|1USAGE_STR) \endverbatim
 \arg \b set_kernel_optimization_type \verbatim sg('set_kernel_optimization_type', USAGE_STRFASTBUTMEMHUNGRY|SLOWBUTMEMEFFICIENTUSAGE_STR) \endverbatim
+\arg \b set_solver \verbatim sg('set_solver', USAGE_STRAUTO|CPLEX|GLPK|INTERNALUSAGE_STR) \endverbatim
 \arg \b set_prior_probs \verbatim sg('set_prior_probs', USAGE_STRpos probs, neg_probsUSAGE_STR) \endverbatim
 \arg \b set_prior_probs_from_labels \verbatim sg('set_prior_probs_from_labels', USAGE_STRlabelsUSAGE_STR) \endverbatim
 \arg \b resize_kernel_cache \verbatim sg('resize_kernel_cache', size) \endverbatim

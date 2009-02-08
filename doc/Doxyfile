@@ -31,7 +31,7 @@ PROJECT_NAME           = SHOGUN
 # This could be handy for archiving the generated documentation or 
 # if some version control system is used.
 
-PROJECT_NUMBER         = v0.6.7
+PROJECT_NUMBER         = 
 
 # The OUTPUT_DIRECTORY tag is used to specify the (relative or absolute) 
 # base path where the generated documentation will be put. 
@@ -493,7 +493,7 @@ WARN_LOGFILE           =
 # directories like "/usr/src/myproject". Separate the files or directories 
 # with spaces.
 
-INPUT                  = ../src/ ./pages/
+INPUT                  = ../src/libshogun/ ./pages/
 
 # This tag can be used to specify the character encoding of the source files that 
 # doxygen parses. Internally doxygen uses the UTF-8 encoding, which is also the default 
@@ -539,8 +539,8 @@ EXCLUDE_SYMLINKS       = NO
 
 EXCLUDE_PATTERNS       = */.svn/* \
                          *_wrap.h \
-                         */gui/* \
-                         */guilib/* \
+                         *ui/* \
+                         */libshogunui/* \
                          */interface/*
 
 # The EXCLUDE_SYMBOLS tag can be used to specify one or more symbol names 
@@ -554,7 +554,7 @@ EXCLUDE_SYMBOLS        =
 # directories that contain example code fragments that are included (see 
 # the \include command).
 
-EXAMPLE_PATH           = ../src ../matlab_and_octave/examples/graphical
+EXAMPLE_PATH           = ../src/libshogun ../matlab_and_octave/examples/graphical
 
 # If the value of the EXAMPLE_PATH tag contains directories, you can use the 
 # EXAMPLE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp 

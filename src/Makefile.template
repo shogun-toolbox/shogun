@@ -259,33 +259,33 @@ doc-libshogun:	lib/versionstring.h
 doc-octave:
 	echo "/** \page staticoctave Static Matlab/Octave Interface Function Reference" >x
 	-echo "sg('set_output', 'y');sg('help','doxygen');" | \
-		( OCTAVE_LOADPATH="$(DESTDIR)$(OCTDIR)" octave )
+		( LD_LIBRARY_PATH=../libshogunui:../libshogun OCTAVE_LOADPATH="$(DESTDIR)$(OCTDIR)" octave )
 	echo "*/" >>y
-	cat x y >../doc/pages/StaticOctaveInterface.mainpage
+	cat x y >../../doc/pages/StaticOctaveInterface.mainpage
 	rm -f x y
 
 doc-cmdline:
 	echo "/** \page staticcmdline Static Command Line Interface Function Reference" >x
 	-bash -c "echo -e \"set_output y\nhelp doxygen\n\"" | \
-		( PATH="$(DESTDIR)$(BINDIR)" shogun )
+		( LD_LIBRARY_PATH=../libshogunui:../libshogun  PATH="./:$(DESTDIR)$(BINDIR)" shogun )
 	echo "*/" >>y
-	cat x y >../doc/pages/StaticCommandLineInterface.mainpage
+	cat x y >../../doc/pages/StaticCommandLineInterface.mainpage
 	rm -f x y
 
 doc-python:
 	echo "/** \page staticpython Static Python Interface Function Reference" >x
 	-bash -c "echo -e \"from sg import sg\nsg('set_output', 'y')\nsg('help','doxygen')\n\"" | \
-		( PYTHONPATH="$(DESTDIR)$(PYDIR)" python )
+		( LD_LIBRARY_PATH=../libshogunui:../libshogun  PYTHONPATH="$(DESTDIR)$(PYDIR)" python )
 	echo "*/" >>y
-	cat x y >../doc/pages/StaticPythonInterface.mainpage
+	cat x y >../../doc/pages/StaticPythonInterface.mainpage
 	rm -f x y
 
 doc-r:
 	echo "/** \page staticr Static R Interface Function Reference" >x
 	-echo "library(sg);sg('set_output', 'y');sg('help','doxygen');" | \
-		( R_PATH="$(DESTDIR)$(RDIR)" R --no-save)
+		( LD_LIBRARY_PATH=../libshogunui:../libshogun  R_PATH="$(DESTDIR)$(RDIR)" R --no-save)
 	echo "*/" >>y
-	cat x y >../doc/pages/StaticRInterface.mainpage
+	cat x y >../../doc/pages/StaticRInterface.mainpage
 	rm -f x y
 
 doc-matlab:
