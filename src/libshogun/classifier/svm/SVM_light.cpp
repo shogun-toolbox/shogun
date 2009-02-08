@@ -2061,7 +2061,7 @@ float64_t CSVMLight::compute_optimal_betas_newton(float64_t* beta,
       beta[p] = old_beta[p] - beta[p];
       //ASSERT( 0.0 <= beta[p] && beta[p] <= 1.0 );
       if( beta[p] < 0.0 ) {
-        beta[p] = 0.0;
+        beta[p] = 1e-10;
       }
       Z += CMath::pow( beta[p], mkl_norm );
     }
@@ -2081,7 +2081,7 @@ float64_t CSVMLight::compute_optimal_betas_newton(float64_t* beta,
 	//for (int32_t i=0; i<num_kernels; i++)
 		//beta[i]=(beta[i]+old_beta[i])/2;
 
-	//CMath::scale_vector(1/CMath::qnorm(beta, num_kernels, mkl_norm), beta, num_kernels);
+	CMath::scale_vector(1/CMath::qnorm(beta, num_kernels, mkl_norm), beta, num_kernels);
 
   obj = -suma;
 	for( p=0; p<num_kernels; ++p ) {
