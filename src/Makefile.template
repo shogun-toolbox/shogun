@@ -235,19 +235,19 @@ check-examples-matlab:
 	cd ../../examples/matlab && ./check.sh
 
 run-testsuite-python_modular:
-	cd ../testsuite/python_modular && ( PYTHON=$(PYTHON) PYTHONPATH="$(DESTDIR)$(PYDIR)" ./test_all.sh    )
+	cd ../../testsuite/python_modular && ( PYTHON=$(PYTHON) PYTHONPATH="$(DESTDIR)$(PYDIR)" ./test_all.sh    )
 check-examples-python_modular:
-	cd ../examples/python_modular && ( PYTHON=$(PYTHON) PYTHONPATH="$(DESTDIR)$(PYDIR)" ./check.sh    )
+	cd ../../examples/python_modular && ( PYTHON=$(PYTHON) PYTHONPATH="$(DESTDIR)$(PYDIR)" ./check.sh    )
 
 run-testsuite-r_modular:
-	cd ../testsuite/r_modular && ( R_LIBS="$(DESTDIR)$(RDIR)" ./test_all.sh )
+	cd ../../testsuite/r_modular && ( R_LIBS="$(DESTDIR)$(RDIR)" ./test_all.sh )
 check-examples-r_modular:
-	cd ../examples/r_modular && ( R_LIBS="$(DESTDIR)$(RDIR)" ./check.sh )
+	cd ../../examples/r_modular && ( R_LIBS="$(DESTDIR)$(RDIR)" ./check.sh )
 
 run-testsuite-octave_modular:
-	cd ../testsuite/octave_modular && ( OCTAVE_LOADPATH="$(DESTDIR)$(OCTDIR)/shogun:" ./test_all.sh )
+	cd ../../testsuite/octave_modular && ( OCTAVE_LOADPATH="$(DESTDIR)$(OCTDIR)/shogun:" ./test_all.sh )
 check-examples-octave_modular:
-	cd ../examples/octave_modular && ( OCTAVE_LOADPATH="$(DESTDIR)$(OCTDIR)/shogun:" ./check.sh )
+	cd ../../examples/octave_modular && ( OCTAVE_LOADPATH="$(DESTDIR)$(OCTDIR)/shogun:" ./check.sh )
 
 lib/versionstring.h:    $(SVNEntries) 
 	        sh ../.version.sh > $@
