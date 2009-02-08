@@ -230,7 +230,7 @@ check-examples-octave:
 	cd ../../examples/octave && ( OCTAVE_LOADPATH="$(DESTDIR)$(OCTDIR):" ./check.sh )
 
 run-testsuite-matlab:
-	cd ../../testsuite/matlab && ( ln -sf ../../src/$(TEMPLATE_TARGET) ; ./test_all.sh - matlab)
+	cd ../../testsuite/matlab && ( ln -sf ../../src/matlab/$(TEMPLATE_TARGET) ; ./test_all.sh - matlab)
 check-examples-matlab:
 	cd ../../examples/matlab && ./check.sh
 
