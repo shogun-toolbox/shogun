@@ -20,7 +20,6 @@ EXT_SRC_SWIG=_wrap.cxx
 EXT_INP_SWIG=i
 EXT_IF_SWIG=.py
 EXT_OBJ_SWIG=_wrap.cxx.o
-PRE_LIB_SWIG=_
 EXT_LIB_SWIG=so
 EXT_DOXY=.doxy
 EXT_SWIG_DOXY=_doxygen.i
@@ -2842,6 +2841,8 @@ test_python()
 
 		if test "$_python" != no
 		then
+			PRE_LIB_SWIG_PYTHON_MODULAR=_
+			EXT_LIB_SWIG_PYTHON_MODULAR=${EXT_LIB_SWIG}
 			EXT_IF_SWIG_PYTHON_MODULAR='.py'
 			HAVE_PYTHON='#define HAVE_PYTHON 1'
 			DEFINES_PYTHON="$DEFINES_PYTHON -DHAVE_PYTHON"
@@ -2923,6 +2924,7 @@ test_r()
 			echores "`echo 'version; quit()' | R  --no-save 2>&1 | grep version\.string | cut -f 4 -d ' '`"
 			test -n "$_rdir" || _rdir=`echo '.libPaths()[1]' | R --no-save 2>/dev/null | grep '^\[1\]' | cut -f 2 -d '"'`
 			PRE_LIB_SWIG_R_MODULAR=
+			EXT_LIB_SWIG_R_MODULAR=${EXT_LIB_SWIG}
 			EXT_IF_SWIG_R_MODULAR='.R'
 		else
 			echores "no"
