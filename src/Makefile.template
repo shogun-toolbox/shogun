@@ -211,7 +211,7 @@ doc-libshogun:	lib/versionstring.h
 		-@sed -i "s/PROJECT_NUMBER         = .*/PROJECT_NUMBER         = `sed -n 's/^#define VERSION_RELEASE "\(.*\)_"/\1/p' $@`/" ../../doc/Doxyfile
 		cd ../../doc && make
 
-$(OBJFILES): ../.config .depend Makefile $(OTHERDEPS) ../ChangeLog
+$(OBJFILES): ../.config .depend Makefile ../ChangeLog
 
 $(TEMPLATE_TARGET): .depend $(OBJFILES) $(SRCFILES) $(HEADERFILES) $(OTHERDEPS)
 	$(LINK) $(shell find $(SRCDIR) -name "*.$(EXT_OBJ_CPP)" -o -name "*.$(EXT_OBJ_C)" 2>/dev/null) $(LINKFLAGS) -o $@ $(POSTLINKFLAGS)
