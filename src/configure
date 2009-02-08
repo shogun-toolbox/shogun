@@ -98,8 +98,8 @@ GDB=gdb
 MAKE=make
 COMP_OPTS="-g -Wall -O9 -fexpensive-optimizations -frerun-cse-after-loop -fcse-follow-jumps -finline-functions -fschedule-insns2 -fthread-jumps -fforce-addr -fstrength-reduce -unroll-loops"
 COMP_NOOPTS="-g -Wall -O2"
-COMPFLAGS_C=
-COMPFLAGS_CPP=
+COMPFLAGS_C=-fPIC
+COMPFLAGS_CPP=-fPIC
 test "$CFLAGS" && COMPFLAGS_C="$COMPFLAGS_C $CFLAGS"
 test "$CXXFLAGS" && COMPFLAGS_CPP="$COMPFLAGS_CPP $CXXFLAGS"
 INCLUDES=
@@ -115,13 +115,13 @@ LIBSHOGUN_TARGET=${LIBSHOGUNSO}
 DEFINES_LIBSHOGUN=
 INCLUDES_LIBSHOGUN="-I../libshogun -I.."
 LINKFLAGS_LIBSHOGUN=
-POSTLINKFLAGS_LIBSHOGUN="-Xlinker -soname=$SONAME_LIBSHOGUN -shared -fPIC"
+POSTLINKFLAGS_LIBSHOGUN="-fPIC -Xlinker -soname=$SONAME_LIBSHOGUN -shared"
 
 LIBSHOGUNUI_TARGET=$LIBSHOGUNUISO
 DEFINES_LIBSHOGUNUI=
 INCLUDES_LIBSHOGUNUI="-I../libshogun -I.."
 LINKFLAGS_LIBSHOGUNUI="-L../libshogun -lshogun"
-POSTLINKFLAGS_LIBSHOGUNUI="-Xlinker -soname=$SONAME_LIBSHOGUNUI -shared -fPIC"
+POSTLINKFLAGS_LIBSHOGUNUI="-fPIC -Xlinker -soname=$SONAME_LIBSHOGUNUI -shared"
 
 CMDLINE_TARGET=	
 DEFINES_CMDLINE=
