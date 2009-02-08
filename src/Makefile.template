@@ -12,11 +12,17 @@ include ../.config
 ifeq (../.config-local,$(wildcard ../.config-local))
 include ../.config-local
 endif
+
 ifeq (libshogun,$(findstring libshogun,$(TEMPLATE_TARGET)))
 	LIBNAME=$(shell echo $(TEMPLATE_TARGET) | cut -f 1 -d '.')
 	SONAME=objdump -p $(TEMPLATE_TARGET) | grep SONAME | awk '{print $$2}'
 	OTHER_TARGETS=$(LIBNAME).a
 	LIBSYMLINKCMD=rm -f $(LIBNAME).so `$(SONAME)`; ln -s $(TEMPLATE_TARGET) `$(SONAME)` ; ln -s $(TEMPLATE_TARGET) $(LIBNAME).so
+
+ifeq (libshogun.,$(findstring libshogun.,$(TEMPLATE_TARGET)))
+DEPDEPS=lib/versionstring.h
+endif
+
 else
 	INCLUDES += $(INCLUDES_STATIC)
 
@@ -28,17 +34,17 @@ endif
 
 ifeq (modular,$(findstring modular,$(TEMPLATE_TARGET)))
 SWIGFLAGS += $(SWIGFLAGS_TEMPLATE) $(INCLUDES_STATIC) -I.. -I.
-SWIGDEPS = $(SWIGSRCFILES) $(SWIGDOCFILES) $(SWIGLIBFILES) 
+OTHERDEPS = $(SWIGSRCFILES) $(SWIGDOCFILES) $(SWIGLIBFILES) 
 $(shell for i in ../modular/*.* ; do test -f `basename $$i` || ln -s $$i . ; done )
 endif
 
 ifeq (r_modular,$(TEMPLATE_TARGET))
-SWIGDEPS += $(SWIGRFILES) $(SWIGRDATAFILES)
+OTHERDEPS += $(SWIGRFILES) $(SWIGRDATAFILES)
 endif
 
 endif
 
-all: $(TEMPLATE_TARGET) $(OTHER_TARGETS) $(SWIGDEPS)
+all: $(TEMPLATE_TARGET) $(OTHER_TARGETS) $(OTHERDEPS)
 endif
 
 INCLUDES += $(INCLUDES_TEMPLATE)
@@ -198,13 +204,16 @@ run-testsuite-matlab:
 check-examples-matlab:
 	cd ../../examples/matlab && ./check.sh
 
+lib/versionstring.h:    $(SVNEntries) 
+	        sh ../.version.sh > $@
+
 doc-libshogun:	lib/versionstring.h
 		-@sed -i "s/PROJECT_NUMBER         = .*/PROJECT_NUMBER         = `sed -n 's/^#define VERSION_RELEASE "\(.*\)_"/\1/p' $@`/" ../../doc/Doxyfile
 		cd ../../doc && make
 
-$(OBJFILES): ../.config .depend Makefile ../libshogun/lib/versionstring.h ../ChangeLog
+$(OBJFILES): ../.config .depend Makefile $(OTHERDEPS) ../ChangeLog
 
-$(TEMPLATE_TARGET): .depend $(OBJFILES) $(SRCFILES) $(HEADERFILES) $(SWIGDEPS)
+$(TEMPLATE_TARGET): .depend $(OBJFILES) $(SRCFILES) $(HEADERFILES) $(OTHERDEPS)
 	$(LINK) $(shell find $(SRCDIR) -name "*.$(EXT_OBJ_CPP)" -o -name "*.$(EXT_OBJ_C)" 2>/dev/null) $(LINKFLAGS) -o $@ $(POSTLINKFLAGS)
 	@$(POSTLINKCMD) $@
 	@$(LIBSYMLINKCMD)
@@ -246,7 +255,7 @@ else
 endif
 
 # Generate dependecies.
-.depend:	../.config ../libshogun/lib/versionstring.h
+.depend:	../.config $(DEPDEPS)
 ifeq (makedepend,$(MAKEDEPEND))
 	-$(MAKEDEPEND) $(DEFINES) $(INCLUDES) \
 		$(shell find $(SRCDIR) -name "*.$(EXT_SRC_CPP)" ) $(MAKEDEPENDOPTS) | \
@@ -259,6 +268,9 @@ else #gcc -MM
 	-exec $(MAKEDEPEND) $(DEFINES) $(INCLUDES) {} -MT {}.o \; >.depend
 	( find . -name "*.$(EXT_INP_SWIG)" | cut -c 3- ; find ../shogun/ -name "*.h"  ) | \
 			$(PYTHON) ../.generate_link_dependencies.py "$(PRE_LIB_SWIG_TEMPLATE)" "$(EXT_LIB_SWIG_TEMPLATE)" >>.depend
+ifeq (r_modular,$(TEMPLATE_TARGET))
+	    bash -c "( for i in \`grep '.so:' .depend | cut -f 1 -d ':'\` ; do echo \`echo \$$i | sed s/.so/.R:/\` \$$i ; done ) >>.depend"
+endif
 
 endif
 
