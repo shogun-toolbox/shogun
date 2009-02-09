@@ -81,7 +81,7 @@ CDynProg::CDynProg(int32_t p_num_svms /*= 8 */)
 
 	  // multi svm
 	  num_degrees(4), 
-	  num_svms(8), 
+	  num_svms(p_num_svms), 
 	  num_strings(1),
 	  word_degree(word_degree_default, num_degrees, true, true),
 	  cum_num_words(cum_num_words_default, num_degrees+1, true, true),
@@ -271,21 +271,11 @@ void CDynProg::init_content_svm_value_array(const int32_t seq_len)
 }
 void CDynProg::resize_lin_feat(const int32_t num_new_feat, const int32_t seq_len)
 {
-	//SG_PRINT("resize_lin_feat: num_new_feat:%i, seq_len:%i\n",num_new_feat, seq_len);
-	int32_t dim1,dim2;
-	m_lin_feat.get_array_size(dim1,dim2);
-	//SG_PRINT("resize_lin_feat: dim1:%i, dim2:%i\n",dim1,dim2);
+	int32_t dim1, dim2;
+	m_lin_feat.get_array_size(dim1, dim2);
 	ASSERT(dim1==m_num_lin_feat_plifs_cum[m_num_raw_data-1]);
-	ASSERT(dim2==seq_len);
+	ASSERT(dim2==seq_len); // == number of candidate positions
 
-	/*for(INT j=0;j<5;j++)
-	{
-		for(INT k=0;k<m_num_lin_feat;k++)
-		{
-			SG_PRINT("(%i,%i)%f ",k,j,m_lin_feat.get_element(k,j));
-		}
-		SG_PRINT("\n");
-	}*/
 
 	float64_t* arr = m_lin_feat.get_array();
 	float64_t* tmp = new float64_t[(dim1+num_new_feat)*dim2];	
@@ -296,9 +286,9 @@ void CDynProg::resize_lin_feat(const int32_t num_new_feat, const int32_t seq_len
 
 	m_lin_feat.set_array(tmp, dim1+num_new_feat,dim2);
 
-	/*for(INT j=0;j<5;j++)
+	/*for(int32_t j=0;j<5;j++)
 	{
-		for(INT k=0;k<m_num_lin_feat_plifs_cum[m_num_raw_data];k++)
+		for(int32_t k=0;k<m_num_lin_feat_plifs_cum[m_num_raw_data];k++)
 		{
 			SG_PRINT("(%i,%i)%f ",k,j,m_lin_feat.get_element(k,j));
 		}
@@ -342,7 +332,7 @@ void CDynProg::precompute_tiling_plifs(
 		CPlif * plif = PEN[tiling_plif_ids[i]];
 		tiling_rows[i] = plif->get_use_svm();
 		//float64_t* limits = plif->get_plif_limits();
-		//for(int j=0;j<20;j++)
+		//for(int32_t j=0;j<20;j++)
 		//	SG_PRINT("%.2f, ",limits[j]);
 		//SG_PRINT("\n ");
 	//	SG_PRINT("tiling_rows[%i]:%i, tiling_plif_ids[%i]:%i  \n",i,tiling_rows[i],i,tiling_plif_ids[i]);
