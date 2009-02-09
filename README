@@ -17,13 +17,15 @@ The following table depicts the status of each interface available in shogun:
 |matlab_and_octave | mature (no known problems)                                |
 |python            | mature (no known problems)                                |
 |r                 | mature (no known problems)                                |
-|cmdline           | alpha quality (some data types incomplete)                |
+|libshogun         | mature (no known problems)                                |
+|libshogunui       | mature (no known problems, only required for static       |
+|                  | interfaces)                                               |
+|cmdline           | beta quality (some data types incomplete)                 |
 +------------------+-----------------------------------------------------------+
 |python-modular    | mature (no known problems)                                |
-|octave-modular    | quite mature (no known problems but very new)             |
-|r-modular         | alpha quality (leaking memory)                            |
-|libshogun         | currently experimental (no known problems, but interface  |
-|                  | subject to change)                                        |
+|octave-modular    | mature (no known problems)                                |
+|r-modular         | pre-alpha quality (swig does not properly handle reference|
+|                  | counting and thus we see crashes or leaked leaking memory)|
 +==================+===========================================================+
 
 Visit src/README for further information.

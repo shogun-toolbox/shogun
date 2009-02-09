@@ -2,11 +2,16 @@ GENERAL
 
 On most platforms (Linux,MacOSX,cygwin) it is sufficient to issue
 
-./configure --interface=<interface>
+./configure
 make
+sudo make install
 
-where <interface> is one of the following R, matlab, python, octave.
-Just running ./configure will compile a stand-a-lone version.
+which will build shogun for the R, matlab, python, octave and octave_modular,
+python_modular and r_modular interfaces and later install it.
+If you want specific interfaces use,
+e.g
+
+./configure --interfaces=libshogun,libshogunui,python,python_modular
 
 See ./configure --help for additional options.
 
@@ -15,21 +20,21 @@ If this does not work for you, see the SPECIFIC BUILD INSTRUCTIONS below
 
 SPECIAL FEATURES
 
-To enable Multiple Kernel Learning CPLEX(tm) is needed and one needs
-to issue configure with ./configure --interface=<interface> --enable-cplex
-
+To enable Multiple Kernel Learning with CPLEX(tm) just make sure cplex can
+be found in the PATH. If it is not found shogun will resort to GLPK (if found)
+for 1-norm MKL, p-norm MKL with p>1 will work nonetheless.
 
 REQUIREMENTS
 
-Apart from the standard linux utils like bash, grep, test, sed, cut, ldd, uname gcc g++ and cat
-python (debian package: python2.3 or python2.4 or python2.5), 
-as well as makedepend (xutils-dev package) need to be installed, for the ./configure to work.
+The standard linux utils like bash, grep, test, sed, cut, awk, ldd, uname gcc
+g++ and cat, python (debian package: python2.4 or python2.5) are required
+for the ./configure to work.
 
 To compile the R interface you need to have the R developer files 
 (debian package r-base-dev) installed.
 
 To compile the octave interface you need to have the octave developer files 
-(debian package octave2.1-headers or octave2.9-headers) installed.
+(debian package octave3.0-headers) installed.
 
 To compile the python interface you need to have numpy version 1.x installed 
 (debian package python-numpy and python-numpy-ext) installed.
@@ -49,18 +54,18 @@ SPECIFIC BUILD INSTRUCTIONS
 
 BUILDING ON DEBIAN GNU LINUX
 
-Python (python2.3 or python2.4 or python2.5), as well as makedepend (xutils-dev package)
-need to be installed.  To get atlas/lapack optimizations optionally also install the atlas3-*
-packages aswell as the lapack3-* packages.
+Python (python2.4 or python2.5) need to be installed.  To get atlas/lapack
+optimizations optionally also install the atlas3-* packages aswell as the
+lapack3-* packages.
 
 standalone:
 ===========
 
 cd src
-./configure
+./configure --interfaces=libshogun,libshogunui,cmdline
 make
 
-a shogun executable can be found in src/
+a shogun executable can be found in cmdline 
 
 octave
 ======
@@ -70,8 +75,9 @@ To compile the octave interface you need to have the octave developer files
 
 then do a
 
-./configure --interface=octave
+./configure --interfaces=libshogun,libshogunui,octave
 make
+make install
 
 a sg.oct file should be created. as a test start octave in the src/ directory
 and type
@@ -85,7 +91,11 @@ R
 To compile the R interface you need to have the R developer files 
 (debian package r-base-dev) installed.
 
-do the usual R CMD INSTALL <package>
+then do the usual 
+
+./configure --interfaces=libshogun,libshogunui,r
+make
+make install
 
 python
 ======
@@ -101,7 +111,7 @@ in your /etc/matplotlibrc
 
 
 then do a
-./configure --interface=python
+./configure --interfaces=libshogun,libshogunui,python
 make
 
 A sg.so file should be created in the src/ directory:
@@ -114,7 +124,7 @@ object oriented python/swig interface:
 proceed as for the python interface but now in addition install the swig package and
 configure+compile shogun with:
 
-  ./configure --interface=python-modular
+  ./configure --interfaces=libshogun,libshogunui,python,python-modular
   make
   sudo make install
 
@@ -153,7 +163,7 @@ object oriented python/swig interface:
 ======================================
 Follow the above instructions for python. Then use fink/darwinports to install swig.
 
-./configure --interface=python-modular
+./configure --interfaces=libshogun,libshogunui,python,python-modular
 make
 sudo make install
 
@@ -168,7 +178,7 @@ unstable repository + it has to be compiled from source. Also note that g77
 
 then do:
 
-./configure --interface=octave
+./configure --interfaces=libshogun,libshogunui,octave
 make
 
 a sg.oct file should be created. as a test start octave in the src/ directory
@@ -180,10 +190,12 @@ svr_regression
 standalone:
 ===========
 cd src
-./configure
+./configure --interfaces=libshogun,libshogunui,cmdline
 make
+make install
 
-The shogun executable can be found in src/
+The shogun executable can be found in /usr/local/bin/shogun and the libraries in
+/usr/local/lib/libshogun*.
 
 R:
 ==
@@ -192,7 +204,7 @@ http://cran.r-project.org/bin/macosx/ )
 
 then do the usual
 
-./configure --interface=r
+./configure --interfaces=libshogun,libshogunui,r
 make
 make install
 
@@ -203,14 +215,15 @@ If that does not work out (send us a bug report) and also please try the followi
 
 Enter the src/ directory and do:
 
-./configure --interface=R
-(if that fails attach the configure.log in the bug report)
+./configure --interfaces=libshogun,libshogunui,r
 make
+make install
+(if that fails attach the configure.log in the bug report)
 
 a sg.so file should be created. To test if that file is OK try in the
-src/ directory:
+r/ directory:
 
-R
+LD_LIBRARY_PATH=../libshogun:../libshogunui R
 >> dyn.load('sg.so')
 sg <- function(...) .External("sg",...,PACKAGE="sg")
 sg('help')
@@ -239,7 +252,7 @@ Instead install the R package from cran (i.e. using the R-2.4.0-win32.exe
 
 Enter the src/ directory and do:
 
-./configure --interface=R
+./configure --interface=libshogun,libshogunui,r
 (if that fails attach the configure.log in the bug report)
 make
 
@@ -263,10 +276,10 @@ them to go start the R gui, choose File->Source R Code and select
 matlab:
 =======
 	cd src
-	./configure --interface=matlab
+	./configure --interfaces=libshogun,libshogunui,matlab
 	make
 
-	a sg.dll can be found in src/
+	a sg.dll can be found in src/matlab
 
 	startup matlab and type sg('help') 
 
@@ -276,8 +289,9 @@ standalone:
 	cd src
 	./configure
 	make
+	make install
 
-	a shogun.exe can be found in src/
+	a shogun.exe can be found in src/cmdline
 
 
 octave:
@@ -285,14 +299,15 @@ octave:
 
 	install octave and octave-headers
 	cd src
-	./configure --interface=octave
+	./configure --interface=libshogun,libshogunui,octave
 	make
+	make install
 
-	a sg.oct file can be found in src/
+	a sg.oct file can be found in src/octave
 	try
 
-	cd src
-	octave
+	cd src/octave
+	LD_LIBRARY_PATH=../libshogun:../libshogunui octave
 	addpath('../examples/octave/graphical')
 	svr_regression
 
@@ -336,26 +351,51 @@ python:
 
 
   now compile shogun:
-	./configure --interface=python
+	./configure --interfaces=libshogun,libshogunui,python
 	make
+	make install
 
-  this will create a sg.dll in the src/ dir
+  this will create a sg.dll in the src/python dir
 
   to test if it is working, try:
 	 cd src
-	 PYTHONPATH=`pwd` python ../examples/python/graphical/svm_classification.py
+	 LD_LIBRARY_PATH=./libshogun:libshogunui PYTHONPATH=./python python ../examples/python/graphical/svm_classification.py
 
 object oriented python/swig interface:
 ======================================
 
-do all of the above but now in addition install the swig package and
-configure+compile shogun with:
+do all of the above you did for python but now in addition install the swig
+package and configure+compile shogun with:
 
-  ./configure --interface=python-modular
+ ./configure --interfaces=libshogun,libshogunui,python,python_modular
+  make
   make install
 
-to test if it is working try python ../examples/python/graphical/svm.py
+to test if it is working try python ../examples/python_modular/graphical/svm.py
 
+object oriented octave/swig interface:
+======================================
+
+do all of the above you did for octave but now in addition install the swig
+package and configure+compile shogun with:
+
+ ./configure --interfaces=libshogun,libshogunui,python,python_modular
+  make
+  make install
+
+to test if it is working try octave ../examples/octave_modular/libsvm.m
+
+object oriented r/swig interface:
+======================================
+
+do all of the above you did for R but now in addition install the swig
+package and configure+compile shogun with:
+
+ ./configure --interfaces=libshogun,libshogunui,python,r_modular
+  make
+  make install
+
+to test if it is working try octave ../examples/r_modular/all_classifier.R
 
 PROBLEMS
 

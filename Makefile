@@ -54,9 +54,10 @@ stop:
 	@echo "most of the time"
 	@echo
 	@echo "cd src"
-	@echo "./configure --interface=<INTERFACE>"
+	@echo "./configure
 	@echo "make"
 	@echo
+	@echo "which will build all available interfaces of shogun"
 	@echo "should be enough. For further information consult"
 	@echo "especially the INSTALL and README files and try"
 	@echo
