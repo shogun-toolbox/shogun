@@ -138,12 +138,12 @@ cat >"$1/$2/R/$2" <<EOF
 	cat(paste("\nWelcome! This is SHOGUN version $VERSION\n"))
 EOF
 
-for f in */*.so
+for f in *.so
 do
 	echo "library.dynam(\"`basename $f`\", pkg, lib)" >> "$1/$2/R/$2"
 done
 
-for f in */*.RData
+for f in *.RData
 do
 	echo "load(paste(lib, \"/\", \"$2\", \"/R/\", \"`basename $f`\", sep=''), envir=.GlobalEnv)" >> "$1/$2/R/$2"
 	echo "cacheMetaData(1)" >> "$1/$2/R/$2"
@@ -156,7 +156,7 @@ cat >>"$1/$2/R/$2" <<EOF
 {
 EOF
 
-for f in */*.so
+for f in *.so
 do
 	echo "library.dynam.unload(\"$f\", lib)" >> "$1/$2/R/$2"
 done
