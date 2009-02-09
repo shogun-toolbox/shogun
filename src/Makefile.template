@@ -34,7 +34,10 @@ endif
 
 ifeq (modular,$(findstring modular,$(TEMPLATE_TARGET)))
 SWIGFLAGS += $(SWIGFLAGS_TEMPLATE) $(INCLUDES_STATIC) -I.. -I.
-OTHERDEPS = $(SWIGSRCFILES) $(SWIGDOCFILES) $(SWIGLIBFILES) 
+OTHERDEPS = $(SWIGSRCFILES) $(SWIGLIBFILES) 
+ifeq (yes,$(USE_DOXYGEN))
+OTHERDEPS += $(SWIGDOCFILES)
+endif
 $(shell for i in ../modular/*.* ; do test -f `basename $$i` || ln -s $$i . ; done )
 endif
 
