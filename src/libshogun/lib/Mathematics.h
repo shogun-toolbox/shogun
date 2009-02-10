@@ -28,11 +28,14 @@
 #include <sys/time.h>
 #include <time.h>
 
+#define SG_FINITE(f) ::finite(f)
+
 //define finite for win32
 #ifdef _WIN32
 #include <float.h>
 #ifndef finite
-#define finite _finite
+#undef SG_FINITE
+#define SG_FINITE(f) _finite(f)
 #endif
 
 #ifndef isnan
@@ -57,7 +60,8 @@ extern "C" int	finite(double);
 #endif
 
 #ifdef DARWIN
-#define finite isfinite
+#undef SG_FINITE
+#define SG_FINITE(f) isfinite(f)
 #endif
 
 /* Size of RNG seed */
@@ -1015,10 +1019,10 @@ class CMath : public CSGObject
 			return CMath::seed;
 		}
 
-		/// returns number generator seed
+		/// checks whether a float is finite
 		inline static int finite(double f)
 		{
-			return ::finite(f);
+			return SG_FINITE(f);
 		}
 
 
