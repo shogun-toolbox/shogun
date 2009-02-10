@@ -861,6 +861,22 @@ CSGInterfaceMethod sg_methods[]=
 				USAGE_COMMA "weights")
 	},
 	{
+		(char*) N_GET_LIN_FEAT,
+		(&CSGInterface::cmd_get_lin_feat),
+		(char*) USAGE_O(N_GET_LIN_FEAT, "lin_feat")
+	},
+	{
+		(char*) N_SET_LIN_FEAT,
+		(&CSGInterface::cmd_set_lin_feat),
+		(char*) USAGE_I(N_SET_LIN_FEAT, "lin_feat")
+	},
+
+	{
+		(char*) N_INIT_DYN_PROG,
+		(&CSGInterface::cmd_init_dyn_prog),
+		(char*) USAGE_I(N_INIT_DYN_PROG, "num_svms")
+	},
+	{
 		(char*) N_PRECOMPUTE_TILING_FEATURES,
 		(&CSGInterface::cmd_precompute_tiling_features),
 		(char*) USAGE_I(N_PRECOMPUTE_TILING_FEATURES, "intensities"
@@ -5663,19 +5679,23 @@ bool CSGInterface::cmd_get_plif_struct()
 	return true;
 }
 
-bool CSGInterface::cmd_set_model()
+bool CSGInterface::cmd_init_dyn_prog()
 {
 	//ARG 1
-	// content svm weights
-	int32_t Nweights=0;
-	int32_t num_svms=0;
-	float64_t* weights;
-	get_real_matrix(weights, Nweights, num_svms);
-	ui_structure->set_content_svm_weights(weights,Nweights, num_svms);
+	int32_t num_svms=get_int();
 
-	CDynProg* h=new CDynProg(Nweights/* = num_svms */);
+	CDynProg* h=new CDynProg(num_svms);
+	ui_structure->set_dyn_prog(h);
+	return true;
+}
+bool CSGInterface::cmd_set_model()
+{
 
-	//ARG 2
+	CDynProg* h = ui_structure->get_dyn_prog();
+	int32_t num_svms = h->get_num_svms();
+	//CDynProg* h=new CDynProg(Nweights/* = num_svms */);
+
+	//ARG 1
 	// transition pointers 
 	// link transitions to length, content, frame (and tiling)
 	// plifs (#states x #states x 3 or 4)
@@ -5688,12 +5708,12 @@ bool CSGInterface::cmd_set_model()
 	ASSERT(ui_structure->compute_plif_matrix(penalties_array, Dim, numDim));	
 
 
-	// ARG 3
+	// ARG 2
 	// bool-> determines if orf information should be used
 	bool use_orf = get_bool();
 	ui_structure->set_use_orf(use_orf);
 
-	// ARG 4
+	// ARG 3
 	// determines for which contents which orf should be used (#contents x 2)
 	int32_t Nmod=0;
 	int32_t Mmod=0;
@@ -5705,7 +5725,7 @@ bool CSGInterface::cmd_set_model()
 	//ui_structure->set_mod_words(mod_words); 
 	h->init_mod_words_array(mod_words, Nmod, Mmod) ;
 
-	// ARG 5
+	// ARG 4
 	// links: states -> signal plifs (#states x 2)
 	int32_t num_states=0;
 	int32_t feat_dim3=0;
@@ -5715,7 +5735,7 @@ bool CSGInterface::cmd_set_model()
 	ui_structure->set_signal_plifs(state_signals, feat_dim3, num_states);
 
 
-	// ARG 6
+	// ARG 5
 	// ORF info (#states x 2)
 	int32_t Norf=0;
 	int32_t Morf=0;
@@ -5734,18 +5754,54 @@ bool CSGInterface::cmd_set_model()
 	SG_DEBUG("set_model done\n");	
 	return true;
 }
-bool CSGInterface::cmd_set_feature_matrix()
+
+bool CSGInterface::cmd_precompute_content_svms()
 {
+
 	// ARG 1
+	int32_t Nseq=0;
+	char* seq;
+	seq = get_string(Nseq);
+
+	// ARG 2
 	// all feature positions
 	int32_t Npos=0;
 	int32_t* all_pos;
 	get_int_vector(all_pos,Npos);
 	ui_structure->set_all_pos(all_pos,Npos);
 
+	//ARG 3
+	// content svm weights
+	int32_t Nweights=0;
+	int32_t num_svms=0;
+	float64_t* weights;
+	get_real_matrix(weights, Nweights, num_svms);
+	ui_structure->set_content_svm_weights(weights,Nweights, num_svms);
+
+	CDynProg* h = ui_structure->get_dyn_prog();
+	if (!h)
+		SG_ERROR("no DynProg object found, use init_dyn_prog first\n");
+
+
+	//float64_t* weights = ui_structure->get_content_svm_weights();
+	//int32_t Mweights = h->get_num_svms();
+	//int32_t Nweights = ui_structure->get_num_svm_weights();
+	uint16_t** wordstr[Nweights];
+	h->create_word_string(seq, (int32_t) 1, Nseq, wordstr);
+	h->init_content_svm_value_array(Npos);
+	h->precompute_content_values(wordstr, all_pos, Npos, Nseq, weights, Nweights*num_svms);
+	h->set_genestr_len(Nseq);
+	SG_DEBUG("precompute_content_svms done\n");
+	return true;
+}
+bool CSGInterface::cmd_set_feature_matrix()
+{
+
+	//int32_t* all_pos = ui_structure->get_all_positions();
+	//int32_t Npos = ui_structure->get_num_positions();
 	int32_t num_states = ui_structure->get_num_states();
 
-	//ARG 2
+	//ARG 1
 	// feature matrix (#states x #feature_positions x max_num_signals)
 	int32_t* Dims=0;
 	int32_t numDims=0;
@@ -5756,46 +5812,47 @@ bool CSGInterface::cmd_set_feature_matrix()
 	ASSERT(Dims[0]==num_states)
 	ASSERT(ui_structure->set_feature_matrix(features, Dims));
 
-	ASSERT(ui_structure->set_all_pos(all_pos,Npos));
 	ASSERT(ui_structure->set_feature_dims(Dims));
-	SG_DEBUG("set_features done\n");	
 	return true;
 
 }
+bool CSGInterface::cmd_get_lin_feat()
+{
+	CDynProg* h = ui_structure->get_dyn_prog();
+	if (!h)
+		SG_ERROR("no DynProg object found, use set_model first\n");
 
+
+	int32_t dim1, dim2 = 0;
+	float64_t* lin_feat = h->get_lin_feat(dim1, dim2);
+
+	set_real_matrix(lin_feat, dim1, dim2);
+
+	return true;
+}
+bool CSGInterface::cmd_set_lin_feat()
+{
+	//ARG 1 
+	//
+	int32_t num_svms, seq_len;
+	float64_t* lin_feat;
+	get_real_matrix(lin_feat, num_svms, seq_len);
+
+
+	CDynProg* h = ui_structure->get_dyn_prog();
+	if (!h)
+		SG_ERROR("no DynProg object found, use set_model first\n");
+
+	h->set_lin_feat(lin_feat, num_svms, seq_len);
+
+	return true;
+}
 bool CSGInterface::cmd_precompute_subkernels()
 {
 	if (m_nrhs!=1 || !create_return_values(0))
 		return false;
 
 	return ui_kernel->precompute_subkernels();
-}
-
-bool CSGInterface::cmd_precompute_content_svms()
-{
-	int32_t* all_pos = ui_structure->get_all_positions();
-
-	int32_t Nseq=0;
-	char* seq;
-	seq = get_string(Nseq);
-
-	CDynProg* h = ui_structure->get_dyn_prog();
-	if (!h)
-		SG_ERROR("no DynProg object found, use set_model first\n");
-
-
-	int32_t Npos = ui_structure->get_num_positions();
-	float64_t* weights = ui_structure->get_content_svm_weights();
-	int32_t Mweights = h->get_num_svms();
-	int32_t Nweights = ui_structure->get_num_svm_weights();
-	uint16_t*** wordstr = new uint16_t**[Mweights];
-	h->create_word_string(seq, (int32_t) 1, Nseq, wordstr);
-	h->init_content_svm_value_array(Npos);
-	h->precompute_content_values(wordstr, all_pos, Npos, Nseq, weights, Nweights*Mweights);
-	h->set_genestr_len(Nseq);
-	SG_DEBUG("precompute_content_svms done\n");
-	delete[] wordstr;
-	return true;
 }
 bool CSGInterface::cmd_precompute_tiling_features()
 {
