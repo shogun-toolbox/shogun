@@ -274,7 +274,7 @@ class CIO
 		}
 
 		/** @return object name */
-		inline virtual const char* get_name() { return "IO"; }
+		inline const char* get_name() { return "IO"; }
 
 	protected:
 		/** get message intro
