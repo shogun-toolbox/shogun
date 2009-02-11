@@ -389,6 +389,8 @@ km=sg('get_kernel_matrix')
 # Combined
 print('Combined')
 
+dump <- sg('clean_features', 'TRAIN')
+dump <- sg('clean_features', 'TEST')
 dump <- sg('set_kernel', 'COMBINED', size_cache)
 dump <- sg('add_kernel', 1, 'LINEAR', 'REAL', size_cache)
 dump <- sg('add_features', 'TRAIN', fm_train_real)
