@@ -137,16 +137,18 @@ install-cmdline: $(TEMPLATE_TARGET)
 install-libshogunui: $(TEMPLATE_TARGET)
 	install -d -m755 $(DESTDIR)$(LIBDIR)
 	install -d -m755 "$(DESTDIR)$(INCDIR)/shogun/ui"
-	install -m755 libshogunui.so* $(DESTDIR)$(LIBDIR)
+	install -m755 $(TEMPLATE_TARGET) $(DESTDIR)$(LIBDIR)
 	install -m755 libshogunui.a $(DESTDIR)$(LIBDIR)
 	install -m644 *.h -t "$(DESTDIR)$(INCDIR)/shogun/ui"
 	find "$(DESTDIR)$(INCDIR)/shogun/ui" -name '*.h' -exec sed -i 's/#include "/#include <shogun\/ui\//' {} \;
-	-ldconfig
+	-ldconfig -n -v $(DESTDIR)$(LIBDIR)
+	rm -f $(DESTDIR)$(LIBDIR)/$(TEMPLATE_TARGET)
+	ln -s $(DESTDIR)$(LIBDIR)/$(TEMPLATE_TARGET)  $(DESTDIR)$(LIBDIR)/libshogunui.so
 
 install-libshogun: $(TEMPLATE_TARGET)
 	install -d -m755 $(DESTDIR)$(LIBDIR)
 	install -d -m755 "$(DESTDIR)$(INCDIR)/shogun"
-	install -m755 libshogun.so* $(DESTDIR)$(LIBDIR)
+	install -m755 $(TEMPLATE_TARGET) $(DESTDIR)$(LIBDIR)
 	install -m755 libshogun.a $(DESTDIR)$(LIBDIR)
 
 	find ./ -mindepth 1 -type d ! \( -path '*.svn*' -o -name '*interface*' -o -name '*guilib*' -o -name '*doxygen*' \)\
@@ -154,7 +156,9 @@ install-libshogun: $(TEMPLATE_TARGET)
 	find ./ -mindepth 1 -type d ! \( -path '*.svn*' -o -name '*wrap*' -o -name '*interface*' -o -name '*guilib*' -o -name '*doxygen*' \) \
 		-exec sh -c "install -m644 {}/*.h -t $(DESTDIR)$(INCDIR)/shogun/{}" \;
 	find "$(DESTDIR)$(INCDIR)/shogun/" -name '*.h' -exec sed -i 's/#include "/#include <shogun\//' {} \;
-	-ldconfig
+	-ldconfig -n -v $(DESTDIR)$(LIBDIR)
+	rm -f $(DESTDIR)$(LIBDIR)/$(TEMPLATE_TARGET)
+	ln -s $(DESTDIR)$(LIBDIR)/$(TEMPLATE_TARGET)  $(DESTDIR)$(LIBDIR)/libshogunui.so
 
 install-python: $(TEMPLATE_TARGET)
 	install -d -m755 $(DESTDIR)$(PYDIR)

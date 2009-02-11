@@ -105,7 +105,7 @@ test "$CXXFLAGS" && COMPFLAGS_CPP="$COMPFLAGS_CPP $CXXFLAGS"
 INCLUDES=
 LINK=c++
 SONAMEOPT="-soname="
-SHAREDNAME="-shared"
+SHAREDOPTS="-shared -Wl,-export-dynamic"
 DEFINES=
 LINKFLAGS=
 POSTLINKFLAGS=
@@ -2001,7 +2001,7 @@ EOF
 	if darwin
 	then
 		SONAMEOPT="-install_name "
-		SHAREDNAME="-dylib"
+		SHAREDOPTS="-dylib"
 
 		if test "$_matlab" = yes
 		then
@@ -3065,7 +3065,7 @@ EOF
 		fi
 	fi
 
-	POSTLINKFLAGS_LIBSHOGUN="-fPIC -Xlinker ${SONAMEOPT}${SONAME_LIBSHOGUN} ${SHAREDNAME}"
+	POSTLINKFLAGS_LIBSHOGUN="-fPIC -Xlinker ${SONAMEOPT}${SONAME_LIBSHOGUN} ${SHAREDOPTS}"
 }
 
 test_libshogunui()
@@ -3126,7 +3126,7 @@ EOF
 			fi
 		fi
 	fi
-	POSTLINKFLAGS_LIBSHOGUNUI="-fPIC -Xlinker ${SONAMEOPT}${SONAME_LIBSHOGUNUI} ${SHAREDNAME}"
+	POSTLINKFLAGS_LIBSHOGUNUI="-fPIC -Xlinker ${SONAMEOPT}${SONAME_LIBSHOGUNUI} ${SHAREDOPTS}"
 }
 
 test_cmdline()
