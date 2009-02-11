@@ -31,7 +31,6 @@ C=1
 sg('loglevel', 'ALL')
 sg('use_mkl', FALSE)
 sg('use_linadd', TRUE)
-sg('use_precompute', 0)
 sg('mkl_parameters', 1e-5, 1)
 sg('svm_epsilon', 1e-6)
 sg('clean_features', 'TRAIN')
