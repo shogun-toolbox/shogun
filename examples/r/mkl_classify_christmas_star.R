@@ -34,7 +34,7 @@ rbf_width <- c(0.01, 0.1, 1, 10, 1000)     # different width for the five used r
 sg('loglevel', 'ERROR')
 sg('echo', 'OFF')
 
-w = matrix(0, length(1:dim(radius_star)), length(rbf_width))
+w = matrix(0, length(1:dim(radius_star)[1]), length(rbf_width))
 
 result.trainout=matrix(0, length(1:dim(radius_star)[1]), 2*no_obs)
 result.testout=matrix(0, length(1:dim(radius_star)[1]), 2*no_obs)
@@ -81,7 +81,6 @@ for (kk in 1:dim(radius_star)[1]) {
   sg('new_svm', 'SVMLIGHT')
   sg('use_linadd', FALSE)
   sg('use_mkl', TRUE)
-  sg('use_precompute', 0)
   sg('mkl_parameters', mkl_eps, 0)
   sg('svm_epsilon', svm_eps)
   sg('set_kernel', 'COMBINED', 0)
@@ -106,7 +105,7 @@ for (kk in 1:dim(radius_star)[1]) {
   sg('set_labels','TEST', train_y)
   sg('init_kernel', 'TEST')
   sg('set_threshold', 0)
-  print(length(sg('classify')))
+
   result.trainout[kk,]<-sg('classify')
   result.trainerr[kk]  <- mean(train_y!=sign(result.trainout[kk,]))  
 
