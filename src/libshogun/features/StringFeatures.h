@@ -178,10 +178,12 @@ template <class ST> class CStringFeatures : public CFeatures
 					features[i].length=0;
 				}
 			}
+
 			num_vectors=0;
 			delete[] features;
-
 			delete[] symbol_mask_table;
+			features=NULL;
+			symbol_mask_table=NULL;
 			alphabet->clear_histogram();
 		}
 
@@ -868,6 +870,10 @@ template <class ST> class CStringFeatures : public CFeatures
 			bool obtain_from_char_features(CStringFeatures<CT>* sf, int32_t start, int32_t p_order, int32_t gap, bool rev)
 			{
 				ASSERT(sf);
+
+				CAlphabet* alpha=sf->get_alphabet();
+				ASSERT(alpha->get_num_symbols_in_histogram() > 0);
+
 				this->order=p_order;
 				cleanup();
 				delete[] symbol_mask_table;
@@ -877,10 +883,9 @@ template <class ST> class CStringFeatures : public CFeatures
 				ASSERT(num_vectors>0);
 				max_string_length=sf->get_max_vector_length()-start;
 				features=new T_STRING<ST>[num_vectors];
-				CAlphabet* alpha=sf->get_alphabet();
-				ASSERT(alpha->get_num_symbols_in_histogram() > 0);
 
-				SG_DEBUG( "%1.0llf symbols in StringFeatures<*>\n", sf->get_num_symbols());
+				SG_DEBUG( "%1.0llf symbols in StringFeatures<*> %d symbols in histogram\n", sf->get_num_symbols(),
+						alpha->get_num_symbols_in_histogram());
 
 				for (int32_t i=0; i<num_vectors; i++)
 				{

@@ -27,7 +27,7 @@ class CHistogram : public CDistribution
 		 * @param f histogram's features
 		 */
 		CHistogram(CStringFeatures<uint16_t>* f);
-		~CHistogram();
+		virtual ~CHistogram();
 
 		/** train histogram
 		 *
@@ -78,6 +78,9 @@ class CHistogram : public CDistribution
 		 *        stored
 		 */
 		virtual void get_histogram(float64_t** dst, int32_t* num);
+
+		/** @return object name */
+		inline virtual const char* get_name() const { return "Histogram"; }
 
 	protected:
 		/** histogram */
