@@ -10,7 +10,6 @@ C = 1.0
 sg('loglevel', 'ALL')
 sg('use_mkl', FALSE)
 sg('use_linadd', TRUE)
-sg('use_precompute', 0)
 sg('mkl_parameters', 1e-5, 0)
 sg('svm_epsilon', 1e-4)
 sg('clean_features', 'TRAIN')
