@@ -184,7 +184,15 @@ template <class ST> class CStringFeatures : public CFeatures
 			delete[] symbol_mask_table;
 			features=NULL;
 			symbol_mask_table=NULL;
-			alphabet->clear_histogram();
+
+			/* start with a fresh alphabet, but instead of emptying the histogram
+			 * create a new object (to let the alphabet object alone if it is used
+			 * by others) 
+			 */
+			CAlphabet* alpha=new CAlphabet(alphabet->get_alphabet());
+			SG_UNREF(alphabet);
+			alphabet=alpha;
+			SG_REF(alphabet);
 		}
 
 		/** get feature class
@@ -576,6 +584,8 @@ template <class ST> class CStringFeatures : public CFeatures
 
 			io->set_dirname(dirname);
 
+			SG_DEBUG("dirname '%s'\n", dirname);
+
 			n = scandir(dirname, &namelist, io->filter, alphasort);
 			if (n <= 0)
 			{
@@ -585,7 +595,6 @@ template <class ST> class CStringFeatures : public CFeatures
 			else
 			{
 				T_STRING<ST>* strings=NULL;
-				alphabet->clear_histogram();
 
 				int32_t num=0;
 				int32_t max_len=-1;
