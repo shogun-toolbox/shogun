@@ -497,6 +497,9 @@ km=sg('get_kernel_matrix');
 % Combined
 disp('Combined');
 
+sg('clean_features','TRAIN');
+sg('clean_features','TEST');
+
 sg('set_kernel', 'COMBINED', size_cache);
 
 sg('add_kernel', 1, 'LINEAR', 'REAL', size_cache);
