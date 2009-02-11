@@ -1,8 +1,9 @@
+# note the word Template (all lowercase and all uppercase are replaced with the current interface name)
+#
 .SUFFIXES: .c .c.o .cpp .cpp.o .h .i .so .a _wrap.cxx _wrap.cxx.o
 .PHONY: all out clean end targets warn2err err2warn ctags buildout buildend dist
 
 SRCDIR = .
-
 
 ifneq (../.config,$(wildcard ../.config))
 all:
@@ -130,6 +131,8 @@ clean:
 	@rm -f sg.mex* shogun shogun.exe gmon.out .depend configure.log .cpuinfo ./configure-* cplex.log
 	@rm -f $(TEMPLATE_TARGET)
 
+install: install-target
+
 install-cmdline: $(TEMPLATE_TARGET)
 	install -d -m755 $(DESTDIR)$(BINDIR)
 	install -m755 $(TEMPLATE_TARGET) $(DESTDIR)$(BINDIR)
@@ -142,8 +145,8 @@ install-libshogunui: $(TEMPLATE_TARGET)
 	install -m644 *.h -t "$(DESTDIR)$(INCDIR)/shogun/ui"
 	find "$(DESTDIR)$(INCDIR)/shogun/ui" -name '*.h' -exec sed -i 's/#include "/#include <shogun\/ui\//' {} \;
 	-ldconfig -n -v $(DESTDIR)$(LIBDIR)
-	rm -f $(DESTDIR)$(LIBDIR)/$(TEMPLATE_TARGET)
-	ln -s $(DESTDIR)$(LIBDIR)/$(TEMPLATE_TARGET)  $(DESTDIR)$(LIBDIR)/libshogunui.so
+	rm -f $(DESTDIR)$(LIBDIR)/libshogunui.$(EXT_LIB)
+	ln -s $(DESTDIR)$(LIBDIR)/$(TEMPLATE_TARGET)  $(DESTDIR)$(LIBDIR)/libshogunui.$(EXT_LIB)
 
 install-libshogun: $(TEMPLATE_TARGET)
 	install -d -m755 $(DESTDIR)$(LIBDIR)
@@ -157,8 +160,8 @@ install-libshogun: $(TEMPLATE_TARGET)
 		-exec sh -c "install -m644 {}/*.h -t $(DESTDIR)$(INCDIR)/shogun/{}" \;
 	find "$(DESTDIR)$(INCDIR)/shogun/" -name '*.h' -exec sed -i 's/#include "/#include <shogun\//' {} \;
 	-ldconfig -n -v $(DESTDIR)$(LIBDIR)
-	rm -f $(DESTDIR)$(LIBDIR)/$(TEMPLATE_TARGET)
-	ln -s $(DESTDIR)$(LIBDIR)/$(TEMPLATE_TARGET)  $(DESTDIR)$(LIBDIR)/libshogunui.so
+	rm -f $(DESTDIR)$(LIBDIR)/libshogun.$(EXT_LIB)
+	ln -s $(DESTDIR)$(LIBDIR)/$(TEMPLATE_TARGET)  $(DESTDIR)$(LIBDIR)/libshogun.$(EXT_LIB)
 
 install-python: $(TEMPLATE_TARGET)
 	install -d -m755 $(DESTDIR)$(PYDIR)
@@ -207,6 +210,9 @@ install-octave_modular: $(TEMPLATE_TARGET)
 	install -m755 $(SWIGLIBFILES) "$(DESTDIR)$(OCTDIR)/shogun"
 	echo '%Initialize shogun by loading all of its modules' > "$(DESTDIR)$(OCTDIR)/shogun/init_shogun.m"
 	for i in $(SWIGLIBFILES) ; do echo $$i | sed -e 's=.*/==' -e 's/\.oct/;/' >>$(DESTDIR)$(OCTDIR)/shogun/init_shogun.m; done
+
+run-testsuite: run-testsuite-template
+check-examples: check-examples-template
 
 run-testsuite-libshogun:
 	true

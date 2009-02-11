@@ -20,7 +20,7 @@ EXT_SRC_SWIG=_wrap.cxx
 EXT_INP_SWIG=i
 EXT_IF_SWIG=.py
 EXT_OBJ_SWIG=_wrap.cxx.o
-EXT_LIB_SWIG=so
+EXT_LIB=so
 EXT_DOXY=.doxy
 EXT_SWIG_DOXY=_doxygen.i
 SWIGFLAGS="-w473 -w454"
@@ -2000,8 +2000,9 @@ EOF
 
 	if darwin
 	then
+		EXT_LIB=so
 		SONAMEOPT="-install_name "
-		SHAREDOPTS="-dylib"
+		SHAREDOPTS="-dynamiclib -undefined suppress -single_module -flat_namespace"
 
 		if test "$_matlab" = yes
 		then
@@ -2019,6 +2020,9 @@ EOF
 	elif sunos
 	then
 		true #nop
+	elif win32
+	then
+		EXT_LIB=dll
 	else
 		true #nop LINKFLAGS="$LINKFLAGS -Xlinker --no-undefined"
 	fi
@@ -2509,7 +2513,6 @@ test_modular()
 
 				if cygwin
 				then
-					EXT_LIB_SWIG=dll
 					POSTLINKFLAGS=$LINKFLAGS
 				fi
 			else
@@ -2864,7 +2867,7 @@ test_python()
 		if test "$_python" != no
 		then
 			PRE_LIB_SWIG_PYTHON_MODULAR=_
-			EXT_LIB_SWIG_PYTHON_MODULAR=${EXT_LIB_SWIG}
+			EXT_LIB_SWIG_PYTHON_MODULAR=${EXT_LIB}
 			EXT_IF_SWIG_PYTHON_MODULAR='.py'
 			HAVE_PYTHON='#define HAVE_PYTHON 1'
 			DEFINES_PYTHON="$DEFINES_PYTHON -DHAVE_PYTHON"
@@ -2922,7 +2925,7 @@ EOF
 				if cc_check $COMPFLAGS_CPP_PYTHON $INCLUDES_PYTHON $LINKFLAGS_PYTHON 
 				then
 					echores "yes"
-					SWIGFLAGS_PYTHON_MODULAR="-w473 -c++ -python"
+					SWIGFLAGS_PYTHON_MODULAR="-c++ -python"
 					PARTS="$PARTS python"
 				else
 					echores "no"
@@ -2946,7 +2949,7 @@ test_r()
 			echores "`echo 'version; quit()' | R  --no-save 2>&1 | grep version\.string | cut -f 4 -d ' '`"
 			test -n "$_rdir" || _rdir=`echo '.libPaths()[1]' | R --no-save 2>/dev/null | grep '^\[1\]' | cut -f 2 -d '"'`
 			PRE_LIB_SWIG_R_MODULAR=
-			EXT_LIB_SWIG_R_MODULAR=${EXT_LIB_SWIG}
+			EXT_LIB_SWIG_R_MODULAR=${EXT_LIB}
 			EXT_IF_SWIG_R_MODULAR='.R'
 		else
 			echores "no"
@@ -3190,6 +3193,7 @@ DOXYGEN 		= ${DOXYGEN}
 USE_SWIG 		= ${USE_SWIG}
 USE_DOXYGEN 	= ${USE_DOXYGEN}
 SWIGFLAGS		= ${SWIGFLAGS}
+EXT_LIB			= ${EXT_LIB}
 EXT_INP_SWIG	= ${EXT_INP_SWIG}
 EXT_OBJ_SWIG	= ${EXT_OBJ_SWIG}
 EXT_SRC_HEADER	= ${EXT_SRC_HEADER}

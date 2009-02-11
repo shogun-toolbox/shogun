@@ -594,6 +594,14 @@ TYPEMAP_ARGOUT2(PyObject,      NPY_OBJECT)
 
 #undef TYPEMAP_ARGOUT2
 
+/* Type mapping for grabbing a FILE * from Python */
+%typemap(in) FILE * {
+    if (!PyFile_Check($input)) {
+        PyErr_SetString(PyExc_TypeError, "Need a file!");
+        return NULL;
+    }
+    $1 = PyFile_AsFile($input);
+}
 
 /* input typemap for CStringFeatures */
 %define TYPEMAP_STRINGFEATURES_IN(type,typecode)

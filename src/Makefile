@@ -61,7 +61,8 @@ dist:	distclean
 	tar -cvf $(TAR) -C ../../ shogun/src && gzip -9 $(TAR)
 
 $(PARTDEPS): Makefile.template
-	@+$(foreach part, $(PARTS), cat Makefile.template | sed 's/TEMPLATE/$(shell echo $(part) | tr 'a-z' 'A-Z')/g' >$(part)/Makefile; )
+	@+$(foreach part, $(PARTS), cat Makefile.template | sed 's/template/$(part)/g' | \
+		sed 's/TEMPLATE/$(shell echo $(part) | tr 'a-z' 'A-Z')/g' >$(part)/Makefile; )
 
 
 ChangeLog:

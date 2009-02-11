@@ -258,21 +258,6 @@ template <class ST> class CStringFeatures : public CFeatures
 			return features[num].string;
 		}
 
-		/** set feature vector for sample num
-		 *
-		 * @param num index of feature vector
-		 * @param string string with the feature vector's content
-		 * @param len length of the string
-		 */
-		virtual void set_feature_vector(int32_t num, ST* string, int32_t len)
-		{
-			ASSERT(features);
-			ASSERT(num<num_vectors);
-
-			features[num].length=len ;
-			features[num].string=string ;
-		}
-
 		/** get feature
 		 *
 		 * @param vec_num which vector
@@ -659,7 +644,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		{
 			if (p_features)
 			{
-				CAlphabet* alpha=new CAlphabet(alphabet);
+				CAlphabet* alpha=new CAlphabet(alphabet->get_alphabet());
 
 				//compute histogram for char/byte
 				for (int32_t i=0; i<p_num_vectors; i++)
@@ -671,8 +656,8 @@ template <class ST> class CStringFeatures : public CFeatures
 				if (alpha->check_alphabet_size() && alpha->check_alphabet())
 				{
 					cleanup();
-
 					SG_UNREF(alphabet);
+
 					alphabet=alpha;
 					SG_REF(alphabet);
 
@@ -1208,6 +1193,24 @@ template <class ST> class CStringFeatures : public CFeatures
 			for (i=start; i<sequence_length; i++)
 				obs[i-start]=obs[i];
 		}
+
+	protected:
+
+		/** set feature vector for sample num
+		 *
+		 * @param num index of feature vector
+		 * @param string string with the feature vector's content
+		 * @param len length of the string
+		 */
+		virtual void set_feature_vector(int32_t num, ST* string, int32_t len)
+		{
+			ASSERT(features);
+			ASSERT(num<num_vectors);
+
+			features[num].length=len ;
+			features[num].string=string ;
+		}
+
 
 	protected:
 
