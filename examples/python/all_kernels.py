@@ -469,6 +469,9 @@ def combined ():
 	size_cache=10
 	weight=1.
 
+	sg('clean_kernel')
+	sg('clean_features', 'TRAIN')
+	sg('clean_features', 'TEST')
 	sg('set_kernel', 'COMBINED', size_cache)
 	sg('add_kernel', weight, 'LINEAR', 'REAL', size_cache)
 	sg('add_features', 'TRAIN', fm_train_real)
