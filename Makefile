@@ -45,7 +45,7 @@ MAINVERSION := $(shell awk '/Release/{print $$5;exit}' src/NEWS)
 VERSIONBASE := $(shell echo $(MAINVERSION) | cut -f 1-2 -d '.')
 EXTRAVERSION := 
 RELEASENAME := shogun-$(MAINVERSION)$(EXTRAVERSION)
-SVNVERSION := $(shell svn info | grep Revision: | cut -d ' ' -f 2)
+SVNVERSION := $(shell svn info 2>/dev/null | grep Revision: | cut -d ' ' -f 2)
 LOGFILE := 'prepare-release.log'
 
 stop:
@@ -145,21 +145,21 @@ prepare-release:
 	+$(MAKE) -C src tests DESTDIR=/tmp/ | tee --append $(LOGFILE)
 	(cd doc; svn ci -m "updated reference documentation") | tee --append $(LOGFILE)
 
-release: src/lib/versionstring.h $(DESTDIR)/src/lib/versionstring.h
+release: src/libshogun/lib/versionstring.h $(DESTDIR)/src/libshogun/lib/versionstring.h
 	tar -c -f $(DESTDIR).tar -C .. $(RELEASENAME)
 	rm -f $(DESTDIR).tar.bz2 $(DESTDIR).tar.gz
 	$(COMPRESS) -9 $(DESTDIR).tar
 
-svn-tag-release: src/lib/versionstring.h
-	sed -i 's/VERSION_RELEASE "svn/VERSION_RELEASE "v$(MAINVERSION)/' src/lib/versionstring.h
+svn-tag-release: src/libshogun/lib/versionstring.h
+	sed -i 's/VERSION_RELEASE "svn/VERSION_RELEASE "v$(MAINVERSION)/' src/libshogun/lib/versionstring.h
 	sed -i "s/PROJECT_NUMBER         = .*/PROJECT_NUMBER         = v$(MAINVERSION)/" doc/Doxyfile
 	svn ci -m "Preparing for new Release shogun_$(MAINVERSION)"
 	#-cd .. && svn --force rm releases/shogun_$(MAINVERSION)
 	#-cd .. && svn commit releases -m "clean old tag"
 	svn cp https://svn.tuebingen.mpg.de:/shogun/trunk ../releases/shogun_$(MAINVERSION)
-	cp src/lib/versionstring.h ../releases/shogun_$(MAINVERSION)/src/lib/versionstring.h
+	cp src/libshogun/lib/versionstring.h ../releases/shogun_$(MAINVERSION)/src/libshogun/lib/versionstring.h
 	sed -i "s| lib/versionstring.h||" ../releases/shogun_$(MAINVERSION)/src/Makefile
-	cd ../releases && svn add shogun_$(MAINVERSION)/src/lib/versionstring.h
+	cd ../releases && svn add shogun_$(MAINVERSION)/src/libshogun/lib/versionstring.h
 	cd ../releases && svn ci -m "Tagging shogun_$(MAINVERSION) release"
 
 package-from-release:
@@ -189,19 +189,19 @@ update-webpage:
 	ssh vserver ./bin/shogun_doc_install.sh
 	rm -rf doc/html
 
-src/lib/versionstring.h:
+src/libshogun/lib/versionstring.h:
 	rm -f src/ChangeLog
 	make -C src ChangeLog
-	make -C src lib/versionstring.h
+	make -C src/libshogun lib/versionstring.h
 
-$(DESTDIR)/src/lib/versionstring.h: src/lib/versionstring.h
+$(DESTDIR)/src/libshogun/lib/versionstring.h: src/libshogun/lib/versionstring.h
 	rm -rf $(DESTDIR)
 	svn export . $(DESTDIR)
 	if test ! $(SVMLIGHT) = yes; then $(REMOVE_SVMLIGHT); fi
 
 	# remove top level makefile from distribution
 	rm -f $(DESTDIR)/src/.authors
-	cp -f src/lib/versionstring.h $(DESTDIR)/src/lib/
+	cp -f src/libshogun/lib/versionstring.h $(DESTDIR)/src/libshogun/lib/
 
 svn-ignores: .svn_ignores
 	find . -name .svn -prune -o -type d -exec svn propset svn:ignore -F .svn_ignores {} \;

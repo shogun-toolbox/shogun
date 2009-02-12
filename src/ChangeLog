@@ -1,5 +1,1396 @@
+2009-02-12  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* libshogun/distributions/hmm/HMM.cpp,
+	  libshogun/distributions/hmm/HMM.h: get parallel HMM code to work
+	  again (it actually never really worked...)
+	* NEWS, configure, libshogun/distributions/hmm/HMM.cpp,
+	  libshogun/distributions/hmm/HMM.h: remove NOVIT test in HMM which
+	  increases code readability by factor 10, remove cruft from
+	  configure and update NEWS
+	* libshogun/classifier/svm/SVM_libsvm.cpp,
+	  libshogun/classifier/svm/SVM_libsvm.h: update copyright
+	* libshogun/classifier/svm/SVM_libsvm.cpp: update to libsvm 2.88
+	* configure: remove further cruft
+	* libshogun/distributions/hmm/HMM.cpp: fix a bug that screwed up
+	  HMM training introduced in shogun 0.5.0 (!)
+	* configure: remove HAVE_SWIG / USE_SWIG cruft
+	* libshogun/distributions/hmm/HMM.cpp,
+	  libshogun/distributions/hmm/HMM.h, libshogun/lib/Mathematics.h,
+	  libshogun/lib/Signal.cpp: support ctrl+c in hmm training
+	* README.soname: add document explaining when to change .soname
+	* configure, libshogun/distributions/hmm/HMM.cpp,
+	  libshogun/distributions/hmm/HMM.h, libshogun/lib/Mathematics.cpp,
+	  libshogun/lib/Mathematics.h: use logcache/parallel hmm structures
+	  per default
+
+2009-02-11  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* libshogun/features/StringFeatures.h: use a different logic to aid
+	  re-use of alphabet objects
+	* Makefile.template, libshogun/distributions/histogram/Histogram.h,
+	  libshogun/features/StringFeatures.h: add a little more debug
+	  output and make make install possible for subdirs
+	* Makefile, Makefile.template, configure,
+	  libshogun/features/StringFeatures.h,
+	  python_modular/swig_typemaps.i: dynamically detect library name
+	  suffixes, and perform some symlink soname magic
+	  add wrappers for run-testsuite, check-examples and make install
+	  in Makefile.template.
+	  
+	  make set_features (in string features) protected. add a typemap
+	  that allows FILE* conversion from python files
+	* Makefile.template, configure: it turns out that install does not
+	  preserve symbolic links, use ln & ldconfig instead
+
+2009-02-10  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* configure, libshogun/lib/Mathematics.h: further compile fixes for
+	  osx
+	* Makefile.template, libshogun/lib/io.h: call ldconfig on make
+	  install (for libshogun*) and make get_name function in io non
+	  virtual
+
+2009-02-10  Jonas Behr <Jonas.Behr@tuebingen.mpg.de>
+
+	* libshogunui/SGInterface.cpp: accidentally removed a function
+
+2009-02-10  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* octave_modular/octave.cpp: remove obsolete file
+	* configure: ignore -w454
+
+2009-02-09  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* octave/sg_print_functions.cpp: remove cruft
+
+2009-02-09  Jonas Behr <Jonas.Behr@tuebingen.mpg.de>
+
+	* libshogun/structure/DynProg.cpp, libshogun/structure/DynProg.h,
+	  libshogunui/GUICommands.h, libshogunui/SGInterface.h: new
+	  functions for direct access of the precomputed content feature
+	  arrays
+
+2009-02-09  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* Makefile.template: allow building without doxygen
+	* INSTALL: update description to match new layout
+	* .r-install.sh: fix install source paths
+
+2009-02-08  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* Makefile.template: add lib path for r file compilation
+	* octave_modular/sg_print_functions.cpp: add forgotten file
+	* .generate_link_dependencies.py, Makefile.template,
+	  octave/sg_print_functions.cpp, octave_modular/octave.cpp,
+	  python_modular/sg_print_functions.cpp,
+	  r_modular/sg_print_functions.cpp: add print functions for modular
+	  interfaces and let .so files in modular if's depend on them
+	* .r-install.sh, Makefile.template,
+	  libshogun/features/CombinedDotFeatures.h,
+	  libshogun/features/DotFeatures.h, r/.r-install.sh: move
+	  r-install.sh to top level src dir and fix typo in doc for
+	  dotfeatures, add doc targets for all interfaces
+	* Makefile.template: fix path to examples/testsuite
+	* Makefile.template: fix doxyfile and reference generation for
+	  static interfaces, rename modular interfaces to use underscore
+	  (octave _ modular)
+	* Makefile, Makefile.template: add make doc, make test target for
+	  modular interfaces
+	* configure, libshogun/classifier/LPBoost.h,
+	  libshogun/classifier/LPM.h,
+	  libshogun/classifier/SubGradientLPM.h: fix compilation when cplex
+	  is available, check for obsolete swig versions and disable
+	  r-modular / octave-modular accordingly
+	* libshogun/classifier/svm/SVM_light.cpp: improve convergence
+	  behaviour of newton q-norm mkl
+	* configure: fix suffixes
+	* Makefile.template: remove unecessary deps
+	* Makefile.template: remove trailing .
+	* configure: use -fPIC per default
+	* Makefile.template: r_modular needs further deps, create
+	  lib/versionstring.h in libshogun
+	* configure: don't check for unreachable code (for now)
+	* .generate_link_dependencies.py, Makefile.template: compiles for
+	  all interfaces now
+	* Makefile.template, configure, octave_modular/octave_typemaps.i,
+	  octave_modular/swig_typemaps.i, python_modular/python_typemaps.i,
+	  python_modular/swig_typemaps.i, r/r.h, r_modular/r_typemaps.i,
+	  r_modular/swig_typemaps.i: rename language specific typemaps /
+	  add lang specific code to typemaps, configure and makefile for
+	  swig.
+	* modular/Clustering.i, modular/Structure.i: fix include paths
+	* .generate_link_dependencies.py, Makefile.template, configure,
+	  libshogun/classifier/Classifier.doxy,
+	  libshogun/classifier/svm/GMNPSVM.i,
+	  libshogun/classifier/svm/GNPPSVM.i,
+	  libshogun/classifier/svm/GPBTSVM.i,
+	  libshogun/classifier/svm/LibLinear.i,
+	  libshogun/classifier/svm/LibSVM.i,
+	  libshogun/classifier/svm/LibSVMMultiClass.i,
+	  libshogun/classifier/svm/LibSVMOneClass.i,
+	  libshogun/classifier/svm/MPDSVM.i,
+	  libshogun/classifier/svm/MultiClassSVM.i,
+	  libshogun/classifier/svm/SVM.i,
+	  libshogun/classifier/svm/SVMLin.i,
+	  libshogun/classifier/svm/SVMOcas.i,
+	  libshogun/classifier/svm/SVMSGD.i,
+	  libshogun/classifier/svm/SVM_light.i,
+	  libshogun/classifier/svm/SubGradientSVM.i,
+	  libshogun/classifier/svm/WDSVMOcas.i,
+	  libshogun/clustering/Clustering.doxy,
+	  libshogun/distance/Distance.doxy,
+	  libshogun/distributions/Distribution.doxy,
+	  libshogun/distributions/histogram/Histogram.i,
+	  libshogun/distributions/hmm/GHMM.i,
+	  libshogun/distributions/hmm/HMM.i,
+	  libshogun/distributions/hmm/LinearHMM.i,
+	  libshogun/evaluation/Evaluation.doxy,
+	  libshogun/features/Features.doxy, libshogun/kernel/Kernel.doxy,
+	  libshogun/lib/Library.doxy, libshogun/preproc/PreProc.doxy,
+	  libshogun/regression/Regression.doxy,
+	  libshogun/regression/svr/LibSVR.i,
+	  libshogun/regression/svr/SVR_light.i,
+	  libshogun/structure/Structure.doxy, modular/AUCKernel.i,
+	  modular/Alphabet.i, modular/Array.i, modular/Array2.i,
+	  modular/Array3.i, modular/AvgDiagKernelNormalizer.i,
+	  modular/ByteFeatures.i, modular/Cache.i, modular/CharFeatures.i,
+	  modular/Chi2Kernel.i, modular/Classifier.doxy,
+	  modular/Classifier.i, modular/Clustering.doxy,
+	  modular/Clustering.i, modular/CombinedDotFeatures.i,
+	  modular/CombinedFeatures.i, modular/CombinedKernel.i,
+	  modular/CommUlongStringKernel.i, modular/CommWordStringKernel.i,
+	  modular/ConstKernel.i, modular/CustomKernel.i,
+	  modular/DiagKernel.i, modular/DiceKernelNormalizer.i,
+	  modular/Distance.doxy, modular/Distance.i,
+	  modular/DistanceKernel.i, modular/DistanceMachine.i,
+	  modular/Distribution.doxy, modular/Distribution.i,
+	  modular/DotFeatures.i, modular/DummyFeatures.i,
+	  modular/DynProg.i, modular/DynamicArray.i,
+	  modular/EuclidianDistance.i, modular/Evaluation.doxy,
+	  modular/Evaluation.i, modular/ExplicitSpecFeatures.i,
+	  modular/FKFeatures.i, modular/Features.doxy, modular/Features.i,
+	  modular/File.i, modular/FixedDegreeStringKernel.i,
+	  modular/GHMM.i, modular/GMNPSVM.i, modular/GNPPSVM.i,
+	  modular/GPBTSVM.i, modular/GaussianKernel.i,
+	  modular/GaussianShiftKernel.i, modular/GaussianShortRealKernel.i,
+	  modular/GeodesicMetric.i, modular/HMM.i,
+	  modular/HammingWordDistance.i, modular/Hierarchical.i,
+	  modular/Histogram.i, modular/HistogramWordStringKernel.i,
+	  modular/IdentityKernelNormalizer.i,
+	  modular/ImplicitWeightedSpecFeatures.i, modular/IntFeatures.i,
+	  modular/JensenMetric.i, modular/KMeans.i, modular/KNN.i,
+	  modular/KRR.i, modular/Kernel.doxy, modular/Kernel.i,
+	  modular/KernelMachine.i, modular/KernelNormalizer.i,
+	  modular/Labels.i, modular/LibLinear.i, modular/LibSVM.i,
+	  modular/LibSVMMultiClass.i, modular/LibSVMOneClass.i,
+	  modular/LibSVR.i, modular/Library.doxy, modular/Library.i,
+	  modular/LinearByteKernel.i, modular/LinearClassifier.i,
+	  modular/LinearHMM.i, modular/LinearKernel.i,
+	  modular/LinearStringKernel.i, modular/LinearWordKernel.i,
+	  modular/List.i, modular/LocalAlignmentStringKernel.i,
+	  modular/LocalityImprovedStringKernel.i, modular/LogPlusOne.i,
+	  modular/MPDSVM.i, modular/ManhattanMetric.i,
+	  modular/ManhattanWordDistance.i, modular/MatchWordStringKernel.i,
+	  modular/Mathematics.i, modular/MindyGramFeatures.i,
+	  modular/MindyGramKernel.i, modular/MinkowskiMetric.i,
+	  modular/MultiClassSVM.i, modular/NormDerivativeLem3.i,
+	  modular/NormOne.i, modular/OligoKernel.i, modular/PCACut.i,
+	  modular/PerformanceMeasures.i, modular/Plif.i,
+	  modular/PlifArray.i, modular/PlifBase.i, modular/PolyKernel.i,
+	  modular/PolyMatchStringKernel.i,
+	  modular/PolyMatchWordStringKernel.i, modular/PreProc.doxy,
+	  modular/PreProc.i, modular/PruneVarSubMean.i,
+	  modular/PyramidChi2.i, modular/RealDistance.i,
+	  modular/RealFeatures.i, modular/RealFileFeatures.i,
+	  modular/Regression.doxy, modular/Regression.i, modular/SVM.i,
+	  modular/SVMLin.i, modular/SVMOcas.i, modular/SVMSGD.i,
+	  modular/SVM_light.i, modular/SVR_light.i,
+	  modular/SalzbergWordStringKernel.i, modular/ShogunException.i,
+	  modular/ShortFeatures.i, modular/ShortRealFeatures.i,
+	  modular/SigmoidKernel.i, modular/Signal.i,
+	  modular/SimpleDistance.i, modular/SimpleFeatures.i,
+	  modular/SimpleFile.i, modular/SimpleKernel.i,
+	  modular/SimpleLocalityImprovedStringKernel.i,
+	  modular/SimplePreProc.i, modular/SortUlongString.i,
+	  modular/SortWordString.i, modular/SparseDistance.i,
+	  modular/SparseEuclidianDistance.i, modular/SparseFeatures.i,
+	  modular/SparseGaussianKernel.i, modular/SparseKernel.i,
+	  modular/SparseLinearKernel.i, modular/SparsePolyKernel.i,
+	  modular/SparsePreProc.i, modular/SqrtDiagKernelNormalizer.i,
+	  modular/StringDistance.i, modular/StringFeatures.i,
+	  modular/StringKernel.i, modular/StringPreProc.i,
+	  modular/Structure.doxy, modular/Structure.i,
+	  modular/SubGradientSVM.i, modular/TOPFeatures.i,
+	  modular/TanimotoDistance.i, modular/TanimotoKernelNormalizer.i,
+	  modular/TensorProductPairKernel.i, modular/Time.i,
+	  modular/Trie.i, modular/Version.i, modular/WDFeatures.i,
+	  modular/WDSVMOcas.i, modular/WeightedCommWordStringKernel.i,
+	  modular/WeightedDegreePositionStringKernel.i,
+	  modular/WeightedDegreeStringKernel.i, modular/WordFeatures.i,
+	  modular/common.i, modular/io.i, modular/lapack.i,
+	  modular/octave_typemaps.i, modular/python_typemaps.i,
+	  modular/r_typemaps.i, modular/swig_typemaps.i, octave_modular,
+	  octave_modular/octave_typemaps.i, python_modular,
+	  python_modular/python_typemaps.i, r_modular,
+	  r_modular/r_typemaps.i: move further .i files to src/modular and
+	  adjust inclusion paths and scripts. move language specific .i
+	  files into language dirs
+
+2009-02-07  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* .r-install.sh, Makefile, Makefile.template, configure,
+	  libshogun/regression/svr/SVR_light.cpp, r/.r-install.sh: enable
+	  svmlight, get make install and make tests to work
+	* Makefile, Makefile.template: fix a misplace endif, quieten output
+	* configure, interfaces: don't fail when matlab is not found remove
+	  cruft
+	* Makefile, Makefile.template, cmdline,
+	  cmdline/CmdLineInterface.cpp, cmdline/CmdLineInterface.h,
+	  cmdline/cmdline.cpp, configure, interfaces/cmdline,
+	  interfaces/lib, interfaces/matlab, interfaces/modular,
+	  interfaces/octave, interfaces/python, interfaces/r,
+	  libshogun/Makefile, libshogun/lib/Signal.h, libshogunui/Makefile,
+	  matlab, matlab/MatlabInterface.cpp, matlab/MatlabInterface.h,
+	  matlab/matlab.cpp, matlab/matlab.h, modular, octave,
+	  octave/OctaveInterface.cpp, octave/OctaveInterface.h,
+	  octave/octave.cpp, octave/octave.h, python,
+	  python/PythonInterface.cpp, python/PythonInterface.h,
+	  python/python.cpp, python/python.h, r, r/RInterface.cpp,
+	  r/RInterface.h, r/r.cpp, r/r.h: building of libshogun{,ui} and
+	  static interfaces works now
+
+2009-02-05  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* Makefile, configure, interfaces/Makefile, interfaces/cmdline,
+	  interfaces/cmdline/CmdLineInterface.cpp,
+	  interfaces/cmdline/CmdLineInterface.h,
+	  interfaces/lib/cmdline.cpp, interfaces/lib/matlab.cpp,
+	  interfaces/lib/matlab.h, interfaces/lib/octave.cpp,
+	  interfaces/lib/octave.h, interfaces/lib/python.cpp,
+	  interfaces/lib/r.cpp, interfaces/lib/r.h, interfaces/matlab,
+	  interfaces/matlab/MatlabInterface.cpp,
+	  interfaces/matlab/MatlabInterface.h, interfaces/octave,
+	  interfaces/octave/OctaveInterface.cpp,
+	  interfaces/octave/OctaveInterface.h, interfaces/python,
+	  interfaces/python/PythonInterface.cpp,
+	  interfaces/python/PythonInterface.h, interfaces/r,
+	  interfaces/r/RInterface.cpp, interfaces/r/RInterface.h,
+	  interfaces/static, libshogunui/Makefile: further restructuring
+	* Makefile, NEWS, configure, interfaces/Makefile,
+	  interfaces/static/CmdLineInterface.cpp,
+	  interfaces/static/CmdLineInterface.h,
+	  interfaces/static/SGInterface.cpp,
+	  interfaces/static/SGInterface.h,
+	  interfaces/static/SyntaxHighLight.h, libshogun/Makefile,
+	  libshogunui/GUIClassifier.cpp, libshogunui/GUIClassifier.h,
+	  libshogunui/GUICommands.h, libshogunui/GUIDistance.cpp,
+	  libshogunui/GUIDistance.h, libshogunui/GUIFeatures.cpp,
+	  libshogunui/GUIFeatures.h, libshogunui/GUIHMM.cpp,
+	  libshogunui/GUIHMM.h, libshogunui/GUIKernel.cpp,
+	  libshogunui/GUIKernel.h, libshogunui/GUILabels.cpp,
+	  libshogunui/GUILabels.h, libshogunui/GUIMath.cpp,
+	  libshogunui/GUIMath.h, libshogunui/GUIPluginEstimate.cpp,
+	  libshogunui/GUIPluginEstimate.h, libshogunui/GUIPreProc.cpp,
+	  libshogunui/GUIPreProc.h, libshogunui/GUIStructure.cpp,
+	  libshogunui/GUIStructure.h, libshogunui/GUITime.cpp,
+	  libshogunui/GUITime.h, libshogunui/Makefile,
+	  libshogunui/SGInterface.cpp, libshogunui/SGInterface.h,
+	  libshogunui/SyntaxHighLight.h: more progress on new
+	  configure/make system
+
+2009-02-04  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* configure: further improve configure
+	* Makefile, NEWS, configure, interfaces/lib,
+	  interfaces/lib/cmdline.cpp, interfaces/lib/matlab.cpp,
+	  interfaces/lib/matlab.h, interfaces/lib/octave.cpp,
+	  interfaces/lib/octave.h, interfaces/lib/python.cpp,
+	  interfaces/lib/python.h, interfaces/lib/r.cpp,
+	  interfaces/lib/r.h, libshogun/Makefile, libshogun/base/Version.h,
+	  libshogun/lib/Cplex.h, libshogun/lib/Signal.cpp,
+	  libshogun/lib/cmdline.cpp, libshogun/lib/io.cpp,
+	  libshogun/lib/matlab.cpp, libshogun/lib/matlab.h,
+	  libshogun/lib/octave.cpp, libshogun/lib/octave.h,
+	  libshogun/lib/python.cpp, libshogun/lib/python.h,
+	  libshogun/lib/r.cpp, libshogun/lib/r.h,
+	  libshogun/structure/Plif.h: move libshogun/lib/matlab.{cpp,h} etc
+	  to interfaces/lib
+
+2009-02-01  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* guilib, interface: remove obsolete dirs
+	* guilib/GUIClassifier.cpp, guilib/GUIClassifier.h,
+	  guilib/GUICommands.h, guilib/GUIDistance.cpp,
+	  guilib/GUIDistance.h, guilib/GUIFeatures.cpp,
+	  guilib/GUIFeatures.h, guilib/GUIHMM.cpp, guilib/GUIHMM.h,
+	  guilib/GUIKernel.cpp, guilib/GUIKernel.h, guilib/GUILabels.cpp,
+	  guilib/GUILabels.h, guilib/GUIMath.cpp, guilib/GUIMath.h,
+	  guilib/GUIPluginEstimate.cpp, guilib/GUIPluginEstimate.h,
+	  guilib/GUIPreProc.cpp, guilib/GUIPreProc.h,
+	  guilib/GUIStructure.cpp, guilib/GUIStructure.h,
+	  guilib/GUITime.cpp, guilib/GUITime.h,
+	  interface/CmdLineInterface.cpp, interface/CmdLineInterface.h,
+	  interface/MatlabInterface.cpp, interface/MatlabInterface.h,
+	  interface/OctaveInterface.cpp, interface/OctaveInterface.h,
+	  interface/PythonInterface.cpp, interface/PythonInterface.h,
+	  interface/RInterface.cpp, interface/RInterface.h,
+	  interface/SGInterface.cpp, interface/SGInterface.h,
+	  interface/SyntaxHighLight.h,
+	  interfaces/static/CmdLineInterface.cpp,
+	  interfaces/static/CmdLineInterface.h,
+	  interfaces/static/MatlabInterface.cpp,
+	  interfaces/static/MatlabInterface.h,
+	  interfaces/static/OctaveInterface.cpp,
+	  interfaces/static/OctaveInterface.h,
+	  interfaces/static/PythonInterface.cpp,
+	  interfaces/static/PythonInterface.h,
+	  interfaces/static/RInterface.cpp, interfaces/static/RInterface.h,
+	  interfaces/static/SGInterface.cpp,
+	  interfaces/static/SGInterface.h,
+	  interfaces/static/SyntaxHighLight.h,
+	  libshogunui/GUIClassifier.cpp, libshogunui/GUIClassifier.h,
+	  libshogunui/GUICommands.h, libshogunui/GUIDistance.cpp,
+	  libshogunui/GUIDistance.h, libshogunui/GUIFeatures.cpp,
+	  libshogunui/GUIFeatures.h, libshogunui/GUIHMM.cpp,
+	  libshogunui/GUIHMM.h, libshogunui/GUIKernel.cpp,
+	  libshogunui/GUIKernel.h, libshogunui/GUILabels.cpp,
+	  libshogunui/GUILabels.h, libshogunui/GUIMath.cpp,
+	  libshogunui/GUIMath.h, libshogunui/GUIPluginEstimate.cpp,
+	  libshogunui/GUIPluginEstimate.h, libshogunui/GUIPreProc.cpp,
+	  libshogunui/GUIPreProc.h, libshogunui/GUIStructure.cpp,
+	  libshogunui/GUIStructure.h, libshogunui/GUITime.cpp,
+	  libshogunui/GUITime.h: move things into static interfaces
+	* base, classifier, clustering, distance, distributions,
+	  evaluation, features, kernel, lib, libshogun/base,
+	  libshogun/base/Parallel.i, libshogun/base/SGObject.i,
+	  libshogun/base/Version.i, libshogun/classifier,
+	  libshogun/classifier/Classifier.i, libshogun/classifier/KNN.i,
+	  libshogun/classifier/KernelPerceptron.i,
+	  libshogun/classifier/LDA.i, libshogun/classifier/LPBoost.i,
+	  libshogun/classifier/LPM.i,
+	  libshogun/classifier/LinearClassifier.i,
+	  libshogun/classifier/Perceptron.i,
+	  libshogun/classifier/PluginEstimate.i,
+	  libshogun/classifier/SubGradientLPM.i, libshogun/clustering,
+	  libshogun/clustering/Clustering.i,
+	  libshogun/clustering/Hierarchical.i,
+	  libshogun/clustering/KMeans.i, libshogun/distance,
+	  libshogun/distance/BrayCurtisDistance.i,
+	  libshogun/distance/CanberraMetric.i,
+	  libshogun/distance/CanberraWordDistance.i,
+	  libshogun/distance/ChebyshewMetric.i,
+	  libshogun/distance/ChiSquareDistance.i,
+	  libshogun/distance/CosineDistance.i,
+	  libshogun/distance/Distance.i,
+	  libshogun/distance/DistanceMachine.i,
+	  libshogun/distance/EuclidianDistance.i,
+	  libshogun/distance/GeodesicMetric.i,
+	  libshogun/distance/HammingWordDistance.i,
+	  libshogun/distance/JensenMetric.i,
+	  libshogun/distance/ManhattanMetric.i,
+	  libshogun/distance/ManhattanWordDistance.i,
+	  libshogun/distance/MinkowskiMetric.i,
+	  libshogun/distance/RealDistance.i,
+	  libshogun/distance/SimpleDistance.i,
+	  libshogun/distance/SparseDistance.i,
+	  libshogun/distance/SparseEuclidianDistance.i,
+	  libshogun/distance/StringDistance.i,
+	  libshogun/distance/TanimotoDistance.i, libshogun/distributions,
+	  libshogun/distributions/Distribution.i, libshogun/evaluation,
+	  libshogun/evaluation/Evaluation.i,
+	  libshogun/evaluation/PerformanceMeasures.i, libshogun/features,
+	  libshogun/features/Alphabet.i, libshogun/features/ByteFeatures.i,
+	  libshogun/features/CharFeatures.i,
+	  libshogun/features/CombinedDotFeatures.i,
+	  libshogun/features/CombinedFeatures.i,
+	  libshogun/features/DotFeatures.i,
+	  libshogun/features/DummyFeatures.i,
+	  libshogun/features/ExplicitSpecFeatures.i,
+	  libshogun/features/FKFeatures.i, libshogun/features/Features.i,
+	  libshogun/features/ImplicitWeightedSpecFeatures.i,
+	  libshogun/features/IntFeatures.i, libshogun/features/Labels.i,
+	  libshogun/features/MindyGramFeatures.i,
+	  libshogun/features/RealFeatures.i,
+	  libshogun/features/RealFileFeatures.i,
+	  libshogun/features/ShortFeatures.i,
+	  libshogun/features/ShortRealFeatures.i,
+	  libshogun/features/SimpleFeatures.i,
+	  libshogun/features/SparseFeatures.i,
+	  libshogun/features/StringFeatures.i,
+	  libshogun/features/TOPFeatures.i,
+	  libshogun/features/WDFeatures.i,
+	  libshogun/features/WordFeatures.i, libshogun/kernel,
+	  libshogun/kernel/AUCKernel.i,
+	  libshogun/kernel/AvgDiagKernelNormalizer.i,
+	  libshogun/kernel/Chi2Kernel.i, libshogun/kernel/CombinedKernel.i,
+	  libshogun/kernel/CommUlongStringKernel.i,
+	  libshogun/kernel/CommWordStringKernel.i,
+	  libshogun/kernel/ConstKernel.i, libshogun/kernel/CustomKernel.i,
+	  libshogun/kernel/DiagKernel.i,
+	  libshogun/kernel/DiceKernelNormalizer.i,
+	  libshogun/kernel/DistanceKernel.i,
+	  libshogun/kernel/FixedDegreeStringKernel.i,
+	  libshogun/kernel/GaussianKernel.i,
+	  libshogun/kernel/GaussianShiftKernel.i,
+	  libshogun/kernel/GaussianShortRealKernel.i,
+	  libshogun/kernel/HistogramWordStringKernel.i,
+	  libshogun/kernel/IdentityKernelNormalizer.i,
+	  libshogun/kernel/Kernel.i, libshogun/kernel/KernelMachine.i,
+	  libshogun/kernel/KernelNormalizer.i,
+	  libshogun/kernel/LinearByteKernel.i,
+	  libshogun/kernel/LinearKernel.i,
+	  libshogun/kernel/LinearStringKernel.i,
+	  libshogun/kernel/LinearWordKernel.i,
+	  libshogun/kernel/LocalAlignmentStringKernel.i,
+	  libshogun/kernel/LocalityImprovedStringKernel.i,
+	  libshogun/kernel/MatchWordStringKernel.i,
+	  libshogun/kernel/MindyGramKernel.i,
+	  libshogun/kernel/OligoKernel.i, libshogun/kernel/PolyKernel.i,
+	  libshogun/kernel/PolyMatchStringKernel.i,
+	  libshogun/kernel/PolyMatchWordStringKernel.i,
+	  libshogun/kernel/PyramidChi2.i,
+	  libshogun/kernel/SalzbergWordStringKernel.i,
+	  libshogun/kernel/SigmoidKernel.i,
+	  libshogun/kernel/SimpleKernel.i,
+	  libshogun/kernel/SimpleLocalityImprovedStringKernel.i,
+	  libshogun/kernel/SparseGaussianKernel.i,
+	  libshogun/kernel/SparseKernel.i,
+	  libshogun/kernel/SparseLinearKernel.i,
+	  libshogun/kernel/SparsePolyKernel.i,
+	  libshogun/kernel/SqrtDiagKernelNormalizer.i,
+	  libshogun/kernel/StringKernel.i,
+	  libshogun/kernel/TanimotoKernelNormalizer.i,
+	  libshogun/kernel/TensorProductPairKernel.i,
+	  libshogun/kernel/WeightedCommWordStringKernel.i,
+	  libshogun/kernel/WeightedDegreePositionStringKernel.i,
+	  libshogun/kernel/WeightedDegreeStringKernel.i, libshogun/lib,
+	  libshogun/lib/Array.i, libshogun/lib/Array2.i,
+	  libshogun/lib/Array3.i, libshogun/lib/Cache.i,
+	  libshogun/lib/DynamicArray.i, libshogun/lib/File.i,
+	  libshogun/lib/Library.i, libshogun/lib/List.i,
+	  libshogun/lib/Mathematics.i, libshogun/lib/ShogunException.i,
+	  libshogun/lib/Signal.i, libshogun/lib/SimpleFile.i,
+	  libshogun/lib/Time.i, libshogun/lib/Trie.i,
+	  libshogun/lib/common.i, libshogun/lib/io.i,
+	  libshogun/lib/lapack.i, libshogun/lib/octave_typemaps.i,
+	  libshogun/lib/python_typemaps.i, libshogun/lib/r_typemaps.i,
+	  libshogun/lib/swig_typemaps.i, libshogun/preproc,
+	  libshogun/preproc/LogPlusOne.i,
+	  libshogun/preproc/NormDerivativeLem3.i,
+	  libshogun/preproc/NormOne.i, libshogun/preproc/PCACut.i,
+	  libshogun/preproc/PreProc.i, libshogun/preproc/PruneVarSubMean.i,
+	  libshogun/preproc/SimplePreProc.i,
+	  libshogun/preproc/SortUlongString.i,
+	  libshogun/preproc/SortWordString.i,
+	  libshogun/preproc/SparsePreProc.i,
+	  libshogun/preproc/StringPreProc.i, libshogun/regression,
+	  libshogun/regression/KRR.i, libshogun/regression/Regression.i,
+	  libshogun/structure, libshogun/structure/DynProg.i,
+	  libshogun/structure/Plif.i, libshogun/structure/PlifArray.i,
+	  libshogun/structure/PlifBase.i, libshogun/structure/Structure.i,
+	  preproc, regression, structure: move things into libshogun
+	* base/Parallel.i, base/SGObject.i, base/Version.i,
+	  classifier/Classifier.i, classifier/KNN.i,
+	  classifier/KernelPerceptron.i, classifier/LDA.i,
+	  classifier/LPBoost.i, classifier/LPM.i,
+	  classifier/LinearClassifier.i, classifier/Perceptron.i,
+	  classifier/PluginEstimate.i, classifier/SubGradientLPM.i,
+	  clustering/Clustering.i, clustering/Hierarchical.i,
+	  clustering/KMeans.i, distance/BrayCurtisDistance.i,
+	  distance/CanberraMetric.i, distance/CanberraWordDistance.i,
+	  distance/ChebyshewMetric.i, distance/ChiSquareDistance.i,
+	  distance/CosineDistance.i, distance/Distance.i,
+	  distance/DistanceMachine.i, distance/EuclidianDistance.i,
+	  distance/GeodesicMetric.i, distance/HammingWordDistance.i,
+	  distance/JensenMetric.i, distance/ManhattanMetric.i,
+	  distance/ManhattanWordDistance.i, distance/MinkowskiMetric.i,
+	  distance/RealDistance.i, distance/SimpleDistance.i,
+	  distance/SparseDistance.i, distance/SparseEuclidianDistance.i,
+	  distance/StringDistance.i, distance/TanimotoDistance.i,
+	  distributions/Distribution.i, evaluation/Evaluation.i,
+	  evaluation/PerformanceMeasures.i, features/Alphabet.i,
+	  features/ByteFeatures.i, features/CharFeatures.i,
+	  features/CombinedDotFeatures.i, features/CombinedFeatures.i,
+	  features/DotFeatures.i, features/DummyFeatures.i,
+	  features/ExplicitSpecFeatures.i, features/FKFeatures.i,
+	  features/Features.i, features/ImplicitWeightedSpecFeatures.i,
+	  features/IntFeatures.i, features/Labels.i,
+	  features/MindyGramFeatures.i, features/RealFeatures.i,
+	  features/RealFileFeatures.i, features/ShortFeatures.i,
+	  features/ShortRealFeatures.i, features/SimpleFeatures.i,
+	  features/SparseFeatures.i, features/StringFeatures.i,
+	  features/TOPFeatures.i, features/WDFeatures.i,
+	  features/WordFeatures.i, interfaces, interfaces/modular,
+	  interfaces/modular/AUCKernel.i, interfaces/modular/Alphabet.i,
+	  interfaces/modular/Array.i, interfaces/modular/Array2.i,
+	  interfaces/modular/Array3.i,
+	  interfaces/modular/AvgDiagKernelNormalizer.i,
+	  interfaces/modular/BrayCurtisDistance.i,
+	  interfaces/modular/ByteFeatures.i, interfaces/modular/Cache.i,
+	  interfaces/modular/CanberraMetric.i,
+	  interfaces/modular/CanberraWordDistance.i,
+	  interfaces/modular/CharFeatures.i,
+	  interfaces/modular/ChebyshewMetric.i,
+	  interfaces/modular/Chi2Kernel.i,
+	  interfaces/modular/ChiSquareDistance.i,
+	  interfaces/modular/Classifier.i, interfaces/modular/Clustering.i,
+	  interfaces/modular/CombinedDotFeatures.i,
+	  interfaces/modular/CombinedFeatures.i,
+	  interfaces/modular/CombinedKernel.i,
+	  interfaces/modular/CommUlongStringKernel.i,
+	  interfaces/modular/CommWordStringKernel.i,
+	  interfaces/modular/ConstKernel.i,
+	  interfaces/modular/CosineDistance.i,
+	  interfaces/modular/CustomKernel.i,
+	  interfaces/modular/DiagKernel.i,
+	  interfaces/modular/DiceKernelNormalizer.i,
+	  interfaces/modular/Distance.i,
+	  interfaces/modular/DistanceKernel.i,
+	  interfaces/modular/DistanceMachine.i,
+	  interfaces/modular/Distribution.i,
+	  interfaces/modular/DotFeatures.i,
+	  interfaces/modular/DummyFeatures.i, interfaces/modular/DynProg.i,
+	  interfaces/modular/DynamicArray.i,
+	  interfaces/modular/EuclidianDistance.i,
+	  interfaces/modular/Evaluation.i,
+	  interfaces/modular/ExplicitSpecFeatures.i,
+	  interfaces/modular/FKFeatures.i, interfaces/modular/Features.i,
+	  interfaces/modular/File.i,
+	  interfaces/modular/FixedDegreeStringKernel.i,
+	  interfaces/modular/GaussianKernel.i,
+	  interfaces/modular/GaussianShiftKernel.i,
+	  interfaces/modular/GaussianShortRealKernel.i,
+	  interfaces/modular/GeodesicMetric.i,
+	  interfaces/modular/HammingWordDistance.i,
+	  interfaces/modular/Hierarchical.i,
+	  interfaces/modular/HistogramWordStringKernel.i,
+	  interfaces/modular/IdentityKernelNormalizer.i,
+	  interfaces/modular/ImplicitWeightedSpecFeatures.i,
+	  interfaces/modular/IntFeatures.i,
+	  interfaces/modular/JensenMetric.i, interfaces/modular/KMeans.i,
+	  interfaces/modular/KNN.i, interfaces/modular/KRR.i,
+	  interfaces/modular/Kernel.i, interfaces/modular/KernelMachine.i,
+	  interfaces/modular/KernelNormalizer.i,
+	  interfaces/modular/KernelPerceptron.i, interfaces/modular/LDA.i,
+	  interfaces/modular/LPBoost.i, interfaces/modular/LPM.i,
+	  interfaces/modular/Labels.i, interfaces/modular/Library.i,
+	  interfaces/modular/LinearByteKernel.i,
+	  interfaces/modular/LinearClassifier.i,
+	  interfaces/modular/LinearKernel.i,
+	  interfaces/modular/LinearStringKernel.i,
+	  interfaces/modular/LinearWordKernel.i, interfaces/modular/List.i,
+	  interfaces/modular/LocalAlignmentStringKernel.i,
+	  interfaces/modular/LocalityImprovedStringKernel.i,
+	  interfaces/modular/LogPlusOne.i,
+	  interfaces/modular/ManhattanMetric.i,
+	  interfaces/modular/ManhattanWordDistance.i,
+	  interfaces/modular/MatchWordStringKernel.i,
+	  interfaces/modular/Mathematics.i,
+	  interfaces/modular/MindyGramFeatures.i,
+	  interfaces/modular/MindyGramKernel.i,
+	  interfaces/modular/MinkowskiMetric.i,
+	  interfaces/modular/NormDerivativeLem3.i,
+	  interfaces/modular/NormOne.i, interfaces/modular/OligoKernel.i,
+	  interfaces/modular/PCACut.i, interfaces/modular/Parallel.i,
+	  interfaces/modular/Perceptron.i,
+	  interfaces/modular/PerformanceMeasures.i,
+	  interfaces/modular/Plif.i, interfaces/modular/PlifArray.i,
+	  interfaces/modular/PlifBase.i,
+	  interfaces/modular/PluginEstimate.i,
+	  interfaces/modular/PolyKernel.i,
+	  interfaces/modular/PolyMatchStringKernel.i,
+	  interfaces/modular/PolyMatchWordStringKernel.i,
+	  interfaces/modular/PreProc.i,
+	  interfaces/modular/PruneVarSubMean.i,
+	  interfaces/modular/PyramidChi2.i,
+	  interfaces/modular/RealDistance.i,
+	  interfaces/modular/RealFeatures.i,
+	  interfaces/modular/RealFileFeatures.i,
+	  interfaces/modular/Regression.i, interfaces/modular/SGObject.i,
+	  interfaces/modular/SalzbergWordStringKernel.i,
+	  interfaces/modular/ShogunException.i,
+	  interfaces/modular/ShortFeatures.i,
+	  interfaces/modular/ShortRealFeatures.i,
+	  interfaces/modular/SigmoidKernel.i, interfaces/modular/Signal.i,
+	  interfaces/modular/SimpleDistance.i,
+	  interfaces/modular/SimpleFeatures.i,
+	  interfaces/modular/SimpleFile.i,
+	  interfaces/modular/SimpleKernel.i,
+	  interfaces/modular/SimpleLocalityImprovedStringKernel.i,
+	  interfaces/modular/SimplePreProc.i,
+	  interfaces/modular/SortUlongString.i,
+	  interfaces/modular/SortWordString.i,
+	  interfaces/modular/SparseDistance.i,
+	  interfaces/modular/SparseEuclidianDistance.i,
+	  interfaces/modular/SparseFeatures.i,
+	  interfaces/modular/SparseGaussianKernel.i,
+	  interfaces/modular/SparseKernel.i,
+	  interfaces/modular/SparseLinearKernel.i,
+	  interfaces/modular/SparsePolyKernel.i,
+	  interfaces/modular/SparsePreProc.i,
+	  interfaces/modular/SqrtDiagKernelNormalizer.i,
+	  interfaces/modular/StringDistance.i,
+	  interfaces/modular/StringFeatures.i,
+	  interfaces/modular/StringKernel.i,
+	  interfaces/modular/StringPreProc.i,
+	  interfaces/modular/Structure.i,
+	  interfaces/modular/SubGradientLPM.i,
+	  interfaces/modular/TOPFeatures.i,
+	  interfaces/modular/TanimotoDistance.i,
+	  interfaces/modular/TanimotoKernelNormalizer.i,
+	  interfaces/modular/TensorProductPairKernel.i,
+	  interfaces/modular/Time.i, interfaces/modular/Trie.i,
+	  interfaces/modular/Version.i, interfaces/modular/WDFeatures.i,
+	  interfaces/modular/WeightedCommWordStringKernel.i,
+	  interfaces/modular/WeightedDegreePositionStringKernel.i,
+	  interfaces/modular/WeightedDegreeStringKernel.i,
+	  interfaces/modular/WordFeatures.i, interfaces/modular/common.i,
+	  interfaces/modular/io.i, interfaces/modular/lapack.i,
+	  interfaces/modular/octave_typemaps.i,
+	  interfaces/modular/python_typemaps.i,
+	  interfaces/modular/r_typemaps.i,
+	  interfaces/modular/swig_typemaps.i, interfaces/static,
+	  kernel/AUCKernel.i, kernel/AvgDiagKernelNormalizer.i,
+	  kernel/Chi2Kernel.i, kernel/CombinedKernel.i,
+	  kernel/CommUlongStringKernel.i, kernel/CommWordStringKernel.i,
+	  kernel/ConstKernel.i, kernel/CustomKernel.i, kernel/DiagKernel.i,
+	  kernel/DiceKernelNormalizer.i, kernel/DistanceKernel.i,
+	  kernel/FixedDegreeStringKernel.i, kernel/GaussianKernel.i,
+	  kernel/GaussianShiftKernel.i, kernel/GaussianShortRealKernel.i,
+	  kernel/HistogramWordStringKernel.i,
+	  kernel/IdentityKernelNormalizer.i, kernel/Kernel.i,
+	  kernel/KernelMachine.i, kernel/KernelNormalizer.i,
+	  kernel/LinearByteKernel.i, kernel/LinearKernel.i,
+	  kernel/LinearStringKernel.i, kernel/LinearWordKernel.i,
+	  kernel/LocalAlignmentStringKernel.i,
+	  kernel/LocalityImprovedStringKernel.i,
+	  kernel/MatchWordStringKernel.i, kernel/MindyGramKernel.i,
+	  kernel/OligoKernel.i, kernel/PolyKernel.i,
+	  kernel/PolyMatchStringKernel.i,
+	  kernel/PolyMatchWordStringKernel.i, kernel/PyramidChi2.i,
+	  kernel/SalzbergWordStringKernel.i, kernel/SigmoidKernel.i,
+	  kernel/SimpleKernel.i,
+	  kernel/SimpleLocalityImprovedStringKernel.i,
+	  kernel/SparseGaussianKernel.i, kernel/SparseKernel.i,
+	  kernel/SparseLinearKernel.i, kernel/SparsePolyKernel.i,
+	  kernel/SqrtDiagKernelNormalizer.i, kernel/StringKernel.i,
+	  kernel/TanimotoKernelNormalizer.i,
+	  kernel/TensorProductPairKernel.i,
+	  kernel/WeightedCommWordStringKernel.i,
+	  kernel/WeightedDegreePositionStringKernel.i,
+	  kernel/WeightedDegreeStringKernel.i, lib/Array.i, lib/Array2.i,
+	  lib/Array3.i, lib/Cache.i, lib/DynamicArray.i, lib/File.i,
+	  lib/Library.i, lib/List.i, lib/Mathematics.i,
+	  lib/ShogunException.i, lib/Signal.i, lib/SimpleFile.i,
+	  lib/Time.i, lib/Trie.i, lib/common.i, lib/io.i, lib/lapack.i,
+	  lib/octave_typemaps.i, lib/python_typemaps.i, lib/r_typemaps.i,
+	  lib/swig_typemaps.i, libshogun, libshogunui,
+	  preproc/LogPlusOne.i, preproc/NormDerivativeLem3.i,
+	  preproc/NormOne.i, preproc/PCACut.i, preproc/PreProc.i,
+	  preproc/PruneVarSubMean.i, preproc/SimplePreProc.i,
+	  preproc/SortUlongString.i, preproc/SortWordString.i,
+	  preproc/SparsePreProc.i, preproc/StringPreProc.i,
+	  regression/KRR.i, regression/Regression.i, structure/DynProg.i,
+	  structure/Plif.i, structure/PlifArray.i, structure/PlifBase.i,
+	  structure/Structure.i: begin restructuring of code
+	* base/Parallel.i, base/SGObject.i, base/Version.i,
+	  classifier/Classifier.i, classifier/KNN.i,
+	  classifier/KernelPerceptron.i, classifier/LDA.i,
+	  classifier/LPBoost.i, classifier/LPM.i,
+	  classifier/LinearClassifier.i, classifier/Perceptron.i,
+	  classifier/PluginEstimate.i, classifier/SubGradientLPM.i,
+	  clustering/Clustering.i, clustering/Hierarchical.i,
+	  clustering/KMeans.i, distance/BrayCurtisDistance.i,
+	  distance/CanberraMetric.i, distance/CanberraWordDistance.i,
+	  distance/ChebyshewMetric.i, distance/ChiSquareDistance.i,
+	  distance/CosineDistance.i: the .i files need
+	  <shogun/path/to/file> as they now base on libshogun
+	* Makefile: also erase libshogun.a on clean
+	* classifier/svm/gmnpmkl.h, lib/Array.h: add get_name function to
+	  gmnpmkl wrappers - fixes compilation when glpk is not available
+
+2009-01-31  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* features/CombinedFeatures.cpp, guilib/GUIFeatures.h,
+	  guilib/GUIKernel.cpp, kernel/CombinedKernel.cpp,
+	  kernel/CombinedKernel.h: all things except HMM work
+	  stably+leak-free in static cmdline if
+	* clustering/KMeans.cpp, distance/Distance.h,
+	  interface/SGInterface.cpp: clustering and distances are now leak
+	  free
+	* base/SGObject.h, classifier/KNN.h, classifier/KernelPerceptron.h,
+	  classifier/LDA.h, classifier/Perceptron.h,
+	  classifier/PluginEstimate.h, classifier/svm/GMNPSVM.h,
+	  classifier/svm/GNPPSVM.h, classifier/svm/GPBTSVM.h,
+	  classifier/svm/LibLinear.h, classifier/svm/LibSVM.h,
+	  classifier/svm/LibSVMMultiClass.h,
+	  classifier/svm/LibSVMOneClass.h, classifier/svm/MPDSVM.h,
+	  classifier/svm/SVM.h, classifier/svm/SVMLin.h,
+	  classifier/svm/SVMOcas.h, classifier/svm/SVMSGD.h,
+	  classifier/svm/SVM_light.cpp, classifier/svm/SVM_light.h,
+	  classifier/svm/SubGradientSVM.h, classifier/svm/Tron.h,
+	  classifier/svm/WDSVMOcas.h, classifier/svm/gmnplib.h,
+	  classifier/svm/gnpplib.h, classifier/svm/gpdtsolve.h,
+	  classifier/svm/qpbsvmlib.h, clustering/Hierarchical.h,
+	  clustering/KMeans.h, distance/BrayCurtisDistance.h,
+	  distance/CanberraMetric.h, distance/CanberraWordDistance.h,
+	  distance/ChebyshewMetric.h, distance/ChiSquareDistance.h,
+	  distance/CosineDistance.h, distance/Distance.h,
+	  distance/EuclidianDistance.h, distance/GeodesicMetric.h,
+	  distance/HammingWordDistance.h, distance/JensenMetric.h,
+	  distance/ManhattanMetric.h, distance/ManhattanWordDistance.h,
+	  distance/MinkowskiMetric.h, distance/SparseEuclidianDistance.h,
+	  distance/TanimotoDistance.h, distributions/hmm/HMM.h,
+	  distributions/hmm/LinearHMM.h, features/Alphabet.h,
+	  features/ByteFeatures.h, features/CharFeatures.h,
+	  features/CombinedDotFeatures.h, features/CombinedFeatures.cpp,
+	  features/CombinedFeatures.h, features/DummyFeatures.h,
+	  features/ExplicitSpecFeatures.h, features/FKFeatures.h,
+	  features/ImplicitWeightedSpecFeatures.h, features/IntFeatures.h,
+	  features/Labels.h, features/MindyGramFeatures.h,
+	  features/RealFeatures.h, features/RealFileFeatures.h,
+	  features/ShortFeatures.h, features/ShortRealFeatures.h,
+	  features/SimpleFeatures.h, features/SparseFeatures.h,
+	  features/StringFeatures.h, features/TOPFeatures.h,
+	  features/WDFeatures.h, features/WordFeatures.h,
+	  guilib/GUIClassifier.h, guilib/GUIDistance.h,
+	  guilib/GUIFeatures.cpp, guilib/GUIFeatures.h, guilib/GUIHMM.h,
+	  guilib/GUIKernel.cpp, guilib/GUIKernel.h, guilib/GUILabels.h,
+	  guilib/GUIMath.h, guilib/GUIPluginEstimate.h,
+	  guilib/GUIPreProc.h, guilib/GUIStructure.h, guilib/GUITime.h,
+	  interface/CmdLineInterface.h, interface/MatlabInterface.h,
+	  interface/OctaveInterface.h, interface/PythonInterface.h,
+	  interface/RInterface.h, interface/SGInterface.cpp,
+	  kernel/AUCKernel.h, kernel/AvgDiagKernelNormalizer.h,
+	  kernel/Chi2Kernel.h, kernel/CombinedKernel.cpp,
+	  kernel/CombinedKernel.h, kernel/CommUlongStringKernel.h,
+	  kernel/CommWordStringKernel.h, kernel/ConstKernel.h,
+	  kernel/CustomKernel.h, kernel/DiagKernel.h,
+	  kernel/DistanceKernel.h, kernel/FirstElementKernelNormalizer.h,
+	  kernel/FixedDegreeStringKernel.h, kernel/GaussianKernel.h,
+	  kernel/GaussianShiftKernel.h, kernel/GaussianShortRealKernel.h,
+	  kernel/HistogramWordStringKernel.h,
+	  kernel/IdentityKernelNormalizer.h, kernel/LinearByteKernel.h,
+	  kernel/LinearKernel.h, kernel/LinearStringKernel.h,
+	  kernel/LinearWordKernel.h, kernel/LocalAlignmentStringKernel.h,
+	  kernel/LocalityImprovedStringKernel.h,
+	  kernel/MatchWordStringKernel.h, kernel/MindyGramKernel.h,
+	  kernel/OligoKernel.h, kernel/PolyKernel.h,
+	  kernel/PolyMatchStringKernel.h,
+	  kernel/PolyMatchWordStringKernel.h, kernel/PyramidChi2.h,
+	  kernel/SalzbergWordStringKernel.h, kernel/SigmoidKernel.h,
+	  kernel/SimpleLocalityImprovedStringKernel.h,
+	  kernel/SparseGaussianKernel.h, kernel/SparseLinearKernel.h,
+	  kernel/SparsePolyKernel.h, kernel/SqrtDiagKernelNormalizer.h,
+	  kernel/TensorProductPairKernel.h,
+	  kernel/WeightedCommWordStringKernel.h,
+	  kernel/WeightedDegreePositionStringKernel.cpp,
+	  kernel/WeightedDegreePositionStringKernel.h,
+	  kernel/WeightedDegreeStringKernel.cpp,
+	  kernel/WeightedDegreeStringKernel.h, lib/Cache.h,
+	  lib/DynamicArray.h, lib/File.h, lib/List.h, lib/Mathematics.h,
+	  lib/SimpleFile.h, lib/Time.h, lib/Trie.h, regression/KRR.h,
+	  regression/svr/LibSVR.h, regression/svr/SVR_light.cpp,
+	  regression/svr/SVR_light.h, structure/DynProg.h,
+	  structure/Plif.h, structure/PlifArray.h: fixes for many further
+	  memory leaks
+	* features/Features.cpp, features/SimpleFeatures.h,
+	  features/StringFeatures.h, guilib/GUIFeatures.h,
+	  guilib/GUIHMM.cpp, interface/SGInterface.cpp, lib/List.h: fix
+	  further memory leaks
+	* classifier/svm/LibLinear.cpp, classifier/svm/MPDSVM.h,
+	  classifier/svm/MultiClassSVM.cpp, classifier/svm/SVMLin.cpp,
+	  classifier/svm/SVMOcas.cpp, classifier/svm/SVMSGD.cpp,
+	  features/StringFeatures.h, guilib/GUIClassifier.cpp,
+	  guilib/GUIKernel.cpp, interface/CmdLineInterface.cpp,
+	  interface/SGInterface.cpp, kernel/WeightedDegreeStringKernel.cpp,
+	  regression/svr/SVR_light.cpp: classifier and regression methods
+	  are leak free now
+	* classifier/LinearClassifier.h, classifier/svm/GPBTSVM.cpp,
+	  classifier/svm/SVMOcas.cpp, clustering/Hierarchical.h,
+	  guilib/GUIClassifier.cpp, guilib/GUIKernel.cpp: fix further leaks
+	  in get_classifier
+	* classifier/svm/Optimizer.cpp, classifier/svm/Optimizer.h,
+	  classifier/svm/SVM_light.cpp, classifier/svm/SVM_light.h,
+	  regression/svr/SVR_light.cpp: fix another leak and get rid of
+	  extra svmlight specific prloqo interface files
+	* NEWS, base/SGObject.h, classifier/KNN.h,
+	  classifier/KernelPerceptron.h, classifier/LDA.h,
+	  classifier/Perceptron.h, classifier/PluginEstimate.h,
+	  classifier/svm/GPBTSVM.h, classifier/svm/LibLinear.h,
+	  classifier/svm/LibSVM.h, classifier/svm/LibSVMMultiClass.h,
+	  classifier/svm/LibSVMOneClass.h, classifier/svm/MPDSVM.h,
+	  classifier/svm/SVM.h, classifier/svm/SVMLin.h,
+	  classifier/svm/SVMOcas.h, classifier/svm/SVMSGD.h,
+	  classifier/svm/SVM_light.h, classifier/svm/SubGradientSVM.h,
+	  classifier/svm/Tron.h, classifier/svm/WDSVMOcas.h,
+	  classifier/svm/gmnplib.h, classifier/svm/gnpplib.h,
+	  classifier/svm/gpdtsolve.h, classifier/svm/qpbsvmlib.h,
+	  clustering/Hierarchical.h, clustering/KMeans.h,
+	  distributions/hmm/HMM.h, distributions/hmm/LinearHMM.h,
+	  features/Alphabet.h, features/ByteFeatures.h,
+	  features/CharFeatures.h, features/CombinedDotFeatures.h,
+	  features/CombinedFeatures.h, features/DummyFeatures.h,
+	  features/ExplicitSpecFeatures.h, features/FKFeatures.h,
+	  features/ImplicitWeightedSpecFeatures.h, features/IntFeatures.h,
+	  features/Labels.h, features/MindyGramFeatures.h,
+	  features/RealFeatures.h, features/RealFileFeatures.h,
+	  features/ShortFeatures.h, features/ShortRealFeatures.h,
+	  features/SimpleFeatures.h, features/SparseFeatures.h,
+	  features/StringFeatures.h, features/TOPFeatures.h,
+	  features/WDFeatures.h, features/WordFeatures.h,
+	  guilib/GUIClassifier.h, guilib/GUIDistance.h,
+	  guilib/GUIFeatures.h, guilib/GUIHMM.h, guilib/GUIKernel.h,
+	  guilib/GUILabels.h, guilib/GUIMath.h, guilib/GUIPluginEstimate.h,
+	  guilib/GUIPreProc.h, guilib/GUIStructure.cpp,
+	  guilib/GUIStructure.h, guilib/GUITime.h,
+	  interface/CmdLineInterface.cpp, interface/CmdLineInterface.h,
+	  interface/MatlabInterface.h, interface/OctaveInterface.h,
+	  interface/PythonInterface.h, interface/RInterface.h,
+	  interface/SGInterface.cpp, kernel/AvgDiagKernelNormalizer.h,
+	  kernel/FirstElementKernelNormalizer.h, kernel/GaussianKernel.h,
+	  kernel/IdentityKernelNormalizer.h, kernel/Kernel.h,
+	  kernel/SqrtDiagKernelNormalizer.h, lib/Array.h, lib/Array2.h,
+	  lib/Array3.h, lib/Cache.h, lib/Cplex.h, lib/DynamicArray.h,
+	  lib/File.h, lib/List.h, lib/Mathematics.h, lib/Signal.h,
+	  lib/SimpleFile.h, lib/Time.h, lib/Trie.h, lib/io.h,
+	  preproc/LogPlusOne.h, preproc/NormOne.h, preproc/PCACut.h,
+	  preproc/PruneVarSubMean.h, preproc/SortUlongString.h,
+	  preproc/SortWordString.h, regression/KRR.h, structure/DynProg.h,
+	  structure/Plif.cpp, structure/Plif.h, structure/PlifArray.h:
+	  implement basis function get_name() for all SGObject derived
+	  objects. this increadibly aids memory leak tracing
+	* base/SGObject.h, distance/Distance.cpp, distance/Distance.h,
+	  distributions/hmm/HMM.cpp, distributions/hmm/HMM.h,
+	  features/CombinedFeatures.cpp, guilib/GUIClassifier.cpp,
+	  guilib/GUIDistance.cpp, guilib/GUIFeatures.cpp,
+	  guilib/GUIFeatures.h, guilib/GUIKernel.cpp, guilib/GUILabels.h,
+	  guilib/GUIPreProc.cpp, guilib/GUIPreProc.h,
+	  interface/SGInterface.cpp, kernel/Kernel.cpp,
+	  kernel/SimpleLocalityImprovedStringKernel.cpp, lib/List.h: fix
+	  many memory leaks and crashers due to missing SG_REF/UNREFs
+
+2009-01-30  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* base/SGObject.h, features/StringFeatures.h,
+	  guilib/GUIClassifier.cpp, guilib/GUIDistance.cpp,
+	  guilib/GUIFeatures.cpp, guilib/GUIFeatures.h, guilib/GUIHMM.cpp,
+	  guilib/GUIKernel.cpp, guilib/GUILabels.cpp, guilib/GUILabels.h,
+	  guilib/GUIPluginEstimate.cpp, guilib/GUIPreProc.cpp,
+	  guilib/GUIStructure.cpp, guilib/GUIStructure.h,
+	  guilib/GUITime.cpp, interface/SGInterface.cpp, lib/List.h:
+	  convert everything from delete to use SG_UNREF
+	* base/Parallel.cpp, base/Version.cpp, lib/io.cpp: fix uninited
+	  refcounts
+	* base/Parallel.cpp, base/Parallel.h, base/SGObject.cpp,
+	  base/SGObject.h, base/Version.h, classifier/svm/SVM.cpp,
+	  classifier/svm/SVM_light.cpp, classifier/svm/WDSVMOcas.cpp,
+	  clustering/KMeans.cpp, distributions/hmm/HMM.cpp,
+	  features/DotFeatures.cpp, features/StringFeatures.h,
+	  guilib/GUIDistance.cpp, guilib/GUIFeatures.cpp,
+	  guilib/GUIPreProc.cpp, interface/CmdLineInterface.cpp,
+	  interface/MatlabInterface.cpp, interface/OctaveInterface.cpp,
+	  interface/PythonInterface.cpp, interface/RInterface.cpp,
+	  interface/SGInterface.cpp, kernel/CombinedKernel.cpp,
+	  kernel/Kernel.cpp, kernel/WeightedDegreePositionStringKernel.cpp,
+	  kernel/WeightedDegreeStringKernel.cpp, lib/DynamicArray.h,
+	  lib/Mathematics.cpp, lib/Mathematics.h, lib/Signal.cpp,
+	  lib/Signal.h, lib/io.cpp, lib/io.h, lib/python.cpp, lib/r.h,
+	  regression/svr/SVR_light.cpp, structure/DynProg.cpp: - convert
+	  all classes to use new io -> sg_io /parallel/version global
+	  objects
+	  - remove all interface specific cruft from anything not under
+	  interface / guilib
+	  - introduce finite() in lib/Mathematics.h
+	* base/SGObject.cpp, base/SGObject.h, classifier/svm/gmnpmkl.cpp,
+	  kernel/Kernel.cpp, lib/io.h: broken commit DON'T USE
+	* structure/Plif.h: remove obsolete code
+	* structure/Plif.cpp: remove obsolete code
+	* lib/Signal.cpp, lib/Signal.h, lib/cmdline.cpp, lib/io.cpp,
+	  lib/io.h, lib/matlab.cpp, lib/octave.cpp, lib/python.cpp,
+	  lib/r.cpp: This attempts to get rid of the language specific code
+	  in lib/io.{h,cpp} and lib/Signal.{cpp,h}.
+	  
+	  To this end every interface has to define a couple of global
+	  functions called
+	  sg_print_{message,warning,error} and sg_cancel_computations. The
+	  printing
+	  functions are called whenever anything is writting to the screen
+	  (and don't
+	  raise exceptions or anything).
+	  
+	  The cancel function is called to allow an interface to check for
+	  the occurrance
+	  of a signal and to set the immediate cancel flag. It will be
+	  called from
+	  core/busy loops only. This is to fix the varius segmentation
+	  faults caused by
+	  throwing exceptions within signal handlers (which are illegal -
+	  not in the
+	  standard).
+	* Makefile: on make install don't install gui/interface headers for
+	  libshogun
+	* classifier/svm/SVM_light.cpp: trap a division by zero
+
+2009-01-29  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* NEWS: update news
+
+2009-01-28  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* classifier/svm/WDSVMOcas.cpp: potentially fix the same things for
+	  WDSVMOcas
+	* classifier/svm/SVMOcas.cpp, classifier/svm/WDSVMOcas.cpp,
+	  classifier/svm/WDSVMOcas.h, guilib/GUIClassifier.cpp: bias
+	  finally works for svmocas
+	* NEWS: update NEWS
+	* features/DotFeatures.cpp: compile fix
+	* features/DotFeatures.cpp, features/DotFeatures.h,
+	  features/DotFeatures.i: impl. method to obtain feature space
+	* features/ImplicitWeightedSpecFeatures.cpp: fix same bug also in
+	  implicit wd spec features
+	* features/WDFeatures.cpp: fix crasher in WDFeatures and error: use
+	  from_degree again
+	* classifier/svm/SVMOcas.cpp: compile fixes related to ocas + bias
+	* classifier/svm/SVMOcas.cpp, classifier/svm/SVMOcas.h: bias 4
+	* classifier/svm/SVMOcas.cpp: bias 3
+	* classifier/svm/SVMOcas.cpp, classifier/svm/SVMOcas.h: bias 2
+	* classifier/svm/SVMOcas.cpp: bias 1
+	* features/CombinedDotFeatures.i, features/DotFeatures.i,
+	  features/ExplicitSpecFeatures.i,
+	  features/ImplicitWeightedSpecFeatures.i, features/WDFeatures.i:
+	  rename classes to remove C prefix
+	* classifier/svm/LibSVMOneClass.cpp, classifier/svm/SVM_libsvm.cpp:
+	  get printing functions right
+	* classifier/svm/LibSVM.cpp, classifier/svm/LibSVMMultiClass.cpp,
+	  classifier/svm/LibSVMOneClass.cpp, classifier/svm/Optimizer.cpp,
+	  classifier/svm/SVMOcas.cpp, classifier/svm/SVM_libsvm.cpp,
+	  classifier/svm/SVM_light.cpp, classifier/svm/gpdt.cpp,
+	  classifier/svm/gpdtsolve.cpp, interface/SGInterface.cpp,
+	  lib/Trie.cpp, regression/svr/LibSVR.cpp,
+	  regression/svr/SVR_light.cpp, structure/DynProg.cpp,
+	  structure/Plif.cpp, structure/Plif.h, structure/PlifArray.h,
+	  structure/PlifBase.h: remove all printf based functions and
+	  replace them with appropriate SG_PRINT functions
+	* classifier/svm/gmnpmkl.h: potential compile fix
+	* features/ImplicitWeightedSpecFeatures.cpp: minor cleanup
+	* INSTALL, README: fix isntall/readme
+	* classifier/svm/SVM_light.cpp: use dual simplex/presolving and fix
+	  a memleak and wrong constraint for glpk-mkl
+
+2009-01-27  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* classifier/svm/SVM_light.cpp, features/StringFeatures.h: add
+	  debug code to figure out what goes wrong when this assertion
+	  triggers
+
+2009-01-25  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* features/DotFeatures.cpp: disable progress output
+	* interface/SGInterface.cpp, kernel/Kernel.cpp: fix tppk bugs
+	* NEWS, classifier/svm/gmnpmkl.cpp: fix a warning in
+	  getsumofsignfreealphas in multiclass MKL, update NEWS
+	* classifier/svm/SVM_light.cpp, guilib/GUIKernel.cpp,
+	  guilib/GUIKernel.h, interface/SGInterface.cpp,
+	  kernel/AUCKernel.cpp, kernel/Kernel.h, kernel/Kernel.i,
+	  kernel/TensorProductPairKernel.cpp,
+	  kernel/TensorProductPairKernel.h,
+	  kernel/TensorProductPairKernel.i: implement tppk
+
+2009-01-23  Alexander Binder <alexander.binder@first.fraunhofer.de>
+
+	* classifier/svm/gmnpmkl.cpp, classifier/svm/gmnpmkl.h: moved
+	  testing routine from gnmpmkl{.h,.cpp} into examples
+
+2009-01-23  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* CONTRIBUTIONS, NEWS, classifier/svm/gmnpmkl.cpp,
+	  classifier/svm/gmnpmkl.h: minor code beatutifications, update
+	  NEWS and list of contributors
+
+2009-01-22  Alexander Binder <alexander.binder@first.fraunhofer.de>
+
+	* classifier/Classifier.h, classifier/svm/GMNPSVM.cpp,
+	  classifier/svm/GMNPSVM.h, classifier/svm/gmnpmkl.cpp,
+	  classifier/svm/gmnpmkl.h: implemented GLPK-based L1 MKL for the
+	  multiclass svm GMNPSVM
+
+2009-01-22  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* classifier/LinearClassifier.cpp, features/DotFeatures.cpp,
+	  features/DotFeatures.h: parallel output computation
+
+2009-01-21  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* features/CombinedDotFeatures.cpp, features/CombinedDotFeatures.h,
+	  guilib/GUICommands.h, interface/SGInterface.cpp,
+	  interface/SGInterface.h: allow getting of subfeature weights
+	* features/CombinedDotFeatures.cpp, features/CombinedDotFeatures.h,
+	  features/DotFeatures.h, features/WDFeatures.cpp,
+	  guilib/GUICommands.h, interface/SGInterface.cpp,
+	  interface/SGInterface.h: let the wd feature space also use
+	  sqrt(weights) (to be symmetric and consisten with spec features)
+	  and
+	  add a weight to each dotfeature object to allow weighting of the
+	  subfeatures of a combineddotfeature object
+	* features/ImplicitWeightedSpecFeatures.cpp,
+	  features/ImplicitWeightedSpecFeatures.h,
+	  kernel/WeightedCommWordStringKernel.cpp: implement normalization
+	  support for implicitwspecfeatures and modify weightedcommwords
+	  internal representation to be equivalent (breaks code that relies
+	  on the normal vector of the weightedcommwordstringkernel - but I
+	  guess nothing like this has been spotted in the wild yet)
+	* features/CombinedDotFeatures.cpp, features/Features.cpp,
+	  features/StringFeatures.h, interface/SGInterface.cpp: now
+	  add_todotfeatures works with WD/WSPEC
+
+2009-01-20  Gunnar Raetsch <Gunnar.Raetsch@tuebingen.mpg.de>
+
+	* kernel/WeightedDegreePositionStringKernel.cpp: * disabled a few
+	  checks for set_WD_postion_weights_lhs and _rhs.
+	  * now check whether lhs==rhs, and if so, then use
+	  position_weights_lhs instead of _rhs.
+	* interface/SGInterface.cpp: Don't understand the logic for
+	  set_WD_position_weights .. did not work for me.. fiddled around,
+	  but did not change anything
+	* structure/PlifBase.h: abstract print function
+	* structure/Plif.h: print function
+	* structure/PlifArray.h:
+
+2009-01-20  Alexander Zien <Alexander.Zien@tuebingen.mpg.de>
+
+	* classifier/svm/SVM_light.cpp:
+
+2009-01-20  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* features/StringFeatures.h: fix reading in string features < 1MB
+	  in size
+	* INSTALL, interface/SGInterface.cpp, interface/SGInterface.h:
+	  change syntax to allow diverse features to be created from
+	  strings
+	* classifier/svm/SVM_light.h: compile fix
+	* classifier/svm/SVM_light.cpp, configure: update glpk detection
+	  (include term_out test)
+	* NEWS, features/ExplicitSpecFeatures.h, features/Features.h,
+	  features/ImplicitWeightedSpecFeatures.cpp,
+	  features/ImplicitWeightedSpecFeatures.h,
+	  features/StringFeatures.h, interface/SGInterface.cpp: weighted
+	  spectrum features work now :)
+
+2009-01-19  Alexander Zien <Alexander.Zien@tuebingen.mpg.de>
+
+	* classifier/svm/SVM_light.cpp, classifier/svm/SVM_light.h:
+	  implemented Newton chunking MKL for q>1
+	  seems to run stably and fast
+
+2009-01-19  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* features/ImplicitWeightedSpecFeatures.cpp,
+	  features/WDFeatures.cpp: WDFeatures do work now :)
+	* features/ExplicitSpecFeatures.cpp,
+	  features/ExplicitSpecFeatures.h, features/ExplicitSpecFeatures.i,
+	  features/Features.i, features/ImplicitWeightedSpecFeatures.cpp,
+	  features/ImplicitWeightedSpecFeatures.h,
+	  features/ImplicitWeightedSpecFeatures.i,
+	  features/SpecFeatures.cpp, features/SpecFeatures.h,
+	  features/SpecFeatures.i, guilib/GUIFeatures.cpp,
+	  guilib/GUIFeatures.h: Impl. of spec features is too memory
+	  demanding, rename to ExplicitSpecFeatures
+	  and introduce ImplicitWeightedSpecFeatures for weighted spectrum
+	  kernel that
+	  requires the same inputs as the weightedcommwordkernel but only
+	  2x as much memory (not 2**8 times ...)
+	* features/SpecFeatures.cpp, features/SpecFeatures.h,
+	  guilib/GUIFeatures.cpp, guilib/GUIFeatures.h,
+	  interface/SGInterface.cpp: support standard spec kernel
+	  normalization
+	* features/SpecFeatures.cpp, features/SpecFeatures.h,
+	  features/StringFeatures.h, features/WDFeatures.cpp,
+	  features/WDFeatures.h, guilib/GUIFeatures.cpp,
+	  guilib/GUIFeatures.h, guilib/GUIKernel.cpp,
+	  interface/SGInterface.cpp: many (valgrind) fixes all over the
+	  place, Specfeatures work reliably now.
+
+2009-01-18  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* features/CombinedDotFeatures.cpp, features/CombinedDotFeatures.h,
+	  features/Features.cpp, features/Features.h, guilib/GUICommands.h,
+	  guilib/GUIFeatures.cpp, guilib/GUIFeatures.h,
+	  interface/SGInterface.cpp, interface/SGInterface.h: combined dot
+	  features work correctly now.
+
+2009-01-17  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* features/DotFeatures.cpp, features/DotFeatures.h,
+	  features/SimpleFeatures.h, features/SparseFeatures.h: implement
+	  dense_dot_range and remove the now obsolete function from sparse
+	  features - suddenly linear svms work again ;)
+
+2009-01-16  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* configure: fix typo in configure, for disable glpk
+	* classifier/svm/SVM_light.cpp: compile fix
+	* classifier/svm/SVM_light.cpp, classifier/svm/WDSVMOcas.h,
+	  interface/OctaveInterface.cpp: remove some cruft, fix a warning
+	* classifier/svm/SVM_light.cpp, classifier/svm/SVM_light.h,
+	  lib/Mathematics.h: write out which solver is taken when (for
+	  debugging) and use logsum to stabilize alex's qnorm mkl (doesn't
+	  seem to help...)
+	* interface/MatlabInterface.cpp: workaround bug in matlab logicals
+	  handling
+	* interface/OctaveInterface.cpp: obtain boolean value for floats
+	  for octave too
+	* classifier/svm/SVM_light.cpp: improve logic when which solver is
+	  used, compute obj in glpk based on new betas
+	* NEWS: fix examples and update NEWS
+	* regression/svr/SVR_light.cpp: fix compilation w/ cplex
+	* classifier/svm/SVM_light.cpp, classifier/svm/SVM_light.h: GLPK
+	  support for 1-norm MKL based on code from Chen Guohua
+	* classifier/svm/SVM_light.cpp, classifier/svm/SVM_light.h,
+	  regression/svr/SVR_light.cpp: further remove code duplication
+	* classifier/svm/SVM_light.cpp, classifier/svm/SVM_light.h,
+	  regression/svr/SVR_light.cpp: factor out mkl into separate
+	  functions (to avoid code duplication) and use these functions for
+	  linadd and vanilla kernels
+
+2009-01-15  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* classifier/Classifier.cpp, classifier/Classifier.h,
+	  classifier/svm/SVM_light.cpp, guilib/GUIClassifier.cpp,
+	  guilib/GUIClassifier.h, guilib/GUICommands.h,
+	  interface/SGInterface.cpp, interface/SGInterface.h: this adds an
+	  option to select the solver type on the fly
+	  (cplex/glpk/internal/auto)
+
+2009-01-15  Alexander Zien <Alexander.Zien@tuebingen.mpg.de>
+
+	* classifier/svm/SVM_light.cpp: compiles and works again in
+	  slightly more modularized version
+	* classifier/svm/SVM_light.cpp:
+
+2009-01-15  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* classifier/svm/SVM_light.cpp, classifier/svm/SVM_light.h:
+	  potentially integrate alex's q-norm mkl solver
+	* classifier/svm/SVM_light.cpp: magic reordering potentially fixes
+	  convergence
+
+2009-01-15  Alexander Zien <Alexander.Zien@tuebingen.mpg.de>
+
+	* classifier/svm/SVM_light.cpp, classifier/svm/SVM_light.h:
+
+2009-01-15  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* classifier/svm/SVM_light.cpp: with debug code
+	* features/Features.h, features/SpecFeatures.cpp,
+	  features/SpecFeatures.h, features/WDFeatures.cpp,
+	  features/WDFeatures.h, guilib/GUIFeatures.cpp,
+	  guilib/GUIFeatures.h, interface/SGInterface.cpp: minor fix
+	* interface/OctaveInterface.cpp, lib/octave_typemaps.i: fix
+	  copy&paste input corruption bug in octave static and modular
+	  interfaces
+	  occurring only with int32/int16 matrices/vectors (used in
+	  functions such as
+	  from_position_list!)
+
+2009-01-14  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* configure: minor formatting change
+	* features/SpecFeatures.cpp, features/SpecFeatures.h,
+	  features/WDFeatures.cpp, features/WDFeatures.h: potentially
+	  complete implementation of WD/SpecFeatures
+
+2009-01-13  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* features/DotFeatures.h, features/DotFeatures.i,
+	  features/Features.i, features/SpecFeatures.i,
+	  features/WDFeatures.cpp, features/WDFeatures.i,
+	  guilib/GUIClassifier.cpp: continue on WDFeatures
+	* distance/Distance.cpp, features/Features.cpp,
+	  features/Features.h, features/SimpleFeatures.h,
+	  features/SpecFeatures.cpp, features/SpecFeatures.h,
+	  features/WDFeatures.cpp, features/WDFeatures.h, kernel/Kernel.h,
+	  lib/common.h: Implement spec features. also as dot features are
+	  not really a feature class,
+	  but more features with a dot property, start implementing feature
+	  properties (similar to kernel properties).
+
+2009-01-12  Sebastian Henschel <shogun@kodeaffe.de>
+
+	* NEWS: - Updated NEWS.
+
+2009-01-12  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* classifier/svm/SVM_light.cpp, classifier/svm/SVM_light.h: - fix
+	  compilation when cplex is not available
+	  - use Math_init_random(as.integer(1.0)) in test r-modular test
+	  suite (required for swig 1.3.37)
+	* NEWS: update NEWS
+	* classifier/svm/SVM_light.cpp, lib/Mathematics.h: q-norm mkl for
+	  linadd based kernels
+	* classifier/svm/SVM_light.cpp: fix convergence criterion, add
+	  constraint removal
+	* classifier/svm/SVM_light.cpp: remove debug code
+	* classifier/svm/SVM_light.cpp, classifier/svm/SVM_light.h,
+	  lib/Mathematics.h: add q-norm mkl
+
+2009-01-09  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* features/SpecFeatures.cpp, features/SpecFeatures.h: uint8 should
+	  be uint16
+	* features/SpecFeatures.cpp, features/SpecFeatures.h,
+	  features/WDFeatures.cpp: work in progress checkin for
+	  wdfeatures/specfeatures
+	* guilib/GUIFeatures.h: try to be clever when converting DNA to
+	  binary formats and select RAWDNA as target type
+	* guilib/GUIFeatures.h, interface/SGInterface.cpp: add support for
+	  sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'BYTE') and
+	  remove some cruft from GUIFeatures
+	* classifier/svm/SVM.h, guilib/GUIClassifier.cpp,
+	  guilib/GUIClassifier.h: enable general norm support - interface
+	  side only
+	* guilib/GUIKernel.cpp: fix crasher with comm* kernel
+	* guilib/GUIClassifier.cpp: fix type check, test suite for
+	  octave/python-modular runs through, commword kernel fix requires
+	  re-generation of test
+	* classifier/LinearClassifier.i: merge SparseLinearClassifier.i
+	  into LinearClassifier.i
+	* NEWS, classifier/Classifier.i, classifier/LDA.cpp,
+	  classifier/LDA.h, classifier/LPBoost.cpp, classifier/LPBoost.h,
+	  classifier/LPM.cpp, classifier/LPM.h,
+	  classifier/LinearClassifier.cpp, classifier/LinearClassifier.h,
+	  classifier/Perceptron.cpp, classifier/Perceptron.h,
+	  classifier/SparseLinearClassifier.cpp,
+	  classifier/SparseLinearClassifier.h,
+	  classifier/SparseLinearClassifier.i,
+	  classifier/SubGradientLPM.cpp, classifier/SubGradientLPM.h,
+	  classifier/svm/LibLinear.cpp, classifier/svm/LibLinear.h,
+	  classifier/svm/SVMLin.cpp, classifier/svm/SVMLin.h,
+	  classifier/svm/SVMOcas.cpp, classifier/svm/SVMOcas.h,
+	  classifier/svm/SVMSGD.cpp, classifier/svm/SVMSGD.h,
+	  classifier/svm/SVM_linear.cpp, classifier/svm/SVM_linear.h,
+	  classifier/svm/SubGradientSVM.cpp,
+	  classifier/svm/SubGradientSVM.h, classifier/svm/ssl.cpp,
+	  classifier/svm/ssl.h, configure, distributions/hmm/HMM.h,
+	  features/CombinedDotFeatures.cpp, features/CombinedDotFeatures.h,
+	  features/CombinedDotFeatures.i, features/DotFeatures.h,
+	  features/SimpleFeatures.h, features/SparseFeatures.h,
+	  features/WDFeatures.cpp, features/WDFeatures.h,
+	  guilib/GUIClassifier.cpp, guilib/GUIClassifier.h,
+	  interface/SGInterface.cpp, lib/List.h: Integrate new DotFeatures
+	  into existing linear classifiers
+
+2009-01-08  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* features/CombinedDotFeatures.cpp, features/CombinedDotFeatures.h,
+	  features/StringFeatures.h, features/WDFeatures.cpp,
+	  features/WDFeatures.h, features/WDFeatures.i: started work on
+	  WDFeatures + several bugfixes in combineddotfeatures
+	* features/CombinedDotFeatures.cpp, features/CombinedDotFeatures.h,
+	  features/CombinedDotFeatures.i, features/DotFeatures.cpp,
+	  features/DotFeatures.h, features/DotFeatures.i,
+	  features/Features.h, features/Features.i,
+	  features/RealFeatures.cpp, features/SimpleFeatures.h,
+	  features/SparseFeatures.h, lib/Mathematics.h: Implement combined
+	  dot features and dot features for simple and sparse features.
+	  
+	  This required a hierarchy change: simple and sparse features are
+	  now derived
+	  from dot features (which in turn derive form features). combined
+	  dot features
+	  use copy & paste code from combined features to avoid multiple
+	  inheritance (bad
+	  bad diamonds, and dynamic_cast<CRealFeatures>(feat) is
+	  #$*Y#$%(%Y&!!!)
+	  
+	  None of this is tested yet. Still TODO:
+	  
+	  - integrate into linear classfiers/kernels
+	  - implement wd/spec features
+	  
+	  Not compile tested under any except the cmdline interface.
+
+2009-01-05  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* features/CombinedDotFeatures.h, features/DotFeatures.h,
+	  features/Features.h: prototyping of new dotfeatures and
+	  combineddotfeatures
+
+2008-12-30  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* guilib/GUIClassifier.cpp: check for SVR before setting tube
+	  epsilon
+	* structure/DynProg.cpp: don't create the array on the stack
+	* configure: sign also cmds
+	* Makefile, configure: add iphone detection in configure / and sign
+	  binary
+
+2008-12-30  Gunnar Raetsch <Gunnar.Raetsch@tuebingen.mpg.de>
+
+	* base/SGObject.h, base/Version.h:
+	* lib/Mathematics.h: minor change for Mac OS and iPhone OS
+
+2008-12-27  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* kernel/OligoKernel.cpp, kernel/OligoKernel.h: remove unused
+	  includes, fixes a crasher occurring with long obsolete matlab
+	  versions
+
+2008-12-13  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* Makefile: build static libshogun.a for libshogun target
+
+2008-12-11  Jonas Behr <Jonas.Behr@tuebingen.mpg.de>
+
+	* structure/DynProg.cpp, structure/DynProg.h: -- changes of
+	  structure branche merged back into trunk
+	  -- function best_path_call restored
+
+2008-12-09  Sebastian Henschel <shogun@kodeaffe.de>
+
+	* guilib/GUIKernel.cpp: interface:
+	  - Fixed compiling issue on normalization of CommString kernels.
+
+2008-12-08  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* guilib/GUIKernel.cpp: fix regression for COMM* kernels:
+	  normalization argument was ignored
+
+2008-12-05  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* classifier/svm/SVM.cpp, classifier/svm/libocas_common.h,
+	  clustering/KMeans.cpp, distributions/histogram/Histogram.cpp,
+	  guilib/GUIKernel.cpp, interface/SGInterface.cpp,
+	  kernel/CombinedKernel.cpp, kernel/Kernel.cpp,
+	  kernel/PolyMatchStringKernel.cpp,
+	  kernel/WeightedDegreePositionStringKernel.cpp,
+	  kernel/WeightedDegreeStringKernel.cpp,
+	  regression/svr/SVR_light.cpp, structure/DynProg.cpp: hopefully
+	  removed all occurences of variable length arrays and log/pow
+	  calls
+
+2008-12-04  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* kernel/PolyMatchWordStringKernel.h: add missing bracket in front
+	  of sum
+	* classifier/svm/SVM_light.cpp: don't use variable length arrays in
+	  svmlight
+	* lib/io.h: use C99 variadic macros
+
+2008-11-28  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* kernel/WeightedDegreePositionStringKernel.h,
+	  kernel/WeightedDegreePositionStringKernel.i: add an option to set
+	  wds kernel position weights
+
+2008-11-26  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* configure: better description for wordsize detection
+	* configure: detect integer word size
+
 2008-11-25  Sebastian Henschel <shogun@kodeaffe.de>
 
+	* ChangeLog: updated changelog
 	* ChangeLog, Makefile: - Improved handling of ChangeLog creation a
 	  little bit.
 	* Makefile: updated changelog

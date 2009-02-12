@@ -19,17 +19,19 @@
 		  OligoKernel.
 		- Ocas and WDOcas can be used with a bias feature now.
 		- Update to LibSVM 2.88.
+		- Enable parallelized HMM code by default.
 	* Cleanup and API Changes:
 		- Shogun has been split up into libshogun and the static and modular
 		interfaces linking to it.
 		- Static interfaces now do proper reference counting.
 		- Remove SparseLinearClassifier: LinearClassifier is a drop-in
 		  replacement.
-		- WDOcas and SVMOcas now have the bias term enabled by default
+		- WDOcas and SVMOcas now have the bias term enabled by default.
 	* Bugfixes:
 		- Fix regression for COMM* kernels (normalization argument was ignored).
 		- Use C99 variadic macros, instead of gcc's own variant.
 		- Disable lp_solve, it is not required as we are using GLPK now.
+		- Fix HMM training.
 
 2008-11-25 Soeren Sonnenburg <debian@nn7.de>
 
