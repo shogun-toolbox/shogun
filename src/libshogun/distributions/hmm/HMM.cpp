@@ -5545,15 +5545,15 @@ bool CHMM::baum_welch_viterbi_train(BaumWelchViterbiType type)
 
 		switch (type) {
 			case BW_NORMAL:
-				estimate_model_baum_welch(estimate); break;
+				working->estimate_model_baum_welch(estimate); break;
 			case BW_TRANS:
-				estimate_model_baum_welch_trans(estimate); break;
+				working->estimate_model_baum_welch_trans(estimate); break;
 			case BW_DEFINED:
-				estimate_model_baum_welch_defined(estimate); break;
+				working->estimate_model_baum_welch_defined(estimate); break;
 			case VIT_NORMAL:
-				estimate_model_viterbi(estimate); break;
+				working->estimate_model_viterbi(estimate); break;
 			case VIT_DEFINED:
-				estimate_model_viterbi_defined(estimate); break;
+				working->estimate_model_viterbi_defined(estimate); break;
 		}
 		prob_train=estimate->model_probability();
 		//SG_PRINT("prob_train=%g prob=%g\n", prob_train, prob);
