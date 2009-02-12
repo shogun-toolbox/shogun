@@ -54,7 +54,7 @@ stop:
 	@echo "most of the time"
 	@echo
 	@echo "cd src"
-	@echo "./configure
+	@echo "./configure"
 	@echo "make"
 	@echo
 	@echo "which will build all available interfaces of shogun"
