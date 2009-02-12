@@ -87,7 +87,7 @@ private:
 	int64_t size;
 	struct head_t
 	{
-		head_t *prev, *next;	// a cicular list
+		head_t *prev, *next;	// a circular list
 		Qfloat *data;
 		int32_t len;		// data[0,len) is cached in this entry
 	};
@@ -302,7 +302,7 @@ protected:
 	int32_t *active_set;
 	float64_t *G_bar;		// gradient, if we treat free variables as 0
 	int32_t l;
-	bool unshrinked;	// XXX
+	bool unshrink;	// XXX
 
 	float64_t get_C(int32_t i)
 	{
@@ -325,7 +325,7 @@ protected:
 	virtual float64_t calculate_rho();
 	virtual void do_shrinking();
 private:
-	bool be_shrunken(int32_t i, float64_t Gmax1, float64_t Gmax2);
+	bool be_shrunk(int32_t i, float64_t Gmax1, float64_t Gmax2);	
 };
 
 void Solver::swap_index(int32_t i, int32_t j)
@@ -346,18 +346,37 @@ void Solver::reconstruct_gradient()
 
 	if(active_size == l) return;
 
-	int32_t i;
-	for(i=active_size;i<l;i++)
-		G[i] = G_bar[i] + p[i];
+	int32_t i,j;
+	int32_t nr_free = 0;
+
+	for(j=active_size;j<l;j++)
+		G[j] = G_bar[j] + p[j];
+
+	for(j=0;j<active_size;j++)
+		if(is_free(j))
+			nr_free++;
 	
-	for(i=0;i<active_size;i++)
-		if(is_free(i))
+	if (nr_free*l > 2*active_size*(l-active_size))
+	{
+		for(i=active_size;i<l;i++)
 		{
-			const Qfloat *Q_i = Q->get_Q(i,l);
-			float64_t alpha_i = alpha[i];
-			for(int32_t j=active_size;j<l;j++)
-				G[j] += alpha_i * Q_i[j];
+			const Qfloat *Q_i = Q->get_Q(i,active_size);
+			for(j=0;j<active_size;j++)
+				if(is_free(j))
+					G[i] += alpha[j] * Q_i[j];
 		}
+	}
+	else
+	{
+		for(i=0;i<active_size;i++)
+			if(is_free(i))
+			{
+				const Qfloat *Q_i = Q->get_Q(i,l);
+				float64_t alpha_i = alpha[i];
+				for(j=active_size;j<l;j++)
+					G[j] += alpha_i * Q_i[j];
+			}
+	}
 }
 
 void Solver::Solve(
@@ -374,7 +393,7 @@ void Solver::Solve(
 	this->Cp = p_Cp;
 	this->Cn = p_Cn;
 	this->eps = p_eps;
-	unshrinked = false;
+	unshrink = false;
 
 	// initialize alpha_status
 	{
@@ -677,7 +696,7 @@ int32_t Solver::select_working_set(
 				if (grad_diff > 0)
 				{
 					float64_t obj_diff; 
-					float64_t quad_coef=Q_i[i]+QD[j]-2*y[i]*Q_i[j];
+					float64_t quad_coef=Q_i[i]+QD[j]-2.0*y[i]*Q_i[j];
 					if (quad_coef > 0)
 						obj_diff = -(grad_diff*grad_diff)/quad_coef;
 					else
@@ -701,7 +720,7 @@ int32_t Solver::select_working_set(
 				if (grad_diff > 0)
 				{
 					float64_t obj_diff; 
-					float64_t quad_coef=Q_i[i]+QD[j]+2*y[i]*Q_i[j];
+					float64_t quad_coef=Q_i[i]+QD[j]+2.0*y[i]*Q_i[j];
 					if (quad_coef > 0)
 						obj_diff = -(grad_diff*grad_diff)/quad_coef;
 					else
@@ -726,7 +745,7 @@ int32_t Solver::select_working_set(
 	return 0;
 }
 
-bool Solver::be_shrunken(int32_t i, float64_t Gmax1, float64_t Gmax2)
+bool Solver::be_shrunk(int i, float64_t Gmax1, float64_t Gmax2)
 {
 	if(is_upper_bound(i))
 	{
@@ -739,12 +758,13 @@ bool Solver::be_shrunken(int32_t i, float64_t Gmax1, float64_t Gmax2)
 	{
 		if(y[i]==+1)
 			return(G[i] > Gmax2);
-		else	
+		else
 			return(G[i] > Gmax1);
 	}
 	else
 		return(false);
 }
+
 
 void Solver::do_shrinking()
 {
@@ -783,43 +803,26 @@ void Solver::do_shrinking()
 		}
 	}
 
-	// shrink
+	if(unshrink == false && Gmax1 + Gmax2 <= eps*10) 
+	{
+		unshrink = true;
+		reconstruct_gradient();
+		active_size = l;
+	}
 
 	for(i=0;i<active_size;i++)
-		if (be_shrunken(i, Gmax1, Gmax2))
+		if (be_shrunk(i, Gmax1, Gmax2))
 		{
 			active_size--;
 			while (active_size > i)
 			{
-				if (!be_shrunken(active_size, Gmax1, Gmax2))
+				if (!be_shrunk(active_size, Gmax1, Gmax2))
 				{
 					swap_index(i,active_size);
 					break;
 				}
 				active_size--;
 			}
-		}
-
-	// unshrink, check all variables again before final iterations
-
-	if(unshrinked || Gmax1 + Gmax2 > eps*10) return;
-	
-	unshrinked = true;
-	reconstruct_gradient();
-
-	for(i=l-1;i>=active_size;i--)
-		if (!be_shrunken(i, Gmax1, Gmax2))
-		{
-			while (active_size < i)
-			{
-				if (be_shrunken(active_size, Gmax1, Gmax2))
-				{
-					swap_index(i,active_size);
-					break;
-				}
-				active_size++;
-			}
-			active_size++;
 		}
 }
 
@@ -882,7 +885,7 @@ private:
 	SolutionInfo *si;
 	int32_t select_working_set(int32_t &i, int32_t &j, float64_t &gap);
 	float64_t calculate_rho();
-	bool be_shrunken(
+	bool be_shrunk(
 		int32_t i, float64_t Gmax1, float64_t Gmax2, float64_t Gmax3,
 		float64_t Gmax4);
 	void do_shrinking();
@@ -992,7 +995,7 @@ int32_t Solver_NU::select_working_set(
 
 	gap=max(Gmaxp+Gmaxp2,Gmaxn+Gmaxn2);
 	if(gap < eps)
- 		return 1;
+		return 1;
 
 	if (y[Gmin_idx] == +1)
 		out_i = Gmaxp_idx;
@@ -1003,7 +1006,7 @@ int32_t Solver_NU::select_working_set(
 	return 0;
 }
 
-bool Solver_NU::be_shrunken(
+bool Solver_NU::be_shrunk(
 	int32_t i, float64_t Gmax1, float64_t Gmax2, float64_t Gmax3,
 	float64_t Gmax4)
 {
@@ -1054,43 +1057,26 @@ void Solver_NU::do_shrinking()
 		}
 	}
 
-	// shrinking
+	if(unshrink == false && max(Gmax1+Gmax2,Gmax3+Gmax4) <= eps*10) 
+	{
+		unshrink = true;
+		reconstruct_gradient();
+		active_size = l;
+	}
 
 	for(i=0;i<active_size;i++)
-		if (be_shrunken(i, Gmax1, Gmax2, Gmax3, Gmax4))
+		if (be_shrunk(i, Gmax1, Gmax2, Gmax3, Gmax4))
 		{
 			active_size--;
 			while (active_size > i)
 			{
-				if (!be_shrunken(active_size, Gmax1, Gmax2, Gmax3, Gmax4))
+				if (!be_shrunk(active_size, Gmax1, Gmax2, Gmax3, Gmax4))
 				{
 					swap_index(i,active_size);
 					break;
 				}
 				active_size--;
 			}
-		}
-
-	// unshrink, check all variables again before final iterations
-
-	if(unshrinked || max(Gmax1+Gmax2,Gmax3+Gmax4) > eps*10) return;
-	
-	unshrinked = true;
-	reconstruct_gradient();
-
-	for(i=l-1;i>=active_size;i--)
-		if (!be_shrunken(i, Gmax1, Gmax2, Gmax3, Gmax4))
-		{
-			while (active_size < i)
-			{
-				if (be_shrunken(active_size, Gmax1, Gmax2, Gmax3, Gmax4))
-				{
-					swap_index(i,active_size);
-					break;
-				}
-				active_size++;
-			}
-			active_size++;
 		}
 }
 
