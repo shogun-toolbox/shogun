@@ -398,27 +398,27 @@ class CHMM : public CDistribution
 		};
 
 		inline T_ALPHA_BETA & ALPHA_CACHE(int32_t dim) {
-			return alpha_cache[dim%parallel.get_num_threads()] ; } ;
+			return alpha_cache[dim%parallel->get_num_threads()] ; } ;
 		inline T_ALPHA_BETA & BETA_CACHE(int32_t dim) {
-			return beta_cache[dim%parallel.get_num_threads()] ; } ;
+			return beta_cache[dim%parallel->get_num_threads()] ; } ;
 #ifdef USE_LOGSUMARRAY 
 		inline float64_t* ARRAYS(int32_t dim) {
-			return arrayS[dim%parallel.get_num_threads()] ; } ;
+			return arrayS[dim%parallel->get_num_threads()] ; } ;
 #endif
 		inline float64_t* ARRAYN1(int32_t dim) {
-			return arrayN1[dim%parallel.get_num_threads()] ; } ;
+			return arrayN1[dim%parallel->get_num_threads()] ; } ;
 		inline float64_t* ARRAYN2(int32_t dim) {
-			return arrayN2[dim%parallel.get_num_threads()] ; } ;
+			return arrayN2[dim%parallel->get_num_threads()] ; } ;
 		inline T_STATES* STATES_PER_OBSERVATION_PSI(int32_t dim) {
-			return states_per_observation_psi[dim%parallel.get_num_threads()] ; } ;
+			return states_per_observation_psi[dim%parallel->get_num_threads()] ; } ;
 		inline const T_STATES* STATES_PER_OBSERVATION_PSI(int32_t dim) const {
-			return states_per_observation_psi[dim%parallel.get_num_threads()] ; } ;
+			return states_per_observation_psi[dim%parallel->get_num_threads()] ; } ;
 		inline T_STATES* PATH(int32_t dim) {
-			return path[dim%parallel.get_num_threads()] ; } ;
+			return path[dim%parallel->get_num_threads()] ; } ;
 		inline bool & PATH_PROB_UPDATED(int32_t dim) {
-			return path_prob_updated[dim%parallel.get_num_threads()] ; } ;
+			return path_prob_updated[dim%parallel->get_num_threads()] ; } ;
 		inline int32_t & PATH_PROB_DIMENSION(int32_t dim) {
-			return path_prob_dimension[dim%parallel.get_num_threads()] ; } ;
+			return path_prob_dimension[dim%parallel->get_num_threads()] ; } ;
 #else
 		inline T_ALPHA_BETA & ALPHA_CACHE(int32_t /*dim*/) {
 			return alpha_cache ; } ;

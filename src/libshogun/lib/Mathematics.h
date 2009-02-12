@@ -1043,40 +1043,41 @@ class CMath : public CSGObject
 
 			if (!finite(p))
 				return q;
+
 			if (!finite(q))
 			{
-				SG_SWARNING(("INVALID second operand to logsum(%f,%f) expect undefined results\n", p, q);
-						return NAN;
-						}
-						diff = p - q;
-						if (diff > 0)
-						return diff > LOGRANGE? p : p + logtable[(int)(diff * LOGACCURACY)];
-						return -diff > LOGRANGE? q : q + logtable[(int)(-diff * LOGACCURACY)];
-						}
+				SG_SWARNING("INVALID second operand to logsum(%f,%f) expect undefined results\n", p, q);
+				return NAN;
+			}
+			diff = p - q;
+			if (diff > 0)
+				return diff > LOGRANGE? p : p + logtable[(int)(diff * LOGACCURACY)];
+			return -diff > LOGRANGE? q : q + logtable[(int)(-diff * LOGACCURACY)];
+		}
 
-						///init log table of form log(1+exp(x))
-						static void init_log_table();
+		///init log table of form log(1+exp(x))
+		static void init_log_table();
 
-						/// determine int32_t x for that log(1+exp(-x)) == 0
-						static int32_t determine_logrange();
+		/// determine int32_t x for that log(1+exp(-x)) == 0
+		static int32_t determine_logrange();
 
-						/// determine accuracy, such that the thing fits into MAX_LOG_TABLE_SIZE, needs logrange as argument
-						static int32_t determine_logaccuracy(int32_t range);
+		/// determine accuracy, such that the thing fits into MAX_LOG_TABLE_SIZE, needs logrange as argument
+		static int32_t determine_logaccuracy(int32_t range);
 #else
-						static inline float64_t logarithmic_sum(
-							float64_t p, float64_t q)
-						{
-						float64_t diff;
+		static inline float64_t logarithmic_sum(
+				float64_t p, float64_t q)
+		{
+			float64_t diff;
 
-						if (!finite(p))
-							return q;
-						if (!finite(q))
-							return p;
-						diff = p - q;
-						if (diff > 0)
-							return diff > LOGRANGE? p : p + log(1 + exp(-diff));
-						return -diff > LOGRANGE? q : q + log(1 + exp(diff));
-						}
+			if (!finite(p))
+				return q;
+			if (!finite(q))
+				return p;
+			diff = p - q;
+			if (diff > 0)
+				return diff > LOGRANGE? p : p + log(1 + exp(-diff));
+			return -diff > LOGRANGE? q : q + log(1 + exp(diff));
+		}
 #endif
 #ifdef LOG_SUM_ARRAY
 				/** sum up a whole array of values in logspace.
@@ -1124,6 +1125,7 @@ class CMath : public CSGObject
 
 				/// random generator seed
 				static uint32_t seed;
+				static char* rand_state;
 
 #ifdef USE_LOGCACHE	
 
@@ -1134,7 +1136,6 @@ class CMath : public CSGObject
 				///table with log-values
 				static float64_t* logtable;	
 #endif
-				static char* rand_state;
 };
 
 	template <class T1,class T2>

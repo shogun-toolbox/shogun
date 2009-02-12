@@ -210,10 +210,16 @@ CHMM::CHMM(int32_t p_N, float64_t* p, float64_t* q, float64_t* a)
 	this->p_observations=NULL;
 	this->reused_caches=false;
 
+#ifdef USE_HMMPARALLEL_STRUCTURES
+	this->alpha_cache=NULL;
+	this->beta_cache=NULL;
+#else
 	this->alpha_cache.table=NULL;
 	this->beta_cache.table=NULL;
 	this->alpha_cache.dimension=0;
 	this->beta_cache.dimension=0;
+#endif
+
 #ifndef NOVIT
 	this->states_per_observation_psi=NULL ;
 	this->path=NULL;
@@ -261,10 +267,16 @@ CHMM::CHMM(
 	this->p_observations=NULL;
 	this->reused_caches=false;
 
+#ifdef USE_HMMPARALLEL_STRUCTURES
+	this->alpha_cache=NULL;
+	this->beta_cache=NULL;
+#else
 	this->alpha_cache.table=NULL;
 	this->beta_cache.table=NULL;
 	this->alpha_cache.dimension=0;
 	this->beta_cache.dimension=0;
+#endif
+
 #ifndef NOVIT
 	this->states_per_observation_psi=NULL ;
 	this->path=NULL;
@@ -601,13 +613,13 @@ bool CHMM::initialize(CModel* m, float64_t pseudo, FILE* modelfile)
 #endif //USE_HMMPARALLEL_STRUCTURES
 
 #ifdef USE_HMMPARALLEL_STRUCTURES
-	arrayN1=new P_float64_t[parallel->get_num_threads()];
-	arrayN2=new P_float64_t[parallel->get_num_threads()];
+	arrayN1=new float64_t*[parallel->get_num_threads()];
+	arrayN2=new float64_t*[parallel->get_num_threads()];
 #endif //USE_HMMPARALLEL_STRUCTURES
 
 #ifdef LOG_SUMARRAY
 #ifdef USE_HMMPARALLEL_STRUCTURES
-	arrayS=new P_float64_t[parallel->get_num_threads()] ;	  
+	arrayS=new float64_t*[parallel->get_num_threads()] ;	  
 #endif // USE_HMMPARALLEL_STRUCTURES
 #endif //LOG_SUMARRAY
 
@@ -1244,7 +1256,7 @@ float64_t CHMM::model_probability_comp()
 float64_t CHMM::model_probability_comp() 
 {
 	pthread_t *threads=new pthread_t[parallel->get_num_threads()];
-	S_MODEL_PROB_PARAM *params=new S_MODEL_PROB_PARAM[parallel->get_num_threads()];
+	S_MODEL_PROB_THREAD_PARAM *params=new S_MODEL_PROB_THREAD_PARAM[parallel->get_num_threads()];
 
 	SG_INFO( "computing full model probablity\n");
 	mod_prob=0;
@@ -1261,11 +1273,11 @@ float64_t CHMM::model_probability_comp()
 #endif // SUNOS
 	}
 
-	for (cpu=0; cpu<parallel->get_num_threads(); cpu++)
+	for (int32_t cpu=0; cpu<parallel->get_num_threads(); cpu++)
 	{
 		void* ret;
 		pthread_join(threads[cpu], &ret);
-		mod_prob+=(float64_t) ret;
+		mod_prob+=*((float64_t*) ret);
 	}
 
 	delete[] threads;
@@ -1277,48 +1289,22 @@ float64_t CHMM::model_probability_comp()
 
 void* CHMM::bw_dim_prefetch(void * params)
 {
-	CHMM* hmm=((S_THREAD_PARAM*)params)->hmm ;
-	int32_t dim=((S_THREAD_PARAM*)params)->dim ;
-	float64_t*p_buf=((S_THREAD_PARAM*)params)->p_buf ;
-	float64_t*q_buf=((S_THREAD_PARAM*)params)->q_buf ;
-	float64_t*a_buf=((S_THREAD_PARAM*)params)->a_buf ;
-	float64_t*b_buf=((S_THREAD_PARAM*)params)->b_buf ;
-	((S_THREAD_PARAM*)params)->ret = hmm->prefetch(dim, true, p_buf, q_buf, a_buf, b_buf) ;
-	return NULL ;
-}
-
-float64_t CHMM::model_prob_thread(void* params)
-{
-	CHMM* hmm=((S_THREAD_PARAM*)params)->hmm ;
-	int32_t dim_start=((S_THREAD_PARAM*)params)->dim_start;
-	int32_t dim_stop=((S_THREAD_PARAM*)params)->dim_stop;
-
-	float64_t prob=0;
-	for (int32_t dim=dim_start; dim<dim_stop; dim++)
-		hmm->model_probability(dim);
-
-	ab_buf_comp(p_buf, q_buf, a_buf, b_buf, dim) ;
-	return modprob ;
-} ;
-
-void* CHMM::bw_dim_prefetch(void * params)
-{
-	CHMM* hmm=((S_THREAD_PARAM*)params)->hmm ;
-	int32_t dim=((S_THREAD_PARAM*)params)->dim ;
-	float64_t*p_buf=((S_THREAD_PARAM*)params)->p_buf ;
-	float64_t*q_buf=((S_THREAD_PARAM*)params)->q_buf ;
-	float64_t*a_buf=((S_THREAD_PARAM*)params)->a_buf ;
-	float64_t*b_buf=((S_THREAD_PARAM*)params)->b_buf ;
-	((S_THREAD_PARAM*)params)->ret = hmm->prefetch(dim, true, p_buf, q_buf, a_buf, b_buf) ;
+	CHMM* hmm=((S_BW_THREAD_PARAM*)params)->hmm ;
+	int32_t dim=((S_BW_THREAD_PARAM*)params)->dim ;
+	float64_t*p_buf=((S_BW_THREAD_PARAM*)params)->p_buf ;
+	float64_t*q_buf=((S_BW_THREAD_PARAM*)params)->q_buf ;
+	float64_t*a_buf=((S_BW_THREAD_PARAM*)params)->a_buf ;
+	float64_t*b_buf=((S_BW_THREAD_PARAM*)params)->b_buf ;
+	((S_BW_THREAD_PARAM*)params)->ret = hmm->prefetch(dim, true, p_buf, q_buf, a_buf, b_buf) ;
 	return NULL ;
 }
 
 #ifndef NOVIT
 void* CHMM::vit_dim_prefetch(void * params)
 {
-	CHMM* hmm=((S_THREAD_PARAM*)params)->hmm ;
-	int32_t dim=((S_THREAD_PARAM*)params)->dim ;
-	((S_THREAD_PARAM*)params)->ret = hmm->prefetch(dim, false) ;
+	CHMM* hmm=((S_BW_THREAD_PARAM*)params)->hmm ;
+	int32_t dim=((S_BW_THREAD_PARAM*)params)->dim ;
+	((S_BW_THREAD_PARAM*)params)->ret = hmm->prefetch(dim, false) ;
 	return NULL ;
 } ;
 #endif // NOVIT
@@ -1352,7 +1338,6 @@ void CHMM::ab_buf_comp(
 	int32_t i,j,t ;
 	float64_t a_sum;
 	float64_t b_sum;
-	float64_t prob=0;	//model probability for dim
 
 	float64_t dimmodprob=model_probability(dim);
 
@@ -1392,38 +1377,37 @@ void CHMM::ab_buf_comp(
 }
 
 //estimates new model lambda out of lambda_train using baum welch algorithm
-void CHMM::estimate_model_baum_welch(CHMM* train)
+void CHMM::estimate_model_baum_welch(CHMM* hmm)
 {
-	int32_t i,j,t,cpu;
-	float64_t a_sum, b_sum;	//numerator
+	int32_t i,j,cpu;
 	float64_t fullmodprob=0;	//for all dims
 
 	//clear actual model a,b,p,q are used as numerator
 	for (i=0; i<N; i++)
 	{
-	  if (train->get_p(i)>CMath::ALMOST_NEG_INFTY)
+	  if (hmm->get_p(i)>CMath::ALMOST_NEG_INFTY)
 	    set_p(i,log(PSEUDO));
 	  else
-	    set_p(i,train->get_p(i));
-	  if (train->get_q(i)>CMath::ALMOST_NEG_INFTY)
+	    set_p(i,hmm->get_p(i));
+	  if (hmm->get_q(i)>CMath::ALMOST_NEG_INFTY)
 	    set_q(i,log(PSEUDO));
 	  else
-	    set_q(i,train->get_q(i));
+	    set_q(i,hmm->get_q(i));
 	  
 	  for (j=0; j<N; j++)
-	    if (train->get_a(i,j)>CMath::ALMOST_NEG_INFTY)
+	    if (hmm->get_a(i,j)>CMath::ALMOST_NEG_INFTY)
 	      set_a(i,j, log(PSEUDO));
 	    else
-	      set_a(i,j,train->get_a(i,j));
+	      set_a(i,j,hmm->get_a(i,j));
 	  for (j=0; j<M; j++)
-	    if (train->get_b(i,j)>CMath::ALMOST_NEG_INFTY)
+	    if (hmm->get_b(i,j)>CMath::ALMOST_NEG_INFTY)
 	      set_b(i,j, log(PSEUDO));
 	    else
-	      set_b(i,j,train->get_b(i,j));
+	      set_b(i,j,hmm->get_b(i,j));
 	}
 	
 	pthread_t *threads=new pthread_t[parallel->get_num_threads()] ;
-	S_THREAD_PARAM *params=new S_THREAD_PARAM[parallel->get_num_threads()] ;
+	S_BW_THREAD_PARAM *params=new S_BW_THREAD_PARAM[parallel->get_num_threads()] ;
 
 	for (i=0; i<parallel->get_num_threads(); i++)
 	{
@@ -1435,7 +1419,7 @@ void CHMM::estimate_model_baum_welch(CHMM* train)
 
 	for (cpu=0; cpu<parallel->get_num_threads(); cpu++)
 	{
-		params[cpu].hmm=train;
+		params[cpu].hmm=hmm;
 		params[cpu].dim_start=p_observations->get_num_vectors()*cpu / parallel->get_num_threads();
 		params[cpu].dim_stop= p_observations->get_num_vectors()*(cpu+1) / parallel->get_num_threads();
 
@@ -1481,9 +1465,9 @@ void CHMM::estimate_model_baum_welch(CHMM* train)
 	delete[] threads ;
 	delete[] params ;
 	
-	//cache train model probability
-	train->mod_prob=fullmodprob;
-	train->mod_prob_updated=true ;
+	//cache hmm model probability
+	hmm->mod_prob=fullmodprob;
+	hmm->mod_prob_updated=true ;
 
 	//new model probability is unknown
 	normalize();
@@ -1491,8 +1475,6 @@ void CHMM::estimate_model_baum_welch(CHMM* train)
 }
 
 #else // USE_HMMPARALLEL 
-
-#if !defined(NEGATIVE_MODEL_HACK) && !defined(NEGATIVE_MODEL_HACK_DON)
 
 //estimates new model lambda out of lambda_estimate using baum welch algorithm
 void CHMM::estimate_model_baum_welch(CHMM* estimate)
@@ -1581,76 +1563,6 @@ void CHMM::estimate_model_baum_welch(CHMM* estimate)
 }
 
 //estimates new model lambda out of lambda_estimate using baum welch algorithm
-// optimize only p, q, a but not b
-void CHMM::estimate_model_baum_welch_trans(CHMM* estimate)
-{
-	int32_t i,j,t,dim;
-	float64_t a_sum;	//numerator
-	float64_t dimmodprob=0;	//model probability for dim
-	float64_t fullmodprob=0;	//for all dims
-
-	//clear actual model a,b,p,q are used as numerator
-	for (i=0; i<N; i++)
-	  {
-	    if (estimate->get_p(i)>CMath::ALMOST_NEG_INFTY)
-	      set_p(i,log(PSEUDO));
-	    else
-	      set_p(i,estimate->get_p(i));
-	    if (estimate->get_q(i)>CMath::ALMOST_NEG_INFTY)
-	      set_q(i,log(PSEUDO));
-	    else
-	      set_q(i,estimate->get_q(i));
-	    
-	    for (j=0; j<N; j++)
-	      if (estimate->get_a(i,j)>CMath::ALMOST_NEG_INFTY)
-		set_a(i,j, log(PSEUDO));
-	      else
-		set_a(i,j,estimate->get_a(i,j));
-	    for (j=0; j<M; j++)
-	      set_b(i,j,estimate->get_b(i,j));
-	  }
-	invalidate_model();
-	
-	//change summation order to make use of alpha/beta caches
-	for (dim=0; dim<p_observations->get_num_vectors(); dim++)
-	  {
-	    dimmodprob=estimate->model_probability(dim);
-	    fullmodprob+=dimmodprob ;
-	    
-	    for (i=0; i<N; i++)
-	      {
-		//estimate initial+end state distribution numerator
-		set_p(i, CMath::logarithmic_sum(get_p(i), estimate->get_p(i)+estimate->get_b(i,p_observations->get_feature(dim,0))+estimate->backward(0,i,dim) - dimmodprob));
-		set_q(i, CMath::logarithmic_sum(get_q(i), estimate->forward(p_observations->get_vector_length(dim)-1, i, dim)+estimate->get_q(i) - dimmodprob ));
-		
-		int32_t num = trans_list_backward_cnt[i] ;
-		//estimate a
-		for (j=0; j<num; j++)
-		  {
-		    int32_t jj = trans_list_backward[i][j] ;
-		    a_sum=-CMath::INFTY;
-		    
-		    for (t=0; t<p_observations->get_vector_length(dim)-1; t++) 
-		      {
-			a_sum= CMath::logarithmic_sum(a_sum, estimate->forward(t,i,dim)+
-						    estimate->get_a(i,jj)+estimate->get_b(jj,p_observations->get_feature(dim,t+1))+estimate->backward(t+1,jj,dim));
-		      }
-		    set_a(i,jj, CMath::logarithmic_sum(get_a(i,jj), a_sum-dimmodprob));
-		  }
-	      } 
-	  }
-	
-	//cache estimate model probability
-	estimate->mod_prob=fullmodprob;
-	estimate->mod_prob_updated=true ;
-	
-	//new model probability is unknown
-	normalize();
-	invalidate_model();
-}
-
-
-//estimates new model lambda out of lambda_estimate using baum welch algorithm
 void CHMM::estimate_model_baum_welch_old(CHMM* estimate)
 {
 	int32_t i,j,t,dim;
@@ -1732,235 +1644,77 @@ void CHMM::estimate_model_baum_welch_old(CHMM* estimate)
 	normalize();
 	invalidate_model();
 }
+#endif // USE_HMMPARALLEL
 
-
-#elif defined(NEGATIVE_MODEL_HACK)
 //estimates new model lambda out of lambda_estimate using baum welch algorithm
-void CHMM::estimate_model_baum_welch(CHMM* estimate)
+// optimize only p, q, a but not b
+void CHMM::estimate_model_baum_welch_trans(CHMM* estimate)
 {
 	int32_t i,j,t,dim;
-	float64_t a_sum, b_sum;	//numerator
+	float64_t a_sum;	//numerator
 	float64_t dimmodprob=0;	//model probability for dim
 	float64_t fullmodprob=0;	//for all dims
 
-	const float64_t MIN_RAND=23e-3;
-
-	SG_DEBUG( "M:%d\n",M);
-
-	if (estimate->get_p(0)>-0.00001)
-	{
-		for (i=0; i<N; i++)
-		{
-			if (i==25)
-				estimate->set_p(i,-CMath::INFTY);
-			else
-				estimate->set_p(i, log(CMath::random(MIN_RAND, 1.0)));
-
-			if (i<49)
-				estimate->set_q(i, -CMath::INFTY);
-			else 
-				estimate->set_q(i, log(CMath::random(MIN_RAND, 1.0)));
-
-			if (i<25)
-			{
-				for (j=0; j<M; j++)
-					estimate->set_b(i,j, log(CMath::random(MIN_RAND, 1.0)));
-			}
-		}
-	}
-
-	for (i=0; i<N; i++)
-	{
-		if (i==25)
-			estimate->set_p(i,-CMath::INFTY);
-
-		if (i<49)
-			estimate->set_q(i, -CMath::INFTY);
-
-	}
-	estimate->invalidate_model();
-	estimate->normalize();
-
 	//clear actual model a,b,p,q are used as numerator
 	for (i=0; i<N; i++)
-	{
-		//if (i!=25)
-		set_p(i,log(PSEUDO));
-		//else
-		//	set_p(i,estimate->get_p(i));
-
-		set_q(i,log(PSEUDO));
-
-		for (j=0; j<N; j++)
-			set_a(i,j, estimate->get_a(i,j));	//a is const
-
-		if (i<25)
-		{
-			for (j=0; j<M; j++)
-				set_b(i,j, log(PSEUDO));	
-		}
-		else
-		{
-			for (j=0; j<M; j++)
-				set_b(i,j, estimate->get_b(i,j));	//b is const for state
-		}
-	}
-
+	  {
+	    if (estimate->get_p(i)>CMath::ALMOST_NEG_INFTY)
+	      set_p(i,log(PSEUDO));
+	    else
+	      set_p(i,estimate->get_p(i));
+	    if (estimate->get_q(i)>CMath::ALMOST_NEG_INFTY)
+	      set_q(i,log(PSEUDO));
+	    else
+	      set_q(i,estimate->get_q(i));
+	    
+	    for (j=0; j<N; j++)
+	      if (estimate->get_a(i,j)>CMath::ALMOST_NEG_INFTY)
+		set_a(i,j, log(PSEUDO));
+	      else
+		set_a(i,j,estimate->get_a(i,j));
+	    for (j=0; j<M; j++)
+	      set_b(i,j,estimate->get_b(i,j));
+	  }
+	invalidate_model();
+	
 	//change summation order to make use of alpha/beta caches
 	for (dim=0; dim<p_observations->get_num_vectors(); dim++)
-	{
-		dimmodprob=estimate->model_probability(dim);
-		fullmodprob+=dimmodprob ;
-
-		for (i=0; i<N; i++)
-		{
-			//estimate initial+end state distribution numerator
-			set_p(i, CMath::logarithmic_sum(get_p(i), estimate->get_p(i)+estimate->get_b(i,p_observations->get_feature(dim,0))+estimate->backward(0,i,dim) - dimmodprob));
-			set_q(i, CMath::logarithmic_sum(get_q(i), estimate->forward(p_observations->get_vector_length(dim)-1, i, dim)+estimate->get_q(i) - dimmodprob ));
-		}
-
-		for (i=0; i<25; i++)
-		{
-			//estimate b
-			for (j=0; j<M; j++)
-			{
-				b_sum=CMath::NEG_INFTY;
-
-				for (t=0; t<p_observations->get_vector_length(dim); t++) 
-				{
-					if (p_observations->get_feature(dim,t)==j) 
-						b_sum=CMath::logarithmic_sum(b_sum, estimate->forward(t,i,dim)+estimate->backward(t, i, dim));
-				}
-
-				set_b(i,j, CMath::logarithmic_sum(get_b(i,j), b_sum-dimmodprob));
-			}
-		} 
-	}
-
+	  {
+	    dimmodprob=estimate->model_probability(dim);
+	    fullmodprob+=dimmodprob ;
+	    
+	    for (i=0; i<N; i++)
+	      {
+		//estimate initial+end state distribution numerator
+		set_p(i, CMath::logarithmic_sum(get_p(i), estimate->get_p(i)+estimate->get_b(i,p_observations->get_feature(dim,0))+estimate->backward(0,i,dim) - dimmodprob));
+		set_q(i, CMath::logarithmic_sum(get_q(i), estimate->forward(p_observations->get_vector_length(dim)-1, i, dim)+estimate->get_q(i) - dimmodprob ));
+		
+		int32_t num = trans_list_backward_cnt[i] ;
+		//estimate a
+		for (j=0; j<num; j++)
+		  {
+		    int32_t jj = trans_list_backward[i][j] ;
+		    a_sum=-CMath::INFTY;
+		    
+		    for (t=0; t<p_observations->get_vector_length(dim)-1; t++) 
+		      {
+			a_sum= CMath::logarithmic_sum(a_sum, estimate->forward(t,i,dim)+
+						    estimate->get_a(i,jj)+estimate->get_b(jj,p_observations->get_feature(dim,t+1))+estimate->backward(t+1,jj,dim));
+		      }
+		    set_a(i,jj, CMath::logarithmic_sum(get_a(i,jj), a_sum-dimmodprob));
+		  }
+	      } 
+	  }
+	
 	//cache estimate model probability
 	estimate->mod_prob=fullmodprob;
 	estimate->mod_prob_updated=true ;
-
+	
 	//new model probability is unknown
 	normalize();
 	invalidate_model();
 }
-#else
-//estimates new model lambda out of lambda_estimate using baum welch algorithm
-void CHMM::estimate_model_baum_welch(CHMM* estimate)
-{
-	int32_t i,j,t,dim;
-	float64_t a_sum, b_sum;	//numerator
-	float64_t dimmodprob=0;	//model probability for dim
-	float64_t fullmodprob=0;	//for all dims
 
-	const float64_t MIN_RAND=23e-3;
-	static bool bla=true;
-
-	if ((bla) && estimate->get_q(N-1)>-0.00001)
-	{
-		bla=false;
-		for (i=0; i<N; i++)
-		{
-			if (i<=N-50)
-				estimate->set_p(i, log(CMath::random(MIN_RAND, 1.0)));
-			else
-				estimate->set_p(i, -1000);
-
-			if ( i==N-25-1)
-				estimate->set_q(i,-10000);
-			else
-				estimate->set_q(i, log(CMath::random(MIN_RAND, 1.0)));
-			SG_DEBUG( "q[%d]=%lf\n", i, estimate->get_q(i));
-
-			if (i>=N-25)
-			{
-				for (j=0; j<M; j++)
-					estimate->set_b(i,j, log(CMath::random(MIN_RAND, 1.0)));
-			}
-		}
-		estimate->invalidate_model();
-		estimate->normalize(true);
-	}
-
-	//clear actual model a,b,p,q are used as numerator
-	for (i=0; i<N; i++)
-	{
-		set_p(i,log(PSEUDO));
-		set_q(i,log(PSEUDO));
-
-		for (j=0; j<N; j++)
-			set_a(i,j, estimate->get_a(i,j));	//a is const
-
-		if (i>=N-25) //estimate last 25 emissions
-		{
-			for (j=0; j<M; j++)
-				set_b(i,j, log(PSEUDO));	
-		}
-		else
-		{
-			for (j=0; j<M; j++)
-				set_b(i,j, estimate->get_b(i,j));	//b is const for state
-
-			if (i==N-25-1-24 || i==N-25-1-23)
-			{
-				for (j=0; j<M; j++)
-				{
-					if (estimate->get_b(i,j)<-10)
-						set_b(i,j, -CMath::INFTY);
-				}
-			}
-		}
-	}
-
-	//change summation order to make use of alpha/beta caches
-	for (dim=0; dim<p_observations->get_num_vectors(); dim++)
-	{
-		dimmodprob=estimate->model_probability(dim);
-		fullmodprob+=dimmodprob ;
-
-		for (i=0; i<N; i++)
-		{
-			//estimate initial+end state distribution numerator
-			if (i<=N-50)
-				set_p(i, CMath::logarithmic_sum(get_p(i), estimate->get_p(i)+estimate->get_b(i,p_observations->get_feature(dim,0))+estimate->backward(0,i,dim) - dimmodprob));
-			else
-				set_p(i, -1000);
-
-			if (i==N-25-1)
-				set_q(i,-10000);
-			else
-				set_q(i, CMath::logarithmic_sum(get_q(i), estimate->forward(p_observations->get_vector_length(dim)-1, i, dim)+estimate->get_q(i) - dimmodprob ));
-		}
-
-		for (i=N-25; i<N; i++)
-		{
-			//estimate b
-			for (j=0; j<M; j++)
-			{
-				b_sum=-CMath::INFTY;
-
-				for (t=0; t<p_observations->get_vector_length(dim); t++) 
-				{
-					if (p_observations->get_feature(dim,t)==j) 
-						b_sum=CMath::logarithmic_sum(b_sum, estimate->forward(t,i,dim)+estimate->backward(t, i, dim));
-				}
-
-				set_b(i,j, CMath::logarithmic_sum(get_b(i,j), b_sum-dimmodprob));
-			}
-		} 
-	}
-
-	//cache estimate model probability
-	estimate->mod_prob=fullmodprob;
-	estimate->mod_prob_updated=true ;
-
-	//new model probability is unknown
-	normalize(true);
-	invalidate_model();
-}
-#endif //NEGATIVE_MODEL_HACK || .._DON
-#endif // USE_HMMPARALLEL
 
 
 //estimates new model lambda out of lambda_estimate using baum welch algorithm
@@ -2002,7 +1756,7 @@ void CHMM::estimate_model_baum_welch_defined(CHMM* estimate)
 
 #ifdef USE_HMMPARALLEL
 	pthread_t *threads=new pthread_t[parallel->get_num_threads()] ;
-	S_THREAD_PARAM *params=new S_THREAD_PARAM[parallel->get_num_threads()] ;
+	S_BW_THREAD_PARAM *params=new S_BW_THREAD_PARAM[parallel->get_num_threads()] ;
 #endif
 
 	//change summation order to make use of alpha/beta caches
@@ -2011,7 +1765,6 @@ void CHMM::estimate_model_baum_welch_defined(CHMM* estimate)
 #ifdef USE_HMMPARALLEL
 		if (dim%parallel->get_num_threads()==0)
 		{
-			int32_t i ;
 			for (i=0; i<parallel->get_num_threads(); i++)
 				if (dim+i<p_observations->get_num_vectors())
 				{
@@ -2165,7 +1918,7 @@ void CHMM::estimate_model_viterbi(CHMM* estimate)
 
 #ifdef USE_HMMPARALLEL
 	pthread_t *threads=new pthread_t[parallel->get_num_threads()] ;
-	S_THREAD_PARAM *params=new S_THREAD_PARAM[parallel->get_num_threads()] ;
+	S_BW_THREAD_PARAM *params=new S_BW_THREAD_PARAM[parallel->get_num_threads()] ;
 #endif
 
 	for (int32_t dim=0; dim<p_observations->get_num_vectors(); dim++)
@@ -2174,7 +1927,6 @@ void CHMM::estimate_model_viterbi(CHMM* estimate)
 #ifdef USE_HMMPARALLEL
 		if (dim%parallel->get_num_threads()==0)
 		{
-			int32_t i ;
 			for (i=0; i<parallel->get_num_threads(); i++)
 				if (dim+i<p_observations->get_num_vectors())
 				{
@@ -2288,7 +2040,7 @@ void CHMM::estimate_model_viterbi_defined(CHMM* estimate)
 
 #ifdef USE_HMMPARALLEL
 	pthread_t *threads=new pthread_t[parallel->get_num_threads()] ;
-	S_THREAD_PARAM *params=new S_THREAD_PARAM[parallel->get_num_threads()] ;
+	S_BW_THREAD_PARAM *params=new S_BW_THREAD_PARAM[parallel->get_num_threads()] ;
 #endif
 
 	float64_t allpatprob=0.0 ;
@@ -2298,7 +2050,6 @@ void CHMM::estimate_model_viterbi_defined(CHMM* estimate)
 #ifdef USE_HMMPARALLEL
 		if (dim%parallel->get_num_threads()==0)
 		{
-			int32_t i ;
 			for (i=0; i<parallel->get_num_threads(); i++)
 				if (dim+i<p_observations->get_num_vectors())
 				{
@@ -4597,7 +4348,7 @@ bool CHMM::save_model_derivatives_bin(FILE* file)
 
 #ifdef USE_HMMPARALLEL
 	pthread_t *threads=new pthread_t[parallel->get_num_threads()] ;
-	S_THREAD_PARAM *params=new S_THREAD_PARAM[parallel->get_num_threads()] ;
+	S_BW_THREAD_PARAM *params=new S_BW_THREAD_PARAM[parallel->get_num_threads()] ;
 #endif
 
 	for (dim=0; dim<p_observations->get_num_vectors(); dim++)
