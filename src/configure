@@ -2486,7 +2486,7 @@ test_modular()
 			then
 				echores "`${SWIG} -version 2>&1 | grep Version | cut -f 3 -d ' '`"
 
-				_swig='yes'
+				_swig=yes
 
 				if cygwin
 				then
@@ -2501,7 +2501,6 @@ test_modular()
 					_swig='no'
 				fi
 			fi
-
 		else
 			echores "no"
 			if test "$_swig" = yes ; then
@@ -2539,8 +2538,10 @@ test_modular()
 
 		if test "$_python" = yes && test "$_python_modular" != no
 		then
+			echocheck "SWIG Python Support"
 			PARTS="$PARTS python_modular"
 			PYTHON_MODULAR_TARGET=python_modular
+			echores "yes"
 		fi
 
 		if test "$_r" = yes && test "$_r_modular" != no
@@ -2798,6 +2799,7 @@ EOF
 				if LD_LIBRARY_PATH=`octave-config -p OCTLIBDIR` cxx_check $COMPFLAGS_CPP_OCTAVE $INCLUDES_OCTAVE $LINKFLAGS_OCTAVE
 				then
 					echores "yes"
+					_octave=yes
 					PARTS="$PARTS octave"
 				else
 					echores "no"
@@ -2821,6 +2823,7 @@ test_python()
 			if [ `$PYTHON -c 'import numpy; print numpy.__version__' | cut -c 1` -gt 0 ]
 			then
 				echores "`$PYTHON -c 'import numpy; print numpy.__version__'`"
+				_python=yes
 			else
 				echores "`$PYTHON -c 'import numpy; print numpy.__version__'`... too old version 1.0 or later required"
 				if test "$_python" = yes
@@ -2890,6 +2893,7 @@ EOF
 			if cc_check
 			then
 				echores "yes"
+				_python=yes
 				SWIGFLAGS_PYTHON_MODULAR="-c++ -python"
 			else
 				# add -ldl and -lutil for some self compiled python versions as
@@ -2976,6 +2980,7 @@ EOF
 				echores "yes"
 				SWIGFLAGS_R_MODULAR="-c++ -r"
 				PARTS="$PARTS r"
+				_r=yes
 			else
 				echores "no"
 				if test "$_r" = yes
