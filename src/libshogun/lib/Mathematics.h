@@ -10,8 +10,8 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#ifndef __MATHMATICS_H_
-#define __MATHMATICS_H_
+#ifndef __MATHEMATICS_H_
+#define __MATHEMATICS_H_
 
 #include "lib/common.h"
 #include "lib/io.h"
@@ -199,7 +199,7 @@ class CMath : public CSGObject
 
 		/// swap e.g. floats a and b
 		template <class T>
-			static inline void swap(T & a,T &b)
+			static inline void swap(T &a,T &b)
 			{
 				T c=a;
 				a=b;

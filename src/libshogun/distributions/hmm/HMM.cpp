@@ -17,6 +17,7 @@
 #include "lib/Mathematics.h"
 #include "lib/io.h"
 #include "lib/config.h"
+#include "lib/Signal.h"
 #include "base/Parallel.h"
 #include "features/StringFeatures.h"
 #include "features/CharFeatures.h"
@@ -4362,7 +4363,6 @@ bool CHMM::save_model_derivatives_bin(FILE* file)
 #ifdef USE_HMMPARALLEL
 		if (dim%parallel->get_num_threads()==0)
 		{
-			int32_t i ;
 			for (i=0; i<parallel->get_num_threads(); i++)
 				if (dim+i<p_observations->get_num_vectors())
 				{
@@ -5504,7 +5504,7 @@ float64_t CHMM::get_log_model_parameter(int32_t num_param)
 
 
 //convergence criteria  -tobeadjusted-
-bool CHMM::converge(float64_t x, float64_t y)
+bool CHMM::converged(float64_t x, float64_t y)
 {
 	float64_t diff=y-x;
 	float64_t absdiff=fabs(diff);
@@ -5529,15 +5529,6 @@ bool CHMM::converge(float64_t x, float64_t y)
 	}
 }
 
-//switch model and train model
-void CHMM::switch_model(CHMM** m1, CHMM** m2)
-{
-	CHMM* dummy=*m1;
-
-	*m1=*m2;
-	*m2=dummy;
-}
-
 bool CHMM::baum_welch_viterbi_train(BaumWelchViterbiType type)
 {
 	CHMM* estimate=new CHMM(this);
@@ -5547,14 +5538,11 @@ bool CHMM::baum_welch_viterbi_train(BaumWelchViterbiType type)
 	float64_t prob_train=CMath::ALMOST_NEG_INFTY;
 	iteration_count=iterations;
 
-	while (!converge(prob, prob_train))
+	while (!converged(prob, prob_train) && (!CSignal::cancel_computations()))
 	{
-		switch_model(&working, &estimate);
+		CMath::swap(working, estimate);
 		prob=prob_train;
-		/* function pointer might be more efficient than switch, but works in
-		 * ISO C++ only with static members. :( but perhaps g++ is smart
-		 * enough to optimise this on its own...
-		 */
+
 		switch (type) {
 			case BW_NORMAL:
 				estimate_model_baum_welch(estimate); break;
@@ -5568,6 +5556,7 @@ bool CHMM::baum_welch_viterbi_train(BaumWelchViterbiType type)
 				estimate_model_viterbi_defined(estimate); break;
 		}
 		prob_train=estimate->model_probability();
+		//SG_PRINT("prob_train=%g prob=%g\n", prob_train, prob);
 		if (prob_max<prob_train)
 			prob_max=prob_train;
 	}

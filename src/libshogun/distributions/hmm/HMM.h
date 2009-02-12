@@ -448,13 +448,7 @@ class CHMM : public CDistribution
 		 * @param x value to check against y
 		 * @param y value to check against x
 		 */
-		bool converge(float64_t x, float64_t y);
-
-		/** Switch models
-		 * @param m1 model one
-		 * @param m2 model two
-		 */
-		void switch_model(CHMM** m1, CHMM** m2);
+		bool converged(float64_t x, float64_t y);
 
 		/** Train definitions.
 		 * Encapsulates Modelparameters that are constant/shall be learned.

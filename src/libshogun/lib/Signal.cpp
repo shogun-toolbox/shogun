@@ -46,15 +46,16 @@ void CSignal::handler(int signal)
 		if (answer == 'I')
 		{
 			unset_handler();
+			set_cancel(true);
 			sg_print_error(stdout, "sg stopped by SIGINT\n");
 		}
 		else if (answer == 'P')
-				cancel_computation=true;
+			set_cancel();
 		else
 			SG_SPRINT("Continuing...\n");
 	}
 	else if (signal == SIGURG)
-		cancel_computation=true;
+		set_cancel();
 	else
 		SG_SPRINT("unknown signal %d received\n", signal);
 }
@@ -129,7 +130,7 @@ void CSignal::clear_cancel()
 
 void CSignal::set_cancel(bool immediately)
 {
-	cancel_computation=false;
+	cancel_computation=true;
 
 	if (immediately)
 		cancel_immediately=true;
