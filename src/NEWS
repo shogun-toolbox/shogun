@@ -18,6 +18,7 @@
 		- Testsuite can also test the modular R interface, added test for
 		  OligoKernel.
 		- Ocas and WDOcas can be used with a bias feature now.
+		- Update to LibSVM 2.88.
 	* Cleanup and API Changes:
 		- Shogun has been split up into libshogun and the static and modular
 		interfaces linking to it.

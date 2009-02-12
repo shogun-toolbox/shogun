@@ -8,11 +8,6 @@
  * Written (W) 1999-2008 Gunnar Raetsch
  * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
  */
-
-// HMM.cpp: implementation of the CHMM class.
-// $Id$
-//////////////////////////////////////////////////////////////////////
-
 #include "distributions/hmm/HMM.h"
 #include "lib/Mathematics.h"
 #include "lib/io.h"
@@ -30,10 +25,6 @@
 
 #define VAL_MACRO log((default_value == 0) ? (CMath::random(MIN_RAND, MAX_RAND)) : default_value)
 #define ARRAY_SIZE 65336
-
-#ifdef SUNOS
-extern "C" int	finite(double);
-#endif
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -221,10 +212,8 @@ CHMM::CHMM(int32_t p_N, float64_t* p, float64_t* q, float64_t* a)
 	this->beta_cache.dimension=0;
 #endif
 
-#ifndef NOVIT
 	this->states_per_observation_psi=NULL ;
 	this->path=NULL;
-#endif //NOVIT
 	arrayN1=NULL ;
 	arrayN2=NULL ;
 
@@ -278,10 +267,8 @@ CHMM::CHMM(
 	this->beta_cache.dimension=0;
 #endif
 
-#ifndef NOVIT
 	this->states_per_observation_psi=NULL ;
 	this->path=NULL;
-#endif //NOVIT
 	arrayN1=NULL ;
 	arrayN2=NULL ;
 
@@ -417,10 +404,8 @@ CHMM::~CHMM()
 		beta_cache.table=NULL;
 #endif // USE_HMMPARALLEL_STRUCTURES
 
-#ifndef NOVIT
 		delete[] states_per_observation_psi;
 		states_per_observation_psi=NULL;
-#endif // NOVIT
 	}
 
 #ifdef USE_LOGSUMARRAY
@@ -437,7 +422,6 @@ CHMM::~CHMM()
 
 	if (!reused_caches)
 	{
-#ifndef NOVIT
 #ifdef USE_HMMPARALLEL_STRUCTURES
 		delete[] path_prob_updated ;
 		delete[] path_prob_dimension ;
@@ -445,7 +429,6 @@ CHMM::~CHMM()
 			delete[] path[i] ;
 #endif //USE_HMMPARALLEL_STRUCTURES
 		delete[] path;
-#endif
 	}
 }
 
@@ -574,9 +557,7 @@ bool CHMM::initialize(CModel* m, float64_t pseudo, FILE* modelfile)
 		this->beta_cache[i].table=NULL;
 		this->alpha_cache[i].dimension=0;
 		this->beta_cache[i].dimension=0;
-#ifndef NOVIT
 		this->states_per_observation_psi[i]=NULL ;
-#endif // NOVIT
 	}
 
 #else // USE_HMMPARALLEL_STRUCTURES
@@ -584,12 +565,8 @@ bool CHMM::initialize(CModel* m, float64_t pseudo, FILE* modelfile)
 	this->beta_cache.table=NULL;
 	this->alpha_cache.dimension=0;
 	this->beta_cache.dimension=0;
-#ifndef NOVIT
 	this->states_per_observation_psi=NULL ;
-#endif //NOVIT
-
 #endif //USE_HMMPARALLEL_STRUCTURES
-
 
 	if (modelfile)
 		files_ok= files_ok && load_model(modelfile);
@@ -601,15 +578,10 @@ bool CHMM::initialize(CModel* m, float64_t pseudo, FILE* modelfile)
 	path=new P_STATES[parallel->get_num_threads()];
 
 	for (int32_t i=0; i<parallel->get_num_threads(); i++)
-	{
-#ifndef NOVIT
 		this->path[i]=NULL;
-#endif // NOVIT
-	}
+
 #else // USE_HMMPARALLEL_STRUCTURES
-#ifndef NOVIT
 	this->path=NULL;
-#endif //NOVIT
 
 #endif //USE_HMMPARALLEL_STRUCTURES
 
@@ -1106,7 +1078,6 @@ float64_t CHMM::backward_comp_old(
 	}
 }
 
-#ifndef NOVIT
 //calculates probability  of best path through the model lambda AND path itself
 //using viterbi algorithm
 float64_t CHMM::best_path(int32_t dimension)
@@ -1237,9 +1208,6 @@ float64_t CHMM::best_path(int32_t dimension)
 	}
 }
 
-
-#endif // NOVIT
-
 #ifndef USE_HMMPARALLEL
 float64_t CHMM::model_probability_comp()
 {
@@ -1257,7 +1225,7 @@ float64_t CHMM::model_probability_comp()
 float64_t CHMM::model_probability_comp() 
 {
 	pthread_t *threads=new pthread_t[parallel->get_num_threads()];
-	S_MODEL_PROB_THREAD_PARAM *params=new S_MODEL_PROB_THREAD_PARAM[parallel->get_num_threads()];
+	S_BW_THREAD_PARAM *params=new S_BW_THREAD_PARAM[parallel->get_num_threads()];
 
 	SG_INFO( "computing full model probablity\n");
 	mod_prob=0;
@@ -1267,19 +1235,26 @@ float64_t CHMM::model_probability_comp()
 		params[cpu].hmm=this ;
 		params[cpu].dim_start= p_observations->get_num_vectors()*cpu/parallel->get_num_threads();
 		params[cpu].dim_stop= p_observations->get_num_vectors()*(cpu+1)/parallel->get_num_threads();
-#ifdef SUNOS
-		thr_create(NULL,0,bw_dim_prefetch, (void*)&params[cpu], PTHREAD_SCOPE_SYSTEM, &threads[cpu]);
-#else // SUNOS
+		params[cpu].p_buf=new float64_t[N];
+		params[cpu].q_buf=new float64_t[N];
+		params[cpu].a_buf=new float64_t[N*N];
+		params[cpu].b_buf=new float64_t[N*M];
 		pthread_create(&threads[cpu], NULL, bw_dim_prefetch, (void*)&params[cpu]);
-#endif // SUNOS
 	}
 
 	for (int32_t cpu=0; cpu<parallel->get_num_threads(); cpu++)
 	{
-		void* ret;
-		pthread_join(threads[cpu], &ret);
-		mod_prob+=*((float64_t*) ret);
+		pthread_join(threads[cpu], NULL);
+		mod_prob+=params[cpu].ret;
 	}
+
+	for (int32_t i=0; i<parallel->get_num_threads(); i++)
+	  {
+	    delete[] params[i].p_buf;
+	    delete[] params[i].q_buf;
+	    delete[] params[i].a_buf;
+	    delete[] params[i].b_buf;
+	  }
 
 	delete[] threads;
 	delete[] params;
@@ -1291,42 +1266,41 @@ float64_t CHMM::model_probability_comp()
 void* CHMM::bw_dim_prefetch(void * params)
 {
 	CHMM* hmm=((S_BW_THREAD_PARAM*)params)->hmm ;
-	int32_t dim=((S_BW_THREAD_PARAM*)params)->dim ;
-	float64_t*p_buf=((S_BW_THREAD_PARAM*)params)->p_buf ;
-	float64_t*q_buf=((S_BW_THREAD_PARAM*)params)->q_buf ;
-	float64_t*a_buf=((S_BW_THREAD_PARAM*)params)->a_buf ;
-	float64_t*b_buf=((S_BW_THREAD_PARAM*)params)->b_buf ;
-	((S_BW_THREAD_PARAM*)params)->ret = hmm->prefetch(dim, true, p_buf, q_buf, a_buf, b_buf) ;
+	int32_t start=((S_BW_THREAD_PARAM*)params)->dim_start ;
+	int32_t stop=((S_BW_THREAD_PARAM*)params)->dim_stop ;
+	float64_t* p_buf=((S_BW_THREAD_PARAM*)params)->p_buf ;
+	float64_t* q_buf=((S_BW_THREAD_PARAM*)params)->q_buf ;
+	float64_t* a_buf=((S_BW_THREAD_PARAM*)params)->a_buf ;
+	float64_t* b_buf=((S_BW_THREAD_PARAM*)params)->b_buf ;
+	((S_BW_THREAD_PARAM*)params)->ret=0;
+
+	for (int32_t dim=start; dim<stop; dim++)
+	{
+		hmm->forward_comp(hmm->p_observations->get_vector_length(dim), hmm->N-1, dim) ;
+		hmm->backward_comp(hmm->p_observations->get_vector_length(dim), hmm->N-1, dim) ;
+		float64_t modprob=hmm->model_probability(dim) ;
+		hmm->ab_buf_comp(p_buf, q_buf, a_buf, b_buf, dim) ;
+		((S_BW_THREAD_PARAM*)params)->ret+= modprob;
+	}
 	return NULL ;
 }
 
-#ifndef NOVIT
-void* CHMM::vit_dim_prefetch(void * params)
+void* CHMM::bw_single_dim_prefetch(void * params)
 {
 	CHMM* hmm=((S_BW_THREAD_PARAM*)params)->hmm ;
-	int32_t dim=((S_BW_THREAD_PARAM*)params)->dim ;
-	((S_BW_THREAD_PARAM*)params)->ret = hmm->prefetch(dim, false) ;
+	int32_t dim=((S_DIM_THREAD_PARAM*)params)->dim ;
+	((S_DIM_THREAD_PARAM*)params)->prob_sum = hmm->model_probability(dim);
 	return NULL ;
-} ;
-#endif // NOVIT
+}
 
-float64_t CHMM::prefetch(
-	int32_t dim, bool bw, float64_t* p_buf, float64_t* q_buf, float64_t* a_buf,
-	float64_t* b_buf)
+void* CHMM::vit_dim_prefetch(void * params)
 {
-	if (bw)
-	{
-		forward_comp(p_observations->get_vector_length(dim), N-1, dim) ;
-		backward_comp(p_observations->get_vector_length(dim), N-1, dim) ;
-		float64_t modprob=model_probability(dim) ;
-		ab_buf_comp(p_buf, q_buf, a_buf, b_buf, dim) ;
-		return modprob ;
-	} 
-#ifndef NOVIT
-	else
-		return best_path(dim) ;
-#endif // NOVIT
-} ;
+	CHMM* hmm=((S_DIM_THREAD_PARAM*)params)->hmm ;
+	int32_t dim=((S_DIM_THREAD_PARAM*)params)->dim ;
+	((S_DIM_THREAD_PARAM*)params)->prob_sum = hmm->best_path(dim);
+	return NULL ;
+}
+
 #endif //USE_HMMPARALLEL
 
 
@@ -1424,11 +1398,7 @@ void CHMM::estimate_model_baum_welch(CHMM* hmm)
 		params[cpu].dim_start=p_observations->get_num_vectors()*cpu / parallel->get_num_threads();
 		params[cpu].dim_stop= p_observations->get_num_vectors()*(cpu+1) / parallel->get_num_threads();
 
-#ifdef SUNOS
-		thr_create(NULL,0, bw_dim_prefetch, (void*)&params[cpu], PTHREAD_SCOPE_SYSTEM, &threads[cpu]) ;
-#else // SUNOS
 		pthread_create(&threads[cpu], NULL, bw_dim_prefetch, (void*)&params[cpu]) ;
-#endif
 	}
 
 	for (cpu=0; cpu<parallel->get_num_threads(); cpu++)
@@ -1452,7 +1422,7 @@ void CHMM::estimate_model_baum_welch(CHMM* hmm)
 		  set_b(i,j, CMath::logarithmic_sum(get_b(i,j), params[cpu].b_buf[M*i+j]));
 	      }
 	    
-	    fullmodprob+=params[cpu].prob;
+	    fullmodprob+=params[cpu].ret;
 	  }
 
 	for (i=0; i<parallel->get_num_threads(); i++)
@@ -1757,7 +1727,7 @@ void CHMM::estimate_model_baum_welch_defined(CHMM* estimate)
 
 #ifdef USE_HMMPARALLEL
 	pthread_t *threads=new pthread_t[parallel->get_num_threads()] ;
-	S_BW_THREAD_PARAM *params=new S_BW_THREAD_PARAM[parallel->get_num_threads()] ;
+	S_DIM_THREAD_PARAM *params=new S_DIM_THREAD_PARAM[parallel->get_num_threads()] ;
 #endif
 
 	//change summation order to make use of alpha/beta caches
@@ -1767,23 +1737,22 @@ void CHMM::estimate_model_baum_welch_defined(CHMM* estimate)
 		if (dim%parallel->get_num_threads()==0)
 		{
 			for (i=0; i<parallel->get_num_threads(); i++)
+			{
 				if (dim+i<p_observations->get_num_vectors())
 				{
 					params[i].hmm=estimate ;
 					params[i].dim=dim+i ;
-#ifdef SUNOS
-					thr_create(NULL,0, bw_dim_prefetch, (void*)&params[i], PTHREAD_SCOPE_SYSTEM, &threads[i]) ;
-#else // SUNOS
-					pthread_create(&threads[i], NULL, bw_dim_prefetch, (void*)&params[i]) ;
-#endif
-				} ;
+					pthread_create(&threads[i], NULL, bw_single_dim_prefetch, (void*)&params[i]) ;
+				}
+			}
 			for (i=0; i<parallel->get_num_threads(); i++)
+			{
 				if (dim+i<p_observations->get_num_vectors())
 				{
-					void * ret ;
-					pthread_join(threads[i], &ret) ;
-					dimmodprob = params[i].ret ;
-				} ;
+					pthread_join(threads[i], NULL);
+					dimmodprob = params[i].prob_sum;
+				}
+			}
 		}
 #else
 		dimmodprob=estimate->model_probability(dim);
@@ -1891,7 +1860,6 @@ void CHMM::estimate_model_baum_welch_defined(CHMM* estimate)
 	invalidate_model();
 }
 
-#ifndef NOVIT
 //estimates new model lambda out of lambda_estimate using viterbi algorithm
 void CHMM::estimate_model_viterbi(CHMM* estimate)
 {
@@ -1919,7 +1887,7 @@ void CHMM::estimate_model_viterbi(CHMM* estimate)
 
 #ifdef USE_HMMPARALLEL
 	pthread_t *threads=new pthread_t[parallel->get_num_threads()] ;
-	S_BW_THREAD_PARAM *params=new S_BW_THREAD_PARAM[parallel->get_num_threads()] ;
+	S_DIM_THREAD_PARAM *params=new S_DIM_THREAD_PARAM[parallel->get_num_threads()] ;
 #endif
 
 	for (int32_t dim=0; dim<p_observations->get_num_vectors(); dim++)
@@ -1929,24 +1897,23 @@ void CHMM::estimate_model_viterbi(CHMM* estimate)
 		if (dim%parallel->get_num_threads()==0)
 		{
 			for (i=0; i<parallel->get_num_threads(); i++)
+			{
 				if (dim+i<p_observations->get_num_vectors())
 				{
 					params[i].hmm=estimate ;
 					params[i].dim=dim+i ;
-#ifdef SUNOS
-					thr_create(NULL,0, vit_dim_prefetch, (void*)&params[i], PTHREAD_SCOPE_SYSTEM, &threads[i]) ;
-#else // SUNOS
 					pthread_create(&threads[i], NULL, vit_dim_prefetch, (void*)&params[i]) ;
-#endif
-				} ;
+				}
+			}
 			for (i=0; i<parallel->get_num_threads(); i++)
+			{
 				if (dim+i<p_observations->get_num_vectors())
 				{
-					void * ret ;
-					pthread_join(threads[i], &ret) ;
-					allpatprob += params[i].ret ;
-				} ;
-		} ;
+					pthread_join(threads[i], NULL);
+					allpatprob += params[i].prob_sum;
+				}
+			}
+		}
 #else
 		//using viterbi to find best path
 		allpatprob += estimate->best_path(dim);
@@ -1966,8 +1933,8 @@ void CHMM::estimate_model_viterbi(CHMM* estimate)
 	}
 
 #ifdef USE_HMMPARALLEL
-	delete[] threads ;
-	delete[] params ;
+	delete[] threads;
+	delete[] params;
 #endif 
 
 	allpatprob/=p_observations->get_num_vectors() ;
@@ -2041,7 +2008,7 @@ void CHMM::estimate_model_viterbi_defined(CHMM* estimate)
 
 #ifdef USE_HMMPARALLEL
 	pthread_t *threads=new pthread_t[parallel->get_num_threads()] ;
-	S_BW_THREAD_PARAM *params=new S_BW_THREAD_PARAM[parallel->get_num_threads()] ;
+	S_DIM_THREAD_PARAM *params=new S_DIM_THREAD_PARAM[parallel->get_num_threads()] ;
 #endif
 
 	float64_t allpatprob=0.0 ;
@@ -2052,24 +2019,23 @@ void CHMM::estimate_model_viterbi_defined(CHMM* estimate)
 		if (dim%parallel->get_num_threads()==0)
 		{
 			for (i=0; i<parallel->get_num_threads(); i++)
+			{
 				if (dim+i<p_observations->get_num_vectors())
 				{
 					params[i].hmm=estimate ;
 					params[i].dim=dim+i ;
-#ifdef SUNOS
-					thr_create(NULL,0,vit_dim_prefetch, (void*)&params[i], PTHREAD_SCOPE_SYSTEM, &threads[i]) ;
-#else // SUNOS
 					pthread_create(&threads[i], NULL, vit_dim_prefetch, (void*)&params[i]) ;
-#endif //SUNOS
-				} ;
+				}
+			}
 			for (i=0; i<parallel->get_num_threads(); i++)
+			{
 				if (dim+i<p_observations->get_num_vectors())
 				{
-					void * ret ;
-					pthread_join(threads[i], &ret) ;
-					allpatprob += params[i].ret ;
-				} ;
-		} ;
+					pthread_join(threads[i], NULL);
+					allpatprob += params[i].prob_sum;
+				}
+			}
+		}
 #else // USE_HMMPARALLEL
 		//using viterbi to find best path
 		allpatprob += estimate->best_path(dim);
@@ -2196,8 +2162,6 @@ void CHMM::estimate_model_viterbi_defined(CHMM* estimate)
 	//new model probability is unknown
 	invalidate_model();
 }
-#endif // NOVIT
-
 //------------------------------------------------------------------------------------//
 
 //to give an idea what the model looks like
@@ -2724,13 +2688,11 @@ void CHMM::invalidate_model()
 		  } 
 	    } ;
 	} ;
-#ifndef NOVIT
 	this->all_pat_prob=0.0;
 	this->pat_prob=0.0;
 	this->path_deriv_updated=false ;
 	this->path_deriv_dimension=-1 ;
 	this->all_path_prob_updated=false;
-#endif  //NOVIT
 
 #ifdef USE_HMMPARALLEL_STRUCTURES
 	{
@@ -2738,19 +2700,15 @@ void CHMM::invalidate_model()
 		{
 			this->alpha_cache[i].updated=false;
 			this->beta_cache[i].updated=false;
-#ifndef NOVIT
 			path_prob_updated[i]=false ;
 			path_prob_dimension[i]=-1 ;
-#endif // NOVIT
 		} ;
 	} 
 #else // USE_HMMPARALLEL_STRUCTURES
 	this->alpha_cache.updated=false;
 	this->beta_cache.updated=false;
-#ifndef NOVIT
 	this->path_prob_dimension=-1;
 	this->path_prob_updated=false;
-#endif //NOVIT
 
 #endif // USE_HMMPARALLEL_STRUCTURES
 }
@@ -3944,13 +3902,13 @@ bool CHMM::save_model(FILE* file)
 		for (i=0; i<N; i++)
 		{
 			if (i<N-1) {
-				if (finite(get_p(i)))
+				if (CMath::finite(get_p(i)))
 					fprintf(file, "%e,", (double)get_p(i));
 				else
 					fprintf(file, "%f,", NAN_REPLACEMENT);			
 			}
 			else {
-				if (finite(get_p(i)))
+				if (CMath::finite(get_p(i)))
 					fprintf(file, "%e", (double)get_p(i));
 				else
 					fprintf(file, "%f", NAN_REPLACEMENT);
@@ -3961,13 +3919,13 @@ bool CHMM::save_model(FILE* file)
 		for (i=0; i<N; i++)
 		{
 			if (i<N-1) {
-				if (finite(get_q(i)))
+				if (CMath::finite(get_q(i)))
 					fprintf(file, "%e,", (double)get_q(i));
 				else
 					fprintf(file, "%f,", NAN_REPLACEMENT);			
 			}
 			else {
-				if (finite(get_q(i)))
+				if (CMath::finite(get_q(i)))
 					fprintf(file, "%e", (double)get_q(i));
 				else
 					fprintf(file, "%f", NAN_REPLACEMENT);
@@ -3982,13 +3940,13 @@ bool CHMM::save_model(FILE* file)
 			for (j=0; j<N; j++)
 			{
 				if (j<N-1) {
-					if (finite(get_a(i,j)))
+					if (CMath::finite(get_a(i,j)))
 						fprintf(file, "%e,", (double)get_a(i,j));
 					else
 						fprintf(file, "%f,", NAN_REPLACEMENT);
 				}
 				else {
-					if (finite(get_a(i,j)))
+					if (CMath::finite(get_a(i,j)))
 						fprintf(file, "%e];\n", (double)get_a(i,j));
 					else
 						fprintf(file, "%f];\n", NAN_REPLACEMENT);
@@ -4005,13 +3963,13 @@ bool CHMM::save_model(FILE* file)
 			for (j=0; j<M; j++)
 			{
 				if (j<M-1) {
-					if (finite(get_b(i,j)))
+					if (CMath::finite(get_b(i,j)))
 						fprintf(file, "%e,",  (double)get_b(i,j));
 					else
 						fprintf(file, "%f,", NAN_REPLACEMENT);
 				}
 				else {
-					if (finite(get_b(i,j)))
+					if (CMath::finite(get_b(i,j)))
 						fprintf(file, "%e];\n", (double)get_b(i,j));
 					else
 						fprintf(file, "%f];\n", NAN_REPLACEMENT);
@@ -4024,7 +3982,6 @@ bool CHMM::save_model(FILE* file)
 	return result;
 }
 
-#ifndef NOVIT
 T_STATES* CHMM::get_path(int32_t dim, float64_t& prob)
 {
 	T_STATES* result = NULL;
@@ -4061,7 +4018,6 @@ bool CHMM::save_path(FILE* file)
 
 	return result;
 }
-#endif // NOVIT
 
 bool CHMM::save_likelihood_bin(FILE* file)
 {
@@ -4203,7 +4159,6 @@ bool CHMM::save_model_bin(FILE* file)
 	return true ;
 }
 
-#ifndef NOVIT
 bool CHMM::save_path_derivatives(FILE* logfile)
 {
 	int32_t dim,i,j;
@@ -4334,7 +4289,6 @@ bool CHMM::save_path_derivatives_bin(FILE* logfile)
 	SG_PRINT( "\n") ;
 	return result;
 }
-#endif // NOVIT
 
 bool CHMM::save_model_derivatives_bin(FILE* file)
 {
@@ -4349,7 +4303,7 @@ bool CHMM::save_model_derivatives_bin(FILE* file)
 
 #ifdef USE_HMMPARALLEL
 	pthread_t *threads=new pthread_t[parallel->get_num_threads()] ;
-	S_BW_THREAD_PARAM *params=new S_BW_THREAD_PARAM[parallel->get_num_threads()] ;
+	S_DIM_THREAD_PARAM *params=new S_DIM_THREAD_PARAM[parallel->get_num_threads()] ;
 #endif
 
 	for (dim=0; dim<p_observations->get_num_vectors(); dim++)
@@ -4364,23 +4318,21 @@ bool CHMM::save_model_derivatives_bin(FILE* file)
 		if (dim%parallel->get_num_threads()==0)
 		{
 			for (i=0; i<parallel->get_num_threads(); i++)
+			{
 				if (dim+i<p_observations->get_num_vectors())
 				{
 					params[i].hmm=this ;
 					params[i].dim=dim+i ;
-#ifdef SUNOS
-					thr_create(NULL,0,bw_dim_prefetch, (void*)&params[i], PTHREAD_SCOPE_SYSTEM, &threads[i]) ;
-#else // SUNOS
 					pthread_create(&threads[i], NULL, bw_dim_prefetch, (void*)&params[i]) ;
-#endif // SUNOS
-				} ;
+				}
+			}
+
 			for (i=0; i<parallel->get_num_threads(); i++)
+			{
 				if (dim+i<p_observations->get_num_vectors())
-				{
-					void * ret ;
-					pthread_join(threads[i], &ret) ;
-				} ;
-		} ;
+					pthread_join(threads[i], NULL);
+			}
+		}
 #endif
 
 		float64_t prob=model_probability(dim) ;
@@ -5237,9 +5189,7 @@ void CHMM::set_observation_nocache(CStringFeatures<uint16_t>* obs)
 
 			alpha_cache[i].table=NULL;
 			beta_cache[i].table=NULL;
-#ifndef NOVIT
 			states_per_observation_psi[i]=NULL;
-#endif // NOVIT
 			path[i]=NULL;
 		} ;
 #else
@@ -5288,16 +5238,12 @@ void CHMM::set_observations(CStringFeatures<uint16_t>* obs, CHMM* lambda)
 		{
 			delete[] alpha_cache[i].table;
 			delete[] beta_cache[i].table;
-#ifndef NOVIT
 			delete[] states_per_observation_psi[i];
-#endif // NOVIT
 			delete[] path[i];
 
 			alpha_cache[i].table=NULL;
 			beta_cache[i].table=NULL;
-#ifndef NOVIT
 			states_per_observation_psi[i]=NULL;
-#endif // NOVIT
 			path[i]=NULL;
 		} ;
 #else
@@ -5556,13 +5502,18 @@ bool CHMM::baum_welch_viterbi_train(BaumWelchViterbiType type)
 				working->estimate_model_viterbi_defined(estimate); break;
 		}
 		prob_train=estimate->model_probability();
-		//SG_PRINT("prob_train=%g prob=%g\n", prob_train, prob);
+
 		if (prob_max<prob_train)
 			prob_max=prob_train;
 	}
 
-	delete estimate;
-	estimate=NULL;
+	if (estimate == this)
+	{
+		estimate->copy_model(working);
+		delete working;
+	}
+	else
+		delete estimate;
 
 	return true;
 }

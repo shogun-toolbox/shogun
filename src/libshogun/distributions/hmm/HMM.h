@@ -370,26 +370,22 @@ class CHMM : public CDistribution
 
 #ifdef USE_HMMPARALLEL_STRUCTURES
 
-		/// Datatype that is used in parrallel computation of model probability
-		struct S_MODEL_PROB_THREAD_PARAM
+		/// Datatype that is used in parrallel computation of viterbi
+		struct S_DIM_THREAD_PARAM
 		{
-			CHMM * hmm;
-			int32_t dim_start;
-			int32_t dim_stop;
-
+			CHMM* hmm;
+			int32_t dim;
 			float64_t prob_sum;
 		};
 
 		/// Datatype that is used in parrallel baum welch model estimation
 		struct S_BW_THREAD_PARAM
 		{
-			CHMM * hmm;
-			int32_t dim ;
+			CHMM* hmm;
 			int32_t dim_start;
 			int32_t dim_stop;
 
 			float64_t ret;
-			float64_t prob;
 
 			float64_t* p_buf;
 			float64_t* q_buf;
@@ -538,7 +534,6 @@ class CHMM : public CDistribution
 		float64_t backward_comp_old(
 			int32_t time, int32_t state, int32_t dimension);
 
-#ifndef NOVIT
 		/** calculates probability of best state sequence s_0,...,s_T-1 AND path itself using viterbi algorithm.
 		 * The path can be found in the array PATH(dimension)[0..T-1] afterwards
 		 * @param dimension dimension of observation for which the most probable path is calculated (observations are a matrix, where a row stands for one dimension i.e. 0_0,O_1,...,O_{T-1} 
@@ -549,7 +544,6 @@ class CHMM : public CDistribution
 			ASSERT(PATH(dim));
 			return PATH(dim)[t];
 		}
-#endif
 
 		/// calculates probability that observations were generated 
 		/// by the model using forward algorithm.
@@ -743,19 +737,9 @@ class CHMM : public CDistribution
 		}
 
 #ifdef USE_HMMPARALLEL_STRUCTURES
-
 		static void* bw_dim_prefetch(void * params);
-#ifndef NOVIT
+		static void* bw_single_dim_prefetch(void * params);
 		static void* vit_dim_prefetch(void * params);
-#endif
-		/** function that gets called from thread start routines.
-		 * @param dim dimension of observation
-		 * @param bw true for model_probability false for best_path
-		 */
-		float64_t prefetch(
-			int32_t dim, bool bw, float64_t* p_buff=NULL,
-			float64_t* q_buf=NULL, float64_t* a_buf=NULL,
-			float64_t* b_buf=NULL) ;
 #endif
 
 #ifdef FIX_POS
@@ -924,7 +908,7 @@ class CHMM : public CDistribution
 		/// numerically check whether derivates were calculated right
 		bool check_model_derivatives() ;
 		bool check_model_derivatives_combined() ;
-#ifndef NOVIT
+
 		/** get viterbi path and path probability
 		 * @param dim dimension for which to obtain best path
 		 * @param prob likelihood of path
@@ -951,7 +935,6 @@ class CHMM : public CDistribution
 		/// numerically check whether derivates were calculated right
 		bool check_path_derivatives() ;
 #endif //USE_HMMDEBUG
-#endif //NOVIT
 
 		/** save model probability in binary format
 		 * @param file filehandle
@@ -1058,7 +1041,6 @@ class CHMM : public CDistribution
 			observation_matrix_b[line_*M+column]=value;
 		}
 
-#ifndef NOVIT
 		/** access function for backtracking table psi
 		 * @param time time 0...T-1
 		 * @param state state 0...N-1
@@ -1074,7 +1056,6 @@ class CHMM : public CDistribution
 #endif
 			STATES_PER_OBSERVATION_PSI(dimension)[time*N+state]=value;
 		}
-#endif // NOVIT
 
 		/** access function for probability of end states
 		 * @param offset index 0...N-1
@@ -1159,7 +1140,6 @@ class CHMM : public CDistribution
 			return observation_matrix_b[line_*M+column];
 		}
 
-#ifndef NOVIT
 		/** access function for backtracking table psi
 		 * @param time time 0...T-1
 		 * @param state state 0...N-1
@@ -1175,7 +1155,7 @@ class CHMM : public CDistribution
 #endif
 			return STATES_PER_OBSERVATION_PSI(dimension)[time*N+state];
 		}
-#endif //NOVIT
+
 		//@}
 
 		/** @return object name */
@@ -1229,19 +1209,18 @@ class CHMM : public CDistribution
 		float64_t epsilon;
 		int32_t conv_it;
 
-#ifndef NOVIT		
 		/// probability of best path
 		float64_t all_pat_prob; 
 
 		/// probability of best path
 		float64_t pat_prob;	
-#endif // NOVIT
+
 		/// probability of model
 		float64_t mod_prob;	
 
 		/// true if model probability is up to date
 		bool mod_prob_updated;	
-#ifndef NOVIT
+
 		/// true if path probability is up to date
 		bool all_path_prob_updated;	
 
@@ -1250,7 +1229,6 @@ class CHMM : public CDistribution
 
 		/// true if path derivative is up to date
 		bool path_deriv_updated;
-#endif // NOVIT
 
 		// true if model is using log likelihood
 		bool loglikelihood;		
@@ -1291,7 +1269,6 @@ class CHMM : public CDistribution
 		/// cache for backward variables can be terrible HUGE O(T*N)
 		T_ALPHA_BETA* beta_cache /*[parallel.get_num_threads()]*/ ;
 
-#ifndef NOVIT
 		/// backtracking table for viterbi can be terrible HUGE O(T*N)
 		T_STATES** states_per_observation_psi /*[parallel.get_num_threads()]*/ ;
 
@@ -1303,7 +1280,6 @@ class CHMM : public CDistribution
 
 		/// dimension for which path_prob was calculated
 		int32_t* path_prob_dimension /*[parallel.get_num_threads()]*/ ;	
-#endif //NOVIT
 
 #else //USE_HMMPARALLEL_STRUCTURES
 		/// cache for forward variables can be terrible HUGE O(T*N)
@@ -1311,7 +1287,6 @@ class CHMM : public CDistribution
 		/// cache for backward variables can be terrible HUGE O(T*N)
 		T_ALPHA_BETA beta_cache;
 
-#ifndef NOVIT
 		/// backtracking table for viterbi can be terrible HUGE O(T*N)
 		T_STATES* states_per_observation_psi;
 
@@ -1323,7 +1298,6 @@ class CHMM : public CDistribution
 
 		/// dimension for which path_prob was calculated
 		int32_t path_prob_dimension;
-#endif // NOVIT
 
 #endif //USE_HMMPARALLEL_STRUCTURES
 		//@}
@@ -1447,7 +1421,6 @@ inline float64_t model_derivative_b(T_STATES i, uint16_t j, int32_t dimension)
 } 
 //@}
 
-#ifndef NOVIT
 /**@name derivatives of path probabilities.
  * computes d log p(lambda,best_path)/d lambda_i
  * @param dimension dimension for that derivatives are calculated
@@ -1539,7 +1512,6 @@ inline void prepare_path_derivative(int32_t dim)
 	path_deriv_dimension=dim ;
 	path_deriv_updated=true ;
 } ;
-#endif // NOVIT
 //@}
 
 /// inline proxies for forward pass
