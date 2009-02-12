@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2000-2008 Chih-Chung Chang and Chih-Jen Lin
+ * Copyright (c) 2000-2009 Chih-Chung Chang and Chih-Jen Lin
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,7 +30,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * Shogun specific adjustments (w) 2006-2008 Soeren Sonnenburg
+ * Shogun specific adjustments (w) 2006-2009 Soeren Sonnenburg
  */
 
 #ifndef _LIBSVM_H
