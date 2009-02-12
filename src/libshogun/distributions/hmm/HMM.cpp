@@ -615,102 +615,102 @@ bool CHMM::initialize(CModel* m, float64_t pseudo, FILE* modelfile)
 //Pr[O|lambda] for time > T
 float64_t CHMM::forward_comp(int32_t time, int32_t state, int32_t dimension)
 {
-  T_ALPHA_BETA_TABLE* alpha_new;
-  T_ALPHA_BETA_TABLE* alpha;
-  T_ALPHA_BETA_TABLE* dummy;
-  if (time<1)
-    time=0;
+	T_ALPHA_BETA_TABLE* alpha_new;
+	T_ALPHA_BETA_TABLE* alpha;
+	T_ALPHA_BETA_TABLE* dummy;
+	if (time<1)
+		time=0;
 
 
-  int32_t wanted_time=time;
-  
-  if (ALPHA_CACHE(dimension).table)
-    {
-      alpha=&ALPHA_CACHE(dimension).table[0];
-      alpha_new=&ALPHA_CACHE(dimension).table[N];
-      time=p_observations->get_vector_length(dimension)+1;
-    }
-  else
-    {
-      alpha_new=(T_ALPHA_BETA_TABLE*)ARRAYN1(dimension);
-      alpha=(T_ALPHA_BETA_TABLE*)ARRAYN2(dimension);
-    }
-  
-  if (time<1)
-    return get_p(state) + get_b(state, p_observations->get_feature(dimension,0));
-  else
-    {
-      //initialization	alpha_1(i)=p_i*b_i(O_1)
-      for (int32_t i=0; i<N; i++)
-	alpha[i] = get_p(i) + get_b(i, p_observations->get_feature(dimension,0)) ;
-      
-      //induction		alpha_t+1(j) = (sum_i=1^N alpha_t(i)a_ij) b_j(O_t+1)
-      for (register int32_t t=1; t<time && t < p_observations->get_vector_length(dimension); t++)
+	int32_t wanted_time=time;
+
+	if (ALPHA_CACHE(dimension).table)
 	{
-	  
-	  for (int32_t j=0; j<N; j++)
-	    {
-	      register int32_t i, num = trans_list_forward_cnt[j] ;
-	      float64_t sum=-CMath::INFTY;  
-	      for (i=0; i < num; i++)
+		alpha=&ALPHA_CACHE(dimension).table[0];
+		alpha_new=&ALPHA_CACHE(dimension).table[N];
+		time=p_observations->get_vector_length(dimension)+1;
+	}
+	else
+	{
+		alpha_new=(T_ALPHA_BETA_TABLE*)ARRAYN1(dimension);
+		alpha=(T_ALPHA_BETA_TABLE*)ARRAYN2(dimension);
+	}
+
+	if (time<1)
+		return get_p(state) + get_b(state, p_observations->get_feature(dimension,0));
+	else
+	{
+		//initialization	alpha_1(i)=p_i*b_i(O_1)
+		for (int32_t i=0; i<N; i++)
+			alpha[i] = get_p(i) + get_b(i, p_observations->get_feature(dimension,0)) ;
+
+		//induction		alpha_t+1(j) = (sum_i=1^N alpha_t(i)a_ij) b_j(O_t+1)
+		for (register int32_t t=1; t<time && t < p_observations->get_vector_length(dimension); t++)
 		{
-		  int32_t ii = trans_list_forward[j][i] ;
-		  sum = CMath::logarithmic_sum(sum, alpha[ii] + get_a(ii,j));
-		} ;
-	      
-	      alpha_new[j]= sum + get_b(j, p_observations->get_feature(dimension,t));
-	    }
-	  
-	  if (!ALPHA_CACHE(dimension).table)
-	    {
-	      dummy=alpha;
-	      alpha=alpha_new;
-	      alpha_new=dummy;	//switch alpha/alpha_new
-	    }
-	  else
-	    {
-	      alpha=alpha_new;
-	      alpha_new+=N;		//perversely pointer arithmetic
-	    }
+
+			for (int32_t j=0; j<N; j++)
+			{
+				register int32_t i, num = trans_list_forward_cnt[j] ;
+				float64_t sum=-CMath::INFTY;  
+				for (i=0; i < num; i++)
+				{
+					int32_t ii = trans_list_forward[j][i] ;
+					sum = CMath::logarithmic_sum(sum, alpha[ii] + get_a(ii,j));
+				} ;
+
+				alpha_new[j]= sum + get_b(j, p_observations->get_feature(dimension,t));
+			}
+
+			if (!ALPHA_CACHE(dimension).table)
+			{
+				dummy=alpha;
+				alpha=alpha_new;
+				alpha_new=dummy;	//switch alpha/alpha_new
+			}
+			else
+			{
+				alpha=alpha_new;
+				alpha_new+=N;		//perversely pointer arithmetic
+			}
+		}
+
+
+		if (time<p_observations->get_vector_length(dimension))
+		{
+			register int32_t i, num=trans_list_forward_cnt[state];
+			register float64_t sum=-CMath::INFTY; 
+			for (i=0; i<num; i++)
+			{
+				int32_t ii = trans_list_forward[state][i] ;
+				sum= CMath::logarithmic_sum(sum, alpha[ii] + get_a(ii, state));
+			} ;
+
+			return sum + get_b(state, p_observations->get_feature(dimension,time));
+		}
+		else
+		{
+			// termination
+			register int32_t i ; 
+			float64_t sum ; 
+			sum=-CMath::INFTY; 
+			for (i=0; i<N; i++)		 	                      			//sum over all paths
+				sum=CMath::logarithmic_sum(sum, alpha[i] + get_q(i));	//to get model probability
+
+			if (!ALPHA_CACHE(dimension).table)
+				return sum;
+			else
+			{
+				ALPHA_CACHE(dimension).dimension=dimension;
+				ALPHA_CACHE(dimension).updated=true;
+				ALPHA_CACHE(dimension).sum=sum;
+
+				if (wanted_time<p_observations->get_vector_length(dimension))
+					return ALPHA_CACHE(dimension).table[wanted_time*N+state];
+				else
+					return ALPHA_CACHE(dimension).sum;
+			}
+		}
 	}
-      
-      
-      if (time<p_observations->get_vector_length(dimension))
-	{
-	  register int32_t i, num=trans_list_forward_cnt[state];
-	  register float64_t sum=-CMath::INFTY; 
-	  for (i=0; i<num; i++)
-	    {
-	      int32_t ii = trans_list_forward[state][i] ;
-	      sum= CMath::logarithmic_sum(sum, alpha[ii] + get_a(ii, state));
-	    } ;
-	  
-	  return sum + get_b(state, p_observations->get_feature(dimension,time));
-	}
-      else
-	{
-	  // termination
-	  register int32_t i ; 
-	  float64_t sum ; 
-	  sum=-CMath::INFTY; 
-	  for (i=0; i<N; i++)		 	                      //sum over all paths
-	    sum=CMath::logarithmic_sum(sum, alpha[i] + get_q(i));     //to get model probability
-	  
-	  if (!ALPHA_CACHE(dimension).table)
-	    return sum;
-	  else
-	    {
-	      ALPHA_CACHE(dimension).dimension=dimension;
-	      ALPHA_CACHE(dimension).updated=true;
-	      ALPHA_CACHE(dimension).sum=sum;
-	      
-	      if (wanted_time<p_observations->get_vector_length(dimension))
-		return ALPHA_CACHE(dimension).table[wanted_time*N+state];
-	      else
-		return ALPHA_CACHE(dimension).sum;
-	    }
-	}
-    }
 }
 
 
@@ -1249,12 +1249,12 @@ float64_t CHMM::model_probability_comp()
 	}
 
 	for (int32_t i=0; i<parallel->get_num_threads(); i++)
-	  {
-	    delete[] params[i].p_buf;
-	    delete[] params[i].q_buf;
-	    delete[] params[i].a_buf;
-	    delete[] params[i].b_buf;
-	  }
+	{
+		delete[] params[i].p_buf;
+		delete[] params[i].q_buf;
+		delete[] params[i].a_buf;
+		delete[] params[i].b_buf;
+	}
 
 	delete[] threads;
 	delete[] params;
@@ -1263,15 +1263,15 @@ float64_t CHMM::model_probability_comp()
 	return mod_prob;
 }
 
-void* CHMM::bw_dim_prefetch(void * params)
+void* CHMM::bw_dim_prefetch(void* params)
 {
-	CHMM* hmm=((S_BW_THREAD_PARAM*)params)->hmm ;
-	int32_t start=((S_BW_THREAD_PARAM*)params)->dim_start ;
-	int32_t stop=((S_BW_THREAD_PARAM*)params)->dim_stop ;
-	float64_t* p_buf=((S_BW_THREAD_PARAM*)params)->p_buf ;
-	float64_t* q_buf=((S_BW_THREAD_PARAM*)params)->q_buf ;
-	float64_t* a_buf=((S_BW_THREAD_PARAM*)params)->a_buf ;
-	float64_t* b_buf=((S_BW_THREAD_PARAM*)params)->b_buf ;
+	CHMM* hmm=((S_BW_THREAD_PARAM*) params)->hmm;
+	int32_t start=((S_BW_THREAD_PARAM*) params)->dim_start;
+	int32_t stop=((S_BW_THREAD_PARAM*) params)->dim_stop;
+	float64_t* p_buf=((S_BW_THREAD_PARAM*) params)->p_buf;
+	float64_t* q_buf=((S_BW_THREAD_PARAM*) params)->q_buf;
+	float64_t* a_buf=((S_BW_THREAD_PARAM*) params)->a_buf;
+	float64_t* b_buf=((S_BW_THREAD_PARAM*) params)->b_buf;
 	((S_BW_THREAD_PARAM*)params)->ret=0;
 
 	for (int32_t dim=start; dim<stop; dim++)
@@ -1319,8 +1319,8 @@ void CHMM::ab_buf_comp(
 	for (i=0; i<N; i++)
 	{
 		//estimate initial+end state distribution numerator
-		p_buf[i]=CMath::logarithmic_sum(get_p(i), get_p(i)+get_b(i,p_observations->get_feature(dim,0))+backward(0,i,dim) - dimmodprob);
-		q_buf[i]=CMath::logarithmic_sum(get_q(i), forward(p_observations->get_vector_length(dim)-1, i, dim)+get_q(i) - dimmodprob);
+		p_buf[i]=get_p(i)+get_b(i,p_observations->get_feature(dim,0))+backward(0,i,dim) - dimmodprob;
+		q_buf[i]=forward(p_observations->get_vector_length(dim)-1, i, dim)+get_q(i) - dimmodprob;
 
 		//estimate a
 		for (j=0; j<N; j++)
@@ -1338,7 +1338,7 @@ void CHMM::ab_buf_comp(
 		//estimate b
 		for (j=0; j<M; j++)
 		{
-			b_sum=CMath::ALMOST_NEG_INFTY;
+			b_sum=-CMath::INFTY;
 
 			for (t=0; t<p_observations->get_vector_length(dim); t++) 
 			{
@@ -1380,59 +1380,68 @@ void CHMM::estimate_model_baum_welch(CHMM* hmm)
 	    else
 	      set_b(i,j,hmm->get_b(i,j));
 	}
+	invalidate_model();
+
+	int32_t num_threads = parallel->get_num_threads();
 	
-	pthread_t *threads=new pthread_t[parallel->get_num_threads()] ;
-	S_BW_THREAD_PARAM *params=new S_BW_THREAD_PARAM[parallel->get_num_threads()] ;
+	pthread_t *threads=new pthread_t[num_threads] ;
+	S_BW_THREAD_PARAM *params=new S_BW_THREAD_PARAM[num_threads] ;
 
-	for (i=0; i<parallel->get_num_threads(); i++)
-	{
-		params[i].p_buf=new float64_t[N];
-		params[i].q_buf=new float64_t[N];
-		params[i].a_buf=new float64_t[N*N];
-		params[i].b_buf=new float64_t[N*M];
-	} ;
+	if (p_observations->get_num_vectors()<num_threads)
+		num_threads=p_observations->get_num_vectors();
 
-	for (cpu=0; cpu<parallel->get_num_threads(); cpu++)
+	for (cpu=0; cpu<num_threads; cpu++)
 	{
+		params[cpu].p_buf=new float64_t[N];
+		params[cpu].q_buf=new float64_t[N];
+		params[cpu].a_buf=new float64_t[N*N];
+		params[cpu].b_buf=new float64_t[N*M];
+
 		params[cpu].hmm=hmm;
-		params[cpu].dim_start=p_observations->get_num_vectors()*cpu / parallel->get_num_threads();
-		params[cpu].dim_stop= p_observations->get_num_vectors()*(cpu+1) / parallel->get_num_threads();
+		int32_t start = p_observations->get_num_vectors()*cpu / num_threads;
+		int32_t stop=p_observations->get_num_vectors()*(cpu+1) / num_threads;
 
-		pthread_create(&threads[cpu], NULL, bw_dim_prefetch, (void*)&params[cpu]) ;
+		if (cpu == parallel->get_num_threads()-1)
+			stop=p_observations->get_num_vectors();
+
+		ASSERT(start<stop);
+		params[cpu].dim_start=start;
+		params[cpu].dim_stop=stop;
+
+		pthread_create(&threads[cpu], NULL, bw_dim_prefetch, &params[cpu]);
 	}
 
-	for (cpu=0; cpu<parallel->get_num_threads(); cpu++)
-	  {
-	    void* ret;
-	    pthread_join(threads[cpu], &ret) ;
-	    //dimmodprob = params[dim%parallel->get_num_threads()].ret ;
-	    
-	    for (i=0; i<N; i++)
-	      {
-		//estimate initial+end state distribution numerator
-		set_p(i, CMath::logarithmic_sum(get_p(i), params[cpu].p_buf[i]));
-		set_q(i, CMath::logarithmic_sum(get_q(i), params[cpu].q_buf[i]));
-		
-		//estimate numerator for a
-		for (j=0; j<N; j++)
-		  set_a(i,j, CMath::logarithmic_sum(get_a(i,j), params[cpu].a_buf[N*i+j]));
-		
-		//estimate numerator for b
-		for (j=0; j<M; j++)
-		  set_b(i,j, CMath::logarithmic_sum(get_b(i,j), params[cpu].b_buf[M*i+j]));
-	      }
-	    
-	    fullmodprob+=params[cpu].ret;
-	  }
+	for (cpu=0; cpu<num_threads; cpu++)
+	{
+		pthread_join(threads[cpu], NULL);
 
-	for (i=0; i<parallel->get_num_threads(); i++)
-	  {
-	    delete[] params[i].p_buf;
-	    delete[] params[i].q_buf;
-	    delete[] params[i].a_buf;
-	    delete[] params[i].b_buf;
-	  }
-	
+		for (i=0; i<N; i++)
+		{
+			//estimate initial+end state distribution numerator
+			set_p(i, CMath::logarithmic_sum(get_p(i), params[cpu].p_buf[i]));
+			set_q(i, CMath::logarithmic_sum(get_q(i), params[cpu].q_buf[i]));
+
+			//estimate numerator for a
+			for (j=0; j<N; j++)
+				set_a(i,j, CMath::logarithmic_sum(get_a(i,j), params[cpu].a_buf[N*i+j]));
+
+			//estimate numerator for b
+			for (j=0; j<M; j++)
+				set_b(i,j, CMath::logarithmic_sum(get_b(i,j), params[cpu].b_buf[M*i+j]));
+		}
+
+		fullmodprob+=params[cpu].ret;
+
+	}
+
+	for (cpu=0; cpu<num_threads; cpu++)
+	{
+		delete[] params[cpu].p_buf;
+		delete[] params[cpu].q_buf;
+		delete[] params[cpu].a_buf;
+		delete[] params[cpu].b_buf;
+	}
+
 	delete[] threads ;
 	delete[] params ;
 	
@@ -1726,17 +1735,21 @@ void CHMM::estimate_model_baum_welch_defined(CHMM* estimate)
 	}
 
 #ifdef USE_HMMPARALLEL
-	pthread_t *threads=new pthread_t[parallel->get_num_threads()] ;
-	S_DIM_THREAD_PARAM *params=new S_DIM_THREAD_PARAM[parallel->get_num_threads()] ;
+	int32_t num_threads = parallel->get_num_threads();
+	pthread_t *threads=new pthread_t[num_threads] ;
+	S_DIM_THREAD_PARAM *params=new S_DIM_THREAD_PARAM[num_threads] ;
+
+	if (p_observations->get_num_vectors()<num_threads)
+		num_threads=p_observations->get_num_vectors();
 #endif
 
 	//change summation order to make use of alpha/beta caches
 	for (dim=0; dim<p_observations->get_num_vectors(); dim++)
 	{
 #ifdef USE_HMMPARALLEL
-		if (dim%parallel->get_num_threads()==0)
+		if (dim%num_threads==0)
 		{
-			for (i=0; i<parallel->get_num_threads(); i++)
+			for (i=0; i<num_threads; i++)
 			{
 				if (dim+i<p_observations->get_num_vectors())
 				{
@@ -1745,7 +1758,7 @@ void CHMM::estimate_model_baum_welch_defined(CHMM* estimate)
 					pthread_create(&threads[i], NULL, bw_single_dim_prefetch, (void*)&params[i]) ;
 				}
 			}
-			for (i=0; i<parallel->get_num_threads(); i++)
+			for (i=0; i<num_threads; i++)
 			{
 				if (dim+i<p_observations->get_num_vectors())
 				{
@@ -1886,17 +1899,21 @@ void CHMM::estimate_model_viterbi(CHMM* estimate)
 	float64_t allpatprob=0 ;
 
 #ifdef USE_HMMPARALLEL
-	pthread_t *threads=new pthread_t[parallel->get_num_threads()] ;
-	S_DIM_THREAD_PARAM *params=new S_DIM_THREAD_PARAM[parallel->get_num_threads()] ;
+	int32_t num_threads = parallel->get_num_threads();
+	pthread_t *threads=new pthread_t[num_threads] ;
+	S_DIM_THREAD_PARAM *params=new S_DIM_THREAD_PARAM[num_threads] ;
+
+	if (p_observations->get_num_vectors()<num_threads)
+		num_threads=p_observations->get_num_vectors();
 #endif
 
 	for (int32_t dim=0; dim<p_observations->get_num_vectors(); dim++)
 	{
 
 #ifdef USE_HMMPARALLEL
-		if (dim%parallel->get_num_threads()==0)
+		if (dim%num_threads==0)
 		{
-			for (i=0; i<parallel->get_num_threads(); i++)
+			for (i=0; i<num_threads; i++)
 			{
 				if (dim+i<p_observations->get_num_vectors())
 				{
@@ -1905,7 +1922,7 @@ void CHMM::estimate_model_viterbi(CHMM* estimate)
 					pthread_create(&threads[i], NULL, vit_dim_prefetch, (void*)&params[i]) ;
 				}
 			}
-			for (i=0; i<parallel->get_num_threads(); i++)
+			for (i=0; i<num_threads; i++)
 			{
 				if (dim+i<p_observations->get_num_vectors())
 				{
@@ -2007,8 +2024,9 @@ void CHMM::estimate_model_viterbi_defined(CHMM* estimate)
 	}
 
 #ifdef USE_HMMPARALLEL
-	pthread_t *threads=new pthread_t[parallel->get_num_threads()] ;
-	S_DIM_THREAD_PARAM *params=new S_DIM_THREAD_PARAM[parallel->get_num_threads()] ;
+	int32_t num_threads = parallel->get_num_threads();
+	pthread_t *threads=new pthread_t[num_threads] ;
+	S_DIM_THREAD_PARAM *params=new S_DIM_THREAD_PARAM[num_threads] ;
 #endif
 
 	float64_t allpatprob=0.0 ;
@@ -2016,9 +2034,9 @@ void CHMM::estimate_model_viterbi_defined(CHMM* estimate)
 	{
 
 #ifdef USE_HMMPARALLEL
-		if (dim%parallel->get_num_threads()==0)
+		if (dim%num_threads==0)
 		{
-			for (i=0; i<parallel->get_num_threads(); i++)
+			for (i=0; i<num_threads; i++)
 			{
 				if (dim+i<p_observations->get_num_vectors())
 				{
@@ -2027,7 +2045,7 @@ void CHMM::estimate_model_viterbi_defined(CHMM* estimate)
 					pthread_create(&threads[i], NULL, vit_dim_prefetch, (void*)&params[i]) ;
 				}
 			}
-			for (i=0; i<parallel->get_num_threads(); i++)
+			for (i=0; i<num_threads; i++)
 			{
 				if (dim+i<p_observations->get_num_vectors())
 				{
@@ -4302,8 +4320,12 @@ bool CHMM::save_model_derivatives_bin(FILE* file)
 		SG_INFO( "writing derivatives of changed weights only\n") ;
 
 #ifdef USE_HMMPARALLEL
-	pthread_t *threads=new pthread_t[parallel->get_num_threads()] ;
-	S_DIM_THREAD_PARAM *params=new S_DIM_THREAD_PARAM[parallel->get_num_threads()] ;
+	int32_t num_threads = parallel->get_num_threads();
+	pthread_t *threads=new pthread_t[num_threads] ;
+	S_DIM_THREAD_PARAM *params=new S_DIM_THREAD_PARAM[num_threads] ;
+
+	if (p_observations->get_num_vectors()<num_threads)
+		num_threads=p_observations->get_num_vectors();
 #endif
 
 	for (dim=0; dim<p_observations->get_num_vectors(); dim++)
@@ -4315,9 +4337,9 @@ bool CHMM::save_model_derivatives_bin(FILE* file)
 		} ;
 
 #ifdef USE_HMMPARALLEL
-		if (dim%parallel->get_num_threads()==0)
+		if (dim%num_threads==0)
 		{
-			for (i=0; i<parallel->get_num_threads(); i++)
+			for (i=0; i<num_threads; i++)
 			{
 				if (dim+i<p_observations->get_num_vectors())
 				{
@@ -4327,7 +4349,7 @@ bool CHMM::save_model_derivatives_bin(FILE* file)
 				}
 			}
 
-			for (i=0; i<parallel->get_num_threads(); i++)
+			for (i=0; i<num_threads; i++)
 			{
 				if (dim+i<p_observations->get_num_vectors())
 					pthread_join(threads[i], NULL);

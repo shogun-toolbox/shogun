@@ -1460,98 +1460,92 @@ inline float64_t path_derivative_b(T_STATES i, uint16_t j, int32_t dimension)
 
 
 protected:
-/**@name input helper functions.
- * for reading model/definition/observation files
- */
-//@{
-/// put a sequence of numbers into the buffer
-bool get_numbuffer(FILE* file, char* buffer, int32_t length);
+	/**@name input helper functions.
+	 * for reading model/definition/observation files
+	 */
+	//@{
+	/// put a sequence of numbers into the buffer
+	bool get_numbuffer(FILE* file, char* buffer, int32_t length);
 
-/// expect open bracket. 
-void open_bracket(FILE* file);
+	/// expect open bracket. 
+	void open_bracket(FILE* file);
 
-/// expect closing bracket
-void close_bracket(FILE* file);
+	/// expect closing bracket
+	void close_bracket(FILE* file);
 
-/// expect comma or space.
-bool comma_or_space(FILE* file);
+	/// expect comma or space.
+	bool comma_or_space(FILE* file);
 
-/// parse error messages
-inline void error(int32_t p_line, const char* str)
-{
-	if (p_line)
-		SG_ERROR( "error in line %d %s\n", p_line, str);
-	else
-		SG_ERROR( "error %s\n", str);
-}
-//@}
-
-/// initialization function that is called before path_derivatives are calculated
-inline void prepare_path_derivative(int32_t dim)
-{
-	if (path_deriv_updated && (path_deriv_dimension==dim))
-		return ;
-	int32_t i,j,t ;
-	best_path(dim);
-	//initialize with zeros
-	for (i=0; i<N; i++)
+	/// parse error messages
+	inline void error(int32_t p_line, const char* str)
 	{
-		for (j=0; j<N; j++)
-			set_A(i,j, 0);
-		for (j=0; j<M; j++)
-			set_B(i,j, 0);
-	}
-
-	//counting occurences for A and B
-	for (t=0; t<p_observations->get_vector_length(dim)-1; t++)
-	{
-		set_A(PATH(dim)[t], PATH(dim)[t+1], get_A(PATH(dim)[t], PATH(dim)[t+1])+1);
-		set_B(PATH(dim)[t], p_observations->get_feature(dim,t),  get_B(PATH(dim)[t], p_observations->get_feature(dim,t))+1);
-	}
-	set_B(PATH(dim)[p_observations->get_vector_length(dim)-1], p_observations->get_feature(dim,p_observations->get_vector_length(dim)-1),  get_B(PATH(dim)[p_observations->get_vector_length(dim)-1], p_observations->get_feature(dim,p_observations->get_vector_length(dim)-1)) + 1);
-	path_deriv_dimension=dim ;
-	path_deriv_updated=true ;
-} ;
-//@}
-
-/// inline proxies for forward pass
-inline float64_t forward(int32_t time, int32_t state, int32_t dimension)
-{
-	if (time<1)
-		time=0;
-
-	if (ALPHA_CACHE(dimension).table && (dimension==ALPHA_CACHE(dimension).dimension) && ALPHA_CACHE(dimension).updated)
-	{
-		if (time<p_observations->get_vector_length(dimension))
-			return ALPHA_CACHE(dimension).table[time*N+state];
+		if (p_line)
+			SG_ERROR( "error in line %d %s\n", p_line, str);
 		else
-			return ALPHA_CACHE(dimension).sum;
+			SG_ERROR( "error %s\n", str);
 	}
-	else
-	{
-		/*printf("forward cache failed for %i: old entry: dim=%i, %i\n", dimension, ALPHA_CACHE(dimension).dimension, ALPHA_CACHE(dimension).updated) ;*/
-		return forward_comp(time, state, dimension) ;
-	} ;
-} ;
+	//@}
 
-/// inline proxies for backward pass
-inline float64_t backward(int32_t time, int32_t state, int32_t dimension)
-{
-	if (BETA_CACHE(dimension).table && (dimension==BETA_CACHE(dimension).dimension) && (BETA_CACHE(dimension).updated))
+	/// initialization function that is called before path_derivatives are calculated
+	inline void prepare_path_derivative(int32_t dim)
 	{
-		if (time<0)
-			return BETA_CACHE(dimension).sum;
-		if (time<p_observations->get_vector_length(dimension))
-			return BETA_CACHE(dimension).table[time*N+state];
-		else
-			return -CMath::INFTY;
-	}
-	else
-	{
-		/*printf("backward cache failed for %i: old entry: dim=%i, %i\n", dimension, ALPHA_CACHE(dimension).dimension, BETA_CACHE(dimension).updated) ;*/
-		return backward_comp(time, state, dimension) ;
+		if (path_deriv_updated && (path_deriv_dimension==dim))
+			return ;
+		int32_t i,j,t ;
+		best_path(dim);
+		//initialize with zeros
+		for (i=0; i<N; i++)
+		{
+			for (j=0; j<N; j++)
+				set_A(i,j, 0);
+			for (j=0; j<M; j++)
+				set_B(i,j, 0);
+		}
+
+		//counting occurences for A and B
+		for (t=0; t<p_observations->get_vector_length(dim)-1; t++)
+		{
+			set_A(PATH(dim)[t], PATH(dim)[t+1], get_A(PATH(dim)[t], PATH(dim)[t+1])+1);
+			set_B(PATH(dim)[t], p_observations->get_feature(dim,t),  get_B(PATH(dim)[t], p_observations->get_feature(dim,t))+1);
+		}
+		set_B(PATH(dim)[p_observations->get_vector_length(dim)-1], p_observations->get_feature(dim,p_observations->get_vector_length(dim)-1),  get_B(PATH(dim)[p_observations->get_vector_length(dim)-1], p_observations->get_feature(dim,p_observations->get_vector_length(dim)-1)) + 1);
+		path_deriv_dimension=dim ;
+		path_deriv_updated=true ;
 	} ;
-} ;
+	//@}
+
+	/// inline proxies for forward pass
+	inline float64_t forward(int32_t time, int32_t state, int32_t dimension)
+	{
+		if (time<1)
+			time=0;
+
+		if (ALPHA_CACHE(dimension).table && (dimension==ALPHA_CACHE(dimension).dimension) && ALPHA_CACHE(dimension).updated)
+		{
+			if (time<p_observations->get_vector_length(dimension))
+				return ALPHA_CACHE(dimension).table[time*N+state];
+			else
+				return ALPHA_CACHE(dimension).sum;
+		}
+		else
+			return forward_comp(time, state, dimension) ;
+	}
+
+	/// inline proxies for backward pass
+	inline float64_t backward(int32_t time, int32_t state, int32_t dimension)
+	{
+		if (BETA_CACHE(dimension).table && (dimension==BETA_CACHE(dimension).dimension) && (BETA_CACHE(dimension).updated))
+		{
+			if (time<0)
+				return BETA_CACHE(dimension).sum;
+			if (time<p_observations->get_vector_length(dimension))
+				return BETA_CACHE(dimension).table[time*N+state];
+			else
+				return -CMath::INFTY;
+		}
+		else
+			return backward_comp(time, state, dimension) ;
+	}
 
 };
 #endif
