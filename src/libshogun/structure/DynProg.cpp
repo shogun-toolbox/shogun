@@ -472,7 +472,8 @@ void CDynProg::precompute_content_values(
 
 void CDynProg::set_p_vector(float64_t *p, int32_t p_N)
 {
-	ASSERT(p_N==N);
+	if (!(p_N==N))
+		SG_ERROR("length of start prob vector p (%i) is not equal to the number of states (%i), p_N: %i\n",p_N, N);
 	//m_orf_info.resize_array(p_N,2);
 	//m_PEN.resize_array(p_N,p_N);
 
@@ -481,7 +482,8 @@ void CDynProg::set_p_vector(float64_t *p, int32_t p_N)
 
 void CDynProg::set_q_vector(float64_t *q, int32_t q_N)
 {
-	ASSERT(q_N==N);
+	if (!(q_N==N))
+		SG_ERROR("length of end prob vector q (%i) is not equal to the number of states (%i), p_N: %i\n",q_N, N);
 	end_state_distribution_q.set_array(q, q_N, true, true);
 }
 

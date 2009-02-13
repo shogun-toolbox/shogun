@@ -5686,6 +5686,7 @@ bool CSGInterface::cmd_init_dyn_prog()
 
 	CDynProg* h=new CDynProg(num_svms);
 	ui_structure->set_dyn_prog(h);
+	SG_PRINT("init_dyn_prog done\n");	
 	return true;
 }
 bool CSGInterface::cmd_set_model()
@@ -5705,6 +5706,7 @@ bool CSGInterface::cmd_set_model()
 	get_real_ndarray(penalties_array,Dim,numDim);
 	ASSERT(numDim==3);
 	ASSERT(Dim[0]==Dim[1]);
+	SG_PRINT("\n\n num states:%i \n", Dim[0]);
 	ASSERT(ui_structure->compute_plif_matrix(penalties_array, Dim, numDim));	
 
 
@@ -5747,11 +5749,12 @@ bool CSGInterface::cmd_set_model()
 	ui_structure->set_orf_info(orf_info, Norf, Morf);
 	h->best_path_set_orf_info(orf_info, Norf, Morf);
 
-	h->set_num_states(Dim[0]) ;
-	
-	ui_structure->set_dyn_prog(h);
+	h->set_num_states(num_states) ;
 
-	SG_DEBUG("set_model done\n");	
+	
+	//ui_structure->set_dyn_prog(h);
+
+	SG_PRINT("set_model done\n");	
 	return true;
 }
 
@@ -5797,9 +5800,9 @@ bool CSGInterface::cmd_precompute_content_svms()
 bool CSGInterface::cmd_set_feature_matrix()
 {
 
-	//int32_t* all_pos = ui_structure->get_all_positions();
-	//int32_t Npos = ui_structure->get_num_positions();
+	int32_t num_pos = ui_structure->get_num_positions();
 	int32_t num_states = ui_structure->get_num_states();
+	SG_PRINT("set_feature_matrix: num_states: %i, num_pos, %i\n",num_states, num_pos); 
 
 	//ARG 1
 	// feature matrix (#states x #feature_positions x max_num_signals)
@@ -5810,6 +5813,7 @@ bool CSGInterface::cmd_set_feature_matrix()
 	
 	ASSERT(numDims==3)
 	ASSERT(Dims[0]==num_states)
+	ASSERT(Dims[1]==num_pos)
 	ASSERT(ui_structure->set_feature_matrix(features, Dims));
 
 	ASSERT(ui_structure->set_feature_dims(Dims));
@@ -5961,6 +5965,10 @@ bool CSGInterface::cmd_best_path_trans()
 	CPlifBase** PEN_matrix = ui_structure->get_plif_matrix();
 	CPlifBase** PEN_state_signal = ui_structure->get_state_signals();
 	
+	int32_t nnnn = 0;
+	nnnn = h->get_num_states();
+	SG_PRINT("best_path_trans: nnnn: %i\n", nnnn);
+
 	h->set_p_vector(p, num_states);
 	h->set_q_vector(q, num_states);
 	if (seg_path!=NULL)
