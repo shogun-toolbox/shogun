@@ -101,6 +101,7 @@ COMP_OPTS="-g -Wall -O9 -fexpensive-optimizations -frerun-cse-after-loop -fcse-f
 COMP_NOOPTS="-g -Wall -O2"
 COMPFLAGS_C=-fPIC
 COMPFLAGS_CPP=-fPIC
+SEDMI='sed -i'
 test "$CFLAGS" && COMPFLAGS_C="$COMPFLAGS_C $CFLAGS"
 test "$CXXFLAGS" && COMPFLAGS_CPP="$COMPFLAGS_CPP $CXXFLAGS"
 INCLUDES=
@@ -2009,6 +2010,7 @@ EOF
 
 	if darwin
 	then
+		SEDMI='sed -i ""'
 		LIBRARY_PATH="DYLD_LIBRARY_PATH"
 		EXT_LIB=dylib
 		SONAMEOPT="-install_name "
@@ -3192,6 +3194,7 @@ MAKE 			= ${MAKE}
 MAKEDEPEND		= ${MAKEDEPEND}
 MAKEDEPENDOPTS	= ${MAKEDEPENDOPTS}
 SWIG 			= ${SWIG}
+SEDMI 			= ${SEDMI}
 PYTHON 			= ${PYTHON}
 DOXYGEN 		= ${DOXYGEN}
 USE_DOXYGEN 	= ${USE_DOXYGEN}
