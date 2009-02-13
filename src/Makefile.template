@@ -16,9 +16,9 @@ endif
 
 ifeq (libshogun,$(findstring libshogun,$(TEMPLATE_TARGET)))
 	LIBNAME=$(shell echo $(TEMPLATE_TARGET) | cut -f 1 -d '.')
-	SONAME=objdump -p $(TEMPLATE_TARGET) | grep SONAME | awk '{print $$2}'
+	SONAME=$(TEMPLATE_SONAME)
 	OTHER_TARGETS=$(LIBNAME).a
-	LIBSYMLINKCMD=rm -f $(LIBNAME).so `$(SONAME)`; ln -s $(TEMPLATE_TARGET) `$(SONAME)` ; ln -s $(TEMPLATE_TARGET) $(LIBNAME).so
+	LIBSYMLINKCMD=rm -f $(LIBNAME).$(EXT_LIB) $(SONAME); ln -s $(TEMPLATE_TARGET) $(SONAME) ; ln -s $(TEMPLATE_TARGET) $(LIBNAME).$(EXT_LIB)
 
 ifeq (libshogun.,$(findstring libshogun.,$(TEMPLATE_TARGET)))
 DEPDEPS=lib/versionstring.h
@@ -114,7 +114,7 @@ swigdocclean:
 
 clean:
 	@rm -f $(shell find . -name "*.cpp.o" -o -name "*.c.o")
-	@rm -f $(shell find . -name "*.a" -o -name "*.so*" -o -name "*.dll" -o -name "*~" -o -name ".#*")
+	@rm -f $(shell find . -name "*.a" -o -name "*.so*" -o -name "*.dylib" -o -name "*.dll" -o -name "*~" -o -name ".#*")
 	@rm -f $(shell find . -type f -name '*.py' ! -name '__*.py' ! -name '.*.py' | grep -v svn)
 	@rm -f $(shell find . -type f -name '*.pyc' -o -name '*.R')
 	@rm -f $(shell find . -type f -name '*.RData')
@@ -275,7 +275,7 @@ doc-libshogunui:
 doc-octave:
 	echo "/** \page staticoctave Static Matlab/Octave Interface Function Reference" >x
 	-echo "sg('set_output', 'y');sg('help','doxygen');" | \
-		( LD_LIBRARY_PATH=../libshogunui:../libshogun OCTAVE_LOADPATH="$(DESTDIR)$(OCTDIR)" octave )
+		( $(LIBRARY_PATH)=../libshogunui:../libshogun OCTAVE_LOADPATH="$(DESTDIR)$(OCTDIR)" octave )
 	echo "*/" >>y
 	cat x y >../../doc/pages/StaticOctaveInterface.mainpage
 	rm -f x y
@@ -283,7 +283,7 @@ doc-octave:
 doc-cmdline:
 	echo "/** \page staticcmdline Static Command Line Interface Function Reference" >x
 	-bash -c "echo -e \"set_output y\nhelp doxygen\n\"" | \
-		( LD_LIBRARY_PATH=../libshogunui:../libshogun  PATH="./:$(DESTDIR)$(BINDIR)" shogun )
+		( $(LIBRARY_PATH)=../libshogunui:../libshogun  PATH="./:$(DESTDIR)$(BINDIR)" shogun )
 	echo "*/" >>y
 	cat x y >../../doc/pages/StaticCommandLineInterface.mainpage
 	rm -f x y
@@ -291,7 +291,7 @@ doc-cmdline:
 doc-python:
 	echo "/** \page staticpython Static Python Interface Function Reference" >x
 	-bash -c "echo -e \"from sg import sg\nsg('set_output', 'y')\nsg('help','doxygen')\n\"" | \
-		( LD_LIBRARY_PATH=../libshogunui:../libshogun  PYTHONPATH="$(DESTDIR)$(PYDIR)" python )
+		( $(LIBRARY_PATH)=../libshogunui:../libshogun  PYTHONPATH="$(DESTDIR)$(PYDIR)" python )
 	echo "*/" >>y
 	cat x y >../../doc/pages/StaticPythonInterface.mainpage
 	rm -f x y
@@ -299,7 +299,7 @@ doc-python:
 doc-r:
 	echo "/** \page staticr Static R Interface Function Reference" >x
 	-echo "library(sg);sg('set_output', 'y');sg('help','doxygen');" | \
-		( LD_LIBRARY_PATH=../libshogunui:../libshogun  R_PATH="$(DESTDIR)$(RDIR)" R --no-save)
+		( $(LIBRARY_PATH)=../libshogunui:../libshogun  R_PATH="$(DESTDIR)$(RDIR)" R --no-save)
 	echo "*/" >>y
 	cat x y >../../doc/pages/StaticRInterface.mainpage
 	rm -f x y
@@ -334,7 +334,7 @@ libshogunui.a: .depend $(OBJFILES) $(SRCFILES) $(HEADERFILES)
 
 %.R: %.${EXT_LIB_SWIG_TEMPLATE}
 %.RData: %.R
-	echo 'f="$<"; fdata="$@"; source(f); save(list=ls(all=TRUE),file=fdata, compress=TRUE); q(save="no")' | (LD_LIBRARY_PATH=../libshogun:../libshogunui R --no-save)
+	echo 'f="$<"; fdata="$@"; source(f); save(list=ls(all=TRUE),file=fdata, compress=TRUE); q(save="no")' | ($(LIBRARY_PATH)=../libshogun:../libshogunui R --no-save)
 
 $(PRE_LIB_SWIG_TEMPLATE)%.${EXT_LIB_SWIG_TEMPLATE}:	%$(EXT_OBJ_SWIG)
 	$(LINK) $(LINKFLAGS) -o $@ $^ $(POSTLINKFLAGS)

@@ -17,6 +17,27 @@
 #include <netinet/in.h>
 #endif
 
+#include <stdio.h>
+
+void cmdline_print_message(FILE* target, const char* str)
+{
+	fprintf(target, "%s", str);
+}
+
+void cmdline_print_warning(FILE* target, const char* str)
+{
+	fprintf(target, "%s", str);
+}
+
+void cmdline_print_error(FILE* target, const char* str)
+{
+	fprintf(target, "%s", str);
+}
+
+void cmdline_cancel_computations(bool &delayed, bool &immediately)
+{
+}
+
 const int32_t READLINE_BUFFER_SIZE = 10000;
 extern CSGInterface* interface;
 extern CSGInterfaceMethod sg_methods[];
@@ -826,6 +847,8 @@ int main(int argc, char* argv[])
 	rl_attempted_completion_function = shogun_completion;
 #endif //HAVE_READLINE
 
+	init_shogun(&cmdline_print_message, &cmdline_print_warning,
+			&cmdline_print_error, &cmdline_cancel_computations);
 	try
 	{
 		interface=new CCmdLineInterface();
@@ -850,6 +873,7 @@ int main(int argc, char* argv[])
 			}
 
 			SG_UNREF(interface);
+			exit_shogun();
 			return 0;
 		}
 
@@ -866,6 +890,7 @@ int main(int argc, char* argv[])
 			SG_SPRINT("==hex(sg), *dangerous* as commands from any source are accepted\n\n");
 
 			SG_UNREF(interface);
+			exit_shogun();
 			return 1;
 		}
 
@@ -900,6 +925,7 @@ int main(int argc, char* argv[])
 			}
 			while (intf->parse_line(input));
 			SG_UNREF(interface);
+			exit_shogun();
 			return 0;
 		}
 #endif
@@ -913,6 +939,7 @@ int main(int argc, char* argv[])
 			{
 				SG_SERROR( "error opening/reading file: \"%s\"",argv[1]);
 				SG_UNREF(interface);
+				exit_shogun();
 				return 1;
 			}
 			else
@@ -925,11 +952,13 @@ int main(int argc, char* argv[])
 				{
 					fclose(file);
 					SG_UNREF(interface);
+					exit_shogun();
 					return 1;
 				}
 
 				fclose(file);
 				SG_UNREF(interface);
+				exit_shogun();
 				return 0;
 			}
 		}
@@ -939,12 +968,21 @@ int main(int argc, char* argv[])
 	{
 		SG_SPRINT("Out of memory error.\n");
 		SG_UNREF(interface);
+		exit_shogun();
 		return 2;
 	}
 	catch (ShogunException e)
 	{
 		SG_SPRINT("%s", e.get_exception_string());
 		SG_UNREF(interface);
+		exit_shogun();
 		return 3;
+	}
+	catch (...)
+	{
+		SG_SPRINT("Returning from SHOGUN unknown error.");
+		SG_UNREF(interface);
+		exit_shogun();
+		return 4;
 	}
 }

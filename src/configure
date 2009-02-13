@@ -1,10 +1,10 @@
 #!/bin/bash
 
 VERSION=`grep "SHOGUN Release version" NEWS 2>&1 | cut -c 27- | cut -f 1 -d ' ' | head -n 1`
-SONAME_LIBSHOGUN=libshogun.so.`grep "SHOGUN Release version" NEWS 2>&1 | cut -f 2 -d '(' | cut -f 2 -d ' ' | tr -d ',' | head -n 1 | cut -f 1 -d '.'`
-SONAME_LIBSHOGUNUI=libshogunui.so.`grep "SHOGUN Release version" NEWS 2>&1 | cut -f 2 -d ',' | cut -f 3 -d ' ' | tr -d ')' | head -n 1 | cut -f 1 -d '.'`
-LIBSHOGUNSO=libshogun.so.`grep "SHOGUN Release version" NEWS 2>&1 | cut -f 2 -d '(' | cut -f 2 -d ' ' | tr -d ',' | head -n 1`
-LIBSHOGUNUISO=libshogunui.so.`grep "SHOGUN Release version" NEWS 2>&1 | cut -f 2 -d ',' | cut -f 3 -d ' ' | tr -d ')' | head -n 1`
+LIBSHOGUNSO=`grep "SHOGUN Release version" NEWS 2>&1 | cut -f 2 -d '(' | cut -f 2 -d ' ' | tr -d ',' | head -n 1 | cut -f 1 -d '.'`
+LIBSHOGUNUISO=`grep "SHOGUN Release version" NEWS 2>&1 | cut -f 2 -d ',' | cut -f 3 -d ' ' | tr -d ')' | head -n 1 | cut -f 1 -d '.'`
+LIBSHOGUNVER=`grep "SHOGUN Release version" NEWS 2>&1 | cut -f 2 -d '(' | cut -f 2 -d ' ' | tr -d ',' | head -n 1`
+LIBSHOGUNUIVER=`grep "SHOGUN Release version" NEWS 2>&1 | cut -f 2 -d ',' | cut -f 3 -d ' ' | tr -d ')' | head -n 1`
 
 [ -n "$VERSION" ] && echo "Running configure for SHOGUN version $VERSION"
 
@@ -13,6 +13,7 @@ POSTLINKCMD="true"
 MAKEDEPEND="gcc -MM"
 MAKEDEPENDOPTS=""
 SRCDIR="`dirname $0`"
+LIBRARY_PATH=LD_LIBRARY_PATH
 EXT_SRC_HEADER=h
 EXT_SRC_C=c
 EXT_SRC_CPP=cpp
@@ -104,7 +105,7 @@ test "$CFLAGS" && COMPFLAGS_C="$COMPFLAGS_C $CFLAGS"
 test "$CXXFLAGS" && COMPFLAGS_CPP="$COMPFLAGS_CPP $CXXFLAGS"
 INCLUDES=
 LINK=c++
-SONAMEOPT="-soname="
+SONAMEOPT="-Xlinker -soname="
 SHAREDOPTS="-shared -Wl,-export-dynamic"
 DEFINES=
 LINKFLAGS=
@@ -115,13 +116,15 @@ LINKFLAGS_STATIC_INTEFACES=
 INCLUDES_MODULAR_INTERFACES=
 LINKFLAGS_MODULAR_INTEFACES=
 
-LIBSHOGUN_TARGET=${LIBSHOGUNSO}
+LIBSHOGUN_SONAME=libshogun.so.${LIBSHOGUNSO}
+LIBSHOGUN_TARGET=libshogun.so.${LIBSHOGUNVER}
 DEFINES_LIBSHOGUN=
 INCLUDES_LIBSHOGUN="-I../libshogun -I.."
 LINKFLAGS_LIBSHOGUN=
 POSTLINKFLAGS_LIBSHOGUN=
 
-LIBSHOGUNUI_TARGET=$LIBSHOGUNUISO
+LIBSHOGUNUI_SONAME=libshogunui.so.${LIBSHOGUNUISO}
+LIBSHOGUNUI_TARGET=libshogun.so.${LIBSHOGUNUIVER}
 DEFINES_LIBSHOGUNUI=
 INCLUDES_LIBSHOGUNUI="-I../libshogun -I.."
 LINKFLAGS_LIBSHOGUNUI="-L../libshogun -lshogun"
@@ -1982,7 +1985,14 @@ set_opts()
 	echocheck "Word Size"
 cat > $TMPC << EOF
 #include <stdint.h>
-int main(void) { return __WORDSIZE; }
+int main(void)
+{
+#ifdef __WORDSIZE
+	return __WORDSIZE;
+#else
+	return 0;
+#endif
+}
 EOF
 
 	"$COMP_C" $INCLUDES "$TMPC" -o ./"$TMPO"
@@ -1999,9 +2009,14 @@ EOF
 
 	if darwin
 	then
-		EXT_LIB=so
+		LIBRARY_PATH="DYLD_LIBRARY_PATH"
+		EXT_LIB=dylib
 		SONAMEOPT="-install_name "
-		SHAREDOPTS="-dynamiclib -undefined suppress -single_module -flat_namespace"
+		SHAREDOPTS="-dynamiclib"
+		LIBSHOGUN_TARGET="libshogun.${LIBSHOGUNVER}.dylib"
+		LIBSHOGUNUI_TARGET="libshogunui.${LIBSHOGUNUIVER}.dylib"
+		LIBSHOGUN_SONAME="libshogun.${LIBSHOGUNSO}.dylib"
+		LIBSHOGUNUI_SONAME="libshogunui.${LIBSHOGUNUISO}.dylib"
 
 		if test "$_matlab" = yes
 		then
@@ -3056,7 +3071,7 @@ EOF
 		fi
 	fi
 
-	POSTLINKFLAGS_LIBSHOGUN="-fPIC -Xlinker ${SONAMEOPT}${SONAME_LIBSHOGUN} ${SHAREDOPTS}"
+	POSTLINKFLAGS_LIBSHOGUN="-fPIC ${SONAMEOPT}${LIBSHOGUN_SONAME} ${SHAREDOPTS}"
 }
 
 test_libshogunui()
@@ -3117,7 +3132,7 @@ EOF
 			fi
 		fi
 	fi
-	POSTLINKFLAGS_LIBSHOGUNUI="-fPIC -Xlinker ${SONAMEOPT}${SONAME_LIBSHOGUNUI} ${SHAREDOPTS}"
+	POSTLINKFLAGS_LIBSHOGUNUI="-fPIC ${SONAMEOPT}${LIBSHOGUNUI_SONAME} ${SHAREDOPTS}"
 }
 
 test_cmdline()
@@ -3162,6 +3177,7 @@ fi
 cat > "$1" <<EOF
 SRCDIR			= ${SRCDIR}
 PARTS			= ${PARTS}
+LIBRARY_PATH= ${LIBRARY_PATH}
 LIBSHOGUN_TARGET= ${LIBSHOGUN_TARGET}
 LIBSHOGUNUI_TARGET= ${LIBSHOGUNUI_TARGET}
 CMDLINE_TARGET	= ${CMDLINE_TARGET}
@@ -3215,11 +3231,13 @@ DEFINES_LIBSHOGUN		= ${DEFINES_LIBSHOGUN}
 INCLUDES_LIBSHOGUN		= ${INCLUDES_LIBSHOGUN}
 LINKFLAGS_LIBSHOGUN 	= ${LINKFLAGS_LIBSHOGUN}
 POSTLINKFLAGS_LIBSHOGUN	= ${POSTLINKFLAGS_LIBSHOGUN}
+LIBSHOGUN_SONAME	= ${LIBSHOGUN_SONAME}
 
 DEFINES_LIBSHOGUNUI		= ${DEFINES_LIBSHOGUNUI}
 INCLUDES_LIBSHOGUNUI	= ${INCLUDES_LIBSHOGUNUI}
 LINKFLAGS_LIBSHOGUNUI 	= ${LINKFLAGS_LIBSHOGUNUI}
 POSTLINKFLAGS_LIBSHOGUNUI	= ${POSTLINKFLAGS_LIBSHOGUNUI}
+LIBSHOGUNUI_SONAME	= ${LIBSHOGUNUI_SONAME}
 
 DEFINES_CMDLINE			= ${DEFINES_CMDLINE}
 INCLUDES_CMDLINE		= ${INCLUDES_CMDLINE}
