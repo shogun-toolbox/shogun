@@ -15,7 +15,7 @@
 
 #include "base/SGObject.h"
 #include "lib/ShogunException.h"
-#include "GMNPSVM.h"
+#include "classifier/svm/GMNPSVM.h"
 #include "kernel/Kernel.h" 
 
 //for the testing method
