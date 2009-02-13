@@ -530,6 +530,11 @@ SEXP sg(SEXP args)
 		error("%s", e.get_exception_string());
 		return R_NilValue;
 	}
+	catch (...)
+	{
+		error("%s", "Returning from SHOGUN in error.");
+		return R_NilValue;
+	}
 
 	return ((CRInterface*) interface)->get_return_values();
 }

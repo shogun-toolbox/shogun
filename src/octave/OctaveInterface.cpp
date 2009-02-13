@@ -515,4 +515,9 @@ DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 		error("%s", e.get_exception_string());
 		return octave_value_list();
 	}
+	catch (...)
+	{
+		error("%s", "Returning from SHOGUN in error.");
+		return octave_value_list();
+	}
 }

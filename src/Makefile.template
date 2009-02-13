@@ -25,21 +25,19 @@ DEPDEPS=lib/versionstring.h
 endif
 
 else
-	INCLUDES += $(INCLUDES_STATIC)
-
-#ifeq (sg.mex,$(findstring sg.mex,$(TEMPLATE_TARGET)))
-#	LINKFLAGS += ../libshogunui/libshogunui.a ../libshogun/libshogun.a 
-#else
-	LINKFLAGS += $(LINKFLAGS_STATIC)
-#endif
 
 ifeq (modular,$(findstring modular,$(TEMPLATE_TARGET)))
-SWIGFLAGS += $(SWIGFLAGS_TEMPLATE) $(INCLUDES_STATIC) -I.. -I.
+INCLUDES += $(INCLUDES_MODULAR_INTERFACES)
+LINKFLAGS += $(LINKFLAGS_MODULAR_INTERFACES)
+SWIGFLAGS += $(SWIGFLAGS_TEMPLATE) $(INCLUDES_MODULAR_INTERFACES) -I.. -I.
 OTHERDEPS = $(SWIGSRCFILES) $(SWIGLIBFILES) 
 ifeq (yes,$(USE_DOXYGEN))
 OTHERDEPS += $(SWIGDOCFILES)
 endif
 $(shell for i in ../modular/*.* ; do test -f `basename $$i` || ln -s $$i . ; done )
+else
+	INCLUDES += $(INCLUDES_STATIC_INTERFACES)
+	LINKFLAGS += $(LINKFLAGS_STATIC_INTERFACES)
 endif
 
 ifeq (r_modular,$(TEMPLATE_TARGET))

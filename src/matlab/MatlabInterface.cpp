@@ -625,11 +625,14 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	}
 	catch (std::bad_alloc)
 	{
-		mexErrMsgTxt("Out of memory error.\n");
+		mexErrMsgTxt("Out of memory error.");
 	}
 	catch (ShogunException e)
 	{
-		printf("exc: %s", e.get_exception_string());
 		mexErrMsgTxt(e.get_exception_string());
+	}
+	catch (...)
+	{
+		mexErrMsgTxt("Returning from SHOGUN in error.");
 	}
 }

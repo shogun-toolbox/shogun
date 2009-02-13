@@ -625,6 +625,10 @@ PyObject* sg(PyObject* self, PyObject* args)
 		PyErr_SetString(PyExc_RuntimeError, e.get_exception_string());
 		return NULL;
 	}
+	catch (...)
+	{
+		return NULL;
+	}
 
 	return ((CPythonInterface*) interface)->get_return_values();
 }

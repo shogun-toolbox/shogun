@@ -74,6 +74,8 @@ _pydir=""
 _octdir=""
 _inc_extra=""
 _ld_extra=""
+_ld_static=""
+_static=no
 _optimizing=""
 _interfaces=""
 _libshogun=auto
@@ -108,8 +110,10 @@ DEFINES=
 LINKFLAGS=
 POSTLINKFLAGS=
 
-INCLUDES_STATIC=
-LINKFLAGS_STATIC=
+INCLUDES_STATIC_INTERFACES=
+LINKFLAGS_STATIC_INTEFACES=
+INCLUDES_MODULAR_INTERFACES=
+LINKFLAGS_MODULAR_INTEFACES=
 
 LIBSHOGUN_TARGET=${LIBSHOGUNSO}
 DEFINES_LIBSHOGUN=
@@ -623,8 +627,8 @@ Miscellaneous options:
   --enable-debug                enable debugging [disabled]
   --enable-path-debug	        enable viterbi path debugging [disabled]
   --enable-profile              compile profiling information into shogun [disable]
-  --enable-static               build a statically linked binary. Set further linking
-                                options with --enable-static="-lslang -lncurses"
+  --enable-static               build a statically linked binary (to the extend possible);
+                                set further linking options with --enable-static="-lm -lglpk"
   --python=python               use this python executable [python]
   --cc=COMPILER                 use this C compiler to build shogun [gcc]
   --cxx=COMPILER                use this C++ compiler to build shogun [g++]
@@ -728,13 +732,16 @@ for ac_option do
     _as=`echo $ac_option | cut -d '=' -f 2`
     ;;
   --enable-static)
-    _ld_static='-static'
+    _ld_static=''
+	_static=yes
     ;;
   --disable-static)
     _ld_static=''
+	_static=no
     ;;
   --enable-static=*)
-    _ld_static="-static `echo $ac_option | cut -d '=' -f 2`"
+    _ld_static="`echo $ac_option | cut -d '=' -f 2`"
+	_static=yes
     ;;
   --includes=*)
     _inc_extra="-I`echo $ac_option | cut -d '=' -f 2 | sed 's,:, -I,g'` $_inc_extra"
@@ -3031,8 +3038,10 @@ EOF
 			ln -s libshogun shogun
 			INCLUDES="$INCLUDES -I${SRCDIR} -I.."
 			PARTS="$PARTS libshogun"
-			INCLUDES_STATIC="$INCLUDES_STATIC -I../libshogun"
-			LINKFLAGS_STATIC="$LINKFLAGS_STATIC -L../libshogun -lshogun"
+			INCLUDES_STATIC_INTERFACES="$INCLUDES_STATIC_INTERFACES -I../libshogun"
+			LINKFLAGS_STATIC_INTERFACES="$LINKFLAGS_STATIC_INTERFACES -L../libshogun -lshogun"
+			INCLUDES_MODULAR_INTERFACES="$INCLUDES_MODULAR_INTERFACES -I../libshogun"
+			LINKFLAGS_MODULAR_INTERFACES="$LINKFLAGS_MODULAR_INTERFACES -L../libshogun -lshogun"
 		else
 			if cc_check
 			then
@@ -3093,8 +3102,8 @@ EOF
 			INCLUDES="$INCLUDES -I${SRCDIR} -I.."
 			PARTS="$PARTS libshogunui"
 
-			INCLUDES_STATIC="$INCLUDES_STATIC -I../libshogunui"
-			LINKFLAGS_STATIC="$LINKFLAGS_STATIC -L../libshogunui -lshogunui"
+			INCLUDES_STATIC_INTERFACES="$INCLUDES_STATIC_INTERFACES -I../libshogunui"
+			LINKFLAGS_STATIC_INTERFACES="$LINKFLAGS_STATIC_INTERFACES -L../libshogunui -lshogunui"
 		else
 			if cc_check
 			then
@@ -3198,8 +3207,10 @@ INCLUDES		= ${INCLUDES}
 LINKFLAGS 		= ${LINKFLAGS}
 POSTLINKFLAGS	= ${POSTLINKFLAGS}
 
-INCLUDES_STATIC			= ${INCLUDES_STATIC}
-LINKFLAGS_STATIC		= ${LINKFLAGS_STATIC}
+INCLUDES_STATIC_INTERFACES	= ${INCLUDES_STATIC_INTERFACES}
+LINKFLAGS_STATIC_INTERFACES	= ${LINKFLAGS_STATIC_INTERFACES}
+INCLUDES_MODULAR_INTERFACES	= ${INCLUDES_MODULAR_INTERFACES}
+LINKFLAGS_MODULAR_INTERFACES= ${LINKFLAGS_MODULAR_INTERFACES}
 DEFINES_LIBSHOGUN		= ${DEFINES_LIBSHOGUN}
 INCLUDES_LIBSHOGUN		= ${INCLUDES_LIBSHOGUN}
 LINKFLAGS_LIBSHOGUN 	= ${LINKFLAGS_LIBSHOGUN}
@@ -3368,6 +3379,38 @@ clean_up()
 	rm -f "$TMPC" "$TMPCPP" "$TMPO" "$TMPS" "$TMPSS"
 }
 
+test_static()
+{
+
+	if test "$_static" = yes
+	then
+		if test "$_octave" = yes
+		then
+			POSTLINKFLAGS_OCTAVE="$POSTLINKFLAGS_OCTAVE ../libshogunui/libshogunui.a ../libshogun/libshogun.a"
+		fi
+
+		if test "$_python" = yes
+		then
+			POSTLINKFLAGS_PYTHON="$POSTLINKFLAGS_PYTHON ../libshogunui/libshogunui.a ../libshogun/libshogun.a"
+		fi
+
+		if test "$_r" = yes
+		then
+			POSTLINKFLAGS_R="$POSTLINKFLAGS_R ../libshogunui/libshogunui.a ../libshogun/libshogun.a"
+		fi
+
+		if test "$_cmdline" = yes
+		then
+			LINKFLAGS_CMDLINE=`echo $LINKFLAGS_CMDLINE | sed 's/-shared/static/g'`
+		fi
+
+		if test "$_matlab" = yes
+		then
+			POSTLINKFLAGS_MATLAB="$POSTLINKFLAGS_MATLAB ../libshogunui/libshogunui.a ../libshogun/libshogun.a"
+		fi
+	fi
+}
+
 set_default_cc
 determine_system_name
 detect_cc
@@ -3385,6 +3428,7 @@ test_octave
 test_r
 test_matlab
 test_modular
+test_static
 svmlight_warn_license
 write_dot_config "$SRCDIR/.config"
 write_config_h "$SRCDIR/libshogun/lib/config.h"
