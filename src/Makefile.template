@@ -140,8 +140,8 @@ install-libshogunui: $(TEMPLATE_TARGET)
 	install -d -m755 "$(DESTDIR)$(INCDIR)/shogun/ui"
 	install -m755 $(TEMPLATE_TARGET) $(DESTDIR)$(LIBDIR)
 	install -m755 libshogunui.a $(DESTDIR)$(LIBDIR)
-	install -m644 *.h -t "$(DESTDIR)$(INCDIR)/shogun/ui"
-	find "$(DESTDIR)$(INCDIR)/shogun/ui" -name '*.h' -exec sed -i 's/#include "/#include <shogun\/ui\//' {} \;
+	install -m644 *.h "$(DESTDIR)$(INCDIR)/shogun/ui"
+	find "$(DESTDIR)$(INCDIR)/shogun/ui" -name '*.h' -exec sed -i "" 's/#include "/#include <shogun\/ui\//' {} \;
 	-ldconfig -n -v $(DESTDIR)$(LIBDIR)
 	rm -f $(DESTDIR)$(LIBDIR)/libshogunui.$(EXT_LIB)
 	ln -s $(DESTDIR)$(LIBDIR)/$(TEMPLATE_TARGET)  $(DESTDIR)$(LIBDIR)/libshogunui.$(EXT_LIB)
@@ -155,8 +155,8 @@ install-libshogun: $(TEMPLATE_TARGET)
 	find ./ -mindepth 1 -type d ! \( -path '*.svn*' -o -name '*interface*' -o -name '*guilib*' -o -name '*doxygen*' \)\
 		-exec install -d -m755 "$(DESTDIR)$(INCDIR)/shogun/"\{\} \;
 	find ./ -mindepth 1 -type d ! \( -path '*.svn*' -o -name '*wrap*' -o -name '*interface*' -o -name '*guilib*' -o -name '*doxygen*' \) \
-		-exec sh -c "install -m644 {}/*.h -t $(DESTDIR)$(INCDIR)/shogun/{}" \;
-	find "$(DESTDIR)$(INCDIR)/shogun/" -name '*.h' -exec sed -i 's/#include "/#include <shogun\//' {} \;
+		-exec sh -c "install -m644 {}/*.h $(DESTDIR)$(INCDIR)/shogun/{}" \;
+	find "$(DESTDIR)$(INCDIR)/shogun/" -name '*.h' -exec sed -i "" 's/#include "/#include <shogun\//' {} \;
 	-ldconfig -n -v $(DESTDIR)$(LIBDIR)
 	rm -f $(DESTDIR)$(LIBDIR)/libshogun.$(EXT_LIB)
 	ln -s $(DESTDIR)$(LIBDIR)/$(TEMPLATE_TARGET)  $(DESTDIR)$(LIBDIR)/libshogun.$(EXT_LIB)
@@ -266,7 +266,7 @@ lib/versionstring.h:    $(SVNEntries)
 	        sh ../.version.sh > $@
 
 doc-libshogun:	lib/versionstring.h
-		-@sed -i "s/PROJECT_NUMBER         = .*/PROJECT_NUMBER         = `sed -n 's/^#define VERSION_RELEASE "\(.*\)_"/\1/p' $@`/" ../../doc/Doxyfile
+		-@sed -i "" "s/PROJECT_NUMBER         = .*/PROJECT_NUMBER         = `sed -n 's/^#define VERSION_RELEASE "\(.*\)_"/\1/p' $@`/" ../../doc/Doxyfile
 		cd ../../doc && make
 
 doc-libshogunui:
