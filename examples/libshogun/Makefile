@@ -1,5 +1,6 @@
-INCDIR=/usr/local/include/shogun
-LIBDIR=/usr/local/lib
+#CXXFLAGS=-I/usr/local/include/shogun
+#LINKFLAGS=-L/usr/local/lib -lshogun
+LINKFLAGS=-lshogun
 
 rbf_svm: rbf_svm.cpp
-	gcc rbf_svm.cpp -I$(INCDIR) -L$(LIBDIR) -lshogun -o rbf_svm
+	gcc rbf_svm.cpp $(LINKFLAGS) -lshogun -o rbf_svm
