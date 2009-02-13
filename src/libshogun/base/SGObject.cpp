@@ -2,27 +2,24 @@
 #include "lib/io.h"
 #include "lib/Mathematics.h"
 #include "base/Parallel.h"
+#include "base/init.h"
 #include "base/Version.h"
 
-CParallel* sg_parallel=NULL;
-CIO* sg_io=NULL;
-CVersion* sg_version=NULL;
-
-//this creates a math object for the purpose of the constructor to be called at least once
-volatile CMath math;
+#include <stdlib.h>
+#include <stdio.h>
 
 extern CParallel* sg_parallel;
 extern CIO* sg_io;
 extern CVersion* sg_version;
+extern CMath* sg_math;
 
 void CSGObject::set_global_objects()
 {
-	if (!sg_io)
-		sg_io = new CIO();
-	if (!sg_parallel)
-		sg_parallel=new CParallel();
-	if (!sg_version)
-		sg_version = new CVersion();
+	if (!sg_io || !sg_parallel || !sg_version)
+	{
+		fprintf(stderr, "call init_shogun() before using the library, dying.\n");
+		exit(1);
+	}
 
 	SG_REF(sg_io);
 	SG_REF(sg_parallel);

@@ -1,9 +1,39 @@
-#include "r.h"
 #include "RInterface.h"
 
+#include <stdio.h>
 #include <shogun/ui/SGInterface.h>
 #include <shogun/lib/ShogunException.h>
 #include <shogun/lib/io.h>
+#include <shogun/base/init.h>
+
+void r_print_message(FILE* target, const char* str)
+{
+	if (target==stdout)
+		Rprintf((char*) "%s", str);
+	else
+		fprintf(target, "%s", str);
+}
+
+void r_print_warning(FILE* target, const char* str)
+{
+	if (target==stdout)
+		Rprintf((char*) "%s", str);
+	else
+		fprintf(target, "%s", str);
+}
+
+void r_print_error(FILE* target, const char* str)
+{
+	if (target==stdout)
+		Rprintf((char*) "%s", str);
+	else
+		fprintf(target, "%s", str);
+}
+
+void r_cancel_computations(bool &delayed, bool &immediately)
+{
+			//R_Suicide((char*) "sg stopped by SIGINT\n");
+}
 
 extern CSGInterface* interface;
 
@@ -15,6 +45,7 @@ CRInterface::CRInterface(SEXP prhs)
 
 CRInterface::~CRInterface()
 {
+	exit_shogun();
 }
 
 void CRInterface::reset(SEXP prhs)
@@ -475,6 +506,11 @@ SEXP sg(SEXP args)
 	{
 		if (!interface)
 		{
+			// init_shogun has to be called before anything else
+			// exit_shogun is called upon destruction of the interface (see
+			// destructor of CRInterface
+			init_shogun(&r_print_message, &r_print_warning,
+					&r_print_error, &r_cancel_computations);
 			interface=new CRInterface(args);
 			ASSERT(interface);
 		}

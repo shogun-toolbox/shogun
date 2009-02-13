@@ -27,11 +27,11 @@ endif
 else
 	INCLUDES += $(INCLUDES_STATIC)
 
-ifeq (sg.mex,$(findstring sg.mex,$(TEMPLATE_TARGET)))
-	LINKFLAGS += ../libshogunui/libshogunui.a ../libshogun/libshogun.a 
-else
+#ifeq (sg.mex,$(findstring sg.mex,$(TEMPLATE_TARGET)))
+#	LINKFLAGS += ../libshogunui/libshogunui.a ../libshogun/libshogun.a 
+#else
 	LINKFLAGS += $(LINKFLAGS_STATIC)
-endif
+#endif
 
 ifeq (modular,$(findstring modular,$(TEMPLATE_TARGET)))
 SWIGFLAGS += $(SWIGFLAGS_TEMPLATE) $(INCLUDES_STATIC) -I.. -I.

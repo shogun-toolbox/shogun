@@ -46,9 +46,9 @@ public:
 
     virtual ~CSGObject()
 	{
+		SG_UNREF(version);
 		SG_UNREF(parallel);
 		SG_UNREF(io);
-		SG_UNREF(version);
 	}
 
 	/** increase reference counter
@@ -103,7 +103,6 @@ private:
 
 private:
 	int32_t refcount;
-	bool static_io;
 
 public:
 	CIO* io;

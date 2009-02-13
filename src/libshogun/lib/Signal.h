@@ -19,7 +19,8 @@
 #include <signal.h>
 #define NUMTRAPPEDSIGS 2
 
-extern void sg_cancel_computations(bool &delayed, bool &immediately);
+
+extern void (*sg_cancel_computations)(bool &delayed, bool &immediately);
 
 /** Class Signal implements signal handling to e.g. allow ctrl+c to cancel a
  * long running process. This is done in two ways: 
@@ -74,7 +75,8 @@ class CSignal : public CSGObject
 		 */
 		static inline bool cancel_computations()
 		{
-			sg_cancel_computations(cancel_computation, cancel_immediately);
+			if (sg_cancel_computations)
+				sg_cancel_computations(cancel_computation, cancel_immediately);
 
 			if (cancel_immediately)
 				throw ShogunException("Computations have been cancelled immediately");

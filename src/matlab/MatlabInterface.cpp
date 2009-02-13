@@ -1,10 +1,39 @@
 #include <mexversion.c>
-#include "matlab.h"
 #include "MatlabInterface.h"
 
+#include <stdio.h>
 #include <shogun/ui/SGInterface.h>
 #include <shogun/lib/ShogunException.h>
 #include <shogun/lib/config.h>
+#include <shogun/base/init.h>
+
+void matlab_print_message(FILE* target, const char* str)
+{
+	if (target==stdout)
+		mexPrintf("%s", str);
+	else
+		fprintf(target, "%s", str);
+}
+
+void matlab_print_warning(FILE* target, const char* str)
+{
+	if (target==stdout)
+		mexWarnMsgTxt(str);
+	else
+		fprintf(target, "%s", str);
+}
+
+void matlab_print_error(FILE* target, const char* str)
+{
+	if (target==stdout)
+		mexPrintf("%s", str);
+	else
+		fprintf(target, "%s", str);
+}
+
+void matlab_cancel_computations(bool &delayed, bool &immediately)
+{
+}
 
 extern CSGInterface* interface;
 
@@ -17,6 +46,7 @@ CMatlabInterface::CMatlabInterface(
 
 CMatlabInterface::~CMatlabInterface()
 {
+	exit_shogun();
 }
 
 void CMatlabInterface::reset(
@@ -579,7 +609,14 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	try
 	{
 		if (!interface)
+		{
+			// init_shogun has to be called before anything else
+			// exit_shogun is called upon destruction of the interface (see
+			// destructor of CMatlabInterface
+			init_shogun(&matlab_print_message, &matlab_print_warning,
+					&matlab_print_error, &matlab_cancel_computations);
 			interface=new CMatlabInterface(nlhs, plhs, nrhs, prhs);
+		}
 		else
 			((CMatlabInterface*) interface)->reset(nlhs, plhs, nrhs, prhs);
 
@@ -592,6 +629,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	}
 	catch (ShogunException e)
 	{
+		printf("exc: %s", e.get_exception_string());
 		mexErrMsgTxt(e.get_exception_string());
 	}
 }

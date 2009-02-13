@@ -105,6 +105,8 @@ struct thread_qsort
 	int32_t num_threads;
 };
 
+class CSGObject;
+
 /** Mathematical Functions.
  * Class which collects generic mathematical functions
  */

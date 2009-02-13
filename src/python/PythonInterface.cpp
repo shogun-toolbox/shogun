@@ -1,12 +1,50 @@
 #include "PythonInterface.h"
-#include "python.h"
+
+#include <stdio.h>
 
 #include <shogun/lib/ShogunException.h>
 #include <shogun/lib/io.h>
 #include <shogun/ui/SGInterface.h>
+#include <shogun/base/init.h>
 
-extern "C" {
-#include <numpy/arrayobject.h>
+void python_print_message(FILE* target, const char* str)
+{
+	fprintf(target, "%s", str);
+}
+
+void python_print_warning(FILE* target, const char* str)
+{
+	if (target==stdout)
+		PyErr_Warn(NULL, str);
+	else
+		fprintf(target, "%s", str);
+}
+
+void python_print_error(FILE* target, const char* str)
+{
+	if (target==stdout)
+		PyErr_SetString(PyExc_RuntimeError, str);
+	else
+		fprintf(target, "%s", str);
+}
+
+void python_cancel_computations(bool &delayed, bool &immediately)
+{
+	if (PyErr_CheckSignals())
+	{
+		SG_SPRINT("\nImmediately return to matlab prompt / Prematurely finish computations / Do nothing (I/P/D)? ");
+		char answer=fgetc(stdin);
+
+		if (answer == 'I')
+			immediately=true;
+		else if (answer == 'P')
+		{
+			PyErr_Clear();
+			delayed=true;
+		}
+		else
+			SG_SPRINT("\n");
+	}
 }
 
 extern CSGInterface* interface;
@@ -594,6 +632,7 @@ PyObject* sg(PyObject* self, PyObject* args)
 void exitsg(void)
 {
 	SG_SINFO("Quitting...\n");
+	exit_shogun();
 }
 
 static PyMethodDef sg_pythonmethods[] = {
@@ -615,4 +654,9 @@ PyMODINIT_FUNC initsg(void)
 	// initialize callbacks
     Py_InitModule((char*) "sg", sg_pythonmethods);
 	import_array();
+
+	// init_shogun has to be called before anything else
+	// exit_shogun is called upon destruction in exitsg()
+	init_shogun(&python_print_message, &python_print_warning,
+			&python_print_error, &python_cancel_computations);
 }

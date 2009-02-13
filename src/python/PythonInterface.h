@@ -1,7 +1,12 @@
 #ifndef __PYTHONINTERFACE__H_
 #define __PYTHONINTERFACE__H_
 
-#include "python.h"
+#undef _POSIX_C_SOURCE
+extern "C" {
+#include <Python.h>
+#include <numpy/arrayobject.h>
+}
+
 #include <shogun/ui/SGInterface.h>
 
 extern "C" {

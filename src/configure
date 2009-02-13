@@ -2003,7 +2003,7 @@ EOF
 		then
 			true #nop	
 		else
-			true #nop LINKFLAGS="$LINKFLAGS -undefined error"
+			LINKFLAGS="$LINKFLAGS -undefined error"
 		fi
 	elif interix
 	then
@@ -2016,7 +2016,7 @@ EOF
 	then
 		EXT_LIB=dll
 	else
-		true #nop LINKFLAGS="$LINKFLAGS -Xlinker --no-undefined"
+		LINKFLAGS="$LINKFLAGS -Xlinker --no-undefined"
 	fi
 
 cat > $TMPC << EOF

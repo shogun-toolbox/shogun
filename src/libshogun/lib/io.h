@@ -18,15 +18,11 @@
 #include <string.h>
 
 #include "lib/common.h"
+#include "base/init.h"
 
-/// function called to print normal messages
-extern void sg_print_message(FILE* target, const char* str);
+class CIO;
 
-/// function called to print warning messages
-extern void sg_print_warning(FILE* target, const char* str);
-
-/// function called to print error messages
-extern void sg_print_error(FILE* target, const char* str);
+extern CIO* sg_io;
 
 /// The io libs output [DEBUG] etc in front of every message
 /// 'higher' messages filter output depending on the loglevel, i.e. CRITICAL messages
@@ -72,7 +68,6 @@ class CIO;
 #define SG_ABS_PROGRESS(...) io->absolute_progress(__VA_ARGS__)
 #define SG_DONE() io->done()
 
-extern CIO* sg_io;
 // printf like function using the global sg_io object
 #define SG_SDEBUG(...) sg_io->message(M_DEBUG,__VA_ARGS__)
 #define SG_SINFO(...) sg_io->message(M_INFO,__VA_ARGS__)

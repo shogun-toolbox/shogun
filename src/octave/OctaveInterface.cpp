@@ -1,10 +1,34 @@
-#include "octave.h"
 #include "OctaveInterface.h"
+
+#include <stdio.h>
 
 #include <shogun/ui/SGInterface.h>
 #include <shogun/lib/ShogunException.h>
 #include <shogun/lib/io.h>
 #include <shogun/lib/memory.h>
+#include <shogun/base/init.h>
+
+void octave_print_message(FILE* target, const char* str)
+{
+	fprintf(target, "%s", str);
+}
+
+void octave_print_warning(FILE* target, const char* str)
+{
+	if (target==stdout)
+		::warning(str);
+	else
+		fprintf(target, "%s", str);
+}
+
+void octave_print_error(FILE* target, const char* str)
+{
+	fprintf(target, "%s", str);
+}
+
+void octave_cancel_computations(bool &delayed, bool &immediately)
+{
+}
 
 extern CSGInterface* interface;
 
@@ -16,6 +40,7 @@ COctaveInterface::COctaveInterface(octave_value_list prhs, int32_t nlhs)
 
 COctaveInterface::~COctaveInterface()
 {
+	exit_shogun();
 }
 
 void COctaveInterface::reset(octave_value_list prhs, int32_t nlhs)
@@ -464,7 +489,14 @@ DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 	try
 	{
 		if (!interface)
+		{
+			// init_shogun has to be called before anything else
+			// exit_shogun is called upon destruction of the interface (see
+			// destructor of COctaveInterface
+			init_shogun(&octave_print_message, &octave_print_warning,
+					&octave_print_error, &octave_cancel_computations);
 			interface=new COctaveInterface(prhs, nlhs);
+		}
 		else
 			((COctaveInterface*) interface)->reset(prhs, nlhs);
 

@@ -1,7 +1,16 @@
 #ifndef __RINTERFACE__H_
 #define __RINTERFACE__H_
 
+extern "C" {
+#include <R.h>
+#include <Rinternals.h>
 #include <Rdefines.h>
+#include <R_ext/Rdynload.h>
+#include <Rembedded.h>
+#include <Rinterface.h>
+#include <R_ext/RS.h>
+#include <R_ext/Error.h>
+}
 
 #include <shogun/lib/common.h>
 #include <shogun/ui/SGInterface.h>

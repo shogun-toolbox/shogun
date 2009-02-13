@@ -8,13 +8,18 @@
  * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max Planck Society
  */
 
+#include "base/init.h"
+
 #include "lib/common.h"
-#include "lib/versionstring.h"
 #include "lib/io.h"
+#include "lib/versionstring.h"
 #include "lib/config.h"
 
 #ifndef VERSION_H__
 #define VERSION_H__
+
+class CIO;
+
 /* Class Version provides information of the version of shogun that is
  * currently used, for example the svn revision, time and date of compile and
  * compilation and linkflags used.

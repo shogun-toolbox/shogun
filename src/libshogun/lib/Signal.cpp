@@ -47,7 +47,8 @@ void CSignal::handler(int signal)
 		{
 			unset_handler();
 			set_cancel(true);
-			sg_print_error(stdout, "sg stopped by SIGINT\n");
+			if (sg_print_error)
+				sg_print_error(stdout, "sg stopped by SIGINT\n");
 		}
 		else if (answer == 'P')
 			set_cancel();

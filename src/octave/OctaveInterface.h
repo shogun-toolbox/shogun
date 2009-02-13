@@ -5,6 +5,17 @@
 #include <shogun/ui/SGInterface.h>
 #include <shogun/lib/memory.h>
 
+#include <octave/config.h>
+
+#include <octave/ov.h>
+#include <octave/defun-dld.h>
+#include <octave/error.h>
+#include <octave/oct-obj.h>
+#include <octave/pager.h>
+#include <octave/symtab.h>
+#include <octave/variables.h>
+#include <octave/Cell.h>
+
 class COctaveInterface : public CSGInterface
 {
 	public:
