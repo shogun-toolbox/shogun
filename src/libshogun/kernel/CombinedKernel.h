@@ -46,16 +46,6 @@ class CCombinedKernel : public CKernel
 		 */
 		CCombinedKernel(int32_t size=10, bool append_subkernel_weights=false);
 
-		/** constructor
-		 *
-		 * @param l features for left-hand side
-		 * @param r features for right-hand side
-		 * @param append_subkernel_weights if subkernel weights shall be
-		 *        appended
-		 */
-		CCombinedKernel(CCombinedFeatures* l, CCombinedFeatures* r,
-				bool append_subkernel_weights=false);
-
 		virtual ~CCombinedKernel();
 
 		/** initialize kernel

@@ -49,21 +49,6 @@ CCombinedKernel::CCombinedKernel(int32_t size, bool asw)
 		SG_INFO( "(subkernel weights are appended)\n") ;
 }
 
-CCombinedKernel::CCombinedKernel(
-	CCombinedFeatures *l, CCombinedFeatures *r, bool asw)
-: CKernel(10), sv_count(0), sv_idx(NULL), sv_weight(NULL),
-	subkernel_weights_buffer(NULL), append_subkernel_weights(asw)
-{
-	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
-	kernel_list=new CList<CKernel*>(true);
-	SG_INFO("Combined kernel created (%p)\n", this) ;
-	if (append_subkernel_weights) {
-		SG_INFO("(subkernel weights are appended)\n") ;
-	}
-
-	init(l, r);
-}
-
 CCombinedKernel::~CCombinedKernel()
 {
 	delete[] subkernel_weights_buffer;
