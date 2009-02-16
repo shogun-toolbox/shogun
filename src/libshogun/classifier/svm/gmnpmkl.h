@@ -178,7 +178,7 @@ protected:
 	
 	virtual bool evaluatefinishcriterion(const int32_t numberofsilpiterations);
 	
-	CGMNPSVM * svm; //the svm in the silp training
+	CGMNPSVM* svm; //the svm in the silp training
 	
 	lpwrapper* lpw; // the lp solver wrapper
 	

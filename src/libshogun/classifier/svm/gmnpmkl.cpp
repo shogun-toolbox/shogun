@@ -568,51 +568,53 @@ bool CGMNPMKL::train()
 
 
 	int32_t numberofsilpiterations=0;
-		bool final=false;
-		while(false==final)
+	bool final=false;
+	while(false==final)
+	{
+
+		curweights.clear();
+		lpw->computeweights(curweights);
+		weightshistory.push_back(curweights);
+
+		SG_SPRINT("SILP iteration %d weights in silp \n",numberofsilpiterations);
+		for(size_t i=0; i< curweights.size();++i)
 		{
-
-			curweights.clear();
-			lpw->computeweights(curweights);
-			weightshistory.push_back(curweights);
-
-			SG_SPRINT("SILP iteration %d weights in silp \n",numberofsilpiterations);
-			for(size_t i=0; i< curweights.size();++i)
-			{
-				SG_SPRINT("%f ",curweights[i]);
-			}
-			SG_SPRINT("\n");
-
-			final=evaluatefinishcriterion(numberofsilpiterations);
-			++numberofsilpiterations;
-
-			addingweightsstep(curweights);
-
-		} // while(false==final)
-
-
-		//set alphas, bias, support vecs
-		ASSERT(numcl>=1);
-		create_multiclass_svm(numcl);
-
-		for (int32_t i=0; i<numcl; i++)
-		{
-			CSVM* osvm=svm->get_svm(i);
-			CSVM* nsvm=new CSVM(osvm->get_num_support_vectors());
-			SG_REF(nsvm);
-			for (int32_t k=0; k<osvm->get_num_support_vectors() ; k++)
-			{
-				nsvm->set_alpha(k, osvm->get_alpha(k) );
-				nsvm->set_support_vector(k,osvm->get_support_vector(k) );
-			}
-			nsvm->set_bias(osvm->get_bias() );
-			SG_UNREF(osvm);
-			osvm=NULL;
-			set_svm(i, nsvm);
+			SG_SPRINT("%f ",curweights[i]);
 		}
-		SG_UNREF(svm);
-		svm=NULL;
-		return(true);
+		SG_SPRINT("\n");
+
+		final=evaluatefinishcriterion(numberofsilpiterations);
+		++numberofsilpiterations;
+
+		addingweightsstep(curweights);
+
+	} // while(false==final)
+
+
+	//set alphas, bias, support vecs
+	ASSERT(numcl>=1);
+	create_multiclass_svm(numcl);
+
+	for (int32_t i=0; i<numcl; i++)
+	{
+		CSVM* osvm=svm->get_svm(i);
+		CSVM* nsvm=new CSVM(osvm->get_num_support_vectors());
+
+		for (int32_t k=0; k<osvm->get_num_support_vectors() ; k++)
+		{
+			nsvm->set_alpha(k, osvm->get_alpha(k) );
+			nsvm->set_support_vector(k,osvm->get_support_vector(k) );
+		}
+		nsvm->set_bias(osvm->get_bias() );
+		set_svm(i, nsvm);
+
+		SG_UNREF(osvm);
+		osvm=NULL;
+	}
+
+	SG_UNREF(svm);
+	svm=NULL;
+	return(true);
 }
 
 
@@ -634,4 +636,3 @@ float64_t* CGMNPMKL::getsubkernelweights(int32_t & numweights)
 	std::copy(subkerw.begin(), subkerw.end(),res);
 	return(res);
 }
-

@@ -112,7 +112,6 @@ bool CGMNPSVM::train()
 		SG_DEBUG("svm[%d] has %d sv, b=%f\n", i, num_sv, all_bs[i]);
 
 		CSVM* svm=new CSVM(num_sv);
-		SG_REF(svm);
 
 		int32_t k=0;
 		for (int32_t j=0; j<num_data; j++)
