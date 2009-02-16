@@ -5797,29 +5797,6 @@ bool CSGInterface::cmd_precompute_content_svms()
 	SG_DEBUG("precompute_content_svms done\n");
 	return true;
 }
-bool CSGInterface::cmd_set_feature_matrix()
-{
-
-	int32_t num_pos = ui_structure->get_num_positions();
-	int32_t num_states = ui_structure->get_num_states();
-	SG_PRINT("set_feature_matrix: num_states: %i, num_pos, %i\n",num_states, num_pos); 
-
-	//ARG 1
-	// feature matrix (#states x #feature_positions x max_num_signals)
-	int32_t* Dims=0;
-	int32_t numDims=0;
-	float64_t* features;
-	get_real_ndarray(features, Dims, numDims);
-	
-	ASSERT(numDims==3)
-	ASSERT(Dims[0]==num_states)
-	ASSERT(Dims[1]==num_pos)
-	ASSERT(ui_structure->set_feature_matrix(features, Dims));
-
-	ASSERT(ui_structure->set_feature_dims(Dims));
-	return true;
-
-}
 bool CSGInterface::cmd_get_lin_feat()
 {
 	CDynProg* h = ui_structure->get_dyn_prog();
@@ -5847,16 +5824,33 @@ bool CSGInterface::cmd_set_lin_feat()
 	if (!h)
 		SG_ERROR("no DynProg object found, use set_model first\n");
 
+	h->init_content_svm_value_array(Npos);
 	h->set_lin_feat(lin_feat, num_svms, seq_len);
 
 	return true;
 }
-bool CSGInterface::cmd_precompute_subkernels()
+bool CSGInterface::cmd_set_feature_matrix()
 {
-	if (m_nrhs!=1 || !create_return_values(0))
-		return false;
 
-	return ui_kernel->precompute_subkernels();
+	int32_t num_pos = ui_structure->get_num_positions();
+	int32_t num_states = ui_structure->get_num_states();
+	SG_PRINT("set_feature_matrix: num_states: %i, num_pos, %i\n",num_states, num_pos); 
+
+	//ARG 1
+	// feature matrix (#states x #feature_positions x max_num_signals)
+	int32_t* Dims=0;
+	int32_t numDims=0;
+	float64_t* features;
+	get_real_ndarray(features, Dims, numDims);
+	
+	ASSERT(numDims==3)
+	ASSERT(Dims[0]==num_states)
+	ASSERT(Dims[1]==num_pos)
+	ASSERT(ui_structure->set_feature_matrix(features, Dims));
+
+	ASSERT(ui_structure->set_feature_dims(Dims));
+	return true;
+
 }
 bool CSGInterface::cmd_precompute_tiling_features()
 {
@@ -5991,6 +5985,8 @@ bool CSGInterface::cmd_best_path_trans()
 	memset(my_path, -1, M*(nother+nbest)*sizeof(int32_t)) ;
 	int32_t *my_pos = new int32_t[M*(nbest+nother)] ;
 	memset(my_pos, -1, M*(nbest+nother)*sizeof(int32_t)) ;
+
+	SG_PRINT("best_path_trans: M: %i, Mseg_path: %i\n", M, Mseg_path);
 	
 	float64_t* p_prob = new float64_t[nbest+nother];
 	if (seg_path!=NULL)
@@ -6445,8 +6441,13 @@ bool CSGInterface::cmd_best_path_no_b_trans()
 
 	return true;
 }
+bool CSGInterface::cmd_precompute_subkernels()
+{
+	if (m_nrhs!=1 || !create_return_values(0))
+		return false;
 
-
+	return ui_kernel->precompute_subkernels();
+}
 bool CSGInterface::cmd_crc()
 {
 	if (m_nrhs!=2 || !create_return_values(1))
