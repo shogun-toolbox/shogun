@@ -265,9 +265,9 @@ void CDynProg::init_tiling_data(
 
 }
 
-void CDynProg::init_content_svm_value_array(const int32_t seq_len)
+void CDynProg::init_content_svm_value_array(const int32_t p_num_svms, const int32_t seq_len)
 {
-	m_lin_feat.resize_array(num_svms,seq_len);
+	m_lin_feat.resize_array(p_num_svms, seq_len);
 }
 void CDynProg::resize_lin_feat(const int32_t num_new_feat, const int32_t seq_len)
 {

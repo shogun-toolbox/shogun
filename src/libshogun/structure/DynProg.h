@@ -114,9 +114,10 @@ public:
 	/** init CArray for precomputed content svm values
 	 *  with size seq_len x num_svms
 	 *
+	 *  @param p_num_svms: number of svm weight vectors for content prediction
 	 *  @param seq_len: number of candidate positions
 	 */
-	void init_content_svm_value_array(const int32_t seq_len);
+	void init_content_svm_value_array(const int32_t p_num_svms, const int32_t seq_len);
 
 	/** init CArray for precomputed tiling intensitie-plif-values
 	 *  with size seq_len x num_svms
