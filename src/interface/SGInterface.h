@@ -350,6 +350,19 @@ class CSGInterface : public CSGObject
 		 *  type
 		 */
 		bool cmd_precompute_content_svms();
+		/** 
+		 * -get lin feat
+		 */
+		bool cmd_get_lin_feat();
+		/** 
+		 * -set lin feat
+		 */
+		bool cmd_set_lin_feat();
+		/** 
+		 * -init dyn prog
+		 */
+		bool cmd_init_dyn_prog();
+
 		/**
 		 * -precompute tiling features 
 		 *  and save the outputs (# content types x 

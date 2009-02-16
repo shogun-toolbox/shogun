@@ -141,7 +141,8 @@ public:
 	/** append rows to linear features array
  	 * 
  	 * @param num_new_feat number of new rows to add
- 	 * @param seq_len number of columns (must be equal to the existing num of cols)
+ 	 * @param seq_len number of columns == number of candidate positions
+ 	 * 			(must be equal to the existing num of cols) 
  	 */
 	void resize_lin_feat(INT num_new_feat, INT seq_len);
 	/** set vector p
@@ -585,14 +586,36 @@ public:
 	 * @param wordstr word strings
 	 * @param pos position
 	 * @param num_cand_pos number of cand position
-	 * @param genestr_len length of gene string
-	 * @param dictionary_weights dictionary weights
-	 * @param dict_len lenght of dictionary
+	 * @param genestr_len length of DNA-sequence
+	 * @param dictionary_weights SVM weight vectors for content prediction
+	 * @param dict_len number of weight vectors 
 	 */
 	void precompute_content_values(WORD*** wordstr, const INT *pos,
 		const INT num_cand_pos, const INT genestr_len,
 		DREAL *dictionary_weights, INT dict_len);
 
+
+	/** return array of precomputed linear features like content predictions
+	 *  and PLiFed tiling array data
+	 * Jonas
+	 *
+	 * @return lin_feat_array
+	 */
+	inline DREAL* get_lin_feat(INT & dim1, INT & dim2) 
+	{
+		m_lin_feat.get_array_size(dim1, dim2);
+		return m_lin_feat.get_array();
+	}
+	/** return array of precomputed linear features like content predictions
+	 *  and PLiFed tiling array data
+	 * Jonas
+	 *
+	 * @return lin_feat_array
+	 */
+	inline void set_lin_feat(DREAL* p_lin_feat, INT p_num_svms, INT p_seq_len) 
+	{
+		m_lin_feat.set_array(p_lin_feat, p_num_svms, p_seq_len, true);
+	}
 	/** create word string from char*
 	 * Jonas
 	 *

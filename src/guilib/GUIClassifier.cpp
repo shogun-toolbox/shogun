@@ -475,8 +475,10 @@ bool CGUIClassifier::train_linear(DREAL gamma)
 		((CPerceptron*) classifier)->set_max_iter(perceptron_maxiter);
 	}
 
+#ifdef HAVE_LAPACK
 	if (classifier->get_classifier_type()==CT_LDA)
 		((CLDA*) classifier)->set_gamma(gamma);
+#endif
 
 	((CLinearClassifier*) classifier)->set_labels(trainlabels);
 	((CLinearClassifier*) classifier)->set_features((CRealFeatures*) trainfeatures);
@@ -1262,9 +1264,10 @@ bool CGUIClassifier::classify_example(INT idx, DREAL &result)
 bool CGUIClassifier::set_krr_tau(DREAL tau)
 {
 	krr_tau=tau;
+#ifdef HAVE_LAPACK
 	((CKRR*) classifier)->set_tau(krr_tau);
 	SG_INFO("Set to krr_tau=%f.\n", krr_tau);
-
+#endif
 	return true;
 }
 
