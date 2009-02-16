@@ -17,7 +17,7 @@ lpwrapper::lpwrapper()
 
 lpwrapper::~lpwrapper()
 {
-	
+
 }
 
 void lpwrapper::setup(const int32_t numkernels)
@@ -43,20 +43,22 @@ void lpwrapper::computeweights(std::vector<float64_t> & weights2)
 glpkwrapper::glpkwrapper()
 {
 	lpwrappertype=0;
-	
+
 #if defined(USE_GLPK)
 	linearproblem=NULL;
-#endif	
+#endif
 }
 glpkwrapper::~glpkwrapper()
 {
-#if defined(USE_GLPK)	
+#if defined(USE_GLPK)
 	if (linearproblem!=NULL)
 	{
 		glp_delete_prob(linearproblem);
 		linearproblem=NULL;
 	}
-#endif	
+	printf("deleting glpk linprob struct\n");
+
+	#endif
 }
 
 glpkwrapper glpkwrapper::operator=(glpkwrapper & gl)
@@ -77,15 +79,15 @@ glpkwrapper4CGMNPMKL::glpkwrapper4CGMNPMKL()
 
 glpkwrapper4CGMNPMKL::~glpkwrapper4CGMNPMKL()
 {
-	
+
 }
-//TODO: check for correctness of 
+//TODO: check for correctness of
 void glpkwrapper4CGMNPMKL::setup(const int32_t numkernels2)
 {
 #if defined(USE_GLPK)
 	numkernels=numkernels2;
 	if(numkernels<=1)
-	{	
+	{
 		//std::ostringstream helper;
 		//helper << "void glpkwrapper::setup(const int32_tnumkernels): input numkernels out of bounds: "<<numkernels <<std::endl;
 		char bla[1000];
@@ -123,7 +125,7 @@ void glpkwrapper4CGMNPMKL::setup(const int32_t numkernels2)
 
 	// objective is maximize theta over { beta and theta } subject to constraints
 
-	//set sumupconstraint32_t/sum_l \beta_l=1 
+	//set sumupconstraint32_t/sum_l \beta_l=1
 	glp_add_rows(linearproblem,1);
 	glp_set_row_name(linearproblem,1,"betas_sumupto_one");
 
@@ -153,14 +155,14 @@ void glpkwrapper4CGMNPMKL::setup(const int32_t numkernels2)
 #else
 	SG_ERROR("glpk.h from GNU glpk not included at compile time necessary in gmnpmkl.cpp/.h");
 #endif
-	
+
 }
 
 void glpkwrapper4CGMNPMKL::addconstraint(const ::std::vector<float64_t> & normw2,
 			const float64_t sumofpositivealphas)
 {
 #if defined(USE_GLPK)
-	
+
 	ASSERT((int)normw2.size()==numkernels);
 	ASSERT(sumofpositivealphas>=0);
 
@@ -188,7 +190,7 @@ void glpkwrapper4CGMNPMKL::addconstraint(const ::std::vector<float64_t> & normw2
 
 	betacoeffs[1]=-1;
 
-	
+
 	for(int32_t i=0; i<numkernels;++i)
 	{
 		betacoeffs[2+i]=0.5*normw2[i];
@@ -201,7 +203,7 @@ void glpkwrapper4CGMNPMKL::addconstraint(const ::std::vector<float64_t> & normw2
 
 	delete[] betacoeffs;
 	betacoeffs=NULL;
-	
+
 	//addedconstraint=true;
 #else
 	SG_ERROR("glpk.h from GNU glpk not included at compile time necessary in gmnpmkl.cpp/.h");
@@ -223,9 +225,9 @@ void glpkwrapper4CGMNPMKL::computeweights(std::vector<float64_t> & weights2)
 		sum+= weights2[i];
 		//
 	}
-	
+
 	if(sum>0)
-	{	
+	{
 	for(int32_t i=0; i< numkernels;++i)
 	{
 		 weights2[i]/=sum;
@@ -240,9 +242,9 @@ void glpkwrapper4CGMNPMKL::computeweights(std::vector<float64_t> & weights2)
 		sprintf(bla,"void glpkwrapper::computeweights(std::vector<float64_t> & weights2): sum of weights nonpositive %f\n",sum);
 		throw ShogunException(bla);
 	}
-	
-	
-	
+
+
+
 #else
 	SG_ERROR("glpk.h from GNU glpk not included at compile time necessary in gmnpmkl.cpp/.h");
 #endif
@@ -254,11 +256,11 @@ CGMNPMKL::CGMNPMKL()
 {
 	svm=NULL;
 	lpw=NULL;
-	
+
 	lpwrappertype=0;
 	thresh=0.01;
 	maxiters=999;
-	
+
 	numdat=0;
 	numcl=0;
 	numker=0;
@@ -269,17 +271,17 @@ CGMNPMKL::CGMNPMKL(float64_t C, CKernel* k, CLabels* lab)
 {
 	svm=NULL;
 	lpw=NULL;
-	
+
 	lpwrappertype=0;
 	thresh=0.01;
 	maxiters=999;
-	
+
 }
 
 
 CGMNPMKL::~CGMNPMKL()
 {
-	delete svm;
+	SG_UNREF(svm);
 	svm=NULL;
 	delete lpw;
 	lpw=NULL;
@@ -299,13 +301,13 @@ void CGMNPMKL::lpsetup(const int32_t numkernels)
 			lpw=new glpkwrapper4CGMNPMKL;
 			lpw->setup(numkernels);
 		break;
-	
+
 		default:
 		{
 			//std::ostringstream helper;
 			//helper << "CGMNPMKL::setup(const int32_tnumkernels): unknown value for lpwrappertype "<<lpwrappertype <<std::endl;
 			//throw ShogunException(helper.str().c_str());
-			
+
 			char bla[1000];
 			sprintf(bla,"CGMNPMKL::setup(const int32_tnumkernels): unknown value for lpwrappertype %d\n ",lpwrappertype);
 			throw ShogunException(bla);
@@ -317,13 +319,14 @@ void CGMNPMKL::lpsetup(const int32_t numkernels)
 void CGMNPMKL::initsvm()
 {
 	ASSERT(labels);
-	
-	delete svm;
+
+	SG_UNREF(svm);
 	svm=new CGMNPSVM;
-	
+	SG_REF(svm);
+
 	svm->set_C(get_C1(),get_C2());
 	svm->set_epsilon(epsilon);
-	
+
 	//CGNMPSVM->set_labels(get_labels());
 
 	int32_t numlabels;
@@ -331,24 +334,24 @@ void CGMNPMKL::initsvm()
 	ASSERT(numlabels>0);
 	numdat=numlabels;
 	numcl=labels->get_num_classes();
-	
+
 	CLabels *newlab(NULL);
-	
+
 	newlab=new CLabels(lb, labels->get_num_labels() );
 	delete[] lb;
 	lb=NULL;
 
 	svm->set_labels(newlab);
-	
+
 	newlab=NULL;
-	
+
 	//TODO test whether labels have been set
-	
+
 }
 
 void CGMNPMKL::init()
 {
-	
+
 	if(NULL==kernel)
 	{
 
@@ -361,17 +364,17 @@ void CGMNPMKL::init()
 			//std::ostringstream helper;
 			//helper << "CGMNPMKL::init(): given kernel is not of type K_COMBINED "<<k->get_kernel_type() <<std::endl;
 			//throw ShogunException(helper.str().c_str());
-			
+
 			char bla[1000];
 			sprintf(bla,"CGMNPMKL::init(): given kernel is not of type K_COMBINED %d \n",kernel->get_kernel_type());
 			throw ShogunException(bla);
 		}
-		
+
 		numker=dynamic_cast<CCombinedKernel *>(kernel)->get_num_subkernels();
-		
+
 		lpsetup(numker);
-		
-		
+
+
 	}
 }
 
@@ -390,16 +393,16 @@ bool CGMNPMKL::evaluatefinishcriterion(const int32_t numberofsilpiterations)
 		wold=weightshistory[ weightshistory.size()-2 ];
 		wnew=weightshistory.back();
 		float64_t delta=0;
-		
+
 		ASSERT(wold.size()==wnew.size());
-		
+
 		for(size_t i=0;i< wnew.size();++i)
 		{
 			delta+=(wold[i]-wnew[i])*(wold[i]-wnew[i]);
 		}
 		delta=sqrt(delta);
 
-		SG_PRINT( "CGMNPMKL::evaluatefinishcriterion(): L2 norm of changes= %f, required for termination by member variables thresh= %f \n",delta, thresh);
+		SG_SPRINT( "CGMNPMKL::evaluatefinishcriterion(): L2 norm of changes= %f, required for termination by member variables thresh= %f \n",delta, thresh);
 
 		if( (delta < thresh)&&(numberofsilpiterations>=1) )
 		{
@@ -418,7 +421,7 @@ void CGMNPMKL::addingweightsstep( const std::vector<float64_t> & curweights)
 	{
 		weightshistory.erase(weightshistory.begin());
 	}
-	
+
 	float64_t* weights(NULL);
 	weights=new float64_t[curweights.size()];
 	std::copy(curweights.begin(),curweights.end(),weights);
@@ -426,20 +429,20 @@ void CGMNPMKL::addingweightsstep( const std::vector<float64_t> & curweights)
 	kernel->set_subkernel_weights(  weights, curweights.size());
 	delete[] weights;
 	weights=NULL;
-		
+
 	initsvm();
-	
+
 	//number of labels equal to number of features?
 	ASSERT(numdat==kernel->get_num_vec_lhs());
 	ASSERT(numdat==kernel->get_num_vec_rhs());
-	
+
 	svm->set_kernel(kernel);
 	svm->train();
-	
+
 	float64_t sumofsignfreealphas=getsumofsignfreealphas();
 	int32_t numkernels=dynamic_cast<CCombinedKernel *>(kernel)->get_num_subkernels();
 
-	
+
 	std::vector<float64_t> normw2(numkernels);
 	for(int32_t ind=0; ind < numkernels; ++ind )
 	{
@@ -460,17 +463,21 @@ float64_t CGMNPMKL::getsumofsignfreealphas()
 	std::copy(lab,lab+labels->get_num_labels(), trainlabels2.begin());
 	delete[] lab;
 	lab=NULL;
-	
-	
+
+
 	ASSERT(trainlabels2.size()>0);
 	float64_t sum=0;
 
 	for(int32_t nc=0; nc< labels->get_num_classes();++nc)
 	{
-		float64_t bia=svm->get_svm(nc)->get_bias();
+		CSVM * sm=svm->get_svm(nc);
+
+		float64_t bia=sm->get_bias();
 		sum+= bia*bia;
+
+		SG_UNREF(sm);
 	}
-	
+
 	::std::vector< ::std::vector<float64_t> > basealphas;
 	svm->getbasealphas( basealphas);
 
@@ -478,14 +485,23 @@ float64_t CGMNPMKL::getsumofsignfreealphas()
 	{
 		for(int32_t nc=0; nc< labels->get_num_classes();++nc)
 		{
+
+			CSVM * sm=svm->get_svm(nc);
+
+
 			if((int)nc!=trainlabels2[lb])
 			{
-				
-				float64_t bia1=svm->get_svm(trainlabels2[lb])->get_bias();
-				float64_t bia2=svm->get_svm(nc)->get_bias();
-				
+				CSVM * sm2=svm->get_svm(trainlabels2[lb]);
+
+				float64_t bia1=sm2->get_bias();
+				float64_t bia2=sm->get_bias();
+				SG_UNREF(sm2);
+
 				sum+= -basealphas[nc][lb]*(bia1-bia2-1);
 			}
+
+			SG_UNREF(sm);
+
 
 		}
 	}
@@ -498,27 +514,34 @@ float64_t CGMNPMKL::getsquarenormofprimalcoefficients(
 {
 	// alphas are already correctly transformed!
 
+	CKernel * ker=dynamic_cast<CCombinedKernel *>(kernel)->get_kernel(ind);
+
 	float64_t tmp=0;
 
 	for(int32_t classindex=0; classindex< labels->get_num_classes();++classindex)
 	{
+		CSVM * sm=svm->get_svm(classindex);
 
-		for (int32_t i=0; i < svm->get_svm(classindex)->get_num_support_vectors(); ++i)
+		for (int32_t i=0; i < sm->get_num_support_vectors(); ++i)
 		{
-			float64_t alphai=svm->get_svm(classindex)->get_alpha(i);// svmstuff[classindex].alphas[i];
-			int32_t svindi= svm->get_svm(classindex)->get_support_vector(i); //svmstuff[classindex].svind[i];
+			float64_t alphai=sm->get_alpha(i);// svmstuff[classindex].alphas[i];
+			int32_t svindi= sm->get_support_vector(i); //svmstuff[classindex].svind[i];
 
-			for (int32_t k=0; k < svm->get_svm(classindex)->get_num_support_vectors(); ++k)
+			for (int32_t k=0; k < sm->get_num_support_vectors(); ++k)
 			{
-				float64_t alphak=svm->get_svm(classindex)->get_alpha(k);
-				int32_t svindk=svm->get_svm(classindex)->get_support_vector(k);
+				float64_t alphak=sm->get_alpha(k);
+				int32_t svindk=sm->get_support_vector(k);
 
-				tmp+=alphai*dynamic_cast<CCombinedKernel *>(kernel)->get_kernel(ind)->kernel(svindi,svindk)
+				tmp+=alphai*ker->kernel(svindi,svindk)
 				*alphak;
 
 			}
 		}
+		SG_UNREF(sm);
 	}
+	SG_UNREF(ker);
+	ker=NULL;
+
 	return(tmp);
 }
 
@@ -527,23 +550,23 @@ bool CGMNPMKL::train()
 {
 	init();
 	weightshistory.clear();
-	
+
 	int32_t numkernels=dynamic_cast<CCombinedKernel *>(kernel)->get_num_subkernels();
-		
+
 	::std::vector<float64_t> curweights(numkernels,1.0/numkernels);
 	weightshistory.push_back(curweights);
-	
+
 	SG_PRINT("initial weights in silp \n");
 	for(size_t i=0; i< curweights.size();++i)
 	{
 		SG_PRINT("%f ",curweights[i]);
 	}
 	SG_PRINT("\n");
-	
+
 
 	addingweightsstep(curweights);
 
-	
+
 	int32_t numberofsilpiterations=0;
 		bool final=false;
 		while(false==final)
@@ -553,21 +576,21 @@ bool CGMNPMKL::train()
 			lpw->computeweights(curweights);
 			weightshistory.push_back(curweights);
 
-			SG_PRINT("SILP iteration %d weights in silp \n",numberofsilpiterations);
+			SG_SPRINT("SILP iteration %d weights in silp \n",numberofsilpiterations);
 			for(size_t i=0; i< curweights.size();++i)
 			{
-				SG_PRINT("%f ",curweights[i]);
+				SG_SPRINT("%f ",curweights[i]);
 			}
-			SG_PRINT("\n");			
+			SG_SPRINT("\n");
 
 			final=evaluatefinishcriterion(numberofsilpiterations);
 			++numberofsilpiterations;
 
 			addingweightsstep(curweights);
-			
+
 		} // while(false==final)
-		
-		
+
+
 		//set alphas, bias, support vecs
 		ASSERT(numcl>=1);
 		create_multiclass_svm(numcl);
@@ -576,18 +599,18 @@ bool CGMNPMKL::train()
 		{
 			CSVM* osvm=svm->get_svm(i);
 			CSVM* nsvm=new CSVM(osvm->get_num_support_vectors());
-
+			SG_REF(nsvm);
 			for (int32_t k=0; k<osvm->get_num_support_vectors() ; k++)
 			{
 				nsvm->set_alpha(k, osvm->get_alpha(k) );
 				nsvm->set_support_vector(k,osvm->get_support_vector(k) );
 			}
 			nsvm->set_bias(osvm->get_bias() );
-
+			SG_UNREF(osvm);
 			osvm=NULL;
 			set_svm(i, nsvm);
 		}
-		delete svm;
+		SG_UNREF(svm);
 		svm=NULL;
 		return(true);
 }
@@ -602,11 +625,11 @@ float64_t* CGMNPMKL::getsubkernelweights(int32_t & numweights)
 		numweights=0;
 		return(NULL);
 	}
-	
+
 	std::vector<float64_t> subkerw=weightshistory.back();
 	ASSERT(numker=subkerw.size());
 	numweights=numker;
-	
+
 	float64_t* res=new  float64_t[numker];
 	std::copy(subkerw.begin(), subkerw.end(),res);
 	return(res);

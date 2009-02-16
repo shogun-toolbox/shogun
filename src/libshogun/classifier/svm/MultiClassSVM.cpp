@@ -31,8 +31,14 @@ CMultiClassSVM::~CMultiClassSVM()
 void CMultiClassSVM::cleanup()
 {
 	for (int32_t i=0; i<m_num_svms; i++)
+	{
+		//if(m_svms[i]!=NULL)
+		//{
+		//	printf("msvmscount %d", m_svms[i]->ref_count());
+		//}
 		SG_UNREF(m_svms[i]);
-	delete[] m_svms;
+	}
+		delete[] m_svms;
 
 	m_num_svms=0;
 	m_svms=NULL;
@@ -470,4 +476,4 @@ bool CMultiClassSVM::save(FILE* modelfl)
 
 	SG_DONE();
 	return true ;
-} 
+}

@@ -1,18 +1,18 @@
-/* 
+/*
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * Written (W) 1999-2008 Vojtech Franc, xfrancv@cmp.felk.cvut.cz
- * Copyright (C) 1999-2008 Center for Machine Perception, CTU FEL Prague 
+ * Copyright (C) 1999-2008 Center for Machine Perception, CTU FEL Prague
  */
 
 #include "lib/io.h"
 #include "classifier/svm/GMNPSVM.h"
 #include "classifier/svm/gmnplib.h"
 
-#define INDEX(ROW,COL,DIM) (((COL)*(DIM))+(ROW)) 
+#define INDEX(ROW,COL,DIM) (((COL)*(DIM))+(ROW))
 #define MINUS_INF INT_MIN
 #define PLUS_INF  INT_MAX
 #define KDELTA(A,B) (A==B)
@@ -42,14 +42,14 @@ bool CGMNPSVM::train()
 	int32_t num_virtual_data= num_data*(num_classes-1);
 
 	SG_INFO( "%d trainlabels, %d classes\n", num_data, num_classes);
-	
+
 	float64_t* vector_y = new float64_t[num_data];
 	for (int32_t i=0; i<num_data; i++)
 	{
 		vector_y[i]= labels->get_label(i)+1;
-		
+
 	}
-	
+
 	float64_t C = get_C1();
 	int32_t tmax = 1000000000;
 	float64_t tolabs = 0;
@@ -68,7 +68,7 @@ bool CGMNPSVM::train()
 	int32_t t = 0;
 	float64_t* History = NULL;
 	int32_t verb = 0;
-	
+
 	CGMNPLib mnp(vector_y,kernel,num_data, num_virtual_data, num_classes, reg_const);
 
 	mnp.gmnp_imdm(vector_c, num_virtual_data, tmax,
@@ -92,7 +92,7 @@ bool CGMNPSVM::train()
 
 			mnp.get_indices2( &inx1, &inx2, j );
 
-			all_alphas[(inx1*num_classes)+i] += 
+			all_alphas[(inx1*num_classes)+i] +=
 				alpha[j]*(KDELTA(vector_y[inx1],i+1)-KDELTA(i+1,inx2));
 			all_bs[i] += alpha[j]*(KDELTA(vector_y[inx1],i+1)-KDELTA(i+1,inx2));
 		}
@@ -112,6 +112,7 @@ bool CGMNPSVM::train()
 		SG_DEBUG("svm[%d] has %d sv, b=%f\n", i, num_sv, all_bs[i]);
 
 		CSVM* svm=new CSVM(num_sv);
+		SG_REF(svm);
 
 		int32_t k=0;
 		for (int32_t j=0; j<num_data; j++)
@@ -127,7 +128,7 @@ bool CGMNPSVM::train()
 		svm->set_bias(all_bs[i]);
 		set_svm(i, svm);
 	}
-	
+
 	basealphas.resize(num_classes, ::std::vector<float64_t>(num_data,0));
 	for(int j=0; j < num_virtual_data; j++ )
 	{
@@ -136,7 +137,7 @@ bool CGMNPSVM::train()
 
 		mnp.get_indices2( &inx1, &inx2, j );
 		basealphas[inx2-1][inx1]=alpha[j];
-	}	
+	}
 
 	delete[] vector_c;
 	delete[] alpha;
