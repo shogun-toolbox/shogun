@@ -25,6 +25,7 @@
 %rename(Features) CFeatures;
 %feature("autodoc","0");
 
+%include "init.i"
 %include "common.i"
 %include "ShogunException.i"
 %include "io.i" 

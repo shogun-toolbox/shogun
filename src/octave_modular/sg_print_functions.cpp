@@ -11,12 +11,12 @@
 
 #include <stdio.h>
 
-void sg_print_message(FILE* target, const char* str)
+void sg_global_print_message(FILE* target, const char* str)
 {
 	fprintf(target, "%s", str);
 }
 
-void sg_print_warning(FILE* target, const char* str)
+void sg_global_print_warning(FILE* target, const char* str)
 {
 	if (target==stdout)
 		::warning(str);
@@ -24,11 +24,11 @@ void sg_print_warning(FILE* target, const char* str)
 		fprintf(target, "%s", str);
 }
 
-void sg_print_error(FILE* target, const char* str)
+void sg_global_print_error(FILE* target, const char* str)
 {
 	fprintf(target, "%s", str);
 }
 
-void sg_cancel_computations(bool &delayed, bool &immediately)
+void sg_global_cancel_computations(bool &delayed, bool &immediately)
 {
 }

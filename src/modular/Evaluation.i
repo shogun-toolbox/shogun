@@ -7,6 +7,7 @@
 #define SWIG_FILE_WITH_INIT
 %}
 
+%include "init.i"
 %include "common.i"
 %include "swig_typemaps.i"
 

@@ -10,6 +10,7 @@
 %rename(Distribution) CDistribution;
 %feature("autodoc","0");
 
+%include "init.i"
 %include "common.i"
 %include "swig_typemaps.i"
 

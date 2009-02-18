@@ -8,6 +8,7 @@
 #include <shogun/distance/Distance.h>
 %}
 
+%include "init.i"
 %include "common.i"
 %include "swig_typemaps.i"
 

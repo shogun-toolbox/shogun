@@ -9,6 +9,7 @@
 %include "Library_doxygen.i"
 #endif
 
+%include "init.i"
 %include "common.i"
 %include "ShogunException.i"
 %include "io.i"

@@ -12,6 +12,7 @@
 %include "Kernel_doxygen.i"
 #endif
 
+%include "init.i"
 %include "common.i"
 %include "swig_typemaps.i"
 

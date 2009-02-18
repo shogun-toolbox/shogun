@@ -616,13 +616,14 @@ class CHMM : public CDistribution
 		 * @param train model from which the new model is estimated
 		 */
 		void estimate_model_baum_welch(CHMM* train);
-		void estimate_model_baum_welch_old(CHMM* train);
 		void estimate_model_baum_welch_trans(CHMM* train);
 
 #ifdef USE_HMMPARALLEL_STRUCTURES
 		void ab_buf_comp(
 			float64_t* p_buf, float64_t* q_buf, float64_t* a_buf,
 			float64_t* b_buf, int32_t dim) ;
+#else
+		void estimate_model_baum_welch_old(CHMM* train);
 #endif
 
 		/** uses baum-welch-algorithm to train the defined transitions etc.

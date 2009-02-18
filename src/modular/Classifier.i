@@ -23,6 +23,7 @@
 %feature("autodoc","0");
 %rename(Classifier) CClassifier;
 
+%include "init.i"
 %include "common.i"
 %include "ShogunException.i"
 %include "io.i"
