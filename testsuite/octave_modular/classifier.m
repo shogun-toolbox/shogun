@@ -76,6 +76,7 @@ function y = classifier(filename)
 
 	elseif strcmp(classifier_name, 'SVMOcas')==1
 		classifier=SVMOcas(classifier_C, feats_train, lab);
+		classifier.set_bias_enabled(false);
 
 	elseif strcmp(classifier_name, 'SVMSGD')==1
 		classifier=SVMSGD(classifier_C, feats_train, lab);

@@ -88,7 +88,7 @@ _matlab=auto
 _r=auto
 _python_modular=auto
 _octave_modular=auto
-_r_modular=auto 
+_r_modular=no 
 
 test -z "$INCLUDES" || _inc_extra="-I`echo $INCLUDES | sed 's,:, -I,g'`"
 test -z "$LIBS" || _ld_extra="-L`echo $LIBS | sed 's,:, -L,g'`"
@@ -3279,7 +3279,7 @@ SWIGFLAGS_OCTAVE_MODULAR = ${SWIGFLAGS_OCTAVE_MODULAR}
 PRE_LIB_SWIG_R_MODULAR	= ${PRE_LIB_SWIG_R_MODULAR}
 EXT_LIB_SWIG_R_MODULAR	= ${EXT_LIB_SWIG_R_MODULAR}
 EXT_IF_SWIG_R_MODULAR		= ${EXT_IF_SWIG_R_MODULAR}
-DEFINES_R_MODULAR		= ${DEFINES_R}
+DEFINES_R_MODULAR		= ${DEFINES_R} -DDISABLE_CANCEL_CALLBACK
 INCLUDES_R_MODULAR		= ${INCLUDES_R}
 LINKFLAGS_R_MODULAR 	= ${LINKFLAGS_R}
 POSTLINKFLAGS_R_MODULAR	= ${POSTLINKFLAGS_R}

@@ -20,7 +20,9 @@
 #define NUMTRAPPEDSIGS 2
 
 
+#ifndef DISABLE_CANCEL_CALLBACK
 extern void (*sg_cancel_computations)(bool &delayed, bool &immediately);
+#endif
 
 /** Class Signal implements signal handling to e.g. allow ctrl+c to cancel a
  * long running process. This is done in two ways: 
@@ -75,9 +77,10 @@ class CSignal : public CSGObject
 		 */
 		static inline bool cancel_computations()
 		{
+#ifndef DISABLE_CANCEL_CALLBACK
 			if (sg_cancel_computations)
 				sg_cancel_computations(cancel_computation, cancel_immediately);
-
+#endif
 			if (cancel_immediately)
 				throw ShogunException("Computations have been cancelled immediately");
 
