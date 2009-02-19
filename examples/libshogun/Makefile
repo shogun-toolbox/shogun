@@ -2,17 +2,17 @@
 #LINKFLAGS=-L/usr/local/lib -lshogun
 CXXFLAGS=-O3 -g
 LINKFLAGS=-lshogun
+TARGETS = rbf_svm gnmpmkl minimal minimal_svm
 
-all:  rbf_svm gnmpmkl minimal minimal_svm
+all: $(TARGETS)
 
-rbf_svm: rbf_svm.cpp
-	gcc rbf_svm.cpp $(LINKFLAGS) -lshogun -o $@
+clean:
+	rm -f $(TARGETS)
 
-minimal: minimal.cpp
-	gcc minimal.cpp $(LINKFLAGS) -lshogun -o $@
+$(TARGETS): $(foreach t, $(TARGET), $t.cpp)
 
-minimal_svm: minimal_svm.cpp
-	gcc minimal_svm.cpp $(LINKFLAGS) -lshogun -o $@
+check-examples: $(TARGETS)
+	@for t in $(TARGETS) ; do echo $$t && ./$$t >/dev/null; done
 
-gnmpmkl: gnmpmkltester.cpp
-	gcc gnmpmkltester.cpp $(LINKFLAGS) -lshogun -o $@
+%: %.cpp
+	gcc $< $(LINKFLAGS) -lshogun -o $@

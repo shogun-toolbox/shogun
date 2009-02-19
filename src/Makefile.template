@@ -215,7 +215,7 @@ check-examples: check-examples-template
 run-testsuite-libshogun:
 	true
 check-examples-libshogun:
-	true
+	cd ../../examples/libshogun && make check-examples
 
 run-testsuite-libshogunui:
 	true
