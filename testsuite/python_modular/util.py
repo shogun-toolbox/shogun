@@ -127,8 +127,8 @@ def get_feats_string (indata, prefix=''):
 def get_feats_string_complex (indata, prefix=''):
 	alphabet=eval(indata[prefix+'alphabet'])
 	feats={
-		'train': StringCharFeatures(DNA),
-		'test': StringCharFeatures(DNA)
+		'train': StringCharFeatures(alphabet),
+		'test': StringCharFeatures(alphabet)
 	}
 
 	if alphabet==CUBE: # data_{train,test} ints due to test.py:_read_matrix
