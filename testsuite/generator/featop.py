@@ -87,13 +87,13 @@ def get_string_complex (ftype, data, alphabet=features.DNA,
 
 	feats={}
 
-	charfeat=features.StringCharFeatures(features.DNA)
+	charfeat=features.StringCharFeatures(alphabet)
 	charfeat.set_string_features(data['train'])
 	feat=eval('features.String'+ftype+'Features(alphabet)')
 	feat.obtain_from_char(charfeat, order-1, order, gap, reverse)
 	feats['train']=feat
 
-	charfeat=features.StringCharFeatures(features.DNA)
+	charfeat=features.StringCharFeatures(alphabet)
 	charfeat.set_string_features(data['test'])
 	feat=eval('features.String'+ftype+'Features(alphabet)')
 	feat.obtain_from_char(charfeat, order-1, order, gap, reverse)
