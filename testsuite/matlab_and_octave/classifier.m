@@ -40,6 +40,10 @@ function y = classifier(filename)
 		sg('set_labels', 'TRAIN', classifier_labels);
 	end
 
+	if strcmp(classifier_name, 'SVMOcas')==1
+		sg('svm_use_bias', false);
+	end
+
 	cname=fix_classifier_name_inconsistency(classifier_name);
 	try
 		sg('new_classifier', cname);
@@ -51,7 +55,6 @@ function y = classifier(filename)
 	if ~isempty(classifier_bias_enabled)
 		sg('svm_use_bias', tobool(classifier_bias_enabled));
 	end
-
 	if ~isempty(classifier_epsilon)
 		sg('svm_epsilon', classifier_epsilon);
 	end

@@ -25,7 +25,7 @@ The following table depicts the status of each interface available in shogun:
 |python-modular    | mature (no known problems)                                |
 |octave-modular    | mature (no known problems)                                |
 |r-modular         | pre-alpha quality (swig does not properly handle reference|
-|                  | counting and thus we see crashes or leaked leaking memory)|
+|                  | counting and thus we see crashes or leaked memory)        |
 +==================+===========================================================+
 
 Visit src/README for further information.
