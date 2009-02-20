@@ -1,11 +1,27 @@
 /*! \page tutorial Tutorial
   \section using_sec Using SHOGUN
 
-  There is currently no step by step user documentation. However for each of the interfaces
-  a large number of examples is available which can be found in the \b interface / examples directory.
-  For example python/examples python-modular/examples etc.
+  \subsection tut_tut_sec Tutorials
+  In addition we provide tutorials for developers that intend to extend shogun
+  or that want to use libshogun from C++ and for the static and modular interfaces.
+
+  \li \subpage developer_tutorial
+  \li \subpage static_tutorial
+  \li \subpage modular_tutorial
+
+  \subsection tut_examples_sec Examples
+
+  For each of the interfaces a large number of examples is available which can
+  be found in the \b examples / interface directory.  For example
+  examples/python examples/python-modular etc.
 
   Note that we always keep the python-modular examples complete and up-to-date
   and also perform regression tests using a test-suite.
 
+\section refinterface_sec Function Reference
+  \li \subpage staticoctave
+  \li \subpage staticpython
+  \li \subpage staticcmdline
+  \li \subpage staticr
+  \li \subpage Class Index
 */
