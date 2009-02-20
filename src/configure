@@ -81,11 +81,16 @@ _optimizing=""
 _interfaces=""
 _libshogun=auto
 _libshogunui=auto
-_cmdline=auto
 _python=auto
 _octave=auto
-_matlab=auto
 _r=auto
+#static interfaces
+_cmdline_static=auto
+_python_static=auto
+_octave_static=auto
+_r_static=auto
+_matlab_static=auto
+#modular interfaces
 _python_modular=auto
 _octave_modular=auto
 _r_modular=no 
@@ -665,11 +670,11 @@ for ac_option do
   --interfaces=*)
 	_libshogun=no
 	_libshogunui=no
-	_cmdline=no
-	_python=no
-	_octave=no
-	_matlab=no
-	_r=no
+	_cmdline_static=no
+	_python_static=no
+	_octave_static=no
+	_matlab_static=no
+	_r_static=no
 	_python_modular=no
 	_octave_modular=no
 	_r_modular=no
@@ -685,19 +690,19 @@ for ac_option do
 	  	_libshogunui=yes
 		;;
 	  cmdline)
-	  	_cmdline=yes
+	  	_cmdline_static=yes
 		;;
 	  python)
-	  	_python=yes
+	  	_python_static=yes
 		;;
 	  octave)
-	  	_octave=yes
+	  	_octave_static=yes
 		;;
 	  matlab)
-	  	_matlab=yes
+	  	_matlab_static=yes
 		;;
 	  r)
-	  	_r=yes
+	  	_r_static=yes
 		;;
 	  python_modular)
 	  	_python_modular=yes
@@ -2725,6 +2730,7 @@ EOF
 					echores "yes"
 					PARTS="$PARTS matlab"
 					_matlab=yes
+					_matlab_static=yes
 				else
 					echores "no"
 					if test "$_matlab" = yes
@@ -2739,7 +2745,7 @@ EOF
 
 test_octave()
 {
-	if test "$_octave" = yes || test "$_octave" = auto
+	if test "$_octave_static" != no || test "$_octave_modular" != no
 	then
 		echocheck "Octave"
 		if echo version | octave >/dev/null 2>&1
@@ -2804,8 +2810,6 @@ EOF
 				PRE_LIB_SWIG_OCTAVE_MODULAR=
 				EXT_LIB_SWIG_OCTAVE_MODULAR=oct
 				SWIGFLAGS_OCTAVE_MODULAR="-c++ -octave"
-				HAVE_OCTAVE='#define HAVE_OCTAVE 1'
-				DEFINES_OCTAVE="$DEFINES_OCTAVE -DHAVE_OCTAVE"
 
 				if darwin
 				then
@@ -2824,7 +2828,6 @@ EOF
 				then
 					echores "yes"
 					_octave=yes
-					PARTS="$PARTS octave"
 				else
 					echores "no"
 					if test "$_octave" = yes
@@ -2835,11 +2838,23 @@ EOF
 			fi
 		fi
 	fi
+
+	if test "$_octave" = yes
+	then
+		HAVE_OCTAVE='#define HAVE_OCTAVE 1'
+		DEFINES_OCTAVE="$DEFINES_OCTAVE -DHAVE_OCTAVE"
+
+		if test "$_octave_static" != no
+		then
+			PARTS="$PARTS octave"
+			_octave_static=yes
+		fi
+	fi
 }
 
 test_python()
 {
-	if test "$_python" = yes || test "$_python" = auto
+	if test "$_python_static" != yes || test "$_python_modular" != no
 	then
 		echocheck "Python numpy support"
 		if $PYTHON -c "import sys; import numpy" >/dev/null 2>&1
@@ -2870,8 +2885,6 @@ test_python()
 			PRE_LIB_SWIG_PYTHON_MODULAR=_
 			EXT_LIB_SWIG_PYTHON_MODULAR=${EXT_LIB}
 			EXT_IF_SWIG_PYTHON_MODULAR='.py'
-			HAVE_PYTHON='#define HAVE_PYTHON 1'
-			DEFINES_PYTHON="$DEFINES_PYTHON -DHAVE_PYTHON"
 			test -n "$_pyinclude" && _pyinclude="-I$_pyinclude"
 			test -n "$_pyinclude" || _pyinclude=`$PYTHON -c "import numpy; import sys; print '-I'+sys.prefix+'/include/python'+sys.version[0:3]+' -I'+numpy.get_include()"`
 			_pylibpath=""
@@ -2928,7 +2941,6 @@ EOF
 				then
 					echores "yes"
 					SWIGFLAGS_PYTHON_MODULAR="-c++ -python"
-					PARTS="$PARTS python"
 				else
 					echores "no"
 					if test "$_python" = yes
@@ -2939,11 +2951,23 @@ EOF
 			fi
 		fi
 	fi
+
+	if test "$_python" = yes
+	then
+		HAVE_PYTHON='#define HAVE_PYTHON 1'
+		DEFINES_PYTHON="$DEFINES_PYTHON -DHAVE_PYTHON"
+
+		if test "$_python_static" != no
+		then
+			PARTS="$PARTS python"
+			_python_static=yes
+		fi
+	fi
 }
 
 test_r()
 {
-	if test "$_r" = yes || test "$_r" = auto
+	if test "$_r_static" != no || test "$_r_modular" != no
 	then
 		echocheck "R"
 		if ( echo 'version; quit()' | R --no-save ) >/dev/null 2>&1 
@@ -2964,8 +2988,6 @@ test_r()
 
 		if test "$_r" != no
 		then
-			HAVE_R='#define HAVE_R 1'
-			DEFINES_R="$DEFINES_R -DHAVE_R"
 
 			if win32
 			then
@@ -3003,7 +3025,6 @@ EOF
 			then
 				echores "yes"
 				SWIGFLAGS_R_MODULAR="-c++ -r"
-				PARTS="$PARTS r"
 				_r=yes
 			else
 				echores "no"
@@ -3012,6 +3033,18 @@ EOF
 					die "cannot find R developer files"
 				fi
 			fi
+		fi
+	fi
+
+	if test "$_r" = yes
+	then
+		HAVE_R='#define HAVE_R 1'
+		DEFINES_R="$DEFINES_R -DHAVE_R"
+
+		if test "$_r_static" != no
+		then
+			PARTS="$PARTS r"
+			_r_static=yes
 		fi
 	fi
 }
@@ -3139,7 +3172,7 @@ EOF
 
 test_cmdline()
 {
-	if test "$_cmdline" = yes || test "$_cmdline" = auto
+	if test "$_cmdline_static" != no
 	then
 		PARTS="$PARTS cmdline"
 		CMDLINE_TARGET=shogun
@@ -3400,32 +3433,32 @@ clean_up()
 	rm -f "$TMPC" "$TMPCPP" "$TMPO" "$TMPS" "$TMPSS"
 }
 
-test_static()
+test_static_linking()
 {
 
 	if test "$_static" = yes
 	then
-		if test "$_octave" = yes
+		if test "$_octave_static" = yes
 		then
 			POSTLINKFLAGS_OCTAVE="$POSTLINKFLAGS_OCTAVE ../libshogunui/libshogunui.a ../libshogun/libshogun.a"
 		fi
 
-		if test "$_python" = yes
+		if test "$_python_static" = yes
 		then
 			POSTLINKFLAGS_PYTHON="$POSTLINKFLAGS_PYTHON ../libshogunui/libshogunui.a ../libshogun/libshogun.a"
 		fi
 
-		if test "$_r" = yes
+		if test "$_r_static" = yes
 		then
 			POSTLINKFLAGS_R="$POSTLINKFLAGS_R ../libshogunui/libshogunui.a ../libshogun/libshogun.a"
 		fi
 
-		if test "$_cmdline" = yes
+		if test "$_cmdline_static" = yes
 		then
 			LINKFLAGS_CMDLINE=`echo $LINKFLAGS_CMDLINE | sed 's/-shared/static/g'`
 		fi
 
-		if test "$_matlab" = yes
+		if test "$_matlab_static" = yes
 		then
 			POSTLINKFLAGS_MATLAB="$POSTLINKFLAGS_MATLAB ../libshogunui/libshogunui.a ../libshogun/libshogun.a"
 		fi
@@ -3449,7 +3482,7 @@ test_octave
 test_r
 test_matlab
 test_modular
-test_static
+test_static_linking
 svmlight_warn_license
 write_dot_config "$SRCDIR/.config"
 write_config_h "$SRCDIR/libshogun/lib/config.h"
