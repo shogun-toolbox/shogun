@@ -158,6 +158,9 @@
 \arg \b get_plif_struct \verbatim [id, name, limits, penalties, transform, min_value, max_value, use_cache, use_svm]=sg('get_plif_struct') \endverbatim
 \arg \b precompute_subkernels \verbatim sg('precompute_subkernels') \endverbatim
 \arg \b precompute_content_svms \verbatim sg('precompute_content_svms', sequence, position_list, weights) \endverbatim
+\arg \b get_lin_feat \verbatim [lin_feat]=sg('get_lin_feat') \endverbatim
+\arg \b set_lin_feat \verbatim sg('set_lin_feat', lin_feat) \endverbatim
+\arg \b init_dyn_prog \verbatim sg('init_dyn_prog', num_svms) \endverbatim
 \arg \b precompute_tiling_features \verbatim sg('precompute_tiling_features', intensities, probe_pos, tiling_plif_ids) \endverbatim
 \arg \b set_model \verbatim sg('set_model', content_weights, transition_pointers, use_orf, mod_words) \endverbatim
 \arg \b best_path_trans \verbatim [prob, path, pos]=sg('best_path_trans', p, q, nbest, seq_path, a_trans, segment_loss) \endverbatim
