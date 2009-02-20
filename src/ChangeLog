@@ -1,5 +1,109 @@
+2009-02-20  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* NEWS: preparing for release
+
+2009-02-19  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* configure, libshogun/lib/Signal.h, modular/init.i: remove broken
+	  ocas and wdocas tests on DNA, disable bias in vanilla ocas test,
+	  disable r_modular by default (as long as garbage collections is
+	  dysfunctional it better stays like this)
+	* Makefile.template: add check scripts for libshogun based examples
+
+2009-02-18  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* libshogun/distributions/hmm/HMM.h, modular/Classifier.i,
+	  modular/Clustering.i, modular/Distance.i, modular/Distribution.i,
+	  modular/Evaluation.i, modular/Features.i, modular/Kernel.i,
+	  modular/Library.i, modular/PreProc.i, modular/Regression.i,
+	  modular/Structure.i, modular/init.i,
+	  octave_modular/sg_print_functions.cpp,
+	  python_modular/sg_print_functions.cpp,
+	  r_modular/sg_print_functions.cpp: fix building of modular
+	  interfaces
+
+2009-02-16  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* libshogun/classifier/svm/GMNPSVM.cpp,
+	  libshogun/classifier/svm/MultiClassSVM.cpp,
+	  libshogun/classifier/svm/gmnpmkl.cpp,
+	  libshogun/classifier/svm/gmnpmkl.h: set_svm has to do SG_REF
+
+2009-02-16  Alexander Binder <alexander.binder@first.fraunhofer.de>
+
+	* libshogun/classifier/svm/GMNPSVM.cpp,
+	  libshogun/classifier/svm/MultiClassSVM.cpp,
+	  libshogun/classifier/svm/gmnpmkl.cpp: adapted to new version of
+	  SG_REF/SG_UNREF scheme,gnmpmkltester is now leakfree
+
+2009-02-16  Cheng Soon Ong <chengsoon.ong@tuebingen.mpg.de>
+
+	* configure: Swap link order for atlas based on
+	  http://math-atlas.sourceforge.net/errata.html#LINK
+
+2009-02-16  Jonas Behr <Jonas.Behr@tuebingen.mpg.de>
+
+	* libshogun/structure/DynProg.cpp, libshogun/structure/DynProg.h,
+	  libshogunui/SGInterface.cpp: fix typo
+	* libshogunui/SGInterface.cpp: fix problem with direct passing of
+	  precomputed linear feature arrays
+
+2009-02-14  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* README.developer: add introduction on how to develop shogun
+	  extensions and/or use libshogun
+	* libshogun/kernel/CombinedKernel.cpp,
+	  libshogun/kernel/CombinedKernel.h: remove convenience constructor
+	  as it won't allow us to check whether number of kernels matches
+	  number of features
+
+2009-02-13  Alexander Binder <alexander.binder@first.fraunhofer.de>
+
+	* libshogun/classifier/svm/gmnpmkl.h: bugfix in .h: added correct
+	  path to an include
+	  .cpp : modified for new shogun, version does not work yet
+
+2009-02-13  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* Makefile.template: fix include brackets
+	* Makefile.template, configure: test for SED specific -i flag
+	* configure: fix typo
+	* Makefile.template: fix make install on osx
+	* Makefile.template, cmdline/CmdLineInterface.cpp, configure:
+	  several compile fixes for osx
+	* libshogun/base/init.cpp, libshogun/base/init.h: ci forgotten
+	  files
+
+2009-02-13  Jonas Behr <Jonas.Behr@tuebingen.mpg.de>
+
+	* libshogun/structure/DynProg.cpp, libshogunui/SGInterface.cpp: --
+	  bugfix: deleted DynProg object to early
+	  -> now valgrind is happy
+	  
+	  -- Error handling with more informative outputs
+
+2009-02-13  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* Makefile.template, configure, matlab/MatlabInterface.cpp,
+	  octave/OctaveInterface.cpp, python/PythonInterface.cpp,
+	  r/RInterface.cpp: finally get all interfaces to dynamically use
+	  libshogun
+	* Makefile.template, configure, libshogun/base/SGObject.cpp,
+	  libshogun/base/SGObject.h, libshogun/base/Version.h,
+	  libshogun/lib/Mathematics.h, libshogun/lib/Signal.cpp,
+	  libshogun/lib/Signal.h, libshogun/lib/io.cpp, libshogun/lib/io.h,
+	  matlab/MatlabInterface.cpp, matlab/MatlabInterface.h,
+	  matlab/matlab.cpp, matlab/matlab.h, octave/OctaveInterface.cpp,
+	  octave/OctaveInterface.h, octave/octave.cpp, octave/octave.h,
+	  python/PythonInterface.cpp, python/PythonInterface.h,
+	  python/python.cpp, python/python.h, r/RInterface.cpp,
+	  r/RInterface.h, r/r.cpp, r/r.h: libshogun now has global pointers
+	  to function callbacks instead of unresolved symbols
+
 2009-02-12  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
 
+	* configure: get configure to work for modular interfaces again
+	* ChangeLog, NEWS: fix top-level make, update news and changelog
 	* libshogun/distributions/hmm/HMM.cpp,
 	  libshogun/distributions/hmm/HMM.h: get parallel HMM code to work
 	  again (it actually never really worked...)
