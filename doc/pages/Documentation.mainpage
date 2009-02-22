@@ -13,7 +13,7 @@
   of the most common kernels, like the Linear, Polynomial, Gaussian and Sigmoid
   Kernel but also comes with a number of recent string kernels as e.g. the
   Locality Improved, Fischer, TOP, Spectrum, Weighted Degree Kernel (with
-  shifts). For the latter the efficient LINADD [10] optimizations are
+  shifts). For the latter the efficient LINADD optimizations are
   implemented. Also SHOGUN offers the freedom of working with custom
   pre-computed kernels. One of its key features is the combined kernel which
   can be constructed by a weighted linear combination of a number of
