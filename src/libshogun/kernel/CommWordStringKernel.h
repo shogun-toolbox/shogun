@@ -43,6 +43,10 @@
 class CCommWordStringKernel : public CStringKernel<uint16_t>
 {
 	friend class CSqrtDiagKernelNormalizer;
+	friend class CAvgDiagKernelNormalizer;
+	friend class CFirstElementKernelNormalizer;
+	friend class CTanimotoKernelNormalizer;
+	friend class CDiceKernelNormalizer;
 
 	public:
 		/** constructor

@@ -83,6 +83,7 @@ class CCombinedDotFeatures : public CDotFeatures
 		 * @param vec_idx1 index of first vector
 		 * @param vec2 pointer to real valued vector
 		 * @param vec2_len length of real valued vector
+		 * @param abs_val if true add the absolute value
 		 */
 		virtual void add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val=false);
 
@@ -238,7 +239,7 @@ class CCombinedDotFeatures : public CDotFeatures
 
 		/** get subfeature weights
 		 *
-		 * @param subfeature weights
+		 * @param weights subfeature weights
 		 * @param num_weights where number of weights is stored
 		 */
 		virtual void get_subfeature_weights(float64_t** weights, int32_t* num_weights);
@@ -255,13 +256,16 @@ class CCombinedDotFeatures : public CDotFeatures
 		inline virtual const char* get_name() const { return "CombinedDotFeatures"; }
 
 	protected:
+		/** update total number of dimensions and vectors */
 		void update_dim_feature_space_and_num_vec();
 
 	protected:
 		/** feature list */
 		CList<CDotFeatures*>* feature_list;
 
+		/// total number of vectors
 		int32_t num_vectors;
+		/// total number of dimensions
 		int32_t num_dimensions;
 };
 #endif // _DOTFEATURES_H___

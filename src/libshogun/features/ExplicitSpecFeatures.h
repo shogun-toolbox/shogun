@@ -18,6 +18,10 @@
 
 template <class ST> class CStringFeatures;
 
+/** Features that compute the Spectrum Kernel feature space explicitly
+ *
+ * \sa CCommWordStringKernel
+ */
 class CExplicitSpecFeatures : public CDotFeatures
 {
 	public:
@@ -32,6 +36,7 @@ class CExplicitSpecFeatures : public CDotFeatures
 		/** copy constructor */
 		CExplicitSpecFeatures(const CExplicitSpecFeatures & orig);
 
+		/** destructor */
 		virtual ~CExplicitSpecFeatures();
 
 		/** duplicate feature object
@@ -74,6 +79,7 @@ class CExplicitSpecFeatures : public CDotFeatures
 		 * @param vec_idx1 index of first vector
 		 * @param vec2 pointer to real valued vector
 		 * @param vec2_len length of real valued vector
+		 * @param abs_val if true add the absolute value
 		 */
 		virtual void add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val=false);
 
@@ -106,11 +112,19 @@ class CExplicitSpecFeatures : public CDotFeatures
 			return C_SPEC;
 		}
 
+		/** get number of strings
+		 *
+		 * @return number of strings
+		 */
 		inline virtual int32_t get_num_vectors()
 		{
 			return num_strings;
 		}
 
+		/** get size of one element
+		 *
+		 * @return size of one element
+		 */
 		inline virtual int32_t get_size()
 		{
 			return sizeof(float64_t);
@@ -120,7 +134,13 @@ class CExplicitSpecFeatures : public CDotFeatures
 		inline virtual const char* get_name() const { return "ExplicitSpecFeatures"; }
 
 	protected:
+		/** obtain the k-spectrum from a list of strings
+		 *
+		 * @param str the string feature object already in k-mer format
+		 */
 		void obtain_kmer_spectrum(CStringFeatures<uint16_t>* str);
+
+		/** free kmer spectrum */
 		void delete_kmer_spectrum();
 
 	protected:

@@ -458,6 +458,7 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 		 * @param vec_idx1 index of first vector
 		 * @param vec2 pointer to real valued vector
 		 * @param vec2_len length of real valued vector
+		 * @param abs_val if true add the absolute value
 		 */
 		virtual void add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val=false)
 		{

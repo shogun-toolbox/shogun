@@ -111,6 +111,8 @@ class CKernel : public CSGObject
 	friend class CSqrtDiagKernelNormalizer;
 	friend class CAvgDiagKernelNormalizer;
 	friend class CFirstElementKernelNormalizer;
+	friend class CTanimotoKernelNormalizer;
+	friend class CDiceKernelNormalizer;
 
 	public:
 		/** constructor

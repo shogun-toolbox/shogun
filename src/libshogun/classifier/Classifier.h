@@ -151,7 +151,7 @@ class CClassifier : public CSGObject
 
 		/** set solver type
 		 *
-		 * @param t solver
+		 * @param st solver type
 		 */
 		inline void set_solver_type(ESolverType st) { solver_type=st; }
 

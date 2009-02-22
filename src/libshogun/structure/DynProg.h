@@ -701,6 +701,7 @@ protected:
 	 * @param from_pos from position
 	 * @param to_pos to position
 	 * @param intensities intensities
+	 * @param type type
 	 * @return an integer
 	 */
 	inline int32_t raw_intensities_interval_query(

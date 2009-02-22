@@ -159,7 +159,6 @@ class CCombinedKernel : public CKernel
 
 		/** get next kernel
 		 *
-		 * @param current
 		 * @return next kernel
 		 */
 		inline CKernel* get_next_kernel()

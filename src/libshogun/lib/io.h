@@ -246,17 +246,30 @@ class CIO
 		static int filter(CONST_DIRENT_T* d);
 
 
+		/** increase reference counter
+		 *
+		 * @return reference count
+		 */
 		inline int32_t ref()
 		{
 			++refcount;
 			return refcount;
 		}
 
+		/** display reference counter
+		 *
+		 * @return reference count
+		 */
 		inline int32_t ref_count() const
 		{
 			return refcount;
 		}
 
+		/** decrement reference counter and deallocate object if refcount is zero
+		 * before or after decrementing it
+		 *
+		 * @return reference count
+		 */
 		inline int32_t unref()
 		{
 			if (refcount==0 || --refcount==0)

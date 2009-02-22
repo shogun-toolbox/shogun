@@ -87,6 +87,7 @@ class CDotFeatures : public CFeatures
 		 * @param vec_idx1 index of first vector
 		 * @param vec2 pointer to real valued vector
 		 * @param vec2_len length of real valued vector
+		 * @param abs_val if true add the absolute value
 		 */
 		virtual void add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val=false)=0;
 
@@ -103,6 +104,9 @@ class CDotFeatures : public CFeatures
 		 */
 		virtual void dense_dot_range(float64_t* output, int32_t start, int32_t stop, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b);
 
+
+		/** Compute the dot product for a range of vectors. This function is
+		 * called by the threads created in dense_dot_range */
 		static void* dense_dot_range_helper(void* p);
 
 		/** get number of non-zero features in vector
@@ -131,6 +135,12 @@ class CDotFeatures : public CFeatures
 		virtual void get_feature_matrix(float64_t** matrix, int32_t* d1, int32_t* d2);
 
 	protected:
+		/** display progress output
+		 *
+		 * @param start minimum value
+		 * @param stop maximum value
+		 * @param v current value
+		 */
 		inline void display_progress(int32_t start, int32_t stop, int32_t v)
 		{
 			int32_t num_vectors=stop-start;
@@ -140,6 +150,8 @@ class CDotFeatures : public CFeatures
 				SG_PROGRESS(v, 0.0, num_vectors-1);
 		}
 	protected:
+
+		/// feature weighting in combined dot features
 		float64_t combined_weight;
 };
 #endif // _DOTFEATURES_H___
