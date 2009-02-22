@@ -1,41 +1,60 @@
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Written (W) 2009 Soeren Sonnenburg
+ * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ */
 %define DOCSTR
 "The `Distribution` module gathers all distributions available in the SHOGUN toolkit."
 %enddef
 
 %module(docstring=DOCSTR) Distribution
-%{
-#define SWIG_FILE_WITH_INIT
-#include <shogun/distributions/Distribution.h>
-%}
-%rename(Distribution) CDistribution;
+
+/* Documentation */
 %feature("autodoc","0");
 
-%include "init.i"
-%include "common.i"
-%include "swig_typemaps.i"
+#ifdef HAVE_PYTHON
+%feature("autodoc", "get_log_likelihood(self) -> numpy 1dim array of float") get_log_likelihood;
+%feature("autodoc", "get_histogram(self) -> numpy 1dim array of float") get_histogram;
+%feature("autodoc", "get_log_transition_probs(self) -> numpy 1dim array of %float") get_log_transition_probs;
+%feature("autodoc", "get_transition_probs(self) -> numpy 1dim array of %float") get_transition_probs;
+#endif
 
 #ifdef HAVE_DOXYGEN
 %include "Distribution_doxygen.i"
 #endif
 
-
-#ifdef HAVE_PYTHON
-%init %{
-	import_array();
+/* Include Module Definitions */
+%include "SGBase.i"
+%{
+#include <shogun/distributions/Distribution.h>
+#include <shogun/distributions/histogram/Histogram.h>
+#include <shogun/distributions/hmm/HMM.h>
+#include <shogun/distributions/hmm/GHMM.h>
+#include <shogun/distributions/hmm/LinearHMM.h>
 %}
-%feature("autodoc", "get_log_likelihood(self) -> numpy 1dim array of float") get_log_likelihood;
-#endif
 
+/* Typemaps */
 %apply (float64_t** ARGOUT1, int32_t* DIM1) {(float64_t** dst, int32_t* num)};
+%apply (float64_t** ARGOUT1, int32_t* DIM1) {(float64_t** dst, int32_t* num)};
+%apply (float64_t* IN_ARRAY1, int32_t DIM1) {(float64_t* src, int32_t num)};
+%apply (float64_t** ARGOUT1, int32_t* DIM1) {(float64_t** dst, int32_t* num)};
+%apply (float64_t* IN_ARRAY1, int32_t DIM1) {(const float64_t* src, int32_t num)};
 
-%include "ShogunException.i"
-%include "io.i"
-%include "Version.i"
-%include "Parallel.i"
-%include "SGObject.i"
+/* Remove C Prefix */
+%rename(Distribution) CDistribution;
+%rename(Histogram) CHistogram;
+%rename(HMM) CHMM;
+%rename(Model) CModel;
+%rename(GHMM) CGHMM;
+%rename(LinearHMM) CLinearHMM;
 
+/* Include Class Headers to make them visible from within the target language */
 %include <shogun/distributions/Distribution.h>
-%include "Histogram.i"
-%include "HMM.i"
-%include "GHMM.i"
-%include "LinearHMM.i"
+%include <shogun/distributions/histogram/Histogram.h>
+%include <shogun/distributions/hmm/HMM.h>
+%include <shogun/distributions/hmm/GHMM.h>
+%include <shogun/distributions/hmm/LinearHMM.h>

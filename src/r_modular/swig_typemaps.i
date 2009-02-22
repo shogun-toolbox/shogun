@@ -12,8 +12,6 @@
  */
 
 %{
-#include <shogun/lib/common.h>
-
 extern "C" {
 #include <R.h>
 #include <Rinternals.h>

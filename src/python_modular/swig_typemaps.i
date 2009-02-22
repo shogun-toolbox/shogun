@@ -5,9 +5,6 @@
 #endif
 #include <stdio.h>
 
-#include <shogun/lib/io.h>
-#include <shogun/lib/common.h>
-
 #undef _POSIX_C_SOURCE
 extern "C" {
 #include <Python.h>
@@ -215,8 +212,6 @@ int require_dimensions(PyObject* ary, int exact_dimensions) {
 
 /* End John Hunter translation (with modifications by Bill Spotz) */
 %}
-
-%include "common.i"
 
 /* TYPEMAP_IN macros
  *

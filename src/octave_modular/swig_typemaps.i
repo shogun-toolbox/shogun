@@ -12,8 +12,6 @@
  */
 
 %{
-#include <shogun/lib/common.h>
-
 #include <octave/config.h>
 
 #include <octave/ov.h>
