@@ -1,4 +1,4 @@
-/** GETTING STARTED
+GETTING STARTED
 
 Shogun is split up into libshogun which contains all the machine learning
 algorithms, libshogunui which contains a library for the 'static interfaces',
@@ -15,9 +15,9 @@ The simplest libshogun based program would be
 
 int main(int argc, char** argv)
 {
-	init_shogun();
-	exit_shogun();
-	return 0;
+    init_shogun();
+    exit_shogun();
+    return 0;
 }
 
 which could be compiled with g++ -lshogun minimal.cpp -o minimal and obviously
@@ -30,17 +30,17 @@ parameters like this
 
 void print_message(FILE* target, const char* str)
 {
-	    fprintf(target, "%s", str);
+    fprintf(target, "%s", str);
 }
 
 void print_warning(FILE* target, const char* str)
 {
-	    fprintf(target, "%s", str);
+    fprintf(target, "%s", str);
 }
 
 void print_error(FILE* target, const char* str)
 {
-	    fprintf(target, "%s", str);
+    fprintf(target, "%s", str);
 }
 
 init_shogun(&print_message, &print_warning,
@@ -60,20 +60,20 @@ e.g. we create some features and a gaussian kernel
 
 void print_message(FILE* target, const char* str)
 {
-	        fprintf(target, "%s", str);
+    fprintf(target, "%s", str);
 }
 
 int main(int argc, char** argv)
 {
-	init_shogun(&print_message);
+    init_shogun(&print_message);
 
     // create some data
     float64_t* matrix = new float64_t[6];
     for (int32_t i=0; i<6; i++)
         matrix[i]=i;
-    
+
     // create three 2-dimensional vectors 
-	// shogun will now own the matrix created
+    // shogun will now own the matrix created
     CRealFeatures* features= new CRealFeatures();
     features->set_feature_matrix(matrix, 2, 3);
 
@@ -87,21 +87,20 @@ int main(int argc, char** argv)
     CGaussianKernel* kernel = new CGaussianKernel(10, 0.5);
     kernel->init(features, features);
 
-	// create libsvm with C=10 and train
+    // create libsvm with C=10 and train
     CLibSVM* svm = new CLibSVM(10, kernel, labels);
-	svm->train();
-	
-	// classify on training examples
-	for (int32_t i=0; i<3; i++)
-		SG_SPRINT("output[%d]=%f\n", i, svm->classify_example(i));
+    svm->train();
 
-	// free up memory
-	SG_UNREF(svm);
+    // classify on training examples
+    for (int32_t i=0; i<3; i++)
+        SG_SPRINT("output[%d]=%f\n", i, svm->classify_example(i));
+
+    // free up memory
+    SG_UNREF(svm);
 
     exit_shogun();
     return 0;
 }
-
 
 Now you probably wonder why this example does not leak memory. First of all,
 supplying pointers to arrays allocated with new[] will make shogun objects own
@@ -136,10 +135,10 @@ constructor do
 
 class MySVM : public CSVM
 {
-	MySVM( ) : CSVM()
-	{
-		...
-	}
+    MySVM( ) : CSVM()
+    {
+        ...
+    }
 };
 
 In case you got your object working we will happily integrate it into shogun
@@ -353,4 +352,4 @@ VERSIONING SCHEME:
 - an automagic version will be created from the date of the last svn update.
 if that is not enough make releases:
 
-e.g.: svn cp trunk releases/shogun_0.1.0 */
+e.g.: svn cp trunk releases/shogun_0.1.0
