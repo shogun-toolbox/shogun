@@ -754,7 +754,7 @@ for ac_option do
     ;;
   --includes=*)
     _inc_extra="-I`echo $ac_option | cut -d '=' -f 2 | sed 's,:, -I,g'` $_inc_extra"
-	INCLUDES="$_inc_extra $INCLUDES "
+	INCLUDES="$INCLUDES $_inc_extra"
     ;;
   --libs=*)
     _ld_extra="-L`echo $ac_option | cut -d '=' -f 2 | sed 's,:, -L,g'` $_ld_extra"
@@ -2363,7 +2363,7 @@ EOF
 								echores "yes"
 								USE_CPLEX='#define USE_CPLEX 1'
 								DEFINES="$DEFINES -DUSE_CPLEX"
-								INCLUDES="$INCLUDES $CPLEXINCLUDES"
+								INCLUDES="$CPLEXINCLUDES $INCLUDES"
 								LINKFLAGS="$LINKFLAGS $CPLEXLINKFLAGS"
 								POSTLINKFLAGS="$POSTLINKFLAGS $CPLEXLINKFLAGS"
 							else
@@ -3086,7 +3086,7 @@ EOF
 			echores "yes (internal in source tree)"
 			rm -f shogun 
 			ln -s libshogun shogun
-			INCLUDES="$INCLUDES -I${SRCDIR} -I.."
+			INCLUDES="-I${SRCDIR} -I.. $INCLUDES"
 			PARTS="$PARTS libshogun"
 			INCLUDES_STATIC_INTERFACES="$INCLUDES_STATIC_INTERFACES -I../libshogun"
 			LINKFLAGS_STATIC_INTERFACES="$LINKFLAGS_STATIC_INTERFACES -L../libshogun -lshogun"
@@ -3149,7 +3149,7 @@ EOF
 			ln -s libshogunui ui
 			rm -f libshogunui/shogun
 			( cd libshogunui ; ln -s .. shogun )
-			INCLUDES="$INCLUDES -I${SRCDIR} -I.."
+			INCLUDES="-I${SRCDIR} -I.. $INCLUDES"
 			PARTS="$PARTS libshogunui"
 
 			INCLUDES_STATIC_INTERFACES="$INCLUDES_STATIC_INTERFACES -I../libshogunui"
