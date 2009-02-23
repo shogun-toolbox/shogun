@@ -15,6 +15,8 @@
 #include "base/Parallel.h"
 #include "base/Version.h"
 
+#include <pthread.h>
+
 class CSGObject;
 class CIO;
 
@@ -36,6 +38,7 @@ public:
 	inline CSGObject() : refcount(0)
 	{
 		set_global_objects();
+		pthread_mutex_init(&ref_mutex, NULL);
 	}
 
 	inline CSGObject(const CSGObject& orig) : refcount(0), io(orig.io),
@@ -46,6 +49,7 @@ public:
 
     virtual ~CSGObject()
 	{
+		pthread_mutex_destroy(&ref_mutex);
 		SG_UNREF(version);
 		SG_UNREF(parallel);
 		SG_UNREF(io);
@@ -57,8 +61,10 @@ public:
 	 */
 	inline int32_t ref()
 	{
+		pthread_mutex_lock(&ref_mutex);
 		++refcount;
 		SG_DEBUG("ref() refcount %ld obj %s (%p) increased\n", refcount, this->get_name(), this);
+		pthread_mutex_unlock(&ref_mutex);
 		return refcount;
 	}
 
@@ -79,15 +85,19 @@ public:
 	 */
 	inline int32_t unref()
 	{
+		pthread_mutex_lock(&ref_mutex);
 		if (refcount==0 || --refcount==0)
 		{
 			SG_DEBUG("unref() refcount %ld, obj %s (%p) destroying\n", refcount, this->get_name(), this);
+			pthread_mutex_t m=ref_mutex;
 			delete this;
+			pthread_mutex_unlock(&m);
 			return 0;
 		}
 		else
 		{
 			SG_DEBUG("unref() refcount %ld obj %s (%p) decreased\n", refcount, this->get_name(), this);
+			pthread_mutex_unlock(&ref_mutex);
 			return refcount;
 		}
 	}
@@ -103,6 +113,7 @@ private:
 
 private:
 	int32_t refcount;
+	pthread_mutex_t ref_mutex;
 
 public:
 	CIO* io;

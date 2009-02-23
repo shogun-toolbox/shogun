@@ -56,29 +56,6 @@ CCommWordStringKernel::~CCommWordStringKernel()
 	delete[] dict_diagonal_optimization ;
 }
   
-void CCommWordStringKernel::remove_lhs() 
-{ 
-	delete_optimization();
-
-#ifdef SVMLIGHT
-	if (lhs)
-		cache_reset();
-#endif
-
-	lhs = NULL ; 
-	rhs = NULL ; 
-}
-
-void CCommWordStringKernel::remove_rhs()
-{
-#ifdef SVMLIGHT
-	if (rhs)
-		cache_reset();
-#endif
-
-	rhs = lhs;
-}
-
 bool CCommWordStringKernel::init(CFeatures* l, CFeatures* r)
 {
 	CStringKernel<uint16_t>::init(l,r);
@@ -96,7 +73,6 @@ bool CCommWordStringKernel::init(CFeatures* l, CFeatures* r)
 void CCommWordStringKernel::cleanup()
 {
 	delete_optimization();
-	clear_normal();
 	CKernel::cleanup();
 }
 

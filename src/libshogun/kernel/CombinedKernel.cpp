@@ -503,14 +503,16 @@ float64_t CCombinedKernel::compute_optimized(int32_t idx)
 
 	CListElement<CKernel*> *current=NULL;
 	CKernel *k=get_first_kernel(current);
-	while(k)
+	while (k)
 	{
-		if (k && k->has_property(KP_LINADD) &&
+		if (k->has_property(KP_LINADD) &&
 			k->get_is_initialized())
 		{
 			if (k->get_combined_kernel_weight()!=0)
+			{
 				result +=
 					k->get_combined_kernel_weight()*k->compute_optimized(idx);
+			}
 		}
 		else
 		{
@@ -710,7 +712,7 @@ bool CCombinedKernel::precompute_subkernels()
 	}
 
 	SG_UNREF(kernel_list);
-	new_kernel_list=kernel_list;
+	kernel_list=new_kernel_list;
 
 	return true;
 }

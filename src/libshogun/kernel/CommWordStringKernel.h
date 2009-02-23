@@ -145,12 +145,6 @@ class CCommWordStringKernel : public CStringKernel<uint16_t>
 		/** clear normal */
 		virtual void clear_normal();
 
-		/** remove lhs from kernel */
-		virtual void remove_lhs();
-
-		/** remove rhs from kernel */
-		virtual void remove_rhs();
-
 		/** return feature type the kernel can deal with
 		 *
 		 * @return feature type WORD
