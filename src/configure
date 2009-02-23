@@ -2025,7 +2025,7 @@ EOF
 		LIBSHOGUN_SONAME="libshogun.${LIBSHOGUNSO}.dylib"
 		LIBSHOGUNUI_SONAME="libshogunui.${LIBSHOGUNUISO}.dylib"
 
-		if test "$_matlab" = yes
+		if test "$_matlab_static" = yes
 		then
 			true #nop	
 		elif test "$_r" = yes
@@ -2591,7 +2591,7 @@ test_modular()
 
 test_matlab()
 {
-	if test "$_matlab" = yes || test "$_matlab" = auto
+	if test "$_matlab_static" = yes || test "$_matlab_static" = auto
 	then
 		if win32
 		then
@@ -2609,7 +2609,7 @@ test_matlab()
 			else
 				echores "no"
 
-				if test "$_matlab" = yes
+				if test "$_matlab_static" = yes
 				then
 					die "could not find matlab in path / matlab crashed"
 				fi
@@ -2628,7 +2628,7 @@ test_matlab()
 			else
 				echores "no"
 
-				if test "$_matlab" = yes
+				if test "$_matlab_static" = yes
 				then
 					die "could not find matlab in path / matlab crashed"
 				fi
@@ -2659,7 +2659,7 @@ test_matlab()
 					LINKFLAGS_MATLAB="$LINKFLAGS_MATLAB -bundle -Wl,-flat_namespace -undefined suppress -Wl,-exported_symbols_list,$MATLAB_LIBDIR/maci/mexFunction.map -L$MATLAB_BINDIR/maci -lmx -lmex -lmat"
 					MATLAB_TARGET="sg.mexmaci"
 				else
-					if test "$_matlab" = yes
+					if test "$_matlab_static" = yes
 					then
 						die "non supported matlab architecture"
 					fi
@@ -2679,7 +2679,7 @@ test_matlab()
 					INCLUDES_MATLAB="$INCLUDES_MATLAB -I$MATLAB_INCDIR -I$MATLAB_SRCDIR"
 					MATLAB_TARGET="sg.mexglx"
 				else
-					if test "$_matlab" = yes
+					if test "$_matlab_static" = yes
 					then
 						die "matlab only supports x86_84 and x86 linux architectures"
 					fi
@@ -2706,7 +2706,7 @@ EOF
 				INCLUDES_MATLAB="$INCLUDES_MATLAB -I$MATLAB_INCDIR"
 				MATLAB_TARGET="sg.dll"
 			else
-				if test "$_matlab" = yes
+				if test "$_matlab_static" = yes
 				then
 					die "non supported matlab architecture"
 				fi
@@ -2729,11 +2729,10 @@ EOF
 				then
 					echores "yes"
 					PARTS="$PARTS matlab"
-					_matlab=yes
 					_matlab_static=yes
 				else
 					echores "no"
-					if test "$_matlab" = yes
+					if test "$_matlab_static" = yes
 					then
 						die "could not find matlab developer files (e.g. mex.h)"
 					fi
