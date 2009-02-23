@@ -23,7 +23,7 @@
  * @param print_error function pointer to print an error message (this will be
  *                                  printed before shogun throws an exception)
  *
- * @param cancel_computation function pointer to check for exception
+ * @param cancel_computations function pointer to check for exception
  *
  */
 void init_shogun(void (*print_message)(FILE* target, const char* str) = NULL,

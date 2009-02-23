@@ -1,4 +1,4 @@
-This cites the relevant points from
+/** This cites the relevant points from
 http://www.linux.org/docs/ldp/howto/Program-Library-HOWTO/shared-libraries.html
 according to which we introduce ABI changes and thus have to change the soname
 of libshogun/libshogunui.
@@ -38,4 +38,4 @@ working.
 
 13. Change the access rights (i.e. public, protected or private) of a member
 function in a portable program, because some compilers mangle the access rights
-into the function name.
+into the function name. */

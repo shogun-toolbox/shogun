@@ -1,5 +1,5 @@
 /*! \page installation Installation
-Currently SHOGUN has been confirmed to be /fully functional/ on PowerPC,
+Currently SHOGUN has been confirmed to be <b>fully functional</b> on PowerPC,
 i386 and AMD64 Linux (tested on debian/ubuntu and gentoo).  We also managed
 to compile SHOGUN on MacOSX and via cygwin on WIN32 platforms. However some
 manual tweakings of configuration files might be necessary.
@@ -23,24 +23,27 @@ Download SHOGUN from http://www.shogun-toolbox.org, aswell as its requirements.
 \subsection requirements Requirements
 
 SHOGUN requires the standard linux utils like bash, grep, test, sed, cut, ldd,
-uname gcc g++ and cat python (debian package: python2.3 or python2.4 or
-python2.5) for the ./configure to work.
+uname gcc g++ and cat python (debian package: python2.4 or python2.5)
+for the ./configure to work.
 
 Optionally you will need atlas and lapack (debian packages lapack3-dev, 
 atlas3-headers atlas3-base-dev or atlas3-altivec-dev atlas3-sse2-dev)
 installed. Note that atlas/lapack is only supported under linux (high
 performance computing should be done under linux only anyway). In case
 atlas/lapack is unavailable, don't worry most of shogun will work without, though
-slightly slower versions are used.
+slightly slower versions are used. To enable Multiple %Kernel Learning with
+CPLEX(tm) just make sure cplex can be found in the PATH. If it is not found
+shogun will resort to GLPK (if version at least 4.29 is found) for 1-norm MKL,
+p-norm MKL with p>1 will work nonetheless.
 
 \li To compile the R interface you need to have the R developer files 
 (debian package r-base-dev) installed.
 
 \li To compile the octave interface you need to have the octave developer files 
-(debian package octave2.1-headers or octave2.9-headers) installed.
+(debian package octave3.0-headers) installed.
 
 \li To compile the python interface you need to have numpy version 1.x installed 
-(debian package python-numpy and python-numpy-ext) installed.
+(debian package python-numpy) installed.
 
 \section compiling_shogun Compiling SHOGUN
 
@@ -48,23 +51,32 @@ slightly slower versions are used.
 On most platforms (Linux,MacOSX,cygwin) it is sufficient to issue
 
 \verbatim
-./configure --interface=<interface>
-make \endverbatim
+./configure
+make
+sudo make install
+\endverbatim
+
+In case you just want to compile for a single interfaces you can use
+\verbatim
+./configure --interfaces=libshogun,libshogunui,<interface>
+make
+sudo make install
+\endverbatim
 
 where \b interface is one of the following
 
-\li octave -- for octave (see http://www.octave.org)
+\li python or python-modular -- for python (see http://www.python.org)
+
+\li octave or octave_modular -- for octave (see http://www.octave.org)
+
+\li r or r_modular -- for r (see http://www.r-project.org).
 
 \li matlab -- for matlab (see http://www.mathworks.com)
 
-\li python or python-modular -- for python (see http://www.python.org)
 
-\li R -- for R (see http://www.r-project.org).
-
-
-Just running 
+However, just running 
 \verbatim ./configure\endverbatim
-will configure for a stand-a-lone version.
+will autodetect and configure for the available interfaces.
 
 Call
 \verbatim./configure --help \endverbatim

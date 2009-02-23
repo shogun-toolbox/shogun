@@ -1,4 +1,4 @@
-GETTING STARTED
+/** GETTING STARTED
 
 Shogun is split up into libshogun which contains all the machine learning
 algorithms, libshogunui which contains a library for the 'static interfaces',
@@ -353,4 +353,4 @@ VERSIONING SCHEME:
 - an automagic version will be created from the date of the last svn update.
 if that is not enough make releases:
 
-e.g.: svn cp trunk releases/shogun_0.1.0
+e.g.: svn cp trunk releases/shogun_0.1.0 */

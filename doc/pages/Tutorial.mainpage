@@ -27,12 +27,12 @@
 
   Note that we always keep the python-modular examples complete and up-to-date
   and also perform regression tests using a test-suite. Finally, we provide a
-  function reference for all static and modular interfaces:
+  %function reference for all static and modular interfaces:
 
 \section refinterface_sec Function Reference
   \li \subpage staticoctave
   \li \subpage staticpython
   \li \subpage staticcmdline
   \li \subpage staticr
-  \li \subpage Modular Interfaces, click the Classes tab above
+  \li Modular Interfaces, click the Classes tab above
 */

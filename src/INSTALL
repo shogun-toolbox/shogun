@@ -37,7 +37,7 @@ To compile the octave interface you need to have the octave developer files
 (debian package octave3.0-headers) installed.
 
 To compile the python interface you need to have numpy version 1.x installed 
-(debian package python-numpy and python-numpy-ext) installed.
+(debian package python-numpy) installed.
 
 Optionally you will need atlas and lapack (debian packages lapack3-dev, 
 atlas3-headers atlas3-base-dev or atlas3-altivec-dev atlas3-sse2-dev)
@@ -71,7 +71,7 @@ octave
 ======
 
 To compile the octave interface you need to have the octave developer files 
-(debian package octave2.1-headers or octave2.9-headers).
+(debian package octave3.0-headers or octave2.9-headers).
 
 then do a
 
