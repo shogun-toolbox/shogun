@@ -657,7 +657,6 @@ TYPEMAP_STRINGFEATURES_IN(uint8_t,       NPY_UINT8 )
 %define TYPEMAP_SPARSEFEATURES_IN(type,typecode)
 %typemap(in) (T_Sparse<type>* sfm, int32_t num_feat, int32_t num_vec) {
 
-
     PyObject* o=(PyObject*) $input;
 
     /* a column compressed storage sparse matrix in python scipy
@@ -694,41 +693,28 @@ TYPEMAP_STRINGFEATURES_IN(uint8_t,       NPY_UINT8 )
         for (int32_t i=0; i<num_vec; i++)
         {
             /*
-            PyObject *o = PyList_GetItem(list,i);
-            if (PyString_Check(o))
-            {
-                sfm->vec_index = i;
-                sfm->num_feat_entries = num;
-                TSparse<type>* ts= new TSparse<type>[num];
-                sfm->features=ts;
+            sfm->vec_index = i;
+            sfm->num_feat_entries = num;
+            TSparse<type>* ts= new TSparse<type>[num];
+            sfm->features=ts;
 
             int32_t vec_index;
             int32_t num_feat_entries;
             TSparseEntry<ST>* features;
 
-                int32_t len=PyString_Size(o);
-                max_len=CMath::max(len,max_len);
-                const char* str=PyString_AsString(o);
+            int32_t len=PyString_Size(o);
+            max_len=CMath::max(len,max_len);
+            const char* str=PyString_AsString(o);
 
-                strings[i].length=len;
-                strings[i].string=NULL;
+            strings[i].length=len;
+            strings[i].string=NULL;
 
-                if (len>0)
-                {
-                    strings[i].string=new type[len];
-                    memcpy(strings[i].string, str, len);
-                }
-                */
-            }
-            else
+            if (len>0)
             {
-                PyErr_SetString(PyExc_TypeError, "all elements in list must be strings");
-
-                for (int32_t j=0; j<i; j++)
-                    delete[] strings[i].string;
-                delete[] strings;
-                SWIG_fail;
+            strings[i].string=new type[len];
+            memcpy(strings[i].string, str, len);
             }
+             */
         }
 
         $1=sfm;
@@ -742,7 +728,7 @@ TYPEMAP_STRINGFEATURES_IN(uint8_t,       NPY_UINT8 )
     }
     else
     {
-        PyErr_SetString(PyExc_TypeError,"not a/empty list");
+        PyErr_SetString(PyExc_TypeError,"not column compressed sparse matrix");
         return NULL;
     }
 }
