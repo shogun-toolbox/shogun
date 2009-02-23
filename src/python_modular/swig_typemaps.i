@@ -653,4 +653,114 @@ TYPEMAP_STRINGFEATURES_IN(char,          NPY_STRING )
 TYPEMAP_STRINGFEATURES_IN(uint8_t,       NPY_UINT8 )
 #undef TYPEMAP_STRINGFEATURES_IN
 
+/* input typemap for Sparse Features */
+%define TYPEMAP_SPARSEFEATURES_IN(type,typecode)
+%typemap(in) (T_Sparse<type>* sfm, int32_t num_feat, int32_t num_vec) {
+
+
+    PyObject* o=(PyObject*) $input;
+
+    /* a column compressed storage sparse matrix in python scipy
+       looks like this
+
+       A = csc_matrix( ... )
+       A.indptr # pointer array
+       A.indices # indices array
+       A.data # nonzero values array
+       A.shape # size of matrix
+
+       >>> type(A.indptr)
+       <type 'numpy.ndarray'>
+       >>> type(A.indices)
+       <type 'numpy.ndarray'>
+       >>> type(A.data)
+       <type 'numpy.ndarray'>
+       >>> type(A.shape)
+       <type 'tuple'>
+     */
+
+    if ( PyObject_HasAttrString(o, "indptr") &&
+            PyObject_HasAttrString(o, "indices") &&
+            PyObject_HasAttrString(o, "data") &&
+            PyObject_HasAttrString(o, "shape"))
+    {
+        PyObject* indptr = PyObject_GetAttrString(o, "indptr");
+        PyObject* indices = PyObject_GetAttrString(o, "indices");
+        PyObject* data = PyObject_GetAttrString(o, "data");
+        PyObject* shape = PyObject_GetAttrString(o, "shape");
+
+        sfm = new TSparse<type>[num_vec];
+
+        for (int32_t i=0; i<num_vec; i++)
+        {
+            /*
+            PyObject *o = PyList_GetItem(list,i);
+            if (PyString_Check(o))
+            {
+                sfm->vec_index = i;
+                sfm->num_feat_entries = num;
+                TSparse<type>* ts= new TSparse<type>[num];
+                sfm->features=ts;
+
+            int32_t vec_index;
+            int32_t num_feat_entries;
+            TSparseEntry<ST>* features;
+
+                int32_t len=PyString_Size(o);
+                max_len=CMath::max(len,max_len);
+                const char* str=PyString_AsString(o);
+
+                strings[i].length=len;
+                strings[i].string=NULL;
+
+                if (len>0)
+                {
+                    strings[i].string=new type[len];
+                    memcpy(strings[i].string, str, len);
+                }
+                */
+            }
+            else
+            {
+                PyErr_SetString(PyExc_TypeError, "all elements in list must be strings");
+
+                for (int32_t j=0; j<i; j++)
+                    delete[] strings[i].string;
+                delete[] strings;
+                SWIG_fail;
+            }
+        }
+
+        $1=sfm;
+        $2=num_feat;
+        $3=num_vec;
+
+        Py_DECREF(indptr);
+        Py_DECREF(indices);
+        Py_DECREF(data);
+        Py_DECREF(shape);
+    }
+    else
+    {
+        PyErr_SetString(PyExc_TypeError,"not a/empty list");
+        return NULL;
+    }
+}
+%enddef
+
+TYPEMAP_SPARSEFEATURES_IN(bool,          NPY_BOOL )
+TYPEMAP_SPARSEFEATURES_IN(char,          NPY_STRING )
+TYPEMAP_SPARSEFEATURES_IN(uint8_t,       NPY_UINT8 )
+TYPEMAP_SPARSEFEATURES_IN(int16_t,       NPY_INT16)
+TYPEMAP_SPARSEFEATURES_IN(uint16_t,      NPY_UINT16 )
+TYPEMAP_SPARSEFEATURES_IN(int32_t,       NPY_INT32 )
+TYPEMAP_SPARSEFEATURES_IN(uint32_t,      NPY_UINT32 )
+TYPEMAP_SPARSEFEATURES_IN(int64_t,       NPY_INT64 )
+TYPEMAP_SPARSEFEATURES_IN(uint64_t,      NPY_UINT64 )
+TYPEMAP_SPARSEFEATURES_IN(float32_t,     NPY_FLOAT32 )
+TYPEMAP_SPARSEFEATURES_IN(float64_t,     NPY_FLOAT64)
+TYPEMAP_SPARSEFEATURES_IN(float128_t,    NPY_FLOAT128)
+TYPEMAP_SPARSEFEATURES_IN(PyObject,      NPY_OBJECT)
+#undef TYPEMAP_SPARSEFEATURES_IN
+
 #endif
