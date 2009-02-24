@@ -318,7 +318,7 @@ doc-python_modular:
 
 doc-r_modular:
 	true
-	
+
 $(OBJFILES): ../.config .depend Makefile ../ChangeLog
 
 $(TEMPLATE_TARGET): .depend $(OBJFILES) $(SRCFILES) $(HEADERFILES) $(OTHERDEPS)

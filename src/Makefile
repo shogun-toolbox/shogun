@@ -36,6 +36,32 @@ endif
 install:  $(PARTDEPS)
 	+$(foreach part, $(PARTS), make -C $(part) install-$(part) &&) true
 
+uninstall: $(PARTDEPS)
+	+$(foreach part, $(PARTS), make uninstall-$(part) &&) true
+
+uninstall-libshogunui:
+	rm -rf $(DESTDIR)$(INCDIR)/shogun
+	rm -f $(DESTDIR)$(LIBDIR)/libshogunui.a
+	rm -f $(DESTDIR)$(LIBDIR)/libshogunui.so
+	rm -f $(DESTDIR)$(LIBDIR)/libshogunui.so.1
+	rm -f $(DESTDIR)$(LIBDIR)/libshogunui.so.1.0
+
+uninstall-libshogun:
+	rm -rf $(DESTDIR)$(INCDIR)/shogun
+	rm -f $(DESTDIR)$(LIBDIR)/libshogun.a
+	rm -f $(DESTDIR)$(LIBDIR)/libshogun.so
+	rm -f $(DESTDIR)$(LIBDIR)/libshogun.so.1
+	rm -f $(DESTDIR)$(LIBDIR)/libshogun.so.1.0
+
+uninstall-python_modular:
+	rm -rf $(DESTDIR)$(PYDIR)/shogun
+
+uninstall-r_modular:
+	rm -rf $(DESTDIR)$(RDIR)/shogun
+
+uninstall-octave_modular:
+	rm -rf $(DESTDIR)$(OCTDIR)/shogun
+
 tests: run-testsuite check-examples
 
 run-testsuite: $(PARTDEPTS)

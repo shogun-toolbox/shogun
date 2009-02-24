@@ -2239,21 +2239,21 @@ int main(int argc, char** argv)
 }
 EOF
 							echocheck "Atlas support"
-							if cc_check -llapack -lcblas -llapack_atlas 
+							if cc_check -llapack -lcblas -llapack_atlas -lgfortran 
 							then
 								echores "yes"
 								HAVE_ATLAS='#define HAVE_ATLAS 1'
 								HAVE_LAPACK='#define HAVE_LAPACK 1'
 								DEFINES="$DEFINES -DHAVE_ATLAS -DHAVE_LAPACK"
-								LINKFLAGS="$LINKFLAGS -llapack -lcblas -llapack_atlas"
+								LINKFLAGS="$LINKFLAGS -llapack -lcblas -llapack_atlas -lgfortran"
 							else
-								if cc_check -llapack -lcblas -latlas
+								if cc_check -llapack -lcblas -latlas -lgfortran
 								then
 									echores "yes"
 									HAVE_ATLAS='#define HAVE_ATLAS 1'
 									HAVE_LAPACK='#define HAVE_LAPACK 1'
 									DEFINES="$DEFINES -DHAVE_ATLAS -DHAVE_LAPACK"
-									LINKFLAGS="$LINKFLAGS -llapack -lcblas -latlas"
+									LINKFLAGS="$LINKFLAGS -llapack -lcblas -latlas -lgfortran"
 								else
 									echores "no"
 								fi
@@ -3085,7 +3085,7 @@ EOF
 			echores "yes (internal in source tree)"
 			rm -f shogun 
 			ln -s libshogun shogun
-			INCLUDES="-I${SRCDIR} -I.. $INCLUDES"
+			INCLUDES=" $INCLUDES -I${SRCDIR} -I.."
 			PARTS="$PARTS libshogun"
 			INCLUDES_STATIC_INTERFACES="$INCLUDES_STATIC_INTERFACES -I../libshogun"
 			LINKFLAGS_STATIC_INTERFACES="$LINKFLAGS_STATIC_INTERFACES -L../libshogun -lshogun"
@@ -3148,7 +3148,7 @@ EOF
 			ln -s libshogunui ui
 			rm -f libshogunui/shogun
 			( cd libshogunui ; ln -s .. shogun )
-			INCLUDES="-I${SRCDIR} -I.. $INCLUDES"
+			INCLUDES="$INCLUDES -I${SRCDIR} -I.."
 			PARTS="$PARTS libshogunui"
 
 			INCLUDES_STATIC_INTERFACES="$INCLUDES_STATIC_INTERFACES -I../libshogunui"
