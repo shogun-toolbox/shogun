@@ -84,14 +84,26 @@ bool CCombinedKernel::init(CFeatures* l, CFeatures* r)
 	{
 		while ( result && lf && rf && k )
 		{
-			SG_DEBUG( "Initializing 0x%p - \"%s\"\n", this, k->get_name());
-			result=k->init(lf,rf);
-			SG_UNREF(lf);
-			SG_UNREF(rf);
-			SG_UNREF(k);
+			// skip over features - the custom kernel does not need any
+			if (k->get_kernel_type() != K_CUSTOM)
+			{
+				SG_DEBUG( "Initializing 0x%p - \"%s\"\n", this, k->get_name());
+				result=k->init(lf,rf);
+				SG_UNREF(lf);
+				SG_UNREF(rf);
 
-			lf=((CCombinedFeatures*) l)->get_next_feature_obj(lfc) ;
-			rf=((CCombinedFeatures*) r)->get_next_feature_obj(rfc) ;
+				lf=((CCombinedFeatures*) l)->get_next_feature_obj(lfc) ;
+				rf=((CCombinedFeatures*) r)->get_next_feature_obj(rfc) ;
+			}
+			else
+			{
+				SG_DEBUG( "Initializing 0x%p - \"%s\" (skipping init, this is a CUSTOM kernel)\n", this, k->get_name());
+				if (!k->has_features())
+					SG_ERROR("No kernel matrix was assigned to this Custom kernel\n");
+			}
+
+
+			SG_UNREF(k);
 			k=get_next_kernel(current) ;
 		}
 	}
