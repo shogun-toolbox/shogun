@@ -7,7 +7,11 @@ except IndexError:
 	prefix='_'
 	suffix='so'
 
-incexpr=re.compile('^\s*[%#]include ("(\S+)"|<shogun/(\S+)>)',re.MULTILINE)
+if len(sys.argv)>3 and sys.argv[3]=='external':
+	incexpr=re.compile('^\s*[%#]include ("(\S+)")',re.MULTILINE)
+else:
+	incexpr=re.compile('^\s*[%#]include ("(\S+)"|<shogun/(\S+)>)',re.MULTILINE)
+
 deps=dict();
 deps['carrays.i']=[]
 deps['cpointer.i']=[]

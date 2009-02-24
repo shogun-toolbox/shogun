@@ -122,6 +122,7 @@ LINKFLAGS_STATIC_INTEFACES=
 INCLUDES_MODULAR_INTERFACES=
 LINKFLAGS_MODULAR_INTEFACES=
 
+LIBSHOGUN_MODE=
 LIBSHOGUN_SONAME=libshogun.so.${LIBSHOGUNSO}
 LIBSHOGUN_TARGET=libshogun.so.${LIBSHOGUNVER}
 DEFINES_LIBSHOGUN=
@@ -3056,25 +3057,13 @@ test_libshogun()
 cat > $TMPC << EOF
 #include <stdio.h>
 #include <shogun/kernel/GaussianKernel.h>
-
-void sg_print_message(FILE* target, const char* str)
-{
-}
-
-void sg_print_warning(FILE* target, const char* str)
-{
-}
-
-void sg_print_error(FILE* target, const char* str)
-{
-}
-
-void sg_cancel_computations(bool &delayed, bool &immediately)
-{
-}
+#include <shogun/base/init.h>
 
 int main(int argc, char** argv)
 {
+	init_shogun();
+	CGaussianKernel* k=new CGaussianKernel(10, 1.0);
+	exit_shogun();
 	return 0;
 }
 EOF
@@ -3091,10 +3080,17 @@ EOF
 			LINKFLAGS_STATIC_INTERFACES="$LINKFLAGS_STATIC_INTERFACES -L../libshogun -lshogun"
 			INCLUDES_MODULAR_INTERFACES="$INCLUDES_MODULAR_INTERFACES -I../libshogun"
 			LINKFLAGS_MODULAR_INTERFACES="$LINKFLAGS_MODULAR_INTERFACES -L../libshogun -lshogun"
+			_libshogun=internal
+			LIBSHOGUN_MODE=internal
 		else
-			if cc_check
+			if cxx_check -lshogun
 			then
 				echores "yes (found installed)"
+				_libshogun=external
+				LIBSHOGUN_MODE=external
+				LINKFLAGS_STATIC_INTERFACES="$LINKFLAGS_STATIC_INTERFACES -lshogun"
+				INCLUDES_MODULAR_INTERFACES="$INCLUDES_MODULAR_INTERFACES -I/usr/local/include -I/usr/include"
+				LINKFLAGS_MODULAR_INTERFACES="$LINKFLAGS_MODULAR_INTERFACES -lshogun"
 			else
 				echores "no"
 				if test "$_libshogun" = yes
@@ -3115,27 +3111,13 @@ test_libshogunui()
 
 cat > $TMPC << EOF
 #include <stdio.h>
-#include <shogun/ui/GUITime..h>
-
-void sg_print_message(FILE* target, const char* str)
-{
-}
-
-void sg_print_warning(FILE* target, const char* str)
-{
-}
-
-void sg_print_error(FILE* target, const char* str)
-{
-}
-
-void sg_cancel_computations(bool &delayed, bool &immediately)
-{
-}
+#include <shogun/ui/GUITime.h>
 
 int main(int argc, char** argv)
 {
+	init_shogun();
 	CGUITime* t;
+	exit_shogun();
 	return 0;
 }
 EOF
@@ -3153,10 +3135,13 @@ EOF
 
 			INCLUDES_STATIC_INTERFACES="$INCLUDES_STATIC_INTERFACES -I../libshogunui"
 			LINKFLAGS_STATIC_INTERFACES="$LINKFLAGS_STATIC_INTERFACES -L../libshogunui -lshogunui"
+			_libshogunui=internal
 		else
-			if cc_check
+			if cxx_check -lshogunui -lshogun
 			then
 				echores "yes (found installed)"
+				_libshogunui=external
+				LINKFLAGS_STATIC_INTERFACES="$LINKFLAGS_STATIC_INTERFACES -lshogunui"
 			else
 				echores "no"
 				if test "$_libshogunui" = yes
@@ -3212,6 +3197,7 @@ cat > "$1" <<EOF
 SRCDIR			= ${SRCDIR}
 PARTS			= ${PARTS}
 LIBRARY_PATH= ${LIBRARY_PATH}
+LIBSHOGUN_MODE= ${LIBSHOGUN_MODE}
 LIBSHOGUN_TARGET= ${LIBSHOGUN_TARGET}
 LIBSHOGUNUI_TARGET= ${LIBSHOGUNUI_TARGET}
 CMDLINE_TARGET	= ${CMDLINE_TARGET}
@@ -3484,6 +3470,9 @@ test_modular
 test_static_linking
 svmlight_warn_license
 write_dot_config "$SRCDIR/.config"
-write_config_h "$SRCDIR/libshogun/lib/config.h"
+if test "$_libshogun" = internal
+then
+	write_config_h "$SRCDIR/libshogun/lib/config.h"
+fi
 clean_up
 type_buildinfo
