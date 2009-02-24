@@ -36,38 +36,21 @@ endif
 install:  $(PARTDEPS)
 	+$(foreach part, $(PARTS), make -C $(part) install-$(part) &&) true
 
-uninstall: $(PARTDEPS)
-	+$(foreach part, $(PARTS), make uninstall-$(part) &&) true
-
-uninstall-libshogunui:
-	rm -rf $(DESTDIR)$(INCDIR)/shogun
-	rm -f $(DESTDIR)$(LIBDIR)/libshogunui.a
-	rm -f $(DESTDIR)$(LIBDIR)/libshogunui.so
-	rm -f $(DESTDIR)$(LIBDIR)/libshogunui.so.1
-	rm -f $(DESTDIR)$(LIBDIR)/libshogunui.so.1.0
-
-uninstall-libshogun:
-	rm -rf $(DESTDIR)$(INCDIR)/shogun
-	rm -f $(DESTDIR)$(LIBDIR)/libshogun.a
-	rm -f $(DESTDIR)$(LIBDIR)/libshogun.so
-	rm -f $(DESTDIR)$(LIBDIR)/libshogun.so.1
-	rm -f $(DESTDIR)$(LIBDIR)/libshogun.so.1.0
-
-uninstall-python_modular:
-	rm -rf $(DESTDIR)$(PYDIR)/shogun
-
-uninstall-r_modular:
-	rm -rf $(DESTDIR)$(RDIR)/shogun
-
-uninstall-octave_modular:
-	rm -rf $(DESTDIR)$(OCTDIR)/shogun
+uninstall:
+	@test -z "$(LIBDIR)" || rm -f "$(DESTDIR)$(LIBDIR)/libshogun"*
+	@test -z "$(INCDIR)" || rm -rf "$(DESTDIR)$(INCDIR)/shogun"
+	@test -z "$(BINDIR)" || rm -rf "$(DESTDIR)$(BINDIR)/shogun"
+	@test -z "$(PYDIR)" || rm -rf "$(DESTDIR)$(PYDIR)/sg.so"
+	@test -z "$(PYDIR)" || rm -rf "$(DESTDIR)$(PYDIR)/shogun"
+	@test -z "$(RDIR)" || rm -rf "$(DESTDIR)$(RDIR)/shogun"
+	@test -z "$(OCTDIR)" || rm -rf "$(DESTDIR)$(OCTDIR)/shogun"
 
 tests: run-testsuite check-examples
 
-run-testsuite: $(PARTDEPTS)
+run-testsuite: $(PARTDEPS)
 	+$(foreach part, $(PARTS), make -C $(part) run-testsuite-$(part) &&) true
 
-check-examples: $(PARTDEPTS)
+check-examples: $(PARTDEPS)
 	+$(foreach part, $(PARTS), make -C $(part) check-examples-$(part) &&) true
 
 doc:  $(PARTDEPS)
