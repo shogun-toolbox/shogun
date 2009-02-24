@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2008 Soeren Sonnenburg
- * Copyright (C) 2008 Fraunhofer Institute FIRST and Max Planck Society
+ * Written (W) 2008-2009 Soeren Sonnenburg
+ * Copyright (C) 2008-2009 Fraunhofer Institute FIRST and Max Planck Society
  */
 
 #ifndef __SGOBJECT_H__
@@ -15,7 +15,14 @@
 #include "base/Parallel.h"
 #include "base/Version.h"
 
+#ifndef WIN32
 #include <pthread.h>
+#else
+#define pthread_mutex_init(x)
+#define pthread_mutex_destroy(x)
+#define pthread_mutex_lock(x)
+#define pthread_mutex_unlock(x)
+#endif
 
 class CSGObject;
 class CIO;
@@ -89,9 +96,13 @@ public:
 		if (refcount==0 || --refcount==0)
 		{
 			SG_DEBUG("unref() refcount %ld, obj %s (%p) destroying\n", refcount, this->get_name(), this);
+#ifndef WIN32
 			pthread_mutex_t m=ref_mutex;
 			delete this;
 			pthread_mutex_unlock(&m);
+#else
+			delete this
+#endif
 			return 0;
 		}
 		else
@@ -113,7 +124,9 @@ private:
 
 private:
 	int32_t refcount;
+#ifndef WIN32
 	pthread_mutex_t ref_mutex;
+#endif
 
 public:
 	CIO* io;
