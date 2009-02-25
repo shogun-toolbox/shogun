@@ -2592,6 +2592,16 @@ test_modular()
 
 test_matlab()
 {
+	if test "$_libshogun" = no  || test "$_libshogunui" = no
+	then
+		if test "$_matlab_static" = yes
+		then
+			die "libshogun and libshogunui are required for matlab"
+		else
+			_matlab_static=no
+		fi
+	fi
+
 	if test "$_matlab_static" = yes || test "$_matlab_static" = auto
 	then
 		if win32
@@ -2745,6 +2755,26 @@ EOF
 
 test_octave()
 {
+	if test "$_libshogun" = no  || test "$_libshogunui" = no
+	then
+		if test "$_octave_static" = yes
+		then
+			die "libshogun and libshogunui are required for octave"
+		else
+			_octave_static=no
+		fi
+	fi
+
+	if test "$_libshogun" = no
+	then
+		if test "$_octave_modular" = yes
+		then
+			die "libshogun is required for octave_modular"
+		else
+			_octave_modular=no
+		fi
+	fi
+
 	if test "$_octave_static" != no || test "$_octave_modular" != no
 	then
 		echocheck "Octave"
@@ -2854,7 +2884,27 @@ EOF
 
 test_python()
 {
-	if test "$_python_static" != yes || test "$_python_modular" != no
+	if test "$_libshogun" = no  || test "$_libshogunui" = no
+	then
+		if test "$_python_static" = yes
+		then
+			die "libshogun and libshogunui are required for python"
+		else
+			_python_static=no
+		fi
+	fi
+
+	if test "$_libshogun" = no
+	then
+		if test "$_python_modular" = yes
+		then
+			die "libshogun is required for python_modular"
+		else
+			_python_modular=no
+		fi
+	fi
+
+	if test "$_python_static" != no || test "$_python_modular" != no
 	then
 		echocheck "Python numpy support"
 		if $PYTHON -c "import sys; import numpy" >/dev/null 2>&1
@@ -2927,7 +2977,7 @@ PyMODINIT_FUNC initsg(void)
 PyMODINIT_FUNC initsg(void);
 EOF
 			echocheck "Python/Python Numpy Developer Files"
-			if cc_check
+			if cc_check $COMPFLAGS_CPP_PYTHON $INCLUDES_PYTHON $LINKFLAGS_PYTHON 
 			then
 				echores "yes"
 				_python=yes
@@ -2967,6 +3017,26 @@ EOF
 
 test_r()
 {
+	if test "$_libshogun" = no  || test "$_libshogunui" = no
+	then
+		if test "$_r_static" = yes
+		then
+			die "libshogun and libshogunui are required for r"
+		else
+			_r_static=no
+		fi
+	fi
+
+	if test "$_libshogun" = no
+	then
+		if test "$_r_modular" = yes
+		then
+			die "libshogun is required for r_modular"
+		else
+			_r_modular=no
+		fi
+	fi
+
 	if test "$_r_static" != no || test "$_r_modular" != no
 	then
 		echocheck "R"
@@ -3106,6 +3176,16 @@ EOF
 
 test_libshogunui()
 {
+	if test "$_libshogun" = no 
+	then
+		if test "$libshogunui" = yes
+		then
+			die "libshogun is required for libshogunui"
+		else
+			_libshogunui=no
+		fi
+	fi
+
 	if test "$_libshogunui" = yes || test "$_libshogunui" = auto
 	then
 
@@ -3125,6 +3205,7 @@ EOF
 
 		if test -d libshogunui
 		then
+
 			echores "yes (internal in source tree)"
 			rm -f ui
 			ln -s libshogunui ui
@@ -3136,6 +3217,7 @@ EOF
 			INCLUDES_STATIC_INTERFACES="$INCLUDES_STATIC_INTERFACES -I../libshogunui"
 			LINKFLAGS_STATIC_INTERFACES="$LINKFLAGS_STATIC_INTERFACES -L../libshogunui -lshogunui"
 			_libshogunui=internal
+
 		else
 			if cxx_check -lshogunui -lshogun
 			then
@@ -3156,6 +3238,16 @@ EOF
 
 test_cmdline()
 {
+	if test "$_libshogun" = no  || test "$_libshogunui" = no
+	then
+		if test "$_cmdline_static" = yes
+		then
+			die "libshogun and libshogunui are required for cmdline"
+		else
+			_cmdline_static=no
+		fi
+	fi
+
 	if test "$_cmdline_static" != no
 	then
 		PARTS="$PARTS cmdline"
@@ -3170,10 +3262,11 @@ EOF
 			echocheck "Readline support"
 			if cc_check -lreadline >/dev/null 2>&1
 			then
+				echores "yes"
+
 				HAVE_READLINE='#define HAVE_READLINE 1'
 				DEFINES_CMDLINE="$DEFINES_CMDLINE -DHAVE_READLINE"
 				LINKFLAGS_CMDLINE="$LINKFLAGS_CMDLINE -lreadline"
-				echores "yes"
 			else
 				echores "no"
 			fi
