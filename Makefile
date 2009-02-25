@@ -84,10 +84,10 @@ endif
 .PHONY: all release package-from-release update-webpage svn-ignores clean distclean
 
 DESTDIR := ../$(RELEASENAME)
-REMOVE_SVMLIGHT := rm -f $(DESTDIR)/src/classifier/svm/SVM_light.* $(DESTDIR)/src/classifier/svm/Optimizer.* $(DESTDIR)/src/regression/svr/SVR_light.* $(DESTDIR)/src/LICENSE.SVMlight; \
+REMOVE_SVMLIGHT := rm -f $(DESTDIR)/src/libshogun/classifier/svm/SVM_light.* $(DESTDIR)/src/libshogun/classifier/svm/Optimizer.* $(DESTDIR)/src/libshogun/regression/svr/SVR_light.* $(DESTDIR)/src/LICENSE.SVMlight; \
 rm -f $(DESTDIR)/testsuite/data/classifier/SVMLight* $(DESTDIR)/testsuite/data/regression/SVRLight*	; \
 grep -rl USE_SVMLIGHT $(DESTDIR)| xargs --no-run-if-empty sed -i '/\#ifdef USE_SVMLIGHT/,/\#endif \/\/USE_SVMLIGHT/c \\' ; \
-sed -i '/^ \* EXCEPT FOR THE KERNEL CACHING FUNCTIONS WHICH ARE (W) THORSTEN JOACHIMS/,/ \* this program is free software/c\ * This program is free software; you can redistribute it and/or modify' $(DESTDIR)/src/kernel/Kernel.cpp $(DESTDIR)/src/kernel/Kernel.h ; \
+sed -i '/^ \* EXCEPT FOR THE KERNEL CACHING FUNCTIONS WHICH ARE (W) THORSTEN JOACHIMS/,/ \* this program is free software/c\ * This program is free software; you can redistribute it and/or modify' $(DESTDIR)/src/libshogun/kernel/Kernel.cpp $(DESTDIR)/src/libshogun/kernel/Kernel.h ; \
 sed -i '/^SVMlight:$$/,/^$$/c\\' $(DESTDIR)/src/LICENSE
 
 # We assume that a release is always created from a SVN working copy.
