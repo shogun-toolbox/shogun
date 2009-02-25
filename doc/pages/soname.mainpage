@@ -1,0 +1,4 @@
+/*!
+\page soname Libshogun SONAME
+\verbinclude README.soname
+*/

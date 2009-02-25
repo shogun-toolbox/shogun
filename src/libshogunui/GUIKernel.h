@@ -78,7 +78,8 @@ class CGUIKernel : public CSGObject
 	/** create a new Const kernel */
 	CKernel* create_const(int32_t size=10, float64_t c=1);
 	/** create a new Custom kernel */
-	CKernel* create_custom();
+	CKernel* create_custom(float64_t* kmatrix, int32_t num_feat, int32_t num_vec,
+		bool source_is_diag, bool dest_is_diag);
 	/** create a new GaussianShift kernel */
 	CKernel* create_gaussianshift(
 		int32_t size=10, float64_t width=1, int32_t max_shift=0,

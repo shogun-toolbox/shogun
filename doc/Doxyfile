@@ -565,8 +565,7 @@ WARN_LOGFILE           =
 # with spaces.
 
 INPUT                  = ../src/libshogun/ \
-                         ./pages/ \
-						 ../src
+                         ./pages/
 
 # This tag can be used to specify the character encoding of the source files 
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding, which is 
@@ -585,8 +584,7 @@ INPUT_ENCODING         = UTF-8
 
 FILE_PATTERNS          = *.cpp \
                          *.h \
-                         *.mainpage \
-						 README*
+                         *.mainpage
 
 # The RECURSIVE tag can be used to turn specify whether or not subdirectories 
 # should be searched for input files as well. Possible values are YES and NO. 
@@ -637,7 +635,7 @@ EXAMPLE_PATH           = ../src \
 # and *.h) to filter out the source-files in the directories. If left 
 # blank all files are included.
 
-EXAMPLE_PATTERNS       = *.cpp *.py *.R *.m LICENSE* README*
+EXAMPLE_PATTERNS       = *.cpp *.sg *.py *.R *.m LICENSE* README*
 
 # If the EXAMPLE_RECURSIVE tag is set to YES then subdirectories will be 
 # searched for input files to be used with the \include or \dontinclude 

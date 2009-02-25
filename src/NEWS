@@ -1,6 +1,20 @@
 2009-03-20 Soeren Sonnenburg <debian@nn7.de>
 
 	* SHOGUN Release version 0.7.1 (libshogun 1.0, libshogunui 0.0)
+	* This release contains several cleanups and bugfixes:
+	* Features:
+		- configure now detects libshogun/ui installed in /usr/(local/)lib if
+		libshogun/ui dirs are removed
+		- Improved documentation (and path fixes)
+		- Tutorial on how to develop with libshogun and to extend shogun.
+	* Bugfixes:
+		- fix a crasher occurring with combined kernel and multiple threads
+		- bugfix in 
+		- configure now allows building of modular interfaces only
+	* Cleanup and API Changes:
+		- Custom Kernel no longer requires features, even not when used in
+		  CombinedKernel (the combined kernel will skip over custom
+				  kernels on init)
 
 2009-02-20 Soeren Sonnenburg <debian@nn7.de>
 

@@ -219,11 +219,6 @@ CSGInterfaceMethod sg_methods[]=
 		USAGE_O(N_GET_KERNEL_MATRIX, "K")
 	},
 	{
-		N_SET_CUSTOM_KERNEL,
-		(&CSGInterface::cmd_set_custom_kernel),
-		USAGE_I(N_SET_CUSTOM_KERNEL, "kernelmatrix" USAGE_COMMA USAGE_STR "DIAG|FULL|FULL2DIAG" USAGE_STR)
-	},
-	{
 		N_SET_WD_POS_WEIGHTS,
 		(&CSGInterface::cmd_set_WD_position_weights),
 		USAGE_I(N_SET_WD_POS_WEIGHTS, "W[" USAGE_COMMA USAGE_STR "TRAIN|TEST" USAGE_STR "]")
@@ -2728,7 +2723,38 @@ CKernel* CSGInterface::create_kernel()
 	}
 	else if (strmatch(type, "CUSTOM"))
 	{
-		kernel=ui_kernel->create_custom();
+		if (m_nrhs!=4 || !create_return_values(0))
+			return false;
+
+		float64_t* kmatrix=NULL;
+		int32_t num_feat=0;
+		int32_t num_vec=0;
+		get_real_matrix(kmatrix, num_feat, num_vec);
+
+		int32_t tlen=0;
+		char* type=get_string(tlen);
+
+		if (!strmatch(type, "DIAG") &&
+				!strmatch(type, "FULL") &&
+				!strmatch(type, "FULL2DIAG"))
+		{
+			delete[] type;
+			SG_ERROR("Undefined type, not DIAG, FULL or FULL2DIAG.\n");
+		}
+
+		bool source_is_diag=false;
+		bool dest_is_diag=false;
+
+		if (strmatch(type, "FULL2DIAG"))
+			dest_is_diag=true;
+		else if (strmatch(type, "DIAG"))
+		{
+			source_is_diag=true;
+			dest_is_diag=true;
+		}
+
+		kernel=ui_kernel->create_custom(kmatrix, num_feat, num_vec,
+				source_is_diag, dest_is_diag);
 	}
 	else if (strmatch(type, "CONST"))
 	{
@@ -2943,70 +2969,6 @@ bool CSGInterface::cmd_get_kernel_matrix()
 	delete[] kmatrix;
 
 	return true;
-}
-
-bool CSGInterface::cmd_set_custom_kernel()
-{
-	if (m_nrhs!=3 || !create_return_values(0))
-		return false;
-
-	CCustomKernel* kernel=(CCustomKernel*) ui_kernel->get_kernel();
-	if (!kernel)
-		SG_ERROR("No kernel defined.\n");
-
-	if (kernel->get_kernel_type()==K_COMBINED)
-	{
-		SG_DEBUG("Identified combined kernel.\n");
-		kernel=(CCustomKernel*) ((CCombinedKernel*) kernel)->
-			get_last_kernel();
-		if (!kernel)
-			SG_ERROR("No last kernel defined.\n");
-	}
-
-	if (kernel->get_kernel_type()!=K_CUSTOM)
-		SG_ERROR("Not a custom kernel.\n");
-
-	float64_t* kmatrix=NULL;
-	int32_t num_feat=0;
-	int32_t num_vec=0;
-	get_real_matrix(kmatrix, num_feat, num_vec);
-
-	int32_t tlen=0;
-	char* type=get_string(tlen);
-
-	if (!strmatch(type, "DIAG") &&
-		!strmatch(type, "FULL") &&
-		!strmatch(type, "FULL2DIAG"))
-	{
-		delete[] type;
-		SG_ERROR("Undefined type, not DIAG, FULL or FULL2DIAG.\n");
-	}
-
-	bool source_is_diag=false;
-	bool dest_is_diag=false;
-	if (strmatch(type, "FULL2DIAG"))
-		dest_is_diag=true;
-	else if (strmatch(type, "DIAG"))
-	{
-		source_is_diag=true;
-		dest_is_diag=true;
-	}
-	// change nothing if FULL
-
-	bool success=false;
-	if (source_is_diag && dest_is_diag && num_vec==num_feat)
-		success=kernel->set_triangle_kernel_matrix_from_triangle(
-			kmatrix, num_vec);
-	else if (!source_is_diag && dest_is_diag && num_vec==num_feat)
-		success=kernel->set_triangle_kernel_matrix_from_full(
-			kmatrix, num_feat, num_vec);
-	else
-		success=kernel->set_full_kernel_matrix_from_full(
-			kmatrix, num_feat, num_vec);
-
-	delete[] kmatrix;
-
-	return success;
 }
 
 bool CSGInterface::cmd_set_WD_position_weights()
@@ -4127,9 +4089,13 @@ bool CSGInterface::cmd_classify()
 	if (m_nrhs!=1 || !create_return_values(1))
 		return false;
 
-	CFeatures* feat=ui_features->get_test_features();
-	if (!feat)
-		SG_ERROR("No features found.\n");
+	if (!ui_kernel->get_kernel() ||
+			!ui_kernel->get_kernel()->get_kernel_type()==K_CUSTOM)
+	{
+		CFeatures* feat=ui_features->get_test_features();
+		if (!feat)
+			SG_ERROR("No features found.\n");
+	}
 
 	CLabels* labels=ui_classifier->classify();
 	if (!labels)

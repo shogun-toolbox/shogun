@@ -126,14 +126,24 @@ CKernel* CGUIKernel::create_const(int32_t size, float64_t c)
 	return kern;
 }
 
-CKernel* CGUIKernel::create_custom()
+CKernel* CGUIKernel::create_custom(float64_t* kmatrix, int32_t num_feat, int32_t num_vec, bool source_is_diag, bool dest_is_diag)
 {
-	CKernel* kern=new CCustomKernel();
-	if (!kern)
-		SG_ERROR("Couldn't create CustomKernel.\n");
-	else
-		SG_DEBUG("created CustomKernel (%p).\n", kern);
+	CCustomKernel* kern=new CCustomKernel();
+	SG_DEBUG("created CustomKernel (%p).\n", kern);
 
+	bool success=false;
+
+	if (source_is_diag && dest_is_diag && num_vec==num_feat)
+		success=kern->set_triangle_kernel_matrix_from_triangle(
+				kmatrix, num_vec);
+	else if (!source_is_diag && dest_is_diag && num_vec==num_feat)
+		success=kern->set_triangle_kernel_matrix_from_full(
+				kmatrix, num_feat, num_vec);
+	else
+		success=kern->set_full_kernel_matrix_from_full(
+				kmatrix, num_feat, num_vec);
+
+	delete[] kmatrix;
 	return kern;
 }
 
@@ -660,6 +670,10 @@ bool CGUIKernel::set_kernel(CKernel* kern)
 		SG_UNREF(kernel);
 		SG_REF(kern);
 		kernel=kern;
+
+		// custom kernel does not require init / features
+		if (kern->get_kernel_type()==K_CUSTOM)
+			initialized=true;
 
 		SG_DEBUG("set new kernel (%p).\n", kern);
 

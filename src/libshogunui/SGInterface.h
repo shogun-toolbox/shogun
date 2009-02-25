@@ -108,8 +108,6 @@ class CSGInterface : public CSGObject
 		bool cmd_save_kernel_init();
 		/** get kernel matrix */
 		bool cmd_get_kernel_matrix();
-		/** set custom kernel */
-		bool cmd_set_custom_kernel();
 		/** set WD position weights */
 		bool cmd_set_WD_position_weights();
 		/** get subkernel weights */

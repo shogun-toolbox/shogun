@@ -914,10 +914,15 @@ CLabels* CGUIClassifier::classify_kernelmachine(CLabels* output)
 
 	if (!classifier)
 		SG_ERROR("No kernelmachine available.\n");
-	if (!trainfeatures)
-		SG_ERROR("No training features available.\n");
-	if (!testfeatures)
-		SG_ERROR("No test features available.\n");
+
+	if (!ui->ui_kernel->get_kernel() ||
+			!ui->ui_kernel->get_kernel()->get_kernel_type()==K_CUSTOM)
+	{
+		if (!trainfeatures)
+			SG_ERROR("No training features available.\n");
+		if (!testfeatures)
+			SG_ERROR("No test features available.\n");
+	}
 	if (!ui->ui_kernel->is_initialized())
 		SG_ERROR("Kernel not initialized.\n");
 
@@ -1194,22 +1199,27 @@ bool CGUIClassifier::classify_example(int32_t idx, float64_t &result)
 		SG_ERROR("no svm available\n") ;
 		return false;
 	}
-	if (!trainfeatures)
-	{
-		SG_ERROR("no training features available\n") ;
-		return false;
-	}
-
-	if (!testfeatures)
-	{
-		SG_ERROR("no test features available\n") ;
-		return false;
-	}
 
 	if (!ui->ui_kernel->is_initialized())
 	{
 		SG_ERROR("kernel not initialized\n") ;
 		return false;
+	}
+
+	if (!ui->ui_kernel->get_kernel() ||
+			!ui->ui_kernel->get_kernel()->get_kernel_type()==K_CUSTOM)
+	{
+		if (!trainfeatures)
+		{
+			SG_ERROR("no training features available\n") ;
+			return false;
+		}
+
+		if (!testfeatures)
+		{
+			SG_ERROR("no test features available\n") ;
+			return false;
+		}
 	}
 
 	((CKernelMachine*) classifier)->set_kernel(
