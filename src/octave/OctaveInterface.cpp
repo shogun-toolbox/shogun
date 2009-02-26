@@ -232,14 +232,13 @@ void COctaveInterface::function_name(sg_type*& array, int32_t*& dims, int32_t& n
 																					\
 	num_dims = (int32_t) mat_feat.ndims();											\
 	dim_vector dimvec = mat_feat.dims();											\
-	int64_t total_size=mat_feat.length();											\
 																					\
 	dims=new int32_t[num_dims];														\
 	for (int32_t d=0; d<num_dims; d++)												\
 		dims[d]=(int32_t) dimvec(d);												\
 																					\
 	oct_type m = mat_feat.oct_converter();											\
-																					\
+	int64_t total_size=m.nelem();													\
 																					\
 	array=new sg_type[total_size];													\
 	for (int64_t i=0; i<total_size; i++)											\
