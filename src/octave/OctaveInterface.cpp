@@ -230,12 +230,19 @@ void COctaveInterface::function_name(sg_type*& array, int32_t*& dims, int32_t& n
 	if (!mat_feat.is_matrix_type() || !mat_feat.oct_type_check())					\
 		SG_ERROR("Expected " error_string " ND Array as argument %d\n", m_rhs_counter); \
 																					\
-	num_dims = (int32_t) mat_feat.ndims();												\
-	oct_type m = mat_feat.oct_converter();											\
-	int64_t total_size=mat_feat.length();												\
-	array=new sg_type[total_size];													\
+	num_dims = (int32_t) mat_feat.ndims();											\
+	dim_vector dimvec = mat_feat.dims();											\
+	int64_t total_size=mat_feat.length();											\
 																					\
-	for (int64_t i=0; i<total_size; i++)												\
+	dims=new int32_t[num_dims];														\
+	for (int32_t d=0; d<num_dims; d++)												\
+		dims[d]=(int32_t) dimvec(d);												\
+																					\
+	oct_type m = mat_feat.oct_converter();											\
+																					\
+																					\
+	array=new sg_type[total_size];													\
+	for (int64_t i=0; i<total_size; i++)											\
 		array[i]= (sg_type) m(i);													\
 }
 GET_NDARRAY(get_byte_ndarray, is_uint8_type, uint8NDArray, uint8_array_value, uint8_t, uint8_t, "Byte")
@@ -243,7 +250,7 @@ GET_NDARRAY(get_char_ndarray, is_char_matrix, charMatrix, char_matrix_value, cha
 GET_NDARRAY(get_int_ndarray, is_int32_type, int32NDArray, int32_array_value, int32_t, int32_t, "Integer")
 GET_NDARRAY(get_short_ndarray, is_int16_type, int16NDArray, int16_array_value, int16_t, int16_t, "Short")
 GET_NDARRAY(get_shortreal_ndarray, is_single_type, Matrix, matrix_value, float32_t, float32_t, "Single Precision")
-GET_NDARRAY(get_real_ndarray, is_double_type, Matrix, matrix_value, float64_t, float64_t, "Double Precision")
+GET_NDARRAY(get_real_ndarray, is_double_type, NDArray, array_value, float64_t, float64_t, "Double Precision")
 GET_NDARRAY(get_word_ndarray, is_uint16_type, uint16NDArray, uint16_array_value, uint16_t, uint16_t, "Word")
 #undef GET_NDARRAY
 

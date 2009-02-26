@@ -8,6 +8,7 @@
 #include <octave/config.h>
 
 #include <octave/ov.h>
+#include <octave/dim-vector.h>
 #include <octave/defun-dld.h>
 #include <octave/error.h>
 #include <octave/oct-obj.h>
