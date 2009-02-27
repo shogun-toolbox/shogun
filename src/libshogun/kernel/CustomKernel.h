@@ -143,6 +143,24 @@ class CCustomKernel: public CKernel
 		bool set_full_kernel_matrix_from_full(
 			const float64_t* km, int32_t rows, int32_t cols);
 
+		/** get number of vectors of lhs features
+		 *
+		 * @return number of vectors of left-hand side
+		 */
+		virtual inline int32_t get_num_vec_lhs()
+		{
+			return num_rows;
+		}
+
+		/** get number of vectors of rhs features
+		 *
+		 * @return number of vectors of right-hand side
+		 */
+		virtual inline int32_t get_num_vec_rhs()
+		{
+			return num_cols;
+		}
+
 	protected:
 		/** compute kernel function
 		 *

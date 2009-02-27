@@ -95,12 +95,15 @@ CLabels* CMultiClassSVM::classify_one_vs_one(CLabels* result)
 		return false ;
 	}
 
-	if ( kernel && kernel->has_features() && kernel->get_num_vec_rhs())
+	if ( kernel && kernel->get_num_vec_lhs() && kernel->get_num_vec_rhs())
 	{
 		int32_t num_vectors=kernel->get_num_vec_rhs();
 
 		if (!result)
+		{
 			result=new CLabels(num_vectors);
+			SG_REF(result);
+		}
 
 		ASSERT(num_vectors==result->get_num_labels());
 		CLabels** outputs=new CLabels*[m_num_svms];
@@ -166,12 +169,15 @@ CLabels* CMultiClassSVM::classify_one_vs_rest(CLabels* result)
 		return false ;
 	}
 
-	if ( kernel && kernel->has_features() && kernel->get_num_vec_rhs())
+	if ( kernel && kernel->get_num_vec_lhs() && kernel->get_num_vec_rhs())
 	{
 		int32_t num_vectors=kernel->get_num_vec_rhs();
 
 		if (!result)
+		{
 			result=new CLabels(num_vectors);
+			SG_REF(result);
+		}
 
 		ASSERT(num_vectors==result->get_num_labels());
 		CLabels** outputs=new CLabels*[m_num_svms];

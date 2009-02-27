@@ -335,18 +335,13 @@ void CGMNPMKL::initsvm()
 	numdat=numlabels;
 	numcl=labels->get_num_classes();
 
-	CLabels *newlab(NULL);
-
-	newlab=new CLabels(lb, labels->get_num_labels() );
+	CLabels* newlab=new CLabels(lb, labels->get_num_labels() );
 	delete[] lb;
 	lb=NULL;
 
 	svm->set_labels(newlab);
 
 	newlab=NULL;
-
-	//TODO test whether labels have been set
-
 }
 
 void CGMNPMKL::init()
@@ -433,8 +428,17 @@ void CGMNPMKL::addingweightsstep( const std::vector<float64_t> & curweights)
 	initsvm();
 
 	//number of labels equal to number of features?
-	ASSERT(numdat==kernel->get_num_vec_lhs());
-	ASSERT(numdat==kernel->get_num_vec_rhs());
+	if (numdat!=kernel->get_num_vec_lhs())
+	{
+		SG_ERROR("numdat (%ld) does not match kernel->get_num_vec_lhs() (%ld)\n",
+				numdat, kernel->get_num_vec_lhs());
+	}
+
+	if (numdat!=kernel->get_num_vec_rhs())
+	{
+		SG_ERROR("numdat (%ld) does not match kernel->get_num_vec_rhs() (%ld)\n",
+				numdat, kernel->get_num_vec_rhs());
+	}
 
 	svm->set_kernel(kernel);
 	svm->train();

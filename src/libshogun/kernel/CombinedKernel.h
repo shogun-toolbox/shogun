@@ -185,6 +185,19 @@ class CCombinedKernel : public CKernel
 		{
 			ASSERT(k);
 
+			if (k->get_num_vec_lhs())
+			{
+				if (num_lhs)
+					ASSERT(num_lhs==k->get_num_vec_lhs());
+				num_lhs=k->get_num_vec_lhs();
+			}
+			if (k->get_num_vec_rhs())
+			{
+				if (num_rhs)
+					ASSERT(num_rhs==k->get_num_vec_rhs());
+				num_rhs=k->get_num_vec_rhs();
+			}
+
 			if (!(k->has_property(KP_LINADD)))
 				unset_property(KP_LINADD);
 
@@ -200,6 +213,19 @@ class CCombinedKernel : public CKernel
 		{
 			ASSERT(k);
 
+			if (k->get_num_vec_lhs())
+			{
+				if (num_lhs)
+					ASSERT(num_lhs==k->get_num_vec_lhs());
+				num_lhs=k->get_num_vec_lhs();
+			}
+			if (k->get_num_vec_rhs())
+			{
+				if (num_rhs)
+					ASSERT(num_rhs==k->get_num_vec_rhs());
+				num_rhs=k->get_num_vec_rhs();
+			}
+
 			if (!(k->has_property(KP_LINADD)))
 				unset_property(KP_LINADD);
 
@@ -214,6 +240,12 @@ class CCombinedKernel : public CKernel
 		{
 			CKernel* k=kernel_list->delete_element();
 			SG_UNREF(k);
+
+			if (!k)
+			{
+				num_lhs=0;
+				num_rhs=0;
+			}
 
 			return (k!=NULL);
 		}
@@ -251,6 +283,24 @@ class CCombinedKernel : public CKernel
 				return kernel_list->get_num_elements();
 		}
 
+		/** get number of vectors of lhs features
+		 *
+		 * @return number of vectors of left-hand side
+		 */
+		virtual inline int32_t get_num_vec_lhs()
+		{
+			return num_lhs;
+		}
+
+		/** get number of vectors of rhs features
+		 *
+		 * @return number of vectors of right-hand side
+		 */
+		virtual inline int32_t get_num_vec_rhs()
+		{
+			return num_rhs;
+		}
+
 		/** remove lhs from kernel */
 		virtual void remove_lhs();
 
@@ -258,7 +308,7 @@ class CCombinedKernel : public CKernel
 		virtual void remove_rhs();
 
 		/** remove lhs and rhs from kernel */
-		void remove_lhs_and_rhs();
+		virtual void remove_lhs_and_rhs();
 
 		/** initialize optimization
 		 *
@@ -384,6 +434,10 @@ class CCombinedKernel : public CKernel
 		float64_t* subkernel_weights_buffer;
 		/** if subkernel weights are appended */
 		bool append_subkernel_weights;
+		/** number of vectors on lhs */
+		int32_t num_lhs;
+		/** number of vectors on lhs */
+		int32_t num_rhs;
 };
 
 #endif /* _COMBINEDKERNEL_H__ */

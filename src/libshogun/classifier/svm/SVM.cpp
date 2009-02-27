@@ -292,7 +292,11 @@ CLabels* CSVM::classify(CLabels* lab)
 		int32_t num_vectors=kernel->get_num_vec_rhs();
 
 		if (!lab)
+		{
 			lab=new CLabels(num_vectors);
+			SG_REF(lab);
+		}
+
 		SG_DEBUG( "computing output on %d test examples\n", num_vectors);
 
 		if (io->get_show_progress())

@@ -28,7 +28,10 @@ CLabels* CClassifier::classify(CLabels* output)
 		ASSERT(num>0);
 
 		if (!output)
+		{
 			output=new CLabels(num);
+			SG_REF(output);
+		}
 
 		for (int32_t i=0; i<num; i++)
 			output->set_label(i, classify_example(i));

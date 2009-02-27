@@ -28,7 +28,10 @@ CLabels* CKernelMachine::classify(CLabels* output)
 		ASSERT(num>0);
 
 		if (!output)
+		{
 			output=new CLabels(num);
+			SG_REF(output);
+		}
 		ASSERT(output->get_num_labels()==num);
 
 		for (int32_t i=0; i<num; i++)

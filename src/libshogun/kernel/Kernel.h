@@ -143,10 +143,7 @@ class CKernel : public CSGObject
 			if (idx_a < 0 || idx_b <0)
 				return 0;
 
-			ASSERT(lhs);
-			ASSERT(rhs);
-
-			if (lhs==rhs)
+			if (lhs && lhs==rhs)
 			{
 				int32_t num_vectors = lhs->get_num_vectors();
 
@@ -273,7 +270,7 @@ class CKernel : public CSGObject
 		 *
 		 * @return number of vectors of left-hand side
 		 */
-		inline int32_t get_num_vec_lhs()
+		virtual inline int32_t get_num_vec_lhs()
 		{
 			if (!lhs)
 				return 0;
@@ -285,7 +282,7 @@ class CKernel : public CSGObject
 		 *
 		 * @return number of vectors of right-hand side
 		 */
-		inline int32_t get_num_vec_rhs()
+		virtual inline int32_t get_num_vec_rhs()
 		{
 			if (!rhs)
 				return 0;

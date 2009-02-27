@@ -40,7 +40,8 @@ struct S_THREAD_PARAM
 
 CCombinedKernel::CCombinedKernel(int32_t size, bool asw)
 : CKernel(size), sv_count(0), sv_idx(NULL), sv_weight(NULL),
-	subkernel_weights_buffer(NULL), append_subkernel_weights(asw)
+	subkernel_weights_buffer(NULL), append_subkernel_weights(asw),
+	num_lhs(0), num_rhs(0)
 {
 	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
 	kernel_list=new CList<CKernel*>(true);
@@ -68,44 +69,55 @@ bool CCombinedKernel::init(CFeatures* l, CFeatures* r)
 	ASSERT(l->get_feature_type()==F_UNKNOWN);
 	ASSERT(r->get_feature_type()==F_UNKNOWN);
 
+	ASSERT(!num_lhs || num_lhs==l->get_num_vectors());
+	ASSERT(!num_rhs || num_rhs==l->get_num_vectors());
+
+	num_lhs=l->get_num_vectors();
+	num_rhs=r->get_num_vectors();
+
 	CFeatures* lf=NULL;
 	CFeatures* rf=NULL;
 	CKernel* k=NULL;
 
 	bool result=true;
 
-	CListElement<CFeatures*>*lfc = NULL, *rfc = NULL ;
-	lf=((CCombinedFeatures*) l)->get_first_feature_obj(lfc) ;
-	rf=((CCombinedFeatures*) r)->get_first_feature_obj(rfc) ;
-	CListElement<CKernel*>* current = NULL ;
-	k=get_first_kernel(current) ;
+	CListElement<CFeatures*>* lfc = NULL;
+	CListElement<CFeatures*>* rfc = NULL;
+	lf=((CCombinedFeatures*) l)->get_first_feature_obj(lfc);
+	rf=((CCombinedFeatures*) r)->get_first_feature_obj(rfc);
+	CListElement<CKernel*>* current = NULL;
+	k=get_first_kernel(current);
 
-	if ( lf && rf && k)
+	while ( result && k )
 	{
-		while ( result && lf && rf && k )
+		// skip over features - the custom kernel does not need any
+		if (k->get_kernel_type() != K_CUSTOM)
 		{
-			// skip over features - the custom kernel does not need any
-			if (k->get_kernel_type() != K_CUSTOM)
+			if (!lf || !rf)
 			{
-				SG_DEBUG( "Initializing 0x%p - \"%s\"\n", this, k->get_name());
-				result=k->init(lf,rf);
 				SG_UNREF(lf);
 				SG_UNREF(rf);
-
-				lf=((CCombinedFeatures*) l)->get_next_feature_obj(lfc) ;
-				rf=((CCombinedFeatures*) r)->get_next_feature_obj(rfc) ;
-			}
-			else
-			{
-				SG_DEBUG( "Initializing 0x%p - \"%s\" (skipping init, this is a CUSTOM kernel)\n", this, k->get_name());
-				if (!k->has_features())
-					SG_ERROR("No kernel matrix was assigned to this Custom kernel\n");
+				SG_UNREF(k);
+				SG_ERROR( "CombinedKernel: Number of features/kernels does not match - bailing out\n");
 			}
 
+			SG_DEBUG( "Initializing 0x%p - \"%s\"\n", this, k->get_name());
+			result=k->init(lf,rf);
+			SG_UNREF(lf);
+			SG_UNREF(rf);
 
-			SG_UNREF(k);
-			k=get_next_kernel(current) ;
+			lf=((CCombinedFeatures*) l)->get_next_feature_obj(lfc) ;
+			rf=((CCombinedFeatures*) r)->get_next_feature_obj(rfc) ;
 		}
+		else
+		{
+			SG_DEBUG( "Initializing 0x%p - \"%s\" (skipping init, this is a CUSTOM kernel)\n", this, k->get_name());
+			if (!k->has_features())
+				SG_ERROR("No kernel matrix was assigned to this Custom kernel\n");
+		}
+
+		SG_UNREF(k);
+		k=get_next_kernel(current) ;
 	}
 
 	if (!result)
@@ -139,11 +151,15 @@ void CCombinedKernel::remove_lhs()
 
 	while (k)
 	{	
-		k->remove_lhs();
+		if (k->get_kernel_type() != K_CUSTOM)
+			k->remove_lhs();
+
 		SG_UNREF(k);
 		k=get_next_kernel(current);
 	}
 	CKernel::remove_lhs();
+
+	num_lhs=0;
 }
 
 void CCombinedKernel::remove_rhs()
@@ -153,11 +169,14 @@ void CCombinedKernel::remove_rhs()
 
 	while (k)
 	{	
-		k->remove_rhs();
+		if (k->get_kernel_type() != K_CUSTOM)
+			k->remove_rhs();
 		SG_UNREF(k);
 		k=get_next_kernel(current);
 	}
 	CKernel::remove_rhs();
+
+	num_rhs=0;
 }
 
 void CCombinedKernel::remove_lhs_and_rhs()
@@ -169,11 +188,16 @@ void CCombinedKernel::remove_lhs_and_rhs()
 
 	while (k)
 	{	
-		k->remove_lhs_and_rhs();
+		if (k->get_kernel_type() != K_CUSTOM)
+			k->remove_lhs_and_rhs();
 		SG_UNREF(k);
 		k=get_next_kernel(current);
 	}
+
 	CKernel::remove_lhs_and_rhs();
+
+	num_lhs=0;
+	num_rhs=0;
 }
 
 void CCombinedKernel::cleanup()
@@ -191,6 +215,9 @@ void CCombinedKernel::cleanup()
 	delete_optimization();
 
 	CKernel::cleanup();
+
+	num_lhs=0;
+	num_rhs=0;
 }
 
 void CCombinedKernel::list_kernels()
@@ -308,8 +335,7 @@ void CCombinedKernel::compute_batch(
 	int32_t num_vec, int32_t* vec_idx, float64_t* result, int32_t num_suppvec,
 	int32_t* IDX, float64_t* weights, float64_t factor)
 {
-	ASSERT(rhs);
-	ASSERT(num_vec<=rhs->get_num_vectors())
+	ASSERT(num_vec<=get_num_vec_rhs())
 	ASSERT(num_vec>0);
 	ASSERT(vec_idx);
 	ASSERT(result);
