@@ -407,7 +407,7 @@ void CDynProg::create_word_string(
 			}
 		}
 	}
-	precompute_stop_codons(genestr, genestr_len);
+	//precompute_stop_codons(genestr, genestr_len);
 }
 
 void CDynProg::precompute_content_values(
