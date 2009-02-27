@@ -15,4 +15,4 @@ check-examples: $(TARGETS)
 	@for t in $(TARGETS) ; do echo $$t && ./$$t >/dev/null; done
 
 %: %.cpp
-	gcc $< $(LINKFLAGS) -lshogun -o $@
+	gcc $(CXXFLAGS) $< $(LINKFLAGS) -lshogun -o $@
