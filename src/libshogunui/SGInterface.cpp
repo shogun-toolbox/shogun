@@ -5760,28 +5760,7 @@ bool CSGInterface::cmd_precompute_content_svms()
 	SG_DEBUG("precompute_content_svms done\n");
 	return true;
 }
-bool CSGInterface::cmd_set_feature_matrix()
-{
 
-	int32_t num_pos = ui_structure->get_num_positions();
-	int32_t num_states = ui_structure->get_num_states();
-
-	//ARG 1
-	// feature matrix (#states x #feature_positions x max_num_signals)
-	int32_t* Dims=0;
-	int32_t numDims=0;
-	float64_t* features;
-	get_real_ndarray(features, Dims, numDims);
-	
-	ASSERT(numDims==3)
-	ASSERT(Dims[0]==num_states)
-	ASSERT(Dims[1]==num_pos)
-	ASSERT(ui_structure->set_feature_matrix(features, Dims));
-
-	ASSERT(ui_structure->set_feature_dims(Dims));
-	return true;
-
-}
 bool CSGInterface::cmd_get_lin_feat()
 {
 	CDynProg* h = ui_structure->get_dyn_prog();
@@ -5832,7 +5811,6 @@ bool CSGInterface::cmd_set_feature_matrix()
 
 	int32_t num_pos = ui_structure->get_num_positions();
 	int32_t num_states = ui_structure->get_num_states();
-	SG_PRINT("set_feature_matrix: num_states: %i, num_pos, %i\n",num_states, num_pos); 
 
 	//ARG 1
 	// feature matrix (#states x #feature_positions x max_num_signals)
