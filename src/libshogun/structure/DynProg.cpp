@@ -3159,7 +3159,7 @@ void CDynProg::best_path_trans_deriv(
 			int32_t elem_id = transition_matrix_a_id.element(from_state, to_state) ;
 			my_losses[i] = extend_segment_loss(loss, pos, elem_id, from_pos, loss_last_pos, last_loss) ;
 #ifdef DYNPROG_DEBUG
-			io.set_loglevel(M_DEBUG) ;
+			io->set_loglevel(M_DEBUG) ;
 			SG_DEBUG( "%i. segment loss %f (id=%i): from=%i(%i), to=%i(%i)\n", i, my_losses[i], elem_id, from_pos, from_state, to_pos, to_state) ;
 #endif
 			// increase usage of this transition
@@ -3193,9 +3193,9 @@ void CDynProg::best_path_trans_deriv(
 					SG_PRINT("svm_values: %f, %f, %f \n", svm_value[4], svm_value[5], svm_value[6]);
 				//SG_PRINT("svm_values: %f, %f, %f, %f \n", svm_value[8], svm_value[9], svm_value[10], svm_value[11]);
 	
-#ifdef DYNPROG_DEBUG
-					SG_DEBUG( "svm[%i]: %f\n", ss, svm_value[ss]) ;
-#endif
+				//#ifdef DYNPROG_DEBUG
+				//					SG_DEBUG( "svm[%i]: %f\n", ss, svm_value[ss]) ;
+				//#endif
 			}
 			
 			if (PEN.element(to_state, from_state)!=NULL)
