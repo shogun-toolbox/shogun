@@ -20,9 +20,9 @@ elwms.cpp.o: elwms.cpp ../matlab/MatlabInterface.h ../matlab/MatlabInterface.cpp
 	-DUSE_HMMPARALLEL -DUSE_BIGSTATES -DUSE_HMMCACHE -DUSE_SVMLIGHT \
 	-DHAVE_DOXYGEN -DHAVE_R -c -I. -I.. -I. -I..  -I../libshogun \
 	-I../libshogunui -I/usr/share/R/include -DHAVE_PYTHON \
-	-I/usr/include/python2.5 \
+	-I/usr/include/python2.5 -I/usr/include -DHAVE_MATLAB \
 	-I/usr/lib/python2.5/site-packages/numpy/core/include -DHAVE_OCTAVE \
-	-I/usr/include/octave-3.0.1 -I/usr/include -I/opt/matlab7.4/extern/include \
+	-I/usr/include/octave-3.0.1 -I/opt/matlab7.4/extern/include \
 	-I/opt/matlab7.4/extern/src -o elwms.cpp.o elwms.cpp
 
 clean:

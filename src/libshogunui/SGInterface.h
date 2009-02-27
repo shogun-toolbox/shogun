@@ -451,6 +451,8 @@ class CSGInterface : public CSGObject
 		bool cmd_help();
 		/** wrapper for compatibility send_command */
 		bool cmd_send_command();
+		/** execute code under python from octave,... */
+		virtual bool cmd_run_python();
 
 		/** get functions - to pass data from the target interface to shogun */
 

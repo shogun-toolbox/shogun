@@ -490,6 +490,142 @@ SET_STRINGLIST(set_short_string_list, int16NDArray, int16_t, int16_t, "Short")
 SET_STRINGLIST(set_word_string_list, uint16NDArray, uint16_t, uint16_t, "Word")
 #undef SET_STRINGLIST
 
+#ifdef HAVE_PYTHON
+#undef HAVE_STAT
+#include "../python/PythonInterface.h"
+#endif
+
+bool COctaveInterface::cmd_run_python()
+{
+#ifdef HAVE_PYTHON
+	SG_SPRINT("entering python\n");
+	Py_Initialize();
+	import_array1(false);
+	PyObject* p1 = PyInt_FromLong(3);
+	PyObject* p2 = PyInt_FromLong(4);
+	PyObject* builtins = PyEval_GetBuiltins();
+	PyObject* globals = PyDict_New();
+	PyDict_SetItemString(globals,"a",p1);
+	PyDict_SetItemString(globals,"b",p2);
+	PyDict_SetItemString(globals,"__builtins__", builtins);
+
+	//const char* code="import numpy\ndef test(c,d):\n\treturn c-d\nresults=dict()\nresults['a']=numpy.array(10,10)+test(a,b)";
+	const char* code="import numpy\nresults=dict()\nresults['a']=numpy.array([[1,2],[3,4.0]])";
+	//const char* code="import numpy\ndef test(c,d):\n\treturn c-d\nresults=dict()\nresults['a']=numpy.array(10,10)+test(a,b)";
+	PyObject* code_obj = Py_CompileString(code, "<test.py>", Py_file_input);
+	if (code_obj == NULL)
+		SG_SERROR("Compiling python code failed.");
+
+	PyObject* res = PyEval_EvalCode((PyCodeObject*) code_obj, globals, NULL);
+	Py_DECREF(code_obj);
+
+	if (res == NULL)
+		SG_SERROR("Running python code failed.");
+
+	Py_DECREF(res);
+
+	//PyObject* results = PyDict_New();
+	//PyDict_SetItemString(results,"a",p1);
+	//PyDict_SetItemString(results,"b",p2);
+	PyObject* results = PyDict_GetItemString(globals, "results");
+	int32_t sz=PyDict_Size(results);
+	if (sz > 0 && create_return_values(sz))
+	{
+		PyObject* values = PyDict_Values(results);
+		//PyObject* keys = PyDict_Keys(results);
+		PyObject* tuple = PyList_AsTuple(values);
+		CPythonInterface* out = new CPythonInterface(NULL, tuple);
+
+		//process d
+		for (int32_t i=0; i<sz; i++)
+		{
+			switch (out->get_argument_type())
+			{
+				case STRING_CHAR:
+				{
+					int32_t num_str=0;
+					int32_t max_str_len=0;
+					T_STRING<char>* strs;
+					out->get_char_string_list(strs, num_str,max_str_len);
+					set_char_string_list(strs, num_str);
+					break;
+				}
+				case STRING_BYTE:
+				{
+					int32_t num_str=0;
+					int32_t max_str_len=0;
+					T_STRING<uint8_t>* strs=NULL;
+					out->get_byte_string_list(strs, num_str, max_str_len);
+					set_byte_string_list(strs, num_str);
+					break;
+				}
+				case DENSE_INT:
+				{
+					int32_t num_feat=0;
+					int32_t num_vec=0;
+					int32_t* fmatrix=NULL;
+					out->get_int_matrix(fmatrix, num_feat, num_vec);
+					set_int_matrix(fmatrix, num_feat, num_vec);
+					break;
+				}
+				case DENSE_REAL:
+				{
+					int32_t num_feat=0;
+					int32_t num_vec=0;
+					float64_t* fmatrix=NULL;
+					out->get_real_matrix(fmatrix, num_feat, num_vec);
+					set_real_matrix(fmatrix, num_feat, num_vec);
+					break;
+				}
+				case DENSE_SHORT:
+				{
+					int32_t num_feat=0;
+					int32_t num_vec=0;
+					int16_t* fmatrix=NULL;
+					out->get_short_matrix(fmatrix, num_feat, num_vec);
+					set_short_matrix(fmatrix, num_feat, num_vec);
+					break;
+				}
+				case DENSE_SHORTREAL:
+				{
+					int32_t num_feat=0;
+					int32_t num_vec=0;
+					float32_t* fmatrix=NULL;
+					out->get_shortreal_matrix(fmatrix, num_feat, num_vec);
+					set_shortreal_matrix(fmatrix, num_feat, num_vec);
+					break;
+				}
+				case DENSE_WORD:
+				{
+					int32_t num_feat=0;
+					int32_t num_vec=0;
+					uint16_t* fmatrix=NULL;
+					out->get_word_matrix(fmatrix, num_feat, num_vec);
+					set_word_matrix(fmatrix, num_feat, num_vec);
+					break;
+				}
+				default:
+					SG_ERROR("unknown return type");
+					break;
+			}
+		}
+
+		SG_UNREF(out);
+	}
+	else
+	{
+		SG_ERROR("number of return values (%d) does not match number of expected"
+				" return values (%d)\n", sz, m_nlhs);
+	}
+
+	Py_Finalize();
+	SG_SPRINT("leaving python\n");
+	return true;
+#else
+	return false;
+#endif
+}
+
 DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 {
 	try

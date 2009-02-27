@@ -1089,6 +1089,12 @@ CSGInterfaceMethod sg_methods[]=
 		(&CSGInterface::cmd_send_command),
 		NULL
 	},
+	{
+		N_RUN_PYTHON,
+		(&CSGInterface::cmd_run_python),
+		USAGE_IO(N_RUN_PYTHON,
+			"'Var1', Var1, 'Var2', Var2,..., python_function", "results")
+	},
 	{NULL, NULL, NULL}        /* Sentinel */
 };
 
@@ -6997,6 +7003,11 @@ bool CSGInterface::cmd_send_command()
 	delete[] command;
 	delete[] arg;
 	return success;
+}
+
+bool CSGInterface::cmd_run_python()
+{
+	return false;
 }
 
 void CSGInterface::print_prompt()

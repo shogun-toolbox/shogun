@@ -208,4 +208,5 @@
 #define N_TIC							"tic"
 #define N_TOC							"toc"
 #define N_KRR_TAU						"krr_tau"
+#define N_RUN_PYTHON					"run_python"
 #endif
