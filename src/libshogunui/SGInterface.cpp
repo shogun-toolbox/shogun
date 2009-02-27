@@ -2732,22 +2732,22 @@ CKernel* CSGInterface::create_kernel()
 		get_real_matrix(kmatrix, num_feat, num_vec);
 
 		int32_t tlen=0;
-		char* type=get_string(tlen);
+		char* ktype=get_string(tlen);
 
-		if (!strmatch(type, "DIAG") &&
-				!strmatch(type, "FULL") &&
-				!strmatch(type, "FULL2DIAG"))
+		if (!strmatch(ktype, "DIAG") &&
+				!strmatch(ktype, "FULL") &&
+				!strmatch(ktype, "FULL2DIAG"))
 		{
-			delete[] type;
+			delete[] ktype;
 			SG_ERROR("Undefined type, not DIAG, FULL or FULL2DIAG.\n");
 		}
 
 		bool source_is_diag=false;
 		bool dest_is_diag=false;
 
-		if (strmatch(type, "FULL2DIAG"))
+		if (strmatch(ktype, "FULL2DIAG"))
 			dest_is_diag=true;
-		else if (strmatch(type, "DIAG"))
+		else if (strmatch(ktype, "DIAG"))
 		{
 			source_is_diag=true;
 			dest_is_diag=true;

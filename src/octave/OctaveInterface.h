@@ -7,6 +7,7 @@
 
 #include <octave/config.h>
 
+#define MXARRAY_H
 #include <octave/ov.h>
 #include <octave/dim-vector.h>
 #include <octave/defun-dld.h>
