@@ -990,7 +990,7 @@ void CDynProg::best_path_set_segment_ids_mask(
 	int32_t max_id = 0;
 	for (int32_t i=1;i<m;i++)
 		max_id = CMath::max(max_id,segment_ids[i]);
-	//SG_PRINT("max_id: %i, m:%i\n",max_id, m); 	
+	SG_PRINT("max_id: %i, m:%i\n",max_id, m); 	
 	m_segment_ids.set_array(segment_ids, m, false, true) ;
 	m_segment_ids.set_name("m_segment_ids");
 	m_segment_mask.set_array(segment_mask, m, false, true) ;

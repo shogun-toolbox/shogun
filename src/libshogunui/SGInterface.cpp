@@ -5652,7 +5652,6 @@ bool CSGInterface::cmd_init_dyn_prog()
 
 	CDynProg* h=new CDynProg(num_svms);
 	ui_structure->set_dyn_prog(h);
-	SG_PRINT("init_dyn_prog done\n");	
 	return true;
 }
 bool CSGInterface::cmd_set_model()
@@ -5672,7 +5671,6 @@ bool CSGInterface::cmd_set_model()
 	get_real_ndarray(penalties_array,Dim,numDim);
 	ASSERT(numDim==3);
 	ASSERT(Dim[0]==Dim[1]);
-	SG_PRINT("\n\n num states:%i \n", Dim[0]);
 	ASSERT(ui_structure->compute_plif_matrix(penalties_array, Dim, numDim));	
 
 
@@ -5720,7 +5718,6 @@ bool CSGInterface::cmd_set_model()
 	
 	//ui_structure->set_dyn_prog(h);
 
-	SG_PRINT("set_model done\n");	
 	return true;
 }
 
@@ -5763,6 +5760,28 @@ bool CSGInterface::cmd_precompute_content_svms()
 	SG_DEBUG("precompute_content_svms done\n");
 	return true;
 }
+bool CSGInterface::cmd_set_feature_matrix()
+{
+
+	int32_t num_pos = ui_structure->get_num_positions();
+	int32_t num_states = ui_structure->get_num_states();
+
+	//ARG 1
+	// feature matrix (#states x #feature_positions x max_num_signals)
+	int32_t* Dims=0;
+	int32_t numDims=0;
+	float64_t* features;
+	get_real_ndarray(features, Dims, numDims);
+	
+	ASSERT(numDims==3)
+	ASSERT(Dims[0]==num_states)
+	ASSERT(Dims[1]==num_pos)
+	ASSERT(ui_structure->set_feature_matrix(features, Dims));
+
+	ASSERT(ui_structure->set_feature_dims(Dims));
+	return true;
+
+}
 bool CSGInterface::cmd_get_lin_feat()
 {
 	CDynProg* h = ui_structure->get_dyn_prog();
@@ -5779,7 +5798,19 @@ bool CSGInterface::cmd_get_lin_feat()
 }
 bool CSGInterface::cmd_set_lin_feat()
 {
-	//ARG 1 
+	// ARG 1
+	int32_t Nseq=0;
+	char* seq;
+	seq = get_string(Nseq);
+
+	// ARG 2
+	// all feature positions
+	int32_t Npos=0;
+	int32_t* all_pos;
+	get_int_vector(all_pos,Npos);
+	ui_structure->set_all_pos(all_pos,Npos);
+
+	//ARG 3 
 	//
 	int32_t num_svms, seq_len;
 	float64_t* lin_feat;
@@ -5790,6 +5821,7 @@ bool CSGInterface::cmd_set_lin_feat()
 	if (!h)
 		SG_ERROR("no DynProg object found, use set_model first\n");
 
+	h->set_genestr_len(Nseq);
 	h->init_content_svm_value_array(num_svms, seq_len);
 	h->set_lin_feat(lin_feat, num_svms, seq_len);
 
@@ -5925,9 +5957,6 @@ bool CSGInterface::cmd_best_path_trans()
 	CPlifBase** PEN_matrix = ui_structure->get_plif_matrix();
 	CPlifBase** PEN_state_signal = ui_structure->get_state_signals();
 	
-	int32_t nnnn = 0;
-	nnnn = h->get_num_states();
-	SG_PRINT("best_path_trans: nnnn: %i\n", nnnn);
 
 	h->set_p_vector(p, num_states);
 	h->set_q_vector(q, num_states);
@@ -5973,7 +6002,6 @@ bool CSGInterface::cmd_best_path_trans()
 	{
 		float64_t zero2[2] = {0.0, 0.0} ;
 		h->best_path_set_segment_loss(zero2, 2, 1) ;
-		//SG_PRINT("M=%i\n", M) ;
 		int32_t *izeros = new int32_t[M] ;
 		float64_t *dzeros = new float64_t[M] ;
 		for (int32_t i=0; i<M; i++)
@@ -6190,7 +6218,6 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 			{
 				float64_t zero2[2] = {0.0, 0.0} ;
 				h->best_path_set_segment_loss(zero2, 2, 1) ;
-				//SG_PRINT("M=%i\n", M) ;
 				int32_t *izeros = new int32_t[M] ;
 				float64_t *dzeros = new float64_t[M] ;
 				for (int32_t i=0; i<M; i++)
@@ -6228,7 +6255,6 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 			{
 				int32_t len=0 ;
 				const float64_t * deriv = PEN[id]->get_cum_derivative(len) ;
-				//SG_PRINT("len=%i, max_plif_len=%i\n", len, max_plif_len) ;
 				ASSERT(len<=max_plif_len) ;
 				for (int32_t j=0; j<max_plif_len; j++)
 					a_Plif_deriv.element(id, j)= deriv[j] ;
