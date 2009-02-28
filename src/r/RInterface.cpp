@@ -49,9 +49,9 @@ CRInterface::CRInterface(SEXP prhs)
 	reset(prhs);
 
 #ifdef HAVE_PYTHON
-	m_pylib = dlopen("libpython2.5.so", RTLD_NOW | RTLD_GLOBAL);
+	m_pylib = dlopen(LIBPYTHON, RTLD_NOW | RTLD_GLOBAL);
 	if (!m_pylib)
-		SG_ERROR("couldn't open libpython2.5.so\n");
+		SG_ERROR("couldn't open " LIBPYTHON ".so\n");
 	Py_Initialize();
 	import_array();
 #endif

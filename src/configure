@@ -28,6 +28,7 @@ SWIGFLAGS="-w473 -w454"
 SWIG=swig
 DOXYGEN=doxygen
 PYTHON=python
+PYVER=
 KERNELNAME=`uname`
 MACHINE=`uname -m | tr ' ' '-'`
 EXT_OBJ_CPP=cpp.o
@@ -375,7 +376,9 @@ check_python()
 	echocheck "Python"
 	if $PYTHON -V >/dev/null 2>&1
 	then
-		echores "`$PYTHON -V 2>&1 | grep Python | cut -f 2 -d ' '`"
+		PYVER="`$PYTHON -V 2>&1 | grep Python | cut -f 2 -d ' '`"
+		echores "${PYVER}"
+		PYVER="`echo $PYVER | cut -f 1-2 -d '.'`"
 	else
 		echores "python not detected (required)"
 	fi
@@ -3307,6 +3310,7 @@ MAKEDEPENDOPTS	= ${MAKEDEPENDOPTS}
 SWIG 			= ${SWIG}
 SEDMI 			= ${SEDMI}
 PYTHON 			= ${PYTHON}
+PYVER 			= ${PYVER}
 DOXYGEN 		= ${DOXYGEN}
 USE_DOXYGEN 	= ${USE_DOXYGEN}
 SWIGFLAGS		= ${SWIGFLAGS}

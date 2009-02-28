@@ -1,10 +1,12 @@
+include ../.config
+
 all: elwms.cpp.o
 	c++ elwms.cpp.o -Xlinker --no-undefined -lm -pthread -llapack -lcblas \
 	-llapack_atlas -lglpk -lm -L../libshogun -lshogun -L../libshogunui \
-	-lshogunui -shared  -lpython2.5 -L/usr/lib/octave-3.0.1 -loctinterp -loctave \
+	-lshogunui -shared  -lpython$(PYVER) -L/usr/lib/octave-3.0.1 -loctinterp -loctave \
 	-lcruft -L/usr/lib/R/lib -lR -o sg.so \
+	-Wl,--rpath-link,/opt/matlab7.4/extern/lib/glnx86 \
 	-L/opt/matlab7.4/bin/glnx86 -lmx -lmex -lmat -lpython2.5 -ldl
-	#-Wl,--rpath-link,/opt/matlab7.4/extern/lib/glnx86 \
 
 elwms.cpp.o: elwms.cpp ../matlab/MatlabInterface.h ../matlab/MatlabInterface.cpp \
 	../octave/OctaveInterface.h ../octave/OctaveInterface.cpp \
@@ -19,9 +21,9 @@ elwms.cpp.o: elwms.cpp ../matlab/MatlabInterface.h ../matlab/MatlabInterface.cpp
 	-DHAVE_LARGEFILE -DUSE_SHORTREAL_KERNELCACHE -DUSE_HMMPARALLELSTRUCTURES \
 	-DUSE_HMMPARALLEL -DUSE_BIGSTATES -DUSE_HMMCACHE -DUSE_SVMLIGHT \
 	-DHAVE_DOXYGEN -DHAVE_R -c -I. -I.. -I. -I..  -I../libshogun \
-	-I../libshogunui -I/usr/share/R/include -DHAVE_PYTHON \
-	-I/usr/include/python2.5 -I/usr/include -DHAVE_MATLAB \
-	-I/usr/lib/python2.5/site-packages/numpy/core/include -DHAVE_OCTAVE \
+	-I../libshogunui -I/usr/share/R/include -DHAVE_PYTHON -DLIBPYTHON=\"libpython$(PYVER).so\" \
+	-I/usr/include/python$(PYVER) -I/usr/include -DHAVE_MATLAB \
+	-I/usr/lib/python$(PYVER)/site-packages/numpy/core/include -DHAVE_OCTAVE \
 	-I/usr/include/octave-3.0.1 -I/opt/matlab7.4/extern/include \
 	-I/opt/matlab7.4/extern/src -o elwms.cpp.o elwms.cpp
 
