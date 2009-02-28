@@ -1099,7 +1099,7 @@ CSGInterfaceMethod sg_methods[]=
 };
 
 
-CSGInterface::CSGInterface()
+CSGInterface::CSGInterface(bool print_copyright)
 : CSGObject(),
 	ui_classifier(new CGUIClassifier(this)),
 	ui_distance(new CGUIDistance(this)),
@@ -1113,14 +1113,21 @@ CSGInterface::CSGInterface()
 	ui_time(new CGUITime(this)),
 	ui_structure(new CGUIStructure(this))
 {
-	version->print_version();
-	reset();
-	SG_PRINT("( seeding random number generator with %u (seed size %d))\n", CMath::rand_state, RNG_SEED_SIZE);
+	if (print_copyright)
+	{
+		version->print_version();
+		SG_PRINT("( seeding random number generator with %u (seed size %d))\n",
+				CMath::rand_state, RNG_SEED_SIZE);
 #ifdef USE_LOGCACHE
-    SG_PRINT( "initializing log-table (size=%i*%i*%i=%2.1fMB) ... ) ",CMath::LOGRANGE,CMath::LOGACCURACY,sizeof(float64_t),CMath::LOGRANGE*CMath::LOGACCURACY*sizeof(float64_t)/(1024.0*1024.0)) ;
+		SG_PRINT( "initializing log-table (size=%i*%i*%i=%2.1fMB) ... ) ",
+				CMath::LOGRANGE,CMath::LOGACCURACY,sizeof(float64_t),
+				CMath::LOGRANGE*CMath::LOGACCURACY*sizeof(float64_t)/(1024.0*1024.0));
 #else
-    SG_PRINT("determined range for x in log(1+exp(-x)) is:%d )\n", CMath::LOGRANGE);
+		SG_PRINT("determined range for x in log(1+exp(-x)) is:%d )\n", CMath::LOGRANGE);
 #endif 
+	}
+
+	reset();
 }
 
 CSGInterface::~CSGInterface()

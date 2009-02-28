@@ -49,6 +49,11 @@ void python_cancel_computations(bool &delayed, bool &immediately)
 
 extern CSGInterface* interface;
 
+CPythonInterface::CPythonInterface(PyObject* args)
+: CSGInterface(false)
+{
+	reset(NULL, args);
+}
 CPythonInterface::CPythonInterface(PyObject* self, PyObject* args)
 : CSGInterface()
 {

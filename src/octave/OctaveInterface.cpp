@@ -8,6 +8,11 @@
 #include <shogun/lib/memory.h>
 #include <shogun/base/init.h>
 
+#ifdef HAVE_PYTHON
+#undef HAVE_STAT
+#include "../python/PythonInterface.h"
+#endif
+
 void octave_print_message(FILE* target, const char* str)
 {
 	fprintf(target, "%s", str);
@@ -36,10 +41,18 @@ COctaveInterface::COctaveInterface(octave_value_list prhs, int32_t nlhs)
 : CSGInterface()
 {
 	reset(prhs, nlhs);
+
+#ifdef HAVE_PYTHON
+	Py_Initialize();
+	import_array();
+#endif
 }
 
 COctaveInterface::~COctaveInterface()
 {
+#ifdef HAVE_PYTHON
+	Py_Finalize();
+#endif
 	exit_shogun();
 }
 
@@ -490,51 +503,133 @@ SET_STRINGLIST(set_short_string_list, int16NDArray, int16_t, int16_t, "Short")
 SET_STRINGLIST(set_word_string_list, uint16NDArray, uint16_t, uint16_t, "Word")
 #undef SET_STRINGLIST
 
-#ifdef HAVE_PYTHON
-#undef HAVE_STAT
-#include "../python/PythonInterface.h"
-#endif
-
 bool COctaveInterface::cmd_run_python()
 {
 #ifdef HAVE_PYTHON
-	SG_SPRINT("entering python\n");
-	Py_Initialize();
-	import_array1(false);
-	PyObject* p1 = PyInt_FromLong(3);
-	PyObject* p2 = PyInt_FromLong(4);
+	SG_DEBUG("Entering Python\n");
 	PyObject* builtins = PyEval_GetBuiltins();
 	PyObject* globals = PyDict_New();
-	PyDict_SetItemString(globals,"a",p1);
-	PyDict_SetItemString(globals,"b",p2);
 	PyDict_SetItemString(globals,"__builtins__", builtins);
+	char* python_code=NULL;
 
-	//const char* code="import numpy\ndef test(c,d):\n\treturn c-d\nresults=dict()\nresults['a']=numpy.array(10,10)+test(a,b)";
-	const char* code="import numpy\nresults=dict()\nresults['a']=numpy.array([[1,2],[3,4.0]])";
-	//const char* code="import numpy\ndef test(c,d):\n\treturn c-d\nresults=dict()\nresults['a']=numpy.array(10,10)+test(a,b)";
-	PyObject* code_obj = Py_CompileString(code, "<test.py>", Py_file_input);
-	if (code_obj == NULL)
+	for (int i=0; i<m_nrhs; i++)
+	{
+		int len=0;
+		char* var_name = get_string(len);
+		SG_DEBUG("var_name = '%s'\n", var_name);
+		if (strmatch(var_name, "pythoncode"))
+		{
+			len=0;
+			python_code=get_string(len);
+			SG_DEBUG("python_code = '%s'\n", python_code);
+			break;
+		}
+		else
+		{
+			PyObject* tuple = PyTuple_New(1);
+
+			CPythonInterface* in = new CPythonInterface(tuple);
+			in->create_return_values(1);
+			switch (get_argument_type())
+			{
+				case STRING_CHAR:
+					{
+						int32_t num_str=0;
+						int32_t max_str_len=0;
+						T_STRING<char>* strs;
+						get_char_string_list(strs, num_str,max_str_len);
+						in->set_char_string_list(strs, num_str);
+						break;
+					}
+				case STRING_BYTE:
+					{
+						int32_t num_str=0;
+						int32_t max_str_len=0;
+						T_STRING<uint8_t>* strs=NULL;
+						get_byte_string_list(strs, num_str, max_str_len);
+						in->set_byte_string_list(strs, num_str);
+						break;
+					}
+				case DENSE_INT:
+					{
+						int32_t num_feat=0;
+						int32_t num_vec=0;
+						int32_t* fmatrix=NULL;
+						get_int_matrix(fmatrix, num_feat, num_vec);
+						in->set_int_matrix(fmatrix, num_feat, num_vec);
+						break;
+					}
+				case DENSE_REAL:
+					{
+						int32_t num_feat=0;
+						int32_t num_vec=0;
+						float64_t* fmatrix=NULL;
+						get_real_matrix(fmatrix, num_feat, num_vec);
+						in->set_real_matrix(fmatrix, num_feat, num_vec);
+						break;
+					}
+				case DENSE_SHORT:
+					{
+						int32_t num_feat=0;
+						int32_t num_vec=0;
+						int16_t* fmatrix=NULL;
+						get_short_matrix(fmatrix, num_feat, num_vec);
+						in->set_short_matrix(fmatrix, num_feat, num_vec);
+						break;
+					}
+				case DENSE_SHORTREAL:
+					{
+						int32_t num_feat=0;
+						int32_t num_vec=0;
+						float32_t* fmatrix=NULL;
+						get_shortreal_matrix(fmatrix, num_feat, num_vec);
+						in->set_shortreal_matrix(fmatrix, num_feat, num_vec);
+						break;
+					}
+				case DENSE_WORD:
+					{
+						int32_t num_feat=0;
+						int32_t num_vec=0;
+						uint16_t* fmatrix=NULL;
+						get_word_matrix(fmatrix, num_feat, num_vec);
+						in->set_word_matrix(fmatrix, num_feat, num_vec);
+						break;
+					}
+				default:
+					SG_ERROR("unknown return type");
+					break;
+			}
+			PyDict_SetItemString(globals, var_name, in->get_return_values());
+			delete[] var_name;
+			Py_DECREF(tuple);
+			SG_UNREF(in);
+		}
+	}
+
+	PyObject* python_code_obj = Py_CompileString(python_code, "<test.py>", Py_file_input);
+	if (python_code_obj == NULL)
 		SG_SERROR("Compiling python code failed.");
 
-	PyObject* res = PyEval_EvalCode((PyCodeObject*) code_obj, globals, NULL);
-	Py_DECREF(code_obj);
+	delete[] python_code;
+
+	PyObject* res = PyEval_EvalCode((PyCodeObject*) python_code_obj, globals, NULL);
+	Py_DECREF(python_code_obj);
 
 	if (res == NULL)
-		SG_SERROR("Running python code failed.");
+		SG_SERROR("Running python code failed.\n");
+	else
+		SG_DEBUG("Successfully executed python code.\n");
 
 	Py_DECREF(res);
 
-	//PyObject* results = PyDict_New();
-	//PyDict_SetItemString(results,"a",p1);
-	//PyDict_SetItemString(results,"b",p2);
 	PyObject* results = PyDict_GetItemString(globals, "results");
 	int32_t sz=PyDict_Size(results);
-	if (sz > 0 && create_return_values(sz))
+	if (create_return_values(sz))
 	{
 		PyObject* values = PyDict_Values(results);
 		//PyObject* keys = PyDict_Keys(results);
 		PyObject* tuple = PyList_AsTuple(values);
-		CPythonInterface* out = new CPythonInterface(NULL, tuple);
+		CPythonInterface* out = new CPythonInterface(tuple);
 
 		//process d
 		for (int32_t i=0; i<sz; i++)
@@ -614,12 +709,14 @@ bool COctaveInterface::cmd_run_python()
 	}
 	else
 	{
-		SG_ERROR("number of return values (%d) does not match number of expected"
-				" return values (%d)\n", sz, m_nlhs);
+		if (sz>-1)
+			SG_ERROR("Number of return values (%d) does not match number of expected"
+					" return values (%d).\n", sz, m_nlhs);
 	}
 
-	Py_Finalize();
-	SG_SPRINT("leaving python\n");
+	Py_DECREF(globals);
+	Py_DECREF(builtins);
+	SG_DEBUG("Leaving Python.\n");
 	return true;
 #else
 	return false;

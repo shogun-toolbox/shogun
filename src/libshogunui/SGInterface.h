@@ -48,7 +48,7 @@ enum IFType
 class CSGInterface : public CSGObject
 {
 	public:
-		CSGInterface();
+		CSGInterface(bool print_copyrights=true);
 		~CSGInterface();
 
 		/// reset to clean state

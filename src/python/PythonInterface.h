@@ -16,6 +16,7 @@ extern "C" {
 class CPythonInterface : public CSGInterface
 {
 	public:
+		CPythonInterface(PyObject* args);
 		CPythonInterface(PyObject* self, PyObject* args);
 		~CPythonInterface();
 
