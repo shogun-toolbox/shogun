@@ -138,6 +138,8 @@ class CRInterface : public CSGInterface
 
 		SEXP get_return_values();
 
+		virtual bool cmd_run_python();
+
 	private:
 		const SEXP get_arg_increment()
 		{
@@ -159,6 +161,7 @@ class CRInterface : public CSGInterface
 		inline virtual const char* get_name() const { return "RInterface"; }
 
 	private:
+		void* m_pylib;
 		SEXP m_lhs;
 		SEXP m_rhs;
 };

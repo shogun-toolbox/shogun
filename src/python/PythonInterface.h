@@ -2,6 +2,8 @@
 #define __PYTHONINTERFACE__H_
 
 #undef _POSIX_C_SOURCE
+#undef HAVE_STAT
+
 extern "C" {
 #include <Python.h>
 #include <numpy/arrayobject.h>
@@ -150,6 +152,11 @@ class CPythonInterface : public CSGInterface
 			return m_lhs;
 		}
 
+		/** @return object name */
+		inline virtual const char* get_name() const { return "PythonInterface"; }
+
+		static bool run_python_helper(CSGInterface* from_if);
+
 	private:
 		const PyObject* get_arg_increment()
 		{
@@ -171,9 +178,6 @@ class CPythonInterface : public CSGInterface
 			PyTuple_SET_ITEM(m_lhs, m_lhs_counter, arg);
 			m_lhs_counter++;
 		}
-
-		/** @return object name */
-		inline virtual const char* get_name() const { return "PythonInterface"; }
 
 	private:
 		PyObject* m_lhs;

@@ -7,6 +7,10 @@
 #include <shogun/lib/config.h>
 #include <shogun/base/init.h>
 
+#ifdef HAVE_PYTHON
+#include "../python/PythonInterface.h"
+#endif
+
 void matlab_print_message(FILE* target, const char* str)
 {
 	if (target==stdout)
@@ -42,10 +46,22 @@ CMatlabInterface::CMatlabInterface(
 : CSGInterface()
 {
 	reset(nlhs, plhs, nrhs, prhs);
+
+#ifdef HAVE_PYTHON
+	m_pylib = dlopen("libpython2.5.so", RTLD_NOW | RTLD_GLOBAL);
+	if (!m_pylib)
+		SG_ERROR("couldn't open libpython2.5.so\n");
+	Py_Initialize();
+	import_array();
+#endif
 }
 
 CMatlabInterface::~CMatlabInterface()
 {
+#ifdef HAVE_PYTHON
+	Py_Finalize();
+	dlclose(m_pylib);
+#endif
 	exit_shogun();
 }
 
@@ -601,8 +617,16 @@ void CMatlabInterface::set_arg_increment(mxArray* mx_arg)
 	m_lhs[m_lhs_counter]=mx_arg;
 	m_lhs_counter++;
 }
-
 ////////////////////////////////////////////////////////////////////
+//
+bool CMatlabInterface::cmd_run_python()
+{
+#ifdef HAVE_PYTHON
+	return CPythonInterface::run_python_helper(this);
+#else
+	return false;
+#endif
+}
 
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {

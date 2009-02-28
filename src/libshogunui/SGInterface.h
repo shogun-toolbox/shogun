@@ -54,6 +54,9 @@ class CSGInterface : public CSGObject
 		/// reset to clean state
 		virtual void reset();
 
+		/// translate matrix from language A to language B 
+		void translate_arg(CSGInterface* source, CSGInterface* target);
+
 		/* commands */
 		/** load features from file */
 		bool cmd_load_features();
@@ -599,6 +602,13 @@ class CSGInterface : public CSGObject
 		/// print the shogun prompt
 		void print_prompt();
 
+		/// return number of lhs args
+		int32_t get_nlhs() { return m_nlhs; }
+
+		/// return number of lhs args
+		int32_t get_nrhs() { return m_nrhs; }
+
+
 		/** ui lib */
 		CGUIClassifier* ui_classifier;
 		CGUIDistance* ui_distance;
@@ -653,7 +663,6 @@ class CSGInterface : public CSGObject
 
 			return get_string(len);
 		}
-
 	private:
 		/** helper function for hmm classify */
 		bool do_hmm_classify(bool linear=false, bool one_class=false);

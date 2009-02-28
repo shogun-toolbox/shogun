@@ -3,8 +3,8 @@ all: elwms.cpp.o
 	-llapack_atlas -lglpk -lm -L../libshogun -lshogun -L../libshogunui \
 	-lshogunui -shared  -lpython2.5 -L/usr/lib/octave-3.0.1 -loctinterp -loctave \
 	-lcruft -L/usr/lib/R/lib -lR -o sg.so \
-	-Wl,--rpath-link,/opt/matlab7.4/extern/lib/glnx86 \
-	-L/opt/matlab7.4/bin/glnx86 -lmx -lmex -lmat
+	-L/opt/matlab7.4/bin/glnx86 -lmx -lmex -lmat -lpython2.5 -ldl
+	#-Wl,--rpath-link,/opt/matlab7.4/extern/lib/glnx86 \
 
 elwms.cpp.o: elwms.cpp ../matlab/MatlabInterface.h ../matlab/MatlabInterface.cpp \
 	../octave/OctaveInterface.h ../octave/OctaveInterface.cpp \

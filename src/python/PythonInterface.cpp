@@ -607,6 +607,94 @@ bool CPythonInterface::create_return_values(int32_t num)
 	return PyTuple_GET_SIZE(m_lhs)==num;
 }
 
+bool CPythonInterface::run_python_helper(CSGInterface* from_if)
+{
+	from_if->SG_DEBUG("Entering Python\n");
+	PyObject* globals = PyDict_New();
+	PyObject* builtins = PyEval_GetBuiltins();
+	PyDict_SetItemString(globals,"__builtins__", builtins);
+	char* python_code=NULL;
+
+	for (int i=0; i<from_if->get_nrhs(); i++)
+	{
+		int len=0;
+		char* var_name = from_if->get_string(len);
+		from_if->SG_DEBUG("var_name = '%s'\n", var_name);
+		if (strmatch(var_name, "pythoncode"))
+		{
+			len=0;
+			python_code=from_if->get_string(len);
+			from_if->SG_DEBUG("python_code = '%s'\n", python_code);
+			break;
+		}
+		else
+		{
+			PyObject* tuple = PyTuple_New(1);
+
+			CPythonInterface* in = new CPythonInterface(tuple);
+			in->create_return_values(1);
+			from_if->translate_arg(from_if, in);
+			PyDict_SetItemString(globals, var_name, in->get_return_values());
+			delete[] var_name;
+			Py_DECREF(tuple);
+			SG_UNREF(in);
+		}
+	}
+
+	PyObject* python_code_obj = Py_CompileString(python_code, "<pythoncode>", Py_file_input);
+	if (python_code_obj == NULL)
+	{
+		PyErr_Print();
+		from_if->SG_ERROR("Compiling python code failed.");
+	}
+
+	delete[] python_code;
+
+	PyObject* res = PyEval_EvalCode((PyCodeObject*) python_code_obj, globals, NULL);
+	Py_DECREF(python_code_obj);
+
+	if (res == NULL)
+	{
+		PyErr_Print();
+		from_if->SG_ERROR("Running python code failed.\n");
+	}
+	else
+		from_if->SG_DEBUG("Successfully executed python code.\n");
+
+	Py_DECREF(res);
+
+	PyObject* results = PyDict_GetItemString(globals, "results");
+	int32_t sz=-1;
+
+	if (results)
+		sz=PyDict_Size(results);
+	if (sz>0 && from_if->create_return_values(sz))
+	{
+		PyObject* values = PyDict_Values(results);
+		//PyObject* keys = PyDict_Keys(results);
+		PyObject* tuple = PyList_AsTuple(values);
+		CPythonInterface* out = new CPythonInterface(tuple);
+
+		//process d
+		for (int32_t i=0; i<sz; i++)
+			from_if->translate_arg(out, from_if);
+
+		SG_UNREF(out);
+	}
+	else
+	{
+		if (sz>-1 && sz!=from_if->get_nlhs())
+		{
+			from_if->SG_ERROR("Number of return values (%d) does not match number of expected"
+					" return values (%d).\n", sz, from_if->get_nlhs());
+		}
+	}
+
+	Py_DECREF(globals);
+	from_if->SG_DEBUG("Leaving Python.\n");
+	return true;
+}
+
 
 PyObject* sg(PyObject* self, PyObject* args)
 {

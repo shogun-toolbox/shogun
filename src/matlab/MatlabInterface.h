@@ -164,11 +164,14 @@ class CMatlabInterface : public CSGInterface
 		/** @return object name */
 		inline virtual const char* get_name() const { return "MatlabInterface"; }
 
+		virtual bool cmd_run_python();
+
 	private:
 		const mxArray* get_arg_increment();
 		void set_arg_increment(mxArray* arg);
 
 	private:
+		void* m_pylib;
 		mxArray** m_lhs;
 		const mxArray** m_rhs;
 

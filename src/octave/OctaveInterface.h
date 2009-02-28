@@ -5,11 +5,13 @@
 #include <shogun/ui/SGInterface.h>
 #include <shogun/lib/memory.h>
 
+#undef HAVE_STAT
 #include <octave/config.h>
 
 #ifdef HAVE_MATLAB
 #define MXARRAY_H
 #endif
+
 #include <octave/ov.h>
 #include <octave/dim-vector.h>
 #include <octave/defun-dld.h>
@@ -164,7 +166,7 @@ class COctaveInterface : public CSGInterface
 			return m_lhs;
 		}
 
-		bool cmd_run_python();
+		virtual bool cmd_run_python();
 
 	private:
 		const octave_value get_arg_increment()

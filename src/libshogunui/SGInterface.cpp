@@ -1159,6 +1159,86 @@ void CSGInterface::reset()
 	echo=true;
 }
 
+void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
+{
+	switch (source->get_argument_type())
+	{
+		case STRING_CHAR:
+			{
+				int32_t num_str=0;
+				int32_t max_str_len=0;
+				T_STRING<char>* strs;
+				source->get_char_string_list(strs, num_str,max_str_len);
+				target->set_char_string_list(strs, num_str);
+				delete[] strs;
+				break;
+			}
+		case STRING_BYTE:
+			{
+				int32_t num_str=0;
+				int32_t max_str_len=0;
+				T_STRING<uint8_t>* strs=NULL;
+				source->get_byte_string_list(strs, num_str, max_str_len);
+				target->set_byte_string_list(strs, num_str);
+				delete[] strs;
+				break;
+			}
+		case DENSE_INT:
+			{
+				int32_t num_feat=0;
+				int32_t num_vec=0;
+				int32_t* fmatrix=NULL;
+				source->get_int_matrix(fmatrix, num_feat, num_vec);
+				target->set_int_matrix(fmatrix, num_feat, num_vec);
+				delete[] fmatrix;
+				break;
+			}
+		case DENSE_REAL:
+			{
+				int32_t num_feat=0;
+				int32_t num_vec=0;
+				float64_t* fmatrix=NULL;
+				source->get_real_matrix(fmatrix, num_feat, num_vec);
+				target->set_real_matrix(fmatrix, num_feat, num_vec);
+				delete[] fmatrix;
+				break;
+			}
+		case DENSE_SHORT:
+			{
+				int32_t num_feat=0;
+				int32_t num_vec=0;
+				int16_t* fmatrix=NULL;
+				source->get_short_matrix(fmatrix, num_feat, num_vec);
+				target->set_short_matrix(fmatrix, num_feat, num_vec);
+				delete[] fmatrix;
+				break;
+			}
+		case DENSE_SHORTREAL:
+			{
+				int32_t num_feat=0;
+				int32_t num_vec=0;
+				float32_t* fmatrix=NULL;
+				source->get_shortreal_matrix(fmatrix, num_feat, num_vec);
+				target->set_shortreal_matrix(fmatrix, num_feat, num_vec);
+				delete[] fmatrix;
+				break;
+			}
+		case DENSE_WORD:
+			{
+				int32_t num_feat=0;
+				int32_t num_vec=0;
+				uint16_t* fmatrix=NULL;
+				source->get_word_matrix(fmatrix, num_feat, num_vec);
+				target->set_word_matrix(fmatrix, num_feat, num_vec);
+				delete[] fmatrix;
+				break;
+			}
+		default:
+			SG_ERROR("unknown return type");
+			break;
+	}
+}
+
 ////////////////////////////////////////////////////////////////////////////
 // commands
 ////////////////////////////////////////////////////////////////////////////

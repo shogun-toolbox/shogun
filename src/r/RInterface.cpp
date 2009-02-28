@@ -6,6 +6,12 @@
 #include <shogun/lib/io.h>
 #include <shogun/base/init.h>
 
+
+#ifdef HAVE_PYTHON
+#include <dlfcn.h>
+#include "../python/PythonInterface.h"
+#endif
+
 void r_print_message(FILE* target, const char* str)
 {
 	if (target==stdout)
@@ -41,10 +47,22 @@ CRInterface::CRInterface(SEXP prhs)
 : CSGInterface()
 {
 	reset(prhs);
+
+#ifdef HAVE_PYTHON
+	m_pylib = dlopen("libpython2.5.so", RTLD_NOW | RTLD_GLOBAL);
+	if (!m_pylib)
+		SG_ERROR("couldn't open libpython2.5.so\n");
+	Py_Initialize();
+	import_array();
+#endif
 }
 
 CRInterface::~CRInterface()
 {
+#ifdef HAVE_PYTHON
+	Py_Finalize();
+	dlclose(m_pylib);
+#endif
 	exit_shogun();
 }
 
@@ -465,6 +483,15 @@ void CRInterface::set_word_string_list(const T_STRING<uint16_t>* strings, int32_
 {
 }
 
+bool CRInterface::cmd_run_python()
+{
+#ifdef HAVE_PYTHON
+	return CPythonInterface::run_python_helper(this);
+#else
+	return false;
+#endif
+}
+
 /* The main function of the shogun R interface. All commands from the R command line
  * to the shogun backend are passed using the syntax:
  * .External("sg", "func", ... ) 
@@ -542,6 +569,6 @@ SEXP sg(SEXP args)
 /* This method is called form within R when the current module is unregistered.
  * Note that R does not allow unregistering of single symbols. */
 
-void R_unload_sg(DllInfo *info) { }
+void R_unload_sg(DllInfo *info) { exit_shogun(); }
 
 } // extern "C"
