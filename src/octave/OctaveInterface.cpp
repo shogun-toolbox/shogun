@@ -192,7 +192,7 @@ char* COctaveInterface::get_string(int32_t& len)
 void COctaveInterface::function_name(sg_type*& vec, int32_t& len)						\
 {																					\
 	const octave_value mat_feat=get_arg_increment();								\
-	if (!mat_feat.is_matrix_type() || !mat_feat.oct_type_check() || mat_feat.rows()!=1)	\
+	if (!mat_feat.oct_type_check() || mat_feat.rows()!=1)	\
 		SG_ERROR("Expected " error_string " Vector as argument %d\n", m_rhs_counter); \
 																					\
 	oct_type m = mat_feat.oct_converter();											\
@@ -216,7 +216,7 @@ GET_VECTOR(get_word_vector, is_uint16_type, uint16NDArray, uint16_array_value, u
 void COctaveInterface::function_name(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec) \
 {																					\
 	const octave_value mat_feat=get_arg_increment();								\
-	if (!mat_feat.is_matrix_type() || !mat_feat.oct_type_check())						\
+	if (!mat_feat.oct_type_check())						\
 		SG_ERROR("Expected " error_string " Matrix as argument %d\n", m_rhs_counter); \
 																					\
 	oct_type m = mat_feat.oct_converter();												\
