@@ -39,6 +39,7 @@ class CCombinedFeatures : public CFeatures
 		 */
 		virtual CFeatures* duplicate() const;
 
+		/** destructor */
 		virtual ~CCombinedFeatures();
 
 		/** get feature type

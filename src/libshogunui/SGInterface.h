@@ -6,6 +6,7 @@
 #include <shogun/base/SGObject.h>
 #include <shogun/features/StringFeatures.h>
 #include <shogun/features/SparseFeatures.h>
+#include <shogun/features/AttributeFeatures.h>
 #include <shogun/kernel/Kernel.h>
 
 #include "GUIClassifier.h"

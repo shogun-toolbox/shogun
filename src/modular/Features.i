@@ -38,6 +38,7 @@
 #include <shogun/features/SparseFeatures.h>
 #include <shogun/features/SimpleFeatures.h>
 #include <shogun/features/DummyFeatures.h>
+#include <shogun/features/AttributeFeatures.h>
 #include <shogun/features/Alphabet.h>
 #include <shogun/features/CharFeatures.h>
 #include <shogun/features/ByteFeatures.h>
@@ -88,6 +89,7 @@
 %rename(Features) CFeatures;
 %rename(DotFeatures) CDotFeatures;
 %rename(DummyFeatures) CDummyFeatures;
+%rename(AttributeFeatures) CAttributeFeatures;
 %rename(Alphabet) CAlphabet;
 %rename(CharFeatures) CCharFeatures;
 %rename(ByteFeatures) CByteFeatures;
@@ -146,6 +148,7 @@
 %template(SimpleIntFeatures)  CSimpleFeatures<int32_t>;
 
 %include <shogun/features/DummyFeatures.h>
+%include <shogun/features/AttributeFeatures.h>
 %include <shogun/features/Alphabet.h>
 %include <shogun/features/CharFeatures.h>
 %include <shogun/features/ByteFeatures.h>

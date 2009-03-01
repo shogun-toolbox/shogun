@@ -68,7 +68,7 @@ template <class T> class CDynamicArray : public CSGObject
 
 		/** get number of elements
 		 *
-		 * @return index of last element
+		 * @return number of elements
 		 */
 		inline int32_t get_num_elements() const
 		{
@@ -77,12 +77,30 @@ template <class T> class CDynamicArray : public CSGObject
 
 		/** get array element at index
 		 *
+		 * (does NOT do bounds checking)
 		 *
 		 * @param index index
 		 * @return array element at index
 		 */
 		inline T get_element(int32_t index) const
 		{
+			return array[index];
+		}
+
+		/** get array element at index
+		 *
+		 * (does bounds checking)
+		 *
+		 * @param index index
+		 * @return array element at index
+		 */
+		inline T get_element_safe(int32_t index) const
+		{
+			if (index>=get_num_elements())
+			{
+				SG_ERROR("array index out of bounds (%d >= %d)\n",
+						index, get_num_elements());
+			}
 			return array[index];
 		}
 
