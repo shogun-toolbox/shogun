@@ -186,7 +186,7 @@ template <class ST> class CStringFeatures : public CFeatures
 			symbol_mask_table=NULL;
 
 			/* start with a fresh alphabet, but instead of emptying the histogram
-			 * create a new object (to let the alphabet object alone if it is used
+			 * create a new object (to leave the alphabet object alone if it is used
 			 * by others) 
 			 */
 			CAlphabet* alpha=new CAlphabet(alphabet->get_alphabet());

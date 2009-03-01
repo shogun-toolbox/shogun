@@ -90,6 +90,7 @@ _cmdline_static=auto
 _python_static=auto
 _octave_static=auto
 _r_static=auto
+_elwms_static=auto
 _matlab_static=auto
 #modular interfaces
 _python_modular=auto
@@ -137,6 +138,12 @@ DEFINES_LIBSHOGUNUI=
 INCLUDES_LIBSHOGUNUI="-I../libshogun -I.."
 LINKFLAGS_LIBSHOGUNUI="-L../libshogun -lshogun"
 POSTLINKFLAGS_LIBSHOGUNUI=
+
+ELWMS_TARGET=	
+DEFINES_ELWMS=
+INCLUDES_ELWMS=
+LINKFLAGS_ELWMS=
+POSTLINKFLAGS_ELWMS=
 
 CMDLINE_TARGET=	
 DEFINES_CMDLINE=
@@ -707,6 +714,9 @@ for ac_option do
 		;;
 	  r)
 	  	_r_static=yes
+		;;
+	  elwms)
+	  	_elwms_static=yes
 		;;
 	  python_modular)
 	  	_python_modular=yes
@@ -2744,6 +2754,7 @@ EOF
 					echores "yes"
 					PARTS="$PARTS matlab"
 					_matlab_static=yes
+					DEFINES_MATLAB="$DEFINES_MATLAB -DHAVE_MATLAB"
 				else
 					echores "no"
 					if test "$_matlab_static" = yes
@@ -2752,6 +2763,33 @@ EOF
 					fi
 				fi
 			fi
+		fi
+	fi
+}
+
+test_elwms()
+{
+	if test "$_libshogun" = no  || test "$_libshogunui" = no
+	then
+		if test "$_elwms_static" = yes
+		then
+			die "libshogun and libshogunui are required for elwms"
+		else
+			_elwms_static=no
+		fi
+	fi
+
+	if test "$_elwms_static" = yes || test "$_elwms_static" = auto
+	then
+		if test "$_octave_static" = yes || test "$_r_static" = yes || \
+			test "$_matlab_static" = yes
+		then
+			_elwms_static=yes
+			PARTS="$PARTS elwms"
+			DEFINES_ELWMS="-DHAVE_ELWMS -DLIBPYTHON=\\\"libpython${PYVER}.so\\\" $DEFINES_PYTHON $DEFINES_R $DEFINES_MATLAB $DEFINES_OCTAVE"
+			INCLUDES_ELWMS="$INCLUDES_R $INCLUDES_PYTHON $INCLUDES_OCTAVE $INCLUDES_MATLAB "
+			LINKFLAGS_ELWMS="$LINKFLAGS_PYTHON $LINKFLAGS_R $LINKFLAGS_MATLAB $LINKFLAGS_OCTAVE -ldl"
+			ELWMS_TARGET="elwms.${EXT_LIB}"
 		fi
 	fi
 }
@@ -2874,7 +2912,6 @@ EOF
 
 	if test "$_octave" = yes
 	then
-		HAVE_OCTAVE='#define HAVE_OCTAVE 1'
 		DEFINES_OCTAVE="$DEFINES_OCTAVE -DHAVE_OCTAVE"
 
 		if test "$_octave_static" != no
@@ -3007,7 +3044,6 @@ EOF
 
 	if test "$_python" = yes
 	then
-		HAVE_PYTHON='#define HAVE_PYTHON 1'
 		DEFINES_PYTHON="$DEFINES_PYTHON -DHAVE_PYTHON"
 
 		if test "$_python_static" != no
@@ -3111,7 +3147,6 @@ EOF
 
 	if test "$_r" = yes
 	then
-		HAVE_R='#define HAVE_R 1'
 		DEFINES_R="$DEFINES_R -DHAVE_R"
 
 		if test "$_r_static" != no
@@ -3301,6 +3336,7 @@ R_TARGET		= ${R_TARGET}
 PYTHON_TARGET	= ${PYTHON_TARGET}
 OCTAVE_TARGET	= ${OCTAVE_TARGET}
 MATLAB_TARGET	= ${MATLAB_TARGET}
+ELWMS_TARGET	= ${ELWMS_TARGET}
 R_MODULAR_TARGET		= ${R_MODULAR_TARGET}
 PYTHON_MODULAR_TARGET	= ${PYTHON_MODULAR_TARGET}
 OCTAVE_MODULAR_TARGET	= ${OCTAVE_MODULAR_TARGET}
@@ -3381,6 +3417,11 @@ DEFINES_PYTHON		= ${DEFINES_PYTHON}
 INCLUDES_PYTHON		= ${INCLUDES_PYTHON}
 LINKFLAGS_PYTHON 	= ${LINKFLAGS_PYTHON}
 POSTLINKFLAGS_PYTHON= ${POSTLINKFLAGS_PYTHON}
+
+DEFINES_ELWMS		= ${DEFINES_ELWMS}
+INCLUDES_ELWMS		= ${INCLUDES_ELWMS}
+LINKFLAGS_ELWMS 	= ${LINKFLAGS_ELWMS}
+POSTLINKFLAGS_ELWMS	= ${POSTLINKFLAGS_ELWMS}
 
 PRE_LIB_SWIG_OCTAVE_MODULAR	= ${PRE_LIB_SWIG_OCTAVE_MODULAR}
 EXT_LIB_SWIG_OCTAVE_MODULAR	= ${EXT_LIB_SWIG_OCTAVE_MODULAR}
@@ -3563,6 +3604,7 @@ test_python
 test_octave
 test_r
 test_matlab
+test_elwms
 test_modular
 test_static_linking
 svmlight_warn_license

@@ -96,13 +96,8 @@ public:
 		if (refcount==0 || --refcount==0)
 		{
 			SG_DEBUG("unref() refcount %ld, obj %s (%p) destroying\n", refcount, this->get_name(), this);
-#ifndef WIN32
-			pthread_mutex_t m=ref_mutex;
+			pthread_mutex_unlock(&ref_mutex);
 			delete this;
-			pthread_mutex_unlock(&m);
-#else
-			delete this
-#endif
 			return 0;
 		}
 		else

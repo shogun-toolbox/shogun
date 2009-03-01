@@ -88,9 +88,9 @@ IFType CRInterface::get_argument_type()
 	switch (TYPEOF(arg))
 	{
 		case INTSXP:
-			return DENSE_INT;
+			return DENSE_MATRIX_INT;
 		case REALSXP:
-			return DENSE_REAL;
+			return DENSE_MATRIX_REAL;
 		case STRSXP:
 			return STRING_CHAR;
 	};
@@ -501,8 +501,12 @@ extern "C" {
 
 SEXP Rsg(SEXP args);
 
-void R_init_sg(DllInfo *info) { 
-   
+#ifdef HAVE_ELWMS
+void R_init_elwms(DllInfo *info)
+#else
+void R_init_sg(DllInfo *info)
+#endif
+{
    /* There are four different external language call mechanisms available in R, namely:
     *    .C
     *    .Call
@@ -513,7 +517,12 @@ void R_init_sg(DllInfo *info) {
 
    R_CMethodDef cMethods[] = { {NULL, NULL, 0} };
    R_FortranMethodDef fortranMethods[] = { {NULL, NULL, 0} };
+   
+#ifdef HAVE_ELWMS
+   R_ExternalMethodDef externalMethods[] = { {"elwms", (void*(*)()) &Rsg, 1}, {NULL, NULL, 0} };
+#else
    R_ExternalMethodDef externalMethods[] = { {"sg", (void*(*)()) &Rsg, 1}, {NULL, NULL, 0} };
+#endif
    R_CallMethodDef callMethods[] = { {NULL, NULL, 0} };
 
    /* Register the routines saved in the callMethods structure so that they are available under R. */
@@ -567,6 +576,13 @@ SEXP Rsg(SEXP args)
 /* This method is called form within R when the current module is unregistered.
  * Note that R does not allow unregistering of single symbols. */
 
-void R_unload_sg(DllInfo *info) { exit_shogun(); }
+#ifdef HAVE_ELWMS
+void R_unload_elwms(DllInfo *info)
+#else
+void R_unload_sg(DllInfo *info)
+#endif
+{
+	exit_shogun();
+}
 
 } // extern "C"

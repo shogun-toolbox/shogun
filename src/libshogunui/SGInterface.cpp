@@ -1163,16 +1163,88 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 {
 	switch (source->get_argument_type())
 	{
-		case STRING_CHAR:
+		case SCALAR_INT:
+			target->set_int(source->get_int());
+			break;
+		case SCALAR_REAL:
+			target->set_real(source->get_real());
+			break;
+		case SCALAR_BOOL:
+			target->set_bool(source->get_bool());
+			break;
+		case VECTOR_BOOL:
 			{
-				int32_t num_str=0;
-				int32_t max_str_len=0;
-				T_STRING<char>* strs;
-				source->get_char_string_list(strs, num_str,max_str_len);
-				target->set_char_string_list(strs, num_str);
-				delete[] strs;
+				bool* v=NULL;
+				int32_t len=0;
+				source->get_bool_vector(v, len);
+				target->set_bool_vector(v, len);
+				delete[] v;
 				break;
 			}
+		case VECTOR_BYTE:
+			{
+				uint8_t* v=NULL;
+				int32_t len=0;
+				source->get_byte_vector(v, len);
+				target->set_byte_vector(v, len);
+				delete[] v;
+				break;
+			}
+		case VECTOR_CHAR:
+			{
+				char* v=NULL;
+				int32_t len=0;
+				source->get_char_vector(v, len);
+				target->set_char_vector(v, len);
+				delete[] v;
+				break;
+			}
+		case VECTOR_INT:
+			{
+				int32_t* v=NULL;
+				int32_t len=0;
+				source->get_int_vector(v, len);
+				target->set_int_vector(v, len);
+				delete[] v;
+				break;
+			}
+		case VECTOR_REAL:
+			{
+				float64_t* v=NULL;
+				int32_t len=0;
+				source->get_real_vector(v, len);
+				target->set_real_vector(v, len);
+				delete[] v;
+				break;
+			}
+		case VECTOR_SHORTREAL:
+			{
+				float32_t* v=NULL;
+				int32_t len=0;
+				source->get_shortreal_vector(v, len);
+				target->set_shortreal_vector(v, len);
+				delete[] v;
+				break;
+			}
+		case VECTOR_SHORT:
+			{
+				int16_t* v=NULL;
+				int32_t len=0;
+				source->get_short_vector(v, len);
+				target->set_short_vector(v, len);
+				delete[] v;
+				break;
+			}
+		case VECTOR_WORD:
+			{
+				uint16_t* v=NULL;
+				int32_t len=0;
+				source->get_word_vector(v, len);
+				target->set_word_vector(v, len);
+				delete[] v;
+				break;
+			}
+
 		case STRING_BYTE:
 			{
 				int32_t num_str=0;
@@ -1183,7 +1255,47 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 				delete[] strs;
 				break;
 			}
-		case DENSE_INT:
+		case STRING_CHAR:
+			{
+				int32_t num_str=0;
+				int32_t max_str_len=0;
+				T_STRING<char>* strs;
+				source->get_char_string_list(strs, num_str,max_str_len);
+				target->set_char_string_list(strs, num_str);
+				delete[] strs;
+				break;
+			}
+		case STRING_INT:
+			{
+				int32_t num_str=0;
+				int32_t max_str_len=0;
+				T_STRING<int32_t>* strs;
+				source->get_int_string_list(strs, num_str,max_str_len);
+				target->set_int_string_list(strs, num_str);
+				delete[] strs;
+				break;
+			}
+		case STRING_SHORT:
+			{
+				int32_t num_str=0;
+				int32_t max_str_len=0;
+				T_STRING<int16_t>* strs=NULL;
+				source->get_short_string_list(strs, num_str, max_str_len);
+				target->set_short_string_list(strs, num_str);
+				delete[] strs;
+				break;
+			}
+		case STRING_WORD:
+			{
+				int32_t num_str=0;
+				int32_t max_str_len=0;
+				T_STRING<uint16_t>* strs=NULL;
+				source->get_word_string_list(strs, num_str, max_str_len);
+				target->set_word_string_list(strs, num_str);
+				delete[] strs;
+				break;
+			}
+		case DENSE_MATRIX_INT:
 			{
 				int32_t num_feat=0;
 				int32_t num_vec=0;
@@ -1193,7 +1305,7 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 				delete[] fmatrix;
 				break;
 			}
-		case DENSE_REAL:
+		case DENSE_MATRIX_REAL:
 			{
 				int32_t num_feat=0;
 				int32_t num_vec=0;
@@ -1203,7 +1315,7 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 				delete[] fmatrix;
 				break;
 			}
-		case DENSE_SHORT:
+		case DENSE_MATRIX_SHORT:
 			{
 				int32_t num_feat=0;
 				int32_t num_vec=0;
@@ -1213,7 +1325,7 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 				delete[] fmatrix;
 				break;
 			}
-		case DENSE_SHORTREAL:
+		case DENSE_MATRIX_SHORTREAL:
 			{
 				int32_t num_feat=0;
 				int32_t num_vec=0;
@@ -1223,7 +1335,7 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 				delete[] fmatrix;
 				break;
 			}
-		case DENSE_WORD:
+		case DENSE_MATRIX_WORD:
 			{
 				int32_t num_feat=0;
 				int32_t num_vec=0;
@@ -1233,6 +1345,98 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 				delete[] fmatrix;
 				break;
 			}
+			/*
+		case DENSE_NDARRAY_BYTE:
+			{
+				uint8_t* a=NULL;
+				int32_t* dims=NULL;
+				int32_t num_dims=0;
+				source->get_byte_ndarray(a, dims, num_dims);
+				target->set_byte_ndarray(a, dims, num_dims);
+				delete[] a;
+				delete[] dims;
+				break;
+			}
+		case DENSE_NDARRAY_CHAR:
+			{
+				char* a=NULL;
+				int32_t* dims=NULL;
+				int32_t num_dims=0;
+				source->get_char_ndarray(a, dims, num_dims);
+				target->set_char_ndarray(a, dims, num_dims);
+				delete[] a;
+				delete[] dims;
+				break;
+			}
+		case DENSE_NDARRAY_INT:
+			{
+				int32_t* a=NULL;
+				int32_t* dims=NULL;
+				int32_t num_dims=0;
+				source->get_int_ndarray(a, dims, num_dims);
+				target->set_int_ndarray(a, dims, num_dims);
+				delete[] a;
+				delete[] dims;
+				break;
+			}
+		case DENSE_NDARRAY_REAL:
+			{
+				float64_t* a=NULL;
+				int32_t* dims=NULL;
+				int32_t num_dims=0;
+				source->get_real_ndarray(a, dims, num_dims);
+				target->set_real_ndarray(a, dims, num_dims);
+				delete[] a;
+				delete[] dims;
+				break;
+			}
+		case DENSE_NDARRAY_SHORTREAL:
+			{
+				float32_t* a=NULL;
+				int32_t* dims=NULL;
+				int32_t num_dims=0;
+				source->get_shortreal_ndarray(a, dims, num_dims);
+				target->set_shortreal_ndarray(a, dims, num_dims);
+				delete[] a;
+				delete[] dims;
+				break;
+			}
+		case DENSE_NDARRAY_SHORT:
+			{
+				int16_t* a=NULL;
+				int32_t* dims=NULL;
+				int32_t num_dims=0;
+				source->get_short_ndarray(a, dims, num_dims);
+				target->set_short_ndarray(a, dims, num_dims);
+				delete[] a;
+				delete[] dims;
+				break;
+			}
+		case DENSE_NDARRAY_WORD:
+			{
+				uint16_t* a=NULL;
+				int32_t* dims=NULL;
+				int32_t num_dims=0;
+				source->get_word_ndarray(a, dims, num_dims);
+				target->set_word_ndarray(a, dims, num_dims);
+				delete[] a;
+				delete[] dims;
+				break;
+			}*/
+		case SPARSE_REAL:
+			{
+				int32_t num_feat=0;
+				int32_t num_vec=0;
+				TSparse<float64_t>* fmatrix=NULL;
+				source->get_real_sparsematrix(fmatrix, num_feat, num_vec);
+				int64_t nnz=0;
+				for (int32_t i=0; i<num_vec; i++)
+					nnz+=fmatrix[i].num_feat_entries;
+				target->set_real_sparsematrix(fmatrix, num_feat, num_vec, nnz);
+				delete[] fmatrix;
+				break;
+			}
+
 		default:
 			SG_ERROR("unknown return type");
 			break;
@@ -1500,7 +1704,7 @@ bool CSGInterface::do_set_features(bool add, bool check_dot)
 			break;
 		}
 
-		case DENSE_REAL:
+		case DENSE_MATRIX_REAL:
 		{
 			float64_t* fmatrix=NULL;
 			get_real_matrix(fmatrix, num_feat, num_vec);
@@ -1511,7 +1715,7 @@ bool CSGInterface::do_set_features(bool add, bool check_dot)
 			break;
 		}
 
-		case DENSE_INT:
+		case DENSE_MATRIX_INT:
 		{
 			int32_t* fmatrix=NULL;
 			get_int_matrix(fmatrix, num_feat, num_vec);
@@ -1522,7 +1726,7 @@ bool CSGInterface::do_set_features(bool add, bool check_dot)
 			break;
 		}
 
-		case DENSE_SHORT:
+		case DENSE_MATRIX_SHORT:
 		{
 			int16_t* fmatrix=NULL;
 			get_short_matrix(fmatrix, num_feat, num_vec);
@@ -1533,7 +1737,7 @@ bool CSGInterface::do_set_features(bool add, bool check_dot)
 			break;
 		}
 
-		case DENSE_WORD:
+		case DENSE_MATRIX_WORD:
 		{
 			uint16_t* fmatrix=NULL;
 			get_word_matrix(fmatrix, num_feat, num_vec);
@@ -1544,7 +1748,7 @@ bool CSGInterface::do_set_features(bool add, bool check_dot)
 			break;
 		}
 
-		case DENSE_SHORTREAL:
+		case DENSE_MATRIX_SHORTREAL:
 		{
 			float32_t* fmatrix=NULL;
 			get_shortreal_matrix(fmatrix, num_feat, num_vec);

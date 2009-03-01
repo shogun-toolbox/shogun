@@ -841,9 +841,9 @@ void CKernel::remove_lhs_and_rhs()
 
 void CKernel::remove_lhs()
 { 
-	SG_UNREF(lhs);
 	if (rhs==lhs)
 		rhs=NULL;
+	SG_UNREF(lhs);
 	lhs = NULL;
 
 #ifdef USE_SVMLIGHT

@@ -118,6 +118,22 @@ A sg.so file should be created in the src/ directory:
 To test whether it is working try
 PYTHONPATH=`pwd` python ../examples/python/graphical/svm_classification.py
 
+eierlegendewollmichsau (elwms) interface
+========================================
+
+This is a .so file that works with R,python,matlab,octave all in one. To compile
+ you should have at least python and some other interface enabled:
+
+cd src
+./configure --interfaces=libshogun,libshogunui,octave,matlab,r,python,elwms
+make
+cd elwms
+
+LD_LIBRARY_PATH=/path/to/octave/lib:/path/to/matlab/libs octave 
+
+All examples from examples/{r,python,matlab,octave}/* should work plus the ones
+in examples/elwms/ (that allows lang -> python subcommands).
+
 object oriented python/swig interface:
 ======================================
 

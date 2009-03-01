@@ -75,44 +75,37 @@ IFType COctaveInterface::get_argument_type()
 {
 	octave_value arg=m_rhs(m_rhs_counter);
 
+	if (arg.is_real_scalar())
+		return SCALAR_REAL;
+	if (arg.is_bool_scalar())
+		return SCALAR_BOOL;
+
 	if (arg.is_char_matrix())
 		return STRING_CHAR;
-	else if (arg.is_uint8_type() && arg.is_matrix_type())
+	if (arg.is_uint8_type() && arg.is_matrix_type())
 		return STRING_BYTE;
 
 	if (arg.is_sparse_type())
 	{
 		if (arg.is_uint8_type())
 			return SPARSE_BYTE;
-		else if (arg.is_char_matrix())
+		if (arg.is_char_matrix())
 			return SPARSE_CHAR;
-		else if (arg.is_int32_type())
+		if (arg.is_int32_type())
 			return SPARSE_INT;
-		else if (arg.is_double_type())
+		if (arg.is_double_type())
 			return SPARSE_REAL;
-		else if (arg.is_int16_type())
+		if (arg.is_int16_type())
 			return SPARSE_SHORT;
-		else if (arg.is_single_type())
+		if (arg.is_single_type())
 			return SPARSE_SHORTREAL;
-		else if (arg.is_uint16_type())
+		if (arg.is_uint16_type())
 			return SPARSE_WORD;
-		else
-			return UNDEFINED;
+
+		return UNDEFINED;
 	}
-	else if (arg.is_matrix_type())
-	{
-		if (arg.is_uint32_type())
-			return DENSE_INT;
-		else if (arg.is_double_type())
-			return DENSE_REAL;
-		else if (arg.is_int16_type())
-			return DENSE_SHORT;
-		else if (arg.is_single_type())
-			return DENSE_SHORTREAL;
-		else if (arg.is_uint16_type())
-			return DENSE_WORD;
-	}
-	else if (arg.is_cell())
+
+	if (arg.is_cell())
 	{
 		Cell c = arg.cell_value();
 
@@ -120,15 +113,66 @@ IFType COctaveInterface::get_argument_type()
 		{
 			if (c.elem(0).is_char_matrix() && c.elem(0).rows()==1)
 				return STRING_CHAR;
-			else if (c.elem(0).is_uint8_type() && c.elem(0).rows()==1)
+			if (c.elem(0).is_uint8_type() && c.elem(0).rows()==1)
 				return STRING_BYTE;
-			else if (c.elem(0).is_int32_type() && c.elem(0).rows()==1)
+			if (c.elem(0).is_int32_type() && c.elem(0).rows()==1)
 				return STRING_INT;
-			else if (c.elem(0).is_int16_type() && c.elem(0).rows()==1)
+			if (c.elem(0).is_int16_type() && c.elem(0).rows()==1)
 				return STRING_SHORT;
-			else if (c.elem(0).is_uint16_type() && c.elem(0).rows()==1)
+			if (c.elem(0).is_uint16_type() && c.elem(0).rows()==1)
 				return STRING_WORD;
 		}
+	}
+
+
+	if (arg.is_matrix_type() && arg.ndims()==1 && arg.rows()==1)
+	{
+		if (arg.is_uint32_type())
+			return VECTOR_INT;
+		if (arg.is_double_type())
+			return VECTOR_REAL;
+		if (arg.is_int16_type())
+			return VECTOR_SHORT;
+		if (arg.is_single_type())
+			return VECTOR_SHORTREAL;
+		if (arg.is_uint16_type())
+			return VECTOR_WORD;
+
+		return UNDEFINED;
+	}
+
+	if (arg.is_matrix_type() && arg.ndims()==2)
+	{
+		if (arg.is_uint32_type())
+			return DENSE_MATRIX_INT;
+		if (arg.is_double_type())
+			return DENSE_MATRIX_REAL;
+		if (arg.is_int16_type())
+			return DENSE_MATRIX_SHORT;
+		if (arg.is_single_type())
+			return DENSE_MATRIX_SHORTREAL;
+		if (arg.is_uint16_type())
+			return DENSE_MATRIX_WORD;
+
+		return UNDEFINED;
+	}
+
+	if (arg.is_matrix_type() && arg.ndims()>2)
+	{
+		if (arg.is_uint8_type())
+			return DENSE_NDARRAY_BYTE;
+		if (arg.is_uint32_type())
+			return DENSE_NDARRAY_INT;
+		if (arg.is_double_type())
+			return DENSE_NDARRAY_REAL;
+		if (arg.is_int16_type())
+			return DENSE_NDARRAY_SHORT;
+		if (arg.is_single_type())
+			return DENSE_NDARRAY_SHORTREAL;
+		if (arg.is_uint16_type())
+			return DENSE_NDARRAY_WORD;
+
+		return UNDEFINED;
 	}
 
 	return UNDEFINED;
@@ -513,7 +557,11 @@ bool COctaveInterface::cmd_run_python()
 #endif
 }
 
+#ifdef HAVE_ELWMS
+DEFUN_DLD (elwms, prhs, nlhs, "shogun.")
+#else
 DEFUN_DLD (sg, prhs, nlhs, "shogun.")
+#endif
 {
 	try
 	{

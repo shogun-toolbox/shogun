@@ -105,15 +105,15 @@ IFType CMatlabInterface::get_argument_type()
 	}
 
 	if (mxIsInt32(arg))
-		return DENSE_INT;
+		return DENSE_MATRIX_INT;
 	if (mxIsDouble(arg))
-		return DENSE_REAL;
+		return DENSE_MATRIX_REAL;
 	if (mxIsInt16(arg))
-		return DENSE_SHORT;
+		return DENSE_MATRIX_SHORT;
 	if (mxIsSingle(arg))
-		return DENSE_SHORTREAL;
+		return DENSE_MATRIX_SHORTREAL;
 	if (mxIsUint16(arg))
-		return DENSE_WORD;
+		return DENSE_MATRIX_WORD;
 
 	if (mxIsChar(arg))
 		return STRING_CHAR;

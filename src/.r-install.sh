@@ -55,9 +55,9 @@ echo "x=structure(list(DESCRIPTION = c(Package='$2',\
 		.saveRDS(x, \"$PKGFILE\")" | R --no-save
 
 # R STATIC
-if [ "$2" = "sg" ]
+if test "$2" = "sg" || test "$2" = "elwms"
 then
-echo "Installing static sg interface for R"
+echo "Installing static sg/elwms interface for R"
 cat >"$1/$2/R/$2" <<EOF
 .packageName <- "$2"
 # The purpose of this file is to supply no functionality

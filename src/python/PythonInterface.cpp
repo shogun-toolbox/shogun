@@ -101,15 +101,15 @@ IFType CPythonInterface::get_argument_type()
 		if (PyArray_TYPE(arg)==NPY_BYTE)
 			return STRING_BYTE;
 		if (PyArray_TYPE(arg)==NPY_INT)
-			return DENSE_INT;
+			return DENSE_MATRIX_INT;
 		if (PyArray_TYPE(arg)==NPY_DOUBLE)
-			return DENSE_REAL;
+			return DENSE_MATRIX_REAL;
 		if (PyArray_TYPE(arg)==NPY_SHORT)
-			return DENSE_SHORT;
+			return DENSE_MATRIX_SHORT;
 		if (PyArray_TYPE(arg)==NPY_FLOAT)
-			return DENSE_SHORTREAL;
+			return DENSE_MATRIX_SHORTREAL;
 		if (PyArray_TYPE(arg)==NPY_USHORT)
-			return DENSE_WORD;
+			return DENSE_MATRIX_WORD;
 	}
 
 
@@ -741,7 +741,11 @@ static PyMethodDef sg_pythonmethods[] = {
     {NULL, NULL, 0, NULL}        /* Sentinel */
 };
 
+#ifdef HAVE_ELWMS
+PyMODINIT_FUNC initelwms(void)
+#else
 PyMODINIT_FUNC initsg(void)
+#endif
 {
 	// initialize python interpreter
 	Py_Initialize();
@@ -753,7 +757,11 @@ PyMODINIT_FUNC initsg(void)
 	Py_AtExit(exitsg);
 
 	// initialize callbacks
+#ifdef HAVE_ELWMS
+    Py_InitModule((char*) "elwms", sg_pythonmethods);
+#else
     Py_InitModule((char*) "sg", sg_pythonmethods);
+#endif
 	import_array();
 
 	// init_shogun has to be called before anything else

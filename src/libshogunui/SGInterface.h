@@ -20,15 +20,41 @@
 #include "GUITime.h"
 #include "GUIStructure.h"
 
+/* Interface datatypes that shogun supports. Note that some interfaces like e.g.
+ * octave/matlab cannot distinguish between scalars and matrices and thus might
+ * always return more complex types like matrices.
+ */
 enum IFType
 {
 	UNDEFINED,
 
-	DENSE_INT,
-	DENSE_REAL,
-	DENSE_SHORT,
-	DENSE_SHORTREAL,
-	DENSE_WORD,
+	SCALAR_INT,
+	SCALAR_REAL,
+	SCALAR_BOOL,
+	STANDARD_STRING,
+
+	VECTOR_BOOL,
+	VECTOR_BYTE,
+	VECTOR_CHAR,
+	VECTOR_INT,
+	VECTOR_REAL,
+	VECTOR_SHORTREAL,
+	VECTOR_SHORT,
+	VECTOR_WORD,
+
+	DENSE_MATRIX_INT,
+	DENSE_MATRIX_REAL,
+	DENSE_MATRIX_SHORTREAL,
+	DENSE_MATRIX_SHORT,
+	DENSE_MATRIX_WORD,
+
+	DENSE_NDARRAY_BYTE,
+	DENSE_NDARRAY_CHAR,
+	DENSE_NDARRAY_INT,
+	DENSE_NDARRAY_REAL,
+	DENSE_NDARRAY_SHORTREAL,
+	DENSE_NDARRAY_SHORT,
+	DENSE_NDARRAY_WORD,
 
 	SPARSE_BYTE,
 	SPARSE_CHAR,
