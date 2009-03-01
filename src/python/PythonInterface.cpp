@@ -667,18 +667,22 @@ bool CPythonInterface::run_python_helper(CSGInterface* from_if)
 	int32_t sz=-1;
 
 	if (results)
-		sz=PyDict_Size(results);
+	{
+		if (!PyTuple_Check(results))
+			from_if->SG_ERROR("results should be a tuple, e.g. results=(1,2,3) or results=tuple([42])");
+		else
+			sz=PyTuple_Size(results);
+	}
+
 	if (sz>0 && from_if->create_return_values(sz))
 	{
-		PyObject* values = PyDict_Values(results);
-		//PyObject* keys = PyDict_Keys(results);
-		PyObject* tuple = PyList_AsTuple(values);
-		CPythonInterface* out = new CPythonInterface(tuple);
+		CPythonInterface* out = new CPythonInterface(results);
 
 		//process d
 		for (int32_t i=0; i<sz; i++)
 			from_if->translate_arg(out, from_if);
 
+		Py_DECREF(results);
 		SG_UNREF(out);
 	}
 	else

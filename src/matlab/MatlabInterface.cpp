@@ -8,6 +8,7 @@
 #include <shogun/base/init.h>
 
 #ifdef HAVE_PYTHON
+#include <dlfcn.h>
 #include "../python/PythonInterface.h"
 #endif
 
@@ -29,9 +30,7 @@ void matlab_print_warning(FILE* target, const char* str)
 
 void matlab_print_error(FILE* target, const char* str)
 {
-	if (target==stdout)
-		mexPrintf("%s", str);
-	else
+	if (target!=stdout)
 		fprintf(target, "%s", str);
 }
 

@@ -30,9 +30,7 @@ void r_print_warning(FILE* target, const char* str)
 
 void r_print_error(FILE* target, const char* str)
 {
-	if (target==stdout)
-		Rprintf((char*) "%s", str);
-	else
+	if (target!=stdout)
 		fprintf(target, "%s", str);
 }
 
@@ -501,7 +499,7 @@ extern "C" {
 /* This method is called by R when the shogun module is loaded into R
  * via dyn.load('sg.so'). */
 
-SEXP sg(SEXP args);
+SEXP Rsg(SEXP args);
 
 void R_init_sg(DllInfo *info) { 
    
@@ -515,7 +513,7 @@ void R_init_sg(DllInfo *info) {
 
    R_CMethodDef cMethods[] = { {NULL, NULL, 0} };
    R_FortranMethodDef fortranMethods[] = { {NULL, NULL, 0} };
-   R_ExternalMethodDef externalMethods[] = { {"sg", (void*(*)()) &sg, 1}, {NULL, NULL, 0} };
+   R_ExternalMethodDef externalMethods[] = { {"sg", (void*(*)()) &Rsg, 1}, {NULL, NULL, 0} };
    R_CallMethodDef callMethods[] = { {NULL, NULL, 0} };
 
    /* Register the routines saved in the callMethods structure so that they are available under R. */
@@ -523,7 +521,7 @@ void R_init_sg(DllInfo *info) {
 
 }
 
-SEXP sg(SEXP args)
+SEXP Rsg(SEXP args)
 {
 	/* The SEXP (Simple Expression) args is a list of arguments of the .External call. 
 	 * it consists of "sg", "func" and additional arguments.

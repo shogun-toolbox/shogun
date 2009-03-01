@@ -9,6 +9,7 @@
 #include <shogun/base/init.h>
 
 #ifdef HAVE_PYTHON
+#include <dlfcn.h>
 #include "../python/PythonInterface.h"
 #endif
 
@@ -27,7 +28,8 @@ void octave_print_warning(FILE* target, const char* str)
 
 void octave_print_error(FILE* target, const char* str)
 {
-	fprintf(target, "%s", str);
+	if (target!=stdout)
+		fprintf(target, "%s", str);
 }
 
 void octave_cancel_computations(bool &delayed, bool &immediately)
