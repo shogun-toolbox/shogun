@@ -307,32 +307,35 @@ CLabels* CSVM::classify(CLabels* lab)
 		if (kernel->has_property(KP_BATCHEVALUATION) &&
 				get_batch_computation_enabled())
 		{
-			ASSERT(get_num_support_vectors()>0);
-			int32_t* sv_idx=new int32_t[get_num_support_vectors()];
-			float64_t* sv_weight=new float64_t[get_num_support_vectors()];
-			int32_t* idx=new int32_t[num_vectors];
 			float64_t* output=new float64_t[num_vectors];
 			memset(output, 0, sizeof(float64_t)*num_vectors);
 
-			//compute output for all vectors v[0]...v[num_vectors-1]
-			for (int32_t i=0; i<num_vectors; i++)
-				idx[i]=i;
-
-			for (int32_t i=0; i<get_num_support_vectors(); i++)
+			if (get_num_support_vectors()>0)
 			{
-				sv_idx[i]    = get_support_vector(i) ;
-				sv_weight[i] = get_alpha(i) ;
-			}
+				int32_t* sv_idx=new int32_t[get_num_support_vectors()];
+				float64_t* sv_weight=new float64_t[get_num_support_vectors()];
+				int32_t* idx=new int32_t[num_vectors];
 
-			kernel->compute_batch(num_vectors, idx,
-					output, get_num_support_vectors(), sv_idx, sv_weight);
+				//compute output for all vectors v[0]...v[num_vectors-1]
+				for (int32_t i=0; i<num_vectors; i++)
+					idx[i]=i;
+
+				for (int32_t i=0; i<get_num_support_vectors(); i++)
+				{
+					sv_idx[i]    = get_support_vector(i) ;
+					sv_weight[i] = get_alpha(i) ;
+				}
+
+				kernel->compute_batch(num_vectors, idx,
+						output, get_num_support_vectors(), sv_idx, sv_weight);
+				delete[] sv_idx ;
+				delete[] sv_weight ;
+				delete[] idx;
+			}
 
 			for (int32_t i=0; i<num_vectors; i++)
 				lab->set_label(i, get_bias()+output[i]);
 
-			delete[] sv_idx ;
-			delete[] sv_weight ;
-			delete[] idx;
 			delete[] output;
 		}
 		else

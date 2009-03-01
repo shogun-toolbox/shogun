@@ -89,24 +89,22 @@ void CKernel::get_kernel_matrix(float64_t** dst, int32_t* m, int32_t* n)
 	ASSERT(dst && m && n);
 
 	float64_t* result = NULL;
-	CFeatures* f1 = lhs;
-	CFeatures* f2 = rhs;
 
-	if (f1 && f2)
+	if (has_features())
 	{
-		int32_t num_vec1=f1->get_num_vectors();
-		int32_t num_vec2=f2->get_num_vectors();
+		int32_t num_vec1=get_num_vec_lhs();
+		int32_t num_vec2=get_num_vec_rhs();
 		*m=num_vec1;
 		*n=num_vec2;
 
-		int64_t total_num = num_vec1 * num_vec2;
+		int64_t total_num = ((int64_t) num_vec1) * num_vec2;
 		int32_t num_done = 0;
 		SG_DEBUG( "returning kernel matrix of size %dx%d\n", num_vec1, num_vec2);
 
 		result=(float64_t*) malloc(sizeof(float64_t)*total_num);
 		ASSERT(result);
 
-		if ( (f1 == f2) && (num_vec1 == num_vec2) )
+		if ( lhs && lhs==rhs && num_vec1==num_vec2 )
 		{
 			for (int32_t i=0; i<num_vec1; i++)
 			{
@@ -155,18 +153,14 @@ float32_t* CKernel::get_kernel_matrix_shortreal(
 	int32_t &num_vec1, int32_t &num_vec2, float32_t* target)
 {
 	float32_t* result = NULL;
-	CFeatures* f1 = lhs;
-	CFeatures* f2 = rhs;
 
-	if (f1 && f2)
+	if (has_features())
 	{
-		if (target && (num_vec1!=f1->get_num_vectors() ||
-					num_vec2!=f2->get_num_vectors()) )
-			SG_ERROR( "kernel matrix does not fit into target\n");
+		if (target && (num_vec1!=get_num_vec_lhs() ||
+					num_vec2!=get_num_vec_rhs()) )
+			SG_ERROR( "kernel matrix size mismatch\n");
 
-		num_vec1=f1->get_num_vectors();
-		num_vec2=f2->get_num_vectors();
-		int64_t total_num = num_vec1 * num_vec2;
+		int64_t total_num = ((int64_t) num_vec1) * num_vec2;
 		int32_t num_done = 0;
 
 		SG_DEBUG( "returning kernel matrix of size %dx%d\n", num_vec1, num_vec2);
@@ -176,7 +170,7 @@ float32_t* CKernel::get_kernel_matrix_shortreal(
 		else
 			result=new float32_t[total_num];
 
-		if (f1==f2 && num_vec1==num_vec2)
+		if (lhs && lhs==rhs && num_vec1==num_vec2)
 		{
 			for (int32_t i=0; i<num_vec1; i++)
 			{
@@ -225,17 +219,13 @@ float64_t* CKernel::get_kernel_matrix_real(
 	int32_t &num_vec1, int32_t &num_vec2, float64_t* target)
 {
 	float64_t* result = NULL;
-	CFeatures* f1 = lhs;
-	CFeatures* f2 = rhs;
 
-	if (f1 && f2)
+	if (has_features())
 	{
-		if (target && (num_vec1!=f1->get_num_vectors() ||
-					num_vec2!=f2->get_num_vectors()) )
-			SG_ERROR( "kernel matrix does not fit into target\n");
+		if (target && (num_vec1!=get_num_vec_lhs() ||
+					num_vec2!=get_num_vec_rhs()) )
+			SG_ERROR( "kernel matrix size mismatch\n");
 
-		num_vec1=f1->get_num_vectors();
-		num_vec2=f2->get_num_vectors();
 		int64_t total_num = num_vec1 * num_vec2;
 		int32_t num_done = 0;
 
@@ -246,7 +236,7 @@ float64_t* CKernel::get_kernel_matrix_real(
 		else
 			result=new float64_t[total_num];
 
-		if (f1==f2 && num_vec1==num_vec2)
+		if (lhs && lhs==rhs && num_vec1==num_vec2)
 		{
 			for (int32_t i=0; i<num_vec1; i++)
 			{
@@ -301,7 +291,7 @@ void CKernel::resize_kernel_cache(KERNELCACHE_IDX size, bool regression_hack)
 	kernel_cache_cleanup();
 	cache_size=size;
 
-	if (lhs!=NULL && rhs!=NULL)
+	if (has_features())
 		kernel_cache_init(cache_size, regression_hack);
 }
 #endif //USE_SVMLIGHT
@@ -360,9 +350,7 @@ void CKernel::cleanup()
 
 void CKernel::kernel_cache_init(int32_t buffsize, bool regression_hack)
 {
-	ASSERT(lhs);
-
-	int32_t totdoc=lhs->get_num_vectors();
+	int32_t totdoc=get_num_vec_lhs();
 	ASSERT(totdoc>0);
 	uint64_t buffer_size=0;
 	int32_t i;
@@ -419,7 +407,7 @@ void CKernel::get_kernel_row(
 	int32_t i,j;
 	KERNELCACHE_IDX start;
 
-	int32_t num_vectors = lhs->get_num_vectors();
+	int32_t num_vectors = get_num_vec_lhs();
 	if (docnum>=num_vectors)
 		docnum=2*num_vectors-1-docnum;
 
@@ -431,7 +419,7 @@ void CKernel::get_kernel_row(
 
 		if (full_line)
 		{
-			for(j=0;j<lhs->get_num_vectors();j++)
+			for(j=0;j<get_num_vec_lhs();j++)
 			{
 				if(kernel_cache.totdoc2active[j] >= 0)
 					buffer[j]=kernel_cache.buffer[start+kernel_cache.totdoc2active[j]];
@@ -454,7 +442,7 @@ void CKernel::get_kernel_row(
 	{
 		if (full_line)
 		{
-			for(j=0;j<lhs->get_num_vectors();j++)
+			for(j=0;j<get_num_vec_lhs();j++)
 				buffer[j]=(KERNELCACHE_ELEM) kernel(docnum, j);
 		}
 		else
@@ -472,7 +460,7 @@ void CKernel::cache_kernel_row(int32_t m)
 	register int32_t j,k,l;
 	register KERNELCACHE_ELEM *cache;
 
-	int32_t num_vectors = lhs->get_num_vectors();
+	int32_t num_vectors = get_num_vec_lhs();
 
 	if (m>=num_vectors)
 		m=2*num_vectors-1-m;
@@ -548,7 +536,7 @@ void CKernel::cache_multiple_kernel_rows(int32_t* rows, int32_t num_rows)
 		pthread_t* threads = new pthread_t[parallel->get_num_threads()-1];
 		S_KTHREAD_PARAM* params = new S_KTHREAD_PARAM[parallel->get_num_threads()-1];
 		int32_t num_threads=parallel->get_num_threads()-1;
-		int32_t num_vec=lhs->get_num_vectors();
+		int32_t num_vec=get_num_vec_lhs();
 		ASSERT(num_vec>0);
 		uint8_t* needs_computation=new uint8_t[num_vec];
 		memset(needs_computation, 0, sizeof(uint8_t)*num_vec);
@@ -797,7 +785,7 @@ bool CKernel::load(char* fname)
 bool CKernel::save(char* fname)
 {
 	int32_t i=0;
-	int32_t num_left=lhs->get_num_vectors();
+	int32_t num_left=get_num_vec_lhs();
 	int32_t num_right=rhs->get_num_vectors();
 	KERNELCACHE_IDX num_total=num_left*num_right;
 
