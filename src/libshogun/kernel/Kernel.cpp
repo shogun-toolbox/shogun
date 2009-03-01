@@ -160,6 +160,9 @@ float32_t* CKernel::get_kernel_matrix_shortreal(
 					num_vec2!=get_num_vec_rhs()) )
 			SG_ERROR( "kernel matrix size mismatch\n");
 
+		num_vec1=get_num_vec_lhs();
+		num_vec2=get_num_vec_rhs();
+
 		int64_t total_num = ((int64_t) num_vec1) * num_vec2;
 		int32_t num_done = 0;
 
@@ -226,7 +229,10 @@ float64_t* CKernel::get_kernel_matrix_real(
 					num_vec2!=get_num_vec_rhs()) )
 			SG_ERROR( "kernel matrix size mismatch\n");
 
-		int64_t total_num = num_vec1 * num_vec2;
+		num_vec1=get_num_vec_lhs();
+		num_vec2=get_num_vec_rhs();
+
+		int64_t total_num = ((int64_t) num_vec1) * num_vec2;
 		int32_t num_done = 0;
 
 		SG_DEBUG( "returning kernel matrix of size %dx%d\n", num_vec1, num_vec2);
