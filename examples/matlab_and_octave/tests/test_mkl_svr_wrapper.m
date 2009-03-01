@@ -72,7 +72,6 @@ sg('add_kernel', 1, 'GAUSSIAN', 'REAL', cache_size, rbf_width(5));
 sg('init_kernel', 'TRAIN');
 sg('use_mkl', 0);
 sg('loglevel', 'ALL');
-sg('use_precompute', 0);
 sg('mkl_parameters', 1e-3, 0);
 sg('c', C);
 sg('svm_epsilon', svm_eps);

@@ -36,7 +36,6 @@ testdat(aa,testlab==1)='A';
 %train svm
 sg('use_linadd', true);
 sg('use_batch_computation', false);
-sg('loglevel', 'ALL');
 sg('set_features', 'TRAIN', traindat, 'DNA');
 sg('set_labels', 'TRAIN', trainlab);
 sg('set_kernel', 'WEIGHTEDDEGREE', 'CHAR', cache, order, max_mismatch, normalize, mkl_stepsize, block, single_degree);

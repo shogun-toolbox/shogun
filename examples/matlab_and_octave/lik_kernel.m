@@ -30,7 +30,6 @@ testdat(aa,testlab==1)='A';
 %input('key to continue')
 
 %train svm
-sg('loglevel', 'ALL');
 sg('set_features', 'TRAIN', traindat, 'DNA');
 sg('set_labels', 'TRAIN', trainlab);
 sg('set_kernel', 'SLIK', 'CHAR', cache, l, d1, d2);

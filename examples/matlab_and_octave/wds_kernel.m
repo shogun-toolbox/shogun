@@ -53,7 +53,6 @@ sg('use_linadd', true);
 sg('use_batch_computation', true);
 sg('set_features', 'TRAIN', traindat,'DNA');
 sg('set_labels', 'TRAIN', trainlab);
-%sg('loglevel', 'ALL');
 %sg('set_kernel', 'WEIGHTEDDEGREEPOS2', 'CHAR', 10, order, max_mismatch, len, shifts);
 sg('set_kernel', 'WEIGHTEDDEGREEPOS3', 'CHAR', 10, order, max_mismatch, len, 1, shifts);
 %sg('set_kernel', 'WEIGHTEDDEGREEPOS3', 'CHAR', 10, order, max_mismatch, len, 1, shifts, posweights);

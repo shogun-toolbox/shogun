@@ -46,7 +46,6 @@ for kk = 4    % big loop for the different learning problems
   % initialize MKL-SVR
   sg('new_regression', 'SVRLIGHT');
   sg('use_mkl', 1);
-  sg('use_precompute', 0);
   sg('mkl_parameters', mkl_eps, 0);
   sg('c', C);
   sg('svm_epsilon', svm_eps);

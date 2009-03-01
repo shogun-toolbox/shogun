@@ -9,7 +9,6 @@ dist=1;
 traindat=sparse([randn(dim,num/2)-dist, randn(dim,num/2)+dist]);
 trainlab=[-ones(1,num/2), ones(1,num/2) ];
 
-sg('loglevel', 'ALL');
 sg('set_features', 'TRAIN', traindat);
 sg('set_labels', 'TRAIN', trainlab);
 sg('c', C);

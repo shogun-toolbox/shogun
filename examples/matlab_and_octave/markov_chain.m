@@ -16,7 +16,6 @@ LV=[-ones(1,numseq), ones(1,numseq)];
 XV=acgt(ceil(3*rand(seqlen,2*numseq)));
 XV(motifidx,LV==1)='T';
 
-%sg('loglevel', 'ALL');
 sg('set_features', 'TRAIN', XT(:,LT==1), 'DNA') ;
 sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'WORD', order);
 sg('pseudo', ppseudo);

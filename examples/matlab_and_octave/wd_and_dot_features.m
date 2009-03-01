@@ -38,7 +38,6 @@ testlab=trainlab;
 sg('send_command', 'threads 1');
 sg('send_command', 'use_linadd 1');
 sg('send_command', 'use_batch_computation 1');
-sg('send_command', 'loglevel ALL');
 sg('progress', 'ON');
 sg('set_features', 'TRAIN', traindat, 'DNA');
 sg('set_labels', 'TRAIN', trainlab);
@@ -88,7 +87,6 @@ testdat(testdat=='G')=2;
 testdat(testdat=='T')=3;
 testdat=uint8(testdat);
 
-sg('send_command', 'loglevel ALL');
 sg('set_features', 'TRAIN', traindat', 'RAWDNA');
 sg('set_labels', 'TRAIN', trainlab);
 sg('send_command', sprintf('c %f',C));
@@ -104,7 +102,6 @@ out=sg('svm_classify');
 %prc=calcrfcscore(out, testlab);
 %roc=calcrocscore(out, testlab);
 
-sg('send_command', 'loglevel ALL');
 sg('set_features', 'TRAIN', traindat, 'RAWDNA', 'WD', order, from_order);
 sg('set_labels', 'TRAIN', trainlab);
 sg('c', C);
@@ -147,7 +144,6 @@ end
 traindat=sparse(dat);
 testdat=traindat;
 
-sg('loglevel', 'ALL');
 sg('set_features', 'TRAIN', traindat);
 sg('set_labels', 'TRAIN', trainlab);
 sg('c', C);
@@ -158,7 +154,6 @@ sg('train_classifier');
 sg('set_features', 'TEST', traindat);
 out_ocas=sg('classify');
 
-sg('loglevel', 'ALL');
 sg('set_features', 'TRAIN', dat);
 sg('set_labels', 'TRAIN', trainlab);
 sg('c', C);
@@ -173,7 +168,6 @@ max(abs(out-out_ref))
 max(abs(out_ocas-out_ref))
 max(abs(out_ocas-out_docas))
 
-sg('loglevel', 'ALL');
 sg('set_features', 'TRAIN', [traindat;2*traindat]);
 sg('set_labels', 'TRAIN', trainlab);
 sg('c', C);

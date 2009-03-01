@@ -16,7 +16,6 @@ sg('new_regression', 'SVRLIGHT');
 sg('use_mkl', 0);
 sg('use_linadd', 1);
 sg('use_batch_computation', 1);
-sg('use_precompute', 0);
 sg('mkl_parameters', 1e-5, 0);
 sg('svm_epsilon', 1e-5);
 sg('clean_features', 'TRAIN');

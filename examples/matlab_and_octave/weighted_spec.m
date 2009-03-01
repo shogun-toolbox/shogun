@@ -26,8 +26,6 @@ for i=1:length(idx),
 	traindat(aa+aas(i),idx(i))='A';
 end
 
-sg('loglevel', 'ALL');
-
 %%% spec
 weights=(order:-1:1);
 weights=weights/sum(weights);
