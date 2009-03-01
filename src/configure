@@ -685,6 +685,7 @@ for ac_option do
 	_python_static=no
 	_octave_static=no
 	_matlab_static=no
+	_elwms_static=no
 	_r_static=no
 	_python_modular=no
 	_octave_modular=no
