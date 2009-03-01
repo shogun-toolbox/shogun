@@ -30,8 +30,7 @@ void matlab_print_warning(FILE* target, const char* str)
 
 void matlab_print_error(FILE* target, const char* str)
 {
-	if (target!=stdout)
-		fprintf(target, "%s", str);
+	fprintf(target, "%s", str);
 }
 
 void matlab_cancel_computations(bool &delayed, bool &immediately)

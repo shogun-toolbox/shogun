@@ -294,7 +294,7 @@ class CKernel : public CSGObject
 		 *
 		 * @return true if features are assigned
 		 */
-		inline bool has_features()
+		virtual inline bool has_features()
 		{
 			return lhs && rhs;
 		}

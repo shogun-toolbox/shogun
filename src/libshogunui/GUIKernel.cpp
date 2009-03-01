@@ -879,6 +879,8 @@ bool CGUIKernel::add_kernel(CKernel* kern, float64_t weight)
 	kern->set_combined_kernel_weight(weight);
 
 	bool success=((CCombinedKernel*) kernel)->append_kernel(kern);
+
+	initialized=true;
 	if (success)
 		((CCombinedKernel*) kernel)->list_kernels();
 	else

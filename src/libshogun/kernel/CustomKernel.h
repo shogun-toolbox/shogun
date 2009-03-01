@@ -161,6 +161,15 @@ class CCustomKernel: public CKernel
 			return num_cols;
 		}
 
+		/** test whether features have been assigned to lhs and rhs
+		 *
+		 * @return true if features are assigned
+		 */
+		virtual inline bool has_features()
+		{
+			return (num_rows>0) && (num_cols>0);
+		}
+
 	protected:
 		/** compute kernel function
 		 *

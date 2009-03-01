@@ -184,19 +184,7 @@ class CCombinedKernel : public CKernel
 		inline bool insert_kernel(CKernel* k)
 		{
 			ASSERT(k);
-
-			if (k->get_num_vec_lhs())
-			{
-				if (num_lhs)
-					ASSERT(num_lhs==k->get_num_vec_lhs());
-				num_lhs=k->get_num_vec_lhs();
-			}
-			if (k->get_num_vec_rhs())
-			{
-				if (num_rhs)
-					ASSERT(num_rhs==k->get_num_vec_rhs());
-				num_rhs=k->get_num_vec_rhs();
-			}
+			adjust_num_lhs_rhs_initialized(k);
 
 			if (!(k->has_property(KP_LINADD)))
 				unset_property(KP_LINADD);
@@ -212,25 +200,14 @@ class CCombinedKernel : public CKernel
 		inline bool append_kernel(CKernel* k)
 		{
 			ASSERT(k);
-
-			if (k->get_num_vec_lhs())
-			{
-				if (num_lhs)
-					ASSERT(num_lhs==k->get_num_vec_lhs());
-				num_lhs=k->get_num_vec_lhs();
-			}
-			if (k->get_num_vec_rhs())
-			{
-				if (num_rhs)
-					ASSERT(num_rhs==k->get_num_vec_rhs());
-				num_rhs=k->get_num_vec_rhs();
-			}
+			adjust_num_lhs_rhs_initialized(k);
 
 			if (!(k->has_property(KP_LINADD)))
 				unset_property(KP_LINADD);
 
 			return kernel_list->append_element(k);
 		}
+
 
 		/** delete kernel
 		 *
@@ -299,6 +276,15 @@ class CCombinedKernel : public CKernel
 		virtual inline int32_t get_num_vec_rhs()
 		{
 			return num_rhs;
+		}
+
+		/** test whether features have been assigned to lhs and rhs
+		 *
+		 * @return true if features are assigned
+		 */
+		virtual inline bool has_features()
+		{
+			return initialized;
 		}
 
 		/** remove lhs from kernel */
@@ -421,6 +407,50 @@ class CCombinedKernel : public CKernel
 		 */
 		virtual float64_t compute(int32_t x, int32_t y);
 
+		/** adjust the variables num_lhs, num_rhs and initialized
+		 * bast on the kernel to be appended/inserted 
+		 *
+		 * @param k kernel
+		 */
+		inline void adjust_num_lhs_rhs_initialized(CKernel* k)
+		{
+			ASSERT(k);
+
+			if (k->get_num_vec_lhs())
+			{
+				if (num_lhs)
+					ASSERT(num_lhs==k->get_num_vec_lhs());
+				num_lhs=k->get_num_vec_lhs();
+
+				if (!get_num_subkernels())
+				{
+					initialized=true;
+#ifdef USE_SVMLIGHT
+					cache_reset();
+#endif //USE_SVMLIGHT
+				}
+			}
+			else
+				initialized=false;
+
+			if (k->get_num_vec_rhs())
+			{
+				if (num_rhs)
+					ASSERT(num_rhs==k->get_num_vec_rhs());
+				num_rhs=k->get_num_vec_rhs();
+
+				if (!get_num_subkernels())
+				{
+					initialized=true;
+#ifdef USE_SVMLIGHT
+					cache_reset();
+#endif //USE_SVMLIGHT
+				}
+			}
+			else
+				initialized=false;
+		}
+
 	protected:
 		/** list of kernels */
 		CList<CKernel*>* kernel_list;
@@ -438,6 +468,8 @@ class CCombinedKernel : public CKernel
 		int32_t num_lhs;
 		/** number of vectors on lhs */
 		int32_t num_rhs;
+		/** whether kernel is ready to be used */
+		bool initialized;
 };
 
 #endif /* _COMBINEDKERNEL_H__ */

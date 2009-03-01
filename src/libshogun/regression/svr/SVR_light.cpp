@@ -363,7 +363,6 @@ void CSVRLight::update_linear_component_mkl(
 	int32_t num         = totdoc;
 	int32_t num_weights = -1;
 	int32_t num_kernels = kernel->get_num_subkernels() ;
-	int nk = (int) num_kernels; /* calling external lib */
 	const float64_t* w  = kernel->get_subkernel_weights(num_weights);
 	float64_t* beta = new float64_t[2*num_kernels+1];
 
@@ -430,6 +429,7 @@ void CSVRLight::update_linear_component_mkl(
 	
 	float64_t mkl_objective=0;
 #ifdef HAVE_LAPACK
+	int nk = (int) num_kernels; /* calling external lib */
 	double* alphay  = new double[num];
 	float64_t sumalpha = 0 ;
 	
@@ -712,7 +712,6 @@ void CSVRLight::update_linear_component_mkl_linadd(
 	int32_t num         = totdoc;
 	int32_t num_weights = -1;
 	int32_t num_kernels = kernel->get_num_subkernels() ;
-	int nk = (int) num_kernels; /* calling external lib */
 	const float64_t* w   = kernel->get_subkernel_weights(num_weights);
 	int32_t num_active_rows=0;
 	int32_t num_rows=0;
@@ -753,6 +752,7 @@ void CSVRLight::update_linear_component_mkl_linadd(
 	}
 	float64_t mkl_objective=0;
 #ifdef HAVE_LAPACK
+	int nk = (int) num_kernels; /* calling external lib */
 	float64_t sumalpha = 0 ;
 	
 	for (int32_t i=0; i<num; i++)

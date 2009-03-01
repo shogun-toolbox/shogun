@@ -65,15 +65,7 @@ class CCombinedFeatures : public CFeatures
 		 */
 		inline virtual int32_t get_num_vectors()
 		{
-			CFeatures* f=feature_list->get_current_element();
-			if (f)
-			{
-				int32_t n=f->get_num_vectors();
-				SG_UNREF(f);
-				return n;
-			}
-			else 
-				return 0;
+			return num_vec;
 		}
 
 		/** get memory footprint of one feature
@@ -158,6 +150,12 @@ class CCombinedFeatures : public CFeatures
 		inline bool insert_feature_obj(CFeatures* obj)
 		{
 			ASSERT(obj);
+			int32_t n=obj->get_num_vectors();
+
+			if (num_vec>0 && n!=num_vec)
+				SG_ERROR("Number of feature vectors does not match (expected %d, obj has %d)\n", num_vec, n);
+
+			num_vec=n;
 			return feature_list->insert_element(obj);
 		}
 
@@ -169,6 +167,12 @@ class CCombinedFeatures : public CFeatures
 		inline bool append_feature_obj(CFeatures* obj)
 		{
 			ASSERT(obj);
+			int32_t n=obj->get_num_vectors();
+
+			if (num_vec>0 && n!=num_vec)
+				SG_ERROR("Number of feature vectors does not match (expected %d, obj has %d)\n", num_vec, n);
+
+			num_vec=n;
 			return feature_list->append_element(obj);
 		}
 
@@ -203,5 +207,10 @@ class CCombinedFeatures : public CFeatures
 	protected:
 		/** feature list */
 		CList<CFeatures*>* feature_list;
+
+		/** number of vectors
+		 * must match between sub features
+		 */
+		int32_t num_vec;
 };
 #endif

@@ -41,7 +41,7 @@ struct S_THREAD_PARAM
 CCombinedKernel::CCombinedKernel(int32_t size, bool asw)
 : CKernel(size), sv_count(0), sv_idx(NULL), sv_weight(NULL),
 	subkernel_weights_buffer(NULL), append_subkernel_weights(asw),
-	num_lhs(0), num_rhs(0)
+	num_lhs(0), num_rhs(0), initialized(false)
 {
 	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
 	kernel_list=new CList<CKernel*>(true);
@@ -114,6 +114,10 @@ bool CCombinedKernel::init(CFeatures* l, CFeatures* r)
 			SG_DEBUG( "Initializing 0x%p - \"%s\" (skipping init, this is a CUSTOM kernel)\n", this, k->get_name());
 			if (!k->has_features())
 				SG_ERROR("No kernel matrix was assigned to this Custom kernel\n");
+			if (!k->get_num_vec_lhs() != num_lhs)
+				SG_ERROR("Number of lhs-feature vectors (%d) not match with number of rows (%d) of custom kernel\n", num_lhs, k->get_num_vec_lhs());
+			if (!k->get_num_vec_rhs() != num_rhs)
+				SG_ERROR("Number of rhs-feature vectors (%d) not match with number of cols (%d) of custom kernel\n", num_rhs, k->get_num_vec_rhs());
 		}
 
 		SG_UNREF(k);
@@ -139,6 +143,7 @@ bool CCombinedKernel::init(CFeatures* l, CFeatures* r)
 	}
 	
 	init_normalizer();
+	initialized=true;
 	return true;
 }
 

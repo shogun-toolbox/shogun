@@ -18,12 +18,15 @@ CCombinedFeatures::CCombinedFeatures()
 : CFeatures(0)
 {
 	feature_list=new CList<CFeatures*>(true);
+	num_vec=0;
 }
 
 CCombinedFeatures::CCombinedFeatures(const CCombinedFeatures & orig)
 : CFeatures(0)
 {
 	feature_list=new CList<CFeatures*>(true);
+	//todo copy features
+	num_vec=orig.num_vec;
 }
 
 CFeatures* CCombinedFeatures::duplicate() const
