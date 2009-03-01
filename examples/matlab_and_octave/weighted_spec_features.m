@@ -67,6 +67,7 @@ sg('set_features', 'TEST', traindat, 'DNA');
 sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, 0, 'r');
 sg('add_preproc', 'SORTWORDSTRING');
 sg('attach_preproc', 'TEST');
+sg('init_kernel','TEST');
 out_ref=sg('classify');
 
 traindat(traindat=='A')=0;
