@@ -29,7 +29,7 @@ testlab=[-ones(1,num/2),ones(1,num_test/2)];
 x=ceil(linspace(1,shift,len));
 shifts = int32(x(end:-1:1));
 
-sg('loglevel', 'ALL');
+%sg('loglevel', 'ALL');
 sg('clean_features', 'TRAIN');
 sg('clean_features', 'TEST');
 sg('clean_kernel');
@@ -85,7 +85,7 @@ tout=toc
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-sg('loglevel', 'ALL');
+%sg('loglevel', 'ALL');
 sg('clean_features', 'TRAIN');
 sg('clean_features', 'TEST');
 sg('threads', 4);

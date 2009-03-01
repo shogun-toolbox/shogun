@@ -30,7 +30,7 @@ end
 testdat=acgt(ceil(4*rand(len,num_test)));
 testlab=ones(1,num_test);
 
-sg('loglevel', 'ALL');
+%sg('loglevel', 'ALL');
 
 %%% spec
 weights=(order:-1:1);

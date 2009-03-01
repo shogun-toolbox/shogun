@@ -12,7 +12,7 @@ trainlab=[ -ones(1,num/2) ones(1,num/2) ];
 valdat=[ (rand(dims,numval/2)-0.1) (rand(dims,numval/2)+0.1) ];
 vallab=[ -ones(1,numval/2) ones(1,numval/2) ];
 
-sg('loglevel', 'ALL');
+%sg('loglevel', 'ALL');
 
 sg('use_mkl', 0);
 sg('use_linadd', 1);

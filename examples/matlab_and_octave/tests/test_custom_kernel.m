@@ -30,14 +30,12 @@ out=sg('classify');
 valerr=mean(testlab~=sign(out));
 
 
-sg('set_kernel', 'CUSTOM', 'ANY', 50);
-sg('set_custom_kernel',kt,'FULL2DIAG');
-sg('init_kernel', 'TRAIN');
+sg('set_kernel', 'CUSTOM', kt,'FULL2DIAG');
 kt2=sg('get_kernel_matrix');
 abs(kt-kt2)<1e-6
 max(abs(kt(:)-kt2(:)))
 
-sg('set_custom_kernel',kte,'FULL');
+sg('set_kernel', 'CUSTOM', kte,'FULL');
 sg('init_kernel', 'TEST');
 kte2=sg('get_kernel_matrix');
 abs(kte-kte2)<1e-6

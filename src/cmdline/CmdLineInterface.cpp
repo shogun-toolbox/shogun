@@ -176,7 +176,7 @@ IFType CCmdLineInterface::get_argument_type()
 		else if (strncmp(signature, "STRING_BYTE", 11)==0)
 			argtype=STRING_BYTE;
 		else if (strncmp(signature, "DENSE_REAL", 10)==0)
-			argtype=DENSE_REAL;
+			argtype=DENSE_MATRIX_REAL;
 		else if (strncmp(signature, "SPARSE_REAL", 11)==0)
 			argtype=SPARSE_REAL;
 	}
@@ -192,7 +192,7 @@ IFType CCmdLineInterface::get_argument_type()
 		}
 		else if (strspn(chunk, "0123456789.e+- \t\n")==nread)
 		{
-			argtype=DENSE_REAL;
+			argtype=DENSE_MATRIX_REAL;
 			SG_DEBUG("guessing DENSE_REAL\n");
 		}
 		else if (strspn(chunk, "0123456789:.e+- \t\n")==nread)

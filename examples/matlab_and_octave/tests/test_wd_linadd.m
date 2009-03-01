@@ -20,7 +20,7 @@ vallab=[ -ones(1,numval/2) ones(1,numval/2) ];
 for i=find(vallab==1)
   valdat(20:26,i)='AAAAAAA' ;
 end ;
-sg('loglevel', 'ALL');
+%sg('loglevel', 'ALL');
 sg('threads', 10);
 sg('svm_qpsize', 150);
 

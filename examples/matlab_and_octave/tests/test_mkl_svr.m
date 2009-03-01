@@ -12,7 +12,7 @@ cache_size = 50;
 mkl_eps  = 1e-6;  % threshold for precision
 svm_eps    = 1e-5;
 svr_tube_eps   = 1e-2;
-debug = 1;
+debug = 0;
 
 % Kernel width for the 5 "basic" SVMs
 rbf_width(1) = 0.005;

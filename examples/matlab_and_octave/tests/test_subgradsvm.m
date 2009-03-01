@@ -82,7 +82,7 @@ otherwise
 	error('unknown dataset')
 end
 
-sg('loglevel', 'ALL');
+%sg('loglevel', 'ALL');
 
 %%%%SUBGRADIENT%%%
 if run_subgradientsvm,

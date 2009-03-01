@@ -11,7 +11,7 @@ traindat=uint8(reshape(x,400,400));
 trainlab=y;
 testdat=traindat;
 
-sg('loglevel', 'ALL');
+%sg('loglevel', 'ALL');
 sg('set_features', 'TRAIN', traindat, 'RAWDNA');
 sg('set_labels', 'TRAIN', trainlab);
 sg('c', C);

@@ -25,7 +25,7 @@ traindat'
 input('key to continue')
 
 %train svm
-sg('loglevel', 'INFO' );
+%sg('loglevel', 'INFO' );
 sg('set_features', 'TRAIN', traindat,'DNA');
 sg('set_labels', 'TRAIN', trainlab);
 sg('set_kernel', 'WEIGHTEDDEGREEPOS2', 'CHAR', 10', order, max_mismatch, len, shifts);

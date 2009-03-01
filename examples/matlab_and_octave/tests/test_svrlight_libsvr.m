@@ -3,7 +3,7 @@ rand('state',12345);
 for i=1:1000,
 num=ceil(1500*rand);
 dims=ceil(1000*rand);
-sg('loglevel', 'ALL');
+%sg('loglevel', 'ALL');
 dist=rand;
 traindat=[rand(dims,num)-dist rand(dims,num)+dist];
 trainlab=sin(sum(traindat,1));

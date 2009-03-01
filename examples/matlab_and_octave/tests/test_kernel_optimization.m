@@ -13,7 +13,7 @@ end
 trainlab=2*round(rand(1,1000))-1;
 %testdat=rand(100,1000);
 testlab=2*round(rand(1,1000))-1;
-sg('loglevel', 'INFO');
+%sg('loglevel', 'INFO');
 sg('set_features', 'TRAIN', traindat, 'DNA');
 sg('set_labels', 'TRAIN', trainlab);
 sg('set_kernel', 'LINEAR', 'CHAR', 100);

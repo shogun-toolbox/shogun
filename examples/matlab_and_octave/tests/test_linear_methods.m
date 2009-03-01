@@ -2,7 +2,7 @@ rand('state',17);
 num=1000;
 dim=2;
 
-sg('loglevel', 'ALL');
+%sg('loglevel', 'ALL');
 traindat=[rand(dim,num/2)-0.3, rand(dim,num/2)+0.3];
 trainlab=[-ones(1,num/2), ones(1,num/2) ];
 

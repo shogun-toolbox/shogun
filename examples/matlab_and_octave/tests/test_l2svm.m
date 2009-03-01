@@ -16,7 +16,7 @@ dim=size(traindat,1);
 %traindat=sparse([randn(dim,num/2)-dist, randn(dim,num/2)+dist]);
 %trainlab=[ones(1,num/2), -ones(1,num/2) ];
 
-sg('loglevel', 'ALL');
+%sg('loglevel', 'ALL');
 sg('set_features', 'TRAIN', traindat);
 sg('set_labels', 'TRAIN', trainlab);
 sg('c', C;
@@ -37,7 +37,7 @@ b1
 W1';
 obj1=sum(W1.^2)+C*sum(max(1-trainlab.*(W1'*traindat-b1)).^2)
 
-sg('loglevel', 'ALL');
+%sg('loglevel', 'ALL');
 sg('set_features', 'TRAIN', traindat);
 sg('set_labels', 'TRAIN', trainlab);
 sg('c', C);
@@ -79,7 +79,7 @@ obj2=sum(W2.^2)+C*sum(max(1-trainlab.*(W2'*traindat+b2)).^2)
 %%sg('init_kernel', 'TEST');
 %%trainout3=sg('classify')*2-1;
 %%trainerr3=mean(trainlab~=sign(trainout3))
-sg('loglevel', 'ERROR');
+%sg('loglevel', 'ERROR');
 sg('set_features', 'TRAIN', traindat);
 sg('set_labels', 'TRAIN', trainlab);
 sg('c', C);
@@ -93,7 +93,7 @@ sg('train_classifier');
 time_gpbt=toc
 [b_gpbt,W_gpbt]=sg('get_classifier');
 
-sg('loglevel', 'ERROR');
+%sg('loglevel', 'ERROR');
 sg('set_features', 'TRAIN', traindat);
 sg('set_labels', 'TRAIN', trainlab);
 sg('c', C);
@@ -107,7 +107,7 @@ sg('train_classifier');
 time_light=toc
 [b_light,W_light]=sg('get_classifier');
 
-sg('loglevel', 'ERROR');
+%sg('loglevel', 'ERROR');
 sg('set_features', 'TRAIN', traindat);
 sg('set_labels', 'TRAIN', trainlab);
 sg('c', C);

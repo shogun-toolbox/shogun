@@ -191,15 +191,24 @@ install-r: $(TEMPLATE_TARGET)
 	../.r-install.sh $(DESTDIR)$(RDIR) sg
 
 install-elwms: $(TEMPLATE_TARGET)
-	install -d -m755 $(DESTDIR)$(PYDIR)
-	install -m755 $(TEMPLATE_TARGET) $(DESTDIR)$(PYDIR)
+	#one .so file
+	install -d -m755 $(DESTDIR)$(LIBDIR)/shogun
+	install -m755 $(TEMPLATE_TARGET) $(DESTDIR)$(LIBDIR)/shogun
+	#python
+	rm -f $(DESTDIR)$(PYDIR)/$(TEMPLATE_TARGET) 
+	cd $(DESTDIR)$(PYDIR) && ln -s $(DESTDIR)$(LIBDIR)/shogun/$(TEMPLATE_TARGET) 
+	#octave
 	install -d -m755 $(DESTDIR)$(OCTDIR)
+	rm -f $(DESTDIR)$(OCTDIR)/$(TEMPLATE_TARGET) 
+	cd $(DESTDIR)$(OCTDIR) && ln -s $(DESTDIR)$(LIBDIR)/shogun/$(TEMPLATE_TARGET) 
+	#r
 	install -m755 $(TEMPLATE_TARGET) $(DESTDIR)$(OCTDIR)
 	install -d -m755 $(DESTDIR)$(RDIR)/elwms/demo
 	install -d -m755 $(DESTDIR)$(RDIR)/elwms/libs
 	install -d -m755 $(DESTDIR)$(RDIR)/elwms/Meta
 	install -d -m755 $(DESTDIR)$(RDIR)/elwms/R
-	install -m755 $(TEMPLATE_TARGET) $(DESTDIR)$(RDIR)/elwms/libs
+	rm -f $(DESTDIR)$(RDIR)/elwms/libs/$(TEMPLATE_TARGET)
+	cd $(DESTDIR)$(RDIR)/elwms/libs && ln -s $(DESTDIR)$(LIBDIR)/shogun/$(TEMPLATE_TARGET) 
 	install -m644 ../../examples/r/*.R ../../examples/r/graphical/*.R $(DESTDIR)$(RDIR)/elwms/demo
 	../.r-install.sh $(DESTDIR)$(RDIR) elwms
 

@@ -1,7 +1,7 @@
 num=1000;
 dim=100;
 
-sg('loglevel', 'ALL');
+%sg('loglevel', 'ALL');
 rand('state',sum(100*clock));
 traindat=[rand(dim,num/2)-0.05, rand(dim,num/2)+0.05];
 trainlab=[-ones(1,num/2), ones(1,num/2) ];

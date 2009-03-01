@@ -5,7 +5,7 @@ dist=0.01;
 C=1000;
 epsilon=1e-3;
 
-sg('loglevel', 'ALL');
+%sg('loglevel', 'ALL');
 traindat=[rand(dim,num/2)-dist, rand(dim,num/2)+dist];
 traindat=traindat/(dim*mean(traindat(:)));
 trainlab=[-ones(1,num/2), ones(1,num/2) ];

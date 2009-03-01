@@ -1,7 +1,7 @@
 %rand('state',sum(100*clock));
 rand('state',123455);
 for i=1:1000,
-sg('loglevel', 'ALL');
+%sg('loglevel', 'ALL');
 num=ceil(1000*rand);
 dims=ceil(100*rand);
 dist=rand;
