@@ -254,6 +254,7 @@ void tester()
 	int32_t numdatatest=tx.size();
 
 	CCombinedKernel* tker=new CCombinedKernel();
+	SG_REF(tker);
 	CCustomKernel* tkernel1=new CCustomKernel();
 	CCustomKernel* tkernel2=new CCustomKernel();
 	tkernel1->set_full_kernel_matrix_from_full(tker1,numdata, numdatatest);
@@ -262,7 +263,7 @@ void tester()
 	tker->append_kernel(tkernel2);
 
 	int32_t numweights;
-	float64_t* weights=tsvm-> getsubkernelweights(numweights);
+	float64_t* weights=tsvm->getsubkernelweights(numweights);
 
 	SG_SPRINT("test kernel weights\n");
 
@@ -296,6 +297,7 @@ void tester()
 	SG_UNREF(tres);
 	SG_UNREF(lab);
 	SG_UNREF(tlab);
+	SG_UNREF(tker);
 
 	delete[] weights;
 	weights=NULL;
