@@ -104,15 +104,15 @@ IFType CMatlabInterface::get_argument_type()
 	}
 
 	if (mxIsInt32(arg))
-		return DENSE_MATRIX_INT;
+		return DENSE_INT;
 	if (mxIsDouble(arg))
-		return DENSE_MATRIX_REAL;
+		return DENSE_REAL;
 	if (mxIsInt16(arg))
-		return DENSE_MATRIX_SHORT;
+		return DENSE_SHORT;
 	if (mxIsSingle(arg))
-		return DENSE_MATRIX_SHORTREAL;
+		return DENSE_SHORTREAL;
 	if (mxIsUint16(arg))
-		return DENSE_MATRIX_WORD;
+		return DENSE_WORD;
 
 	if (mxIsChar(arg))
 		return STRING_CHAR;
@@ -420,6 +420,11 @@ GET_STRINGLIST(get_word_string_list, "uint16", uint16_t, unsigned short, "Word")
 #undef GET_STRINGLIST
 
 
+void CMatlabInterface::get_attribute_struct(const CDynamicArray<T_ATTRIBUTE>* &attrs)
+{
+	attrs=NULL;
+}
+
 /** set functions - to pass data from shogun to the target interface */
 
 void CMatlabInterface::set_int(int32_t scalar)
@@ -593,6 +598,10 @@ SET_STRINGLIST(set_int_string_list, mxINT32_CLASS, int32_t, int, "Integer")
 SET_STRINGLIST(set_short_string_list, mxINT16_CLASS, int16_t, short, "Short")
 SET_STRINGLIST(set_word_string_list, mxUINT16_CLASS, uint16_t, unsigned short, "Word")
 #undef SET_STRINGLIST
+
+void CMatlabInterface::set_attribute_struct(const CDynamicArray<T_ATTRIBUTE>* attrs)
+{
+}
 
 ////////////////////////////////////////////////////////////////////
 

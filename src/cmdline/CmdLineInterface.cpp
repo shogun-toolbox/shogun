@@ -176,7 +176,7 @@ IFType CCmdLineInterface::get_argument_type()
 		else if (strncmp(signature, "STRING_BYTE", 11)==0)
 			argtype=STRING_BYTE;
 		else if (strncmp(signature, "DENSE_REAL", 10)==0)
-			argtype=DENSE_MATRIX_REAL;
+			argtype=DENSE_REAL;
 		else if (strncmp(signature, "SPARSE_REAL", 11)==0)
 			argtype=SPARSE_REAL;
 	}
@@ -192,7 +192,7 @@ IFType CCmdLineInterface::get_argument_type()
 		}
 		else if (strspn(chunk, "0123456789.e+- \t\n")==nread)
 		{
-			argtype=DENSE_MATRIX_REAL;
+			argtype=DENSE_REAL;
 			SG_DEBUG("guessing DENSE_REAL\n");
 		}
 		else if (strspn(chunk, "0123456789:.e+- \t\n")==nread)
@@ -508,6 +508,12 @@ void CCmdLineInterface::get_word_string_list(T_STRING<uint16_t>*& strings, int32
 	max_string_len=0;
 }
 
+
+void CCmdLineInterface::get_attribute_struct(const CDynamicArray<T_ATTRIBUTE>* &attrs)
+{
+	attrs=NULL;
+}
+
 /** set functions - to pass data from shogun to the target interface */
 bool CCmdLineInterface::create_return_values(int32_t num)
 {
@@ -706,6 +712,9 @@ void CCmdLineInterface::set_word_string_list(const T_STRING<uint16_t>* strings, 
 {
 }
 
+void CCmdLineInterface::set_attribute_struct(const CDynamicArray<T_ATTRIBUTE>* attrs)
+{
+}
 
 bool CCmdLineInterface::skip_line(const char* line)
 {

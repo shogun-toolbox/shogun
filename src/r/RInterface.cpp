@@ -88,9 +88,9 @@ IFType CRInterface::get_argument_type()
 	switch (TYPEOF(arg))
 	{
 		case INTSXP:
-			return DENSE_MATRIX_INT;
+			return DENSE_INT;
 		case REALSXP:
-			return DENSE_MATRIX_REAL;
+			return DENSE_REAL;
 		case STRSXP:
 			return STRING_CHAR;
 	};
@@ -342,6 +342,12 @@ void CRInterface::get_word_string_list(T_STRING<uint16_t>*& strings, int32_t& nu
 {
 }
 
+
+void CRInterface::get_attribute_struct(const CDynamicArray<T_ATTRIBUTE>* &attrs)
+{
+	attrs=NULL;
+}
+
 /** set functions - to pass data from shogun to the target interface */
 bool CRInterface::create_return_values(int32_t num)
 {
@@ -478,6 +484,10 @@ void CRInterface::set_short_string_list(const T_STRING<int16_t>* strings, int32_
 }
 
 void CRInterface::set_word_string_list(const T_STRING<uint16_t>* strings, int32_t num_str)
+{
+}
+
+void CRInterface::set_attribute_struct(const CDynamicArray<T_ATTRIBUTE>* attrs)
 {
 }
 

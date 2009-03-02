@@ -101,15 +101,15 @@ IFType CPythonInterface::get_argument_type()
 		if (PyArray_TYPE(arg)==NPY_BYTE)
 			return STRING_BYTE;
 		if (PyArray_TYPE(arg)==NPY_INT)
-			return DENSE_MATRIX_INT;
+			return DENSE_INT;
 		if (PyArray_TYPE(arg)==NPY_DOUBLE)
-			return DENSE_MATRIX_REAL;
+			return DENSE_REAL;
 		if (PyArray_TYPE(arg)==NPY_SHORT)
-			return DENSE_MATRIX_SHORT;
+			return DENSE_SHORT;
 		if (PyArray_TYPE(arg)==NPY_FLOAT)
-			return DENSE_MATRIX_SHORTREAL;
+			return DENSE_SHORTREAL;
 		if (PyArray_TYPE(arg)==NPY_USHORT)
-			return DENSE_MATRIX_WORD;
+			return DENSE_WORD;
 	}
 
 
@@ -416,6 +416,10 @@ GET_STRINGLIST(get_short_string_list, NPY_SHORT, int16_t, short, 0, "Short")
 GET_STRINGLIST(get_word_string_list, NPY_USHORT, uint16_t, unsigned short, 0, "Word")
 #undef GET_STRINGLIST
 
+void CPythonInterface::get_attribute_struct(const CDynamicArray<T_ATTRIBUTE>* &attrs)
+{
+	attrs=NULL;
+}
 
 
 /** set functions - to pass data from shogun to the target interface */
@@ -594,6 +598,9 @@ SET_STRINGLIST(set_short_string_list, NPY_SHORT, int16_t, short, 0, "Short")
 SET_STRINGLIST(set_word_string_list, NPY_USHORT, uint16_t, unsigned short, 0, "Word")
 #undef SET_STRINGLIST
 
+void CPythonInterface::set_attribute_struct(const CDynamicArray<T_ATTRIBUTE>* attrs)
+{
+}
 
 bool CPythonInterface::create_return_values(int32_t num)
 {

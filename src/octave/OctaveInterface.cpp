@@ -144,15 +144,15 @@ IFType COctaveInterface::get_argument_type()
 	if (arg.is_matrix_type() && arg.ndims()==2)
 	{
 		if (arg.is_uint32_type())
-			return DENSE_MATRIX_INT;
+			return DENSE_INT;
 		if (arg.is_double_type())
-			return DENSE_MATRIX_REAL;
+			return DENSE_REAL;
 		if (arg.is_int16_type())
-			return DENSE_MATRIX_SHORT;
+			return DENSE_SHORT;
 		if (arg.is_single_type())
-			return DENSE_MATRIX_SHORTREAL;
+			return DENSE_SHORTREAL;
 		if (arg.is_uint16_type())
-			return DENSE_MATRIX_WORD;
+			return DENSE_WORD;
 
 		return UNDEFINED;
 	}
@@ -160,20 +160,23 @@ IFType COctaveInterface::get_argument_type()
 	if (arg.is_matrix_type() && arg.ndims()>2)
 	{
 		if (arg.is_uint8_type())
-			return DENSE_NDARRAY_BYTE;
+			return NDARRAY_BYTE;
 		if (arg.is_uint32_type())
-			return DENSE_NDARRAY_INT;
+			return NDARRAY_INT;
 		if (arg.is_double_type())
-			return DENSE_NDARRAY_REAL;
+			return NDARRAY_REAL;
 		if (arg.is_int16_type())
-			return DENSE_NDARRAY_SHORT;
+			return NDARRAY_SHORT;
 		if (arg.is_single_type())
-			return DENSE_NDARRAY_SHORTREAL;
+			return NDARRAY_SHORTREAL;
 		if (arg.is_uint16_type())
-			return DENSE_NDARRAY_WORD;
+			return NDARRAY_WORD;
 
 		return UNDEFINED;
 	}
+
+	if (arg.is_map())
+		return ATTR_STRUCT;
 
 	return UNDEFINED;
 }
@@ -430,6 +433,10 @@ GET_STRINGLIST(get_short_string_list, is_matrix_type, is_int16_type, int16NDArra
 GET_STRINGLIST(get_word_string_list, is_matrix_type, is_uint16_type, uint16NDArray, uint16_array_value, uint16_t, uint16_t, "Word")
 #undef GET_STRINGLIST
 
+void COctaveInterface::get_attribute_struct(const CDynamicArray<T_ATTRIBUTE>* &attrs)
+{
+	attrs=NULL;
+}
 
 /** set functions - to pass data from shogun to Octave */
 
@@ -547,6 +554,14 @@ SET_STRINGLIST(set_int_string_list, int32NDArray, int32_t, int32_t, "Integer")
 SET_STRINGLIST(set_short_string_list, int16NDArray, int16_t, int16_t, "Short")
 SET_STRINGLIST(set_word_string_list, uint16NDArray, uint16_t, uint16_t, "Word")
 #undef SET_STRINGLIST
+
+void COctaveInterface::set_attribute_struct(const CDynamicArray<T_ATTRIBUTE>* attrs)
+{
+/*	octave_value arg=get_arg_increment();
+	if (!arg.is_map())
+		SG_ERROR("not a struct");
+	attrs = new CDynamicArray<T_ATTRIBUTE>();*/
+}
 
 bool COctaveInterface::cmd_run_python()
 {

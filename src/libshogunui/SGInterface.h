@@ -29,11 +29,13 @@ enum IFType
 {
 	UNDEFINED,
 
+	///simple scalar/string types
 	SCALAR_INT,
 	SCALAR_REAL,
 	SCALAR_BOOL,
 	STANDARD_STRING,
 
+	///vector type
 	VECTOR_BOOL,
 	VECTOR_BYTE,
 	VECTOR_CHAR,
@@ -43,20 +45,23 @@ enum IFType
 	VECTOR_SHORT,
 	VECTOR_WORD,
 
-	DENSE_MATRIX_INT,
-	DENSE_MATRIX_REAL,
-	DENSE_MATRIX_SHORTREAL,
-	DENSE_MATRIX_SHORT,
-	DENSE_MATRIX_WORD,
+	///dense matrices 
+	DENSE_INT,
+	DENSE_REAL,
+	DENSE_SHORTREAL,
+	DENSE_SHORT,
+	DENSE_WORD,
 
-	DENSE_NDARRAY_BYTE,
-	DENSE_NDARRAY_CHAR,
-	DENSE_NDARRAY_INT,
-	DENSE_NDARRAY_REAL,
-	DENSE_NDARRAY_SHORTREAL,
-	DENSE_NDARRAY_SHORT,
-	DENSE_NDARRAY_WORD,
+	///dense nd arrays
+	NDARRAY_BYTE,
+	NDARRAY_CHAR,
+	NDARRAY_INT,
+	NDARRAY_REAL,
+	NDARRAY_SHORTREAL,
+	NDARRAY_SHORT,
+	NDARRAY_WORD,
 
+	///sparse matrices
 	SPARSE_BYTE,
 	SPARSE_CHAR,
 	SPARSE_INT,
@@ -65,11 +70,15 @@ enum IFType
 	SPARSE_SHORTREAL,
 	SPARSE_WORD,
 
+	///strings of arbitrary type
 	STRING_BYTE,
 	STRING_CHAR,
 	STRING_INT,
 	STRING_SHORT,
 	STRING_WORD,
+
+	/// structures
+	ATTR_STRUCT
 };
 
 class CSGInterface : public CSGObject
@@ -565,6 +574,8 @@ class CSGInterface : public CSGObject
 			T_STRING<uint16_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len)=0;
 
+		virtual void get_attribute_struct(
+			const CDynamicArray<T_ATTRIBUTE>* &attrs)=0;
 
 		/** set functions - to pass data from shogun to the target interface */
 		virtual bool create_return_values(int32_t num_val)=0;
@@ -622,6 +633,9 @@ class CSGInterface : public CSGObject
 			const T_STRING<int16_t>* strings, int32_t num_str)=0;
 		virtual void set_word_string_list(
 			const T_STRING<uint16_t>* strings, int32_t num_str)=0;
+
+		virtual void set_attribute_struct(
+			const CDynamicArray<T_ATTRIBUTE>* attrs)=0;
 
 		/// general interface handler
 		bool handle();

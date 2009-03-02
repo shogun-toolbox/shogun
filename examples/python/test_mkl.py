@@ -4,7 +4,6 @@ from numpy import *
 
 num=100
 weight=1.
-sg('loglevel', 'ALL')
 labels=concatenate((-ones([1,num]), ones([1,num])),1)[0]
 features=concatenate((randn(2,num)-1,randn(2,num)+1),1)
 

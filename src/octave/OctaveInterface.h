@@ -105,6 +105,9 @@ class COctaveInterface : public CSGInterface
 			T_STRING<uint16_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
 
+		virtual void get_attribute_struct(
+			const CDynamicArray<T_ATTRIBUTE>* &attrs);
+
 		/** set functions - to pass data from shogun to the target interface */
 
 		virtual void set_int(int32_t scalar);
@@ -155,6 +158,9 @@ class COctaveInterface : public CSGInterface
 			const T_STRING<int16_t>* strings, int32_t num_str);
 		void set_word_string_list(
 			const T_STRING<uint16_t>* strings, int32_t num_str);
+
+		virtual void set_attribute_struct(
+			const CDynamicArray<T_ATTRIBUTE>* attrs);
 
 		virtual bool create_return_values(int32_t num)
 		{
