@@ -24,7 +24,7 @@ EXT_OBJ_SWIG=_wrap.cxx.o
 EXT_LIB=so
 EXT_DOXY=.doxy
 EXT_SWIG_DOXY=_doxygen.i
-SWIGFLAGS="-w473 -w454"
+SWIGFLAGS="-w473 -w454 -fcompact -fvirtual"
 SWIG=swig
 DOXYGEN=doxygen
 PYTHON=python
@@ -115,7 +115,7 @@ INCLUDES=
 LINK=c++
 SONAMEOPT="-Xlinker -soname="
 SHAREDOPTS="-shared -Wl,-export-dynamic"
-DEFINES=
+DEFINES="-DSWIG_TYPE_TABLE=shogun"
 LINKFLAGS=
 POSTLINKFLAGS=
 

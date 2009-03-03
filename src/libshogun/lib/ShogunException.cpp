@@ -20,7 +20,7 @@ ShogunException::ShogunException(const char* str)
 #ifndef WIN32
 	CSignal::unset_handler();
 #endif
-   val = new char[4096];
+   val = (char*) malloc(sizeof(char)*4096);
    if (val)
        strncpy(val,str,4096);
    else
@@ -28,4 +28,8 @@ ShogunException::ShogunException(const char* str)
        fprintf(stderr, "Could not even allocate memory for exception - dying.\n");
        exit(1);
    }
+}
+
+ShogunException::~ShogunException()
+{
 }

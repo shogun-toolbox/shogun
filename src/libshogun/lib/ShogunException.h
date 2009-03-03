@@ -22,6 +22,10 @@ class ShogunException {
 		 */
 		ShogunException(const char* str);
 
+		/** destructor
+		 */
+        virtual ~ShogunException();
+
 		/** get exception string
 		 *
 		 * @return the exception string

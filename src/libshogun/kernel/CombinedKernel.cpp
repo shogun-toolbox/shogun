@@ -688,6 +688,17 @@ const float64_t* CCombinedKernel::get_subkernel_weights(int32_t& num_weights)
 	return subkernel_weights_buffer ;
 }
 
+void CCombinedKernel::get_subkernel_weights(float64_t** weights, int32_t* num_weights)
+{
+	int32_t num=0;
+	const float64_t* w=get_subkernel_weights(num);
+
+	ASSERT(num>0);
+	*num_weights=num;
+	*weights = (float64_t*) malloc(num*sizeof(float64_t));
+	memcpy(*weights, w, num*sizeof(float64_t));
+}
+
 void CCombinedKernel::set_subkernel_weights(
 	float64_t* weights, int32_t num_weights)
 {
