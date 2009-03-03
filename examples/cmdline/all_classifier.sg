@@ -3,6 +3,8 @@
 %
 % kernel-based SVMs
 %
+%echo ON
+%loglevel INFO
 
 % SVMLight
 %try
@@ -10,7 +12,7 @@
 
 	set_kernel WEIGHTEDDEGREE CHAR 10 20
 	set_features TRAIN ../data/fm_train_dna.dat DNA
-	set_labels TRAIN ../data/label_train_dna42.dat
+	set_labels TRAIN ../data/label_train_dna.dat
 	new_svm LIGHT
 	svm_epsilon 1e-5
 	svm_use_bias 0

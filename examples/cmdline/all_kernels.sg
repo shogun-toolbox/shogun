@@ -429,7 +429,7 @@ set_features TEST ../data/fm_test_dna.dat DNA
 convert TEST STRING CHAR STRING WORD 3 2 0 n
 
 new_plugin_estimator 1e-1 1e-1
-set_labels TRAIN ../data/label_train_dna42.dat
+set_labels TRAIN ../data/label_train_dna.dat
 train_estimator
 
 set_kernel HISTOGRAM WORD 10

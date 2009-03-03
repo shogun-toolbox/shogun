@@ -2,7 +2,10 @@
 
 import os
 
-interfaces = ['cmdline', 'python_modular', 'python', 'r', 'r_modular',
+opts=''
+#opts=' --prefix=/local/cong --libs=/local/cong/lib --includes=/local/cong/include'
+
+interfaces = ['elwms','cmdline', 'python_modular', 'python', 'r', 'r_modular',
               'octave', 'octave_modular', 'matlab','libshogun','libshogunui'];
 
 def powerset(s):
@@ -22,10 +25,11 @@ def test_configure():
     """Main"""
     exit_status = []
     for conf in powerset(interfaces):
+        conf=tuple(conf)
         interface_string = ','.join(conf)
-        p = os.system('./configure --interfaces='+interface_string
-                      +' --prefix=/local/cong --libs=/local/cong/lib --includes=/local/cong/include')
-        exit_status.append(p)
+        p = os.system('./configure --interfaces=' + interface_string + opts + ' >/dev/null 2>&1')
+        exit_status.append((conf,p))
+        print conf,p
     print exit_status
 
 if __name__ == '__main__':
