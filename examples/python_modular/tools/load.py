@@ -20,22 +20,8 @@ class LoadMatrix:
 		fh=open(filename, 'r');
 		matrix=[]
 
-		# handle row/column brain damage
 		for line in fh:
-			string=line.split(' ')[0][:-1]
-			len_string=len(string)
-
-			if len(matrix)==0:
-				for i in xrange(len_string):
-					matrix.append([])
-
-			for i in xrange(len_string):
-				matrix[i].append(string[i])
-
-		fh.close()
-
-		for i in xrange(len(matrix)):
-			matrix[i]="".join(matrix[i])
+			matrix.append(line[:-1])
 
 		return matrix
 
