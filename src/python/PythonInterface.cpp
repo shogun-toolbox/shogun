@@ -7,6 +7,12 @@
 #include <shogun/ui/SGInterface.h>
 #include <shogun/base/init.h>
 
+#ifdef HAVE_OCTAVE
+#include "../octave/OctaveInterface.h"
+#include <octave/octave.h>
+#include <octave/toplev.h>
+#endif
+
 void python_print_message(FILE* target, const char* str)
 {
 	fprintf(target, "%s", str);
@@ -54,6 +60,7 @@ CPythonInterface::CPythonInterface(PyObject* args)
 {
 	reset(NULL, args);
 }
+
 CPythonInterface::CPythonInterface(PyObject* self, PyObject* args)
 : CSGInterface()
 {
@@ -706,8 +713,21 @@ bool CPythonInterface::run_python_helper(CSGInterface* from_if)
 	return true;
 }
 
+bool CPythonInterface::cmd_run_octave()
+{
+#ifdef HAVE_OCTAVE
+	return COctaveInterface::run_octave_helper(this);
+#else
+	return false;
+#endif
+}
 
+
+#ifdef HAVE_ELWMS
+PyObject* elwms(PyObject* self, PyObject* args)
+#else
 PyObject* sg(PyObject* self, PyObject* args)
+#endif
 {
 	try
 	{
@@ -740,11 +760,19 @@ PyObject* sg(PyObject* self, PyObject* args)
 void exitsg(void)
 {
 	SG_SINFO("Quitting...\n");
+#ifdef HAVE_OCTAVE
+	do_octave_atexit();
+#endif
 	exit_shogun();
 }
 
 static PyMethodDef sg_pythonmethods[] = {
-    {(char*) "sg",  sg, METH_VARARGS, (char*) "Shogun."},
+	{(char*)
+#ifdef HAVE_ELWMS
+	"elwms", elwms, METH_VARARGS, (char*) "Shogun."},
+#else
+    "sg", sg, METH_VARARGS, (char*) "Shogun."},
+#endif
     {NULL, NULL, 0, NULL}        /* Sentinel */
 };
 
@@ -769,6 +797,13 @@ PyMODINIT_FUNC initsg(void)
 #else
     Py_InitModule((char*) "sg", sg_pythonmethods);
 #endif
+
+#ifdef HAVE_OCTAVE
+	char* argv=strdup("octave");
+	octave_main(1,&argv,1);
+	free(argv);
+#endif
+
 	import_array();
 
 	// init_shogun has to be called before anything else

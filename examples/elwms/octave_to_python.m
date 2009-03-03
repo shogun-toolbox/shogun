@@ -5,6 +5,7 @@ A=[[1,2,3];[4,5,6]];
 B=[[1,1,1];[0,0,0]];
 pythoncode=sprintf('import numpy\nresults=tuple([A+B])\n');
 elwms('run_python', 'pythoncode', 'print "hi"')
+elwms('run_python', 'pythoncode', 'print "hi2"')
 C=elwms('run_python', 'A',A, 'B',B, 'pythoncode', pythoncode)
 D=elwms('run_python', 'A',A+1, 'B',B*2, 'pythoncode', pythoncode)
 pythoncode=sprintf('import numpy\nresults=(A, B, [ "bla1", "bla2" ])\n');

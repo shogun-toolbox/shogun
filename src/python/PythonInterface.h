@@ -161,6 +161,7 @@ class CPythonInterface : public CSGInterface
 		inline virtual const char* get_name() const { return "PythonInterface"; }
 
 		static bool run_python_helper(CSGInterface* from_if);
+		virtual bool cmd_run_octave();
 
 	private:
 		const PyObject* get_arg_increment()

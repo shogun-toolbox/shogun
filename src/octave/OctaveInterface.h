@@ -10,17 +10,10 @@
 
 #ifdef HAVE_MATLAB
 #define MXARRAY_H
+typedef struct mxArray_tag mxArray;
 #endif
 
-#include <octave/ov.h>
-#include <octave/dim-vector.h>
-#include <octave/defun-dld.h>
-#include <octave/error.h>
-#include <octave/oct-obj.h>
-#include <octave/pager.h>
-#include <octave/symtab.h>
 #include <octave/variables.h>
-#include <octave/Cell.h>
 
 class COctaveInterface : public CSGInterface
 {
@@ -173,6 +166,8 @@ class COctaveInterface : public CSGInterface
 		}
 
 		virtual bool cmd_run_python();
+		static bool run_octave_helper(CSGInterface* from_if);
+		static void recover_from_exception();
 
 	private:
 		const octave_value get_arg_increment()

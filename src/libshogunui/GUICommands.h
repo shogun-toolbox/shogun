@@ -209,4 +209,5 @@
 #define N_TOC							"toc"
 #define N_KRR_TAU						"krr_tau"
 #define N_RUN_PYTHON					"run_python"
+#define N_RUN_OCTAVE					"run_octave"
 #endif

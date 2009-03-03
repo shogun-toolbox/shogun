@@ -1,5 +1,21 @@
 #include "OctaveInterface.h"
 
+#include <octave/ov.h>
+#include <octave/octave.h>
+#include <octave/variables.h>
+#include <octave/unwind-prot.h>
+#include <octave/sighandlers.h>
+#include <octave/sysdep.h>
+#include <octave/parse.h>
+#include <octave/toplev.h>
+#include <octave/dim-vector.h>
+#include <octave/defun-dld.h>
+#include <octave/error.h>
+#include <octave/oct-obj.h>
+#include <octave/pager.h>
+#include <octave/symtab.h>
+#include <octave/variables.h>
+#include <octave/Cell.h>
 #include <stdio.h>
 
 #include <shogun/ui/SGInterface.h>
@@ -9,7 +25,6 @@
 #include <shogun/base/init.h>
 
 #ifdef HAVE_PYTHON
-#include <dlfcn.h>
 #include "../python/PythonInterface.h"
 #endif
 
@@ -42,19 +57,10 @@ COctaveInterface::COctaveInterface(octave_value_list prhs, int32_t nlhs)
 : CSGInterface()
 {
 	reset(prhs, nlhs);
-
-#ifdef HAVE_PYTHON
-	Py_Initialize();
-	import_array();
-#endif
 }
 
 COctaveInterface::~COctaveInterface()
 {
-#ifdef HAVE_PYTHON
-	Py_Finalize();
-#endif
-	exit_shogun();
 }
 
 void COctaveInterface::reset(octave_value_list prhs, int32_t nlhs)
@@ -572,6 +578,123 @@ bool COctaveInterface::cmd_run_python()
 #endif
 }
 
+void COctaveInterface::recover_from_exception(void)
+{
+  unwind_protect::run_all ();
+  can_interrupt = true;
+  octave_interrupt_immediately = 0;
+  octave_interrupt_state = 0;
+  octave_allocation_error = 0;
+  octave_restore_signal_mask ();
+  octave_catch_interrupts ();
+}
+
+bool COctaveInterface::run_octave_helper(CSGInterface* from_if)
+{
+	from_if->SG_DEBUG("Entering Octave\n");
+	octave_save_signal_mask ();
+
+	if (octave_set_current_context)
+	{
+#if defined (USE_EXCEPTIONS_FOR_INTERRUPTS)
+		panic_impossible ();
+#else
+		unwind_protect::run_all ();
+		raw_mode (0);
+		octave_restore_signal_mask ();
+#endif
+	}
+
+	can_interrupt = true;
+	octave_catch_interrupts ();
+	octave_initialized = true;
+
+	try 
+	{
+		int parse_status;
+		char* octave_code=NULL;
+		global_sym_tab->clear();
+
+		for (int i=0; i<from_if->get_nrhs(); i++)
+		{
+			int len=0;
+			char* var_name = from_if->get_string(len);
+			from_if->SG_DEBUG("var_name = '%s'\n", var_name);
+			if (strmatch(var_name, "octavecode"))
+			{
+				len=0;
+				octave_code=from_if->get_string(len);
+				from_if->SG_DEBUG("octave_code = '%s'\n", octave_code);
+				break;
+			}
+			else
+			{
+				octave_value_list args;
+
+				COctaveInterface* in = new COctaveInterface(args, 1);
+				in->create_return_values(1);
+				from_if->translate_arg(from_if, in);
+				set_global_value(var_name, in->get_return_values());
+				delete[] var_name;
+				SG_UNREF(in);
+			}
+		}
+
+		symbol_table* old=curr_sym_tab;
+		curr_sym_tab = global_sym_tab;
+		reset_error_handler ();
+		eval_string(octave_code, false, parse_status);
+		delete[] octave_code;
+
+		int32_t sz=0;
+		octave_value_list results;
+
+		if (curr_sym_tab->lookup("results"))
+		{
+			results = get_global_value("results", false);
+			sz=results.length();
+		}
+
+		if (sz>0 && from_if->create_return_values(sz))
+		{
+			from_if->SG_DEBUG("Found %d args\n", sz);
+			COctaveInterface* out = new COctaveInterface(results, sz);
+
+			//process d
+			for (int32_t i=0; i<sz; i++)
+				from_if->translate_arg(out, from_if);
+
+			SG_UNREF(out);
+		}
+		else
+		{
+			if (sz!=from_if->get_nlhs())
+			{
+				from_if->SG_ERROR("Number of return values (%d) does not match number of expected"
+						" return values (%d).\n", sz, from_if->get_nlhs());
+			}
+		}
+
+		curr_sym_tab=old;
+	}
+	catch (octave_interrupt_exception)
+	{
+		recover_from_exception ();
+		std::cout << "\n"; 
+	}
+	catch (std::bad_alloc)
+	{
+		recover_from_exception ();
+		std::cout << "\n"; 
+	}
+
+	octave_restore_signal_mask();
+	octave_initialized = false;
+
+	from_if->SG_DEBUG("Leaving Octave.\n");
+	return true;
+}
+
 #ifdef HAVE_ELWMS
 DEFUN_DLD (elwms, prhs, nlhs, "shogun.")
 #else
@@ -588,6 +711,10 @@ DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 			init_shogun(&octave_print_message, &octave_print_warning,
 					&octave_print_error, &octave_cancel_computations);
 			interface=new COctaveInterface(prhs, nlhs);
+#ifdef HAVE_PYTHON
+			Py_Initialize();
+			_import_array();
+#endif
 		}
 		else
 			((COctaveInterface*) interface)->reset(prhs, nlhs);

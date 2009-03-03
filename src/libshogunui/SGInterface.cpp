@@ -1095,6 +1095,12 @@ CSGInterfaceMethod sg_methods[]=
 		USAGE_IO(N_RUN_PYTHON,
 			"'Var1', Var1, 'Var2', Var2,..., python_function", "results")
 	},
+	{
+		N_RUN_OCTAVE,
+		(&CSGInterface::cmd_run_octave),
+		USAGE_IO(N_RUN_OCTAVE,
+			"'Var1', Var1, 'Var2', Var2,..., octave_function", "results")
+	},
 	{NULL, NULL, NULL}        /* Sentinel */
 };
 
@@ -7298,6 +7304,13 @@ bool CSGInterface::cmd_send_command()
 
 bool CSGInterface::cmd_run_python()
 {
+	SG_ERROR("Only available in the elwms interface\n");
+	return false;
+}
+
+bool CSGInterface::cmd_run_octave()
+{
+	SG_ERROR("Only available in the elwms interface\n");
 	return false;
 }
 

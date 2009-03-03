@@ -199,10 +199,9 @@ install-elwms: $(TEMPLATE_TARGET)
 	cd $(DESTDIR)$(PYDIR) && ln -s $(DESTDIR)$(LIBDIR)/shogun/$(TEMPLATE_TARGET) 
 	#octave
 	install -d -m755 $(DESTDIR)$(OCTDIR)
-	rm -f $(DESTDIR)$(OCTDIR)/$(TEMPLATE_TARGET) 
-	cd $(DESTDIR)$(OCTDIR) && ln -s $(DESTDIR)$(LIBDIR)/shogun/$(TEMPLATE_TARGET) 
+	rm -f $(DESTDIR)$(OCTDIR)/elwms.oct
+	cd $(DESTDIR)$(OCTDIR) && ln -s $(DESTDIR)$(LIBDIR)/shogun/$(TEMPLATE_TARGET) elwms.oct
 	#r
-	install -m755 $(TEMPLATE_TARGET) $(DESTDIR)$(OCTDIR)
 	install -d -m755 $(DESTDIR)$(RDIR)/elwms/demo
 	install -d -m755 $(DESTDIR)$(RDIR)/elwms/libs
 	install -d -m755 $(DESTDIR)$(RDIR)/elwms/Meta

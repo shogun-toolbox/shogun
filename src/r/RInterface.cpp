@@ -6,10 +6,16 @@
 #include <shogun/lib/io.h>
 #include <shogun/base/init.h>
 
-
 #ifdef HAVE_PYTHON
 #include <dlfcn.h>
 #include "../python/PythonInterface.h"
+#endif
+
+#ifdef HAVE_OCTAVE
+#include "../octave/OctaveInterface.h"
+#include <octave/ov.h>
+#include <octave/octave.h>
+#include <octave/toplev.h>
 #endif
 
 void r_print_message(FILE* target, const char* str)
@@ -45,23 +51,10 @@ CRInterface::CRInterface(SEXP prhs)
 : CSGInterface()
 {
 	reset(prhs);
-
-#ifdef HAVE_PYTHON
-	m_pylib = dlopen(LIBPYTHON, RTLD_NOW | RTLD_GLOBAL);
-	if (!m_pylib)
-		SG_ERROR("couldn't open " LIBPYTHON ".so\n");
-	Py_Initialize();
-	import_array();
-#endif
 }
 
 CRInterface::~CRInterface()
 {
-#ifdef HAVE_PYTHON
-	Py_Finalize();
-	dlclose(m_pylib);
-#endif
-	exit_shogun();
 }
 
 void CRInterface::reset(SEXP prhs)
@@ -500,6 +493,15 @@ bool CRInterface::cmd_run_python()
 #endif
 }
 
+bool CRInterface::cmd_run_octave()
+{
+#ifdef HAVE_OCTAVE
+	return COctaveInterface::run_octave_helper(this);
+#else
+	return false;
+#endif
+}
+
 /* The main function of the shogun R interface. All commands from the R command line
  * to the shogun backend are passed using the syntax:
  * .External("sg", "func", ... ) 
@@ -540,6 +542,8 @@ void R_init_sg(DllInfo *info)
 
 }
 
+void* m_pylib;
+
 SEXP Rsg(SEXP args)
 {
 	/* The SEXP (Simple Expression) args is a list of arguments of the .External call. 
@@ -556,7 +560,18 @@ SEXP Rsg(SEXP args)
 			init_shogun(&r_print_message, &r_print_warning,
 					&r_print_error, &r_cancel_computations);
 			interface=new CRInterface(args);
-			ASSERT(interface);
+#ifdef HAVE_PYTHON
+			m_pylib = dlopen(LIBPYTHON, RTLD_NOW | RTLD_GLOBAL);
+			if (!m_pylib)
+				SG_SERROR("couldn't open " LIBPYTHON ".so\n");
+			Py_Initialize();
+			_import_array();
+#endif
+#ifdef HAVE_OCTAVE
+			char* argv=strdup("octave");
+			octave_main(1,&argv,1);
+			free(argv);
+#endif
 		}
 		else
 			((CRInterface*) interface)->reset(args);
@@ -592,6 +607,15 @@ void R_unload_elwms(DllInfo *info)
 void R_unload_sg(DllInfo *info)
 #endif
 {
+#ifdef HAVE_PYTHON
+	Py_Finalize();
+	dlclose(m_pylib);
+#endif
+
+#ifdef HAVE_OCTAVE
+	do_octave_atexit();
+#endif
+
 	exit_shogun();
 }
 

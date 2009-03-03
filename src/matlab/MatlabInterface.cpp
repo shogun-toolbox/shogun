@@ -12,6 +12,12 @@
 #include "../python/PythonInterface.h"
 #endif
 
+#ifdef HAVE_OCTAVE
+#include "../octave/OctaveInterface.h"
+#include <octave/octave.h>
+#include <octave/toplev.h>
+#endif
+
 void matlab_print_message(FILE* target, const char* str)
 {
 	if (target==stdout)
@@ -45,22 +51,10 @@ CMatlabInterface::CMatlabInterface(
 {
 	reset(nlhs, plhs, nrhs, prhs);
 
-#ifdef HAVE_PYTHON
-	m_pylib = dlopen(LIBPYTHON, RTLD_NOW | RTLD_GLOBAL);
-	if (!m_pylib)
-		SG_ERROR("couldn't open " LIBPYTHON ".so\n");
-	Py_Initialize();
-	import_array();
-#endif
 }
 
 CMatlabInterface::~CMatlabInterface()
 {
-#ifdef HAVE_PYTHON
-	Py_Finalize();
-	dlclose(m_pylib);
-#endif
-	exit_shogun();
 }
 
 void CMatlabInterface::reset(
@@ -635,6 +629,15 @@ bool CMatlabInterface::cmd_run_python()
 #endif
 }
 
+bool CMatlabInterface::cmd_run_octave()
+{
+#ifdef HAVE_OCTAVE
+	return COctaveInterface::run_octave_helper(this);
+#else
+	return false;
+#endif
+}
+
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
 	try
@@ -647,6 +650,19 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 			init_shogun(&matlab_print_message, &matlab_print_warning,
 					&matlab_print_error, &matlab_cancel_computations);
 			interface=new CMatlabInterface(nlhs, plhs, nrhs, prhs);
+
+#ifdef HAVE_PYTHON
+			void* m_pylib = dlopen(LIBPYTHON, RTLD_NOW | RTLD_GLOBAL);
+			if (!m_pylib)
+				SG_SERROR("couldn't open " LIBPYTHON ".so\n");
+			Py_Initialize();
+			import_array();
+#endif
+#ifdef HAVE_OCTAVE
+			char* argv=strdup("octave");
+			octave_main(1,&argv,1);
+			free(argv);
+#endif
 		}
 		else
 			((CMatlabInterface*) interface)->reset(nlhs, plhs, nrhs, prhs);
@@ -667,3 +683,15 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		mexErrMsgTxt("Returning from SHOGUN in error.");
 	}
 }
+
+/* to be run on exiting matlab ... does not seem to be possible right now
+#ifdef HAVE_PYTHON
+	Py_Finalize();
+	dlclose(m_pylib);
+#endif
+	exit_shogun();
+
+#ifdef HAVE_OCTAVE
+	do_octave_atexit();
+#endif
+*/
