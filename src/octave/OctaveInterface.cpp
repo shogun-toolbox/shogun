@@ -53,8 +53,8 @@ void octave_cancel_computations(bool &delayed, bool &immediately)
 
 extern CSGInterface* interface;
 
-COctaveInterface::COctaveInterface(octave_value_list prhs, int32_t nlhs)
-: CSGInterface()
+COctaveInterface::COctaveInterface(octave_value_list prhs, int32_t nlhs, bool verbose)
+: CSGInterface(verbose)
 {
 	reset(prhs, nlhs);
 }
@@ -631,7 +631,7 @@ bool COctaveInterface::run_octave_helper(CSGInterface* from_if)
 			{
 				octave_value_list args;
 
-				COctaveInterface* in = new COctaveInterface(args, 1);
+				COctaveInterface* in = new COctaveInterface(args, 1, false);
 				in->create_return_values(1);
 				from_if->translate_arg(from_if, in);
 				set_global_value(var_name, in->get_return_values()(0));
@@ -669,7 +669,7 @@ bool COctaveInterface::run_octave_helper(CSGInterface* from_if)
 		if (sz>0 && from_if->create_return_values(sz))
 		{
 			from_if->SG_DEBUG("Found %d args\n", sz);
-			COctaveInterface* out = new COctaveInterface(results, sz);
+			COctaveInterface* out = new COctaveInterface(results, sz, false);
 
 			//process d
 			for (int32_t i=0; i<sz; i++)

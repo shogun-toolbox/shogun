@@ -568,9 +568,12 @@ SEXP Rsg(SEXP args)
 			_import_array();
 #endif
 #ifdef HAVE_OCTAVE
-			char* argv=strdup("octave");
-			octave_main(1,&argv,1);
-			free(argv);
+			char* name=strdup("octave");
+			char* opts=strdup("-q");
+			char* argv[2]={name, opts};
+			octave_main(2,argv,1);
+			free(opts);
+			free(name);
 #endif
 		}
 		else

@@ -18,7 +18,7 @@ typedef struct mxArray_tag mxArray;
 class COctaveInterface : public CSGInterface
 {
 	public:
-		COctaveInterface(octave_value_list prhs, int32_t nlhs);
+		COctaveInterface(octave_value_list prhs, int32_t nlhs, bool verbose=true);
 		~COctaveInterface();
 
 		/// reset to clean state
