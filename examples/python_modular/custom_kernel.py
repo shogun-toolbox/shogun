@@ -9,7 +9,7 @@ dim=7
 
 lab=sign(2*rand(dim) - 1)
 data=rand(dim, dim)
-symdata=data+data.T
+symdata=data*data.T
 
 kernel=CustomKernel()
 kernel.set_full_kernel_matrix_from_full(data)
