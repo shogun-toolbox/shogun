@@ -12,7 +12,10 @@ function [matrix] = load_matrix(fname)
 		if ~ischar(line),   break,   end
 
 		converted=str2num(line);
-		if isempty(converted), converted=line;, end
-		matrix=[matrix; converted];
+		if isempty(converted)
+			matrix=[matrix, line'];
+		else
+			matrix=[matrix; converted];
+		end
 	end
 	fclose(fid);
