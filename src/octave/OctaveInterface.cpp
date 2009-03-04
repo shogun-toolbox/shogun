@@ -634,7 +634,7 @@ bool COctaveInterface::run_octave_helper(CSGInterface* from_if)
 				COctaveInterface* in = new COctaveInterface(args, 1);
 				in->create_return_values(1);
 				from_if->translate_arg(from_if, in);
-				set_global_value(var_name, in->get_return_values());
+				set_global_value(var_name, in->get_return_values()(0));
 				delete[] var_name;
 				SG_UNREF(in);
 			}
@@ -654,6 +654,17 @@ bool COctaveInterface::run_octave_helper(CSGInterface* from_if)
 			results = get_global_value("results", false);
 			sz=results.length();
 		}
+
+		if (sz>0)
+		{
+			if (results(0).is_list())
+			{
+				from_if->SG_DEBUG("Found return list of length %d\n", results(0).length());
+				results=results(0).list_value();
+				sz=results.length();
+			}
+		}
+
 
 		if (sz>0 && from_if->create_return_values(sz))
 		{
