@@ -36,7 +36,6 @@
 
 #endif //HAVE_BOOST_SERIALIZATION
 
-
 #include "lib/io.h"
 #include "base/Parallel.h"
 #include "base/Version.h"
@@ -67,74 +66,6 @@ class CIO;
  */
 class CSGObject
 {
-
-#ifdef HAVE_BOOST_SERIALIZATION
-  protected:
-		friend class boost::serialization::access;
-		// When the class Archive corresponds to an output archive, the
-		// & operator is defined similar to <<.  Likewise, when the class Archive
-		// is a type of input archive the & operator is defined similar to >>.
-		template<class Archive>
-		void serialize(Archive & ar, const unsigned int version_num)
-		{
-			//ar & test;
-			std::cout << "SERIALIZING SGObject: nothing to do" << std::endl;
-		}
-
-  public:
-	    virtual std::string toString() const
-	    {
-	      std::ostringstream s;
-
-	      boost::archive::text_oarchive oa(s);
-
-	      oa << this;
-
-	      return s.str();
-	    }
-
-
-	    virtual void fromString(std::string str)
-	    {
-
-	      std::istringstream is(str);
-
-	      boost::archive::text_iarchive ia(is);
-
-	      //cast away constness
-	      CSGObject* tmp = const_cast<CSGObject*>(this);
-
-	      //std::cout << tmp << ":" << this << std::endl;
-
-	      ia >> tmp;
-	      *this = *tmp;
-	    }
-
-	    virtual void toFile(std::string filename) const
-	    {
-
-	      std::ofstream os(filename.c_str(), std::ios::binary);
-	      boost::archive::binary_oarchive oa(os);
-
-	      oa << this;
-
-	    }
-
-
-	    virtual void fromFile(std::string filename)
-	    {
-
-	      std::ifstream is(filename.c_str(), std::ios::binary);
-	      boost::archive::binary_iarchive ia(is);
-
-	      //cast away constness
-	      CSGObject* tmp = const_cast<CSGObject*>(this);
-
-	      ia >> tmp;
-
-	    }
-#endif //HAVE_BOOST_SERIALIZATION
-
 public:
 	inline CSGObject() : refcount(0)
 	{
@@ -207,6 +138,80 @@ public:
 	 * @return name of object
 	 */
 	virtual const char* get_name() const=0;
+
+#ifdef HAVE_BOOST_SERIALIZATION
+
+	/** Serialization Function: Convert object to a string
+	 *
+	 * @return string
+	 */
+	virtual std::string to_string() const
+	{
+		std::ostringstream s;
+		boost::archive::text_oarchive oa(s);
+		oa << this;
+		return s.str();
+	}
+
+
+	/** Serialization Function: Obtain object from string
+	 *
+	 * @param filename file name
+	 */
+	virtual void from_string(std::string str)
+	{
+		std::istringstream is(str);
+		boost::archive::text_iarchive ia(is);
+
+		//cast away constness
+		CSGObject* tmp = const_cast<CSGObject*>(this);
+
+		ia >> tmp;
+		*this = *tmp;
+	}
+
+	/** Serialization Function: Save the object to file
+	 *
+	 * @param filename file name
+	 */
+	virtual void to_file(std::string filename) const
+	{
+		std::ofstream os(filename.c_str(), std::ios::binary);
+		boost::archive::binary_oarchive oa(os);
+		oa << this;
+	}
+
+	/** Serialization Function: Load the object from file
+	 *
+	 * @param filename file name
+	 */
+	virtual void from_file(std::string filename)
+	{
+		std::ifstream is(filename.c_str(), std::ios::binary);
+		boost::archive::binary_iarchive ia(is);
+		CSGObject* tmp= const_cast<CSGObject*>(this);
+		ia >> tmp; 
+	}
+
+  protected:
+	friend class boost::serialization::access;
+
+	/** When the class Archive corresponds to an output archive, the & operator
+	 * is defined similar to <<.  Likewise, when the class Archive is a type of
+	 * input archive the & operator is defined similar to >>.
+	 *
+	 * @param ar output archive
+	 * @param version_num version number
+	 */
+	template<class Archive>
+		void serialize(Archive & ar, const unsigned int version_num)
+		{
+			//ar & test;
+			std::cout << "SERIALIZING SGObject: nothing to do" << std::endl;
+		}
+
+#endif //HAVE_BOOST_SERIALIZATION
+
 
 private:
 	void set_global_objects();

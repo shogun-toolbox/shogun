@@ -626,7 +626,7 @@ Installation directories:
   --rdir=DIR                    use this prefix for r files [PREFIX/auto-detected]
 
 Optional features:
-  --enable-boost_serialization	enable boost serialization support [disabled]
+  --enable-boost-serialization	enable boost serialization support [disabled]
   --enable-mindy                enable mindy library support (for more efficient n-gram, word-in-a-bag kernel implementations) [auto]
   --enable-readline    	        enable readline in cmdline interface [auto]
   --enable-logcache             enable log (1+exp(x)) log cache (is much faster but less accurate) [disabled]
@@ -634,7 +634,7 @@ Optional features:
   --enable-logsum-array         enable log sum array supposed to be a bit more accurate [disabled]
   --enable-hmm-parallel         enable parallel structures in hmm training. shogun will then run as many threads as the machine has (much faster) [disabled]
 
-  --disable-boost_serialization	disable boost serialization support [disable]
+  --disable-boost-serialization	disable boost serialization support [disable]
   --disable-largefile           disable large file support (64bit file acces routines) [enabled]
   --disable-lapack    	        disable lapack (fast blas and lapack math routines) and use built in ones (slower!) [auto]
   --disable-cplex    	        disable code using CPLEX  [auto]
@@ -783,8 +783,8 @@ for ac_option do
     ;;
   --disable-mindy)		_mindy=no	;;
   --enable-mindy)		_mindy=yes	;;
-  --disable-boost_serialization)		_boost_serialization=no	;;
-  --enable-boost_serialization)		_boost_serialization=yes	;;
+  --disable-boost-serialization)		_boost_serialization=no	;;
+  --enable-boost-serialization)		_boost_serialization=yes	;;
   --disable-svm-light)	_svm_light=no;	_gpl=yes;;
   --enable-svm-light)	_svm_light=yes; _gpl=no;;
   --disable-readline)	_readline=no	;;
