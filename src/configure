@@ -2807,11 +2807,11 @@ test_elwms()
 	if test "$_elwms_static" = yes || test "$_elwms_static" = auto
 	then
 		if test "$_octave_static" = yes || test "$_r_static" = yes || \
-			test "$_matlab_static" = yes
+			test "$_matlab_static" = yes || test "$_python_static" = yes
 		then
 			_elwms_static=yes
 			PARTS="$PARTS elwms"
-			DEFINES_ELWMS="-DHAVE_ELWMS -DLIBPYTHON=\\\"libpython${PYVER}.so\\\" $DEFINES_PYTHON $DEFINES_R $DEFINES_MATLAB $DEFINES_OCTAVE"
+			DEFINES_ELWMS="-DHAVE_ELWMS -DR_HOME_ENV=\\\"${R_HOME}\\\" -DLIBPYTHON=\\\"libpython${PYVER}.so\\\" $DEFINES_PYTHON $DEFINES_R $DEFINES_MATLAB $DEFINES_OCTAVE"
 			INCLUDES_ELWMS="$INCLUDES_R $INCLUDES_PYTHON $INCLUDES_OCTAVE $INCLUDES_MATLAB "
 			LINKFLAGS_ELWMS="$LINKFLAGS_PYTHON $LINKFLAGS_R `echo $LINKFLAGS_MATLAB | sed 's/-Wl,--version-script,.*mexFunction.map / /g'` $LINKFLAGS_OCTAVE -ldl"
 			ELWMS_TARGET="elwms.${EXT_LIB}"
@@ -3108,6 +3108,7 @@ test_r()
 		then
 			echores "`echo 'version; quit()' | R  --no-save 2>&1 | grep version\.string | cut -f 4 -d ' '`"
 			test -n "$_rdir" || _rdir=`echo '.libPaths()[1]' | R --no-save 2>/dev/null | grep '^\[1\]' | cut -f 2 -d '"'`
+			R_HOME=`echo 'system("env | grep ^R_HOME")' | R -q --no-save | grep ^R_HOME | cut -f 2 -d '='`
 			PRE_LIB_SWIG_R_MODULAR=
 			EXT_LIB_SWIG_R_MODULAR=${EXT_LIB}
 			EXT_IF_SWIG_R_MODULAR='.R'

@@ -8,14 +8,15 @@
 #include <shogun/base/init.h>
 
 #ifdef HAVE_PYTHON
-#include <dlfcn.h>
 #include "../python/PythonInterface.h"
 #endif
 
 #ifdef HAVE_OCTAVE
 #include "../octave/OctaveInterface.h"
-#include <octave/octave.h>
-#include <octave/toplev.h>
+#endif
+
+#ifdef HAVE_R
+#include "../r/RInterface.h"
 #endif
 
 void matlab_print_message(FILE* target, const char* str)
@@ -638,6 +639,15 @@ bool CMatlabInterface::cmd_run_octave()
 #endif
 }
 
+bool CMatlabInterface::cmd_run_r()
+{
+#ifdef HAVE_R
+	return CRInterface::run_r_helper(this);
+#else
+	return false;
+#endif
+}
+
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
 	try
@@ -652,19 +662,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 			interface=new CMatlabInterface(nlhs, plhs, nrhs, prhs);
 
 #ifdef HAVE_PYTHON
-			void* m_pylib = dlopen(LIBPYTHON, RTLD_NOW | RTLD_GLOBAL);
-			if (!m_pylib)
-				SG_SERROR("couldn't open " LIBPYTHON ".so\n");
-			Py_Initialize();
-			import_array();
+			CPythonInterface::run_python_init();
 #endif
 #ifdef HAVE_OCTAVE
-			char* name=strdup("octave");
-			char* opts=strdup("-q");
-			char* argv[2]={name, opts};
-			octave_main(2,argv,1);
-			free(opts);
-			free(name);
+			COctaveInterface::run_octave_init();
+#endif
+#ifdef HAVE_R
+			CRInterface::run_r_init();
 #endif
 		}
 		else
@@ -687,14 +691,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	}
 }
 
-/* to be run on exiting matlab ... does not seem to be possible right now
-#ifdef HAVE_PYTHON
-	Py_Finalize();
-	dlclose(m_pylib);
-#endif
-	exit_shogun();
-
-#ifdef HAVE_OCTAVE
-	do_octave_atexit();
-#endif
-*/
+/* to be run on exiting matlab ... does not seem to be possible right now:
+ * run_octave_exit()
+ * run_python_exit()
+ * run_r_exit()
+ */

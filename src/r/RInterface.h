@@ -7,20 +7,14 @@
 
 extern "C" {
 #include <R.h>
-#include <Rinternals.h>
 #include <Rdefines.h>
-#include <R_ext/Rdynload.h>
-#include <Rembedded.h>
-#include <Rinterface.h>
-#include <R_ext/RS.h>
-#include <R_ext/Error.h>
 }
 
 
 class CRInterface : public CSGInterface
 {
 	public:
-		CRInterface(SEXP prhs);
+		CRInterface(SEXP prhs, bool skip=true);
 		~CRInterface();
 
 		/// reset to clean state
@@ -148,15 +142,22 @@ class CRInterface : public CSGInterface
 
 		virtual bool cmd_run_python();
 		virtual bool cmd_run_octave();
+		static void run_r_init();
+		static void run_r_exit();
+		static bool run_r_helper(CSGInterface* from_if);
 
 	private:
 		const SEXP get_arg_increment()
 		{
 			ASSERT(m_rhs_counter>=0 && m_rhs_counter<m_nrhs+1); // +1 for action
-			m_rhs=CDR(m_rhs);
+			SEXP retval=R_NilValue;
+			if (m_rhs)
+				retval=CAR(m_rhs);
+			if (m_rhs)
+				m_rhs=CDR(m_rhs);
 			m_rhs_counter++;
 
-			return m_rhs;
+			return retval;
 		}
 
 		void set_arg_increment(SEXP arg)
@@ -172,5 +173,6 @@ class CRInterface : public CSGInterface
 	private:
 		SEXP m_lhs;
 		SEXP m_rhs;
+		bool skip_value;
 };
 #endif // __RINTERFACE__H_

@@ -1,6 +1,7 @@
 #include "PythonInterface.h"
 
 #include <stdio.h>
+#include <dlfcn.h>
 
 #include <shogun/lib/ShogunException.h>
 #include <shogun/lib/io.h>
@@ -9,9 +10,14 @@
 
 #ifdef HAVE_OCTAVE
 #include "../octave/OctaveInterface.h"
-#include <octave/octave.h>
-#include <octave/toplev.h>
 #endif
+
+#ifdef HAVE_R
+#include "../r/RInterface.h"
+#endif
+
+
+void* CPythonInterface::m_pylib=0;
 
 void python_print_message(FILE* target, const char* str)
 {
@@ -621,6 +627,26 @@ bool CPythonInterface::create_return_values(int32_t num)
 	return PyTuple_GET_SIZE(m_lhs)==num;
 }
 
+
+void CPythonInterface::run_python_init()
+{
+#ifdef LIBPYTHON
+	m_pylib = dlopen(LIBPYTHON, RTLD_NOW | RTLD_GLOBAL);
+	if (!m_pylib)
+		SG_SERROR("couldn't open " LIBPYTHON ".so\n");
+#endif
+	Py_Initialize();
+	import_array();
+}
+
+void CPythonInterface::run_python_exit()
+{
+	Py_Finalize();
+#ifdef LIBPYTHON
+	dlclose(m_pylib);
+#endif
+}
+
 bool CPythonInterface::run_python_helper(CSGInterface* from_if)
 {
 	from_if->SG_DEBUG("Entering Python\n");
@@ -722,6 +748,15 @@ bool CPythonInterface::cmd_run_octave()
 #endif
 }
 
+bool CPythonInterface::cmd_run_r()
+{
+#ifdef HAVE_R
+	return CRInterface::run_r_helper(this);
+#else
+	return false;
+#endif
+}
+
 
 #ifdef HAVE_ELWMS
 PyObject* elwms(PyObject* self, PyObject* args)
@@ -761,7 +796,10 @@ void exitsg(void)
 {
 	SG_SINFO("Quitting...\n");
 #ifdef HAVE_OCTAVE
-	do_octave_atexit();
+	COctaveInterface::run_octave_exit();
+#endif
+#ifdef HAVE_R
+	CRInterface::run_r_exit();
 #endif
 	exit_shogun();
 }
@@ -799,12 +837,10 @@ PyMODINIT_FUNC initsg(void)
 #endif
 
 #ifdef HAVE_OCTAVE
-			char* name=strdup("octave");
-			char* opts=strdup("-q");
-			char* argv[2]={name, opts};
-			octave_main(2,argv,1);
-			free(opts);
-			free(name);
+	COctaveInterface::run_octave_init();
+#endif
+#ifdef HAVE_R
+	CRInterface::run_r_init();
 #endif
 
 	import_array();

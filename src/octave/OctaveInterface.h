@@ -166,6 +166,9 @@ class COctaveInterface : public CSGInterface
 		}
 
 		virtual bool cmd_run_python();
+		virtual bool cmd_run_r();
+		static void run_octave_init();
+		static void run_octave_exit();
 		static bool run_octave_helper(CSGInterface* from_if);
 		static void recover_from_exception();
 

@@ -1,5 +1,7 @@
 #include "OctaveInterface.h"
 
+#undef length
+
 #include <octave/ov.h>
 #include <octave/octave.h>
 #include <octave/variables.h>
@@ -26,6 +28,11 @@
 
 #ifdef HAVE_PYTHON
 #include "../python/PythonInterface.h"
+#endif
+
+#ifdef HAVE_R
+#include "../r/RInterface.h"
+#undef length
 #endif
 
 void octave_print_message(FILE* target, const char* str)
@@ -578,6 +585,15 @@ bool COctaveInterface::cmd_run_python()
 #endif
 }
 
+bool COctaveInterface::cmd_run_r()
+{
+#ifdef HAVE_R
+	return CRInterface::run_r_helper(this);
+#else
+	return false;
+#endif
+}
+
 void COctaveInterface::recover_from_exception(void)
 {
   unwind_protect::run_all ();
@@ -587,6 +603,21 @@ void COctaveInterface::recover_from_exception(void)
   octave_allocation_error = 0;
   octave_restore_signal_mask ();
   octave_catch_interrupts ();
+}
+
+void COctaveInterface::run_octave_init()
+{
+	char* name=strdup("octave");
+	char* opts=strdup("-q");
+	char* argv[2]={name, opts};
+	octave_main(2,argv,1);
+	free(opts);
+	free(name);
+}
+
+void COctaveInterface::run_octave_exit()
+{
+	do_octave_atexit();
 }
 
 bool COctaveInterface::run_octave_helper(CSGInterface* from_if)
@@ -723,8 +754,10 @@ DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 					&octave_print_error, &octave_cancel_computations);
 			interface=new COctaveInterface(prhs, nlhs);
 #ifdef HAVE_PYTHON
-			Py_Initialize();
-			_import_array();
+			CPythonInterface::run_python_init();
+#endif
+#ifdef HAVE_R
+			CRInterface::run_r_init();
 #endif
 		}
 		else
@@ -751,3 +784,9 @@ DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 		return octave_value_list();
 	}
 }
+
+/* to be run on exiting matlab ... does not seem to be possible right now:
+ * run_octave_exit()
+ * run_python_exit()
+ * run_r_exit()
+ */

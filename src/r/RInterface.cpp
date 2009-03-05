@@ -1,5 +1,18 @@
 #include "RInterface.h"
 
+extern "C" {
+#include <R.h>
+#include <Rinternals.h>
+#include <Rdefines.h>
+#include <R_ext/Rdynload.h>
+#include <Rembedded.h>
+#include <Rinterface.h>
+#include <R_ext/RS.h>
+#include <R_ext/Error.h>
+}
+
+
+#include <stdlib.h>
 #include <stdio.h>
 #include <shogun/ui/SGInterface.h>
 #include <shogun/lib/ShogunException.h>
@@ -7,15 +20,11 @@
 #include <shogun/base/init.h>
 
 #ifdef HAVE_PYTHON
-#include <dlfcn.h>
 #include "../python/PythonInterface.h"
 #endif
 
 #ifdef HAVE_OCTAVE
 #include "../octave/OctaveInterface.h"
-#include <octave/ov.h>
-#include <octave/octave.h>
-#include <octave/toplev.h>
 #endif
 
 void r_print_message(FILE* target, const char* str)
@@ -47,9 +56,10 @@ void r_cancel_computations(bool &delayed, bool &immediately)
 
 extern CSGInterface* interface;
 
-CRInterface::CRInterface(SEXP prhs)
-: CSGInterface()
+CRInterface::CRInterface(SEXP prhs, bool skip)
+: CSGInterface(skip)
 {
+	skip_value=skip;
 	reset(prhs);
 }
 
@@ -61,8 +71,13 @@ void CRInterface::reset(SEXP prhs)
 {
 	CSGInterface::reset();
 
+	if (skip_value && prhs)
+		prhs=CDR(prhs);
+
 	m_nlhs=0;
-	m_nrhs=length(prhs)-1;
+	m_nrhs=0;
+	if (prhs)
+		m_nrhs=Rf_length(prhs);
 	if (m_nrhs<0)
 		m_nrhs=0;
 	m_lhs=R_NilValue;
@@ -76,17 +91,20 @@ void CRInterface::reset(SEXP prhs)
 /// get type of current argument (does not increment argument counter)
 IFType CRInterface::get_argument_type()
 {
-	SEXP arg=CADR(m_rhs);
-
-	switch (TYPEOF(arg))
+	if (m_rhs)
 	{
-		case INTSXP:
-			return DENSE_INT;
-		case REALSXP:
-			return DENSE_REAL;
-		case STRSXP:
-			return STRING_CHAR;
-	};
+		SEXP arg=CAR(m_rhs);
+
+		switch (TYPEOF(arg))
+		{
+			case INTSXP:
+				return DENSE_INT;
+			case REALSXP:
+				return DENSE_REAL;
+			case STRSXP:
+				return STRING_CHAR;
+		};
+	}
 	return UNDEFINED;
 }
 
@@ -95,49 +113,49 @@ int32_t CRInterface::get_int()
 {
 	SEXP i=get_arg_increment();
 
-	if (i == R_NilValue || nrows(CAR(i))!=1 || ncols(CAR(i))!=1)
+	if (i == R_NilValue || nrows(i)!=1 || ncols(i)!=1)
 		SG_ERROR("Expected Scalar Integer as argument %d\n", m_rhs_counter);
 
-	if (TYPEOF(CAR(i)) == REALSXP)
+	if (TYPEOF(i) == REALSXP)
 	{
-		double d=REAL(CAR(i))[0];
+		double d=REAL(i)[0];
 		if (d-CMath::floor(d)!=0)
 			SG_ERROR("Expected Integer as argument %d\n", m_rhs_counter);
 		return (int32_t) d;
 	}
 
-	if (TYPEOF(CAR(i)) != INTSXP)
+	if (TYPEOF(i) != INTSXP)
 		SG_ERROR("Expected Scalar Integer as argument %d\n", m_rhs_counter);
 
-	return INTEGER(CAR(i))[0];
+	return INTEGER(i)[0];
 }
 
 float64_t CRInterface::get_real()
 {
 	SEXP f=get_arg_increment();
-	if (f == R_NilValue || TYPEOF(CAR(f)) != REALSXP || nrows(CAR(f))!=1 || ncols(CAR(f))!=1)
+	if (f == R_NilValue || TYPEOF(f) != REALSXP || nrows(f)!=1 || ncols(f)!=1)
 		SG_ERROR("Expected Scalar Float as argument %d\n", m_rhs_counter);
 
-	return REAL(CAR(f))[0];
+	return REAL(f)[0];
 }
 
 bool CRInterface::get_bool()
 {
 	SEXP b=get_arg_increment();
-	if (b == R_NilValue || TYPEOF(CAR(b)) != LGLSXP || nrows(CAR(b))!=1 || ncols(CAR(b))!=1)
+	if (b == R_NilValue || TYPEOF(b) != LGLSXP || nrows(b)!=1 || ncols(b)!=1)
 		SG_ERROR("Expected Scalar Boolean as argument %d\n", m_rhs_counter);
 
-	return INTEGER(CAR(b))[0] != 0;
+	return INTEGER(b)[0] != 0;
 }
 
 
 char* CRInterface::get_string(int32_t& len)
 {
 	SEXP s=get_arg_increment();
-	if (s == R_NilValue || TYPEOF(CAR(s)) != STRSXP || length(CAR(s))!=1)
+	if (s == R_NilValue || TYPEOF(s) != STRSXP || Rf_length(s)!=1)
 		SG_ERROR("Expected String as argument %d\n", m_rhs_counter);
 
-	SEXPREC* rstr= STRING_ELT(CAR(s),0);
+	SEXPREC* rstr= STRING_ELT(s,0);
 	const char* str= CHAR(rstr);
 	len=LENGTH(rstr);
 	ASSERT(len>0);
@@ -164,7 +182,7 @@ void CRInterface::get_int_vector(int32_t*& vec, int32_t& len)
 	vec=NULL;
 	len=0;
 
-	SEXP rvec=CAR(get_arg_increment());
+	SEXP rvec=get_arg_increment();
 	if( TYPEOF(rvec) != INTSXP )
 		SG_ERROR("Expected Integer Vector as argument %d\n", m_rhs_counter);
 
@@ -184,7 +202,7 @@ void CRInterface::get_shortreal_vector(float32_t*& vec, int32_t& len)
 
 void CRInterface::get_real_vector(float64_t*& vec, int32_t& len)
 {
-	SEXP rvec=CAR(get_arg_increment());
+	SEXP rvec=get_arg_increment();
 	if( TYPEOF(rvec) != REALSXP && TYPEOF(rvec) != INTSXP )
 		SG_ERROR("Expected Double Vector as argument %d\n", m_rhs_counter);
 
@@ -227,7 +245,7 @@ void CRInterface::get_shortreal_matrix(float32_t*& matrix, int32_t& num_feat, in
 
 void CRInterface::get_real_matrix(float64_t*& matrix, int32_t& num_feat, int32_t& num_vec)
 {
-	SEXP feat=CAR(get_arg_increment());
+	SEXP feat=get_arg_increment();
 	if( TYPEOF(feat) != REALSXP && TYPEOF(feat) != INTSXP )
 		SG_ERROR("Expected Double Matrix as argument %d\n", m_rhs_counter);
 
@@ -291,12 +309,11 @@ void CRInterface::get_char_string_list(T_STRING<char>*& strings, int32_t& num_st
 {
 	SEXP strs=get_arg_increment();
 
-	if (strs == R_NilValue || TYPEOF(CAR(strs)) != STRSXP)
+	if (strs == R_NilValue || TYPEOF(strs) != STRSXP)
 		SG_ERROR("Expected String List as argument %d\n", m_rhs_counter);
-	strs=CAR(strs);
 
 	max_string_len=0;
-	num_str=length(strs);
+	num_str=Rf_length(strs);
 	strings=new T_STRING<char>[num_str];
 	ASSERT(strings);
 
@@ -349,7 +366,7 @@ bool CRInterface::create_return_values(int32_t num)
 
 	PROTECT(m_lhs=allocVector(VECSXP, num));
 	m_nlhs=num;
-	return length(m_lhs) == num;
+	return Rf_length(m_lhs) == num;
 }
 
 SEXP CRInterface::get_return_values()
@@ -502,6 +519,130 @@ bool CRInterface::cmd_run_octave()
 #endif
 }
 
+void CRInterface::run_r_init()
+{
+#ifdef R_HOME_ENV
+	setenv("R_HOME", R_HOME_ENV, 0);
+#endif
+	char* name=strdup("R");
+	char* opts=strdup("-q");
+	char* argv[2]={name, opts};
+	Rf_initEmbeddedR(2, argv);
+	free(opts);
+	free(name);
+}
+
+void CRInterface::run_r_exit()
+{
+	//R_dot_Last();
+	//R_RunExitFinalizers();
+	//R_gc();
+	Rf_endEmbeddedR(0);
+}
+
+bool CRInterface::run_r_helper(CSGInterface* from_if)
+{
+	char* rfile=NULL;
+
+	try
+	{
+		for (int i=0; i<from_if->get_nrhs(); i++)
+		{
+			int len=0;
+			char* var_name = from_if->get_string(len);
+			from_if->SG_DEBUG("var_name = '%s'\n", var_name);
+			if (strmatch(var_name, "rfile"))
+			{
+				len=0;
+				rfile=from_if->get_string(len);
+				from_if->SG_DEBUG("rfile = '%s'\n", rfile);
+				break;
+			}
+			else
+			{
+				CRInterface* in = new CRInterface(R_NilValue, false);
+				in->create_return_values(1);
+				from_if->translate_arg(from_if, in);
+
+				setVar(install(var_name), in->get_return_values(), R_GlobalEnv);
+				delete[] var_name;
+				SG_UNREF(in);
+			}
+		}
+	}
+	catch (ShogunException e)
+	{
+		from_if->SG_PRINT("%s", e.get_exception_string());
+		return true;
+	}
+	
+	// Find source function
+	SEXP src = Rf_findFun(Rf_install("source"), R_GlobalEnv);
+	PROTECT(src);
+
+	// Make file argument
+	SEXP file;
+	PROTECT(file = NEW_CHARACTER(1));
+	SET_STRING_ELT(file, 0, COPY_TO_USER_STRING(rfile));
+
+	// expression source(file,print.eval=p)
+	SEXP expr;
+	PROTECT(expr = allocVector(LANGSXP,2));
+	SETCAR(expr,src); 
+	SETCAR(CDR(expr),file);
+
+	int err=0;
+	R_tryEval(expr,NULL,&err);
+
+	if (err)
+	{
+		UNPROTECT(3);
+		from_if->SG_PRINT("Error occurred\n");
+		return true;
+	}
+
+	SEXP results;
+	PROTECT(results=findVar(install("results"), R_GlobalEnv));
+	from_if->SG_DEBUG("Found type %d\n", TYPEOF(results));
+
+	try
+	{
+		if (TYPEOF(results)==LISTSXP)
+		{
+			int32_t sz=Rf_length(results);
+			from_if->SG_DEBUG("Found %d args\n", sz);
+
+			if (sz>0 && from_if->create_return_values(sz))
+			{
+				CRInterface* out = new CRInterface(results, false);
+
+				//process d
+				for (int32_t i=0; i<sz; i++)
+					from_if->translate_arg(out, from_if);
+
+				SG_UNREF(out);
+			}
+			else if (sz!=from_if->get_nlhs())
+			{
+				UNPROTECT(4);
+				from_if->SG_PRINT("Number of return values (%d) does not match "
+						"number of expected return values (%d).\n",
+						sz, from_if->get_nlhs());
+				return true;
+			}
+		}
+	}
+	catch (ShogunException e)
+	{
+		UNPROTECT(4);
+		from_if->SG_PRINT("%s", e.get_exception_string());
+	}
+
+	UNPROTECT(4);
+
+	return true;
+}
+
 /* The main function of the shogun R interface. All commands from the R command line
  * to the shogun backend are passed using the syntax:
  * .External("sg", "func", ... ) 
@@ -542,8 +683,6 @@ void R_init_sg(DllInfo *info)
 
 }
 
-void* m_pylib;
-
 SEXP Rsg(SEXP args)
 {
 	/* The SEXP (Simple Expression) args is a list of arguments of the .External call. 
@@ -561,19 +700,10 @@ SEXP Rsg(SEXP args)
 					&r_print_error, &r_cancel_computations);
 			interface=new CRInterface(args);
 #ifdef HAVE_PYTHON
-			m_pylib = dlopen(LIBPYTHON, RTLD_NOW | RTLD_GLOBAL);
-			if (!m_pylib)
-				SG_SERROR("couldn't open " LIBPYTHON ".so\n");
-			Py_Initialize();
-			_import_array();
+	CPythonInterface::run_python_init();
 #endif
 #ifdef HAVE_OCTAVE
-			char* name=strdup("octave");
-			char* opts=strdup("-q");
-			char* argv[2]={name, opts};
-			octave_main(2,argv,1);
-			free(opts);
-			free(name);
+	COctaveInterface::run_octave_init();
 #endif
 		}
 		else
@@ -611,12 +741,10 @@ void R_unload_sg(DllInfo *info)
 #endif
 {
 #ifdef HAVE_PYTHON
-	Py_Finalize();
-	dlclose(m_pylib);
+	CPythonInterface::run_python_exit();
 #endif
-
 #ifdef HAVE_OCTAVE
-	do_octave_atexit();
+	COctaveInterface::run_octave_exit();
 #endif
 
 	exit_shogun();
