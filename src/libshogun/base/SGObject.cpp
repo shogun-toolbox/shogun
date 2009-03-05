@@ -18,6 +18,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+
+#ifdef HAVE_BOOST_SERIALIZATION
+#include <boost/serialization/export.hpp>
+BOOST_IS_ABSTRACT(CSGObject);
+#endif //HAVE_BOOST_SERIALIZATION
+
+
 extern CParallel* sg_parallel;
 extern CIO* sg_io;
 extern CVersion* sg_version;

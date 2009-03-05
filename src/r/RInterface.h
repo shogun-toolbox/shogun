@@ -1,6 +1,10 @@
 #ifndef __RINTERFACE__H_
 #define __RINTERFACE__H_
 
+
+#include <shogun/lib/common.h>
+#include <shogun/ui/SGInterface.h>
+
 extern "C" {
 #include <R.h>
 #include <Rinternals.h>
@@ -12,8 +16,6 @@ extern "C" {
 #include <R_ext/Error.h>
 }
 
-#include <shogun/lib/common.h>
-#include <shogun/ui/SGInterface.h>
 
 class CRInterface : public CSGInterface
 {

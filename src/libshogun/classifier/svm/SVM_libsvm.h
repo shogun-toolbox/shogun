@@ -36,10 +36,6 @@
 #ifndef _LIBSVM_H
 #define _LIBSVM_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include "kernel/Kernel.h"
 
 /** SVM node */
@@ -144,8 +140,5 @@ void svm_destroy_model(struct svm_model *model);
 
 const char *svm_check_parameter(const struct svm_problem *prob, const struct svm_parameter *param);
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* _LIBSVM_H */

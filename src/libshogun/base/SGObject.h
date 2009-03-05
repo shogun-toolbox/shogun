@@ -11,6 +11,32 @@
 #ifndef __SGOBJECT_H__
 #define __SGOBJECT_H__
 
+
+
+#ifdef HAVE_BOOST_SERIALIZATION
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/archive/binary_oarchive.hpp>
+#include <boost/archive/binary_iarchive.hpp>
+#include <boost/serialization/vector.hpp>
+
+//TODO xml will not work right away, every class needs name-value-pairs (NVP)
+//TODO we SHOULD FIX THIS NOW!
+//will have to be defined using respective boost macros
+//#include <boost/archive/xml_oarchive.hpp>
+//#include <boost/archive/xml_iarchive.hpp>
+
+//some STL modules needed for serialization
+
+#include <string>
+#include <sstream>
+#include <iostream>
+#include <fstream>
+#include <vector>
+
+#endif //HAVE_BOOST_SERIALIZATION
+
+
 #include "lib/io.h"
 #include "base/Parallel.h"
 #include "base/Version.h"
@@ -29,7 +55,7 @@ class CIO;
 
 // define reference counter macros
 #define SG_REF(x) { if (x) (x)->ref(); }
-#define SG_UNREF(x) { if (x) { if ((x)->unref()==0) (x)=0; } } 
+#define SG_UNREF(x) { if (x) { if ((x)->unref()==0) (x)=0; } }
 
 /** Class SGObject is the base class of all shogun objects. Apart from dealing
  * with reference counting that is used to manage shogung objects in memory
@@ -41,6 +67,74 @@ class CIO;
  */
 class CSGObject
 {
+
+#ifdef HAVE_BOOST_SERIALIZATION
+  protected:
+		friend class boost::serialization::access;
+		// When the class Archive corresponds to an output archive, the
+		// & operator is defined similar to <<.  Likewise, when the class Archive
+		// is a type of input archive the & operator is defined similar to >>.
+		template<class Archive>
+		void serialize(Archive & ar, const unsigned int version_num)
+		{
+			//ar & test;
+			std::cout << "SERIALIZING SGObject: nothing to do" << std::endl;
+		}
+
+  public:
+	    virtual std::string toString() const
+	    {
+	      std::ostringstream s;
+
+	      boost::archive::text_oarchive oa(s);
+
+	      oa << this;
+
+	      return s.str();
+	    }
+
+
+	    virtual void fromString(std::string str)
+	    {
+
+	      std::istringstream is(str);
+
+	      boost::archive::text_iarchive ia(is);
+
+	      //cast away constness
+	      CSGObject* tmp = const_cast<CSGObject*>(this);
+
+	      //std::cout << tmp << ":" << this << std::endl;
+
+	      ia >> tmp;
+	      *this = *tmp;
+	    }
+
+	    virtual void toFile(std::string filename) const
+	    {
+
+	      std::ofstream os(filename.c_str(), std::ios::binary);
+	      boost::archive::binary_oarchive oa(os);
+
+	      oa << this;
+
+	    }
+
+
+	    virtual void fromFile(std::string filename)
+	    {
+
+	      std::ifstream is(filename.c_str(), std::ios::binary);
+	      boost::archive::binary_iarchive ia(is);
+
+	      //cast away constness
+	      CSGObject* tmp = const_cast<CSGObject*>(this);
+
+	      ia >> tmp;
+
+	    }
+#endif //HAVE_BOOST_SERIALIZATION
+
 public:
 	inline CSGObject() : refcount(0)
 	{
