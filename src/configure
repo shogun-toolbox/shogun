@@ -38,6 +38,7 @@ EXT_OBJ_C=c.o
 _swig_version=0.0.0
 _readline=auto
 _mindy=auto
+_boost_serialization=auto
 _r=no
 if [ -e libshogun/classifier/svm/SVM_light.cpp ]; then
   _svm_light=yes
@@ -95,7 +96,7 @@ _matlab_static=auto
 #modular interfaces
 _python_modular=auto
 _octave_modular=auto
-_r_modular=no 
+_r_modular=no
 
 test -z "$INCLUDES" || _inc_extra="-I`echo $INCLUDES | sed 's,:, -I,g'`"
 test -z "$LIBS" || _ld_extra="-L`echo $LIBS | sed 's,:, -L,g'`"
@@ -139,13 +140,13 @@ INCLUDES_LIBSHOGUNUI="-I../libshogun -I.."
 LINKFLAGS_LIBSHOGUNUI="-L../libshogun -lshogun"
 POSTLINKFLAGS_LIBSHOGUNUI=
 
-ELWMS_TARGET=	
+ELWMS_TARGET=
 DEFINES_ELWMS=
 INCLUDES_ELWMS=
 LINKFLAGS_ELWMS=
 POSTLINKFLAGS_ELWMS=
 
-CMDLINE_TARGET=	
+CMDLINE_TARGET=
 DEFINES_CMDLINE=
 INCLUDES_CMDLINE=
 LINKFLAGS_CMDLINE=
@@ -632,6 +633,7 @@ Optional features:
   --enable-logsum-array         enable log sum array supposed to be a bit more accurate [disabled]
   --enable-hmm-parallel         enable parallel structures in hmm training. shogun will then run as many threads as the machine has (much faster) [disabled]
 
+  --disable-boost_serialization	disable boost serialization support [auto]
   --disable-largefile           disable large file support (64bit file acces routines) [enabled]
   --disable-lapack    	        disable lapack (fast blas and lapack math routines) and use built in ones (slower!) [auto]
   --disable-cplex    	        disable code using CPLEX  [auto]
@@ -780,6 +782,8 @@ for ac_option do
     ;;
   --disable-mindy)		_mindy=no	;;
   --enable-mindy)		_mindy=yes	;;
+  --disable-boost_serialization)		_boost_serialization=no	;;
+  --enable-boost_serialization)		_boost_serialization=yes	;;
   --disable-svm-light)	_svm_light=no;	_gpl=yes;;
   --enable-svm-light)	_svm_light=yes; _gpl=no;;
   --disable-readline)	_readline=no	;;
@@ -1036,7 +1040,7 @@ cpuid(int func) {
 #ifdef __x86_64__
   asm("mov %%rbx, %%rsi\n\t"
 #else
-  asm("mov %%ebx, %%esi\n\t" 
+  asm("mov %%ebx, %%esi\n\t"
 #endif
       CPUID"\n\t"
 #ifdef __x86_64__
@@ -1110,7 +1114,7 @@ main(int argc, char **argv)
   store32(idstr+4, regs.edx);
   store32(idstr+8, regs.ecx);
   idstr[12] = 0;
-  printf("vendor_id\t: %s\n", idstr); 
+  printf("vendor_id\t: %s\n", idstr);
 
   regs_ext = cpuid((1<<31) + 0);
   max_ext_cpuid = regs_ext.eax;
@@ -1186,7 +1190,7 @@ main(int argc, char **argv)
       { 8, "tm2", "Thermal Monitor 2" },
       { 10, "cid", "L1 Context ID" },
       { 13, "cx16", "CMPXCHG16B Available" },
-      { 14, "xtpr", "xTPR Disable" }, 
+      { 14, "xtpr", "xTPR Disable" },
       { -1 }
     };
     static struct {
@@ -1241,7 +1245,7 @@ main(int argc, char **argv)
         model_name = "Intel (R) Celeron (R) processor";
       else
         model_name = brandname(regs.ebx & 0xf);
-    }   
+    }
 
     printf("flags\t\t:");
     for (i = 0; cap[i].bit >= 0; i++) {
@@ -1258,7 +1262,7 @@ main(int argc, char **argv)
        it is not indicated by a CPUID feature bit, so we
        have to check the family, model and stepping instead. */
     if (strstr(idstr, "AMD") &&
-        family == 5 && 
+        family == 5 &&
         (model >= 9 || model == 8 && stepping >= 8))
       printf(" %s", "k6_mtrr");
     /* similar for cyrix_arr. */
@@ -1269,7 +1273,7 @@ main(int argc, char **argv)
     if (strstr(idstr, "Centaur") &&
         family == 5)
       printf(" %s", "centaur_mcr");
- 
+
     for (i = 0; cap_amd[i].bit >= 0; i++) {
       if (amd_flags & (1 << cap_amd[i].bit)) {
         printf(" %s", cap_amd[i].desc);
@@ -1300,7 +1304,7 @@ main(int argc, char **argv)
       usec_delay = 1000000 * (tv_end.tv_sec - tv_start.tv_sec)
         + (tv_end.tv_usec - tv_start.tv_usec);
 
-      printf("cpu MHz\t\t: %.3f\n", 
+      printf("cpu MHz\t\t: %.3f\n",
              (double)(tsc_end-tsc_start) / usec_delay);
     }
   }
@@ -1309,7 +1313,7 @@ main(int argc, char **argv)
   if (model_name)
     printf("%s\n", model_name);
   else
-    printf("Unknown %s CPU\n", idstr); 
+    printf("Unknown %s CPU\n", idstr);
 }
 EOF
 
@@ -1486,7 +1490,7 @@ EOF
       if not cc_check -march=$proc $cpuopt=$proc; then
         if cc_check -march=i586 $cpuopt=i686; then
           proc=i586-i686
-        else 
+        else
           proc=i586
 	fi
       fi
@@ -1533,11 +1537,11 @@ EOF
       if test "$host_arch" = "i586-i686"; then
         _march="-march=i586"
         _mcpu="$cpuopt=i686"
-      else      
+      else
         _march="-march=$host_arch"
         _mcpu="$cpuopt=$host_arch"
       fi
-    
+
       proc="$host_arch"
 
       case "$proc" in
@@ -1618,7 +1622,7 @@ EOF
       _march=""
       _mcpu=""
     fi
-    
+
     echores "$proc"
     ;;
 
@@ -1631,7 +1635,7 @@ EOF
 	karch=`uname -m`
 	case "`echo $karch`" in
 	    sun4) proc=v7 ;;
-	    sun4c) proc=v7 ;; 
+	    sun4c) proc=v7 ;;
 	    sun4d) proc=v8 ;;
 	    sun4m) proc=v8 ;;
 	    sun4u) proc=v9 _vis='yes' _def_vis='#define HAVE_VIS = yes' ;;
@@ -1768,7 +1772,7 @@ EOF
     _target_arch='TARGET_ARCH_ALPHA = yes'
     iproc='alpha'
     _march=''
-    
+
     echocheck "CPU type"
     cat > $TMPC << EOF
 int main() {
@@ -1784,14 +1788,14 @@ EOF
 
         0-0)    proc="ev4";   cpu_understands_mvi="0";;
         1-0)    proc="ev5";   cpu_understands_mvi="0";;
-        1-1)    proc="ev56";  cpu_understands_mvi="0";; 
+        1-1)    proc="ev56";  cpu_understands_mvi="0";;
         1-101)  proc="pca56"; cpu_understands_mvi="1";;
         2-303)  proc="ev6";   cpu_understands_mvi="1";;
         2-307)  proc="ev67";  cpu_understands_mvi="1";;
         2-1307) proc="ev68";  cpu_understands_mvi="1";;
     esac
     echores "$proc"
-    
+
     echocheck "GCC & CPU optimization abilities"
     if test "$proc" = "ev68" ; then
       cc_check -mcpu=$proc || proc=ev67
@@ -1801,7 +1805,7 @@ EOF
     fi
     _mcpu="-mcpu=$proc"
     echores "$proc"
-    
+
     echocheck "MVI instruction support in GCC"
     if test "$_cc_major" -ge "3" && test "$cpu_understands_mvi" = "1" ; then
         _def_gcc_mvi_support="#define CAN_COMPILE_ALPHA_MVI 1"
@@ -2042,10 +2046,10 @@ EOF
 
 		if test "$_matlab_static" = yes
 		then
-			true #nop	
+			true #nop
 		elif test "$_r" = yes
 		then
-			true #nop	
+			true #nop
 		else
 			LINKFLAGS="$LINKFLAGS -undefined error"
 		fi
@@ -2158,6 +2162,25 @@ EOF
 				die "no posix threading support found (libpthread)"
 			fi
 
+			if test "$_boost_serialization" = yes || test "$_boost_serialization" = auto
+			then
+cat > $TMPC << EOF
+int main(void) { return 0; }
+EOF
+				echocheck "Boost Serialization support"
+				if cc_check -lboost_serialization
+				then
+					HAVE_BOOST_SERIALIZATION='#define HAVE_BOOST_SERIALIZATION 1'
+					DEFINES="$DEFINES -DHAVE_BOOST_SERIALIZATION"
+					LINKFLAGS="$LINKFLAGS -lboost_serialization"
+					echores "yes"
+				else
+					echores "no"
+				fi
+			fi
+
+
+
 			if test "$_mindy" = yes || test "$_mindy" = auto
 			then
 cat > $TMPC << EOF
@@ -2183,7 +2206,7 @@ cat > $TMPC << EOF
 void dpotrf(char uplo, int n, double *a, int lda, int *info);
 
 int main(int argc, char** argv)
-{ 
+{
 	char uplo = 'U';
 	int info=0;
 	int skip=argc;
@@ -2210,7 +2233,7 @@ cat > $TMPC << EOF
 void dpotrf(char* uplo, int* n, double* a, int* lda, int* info);
 
 int main(int argc, char** argv)
-{ 
+{
 	char uplo = 'U';
 	int info=0;
 	int skip=argc;
@@ -2245,7 +2268,7 @@ cat > $TMPC << EOF
 #include <clapack.h>
 
 int main(int argc, char** argv)
-{ 
+{
 	int skip=argc;
 	int n=argc; double* a=0; double* v1=0; double* v2=0;
 	int result=clapack_dpotrf(CblasRowMajor, CblasUpper, n, a, n);
@@ -2254,7 +2277,7 @@ int main(int argc, char** argv)
 }
 EOF
 							echocheck "Atlas support"
-							if cc_check -llapack -lcblas -llapack_atlas 
+							if cc_check -llapack -lcblas -llapack_atlas
 							then
 								echores "yes"
 								HAVE_ATLAS='#define HAVE_ATLAS 1'
@@ -2277,7 +2300,7 @@ cat > $TMPC << EOF
 #include <cblas.h>
 int dpotrf_(char* uplo, int* n, double* a, int* lda, int* info);
 int main(int argc, char** argv)
-{ 
+{
 	char uplo = 'U';
 	int info=0;
 	int skip=argc;
@@ -2408,7 +2431,7 @@ EOF
 				echocheck "GLPK"
 				GLPKLINKFLAGS="-lglpk -lm"
 				if cc_check $GLPKLINKFLAGS
-				then 
+				then
 					echores "yes"
 					USE_GLPK='#define USE_GLPK 1'
 					LINKFLAGS="$LINKFLAGS $GLPKLINKFLAGS"
@@ -2432,12 +2455,12 @@ EOF
 				echocheck "lpsolve Developer Files"
 				LPSOLVELINKFLAGS="-L /usr/lib/lp_solve -llpsolve55"
 				if cc_check $LPSOLVELINKFLAGS
-				then 
+				then
 					echores "yes"
 					USE_LPSOLVE='#define USE_LPSOLVE 1'
 					LINKFLAGS="$LINKFLAGS $LPSOLVELINKFLAGS"
 					POSTLINKFLAGS="$POSTLINKFLAGS $LPSOLVELINKFLAGS"
-					DEFINES="$DEFINES -DUSE_LPSOLVE -DYY_NEVER_INTERACTIVE -DPARSER_LP -DINVERSE_ACTIVE=INVERSE_LUSOL -DRoleIsExternalInvEngine" 
+					DEFINES="$DEFINES -DUSE_LPSOLVE -DYY_NEVER_INTERACTIVE -DPARSER_LP -DINVERSE_ACTIVE=INVERSE_LUSOL -DRoleIsExternalInvEngine"
 				else
 					echores "no"
 				fi
@@ -2859,7 +2882,7 @@ test_octave()
 				_octave="no"
 			fi
 
-			if test "$_octave" != no 
+			if test "$_octave" != no
 			then
 cat > $TMPC << EOF
 
@@ -3018,7 +3041,7 @@ PyMODINIT_FUNC initsg(void)
 PyMODINIT_FUNC initsg(void);
 EOF
 			echocheck "Python/Python Numpy Developer Files"
-			if cc_check $COMPFLAGS_CPP_PYTHON $INCLUDES_PYTHON $LINKFLAGS_PYTHON 
+			if cc_check $COMPFLAGS_CPP_PYTHON $INCLUDES_PYTHON $LINKFLAGS_PYTHON
 			then
 				echores "yes"
 				_python=yes
@@ -3028,7 +3051,7 @@ EOF
 				# they for some reason are not automgically pulled in
 				LINKFLAGS_PYTHON="-lutil -ldl $LINKFLAGS_PYTHON"
 				POSTLINKFLAGS_PYTHON="-lutil -ldl $POSTLINKFLAGS_PYTHON"
-				if cc_check $COMPFLAGS_CPP_PYTHON $INCLUDES_PYTHON $LINKFLAGS_PYTHON 
+				if cc_check $COMPFLAGS_CPP_PYTHON $INCLUDES_PYTHON $LINKFLAGS_PYTHON
 				then
 					echores "yes"
 					SWIGFLAGS_PYTHON_MODULAR="-c++ -python"
@@ -3080,7 +3103,7 @@ test_r()
 	if test "$_r_static" != no || test "$_r_modular" != no
 	then
 		echocheck "R"
-		if ( echo 'version; quit()' | R --no-save ) >/dev/null 2>&1 
+		if ( echo 'version; quit()' | R --no-save ) >/dev/null 2>&1
 		then
 			echores "`echo 'version; quit()' | R  --no-save 2>&1 | grep version\.string | cut -f 4 -d ' '`"
 			test -n "$_rdir" || _rdir=`echo '.libPaths()[1]' | R --no-save 2>/dev/null | grep '^\[1\]' | cut -f 2 -d '"'`
@@ -3181,7 +3204,7 @@ EOF
 		if test -d libshogun
 		then
 			echores "yes (internal in source tree)"
-			rm -f shogun 
+			rm -f shogun
 			ln -s libshogun shogun
 			INCLUDES="-I${SRCDIR} -I.. $INCLUDES"
 			PARTS="$PARTS libshogun"
@@ -3215,7 +3238,7 @@ EOF
 
 test_libshogunui()
 {
-	if test "$_libshogun" = no 
+	if test "$_libshogun" = no
 	then
 		if test "$libshogunui" = yes
 		then
@@ -3476,7 +3499,7 @@ svmlight_warn_license()
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 WARNING: SHOGUN is built using SVMlight which was written
 by Thorsten Joachims and uses a different non GPL compatible license.
-To build a fully GPL'd SHOGUN use 
+To build a fully GPL'd SHOGUN use
 
 ./configure --disable-svm-light
 
@@ -3495,6 +3518,7 @@ write_config_h()
 cat >"$1" <<EOF
 $HAVE_READLINE
 $HAVE_MINDY
+$HAVE_BOOST_SERIALIZATION
 $HAVE_LARGEFILE
 $HAVE_DOXYGEN
 $HAVE_LAPACK
