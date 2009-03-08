@@ -1,5 +1,378 @@
+2009-03-08  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* NEWS, libshogun/classifier/Classifier.h,
+	  libshogun/classifier/KNN.h,
+	  libshogun/classifier/KernelPerceptron.h,
+	  libshogun/classifier/LDA.h, libshogun/classifier/LPBoost.h,
+	  libshogun/classifier/LPM.h,
+	  libshogun/classifier/LinearClassifier.h,
+	  libshogun/classifier/Perceptron.h,
+	  libshogun/classifier/PluginEstimate.cpp,
+	  libshogun/classifier/PluginEstimate.h,
+	  libshogun/classifier/SubGradientLPM.h,
+	  libshogun/classifier/svm/GMNPSVM.h,
+	  libshogun/classifier/svm/gmnplib.h,
+	  libshogun/classifier/svm/gmnpmkl.h,
+	  libshogun/classifier/svm/gnpplib.h,
+	  libshogun/distance/DistanceMachine.h,
+	  libshogun/features/AttributeFeatures.h,
+	  libshogun/kernel/KernelMachine.h, libshogun/lib/Cplex.h: update
+	  documentation
+
+2009-03-05  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* configure, libshogun/base/SGObject.h: whitespace code cleanup +
+	  docu
+	* .authors, configure, libshogunui/GUICommands.h,
+	  libshogunui/SGInterface.cpp, libshogunui/SGInterface.h,
+	  matlab/MatlabInterface.cpp, matlab/MatlabInterface.h,
+	  octave/OctaveInterface.cpp, octave/OctaveInterface.h,
+	  python/PythonInterface.cpp, python/PythonInterface.h,
+	  r/RInterface.cpp, r/RInterface.h: add chris to authors and get
+	  python,... to R interface to work
+
+2009-03-05  Christian Widmer <cwidmer@tuebingen.mpg.de>
+
+	* configure, libshogun/base/SGObject.cpp,
+	  libshogun/base/SGObject.h, libshogun/classifier/svm/SVM_libsvm.h,
+	  r/RInterface.h: first piece of serialization support ported to a
+	  non-ancient version of shogun, default=off
+	* configure: checks for boost_serialization
+
+2009-03-04  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* matlab/MatlabInterface.cpp, octave/OctaveInterface.cpp,
+	  octave/OctaveInterface.h, python/PythonInterface.cpp,
+	  r/RInterface.cpp: run octave embedded quietly
+	* octave/OctaveInterface.cpp: x to octave now fully working for x
+	  in r,python and I guess even matlab
+
+2009-03-03  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* configure, libshogun/features/RealFeatures.h: -fvirtual seems to
+	  break things
+	* configure, libshogun/kernel/CombinedKernel.cpp,
+	  libshogun/kernel/CombinedKernel.h,
+	  libshogun/lib/ShogunException.cpp,
+	  libshogun/lib/ShogunException.h, modular/Kernel.i: add function
+	  to get sub kernel weights and fix clash in exceptions by
+	  introducing a virtual functions as suggested in
+	  http://sourceforge.net/mailarchive/message.php?msg_name=48DF377F.2050407%40salilab.org
+	* Makefile.template, configure, libshogunui/GUICommands.h,
+	  libshogunui/SGInterface.cpp, libshogunui/SGInterface.h,
+	  matlab/MatlabInterface.cpp, matlab/MatlabInterface.h,
+	  octave/OctaveInterface.cpp, octave/OctaveInterface.h,
+	  python/PythonInterface.cpp, python/PythonInterface.h,
+	  r/RInterface.cpp, r/RInterface.h: python,... to octave
+
+2009-03-02  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* NEWS, cmdline/CmdLineInterface.cpp, cmdline/CmdLineInterface.h,
+	  libshogunui/SGInterface.cpp, libshogunui/SGInterface.h,
+	  matlab/MatlabInterface.cpp, matlab/MatlabInterface.h,
+	  octave/OctaveInterface.cpp, octave/OctaveInterface.h,
+	  python/PythonInterface.cpp, python/PythonInterface.h,
+	  r/RInterface.cpp, r/RInterface.h: implement dummy attribute
+	  struct hooks, fix examples
+
+2009-03-01  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* libshogun/features/AttributeFeatures.cpp,
+	  libshogun/features/AttributeFeatures.h,
+	  libshogun/features/CombinedFeatures.h,
+	  libshogun/lib/DynamicArray.h, libshogunui/SGInterface.h,
+	  modular/Features.i: add attribute features
+	* libshogun/kernel/Kernel.cpp: fix a bug in get_kernel_matrix
+	* libshogun/classifier/svm/SVM.cpp, libshogun/kernel/Kernel.cpp:
+	  allow kernels with NULL as features
+	* configure: disable elwms when interfaces are given
+	* libshogun/features/CombinedFeatures.cpp,
+	  libshogun/features/CombinedFeatures.h,
+	  libshogun/kernel/CombinedKernel.cpp,
+	  libshogun/kernel/CombinedKernel.h,
+	  libshogun/kernel/CustomKernel.h, libshogun/kernel/Kernel.h,
+	  libshogun/regression/svr/SVR_light.cpp,
+	  libshogunui/GUIKernel.cpp, matlab/MatlabInterface.cpp: fix error
+	  printing in matlab, combined kernel needs an init when custom
+	  features are used
+	* Makefile.template, cmdline/CmdLineInterface.cpp, elwms/Makefile:
+	  don't set verbosity in examples, fix compilation error in cmdline
+	  if and remove elwms Makefile
+	* .r-install.sh, INSTALL, Makefile.template, NEWS, configure,
+	  elwms/Makefile, elwms/elwms.cpp, libshogun/base/SGObject.h,
+	  libshogun/features/StringFeatures.h, libshogun/kernel/Kernel.cpp,
+	  libshogunui/SGInterface.cpp, libshogunui/SGInterface.h,
+	  matlab/MatlabInterface.cpp, octave/OctaveInterface.cpp,
+	  python/PythonInterface.cpp, r/RInterface.cpp: - rename elwms
+	  interface from sg to elwms (to avoid naming conflicts with other
+	  interfaces) and properly integrate it into ./configure and the
+	  standard install procedure
+	  - update NEWS and INSTALL accordingly and support the whole
+	  spectrum of types from scalars to strings in translation
+	* libshogun/base/Version.h: 2008 -> 2009
+	* octave/OctaveInterface.cpp: also accept scalars as vec/matrix
+	* elwms/elwms.cpp, matlab/MatlabInterface.cpp,
+	  octave/OctaveInterface.cpp, python/PythonInterface.cpp,
+	  r/RInterface.cpp: - don't actually print anything on SG_ERROR (as
+	  it throws an exception anyway - so only print the error then)
+	  - fix a clash in R and octave error function (in elwms
+	  interface), also don't require result to be a dictionary, make it
+	  a tuple
+
+2009-02-28  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* configure, elwms/Makefile, matlab/MatlabInterface.cpp,
+	  r/RInterface.cpp: dynamically load the python libs to global
+	  context
+	  (since matlab/R don't load them automagically they fail due to
+	  missing
+	  symbols), do at least try to get the python version right
+	* elwms/Makefile, elwms/elwms.cpp, libshogunui/SGInterface.cpp,
+	  libshogunui/SGInterface.h, matlab/MatlabInterface.cpp,
+	  matlab/MatlabInterface.h, octave/OctaveInterface.cpp,
+	  octave/OctaveInterface.h, python/PythonInterface.cpp,
+	  python/PythonInterface.h, r/RInterface.cpp, r/RInterface.h: get
+	  the run_python command to work in r,octave and matlab, also
+	  release memory of converted matrices
+	* libshogunui/SGInterface.cpp, libshogunui/SGInterface.h,
+	  octave/OctaveInterface.cpp, python/PythonInterface.cpp,
+	  python/PythonInterface.h: octave to python translator now
+	  functional
+
+2009-02-27  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* NEWS, elwms/Makefile, libshogunui/GUICommands.h,
+	  libshogunui/SGInterface.cpp, libshogunui/SGInterface.h,
+	  octave/OctaveInterface.cpp, octave/OctaveInterface.h: add
+	  run_python command to the eierlegendewollmilchsau which will
+	  translate octave variables into python variables, execute python
+	  code and translate the variables back into octave *currently
+	  returning a matrix works*
+	* NEWS, elwms, elwms/Makefile, elwms/elwms.cpp,
+	  libshogunui/SGInterface.cpp, octave/OctaveInterface.h: -
+	  *taddaaa* I hereby proudly present THE EIERLEGENDEWOLLMILCHSAU
+	  (elwms), that is a *single file* that constitutes a interfaces to
+	  python, octave, R and matlab all at the same time - yes now one
+	  shoe^H^H^H^Hfile that fits all.
+	  - minor warning fixes in interface, update NEWS
+	* libshogun/classifier/Classifier.cpp,
+	  libshogun/classifier/svm/MultiClassSVM.cpp,
+	  libshogun/classifier/svm/SVM.cpp,
+	  libshogun/classifier/svm/gmnpmkl.cpp,
+	  libshogun/kernel/CombinedKernel.cpp,
+	  libshogun/kernel/CombinedKernel.h,
+	  libshogun/kernel/CustomKernel.cpp,
+	  libshogun/kernel/CustomKernel.h, libshogun/kernel/Kernel.h,
+	  libshogun/kernel/KernelMachine.cpp: sole combined kernel based on
+	  custom kernels no longer requires features nor init
+
+2009-02-27  Gunnar Raetsch <Gunnar.Raetsch@tuebingen.mpg.de>
+
+	* libshogun/structure/DynProg.cpp: fixed compile errors in debug
+	  code
+
+2009-02-27  Jonas Behr <Jonas.Behr@tuebingen.mpg.de>
+
+	* libshogun/structure/DynProg.cpp, libshogunui/SGInterface.cpp: --
+	  bugfix: precompute stop codons for precomp interface as well
+	* libshogunui/SGInterface.cpp: - double declaration removed
+	* libshogun/structure/DynProg.cpp, libshogunui/SGInterface.cpp: -
+	  some SG_PRINTs removed
+	  - changed function init_content_svm_value_array such that all
+	  arguments are now passed,
+	  instead of using member variables
+
+2009-02-26  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* octave/OctaveInterface.cpp: fix size?
+	* octave/OctaveInterface.cpp, octave/OctaveInterface.h: potentially
+	  get nd arrays to work
+	* Makefile.template: fix install
+
+2009-02-25  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* configure: this adds checks to configure that does not allow
+	  building using an illegal
+	  config, e.g. --interfaces=python_modular will trigger an error
+	  since libshogun
+	  is missing, --interfaces=libshogun,python_modular will work
+	  nicely etc
+	* Makefile.template: always call ldconfig and create symlinks to
+	  soname/library name manually
+	* NEWS, libshogunui/GUIClassifier.cpp, libshogunui/GUIKernel.cpp,
+	  libshogunui/GUIKernel.h, libshogunui/SGInterface.cpp,
+	  libshogunui/SGInterface.h: this changes the syntax of the custom
+	  kernel. a simple
+	  
+	  sg('set_kernel', 'CUSTOM', km, 'FULL2DIAG');
+	  
+	  is enough now too in static interfaces, no features nor init
+	  required
+
+2009-02-24  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* .generate_link_dependencies.py, Makefile.template, configure:
+	  configure / make should work now when libshogun / libshogunui are
+	  installed but the local libshogun/libshogunui directories are
+	  missing
+	* libshogun/base/Parallel.cpp, libshogun/base/Parallel.h,
+	  libshogun/base/SGObject.cpp, libshogun/base/Version.cpp,
+	  libshogun/base/Version.h, libshogun/base/init.cpp,
+	  libshogun/classifier/svm/SVM.cpp, libshogun/lib/Array.h,
+	  libshogun/lib/Array2.h, libshogun/lib/Array3.h,
+	  libshogun/lib/Cache.h, libshogun/lib/Cplex.cpp,
+	  libshogun/lib/Cplex.h, libshogun/lib/File.cpp,
+	  libshogun/lib/File.h, libshogun/lib/List.h,
+	  libshogun/lib/Mathematics.cpp, libshogun/lib/ShogunException.cpp,
+	  libshogun/lib/ShogunException.h, libshogun/lib/Signal.cpp,
+	  libshogun/lib/SimpleFile.h, libshogun/lib/Time.cpp,
+	  libshogun/lib/Time.h, libshogun/lib/Trie.cpp,
+	  libshogun/lib/Trie.h, libshogun/lib/io.cpp, libshogun/lib/io.h,
+	  libshogun/lib/lapack.cpp, libshogun/lib/lapack.h,
+	  libshogun/lib/memory.cpp, libshogun/lib/memory.h: update
+	  copyright to 2009 in lib and base
+	* libshogun/base/SGObject.h: ifdef pthread mutex handling
+	* Makefile, configure: test if variables are set and then uninstall
+	  things, undo changes in configure
+
+2009-02-24  Cheng Soon Ong <chengsoon.ong@tuebingen.mpg.de>
+
+	* Makefile, Makefile.template, configure: Hack for cleaning up
+	  installed shogun, make uninstall
+
+2009-02-24  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* libshogun/kernel/CombinedKernel.cpp: this should not skip over
+	  custom kernels on init (so users don't need to assign
+	  features to custom kernels in combined features)
+
+2009-02-23  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* configure: fix an error in configure that always de-selected
+	  matlab
+	* configure: potentially fix a compile error for people that have
+	  libshogun headers installed in the same path as they are
+	  installing to
+	* libshogun/base/SGObject.h, libshogun/kernel/CombinedKernel.cpp,
+	  libshogun/kernel/CommWordStringKernel.cpp,
+	  libshogun/kernel/CommWordStringKernel.h,
+	  libshogun/kernel/Kernel.cpp: fix a tricky to trigger tricky to
+	  find bug occurring only with num_threads > 1 linadd enabled
+	  kernels in the combined kernel: reference counts require mutex
+	  locking to avoid accidental destruction of objects.
+	* python_modular/swig_typemaps.i: removed some crappy lines
+	  introducing a compile failure in python_modular
+	* python_modular/swig_typemaps.i: work on sparse features for
+	  python
+	* README.developer, README.soname: minor reformatting
+	* INSTALL, README.developer, README.soname, libshogun/base/init.h,
+	  libshogun/classifier/svm/SVM_light.h: polish documentation
+
+2009-02-22  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* NEWS, modular/AUCKernel.i, modular/Alphabet.i, modular/Array.i,
+	  modular/Array2.i, modular/Array3.i,
+	  modular/AvgDiagKernelNormalizer.i, modular/BrayCurtisDistance.i,
+	  modular/ByteFeatures.i, modular/Cache.i,
+	  modular/CanberraMetric.i, modular/CanberraWordDistance.i,
+	  modular/CharFeatures.i, modular/ChebyshewMetric.i,
+	  modular/Chi2Kernel.i, modular/ChiSquareDistance.i,
+	  modular/Classifier.i, modular/Clustering.i,
+	  modular/CombinedDotFeatures.i, modular/CombinedFeatures.i,
+	  modular/CombinedKernel.i, modular/CommUlongStringKernel.i,
+	  modular/CommWordStringKernel.i, modular/ConstKernel.i,
+	  modular/CosineDistance.i, modular/CustomKernel.i,
+	  modular/DiagKernel.i, modular/DiceKernelNormalizer.i,
+	  modular/Distance.i, modular/DistanceKernel.i,
+	  modular/DistanceMachine.i, modular/Distribution.i,
+	  modular/DotFeatures.i, modular/DummyFeatures.i,
+	  modular/DynProg.i, modular/DynamicArray.i,
+	  modular/EuclidianDistance.i, modular/Evaluation.i,
+	  modular/ExplicitSpecFeatures.i, modular/FKFeatures.i,
+	  modular/Features.i, modular/File.i,
+	  modular/FixedDegreeStringKernel.i, modular/GHMM.i,
+	  modular/GMNPSVM.i, modular/GNPPSVM.i, modular/GPBTSVM.i,
+	  modular/GaussianKernel.i, modular/GaussianShiftKernel.i,
+	  modular/GaussianShortRealKernel.i, modular/GeodesicMetric.i,
+	  modular/HMM.i, modular/HammingWordDistance.i,
+	  modular/Hierarchical.i, modular/Histogram.i,
+	  modular/HistogramWordStringKernel.i,
+	  modular/IdentityKernelNormalizer.i,
+	  modular/ImplicitWeightedSpecFeatures.i, modular/IntFeatures.i,
+	  modular/JensenMetric.i, modular/KMeans.i, modular/KNN.i,
+	  modular/KRR.i, modular/Kernel.i, modular/KernelMachine.i,
+	  modular/KernelNormalizer.i, modular/KernelPerceptron.i,
+	  modular/LDA.i, modular/LPBoost.i, modular/LPM.i,
+	  modular/Labels.i, modular/LibLinear.i, modular/LibSVM.i,
+	  modular/LibSVMMultiClass.i, modular/LibSVMOneClass.i,
+	  modular/LibSVR.i, modular/Library.i, modular/LinearByteKernel.i,
+	  modular/LinearClassifier.i, modular/LinearHMM.i,
+	  modular/LinearKernel.i, modular/LinearStringKernel.i,
+	  modular/LinearWordKernel.i, modular/List.i,
+	  modular/LocalAlignmentStringKernel.i,
+	  modular/LocalityImprovedStringKernel.i, modular/LogPlusOne.i,
+	  modular/MPDSVM.i, modular/ManhattanMetric.i,
+	  modular/ManhattanWordDistance.i, modular/MatchWordStringKernel.i,
+	  modular/Mathematics.i, modular/MindyGramFeatures.i,
+	  modular/MindyGramKernel.i, modular/MinkowskiMetric.i,
+	  modular/MultiClassSVM.i, modular/NormDerivativeLem3.i,
+	  modular/NormOne.i, modular/OligoKernel.i, modular/PCACut.i,
+	  modular/Parallel.i, modular/Perceptron.i,
+	  modular/PerformanceMeasures.i, modular/Plif.i,
+	  modular/PlifArray.i, modular/PlifBase.i,
+	  modular/PluginEstimate.i, modular/PolyKernel.i,
+	  modular/PolyMatchStringKernel.i,
+	  modular/PolyMatchWordStringKernel.i, modular/PreProc.i,
+	  modular/PruneVarSubMean.i, modular/PyramidChi2.i,
+	  modular/RealDistance.i, modular/RealFeatures.i,
+	  modular/RealFileFeatures.i, modular/Regression.i,
+	  modular/SGBase.i, modular/SGObject.i, modular/SVM.i,
+	  modular/SVMLin.i, modular/SVMOcas.i, modular/SVMSGD.i,
+	  modular/SVM_light.i, modular/SVR_light.i,
+	  modular/SalzbergWordStringKernel.i, modular/ShogunException.i,
+	  modular/ShortFeatures.i, modular/ShortRealFeatures.i,
+	  modular/SigmoidKernel.i, modular/Signal.i,
+	  modular/SimpleDistance.i, modular/SimpleFeatures.i,
+	  modular/SimpleFile.i, modular/SimpleKernel.i,
+	  modular/SimpleLocalityImprovedStringKernel.i,
+	  modular/SimplePreProc.i, modular/SortUlongString.i,
+	  modular/SortWordString.i, modular/SparseDistance.i,
+	  modular/SparseEuclidianDistance.i, modular/SparseFeatures.i,
+	  modular/SparseGaussianKernel.i, modular/SparseKernel.i,
+	  modular/SparseLinearKernel.i, modular/SparsePolyKernel.i,
+	  modular/SparsePreProc.i, modular/SqrtDiagKernelNormalizer.i,
+	  modular/StringDistance.i, modular/StringFeatures.i,
+	  modular/StringKernel.i, modular/StringPreProc.i,
+	  modular/Structure.i, modular/SubGradientLPM.i,
+	  modular/SubGradientSVM.i, modular/TOPFeatures.i,
+	  modular/TanimotoDistance.i, modular/TanimotoKernelNormalizer.i,
+	  modular/TensorProductPairKernel.i, modular/Time.i,
+	  modular/Trie.i, modular/Version.i, modular/WDFeatures.i,
+	  modular/WDSVMOcas.i, modular/WeightedCommWordStringKernel.i,
+	  modular/WeightedDegreePositionStringKernel.i,
+	  modular/WeightedDegreeStringKernel.i, modular/WordFeatures.i,
+	  modular/common.i, modular/init.i, modular/io.i, modular/lapack.i,
+	  octave_modular/swig_typemaps.i, python_modular/swig_typemaps.i,
+	  r_modular/swig_typemaps.i: merge swig interface files
+	* libshogun/classifier/Classifier.h,
+	  libshogun/features/CombinedDotFeatures.h,
+	  libshogun/features/DotFeatures.h,
+	  libshogun/features/ExplicitSpecFeatures.h,
+	  libshogun/features/ImplicitWeightedSpecFeatures.h,
+	  libshogun/features/SimpleFeatures.h,
+	  libshogun/features/WDFeatures.h,
+	  libshogun/kernel/CombinedKernel.h,
+	  libshogun/kernel/CommWordStringKernel.h,
+	  libshogun/kernel/DiceKernelNormalizer.h,
+	  libshogun/kernel/Kernel.h, libshogun/lib/io.h,
+	  libshogun/structure/DynProg.h: add lots of documentation and fix
+	  a naming collision w/ kernel normalizers
+
 2009-02-20  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
 
+	* NEWS: start some tutorial
+	* configure: an attempt to allow building of modular if's only
+	* ChangeLog: updated changelog
 	* ChangeLog: updated changelog
 	* NEWS: preparing for release
 
