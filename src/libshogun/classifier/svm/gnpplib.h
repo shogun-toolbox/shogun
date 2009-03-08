@@ -23,7 +23,9 @@
 #include "lib/common.h"
 #include "kernel/Kernel.h"
 
-/** class GNPPLib */
+/** class GNPPLib
+ * Library of solvers for Generalized Nearest Point Problem (GNPP).
+ */
 class CGNPPLib: public CSGObject
 {
  public:

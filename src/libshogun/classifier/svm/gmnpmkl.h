@@ -33,9 +33,9 @@
  * its own parameters are thresh (L2 norm of subkernel weights for termination) and
  * maxiters (how many silp iterations at most in order to force termination)
  *
- * TODO: check what options to pass from CGMNPMKL to CGMNPSVM
- * set C_mkl?
- * TODO: clear types (float64_t, size_t, int)
+ * \todo check what options to pass from CGMNPMKL to CGMNPSVM
+ * \todo set C_mkl?
+ * \todo clear types (float64_t, size_t, int)
  */
 class lpwrapper
 {
@@ -48,9 +48,9 @@ public:
 	
 	virtual void setup(const int32_t numkernels); 
 
-	/** takes a set of alpha^t H alpha and -sum alpha
+	/** takes a set of \f$\alpha^t H \alpha\f$ and \f$-\sum \alpha\f$
 	 * and adds constraint32_t to the working set
-	 * theta <= \beta^ (1) + -sumalpha  
+	 * \f$\theta <= \beta^(1) + -\sum \alpha\f$
 	 */
 	virtual void addconstraint(const ::std::vector<float64_t> & normw2,
 			const float64_t sumofpositivealphas); 
@@ -89,7 +89,6 @@ public:
 	
 	virtual void setup(const int32_t numkernels); 
 
-	// takes a set of alpha^t H alpha and -sum alpha and adds constraint32_t to the working set theta <= \beta^ (1) + -sumalpha  
 	virtual void addconstraint(const ::std::vector<float64_t> & normw2,
 			const float64_t sumofpositivealphas); 
 

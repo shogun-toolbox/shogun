@@ -59,7 +59,17 @@ enum ESolverType
 	ST_INTERNAL=3
 };
 
-/** class Classifier */
+/** A generic classifier interface
+ *
+ * A classifier takes as input CLabels. Later subclasses may specialize the
+ * classifier to require labels and a kernel or labels and (real-valued)
+ * features.
+ *
+ * A classifier needs to override the train() function for training,
+ * the function classify_example() (optionally classify() to predict on the
+ * whole set of examples) and the load and save routines.
+ *
+ */
 class CClassifier : public CSGObject
 {
 	public:

@@ -59,60 +59,60 @@ public:
 		float64_t factor, TSparseEntry<float64_t>* h, int32_t len,
 		int32_t ulen, CLabels* label);
 
-	/// given N sparse inputs x_i, and corresponding labels y_i i=0...N-1
-	/// create the following 1-norm SVM problem & transfer to cplex
-	/// 
-	////////////////////////////////////////////////////////////////// 
-	/// min_w 		sum_{i=0}^N ( w^+_i + w^-_i) C \sum_{i=0}^N \xi_i
-	/// w=[w^+ w^-]
-	/// b, xi
-	/// 
-	/// -y_i((w^+-w^-)^T x_i + b)-xi_i <= -1
-	/// x_i >= 0 
-	/// w_i >= 0    forall i=1...N
-	////////////////////////////////////////////////////////////////// 
-	/// min f^x
-	/// Ax <= b
-	/// -x <= 0
-	/// 
-	/// lb= [ -inf, //b
-	/// 	  2*dims [0], //w
-	/// 	  num_train [0] //xi 
-	/// 	]
-	/// 
-	/// ub= [ inf, //b
-	/// 	  2*dims [inf], //w
-	/// 	  num_train [inf] //xi 
-	/// 	]
-	/// 
-	/// f= [0,2*dim[1], num_train*C]
-	/// A= [-y', // b
-	/// 	-y_ix_i // w_+
-	/// 	+y_ix_i // w_-
-	/// 	-1 //xi
-	/// 	]
-	/// 
-	/// 	dim(A)=(n,1+2*dim+n)
-	/// 
-	/// b =  -1 -1 -1 -1 ... 
+	// given N sparse inputs x_i, and corresponding labels y_i i=0...N-1
+	// create the following 1-norm SVM problem & transfer to cplex
+	// 
+	///////////////////////////////////////////////////////////////// 
+	// min_w 		sum_{i=0}^N ( w^+_i + w^-_i) + C \sum_{i=0}^N \xi_i
+	// w=[w^+ w^-]
+	// b, xi
+	// 
+	// -y_i((w^+-w^-)^T x_i + b)-xi_i <= -1
+	// xi_i >= 0 
+	// w_i >= 0    forall i=1...N
+	///////////////////////////////////////////////////////////////// 
+	// min f^x
+	// Ax <= b
+	// -x <= 0
+	// 
+	// lb= [ -inf, //b
+	// 	  2*dims [0], //w
+	// 	  num_train [0] //xi 
+	// 	]
+	// 
+	// ub= [ inf, //b
+	// 	  2*dims [inf], //w
+	// 	  num_train [inf] //xi 
+	// 	]
+	// 
+	// f= [0,2*dim[1], num_train*C]
+	// A= [-y', // b
+	// 	-y_ix_i // w_+
+	// 	+y_ix_i // w_-
+	// 	-1 //xi
+	// 	]
+	// 
+	// 	dim(A)=(n,1+2*dim+n)
+	// 
+	// b =  -1 -1 -1 -1 ... 
 	bool setup_lpm(
 		float64_t C, CSparseFeatures<float64_t>* x, CLabels* y, bool use_bias);
 
-	/// call this to setup linear part
-	///
-	/// setup lp, to minimize
-	/// objective[0]*x_0 ... objective[cols-1]*x_{cols-1}
-	/// w.r.t. x
-	/// s.t. constraint_mat*x <= rhs
-	/// lb[i] <= x[i] <= ub[i] for all i
+	// call this to setup linear part
+	//
+	// setup lp, to minimize
+	// objective[0]*x_0 ... objective[cols-1]*x_{cols-1}
+	// w.r.t. x
+	// s.t. constraint_mat*x <= rhs
+	// lb[i] <= x[i] <= ub[i] for all i
 	bool setup_lp(
 		float64_t* objective, float64_t* constraints_mat, int32_t rows,
 		int32_t cols, float64_t* rhs, float64_t* lb, float64_t* ub);
 
 
-	/// call this to setup quadratic part H
-	/// x'*H*x
-	/// call setup_lp before (to setup the linear part / linear constraints)
+	// call this to setup quadratic part H
+	// x'*H*x
+	// call setup_lp before (to setup the linear part / linear constraints)
 	bool setup_qp(float64_t* H, int32_t dim);
 	bool optimize(float64_t* sol, float64_t* lambda=NULL);
 

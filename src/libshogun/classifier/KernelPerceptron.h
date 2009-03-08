@@ -16,7 +16,9 @@
 #include "features/Features.h"
 #include "kernel/KernelMachine.h"
 
-/** class KernelPerceptron */
+/** Class KernelPerceptron -
+ * currently unfinished implementation of a Kernel Perceptron
+ */
 class CKernelPerceptron : public CKernelMachine
 {
 	public:

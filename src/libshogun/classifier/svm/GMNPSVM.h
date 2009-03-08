@@ -16,7 +16,9 @@
 #include "lib/common.h"
 #include "classifier/svm/MultiClassSVM.h"
 
-/** class GMNPSVM */
+/** Class GMNPSVM implements a one vs. rest MultiClass SVM. It uses CGMNPLib
+ * for training (in true multiclass-SVM fashion).
+ */
 class CGMNPSVM : public CMultiClassSVM
 {
 	public:

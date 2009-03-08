@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2008 Soeren Sonnenburg
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 1999-2009 Soeren Sonnenburg
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _PLUGINESTIMATE_H___
@@ -16,7 +16,17 @@
 #include "features/Labels.h"
 #include "distributions/hmm/LinearHMM.h"
 
-/** class PluginEstimate */
+/** The class PluginEstimate takes as input two probabilistic models (of type
+ * CLinearHMM, even though general models are possible ) and classifies an
+ * examples according to the rule
+ *
+ * \f[
+ * f({\bf x})= \log(\mbox{Pr}({\bf x}|\theta_+)) - \log(\mbox{Pr}({\bf x}|\theta_-))
+ * \f]
+ *
+ * \sa CLinearHMM
+ * \sa CDistribution
+ * */
 class CPluginEstimate: public CClassifier
 {
 	public:

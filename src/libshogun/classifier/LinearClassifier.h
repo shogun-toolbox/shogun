@@ -18,7 +18,38 @@
 
 #include <stdio.h>
 
-/** class LinearClassifier */
+/** Class LinearClassifier is a generic interface for all kinds of linear
+ * classifiers. A linear classifier computes 
+ *
+ *  \f[
+ * 		f({\bf x})= {\bf w} \cdot {\bf x} + b
+ * 	\f]
+ *
+ * where \f${\bf w}\f$ are the weights assigned to each feature in training 
+ * and \f$b\f$ the bias.
+ *
+ * To implement a linear classifier all that is required is to define the
+ * train() function that delivers \f${\bf w}\f$ above.
+ *
+ * Note that this framework works with linear classifiers of arbitraty feature
+ * type, e.g. dense and sparse and even string based features. This is
+ * implemented by using CDotFeatures that may provide a mapping function
+ * \f$\Phi({\bf x})\mapsto {\cal R^D}\f$ encapsulating all the required
+ * operations (like the dot product). The decision function is thus
+ *
+ *  \f[
+ * 		f({\bf x})= {\bf w} \cdot \Phi({\bf x}) + b.
+ * 	\f]
+ *
+ * 	The following linear classifiers are implemented
+ * 	\li Linear Descriminant Analysis (CLDA)
+ * 	\li Linear Programming Machines (CLPM, CLPBoost)
+ * 	\li Perceptron (CPerceptron)
+ * 	\li Linear SVMs (CSVMSGD, CLibLinear, CSVMOcas, CSVMLin, CSubgradientSVM)
+ *
+ * 	\sa CDotFeatures
+ *
+ * */
 class CLinearClassifier : public CClassifier
 {
 	public:

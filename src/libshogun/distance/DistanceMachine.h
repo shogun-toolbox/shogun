@@ -19,7 +19,12 @@
 
 #include <stdio.h>
 
-/** class DistanceMachine */
+/** A generic DistanceMachine interface
+ *
+ * A distance machine is based on labels and a distance.
+ *
+ * Note that the distance has to be choosen a-priori.
+ */
 class CDistanceMachine : public CClassifier
 {
 	public:

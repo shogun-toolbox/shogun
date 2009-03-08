@@ -4,9 +4,9 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2007-2008 Soeren Sonnenburg
+ * Written (W) 2007-2009 Soeren Sonnenburg
  * Written (W) 2007-2008 Vojtech Franc
- * Copyright (C) 2007-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 2007-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _SUBGRADIENTLPM_H___
@@ -23,6 +23,25 @@
 #include "features/Features.h"
 #include "features/Labels.h"
 
+/** Class SubGradientSVM trains a linear classifier called Linear Programming Machine,
+ * i.e. a SVM using a \f$\ell_1\f$ norm regularizer. It solves the following
+ * optimization problem using subgradient descent.
+ *
+ * \f{eqnarray*}
+ * \min_{{\bf w}={(\bf w^+},{\bf w^-}), b, {\bf \xi}} &&
+ * \sum_{i=1}^N ( {\bf w}^+_i + {\bf w}^-_i) + C \sum_{i=1}^{N} \xi_i\\
+ *
+ * \mbox{s.t.} && -y_i(({\bf w}^+-{\bf w}^-)^T {\bf x}_i + b)-{\bf \xi}_i \leq -1\\
+ * && \quad {\bf x}_i \geq 0\\\
+ * && {\bf w}_i \geq 0,\quad \forall i=1\dots N
+ * \f}
+ *
+ * Note that this implementation is not very stable numerically for a large
+ * number of dimensions. Also note that currently CPLEX is required to solve
+ * this problem.
+ * \sa CLPBoost
+ * \sa CLPM
+ */
 class CSubGradientLPM : public CLinearClassifier
 {
 	public:

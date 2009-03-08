@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2007-2008 Soeren Sonnenburg
- * Copyright (C) 2007-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 2007-2009 Soeren Sonnenburg
+ * Copyright (C) 2007-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _LPM_H___
@@ -19,6 +19,24 @@
 #include "features/Features.h"
 #include "classifier/LinearClassifier.h"
 
+/** Class LPM trains a linear classifier called Linear Programming Machine,
+ * i.e. a SVM using a \f$\ell_1\f$ norm regularizer. It solves the following
+ * optimization problem using CPLEX:
+ *
+ * \f{eqnarray*}
+ * \min_{{\bf w}={(\bf w^+},{\bf w^-}), b, {\bf \xi}} &&
+ * \sum_{i=1}^N ( {\bf w}^+_i + {\bf w}^-_i) + C \sum_{i=1}^{N} \xi_i\\
+ *
+ * \mbox{s.t.} && -y_i(({\bf w}^+-{\bf w}^-)^T {\bf x}_i + b)-{\bf \xi}_i \leq -1\\
+ * && \quad {\bf x}_i \geq 0\\\
+ * && {\bf w}_i \geq 0,\quad \forall i=1\dots N
+ * \f}
+ *
+ * Note that currently CPLEX is required to solve this problem. A
+ * faster implementation is available in CLPBoost.
+ * 
+ * \sa CLPBoost
+ */
 class CLPM : public CLinearClassifier
 {
 	public:

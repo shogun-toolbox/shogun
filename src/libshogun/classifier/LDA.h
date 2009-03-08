@@ -11,14 +11,41 @@
 #ifndef _LDA_H___
 #define _LDA_H___
 
-#include "lib/common.h"
+#include "lib/config.h"
 
 #ifdef HAVE_LAPACK
+#include "lib/common.h"
 #include "features/Features.h"
 #include "features/RealFeatures.h"
 #include "classifier/LinearClassifier.h"
 
-/** class LDA */
+/** Class LDA implements regularized Linear Discriminant Analysis.
+ *
+ * LDA learns a linear classifier and requires examples to be CRealFeatures.
+ * The learned linear classification rule is optimal under the assumption that
+ * both classes a gaussian distributed with equal co-variance. To find a linear
+ * separation \f${\bf w}\f$ in training, the in-between class variance is
+ * maximized and the within class variance is minimized, i.e.
+ *
+ * \f[
+ * J({\bf w})=\frac{{\bf w^T} S_B {\bf w}}{{\bf w^T} S_W {\bf w}}
+ * \f]
+ *
+ * is maximized, where
+ * \f[S_b := ({\bf m_{+1}} - {\bf m_{-1}})({\bf m_{+1}} - {\bf m_{-1}})^T \f]
+ * is the between class scatter matrix and
+ * \f[S_w := \sum_{c\in\{-1,+1\}}\sum_{{\bf x}\in X_{c}}({\bf x} - {\bf m_c})({\bf x} - {\bf m_c})^T \f]
+ * is the within class scatter matrix with mean \f${\bf m_c} :=
+ * \frac{1}{N}\sum_{j=1}^N {\bf x_j^c}\f$ and \f$X_c:=\{x_1^c, \dots, x_N^c\}\f$
+ * the set of examples of class c.
+ *
+ * LDA is very fast for low-dimensional samples. The regularization parameter
+ * \f$\gamma\f$ (especially useful in the low sample case) should be tuned in
+ * cross-validation.
+ *
+ * \sa CLinearClassifier
+ * \sa http://en.wikipedia.org/wiki/Linear_discriminant_analysis
+ */
 class CLDA : public CLinearClassifier
 {
 	public:

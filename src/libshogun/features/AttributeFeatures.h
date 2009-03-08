@@ -60,10 +60,11 @@ public:
 		return NULL;
 	}
 
-	/** return the feature object matching attribute name
+	/** return the feature object at index
 	 *
-	 * @param attr_name attribute name
-	 * @return feature object
+	 * @param idx index of attribute
+	 * @param attr_name attribute name (returned by reference)
+	 * @param attr_obj attribute object (returned by reference)
 	 */
 	inline void get_attribute_by_index(int idx, const char* &attr_name, CFeatures* &attr_obj)
 	{

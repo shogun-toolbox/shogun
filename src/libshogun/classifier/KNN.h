@@ -21,7 +21,17 @@
 
 class CDistanceMachine;
 
-/** class KNN */
+/** Class KNN, an implementation of the standard k-nearest neigbor classifier.
+ * An example is classified to belong to the class of which the majority of the
+ * k closest examples belong to.
+ *
+ * To avoid ties, k should be an odd number. To define how close examples are
+ * k-NN requires a CDistance object to work with (e.g., CEuclideanDistance ).
+ *
+ * Note that k-NN has zero training time but classification times increase
+ * dramatically with the number of examples. Also note that k-NN is capable of
+ * multi-class-classification.
+ */
 class CKNN : public CDistanceMachine
 {
 	public:

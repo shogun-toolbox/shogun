@@ -1,16 +1,17 @@
-2009-03-20 Soeren Sonnenburg <debian@nn7.de>
+2009-03-08 Soeren Sonnenburg <debian@nn7.de>
 
 	* SHOGUN Release version 0.7.1 (libshogun 1.0, libshogunui 1.0)
 	* This release contains several cleanups and bugfixes:
 	* Features:
 		- configure now detects libshogun/ui installed in /usr/(local/)lib if
 		libshogun/ui dirs are removed.
-		- Improved documentation (and path fixes).
+		- Improved documentation (and path and doxygen fixes).
 		- Tutorial on how to develop with libshogun and to extend shogun.
 		- Added the elwms (eilergendewollmilchsau) interface that is a
 		chimera that in one file interfaces to python,octave,r,matlab and
-		provides the run_python to run code in python using the in
-		octave,r,matlab available variables avoiding file i/o.
+		provides the run_{octave,python,r} command to run code in
+		{octave,python,r} from within octave,r,matlab,python transparently
+		making variables available to the target interface avoiding file i/o.
 		- Implement AttributeFeatures for (attr,value) pairs, trees etc.
 	* Bugfixes:
 		- fix a crasher occurring with combined kernel and multiple threads.
