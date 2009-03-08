@@ -30,7 +30,6 @@
 \arg \b load_kernel_init \verbatim sg('load_kernel_init', filename) \endverbatim
 \arg \b save_kernel_init \verbatim sg('save_kernel_init', filename) \endverbatim
 \arg \b get_kernel_matrix \verbatim [K]=sg('get_kernel_matrix') \endverbatim
-\arg \b set_custom_kernel \verbatim sg('set_custom_kernel', kernelmatrix, 'DIAG|FULL|FULL2DIAG') \endverbatim
 \arg \b set_WD_position_weights \verbatim sg('set_WD_position_weights', W[, 'TRAIN|TEST']) \endverbatim
 \arg \b get_subkernel_weights \verbatim [W]=sg('get_subkernel_weights') \endverbatim
 \arg \b set_subkernel_weights \verbatim sg('set_subkernel_weights', W) \endverbatim
@@ -197,5 +196,8 @@
 \arg \b progress \verbatim sg('progress', 'ON|OFF') \endverbatim
 \arg \b get_version \verbatim [version]=sg('get_version') \endverbatim
 \arg \b help \verbatim sg('help') \endverbatim
+\arg \b run_python \verbatim [results]=sg('run_python', 'Var1', Var1, 'Var2', Var2,..., python_function) \endverbatim
+\arg \b run_octave \verbatim [results]=sg('run_octave', 'Var1', Var1, 'Var2', Var2,..., octave_function) \endverbatim
+\arg \b run_r \verbatim [results]=sg('run_r', 'Var1', Var1, 'Var2', Var2,..., r_function) \endverbatim
 
 */
