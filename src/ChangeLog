@@ -1,5 +1,6 @@
 2009-03-08  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
 
+	* ChangeLog: updated changelog
 	* NEWS, libshogun/classifier/Classifier.h,
 	  libshogun/classifier/KNN.h,
 	  libshogun/classifier/KernelPerceptron.h,
