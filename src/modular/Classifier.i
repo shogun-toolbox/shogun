@@ -60,7 +60,9 @@
  #include <shogun/classifier/svm/SVMSGD.h>
  #include <shogun/classifier/svm/WDSVMOcas.h>
  #include <shogun/classifier/PluginEstimate.h> 
+#ifdef USE_SVMLIGHT
  #include <shogun/classifier/svm/SVM_light.h>
+#endif //USE_SVMLIGHT
 %}
 
 /* Typemaps */
@@ -100,7 +102,9 @@
 %rename(SVMSGD) CSVMSGD;
 %rename(WDSVMOcas) CWDSVMOcas;
 %rename(PluginEstimate) CPluginEstimate;
+#ifdef USE_SVMLIGHT
 %rename(SVMLight) CSVMLight;
+#endif //USE_SVMLIGHT
 
 /* These functions return new Objects */
 %newobject classify;

@@ -85,6 +85,10 @@ SWIGRFILES 	= $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -exec grep -le '^
 SWIGRDATAFILES 	= $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -exec grep -le '^%module' {} \; | sed 's=/\([^/]*\.\)$(EXT_INP_SWIG)=/\1RData=')
 TAR:=../shogun-$(shell date +%Y-%m-%d).tar
 
+PRELPATH=$(shell python ../.relpath.py $(DESTDIR)$(PYDIR) $(DESTDIR)$(LIBDIR)/shogun)
+ORELPATH=$(shell python ../.relpath.py $(DESTDIR)$(OCTDIR) $(DESTDIR)$(LIBDIR)/shogun)
+RRELPATH=$(shell python ../.relpath.py $(DESTDIR)$(RDIR)/elwms/libs $(DESTDIR)$(LIBDIR)/shogun)
+
 warn2err: $(SRCFILES)
 	for i in $^ ; do cat $$i | sed 's/^\#warning/#error/g' >$$i.new ; mv $$i.new $$i ; done
 err2warn: $(SRCFILES)
@@ -196,18 +200,19 @@ install-elwms: $(TEMPLATE_TARGET)
 	install -m755 $(TEMPLATE_TARGET) $(DESTDIR)$(LIBDIR)/shogun
 	#python
 	rm -f $(DESTDIR)$(PYDIR)/$(TEMPLATE_TARGET) 
-	cd $(DESTDIR)$(PYDIR) && ln -s $(DESTDIR)$(LIBDIR)/shogun/$(TEMPLATE_TARGET) 
+	install -d -m755 $(DESTDIR)$(PYDIR)
+	cd $(DESTDIR)$(PYDIR) && ln -s $(PRELPATH)/$(TEMPLATE_TARGET)
 	#octave
 	install -d -m755 $(DESTDIR)$(OCTDIR)
 	rm -f $(DESTDIR)$(OCTDIR)/elwms.oct
-	cd $(DESTDIR)$(OCTDIR) && ln -s $(DESTDIR)$(LIBDIR)/shogun/$(TEMPLATE_TARGET) elwms.oct
+	cd $(DESTDIR)$(OCTDIR) && ln -s $(ORELPATH)/$(TEMPLATE_TARGET) elwms.oct
 	#r
 	install -d -m755 $(DESTDIR)$(RDIR)/elwms/demo
 	install -d -m755 $(DESTDIR)$(RDIR)/elwms/libs
 	install -d -m755 $(DESTDIR)$(RDIR)/elwms/Meta
 	install -d -m755 $(DESTDIR)$(RDIR)/elwms/R
 	rm -f $(DESTDIR)$(RDIR)/elwms/libs/$(TEMPLATE_TARGET)
-	cd $(DESTDIR)$(RDIR)/elwms/libs && ln -s $(DESTDIR)$(LIBDIR)/shogun/$(TEMPLATE_TARGET) 
+	cd $(DESTDIR)$(RDIR)/elwms/libs && ln -s $(RRELPATH)/$(TEMPLATE_TARGET) 
 	install -m644 ../../examples/r/*.R ../../examples/r/graphical/*.R $(DESTDIR)$(RDIR)/elwms/demo
 	../.r-install.sh $(DESTDIR)$(RDIR) elwms
 
