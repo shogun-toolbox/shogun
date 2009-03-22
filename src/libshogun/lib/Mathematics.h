@@ -248,7 +248,7 @@ class CMath : public CSGObject
 		}
 
 		/// x^0.5
-		static inline float96_t sqrt(float96_t x)
+		static inline floatmax_t sqrt(floatmax_t x)
 		{
 			//fall back to double precision sqrt if sqrtl is not
 			//available
@@ -261,7 +261,7 @@ class CMath : public CSGObject
 
 
 		/// x^n
-		static inline float96_t powl(float96_t x, float96_t n)
+		static inline floatmax_t powl(floatmax_t x, floatmax_t n)
 		{
 			//fall back to double precision pow if powl is not
 			//available
@@ -504,9 +504,9 @@ class CMath : public CSGObject
 		}
 
 		/// compute dot product between v1 and v2 (blas optimized)
-		static inline float96_t dot(const float96_t* v1, const float96_t* v2, int32_t n)
+		static inline floatmax_t dot(const floatmax_t* v1, const floatmax_t* v2, int32_t n)
 		{
-			float96_t r=0;
+			floatmax_t r=0;
 			for (int32_t i=0; i<n; i++)
 				r+=v1[i]*v2[i];
 			return r;

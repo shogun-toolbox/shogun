@@ -55,7 +55,7 @@ template <class ST> class CSimplePreProc;
  * \li 64bit Float matrix <b>in a file</b> - CRealFileFeatures
  * \li 64bit Tangent of posterior log-odds (TOP) features from HMM - CTOPFeatures
  * \li 64bit Fisher Kernel (FK) features from HMM - CTOPFeatures
- * \li 96bit Float matrix - CSimpleFeatures<float96_t>
+ * \li 96bit Float matrix - CSimpleFeatures<floatmax_t>
  */
 template <class ST> class CSimpleFeatures: public CDotFeatures
 {
@@ -757,7 +757,7 @@ template<> inline EFeatureType CSimpleFeatures<float64_t>::get_feature_type()
  *
  * @return feature type LONGREAL
  */
-template<> inline EFeatureType CSimpleFeatures<float96_t>::get_feature_type()
+template<> inline EFeatureType CSimpleFeatures<floatmax_t>::get_feature_type()
 {
 	return F_LONGREAL;
 }
@@ -829,7 +829,7 @@ template<> inline const char* CSimpleFeatures<float64_t>::get_name() const
 }
 
 /** @return object name */
-template<> inline const char* CSimpleFeatures<float96_t>::get_name() const
+template<> inline const char* CSimpleFeatures<floatmax_t>::get_name() const
 {
 	return "LongRealFeatures";
 }
@@ -1074,13 +1074,13 @@ template<> inline float64_t CSimpleFeatures<float64_t>:: dense_dot(int32_t vec_i
 	return result;
 }
 
-template<> inline float64_t CSimpleFeatures<float96_t>:: dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
+template<> inline float64_t CSimpleFeatures<floatmax_t>:: dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
 {
 	ASSERT(vec2_len == num_features);
 
 	int32_t vlen;
 	bool vfree;
-	float96_t* vec1= get_feature_vector(vec_idx1, vlen, vfree);
+	floatmax_t* vec1= get_feature_vector(vec_idx1, vlen, vfree);
 
 	ASSERT(vlen == num_features);
 	float64_t result=0;

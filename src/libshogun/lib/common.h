@@ -58,7 +58,7 @@ typedef unsigned long long int uintmax_t;
  */
 typedef float float32_t;
 typedef double float64_t;
-typedef long double float96_t;
+typedef long double floatmax_t;
 
 //@}
 

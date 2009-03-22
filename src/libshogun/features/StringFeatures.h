@@ -351,20 +351,20 @@ template <class ST> class CStringFeatures : public CFeatures
 
 		/** get number of symbols
 		 *
-		 * Note: float96_t sounds weird, but LONG is not long enough
+		 * Note: floatmax_t sounds weird, but LONG is not long enough
 		 *
 		 * @return number of symbols
 		 */
-		inline float96_t get_num_symbols() { return num_symbols; }
+		inline floatmax_t get_num_symbols() { return num_symbols; }
 
 		/** get maximum number of symbols
 		 *
-		 * Note: float96_t sounds weird, but int64_t is not long enough (and
+		 * Note: floatmax_t sounds weird, but int64_t is not long enough (and
 		 * there is no int128_t type)
 		 *
 		 * @return maximum number of symbols
 		 */
-		inline float96_t get_max_num_symbols() { return CMath::powl(2,sizeof(ST)*8); }
+		inline floatmax_t get_max_num_symbols() { return CMath::powl(2,sizeof(ST)*8); }
 
 		// these functions are necessary to find out about a former conversion process
 
@@ -372,7 +372,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 *
 		 * @return original number of symbols
 		 */
-		inline float96_t get_original_num_symbols() { return original_num_symbols; }
+		inline floatmax_t get_original_num_symbols() { return original_num_symbols; }
 
 		/** order used for higher order mapping
 		 *
@@ -966,12 +966,12 @@ template <class ST> class CStringFeatures : public CFeatures
 				SG_UNREF(alpha);
 
 				if (p_order>1)
-					num_symbols=CMath::powl((float96_t) 2, (float96_t) max_val*p_order);
+					num_symbols=CMath::powl((floatmax_t) 2, (floatmax_t) max_val*p_order);
 				else
 					num_symbols=original_num_symbols;
 				SG_INFO( "max_val (bit): %d order: %d -> results in num_symbols: %.0Lf\n", max_val, p_order, num_symbols);
 
-				if ( ((float96_t) num_symbols) > CMath::powl(((float96_t) 2),((float96_t) sizeof(ST)*8)) )
+				if ( ((floatmax_t) num_symbols) > CMath::powl(((floatmax_t) 2),((floatmax_t) sizeof(ST)*8)) )
 				{
 					SG_ERROR( "symbol does not fit into datatype \"%c\" (%d)\n", (char) max_val, (int) max_val);
 					return false;
@@ -1307,10 +1307,10 @@ template <class ST> class CStringFeatures : public CFeatures
 		int32_t max_string_length;
 
 		/// number of used symbols
-		float96_t num_symbols;
+		floatmax_t num_symbols;
 
 		/// original number of used symbols (before higher order mapping)
-		float96_t original_num_symbols;
+		floatmax_t original_num_symbols;
 
 		/// order used in higher order mapping
 		int32_t order;
@@ -1423,7 +1423,7 @@ template<> inline EFeatureType CStringFeatures<float64_t>::get_feature_type()
  *
  * @return feature type LONGREAL
  */
-template<> inline EFeatureType CStringFeatures<float96_t>::get_feature_type()
+template<> inline EFeatureType CStringFeatures<floatmax_t>::get_feature_type()
 {
 	return F_LONGREAL;
 }
@@ -1440,7 +1440,7 @@ template<> inline float64_t CStringFeatures<float64_t>::get_masked_symbols(float
 {
 	return symbol;
 }
-template<> inline float96_t CStringFeatures<float96_t>::get_masked_symbols(float96_t symbol, uint8_t mask)
+template<> inline floatmax_t CStringFeatures<floatmax_t>::get_masked_symbols(floatmax_t symbol, uint8_t mask)
 {
 	return symbol;
 }
@@ -1457,7 +1457,7 @@ template<> inline float64_t CStringFeatures<float64_t>::shift_offset(float64_t s
 {
 	return 0;
 }
-template<> inline float96_t CStringFeatures<float96_t>::shift_offset(float96_t symbol, int32_t amount)
+template<> inline floatmax_t CStringFeatures<floatmax_t>::shift_offset(floatmax_t symbol, int32_t amount)
 {
 	return 0;
 }
@@ -1474,7 +1474,7 @@ template<> inline float64_t CStringFeatures<float64_t>::shift_symbol(float64_t s
 {
 	return symbol;
 }
-template<> inline float96_t CStringFeatures<float96_t>::shift_symbol(float96_t symbol, int32_t amount)
+template<> inline floatmax_t CStringFeatures<floatmax_t>::shift_symbol(floatmax_t symbol, int32_t amount)
 {
 	return symbol;
 }
@@ -1487,7 +1487,7 @@ template<> inline void CStringFeatures<float64_t>::translate_from_single_order(f
 {
 }
 
-template<> inline void CStringFeatures<float96_t>::translate_from_single_order(float96_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap)
+template<> inline void CStringFeatures<floatmax_t>::translate_from_single_order(floatmax_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap)
 {
 }
 
@@ -1499,7 +1499,7 @@ template<> inline void CStringFeatures<float64_t>::translate_from_single_order_r
 {
 }
 
-template<> inline void CStringFeatures<float96_t>::translate_from_single_order_reversed(float96_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap)
+template<> inline void CStringFeatures<floatmax_t>::translate_from_single_order_reversed(floatmax_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap)
 {
 }
 
@@ -1511,7 +1511,7 @@ template<> 	template <class CT> bool CStringFeatures<float64_t>::obtain_from_cha
 {
 	return false;
 }
-template<> 	template <class CT> bool CStringFeatures<float96_t>::obtain_from_char_features(CStringFeatures<CT>* sf, int32_t start, int32_t p_order, int32_t gap, bool rev)
+template<> 	template <class CT> bool CStringFeatures<floatmax_t>::obtain_from_char_features(CStringFeatures<CT>* sf, int32_t start, int32_t p_order, int32_t gap, bool rev)
 {
 	return false;
 }

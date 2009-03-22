@@ -229,7 +229,7 @@ class CAlphabet : public CSGObject
 		 * @param p string
 		 * @param len length of string
 		 */
-		inline void add_string_to_histogram(float96_t* p, int64_t len)
+		inline void add_string_to_histogram(floatmax_t* p, int64_t len)
 		{
 		}
 

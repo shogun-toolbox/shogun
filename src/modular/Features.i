@@ -64,7 +64,7 @@
 %apply (uint64_t* IN_ARRAY1, int32_t DIM1) {(uint64_t* src, int32_t len)};
 %apply (float32_t* IN_ARRAY1, int32_t DIM1) {(float32_t* src, int32_t len)};
 %apply (float64_t* IN_ARRAY1, int32_t DIM1) {(float64_t* src, int32_t len)};
-%apply (float96_t* IN_ARRAY1, int32_t DIM1) {(float96_t* src, int32_t len)};
+%apply (floatmax_t* IN_ARRAY1, int32_t DIM1) {(floatmax_t* src, int32_t len)};
 
 %apply (bool** ARGOUT1, int32_t* DIM1) {(bool** dst, int32_t* len)};
 %apply (char** ARGOUT1, int32_t* DIM1) {(char** dst, int32_t* len)};
@@ -77,7 +77,7 @@
 %apply (uint64_t** ARGOUT1, int32_t* DIM1) {(uint64_t** dst, int32_t* len)};
 %apply (float32_t** ARGOUT1, int32_t* DIM1) {(float32_t** dst, int32_t* len)};
 %apply (float64_t** ARGOUT1, int32_t* DIM1) {(float64_t** dst, int32_t* len)};
-%apply (float96_t** ARGOUT1, int32_t* DIM1) {(float96_t** dst, int32_t* len)};
+%apply (floatmax_t** ARGOUT1, int32_t* DIM1) {(floatmax_t** dst, int32_t* len)};
 
 %apply (bool* IN_ARRAY2, int32_t DIM1, int32_t DIM2) {(bool* src, int32_t num_feat, int32_t num_vec)};
 %apply (char* IN_ARRAY2, int32_t DIM1, int32_t DIM2) {(char* src, int32_t num_feat, int32_t num_vec)};
@@ -90,7 +90,7 @@
 %apply (uint64_t* IN_ARRAY2, int32_t DIM1, int32_t DIM2) {(uint64_t* src, int32_t num_feat, int32_t num_vec)};
 %apply (float32_t* IN_ARRAY2, int32_t DIM1, int32_t DIM2) {(float32_t* src, int32_t num_feat, int32_t num_vec)};
 %apply (float64_t* IN_ARRAY2, int32_t DIM1, int32_t DIM2) {(float64_t* src, int32_t num_feat, int32_t num_vec)};
-%apply (float96_t* IN_ARRAY2, int32_t DIM1, int32_t DIM2) {(float96_t* src, int32_t num_feat, int32_t num_vec)};
+%apply (floatmax_t* IN_ARRAY2, int32_t DIM1, int32_t DIM2) {(floatmax_t* src, int32_t num_feat, int32_t num_vec)};
 
 %apply (bool** ARGOUT2, int32_t* DIM1, int32_t* DIM2) {(bool** dst, int32_t* num_feat, int32_t* num_vec)};
 %apply (char** ARGOUT2, int32_t* DIM1, int32_t* DIM2) {(char** dst, int32_t* num_feat, int32_t* num_vec)};
@@ -103,7 +103,7 @@
 %apply (uint64_t** ARGOUT2, int32_t* DIM1, int32_t* DIM2) {(uint64_t** dst, int32_t* num_feat, int32_t* num_vec)};
 %apply (float32_t** ARGOUT2, int32_t* DIM1, int32_t* DIM2) {(float32_t** dst, int32_t* num_feat, int32_t* num_vec)};
 %apply (float64_t** ARGOUT2, int32_t* DIM1, int32_t* DIM2) {(float64_t** dst, int32_t* num_feat, int32_t* num_vec)};
-%apply (float96_t** ARGOUT2, int32_t* DIM1, int32_t* DIM2) {(float96_t** dst, int32_t* num_feat, int32_t* num_vec)};
+%apply (floatmax_t** ARGOUT2, int32_t* DIM1, int32_t* DIM2) {(floatmax_t** dst, int32_t* num_feat, int32_t* num_vec)};
 
 %apply (T_STRING<bool>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(T_STRING<bool>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
 %apply (T_STRING<char>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(T_STRING<char>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
@@ -116,7 +116,7 @@
 %apply (T_STRING<uint64_t>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(T_STRING<uint64_t>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
 %apply (T_STRING<float32_t>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(T_STRING<float32_t>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
 %apply (T_STRING<float64_t>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(T_STRING<float64_t>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
-%apply (T_STRING<float96_t>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(T_STRING<float96_t>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
+%apply (T_STRING<floatmax_t>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(T_STRING<floatmax_t>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
 
 %apply (T_STRING<bool>** ARGOUT_STRINGS, int32_t* NUM) {(T_STRING<bool>** dst, int32_t* num_str)};
 %apply (T_STRING<char>** ARGOUT_STRINGS, int32_t* NUM) {(T_STRING<char>** dst, int32_t* num_str)};
@@ -129,7 +129,7 @@
 %apply (T_STRING<uint64_t>** ARGOUT_STRINGS, int32_t* NUM) {(T_STRING<uint64_t>** dst, int32_t* num_str)};
 %apply (T_STRING<float32_t>** ARGOUT_STRINGS, int32_t* NUM) {(T_STRING<float32_t>** dst, int32_t* num_str)};
 %apply (T_STRING<float64_t>** ARGOUT_STRINGS, int32_t* NUM) {(T_STRING<float64_t>** dst, int32_t* num_str)};
-%apply (T_STRING<float96_t>** ARGOUT_STRINGS, int32_t* NUM) {(T_STRING<float96_t>** dst, int32_t* num_str)};
+%apply (T_STRING<floatmax_t>** ARGOUT_STRINGS, int32_t* NUM) {(T_STRING<floatmax_t>** dst, int32_t* num_str)};
 
 %apply (TSparse<bool>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(TSparse<bool>* src, int32_t num_feat, int32_t num_vec)};
 %apply (TSparse<char>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(TSparse<char>* src, int32_t num_feat, int32_t num_vec)};
@@ -142,7 +142,7 @@
 %apply (TSparse<uint64_t>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(TSparse<uint64_t>* src, int32_t num_feat, int32_t num_vec)};
 %apply (TSparse<float32_t>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(TSparse<float32_t>* src, int32_t num_feat, int32_t num_vec)};
 %apply (TSparse<float64_t>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(TSparse<float64_t>* src, int32_t num_feat, int32_t num_vec)};
-%apply (TSparse<float96_t>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(TSparse<float96_t>* src, int32_t num_feat, int32_t num_vec)};
+%apply (TSparse<floatmax_t>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(TSparse<floatmax_t>* src, int32_t num_feat, int32_t num_vec)};
 
 %apply (TSparse<bool>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(TSparse<bool>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
 %apply (TSparse<char>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(TSparse<char>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
@@ -155,7 +155,7 @@
 %apply (TSparse<uint64_t>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(TSparse<uint64_t>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
 %apply (TSparse<float32_t>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(TSparse<float32_t>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
 %apply (TSparse<float64_t>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(TSparse<float64_t>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
-%apply (TSparse<float96_t>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(TSparse<float96_t>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
+%apply (TSparse<floatmax_t>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(TSparse<floatmax_t>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
 
 /* There seems to be a bug(?) in swig type reduction, e.g. int32_t** does not
  * match int**, therefore apply's are repeated here for ordinary types. While
@@ -175,7 +175,7 @@
 #endif
 %apply (float32_t* IN_ARRAY1, int32_t DIM1) {(float* src, int32_t len)};
 %apply (float64_t* IN_ARRAY1, int32_t DIM1) {(double* src, int32_t len)};
-%apply (float96_t* IN_ARRAY1, int32_t DIM1) {(long double* src, int32_t len)};
+%apply (floatmax_t* IN_ARRAY1, int32_t DIM1) {(long double* src, int32_t len)};
 
 %apply (uint8_t** ARGOUT1, int32_t* DIM1) {(unsigned char** dst, int32_t* len)};
 %apply (int16_t** ARGOUT1, int32_t* DIM1) {(short int** dst, int32_t* len)};
@@ -191,7 +191,7 @@
 #endif
 %apply (float32_t** ARGOUT1, int32_t* DIM1) {(float** dst, int32_t* len)};
 %apply (float64_t** ARGOUT1, int32_t* DIM1) {(double** dst, int32_t* len)};
-%apply (float96_t** ARGOUT1, int32_t* DIM1) {(long double** dst, int32_t* len)};
+%apply (floatmax_t** ARGOUT1, int32_t* DIM1) {(long double** dst, int32_t* len)};
 
 %apply (uint8_t* IN_ARRAY2, int32_t DIM1, int32_t DIM2) {(unsigned char* src, int32_t num_feat, int32_t num_vec)};
 %apply (int16_t* IN_ARRAY2, int32_t DIM1, int32_t DIM2) {(short int* src, int32_t num_feat, int32_t num_vec)};
@@ -222,7 +222,7 @@
 #endif
 %apply (float32_t** ARGOUT2, int32_t* DIM1, int32_t* DIM2) {(float** dst, int32_t* num_feat, int32_t* num_vec)};
 %apply (float64_t** ARGOUT2, int32_t* DIM1, int32_t* DIM2) {(double** dst, int32_t* num_feat, int32_t* num_vec)};
-%apply (float96_t** ARGOUT2, int32_t* DIM1, int32_t* DIM2) {(long double** dst, int32_t* num_feat, int32_t* num_vec)};
+%apply (floatmax_t** ARGOUT2, int32_t* DIM1, int32_t* DIM2) {(long double** dst, int32_t* num_feat, int32_t* num_vec)};
 
 %apply (T_STRING<uint8_t>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(T_STRING<unsigned char>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
 %apply (T_STRING<int16_t>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(T_STRING<short int>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
@@ -238,7 +238,7 @@
 #endif
 %apply (T_STRING<float32_t>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(T_STRING<float>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
 %apply (T_STRING<float64_t>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(T_STRING<double>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
-%apply (T_STRING<float96_t>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(T_STRING<long double>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
+%apply (T_STRING<floatmax_t>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(T_STRING<long double>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
 
 %apply (T_STRING<uint8_t>** ARGOUT_STRINGS, int32_t* NUM) {(T_STRING<unsigned char>** dst, int32_t* num_str)};
 %apply (T_STRING<int16_t>** ARGOUT_STRINGS, int32_t* NUM) {(T_STRING<short int>** dst, int32_t* num_str)};
@@ -254,7 +254,7 @@
 #endif
 %apply (T_STRING<float32_t>** ARGOUT_STRINGS, int32_t* NUM) {(T_STRING<float>** dst, int32_t* num_str)};
 %apply (T_STRING<float64_t>** ARGOUT_STRINGS, int32_t* NUM) {(T_STRING<double>** dst, int32_t* num_str)};
-%apply (T_STRING<float96_t>** ARGOUT_STRINGS, int32_t* NUM) {(T_STRING<long double>** dst, int32_t* num_str)};
+%apply (T_STRING<floatmax_t>** ARGOUT_STRINGS, int32_t* NUM) {(T_STRING<long double>** dst, int32_t* num_str)};
 
 %apply (TSparse<uint8_t>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(TSparse<unsigned char>* src, int32_t num_feat, int32_t num_vec)};
 %apply (TSparse<int16_t>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(TSparse<short int>* src, int32_t num_feat, int32_t num_vec)};
@@ -270,7 +270,7 @@
 #endif
 %apply (TSparse<float32_t>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(TSparse<float>* src, int32_t num_feat, int32_t num_vec)};
 %apply (TSparse<float64_t>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(TSparse<double>* src, int32_t num_feat, int32_t num_vec)};
-%apply (TSparse<float96_t>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(TSparse<long double>* src, int32_t num_feat, int32_t num_vec)};
+%apply (TSparse<floatmax_t>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(TSparse<long double>* src, int32_t num_feat, int32_t num_vec)};
 
 %apply (TSparse<uint8_t>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(TSparse<unsigned char>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
 %apply (TSparse<int16_t>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(TSparse<short int>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
@@ -286,7 +286,7 @@
 #endif
 %apply (TSparse<float32_t>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(TSparse<float>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
 %apply (TSparse<float64_t>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(TSparse<double>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
-%apply (TSparse<float96_t>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(TSparse<long double>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
+%apply (TSparse<floatmax_t>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(TSparse<long double>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
 
 /* Remove C Prefix */
 %rename(Features) CFeatures;
@@ -321,7 +321,7 @@
 %template(StringUlongFeatures) CStringFeatures<uint64_t>;
 %template(StringShortRealFeatures) CStringFeatures<float32_t>;
 %template(StringRealFeatures) CStringFeatures<float64_t>;
-%template(StringLongRealFeatures) CStringFeatures<float96_t>;
+%template(StringLongRealFeatures) CStringFeatures<floatmax_t>;
 
 /* Templated Class SparseFeatures */
 %include <shogun/features/SparseFeatures.h>
@@ -336,7 +336,7 @@
 %template(SparseUlongFeatures) CSparseFeatures<uint64_t>;
 %template(SparseShortRealFeatures) CSparseFeatures<float32_t>;
 %template(SparseRealFeatures) CSparseFeatures<float64_t>;
-%template(SparseLongRealFeatures) CSparseFeatures<float96_t>;
+%template(SparseLongRealFeatures) CSparseFeatures<floatmax_t>;
 
 /* Templated Class SimpleFeatures */
 %include <shogun/features/SimpleFeatures.h>
@@ -351,7 +351,7 @@
 %template(ULongIntFeatures)  CSimpleFeatures<uint64_t>;
 %template(ShortRealFeatures) CSimpleFeatures<float32_t>;
 %template(RealFeatures) CSimpleFeatures<float64_t>;
-%template(LongRealFeatures) CSimpleFeatures<float96_t>;
+%template(LongRealFeatures) CSimpleFeatures<floatmax_t>;
 
 %include <shogun/features/DummyFeatures.h>
 %include <shogun/features/AttributeFeatures.h>
