@@ -748,7 +748,7 @@ bool CGUIClassifier::set_svm_mkl_parameters(
 
 	SG_INFO("Set to weight_epsilon=%f.\n", svm_weight_epsilon);
 	SG_INFO("Set to C_mkl=%f.\n", svm_C_mkl);
-	SG_INFO("Set to mkl_norm=%d.\n", svm_mkl_norm);
+	SG_INFO("Set to mkl_norm=%f.\n", svm_mkl_norm);
 
 	return true;
 }
