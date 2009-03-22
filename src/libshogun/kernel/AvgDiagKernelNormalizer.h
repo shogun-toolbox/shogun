@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2008 Soeren Sonnenburg
- * Copyright (C) 2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 2009 Soeren Sonnenburg
+ * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _AVGDIAGKERNELNORMALIZER_H___
@@ -13,8 +13,8 @@
 
 #include "kernel/KernelNormalizer.h"
 
-/** Normalize the kernel by either a constant or the average value of the
- * diagonal elements (depending on argument c of the constructor)
+/** @brief Normalize the kernel by either a constant or the average value of the
+ * diagonal elements (depending on argument c of the constructor).
  *
  * In case c <= 0 compute scale as
 * \f[

@@ -16,6 +16,11 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
+#include <dirent.h>
+#include <unistd.h>
+
+#include <sys/types.h>
+#include <sys/stat.h>
 
 #include "lib/common.h"
 #include "base/init.h"
@@ -24,9 +29,10 @@ class CIO;
 
 extern CIO* sg_io;
 
-/// The io libs output [DEBUG] etc in front of every message
-/// 'higher' messages filter output depending on the loglevel, i.e. CRITICAL messages
-/// will print all M_CRITICAL TO M_EMERGENCY messages to
+/** The io libs output [DEBUG] etc in front of every message 'higher' messages
+ * filter output depending on the loglevel, i.e. CRITICAL messages will print
+ * all M_CRITICAL TO M_EMERGENCY messages.
+ */
 enum EMessageType
 {
 	M_DEBUG,
@@ -49,9 +55,6 @@ enum EMessageType
 #else //DARWIN
 #define CONST_DIRENT_T const struct dirent
 #endif //DARWIN
-
-extern char file_buffer[FBUFSIZE];
-extern char directory_name[FBUFSIZE];
 
 class CIO;
 
@@ -82,10 +85,11 @@ class CIO;
 #define ASSERT(x) { if (!(x)) SG_SERROR("assertion %s failed in file %s line %d\n",#x, __FILE__, __LINE__);}
 
 
-/** Class IO, used to do input output operations throughout shogun, i.e. any
- * debug or error or progress message is passed through the functions of this
- * class to be in the end written to the screen. Note that messages don't have
- * to be written to stdout or stderr, but can be redirected to a file.
+/** @brief Class IO, used to do input output operations throughout shogun.
+ *
+ * Any debug or error or progress message is passed through the functions of
+ * this class to be in the end written to the screen. Note that messages don't
+ * have to be written to stdout or stderr, but can be redirected to a file.
  */
 class CIO
 {
@@ -225,7 +229,7 @@ class CIO
 		 *
 		 * @param dirname new directory name
 		 */
-		inline void set_dirname(const char* dirname)
+		static inline void set_dirname(const char* dirname)
 		{
 			strncpy(directory_name, dirname, FBUFSIZE);
 		}
@@ -236,15 +240,35 @@ class CIO
 		 * @param filename new filename
 		 * @return concatenated directory and filename
 		 */
-		static char* concat_filename(const char* filename);
+        static inline char* concat_filename(const char* filename)
+        {
+            if (snprintf(file_buffer, FBUFSIZE, "%s/%s", directory_name, filename) > FBUFSIZE)
+                SG_SERROR("filename too long");
+            SG_SDEBUG("filename=\"%s\"\n", file_buffer);
+            return file_buffer;
+        }
 
 		/** filter
 		 *
 		 * @param d directory entry
-		 * @return if filtering was successful
+		 * @return 1 if d is a readable file
 		 */
-		static int filter(CONST_DIRENT_T* d);
+		static inline int filter(CONST_DIRENT_T* d)
+        {
+            if (d)
+            {
+                char* fname=concat_filename(d->d_name);
 
+                if (!access(fname, R_OK))
+                {
+                    struct stat s;
+                    if (!stat(fname, &s) && S_ISREG(s.st_mode))
+                        return 1;
+                }
+            }
+
+            return 0;
+        }
 
 		/** increase reference counter
 		 *
@@ -311,6 +335,11 @@ class CIO
 		static const EMessageType levels[NUM_LOG_LEVELS];
 		/** message strings */
 		static const char* message_strings[NUM_LOG_LEVELS];
+
+        /** file buffer */
+        static char file_buffer[FBUFSIZE];
+        /** directory name (for filter function) */
+        static char directory_name[FBUFSIZE];
 
 	private:
 		int32_t refcount;

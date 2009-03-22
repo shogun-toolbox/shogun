@@ -22,10 +22,11 @@
 #include <sys/sysctl.h>
 #endif
 
-/** Class Parallel provides helper functions for multithreading. For example it
- * can be used to determine the number of CPU cores in your computer and is the
- * place where you define the number of CPUs that shall be used in
- * computations.
+/** @brief Class Parallel provides helper functions for multithreading.
+ *
+ * For example it can be used to determine the number of CPU cores in your
+ * computer and is the place where you define the number of CPUs that shall be
+ * used in computations.
  */
 class CParallel
 {

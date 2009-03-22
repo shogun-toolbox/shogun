@@ -7,9 +7,9 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2008 Soeren Sonnenburg
+ * Written (W) 1999-2009 Soeren Sonnenburg
  * Written (W) 1999-2008 Gunnar Raetsch
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _KERNEL_H___
@@ -83,7 +83,9 @@ enum EKernelProperty
 
 class CSVM;
 
-/** The Kernel base class. Non-mathematically spoken, a kernel is a function
+/** @brief The Kernel base class.
+ *
+ * Non-mathematically spoken, a kernel is a function
  * that given two input objects \f${\bf x}\f$ and \f${\bf x'}\f$ returns a
  * score describing the similarity of the vectors. The score should be larger
  * when the objects are more similar.
@@ -637,9 +639,8 @@ class CKernel : public CSGObject
 		virtual float64_t compute(int32_t x, int32_t y)=0;
 
 #ifdef USE_SVMLIGHT
-		/**@ cache kernel evalutations to improve speed
-		*/
-		//@{
+		/**@ cache kernel evalutations to improve speed */
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 		struct KERNEL_CACHE {
 			/** index */
 			int32_t   *index;
@@ -688,6 +689,9 @@ class CKernel : public CSGObject
 			/** end */
 			int32_t end;
 		};
+#endif // DOXYGEN_SHOULD_SKIP_THIS
+
+		//@{
 		static void* cache_multiple_kernel_row_helper(void* p);
 
 		/// init kernel cache of size megabytes

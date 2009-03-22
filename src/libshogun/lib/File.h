@@ -17,15 +17,17 @@
 
 #include "base/SGObject.h"
 #include "lib/DynamicArray.h"
+#include "lib/SimpleFile.h"
 #include "features/Features.h"
 
 template <class ST> struct T_STRING;
 template <class ST> struct TSparse;
 
-/** A File access class. A file consists of a fourcc header then an alternation
- * of a type header and data or just raw data (simplefile=true). However this
- * implementation is not complete - the more complex stuff is currently not
- * implemented.
+/** @brief A File access class.
+ *
+ * A file consists of a fourcc header then an alternation of a type header and
+ * data or just raw data (simplefile=true). However this implementation is not
+ * complete - the more complex stuff is currently not implemented.
  */
 
 class CFile : public CSGObject
@@ -123,6 +125,33 @@ public:
 	 * @return loaded data
 	 */
 	int16_t* load_short_data(int16_t* target, int64_t& num);
+
+	/** load data (templated)
+	 *
+	 * @param target loaded data
+	 * @param num number of data elements
+	 * @return loaded data
+	 */
+	template <class DT> DT* load_data(DT* target, int64_t& num)
+	{
+		CSimpleFile<DT> f(filename, file);
+		target=f.load(target, num);
+		status=(target!=NULL);
+		return target;
+	}
+
+	/** save data (templated)
+	 *
+	 * @param src data to save
+	 * @param num number of data elements
+	 * @return whether operation was successful
+	 */
+	template <class DT> bool save_data(DT* src, int64_t num)
+	{
+		CSimpleFile<DT> f(filename, file);
+		status=f.save(src, num);
+		return status;
+	}
 
 	/** save integer data
 	 *

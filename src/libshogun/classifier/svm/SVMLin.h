@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2006-2008 Soeren Sonnenburg
- * Copyright (C) 2006-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 2006-2009 Soeren Sonnenburg
+ * Copyright (C) 2006-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _SVMLIN_H___
@@ -16,7 +16,7 @@
 #include "features/DotFeatures.h"
 #include "features/Labels.h"
 
-/** class SVMLin */
+/** @brief class SVMLin */
 class CSVMLin : public CLinearClassifier
 {
 	public:

@@ -5,7 +5,8 @@
  * (at your option) any later version.
  *
  * Written (W) 1999-2008 Gunnar Raetsch
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 2009 Soeren Sonnnenburg
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _AUCKERNEL_H___
@@ -13,9 +14,17 @@
 
 #include "lib/common.h"
 #include "kernel/SimpleKernel.h"
-#include "features/WordFeatures.h"
+#include "features/SimpleFeatures.h"
+#include "features/Labels.h"
 
-/** kernel AUC */
+/** @brief The AUC kernel can be used to maximize the area under the receiver operator
+ * characteristic curve (AUC) instead of margin in SVM training.
+ *
+ * It takes as argument a sub-kernel and Labels based on which number of
+ * positive labels times number of negative labels many ``virtual'' examples
+ * are created that ensure that all positive examples get a higher score than
+ * all negative examples in training.
+ */
 class CAUCKernel: public CSimpleKernel<uint16_t>
 {
 	public:
@@ -26,15 +35,16 @@ class CAUCKernel: public CSimpleKernel<uint16_t>
 		 */
 		CAUCKernel(int32_t size, CKernel* subkernel);
 
-		/** constructor
-		 *
-		 * @param l features of left-hand side
-		 * @param r features of right-hand side
-		 * @param subkernel the subkernel
-		 */
-		CAUCKernel(CWordFeatures *l, CWordFeatures *r, CKernel* subkernel);
-
+		/** destructor */
 		virtual ~CAUCKernel();
+
+		/** initialize kernel based on current labeling and subkernel
+		 *
+		 * @param labels - current labeling
+		 * @return new label object to be used together with this kernel in SVM
+		 * training for AUC maximization
+		 */
+		CLabels* setup_auc_maximization(CLabels* labels);
 
 		/** initialize kernel
 		 *

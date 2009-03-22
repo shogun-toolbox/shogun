@@ -4,9 +4,9 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2007 Christian Gehl
- * Written (W) 1999-2008 Soeren Sonnenburg
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 2007-2009 Christian Gehl
+ * Written (W) 1999-2009 Soeren Sonnenburg
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _CANBERRAWORDDISTANCE_H___
@@ -17,7 +17,7 @@
 #include "features/StringFeatures.h"
 #include "distance/StringDistance.h"
 
-/** class CanberraWordDistance */
+/**@brief class CanberraWordDistance */
 class CCanberraWordDistance: public CStringDistance<uint16_t>
 {
 	public:

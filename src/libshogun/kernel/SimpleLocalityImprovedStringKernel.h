@@ -5,7 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 1999-2008 Gunnar Raetsch
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _SIMPLELOCALITYIMPROVEDSTRINGKERNEL_H___
@@ -14,10 +14,11 @@
 #include "lib/common.h"
 #include "kernel/StringKernel.h"
 
-/** SimpleLocalityImprovedString kernel, is a ``simplified'' and better
+/** @brief SimpleLocalityImprovedString kernel, is a ``simplified'' and better
  * performing version of the Locality improved kernel.
  *
  * It can be defined as
+ *
  * \f[
  * K({\bf x},{\bf x'})=\left(\sum_{i=0}^{T-1}\left(\sum_{j=-l}^{+l}w_jI_{i+j}({\bf x},{\bf x'})\right)^{d_1}\right)^{d_2},
  * \f]

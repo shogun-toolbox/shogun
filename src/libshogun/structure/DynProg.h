@@ -6,7 +6,8 @@
  *
  * Written (W) 1999-2008 Gunnar Raetsch
  * Written (W) 1999-2008 Soeren Sonnenburg
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 2008-2009 Jonas Behr
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef __CDYNPROG_H__
@@ -38,7 +39,8 @@ typedef uint8_t T_STATES ;
 #endif
 typedef T_STATES* P_STATES ;
 
-/** Dynamic Programming Class.
+/** @brief Dynamic Programming Class.
+ *
  * Structure and Function collection.
  * This Class implements a Dynamic Programming functions.
  */
@@ -759,7 +761,7 @@ protected:
 		int32_t num_states, int32_t pos, int32_t &last_segment_sum_pos,
 		float64_t* segment_sum_value);
 
-	/** SVM values */
+	/** @brief SVM values */
 	struct svm_values_struct
 	{
 		/** maximum lookback */
@@ -838,7 +840,7 @@ protected:
 	 */
 	bool extend_orf(int32_t orf_from, int32_t orf_to, int32_t start, int32_t &last_pos, int32_t to);
 
-	/** segment loss */
+	/** @brief segment loss */
 	struct segment_loss_struct
 	{
 		/** maximum lookback */

@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2006 Christian Gehl
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 2006-2009 Christian Gehl
+ * Copyright (C) 2006-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _MINKOWSKIMETRIC_H___
@@ -13,9 +13,9 @@
 
 #include "lib/common.h"
 #include "distance/SimpleDistance.h"
-#include "features/RealFeatures.h"
+#include "features/SimpleFeatures.h"
 
-/** class MinkowskiMetric 
+/** @brief class MinkowskiMetric 
  *
  * The Minkowski metric is one general class of metrics for a 
  * \f$\displaystyle R^{n}\f$ feature space also referred as 
@@ -50,7 +50,7 @@ class CMinkowskiMetric: public CSimpleDistance<float64_t>
 		 * @param r features of right-hand side
 		 * @param k parameter k
 		 */
-		CMinkowskiMetric(CRealFeatures* l, CRealFeatures* r, float64_t k);
+		CMinkowskiMetric(CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r, float64_t k);
 		virtual ~CMinkowskiMetric();
 
 		/** constructor

@@ -4,14 +4,14 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2008 Soeren Sonnenburg
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 1999-2009 Soeren Sonnenburg
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #include "preproc/LogPlusOne.h"
 #include "preproc/SimplePreProc.h"
 #include "features/Features.h"
-#include "features/RealFeatures.h"
+#include "features/SimpleFeatures.h"
 #include "lib/Mathematics.h"
 
 CLogPlusOne::CLogPlusOne()
@@ -58,7 +58,7 @@ float64_t* CLogPlusOne::apply_to_feature_matrix(CFeatures* f)
 	int32_t i,j;
 	int32_t num_vec;
 	int32_t num_feat;
-	float64_t* matrix=((CRealFeatures*) f)->get_feature_matrix(num_feat, num_vec);
+	float64_t* matrix=((CSimpleFeatures<float64_t>*) f)->get_feature_matrix(num_feat, num_vec);
 
 	for (i=0; i<num_vec; i++)
 	{

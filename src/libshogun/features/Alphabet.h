@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2006-2008 Soeren Sonnenburg
- * Copyright (C) 2006-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 2006-2009 Soeren Sonnenburg
+ * Copyright (C) 2006-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _CALPHABET__H__
@@ -54,9 +54,11 @@ enum EAlphabet
 };
 
 
-/** The class Alphabet implements an alphabet and utility functions, to remap
- * characters to more (bit-)efficient representations, check if a string is
- * valid, compute histograms etc.
+/** @brief The class Alphabet implements an alphabet and alphabet utility functions.
+ *
+ * These utility functions can be used to remap characters to more
+ * (bit-)efficient representations, check if a string is valid, compute
+ * histograms etc.
  *
  * Currently supported alphabets are DNA, RAWDNA, RNA, PROTEIN, ALPHANUM, CUBE, RAW,
  * IUPAC_NUCLEIC_ACID and IUPAC_AMINO_ACID.
@@ -141,6 +143,12 @@ class CAlphabet : public CSGObject
 
 		/// clear histogram
 		void clear_histogram();
+		/** make histogram for whole string
+		 *
+		 * @param p string
+		 * @param len length of string
+		 */
+		void add_string_to_histogram(bool* p, int64_t len);
 
 		/** make histogram for whole string
 		 *
@@ -197,6 +205,33 @@ class CAlphabet : public CSGObject
 		 * @param len length of string
 		 */
 		void add_string_to_histogram(uint64_t* p, int64_t len);
+
+		/** make histogram for whole string
+		 *
+		 * @param p string
+		 * @param len length of string
+		 */
+		inline void add_string_to_histogram(float32_t* p, int64_t len)
+		{
+		}
+
+		/** make histogram for whole string
+		 *
+		 * @param p string
+		 * @param len length of string
+		 */
+		inline void add_string_to_histogram(float64_t* p, int64_t len)
+		{
+		}
+
+		/** make histogram for whole string
+		 *
+		 * @param p string
+		 * @param len length of string
+		 */
+		inline void add_string_to_histogram(float96_t* p, int64_t len)
+		{
+		}
 
 		/** add element to histogram
 		 *

@@ -27,7 +27,7 @@
 #include "features/DotFeatures.h"
 #include "features/Labels.h"
 
-/** class SVMSGD */
+/** @brief class SVMSGD */
 class CSVMSGD : public CLinearClassifier
 {
 	public:

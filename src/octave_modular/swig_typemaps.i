@@ -7,8 +7,8 @@
  * This code is inspired by the python numpy.i typemaps, from John Hunter
  * and Bill Spotz.
  *
- * Written (W) 2008 Soeren Sonnenburg
- * Copyright (C) 2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 2008-2009 Soeren Sonnenburg
+ * Copyright (C) 2008-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 %{
@@ -216,8 +216,8 @@ TYPEMAP_ARGOUT2(uint16NDArray, uint16_t, uint16_t, "Word")
 #undef TYPEMAP_ARGOUT2
 
 /* input typemap for CStringFeatures<char> etc */
-%define GET_STRINGLIST(oct_type_check, oct_type, oct_converter, sg_type, if_type, error_string)
-%typemap(in) (T_STRING<sg_type>* strings, int32_t num_strings, int32_t max_len)
+%define TYPEMAP_STRINGFEATURES_IN(oct_type_check, oct_type, oct_converter, sg_type, if_type, error_string)
+%typemap(in) (T_STRING<sg_type>* IN_STRINGS, int32_t NUM, int32_t MAXLEN)
 {
     int32_t max_len=0;
     int32_t num_strings=0;
@@ -245,7 +245,7 @@ TYPEMAP_ARGOUT2(uint16NDArray, uint16_t, uint16_t, "Word")
             { 
                 strings[i].length=len; /* all must have same length in octave */
                 strings[i].string=new sg_type[len+1]; /* not zero terminated in octave */
-                /*ASSERT(strings[i].string);*/
+
                 int32_t j; 
                 for (j=0; j<len; j++)
                     strings[i].string[j]=str(0,j);
@@ -274,7 +274,7 @@ TYPEMAP_ARGOUT2(uint16NDArray, uint16_t, uint16_t, "Word")
             { 
                 strings[i].length=len; /* all must have same length in octave */
                 strings[i].string=new sg_type[len+1]; /* not zero terminated in octave */
-                /*ASSERT(strings[i].string);*/
+
                 int32_t j;
                 for (j=0; j<len; j++)
                     strings[i].string[j]=data(j,i);
@@ -302,9 +302,60 @@ TYPEMAP_ARGOUT2(uint16NDArray, uint16_t, uint16_t, "Word")
 }
 %enddef
 
-GET_STRINGLIST(is_matrix_type() && arg.is_uint8_type, uint8NDArray, uint8_array_value, uint8_t, uint8_t, "Byte")
-GET_STRINGLIST(is_char_matrix, charMatrix, char_matrix_value, char, char, "Char")
-GET_STRINGLIST(is_matrix_type() && arg.is_int32_type, int32NDArray, int32_array_value, int32_t, int32_t, "Integer")
-GET_STRINGLIST(is_matrix_type() && arg.is_int16_type, int16NDArray, int16_array_value, int16_t, int16_t, "Short")
-GET_STRINGLIST(is_matrix_type() && arg.is_uint16_type, uint16NDArray, uint16_array_value, uint16_t, uint16_t, "Word")
-#undef GET_STRINGLIST
+TYPEMAP_STRINGFEATURES_IN(is_matrix_type() && arg.is_uint8_type, uint8NDArray, uint8_array_value, uint8_t, uint8_t, "Byte")
+TYPEMAP_STRINGFEATURES_IN(is_char_matrix, charMatrix, char_matrix_value, char, char, "Char")
+TYPEMAP_STRINGFEATURES_IN(is_matrix_type() && arg.is_int32_type, int32NDArray, int32_array_value, int32_t, int32_t, "Integer")
+TYPEMAP_STRINGFEATURES_IN(is_matrix_type() && arg.is_int16_type, int16NDArray, int16_array_value, int16_t, int16_t, "Short")
+TYPEMAP_STRINGFEATURES_IN(is_matrix_type() && arg.is_uint16_type, uint16NDArray, uint16_array_value, uint16_t, uint16_t, "Word")
+#undef TYPEMAP_STRINGFEATURES_IN
+
+/* output typemap for CStringFeatures */
+%define TYPEMAP_STRINGFEATURES_ARGOUT(type,typecode)
+%typemap(in, numinputs=0) (T_STRING<type>** ARGOUT_STRINGS, int32_t* NUM) {
+    $1 = (T_STRING<type>**) malloc(sizeof(T_STRING<type>*));
+    $2 = (int32_t*) malloc(sizeof(int32_t));
+}
+%typemap(argout) (T_STRING<type>** ARGOUT_STRINGS, int32_t* NUM) {
+    if (!$1 || !$2)
+        SWIG_fail;
+    free($1); free($2);
+}
+%enddef
+
+TYPEMAP_STRINGFEATURES_ARGOUT(char,          charMatrix)
+TYPEMAP_STRINGFEATURES_ARGOUT(uint8_t,       uint8NDArray)
+TYPEMAP_STRINGFEATURES_ARGOUT(int16_t,       int16NDArray)
+TYPEMAP_STRINGFEATURES_ARGOUT(uint16_t,      uint16NDArray)
+TYPEMAP_STRINGFEATURES_ARGOUT(int32_t,       int32NDArray)
+TYPEMAP_STRINGFEATURES_ARGOUT(uint32_t,      uint32NDArray)
+TYPEMAP_STRINGFEATURES_ARGOUT(int64_t,       int64NDArray)
+TYPEMAP_STRINGFEATURES_ARGOUT(uint64_t,      uint64NDArray)
+TYPEMAP_STRINGFEATURES_ARGOUT(float64_t,     Matrix)
+#undef TYPEMAP_STRINGFEATURES_ARGOUT
+
+/* input typemap for Sparse Features */
+%define TYPEMAP_SPARSEFEATURES_IN(type,typecode)
+%typemap(in) (TSparse<type>* IN_SPARSE, int32_t DIM1, int32_t DIM2)
+{
+}
+%enddef
+TYPEMAP_SPARSEFEATURES_IN(float64_t,     Matrix)
+#undef TYPEMAP_SPARSEFEATURES_IN
+
+/* output typemap for sparse features returns (data, row, ptr) */
+%define TYPEMAP_SPARSEFEATURES_ARGOUT(type,typecode)
+%typemap(in, numinputs=0) (TSparse<type>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {
+    $1 = (TSparse<type>**) malloc(sizeof(TSparse<type>*));
+    $2 = (int32_t*) malloc(sizeof(int32_t));
+    $3 = (int32_t*) malloc(sizeof(int32_t));
+    $4 = (int64_t*) malloc(sizeof(int64_t));
+}
+%typemap(argout) (TSparse<type>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {
+    if (!$1 || !$2 || !$3 || !$4)
+        SWIG_fail;
+    free($1); free($2); free($3); free($4);
+}
+%enddef
+
+TYPEMAP_SPARSEFEATURES_ARGOUT(float64_t,     NPY_FLOAT64)
+#undef TYPEMAP_SPARSEFEATURES_ARGOUT

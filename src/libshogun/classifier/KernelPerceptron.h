@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2008 Soeren Sonnenburg
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 1999-2009 Soeren Sonnenburg
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _KERNELPERCEPTRON_H___
@@ -16,7 +16,7 @@
 #include "features/Features.h"
 #include "kernel/KernelMachine.h"
 
-/** Class KernelPerceptron -
+/** @brief Class KernelPerceptron -
  * currently unfinished implementation of a Kernel Perceptron
  */
 class CKernelPerceptron : public CKernelMachine

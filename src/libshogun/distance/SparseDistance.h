@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2007-2008 Soeren Sonnenburg
- * Copyright (C) 2007-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 2007-2009 Soeren Sonnenburg
+ * Copyright (C) 2007-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _SPARSEDISTANCE_H___
@@ -14,7 +14,7 @@
 #include "distance/Distance.h"
 #include "features/SparseFeatures.h"
 
-/** template class SparseDistance */
+/** @brief template class SparseDistance */
 template <class ST> class CSparseDistance : public CDistance
 {
 	public:

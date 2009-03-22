@@ -69,7 +69,7 @@ bool CGUIFeatures::load(
 	{
 		if (strncmp(type, "REAL", 4)==0)
 		{
-			*f_ptr=new CRealFeatures(filename);
+			*f_ptr=new CSimpleFeatures<float64_t>(filename);
 			//SG_DEBUG( "opening file...\n");
 			//*f_ptr=new CRealFileFeatures(size, filename);
 
@@ -79,16 +79,16 @@ bool CGUIFeatures::load(
 		else if (strncmp(type, "BYTE", 4)==0)
 		{
 			///FIXME make CHAR type configurable... it is DNA by default
-			*f_ptr=new CByteFeatures(DNA, filename);
+			*f_ptr=new CSimpleFeatures<uint8_t>(filename);
 		}
 		else if (strncmp(type, "CHAR", 4)==0)
 		{
 			///FIXME make CHAR type configurable... it is DNA by default
-			*f_ptr=new CCharFeatures(DNA, filename);
+			*f_ptr=new CSimpleFeatures<char>(filename);
 		}
 		else if (strncmp(type, "SHORT", 5)==0)
 		{
-			*f_ptr=new CShortFeatures(filename);
+			*f_ptr=new CSimpleFeatures<int16_t>(filename);
 		}
 		else
 		{
@@ -159,23 +159,23 @@ bool CGUIFeatures::save(char* filename, char* type, char* target)
 	{
 		if (strncmp(type, "REAL", 4)==0)
 		{
-			result= ((CRealFeatures*) (*f_ptr))->save(filename);
+			result= ((CSimpleFeatures<float64_t>*) (*f_ptr))->save(filename);
 		}
 		else if (strncmp(type, "BYTE", 4)==0)
 		{
-			result= ((CByteFeatures*) (*f_ptr))->save(filename);
+			result= ((CSimpleFeatures<uint8_t>*) (*f_ptr))->save(filename);
 		}
 		else if (strncmp(type, "CHAR", 4)==0)
 		{
-			result= ((CCharFeatures*) (*f_ptr))->save(filename);
+			result= ((CSimpleFeatures<char>*) (*f_ptr))->save(filename);
 		}
 		else if (strncmp(type, "SHORT", 5)==0)
 		{
-			result= ((CShortFeatures*) (*f_ptr))->save(filename);
+			result= ((CSimpleFeatures<int16_t>*) (*f_ptr))->save(filename);
 		}
 		else if (strncmp(type, "WORD", 4)==0)
 		{
-			result= ((CWordFeatures*) (*f_ptr))->save(filename);
+			result= ((CSimpleFeatures<uint16_t>*) (*f_ptr))->save(filename);
 		}
 		else
 		{
@@ -340,7 +340,7 @@ bool CGUIFeatures::set_convert_features(CFeatures* features, char* target)
 }
 
 CSparseFeatures<float64_t>* CGUIFeatures::convert_simple_real_to_sparse_real(
-	CRealFeatures* src)
+	CSimpleFeatures<float64_t>* src)
 {
 	if (src &&
 		src->get_feature_class()==C_SIMPLE &&
@@ -364,7 +364,7 @@ CSparseFeatures<float64_t>* CGUIFeatures::convert_simple_real_to_sparse_real(
 }
 
 CStringFeatures<char>* CGUIFeatures::convert_simple_char_to_string_char(
-	CCharFeatures* src)
+	CSimpleFeatures<char>* src)
 {
 	if (src && src->get_feature_class()==C_SIMPLE)
 	{
@@ -395,8 +395,7 @@ CStringFeatures<char>* CGUIFeatures::convert_simple_char_to_string_char(
 			src->free_feature_vector(str, i, to_free);
 		}
 
-		CStringFeatures<char>* target=new CStringFeatures<char>(
-			new CAlphabet(src->get_alphabet()));
+		CStringFeatures<char>* target=new CStringFeatures<char>(new CAlphabet(DNA));
 		target->set_features(strings, num_vec, max_len);
 		return target;
 	}
@@ -406,8 +405,8 @@ CStringFeatures<char>* CGUIFeatures::convert_simple_char_to_string_char(
 	return NULL;
 }
 
-CRealFeatures* CGUIFeatures::convert_simple_word_to_simple_salzberg(
-	CWordFeatures* src)
+CSimpleFeatures<float64_t>* CGUIFeatures::convert_simple_word_to_simple_salzberg(
+	CSimpleFeatures<uint16_t>* src)
 {
 	CPluginEstimate* pie=ui->ui_pluginestimate->get_estimator();
 
@@ -416,7 +415,7 @@ CRealFeatures* CGUIFeatures::convert_simple_word_to_simple_salzberg(
 		src->get_feature_class()==C_SIMPLE &&
 		pie)
 	{
-		CRealFeatures* target=new CRealFeatures(0);
+		CSimpleFeatures<float64_t>* target=new CSimpleFeatures<float64_t>(0);
 		int32_t num_feat=src->get_num_features();
 		int32_t num_vec=src->get_num_vectors();
 		float64_t* fm=new float64_t[num_vec*num_feat];
@@ -519,7 +518,7 @@ CFKFeatures* CGUIFeatures::convert_string_word_to_simple_fk(
 }
 
 
-CRealFeatures* CGUIFeatures::convert_sparse_real_to_simple_real(
+CSimpleFeatures<float64_t>* CGUIFeatures::convert_sparse_real_to_simple_real(
 	CSparseFeatures<float64_t>* src)
 {
 	if (src &&
@@ -528,7 +527,7 @@ CRealFeatures* CGUIFeatures::convert_sparse_real_to_simple_real(
 	{
 		//create dense features with 0 cache
 		SG_INFO("Attempting to convert sparse feature matrix to a dense one.\n");
-		CRealFeatures* rf=new CRealFeatures(0);
+		CSimpleFeatures<float64_t>* rf=new CSimpleFeatures<float64_t>(0);
 		if (rf)
 		{
 			int32_t num_f=0;
@@ -550,67 +549,8 @@ CExplicitSpecFeatures* CGUIFeatures::convert_string_byte_to_spec_word(
 	return new CExplicitSpecFeatures(src, use_norm);
 }
 
-
-CWordFeatures* CGUIFeatures::convert_simple_char_to_simple_word(
-	CCharFeatures* src, int32_t order, int32_t start, int32_t gap)
-{
-	if (src &&
-		src->get_feature_class()==C_SIMPLE &&
-		src->get_feature_type()==F_CHAR)
-	{
-		//create dense features with 0 cache
-		SG_INFO("Converting CHAR features to WORD ones.\n");
-
-		CWordFeatures* wf=new CWordFeatures(0);
-		if (wf)
-		{
-			if (wf->obtain_from_char_features(src, start, order, gap))
-			{
-				SG_INFO("Conversion was successful.\n");
-				return wf;
-			}
-
-			SG_UNREF(wf);
-		}
-	}
-	else
-		SG_ERROR("No SIMPLE CHAR features available.\n");
-
-	SG_ERROR("Conversion failed.\n");
-	return NULL;
-}
-
-CShortFeatures* CGUIFeatures::convert_simple_char_to_simple_short(
-	CCharFeatures* src, int32_t order, int32_t start, int32_t gap)
-{
-	if (src &&
-		src->get_feature_class()==C_SIMPLE &&
-		src->get_feature_type()==F_CHAR)
-	{
-		//create dense features with 0 cache
-		SG_INFO("Converting CHAR features to WORD ones.\n");
-
-		CShortFeatures* sf=new CShortFeatures(0);
-		if (sf)
-		{
-			if (sf->obtain_from_char_features(src, start, order, gap))
-			{
-				SG_INFO("Conversion was successful.\n");
-				return sf;
-			}
-
-			SG_UNREF(sf);
-		}
-	}
-	else
-		SG_ERROR("No SIMPLE CHAR features available.\n");
-
-	SG_ERROR("Conversion failed.\n");
-	return NULL;
-}
-
-CRealFeatures* CGUIFeatures::convert_simple_char_to_simple_align(
-	CCharFeatures* src, float64_t gap_cost)
+CSimpleFeatures<float64_t>* CGUIFeatures::convert_simple_char_to_simple_align(
+	CSimpleFeatures<char>* src, float64_t gap_cost)
 {
 	if (src &&
 		src->get_feature_class()==C_SIMPLE &&
@@ -619,12 +559,12 @@ CRealFeatures* CGUIFeatures::convert_simple_char_to_simple_align(
 		//create dense features with 0 cache
 		SG_INFO("Converting CHAR features to REAL ones.\n");
 
-		CRealFeatures* rf=new CRealFeatures(0);
+		CSimpleFeatures<float64_t>* rf=new CSimpleFeatures<float64_t>(0);
 		if (rf)
 		{
 			SG_INFO("Start aligment with gapCost=%1.2f.\n", gap_cost);
-			rf->Align_char_features(
-				src, (CCharFeatures*) ref_features, gap_cost);
+			/*rf->Align_char_features(
+				src, (CSimpleFeatures<char>*) ref_features, gap_cost);*/
 			SG_INFO("Conversion was successful.\n");
 			return rf;
 		}

@@ -5,8 +5,8 @@
  * (at your option) any later version.
  *
  * Written (W) 2007-2008 Vojtech Franc
- * Written (W) 2007-2008 Soeren Sonnenburg
- * Copyright (C) 2007-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 2007-2009 Soeren Sonnenburg
+ * Copyright (C) 2007-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _WDSVMOCAS_H___
@@ -18,7 +18,7 @@
 #include "features/StringFeatures.h"
 #include "features/Labels.h"
 
-/** class WDSVMOcas */
+/** @brief class WDSVMOcas */
 class CWDSVMOcas : public CClassifier
 {
 	public:

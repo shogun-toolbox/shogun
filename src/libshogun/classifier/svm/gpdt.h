@@ -78,6 +78,7 @@ enum {
   SOLVER_FLETCHER = 1
 };
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 /** s kernel */
 class sKernel
 {
@@ -188,6 +189,7 @@ private:
 void SplitParts (
 	int32_t n, int32_t part, int32_t parts, int32_t *dim, int32_t *off);
 void SplitNum   (int32_t n, int32_t *nloc, int32_t *noff);
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 
 /******************************************************************************/
 /*** End of gpdt.h file                                                     ***/

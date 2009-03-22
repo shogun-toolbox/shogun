@@ -4,19 +4,21 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2008 Soeren Sonnenburg
+ * Written (W) 1999-2009 Soeren Sonnenburg
  * Written (W) 1999-2008 Gunnar Raetsch
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _CFKFEATURES__H__
 #define _CFKFEATURES__H__
 
-#include "features/RealFeatures.h"
+#include "features/SimpleFeatures.h"
 #include "distributions/hmm/HMM.h"
 
-/** The class FKFeatures implements Fischer kernel features obtained from
- * two Hidden Markov models and was used in
+/** @brief The class FKFeatures implements Fischer kernel features obtained from
+ * two Hidden Markov models.
+ *
+ * It was used in
  *
  * K. Tsuda, M. Kawanabe, G. Raetsch, S. Sonnenburg, and K.R. Mueller. A new
  * discriminative kernel from probabilistic models. Neural Computation,
@@ -30,7 +32,7 @@
  * It inherits its functionality from CSimpleFeatures, which should be
  * consulted for further reference.
  */
-class CFKFeatures: public CRealFeatures
+class CFKFeatures: public CSimpleFeatures<float64_t>
 {
 	public:
 		/** constructor

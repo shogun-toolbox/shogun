@@ -14,7 +14,7 @@
 #include "lib/common.h"
 #include "classifier/svm/SVM.h"
 
-/** class GNPPSVM */
+/** @brief class GNPPSVM */
 class CGNPPSVM : public CSVM
 {
 	public:

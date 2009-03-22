@@ -17,6 +17,8 @@
 	  along with SVM-lin (see gpl.txt); if not, write to the Free Software
 	  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	  */
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+
 #ifndef _SSL_H
 #define _SSL_H
 
@@ -36,6 +38,7 @@
 
 #include "lib/common.h"
 #include "features/DotFeatures.h"
+
 
 /** Data: Input examples are stored in sparse (Compressed Row Storage) format */
 struct data
@@ -225,4 +228,6 @@ float64_t entropy(const  float64_t *p, int32_t u);
 /* KL-divergence */
 float64_t KL(const  float64_t *p, const  float64_t *q, int32_t u);
 
-#endif
+#endif // _SSL_H
+
+#endif // DOXYGEN_SHOULD_SKIP_THIS

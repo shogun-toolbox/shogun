@@ -52,6 +52,7 @@ extern "C" {
 # define DEF_PRECISION 1E-14
 # define MAXSHRINK 50000
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 /** model */
 struct MODEL {
 /** sv num */
@@ -232,8 +233,9 @@ struct SHRINK_STATE
   /** for shrinking with linear kernel */
   float64_t *last_lin;
 };
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 
-/** class SVMlight */
+/** @brief class SVMlight */
 class CSVMLight : public CSVM
 {
  public:
@@ -257,12 +259,6 @@ class CSVMLight : public CSVM
    * @return if training was successful
    */
   virtual bool train();
-
-  /** setup AUC maximization
-   *
-   * @return if maximization was successful
-   */
-  bool setup_auc_maximization() ;
 
   /** get classifier type
    *
@@ -520,7 +516,7 @@ class CSVMLight : public CSVM
    * using a lp for 1-norm mkl, a qcqp for 2-norm mkl and an
    * iterated qcqp for general q-norm mkl.
    *
-   * @param beta new betas (kernel weights)
+   * @param x new betas (kernel weights)
    * @param old_beta old betas (previous kernel weights)
    * @param num_kernels number of kernels
    * @param sumw 1/2*alpha'*K_j*alpha for each kernel j
@@ -529,7 +525,7 @@ class CSVMLight : public CSVM
    *
    * @return new objective value
    */
-  float64_t compute_optimal_betas_via_cplex(float64_t* beta, float64_t* old_beta, int num_kernels,
+  float64_t compute_optimal_betas_via_cplex(float64_t* x, float64_t* old_beta, int32_t num_kernels,
 		  const float64_t* sumw, float64_t suma, int32_t& inner_iters);
 
   /** given the alphas, compute the corresponding optimal betas

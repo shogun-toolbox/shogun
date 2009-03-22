@@ -4,9 +4,9 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2006 Christian Gehl
- * Written (W) 2006-2008 Soeren Sonnenburg
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 2006-2009 Christian Gehl
+ * Written (W) 2006-2009 Soeren Sonnenburg
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _DISTANCE_MACHINE_H__
@@ -19,11 +19,9 @@
 
 #include <stdio.h>
 
-/** A generic DistanceMachine interface
+/** @brief A generic DistanceMachine interface.
  *
- * A distance machine is based on labels and a distance.
- *
- * Note that the distance has to be choosen a-priori.
+ * A distance machine is based on a a-priori choosen distance.
  */
 class CDistanceMachine : public CClassifier
 {

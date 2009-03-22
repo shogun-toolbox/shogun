@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2008 Soeren Sonnenburg
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 1999-2009 Soeren Sonnenburg
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _LINEARKERNEL_H___
@@ -13,9 +13,12 @@
 
 #include "lib/common.h"
 #include "kernel/SimpleKernel.h"
-#include "features/RealFeatures.h"
+#include "features/SimpleFeatures.h"
 
-/** Computes the standard linear kernel on dense real valued features
+/** @brief Computes the standard linear kernel on dense real valued features.
+ *
+ * Formally, it computes
+ *
  * \f[
  * k({\bf x},{\bf x'})= \frac{1}{scale}{\bf x}\cdot {\bf x'}
  * \f]
@@ -32,7 +35,7 @@ class CLinearKernel: public CSimpleKernel<float64_t>
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 */
-		CLinearKernel(CRealFeatures* l, CRealFeatures* r);
+		CLinearKernel(CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r);
 
 		virtual ~CLinearKernel();
 
@@ -116,7 +119,7 @@ class CLinearKernel: public CSimpleKernel<float64_t>
 		{
 			if (lhs && normal)
 			{
-				len = ((CRealFeatures*) lhs)->get_num_features();
+				len = ((CSimpleFeatures<float64_t>*) lhs)->get_num_features();
 				return normal;
 			}
 			else
@@ -134,7 +137,7 @@ class CLinearKernel: public CSimpleKernel<float64_t>
 		inline void get_w(float64_t** dst_w, int32_t* dst_dims)
 		{
 			ASSERT(lhs && normal);
-			int32_t len = ((CRealFeatures*) lhs)->get_num_features();
+			int32_t len = ((CSimpleFeatures<float64_t>*) lhs)->get_num_features();
 			ASSERT(dst_w && dst_dims);
 			*dst_dims=len;
 			*dst_w=(float64_t*) malloc(sizeof(float64_t)*(*dst_dims));
@@ -149,7 +152,7 @@ class CLinearKernel: public CSimpleKernel<float64_t>
 		 */
 		inline void set_w(float64_t* src_w, int32_t src_w_dim)
 		{
-			ASSERT(lhs && src_w_dim==((CRealFeatures*) lhs)->get_num_features());
+			ASSERT(lhs && src_w_dim==((CSimpleFeatures<float64_t>*) lhs)->get_num_features());
 			clear_normal();
 			memcpy(normal, src_w, sizeof(float64_t) * src_w_dim);
 		}

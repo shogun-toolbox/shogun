@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2008 Soeren Sonnenburg
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 1999-2009 Soeren Sonnenburg
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _CGHMM_H___
@@ -16,8 +16,8 @@
 #include "distributions/Distribution.h"
 
 
-/** class GHMM - this class is non-functional and was meant to implement a
- * Generalize Hidden Markov Model (aka Semi Hidden Markov HMM) */
+/** @brief class GHMM - this class is non-functional and was meant to implement a
+ * Generalize Hidden Markov Model (aka Semi Hidden Markov HMM). */
 class CGHMM : public CDistribution
 {
 	public:

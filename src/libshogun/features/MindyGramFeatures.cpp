@@ -5,7 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 2006 Konrad Rieck
- * Copyright (C) 2006-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 2006-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  *
  * Indentation: bcpp -f 1 -s -ylcnc -bcl -i 4
  */
@@ -15,7 +15,6 @@
 #ifdef HAVE_MINDY
 
 #include "features/Features.h"
-#include "features/CharFeatures.h"
 #include "features/StringFeatures.h"
 #include "features/MindyGramFeatures.h"
 #include "lib/common.h"

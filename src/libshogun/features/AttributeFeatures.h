@@ -15,14 +15,22 @@
 #include "features/Features.h"
 #include "lib/DynamicArray.h"
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+/** Attribute Struct */
 struct T_ATTRIBUTE
 {
+	/// attribute name
 	char* attr_name;
+	/// attribute object
 	CFeatures* attr_obj;
 };
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 
-/** Implements attributed features, that is in the simplest case a number of
- * (attribute, value) pairs ala
+/** @brief Implements attributed features, that is in the simplest case a number of
+ * (attribute, value) pairs.
+ *
+ * For example 
+ *
  * x[0...].attr1 = <value(s)>
  * x[0...].attr2 = <value(s)>.
  *

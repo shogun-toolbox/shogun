@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2006 Christian Gehl
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 2006-2009 Christian Gehl
+ * Copyright (C) 2006-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _MANHATTANMETRIC_H___
@@ -13,9 +13,9 @@
 
 #include "lib/common.h"
 #include "distance/SimpleDistance.h"
-#include "features/RealFeatures.h"
+#include "features/SimpleFeatures.h"
 
-/** class ManhattanMetric 
+/** @brief class ManhattanMetric 
  *
  * The Manhattan distance (city block distance,\f$L_{1}\f$ norm, rectilinear
  * distance or taxi cab metric ) is a special case
@@ -42,7 +42,7 @@ class CManhattanMetric: public CSimpleDistance<float64_t>
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 */
-		CManhattanMetric(CRealFeatures* l, CRealFeatures* r);
+		CManhattanMetric(CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r);
 		virtual ~CManhattanMetric();
 
 		/** init distance

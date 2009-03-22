@@ -5,8 +5,8 @@
  * (at your option) any later version.
  *
  * Written (W) 2006 Christian Gehl
- * Written (W) 1999-2008 Soeren Sonnenburg
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 1999-2009 Soeren Sonnenburg
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _KNN_H__
@@ -21,7 +21,9 @@
 
 class CDistanceMachine;
 
-/** Class KNN, an implementation of the standard k-nearest neigbor classifier.
+/** @brief Class KNN, an implementation of the standard k-nearest neigbor
+ * classifier.
+ *
  * An example is classified to belong to the class of which the majority of the
  * k closest examples belong to.
  *

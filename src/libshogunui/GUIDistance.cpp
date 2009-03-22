@@ -38,11 +38,8 @@
 #include <shogun/features/RealFileFeatures.h>
 #include <shogun/features/TOPFeatures.h>
 #include <shogun/features/FKFeatures.h>
-#include <shogun/features/CharFeatures.h>
 #include <shogun/features/StringFeatures.h>
-#include <shogun/features/ByteFeatures.h>
-#include <shogun/features/ShortFeatures.h>
-#include <shogun/features/RealFeatures.h>
+#include <shogun/features/SimpleFeatures.h>
 #include <shogun/features/Features.h>
 
 

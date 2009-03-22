@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2006 Christian Gehl
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 2006-2009 Christian Gehl
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _JENSENMETRIC_H___
@@ -13,9 +13,9 @@
 
 #include "lib/common.h"
 #include "distance/SimpleDistance.h"
-#include "features/RealFeatures.h"
+#include "features/SimpleFeatures.h"
 
-/** class JensenMetric 
+/** @brief class JensenMetric 
  *
  * The Jensen-Shannon distance/divergence measures the similarity between
  * two data points which is based on the Kullback-Leibler divergence.
@@ -41,7 +41,7 @@ class CJensenMetric: public CSimpleDistance<float64_t>
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 */
-		CJensenMetric(CRealFeatures* l, CRealFeatures* r);
+		CJensenMetric(CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r);
 		virtual ~CJensenMetric();
 
 		/** init distance

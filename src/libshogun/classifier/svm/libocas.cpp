@@ -8,8 +8,8 @@
  *
  *  Linear unbiased binary SVM solver.
  *
- * Written (W) 1999-2008 Vojtech Franc
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 1999-2009 Vojtech Franc
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  *
  * Modifications:
  * 23-oct-2007, VF

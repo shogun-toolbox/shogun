@@ -8,7 +8,7 @@
  * Copyright (C) 2008-2009 Fraunhofer Institute FIRST and Max Planck Society
  */
 #include <shogun/kernel/GaussianKernel.h>
-#include <shogun/features/RealFeatures.h>
+#include <shogun/features/SimpleFeatures.h>
 #include <shogun/classifier/svm/LibSVM.h>
 #include <shogun/lib/Mathematics.h>
 #include <shogun/lib/common.h>
@@ -69,7 +69,7 @@ int main()
 	SG_REF(labels);
 
 	// create train features
-	CRealFeatures* features = new CRealFeatures(feature_cache);
+	CSimpleFeatures<float64_t>* features = new CSimpleFeatures<float64_t>(feature_cache);
 	SG_REF(features);
 	features->set_feature_matrix(feat, DIMS, NUM);
 

@@ -11,8 +11,8 @@
 #ifndef _SHOGUN_EXCEPTION_H_
 #define _SHOGUN_EXCEPTION_H_
 
-/** Class ShogunException defines an exception which is thrown whenever an
- * error inside of shogun occurs
+/** @brief Class ShogunException defines an exception which is thrown whenever an
+ * error inside of shogun occurs.
  */ 
 class ShogunException {
 	public:

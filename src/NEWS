@@ -1,3 +1,28 @@
+2009-03-22 Soeren Sonnenburg <sonne@debian.org>
+
+	* SHOGUN Release version 0.7.2 (libshogun 2.0, libshogunui 1.1)
+	* This release contains several cleanups and enhancements:
+	* Features:
+		- Support all data types from python_modular: dense, scipy-sparse
+		csc_sparse matrices and strings of type bool, char, (u)int{8,16,32,64},
+		float{32,64,96}. In addition, individual vectors/strings can now be
+		obtained and even changed.  See examples/python_modular/features_*.py
+		for examples.
+		- AUC maximization now works with arbitrary kernel SVMs.
+		- Documentation updates, many examples have been polished.
+		- Slightly speedup Oligo kernel.
+	* Bugfixes:
+		- Fix reading strings from directory (f.load_from_directory()).
+		- Update copyright to 2009.
+	* Cleanup and API Changes:
+		- Remove {Char,Short,Word,Int,Real}Features and only ever use the
+		templated SimpleFeatures.
+		- Split up examples in examples/python_modular to separate files.
+		- Now use s.set_features(strs) instead of s.set_string_features(strs)
+          to set string features.
+		- The meaning of the width parameter for the Oligo Kernel changed, the
+		OligoKernel has been renamed to OligoStringKernel.
+
 2009-03-08 Soeren Sonnenburg <debian@nn7.de>
 
 	* SHOGUN Release version 0.7.1 (libshogun 1.0, libshogunui 1.0)

@@ -4,15 +4,15 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2007-2008 Soeren Sonnenburg
- * Copyright (C) 2007-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 2007-2009 Soeren Sonnenburg
+ * Copyright (C) 2007-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #include "lib/common.h"
 #include "lib/io.h"
 #include "distance/EuclidianDistance.h"
 #include "features/Features.h"
-#include "features/RealFeatures.h"
+#include "features/SimpleFeatures.h"
 
 CEuclidianDistance::CEuclidianDistance()
 : CRealDistance()
@@ -20,7 +20,7 @@ CEuclidianDistance::CEuclidianDistance()
 	disable_sqrt=false;
 }
 
-CEuclidianDistance::CEuclidianDistance(CRealFeatures* l, CRealFeatures* r)
+CEuclidianDistance::CEuclidianDistance(CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r)
 : CRealDistance()
 {
 	disable_sqrt=false;
@@ -59,17 +59,17 @@ float64_t CEuclidianDistance::compute(int32_t idx_a, int32_t idx_b)
 	bool afree, bfree;
 	float64_t result=0;
 
-	float64_t* avec=((CRealFeatures*) lhs)->
+	float64_t* avec=((CSimpleFeatures<float64_t>*) lhs)->
 		get_feature_vector(idx_a, alen, afree);
-	float64_t* bvec=((CRealFeatures*) rhs)->
+	float64_t* bvec=((CSimpleFeatures<float64_t>*) rhs)->
 		get_feature_vector(idx_b, blen, bfree);
 	ASSERT(alen==blen);
 
 	for (int32_t i=0; i<alen; i++)
 		result+=CMath::sq(avec[i] - bvec[i]);
 
-	((CRealFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
-	((CRealFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+	((CSimpleFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
+	((CSimpleFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
 	if (disable_sqrt) {
 		return result;

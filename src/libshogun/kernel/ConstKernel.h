@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2008 Soeren Sonnenburg
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 1999-2009 Soeren Sonnenburg
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _CONSTKERNEL_H___
@@ -16,7 +16,7 @@
 #include "kernel/Kernel.h"
 #include "features/Features.h"
 
-/** Constant Kernel
+/** @brief The Constant Kernel returns a constant for all elements.
  *
  * A ``kernel'' that simply returns a single constant, i.e.
  * \f$k({\bf x}, {\bf x'})= c\f$

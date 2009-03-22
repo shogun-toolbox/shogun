@@ -16,7 +16,7 @@
 #include "features/DotFeatures.h"
 #include "features/Features.h"
 
-/** Features that allow stacking of a number of DotFeatures.
+/** @brief Features that allow stacking of a number of DotFeatures.
  *
  * They transparently provide all the operations of DotFeatures, i.e.
  *

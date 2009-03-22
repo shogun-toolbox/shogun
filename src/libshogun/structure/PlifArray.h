@@ -5,7 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 1999-2008 Gunnar Raetsch
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef __PLIFARRAY_H__
@@ -16,7 +16,7 @@
 #include "lib/DynamicArray.h"
 #include "structure/PlifBase.h"
 
-/** class PlifArray */
+/** @brief class PlifArray */
 class CPlifArray: public CPlifBase
 {
 	public:

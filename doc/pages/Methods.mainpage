@@ -1,40 +1,50 @@
 /*! \page methods Methods
   \section featrep_sec Feature Representations
-  \subsection simplefeat_sec Simple Features (Matrices)
+  Shogun supports a wide range of feature representations. Among them are the so called
+  simple features (cf., CSimpleFeatures) that are standard 2-d Matrices, strings
+  (cf., CStringFeatures) that however in contrast to other meanings of string are
+  just a list of vectors of arbitrary length and sparse features (cf.,
+  CSparseFeatures) to efficiently represent sparse matrices.
+
+  Each of these feature objects
+
+  \li Simple Features (CSimpleFeatures)
+  \li Strings (CStringFeatures)
+  \li Sparse Features (CSparseFeatures)
+
+  supports any of the standard types from bool to floats:
+
   Supported Types
-  \li CHAR
-  \li BYTE
-  \li SHORT
-  \li WORD
-  \li INT
-  \li UINT
-  \li LONG
-  \li ULONG
-  \li SHORTREAL
-  \li DOUBLEREAL
-  \li LONGREALREAL
-  \subsection sparsefeat_sec Sparse Features
-  Supported Types
-  \li CHAR
-  \li BYTE
-  \li SHORT
-  \li WORD
-  \li INT
-  \li UINT
-  \li LONG
-  \li ULONG
-  \li SHORTREAL
-  \li DOUBLEREAL
-  \li LONGREALREAL
-  \subsection stringfeat_sec String Features
-  \li CHAR
-  \li BYTE
-  \li SHORT
-  \li WORD
-  \li INT
-  \li UINT
-  \li LONG
-  \li ULONG
+  \li bool
+  \li 8bit char
+  \li 8bit Byte
+  \li 16bit Integer
+  \li 16bit Word
+  \li 32bit Integer
+  \li 32bit Unsigned Integer
+  \li 32bit Float matrix
+  \li 64bit Float matrix
+  \li 96bit Float matrix
+
+  Many other feature types available. Some of them are based on the three basic
+  feature types above, like CTOPFeatures (TOP Kernel features from CHMM),
+  CFKFeatures (Fisher Kernel features from CHMM) and CRealFileFeatures (vectors
+  fetched from a binary file). It should be noted that all 
+  feature objects are derived from CFeatures 
+  More complex 
+  CAttributeFeatures
+  CCombinedDotFeatures
+  CCombinedFeatures
+  CDotFeatures
+  CDummyFeatures
+  CExplicitSpecFeatures
+  CImplicitWeightedSpecFeatures
+  CWDFeatures
+
+  In addition, labels are represented in CLabels and the alphabet of a string in CAlphabet.
+
+
+
   \section preproc_sec Preprocessors
   \li NormOne
   \li LogPlusOne
@@ -117,4 +127,3 @@
   \li ROC
   \li PRC
 */
-

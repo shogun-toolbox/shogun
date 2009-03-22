@@ -195,7 +195,7 @@ def canberra_word_distance ():
 	reverse=False
 
 	charfeat=StringCharFeatures(DNA)
-	charfeat.set_string_features(fm_train_dna)
+	charfeat.set_features(fm_train_dna)
 	feats_train=StringWordFeatures(charfeat.get_alphabet())
 	feats_train.obtain_from_char(charfeat, order-1, order, gap, reverse)
 	preproc=SortWordString()
@@ -204,7 +204,7 @@ def canberra_word_distance ():
 	feats_train.apply_preproc()
 
 	charfeat=StringCharFeatures(DNA)
-	charfeat.set_string_features(fm_test_dna)
+	charfeat.set_features(fm_test_dna)
 	feats_test=StringWordFeatures(charfeat.get_alphabet())
 	feats_test.obtain_from_char(charfeat, order-1, order, gap, reverse)
 	feats_test.add_preproc(preproc)
@@ -224,7 +224,7 @@ def hamming_word_distance ():
 	reverse=False
 
 	charfeat=StringCharFeatures(DNA)
-	charfeat.set_string_features(fm_train_dna)
+	charfeat.set_features(fm_train_dna)
 	feats_train=StringWordFeatures(charfeat.get_alphabet())
 	feats_train.obtain_from_char(charfeat, order-1, order, gap, reverse)
 	preproc=SortWordString()
@@ -233,7 +233,7 @@ def hamming_word_distance ():
 	feats_train.apply_preproc()
 
 	charfeat=StringCharFeatures(DNA)
-	charfeat.set_string_features(fm_test_dna)
+	charfeat.set_features(fm_test_dna)
 	feats_test=StringWordFeatures(charfeat.get_alphabet())
 	feats_test.obtain_from_char(charfeat, order-1, order, gap, reverse)
 	feats_test.add_preproc(preproc)
@@ -255,7 +255,7 @@ def manhattan_word_distance ():
 	reverse=False
 
 	charfeat=StringCharFeatures(DNA)
-	charfeat.set_string_features(fm_train_dna)
+	charfeat.set_features(fm_train_dna)
 	feats_train=StringWordFeatures(charfeat.get_alphabet())
 	feats_train.obtain_from_char(charfeat, order-1, order, gap, reverse)
 	preproc=SortWordString()
@@ -264,7 +264,7 @@ def manhattan_word_distance ():
 	feats_train.apply_preproc()
 
 	charfeat=StringCharFeatures(DNA)
-	charfeat.set_string_features(fm_test_dna)
+	charfeat.set_features(fm_test_dna)
 	feats_test=StringWordFeatures(charfeat.get_alphabet())
 	feats_test.obtain_from_char(charfeat, order-1, order, gap, reverse)
 	feats_test.add_preproc(preproc)

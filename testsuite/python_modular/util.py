@@ -118,8 +118,8 @@ def get_feats_string (indata, prefix=''):
 		'train': eval('String'+ftype+'Features(alphabet)'),
 		'test': eval('String'+ftype+'Features(alphabet)')
 	}
-	feats['train'].set_string_features(list(indata[prefix+'data_train'][0]))
-	feats['test'].set_string_features(list(indata[prefix+'data_test'][0]))
+	feats['train'].set_features(list(indata[prefix+'data_train'][0]))
+	feats['test'].set_features(list(indata[prefix+'data_test'][0]))
 
 	return feats
 
@@ -138,8 +138,8 @@ def get_feats_string_complex (indata, prefix=''):
 		data_train=list(indata[prefix+'data_train'][0])
 		data_test=list(indata[prefix+'data_test'][0])
 
-	feats['train'].set_string_features(data_train)
-	feats['test'].set_string_features(data_test)
+	feats['train'].set_features(data_train)
+	feats['test'].set_features(data_test)
 
 	feat=eval('String'+indata[prefix+'feature_type']+ \
 		"Features(alphabet)")
@@ -168,13 +168,13 @@ def get_feats_wd (indata, prefix=''):
 	feats={}
 
 	charfeat=StringCharFeatures(DNA)
-	charfeat.set_string_features(list(indata[prefix+'data_train'][0]))
+	charfeat.set_features(list(indata[prefix+'data_train'][0]))
 	bytefeat=StringByteFeatures(RAWDNA)
 	bytefeat.obtain_from_char(charfeat, 0, 1, 0, False)
 	feats['train']=WDFeatures(bytefeat, order, order)
 
 	charfeat=StringCharFeatures(DNA)
-	charfeat.set_string_features(list(indata[prefix+'data_test'][0]))
+	charfeat.set_features(list(indata[prefix+'data_test'][0]))
 	bytefeat=StringByteFeatures(RAWDNA)
 	bytefeat.obtain_from_char(charfeat, 0, 1, 0, False)
 	feats['test']=WDFeatures(bytefeat, order, order)

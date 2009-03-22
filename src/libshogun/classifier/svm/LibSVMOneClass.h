@@ -5,8 +5,8 @@
  * (at your option) any later version.
  *
  * Written (W) 2006 Christian Gehl
- * Written (W) 2006-2008 Soeren Sonnenburg
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 2006-2009 Soeren Sonnenburg
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _LIBSVM_ONECLASS_H___
@@ -17,7 +17,7 @@
 
 #include <stdio.h>
 
-/** class LibSVMOneClass */
+/** @brief class LibSVMOneClass */
 class CLibSVMOneClass : public CSVM
 {
 	public:

@@ -19,12 +19,8 @@
 #include <shogun/features/RealFileFeatures.h>
 #include <shogun/features/TOPFeatures.h>
 #include <shogun/features/FKFeatures.h>
-#include <shogun/features/CharFeatures.h>
 #include <shogun/features/StringFeatures.h>
-#include <shogun/features/ByteFeatures.h>
-#include <shogun/features/WordFeatures.h>
-#include <shogun/features/ShortFeatures.h>
-#include <shogun/features/RealFeatures.h>
+#include <shogun/features/SimpleFeatures.h>
 #include <shogun/features/SparseFeatures.h>
 #include <shogun/features/CombinedFeatures.h>
 #include <shogun/features/CombinedDotFeatures.h>
@@ -100,26 +96,20 @@ class CGUIFeatures : public CSGObject
 
 		/* convert features from one class/type to another */
 		CSparseFeatures<float64_t>* convert_simple_real_to_sparse_real(
-			CRealFeatures* src);
+			CSimpleFeatures<float64_t>* src);
 		CStringFeatures<char>* convert_simple_char_to_string_char(
-			CCharFeatures* src);
-		CWordFeatures* convert_simple_char_to_simple_word(
-			CCharFeatures* src,
-			int32_t order=1, int32_t start=0, int32_t gap=0);
-		CShortFeatures* convert_simple_char_to_simple_short(
-			CCharFeatures* src,
-			int32_t order=1, int32_t start=0, int32_t gap=0);
-		CRealFeatures* convert_simple_char_to_simple_align(
-			CCharFeatures* src,
+			CSimpleFeatures<char>* src);
+		CSimpleFeatures<float64_t>* convert_simple_char_to_simple_align(
+			CSimpleFeatures<char>* src,
 			float64_t gap_cost=0);
-		CRealFeatures* convert_simple_word_to_simple_salzberg(
-			CWordFeatures* src);
+		CSimpleFeatures<float64_t>* convert_simple_word_to_simple_salzberg(
+			CSimpleFeatures<uint16_t>* src);
 
 		CTOPFeatures* convert_string_word_to_simple_top(
 			CStringFeatures<uint16_t>* src);
 		CFKFeatures* convert_string_word_to_simple_fk(
 			CStringFeatures<uint16_t>* src);
-		CRealFeatures* convert_sparse_real_to_simple_real(
+		CSimpleFeatures<float64_t>* convert_sparse_real_to_simple_real(
 			CSparseFeatures<float64_t>* src);
 		CExplicitSpecFeatures* convert_string_byte_to_spec_word(
 				CStringFeatures<uint16_t>* src, bool use_norm);

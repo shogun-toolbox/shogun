@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2008 Soeren Sonnenburg
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 1999-2009 Soeren Sonnenburg
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _POLYMATCHWORDSTRINGKERNEL_H___
@@ -15,9 +15,12 @@
 #include "kernel/StringKernel.h"
 #include "features/StringFeatures.h"
 
-/** The class PolyMatchWordStringKernel computes a variant of the polynomial kernel
- * on word-features (makes sense for strings of same length mapped to word
- * features). It is computed as
+/** @brief The class PolyMatchWordStringKernel computes a variant of the
+ * polynomial kernel on word-features.
+ *
+ * It makes sense for strings of same length mapped to word features and is
+ * computed as
+ *
  * \f[
  * k({\bf x},{\bf x'})= (\sum_{i=0}^L I(x_i=x'_i)+c)^d
  * \f]

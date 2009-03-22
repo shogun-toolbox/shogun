@@ -20,7 +20,7 @@
 
 class CClassifier;
 
-/** A generic KernelMachine interface
+/** @brief A generic KernelMachine interface.
  *
  * A kernel machine is defined as
  *  \f[

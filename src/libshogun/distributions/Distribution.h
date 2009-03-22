@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2008 Soeren Sonnenburg
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 1999-2009 Soeren Sonnenburg
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _DISTRIBUTION_H___
@@ -15,8 +15,8 @@
 #include "lib/Mathematics.h"
 #include "base/SGObject.h"
 
-/** Base class Distribution from which all methods implementing a distribution
- * are derived.
+/** @brief Base class Distribution from which all methods implementing a
+ * distribution are derived.
  *
  * Distributions are based on some general feature object and have to implement
  * interfaces to

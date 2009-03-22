@@ -4,9 +4,9 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2007-2008 Soeren Sonnenburg
+ * Written (W) 2007-2009 Soeren Sonnenburg
  * Written (W) 2007-2008 Vojtech Franc
- * Copyright (C) 2007-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 2007-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _SUBGRADIENTSVM_H___
@@ -17,7 +17,7 @@
 #include "features/DotFeatures.h"
 #include "features/Labels.h"
 
-/** class SubGradientSVM */
+/** @brief class SubGradientSVM */
 class CSubGradientSVM : public CLinearClassifier
 {
 	public:

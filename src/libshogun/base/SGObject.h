@@ -11,29 +11,9 @@
 #ifndef __SGOBJECT_H__
 #define __SGOBJECT_H__
 
-
-
 #ifdef HAVE_BOOST_SERIALIZATION
-#include <boost/archive/text_oarchive.hpp>
-#include <boost/archive/text_iarchive.hpp>
-#include <boost/archive/binary_oarchive.hpp>
-#include <boost/archive/binary_iarchive.hpp>
-#include <boost/serialization/vector.hpp>
-
-//TODO xml will not work right away, every class needs name-value-pairs (NVP)
-//TODO we SHOULD FIX THIS NOW!
-//will have to be defined using respective boost macros
-//#include <boost/archive/xml_oarchive.hpp>
-//#include <boost/archive/xml_iarchive.hpp>
-
-//some STL modules needed for serialization
-
+#include <boost/serialization/access.hpp>
 #include <string>
-#include <sstream>
-#include <iostream>
-#include <fstream>
-#include <vector>
-
 #endif //HAVE_BOOST_SERIALIZATION
 
 #include "lib/io.h"
@@ -56,10 +36,12 @@ class CIO;
 #define SG_REF(x) { if (x) (x)->ref(); }
 #define SG_UNREF(x) { if (x) { if ((x)->unref()==0) (x)=0; } }
 
-/** Class SGObject is the base class of all shogun objects. Apart from dealing
- * with reference counting that is used to manage shogung objects in memory
- * (erase unused object, avoid cleaning objects when they are still in use), it
- * provides interfaces for:
+/** @brief Class SGObject is the base class of all shogun objects.
+ *
+ * Apart from dealing with reference counting that is used to manage shogung
+ * objects in memory (erase unused object, avoid cleaning objects when they are
+ * still in use), it provides interfaces for:
+ *
  * -# parallel - to determine the number of used CPUs for a method (cf. CParallel)
  * -# io - to output messages and general i/o (cf. CIO)
  * -# version - to provide version information of the shogun version used (cf. CVersion)
@@ -140,58 +122,29 @@ public:
 	virtual const char* get_name() const=0;
 
 #ifdef HAVE_BOOST_SERIALIZATION
-
 	/** Serialization Function: Convert object to a string
 	 *
 	 * @return string
 	 */
-	virtual std::string to_string() const
-	{
-		std::ostringstream s;
-		boost::archive::text_oarchive oa(s);
-		oa << this;
-		return s.str();
-	}
-
+	virtual std::string to_string() const;
 
 	/** Serialization Function: Obtain object from string
 	 *
 	 * @param filename file name
 	 */
-	virtual void from_string(std::string str)
-	{
-		std::istringstream is(str);
-		boost::archive::text_iarchive ia(is);
-
-		//cast away constness
-		CSGObject* tmp = const_cast<CSGObject*>(this);
-
-		ia >> tmp;
-		*this = *tmp;
-	}
+	virtual void from_string(std::string str);
 
 	/** Serialization Function: Save the object to file
 	 *
 	 * @param filename file name
 	 */
-	virtual void to_file(std::string filename) const
-	{
-		std::ofstream os(filename.c_str(), std::ios::binary);
-		boost::archive::binary_oarchive oa(os);
-		oa << this;
-	}
+	virtual void to_file(std::string filename) const;
 
 	/** Serialization Function: Load the object from file
 	 *
 	 * @param filename file name
 	 */
-	virtual void from_file(std::string filename)
-	{
-		std::ifstream is(filename.c_str(), std::ios::binary);
-		boost::archive::binary_iarchive ia(is);
-		CSGObject* tmp= const_cast<CSGObject*>(this);
-		ia >> tmp; 
-	}
+	virtual void from_file(std::string filename);
 
   protected:
 	friend class boost::serialization::access;
@@ -207,7 +160,7 @@ public:
 		void serialize(Archive & ar, const unsigned int version_num)
 		{
 			//ar & test;
-			std::cout << "SERIALIZING SGObject: nothing to do" << std::endl;
+			SG_ERROR("SERIALIZING SGObject: nothing to do");
 		}
 
 #endif //HAVE_BOOST_SERIALIZATION

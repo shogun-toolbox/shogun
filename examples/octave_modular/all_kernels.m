@@ -264,9 +264,9 @@ km_test=kernel.get_kernel_matrix();
 disp('FixedDegreeString')
 
 feats_train=StringCharFeatures(DNA);
-feats_train.set_string_features(fm_train_dna);
+feats_train.set_features(fm_train_dna);
 feats_test=StringCharFeatures(DNA);
-feats_test.set_string_features(fm_test_dna);
+feats_test.set_features(fm_test_dna);
 degree=3;
 
 kernel=FixedDegreeStringKernel(feats_train, feats_train, degree);
@@ -279,9 +279,9 @@ km_test=kernel.get_kernel_matrix();
 disp('LinearString')
 
 feats_train=StringCharFeatures(DNA);
-feats_train.set_string_features(fm_train_dna);
+feats_train.set_features(fm_train_dna);
 feats_test=StringCharFeatures(DNA);
-feats_test.set_string_features(fm_test_dna);
+feats_test.set_features(fm_test_dna);
 
 kernel=LinearStringKernel(feats_train, feats_train);
 
@@ -293,9 +293,9 @@ km_test=kernel.get_kernel_matrix();
 disp('LocalAlignmentString')
 
 feats_train=StringCharFeatures(DNA);
-feats_train.set_string_features(fm_train_dna);
+feats_train.set_features(fm_train_dna);
 feats_test=StringCharFeatures(DNA);
-feats_test.set_string_features(fm_test_dna);
+feats_test.set_features(fm_test_dna);
 
 kernel=LocalAlignmentStringKernel(feats_train, feats_train);
 
@@ -307,9 +307,9 @@ km_test=kernel.get_kernel_matrix();
 disp('OligoString')
 
 feats_train=StringCharFeatures(DNA);
-feats_train.set_string_features(fm_train_dna);
+feats_train.set_features(fm_train_dna);
 feats_test=StringCharFeatures(DNA);
-feats_test.set_string_features(fm_test_dna);
+feats_test.set_features(fm_test_dna);
 k=3;
 width=1.2;
 size_cache=10;
@@ -326,9 +326,9 @@ km_test=kernel.get_kernel_matrix();
 disp('PolyMatchString')
 
 feats_train=StringCharFeatures(DNA);
-feats_train.set_string_features(fm_train_dna);
+feats_train.set_features(fm_train_dna);
 feats_test=StringCharFeatures(DNA);
-feats_test.set_string_features(fm_test_dna);
+feats_test.set_features(fm_test_dna);
 degree=3;
 inhomogene=false;
 
@@ -342,9 +342,9 @@ km_test=kernel.get_kernel_matrix();
 disp('SimpleLocalityImprovedString')
 
 feats_train=StringCharFeatures(DNA);
-feats_train.set_string_features(fm_train_dna);
+feats_train.set_features(fm_train_dna);
 feats_test=StringCharFeatures(DNA);
-feats_test.set_string_features(fm_test_dna);
+feats_test.set_features(fm_test_dna);
 l=5;
 inner_degree=5;
 outer_degree=7;
@@ -360,9 +360,9 @@ km_test=kernel.get_kernel_matrix();
 disp('WeightedDegreeString')
 
 feats_train=StringCharFeatures(DNA);
-feats_train.set_string_features(fm_train_dna);
+feats_train.set_features(fm_train_dna);
 feats_test=StringCharFeatures(DNA);
-feats_test.set_string_features(fm_test_dna);
+feats_test.set_features(fm_test_dna);
 degree=20;
 
 kernel=WeightedDegreeStringKernel(feats_train, feats_train, degree);
@@ -379,9 +379,9 @@ km_test=kernel.get_kernel_matrix();
 disp('WeightedDegreePositionString')
 
 feats_train=StringCharFeatures(DNA);
-feats_train.set_string_features(fm_train_dna);
+feats_train.set_features(fm_train_dna);
 feats_test=StringCharFeatures(DNA);
-feats_test.set_string_features(fm_test_dna);
+feats_test.set_features(fm_test_dna);
 degree=20;
 
 kernel=WeightedDegreePositionStringKernel(feats_train, feats_train, degree);
@@ -396,9 +396,9 @@ km_test=kernel.get_kernel_matrix();
 disp('LocalityImprovedString')
 
 feats_train=StringCharFeatures(DNA);
-feats_train.set_string_features(fm_train_dna);
+feats_train.set_features(fm_train_dna);
 feats_test=StringCharFeatures(DNA);
-feats_test.set_string_features(fm_test_dna);
+feats_test.set_features(fm_test_dna);
 l=5;
 inner_degree=5;
 outer_degree=7;
@@ -425,7 +425,7 @@ degree=2;
 inhomogene=true;
 
 charfeat=StringCharFeatures(DNA);
-charfeat.set_string_features(fm_train_dna);
+charfeat.set_features(fm_train_dna);
 feats_train=StringWordFeatures(charfeat.get_alphabet());
 feats_train.obtain_from_char(charfeat, order-1, order, gap, reverse);
 preproc=SortWordString();
@@ -434,7 +434,7 @@ feats_train.add_preproc(preproc);
 feats_train.apply_preproc();
 
 charfeat=StringCharFeatures(DNA);
-charfeat.set_string_features(fm_test_dna);
+charfeat.set_features(fm_test_dna);
 feats_test=StringWordFeatures(charfeat.get_alphabet());
 feats_test.obtain_from_char(charfeat, order-1, order, gap, reverse);
 feats_test.add_preproc(preproc);
@@ -454,7 +454,7 @@ scale=1.4;
 size_cache=10;
 
 charfeat=StringCharFeatures(DNA);
-charfeat.set_string_features(fm_train_dna);
+charfeat.set_features(fm_train_dna);
 feats_train=StringWordFeatures(charfeat.get_alphabet());
 feats_train.obtain_from_char(charfeat, order-1, order, gap, reverse);
 preproc=SortWordString();
@@ -463,7 +463,7 @@ feats_train.add_preproc(preproc);
 feats_train.apply_preproc();
 
 charfeat=StringCharFeatures(DNA);
-charfeat.set_string_features(fm_test_dna);
+charfeat.set_features(fm_test_dna);
 feats_test=StringWordFeatures(charfeat.get_alphabet());
 feats_test.obtain_from_char(charfeat, order-1, order, gap, reverse);
 feats_test.add_preproc(preproc);
@@ -482,7 +482,7 @@ km_test=kernel.get_kernel_matrix();
 disp('CommWordString')
 
 	charfeat=StringCharFeatures(DNA);
-	charfeat.set_string_features(fm_train_dna);
+	charfeat.set_features(fm_train_dna);
 	feats_train=StringWordFeatures(charfeat.get_alphabet());
 	feats_train.obtain_from_char(charfeat, order-1, order, gap, reverse);
 	preproc=SortWordString();
@@ -491,7 +491,7 @@ disp('CommWordString')
 	feats_train.apply_preproc();
 
 	charfeat=StringCharFeatures(DNA);
-	charfeat.set_string_features(fm_test_dna);
+	charfeat.set_features(fm_test_dna);
 	feats_test=StringWordFeatures(charfeat.get_alphabet());
 	feats_test.obtain_from_char(charfeat, order-1, order, gap, reverse);
 	feats_test.add_preproc(preproc);
@@ -513,7 +513,7 @@ gap=0;
 reverse=true;
 
 charfeat=StringCharFeatures(DNA);
-charfeat.set_string_features(fm_train_dna);
+charfeat.set_features(fm_train_dna);
 feats_train=StringWordFeatures(charfeat.get_alphabet());
 feats_train.obtain_from_char(charfeat, order-1, order, gap, reverse);
 preproc=SortWordString();
@@ -522,7 +522,7 @@ feats_train.add_preproc(preproc);
 feats_train.apply_preproc();
 
 charfeat=StringCharFeatures(DNA);
-charfeat.set_string_features(fm_test_dna);
+charfeat.set_features(fm_test_dna);
 feats_test=StringWordFeatures(charfeat.get_alphabet());
 feats_test.obtain_from_char(charfeat, order-1, order, gap, reverse);
 feats_test.add_preproc(preproc);
@@ -544,7 +544,7 @@ gap=0;
 reverse=false;
 
 charfeat=StringCharFeatures(DNA);
-charfeat.set_string_features(fm_train_dna);
+charfeat.set_features(fm_train_dna);
 feats_train=StringUlongFeatures(charfeat.get_alphabet());
 feats_train.obtain_from_char(charfeat, order-1, order, gap, reverse);
 preproc=SortUlongString();
@@ -554,7 +554,7 @@ feats_train.apply_preproc();
 
 
 charfeat=StringCharFeatures(DNA);
-charfeat.set_string_features(fm_test_dna);
+charfeat.set_features(fm_test_dna);
 feats_test=StringUlongFeatures(charfeat.get_alphabet());
 feats_test.obtain_from_char(charfeat, order-1, order, gap, reverse);
 feats_test.add_preproc(preproc);
@@ -644,9 +644,9 @@ feats_test.append_feature_obj(subkfeats_test);
 kernel.append_kernel(subkernel);
 
 subkfeats_train=StringCharFeatures(DNA);
-subkfeats_train.set_string_features(fm_train_dna);
+subkfeats_train.set_features(fm_train_dna);
 subkfeats_test=StringCharFeatures(DNA);
-subkfeats_test.set_string_features(fm_test_dna);
+subkfeats_test.set_features(fm_test_dna);
 degree=3;
 subkernel=FixedDegreeStringKernel(10, degree);
 feats_train.append_feature_obj(subkfeats_train);
@@ -654,9 +654,9 @@ feats_test.append_feature_obj(subkfeats_test);
 kernel.append_kernel(subkernel);
 
 subkfeats_train=StringCharFeatures(DNA);
-subkfeats_train.set_string_features(fm_train_dna);
+subkfeats_train.set_features(fm_train_dna);
 subkfeats_test=StringCharFeatures(DNA);
-subkfeats_test.set_string_features(fm_test_dna);
+subkfeats_test.set_features(fm_test_dna);
 subkernel=LocalAlignmentStringKernel(10);
 feats_train.append_feature_obj(subkfeats_train);
 feats_test.append_feature_obj(subkfeats_test);
@@ -675,12 +675,12 @@ gap=0;
 reverse=false;
 
 charfeat=StringCharFeatures(DNA);
-charfeat.set_string_features(fm_train_dna);
+charfeat.set_features(fm_train_dna);
 feats_train=StringWordFeatures(charfeat.get_alphabet());
 feats_train.obtain_from_char(charfeat, order-1, order, gap, reverse);
 
 charfeat=StringCharFeatures(DNA);
-charfeat.set_string_features(fm_test_dna);
+charfeat.set_features(fm_test_dna);
 feats_test=StringWordFeatures(charfeat.get_alphabet());
 feats_test.obtain_from_char(charfeat, order-1, order, gap, reverse);
 
@@ -709,7 +709,7 @@ gap=0;
 reverse=false;
 
 charfeat=StringCharFeatures(CUBE);
-charfeat.set_string_features(cubesequence);
+charfeat.set_features(cubesequence);
 wordfeats_train=StringWordFeatures(charfeat.get_alphabet());
 wordfeats_train.obtain_from_char(charfeat, order-1, order, gap, reverse);
 preproc=SortWordString();
@@ -718,7 +718,7 @@ wordfeats_train.add_preproc(preproc);
 wordfeats_train.apply_preproc();
 
 charfeat=StringCharFeatures(CUBE);
-charfeat.set_string_features(cubesequence);
+charfeat.set_features(cubesequence);
 wordfeats_test=StringWordFeatures(charfeat.get_alphabet());
 wordfeats_test.obtain_from_char(charfeat, order-1, order, gap, reverse);
 wordfeats_test.add_preproc(preproc);

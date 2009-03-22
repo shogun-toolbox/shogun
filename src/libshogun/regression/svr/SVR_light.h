@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2008 Soeren Sonnenburg
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 1999-2009 Soeren Sonnenburg
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _SVRLight_H___
@@ -19,7 +19,9 @@
 #endif //USE_SVMLIGHT
 
 #ifdef USE_SVMLIGHT
-/** Class SVRLight, performs support vector regression using SVMLight. The SVR solution can be expressed as 
+/** @brief Class SVRLight, performs support vector regression using SVMLight.
+ *
+ * The SVR solution can be expressed as 
  *  \f[
  * 		f({\bf x})=\sum_{i=1}^{N} \alpha_i k({\bf x}, {\bf x_i})+b
  * 	\f]

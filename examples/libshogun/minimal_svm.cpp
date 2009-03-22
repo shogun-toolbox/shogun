@@ -1,5 +1,5 @@
 #include <shogun/features/Labels.h>
-#include <shogun/features/RealFeatures.h>
+#include <shogun/features/SimpleFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/classifier/svm/LibSVM.h>
 #include <shogun/base/init.h>
@@ -23,7 +23,7 @@ int main(int argc, char** argv)
 
 	// create three 2-dimensional vectors 
 	// shogun will now own the matrix created
-	CRealFeatures* features= new CRealFeatures();
+	CSimpleFeatures<float64_t>* features= new CSimpleFeatures<float64_t>();
 	features->set_feature_matrix(matrix, 2, 3);
 
 	// create three labels

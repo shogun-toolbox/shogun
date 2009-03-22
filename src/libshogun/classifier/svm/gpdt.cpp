@@ -76,6 +76,7 @@
 #include "classifier/svm/gpdt.h"
 #include "classifier/svm/gpdtsolve.h"
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 void    fatalError(const char *msg1, const char *msg2);
 
 /******************************************************************************/
@@ -308,6 +309,7 @@ sKernel::~sKernel()
   }
 }
 
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 
 /******************************************************************************/
 /*** End of gpdt.cpp file                                                   ***/

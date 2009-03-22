@@ -6,7 +6,7 @@
  *
  * Written (W) 1999-2008 Gunnar Raetsch
  * Written (W) 1999-2008 Soeren Sonnenburg
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _CPRUNE_VAR_SUB_MEAN__H__
@@ -14,13 +14,15 @@
 
 #include "preproc/SimplePreProc.h"
 #include "features/Features.h"
-#include "features/RealFeatures.h"
+#include "features/SimpleFeatures.h"
 #include "lib/common.h"
 
 #include <stdio.h>
 
-/** Preprocessor PruneVarSubMean will substract the mean and remove features
- * that have zero variance. It will optionally normalize standard deviation of
+/** @brief Preprocessor PruneVarSubMean will substract the mean and remove
+ * features that have zero variance.
+ *
+ * It will optionally normalize standard deviation of
  * features to 1 (by dividing by standard deviation of the feature)
  */
 class CPruneVarSubMean : public CSimplePreProc<float64_t>

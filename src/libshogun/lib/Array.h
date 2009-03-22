@@ -11,8 +11,6 @@
 #ifndef _ARRAY_H_
 #define _ARRAY_H_
 
-#include <assert.h>
-
 //#define ARRAY_STATISTICS
 
 //#define ARRAY_ASSERT(x) ASSERT(x)
@@ -70,7 +68,7 @@ struct array_statistics {
 #define INCREMENT_ARRAY_STATISTICS_VALUE(_val_)
 #endif /* ARRAY_STATISTICS */
 
-/** Template class Array implements a dense one dimensional array.
+/** @brief Template class Array implements a dense one dimensional array.
  *
  * Note that depending on compile options everything will be inlined, such that
  * this is as high performance array implementation \b without error checking.

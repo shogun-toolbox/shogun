@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2008 Soeren Sonnenburg
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 1999-2009 Soeren Sonnenburg
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _CSTRINGPREPROC__H__
@@ -18,8 +18,8 @@
 
 template <class ST> class CStringFeatures;
 
-/** Template class StringPreProc, base class for preprocessors (cf. CPreProc)
- * that apply to CStringFeatures (i.e. strings of variable length).
+/** @brief Template class StringPreProc, base class for preprocessors (cf.
+ * CPreProc) that apply to CStringFeatures (i.e. strings of variable length).
  *
  * Two new functions apply_to_string() and apply_to_string_features()
  * are defined in this interface that need to be implemented in each particular

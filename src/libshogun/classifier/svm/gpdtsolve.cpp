@@ -80,6 +80,7 @@
 #include "lib/Signal.h"
 #include "lib/io.h"
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 #define y_in(i)      y[index_in[(i)]]
 #define y_out(i)     y[index_out[(i)]]
 #define alpha_in(i)  alpha[index_in[(i)]]
@@ -316,7 +317,6 @@ int32_t sCache::DivideMP(int32_t *out, int32_t *in, int32_t n)
   free(remained);
   return n;
 }
-
 
 /******************************************************************************/
 /*** Check solution optimality                                              ***/
@@ -1564,6 +1564,8 @@ void quick_s3(int32_t a[], int32_t n, int32_t ia[])
       } while (s < d);
   } while (l >= 0);
 }
+
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 
 /******************************************************************************/
 /*** End of gpdtsolve.cpp file                                              ***/

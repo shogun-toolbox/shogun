@@ -16,8 +16,10 @@
 #include "features/Labels.h"
 #include "distributions/hmm/LinearHMM.h"
 
-/** The class PluginEstimate takes as input two probabilistic models (of type
- * CLinearHMM, even though general models are possible ) and classifies an
+/** @brief class PluginEstimate
+ *
+ * The class PluginEstimate takes as input two probabilistic models (of type
+ * CLinearHMM, even though general models are possible ) and classifies
  * examples according to the rule
  *
  * \f[

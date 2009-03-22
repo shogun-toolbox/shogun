@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2008 Sebastian Henschel
- * Copyright (C) 2008 Friedrich Miescher Laboratory of Max-Planck-Society
+ * Written (W) 2008-2009 Sebastian Henschel
+ * Copyright (C) 2008-2009 Friedrich Miescher Laboratory of Max-Planck-Society
  */
 
 #ifndef __PERFORMANCEMEASURES_H_
@@ -15,7 +15,7 @@
 #include "features/Labels.h"
 #include "lib/DynamicArray.h"
 
-/** Class to implement various performance measures:
+/** @brief Class to implement various performance measures.
  *
  * - Receiver Operating Curve (ROC)
  * - Area under the ROC curve (auROC)

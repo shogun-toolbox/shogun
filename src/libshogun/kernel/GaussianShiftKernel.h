@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2008 Gunnar Raetsch, Soeren Sonnenburg
- * Copyright (C) 1999-2008 Max-Planck-Society and Fraunhofer Institute FIRST
+ * Written (W) 2008 Gunnar Raetsch
+ * Copyright (C) 2008-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _GAUSSIANSHIFTKERNEL_H___
@@ -14,8 +14,10 @@
 #include "lib/common.h"
 #include "kernel/GaussianKernel.h"
 
-/** An experimental kernel inspired by the WeightedDegreePositionStringKernel
- * and the Gaussian kernel. It is computed as
+/** @brief An experimental kernel inspired by the WeightedDegreePositionStringKernel
+ * and the Gaussian kernel.
+ *
+ * It is computed as
  *
  * \f[
  * k({\bf x},{\bf x'})= \exp(-\frac{||{\bf x}-{\bf x'}||^2}{\tau}) + 
@@ -53,7 +55,7 @@ class CGaussianShiftKernel: public CGaussianKernel
 		 * @param size cache size
 		 */
 		CGaussianShiftKernel(
-			CRealFeatures* l, CRealFeatures* r,
+			CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r,
 			float64_t width, int32_t max_shift, int32_t shift_step,
 			int32_t size=10);
 

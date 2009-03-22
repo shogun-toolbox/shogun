@@ -47,7 +47,7 @@
 #include <shogun/kernel/SparseGaussianKernel.h>
 #include <shogun/kernel/DiagKernel.h>
 #include <shogun/kernel/MindyGramKernel.h>
-#include <shogun/kernel/OligoKernel.h>
+#include <shogun/kernel/OligoStringKernel.h>
 #include <shogun/kernel/DistanceKernel.h>
 #include <shogun/kernel/TensorProductPairKernel.h>
 #include <shogun/kernel/AvgDiagKernelNormalizer.h>
@@ -96,8 +96,8 @@ CKernel* CGUIKernel::create_mindygram(
 
 CKernel* CGUIKernel::create_oligo(int32_t size, int32_t k, float64_t width)
 {
-	CKernel* kern=new COligoKernel(size, k, width);
-	SG_DEBUG("created OligoKernel (%p) with size %d, k %d, width %f.\n", kern, size, k, width);
+	CKernel* kern=new COligoStringKernel(size, k, width);
+	SG_DEBUG("created OligoStringKernel (%p) with size %d, k %d, width %f.\n", kern, size, k, width);
 
 	return kern;
 }

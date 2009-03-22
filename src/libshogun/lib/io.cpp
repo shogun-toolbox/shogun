@@ -18,15 +18,11 @@
 #include "lib/Time.h"
 #include "lib/Mathematics.h"
 
-#include <sys/types.h>
-#include <sys/stat.h>
-
 #include <stdio.h>
 #include <stdarg.h>
 #include <ctype.h>
-#include <dirent.h>
+
 #include <stdlib.h>
-#include <unistd.h>
 
 const EMessageType CIO::levels[NUM_LOG_LEVELS]={M_DEBUG, M_INFO, M_NOTICE,
 	M_WARN, M_ERROR, M_CRITICAL, M_ALERT, M_EMERGENCY, M_MESSAGEONLY};
@@ -36,10 +32,10 @@ const char* CIO::message_strings[NUM_LOG_LEVELS]={"[DEBUG] \0", "[INFO] \0",
 	"[CRITICAL] \0", "[ALERT] \0", "[EMERGENCY] \0", "\0"};
 
 /// file name buffer
-char file_buffer[FBUFSIZE];
+char CIO::file_buffer[FBUFSIZE];
 
 /// directory name buffer
-char directory_name[FBUFSIZE];
+char CIO::directory_name[FBUFSIZE];
 
 CIO::CIO()
 : target(stdout), last_progress_time(0), progress_start_time(0),
@@ -289,28 +285,4 @@ const char* CIO::get_msg_intro(EMessageType prio) const
 	}
 
 	return NULL;
-}
-
-char* CIO::concat_filename(const char* filename)
-{
-	if (snprintf(file_buffer, FBUFSIZE, "%s/%s", directory_name, filename) > FBUFSIZE)
-		SG_SERROR("filename too long");
-	return file_buffer;
-}
-
-int CIO::filter(CONST_DIRENT_T* d)
-{
-	if (d)
-	{
-		char* fname=concat_filename(d->d_name);
-
-		if (!access(fname, R_OK))
-		{
-			struct stat s;
-			if (!stat(fname, &s) && S_ISREG(s.st_mode))
-				return 1;
-		}
-	}
-
-	return 0;
 }

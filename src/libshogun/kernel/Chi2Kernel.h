@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2008 Soeren Sonnenburg
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 1999-2009 Soeren Sonnenburg
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _CHI2KERNEL_H___
@@ -14,11 +14,12 @@
 #include "lib/common.h"
 #include "kernel/SimpleKernel.h"
 #include "features/Features.h"
-#include "features/RealFeatures.h"
+#include "features/SimpleFeatures.h"
 
-/** The Chi2 kernel operating on realvalued vectors computes
- * the chi-squared distance between sets of histograms. It
- * is a very useful distance in image recognition (used to detect objects).
+/** @brief The Chi2 kernel operating on realvalued vectors computes
+ * the chi-squared distance between sets of histograms.
+ *
+ * It is a very useful distance in image recognition (used to detect objects).
  *
  * It is defined as
  * \f[
@@ -44,7 +45,7 @@ class CChi2Kernel: public CSimpleKernel<float64_t>
 		 * @param size cache size
 		 */
 		CChi2Kernel(
-			CRealFeatures* l, CRealFeatures* r, float64_t width, int32_t size);
+			CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r, float64_t width, int32_t size);
 
 		virtual ~CChi2Kernel();
 

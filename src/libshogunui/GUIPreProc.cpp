@@ -24,11 +24,8 @@
 #include <shogun/features/RealFileFeatures.h>
 #include <shogun/features/TOPFeatures.h>
 #include <shogun/features/FKFeatures.h>
-#include <shogun/features/CharFeatures.h>
 #include <shogun/features/StringFeatures.h>
-#include <shogun/features/ByteFeatures.h>
-#include <shogun/features/ShortFeatures.h>
-#include <shogun/features/RealFeatures.h>
+#include <shogun/features/SimpleFeatures.h>
 #include <shogun/features/SparseFeatures.h>
 #include <shogun/features/CombinedFeatures.h>
 #include <shogun/features/Features.h>
@@ -366,15 +363,15 @@ bool CGUIPreProc::preproc_all_features(CFeatures* f, bool force)
 			switch (f->get_feature_type())
 			{
 				case F_DREAL:
-					return ((CRealFeatures*) f)->apply_preproc(force);
+					return ((CSimpleFeatures<float64_t>*) f)->apply_preproc(force);
 				case F_SHORT:
-					return ((CShortFeatures*) f)->apply_preproc(force);
+					return ((CSimpleFeatures<int16_t>*) f)->apply_preproc(force);
 				case F_WORD:
-					return ((CShortFeatures*) f)->apply_preproc(force);
+					return ((CSimpleFeatures<uint16_t>*) f)->apply_preproc(force);
 				case F_CHAR:
-					return ((CCharFeatures*) f)->apply_preproc(force);
+					return ((CSimpleFeatures<char>*) f)->apply_preproc(force);
 				case F_BYTE:
-					return ((CByteFeatures*) f)->apply_preproc(force);
+					return ((CSimpleFeatures<uint8_t>*) f)->apply_preproc(force);
 				default:
 					SG_NOTIMPLEMENTED;
 			}

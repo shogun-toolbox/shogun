@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2008 Soeren Sonnenburg
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 1999-2009 Soeren Sonnenburg
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _CSIMPLEPREPROC__H__
@@ -18,8 +18,8 @@
 
 template <class ST> class CSimpleFeatures;
 
-/** Template class SimplePreProc, base class for preprocessors (cf. CPreProc)
- * that apply to CSimpleFeatures (i.e. rectangular dense matrices)
+/** @brief Template class SimplePreProc, base class for preprocessors (cf.
+ * CPreProc) that apply to CSimpleFeatures (i.e. rectangular dense matrices)
  *
  * Two new functions apply_to_feature_vector() and apply_to_feature_matrix()
  * are defined in this interface that need to be implemented in each particular

@@ -4,9 +4,9 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2008 Soeren Sonnenburg
+ * Written (W) 1999-2009 Soeren Sonnenburg
  * Written (W) 1999-2008 Gunnar Raetsch
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _CSTRINGFEATURES__H__
@@ -16,7 +16,7 @@
 #include "preproc/PreProc.h"
 #include "preproc/StringPreProc.h"
 #include "features/Features.h"
-#include "features/CharFeatures.h"
+#include "features/SimpleFeatures.h"
 #include "features/Alphabet.h"
 #include "lib/common.h"
 #include "lib/io.h"
@@ -35,6 +35,7 @@ class CFile;
 
 template <class ST> class CStringPreProc;
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 /** template class T_STRING */
 template <class T> struct T_STRING
 {
@@ -43,6 +44,7 @@ template <class T> struct T_STRING
 	/** length of string */
 	int32_t length;
 };
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 
 template <class T> char* get_zero_terminated_string_copy(T_STRING<T> str)
 {
@@ -53,12 +55,13 @@ template <class T> char* get_zero_terminated_string_copy(T_STRING<T> str)
 	return s;
 }
 
-/** Template class StringFeatures implements a list of strings. As this class
- * is template the underlying storage type is quite arbitrary and not limited
- * to character strings, but could also be sequences of floating point numbers
- * etc. Strings differ from matrices (cf. CSimpleFeatures) in a way that the
- * dimensionality of the feature vectors (i.e. the strings) is not fixed; it
- * may vary between strings.
+/** @brief Template class StringFeatures implements a list of strings.
+ *
+ * As this class is template the underlying storage type is quite arbitrary and
+ * not limited to character strings, but could also be sequences of floating
+ * point numbers etc. Strings differ from matrices (cf. CSimpleFeatures) in a
+ * way that the dimensionality of the feature vectors (i.e. the strings) is not
+ * fixed; it may vary between strings.
  * 
  * Most string kernels require StringFeatures but a number of them actually
  * requires strings to have same length.
@@ -75,8 +78,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		CStringFeatures(EAlphabet alpha)
 		: CFeatures(0), num_vectors(0), features(NULL),
 			single_string(NULL),length_of_single_string(0),
-			max_string_length(0), order(0), selected_vector(0),
-			symbol_mask_table(NULL)
+			max_string_length(0), order(0), symbol_mask_table(NULL)
 		{
 			alphabet=new CAlphabet(alpha);
 			SG_REF(alphabet);
@@ -86,20 +88,39 @@ template <class ST> class CStringFeatures : public CFeatures
 
 		/** constructor
 		 *
+		 * @param p_features new features
+		 * @param p_num_vectors number of vectors
+		 * @param p_max_string_length maximum string length
+		 * @param alpha alphabet (type) to use for string features
+		 */
+		CStringFeatures(T_STRING<ST>* p_features, int32_t p_num_vectors,
+				int32_t p_max_string_length, EAlphabet alpha)
+		: CFeatures(0), num_vectors(0), features(NULL),
+			single_string(NULL),length_of_single_string(0),
+			max_string_length(0), order(0), symbol_mask_table(NULL)
+		{
+			alphabet=new CAlphabet(alpha);
+			SG_REF(alphabet);
+			num_symbols=alphabet->get_num_symbols();
+			original_num_symbols=num_symbols;
+			set_features(p_features, p_num_vectors, p_max_string_length);
+		}
+
+		/** constructor
+		 *
 		 * @param alpha alphabet to use for string features
 		 */
 		CStringFeatures(CAlphabet* alpha)
 		: CFeatures(0), num_vectors(0), features(NULL),
 			single_string(NULL),length_of_single_string(0),
-			max_string_length(0), order(0), selected_vector(0),
-			symbol_mask_table(NULL)
-	{
-		ASSERT(alpha);
-		SG_REF(alpha);
-		alphabet=alpha;
-		num_symbols=alphabet->get_num_symbols();
-		original_num_symbols=num_symbols;
-	}
+			max_string_length(0), order(0), symbol_mask_table(NULL)
+		{
+			ASSERT(alpha);
+			SG_REF(alpha);
+			alphabet=alpha;
+			num_symbols=alphabet->get_num_symbols();
+			original_num_symbols=num_symbols;
+		}
 
 		/** copy constructor */
 		CStringFeatures(const CStringFeatures & orig)
@@ -109,7 +130,7 @@ template <class ST> class CStringFeatures : public CFeatures
 			max_string_length(orig.max_string_length),
 			num_symbols(orig.num_symbols),
 			original_num_symbols(orig.original_num_symbols),
-			order(orig.order), selected_vector(orig.selected_vector)
+			order(orig.order)
 		{
 			ASSERT(orig.single_string == NULL); //not implemented
 
@@ -146,7 +167,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		: CFeatures(fname), num_vectors(0),
 			features(NULL), single_string(NULL),
 			length_of_single_string(0), max_string_length(0),
-			order(0), selected_vector(0), symbol_mask_table(NULL)
+			order(0), symbol_mask_table(NULL)
 		{
 			alphabet=new CAlphabet(alpha);
 			SG_REF(alphabet);
@@ -226,31 +247,51 @@ template <class ST> class CStringFeatures : public CFeatures
 			return new CStringFeatures<ST>(*this);
 		}
 
-		/** select feature vector
-		 *
-		 * @param num which feature vector to select
-		 */
-		void select_feature_vector(int32_t num)
-		{
-			ASSERT(features);
-			ASSERT(num<num_vectors);
-
-			selected_vector=num;
-		}
-
-		/** get feature vector for selected example
+		/** get string for selected example num
 		 *
 		 * @param dst destination where vector will be stored
 		 * @param len number of features in vector
+		 * @param num index of the string
 		 */
-		void get_string(ST** dst, int32_t* len)
+		void get_feature_vector(ST** dst, int32_t* len, int32_t num)
 		{
 			ASSERT(features);
-			ASSERT(selected_vector<num_vectors);
+			if (num>=num_vectors)
+			{
+				SG_ERROR("Index out of bounds (number of strings %d, you "
+						"requested %d)\n", num_vectors, num);
+			}
 
-			*len=features[selected_vector].length;
-			*dst=new ST[*len];
-			memcpy(*dst, features[selected_vector].string, *len * sizeof(ST));
+			*len=features[num].length;
+			*dst=(ST*) malloc(*len * sizeof(ST));
+			memcpy(*dst, features[num].string, *len * sizeof(ST));
+		}
+
+		/** set string for selected example num
+		 *
+		 * @param src destination where vector will be stored
+		 * @param len number of features in vector
+		 * @param num index of the string
+		 */
+		void set_feature_vector(ST* src, int32_t len, int32_t num)
+		{
+			ASSERT(features);
+			if (num>=num_vectors)
+			{
+				SG_ERROR("Index out of bounds (number of strings %d, you "
+						"requested %d)\n", num_vectors, num);
+			}
+
+			if (len<=0)
+				SG_ERROR("String has zero or negative length\n");
+
+
+			delete[] features[num].string;
+			features[num].length=len;
+			features[num].string=new ST[len];
+			memcpy(features[num].string, src, len*sizeof(ST));
+
+			determine_maximum_string_length();
 		}
 
 		/** get feature vector for sample num
@@ -310,20 +351,20 @@ template <class ST> class CStringFeatures : public CFeatures
 
 		/** get number of symbols
 		 *
-		 * Note: float128_t sounds weird, but LONG is not long enough
+		 * Note: float96_t sounds weird, but LONG is not long enough
 		 *
 		 * @return number of symbols
 		 */
-		inline float128_t get_num_symbols() { return num_symbols; }
+		inline float96_t get_num_symbols() { return num_symbols; }
 
 		/** get maximum number of symbols
 		 *
-		 * Note: float128_t sounds weird, but int64_t is not long enough (and
+		 * Note: float96_t sounds weird, but int64_t is not long enough (and
 		 * there is no int128_t type)
 		 *
 		 * @return maximum number of symbols
 		 */
-		inline float128_t get_max_num_symbols() { return CMath::powl(2,sizeof(ST)*8); }
+		inline float96_t get_max_num_symbols() { return CMath::powl(2,sizeof(ST)*8); }
 
 		// these functions are necessary to find out about a former conversion process
 
@@ -331,7 +372,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 *
 		 * @return original number of symbols
 		 */
-		inline float128_t get_original_num_symbols() { return original_num_symbols; }
+		inline float96_t get_original_num_symbols() { return original_num_symbols; }
 
 		/** order used for higher order mapping
 		 *
@@ -582,14 +623,14 @@ template <class ST> class CStringFeatures : public CFeatures
 			struct dirent **namelist;
 			int32_t n;
 
-			io->set_dirname(dirname);
+            CIO::set_dirname(dirname);
 
 			SG_DEBUG("dirname '%s'\n", dirname);
 
-			n = scandir(dirname, &namelist, io->filter, alphasort);
+			n = scandir(dirname, &namelist, &CIO::filter, alphasort);
 			if (n <= 0)
 			{
-				SG_ERROR( "error calling scandir\n");
+				SG_ERROR("error calling scandir - no files found\n");
 				return false;
 			}
 			else
@@ -605,7 +646,7 @@ template <class ST> class CStringFeatures : public CFeatures
 
 				for (int32_t i=0; i<n; i++)
 				{
-					char* fname=io->concat_filename(namelist[i]->d_name);
+					char* fname=CIO::concat_filename(namelist[i]->d_name);
 
 					struct stat s;
 					off_t filesize=0;
@@ -698,6 +739,17 @@ template <class ST> class CStringFeatures : public CFeatures
 			return features;
 		}
 
+		/** get_features  (swig compatible)
+		 *
+		 * @param dst string features (returned)
+		 * @param num_str number of strings (returned)
+		 */
+		virtual void get_features(T_STRING<ST>** dst, int32_t* num_str)
+		{
+			*num_str=num_vectors;
+			*dst=features;
+		}
+
 		/** save features to file
 		 *
 		 * @param dest filename to save to
@@ -781,7 +833,6 @@ template <class ST> class CStringFeatures : public CFeatures
 			single_string=features[0].string;
 			delete[] features;
 			features=f;
-			selected_vector=0;
 			max_string_length=window_size-skip;
 
 			return num_vectors;
@@ -844,7 +895,6 @@ template <class ST> class CStringFeatures : public CFeatures
 
 			delete[] features;
 			features=f;
-			selected_vector=0;
 			max_string_length=window_size-skip;
 
 			return num_vectors;
@@ -916,12 +966,12 @@ template <class ST> class CStringFeatures : public CFeatures
 				SG_UNREF(alpha);
 
 				if (p_order>1)
-					num_symbols=CMath::powl((float128_t) 2, (float128_t) max_val*p_order);
+					num_symbols=CMath::powl((float96_t) 2, (float96_t) max_val*p_order);
 				else
 					num_symbols=original_num_symbols;
 				SG_INFO( "max_val (bit): %d order: %d -> results in num_symbols: %.0Lf\n", max_val, p_order, num_symbols);
 
-				if ( ((float128_t) num_symbols) > CMath::powl(((float128_t) 2),((float128_t) sizeof(ST)*8)) )
+				if ( ((float96_t) num_symbols) > CMath::powl(((float96_t) 2),((float96_t) sizeof(ST)*8)) )
 				{
 					SG_ERROR( "symbol does not fit into datatype \"%c\" (%d)\n", (char) max_val, (int) max_val);
 					return false;
@@ -990,6 +1040,16 @@ template <class ST> class CStringFeatures : public CFeatures
 			}
 
 			return true;
+		}
+
+		/** determine new maximum string length
+		 */
+		void determine_maximum_string_length()
+		{
+			max_string_length=0;
+
+			for (int32_t i=0; i<num_vectors; i++)
+				max_string_length=CMath::max(max_string_length, features[i].length);
 		}
 
 		/** @return object name */
@@ -1247,20 +1307,27 @@ template <class ST> class CStringFeatures : public CFeatures
 		int32_t max_string_length;
 
 		/// number of used symbols
-		float128_t num_symbols;
+		float96_t num_symbols;
 
 		/// original number of used symbols (before higher order mapping)
-		float128_t original_num_symbols;
+		float96_t original_num_symbols;
 
 		/// order used in higher order mapping
 		int32_t order;
 
-		/// vector to be obtained via get_string
-		int32_t selected_vector;
-
 		/// order used in higher order mapping
 		ST* symbol_mask_table;
 };
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+/** get feature type the char feature can deal with
+ *
+ * @return feature type char
+ */
+template<> inline EFeatureType CStringFeatures<bool>::get_feature_type()
+{
+	return F_BOOL;
+}
 
 /** get feature type the char feature can deal with
  *
@@ -1334,6 +1401,15 @@ template<> inline EFeatureType CStringFeatures<uint64_t>::get_feature_type()
 	return F_ULONG;
 }
 
+/** get feature type the SHORTREAL feature can deal with
+ *
+ * @return feature type SHORTREAL
+ */
+template<> inline EFeatureType CStringFeatures<float32_t>::get_feature_type()
+{
+	return F_SHORTREAL;
+}
+
 /** get feature type the DREAL feature can deal with
  *
  * @return feature type DREAL
@@ -1342,4 +1418,102 @@ template<> inline EFeatureType CStringFeatures<float64_t>::get_feature_type()
 {
 	return F_DREAL;
 }
-#endif
+
+/** get feature type the LONGREAL feature can deal with
+ *
+ * @return feature type LONGREAL
+ */
+template<> inline EFeatureType CStringFeatures<float96_t>::get_feature_type()
+{
+	return F_LONGREAL;
+}
+
+template<> inline bool CStringFeatures<bool>::get_masked_symbols(bool symbol, uint8_t mask)
+{
+	return symbol;
+}
+template<> inline float32_t CStringFeatures<float32_t>::get_masked_symbols(float32_t symbol, uint8_t mask)
+{
+	return symbol;
+}
+template<> inline float64_t CStringFeatures<float64_t>::get_masked_symbols(float64_t symbol, uint8_t mask)
+{
+	return symbol;
+}
+template<> inline float96_t CStringFeatures<float96_t>::get_masked_symbols(float96_t symbol, uint8_t mask)
+{
+	return symbol;
+}
+
+template<> inline bool CStringFeatures<bool>::shift_offset(bool symbol, int32_t amount)
+{
+	return false;
+}
+template<> inline float32_t CStringFeatures<float32_t>::shift_offset(float32_t symbol, int32_t amount)
+{
+	return 0;
+}
+template<> inline float64_t CStringFeatures<float64_t>::shift_offset(float64_t symbol, int32_t amount)
+{
+	return 0;
+}
+template<> inline float96_t CStringFeatures<float96_t>::shift_offset(float96_t symbol, int32_t amount)
+{
+	return 0;
+}
+
+template<> inline bool CStringFeatures<bool>::shift_symbol(bool symbol, int32_t amount)
+{
+	return symbol;
+}
+template<> inline float32_t CStringFeatures<float32_t>::shift_symbol(float32_t symbol, int32_t amount)
+{
+	return symbol;
+}
+template<> inline float64_t CStringFeatures<float64_t>::shift_symbol(float64_t symbol, int32_t amount)
+{
+	return symbol;
+}
+template<> inline float96_t CStringFeatures<float96_t>::shift_symbol(float96_t symbol, int32_t amount)
+{
+	return symbol;
+}
+
+template<> inline void CStringFeatures<float32_t>::translate_from_single_order(float32_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap)
+{
+}
+
+template<> inline void CStringFeatures<float64_t>::translate_from_single_order(float64_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap)
+{
+}
+
+template<> inline void CStringFeatures<float96_t>::translate_from_single_order(float96_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap)
+{
+}
+
+template<> inline void CStringFeatures<float32_t>::translate_from_single_order_reversed(float32_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap)
+{
+}
+
+template<> inline void CStringFeatures<float64_t>::translate_from_single_order_reversed(float64_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap)
+{
+}
+
+template<> inline void CStringFeatures<float96_t>::translate_from_single_order_reversed(float96_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap)
+{
+}
+
+template<> 	template <class CT> bool CStringFeatures<float32_t>::obtain_from_char_features(CStringFeatures<CT>* sf, int32_t start, int32_t p_order, int32_t gap, bool rev)
+{
+	return false;
+}
+template<> 	template <class CT> bool CStringFeatures<float64_t>::obtain_from_char_features(CStringFeatures<CT>* sf, int32_t start, int32_t p_order, int32_t gap, bool rev)
+{
+	return false;
+}
+template<> 	template <class CT> bool CStringFeatures<float96_t>::obtain_from_char_features(CStringFeatures<CT>* sf, int32_t start, int32_t p_order, int32_t gap, bool rev)
+{
+	return false;
+}
+#endif // DOXYGEN_SHOULD_SKIP_THIS
+#endif // _CSTRINGFEATURES__H__

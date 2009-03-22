@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2007 Christian Gehl
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 2007-2009 Christian Gehl
+ * Copyright (C) 2007-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #include "lib/config.h"
@@ -18,7 +18,9 @@
 #include "kernel/Kernel.h"
 #include "distance/Distance.h"
 
-/** The Distance kernel takes a distance as input and computes
+/** @brief The Distance kernel takes a distance as input.
+ *
+ * It turns a distance into something kernel like by computing
  *
  * \f[
  *     k({\bf x}, {\bf x'}) = e^{-\frac{dist({\bf x}, {\bf x'})}{width}}

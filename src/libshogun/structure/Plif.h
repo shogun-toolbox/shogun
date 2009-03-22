@@ -5,7 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 1999-2008 Gunnar Raetsch
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef __PLIF_H__
@@ -24,7 +24,7 @@ enum ETransformType
 	T_LINEAR_PLUS3
 };
 
-/** class Plif */
+/** @brief class Plif */
 class CPlif: public CPlifBase
 {
 	public:

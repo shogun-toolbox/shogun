@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2008 Soeren Sonnenburg
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 1999-2009 Soeren Sonnenburg
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _LDA_H___
@@ -16,12 +16,12 @@
 #ifdef HAVE_LAPACK
 #include "lib/common.h"
 #include "features/Features.h"
-#include "features/RealFeatures.h"
+#include "features/SimpleFeatures.h"
 #include "classifier/LinearClassifier.h"
 
-/** Class LDA implements regularized Linear Discriminant Analysis.
+/** @brief Class LDA implements regularized Linear Discriminant Analysis.
  *
- * LDA learns a linear classifier and requires examples to be CRealFeatures.
+ * LDA learns a linear classifier and requires examples to be CSimpleFeatures.
  * The learned linear classification rule is optimal under the assumption that
  * both classes a gaussian distributed with equal co-variance. To find a linear
  * separation \f${\bf w}\f$ in training, the in-between class variance is
@@ -61,7 +61,7 @@ class CLDA : public CLinearClassifier
 		 * @param traindat training features
 		 * @param trainlab labels for training features
 		 */
-		CLDA(float64_t gamma, CRealFeatures* traindat, CLabels* trainlab);
+		CLDA(float64_t gamma, CSimpleFeatures<float64_t>* traindat, CLabels* trainlab);
 		virtual ~CLDA();
 
 		/** set gamme

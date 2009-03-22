@@ -30,7 +30,8 @@ enum E_PROB_TYPE
 	E_QP
 };
 
-/** Class CCplex to encapsulate access to the commercial cplex general purpose optimizer.
+/** @brief Class CCplex to encapsulate access to the commercial cplex general
+ * purpose optimizer.
  *
  * This class takes care of obtaining and releasing cplex licenses and sets up
  * a number of optimization problems that are used in shogun, like for Multiple

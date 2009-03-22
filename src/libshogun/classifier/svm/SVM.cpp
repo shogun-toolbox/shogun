@@ -21,6 +21,7 @@
 #include <pthread.h>
 #endif
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 struct S_THREAD_PARAM
 {
 	CSVM* svm;
@@ -29,6 +30,7 @@ struct S_THREAD_PARAM
 	int32_t end;
 	bool verbose;
 };
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 
 CSVM::CSVM(int32_t num_sv)
 : CKernelMachine()

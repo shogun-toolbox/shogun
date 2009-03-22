@@ -23,9 +23,10 @@
 #include "features/Features.h"
 #include "features/Labels.h"
 
-/** Class SubGradientSVM trains a linear classifier called Linear Programming Machine,
- * i.e. a SVM using a \f$\ell_1\f$ norm regularizer. It solves the following
- * optimization problem using subgradient descent.
+/** @brief Class SubGradientSVM trains a linear classifier called Linear
+ * Programming Machine, i.e. a SVM using a \f$\ell_1\f$ norm regularizer.
+ *
+ * It solves the following optimization problem using subgradient descent.
  *
  * \f{eqnarray*}
  * \min_{{\bf w}={(\bf w^+},{\bf w^-}), b, {\bf \xi}} &&

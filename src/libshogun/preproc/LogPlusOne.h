@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2008 Soeren Sonnenburg
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 1999-2009 Soeren Sonnenburg
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _CLOGPLUSONE__H__
@@ -17,8 +17,9 @@
 
 #include <stdio.h>
 
-/** Preprocessor LogPlusOne does what the name says, it adds one to a dense
+/** @brief Preprocessor LogPlusOne does what the name says, it adds one to a dense
  * real valued vector and takes the logarithm of each component of it.
+ *
  * \f[
  * {\bf x}\leftarrow \log({\bf x}+{\bf 1}
  * \f]

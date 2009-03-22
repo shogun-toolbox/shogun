@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2008 Soeren Sonnenburg
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 1999-2009 Soeren Sonnenburg
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _CUSTOMKERNEL_H___
@@ -16,12 +16,11 @@
 #include "kernel/Kernel.h"
 #include "features/Features.h"
 
-/** Custom Kernel
+/** @brief The Custom Kernelallows for custom user provided kernel matrices.
  *
- * This kernel allows for custom user provided kernel matrices. For squared
- * training matrices it allows to store only the upper triangle of the kernel
- * to save memory: Full symmetric kernel matrices can be stored as is or
- * can be internally converted into (or directly given in) upper triangle
+ * For squared training matrices it allows to store only the upper triangle of
+ * the kernel to save memory: Full symmetric kernel matrices can be stored as
+ * is or can be internally converted into (or directly given in) upper triangle
  * representation. Also note that values are stored as 32bit floats.
  *
  */

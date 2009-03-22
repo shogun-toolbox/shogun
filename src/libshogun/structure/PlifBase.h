@@ -5,7 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 1999-2008 Gunnar Raetsch
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef __PLIF_BASE_H__
@@ -15,7 +15,7 @@
 #include "base/SGObject.h"
 #include "lib/Mathematics.h"
 
-/** class PlifBase */
+/** @brief class PlifBase */
 class CPlifBase : public CSGObject
 {
 	public:

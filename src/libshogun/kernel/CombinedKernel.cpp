@@ -4,9 +4,9 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2008 Soeren Sonnenburg
+ * Written (W) 1999-2009 Soeren Sonnenburg
  * Written (W) 1999-2008 Gunnar Raetsch
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #include "lib/common.h"
@@ -25,6 +25,7 @@
 #include <pthread.h>
 #endif
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 struct S_THREAD_PARAM
 {
 	CKernel* kernel;
@@ -37,6 +38,7 @@ struct S_THREAD_PARAM
 	int32_t* IDX;
 	int32_t num_suppvec;
 };
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 
 CCombinedKernel::CCombinedKernel(int32_t size, bool asw)
 : CKernel(size), sv_count(0), sv_idx(NULL), sv_weight(NULL),

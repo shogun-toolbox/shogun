@@ -17,8 +17,9 @@
 #include <stdio.h>
 #include <string.h>
 
-/** Template class SimpleFile to read and write from files. Currently only
- * simple reading and writing of blocks is supported. 
+/** @brief Template class SimpleFile to read and write from files.
+ *
+ * Currently only simple reading and writing of blocks is supported. 
  */
 template <class T> class CSimpleFile : public CSGObject
 {

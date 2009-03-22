@@ -13,9 +13,11 @@
 
 #include "lib/common.h"
 #include "kernel/SimpleKernel.h"
-#include "features/WordFeatures.h"
+#include "features/SimpleFeatures.h"
 
-/** Tensor Product Pair Kernel (TPPK) computes
+/** @brief Computes the Tensor Product Pair Kernel (TPPK).
+ *
+ * Formally, it computes
  *
  * \f[
  * k_{\mbox{tppk}}(({\bf a},{\bf b}), ({\bf c},{\bf d}))= k({\bf a}, {\bf c})\cdot k({\bf b}, {\bf c}) + k({\bf a},{\bf d})\cdot k({\bf b}, {\bf c})
@@ -46,7 +48,7 @@ class CTensorProductPairKernel: public CSimpleKernel<int32_t>
 		 * @param r features of right-hand side
 		 * @param subkernel the subkernel
 		 */
-		CTensorProductPairKernel(CWordFeatures *l, CWordFeatures *r, CKernel* subkernel);
+		CTensorProductPairKernel(CSimpleFeatures<int32_t> *l, CSimpleFeatures<int32_t> *r, CKernel* subkernel);
 
 		virtual ~CTensorProductPairKernel();
 

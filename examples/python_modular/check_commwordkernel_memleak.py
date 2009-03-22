@@ -59,7 +59,7 @@ reverse=False
 for i in xrange(10):
     alpha=Alphabet(DNA)
     traindat=StringCharFeatures(alpha)
-    traindat.set_string_features(POS+NEG)
+    traindat.set_features(POS+NEG)
     trainudat=StringWordFeatures(traindat.get_alphabet());
     trainudat.obtain_from_char(traindat, order-1, order, gap, reverse)
     #trainudat.io.set_loglevel(M_DEBUG)

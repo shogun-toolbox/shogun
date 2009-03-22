@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2008 Sebastian Henschel
- * Copyright (C) 2008 Friedrich Miescher Laboratory of Max-Planck-Society
+ * Written (W) 2008-2009 Sebastian Henschel
+ * Copyright (C) 2008-2009 Friedrich Miescher Laboratory of Max-Planck-Society
  */
 
 #include "evaluation/PerformanceMeasures.h"

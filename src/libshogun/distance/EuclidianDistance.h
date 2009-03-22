@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2007-2008 Soeren Sonnenburg
- * Copyright (C) 2007-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 2007-2009 Soeren Sonnenburg
+ * Copyright (C) 2007-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _EUCLIDIANDISTANCE_H__
@@ -13,9 +13,9 @@
 
 #include "lib/common.h"
 #include "distance/RealDistance.h"
-#include "features/RealFeatures.h"
+#include "features/SimpleFeatures.h"
 
-/** class EuclidianDistance 
+/** @brief class EuclidianDistance 
  *
  * The familiar Euclidian distance for real valued features computes
  * the square root of the sum of squared disparity between the
@@ -49,7 +49,7 @@ class CEuclidianDistance: public CRealDistance
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 */
-		CEuclidianDistance(CRealFeatures* l, CRealFeatures* r);
+		CEuclidianDistance(CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r);
 		virtual ~CEuclidianDistance();
 
 		/** init distance

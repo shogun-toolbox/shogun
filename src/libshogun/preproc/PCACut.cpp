@@ -6,7 +6,7 @@
  *
  * Written (W) 1999-2008 Gunnar Raetsch
  * Written (W) 1999-2008 Soeren Sonnenburg
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #include "lib/config.h"
@@ -22,7 +22,7 @@
 #include "preproc/PCACut.h"
 #include "preproc/SimplePreProc.h"
 #include "features/Features.h"
-#include "features/RealFeatures.h"
+#include "features/SimpleFeatures.h"
 #include "lib/io.h"
 
 CPCACut::CPCACut(int32_t do_whitening_, float64_t thresh_)
@@ -46,8 +46,8 @@ bool CPCACut::init(CFeatures* f)
 		ASSERT(f->get_feature_type()==F_DREAL);
 
 		SG_INFO("calling CPCACut::init\n") ;
-		int32_t num_vectors=((CRealFeatures*)f)->get_num_vectors() ;
-		int32_t num_features=((CRealFeatures*)f)->get_num_features() ;
+		int32_t num_vectors=((CSimpleFeatures<float64_t>*)f)->get_num_vectors() ;
+		int32_t num_features=((CSimpleFeatures<float64_t>*)f)->get_num_features() ;
 		SG_INFO("num_examples: %ld num_features: %ld \n", num_vectors, num_features);
 		delete[] mean ;
 		mean=new float64_t[num_features+1] ;
@@ -65,11 +65,11 @@ bool CPCACut::init(CFeatures* f)
 		{
 			int32_t len;
 			bool free;
-			float64_t* vec=((CRealFeatures*) f)->get_feature_vector(i, len, free);
+			float64_t* vec=((CSimpleFeatures<float64_t>*) f)->get_feature_vector(i, len, free);
 			for (j=0; j<num_features; j++)
 				mean[j]+= vec[j];
 
-			((CRealFeatures*) f)->free_feature_vector(vec, i, free);
+			((CSimpleFeatures<float64_t>*) f)->free_feature_vector(vec, i, free);
 		}
 
 		//divide
@@ -91,7 +91,7 @@ bool CPCACut::init(CFeatures* f)
 			int32_t len;
 			bool free;
 
-			float64_t* vec=((CRealFeatures*) f)->get_feature_vector(i, len, free) ;
+			float64_t* vec=((CSimpleFeatures<float64_t>*) f)->get_feature_vector(i, len, free) ;
 
 			for (int32_t jj=0; jj<num_features; jj++)
 				vec[jj]-=mean[jj] ;
@@ -106,7 +106,7 @@ bool CPCACut::init(CFeatures* f)
 			//	for (int32_t l=0; l<num_features; l++)
 			//          cov[k*num_features+l]+=feature[l]*feature[k] ;
 
-			((CRealFeatures*) f)->free_feature_vector(vec, i, free) ;
+			((CSimpleFeatures<float64_t>*) f)->free_feature_vector(vec, i, free) ;
 		}
 
 		SG_DONE();
@@ -186,7 +186,7 @@ float64_t* CPCACut::apply_to_feature_matrix(CFeatures* f)
 	int32_t num_vectors=0;
 	int32_t num_features=0;
 
-	float64_t* m=((CRealFeatures*) f)->get_feature_matrix(num_features, num_vectors);
+	float64_t* m=((CSimpleFeatures<float64_t>*) f)->get_feature_matrix(num_features, num_vectors);
 	SG_INFO("get Feature matrix: %ix%i\n", num_vectors, num_features) ;
 
 	if (m)
@@ -213,8 +213,8 @@ float64_t* CPCACut::apply_to_feature_matrix(CFeatures* f)
 		delete[] res;
 		delete[] sub_mean;
 
-		((CRealFeatures*) f)->set_num_features(num_dim);
-		((CRealFeatures*) f)->get_feature_matrix(num_features, num_vectors);
+		((CSimpleFeatures<float64_t>*) f)->set_num_features(num_dim);
+		((CSimpleFeatures<float64_t>*) f)->get_feature_matrix(num_features, num_vectors);
 		SG_INFO("new Feature matrix: %ix%i\n", num_vectors, num_features);
 	}
 

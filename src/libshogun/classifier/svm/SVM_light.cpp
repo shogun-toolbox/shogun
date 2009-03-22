@@ -30,14 +30,13 @@
 #include "lib/Time.h"
 #include "lib/lapack.h"
 
-#include "features/WordFeatures.h"
+#include "features/SimpleFeatures.h"
 #include "classifier/svm/SVM_light.h"
 #include "classifier/svm/pr_loqo.h"
 
 #include "kernel/Kernel.h"
 #include "kernel/KernelMachine.h"
 #include "kernel/CombinedKernel.h"
-#include "kernel/AUCKernel.h"
 
 #include <unistd.h>
 
@@ -53,6 +52,7 @@ extern "C" {
 #include <pthread.h>
 #endif
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 struct S_THREAD_PARAM_REACTIVATE_LINADD
 {
 	CKernel* kernel;
@@ -86,7 +86,7 @@ struct S_THREAD_PARAM
 	int32_t * active2dnum ;
 	int32_t * docs ;
 	CKernel* kernel ;
-}  ;
+};
 
 struct S_THREAD_PARAM_KERNEL 
 {
@@ -94,7 +94,9 @@ struct S_THREAD_PARAM_KERNEL
 	int32_t *KI, *KJ ;
 	int32_t start, end;
     CKernel * kernel;
-}  ;
+};
+
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 
 void* CSVMLight::update_linear_component_linadd_helper(void* p)
 {
@@ -322,74 +324,6 @@ CSVMLight::~CSVMLight()
   // optimizer variables
   delete[] dual;
   delete[] primal;
-}
-
-bool CSVMLight::setup_auc_maximization()
-{
-	SG_INFO( "setting up AUC maximization\n") ;
-
-	// get the original labels
-	int32_t num=0;
-	ASSERT(labels);
-	int32_t* int_labels=labels->get_int_labels(num);
-	ASSERT(kernel->get_num_vec_rhs()==num);
-
-	// count positive and negative
-	int32_t num_pos = 0 ;
-	int32_t num_neg = 0 ;
-	for (int32_t i=0; i<num; i++)
-		if (int_labels[i]==1)
-			num_pos++ ;
-		else 
-			num_neg++ ;
-
-	// create AUC features and labels (alternate labels)
-	int32_t num_auc = num_pos*num_neg ;
-	SG_INFO( "num_pos: %i  num_neg: %i  num_auc: %i\n", num_pos, num_neg, num_auc) ;
-
-	uint16_t* features_auc = new uint16_t[num_auc*2] ;
-	int32_t* labels_auc = new int32_t[num_auc] ;
-	int32_t n=0 ;
-	for (int32_t i=0; i<num; i++)
-		if (int_labels[i]==1)
-			for (int32_t j=0; j<num; j++)
-				if (int_labels[j]==-1)
-				{
-					if (n%2==0)
-					{
-						features_auc[n*2]=i ;
-						features_auc[n*2+1]=j ;
-						labels_auc[n] = 1 ;
-					}
-					else
-					{
-						features_auc[n*2]=j ;
-						features_auc[n*2+1]=i ;
-						labels_auc[n] = -1 ;
-					}
-					n++ ;
-					ASSERT(n<=num_auc);
-				}
-
-	// create label object and attach it to svm
-	CLabels* lab_auc = new CLabels(num_auc) ;
-	lab_auc->set_int_labels(labels_auc, num_auc) ;
-	set_labels(lab_auc);
-
-	// create feature object
-	CWordFeatures* f = new CWordFeatures((int32_t)0,0) ;
-	f->set_feature_matrix(features_auc, 2, num_auc) ;
-
-	// create AUC kernel and attach the features
-	CAUCKernel* k= new CAUCKernel(10, kernel) ;
-	kernel->init(f,f);
-
-	set_kernel(k) ;
-
-	delete[] int_labels ;
-	delete[] labels_auc ;
-
-	return true ;
 }
 
 bool CSVMLight::train()

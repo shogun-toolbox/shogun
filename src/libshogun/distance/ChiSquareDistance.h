@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2008 Christian Gehl
- * Copyright (C) 2008 Fraunhofer Institute FIRST
+ * Written (W) 2008-2009 Christian Gehl
+ * Copyright (C) 2008-2009 Fraunhofer Institute FIRST
  */
 
 #ifndef _CHISQUAREDISTANCE_H___
@@ -13,9 +13,9 @@
 
 #include "lib/common.h"
 #include "distance/SimpleDistance.h"
-#include "features/RealFeatures.h"
+#include "features/SimpleFeatures.h"
 
-/** class ChiSquareDistance
+/** @brief class ChiSquareDistance
  *
  * This implementation of \f$\chi^{2}\f$ distance extends the
  * concept of \f$\chi^{2}\f$ metric to negative values.
@@ -39,7 +39,7 @@ class CChiSquareDistance: public CSimpleDistance<float64_t>
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 */
-		CChiSquareDistance(CRealFeatures* l, CRealFeatures* r);
+		CChiSquareDistance(CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r);
 		virtual ~CChiSquareDistance();
 
 		/** init distance

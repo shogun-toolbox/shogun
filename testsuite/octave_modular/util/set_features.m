@@ -35,24 +35,24 @@ function y = set_features(prefix)
 		feats_test=CombinedFeatures();
 
 		feat=StringCharFeatures(DNA);
-		feat.set_string_features(kernel_subkernel0_data_train);
+		feat.set_features(kernel_subkernel0_data_train);
 		feats_train.append_feature_obj(feat);
 		feat=StringCharFeatures(DNA);
-		feat.set_string_features(kernel_subkernel0_data_test);
+		feat.set_features(kernel_subkernel0_data_test);
 		feats_test.append_feature_obj(feat);
 
 		feat=StringCharFeatures(DNA);
-		feat.set_string_features(kernel_subkernel1_data_train);
+		feat.set_features(kernel_subkernel1_data_train);
 		feats_train.append_feature_obj(feat);
 		feat=StringCharFeatures(DNA);
-		feat.set_string_features(kernel_subkernel1_data_test);
+		feat.set_features(kernel_subkernel1_data_test);
 		feats_test.append_feature_obj(feat);
 
 		feat=StringCharFeatures(DNA);
-		feat.set_string_features(kernel_subkernel2_data_train);
+		feat.set_features(kernel_subkernel2_data_train);
 		feats_train.append_feature_obj(feat);
 		feat=StringCharFeatures(DNA);
-		feat.set_string_features(kernel_subkernel2_data_test);
+		feat.set_features(kernel_subkernel2_data_test);
 		feats_test.append_feature_obj(feat);
 
 	elseif strcmp(name, 'Custom')==1
@@ -152,9 +152,9 @@ function y = set_features(prefix)
 
 			global StringCharFeatures;
 			feats_train=StringCharFeatures(alphabet);
-			feats_train.set_string_features(data_train);
+			feats_train.set_features(data_train);
 			feats_test=StringCharFeatures(alphabet);
-			feats_test.set_string_features(data_test);
+			feats_test.set_features(data_test);
 
 			if strcmp(feature_class, 'string_complex')==1
 				convert_features_and_add_preproc(prefix);
@@ -170,13 +170,13 @@ function y = set_features(prefix)
 			order=eval(sprintf([prefix, 'order']));
 
 			charfeat=StringCharFeatures(DNA);
-			charfeat.set_string_features(data_train);
+			charfeat.set_features(data_train);
 			bytefeat=StringByteFeatures(RAWDNA);
 			bytefeat.obtain_from_char(charfeat, 0, 1, 0, false);
 			feats_train=WDFeatures(bytefeat, order, order);
 
 			charfeat=StringCharFeatures(DNA);
-			charfeat.set_string_features(data_test);
+			charfeat.set_features(data_test);
 			bytefeat=StringByteFeatures(RAWDNA);
 			bytefeat.obtain_from_char(charfeat, 0, 1, 0, false);
 			feats_test=WDFeatures(bytefeat, order, order);

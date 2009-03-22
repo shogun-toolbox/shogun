@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2008 Christian Gehl
- * Copyright (C) 2008 Fraunhofer Institute FIRST
+ * Written (W) 2008-2009 Christian Gehl
+ * Copyright (C) 2008-2009 Fraunhofer Institute FIRST
  */
 
 #include "lib/config.h"
@@ -13,14 +13,14 @@
 #include "lib/io.h"
 #include "distance/CosineDistance.h"
 #include "features/Features.h"
-#include "features/RealFeatures.h"
+#include "features/SimpleFeatures.h"
 
 CCosineDistance::CCosineDistance()
 : CSimpleDistance<float64_t>()
 {
 }
 
-CCosineDistance::CCosineDistance(CRealFeatures* l, CRealFeatures* r)
+CCosineDistance::CCosineDistance(CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r)
 : CSimpleDistance<float64_t>()
 {
 	init(l, r);
@@ -58,9 +58,9 @@ float64_t CCosineDistance::compute(int32_t idx_a, int32_t idx_b)
 	bool afree, bfree;
 
 	float64_t* avec=
-		((CRealFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
+		((CSimpleFeatures<float64_t>*) lhs)->get_feature_vector(idx_a, alen, afree);
 	float64_t* bvec=
-		((CRealFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
+		((CSimpleFeatures<float64_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);
 
 	ASSERT(alen==blen);
 	float64_t s=0;
@@ -76,8 +76,8 @@ float64_t CCosineDistance::compute(int32_t idx_a, int32_t idx_b)
 		}
 	}
 
-	((CRealFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
-	((CRealFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+	((CSimpleFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
+	((CSimpleFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 	
 	s=sqrt(sa)*sqrt(sb);
 	

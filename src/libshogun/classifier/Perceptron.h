@@ -16,7 +16,7 @@
 #include "features/DotFeatures.h"
 #include "classifier/LinearClassifier.h"
 
-/** Class Perceptron implements the standard linear (online) perceptron.
+/** @brief Class Perceptron implements the standard linear (online) perceptron.
  *
  * Given a maximum number of iterations (the standard perceptron algorithm is
  * not guaranteed to converge) and a fixed lerning rate, the result is a linear

@@ -22,9 +22,9 @@ if exist('SVMLight')
 	disp('SVMLight')
 
 	feats_train=StringCharFeatures(DNA);
-	feats_train.set_string_features(fm_train_dna);
+	feats_train.set_features(fm_train_dna);
 	feats_test=StringCharFeatures(DNA);
-	feats_test.set_string_features(fm_test_dna);
+	feats_test.set_features(fm_test_dna);
 	degree=20;
 
 	kernel=WeightedDegreeStringKernel(feats_train, feats_train, degree);
@@ -179,9 +179,9 @@ svm.classify().get_labels();
 disp('LibSVM batch')
 
 feats_train=StringCharFeatures(DNA);
-feats_train.set_string_features(fm_train_dna);
+feats_train.set_features(fm_train_dna);
 feats_test=StringCharFeatures(DNA);
-feats_test.set_string_features(fm_test_dna);
+feats_test.set_features(fm_test_dna);
 degree=20;
 
 kernel=WeightedDegreeStringKernel(feats_train, feats_train, degree);

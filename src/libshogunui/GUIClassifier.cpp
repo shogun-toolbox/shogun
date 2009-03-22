@@ -18,6 +18,8 @@
 #include <shogun/features/RealFileFeatures.h>
 #include <shogun/features/Labels.h>
 
+#include <shogun/kernel/AUCKernel.h>
+
 #include <shogun/classifier/KNN.h>
 #include <shogun/clustering/KMeans.h>
 #include <shogun/clustering/Hierarchical.h>
@@ -377,14 +379,21 @@ bool CGUIClassifier::train_svm()
 	svm->set_shrinking_enabled(svm_use_shrinking);
 	svm->set_linadd_enabled(svm_use_linadd);
 	svm->set_batch_computation_enabled(svm_use_batch_computation);
-	if(!oneclass)
-		((CKernelMachine*) svm)->set_labels(trainlabels);
-	((CKernelMachine*) svm)->set_kernel(kernel);
 
-#ifdef USE_SVMLIGHT
 	if (svm_do_auc_maximization)
-		((CSVMLight*)svm)->setup_auc_maximization();
-#endif //USE_SVMLIGHT
+	{
+		CAUCKernel* auc_kernel = new CAUCKernel(10, kernel);
+		CLabels* auc_labels= auc_kernel->setup_auc_maximization(trainlabels);
+		((CKernelMachine*) svm)->set_labels(auc_labels);
+		((CKernelMachine*) svm)->set_kernel(auc_kernel);
+		SG_UNREF(auc_labels);
+	}
+	else
+	{
+		if(!oneclass)
+			((CKernelMachine*) svm)->set_labels(trainlabels);
+		((CKernelMachine*) svm)->set_kernel(kernel);
+	}
 
 	bool result=svm->train();
 
@@ -503,7 +512,7 @@ bool CGUIClassifier::train_linear(float64_t gamma)
 	}
 
 	((CLinearClassifier*) classifier)->set_labels(trainlabels);
-	((CLinearClassifier*) classifier)->set_features((CRealFeatures*) trainfeatures);
+	((CLinearClassifier*) classifier)->set_features((CSimpleFeatures<float64_t>*) trainfeatures);
 	result=((CLinearClassifier*) classifier)->train();
 
 	return result;
@@ -556,8 +565,8 @@ bool CGUIClassifier::test(char* filename_out, char* filename_roc)
 	CLabels* testlabels=ui->ui_labels->get_test_labels();
 	CFeatures* trainfeatures=ui->ui_features->get_train_features();
 	CFeatures* testfeatures=ui->ui_features->get_test_features();
-	SG_DEBUG("I:training: %ld examples each %ld features\n", ((CRealFeatures*) trainfeatures)->get_num_vectors(), ((CRealFeatures*) trainfeatures)->get_num_features());
-	SG_DEBUG("I:testing: %ld examples each %ld features\n", ((CRealFeatures*) testfeatures)->get_num_vectors(), ((CRealFeatures*) testfeatures)->get_num_features());
+	SG_DEBUG("I:training: %ld examples each %ld features\n", ((CSimpleFeatures<float64_t>*) trainfeatures)->get_num_vectors(), ((CSimpleFeatures<float64_t>*) trainfeatures)->get_num_features());
+	SG_DEBUG("I:testing: %ld examples each %ld features\n", ((CSimpleFeatures<float64_t>*) testfeatures)->get_num_vectors(), ((CSimpleFeatures<float64_t>*) testfeatures)->get_num_features());
 
 	if (!classifier)
 		SG_ERROR("No svm available.\n");

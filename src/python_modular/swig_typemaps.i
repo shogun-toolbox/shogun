@@ -1,3 +1,19 @@
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This code is inspired by the python numpy.i typemaps, from John Hunter
+ * and Bill Spotz that in turn is based on enthought/kiva/agg/src/numeric.i,
+ * author unknown.
+ *
+ * It goes further by supporting strings of arbitrary types, sparse matrices
+ * and ways to return arbitrariliy shaped matrices.
+ *
+ * Written (W) 2006-2009 Soeren Sonnenburg
+ * Copyright (C) 2006-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ */
 #ifdef HAVE_PYTHON
 %{
 #ifndef SWIG_FILE_WITH_INIT
@@ -11,19 +27,13 @@ extern "C" {
 #include <numpy/arrayobject.h>
 }
 
-/* The following code originally appeared in enthought/kiva/agg/src/numeric.i,
- * author unknown.  It was translated from C++ to C by John Hunter.  Bill
- * Spotz has modified it slightly to fix some minor bugs, add some comments
- * and some functionality.
+/* Functions to extract array attributes.
  */
-
-/* Macros to extract array attributes.
- */
-#define is_array(a)            ((a) && PyArray_Check((PyObject *)a))
-#define array_type(a)          (int)(PyArray_TYPE(a))
-#define array_dimensions(a)    (((PyArrayObject *)a)->nd)
-#define array_size(a,i)        (((PyArrayObject *)a)->dimensions[i])
-#define array_is_contiguous(a) (PyArray_ISCONTIGUOUS(a))
+bool is_array(PyObject* a) { return (a) && PyArray_Check(a); }
+int array_type(PyObject* a) { return (int) PyArray_TYPE(a); }
+int array_dimensions(PyObject* a)  { return ((PyArrayObject *)a)->nd; }
+int array_size(PyObject* a, int i) { return ((PyArrayObject *)a)->dimensions[i]; }
+bool array_is_contiguous(PyObject* a) { return PyArray_ISCONTIGUOUS(a); }
 
 /* Given a PyObject, return a string describing its type.
  */
@@ -97,7 +107,7 @@ PyArrayObject* obj_to_array_no_conversion(PyObject* input, int typecode)
 						typecode))) {
         ary = (PyArrayObject*) input;
     }
-    else if is_array(input) {
+    else if (is_array(input)) {
       const char* desired_type = typecode_string(typecode);
       const char* actual_type = typecode_string(array_type(input));
       PyErr_Format(PyExc_TypeError, 
@@ -155,7 +165,7 @@ PyObject* make_contiguous(PyObject* ary, int* is_new_object,
 
     if (array_dimensions(array)!=dims)
     {
-        PyErr_Format(PyExc_TypeError, "Array has wrong dimensionality," 
+        PyErr_Format(PyExc_TypeError, "Array has wrong dimensionality, " 
                 "expected a %dd-array, received a %dd-array", dims, array_dimensions(array));
         if (*is_new_object)
             Py_DECREF(array);
@@ -275,7 +285,7 @@ TYPEMAP_IN1(int64_t,       NPY_INT64 )
 TYPEMAP_IN1(uint64_t,      NPY_UINT64 )
 TYPEMAP_IN1(float32_t,     NPY_FLOAT32 )
 TYPEMAP_IN1(float64_t,     NPY_FLOAT64)
-TYPEMAP_IN1(float128_t,    NPY_FLOAT128)
+TYPEMAP_IN1(float96_t,     NPY_FLOAT96)
 TYPEMAP_IN1(PyObject,      NPY_OBJECT)
 
 #undef TYPEMAP_IN1
@@ -317,7 +327,7 @@ TYPEMAP_IN2(int64_t,       NPY_INT64 )
 TYPEMAP_IN2(uint64_t,      NPY_UINT64 )
 TYPEMAP_IN2(float32_t,     NPY_FLOAT32 )
 TYPEMAP_IN2(float64_t,     NPY_FLOAT64)
-TYPEMAP_IN2(float128_t,    NPY_FLOAT128)
+TYPEMAP_IN2(float96_t,     NPY_FLOAT96)
 TYPEMAP_IN2(PyObject,      NPY_OBJECT)
 
 #undef TYPEMAP_IN2
@@ -371,7 +381,7 @@ TYPEMAP_INPLACE1(int64_t,       NPY_INT64 )
 TYPEMAP_INPLACE1(uint64_t,      NPY_UINT64 )
 TYPEMAP_INPLACE1(float32_t,     NPY_FLOAT32 )
 TYPEMAP_INPLACE1(float64_t,     NPY_FLOAT64)
-TYPEMAP_INPLACE1(float128_t,    NPY_FLOAT128)
+TYPEMAP_INPLACE1(float96_t,     NPY_FLOAT96)
 TYPEMAP_INPLACE1(PyObject,      NPY_OBJECT)
 
 #undef TYPEMAP_INPLACE1
@@ -399,7 +409,7 @@ TYPEMAP_INPLACE2(int64_t,       NPY_INT64 )
 TYPEMAP_INPLACE2(uint64_t,      NPY_UINT64 )
 TYPEMAP_INPLACE2(float32_t,     NPY_FLOAT32 )
 TYPEMAP_INPLACE2(float64_t,     NPY_FLOAT64)
-TYPEMAP_INPLACE2(float128_t,    NPY_FLOAT128)
+TYPEMAP_INPLACE2(float96_t,     NPY_FLOAT96)
 TYPEMAP_INPLACE2(PyObject,      NPY_OBJECT)
 
 #undef TYPEMAP_INPLACE2
@@ -438,8 +448,17 @@ TYPEMAP_INPLACE2(PyObject,      NPY_OBJECT)
   }
 }
 %typemap(argout) ARRAYOUT_ARRAY[ANY] {
-  int dimensions[1] = {$1_dim0};
-  PyObject* outArray = PyArray_FromDimsAndData(1, dimensions, typecode, (char*)$1);
+    npy_intp dims = $1_dim0;
+    PyArray_Descr* descr=PyArray_DescrFromType(typecode);
+
+    if (descr && $1)
+    {
+        $result = PyArray_NewFromDescr(&PyArray_Type,
+                descr, 1, &dims, NULL, (void*)*$1, NPY_FARRAY | NPY_WRITEABLE, NULL);
+        ((PyArrayObject*) $result)->flags |= NPY_OWNDATA;
+    }
+    else
+        SWIG_fail;
 }
 %enddef
 
@@ -455,7 +474,7 @@ TYPEMAP_ARRAYOUT1(int64_t,       NPY_INT64 )
 TYPEMAP_ARRAYOUT1(uint64_t,      NPY_UINT64 )
 TYPEMAP_ARRAYOUT1(float32_t,     NPY_FLOAT32 )
 TYPEMAP_ARRAYOUT1(float64_t,     NPY_FLOAT64)
-TYPEMAP_ARRAYOUT1(float128_t,    NPY_FLOAT128)
+TYPEMAP_ARRAYOUT1(float96_t,     NPY_FLOAT96)
 TYPEMAP_ARRAYOUT1(PyObject,      NPY_OBJECT)
 
 #undef TYPEMAP_ARRAYOUT1
@@ -483,7 +502,7 @@ TYPEMAP_ARRAYOUT2(int64_t,       NPY_INT64 )
 TYPEMAP_ARRAYOUT2(uint64_t,      NPY_UINT64 )
 TYPEMAP_ARRAYOUT2(float32_t,     NPY_FLOAT32 )
 TYPEMAP_ARRAYOUT2(float64_t,     NPY_FLOAT64)
-TYPEMAP_ARRAYOUT2(float128_t,    NPY_FLOAT128)
+TYPEMAP_ARRAYOUT2(float96_t,     NPY_FLOAT96)
 TYPEMAP_ARRAYOUT2(PyObject,      NPY_OBJECT)
 
 #undef TYPEMAP_ARRAYOUT2
@@ -545,7 +564,7 @@ TYPEMAP_ARGOUT1(int64_t,       NPY_INT64 )
 TYPEMAP_ARGOUT1(uint64_t,      NPY_UINT64 )
 TYPEMAP_ARGOUT1(float32_t,     NPY_FLOAT32 )
 TYPEMAP_ARGOUT1(float64_t,     NPY_FLOAT64)
-TYPEMAP_ARGOUT1(float128_t,    NPY_FLOAT128)
+TYPEMAP_ARGOUT1(float96_t,     NPY_FLOAT96)
 TYPEMAP_ARGOUT1(PyObject,      NPY_OBJECT)
 
 #undef TYPEMAP_ARGOUT1
@@ -584,7 +603,7 @@ TYPEMAP_ARGOUT2(int64_t,       NPY_INT64 )
 TYPEMAP_ARGOUT2(uint64_t,      NPY_UINT64 )
 TYPEMAP_ARGOUT2(float32_t,     NPY_FLOAT32 )
 TYPEMAP_ARGOUT2(float64_t,     NPY_FLOAT64)
-TYPEMAP_ARGOUT2(float128_t,    NPY_FLOAT128)
+TYPEMAP_ARGOUT2(float96_t,     NPY_FLOAT96)
 TYPEMAP_ARGOUT2(PyObject,      NPY_OBJECT)
 
 #undef TYPEMAP_ARGOUT2
@@ -600,7 +619,39 @@ TYPEMAP_ARGOUT2(PyObject,      NPY_OBJECT)
 
 /* input typemap for CStringFeatures */
 %define TYPEMAP_STRINGFEATURES_IN(type,typecode)
-%typemap(in) (T_STRING<type>* strings, int32_t num_strings, int32_t max_len) {
+%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER)
+        (T_STRING<type>* IN_STRINGS, int32_t NUM, int32_t MAXLEN)
+{
+    PyObject* list=(PyObject*) $input;
+
+    $1=0;
+    if (list && PyList_Check(list) && PyList_Size(list)>0)
+    {
+        $1=1;
+        int32_t size=PyList_Size(list);
+        for (int32_t i=0; i<size; i++)
+        {
+            PyObject *o = PyList_GetItem(list,i);
+            if (typecode == NPY_STRING)
+            {
+                if (!PyString_Check(o))
+                {
+                    $1=0;
+                    break;
+                }
+            }
+            else
+            {
+                if (!is_array(o) || array_dimensions(o)!=1 || array_type(o) != typecode)
+                {
+                    $1=0;
+                    break;
+                }
+            }
+        }
+    }
+}
+%typemap(in) (T_STRING<type>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {
     PyObject* list=(PyObject*) $input;
     /* Check if is a list */
     if (!list || PyList_Check(list) || PyList_Size(list)==0)
@@ -612,29 +663,67 @@ TYPEMAP_ARGOUT2(PyObject,      NPY_OBJECT)
         for (int32_t i=0; i<size; i++)
         {
             PyObject *o = PyList_GetItem(list,i);
-            if (PyString_Check(o))
+            if (typecode == NPY_STRING)
             {
-                int32_t len=PyString_Size(o);
-                max_len=CMath::max(len,max_len);
-                const char* str=PyString_AsString(o);
-
-                strings[i].length=len;
-                strings[i].string=NULL;
-
-                if (len>0)
+                if (PyString_Check(o))
                 {
-                    strings[i].string=new type[len];
-                    memcpy(strings[i].string, str, len);
+                    int32_t len=PyString_Size(o);
+                    max_len=CMath::max(len,max_len);
+                    const char* str=PyString_AsString(o);
+
+                    strings[i].length=len;
+                    strings[i].string=NULL;
+
+                    if (len>0)
+                    {
+                        strings[i].string=new type[len];
+                        memcpy(strings[i].string, str, len);
+                    }
+                }
+                else
+                {
+                    PyErr_SetString(PyExc_TypeError, "all elements in list must be strings");
+
+                    for (int32_t j=0; j<i; j++)
+                        delete[] strings[i].string;
+                    delete[] strings;
+                    SWIG_fail;
                 }
             }
             else
             {
-                PyErr_SetString(PyExc_TypeError, "all elements in list must be strings");
+                if (is_array(o) && array_dimensions(o)==1 && array_type(o) == typecode)
+                {
+                    int is_new_object=0;
+                    PyObject* array = make_contiguous(o, &is_new_object, 1, typecode);
+                    if (!array)
+                        SWIG_fail;
 
-                for (int32_t j=0; j<i; j++)
-                    delete[] strings[i].string;
-                delete[] strings;
-                SWIG_fail;
+                    type* str=(type*) PyArray_BYTES(array);
+                    int32_t len = PyArray_DIM(array,0);
+                    max_len=CMath::max(len,max_len);
+
+                    strings[i].length=len;
+                    strings[i].string=NULL;
+
+                    if (len>0)
+                    {
+                        strings[i].string=new type[len];
+                        memcpy(strings[i].string, str, len*sizeof(type));
+                    }
+
+                    if (is_new_object)
+                        Py_DECREF(array);
+                }
+                else
+                {
+                    PyErr_SetString(PyExc_TypeError, "all elements in list must be of same array type");
+
+                    for (int32_t j=0; j<i; j++)
+                        delete[] strings[i].string;
+                    delete[] strings;
+                    SWIG_fail;
+                }
             }
         }
         $1=strings;
@@ -649,14 +738,105 @@ TYPEMAP_ARGOUT2(PyObject,      NPY_OBJECT)
 }
 %enddef
 
+TYPEMAP_STRINGFEATURES_IN(bool,          NPY_BOOL )
 TYPEMAP_STRINGFEATURES_IN(char,          NPY_STRING )
 TYPEMAP_STRINGFEATURES_IN(uint8_t,       NPY_UINT8 )
+TYPEMAP_STRINGFEATURES_IN(int16_t,       NPY_INT16)
+TYPEMAP_STRINGFEATURES_IN(uint16_t,      NPY_UINT16 )
+TYPEMAP_STRINGFEATURES_IN(int32_t,       NPY_INT32 )
+TYPEMAP_STRINGFEATURES_IN(uint32_t,      NPY_UINT32 )
+TYPEMAP_STRINGFEATURES_IN(int64_t,       NPY_INT64 )
+TYPEMAP_STRINGFEATURES_IN(uint64_t,      NPY_UINT64 )
+TYPEMAP_STRINGFEATURES_IN(float32_t,     NPY_FLOAT32 )
+TYPEMAP_STRINGFEATURES_IN(float64_t,     NPY_FLOAT64)
+TYPEMAP_STRINGFEATURES_IN(float96_t,     NPY_FLOAT96)
+TYPEMAP_STRINGFEATURES_IN(PyObject,      NPY_OBJECT)
+
 #undef TYPEMAP_STRINGFEATURES_IN
+
+/* output typemap for CStringFeatures */
+%define TYPEMAP_STRINGFEATURES_ARGOUT(type,typecode)
+%typemap(in, numinputs=0) (T_STRING<type>** ARGOUT_STRINGS, int32_t* NUM) {
+    $1 = (T_STRING<type>**) malloc(sizeof(T_STRING<type>*));
+    $2 = (int32_t*) malloc(sizeof(int32_t));
+}
+%typemap(argout) (T_STRING<type>** ARGOUT_STRINGS, int32_t* NUM) {
+    if (!$1 || !$2)
+        SWIG_fail;
+
+    T_STRING<type>* str=*$1;
+    int32_t num=*$2;
+    PyObject* list = PyList_New(num);
+
+    if (list && str)
+    {
+        for (int32_t i=0; i<num; i++)
+        {
+            PyObject* s=NULL;
+
+            if (typecode == NPY_STRING)
+            {
+                /* This path is only taking if str[i].string is a char*. However this cast is
+                   required to build through for non char types. */
+                s=PyString_FromStringAndSize((char*) str[i].string, str[i].length);
+            }
+            else
+            {
+                PyArray_Descr* descr=PyArray_DescrFromType(typecode);
+                type* data = (type*) malloc(str[i].length*sizeof(type));
+                if (descr && data)
+                {
+                    memcpy(data, str[i].string, str[i].length*sizeof(type));
+                    npy_intp dims = str[i].length;
+
+                    s = PyArray_NewFromDescr(&PyArray_Type,
+                            descr, 1, &dims, NULL, (void*) data, NPY_FARRAY | NPY_WRITEABLE, NULL);
+                    ((PyArrayObject*) s)->flags |= NPY_OWNDATA;
+                }
+                else
+                    SWIG_fail;
+            }
+
+            PyList_SetItem(list, i, s);
+        }
+        $result = list;
+    }
+    else
+        SWIG_fail;
+
+    free($1); free($2);
+}
+%enddef
+
+TYPEMAP_STRINGFEATURES_ARGOUT(bool,          NPY_BOOL )
+TYPEMAP_STRINGFEATURES_ARGOUT(char,          NPY_STRING )
+TYPEMAP_STRINGFEATURES_ARGOUT(uint8_t,       NPY_UINT8 )
+TYPEMAP_STRINGFEATURES_ARGOUT(int16_t,       NPY_INT16)
+TYPEMAP_STRINGFEATURES_ARGOUT(uint16_t,      NPY_UINT16 )
+TYPEMAP_STRINGFEATURES_ARGOUT(int32_t,       NPY_INT32 )
+TYPEMAP_STRINGFEATURES_ARGOUT(uint32_t,      NPY_UINT32 )
+TYPEMAP_STRINGFEATURES_ARGOUT(int64_t,       NPY_INT64 )
+TYPEMAP_STRINGFEATURES_ARGOUT(uint64_t,      NPY_UINT64 )
+TYPEMAP_STRINGFEATURES_ARGOUT(float32_t,     NPY_FLOAT32 )
+TYPEMAP_STRINGFEATURES_ARGOUT(float64_t,     NPY_FLOAT64)
+TYPEMAP_STRINGFEATURES_ARGOUT(float96_t,     NPY_FLOAT96)
+TYPEMAP_STRINGFEATURES_ARGOUT(PyObject,      NPY_OBJECT)
+#undef TYPEMAP_STRINGFEATURES_ARGOUT
 
 /* input typemap for Sparse Features */
 %define TYPEMAP_SPARSEFEATURES_IN(type,typecode)
-%typemap(in) (T_Sparse<type>* sfm, int32_t num_feat, int32_t num_vec) {
+%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER)
+        (TSparse<type>* IN_SPARSE, int32_t DIM1, int32_t DIM2)
+{
+    $1 = ( PyObject_HasAttrString($input, "indptr") &&
+            PyObject_HasAttrString($input, "indices") &&
+            PyObject_HasAttrString($input, "data") &&
+            PyObject_HasAttrString($input, "shape")
+         ) ? 1 : 0;
+}
 
+%typemap(in) (TSparse<type>* IN_SPARSE, int32_t DIM1, int32_t DIM2)
+{
     PyObject* o=(PyObject*) $input;
 
     /* a column compressed storage sparse matrix in python scipy
@@ -669,9 +849,9 @@ TYPEMAP_STRINGFEATURES_IN(uint8_t,       NPY_UINT8 )
        A.shape # size of matrix
 
        >>> type(A.indptr)
-       <type 'numpy.ndarray'>
+       <type 'numpy.ndarray'> #int32
        >>> type(A.indices)
-       <type 'numpy.ndarray'>
+       <type 'numpy.ndarray'> #int32
        >>> type(A.data)
        <type 'numpy.ndarray'>
        >>> type(A.shape)
@@ -683,52 +863,116 @@ TYPEMAP_STRINGFEATURES_IN(uint8_t,       NPY_UINT8 )
             PyObject_HasAttrString(o, "data") &&
             PyObject_HasAttrString(o, "shape"))
     {
+        /* fetch sparse attributes */
         PyObject* indptr = PyObject_GetAttrString(o, "indptr");
         PyObject* indices = PyObject_GetAttrString(o, "indices");
         PyObject* data = PyObject_GetAttrString(o, "data");
         PyObject* shape = PyObject_GetAttrString(o, "shape");
 
-        sfm = new TSparse<type>[num_vec];
+        /* check that types are OK */
+        if ((!is_array(indptr)) || (array_dimensions(indptr)!=1) ||
+                (array_type(indptr)!=NPY_INT && array_type(indptr)!=NPY_LONG))
+        {
+            PyErr_SetString(PyExc_TypeError,"indptr array should be 1d int's");
+            return NULL;
+        }
+
+        if (!is_array(indices) || array_dimensions(indices)!=1 ||
+                (array_type(indices)!=NPY_INT && array_type(indices)!=NPY_LONG))
+        {
+            PyErr_SetString(PyExc_TypeError,"indices array should be 1d int's");
+            return NULL;
+        }
+
+        if (!is_array(data) || array_dimensions(data)!=1 || array_type(data) != typecode)
+        {
+            PyErr_SetString(PyExc_TypeError,"data array should be 1d and match datatype");
+            return NULL;
+        }
+
+        if (!PyTuple_Check(shape))
+        {
+            PyErr_SetString(PyExc_TypeError,"shape should be a tuple");
+            return NULL;
+        }
+
+        /* get array dimensions */
+        int32_t num_feat=PyInt_AsLong(PyTuple_GetItem(shape, 0));
+        int32_t num_vec=PyInt_AsLong(PyTuple_GetItem(shape, 1));
+
+        /* get indptr array */
+        int is_new_object_indptr=0;
+        PyObject* array_indptr = make_contiguous(indptr, &is_new_object_indptr, 1, NPY_INT32);
+        if (!array_indptr) SWIG_fail;
+        int32_t* bytes_indptr=(int32_t*) PyArray_BYTES(array_indptr);
+        int32_t len_indptr = PyArray_DIM(array_indptr,0);
+
+        /* get indices array */
+        int is_new_object_indices=0;
+        PyObject* array_indices = make_contiguous(indices, &is_new_object_indices, 1, NPY_INT32);
+        if (!array_indices) SWIG_fail;
+        int32_t* bytes_indices=(int32_t*) PyArray_BYTES(array_indices);
+        int32_t len_indices = PyArray_DIM(array_indices,0);
+
+        /* get data array */
+        int is_new_object_data=0;
+        PyObject* array_data = make_contiguous(data, &is_new_object_data, 1, typecode);
+        if (!array_data) SWIG_fail;
+        type* bytes_data=(type*) PyArray_BYTES(array_data);
+        int32_t len_data = PyArray_DIM(array_data,0);
+
+        if (len_indices!=len_data)
+            SWIG_fail;
+
+        TSparse<type>* sfm = new TSparse<type>[num_vec];
 
         for (int32_t i=0; i<num_vec; i++)
         {
-            /*
-            sfm->vec_index = i;
-            sfm->num_feat_entries = num;
-            TSparse<type>* ts= new TSparse<type>[num];
-            sfm->features=ts;
-
-            int32_t vec_index;
-            int32_t num_feat_entries;
-            TSparseEntry<ST>* features;
-
-            int32_t len=PyString_Size(o);
-            max_len=CMath::max(len,max_len);
-            const char* str=PyString_AsString(o);
-
-            strings[i].length=len;
-            strings[i].string=NULL;
-
-            if (len>0)
-            {
-            strings[i].string=new type[len];
-            memcpy(strings[i].string, str, len);
-            }
-             */
+            sfm[i].vec_index = i;
+            sfm[i].num_feat_entries = 0;
+            sfm[i].features = NULL;
         }
 
-        $1=sfm;
-        $2=num_feat;
-        $3=num_vec;
+        for (int32_t i=1; i<len_indptr; i++)
+        {
+            int32_t num = bytes_indptr[i]-bytes_indptr[i-1];
+            
+            if (num>0)
+            {
+                TSparseEntry<type>* features=new TSparseEntry<type>[num];
+
+                for (int32_t j=0; j<num; j++)
+                {
+                    features[j].feat_index=*bytes_indices;
+                    features[j].entry=*bytes_data;
+
+                    bytes_indices++;
+                    bytes_data++;
+                }
+                sfm[i-1].num_feat_entries=num;
+                sfm[i-1].features=features;
+            }
+        }
+
+        if (is_new_object_indptr)
+            Py_DECREF(array_indptr);
+        if (is_new_object_indices)
+            Py_DECREF(array_indices);
+        if (is_new_object_data)
+            Py_DECREF(array_data);
 
         Py_DECREF(indptr);
         Py_DECREF(indices);
         Py_DECREF(data);
         Py_DECREF(shape);
+
+        $1=sfm;
+        $2=num_feat;
+        $3=num_vec;
     }
     else
     {
-        PyErr_SetString(PyExc_TypeError,"not column compressed sparse matrix");
+        PyErr_SetString(PyExc_TypeError,"not a column compressed sparse matrix");
         return NULL;
     }
 }
@@ -745,8 +989,109 @@ TYPEMAP_SPARSEFEATURES_IN(int64_t,       NPY_INT64 )
 TYPEMAP_SPARSEFEATURES_IN(uint64_t,      NPY_UINT64 )
 TYPEMAP_SPARSEFEATURES_IN(float32_t,     NPY_FLOAT32 )
 TYPEMAP_SPARSEFEATURES_IN(float64_t,     NPY_FLOAT64)
-TYPEMAP_SPARSEFEATURES_IN(float128_t,    NPY_FLOAT128)
+TYPEMAP_SPARSEFEATURES_IN(float96_t,     NPY_FLOAT96)
 TYPEMAP_SPARSEFEATURES_IN(PyObject,      NPY_OBJECT)
 #undef TYPEMAP_SPARSEFEATURES_IN
+
+/* output typemap for sparse features returns (data, row, ptr) */
+%define TYPEMAP_SPARSEFEATURES_ARGOUT(type,typecode)
+%typemap(in, numinputs=0) (TSparse<type>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {
+    $1 = (TSparse<type>**) malloc(sizeof(TSparse<type>*));
+    $2 = (int32_t*) malloc(sizeof(int32_t));
+    $3 = (int32_t*) malloc(sizeof(int32_t));
+    $4 = (int64_t*) malloc(sizeof(int64_t));
+}
+%typemap(argout) (TSparse<type>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {
+    if (!$1 || !$2 || !$3 || !$4)
+        SWIG_fail;
+
+    TSparse<type>* sfm=*$1;
+    int32_t num_feat=*$2;
+    int32_t num_vec=*$3;
+    int64_t nnz=*$4;
+
+    PyObject* tuple = PyTuple_New(3);
+
+    if (tuple && sfm)
+    {
+        PyObject* data_py=NULL;
+        PyObject* indices_py=NULL;
+        PyObject* indptr_py=NULL;
+
+        PyArray_Descr* descr=PyArray_DescrFromType(NPY_INT32);
+        PyArray_Descr* descr_data=PyArray_DescrFromType(typecode);
+
+        int32_t* indptr = (int32_t*) malloc((num_vec+1)*sizeof(int32_t));
+        int32_t* indices = (int32_t*) malloc(nnz*sizeof(int32_t));
+        type* data = (type*) malloc(nnz*sizeof(type));
+
+        if (descr && descr_data && indptr && indices && data)
+        {
+            indptr[0]=0;
+
+            int32_t* i_ptr=indices;
+            type* d_ptr=data;
+
+            for (int32_t i=0; i<num_vec; i++)
+            {
+                indptr[i+1]=indptr[i];
+                if (sfm[i].vec_index==i)
+                {
+                    indptr[i+1]+=sfm[i].num_feat_entries;
+
+                    for (int32_t j=0; j<sfm[i].num_feat_entries; j++)
+                    {
+                        *i_ptr=sfm[i].features[j].feat_index;
+                        *d_ptr=sfm[i].features[j].entry;
+
+                        i_ptr++;
+                        d_ptr++;
+                    }
+                }
+            }
+
+            npy_intp indptr_dims = num_vec+1;
+            indptr_py = PyArray_NewFromDescr(&PyArray_Type,
+                    descr, 1, &indptr_dims, NULL, (void*) indptr, NPY_FARRAY | NPY_WRITEABLE, NULL);
+            ((PyArrayObject*) indptr_py)->flags |= NPY_OWNDATA;
+
+            npy_intp dims = nnz;
+            indices_py = PyArray_NewFromDescr(&PyArray_Type,
+                    descr, 1, &dims, NULL, (void*) indices, NPY_FARRAY | NPY_WRITEABLE, NULL);
+            ((PyArrayObject*) indices_py)->flags |= NPY_OWNDATA;
+
+            data_py = PyArray_NewFromDescr(&PyArray_Type,
+                    descr_data, 1, &dims, NULL, (void*) data, NPY_FARRAY | NPY_WRITEABLE, NULL);
+            ((PyArrayObject*) data_py)->flags |= NPY_OWNDATA;
+
+            PyTuple_SetItem(tuple, 0, data_py);
+            PyTuple_SetItem(tuple, 1, indices_py);
+            PyTuple_SetItem(tuple, 2, indptr_py);
+            $result = tuple;
+        }
+        else
+            SWIG_fail;
+    }
+    else
+        SWIG_fail;
+
+    free($1); free($2); free($3); free($4);
+}
+%enddef
+
+TYPEMAP_SPARSEFEATURES_ARGOUT(bool,          NPY_BOOL )
+TYPEMAP_SPARSEFEATURES_ARGOUT(char,          NPY_STRING )
+TYPEMAP_SPARSEFEATURES_ARGOUT(uint8_t,       NPY_UINT8 )
+TYPEMAP_SPARSEFEATURES_ARGOUT(int16_t,       NPY_INT16)
+TYPEMAP_SPARSEFEATURES_ARGOUT(uint16_t,      NPY_UINT16 )
+TYPEMAP_SPARSEFEATURES_ARGOUT(int32_t,       NPY_INT32 )
+TYPEMAP_SPARSEFEATURES_ARGOUT(uint32_t,      NPY_UINT32 )
+TYPEMAP_SPARSEFEATURES_ARGOUT(int64_t,       NPY_INT64 )
+TYPEMAP_SPARSEFEATURES_ARGOUT(uint64_t,      NPY_UINT64 )
+TYPEMAP_SPARSEFEATURES_ARGOUT(float32_t,     NPY_FLOAT32 )
+TYPEMAP_SPARSEFEATURES_ARGOUT(float64_t,     NPY_FLOAT64)
+TYPEMAP_SPARSEFEATURES_ARGOUT(float96_t,     NPY_FLOAT96)
+TYPEMAP_SPARSEFEATURES_ARGOUT(PyObject,      NPY_OBJECT)
+#undef TYPEMAP_SPARSEFEATURES_ARGOUT
 
 #endif

@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2008 Soeren Sonnenburg
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 1999-2009 Soeren Sonnenburg
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _SIMPLEKERNEL_H___
@@ -15,8 +15,11 @@
 #include "features/SimpleFeatures.h"
 #include "lib/io.h"
 
-/** Template class SimpleKernel is the base class for kernels working on dense
- * features, i.e. they all derive from this class (cf. e.g. CGaussianKernel)
+/** @brief Template class SimpleKernel is the base class for kernels working on
+ * Simple features.
+ *
+ * CSimpleFeatures are dense Matrix like Features and Kernels operating on them
+ * all derive from this class (cf., e.g., CGaussianKernel)
  */ 
 template <class ST> class CSimpleKernel : public CKernel
 {

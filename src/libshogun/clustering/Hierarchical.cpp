@@ -4,14 +4,14 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2007-2008 Soeren Sonnenburg
- * Copyright (C) 2007-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 2007-2009 Soeren Sonnenburg
+ * Copyright (C) 2007-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #include "clustering/Hierarchical.h"
 #include "distance/Distance.h"
 #include "features/Labels.h"
-#include "features/RealFeatures.h"
+#include "features/Features.h"
 #include "lib/Mathematics.h"
 #include "base/Parallel.h"
 
@@ -19,6 +19,7 @@
 #include <pthread.h>
 #endif
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 struct pair
 {
 	/** index 1 */
@@ -26,6 +27,7 @@ struct pair
 	/** index 2 */
 	int32_t idx2;
 };
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 
 CHierarchical::CHierarchical()
 : CDistanceMachine(), merges(3), dimensions(0), assignment(NULL),

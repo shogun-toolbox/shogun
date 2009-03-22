@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2008 Soeren Sonnenburg
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 1999-2009 Soeren Sonnenburg
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _LINEARSTRINGKERNEL_H___
@@ -14,7 +14,10 @@
 #include "lib/common.h"
 #include "kernel/StringKernel.h"
 
-/** Computes the standard linear kernel on dense char valued features
+/** @brief Computes the standard linear kernel on dense char valued features.
+ *
+ * Formally, it computes
+ *
  * \f[
  * k({\bf x},{\bf x'})= \frac{1}{scale}{\bf x}\cdot {\bf x'}
  * \f]

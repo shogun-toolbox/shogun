@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2008 Soeren Sonnenburg
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 1999-2009 Soeren Sonnenburg
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _LINEARBYTEKERNEL_H___
@@ -13,9 +13,12 @@
 
 #include "lib/common.h"
 #include "kernel/SimpleKernel.h"
-#include "features/ByteFeatures.h"
+#include "features/SimpleFeatures.h"
 
-/** Computes the standard linear kernel on dense byte valued features
+/** @brief Computes the standard linear kernel on dense byte valued features.
+ *
+ * Formally, it computes
+ *
  * \f[
  * k({\bf x},{\bf x'})= {\bf x}\cdot {\bf x'}
  * \f]
@@ -32,7 +35,7 @@ class CLinearByteKernel: public CSimpleKernel<uint8_t>
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 */
-		CLinearByteKernel(CByteFeatures* l, CByteFeatures *r);
+		CLinearByteKernel(CSimpleFeatures<uint8_t>* l, CSimpleFeatures<uint8_t> *r);
 
 		virtual ~CLinearByteKernel();
 

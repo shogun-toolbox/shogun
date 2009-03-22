@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2008 Alexander Binder
- * Copyright (C) 2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 2008-2009 Alexander Binder
+ * Copyright (C) 2008-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef PYRAMIDCHI2_H_
@@ -14,11 +14,14 @@
 #include "lib/common.h"
 #include "kernel/SimpleKernel.h"
 #include "features/Features.h"
-#include "features/RealFeatures.h"
+#include "features/SimpleFeatures.h"
 
-//TODO: port to CCombinedKernel (if it is the appropriate) as the pyramid is a weighted linear combination of kernels
 
-///Pyramid Kernel over Chi2 matched histograms
+/** @brief Pyramid Kernel over Chi2 matched histograms.
+ *
+ * \todo port to CCombinedKernel (if it is the appropriate) as the pyramid is a
+ * weighted linear combination of kernels
+ */
 class CPyramidChi2 : public CSimpleKernel<float64_t>
 {
 public:
@@ -51,7 +54,7 @@ public:
 	 * @param numweights2 numweights2
 	 */
 	CPyramidChi2(
-		CRealFeatures* l, CRealFeatures* r, int32_t size, float64_t width2,
+		CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r, int32_t size, float64_t width2,
 		int32_t* pyramidlevels2, int32_t numlevels2,
 		int32_t  numbinsinhistogram2, float64_t* weights2, int32_t numweights2);
 

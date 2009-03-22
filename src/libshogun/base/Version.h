@@ -20,9 +20,11 @@
 
 class CIO;
 
-/* Class Version provides information of the version of shogun that is
- * currently used, for example the svn revision, time and date of compile and
- * compilation and linkflags used.
+/** @brief Class Version provides version information.
+ *
+ * It provides information of the version of shogun that is currently used, for
+ * example the svn revision, time and date of compile and compilation and
+ * the linkflags used.
  */
 class CVersion
 {

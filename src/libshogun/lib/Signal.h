@@ -24,8 +24,10 @@
 extern void (*sg_cancel_computations)(bool &delayed, bool &immediately);
 #endif
 
-/** Class Signal implements signal handling to e.g. allow ctrl+c to cancel a
- * long running process. This is done in two ways: 
+/** @brief Class Signal implements signal handling to e.g. allow ctrl+c to cancel a
+ * long running process.
+ *
+ * This is done in two ways: 
  *
  * -# A signal handler is attached to trap the SIGINT and SIGURG signal.
  *  Pressing ctrl+c or sending the SIGINT (kill ...) signal to the shogun

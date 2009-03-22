@@ -17,13 +17,7 @@
 #include <shogun/kernel/CombinedKernel.h>
 #include <shogun/kernel/CustomKernel.h>
 #include <shogun/kernel/SalzbergWordStringKernel.h>
-#include <shogun/features/ByteFeatures.h>
-#include <shogun/features/CharFeatures.h>
-#include <shogun/features/IntFeatures.h>
-#include <shogun/features/RealFeatures.h>
-#include <shogun/features/ShortFeatures.h>
-#include <shogun/features/ShortRealFeatures.h>
-#include <shogun/features/WordFeatures.h>
+#include <shogun/features/SimpleFeatures.h>
 #include <shogun/preproc/SortWordString.h>
 
 #include <shogun/structure/Plif.h>
@@ -1549,49 +1543,49 @@ bool CSGInterface::cmd_get_features()
 			{
 				case F_BYTE:
 				{
-					uint8_t* fmatrix=((CByteFeatures *) feat)->get_feature_matrix(num_feat, num_vec);
+					uint8_t* fmatrix=((CSimpleFeatures<uint8_t> *) feat)->get_feature_matrix(num_feat, num_vec);
 					set_byte_matrix(fmatrix, num_feat, num_vec);
 					break;
 				}
 
 				case F_CHAR:
 				{
-					char* fmatrix=((CCharFeatures *) feat)->get_feature_matrix(num_feat, num_vec);
+					char* fmatrix=((CSimpleFeatures<char> *) feat)->get_feature_matrix(num_feat, num_vec);
 					set_char_matrix(fmatrix, num_feat, num_vec);
 					break;
 				}
 
 				case F_DREAL:
 				{
-					float64_t* fmatrix=((CRealFeatures *) feat)->get_feature_matrix(num_feat, num_vec);
+					float64_t* fmatrix=((CSimpleFeatures<float64_t> *) feat)->get_feature_matrix(num_feat, num_vec);
 					set_real_matrix(fmatrix, num_feat, num_vec);
 					break;
 				}
 
 				case F_INT:
 				{
-					int32_t* fmatrix=((CIntFeatures *) feat)->get_feature_matrix(num_feat, num_vec);
+					int32_t* fmatrix=((CSimpleFeatures<int32_t> *) feat)->get_feature_matrix(num_feat, num_vec);
 					set_int_matrix(fmatrix, num_feat, num_vec);
 					break;
 				}
 
 				case F_SHORT:
 				{
-					int16_t* fmatrix=((CShortFeatures *) feat)->get_feature_matrix(num_feat, num_vec);
+					int16_t* fmatrix=((CSimpleFeatures<int16_t> *) feat)->get_feature_matrix(num_feat, num_vec);
 					set_short_matrix(fmatrix, num_feat, num_vec);
 					break;
 				}
 
 				case F_SHORTREAL:
 				{
-					float32_t* fmatrix=((CShortRealFeatures *) feat)->get_feature_matrix(num_feat, num_vec);
+					float32_t* fmatrix=((CSimpleFeatures<float32_t> *) feat)->get_feature_matrix(num_feat, num_vec);
 					set_shortreal_matrix(fmatrix, num_feat, num_vec);
 					break;
 				}
 
 				case F_WORD:
 				{
-					uint16_t* fmatrix=((CWordFeatures *) feat)->get_feature_matrix(num_feat, num_vec);
+					uint16_t* fmatrix=((CSimpleFeatures<uint16_t> *) feat)->get_feature_matrix(num_feat, num_vec);
 					set_word_matrix(fmatrix, num_feat, num_vec);
 					break;
 				}
@@ -1721,8 +1715,8 @@ bool CSGInterface::do_set_features(bool add, bool check_dot)
 			float64_t* fmatrix=NULL;
 			get_real_matrix(fmatrix, num_feat, num_vec);
 
-			feat=new CRealFeatures(0);
-			((CRealFeatures*) feat)->
+			feat=new CSimpleFeatures<float64_t>(0);
+			((CSimpleFeatures<float64_t>*) feat)->
 				set_feature_matrix(fmatrix, num_feat, num_vec);
 			break;
 		}
@@ -1732,8 +1726,8 @@ bool CSGInterface::do_set_features(bool add, bool check_dot)
 			int32_t* fmatrix=NULL;
 			get_int_matrix(fmatrix, num_feat, num_vec);
 
-			feat=new CIntFeatures(0);
-			((CIntFeatures*) feat)->
+			feat=new CSimpleFeatures<int32_t>(0);
+			((CSimpleFeatures<int32_t>*) feat)->
 				set_feature_matrix(fmatrix, num_feat, num_vec);
 			break;
 		}
@@ -1743,8 +1737,8 @@ bool CSGInterface::do_set_features(bool add, bool check_dot)
 			int16_t* fmatrix=NULL;
 			get_short_matrix(fmatrix, num_feat, num_vec);
 
-			feat=new CShortFeatures(0);
-			((CShortFeatures*) feat)->
+			feat=new CSimpleFeatures<int16_t>(0);
+			((CSimpleFeatures<int16_t>*) feat)->
 				set_feature_matrix(fmatrix, num_feat, num_vec);
 			break;
 		}
@@ -1754,8 +1748,8 @@ bool CSGInterface::do_set_features(bool add, bool check_dot)
 			uint16_t* fmatrix=NULL;
 			get_word_matrix(fmatrix, num_feat, num_vec);
 
-			feat=new CWordFeatures(0);
-			((CWordFeatures*) feat)->
+			feat=new CSimpleFeatures<uint16_t>(0);
+			((CSimpleFeatures<uint16_t>*) feat)->
 				set_feature_matrix(fmatrix, num_feat, num_vec);
 			break;
 		}
@@ -1765,8 +1759,8 @@ bool CSGInterface::do_set_features(bool add, bool check_dot)
 			float32_t* fmatrix=NULL;
 			get_shortreal_matrix(fmatrix, num_feat, num_vec);
 
-			feat=new CShortRealFeatures(0);
-			((CShortRealFeatures*) feat)->
+			feat=new CSimpleFeatures<float32_t>(0);
+			((CSimpleFeatures<float32_t>*) feat)->
 				set_feature_matrix(fmatrix, num_feat, num_vec);
 			break;
 		}
@@ -1936,7 +1930,7 @@ bool CSGInterface::cmd_convert()
 				strmatch(to_type, "REAL"))
 			{
 				result=ui_features->convert_simple_real_to_sparse_real(
-					((CRealFeatures*) features));
+					((CSimpleFeatures<float64_t>*) features));
 			}
 			else
 				SG_NOTIMPLEMENTED;
@@ -1948,37 +1942,15 @@ bool CSGInterface::cmd_convert()
 				strmatch(to_type, "CHAR"))
 			{
 				result=ui_features->convert_simple_char_to_string_char(
-					((CCharFeatures*) features));
+					((CSimpleFeatures<char>*) features));
 			}
 			else if (strmatch(to_class, "SIMPLE"))
 			{
-				if ((strmatch(to_type, "WORD") ||
-					strmatch(to_type, "SHORT")) && m_nrhs==10)
-				{
-					int32_t order=get_int_from_int_or_str();
-					int32_t start=get_int_from_int_or_str();
-					int32_t gap=get_int_from_int_or_str();
-
-					if (strmatch(to_type, "WORD"))
-					{
-						result=ui_features->convert_simple_char_to_simple_word(
-							(CCharFeatures*) features, order, start,
-							gap);
-					}
-					else if (strmatch(to_type, "SHORT"))
-					{
-						result=ui_features->convert_simple_char_to_simple_short(
-							(CCharFeatures*) features, order, start,
-							gap);
-					}
-					else
-						SG_NOTIMPLEMENTED;
-				}
-				else if (strmatch(to_type, "ALIGN") && m_nrhs==8)
+				if (strmatch(to_type, "ALIGN") && m_nrhs==8)
 				{
 					float64_t gap_cost=get_real_from_real_or_str();
 					result=ui_features->convert_simple_char_to_simple_align(
-						(CCharFeatures*) features, gap_cost);
+						(CSimpleFeatures<char>*) features, gap_cost);
 				}
 				else
 					SG_NOTIMPLEMENTED;
@@ -1993,7 +1965,7 @@ bool CSGInterface::cmd_convert()
 				strmatch(to_type, "SALZBERG"))
 			{
 				result=ui_features->convert_simple_word_to_simple_salzberg(
-					(CWordFeatures*) features);
+					(CSimpleFeatures<uint16_t>*) features);
 			}
 			else
 				SG_NOTIMPLEMENTED;

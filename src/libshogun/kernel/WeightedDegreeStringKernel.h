@@ -4,9 +4,9 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2008 Soeren Sonnenburg
+ * Written (W) 1999-2009 Soeren Sonnenburg
  * Written (W) 1999-2008 Gunnar Raetsch
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _WEIGHTEDDEGREESTRINGKERNEL_H___
@@ -33,7 +33,9 @@ enum EWDKernType
 };
 
 
-/** The Weighted Degree kernel of order d compares two sequences \f${\bf x}\f$ and
+/** @brief The Weighted Degree String kernel.
+ *
+ *  The WD kernel of order d compares two sequences \f${\bf x}\f$ and
  *  \f${\bf x'}\f$ of length L by summing all contributions of k-mer matches of
  *  lengths \f$k\in\{1,\dots,d\}\f$, weighted by coefficients \f$\beta_k\f$. It
  *  is defined as

@@ -7,10 +7,10 @@
  *
  * Library for solving QP task required for learning SVM without bias term.
  *
- * Written (W) 2006-2008 Vojtech Franc, xfrancv@cmp.felk.cvut.cz
+ * Written (W) 2006-2009 Vojtech Franc, xfrancv@cmp.felk.cvut.cz
  * Written (W) 2007 Soeren Sonnenburg
- * Copyright (C) 2006-2008 Center for Machine Perception, CTU FEL Prague
- * Copyright (C) 2007-2008 Fraunhofer Institute FIRST
+ * Copyright (C) 2006-2009 Center for Machine Perception, CTU FEL Prague
+ * Copyright (C) 2007-2009 Fraunhofer Institute FIRST
  *
  *
  *  min 0.5*x'*H*x + f'*x

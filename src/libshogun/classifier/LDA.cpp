@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2008 Soeren Sonnenburg
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 1999-2009 Soeren Sonnenburg
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #include "lib/common.h"
@@ -23,7 +23,7 @@ CLDA::CLDA(float64_t gamma)
 {
 }
 
-CLDA::CLDA(float64_t gamma, CRealFeatures* traindat, CLabels* trainlab)
+CLDA::CLDA(float64_t gamma, CSimpleFeatures<float64_t>* traindat, CLabels* trainlab)
 : CLinearClassifier(), m_gamma(gamma)
 {
 	set_features(traindat);
@@ -88,7 +88,7 @@ bool CLDA::train()
 	double* buffer=new double[num_feat*CMath::max(num_neg, num_pos)];
 	int nf = (int) num_feat;
 
-	CRealFeatures* rf = (CRealFeatures*) features;
+	CSimpleFeatures<float64_t>* rf = (CSimpleFeatures<float64_t>*) features;
 	//mean neg
 	for (i=0; i<num_neg; i++)
 	{

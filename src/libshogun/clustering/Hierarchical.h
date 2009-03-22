@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2007-2008 Soeren Sonnenburg
- * Copyright (C) 2007-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 2007-2009 Soeren Sonnenburg
+ * Copyright (C) 2007-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _HIERARCHICAL_H__
@@ -14,16 +14,16 @@
 #include <stdio.h>
 #include "lib/common.h"
 #include "lib/io.h"
-#include "features/RealFeatures.h"
 #include "distance/Distance.h"
 #include "distance/DistanceMachine.h"
 
 class CDistanceMachine;
 
-/** Agglomerative hierarchical single linkage clustering. Starting with each
- * object being assigned to its own cluster clusters are iteratively merged.
- * Here the clusters are merged whose elements have minimum distance, i.e.
- * the clusters A and B that obtain
+/** @brief Agglomerative hierarchical single linkage clustering.
+ *
+ * Starting with each object being assigned to its own cluster clusters are
+ * iteratively merged.  Here the clusters are merged whose elements have
+ * minimum distance, i.e.  the clusters A and B that obtain
  *
  * \f[
  * \min\{d({\bf x},{\bf x'}): {\bf x}\in {\cal A},{\bf x'}\in {\cal B}\}

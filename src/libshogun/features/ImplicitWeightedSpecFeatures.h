@@ -18,7 +18,8 @@
 
 template <class ST> class CStringFeatures;
 
-/** Features that compute the Weighted Spectrum Kernel feature space explicitly
+/** @brief Features that compute the Weighted Spectrum Kernel feature space
+ * explicitly.
  *
  * \sa CWeightedCommWordStringKernel
  */

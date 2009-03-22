@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2008 Soeren Sonnenburg
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 1999-2009 Soeren Sonnenburg
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #include "features/RealFileFeatures.h"
@@ -16,7 +16,7 @@
 #include <string.h>
 
 CRealFileFeatures::CRealFileFeatures(int32_t size, char* fname)
-: CRealFeatures(size)
+: CSimpleFeatures<float64_t>(size)
 {
 	working_file=fopen(fname, "r");
 	working_filename=strdup(fname);
@@ -31,7 +31,7 @@ CRealFileFeatures::CRealFileFeatures(int32_t size, char* fname)
 }
 
 CRealFileFeatures::CRealFileFeatures(int32_t size, FILE* file)
-: CRealFeatures(size), working_file(file), working_filename(NULL)
+: CSimpleFeatures<float64_t>(size), working_file(file), working_filename(NULL)
 {
 	ASSERT(working_file);
 	intlen=0;
@@ -51,7 +51,7 @@ CRealFileFeatures::~CRealFileFeatures()
 }
 
 CRealFileFeatures::CRealFileFeatures(const CRealFileFeatures & orig)
-: CRealFeatures(orig), working_file(orig.working_file), status(orig.status)
+: CSimpleFeatures<float64_t>(orig), working_file(orig.working_file), status(orig.status)
 {
 	if (orig.working_filename)
 		working_filename=strdup(orig.working_filename);

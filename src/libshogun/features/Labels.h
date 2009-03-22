@@ -4,9 +4,9 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2008 Soeren Sonnenburg
+ * Written (W) 1999-2009 Soeren Sonnenburg
  * Written (W) 1999-2008 Gunnar Raetsch
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _LABELS__H__
@@ -16,9 +16,10 @@
 #include "lib/io.h"
 #include "base/SGObject.h"
 
-/** The class Labels models labels, i.e. class assignments of objects. Labels
- * here are always real-valued and thus applicable to classification (cf.
- * CClassifier) and regression (cf. CRegression) problems.
+/** @brief The class Labels models labels, i.e. class assignments of objects.
+ *
+ * Labels here are always real-valued and thus applicable to classification
+ * (cf.  CClassifier) and regression (cf. CRegression) problems.
  */
 class CLabels : public CSGObject
 {
@@ -34,10 +35,10 @@ class CLabels : public CSGObject
 
 		/** constructor
 		 *
-		 * @param labels labels to set
+		 * @param src labels to set
 		 * @param len number of labels
 		 */
-		CLabels(float64_t* labels, int32_t len);
+		CLabels(float64_t* src, int32_t len);
 
 		/** constructor
 		 *
@@ -147,17 +148,17 @@ class CLabels : public CSGObject
 		
 		/** get labels (swig compatible)
 		 *
-		 * @param labels where labels will be stored in
+		 * @param dst where labels will be stored in
 		 * @param len where number of labels will be stored in
 		 */
-		void get_labels(float64_t** labels, int32_t* len);
+		void get_labels(float64_t** dst, int32_t* len);
 
 		/** set labels
 		 *
-		 * @param labels labels to set
+		 * @param src labels to set
 		 * @param len number of labels
 		 */
-		void set_labels(float64_t* labels, int32_t len);
+		void set_labels(float64_t* src, int32_t len);
 
 		/** get INT label vector
 		 * caller has to clean up

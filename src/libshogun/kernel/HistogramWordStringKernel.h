@@ -4,9 +4,9 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2008 Soeren Sonnenburg
+ * Written (W) 1999-2009 Soeren Sonnenburg
  * Written (W) 1999-2008 Gunnar Raetsch
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _HISTOGRAMWORDKERNEL_H___
@@ -17,7 +17,8 @@
 #include "classifier/PluginEstimate.h"
 #include "features/StringFeatures.h"
 
-/** The HistogramWordString computes the TOP kernel on inhomogeneous Markov Chains. */
+/** @brief The HistogramWordString computes the TOP kernel on inhomogeneous
+ * Markov Chains. */
 class CHistogramWordStringKernel: public CStringKernel<uint16_t>
 {
 	public:

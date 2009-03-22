@@ -18,8 +18,10 @@
 
 #include <stdio.h>
 
-/** Class LinearClassifier is a generic interface for all kinds of linear
- * classifiers. A linear classifier computes 
+/** @brief Class LinearClassifier is a generic interface for all kinds of linear
+ * classifiers.
+ *
+ * A linear classifier computes 
  *
  *  \f[
  * 		f({\bf x})= {\bf w} \cdot {\bf x} + b

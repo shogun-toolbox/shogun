@@ -6,6 +6,7 @@
 #ifdef HAVE_LAPACK
 #include "base/SGObject.h"
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 /** class function */
 class function
 {
@@ -47,8 +48,9 @@ public:
 
 	virtual ~function(void){}
 };
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 
-/** class Tron */
+/** @brief class Tron */
 class CTron : public CSGObject
 {
 public:

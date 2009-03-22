@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2006 Christian Gehl
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 2006-2009 Christian Gehl
+ * Copyright (C) 2006-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _CHEBYSHEWMETRIC_H___
@@ -13,9 +13,9 @@
 
 #include "lib/common.h"
 #include "distance/SimpleDistance.h"
-#include "features/RealFeatures.h"
+#include "features/SimpleFeatures.h"
 
-/** class ChebyshewMetric 
+/** @brief class ChebyshewMetric 
  *
  * The Chebyshev distance (\f$L_{\infty}\f$ norm) returns the maximum of
  * absolute feature dimension differences between two data points.
@@ -37,7 +37,7 @@ class CChebyshewMetric: public CSimpleDistance<float64_t>
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 */
-		CChebyshewMetric(CRealFeatures* l, CRealFeatures* r);
+		CChebyshewMetric(CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r);
 		virtual ~CChebyshewMetric();
 
 		/** init distance

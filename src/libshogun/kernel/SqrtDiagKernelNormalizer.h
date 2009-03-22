@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2008 Soeren Sonnenburg
- * Copyright (C) 2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 2009 Soeren Sonnenburg
+ * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _SQRTDIAGKERNELNORMALIZER_H___
@@ -14,15 +14,16 @@
 #include "kernel/KernelNormalizer.h"
 #include "kernel/CommWordStringKernel.h"
 
-/** SqrtDiagKernelNormalizer divides by the Square Root of the product of
- * the diagonal elements which effectively normalizes the vectors in feature
- * space to norm 1 (see CSqrtDiagKernelNormalizer)
+/** @brief SqrtDiagKernelNormalizer divides by the Square Root of the product of
+ * the diagonal elements.
+ *
+ * This effectively normalizes the vectors in feature space to norm 1 (see
+ * CSqrtDiagKernelNormalizer)
  *
  * \f[
  * k'({\bf x},{\bf x'}) = \frac{k({\bf x},{\bf x'})}{\sqrt{k({\bf x},{\bf x})k({\bf x'},{\bf x'})}}
  * \f]
  */
-
 class CSqrtDiagKernelNormalizer : public CKernelNormalizer
 {
 	public:

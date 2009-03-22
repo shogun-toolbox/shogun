@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2008 Christian Gehl
- * Copyright (C) 2008 Fraunhofer Institute FIRST
+ * Written (W) 2008-2009 Christian Gehl
+ * Copyright (C) 2008-2009 Fraunhofer Institute FIRST
  */
 
 #ifndef _COSINEDISTANCE_H___
@@ -13,9 +13,9 @@
 
 #include "lib/common.h"
 #include "distance/SimpleDistance.h"
-#include "features/RealFeatures.h"
+#include "features/SimpleFeatures.h"
 
-/** class CosineDistance 
+/** @brief class CosineDistance 
  *
  * The Cosine distance is obtained by using the Cosine similarity (Orchini
  * similarity, angular similarity, normalized dot product), which
@@ -42,7 +42,7 @@ class CCosineDistance: public CSimpleDistance<float64_t>
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 */
-		CCosineDistance(CRealFeatures* l, CRealFeatures* r);
+		CCosineDistance(CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r);
 		virtual ~CCosineDistance();
 
 		/** init distance

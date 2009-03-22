@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2008 Soeren Sonnenburg
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 1999-2009 Soeren Sonnenburg
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _SIGMOIDKERNEL_H___
@@ -13,9 +13,12 @@
 
 #include "lib/common.h"
 #include "kernel/SimpleKernel.h"
-#include "features/RealFeatures.h"
+#include "features/SimpleFeatures.h"
 
-/** The standard Sigmoid kernel computed on dense real valued features as
+/** @brief The standard Sigmoid kernel computed on dense real valued features.
+ *
+ * Formally, it is computed as
+ *
  * \f[
  * k({\bf x},{\bf x'})=\mbox{tanh}(\gamma {\bf x}\cdot{\bf x'}+c)
  * \f]
@@ -39,7 +42,7 @@ class CSigmoidKernel: public CSimpleKernel<float64_t>
 		 * @param gamma gamma
 		 * @param coef0 coefficient 0
 		 */
-		CSigmoidKernel(CRealFeatures* l, CRealFeatures* r, int32_t size,
+		CSigmoidKernel(CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r, int32_t size,
 			float64_t gamma, float64_t coef0);
 
 		virtual ~CSigmoidKernel();

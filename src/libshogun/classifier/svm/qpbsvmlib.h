@@ -36,7 +36,7 @@ enum E_QPB_SOLVER
 	QPB_SOLVER_GRADDESC  // gaussian seidel
 };
 
-/** clas QPBSVMLib */
+/** @brief class QPBSVMLib */
 class CQPBSVMLib: public CSGObject
 {
 	public:

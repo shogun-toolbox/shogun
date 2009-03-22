@@ -19,6 +19,8 @@
 #include "lib/Mathematics.h"
 #include "base/SGObject.h"
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+
 // sentinel is 0xFFFFFFFC or float -2
 #define NO_CHILD ((int32_t)-1073741824)
 
@@ -126,14 +128,17 @@ struct TreeParseInfo {
 	float64_t* R_k;
 };
 
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 
 template <class Trie> class CTrie;
 
-/** Template class Trie implements a suffix trie, i.e. a tree in which all
- * suffixes up to a certain length are stored. It is excessively used in the
- * CWeightedDegreeStringKernel and CWeightedDegreePositionStringKernel to
- * construct the whole features space \f$\Phi(x)\f$ and enormously helps here to
- * speed up SVM training and evaluation.
+/** @brief Template class Trie implements a suffix trie, i.e. a tree in which all
+ * suffixes up to a certain length are stored.
+ *
+ * It is excessively used in the CWeightedDegreeStringKernel and
+ * CWeightedDegreePositionStringKernel to construct the whole features space
+ * \f$\Phi(x)\f$ and enormously helps here to speed up SVM training and
+ * evaluation.
  *
  * Note that depending on the underlying structure used, a single symbol in the
  * tree requires 20 bytes (DNATrie). It is also used to do the efficient

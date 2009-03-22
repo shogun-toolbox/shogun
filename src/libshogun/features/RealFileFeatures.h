@@ -4,21 +4,23 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2008 Soeren Sonnenburg
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 1999-2009 Soeren Sonnenburg
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _DREALFILEFEATURES__H__
 #define _DREALFILEFEATURES__H__
 
 #include "lib/common.h"
-#include "features/RealFeatures.h"
+#include "features/SimpleFeatures.h"
 
-/** The class RealFileFeatures implements a dense double-precision floating
- * point matrix <b>from a file</b>.  It inherits its functionality from
- * CSimpleFeatures, which should be consulted for further reference.
+/** @brief The class RealFileFeatures implements a dense double-precision floating
+ * point matrix <b>from a file</b>.
+ *
+ * It inherits its functionality from CSimpleFeatures, which should be
+ * consulted for further reference.
  */
-class CRealFileFeatures: public CRealFeatures
+class CRealFileFeatures: public CSimpleFeatures<float64_t>
 {
 	public:
 		/** constructor

@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2006 Christian Gehl
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 2006-2009 Christian Gehl
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _STRINGDISTANCE_H___
@@ -14,7 +14,7 @@
 #include "distance/Distance.h"
 #include "features/StringFeatures.h"
 
-/** template class StringDistance */
+/** @brief template class StringDistance */
 template <class ST> class CStringDistance : public CDistance
 {
 	public:

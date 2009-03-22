@@ -15,7 +15,7 @@ Version: $VERSION
 Date: $DATE
 Title: The SHOGUN Machine Learning Toolbox
 Author: Soeren Sonnenburg, Gunnar Raetsch
-Maintainer: Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+Maintainer: Soeren Sonnenburg <sonne@debian.org>
 Depends: R (>= 2.1.0)
 Suggests:
 Description: SHOGUN - is a new machine learning toolbox with focus on large
@@ -43,7 +43,7 @@ echo "x=structure(list(DESCRIPTION = c(Package='$2',\
 		Date=\"$DATE\",\
 		Title=\"The SHOGUN Machine Learning Toolbox\",\
 		Author=\"Soeren Sonnenburg, Gunnar Raetsch\",\
-		Maintainer=\"Soeren.Sonnenburg@first.fraunhofer.de\",\
+		Maintainer=\"sonne@debian.org\",\
 		Depends=\"R (>= $RVERSION)\"),\
 		Built = list(R=\"$RVERSION\", Platform=\"$PLATFORM\", Date=\"$DATE\", OStype=\"$OSTYPE\"),\
 		Rdepends = list(name='R', op='>=', version='2.1.0'),\

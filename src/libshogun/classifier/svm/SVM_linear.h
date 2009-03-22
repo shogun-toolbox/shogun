@@ -1,3 +1,5 @@
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+
 #ifndef _LIBLINEAR_H
 #define _LIBLINEAR_H
 
@@ -191,3 +193,5 @@ private:
 };
 #endif //HAVE_LAPACK
 #endif //_LIBLINEAR_H
+
+#endif // DOXYGEN_SHOULD_SKIP_THIS

@@ -33,6 +33,8 @@
  * Shogun specific adjustments (w) 2006-2009 Soeren Sonnenburg
  */
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+
 #ifndef _LIBSVM_H
 #define _LIBSVM_H
 
@@ -139,6 +141,6 @@ float64_t svm_predict(const struct svm_model *model, const struct svm_node *x);
 void svm_destroy_model(struct svm_model *model);
 
 const char *svm_check_parameter(const struct svm_problem *prob, const struct svm_parameter *param);
-
-
 #endif /* _LIBSVM_H */
+
+#endif // DOXYGEN_SHOULD_SKIP_THIS

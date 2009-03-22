@@ -1,5 +1,6 @@
 #include "lib/config.h"
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 #ifdef HAVE_LAPACK
 #include <math.h>
 #include <stdio.h>
@@ -291,3 +292,4 @@ void l2loss_svm_fun::subXTv(float64_t *v, float64_t *XTv)
 }
 
 #endif //HAVE_LAPACK
+#endif // DOXYGEN_SHOULD_SKIP_THIS

@@ -4,9 +4,9 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2008 Soeren Sonnenburg
+ * Written (W) 1999-2009 Soeren Sonnenburg
  * Written (W) 1999-2008 Gunnar Raetsch
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _WEIGHTEDCOMMWORDSTRINGKERNEL_H___
@@ -18,12 +18,13 @@
 
 class CCommWordStringKernel;
 
-/** The WeightedCommWordString kernel may be used to compute the weighted
+/** @brief The WeightedCommWordString kernel may be used to compute the weighted
  * spectrum kernel (i.e. a spectrum kernel for 1 to K-mers, where each k-mer
- * length is weighted by some coefficient \f$\beta_k\f$)
- * from strings that have been mapped into unsigned 16bit integers. These 16bit
- * integers correspond to k-mers. To applicable in this kernel they need to be
- * sorted (e.g. via the SortWordString pre-processor).
+ * length is weighted by some coefficient \f$\beta_k\f$) from strings that have
+ * been mapped into unsigned 16bit integers.
+ *
+ * These 16bit integers correspond to k-mers. To applicable in this kernel they
+ * need to be sorted (e.g. via the SortWordString pre-processor).
  *
  * It basically uses the algorithm in the unix "comm" command (hence the name)
  * to compute:

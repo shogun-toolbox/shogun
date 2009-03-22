@@ -5,8 +5,8 @@
  * (at your option) any later version.
  *
  * Written (W) 1999-2008 Gunnar Raetsch
- * Written (W) 2007-2008 Soeren Sonnenburg
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 2007-2009 Soeren Sonnenburg
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _KMEANS_H__
@@ -15,13 +15,14 @@
 #include <stdio.h>
 #include "lib/common.h"
 #include "lib/io.h"
-#include "features/RealFeatures.h"
+#include "features/SimpleFeatures.h"
 #include "distance/Distance.h"
 #include "distance/DistanceMachine.h"
 
 class CDistanceMachine;
 
-/** KMeans clustering,  partitions the data into k (a-priori specified) clusters.
+/** @brief KMeans clustering,  partitions the data into k (a-priori specified) clusters.
+ *
  * It minimizes
  * \f[
  *  \sum_{i=1}^k\sum_{x_j\in S_i} (x_j-\mu_i)^2
@@ -190,7 +191,7 @@ class CKMeans : public CDistanceMachine
 		 * @param m m
 		 */
 		void sqdist(
-			float64_t* x, CRealFeatures* y, float64_t *z, int32_t n1,
+			float64_t* x, CSimpleFeatures<float64_t>* y, float64_t *z, int32_t n1,
 			int32_t offs, int32_t n2, int32_t m);
 
 		/** clustknb

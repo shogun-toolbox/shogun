@@ -8,7 +8,7 @@
  * Written (W) 1999-2008 Gunnar Raetsch
  * Written (W) 2006-2007 Mikio L. Braun
  * Written (W) 2008 Jochen Garcke
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _LAPACK_H__

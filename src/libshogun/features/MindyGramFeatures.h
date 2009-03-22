@@ -5,8 +5,8 @@
  * (at your option) any later version.
  *
  * Written (W) 2006 Konrad Rieck
- * Written (W) 2006-2008 Soeren Sonnenburg
- * Copyright (C) 2006-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 2006-2009 Soeren Sonnenburg
+ * Copyright (C) 2006-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #include "lib/config.h"
@@ -17,12 +17,11 @@
 #define _CMINDYGRAMFEATURES__H__
 
 #include "features/Features.h"
-#include "features/CharFeatures.h"
 #include "features/StringFeatures.h"
 
 #include <mindy.h>
 
-// MindyGramFeatures
+/// MindyGramFeatures
 class CMindyGramFeatures : public CFeatures
 {
     public:

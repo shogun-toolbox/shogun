@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2008 Soeren Sonnenburg
- * Copyright (C) 2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 2008-2009 Soeren Sonnenburg
+ * Copyright (C) 2008-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _KERNELNORMALIZER_H___
@@ -14,7 +14,9 @@
 class CKernel;
 #include "kernel/Kernel.h"
 
-/** The class Kernel Normalizer defines a function to postprocess kernel values, i.e.
+/** @brief The class Kernel Normalizer defines a function to postprocess kernel values. 
+ *
+ * Formally it defines f(.,.,.)
  *
  * \f[
  * k'({\bf x},{\bf x'}) = f(k({\bf x},{\bf x'}),{\bf x},{\bf x'})

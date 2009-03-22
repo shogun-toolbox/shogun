@@ -74,6 +74,7 @@ extern "C" int	finite(double);
 #define radix_push(a, n, i)	    sp->sa = a, sp->sn = n, (sp++)->si = i
 #define radix_pop(a, n, i)	    a = (--sp)->sa, n = sp->sn, i = sp->si
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 /** Stack structure */
 template <class T> struct radix_stack_t
 {
@@ -104,11 +105,11 @@ struct thread_qsort
 	/** number of threads */
 	int32_t num_threads;
 };
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 
 class CSGObject;
 
-/** Mathematical Functions.
- * Class which collects generic mathematical functions
+/** @brief Class which collects generic mathematical functions
  */
 class CMath : public CSGObject
 {
@@ -247,7 +248,7 @@ class CMath : public CSGObject
 		}
 
 		/// x^0.5
-		static inline float128_t sqrt(float128_t x)
+		static inline float96_t sqrt(float96_t x)
 		{
 			//fall back to double precision sqrt if sqrtl is not
 			//available
@@ -260,7 +261,7 @@ class CMath : public CSGObject
 
 
 		/// x^n
-		static inline float128_t powl(float128_t x, float128_t n)
+		static inline float96_t powl(float96_t x, float96_t n)
 		{
 			//fall back to double precision pow if powl is not
 			//available
@@ -494,6 +495,24 @@ class CMath : public CSGObject
 			}
 
 		/// compute dot product between v1 and v2 (blas optimized)
+		static inline float64_t dot(const bool* v1, const bool* v2, int32_t n)
+		{
+			float64_t r=0;
+			for (int32_t i=0; i<n; i++)
+				r+=((v1[i]) ? 1 : 0) * ((v2[i]) ? 1 : 0);
+			return r;
+		}
+
+		/// compute dot product between v1 and v2 (blas optimized)
+		static inline float96_t dot(const float96_t* v1, const float96_t* v2, int32_t n)
+		{
+			float96_t r=0;
+			for (int32_t i=0; i<n; i++)
+				r+=v1[i]*v2[i];
+			return r;
+		}
+
+		/// compute dot product between v1 and v2 (blas optimized)
 		static inline float64_t dot(const float64_t* v1, const float64_t* v2, int32_t n)
 		{
 			float64_t r=0;
@@ -546,6 +565,17 @@ class CMath : public CSGObject
 		/// compute dot product between v1 and v2 (for 32bit ints)
 		static inline float64_t dot(
 			const int32_t* v1, const int32_t* v2, int32_t n)
+		{
+			float64_t r=0;
+			for (int32_t i=0; i<n; i++)
+				r+=((float64_t) v1[i])*v2[i];
+
+			return r;
+		}
+
+		/// compute dot product between v1 and v2 (for 32bit unsigned ints)
+		static inline float64_t dot(
+			const uint32_t* v1, const uint32_t* v2, int32_t n)
 		{
 			float64_t r=0;
 			for (int32_t i=0; i<n; i++)

@@ -5,7 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 1999-2008 Gunnar Raetsch
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _SALZBERGWORDSTRINGKERNEL_H___
@@ -16,7 +16,9 @@
 #include "classifier/PluginEstimate.h"
 #include "features/StringFeatures.h"
 
-/** The SalzbergWordString kernel implements the Salzberg kernel as described in
+/** @brief The SalzbergWordString kernel implements the Salzberg kernel.
+ *
+ * It is described in
  *
  * Engineering Support Vector Machine Kernels That Recognize Translation Initiation Sites
  * A. Zien, G.Raetsch, S. Mika, B. Schoelkopf, T. Lengauer, K.-R. Mueller

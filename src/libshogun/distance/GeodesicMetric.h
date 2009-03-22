@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2006 Christian Gehl
- * Copyright (C) 2006-2008 Fraunhofer Institute FIRST
+ * Written (W) 2006-2009 Christian Gehl
+ * Copyright (C) 2006-2009 Fraunhofer Institute FIRST
  */
 
 #ifndef _GEODESICMETRIC_H___
@@ -13,9 +13,9 @@
 
 #include "lib/common.h"
 #include "distance/SimpleDistance.h"
-#include "features/RealFeatures.h"
+#include "features/SimpleFeatures.h"
 
-/** class GeodesicMetric
+/** @brief class GeodesicMetric
  *
  * The Geodesic distance (Great circle distance) computes the shortest path
  * between two data points on a sphere (the radius is set to one for the
@@ -41,7 +41,7 @@ class CGeodesicMetric: public CSimpleDistance<float64_t>
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 */
-		CGeodesicMetric(CRealFeatures* l, CRealFeatures* r);
+		CGeodesicMetric(CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r);
 		virtual ~CGeodesicMetric();
 
 		/** init distance

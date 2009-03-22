@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2008 Soeren Sonnenburg
- * Copyright (C) 2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 2009 Soeren Sonnenburg
+ * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _DUMMYFEATURES__H__
@@ -14,7 +14,10 @@
 #include "lib/common.h"
 #include "features/Features.h"
 
-/** The class DummyFeatures implements a set of dummy features. */
+/** @brief The class DummyFeatures implements features that only know the
+ * number of feature objects (but don't actually contain any).
+ *
+ * This is used in the CCustomKernel.*/
 class CDummyFeatures : public CFeatures
 {
 	public:

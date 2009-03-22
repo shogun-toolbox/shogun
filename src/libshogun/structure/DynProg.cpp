@@ -6,7 +6,8 @@
  *
  * Written (W) 1999-2007 Soeren Sonnenburg
  * Written (W) 1999-2007 Gunnar Raetsch
- * Copyright (C) 1999-2007 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 2008-2009 Jonas Behr
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #include "structure/DynProg.h"
@@ -14,7 +15,6 @@
 #include "lib/io.h"
 #include "lib/config.h"
 #include "features/StringFeatures.h"
-#include "features/CharFeatures.h"
 #include "features/Alphabet.h"
 #include "structure/Plif.h"
 #include "lib/Array.h"

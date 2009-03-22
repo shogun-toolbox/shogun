@@ -11,7 +11,7 @@
 #include "lib/common.h"
 #include "lib/Mathematics.h"
 #include "kernel/TensorProductPairKernel.h"
-#include "features/WordFeatures.h"
+#include "features/SimpleFeatures.h"
 #include "lib/io.h"
 
 CTensorProductPairKernel::CTensorProductPairKernel(int32_t size, CKernel* s)
@@ -20,7 +20,7 @@ CTensorProductPairKernel::CTensorProductPairKernel(int32_t size, CKernel* s)
 	SG_REF(subkernel);
 }
 
-CTensorProductPairKernel::CTensorProductPairKernel(CWordFeatures* l, CWordFeatures* r, CKernel* s)
+CTensorProductPairKernel::CTensorProductPairKernel(CSimpleFeatures<int32_t>* l, CSimpleFeatures<int32_t>* r, CKernel* s)
 : CSimpleKernel<int32_t>(10), subkernel(s)
 {
 	SG_REF(subkernel);

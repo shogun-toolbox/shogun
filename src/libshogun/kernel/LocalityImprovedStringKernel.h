@@ -6,7 +6,7 @@
  *
  * Written (W) 1999-2008 Gunnar Raetsch
  * Written (W) 1999-2008 Soeren Sonnenburg
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _LOCALITYIMPROVEDSTRINGKERNEL_H___
@@ -15,7 +15,7 @@
 #include "lib/common.h"
 #include "kernel/StringKernel.h"
 
-/** The LocalityImprovedString kernel is inspired by the polynomial kernel.
+/** @brief The LocalityImprovedString kernel is inspired by the polynomial kernel.
  * Comparing neighboring characters it puts emphasize on local features.
  *
  * It can be defined as

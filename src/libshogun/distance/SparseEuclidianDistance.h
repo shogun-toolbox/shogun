@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2007-2008 Soeren Sonnenburg
- * Copyright (C) 2007-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 2007-2009 Soeren Sonnenburg
+ * Copyright (C) 2007-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _SPARSEEUCLIDIANDISTANCE_H__
@@ -15,7 +15,7 @@
 #include "distance/SparseDistance.h"
 #include "features/SparseFeatures.h"
 
-/** class SparseEucldianDistance */
+/** @brief class SparseEucldianDistance */
 class CSparseEuclidianDistance: public CSparseDistance<float64_t>
 {
 	public:

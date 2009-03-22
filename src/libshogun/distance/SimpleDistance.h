@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2006 Christian Gehl
- * Copyright (C) 2006-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 2006-2009 Christian Gehl
+ * Copyright (C) 2006-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _SIMPLEDISTANCE_H___
@@ -15,7 +15,7 @@
 #include "features/SimpleFeatures.h"
 #include "lib/io.h"
 
-/** template class SimpleDistance */
+/** @brief template class SimpleDistance */
 template <class ST> class CSimpleDistance : public CDistance
 {
 	public:

@@ -4,9 +4,9 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2008 Soeren Sonnenburg
+ * Written (W) 1999-2009 Soeren Sonnenburg
  * Written (W) 1999-2008 Gunnar Raetsch
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #include "lib/common.h"
@@ -28,6 +28,7 @@
 
 #define TRIES(X) ((use_poim_tries) ? (poim_tries.X) : (tries.X))
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 template <class Trie> struct S_THREAD_PARAM 
 {
 	int32_t* vec;
@@ -44,6 +45,7 @@ template <class Trie> struct S_THREAD_PARAM
 	int32_t* shift;
 	int32_t* vec_idx;
 };
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 
 CWeightedDegreePositionStringKernel::CWeightedDegreePositionStringKernel(
 	int32_t size, int32_t d, int32_t mm, int32_t mkls)

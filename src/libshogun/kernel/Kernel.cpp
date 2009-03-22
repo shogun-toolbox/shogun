@@ -7,9 +7,9 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2008 Soeren Sonnenburg
+ * Written (W) 1999-2009 Soeren Sonnenburg
  * Written (W) 1999-2008 Gunnar Raetsch
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #include "lib/config.h"
@@ -493,6 +493,7 @@ void CKernel::cache_kernel_row(int32_t m)
 			perror("Error: Kernel cache full! => increase cache size");
 	}
 }
+
 
 void* CKernel::cache_multiple_kernel_row_helper(void* p)
 {

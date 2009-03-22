@@ -4,9 +4,9 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2007-2008 Vojtech Franc
- * Written (W) 2007-2008 Soeren Sonnenburg
- * Copyright (C) 2007-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 2007-2009 Vojtech Franc
+ * Written (W) 2007-2009 Soeren Sonnenburg
+ * Copyright (C) 2007-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _SVMOCAS_H___
@@ -23,7 +23,7 @@ enum E_SVM_TYPE
 	SVM_BMRM = 1
 };
 
-/** class SVMOcas */
+/** @brief class SVMOcas */
 class CSVMOcas : public CLinearClassifier
 {
 	public:

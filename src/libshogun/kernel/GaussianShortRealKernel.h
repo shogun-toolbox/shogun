@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2008 Soeren Sonnenburg
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 2008-2009 Soeren Sonnenburg
+ * Copyright (C) 2008-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _GAUSSIANSHORTREALKERNEL_H___
@@ -13,10 +13,12 @@
 
 #include "lib/common.h"
 #include "kernel/SimpleKernel.h"
-#include "features/ShortRealFeatures.h"
+#include "features/SimpleFeatures.h"
 
-/** The well known Gaussian kernel (swiss army knife for SVMs)
- * on dense short-real valued features is computed as
+/** @brief The well known Gaussian kernel (swiss army knife for SVMs)
+ * on dense short-real valued features.
+ *
+ * It is computed as
  *
  * \f[
  * k({\bf x},{\bf x'})= exp(-\frac{||{\bf x}-{\bf x'}||^2}{\tau})
@@ -41,7 +43,7 @@ class CGaussianShortRealKernel: public CSimpleKernel<float32_t>
 		 * @param width width
 		 * @param size cache size
 		 */
-		CGaussianShortRealKernel(CShortRealFeatures* l, CShortRealFeatures* r,
+		CGaussianShortRealKernel(CSimpleFeatures<float32_t>* l, CSimpleFeatures<float32_t>* r,
 			float64_t width, int32_t size=10);
 
 		virtual ~CGaussianShortRealKernel();

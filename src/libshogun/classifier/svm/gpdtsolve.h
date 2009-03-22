@@ -28,6 +28,7 @@
 
 #include "base/SGObject.h"
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 /** class QProblem */
 class QPproblem : public CSGObject
 {
@@ -163,3 +164,4 @@ private:
   bool is_bound(int32_t i) { return (alpha[i] > (c_const - DELTAsv)); }
 
 };
+#endif // DOXYGEN_SHOULD_SKIP_THIS

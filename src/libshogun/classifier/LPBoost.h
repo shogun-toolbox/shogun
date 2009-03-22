@@ -22,9 +22,11 @@
 #include "features/SparseFeatures.h"
 #include "classifier/LinearClassifier.h"
 
-/** Class LPBoost trains a linear classifier called Linear Programming Machine,
- * i.e. a SVM using a \f$\ell_1\f$ norm regularizer. It solves the following
- * optimization problem using Boosting on the input features:
+/** @brief Class LPBoost trains a linear classifier called Linear Programming
+ * Machine, i.e. a SVM using a \f$\ell_1\f$ norm regularizer.
+ *
+ * It solves the following optimization problem using Boosting on the input
+ * features:
  *
  * \f{eqnarray*}
  * \min_{{\bf w}={(\bf w^+},{\bf w^-}), b, {\bf \xi}} &&

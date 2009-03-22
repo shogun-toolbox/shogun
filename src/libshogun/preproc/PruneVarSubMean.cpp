@@ -5,14 +5,14 @@
  * (at your option) any later version.
  *
  * Written (W) 1999-2008 Gunnar Raetsch
- * Written (W) 1999-2008 Soeren Sonnenburg
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 1999-2009 Soeren Sonnenburg
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #include "preproc/PruneVarSubMean.h"
 #include "preproc/SimplePreProc.h"
 #include "features/Features.h"
-#include "features/RealFeatures.h"
+#include "features/SimpleFeatures.h"
 #include "lib/io.h"
 #include "lib/Mathematics.h"
 
@@ -35,9 +35,9 @@ bool CPruneVarSubMean::init(CFeatures* p_f)
 		ASSERT(p_f->get_feature_class()==C_SIMPLE);
 		ASSERT(p_f->get_feature_type()==F_DREAL);
 
-		CRealFeatures *f=(CRealFeatures*) p_f;
+		CSimpleFeatures<float64_t> *f=(CSimpleFeatures<float64_t>*) p_f;
 		int32_t num_examples=f->get_num_vectors();
-		int32_t num_features=((CRealFeatures*)f)->get_num_features();
+		int32_t num_features=((CSimpleFeatures<float64_t>*)f)->get_num_features();
 
 		delete[] mean;
 		delete[] idx;
@@ -143,7 +143,7 @@ float64_t* CPruneVarSubMean::apply_to_feature_matrix(CFeatures* f)
 
 	int32_t num_vectors=0;
 	int32_t num_features=0;
-	float64_t* m=((CRealFeatures*) f)->get_feature_matrix(num_features, num_vectors);
+	float64_t* m=((CSimpleFeatures<float64_t>*) f)->get_feature_matrix(num_features, num_vectors);
 
 	SG_INFO( "get Feature matrix: %ix%i\n", num_vectors, num_features);
 	SG_INFO( "Preprocessing feature matrix\n");
@@ -164,8 +164,8 @@ float64_t* CPruneVarSubMean::apply_to_feature_matrix(CFeatures* f)
 		}
 	}
 
-	((CRealFeatures*) f)->set_num_features(num_idx);
-	((CRealFeatures*) f)->get_feature_matrix(num_features, num_vectors);
+	((CSimpleFeatures<float64_t>*) f)->set_num_features(num_idx);
+	((CSimpleFeatures<float64_t>*) f)->get_feature_matrix(num_features, num_vectors);
 	SG_INFO( "new Feature matrix: %ix%i\n", num_vectors, num_features);
 
 	return m;

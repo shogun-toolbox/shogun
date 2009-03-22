@@ -4,9 +4,9 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2008 Soeren Sonnenburg
+ * Written (W) 1999-2009 Soeren Sonnenburg
  * Written (W) 1999-2008 Gunnar Raetsch
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _CPREPROC__H__
@@ -32,12 +32,13 @@ enum EPreProcType
 class CFeatures;
 
 
-/** Class PreProc defines a preprocessor interface. Preprocessors are
- * transformation functions that don't change the domain of the input features.
- * These functions can be applied in-place if the input features fit in memory
- * or can be applied on-the-fly when (depending on features) a feature caching
- * strategy is applied. However, if the individual features are in
- * \f$\bf{R}\f$ they have to stay in \f$\bf{R}\f$ although the
+/** @brief Class PreProc defines a preprocessor interface.
+ *
+ * Preprocessors are transformation functions that don't change the domain of
+ * the input features.  These functions can be applied in-place if the input
+ * features fit in memory or can be applied on-the-fly when (depending on
+ * features) a feature caching strategy is applied. However, if the individual
+ * features are in \f$\bf{R}\f$ they have to stay in \f$\bf{R}\f$ although the
  * dimensionality of the feature vectors is allowed change.
  *
  * As preprocessors might need a certain initialization they may expect that

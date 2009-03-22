@@ -16,6 +16,7 @@
 #include <pthread.h>
 #endif
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 struct DF_THREAD_PARAM
 {
 	CDotFeatures* df;
@@ -28,6 +29,7 @@ struct DF_THREAD_PARAM
 	float64_t bias;
 	bool progress;
 };
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 
 void CDotFeatures::dense_dot_range(float64_t* output, int32_t start, int32_t stop, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b)
 {
@@ -137,24 +139,24 @@ void* CDotFeatures::dense_dot_range_helper(void* p)
 	return NULL;
 }
 
-void CDotFeatures::get_feature_matrix(float64_t** matrix, int32_t* d1, int32_t* d2)
+void CDotFeatures::get_feature_matrix(float64_t** dst, int32_t* num_feat, int32_t* num_vec)
 {
     int64_t offs=0;
-	int32_t num_vec=get_num_vectors();
+	int32_t num=get_num_vectors();
     int32_t dim=get_dim_feature_space();
-    ASSERT(num_vec>0);
+    ASSERT(num>0);
     ASSERT(dim>0);
 
-    int64_t sz=((uint64_t) num_vec)* dim;
+    int64_t sz=((uint64_t) num)* dim;
 
-    *d1=dim;
-    *d2=num_vec;
-    *matrix=new float64_t[sz];
-    memset(*matrix, 0, sz*sizeof(float64_t));
+    *num_feat=dim;
+    *num_vec=num;
+    *dst=new float64_t[sz];
+    memset(*dst, 0, sz*sizeof(float64_t));
 
-    for (int32_t i=0; i<num_vec; i++)
+    for (int32_t i=0; i<num; i++)
     {
-		add_to_dense_vec(1.0, i, &((*matrix)[offs]), dim);
+		add_to_dense_vec(1.0, i, &((*dst)[offs]), dim);
         offs+=dim;
     }
 }

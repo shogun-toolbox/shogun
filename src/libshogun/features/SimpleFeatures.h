@@ -4,9 +4,9 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2008 Soeren Sonnenburg
+ * Written (W) 1999-2009 Soeren Sonnenburg
  * Written (W) 1999-2008 Gunnar Raetsch
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _SIMPLEFEATURES__H__
@@ -17,18 +17,21 @@
 #include "lib/Cache.h"
 #include "lib/io.h"
 #include "lib/Cache.h"
+#include "lib/File.h"
 #include "preproc/SimplePreProc.h"
 #include "features/DotFeatures.h"
+#include "features/StringFeatures.h"
 
 #include <string.h>
 
-
+template <class ST> class CStringFeatures;
 template <class ST> class CSimpleFeatures;
 template <class ST> class CSimplePreProc;
 
-/** The class SimpleFeatures implements dense feature matrices, which are
- * stored en-block in memory in fortran order, i.e. column-by-column, where a
- * column denotes a feature vector.
+/** @brief The class SimpleFeatures implements dense feature matrices.
+ *
+ * The feature matrices are stored en-block in memory in fortran order, i.e.
+ * column-by-column, where a column denotes a feature vector.
  *
  * There are get_num_vectors() many feature vectors, of dimension
  * get_num_features(). To access a feature vector call
@@ -37,20 +40,22 @@ template <class ST> class CSimplePreProc;
  * feature vectors might have been generated on the fly (due to a number
  * preprocessors being attached to them).
  *
- * From this template class a number of dense feature matrix classes are derived.
- * They all are only shortcuts for different data types and heavily rely on
- * this class:
+ * From this template class a number the following dense feature matrix types
+ * are used and supported:
  *
- * 8bit char matrix - CCharFeatures
- * 8bit Byte matrix - CByteFeatures
- * 16bit Integer matrix - CShortFeatures
- * 16bit Word matrix - CWordFeatures
- * 32bit Float matrix - CShortRealFeatures
- * 64bit Double matrix - CRealFeatures
- * 64bit Double matrix <b>in a file</b> - CRealFileFeatures
- * 64bit Tangent of posterior log-odds (TOP) features from HMM - CTOPFeatures
- * 64bit Fisher Kernel (FK) features from HMM - CTOPFeatures
- * 32bit Integer matrix - CIntFeatures
+ * \li bool matrix - CSimpleFeatures<bool>
+ * \li 8bit char matrix - CSimpleFeatures<char>
+ * \li 8bit Byte matrix - CSimpleFeatures<uint8_t>
+ * \li 16bit Integer matrix - CSimpleFeatures<int16_t>
+ * \li 16bit Word matrix - CSimpleFeatures<uint16_t>
+ * \li 32bit Integer matrix - CSimpleFeatures<int32_t>
+ * \li 32bit Unsigned Integer matrix - CSimpleFeatures<uint32_t>
+ * \li 32bit Float matrix - CSimpleFeatures<float32_t>
+ * \li 64bit Float matrix - CSimpleFeatures<float64_t>
+ * \li 64bit Float matrix <b>in a file</b> - CRealFileFeatures
+ * \li 64bit Tangent of posterior log-odds (TOP) features from HMM - CTOPFeatures
+ * \li 64bit Fisher Kernel (FK) features from HMM - CTOPFeatures
+ * \li 96bit Float matrix - CSimpleFeatures<float96_t>
  */
 template <class ST> class CSimpleFeatures: public CDotFeatures
 {
@@ -80,15 +85,15 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 
 		/** constructor
 		 *
-		 * @param fm feature matrix
+		 * @param src feature matrix
 		 * @param num_feat number of features in matrix
 		 * @param num_vec number of vectors in matrix
 		 */
-		CSimpleFeatures(ST* fm, int32_t num_feat, int32_t num_vec)
+		CSimpleFeatures(ST* src, int32_t num_feat, int32_t num_vec)
 		: CDotFeatures(0), num_vectors(0), num_features(0),
 			feature_matrix(NULL), feature_cache(NULL)
 		{
-			set_feature_matrix(fm, num_feat, num_vec);
+			copy_feature_matrix(src, num_feat, num_vec);
 		}
 
 		/** constructor
@@ -207,6 +212,57 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 			}
 		}
 
+		/** set feature vector num
+		 *
+		 * ( only available in-memory feature matrices )
+		 *
+		 * @param src vector
+		 * @param len length of vector
+		 * @param num index where to put vector to
+		 */
+		void set_feature_vector(ST* src, int32_t len, int32_t num)
+		{
+			if (num>=num_vectors)
+			{
+				SG_ERROR("Index out of bounds (number of vectors %d, you "
+						"requested %d)\n", num_vectors, num);
+			}
+
+			if (!feature_matrix)
+				SG_ERROR("Requires a in-memory feature matrix\n");
+
+			if (len != num_features)
+				SG_ERROR("Vector not of length %d (has %d)\n", num_features, len);
+
+			memcpy(&feature_matrix[num*num_features], src, num_features*sizeof(ST));
+		}
+
+		/** get feature vector num
+		 *
+		 * @param dst destination to store vector in
+		 * @param len length of vector
+		 * @param num index of vector
+		 */
+		void get_feature_vector(ST** dst, int32_t* len, int32_t num)
+		{
+			if (num>=num_vectors)
+			{
+				SG_ERROR("Index out of bounds (number of vectors %d, you "
+						"requested %d)\n", num_vectors, num);
+			}
+
+			int32_t vlen=0;
+			bool free_vec;
+
+			ST* vec= get_feature_vector(num, vlen, free_vec);
+
+			*len=vlen;
+			*dst=(ST*) malloc(vlen*sizeof(ST));
+			memcpy(*dst, vec, vlen*sizeof(ST));
+
+			free_feature_vector(vec, num, free_vec);
+		}
+
 		/** free feature vector
 		 *
 		 * @param feat_vec feature vector to free
@@ -222,20 +278,20 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 				delete[] feat_vec ;
 		}
 
-		/** get the pointer to the feature matrix
+		/** get a copy of the feature matrix
 		 * num_feat,num_vectors are returned by reference
 		 *
 		 * @param dst destination to store matrix in
-		 * @param d1 dimension 1 of matrix
-		 * @param d2 dimension 2 of matrix
+		 * @param num_feat number of features (rows of matrix)
+		 * @param num_vec number of vectors (columns of matrix)
 		 */
-		void get_fm(ST** dst, int32_t* d1, int32_t* d2)
+		void get_feature_matrix(ST** dst, int32_t* num_feat, int32_t* num_vec)
 		{
 			ASSERT(feature_matrix);
 
 			int64_t num=num_features*num_vectors;
-			*d1=num_features;
-			*d2=num_vectors;
+			*num_feat=num_features;
+			*num_vec=num_vectors;
 			*dst=(ST*) malloc(sizeof(ST)*num);
 			memcpy(*dst, feature_matrix, num * sizeof(ST));
 		}
@@ -494,6 +550,74 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 			return num_features;
 		}
 
+		/** align char features
+		 *
+		 * @param cf char features
+		 * @param Ref other char features
+		 * @param gapCost gap cost
+		 * @return if aligning was successful
+		 */
+		virtual inline bool Align_char_features(
+			CStringFeatures<char>* cf, CStringFeatures<char>* Ref, float64_t gapCost)
+		{
+			return false;
+		}
+
+		/** load features from file
+		 *
+		 * @param fname filename to load from
+		 * @return if loading was successful
+		 */
+		virtual bool load(char* fname)
+		{
+			bool status=false;
+			num_vectors=1;
+			num_features=0;
+			CFile f(fname, 'r', get_feature_type());
+			int64_t numf=0;
+			free_feature_matrix();
+			feature_matrix=f.load_data<ST>(NULL, numf);
+			num_features=numf;
+
+			if (!f.is_ok())
+				SG_ERROR( "loading file \"%s\" failed", fname);
+			else
+				status=true;
+
+			return status;
+		}
+
+		/** save features to file
+		 *
+		 * @param fname filename to save to
+		 * @return if saving was successful
+		 */
+		virtual bool save(char* fname)
+		{
+			int32_t len;
+			bool free;
+			ST* fv;
+
+			CFile f(fname, 'w', get_feature_type());
+
+			for (int32_t i=0; i< (int32_t) num_vectors && f.is_ok(); i++)
+			{
+				if (!(i % (num_vectors/10+1)))
+					SG_PRINT( "%02d%%.", (int) (100.0*i/num_vectors));
+				else if (!(i % (num_vectors/200+1)))
+					SG_PRINT( ".");
+
+				fv=get_feature_vector(i, len, free);
+				f.save_data<ST>(fv, len);
+				free_feature_vector(fv, i, free) ;
+			}
+
+			if (f.is_ok())
+				SG_INFO( "%d vectors with %d features each successfully written (filesize: %ld)\n", num_vectors, num_features, num_vectors*num_features*sizeof(float64_t));
+
+			return true;
+		}
+
 		/** @return object name */
 		inline virtual const char* get_name() const { return "SimpleFeatures"; }
 
@@ -528,31 +652,14 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 		CCache<ST>* feature_cache;
 };
 
-/** get feature type the DREAL feature can deal with
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+/** get feature type the BOOL feature can deal with
  *
- * @return feature type DREAL
+ * @return feature type BOOL
  */
-template<> inline EFeatureType CSimpleFeatures<float64_t>::get_feature_type()
+template<> inline EFeatureType CSimpleFeatures<bool>::get_feature_type()
 {
-	return F_DREAL;
-}
-
-/** get feature type the SHORTREAL feature can deal with
- *
- * @return feature type SHORTREAL
- */
-template<> inline EFeatureType CSimpleFeatures<float32_t>::get_feature_type()
-{
-	return F_SHORTREAL;
-}
-
-/** get feature type the SHORT feature can deal with
- *
- * @return feature type SHORT
- */
-template<> inline EFeatureType CSimpleFeatures<int16_t>::get_feature_type()
-{
-	return F_SHORT;
+	return F_BOOL;
 }
 
 /** get feature type the CHAR feature can deal with
@@ -573,13 +680,13 @@ template<> inline EFeatureType CSimpleFeatures<uint8_t>::get_feature_type()
 	return F_BYTE;
 }
 
-/** get feature type the INT feature can deal with
+/** get feature type the SHORT feature can deal with
  *
- * @return feature type INT
+ * @return feature type SHORT
  */
-template<> inline EFeatureType CSimpleFeatures<int32_t>::get_feature_type()
+template<> inline EFeatureType CSimpleFeatures<int16_t>::get_feature_type()
 {
-	return F_INT;
+	return F_SHORT;
 }
 
 /** get feature type the WORD feature can deal with
@@ -591,6 +698,34 @@ template<> inline EFeatureType CSimpleFeatures<uint16_t>::get_feature_type()
 	return F_WORD;
 }
 
+
+/** get feature type the INT feature can deal with
+ *
+ * @return feature type INT
+ */
+template<> inline EFeatureType CSimpleFeatures<int32_t>::get_feature_type()
+{
+	return F_INT;
+}
+
+/** get feature type the UINT feature can deal with
+ *
+ * @return feature type UINT
+ */
+template<> inline EFeatureType CSimpleFeatures<uint32_t>::get_feature_type()
+{
+	return F_UINT;
+}
+
+/** get feature type the LONG feature can deal with
+ *
+ * @return feature type LONG
+ */
+template<> inline EFeatureType CSimpleFeatures<int64_t>::get_feature_type()
+{
+	return F_LONG;
+}
+
 /** get feature type the ULONG feature can deal with
  *
  * @return feature type ULONG
@@ -600,59 +735,156 @@ template<> inline EFeatureType CSimpleFeatures<uint64_t>::get_feature_type()
 	return F_ULONG;
 }
 
-template<> inline float64_t CSimpleFeatures<float64_t>:: dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
+/** get feature type the SHORTREAL feature can deal with
+ *
+ * @return feature type SHORTREAL
+ */
+template<> inline EFeatureType CSimpleFeatures<float32_t>::get_feature_type()
 {
-	ASSERT(vec2_len == num_features);
-
-	int32_t vlen;
-	bool vfree;
-	float64_t* vec1= get_feature_vector(vec_idx1, vlen, vfree);
-
-	ASSERT(vlen == num_features);
-	float64_t result=CMath::dot(vec1, vec2, num_features);
-
-	free_feature_vector(vec1, vec_idx1, vfree);
-
-	return result;
+	return F_SHORTREAL;
 }
 
-template<> inline float64_t CSimpleFeatures<float32_t>:: dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
+/** get feature type the DREAL feature can deal with
+ *
+ * @return feature type DREAL
+ */
+template<> inline EFeatureType CSimpleFeatures<float64_t>::get_feature_type()
+{
+	return F_DREAL;
+}
+
+/** get feature type the LONGREAL feature can deal with
+ *
+ * @return feature type LONGREAL
+ */
+template<> inline EFeatureType CSimpleFeatures<float96_t>::get_feature_type()
+{
+	return F_LONGREAL;
+}
+
+/** @return object name */
+template<> inline const char* CSimpleFeatures<bool>::get_name() const
+{
+	return "BoolFeatures";
+}
+
+/** @return object name */
+template<> inline const char* CSimpleFeatures<char>::get_name() const
+{
+	return "CharFeatures";
+}
+
+/** @return object name */
+template<> inline const char* CSimpleFeatures<uint8_t>::get_name() const
+{
+	return "ByteFeatures";
+}
+
+/** @return object name */
+template<> inline const char* CSimpleFeatures<int16_t>::get_name() const
+{
+	return "ShortFeatures";
+}
+
+/** @return object name */
+template<> inline const char* CSimpleFeatures<uint16_t>::get_name() const
+{
+	return "WordFeatures";
+}
+
+/** @return object name */
+template<> inline const char* CSimpleFeatures<int32_t>::get_name() const
+{
+	return "IntFeatures";
+}
+
+/** @return object name */
+template<> inline const char* CSimpleFeatures<uint32_t>::get_name() const
+{
+	return "UIntFeatures";
+}
+
+/** @return object name */
+template<> inline const char* CSimpleFeatures<int64_t>::get_name() const
+{
+	return "LongIntFeatures";
+}
+
+/** @return object name */
+template<> inline const char* CSimpleFeatures<uint64_t>::get_name() const
+{
+	return "ULongIntFeatures";
+}
+
+/** @return object name */
+template<> inline const char* CSimpleFeatures<float32_t>::get_name() const
+{
+	return "ShortRealFeatures";
+}
+
+/** @return object name */
+template<> inline const char* CSimpleFeatures<float64_t>::get_name() const
+{
+	return "RealFeatures";
+}
+
+/** @return object name */
+template<> inline const char* CSimpleFeatures<float96_t>::get_name() const
+{
+	return "LongRealFeatures";
+}
+
+template<> inline bool CSimpleFeatures<float64_t>::Align_char_features(
+		CStringFeatures<char>* cf, CStringFeatures<char>* Ref, float64_t gapCost)
+{
+	ASSERT(cf);
+	/*num_vectors=cf->get_num_vectors();
+	num_features=Ref->get_num_vectors();
+
+	int64_t len=((int64_t) num_vectors)*num_features;
+	free_feature_matrix();
+	feature_matrix=new float64_t[len];
+	int32_t num_cf_feat=0;
+	int32_t num_cf_vec=0;
+	int32_t num_ref_feat=0;
+	int32_t num_ref_vec=0;
+	char* fm_cf=NULL; //cf->get_feature_matrix(num_cf_feat, num_cf_vec);
+	char* fm_ref=NULL; //Ref->get_feature_matrix(num_ref_feat, num_ref_vec);
+
+	ASSERT(num_cf_vec==num_vectors);
+	ASSERT(num_ref_vec==num_features);
+
+	SG_INFO( "computing aligments of %i vectors to %i reference vectors: ", num_cf_vec, num_ref_vec) ;
+	for (int32_t i=0; i< num_ref_vec; i++)
+	{
+		SG_PROGRESS(i, num_ref_vec) ;
+		for (int32_t j=0; j<num_cf_vec; j++)
+			feature_matrix[i+j*num_features] = CMath::Align(&fm_cf[j*num_cf_feat], &fm_ref[i*num_ref_feat], num_cf_feat, num_ref_feat, gapCost);
+	} ;
+
+	SG_INFO( "created %i x %i matrix (0x%p)\n", num_features, num_vectors, feature_matrix) ;*/
+	return true;
+}
+
+template<> inline float64_t CSimpleFeatures<bool>:: dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
 {
 	ASSERT(vec2_len == num_features);
 
 	int32_t vlen;
 	bool vfree;
-	float32_t* vec1= get_feature_vector(vec_idx1, vlen, vfree);
+	bool* vec1= get_feature_vector(vec_idx1, vlen, vfree);
 
 	ASSERT(vlen == num_features);
 	float64_t result=0;
 
 	for (int32_t i=0 ; i<num_features; i++)
-		result+=vec1[i]*vec2[i];
+		result+=vec1[i] ? vec2[i] : 0;
 
 	free_feature_vector(vec1, vec_idx1, vfree);
 
 	return result;
 }
 
-template<> inline float64_t CSimpleFeatures<int16_t>:: dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
-{
-	ASSERT(vec2_len == num_features);
-
-	int32_t vlen;
-	bool vfree;
-	int16_t* vec1= get_feature_vector(vec_idx1, vlen, vfree);
-
-	ASSERT(vlen == num_features);
-	float64_t result=0;
-
-	for (int32_t i=0 ; i<num_features; i++)
-		result+=vec1[i]*vec2[i];
-
-	free_feature_vector(vec1, vec_idx1, vfree);
-
-	return result;
-}
 
 template<> inline float64_t CSimpleFeatures<char>:: dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
 {
@@ -692,6 +924,45 @@ template<> inline float64_t CSimpleFeatures<uint8_t>:: dense_dot(int32_t vec_idx
 	return result;
 }
 
+template<> inline float64_t CSimpleFeatures<int16_t>:: dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
+{
+	ASSERT(vec2_len == num_features);
+
+	int32_t vlen;
+	bool vfree;
+	int16_t* vec1= get_feature_vector(vec_idx1, vlen, vfree);
+
+	ASSERT(vlen == num_features);
+	float64_t result=0;
+
+	for (int32_t i=0 ; i<num_features; i++)
+		result+=vec1[i]*vec2[i];
+
+	free_feature_vector(vec1, vec_idx1, vfree);
+
+	return result;
+}
+
+
+template<> inline float64_t CSimpleFeatures<uint16_t>:: dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
+{
+	ASSERT(vec2_len == num_features);
+
+	int32_t vlen;
+	bool vfree;
+	uint16_t* vec1= get_feature_vector(vec_idx1, vlen, vfree);
+
+	ASSERT(vlen == num_features);
+	float64_t result=0;
+
+	for (int32_t i=0 ; i<num_features; i++)
+		result+=vec1[i]*vec2[i];
+
+	free_feature_vector(vec1, vec_idx1, vfree);
+
+	return result;
+}
+
 template<> inline float64_t CSimpleFeatures<int32_t>:: dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
 {
 	ASSERT(vec2_len == num_features);
@@ -711,13 +982,32 @@ template<> inline float64_t CSimpleFeatures<int32_t>:: dense_dot(int32_t vec_idx
 	return result;
 }
 
-template<> inline float64_t CSimpleFeatures<uint16_t>:: dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
+template<> inline float64_t CSimpleFeatures<uint32_t>:: dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
 {
 	ASSERT(vec2_len == num_features);
 
 	int32_t vlen;
 	bool vfree;
-	uint16_t* vec1= get_feature_vector(vec_idx1, vlen, vfree);
+	uint32_t* vec1= get_feature_vector(vec_idx1, vlen, vfree);
+
+	ASSERT(vlen == num_features);
+	float64_t result=0;
+
+	for (int32_t i=0 ; i<num_features; i++)
+		result+=vec1[i]*vec2[i];
+
+	free_feature_vector(vec1, vec_idx1, vfree);
+
+	return result;
+}
+
+template<> inline float64_t CSimpleFeatures<int64_t>:: dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
+{
+	ASSERT(vec2_len == num_features);
+
+	int32_t vlen;
+	bool vfree;
+	int64_t* vec1= get_feature_vector(vec_idx1, vlen, vfree);
 
 	ASSERT(vlen == num_features);
 	float64_t result=0;
@@ -748,4 +1038,59 @@ template<> inline float64_t CSimpleFeatures<uint64_t>:: dense_dot(int32_t vec_id
 
 	return result;
 }
-#endif
+
+template<> inline float64_t CSimpleFeatures<float32_t>:: dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
+{
+	ASSERT(vec2_len == num_features);
+
+	int32_t vlen;
+	bool vfree;
+	float32_t* vec1= get_feature_vector(vec_idx1, vlen, vfree);
+
+	ASSERT(vlen == num_features);
+	float64_t result=0;
+
+	for (int32_t i=0 ; i<num_features; i++)
+		result+=vec1[i]*vec2[i];
+
+	free_feature_vector(vec1, vec_idx1, vfree);
+
+	return result;
+}
+
+template<> inline float64_t CSimpleFeatures<float64_t>:: dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
+{
+	ASSERT(vec2_len == num_features);
+
+	int32_t vlen;
+	bool vfree;
+	float64_t* vec1= get_feature_vector(vec_idx1, vlen, vfree);
+
+	ASSERT(vlen == num_features);
+	float64_t result=CMath::dot(vec1, vec2, num_features);
+
+	free_feature_vector(vec1, vec_idx1, vfree);
+
+	return result;
+}
+
+template<> inline float64_t CSimpleFeatures<float96_t>:: dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
+{
+	ASSERT(vec2_len == num_features);
+
+	int32_t vlen;
+	bool vfree;
+	float96_t* vec1= get_feature_vector(vec_idx1, vlen, vfree);
+
+	ASSERT(vlen == num_features);
+	float64_t result=0;
+
+	for (int32_t i=0 ; i<num_features; i++)
+		result+=vec1[i]*vec2[i];
+
+	free_feature_vector(vec1, vec_idx1, vfree);
+
+	return result;
+}
+#endif // DOXYGEN_SHOULD_SKIP_THIS
+#endif // _SIMPLEFEATURES__H__

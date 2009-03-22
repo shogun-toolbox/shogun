@@ -4,9 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2008 Soeren Sonnenburg
- * Written (W) 1999-2008 Gunnar Raetsch
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 1999-2009 Soeren Sonnenburg
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _COMMULONGSTRINGKERNEL_H___
@@ -17,10 +16,11 @@
 #include "lib/DynamicArray.h"
 #include "kernel/StringKernel.h"
 
-/** The CommUlongString kernel may be used to compute the spectrum kernel [
- * from strings that have been mapped into unsigned 64bit integers. These 64bit
- * integers correspond to k-mers. To applicable in this kernel they need to be
- * sorted (e.g. via the SortUlongString pre-processor).
+/** @brief The CommUlongString kernel may be used to compute the spectrum kernel
+ * from strings that have been mapped into unsigned 64bit integers.
+ *
+ * These 64bit integers correspond to k-mers. To be applicable in this kernel
+ * they need to be sorted (e.g. via the SortUlongString pre-processor).
  *
  * It basically uses the algorithm in the unix "comm" command (hence the name)
  * to compute:

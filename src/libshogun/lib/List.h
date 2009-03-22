@@ -15,7 +15,7 @@
 #include "lib/common.h"
 #include "base/SGObject.h"
 
-/** Class ListElement, defines how an element of the the list looks like */
+/** @brief Class ListElement, defines how an element of the the list looks like */
 template <class T> class CListElement
 {
 	public:
@@ -44,8 +44,9 @@ template <class T> class CListElement
 		~CListElement() { data = NULL; }
 };
 
-/** Class List implements a doubly connected list for low-level-objects. For
- * higher level objects pointers should be used. The list supports calling
+/** @brief Class List implements a doubly connected list for low-level-objects.
+ *
+ * For higher level objects pointers should be used. The list supports calling
  * delete() of an object that is to be removed from the list.
  */
 template <class T> class CList : public CSGObject

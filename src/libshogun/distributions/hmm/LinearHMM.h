@@ -4,9 +4,9 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2008 Soeren Sonnenburg
+ * Written (W) 1999-2009 Soeren Sonnenburg
  * Written (W) 1999-2008 Gunnar Raetsch
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _LINEARHMM_H__
@@ -16,8 +16,9 @@
 #include "features/Labels.h"
 #include "distributions/Distribution.h"
 
-/** The class LinearHMM is for learning Higher Order Markov chains, i.e.
- * the parameters \f${\bf \theta}\f$ in
+/** @brief The class LinearHMM is for learning Higher Order Markov chains.
+ *
+ * While learning the parameters \f${\bf \theta}\f$ in
  *
  * \f{eqnarray*}
  * P({\bf x}|{\bf \theta}^\pm)&=&P(x_1, \ldots, x_N|{\bf \theta}^\pm)\\
@@ -25,7 +26,7 @@
  * P(x_i|x_{i-1},\ldots,x_{i-d},{\bf \theta}^\pm)
  * \f}
  *
- * are determined in training. 
+ * are determined.
  *
  * A more detailed description can be found in
  *

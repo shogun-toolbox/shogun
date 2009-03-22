@@ -4,17 +4,18 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2008 Soeren Sonnenburg
+ * Written (W) 1999-2009 Soeren Sonnenburg
  * Written (W) 1999-2008 Gunnar Raetsch
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _CTOPFEATURES__H__
 #define _CTOPFEATURES__H__
 
-#include "features/RealFeatures.h"
+#include "features/SimpleFeatures.h"
 #include "distributions/hmm/HMM.h"
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 /** HMM indices */
 struct T_HMM_INDIZES
 {
@@ -40,9 +41,12 @@ struct T_HMM_INDIZES
 	/** number b */
 	int32_t num_b;
 };
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 
-/** The class TOPFeatures implements TOP kernel features obtained from
- * two Hidden Markov models and was used in
+/** @brief The class TOPFeatures implements TOP kernel features obtained from
+ * two Hidden Markov models.
+ *
+ * It was used in
  *
  * K. Tsuda, M. Kawanabe, G. Raetsch, S. Sonnenburg, and K.R. Mueller. A new
  * discriminative kernel from probabilistic models. Neural Computation,
@@ -56,7 +60,7 @@ struct T_HMM_INDIZES
  * It inherits its functionality from CSimpleFeatures, which should be
  * consulted for further reference.
  */
-class CTOPFeatures : public CRealFeatures
+class CTOPFeatures : public CSimpleFeatures<float64_t>
 {
 	public:
 		/** constructor

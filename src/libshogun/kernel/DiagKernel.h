@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2008 Soeren Sonnenburg
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 1999-2009 Soeren Sonnenburg
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _DIAGKERNEL_H___
@@ -14,7 +14,8 @@
 #include "lib/common.h"
 #include "kernel/Kernel.h"
 
-/** Diagonal Kernel
+/** @brief The Diagonal Kernel returns a constant for the diagonal and zero
+ * otherwise.
  *
  * A kernel that returns zero for all non-diagonal elements and a single
  * constant otherwise, i.e.\f$k({\bf x_i}, {\bf x_j})= \delta_{ij} c\f$

@@ -15,6 +15,7 @@
 
 #include "lib/common.h"
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 /** ocas return value */
 typedef struct {
   /** number of iterations */
@@ -48,6 +49,7 @@ typedef struct {
    */
   int8_t exitflag;
 } ocas_return_value_T;
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 
 ocas_return_value_T svm_ocas_solver(
 		float64_t C,            /* regularizarion constant */

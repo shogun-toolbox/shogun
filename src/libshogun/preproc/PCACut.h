@@ -6,7 +6,7 @@
  *
  * Written (W) 1999-2008 Gunnar Raetsch
  * Written (W) 1999-2008 Soeren Sonnenburg
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _CPCACUT__H__
@@ -23,9 +23,11 @@
 #include "lib/common.h"
 
 
-/** Preprocessor PCACut performs principial component analysis on the input
+/** @brief Preprocessor PCACut performs principial component analysis on the input
  * vectors and keeps only the n eigenvectors with eigenvalues above a certain
- * threshold. On preprocessing the stored covariance matrix is used to project
+ * threshold.
+ *
+ * On preprocessing the stored covariance matrix is used to project
  * vectors into eigenspace only returning vectors of reduced dimension n.
  * Optional whitening is performed.
  *

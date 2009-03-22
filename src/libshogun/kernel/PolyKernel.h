@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2008 Soeren Sonnenburg
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 1999-2009 Soeren Sonnenburg
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _POLYKERNEL_H___
@@ -13,9 +13,13 @@
 
 #include "lib/common.h"
 #include "kernel/SimpleKernel.h"
-#include "features/RealFeatures.h"
+#include "features/SimpleFeatures.h"
 
-/** Computes the standard polynomial kernel on dense real valued features
+/** @brief Computes the standard polynomial kernel on dense real valued
+ * features.
+ *
+ * Formally, it computes
+ *
  * \f[
  * k({\bf x},{\bf x'})= ({\bf x}\cdot {\bf x'}+c)^d
  * \f]
@@ -36,7 +40,7 @@ class CPolyKernel: public CSimpleKernel<float64_t>
 		 * @param inhom is inhomogeneous
 		 * @param size cache size
 		 */
-		CPolyKernel(CRealFeatures* l, CRealFeatures* r,
+		CPolyKernel(CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r,
 			int32_t d, bool inhom, int32_t size=10);
 
 		/** constructor

@@ -32,4 +32,13 @@ A: It requires cygwin and the dependencies need to be compiled manually. As none
 one of us use windows, and things (in external dependencies) break frequently,
 feel free to submit patches. If your are looking for a win32 port, there is
 none, but we take patches :-)
+
+\li Q:How does shogun do its memory management?
+A: As does python, we use reference counting internally, i.e. objects holding a
+reference to another object should increase the reference count of the object
+they are referencing and decrease the counter when they finished using the
+object. It should be noted that loops (e.g., object A holding a reference to object B
+and vice versa) are not detecting and may thus create memory leaks. However,
+this scenario can so far be easily avoided - just don't create a combined
+kernel that contains itself as a subkernel ;-)
 */

@@ -33,6 +33,8 @@
  * Shogun specific adjustments (w) 2006-2009 Soeren Sonnenburg
  */
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+
 #include "lib/memory.h"
 #include "classifier/svm/SVM_libsvm.h"
 #include "kernel/Kernel.h"
@@ -206,10 +208,10 @@ public:
 	virtual ~QMatrix() {}
 };
 
-class Kernel: public QMatrix {
+class LibSVMKernel: public QMatrix {
 public:
-	Kernel(int32_t l, svm_node * const * x, const svm_parameter& param);
-	virtual ~Kernel();
+	LibSVMKernel(int32_t l, svm_node * const * x, const svm_parameter& param);
+	virtual ~LibSVMKernel();
 
 	virtual Qfloat *get_Q(int32_t column, int32_t len) const = 0;
 	virtual Qfloat *get_QD() const = 0;
@@ -236,7 +238,7 @@ private:
 	const float64_t coef0;
 };
 
-Kernel::Kernel(int32_t l, svm_node * const * x_, const svm_parameter& param)
+LibSVMKernel::LibSVMKernel(int32_t l, svm_node * const * x_, const svm_parameter& param)
 : kernel_type(param.kernel_type), degree(param.degree),
  gamma(param.gamma), coef0(param.coef0)
 {
@@ -245,7 +247,7 @@ Kernel::Kernel(int32_t l, svm_node * const * x_, const svm_parameter& param)
 	kernel=param.kernel;
 }
 
-Kernel::~Kernel()
+LibSVMKernel::~LibSVMKernel()
 {
 	delete[] x;
 	delete[] x_square;
@@ -745,7 +747,7 @@ int32_t Solver::select_working_set(
 	return 0;
 }
 
-bool Solver::be_shrunk(int i, float64_t Gmax1, float64_t Gmax2)
+bool Solver::be_shrunk(int32_t i, float64_t Gmax1, float64_t Gmax2)
 {
 	if(is_upper_bound(i))
 	{
@@ -1133,11 +1135,11 @@ float64_t Solver_NU::calculate_rho()
 //
 // Q matrices for various formulations
 //
-class SVC_Q: public Kernel
+class SVC_Q: public LibSVMKernel
 { 
 public:
 	SVC_Q(const svm_problem& prob, const svm_parameter& param, const schar *y_)
-	:Kernel(prob.l, prob.x, param)
+	:LibSVMKernel(prob.l, prob.x, param)
 	{
 		clone(y,y_,prob.l);
 		cache = new Cache(prob.l,(int64_t)(param.cache_size*(1l<<20)));
@@ -1166,7 +1168,7 @@ public:
 	void swap_index(int32_t i, int32_t j) const
 	{
 		cache->swap_index(i,j);
-		Kernel::swap_index(i,j);
+		LibSVMKernel::swap_index(i,j);
 		swap(y[i],y[j]);
 		swap(QD[i],QD[j]);
 	}
@@ -1183,11 +1185,11 @@ private:
 	Qfloat *QD;
 };
 
-class ONE_CLASS_Q: public Kernel
+class ONE_CLASS_Q: public LibSVMKernel
 {
 public:
 	ONE_CLASS_Q(const svm_problem& prob, const svm_parameter& param)
-	:Kernel(prob.l, prob.x, param)
+	:LibSVMKernel(prob.l, prob.x, param)
 	{
 		cache = new Cache(prob.l,(int64_t)(param.cache_size*(1l<<20)));
 		QD = new Qfloat[prob.l];
@@ -1215,7 +1217,7 @@ public:
 	void swap_index(int32_t i, int32_t j) const
 	{
 		cache->swap_index(i,j);
-		Kernel::swap_index(i,j);
+		LibSVMKernel::swap_index(i,j);
 		swap(QD[i],QD[j]);
 	}
 
@@ -1229,11 +1231,11 @@ private:
 	Qfloat *QD;
 };
 
-class SVR_Q: public Kernel
+class SVR_Q: public LibSVMKernel
 { 
 public:
 	SVR_Q(const svm_problem& prob, const svm_parameter& param)
-	:Kernel(prob.l, prob.x, param)
+	:LibSVMKernel(prob.l, prob.x, param)
 	{
 		l = prob.l;
 		cache = new Cache(l,(int64_t)(param.cache_size*(1l<<20)));
@@ -1986,3 +1988,4 @@ const char *svm_check_parameter(
 
 	return NULL;
 }
+#endif // DOXYGEN_SHOULD_SKIP_THIS

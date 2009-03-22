@@ -14,7 +14,9 @@
 #include "lib/common.h"
 #include "features/Features.h"
 
-/** Features that support the following operations:
+/** @brief Features that support dot products among other operations.
+ *
+ * DotFeatures support the following operations:
  *
  * - a way to obtain the dimensionality of the feature space, i.e. \f$\mbox{dim}({\cal X})\f$
  *
@@ -130,9 +132,14 @@ class CDotFeatures : public CFeatures
 		 */
 		inline void set_combined_feature_weight(float64_t nw) { combined_weight=nw; }
 
-		/** return feature matrix (in feature space)
+		/** get a copy of the feature matrix (in feature space)
+		 * num_feat,num_vectors are returned by reference
+		 *
+		 * @param dst destination to store matrix in
+		 * @param num_feat number of features (rows of matrix)
+		 * @param num_vec number of vectors (columns of matrix)
 		 */
-		virtual void get_feature_matrix(float64_t** matrix, int32_t* d1, int32_t* d2);
+		virtual void get_feature_matrix(float64_t** dst, int32_t* num_feat, int32_t* num_vec);
 
 	protected:
 		/** display progress output

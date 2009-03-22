@@ -4,9 +4,9 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2008 Soeren Sonnenburg
+ * Written (W) 1999-2009 Soeren Sonnenburg
  * Written (W) 1999-2008 Gunnar Raetsch
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #include "features/TOPFeatures.h"
@@ -15,7 +15,7 @@
 
 CTOPFeatures::CTOPFeatures(
 	int32_t size, CHMM* p, CHMM* n, bool neglin, bool poslin)
-: CRealFeatures(size), neglinear(neglin), poslinear(poslin)
+: CSimpleFeatures<float64_t>(size), neglinear(neglin), poslinear(poslin)
 {
 	memset(&pos_relevant_indizes, 0, sizeof(pos_relevant_indizes));
 	memset(&neg_relevant_indizes, 0, sizeof(neg_relevant_indizes));
@@ -23,7 +23,7 @@ CTOPFeatures::CTOPFeatures(
 }
 
 CTOPFeatures::CTOPFeatures(const CTOPFeatures &orig)
-: CRealFeatures(orig), pos(orig.pos), neg(orig.neg), neglinear(orig.neglinear),
+: CSimpleFeatures<float64_t>(orig), pos(orig.pos), neg(orig.neg), neglinear(orig.neglinear),
 	poslinear(orig.poslinear)
 {
 }

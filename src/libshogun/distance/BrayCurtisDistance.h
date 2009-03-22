@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2008 Christian Gehl
- * Copyright (C) 2008 Fraunhofer Institute FIRST
+ * Written (W) 2008-2009 Christian Gehl
+ * Copyright (C) 2008-2009 Fraunhofer Institute FIRST
  */
 
 #ifndef _BRAYCURTISDISTANCE_H___
@@ -13,9 +13,9 @@
 
 #include "lib/common.h"
 #include "distance/SimpleDistance.h"
-#include "features/RealFeatures.h"
+#include "features/SimpleFeatures.h"
 
-/** class BrayCurtisDistance 
+/** @brief class Bray-Curtis distance 
  *
  * The Bray-Curtis distance (Sorensen distance) is similar to the 
  * Manhattan distance with normalization.
@@ -37,7 +37,7 @@ class CBrayCurtisDistance: public CSimpleDistance<float64_t>
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 */
-		CBrayCurtisDistance(CRealFeatures* l, CRealFeatures* r);
+		CBrayCurtisDistance(CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r);
 		virtual ~CBrayCurtisDistance();
 
 		/** init distance

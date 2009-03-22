@@ -27,11 +27,14 @@
 #ifdef USE_GLPK
 #include <glpk.h>
 
-/** CGMNPMKL is a class for a L1-norm (because there is with glpk a free solver
- * available) MKL for the multiclass svm CGMNPSVM kit is to be used as all
+/** @brief CGMNPMKL is a class for L1-norm multiclass MKL.
+ *
+ * L1-norm MKL for the multiclass svm CGMNPSVM kit is to be used as all
  * other SVM routines with the set_kernel, set_C, set_labels, set_epsilon
  * its own parameters are thresh (L2 norm of subkernel weights for termination) and
  * maxiters (how many silp iterations at most in order to force termination)
+ *
+ * This is based on the free solver glpk solver.
  *
  * \todo check what options to pass from CGMNPMKL to CGMNPSVM
  * \todo set C_mkl?
@@ -59,6 +62,7 @@ public:
 	
 };
 
+/** @brief CGMNPMKL is a class for L1-norm multiclass MKL. */
 class glpkwrapper: public lpwrapper
 {
 public:
@@ -78,6 +82,7 @@ protected:
 
 #else
 
+/** @brief CGMNPMKL is a class for L1-norm multiclass MKL. */
 class lpwrapper : public CSGObject
 {
 public:
@@ -96,6 +101,7 @@ public:
 	
 };
 
+/** @brief CGMNPMKL is a class for L1-norm multiclass MKL. */
 class glpkwrapper: public lpwrapper
 {
 public:
@@ -116,6 +122,7 @@ protected:
 
 #endif //USE_GLPK
 
+/** @brief CGMNPMKL is a class for L1-norm multiclass MKL. */
 class glpkwrapper4CGMNPMKL: public glpkwrapper
 {
 public:
@@ -138,6 +145,8 @@ public:
 	
 };	
 
+/** @brief CGMNPMKL is a class for L1-norm multiclass MKL.
+ */
 class CGMNPMKL : public CMultiClassSVM
 {
 public:

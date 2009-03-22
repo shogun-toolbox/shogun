@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2006-2008 Soeren Sonnenburg
- * Copyright (C) 2006-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 2006-2009 Soeren Sonnenburg
+ * Copyright (C) 2006-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #include <string.h>
@@ -380,6 +380,12 @@ void CAlphabet::clear_histogram()
 {
 	memset(histogram, 0, sizeof(histogram));
     print_histogram();
+}
+
+void CAlphabet::add_string_to_histogram(bool* p, int64_t len)
+{
+	for (int64_t i=0; i<len; i++)
+		add_byte_to_histogram(p[i] ? 1 : 0);
 }
 
 void CAlphabet::add_string_to_histogram(uint8_t* p, int64_t len)

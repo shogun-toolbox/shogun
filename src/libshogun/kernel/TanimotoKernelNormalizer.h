@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2008 Soeren Sonnenburg
- * Copyright (C) 2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 2008-2009 Soeren Sonnenburg
+ * Copyright (C) 2008-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _TANIMOTOKERNELNORMALIZER_H___
@@ -14,14 +14,13 @@
 #include "kernel/KernelNormalizer.h"
 #include "kernel/CommWordStringKernel.h"
 
-/** TanimotoKernelNormalizer performs kernel normalization inspired by the Tanimoto
- * coefficient (see http://en.wikipedia.org/wiki/Jaccard_index )
+/** @brief TanimotoKernelNormalizer performs kernel normalization inspired by
+ * the Tanimoto coefficient (see http://en.wikipedia.org/wiki/Jaccard_index )
  *
  * \f[
  * k'({\bf x},{\bf x'}) = \frac{k({\bf x},{\bf x'})}{k({\bf x},{\bf x})+k({\bf x'},{\bf x'})-k({\bf x},{\bf x'})}
  * \f]
  */
-
 class CTanimotoKernelNormalizer : public CKernelNormalizer
 {
 	public:

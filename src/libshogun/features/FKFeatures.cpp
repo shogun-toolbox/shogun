@@ -4,9 +4,9 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2008 Soeren Sonnenburg
+ * Written (W) 1999-2009 Soeren Sonnenburg
  * Written (W) 1999-2008 Gunnar Raetsch
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #include "features/FKFeatures.h"
@@ -14,7 +14,7 @@
 #include "lib/io.h"
 
 CFKFeatures::CFKFeatures(int32_t size, CHMM* p, CHMM* n)
-: CRealFeatures(size)
+: CSimpleFeatures<float64_t>(size)
 {
 	pos_prob=NULL;
 	neg_prob=NULL;
@@ -23,7 +23,7 @@ CFKFeatures::CFKFeatures(int32_t size, CHMM* p, CHMM* n)
 }
 
 CFKFeatures::CFKFeatures(const CFKFeatures &orig)
-: CRealFeatures(orig), pos(orig.pos), neg(orig.neg), weight_a(orig.weight_a)
+: CSimpleFeatures<float64_t>(orig), pos(orig.pos), neg(orig.neg), weight_a(orig.weight_a)
 { 
 }
 

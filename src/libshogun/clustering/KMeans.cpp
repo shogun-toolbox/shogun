@@ -5,14 +5,14 @@
  * (at your option) any later version.
  *
  * Written (W) 1999-2008 Gunnar Raetsch
- * Written (W) 2007-2008 Soeren Sonnenburg
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 2007-2009 Soeren Sonnenburg
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #include "clustering/KMeans.h"
 #include "distance/Distance.h"
 #include "features/Labels.h"
-#include "features/RealFeatures.h"
+#include "features/SimpleFeatures.h"
 #include "lib/Mathematics.h"
 #include "base/Parallel.h"
 
@@ -48,7 +48,7 @@ bool CKMeans::train()
 	ASSERT(distance);
 	ASSERT(distance->get_feature_type()==F_DREAL);
 	ASSERT(distance->get_distance_type()==D_EUCLIDIAN);
-	CRealFeatures* lhs=(CRealFeatures*) distance->get_lhs();
+	CSimpleFeatures<float64_t>* lhs=(CSimpleFeatures<float64_t>*) distance->get_lhs();
 	ASSERT(lhs);
 	int32_t num=lhs->get_num_vectors();
 	SG_UNREF(lhs);
@@ -73,21 +73,23 @@ bool CKMeans::save(FILE* dstfile)
 	return false;
 }
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 struct thread_data
 {
 	float64_t* x;
-	CRealFeatures* y;
+	CSimpleFeatures<float64_t>* y;
 	float64_t* z;
 	int32_t n1, n2, m;
 	int32_t js, je; /* defines the matrix stripe */
 	int32_t offs;
 };
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 
 void *sqdist_thread_func(void * P)
 {
 	struct thread_data *TD=(struct thread_data*) P;
 	float64_t* x=TD->x;
-	CRealFeatures* y=TD->y;
+	CSimpleFeatures<float64_t>* y=TD->y;
 	float64_t* z=TD->z;
 	int32_t n1=TD->n1,
 		m=TD->m,
@@ -116,7 +118,7 @@ void *sqdist_thread_func(void * P)
 } 
 
 void CKMeans::sqdist(
-	float64_t* x, CRealFeatures* y, float64_t* z, int32_t n1, int32_t offs,
+	float64_t* x, CSimpleFeatures<float64_t>* y, float64_t* z, int32_t n1, int32_t offs,
 	int32_t n2, int32_t m)
 {
 	const int32_t num_threads=parallel->get_num_threads();
@@ -166,7 +168,7 @@ void CKMeans::sqdist(
 void CKMeans::clustknb(bool use_old_mus, float64_t *mus_start)
 {
 	ASSERT(distance && distance->get_feature_type()==F_DREAL);
-	CRealFeatures* lhs = (CRealFeatures*) distance->get_lhs();
+	CSimpleFeatures<float64_t>* lhs = (CSimpleFeatures<float64_t>*) distance->get_lhs();
 	ASSERT(lhs && lhs->get_num_features()>0 && lhs->get_num_vectors()>0);
 
 	int32_t XSize=lhs->get_num_vectors();

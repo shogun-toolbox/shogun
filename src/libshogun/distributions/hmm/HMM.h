@@ -4,9 +4,9 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2008 Soeren Sonnenburg
+ * Written (W) 1999-2009 Soeren Sonnenburg
  * Written (W) 1999-2008 Gunnar Raetsch
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef __CHMM_H__
@@ -32,6 +32,7 @@ class CHMM;
 /// type for alpha/beta caching table
 typedef float64_t T_ALPHA_BETA_TABLE;
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 /// type for alpha/beta table
 struct T_ALPHA_BETA
 {
@@ -47,6 +48,7 @@ struct T_ALPHA_BETA
 	/// sum over all paths == model_probability for this dimension
 	float64_t sum;
 };
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 
 /** type that is used for states.
  * Probably uint8_t is enough if you have at most 256 states,
@@ -71,7 +73,7 @@ enum BaumWelchViterbiType
 };
 
 
-/** class Model */
+/** @brief class Model */
 class CModel
 {
 	public:
@@ -346,7 +348,7 @@ class CModel
 };
 
 
-/** Hidden Markov Model.
+/** @brief Hidden Markov Model.
  *
  * Structure and Function collection.
  * This Class implements a Hidden Markov Model.

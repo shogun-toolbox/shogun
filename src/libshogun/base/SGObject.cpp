@@ -18,9 +18,26 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-
 #ifdef HAVE_BOOST_SERIALIZATION
+#include <boost/serialization/access.hpp>
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/archive/binary_oarchive.hpp>
+#include <boost/archive/binary_iarchive.hpp>
 #include <boost/serialization/export.hpp>
+//#include <boost/serialization/vector.hpp>
+//
+////TODO xml will not work right away, every class needs name-value-pairs (NVP)
+////TODO we SHOULD FIX THIS NOW!
+////will have to be defined using respective boost macros
+////#include <boost/archive/xml_oarchive.hpp>
+////#include <boost/archive/xml_iarchive.hpp>
+////some STL modules needed for serialization
+#include <sstream>
+#include <iostream>
+#include <string>
+#include <fstream>
+//#include <vector>
 BOOST_IS_ABSTRACT(CSGObject);
 #endif //HAVE_BOOST_SERIALIZATION
 
@@ -46,3 +63,40 @@ void CSGObject::set_global_objects()
 	parallel=sg_parallel;
 	version=sg_version;
 }
+
+#ifdef HAVE_BOOST_SERIALIZATION
+std::string CSGObject::to_string() const
+{
+	std::ostringstream s;
+	boost::archive::text_oarchive oa(s);
+	oa << this;
+	return s.str();
+}
+
+void CSGObject::from_string(std::string str)
+{
+	std::istringstream is(str);
+	boost::archive::text_iarchive ia(is);
+
+	//cast away constness
+	CSGObject* tmp = const_cast<CSGObject*>(this);
+
+	ia >> tmp;
+	*this = *tmp;
+}
+
+void CSGObject::to_file(std::string filename) const
+{
+	std::ofstream os(filename.c_str(), std::ios::binary);
+	boost::archive::binary_oarchive oa(os);
+	oa << this;
+}
+
+void CSGObject::from_file(std::string filename)
+{
+	std::ifstream is(filename.c_str(), std::ios::binary);
+	boost::archive::binary_iarchive ia(is);
+	CSGObject* tmp= const_cast<CSGObject*>(this);
+	ia >> tmp; 
+}
+#endif //HAVE_BOOST_SERIALIZATION

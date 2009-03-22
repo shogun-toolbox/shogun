@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2008 Soeren Sonnenburg
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 1999-2009 Soeren Sonnenburg
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _CSPARSEPREPROC__H__
@@ -20,7 +20,7 @@
 template <class ST> class TSparse;
 template <class ST> class CSparseFeatures;
 
-/** Template class SparsePreProc, base class for preprocessors (cf. CPreProc)
+/** @brief Template class SparsePreProc, base class for preprocessors (cf. CPreProc)
  * that apply to CSparseFeatures
  *
  * Two new functions apply_to_sparse_feature_vector() and

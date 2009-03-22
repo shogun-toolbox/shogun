@@ -4,9 +4,9 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2008 Soeren Sonnenburg
+ * Written (W) 1999-2009 Soeren Sonnenburg
  * Written (W) 1999-2008 Gunnar Raetsch
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 
@@ -16,9 +16,11 @@
 #include "lib/common.h"
 #include "base/SGObject.h"
 
+/// shogun feature type
 enum EFeatureType
 {
 	F_UNKNOWN = 0,
+	F_BOOL = 5,
 	F_CHAR = 10,
 	F_BYTE = 20,
 	F_SHORT = 30,
@@ -33,6 +35,7 @@ enum EFeatureType
 	F_ANY = 1000
 };
 
+/// shogun feature class
 enum EFeatureClass
 {
 	C_UNKNOWN = 0,
@@ -48,6 +51,7 @@ enum EFeatureClass
 	C_ANY = 1000
 };
 
+/// shogun feature properties
 enum EFeatureProperty
 {
 	FP_NONE = 0,
@@ -60,11 +64,12 @@ class CPreProc;
 class CFeatures;
 
 
-/** The class Features is the base class of all feature objects. It can be
- * understood as a dense real valued feature matrix (with e.g. columns as
- * single feature vectors), a set of strings, graphs or any other arbitrary
- * collection of objects. As a result this class is kept very general and
- * implements only very weak interfaces to
+/** @brief The class Features is the base class of all feature objects.
+ *
+ * It can be understood as a dense real valued feature matrix (with e.g.
+ * columns as single feature vectors), a set of strings, graphs or any other
+ * arbitrary collection of objects. As a result this class is kept very general
+ * and implements only very weak interfaces to
  *
  * - duplicate the Feature object
  * - obtain the feature type (like F_DREAL, F_SHORT ...)
@@ -75,7 +80,7 @@ class CFeatures;
  *
  *   Currently there are 3 general feature classes, which are CSimpleFeatures
  *   (dense matrices), CSparseFeatures (sparse matrices), CStringFeatures (a
- *   set of strings) from which all the specific features like CRealFeatures
+ *   set of strings) from which all the specific features like CSimpleFeatures<float64_t>
  *   (dense real valued feature matrices) are derived.
  */
 class CFeatures : public CSGObject

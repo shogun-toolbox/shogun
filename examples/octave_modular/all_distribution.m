@@ -41,7 +41,7 @@ gap=0;
 reverse=false;
 
 charfeat=StringCharFeatures(DNA);
-charfeat.set_string_features(fm_train_dna);
+charfeat.set_features(fm_train_dna);
 feats=StringWordFeatures(charfeat.get_alphabet());
 feats.obtain_from_char(charfeat, order-1, order, gap, reverse);
 preproc=SortWordString();
@@ -73,7 +73,7 @@ gap=0;
 reverse=false;
 
 charfeat=StringCharFeatures(DNA);
-charfeat.set_string_features(fm_train_dna);
+charfeat.set_features(fm_train_dna);
 feats=StringWordFeatures(charfeat.get_alphabet());
 feats.obtain_from_char(charfeat, order-1, order, gap, reverse);
 preproc=SortWordString();
@@ -108,7 +108,7 @@ gap=0;
 reverse=false;
 num_examples=2;
 charfeat=StringCharFeatures(CUBE);
-charfeat.set_string_features(cubesequence);
+charfeat.set_features(cubesequence);
 feats=StringWordFeatures(charfeat.get_alphabet());
 feats.obtain_from_char(charfeat, order-1, order, gap, reverse);
 preproc=SortWordString();

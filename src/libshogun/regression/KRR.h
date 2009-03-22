@@ -5,8 +5,8 @@
  * (at your option) any later version.
  *
  * Written (W) 2006 Mikio L. Braun
- * Written (W) 1999-2008 Soeren Sonnenburg
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 1999-2009 Soeren Sonnenburg
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _KRR_H__
@@ -19,13 +19,15 @@
 
 #include "kernel/KernelMachine.h"
 
-/** Class KRR implements Kernel Ridge Regression - a regularized least square
- * method for classification and regression. It is similar to support vector
- * machines (cf. CSVM). However in contrast to SVMs a different objective is
- * optimized that leads to a dense solution (thus not only a few support
- * vectors are active in the end but all training examples). This makes it only
- * applicable to rather few training examples. In case a linear kernel is used
- * RR is closely related to Fishers Linear Discriminant (cf. LDA).
+/** @brief Class KRR implements Kernel Ridge Regression - a regularized least square
+ * method for classification and regression.
+ *
+ * It is similar to support vector machines (cf. CSVM). However in contrast to
+ * SVMs a different objective is optimized that leads to a dense solution (thus
+ * not only a few support vectors are active in the end but all training
+ * examples). This makes it only applicable to rather few (a couple of
+ * thousand) training examples. In case a linear kernel is used RR is closely
+ * related to Fishers Linear Discriminant (cf. LDA).
  *
  * Internally (for linear kernels) it is solved via minimizing the following system
  *

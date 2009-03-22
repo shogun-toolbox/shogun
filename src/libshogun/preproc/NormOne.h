@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2008 Soeren Sonnenburg
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 1999-2009 Soeren Sonnenburg
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _CNORM_ONE__H__
@@ -17,7 +17,9 @@
 
 #include <stdio.h>
 
-/** Preprocessor NormOne, normalizes vectors to have norm 1, i.e.
+/** @brief Preprocessor NormOne, normalizes vectors to have norm 1.
+ *
+ * Formally, it computes
  *
  * \f[
  * {\bf x} \leftarrow \frac{{\bf x}}{||{\bf x}||}

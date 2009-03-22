@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2008 Soeren Sonnenburg
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 1999-2009 Soeren Sonnenburg
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _LOCALALIGNMENTSTRINGKERNEL_H___
@@ -16,9 +16,11 @@
 
 #define LOGSUM_TBL 10000      /* span of the logsum table */
 
-/** The LocalAlignmentString kernel compares two sequences through all possible
- * local alignments between the two sequences. The implementation is taken from
- * http://www.mloss.org/software/view/40/ and only adjusted to work with shogun.
+/** @brief The LocalAlignmentString kernel compares two sequences through all
+ * possible local alignments between the two sequences.
+ *
+ * The implementation is taken from http://www.mloss.org/software/view/40/ and
+ * only adjusted to work with shogun.
  */
 class CLocalAlignmentStringKernel: public CStringKernel<char>
 {

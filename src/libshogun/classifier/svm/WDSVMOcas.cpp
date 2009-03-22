@@ -5,8 +5,8 @@
  * (at your option) any later version.
  *
  * Written (W) 2007-2008 Vojtech Franc
- * Written (W) 2007-2008 Soeren Sonnenburg
- * Copyright (C) 2007-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 2007-2009 Soeren Sonnenburg
+ * Copyright (C) 2007-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #include "features/Labels.h"
@@ -22,6 +22,7 @@
 #include "features/Labels.h"
 
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 struct wdocas_thread_params_output
 {
 	float32_t* out;
@@ -41,6 +42,7 @@ struct wdocas_thread_params_add
 	int32_t end;
 	uint32_t cut_length;
 };
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 
 CWDSVMOcas::CWDSVMOcas(E_SVM_TYPE type)
 : CClassifier(), use_bias(false), bufsize(3000), C1(1), C2(1),

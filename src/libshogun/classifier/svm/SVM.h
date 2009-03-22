@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2008 Soeren Sonnenburg
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 1999-2009 Soeren Sonnenburg
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _SVM_H___
@@ -18,7 +18,7 @@
 
 class CKernelMachine;
 
-/** A generic Support Vector Machine Interface
+/** @brief A generic Support Vector Machine Interface.
  * 
  * A support vector machine is defined as
  *  \f[
@@ -445,8 +445,8 @@ class CSVM : public CKernelMachine
 		inline virtual const char* get_name() const { return "SVM"; }
 
 	protected:
-		/// an SVM is defined by support vectors, their coefficients alpha
-		/// and the bias b ( + CKernelMachine::kernel)
+		/** @brief an SVM is defined by support vectors, their coefficients alpha
+		 * and the bias b ( + CKernelMachine::kernel) */
 		struct TModel
 		{
 			/** bias b */

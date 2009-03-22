@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2008 Soeren Sonnenburg
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 1999-2009 Soeren Sonnenburg
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _STRINGKERNEL_H___
@@ -14,7 +14,11 @@
 #include "kernel/Kernel.h"
 #include "features/StringFeatures.h"
 
-/** Template class StringKernel, is the base class of all String Kernels. */
+/** @brief Template class StringKernel, is the base class of all String Kernels.
+ *
+ * For a (very complex) example see e.g. CWeightedDegreeStringKernel
+ *
+ */ 
 template <class ST> class CStringKernel : public CKernel
 {
 	public:

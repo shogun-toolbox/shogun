@@ -18,7 +18,7 @@
 
 template <class ST> class CStringFeatures;
 
-/** Features that compute the Spectrum Kernel feature space explicitly
+/**@brief Features that compute the Spectrum Kernel feature space explicitly.
  *
  * \sa CCommWordStringKernel
  */

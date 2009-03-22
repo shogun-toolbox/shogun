@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2006 Christian Gehl
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST
+ * Written (W) 2006-2009 Christian Gehl
+ * Copyright (C) 2006-2009 Fraunhofer Institute FIRST
  */
 
 #ifndef _CANBERRAMETRIC_H__
@@ -13,9 +13,9 @@
 
 #include "lib/common.h"
 #include "distance/SimpleDistance.h"
-#include "features/RealFeatures.h"
+#include "features/SimpleFeatures.h"
 
-/** class CanberraMetric 
+/** @brief class CanberraMetric 
  *
  * The Canberra distance sums up the dissimilarity (ratios) between feature 
  * dimensions of two data points.
@@ -39,7 +39,7 @@ class CCanberraMetric: public CSimpleDistance<float64_t>
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 */
-		CCanberraMetric(CRealFeatures* l, CRealFeatures* r);
+		CCanberraMetric(CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r);
 		virtual ~CCanberraMetric();
 
 		/** init distance
