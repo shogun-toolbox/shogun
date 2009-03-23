@@ -1,5 +1,325 @@
-2009-03-08  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2009-03-22  Soeren Sonnenburg <sonne@debian.org>
 
+	* libshogun/features/Alphabet.h,
+	  libshogun/features/SimpleFeatures.h,
+	  libshogun/features/SparseFeatures.h,
+	  libshogun/features/StringFeatures.h, libshogun/lib/Mathematics.h,
+	  libshogun/lib/common.h, modular/Features.i,
+	  python_modular/swig_typemaps.i: long double can be 96 or 128 bits
+	  so name it floatmax_t
+	* libshogunui/GUIClassifier.cpp: fix norm printing
+	* .authors, .r-install.sh, AUTHORS, NEWS,
+	  libshogun/base/Parallel.h, libshogun/base/SGObject.cpp,
+	  libshogun/base/SGObject.h, libshogun/base/Version.h,
+	  libshogun/classifier/Classifier.cpp,
+	  libshogun/classifier/Classifier.h, libshogun/classifier/KNN.cpp,
+	  libshogun/classifier/KNN.h,
+	  libshogun/classifier/KernelPerceptron.cpp,
+	  libshogun/classifier/KernelPerceptron.h,
+	  libshogun/classifier/LDA.cpp, libshogun/classifier/LDA.h,
+	  libshogun/classifier/LPBoost.cpp, libshogun/classifier/LPBoost.h,
+	  libshogun/classifier/LPM.cpp, libshogun/classifier/LPM.h,
+	  libshogun/classifier/LinearClassifier.h,
+	  libshogun/classifier/Perceptron.cpp,
+	  libshogun/classifier/Perceptron.h,
+	  libshogun/classifier/PluginEstimate.h,
+	  libshogun/classifier/SubGradientLPM.cpp,
+	  libshogun/classifier/SubGradientLPM.h,
+	  libshogun/classifier/svm/CPLEXSVM.cpp,
+	  libshogun/classifier/svm/CPLEXSVM.h,
+	  libshogun/classifier/svm/GMNPSVM.h,
+	  libshogun/classifier/svm/GNPPSVM.h,
+	  libshogun/classifier/svm/GPBTSVM.cpp,
+	  libshogun/classifier/svm/GPBTSVM.h,
+	  libshogun/classifier/svm/LibLinear.cpp,
+	  libshogun/classifier/svm/LibLinear.h,
+	  libshogun/classifier/svm/LibSVM.cpp,
+	  libshogun/classifier/svm/LibSVM.h,
+	  libshogun/classifier/svm/LibSVMMultiClass.cpp,
+	  libshogun/classifier/svm/LibSVMMultiClass.h,
+	  libshogun/classifier/svm/LibSVMOneClass.cpp,
+	  libshogun/classifier/svm/LibSVMOneClass.h,
+	  libshogun/classifier/svm/MPDSVM.cpp,
+	  libshogun/classifier/svm/MPDSVM.h,
+	  libshogun/classifier/svm/MultiClassSVM.cpp,
+	  libshogun/classifier/svm/MultiClassSVM.h,
+	  libshogun/classifier/svm/SVM.cpp, libshogun/classifier/svm/SVM.h,
+	  libshogun/classifier/svm/SVMLin.cpp,
+	  libshogun/classifier/svm/SVMLin.h,
+	  libshogun/classifier/svm/SVMOcas.cpp,
+	  libshogun/classifier/svm/SVMOcas.h,
+	  libshogun/classifier/svm/SVMSGD.h,
+	  libshogun/classifier/svm/SVM_libsvm.cpp,
+	  libshogun/classifier/svm/SVM_libsvm.h,
+	  libshogun/classifier/svm/SVM_light.cpp,
+	  libshogun/classifier/svm/SVM_light.h,
+	  libshogun/classifier/svm/SVM_linear.cpp,
+	  libshogun/classifier/svm/SVM_linear.h,
+	  libshogun/classifier/svm/SubGradientSVM.cpp,
+	  libshogun/classifier/svm/SubGradientSVM.h,
+	  libshogun/classifier/svm/Tron.h,
+	  libshogun/classifier/svm/WDSVMOcas.cpp,
+	  libshogun/classifier/svm/WDSVMOcas.h,
+	  libshogun/classifier/svm/gmnplib.h,
+	  libshogun/classifier/svm/gmnpmkl.h,
+	  libshogun/classifier/svm/gnpplib.h,
+	  libshogun/classifier/svm/gpdt.cpp,
+	  libshogun/classifier/svm/gpdt.h,
+	  libshogun/classifier/svm/gpdtsolve.cpp,
+	  libshogun/classifier/svm/gpdtsolve.h,
+	  libshogun/classifier/svm/libocas.cpp,
+	  libshogun/classifier/svm/libocas.h,
+	  libshogun/classifier/svm/pr_loqo.cpp,
+	  libshogun/classifier/svm/pr_loqo.h,
+	  libshogun/classifier/svm/qpbsvmlib.cpp,
+	  libshogun/classifier/svm/qpbsvmlib.h,
+	  libshogun/classifier/svm/ssl.h,
+	  libshogun/clustering/Hierarchical.cpp,
+	  libshogun/clustering/Hierarchical.h,
+	  libshogun/clustering/KMeans.cpp, libshogun/clustering/KMeans.h,
+	  libshogun/distance/BrayCurtisDistance.cpp,
+	  libshogun/distance/BrayCurtisDistance.h,
+	  libshogun/distance/CanberraMetric.cpp,
+	  libshogun/distance/CanberraMetric.h,
+	  libshogun/distance/CanberraWordDistance.cpp,
+	  libshogun/distance/CanberraWordDistance.h,
+	  libshogun/distance/ChebyshewMetric.cpp,
+	  libshogun/distance/ChebyshewMetric.h,
+	  libshogun/distance/ChiSquareDistance.cpp,
+	  libshogun/distance/ChiSquareDistance.h,
+	  libshogun/distance/CosineDistance.cpp,
+	  libshogun/distance/CosineDistance.h,
+	  libshogun/distance/Distance.cpp, libshogun/distance/Distance.h,
+	  libshogun/distance/DistanceMachine.cpp,
+	  libshogun/distance/DistanceMachine.h,
+	  libshogun/distance/EuclidianDistance.cpp,
+	  libshogun/distance/EuclidianDistance.h,
+	  libshogun/distance/GeodesicMetric.cpp,
+	  libshogun/distance/GeodesicMetric.h,
+	  libshogun/distance/HammingWordDistance.cpp,
+	  libshogun/distance/HammingWordDistance.h,
+	  libshogun/distance/JensenMetric.cpp,
+	  libshogun/distance/JensenMetric.h,
+	  libshogun/distance/ManhattanMetric.cpp,
+	  libshogun/distance/ManhattanMetric.h,
+	  libshogun/distance/ManhattanWordDistance.cpp,
+	  libshogun/distance/ManhattanWordDistance.h,
+	  libshogun/distance/MinkowskiMetric.cpp,
+	  libshogun/distance/MinkowskiMetric.h,
+	  libshogun/distance/RealDistance.h,
+	  libshogun/distance/SimpleDistance.h,
+	  libshogun/distance/SparseDistance.h,
+	  libshogun/distance/SparseEuclidianDistance.cpp,
+	  libshogun/distance/SparseEuclidianDistance.h,
+	  libshogun/distance/StringDistance.h,
+	  libshogun/distance/TanimotoDistance.cpp,
+	  libshogun/distance/TanimotoDistance.h,
+	  libshogun/distributions/Distribution.cpp,
+	  libshogun/distributions/Distribution.h,
+	  libshogun/distributions/histogram/Histogram.cpp,
+	  libshogun/distributions/histogram/Histogram.h,
+	  libshogun/distributions/hmm/GHMM.cpp,
+	  libshogun/distributions/hmm/GHMM.h,
+	  libshogun/distributions/hmm/HMM.cpp,
+	  libshogun/distributions/hmm/HMM.h,
+	  libshogun/distributions/hmm/LinearHMM.cpp,
+	  libshogun/distributions/hmm/LinearHMM.h,
+	  libshogun/evaluation/PerformanceMeasures.cpp,
+	  libshogun/evaluation/PerformanceMeasures.h,
+	  libshogun/features/Alphabet.cpp, libshogun/features/Alphabet.h,
+	  libshogun/features/AttributeFeatures.h,
+	  libshogun/features/ByteFeatures.cpp,
+	  libshogun/features/ByteFeatures.h,
+	  libshogun/features/CharFeatures.cpp,
+	  libshogun/features/CharFeatures.h,
+	  libshogun/features/CombinedDotFeatures.h,
+	  libshogun/features/CombinedFeatures.cpp,
+	  libshogun/features/CombinedFeatures.h,
+	  libshogun/features/DotFeatures.cpp,
+	  libshogun/features/DotFeatures.h,
+	  libshogun/features/DummyFeatures.h,
+	  libshogun/features/ExplicitSpecFeatures.h,
+	  libshogun/features/FKFeatures.cpp,
+	  libshogun/features/FKFeatures.h, libshogun/features/Features.cpp,
+	  libshogun/features/Features.h,
+	  libshogun/features/ImplicitWeightedSpecFeatures.h,
+	  libshogun/features/IntFeatures.cpp,
+	  libshogun/features/IntFeatures.h, libshogun/features/Labels.cpp,
+	  libshogun/features/Labels.h,
+	  libshogun/features/MindyGramFeatures.cpp,
+	  libshogun/features/MindyGramFeatures.h,
+	  libshogun/features/RealFeatures.cpp,
+	  libshogun/features/RealFeatures.h,
+	  libshogun/features/RealFileFeatures.cpp,
+	  libshogun/features/RealFileFeatures.h,
+	  libshogun/features/ShortFeatures.cpp,
+	  libshogun/features/ShortFeatures.h,
+	  libshogun/features/ShortRealFeatures.cpp,
+	  libshogun/features/ShortRealFeatures.h,
+	  libshogun/features/SimpleFeatures.h,
+	  libshogun/features/SparseFeatures.h,
+	  libshogun/features/StringFeatures.cpp,
+	  libshogun/features/StringFeatures.h,
+	  libshogun/features/TOPFeatures.cpp,
+	  libshogun/features/TOPFeatures.h,
+	  libshogun/features/WDFeatures.h,
+	  libshogun/features/WordFeatures.cpp,
+	  libshogun/features/WordFeatures.h,
+	  libshogun/kernel/AUCKernel.cpp, libshogun/kernel/AUCKernel.h,
+	  libshogun/kernel/AvgDiagKernelNormalizer.h,
+	  libshogun/kernel/Chi2Kernel.cpp, libshogun/kernel/Chi2Kernel.h,
+	  libshogun/kernel/CombinedKernel.cpp,
+	  libshogun/kernel/CombinedKernel.h,
+	  libshogun/kernel/CommUlongStringKernel.cpp,
+	  libshogun/kernel/CommUlongStringKernel.h,
+	  libshogun/kernel/CommWordStringKernel.cpp,
+	  libshogun/kernel/CommWordStringKernel.h,
+	  libshogun/kernel/ConstKernel.cpp, libshogun/kernel/ConstKernel.h,
+	  libshogun/kernel/CustomKernel.cpp,
+	  libshogun/kernel/CustomKernel.h, libshogun/kernel/DiagKernel.cpp,
+	  libshogun/kernel/DiagKernel.h,
+	  libshogun/kernel/DiceKernelNormalizer.h,
+	  libshogun/kernel/DistanceKernel.cpp,
+	  libshogun/kernel/DistanceKernel.h,
+	  libshogun/kernel/FirstElementKernelNormalizer.h,
+	  libshogun/kernel/FixedDegreeStringKernel.cpp,
+	  libshogun/kernel/FixedDegreeStringKernel.h,
+	  libshogun/kernel/GaussianKernel.cpp,
+	  libshogun/kernel/GaussianKernel.h,
+	  libshogun/kernel/GaussianShiftKernel.cpp,
+	  libshogun/kernel/GaussianShiftKernel.h,
+	  libshogun/kernel/GaussianShortRealKernel.cpp,
+	  libshogun/kernel/GaussianShortRealKernel.h,
+	  libshogun/kernel/HistogramWordStringKernel.cpp,
+	  libshogun/kernel/HistogramWordStringKernel.h,
+	  libshogun/kernel/IdentityKernelNormalizer.h,
+	  libshogun/kernel/Kernel.cpp, libshogun/kernel/Kernel.h,
+	  libshogun/kernel/KernelMachine.cpp,
+	  libshogun/kernel/KernelMachine.h,
+	  libshogun/kernel/KernelNormalizer.h,
+	  libshogun/kernel/LinearByteKernel.cpp,
+	  libshogun/kernel/LinearByteKernel.h,
+	  libshogun/kernel/LinearKernel.cpp,
+	  libshogun/kernel/LinearKernel.h,
+	  libshogun/kernel/LinearStringKernel.cpp,
+	  libshogun/kernel/LinearStringKernel.h,
+	  libshogun/kernel/LinearWordKernel.cpp,
+	  libshogun/kernel/LinearWordKernel.h,
+	  libshogun/kernel/LocalAlignmentStringKernel.h,
+	  libshogun/kernel/LocalityImprovedStringKernel.cpp,
+	  libshogun/kernel/LocalityImprovedStringKernel.h,
+	  libshogun/kernel/MatchWordStringKernel.cpp,
+	  libshogun/kernel/MatchWordStringKernel.h,
+	  libshogun/kernel/MindyGramKernel.cpp,
+	  libshogun/kernel/MindyGramKernel.h,
+	  libshogun/kernel/OligoKernel.cpp, libshogun/kernel/OligoKernel.h,
+	  libshogun/kernel/OligoStringKernel.cpp,
+	  libshogun/kernel/OligoStringKernel.h,
+	  libshogun/kernel/PolyKernel.cpp, libshogun/kernel/PolyKernel.h,
+	  libshogun/kernel/PolyMatchStringKernel.cpp,
+	  libshogun/kernel/PolyMatchStringKernel.h,
+	  libshogun/kernel/PolyMatchWordStringKernel.cpp,
+	  libshogun/kernel/PolyMatchWordStringKernel.h,
+	  libshogun/kernel/PyramidChi2.cpp, libshogun/kernel/PyramidChi2.h,
+	  libshogun/kernel/SalzbergWordStringKernel.cpp,
+	  libshogun/kernel/SalzbergWordStringKernel.h,
+	  libshogun/kernel/SigmoidKernel.cpp,
+	  libshogun/kernel/SigmoidKernel.h,
+	  libshogun/kernel/SimpleKernel.h,
+	  libshogun/kernel/SimpleLocalityImprovedStringKernel.cpp,
+	  libshogun/kernel/SimpleLocalityImprovedStringKernel.h,
+	  libshogun/kernel/SparseGaussianKernel.cpp,
+	  libshogun/kernel/SparseGaussianKernel.h,
+	  libshogun/kernel/SparseKernel.h,
+	  libshogun/kernel/SparseLinearKernel.cpp,
+	  libshogun/kernel/SparseLinearKernel.h,
+	  libshogun/kernel/SparsePolyKernel.cpp,
+	  libshogun/kernel/SparsePolyKernel.h,
+	  libshogun/kernel/SqrtDiagKernelNormalizer.h,
+	  libshogun/kernel/StringKernel.h,
+	  libshogun/kernel/TanimotoKernelNormalizer.h,
+	  libshogun/kernel/TensorProductPairKernel.cpp,
+	  libshogun/kernel/TensorProductPairKernel.h,
+	  libshogun/kernel/WeightedCommWordStringKernel.cpp,
+	  libshogun/kernel/WeightedCommWordStringKernel.h,
+	  libshogun/kernel/WeightedDegreePositionStringKernel.cpp,
+	  libshogun/kernel/WeightedDegreePositionStringKernel.h,
+	  libshogun/kernel/WeightedDegreeStringKernel.cpp,
+	  libshogun/kernel/WeightedDegreeStringKernel.h,
+	  libshogun/lib/Array.h, libshogun/lib/Array2.h,
+	  libshogun/lib/Array3.h, libshogun/lib/Cache.h,
+	  libshogun/lib/Cplex.h, libshogun/lib/DynamicArray.h,
+	  libshogun/lib/File.h, libshogun/lib/List.h,
+	  libshogun/lib/Mathematics.h, libshogun/lib/ShogunException.h,
+	  libshogun/lib/Signal.h, libshogun/lib/SimpleFile.h,
+	  libshogun/lib/Time.h, libshogun/lib/Trie.h,
+	  libshogun/lib/common.h, libshogun/lib/io.cpp, libshogun/lib/io.h,
+	  libshogun/lib/lapack.h, libshogun/preproc/LogPlusOne.cpp,
+	  libshogun/preproc/LogPlusOne.h,
+	  libshogun/preproc/NormDerivativeLem3.cpp,
+	  libshogun/preproc/NormDerivativeLem3.h,
+	  libshogun/preproc/NormOne.cpp, libshogun/preproc/NormOne.h,
+	  libshogun/preproc/PCACut.cpp, libshogun/preproc/PCACut.h,
+	  libshogun/preproc/PreProc.cpp, libshogun/preproc/PreProc.h,
+	  libshogun/preproc/PruneVarSubMean.cpp,
+	  libshogun/preproc/PruneVarSubMean.h,
+	  libshogun/preproc/SimplePreProc.h,
+	  libshogun/preproc/SortUlongString.cpp,
+	  libshogun/preproc/SortUlongString.h,
+	  libshogun/preproc/SortWordString.cpp,
+	  libshogun/preproc/SortWordString.h,
+	  libshogun/preproc/SparsePreProc.h,
+	  libshogun/preproc/StringPreProc.h, libshogun/regression/KRR.cpp,
+	  libshogun/regression/KRR.h, libshogun/regression/Regression.h,
+	  libshogun/regression/svr/LibSVR.cpp,
+	  libshogun/regression/svr/LibSVR.h,
+	  libshogun/regression/svr/SVR_light.cpp,
+	  libshogun/regression/svr/SVR_light.h,
+	  libshogun/structure/DynProg.cpp, libshogun/structure/DynProg.h,
+	  libshogun/structure/Plif.cpp, libshogun/structure/Plif.h,
+	  libshogun/structure/PlifArray.cpp,
+	  libshogun/structure/PlifArray.h, libshogun/structure/PlifBase.h,
+	  libshogunui/GUIClassifier.cpp, libshogunui/GUIDistance.cpp,
+	  libshogunui/GUIFeatures.cpp, libshogunui/GUIFeatures.h,
+	  libshogunui/GUIKernel.cpp, libshogunui/GUIPreProc.cpp,
+	  libshogunui/SGInterface.cpp, modular/Features.i,
+	  modular/Kernel.i, octave_modular/swig_typemaps.i,
+	  python_modular/swig_typemaps.i: - Support all data types from
+	  python_modular: dense, scipy-sparse
+	  csc_sparse matrices and strings of type bool, char,
+	  (u)int{8,16,32,64},
+	  float{32,64,96}. In addition, individual vectors/strings can now
+	  be
+	  obtained and even changed. See
+	  examples/python_modular/features_*.py
+	  for examples.
+	  - AUC maximization now works with arbitrary kernel SVMs.
+	  - Documentation updates, many examples have been polished.
+	  - Slightly speedup Oligo kernel.
+	  - Fix reading strings from directory (f.load_from_directory()).
+	  - Update copyright to 2009.
+	  - Remove {Char,Short,Word,Int,Real}Features and only ever use the
+	  templated SimpleFeatures.
+	  - Split up examples in examples/python_modular to separate files.
+	  - Now use s.set_features(strs) instead of
+	  s.set_string_features(strs)
+	  to set string features.
+	  - The meaning of the width parameter for the Oligo Kernel
+	  changed, the
+	  OligoKernel has been renamed to OligoStringKernel.
+
+2009-03-11  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/features/Labels.cpp: equivalant logic transformation
+
+2009-03-10  Soeren Sonnenburg <sonne@debian.org>
+
+	* .relpath.py, Makefile.template, modular/Classifier.i: compile
+	  fixes / make installation path relative
+
+2009-03-08  Soeren Sonnenburg <sonne@debian.org>
+
+	* ChangeLog: updated changelog
 	* ChangeLog: updated changelog
 	* NEWS, libshogun/classifier/Classifier.h,
 	  libshogun/classifier/KNN.h,
@@ -20,7 +340,7 @@
 	  libshogun/kernel/KernelMachine.h, libshogun/lib/Cplex.h: update
 	  documentation
 
-2009-03-05  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2009-03-05  Soeren Sonnenburg <sonne@debian.org>
 
 	* configure, libshogun/base/SGObject.h: whitespace code cleanup +
 	  docu
@@ -40,7 +360,7 @@
 	  non-ancient version of shogun, default=off
 	* configure: checks for boost_serialization
 
-2009-03-04  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2009-03-04  Soeren Sonnenburg <sonne@debian.org>
 
 	* matlab/MatlabInterface.cpp, octave/OctaveInterface.cpp,
 	  octave/OctaveInterface.h, python/PythonInterface.cpp,
@@ -48,7 +368,7 @@
 	* octave/OctaveInterface.cpp: x to octave now fully working for x
 	  in r,python and I guess even matlab
 
-2009-03-03  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2009-03-03  Soeren Sonnenburg <sonne@debian.org>
 
 	* configure, libshogun/features/RealFeatures.h: -fvirtual seems to
 	  break things
@@ -66,7 +386,7 @@
 	  python/PythonInterface.cpp, python/PythonInterface.h,
 	  r/RInterface.cpp, r/RInterface.h: python,... to octave
 
-2009-03-02  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2009-03-02  Soeren Sonnenburg <sonne@debian.org>
 
 	* NEWS, cmdline/CmdLineInterface.cpp, cmdline/CmdLineInterface.h,
 	  libshogunui/SGInterface.cpp, libshogunui/SGInterface.h,
@@ -76,7 +396,7 @@
 	  r/RInterface.cpp, r/RInterface.h: implement dummy attribute
 	  struct hooks, fix examples
 
-2009-03-01  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2009-03-01  Soeren Sonnenburg <sonne@debian.org>
 
 	* libshogun/features/AttributeFeatures.cpp,
 	  libshogun/features/AttributeFeatures.h,
@@ -120,7 +440,7 @@
 	  interface), also don't require result to be a dictionary, make it
 	  a tuple
 
-2009-02-28  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2009-02-28  Soeren Sonnenburg <sonne@debian.org>
 
 	* configure, elwms/Makefile, matlab/MatlabInterface.cpp,
 	  r/RInterface.cpp: dynamically load the python libs to global
@@ -140,7 +460,7 @@
 	  python/PythonInterface.h: octave to python translator now
 	  functional
 
-2009-02-27  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2009-02-27  Soeren Sonnenburg <sonne@debian.org>
 
 	* NEWS, elwms/Makefile, libshogunui/GUICommands.h,
 	  libshogunui/SGInterface.cpp, libshogunui/SGInterface.h,
@@ -183,14 +503,14 @@
 	  arguments are now passed,
 	  instead of using member variables
 
-2009-02-26  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2009-02-26  Soeren Sonnenburg <sonne@debian.org>
 
 	* octave/OctaveInterface.cpp: fix size?
 	* octave/OctaveInterface.cpp, octave/OctaveInterface.h: potentially
 	  get nd arrays to work
 	* Makefile.template: fix install
 
-2009-02-25  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2009-02-25  Soeren Sonnenburg <sonne@debian.org>
 
 	* configure: this adds checks to configure that does not allow
 	  building using an illegal
@@ -210,7 +530,7 @@
 	  is enough now too in static interfaces, no features nor init
 	  required
 
-2009-02-24  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2009-02-24  Soeren Sonnenburg <sonne@debian.org>
 
 	* .generate_link_dependencies.py, Makefile.template, configure:
 	  configure / make should work now when libshogun / libshogunui are
@@ -241,13 +561,13 @@
 	* Makefile, Makefile.template, configure: Hack for cleaning up
 	  installed shogun, make uninstall
 
-2009-02-24  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2009-02-24  Soeren Sonnenburg <sonne@debian.org>
 
 	* libshogun/kernel/CombinedKernel.cpp: this should not skip over
 	  custom kernels on init (so users don't need to assign
 	  features to custom kernels in combined features)
 
-2009-02-23  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2009-02-23  Soeren Sonnenburg <sonne@debian.org>
 
 	* configure: fix an error in configure that always de-selected
 	  matlab
@@ -269,7 +589,7 @@
 	* INSTALL, README.developer, README.soname, libshogun/base/init.h,
 	  libshogun/classifier/svm/SVM_light.h: polish documentation
 
-2009-02-22  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2009-02-22  Soeren Sonnenburg <sonne@debian.org>
 
 	* NEWS, modular/AUCKernel.i, modular/Alphabet.i, modular/Array.i,
 	  modular/Array2.i, modular/Array3.i,
@@ -369,7 +689,7 @@
 	  libshogun/structure/DynProg.h: add lots of documentation and fix
 	  a naming collision w/ kernel normalizers
 
-2009-02-20  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2009-02-20  Soeren Sonnenburg <sonne@debian.org>
 
 	* NEWS: start some tutorial
 	* configure: an attempt to allow building of modular if's only
@@ -377,7 +697,7 @@
 	* ChangeLog: updated changelog
 	* NEWS: preparing for release
 
-2009-02-19  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2009-02-19  Soeren Sonnenburg <sonne@debian.org>
 
 	* configure, libshogun/lib/Signal.h, modular/init.i: remove broken
 	  ocas and wdocas tests on DNA, disable bias in vanilla ocas test,
@@ -385,7 +705,7 @@
 	  dysfunctional it better stays like this)
 	* Makefile.template: add check scripts for libshogun based examples
 
-2009-02-18  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2009-02-18  Soeren Sonnenburg <sonne@debian.org>
 
 	* libshogun/distributions/hmm/HMM.h, modular/Classifier.i,
 	  modular/Clustering.i, modular/Distance.i, modular/Distribution.i,
@@ -397,7 +717,7 @@
 	  r_modular/sg_print_functions.cpp: fix building of modular
 	  interfaces
 
-2009-02-16  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2009-02-16  Soeren Sonnenburg <sonne@debian.org>
 
 	* libshogun/classifier/svm/GMNPSVM.cpp,
 	  libshogun/classifier/svm/MultiClassSVM.cpp,
@@ -423,7 +743,7 @@
 	* libshogunui/SGInterface.cpp: fix problem with direct passing of
 	  precomputed linear feature arrays
 
-2009-02-14  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2009-02-14  Soeren Sonnenburg <sonne@debian.org>
 
 	* README.developer: add introduction on how to develop shogun
 	  extensions and/or use libshogun
@@ -438,7 +758,7 @@
 	  path to an include
 	  .cpp : modified for new shogun, version does not work yet
 
-2009-02-13  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2009-02-13  Soeren Sonnenburg <sonne@debian.org>
 
 	* Makefile.template: fix include brackets
 	* Makefile.template, configure: test for SED specific -i flag
@@ -457,7 +777,7 @@
 	  
 	  -- Error handling with more informative outputs
 
-2009-02-13  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2009-02-13  Soeren Sonnenburg <sonne@debian.org>
 
 	* Makefile.template, configure, matlab/MatlabInterface.cpp,
 	  octave/OctaveInterface.cpp, python/PythonInterface.cpp,
@@ -475,7 +795,7 @@
 	  r/RInterface.h, r/r.cpp, r/r.h: libshogun now has global pointers
 	  to function callbacks instead of unresolved symbols
 
-2009-02-12  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2009-02-12  Soeren Sonnenburg <sonne@debian.org>
 
 	* configure: get configure to work for modular interfaces again
 	* ChangeLog, NEWS: fix top-level make, update news and changelog
@@ -502,7 +822,7 @@
 	  libshogun/lib/Mathematics.h: use logcache/parallel hmm structures
 	  per default
 
-2009-02-11  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2009-02-11  Soeren Sonnenburg <sonne@debian.org>
 
 	* libshogun/features/StringFeatures.h: use a different logic to aid
 	  re-use of alphabet objects
@@ -521,7 +841,7 @@
 	* Makefile.template, configure: it turns out that install does not
 	  preserve symbolic links, use ln & ldconfig instead
 
-2009-02-10  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2009-02-10  Soeren Sonnenburg <sonne@debian.org>
 
 	* configure, libshogun/lib/Mathematics.h: further compile fixes for
 	  osx
@@ -533,12 +853,12 @@
 
 	* libshogunui/SGInterface.cpp: accidentally removed a function
 
-2009-02-10  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2009-02-10  Soeren Sonnenburg <sonne@debian.org>
 
 	* octave_modular/octave.cpp: remove obsolete file
 	* configure: ignore -w454
 
-2009-02-09  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2009-02-09  Soeren Sonnenburg <sonne@debian.org>
 
 	* octave/sg_print_functions.cpp: remove cruft
 
@@ -549,13 +869,13 @@
 	  functions for direct access of the precomputed content feature
 	  arrays
 
-2009-02-09  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2009-02-09  Soeren Sonnenburg <sonne@debian.org>
 
 	* Makefile.template: allow building without doxygen
 	* INSTALL: update description to match new layout
 	* .r-install.sh: fix install source paths
 
-2009-02-08  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2009-02-08  Soeren Sonnenburg <sonne@debian.org>
 
 	* Makefile.template: add lib path for r file compilation
 	* octave_modular/sg_print_functions.cpp: add forgotten file
@@ -715,7 +1035,7 @@
 	  adjust inclusion paths and scripts. move language specific .i
 	  files into language dirs
 
-2009-02-07  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2009-02-07  Soeren Sonnenburg <sonne@debian.org>
 
 	* .r-install.sh, Makefile, Makefile.template, configure,
 	  libshogun/regression/svr/SVR_light.cpp, r/.r-install.sh: enable
@@ -738,7 +1058,7 @@
 	  r/RInterface.h, r/r.cpp, r/r.h: building of libshogun{,ui} and
 	  static interfaces works now
 
-2009-02-05  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2009-02-05  Soeren Sonnenburg <sonne@debian.org>
 
 	* Makefile, configure, interfaces/Makefile, interfaces/cmdline,
 	  interfaces/cmdline/CmdLineInterface.cpp,
@@ -777,7 +1097,7 @@
 	  libshogunui/SyntaxHighLight.h: more progress on new
 	  configure/make system
 
-2009-02-04  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2009-02-04  Soeren Sonnenburg <sonne@debian.org>
 
 	* configure: further improve configure
 	* Makefile, NEWS, configure, interfaces/lib,
@@ -795,7 +1115,7 @@
 	  libshogun/structure/Plif.h: move libshogun/lib/matlab.{cpp,h} etc
 	  to interfaces/lib
 
-2009-02-01  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2009-02-01  Soeren Sonnenburg <sonne@debian.org>
 
 	* guilib, interface: remove obsolete dirs
 	* guilib/GUIClassifier.cpp, guilib/GUIClassifier.h,
@@ -1188,7 +1508,7 @@
 	* classifier/svm/gmnpmkl.h, lib/Array.h: add get_name function to
 	  gmnpmkl wrappers - fixes compilation when glpk is not available
 
-2009-01-31  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2009-01-31  Soeren Sonnenburg <sonne@debian.org>
 
 	* features/CombinedFeatures.cpp, guilib/GUIFeatures.h,
 	  guilib/GUIKernel.cpp, kernel/CombinedKernel.cpp,
@@ -1349,7 +1669,7 @@
 	  kernel/SimpleLocalityImprovedStringKernel.cpp, lib/List.h: fix
 	  many memory leaks and crashers due to missing SG_REF/UNREFs
 
-2009-01-30  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2009-01-30  Soeren Sonnenburg <sonne@debian.org>
 
 	* base/SGObject.h, features/StringFeatures.h,
 	  guilib/GUIClassifier.cpp, guilib/GUIDistance.cpp,
@@ -1411,11 +1731,11 @@
 	  libshogun
 	* classifier/svm/SVM_light.cpp: trap a division by zero
 
-2009-01-29  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2009-01-29  Soeren Sonnenburg <sonne@debian.org>
 
 	* NEWS: update news
 
-2009-01-28  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2009-01-28  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/WDSVMOcas.cpp: potentially fix the same things for
 	  WDSVMOcas
@@ -1457,13 +1777,13 @@
 	* classifier/svm/SVM_light.cpp: use dual simplex/presolving and fix
 	  a memleak and wrong constraint for glpk-mkl
 
-2009-01-27  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2009-01-27  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/SVM_light.cpp, features/StringFeatures.h: add
 	  debug code to figure out what goes wrong when this assertion
 	  triggers
 
-2009-01-25  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2009-01-25  Soeren Sonnenburg <sonne@debian.org>
 
 	* features/DotFeatures.cpp: disable progress output
 	* interface/SGInterface.cpp, kernel/Kernel.cpp: fix tppk bugs
@@ -1481,7 +1801,7 @@
 	* classifier/svm/gmnpmkl.cpp, classifier/svm/gmnpmkl.h: moved
 	  testing routine from gnmpmkl{.h,.cpp} into examples
 
-2009-01-23  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2009-01-23  Soeren Sonnenburg <sonne@debian.org>
 
 	* CONTRIBUTIONS, NEWS, classifier/svm/gmnpmkl.cpp,
 	  classifier/svm/gmnpmkl.h: minor code beatutifications, update
@@ -1494,12 +1814,12 @@
 	  classifier/svm/gmnpmkl.h: implemented GLPK-based L1 MKL for the
 	  multiclass svm GMNPSVM
 
-2009-01-22  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2009-01-22  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/LinearClassifier.cpp, features/DotFeatures.cpp,
 	  features/DotFeatures.h: parallel output computation
 
-2009-01-21  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2009-01-21  Soeren Sonnenburg <sonne@debian.org>
 
 	* features/CombinedDotFeatures.cpp, features/CombinedDotFeatures.h,
 	  guilib/GUICommands.h, interface/SGInterface.cpp,
@@ -1540,7 +1860,7 @@
 
 	* classifier/svm/SVM_light.cpp:
 
-2009-01-20  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2009-01-20  Soeren Sonnenburg <sonne@debian.org>
 
 	* features/StringFeatures.h: fix reading in string features < 1MB
 	  in size
@@ -1562,7 +1882,7 @@
 	  implemented Newton chunking MKL for q>1
 	  seems to run stably and fast
 
-2009-01-19  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2009-01-19  Soeren Sonnenburg <sonne@debian.org>
 
 	* features/ImplicitWeightedSpecFeatures.cpp,
 	  features/WDFeatures.cpp: WDFeatures do work now :)
@@ -1590,7 +1910,7 @@
 	  interface/SGInterface.cpp: many (valgrind) fixes all over the
 	  place, Specfeatures work reliably now.
 
-2009-01-18  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2009-01-18  Soeren Sonnenburg <sonne@debian.org>
 
 	* features/CombinedDotFeatures.cpp, features/CombinedDotFeatures.h,
 	  features/Features.cpp, features/Features.h, guilib/GUICommands.h,
@@ -1598,14 +1918,14 @@
 	  interface/SGInterface.cpp, interface/SGInterface.h: combined dot
 	  features work correctly now.
 
-2009-01-17  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2009-01-17  Soeren Sonnenburg <sonne@debian.org>
 
 	* features/DotFeatures.cpp, features/DotFeatures.h,
 	  features/SimpleFeatures.h, features/SparseFeatures.h: implement
 	  dense_dot_range and remove the now obsolete function from sparse
 	  features - suddenly linear svms work again ;)
 
-2009-01-16  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2009-01-16  Soeren Sonnenburg <sonne@debian.org>
 
 	* configure: fix typo in configure, for disable glpk
 	* classifier/svm/SVM_light.cpp: compile fix
@@ -1632,7 +1952,7 @@
 	  functions (to avoid code duplication) and use these functions for
 	  linadd and vanilla kernels
 
-2009-01-15  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2009-01-15  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/Classifier.cpp, classifier/Classifier.h,
 	  classifier/svm/SVM_light.cpp, guilib/GUIClassifier.cpp,
@@ -1647,7 +1967,7 @@
 	  slightly more modularized version
 	* classifier/svm/SVM_light.cpp:
 
-2009-01-15  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2009-01-15  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/SVM_light.cpp, classifier/svm/SVM_light.h:
 	  potentially integrate alex's q-norm mkl solver
@@ -1658,7 +1978,7 @@
 
 	* classifier/svm/SVM_light.cpp, classifier/svm/SVM_light.h:
 
-2009-01-15  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2009-01-15  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/SVM_light.cpp: with debug code
 	* features/Features.h, features/SpecFeatures.cpp,
@@ -1672,14 +1992,14 @@
 	  functions such as
 	  from_position_list!)
 
-2009-01-14  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2009-01-14  Soeren Sonnenburg <sonne@debian.org>
 
 	* configure: minor formatting change
 	* features/SpecFeatures.cpp, features/SpecFeatures.h,
 	  features/WDFeatures.cpp, features/WDFeatures.h: potentially
 	  complete implementation of WD/SpecFeatures
 
-2009-01-13  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2009-01-13  Soeren Sonnenburg <sonne@debian.org>
 
 	* features/DotFeatures.h, features/DotFeatures.i,
 	  features/Features.i, features/SpecFeatures.i,
@@ -1698,7 +2018,7 @@
 
 	* NEWS: - Updated NEWS.
 
-2009-01-12  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2009-01-12  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/SVM_light.cpp, classifier/svm/SVM_light.h: - fix
 	  compilation when cplex is not available
@@ -1713,7 +2033,7 @@
 	* classifier/svm/SVM_light.cpp, classifier/svm/SVM_light.h,
 	  lib/Mathematics.h: add q-norm mkl
 
-2009-01-09  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2009-01-09  Soeren Sonnenburg <sonne@debian.org>
 
 	* features/SpecFeatures.cpp, features/SpecFeatures.h: uint8 should
 	  be uint16
@@ -1759,7 +2079,7 @@
 	  interface/SGInterface.cpp, lib/List.h: Integrate new DotFeatures
 	  into existing linear classifiers
 
-2009-01-08  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2009-01-08  Soeren Sonnenburg <sonne@debian.org>
 
 	* features/CombinedDotFeatures.cpp, features/CombinedDotFeatures.h,
 	  features/StringFeatures.h, features/WDFeatures.cpp,
@@ -1789,13 +2109,13 @@
 	  
 	  Not compile tested under any except the cmdline interface.
 
-2009-01-05  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2009-01-05  Soeren Sonnenburg <sonne@debian.org>
 
 	* features/CombinedDotFeatures.h, features/DotFeatures.h,
 	  features/Features.h: prototyping of new dotfeatures and
 	  combineddotfeatures
 
-2008-12-30  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-12-30  Soeren Sonnenburg <sonne@debian.org>
 
 	* guilib/GUIClassifier.cpp: check for SVR before setting tube
 	  epsilon
@@ -1809,13 +2129,13 @@
 	* base/SGObject.h, base/Version.h:
 	* lib/Mathematics.h: minor change for Mac OS and iPhone OS
 
-2008-12-27  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-12-27  Soeren Sonnenburg <sonne@debian.org>
 
 	* kernel/OligoKernel.cpp, kernel/OligoKernel.h: remove unused
 	  includes, fixes a crasher occurring with long obsolete matlab
 	  versions
 
-2008-12-13  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-12-13  Soeren Sonnenburg <sonne@debian.org>
 
 	* Makefile: build static libshogun.a for libshogun target
 
@@ -1830,12 +2150,12 @@
 	* guilib/GUIKernel.cpp: interface:
 	  - Fixed compiling issue on normalization of CommString kernels.
 
-2008-12-08  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-12-08  Soeren Sonnenburg <sonne@debian.org>
 
 	* guilib/GUIKernel.cpp: fix regression for COMM* kernels:
 	  normalization argument was ignored
 
-2008-12-05  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-12-05  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/SVM.cpp, classifier/svm/libocas_common.h,
 	  clustering/KMeans.cpp, distributions/histogram/Histogram.cpp,
@@ -1848,7 +2168,7 @@
 	  removed all occurences of variable length arrays and log/pow
 	  calls
 
-2008-12-04  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-12-04  Soeren Sonnenburg <sonne@debian.org>
 
 	* kernel/PolyMatchWordStringKernel.h: add missing bracket in front
 	  of sum
@@ -1856,13 +2176,13 @@
 	  svmlight
 	* lib/io.h: use C99 variadic macros
 
-2008-11-28  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-11-28  Soeren Sonnenburg <sonne@debian.org>
 
 	* kernel/WeightedDegreePositionStringKernel.h,
 	  kernel/WeightedDegreePositionStringKernel.i: add an option to set
 	  wds kernel position weights
 
-2008-11-26  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-11-26  Soeren Sonnenburg <sonne@debian.org>
 
 	* configure: better description for wordsize detection
 	* configure: detect integer word size
@@ -1877,7 +2197,7 @@
 	* NEWS: - removed immature NEWS items.
 	* NEWS: - updated NEWS in preparation for release 0.6.7.
 
-2008-11-24  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-11-24  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/SVM_light.cpp: compile fix introduced by an
 	  accidentally inserted 'u'
@@ -1918,7 +2238,7 @@
 	  argument of WDSVMOcas::classify().
 	  - Added a debug print to WDSVMOcas::classify_example().
 
-2008-11-02  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-11-02  Soeren Sonnenburg <sonne@debian.org>
 
 	* interface/PythonInterface.cpp, lib/memory.cpp: really fix
 	  contiguous arrays and also a warning in lib/memory.cpp snprintf
@@ -1926,7 +2246,7 @@
 	* interface/PythonInterface.cpp: potentially better fix, that does
 	  not require contiguous vectors
 
-2008-11-01  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-11-01  Soeren Sonnenburg <sonne@debian.org>
 
 	* interface/PythonInterface.cpp: test if array/vector is contigous
 
@@ -2494,7 +2814,7 @@
 	  structure/PlifArray.h, structure/PlifBase.h: - BIG replacement V:
 	  INT/int -> int32_t/int
 
-2008-10-25  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-10-25  Soeren Sonnenburg <sonne@debian.org>
 
 	* features/DummyFeatures.i, features/Features.i: add Nicolas
 	  Pinto's swig extension to dummyfeatures
@@ -2691,17 +3011,17 @@
 	* lib/common.h: library:
 	  - Removed unnecessary P_* typedefs.
 
-2008-10-24  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-10-24  Soeren Sonnenburg <sonne@debian.org>
 
 	* configure: Integrate Chen Guohua's glpk,lpsolve detection
 
-2008-10-21  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-10-21  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/pr_loqo.cpp: lower loglevel for Choldc failed,
 	  matrix not pd message, as we are cleanly dealing with that case
 	  anyways
 
-2008-10-20  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-10-20  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/GMNPSVM.cpp: potential fix for vojtechs multiclass
 	  svm as reported by alexander binder
@@ -2710,16 +3030,16 @@
 
 	* structure/DynProg.cpp: compiles again, but I cannot test it
 
-2008-10-15  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-10-15  Soeren Sonnenburg <sonne@debian.org>
 
 	* structure/DynProg.cpp: function best_path_call is broken and
 	  needs adjustments to new best_path_trans API
 
-2008-10-14  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-10-14  Soeren Sonnenburg <sonne@debian.org>
 
 	* .r-install.sh: fix malformed R description
 
-2008-10-11  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-10-11  Soeren Sonnenburg <sonne@debian.org>
 
 	* NEWS, distance/BrayCurtisDistance.cpp,
 	  distance/BrayCurtisDistance.h, distance/CanberraMetric.cpp,
@@ -2745,7 +3065,7 @@
 	* regression/Regression.h: - Oopsie, forgot to add
 	  regression/Regression.h
 
-2008-10-10  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-10-10  Soeren Sonnenburg <sonne@debian.org>
 
 	* NEWS, configure: update news
 
@@ -2808,7 +3128,7 @@
 	  - Extended changes in static interface to Match(Word)String
 	  kernels
 
-2008-09-19  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-09-19  Soeren Sonnenburg <sonne@debian.org>
 
 	* guilib/GUIKernel.cpp, guilib/GUIPreProc.cpp,
 	  interface/SGInterface.cpp, kernel/HistogramWordKernel.cpp,
@@ -2851,18 +3171,18 @@
 	  interface/SGInterface.cpp, lib/common.h: added distances:
 	  Bray-Curtis, Chi-Square, Cosine, Tanimoto
 
-2008-09-16  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-09-16  Soeren Sonnenburg <sonne@debian.org>
 
 	* kernel/DiceKernelNormalizer.h, kernel/DiceKernelNormalizer.i,
 	  kernel/TanimotoKernelNormalizer.h,
 	  kernel/TanimotoKernelNormalizer.i: add further kernel
 	  normalizers, after reading PyML tutorial
 
-2008-09-05  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-09-05  Soeren Sonnenburg <sonne@debian.org>
 
 	* kernel/OligoKernel.i: add missing file
 
-2008-09-01  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-09-01  Soeren Sonnenburg <sonne@debian.org>
 
 	* NEWS, guilib/GUICommands.h, guilib/GUIKernel.cpp,
 	  guilib/GUIKernel.h, interface/SGInterface.cpp,
@@ -2870,7 +3190,7 @@
 	  kernel/CombinedKernel.h, kernel/OligoKernel.cpp,
 	  kernel/OligoKernel.h: implement precompute_subkernels
 
-2008-08-28  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-08-28  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/MultiClassSVM.cpp, classifier/svm/MultiClassSVM.h,
 	  classifier/svm/SVM.h, distributions/Distribution.h,
@@ -2879,7 +3199,7 @@
 	  Documentation updates for distributions. Implement multiclass svm
 	  model saving and loading.
 
-2008-08-26  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-08-26  Soeren Sonnenburg <sonne@debian.org>
 
 	* kernel/FirstElementKernelNormalizer.h: add missing file
 	* NEWS, clustering/Hierarchical.cpp, guilib/GUIKernel.cpp,
@@ -2892,7 +3212,7 @@
 	  normalization; wrote examples for all interfaces from cmdline to
 	  r-modular :)
 
-2008-08-24  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-08-24  Soeren Sonnenburg <sonne@debian.org>
 
 	* NEWS, classifier/svm/SVM.cpp, classifier/svm/SVM.h,
 	  classifier/svm/SVM_light.cpp, classifier/svm/SVM_light.h,
@@ -2942,15 +3262,15 @@
 	  - remove requirement to set features to custom kernel
 	  - fix buggy normalization in wds kernel
 
-2008-08-18  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-08-18  Soeren Sonnenburg <sonne@debian.org>
 
 	* configure: potentially fix mkl detection
 
-2008-08-17  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-08-17  Soeren Sonnenburg <sonne@debian.org>
 
 	* lib/File.cpp, lib/Mathematics.h: fix transpose
 
-2008-08-16  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-08-16  Soeren Sonnenburg <sonne@debian.org>
 
 	* Makefile: adjust makefile
 	* guilib/GUIClassifier.cpp: - compile fix when lapack/atlas is not
@@ -2958,7 +3278,7 @@
 	  - don't check .config for interface when running tests but use
 	  argument
 
-2008-08-15  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-08-15  Soeren Sonnenburg <sonne@debian.org>
 
 	* ChangeLog: updated changelog
 	* ChangeLog: updated changelog
@@ -2992,7 +3312,7 @@
 	* kernel/GaussianShiftKernel.h: added some documentation of the
 	  GaussianShift kernel
 
-2008-08-14  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-08-14  Soeren Sonnenburg <sonne@debian.org>
 
 	* NEWS, kernel/CommWordStringKernel.h, kernel/CustomKernel.h,
 	  kernel/GaussianKernel.h, kernel/GaussianShiftKernel.h,
@@ -3014,7 +3334,7 @@
 	  kernel/WeightedDegreeStringKernel.h, kernel/WordMatchKernel.h:
 	  document kernels
 
-2008-08-13  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-08-13  Soeren Sonnenburg <sonne@debian.org>
 
 	* kernel/CustomKernel.cpp: kill remaining randomness, testsuite
 	  runs through now for octave/python/python-modular
@@ -3026,7 +3346,7 @@
 	  guilib to
 	  classifier in static interface.
 
-2008-08-12  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-08-12  Soeren Sonnenburg <sonne@debian.org>
 
 	* clustering/KMeans.cpp, interface/SGInterface.cpp,
 	  lib/Mathematics.cpp, lib/Mathematics.h: fix a long standing bug
@@ -3045,12 +3365,12 @@
 	  modules loaded on
 	  startup, like alphabetical sorting, seems to remedy this.
 
-2008-08-10  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-08-10  Soeren Sonnenburg <sonne@debian.org>
 
 	* Makefile: add make tests for matlab (works now for all except
 	  randomized algos :)
 
-2008-08-09  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-08-09  Soeren Sonnenburg <sonne@debian.org>
 
 	* kernel/WeightedDegreePositionStringKernel.h: fix one liner
 	  normalization const function - however this still is not the
@@ -3066,12 +3386,12 @@
 	* kernel/SalzbergWordKernel.h: kernel:
 	  - Little documentation fix in constructor.
 
-2008-07-24  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-07-24  Soeren Sonnenburg <sonne@debian.org>
 
 	* guilib/GUIClassifier.cpp, interface/SGInterface.cpp: fix
 	  documentation string and LDA / lapack compile error
 
-2008-07-23  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-07-23  Soeren Sonnenburg <sonne@debian.org>
 
 	* NEWS, classifier/svm/SVM.cpp, guilib/GUICommands.h,
 	  interface/SGInterface.cpp, interface/SGInterface.h: add
@@ -3157,7 +3477,7 @@
 	* interface/SGInterface.cpp: interface:
 	  - Fixed a bug when counting arguments for HammingWordDistance.
 
-2008-06-24  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-06-24  Soeren Sonnenburg <sonne@debian.org>
 
 	* features/ShortRealFeatures.i, features/SimpleFeatures.i: fix
 	  rename to ShortRealFeatures
@@ -3169,7 +3489,7 @@
 	  WeightedDegreePositionString from 1 to 0 (as in the class'
 	  constructor)
 
-2008-06-23  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-06-23  Soeren Sonnenburg <sonne@debian.org>
 
 	* kernel/GaussianShortRealKernel.cpp, kernel/SimpleKernel.h,
 	  kernel/SimpleKernel.i: fix compilation and warnings caused by my
@@ -3185,14 +3505,14 @@
 	  interface/SGInterface.cpp, interface/SGInterface.h: interface:
 	  - Added command init_random to static interfaces.
 
-2008-06-21  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-06-21  Soeren Sonnenburg <sonne@debian.org>
 
 	* kernel/OligoKernel.cpp, kernel/OligoKernel.h, lib/Signal.cpp,
 	  preproc/NormOne.cpp: moving the oligokernel in place - currently
 	  only formatting changes.. still way to go before it is working in
 	  sg
 
-2008-06-20  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-06-20  Soeren Sonnenburg <sonne@debian.org>
 
 	* NEWS, regression/KRR.h, regression/svr/LibSVR.h,
 	  regression/svr/SVR_light.h: - document methods in regression/*
@@ -3200,7 +3520,7 @@
 	  is becoming messy+confusing) and define USE_SVMLIGHT and
 	  HAVE_LAPACK/ATLAS to also see these methods documented
 
-2008-06-19  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-06-19  Soeren Sonnenburg <sonne@debian.org>
 
 	* NEWS, preproc/LogPlusOne.h, preproc/NormDerivativeLem3.h,
 	  preproc/NormOne.cpp, preproc/NormOne.h, preproc/PCACut.cpp,
@@ -3219,7 +3539,7 @@
 	* classifier/svm/SVM_light.cpp: remove accidental unconditional
 	  active constraint counter increase
 
-2008-06-18  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-06-18  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/SVM_light.cpp: looks like there is some problem in
 	  the heuristic?
@@ -3242,7 +3562,7 @@
 	* classifier/svm/SVM_light.cpp: also implement two/one norm mkl for
 	  linadd
 
-2008-06-17  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-06-17  Soeren Sonnenburg <sonne@debian.org>
 
 	* interface/RInterface.cpp: fix index
 	* interface/RInterface.cpp: attempt to fix corruption
@@ -3252,12 +3572,12 @@
 	  interface/SGInterface.h, structure/DynProg.cpp,
 	  structure/DynProg.h: merge jonas' changes back to trunk
 
-2008-06-16  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-06-16  Soeren Sonnenburg <sonne@debian.org>
 
 	* ChangeLog: updated changelog
 	* NEWS: update news
 
-2008-06-15  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-06-15  Soeren Sonnenburg <sonne@debian.org>
 
 	* Makefile: fix path for octave modular if
 	* Makefile: we don't have any r-doc/vignette or the like
@@ -3272,7 +3592,7 @@
 	  
 	  (with DESTDIR optional :-)
 
-2008-06-14  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-06-14  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/SVM.cpp, classifier/svm/SVM.h,
 	  classifier/svm/SVM_light.cpp, classifier/svm/SVM_light.h,
@@ -3298,7 +3618,7 @@
 	  
 	  ... is $DESTDIR/$PYDIR etc
 
-2008-06-13  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-06-13  Soeren Sonnenburg <sonne@debian.org>
 
 	* ChangeLog: updated changelog
 	* interface/SGInterface.cpp: R tests don't run yet, fix stupid
@@ -3313,7 +3633,7 @@
 
 	* NEWS: Add Ocas changes to News.
 
-2008-06-13  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-06-13  Soeren Sonnenburg <sonne@debian.org>
 
 	* interface/SGInterface.cpp: move structure commands to separate
 	  group
@@ -3324,7 +3644,7 @@
 	  classifier:
 	  - Transformed SG_SINFO into SG_ABS_PROGRESS in Ocas.
 
-2008-06-13  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-06-13  Soeren Sonnenburg <sonne@debian.org>
 
 	* NEWS, guilib/GUIStructure.h, interface/SGInterface.cpp,
 	  structure/DynProg.cpp, structure/DynProg.h, structure/Plif.cpp:
@@ -3346,13 +3666,13 @@
 	  x*y/sqrt( (x*x) * (y*y) ) )
 	  -distance can handle data, which has not be normalized
 
-2008-06-12  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-06-12  Soeren Sonnenburg <sonne@debian.org>
 
 	* NEWS, interface/OctaveInterface.cpp, kernel/Kernel.cpp:
 	  -refresh+resize kernel cache after we actually erease lhs or rhs
 	  -fix a bug+warning in octave interface when setting strings
 
-2008-06-11  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-06-11  Soeren Sonnenburg <sonne@debian.org>
 
 	* kernel/KernelMachine.cpp: minor code cleanup
 	* Makefile: include test and doc for cmdline interface
@@ -3367,7 +3687,7 @@
 	  structure: - Slightly modified NEWS
 	  - updated svn:ignores in various places.
 
-2008-06-11  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-06-11  Soeren Sonnenburg <sonne@debian.org>
 
 	* ChangeLog, Makefile, NEWS, interface/SGInterface.cpp,
 	  kernel/WeightedDegreePositionStringKernel.cpp,
@@ -3405,7 +3725,7 @@
 	  are set for
 	  WeightedDegreeString kernel.
 
-2008-06-10  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-06-10  Soeren Sonnenburg <sonne@debian.org>
 
 	* guilib/GUIStructure.cpp, interface/CmdLineInterface.cpp,
 	  interface/CmdLineInterface.h, interface/OctaveInterface.cpp,
@@ -3432,7 +3752,7 @@
 	* interface/OctaveInterface.cpp, interface/PythonInterface.cpp,
 	  interface/RInterface.cpp: remove double error printing
 
-2008-06-09  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-06-09  Soeren Sonnenburg <sonne@debian.org>
 
 	* interface/SGInterface.cpp: fix error msg when command is mistyped
 	* Makefile, configure, guilib/GUICommands.h,
@@ -3468,7 +3788,7 @@
 	  interface/SGInterface.h: interface:
 	  - Added command print to print messages via SG_PRINT.
 
-2008-06-04  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-06-04  Soeren Sonnenburg <sonne@debian.org>
 
 	* configure: support cplex11
 	* kernel/Kernel.cpp: at least add an assertion that lhs!=NULL and
@@ -3489,7 +3809,7 @@
 	* kernel/Kernel.cpp: kernel:
 	  - Fixed a segfault issue on kernel cleanup when lhs == rhs.
 
-2008-05-30  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-05-30  Soeren Sonnenburg <sonne@debian.org>
 
 	* kernel/AUCKernel.cpp, kernel/AUCKernel.h, kernel/Chi2Kernel.cpp,
 	  kernel/Chi2Kernel.h, kernel/CombinedKernel.cpp,
@@ -3533,7 +3853,7 @@
 	  - Made Perceptron spit out a warning, instead of info when not
 	  converged.
 
-2008-05-29  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-05-29  Soeren Sonnenburg <sonne@debian.org>
 
 	* interface/SGInterface.cpp: fix a memory leak in set_custom_kernel
 	* Makefile: on clean also rm .RData files
@@ -3544,7 +3864,7 @@
 	* interface/CmdLineInterface.h: interface:
 	  - Compile fix for cmdline.
 
-2008-05-28  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-05-28  Soeren Sonnenburg <sonne@debian.org>
 
 	* base/SGObject.h: revert accidental change - r-modular is crashy
 	  when we do proper garbage collection so better leak memory for
@@ -3626,7 +3946,7 @@
 	  structure/Plif.cpp, structure/PlifArray.cpp: - All derived
 	  classes should now call their parent classes on construction.
 
-2008-05-27  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-05-27  Soeren Sonnenburg <sonne@debian.org>
 
 	* kernel/WeightedDegreeStringKernel.cpp, lib/Trie.h: fix a bug in
 	  linadd/batch computation for WD* kernels when degree=1 + minor
@@ -3643,13 +3963,13 @@
 	  - Modified SG_DONE to only display a message when progress bar is
 	  enabled.
 
-2008-05-25  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-05-25  Soeren Sonnenburg <sonne@debian.org>
 
 	* lib/lapack.cpp, lib/lapack.h, lib/python_typemaps.i: fix
 	  dysfunctional lapack bug (it was only working OK with atlas or
 	  when neither atlas or lapack were available)
 
-2008-05-24  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-05-24  Soeren Sonnenburg <sonne@debian.org>
 
 	* TODO: update TODO
 	* classifier/svm/gmnplib.cpp, classifier/svm/gnpplib.cpp: allow
@@ -3676,7 +3996,7 @@
 	  Shogun is
 	  currently terminated if these situations occur.
 
-2008-05-23  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-05-23  Soeren Sonnenburg <sonne@debian.org>
 
 	* guilib/GUIPreProc.cpp: compile fix when lapack is not available
 	* TODO: updated TODO
@@ -3718,7 +4038,7 @@
 	  library:
 	  - Saved a function call in overloaded operator delete.
 
-2008-05-22  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-05-22  Soeren Sonnenburg <sonne@debian.org>
 
 	* TODO: updated todo
 	* TODO: updated TODO
@@ -3731,7 +4051,7 @@
 	  - bad_alloc is now caught for modular interfaces.
 	  - Cosmetic fixes in overloaded new.
 
-2008-05-21  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-05-21  Soeren Sonnenburg <sonne@debian.org>
 
 	* lib/memory.cpp, lib/memory.h: memory handling exceptions now work
 	  for all interfaces
@@ -3816,7 +4136,7 @@
 	  together with
 	  coding-style fixes should be done for real some time later.
 
-2008-05-20  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-05-20  Soeren Sonnenburg <sonne@debian.org>
 
 	* base/SGObject.cpp, classifier/svm/SVM_libsvm.cpp,
 	  interface/OctaveInterface.cpp, interface/OctaveInterface.h,
@@ -3830,18 +4150,18 @@
 	* TODO: TODO:
 	  - Marked items to take charge of for next release.
 
-2008-05-18  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-05-18  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/MPDSVM.cpp, lib/Cache.h: fix spelling mistake in
 	  cache and add some assertions to MPD
 
-2008-05-17  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-05-17  Soeren Sonnenburg <sonne@debian.org>
 
 	* configure: update configure to also use 'native' as march/mcpu
 	  flag
 	* .authors:
 
-2008-05-16  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-05-16  Soeren Sonnenburg <sonne@debian.org>
 
 	* TODO: more ideas
 	* classifier/svm/pr_loqo.cpp: this should fix yaroslavs latest and
@@ -3861,13 +4181,13 @@
 	  kernel/WeightedDegreeStringKernel.cpp, preproc/PCACut.cpp: BF:
 	  some SG_PRINT and printf statements into SG_INFO and SG_DEBUG
 
-2008-05-16  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-05-16  Soeren Sonnenburg <sonne@debian.org>
 
 	* .authors, TODO: add cheng to authors, fix footer and add a
 	  comment to remind me to run make ChangeLog before actually doing
 	  a release
 
-2008-05-15  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-05-15  Soeren Sonnenburg <sonne@debian.org>
 
 	* TODO: brain storming idea
 
@@ -3876,7 +4196,7 @@
 	* features/StringFeatures.h: features:
 	  - Alphabet un/refing bug squished.
 
-2008-05-15  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-05-15  Soeren Sonnenburg <sonne@debian.org>
 
 	* features/StringFeatures.h: fix delete alphabet/missing SG_REF bug
 	* features/Alphabet.cpp: assert that alphabet is not NULL
@@ -3906,7 +4226,7 @@
 	  fix a bug in reading charstring features (forgotten overflow
 	  buffer *ugh*)
 
-2008-05-14  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-05-14  Soeren Sonnenburg <sonne@debian.org>
 
 	* kernel/WeightedDegreePositionStringKernel.cpp,
 	  kernel/WeightedDegreeStringKernel.cpp: remove now (that the
@@ -3932,7 +4252,7 @@
 	  lhs/rhs in
 	  command-line interface.
 
-2008-05-14  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-05-14  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/WDSVMOcas.cpp, kernel/CommWordStringKernel.cpp,
 	  kernel/WeightedDegreePositionStringKernel.cpp,
@@ -3968,7 +4288,7 @@
 	  might be a
 	  more elegent way, though.
 
-2008-05-13  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-05-13  Soeren Sonnenburg <sonne@debian.org>
 
 	* lib/File.cpp, lib/File.h: drafty i/o
 
@@ -3977,7 +4297,7 @@
 	* interface/CmdLineInterface.cpp: interface:
 	  - Little compile warning fix.
 
-2008-05-13  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-05-13  Soeren Sonnenburg <sonne@debian.org>
 
 	* NEWS, interface/CmdLineInterface.cpp, interface/SGInterface.cpp:
 	  add readline completion and filetype guessing (based on 1st 1024
@@ -3988,7 +4308,7 @@
 	* interface/CmdLineInterface.cpp: interface:
 	  - Poked at reading features from files...
 
-2008-05-12  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-05-12  Soeren Sonnenburg <sonne@debian.org>
 
 	* interface/CmdLineInterface.cpp, interface/SGInterface.cpp: -
 	  remove erraneous readline part from SGInterface
@@ -4005,7 +4325,7 @@
 	  kernel/SparsePolyKernel.h: more documentation and compile fix for
 	  cmdline if
 
-2008-05-10  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-05-10  Soeren Sonnenburg <sonne@debian.org>
 
 	* kernel/Chi2Kernel.h, kernel/CombinedKernel.h,
 	  kernel/CommUlongStringKernel.h, kernel/CommWordStringKernel.h,
@@ -4046,7 +4366,7 @@
 	  - Added some ifdef WIN32 around CSignal::unset_handler() in
 	  io::message().
 
-2008-05-09  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-05-09  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/SVM_light.cpp: remove debug code
 	* classifier/svm/SVM_light.cpp: init kernel caches when multiple
@@ -4064,7 +4384,7 @@
 	  AFAICT all examples for all interface run through.
 	* Makefile: add tests to also run examples
 
-2008-05-08  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-05-08  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/SVM_light.cpp: fix crasher when precompute is true
 
@@ -4081,7 +4401,7 @@
 	  new_classifier/train_classifier) and adjusted examples.
 	  - Completely enabled KRR in examples.
 
-2008-05-08  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-05-08  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/SVM_libsvm.cpp: add some progress to libsvm
 
@@ -4115,7 +4435,7 @@
 	* interface/SGInterface.cpp: interface:
 	  - Fixed recognition of WEIGHTEDDEGREEPOS2_NONORM.
 
-2008-05-05  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-05-05  Soeren Sonnenburg <sonne@debian.org>
 
 	* NEWS, kernel/WeightedCommWordStringKernel.cpp,
 	  kernel/WeightedCommWordStringKernel.h,
@@ -4132,7 +4452,7 @@
 	  - Usage of send_command will spit out a warning now.
 	  - Help texts adjusted to not use strings as method arguments.
 
-2008-05-04  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-05-04  Soeren Sonnenburg <sonne@debian.org>
 
 	* base/SGObject.h, kernel/CommWordStringKernel.cpp,
 	  kernel/CommWordStringKernel.h: the compute_helper function in
@@ -4175,7 +4495,7 @@
 	  - Made little changes on how WEIGHTEDDEGREEPOS2/3 are
 	  implemented.
 
-2008-05-02  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-05-02  Soeren Sonnenburg <sonne@debian.org>
 
 	* interface/MatlabInterface.cpp: better do explicit casts, mxChar
 	  is 16bit, CHAR only 8
@@ -4223,7 +4543,7 @@
 	  WeightedDegree* (read: vectors in a string) is apparently,
 	  though.
 
-2008-04-30  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-04-30  Soeren Sonnenburg <sonne@debian.org>
 
 	* base/SGObject.i, lib/r.h, lib/r_typemaps.i: - really disable
 	  garbage collection in r-modular (crashes if on)
@@ -4245,7 +4565,7 @@
 	  interface/SGInterface.cpp: interface:
 	  - Interface now supports new and legacy way to handle features.
 
-2008-04-27  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-04-27  Soeren Sonnenburg <sonne@debian.org>
 
 	* NEWS: ported regression examples to r-modular - Rswig seems to
 	  work now with my
@@ -4259,7 +4579,7 @@
 	  all_* examples
 	  in octave run through, so there are only spiteful bugs.
 
-2008-04-25  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-04-25  Soeren Sonnenburg <sonne@debian.org>
 
 	* base/SGObject.h, classifier/svm/SVM_light.i, lib/Mathematics.i,
 	  lib/Signal.i, lib/Trie.i, lib/io.i, lib/r_typemaps.i: There was
@@ -4296,7 +4616,7 @@
 	  - Fixed an erroneous check for boolean scalar in Octave
 	  interface.
 
-2008-04-24  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-04-24  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/SVM.cpp, structure/DynProg.cpp: - fix crasher in
 	  dynprog (double free)
@@ -4307,7 +4627,7 @@
 	* classifier/svm/SVM.cpp, lib/io.h: Hack to make sure that static
 	  sg_io has same display progress settings as svm.io
 
-2008-04-19  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-04-19  Soeren Sonnenburg <sonne@debian.org>
 
 	* Makefile: install octave files with executable bit set
 	* Makefile: fix PYTHONPATH on make test
@@ -4325,7 +4645,7 @@
 	* interface/SGInterface.cpp, interface/SGInterface.h: interface:
 	  - Added remaining commands to make send_command obsolete.
 
-2008-04-18  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-04-18  Soeren Sonnenburg <sonne@debian.org>
 
 	* NEWS: update news
 	* kernel/Kernel.h: type : -> ;
@@ -4368,7 +4688,7 @@
 	  - Added a bunch of commands to make send_command obsolete in the
 	  near future.
 
-2008-04-17  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-04-17  Soeren Sonnenburg <sonne@debian.org>
 
 	* Makefile, clustering/Hierarchical.i, lib/octave_typemaps.i,
 	  lib/python_typemaps.i, regression/KRR.cpp,
@@ -4381,7 +4701,7 @@
 	  virtual functions in
 	  the octave swig wrapper ... to be debugged
 
-2008-04-16  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-04-16  Soeren Sonnenburg <sonne@debian.org>
 
 	* features/SparseFeatures.h, kernel/CommWordStringKernel.cpp,
 	  kernel/HistogramWordKernel.cpp,
@@ -4419,7 +4739,7 @@
 	  - we won't need the elstupido %pythoncode class derivation stuff
 	  :-)
 
-2008-04-15  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-04-15  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/LinearClassifier.i,
 	  classifier/SparseLinearClassifier.i, classifier/svm/SVM.i,
@@ -4470,7 +4790,7 @@
 	  - add missing documentation
 	  - add copyright header to octave_typemaps.i
 
-2008-04-14  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-04-14  Soeren Sonnenburg <sonne@debian.org>
 
 	* lib/octave_typemaps.i: force variable to be in the outer context
 	  for IN1/IN2 octave typemaps. they
@@ -4485,7 +4805,7 @@
 	  - ignore all further constructors when creating Labels(lab), this
 	  seems to please typemaps (as in they are now applied)
 
-2008-04-13  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-04-13  Soeren Sonnenburg <sonne@debian.org>
 
 	* NEWS, classifier/LinearClassifier.i,
 	  classifier/SparseLinearClassifier.i, classifier/svm/SVM.i,
@@ -4515,14 +4835,14 @@
 	  for a single
 	  command.
 
-2008-04-13  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-04-13  Soeren Sonnenburg <sonne@debian.org>
 
 	* clustering/KMeans.h, features/SimpleFeatures.h,
 	  features/StringFeatures.h, kernel/Kernel.h,
 	  kernel/KernelMachine.h: fixed a few doxygen documentation
 	  warnings
 
-2008-04-12  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-04-12  Soeren Sonnenburg <sonne@debian.org>
 
 	* COPYRIGHT, LICENSE, LICENSE.SVMlight, NEWS: - lots more of
 	  documentation
@@ -4539,7 +4859,7 @@
 	  - Removed superflous command test.
 	  - Improved help function.
 
-2008-04-12  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-04-12  Soeren Sonnenburg <sonne@debian.org>
 
 	* kernel/Kernel.i: - remove vignette and include documentation in
 	  doxygen
@@ -4550,7 +4870,7 @@
 	  - move/merge documenation form .txt files to doxygen
 	  - update README and fix doc generation
 
-2008-04-11  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-04-11  Soeren Sonnenburg <sonne@debian.org>
 
 	* interface/RInterface.cpp, interface/SGInterface.cpp: fix the hmm
 	  viterbi path: it returns a WORD not real-vector: using
@@ -4579,7 +4899,7 @@
 	  Maybe
 	  CHMM::model_probability_comp must be changed? dunno how.
 
-2008-04-10  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-04-10  Soeren Sonnenburg <sonne@debian.org>
 
 	* configure, lib/lapack.cpp, lib/lapack.h: add jochens fixes to
 	  properly detect acml and intel mkl
@@ -4599,11 +4919,11 @@
 	  into plots/.
 	  - Mostly cosmetic fixed to other interfaces.
 
-2008-04-09  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-04-09  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/Tron.cpp, configure: convert tron to use cblas
 
-2008-04-08  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-04-08  Soeren Sonnenburg <sonne@debian.org>
 
 	* configure: fix definition of dpotrf_
 	* configure: link with cblas in case of atlas
@@ -4638,7 +4958,7 @@
 	  - Fix double free corruption in SGInterface::a_get_classifier.
 	  - Fix python examples for clustering.
 
-2008-04-07  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-04-07  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/LinearClassifier.i, kernel/LinearKernel.h,
 	  kernel/LinearKernel.i: add a get_w / set_w to linear kernel
@@ -4661,7 +4981,7 @@
 	  interface/SGInterface.cpp, interface/SGInterface.h: interface:
 	  - Implemented set_int/real/bool for all 4 interfaces.
 
-2008-04-06  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-04-06  Soeren Sonnenburg <sonne@debian.org>
 
 	* .scrub_docstrings.py, Makefile, clustering/Hierarchical.h,
 	  clustering/KMeans.h, configure, features/Features.i,
@@ -4680,7 +5000,7 @@
 	  appropriate.
 	  - Fixed octave-incompatible example.
 
-2008-04-06  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-04-06  Soeren Sonnenburg <sonne@debian.org>
 
 	* TODO, gui/GUI.h, gui/Python.h, gui/TextGUI.h,
 	  guilib/GUIMatlab.cpp, interface/MatlabInterface.cpp,
@@ -4704,7 +5024,7 @@
 	  - put extension includes in lib/{R,octave,python,matlab}.h
 	  - remove old (and now obsolete) interface files
 
-2008-04-04  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-04-04  Soeren Sonnenburg <sonne@debian.org>
 
 	* interface/OctaveInterface.cpp, interface/PythonInterface.cpp,
 	  interface/PythonInterface.h: mostly fixed static python interface
@@ -4729,7 +5049,7 @@
 	  working
 	  properly.
 
-2008-04-03  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-04-03  Soeren Sonnenburg <sonne@debian.org>
 
 	* interface/RInterface.cpp, interface/RInterface.h,
 	  interface/SGInterface.cpp: fix examples for new R interface. we
@@ -4743,7 +5063,7 @@
 	  - Fixed compilation and implemented create_return_values() in
 	  PythonInterface.
 
-2008-04-03  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-04-03  Soeren Sonnenburg <sonne@debian.org>
 
 	* interface/RInterface.cpp: completed R interface - not many
 	  datatypes are supported in R :(
@@ -4766,7 +5086,7 @@
 	* features/SparseFeatures.h: fix possible segfault in
 	  SparseFeatures.h (thanks to Andrey T)
 
-2008-04-02  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-04-02  Soeren Sonnenburg <sonne@debian.org>
 
 	* configure: test swig version
 
@@ -4776,7 +5096,7 @@
 	  - Fixed initialisation of PythonInterface.
 	  - Modified examples to use new interface.
 
-2008-04-02  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-04-02  Soeren Sonnenburg <sonne@debian.org>
 
 	* lib/python_typemaps.i: potentially fix a bug in make contiguous
 
@@ -4786,7 +5106,7 @@
 	  - Implemented methods for PythonInterface - they compile but most
 	  likely won't work.
 
-2008-04-01  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-04-01  Soeren Sonnenburg <sonne@debian.org>
 
 	* interface/RInterface.cpp, interface/RInterface.h,
 	  interface/SGInterface.cpp: get/set_features for R interface: note
@@ -4815,7 +5135,7 @@
 	  data) while
 	  checking octave interface on matlab examples.
 
-2008-03-29  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-03-29  Soeren Sonnenburg <sonne@debian.org>
 
 	* interface/RInterface.cpp, interface/RInterface.h: get R interface
 	  to compile again
@@ -4826,7 +5146,7 @@
 	  interface/SGInterface.cpp, interface/SGInterface.h: interface:
 	  - Got rid of SINGLE_STRING
 
-2008-03-28  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-03-28  Soeren Sonnenburg <sonne@debian.org>
 
 	* features/SparseFeatures.h: free the matrix as long as num_vectors
 	  is still correct
@@ -4876,7 +5196,7 @@
 	  function, make classifier framework compatible and adjust test
 	  suite/examples)
 
-2008-03-27  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-03-27  Soeren Sonnenburg <sonne@debian.org>
 
 	* kernel/WeightedDegreePositionStringKernel.cpp,
 	  kernel/WeightedDegreeStringKernel.cpp: one further leak
@@ -4943,7 +5263,7 @@
 	  and fixed the
 	  new interface in the process.
 
-2008-03-27  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-03-27  Soeren Sonnenburg <sonne@debian.org>
 
 	* interface/OctaveInterface.cpp, interface/OctaveInterface.h: get
 	  octave interface to at least compile again
@@ -4989,7 +5309,7 @@
 	  interface:
 	  - Fixes, fixes, fixes!
 
-2008-03-26  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-03-26  Soeren Sonnenburg <sonne@debian.org>
 
 	* interface/MatlabInterface.cpp: use mxGetPr instead of mxGetData
 	  for sparse matrix
@@ -4999,7 +5319,7 @@
 	* interface/SGInterface.cpp, interface/SGInterface.h: interface:
 	  - Getting closer...
 
-2008-03-26  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-03-26  Soeren Sonnenburg <sonne@debian.org>
 
 	* interface/MatlabInterface.cpp, interface/MatlabInterface.h: use
 	  nnz for SET_SPARSe
@@ -5012,7 +5332,7 @@
 	  lib/io:
 	  - Added macro NOTIMPLEMENTED
 
-2008-03-26  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-03-26  Soeren Sonnenburg <sonne@debian.org>
 
 	* interface/MatlabInterface.cpp: another attempt to fix stringf
 	* interface/MatlabInterface.cpp: bug fix in SET_STRINGLIST
@@ -5031,7 +5351,7 @@
 	  interface:
 	  - Some more tidbits
 
-2008-03-26  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-03-26  Soeren Sonnenburg <sonne@debian.org>
 
 	* features/IntFeatures.cpp, features/IntFeatures.h,
 	  features/ShortRealFeatures.cpp, features/ShortRealFeatures.h,
@@ -5043,7 +5363,7 @@
 	  interface/SGInterface.cpp, interface/SGInterface.h: interface:
 	  - First stab at getting set_features to work.
 
-2008-03-25  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-03-25  Soeren Sonnenburg <sonne@debian.org>
 
 	* interface/MatlabInterface.cpp, interface/MatlabInterface.h,
 	  interface/SGInterface.h: use macros for everthing in matlab
@@ -5060,13 +5380,13 @@
 	  improved)
 	  functions get/set_<type>_vector/matrix/string_list
 
-2008-03-25  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-03-25  Soeren Sonnenburg <sonne@debian.org>
 
 	* interface/MatlabInterface.cpp, interface/MatlabInterface.h,
 	  interface/SGInterface.h: use macros for interface
 	* configure: fall back magic to -lutil and -ldl
 
-2008-03-20  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-03-20  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/LibSVMOneClass.cpp: add missing model=NULL
 	* classifier/svm/LibSVMMultiClass.cpp,
@@ -5083,7 +5403,7 @@
 
 	* classifier/svm/LibSVM.cpp: included Alexander binders bugfix.
 
-2008-03-20  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-03-20  Soeren Sonnenburg <sonne@debian.org>
 
 	* configure, lib/Mathematics.h: fix compilation if sqrtl is not
 	  available (fall back to sqrt)
@@ -5222,7 +5542,7 @@
 	  kernel/WeightedDegreePositionStringKernel.h: initial version of a
 	  swiggable POIM interface.
 
-2008-02-29  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-02-29  Soeren Sonnenburg <sonne@debian.org>
 
 	* kernel/WeightedDegreePositionStringKernel.h,
 	  kernel/WeightedDegreePositionStringKernel.i: draft: split up poim
@@ -5241,14 +5561,14 @@
 	  - Introduced a second counter for arguments (now: in and out)
 	  - Made set functions to take a const as first argument
 
-2008-02-29  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-02-29  Soeren Sonnenburg <sonne@debian.org>
 
 	* configure: assume the python libraries are in the standard
 	  library paths (should fix a
 	  compile failure on opensuse) - not clear if it breaks compilation
 	  on OSX etc
 
-2008-02-28  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-02-28  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/SVM_light.cpp, features/Labels.cpp,
 	  kernel/Kernel.cpp, kernel/Kernel.h, kernel/KernelMachine.cpp:
@@ -5271,7 +5591,7 @@
 	  correctly,
 	  though)
 
-2008-02-27  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-02-27  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/GNPPSVM.cpp: fix leak, by deleting history...
 
@@ -5289,7 +5609,7 @@
 	  instead of
 	  endless case switches.
 
-2008-02-26  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-02-26  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/GPBTSVM.cpp, classifier/svm/LibSVM.cpp: fix
 	  another delete / free mismatch and another leak (in libsvm)
@@ -5322,7 +5642,7 @@
 	  - implemented get functions in MatlabInterface (dunno if it
 	  works, though)
 
-2008-02-26  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-02-26  Soeren Sonnenburg <sonne@debian.org>
 
 	* gui/Python.cpp, interface/OctaveInterface.cpp,
 	  interface/PythonInterface.cpp, interface/PythonInterface.h,
@@ -5358,7 +5678,7 @@
 	  - add octave interface functions:
 	  NOTE THAT THIS FOR NOW BREAKS THE WHOLE OCTAVE INTERFACE
 
-2008-02-25  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-02-25  Soeren Sonnenburg <sonne@debian.org>
 
 	* interface/MatlabInterface.cpp: more interface functions to deal
 	  with int/float/ etc
@@ -5376,7 +5696,7 @@
 	* evaluation/PerformanceMeasures.cpp: evaluation:
 	  - Fixed balanced error in PerformanceMeasures
 
-2008-02-20  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-02-20  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/SVMOcas.cpp, features/SparseFeatures.h: - fix
 	  stupid bug in sparse features & svmlight file loading
@@ -5395,13 +5715,13 @@
 	  handling hack in
 	  constructor
 
-2008-02-20  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-02-20  Soeren Sonnenburg <sonne@debian.org>
 
 	* features/SparseFeatures.h: add example on how to read svm light
 	  format
 	  fix crasher when writing and labels are None
 
-2008-02-19  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-02-19  Soeren Sonnenburg <sonne@debian.org>
 
 	* guilib/GUIMatlab.cpp, structure/DynProg.h: really fix building...
 	* guilib/GUIMatlab.cpp, structure/DynProg.h: compile & style fixes
@@ -5421,7 +5741,7 @@
 	  precompute content svm values; preliminary modifications; not
 	  functionalmake -j 5!
 
-2008-02-19  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-02-19  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/pr_loqo.cpp, configure,
 	  evaluation/PerformanceMeasures.cpp,
@@ -5445,7 +5765,7 @@
 	  evaluation/PerformanceMeasures.h: evaluation:
 	  - Various cleanups and docstring updates in PerformanceMeasures
 
-2008-02-17  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-02-17  Soeren Sonnenburg <sonne@debian.org>
 
 	* features/SparseFeatures.h: fix documentation when writing
 	  features in svm light format..
@@ -5460,7 +5780,7 @@
 	  evaluation/PerformanceMeasures.h: evaluation:
 	  - Added DET to PerformanceMeasures
 
-2008-02-15  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-02-15  Soeren Sonnenburg <sonne@debian.org>
 
 	* kernel/PyramidChi2.cpp, kernel/PyramidChi2.h: cleanups
 
@@ -5473,7 +5793,7 @@
 	  evaluation/PerformanceMeasures.h: evaluation:
 	  - Added PRC + F-measure to PerformanceMeasures
 
-2008-02-15  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-02-15  Soeren Sonnenburg <sonne@debian.org>
 
 	* Makefile: ignore error when trying to version Doxyfile
 
@@ -5494,7 +5814,7 @@
 	  2) added PyramidChi2.{h,cpp} as a pyramid kernel over Chi2
 	  Kernels in a version which is adapted to shogun
 
-2008-02-08  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-02-08  Soeren Sonnenburg <sonne@debian.org>
 
 	* configure: enable building when doxygen is not installed
 
@@ -5515,7 +5835,7 @@
 	* lib/Mathematics.h: lib/Mathematics:
 	  - CMath::sign is properly templated now.
 
-2008-02-05  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-02-05  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/MultiClassSVM.h: fix the > 0 thanks yaroslav
 
@@ -5553,7 +5873,7 @@
 	  first member:
 	  PerformanceMeasures
 
-2008-02-04  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-02-04  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/SVMOcas.h, classifier/svm/SVMSGD.h,
 	  guilib/GUIClassifier.cpp, lib/common.h: also allow for bias being
@@ -5565,7 +5885,7 @@
 	  classifier/svm/SVMSGD.h, guilib/GUIClassifier.cpp,
 	  lib/Mathematics.h: add tests and examples for SGD
 
-2008-02-03  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-02-03  Soeren Sonnenburg <sonne@debian.org>
 
 	* CONTRIBUTIONS: add leon
 	* classifier/svm/SVMSGD.cpp, classifier/svm/SVMSGD.h,
@@ -5576,7 +5896,7 @@
 	  test_all.sh was modified to
 	  execute $PYTHON
 
-2008-02-02  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-02-02  Soeren Sonnenburg <sonne@debian.org>
 
 	* ChangeLog: Preparing for new Release shogun_0.5.0
 	* lib/io.cpp, lib/io.h: Apply patch from Yaroslav Halchenko to
@@ -5587,7 +5907,7 @@
 	* gui/Octave.cpp: built shogun for all interfaces, fixed minor
 	  warning for octave
 
-2008-02-01  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-02-01  Soeren Sonnenburg <sonne@debian.org>
 
 	* features/FKFeatures.cpp, features/TOPFeatures.cpp,
 	  lib/DynamicArray.h, lib/Mathematics.h: - INCREF HMM models when
@@ -5606,7 +5926,7 @@
 	* distributions/hmm/HMM.cpp: distribution:
 	  - Hopefully fixed some issues with refcounting
 
-2008-02-01  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-02-01  Soeren Sonnenburg <sonne@debian.org>
 
 	* features/FKFeatures.cpp, features/TOPFeatures.h: add assertions
 	  in FKFeatures too and minor docu fix for TOP Features
@@ -5616,7 +5936,7 @@
 	  and add some user documentation
 	* Makefile: add a make doc target
 
-2008-01-31  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-01-31  Soeren Sonnenburg <sonne@debian.org>
 
 	* features/TOPFeatures.cpp, kernel/PolyKernel.cpp,
 	  kernel/PolyMatchStringKernel.cpp, kernel/PolyMatchWordKernel.cpp,
@@ -5633,7 +5953,7 @@
 	  feature type and hence the testsuite has to be reworked in that
 	  regard.
 
-2008-01-31  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-01-31  Soeren Sonnenburg <sonne@debian.org>
 
 	* features/TOPFeatures.cpp, kernel/LinearKernel.cpp,
 	  kernel/PolyKernel.cpp, kernel/PolyMatchStringKernel.cpp,
@@ -5934,7 +6254,7 @@
 	  structure/PlifBase.h: The big license switch to GPL v3 and
 	  copyright switch to 2008
 
-2008-01-23  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-01-23  Soeren Sonnenburg <sonne@debian.org>
 
 	* lib/io.cpp, lib/io.h: fix inverted meaning
 	* lib/io.cpp, lib/io.h: disable -> show_progress
@@ -5986,7 +6306,7 @@
 	  constructor at the
 	  wrong place
 
-2008-01-15  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-01-15  Soeren Sonnenburg <sonne@debian.org>
 
 	* distributions/hmm/HMM.cpp: call constructor
 
@@ -5999,7 +6319,7 @@
 
 	* guilib/GUIMatlab.cpp: minor changes in argument processing
 
-2008-01-12  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-01-12  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/SVM.h, distance/Distance.cpp, kernel/Kernel.cpp:
 	  fix valgrind delete[] delete free mismatches triggered by
@@ -6029,7 +6349,7 @@
 	  - Fixed memory/NaN issue with in test matrices in
 	  {Salzberg,Histogram}WordKernel
 
-2008-01-09  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-01-09  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/libocas.cpp, lib/Mathematics.cpp,
 	  lib/Mathematics.h: * fix crasher on clear sg :
@@ -6067,7 +6387,7 @@
 	  due to yet
 	  another road block (see mailing-list).
 
-2008-01-08  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-01-08  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/WDSVMOcas.cpp, guilib/GUIMatlab.cpp: - fix crash
 	  in figuring out alphabet
@@ -6077,7 +6397,7 @@
 	* classifier/svm/libocas.cpp: update of libocas, fixes bug in
 	  linesearch
 
-2008-01-05  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-01-05  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/WDSVMOcas.cpp, classifier/svm/WDSVMOcas.h,
 	  classifier/svm/libocas.cpp: parallelize WDOcas
@@ -6089,7 +6409,7 @@
 	* classifier/svm/SubGradientSVM.cpp: classifier:
 	  - Silenced SubGradientSVM
 
-2008-01-05  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-01-05  Soeren Sonnenburg <sonne@debian.org>
 
 	* Makefile: hopefully fix dependency building with gcc -MM -MT ...
 
@@ -6101,14 +6421,14 @@
 	  swig
 	  - Added this method to the examples for Distribution
 
-2008-01-05  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-01-05  Soeren Sonnenburg <sonne@debian.org>
 
 	* distributions/hmm/LinearHMM.cpp, features/StringFeatures.h: * fix
 	  warning in linear hmm (cast num_symbols to int)
 	  * fix loading of strings when lines are longer than 1MB
 	  * add progress bar for linecounting and loading
 
-2008-01-04  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-01-04  Soeren Sonnenburg <sonne@debian.org>
 
 	* Makefile, classifier/svm/WDSVMOcas.cpp, configure,
 	  features/Alphabet.cpp, features/StringFeatures.h,
@@ -6141,7 +6461,7 @@
 	  similarly to yesterday's fix of KMeans::get_radi() and
 	  ::get_centers()
 
-2008-01-03  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2008-01-03  Soeren Sonnenburg <sonne@debian.org>
 
 	* clustering/KMeans.h, distributions/Distribution.cpp,
 	  distributions/histogram/Histogram.h,
@@ -6166,7 +6486,7 @@
 	  preproc/WordPreProc.i: preproc:
 	  - Obliterated {Real,Short,Word}PreProc
 
-2007-12-30  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-12-30  Soeren Sonnenburg <sonne@debian.org>
 
 	* kernel/WeightedDegreePositionStringKernel.h: fix error in header
 	  file (gcc 4.3 reports this as error multiple parameters named
@@ -6187,7 +6507,7 @@
 	  yet, hence no
 	  updated examples.
 
-2007-12-22  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-12-22  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/SVMOcas.cpp, classifier/svm/WDSVMOcas.cpp: bugfix
 	* classifier/svm/WDSVMOcas.cpp, classifier/svm/WDSVMOcas.h,
@@ -6215,7 +6535,7 @@
 	  functionality lost through changes in the constructors a few
 	  commits before
 
-2007-12-21  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-12-21  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/WDSVMOcas.cpp, classifier/svm/libocas.cpp: fix
 	  timing, minor tuning
@@ -6224,7 +6544,7 @@
 	* classifier/svm/libocas.cpp, classifier/svm/libocas.h: updated to
 	  new ocas
 
-2007-12-20  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-12-20  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/WDSVMOcas.cpp, classifier/svm/WDSVMOcas.h: seems
 	  to work now - the meaning of epsilon is really completely
@@ -6256,7 +6576,7 @@
 	  testsuite/examples:
 	  - Adapted accordingly to changes in LinearHMM/Histogram
 
-2007-12-20  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-12-20  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/WDSVMOcas.cpp, classifier/svm/WDSVMOcas.h:
 	  introduce WD kernel normalization const
@@ -6283,7 +6603,7 @@
 	  clustering:
 	  - Fixed typo in doc-string of Clustering.i
 
-2007-12-19  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-12-19  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/WDSVMOcas.cpp, guilib/GUIClassifier.cpp,
 	  guilib/GUIClassifier.h: wdocas needs bytefeatures, adjust
@@ -6350,7 +6670,7 @@
 	  - Adapted DNA features to have different lengths in train and
 	  test
 
-2007-12-14  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-12-14  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/WDSVMOcas.cpp, classifier/svm/WDSVMOcas.h,
 	  classifier/svm/WDSVMOcas.i, guilib/GUIClassifier.cpp: start OCAS
@@ -6872,7 +7192,7 @@
 	  Extended LibSVMOneClass' constructor and added the
 	  SVM to testuite.
 
-2007-12-12  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-12-12  Soeren Sonnenburg <sonne@debian.org>
 
 	* guilib/GUIMatlab.cpp: fix warning in matlab interface
 
@@ -7035,7 +7355,7 @@
 	  be removed
 	  with the next commit.
 
-2007-11-27  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-11-27  Soeren Sonnenburg <sonne@debian.org>
 
 	* base/Version.cpp, base/Version.h, classifier/Classifier.doxy,
 	  classifier/Classifier.i, classifier/KNN.cpp,
@@ -7045,7 +7365,7 @@
 	  showing sebastian the code
 	  - some more docu for SVM.h
 
-2007-11-26  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-11-26  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/Classifier.doxy, clustering/Clustering.doxy,
 	  distance/Distance.doxy, distributions/Distribution.doxy,
@@ -7056,7 +7376,7 @@
 	* .generate_link_dependencies.py: add void deps to
 	  clustering/CLustering_doxygen.i
 
-2007-11-25  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-11-25  Soeren Sonnenburg <sonne@debian.org>
 
 	* Makefile, clustering/Clustering.i: clustering should include
 	  clustering stuff not classifiers... argh
@@ -7098,7 +7418,7 @@
 	  Custom kernel, while bugfixing and cleaning it. The testdata
 	  looks weird, though, and has to be investigated further.
 
-2007-11-24  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-11-24  Soeren Sonnenburg <sonne@debian.org>
 
 	* features/StringFeatures.h: fix a compile warning
 
@@ -7113,7 +7433,7 @@
 	  list of
 	  changed data files)
 
-2007-11-23  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-11-23  Soeren Sonnenburg <sonne@debian.org>
 
 	* .authors: add Christoph Lampert to authors
 	* NEWS, clustering/Hierarchical.cpp, clustering/Hierarchical.h,
@@ -7126,7 +7446,7 @@
 
 	* guilib/GUIDistance.cpp: More Manhatten->Manhattan changes.
 
-2007-11-23  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-11-23  Soeren Sonnenburg <sonne@debian.org>
 
 	* kernel/ManhattanWordKernel.i: include should not be needed
 
@@ -7137,7 +7457,7 @@
 	  stuff which seemed helpful in finding fix mentioned in
 	  previous check-in.
 
-2007-11-23  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-11-23  Soeren Sonnenburg <sonne@debian.org>
 
 	* lib/List.h: don't call delete but SG_UNREF for swig interface in
 	  list, should fix double free w/ combined kernel
@@ -7149,7 +7469,7 @@
 	  features/StringFeatures.i, found and fixed a segfault in
 	  features/StringFeatures.h:get_string.
 
-2007-11-21  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-11-21  Soeren Sonnenburg <sonne@debian.org>
 
 	* NEWS, guilib/GUIPython.cpp: fix building of python interface
 	  update NEWS for new release
@@ -7161,12 +7481,12 @@
 	  properly initialised; also added similar ASSERTs to
 	  kernel/Kernel.h:kernel().
 
-2007-11-20  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-11-20  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/LibSVM.cpp: fix memory leak in libsvm wrapper as
 	  reported by alexander binder
 
-2007-11-19  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-11-19  Soeren Sonnenburg <sonne@debian.org>
 
 	* distance/Distance.i, distance/RealDistance.i,
 	  distance/SparseDistance.i, kernel/CombinedKernel.cpp,
@@ -7204,7 +7524,7 @@
 	* guilib/GUIMatlab.cpp, structure/DynProg.cpp, structure/DynProg.h,
 	  structure/Plif.cpp: testing...
 
-2007-11-15  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-11-15  Soeren Sonnenburg <sonne@debian.org>
 
 	* guilib/GUIMatlab.cpp, lib/Array.h, lib/Array2.h, lib/Array3.h,
 	  structure/DynProg.cpp: argh! this is the
@@ -7214,7 +7534,7 @@
 	  ASSERT was undefined in matlab interface... so THERE WAS NO ERROR
 	  CHECKING
 
-2007-11-14  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-11-14  Soeren Sonnenburg <sonne@debian.org>
 
 	* kernel/WeightedDegreePositionStringKernel.cpp,
 	  kernel/WeightedDegreePositionStringKernel.h,
@@ -7234,7 +7554,7 @@
 	* structure/DynProg.cpp: revert
 	* kernel/CombinedKernel.cpp, structure/DynProg.cpp: fixed typo
 
-2007-11-13  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-11-13  Soeren Sonnenburg <sonne@debian.org>
 
 	* kernel/CombinedKernel.cpp: fix serious bug in output computation
 	  which could occur only when a kernel
@@ -7312,7 +7632,7 @@
 	  their features.
 	  Also cleaned up kernels' .h files and a bit .cpp files.
 
-2007-11-12  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-11-12  Soeren Sonnenburg <sonne@debian.org>
 
 	* features/Features.cpp, features/RealFeatures.cpp,
 	  features/SimpleFeatures.h, kernel/Kernel.cpp: more %ld -> %p
@@ -7326,7 +7646,7 @@
 	  GaussianShift kernel.
 	  (untested)
 
-2007-11-09  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-11-09  Soeren Sonnenburg <sonne@debian.org>
 
 	* features/Labels.cpp, guilib/GUIKernel.cpp, kernel/Chi2Kernel.cpp,
 	  kernel/Chi2Kernel.h, kernel/GaussianKernel.cpp,
@@ -7341,7 +7661,7 @@
 	  - update kernel name printing / fix duplicate id, reported by
 	  Christoph Lampert
 
-2007-11-03  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-11-03  Soeren Sonnenburg <sonne@debian.org>
 
 	* Makefile: argh, fix C C++ mixup on make depend / fixes
 	  python-modular build
@@ -7357,7 +7677,7 @@
 	  Finally enable batch computation/linadd in kernelmachines by
 	  default
 
-2007-11-02  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-11-02  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/SVM_light.cpp, classifier/svm/ssl.cpp, configure,
 	  lib/Mathematics.h, lib/Signal.cpp, regression/svr/SVR_light.cpp:
@@ -7384,7 +7704,7 @@
 	  through, though.
 	* lib/Mathematics.cpp: added display_vector for long long int
 
-2007-10-29  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-10-29  Soeren Sonnenburg <sonne@debian.org>
 
 	* kernel/CanberraWordKernel.cpp, kernel/CanberraWordKernel.h,
 	  kernel/Chi2Kernel.cpp, kernel/Chi2Kernel.h,
@@ -7417,12 +7737,12 @@
 	* configure: little bugfix: extra includes should be appended by
 	  '-I', not '-L'
 
-2007-10-26  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-10-26  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/SVMOcas.cpp: avoid a couple of (useless) memory
 	  init's / copies
 
-2007-10-25  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-10-25  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/SVMOcas.cpp, classifier/svm/SVMOcas.h,
 	  classifier/svm/libocas.cpp, gui/TextGUI.cpp,
@@ -7434,14 +7754,14 @@
 	* classifier/svm/SVMOcas.cpp, classifier/svm/libocas.cpp: addgin
 	  debug code
 
-2007-10-25  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-10-25  Soeren Sonnenburg <sonne@debian.org>
 
 	* .authors, base/SGObject.h, classifier/LDA.h,
 	  classifier/LinearClassifier.h, lib/Mathematics.h,
 	  preproc/NormOne.cpp: add mr. kodeaffe to list of authors + minor
 	  code edits we spotted while talking about the source
 
-2007-10-24  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-10-24  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/SVMOcas.cpp, classifier/svm/SVMOcas.h: one bug
 	  less...
@@ -7451,7 +7771,7 @@
 	* classifier/svm/SVMOcas.cpp, features/SparseFeatures.h: fixed some
 	  of the bugs
 
-2007-10-24  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-10-24  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/SVMOcas.cpp, classifier/svm/SVMOcas.h,
 	  classifier/svm/libocas.cpp, classifier/svm/libocas.h,
@@ -7465,7 +7785,7 @@
 	* lib/common.h, structure/DynProg.cpp, structure/DynProg.h: some
 	  timing routines and speedups for DynProg.
 
-2007-10-23  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-10-23  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/SVMOcas.cpp, classifier/svm/SVMOcas.h,
 	  classifier/svm/libocas.cpp, classifier/svm/libocas.h,
@@ -7474,7 +7794,7 @@
 	  lib/Mathematics.h: start integration of libocas
 	  (avoiding code duplication/resyncs between ocas/shogun)
 
-2007-10-22  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-10-22  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/SVMOcas.cpp, lib/Mathematics.h, lib/common.h:
 	  compile fix:
@@ -7488,7 +7808,7 @@
 	  GaussianShiftKernel. Could not test it.
 	  Hope it works.
 
-2007-10-21  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-10-21  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/SparseLinearClassifier.i, classifier/svm/SVMOcas.cpp,
 	  classifier/svm/SVMOcas.h, classifier/svm/SVMOcas.i,
@@ -7504,7 +7824,7 @@
 	  guilib/GUIFeatures.h, kernel/MindyGramKernel.cpp: added support
 	  for faster gram addition
 
-2007-10-18  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-10-18  Soeren Sonnenburg <sonne@debian.org>
 
 	* lib/python_typemaps.i: fix a major memory leak (occured for all
 	  functions returning arrays to python)
@@ -7520,12 +7840,12 @@
 	  copied from
 	  the C++ functions
 
-2007-10-17  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-10-17  Soeren Sonnenburg <sonne@debian.org>
 
 	* Makefile, configure: add example for shogun's new library
 	  interface - libshogun
 
-2007-10-14  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-10-14  Soeren Sonnenburg <sonne@debian.org>
 
 	* features/Features.cpp, features/StringFeatures.h,
 	  kernel/CommWordStringKernel.cpp, kernel/Kernel.cpp: - fix a
@@ -7533,19 +7853,19 @@
 	  kernel)
 	  - remove some debug code
 
-2007-10-10  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-10-10  Soeren Sonnenburg <sonne@debian.org>
 
 	* NEWS: prepare for release 0.4.3
 
-2007-10-09  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-10-09  Soeren Sonnenburg <sonne@debian.org>
 
 	* lib/Mathematics.h: add insertion sort
 
-2007-10-04  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-10-04  Soeren Sonnenburg <sonne@debian.org>
 
 	* lib/Trie.cpp: code cleanup in obtaining w - no function change
 
-2007-09-28  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-09-28  Soeren Sonnenburg <sonne@debian.org>
 
 	* features/Alphabet.cpp: fix warnings
 	* configure, features/Alphabet.cpp, features/Alphabet.h,
@@ -7559,13 +7879,13 @@
 	  change in
 	  commword kernel) and add support for sliding window init
 
-2007-09-25  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-09-25  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/SubGradientLPM.cpp, lib/Trie.cpp: - this should fix a
 	  boundary bug in poim computation
 	  - compile fix when cplex is available
 
-2007-09-19  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-09-19  Soeren Sonnenburg <sonne@debian.org>
 
 	* gui/R.cpp, guilib/GUIR.cpp, kernel/Kernel.cpp, lib/Mathematics.h,
 	  lib/io.cpp: compile fixes for R/python-modular/python
@@ -7575,7 +7895,7 @@
 	  (just make sure src/NEWS is updated)
 	  - minor clustering fixes
 
-2007-09-13  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-09-13  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/KNN.cpp, classifier/svm/SubGradientSVM.cpp,
 	  clustering/Hierarchical.cpp, clustering/Hierarchical.h,
@@ -7584,7 +7904,7 @@
 	  guilib/GUIMatlab.cpp, guilib/GUIMatlab.h, lib/Mathematics.h,
 	  structure/DynProg.cpp: hierarchical clustering works now
 
-2007-09-12  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-09-12  Soeren Sonnenburg <sonne@debian.org>
 
 	* clustering/Hierarchical.cpp, clustering/Hierarchical.h,
 	  distance/NormSquaredDistance.cpp, guilib/GUIClassifier.cpp,
@@ -7595,7 +7915,7 @@
 	  lib/common.h: add aggregative single linkage hierarchical
 	  clustering (to be debugged)
 
-2007-09-11  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-09-11  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/KNN.h, clustering/KMeans.cpp, clustering/KMeans.h,
 	  distributions/hmm/HMM.cpp, guilib/GUIClassifier.cpp,
@@ -7620,7 +7940,7 @@
 	  kernel/SparseNormSquaredKernel.i, lib/common.h: add clustering
 	  methods support
 
-2007-09-05  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-09-05  Soeren Sonnenburg <sonne@debian.org>
 
 	* guilib/GUIMatlab.cpp,
 	  kernel/WeightedDegreePositionStringKernel.cpp,
@@ -7637,14 +7957,14 @@
 	* kernel/WeightedDegreePositionStringKernel.cpp, lib/Trie.cpp,
 	  lib/Trie.h: POIMs work...!
 
-2007-09-03  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-09-03  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/LibLinear.cpp, classifier/svm/LibLinear.h,
 	  classifier/svm/SVM_linear.cpp, classifier/svm/SVM_linear.h,
 	  classifier/svm/Tron.cpp, classifier/svm/Tron.h,
 	  guilib/GUIClassifier.cpp: fix compilation with --disable-lapack
 
-2007-08-31  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-08-31  Soeren Sonnenburg <sonne@debian.org>
 
 	* ChangeLog: release 0.4.1
 	* CONTRIBUTIONS, NEWS, guilib/GUIMatlab.cpp, kernel/AUCKernel.cpp,
@@ -7665,7 +7985,7 @@
 	  lib/Trie.h: POIMS: Enabled to output partial scores, to aid
 	  debugging.
 
-2007-08-29  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-08-29  Soeren Sonnenburg <sonne@debian.org>
 
 	* gui/Matlab.cpp, guilib/GUIMatlab.cpp, guilib/GUIMatlab.h,
 	  kernel/WeightedDegreePositionStringKernel.cpp,
@@ -7681,7 +8001,7 @@
 	* kernel/WeightedDegreePositionStringKernel.cpp, lib/Trie.cpp,
 	  lib/Trie.h:
 
-2007-08-28  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-08-28  Soeren Sonnenburg <sonne@debian.org>
 
 	* gui/Matlab.cpp, guilib/GUIMatlab.cpp, guilib/GUIMatlab.h: get
 	  normal support
@@ -7696,7 +8016,7 @@
 	* kernel/WeightedDegreePositionStringKernel.cpp:
 	* kernel/WeightedDegreePositionStringKernel.cpp, lib/Trie.cpp:
 
-2007-08-24  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-08-24  Soeren Sonnenburg <sonne@debian.org>
 
 	* guilib/GUIKernel.cpp: add POS2_NONORM kernel
 	* classifier/svm/LibLinear.cpp, classifier/svm/SVM_linear.cpp,
@@ -7708,14 +8028,14 @@
 	* kernel/WeightedDegreePositionStringKernel.cpp, lib/Trie.cpp,
 	  lib/Trie.h:
 
-2007-08-23  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-08-23  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/SVMLin.cpp, classifier/svm/Tron.cpp: finally fix
 	  SVMLin+liblinear
 	* kernel/WeightedDegreePositionStringKernel.cpp: build whole
 	  tree...
 
-2007-08-22  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-08-22  Soeren Sonnenburg <sonne@debian.org>
 
 	* regression/KRR.cpp: test whether kernel is inited on train()
 	* gui/Matlab.cpp, guilib/GUIMatlab.cpp, guilib/GUIMatlab.h,
@@ -7729,7 +8049,7 @@
 	  kernel/WeightedDegreePositionStringKernel.h, lib/Trie.cpp,
 	  lib/Trie.h:
 
-2007-08-22  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-08-22  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/LinearClassifier.i,
 	  classifier/SparseLinearClassifier.i,
@@ -7741,7 +8061,7 @@
 	  python-modular support for the custom kernel
 	  - lots of fixes for SVMLin / Liblinear
 
-2007-08-21  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-08-21  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/SVMLin.cpp, classifier/svm/SVMLin.h,
 	  classifier/svm/ssl.cpp, classifier/svm/ssl.h, configure,
@@ -7753,12 +8073,12 @@
 	* kernel/WeightedDegreePositionStringKernel.POIM.cpp,
 	  lib/Trie.POIM.cpp, lib/Trie.POIM.h, lib/Trie.cpp, lib/Trie.h:
 
-2007-08-21  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-08-21  Soeren Sonnenburg <sonne@debian.org>
 
 	* guilib/GUIClassifier.cpp, lib/io.cpp: fix the python
 	  examples/python io
 
-2007-08-20  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-08-20  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/LibLinear.cpp, classifier/svm/LibLinear.h,
 	  classifier/svm/SVM_linear.cpp, classifier/svm/SVM_linear.h,
@@ -7772,7 +8092,7 @@
 	  with -1,
 	  additionally a 'bias feature' may need to be added )
 
-2007-08-17  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-08-17  Soeren Sonnenburg <sonne@debian.org>
 
 	* features/StringFeatures.h, gui/Matlab.cpp,
 	  guilib/GUIFeatures.cpp, guilib/GUIMatlab.cpp: add support for
@@ -7805,7 +8125,7 @@
 	* kernel/WeightedDegreePositionStringKernel.POIM.cpp,
 	  lib/Trie.POIM.cpp, lib/Trie.POIM.h:
 
-2007-08-17  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-08-17  Soeren Sonnenburg <sonne@debian.org>
 
 	* features/StringFeatures.h, kernel/CommWordStringKernel.cpp,
 	  kernel/CommWordStringKernel.h,
@@ -7821,7 +8141,7 @@
 	  (potentially resolving the problem with sliding window/spec
 	  kernel)
 
-2007-08-16  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-08-16  Soeren Sonnenburg <sonne@debian.org>
 
 	* kernel/CommWordStringKernel.cpp: remove debug code
 	* kernel/CommWordStringKernel.cpp: POIM for spec bugfixes
@@ -7833,7 +8153,7 @@
 	  Mindy distance to kernel mapping. In essence either use RBF
 	  conversion or check that the distance is a negative CPD kernel.
 
-2007-08-15  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-08-15  Soeren Sonnenburg <sonne@debian.org>
 
 	* lib/Trie.h: new trie fields
 	* classifier/svm/SubGradientSVM.cpp: rename A0 -> A_zero , B0 ->
@@ -7848,12 +8168,12 @@
 	* features/MindyGramFeatures.cpp, features/MindyGramFeatures.h,
 	  kernel/MindyGramKernel.h: added support for latest Mindy library
 
-2007-08-08  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-08-08  Soeren Sonnenburg <sonne@debian.org>
 
 	* kernel/CommWordStringKernel.cpp: removed debug code/make toy
 	  example more convincing
 
-2007-08-07  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-08-07  Soeren Sonnenburg <sonne@debian.org>
 
 	* kernel/CommWordStringKernel.cpp: spectrum poim seems to work...
 	* features/Alphabet.cpp, kernel/LocalAlignmentStringKernel.cpp,
@@ -7871,7 +8191,7 @@
 	  kernel/WeightedDegreePositionStringKernel.cpp, lib/Mathematics.h:
 	  add function to compute POIM from spectrum kernel
 
-2007-08-06  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-08-06  Soeren Sonnenburg <sonne@debian.org>
 
 	* CONTRIBUTIONS, classifier/svm/LibLinear.cpp,
 	  classifier/svm/LibLinear.h, classifier/svm/SVM_linear.cpp,
@@ -7880,22 +8200,22 @@
 	  add Xiang-Rui Wang and Chih-Jen Lin's
 	  liblinear (for LS-logistic regression / L2 svm)
 
-2007-08-03  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-08-03  Soeren Sonnenburg <sonne@debian.org>
 
 	* guilib/GUIFeatures.cpp, guilib/GUIMatlab.cpp: add support for
 	  BYTE/WORD/ULONG based stringfeatures for sliding
 	  window/position list
 
-2007-08-02  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-08-02  Soeren Sonnenburg <sonne@debian.org>
 
 	* features/StringFeatures.h: potentially fix the erraneous delete[]
 	  happening after calling from_window_list
 
-2007-07-31  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-07-31  Soeren Sonnenburg <sonne@debian.org>
 
 	* kernel/Kernel.h: fix compilation with --disable-svm-light
 
-2007-07-30  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-07-30  Soeren Sonnenburg <sonne@debian.org>
 
 	* configure, lib/Cplex.h: cplex 10 compat fixes as suggested by
 	  Gorden Jemwa
@@ -7910,14 +8230,14 @@
 	  not support
 	  dynamic argument macros)
 
-2007-07-29  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-07-29  Soeren Sonnenburg <sonne@debian.org>
 
 	* configure: remove undefined suppress from configure
 	* base/Version.cpp, base/Version.h, classifier/svm/LibSVM.cpp,
 	  classifier/svm/SVM_light.cpp: fix the remaining python-modular
 	  interface examples
 
-2007-07-28  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-07-28  Soeren Sonnenburg <sonne@debian.org>
 
 	* guilib/GUIOctave.cpp: fix get_svm for octave
 	* kernel/CommWordStringKernel.cpp, kernel/CommWordStringKernel.h,
@@ -7927,7 +8247,7 @@
 	* classifier/Classifier.h, guilib/GUIClassifier.cpp: fix oneclass
 	  svm bug
 
-2007-07-27  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-07-27  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/KNN.h, classifier/Perceptron.h,
 	  classifier/SubGradientLPM.h, classifier/svm/CPLEXSVM.h,
@@ -7949,7 +8269,7 @@
 	  kernel/LocalityImprovedStringKernel.i: * update NEWS
 	  * fix remaining CharKernel occurances
 
-2007-07-23  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-07-23  Soeren Sonnenburg <sonne@debian.org>
 
 	* features/StringFeatures.h, kernel/CommWordStringKernel.cpp,
 	  kernel/CommWordStringKernel.h,
@@ -7957,13 +8277,13 @@
 	  kernel/WeightedCommWordStringKernel.h: + add linadd functionality
 	  + svm test case/example
 
-2007-07-22  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-07-22  Soeren Sonnenburg <sonne@debian.org>
 
 	* features/StringFeatures.h, guilib/GUIFeatures.h,
 	  kernel/WeightedCommWordStringKernel.cpp: an example on how to use
 	  the weighted spectrum kernel
 
-2007-07-21  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-07-21  Soeren Sonnenburg <sonne@debian.org>
 
 	* kernel/WeightedCommWordStringKernel.cpp,
 	  kernel/WeightedCommWordStringKernel.h: - update octave example
@@ -7981,7 +8301,7 @@
 	  - remove CommWord kernel
 	  - add WeightedCommWordString Kernel
 
-2007-07-12  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-07-12  Soeren Sonnenburg <sonne@debian.org>
 
 	* base/SGObject.h: fix warning in base/SGObject
 
@@ -7989,7 +8309,7 @@
 
 	* lib/Mathematics.cpp: fixed minor compilation problem
 
-2007-07-09  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-07-09  Soeren Sonnenburg <sonne@debian.org>
 
 	* configure, guilib/GUIKernel.cpp, kernel/CommWordKernel.h,
 	  kernel/LinearKernel.cpp, kernel/LinearKernel.h,
@@ -8002,14 +8322,14 @@
 
 	* kernel/Kernel.cpp: added a missing case switch.
 
-2007-06-18  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-06-18  Soeren Sonnenburg <sonne@debian.org>
 
 	* configure: fix syntax error in configure
 	* features/StringFeatures.h: split asserts and don't fail if string
 	  is already a sling window
 	  string and shorter than window len
 
-2007-06-16  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-06-16  Soeren Sonnenburg <sonne@debian.org>
 
 	* NEWS, base/Version.cpp, base/Version.h,
 	  classifier/Classifier.cpp, configure, distributions/hmm/HMM.h,
@@ -8017,7 +8337,7 @@
 	  kernel/WeightedDegreePositionStringKernel.cpp: gcc-4.2 warning
 	  fixes
 
-2007-06-07  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-06-07  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/SubGradientLPM.cpp, classifier/svm/SubGradientSVM.cpp:
 	  implement time limit also for subgradientsvm/lpm
@@ -8035,7 +8355,7 @@
 	* classifier/SubGradientLPM.cpp, classifier/svm/SubGradientSVM.cpp:
 	  argh, need to use abs(alpha) in convergence crit. of course
 
-2007-06-06  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-06-06  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/SubGradientLPM.cpp, classifier/SubGradientLPM.h,
 	  classifier/svm/SubGradientSVM.cpp, guilib/GUIClassifier.cpp: use
@@ -8046,7 +8366,7 @@
 	* classifier/SubGradientLPM.cpp, classifier/svm/SubGradientSVM.cpp,
 	  lib/Cplex.cpp, lib/Mathematics.cpp: use cplex result directly
 
-2007-06-05  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-06-05  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/SubGradientLPM.cpp, lib/Cplex.cpp: still not 100% the
 	  same
@@ -8062,7 +8382,7 @@
 	  classifier/svm/qpbsvmlib.cpp, lib/Cplex.cpp, lib/Cplex.h:
 	  debuggin...
 
-2007-06-04  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-06-04  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/SubGradientLPM.cpp, classifier/SubGradientLPM.h,
 	  guilib/GUIClassifier.cpp, lib/Mathematics.h: still not even close
@@ -8074,7 +8394,7 @@
 	* classifier/LPBoost.cpp, lib/Cplex.cpp: lpboost still not working
 	  correctly...
 
-2007-06-03  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-06-03  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/LPBoost.cpp, classifier/LPBoost.h, classifier/LPM.cpp,
 	  classifier/LPM.h, classifier/svm/SVM_light.cpp,
@@ -8093,7 +8413,7 @@
 	  classifier/LPM.h, guilib/GUIClassifier.cpp, lib/Cplex.cpp,
 	  lib/Cplex.h, lib/common.h: +stubs for LPM/LPBoost, doing LPM now
 
-2007-05-31  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-05-31  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/SubGradientSVM.cpp,
 	  classifier/svm/SubGradientSVM.h, guilib/GUIClassifier.cpp,
@@ -8107,19 +8427,19 @@
 	* classifier/svm/SubGradientSVM.cpp,
 	  classifier/svm/SubGradientSVM.h: option to disable bias
 
-2007-05-30  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-05-30  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/SubGradientSVM.cpp: playing with convergence
 	  criterion
 
-2007-05-29  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-05-29  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/SubGradientSVM.cpp,
 	  kernel/WeightedDegreeStringKernel.cpp: - fix early convergence of
 	  subgradient svm
 	  - fix double free in wd kernel
 
-2007-05-28  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-05-28  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/SubGradientSVM.cpp, lib/Cplex.cpp, lib/matlab.h:
 	  forgot to check in matlab build fix:
@@ -8128,7 +8448,7 @@
 	  
 	  then define mwSize to be INT etc...
 
-2007-05-25  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-05-25  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/GPBTSVM.cpp, classifier/svm/gpdt.h,
 	  classifier/svm/gpdtsolve.cpp, classifier/svm/gpdtsolve.h,
@@ -8147,7 +8467,7 @@
 	* guilib/GUIMatlab.cpp:
 	* guilib/GUIMatlab.cpp: add sparse matrix matalb i/o support
 
-2007-05-24  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-05-24  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/SubGradientSVM.cpp, classifier/svm/qpbsvmlib.cpp,
 	  classifier/svm/qpbsvmlib.h: add gradient descent
@@ -8165,7 +8485,7 @@
 	* classifier/svm/gpdt.cpp, classifier/svm/gpdtsolve.cpp: update
 	  gpbt svm to version nov 2006 (released in january 2007)
 
-2007-05-23  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-05-23  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/SubGradientSVM.cpp: - update subgradient svm
 	  example
@@ -8187,7 +8507,7 @@
 	* classifier/svm/SubGradientSVM.h, guilib/GUIClassifier.cpp: make
 	  qpsize configurable
 
-2007-05-22  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-05-22  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/qpbsvmlib.cpp, lib/Cplex.cpp, lib/Cplex.h: remove
 	  debug output & cleanups
@@ -8202,7 +8522,7 @@
 	* classifier/svm/SubGradientSVM.cpp, classifier/svm/qpbsvmlib.cpp,
 	  lib/Cplex.cpp: cplex dense_to_cplex_sparse fix
 
-2007-05-21  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-05-21  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/CPLEXSVM.cpp, classifier/svm/SubGradientSVM.cpp,
 	  classifier/svm/SubGradientSVM.h, classifier/svm/qpbsvmlib.cpp,
@@ -8213,7 +8533,7 @@
 	* classifier/svm/SubGradientSVM.cpp, classifier/svm/qpbsvmlib.cpp:
 	  fix uninitialised variables
 
-2007-05-19  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-05-19  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/SubGradientSVM.cpp, classifier/svm/gpdtsolve.cpp,
 	  classifier/svm/gpm.cpp, classifier/svm/qpbsvmlib.cpp,
@@ -8221,7 +8541,7 @@
 	  in grad proj techn. svm
 	  * add pr_loqo to qpbsvmlib
 
-2007-05-18  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-05-18  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/LinearClassifier.h, classifier/svm/SVM_libsvm.cpp,
 	  classifier/svm/SubGradientSVM.cpp,
@@ -8234,14 +8554,14 @@
 	  * add generic [bias,weights]=sg('get_classifier') call
 	  * autoadjust epsilon for subgradient svm
 
-2007-05-15  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-05-15  Soeren Sonnenburg <sonne@debian.org>
 
 	* guilib/GUIClassifier.cpp: synonymize SVMLIGHT with LIGHT for
 	  compatibility
 	* guilib/GUIR.cpp: fix get_matrix stuff
 	* Makefile, classifier/svm/SubGradientSVM.cpp: R test update
 
-2007-05-11  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-05-11  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/SubGradientSVM.cpp, gui/Octave.cpp, gui/R.cpp,
 	  guilib/GUIOctave.h, guilib/GUIR.cpp, guilib/GUIR.h: classifier
@@ -8263,7 +8583,7 @@
 	  -convert everything to work with guiclassifier
 	  -fix subgradientsvm
 
-2007-05-10  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-05-10  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/SubGradientSVM.cpp,
 	  classifier/svm/SubGradientSVM.h, gui/Octave.cpp,
@@ -8282,7 +8602,7 @@
 	  / sg('classify')
 	  functionality for lots of FOO
 
-2007-05-09  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-05-09  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/SubGradientSVM.cpp, classifier/svm/gmnplib.cpp,
 	  classifier/svm/qpbsvmlib.cpp, classifier/svm/qpbsvmlib.h,
@@ -8292,7 +8612,7 @@
 	  classifier/svm/qpbsvmlib.h, lib/Mathematics.cpp,
 	  lib/Mathematics.h: add vojtechs QP solver
 
-2007-05-08  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-05-08  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/Classifier.h, classifier/svm/SVMPerf.cpp,
 	  classifier/svm/SubGradientSVM.cpp,
@@ -8321,7 +8641,7 @@
 	  An example script is given in
 	  matlab/examples/test_wdshift_position_weights.m.
 
-2007-04-30  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-04-30  Soeren Sonnenburg <sonne@debian.org>
 
 	* kernel/WeightedDegreePositionStringKernel.cpp,
 	  kernel/WeightedDegreePositionStringKernel.h: - fix threading bugs
@@ -8337,7 +8657,7 @@
 	* classifier/svm/SVM_light.cpp, kernel/CombinedKernel.cpp: forgot
 	  adding lin contributions for last thread
 
-2007-04-29  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-04-29  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/SVM_light.cpp: Fixed a stupid (variable name
 	  collision, t was used for time and threads in 2
@@ -8374,7 +8694,7 @@
 	  * fix test_wdshift_kernel script
 	  * add stubs for vojtechs subgradient svm and svmperf
 
-2007-04-25  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-04-25  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/LibSVM.cpp: fix the 2-class case by introducing
 	  sign=model->label[0]
@@ -8423,7 +8743,7 @@
 	  svms to the python interface
 	  * apply dos2unix on gmnp svm
 
-2007-04-23  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-04-23  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/SVM_libsvm.cpp, classifier/svm/SVM_libsvm.h,
 	  features/StringFeatures.h, gui/Matlab.cpp, guilib/GUIMatlab.cpp,
@@ -8436,7 +8756,7 @@
 	  * fix svm_lin/svm .py scripts (axis tight/dynamically adjust
 	  interval)
 
-2007-04-20  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-04-20  Soeren Sonnenburg <sonne@debian.org>
 
 	* features/StringFeatures.h,
 	  kernel/WeightedDegreePositionStringKernel.cpp, lib/Trie.cpp: fix
@@ -8445,13 +8765,13 @@
 	* kernel/WeightedDegreePositionStringKernel.cpp, lib/Trie.cpp,
 	  lib/Trie.h: get_WD_consensus is finally working correctly.
 
-2007-04-17  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-04-17  Soeren Sonnenburg <sonne@debian.org>
 
 	* kernel/WeightedDegreePositionStringKernel.cpp, lib/Trie.cpp:
 	  b0rken: backtracking needs to go over full tree (max. all 4^d
 	  strings)
 
-2007-04-16  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-04-16  Soeren Sonnenburg <sonne@debian.org>
 
 	* kernel/WeightedDegreePositionStringKernel.cpp, lib/Mathematics.h,
 	  lib/Trie.cpp, lib/Trie.h: display matrix column major + further
@@ -8464,7 +8784,7 @@
 	  again in matlab
 	  +add code + example for consensus computation for WDS kernel
 
-2007-04-15  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-04-15  Soeren Sonnenburg <sonne@debian.org>
 
 	* guilib/GUIMatlab.cpp,
 	  kernel/WeightedDegreePositionStringKernel.cpp,
@@ -8474,7 +8794,7 @@
 	  -start impl. of consensus
 	  -whitespace cleanups
 
-2007-04-12  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-04-12  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/GMNPSVM.cpp, classifier/svm/GMNPSVM.h,
 	  classifier/svm/MultiClassSVM.cpp, classifier/svm/MultiClassSVM.h,
@@ -8484,7 +8804,7 @@
 	  -add L2-b-svm multiclass matlab example
 	  -vojtechs multiclass svm is now working
 
-2007-04-05  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-04-05  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/GMNPSVM.cpp, classifier/svm/GMNPSVM.h,
 	  classifier/svm/GMNPSVM.i, classifier/svm/gmnplib.cpp,
@@ -8498,7 +8818,7 @@
 	* guilib/GUIPython.cpp: solved transpose-problem of old python
 	  interface
 
-2007-04-02  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-04-02  Soeren Sonnenburg <sonne@debian.org>
 
 	* guilib/GUIOctave.cpp, guilib/GUIPython.cpp, guilib/GUIR.cpp,
 	  kernel/LocalityImprovedStringKernel.cpp: R/python/octave
@@ -8739,7 +9059,7 @@
 	  renamed: trunk/src/kernel/LocalityImprovedCharKernel.i ->
 	  trunk/src/kernel/LocalityImprovedStringKernel.i
 
-2007-03-31  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-03-31  Soeren Sonnenburg <sonne@debian.org>
 
 	* configure: readd the undefined suppress to the configure options
 	  whether the rest works only time will tell :-)
@@ -8754,7 +9074,7 @@
 
 	* configure: fixed some configure issues on imacs. seems to work.
 
-2007-03-14  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-03-14  Soeren Sonnenburg <sonne@debian.org>
 
 	* gui/Matlab.cpp, guilib/GUIKernel.cpp, guilib/GUIMatlab.cpp: WD
 	  kernel string support
@@ -8767,7 +9087,7 @@
 	  to the shogun coding style.
 	* lib/Trie.h: Trie.h: Trivial whitespace cleanups
 
-2007-03-14  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-03-14  Soeren Sonnenburg <sonne@debian.org>
 
 	* gui/Matlab.cpp, guilib/GUIMatlab.cpp: matlab interface compile
 	  fix
@@ -8781,11 +9101,11 @@
 	  kernel/WeightedDegreeStringKernel.i, lib/common.h: obtain by
 	  sliding window / by position list
 
-2007-03-13  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-03-13  Soeren Sonnenburg <sonne@debian.org>
 
 	* guilib/GUISVM.cpp: by default use linadd
 
-2007-03-12  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-03-12  Soeren Sonnenburg <sonne@debian.org>
 
 	* kernel/WeightedDegreePositionStringKernel.cpp: also add missing
 	  init to wds -string kernel
@@ -8798,7 +9118,7 @@
 	  * add sliding window stringfeatures example
 	  * allow features to be None for WDS kernel
 
-2007-03-09  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-03-09  Soeren Sonnenburg <sonne@debian.org>
 
 	* lib/Array.i, lib/Array2.i, lib/Array3.i: filter swig array
 	  Overloaded warnings
@@ -8832,7 +9152,7 @@
 	  although it means code duplication, I will merge changes to the
 	  wds CHAR kernel
 
-2007-03-08  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-03-08  Soeren Sonnenburg <sonne@debian.org>
 
 	* gui/Matlab.cpp, guilib/GUIMatlab.h, lib/io.cpp, lib/matlab.h,
 	  structure/Plif.cpp, structure/Plif.h: introduce lib/matlab.h
@@ -8867,14 +9187,14 @@
 	  the python interface (though I really only wanted to interface
 	  the WDS kernel ...)
 
-2007-03-07  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-03-07  Soeren Sonnenburg <sonne@debian.org>
 
 	* kernel/GaussianKernel.cpp: remove debug output
 	* ChangeLog, TODO, kernel/WeightedDegreePositionCharKernel.i,
 	  kernel/WeightedDegreePositionStringKernel.i: * update to 0.3.2
 	  * start wds kernel python interf.
 
-2007-03-06  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-03-06  Soeren Sonnenburg <sonne@debian.org>
 
 	* base/Version.h, distributions/hmm/HMM.cpp, gui/Octave.cpp: merge
 	  changes back to trunk
@@ -8889,7 +9209,7 @@
 	* base/Version.h: fixed version string.
 	  G
 
-2007-03-04  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-03-04  Soeren Sonnenburg <sonne@debian.org>
 
 	* lib/python_typemaps.i: * much more detailed error outputs when
 	  types/dims don't match
@@ -8898,7 +9218,7 @@
 	  types inside of numpy, but both are 32bit on 32bit machines)
 	  if they are 32bit and same size then treat long as int
 
-2007-03-03  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-03-03  Soeren Sonnenburg <sonne@debian.org>
 
 	* README.developer, base/SGObject.h, classifier/Classifier.cpp,
 	  classifier/Classifier.h, features/CombinedFeatures.h,
@@ -8920,7 +9240,7 @@
 	  
 	  this fixes just enough to make the test_wd_kernel script run
 
-2007-03-02  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-03-02  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/SVM.cpp, features/StringFeatures.h,
 	  features/StringFeatures.i, kernel/WeightedDegreeCharKernel.cpp,
@@ -8952,7 +9272,7 @@
 	  structure/DynProg.cpp: Mainly debug changes... cleanup soon.
 	  G
 
-2007-03-01  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-03-01  Soeren Sonnenburg <sonne@debian.org>
 
 	* ChangeLog, kernel/WeightedDegreePositionCharKernel.h,
 	  kernel/WeightedDegreePositionStringKernel.cpp,
@@ -8989,7 +9309,7 @@
 	  strings to be mapped to string features - not exactly a numeric
 	  problem)
 
-2007-02-27  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-02-27  Soeren Sonnenburg <sonne@debian.org>
 
 	* features/StringFeatures.i: replace $self -> self as this seems to
 	  be troublesome on
@@ -8999,7 +9319,7 @@
 
 	* lib/Array.h: fixed another wrong free...
 
-2007-02-27  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-02-27  Soeren Sonnenburg <sonne@debian.org>
 
 	* ChangeLog, features/Features.i, features/ShortFeatures.h,
 	  features/ShortFeatures.i, features/SimpleFeatures.h,
@@ -9015,13 +9335,13 @@
 
 	* lib/numpy.i, structure/DynProg.i:
 
-2007-02-27  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-02-27  Soeren Sonnenburg <sonne@debian.org>
 
 	* ChangeLog, base/SGObject.h, configure: * this fixes the many
 	  pointer related warnings
 	  * also fixes configure for atlas/lapack
 
-2007-02-26  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-02-26  Soeren Sonnenburg <sonne@debian.org>
 
 	* README.developer, base/Parallel.cpp, base/Parallel.h,
 	  base/SGObject.h, base/SGObject.i, classifier/Classifier.cpp,
@@ -9078,7 +9398,7 @@
 	  - get rid of some duplicate SG_PRINT()s
 	  - add myself to authors
 
-2007-02-22  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-02-22  Soeren Sonnenburg <sonne@debian.org>
 
 	* .authors, ChangeLog, lib/Array.h: * added jonas to authors
 	  * added andre's array cleanup patches - now it is readable
@@ -9112,7 +9432,7 @@
 	  kernel/CharPolyKernel.i: removed unused CharPolyKernel
 	  updated test scripts
 
-2007-02-21  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-02-21  Soeren Sonnenburg <sonne@debian.org>
 
 	* CONTRIBUTIONS, ChangeLog, classifier/Classifier.i,
 	  classifier/SparseLinearClassifier.cpp,
@@ -9153,7 +9473,7 @@
 	  
 	  Yes. We now have Sindhwani/Keerthis primal svm in shogun.
 
-2007-02-20  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-02-20  Soeren Sonnenburg <sonne@debian.org>
 
 	* configure: 3.1 merging
 	* ChangeLog: releasing
@@ -9177,7 +9497,7 @@
 	  as
 	  it does more harm than good. We're using -O anyway.
 
-2007-02-19  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-02-19  Soeren Sonnenburg <sonne@debian.org>
 
 	* base/Parallel.h, configure, lib/Mathematics.h: * fix configure
 	  check for sysconf _SC_NPROCESSORS_ONLN (should work now on macs)
@@ -9187,12 +9507,12 @@
 	  lib/Mathematics.h: * applied andre's cleanup patches
 	  * some more SVMLin fixes
 
-2007-02-18  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-02-18  Soeren Sonnenburg <sonne@debian.org>
 
 	* configure, lib/io.h: rework configure to put -D$OS also into
 	  DEFINES
 
-2007-02-17  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-02-17  Soeren Sonnenburg <sonne@debian.org>
 
 	* ChangeLog, INSTALL, lib/io.cpp, lib/io.h, structure/DynProg.cpp:
 	  * update install instructions ( --enable-<interface> ->
@@ -9204,7 +9524,7 @@
 	* lib/io.cpp, lib/io.h, structure/DynProg.cpp: had to fix a few
 	  thinks to get it to compile on intel macs.
 
-2007-02-16  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-02-16  Soeren Sonnenburg <sonne@debian.org>
 
 	* distributions/hmm/GHMM.h: make con/destructor public
 
@@ -9212,7 +9532,7 @@
 
 	* Makefile: Don't count empty lines.
 
-2007-02-14  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-02-14  Soeren Sonnenburg <sonne@debian.org>
 
 	* README.developer: * Release 0.3.0
 	  * update developer README
@@ -9225,12 +9545,12 @@
 	  classifier/svm/gnpplib.cpp, classifier/svm/gnpplib.h: Copyright
 	  info updated, fixed stopping condition bug.
 
-2007-02-14  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-02-14  Soeren Sonnenburg <sonne@debian.org>
 
 	* ChangeLog, NEWS, structure/DynProg.cpp, structure/DynProg.h:
 	  remove debug code, prepare for new release 0.3.1
 
-2007-02-13  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-02-13  Soeren Sonnenburg <sonne@debian.org>
 
 	* .authors, ChangeLog, guilib/GUISVM.cpp: add vojtech to authors /
 	  finish relabeling to GNPP SVM
@@ -9246,7 +9566,7 @@
 	  classifier/svm/gnpplib.h, guilib/GUISVM.cpp, lib/common.h: added
 	  GNPP (Generalized Nearest Point Problem) SVM
 
-2007-02-13  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-02-13  Soeren Sonnenburg <sonne@debian.org>
 
 	* README.developer: updated sections about macros
 	* README.developer:
@@ -9269,7 +9589,7 @@
 	  PS: need this many checkins since I'm comparing matlab and python
 	  to give same results and need two svn checkouts in sync.
 
-2007-02-12  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-02-12  Soeren Sonnenburg <sonne@debian.org>
 
 	* ChangeLog, features/CombinedFeatures.i, features/Features.i,
 	  guilib/GUIKernel.cpp, kernel/CombinedKernel.cpp,
@@ -9287,7 +9607,7 @@
 	* structure/PlifArray.cpp: *** empty log message ***
 	* structure/DynProg.cpp:
 
-2007-02-12  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-02-12  Soeren Sonnenburg <sonne@debian.org>
 
 	* features/Alphabet.i: * put python-modular examples in separate
 	  directory
@@ -9298,7 +9618,7 @@
 	* structure/DynProg.cpp: minor debug changes.
 	  G
 
-2007-02-11  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-02-11  Soeren Sonnenburg <sonne@debian.org>
 
 	* ChangeLog, configure, lib/Mathematics.h: * add a configure test
 	  for powl(), as the ifdef construct in
@@ -9324,7 +9644,7 @@
 	  strange normalization of the histogram intersection kernel. this
 	  is unpublished, btw.)
 
-2007-02-10  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-02-10  Soeren Sonnenburg <sonne@debian.org>
 
 	* ChangeLog, lib/Mathematics.h: + fall back to double precision pow
 	  if powl is not available
@@ -9341,7 +9661,7 @@
 	* guilib/GUIFeatures.h, guilib/GUIKernel.cpp: fixed incorrect
 	  matlab interface to changed Mindy functions
 
-2007-02-09  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-02-09  Soeren Sonnenburg <sonne@debian.org>
 
 	* features/StringFeatures.h: * make empty files (strings) a fatal
 	  error
@@ -9352,13 +9672,13 @@
 	* kernel/MindyGramKernel.cpp, kernel/MindyGramKernel.h: more mindy
 	  changes
 
-2007-02-09  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-02-09  Soeren Sonnenburg <sonne@debian.org>
 
 	* ChangeLog, features/MindyGramFeatures.i,
 	  kernel/CommUlongStringKernel.cpp, kernel/MindyGramKernel.i: fix
 	  for spectrum kernel (yet another init problem)
 
-2007-02-08  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-02-08  Soeren Sonnenburg <sonne@debian.org>
 
 	* ChangeLog, features/Alphabet.h, features/Alphabet.i: * add
 	  typemapped get_hist() function
@@ -9386,12 +9706,12 @@
 
 	* guilib/GUIMatlab.cpp, structure/DynProg.cpp:
 
-2007-02-01  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-02-01  Soeren Sonnenburg <sonne@debian.org>
 
 	* Makefile, TODO, configure: * updated make linecount ... hmmhh
 	  83556 lines
 
-2007-01-31  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-01-31  Soeren Sonnenburg <sonne@debian.org>
 
 	* ChangeLog, structure/DynProg.cpp, structure/DynProg.h: * rename
 	  best_path_set_seq to best_path_set_seq3d
@@ -9408,7 +9728,7 @@
 	  * fix init for wd kernel
 	  * call KernelMachine Constructor in SVM constructor
 
-2007-01-29  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-01-29  Soeren Sonnenburg <sonne@debian.org>
 
 	* .generate_link_dependencies.py, ChangeLog,
 	  classifier/Classifier.i, distance/Distance.i,
@@ -9428,7 +9748,7 @@
 	* kernel/DistanceKernel.cpp: change init (init call for CKernel)
 	  and delete (Distance=NULL)
 
-2007-01-29  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-01-29  Soeren Sonnenburg <sonne@debian.org>
 
 	* ChangeLog, Makefile, classifier/Classifier.h, classifier/LDA.cpp,
 	  classifier/LDA.h, classifier/LinearClassifier.cpp,
@@ -9454,7 +9774,7 @@
 	  @Soeren, when you use it, just drop the second column of
 	  state_signals (with all zeros in it).
 
-2007-01-26  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-01-26  Soeren Sonnenburg <sonne@debian.org>
 
 	* lib/Mathematics.cpp, lib/Mathematics.h: * quieten status
 	  printouts for modular python interface
@@ -9498,7 +9818,7 @@
 	* lib/Array.h, lib/Array3.h: + added 'const' in overloaded
 	  operator=
 
-2007-01-25  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-01-25  Soeren Sonnenburg <sonne@debian.org>
 
 	* Makefile: * quieten svn2cl error (if svn2cl does not exist)
 	* ChangeLog, lib/Array.h, lib/Array2.h, structure/DynProg.cpp: *
@@ -9511,13 +9831,13 @@
 	  changes ... should work as before...
 	  G
 
-2007-01-24  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-01-24  Soeren Sonnenburg <sonne@debian.org>
 
 	* README, regression/Regression.i: -updates for the debian package
 	  * compile fix for don't use svmlight
 	  * updated project URL
 
-2007-01-23  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-01-23  Soeren Sonnenburg <sonne@debian.org>
 
 	* .authors, ChangeLog, base/SGObject.cpp, base/SGObject.h,
 	  gui/GUI.cpp, gui/Matlab.cpp, gui/Octave.cpp, gui/R.cpp,
@@ -9534,7 +9854,7 @@
 
 	* lib/common.h: new distance types
 
-2007-01-23  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-01-23  Soeren Sonnenburg <sonne@debian.org>
 
 	* ChangeLog, base/Version.cpp, base/Version.h,
 	  kernel/CommUlongStringKernel.cpp,
@@ -9550,7 +9870,7 @@
 	  
 	  G
 
-2007-01-22  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-01-22  Soeren Sonnenburg <sonne@debian.org>
 
 	* ChangeLog, Makefile: - don't regroup changelog
 	* guilib/GUIMatlab.cpp: + matlab build fix
@@ -9614,7 +9934,7 @@
 	  
 	  G
 
-2007-01-20  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-01-20  Soeren Sonnenburg <sonne@debian.org>
 
 	* guilib/GUIMatlab.cpp, structure/Plif.cpp: - matlab build fix
 	* ChangeLog, README.developer, base/SGObject.h, base/Version.cpp,
@@ -9711,7 +10031,7 @@
 	  - kernel init function takes only lhs + rhs
 	  - all objects now derive from CSGObject
 
-2007-01-19  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-01-19  Soeren Sonnenburg <sonne@debian.org>
 
 	* structure/DynProg.cpp, structure/DynProg.h, structure/DynProg.i:
 	  +best_path*deriv setup functions
@@ -9730,7 +10050,7 @@
 	* kernel/Kernel.i, preproc/PreProc.i, preproc/SortUlongString.i,
 	  preproc/StringPreProc.i: + added first preprocessing interfaces
 
-2007-01-19  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-01-19  Soeren Sonnenburg <sonne@debian.org>
 
 	* .authors, ChangeLog, Makefile, NEWS: automagic ChangeLog
 	  generation using svn2cl
@@ -9769,7 +10089,7 @@
 	  structure/PlifBase.h: make all objects to be derived from
 	  SGObject
 
-2007-01-18  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-01-18  Soeren Sonnenburg <sonne@debian.org>
 
 	* structure/DynProg.cpp, structure/DynProg.i: get path interf.
 	* structure/DynProg.cpp, structure/DynProg.h, structure/DynProg.i:
@@ -9792,7 +10112,7 @@
 	* kernel/WeightedDegreeCharKernel.cpp: additional check ...
 	* classifier/svm/SVM_light.cpp: *** empty log message ***
 
-2007-01-10  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-01-10  Soeren Sonnenburg <sonne@debian.org>
 
 	* Makefile, configure: + configure/Makefile install path fix
 	* .version.sh: + improved debian target / version generation
@@ -9802,7 +10122,7 @@
 	* testfile: removed testfile
 	* testfile: added just to see whether the SVNPoller script works
 
-2007-01-08  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-01-08  Soeren Sonnenburg <sonne@debian.org>
 
 	* .version.sh: .version.sh calls svn info again, as $Id is not
 	  regularly updated...
@@ -9944,11 +10264,11 @@
 
 	* structure/DynProg.cpp:
 
-2007-01-06  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-01-06  Soeren Sonnenburg <sonne@debian.org>
 
 	* lib/Parallel.h: +#ifdef _SC_NPROCESSORS_ONLN
 
-2007-01-05  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-01-05  Soeren Sonnenburg <sonne@debian.org>
 
 	* configure: +remove more of svmlight
 	  +compiler tuning now takes place after compiler is detected
@@ -9965,7 +10285,7 @@
 	  $ make vanilla-package COMPRESS=gzip EXTRAVERSION=+svn20070105
 	  SVMLIGHT=no
 
-2007-01-04  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-01-04  Soeren Sonnenburg <sonne@debian.org>
 
 	* features/Alphabet.cpp, features/StringFeatures.h,
 	  features/StringFeatures.i, gui/Matlab.cpp, gui/R.cpp,
@@ -9977,7 +10297,7 @@
 	  now
 	  speed & accuracy are still an isssue
 
-2007-01-03  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-01-03  Soeren Sonnenburg <sonne@debian.org>
 
 	* features/StringFeatures.h, features/StringFeatures.i: +string
 	  features can now easily read strings-files from a directory (to
@@ -9997,13 +10317,13 @@
 	* classifier/KRR.cpp, classifier/KRR.h, classifier/KRR.i:
 	  Kernel-ridge-regression
 
-2007-01-03  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2007-01-03  Soeren Sonnenburg <sonne@debian.org>
 
 	* configure, lib/Array.h, lib/Array2.h, lib/Array3.h: +LINK is now
 	  is set from COMP_CPP
 	  +Array uses ASSERT again and undefs/defs ASSERT
 
-2006-12-30  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-12-30  Soeren Sonnenburg <sonne@debian.org>
 
 	* features/StringFeatures.h:
 
@@ -10015,7 +10335,7 @@
 	  structure/DynProg.cpp: before I change the conservation stuff...
 	  G
 
-2006-12-29  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-12-29  Soeren Sonnenburg <sonne@debian.org>
 
 	* features/StringFeatures.h, lib/Array.h, lib/Array2.h, lib/io.cpp,
 	  lib/io.h: +read_dir
@@ -10025,7 +10345,7 @@
 	* guilib/GUIMatlab.cpp, structure/DynProg.cpp,
 	  structure/PlifArray.cpp: should work for nGASP cat-1
 
-2006-12-29  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-12-29  Soeren Sonnenburg <sonne@debian.org>
 
 	* lib/lapack.h: missing endif
 
@@ -10040,7 +10360,7 @@
 
 	* lib/Array.h: fixed ifndef -> ifdef line 118
 
-2006-12-28  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-12-28  Soeren Sonnenburg <sonne@debian.org>
 
 	* lib/io.cpp, lib/io.h: get rid of another bazillion of warnings
 	* structure/DynProg.cpp: compile fix
@@ -10084,7 +10404,7 @@
 	  TODO:
 	  + not all exceptions were removed.
 
-2006-12-21  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-12-21  Soeren Sonnenburg <sonne@debian.org>
 
 	* lib/io.h, structure/DynProg.i: +tiny fixes
 	* lib/Array.i, lib/Array2.i, lib/Array3.i, lib/DynamicArray.i:
@@ -10104,7 +10424,7 @@
 	* structure/DynProg.cpp: implemented some kind of suboptimal path
 	  sampling.
 
-2006-12-20  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-12-20  Soeren Sonnenburg <sonne@debian.org>
 
 	* gui/R.cpp:
 	* gui/R.cpp: +build fix
@@ -10119,7 +10439,7 @@
 
 	* lib/DynamicArray.h: *** empty log message ***
 
-2006-12-20  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-12-20  Soeren Sonnenburg <sonne@debian.org>
 
 	* lib/Signal.cpp, lib/Signal.h: ifndef -> ifdef HAVE_MATLAB...
 	* Makefile, lib/Time.i: also erase .R files on clean
@@ -10128,7 +10448,7 @@
 
 	* guilib/GUIHMM.cpp: does not compile without this fix.
 
-2006-12-20  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-12-20  Soeren Sonnenburg <sonne@debian.org>
 
 	* Makefile, classifier/Classifier.h, classifier/svm/SVM_light.h,
 	  classifier/svm/gpdt.cpp, classifier/svm/gpdt.h,
@@ -10151,7 +10471,7 @@
 	  
 	  (msplicer already uses this :)
 
-2006-12-19  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-12-19  Soeren Sonnenburg <sonne@debian.org>
 
 	* distributions/hmm/HMM.cpp, kernel/WeightedDegreeCharKernel.cpp,
 	  kernel/WeightedDegreePositionCharKernel.cpp, lib/Cache.i,
@@ -10168,7 +10488,7 @@
 	* lib/numpy.i: + changed typecode error message to be part of a
 	  standard python 'TypeError' exception
 
-2006-12-19  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-12-19  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/Classifier.i, classifier/svm/SVM.i, configure,
 	  distance/Distance.i, features/ByteFeatures.i,
@@ -10244,7 +10564,7 @@
 	  codon-based content sensors.
 	  few fixes and cleanups.
 
-2006-12-18  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-12-18  Soeren Sonnenburg <sonne@debian.org>
 
 	* lib/numpy.i:
 	* classifier/svm/SVM.h:
@@ -10278,7 +10598,7 @@
 	  Many, many minor changes to avoid shadowing, which can easily
 	  lead (and has led) to mistakes.
 
-2006-12-18  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-12-18  Soeren Sonnenburg <sonne@debian.org>
 
 	* lib/Mathematics.h:
 	* lib/Mathematics.h: fix floor/ceil/round
@@ -10344,7 +10664,7 @@
 	* kernel/WeightedDegreePositionCharKernel.h: cleanup
 	* kernel/WeightedDegreePositionCharKernel.cpp: cleanup
 
-2006-12-15  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-12-15  Soeren Sonnenburg <sonne@debian.org>
 
 	* structure/DynProg.cpp, structure/DynProg.h, structure/DynProg.i:
 	  +typemap fix
@@ -10357,7 +10677,7 @@
 	* kernel/WDCharKernel.i: remove obsolete file
 	* configure: +cplex autodetection
 
-2006-12-14  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-12-14  Soeren Sonnenburg <sonne@debian.org>
 
 	* configure: +document --destdir option
 	* configure, lib/Mathematics.h, structure/DynProg.cpp,
@@ -10366,12 +10686,12 @@
 	  +plif limits are now real valued
 	* structure/Plif.h: + get_penalty access funcitons
 
-2006-12-13  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-12-13  Soeren Sonnenburg <sonne@debian.org>
 
 	* LICENSE: +debian target for R
 	  +add licensing note for Msuffsort
 
-2006-12-12  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-12-12  Soeren Sonnenburg <sonne@debian.org>
 
 	* lib/fibheap.cpp, lib/fibheap.h, structure/DynProg.cpp: remove
 	  unused fibheap file (which has unclear license)
@@ -10407,7 +10727,7 @@
 	* structure/Plif.cpp: minor bug fixed
 	  G
 
-2006-12-05  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-12-05  Soeren Sonnenburg <sonne@debian.org>
 
 	* ChangeLog:
 	* classifier/svm/SVM.i, kernel/SpectrumKernel.i,
@@ -10420,7 +10740,7 @@
 
 	* structure/Plif.cpp:
 
-2006-12-04  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-12-04  Soeren Sonnenburg <sonne@debian.org>
 
 	* Makefile: fix makefile for make 3.80
 
@@ -10505,12 +10825,12 @@
 	* structure/Plif.cpp, structure/Plif.h: little extension...
 	  G
 
-2006-12-01  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-12-01  Soeren Sonnenburg <sonne@debian.org>
 
 	* Makefile: +make clean now also kills *wrap.h
 	  +more poster pics
 
-2006-11-30  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-11-30  Soeren Sonnenburg <sonne@debian.org>
 
 	* guilib/GUIR.cpp: fix string features in R
 
@@ -10532,7 +10852,7 @@
 	  PluginException, SVMException and ClassifierException
 	  + all python test cases are still running
 
-2006-11-30  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-11-30  Soeren Sonnenburg <sonne@debian.org>
 
 	* Makefile, configure: +updated makefile/confiugre for R
 
@@ -10570,7 +10890,7 @@
 	  + generate FeatureException and ClassifierException and modify
 	  files according the above rule.
 
-2006-11-29  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-11-29  Soeren Sonnenburg <sonne@debian.org>
 
 	* Makefile, configure: +octave install dir fixes
 	* Makefile, classifier/LDA.cpp, configure: +integrated torsten
@@ -10587,7 +10907,7 @@
 	* structure/DynProg.cpp: bug fixed.
 	  G
 
-2006-11-28  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-11-28  Soeren Sonnenburg <sonne@debian.org>
 
 	* structure/Plif.cpp, structure/Plif.h: +plif constructor has now
 	  has a len argument
@@ -10600,7 +10920,7 @@
 	  other minor changes.
 	  G
 
-2006-11-28  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-11-28  Soeren Sonnenburg <sonne@debian.org>
 
 	* INSTALL, classifier/svm/SVM.cpp, classifier/svm/SVM_light.cpp,
 	  configure, distance/Distance.cpp, gui/R.cpp, gui/TextGUI.cpp,
@@ -10612,13 +10932,13 @@
 	  for win32/cygwin (now matlab/R work at least partially)
 	  +update install guide
 
-2006-11-26  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-11-26  Soeren Sonnenburg <sonne@debian.org>
 
 	* Makefile, classifier/Classifier.h, classifier/svm/SVM.cpp,
 	  classifier/svm/SVM.h, classifier/svm/SVM.i,
 	  classifier/svm/SVM_light.cpp, configure: +many fixes...
 
-2006-11-24  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-11-24  Soeren Sonnenburg <sonne@debian.org>
 
 	* configure: allow configure to be run from a path outside of
 	  shogun
@@ -10640,7 +10960,7 @@
 	  
 	  G
 
-2006-11-23  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-11-23  Soeren Sonnenburg <sonne@debian.org>
 
 	* configure: +cygwin path magic
 
@@ -10659,7 +10979,7 @@
 	  a few hacks...
 	  G
 
-2006-11-20  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-11-20  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/Optimizer.cpp, classifier/svm/SVM.cpp,
 	  classifier/svm/SVM_light.cpp, configure,
@@ -10683,12 +11003,12 @@
 	  work now in matlab.
 	  G
 
-2006-11-18  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-11-18  Soeren Sonnenburg <sonne@debian.org>
 
 	* configure: + use die "error message" when something is missing +
 	  some matlab/win32 checks
 
-2006-11-16  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-11-16  Soeren Sonnenburg <sonne@debian.org>
 
 	* INSTALL, Makefile, README, configure, lib/DynamicArray.h: +fix
 	  configure for R interface on osx
@@ -10718,11 +11038,11 @@
 	* classifier/svm/SVM.h, classifier/svm/SVM.i: + addded support for
 	  "numpy_matrix = svm.get_alphas()"
 
-2006-11-15  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-11-15  Soeren Sonnenburg <sonne@debian.org>
 
 	* configure, guilib/GUIR.cpp: configure don't use lapack-3
 
-2006-11-14  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-11-14  Soeren Sonnenburg <sonne@debian.org>
 
 	* guilib/GUIMatlab.cpp: +fix bug in set_features. the feature
 	  object should be created *AFTER* the alphabet
@@ -10736,7 +11056,7 @@
 	  Untested.
 	  G
 
-2006-11-12  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-11-12  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/SVM.cpp, classifier/svm/SVM_light.cpp,
 	  kernel/CombinedKernel.cpp, kernel/WeightedDegreeCharKernel.cpp,
@@ -10782,7 +11102,7 @@
 	  kernel/WeightedDegreePositionCharKernel.h: experimental:
 	  parallelized compute_batch
 
-2006-11-10  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-11-10  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/SVM.cpp, classifier/svm/SVM_light.cpp,
 	  kernel/CombinedKernel.cpp, kernel/CombinedKernel.h,
@@ -10819,7 +11139,7 @@
 	  the code from WDS... (not so nice). Alex is currently testing it.
 	  G
 
-2006-11-10  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-11-10  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/SVM_light.cpp: call batchcomput only if
 	  num_suppvec >0 / free temporary arrays afterwards
@@ -10839,7 +11159,7 @@
 	  
 	  Gu
 
-2006-11-08  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-11-08  Soeren Sonnenburg <sonne@debian.org>
 
 	* Makefile, configure: +fix == syntax error in configure
 	  +ignore configure- files on make
@@ -10850,11 +11170,11 @@
 	* lib/io.h, lib/io.i: + added module for io
 	  + setting of loglevels is now possible
 
-2006-11-07  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-11-07  Soeren Sonnenburg <sonne@debian.org>
 
 	* configure: matlab devel check only when matlab is on
 
-2006-11-06  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-11-06  Soeren Sonnenburg <sonne@debian.org>
 
 	* configure: matlab autodetection for cygwin
 	* configure: now matlab should be autodetected
@@ -10880,7 +11200,7 @@
 	  + write some test cases for Poly, Gaussian and Linear
 	* kernel/AUCKernel.i, kernel/Kernel.i: + added AUCKernel
 
-2006-11-06  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-11-06  Soeren Sonnenburg <sonne@debian.org>
 
 	* configure: try to be smart and convert ~ into $HOME
 
@@ -10888,11 +11208,11 @@
 
 	* kernel/WeightedDegreeCharKernel.cpp, structure/Plif.h:
 
-2006-11-06  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-11-06  Soeren Sonnenburg <sonne@debian.org>
 
 	* configure: exclusive or for --enable-matlab --enable-python etc
 
-2006-11-05  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-11-05  Soeren Sonnenburg <sonne@debian.org>
 
 	* distance/Distance.i, distance/DistanceMachine.i: +Distance .i
 	  files
@@ -10916,7 +11236,7 @@
 	  see:
 	  python/examples/test_wdk.py
 
-2006-11-04  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-11-04  Soeren Sonnenburg <sonne@debian.org>
 
 	* kernel/WeightedDegreeCharKernel.cpp,
 	  kernel/WeightedDegreeCharKernel.h,
@@ -10924,7 +11244,7 @@
 	  optimization the py wd kernel
 	  is now equiv to the oct/matlab versions
 
-2006-11-03  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-11-03  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/Classifier.i, classifier/svm/SVM.i,
 	  distributions/hmm/HMM.cpp, distributions/hmm/HMM.h,
@@ -10946,7 +11266,7 @@
 	* structure/DynProg.h: compile-error fixed.
 	  G
 
-2006-11-01  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-11-01  Soeren Sonnenburg <sonne@debian.org>
 
 	* gui/Octave.cpp, guilib/GUIOctave.cpp,
 	  kernel/WeightedDegreeCharKernel.cpp: remove the structure stuff
@@ -10957,7 +11277,7 @@
 	* structure/DynProg.cpp:
 	* structure/DynProg.cpp, structure/DynProg.h:
 
-2006-11-01  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-11-01  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/Classifier.i, classifier/KNN.h, classifier/KNN.i,
 	  classifier/svm/SVM.i, configure, distance/Distance.cpp,
@@ -11069,7 +11389,7 @@
 	  G
 	* structure/DynProg.h: *** empty log message ***
 
-2006-10-26  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-10-26  Soeren Sonnenburg <sonne@debian.org>
 
 	* TODO:
 
@@ -11094,7 +11414,7 @@
 	  
 	  Gu
 
-2006-10-26  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-10-26  Soeren Sonnenburg <sonne@debian.org>
 
 	* distance/Distance.h, lib/Mathematics.h: forgotten fix for
 	  <float.h>
@@ -11132,7 +11452,7 @@
 	  lib/Plif.cpp, lib/Plif.h: tmp ci.
 	  G
 
-2006-10-25  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-10-25  Soeren Sonnenburg <sonne@debian.org>
 
 	* distance/Distance.h, guilib/GUIDistance.cpp: +fix mathematics /
 	  realsparse features include
@@ -11251,7 +11571,7 @@
 	  Still trying.
 	  G
 
-2006-10-21  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-10-21  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/SVM.cpp, features/Alphabet.i, features/Features.i,
 	  features/StringFeatures.h, features/StringFeatures.i,
@@ -11283,7 +11603,7 @@
 	  kernel/WeightedDegreePositionCharKernel.h: massive speedup of
 	  compute_scoring
 
-2006-10-20  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-10-20  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/SVM.cpp, classifier/svm/SVM.h:
 	  +init_kernel_optimization in svm object
@@ -11298,7 +11618,7 @@
 	  lib/Trie.h: fixed batch computation bug.
 	  G
 
-2006-10-20  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-10-20  Soeren Sonnenburg <sonne@debian.org>
 
 	* kernel/WeightedDegreePositionCharKernel.cpp: +fix wrong mem
 	  access
@@ -11312,7 +11632,7 @@
 	  computation fix
 	* kernel/WeightedDegreePositionCharKernel.cpp:
 
-2006-10-19  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-10-19  Soeren Sonnenburg <sonne@debian.org>
 
 	* configure, kernel/WeightedDegreeCharKernel.cpp,
 	  kernel/WeightedDegreeCharKernel.h,
@@ -11385,7 +11705,7 @@
 	  changes still working.
 	  G
 
-2006-10-19  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-10-19  Soeren Sonnenburg <sonne@debian.org>
 
 	* kernel/WeightedDegreePositionCharKernel.cpp,
 	  lib/suffixarray/MSufSort.h: ...looks promising... but needs
@@ -11396,7 +11716,7 @@
 	* kernel/WeightedDegreePositionCharKernel.cpp,
 	  kernel/WeightedDegreePositionCharKernel.h:
 
-2006-10-19  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-10-19  Soeren Sonnenburg <sonne@debian.org>
 
 	* kernel/WeightedDegreePositionCharKernel.cpp,
 	  kernel/WeightedDegreePositionCharKernel.h:
@@ -11407,7 +11727,7 @@
 	* kernel/WeightedDegreePositionCharKernel.cpp,
 	  kernel/WeightedDegreePositionCharKernel.h:
 
-2006-10-19  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-10-19  Soeren Sonnenburg <sonne@debian.org>
 
 	* kernel/WeightedDegreePositionCharKernel.cpp,
 	  kernel/WeightedDegreePositionCharKernel.h:
@@ -11430,7 +11750,7 @@
 	  I'm still testing.
 	  G
 
-2006-10-18  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-10-18  Soeren Sonnenburg <sonne@debian.org>
 
 	* kernel/WeightedDegreePositionCharKernel.cpp:
 	* configure:
@@ -11448,7 +11768,7 @@
 	  +fix makefile dependency generation
 	  +fix swig IN/OUT typemaps to use fortran order
 
-2006-10-15  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-10-15  Soeren Sonnenburg <sonne@debian.org>
 
 	* lib/numpy.i: oopsi, wrong malloc sizes
 	* configure: +fix octave support under osx
@@ -11482,7 +11802,7 @@
 	  necessary
 	  +updated all (oct/py/R) examples to work again
 
-2006-10-13  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-10-13  Soeren Sonnenburg <sonne@debian.org>
 
 	* ChangeLog, TODO:
 	* Makefile, classifier/svm/LibSVM.cpp, classifier/svm/LibSVM.h,
@@ -11496,7 +11816,7 @@
 	  kernel/GaussianKernel.i, kernel/Kernel.i, lib/numpy.i: ...finally
 	  working numpy & swig
 
-2006-10-12  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-10-12  Soeren Sonnenburg <sonne@debian.org>
 
 	* features/Alphabet.cpp, features/Alphabet.h,
 	  features/ByteFeatures.i, features/CharFeatures.h,
@@ -11521,7 +11841,7 @@
 
 	* features/CharFeatures.i, features/Features.i, lib/numpy.i: dadfa
 
-2006-10-12  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-10-12  Soeren Sonnenburg <sonne@debian.org>
 
 	* Makefile, features/CharFeatures.h, features/CharFeatures.i,
 	  lib/numpy.i: ...
@@ -11531,7 +11851,7 @@
 	* features/CharFeatures.h, features/CharFeatures.i, lib/numpy.i:
 	  trying to get numpy typemapping to work.
 
-2006-10-11  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-10-11  Soeren Sonnenburg <sonne@debian.org>
 
 	* features/CharFeatures.h, features/CharFeatures.i,
 	  features/Features.i, lib/numpy.i: it works :-)
@@ -11569,7 +11889,7 @@
 	  kernel/WeightedDegreeCharKernel.i, lib/common.i: removed LONG
 	  from WeightedDegreeCharKernel, fix for the "thisown" problem.
 
-2006-10-11  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-10-11  Soeren Sonnenburg <sonne@debian.org>
 
 	* features/Alphabet.cpp, features/Alphabet.h, guilib/GUIMatlab.cpp:
 	  + also check alphabet for uint8 charfeatures (not just
@@ -11606,7 +11926,7 @@
 	  classifier/svm/__init__.py: modified interfaces for SVMs, still a
 	  problem with inheritance.
 
-2006-10-11  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-10-11  Soeren Sonnenburg <sonne@debian.org>
 
 	* kernel/CommUlongStringKernel.cpp, kernel/SimpleKernel.h,
 	  kernel/SparseGaussianKernel.cpp, kernel/SparseGaussianKernel.h,
@@ -11633,7 +11953,7 @@
 	  modified Classifier and KernelMachine to be modules in order to
 	  get the director proxy classes right.
 
-2006-10-10  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-10-10  Soeren Sonnenburg <sonne@debian.org>
 
 	* .generate_link_dependencies.py:
 
@@ -11642,7 +11962,7 @@
 	* kernel/Kernel.i: added swig director support
 	* features/Features.i: modified Features
 
-2006-10-10  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-10-10  Soeren Sonnenburg <sonne@debian.org>
 
 	* .generate_link_dependencies.py, Makefile, features/allFeatures.i:
 	  +fixed makefile for swig
@@ -11658,7 +11978,7 @@
 	  kernel/StringKernel.i, kernel/WeightedDegreeCharKernel.i,
 	  kernel/__init__.py: modified some interfaces
 
-2006-10-10  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-10-10  Soeren Sonnenburg <sonne@debian.org>
 
 	* Makefile:
 	* classifier/Classifier.i, classifier/KNN.i,
@@ -11772,12 +12092,12 @@
 	  possible,
 	  this removes all the {Byte,Char,Word,Real}Kernel* fils
 
-2006-10-08  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-10-08  Soeren Sonnenburg <sonne@debian.org>
 
 	* Makefile, features/Alphabet.i, features/RealFeatures.i: +swig
 	  Makefile fixes
 
-2006-10-07  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-10-07  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/SVM.h, classifier/svm/SVM_light.cpp,
 	  guilib/GUISVM.h, kernel/GaussianKernel.cpp,
@@ -11790,7 +12110,7 @@
 	  gui/TextGUI.cpp, guilib/GUISVM.cpp, guilib/GUISVM.h,
 	  kernel/Kernel.i: + option to disable shrinking in svm training
 
-2006-10-06  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-10-06  Soeren Sonnenburg <sonne@debian.org>
 
 	* features/Alphabet.i: +forgot the alphabet for swig
 
@@ -11807,7 +12127,7 @@
 	* guilib/GUIMatlab.cpp: added matlab support byte matrices and cell
 	  arrays of bytes
 
-2006-10-06  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-10-06  Soeren Sonnenburg <sonne@debian.org>
 
 	* features/ByteFeatures.cpp, features/CharFeatures.cpp,
 	  features/CharFeatures.i, features/RealFeatures.i,
@@ -11833,7 +12153,7 @@
 	  matrices too
 	  (testme!)
 
-2006-10-05  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-10-05  Soeren Sonnenburg <sonne@debian.org>
 
 	* features/Alphabet.cpp, features/Alphabet.h,
 	  features/StringFeatures.h, guilib/GUIMatlab.cpp: this should now
@@ -11843,7 +12163,7 @@
 	  kernel/CommWordStringKernel.cpp: hopefully fixes spec* kernels
 	  for too long strings
 
-2006-10-03  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-10-03  Soeren Sonnenburg <sonne@debian.org>
 
 	* kernel/CommUlongStringKernel.cpp, kernel/CommWordKernel.cpp,
 	  kernel/CommWordStringKernel.cpp: + for very long repetitive
@@ -11856,7 +12176,7 @@
 	  in the new trie code related to uninitialized variables.
 	  Gu
 
-2006-10-02  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-10-02  Soeren Sonnenburg <sonne@debian.org>
 
 	* kernel/Trie.cpp, kernel/Trie.h,
 	  kernel/WeightedDegreeCharKernel.cpp,
@@ -11887,14 +12207,14 @@
 	  kernel/WeightedDegreeCharKernel.h,
 	  kernel/WeightedDegreeCharKernel.h_orig:
 
-2006-09-29  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-09-29  Soeren Sonnenburg <sonne@debian.org>
 
 	* features/StringFeatures.h, lib/Mathmatics.h: +workaround for
 	  broken powl() (powl is crashing on congo!!!)
 	* features/Alphabet.cpp: +fail on unknown alphabet
 	* configure:
 
-2006-09-24  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-09-24  Soeren Sonnenburg <sonne@debian.org>
 
 	* kernel/WeightedDegreeCharKernel.cpp,
 	  kernel/WeightedDegreeCharKernel.h,
@@ -11902,7 +12222,7 @@
 	  kernel/WeightedDegreePositionCharKernel.h: +this *should* fix the
 	  scoring computation function
 
-2006-09-22  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-09-22  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/LibSVM_oneclass.cpp,
 	  classifier/svm/LibSVM_oneclass.h, classifier/svm/SVM.cpp,
@@ -11910,7 +12230,7 @@
 	  gui/TextGUI.cpp, guilib/GUISVM.cpp, guilib/GUISVM.h,
 	  kernel/Kernel.cpp, lib/common.h: + LIBSVM_ONECLASS
 
-2006-09-20  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-09-20  Soeren Sonnenburg <sonne@debian.org>
 
 	* guilib/GUIOctave.cpp: +cell array support in octave (strings of
 	  different length :)
@@ -11928,7 +12248,7 @@
 	  docu in INSTALL
 	* .cpuinfo.c, configure: further configure fixes ...
 
-2006-09-18  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-09-18  Soeren Sonnenburg <sonne@debian.org>
 
 	* Makefile, configure: +make install
 	  +make -C src install DESTDIR=$(pwd)/debian/
@@ -11947,7 +12267,7 @@
 	  INTs only
 	  (i.e. caching max ~2^31 cache lines (~2^62 elements) is possible)
 
-2006-09-11  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-09-11  Soeren Sonnenburg <sonne@debian.org>
 
 	* configure: make configure work when $INCLUDES / $LIBS are empty
 	* ChangeLog, LICENSE, configure, features/StringFeatures.h,
@@ -11970,7 +12290,7 @@
 	  (b) similarity measures: see sm.c in mindy distribution
 	  (c) parameters for measures: kernel width, minkowski k, etc...
 
-2006-09-01  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-09-01  Soeren Sonnenburg <sonne@debian.org>
 
 	* gui/Matlab.cpp, guilib/GUIMatlab.cpp, guilib/GUIMatlab.h,
 	  kernel/WeightedDegreeCharKernel.cpp,
@@ -11980,7 +12300,7 @@
 	  kernel scoring functions -> gibt saucoole positionsgewichtungen -
 	  nieder mit MKL!
 
-2006-08-31  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-08-31  Soeren Sonnenburg <sonne@debian.org>
 
 	* kernel/WeightedDegreeCharKernel.cpp,
 	  kernel/WeightedDegreeCharKernel.h: +support higher order scoring
@@ -12122,7 +12442,7 @@
 	  kernel/WeightedDegreeCharKernel.cpp,
 	  kernel/WeightedDegreeCharKernel.h: several minor fixes by sonne
 
-2006-08-31  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-08-31  Soeren Sonnenburg <sonne@debian.org>
 
 	* gui/Matlab.cpp, guilib/GUIMatlab.cpp, guilib/GUIMatlab.h,
 	  kernel/WeightedDegreeCharKernel.cpp,
@@ -12130,7 +12450,7 @@
 	  kernel/WeightedDegreePositionCharKernel.h: + first try to get a
 	  weighted scoring
 
-2006-08-30  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-08-30  Soeren Sonnenburg <sonne@debian.org>
 
 	* features/CharFeatures.cpp, features/StringFeatures.h: +hurray,
 	  BYTE/RAW features are now working, however as features are now
@@ -12167,7 +12487,7 @@
 
 	* kernel/MindyGramKernel.cpp: fixed changes in mindy interface
 
-2006-08-30  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-08-30  Soeren Sonnenburg <sonne@debian.org>
 
 	* features/StringFeatures.h, guilib/GUIMatlab.cpp, lib/common.h,
 	  lib/io.h: - undo CHAR -> signed char change, as then CHAR* bla =
@@ -12187,7 +12507,7 @@
 	  kernel/MindyGramKernel.cpp, kernel/MindyGramKernel.h: fixed minor
 	  bugs in mindy code and did code beautification
 
-2006-08-30  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-08-30  Soeren Sonnenburg <sonne@debian.org>
 
 	* features/CharFeatures.cpp, guilib/GUIFeatures.cpp,
 	  guilib/GUIMatlab.cpp, guilib/GUIOctave.cpp, guilib/GUIPython.cpp,
@@ -12199,7 +12519,7 @@
 	  guilib/GUIR.cpp, guilib/GUIR.h, lib/common.h: +support for non
 	  DNA (BYTE,PROTEIN,...) alphabet
 
-2006-08-29  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-08-29  Soeren Sonnenburg <sonne@debian.org>
 
 	* features/StringFeatures.h, guilib/GUIKernel.cpp: +ifdef mindy
 	* TODO, guilib/GUIKernel.cpp: +comm word kernel obeys normalization
@@ -12215,14 +12535,14 @@
 	  kernel/MindyGramKernel.h, kernel/MindyGramKernel.i, lib/common.h:
 	  rudimentary interface (features/kernel) to mindy library
 
-2006-08-25  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-08-25  Soeren Sonnenburg <sonne@debian.org>
 
 	* features/GramFeatures.cpp, features/GramFeatures.h,
 	  features/GramFeatures.i, guilib/GUIFeatures.cpp,
 	  guilib/GUIFeatures.h, lib/common.h: +konrads mindy lib based
 	  n-gram / bag-of-words features (kernel to follow...)
 
-2006-08-09  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-08-09  Soeren Sonnenburg <sonne@debian.org>
 
 	* configure: +new experimental configure (should work on macbook
 	  pro's)
@@ -12231,15 +12551,15 @@
 
 	* kernel/WeightedDegreePositionCharKernel.cpp:
 
-2006-07-01  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-07-01  Soeren Sonnenburg <sonne@debian.org>
 
 	* configure: +compile fix for matlab+osx
 
-2006-06-30  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-06-30  Soeren Sonnenburg <sonne@debian.org>
 
 	* ChangeLog:
 
-2006-06-29  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-06-29  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/SVM_light.cpp, guilib/GUIMatlab.cpp,
 	  kernel/WeightedDegreeCharKernel.cpp,
@@ -12263,7 +12583,7 @@
 	  kernel might work but need example!
 	* kernel/WeightedDegreeCharKernel.cpp:
 
-2006-06-28  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-06-28  Soeren Sonnenburg <sonne@debian.org>
 
 	* kernel/WeightedDegreePositionCharKernel.cpp: good news: this
 	  kernel is now really really working (except for maybe MKL -
@@ -12282,7 +12602,7 @@
 	  +call delete_optimization after svm training, this fixes the
 	  'zero output on when init_kernel_optimization is forgotten' issue
 
-2006-06-26  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-06-26  Soeren Sonnenburg <sonne@debian.org>
 
 	* configure: - mpisvm
 	  + lots of documentation ...
@@ -12293,11 +12613,11 @@
 	  for protein sequences ...
 	  G
 
-2006-06-25  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-06-25  Soeren Sonnenburg <sonne@debian.org>
 
 	* lib/Mathmatics.cpp: + compile fix for cygwin W32 arch
 
-2006-06-23  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-06-23  Soeren Sonnenburg <sonne@debian.org>
 
 	* kernel/GaussianKernel.i, kernel/RealKernel.i,
 	  kernel/SimpleKernel.i:
@@ -12322,12 +12642,12 @@
 	  kernel/__init__.py: added GaussianKernel interface
 	* features/RealFeatures.i: new constructor added
 
-2006-06-23  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-06-23  Soeren Sonnenburg <sonne@debian.org>
 
 	* features/RealFeatures.h:
 	* features/RealFeatures.h: + realfeatures
 
-2006-06-22  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-06-22  Soeren Sonnenburg <sonne@debian.org>
 
 	* lib/common.i:
 
@@ -12341,7 +12661,7 @@
 	* classifier/svm/SVM_light.i, lib/common.i, swigfiles: removed
 	  swigfiles dir
 
-2006-06-21  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-06-21  Soeren Sonnenburg <sonne@debian.org>
 
 	* gui/Octave.cpp, guilib/GUIOctave.cpp, guilib/GUIOctave.h,
 	  kernel/CommWordStringKernel.h, lib/Mathmatics.h: +hmm example
@@ -12361,13 +12681,13 @@
 	  features/CharFeatures.i, features/Features.i, kernel/Kernel.i,
 	  lib/common.i: fixed some include paths
 
-2006-06-21  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-06-21  Soeren Sonnenburg <sonne@debian.org>
 
 	* configure, guilib/GUIOctave.cpp: +octave set/get_features fixes
 	  +examples for svm/svr w/ octave
 	* lib/lapack.c, lib/lapack.cpp: c -> cpp
 
-2006-06-20  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-06-20  Soeren Sonnenburg <sonne@debian.org>
 
 	* lib/lapack.c, lib/lapack.h, preproc/PCACut.cpp: + use extern "C"
 	  for lapack functions
@@ -12379,7 +12699,7 @@
 	  work :/
 	  - disable lapack on macs and print a warning
 
-2006-06-19  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-06-19  Soeren Sonnenburg <sonne@debian.org>
 
 	* lib/Mathmatics.cpp, lib/lapack.h, preproc/PCACut.cpp: +further
 	  lapack osx compilation fixes
@@ -12392,13 +12712,13 @@
 	* .generate_link_dependencies.py: cpointer added to none dependend
 	  files
 
-2006-06-19  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-06-19  Soeren Sonnenburg <sonne@debian.org>
 
 	* Makefile, classifier/LDA.cpp, configure, lib/Mathmatics.cpp,
 	  lib/Mathmatics.h: + allow compiling w/ lapack/blas on osx
 	  + workaround clapack_dpotrf not beeing defined (needs check!!)
 
-2006-06-18  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-06-18  Soeren Sonnenburg <sonne@debian.org>
 
 	* d-bug.py:
 	* classifier/svm/gpdtsolve.h, classifier/svm/gpm.h: +forgotten
@@ -12446,7 +12766,7 @@
 	  kernel/WeightedDegreePositionCharKernel.i: updated a few
 	  interfaces
 
-2006-06-16  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-06-16  Soeren Sonnenburg <sonne@debian.org>
 
 	* Makefile: +make swigclean
 	* configure: yet another python build fix
@@ -12465,7 +12785,7 @@
 
 	* Makefile: removed gcc --dumpversion
 
-2006-06-16  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-06-16  Soeren Sonnenburg <sonne@debian.org>
 
 	* README, classifier/svm/SVM_light.cpp, classifier/svm/SVM_light.h,
 	  configure, gui/R.cpp, gui/TextGUI.cpp, guilib/GUIClassifier.cpp,
@@ -12482,7 +12802,7 @@
 	  + configure option --disable-svm-light
 	  + print out warning when confiuring w/ svmlight
 
-2006-06-15  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-06-15  Soeren Sonnenburg <sonne@debian.org>
 
 	* CONTRIBUTIONS, ChangeLog, HISTORY, LICENSE.SVMlight, gui/R.cpp,
 	  guilib/GUIHMM.cpp, guilib/GUIR.cpp, guilib/GUIR.h,
@@ -12632,11 +12952,11 @@
 	* gui/R.cpp, guilib/GUIR.cpp, guilib/GUIR.h: added length parameter
 	  to set_features
 
-2006-06-12  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-06-12  Soeren Sonnenburg <sonne@debian.org>
 
 	* configure: +make configure executable
 
-2006-06-11  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-06-11  Soeren Sonnenburg <sonne@debian.org>
 
 	* Makefile, configure, gui/R.cpp, guilib/GUIPython.cpp,
 	  guilib/GUIR.cpp, guilib/GUIR.h: + make char features work with
@@ -12645,7 +12965,7 @@
 	  + set/get_svm in R interf.
 	  + make clean should not mess around in .svn
 
-2006-06-08  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-06-08  Soeren Sonnenburg <sonne@debian.org>
 
 	* classifier/svm/MPD.h, configure, gui/R.cpp, guilib/GUIFeatures.h,
 	  guilib/GUILabels.h, guilib/GUIR.cpp, lib/io.cpp: - -fforce-mem
@@ -12661,20 +12981,20 @@
 	* deletemetoo: gu's test.
 	  G
 
-2006-06-05  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-06-05  Soeren Sonnenburg <sonne@debian.org>
 
 	* gui/R.cpp, guilib/GUIR.cpp: + classification example
 	* .:
 	* .:
 
-2006-06-03  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-06-03  Soeren Sonnenburg <sonne@debian.org>
 
 	* kernel/CanberraWordKernel.cpp: fixes..
 	* guilib/GUIKernel.cpp, kernel/CanberraWordKernel.cpp,
 	  kernel/CanberraWordKernel.h, kernel/HammingWordKernel.cpp,
 	  kernel/ManhattenWordKernel.h, lib/common.h: +canberra kernel
 
-2006-06-02  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-06-02  Soeren Sonnenburg <sonne@debian.org>
 
 	* kernel/HammingWordKernel.cpp, kernel/ManhattenWordKernel.cpp: +
 	  fixes in these kernels
@@ -12683,7 +13003,7 @@
 	  kernel/ManhattenWordKernel.h: +Manhattenwordkernel
 	  +ctrl+c allowed to cancel testing
 
-2006-05-31  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+2006-05-31  Soeren Sonnenburg <sonne@debian.org>
 
 	* kernel/HammingWordKernel.cpp:
 
