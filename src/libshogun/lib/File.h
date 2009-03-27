@@ -52,7 +52,7 @@ public:
 	 */
 	CFile(char* fname, char rw, EFeatureType type, char fourcc[4]=NULL);
 
-	~CFile();
+	virtual ~CFile();
 
 	/** parse first header - defunct!
 	 *

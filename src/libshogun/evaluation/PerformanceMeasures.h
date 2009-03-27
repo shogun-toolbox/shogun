@@ -379,6 +379,12 @@ class CPerformanceMeasures : public CSGObject
 		 */
 		float64_t get_BAL(float64_t threshold=0);
 
+        /** get the name of tghe object
+         *
+         * @return name of object
+         */
+        inline virtual const char* get_name() const { return "PerformanceMeasures"; }
+
 	protected:
 		/** initialise values independent from true labels/output */
 		void init_nolabels();
@@ -391,7 +397,7 @@ class CPerformanceMeasures : public CSGObject
 		 * @param y2 y coordinate of point 2
 		 * @return trapezoid area for auROC
 		 */
-		template <class T> float64_t trapezoid_area(T x1, T x2, T y1, T y2);
+		float64_t trapezoid_area(float64_t x1, float64_t x2, float64_t y1, float64_t y2);
 
 		/** create index for ROC sorting
 		 *

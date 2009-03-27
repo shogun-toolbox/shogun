@@ -63,7 +63,7 @@ class CQPBSVMLib: public CSGObject
 			m_solver=solver;
 		}
 
-		~CQPBSVMLib();
+		virtual ~CQPBSVMLib();
 
 	protected:
 		/** get col

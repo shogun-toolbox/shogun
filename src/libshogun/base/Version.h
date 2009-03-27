@@ -30,7 +30,7 @@ class CVersion
 {
 public:
 	CVersion();
-	~CVersion();
+	virtual ~CVersion();
 
 	static inline void print_version()
 	{

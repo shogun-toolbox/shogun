@@ -49,7 +49,7 @@ class CLinearHMM : public CDistribution
 		 * @param p_num_symbols number of symbols in features
 		 */
 		CLinearHMM(int32_t p_num_features, int32_t p_num_symbols);
-		~CLinearHMM();
+		virtual ~CLinearHMM();
 
 		/** train distribution
 		 *

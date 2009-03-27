@@ -163,7 +163,7 @@ template <class Trie> class CTrie : public CSGObject
 
 		/** copy constructor */
 		CTrie(const CTrie & to_copy);
-		~CTrie();
+		virtual ~CTrie();
 
 		/** overload operator = */
 		const CTrie & operator=(const CTrie & to_copy);

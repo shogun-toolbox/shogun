@@ -23,7 +23,7 @@ class CGHMM : public CDistribution
 	public:
 		/** default constructor */
 		CGHMM();
-		~CGHMM();
+		virtual ~CGHMM();
 
 		/** train distribution
 		 *

@@ -85,7 +85,7 @@ class CAlphabet : public CSGObject
 		 * @param alpha alphabet to use
 		 */
 		CAlphabet(CAlphabet* alpha);
-		~CAlphabet();
+		virtual ~CAlphabet();
 
 		/** set alphabet and initialize mapping table (for remap)
 		 *

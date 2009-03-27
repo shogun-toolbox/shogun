@@ -43,7 +43,7 @@ template <class T> class CDynamicArray : public CSGObject
 			last_element_idx=-1;
 		}
 
-		~CDynamicArray() { free(array); }
+		virtual ~CDynamicArray() { free(array); }
 
 		/** set the resize granularity
 		 *

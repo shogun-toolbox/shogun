@@ -41,7 +41,7 @@ template <class T> class CListElement
 		};
 
 		/// destructor
-		~CListElement() { data = NULL; }
+		virtual ~CListElement() { data = NULL; }
 };
 
 /** @brief Class List implements a doubly connected list for low-level-objects.
@@ -66,7 +66,7 @@ template <class T> class CList : public CSGObject
 			this->delete_data=p_delete_data;
 		}
 
-		~CList()
+		virtual ~CList()
 		{
 			while (get_num_elements())
 			{

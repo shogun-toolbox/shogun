@@ -45,7 +45,7 @@ class CLabels : public CSGObject
 		 * @param fname filename to load labels from
 		 */
 		CLabels(char* fname);
-		~CLabels();
+		virtual ~CLabels();
 
 		/** load labels from file
 		 *

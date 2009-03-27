@@ -77,7 +77,7 @@ class CGMNPLib: public CSGObject
 			float64_t* vector_y, CKernel* kernel, int32_t num_data,
 			int32_t num_virtual_data, int32_t num_classes, float64_t reg_const);
 
-		~CGMNPLib();
+		virtual ~CGMNPLib();
 
 		/** --------------------------------------------------------------
 		  GMNP solver based on improved MDM algorithm 1.

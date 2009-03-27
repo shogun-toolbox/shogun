@@ -117,7 +117,7 @@ class CMindyGramFeatures : public CFeatures
 		}
 
         /* Destructors */
-        ~CMindyGramFeatures();
+        virtual ~CMindyGramFeatures();
 
         CFeatures *duplicate() const;
 

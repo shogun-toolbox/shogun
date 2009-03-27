@@ -61,7 +61,7 @@ template <class T> class CArray2: public CArray<T>
 		{
 		}
 
-		~CArray2() {}
+		virtual ~CArray2() {}
 
 		/** return total array size (including granularity buffer)
 		 *

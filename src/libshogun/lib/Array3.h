@@ -73,7 +73,7 @@ template <class T> class CArray3: public CArray<T>
 		{
 		}
 
-		~CArray3() {}
+		virtual ~CArray3() {}
 
 		/** set array's name
 		 *

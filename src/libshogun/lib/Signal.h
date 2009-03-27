@@ -44,7 +44,7 @@ class CSignal : public CSGObject
 	public:
 		/** default constructor */
 		CSignal();
-		~CSignal();
+		virtual ~CSignal();
 
 		/** handler
 		 *

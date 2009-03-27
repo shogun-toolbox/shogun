@@ -28,7 +28,7 @@ class CTime : public CSGObject
 		 * @param start if time measurement shall be started
 		 */
 		CTime(bool start=true);
-		~CTime();
+		virtual ~CTime();
 
 		/** get current cpu runtime
 		 *

@@ -42,7 +42,7 @@ class CCplex : public CSGObject
 public:
 
 	CCplex();
-	~CCplex();
+	virtual ~CCplex();
 
 	/// init cplex with problem type t and retry timeout 60 seconds
 	bool init(E_PROB_TYPE t, int32_t timeout=60);

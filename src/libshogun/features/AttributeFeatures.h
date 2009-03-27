@@ -48,7 +48,7 @@ public:
 	CAttributeFeatures();
 
 	/** destructor */
-	~CAttributeFeatures();
+	virtual ~CAttributeFeatures();
 
 	/** return the feature object matching attribute name
 	 *

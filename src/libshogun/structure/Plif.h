@@ -33,7 +33,7 @@ class CPlif: public CPlifBase
 		 * @param len len
 		 */
 		CPlif(int32_t len=0);
-		~CPlif();
+		virtual ~CPlif();
 
 		/** init penalty struct cache */
 		void init_penalty_struct_cache();

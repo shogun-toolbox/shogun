@@ -62,7 +62,7 @@ public:
 	 */
 	CTron(
 		const function *fun_obj, float64_t eps = 0.1, int32_t max_iter = 1000);
-	~CTron();
+	virtual ~CTron();
 
 	/** tron
 	 *

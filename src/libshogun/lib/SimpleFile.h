@@ -38,7 +38,7 @@ template <class T> class CSimpleFile : public CSGObject
 			status = (file!=NULL && filename!=NULL);
 		}
 
-		~CSimpleFile() { free(filename); }
+		virtual ~CSimpleFile() { free(filename); }
 
 		/** load
 		 *

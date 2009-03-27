@@ -1,3 +1,15 @@
+2009-04-XX Soeren Sonnenburg <sonne@debian.org>
+
+	* SHOGUN Release version 0.7.3 (libshogun 3.0, libshogunui 1.1)
+	* This release contains several bugfixes:
+	* Features:
+		- None
+	* Bugfixes:
+		- None
+	* Cleanup and API Changes:
+		- Make sure that all destructors are declared virtual.
+		- get_name function was undefined in Evaluation causing the PerformanceMeasures class to be defunct.
+
 2009-03-23 Soeren Sonnenburg <sonne@debian.org>
 
 	* SHOGUN Release version 0.7.2 (libshogun 2.0, libshogunui 1.1)

@@ -77,7 +77,7 @@ public:
 	 * @param p_num_svms number of SVMs
 	 */
 	CDynProg(int32_t p_num_svms=8);
-	~CDynProg();
+	virtual ~CDynProg();
 
 	/** best path no b
 	 *

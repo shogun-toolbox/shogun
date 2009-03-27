@@ -47,7 +47,7 @@ class CSVMSGD : public CLinearClassifier
 			float64_t C, CDotFeatures* traindat,
 			CLabels* trainlab);
 
-		~CSVMSGD();
+		virtual ~CSVMSGD();
 
 		/** get classifier type
 		 *

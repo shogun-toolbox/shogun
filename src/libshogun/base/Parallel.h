@@ -33,7 +33,7 @@ class CParallel
 public:
 	CParallel();
 	CParallel(const CParallel& orig);
-	~CParallel();
+	virtual ~CParallel();
 
 	inline int32_t get_num_cpus() const
 	{

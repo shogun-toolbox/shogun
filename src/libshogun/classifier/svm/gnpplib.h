@@ -37,7 +37,7 @@ class CGNPPLib: public CSGObject
    * @param reg_const reg const
    */
   CGNPPLib(float64_t* vector_y, CKernel* kernel, int32_t num_data, float64_t reg_const);
-  ~CGNPPLib();
+  virtual ~CGNPPLib();
 
   /** --------------------------------------------------------------
      QP solver based on MDM algorithm.

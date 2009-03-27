@@ -94,7 +94,7 @@ template<class T> class CCache : public CSGObject
 		nr_cache_lines--;
 	}
 
-	~CCache()
+	virtual ~CCache()
 	{
 		delete[] cache_block;
 		delete[] lookup_table;

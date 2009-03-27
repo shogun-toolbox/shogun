@@ -117,7 +117,7 @@ template <class T> class CArray : public CSGObject
 			set_array(p_array, p_array_size);
 		}
 
-		~CArray()
+		virtual ~CArray()
 		{
 			SG_DEBUG( "destroying CArray array '%s' of size %i\n",
 				name? name : "unnamed", array_size);

@@ -115,7 +115,7 @@ public:
 		}
 	}
 
-	/** get the name of a kernel
+	/** get the name of the object
 	 *
 	 * @return name of object
 	 */

@@ -130,8 +130,8 @@ void CPerformanceMeasures::create_sortedROC()
 
 /////////////////////////////////////////////////////////////////////
 
-template <class T> float64_t CPerformanceMeasures::trapezoid_area(
-	T x1, T x2, T y1, T y2)
+float64_t CPerformanceMeasures::trapezoid_area(
+	float64_t x1, float64_t x2, float64_t y1, float64_t y2)
 {
 	float64_t base=CMath::abs(x1-x2);
 	float64_t height_avg=0.5*(float64_t)(y1+y2);

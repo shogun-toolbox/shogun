@@ -47,7 +47,7 @@ class COligoStringKernel : public CStringKernel<char>
 		COligoStringKernel(int32_t cache_size, int32_t k, float64_t width);
 
 		/** Destructor */
-		~COligoStringKernel();
+		virtual ~COligoStringKernel();
 
 		/** initialize kernel
 		 *
