@@ -872,8 +872,6 @@ class CMath : public CSGObject
 
 		/** performs a quicksort on an array output of length size
 		 * it is sorted from in ascending (for type T) */
-		//template <class T>
-		//static void qsort(T* output, int32_t size) ;
 		template <class T>
 			static void qsort(T* output, int32_t size)
 			{
@@ -883,7 +881,8 @@ class CMath : public CSGObject
 						swap(output[0],output[1]);
 					return;
 				}
-				T split=output[random(0,size-1)];
+				//T split=output[random(0,size-1)];
+				T split=output[size/2];
 
 				int32_t left=0;
 				int32_t right=size-1;
@@ -1215,7 +1214,7 @@ void* CMath::parallel_qsort_index(void* p)
 			}
 			return NULL;
 		}
-		/*float64_t split=output[(((uint64_t) size)*rand())/(((uint64_t)RAND_MAX)+1)];*/
+		//T1 split=output[random(0,size-1)];
 		T1 split=output[size/2];
 
 		int32_t left=0;
