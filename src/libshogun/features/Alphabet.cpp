@@ -128,18 +128,18 @@ void CAlphabet::init_map_table()
 	{
 		maptable_to_bin[i] = MAPTABLE_UNDEF;
 		maptable_to_char[i] = MAPTABLE_UNDEF;
-		valid_chars[i] = 0;
+		valid_chars[i] = false;
 	}
 
 	switch (alphabet)
 	{
 		case CUBE:
-			valid_chars[(uint8_t) '1']=1;
-			valid_chars[(uint8_t) '2']=1;
-			valid_chars[(uint8_t) '3']=1;
-			valid_chars[(uint8_t) '4']=1;	
-			valid_chars[(uint8_t) '5']=1;	
-			valid_chars[(uint8_t) '6']=1;	//Translation '123456' -> 012345
+			valid_chars[(uint8_t) '1']=true;
+			valid_chars[(uint8_t) '2']=true;
+			valid_chars[(uint8_t) '3']=true;
+			valid_chars[(uint8_t) '4']=true;	
+			valid_chars[(uint8_t) '5']=true;	
+			valid_chars[(uint8_t) '6']=true;	//Translation '123456' -> 012345
 
 			maptable_to_bin[(uint8_t) '1']=0;
 			maptable_to_bin[(uint8_t) '2']=1;
@@ -165,7 +165,7 @@ void CAlphabet::init_map_table()
 					if (i==8) skip++ ;
 					if (i==12) skip++ ;
 					if (i==17) skip++ ;
-					valid_chars['A'+i+skip]=1;
+					valid_chars['A'+i+skip]=true;
 					maptable_to_bin['A'+i+skip]=i ;
 					maptable_to_char[i]='A'+i+skip ;
 				} ;                   //Translation 012345->acde...xy -- the protein code
@@ -176,13 +176,13 @@ void CAlphabet::init_map_table()
 			{
 				for (i=0; i<26; i++)
 				{
-					valid_chars['A'+i]=1;
+					valid_chars['A'+i]=true;
 					maptable_to_bin['A'+i]=i ;
 					maptable_to_char[i]='A'+i ;
 				} ;
 				for (i=0; i<10; i++)
 				{
-					valid_chars['0'+i]=1;
+					valid_chars['0'+i]=true;
 					maptable_to_bin['0'+i]=26+i ;
 					maptable_to_char[26+i]='0'+i ;
 				} ;        //Translation 012345->acde...xy0123456789
@@ -194,7 +194,7 @@ void CAlphabet::init_map_table()
 				//identity
 				for (i=0; i<256; i++)
 				{
-					valid_chars[i]=1;
+					valid_chars[i]=true;
 					maptable_to_bin[i]=i;
 					maptable_to_char[i]=i;
 				}
@@ -202,10 +202,10 @@ void CAlphabet::init_map_table()
 			break;
 
 		case DNA:
-			valid_chars[(uint8_t) 'A']=1;
-			valid_chars[(uint8_t) 'C']=1;
-			valid_chars[(uint8_t) 'G']=1;
-			valid_chars[(uint8_t) 'T']=1;	
+			valid_chars[(uint8_t) 'A']=true;
+			valid_chars[(uint8_t) 'C']=true;
+			valid_chars[(uint8_t) 'G']=true;
+			valid_chars[(uint8_t) 'T']=true;	
 
 			maptable_to_bin[(uint8_t) 'A']=B_A;
 			maptable_to_bin[(uint8_t) 'C']=B_C;
@@ -222,7 +222,7 @@ void CAlphabet::init_map_table()
 				//identity
 				for (i=0; i<4; i++)
 				{
-					valid_chars[i]=1;
+					valid_chars[i]=true;
 					maptable_to_bin[i]=i;
 					maptable_to_char[i]=i;
 				}
@@ -230,10 +230,10 @@ void CAlphabet::init_map_table()
 			break;
 
 		case RNA:
-			valid_chars[(uint8_t) 'A']=1;
-			valid_chars[(uint8_t) 'C']=1;
-			valid_chars[(uint8_t) 'G']=1;
-			valid_chars[(uint8_t) 'U']=1;	
+			valid_chars[(uint8_t) 'A']=true;
+			valid_chars[(uint8_t) 'C']=true;
+			valid_chars[(uint8_t) 'G']=true;
+			valid_chars[(uint8_t) 'U']=true;	
 
 			maptable_to_bin[(uint8_t) 'A']=B_A;
 			maptable_to_bin[(uint8_t) 'C']=B_C;
@@ -247,22 +247,22 @@ void CAlphabet::init_map_table()
 			break;
 
 		case IUPAC_NUCLEIC_ACID:
-			valid_chars[(uint8_t) 'A']=1; // A	Adenine
-			valid_chars[(uint8_t) 'C']=1; // C	Cytosine
-			valid_chars[(uint8_t) 'G']=1; // G	Guanine
-			valid_chars[(uint8_t) 'T']=1; // T	Thymine
-			valid_chars[(uint8_t) 'U']=1; // U	Uracil
-			valid_chars[(uint8_t) 'R']=1; // R	Purine (A or G)
-			valid_chars[(uint8_t) 'Y']=1; // Y	Pyrimidine (C, T, or U)
-			valid_chars[(uint8_t) 'M']=1; // M	C or A
-			valid_chars[(uint8_t) 'K']=1; // K	T, U, or G
-			valid_chars[(uint8_t) 'W']=1; // W	T, U, or A
-			valid_chars[(uint8_t) 'S']=1; // S	C or G
-			valid_chars[(uint8_t) 'B']=1; // B	C, T, U, or G (not A)
-			valid_chars[(uint8_t) 'D']=1; // D	A, T, U, or G (not C)
-			valid_chars[(uint8_t) 'H']=1; // H	A, T, U, or C (not G)
-			valid_chars[(uint8_t) 'V']=1; // V	A, C, or G (not T, not U)
-			valid_chars[(uint8_t) 'N']=1; // N	Any base (A, C, G, T, or U)
+			valid_chars[(uint8_t) 'A']=true; // A	Adenine
+			valid_chars[(uint8_t) 'C']=true; // C	Cytosine
+			valid_chars[(uint8_t) 'G']=true; // G	Guanine
+			valid_chars[(uint8_t) 'T']=true; // T	Thymine
+			valid_chars[(uint8_t) 'U']=true; // U	Uracil
+			valid_chars[(uint8_t) 'R']=true; // R	Purine (A or G)
+			valid_chars[(uint8_t) 'Y']=true; // Y	Pyrimidine (C, T, or U)
+			valid_chars[(uint8_t) 'M']=true; // M	C or A
+			valid_chars[(uint8_t) 'K']=true; // K	T, U, or G
+			valid_chars[(uint8_t) 'W']=true; // W	T, U, or A
+			valid_chars[(uint8_t) 'S']=true; // S	C or G
+			valid_chars[(uint8_t) 'B']=true; // B	C, T, U, or G (not A)
+			valid_chars[(uint8_t) 'D']=true; // D	A, T, U, or G (not C)
+			valid_chars[(uint8_t) 'H']=true; // H	A, T, U, or C (not G)
+			valid_chars[(uint8_t) 'V']=true; // V	A, C, or G (not T, not U)
+			valid_chars[(uint8_t) 'N']=true; // N	Any base (A, C, G, T, or U)
 
 			maptable_to_bin[(uint8_t) 'A']=0; // A	Adenine
 			maptable_to_bin[(uint8_t) 'C']=1; // C	Cytosine
@@ -300,29 +300,29 @@ void CAlphabet::init_map_table()
 			break;
 
 		case IUPAC_AMINO_ACID:
-			valid_chars[(uint8_t) 'A']=0;  //A	Ala	Alanine
-			valid_chars[(uint8_t) 'R']=1;  //R	Arg	Arginine
-			valid_chars[(uint8_t) 'N']=2;  //N	Asn	Asparagine
-			valid_chars[(uint8_t) 'D']=3;  //D	Asp	Aspartic acid
-			valid_chars[(uint8_t) 'C']=4;  //C	Cys	Cysteine
-			valid_chars[(uint8_t) 'Q']=5;  //Q	Gln	Glutamine
-			valid_chars[(uint8_t) 'E']=6;  //E	Glu	Glutamic acid
-			valid_chars[(uint8_t) 'G']=7;  //G	Gly	Glycine
-			valid_chars[(uint8_t) 'H']=8;  //H	His	Histidine
-			valid_chars[(uint8_t) 'I']=9;  //I	Ile	Isoleucine
-			valid_chars[(uint8_t) 'L']=10; //L	Leu	Leucine
-			valid_chars[(uint8_t) 'K']=11; //K	Lys	Lysine
-			valid_chars[(uint8_t) 'M']=12; //M	Met	Methionine
-			valid_chars[(uint8_t) 'F']=13; //F	Phe	Phenylalanine
-			valid_chars[(uint8_t) 'P']=14; //P	Pro	Proline
-			valid_chars[(uint8_t) 'S']=15; //S	Ser	Serine
-			valid_chars[(uint8_t) 'T']=16; //T	Thr	Threonine
-			valid_chars[(uint8_t) 'W']=17; //W	Trp	Tryptophan
-			valid_chars[(uint8_t) 'Y']=18; //Y	Tyr	Tyrosine
-			valid_chars[(uint8_t) 'V']=19; //V	Val	Valine
-			valid_chars[(uint8_t) 'B']=20; //B	Asx	Aspartic acid or Asparagine
-			valid_chars[(uint8_t) 'Z']=21; //Z	Glx	Glutamine or Glutamic acid
-			valid_chars[(uint8_t) 'X']=22; //X	Xaa	Any amino acid
+			valid_chars[(uint8_t) 'A']=true; //A	Ala	Alanine
+			valid_chars[(uint8_t) 'R']=true; //R	Arg	Arginine
+			valid_chars[(uint8_t) 'N']=true; //N	Asn	Asparagine
+			valid_chars[(uint8_t) 'D']=true; //D	Asp	Aspartic acid
+			valid_chars[(uint8_t) 'C']=true; //C	Cys	Cysteine
+			valid_chars[(uint8_t) 'Q']=true; //Q	Gln	Glutamine
+			valid_chars[(uint8_t) 'E']=true; //E	Glu	Glutamic acid
+			valid_chars[(uint8_t) 'G']=true; //G	Gly	Glycine
+			valid_chars[(uint8_t) 'H']=true; //H	His	Histidine
+			valid_chars[(uint8_t) 'I']=true; //I	Ile	Isoleucine
+			valid_chars[(uint8_t) 'L']=true; //L	Leu	Leucine
+			valid_chars[(uint8_t) 'K']=true; //K	Lys	Lysine
+			valid_chars[(uint8_t) 'M']=true; //M	Met	Methionine
+			valid_chars[(uint8_t) 'F']=true; //F	Phe	Phenylalanine
+			valid_chars[(uint8_t) 'P']=true; //P	Pro	Proline
+			valid_chars[(uint8_t) 'S']=true; //S	Ser	Serine
+			valid_chars[(uint8_t) 'T']=true; //T	Thr	Threonine
+			valid_chars[(uint8_t) 'W']=true; //W	Trp	Tryptophan
+			valid_chars[(uint8_t) 'Y']=true; //Y	Tyr	Tyrosine
+			valid_chars[(uint8_t) 'V']=true; //V	Val	Valine
+			valid_chars[(uint8_t) 'B']=true; //B	Asx	Aspartic acid or Asparagine
+			valid_chars[(uint8_t) 'Z']=true; //Z	Glx	Glutamine or Glutamic acid
+			valid_chars[(uint8_t) 'X']=true; //X	Xaa	Any amino acid
 
 			maptable_to_bin[(uint8_t) 'A']=0;  //A	Ala	Alanine
 			maptable_to_bin[(uint8_t) 'R']=1;  //R	Arg	Arginine
@@ -509,7 +509,7 @@ bool CAlphabet::check_alphabet(bool print_error)
 	if (!result && print_error)
 	{
 		print_histogram();
-      SG_ERROR( "ALPHABET does not contain all symbols in histogram\n");
+		SG_ERROR( "ALPHABET does not contain all symbols in histogram\n");
 	}
 
 	return result;

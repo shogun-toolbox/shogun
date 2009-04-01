@@ -16,6 +16,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <sys/mman.h>
 
 /** @brief Template class SimpleFile to read and write from files.
  *
@@ -31,14 +32,18 @@ template <class T> class CSimpleFile : public CSGObject
 		 * @param f file descriptor
 		 */
 		CSimpleFile(char* fname, FILE* f)
-		: CSGObject()
+		: CSGObject(), line_buffer_size(1024*1024), line_buffer(NULL)
 		{
 			file=f;
 			filename=strdup(fname);
 			status = (file!=NULL && filename!=NULL);
 		}
 
-		virtual ~CSimpleFile() { free(filename); }
+		virtual ~CSimpleFile()
+		{
+			free(filename);
+			free_line_buffer();
+		}
 
 		/** load
 		 *
@@ -135,6 +140,44 @@ template <class T> class CSimpleFile : public CSGObject
 			return status;
 		}
 
+		void get_buffered_line(char* line, uint64_t len)
+		{
+
+			/*
+			if (!line_buffer)
+			{
+				line_buffer=new char[line_buffer_size];
+				size_t num_read=fread((void*) target, sizeof(T), num, file);
+
+					if (target)
+					{
+						size_t num_read=fread((void*) target, sizeof(T), num, file);
+						status=((int64_t) num_read == num);
+
+						if (!status)
+							SG_ERROR( "only %ld of %ld entries read. io error\n", (int64_t) num_read, num);
+					}
+					else
+						SG_ERROR( "failed to allocate memory while trying to read %ld entries from file \"s\"\n", (int64_t) num, filename);
+
+						*/
+		}
+
+		void free_line_buffer()
+		{
+			delete[] line_buffer;
+			line_buffer=NULL;
+		}
+
+		inline void set_line_buffer_size(int32_t bufsize)
+		{
+			if (bufsize<=0)
+				bufsize=1024*1024;
+
+			free_line_buffer();
+			line_buffer_size=bufsize;
+		}
+
 		/** check if status is ok
 		 *
 		 * @return if status is ok
@@ -153,5 +196,10 @@ template <class T> class CSimpleFile : public CSGObject
 		char task;
 		/** filename */
 		char* filename;
+
+		/* size of line buffer */
+		int32_t line_buffer_size;
+		/** line buffer */
+		char* line_buffer;
 };
 #endif

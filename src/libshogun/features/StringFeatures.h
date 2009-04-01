@@ -22,6 +22,7 @@
 #include "lib/io.h"
 #include "lib/DynamicArray.h"
 #include "lib/File.h"
+#include "lib/MemoryMappedFile.h"
 #include "lib/Mathematics.h"
 
 #include <sys/types.h>
@@ -611,6 +612,75 @@ template <class ST> class CStringFeatures : public CFeatures
 			SG_REF(alphabet);
 
 			return result;
+		}
+
+		/** load fastq file as string features
+		 *
+		 * @param fname filename to load from
+		 * @param ignore_invalid if set to true, characters other than A,C,G,T are converted to A
+		 * @return if loading was successful
+		 */
+		bool load_fastq_file(const char* fname, bool ignore_invalid=false)
+		{
+			CMemoryMappedFile<char> f(fname);
+			
+			int32_t i=0;
+			uint64_t len=0;
+			uint64_t offs=0;
+
+			int32_t num=f.get_num_lines();
+			int32_t max_len=0;
+
+			if (num%4)
+				SG_ERROR("Number of lines must be divisible by 4 in fastq files\n");
+			num/=4;
+
+			cleanup();
+			SG_UNREF(alphabet);
+			alphabet=new CAlphabet(DNA);
+
+			T_STRING<ST>* strings=new T_STRING<ST>[num];
+
+			for (i=0;i<num; i++)
+			{
+				if (!f.get_line(len, offs))
+					SG_ERROR("Error reading 'read' identifier in line %d", 4*i);
+
+				char* s=f.get_line(len, offs);
+				if (!s || len==0)
+					SG_ERROR("Error reading 'read' in line %d len=%ld", 4*i+1, len);
+
+				strings[i].string=new ST[len];
+				strings[i].length=len;
+
+				if (ignore_invalid)
+				{
+					for (int32_t j=0; j<len; j++)
+					{
+						if (alphabet->is_valid((uint8_t) s[j]))
+							strings[i].string[j]= (ST) s[j];
+						else
+							strings[i].string[j]= (ST) 'A';
+					}
+				}
+				else
+				{
+					for (int32_t j=0; j<len; j++)
+						strings[i].string[j]= (ST) s[j];
+				}
+		//if (translate)
+			//translate_from_single_order(strings[i].string, strings[i].length, 0int32_t p_order, int32_t max_val)
+
+				max_len=CMath::max(max_len, strings[i].length);
+
+				if (!f.get_line(len, offs))
+					SG_ERROR("Error reading 'read' quality identifier in line %d", 4*i+2);
+
+				if (!f.get_line(len, offs))
+					SG_ERROR("Error reading 'read' quality in line %d", 4*i+3);
+			}
+
+			return set_features(strings, num, max_len);
 		}
 
 		/** load features from directory

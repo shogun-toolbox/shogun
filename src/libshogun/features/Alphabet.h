@@ -275,6 +275,17 @@ class CAlphabet : public CSGObject
 		 */
 		bool check_alphabet(bool print_error=true);
 
+		/** check whether symbols are valid in alphabet
+		 * e.g. for DNA if symbol is one of the A,C,G or T
+		 *
+		 * @param s symbol
+		 * @return if symbol is a valid character in alphabet
+		 */
+		inline bool is_valid(uint8_t c)
+		{
+			return valid_chars[c];
+		}
+
 		/** check whether symbols in histogram ALL fit in alphabet
 		 *
 		 * @param print_error if errors shall be printed
@@ -345,7 +356,7 @@ class CAlphabet : public CSGObject
 		/** number of bits */
 		int32_t num_bits;
 		/** valid chars */
-		uint8_t valid_chars[1 << (sizeof(uint8_t)*8)];
+		bool valid_chars[1 << (sizeof(uint8_t)*8)];
 		/** maptable to bin */
 		uint8_t maptable_to_bin[1 << (sizeof(uint8_t)*8)];
 		/** maptable to char */
