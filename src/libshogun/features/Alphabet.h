@@ -143,94 +143,17 @@ class CAlphabet : public CSGObject
 
 		/// clear histogram
 		void clear_histogram();
-		/** make histogram for whole string
-		 *
-		 * @param p string
-		 * @param len length of string
-		 */
-		void add_string_to_histogram(bool* p, int64_t len);
 
 		/** make histogram for whole string
 		 *
 		 * @param p string
 		 * @param len length of string
 		 */
-		void add_string_to_histogram(char* p, int64_t len);
-
-		/** make histogram for whole string
-		 *
-		 * @param p string
-		 * @param len length of string
-		 */
-		void add_string_to_histogram(uint8_t* p, int64_t len);
-
-		/** make histogram for whole string
-		 *
-		 * @param p string
-		 * @param len length of string
-		 */
-		void add_string_to_histogram(int16_t* p, int64_t len);
-
-		/** make histogram for whole string
-		 *
-		 * @param p string
-		 * @param len length of string
-		 */
-		void add_string_to_histogram(uint16_t* p, int64_t len);
-
-		/** make histogram for whole string
-		 *
-		 * @param p string
-		 * @param len length of string
-		 */
-		void add_string_to_histogram(int32_t* p, int64_t len);
-
-		/** make histogram for whole string
-		 *
-		 * @param p string
-		 * @param len length of string
-		 */
-		void add_string_to_histogram(uint32_t* p, int64_t len);
-
-		/** make histogram for whole string
-		 *
-		 * @param p string
-		 * @param len length of string
-		 */
-		void add_string_to_histogram(int64_t* p, int64_t len);
-
-		/** make histogram for whole string
-		 *
-		 * @param p string
-		 * @param len length of string
-		 */
-		void add_string_to_histogram(uint64_t* p, int64_t len);
-
-		/** make histogram for whole string
-		 *
-		 * @param p string
-		 * @param len length of string
-		 */
-		inline void add_string_to_histogram(float32_t* p, int64_t len)
+		template <class T>
+		void add_string_to_histogram(T* p, int64_t len)
 		{
-		}
-
-		/** make histogram for whole string
-		 *
-		 * @param p string
-		 * @param len length of string
-		 */
-		inline void add_string_to_histogram(float64_t* p, int64_t len)
-		{
-		}
-
-		/** make histogram for whole string
-		 *
-		 * @param p string
-		 * @param len length of string
-		 */
-		inline void add_string_to_histogram(floatmax_t* p, int64_t len)
-		{
+			for (int64_t i=0; i<len; i++)
+				add_byte_to_histogram((uint8_t) p[i]);
 		}
 
 		/** add element to histogram

@@ -227,7 +227,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 *
 		 * @return templated feature type
 		 */
-		inline virtual EFeatureType get_feature_type();
+		inline virtual EFeatureType get_feature_type() { return F_UNKNOWN; }
 
 		/** get alphabet used in string features
 		 *
