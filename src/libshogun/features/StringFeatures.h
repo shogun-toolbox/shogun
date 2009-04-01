@@ -614,6 +614,103 @@ template <class ST> class CStringFeatures : public CFeatures
 			return result;
 		}
 
+		/** load fasta file as string features
+		 *
+		 * @param fname filename to load from
+		 * @param ignore_invalid if set to true, characters other than A,C,G,T are converted to A
+		 * @return if loading was successful
+		 */
+		bool load_fasta_file(const char* fname, bool ignore_invalid=false)
+		{
+			int32_t i=0;
+			uint64_t len=0;
+			uint64_t offs=0;
+			int32_t num=0;
+			int32_t max_len=0;
+
+			CMemoryMappedFile<char> f(fname);
+
+			while (true)
+			{
+				char* s=f.get_line(len, offs);
+				if (!s)
+					break;
+
+				if (len>0 && s[0]=='>')
+					num++;
+			}
+
+			if (num==0)
+				SG_ERROR("No fasta hunks (lines starting with '>') found\n");
+
+			cleanup();
+			SG_UNREF(alphabet);
+			alphabet=new CAlphabet(DNA);
+
+			T_STRING<ST>* strings=new T_STRING<ST>[num];
+			offs=0;
+
+			for (i=0;i<num; i++)
+			{
+				uint64_t id_len=0;
+				char* id=f.get_line(id_len, offs);
+
+				char* fasta=f.get_line(len, offs);
+				char* s=fasta;
+				int32_t fasta_len=0;
+				int32_t spanned_lines=0;
+
+				while (true)
+				{
+					if (!s || len==0)
+						SG_ERROR("Error reading fasta entry in line %d len=%ld", 4*i+1, len);
+
+					if (s[0]=='>' || offs==f.get_size())
+					{
+						offs-=len+1; // seek to beginning
+						if (offs==f.get_size())
+						{
+							SG_DEBUG("at EOF\n");
+							fasta_len+=len;
+						}
+
+						len = fasta_len-spanned_lines;
+						strings[i].string=new ST[len];
+						strings[i].length=len;
+
+						ST* str=strings[i].string;
+						int32_t idx=0;
+						SG_DEBUG("'%.*s', len=%d, spanned_lines=%d\n", (int32_t) id_len, id, (int32_t) len, (int32_t) spanned_lines);
+
+						for (int32_t j=0; j<fasta_len; j++)
+						{
+							if (fasta[j]=='\n')
+								continue;
+
+							ST c = (ST) fasta[j];
+
+							if (ignore_invalid  && !alphabet->is_valid((uint8_t) fasta[j]))
+								c = (ST) 'A';
+
+							if (idx>=len)
+								SG_ERROR("idx=%d j=%d fasta_len=%d, spanned_lines=%d str='%.*s'\n", idx, j, fasta_len, spanned_lines, idx, str);
+							str[idx++]=c;
+						}
+						max_len=CMath::max(max_len, strings[i].length);
+
+
+						break;
+					}
+
+					spanned_lines++;
+					fasta_len+=len+1; // including '\n'
+					s=f.get_line(len, offs);
+				}
+			}
+
+			return set_features(strings, num, max_len);
+		}
+
 		/** load fastq file as string features
 		 *
 		 * @param fname filename to load from
