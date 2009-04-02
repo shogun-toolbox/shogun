@@ -153,7 +153,7 @@ class CAlphabet : public CSGObject
 		void add_string_to_histogram(T* p, int64_t len)
 		{
 			for (int64_t i=0; i<len; i++)
-				add_byte_to_histogram((uint8_t) p[i]);
+				add_byte_to_histogram((uint8_t) (p[i]));
 		}
 
 		/** add element to histogram
@@ -162,7 +162,7 @@ class CAlphabet : public CSGObject
 		 */
 		inline void add_byte_to_histogram(uint8_t p)
 		{
-			histogram[(int32_t) p]++;
+			histogram[p]++;
 		}
 
 		/// print histogram

@@ -717,7 +717,8 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param ignore_invalid if set to true, characters other than A,C,G,T are converted to A
 		 * @return if loading was successful
 		 */
-		bool load_fastq_file(const char* fname, bool ignore_invalid=false)
+		bool load_fastq_file(const char* fname,
+				bool ignore_invalid=false, bool bitremap_in_single_string=false)
 		{
 			CMemoryMappedFile<char> f(fname);
 			
@@ -736,7 +737,25 @@ template <class ST> class CStringFeatures : public CFeatures
 			SG_UNREF(alphabet);
 			alphabet=new CAlphabet(DNA);
 
-			T_STRING<ST>* strings=new T_STRING<ST>[num];
+			T_STRING<ST>* strings;
+			
+			ST* str;
+			if (bitremap_in_single_string)
+			{
+				strings=new T_STRING<ST>[1];
+				strings[0].string=new ST[num];
+				strings[0].length=num;
+				f.get_line(len, offs);
+				f.get_line(len, offs);
+				order=len;
+				max_len=num;
+				offs=0;
+				original_num_symbols=alphabet->get_num_symbols();
+				int32_t max_val=alphabet->get_num_bits();
+				str=new ST[len];
+			}
+			else
+				strings=new T_STRING<ST>[num];
 
 			for (i=0;i<num; i++)
 			{
@@ -747,28 +766,39 @@ template <class ST> class CStringFeatures : public CFeatures
 				if (!s || len==0)
 					SG_ERROR("Error reading 'read' in line %d len=%ld", 4*i+1, len);
 
-				strings[i].string=new ST[len];
-				strings[i].length=len;
-
-				if (ignore_invalid)
+				if (bitremap_in_single_string)
 				{
-					for (int32_t j=0; j<len; j++)
-					{
-						if (alphabet->is_valid((uint8_t) s[j]))
-							strings[i].string[j]= (ST) s[j];
-						else
-							strings[i].string[j]= (ST) 'A';
-					}
+					if (len!=order)
+						SG_ERROR("read in line %d not of length %d (is %d)\n", 4*i+1, order, len);
+					for (int32_t j=0; j<order; j++)
+						str[j]=(ST) alphabet->remap_to_bin((uint8_t) s[j]);
+
+					strings[0].string[i]=embed_word(str, order);
 				}
 				else
 				{
-					for (int32_t j=0; j<len; j++)
-						strings[i].string[j]= (ST) s[j];
-				}
-		//if (translate)
-			//translate_from_single_order(strings[i].string, strings[i].length, 0int32_t p_order, int32_t max_val)
+					strings[i].string=new ST[len];
+					strings[i].length=len;
+					str=strings[i].string;
 
-				max_len=CMath::max(max_len, strings[i].length);
+					if (ignore_invalid)
+					{
+						for (int32_t j=0; j<len; j++)
+						{
+							if (alphabet->is_valid((uint8_t) s[j]))
+								str[j]= (ST) s[j];
+							else
+								str[j]= (ST) 'A';
+						}
+					}
+					else
+					{
+						for (int32_t j=0; j<len; j++)
+							str[j]= (ST) s[j];
+					}
+					max_len=CMath::max(max_len, (int32_t) len);
+				}
+
 
 				if (!f.get_line(len, offs))
 					SG_ERROR("Error reading 'read' quality identifier in line %d", 4*i+2);
@@ -777,7 +807,14 @@ template <class ST> class CStringFeatures : public CFeatures
 					SG_ERROR("Error reading 'read' quality in line %d", 4*i+3);
 			}
 
-			return set_features(strings, num, max_len);
+			if (bitremap_in_single_string)
+				num=1;
+
+			num_vectors=num;
+			max_string_length=max_len;
+			features=strings;
+
+			return true;
 		}
 
 		/** load features from directory
