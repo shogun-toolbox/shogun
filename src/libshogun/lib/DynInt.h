@@ -13,6 +13,7 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/lib/io.h>
+#include <shogun/lib/Mathematics.h>
 
 /** @brief integer type of dynamic size
  *
@@ -49,11 +50,76 @@ public:
 	 *
 	 * @param x least significant word
 	 */
-	CDynInt(T x)
+	CDynInt(uint8_t x)
 	{
 		for (int i=0; i<sz-1; i++)
 			integer[i]=0;
-		integer[sz-1]=x;
+		integer[sz-1]= (T) x;
+	}
+
+	/** constructor (set least significant ``word'')
+	 *
+	 * The least significant word is set, the rest filled with zeros.
+	 *
+	 * @param x least significant word
+	 */
+	CDynInt(uint16_t x)
+	{
+		for (int i=0; i<sz-1; i++)
+			integer[i]=0;
+		integer[sz-1]= (T) x;
+	}
+
+	/** constructor (set least significant ``word'')
+	 *
+	 * The least significant word is set, the rest filled with zeros.
+	 *
+	 * @param x least significant word
+	 */
+	CDynInt(uint32_t x)
+	{
+		for (int i=0; i<sz-1; i++)
+			integer[i]=0;
+		integer[sz-1]= (T) x;
+	}
+
+	/** constructor (set least significant ``word'')
+	 *
+	 * The least significant word is set, the rest filled with zeros.
+	 *
+	 * @param x least significant word
+	 */
+	CDynInt(int32_t x)
+	{
+		for (int i=0; i<sz-1; i++)
+			integer[i]=0;
+		integer[sz-1]= (T) x;
+	}
+
+	/** constructor (set least significant ``word'')
+	 *
+	 * The least significant word is set, the rest filled with zeros.
+	 *
+	 * @param x least significant word
+	 */
+	CDynInt(int64_t x)
+	{
+		for (int i=0; i<sz-1; i++)
+			integer[i]=0;
+		integer[sz-1]=(T) x;
+	}
+
+	/** constructor (set least significant ``word'')
+	 *
+	 * The least significant word is set, the rest filled with zeros.
+	 *
+	 * @param x least significant word
+	 */
+	CDynInt(uint64_t x)
+	{
+		for (int i=0; i<sz-1; i++)
+			integer[i]=0;
+		integer[sz-1]=(T) x;
 	}
 
 	/** constructor (set whole array)
@@ -114,6 +180,62 @@ public:
 
 		for (int i=sz-1; i>=0; i--)
 			r.integer[i]=integer[i] & x.integer[i];
+
+		return r;
+	}
+
+	/** overload << operator
+	 *
+	 * perform bit shift to the left
+	 *
+	 * @param shift shift by this amount
+	 */
+	CDynInt<T,sz> operator<<(int shift)
+	{
+		CDynInt<T,sz> r=*this;
+
+		while (shift>0)
+		{
+			int s=CMath::min(shift, 8*((int) sizeof(T))-1);
+
+			for (int i=0; i<sz; i++)
+			{
+				T overflow=0;
+				if (i<sz-1)
+					overflow = r.integer[i+1] >> (sizeof(T)*8 - s);
+				r.integer[i]= (r.integer[i] << s) | overflow;
+			}
+
+			shift-=s;
+		}
+
+		return r;
+	}
+
+	/** overload >> operator
+	 *
+	 * perform bit shift to the right
+	 *
+	 * @param shift shift by this amount
+	 */
+	CDynInt<T,sz> operator>>(int shift)
+	{
+		CDynInt<T,sz> r=*this;
+
+		while (shift>0)
+		{
+			int s=CMath::min(shift, 8*((int) sizeof(T))-1);
+
+			for (int i=sz-1; i>=0; i--)
+			{
+				T overflow=0;
+				if (i>0)
+					overflow = (r.integer[i-1] << (sizeof(T)*8 - s));
+				r.integer[i]= (r.integer[i] >> s) | overflow;
+			}
+
+			shift-=s;
+		}
 
 		return r;
 	}
@@ -359,13 +481,7 @@ public:
 	 */
 	CDynInt<T,sz>& operator<<=(int shift)
 	{
-		T overflow=0;
-		for (int i=sz-1; i>=0; i--)
-		{
-			integer[i]= (integer[i] << shift) | overflow;
-			overflow = integer[i] >> (sizeof(T)*8 - shift);
-		}
-
+		*this=*this<<shift;
 		return *this;
 	}
 
@@ -377,13 +493,7 @@ public:
 	 */
 	CDynInt<T,sz>& operator>>=(int shift)
 	{
-		T overflow=0;
-		for (int i=sz-1; i>=0; i--)
-		{
-			integer[i]= (integer[i] >> shift) | overflow;
-			overflow = (integer[i] >> (sizeof(T)*8 - shift)) << (sizeof(T)*8 - shift);
-		}
-
+		*this=*this>>shift;
 		return *this;
 	}
 

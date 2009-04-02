@@ -1102,8 +1102,6 @@ template <class ST> class CStringFeatures : public CFeatures
 
 				this->order=p_order;
 				cleanup();
-				delete[] symbol_mask_table;
-				symbol_mask_table=new ST[256];
 
 				num_vectors=sf->get_num_vectors();
 				ASSERT(num_vectors>0);
@@ -1154,8 +1152,6 @@ template <class ST> class CStringFeatures : public CFeatures
 						translate_from_single_order_reversed(fv, len, start+gap, p_order+gap, max_val, gap);
 					else
 						translate_from_single_order(fv, len, start+gap, p_order+gap, max_val, gap);
-					//translate_from_single_order(fv, len, start, p_order, max_val);
-					//translate_from_single_order_reversed(fv, len, start, p_order, max_val);
 
 					/* fix the length of the string -- hacky */
 					features[line].length-=start+gap ;
@@ -1163,23 +1159,7 @@ template <class ST> class CStringFeatures : public CFeatures
 						features[line].length=0 ;
 				}         
 
-				uint64_t mask=0;
-				for (int32_t i=0; i< (int64_t) max_val; i++)
-					mask=(mask<<1) | 1;
-
-				for (int32_t i=0; i<256; i++)
-				{
-					uint8_t bits=(uint8_t) i;
-					symbol_mask_table[i]=0;
-
-					for (int32_t j=0; j<8; j++)
-					{
-						if (bits & 1)
-							symbol_mask_table[i]|=mask<<(max_val*j);
-
-						bits>>=1;
-					}
-				}
+				compute_symbol_mask_table(max_val);
 
 				return true;
 			}
@@ -1209,6 +1189,91 @@ template <class ST> class CStringFeatures : public CFeatures
 			return true;
 		}
 
+		/** embed string features in bit representation in-place
+		 *
+		 *
+		 */
+		void embed_features(int32_t p_order)
+		{
+			ASSERT(alphabet->get_num_symbols_in_histogram() > 0);
+
+			order=p_order;
+			original_num_symbols=alphabet->get_num_symbols();
+			int32_t max_val=alphabet->get_num_bits();
+
+			if (p_order>1)
+				num_symbols=CMath::powl((floatmax_t) 2, (floatmax_t) max_val*p_order);
+			else
+				num_symbols=original_num_symbols;
+
+			SG_INFO( "max_val (bit): %d order: %d -> results in num_symbols: %.0Lf\n", max_val, p_order, num_symbols);
+
+			if ( ((floatmax_t) num_symbols) > CMath::powl(((floatmax_t) 2),((floatmax_t) sizeof(ST)*8)) )
+				SG_WARNING("symbols did not fit into datatype \"%c\" (%d)\n", (char) max_val, (int) max_val);
+
+			for (int32_t i=0; i<num_vectors; i++)
+			{
+				int32_t len=features[i].length;
+				ST* str = features[i].string;
+				for (int32_t j=0; j<len; j++)
+					str[j]=(ST) alphabet->remap_to_bin(str[j]);
+
+				for (int32_t j=0; j<len-p_order+1; j++)
+					str[j]= embed_word(&str[j], p_order);
+
+				features[i].length=len-p_order+1;
+			}
+
+			compute_symbol_mask_table(max_val);
+		}
+
+		/** compute symbol mask table
+		 * 
+		 * required to access bit-based symbols
+		 */
+		void compute_symbol_mask_table(int64_t max_val)
+		{
+			delete[] symbol_mask_table;
+			symbol_mask_table=new ST[256];
+
+			uint64_t mask=0;
+			for (int32_t i=0; i< (int64_t) max_val; i++)
+				mask=(mask<<1) | 1;
+
+			for (int32_t i=0; i<256; i++)
+			{
+				uint8_t bits=(uint8_t) i;
+				symbol_mask_table[i]=0;
+
+				for (int32_t j=0; j<8; j++)
+				{
+					if (bits & 1)
+						symbol_mask_table[i]|=mask<<(max_val*j);
+
+					bits>>=1;
+				}
+			}
+		}
+
+		/** embed a sequence
+		 *
+		 * @param seq sequence of size len in a bitfield
+		 * @param len
+		 */
+		inline ST embed_word(ST* seq, int32_t len)
+		{
+			ST value=(ST) 0;
+			uint32_t nbits= (uint32_t) alphabet->get_num_bits();
+			for (int32_t i=0; i<len; i++)
+			{
+				value<<=nbits;
+				value|=seq[i];
+			}
+
+			return value;
+		}
+
+
 		/** determine new maximum string length
 		 */
 		void determine_maximum_string_length()
@@ -1223,6 +1288,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		inline virtual const char* get_name() const { return "StringFeatures"; }
 
 	protected:
+
 		/** translate from single order
 		 *
 		 * @param obs observation
@@ -1260,6 +1326,7 @@ template <class ST> class CStringFeatures : public CFeatures
 				obs[i]=value;
 			}
 
+			// TODO we should get rid of this loop!
 			for (i=start; i<sequence_length; i++)
 				obs[i-start]=obs[i];
 		}
@@ -1301,6 +1368,7 @@ template <class ST> class CStringFeatures : public CFeatures
 				obs[i]=value;
 			}
 
+			// TODO we should get rid of this loop!
 			for (i=start; i<sequence_length; i++)
 				obs[i-start]=obs[i];
 		}
@@ -1367,7 +1435,7 @@ template <class ST> class CStringFeatures : public CFeatures
 				obs[i]=value;
 			}
 
-			// shifting
+			// TODO we should get rid of this loop!
 			for (i=start; i<sequence_length; i++)
 				obs[i-start]=obs[i];
 		}
@@ -1430,7 +1498,7 @@ template <class ST> class CStringFeatures : public CFeatures
 				obs[i]=value;
 			}
 
-			// shifting
+			// TODO we should get rid of this loop!
 			for (i=start; i<sequence_length; i++)
 				obs[i-start]=obs[i];
 		}
