@@ -1248,15 +1248,32 @@ template <class ST> class CStringFeatures : public CFeatures
 			if ( ((floatmax_t) num_symbols) > CMath::powl(((floatmax_t) 2),((floatmax_t) sizeof(ST)*8)) )
 				SG_WARNING("symbols did not fit into datatype \"%c\" (%d)\n", (char) max_val, (int) max_val);
 
+			ST mask=0;
+			for (int32_t i=0; i<p_order*max_val; i++)
+				mask= (mask<<1) | ((ST) 1);
+
 			for (int32_t i=0; i<num_vectors; i++)
 			{
 				int32_t len=features[i].length;
-				ST* str = features[i].string;
-				for (int32_t j=0; j<len; j++)
-					str[j]=(ST) alphabet->remap_to_bin(str[j]);
 
-				for (int32_t j=0; j<len-p_order+1; j++)
-					str[j]= embed_word(&str[j], p_order);
+				if (len < p_order)
+					SG_ERROR("Sequence must be longer than order (%d vs. %d)\n", len, p_order);
+
+				ST* str = features[i].string;
+
+				// convert first word
+				for (int32_t j=0; j<p_order; j++)
+					str[j]=(ST) alphabet->remap_to_bin(str[j]);
+				str[0]=embed_word(&str[0], p_order);
+
+				// convert the rest
+				int32_t idx=0;
+				for (int32_t j=p_order; j<len; j++)
+				{
+					str[j]=(ST) alphabet->remap_to_bin(str[j]);
+					str[idx+1]= ((str[idx]<<max_val) | str[j]) & mask;
+					idx++;
+				}
 
 				features[i].length=len-p_order+1;
 			}
@@ -1292,7 +1309,7 @@ template <class ST> class CStringFeatures : public CFeatures
 			}
 		}
 
-		/** embed a sequence
+		/** embed a single word
 		 *
 		 * @param seq sequence of size len in a bitfield
 		 * @param len
@@ -1309,7 +1326,6 @@ template <class ST> class CStringFeatures : public CFeatures
 
 			return value;
 		}
-
 
 		/** determine new maximum string length
 		 */
