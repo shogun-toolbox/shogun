@@ -1309,6 +1309,28 @@ template <class ST> class CStringFeatures : public CFeatures
 			}
 		}
 
+		/** remap bit-based word to character sequence
+		 *
+		 * @param word word to remap
+		 * @param seq sequence of size len that remapped characters are written to
+		 * @param len length of sequence and word
+		 */
+		inline void unembed_word(ST word, uint8_t* seq, int32_t len)
+		{
+			uint32_t nbits= (uint32_t) alphabet->get_num_bits();
+
+			ST mask=0;
+			for (int32_t i=0; i<nbits; i++)
+				mask=(mask<<1) | (ST) 1;
+
+			for (int32_t i=0; i<len; i++)
+			{
+				ST w=(word & mask);
+				seq[len-i-1]=alphabet->remap_to_char((uint8_t) w);
+				word>>=nbits;
+			}
+		}
+
 		/** embed a single word
 		 *
 		 * @param seq sequence of size len in a bitfield
