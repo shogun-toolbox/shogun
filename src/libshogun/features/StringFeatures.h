@@ -12,7 +12,6 @@
 #ifndef _CSTRINGFEATURES__H__
 #define _CSTRINGFEATURES__H__
 
-
 #include "preproc/PreProc.h"
 #include "preproc/StringPreProc.h"
 #include "features/Features.h"
