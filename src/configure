@@ -2052,7 +2052,7 @@ EOF
 		then
 			true #nop
 		else
-			LINKFLAGS="$LINKFLAGS -undefined error"
+			true #nop LINKFLAGS="$LINKFLAGS -undefined error"
 		fi
 	elif interix
 	then
