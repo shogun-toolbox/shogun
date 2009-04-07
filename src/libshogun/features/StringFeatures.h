@@ -1229,7 +1229,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 *
 		 *
 		 */
-		void embed_features(int32_t p_order)
+		inline void embed_features(int32_t p_order)
 		{
 			ASSERT(alphabet->get_num_symbols_in_histogram() > 0);
 
@@ -1284,7 +1284,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * 
 		 * required to access bit-based symbols
 		 */
-		void compute_symbol_mask_table(int64_t max_val)
+		inline void compute_symbol_mask_table(int64_t max_val)
 		{
 			delete[] symbol_mask_table;
 			symbol_mask_table=new ST[256];
@@ -1823,6 +1823,49 @@ template<> 	template <class CT> bool CStringFeatures<float64_t>::obtain_from_cha
 template<> 	template <class CT> bool CStringFeatures<floatmax_t>::obtain_from_char_features(CStringFeatures<CT>* sf, int32_t start, int32_t p_order, int32_t gap, bool rev)
 {
 	return false;
+}
+
+template<> 	inline void CStringFeatures<float32_t>::embed_features(int32_t p_order)
+{
+}
+template<> 	inline void CStringFeatures<float64_t>::embed_features(int32_t p_order)
+{
+}
+template<> 	inline void CStringFeatures<floatmax_t>::embed_features(int32_t p_order)
+{
+}
+
+template<> 	inline void CStringFeatures<float32_t>::compute_symbol_mask_table(int64_t max_val)
+{
+}
+template<> 	inline void CStringFeatures<float64_t>::compute_symbol_mask_table(int64_t max_val)
+{
+}
+template<> 	inline void CStringFeatures<floatmax_t>::compute_symbol_mask_table(int64_t max_val)
+{
+}
+
+template<> 	inline float32_t CStringFeatures<float32_t>::embed_word(float32_t* seq, int32_t len)
+{
+	return 0;
+}
+template<> 	inline float64_t CStringFeatures<float64_t>::embed_word(float64_t* seq, int32_t len)
+{
+	return 0;
+}
+template<> 	inline floatmax_t CStringFeatures<floatmax_t>::embed_word(floatmax_t* seq, int32_t len)
+{
+	return 0;
+}
+
+template<> 	inline void CStringFeatures<float32_t>::unembed_word(float32_t word, uint8_t* seq, int32_t len)
+{
+}
+template<> 	inline void CStringFeatures<float64_t>::unembed_word(float64_t word, uint8_t* seq, int32_t len)
+{
+}
+template<> 	inline void CStringFeatures<floatmax_t>::unembed_word(floatmax_t word, uint8_t* seq, int32_t len)
+{
 }
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 #endif // _CSTRINGFEATURES__H__
