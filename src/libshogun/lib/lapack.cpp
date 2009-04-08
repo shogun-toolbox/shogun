@@ -18,7 +18,7 @@
 #include "lib/common.h"
 #include "lib/io.h"
 
-#if defined(HAVE_MKL) || defined(HAVE_ACML) || defined(DARWIN)
+#if defined(HAVE_MKL) || defined(HAVE_ACML) 
 #define DSYEV dsyev
 #define DGESVD dgesvd
 #define DPOSV dposv

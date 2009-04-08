@@ -9,6 +9,7 @@ LIBSHOGUNUIVER=`grep "SHOGUN Release version" NEWS 2>&1 | cut -f 2 -d ',' | cut 
 [ -n "$VERSION" ] && echo "Running configure for SHOGUN version $VERSION"
 
 # some hopefully reasonable defaults
+LDD=ldd
 POSTLINKCMD="true"
 MAKEDEPEND="gcc -MM"
 MAKEDEPENDOPTS=""
@@ -246,6 +247,14 @@ set_default_cc()
 	test "$CXX" && COMP_CPP="$CXX"
 }
 
+detect_ldd()
+{
+	if darwin
+	then
+		LDD="otool -L"
+	fi
+}
+
 detect_cc()
 {
 	echocheck "C Compiler"
@@ -466,8 +475,8 @@ cc_check() {
   if test -f "$TMPO"
   then
 	  echo >> "$TMPLOG"
-	  echo "ldd $TMPO" >> "$TMPLOG"
-	  ( ldd "$TMPO" ) >> "$TMPLOG" 2>&1
+	  echo "$LDD $TMPO" >> "$TMPLOG"
+	  ( $LDD "$TMPO" ) >> "$TMPLOG" 2>&1
   else
 	  echo "no object file created" >> "$TMPLOG"
   fi
@@ -486,8 +495,8 @@ cxx_check() {
   if test -f "$TMPO"
   then
 	  echo >> "$TMPLOG"
-	  echo "ldd $TMPO" >> "$TMPLOG"
-	  ( ldd "$TMPO" ) >> "$TMPLOG" 2>&1
+	  echo "$LDD $TMPO" >> "$TMPLOG"
+	  ( $LDD "$TMPO" ) >> "$TMPLOG" 2>&1
   else
 	  echo "no object file created" >> "$TMPLOG"
   fi
@@ -3617,6 +3626,7 @@ test_static_linking()
 
 set_default_cc
 determine_system_name
+detect_ldd
 detect_cc
 check_makedepend
 check_python
