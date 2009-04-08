@@ -5948,12 +5948,12 @@ bool CSGInterface::cmd_set_model()
 	// plifs (#states x #states x 3 or 4)
 	int32_t numDim=0;
 	int32_t* Dim=0;
-	float64_t* penalties_array;
+	float64_t* penalties_array=NULL;
 	get_real_ndarray(penalties_array,Dim,numDim);
 	ASSERT(numDim==3);
 	ASSERT(Dim[0]==Dim[1]);
 	ASSERT(ui_structure->compute_plif_matrix(penalties_array, Dim, numDim));	
-
+	delete[] penalties_array ;
 
 	// ARG 2
 	// bool-> determines if orf information should be used
@@ -6534,6 +6534,12 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 			set_real_matrix(p_Plif_deriv, (max_plif_id+1), max_plif_len);
 			set_real_vector(p_my_scores, Nmypos_seq);
 			set_real_vector(p_my_losses, Nmypos_seq);
+
+			delete[] p_A_deriv ;
+			delete[] p_p_deriv ;
+			delete[] p_q_deriv ;
+			delete[] p_my_scores ;
+			delete[] p_my_losses ;
 
 			delete[] my_path ;
 			delete[] my_pos ;

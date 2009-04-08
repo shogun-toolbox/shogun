@@ -1049,8 +1049,8 @@ protected:
 
 
 	/** raw intensities */
-	float64_t* m_raw_intensities;
-	/** prope position */
+	float64_t *m_raw_intensities;
+	/** probe position */
 	int32_t* m_probe_pos;
 	/** number of probes */
 	int32_t* m_num_probes_cum;

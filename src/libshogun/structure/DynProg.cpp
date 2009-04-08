@@ -179,7 +179,10 @@ CDynProg::~CDynProg()
 		delete[] m_raw_intensities;
 	if (m_probe_pos)
 		delete[] m_probe_pos;
-	
+	if (m_num_probes_cum)
+	  delete[] m_num_probes_cum ;
+	if (m_num_lin_feat_plifs_cum)
+	  delete[] m_num_lin_feat_plifs_cum ;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

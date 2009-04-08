@@ -95,7 +95,7 @@ class CGUIStructure : public CSGObject
 			delete[] m_feature_matrix;
 			int32_t len = dims[0]*dims[1]*dims[2];
 			m_feature_matrix = new float64_t[len];
-			memcpy(m_feature_matrix, feat,len*sizeof(float64_t));
+			memcpy(m_feature_matrix, feat, len*sizeof(float64_t));
 			return true;
 		}
 
