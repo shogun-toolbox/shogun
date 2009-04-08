@@ -4,12 +4,12 @@
 	* This release contains several bugfixes:
 	* Features:
 		- Implement convenience function for parallel quicksort.
+		- Fasta/fastq file loading for StringFeatures.
 	* Bugfixes:
-		- None
-	* Cleanup and API Changes:
-		- Make sure that all destructors are declared virtual.
 		- get_name function was undefined in Evaluation causing the
 		PerformanceMeasures class to be defunct.
+	* Cleanup and API Changes:
+		- Make sure that all destructors are declared virtual.
 
 2009-03-23 Soeren Sonnenburg <sonne@debian.org>
 
