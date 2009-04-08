@@ -6074,7 +6074,7 @@ bool CSGInterface::cmd_set_lin_feat()
 	//ARG 3 
 	//
 	int32_t num_svms, seq_len;
-	float64_t* lin_feat;
+	float64_t* lin_feat=NULL;
 	get_real_matrix(lin_feat, num_svms, seq_len);
 
 
@@ -6099,7 +6099,7 @@ bool CSGInterface::cmd_set_feature_matrix()
 	// feature matrix (#states x #feature_positions x max_num_signals)
 	int32_t* Dims=0;
 	int32_t numDims=0;
-	float64_t* features;
+	float64_t* features = NULL;
 	get_real_ndarray(features, Dims, numDims);
 	
 	ASSERT(numDims==3)
@@ -6108,6 +6108,9 @@ bool CSGInterface::cmd_set_feature_matrix()
 	ASSERT(ui_structure->set_feature_matrix(features, Dims));
 
 	ASSERT(ui_structure->set_feature_dims(Dims));
+
+	delete[] features ;
+
 	return true;
 
 }
@@ -6353,7 +6356,7 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 	// ARG 1
 	// transitions from initial state (#states x 1)
 	int32_t Np=0;
-	float64_t* p;
+	float64_t* p=NULL;
 	get_real_vector(p, Np);
 	if (Np!=num_states)
 		SG_ERROR("Np!=num_states; Np:%i num_states:%i",Np,num_states);
@@ -6361,7 +6364,7 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 	// ARG 2
 	// transitions to end state (#states x 1)
 	int32_t Nq=0;
-	float64_t* q;
+	float64_t* q=NULL;
 	get_real_vector(q, Nq);
 	if (Nq!=num_states)
 		SG_ERROR("Nq!=num_states; Nq:%i num_states:%i",Nq,num_states);
@@ -6380,7 +6383,7 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 	// links for transitions (#transitions x 4)
 	int32_t Na_trans=0;
 	int32_t num_a_trans=0;
-	float64_t* a_trans;
+	float64_t* a_trans=NULL;
 	get_real_matrix(a_trans, num_a_trans, Na_trans);
 
 	// ARG 5
@@ -6389,7 +6392,7 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 	// and one for nucleotide loss
 	int32_t Nloss=0;
 	int32_t Mloss=0;
-	float64_t* loss;
+	float64_t* loss=NULL;
 	get_real_matrix(loss, Nloss,Mloss);
 	
 	int32_t M = ui_structure->get_num_positions();
@@ -6398,13 +6401,13 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 	// ARG 6
 	// path to calc derivative for 
 	int32_t Nmystate_seq=0;
-	int32_t* mystate_seq;
+	int32_t* mystate_seq=NULL;
 	get_int_vector(mystate_seq, Nmystate_seq);
 
 	// ARG 7
 	// positions of the path
 	int32_t Nmypos_seq=0;
-	int32_t* mypos_seq;
+	int32_t* mypos_seq=NULL;
 	get_int_vector(mypos_seq, Nmypos_seq);
 
 
@@ -6543,6 +6546,14 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 
 			delete[] my_path ;
 			delete[] my_pos ;
+
+			delete[] p ;
+			delete[] q ;
+			delete[] seg_path ;
+			delete[] a_trans ;
+			delete[] loss ;
+			delete[] mystate_seq ;
+			delete[] mypos_seq ;
 
 			return true ;
 		}
