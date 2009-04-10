@@ -130,7 +130,7 @@ int8_t qpssvm_solver(const void* (*get_col)(uint32_t),
   d=NULL;
 
   /* count cumber of constraints */
-  for( i=0, m=0; i < n; i++ ) m = MAX(m,I[i]);
+  for( i=0, m=0; i < n; i++ ) m = CMath::max(m,(uint32_t) I[i]);
 
   /* alloc and initialize x_nequ */
   x_nequ = (float64_t*) OCAS_CALLOC(m, sizeof(float64_t));
@@ -200,7 +200,7 @@ int8_t qpssvm_solver(const void* (*get_col)(uint32_t),
   
   for( i=0; i < m; i++ ) {
     for( j=0, tmp = OCAS_PLUS_INF; j < nk[i]; j++ ) {
-      tmp = MIN(tmp, d[inx[INDEX2(j,i,n)]]);
+      tmp = CMath::min(tmp, d[inx[INDEX2(j,i,n)]]);
     }
     if( tmp < 0) LB += b*tmp;
   }
@@ -236,7 +236,7 @@ int8_t qpssvm_solver(const void* (*get_col)(uint32_t),
       /* delta = x(inx)'*d(inx) - yu*d(u); */
       delta -= yu*d[u];
             
-      if( delta > tolabs/m && delta > tolrel*ABS(UB)/m) 
+      if( delta > tolabs/m && delta > tolrel*CMath::abs(UB)/m) 
       {
          exitflag = 0;
          
@@ -263,7 +263,7 @@ int8_t qpssvm_solver(const void* (*get_col)(uint32_t),
                }
                if( tmp > improv ) {
                  improv = tmp;
-                 tau = MIN(1,tmp_num/tmp_den);
+                 tau = CMath::min(1.0,tmp_num/tmp_den);
                  v = i;
                }
              }
@@ -284,7 +284,7 @@ int8_t qpssvm_solver(const void* (*get_col)(uint32_t),
            }
            
            if( tmp > improv ) {
-              tau = MIN(1,tmp_num/tmp_den);
+              tau = CMath::min(1.0,tmp_num/tmp_den);
               for( i = 0; i < n; i++ ) {             
                 d[i] += x_nequ[k]*tau*col_u[i];
               }
@@ -324,7 +324,7 @@ int8_t qpssvm_solver(const void* (*get_col)(uint32_t),
                }
                if( tmp > improv ) {
                  improv = tmp;
-                 tau = MIN(1,tmp_num/tmp_den);
+                 tau = CMath::min(1.0,tmp_num/tmp_den);
                  v = i;
                }
              }    
@@ -364,14 +364,14 @@ int8_t qpssvm_solver(const void* (*get_col)(uint32_t),
       for( j=0,tmp = OCAS_PLUS_INF; j < nk[k]; j++ ) {
         i = inx[INDEX2(j,k,n)];
 
-        tmp = MIN(tmp, d[i]);
+        tmp = CMath::min(tmp, d[i]);
       }
       if( tmp < 0) LB += b*tmp;
     }
 
     if( verb > 0 && (exitflag > 0 || (t % verb)==0 ))
     {
-        float64_t gap=(UB!=0) ? (UB-LB)/ABS(UB) : 0;
+        float64_t gap=(UB!=0) ? (UB-LB)/CMath::abs(UB) : 0;
         SG_SABS_PROGRESS(gap, -CMath::log10(gap), -CMath::log10(1), -CMath::log10(tolrel), 6);
     }
 
@@ -379,7 +379,7 @@ int8_t qpssvm_solver(const void* (*get_col)(uint32_t),
 
   /* -- Find which stopping consition has been used -------- */
   if( UB-LB < tolabs ) exitflag = 1;
-  else if(UB-LB < ABS(UB)*tolrel ) exitflag = 2;
+  else if(UB-LB < CMath::abs(UB)*tolrel ) exitflag = 2;
   else exitflag = 0;
 
   /*----------------------------------------------------------   

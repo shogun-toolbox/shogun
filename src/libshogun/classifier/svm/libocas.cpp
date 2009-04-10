@@ -215,7 +215,7 @@ ocas_return_value_T svm_ocas_solver(
   for(i=0; i < nData; i++)
     new_cut[i] = i;
     
-  gap=(ocas.Q_P-ocas.Q_D)/ABS(ocas.Q_P);
+  gap=(ocas.Q_P-ocas.Q_D)/CMath::abs(ocas.Q_P);
   SG_SABS_PROGRESS(gap, -CMath::log10(gap), -CMath::log10(1), -CMath::log10(TolRel), 6);
 
   /* main loop */
@@ -285,7 +285,7 @@ ocas_return_value_T svm_ocas_solver(
         }
         ocas.Q_P = 0.5*sq_norm_W + C*xi;
 
-        gap=(ocas.Q_P-ocas.Q_D)/ABS(ocas.Q_P);
+        gap=(ocas.Q_P-ocas.Q_D)/CMath::abs(ocas.Q_P);
         SG_SABS_PROGRESS(gap, -CMath::log10(gap), -CMath::log10(1), -CMath::log10(TolRel), 6);
 
         break;
@@ -341,7 +341,7 @@ ocas_return_value_T svm_ocas_solver(
           while( GradVal < 0 && i < num_hp )
           {
             t_new = hpf[i];
-            GradVal_new = GradVal + ABS(Bi[hpi[i]]) + A0*(t_new-t);
+            GradVal_new = GradVal + CMath::abs(Bi[hpi[i]]) + A0*(t_new-t);
 
             if( GradVal_new >= 0 )
             {
@@ -363,12 +363,12 @@ ocas_return_value_T svm_ocas_solver(
         GradVal = t*A0 + Bsum;
         while( GradVal < 0 && i < num_hp && hpf[i] < OCAS_PLUS_INF ) {
           t = hpf[i];
-          Bsum = Bsum + ABS(Bi[hpi[i]]);
+          Bsum = Bsum + CMath::abs(Bi[hpi[i]]);
           GradVal = t*A0 + Bsum;
           i++;
         }
         */
-        t = MAX(t,0);          /* just sanity check; t < 0 should not ocure */
+        t = CMath::max(t,0.0);          /* just sanity check; t < 0 should not ocure */
 
         t1 = t;                /* new (best so far) W */
         t2 = t+(1.0-t)/10.0;   /* new cutting plane */
@@ -397,14 +397,14 @@ ocas_return_value_T svm_ocas_solver(
 
         ocas.Q_P = 0.5*sq_norm_W + C*xi;
 
-        gap=(ocas.Q_P-ocas.Q_D)/ABS(ocas.Q_P);
+        gap=(ocas.Q_P-ocas.Q_D)/CMath::abs(ocas.Q_P);
         SG_SABS_PROGRESS(gap, -CMath::log10(gap), -CMath::log10(1), -CMath::log10(TolRel), 6);
 
         break;
     }
 
     /* Stopping conditions */
-    if( ocas.Q_P - ocas.Q_D <= TolRel*ABS(ocas.Q_P)) ocas.exitflag = 1; 
+    if( ocas.Q_P - ocas.Q_D <= TolRel*CMath::abs(ocas.Q_P)) ocas.exitflag = 1; 
     if( ocas.Q_P - ocas.Q_D <= TolAbs) ocas.exitflag = 2; 
     if( ocas.Q_P <= QPBound) ocas.exitflag = 3; 
     if(ocas.nCutPlanes >= BufSize) ocas.exitflag = -1;
