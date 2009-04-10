@@ -548,19 +548,7 @@ public:
 	/** print the current long integer in bits (without carriage return */
 	void print_bits() const
 	{
-		for (int i=0; i<sz; i++)
-		{
-			T mask = ((T) 1)<<(sizeof(T)*8-1);
-			while (mask)
-			{
-				if (mask & integer[i])
-					SG_SPRINT("1");
-				else
-					SG_SPRINT("0");
-
-				mask>>=1;
-			}
-		}
+		CMath::display_bits(integer, sz);
 	}
 
 private:

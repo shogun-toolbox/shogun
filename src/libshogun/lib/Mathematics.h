@@ -909,6 +909,25 @@ class CMath : public CSGObject
 					qsort(&output[left],size-left);
 			}
 
+		/// display bits (useful for debugging)
+		template <class T> static void display_bits(T word, int32_t width=8*sizeof(T))
+		{
+			ASSERT(width>=0);
+			for (int i=0; i<width; i++)
+			{
+				T mask = ((T) 1)<<(sizeof(T)*8-1);
+				while (mask)
+				{
+					if (mask & word)
+						SG_SPRINT("1");
+					else
+						SG_SPRINT("0");
+
+					mask>>=1;
+				}
+			}
+		}
+
 		/// display vector (useful for debugging)
 		template <class T> static void display_vector(
 			T* vector, int32_t n, const char* name="vector");
