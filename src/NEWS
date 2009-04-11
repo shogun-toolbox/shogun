@@ -3,6 +3,7 @@
 	* SHOGUN Release version 0.7.3 (libshogun 3.0, libshogunui 1.1)
 	* This release contains several bugfixes:
 	* Features:
+		- Improve libshogun/developer tutorial 
 		- Implement convenience function for parallel quicksort.
 		- Fasta/fastq file loading for StringFeatures.
 	* Bugfixes:

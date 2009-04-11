@@ -2,7 +2,7 @@
 #LINKFLAGS=-L/usr/local/lib -lshogun
 CXXFLAGS=-O3 -g
 LINKFLAGS=-lshogun
-TARGETS = rbf_svm gnmpmkl minimal minimal_svm dyn_int
+TARGETS = rbf_svm gnmpmkl minimal minimal_svm dyn_int rbf_kernel revlin_kernel
 
 all: $(TARGETS)
 

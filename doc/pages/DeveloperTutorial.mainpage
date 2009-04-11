@@ -63,7 +63,7 @@ increases the reference count of kernel and labels. On destruction the
 reference counter is decreased and the object is freed if the counter is <= 0.
 
 It is therefore your duty to prevent objects from destruction if you keep a
-handle to them globally <b>which you still intend to use later</b>. In the example
+handle to them globally <b>that you still intend to use later</b>. In the example
 above accessing labels after the call to SG_UNREF(svm) will cause a
 segmentation fault as the Label object was already destroyed in the SVM
 destructor. You can do this by SG_REF(obj). To decrement the reference count of
@@ -87,7 +87,99 @@ class MySVM : public CSVM
     {
 
     }
+
+    virtual ~MySVM()
+    {
+
+    }
 };
+\endverbatim
+
+Also make sure that you define the destructor \b virtual.
+
+We are now going to define our own kernel, a linear like kernel defined on
+standard double precision floating point vectors. We define it as
+
+\f$k({\bf x}, {\bf x'}) = \sum_{i=1}^D x_i \cdot x'_{D-i+1}\f$
+
+where D is the dimensionality of the data.
+To implement this kernel we need to derive a class say CReverseLinearKernel from
+CSimpleKernel<float64_t> (for strings it would be CStringKernel, for sparse
+features CSparseKernel).
+
+Essentially we only need to overload the CKernel::compute() function with our
+own implementation of compute. All the rest gets empty defaults. An example for our compute() function could be
+
+
+\verbatim
+virtual float64_t compute(int32_t idx_a, int32_t idx_b)
+{
+    int32_t alen, blen;
+    bool afree, bfree;
+
+    float64_t* avec= 
+        ((CSimpleFeatures<float64_t>*) lhs)->get_feature_vector(idx_a, alen, afree);
+    float64_t* bvec=
+        ((CSimpleFeatures<float64_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);
+
+    ASSERT(alen==blen);
+
+    float64_t result=0;
+    for (int32_t i=0; i<alen; i++)
+        result+=avec[i]*bvec[alen-i-1];
+
+    ((CSimpleFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
+    ((CSimpleFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+
+    return result;
+}
+\endverbatim
+
+So for two indices idx_a (for vector a) and idx_b (for vector b) we obtain the
+corresponding pointers to the feature vectors avec and bvec, do our two line
+computation (for loop in the middle) and ``free'' the feature vectors again. It
+should be noted that in most cases getting the feature vector is actually a
+single memory access operation (and free_feature_vector is a nop in this case).
+However, when preprocessor objects are attached to the feature object they
+could potentially perform on-the-fly processing operations.
+
+A complete, fully working example could look like this
+
+\verbinclude revlin_kernel.cpp
+
+As you notice only a few other functions are defined returning name of the
+object, and object id and allow for loading/saving of kernel initialization
+data. No magic really, the same holds when you want to incorporate a new
+SVM (derive from CSVM or CLinearClassifier if it is a linear SVM) or create new
+feature objects (derive from CFeatures or CSimpleFeatures, CStringFeatures or
+CSparseFeatures). For the SVM you would only have to override the CSVM::train()
+function, parameter settings like epsilon, C  and evaluating SVMs is done
+naturally by the CSVM base class.
+
+In case you would want to integrate this into shoguns
+modular interfaces, all you have to do is to put this class in a header file
+and to include the header file in the corresponding .i file (in this case
+src/modular/Kernel.i). It is easies to search for a similarly wrapped object
+and just fill in the same three lines: in the %{ %} block (that is ignored by
+swig - the program we use to generate the modular python/octave interface
+wrappers)
+
+\verbatim
+%{
+#include <shogun/kernel/ReverseLinearKernel.h>
+%}
+\endverbatim
+
+then remove the C prefix (if you had one)
+
+\verbatim
+%rename(ReverseLinearKernel) CReverseLinearKernel;
+\endverbatim
+
+and finally tell swig to wrap all functions found in the header
+
+\verbatim
+%include <shogun/kernel/ReverseLinearKernel.h>
 \endverbatim
 
 In case you got your object working we will happily integrate it into shogun
