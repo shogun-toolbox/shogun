@@ -1,6 +1,6 @@
 # note the word Template (all lowercase and all uppercase are replaced with the current interface name)
 #
-.SUFFIXES: .c .c.o .cpp .cpp.o .h .i .so .a _wrap.cxx _wrap.cxx.o
+.SUFFIXES: .c .c.o .cpp .cpp.o .h .i .so .dylib .a _wrap.cxx _wrap.cxx.o
 .PHONY: all out clean end targets warn2err err2warn ctags buildout buildend dist
 
 SRCDIR = .
@@ -192,7 +192,7 @@ install-r: $(TEMPLATE_TARGET)
 	install -d -m755 $(DESTDIR)$(RDIR)/sg/R
 	install -m755 $(TEMPLATE_TARGET) $(DESTDIR)$(RDIR)/sg/libs
 	install -m644 ../../examples/r/*.R ../../examples/r/graphical/*.R $(DESTDIR)$(RDIR)/sg/demo
-	../.r-install.sh $(DESTDIR)$(RDIR) sg
+	../.r-install.sh $(DESTDIR)$(RDIR) sg $(EXT_LIB)
 
 install-elwms: $(TEMPLATE_TARGET)
 	#one .so file
@@ -214,7 +214,7 @@ install-elwms: $(TEMPLATE_TARGET)
 	rm -f $(DESTDIR)$(RDIR)/elwms/libs/$(TEMPLATE_TARGET)
 	cd $(DESTDIR)$(RDIR)/elwms/libs && ln -s $(RRELPATH)/$(TEMPLATE_TARGET) 
 	install -m644 ../../examples/r/*.R ../../examples/r/graphical/*.R $(DESTDIR)$(RDIR)/elwms/demo
-	../.r-install.sh $(DESTDIR)$(RDIR) elwms
+	../.r-install.sh $(DESTDIR)$(RDIR) elwms $(EXT_LIB)
 
 install-matlab: $(TEMPLATE_TARGET)
 	@echo "The matlab interface needs to be installed"
@@ -237,9 +237,9 @@ install-r_modular: $(TEMPLATE_TARGET)
 	install -d -m755 $(DESTDIR)$(RDIR)/shogun/Meta
 	install -d -m755 $(DESTDIR)$(RDIR)/shogun/R
 	install -m644 ../../examples/r_modular/*.R $(DESTDIR)$(RDIR)/shogun/demo
-	install -m755 *.so $(DESTDIR)$(RDIR)/shogun/libs
+	install -m755 *.$(EXT_LIB) $(DESTDIR)$(RDIR)/shogun/libs
 	install -m755 *.RData $(DESTDIR)$(RDIR)/shogun/R
-	../.r-install.sh $(DESTDIR)$(RDIR) shogun
+	../.r-install.sh $(DESTDIR)$(RDIR) shogun $(EXT_LIB)
 
 install-octave_modular: $(TEMPLATE_TARGET)
 	install -d -m755 "$(DESTDIR)$(OCTDIR)/shogun"
@@ -427,7 +427,7 @@ else #gcc -MM
 	( find . -name "*.$(EXT_INP_SWIG)" | cut -c 3- ; find ../shogun/ -name "*.h"  ) | \
 			$(PYTHON) ../.generate_link_dependencies.py "$(PRE_LIB_SWIG_TEMPLATE)" "$(EXT_LIB_SWIG_TEMPLATE)" $(LIBSHOGUN_MODE) >>.depend
 ifeq (r_modular,$(TEMPLATE_TARGET))
-	    bash -c "( for i in \`grep '.so:' .depend | cut -f 1 -d ':'\` ; do echo \`echo \$$i | sed s/.so/.R:/\` \$$i ; done ) >>.depend"
+	    bash -c "( for i in \`grep '.$(EXT_LIB):' .depend | cut -f 1 -d ':'\` ; do echo \`echo \$$i | sed s/.$(EXT_LIB)/.R:/\` \$$i ; done ) >>.depend"
 endif
 
 endif

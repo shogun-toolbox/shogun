@@ -41,6 +41,7 @@ uninstall:
 	@test -z "$(INCDIR)" || rm -rf "$(DESTDIR)$(INCDIR)/shogun"
 	@test -z "$(BINDIR)" || rm -rf "$(DESTDIR)$(BINDIR)/shogun"
 	@test -z "$(PYDIR)" || rm -rf "$(DESTDIR)$(PYDIR)/sg.so"
+	@test -z "$(PYDIR)" || rm -rf "$(DESTDIR)$(PYDIR)/sg.dylib"
 	@test -z "$(PYDIR)" || rm -rf "$(DESTDIR)$(PYDIR)/shogun"
 	@test -z "$(RDIR)" || rm -rf "$(DESTDIR)$(RDIR)/shogun"
 	@test -z "$(OCTDIR)" || rm -rf "$(DESTDIR)$(OCTDIR)/shogun"

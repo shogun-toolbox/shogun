@@ -156,7 +156,7 @@ cat >>"$1/$2/R/$2" <<EOF
 {
 EOF
 
-for f in *.so
+for f in *.$3
 do
 	echo "library.dynam.unload(\"$f\", lib)" >> "$1/$2/R/$2"
 done
