@@ -163,7 +163,7 @@ PyObject* make_contiguous(PyObject* ary, int* is_new_object,
         return NULL;
     }
 
-    if (array_dimensions(array)!=dims)
+    if (dims!=-1 || array_dimensions(array)!=dims)
     {
         PyErr_Format(PyExc_TypeError, "Array has wrong dimensionality, " 
                 "expected a %dd-array, received a %dd-array", dims, array_dimensions(array));
@@ -329,6 +329,47 @@ TYPEMAP_IN2(float32_t,     NPY_FLOAT32)
 TYPEMAP_IN2(float64_t,     NPY_FLOAT64)
 TYPEMAP_IN2(floatmax_t,    NPY_LONGDOUBLE)
 TYPEMAP_IN2(PyObject,      NPY_OBJECT)
+
+#undef TYPEMAP_IN2
+
+/* N-dimensional input arrays */
+%define TYPEMAP_INND(type,typecode)
+%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER)
+        (type* IN_NDARRAY, int32_t* DIMS, int32_t NDIMS)
+{
+    $1 = (is_array($input)) ? 1 : 0;
+}
+
+%typemap(in) (type* IN_ND_ARRAY, int32_t* DIMS, int32_t NDIMS)
+            (PyObject* array=NULL, int is_new_object)
+{
+    array = make_contiguous($input, &is_new_object, -1,typecode);
+    if (!array)
+        SWIG_fail;
+
+    $1 = (type*) PyArray_BYTES(array);
+    $2 = PyArray_DIMS(array);
+    $3 = PyArray_NDIM(array);
+}
+%typemap(freearg) (type* IN_ND_ARRAY, int32_t* DIMS, int32_t NDIMS) {
+  if (is_new_object$argnum && array$argnum) Py_DECREF(array$argnum);
+}
+%enddef
+
+/* Define concrete examples of the TYPEMAP_INND macros */
+TYPEMAP_INND(bool,          NPY_BOOL)
+TYPEMAP_INND(char,          NPY_STRING)
+TYPEMAP_INND(uint8_t,       NPY_UINT8)
+TYPEMAP_INND(int16_t,       NPY_INT16)
+TYPEMAP_INND(uint16_t,      NPY_UINT16)
+TYPEMAP_INND(int32_t,       NPY_INT32)
+TYPEMAP_INND(uint32_t,      NPY_UINT32)
+TYPEMAP_INND(int64_t,       NPY_INT64)
+TYPEMAP_INND(uint64_t,      NPY_UINT64)
+TYPEMAP_INND(float32_t,     NPY_FLOAT32)
+TYPEMAP_INND(float64_t,     NPY_FLOAT64)
+TYPEMAP_INND(floatmax_t,    NPY_LONGDOUBLE)
+TYPEMAP_INND(PyObject,      NPY_OBJECT)
 
 #undef TYPEMAP_IN2
 
