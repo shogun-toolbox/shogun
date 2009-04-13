@@ -3031,6 +3031,7 @@ test_python()
 			then
 				PYTHON_TARGET="sg.dll"
 			elif darwin
+			then
 				PYTHON_TARGET="sg.dylib"
 			else
 				PYTHON_TARGET="sg.so"
@@ -3144,6 +3145,7 @@ test_r()
 				INCLUDES_R="$INCLUDES_R -I$RPATH/include"
 				LINKFLAGS_R="$LINKFLAGS_R -L$RPATH/bin -lR -shared -mno-cygwin"
 			elif darwin
+			then
 				R_TARGET="sg.dylib"
 				#unset makeflags as R uses -w and that leads to screwed up R CMD config --ldflags
 				unset MAKEFLAGS MFLAGS
