@@ -21,23 +21,46 @@
 template <class T> class CIndirectObject
 {
 	public:
+		/** default constructor
+		 * (initializes index with -1)
+		 */
 		CIndirectObject() : index(-1)
 		{
 		}
 
+		/** constructor
+		 * @param idx index
+		 */
 		CIndirectObject(int32_t idx)
 		{
 			index=idx;
 		}
 
+		/** set array 
+		 *
+		 * @param a array
+		 */
 		static void set_array(T* a)
 		{
 			array=a;
 		}
 
-		static void init_slice(CIndirectObject<T>* a, int32_t len)
+		/** get array 
+		 *
+		 * @return array
+		 */
+		static T* get_array()
 		{
-			for (int32_t i=0; i<len; i++)
+			return array;
+		}
+
+		/** initialize slice
+		 *
+		 * @return array
+		 */
+		static void init_slice(CIndirectObject<T>* a, int32_t len, int32_t start=0; int32_t stop=len)
+		{
+			for (int32_t i=start; i<stop && i<len; i++)
 				a[i].index=i;
 		}
 
@@ -319,4 +342,7 @@ template <class T> class CIndirectObject
 		/** index into array */
 		int32_t index;
 };
+
+template <class T> T* CIndirectObject<T>::array=NULL;
+
 #endif //__INDIRECTOBJECT_H__
