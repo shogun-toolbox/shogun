@@ -147,6 +147,7 @@ class CBitString : public CSGObject
 							idx++;
 						}
 					}
+
 					if (idx<stream_len)
 						string[idx]=w;
 					break;
@@ -198,22 +199,26 @@ class CBitString : public CSGObject
 
 		inline uint64_t operator[](uint64_t index) const
 		{
-			uint64_t i=bit_to_word_index(index);
-			uint64_t j=bit_idx/(8*sizeof(uint64_t));
-			uint64_t x=string[i];
+			uint64_t ws=get_sizeof_word();
+			uint64_t i=index/ws;
+			uint64_t j=index % ws;
+			//if (
+			//uint64_t x=string[i];
 			return array[index];
 		}
 
 
 		inline uint64_t bitword_to_word_index(uint64_t bit_idx)
 		{
-			return bit_idx/(8*sizeof(uint64_t)*alphabet->get_num_bits());
+			return bit_idx/(get_sizeof_word()*alphabet->get_num_bits());
 		}
 
-		inline uint64_t bit_to_word_index(uint64_t bit_idx)
+		/** return size of word in bits */
+		inline uint64_t get_sizeof_word()
 		{
-			return bit_idx/(8*sizeof(uint64_t));
+			return 8*sizeof(uint64_t);
 		}
+
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "BitString"; }
