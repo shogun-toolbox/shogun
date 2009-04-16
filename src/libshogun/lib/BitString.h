@@ -204,7 +204,7 @@ class CBitString : public CSGObject
 			uint64_t j=index % ws;
 			//if (
 			//uint64_t x=string[i];
-			return array[index];
+			return string[i];
 		}
 
 
@@ -214,7 +214,7 @@ class CBitString : public CSGObject
 		}
 
 		/** return size of word in bits */
-		inline uint64_t get_sizeof_word()
+		inline uint64_t get_sizeof_word() const
 		{
 			return 8*sizeof(uint64_t);
 		}
