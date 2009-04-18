@@ -18,14 +18,14 @@ int main(int argc, char** argv)
 		a[i]=l-i;
 
 	// create array of indirect objects pointing to array a
-	CIndirectObject<int32_t>::set_array(a);
-	CIndirectObject<int32_t>* x = new CIndirectObject<int32_t>[l];
-	CIndirectObject<int32_t>::init_slice(x, l);
+	CIndirectObject<int32_t, int32_t**>::set_array(&a);
+	CIndirectObject<int32_t, int32_t**>* x = new CIndirectObject<int32_t, int32_t**>[l];
+	CIndirectObject<int32_t, int32_t**>::init_slice(x, l);
 
 
 	printf("created array a and indirect object array x pointing to a.\n\n");
 	for (int i=0; i<l; i++)
-		printf("a[%d]=%d x[%d]=%d\n", i, a[i], i, (int32_t) x[i]);
+		printf("a[%d]=%d x[%d]=%d\n", i, a[i], i, int32_t(x[i]));
 
 	//sort the array
 	CMath::qsort(x, l);

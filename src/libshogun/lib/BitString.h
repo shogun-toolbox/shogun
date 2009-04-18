@@ -33,13 +33,20 @@ class CBitString : public CSGObject
 		 * @param alpha Alphabet
 		 * @param width return this many bits upon str[idx] access operations
 		 */
-		CBitString(EAlphabet alpha, int32_t width=1) : string(NULL), length(0), word_len(width)
+		CBitString(EAlphabet alpha, int32_t width=1) : CSGObject(), string(NULL), length(0)
 		{
 			alphabet=new CAlphabet(alpha);
+			int32_t nbits=alphabet->get_num_bits();
+			word_len=width*nbits;
+			mask=0;
+
+			for (int32_t j=0; j<word_len; j++)
+				mask=(mask<<1) | (uint64_t) 1;
+			mask<<=sizeof(uint64_t)*8-word_len;
 		}
 
 		/** destructor */
-		virtual ~CBitString()
+		~CBitString()
 		{
 			cleanup();
 			SG_UNREF(alphabet);
@@ -97,6 +104,8 @@ class CBitString : public CSGObject
 		 */
 		void load_fasta_file(const char* fname, bool ignore_invalid=false)
 		{
+			cleanup();
+
 			uint64_t len=0;
 			uint64_t offs=0;
 
@@ -106,23 +115,34 @@ class CBitString : public CSGObject
 			char* id=f.get_line(id_len, offs);
 
 			if (!id_len || id[0]!='>')
-				SG_ERROR("No fasta hunks (lines starting with '>') found\n");
+				SG_SERROR("No fasta hunks (lines starting with '>') found\n");
 
-			char* fasta=f.get_line(len, offs);
-			char* s=fasta;
-			uint64_t fasta_len=0;
+			if (offs==f.get_size())
+				SG_SERROR("Empty file?\n");
+
+			char* fasta=NULL;
+			char* s=NULL;
 			int32_t spanned_lines=0;
+			int32_t fasta_len=0;
 
 			while (true)
 			{
+				s=f.get_line(len, offs);
+
+				if (!fasta)
+					fasta=s;
+
 				if (!s || len==0)
-					SG_ERROR("Error reading fasta entry in line %d len=%ld", spanned_lines+1, len);
+					SG_SERROR("Error reading fasta entry in line %d len=%ld", spanned_lines+1, len);
 
 				if (s[0]=='>')
-					SG_ERROR("Multiple fasta hunks (lines starting with '>') are not supported!\n");
+					SG_SERROR("Multiple fasta hunks (lines starting with '>') are not supported!\n");
 
 				if (offs==f.get_size())
 				{
+					offs-=len+1; // seek to beginning
+					fasta_len+=len;
+
 					uint64_t w=0;
 					int32_t nbits=alphabet->get_num_bits();
 					uint64_t nfit=8*sizeof(w)/nbits;
@@ -133,56 +153,35 @@ class CBitString : public CSGObject
 					length=len;
 
 					int32_t idx=0;
+					int32_t k=0;
 
-					for (int32_t j=0; j<fasta_len; j++)
+					for (int32_t j=0; j<fasta_len; j++, k++)
 					{
 						if (fasta[j]=='\n')
+						{
+							k--;
 							continue;
+						}
 
 						w= (w << nbits) | alphabet->remap_to_bin((uint8_t) fasta[j]);
 
-						if (j % nfit == nfit-1)
+						if (k % nfit == nfit-1)
 						{
 							string[idx]=w;
+							w=0;
 							idx++;
 						}
 					}
 
 					if (idx<stream_len)
-						string[idx]=w;
+						string[idx]=w<<(nbits*(nfit - k%nfit));
+
 					break;
 				}
 
 				spanned_lines++;
 				fasta_len+=len+1; // including '\n'
-				s=f.get_line(len, offs);
 			}
-
-			//for (uint64_t i=0; i<length/(8*sizeof(uint64_t)); i++)
-			//	CMath::display_bits(string[i], (8*sizeof(uint64_t)));
-
-
-			//for (uint64_t i=0; i<2; i++)
-			//	CMath::display_bits(string[i], (8*sizeof(uint64_t)));
-
-			SG_PRINT("\n\n");
-			for (uint64_t i=0; i<2; i++)
-			{
-				uint64_t mask=0;
-				uint64_t word=string[i];
-				int32_t nbits=alphabet->get_num_bits();
-
-				for (int32_t j=0; j<nbits; j++)
-					mask=(mask<<1) | (uint64_t) 1;
-
-				for (int32_t j=0; j<sizeof(uint64_t)*8; j++)
-				{
-					uint64_t w=(word & mask);
-					SG_PRINT("%c", alphabet->remap_to_char((uint8_t) w));
-					word>>=nbits;
-				}
-			}
-			SG_PRINT("\n\n");
 		}
 
 		/** set string of length len embedded in a uint64_t sequence
@@ -199,26 +198,24 @@ class CBitString : public CSGObject
 
 		inline uint64_t operator[](uint64_t index) const
 		{
-			uint64_t ws=get_sizeof_word();
-			uint64_t i=index/ws;
-			uint64_t j=index % ws;
-			//if (
-			//uint64_t x=string[i];
-			return string[i];
+			ASSERT(index<length);
+
+			uint64_t bitindex=alphabet->get_num_bits()*index;
+			int32_t ws=8*sizeof(uint64_t);
+			uint64_t i=bitindex/ws;
+			int32_t j=bitindex % ws;
+			int32_t missing=word_len-(ws-j);
+
+			//SG_SPRINT("i=%lld j=%d ws=%d word_len=%d missing=%d left=%llx shift=%d\n", i, j, ws, word_len, missing, ( string[i] << j ) & mask, ws-word_len);
+			uint64_t res= ((string[i] << j) & mask ) >> (ws-word_len);
+
+			if (missing>0)
+				res|= ( string[i+1] >> (ws-missing) );
+
+			return res;
 		}
 
-
-		inline uint64_t bitword_to_word_index(uint64_t bit_idx)
-		{
-			return bit_idx/(get_sizeof_word()*alphabet->get_num_bits());
-		}
-
-		/** return size of word in bits */
-		inline uint64_t get_sizeof_word() const
-		{
-			return 8*sizeof(uint64_t);
-		}
-
+		inline uint64_t get_length() const { return length-word_len/alphabet->get_num_bits()+1; }
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "BitString"; }
@@ -230,7 +227,9 @@ class CBitString : public CSGObject
 		uint64_t* string;
 		/** the length of the bit string */
 		uint64_t length;
-		/** the length of a word in bits */
+		/** length of a word in bits */
 		int32_t word_len;
+		/** mask */
+		uint64_t mask;
 };
 #endif //__BITSTRING_H__
