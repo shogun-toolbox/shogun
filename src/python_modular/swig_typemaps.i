@@ -163,7 +163,7 @@ PyObject* make_contiguous(PyObject* ary, int* is_new_object,
         return NULL;
     }
 
-    if (dims!=-1 || array_dimensions(array)!=dims)
+    if (dims!=-1 && array_dimensions(array)!=dims)
     {
         PyErr_Format(PyExc_TypeError, "Array has wrong dimensionality, " 
                 "expected a %dd-array, received a %dd-array", dims, array_dimensions(array));
