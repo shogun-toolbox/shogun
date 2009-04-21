@@ -196,6 +196,34 @@ class CBitString : public CSGObject
 			length=len;
 		}
 
+		inline uint64_t condense(uint64_t bits, uint64_t mask) const
+			{
+				uint64_t res = 0 ;
+				uint64_t m=mask ;
+				uint64_t b=bits ;
+				char cnt=0 ;
+				
+				char ar[256][256] ;
+
+				for (int i=0; i<8; i++)
+				{
+					//fprintf(stdout, "%i %lx %lx %lx %i\n", i, res, m, b, (int)cnt) ;
+					if (m&1)
+						res = res>>8 | ar[b&255][m&255] ;
+					//else
+					//	cnt++ ;
+					m=m>>8 ;
+					b=b>>8 ;
+				}
+				res=res>>cnt ;
+				//fprintf(stdout, "%lx %lx %lx\n", res, m, b) ;
+				
+				//res = res & bits & mask ;
+				
+				return res ;
+			}
+		
+
 		inline uint64_t operator[](uint64_t index) const
 		{
 			ASSERT(index<length);
@@ -211,6 +239,8 @@ class CBitString : public CSGObject
 
 			if (missing>0)
 				res|= ( string[i+1] >> (ws-missing) );
+
+			//res = condense(res, 1<<31|1<<24|1<<10|1<<8|1<<4|1<<2|1<<1|1) ;
 
 			return res;
 		}

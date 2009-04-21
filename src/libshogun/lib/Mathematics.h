@@ -741,7 +741,7 @@ class CMath : public CSGObject
 
 		/** performs a in-place radix sort in ascending order */
 		template <class T>
-			inline static void radix_sort(T* array, size_t size)
+			inline static void radix_sort(T* array, int32_t size)
 			{
 				radix_sort_helper(array,size,0);
 			}
@@ -753,7 +753,7 @@ class CMath : public CSGObject
 			}
 
 		template <class T>
-			static void radix_sort_helper(T* array, size_t size, uint16_t i)
+			static void radix_sort_helper(T* array, int32_t size, uint16_t i)
 			{
 				static size_t count[256], nc, cmin;
 				T *ak;
