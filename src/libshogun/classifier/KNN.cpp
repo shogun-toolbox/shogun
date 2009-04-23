@@ -65,11 +65,16 @@ CLabels* CKNN::classify(CLabels* output)
 {
 	ASSERT(num_classes>0);
 	ASSERT(distance);
-	ASSERT(labels);
-	ASSERT(labels->get_num_labels());
+	ASSERT(distance->get_num_vec_rhs());
 
-	int32_t num_lab=labels->get_num_labels();
+	int32_t num_lab=distance->get_num_vec_rhs();
 	ASSERT(k<=num_lab);
+
+	if (output && output->get_num_labels()!=num_lab)
+		SG_ERROR("Number of labels mismatches number of outputs\n");
+
+	if (!output)
+		output=new CLabels(num_lab);
 
 	//distances to train data and working buffer of train_labels
 	float64_t* dists=new float64_t[num_train_labels];
@@ -77,12 +82,9 @@ CLabels* CKNN::classify(CLabels* output)
 
 	///histogram of classes and returned output
 	int32_t* classes=new int32_t[num_classes];
-	if (!output)
-		output=new CLabels(num_lab);
 
 	ASSERT(dists);
 	ASSERT(train_lab);
-	ASSERT(output);
 	ASSERT(classes);
 
 	SG_INFO( "%d test examples\n", num_lab);
