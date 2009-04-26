@@ -425,6 +425,7 @@ else #gcc -MM
 	find $(SRCDIR) -name "*.$(EXT_SRC_C)" -o -name "*.$(EXT_SRC_CPP)" \
 	-exec $(MAKEDEPEND) $(DEFINES) $(INCLUDES) {} -MT {}.o \; >.depend
 	( find . -name "*.$(EXT_INP_SWIG)" | cut -c 3- ; find ../shogun/ -name "*.h"  ) | \
+	 		sed 's#/[/]*#/#g' | \
 			$(PYTHON) ../.generate_link_dependencies.py "$(PRE_LIB_SWIG_TEMPLATE)" "$(EXT_LIB_SWIG_TEMPLATE)" $(LIBSHOGUN_MODE) >>.depend
 ifeq (r_modular,$(TEMPLATE_TARGET))
 	    bash -c "( for i in \`grep '.$(EXT_LIB):' .depend | cut -f 1 -d ':'\` ; do echo \`echo \$$i | sed s/.$(EXT_LIB)/.R:/\` \$$i ; done ) >>.depend"
