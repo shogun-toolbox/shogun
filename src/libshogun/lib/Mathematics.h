@@ -28,40 +28,19 @@
 #include <sys/time.h>
 #include <time.h>
 
-#define SG_FINITE(f) ::finite(f)
-
-//define finite for win32
 #ifdef _WIN32
-#include <float.h>
-#ifndef finite
-#undef SG_FINITE
-#define SG_FINITE(f) _finite(f)
-#endif
-
 #ifndef isnan
 #define isnan _isnan
 #endif
-#endif
 
-//define finite/nan for CYGWIN
-#ifdef CYGWIN
-#ifndef finite
-#include <ieeefp.h>
+#ifndef isfinite
+#define isfinite _isfinite
 #endif
-#endif
+#endif //_WIN32
 
 #ifndef NAN
 #include <stdlib.h>
 #define NAN (strtod("NAN",NULL))
-#endif
-
-#ifdef SUNOS
-extern "C" int	finite(double);
-#endif
-
-#ifdef DARWIN
-#undef SG_FINITE
-#define SG_FINITE(f) isfinite(f)
 #endif
 
 /* Size of RNG seed */
@@ -1096,7 +1075,7 @@ class CMath : public CSGObject
 		/// checks whether a float is finite
 		inline static int finite(double f)
 		{
-			return SG_FINITE(f);
+			return isfinite(f);
 		}
 
 
