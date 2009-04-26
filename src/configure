@@ -3007,7 +3007,7 @@ test_python()
 		if test "$_python" != no
 		then
 			PRE_LIB_SWIG_PYTHON_MODULAR=_
-			EXT_LIB_SWIG_PYTHON_MODULAR=${EXT_LIB}
+			EXT_LIB_SWIG_PYTHON_MODULAR='.so'
 			EXT_IF_SWIG_PYTHON_MODULAR='.py'
 			test -n "$_pyinclude" && _pyinclude="-I$_pyinclude"
 			test -n "$_pyinclude" || _pyinclude=`$PYTHON -c "import numpy; import sys; print '-I'+sys.prefix+'/include/python'+sys.version[0:3]+' -I'+numpy.get_include()"`
@@ -3030,9 +3030,6 @@ test_python()
 			if win32
 			then
 				PYTHON_TARGET="sg.dll"
-			elif darwin
-			then
-				PYTHON_TARGET="sg.dylib"
 			else
 				PYTHON_TARGET="sg.so"
 			fi
