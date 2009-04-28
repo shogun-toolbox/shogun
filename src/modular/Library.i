@@ -75,6 +75,10 @@
 %template(DynamicPlifArray) CDynamicArray<CPlifBase*>;
 
 /* Template Class Array */
+%include <shogun/lib/GCArray.h>
+%template(PlifGCArray) CGCArray<CPlifBase*>;
+
+/* Template Class Array */
 %include <shogun/lib/Array.h>
 %template(CharArray) CArray<char>;
 %template(ByteArray) CArray<uint8_t>;
@@ -114,6 +118,7 @@
 %template(RealArray3) CArray3<float64_t>;
 
 %include <shogun/lib/Cache.h>
+%include <shogun/lib/GCArray.h>
 %include <shogun/lib/File.h>
 %include <shogun/lib/List.h>
 %include <shogun/lib/Mathematics.h>
