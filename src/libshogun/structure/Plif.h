@@ -217,8 +217,6 @@ class CPlif: public CPlifBase
 
 		/** set plif
 		 *
-		 * for swig use set_plif_len, set_plif_limits, set_plif_penalty
-		 *
 		 * @param p_len len
 		 * @param p_limits limit
 		 * @param p_penalties penalties
@@ -240,11 +238,8 @@ class CPlif: public CPlifBase
 
 		/** set plif_limits
 		 *
-		 * for swig use set_plif_len, set_plif_limits, set_plif_penalty
-		 *
-		 * @param p_len len
 		 * @param p_limits limit
-		 * @param p_penalties penalties
+		 * @param p_len len
 		 */
 		void set_plif_limits(float64_t *p_limits, int32_t p_len)
 		{
@@ -258,15 +253,12 @@ class CPlif: public CPlifBase
 		}
 
 
-		/** set plif
+		/** set plif penalty
 		 *
-		 * for swig use set_plif_len, set_plif_limits, set_plif_penalty
-		 *
-		 * @param p_len len
-		 * @param p_limits limit
 		 * @param p_penalties penalties
+		 * @param p_len len
 		 */
-		void set_plif_penalties(float64_t* p_penalties, int32_t p_len)
+		void set_plif_penalty(float64_t* p_penalties, int32_t p_len)
 		{
 			ASSERT(len==p_len);
 
@@ -276,7 +268,6 @@ class CPlif: public CPlifBase
 			invalidate_cache();
 			penalty_clear_derivative();
 		}
-
 
 		/** set plif length
 		 *
@@ -307,22 +298,6 @@ class CPlif: public CPlifBase
 			penalty_clear_derivative();
 		}
 
-		/** set plif limits
-		 *
-		 * @param p_limits limits
-		 * @param p_len len
-		 */
-		void set_plif_limits(float64_t* p_limits, int32_t p_len)
-		{
-			ASSERT(len==p_len);
-
-			for (int32_t i=0; i<len; i++)
-				limits[i]=p_limits[i];
-
-			invalidate_cache();
-			penalty_clear_derivative();
-		}
-
 		/** get Plif limits
 		 *
 		 * @return limits
@@ -332,21 +307,6 @@ class CPlif: public CPlifBase
 			return limits;
 		}
 
-		/** set plif penalty
-		 *
-		 * @param p_penalties penalties
-		 * @param p_len len
-		 */
-		void set_plif_penalty(float64_t* p_penalties, int32_t p_len)
-		{
-			ASSERT(len==p_len);
-
-			for (int32_t i=0; i<len; i++)
-				penalties[i]=p_penalties[i];
-
-			invalidate_cache();
-			penalty_clear_derivative();
-		}
 		/** get plif penalty
  		 *	
  		 * @return plif penalty
