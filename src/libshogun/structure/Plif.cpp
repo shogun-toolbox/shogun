@@ -49,8 +49,7 @@ CPlif::~CPlif()
 
 bool CPlif::set_transform_type(const char *type_str)
 {
-	delete[] cache ;
-	cache=NULL ;
+	invalidate_cache();
 
 	if (strcmp(type_str, "linear")==0)
 		transform = T_LINEAR ;

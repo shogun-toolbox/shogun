@@ -166,8 +166,7 @@ class CPlif: public CPlifBase
 		 */
 		void set_use_svm(int32_t p_use_svm)
 		{
-			delete[] cache;
-			cache=NULL;
+			invalidate_cache();
 			use_svm=p_use_svm;
 		}
 
@@ -195,9 +194,16 @@ class CPlif: public CPlifBase
 		 */
 		void set_use_cache(int32_t p_use_cache)
 		{
+			invalidate_cache();
+			use_cache=p_use_cache;
+		}
+
+		/** invalidate the cache
+		 */
+		void invalidate_cache()
+		{
 			delete[] cache;
 			cache=NULL;
-			use_cache=p_use_cache;
 		}
 		
 		/** get use cache
@@ -220,16 +226,7 @@ class CPlif: public CPlifBase
 		void set_plif(
 			int32_t p_len, float64_t *p_limits, float64_t* p_penalties)
 		{
-			len=p_len;
-			delete[] limits;
-			delete[] penalties;
-			delete[] cum_derivatives;
-			delete[] cache;
-			cache=NULL;
-
-			limits=new float64_t[len];
-			penalties=new float64_t[len];
-			cum_derivatives=new float64_t[len];
+			ASSERT(len==p_len);
 
 			for (int32_t i=0; i<len; i++)
 			{
@@ -237,8 +234,49 @@ class CPlif: public CPlifBase
 				penalties[i]=p_penalties[i];
 			}
 
+			invalidate_cache();
 			penalty_clear_derivative();
 		}
+
+		/** set plif_limits
+		 *
+		 * for swig use set_plif_len, set_plif_limits, set_plif_penalty
+		 *
+		 * @param p_len len
+		 * @param p_limits limit
+		 * @param p_penalties penalties
+		 */
+		void set_plif_limits(float64_t *p_limits, int32_t p_len)
+		{
+			ASSERT(len==p_len);
+
+			for (int32_t i=0; i<len; i++)
+				limits[i]=p_limits[i];
+
+			invalidate_cache();
+			penalty_clear_derivative();
+		}
+
+
+		/** set plif
+		 *
+		 * for swig use set_plif_len, set_plif_limits, set_plif_penalty
+		 *
+		 * @param p_len len
+		 * @param p_limits limit
+		 * @param p_penalties penalties
+		 */
+		void set_plif_penalties(float64_t* p_penalties, int32_t p_len)
+		{
+			ASSERT(len==p_len);
+
+			for (int32_t i=0; i<len; i++)
+				penalties[i]=p_penalties[i];
+
+			invalidate_cache();
+			penalty_clear_derivative();
+		}
+
 
 		/** set plif length
 		 *
@@ -252,18 +290,20 @@ class CPlif: public CPlifBase
 				delete[] limits;
 				delete[] penalties;
 				delete[] cum_derivatives;
+
 				SG_DEBUG( "set_plif len=%i\n", p_len);
 				limits=new float64_t[len];
 				penalties=new float64_t[len];
 				cum_derivatives=new float64_t[len];
 			}
-			delete[] cache;
-			cache=NULL;
+
 			for (int32_t i=0; i<len; i++)
 			{
 				limits[i]=0.0;
 				penalties[i]=0.0;
 			}
+
+			invalidate_cache();
 			penalty_clear_derivative();
 		}
 
@@ -274,13 +314,12 @@ class CPlif: public CPlifBase
 		 */
 		void set_plif_limits(float64_t* p_limits, int32_t p_len)
 		{
-			delete[] cache;
-			cache=NULL;
 			ASSERT(len==p_len);
 
 			for (int32_t i=0; i<len; i++)
 				limits[i]=p_limits[i];
 
+			invalidate_cache();
 			penalty_clear_derivative();
 		}
 
@@ -300,13 +339,12 @@ class CPlif: public CPlifBase
 		 */
 		void set_plif_penalty(float64_t* p_penalties, int32_t p_len)
 		{
-			delete[] cache;
-			cache=NULL;
 			ASSERT(len==p_len);
 
 			for (int32_t i=0; i<len; i++)
 				penalties[i]=p_penalties[i];
 
+			invalidate_cache();
 			penalty_clear_derivative();
 		}
 		/** get plif penalty
@@ -323,9 +361,8 @@ class CPlif: public CPlifBase
 		 */
 		inline void set_max_value(float64_t p_max_value)
 		{
-			delete[] cache;
-			cache=NULL;
 			max_value=p_max_value;
+			invalidate_cache();
 		}
 
 		/** get maximum value
@@ -343,9 +380,8 @@ class CPlif: public CPlifBase
 		 */
 		inline void set_min_value(float64_t p_min_value)
 		{
-			delete[] cache;
-			cache=NULL;
 			min_value=p_min_value;
+			invalidate_cache();
 		}
 
 		/** get minimum value

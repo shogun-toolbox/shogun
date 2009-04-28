@@ -447,7 +447,7 @@ void CDynProg::precompute_content_values(
 			my_svm_values_unnormalized[s]=0.0;//precomputed_svm_values.element(s,p);
 		}
 		for (int32_t i=from_pos; i<to_pos;i++)
-                {
+		{
 			for (int32_t j=0; j<num_degrees; j++)
 			{
 				uint16_t word = wordstr[0][j][i] ;
