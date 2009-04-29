@@ -1073,9 +1073,25 @@ class CMath : public CSGObject
 		}
 
 		/// checks whether a float is finite
-		inline static int finite(double f)
+		inline static int is_finite(double f)
 		{
-			return isfinite(f);
+#ifdef isfinite
+            return isfinite(f);
+#else
+			return finite(f);
+#endif
+		}
+
+		/// checks whether a float is infinity
+		inline static int is_infinity(double f)
+		{
+            return isinf(f);
+		}
+
+		/// checks whether a float is nan
+		inline static int is_nan(double f)
+		{
+            return isnan(f);
 		}
 
 
@@ -1094,10 +1110,10 @@ class CMath : public CSGObject
 		{
 			float64_t diff;
 
-			if (!finite(p))
+			if (!CMath::finite(p))
 				return q;
 
-			if (!finite(q))
+			if (!CMath::finite(q))
 			{
 				SG_SWARNING("INVALID second operand to logsum(%f,%f) expect undefined results\n", p, q);
 				return NAN;
@@ -1122,9 +1138,9 @@ class CMath : public CSGObject
 		{
 			float64_t diff;
 
-			if (!finite(p))
+			if (!CMath::is_finite(p))
 				return q;
-			if (!finite(q))
+			if (!CMath::is_finite(q))
 				return p;
 			diff = p - q;
 			if (diff > 0)

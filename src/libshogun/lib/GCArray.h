@@ -10,23 +10,37 @@
 
 #ifndef __GCARRAY_H__
 #define __GCARRAY_H__
-template <class T> class CArray : public CSGObject
+
+#include "base/SGObject.h"
+#include "lib/common.h"
+
+template <class T> class CGCArray : public CSGObject
 {
 	public:
-		CArray(int32_t sz) : CSGObject()
+		/** Constructor
+		  * 
+		  * @param sz length of array
+		  */
+		CGCArray(int32_t sz) : CSGObject()
 		{
 			ASSERT(sz>0);
 			array = new T[sz];
 			size=sz;
 		}
 
-		virtual ~CArray()
+		/** Destructor */
+		virtual ~CGCArray()
 		{
 			for (int32_t i=0; i<size; i++)
 				SG_UNREF(array[i]);
 			delete[] array;
 		}
 
+		/** (write) access operator
+		 *
+		 * @param element - element to write
+		 * @param index - index to write to
+		 */
 		inline void operator[](const T* element, int32_t index)
 		{
 			ASSERT(index>=0);
@@ -37,6 +51,11 @@ template <class T> class CArray : public CSGObject
 			return element;
 		}
 
+		/** read only access operator
+		 *
+		 * @param index index to write to
+		 * @return element element
+		 */
 		inline const T& operator[](int32_t index) const
 		{
 			ASSERT(index>=0);
@@ -47,7 +66,9 @@ template <class T> class CArray : public CSGObject
 		}
 
 	protected:
+		/// array
 		T* array;
+		/// size of array
 		int32_t size;
 };
 #endif //__GCARRAY_H__

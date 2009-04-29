@@ -148,7 +148,7 @@ class CImplicitWeightedSpecFeatures : public CDotFeatures
 		inline virtual const char* get_name() const { return "ImplicitWeightedSpecFeatures"; }
 
 	protected:
-		/* compute the sqrt diag normalization constant per string
+		/** compute the sqrt diag normalization constant per string
 		 *
 		 * \sa CSqrtDiagKernelNormalization
 		 */

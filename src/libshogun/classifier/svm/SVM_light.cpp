@@ -3521,7 +3521,7 @@ float64_t* CSVMLight::optimize_qp(
 				(float64_t)sigdig,(int32_t)iter,
 				(float64_t)margin,(float64_t)(qp->opt_up[0])/4.0,(int32_t)0);
 
-		if(isnan(dual[0])) {     /* check for choldc problem */
+		if(CMath::is_nan(dual[0])) {     /* check for choldc problem */
 			if(verbosity>=2) {
 				SG_SDEBUG("Restarting PR_LOQO with more conservative parameters.\n");
 			}
@@ -3590,7 +3590,7 @@ float64_t* CSVMLight::optimize_qp(
 
 	/* if optimizer returned NAN values, reset and retry with smaller */
 	/* working set. */
-	if(isnan(obj_after) || isnan(model_b)) {
+	if(CMath::is_nan(obj_after) || CMath::is_nan(model_b)) {
 		for(i=0;i<qp->opt_n;i++) {
 			primal[i]=qp->opt_xinit[i];
 		}

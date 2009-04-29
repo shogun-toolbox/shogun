@@ -2467,7 +2467,7 @@ void CDynProg::best_path_trans(
 					if (PEN_state_signals.element(i,k)!=NULL)
 					{
 						// just one plif
-						if (CMath::finite(seq_input.element(i,j,k)))
+						if (CMath::is_finite(seq_input.element(i,j,k)))
 							seq.element(i,j) += PEN_state_signals.element(i,k)->lookup_penalty(seq_input.element(i,j,k), svm_value) ;
 						else
 							// keep infinity values

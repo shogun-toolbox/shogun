@@ -201,7 +201,7 @@ class CAlphabet : public CSGObject
 		/** check whether symbols are valid in alphabet
 		 * e.g. for DNA if symbol is one of the A,C,G or T
 		 *
-		 * @param s symbol
+		 * @param c symbol
 		 * @return if symbol is a valid character in alphabet
 		 */
 		inline bool is_valid(uint8_t c)

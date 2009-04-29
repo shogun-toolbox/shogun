@@ -714,6 +714,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 *
 		 * @param fname filename to load from
 		 * @param ignore_invalid if set to true, characters other than A,C,G,T are converted to A
+		 * @param bitremap_in_single_string if set to true, do binary embedding of symbols
 		 * @return if loading was successful
 		 */
 		bool load_fastq_file(const char* fname,

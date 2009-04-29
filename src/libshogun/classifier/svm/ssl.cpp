@@ -951,7 +951,7 @@ void optimize_p(
 	for (int32_t i=0;i<u;i++)
 	{
 		s=exp((g[i]-nu)/T);
-		if(!(isinf(s)))
+		if(!(CMath::is_infinity(s)))
 		{
 			tmp=1.0/(1.0+s);
 			Bnu+=tmp;
@@ -976,7 +976,7 @@ void optimize_p(
 		for(int32_t i=0;i<u;i++)
 		{
 			s=exp((g[i]-nu)/T);
-			if(!(isinf(s)))
+			if(!(CMath::is_infinity(s)))
 			{
 				tmp=1.0/(1.0+s);
 				Bnu+=tmp;
@@ -999,7 +999,7 @@ void optimize_p(
 	for (int32_t i=0;i<u;i++)
 	{
 		s=exp((g[i]-nu)/T);
-		if(isinf(s)) p[i]=0.0;
+		if(CMath::is_infinity(s)) p[i]=0.0;
 		else p[i]=1.0/(1.0+s);  
 	}
 	SG_SINFO(" root (nu) = %f B(nu) = %f", nu, Bnu);
@@ -1053,7 +1053,7 @@ float64_t KL(const float64_t *p, const float64_t *q, int32_t u)
 		if(q1>1-1e-8) q1-=1e-8;
 		if(q1<1-1e-8) q1+=1e-8;
 		g= (p1*CMath::log2(p1/q1) + (1-p1)*CMath::log2((1-p1)/(1-q1)));
-		if(CMath::abs(g)<1e-12 || isnan(g)) g=0.0;
+		if(CMath::abs(g)<1e-12 || CMath::is_nan(g)) g=0.0;
 		h+=g;
 	}
 	return h/u;   

@@ -68,7 +68,7 @@ bool CGUIStructure::set_plif_struct(
 		m_PEN[id]->set_use_cache(all_use_cache[i]);
 		m_PEN[id]->set_use_svm(all_use_svm[i]);
 		m_PEN[id]->set_plif_limits(limits, M);
-		m_PEN[id]->set_plif_penalties(penalties, M);
+		m_PEN[id]->set_plif_penalty(penalties, M);
 		//m_PEN[id]->set_do_calc(all_do_calc[i]); //JONAS FIX
 		char* transform_str=get_zero_terminated_string_copy(all_transform[i]);
 		if (!m_PEN[id]->set_transform_type(transform_str))
