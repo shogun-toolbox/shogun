@@ -36,6 +36,7 @@
 #include <shogun/lib/Array.h>
 #include <shogun/lib/Array2.h>
 #include <shogun/lib/Array3.h>
+#include <shogun/lib/GCArray.h>
 %}
 
 /* Remove C Prefix */

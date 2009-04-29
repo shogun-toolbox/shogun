@@ -11,8 +11,8 @@
 #ifndef __GCARRAY_H__
 #define __GCARRAY_H__
 
-#include "base/SGObject.h"
-#include "lib/common.h"
+#include <shogun/base/SGObject.h>
+#include <shogun/lib/common.h>
 
 template <class T> class CGCArray : public CSGObject
 {
@@ -36,19 +36,18 @@ template <class T> class CGCArray : public CSGObject
 			delete[] array;
 		}
 
-		/** (write) access operator
+		/** write access operator
 		 *
 		 * @param element - element to write
 		 * @param index - index to write to
 		 */
-		inline void operator[](const T* element, int32_t index)
+		inline void set(T element, int32_t index)
 		{
 			ASSERT(index>=0);
 			ASSERT(index<size);
 			SG_UNREF(array[index]);
 			array[index]=element;
 			SG_REF(element);
-			return element;
 		}
 
 		/** read only access operator
@@ -56,14 +55,20 @@ template <class T> class CGCArray : public CSGObject
 		 * @param index index to write to
 		 * @return element element
 		 */
-		inline const T& operator[](int32_t index) const
+		inline T get(int32_t index)
 		{
 			ASSERT(index>=0);
 			ASSERT(index<size);
-			T* element=array[index];
+			T element=array[index];
 			SG_REF(element); //???
 			return element;
 		}
+
+		/** get the name of the object
+		 *
+		 * @return name of object
+		 */
+		virtual const char* get_name() const { return "GCArray"; }
 
 	protected:
 		/// array
