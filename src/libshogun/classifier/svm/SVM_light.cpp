@@ -172,6 +172,7 @@ void CSVMLight::init()
 	mymaxdiff=1 ;
 	weight_epsilon=0 ;
 	lp_C = 0 ;
+	mkl_iterations = 0;
 	
 #ifdef USE_CPLEX
 	lp_cplex = NULL ;
@@ -1696,6 +1697,7 @@ void CSVMLight::perform_mkl_step(float64_t* beta, float64_t* old_beta, int num_k
 			start_row+=2*(num_kernels-1);
 		SG_DEBUG("%i. OBJ: %f  RHO: %f  wgap=%f agap=%f (activeset=%i; active rows=%i/%i; inner_iters=%d)\n", count, mkl_objective,rho,w_gap,mymaxdiff,jj,num_active_rows,num_rows-start_row, inner_iters);
 	}
+	mkl_iterations++;
 }
 
 float64_t CSVMLight::compute_optimal_betas_analytically(float64_t* beta,

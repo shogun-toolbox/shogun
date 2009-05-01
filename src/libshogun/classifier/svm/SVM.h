@@ -444,6 +444,12 @@ class CSVM : public CKernelMachine
 		/** @return object name */
 		inline virtual const char* get_name() const { return "SVM"; }
 
+		/** get number of MKL iterations
+		 *
+		 * @return mkl_iterations
+		 */
+		inline int32_t get_mkl_iterations() { return mkl_iterations; }
+
 	protected:
 		/** @brief an SVM is defined by support vectors, their coefficients alpha
 		 * and the bias b ( + CKernelMachine::kernel) */
@@ -489,5 +495,7 @@ class CSVM : public CKernelMachine
 		bool use_shrinking;
 		/** if mkl shall be used */
 		bool use_mkl;
+		/** number of mkl steps */
+		int32_t mkl_iterations;
 };
 #endif
