@@ -46,7 +46,7 @@ function y = set_kernel()
 		subfeats_test=RealFeatures(kernel_subkernel0_data_test);
 		subkernel=GaussianKernel(subfeats_train, subfeats_test, ...
 			kernel_subkernel0_arg1_width);
-		kernel=AUCKernel(feats_train, feats_train, subkernel);
+		kernel=AUCKernel(0, subkernel);
 
 	elseif strcmp(kname, 'Chi2')==1
 		global Chi2Kernel;
@@ -200,11 +200,11 @@ function y = set_kernel()
 		global LocalAlignmentStringKernel;
 		kernel=LocalAlignmentStringKernel(feats_train, feats_train);
 
-	elseif strcmp(kname, 'Oligo')==1
-		global OligoKernel;
+	elseif strcmp(kname, 'OligoString')==1
+		global OligoStringKernel;
 		global kernel_arg1_k;
 		global kernel_arg2_width;
-		kernel=OligoKernel(size_cache, kernel_arg1_k, kernel_arg2_width);
+		kernel=OligoStringKernel(size_cache, kernel_arg1_k, kernel_arg2_width);
 		kernel.init(feats_train, feats_train);
 
 	elseif strcmp(kname, 'PolyMatchString')==1
