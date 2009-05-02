@@ -1,5 +1,13 @@
 2009-05-02  Soeren Sonnenburg <sonne@debian.org>
 
+	* NEWS: update NEWS
+	* Makefile.template: get some of the test to compile and actually
+	  run on OSX :)
+	* configure: don't fail when gnu sed is in path on osx
+	* Makefile.template, configure: set include paths, libpaths to
+	  allow testing of libshogun examples in non standard dirs, add
+	  ldflags to allow custom
+	* ChangeLog: updated changelog
 	* Makefile, Makefile.template: prefix make tests with
 	  LD_LIBRARY_PATH
 	* libshogun/lib/GCArray.h: fix docu
