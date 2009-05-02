@@ -253,7 +253,7 @@ check-examples: check-examples-template
 run-testsuite-libshogun:
 	true
 check-examples-libshogun:
-	cd ../../examples/libshogun && make check-examples
+	cd ../../examples/libshogun && make LIB_PATH=$(DESTDIR)$(LIBDIR)check-examples
 
 run-testsuite-libshogunui:
 	true
@@ -266,44 +266,44 @@ check-examples-elwms:
 	true
 
 run-testsuite-python:
-	cd ../../testsuite/python && ( PYTHON=$(PYTHON) PYTHONPATH="$(DESTDIR)$(PYDIR)" ./test_all.sh	)
+	cd ../../testsuite/python && ( LD_LIBRARY_PATH=$(DESTDIR)$(LIBDIR) PYTHON=$(PYTHON) PYTHONPATH="$(DESTDIR)$(PYDIR)" ./test_all.sh	)
 check-examples-python:
-	cd ../../examples/python && ( PYTHON=$(PYTHON) PYTHONPATH="$(DESTDIR)$(PYDIR)" ./check.sh	)
+	cd ../../examples/python && ( LD_LIBRARY_PATH=$(DESTDIR)$(LIBDIR) PYTHON=$(PYTHON) PYTHONPATH="$(DESTDIR)$(PYDIR)" ./check.sh	)
 
 run-testsuite-r:
-	cd ../../testsuite/r && ( R_LIBS="$(DESTDIR)$(RDIR)" ./test_all.sh )
+	cd ../../testsuite/r && ( LD_LIBRARY_PATH=$(DESTDIR)$(LIBDIR) R_LIBS="$(DESTDIR)$(RDIR)" ./test_all.sh )
 check-examples-r:
-	cd ../../examples/r && ( R_LIBS="$(DESTDIR)$(RDIR)" ./check.sh )
+	cd ../../examples/r && ( LD_LIBRARY_PATH=$(DESTDIR)$(LIBDIR) R_LIBS="$(DESTDIR)$(RDIR)" ./check.sh )
 
 run-testsuite-cmdline:
-	cd ../../testsuite/cmdline && ( PATH="$(DESTDIR)$(BINDIR)"  ./test_all.sh )
+	cd ../../testsuite/cmdline && ( LD_LIBRARY_PATH=$(DESTDIR)$(LIBDIR) PATH="$(DESTDIR)$(BINDIR)"  ./test_all.sh )
 check-examples-cmdline:
-	cd ../../examples/cmdline && ( PATH="$(DESTDIR)$(BINDIR)"  ./check.sh )
+	cd ../../examples/cmdline && ( LD_LIBRARY_PATH=$(DESTDIR)$(LIBDIR) PATH="$(DESTDIR)$(BINDIR)"  ./check.sh )
 
 run-testsuite-octave:
-	cd ../../testsuite/octave && ( OCTAVE_LOADPATH="$(DESTDIR)$(OCTDIR):" ./test_all.sh - octave )
+	cd ../../testsuite/octave && ( LD_LIBRARY_PATH=$(DESTDIR)$(LIBDIR) OCTAVE_LOADPATH="$(DESTDIR)$(OCTDIR):" ./test_all.sh - octave )
 check-examples-octave:
-	cd ../../examples/octave && ( OCTAVE_LOADPATH="$(DESTDIR)$(OCTDIR):" ./check.sh )
+	cd ../../examples/octave && ( LD_LIBRARY_PATH=$(DESTDIR)$(LIBDIR) OCTAVE_LOADPATH="$(DESTDIR)$(OCTDIR):" ./check.sh )
 
 run-testsuite-matlab:
-	cd ../../testsuite/matlab && ( ln -sf ../../src/matlab/$(TEMPLATE_TARGET) ; ./test_all.sh - matlab)
+	cd ../../testsuite/matlab && ( ln -sf ../../src/matlab/$(TEMPLATE_TARGET) ; LD_LIBRARY_PATH=$(DESTDIR)$(LIBDIR) ./test_all.sh - matlab)
 check-examples-matlab:
 	cd ../../examples/matlab && ./check.sh
 
 run-testsuite-python_modular:
-	cd ../../testsuite/python_modular && ( PYTHON=$(PYTHON) PYTHONPATH="$(DESTDIR)$(PYDIR)" ./test_all.sh    )
+	cd ../../testsuite/python_modular && ( LD_LIBRARY_PATH=$(DESTDIR)$(LIBDIR) PYTHON=$(PYTHON) PYTHONPATH="$(DESTDIR)$(PYDIR)" ./test_all.sh    )
 check-examples-python_modular:
-	cd ../../examples/python_modular && ( PYTHON=$(PYTHON) PYTHONPATH="$(DESTDIR)$(PYDIR)" ./check.sh    )
+	cd ../../examples/python_modular && ( LD_LIBRARY_PATH=$(DESTDIR)$(LIBDIR) PYTHON=$(PYTHON) PYTHONPATH="$(DESTDIR)$(PYDIR)" ./check.sh    )
 
 run-testsuite-r_modular:
-	cd ../../testsuite/r_modular && ( R_LIBS="$(DESTDIR)$(RDIR)" ./test_all.sh )
+	cd ../../testsuite/r_modular && ( LD_LIBRARY_PATH=$(DESTDIR)$(LIBDIR) R_LIBS="$(DESTDIR)$(RDIR)" ./test_all.sh )
 check-examples-r_modular:
-	cd ../../examples/r_modular && ( R_LIBS="$(DESTDIR)$(RDIR)" ./check.sh )
+	cd ../../examples/r_modular && ( LD_LIBRARY_PATH=$(DESTDIR)$(LIBDIR) R_LIBS="$(DESTDIR)$(RDIR)" ./check.sh )
 
 run-testsuite-octave_modular:
-	cd ../../testsuite/octave_modular && ( OCTAVE_LOADPATH="$(DESTDIR)$(OCTDIR)/shogun:" ./test_all.sh )
+	cd ../../testsuite/octave_modular && ( LD_LIBRARY_PATH=$(DESTDIR)$(LIBDIR) OCTAVE_LOADPATH="$(DESTDIR)$(OCTDIR)/shogun:" ./test_all.sh )
 check-examples-octave_modular:
-	cd ../../examples/octave_modular && ( OCTAVE_LOADPATH="$(DESTDIR)$(OCTDIR)/shogun:" ./check.sh )
+	cd ../../examples/octave_modular && ( LD_LIBRARY_PATH=$(DESTDIR)$(LIBDIR) OCTAVE_LOADPATH="$(DESTDIR)$(OCTDIR)/shogun:" ./check.sh )
 
 lib/versionstring.h:    $(SVNEntries) 
 	        sh ../.version.sh > $@

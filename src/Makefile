@@ -46,7 +46,9 @@ uninstall:
 	@test -z "$(RDIR)" || rm -rf "$(DESTDIR)$(RDIR)/shogun"
 	@test -z "$(OCTDIR)" || rm -rf "$(DESTDIR)$(OCTDIR)/shogun"
 
-tests: run-testsuite check-examples
+tests:
+	$(MAKE) check-examples
+	$(MAKE) run-testsuite
 
 run-testsuite: $(PARTDEPS)
 	+$(foreach part, $(PARTS), make -C $(part) run-testsuite-$(part) &&) true
