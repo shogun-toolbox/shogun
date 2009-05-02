@@ -5,6 +5,7 @@ init_shogun
 addpath('tools');
 fm_train_real=load_matrix('../data/fm_train_real.dat');
 fm_test_real=load_matrix('../data/fm_test_real.dat');
+label_train_twoclass=load_matrix('../data/label_train_twoclass.dat');
 label_train_dna=load_matrix('../data/label_train_dna.dat');
 fm_train_dna=load_matrix('../data/fm_train_dna.dat');
 fm_test_dna=load_matrix('../data/fm_test_dna.dat');
@@ -314,7 +315,7 @@ k=3;
 width=1.2;
 size_cache=10;
 
-kernel=OligoKernel(size_cache, k, width);
+kernel=OligoStringKernel(size_cache, k, width);
 kernel.init(feats_train, feats_train);
 
 km_train=kernel.get_kernel_matrix();
@@ -611,23 +612,12 @@ km_test=kernel.get_kernel_matrix();
 disp('AUC')
 
 feats_train=RealFeatures(fm_train_real);
-feats_test=RealFeatures(fm_test_real);
 width=1.7;
-subkernel=GaussianKernel(feats_train, feats_test, width);
+subkernel=GaussianKernel(feats_train, feats_train, width);
 
-num_feats=2; % do not change!
-len_train=11;
-len_test=17;
-data=uint16((len_train-1)*rand(num_feats, len_train));
-feats_train=WordFeatures(data);
-data=uint16((len_test-1)*rand(num_feats, len_test));
-feats_test=WordFeatures(data);
-
-kernel=AUCKernel(feats_train, feats_train, subkernel);
-
+kernel=AUCKernel(0, subkernel);
+kernel.setup_auc_maximization( Labels(label_train_twoclass) );
 km_train=kernel.get_kernel_matrix();
-kernel.init(feats_train, feats_test);
-km_test=kernel.get_kernel_matrix();
 
 % combined
 disp('Combined')
