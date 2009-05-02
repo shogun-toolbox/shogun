@@ -1,11 +1,12 @@
 #CXXFLAGS=-I/usr/local/include/shogun
 #LINKFLAGS=-L/usr/local/lib -lshogun
-CXXFLAGS=-O3 -g
-LINKFLAGS=-lshogun
+LIB_PATH=/usr/lib
+CXXFLAGS=-O3 -g $(INCLUDES)
+ifneq (,$(LIB_PATH))
+	LINKFLAGS+=-L$(LIB_PATH)
+endif
+LINKFLAGS=-L$(LIB_PATH) -lshogun
 TARGETS = rbf_svm gnmpmkl minimal minimal_svm dyn_int rbf_kernel revlin_kernel indirect_object gc_array
-LIB_PATH=
-
-all: $(TARGETS)
 
 clean:
 	rm -f $(TARGETS)

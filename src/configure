@@ -666,6 +666,7 @@ Miscellaneous options:
   --cxx=COMPILER                use this C++ compiler to build shogun [g++]
   --cflags=OPTIONS              use these C compiler options
   --cxxflags=OPTIONS            use these C++ compiler options
+  --ldflags=OPTIONS             use these additional linker options
   --target=PLATFORM             target platform (i386-linux, arm-linux, etc)
   --install-path=PATH           the path to a custom install program (useful if
                                 your OS uses a GNU-incompatible install utility by
@@ -763,6 +764,9 @@ for ac_option do
     ;;
   --cxxflags=*)
     COMPFLAGS_CPP=`echo $ac_option | cut -d '=' -f 2` ;
+	;;
+  --ldflags=*)
+	  LINKFLAGS=`echo $ac_option | cut -d '=' -f 2` ;
     ;;
   --as=*)
     _as=`echo $ac_option | cut -d '=' -f 2`

@@ -253,7 +253,7 @@ check-examples: check-examples-template
 run-testsuite-libshogun:
 	true
 check-examples-libshogun:
-	cd ../../examples/libshogun && make LIB_PATH=$(DESTDIR)$(LIBDIR)check-examples
+	cd ../../examples/libshogun && make LIB_PATH=$(DESTDIR)$(LIBDIR) INCLUDES=-I$(DESTDIR)$(INCDIR) check-examples
 
 run-testsuite-libshogunui:
 	true
