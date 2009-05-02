@@ -64,11 +64,8 @@ def get_string (ftype, data, alphabet=features.DNA):
 	@return Dict with StringFeatures train/test
 	"""
 
-	train=eval('features.String'+ftype+"Features(alphabet)")
-	train.set_string_features(data['train'])
-	test=eval('features.String'+ftype+"Features(alphabet)")
-	test.set_string_features(data['test'])
-
+	train=eval('features.String'+ftype+"Features(data['train'], alphabet)")
+	test=eval('features.String'+ftype+"Features(data['test'], alphabet)")
 	return {'train':train, 'test':test}
 
 
@@ -87,14 +84,12 @@ def get_string_complex (ftype, data, alphabet=features.DNA,
 
 	feats={}
 
-	charfeat=features.StringCharFeatures(alphabet)
-	charfeat.set_string_features(data['train'])
+	charfeat=features.StringCharFeatures(data['train'], alphabet)
 	feat=eval('features.String'+ftype+'Features(alphabet)')
 	feat.obtain_from_char(charfeat, order-1, order, gap, reverse)
 	feats['train']=feat
 
-	charfeat=features.StringCharFeatures(alphabet)
-	charfeat.set_string_features(data['test'])
+	charfeat=features.StringCharFeatures(data['test'], alphabet)
 	feat=eval('features.String'+ftype+'Features(alphabet)')
 	feat.obtain_from_char(charfeat, order-1, order, gap, reverse)
 	feats['test']=feat
@@ -116,14 +111,12 @@ def get_wd (data, order=WORDSTRING_ORDER):
 
 	feats={}
 
-	charfeat=features.StringCharFeatures(features.DNA)
-	charfeat.set_string_features(data['train'])
+	charfeat=features.StringCharFeatures(data['train'], features.DNA)
 	bytefeat=features.StringByteFeatures(features.RAWDNA)
 	bytefeat.obtain_from_char(charfeat, 0, 1, 0, False)
 	feats['train']=features.WDFeatures(bytefeat, order, order)
 
-	charfeat=features.StringCharFeatures(features.DNA)
-	charfeat.set_string_features(data['test'])
+	charfeat=features.StringCharFeatures(data['test'], features.DNA)
 	bytefeat=features.StringByteFeatures(features.RAWDNA)
 	bytefeat.obtain_from_char(charfeat, 0, 1, 0, False)
 	feats['test']=features.WDFeatures(bytefeat, order, order)
