@@ -2048,7 +2048,11 @@ EOF
 
 	if darwin
 	then
-		SEDMI='sed -i ""'
+		if ! sed --version | grep -q "GNU sed"
+		then
+			SEDMI='sed -i ""'
+		fi
+
 		LIBRARY_PATH="DYLD_LIBRARY_PATH"
 		EXT_LIB=dylib
 		SONAMEOPT="-install_name "
