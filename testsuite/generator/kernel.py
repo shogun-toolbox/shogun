@@ -445,7 +445,7 @@ def _run_feats_string ():
 	params['args']={'key': ('size', 'degree'), 'val': (10, 1)}
 	_compute(feats, params)
 
-	params['name']='Oligo'
+	params['name']='OligoString'
 	params['args']={'key': ('size', 'k', 'width'), 'val': (10, 3, 1.2)}
 	_compute(feats, params)
 	params['args']={'key': ('size', 'k', 'width'), 'val': (10, 4, 1.7)}
