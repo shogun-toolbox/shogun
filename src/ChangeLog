@@ -1,3 +1,209 @@
+2009-05-02  Soeren Sonnenburg <sonne@debian.org>
+
+	* NEWS: new release tomorrow if things build under osx with this
+	  workaround
+	* libshogun/lib/Mathematics.h: it seems that we get clashes with
+	  the standard template library...
+
+2009-05-01  Cheng Soon Ong <chengsoon.ong@tuebingen.mpg.de>
+
+	* libshogun/classifier/svm/SVM.h,
+	  libshogun/classifier/svm/SVM_light.cpp: Count the number of times
+	  beta is updated in MKL
+
+2009-04-29  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/lib/GCArray.h, modular/Library.i: throw away operator
+	  overloading and use get + set and add an example. things compile
+	  now again.
+	* libshogun/classifier/svm/SVM_light.cpp,
+	  libshogun/classifier/svm/ssl.cpp,
+	  libshogun/distributions/hmm/HMM.cpp,
+	  libshogun/features/Alphabet.h,
+	  libshogun/features/ImplicitWeightedSpecFeatures.h,
+	  libshogun/features/SimpleFeatures.h,
+	  libshogun/features/StringFeatures.h, libshogun/lib/GCArray.h,
+	  libshogun/lib/Mathematics.h, libshogun/structure/DynProg.cpp,
+	  libshogunui/GUIStructure.cpp: define is_infinity, is_nan,
+	  is_finite in CMath and make others use it, closer to compiling
+	  (GCArray still fails...)
+
+2009-04-28  Soeren Sonnenburg <sonne@debian.org>
+
+	* modular/Library.i: put GCArray into .i file
+	* libshogun/structure/Plif.h: remove erreaneously introduced plif
+	  functiosn
+	* libshogun/lib/GCArray.h, libshogun/structure/DynProg.cpp,
+	  libshogun/structure/Plif.cpp, libshogun/structure/Plif.h,
+	  libshogunui/GUIStructure.cpp: - introduce garbage collecting
+	  array (GCArray)
+	  - cleanup Plifs: never ever delete[] arrays in core functions.
+	  assume intial size (or size that is set using set_plif_length) is
+	  correct
+
+2009-04-26  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/lib/Mathematics.h: use isfinite everywhere as this is
+	  in the C99 standard
+	* Makefile.template: fix warnings on build dependencies for python
+	  modular on mac
+	* configure: build fixes for osx
+	* configure: python extensions always have an .so suffix on *nix
+	  and darwin as well
+
+2009-04-23  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/classifier/KNN.cpp,
+	  libshogun/distance/MinkowskiMetric.cpp: use test data size when
+	  computing outputs in KNN
+
+2009-04-21  Gunnar Raetsch <Gunnar.Raetsch@tuebingen.mpg.de>
+
+	* libshogun/lib/BitString.h, libshogun/lib/Mathematics.h: minor
+	  modifications and some testcode.
+	* python_modular/swig_typemaps.i:
+
+2009-04-18  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/lib/BitString.h, libshogun/lib/IndirectObject.h:
+	  finally bitstring/indirect objects work together
+
+2009-04-16  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/lib/BitString.h: still debugging
+	* libshogun/lib/BitString.h: add example on how to access indirect
+	  objects
+
+2009-04-14  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/lib/IndirectObject.cpp, libshogun/lib/IndirectObject.h:
+	  declare static variable in header file
+
+2009-04-13  Soeren Sonnenburg <sonne@debian.org>
+
+	* modular/Structure.i: apply nd-array typemap
+	* libshogun/lib/IndirectObject.cpp, libshogun/lib/IndirectObject.h:
+	  create an indirect object - allows for quicksort etc only
+	  modifying an index list
+	* python_modular/swig_typemaps.i: input typemap for N-dimensional
+	  python arrays
+	* configure: fix syntax errors in script
+
+2009-04-12  Soeren Sonnenburg <sonne@debian.org>
+
+	* .r-install.sh, Makefile, Makefile.template, configure: potential
+	  install fixes for OSX
+
+2009-04-11  Soeren Sonnenburg <sonne@debian.org>
+
+	* NEWS: improve tutorial
+
+2009-04-10  Soeren Sonnenburg <sonne@debian.org>
+
+	* configure, libshogun/classifier/svm/libocas.cpp,
+	  libshogun/classifier/svm/libocas_common.h,
+	  libshogun/classifier/svm/qpssvmlib.cpp: use -funroll-loops and
+	  CMath::{max,min,abs}
+	* libshogun/lib/BitString.h, libshogun/lib/DynInt.h,
+	  libshogun/lib/Mathematics.h: move displaybits to lib/Mathematics,
+	  further work on bitstring
+
+2009-04-08  Soeren Sonnenburg <sonne@debian.org>
+
+	* configure, libshogun/lib/lapack.cpp: compile fixes for darwin
+	* NEWS: update NEWS
+
+2009-04-08  Gunnar Raetsch <Gunnar.Raetsch@tuebingen.mpg.de>
+
+	* libshogunui/SGInterface.cpp: more memleaks fixed
+	* libshogun/structure/DynProg.cpp, libshogun/structure/DynProg.h,
+	  libshogunui/GUIStructure.cpp, libshogunui/GUIStructure.h,
+	  libshogunui/SGInterface.cpp: fixed some memory leaks
+
+2009-04-07  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/features/StringFeatures.h: compile fixes for modular
+	  interfaces
+
+2009-04-05  Soeren Sonnenburg <sonne@debian.org>
+
+	* configure: don't set -undefined error on OSX as this conflicts
+	  with R and other builds
+	* libshogun/features/StringFeatures.h, libshogun/lib/BitString.h:
+	  add bitstring to efficiently represent huge strings
+
+2009-04-03  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/features/StringFeatures.h: provide function to
+	  translate embedded bits back to string
+
+2009-04-02  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/features/StringFeatures.h: speed up embedding
+	* libshogun/features/Alphabet.h,
+	  libshogun/features/StringFeatures.h: add inplace remapping for
+	  fastq files
+	* libshogun/features/StringFeatures.h, libshogun/lib/DynInt.h: fix
+	  bitshift ops
+
+2009-04-01  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/lib/Time.cpp: time outputs should use SG_PRINT
+	* libshogun/features/Alphabet.cpp, libshogun/features/Alphabet.h,
+	  libshogun/features/StringFeatures.h, libshogun/lib/DynInt.h: add
+	  dynamic size integers and support for them in
+	  stringfeatures/alphabet
+	* libshogun/features/StringFeatures.h: fast fasta file reading
+	* libshogun/features/Alphabet.cpp, libshogun/features/Alphabet.h,
+	  libshogun/features/StringFeatures.h,
+	  libshogun/lib/MemoryMappedFile.h, libshogun/lib/SimpleFile.h:
+	  fast reading of fastq files
+
+2009-03-31  Soeren Sonnenburg <sonne@debian.org>
+
+	* NEWS, libshogun/lib/Mathematics.h: always use the central element
+	  as pivot element. it speeds up things when the array is already
+	  sorted.
+
+2009-03-30  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/lib/Mathematics.h: - speed up qsort by factor of 2
+	  - also provide convenience function for parallel qsort, to be
+	  called like CMath::parallel_qsort_index<uint64_t>(a, b, LEN,
+	  num_threads), gets quite some further speedup here
+
+2009-03-27  Soeren Sonnenburg <sonne@debian.org>
+
+	* NEWS, libshogun/base/Parallel.h, libshogun/base/SGObject.h,
+	  libshogun/base/Version.h, libshogun/classifier/svm/SVMSGD.h,
+	  libshogun/classifier/svm/Tron.h,
+	  libshogun/classifier/svm/gmnplib.h,
+	  libshogun/classifier/svm/gnpplib.h,
+	  libshogun/classifier/svm/qpbsvmlib.h,
+	  libshogun/distributions/hmm/GHMM.h,
+	  libshogun/distributions/hmm/LinearHMM.h,
+	  libshogun/evaluation/PerformanceMeasures.cpp,
+	  libshogun/evaluation/PerformanceMeasures.h,
+	  libshogun/features/Alphabet.h,
+	  libshogun/features/AttributeFeatures.h,
+	  libshogun/features/Labels.h,
+	  libshogun/features/MindyGramFeatures.h,
+	  libshogun/kernel/OligoStringKernel.h, libshogun/lib/Array.h,
+	  libshogun/lib/Array2.h, libshogun/lib/Array3.h,
+	  libshogun/lib/Cache.h, libshogun/lib/Cplex.h,
+	  libshogun/lib/DynamicArray.h, libshogun/lib/File.h,
+	  libshogun/lib/List.h, libshogun/lib/Signal.h,
+	  libshogun/lib/SimpleFile.h, libshogun/lib/Time.h,
+	  libshogun/lib/Trie.h, libshogun/structure/DynProg.h,
+	  libshogun/structure/Plif.h, modular/Evaluation.i: - Make sure
+	  that all destructors are declared virtual.
+	  - get_name function was undefined in Evaluation causing the
+	  PerformanceMeasures class to be defunct.
+
+2009-03-23  Soeren Sonnenburg <sonne@debian.org>
+
+	* ChangeLog, NEWS: updated changelog
+
 2009-03-22  Soeren Sonnenburg <sonne@debian.org>
 
 	* libshogun/features/Alphabet.h,
