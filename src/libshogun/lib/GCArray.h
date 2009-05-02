@@ -13,7 +13,14 @@
 
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/common.h>
-
+/** @brief Template class GCArray implements a garbage collecting static array
+ *
+ * This array is meant to be used for Shogun Objects (CSGObject) only, as it
+ * deals with garbage collection, i.e. on read and array assignment the
+ * reference count is increased (and decreased on delete and overwriting
+ * elements).
+ *
+ * */
 template <class T> class CGCArray : public CSGObject
 {
 	public:
