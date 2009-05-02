@@ -1,5 +1,10 @@
 2009-05-02  Soeren Sonnenburg <sonne@debian.org>
 
+	* Makefile, Makefile.template: prefix make tests with
+	  LD_LIBRARY_PATH
+	* libshogun/lib/GCArray.h: fix docu
+	* libshogun/lib/Mathematics.h: workaround broke compilation here :(
+	* ChangeLog: updated changelog
 	* NEWS: new release tomorrow if things build under osx with this
 	  workaround
 	* libshogun/lib/Mathematics.h: it seems that we get clashes with
