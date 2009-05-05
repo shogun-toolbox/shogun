@@ -36,16 +36,6 @@
 #include <stdlib.h>
 #include <time.h> 
 
-#ifdef USE_CPLEX
-extern "C" {
-#include <ilcplex/cplex.h>
-}
-#endif
-
-#ifdef USE_GLPK
-#include <glpk.h>
-#endif
-
 # define VERSION       "V3.50 -- correct??"
 # define VERSION_DATE  "01.11.00 -- correct??"
 
@@ -459,124 +449,6 @@ class CSVMLight : public CSVM
 	float64_t* a_old, int32_t *working2dnum, int32_t totdoc, float64_t *lin,
 	float64_t *aicache, float64_t* c);
 
-  // MKL stuff
-
-  /** perform single mkl iteration
-   *
-   * given the alphas, compute the corresponding optimal betas
-   *
-   * @param beta new betas (kernel weights)
-   * @param old_beta old betas (previous kernel weights)
-   * @param num_kernels number of kernels
-   * @param label (from svmlight label)
-   * @param active2dnum (from svmlight active2dnum)
-   * @param a (from svmlight alphas)
-   * @param lin (from svmlight linear components)
-   * @param sumw 1/2*alpha'*K_j*alpha for each kernel j
-   * @param inner_iters number of required internal iterations
-   *
-   */
-  void perform_mkl_step(float64_t* beta, float64_t* old_beta, int num_kernels,
-		  int32_t* label, int32_t* active2dnum,
-		  float64_t* a, float64_t* lin, float64_t* sumw, int32_t& inner_iters);
-
-  /** given the alphas, compute the corresponding optimal betas
-   *
-   * @param beta new betas (kernel weights)
-   * @param old_beta old betas (previous kernel weights)
-   * @param num_kernels number of kernels
-   * @param sumw 1/2*alpha'*K_j*alpha for each kernel j
-   * @param suma (sum over alphas)
-   * @param mkl_objective the current mkl objective
-   *
-   * @return new objective value
-   */
-  float64_t compute_optimal_betas_analytically(float64_t* beta, float64_t* old_beta,
-		  int32_t num_kernels, const float64_t* sumw, float64_t suma, float64_t mkl_objective);
-
-/*  float64_t compute_optimal_betas_gradient(float64_t* beta, float64_t* old_beta,
-		  int32_t num_kernels, const float64_t* sumw, float64_t suma, float64_t mkl_objective);
-*/
-
-  /** given the alphas, compute the corresponding optimal betas
-   *
-   * @param beta new betas (kernel weights)
-   * @param old_beta old betas (previous kernel weights)
-   * @param num_kernels number of kernels
-   * @param sumw 1/2*alpha'*K_j*alpha for each kernel j
-   * @param suma (sum over alphas)
-   * @param mkl_objective the current mkl objective
-   *
-   * @return new objective value
-   */
-  float64_t compute_optimal_betas_newton(float64_t* beta, float64_t* old_beta,
-		  int32_t num_kernels, const float64_t* sumw, float64_t suma, float64_t mkl_objective);
-
-  /** given the alphas, compute the corresponding optimal betas
-   * using a lp for 1-norm mkl, a qcqp for 2-norm mkl and an
-   * iterated qcqp for general q-norm mkl.
-   *
-   * @param x new betas (kernel weights)
-   * @param old_beta old betas (previous kernel weights)
-   * @param num_kernels number of kernels
-   * @param sumw 1/2*alpha'*K_j*alpha for each kernel j
-   * @param suma (sum over alphas)
-   * @param inner_iters number of internal iterations (for statistics)
-   *
-   * @return new objective value
-   */
-  float64_t compute_optimal_betas_via_cplex(float64_t* x, float64_t* old_beta, int32_t num_kernels,
-		  const float64_t* sumw, float64_t suma, int32_t& inner_iters);
-
-  /** given the alphas, compute the corresponding optimal betas
-   * using a lp for 1-norm mkl
-   *
-   * @param beta new betas (kernel weights)
-   * @param old_beta old betas (previous kernel weights)
-   * @param num_kernels number of kernels
-   * @param sumw 1/2*alpha'*K_j*alpha for each kernel j
-   * @param suma (sum over alphas)
-   * @param inner_iters number of internal iterations (for statistics)
-   *
-   * @return new objective value
-   */
-  float64_t compute_optimal_betas_via_glpk(float64_t* beta, float64_t* old_beta,
-		  int num_kernels, const float64_t* sumw, float64_t suma, int32_t& inner_iters);
-
-  /** update linear component MKL
-   *
-   * @param docs docs
-   * @param label label
-   * @param active2dnum active 2D num
-   * @param a a
-   * @param a_old old a
-   * @param working2dnum working 2D num
-   * @param totdoc totdoc
-   * @param lin lin
-   * @param aicache ai cache
-   */
-  void update_linear_component_mkl(
-	int32_t* docs, int32_t *label, int32_t *active2dnum, float64_t *a,
-	float64_t* a_old, int32_t *working2dnum, int32_t totdoc, float64_t *lin,
-	float64_t *aicache);
-
-  /** update linear component MKL
-   *
-   * @param docs docs
-   * @param label label
-   * @param active2dnum active 2D num
-   * @param a a
-   * @param a_old old a
-   * @param working2dnum working 2D num
-   * @param totdoc totdoc
-   * @param lin lin
-   * @param aicache ai cache
-   */
-  void update_linear_component_mkl_linadd(
-	int32_t* docs, int32_t *label, int32_t *active2dnum, float64_t *a,
-	float64_t* a_old, int32_t *working2dnum, int32_t totdoc, float64_t *lin,
-	float64_t *aicache);
-
   /** select next qp subproblem grad
    *
    * @param label label
@@ -714,12 +586,6 @@ protected:
 	 */
 	static void* update_linear_component_linadd_helper(void* p);
 
-	/** helper for update linear component MKL linadd
-	 *
-	 * @param p p
-	 */
-	static void* update_linear_component_mkl_linadd_helper(void* p);
-
 	/** helper for reactivate inactive examples vanilla
 	 *
 	 * @param p p
@@ -732,27 +598,6 @@ protected:
 	 */
 	static void* reactivate_inactive_examples_linadd_helper(void* p);
 
-#ifdef USE_CPLEX
-	void set_qnorm_constraints(float64_t* beta, int32_t num_kernels);
-
-	/** init cplex
-	 *
-	 * @return if init was successful
-	 */
-	bool init_cplex();
-
-	/** cleanup cplex
-	 *
-	 * @return if cleanup was successful
-	 */
-	bool cleanup_cplex();
-#endif
-
-#ifdef USE_GLPK
-	bool init_glpk();
-	bool cleanup_glpk();
-	inline bool check_lpx_status(LPX *lp);
-#endif
 	/** @return object name */
 	inline virtual const char* get_name() const { return "SVM_light"; }
 
@@ -802,20 +647,6 @@ protected:
   /** if kernel cache is used */
   bool use_kernel_cache;
 
-#ifdef USE_CPLEX
-  /** env */
-  CPXENVptr     env;
-  /** lp */
-  CPXLPptr      lp_cplex;
-#endif
-
-#ifdef USE_GLPK
-  /** lp */
-  LPX* lp_glpk;
-#endif
-
-  /** if lp is initialized */
-  bool lp_initialized ;
 };
 #endif //USE_SVMLIGHT
 #endif //_SVMLight_H___

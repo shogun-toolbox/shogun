@@ -88,12 +88,6 @@ class CSVM : public CKernelMachine
 		 */
 		inline void set_C(float64_t c1, float64_t c2) { C1=c1; C2=c2; }
 
-		/** set epsilon for weights
-		 *
-		 * @param eps new weight_epsilon
-		 */
-		inline void set_weight_epsilon(float64_t eps) { weight_epsilon=eps; }
-
 		/** set epsilon
 		 *
 		 * @param eps new epsilon
@@ -105,23 +99,6 @@ class CSVM : public CKernelMachine
 		 * @param eps new tube epsilon
 		 */
 		inline void set_tube_epsilon(float64_t eps) { tube_epsilon=eps; }
-
-		/** set C mkl
-		 *
-		 * @param C new C_mkl
-		 */
-		inline void set_C_mkl(float64_t C) { C_mkl = C; }
-
-		/** set mkl norm
-		 *
-		 * @param norm new mkl norm (1 or 2)
-		 */
-		inline void set_mkl_norm(float64_t norm)
-		{
-			if (norm<=0)
-				SG_ERROR("Norm must be > 0, e.g., 1-norm is the standard MKL; 2-norm nonsparse MKL\n");
-			mkl_norm = norm;
-		}
 
 		/** set qpsize
 		 *
@@ -140,12 +117,6 @@ class CSVM : public CKernelMachine
 		 * @return state of bias
 		 */
 		inline bool get_bias_enabled() { return use_bias; }
-
-		/** get epsilon for weights
-		 *
-		 * @return epsilon for weights
-		 */
-		inline float64_t get_weight_epsilon() { return weight_epsilon; }
 
 		/** get epsilon
 		 *
@@ -372,24 +343,6 @@ class CSVM : public CKernelMachine
 			return use_shrinking;
 		}
 
-		/** set state of mkl
-		 *
-		 * @param enable if mkl shall be enabled
-		 */
-		inline void set_mkl_enabled(bool enable)
-		{
-			use_mkl=enable;
-		}
-
-		/** get state of mkl
-		 *
-		 * @return if mkl is enabled
-		 */
-		inline bool get_mkl_enabled()
-		{
-			return use_mkl;
-		}
-
 		/** compute objective
 		 *
 		 * @return computed objective
@@ -444,12 +397,6 @@ class CSVM : public CKernelMachine
 		/** @return object name */
 		inline virtual const char* get_name() const { return "SVM"; }
 
-		/** get number of MKL iterations
-		 *
-		 * @return mkl_iterations
-		 */
-		inline int32_t get_mkl_iterations() { return mkl_iterations; }
-
 	protected:
 		/** @brief an SVM is defined by support vectors, their coefficients alpha
 		 * and the bias b ( + CKernelMachine::kernel) */
@@ -469,8 +416,6 @@ class CSVM : public CKernelMachine
 		TModel svm_model;
 		/** if SVM is loaded */
 		bool svm_loaded;
-		/** epsilon for multiple kernel learning */
-		float64_t weight_epsilon;
 		/** epsilon */
 		float64_t epsilon;
 		/** tube epsilon for support vector regression*/
@@ -481,10 +426,6 @@ class CSVM : public CKernelMachine
 		float64_t C1;
 		/** C2 */
 		float64_t C2;
-		/** norm used in mkl must be > 0 */
-		float64_t mkl_norm;
-		/** C_mkl */
-		float64_t C_mkl;
 		/** objective */
 		float64_t objective;
 		/** qpsize */
@@ -493,9 +434,5 @@ class CSVM : public CKernelMachine
 		bool use_bias;
 		/** if shrinking shall be used */
 		bool use_shrinking;
-		/** if mkl shall be used */
-		bool use_mkl;
-		/** number of mkl steps */
-		int32_t mkl_iterations;
 };
 #endif

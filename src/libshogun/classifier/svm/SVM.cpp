@@ -63,22 +63,18 @@ void CSVM::set_defaults(int32_t num_sv)
 	svm_model.num_svs=0;
 	svm_loaded=false;
 
-	weight_epsilon=1e-5;
 	epsilon=1e-5;
 	tube_epsilon=1e-2;
 
 	nu=0.5;
 	C1=1;
 	C2=1;
-	C_mkl=0;
-	mkl_norm=1;
 
 	objective=0;
 
 	qpsize=41;
 	use_bias=true;
 	use_shrinking=true;
-	use_mkl=false;
 	use_batch_computation=true;
 	use_linadd=true;
 
