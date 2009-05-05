@@ -727,7 +727,9 @@ bool CGUIClassifier::set_svr_tube_epsilon(float64_t tube_epsilon)
 bool CGUIClassifier::set_svm_one_class_nu(float64_t nu)
 {
 	if (nu<0 || nu>1)
-		svm_nu=0.5;
+		nu=0.5;
+
+	svm_nu=nu;
 	SG_INFO("Set to nu=%f.\n", svm_nu);
 
 	return true;
