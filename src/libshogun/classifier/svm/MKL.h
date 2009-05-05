@@ -28,27 +28,9 @@ extern "C" {
 class CMKL : public CSVM
 {
 	public:
-		CMKL(CSVM* s=NULL)
-			: CSVM(), svm(NULL), C_mkl(0), mkl_norm(1), 
-			mkl_iterations(0), epsilon(1e-5)
-	{
-		set_constraint_generator(s);
-#ifdef USE_CPLEX
-	lp_cplex = NULL ;
-	env = NULL ;
-#endif
+		CMKL(CSVM* s=NULL);
 
-#ifdef USE_GLPK
-	lp_glpk = NULL;
-#endif
-
-	lp_initialized = false ;
-	}
-
-		~CMKL()
-		{
-			SG_UNREF(svm);
-		}
+		~CMKL();
 
 		/** SVM to use as constraint generator in MKL SILP
 		 *

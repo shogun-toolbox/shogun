@@ -366,16 +366,17 @@ bool CGUIClassifier::train_svm()
 	SG_INFO("Starting SVM training on %ld vectors using C1=%lf C2=%lf epsilon=%lf\n", num_vec, svm_C1, svm_C2, svm_epsilon);
 
 	svm->set_bias_enabled(svm_use_bias);
+	/* mkl
 	svm->set_weight_epsilon(svm_weight_epsilon);
-	svm->set_mkl_norm(svm_mkl_norm);
+	svm->set_mkl_norm(svm_mkl_norm); 
+	svm->set_C_mkl(svm_C_mkl);
+	svm->set_mkl_enabled(svm_use_mkl); */
 	svm->set_epsilon(svm_epsilon);
 	svm->set_max_train_time(max_train_time);
 	svm->set_tube_epsilon(svm_tube_epsilon);
 	svm->set_nu(svm_nu);
-	svm->set_C_mkl(svm_C_mkl);
 	svm->set_C(svm_C1, svm_C2);
 	svm->set_qpsize(svm_qpsize);
-	svm->set_mkl_enabled(svm_use_mkl);
 	svm->set_shrinking_enabled(svm_use_shrinking);
 	svm->set_linadd_enabled(svm_use_linadd);
 	svm->set_batch_computation_enabled(svm_use_batch_computation);

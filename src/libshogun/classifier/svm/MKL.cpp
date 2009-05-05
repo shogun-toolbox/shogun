@@ -10,6 +10,27 @@
 
 #include "classifier/svm/MKL.h"
 
+CMKL::CMKL(CSVM* s)
+	: CSVM(), svm(NULL), C_mkl(0), mkl_norm(1), mkl_iterations(0), epsilon(1e-5)
+{
+	set_constraint_generator(s);
+#ifdef USE_CPLEX
+	lp_cplex = NULL ;
+	env = NULL ;
+#endif
+
+#ifdef USE_GLPK
+	lp_glpk = NULL;
+#endif
+
+	lp_initialized = false ;
+}
+
+CMKL::~CMKL()
+{
+	SG_UNREF(svm);
+}
+
 void CMKL::init_solver()
 {
 #ifdef USE_CPLEX
