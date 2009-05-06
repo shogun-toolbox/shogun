@@ -419,19 +419,34 @@ CSGInterfaceMethod sg_methods[]=
 		USAGE_O(N_GET_SVM_OBJECTIVE, "objective")
 	},
 	{
+		N_COMPUTE_SVM_PRIMAL_OBJECTIVE,
+		(&CSGInterface::cmd_compute_svm_primal_objective),
+		USAGE_O(N_COMPUTE_SVM_PRIMAL_OBJECTIVE, "objective")
+	},
+	{
 		N_COMPUTE_SVM_DUAL_OBJECTIVE,
 		(&CSGInterface::cmd_compute_svm_dual_objective),
 		USAGE_O(N_COMPUTE_SVM_DUAL_OBJECTIVE, "objective")
 	},
 	{
-		N_COMPUTE_SVM_PRIMAL_OBJECTIVE,
+		N_COMPUTE_MKL_PRIMAL_OBJECTIVE,
 		(&CSGInterface::cmd_compute_svm_primal_objective),
-		USAGE_O(N_COMPUTE_SVM_OBJECTIVE, "objective")
+		USAGE_O(N_COMPUTE_MKL_PRIMAL_OBJECTIVE, "objective")
 	},
 	{
 		N_COMPUTE_MKL_DUAL_OBJECTIVE,
 		(&CSGInterface::cmd_compute_mkl_dual_objective),
 		USAGE_O(N_COMPUTE_MKL_DUAL_OBJECTIVE, "objective")
+	},
+	{
+		N_COMPUTE_RELATIVE_MKL_DUALITY_GAP,
+		(&CSGInterface::cmd_compute_relative_mkl_duality_gap),
+		USAGE_O(N_COMPUTE_RELATIVE_MKL_DUALITY_GAP, "gap")
+	},
+	{
+		N_COMPUTE_ABSOLUTE_MKL_DUALITY_GAP,
+		(&CSGInterface::cmd_compute_absolute_mkl_duality_gap),
+		USAGE_O(N_COMPUTE_ABSOLUTE_MKL_DUALITY_GAP, "gap")
 	},
 	{
 		N_DO_AUC_MAXIMIZATION,
@@ -4615,6 +4630,38 @@ bool CSGInterface::cmd_compute_mkl_dual_objective()
 		SG_ERROR("No SVM set.\n");
 
 	set_real(svm->compute_mkl_dual_objective());
+
+	return true;
+}
+
+bool CSGInterface::cmd_compute_relative_mkl_duality_gap()
+{
+	if (m_nrhs!=1 || !create_return_values(1))
+		return false;
+
+	CSVM* svm=(CSVM*) ui_classifier->get_classifier();
+	if (!svm)
+		SG_ERROR("No SVM set.\n");
+
+	float64_t primal=svm->compute_mkl_dual_objective();
+	float64_t dual=svm->compute_mkl_primal_objective();
+	set_real((primal-dual)/dual);
+
+	return true;
+}
+
+bool CSGInterface::cmd_compute_absolute_mkl_duality_gap()
+{
+	if (m_nrhs!=1 || !create_return_values(1))
+		return false;
+
+	CSVM* svm=(CSVM*) ui_classifier->get_classifier();
+	if (!svm)
+		SG_ERROR("No SVM set.\n");
+
+	float64_t primal=svm->compute_mkl_dual_objective();
+	float64_t dual=svm->compute_mkl_primal_objective();
+	set_real(dual-primal);
 
 	return true;
 }

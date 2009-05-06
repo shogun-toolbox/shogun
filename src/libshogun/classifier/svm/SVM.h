@@ -402,6 +402,15 @@ class CSVM : public CKernelMachine
 		 */
 		float64_t compute_svm_primal_objective();
 
+		/** compute mkl primal objective
+		 *
+		 * @return computed mkl primal objective
+		 */
+		inline float64_t compute_mkl_primal_objective()
+		{
+			return compute_svm_primal_objective();
+		}
+
 		/** compute mkl dual objective
 		 *
 		 * @return computed dual objective

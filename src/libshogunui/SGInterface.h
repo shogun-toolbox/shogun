@@ -232,6 +232,10 @@ class CSGInterface : public CSGObject
 		bool cmd_compute_svm_dual_objective();
 		/** compute SVM objective from scratch*/
 		bool cmd_compute_mkl_dual_objective();
+		/** compute relative mkl duality gap */
+		bool cmd_compute_relative_mkl_duality_gap();
+		/** compute absolute mkl duality gap */
+		bool cmd_compute_absolute_mkl_duality_gap();
 		/** train classifier/SVM */
 		bool cmd_train_classifier();
 		/** test SVM */
