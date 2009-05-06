@@ -2048,7 +2048,7 @@ EOF
 
 	if darwin
 	then
-		if ! sed --version | grep -q "GNU sed"
+		if ! sed --version 2>/dev/null | grep -q "GNU sed"
 		then
 			SEDMI='sed -i ""'
 		fi
