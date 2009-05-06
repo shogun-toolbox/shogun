@@ -178,9 +178,9 @@ bool CMKL::train()
 	if (epsilon<=0)
 		epsilon=1e-2 ;
 	SG_DEBUG( "mkl_epsilon = %1.1e\n", epsilon) ;
-	mkl_iterations = 0;
 	SG_DEBUG( "C_mkl = %1.1e\n", C_mkl) ;
 	SG_DEBUG( "mkl_norm = %1.3e\n", mkl_norm);
+
 #ifdef USE_CPLEX
 	cleanup_cplex();
 
@@ -191,6 +191,8 @@ bool CMKL::train()
 #ifdef USE_CPLEX
 	cleanup_cplex();
 #endif
+
+	mkl_iterations = 0;
 	
 	if (interleaved_optimization)
 		svm->set_callback_function(CMKL::perform_mkl_step);
@@ -200,6 +202,9 @@ bool CMKL::train()
 		{
 			svm->train();
 			perform_mkl_step();
+			compute_wgap();
+
+			mkl_iterations++;
 		}
 	}
 

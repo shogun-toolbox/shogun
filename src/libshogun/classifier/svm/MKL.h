@@ -28,13 +28,19 @@ extern "C" {
 class CMKL : public CSVM
 {
 	public:
+		/** Constructor
+		 *
+		 * @param s SVM to use as constraint generator in MKL SILP
+		 */
 		CMKL(CSVM* s=NULL);
 
-		~CMKL();
+		/** Destructor
+		 */
+		virtual ~CMKL();
 
 		/** SVM to use as constraint generator in MKL SILP
 		 *
-		 * @param C new C_mkl
+		 * @param s svm
 		 */
 		void set_constraint_generator(CSVM* s)
 		{
@@ -43,7 +49,7 @@ class CMKL : public CSVM
 			svm=s;
 		}
 
-		bool train();
+		virtual bool train();
 
 		/** set C mkl
 		 *
@@ -57,33 +63,22 @@ class CMKL : public CSVM
 		 */
 		inline void set_mkl_norm(float64_t norm)
 		{
-			if (norm<=0)
-				SG_ERROR("Norm must be > 0, e.g., 1-norm is the standard MKL; 2-norm nonsparse MKL\n");
+			if (norm<1)
+				SG_ERROR("Norm must be >= 1, e.g., 1-norm is the standard MKL; 2-norm nonsparse MKL\n");
 			mkl_norm = norm;
 		}
 
-		/** set epsilon for weights
+		/** set epsilon (optimization accuracy for kernel weights)
 		 *
 		 * @param eps new weight_epsilon
 		 */
 		inline void set_epsilon(float64_t eps) { epsilon=eps; }
 
-		/** get epsilon for weights
+		/** get epsilon for weights (optimization accuracy for kernel weights)
 		 *
 		 * @return epsilon for weights
 		 */
 		inline float64_t get_epsilon() { return epsilon; }
-
-		/** classify one example
-		 *
-		 * @param num which example to classify
-		 * @return classified value
-		 */
-		virtual float64_t classify_example(int32_t num)
-		{
-			ASSERT(svm);
-			return svm->classify_example(num);
-		}
 
 		/** get number of MKL iterations
 		 *
@@ -106,73 +101,11 @@ class CMKL : public CSVM
 		 * @param inner_iters number of required internal iterations
 		 *
 		 */
-		void perform_mkl_step(float64_t* beta, float64_t* old_beta, int num_kernels,
+		virtual void perform_mkl_step(float64_t* beta, float64_t* old_beta, int num_kernels,
 				int32_t* label, int32_t* active2dnum,
-				float64_t* a, float64_t* lin, float64_t* sumw, int32_t& inner_iters);
+				float64_t* a, float64_t* lin, float64_t* sumw, int32_t& inner_iters)=0;
 
-		/** given the alphas, compute the corresponding optimal betas
-		 *
-		 * @param beta new betas (kernel weights)
-		 * @param old_beta old betas (previous kernel weights)
-		 * @param num_kernels number of kernels
-		 * @param sumw 1/2*alpha'*K_j*alpha for each kernel j
-		 * @param suma (sum over alphas)
-		 * @param mkl_objective the current mkl objective
-		 *
-		 * @return new objective value
-		 */
-		float64_t compute_optimal_betas_analytically(float64_t* beta, float64_t* old_beta,
-				int32_t num_kernels, const float64_t* sumw, float64_t suma, float64_t mkl_objective);
-
-		/*  float64_t compute_optimal_betas_gradient(float64_t* beta, float64_t* old_beta,
-			int32_t num_kernels, const float64_t* sumw, float64_t suma, float64_t mkl_objective);
-			*/
-
-		/** given the alphas, compute the corresponding optimal betas
-		 *
-		 * @param beta new betas (kernel weights)
-		 * @param old_beta old betas (previous kernel weights)
-		 * @param num_kernels number of kernels
-		 * @param sumw 1/2*alpha'*K_j*alpha for each kernel j
-		 * @param suma (sum over alphas)
-		 * @param mkl_objective the current mkl objective
-		 *
-		 * @return new objective value
-		 */
-		float64_t compute_optimal_betas_newton(float64_t* beta, float64_t* old_beta,
-				int32_t num_kernels, const float64_t* sumw, float64_t suma, float64_t mkl_objective);
-
-		/** given the alphas, compute the corresponding optimal betas
-		 * using a lp for 1-norm mkl, a qcqp for 2-norm mkl and an
-		 * iterated qcqp for general q-norm mkl.
-		 *
-		 * @param x new betas (kernel weights)
-		 * @param old_beta old betas (previous kernel weights)
-		 * @param num_kernels number of kernels
-		 * @param sumw 1/2*alpha'*K_j*alpha for each kernel j
-		 * @param suma (sum over alphas)
-		 * @param inner_iters number of internal iterations (for statistics)
-		 *
-		 * @return new objective value
-		 */
-		float64_t compute_optimal_betas_via_cplex(float64_t* x, float64_t* old_beta, int32_t num_kernels,
-				const float64_t* sumw, float64_t suma, int32_t& inner_iters);
-
-		/** given the alphas, compute the corresponding optimal betas
-		 * using a lp for 1-norm mkl
-		 *
-		 * @param beta new betas (kernel weights)
-		 * @param old_beta old betas (previous kernel weights)
-		 * @param num_kernels number of kernels
-		 * @param sumw 1/2*alpha'*K_j*alpha for each kernel j
-		 * @param suma (sum over alphas)
-		 * @param inner_iters number of internal iterations (for statistics)
-		 *
-		 * @return new objective value
-		 */
-		float64_t compute_optimal_betas_via_glpk(float64_t* beta, float64_t* old_beta,
-				int num_kernels, const float64_t* sumw, float64_t suma, int32_t& inner_iters);
-
+	protected:
 
 		void init_solver();
 
