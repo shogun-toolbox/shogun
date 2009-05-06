@@ -390,6 +390,24 @@ class CSVM : public CKernelMachine
 			return use_mkl;
 		}
 
+		/** compute svm dual objective
+		 *
+		 * @return computed dual objective
+		 */
+		float64_t compute_svm_dual_objective();
+
+		/** compute svm primal objective
+		 *
+		 * @return computed svm primal objective
+		 */
+		float64_t compute_svm_primal_objective();
+
+		/** compute mkl dual objective
+		 *
+		 * @return computed dual objective
+		 */
+		float64_t compute_mkl_dual_objective();
+
 		/** compute objective
 		 *
 		 * @return computed objective
