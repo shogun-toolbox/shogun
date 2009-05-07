@@ -4,52 +4,67 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2008-2009 Soeren Sonnenburg
- * Copyright (C) 2008-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 2009 Soeren Sonnenburg
+ * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#ifndef _FIRSTELEMENTKERNELNORMALIZER_H___
-#define _FIRSTELEMENTKERNELNORMALIZER_H___
+#ifndef _VARIANCEKERNELNORMALIZER_H___
+#define _VARIANCEKERNELNORMALIZER_H___
 
 #include "kernel/KernelNormalizer.h"
 
-/** @brief Normalize the kernel by a constant obtained from the first element of the
- * kernel matrix, i.e. \f$ c=k({\bf x},{\bf x})\f$
+/** @brief VarianceKernelNormalizer divides by the ``variance''
+ *
+ * This effectively normalizes the vectors in feature space to variance 1 (see
+ * CVarianceKernelNormalizer)
  *
  * \f[
- * k'(x,x')= \frac{k(x,x')}{c}
+ * k'({\bf x},{\bf x'}) = \frac{k({\bf x},{\bf x'})}{\frac{1}{N}\sum_{i=1}^N k({\bf x}_i, {\bf x}_i) - \sum_{i,j=1}^N, k({\bf x}_i,{\bf x'}_j)/N^2}
  * \f]
- *
- * useful if the kernel returns constant elements along the diagonal anyway and
- * all one wants is to scale the kernel down to 1 on the diagonal.
  */
-class CFirstElementKernelNormalizer : public CKernelNormalizer
+class CVarianceKernelNormalizer : public CKernelNormalizer
 {
 	public:
-		/** constructor
+		/** default constructor
 		 */
-		CFirstElementKernelNormalizer() : scale(1.0)
+		CVarianceKernelNormalizer() : meandiff(1.0)
 		{
 		}
 
 		/** default destructor */
-		virtual ~CFirstElementKernelNormalizer()
+		virtual ~CVarianceKernelNormalizer()
 		{
 		}
 
-		/** initialization of the normalizer (if needed)
+		/** initialization of the normalizer 
          * @param k kernel */
 		virtual bool init(CKernel* k)
 		{
+			ASSERT(k);
+			int32_t n=k->get_num_vec_lhs();
+			ASSERT(n>0);
+
 			CFeatures* old_lhs=k->lhs;
 			CFeatures* old_rhs=k->rhs;
 			k->lhs=old_lhs;
 			k->rhs=old_lhs;
 
-			scale=k->compute(0, 0);
+			float64_t diag_mean=0;
+			float64_t overall_mean=0;
+			for (int32_t i=0; i<n; i++)
+			{
+				diag_mean+=k->compute(i, i);
+
+				for (int32_t j=0; j<n; j++)
+					overall_mean+=k->compute(i, j);
+			}
+			diag_mean/=n;
+			overall_mean/=((float64_t) n)*n;
 
 			k->lhs=old_lhs;
 			k->rhs=old_rhs;
+
+			meandiff=1.0/(diag_mean-overall_mean);
 
 			return true;
 		}
@@ -62,7 +77,7 @@ class CFirstElementKernelNormalizer : public CKernelNormalizer
 		inline virtual float64_t normalize(
 			float64_t value, int32_t idx_lhs, int32_t idx_rhs)
 		{
-			return value/scale;
+			return value*meandiff;
 		}
 
 		/** normalize only the left hand side vector
@@ -71,7 +86,7 @@ class CFirstElementKernelNormalizer : public CKernelNormalizer
 		 */
 		inline virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs)
 		{
-			return value/sqrt(scale);
+			return value*sqrt(meandiff);
 		}
 
 		/** normalize only the right hand side vector
@@ -80,15 +95,14 @@ class CFirstElementKernelNormalizer : public CKernelNormalizer
 		 */
 		inline virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs)
 		{
-			return value/sqrt(scale);
+			return value*sqrt(meandiff);
 		}
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "FirstElementKernelNormalizer"; }
+		inline virtual const char* get_name() const { return "VarianceKernelNormalizer"; }
 
-	protected:
-		/// scale constant obtained from k(0,0)
-		float64_t scale;
+    protected:
+		float64_t meandiff;
 };
 
 #endif

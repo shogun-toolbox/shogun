@@ -110,6 +110,7 @@ class CSVM;
  */
 class CKernel : public CSGObject
 {
+	friend class CVarianceKernelNormalizer;
 	friend class CSqrtDiagKernelNormalizer;
 	friend class CAvgDiagKernelNormalizer;
 	friend class CFirstElementKernelNormalizer;

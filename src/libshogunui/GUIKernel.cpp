@@ -54,6 +54,7 @@
 #include <shogun/kernel/FirstElementKernelNormalizer.h>
 #include <shogun/kernel/IdentityKernelNormalizer.h>
 #include <shogun/kernel/SqrtDiagKernelNormalizer.h>
+#include <shogun/kernel/VarianceKernelNormalizer.h>
 #include <shogun/classifier/svm/SVM.h>
 
 #include <string.h>
@@ -653,6 +654,11 @@ bool CGUIKernel::set_normalization(char* normalization, float64_t c)
 	{
 		SG_INFO("First Element Normalization selected\n");
 		return k->set_normalizer(new CFirstElementKernelNormalizer());
+	}
+	else if (strncmp(normalization,"VARIANCE", 8)==0)
+	{
+		SG_INFO("Variance Normalization selected\n");
+		return k->set_normalizer(new CVarianceKernelNormalizer());
 	}
 	else
 		SG_ERROR("Wrong kernel normalizer name.\n");
