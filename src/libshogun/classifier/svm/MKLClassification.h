@@ -41,9 +41,11 @@ class CMKLClassification : public CMKL
 		 * @param inner_iters number of required internal iterations
 		 *
 		 */
-		virtual void perform_mkl_step(float64_t* beta, float64_t* old_beta, int num_kernels,
-				int32_t* label, int32_t* active2dnum,
-				float64_t* a, float64_t* lin, float64_t* sumw, int32_t& inner_iters)=0;
+		virtual void perform_mkl_step(float64_t* alpha, float64_t* old_alpha, int32_t num_alpha,
+				float64_t* beta, float64_t* old_beta, int32_t num_beta, void* aux);
+		//virtual void perform_mkl_step(float64_t* beta, float64_t* old_beta, int num_kernels,
+		//		int32_t* label, int32_t* active2dnum,
+		//		float64_t* a, float64_t* lin, float64_t* sumw, int32_t& inner_iters)=0;
 
 	protected:
 		/** helper for update linear component MKL linadd
@@ -149,5 +151,15 @@ class CMKLClassification : public CMKL
 		 */
 		float64_t compute_optimal_betas_via_glpk(float64_t* beta, float64_t* old_beta,
 				int num_kernels, const float64_t* sumw, float64_t suma, int32_t& inner_iters);
+
+		virtual bool converged()
+		{
+			return w_gap<epsilon;
+		}
+	protected:
+		float64_t* W;
+		float64_t w_gap;
+		float64_t rho;
+
 };
 #endif //__MKLCLASSIFICATION_H__

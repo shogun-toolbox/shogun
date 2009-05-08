@@ -58,6 +58,16 @@ struct S_THREAD_PARAM_REACTIVATE_LINADD
 	int32_t end;
 };
 
+struct S_THREAD_PARAM 
+{
+	float64_t * lin ;
+	float64_t* W;
+	int32_t start, end;
+	int32_t * active2dnum ;
+	int32_t * docs ;
+	CKernel* kernel ;
+};
+
 struct S_THREAD_PARAM_REACTIVATE_VANILLA
 {
 	CKernel* kernel;
@@ -70,16 +80,6 @@ struct S_THREAD_PARAM_REACTIVATE_VANILLA
 	int32_t* label;
 	int32_t start;
 	int32_t end;
-};
-
-struct S_THREAD_PARAM 
-{
-	float64_t * lin ;
-	float64_t* W;
-	int32_t start, end;
-	int32_t * active2dnum ;
-	int32_t * docs ;
-	CKernel* kernel ;
 };
 
 struct S_THREAD_PARAM_KERNEL 

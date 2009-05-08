@@ -199,11 +199,11 @@ bool CMKL::train()
 		set_callback_function();
 	else
 	{
-		while (w_gap>epsilon)
+		while (!converged())
 		{
 			svm->train();
-			perform_mkl_step();
-			compute_wgap();
+			//perform_mkl_step(alpha, old_alpha, num_alpha, beta, old_beta, num_beta, aux);
+			//compute_wgap();
 
 			mkl_iterations++;
 		}
@@ -215,7 +215,7 @@ bool CMKL::train()
 	set_bias(svm->get_bias());
 	for (int32_t i=0; i<nsv; i++)
 	{
-		set_alpha(i, svm->get_alpha(i))
+		set_alpha(i, svm->get_alpha(i));
 		set_support_vector(i, svm->get_support_vector(i));
 	}
 	return true;

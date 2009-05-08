@@ -104,7 +104,8 @@ class CMKL : public CSVM
 		//virtual void perform_mkl_step(float64_t* beta, float64_t* old_beta, int num_kernels,
 		//		int32_t* label, int32_t* active2dnum,
 		//		float64_t* a, float64_t* lin, float64_t* sumw, int32_t& inner_iters)=0;
-		//static virtual void perform_mkl_step(float64_t* new_a, float64_t* old_a, int32_t num, void* aux)=0;
+		virtual void perform_mkl_step(float64_t* alpha, float64_t* old_alpha, int32_t num_alpha,
+				float64_t* beta, float64_t* old_beta, int32_t num_beta, void* aux)=0;
 
 		/** assigns the callback function to the svm object
 		 * */
@@ -113,6 +114,8 @@ class CMKL : public CSVM
 	protected:
 
 		void init_solver();
+
+		virtual bool converged()=0;
 
 #ifdef USE_CPLEX
 		void set_qnorm_constraints(float64_t* beta, int32_t num_kernels);
@@ -133,7 +136,7 @@ class CMKL : public CSVM
 #ifdef USE_GLPK
 		bool init_glpk();
 		bool cleanup_glpk();
-		inline bool check_lpx_status(LPX *lp);
+		bool check_lpx_status(LPX *lp);
 #endif
 
 	protected:
