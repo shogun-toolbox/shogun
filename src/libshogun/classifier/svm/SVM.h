@@ -394,6 +394,19 @@ class CSVM : public CKernelMachine
 		 */
 		static void* classify_example_helper(void* p);
 
+		
+		/** set callback function svm optimizers may call when they have a new
+		 * (small) set of alphas
+		 *
+		 * @param cb callback function
+		 *
+		 * */
+		void set_callback_function(void (*cb)
+				(float64_t* new_a, float64_t* old_a, int32_t num, void* aux))
+		{
+			callback=cb;
+		}
+
 		/** @return object name */
 		inline virtual const char* get_name() const { return "SVM"; }
 
@@ -434,5 +447,9 @@ class CSVM : public CKernelMachine
 		bool use_bias;
 		/** if shrinking shall be used */
 		bool use_shrinking;
+
+		/** callback function svm optimizers may call when they have a new
+		 * (small) set of alphas */
+		void (*callback) (float64_t* new_a, float64_t* old_a, int32_t num, void* aux);
 };
 #endif

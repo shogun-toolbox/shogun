@@ -101,9 +101,14 @@ class CMKL : public CSVM
 		 * @param inner_iters number of required internal iterations
 		 *
 		 */
-		virtual void perform_mkl_step(float64_t* beta, float64_t* old_beta, int num_kernels,
-				int32_t* label, int32_t* active2dnum,
-				float64_t* a, float64_t* lin, float64_t* sumw, int32_t& inner_iters)=0;
+		//virtual void perform_mkl_step(float64_t* beta, float64_t* old_beta, int num_kernels,
+		//		int32_t* label, int32_t* active2dnum,
+		//		float64_t* a, float64_t* lin, float64_t* sumw, int32_t& inner_iters)=0;
+		//static virtual void perform_mkl_step(float64_t* new_a, float64_t* old_a, int32_t num, void* aux)=0;
+
+		/** assigns the callback function to the svm object
+		 * */
+		virtual void set_callback_function()=0;
 
 	protected:
 
@@ -141,20 +146,23 @@ class CMKL : public CSVM
 		int32_t mkl_iterations;
 		/** epsilon for multiple kernel learning */
 		float64_t epsilon;
+		/** whether to use mkl wrapper or interleaved opt. */
+		bool interleaved_optimization;
+
+
 
 #ifdef USE_CPLEX
-  /** env */
-  CPXENVptr     env;
-  /** lp */
-  CPXLPptr      lp_cplex;
+		/** env */
+		CPXENVptr     env;
+		/** lp */
+		CPXLPptr      lp_cplex;
 #endif
 
 #ifdef USE_GLPK
-  /** lp */
-  LPX* lp_glpk;
+		/** lp */
+		LPX* lp_glpk;
 #endif
-
-  /** if lp is initialized */
-  bool lp_initialized ;
+		/** if lp is initialized */
+		bool lp_initialized ;
 };
 #endif //__MKL_H__

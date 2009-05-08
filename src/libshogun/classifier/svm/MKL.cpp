@@ -11,7 +11,7 @@
 #include "classifier/svm/MKL.h"
 
 CMKL::CMKL(CSVM* s)
-	: CSVM(), svm(NULL), C_mkl(0), mkl_norm(1), mkl_iterations(0), epsilon(1e-5)
+	: CSVM(), svm(NULL), C_mkl(0), mkl_norm(1), mkl_iterations(0), epsilon(1e-5), interleaved_optimization(false)
 {
 	set_constraint_generator(s);
 #ifdef USE_CPLEX
@@ -28,6 +28,7 @@ CMKL::CMKL(CSVM* s)
 
 CMKL::~CMKL()
 {
+	svm->set_callback_function(NULL);
 	SG_UNREF(svm);
 }
 
@@ -195,7 +196,7 @@ bool CMKL::train()
 	mkl_iterations = 0;
 	
 	if (interleaved_optimization)
-		svm->set_callback_function(CMKL::perform_mkl_step);
+		set_callback_function();
 	else
 	{
 		while (w_gap>epsilon)

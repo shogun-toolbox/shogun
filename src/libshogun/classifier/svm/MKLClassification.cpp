@@ -1,3 +1,6 @@
+#include "classifier/svm/MKLClassification.h"
+#include "kernel/CombinedKernel.h"
+
 void CMKLClassification::update_linear_component_mkl(
 	int32_t* docs, int32_t* label, int32_t *active2dnum, float64_t *a,
 	float64_t *a_old, int32_t *working2dnum, int32_t totdoc, float64_t *lin,

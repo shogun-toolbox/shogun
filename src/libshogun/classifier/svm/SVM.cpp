@@ -57,6 +57,8 @@ CSVM::~CSVM()
 
 void CSVM::set_defaults(int32_t num_sv)
 {
+	callback=NULL;
+
 	svm_model.b=0.0;
 	svm_model.alpha=NULL;
 	svm_model.svs=NULL;
