@@ -2071,10 +2071,10 @@ float64_t CSVMLight::compute_optimal_betas_newton(float64_t* beta,
     gamma = -1e-9;
   }
 
-  const int nofNewtonSteps = 1;
+  const int nofNewtonSteps = 3;
   int i;
   if( nofNewtonSteps > 1 ) {
-    SG_PRINT( "performing %d Newton steps.\n", nofNewtonSteps );
+    //SG_PRINT( "performing %d Newton steps.\n", nofNewtonSteps );
   }
   for( i = 0; i < nofNewtonSteps; ++i ) {
 
