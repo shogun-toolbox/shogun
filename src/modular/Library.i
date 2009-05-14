@@ -31,6 +31,7 @@
 #include <shogun/lib/SimpleFile.h>
 #include <shogun/lib/Time.h>
 #include <shogun/lib/Trie.h>
+#include <shogun/lib/MemoryMappedFile.h>
 #include <shogun/lib/DynamicArray.h>
 #include <shogun/structure/PlifBase.h>
 #include <shogun/lib/Array.h>
@@ -48,6 +49,7 @@
 %rename(Signal) CSignal;
 %rename(SimpleFile) CSimpleFile;
 %rename(Time) CTime;
+%rename(MemoryMappedFile) CMemoryMappedFile;
 
 %ignore RADIX_STACK_SIZE;
 %ignore NUMTRAPPEDSIGS;
@@ -127,3 +129,4 @@
 %include <shogun/lib/SimpleFile.h>
 %include <shogun/lib/Time.h>
 %include <shogun/lib/Trie.h>
+%include <shogun/lib/MemoryMappedFile.h>
