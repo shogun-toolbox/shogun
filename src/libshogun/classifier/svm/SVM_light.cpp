@@ -1664,7 +1664,7 @@ void CSVMLight::perform_mkl_step(float64_t* beta, float64_t* old_beta, int num_k
 			}
 			else
 			{
-				//rho=compute_optimal_betas_analytically(beta, old_beta, num_kernels, sumw, suma, mkl_objective);
+			  //rho=compute_optimal_betas_analytically(beta, old_beta, num_kernels, sumw, suma, mkl_objective);
 				//rho=compute_optimal_betas_gradient(beta, old_beta, num_kernels, sumw, suma, mkl_objective);
 				rho=compute_optimal_betas_newton(beta, old_beta, num_kernels, sumw, suma, mkl_objective);
 			}
@@ -1720,11 +1720,11 @@ float64_t CSVMLight::compute_optimal_betas_analytically(float64_t* beta,
   }
 	SG_PRINT( "OBJ_old = %f / %f\n", obj, mkl_objective );
   */
-	SG_PRINT( "OBJ_old = %f\n", mkl_objective );
+	//	SG_PRINT( "OBJ_old = %f\n", mkl_objective );
 
 	Z = 0.0;
 	for (int32_t n=0; n<num_kernels; n++ ) {
-		beta[n] = CMath::pow( sumw[n], r );
+		beta[n] = CMath::pow( 2*sumw[n], r );
 		Z += CMath::pow( beta[n], mkl_norm );
 	}
 
@@ -1732,8 +1732,9 @@ float64_t CSVMLight::compute_optimal_betas_analytically(float64_t* beta,
 	for( int32_t n=0; n<num_kernels; n++ ) {
 		beta[n] *= Z;
   }
-	CMath::display_vector( beta, num_kernels, "new_beta " );
+	//	CMath::display_vector( beta, num_kernels, "new_beta " );
 
+	/*
 	Z = 0.0;
 	for (int32_t n=0; n<num_kernels; n++ ) {
 		beta[n] = beta[n] * old_beta[n];
@@ -1743,9 +1744,10 @@ float64_t CSVMLight::compute_optimal_betas_analytically(float64_t* beta,
 	for( int32_t n=0; n<num_kernels; n++ ) {
 		beta[n] *= Z;
   }
+	*/
 
 	// CMath::display_vector(beta, num_kernels, "beta_alex");
-	SG_PRINT("Z_alex = %e\n", Z);
+	//	SG_PRINT("Z_alex = %e\n", Z);
 
   /*
 	// compute in log space
@@ -1762,8 +1764,8 @@ float64_t CSVMLight::compute_optimal_betas_analytically(float64_t* beta,
 		beta[n] = CMath::exp(beta[n]+Z);
   */
 
-	CMath::display_vector( old_beta, num_kernels, "old_beta " );
-	CMath::display_vector( beta,     num_kernels, "beta     " );
+	//	CMath::display_vector( old_beta, num_kernels, "old_beta " );
+	//	CMath::display_vector( beta,     num_kernels, "beta     " );
 	//CMath::display_vector(beta, num_kernels, "beta_log");
 	//SG_PRINT("Z_log=%f\n", Z);
 	//for (int32_t i=0; i<num_kernels; i++)
@@ -1775,7 +1777,7 @@ float64_t CSVMLight::compute_optimal_betas_analytically(float64_t* beta,
 	for (int32_t d=0; d<num_kernels; d++) {
 		obj += beta[d] * (sumw[d]);
   }
-	SG_PRINT( "OBJ = %f\n", obj );
+	//	SG_PRINT( "OBJ = %f\n", obj );
 	return obj;
 }
 
@@ -2037,22 +2039,37 @@ float64_t CSVMLight::compute_optimal_betas_newton(float64_t* beta,
 		const float64_t* sumw, float64_t suma,
     float64_t mkl_objective)
 {
-	SG_DEBUG("MKL via NEWTON\n");
+  SG_DEBUG("MKL via NEWTON\n");
 
-	const float64_t r = mkl_norm / ( mkl_norm - 1.0 );
-	float64_t Z;
-	float64_t obj;
-	float64_t gamma;
+  const float64_t r = mkl_norm / ( mkl_norm - 1.0 );
+  float64_t Z;
+  float64_t obj;
+  float64_t gamma;
   int32_t p;
 
-	//SG_PRINT( "OBJ_old = %f\n", mkl_objective );
+  //SG_PRINT( "OBJ_old = %f\n", mkl_objective );
 
- 	gamma = 0.0;
-	for( p=0; p<num_kernels; ++p ) {
-		gamma += CMath::pow( sumw[p]*old_beta[p]*old_beta[p], r );
-	}
-  gamma = CMath::pow( gamma, 1.0/r ) / mkl_norm;
-  ASSERT( gamma > 0.0 );
+  gamma = 0.0;
+  for( p=0; p<num_kernels; ++p ) {
+    if( !( old_beta[p] >= 0 ) ) {
+      SG_WARNING( "old_beta[%d] = %e;  set to 1e-9.  \n", p, sumw[p] );
+      old_beta[p] = 1e-9;
+    }
+    ASSERT( old_beta[p] >= 0 );
+    if( !( sumw[p] >= 0 ) ) {
+      SG_WARNING( "sumw[%d] = %e;  set to 0.  \n", p, sumw[p] );
+    } else {
+      ASSERT( sumw[p] >= 0 );
+      gamma += CMath::pow( sumw[p]*old_beta[p]*old_beta[p], r );
+    }
+  }
+  gamma = - CMath::pow( gamma, 1.0/r ) / mkl_norm;
+  ASSERT( -gamma > -1e-6 );
+  //ASSERT( -gamma >= 0 );
+  if( !( -gamma > 0.0 ) ) {
+    SG_WARNING( "bad gamma: %e;  set to -1e-9.  \n", -gamma );
+    gamma = -1e-9;
+  }
 
   const int nofNewtonSteps = 1;
   int i;
@@ -2068,7 +2085,7 @@ float64_t CSVMLight::compute_optimal_betas_newton(float64_t* beta,
     }
 
     // compute Newton step (stored in "beta") (Hessian is diagonal)
-    const float64_t gqq1 = gamma * mkl_norm * (mkl_norm-1.0);
+    const float64_t gqq1 = mkl_norm * (mkl_norm-1.0) * gamma;
     Z = 0.0;
     for( p=0; p<num_kernels; ++p ) {
       if ( 0.0 > old_beta[p] || old_beta[p] > 1.0 ) {
@@ -2076,9 +2093,12 @@ float64_t CSVMLight::compute_optimal_betas_newton(float64_t* beta,
         CMath::display_vector( beta, num_kernels, "beta" );
         SG_ERROR("old_beta out of range");
       }
-      float64_t t1 = gamma*mkl_norm*CMath::pow(old_beta[p],mkl_norm) - sumw[p]*old_beta[p];
-      float64_t t2 = 2.0*sumw[p] + gqq1*CMath::pow(old_beta[p],mkl_norm-1.0);
-      beta[p] = ( t1 == 0.0 ) ? 0.0 : ( t1 / t2 );
+      const float halfw2p = ( sumw[p] >= 0.0 ) ? sumw[p] : 0.0;
+      const float64_t t1 = halfw2p*old_beta[p] - mkl_norm*gamma*CMath::pow(old_beta[p],mkl_norm);
+      const float64_t t2 = 2.0*halfw2p + gqq1*CMath::pow(old_beta[p],mkl_norm-1.0);
+      //beta[p] = ( t1 == 0.0 ) ? 0.0 : ( t1 / t2 );
+      beta[p] = t1 / ( t1 + t2*old_beta[p] );
+      ASSERT( beta[p] == beta[p] );
       Z += beta[p] * beta[p];
     }
     //CMath::display_vector( beta, num_kernels, "newton   " );
@@ -2087,7 +2107,8 @@ float64_t CSVMLight::compute_optimal_betas_newton(float64_t* beta,
     // perform Newton step
     Z = 0.0;
     for( p=0; p<num_kernels; ++p ) {
-      beta[p] = old_beta[p] - beta[p];
+      //beta[p] = old_beta[p] - beta[p];
+      beta[p] = old_beta[p] * CMath::exp( -beta[p] );
       if( !( beta[p] >= 1e-10 ) ) {
         beta[p] = 1e-10;
       }
@@ -2100,13 +2121,13 @@ float64_t CSVMLight::compute_optimal_betas_newton(float64_t* beta,
 
   }
 
-	CMath::scale_vector(1/CMath::qnorm(beta, num_kernels, mkl_norm), beta, num_kernels);
+  CMath::scale_vector(1/CMath::qnorm(beta, num_kernels, mkl_norm), beta, num_kernels);
 
   obj = -suma;
-	for( p=0; p<num_kernels; ++p ) {
-		obj += beta[p] * (sumw[p]);
+  for( p=0; p<num_kernels; ++p ) {
+    obj += beta[p] * (sumw[p]);
   }
-	return obj;
+  return obj;
 }
 
 
