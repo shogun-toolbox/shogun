@@ -119,8 +119,7 @@ template <class T> class CArray : public CSGObject
 
 		virtual ~CArray()
 		{
-			SG_DEBUG( "destroying CArray array '%s' of size %i\n",
-				name? name : "unnamed", array_size);
+			//SG_DEBUG( "destroying CArray array '%s' of size %i\n", name? name : "unnamed", array_size);
 			PRINT_ARRAY_STATISTICS;
 			if (free_array)
 				free(array);

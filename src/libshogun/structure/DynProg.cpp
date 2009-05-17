@@ -1558,17 +1558,16 @@ void CDynProg::best_path_2struct(
 	const float64_t mem_use = (float64_t)(seq_len*N*nbest*(sizeof(T_STATES)+sizeof(int16_t)+sizeof(int32_t))+
 								look_back_buflen*(2*sizeof(float64_t)+sizeof(int32_t))+
 								seq_len*(sizeof(T_STATES)+sizeof(int32_t))+
-								genestr_len*sizeof(bool))/(1024*1024)
-		 ;
-    bool is_big = (mem_use>200) || (seq_len>5000) ;
+								genestr_len*sizeof(bool))/(1024*1024);
+    //bool is_big = (mem_use>200) || (seq_len>5000) ;
 	
-	if (is_big)
+	/*if (is_big)
 	{
 		SG_DEBUG("calling best_path_2struct: seq_len=%i, N=%i, lookback=%i nbest=%i\n", 
 					 seq_len, N, max_look_back, nbest) ;
 		SG_DEBUG("allocating %1.2fMB of memory\n", 
 					 mem_use) ;
-	}
+					 }*/
 	ASSERT(nbest<32000) ;
 		
 	CArray3<float64_t> delta(max_look_back+1, N, nbest) ;
@@ -1629,8 +1628,8 @@ void CDynProg::best_path_2struct(
 	// recursion
 	for (int32_t t=1; t<seq_len; t++)
 	{
-		if (is_big && t%(seq_len/10000)==1)
-			SG_PROGRESS(t, 0, seq_len);
+		//if (is_big && t%(seq_len/10000)==1)
+		//	SG_PROGRESS(t, 0, seq_len);
 		//SG_PRINT("%i\n", t) ;
 		
 		for (T_STATES j=0; j<N; j++)
@@ -1765,8 +1764,8 @@ void CDynProg::best_path_2struct(
 			my_pos_seq[num_states+k*(seq_len+1)]=-1 ;
 		}
 	}
-	if (is_big)
-		SG_PRINT( "DONE.     \n") ;
+	//if (is_big)
+	//	SG_PRINT( "DONE.     \n") ;
 }
 
 /*void CDynProg::reset_svm_values(int32_t pos, int32_t * last_svm_pos, float64_t * svm_value) 
@@ -1884,12 +1883,19 @@ float64_t CDynProg::extend_segment_loss(
 	struct segment_loss_struct & loss, const int32_t * pos_array,
 	int32_t segment_id, int32_t pos, int32_t & last_pos, float64_t &last_value)
 {
-#ifdef DYNPROG_TIMING
+#ifdef DYNPROG_TIMING_DETAIL
 	MyTime.start() ;
 #endif
 	
 	if (pos==last_pos)
+	{		
+#ifdef DYNPROG_TIMING_DETAIL
+		MyTime.stop() ;
+		segment_extend_time += MyTime.time_diff_sec() ;
+#endif
 		return last_value ;
+	}
+	
 	ASSERT(pos<last_pos) ;
 
 	last_pos-- ;
@@ -1913,9 +1919,14 @@ float64_t CDynProg::extend_segment_loss(
 		float64_t length_contrib = (pos_array[last_pos]-pos_array[pos])*m_segment_loss.element(m_segment_ids.element(pos), segment_id, 1) ;
 		float64_t ret = last_value + length_contrib ;
 		last_pos = pos ;
+		
+#ifdef DYNPROG_TIMING_DETAIL
+		MyTime.stop() ;
+		segment_extend_time += MyTime.time_diff_sec() ;
+#endif
 		return ret ;
 	}
-
+	
 	CArray2<float64_t> num_segment_id(loss.num_segment_id, loss.seqlen, max_a_id+1, false, false) ;
 	CArray2<int32_t> length_segment_id(loss.length_segment_id, loss.seqlen, max_a_id+1, false, false) ;
 	float64_t ret = 0.0 ;
@@ -1940,7 +1951,7 @@ float64_t CDynProg::extend_segment_loss(
 	last_pos = pos ;
 	last_value = ret ;
 
-#ifdef DYNPROG_TIMING
+#ifdef DYNPROG_TIMING_DETAIL
 	MyTime.stop() ;
 	segment_extend_time += MyTime.time_diff_sec() ;
 #endif
@@ -2343,7 +2354,7 @@ bool CDynProg::extend_orf(
 	int32_t orf_from, int32_t orf_to, int32_t start, int32_t &last_pos,
 	int32_t to)
 {
-#ifdef DYNPROG_TIMING
+#ifdef DYNPROG_TIMING_DETAIL
 	MyTime.start() ;
 #endif
 	
@@ -2362,15 +2373,28 @@ bool CDynProg::extend_orf(
 		pos=last_pos ;
 
 	if (pos<0)
+	{
+#ifdef DYNPROG_TIMING_DETAIL
+		MyTime.stop() ;
+		orf_time += MyTime.time_diff_sec() ;
+#endif
 		return true ;
+	}
 	
 	for (; pos>=start; pos-=3)
 		if (m_genestr_stop[pos])
+		{
+#ifdef DYNPROG_TIMING_DETAIL
+			MyTime.stop() ;
+			orf_time += MyTime.time_diff_sec() ;
+#endif
 			return false ;
+		}
+	
 	
 	last_pos = CMath::min(pos+3,to-orf_to-3) ;
 
-#ifdef DYNPROG_TIMING
+#ifdef DYNPROG_TIMING_DETAIL
 	MyTime.stop() ;
 	orf_time += MyTime.time_diff_sec() ;
 #endif
@@ -2394,6 +2418,11 @@ void CDynProg::best_path_trans(
 	svm_init_time = 0.0 ;
 	svm_pos_time = 0.0 ;
 	svm_clean_time = 0.0 ;
+	inner_loop_time = 0.0 ;
+	content_svm_values_time = 0.0 ;
+	content_plifs_time = 0.0 ;
+	inner_loop_max_time = 0.0 ;
+	
 	MyTime2.start() ;
 #endif
 	
@@ -2481,8 +2510,8 @@ void CDynProg::best_path_trans(
 	// allow longer transitions than look_back
 	bool long_transitions = true;
 	int32_t long_transition_max = 1000000 ;
-	CArray<int32_t> long_transition_content_position(N) ;
-	CArray2<float64_t> long_transition_content_scores(N, m_num_lin_feat_plifs_cum[m_num_raw_data]) ;
+	CArray2<int32_t> long_transition_content_position(N,N) ;
+	CArray3<float64_t> long_transition_content_scores(N, N, m_num_lin_feat_plifs_cum[m_num_raw_data]) ;
 	long_transition_content_position.zero();
 	long_transition_content_scores.zero() ;
 
@@ -2538,15 +2567,15 @@ void CDynProg::best_path_trans(
 								  seq_len*(sizeof(T_STATES)+sizeof(int32_t))+
 								  m_genestr_len*sizeof(bool))/(1024*1024);
 
-    bool is_big = (mem_use>200) || (seq_len>5000) ;
+    //bool is_big = (mem_use>200) || (seq_len>5000) ;
 
-	if (1)//(is_big)
+	/*if (is_big)
 	{
 		SG_DEBUG("calling best_path_trans: seq_len=%i, N=%i, lookback=%i nbest=%i\n", 
 					 seq_len, N, max_look_back, nbest) ;
 		SG_DEBUG("allocating %1.2fMB of memory\n", 
 					 mem_use) ;
-	}
+					 }*/
 	ASSERT(nbest<32000) ;
 	
 
@@ -2759,8 +2788,8 @@ void CDynProg::best_path_trans(
 	// recursion
 	for (int32_t t=1; t<seq_len; t++)
 	{
-		if (is_big && t%(1+(seq_len/1000))==1)
-			SG_PROGRESS(t, 0, seq_len);
+		//if (is_big && t%(1+(seq_len/1000))==1)
+		//	SG_PROGRESS(t, 0, seq_len);
 		//SG_PRINT("%i\n", t) ;
 
 		if (with_loss)
@@ -2799,6 +2828,18 @@ void CDynProg::best_path_trans(
 					T_STATES ii = elem_list[i] ;
 					
 					const CPlifBase * penalty = PEN.element(j,ii) ;
+
+					/*int32_t look_back = max_look_back ;
+					if (0)
+					{ // find lookback length
+						CPlifBase *pen = (CPlifBase*) penalty ;
+						if (pen!=NULL)
+							look_back=(int32_t) (CMath::ceil(pen->get_max_value()));
+						if (look_back>=1e6)
+							SG_PRINT("%i,%i -> %d from %ld\n", j, ii, look_back, (long)pen) ;
+						ASSERT(look_back<1e6);
+						} */
+
 					int32_t look_back_ = look_back.element(j,ii) ;
 				
 					int32_t orf_from = orf_info.element(ii,0) ;
@@ -2820,6 +2861,9 @@ void CDynProg::best_path_trans(
 					int32_t loss_last_pos = t ;
 					float64_t last_loss = 0.0 ;
 
+#ifdef DYNPROG_TIMING
+					MyTime3.start() ;
+#endif								
 					for (int32_t ts=t-1; ts>=0 && pos[t]-pos[ts]<=look_back_; ts--)
 					{
 						bool ok ;
@@ -2845,12 +2889,16 @@ void CDynProg::best_path_trans(
 							float64_t segment_loss = 0.0 ;
 							if (with_loss)
 								segment_loss = extend_segment_loss(loss, pos, elem_id[i], ts, loss_last_pos, last_loss) ;
+							//if (pos[t]-pos[ts]>1000)
+							//	continue ;
 
 							////////////////////////////////////////////////////////
 							// BEST_PATH_TRANS
 							////////////////////////////////////////////////////////
+
 							int32_t frame = orf_info.element(ii,0);
 							lookup_content_svm_values(ts, t, pos[ts], pos[t], svm_value, frame);
+
 
 							//int32_t offset = plen*num_svms ;
 							//for (int32_t ss=0; ss<num_svms; ss++)
@@ -2863,7 +2911,21 @@ void CDynProg::best_path_trans(
 
 							float64_t pen_val = 0.0 ;
 							if (penalty)
+							{
+#ifdef DYNPROG_TIMING_DETAIL
+								MyTime.start() ;
+#endif								
 								pen_val = penalty->lookup_penalty(pos[t]-pos[ts], svm_value) ;
+								
+#ifdef DYNPROG_TIMING_DETAIL
+								MyTime.stop() ;
+								content_plifs_time += MyTime.time_diff_sec() ;
+#endif
+							}
+
+#ifdef DYNPROG_TIMING_DETAIL
+							MyTime.start() ;
+#endif								
 							if (nbest==1)
 							{
 								float64_t  val        = elem_val[i] + pen_val ;
@@ -2923,13 +2985,24 @@ void CDynProg::best_path_trans(
 									}
 								}
 							}
+#ifdef DYNPROG_TIMING_DETAIL
+							MyTime.stop() ;
+							inner_loop_max_time += MyTime.time_diff_sec() ;
+#endif
 						}
 					}
-				}
-				if (long_transitions)
-				{
+#ifdef DYNPROG_TIMING
+					MyTime3.stop() ;
+					inner_loop_time += MyTime3.time_diff_sec() ;
+#endif
 					
+					
+					if (long_transitions)
+					{
+						
+					}
 				}
+				
 				
 				int32_t numEnt = fixed_list_len;
 				
@@ -3030,15 +3103,15 @@ void CDynProg::best_path_trans(
 		}
 	}
 	
-	if (is_big)
-		SG_PRINT( "DONE.     \n") ;
+	//if (is_big)
+	//	SG_PRINT( "DONE.     \n") ;
 
 
 #ifdef DYNPROG_TIMING
 	MyTime2.stop() ;
 	
-	if (is_big)
-		SG_PRINT("Timing:  orf=%1.2f s \n Segment_init=%1.2f s Segment_pos=%1.2f s  Segment_extend=%1.2f s Segment_clean=%1.2f s\nsvm_init=%1.2f s  svm_pos=%1.2f  svm_clean=%1.2f\n  total=%1.2f\n", orf_time, segment_init_time, segment_pos_time, segment_extend_time, segment_clean_time, svm_init_time, svm_pos_time, svm_clean_time, MyTime2.time_diff_sec()) ;
+	//if (is_big)
+	SG_PRINT("Timing:  orf=%1.2f s \n Segment_init=%1.2f s Segment_pos=%1.2f s  Segment_extend=%1.2f s Segment_clean=%1.2f s\nsvm_init=%1.2f s  svm_pos=%1.2f  svm_clean=%1.2f\n  content_svm_values_time=%1.2f  content_plifs_time=%1.2f\ninner_loop_max_time=%1.2f inner_loop=%1.2f\n total=%1.2f\n", orf_time, segment_init_time, segment_pos_time, segment_extend_time, segment_clean_time, svm_init_time, svm_pos_time, svm_clean_time, content_svm_values_time, content_plifs_time, inner_loop_max_time, inner_loop_time, MyTime2.time_diff_sec()) ;
 #endif
 
 	delete[] fixedtempvv ;

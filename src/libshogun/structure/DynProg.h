@@ -30,7 +30,7 @@
 
 #include <stdio.h>
 
-//#define DYNPROG_TIMING
+#define DYNPROG_TIMING
 
 #ifdef USE_BIGSTATES
 typedef uint16_t T_STATES ;
@@ -58,6 +58,7 @@ private:
 #ifdef DYNPROG_TIMING
 	CTime MyTime;
 	CTime MyTime2;
+	CTime MyTime3;
 	
 	float64_t segment_init_time;
 	float64_t segment_pos_time;
@@ -66,8 +67,12 @@ private:
 	float64_t orf_time;
 	float64_t content_time;
 	float64_t content_penalty_time;
+	float64_t content_svm_values_time ;
+	float64_t content_plifs_time ;	
 	float64_t svm_init_time;
 	float64_t svm_pos_time;
+	float64_t inner_loop_time;
+	float64_t inner_loop_max_time ;	
 	float64_t svm_clean_time;
 #endif
 	
@@ -1090,6 +1095,9 @@ inline int32_t CDynProg::raw_intensities_interval_query(const int32_t from_pos, 
 
 inline void CDynProg::lookup_content_svm_values(const int32_t from_state, const int32_t to_state, const int32_t from_pos, const int32_t to_pos, float64_t* svm_values, int32_t frame)
 {
+#ifdef DYNPROG_TIMING_DETAIL
+	MyTime.start() ;
+#endif
 //	ASSERT(from_state<to_state);
 //	if (!(from_pos<to_pos))
 //		SG_ERROR("from_pos!<to_pos, from_pos: %i to_pos: %i \n",from_pos,to_pos);
@@ -1118,5 +1126,9 @@ inline void CDynProg::lookup_content_svm_values(const int32_t from_state, const 
 		float64_t from_val = m_lin_feat.get_element(row, from_state);
 		svm_values[frame+4] = (to_val-from_val)/(to_pos-from_pos);
 	}
+#ifdef DYNPROG_TIMING_DETAIL
+	MyTime.stop() ;
+	content_svm_values_time += MyTime.time_diff_sec() ;
+#endif
 }
 #endif
