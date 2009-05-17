@@ -1087,6 +1087,7 @@ inline int32_t CDynProg::raw_intensities_interval_query(const int32_t from_pos, 
 	}
 	return num_intensities;
 }
+
 inline void CDynProg::lookup_content_svm_values(const int32_t from_state, const int32_t to_state, const int32_t from_pos, const int32_t to_pos, float64_t* svm_values, int32_t frame)
 {
 //	ASSERT(from_state<to_state);
@@ -1094,16 +1095,17 @@ inline void CDynProg::lookup_content_svm_values(const int32_t from_state, const 
 //		SG_ERROR("from_pos!<to_pos, from_pos: %i to_pos: %i \n",from_pos,to_pos);
 	for (int32_t i=0;i<num_svms;i++)
 	{
-		float64_t to_val   = m_lin_feat.get_element(i,  to_state);
-		float64_t from_val = m_lin_feat.get_element(i,from_state);
-		svm_values[i]=(to_val-from_val)/(to_pos-from_pos);
+		float64_t to_val   = m_lin_feat.get_element(i, to_state);
+		float64_t from_val = m_lin_feat.get_element(i, from_state);
+		svm_values[i] = (to_val-from_val)/(to_pos-from_pos);
 	}
 	for (int32_t i=num_svms;i<m_num_lin_feat_plifs_cum[m_num_raw_data];i++)
 	{
-		float64_t to_val   = m_lin_feat.get_element(i,  to_state);
-		float64_t from_val = m_lin_feat.get_element(i,from_state);
-		svm_values[i]=to_val-from_val;
+		float64_t to_val   = m_lin_feat.get_element(i, to_state);
+		float64_t from_val = m_lin_feat.get_element(i, from_state);
+		svm_values[i] = to_val-from_val ;
 	}
+
 	// find the correct row with precomputed 
 	if (frame!=-1)
 	{
@@ -1111,9 +1113,9 @@ inline void CDynProg::lookup_content_svm_values(const int32_t from_state, const 
 		svm_values[5] = 1e10;
 		svm_values[6] = 1e10;
 		int32_t global_frame = from_pos%3;
-        	int32_t row = ((global_frame+frame)%3)+4;
-		float64_t to_val   = m_lin_feat.get_element(row,  to_state);
-		float64_t from_val = m_lin_feat.get_element(row,from_state);
+		int32_t row = ((global_frame+frame)%3)+4;
+		float64_t to_val   = m_lin_feat.get_element(row, to_state);
+		float64_t from_val = m_lin_feat.get_element(row, from_state);
 		svm_values[frame+4] = (to_val-from_val)/(to_pos-from_pos);
 	}
 }

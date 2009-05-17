@@ -25,6 +25,7 @@
 #include <stdio.h>
 #include <time.h>
 #include <ctype.h>
+#include <limits.h>
 
 template void CDynProg::best_path_trans<1,true,false>(
 	const float64_t *seq, int32_t seq_len, const int32_t *pos,
@@ -2485,7 +2486,13 @@ void CDynProg::best_path_trans(
 	long_transition_content_position.zero();
 	long_transition_content_scores.zero() ;
 
+
+	CArray2<int> look_back(N,N) ;
 	{ // determine maximal length of look-back
+		for (int32_t i=0; i<N; i++)
+			for (int32_t j=0; j<N; j++)
+				look_back.set_element(i,j, INT_MAX) ;
+		
 		for (int32_t i=0; i<N; i++)
 		{
 			// only consider transitions that are actually allowed
@@ -2499,6 +2506,9 @@ void CDynProg::best_path_trans(
 				CPlifBase *penij=PEN.element(i,j) ;
 				if (penij==NULL)
 					continue ;
+
+				look_back.set_element(i,j, CMath::ceil(penij->get_max_value())) ;
+
 				if (penij->get_max_value()>max_look_back)
 				{
 					SG_DEBUG( "%d %d -> value: %f\n", i,j,penij->get_max_value());
@@ -2509,10 +2519,15 @@ void CDynProg::best_path_trans(
 					use_svm=true ;
 			}
 		}
+		max_look_back = CMath::min(m_genestr_len, max_look_back) ;
+
+		for (int32_t i=0; i<N; i++)
+			for (int32_t j=0; j<N; j++)
+				if (look_back.get_element(i,j)==INT_MAX)
+					look_back.set_element(i,j, max_look_back) ;
 	}
 
 	//SG_PRINT("use_svm=%i, genestr_len: \n", use_svm, m_genestr_len) ;
-	max_look_back = CMath::min(m_genestr_len, max_look_back) ;
 	SG_DEBUG("use_svm=%i\n", use_svm) ;
 	
 	SG_DEBUG("maxlook: %d N: %d nbest: %d \n", max_look_back, N, nbest);
@@ -2761,10 +2776,10 @@ void CDynProg::best_path_trans(
 				for (int16_t k=0; k<nbest; k++)
 				{
 					delta.element(delta_array, t, j, k, seq_len, N)    = seq.element(j,t) ;
-					psi.element(t,j,k)      = 0 ;
+					psi.element(t,j,k)         = 0 ;
 					if (nbest>1)
-						ktable.element(t,j,k)     = 0 ;
-					ptable.element(t,j,k)     = 0 ;
+						ktable.element(t,j,k)  = 0 ;
+					ptable.element(t,j,k)      = 0 ;
 				}
 			}
 			else
@@ -2784,20 +2799,7 @@ void CDynProg::best_path_trans(
 					T_STATES ii = elem_list[i] ;
 					
 					const CPlifBase * penalty = PEN.element(j,ii) ;
-					int32_t look_back = max_look_back ;
-					{ // find lookback length
-						CPlifBase *pen = (CPlifBase*) penalty ;
-						if (pen!=NULL)
-							look_back=(int32_t) (CMath::ceil(pen->get_max_value()));
-						if (look_back>=1e6)
-							SG_PRINT("%i,%i -> %d from %ld\n", j, ii, look_back, (long)pen) ;
-						ASSERT(look_back<1e6);
-					}
-					//int32_t num_current_svms = trans_matrix_num_svms.element(j,ii);
-					//int32_t* svm_ids = trans_matrix_svms.element(j,ii);
-					//int32_t* svm_ids[num_current_svms];
-					//for (int32_t id=0;id<num_current_svms;id++)
-					//	svm_ids[id]=*(p_svm_ids+id);
+					int32_t look_back_ = look_back.element(j,ii) ;
 				
 					int32_t orf_from = orf_info.element(ii,0) ;
 					int32_t orf_to   = orf_info.element(j,1) ;
@@ -2818,7 +2820,7 @@ void CDynProg::best_path_trans(
 					int32_t loss_last_pos = t ;
 					float64_t last_loss = 0.0 ;
 
-					for (int32_t ts=t-1; ts>=0 && pos[t]-pos[ts]<=look_back; ts--)
+					for (int32_t ts=t-1; ts>=0 && pos[t]-pos[ts]<=look_back_; ts--)
 					{
 						bool ok ;
 						//int32_t plen=t-ts;
@@ -3198,7 +3200,6 @@ void CDynProg::best_path_trans_deriv(
 					PEN.element(to_state, from_state)->get_used_svms(&num_current_svms, svm_ids);
 					SG_PRINT("\n");
 				}
-
 
 				lookup_content_svm_values(from_pos, to_pos, pos[from_pos],pos[to_pos], svm_value, frame);
 				if (false)//(frame>=0)
