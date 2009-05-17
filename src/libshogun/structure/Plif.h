@@ -243,6 +243,8 @@ class CPlif: public CPlifBase
 		 */
 		void set_plif_limits(float64_t *p_limits, int32_t p_len)
 		{
+			if (len!=p_len)
+				SG_PRINT("len=%i p_len=%i\n", len, p_len) ;
 			ASSERT(len==p_len);
 
 			for (int32_t i=0; i<len; i++)

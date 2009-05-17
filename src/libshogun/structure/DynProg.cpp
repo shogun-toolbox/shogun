@@ -2396,7 +2396,6 @@ void CDynProg::best_path_trans(
 	MyTime2.start() ;
 #endif
 	
-	//SG_PRINT( "best_path_trans:%x\n", seq_array);
 	if (!svm_arrays_clean)
 	{
 		SG_ERROR( "SVM arrays not clean") ;
@@ -2478,6 +2477,13 @@ void CDynProg::best_path_trans(
 				}
 	}
 
+	// allow longer transitions than look_back
+	bool long_transitions = true;
+	int32_t long_transition_max = 1000000 ;
+	CArray<int32_t> long_transition_content_position(N) ;
+	CArray2<float64_t> long_transition_content_scores(N, m_num_lin_feat_plifs_cum[m_num_raw_data]) ;
+	long_transition_content_position.zero();
+	long_transition_content_scores.zero() ;
 
 	{ // determine maximal length of look-back
 		for (int32_t i=0; i<N; i++)
@@ -2918,7 +2924,10 @@ void CDynProg::best_path_trans(
 						}
 					}
 				}
-				
+				if (long_transitions)
+				{
+					
+				}
 				
 				int32_t numEnt = fixed_list_len;
 				

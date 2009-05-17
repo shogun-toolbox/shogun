@@ -46,7 +46,7 @@ bool CGUIStructure::set_plif_struct(
 	m_num_limits=M;
 	m_PEN = new CPlif*[N] ;
 	for (int32_t i=0; i<N; i++)	
-		m_PEN[i]=new CPlif() ;
+		m_PEN[i]=new CPlif(M) ;
 
 	for (int32_t i=0; i<N; i++)
 	{
