@@ -1,0 +1,43 @@
+We integrated the work of the following people:
+
+ Alex J. Smola
+	- the pr_loqo optimizer
+
+ Thorsten Joachims 
+	- SVMLight
+
+ Chih-Chung Chang and and Chih-Jen Lin	
+	- LibSVM
+
+ Xiang-Rui Wang and Chih-Jen Lin
+	- LIBLINEAR
+
+ Thomas Serafini, Luca Zanni, Gaetano Zanghirati
+	- the Gradient Projection Decomposition Technique (GPDT) - SVM
+
+ Vikas Sindhwani
+    - SVM-lin: Fast SVM Solvers for Supervised and Semi-supervised Learning
+
+ Vojtech Franc
+	- Generalized Nearest Point Problem Solver based L2 (slacks) SVM
+	- Optimized Cutting Plane Support Vector Machines (Ocas)
+
+ Jean-Philippe Vert and Hiroto Saigo
+	- Local Alignment Kernel
+
+ Leon Bottou
+	- Stochastic Gradient Descent (SGD) SVM 
+
+ Marius Kloft
+	- 2-norm and q-norm MKL
+
+ Alexander Zien
+	- Newton based q-norm MKL
+	- POIM code for WD kernels
+
+ Christian Gehl
+	- Distance Metrics
+
+ Jonas Behr
+	- Structured Learning
+

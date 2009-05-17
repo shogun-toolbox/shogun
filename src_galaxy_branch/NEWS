@@ -1,0 +1,436 @@
+2009-04-XX Soeren Sonnenburg <sonne@debian.org>
+
+	* SHOGUN Release version 0.7.3 (libshogun 3.0, libshogunui 1.1)
+	* This release contains several bugfixes:
+	* Features:
+		- Implement convenience function for parallel quicksort.
+	* Bugfixes:
+		- None
+	* Cleanup and API Changes:
+		- Make sure that all destructors are declared virtual.
+		- get_name function was undefined in Evaluation causing the
+		PerformanceMeasures class to be defunct.
+
+2009-03-23 Soeren Sonnenburg <sonne@debian.org>
+
+	* SHOGUN Release version 0.7.2 (libshogun 2.0, libshogunui 1.1)
+	* This release contains several cleanups and enhancements:
+	* Features:
+		- Support all data types from python_modular: dense, scipy-sparse
+		csc_sparse matrices and strings of type bool, char, (u)int{8,16,32,64},
+		float{32,64,96}. In addition, individual vectors/strings can now be
+		obtained and even changed.  See examples/python_modular/features_*.py
+		for examples.
+		- AUC maximization now works with arbitrary kernel SVMs.
+		- Documentation updates, many examples have been polished.
+		- Slightly speedup Oligo kernel.
+	* Bugfixes:
+		- Fix reading strings from directory (f.load_from_directory()).
+		- Update copyright to 2009.
+	* Cleanup and API Changes:
+		- Remove {Char,Short,Word,Int,Real}Features and only ever use the
+		templated SimpleFeatures.
+		- Split up examples in examples/python_modular to separate files.
+		- Now use s.set_features(strs) instead of s.set_string_features(strs)
+          to set string features.
+		- The meaning of the width parameter for the Oligo Kernel changed, the
+		OligoKernel has been renamed to OligoStringKernel.
+
+2009-03-08 Soeren Sonnenburg <debian@nn7.de>
+
+	* SHOGUN Release version 0.7.1 (libshogun 1.0, libshogunui 1.0)
+	* This release contains several cleanups and bugfixes:
+	* Features:
+		- configure now detects libshogun/ui installed in /usr/(local/)lib if
+		libshogun/ui dirs are removed.
+		- Improved documentation (and path and doxygen fixes).
+		- Tutorial on how to develop with libshogun and to extend shogun.
+		- Added the elwms (eilergendewollmilchsau) interface that is a
+		chimera that in one file interfaces to python,octave,r,matlab and
+		provides the run_{octave,python,r} command to run code in
+		{octave,python,r} from within octave,r,matlab,python transparently
+		making variables available to the target interface avoiding file i/o.
+		- Implement AttributeFeatures for (attr,value) pairs, trees etc.
+	* Bugfixes:
+		- fix a crasher occurring with combined kernel and multiple threads.
+		- configure now allows building of modular interfaces only.
+		- n-dimensional arrays work now in octave.
+	* Cleanup and API Changes:
+		- Custom Kernel no longer requires features nor initialization, even
+		not when used in CombinedKernel (the combined kernel will skip over
+		custom kernels on init).
+
+2009-02-20 Soeren Sonnenburg <debian@nn7.de>
+
+	* SHOGUN Release version 0.7.0 (libshogun 0.0, libshogunui 0.0)
+	* This release contains major feature enhancements and bugfixes:
+		- Implement DotFeatures and CombinedDotFeatures. DotFeatures need
+		  to provide dot-product and similar operations (hence the name).
+		  This enables training of linear methods with mixed datatypes
+		  (sparse and dense and other even the newly implemented string
+		  based SpecFeatures and WDFeatures).
+		- MKL now does not require CPLEX any longer.
+		- Add q-norm MKL support based on internal Newton implementation.
+		- Add 1-norm MKL support based on GLPK.
+		- Add multiclass MKL support based on the GLPK and the GMNP svm solver.
+		- Implement Tensor Product Pair Kernel (TPPK).
+		- Support compilation on the iPhone :)
+		- Add an option to set wds kernel position weights.
+		- Build static libshogun.a for libshogun target.
+		- Testsuite can also test the modular R interface, added test for
+		  OligoKernel.
+		- Ocas and WDOcas can be used with a bias feature now.
+		- Update to LibSVM 2.88.
+		- Enable parallelized HMM code by default.
+	* Cleanup and API Changes:
+		- Shogun has been split up into libshogun and the static and modular
+		interfaces linking to it.
+		- Static interfaces now do proper reference counting.
+		- Remove SparseLinearClassifier: LinearClassifier is a drop-in
+		  replacement.
+		- WDOcas and SVMOcas now have the bias term enabled by default.
+	* Bugfixes:
+		- Fix regression for COMM* kernels (normalization argument was ignored).
+		- Use C99 variadic macros, instead of gcc's own variant.
+		- Disable lp_solve, it is not required as we are using GLPK now.
+		- Fix HMM training.
+
+2008-11-25 Soeren Sonnenburg <debian@nn7.de>
+
+	* SHOGUN Release version 0.6.7
+	* Cleanup:
+		- Replace ambigous self-defined data types for char/int/float etc.
+		by 'standardized' types.
+		- Method classify() in WDSVMOcas now has a default value for its
+		  argument.
+		- Removed a few stderr debug outputs.
+	* Features:
+		- Testsuite now covers subSVMs in MultiClassSVMs, static interfaces
+		  now support commands GET_NUM_SVMS and GET_SVM for MultiClassSVMs.
+	* Bugfixes:
+		- Fix for contigous arrays/vectors in interface for Python modular.
+		- Fixed improper assignment of labels in constructor of WDSVMOcas
+		  leading to segfaults on destruction in (python) modular interface.
+		- Fixed a segfault opportunity in MultiClassSVM.
+
+2008-10-11  Soeren Sonnenburg <debian@nn7.de>
+
+	* SHOGUN Release version 0.6.6
+	* Bugfixes:
+		- Include missing file regression/Regression.h.
+		- Fix formula in CosineDistance.
+
+2008-10-10  Soeren Sonnenburg <debian@nn7.de>
+
+	* SHOGUN Release version 0.6.5
+	* This release contains several cleanups and bugfixes:
+		- Implement KernelNormalizer class with a couple of normalization
+		functions that can now be attached to almost any kernel via
+		set_normalizer() in the modular and set_kernel_normalization in the
+		static interfaces. This fixes a long standing bug in the
+		WeightedDegreePositionStringKernel normalization WARNING will break
+		compatibility to all previously trained WD-shift kernel models, use
+		FIRSTELEMENT / CFirstElementKernelNormalizer for an *approximation* to
+		the previous buggy behaviour. Also breaks WordMatchKernel as for this
+		kernel normalization is now enabled by default.
+		- The custom kernel no longer requires lhs/rhs features (it will create
+				its own dummy features)
+		- Linear kernels don't use kernel cache (only slows down things)
+		- Integrate the Oligo string-kernel (from Meinecke et.al 2004)
+		- Remove use_precompute hack from SVMLight.
+		- Add precompute_kernels function to turn kernels appended to a
+		combined kernel into CustomKernels (i.e. precomputed ones).
+		- Add distances BrayCurtis, ChiSquare, Cosine and Tanimoto.
+	* Bugfixes:
+		- Support Intel MKL on 32bit archs.
+		- Fix compilation when atlas/lapack is not available.
+
+2008-08-15  Soeren Sonnenburg <debian@nn7.de>
+
+	* SHOGUN Release version 0.6.4
+	* This release contains major feature enhancements and bugfixes:
+		- Implement 2-norm Multiple Kernel Learning.
+		- Much extended documentation.
+		- Add Gaussian kernel for 32bit floating point features.
+		- Testsuite is now available for static interfaces python, octave,
+		  matlab and R and modular interface octave.
+	* Bugfixes:
+		- Tests are now run in the examples/interface directory, with paths set
+		to the installation directory.
+		- Filter out duplicate signals in signal handler and make sure the
+		handler is removed.
+		- Fix random number generator initialization.
+
+2008-06-13  Soeren Sonnenburg <debian@nn7.de>
+
+	* SHOGUN Release version 0.6.3
+	* This release contains several cleanups and bugfixes:
+		- Fail nicely in out of memory situations.
+		- Drop R package, now configure; make; make install will work for all
+		interfaces.
+		- Disable progress output by default. Ocas now uses a progress bar and
+		  hence is less verbose.
+		- Revised directory structure with /doc, /examples, /src, /testsuite.
+		- Add common toy data repository and make all examples from all interfaces
+		use it.
+		- Add examples for cmdline interface.
+		- Dynamically generate a reference documentation for the static interfaces.
+		- Syntax highlight commands again.
+		- Support for cplex 11.
+		- Port MKL examples to R.
+		- Merge structure learning branch.
+	* Bugfixes:
+		- Don't render string if it is not printed in current loglevel anyway
+		and throw exceptions for messages with priority ERROR or higher.
+		- Compile fix when lapack is not available.
+		- Fix when only lapack and blas (but not atlas) are available.
+		- Fix bug in batch/linadd occurring for WD kernel of order 1.
+		- Check that strings have same length on initing WD kernels.
+		- Remove signal handler on Ctrl+C to fix Ctrl+C pressed twice bug.
+		- All derived classes now call their parent class on construction.
+		- Fix a crasher occuring with SVRLight on multiple threads.
+
+2008-05-15  Soeren Sonnenburg <debian@nn7.de>
+
+	* SHOGUN Release version 0.6.2
+		- Experimental support for r-modular thanks to the swig team!
+		- All python-modular examples describing the use of kernels,
+		classifier, distributions, features, distances, regression and
+		preprocessors have been ported to r-modular (requires swig from svn).
+		- The 'send_command' legacy is no longer necessary, numbers can be used
+		as such and don't have to be given as strings. All examples for
+		r,python,octave,matlab have been converted to the new syntax.
+		- Resurrected the command line interface. Basic functionionality,
+		like training a classifier on strings/real valued (sparse) features
+		was restored. Readline completion was added.
+		- Documentation updates.
+	* Bugfixes:
+		- The weighted spectrum kernel is now working again.
+		- Fix the testsuite to reliably check methods that use random().
+		- Off-by-one bug fix in FixedDegreeStringKernel.
+		- Fix reading strings from file, when strings don't have the same length.
+		- Fix massive slowdown in modular interfaces for WD based kernels (it
+		is 5-30 times faster now).
+
+2008-04-19  Soeren Sonnenburg <debian@nn7.de>
+
+	* SHOGUN Release version 0.6.1
+		- Now fully support octave-modular thanks to the swig team!
+		- All python-modular examples describing the use of kernels,
+		classifier, distributions, features, distances, regression and
+		preprocessors have been ported to octave-modular.
+		- Minor documentation updates.
+		- Unconditionally disable swig director. This reduces wrapper code size
+		and compile time and also speeds up calls to virtual functions *a lot*.
+		Expect big speed improvements if you were using the python-modular
+		interface.
+	* Bugfixes:
+		- Include missing files in documentation.
+		- The 'send_command' legacy is no longer necessary.
+		- Improved cmdline help, categorized in topic sg('help', 'topic')
+
+2008-04-12  Soeren Sonnenburg <debian@nn7.de>
+
+	* SHOGUN Release version 0.6.0
+	* This release contains several major enhancements:
+		- The static R,octave,matlab,python interfaces have been rewritten from
+		scratch simplifying future extensions. They now use the same syntax and
+		support the same set of shogun commands.
+		- Toy examples describing the use of kernels, classifier,
+		distributions, features, distances, regression and preprocessors
+		for the static python, R, octave and matlab interface have been added.
+		- Improved user documentation
+		- Support for ACML and Intel MKL
+	* New methods:
+		- POIMs for python-modular interface
+	* Bugfixes:
+		- Fixed memory leaks in Classifiers, Kernels, Distributions
+		- Fixed severale delete[]/free mismatches
+		- Fixed reading and writing of svm light format
+		- Enable ctrl-c support in octave
+
+2008-02-19  Soeren Sonnenburg <debian@nn7.de>
+
+	* SHOGUN Release version 0.5.1
+	* This release contains minor bugfixes
+		- Allow building w/o doxygen
+		- Code cleanups
+		- Support newer lapack/atlas/blas
+	* New methods:
+		- Added several performance measures
+		- SVMSGD
+		- Efficient reading/writing of svmlight format
+
+2008-01-31  Soeren Sonnenburg <debian@nn7.de>
+
+	* SHOGUN Release version 0.5.0
+	* This release contains several major enhancements:
+		- Full fledged test suite for python-modular interface
+		- Toy examples describing the use of kernels, classifier,
+		distributions, features, distances, regression and preprocessors
+		for the python-modular interface
+		- Doxygen generated documentation for python-modular interface
+		- Many cleanups to make python-modular interface more consistent
+	* New methods:
+		- WDSVMOcas
+		- Update liblinear to version 1.22
+	* Bugfixes:
+		- StringFeatures may now directly read DNA strings from a single file
+		- Option to quieten progress output
+		- Several memory leaks and valgrind errors
+		- Fixed rarely ocurring convergence problem in OCAS
+		- Division by zero in Chi2Kernel
+		- WD kernel now dynamically allocates Tries
+		- Matlab clear sg ; sg crasher
+		- Salzberg/HistogramWordkernel crasher
+		- Fix build dependency generation using gcc -MM
+	* Switched license to GPL v3
+
+2007-11-23  Soeren Sonnenburg <debian@nn7.de>
+
+	* SHOGUN Release version 0.4.4
+	* This release contains several bugfixes:
+		- Memory leak fix in libsvm wrapper
+		- Enable error checking in matlab interface
+		- Free memory after batch computation
+		- Parallel (num_threads>1) bug occurring with batch computation
+		- Several python-modular interface cleanups
+		- Fix for Chi2 kernel
+		- Use gcc now to generate build dependencies
+		- Test for existance of log2 (enables building on interix)
+		- Python build fix
+		- Double free fix for combined kernel (python modular interface)
+	* New methods: SVMOcas, GaussianShiftKernel
+
+2007-10-10  Soeren Sonnenburg <debian@nn7.de>
+
+	* SHOGUN Release version 0.4.3
+	* This release contains minor bugfixes for the
+	weighted spectrum kernel and poims
+
+2007-09-19  Soeren Sonnenburg <debian@nn7.de>
+
+	* SHOGUN Release version 0.4.2
+	* This release contains minor bugfixes and improvements
+		- fix POIMs
+		- compile fix when atlas/lapack is not available
+		- minor code cleanup (Tries now use templates)
+		- added KMeans and Hierarchical Clustering
+
+2007-09-01  Soeren Sonnenburg <debian@nn7.de>
+
+	* SHOGUN Release version 0.4.1
+	* This release contains minor bugfixes and improvements
+	* Fixes for:
+		- SVMLin
+		- python examples
+		- R examples
+		- cplex 10 compatibility fixes
+		- compilation fix when configured with --disable-svm-light
+		- sliding window/position list fixes
+	* New methods
+		- Liblinear
+		- Local Alignment Kernel
+		- support for transfering StringFeatures of type word to matlab
+		- python modular support for custom kernel
+
+2007-07-30  Soeren Sonnenburg <debian@nn7.de>
+
+	* SHOGUN Release version 0.4.0
+	* new methods: 
+		- SubgradientSVM
+		- GMNPSVM (multiclass b-SVM)
+		- SubgradientLPM
+		- CplexLPM
+		- LPBoost (for LPM)
+		- SVMLin
+		- weighted spectrum kernel
+	* linadd support for GPDTSVM
+	* new commands new_classifier / train_classifier / get_classifier
+	* support for sparse features (from matlab)
+	* cleaned and added many more examples 
+	* removed suffixarray code due to license conflicts
+	* Matlab R2007a support
+	* all string kernels now work on strings (not charfeatures)
+
+2007-03-06  Soeren Sonnenburg <debian@nn7.de>
+
+	* SHOGUN Release version 0.3.2
+	* workaround for python-numpy, when long==int==int32, add bool support
+	* fix autodetection of atlas/lapack
+	* fix uninitialized variables in (GUI)HMM, valgrind errors
+
+2007-02-20  Soeren Sonnenburg <debian@nn7.de>
+
+	* SHOGUN Release version 0.3.1
+	* update README
+	* fix autodetection of powl() and _SC_NPROCESSORS_ONLN
+
+2007-02-14  Soeren Sonnenburg <debian@nn7.de>
+
+	* SHOGUN Release version 0.3.0
+
+2007-02-13  Soeren Sonnenburg <debian@nn7.de>
+
+	* added vojtechs SVM
+	* finished (regularized) LDA
+	* conservational weights in WD kernel
+	* added mikios kernel ridge regression (KRR)
+	* many fixes in python swig interface
+	* build fixes for archs that don't have powl()
+	* much improved build system
+	* updated coding conventions (though still in a flux)
+	* enable warnings for shadowed variables
+	* lots of build fixes 
+
+2006-12-05  Soeren Sonnenburg <debian@nn7.de>
+
+	* SHOGUN Release version 0.2.1
+
+2006-10-13  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* swig python interface (works w/ multiple svms etc etc)
+
+2006-10-09  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* some autodetection magic in ./configure
+	* fixed a serious bug occuring with shrinking & SVM light (target epsilon
+			was not achieved as we erreanously terminated optimization)
+	* fixed a serious bug when using charfeatures (or strings) w/ mxGetString
+	in matlab interface (the mxGetString function has the undocumented
+			`feature' of returning locale dependent results!)
+	* new command use_shrinking 0/1
+	* new svm classifier SVM LIBSVM_ONECLASS
+	* new function get_WD_scoring
+	* make much more use of templates, i.e. remove all the
+	{Real,Char,Word,Byte,*}Kernel.* files
+
+2006-09-11  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* incorporated MINDY support
+	* new alphabet class, all string features now have a defined
+	alphabet plus mapping function
+	* RAW (i.e. 8bit) alphabet added
+	* fixes for CommStringUlongKernel (was buggy when strings have different
+			lengths)
+	* new get_WD_scoring function
+	* compile fixes for octave and matlab on osx
+	* configure now scans a number of variants to detect include and library paths
+	* configure obeys INCLUDES LIBS environment variables and optional
+	  paths specified by --libraries --includes 
+	* updated copyright infos
+	* updated license infos
+
+2006-06-30  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* SHOGUN Release 0.1.2
+	* compile fixes for R on MaxOSX
+	* some compile fixes for cygwin/WIN32
+	* Weighted Degree/Weighted Degree Shift kernel speedups & fixes
+	* python build fixes
+	* initial *workin* swig support 
+	* entropy example
+
+2006-06-15  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* SHOGUN Release version 0.1-pre1
