@@ -2516,10 +2516,11 @@ void CDynProg::best_path_trans(
 	// allow longer transitions than look_back
 	bool long_transitions = m_long_transitions ;
 	CArray2<int32_t> long_transition_content_position(N,N) ;
+	CArray2<int32_t> long_transition_content_start(N,N) ;
 	CArray2<float64_t> long_transition_content_scores(N,N) ;
-	//CArray2<float64_t> long_transition_content_scores_pen(N,N) ;
-	//CArray2<float64_t> long_transition_content_scores_prev(N,N) ;
-	//CArray2<float64_t> long_transition_content_scores_elem(N,N) ;
+	CArray2<float64_t> long_transition_content_scores_pen(N,N) ;
+	CArray2<float64_t> long_transition_content_scores_prev(N,N) ;
+	CArray2<float64_t> long_transition_content_scores_elem(N,N) ;
 	
 	if (with_loss || nbest!=1)
 	{
@@ -2527,9 +2528,10 @@ void CDynProg::best_path_trans(
 		long_transitions = false ;
 	}
 	long_transition_content_scores.set_const(-CMath::INFTY);
-	//long_transition_content_scores_pen.set_const(0) ;
-	//long_transition_content_scores_elem.set_const(0) ;
-	//long_transition_content_scores_prev.set_const(0) ;
+	long_transition_content_scores_pen.set_const(0) ;
+	long_transition_content_scores_elem.set_const(0) ;
+	long_transition_content_scores_prev.set_const(0) ;
+	long_transition_content_start.zero() ;
 	long_transition_content_position.zero() ;
 
 	CArray2<int32_t> look_back(N,N) ;
@@ -3062,8 +3064,10 @@ void CDynProg::best_path_trans(
 						while (ts>0 && pos[t]-pos[ts-1] < m_long_transition_threshold)
 							ts-- ;
 
-						if ((ts>0) && (pos[t]-pos[ts-1] >= m_long_transition_threshold) && (pos[t]-pos[ts] < m_long_transition_threshold))
+						if (ts>0)
 						{
+							ASSERT((pos[t]-pos[ts-1] >= m_long_transition_threshold) && (pos[t]-pos[ts] < m_long_transition_threshold))
+
 							/* only consider this transition, if the right position was found */
 							float pen_val = 0.0 ;
 							if (penalty)
@@ -3072,8 +3076,8 @@ void CDynProg::best_path_trans(
 								lookup_content_svm_values(ts, t, pos[ts], pos[t], svm_value, frame);
 								pen_val = penalty->lookup_penalty(pos[t]-pos[ts], svm_value) ;
 							}
-							//if (pos[ts]==3920)
-							//	SG_PRINT("%i,%i,%i: pen_val=%1.5f (t=%i, ts=%i, ts-1=%i, ts+1=%i)\n", pos[t], j, ii, pen_val, pos[t], pos[ts], pos[ts-1], pos[ts+1]) ;
+							if (pos[ts]==3812)
+								SG_PRINT("%i,%i,%i: pen_val=%1.5f (t=%i, ts=%i, ts-1=%i, ts+1=%i)\n", pos[t], j, ii, pen_val, pos[t], pos[ts], pos[ts-1], pos[ts+1]) ;
 							
 							float64_t mval = -(long_transition_content_scores.get_element(ii, j) + pen_val*0.5) ;
 							/* // incomplete extra check
@@ -3093,9 +3097,9 @@ void CDynProg::best_path_trans(
 							{
 								/* then the long transition is better than the short one => replace it */ 
 								int32_t fromtjk =  fixedtempii_ ;
-								SG_DEBUG("%i,%i: Long transition (%1.5f=-(%1.5f+%1.5f+%1.5f+%1.5f), %i) to pos %i better than short transition (%1.5f,%i) to pos %i \n", 
+								SG_PRINT("%i,%i: Long transition (%1.5f=-(%1.5f+%1.5f+%1.5f+%1.5f), %i) to pos %i better than short transition (%1.5f,%i) to pos %i \n", 
 										 pos[t], j, 
-										 mval, pen_val*0.5, 0,0,0,//long_transition_content_scores_pen.get_element(ii, j), long_transition_content_scores_elem.get_element(ii, j), long_transition_content_scores_prev.get_element(ii, j), ii, 
+										 mval, pen_val*0.5, long_transition_content_scores_pen.get_element(ii, j), long_transition_content_scores_elem.get_element(ii, j), long_transition_content_scores_prev.get_element(ii, j), ii, 
 										 pos[long_transition_content_position.get_element(ii, j)], 
 										 fixedtempvv_, (fromtjk%N), pos[(fromtjk-(fromtjk%(N*nbest)))/(N*nbest)]) ;
 								ASSERT((fromtjk-(fromtjk%(N*nbest)))/(N*nbest)==0 || pos[(fromtjk-(fromtjk%(N*nbest)))/(N*nbest)]>=pos[long_transition_content_position.get_element(ii, j)] || fixedtemplong) ;
@@ -3105,34 +3109,41 @@ void CDynProg::best_path_trans(
 								fixed_list_len = 1 ;
 								fixedtemplong = true ;
 							}
-
-							/* search the other way around, to make sure we'll find the same segment later... */
-							int t2 = ts ;
-							while (t2<seq_len && pos[t2+1]-pos[ts] < m_long_transition_threshold)
-								t2++ ;
-
-							if (t2<seq_len)
+						
+							int32_t start = long_transition_content_start.get_element(ii, j) ;
+							for (int32_t ts2=start; pos[t]-pos[ts2] > m_long_transition_threshold ; ts2++)
 							{
+								int32_t t2 = ts2 ;
+								while (t2<=t && pos[t2+1]-pos[ts2]<m_long_transition_threshold)
+									t2++ ;
+								
+								ASSERT(pos[t2+1]-pos[ts2] >= m_long_transition_threshold || t2==t) ;
+								ASSERT(pos[t2]-pos[ts2] < m_long_transition_threshold) ;
+								
+								
 								/* recompute penalty, if necessary */
-								if (penalty && t2!=t)
+								if (penalty)
 								{
 									int32_t frame = orf_info.element(ii,0);
-									lookup_content_svm_values(ts, t2, pos[ts], pos[t2], svm_value, frame);
-									pen_val = penalty->lookup_penalty(pos[t2]-pos[ts], svm_value) ;
+									lookup_content_svm_values(ts2, t, pos[ts2], pos[t2], svm_value, frame);
+									pen_val = penalty->lookup_penalty(pos[t2]-pos[ts2], svm_value) ;
 								}
 								
-								//if (pos[ts]==3920)
-								//	SG_PRINT("t2=%i  t=%i  ts=%i  seq_len=%i\n", pos[t2], pos[t], pos[ts], seq_len) ;
+								if (pos[ts2]==3812)
+								{
+									SG_PRINT("%i - %i   vs  %i - %i\n", pos[t], pos[ts], pos[t2], pos[ts2]) ;
+									SG_PRINT("ts=%i  t=%i  ts2=%i  seq_len=%i\n", pos[ts], pos[t], pos[ts2], seq_len) ;
+								}
 								
-								float64_t mval_trans = -( elem_val[i] + pen_val*0.5 + delta.element(delta_array, ts, ii, 0, seq_len, N) ) ;
+								float64_t mval_trans = -( elem_val[i] + pen_val*0.5 + delta.element(delta_array, ts2, ii, 0, seq_len, N) ) ;
 								//float64_t mval_trans = -( elem_val[i] + delta.element(delta_array, ts, ii, 0, seq_len, N) ) ; // enable this for the incomplete extra check
 								
-								if (pos[t] - pos[long_transition_content_position.get_element(ii, j)] > m_long_transition_max)
+								if (pos[t2] - pos[long_transition_content_position.get_element(ii, j)] > m_long_transition_max)
 								{
 									long_transition_content_scores.set_element(-CMath::INFTY, ii, j) ;
-									//long_transition_content_scores_pen.set_element(0, ii, j) ;
-									//long_transition_content_scores_elem.set_element(0, ii, j) ;
-									//long_transition_content_scores_prev.set_element(0, ii, j) ;
+									long_transition_content_scores_pen.set_element(0, ii, j) ;
+									long_transition_content_scores_elem.set_element(0, ii, j) ;
+									long_transition_content_scores_prev.set_element(0, ii, j) ;
 									long_transition_content_position.set_element(0, ii, j) ;
 								}
 								
@@ -3140,11 +3151,13 @@ void CDynProg::best_path_trans(
 								{
 									/* then the old long transition is either too far away or worse than the current one */
 									long_transition_content_scores.set_element(-mval_trans, ii, j) ;
-									//long_transition_content_scores_pen.set_element(pen_val*0.5, ii, j) ;
-									//long_transition_content_scores_elem.set_element(elem_val[i], ii, j) ;
-									//long_transition_content_scores_prev.set_element(delta.element(delta_array, ts, ii, 0, seq_len, N), ii, j) ;
-									long_transition_content_position.set_element(ts, ii, j) ;
+									long_transition_content_scores_pen.set_element(pen_val*0.5, ii, j) ;
+									long_transition_content_scores_elem.set_element(elem_val[i], ii, j) ;
+									long_transition_content_scores_prev.set_element(delta.element(delta_array, ts2, ii, 0, seq_len, N), ii, j) ;
+									long_transition_content_position.set_element(ts2, ii, j) ;
 								}
+
+								long_transition_content_start.set_element(ts2, ii, j) ;
 							}
 							
 							/* // extra check
@@ -3448,7 +3461,7 @@ void CDynProg::best_path_trans_deriv(
 					ASSERT(pos[from_pos_thresh] - pos[from_pos] < m_long_transition_threshold);
 					ASSERT(pos[from_pos_thresh+1] - pos[from_pos] >= m_long_transition_threshold);
 
-					//SG_PRINT("pos1: %i  pos2: %i   pos3: %i\n", pos[from_pos], pos[from_pos_thresh], pos[from_pos_thresh+1]) ;
+					SG_PRINT("pos1: %i  pos2: %i   pos3: %i\n", pos[from_pos], pos[from_pos_thresh], pos[from_pos_thresh+1]) ;
 					
 					int32_t frame = m_orf_info.element(from_state,0);
 					lookup_content_svm_values(from_pos, from_pos_thresh, pos[from_pos], pos[from_pos_thresh], svm_value_part1, frame);
@@ -3521,7 +3534,7 @@ void CDynProg::best_path_trans_deriv(
 					for (int kk=0; kk<i; kk++)
 						sum_score += my_scores[i] ;
 
-					SG_DEBUG("is_long_transition=%i  (from_pos=%i (%i), to_pos=%i (%i)=> %1.5f, %1.5f --- 1: %1.5f (%i-%i)  2: %1.5f (%i-%i) \n", 
+					SG_PRINT("is_long_transition=%i  (from_pos=%i (%i), to_pos=%i (%i)=> %1.5f, %1.5f --- 1: %1.5f (%i-%i)  2: %1.5f (%i-%i) \n", 
 							 is_long_transition, pos[from_pos], from_state, pos[to_pos], to_state, 
 							 nscore, sum_score, 
 							 PEN.element(to_state, from_state)->lookup_penalty(pos[from_pos_thresh]-pos[from_pos], svm_value_part1)*0.5, pos[from_pos], pos[from_pos_thresh], 
