@@ -6440,6 +6440,8 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 
 			
 			CDynProg* h = ui_structure->get_dyn_prog();
+			h->set_num_states(num_states) ;
+
 			h->set_p_vector(p, num_states) ;
 			h->set_q_vector(q, num_states) ;
 			if (seg_path!=NULL) 
@@ -6503,7 +6505,7 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 			float64_t* p_q_deriv   = new float64_t[num_states];
 			float64_t* p_my_scores = new float64_t[Nmypos_seq];
 			float64_t* p_my_losses = new float64_t[Nmypos_seq];
-			
+
 			h->best_path_trans_deriv(my_path, my_pos, p_my_scores, p_my_losses, Nmypos_seq, features, 
 						 num_pos, all_pos, PEN_matrix, PEN_state_signal, feat_dims[2], genestr_num) ;
 			

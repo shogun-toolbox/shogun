@@ -106,10 +106,10 @@ void CPlifArray::penalty_clear_derivative()
 }
 
 void CPlifArray::penalty_add_derivative(
-	float64_t p_value, float64_t* svm_values)
+	float64_t p_value, float64_t* svm_values, float64_t factor)
 {
 	for (int32_t i=0; i<m_array.get_num_elements(); i++)
-		m_array[i]->penalty_add_derivative(p_value, svm_values) ;
+		m_array[i]->penalty_add_derivative(p_value, svm_values, factor) ;
 }
 
 bool CPlifArray::uses_svm_values() const

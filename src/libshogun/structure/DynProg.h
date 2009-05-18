@@ -74,6 +74,7 @@ private:
 	float64_t inner_loop_time;
 	float64_t inner_loop_max_time ;	
 	float64_t svm_clean_time;
+	float64_t long_transition_time ;
 #endif
 	
 public:
@@ -656,7 +657,7 @@ public:
 	 */
 	inline float64_t get_a(T_STATES line_, T_STATES column) const
 	{
-	  return transition_matrix_a.element(line_,column); // look also best_path()!
+	  return transition_matrix_a.element(line_, column); // look also best_path()!
 	}
 
 	/** access function for matrix a derivated
@@ -667,7 +668,7 @@ public:
 	 */
 	inline float64_t get_a_deriv(T_STATES line_, T_STATES column) const
 	{
-	  return transition_matrix_a_deriv.element(line_,column); // look also best_path()!
+	  return transition_matrix_a_deriv.element(line_, column); // look also best_path()!
 	}
 	//@}
 protected:
@@ -903,8 +904,8 @@ protected:
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "DynProg"; }
-	
-protected:
+
+public:	
 	/**@name model specific variables.
 	 * these are p,q,a,b,N,M etc
 	 */
@@ -921,6 +922,7 @@ protected:
 	CArray<float64_t> initial_state_distribution_p;
 	CArray<float64_t> initial_state_distribution_p_deriv;
 
+protected:
 	/// distribution of end-states
 	CArray<float64_t> end_state_distribution_q;
 	CArray<float64_t> end_state_distribution_q_deriv;
@@ -1065,6 +1067,12 @@ protected:
 	int32_t m_num_raw_data;
 	/** length of gene string */
 	int32_t m_genestr_len;
+
+
+	bool m_long_transitions ;
+	int32_t m_long_transition_threshold  ;
+	int32_t m_long_transition_max ;
+
 };
 
 inline int32_t CDynProg::raw_intensities_interval_query(const int32_t from_pos, const int32_t to_pos, float64_t* intensities, int32_t type)

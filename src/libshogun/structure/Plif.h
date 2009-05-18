@@ -84,14 +84,14 @@ class CPlif: public CPlifBase
 		 * @param svm_values SVM values
 		 */
 		void penalty_add_derivative_svm(
-			float64_t p_value, float64_t* svm_values) ;
+			float64_t p_value, float64_t* svm_values, float64_t factor) ;
 
 		/** penalty add derivative
 		 *
 		 * @param p_value value
 		 * @param svm_values SVM values
 		 */
-		void penalty_add_derivative(float64_t p_value, float64_t* svm_values);
+		void penalty_add_derivative(float64_t p_value, float64_t* svm_values, float64_t factor);
 
 		/** get cum derivative
 		 *

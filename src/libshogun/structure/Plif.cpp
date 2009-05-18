@@ -270,11 +270,11 @@ void CPlif::penalty_clear_derivative()
 		cum_derivatives[i]=0.0 ;
 }
 
-void CPlif::penalty_add_derivative(float64_t p_value, float64_t* svm_values)
+void CPlif::penalty_add_derivative(float64_t p_value, float64_t* svm_values, float64_t factor)
 {
 	if (use_svm)
 	{
-		penalty_add_derivative_svm(p_value, svm_values) ;
+		penalty_add_derivative_svm(p_value, svm_values, factor) ;
 		return ;
 	}
 	
@@ -312,17 +312,17 @@ void CPlif::penalty_add_derivative(float64_t p_value, float64_t* svm_values)
 			break ; // assume it is monotonically increasing
 	
 	if (idx==0)
-		cum_derivatives[0]+=1 ;
+		cum_derivatives[0]+= factor ;
 	else if (idx==len)
-		cum_derivatives[len-1]+=1 ;
+		cum_derivatives[len-1]+= factor ;
 	else
 	{
-		cum_derivatives[idx]+=(d_value-limits[idx-1])/(limits[idx]-limits[idx-1]) ;
-		cum_derivatives[idx-1]+=(limits[idx]-d_value)/(limits[idx]-limits[idx-1]) ;
+		cum_derivatives[idx] += factor * (d_value-limits[idx-1])/(limits[idx]-limits[idx-1]) ;
+		cum_derivatives[idx-1]+= factor*(limits[idx]-d_value)/(limits[idx]-limits[idx-1]) ;
 	}
 }
 
-void CPlif::penalty_add_derivative_svm(float64_t p_value, float64_t *d_values)
+void CPlif::penalty_add_derivative_svm(float64_t p_value, float64_t *d_values, float64_t factor)
 {
 	ASSERT(use_svm>0);
 	float64_t d_value=d_values[use_svm-1] ;
@@ -359,13 +359,13 @@ void CPlif::penalty_add_derivative_svm(float64_t p_value, float64_t *d_values)
 			break ; // assume it is monotonically increasing
 	
 	if (idx==0)
-		cum_derivatives[0]+=1 ;
+		cum_derivatives[0]+=factor ;
 	else if (idx==len)
-		cum_derivatives[len-1]+=1 ;
+		cum_derivatives[len-1]+=factor ;
 	else
 	{
-		cum_derivatives[idx]+=(d_value-limits[idx-1])/(limits[idx]-limits[idx-1]) ;
-		cum_derivatives[idx-1]+=(limits[idx]-d_value)/(limits[idx]-limits[idx-1]) ;
+		cum_derivatives[idx] += factor*(d_value-limits[idx-1])/(limits[idx]-limits[idx-1]) ;
+		cum_derivatives[idx-1] += factor*(limits[idx]-d_value)/(limits[idx]-limits[idx-1]) ;
 	}
 }
 

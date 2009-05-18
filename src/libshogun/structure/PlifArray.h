@@ -67,7 +67,7 @@ class CPlifArray: public CPlifBase
 		 * @param svm_values SVM values
 		 */
 		virtual void penalty_add_derivative(
-			float64_t p_value, float64_t* svm_values);
+			float64_t p_value, float64_t* svm_values, float64_t factor);
 
 		/** get maximum value
 		 *

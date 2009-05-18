@@ -117,8 +117,11 @@ CDynProg::CDynProg(int32_t p_num_svms /*= 8 */)
           m_segment_ids(1),
           m_segment_mask(1),
 	  m_scores(1), m_states(1,1), m_positions(1,1), m_genestr_stop(1),
-	  m_lin_feat(1,1) //by Jonas
+	  m_lin_feat(1,1), //by Jonas
 	  //m_num_lin_feat(num_svms)
+  m_long_transitions(true),
+  m_long_transition_threshold(2000),
+  m_long_transition_max(100000)
 {
 	trans_list_forward = NULL ;
 	trans_list_forward_cnt = NULL ;
@@ -526,6 +529,8 @@ void CDynProg::set_a_trans_matrix(
 	trans_list_forward_val = NULL ;
 	trans_list_len = 0 ;
 
+	SG_PRINT("N=%i\n", N) ;
+	
 	transition_matrix_a.zero() ;
 	transition_matrix_a_id.zero() ;
 
@@ -2422,6 +2427,7 @@ void CDynProg::best_path_trans(
 	content_svm_values_time = 0.0 ;
 	content_plifs_time = 0.0 ;
 	inner_loop_max_time = 0.0 ;
+	long_transition_time = 0.0 ;
 	
 	MyTime2.start() ;
 #endif
@@ -2441,7 +2447,7 @@ void CDynProg::best_path_trans(
 	SG_PRINT("use_orf = %i\n", use_orf) ;
 #endif
 	
-	int32_t max_look_back = 20000 ;
+	int32_t max_look_back = 1000 ;
 	bool use_svm = false ;
 	//ASSERT(dict_len==num_svms*cum_num_words_array[num_degrees]) ;
 	//dict_weights.set_array(dictionary_weights, cum_num_words_array[num_degrees], num_svms, false, false) ;
@@ -2508,9 +2514,7 @@ void CDynProg::best_path_trans(
 	}
 
 	// allow longer transitions than look_back
-	bool long_transitions = true;
-	int32_t long_transition_threshold = 1000 ;
-	int32_t long_transition_max = 1000000 ;
+	bool long_transitions = m_long_transitions ;
 	CArray2<int32_t> long_transition_content_position(N,N) ;
 	CArray2<float64_t> long_transition_content_scores(N,N) ;
 	
@@ -2543,7 +2547,7 @@ void CDynProg::best_path_trans(
 				if (penij==NULL)
 				{
 					if (long_transitions)
-						look_back.set_element(long_transition_threshold, j, ii) ;
+						look_back.set_element(m_long_transition_threshold, j, ii) ;
 					continue ;
 				}
 				
@@ -2558,7 +2562,7 @@ void CDynProg::best_path_trans(
 					}
 				}
 				else
-					look_back.set_element(CMath::min( (int32_t)CMath::ceil(penij->get_max_value()), long_transition_threshold ), j, ii) ;
+					look_back.set_element(CMath::min( (int32_t)CMath::ceil(penij->get_max_value()), m_long_transition_threshold ), j, ii) ;
 
 				if (penij->uses_svm_values())
 					use_svm=true ;
@@ -2566,7 +2570,7 @@ void CDynProg::best_path_trans(
 		}
 		/* make sure max_look_back is at least as long as a long transition */
 		if (long_transitions)
-			max_look_back = CMath::max(long_transition_threshold, max_look_back) ;
+			max_look_back = CMath::max(m_long_transition_threshold, max_look_back) ;
 
 		/* make sure max_look_back is not longer than the whole string */
 		max_look_back = CMath::min(m_genestr_len, max_look_back) ;
@@ -2575,12 +2579,12 @@ void CDynProg::best_path_trans(
 		for (int32_t i=0; i<N; i++)
 			for (int32_t j=0; j<N; j++)
 			{
-				if (look_back.get_element(i,j)==long_transition_threshold)
+				if (look_back.get_element(i,j)==m_long_transition_threshold)
 					num_long_transitions++ ;
 				if (look_back.get_element(i,j)==INT_MAX)
 				{
 					if (long_transitions)
-						look_back.set_element(long_transition_threshold, i, j) ;
+						look_back.set_element(m_long_transition_threshold, i, j) ;
 					else
 						look_back.set_element(max_look_back, i, j) ;
 				}
@@ -2897,6 +2901,8 @@ void CDynProg::best_path_trans(
 					MyTime3.start() ;
 #endif				
 					int32_t num_ok_pos = 0 ;
+					float64_t last_mval=0 ;
+					int32_t last_ts = 0 ;
 					
 					for (int32_t ts=t-1; ts>=0 && pos[t]-pos[ts]<=look_back_; ts--)
 					{
@@ -2923,8 +2929,6 @@ void CDynProg::best_path_trans(
 							float64_t segment_loss = 0.0 ;
 							if (with_loss)
 								segment_loss = extend_segment_loss(loss, pos, elem_id[i], ts, loss_last_pos, last_loss) ;
-							//if (pos[t]-pos[ts]>1000)
-							//	continue ;
 
 							////////////////////////////////////////////////////////
 							// BEST_PATH_TRANS
@@ -2956,8 +2960,6 @@ void CDynProg::best_path_trans(
 								content_plifs_time += MyTime.time_diff_sec() ;
 #endif
 							}
-							//if (ii==10 && j==18)
-							//	SG_PRINT("pen_val: 10/18: %i (%i,%i) -> %1.2f\n", pos[t]-pos[ts], pos[ts], pos[t], pen_val) ;
 
 #ifdef DYNPROG_TIMING_DETAIL
 							MyTime.start() ;
@@ -2971,12 +2973,6 @@ void CDynProg::best_path_trans(
 									val              += segment_loss ;
 								
 								float64_t mval = -(val + delta.element(delta_array, ts, ii, 0, seq_len, N)) ;
-								if (ii==10 && j==18)
-								{
-									SG_PRINT("mval 10/18: %i (%i,%i) -> %1.2f  => %1.2f + %1.2f + %1.2f \n", pos[t]-pos[ts], pos[ts], pos[t], mval, elem_val[i], pen_val, delta.element(delta_array, ts, ii, 0, seq_len, N)) ;
-									//SG_PRINT("mval=%1.2f <  fixedtempvv_=%1.2f : %i\n", mval, fixedtempvv_, mval<fixedtempvv_) ;
-								}
-								
 								
 								if (mval<fixedtempvv_)
 								{
@@ -2985,6 +2981,8 @@ void CDynProg::best_path_trans(
 									fixed_list_len = 1 ;
 									fixedtemplong = false ;
 								}
+								last_mval = mval ;
+								last_ts = ts ;
 							}
 							else
 							{
@@ -3042,9 +3040,6 @@ void CDynProg::best_path_trans(
 					inner_loop_time += MyTime3.time_diff_sec() ;
 #endif
 					
-					//if (isinf(fixedtempvv_))
-					//	SG_DEBUG("considered %i ok positions (%1.2f, %i, %i)\n", num_ok_pos, fixedtempvv_, ii, j) ;
-					
 					/* long transition stuff */
 					/* only do this, if 
 					   * this feature is enabled
@@ -3052,13 +3047,16 @@ void CDynProg::best_path_trans(
 					   * the loss is switched off
 					   * nbest=1
 					 */ 
-					if ( long_transitions && orf_target==-1 && look_back_ == long_transition_threshold )
+#ifdef DYNPROG_TIMING
+					MyTime3.start() ;
+#endif
+					if ( long_transitions && orf_target==-1 && look_back_ == m_long_transition_threshold )
 					{
 						int ts = t ;
-						while (ts>0 && pos[t]-pos[ts-1] < long_transition_threshold)
+						while (ts>0 && pos[t]-pos[ts-1] < m_long_transition_threshold)
 							ts-- ;
 
-						if ((ts>0) && (pos[t]-pos[ts-1] >= long_transition_threshold) && (pos[t]-pos[ts] < long_transition_threshold))
+						if ((ts>0) && (pos[t]-pos[ts-1] >= m_long_transition_threshold) && (pos[t]-pos[ts] < m_long_transition_threshold))
 						{
 							/* only consider this transition, if the right position was found */
 							float pen_val = 0.0 ;
@@ -3068,69 +3066,38 @@ void CDynProg::best_path_trans(
 								lookup_content_svm_values(ts, t, pos[ts], pos[t], svm_value, frame);
 								pen_val = penalty->lookup_penalty(pos[t]-pos[ts], svm_value) ;
 							}
-							//if (ii==10 && j==18)
-							//	SG_PRINT("10/18: %i (%i, %i) )-> %1.2f\n", pos[t]-pos[ts], pos[ts], pos[t], pen_val) ;
 
-							float64_t mval = -(long_transition_content_scores.get_element(ii, j) + pen_val/2) ;
-							//SG_PRINT("mval=%1.2f  fixedtempvv_=%1.2f\n", mval, fixedtempvv_) ;
-							float64_t mval2 = CMath::INFTY ;
-							if (long_transition_content_position.get_element(ii,j)>0)
-								mval2 = -( pen_val/2 + delta.element(delta_array, long_transition_content_position.get_element(ii,j), ii, 0, seq_len, N) + elem_val[i]  ) ;
-							if (fabs(mval-mval2)>1e-8)
-								SG_PRINT("!!!  mval=%1.2f  mval2=%1.2f\n", mval, mval2) ;
-							
-							if (isinf(fixedtempvv_))
-							{
-								float64_t mval3 = CMath::INFTY ;
-								int32_t ts2 = t-1, ts2_best=0 ;
-								
-								while (ts2>0 && pos[t]-pos[ts2]<max_look_back)
-								{
-									float pen_val2 = 0.0 ;
-									if (penalty)
-									{
-										int32_t frame = orf_info.element(ii,0);
-										lookup_content_svm_values(ts, t, pos[ts2], pos[t], svm_value, frame);
-										pen_val2 = penalty->lookup_penalty(pos[t]-pos[ts2], svm_value) ;
-									}
-									float64_t mval3_ = -( pen_val2/2 + delta.element(delta_array, ts2, ii, 0, seq_len, N) + elem_val[i]  ) ;
-									if (mval3_<mval3)
-									{
-										mval3=mval3_ ;
-										ts2_best = ts2 ;
-									}
-									ts2-- ;
-								}
-								SG_PRINT("mval3=%1.2f at position %i\n", mval3, pos[ts2_best]) ;
-							}
-							
-							if (long_transition_content_position.get_element(ii,j)>0)
-								mval2 = -( pen_val/2 + delta.element(delta_array, long_transition_content_position.get_element(ii,j), ii, 0, seq_len, N) + elem_val[i]  ) ;
+							float64_t mval = -(long_transition_content_scores.get_element(ii, j) + pen_val*0.5) ;
+							/* // incomplete extra check
+							   float64_t mval2 = CMath::INFTY ;
+							   if (long_transition_content_position.get_element(ii,j)>0)
+							   mval2 = -( pen_val/2 + delta.element(delta_array, long_transition_content_position.get_element(ii,j), ii, 0, seq_len, N) + elem_val[i]  ) ;
+							   if (fabs(mval-mval2)>1e-8)
+							   SG_PRINT("!!!  mval=%1.2f  mval2=%1.2f\n", mval, mval2) ;
+							   
+							   if (long_transition_content_position.get_element(ii,j)>0)
+							   mval2 = -( pen_val/2 + delta.element(delta_array, long_transition_content_position.get_element(ii,j), ii, 0, seq_len, N) + elem_val[i]  ) ;
+							*/
 
 								
 							if ((mval < fixedtempvv_) &&
-								(pos[t] - pos[long_transition_content_position.get_element(ii, j)])<=long_transition_max)
+								(pos[t] - pos[long_transition_content_position.get_element(ii, j)])<=m_long_transition_max)
 							{
 								/* then the long transition is better than the short one => replace it */ 
 								int32_t fromtjk =  fixedtempii_ ;
 								SG_DEBUG("%i,%i: Long transition (%1.2f,%i) to pos %i better than short transition (%1.2f,%i) to pos %i \n", pos[t], j, mval, ii, pos[long_transition_content_position.get_element(ii, j)], fixedtempvv_, (fromtjk%N), pos[(fromtjk-(fromtjk%(N*nbest)))/(N*nbest)]) ;
-								ASSERT(pos[(fromtjk-(fromtjk%(N*nbest)))/(N*nbest)]==1 || pos[(fromtjk-(fromtjk%(N*nbest)))/(N*nbest)]>=pos[long_transition_content_position.get_element(ii, j)] || fixedtemplong) ;
+								ASSERT((fromtjk-(fromtjk%(N*nbest)))/(N*nbest)==0 || pos[(fromtjk-(fromtjk%(N*nbest)))/(N*nbest)]>=pos[long_transition_content_position.get_element(ii, j)] || fixedtemplong) ;
 								
 								fixedtempvv_ = mval ;
 								fixedtempii_ = ii + N*long_transition_content_position.get_element(ii, j) ;
 								fixed_list_len = 1 ;
 								fixedtemplong = true ;
-
-								//if (11231==pos[long_transition_content_position.get_element(ii, j)])
-								//	ASSERT(0) ;
 							}
 							 
-							//float64_t mval_trans = -( elem_val[i] + pen_val/2 + delta.element(delta_array, ts, ii, 0, seq_len, N) ) ;
-							float64_t mval_trans = -( elem_val[i] + delta.element(delta_array, ts, ii, 0, seq_len, N) ) ;
-							//if (ii==10 && j==18)
-							//	SG_PRINT("mval_trans 10/18: mval_trans=%1.2f ts=%i t=%i diff=%i\n", mval_trans, pos[ts], pos[t], pos[t]-pos[ts]) ;
+							float64_t mval_trans = -( elem_val[i] + pen_val*0.5 + delta.element(delta_array, ts, ii, 0, seq_len, N) ) ;
+							//float64_t mval_trans = -( elem_val[i] + delta.element(delta_array, ts, ii, 0, seq_len, N) ) ; // enable this for the incomplete extra check
 
-							if (pos[t] - pos[long_transition_content_position.get_element(ii, j)] > long_transition_max)
+							if (pos[t] - pos[long_transition_content_position.get_element(ii, j)] > m_long_transition_max)
 							{
 								long_transition_content_scores.set_element(-CMath::INFTY, ii, j) ;
 								long_transition_content_position.set_element(0, ii, j) ;
@@ -3142,9 +3109,19 @@ void CDynProg::best_path_trans(
 								long_transition_content_scores.set_element(-mval_trans, ii, j) ;
 								long_transition_content_position.set_element(ts, ii, j) ;
 							}
+
+							/* // extra check
+							   float64_t mval_trans2 = -( elem_val[i] + pen_val + delta.element(delta_array, ts, ii, 0, seq_len, N) ) ;
+							   if (last_ts==ts && fabs(last_mval-mval_trans2)>1e-5)
+							   SG_PRINT("last_mval=%1.2f at pos %i vs. mval_trans2=%1.2f at pos %i (diff=%f)\n", last_mval, pos[last_ts], mval_trans2, pos[ts], last_mval-mval_trans2) ;
+							*/
 						}
 					}
 				}
+#ifdef DYNPROG_TIMING
+				MyTime3.stop() ;
+				long_transition_time += MyTime3.time_diff_sec() ;
+#endif
 				
 				
 				int32_t numEnt = fixed_list_len;
@@ -3254,7 +3231,7 @@ void CDynProg::best_path_trans(
 	MyTime2.stop() ;
 	
 	//if (is_big)
-	SG_PRINT("Timing:  orf=%1.2f s \n Segment_init=%1.2f s Segment_pos=%1.2f s  Segment_extend=%1.2f s Segment_clean=%1.2f s\nsvm_init=%1.2f s  svm_pos=%1.2f  svm_clean=%1.2f\n  content_svm_values_time=%1.2f  content_plifs_time=%1.2f\ninner_loop_max_time=%1.2f inner_loop=%1.2f\n total=%1.2f\n", orf_time, segment_init_time, segment_pos_time, segment_extend_time, segment_clean_time, svm_init_time, svm_pos_time, svm_clean_time, content_svm_values_time, content_plifs_time, inner_loop_max_time, inner_loop_time, MyTime2.time_diff_sec()) ;
+	SG_PRINT("Timing:  orf=%1.2f s \n Segment_init=%1.2f s Segment_pos=%1.2f s  Segment_extend=%1.2f s Segment_clean=%1.2f s\nsvm_init=%1.2f s  svm_pos=%1.2f  svm_clean=%1.2f\n  content_svm_values_time=%1.2f  content_plifs_time=%1.2f\ninner_loop_max_time=%1.2f inner_loop=%1.2f long_transition_time=%1.2f\n total=%1.2f\n", orf_time, segment_init_time, segment_pos_time, segment_extend_time, segment_clean_time, svm_init_time, svm_pos_time, svm_clean_time, content_svm_values_time, content_plifs_time, inner_loop_max_time, inner_loop_time, long_transition_time, MyTime2.time_diff_sec()) ;
 #endif
 
 	delete[] fixedtempvv ;
@@ -3267,6 +3244,10 @@ void CDynProg::best_path_trans_deriv(
 	int32_t seq_len, const int32_t *pos, CPlifBase **Plif_matrix,
 	CPlifBase **Plif_state_signals, int32_t max_num_signals,int32_t genestr_num)
 {	
+	initial_state_distribution_p_deriv.resize_array(N) ;
+	end_state_distribution_q_deriv.resize_array(N) ;
+	transition_matrix_a_deriv.resize_array(N,N) ;
+
 	if (!svm_arrays_clean)
 	{
 		SG_ERROR( "SVM arrays not clean") ;
@@ -3311,6 +3292,7 @@ void CDynProg::best_path_trans_deriv(
 	}
 
 	{ // set derivatives of p, q and a to zero
+		
 		for (int32_t i=0; i<N; i++)
 		{
 			initial_state_distribution_p_deriv.element(i)=0 ;
@@ -3335,8 +3317,14 @@ void CDynProg::best_path_trans_deriv(
 	
 	{ // compute derivatives for given path
 		float64_t* svm_value = new float64_t[m_num_lin_feat_plifs_cum[m_num_raw_data]];
+		float64_t* svm_value_part1 = new float64_t[m_num_lin_feat_plifs_cum[m_num_raw_data]];
+		float64_t* svm_value_part2 = new float64_t[m_num_lin_feat_plifs_cum[m_num_raw_data]];
 		for (int32_t s=0; s<m_num_lin_feat_plifs_cum[m_num_raw_data]; s++)
+		{
 			svm_value[s]=0 ;
+			svm_value_part1[s]=0 ;
+			svm_value_part2[s]=0 ;
+		}
 		
 		for (int32_t i=0; i<my_seq_len; i++)
 		{
@@ -3383,7 +3371,7 @@ void CDynProg::best_path_trans_deriv(
 			// compute loss relative to another segmentation using the segment_loss function
 			init_segment_loss(loss, seq_len, pos[to_pos]-pos[from_pos]+10);
 			find_segment_loss_till_pos(pos, to_pos,m_segment_ids, m_segment_mask, loss);  
-
+			
 			int32_t loss_last_pos = to_pos ;
 			float64_t last_loss = 0.0 ;
 			int32_t elem_id = transition_matrix_a_id.element(from_state, to_state) ;
@@ -3401,40 +3389,77 @@ void CDynProg::best_path_trans_deriv(
 #endif
 			
 			/*int32_t last_svm_pos[num_degrees] ;
-			for (int32_t qq=0; qq<num_degrees; qq++)
-			last_svm_pos[qq]=-1 ;*/
-			
+			  for (int32_t qq=0; qq<num_degrees; qq++)
+			  last_svm_pos[qq]=-1 ;*/
+
+			bool is_long_transition = false ;
+			if (pos[to_pos]-pos[from_pos]>m_long_transition_threshold)
+				is_long_transition = true ;
+			if (m_orf_info.element(from_state,0)!=-1)
+				is_long_transition = false ;
+				
+			int32_t from_pos_thresh = from_pos ;
+			int32_t to_pos_thresh = to_pos ;
+
 			if (use_svm)
 			{
-				//SG_PRINT("from_pos: %i; to_pos: %i; pos[to_pos]-pos[from_pos]: %i \n",from_pos, to_pos, pos[to_pos]-pos[from_pos]); 
-				int32_t frame = m_orf_info.element(from_state,0);
-				if (false)//(frame>=0)
+				if (is_long_transition)
 				{
-					int32_t num_current_svms=0;
-					int32_t svm_ids[] = {-8, -7, -6, -5, -4, -3, -2, -1};
-					SG_PRINT("penalties(%i, %i), frame:%i  ", from_state, to_state, frame);
-					PEN.element(to_state, from_state)->get_used_svms(&num_current_svms, svm_ids);
-					SG_PRINT("\n");
-				}
+					while (from_pos_thresh<to_pos && pos[from_pos_thresh+1] - pos[from_pos] < m_long_transition_threshold)
+						from_pos_thresh++ ;
+					ASSERT(from_pos_thresh<to_pos) ;
+					ASSERT(pos[from_pos_thresh] - pos[from_pos] <= m_long_transition_threshold);
+					
+					int32_t frame = m_orf_info.element(from_state,0);
+					lookup_content_svm_values(from_pos, from_pos_thresh, pos[from_pos], pos[from_pos_thresh], svm_value_part1, frame);
 
-				lookup_content_svm_values(from_pos, to_pos, pos[from_pos],pos[to_pos], svm_value, frame);
-				if (false)//(frame>=0)
-					SG_PRINT("svm_values: %f, %f, %f \n", svm_value[4], svm_value[5], svm_value[6]);
-				//SG_PRINT("svm_values: %f, %f, %f, %f \n", svm_value[8], svm_value[9], svm_value[10], svm_value[11]);
-	
-				//#ifdef DYNPROG_DEBUG
-				//					SG_DEBUG( "svm[%i]: %f\n", ss, svm_value[ss]) ;
-				//#endif
+					while (to_pos>0 && pos[to_pos] - pos[to_pos_thresh-1] < m_long_transition_threshold)
+						to_pos_thresh-- ;
+					ASSERT(to_pos_thresh>0) ;
+					ASSERT(pos[to_pos] - pos[to_pos_thresh] < m_long_transition_threshold) ;
+					
+					lookup_content_svm_values(to_pos_thresh, to_pos, pos[to_pos_thresh], pos[to_pos], svm_value_part2, frame);
+				}
+				else
+				{
+					/* normal case */
+					
+					//SG_PRINT("from_pos: %i; to_pos: %i; pos[to_pos]-pos[from_pos]: %i \n",from_pos, to_pos, pos[to_pos]-pos[from_pos]); 
+					int32_t frame = m_orf_info.element(from_state,0);
+					if (false)//(frame>=0)
+					{
+						int32_t num_current_svms=0;
+						int32_t svm_ids[] = {-8, -7, -6, -5, -4, -3, -2, -1};
+						SG_PRINT("penalties(%i, %i), frame:%i  ", from_state, to_state, frame);
+						PEN.element(to_state, from_state)->get_used_svms(&num_current_svms, svm_ids);
+						SG_PRINT("\n");
+					}
+					
+					lookup_content_svm_values(from_pos, to_pos, pos[from_pos],pos[to_pos], svm_value, frame);
+					if (false)//(frame>=0)
+						SG_PRINT("svm_values: %f, %f, %f \n", svm_value[4], svm_value[5], svm_value[6]);
+					//SG_PRINT("svm_values: %f, %f, %f, %f \n", svm_value[8], svm_value[9], svm_value[10], svm_value[11]);
+					
+				}
 			}
 			
 			if (PEN.element(to_state, from_state)!=NULL)
 			{
-				float64_t nscore = PEN.element(to_state, from_state)->lookup_penalty(pos[to_pos]-pos[from_pos], svm_value) ;
+				float64_t nscore = 0 ;
+				if (is_long_transition)
+					nscore= 0.5*PEN.element(to_state, from_state)->lookup_penalty(pos[from_pos_thresh]-pos[from_pos], svm_value_part1) + 
+						0.5*PEN.element(to_state, from_state)->lookup_penalty(pos[to_pos]-pos[to_pos_thresh], svm_value_part2) ;
+				else
+					nscore = PEN.element(to_state, from_state)->lookup_penalty(pos[to_pos]-pos[from_pos], svm_value) ;
 				my_scores[i] += nscore ;
 
-				for (int32_t s=num_svms;s<m_num_lin_feat_plifs_cum[m_num_raw_data];s++)/*set tiling plif values to neutral values (that do not influence derivative calculation)*/
+				for (int32_t s=num_svms;s<m_num_lin_feat_plifs_cum[m_num_raw_data]; s++)/*set tiling plif values to neutral values (that do not influence derivative calculation)*/
+				{
 					svm_value[s]=-CMath::INFTY;
-			
+					svm_value_part1[s]=-CMath::INFTY;
+					svm_value_part2[s]=-CMath::INFTY;
+				}
+
 #ifdef DYNPROG_DEBUG
 				//SG_DEBUG( "%i. transition penalty: from_state=%i to_state=%i from_pos=%i [%i] to_pos=%i [%i] value=%i\n", i, from_state, to_state, from_pos, pos[from_pos], to_pos, pos[to_pos], pos[to_pos]-pos[from_pos]) ;
 
@@ -3448,9 +3473,19 @@ void CDynProg::best_path_trans_deriv(
 				  SG_DEBUG( "%i. orf_info: from_orf=%i to_orf=%i orf_diff=%i, len=%i, lenmod3=%i, total_len=%i, total_lenmod3=%i\n", i, orf_from, orf_to, (orf_to-orf_from)%3, pos[to_pos]-pos[from_pos], (pos[to_pos]-pos[from_pos])%3, total_len, total_len%3) ;
 				*/
 #endif
-				PEN.element(to_state, from_state)->penalty_add_derivative(pos[to_pos]-pos[from_pos], svm_value) ;
+				SG_PRINT("is_long_transition=%i  (from_pos=%i, to_pos=%i)\n", is_long_transition, pos[from_pos], pos[to_pos]) ;
+				if (is_long_transition)
+				{
+					PEN.element(to_state, from_state)->penalty_add_derivative(pos[from_pos_thresh]-pos[from_pos], svm_value_part1, 0.5) ;
+					PEN.element(to_state, from_state)->penalty_add_derivative(pos[to_pos]-pos[to_pos_thresh], svm_value_part2, 0.5) ;
+				}
+				else
+					PEN.element(to_state, from_state)->penalty_add_derivative(pos[to_pos]-pos[from_pos], svm_value, 1) ;
+
 				for (int32_t d=1;d<=m_num_raw_data;d++) 
 				{
+					ASSERT(!is_long_transition) ; // not sure what has to be done here
+					
 					for (int32_t s=0;s<m_num_lin_feat_plifs_cum[m_num_raw_data];s++)
 						svm_value[s]=-CMath::INFTY;
 					float64_t* intensities = new float64_t[m_num_probes_cum[d]];
@@ -3461,7 +3496,7 @@ void CDynProg::best_path_trans_deriv(
 					 	for (int32_t j=m_num_lin_feat_plifs_cum[d-1];j<m_num_lin_feat_plifs_cum[d];j++)
 							svm_value[j]=intensities[k];
 						
-						PEN.element(to_state, from_state)->penalty_add_derivative(-CMath::INFTY, svm_value) ;	
+						PEN.element(to_state, from_state)->penalty_add_derivative(-CMath::INFTY, svm_value, 1) ;	
 						
 					}
 					delete[] intensities;
@@ -3486,7 +3521,7 @@ void CDynProg::best_path_trans_deriv(
 				}
 				if (PEN_state_signals.element(to_state, k)!=NULL)
 				{
-					float64_t nscore = PEN_state_signals.element(to_state,k)->lookup_penalty(seq_input.element(to_state, to_pos, k), svm_value) ;
+					float64_t nscore = PEN_state_signals.element(to_state,k)->lookup_penalty(seq_input.element(to_state, to_pos, k), svm_value) ; // this should be ok for long_transitions (svm_value does not matter)
 					my_scores[i] += nscore ;
 					//break ;
 					//int32_t num_current_svms=0;
@@ -3499,7 +3534,7 @@ void CDynProg::best_path_trans_deriv(
 #ifdef DYNPROG_DEBUG
 					SG_DEBUG( "%i. emmission penalty: to_state=%i to_pos=%i value=%1.2f score=%1.2f k=%i\n", i, to_state, to_pos, seq_input.element(to_state, to_pos, k), nscore, k) ;
 #endif
-					PEN_state_signals.element(to_state,k)->penalty_add_derivative(seq_input.element(to_state, to_pos, k), svm_value) ;
+					PEN_state_signals.element(to_state,k)->penalty_add_derivative(seq_input.element(to_state, to_pos, k), svm_value, 1) ; // this should be ok for long_transitions (svm_value does not matter)
 				} else
 					break ;
 			}
@@ -3518,6 +3553,8 @@ void CDynProg::best_path_trans_deriv(
 		clear_svm_values(svs);
 		clear_segment_loss(loss);
 		delete[] svm_value;
+		delete[] svm_value_part1 ;
+		delete[] svm_value_part2 ;
 	}
 
 	

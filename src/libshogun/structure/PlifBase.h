@@ -59,7 +59,7 @@ class CPlifBase : public CSGObject
 		 * @param svm_values SVM values
 		 */
 		virtual void penalty_add_derivative(
-			float64_t p_value, float64_t* svm_values)=0 ;
+			float64_t p_value, float64_t* svm_values, float64_t factor)=0 ;
 
 		/** get maximum value
 		 *
