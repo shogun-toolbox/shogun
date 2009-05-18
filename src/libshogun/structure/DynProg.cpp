@@ -1555,10 +1555,10 @@ void CDynProg::best_path_2struct(
 	
 	const int32_t look_back_buflen = (max_look_back+1)*nbest*N ;
 	//SG_DEBUG("look_back_buflen=%i\n", look_back_buflen) ;
-	const float64_t mem_use = (float64_t)(seq_len*N*nbest*(sizeof(T_STATES)+sizeof(int16_t)+sizeof(int32_t))+
+	/*const float64_t mem_use = (float64_t)(seq_len*N*nbest*(sizeof(T_STATES)+sizeof(int16_t)+sizeof(int32_t))+
 								look_back_buflen*(2*sizeof(float64_t)+sizeof(int32_t))+
 								seq_len*(sizeof(T_STATES)+sizeof(int32_t))+
-								genestr_len*sizeof(bool))/(1024*1024);
+								genestr_len*sizeof(bool))/(1024*1024);*/
     //bool is_big = (mem_use>200) || (seq_len>5000) ;
 	
 	/*if (is_big)
@@ -2509,51 +2509,83 @@ void CDynProg::best_path_trans(
 
 	// allow longer transitions than look_back
 	bool long_transitions = true;
+	int32_t long_transition_threshold = 1000 ;
 	int32_t long_transition_max = 1000000 ;
 	CArray2<int32_t> long_transition_content_position(N,N) ;
-	CArray3<float64_t> long_transition_content_scores(N, N, m_num_lin_feat_plifs_cum[m_num_raw_data]) ;
-	long_transition_content_position.zero();
-	long_transition_content_scores.zero() ;
+	CArray2<float64_t> long_transition_content_scores(N,N) ;
+	
+	if (with_loss || nbest!=1)
+	{
+		SG_DEBUG("disabling long transitions\n") ;
+		long_transitions = false ;
+	}
+	long_transition_content_scores.set_const(-CMath::INFTY);
+	long_transition_content_position.zero() ;
 
-
-	CArray2<int> look_back(N,N) ;
+	CArray2<int32_t> look_back(N,N) ;
+	
 	{ // determine maximal length of look-back
 		for (int32_t i=0; i<N; i++)
 			for (int32_t j=0; j<N; j++)
-				look_back.set_element(i,j, INT_MAX) ;
+				look_back.set_element(INT_MAX, i, j) ;
 		
-		for (int32_t i=0; i<N; i++)
+		for (int32_t j=0; j<N; j++)
 		{
 			// only consider transitions that are actually allowed
-			const T_STATES num_elem   = trans_list_forward_cnt[i] ;
-			const T_STATES *elem_list = trans_list_forward[i] ;
+			const T_STATES num_elem   = trans_list_forward_cnt[j] ;
+			const T_STATES *elem_list = trans_list_forward[j] ;
 				
-			for (int32_t jj=0; jj<num_elem; jj++)
+			for (int32_t i=0; i<num_elem; i++)
 			{
-				T_STATES j = elem_list[jj] ;
-
-				CPlifBase *penij=PEN.element(i,j) ;
+				T_STATES ii = elem_list[i] ;
+					
+				CPlifBase *penij=PEN.element(j, ii) ;
 				if (penij==NULL)
-					continue ;
-
-				look_back.set_element(i,j, CMath::ceil(penij->get_max_value())) ;
-
-				if (penij->get_max_value()>max_look_back)
 				{
-					SG_DEBUG( "%d %d -> value: %f\n", i,j,penij->get_max_value());
-					//penij->print() ;
-					max_look_back=(int32_t) (CMath::ceil(penij->get_max_value()));
+					if (long_transitions)
+						look_back.set_element(long_transition_threshold, j, ii) ;
+					continue ;
 				}
+				
+				/* if the transition is an ORF or we do computation with loss, we have to disable long transitions */
+				if ((orf_info.element(ii,0)!=-1) || (orf_info.element(j,1)!=-1) || (!long_transitions))
+				{
+					look_back.set_element(CMath::ceil(penij->get_max_value()), j, ii) ;
+					if (CMath::ceil(penij->get_max_value()) > max_look_back)
+					{
+						SG_DEBUG( "%d %d -> value: %f\n", ii,j,penij->get_max_value());
+						max_look_back=(int32_t) (CMath::ceil(penij->get_max_value()));
+					}
+				}
+				else
+					look_back.set_element(CMath::min( (int32_t)CMath::ceil(penij->get_max_value()), long_transition_threshold ), j, ii) ;
+
 				if (penij->uses_svm_values())
 					use_svm=true ;
 			}
 		}
+		/* make sure max_look_back is at least as long as a long transition */
+		if (long_transitions)
+			max_look_back = CMath::max(long_transition_threshold, max_look_back) ;
+
+		/* make sure max_look_back is not longer than the whole string */
 		max_look_back = CMath::min(m_genestr_len, max_look_back) ;
 
+		int32_t num_long_transitions = 0 ;
 		for (int32_t i=0; i<N; i++)
 			for (int32_t j=0; j<N; j++)
+			{
+				if (look_back.get_element(i,j)==long_transition_threshold)
+					num_long_transitions++ ;
 				if (look_back.get_element(i,j)==INT_MAX)
-					look_back.set_element(i,j, max_look_back) ;
+				{
+					if (long_transitions)
+						look_back.set_element(long_transition_threshold, i, j) ;
+					else
+						look_back.set_element(max_look_back, i, j) ;
+				}
+			}
+		SG_DEBUG("Using %i long transitions\n", num_long_transitions) ;
 	}
 
 	//SG_PRINT("use_svm=%i, genestr_len: \n", use_svm, m_genestr_len) ;
@@ -2562,10 +2594,10 @@ void CDynProg::best_path_trans(
 	SG_DEBUG("maxlook: %d N: %d nbest: %d \n", max_look_back, N, nbest);
 	const int32_t look_back_buflen = (max_look_back*N+1)*nbest ;
 	SG_DEBUG("look_back_buflen=%i\n", look_back_buflen) ;
-	const float64_t mem_use = (float64_t)(seq_len*N*nbest*(sizeof(T_STATES)+sizeof(int16_t)+sizeof(int32_t))+
+	/*const float64_t mem_use = (float64_t)(seq_len*N*nbest*(sizeof(T_STATES)+sizeof(int16_t)+sizeof(int32_t))+
 								  look_back_buflen*(2*sizeof(float64_t)+sizeof(int32_t))+
 								  seq_len*(sizeof(T_STATES)+sizeof(int32_t))+
-								  m_genestr_len*sizeof(bool))/(1024*1024);
+								  m_genestr_len*sizeof(bool))/(1024*1024);*/
 
     //bool is_big = (mem_use>200) || (seq_len>5000) ;
 
@@ -2821,7 +2853,7 @@ void CDynProg::best_path_trans(
 				int32_t fixed_list_len = 0 ;
 				float64_t fixedtempvv_ = CMath::INFTY ;
 				int32_t fixedtempii_ = 0 ;
-				
+				bool fixedtemplong = false ;
 			
 				for (int32_t i=0; i<num_elem; i++)
 				{
@@ -2840,7 +2872,7 @@ void CDynProg::best_path_trans(
 						ASSERT(look_back<1e6);
 						} */
 
-					int32_t look_back_ = look_back.element(j,ii) ;
+					int32_t look_back_ = look_back.element(j, ii) ;
 				
 					int32_t orf_from = orf_info.element(ii,0) ;
 					int32_t orf_to   = orf_info.element(j,1) ;
@@ -2863,7 +2895,9 @@ void CDynProg::best_path_trans(
 
 #ifdef DYNPROG_TIMING
 					MyTime3.start() ;
-#endif								
+#endif				
+					int32_t num_ok_pos = 0 ;
+					
 					for (int32_t ts=t-1; ts>=0 && pos[t]-pos[ts]<=look_back_; ts--)
 					{
 						bool ok ;
@@ -2922,10 +2956,14 @@ void CDynProg::best_path_trans(
 								content_plifs_time += MyTime.time_diff_sec() ;
 #endif
 							}
+							//if (ii==10 && j==18)
+							//	SG_PRINT("pen_val: 10/18: %i (%i,%i) -> %1.2f\n", pos[t]-pos[ts], pos[ts], pos[t], pen_val) ;
 
 #ifdef DYNPROG_TIMING_DETAIL
 							MyTime.start() ;
 #endif								
+							num_ok_pos++ ;
+							
 							if (nbest==1)
 							{
 								float64_t  val        = elem_val[i] + pen_val ;
@@ -2933,11 +2971,19 @@ void CDynProg::best_path_trans(
 									val              += segment_loss ;
 								
 								float64_t mval = -(val + delta.element(delta_array, ts, ii, 0, seq_len, N)) ;
+								if (ii==10 && j==18)
+								{
+									SG_PRINT("mval 10/18: %i (%i,%i) -> %1.2f  => %1.2f + %1.2f + %1.2f \n", pos[t]-pos[ts], pos[ts], pos[t], mval, elem_val[i], pen_val, delta.element(delta_array, ts, ii, 0, seq_len, N)) ;
+									//SG_PRINT("mval=%1.2f <  fixedtempvv_=%1.2f : %i\n", mval, fixedtempvv_, mval<fixedtempvv_) ;
+								}
+								
+								
 								if (mval<fixedtempvv_)
 								{
 									fixedtempvv_ = mval ;
 									fixedtempii_ = ii + ts*N;
 									fixed_list_len = 1 ;
+									fixedtemplong = false ;
 								}
 							}
 							else
@@ -2945,7 +2991,7 @@ void CDynProg::best_path_trans(
 								for (int16_t diff=0; diff<nbest; diff++)
 								{
 									float64_t  val        = elem_val[i]  ;
-									val              += pen_val ;
+									val                  += pen_val ;
 									if (with_loss)
 										val              += segment_loss ;
 									
@@ -2996,10 +3042,107 @@ void CDynProg::best_path_trans(
 					inner_loop_time += MyTime3.time_diff_sec() ;
 #endif
 					
+					//if (isinf(fixedtempvv_))
+					//	SG_DEBUG("considered %i ok positions (%1.2f, %i, %i)\n", num_ok_pos, fixedtempvv_, ii, j) ;
 					
-					if (long_transitions)
+					/* long transition stuff */
+					/* only do this, if 
+					   * this feature is enabled
+					   * this is not a transition with ORF restrictions
+					   * the loss is switched off
+					   * nbest=1
+					 */ 
+					if ( long_transitions && orf_target==-1 && look_back_ == long_transition_threshold )
 					{
-						
+						int ts = t ;
+						while (ts>0 && pos[t]-pos[ts-1] < long_transition_threshold)
+							ts-- ;
+
+						if ((ts>0) && (pos[t]-pos[ts-1] >= long_transition_threshold) && (pos[t]-pos[ts] < long_transition_threshold))
+						{
+							/* only consider this transition, if the right position was found */
+							float pen_val = 0.0 ;
+							if (penalty)
+							{
+								int32_t frame = orf_info.element(ii,0);
+								lookup_content_svm_values(ts, t, pos[ts], pos[t], svm_value, frame);
+								pen_val = penalty->lookup_penalty(pos[t]-pos[ts], svm_value) ;
+							}
+							//if (ii==10 && j==18)
+							//	SG_PRINT("10/18: %i (%i, %i) )-> %1.2f\n", pos[t]-pos[ts], pos[ts], pos[t], pen_val) ;
+
+							float64_t mval = -(long_transition_content_scores.get_element(ii, j) + pen_val/2) ;
+							//SG_PRINT("mval=%1.2f  fixedtempvv_=%1.2f\n", mval, fixedtempvv_) ;
+							float64_t mval2 = CMath::INFTY ;
+							if (long_transition_content_position.get_element(ii,j)>0)
+								mval2 = -( pen_val/2 + delta.element(delta_array, long_transition_content_position.get_element(ii,j), ii, 0, seq_len, N) + elem_val[i]  ) ;
+							if (fabs(mval-mval2)>1e-8)
+								SG_PRINT("!!!  mval=%1.2f  mval2=%1.2f\n", mval, mval2) ;
+							
+							if (isinf(fixedtempvv_))
+							{
+								float64_t mval3 = CMath::INFTY ;
+								int32_t ts2 = t-1, ts2_best=0 ;
+								
+								while (ts2>0 && pos[t]-pos[ts2]<max_look_back)
+								{
+									float pen_val2 = 0.0 ;
+									if (penalty)
+									{
+										int32_t frame = orf_info.element(ii,0);
+										lookup_content_svm_values(ts, t, pos[ts2], pos[t], svm_value, frame);
+										pen_val2 = penalty->lookup_penalty(pos[t]-pos[ts2], svm_value) ;
+									}
+									float64_t mval3_ = -( pen_val2/2 + delta.element(delta_array, ts2, ii, 0, seq_len, N) + elem_val[i]  ) ;
+									if (mval3_<mval3)
+									{
+										mval3=mval3_ ;
+										ts2_best = ts2 ;
+									}
+									ts2-- ;
+								}
+								SG_PRINT("mval3=%1.2f at position %i\n", mval3, pos[ts2_best]) ;
+							}
+							
+							if (long_transition_content_position.get_element(ii,j)>0)
+								mval2 = -( pen_val/2 + delta.element(delta_array, long_transition_content_position.get_element(ii,j), ii, 0, seq_len, N) + elem_val[i]  ) ;
+
+								
+							if ((mval < fixedtempvv_) &&
+								(pos[t] - pos[long_transition_content_position.get_element(ii, j)])<=long_transition_max)
+							{
+								/* then the long transition is better than the short one => replace it */ 
+								int32_t fromtjk =  fixedtempii_ ;
+								SG_DEBUG("%i,%i: Long transition (%1.2f,%i) to pos %i better than short transition (%1.2f,%i) to pos %i \n", pos[t], j, mval, ii, pos[long_transition_content_position.get_element(ii, j)], fixedtempvv_, (fromtjk%N), pos[(fromtjk-(fromtjk%(N*nbest)))/(N*nbest)]) ;
+								ASSERT(pos[(fromtjk-(fromtjk%(N*nbest)))/(N*nbest)]==1 || pos[(fromtjk-(fromtjk%(N*nbest)))/(N*nbest)]>=pos[long_transition_content_position.get_element(ii, j)] || fixedtemplong) ;
+								
+								fixedtempvv_ = mval ;
+								fixedtempii_ = ii + N*long_transition_content_position.get_element(ii, j) ;
+								fixed_list_len = 1 ;
+								fixedtemplong = true ;
+
+								//if (11231==pos[long_transition_content_position.get_element(ii, j)])
+								//	ASSERT(0) ;
+							}
+							 
+							//float64_t mval_trans = -( elem_val[i] + pen_val/2 + delta.element(delta_array, ts, ii, 0, seq_len, N) ) ;
+							float64_t mval_trans = -( elem_val[i] + delta.element(delta_array, ts, ii, 0, seq_len, N) ) ;
+							//if (ii==10 && j==18)
+							//	SG_PRINT("mval_trans 10/18: mval_trans=%1.2f ts=%i t=%i diff=%i\n", mval_trans, pos[ts], pos[t], pos[t]-pos[ts]) ;
+
+							if (pos[t] - pos[long_transition_content_position.get_element(ii, j)] > long_transition_max)
+							{
+								long_transition_content_scores.set_element(-CMath::INFTY, ii, j) ;
+								long_transition_content_position.set_element(0, ii, j) ;
+							}
+							
+							if (-long_transition_content_scores.get_element(ii, j) > mval_trans )
+							{
+								/* then the old long transition is either too far away or worse than the current one */
+								long_transition_content_scores.set_element(-mval_trans, ii, j) ;
+								long_transition_content_position.set_element(ts, ii, j) ;
+							}
+						}
 					}
 				}
 				

@@ -13,8 +13,9 @@
 
 //#define ARRAY_STATISTICS
 
+#define ARRAY_ASSERT(x) {if (x==0) {*((int*)0)=0;}}
 //#define ARRAY_ASSERT(x) ASSERT(x)
-#define ARRAY_ASSERT(x)
+//#define ARRAY_ASSERT(x)
 
 #include "lib/common.h"
 #include "base/SGObject.h"
@@ -163,6 +164,13 @@ template <class T> class CArray : public CSGObject
 		{
 			for (int32_t i=0; i< array_size; i++)
 				array[i]=0;
+		}
+
+		/** set array with a constant */
+		inline void set_const(T const_elem)
+		{
+			for (int32_t i=0; i< array_size; i++)
+				array[i]=const_elem ;
 		}
 
 		/** get array element at index

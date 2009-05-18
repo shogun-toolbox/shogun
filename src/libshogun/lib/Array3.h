@@ -119,6 +119,12 @@ template <class T> class CArray3: public CArray<T>
 		/** zero array */
 		inline void zero() { CArray<T>::zero(); }
 
+		/** set array with a constant */
+		inline void set_const(T const_elem)
+		{
+			CArray<T>::set_const(const_elem) ;
+		}
+
 		/** get the array
 		 * call get_array just before messing with it DO NOT call any
 		 * [],resize/delete functions after get_array(), the pointer may
