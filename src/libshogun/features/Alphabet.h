@@ -19,13 +19,13 @@
 /// Alphabet of charfeatures/observations
 enum EAlphabet
 {
-	/// DNA - letters A,C,G,T,*,N,n
+	/// DNA - letters A,C,G,T
 	DNA=0,
 
 	/// RAWDNA - letters 0,1,2,3
 	RAWDNA=1,
 
-	/// RNA - letters A,C,G,U,*,N,n
+	/// RNA - letters A,C,G,U
 	RNA=2,
 
 	/// PROTEIN - letters a-z
