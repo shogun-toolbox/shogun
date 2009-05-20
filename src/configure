@@ -1487,7 +1487,7 @@ case "$host_arch" in
 cat > $TMPC << EOF
 int main(void) { return 0; }
 EOF
-  if test "$_cpudetection" = no ; then
+  if test "$_cpudetection" = yes ; then
 	cc_check -march=native && proc=native
     if test "$proc" = "k8" -o "$proc" = "opteron" \
 		-o "$proc" = "athlon64" -o "$proc" = "athlon-fx" ; then
@@ -1508,6 +1508,12 @@ EOF
           proc=i586
 	fi
       fi
+    fi
+    if test "$proc" = "prescott" ; then
+      cc_check -march=$proc $cpuopt=$proc || proc=pentium4
+    fi
+    if test "$proc" = "core2" ; then
+      cc_check -march=$proc $cpuopt=$proc || proc=pentium-m
     fi
     if test "$proc" = "pentium4" || test "$proc" = "pentium-m" || test "$proc" = "pentium3" || test "$proc" = "pentium2" || test "$proc" = "athlon" || test "$proc" = "c3-2" || test "$proc" = "geode"; then
       cc_check -march=$proc $cpuopt=$proc  || proc=i686
@@ -1535,7 +1541,7 @@ EOF
       _march="-march=$proc"
       _mcpu="$cpuopt=$proc"
     fi
-  else # if test "$_cpudetection" = no
+  else # if test "$_cpudetection" = yes
     # i686 is probably the most common CPU - optimize for it
     _mcpu="$cpuopt=i686"
     # at least i486 required, for bswap instruction
@@ -1606,7 +1612,8 @@ cat > $TMPC << EOF
 int main(void) { return 0; }
 EOF
     # This is a stripped-down version of the i386 fallback.
-    if test "$_cpudetection" = no ; then
+    if test "$_cpudetection" = yes ; then
+      cc_check -march=native && proc=native
       # --- AMD processors ---
       if test "$proc" = "k8" -o "$proc" = "opteron" -o "$proc" = "athlon64" -o "$proc" = "athlon-fx" ; then
         cc_check -march=$proc $cpuopt=$proc || proc=athlon-xp
@@ -1618,6 +1625,9 @@ EOF
         cc_check -march=$proc $cpuopt=$proc || proc=error
       fi
       # --- Intel processors ---
+      if test "$proc" = "core2"; then
+        cc_check -march=$proc $cpuopt=$proc || proc=nocona
+      fi
       if test "$proc" = "nocona" || test "$proc" = "prescott" ; then
         cc_check -march=$proc $cpuopt=$proc || proc=pentium4
       fi
@@ -1632,9 +1642,13 @@ EOF
         _mcpu=""
         _march=""
       fi
-    else
-      _march=""
-      _mcpu=""
+    else # if test "$_cpudetection" = yes
+      # x86-64 is an undocumented option, an intersection of k8 and nocona.
+      _march="-march=x86-64"
+      _mcpu="$cpuopt=generic"
+      cc_check $_mcpu || _mcpu="x86-64"
+      cc_check $_mcpu || _mcpu=""
+      cc_check $_march $_mcpu || _march=""
     fi
 
     echores "$proc"
@@ -1921,7 +1935,7 @@ if test "$_cpudetection" = yes ; then
   fi
 fi
 
-if x86 || x86_64 && test "$_cpudetection" = no ; then
+if x86 || x86_64 && test "$_cpudetection" = yes ; then
   extcheck() {
     if test "$1" = yes ; then
       echocheck "compiler and kernel support of $2"
