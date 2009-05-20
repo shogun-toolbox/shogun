@@ -1417,7 +1417,9 @@ case "$host_arch" in
 	fi
 	;;
     6) iproc=686
-	if test "$pmodel" -eq 9 -o "$pmodel" -ge 13; then
+	if test "$pmodel" -ge 15; then
+		proc=core2
+	elif test "$pmodel" -eq 9 -o "$pmodel" -ge 13; then
 		proc=pentium-m
 	elif test "$pmodel" -ge 7; then
 		proc=pentium3
@@ -1961,10 +1963,12 @@ EOF
   }
 
   extcheck $_mmx "mmx" "emms" || _mmx=no
+  extcheck $_mmxext   "mmxext"   "sfence" 
   extcheck $_3dnow "3dnow" "femms" || _3dnow=no
   extcheck $_sse "sse" "xorps %%xmm0, %%xmm0" || _sse=no _gcc3_ext="$_gcc3_ext -mno-sse"
   extcheck $_sse2 "sse2" "xorpd %%xmm0, %%xmm0" || _sse2=no _gcc3_ext="$_gcc3_ext -mno-sse2"
   extcheck $_pni "sse3" "addsubpd %%xmm0, %%xmm1" || _sse3=no _gcc3_ext="$_gcc3_ext -mno-sse3"
+  extcheck $_cmov     "cmov"     "cmovb %%eax,%%ebx"
 
   if test "$_gcc3_ext" != ""; then
     # if we had to disable sse/sse2 because the active kernel does not
