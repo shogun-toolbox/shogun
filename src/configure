@@ -54,6 +54,15 @@ _glpk=auto
 _doxygen=auto
 _shortrealkernelcache=yes
 _logcache=no
+_mmx=auto
+_3dnow=auto
+_3dnowext=auto
+_mmxext=auto
+_sse=auto
+_sse2=auto
+_ssse3=auto
+_cmov=auto
+_fast_cmov=auto
 _logsumarray=no
 _hmmparallel=yes
 _largefile=yes
@@ -1349,11 +1358,11 @@ if x86 || x86_64 ; then
                            -e s/xmm/sse/ -e s/kni/sse/`
 
   for ext in $pparam ; do
-    eval _$ext=auto && eval _$ext=yes
+    eval test \"\$_$ext\" = auto 2>/dev/null && eval _$ext=kernel_check
   done
 
   # SSE implies MMX2, but not all SSE processors report the mmxext CPU flag.
-  test $_sse = yes && _mmxext=yes
+  test $_sse = kernel_check && _mmxext=kernel_check
 
   echocheck "CPU vendor"
   echores "$pvendor ($pfamily:$pmodel:$pstepping)"
@@ -1921,16 +1930,18 @@ EOF
     ;;
 esac # case "$host_arch" in
 
-if test "$_cpudetection" = yes ; then
-  if x86; then
-    _mmx=yes
-    _3dnow=yes
-    _3dnowext=yes
-    _mmxext=yes
-    _sse=yes
-    _sse2=yes
-    _sse3=yes
-    _mtrr=yes
+if test "$_cpudetection" = no ; then
+  if x86 ; then
+    test "$_cmov"     != no && _cmov=yes
+    x86_32 && _cmov=no
+    test "$_mmx"      != no && _mmx=yes
+    test "$_3dnow"    != no && _3dnow=yes
+    test "$_3dnowext" != no && _3dnowext=yes
+    test "$_mmxext"   != no && _mmxext=yes
+    test "$_sse"      != no && _sse=yes
+    test "$_sse2"     != no && _sse2=yes
+    test "$_ssse3"    != no && _ssse3=yes
+    test "$_mtrr"     != no && _mtrr=yes
   fi
   if ppc; then
     _altivec=yes
@@ -1939,35 +1950,39 @@ fi
 
 if x86 || x86_64 && test "$_cpudetection" = yes ; then
   extcheck() {
-    if test "$1" = yes ; then
+    if test "$1" = kernel_check ; then
       echocheck "compiler and kernel support of $2"
       cat > $TMPC <<EOF
+#include <stdlib.h>
 #include <signal.h>
 void catch() { exit(1); }
 int main(void){
   signal(SIGILL, catch);
-  __asm__ __volatile__ ("$3":::"memory");return(0);
+  __asm__ volatile ("$3":::"memory"); return(0);
 }
 EOF
 
       if cc_check "-m$2" && tmp_run ; then
+        eval _$2=yes
         echores "yes"
 		_optimizing="$_optimizing -m$2"
         return 0
       else
+        eval _$2=no
         echores "failed"
+        #echo "It seems that your kernel does not correctly support $2."
 	return 1
       fi
     fi
     return 0
   }
 
-  extcheck $_mmx "mmx" "emms" || _mmx=no
+  extcheck $_mmx "mmx" "emms"
   extcheck $_mmxext   "mmxext"   "sfence" 
-  extcheck $_3dnow "3dnow" "femms" || _3dnow=no
-  extcheck $_sse "sse" "xorps %%xmm0, %%xmm0" || _sse=no _gcc3_ext="$_gcc3_ext -mno-sse"
-  extcheck $_sse2 "sse2" "xorpd %%xmm0, %%xmm0" || _sse2=no _gcc3_ext="$_gcc3_ext -mno-sse2"
-  extcheck $_pni "sse3" "addsubpd %%xmm0, %%xmm1" || _sse3=no _gcc3_ext="$_gcc3_ext -mno-sse3"
+  extcheck $_3dnow "3dnow" "femms"
+  extcheck $_sse "sse" "xorps %%xmm0, %%xmm0" || _gcc3_ext="$_gcc3_ext -mno-sse"
+  extcheck $_sse2 "sse2" "xorpd %%xmm0, %%xmm0" || _gcc3_ext="$_gcc3_ext -mno-sse2"
+  extcheck $_pni "sse3" "addsubpd %%xmm0, %%xmm1" || _gcc3_ext="$_gcc3_ext -mno-sse3"
   extcheck $_cmov     "cmov"     "cmovb %%eax,%%ebx"
 
   if test "$_gcc3_ext" != ""; then
