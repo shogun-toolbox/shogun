@@ -1,5 +1,11 @@
 #!/bin/bash
-
+#
+# This configure script is based on the one from mplayer
+#   http://mplayer.hu
+#
+# but is largely deviated in all parts except cpu detection
+# due to the different focus of shogun.
+#
 VERSION=`grep "SHOGUN Release version" NEWS 2>&1 | cut -c 27- | cut -f 1 -d ' ' | head -n 1`
 LIBSHOGUNSO=`grep "SHOGUN Release version" NEWS 2>&1 | cut -f 2 -d '(' | cut -f 2 -d ' ' | tr -d ',' | head -n 1 | cut -f 1 -d '.'`
 LIBSHOGUNUISO=`grep "SHOGUN Release version" NEWS 2>&1 | cut -f 2 -d ',' | cut -f 3 -d ' ' | tr -d ')' | head -n 1 | cut -f 1 -d '.'`
@@ -1962,7 +1968,7 @@ int main(void){
 }
 EOF
 
-      if cc_check "-m$2" && tmp_run ; then
+      if cc_check && tmp_run ; then
         eval _$2=yes
         echores "yes"
 		_optimizing="$_optimizing -m$2"
