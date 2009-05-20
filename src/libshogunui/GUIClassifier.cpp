@@ -38,7 +38,10 @@
 #include <shogun/regression/svr/SVR_light.h>
 #endif //USE_SVMLIGHT
 
+#include <shogun/classifier/svm/MKLClassification.h>
+#include <shogun/classifier/svm/MKLRegression.h>
 #include <shogun/classifier/svm/LibSVM.h>
+#include <shogun/classifier/svm/LibSVMNu.h>
 #include <shogun/classifier/svm/GPBTSVM.h>
 #include <shogun/classifier/svm/LibSVMOneClass.h>
 #include <shogun/classifier/svm/LibSVMMultiClass.h>
@@ -72,10 +75,10 @@ CGUIClassifier::CGUIClassifier(CSGInterface* ui_)
 	svm_qpsize=41;
 	svm_bufsize=3000;
 	svm_max_qpsize=1000;
-	svm_mkl_norm=1;
+	mkl_norm=1;
 	svm_C1=1;
 	svm_C2=1;
-	svm_C_mkl=0;
+	C_mkl=0;
 	svm_weight_epsilon=1e-5;
 	svm_epsilon=1e-5;
 	svm_tube_epsilon=1e-2;
@@ -83,7 +86,6 @@ CGUIClassifier::CGUIClassifier(CSGInterface* ui_)
 	svm_use_shrinking = true ;
 
 	svm_use_bias = true;
-	svm_use_mkl = false ;
 	svm_use_batch_computation = true ;
 	svm_use_linadd = true ;
 	svm_do_auc_maximization = false ;
@@ -112,6 +114,12 @@ bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
 		SG_UNREF(classifier);
 		classifier = new CLibSVMMultiClass();
 		SG_INFO("created SVMlibsvm object for multiclass\n");
+	}
+	else if (strcmp(name,"LIBSVM_NU")==0)
+	{
+		SG_UNREF(classifier);
+		classifier= new CLibSVMNu();
+		SG_INFO("created SVMlibsvm object\n") ;
 	}
 	else if (strcmp(name,"LIBSVM")==0)
 	{
@@ -882,6 +890,7 @@ CLabels* CGUIClassifier::classify(CLabels* output)
 	{
 		case CT_LIGHT:
 		case CT_LIBSVM:
+		case CT_LIBSVMNU:
 		case CT_MPD:
 		case CT_GPBT:
 		case CT_CPLEXSVM:

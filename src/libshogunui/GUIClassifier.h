@@ -68,7 +68,6 @@ class CGUIClassifier : public CSGObject
 		bool set_svm_bufsize(int32_t bufsize);
 		bool set_svm_qpsize(int32_t qpsize);
 		bool set_svm_max_qpsize(int32_t max_qpsize);
-		bool set_svm_mkl_enabled(bool enabled);
 		bool set_svm_shrinking_enabled(bool enabled);
 		bool set_svm_one_class_nu(float64_t nu);
 		bool set_svm_batch_computation_enabled(bool enabled);
@@ -115,17 +114,16 @@ class CGUIClassifier : public CSGObject
 		int32_t svm_qpsize;
 		int32_t svm_bufsize;
 		int32_t svm_max_qpsize;
-		float64_t svm_mkl_norm;
+		float64_t mkl_norm;
 		float64_t svm_weight_epsilon;
 		float64_t svm_epsilon;
 		float64_t svm_tube_epsilon;
 		float64_t svm_nu;
 		float64_t svm_C1;
 		float64_t svm_C2;
-		float64_t svm_C_mkl;
+		float64_t C_mkl;
 		float64_t krr_tau;
 		bool svm_use_bias;
-		bool svm_use_mkl;
 		bool svm_use_batch_computation;
 		bool svm_use_linadd;
 		bool svm_use_precompute;

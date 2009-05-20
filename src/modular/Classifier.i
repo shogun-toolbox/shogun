@@ -41,6 +41,7 @@
  #include <shogun/classifier/LDA.h>
  #include <shogun/classifier/svm/LibLinear.h>
  #include <shogun/classifier/svm/LibSVM.h>
+ #include <shogun/classifier/svm/LibSVMNU.h>
  #include <shogun/classifier/svm/LibSVMMultiClass.h>
  #include <shogun/classifier/svm/LibSVMOneClass.h>
  #include <shogun/classifier/LinearClassifier.h> 
@@ -84,6 +85,7 @@
 %rename(LDA) CLDA;
 %rename(LibLinear) CLibLinear;
 %rename(LibSVM) CLibSVM;
+%rename(LibSVMNu) CLibSVMNu;
 %rename(LibSVMMultiClass) CLibSVMMultiClass;
 %rename(LibSVMOneClass) CLibSVMOneClass;
 %rename(LinearClassifier) CLinearClassifier;
@@ -125,6 +127,7 @@
 %include <shogun/classifier/LDA.h>
 %include <shogun/classifier/svm/LibLinear.h>
 %include <shogun/classifier/svm/LibSVM.h>
+%include <shogun/classifier/svm/LibSVMNu.h>
 %include <shogun/classifier/svm/LibSVMMultiClass.h>
 %include <shogun/classifier/svm/LibSVMOneClass.h>
 %include <shogun/classifier/LPBoost.h> 
