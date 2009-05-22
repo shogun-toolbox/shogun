@@ -51,11 +51,9 @@
 typedef KERNELCACHE_ELEM Qfloat;
 typedef float64_t schar;
 
-template <class S, class T> void clone(T*& dst, S* src, int32_t n)
+inline template <class S, class T> void clone(T*& dst, S* src, int32_t n)
 {
-	SG_SPRINT("src=%p, n=%i\n", src, n);
 	dst = new T[n];
-	SG_SPRINT("dst=%p, n=%i\n", dst, n);
 	memcpy((void *)dst,(void *)src,sizeof(T)*n);
 }
 #define INF HUGE_VAL
