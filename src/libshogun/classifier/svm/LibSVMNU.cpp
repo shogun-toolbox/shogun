@@ -8,7 +8,7 @@
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "classifier/svm/LibSVM.h"
+#include "classifier/svm/LibSVMNU.h"
 #include "lib/io.h"
 
 CLibSVMNu::CLibSVMNu()

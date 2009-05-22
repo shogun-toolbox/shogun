@@ -187,8 +187,8 @@ template <class T> class CArray2: public CArray<T>
 		 */
 		inline T& element(int32_t idx1, int32_t idx2)
 		{
-			ARRAY_ASSERT(idx1>=0 && idx1<dim1_size);
-			ARRAY_ASSERT(idx2>=0 && idx2<dim2_size);
+			ARRAY_ASSERT((idx1>=0 && idx1<dim1_size));
+			ARRAY_ASSERT((idx2>=0 && idx2<dim2_size));
 			return CArray<T>::element(idx1+dim1_size*idx2);
 		}
 

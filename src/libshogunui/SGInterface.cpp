@@ -499,11 +499,6 @@ CSGInterfaceMethod sg_methods[]=
 		USAGE_I(N_SVM_MAX_TRAIN_TIME, "max_train_time")
 	},
 	{
-		N_USE_MKL,
-		(&CSGInterface::cmd_set_svm_mkl_enabled),
-		USAGE_I(N_USE_MKL, "enable_mkl")
-	},
-	{
 		N_USE_SHRINKING,
 		(&CSGInterface::cmd_set_svm_shrinking_enabled),
 		USAGE_I(N_USE_SHRINKING, "enable_shrinking")
@@ -4790,16 +4785,6 @@ bool CSGInterface::cmd_set_max_train_time()
 	float64_t max_train_time=get_real_from_real_or_str();
 
 	return ui_classifier->set_max_train_time(max_train_time);
-}
-
-bool CSGInterface::cmd_set_svm_mkl_enabled()
-{
-	if (m_nrhs!=2 || !create_return_values(0))
-		return false;
-
-	bool mkl_enabled=get_bool_from_bool_or_str();
-
-	return ui_classifier->set_svm_mkl_enabled(mkl_enabled);
 }
 
 bool CSGInterface::cmd_set_svm_shrinking_enabled()

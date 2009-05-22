@@ -41,7 +41,7 @@
 #include <shogun/classifier/svm/MKLClassification.h>
 #include <shogun/classifier/svm/MKLRegression.h>
 #include <shogun/classifier/svm/LibSVM.h>
-#include <shogun/classifier/svm/LibSVMNu.h>
+#include <shogun/classifier/svm/LibSVMNU.h>
 #include <shogun/classifier/svm/GPBTSVM.h>
 #include <shogun/classifier/svm/LibSVMOneClass.h>
 #include <shogun/classifier/svm/LibSVMMultiClass.h>
@@ -744,22 +744,22 @@ bool CGUIClassifier::set_svm_one_class_nu(float64_t nu)
 }
 
 bool CGUIClassifier::set_svm_mkl_parameters(
-	float64_t weight_epsilon, float64_t C_mkl, float64_t mkl_norm)
+	float64_t weight_epsilon, float64_t C, float64_t norm)
 {
 	if (weight_epsilon<0)
 		svm_weight_epsilon=1e-4;
-	if (C_mkl<0)
-		svm_C_mkl=0;
-	if (mkl_norm<=0)
+	if (C<0)
+		C_mkl=0;
+	if (norm<=0)
 		SG_ERROR("MKL norm > 0\n");
 
 	svm_weight_epsilon=weight_epsilon;
-	svm_C_mkl=C_mkl;
-	svm_mkl_norm=mkl_norm;
+	C_mkl=C;
+	mkl_norm=norm;
 
 	SG_INFO("Set to weight_epsilon=%f.\n", svm_weight_epsilon);
-	SG_INFO("Set to C_mkl=%f.\n", svm_C_mkl);
-	SG_INFO("Set to mkl_norm=%f.\n", svm_mkl_norm);
+	SG_INFO("Set to C_mkl=%f.\n", C_mkl);
+	SG_INFO("Set to mkl_norm=%f.\n", mkl_norm);
 
 	return true;
 }
@@ -812,17 +812,6 @@ bool CGUIClassifier::set_svm_bufsize(int32_t bufsize)
 	SG_INFO("Set bufsize to svm_bufsize=%d.\n", svm_bufsize);
 
 	return true ;
-}
-
-bool CGUIClassifier::set_svm_mkl_enabled(bool enabled)
-{
-	svm_use_mkl=enabled;
-	if (svm_use_mkl)
-		SG_INFO("Enabling MKL optimization.\n");
-	else
-		SG_INFO("Disabling MKL optimization.\n");
-
-	return true;
 }
 
 bool CGUIClassifier::set_svm_shrinking_enabled(bool enabled)
