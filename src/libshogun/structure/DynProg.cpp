@@ -2533,65 +2533,59 @@ void CDynProg::best_path_trans(
 				seq.element(i,j) = 0 ;
 
 		for (int32_t i=0; i<N; i++)
-			for (int32_t j=0; j<seq_len; j++)
-				for (int32_t k=0; k<max_num_signals; k++)
-				{
-					if ((PEN_state_signals.element(i,k)==NULL) && (k==0))
-					{
-						// no plif
-						if (seq_input!=NULL)
-							seq.element(i,j) = seq_input->element(i,j,k) ;
-						else
-						{
-							if (k==0)
-								seq.element(i,j) = seq_sparse1->get_element(i,j) ;
-							if (k==1)
-								seq.element(i,j) = seq_sparse2->get_element(i,j) ;
-						}
-						break ;
-					}
-					if (PEN_state_signals.element(i,k)!=NULL)
-					{
-<<<<<<< .mine
-						if (seq_input!=NULL)
-						{
-							// just one plif
-							if (CMath::finite(seq_input->element(i,j,k)))
-								seq.element(i,j) += PEN_state_signals.element(i,k)->lookup_penalty(seq_input->element(i,j,k), svm_value) ;
-							else
-								// keep infinity values
-								seq.element(i,j) = seq_input->element(i, j, k) ;
-						}
-=======
-						// just one plif
-						if (CMath::is_finite(seq_input.element(i,j,k)))
-							seq.element(i,j) += PEN_state_signals.element(i,k)->lookup_penalty(seq_input.element(i,j,k), svm_value) ;
->>>>>>> .r3943
-						else
-						{
-							if (k==0)
-							{
-								// just one plif
-								if (CMath::finite(seq_sparse1->get_element(i,j)))
-									seq.element(i,j) += PEN_state_signals.element(i,k)->lookup_penalty(seq_sparse1->get_element(i,j), svm_value) ;
-								else
-									// keep infinity values
-									seq.element(i,j) = seq_sparse1->get_element(i, j) ;
-							}
-							if (k==1)
-							{
-								// just one plif
-								if (CMath::finite(seq_sparse2->get_element(i,j)))
-									seq.element(i,j) += PEN_state_signals.element(i,k)->lookup_penalty(seq_sparse2->get_element(i,j), svm_value) ;
-								else
-									// keep infinity values
-									seq.element(i,j) = seq_sparse2->get_element(i, j) ;
-							}
-						}
-					} 
-					else
-						break ;
-				}
+		  for (int32_t j=0; j<seq_len; j++)
+		    for (int32_t k=0; k<max_num_signals; k++)
+		      {
+			if ((PEN_state_signals.element(i,k)==NULL) && (k==0))
+			  {
+			    // no plif
+			    if (seq_input!=NULL)
+			      seq.element(i,j) = seq_input->element(i,j,k) ;
+			    else
+			      {
+				if (k==0)
+				  seq.element(i,j) = seq_sparse1->get_element(i,j) ;
+				if (k==1)
+				  seq.element(i,j) = seq_sparse2->get_element(i,j) ;
+			      }
+			    break ;
+			  }
+			if (PEN_state_signals.element(i,k)!=NULL)
+			  {
+			    if (seq_input!=NULL)
+			      {
+				// just one plif
+				if (CMath::finite(seq_input->element(i,j,k)))
+				  seq.element(i,j) += PEN_state_signals.element(i,k)->lookup_penalty(seq_input->element(i,j,k), svm_value) ;
+				else
+				  // keep infinity values
+				  seq.element(i,j) = seq_input->element(i, j, k) ;
+			      }
+			    else
+			      {
+				if (k==0)
+				  {
+				    // just one plif
+				    if (CMath::finite(seq_sparse1->get_element(i,j)))
+				      seq.element(i,j) += PEN_state_signals.element(i,k)->lookup_penalty(seq_sparse1->get_element(i,j), svm_value) ;
+				    else
+				      // keep infinity values
+				      seq.element(i,j) = seq_sparse1->get_element(i, j) ;
+				  }
+				if (k==1)
+				  {
+				    // just one plif
+				    if (CMath::finite(seq_sparse2->get_element(i,j)))
+				      seq.element(i,j) += PEN_state_signals.element(i,k)->lookup_penalty(seq_sparse2->get_element(i,j), svm_value) ;
+				    else
+				      // keep infinity values
+				      seq.element(i,j) = seq_sparse2->get_element(i, j) ;
+				  }
+			      }
+			  } 
+			else
+			  break ;
+		      }
 		delete seq_input ;
 	}
 
@@ -2693,17 +2687,8 @@ void CDynProg::best_path_trans(
 								  seq_len*(sizeof(T_STATES)+sizeof(int32_t))+
 								  m_genestr_len*sizeof(bool))/(1024*1024);*/
 
-    //bool is_big = (mem_use>200) || (seq_len>5000) ;
+	//bool is_big = (mem_use>200) || (seq_len>5000) ;
 
-<<<<<<< .mine
-	if (0)//(is_big)
-	{
-		SG_DEBUG("calling best_path_trans: seq_len=%i, N=%i, lookback=%i nbest=%i\n", 
-					 seq_len, N, max_look_back, nbest) ;
-		SG_DEBUG("allocating %1.2fMB of memory\n", 
-					 mem_use) ;
-	}
-=======
 	/*if (is_big)
 	  {
 	  SG_DEBUG("calling best_path_trans: seq_len=%i, N=%i, lookback=%i nbest=%i\n", 
@@ -2711,7 +2696,6 @@ void CDynProg::best_path_trans(
 	  SG_DEBUG("allocating %1.2fMB of memory\n", 
 	  mem_use) ;
 	  }*/
->>>>>>> .r3943
 	ASSERT(nbest<32000) ;
 	
 
@@ -3618,13 +3602,7 @@ void CDynProg::best_path_trans_deriv(
 				  SG_DEBUG( "%i. orf_info: from_orf=%i to_orf=%i orf_diff=%i, len=%i, lenmod3=%i, total_len=%i, total_lenmod3=%i\n", i, orf_from, orf_to, (orf_to-orf_from)%3, pos[to_pos]-pos[from_pos], (pos[to_pos]-pos[from_pos])%3, total_len, total_len%3) ;
 				*/
 #endif
-<<<<<<< .mine
-				PEN.element(to_state, from_state)->penalty_add_derivative(pos[to_pos]-pos[from_pos], svm_value) ;
-				//SG_PRINT("m_num_raw_data = %i \n", m_num_raw_data) ;
-				for (int32_t d=1; d<=m_num_raw_data; d++) 
-=======
 				if (is_long_transition)
->>>>>>> .r3943
 				{
 					float64_t sum_score = 0.0 ;
 					
