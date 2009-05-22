@@ -31,7 +31,7 @@ template <class T> class CArray2: public CArray<T>
 		 * @param dim1 dimension 1
 		 * @param dim2 dimension 2
 		 */
-		CArray2(int32_t dim1, int32_t dim2)
+		CArray2(int32_t dim1=1, int32_t dim2=1)
 		: CArray<T>(dim1*dim2), dim1_size(dim1), dim2_size(dim2)
 		{
 		}
