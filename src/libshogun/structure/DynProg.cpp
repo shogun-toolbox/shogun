@@ -2555,7 +2555,7 @@ void CDynProg::best_path_trans(
 			    if (seq_input!=NULL)
 			      {
 				// just one plif
-				if (CMath::finite(seq_input->element(i,j,k)))
+				if (CMath::is_finite(seq_input->element(i,j,k)))
 				  seq.element(i,j) += PEN_state_signals.element(i,k)->lookup_penalty(seq_input->element(i,j,k), svm_value) ;
 				else
 				  // keep infinity values
@@ -2566,7 +2566,7 @@ void CDynProg::best_path_trans(
 				if (k==0)
 				  {
 				    // just one plif
-				    if (CMath::finite(seq_sparse1->get_element(i,j)))
+				    if (CMath::is_finite(seq_sparse1->get_element(i,j)))
 				      seq.element(i,j) += PEN_state_signals.element(i,k)->lookup_penalty(seq_sparse1->get_element(i,j), svm_value) ;
 				    else
 				      // keep infinity values
@@ -2575,7 +2575,7 @@ void CDynProg::best_path_trans(
 				if (k==1)
 				  {
 				    // just one plif
-				    if (CMath::finite(seq_sparse2->get_element(i,j)))
+				    if (CMath::is_finite(seq_sparse2->get_element(i,j)))
 				      seq.element(i,j) += PEN_state_signals.element(i,k)->lookup_penalty(seq_sparse2->get_element(i,j), svm_value) ;
 				    else
 				      // keep infinity values
