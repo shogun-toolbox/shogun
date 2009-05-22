@@ -275,6 +275,11 @@ void CDynProg::init_tiling_data(
 void CDynProg::init_content_svm_value_array(const int32_t p_num_svms, const int32_t seq_len)
 {
 	m_lin_feat.resize_array(p_num_svms, seq_len);
+
+	// initialize array
+	for (int s=0; s<p_num_svms; s++)
+	  for (int p=0; p<seq_len; p++)
+	    m_lin_feat.set_element(s, p, 0.0) ;
 }
 void CDynProg::resize_lin_feat(const int32_t num_new_feat, const int32_t seq_len)
 {
@@ -418,8 +423,8 @@ void CDynProg::create_word_string(
 }
 
 void CDynProg::precompute_content_values(
-	uint16_t*** wordstr, const int32_t *pos,const int32_t seq_len,
-	const int32_t genestr_len,float64_t *dictionary_weights,int32_t dict_len)
+	uint16_t*** wordstr, const int32_t *pos, const int32_t seq_len,
+	const int32_t genestr_len, float64_t *dictionary_weights, int32_t dict_len)
 {
 	//SG_PRINT("seq_len=%i, genestr_len=%i, dict_len=%i, num_svms=%i, num_degrees=%i\n",seq_len, genestr_len, dict_len, num_svms, num_degrees);
 
@@ -435,45 +440,52 @@ void CDynProg::precompute_content_values(
 	//		SG_PRINT("%i ",mod_words.get_element(p,q));
 	//	SG_PRINT("\n");
 	//}
+	
+	for (int32_t s=0; s<num_svms; s++)
+	  m_lin_feat.set_element(s, 0, 0.0);
 
 	for (int32_t p=0 ; p<seq_len-1 ; p++)
-	{
-		int32_t from_pos = pos[p];
-		int32_t to_pos = pos[p+1];
-		float64_t my_svm_values_unnormalized[num_svms] ;
-		//SG_PRINT("%i(%i->%i) ",p,from_pos, to_pos);
-      
-		ASSERT(from_pos<=genestr_len)	
-		ASSERT(to_pos<=genestr_len)	
-			
-		for (int32_t s=0; s<num_svms; s++)
-		{
-			my_svm_values_unnormalized[s]=0.0;//precomputed_svm_values.element(s,p);
-		}
-		for (int32_t i=from_pos; i<to_pos;i++)
-		{
-			for (int32_t j=0; j<num_degrees; j++)
-			{
-				uint16_t word = wordstr[0][j][i] ;
-				for (int32_t s=0; s<num_svms; s++)
-				{
-					// check if this k-mere should be considered for this SVM
-					if (mod_words.get_element(s,0)==3 && i%3!=mod_words.get_element(s,1))
-						continue;
-					my_svm_values_unnormalized[s] += dict_weights_array[(word+cum_num_words_array[j])+s*cum_num_words_array[num_degrees]] ;
-				}
-			}
-		}
-		for (int32_t s=0; s<num_svms; s++)
-		{
-			float64_t prev = m_lin_feat.get_element(s,p);
-			m_lin_feat.set_element(prev + my_svm_values_unnormalized[s],s,p+1);
-
-			ASSERT(prev>-1e20);
-		}
-	}
+	  {
+	    int32_t from_pos = pos[p];
+	    int32_t to_pos = pos[p+1];
+	    float64_t my_svm_values_unnormalized[num_svms] ;
+	    //SG_PRINT("%i(%i->%i) ",p,from_pos, to_pos);
+	    
+	    ASSERT(from_pos<=genestr_len) ;
+	    ASSERT(to_pos<=genestr_len)	;
+	    
+	    for (int32_t s=0; s<num_svms; s++)
+	      {
+		my_svm_values_unnormalized[s]=0.0;//precomputed_svm_values.element(s,p);
+	      }
+	    for (int32_t i=from_pos; i<to_pos; i++)
+	      {
+		for (int32_t j=0; j<num_degrees; j++)
+		  {
+		    uint16_t word = wordstr[0][j][i] ;
+		    for (int32_t s=0; s<num_svms; s++)
+		      {
+			// check if this k-mere should be considered for this SVM
+			if (mod_words.get_element(s,0)==3 && i%3!=mod_words.get_element(s,1))
+			  continue;
+			my_svm_values_unnormalized[s] += dict_weights_array[(word+cum_num_words_array[j])+s*cum_num_words_array[num_degrees]] ;
+		      }
+		  }
+	      }
+	    for (int32_t s=0; s<num_svms; s++)
+	      {
+		float64_t prev = m_lin_feat.get_element(s, p);
+		//SG_PRINT("elem (%i, %i, %f)\n", s, p, prev) ;
+		if (prev<-1e20 || prev>1e20)
+		  {
+		    SG_PRINT("initialization missing (%i, %i, %f)\n", s, p, prev) ;
+		    prev=0 ;
+		  }
+		m_lin_feat.set_element(prev + my_svm_values_unnormalized[s], s, p+1);
+	      }
+	  }
 	for (int32_t j=0; j<num_degrees; j++)
-		delete[] wordstr[0][j] ;
+	  delete[] wordstr[0][j] ;
 	delete[] wordstr[0] ;
 }
 
@@ -616,15 +628,23 @@ void CDynProg::init_svm_arrays(int32_t p_num_degrees, int32_t p_num_svms)
 	svm_arrays_clean=false ;
 
 	word_degree.resize_array(num_degrees) ;
+	//for (int i=0; i<num_degrees; i++)
+	//  word_degree.set_element(i, 0) ;
 
 	cum_num_words.resize_array(num_degrees+1) ;
+	//for (int i=0; i<num_degrees+1; i++)
+	//  cum_num_words.set_element(i, 0) ;
 	cum_num_words_array=cum_num_words.get_array() ;
 
 	num_words.resize_array(num_degrees) ;
+	//for (int i=0; i<num_degrees; i++)
+	//  num_words.set_element(i, 0) ;
 	num_words_array=num_words.get_array() ;
 	
 	//svm_values_unnormalized.resize_array(num_degrees, num_svms) ;
 	svm_pos_start.resize_array(num_degrees) ;
+	//for (int i=0; i<num_degrees; i++)
+	//  svm_pos_start.set_element(i, 0) ;
 	num_unique_words.resize_array(num_degrees) ;
 } 
 
@@ -636,7 +656,6 @@ void CDynProg::init_word_degree_array(
 
 	word_degree.resize_array(num_degrees) ;
 	ASSERT(num_degrees==num_elem);
-
 
 	for (int32_t i=0; i<num_degrees; i++)
 		word_degree[i]=p_word_degree_array[i] ;
@@ -999,7 +1018,7 @@ void CDynProg::best_path_set_segment_ids_mask(
 	int32_t max_id = 0;
 	for (int32_t i=1;i<m;i++)
 		max_id = CMath::max(max_id,segment_ids[i]);
-	SG_PRINT("max_id: %i, m:%i\n",max_id, m); 	
+	//SG_PRINT("max_id: %i, m:%i\n",max_id, m); 	
 	m_segment_ids.set_array(segment_ids, m, false, true) ;
 	m_segment_ids.set_name("m_segment_ids");
 	m_segment_mask.set_array(segment_mask, m, false, true) ;
@@ -2453,7 +2472,7 @@ void CDynProg::best_path_trans(
 	//dict_weights.set_array(dictionary_weights, cum_num_words_array[num_degrees], num_svms, false, false) ;
 	//dict_weights_array=dict_weights.get_array() ;
 	
-	SG_PRINT("N:%i, seq_len:%i, max_num_signals:%i\n",N, seq_len, max_num_signals) ;
+	SG_DEBUG("N:%i, seq_len:%i, max_num_signals:%i\n",N, seq_len, max_num_signals) ;
 
 //	for (int32_t i=0;i<N*seq_len*max_num_signals;i++)
 //		SG_PRINT("(%i)%0.2f ",i,seq_array[i]);
@@ -2614,12 +2633,12 @@ void CDynProg::best_path_trans(
     //bool is_big = (mem_use>200) || (seq_len>5000) ;
 
 	/*if (is_big)
-	{
-		SG_DEBUG("calling best_path_trans: seq_len=%i, N=%i, lookback=%i nbest=%i\n", 
-					 seq_len, N, max_look_back, nbest) ;
-		SG_DEBUG("allocating %1.2fMB of memory\n", 
-					 mem_use) ;
-					 }*/
+	  {
+	  SG_DEBUG("calling best_path_trans: seq_len=%i, N=%i, lookback=%i nbest=%i\n", 
+	  seq_len, N, max_look_back, nbest) ;
+	  SG_DEBUG("allocating %1.2fMB of memory\n", 
+	  mem_use) ;
+	  }*/
 	ASSERT(nbest<32000) ;
 	
 
@@ -3549,7 +3568,8 @@ void CDynProg::best_path_trans_deriv(
 				else
 					PEN.element(to_state, from_state)->penalty_add_derivative(pos[to_pos]-pos[from_pos], svm_value, 1) ;
 
-				for (int32_t d=1;d<=m_num_raw_data;d++) 
+				//SG_PRINT("m_num_raw_data = %i \n", m_num_raw_data) ;
+				for (int32_t d=1; d<=m_num_raw_data; d++) 
 				{
 					ASSERT(!is_long_transition) ; // not sure what has to be done here
 					
@@ -3615,7 +3635,7 @@ void CDynProg::best_path_trans_deriv(
 		}
 //#ifdef DYNPROG_DEBUG
 		//SG_PRINT( "total score = %f \n", total_score) ;
-		SG_PRINT( "total loss = %f \n", total_loss) ;
+		//SG_PRINT( "total loss = %f \n", total_loss) ;
 //#endif
 		clear_svm_values(svs);
 		clear_segment_loss(loss);

@@ -100,7 +100,7 @@ bool CGUIStructure::compute_plif_matrix(
 	delete[] m_plif_matrix ;
         m_plif_matrix = new CPlifBase*[num_states*num_states] ;
 	//SG_PRINT("m_plif_matrix: %p \n",m_plif_matrix);
-        CArray3<float64_t> penalties(penalties_array, num_states, num_states, Dim[2], false, true) ;
+        CArray3<float64_t> penalties(penalties_array, num_states, num_states, Dim[2], true, true) ;
 
         for (int32_t i=0; i<num_states; i++)
         {

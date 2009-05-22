@@ -113,7 +113,7 @@ class CGUIStructure : public CSGObject
 			if (m_all_positions!=pos)
 				delete[] m_all_positions;
 			int32_t* cp_array = new int32_t[Npos];
-			memcpy(cp_array, pos,Npos*sizeof(int32_t));
+			memcpy(cp_array, pos, Npos*sizeof(int32_t));
 			m_num_positions = Npos;
 			m_all_positions = cp_array;
 			return true;

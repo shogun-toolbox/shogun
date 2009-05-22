@@ -4539,6 +4539,7 @@ bool CSGInterface::cmd_set_svm()
 		svm->set_alpha(i, alphas[i]);
 		svm->set_support_vector(i, (int32_t) alphas[i+num_support_vectors]);
 	}
+	delete[] alphas ;
 
 	return true;
 }
@@ -5855,9 +5856,12 @@ bool CSGInterface::cmd_set_plif_struct()
 
 	int32_t N = Ncalc;
 	int32_t M = Mlimits; 	
-	return ui_structure->set_plif_struct(N, M, all_limits, all_penalties, ids,
+	bool ret= ui_structure->set_plif_struct(N, M, all_limits, all_penalties, ids,
 			names, min_values, max_values, all_use_cache, all_use_svm,
 			all_transform);
+	delete[] all_limits ;
+	delete[] all_penalties ;
+	return ret ;
 }
 bool CSGInterface::cmd_get_plif_struct()
 {
@@ -6008,7 +6012,9 @@ bool CSGInterface::cmd_precompute_content_svms()
 	int32_t num_svms=0;
 	float64_t* weights;
 	get_real_matrix(weights, Nweights, num_svms);
-	ui_structure->set_content_svm_weights(weights,Nweights, num_svms);
+	if (Nweights!=5440)
+	  SG_PRINT("Dimension mismatch: got %i, expect %i\n", Nweights, 5440) ;
+	ui_structure->set_content_svm_weights(weights, Nweights, num_svms);
 
 	CDynProg* h = ui_structure->get_dyn_prog();
 	if (!h)
@@ -6062,6 +6068,16 @@ bool CSGInterface::cmd_set_lin_feat()
 	float64_t* lin_feat=NULL;
 	get_real_matrix(lin_feat, num_svms, seq_len);
 
+        if (Npos!=seq_len)
+	  {
+	    SG_ERROR("Dimension mismatch: got %i positions and (%ix%i) values\n", Npos, num_svms, seq_len) ;
+
+	    delete[] lin_feat ;
+	    delete[] seq ;
+	    delete[] all_pos ;
+	    
+	    return false ;
+	  }
 
 	CDynProg* h = ui_structure->get_dyn_prog();
 	if (!h)
@@ -6071,6 +6087,10 @@ bool CSGInterface::cmd_set_lin_feat()
 	h->precompute_stop_codons(seq, Nseq);
 	h->init_content_svm_value_array(num_svms, seq_len);
 	h->set_lin_feat(lin_feat, num_svms, seq_len);
+
+	delete[] lin_feat ;
+	delete[] seq ;
+	delete[] all_pos ;
 
 	return true;
 }
@@ -6167,6 +6187,7 @@ bool CSGInterface::cmd_best_path_trans()
 	else
 		nbest =all_nbest[0];	
 	delete[] all_nbest;
+
 	// ARG 4
 	// segment path (2 x #feature_positions)
 	// masking/weighting of loss for specific 
@@ -6174,7 +6195,7 @@ bool CSGInterface::cmd_best_path_trans()
 	int32_t Nseg_path=0;
 	int32_t Mseg_path=0;
 	float64_t* seg_path;
-	get_real_matrix(seg_path,Nseg_path,Mseg_path);
+	get_real_matrix(seg_path, Nseg_path, Mseg_path);
 
 	// ARG 5
 	// links for transitions (#transitions x 4)
@@ -6208,7 +6229,10 @@ bool CSGInterface::cmd_best_path_trans()
 	
 
 	h->set_p_vector(p, num_states);
+	delete[] p ; p=NULL ;
 	h->set_q_vector(q, num_states);
+	delete[] q ; q=NULL ;
+
 	if (seg_path!=NULL)
 	{
 		h->set_a_trans_matrix(a_trans, num_a_trans, Na_trans) ;
@@ -6217,6 +6241,8 @@ bool CSGInterface::cmd_best_path_trans()
 	{
 		h->set_a_trans_matrix(a_trans, num_a_trans, 3) ; // segment_id = 0 
 	}
+	delete[] a_trans ;
+	a_trans=NULL ;
 
 	if (!h->check_svm_arrays())
 	{
@@ -6230,7 +6256,7 @@ bool CSGInterface::cmd_best_path_trans()
 	int32_t *my_pos = new int32_t[M*(nbest+nother)] ;
 	memset(my_pos, -1, M*(nbest+nother)*sizeof(int32_t)) ;
 
-	SG_PRINT("best_path_trans: M: %i, Mseg_path: %i\n", M, Mseg_path);
+	SG_DEBUG("best_path_trans: M: %i, Mseg_path: %i\n", M, Mseg_path);
 	
 	float64_t* p_prob = new float64_t[nbest+nother];
 	if (seg_path!=NULL)
@@ -6246,6 +6272,7 @@ bool CSGInterface::cmd_best_path_trans()
 		h->best_path_set_segment_ids_mask(segment_ids, segment_mask, Mseg_path) ;
 		delete[] segment_ids;
 		delete[] segment_mask;
+		delete[] seg_path ; seg_path=NULL ;
 	}
 	else
 	{
@@ -6267,6 +6294,7 @@ bool CSGInterface::cmd_best_path_trans()
 	for (int32_t i=0; i<Nloss*Mloss; i++)
 		if (loss[i]>1e-3)
 			segment_loss_non_zero=true;
+	delete[] loss ; loss=NULL ;
 	if (segment_loss_non_zero)
 	{
 	        SG_DEBUG("Using version with segment_loss\n") ;

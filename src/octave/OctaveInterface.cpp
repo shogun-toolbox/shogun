@@ -282,7 +282,7 @@ void COctaveInterface::function_name(sg_type*& matrix, int32_t& num_feat, int32_
 	oct_type m = mat_feat.oct_converter();												\
 	num_vec = m.cols();																\
 	num_feat = m.rows();															\
-	matrix=new sg_type[num_vec*num_feat];											\
+	matrix = new sg_type[num_vec*num_feat];											\
 																					\
 	for (int32_t i=0; i<num_vec; i++)													\
 		for (int32_t j=0; j<num_feat; j++)												\

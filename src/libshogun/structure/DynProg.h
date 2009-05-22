@@ -623,7 +623,7 @@ public:
 	 */
 	inline void set_lin_feat(float64_t* p_lin_feat, int32_t p_num_svms, int32_t p_seq_len) 
 	{
-		m_lin_feat.set_array(p_lin_feat, p_num_svms, p_seq_len, true);
+ 	  m_lin_feat.set_array(p_lin_feat, p_num_svms, p_seq_len, true, true);
 	}
 	/** create word string from char*
 	 * Jonas
