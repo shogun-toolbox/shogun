@@ -51,7 +51,7 @@
 typedef KERNELCACHE_ELEM Qfloat;
 typedef float64_t schar;
 
-inline template <class S, class T> void clone(T*& dst, S* src, int32_t n)
+template <class S, class T> inline void clone(T*& dst, S* src, int32_t n)
 {
 	dst = new T[n];
 	memcpy((void *)dst,(void *)src,sizeof(T)*n);
