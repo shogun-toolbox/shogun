@@ -13,9 +13,9 @@
 
 //#define ARRAY_STATISTICS
 
-#define ARRAY_ASSERT(x) {if ((x)==0) {*((int*)0)=0;}}
+//#define ARRAY_ASSERT(x) {if ((x)==0) {*((int*)0)=0;}}
 //#define ARRAY_ASSERT(x) ASSERT(x)
-//#define ARRAY_ASSERT(x)
+#define ARRAY_ASSERT(x)
 
 #include "lib/common.h"
 #include "base/SGObject.h"

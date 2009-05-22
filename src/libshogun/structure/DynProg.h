@@ -21,6 +21,7 @@
 #include "structure/PlifBase.h"
 #include "structure/Plif.h"
 #include "features/StringFeatures.h"
+#include "features/SparseFeatures.h"
 #include "distributions/Distribution.h"
 #include "lib/DynamicArray.h"
 #include "lib/Array.h"
@@ -452,7 +453,8 @@ public:
 	 * @param use_orf whether orf shall be used
 	 */
 	template <int16_t nbest, bool with_loss, bool with_multiple_sequences>
-	void best_path_trans(const float64_t *seq, int32_t seq_len, const int32_t *pos,
+	void best_path_trans(const float64_t *seq, CSparseFeatures<float64_t> *seq_sparse1, CSparseFeatures<float64_t> *seq_sparse2,
+						 int32_t seq_len, const int32_t *pos,
 						 const int32_t *orf_info, CPlifBase **PLif_matrix,
 						 CPlifBase **Plif_state_signals, int32_t max_num_signals,
 						 int32_t genestr_num,

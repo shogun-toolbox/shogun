@@ -750,6 +750,11 @@ CSGInterfaceMethod sg_methods[]=
 		(char*) USAGE_I(N_SET_FEATURE_MATRIX, "features")
 	},
 	{
+		(char*) N_SET_FEATURE_MATRIX_SPARSE,
+		(&CSGInterface::cmd_set_feature_matrix_sparse),
+		(char*) USAGE_I(N_SET_FEATURE_MATRIX_SPARSE, "sp1" USAGE_COMMA "sp2" )
+	},
+	{
 		N_NEW_PLUGIN_ESTIMATOR,
 		(&CSGInterface::cmd_new_plugin_estimator),
 		USAGE_I(N_NEW_PLUGIN_ESTIMATOR, "pos_pseudo" USAGE_COMMA "neg_pseudo")
@@ -6094,9 +6099,9 @@ bool CSGInterface::cmd_set_lin_feat()
 
 	return true;
 }
+
 bool CSGInterface::cmd_set_feature_matrix()
 {
-
 	int32_t num_pos = ui_structure->get_num_positions();
 	int32_t num_states = ui_structure->get_num_states();
 
@@ -6115,10 +6120,47 @@ bool CSGInterface::cmd_set_feature_matrix()
 	ASSERT(ui_structure->set_feature_dims(Dims));
 
 	delete[] features ;
+	delete[] Dims ;
 
 	return true;
-
 }
+
+bool CSGInterface::cmd_set_feature_matrix_sparse()
+{
+	int32_t num_pos = ui_structure->get_num_positions();
+	int32_t num_states = ui_structure->get_num_states();
+
+	//ARG 1
+	// feature matrix (#states x #feature_positions x max_num_signals)
+	int32_t dim11, dim12 ;
+	TSparse<float64_t> *features1=NULL ;
+	get_real_sparsematrix(features1, dim11, dim12);
+	
+	int32_t dim21, dim22 ;
+	TSparse<float64_t> *features2=NULL ;
+	get_real_sparsematrix(features2, dim21, dim22);
+
+	ASSERT(dim11==dim21) ;
+	ASSERT(dim12==dim22) ;
+
+	int32_t *Dims = new int32_t[3] ;
+	Dims[0]=dim11 ;
+	Dims[1]=dim12 ;
+	Dims[2]=2 ;
+
+	ASSERT(Dims[0]==num_states)
+	ASSERT(Dims[1]==num_pos)
+
+	ASSERT(ui_structure->set_feature_matrix_sparse(features1, features2, Dims));
+	ASSERT(ui_structure->set_feature_dims(Dims));
+
+	delete[] features1 ;
+	delete[] features2 ;
+	delete[] Dims ;
+	
+	return true;
+}
+
 bool CSGInterface::cmd_precompute_tiling_features()
 {
 	int32_t* all_pos = ui_structure->get_all_positions();
@@ -6143,6 +6185,7 @@ bool CSGInterface::cmd_precompute_tiling_features()
 	h->precompute_tiling_plifs(PEN, tiling_plif_ids, Ntiling_plif_ids, Npos, all_pos);
 	return true;
 }
+
 bool CSGInterface::cmd_best_path_trans()
 {
 	CDynProg* h = ui_structure->get_dyn_prog();
@@ -6150,6 +6193,8 @@ bool CSGInterface::cmd_best_path_trans()
 	int32_t num_states = h->get_num_states();
 	int32_t* feat_dims = ui_structure->get_feature_dims();
 	float64_t* features = (ui_structure->get_feature_matrix(false));
+	CSparseFeatures<float64_t>* features_sparse1 = (ui_structure->get_feature_matrix_sparse(0));
+	CSparseFeatures<float64_t>* features_sparse2 = (ui_structure->get_feature_matrix_sparse(1));
 	int32_t* all_pos = ui_structure->get_all_positions();
 	int32_t num_pos = ui_structure->get_num_positions();
 	int32_t* orf_info = ui_structure->get_orf_info();
@@ -6299,20 +6344,20 @@ bool CSGInterface::cmd_best_path_trans()
 	{
 	        SG_DEBUG("Using version with segment_loss\n") ;
 	        if (nbest==1)
-	                h->best_path_trans<1,true,false>(features, num_pos, all_pos, orf_info, PEN_matrix, 
-				PEN_state_signal, feat_dims[2], genestr_num, p_prob, my_path, my_pos, use_orf) ;
+	                h->best_path_trans<1,true,false>(features, features_sparse1, features_sparse2, num_pos, all_pos, orf_info, PEN_matrix, 
+													 PEN_state_signal, feat_dims[2], genestr_num, p_prob, my_path, my_pos, use_orf) ;
 	        else
-	                h->best_path_trans<2,true,false>(features, num_pos, all_pos, orf_info,PEN_matrix, 
-				PEN_state_signal, feat_dims[2], genestr_num, p_prob, my_path, my_pos, use_orf) ;
+				h->best_path_trans<2,true,false>(features, features_sparse1, features_sparse2, num_pos, all_pos, orf_info,PEN_matrix, 
+												 PEN_state_signal, feat_dims[2], genestr_num, p_prob, my_path, my_pos, use_orf) ;
 	}
 	else
 	{
 	        SG_DEBUG("Using version without segment_loss\n") ;
 	        if (nbest==1)
-	                h->best_path_trans<1,false,false>(features, num_pos, all_pos, orf_info, PEN_matrix, 
+	                h->best_path_trans<1,false,false>(features, features_sparse1, features_sparse2, num_pos, all_pos, orf_info, PEN_matrix, 
 				PEN_state_signal, feat_dims[2], genestr_num, p_prob, my_path, my_pos, use_orf) ;
 	        else
-	                h->best_path_trans<2,false,false>(features, num_pos, all_pos, orf_info, PEN_matrix, 
+	                h->best_path_trans<2,false,false>(features, features_sparse1, features_sparse2, num_pos, all_pos, orf_info, PEN_matrix, 
 				PEN_state_signal, feat_dims[2], genestr_num, p_prob, my_path, my_pos, use_orf) ;
 	}
 

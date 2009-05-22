@@ -435,6 +435,11 @@ class CSGInterface : public CSGObject
  		 */
 		bool cmd_set_model();
 		/**
+		 * set sparse feature matrix and 
+		 * all feature positions
+		 */	
+		bool cmd_set_feature_matrix_sparse();
+		/**
 		 * set feature matrix and 
 		 * all feature positions
 		 */	

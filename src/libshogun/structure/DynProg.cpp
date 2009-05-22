@@ -28,28 +28,32 @@
 #include <limits.h>
 
 template void CDynProg::best_path_trans<1,true,false>(
-	const float64_t *seq, int32_t seq_len, const int32_t *pos,
+	const float64_t *seq, CSparseFeatures<float64_t> *seq_sparse1, CSparseFeatures<float64_t> *seq_sparse2,
+	int32_t seq_len, const int32_t *pos,
 	const int32_t *orf_info, CPlifBase **PLif_matrix,
 	CPlifBase **Plif_state_signals, int32_t max_num_signals,
 	int32_t genestr_num, float64_t *prob_nbest, int32_t *my_state_seq,
 	int32_t *my_pos_seq, bool use_orf);
 
 template void CDynProg::best_path_trans<2,true,false>(
-	const float64_t *seq, int32_t seq_len, const int32_t *pos,
+	const float64_t *seq, CSparseFeatures<float64_t> *seq_sparse1, CSparseFeatures<float64_t> *seq_sparse2,
+	int32_t seq_len, const int32_t *pos,
 	const int32_t *orf_info, CPlifBase **PLif_matrix,
 	CPlifBase **Plif_state_signals, int32_t max_num_signals,
 	int32_t genestr_num, float64_t *prob_nbest, int32_t *my_state_seq,
 	int32_t *my_pos_seq, bool use_orf);
 
 template void CDynProg::best_path_trans<1,false,false>(
-	const float64_t *seq, int32_t seq_len, const int32_t *pos,
+	const float64_t *seq, CSparseFeatures<float64_t> *seq_sparse1, CSparseFeatures<float64_t> *seq_sparse2,
+	int32_t seq_len, const int32_t *pos,
 	const int32_t *orf_info, CPlifBase **PLif_matrix,
 	CPlifBase **Plif_state_signals, int32_t max_num_signals,
 	int32_t genestr_num, float64_t *prob_nbest, int32_t *my_state_seq,
 	int32_t *my_pos_seq, bool use_orf);
 
 template void CDynProg::best_path_trans<2,false,false>(
-	const float64_t *seq, int32_t seq_len, const int32_t *pos,
+	const float64_t *seq, CSparseFeatures<float64_t> *seq_sparse1, CSparseFeatures<float64_t> *seq_sparse2,
+	int32_t seq_len, const int32_t *pos,
 	const int32_t *orf_info, CPlifBase **PLif_matrix,
 	CPlifBase **Plif_state_signals, int32_t max_num_signals,
 	int32_t genestr_num, float64_t *prob_nbest, int32_t *my_state_seq,
@@ -445,47 +449,47 @@ void CDynProg::precompute_content_values(
 	  m_lin_feat.set_element(s, 0, 0.0);
 
 	for (int32_t p=0 ; p<seq_len-1 ; p++)
-	  {
-	    int32_t from_pos = pos[p];
-	    int32_t to_pos = pos[p+1];
-	    float64_t my_svm_values_unnormalized[num_svms] ;
-	    //SG_PRINT("%i(%i->%i) ",p,from_pos, to_pos);
-	    
+	{
+		int32_t from_pos = pos[p];
+		int32_t to_pos = pos[p+1];
+		float64_t my_svm_values_unnormalized[num_svms] ;
+		//SG_PRINT("%i(%i->%i) ",p,from_pos, to_pos);
+		
 	    ASSERT(from_pos<=genestr_len) ;
 	    ASSERT(to_pos<=genestr_len)	;
 	    
 	    for (int32_t s=0; s<num_svms; s++)
-	      {
-		my_svm_values_unnormalized[s]=0.0;//precomputed_svm_values.element(s,p);
-	      }
+		{
+			my_svm_values_unnormalized[s]=0.0;//precomputed_svm_values.element(s,p);
+		}
 	    for (int32_t i=from_pos; i<to_pos; i++)
-	      {
-		for (int32_t j=0; j<num_degrees; j++)
-		  {
-		    uint16_t word = wordstr[0][j][i] ;
-		    for (int32_t s=0; s<num_svms; s++)
-		      {
-			// check if this k-mere should be considered for this SVM
-			if (mod_words.get_element(s,0)==3 && i%3!=mod_words.get_element(s,1))
-			  continue;
-			my_svm_values_unnormalized[s] += dict_weights_array[(word+cum_num_words_array[j])+s*cum_num_words_array[num_degrees]] ;
-		      }
-		  }
-	      }
+		{
+			for (int32_t j=0; j<num_degrees; j++)
+			{
+				uint16_t word = wordstr[0][j][i] ;
+				for (int32_t s=0; s<num_svms; s++)
+				{
+					// check if this k-mere should be considered for this SVM
+					if (mod_words.get_element(s,0)==3 && i%3!=mod_words.get_element(s,1))
+						continue;
+					my_svm_values_unnormalized[s] += dict_weights_array[(word+cum_num_words_array[j])+s*cum_num_words_array[num_degrees]] ;
+				}
+			}
+		}
 	    for (int32_t s=0; s<num_svms; s++)
-	      {
-		float64_t prev = m_lin_feat.get_element(s, p);
-		//SG_PRINT("elem (%i, %i, %f)\n", s, p, prev) ;
-		if (prev<-1e20 || prev>1e20)
-		  {
-		    SG_PRINT("initialization missing (%i, %i, %f)\n", s, p, prev) ;
-		    prev=0 ;
-		  }
-		m_lin_feat.set_element(prev + my_svm_values_unnormalized[s], s, p+1);
-	      }
-	  }
+		{
+			float64_t prev = m_lin_feat.get_element(s, p);
+			//SG_PRINT("elem (%i, %i, %f)\n", s, p, prev) ;
+			if (prev<-1e20 || prev>1e20)
+			{
+				SG_PRINT("initialization missing (%i, %i, %f)\n", s, p, prev) ;
+				prev=0 ;
+			}
+			m_lin_feat.set_element(prev + my_svm_values_unnormalized[s], s, p+1);
+		}
+	}
 	for (int32_t j=0; j<num_degrees; j++)
-	  delete[] wordstr[0][j] ;
+		delete[] wordstr[0][j] ;
 	delete[] wordstr[0] ;
 }
 
@@ -1044,14 +1048,14 @@ void CDynProg::best_path_call(int32_t nbest, bool use_orf)
 	ASSERT(nbest==1||nbest==2) ;
 	ASSERT(m_genestr.get_dim2()==1) ;
 	if (nbest==1)
-		best_path_trans<1,false,false>(m_seq.get_array(), m_seq.get_dim2(), m_pos.get_array(), 
+		best_path_trans<1,false,false>(m_seq.get_array(), NULL, NULL, m_seq.get_dim2(), m_pos.get_array(), 
 								m_orf_info.get_array(), m_PEN.get_array(),
 								m_PEN_state_signals.get_array(), m_PEN_state_signals.get_dim2(),
 								m_genestr.get_dim2(), m_scores.get_array(), 
 								m_states.get_array(), m_positions.get_array(),
 								use_orf) ;
 	else
-		best_path_trans<2,false,false>(m_seq.get_array(), m_seq.get_dim2(), m_pos.get_array(), 
+		best_path_trans<2,false,false>(m_seq.get_array(), NULL, NULL, m_seq.get_dim2(), m_pos.get_array(), 
 								m_orf_info.get_array(), m_PEN.get_array(),
 								m_PEN_state_signals.get_array(), m_PEN_state_signals.get_dim2(),
 								m_genestr.get_dim2(), m_scores.get_array(),
@@ -2427,7 +2431,8 @@ bool CDynProg::extend_orf(
 
 template <int16_t nbest, bool with_loss, bool with_multiple_sequences>
 void CDynProg::best_path_trans(
-	const float64_t *seq_array, int32_t seq_len, const int32_t *pos,
+	const float64_t *seq_array, CSparseFeatures<float64_t> *seq_sparse1, CSparseFeatures<float64_t> *seq_sparse2,
+	int32_t seq_len, const int32_t *pos,
 	const int32_t *orf_info_array, CPlifBase **Plif_matrix,
 	CPlifBase **Plif_state_signals, int32_t max_num_signals,
 	int32_t genestr_num, float64_t *prob_nbest, int32_t *my_state_seq,
@@ -2483,10 +2488,7 @@ void CDynProg::best_path_trans(
 	//CArray2<CPlifBase*> PEN_state_signals(Plif_state_signals, N, max_num_signals, false, false) ;
 	CArray2<CPlifBase*> PEN_state_signals(Plif_state_signals, N, max_num_signals, false, true) ;
 	PEN_state_signals.set_name("state_signals");
-	//CArray3<float64_t> seq_input(seq_array, N, seq_len, max_num_signals) ;
-	CArray3<float64_t> seq_input(seq_array, N, seq_len, max_num_signals) ;
-	seq_input.set_name("seq_input") ;
-	//seq_input.display_array() ;
+	
 	CArray2<float64_t> seq(N, seq_len) ;
 	seq.set_name("seq") ;
 	seq.zero() ;
@@ -2504,6 +2506,28 @@ void CDynProg::best_path_trans(
 
 	{ // convert seq_input to seq
       // this is independent of the svm values 
+
+		//CArray3<float64_t> seq_input(seq_array, N, seq_len, max_num_signals) ;
+		CArray3<float64_t> *seq_input=NULL ;
+		if (seq_array!=NULL)
+		{
+			SG_PRINT("using dense seq_array\n") ;
+
+			seq_input=new CArray3<float64_t>(seq_array, N, seq_len, max_num_signals) ;
+			seq_input->set_name("seq_input") ;
+			//seq_input.display_array() ;
+			
+			ASSERT(seq_sparse1==NULL) ;
+			ASSERT(seq_sparse2==NULL) ;
+		} else
+		{
+			SG_PRINT("using sparse seq_array\n") ;
+
+			ASSERT(seq_sparse1!=NULL) ;
+			ASSERT(seq_sparse2!=NULL) ;
+			ASSERT(max_num_signals==2) ;
+		}
+		
 		for (int32_t i=0; i<N; i++)
 			for (int32_t j=0; j<seq_len; j++)
 				seq.element(i,j) = 0 ;
@@ -2515,21 +2539,60 @@ void CDynProg::best_path_trans(
 					if ((PEN_state_signals.element(i,k)==NULL) && (k==0))
 					{
 						// no plif
-						seq.element(i,j) = seq_input.element(i,j,k) ;
+						if (seq_input!=NULL)
+							seq.element(i,j) = seq_input->element(i,j,k) ;
+						else
+						{
+							if (k==0)
+								seq.element(i,j) = seq_sparse1->get_element(i,j) ;
+							if (k==1)
+								seq.element(i,j) = seq_sparse2->get_element(i,j) ;
+						}
 						break ;
 					}
 					if (PEN_state_signals.element(i,k)!=NULL)
 					{
+<<<<<<< .mine
+						if (seq_input!=NULL)
+						{
+							// just one plif
+							if (CMath::finite(seq_input->element(i,j,k)))
+								seq.element(i,j) += PEN_state_signals.element(i,k)->lookup_penalty(seq_input->element(i,j,k), svm_value) ;
+							else
+								// keep infinity values
+								seq.element(i,j) = seq_input->element(i, j, k) ;
+						}
+=======
 						// just one plif
 						if (CMath::is_finite(seq_input.element(i,j,k)))
 							seq.element(i,j) += PEN_state_signals.element(i,k)->lookup_penalty(seq_input.element(i,j,k), svm_value) ;
+>>>>>>> .r3943
 						else
-							// keep infinity values
-							seq.element(i,j) = seq_input.element(i, j, k) ;
+						{
+							if (k==0)
+							{
+								// just one plif
+								if (CMath::finite(seq_sparse1->get_element(i,j)))
+									seq.element(i,j) += PEN_state_signals.element(i,k)->lookup_penalty(seq_sparse1->get_element(i,j), svm_value) ;
+								else
+									// keep infinity values
+									seq.element(i,j) = seq_sparse1->get_element(i, j) ;
+							}
+							if (k==1)
+							{
+								// just one plif
+								if (CMath::finite(seq_sparse2->get_element(i,j)))
+									seq.element(i,j) += PEN_state_signals.element(i,k)->lookup_penalty(seq_sparse2->get_element(i,j), svm_value) ;
+								else
+									// keep infinity values
+									seq.element(i,j) = seq_sparse2->get_element(i, j) ;
+							}
+						}
 					} 
 					else
 						break ;
 				}
+		delete seq_input ;
 	}
 
 	// allow longer transitions than look_back
@@ -2632,6 +2695,15 @@ void CDynProg::best_path_trans(
 
     //bool is_big = (mem_use>200) || (seq_len>5000) ;
 
+<<<<<<< .mine
+	if (0)//(is_big)
+	{
+		SG_DEBUG("calling best_path_trans: seq_len=%i, N=%i, lookback=%i nbest=%i\n", 
+					 seq_len, N, max_look_back, nbest) ;
+		SG_DEBUG("allocating %1.2fMB of memory\n", 
+					 mem_use) ;
+	}
+=======
 	/*if (is_big)
 	  {
 	  SG_DEBUG("calling best_path_trans: seq_len=%i, N=%i, lookback=%i nbest=%i\n", 
@@ -2639,6 +2711,7 @@ void CDynProg::best_path_trans(
 	  SG_DEBUG("allocating %1.2fMB of memory\n", 
 	  mem_use) ;
 	  }*/
+>>>>>>> .r3943
 	ASSERT(nbest<32000) ;
 	
 
@@ -2776,7 +2849,6 @@ void CDynProg::best_path_trans(
 	pp.display_array() ;
 	
 	//seq.zero() ;
-	//seq_input.display_array() ;
 
 #endif //DYNPROG_DEBUG
 
@@ -3546,7 +3618,13 @@ void CDynProg::best_path_trans_deriv(
 				  SG_DEBUG( "%i. orf_info: from_orf=%i to_orf=%i orf_diff=%i, len=%i, lenmod3=%i, total_len=%i, total_lenmod3=%i\n", i, orf_from, orf_to, (orf_to-orf_from)%3, pos[to_pos]-pos[from_pos], (pos[to_pos]-pos[from_pos])%3, total_len, total_len%3) ;
 				*/
 #endif
+<<<<<<< .mine
+				PEN.element(to_state, from_state)->penalty_add_derivative(pos[to_pos]-pos[from_pos], svm_value) ;
+				//SG_PRINT("m_num_raw_data = %i \n", m_num_raw_data) ;
+				for (int32_t d=1; d<=m_num_raw_data; d++) 
+=======
 				if (is_long_transition)
+>>>>>>> .r3943
 				{
 					float64_t sum_score = 0.0 ;
 					

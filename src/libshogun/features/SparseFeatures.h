@@ -83,11 +83,23 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 * @param num_feat number of features
 		 * @param num_vec number of vectors
 		 */
-		CSparseFeatures(TSparse<ST>* src, int32_t num_feat, int32_t num_vec)
+		CSparseFeatures(TSparse<ST>* src, int32_t num_feat, int32_t num_vec, bool copy=false)
 		: CDotFeatures(0), num_vectors(0), num_features(0),
 			sparse_feature_matrix(NULL), feature_cache(NULL)
 		{
-			set_sparse_feature_matrix(src, num_feat, num_vec);
+			if (!copy)
+				set_sparse_feature_matrix(src, num_feat, num_vec);
+			else
+			{
+				sparse_feature_matrix = new TSparse<ST>[num_vec];
+				memcpy(sparse_feature_matrix, src, sizeof(TSparse<ST>)*num_vec);
+				for (int32_t i=0; i< num_vec; i++)
+				{
+					sparse_feature_matrix[i].features = new TSparseEntry<ST>[sparse_feature_matrix[i].num_feat_entries];
+					memcpy(sparse_feature_matrix[i].features, src[i].features, sizeof(TSparseEntry<ST>)*sparse_feature_matrix[i].num_feat_entries);
+
+				}
+			}
 		}
 
 		/** convenience constructor that creates sparse features from
@@ -168,6 +180,30 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		{
 			return new CSparseFeatures<ST>(*this);
 		}
+
+		ST get_element(int32_t num, int32_t index)
+		{
+			ASSERT(index>=0 && index<num_features) ;
+			ASSERT(num>=0 && num<num_vectors) ;
+
+			bool vfree;
+			int32_t num_feat;
+			int32_t i;
+			TSparseEntry<ST>* sv=get_sparse_feature_vector(num, num_feat, vfree);
+			ST ret = 0 ;
+			
+			if (sv)
+			{
+				for (i=0; i<num_feat; i++)
+					if (sv[i].feat_index==index)
+						ret += sv[i].entry ;
+			}
+			
+			free_sparse_feature_vector(sv, num, vfree);
+			
+			return ret ;
+		}
+		
 
 		/** converts a sparse feature vector into a dense one
 		  * preprocessed compute_feature_vector

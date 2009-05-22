@@ -65,6 +65,7 @@
 #define N_PRECOMPUTE_TILING_FEATURES		"precompute_tiling_features"
 #define N_SET_MODEL							"set_model"
 #define N_SET_FEATURE_MATRIX				"set_feature_matrix"
+#define N_SET_FEATURE_MATRIX_SPARSE			"set_feature_matrix_sparse"
 #define N_BEST_PATH_2STRUCT					"best_path_2struct"
 #define N_BEST_PATH_TRANS_SIMPLE			"best_path_trans_simple"
 #define N_BEST_PATH_NO_B					"best_path_no_b"

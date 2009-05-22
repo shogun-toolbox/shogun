@@ -90,12 +90,33 @@ class CGUIStructure : public CSGObject
 				return m_feature_matrix;
 		}
 
+		inline CSparseFeatures<float64_t>* get_feature_matrix_sparse(int32_t index)
+		{
+			ASSERT(index>=0 && index<=1) ;
+			if (index==0)
+				return m_feature_matrix_sparse1;
+			if (index==1)
+				return m_feature_matrix_sparse2;
+			return NULL ;
+		}
+
 		inline bool set_feature_matrix(float64_t* feat, int32_t* dims)
 		{
 			delete[] m_feature_matrix;
 			int32_t len = dims[0]*dims[1]*dims[2];
 			m_feature_matrix = new float64_t[len];
 			memcpy(m_feature_matrix, feat, len*sizeof(float64_t));
+			return true;
+		}
+
+		inline bool set_feature_matrix_sparse(TSparse<float64_t> *f1, TSparse<float64_t> *f2, int32_t* dims)
+		{
+			delete[] m_feature_matrix_sparse1 ;
+			delete[] m_feature_matrix_sparse2 ;
+
+			m_feature_matrix_sparse1 = new CSparseFeatures<float64_t>(f1, dims[0], dims[1], true) ;
+			m_feature_matrix_sparse2 = new CSparseFeatures<float64_t>(f2, dims[0], dims[1], true) ;
+
 			return true;
 		}
 
@@ -190,6 +211,8 @@ class CGUIStructure : public CSGObject
 		CDynProg* m_dp;
 		CPlifBase** m_plif_matrix;
 		float64_t* m_feature_matrix;
+		CSparseFeatures<float64_t>* m_feature_matrix_sparse1;
+		CSparseFeatures<float64_t>* m_feature_matrix_sparse2;
 		int32_t* m_feature_dims;
 		int32_t m_num_positions;
 		int32_t* m_all_positions;
