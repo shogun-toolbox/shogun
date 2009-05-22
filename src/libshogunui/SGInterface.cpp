@@ -2762,6 +2762,7 @@ CKernel* CSGInterface::create_kernel()
 				mkl_stepsize, position_weights);
 
 			delete[] position_weights;
+			delete[] shifts ;
 		}
 
 		delete[] dtype;
