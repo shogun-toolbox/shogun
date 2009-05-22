@@ -50,16 +50,12 @@
 #include <stdarg.h>
 typedef KERNELCACHE_ELEM Qfloat;
 typedef float64_t schar;
-#ifndef min
-template <class T> inline T min(T x,T y) { return (x<y)?x:y; }
-#endif
-#ifndef max
-template <class T> inline T max(T x,T y) { return (x>y)?x:y; }
-#endif
-template <class T> inline void swap(T& x, T& y) { T t=x; x=y; y=t; }
-template <class S, class T> inline void clone(T*& dst, S* src, int32_t n)
+
+template <class S, class T> void clone(T*& dst, S* src, int32_t n)
 {
+	SG_SPRINT("src=%p, n=%i\n", src, n);
 	dst = new T[n];
+	SG_SPRINT("dst=%p, n=%i\n", dst, n);
 	memcpy((void *)dst,(void *)src,sizeof(T)*n);
 }
 #define INF HUGE_VAL
@@ -105,7 +101,7 @@ Cache::Cache(int32_t l_, int64_t size_):l(l_),size(size_)
 	head = (head_t *)calloc(l,sizeof(head_t));	// initialized to 0
 	size /= sizeof(Qfloat);
 	size -= l * sizeof(head_t) / sizeof(Qfloat);
-	size = max(size, (int64_t) 2*l);	// cache must be large enough for two columns
+	size = CMath::max(size, (int64_t) 2*l);	// cache must be large enough for two columns
 	lru_head.next = lru_head.prev = &lru_head;
 }
 
@@ -154,7 +150,7 @@ int32_t Cache::get_data(const int32_t index, Qfloat **data, int32_t len)
 		// allocate new space
 		h->data = (Qfloat *)realloc(h->data,sizeof(Qfloat)*len);
 		size -= more;
-		swap(h->len,len);
+		CMath::swap(h->len,len);
 	}
 
 	lru_insert(h);
@@ -168,18 +164,18 @@ void Cache::swap_index(int32_t i, int32_t j)
 
 	if(head[i].len) lru_delete(&head[i]);
 	if(head[j].len) lru_delete(&head[j]);
-	swap(head[i].data,head[j].data);
-	swap(head[i].len,head[j].len);
+	CMath::swap(head[i].data,head[j].data);
+	CMath::swap(head[i].len,head[j].len);
 	if(head[i].len) lru_insert(&head[i]);
 	if(head[j].len) lru_insert(&head[j]);
 
-	if(i>j) swap(i,j);
+	if(i>j) CMath::swap(i,j);
 	for(head_t *h = lru_head.next; h!=&lru_head; h=h->next)
 	{
 		if(h->len > i)
 		{
 			if(h->len > j)
-				swap(h->data[i],h->data[j]);
+				CMath::swap(h->data[i],h->data[j]);
 			else
 			{
 				// give up
@@ -217,8 +213,8 @@ public:
 	virtual Qfloat *get_QD() const = 0;
 	virtual void swap_index(int32_t i, int32_t j) const	// no so const...
 	{
-		swap(x[i],x[j]);
-		if(x_square) swap(x_square[i],x_square[j]);
+		CMath::swap(x[i],x[j]);
+		if(x_square) CMath::swap(x_square[i],x_square[j]);
 	}
 
 	inline float64_t kernel_function(int32_t i, int32_t j) const
@@ -333,13 +329,13 @@ private:
 void Solver::swap_index(int32_t i, int32_t j)
 {
 	Q->swap_index(i,j);
-	swap(y[i],y[j]);
-	swap(G[i],G[j]);
-	swap(alpha_status[i],alpha_status[j]);
-	swap(alpha[i],alpha[j]);
-	swap(p[i],p[j]);
-	swap(active_set[i],active_set[j]);
-	swap(G_bar[i],G_bar[j]);
+	CMath::swap(y[i],y[j]);
+	CMath::swap(G[i],G[j]);
+	CMath::swap(alpha_status[i],alpha_status[j]);
+	CMath::swap(alpha[i],alpha[j]);
+	CMath::swap(p[i],p[j]);
+	CMath::swap(active_set[i],active_set[j]);
+	CMath::swap(G_bar[i],G_bar[j]);
 }
 
 void Solver::reconstruct_gradient()
@@ -439,7 +435,7 @@ void Solver::Solve(
 	// optimization step
 
 	int32_t iter = 0;
-	int32_t counter = min(l,1000)+1;
+	int32_t counter = CMath::min(l,1000)+1;
 
 	while(1)
 	{
@@ -447,7 +443,7 @@ void Solver::Solve(
 
 		if(--counter == 0)
 		{
-			counter = min(l,1000);
+			counter = CMath::min(l,1000);
 			if(shrinking) do_shrinking();
 			//SG_SINFO(".");
 		}
@@ -840,16 +836,16 @@ float64_t Solver::calculate_rho()
 		if(is_upper_bound(i))
 		{
 			if(y[i]==-1)
-				ub = min(ub,yG);
+				ub = CMath::min(ub,yG);
 			else
-				lb = max(lb,yG);
+				lb = CMath::max(lb,yG);
 		}
 		else if(is_lower_bound(i))
 		{
 			if(y[i]==+1)
-				ub = min(ub,yG);
+				ub = CMath::min(ub,yG);
 			else
-				lb = max(lb,yG);
+				lb = CMath::max(lb,yG);
 		}
 		else
 		{
@@ -881,7 +877,7 @@ public:
 		float64_t p_eps, SolutionInfo* p_si, int32_t shrinking)
 	{
 		this->si = p_si;
-		Solver::Solve(p_l,p_Q,p,p_y,p_alpha,p_Cp,p_Cn,p_eps,p_si,shrinking);
+		Solver::Solve(p_l,p_Q,p_p,p_y,p_alpha,p_Cp,p_Cn,p_eps,p_si,shrinking);
 	}
 private:
 	SolutionInfo *si;
@@ -995,7 +991,7 @@ int32_t Solver_NU::select_working_set(
 		}
 	}
 
-	gap=max(Gmaxp+Gmaxp2,Gmaxn+Gmaxn2);
+	gap=CMath::max(Gmaxp+Gmaxp2,Gmaxn+Gmaxn2);
 	if(gap < eps)
 		return 1;
 
@@ -1059,7 +1055,7 @@ void Solver_NU::do_shrinking()
 		}
 	}
 
-	if(unshrink == false && max(Gmax1+Gmax2,Gmax3+Gmax4) <= eps*10) 
+	if(unshrink == false && CMath::max(Gmax1+Gmax2,Gmax3+Gmax4) <= eps*10) 
 	{
 		unshrink = true;
 		reconstruct_gradient();
@@ -1094,9 +1090,9 @@ float64_t Solver_NU::calculate_rho()
 		if(y[i]==+1)
 		{
 			if(is_upper_bound(i))
-				lb1 = max(lb1,G[i]);
+				lb1 = CMath::max(lb1,G[i]);
 			else if(is_lower_bound(i))
-				ub1 = min(ub1,G[i]);
+				ub1 = CMath::min(ub1,G[i]);
 			else
 			{
 				++nr_free1;
@@ -1106,9 +1102,9 @@ float64_t Solver_NU::calculate_rho()
 		else
 		{
 			if(is_upper_bound(i))
-				lb2 = max(lb2,G[i]);
+				lb2 = CMath::max(lb2,G[i]);
 			else if(is_lower_bound(i))
-				ub2 = min(ub2,G[i]);
+				ub2 = CMath::min(ub2,G[i]);
 			else
 			{
 				++nr_free2;
@@ -1169,8 +1165,8 @@ public:
 	{
 		cache->swap_index(i,j);
 		LibSVMKernel::swap_index(i,j);
-		swap(y[i],y[j]);
-		swap(QD[i],QD[j]);
+		CMath::swap(y[i],y[j]);
+		CMath::swap(QD[i],QD[j]);
 	}
 
 	~SVC_Q()
@@ -1218,7 +1214,7 @@ public:
 	{
 		cache->swap_index(i,j);
 		LibSVMKernel::swap_index(i,j);
-		swap(QD[i],QD[j]);
+		CMath::swap(QD[i],QD[j]);
 	}
 
 	~ONE_CLASS_Q()
@@ -1258,9 +1254,9 @@ public:
 
 	void swap_index(int32_t i, int32_t j) const
 	{
-		swap(sign[i],sign[j]);
-		swap(index[i],index[j]);
-		swap(QD[i],QD[j]);
+		CMath::swap(sign[i],sign[j]);
+		CMath::swap(index[i],index[j]);
+		CMath::swap(QD[i],QD[j]);
 	}
 	
 	Qfloat *get_Q(int32_t i, int32_t len) const
@@ -1367,12 +1363,12 @@ static void solve_nu_svc(
 	for(i=0;i<l;i++)
 		if(y[i] == +1)
 		{
-			alpha[i] = min(1.0,sum_pos);
+			alpha[i] = CMath::min(1.0,sum_pos);
 			sum_pos -= alpha[i];
 		}
 		else
 		{
-			alpha[i] = min(1.0,sum_neg);
+			alpha[i] = CMath::min(1.0,sum_neg);
 			sum_neg -= alpha[i];
 		}
 
@@ -1484,7 +1480,7 @@ static void solve_nu_svr(
 	float64_t sum = C * param->nu * l / 2;
 	for(i=0;i<l;i++)
 	{
-		alpha2[i] = alpha2[i+l] = min(sum,C);
+		alpha2[i] = alpha2[i+l] = CMath::min(sum,C);
 		sum -= alpha2[i];
 
 		linear_term[i] = - prob->y[i];
@@ -1974,7 +1970,7 @@ const char *svm_check_parameter(
 			for(int32_t j=i+1;j<nr_class;j++)
 			{
 				int32_t n2 = count[j];
-				if(param->nu*(n1+n2)/2 > min(n1,n2))
+				if(param->nu*(n1+n2)/2 > CMath::min(n1,n2))
 				{
 					free(label);
 					free(count);
