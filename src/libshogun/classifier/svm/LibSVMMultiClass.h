@@ -16,13 +16,18 @@
 #include "classifier/svm/SVM_libsvm.h"
 
 #include <stdio.h>
+enum LIBSVM_SOLVER_TYPE
+{
+	LIBSVM_C_SVC = 1,
+	LIBSVM_NU_SVC = 2
+};
 
 /** @brief class LibSVMMultiClass */
 class CLibSVMMultiClass : public CMultiClassSVM
 {
 	public:
 		/** default constructor */
-		CLibSVMMultiClass();
+		CLibSVMMultiClass(LIBSVM_SOLVER_TYPE st=LIBSVM_C_SVC);
 
 		/** constructor
 		 *
@@ -56,6 +61,9 @@ class CLibSVMMultiClass : public CMultiClassSVM
 
 		/** SVM model */
 		struct svm_model* model;
+
+		/** solver type */
+		LIBSVM_SOLVER_TYPE solver_type;
 };
 #endif
 

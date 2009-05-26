@@ -115,6 +115,12 @@ bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
 		classifier = new CLibSVMMultiClass();
 		SG_INFO("created SVMlibsvm object for multiclass\n");
 	}
+	else if (strcmp(name,"LIBSVM_NUMULTICLASS")==0)
+	{
+		SG_UNREF(classifier);
+		classifier= new CLibSVMMultiClass(LIBSVM_NU_SVC);
+		SG_INFO("created SVMlibsvm object for multiclass\n") ;
+	}
 	else if (strcmp(name,"LIBSVM_NU")==0)
 	{
 		SG_UNREF(classifier);

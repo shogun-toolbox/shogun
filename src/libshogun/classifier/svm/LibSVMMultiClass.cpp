@@ -11,13 +11,13 @@
 #include "classifier/svm/LibSVMMultiClass.h"
 #include "lib/io.h"
 
-CLibSVMMultiClass::CLibSVMMultiClass()
-: CMultiClassSVM(ONE_VS_ONE), model(NULL)
+CLibSVMMultiClass::CLibSVMMultiClass(LIBSVM_SOLVER_TYPE st)
+: CMultiClassSVM(ONE_VS_ONE), model(NULL), solver_type(st)
 {
 }
 
 CLibSVMMultiClass::CLibSVMMultiClass(float64_t C, CKernel* k, CLabels* lab)
-: CMultiClassSVM(ONE_VS_ONE, C, k, lab), model(NULL)
+: CMultiClassSVM(ONE_VS_ONE, C, k, lab), model(NULL), solver_type(LIBSVM_C_SVC)
 {
 }
 
@@ -49,12 +49,12 @@ bool CLibSVMMultiClass::train()
 
 	ASSERT(kernel);
 
-	param.svm_type=C_SVC; // C SVM
+	param.svm_type=solver_type; // C SVM
 	param.kernel_type = LINEAR;
 	param.degree = 3;
 	param.gamma = 0;	// 1/k
 	param.coef0 = 0;
-	param.nu = 0.5;
+	param.nu = get_nu(); // Nu
 	param.kernel=kernel;
 	param.cache_size = kernel->get_cache_size();
 	param.C = get_C1();
