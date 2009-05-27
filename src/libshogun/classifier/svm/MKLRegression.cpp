@@ -1,3 +1,22 @@
+#include "classifier/svm/MKLRegression.h"
+#include "kernel/CombinedKernel.h"
+
+CMKLRegression::CMKLRegression(CSVM* s) : CMKL(s)
+{
+}
+
+CMKLRegression::~CMKLRegression()
+{
+}
+
+void CMKLRegression::perform_mkl_step(float64_t* alpha, float64_t* old_alpha, int32_t num_alpha,
+		float64_t* beta, float64_t* old_beta, int32_t num_beta, void* aux)
+{
+}
+
+void CMKLRegression::set_callback_function()
+{
+}
 
 /*
 void CSVRLight::update_linear_component_mkl(

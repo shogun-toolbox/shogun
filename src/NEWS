@@ -1,10 +1,15 @@
-2009-XX-XX Soeren Sonnenburg <sonne@debian.org>
+2009-08-XX Soeren Sonnenburg <sonne@debian.org>
 
 	* SHOGUN Release version 0.7.4 (libshogun 4.0, libshogunui 2.0)
-	* This release contains several cleanups and bugfixes:
+	* This release contains several cleanups, features and bugfixes:
 	* Features:
+		- Implements new multiclass svm formulation.
+		- MKL wrapper and chunking algorithm for various SVM solvers.
 	* Bugfixes:
+		- Correct q-norm MKL for Newton.
 	* Cleanup and API Changes:
+		- Rename svm_one_class_nu to svm_nu.
+
 
 2009-05-02 Soeren Sonnenburg <sonne@debian.org>
 

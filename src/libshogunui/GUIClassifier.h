@@ -69,7 +69,7 @@ class CGUIClassifier : public CSGObject
 		bool set_svm_qpsize(int32_t qpsize);
 		bool set_svm_max_qpsize(int32_t max_qpsize);
 		bool set_svm_shrinking_enabled(bool enabled);
-		bool set_svm_one_class_nu(float64_t nu);
+		bool set_svm_nu(float64_t nu);
 		bool set_svm_batch_computation_enabled(bool enabled);
 		bool set_do_auc_maximization(bool do_auc);
 		bool set_svm_linadd_enabled(bool enabled);

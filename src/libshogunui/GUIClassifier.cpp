@@ -748,7 +748,7 @@ bool CGUIClassifier::set_svr_tube_epsilon(float64_t tube_epsilon)
 	return true;
 }
 
-bool CGUIClassifier::set_svm_one_class_nu(float64_t nu)
+bool CGUIClassifier::set_svm_nu(float64_t nu)
 {
 	if (nu<0 || nu>1)
 		nu=0.5;
@@ -970,6 +970,8 @@ bool CGUIClassifier::get_trained_classifier(
 
 	switch (classifier->get_classifier_type())
 	{
+		case CT_GNPPSVM:
+		case CT_LIBSVMMULTICLASS:
 		case CT_MKLCLASSIFICATION:
 		case CT_LIGHT:
 		case CT_LIBSVM:
@@ -977,10 +979,8 @@ bool CGUIClassifier::get_trained_classifier(
 		case CT_GPBT:
 		case CT_CPLEXSVM:
 		case CT_GMNPSVM:
-		case CT_GNPPSVM:
 		case CT_KERNELPERCEPTRON:
 		case CT_LIBSVR:
-		case CT_LIBSVMMULTICLASS:
 		case CT_LIBSVMONECLASS:
 		case CT_SVRLIGHT:
 		case CT_KRR:
@@ -1019,7 +1019,6 @@ int32_t CGUIClassifier::get_num_svms()
 	ASSERT(classifier);
 	return ((CMultiClassSVM*) classifier)->get_num_svms();
 }
-
 
 bool CGUIClassifier::get_svm(
 	float64_t* &weights, int32_t& rows, int32_t& cols, float64_t*& bias,

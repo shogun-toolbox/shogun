@@ -1,6 +1,15 @@
 #include "classifier/svm/MKLClassification.h"
 #include "kernel/CombinedKernel.h"
 
+
+CMKLClassification::CMKLClassification(CSVM* s) : CMKL(s)
+{
+}
+
+CMKLClassification::~CMKLClassification()
+{
+}
+
 struct S_THREAD_PARAM 
 {
 	float64_t * lin ;
@@ -313,6 +322,10 @@ void CMKLClassification::perform_mkl_step(float64_t* alpha, float64_t* old_alpha
 		SG_DEBUG("%i. OBJ: %f  RHO: %f  wgap=%f (activeset=%i; active rows=%i/%i; inner_iters=%d)\n", count, mkl_objective,rho,w_gap,jj,num_active_rows,num_rows-start_row, inner_iters);
 	}
 	mkl_iterations++;
+}
+
+void CMKLClassification::set_callback_function()
+{
 }
 
 float64_t CMKLClassification::compute_optimal_betas_analytically(float64_t* beta,

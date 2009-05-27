@@ -247,7 +247,7 @@ class CSGInterface : public CSGObject
 		/** set SVR tube epsilon */
 		bool cmd_set_svr_tube_epsilon();
 		/** set SVM OneClass nu */
-		bool cmd_set_svm_one_class_nu();
+		bool cmd_set_svm_nu();
 		/** set SVM MKL parameters */
 		bool cmd_set_svm_mkl_parameters();
 		/** set max train time */

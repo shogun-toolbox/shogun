@@ -174,7 +174,7 @@
 #define N_SVM_EPSILON					"svm_epsilon"
 #define N_SVM_MAX_TRAIN_TIME			"svm_max_train_time"
 #define N_SVR_TUBE_EPSILON				"svr_tube_epsilon"
-#define N_SVM_ONE_CLASS_NU				"svm_one_class_nu"
+#define N_SVM_NU						"svm_nu"
 #define N_SVM_USE_BIAS					"svm_use_bias"
 #define N_DO_AUC_MAXIMIZATION			"do_auc_maximization"
 #define N_ADD_STATES					"add_states"

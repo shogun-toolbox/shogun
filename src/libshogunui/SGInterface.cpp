@@ -484,9 +484,9 @@ CSGInterfaceMethod sg_methods[]=
 		USAGE_I(N_SVR_TUBE_EPSILON, "tube_epsilon")
 	},
 	{
-		N_SVM_ONE_CLASS_NU,
-		(&CSGInterface::cmd_set_svm_one_class_nu),
-		USAGE_I(N_SVM_ONE_CLASS_NU, "nu")
+		N_SVM_NU,
+		(&CSGInterface::cmd_set_svm_nu),
+		USAGE_I(N_SVM_NU, "nu")
 	},
 	{
 		N_MKL_PARAMETERS,
@@ -4757,14 +4757,14 @@ bool CSGInterface::cmd_set_svr_tube_epsilon()
 	return ui_classifier->set_svr_tube_epsilon(tube_epsilon);
 }
 
-bool CSGInterface::cmd_set_svm_one_class_nu()
+bool CSGInterface::cmd_set_svm_nu()
 {
 	if (m_nrhs!=2 || !create_return_values(0))
 		return false;
 
 	float64_t nu=get_real_from_real_or_str();
 
-	return ui_classifier->set_svm_one_class_nu(nu);
+	return ui_classifier->set_svm_nu(nu);
 }
 
 bool CSGInterface::cmd_set_svm_mkl_parameters()

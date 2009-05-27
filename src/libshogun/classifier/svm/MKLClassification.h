@@ -20,7 +20,7 @@ class CMKLClassification : public CMKL
 		 *
 		 * @param s SVM to use as constraint generator in MKL SILP
 		 */
-		CMKLClassification(CSVM* s=NULL) : CMKL(s) { }
+		CMKLClassification(CSVM* s=NULL);
 
 		/** Destructor
 		 */
@@ -46,6 +46,8 @@ class CMKLClassification : public CMKL
 		//virtual void perform_mkl_step(float64_t* beta, float64_t* old_beta, int num_kernels,
 		//		int32_t* label, int32_t* active2dnum,
 		//		float64_t* a, float64_t* lin, float64_t* sumw, int32_t& inner_iters)=0;
+
+		virtual void set_callback_function();
 
 	protected:
 		/** helper for update linear component MKL linadd

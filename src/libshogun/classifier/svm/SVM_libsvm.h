@@ -58,7 +58,7 @@ struct svm_problem
 	struct svm_node **x;
 };
 
-enum { C_SVC=1, NU_SVC=2, ONE_CLASS=3, EPSILON_SVR=4, NU_SVR=5 };	/* svm_type */
+enum { C_SVC=1, NU_SVC=2, NU_MULTICLASS_SVC=3, ONE_CLASS=4, EPSILON_SVR=5, NU_SVR=6 };	/* svm_type */
 enum { LINEAR, POLY, RBF, SIGMOID, PRECOMPUTED }; /* kernel_type */
 
 /** SVM parameter */
