@@ -2035,94 +2035,95 @@ float64_t CSVMLight::compute_optimal_betas_newton(float64_t* beta,
 
 
 float64_t CSVMLight::compute_optimal_betas_newton(float64_t* beta,
-		float64_t* old_beta, int32_t num_kernels,
+		const float64_t* old_beta, int32_t num_kernels,
 		const float64_t* sumw, float64_t suma,
     float64_t mkl_objective)
 {
   SG_DEBUG("MKL via NEWTON\n");
 
+  const double epsBeta = 1e-12;
+  const double epsGamma = 1e-12;
+  const int nofNewtonSteps = 3;
+  const double hessRidge = 1e-9;
   const float64_t r = mkl_norm / ( mkl_norm - 1.0 );
+  float64_t* newtDir = new float64_t[ num_kernels ];
   float64_t Z;
   float64_t obj;
   float64_t gamma;
   int32_t p;
+  int i;
 
-  //SG_PRINT( "OBJ_old = %f\n", mkl_objective );
-
+  // === init beta, compute gamma
   gamma = 0.0;
   for( p=0; p<num_kernels; ++p ) {
-    if( !( old_beta[p] >= 0 ) ) {
-      SG_WARNING( "old_beta[%d] = %e;  set to 1e-9.  \n", p, sumw[p] );
-      old_beta[p] = 1e-9;
+    beta[p] = old_beta[p];
+    if( !( beta[p] >= epsBeta ) ) {
+      SG_WARNING( "old_beta[%d] = %e;  set to %e.  \n", p, beta[p], epsBeta );
+      beta[p] = epsBeta;
     }
-    ASSERT( old_beta[p] >= 0 );
+    ASSERT( 0.0 <= beta[p] && beta[p] <= 1.0 );
     if( !( sumw[p] >= 0 ) ) {
-      SG_WARNING( "sumw[%d] = %e;  set to 0.  \n", p, sumw[p] );
+      SG_WARNING( "sumw[%d] = %e;  treated as 0.  \n", p, sumw[p] );
+      // should better recompute sumw[] !!!
     } else {
       ASSERT( sumw[p] >= 0 );
-      gamma += CMath::pow( sumw[p]*old_beta[p]*old_beta[p], r );
+      gamma += CMath::pow( sumw[p]*beta[p]*beta[p], r );
     }
   }
-  gamma = - CMath::pow( gamma, 1.0/r ) / mkl_norm;
-  ASSERT( -gamma > -1e-6 );
-  //ASSERT( -gamma >= 0 );
-  if( !( -gamma > 0.0 ) ) {
-    SG_WARNING( "bad gamma: %e;  set to -1e-9.  \n", -gamma );
-    gamma = -1e-9;
+  gamma = CMath::pow( gamma, 1.0/r ) / mkl_norm;
+  ASSERT( gamma > -1e-9 );
+  if( !( gamma > epsGamma ) ) {
+    SG_WARNING( "bad gamma: %e;  set to %e.  \n", gamma, epsGamma );
+    // should better recompute sumw[] !!!
+    gamma = epsGamma;
   }
+  ASSERT( gamma >= epsGamma );
+  gamma = -gamma;
 
-  const int nofNewtonSteps = 3;
-  int i;
+  // === perform Newton steps
   if( nofNewtonSteps > 1 ) {
-    //SG_PRINT( "performing %d Newton steps.\n", nofNewtonSteps );
+    //SG_DEBUG( "performing %d Newton steps.\n", nofNewtonSteps );
   }
   for( i = 0; i < nofNewtonSteps; ++i ) {
 
-    if( i != 0 ) {
-      for( p=0; p<num_kernels; ++p ) {
-        old_beta[p] = beta[p];
-      }
-    }
-
-    // compute Newton step (stored in "beta") (Hessian is diagonal)
+    // --- compute Newton step (Hessian is diagonal)
     const float64_t gqq1 = mkl_norm * (mkl_norm-1.0) * gamma;
     Z = 0.0;
     for( p=0; p<num_kernels; ++p ) {
-      if ( 0.0 > old_beta[p] || old_beta[p] > 1.0 ) {
-        CMath::display_vector( old_beta, num_kernels, "old_beta" );
-        CMath::display_vector( beta, num_kernels, "beta" );
-        SG_ERROR("old_beta out of range");
-      }
+      ASSERT( 0.0 <= beta[p] && beta[p] <= 1.0 );
       const float halfw2p = ( sumw[p] >= 0.0 ) ? sumw[p] : 0.0;
-      const float64_t t1 = halfw2p*old_beta[p] - mkl_norm*gamma*CMath::pow(old_beta[p],mkl_norm);
-      const float64_t t2 = 2.0*halfw2p + gqq1*CMath::pow(old_beta[p],mkl_norm-1.0);
-      //beta[p] = ( t1 == 0.0 ) ? 0.0 : ( t1 / t2 );
-      beta[p] = t1 / ( t1 + t2*old_beta[p] );
-      ASSERT( beta[p] == beta[p] );
-      Z += beta[p] * beta[p];
+      const float64_t t1 = halfw2p*beta[p] - mkl_norm*gamma*CMath::pow(beta[p],mkl_norm);
+      const float64_t t2 = 2.0*halfw2p + gqq1*CMath::pow(beta[p],mkl_norm-1.0);
+      //newtDir[p] = ( t1 == 0.0 ) ? 0.0 : ( t1 / t2 );
+      newtDir[p] = t1 / ( t1 + t2*beta[p] + hessRidge );
+      ASSERT( newtDir[p] == newtDir[p] );
+      Z += newtDir[p] * newtDir[p];
     }
-    //CMath::display_vector( beta, num_kernels, "newton   " );
+    //CMath::display_vector( newtDir, num_kernels, "newton direction  " );
     //SG_PRINT( "Newton step size = %e\n", Z );
 
-    // perform Newton step
+    // --- perform Newton step
     Z = 0.0;
     for( p=0; p<num_kernels; ++p ) {
-      //beta[p] = old_beta[p] - beta[p];
-      beta[p] = old_beta[p] * CMath::exp( -beta[p] );
-      if( !( beta[p] >= 1e-10 ) ) {
-        beta[p] = 1e-10;
+      //beta[p] = beta[p] - newtDir[p];
+      beta[p] = beta[p] * CMath::exp( -newtDir[p] );
+      if( !( beta[p] >= epsBeta ) ) {
+        beta[p] = epsBeta;
       }
       Z += CMath::pow( beta[p], mkl_norm );
     }
+
+    // --- noramlize new beta (wrt p-norm)
     Z = CMath::pow( Z, -1.0/mkl_norm );
     for( p=0; p<num_kernels; ++p ) {
       beta[p] *= Z;
     }
 
   }
+  delete[] newtDir;
+  //CMath::scale_vector( 1.0/CMath::qnorm(beta,num_kernels,mkl_norm), beta, num_kernels );
 
-  CMath::scale_vector(1/CMath::qnorm(beta, num_kernels, mkl_norm), beta, num_kernels);
-
+  // === return new objective
   obj = -suma;
   for( p=0; p<num_kernels; ++p ) {
     obj += beta[p] * (sumw[p]);
