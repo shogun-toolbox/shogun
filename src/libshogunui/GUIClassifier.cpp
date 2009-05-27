@@ -340,6 +340,16 @@ bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
 		((CSVMOcas*) classifier)->set_bias_enabled(svm_use_bias);
 		SG_INFO("created SVM Ocas(BMRM/PERF) object\n") ;
 	}
+	else if (strcmp(name,"MKL_CLASSIFICATION")==0)
+	{
+		SG_UNREF(classifier);
+		classifier= new CMKLClassification();
+	}
+	else if (strcmp(name,"MKL_REGRESSION")==0)
+	{
+		SG_UNREF(classifier);
+		classifier= new CMKLRegression();
+	}
 	else
 	{
 		SG_ERROR("Unknown classifier %s.\n", name);
@@ -883,6 +893,7 @@ CLabels* CGUIClassifier::classify(CLabels* output)
 
 	switch (classifier->get_classifier_type())
 	{
+		case CT_MKLCLASSIFICATION:
 		case CT_LIGHT:
 		case CT_LIBSVM:
 		case CT_LIBSVMNU:
@@ -959,6 +970,7 @@ bool CGUIClassifier::get_trained_classifier(
 
 	switch (classifier->get_classifier_type())
 	{
+		case CT_MKLCLASSIFICATION:
 		case CT_LIGHT:
 		case CT_LIBSVM:
 		case CT_MPD:

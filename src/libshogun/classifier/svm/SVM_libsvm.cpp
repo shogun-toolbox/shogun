@@ -1394,6 +1394,61 @@ static void solve_nu_svc(
 	delete[] zeros;
 }
 
+static void solve_nu_multiclass_svc(
+	const svm_problem *prob, const svm_parameter *param,
+	float64_t *alpha, Solver::SolutionInfo* si)
+{
+	int32_t i;
+	int32_t l = prob->l;
+	float64_t nu = param->nu;
+
+	schar *y = new schar[l];
+
+	for(i=0;i<l;i++)
+		if(prob->y[i]>0)
+			y[i] = +1;
+		else
+			y[i] = -1;
+
+	float64_t sum_pos = nu*l/2;
+	float64_t sum_neg = nu*l/2;
+
+	for(i=0;i<l;i++)
+		if(y[i] == +1)
+		{
+			alpha[i] = CMath::min(1.0,sum_pos);
+			sum_pos -= alpha[i];
+		}
+		else
+		{
+			alpha[i] = CMath::min(1.0,sum_neg);
+			sum_neg -= alpha[i];
+		}
+
+	float64_t *zeros = new float64_t[l];
+
+	for(i=0;i<l;i++)
+		zeros[i] = 0;
+
+	Solver_NU s;
+	s.Solve(l, SVC_Q(*prob,*param,y), zeros, y,
+		alpha, 1.0, 1.0, param->eps, si,  param->shrinking);
+	float64_t r = si->r;
+
+	SG_SINFO("C = %f\n",1/r);
+
+	for(i=0;i<l;i++)
+		alpha[i] *= y[i]/r;
+
+	si->rho /= r;
+	si->obj /= (r*r);
+	si->upper_bound_p = 1/r;
+	si->upper_bound_n = 1/r;
+
+	delete[] y;
+	delete[] zeros;
+}
+
 static void solve_one_class(
 	const svm_problem *prob, const svm_parameter *param,
 	float64_t *alpha, Solver::SolutionInfo* si)
@@ -1526,6 +1581,9 @@ decision_function svm_train_one(
 		case NU_SVC:
 			solve_nu_svc(prob,param,alpha,&si);
 			break;
+		case NU_MULTICLASS_SVC:
+			solve_nu_multiclass_svc(prob,param,alpha,&si);
+			break;
 		case ONE_CLASS:
 			solve_one_class(prob,param,alpha,&si);
 			break;
@@ -1654,6 +1712,35 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 		model->nSV = NULL;
 		model->sv_coef = Malloc(float64_t *,1);
 		decision_function f = svm_train_one(prob,param,0,0);
+		model->rho = Malloc(float64_t, 1);
+		model->rho[0] = f.rho;
+		model->objective = f.objective;
+
+		int32_t nSV = 0;
+		int32_t i;
+		for(i=0;i<prob->l;i++)
+			if(fabs(f.alpha[i]) > 0) ++nSV;
+		model->l = nSV;
+		model->SV = Malloc(svm_node *,nSV);
+		model->sv_coef[0] = Malloc(float64_t, nSV);
+		int32_t j = 0;
+		for(i=0;i<prob->l;i++)
+			if(fabs(f.alpha[i]) > 0)
+			{
+				model->SV[j] = prob->x[i];
+				model->sv_coef[0][j] = f.alpha[i];
+				++j;
+			}		
+
+		free(f.alpha);
+	}
+	else if(param->svm_type == NU_MULTICLASS_SVC)
+	{
+		model->nr_class = 2;
+		model->label = NULL;
+		model->nSV = NULL;
+		model->sv_coef = Malloc(float64_t *,1);
+		decision_function f = svm_train_one(prob,param,1,1);
 		model->rho = Malloc(float64_t, 1);
 		model->rho[0] = f.rho;
 		model->objective = f.objective;
