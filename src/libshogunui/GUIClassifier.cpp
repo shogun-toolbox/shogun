@@ -902,7 +902,7 @@ CLabels* CGUIClassifier::classify(CLabels* output)
 		case CT_MKLCLASSIFICATION:
 		case CT_LIGHT:
 		case CT_LIBSVM:
-		case CT_LIBSVMNU:
+		case CT_MCSVM:
 		case CT_MPD:
 		case CT_GPBT:
 		case CT_CPLEXSVM:

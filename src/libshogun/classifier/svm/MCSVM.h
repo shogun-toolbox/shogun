@@ -41,7 +41,7 @@ class CMCSVM : public CMultiClassSVM
 		 *
 		 * @return classifier type LIBSVM
 		 */
-		virtual inline EClassifierType get_classifier_type() { return CT_LIBSVMNU; }
+		virtual inline EClassifierType get_classifier_type() { return CT_MCSVM; }
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "MCSVM"; }

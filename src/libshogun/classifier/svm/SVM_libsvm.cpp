@@ -603,6 +603,18 @@ void Solver::Solve(
 						G_bar[k] += C_j * Q_j[k];
 			}
 		}
+	// calculate objective value
+	{
+		float64_t v = 0;
+		for(i=0;i<l;i++)
+			v += alpha[i] * (G[i] + p[i]);
+
+		p_si->obj = v/2;
+
+		float64_t primal=0;
+		float64_t gap=100000;
+		SG_SPRINT("dual obj=%f primal obf=%f gap=%f\n", v/2, primal, gap);
+	}
 	}
 
 	// calculate rho
@@ -1289,7 +1301,7 @@ void Solver_NUMC::do_shrinking()
 
 float64_t Solver_NUMC::calculate_rho()
 {
-	SG_SERROR("to be implemented...\n");
+	SG_SWARNING("calculate_rho to be implemented...\n");
 	return 0;
 }
 
@@ -1662,17 +1674,6 @@ static void solve_nu_multiclass_svc(
 
 	s.Solve(l, SVC_QMC(*prob,*param,y, nr_class, ((float64_t) nr_class)/CMath::sq(nu*l)), zeros, y,
 		alpha, 1.0, 1.0, param->eps, si,  param->shrinking);
-	float64_t r = si->r;
-
-	SG_SINFO("C = %f\n",1/r);
-
-	for(i=0;i<l;i++)
-		alpha[i] *= y[i]/r;
-
-	si->rho /= r;
-	si->obj /= (r*r);
-	si->upper_bound_p = 1/r;
-	si->upper_bound_n = 1/r;
 
 	delete[] y;
 	delete[] zeros;
@@ -2198,7 +2199,8 @@ const char *svm_check_parameter(
 	   svm_type != NU_SVC &&
 	   svm_type != ONE_CLASS &&
 	   svm_type != EPSILON_SVR &&
-	   svm_type != NU_SVR)
+	   svm_type != NU_SVR &&
+	   svm_type != NU_MULTICLASS_SVC)
 		return "unknown svm type";
 
 	// kernel_type, degree
