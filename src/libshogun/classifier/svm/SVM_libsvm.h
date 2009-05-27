@@ -84,6 +84,8 @@ struct svm_parameter
 	float64_t eps;
 	/** for C_SVC, EPSILON_SVR and NU_SVR */
 	float64_t C;
+	/** number of classes */
+	int32_t nr_class;
 	/** for C_SVC */
 	int32_t nr_weight;
 	/** for C_SVC */

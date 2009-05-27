@@ -1127,6 +1127,174 @@ float64_t Solver_NU::calculate_rho()
 }
 
 //
+// Solver for nu-svm classification and regression
+//
+// additional constraint: e^T \alpha = constant
+//
+class Solver_NUMC : public Solver
+{
+public:
+	Solver_NUMC(int32_t n_class)
+	{
+		nr_class=n_class;
+	}
+
+	void Solve(
+		int32_t p_l, const QMatrix& p_Q, const float64_t *p_p,
+		const schar *p_y, float64_t* p_alpha, float64_t p_Cp, float64_t p_Cn,
+		float64_t p_eps, SolutionInfo* p_si, int32_t shrinking)
+	{
+		this->si = p_si;
+		Solver::Solve(p_l,p_Q,p_p,p_y,p_alpha,p_Cp,p_Cn,p_eps,p_si,shrinking);
+	}
+private:
+	SolutionInfo *si;
+	int32_t select_working_set(int32_t &i, int32_t &j, float64_t &gap);
+	float64_t calculate_rho();
+	bool be_shrunk(
+		int32_t i, float64_t Gmax1, float64_t Gmax2, float64_t Gmax3,
+		float64_t Gmax4);
+	void do_shrinking();
+
+private:
+	int32_t nr_class;
+};
+
+// return 1 if already optimal, return 0 otherwise
+int32_t Solver_NUMC::select_working_set(
+	int32_t &out_i, int32_t &out_j, float64_t &gap)
+{
+	// return i,j such that y_i = y_j and
+	// i: maximizes -y_i * grad(f)_i, i in I_up(\alpha)
+	// j: minimizes the decrease of obj value
+	//    (if quadratic coefficient <= 0, replace it with tau)
+	//    -y_j*grad(f)_j < -y_i*grad(f)_i, j in I_low(\alpha)
+
+	schar *tmp_y;
+	clone(tmp_y,y,active_size);
+
+
+	float64_t best_gap=0;
+	int32_t best_out_i=-1;
+	int32_t best_out_j=-1;
+
+	for (int32_t c=0; c<nr_class; c++)
+	{
+		for (int32_t i=0; i<active_size; i++)
+			tmp_y[i] = (y[i] == c) ? 1 : 0;
+
+		float64_t Gmaxp = -INF;
+		float64_t Gmaxp2 = -INF;
+		int32_t Gmaxp_idx = -1;
+
+		float64_t Gmaxn = -INF;
+		float64_t Gmaxn2 = -INF;
+		int32_t Gmaxn_idx = -1;
+
+		int32_t Gmin_idx = -1;
+		float64_t obj_diff_min = INF;
+
+		for(int32_t t=0;t<active_size;t++)
+			if(tmp_y[t]==+1)
+			{
+				if(!is_upper_bound(t))
+					if(-G[t] >= Gmaxp)
+					{
+						Gmaxp = -G[t];
+						Gmaxp_idx = t;
+					}
+			}
+
+		int32_t ip = Gmaxp_idx;
+		int32_t in = Gmaxn_idx;
+		const Qfloat *Q_ip = NULL;
+		const Qfloat *Q_in = NULL;
+		if(ip != -1) // NULL Q_ip not accessed: Gmaxp=-INF if ip=-1
+			Q_ip = Q->get_Q(ip,active_size);
+		if(in != -1)
+			Q_in = Q->get_Q(in,active_size);
+
+		for(int32_t j=0;j<active_size;j++)
+		{
+			if(tmp_y[j]==+1)
+			{
+				if (!is_lower_bound(j))	
+				{
+					float64_t grad_diff=Gmaxp+G[j];
+					if (G[j] >= Gmaxp2)
+						Gmaxp2 = G[j];
+					if (grad_diff > 0)
+					{
+						float64_t obj_diff; 
+						float64_t quad_coef = Q_ip[ip]+QD[j]-2*Q_ip[j];
+						if (quad_coef > 0)
+							obj_diff = -(grad_diff*grad_diff)/quad_coef;
+						else
+							obj_diff = -(grad_diff*grad_diff)/TAU;
+
+						if (obj_diff <= obj_diff_min)
+						{
+							Gmin_idx=j;
+							obj_diff_min = obj_diff;
+						}
+					}
+				}
+			}
+		}
+		gap=CMath::max(Gmaxp+Gmaxp2,Gmaxn+Gmaxn2);
+
+		if (gap>=best_gap && Gmin_idx>=0 && Gmin_idx<active_size)
+		{
+			if (tmp_y[Gmin_idx] == +1)
+				out_i = Gmaxp_idx;
+			else
+				out_i = Gmaxn_idx;
+			out_j = Gmin_idx;
+
+			best_gap=gap;
+			best_out_i=out_i;
+			best_out_j=out_j;
+		}
+	}
+
+	gap=best_gap;
+	out_i=best_out_i;
+	out_j=best_out_j;
+
+	SG_SPRINT("i=%d j=%d best_gap=%f y_i=%f y_j=%f\n", out_i, out_j, gap, y[out_i], y[out_j]);
+
+
+	if(gap < eps)
+	{
+		delete[] tmp_y;
+		return 1;
+	}
+
+	delete[] tmp_y;
+	return 0;
+}
+
+bool Solver_NUMC::be_shrunk(
+	int32_t i, float64_t Gmax1, float64_t Gmax2, float64_t Gmax3,
+	float64_t Gmax4)
+{
+	SG_SERROR("to be implemented...\n");
+	return false;
+}
+
+void Solver_NUMC::do_shrinking()
+{
+	SG_SERROR("to be implemented...\n");
+}
+
+float64_t Solver_NUMC::calculate_rho()
+{
+	SG_SERROR("to be implemented...\n");
+	return 0;
+}
+
+
+//
 // Q matrices for various formulations
 //
 class SVC_Q: public LibSVMKernel
@@ -1174,6 +1342,67 @@ public:
 		delete[] QD;
 	}
 private:
+	schar *y;
+	Cache *cache;
+	Qfloat *QD;
+};
+
+class SVC_QMC: public LibSVMKernel
+{ 
+public:
+	SVC_QMC(const svm_problem& prob, const svm_parameter& param, const schar *y_, int32_t n_class, float64_t fac)
+	:LibSVMKernel(prob.l, prob.x, param)
+	{
+		nr_class=n_class;
+		factor=fac;
+		clone(y,y_,prob.l);
+		cache = new Cache(prob.l,(int64_t)(param.cache_size*(1l<<20)));
+		QD = new Qfloat[prob.l];
+		for(int32_t i=0;i<prob.l;i++)
+		{
+			QD[i]= factor*(nr_class-1)*kernel_function(i,i);
+		}
+	}
+	
+	Qfloat *get_Q(int32_t i, int32_t len) const
+	{
+		Qfloat *data;
+		int32_t start;
+		if((start = cache->get_data(i,&data,len)) < len)
+		{
+			for(int32_t j=start;j<len;j++)
+			{
+				if (y[i]==y[j])
+					data[j] = factor*(nr_class-1)*kernel_function(i,j);
+				else
+					data[j] = -factor*kernel_function(i,j);
+			}
+		}
+		return data;
+	}
+
+	Qfloat *get_QD() const
+	{
+		return QD;
+	}
+
+	void swap_index(int32_t i, int32_t j) const
+	{
+		cache->swap_index(i,j);
+		LibSVMKernel::swap_index(i,j);
+		CMath::swap(y[i],y[j]);
+		CMath::swap(QD[i],QD[j]);
+	}
+
+	~SVC_QMC()
+	{
+		delete[] y;
+		delete cache;
+		delete[] QD;
+	}
+private:
+	float64_t factor;
+	float64_t nr_class;
 	schar *y;
 	Cache *cache;
 	Qfloat *QD;
@@ -1405,33 +1634,33 @@ static void solve_nu_multiclass_svc(
 	schar *y = new schar[l];
 
 	for(i=0;i<l;i++)
-		if(prob->y[i]>0)
-			y[i] = +1;
-		else
-			y[i] = -1;
+	{
+		alpha[i] = 0;
+		y[i]=prob->y[i];
+	}
 
-	float64_t sum_pos = nu*l/2;
-	float64_t sum_neg = nu*l/2;
+	int32_t nr_class=param->nr_class;
+	float64_t* sum_class = new float64_t[nr_class];
+
+	for (int32_t j=0; j<nr_class; j++)
+		sum_class[j] = nu*l/nr_class;
 
 	for(i=0;i<l;i++)
-		if(y[i] == +1)
-		{
-			alpha[i] = CMath::min(1.0,sum_pos);
-			sum_pos -= alpha[i];
-		}
-		else
-		{
-			alpha[i] = CMath::min(1.0,sum_neg);
-			sum_neg -= alpha[i];
-		}
+	{
+		alpha[i] = CMath::min(1.0,sum_class[int32_t(y[i])]);
+		sum_class[int32_t(y[i])] -= alpha[i];
+	}
+	delete[] sum_class;
+
 
 	float64_t *zeros = new float64_t[l];
 
 	for(i=0;i<l;i++)
 		zeros[i] = 0;
 
-	Solver_NU s;
-	s.Solve(l, SVC_Q(*prob,*param,y), zeros, y,
+	Solver_NUMC s(nr_class);
+
+	s.Solve(l, SVC_QMC(*prob,*param,y, nr_class, ((float64_t) nr_class)/CMath::sq(nu*l)), zeros, y,
 		alpha, 1.0, 1.0, param->eps, si,  param->shrinking);
 	float64_t r = si->r;
 
@@ -1598,7 +1827,7 @@ decision_function svm_train_one(
 	SG_SINFO("obj = %.16f, rho = %.16f\n",si.obj,si.rho);
 
 	// output SVs
-	if (param->svm_type != ONE_CLASS)
+	if (param->svm_type != ONE_CLASS && param->svm_type != NU_MULTICLASS_SVC)
 	{
 		int32_t nSV = 0;
 		int32_t nBSV = 0;
@@ -1736,11 +1965,13 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 	}
 	else if(param->svm_type == NU_MULTICLASS_SVC)
 	{
-		model->nr_class = 2;
+		model->nr_class = param->nr_class;
 		model->label = NULL;
 		model->nSV = NULL;
 		model->sv_coef = Malloc(float64_t *,1);
 		decision_function f = svm_train_one(prob,param,1,1);
+		SG_SERROR("ende\n");
+		//FIXME
 		model->rho = Malloc(float64_t, 1);
 		model->rho[0] = f.rho;
 		model->objective = f.objective;

@@ -14,13 +14,7 @@
 #include "lib/common.h"
 #include "classifier/svm/MultiClassSVM.h"
 #include "classifier/svm/SVM_libsvm.h"
-
-#include <stdio.h>
-enum LIBSVM_SOLVER_TYPE
-{
-	LIBSVM_C_SVC = 1,
-	LIBSVM_NU_SVC = 2
-};
+#include "classifier/svm/LibSVM.h"
 
 /** @brief class LibSVMMultiClass */
 class CLibSVMMultiClass : public CMultiClassSVM

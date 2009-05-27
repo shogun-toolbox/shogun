@@ -11,13 +11,13 @@
 #include "classifier/svm/LibSVM.h"
 #include "lib/io.h"
 
-CLibSVM::CLibSVM()
-: CSVM(), model(NULL)
+CLibSVM::CLibSVM(LIBSVM_SOLVER_TYPE st)
+: CSVM(), model(NULL), solver_type(st)
 {
 }
 
 CLibSVM::CLibSVM(float64_t C, CKernel* k, CLabels* lab)
-: CSVM(C, k, lab), model(NULL)
+: CSVM(C, k, lab), model(NULL), solver_type(LIBSVM_C_SVC)
 {
 }
 
@@ -54,12 +54,12 @@ bool CLibSVM::train()
 	ASSERT(kernel && kernel->has_features());
     ASSERT(kernel->get_num_vec_lhs()==problem.l);
 
-	param.svm_type=C_SVC; // C SVM
+	param.svm_type=solver_type; // C SVM or NU_SVM
 	param.kernel_type = LINEAR;
 	param.degree = 3;
 	param.gamma = 0;	// 1/k
 	param.coef0 = 0;
-	param.nu = 0.5;
+	param.nu = get_nu();
 	param.kernel=kernel;
 	param.cache_size = kernel->get_cache_size();
 	param.C = get_C1();

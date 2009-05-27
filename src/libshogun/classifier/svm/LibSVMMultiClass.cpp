@@ -49,7 +49,7 @@ bool CLibSVMMultiClass::train()
 
 	ASSERT(kernel);
 
-	param.svm_type=solver_type; // C SVM
+	param.svm_type=solver_type; // C SVM or NU_SVM
 	param.kernel_type = LINEAR;
 	param.degree = 3;
 	param.gamma = 0;	// 1/k

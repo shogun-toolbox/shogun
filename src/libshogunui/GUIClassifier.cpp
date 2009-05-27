@@ -41,7 +41,6 @@
 #include <shogun/classifier/svm/MKLClassification.h>
 #include <shogun/classifier/svm/MKLRegression.h>
 #include <shogun/classifier/svm/LibSVM.h>
-#include <shogun/classifier/svm/LibSVMNU.h>
 #include <shogun/classifier/svm/GPBTSVM.h>
 #include <shogun/classifier/svm/LibSVMOneClass.h>
 #include <shogun/classifier/svm/LibSVMMultiClass.h>
@@ -53,6 +52,7 @@
 #include <shogun/classifier/svm/MPDSVM.h>
 #include <shogun/classifier/svm/GNPPSVM.h>
 #include <shogun/classifier/svm/GMNPSVM.h>
+#include <shogun/classifier/svm/MCSVM.h>
 
 #include <shogun/classifier/svm/SVMLin.h>
 #include <shogun/classifier/svm/SubGradientSVM.h>
@@ -121,10 +121,16 @@ bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
 		classifier= new CLibSVMMultiClass(LIBSVM_NU_SVC);
 		SG_INFO("created SVMlibsvm object for multiclass\n") ;
 	}
+	else if (strcmp(name,"MCSVM")==0)
+	{
+		SG_UNREF(classifier);
+		classifier= new CMCSVM();
+		SG_INFO("created MCSVM object\n") ;
+	}
 	else if (strcmp(name,"LIBSVM_NU")==0)
 	{
 		SG_UNREF(classifier);
-		classifier= new CLibSVMNu();
+		classifier= new CLibSVM(LIBSVM_NU_SVC);
 		SG_INFO("created SVMlibsvm object\n") ;
 	}
 	else if (strcmp(name,"LIBSVM")==0)

@@ -15,14 +15,19 @@
 #include "classifier/svm/SVM.h"
 #include "classifier/svm/SVM_libsvm.h"
 
-#include <stdio.h>
+enum LIBSVM_SOLVER_TYPE
+{
+	LIBSVM_C_SVC = 1,
+	LIBSVM_NU_SVC = 2
+};
 
 /** @brief LibSVM */
 class CLibSVM : public CSVM
 {
 	public:
 		/** constructor */
-		CLibSVM();
+		CLibSVM(LIBSVM_SOLVER_TYPE st=LIBSVM_C_SVC);
+
 		/** constructor
 		 *
 		 * @param C constant C
@@ -49,8 +54,10 @@ class CLibSVM : public CSVM
 		svm_problem problem;
 		/** SVM param */
 		svm_parameter param;
-
 		/** SVM model */
 		struct svm_model* model;
+
+		/** solver type */
+		LIBSVM_SOLVER_TYPE solver_type;
 };
 #endif
