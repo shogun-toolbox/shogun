@@ -2043,6 +2043,7 @@ float64_t CSVMLight::compute_optimal_betas_newton(float64_t* beta,
 
   const double epsBeta = 1e-12;
   const double epsGamma = 1e-12;
+  const double epsWsq = 1e-12;
   const int nofNewtonSteps = 3;
   const double hessRidge = 1e-6;
   const float64_t r = mkl_norm / ( mkl_norm - 1.0 );
@@ -2063,7 +2064,9 @@ float64_t CSVMLight::compute_optimal_betas_newton(float64_t* beta,
     }
     ASSERT( 0.0 <= beta[p] && beta[p] <= 1.0 );
     if( !( sumw[p] >= 0 ) ) {
-      SG_WARNING( "sumw[%d] = %e;  treated as 0.  ", p, sumw[p] );
+      if( !( sumw[p] >= -epsWsq ) ) {
+	SG_WARNING( "sumw[%d] = %e;  treated as 0.  ", p, sumw[p] );
+      }
       // should better recompute sumw[] !!!
     } else {
       ASSERT( sumw[p] >= 0 );
