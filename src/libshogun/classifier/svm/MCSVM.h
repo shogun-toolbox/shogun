@@ -43,8 +43,21 @@ class CMCSVM : public CMultiClassSVM
 		 */
 		virtual inline EClassifierType get_classifier_type() { return CT_MCSVM; }
 
+		/** classify one example
+		 *
+		 * @param num number of example to classify
+		 * @return resulting classification
+		 */
+		virtual float64_t classify_example(int32_t num);
+
+		CLabels* classify_one_vs_rest(CLabels* result);
+
 		/** @return object name */
 		inline virtual const char* get_name() const { return "MCSVM"; }
+
+	private:
+		void compute_norm_wc();
+
 	protected:
 		/** SVM problem */
 		svm_problem problem;
@@ -53,5 +66,8 @@ class CMCSVM : public CMultiClassSVM
 
 		/** SVM model */
 		struct svm_model* model;
+
+		/** norm of w_c */
+		float64_t* norm_wc;
 };
 #endif // MCSVM

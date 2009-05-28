@@ -13,17 +13,18 @@
 #include "lib/io.h"
 
 CMCSVM::CMCSVM()
-: CMultiClassSVM(TRUE_MULTICLASS), model(NULL)
+: CMultiClassSVM(TRUE_MULTICLASS), model(NULL), norm_wc(NULL)
 {
 }
 
 CMCSVM::CMCSVM(float64_t C, CKernel* k, CLabels* lab)
-: CMultiClassSVM(TRUE_MULTICLASS, C, k, lab), model(NULL)
+: CMultiClassSVM(TRUE_MULTICLASS, C, k, lab), model(NULL), norm_wc(NULL)
 {
 }
 
 CMCSVM::~CMCSVM()
 {
+	delete[] norm_wc;
 	//SG_PRINT("deleting MCSVM\n");
 }
 
@@ -95,7 +96,7 @@ bool CMCSVM::train()
 
 			for (int32_t j=0; j<num_sv; j++)
 			{
-				svm->set_alpha(j, model->SV[i][j]);
+				svm->set_alpha(j, model->SV[i][j].index);
 				svm->set_support_vector(j, model->sv_coef[i][j]);
 			}
 
@@ -106,10 +107,116 @@ bool CMCSVM::train()
 		delete[] problem.y;
 		delete[] x_space;
 		svm_destroy_model(model);
+		compute_norm_wc();
 
 		model=NULL;
 		return true;
 	}
 	else
 		return false;
+}
+
+void CMCSVM::compute_norm_wc()
+{
+	delete[] norm_wc;
+	norm_wc = new float64_t[m_num_svms];
+	for (int32_t i=0; i<m_num_svms; i++)
+		norm_wc[i]=0;
+
+	int32_t num_vectors=kernel->get_num_vec_lhs();
+	for (int32_t i=0; i<num_vectors; i++)
+	{
+		int32_t idx=labels->get_label(i);
+		CSVM* svm=m_svms[idx];
+
+		for (int32_t j=0; j<num_vectors; j++)
+		{
+			if (idx !=labels->get_label(j))
+				continue;
+			norm_wc[idx]+=svm->get_alpha(j)*svm->get_alpha(i)*kernel->kernel(i,j);
+		}
+	}
+
+	for (int32_t i=0; i<m_num_svms; i++)
+		norm_wc[i]=CMath::sqrt(norm_wc[i]);
+}
+
+CLabels* CMCSVM::classify_one_vs_rest(CLabels* result)
+{
+	ASSERT(m_num_svms>0);
+
+	if (!kernel)
+	{
+		SG_ERROR( "SVM can not proceed without kernel!\n");
+		return false ;
+	}
+
+	if ( kernel && kernel->get_num_vec_lhs() && kernel->get_num_vec_rhs())
+	{
+		int32_t num_vectors=kernel->get_num_vec_rhs();
+
+		if (!result)
+		{
+			result=new CLabels(num_vectors);
+			SG_REF(result);
+		}
+
+		ASSERT(num_vectors==result->get_num_labels());
+		CLabels** outputs=new CLabels*[m_num_svms];
+
+		for (int32_t i=0; i<m_num_svms; i++)
+		{
+			ASSERT(m_svms[i]);
+			m_svms[i]->set_kernel(kernel);
+			m_svms[i]->set_labels(labels);
+			outputs[i]=m_svms[i]->classify();
+		}
+
+		for (int32_t i=0; i<num_vectors; i++)
+		{
+			int32_t winner=0;
+			float64_t max_out=outputs[0]->get_label(i)/norm_wc[0];
+
+			for (int32_t j=1; j<m_num_svms; j++)
+			{
+				float64_t out=outputs[j]->get_label(i)/norm_wc[j];
+
+				if (out>max_out)
+				{
+					winner=j;
+					max_out=out;
+				}
+			}
+
+			result->set_label(i, winner);
+		}
+
+		for (int32_t i=0; i<m_num_svms; i++)
+			SG_UNREF(outputs[i]);
+
+		delete[] outputs;
+	}
+
+	return result;
+}
+
+float64_t CMCSVM::classify_example(int32_t num)
+{
+	ASSERT(m_num_svms>0);
+	float64_t* outputs=new float64_t[m_num_svms];
+	int32_t winner=0;
+	float64_t max_out=m_svms[0]->classify_example(num)/norm_wc[0];
+
+	for (int32_t i=1; i<m_num_svms; i++)
+	{
+		outputs[i]=m_svms[i]->classify_example(num)/norm_wc[i];
+		if (outputs[i]>max_out)
+		{
+			winner=i;
+			max_out=outputs[i];
+		}
+	}
+	delete[] outputs;
+
+	return winner;
 }

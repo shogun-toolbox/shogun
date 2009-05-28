@@ -1758,14 +1758,13 @@ static void solve_nu_svc(
 static void solve_nu_multiclass_svc(const svm_problem *prob,
 		const svm_parameter *param, Solver::SolutionInfo* si, svm_model* model)
 {
-	int32_t i;
 	int32_t l = prob->l;
 	float64_t nu = param->nu;
 
 	float64_t *alpha = Malloc(float64_t, prob->l);
 	schar *y = new schar[l];
 
-	for(i=0;i<l;i++)
+	for(int32_t i=0;i<l;i++)
 	{
 		alpha[i] = 0;
 		y[i]=prob->y[i];
@@ -1777,7 +1776,7 @@ static void solve_nu_multiclass_svc(const svm_problem *prob,
 	for (int32_t j=0; j<nr_class; j++)
 		sum_class[j] = nu*l/nr_class;
 
-	for(i=0;i<l;i++)
+	for(int32_t i=0;i<l;i++)
 	{
 		alpha[i] = CMath::min(1.0,sum_class[int32_t(y[i])]);
 		sum_class[int32_t(y[i])] -= alpha[i];
@@ -1787,7 +1786,7 @@ static void solve_nu_multiclass_svc(const svm_problem *prob,
 
 	float64_t *zeros = new float64_t[l];
 
-	for(i=0;i<l;i++)
+	for (int32_t i=0;i<l;i++)
 		zeros[i] = 0;
 
 	Solver_NUMC s(nr_class, nu);
@@ -1799,13 +1798,13 @@ static void solve_nu_multiclass_svc(const svm_problem *prob,
 
 	int32_t* class_sv_count=new int32_t[nr_class];
 
-	for (int32_t i=0; i<l; i++)
-		class_count[i]=0;
+	for (int32_t i=0; i<nr_class; i++)
+		class_sv_count[i]=0;
 
 	for (int32_t i=0; i<l; i++)
 	{
-		if (CMath::abs(f.alpha[i]) > 0)
-			class_sv_count[y[i]]++;
+		if (CMath::abs(alpha[i]) > 0)
+			class_sv_count[(int32_t) y[i]]++;
 	}
 
 	model->rho = new float64_t[nr_class];
@@ -1817,25 +1816,26 @@ static void solve_nu_multiclass_svc(const svm_problem *prob,
 
 
 	s.compute_primal(y, alpha, model->rho);
-	model->objective = si.obj;
+	model->objective = si->obj;
 
 
 	for (int32_t i=0; i<nr_class; i++)
 	{
-		model->nSV[i]=class_count[i];
-		model->SV[i] = Malloc(svm_node,class_count[i]);
+		model->nSV[i]=class_sv_count[i];
+		model->SV[i] = Malloc(svm_node,class_sv_count[i]);
+		model->sv_coef[i] = Malloc(float64_t,class_sv_count[i]);
 	}
 
 	for (int32_t i=0; i<l; i++)
-		class_count[i]=0;
+		class_sv_count[i]=0;
 
 	for(int32_t i=0;i<prob->l;i++)
 	{
-		if(fabs(f.alpha[i]) > 0)
+		if(fabs(alpha[i]) > 0)
 		{
-			model->SV[y[i]][class_count[y[i]]] = prob->x[i];
-			model->sv_coef[y[i]][class_count[y[i]]] = alpha[i];
-			class_count[y[i]]++;
+			model->SV[(int32_t) y[i]][class_sv_count[(int32_t) y[i]]].index = prob->x[i]->index;
+			model->sv_coef[(int32_t) y[i]][class_sv_count[(int32_t) y[i]]] = alpha[i];
+			class_sv_count[(int32_t) y[i]]++;
 		}		
 	}
 

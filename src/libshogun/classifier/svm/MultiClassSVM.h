@@ -104,14 +104,14 @@ class CMultiClassSVM : public CSVM
 		 * @param labels resulting labels
 		 * @return resulting labels
 		 */
-		CLabels* classify_one_vs_rest(CLabels* labels=NULL);
+		virtual CLabels* classify_one_vs_rest(CLabels* labels=NULL);
 
 		/** classify one example one vs rest
 		 *
 		 * @param num number of example of classify
 		 * @return resulting classification
 		 */
-		float64_t classify_example_one_vs_rest(int32_t num);
+		virtual float64_t classify_example_one_vs_rest(int32_t num);
 
 		/** classify one vs one
 		 *
