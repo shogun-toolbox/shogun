@@ -2058,12 +2058,12 @@ float64_t CSVMLight::compute_optimal_betas_newton(float64_t* beta,
   for( p=0; p<num_kernels; ++p ) {
     beta[p] = old_beta[p];
     if( !( beta[p] >= epsBeta ) ) {
-      SG_WARNING( "old_beta[%d] = %e;  set to %e.  \n", p, beta[p], epsBeta );
+      SG_WARNING( "old_beta[%d] = %e;  set to %e.  ", p, beta[p], epsBeta );
       beta[p] = epsBeta;
     }
     ASSERT( 0.0 <= beta[p] && beta[p] <= 1.0 );
     if( !( sumw[p] >= 0 ) ) {
-      SG_WARNING( "sumw[%d] = %e;  treated as 0.  \n", p, sumw[p] );
+      SG_WARNING( "sumw[%d] = %e;  treated as 0.  ", p, sumw[p] );
       // should better recompute sumw[] !!!
     } else {
       ASSERT( sumw[p] >= 0 );
@@ -2073,7 +2073,7 @@ float64_t CSVMLight::compute_optimal_betas_newton(float64_t* beta,
   gamma = CMath::pow( gamma, 1.0/r ) / mkl_norm;
   ASSERT( gamma > -1e-9 );
   if( !( gamma > epsGamma ) ) {
-    SG_WARNING( "bad gamma: %e;  set to %e.  \n", gamma, epsGamma );
+    SG_WARNING( "bad gamma: %e;  set to %e.  ", gamma, epsGamma );
     // should better recompute sumw[] !!!
     gamma = epsGamma;
   }
@@ -2117,6 +2117,11 @@ float64_t CSVMLight::compute_optimal_betas_newton(float64_t* beta,
     Z = CMath::pow( Z, -1.0/mkl_norm );
     for( p=0; p<num_kernels; ++p ) {
       beta[p] *= Z;
+      if( beta[p] > 1.0 ) {
+	SG_WARNING( "beta[%d] = %e;  set to 1.  ", p, beta[p] );
+	beta[p] = 1.0;
+      }
+      ASSERT( 0.0 <= beta[p] && beta[p] <= 1.0 );
     }
 
   }
