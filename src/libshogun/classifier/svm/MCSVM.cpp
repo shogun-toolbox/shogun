@@ -133,12 +133,14 @@ void CMCSVM::compute_norm_wc()
 		{
 			if (idx !=labels->get_label(j))
 				continue;
-			norm_wc[idx]+=svm->get_alpha(j)*svm->get_alpha(i)*kernel->kernel(i,j);
+			norm_wc[idx]+=svm->get_alpha(i)*kernel->kernel(i,j)*svm->get_alpha(j);
 		}
 	}
 
 	for (int32_t i=0; i<m_num_svms; i++)
 		norm_wc[i]=CMath::sqrt(norm_wc[i]);
+
+	CMath::display_vector(norm_wc, m_num_svms, "norm_wc");
 }
 
 CLabels* CMCSVM::classify_one_vs_rest(CLabels* result)
