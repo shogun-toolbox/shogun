@@ -976,6 +976,7 @@ bool CGUIClassifier::get_trained_classifier(
 
 	switch (classifier->get_classifier_type())
 	{
+		case CT_MCSVM:
 		case CT_GNPPSVM:
 		case CT_LIBSVMMULTICLASS:
 		case CT_MKLCLASSIFICATION:

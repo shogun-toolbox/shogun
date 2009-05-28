@@ -21,7 +21,6 @@ enum EMultiClassSVM
 {
 	ONE_VS_REST,
 	ONE_VS_ONE,
-	TRUE_MULTICLASS
 };
 
 /** @brief class MultiClassSVM */

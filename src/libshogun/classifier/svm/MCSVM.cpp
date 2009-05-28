@@ -13,12 +13,12 @@
 #include "lib/io.h"
 
 CMCSVM::CMCSVM()
-: CMultiClassSVM(TRUE_MULTICLASS), model(NULL), norm_wc(NULL)
+: CMultiClassSVM(ONE_VS_REST), model(NULL), norm_wc(NULL)
 {
 }
 
 CMCSVM::CMCSVM(float64_t C, CKernel* k, CLabels* lab)
-: CMultiClassSVM(TRUE_MULTICLASS, C, k, lab), model(NULL), norm_wc(NULL)
+: CMultiClassSVM(ONE_VS_REST, C, k, lab), model(NULL), norm_wc(NULL)
 {
 }
 
@@ -92,12 +92,13 @@ bool CMCSVM::train()
 			int32_t num_sv=model->nSV[i];
 
 			CSVM* svm=new CSVM(num_sv);
-			svm->set_bias(model->rho[i]);
+			//svm->set_bias(model->rho[i]);
+			svm->set_bias(0);
 
 			for (int32_t j=0; j<num_sv; j++)
 			{
-				svm->set_alpha(j, model->SV[i][j].index);
-				svm->set_support_vector(j, model->sv_coef[i][j]);
+				svm->set_alpha(j, model->sv_coef[i][j]);
+				svm->set_support_vector(j, model->SV[i][j].index);
 			}
 
 			set_svm(i, svm);
@@ -123,17 +124,20 @@ void CMCSVM::compute_norm_wc()
 	for (int32_t i=0; i<m_num_svms; i++)
 		norm_wc[i]=0;
 
-	int32_t num_vectors=kernel->get_num_vec_lhs();
-	for (int32_t i=0; i<num_vectors; i++)
-	{
-		int32_t idx=labels->get_label(i);
-		CSVM* svm=m_svms[idx];
 
-		for (int32_t j=0; j<num_vectors; j++)
+	for (int c=0; c<m_num_svms; c++)
+	{
+		CSVM* svm=m_svms[c];
+		int32_t num_sv = svm->get_num_support_vectors();
+
+		for (int32_t i=0; i<num_sv; i++)
 		{
-			if (idx !=labels->get_label(j))
-				continue;
-			norm_wc[idx]+=svm->get_alpha(i)*kernel->kernel(i,j)*svm->get_alpha(j);
+			int32_t ii=svm->get_support_vector(i);
+			for (int32_t j=0; j<num_sv; j++)
+			{
+				int32_t jj=svm->get_support_vector(j);
+				norm_wc[c]+=svm->get_alpha(i)*kernel->kernel(ii,jj)*svm->get_alpha(j);
+			}
 		}
 	}
 

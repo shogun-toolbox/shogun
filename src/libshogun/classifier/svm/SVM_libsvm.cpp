@@ -1812,7 +1812,7 @@ static void solve_nu_multiclass_svc(const svm_problem *prob,
 	model->label = NULL;
 	model->SV = Malloc(svm_node*,nr_class);
 	model->nSV = Malloc(int32_t, nr_class);
-	model->sv_coef = Malloc(float64_t *,1);
+	model->sv_coef = Malloc(float64_t *,nr_class);
 
 
 	s.compute_primal(y, alpha, model->rho);
@@ -1824,10 +1824,8 @@ static void solve_nu_multiclass_svc(const svm_problem *prob,
 		model->nSV[i]=class_sv_count[i];
 		model->SV[i] = Malloc(svm_node,class_sv_count[i]);
 		model->sv_coef[i] = Malloc(float64_t,class_sv_count[i]);
-	}
-
-	for (int32_t i=0; i<l; i++)
 		class_sv_count[i]=0;
+	}
 
 	for(int32_t i=0;i<prob->l;i++)
 	{
