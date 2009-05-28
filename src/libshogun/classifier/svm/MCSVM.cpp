@@ -13,12 +13,12 @@
 #include "lib/io.h"
 
 CMCSVM::CMCSVM()
-: CMultiClassSVM(ONE_VS_REST), model(NULL)
+: CMultiClassSVM(TRUE_MULTICLASS), model(NULL)
 {
 }
 
 CMCSVM::CMCSVM(float64_t C, CKernel* k, CLabels* lab)
-: CMultiClassSVM(ONE_VS_REST, C, k, lab), model(NULL)
+: CMultiClassSVM(TRUE_MULTICLASS, C, k, lab), model(NULL)
 {
 }
 

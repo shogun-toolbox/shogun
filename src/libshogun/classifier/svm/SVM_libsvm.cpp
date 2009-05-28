@@ -603,18 +603,21 @@ void Solver::Solve(
 						G_bar[k] += C_j * Q_j[k];
 			}
 		}
-	// calculate objective value
-	{
-		float64_t v = 0;
-		for(i=0;i<l;i++)
-			v += alpha[i] * (G[i] + p[i]);
 
-		p_si->obj = v/2;
+#ifdef MCSVM_DEBUG
+		// calculate objective value
+		{
+			float64_t v = 0;
+			for(i=0;i<l;i++)
+				v += alpha[i] * (G[i] + p[i]);
 
-		float64_t primal=0;
-		float64_t gap=100000;
-		SG_SPRINT("dual obj=%f primal obf=%f gap=%f\n", v/2, primal, gap);
-	}
+			p_si->obj = v/2;
+
+			float64_t primal=0;
+			float64_t gap=100000;
+			SG_SPRINT("dual obj=%f primal obf=%f gap=%f\n", v/2, primal, gap);
+		}
+#endif
 	}
 
 	// calculate rho
@@ -1146,9 +1149,10 @@ float64_t Solver_NU::calculate_rho()
 class Solver_NUMC : public Solver
 {
 public:
-	Solver_NUMC(int32_t n_class)
+	Solver_NUMC(int32_t n_class, float64_t svm_nu)
 	{
 		nr_class=n_class;
+		nu=svm_nu;
 	}
 
 	void Solve(
@@ -1159,6 +1163,8 @@ public:
 		this->si = p_si;
 		Solver::Solve(p_l,p_Q,p_p,p_y,p_alpha,p_Cp,p_Cn,p_eps,p_si,shrinking);
 	}
+	float64_t compute_primal(const schar* p_y, float64_t* p_alpha, float64_t* biases);
+
 private:
 	SolutionInfo *si;
 	int32_t select_working_set(int32_t &i, int32_t &j, float64_t &gap);
@@ -1170,7 +1176,121 @@ private:
 
 private:
 	int32_t nr_class;
+	float64_t  nu;
 };
+
+float64_t Solver_NUMC::compute_primal(const schar* p_y, float64_t* p_alpha, float64_t* biases)
+{
+	clone(y, p_y,l);
+	clone(alpha,p_alpha,l);
+
+	alpha_status = new char[l];
+	for(int32_t i=0;i<l;i++)
+		update_alpha_status(i);
+
+	float64_t* class_count = new float64_t[nr_class];
+	float64_t* outputs = new float64_t[l];
+
+	for (int32_t i=0; i<nr_class; i++)
+	{
+		class_count[i]=0;
+		biases[i]=0;
+	}
+
+
+	for (int32_t i=0; i<active_size; i++)
+	{
+		update_alpha_status(i);
+		if(!is_upper_bound(i) && !is_lower_bound(i))
+			class_count[(int32_t) y[i]]++;
+	}
+
+	CMath::display_vector(class_count, nr_class, "class_count");
+
+	float64_t mu=((float64_t) nr_class)/(nu*l);
+	SG_SPRINT("nr_class=%d, l=%d, active_size=%d, nu=%f, mu=%f\n", nr_class, l, active_size, nu, mu);
+
+	float64_t rho=0;
+	for (int32_t i=0; i<active_size; i++)
+	{
+		float64_t sum_free=0;
+		float64_t sum_atbound=0;
+		Qfloat* Q_i = Q->get_Q(i,active_size);
+		outputs[i]=0;
+
+		for (int j=0; j<active_size; j++)
+		{
+			float64_t tmp= alpha[j]*Q_i[j]/mu;
+
+			if(!is_upper_bound(i) && !is_lower_bound(i))
+				sum_free+=tmp;
+			else
+				sum_atbound+=tmp;
+		}
+
+		biases[(int32_t) y[i]]-=sum_free;
+		if (class_count[(int32_t) y[i]] != 0.0)
+			rho+=sum_free/class_count[(int32_t) y[i]];
+		else
+			SG_SPRINT("sum_free=%f, class_count=0\n", sum_free);
+		outputs[i]+=sum_free+sum_atbound;
+	}
+
+	rho/=nr_class;
+
+	SG_SPRINT("rho=%f\n", rho);
+
+	for (int32_t i=0; i<nr_class; i++)
+	{
+		if (class_count[i] != 0.0)
+			biases[i]=biases[i]/class_count[i]+rho;
+		else
+		{
+			SG_SPRINT("biases[i]=%f, class_count=0\n", biases[i]);
+			biases[i]+=rho;
+		}
+		SG_SPRINT("biases=%f\n", biases[i]);
+	}
+
+	for (int32_t i=0; i<l; i++)
+		outputs[i]+=biases[(int32_t) y[i]];
+
+	//CMath::display_vector(outputs, l, "outputs");
+
+
+	float64_t xi=0;
+	for (int32_t i=0; i<active_size; i++)
+	{
+		if (is_lower_bound(i))
+			continue;
+		xi+=rho-outputs[i];
+	}
+
+	SG_SPRINT("xi=%f\n", xi);
+
+
+	float64_t quad=0;
+
+	for (int32_t i=0; i<active_size; i++)
+	{
+		Qfloat* Q_i = Q->get_Q(i,active_size);
+
+		for (int j=0; j<active_size; j++)
+			quad+= alpha[i]*alpha[j]*Q_i[j];
+	}
+	SG_SPRINT("quad=%f\n", quad);
+
+	float64_t primal=0.5*quad- nr_class*rho+xi*mu;
+
+	SG_SPRINT("primal=%f\n", primal);
+
+	delete[] y;
+	delete[] alpha;
+	delete[] alpha_status;
+
+	return primal;
+}
+
 
 // return 1 if already optimal, return 0 otherwise
 int32_t Solver_NUMC::select_working_set(
@@ -1635,14 +1755,14 @@ static void solve_nu_svc(
 	delete[] zeros;
 }
 
-static void solve_nu_multiclass_svc(
-	const svm_problem *prob, const svm_parameter *param,
-	float64_t *alpha, Solver::SolutionInfo* si)
+static void solve_nu_multiclass_svc(const svm_problem *prob,
+		const svm_parameter *param, Solver::SolutionInfo* si, svm_model* model)
 {
 	int32_t i;
 	int32_t l = prob->l;
 	float64_t nu = param->nu;
 
+	float64_t *alpha = Malloc(float64_t, prob->l);
 	schar *y = new schar[l];
 
 	for(i=0;i<l;i++)
@@ -1670,13 +1790,42 @@ static void solve_nu_multiclass_svc(
 	for(i=0;i<l;i++)
 		zeros[i] = 0;
 
-	Solver_NUMC s(nr_class);
+	Solver_NUMC s(nr_class, nu);
+	SVC_QMC Q(*prob,*param,y, nr_class, ((float64_t) nr_class)/CMath::sq(nu*l));
 
-	s.Solve(l, SVC_QMC(*prob,*param,y, nr_class, ((float64_t) nr_class)/CMath::sq(nu*l)), zeros, y,
+	s.Solve(l, Q, zeros, y,
 		alpha, 1.0, 1.0, param->eps, si,  param->shrinking);
+
+
+	model->rho = new float64_t[param->nr_class];
+	model->nr_class = param->nr_class;
+	model->label = NULL;
+	model->nSV = Malloc(int32_t,1);
+	model->sv_coef = Malloc(float64_t *,1);
+	s.compute_primal(y, alpha, model->rho);
+	//model->rho[0] = f.rho;
+	//model->objective = f.objective;
+
+	//int32_t nSV = 0;
+	//int32_t i;
+	//for(i=0;i<prob->l;i++)
+	//	if(fabs(f.alpha[i]) > 0) ++nSV;
+	//model->l = nSV;
+	//model->SV = Malloc(svm_node *,nSV);
+	//model->sv_coef[0] = Malloc(float64_t, nSV);
+	//int32_t j = 0;
+	//for(i=0;i<prob->l;i++)
+	//	if(fabs(f.alpha[i]) > 0)
+	//	{
+	//		model->SV[j] = prob->x[i];
+	//		model->sv_coef[0][j] = f.alpha[i];
+	//		++j;
+	//	}		
+
 
 	delete[] y;
 	delete[] zeros;
+
 }
 
 static void solve_one_class(
@@ -1811,9 +1960,6 @@ decision_function svm_train_one(
 		case NU_SVC:
 			solve_nu_svc(prob,param,alpha,&si);
 			break;
-		case NU_MULTICLASS_SVC:
-			solve_nu_multiclass_svc(prob,param,alpha,&si);
-			break;
 		case ONE_CLASS:
 			solve_one_class(prob,param,alpha,&si);
 			break;
@@ -1828,7 +1974,7 @@ decision_function svm_train_one(
 	SG_SINFO("obj = %.16f, rho = %.16f\n",si.obj,si.rho);
 
 	// output SVs
-	if (param->svm_type != ONE_CLASS && param->svm_type != NU_MULTICLASS_SVC)
+	if (param->svm_type != ONE_CLASS)
 	{
 		int32_t nSV = 0;
 		int32_t nBSV = 0;
@@ -1966,34 +2112,9 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 	}
 	else if(param->svm_type == NU_MULTICLASS_SVC)
 	{
-		model->nr_class = param->nr_class;
-		model->label = NULL;
-		model->nSV = NULL;
-		model->sv_coef = Malloc(float64_t *,1);
-		decision_function f = svm_train_one(prob,param,1,1);
-		SG_SERROR("ende\n");
-		//FIXME
-		model->rho = Malloc(float64_t, 1);
-		model->rho[0] = f.rho;
-		model->objective = f.objective;
-
-		int32_t nSV = 0;
-		int32_t i;
-		for(i=0;i<prob->l;i++)
-			if(fabs(f.alpha[i]) > 0) ++nSV;
-		model->l = nSV;
-		model->SV = Malloc(svm_node *,nSV);
-		model->sv_coef[0] = Malloc(float64_t, nSV);
-		int32_t j = 0;
-		for(i=0;i<prob->l;i++)
-			if(fabs(f.alpha[i]) > 0)
-			{
-				model->SV[j] = prob->x[i];
-				model->sv_coef[0][j] = f.alpha[i];
-				++j;
-			}		
-
-		free(f.alpha);
+		Solver::SolutionInfo si;
+		solve_nu_multiclass_svc(prob,param,&si,model);
+		SG_SINFO("obj = %.16f, rho = %.16f\n",si.obj,si.rho);
 	}
 	else
 	{
