@@ -81,51 +81,25 @@ bool CMCSVM::train()
 
 	if (model)
 	{
-		ASSERT((model->l==0) || (model->l>0 && model->SV && model->sv_coef && model->sv_coef[0]));
+		ASSERT((model->l==0) || (model->l>0 && model->SV && model->sv_coef && model->sv_coef));
 
-		//int32_t num_sv=model->l;
-
-		//create_new_model(num_sv);
-		//CSVM::set_objective(model->objective);
-
-		//float64_t sgn=model->label[0];
-
-		//set_bias(-sgn*model->rho[0]);
-
-		//for (int32_t i=0; i<num_sv; i++)
-		//{
-		//	set_support_vector(i, (model->SV[i])->index);
-		//	set_alpha(i, sgn*model->sv_coef[0][i]);
-		//}
-
+		ASSERT(model->nr_class==num_classes);
 		create_multiclass_svm(num_classes);
 
 		for (int32_t i=0; i<num_classes; i++)
 		{
-			//int32_t num_sv=0;
-			//for (int32_t j=0; j<num_data; j++)
-			//{
-			//	if (all_alphas[j*num_classes+i] != 0)
-			//		num_sv++;
-			//}
-			//ASSERT(num_sv>0);
-			//SG_DEBUG("svm[%d] has %d sv, b=%f\n", i, num_sv, all_bs[i]);
+			int32_t num_sv=model->nSV[i];
 
-			//CSVM* svm=new CSVM(num_sv);
+			CSVM* svm=new CSVM(num_sv);
+			svm->set_bias(model->rho[i]);
 
-			//int32_t k=0;
-			//for (int32_t j=0; j<num_data; j++)
-			//{
-			//	if (all_alphas[j*num_classes+i] != 0)
-			//	{
-			//		svm->set_alpha(k, all_alphas[j*num_classes+i]);
-			//		svm->set_support_vector(k, j);
-			//		k++;
-			//	}
-			//}
+			for (int32_t j=0; j<num_sv; j++)
+			{
+				svm->set_alpha(j, model->SV[i][j]);
+				svm->set_support_vector(j, model->sv_coef[i][j]);
+			}
 
-			//svm->set_bias(all_bs[i]);
-			//set_svm(i, svm);
+			set_svm(i, svm);
 		}
 
 		delete[] problem.x;

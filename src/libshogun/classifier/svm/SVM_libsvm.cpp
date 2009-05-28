@@ -1797,31 +1797,47 @@ static void solve_nu_multiclass_svc(const svm_problem *prob,
 		alpha, 1.0, 1.0, param->eps, si,  param->shrinking);
 
 
-	model->rho = new float64_t[param->nr_class];
-	model->nr_class = param->nr_class;
+	int32_t* class_sv_count=new int32_t[nr_class];
+
+	for (int32_t i=0; i<l; i++)
+		class_count[i]=0;
+
+	for (int32_t i=0; i<l; i++)
+	{
+		if (CMath::abs(f.alpha[i]) > 0)
+			class_sv_count[y[i]]++;
+	}
+
+	model->rho = new float64_t[nr_class];
+	model->nr_class = nr_class;
 	model->label = NULL;
-	model->nSV = Malloc(int32_t,1);
+	model->SV = Malloc(svm_node*,nr_class);
+	model->nSV = Malloc(int32_t, nr_class);
 	model->sv_coef = Malloc(float64_t *,1);
+
+
 	s.compute_primal(y, alpha, model->rho);
-	//model->rho[0] = f.rho;
-	//model->objective = f.objective;
+	model->objective = si.obj;
 
-	//int32_t nSV = 0;
-	//int32_t i;
-	//for(i=0;i<prob->l;i++)
-	//	if(fabs(f.alpha[i]) > 0) ++nSV;
-	//model->l = nSV;
-	//model->SV = Malloc(svm_node *,nSV);
-	//model->sv_coef[0] = Malloc(float64_t, nSV);
-	//int32_t j = 0;
-	//for(i=0;i<prob->l;i++)
-	//	if(fabs(f.alpha[i]) > 0)
-	//	{
-	//		model->SV[j] = prob->x[i];
-	//		model->sv_coef[0][j] = f.alpha[i];
-	//		++j;
-	//	}		
 
+	for (int32_t i=0; i<nr_class; i++)
+	{
+		model->nSV[i]=class_count[i];
+		model->SV[i] = Malloc(svm_node,class_count[i]);
+	}
+
+	for (int32_t i=0; i<l; i++)
+		class_count[i]=0;
+
+	for(int32_t i=0;i<prob->l;i++)
+	{
+		if(fabs(f.alpha[i]) > 0)
+		{
+			model->SV[y[i]][class_count[y[i]]] = prob->x[i];
+			model->sv_coef[y[i]][class_count[y[i]]] = alpha[i];
+			class_count[y[i]]++;
+		}		
+	}
 
 	delete[] y;
 	delete[] zeros;
