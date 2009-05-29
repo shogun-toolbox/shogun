@@ -176,6 +176,12 @@ bool CMKL::check_lpx_status(LPX *lp)
 
 bool CMKL::train()
 {
+	ASSERT(labels && labels->get_num_labels());
+	ASSERT(labels->is_two_class_labeling());
+
+	int32_t num_label=labels->get_num_labels();
+
+	SG_INFO( "%d trainlabels\n", num_label);
 	if (epsilon<=0)
 		epsilon=1e-2 ;
 	SG_DEBUG( "mkl_epsilon = %1.1e\n", epsilon) ;
@@ -189,25 +195,35 @@ bool CMKL::train()
 		init_cplex();
 #endif
 
-#ifdef USE_CPLEX
-	cleanup_cplex();
-#endif
-
 	mkl_iterations = 0;
 	
 	if (interleaved_optimization)
 		set_callback_function();
 	else
 	{
+		float64_t* alpha=new float64_t[num_vectors];
+		float64_t* old_alpha;
+		float64_t* beta;
+		float64_t* old_beta;
+		int32_t num_beta=num_kernels;
+		int32_t num_alpha=num_vectors;
+		void* aux=NULL;
+
 		while (!converged())
 		{
 			svm->train();
-			//perform_mkl_step(alpha, old_alpha, num_alpha, beta, old_beta, num_beta, aux);
+			perform_mkl_step(alpha, old_alpha, num_alpha, beta, old_beta, num_beta, aux);
 			//compute_wgap();
 
 			mkl_iterations++;
 		}
+
+		delete[] 
 	}
+#ifdef USE_CPLEX
+	cleanup_cplex();
+#endif
+
 
 	int32_t nsv=svm->get_num_support_vectors();
 	create_new_model(nsv);
