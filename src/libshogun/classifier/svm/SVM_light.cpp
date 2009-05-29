@@ -2041,7 +2041,7 @@ float64_t CSVMLight::compute_optimal_betas_newton(float64_t* beta,
 {
   SG_DEBUG("MKL via NEWTON\n");
 
-  const double epsBeta = 1e-12;
+  const double epsBeta = 1e-32;
   const double epsGamma = 1e-12;
   const double epsWsq = 1e-12;
   const int nofNewtonSteps = 3;
