@@ -81,6 +81,7 @@
 #define N_SET_FEATURES						"set_features"
 #define N_FROM_POSITION_LIST				"from_position_list"
 #define N_ADD_FEATURES						"add_features"
+#define N_ADD_MULTIPLE_FEATURES				"add_multiple_features"
 #define N_ADD_DOTFEATURES					"add_dotfeatures"
 #define N_DEL_LAST_FEATURES					"del_last_features"
 #define N_SET_LABELS						"set_labels"

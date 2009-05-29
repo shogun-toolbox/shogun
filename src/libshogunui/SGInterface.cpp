@@ -84,6 +84,12 @@ CSGInterfaceMethod sg_methods[]=
 			USAGE_STR "TRAIN|TEST" USAGE_STR USAGE_COMMA "features[" USAGE_COMMA "DNABINFILE|<ALPHABET>]")
 	},
 	{
+		N_ADD_MULTIPLE_FEATURES,
+		(&CSGInterface::cmd_add_multiple_features),
+		USAGE_I(N_ADD_MULTIPLE_FEATURES,
+			USAGE_STR "TRAIN|TEST" USAGE_STR USAGE_COMMA "repetitions" USAGE_COMMA "features[" USAGE_COMMA "DNABINFILE|<ALPHABET>]")
+	},
+	{
 		N_ADD_DOTFEATURES,
 		(&CSGInterface::cmd_add_dotfeatures),
 		USAGE_I(N_ADD_DOTFEATURES,
@@ -1697,6 +1703,18 @@ bool CSGInterface::cmd_add_features()
 	return do_set_features(true, false);
 }
 
+bool CSGInterface::cmd_add_multiple_features()
+{
+	if ((m_nrhs!=4 && m_nrhs<5) || !create_return_values(0))
+		return false;
+
+	int32_t repetitions=get_int();
+
+	ASSERT(repetitions>=1);
+
+	return do_set_features(true, false, repetitions);
+}
+
 bool CSGInterface::cmd_add_dotfeatures()
 {
 	if ((m_nrhs!=3 && m_nrhs<4) || !create_return_values(0))
@@ -1713,7 +1731,7 @@ bool CSGInterface::cmd_set_features()
 	return do_set_features(false, false);
 }
 
-bool CSGInterface::do_set_features(bool add, bool check_dot)
+bool CSGInterface::do_set_features(bool add, bool check_dot, int32_t repetitions)
 {
 	int32_t tlen=0;
 	char* target=get_string(tlen);
@@ -1886,18 +1904,30 @@ bool CSGInterface::do_set_features(bool add, bool check_dot)
 		if (!add)
 			ui_features->set_train_features(feat);
 		else if (check_dot)
+		{
+			for (int32_t i=0; i<repetitions; i++)
 			ui_features->add_train_dotfeatures((CDotFeatures*) feat);
+		}
 		else
+		{
+			for (int32_t i=0; i<repetitions; i++)
 			ui_features->add_train_features(feat);
+		}
 	}
 	else
 	{
 		if (!add)
 			ui_features->set_test_features(feat);
 		else if (check_dot)
-			ui_features->add_test_dotfeatures((CDotFeatures*) feat);
+		{
+			for (int32_t i=0; i<repetitions; i++)
+				ui_features->add_test_dotfeatures((CDotFeatures*) feat);
+		}
 		else
-			ui_features->add_test_features(feat);
+		{
+			for (int32_t i=0; i<repetitions; i++)
+				ui_features->add_test_features(feat);
+		}
 	}
 
 	delete[] target;
