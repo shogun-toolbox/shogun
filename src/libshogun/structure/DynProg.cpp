@@ -123,8 +123,8 @@ CDynProg::CDynProg(int32_t p_num_svms /*= 8 */)
 	  m_scores(1), m_states(1,1), m_positions(1,1), m_genestr_stop(1),
 	  m_lin_feat(1,1), //by Jonas
 	  //m_num_lin_feat(num_svms)
-  m_long_transitions(true),
-  m_long_transition_threshold(2000),
+  m_long_transitions(false),
+  m_long_transition_threshold(100000),
   m_long_transition_max(100000)
 {
 	trans_list_forward = NULL ;
