@@ -201,6 +201,9 @@ bool CMKL::train()
 		set_callback_function();
 	else
 	{
+#warning unqualified compile-fix
+		int32_t num_vectors = 0 ;
+		int32_t num_kernels = 0 ;
 		float64_t* alpha=new float64_t[num_vectors];
 		float64_t* old_alpha;
 		float64_t* beta;
@@ -217,8 +220,7 @@ bool CMKL::train()
 
 			mkl_iterations++;
 		}
-
-		delete[] 
+		//delete[] ;
 	}
 #ifdef USE_CPLEX
 	cleanup_cplex();
