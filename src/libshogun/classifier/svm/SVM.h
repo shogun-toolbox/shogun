@@ -417,12 +417,6 @@ class CSVM : public CKernelMachine
 		 */
 		float64_t compute_mkl_dual_objective();
 
-		/** compute objective
-		 *
-		 * @return computed objective
-		 */
-		float64_t compute_objective();
-
 		/** set objective
 		 *
 		 * @param v objective
