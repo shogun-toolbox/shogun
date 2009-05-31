@@ -226,7 +226,6 @@ void CMKLClassification::perform_mkl_step(float64_t* alpha, float64_t* old_alpha
 	float64_t suma = 0 ;
 	int32_t num = kernel->get_num_vec_rhs();
 
-#warning unqualified compile-fix
 	int32_t count=0;
 
 #ifdef HAVE_LAPACK

@@ -39,6 +39,7 @@
 #include "classifier/svm/SVM_libsvm.h"
 #include "kernel/Kernel.h"
 #include "lib/io.h"
+#include "lib/Signal.h"
 #include "lib/common.h"
 #include "lib/Mathematics.h"
 
@@ -434,8 +435,9 @@ void Solver::Solve(
 
 	int32_t iter = 0;
 	int32_t counter = CMath::min(l,1000)+1;
+	CSignal::clear_cancel();
 
-	while(1)
+	while (!CSignal::cancel_computations())
 	{
 		// show progress and do shrinking
 
@@ -1181,6 +1183,7 @@ private:
 
 float64_t Solver_NUMC::compute_primal(const schar* p_y, float64_t* p_alpha, float64_t* biases)
 {
+	/*
 	clone(y, p_y,l);
 	clone(alpha,p_alpha,l);
 
@@ -1231,8 +1234,8 @@ float64_t Solver_NUMC::compute_primal(const schar* p_y, float64_t* p_alpha, floa
 		biases[(int32_t) y[i]]-=sum_free;
 		if (class_count[(int32_t) y[i]] != 0.0)
 			rho+=sum_free/class_count[(int32_t) y[i]];
-		else
-			SG_SPRINT("sum_free=%f, class_count=0\n", sum_free);
+		//else
+		//	SG_SPRINT("sum_free=%f, class_count=0\n", sum_free);
 		outputs[i]+=sum_free+sum_atbound;
 	}
 
@@ -1289,6 +1292,8 @@ float64_t Solver_NUMC::compute_primal(const schar* p_y, float64_t* p_alpha, floa
 	delete[] alpha_status;
 
 	return primal;
+	*/
+	return 0;
 }
 
 
@@ -1393,7 +1398,7 @@ int32_t Solver_NUMC::select_working_set(
 	out_i=best_out_i;
 	out_j=best_out_j;
 
-	SG_SPRINT("i=%d j=%d best_gap=%f y_i=%f y_j=%f\n", out_i, out_j, gap, y[out_i], y[out_j]);
+	SG_SDEBUG("i=%d j=%d best_gap=%f y_i=%f y_j=%f\n", out_i, out_j, gap, y[out_i], y[out_j]);
 
 
 	if(gap < eps)
@@ -1410,18 +1415,15 @@ bool Solver_NUMC::be_shrunk(
 	int32_t i, float64_t Gmax1, float64_t Gmax2, float64_t Gmax3,
 	float64_t Gmax4)
 {
-	SG_SERROR("to be implemented...\n");
 	return false;
 }
 
 void Solver_NUMC::do_shrinking()
 {
-	SG_SERROR("to be implemented...\n");
 }
 
 float64_t Solver_NUMC::calculate_rho()
 {
-	SG_SWARNING("calculate_rho to be implemented...\n");
 	return 0;
 }
 
@@ -1807,7 +1809,8 @@ static void solve_nu_multiclass_svc(const svm_problem *prob,
 			class_sv_count[(int32_t) y[i]]++;
 	}
 
-	model->rho = new float64_t[nr_class];
+	model->l=l;
+	model->rho = Malloc(float64_t, nr_class);
 	model->nr_class = nr_class;
 	model->label = NULL;
 	model->SV = Malloc(svm_node*,nr_class);
@@ -1839,7 +1842,7 @@ static void solve_nu_multiclass_svc(const svm_problem *prob,
 
 	delete[] y;
 	delete[] zeros;
-
+	free(alpha);
 }
 
 static void solve_one_class(

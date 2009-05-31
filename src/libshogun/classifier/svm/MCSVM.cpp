@@ -107,6 +107,11 @@ bool CMCSVM::train()
 		delete[] problem.x;
 		delete[] problem.y;
 		delete[] x_space;
+		for (int32_t i=0; i<num_classes; i++)
+		{
+			free(model->SV[i]);
+			model->SV[i]=NULL;
+		}
 		svm_destroy_model(model);
 		compute_norm_wc();
 

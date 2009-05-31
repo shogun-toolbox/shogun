@@ -42,6 +42,8 @@ bool CMultiClassSVM::create_multiclass_svm(int32_t num_classes)
 {
 	if (num_classes>0)
 	{
+		cleanup();
+
 		m_num_classes=num_classes;
 
 		if (multiclass_type==ONE_VS_REST)

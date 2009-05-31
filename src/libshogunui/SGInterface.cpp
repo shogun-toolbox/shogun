@@ -1138,17 +1138,17 @@ CSGInterface::CSGInterface(bool print_copyright)
 
 CSGInterface::~CSGInterface()
 {
-	SG_UNREF(ui_classifier);
-	SG_UNREF(ui_hmm);
-	SG_UNREF(ui_pluginestimate);
-	SG_UNREF(ui_kernel);
-	SG_UNREF(ui_preproc);
-	SG_UNREF(ui_features);
-	SG_UNREF(ui_labels);
-	SG_UNREF(ui_math);
-	SG_UNREF(ui_structure);
-	SG_UNREF(ui_time);
-	SG_UNREF(ui_distance);
+	delete ui_classifier;
+	delete ui_hmm;
+	delete ui_pluginestimate;
+	delete ui_kernel;
+	delete ui_preproc;
+	delete ui_features;
+	delete ui_labels;
+	delete ui_math;
+	delete ui_structure;
+	delete ui_time;
+	delete ui_distance;
 
 	if (file_out)
 		fclose(file_out);
