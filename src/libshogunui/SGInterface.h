@@ -4,6 +4,7 @@
 #include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
 #include <shogun/base/SGObject.h>
+#include <shogun/features/Features.h>
 #include <shogun/features/StringFeatures.h>
 #include <shogun/features/SparseFeatures.h>
 #include <shogun/features/AttributeFeatures.h>
@@ -114,10 +115,6 @@ class CSGInterface : public CSGObject
 		bool cmd_del_last_features();
 		/** convert features */
 		bool cmd_convert();
-		/** obtain from position list */
-		bool cmd_obtain_from_position_list();
-		/** obtain by sliding window */
-		bool cmd_obtain_by_sliding_window();
 		/** reshape features */
 		bool cmd_reshape();
 		/** load labels from file */
@@ -720,6 +717,13 @@ class CSGInterface : public CSGObject
 		bool do_hmm_classify_example(bool one_class=false);
 		/** helper function for add/set features */
 		bool do_set_features(bool add=false, bool check_dot=false);
+
+		/** obtain from single string */
+		void obtain_from_single_string(CFeatures* features);
+		/** obtain from position list */
+		bool obtain_from_position_list(CFeatures* features);
+		/** obtain by sliding window */
+		bool obtain_by_sliding_window(CFeatures* features);
 		/** helper function to create a kernel */
 		CKernel* create_kernel();
 

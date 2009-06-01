@@ -93,7 +93,13 @@ CSGInterfaceMethod sg_methods[]=
 		N_SET_FEATURES,
 		(&CSGInterface::cmd_set_features),
 		USAGE_I(N_SET_FEATURES,
-			USAGE_STR "TRAIN|TEST" USAGE_STR USAGE_COMMA "features[" USAGE_COMMA "DNABINFILE|<ALPHABET>]")
+			USAGE_STR "TRAIN|TEST" USAGE_STR
+			USAGE_COMMA "features["
+			USAGE_COMMA "DNABINFILE|<ALPHABET>]["
+			USAGE_COMMA "[from_position_list|slide_window]"
+			USAGE_COMMA "window size"
+			USAGE_COMMA "[position_list|shift]"
+			USAGE_COMMA "skip")
 	},
 	{
 		N_SET_REF_FEAT,
@@ -117,22 +123,6 @@ CSGInterfaceMethod sg_methods[]=
 				USAGE_COMMA "start"
 				USAGE_COMMA "gap"
 				USAGE_COMMA "reversed]")
-	},
-	{
-		N_FROM_POSITION_LIST,
-		(&CSGInterface::cmd_obtain_from_position_list),
-		USAGE_I(N_FROM_POSITION_LIST, USAGE_STR "TRAIN|TEST" USAGE_STR
-				USAGE_COMMA "winsize"
-				USAGE_COMMA "shift["
-				USAGE_COMMA "skip]")
-	},
-	{
-		N_SLIDE_WINDOW,
-		(&CSGInterface::cmd_obtain_by_sliding_window),
-		USAGE_I(N_SLIDE_WINDOW, USAGE_STR "TRAIN|TEST" USAGE_STR
-				USAGE_COMMA "winsize"
-				USAGE_COMMA "shift["
-				USAGE_COMMA "skip]")
 	},
 	{
 		N_RESHAPE,
@@ -1661,7 +1651,7 @@ bool CSGInterface::cmd_get_features()
 
 bool CSGInterface::cmd_add_features()
 {
-	if ((m_nrhs!=3 && m_nrhs<4) || !create_return_values(0))
+	if (m_nrhs<3 || !create_return_values(0))
 		return false;
 
 	return do_set_features(true, false);
@@ -1669,7 +1659,7 @@ bool CSGInterface::cmd_add_features()
 
 bool CSGInterface::cmd_add_dotfeatures()
 {
-	if ((m_nrhs!=3 && m_nrhs<4) || !create_return_values(0))
+	if (m_nrhs<3 || !create_return_values(0))
 		return false;
 
 	return do_set_features(true, true);
@@ -1677,7 +1667,7 @@ bool CSGInterface::cmd_add_dotfeatures()
 
 bool CSGInterface::cmd_set_features()
 {
-	if ((m_nrhs!=3 && m_nrhs<4) || !create_return_values(0))
+	if (m_nrhs<3 || !create_return_values(0))
 		return false;
 
 	return do_set_features(false, false);
@@ -1810,6 +1800,8 @@ bool CSGInterface::do_set_features(bool add, bool check_dot)
 
 				SG_UNREF(alphabet);
 			}
+
+			obtain_from_single_string(feat);
 			break;
 		}
 
@@ -1838,6 +1830,8 @@ bool CSGInterface::do_set_features(bool add, bool check_dot)
 				SG_ERROR("Couldnt set byte string features.\n");
 			}
 			feat=create_custom_string_features((CStringFeatures<uint8_t>*) feat);
+
+			obtain_from_single_string(feat);
 			break;
 		}
 
@@ -2185,19 +2179,29 @@ bool CSGInterface::cmd_convert()
 	return (result!=NULL);
 }
 
-bool CSGInterface::cmd_obtain_from_position_list()
+void CSGInterface::obtain_from_single_string(CFeatures* features)
 {
-	if ((m_nrhs!=4 && m_nrhs!=5) || !create_return_values(0))
-		return false;
+	if (m_nrhs<5)
+		return;
 
-	int32_t tlen=0;
-	char* target=get_string(tlen);
-	if (!strmatch(target, "TRAIN") && !strmatch(target, "TEST"))
+	int32_t len=0;
+	char* str=get_string(len);
+	ASSERT(str);
+
+	if (strmatch(str, "from_position_list"))
 	{
-		delete[] target;
-		SG_ERROR("Unknown target, neither TRAIN nor TEST.\n");
+		obtain_from_position_list(features);
 	}
+	else if (strmatch(str, "slide_window"))
+	{
+		obtain_by_sliding_window(features);
+	}
+	else
+		SG_SERROR("Unknown conversion\n");
+}
 
+bool CSGInterface::obtain_from_position_list(CFeatures* features)
+{
 	int32_t winsize=get_int();
 
 	int32_t* shifts=NULL;
@@ -2205,7 +2209,7 @@ bool CSGInterface::cmd_obtain_from_position_list()
 	get_int_vector(shifts, num_shift);
 
 	int32_t skip=0;
-	if (m_nrhs==5)
+	if (m_nrhs==8)
 		skip=get_int();
 
 	SG_DEBUG("winsize: %d num_shifts: %d skip: %d\n", winsize, num_shift, skip);
@@ -2214,29 +2218,6 @@ bool CSGInterface::cmd_obtain_from_position_list()
 
 	for (int32_t i=0; i<num_shift; i++)
 		positions.set_element(shifts[i], i);
-
-	CFeatures* features=NULL;
-	if (strmatch(target, "TRAIN"))
-	{
-		ui_features->invalidate_train();
-		features=ui_features->get_train_features();
-	}
-	else
-	{
-		ui_features->invalidate_test();
-		features=ui_features->get_test_features();
-	}
-	delete[] target;
-
-	if (!features)
-		SG_ERROR("No features.\n");
-
-	if (features->get_feature_class()==C_COMBINED)
-	{
-		features=((CCombinedFeatures*) features)->get_last_feature_obj();
-		if (!features)
-			SG_ERROR("No features from combined.\n");
-	}
 
 	if (features->get_feature_class()!=C_STRING)
 		SG_ERROR("No string features.\n");
@@ -2275,23 +2256,35 @@ bool CSGInterface::cmd_obtain_from_position_list()
 	return success;
 }
 
-bool CSGInterface::cmd_obtain_by_sliding_window()
+bool CSGInterface::obtain_by_sliding_window(CFeatures* features)
 {
-	if (m_nrhs<4 || !create_return_values(0))
-		return false;
-
-	int32_t len=0;
-	char* target=get_str_from_str_or_direct(len);
-	int32_t winsize=get_int_from_int_or_str();
-	int32_t shift=get_int_from_int_or_str();
+	int32_t winsize=get_int();
+	int32_t shift=get_int();
 	int32_t skip=0;
 
-	if (m_nrhs>5)
-		skip=get_int_from_int_or_str();
+	if (m_nrhs==8)
+		skip=get_int();
 
-	bool success=ui_features->obtain_by_sliding_window(target, winsize, shift, skip);
+	bool success=false;
 
-	delete[] target;
+	ASSERT(features);
+	ASSERT(((CFeatures*) features)->get_feature_class()==C_STRING);
+
+	switch (features->get_feature_type())
+	{
+		case F_CHAR:
+			return ( ((CStringFeatures<char>*) features)->obtain_by_sliding_window(winsize, shift, skip)>0);
+		case F_BYTE:
+			return ( ((CStringFeatures<uint8_t>*) features)->obtain_by_sliding_window(winsize, shift, skip)>0);
+		case F_WORD:
+			return ( ((CStringFeatures<uint16_t>*) features)->obtain_by_sliding_window(winsize, shift, skip)>0);
+		case F_ULONG:
+			return ( ((CStringFeatures<uint64_t>*) features)->obtain_by_sliding_window(winsize, shift, skip)>0);
+		default:
+			SG_SERROR("Unsupported string features type.\n");
+			return false;
+	}
+
 	return success;
 }
 

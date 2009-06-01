@@ -209,54 +209,6 @@ bool CGUIFeatures::clean(char* target)
 	return true;
 }
 
-bool CGUIFeatures::obtain_by_sliding_window(
-	char* target, int32_t winsize, int32_t shift, int32_t skip)
-{
-	ASSERT(winsize>0);
-	ASSERT(shift>0);
-
-	CFeatures* features=NULL;
-
-	if (strncmp(target, "TRAIN", 5)==0)
-	{
-		invalidate_train();
-		features=train_features;
-	}
-	else if (strncmp(target, "TEST", 4)==0)
-	{
-		invalidate_test();
-		features=test_features;
-	}
-	else
-	{
-		SG_ERROR("Invalid target %s.\n", target);
-		return false;
-	}
-
-	if (((CFeatures*) features)->get_feature_class()==C_COMBINED)
-		features=((CCombinedFeatures*) features)->get_last_feature_obj();
-
-	ASSERT(features);
-	ASSERT(((CFeatures*) features)->get_feature_class()==C_STRING);
-
-	switch (features->get_feature_type())
-	{
-		case F_CHAR:
-			return ( ((CStringFeatures<char>*) features)->obtain_by_sliding_window(winsize, shift, skip)>0);
-		case F_BYTE:
-			return ( ((CStringFeatures<uint8_t>*) features)->obtain_by_sliding_window(winsize, shift, skip)>0);
-		case F_WORD:
-			return ( ((CStringFeatures<uint16_t>*) features)->obtain_by_sliding_window(winsize, shift, skip)>0);
-		case F_ULONG:
-			return ( ((CStringFeatures<uint64_t>*) features)->obtain_by_sliding_window(winsize, shift, skip)>0);
-		default:
-			SG_SERROR("Unsupported string features type.\n");
-			return false;
-	}
-
-	return false;
-}
-
 bool CGUIFeatures::reshape(char* target, int32_t num_feat, int32_t num_vec)
 {
 	CFeatures** f_ptr=NULL;
