@@ -24,10 +24,10 @@
 
 #include <stdlib.h>
 
-const EMessageType CIO::levels[NUM_LOG_LEVELS]={M_DEBUG, M_INFO, M_NOTICE,
+const EMessageType CIO::levels[NUM_LOG_LEVELS]={M_GCDEBUG, M_DEBUG, M_INFO, M_NOTICE,
 	M_WARN, M_ERROR, M_CRITICAL, M_ALERT, M_EMERGENCY, M_MESSAGEONLY};
 
-const char* CIO::message_strings[NUM_LOG_LEVELS]={"[DEBUG] \0", "[INFO] \0",
+const char* CIO::message_strings[NUM_LOG_LEVELS]={"[GCDEBUG] \0", "[DEBUG] \0", "[INFO] \0",
 	"[NOTICE] \0", "\033[1;34m[WARN]\033[0m \0", "\033[1;31m[ERROR]\033[0m \0",
 	"[CRITICAL] \0", "[ALERT] \0", "[EMERGENCY] \0", "\0"};
 
@@ -68,6 +68,7 @@ void CIO::message(EMessageType prio, const char *fmt, ... ) const
 
 		switch (prio)
 		{
+			case M_GCDEBUG:
 			case M_DEBUG:
 			case M_INFO:
 			case M_NOTICE:

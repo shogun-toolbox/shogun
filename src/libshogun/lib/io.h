@@ -35,6 +35,7 @@ extern CIO* sg_io;
  */
 enum EMessageType
 {
+	M_GCDEBUG,
 	M_DEBUG,
 	M_INFO,
 	M_NOTICE,
@@ -47,7 +48,7 @@ enum EMessageType
 };
 
 
-#define NUM_LOG_LEVELS 9
+#define NUM_LOG_LEVELS 10
 #define FBUFSIZE 4096
 
 #ifdef DARWIN
@@ -60,6 +61,7 @@ class CIO;
 
 // printf like funktions (with additional severity level)
 // for object derived from CSGObject
+#define SG_GCDEBUG(...) io->message(M_GCDEBUG, __VA_ARGS__)
 #define SG_DEBUG(...) io->message(M_DEBUG, __VA_ARGS__)
 #define SG_INFO(...) io->message(M_INFO, __VA_ARGS__)
 #define SG_WARNING(...) io->message(M_WARN, __VA_ARGS__)
@@ -72,6 +74,7 @@ class CIO;
 #define SG_DONE() io->done()
 
 // printf like function using the global sg_io object
+#define SG_SGCDEBUG(...) sg_io->message(M_GCDEBUG,__VA_ARGS__)
 #define SG_SDEBUG(...) sg_io->message(M_DEBUG,__VA_ARGS__)
 #define SG_SINFO(...) sg_io->message(M_INFO,__VA_ARGS__)
 #define SG_SWARNING(...) sg_io->message(M_WARN,__VA_ARGS__)

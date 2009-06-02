@@ -77,7 +77,7 @@ public:
 	{
 		pthread_mutex_lock(&ref_mutex);
 		++refcount;
-		SG_DEBUG("ref() refcount %ld obj %s (%p) increased\n", refcount, this->get_name(), this);
+		SG_GCDEBUG("ref() refcount %ld obj %s (%p) increased\n", refcount, this->get_name(), this);
 		pthread_mutex_unlock(&ref_mutex);
 		return refcount;
 	}
@@ -88,7 +88,7 @@ public:
 	 */
 	inline int32_t ref_count() const
 	{
-		SG_DEBUG("ref_count(): refcount %d, obj %s (%p)\n", refcount, this->get_name(), this);
+		SG_GCDEBUG("ref_count(): refcount %d, obj %s (%p)\n", refcount, this->get_name(), this);
 		return refcount;
 	}
 
@@ -102,14 +102,14 @@ public:
 		pthread_mutex_lock(&ref_mutex);
 		if (refcount==0 || --refcount==0)
 		{
-			SG_DEBUG("unref() refcount %ld, obj %s (%p) destroying\n", refcount, this->get_name(), this);
+			SG_GCDEBUG("unref() refcount %ld, obj %s (%p) destroying\n", refcount, this->get_name(), this);
 			pthread_mutex_unlock(&ref_mutex);
 			delete this;
 			return 0;
 		}
 		else
 		{
-			SG_DEBUG("unref() refcount %ld obj %s (%p) decreased\n", refcount, this->get_name(), this);
+			SG_GCDEBUG("unref() refcount %ld obj %s (%p) decreased\n", refcount, this->get_name(), this);
 			pthread_mutex_unlock(&ref_mutex);
 			return refcount;
 		}

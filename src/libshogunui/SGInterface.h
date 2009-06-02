@@ -718,6 +718,8 @@ class CSGInterface : public CSGObject
 		/** helper function for add/set features */
 		bool do_set_features(bool add=false, bool check_dot=false);
 
+		/** perform bit embedding */
+		void convert_to_bitembedding(CFeatures* &features, bool convert_to_word, bool convert_to_ulong);
 		/** obtain from single string */
 		void obtain_from_single_string(CFeatures* features);
 		/** obtain from position list */

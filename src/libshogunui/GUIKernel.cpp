@@ -866,7 +866,7 @@ bool CGUIKernel::add_kernel(CKernel* kern, float64_t weight)
 
 	if (kernel->get_kernel_type()!=K_COMBINED)
 	{
-		CKernel* first_elem=kern;
+		CKernel* first_elem=kernel;
 		kernel= new CCombinedKernel(20, false);
 		SG_REF(kernel);
 		((CCombinedKernel*) kernel)->append_kernel(first_elem);

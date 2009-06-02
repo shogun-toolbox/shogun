@@ -1785,7 +1785,22 @@ bool CSGInterface::do_set_features(bool add, bool check_dot)
 			}
 			else
 			{
-				CAlphabet* alphabet=new CAlphabet(alphabet_str, alphabet_len);
+				bool convert_to_word=false;
+				bool convert_to_ulong=false;
+				CAlphabet* alphabet=NULL;
+				if (strmatch(alphabet_str, "DNAWORD"))
+				{
+					alphabet=new CAlphabet(DNA);
+					convert_to_word=true;
+				}
+				else if (strmatch(alphabet_str, "DNAULONG"))
+				{
+					alphabet=new CAlphabet(DNA);
+					convert_to_ulong=true;
+				}
+				else
+					alphabet=new CAlphabet(alphabet_str, alphabet_len);
+
 				SG_REF(alphabet);
 				delete[] alphabet_str;
 
@@ -1799,6 +1814,9 @@ bool CSGInterface::do_set_features(bool add, bool check_dot)
 				}
 
 				SG_UNREF(alphabet);
+
+				if (convert_to_word || convert_to_ulong)
+					convert_to_bitembedding(feat, convert_to_word, convert_to_ulong);
 			}
 
 			obtain_from_single_string(feat);
@@ -2177,6 +2195,35 @@ bool CSGInterface::cmd_convert()
 	delete[] to_class;
 	delete[] to_type;
 	return (result!=NULL);
+}
+
+void CSGInterface::convert_to_bitembedding(CFeatures* &features, bool convert_to_word, bool convert_to_ulong)
+{
+	int32_t order=1;
+	int32_t start=0;
+	int32_t gap=0;
+	char rev='f';
+
+	if (m_nrhs<5)
+		return;
+
+	order=get_int();
+	// remove arg, for parameters to come
+	m_nrhs--;
+
+	if (convert_to_word)
+	{
+		SG_INFO("Converting into word-bitembedding\n");
+		features=ui_features->convert_string_char_to_string_generic<char,uint16_t>(
+				(CStringFeatures<char>*) features, order, start, gap, rev);
+	}
+
+	if (convert_to_ulong)
+	{
+		SG_INFO("Converting into ulong-bitembedding\n");
+		features=ui_features->convert_string_char_to_string_generic<char,uint64_t>(
+				(CStringFeatures<char>*) features, order, start, gap, rev);
+	}
 }
 
 void CSGInterface::obtain_from_single_string(CFeatures* features)
@@ -7062,7 +7109,9 @@ bool CSGInterface::cmd_loglevel()
 	int32_t len=0;
 	char* level=get_str_from_str_or_direct(len);
 
-	if (strmatch(level, "ALL") || strmatch(level, "DEBUG"))
+	if (strmatch(level, "ALL") || strmatch(level, "GCDEBUG"))
+		io->set_loglevel(M_DEBUG);
+	else if (strmatch(level, "DEBUG"))
 		io->set_loglevel(M_DEBUG);
 	else if (strmatch(level, "INFO"))
 		io->set_loglevel(M_INFO);
