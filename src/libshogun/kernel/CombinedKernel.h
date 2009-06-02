@@ -142,7 +142,7 @@ class CCombinedKernel : public CKernel
 		inline CKernel* get_kernel(int32_t idx)
 		{
 			CKernel * k = get_first_kernel();
-			for (int32_t i=1; i<idx; i++)
+			for (int32_t i=0; i<idx; i++)
 			{
 				SG_UNREF(k);
 				k = get_next_kernel();
