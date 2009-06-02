@@ -2047,10 +2047,10 @@ float64_t CSVMLight::compute_optimal_betas_newton(float64_t* beta,
   const double epsNewt = 0.0001;
   const double epsStep = 1e-9;
   const int nofNewtonSteps = 3;
-  const double hessRidge = 1e-6;
+  const double hessRidge = 1e-3;
   const float64_t r = mkl_norm / ( mkl_norm - 1.0 );
   float64_t* newtDir = new float64_t[ num_kernels ];
-  float64_t* newtHit = new float64_t[ num_kernels ];
+  float64_t* newtBeta = new float64_t[ num_kernels ];
   float64_t newtStep;
   float64_t stepSize;
   float64_t Z;
@@ -2059,16 +2059,37 @@ float64_t CSVMLight::compute_optimal_betas_newton(float64_t* beta,
   int32_t p;
   int i;
 
-  // === init beta, compute gamma
-  gamma = 0.0;
-  obj = -suma;
+  // === init
+  for( p=0; p<num_kernels; ++p ) {
+    //SG_PRINT( "old_beta[%d] = %e;  sumw[%d]=%e.  \n", p, old_beta[p], p, sumw[p] );
+  }
+
+  // --- check beta
+  Z = 0.0;
   for( p=0; p<num_kernels; ++p ) {
     beta[p] = old_beta[p];
     if( !( beta[p] >= epsBeta ) ) {
-      SG_WARNING( "old_beta[%d] = %e;  set to %e.  ", p, beta[p], epsBeta );
+      SG_WARNING( "old_beta[%d] = %e  (sumw[.]=%e);  set to %e.  ", p, beta[p], sumw[p], epsBeta );
       beta[p] = epsBeta;
     }
     ASSERT( 0.0 <= beta[p] && beta[p] <= 1.0 );
+    Z += CMath::pow( beta[p], mkl_norm );
+  }
+  Z = CMath::pow( Z, -1.0/mkl_norm );
+  if( !( fabs(Z-1.0) <= epsGamma ) ) {
+    SG_WARNING( "old_beta not normalized (diff=%e);  forcing normalization.  ", Z-1.0 );
+    for( p=0; p<num_kernels; ++p ) {
+      beta[p] *= Z;
+      if( beta[p] > 1.0 ) {
+	beta[p] = 1.0;
+      }
+      ASSERT( 0.0 <= beta[p] && beta[p] <= 1.0 );
+    }
+  }
+
+  // --- compute gamma
+  gamma = 0.0;
+  for( p=0; p<num_kernels; ++p ) {
     if( !( sumw[p] >= 0 ) ) {
       if( !( sumw[p] >= -epsWsq ) ) {
 	SG_WARNING( "sumw[%d] = %e;  treated as 0.  ", p, sumw[p] );
@@ -2076,12 +2097,8 @@ float64_t CSVMLight::compute_optimal_betas_newton(float64_t* beta,
       // should better recompute sumw[] !!!
     } else {
       ASSERT( sumw[p] >= 0 );
-      gamma += CMath::pow( sumw[p]*beta[p]*beta[p], r );
+      gamma += CMath::pow( sumw[p] * beta[p]*beta[p], r );
     }
-    obj += beta[p] * sumw[p];
-  }
-  if( !( obj >= 0.0 ) ) {
-    SG_WARNING( "bad objective: %e.  ", obj );
   }
   gamma = CMath::pow( gamma, 1.0/r ) / mkl_norm;
   ASSERT( gamma > -1e-9 );
@@ -2093,16 +2110,26 @@ float64_t CSVMLight::compute_optimal_betas_newton(float64_t* beta,
   ASSERT( gamma >= epsGamma );
   gamma = -gamma;
 
+  // --- compute objective
+  obj = 0.0;
+  for( p=0; p<num_kernels; ++p ) {
+    obj += beta[p] * sumw[p];
+    //obj += gamma/mkl_norm * CMath::pow( beta[p], mkl_norm );
+  }
+  if( !( obj >= 0.0 ) ) {
+    SG_WARNING( "negative objective: %e.  ", obj );
+  }
+  //SG_PRINT( "OBJ = %e.  \n", obj );
+
   // === perform Newton steps
   if( nofNewtonSteps > 1 ) {
     //SG_DEBUG( "performing %d Newton steps.\n", nofNewtonSteps );
   }
   for( i = 0; i < nofNewtonSteps; ++i ) {
 
-    // --- compute Newton step (Hessian is diagonal)
+    // --- compute Newton direction (Hessian is diagonal)
     const float64_t gqq1 = mkl_norm * (mkl_norm-1.0) * gamma;
     newtStep = 0.0;
-    Z = 0.0;
     for( p=0; p<num_kernels; ++p ) {
       ASSERT( 0.0 <= beta[p] && beta[p] <= 1.0 );
       const float halfw2p = ( sumw[p] >= 0.0 ) ? sumw[p] : 0.0;
@@ -2110,12 +2137,24 @@ float64_t CSVMLight::compute_optimal_betas_newton(float64_t* beta,
       const float64_t t2 = 2.0*halfw2p + gqq1*CMath::pow(beta[p],mkl_norm-1.0);
       //newtDir[p] = ( t1 == 0.0 ) ? 0.0 : ( t1 / t2 );
       newtDir[p] = t1 / ( t1 + t2*beta[p] + hessRidge );
-      // newtStep += newtDir[p] * 
+      // newtStep += newtDir[p] * grad[p];
       ASSERT( newtDir[p] == newtDir[p] );
-      Z += newtDir[p] * newtDir[p];
+      //SG_PRINT( "newtDir[%d] = %6.3f = %e / %e \n", p, newtDir[p], t1, t2 );
     }
     //CMath::display_vector( newtDir, num_kernels, "newton direction  " );
     //SG_PRINT( "Newton step size = %e\n", Z );
+
+    // --- simple direction !!!
+    for( p=0; p<num_kernels; ++p ) {
+      ASSERT( 0.0 <= beta[p] && beta[p] <= 1.0 );
+      const float halfw2p = ( sumw[p] >= 0.0 ) ? sumw[p] : 0.0;
+      const float64_t t1 = halfw2p*beta[p] - mkl_norm*gamma*CMath::pow(beta[p],mkl_norm);
+      const float64_t t2 = 2.0*halfw2p + gqq1*CMath::pow(beta[p],mkl_norm-1.0);
+      //newtDir[p] = ( t1 == 0.0 ) ? 0.0 : ( t1 / t2 );
+      newtDir[p] = t1 / ( t1 + t2*beta[p] + hessRidge );
+      // newtStep += newtDir[p] * grad[p];
+      ASSERT( newtDir[p] == newtDir[p] );
+    }
 
     // --- line search
     stepSize = 1.0;
@@ -2124,34 +2163,36 @@ float64_t CSVMLight::compute_optimal_betas_newton(float64_t* beta,
       // --- perform Newton step
       Z = 0.0;
       for( p=0; p<num_kernels; ++p ) {
-	//newtHit[p] = beta[p] - stepSize * newtDir[p];
-	newtHit[p] = beta[p] * CMath::exp( - stepSize * newtDir[p] );
-	if( !( newtHit[p] >= epsBeta ) ) {
-	  newtHit[p] = epsBeta;
+	//newtBeta[p] = beta[p] - stepSize * newtDir[p];
+	newtBeta[p] = beta[p] * CMath::exp( - stepSize * newtDir[p] );
+	if( !( newtBeta[p] >= epsBeta ) ) {
+	  newtBeta[p] = epsBeta;
 	}
-	Z += CMath::pow( newtHit[p], mkl_norm );
+	Z += CMath::pow( newtBeta[p], mkl_norm );
       }
 
       // --- noramlize new beta (wrt p-norm)
       Z = CMath::pow( Z, -1.0/mkl_norm );
       for( p=0; p<num_kernels; ++p ) {
-	newtHit[p] *= Z;
-	if( newtHit[p] > 1.0 ) {
-	  SG_WARNING( "beta[%d] = %e;  set to 1.  ", p, beta[p] );
-	  newtHit[p] = 1.0;
+	newtBeta[p] *= Z;
+	if( newtBeta[p] > 1.0 ) {
+	  //SG_WARNING( "beta[%d] = %e;  set to 1.  ", p, beta[p] );
+	  newtBeta[p] = 1.0;
 	}
-	ASSERT( 0.0 <= newtHit[p] && newtHit[p] <= 1.0 );
+	ASSERT( 0.0 <= newtBeta[p] && newtBeta[p] <= 1.0 );
       }
 
-      // --- objective decreased?
+      // --- objective increased?
       float64_t newtObj;
-      newtObj = -suma;
+      newtObj = 0.0;
       for( p=0; p<num_kernels; ++p ) {
-	newtObj += newtHit[p] * sumw[p];
+	newtObj += newtBeta[p] * sumw[p];
       }
-      if( newtObj < obj + epsNewt*stepSize*obj ) {
+      //SG_PRINT( "step = %.8f => obj = %e.  \n", stepSize, newtObj );
+      if( newtObj > obj + epsNewt*stepSize*obj ) {
+	//if( 1 ) {
 	for( p=0; p<num_kernels; ++p ) {
-	  beta[p] = newtHit[p];
+	  beta[p] = newtBeta[p];
 	}
 	obj = newtObj;
 	break;
@@ -2171,7 +2212,7 @@ float64_t CSVMLight::compute_optimal_betas_newton(float64_t* beta,
   // === return new objective
   obj = -suma;
   for( p=0; p<num_kernels; ++p ) {
-    obj += beta[p] * (sumw[p]);
+    obj += beta[p] * sumw[p];
   }
   return obj;
 }
@@ -2246,7 +2287,7 @@ float64_t CSVMLight::compute_optimal_betas_newton(float64_t* beta,
 // }
 
 
-float64_t CSVMLight::compute_optimal_betas_via_cplex(float64_t* x, float64_t* old_beta, int32_t num_kernels,
+float64_t CSVMLight::compute_optimal_betas_via_cplex(float64_t* x, const float64_t* old_beta, int32_t num_kernels,
 		  const float64_t* sumw, float64_t suma, int32_t& inner_iters)
 {
 	SG_DEBUG("MKL via CPLEX\n");
@@ -2587,7 +2628,7 @@ float64_t CSVMLight::compute_optimal_betas_via_cplex(float64_t* x, float64_t* ol
 	return rho;
 }
 
-float64_t CSVMLight::compute_optimal_betas_via_glpk(float64_t* beta, float64_t* old_beta,
+float64_t CSVMLight::compute_optimal_betas_via_glpk(float64_t* beta, const float64_t* old_beta,
 		int num_kernels, const float64_t* sumw, float64_t suma, int32_t& inner_iters)
 {
 	SG_DEBUG("MKL via GLPK\n");

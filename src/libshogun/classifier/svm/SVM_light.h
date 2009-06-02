@@ -525,7 +525,7 @@ class CSVMLight : public CSVM
    *
    * @return new objective value
    */
-  float64_t compute_optimal_betas_via_cplex(float64_t* x, float64_t* old_beta, int32_t num_kernels,
+  float64_t compute_optimal_betas_via_cplex(float64_t* x, const float64_t* old_beta, int32_t num_kernels,
 		  const float64_t* sumw, float64_t suma, int32_t& inner_iters);
 
   /** given the alphas, compute the corresponding optimal betas
@@ -540,7 +540,7 @@ class CSVMLight : public CSVM
    *
    * @return new objective value
    */
-  float64_t compute_optimal_betas_via_glpk(float64_t* beta, float64_t* old_beta,
+  float64_t compute_optimal_betas_via_glpk(float64_t* beta, const float64_t* old_beta,
 		  int num_kernels, const float64_t* sumw, float64_t suma, int32_t& inner_iters);
 
   /** update linear component MKL
