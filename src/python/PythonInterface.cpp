@@ -27,7 +27,7 @@ void python_print_message(FILE* target, const char* str)
 void python_print_warning(FILE* target, const char* str)
 {
 	if (target==stdout)
-		PyErr_Warn(NULL, str);
+		PyErr_Warn(NULL, (char*) str); //the cast seems to be necessary for python 2.4.3
 	else
 		fprintf(target, "%s", str);
 }
