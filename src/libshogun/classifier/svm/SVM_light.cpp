@@ -3390,12 +3390,23 @@ void CSVMLight::set_qnorm_constraints(float64_t* beta, int32_t num_kernels)
 	if (num>0)
 	{
 		status = CPXdelqconstrs (env, lp_cplex, 0, 0);
-		ASSERT(!status);
+		if (status)
+		{
+			char  errmsg[1024];
+			CPXgeterrorstring (env, status, errmsg);
+			SG_ERROR("%s", errmsg);
+		}
 	}
 
 	status = CPXaddqconstr (env, lp_cplex, num_kernels+1, num_kernels+1, const_term, 'L', ind, lin_term,
 			ind, ind, hess_beta, NULL);
-	ASSERT(!status);
+
+	if (status)
+	{
+		char  errmsg[1024];
+		CPXgeterrorstring (env, status, errmsg);
+		SG_ERROR("%s", errmsg);
+	}
 
 	//CPXwriteprob (env, lp_cplex, "prob.lp", NULL);
 	//CPXqpwrite (env, lp_cplex, "prob.qp");
