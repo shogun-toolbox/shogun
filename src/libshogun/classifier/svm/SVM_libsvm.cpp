@@ -1200,7 +1200,6 @@ float64_t Solver_NUMC::compute_primal(const schar* p_y, float64_t* p_alpha, floa
 		biases[i]=0;
 	}
 
-
 	for (int32_t i=0; i<active_size; i++)
 	{
 		update_alpha_status(i);
@@ -1307,80 +1306,87 @@ int32_t Solver_NUMC::select_working_set(
 	//    (if quadratic coefficient <= 0, replace it with tau)
 	//    -y_j*grad(f)_j < -y_i*grad(f)_i, j in I_low(\alpha)
 
-	schar *tmp_y;
-	clone(tmp_y,y,active_size);
-
-
+	int32_t retval=0;
 	float64_t best_gap=0;
 	int32_t best_out_i=-1;
 	int32_t best_out_j=-1;
 
-	for (int32_t c=0; c<nr_class; c++)
+	float64_t* Gmaxp = new float64_t[nr_class];
+	float64_t* Gmaxp2 = new float64_t[nr_class];
+	int32_t* Gmaxp_idx = new float64_t[nr_class];
+
+	float64_t* Gmaxn = new float64_t[nr_class];
+	float64_t* Gmaxn2 = new float64_t[nr_class];
+	int32_t* Gmaxn_idx = new float64_t[nr_class];
+
+	int32_t* Gmin_idx = new float64_t[nr_class];
+	float64_t* obj_diff_min = new float64_t[nr_class];
+
+	for (int32_t i=0; i<nr_class; i++)
 	{
-		for (int32_t i=0; i<active_size; i++)
-			tmp_y[i] = (y[i] == c) ? 1 : 0;
+		Gmaxp[i]=-INF;
+		Gmaxp2[i]=-INF;
+		Gmaxp_idx[i]=-1;
+		Gmaxn[i]=-INF;
+		Gmaxn2[i]=-INF;
+		Gmaxn_idx[i]=-1;
+		Gmin_idx[i]=-1;
+		obj_diff_min[i]=INF;
+	}
 
-		float64_t Gmaxp = -INF;
-		float64_t Gmaxp2 = -INF;
-		int32_t Gmaxp_idx = -1;
-
-		float64_t Gmaxn = -INF;
-		float64_t Gmaxn2 = -INF;
-		int32_t Gmaxn_idx = -1;
-
-		int32_t Gmin_idx = -1;
-		float64_t obj_diff_min = INF;
-
-		for(int32_t t=0;t<active_size;t++)
-			if(tmp_y[t]==+1)
-			{
-				if(!is_upper_bound(t))
-					if(-G[t] >= Gmaxp)
-					{
-						Gmaxp = -G[t];
-						Gmaxp_idx = t;
-					}
-			}
-
-		int32_t ip = Gmaxp_idx;
-		int32_t in = Gmaxn_idx;
-		const Qfloat *Q_ip = NULL;
-		const Qfloat *Q_in = NULL;
-		if(ip != -1) // NULL Q_ip not accessed: Gmaxp=-INF if ip=-1
-			Q_ip = Q->get_Q(ip,active_size);
-		if(in != -1)
-			Q_in = Q->get_Q(in,active_size);
-
-		for(int32_t j=0;j<active_size;j++)
+	for(int32_t t=0;t<active_size;t++)
+	{
+		int32_t cidx=y[t];
+		if(!is_upper_bound(t))
 		{
-			if(tmp_y[j]==+1)
+			if(-G[t] >= Gmaxp[cidx])
 			{
-				if (!is_lower_bound(j))	
-				{
-					float64_t grad_diff=Gmaxp+G[j];
-					if (G[j] >= Gmaxp2)
-						Gmaxp2 = G[j];
-					if (grad_diff > 0)
-					{
-						float64_t obj_diff; 
-						float64_t quad_coef = Q_ip[ip]+QD[j]-2*Q_ip[j];
-						if (quad_coef > 0)
-							obj_diff = -(grad_diff*grad_diff)/quad_coef;
-						else
-							obj_diff = -(grad_diff*grad_diff)/TAU;
+				Gmaxp[cidx] = -G[t];
+				Gmaxp_idx[cidx] = t;
+			}
+		}
+	}
 
-						if (obj_diff <= obj_diff_min)
-						{
-							Gmin_idx=j;
-							obj_diff_min = obj_diff;
-						}
-					}
+	int32_t ip = Gmaxp_idx;
+	int32_t in = Gmaxn_idx;
+	const Qfloat *Q_ip = NULL;
+	const Qfloat *Q_in = NULL;
+	if(ip != -1) // NULL Q_ip not accessed: Gmaxp=-INF if ip=-1
+		Q_ip = Q->get_Q(ip,active_size);
+	if(in != -1)
+		Q_in = Q->get_Q(in,active_size);
+
+	for(int32_t j=0;j<active_size;j++)
+	{
+		int32_t cidx=y[j];
+
+		if (!is_lower_bound(j))	
+		{
+			float64_t grad_diff=Gmaxp[cidx]+G[j];
+			if (G[j] >= Gmaxp2[cidx])
+				Gmaxp2[cidx] = G[j];
+			if (grad_diff > 0)
+			{
+				float64_t obj_diff; 
+				float64_t quad_coef = Q_ip[ip]+QD[j]-2*Q_ip[j];
+				if (quad_coef > 0)
+					obj_diff = -(grad_diff*grad_diff)/quad_coef;
+				else
+					obj_diff = -(grad_diff*grad_diff)/TAU;
+
+				if (obj_diff <= obj_diff_min[cidx])
+				{
+					Gmin_idx[cidx]=j;
+					obj_diff_min[cidx] = obj_diff;
 				}
 			}
 		}
-		gap=CMath::max(Gmaxp+Gmaxp2,Gmaxn+Gmaxn2);
+	}
 
-		if (gap>=best_gap && Gmin_idx>=0 && Gmin_idx<active_size)
+	for (int32_t c=0; c<nr_class; c++)
+	{
+		gap=CMath::max(Gmaxp[c]+Gmaxp2[c],Gmaxn[c]+Gmaxn2[c]);
+		if (gap>=best_gap && Gmin_idx[c]>=0 && Gmin_idx[c]<active_size)
 		{
 			if (tmp_y[Gmin_idx] == +1)
 				out_i = Gmaxp_idx;
@@ -1402,13 +1408,18 @@ int32_t Solver_NUMC::select_working_set(
 
 
 	if(gap < eps)
-	{
-		delete[] tmp_y;
-		return 1;
-	}
+		retval=1;
 
-	delete[] tmp_y;
-	return 0;
+	delete[] Gmaxp;
+	delete[] Gmaxp2;
+	delete[] Gmaxp_idx;
+	delete[] Gmaxn;
+	delete[] Gmaxn2;
+	delete[] Gmaxn_idx;
+	delete[] Gmin_idx;
+	delete[] obj_diff_min;
+
+	return retval;
 }
 
 bool Solver_NUMC::be_shrunk(
