@@ -947,33 +947,30 @@ protected:
 	/** word degree */
 	CArray<int32_t> word_degree;
 	/** cum num words */
-	CArray<int32_t> cum_num_words;
+	CArray<int32_t> m_cum_num_words;
 	/** cum num words array */
-	int32_t * cum_num_words_array;
+	int32_t * m_cum_num_words_array;
 	/** num words */
-	CArray<int32_t> num_words;
+	CArray<int32_t> m_num_words;
 	/** num words array */
-	int32_t * num_words_array;
+	int32_t* m_num_words_array;
 	/** mod words */
-	CArray2<int32_t> mod_words;
+	CArray2<int32_t> m_mod_words;
 	/** mod words array */
-	int32_t * mod_words_array;
+	int32_t* m_mod_words_array;
 	/** sign words */
-	CArray<bool> sign_words;
+	CArray<bool> m_sign_words;
 	/** sign words array */
-	bool * sign_words_array;
+	bool* m_sign_words_array;
 	/** string words */
-	CArray<int32_t> string_words;
+	CArray<int32_t> m_string_words;
 	/** string words array */
-	int32_t * string_words_array;
+	int32_t* m_string_words_array;
 
-//	CArray3<int32_t> word_used ;
-//	int32_t *word_used_array ;
-//	CArray2<float64_t> svm_values_unnormalized ;
 	/** SVM start position */
-	CArray<int32_t> svm_pos_start;
+	CArray<int32_t> m_svm_pos_start;
 	/** number of unique words */
-	CArray<int32_t> num_unique_words;
+	CArray<int32_t> m_num_unique_words;
 	/** SVM arrays clean */
 	bool m_svm_arrays_clean;
 
