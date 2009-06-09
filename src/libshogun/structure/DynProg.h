@@ -528,7 +528,7 @@ public:
 	 */
 	inline void set_q(T_STATES offset, float64_t value)
 	{
-		end_state_distribution_q[offset]=value;
+		m_end_state_distribution_q[offset]=value;
 	}
 
 	/** access function for probability of first state
@@ -537,7 +537,7 @@ public:
 	 */
 	inline void set_p(T_STATES offset, float64_t value)
 	{
-		initial_state_distribution_p[offset]=value;
+		m_initial_state_distribution_p[offset]=value;
 	}
 
 	/** access function for matrix a
@@ -548,7 +548,7 @@ public:
 	 */
 	inline void set_a(T_STATES line_, T_STATES column, float64_t value)
 	{
-	  transition_matrix_a.element(line_,column)=value; // look also best_path!
+	  m_transition_matrix_a.element(line_,column)=value; // look also best_path!
 	}
 
 	/** access function for probability of end states
@@ -558,7 +558,7 @@ public:
 	 */
 	inline float64_t get_q(T_STATES offset) const
 	{
-		return end_state_distribution_q[offset];
+		return m_end_state_distribution_q[offset];
 	}
 
 	/** access function for derivated probability of end states
@@ -568,7 +568,7 @@ public:
 	 */
 	inline float64_t get_q_deriv(T_STATES offset) const
 	{
-		return end_state_distribution_q_deriv[offset];
+		return m_end_state_distribution_q_deriv[offset];
 	}
 
 	/** access function for probability of initial states
@@ -578,7 +578,7 @@ public:
 	 */
 	inline float64_t get_p(T_STATES offset) const
 	{
-		return initial_state_distribution_p[offset];
+		return m_initial_state_distribution_p[offset];
 	}
 
 	/** access function for derivated probability of initial states
@@ -588,7 +588,7 @@ public:
 	 */
 	inline float64_t get_p_deriv(T_STATES offset) const
 	{
-		return initial_state_distribution_p_deriv[offset];
+		return m_initial_state_distribution_p_deriv[offset];
 	}
 	
 	/** create array of precomputed content svm values
@@ -661,7 +661,7 @@ public:
 	 */
 	inline float64_t get_a(T_STATES line_, T_STATES column) const
 	{
-	  return transition_matrix_a.element(line_, column); // look also best_path()!
+	  return m_transition_matrix_a.element(line_, column); // look also best_path()!
 	}
 
 	/** access function for matrix a derivated
@@ -672,7 +672,7 @@ public:
 	 */
 	inline float64_t get_a_deriv(T_STATES line_, T_STATES column) const
 	{
-	  return transition_matrix_a_deriv.element(line_, column); // look also best_path()!
+	  return m_transition_matrix_a_deriv.element(line_, column); // look also best_path()!
 	}
 	//@}
 protected:
@@ -918,34 +918,34 @@ protected:
 	int32_t N;
 
 	/// transition matrix
-	CArray2<int32_t> transition_matrix_a_id;
-	CArray2<float64_t> transition_matrix_a;
-	CArray2<float64_t> transition_matrix_a_deriv;
+	CArray2<int32_t> m_transition_matrix_a_id;
+	CArray2<float64_t> m_transition_matrix_a;
+	CArray2<float64_t> m_transition_matrix_a_deriv;
 
 	/// initial distribution of states
-	CArray<float64_t> initial_state_distribution_p;
-	CArray<float64_t> initial_state_distribution_p_deriv;
+	CArray<float64_t> m_initial_state_distribution_p;
+	CArray<float64_t> m_initial_state_distribution_p_deriv;
 
 	/// distribution of end-states
-	CArray<float64_t> end_state_distribution_q;
-	CArray<float64_t> end_state_distribution_q_deriv;
+	CArray<float64_t> m_end_state_distribution_q;
+	CArray<float64_t> m_end_state_distribution_q_deriv;
 
 	//@}
 	
 	/** dict weights */
 	CArray2<float64_t> dict_weights;
 	/** dict weights array */
-	float64_t * dict_weights_array;
+	float64_t* m_dict_weights_array;
 
 	/** number of degress */
-	int32_t num_degrees;
+	int32_t m_num_degrees;
 	/** number of SVMs */
-	int32_t num_svms;
+	int32_t m_num_svms;
 	/** number of strings */
-	int32_t num_strings;
+	int32_t m_num_strings;
 	
 	/** word degree */
-	CArray<int32_t> word_degree;
+	CArray<int32_t> m_word_degree;
 	/** cum num words */
 	CArray<int32_t> m_cum_num_words;
 	/** cum num words array */
