@@ -686,7 +686,7 @@ protected:
 	 * @param svm_values SVM values
 	 * @param frame frame
 	 */
-	inline void lookup_content_svm_values(const int32_t from_state,
+	void lookup_content_svm_values(const int32_t from_state,
 		const int32_t to_state, const int32_t from_pos, const int32_t to_pos,
 		float64_t* svm_values, int32_t frame);
 
@@ -992,7 +992,7 @@ protected:
 	int32_t num_unique_words_single;
 
 	/** max a id */
-	int32_t max_a_id;
+	int32_t m_max_a_id;
 	
 	// control info
 	/** m step */
@@ -1075,69 +1075,4 @@ protected:
 	int32_t m_long_transition_max ;
 
 };
-
-inline int32_t CDynProg::raw_intensities_interval_query(const int32_t from_pos, const int32_t to_pos, float64_t* intensities, int32_t type)
-{
-	ASSERT(from_pos<to_pos);
-	int32_t num_intensities = 0;
-	int32_t* p_tiling_pos  = &m_probe_pos[m_num_probes_cum[type-1]];
-	float64_t* p_tiling_data = &m_raw_intensities[m_num_probes_cum[type-1]];
-	int32_t last_pos;
-	int32_t num = m_num_probes_cum[type-1];
-	while (*p_tiling_pos<to_pos)
-	{
-		if (*p_tiling_pos>=from_pos)
-		{
-			intensities[num_intensities] = *p_tiling_data;
-			num_intensities++;
-		}
-		num++;
-		if (num>=m_num_probes_cum[type])
-			break;
-		last_pos = *p_tiling_pos;
-		p_tiling_pos++;
-		p_tiling_data++;
-		ASSERT(last_pos<*p_tiling_pos);
-	}
-	return num_intensities;
-}
-
-inline void CDynProg::lookup_content_svm_values(const int32_t from_state, const int32_t to_state, const int32_t from_pos, const int32_t to_pos, float64_t* svm_values, int32_t frame)
-{
-#ifdef DYNPROG_TIMING_DETAIL
-	MyTime.start() ;
-#endif
-//	ASSERT(from_state<to_state);
-//	if (!(from_pos<to_pos))
-//		SG_ERROR("from_pos!<to_pos, from_pos: %i to_pos: %i \n",from_pos,to_pos);
-	for (int32_t i=0;i<num_svms;i++)
-	{
-		float64_t to_val   = m_lin_feat.get_element(i, to_state);
-		float64_t from_val = m_lin_feat.get_element(i, from_state);
-		svm_values[i] = (to_val-from_val)/(to_pos-from_pos);
-	}
-	for (int32_t i=num_svms;i<m_num_lin_feat_plifs_cum[m_num_raw_data];i++)
-	{
-		float64_t to_val   = m_lin_feat.get_element(i, to_state);
-		float64_t from_val = m_lin_feat.get_element(i, from_state);
-		svm_values[i] = to_val-from_val ;
-	}
-
-	// find the correct row with precomputed 
-	if (frame!=-1)
-	{
-		svm_values[4] = 1e10;
-		svm_values[5] = 1e10;
-		svm_values[6] = 1e10;
-		int32_t global_frame = from_pos%3;
-		int32_t row = ((global_frame+frame)%3)+4;
-		float64_t to_val   = m_lin_feat.get_element(row, to_state);
-		float64_t from_val = m_lin_feat.get_element(row, from_state);
-		svm_values[frame+4] = (to_val-from_val)/(to_pos-from_pos);
-	}
-#ifdef DYNPROG_TIMING_DETAIL
-	MyTime.stop() ;
-	content_svm_values_time += MyTime.time_diff_sec() ;
-#endif
-}
 #endif

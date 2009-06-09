@@ -114,7 +114,7 @@ CDynProg::CDynProg(int32_t p_num_svms /*= 8 */)
 	  svm_value_unnormalized_single(num_svms_single),
 	  num_unique_words_single(0),
 
-	  max_a_id(0), m_seq(1,1,1), m_pos(1), m_orf_info(1,2), 
+	  m_max_a_id(0), m_seq(1,1,1), m_pos(1), m_orf_info(1,2), 
           m_segment_sum_weights(1,1), m_plif_list(1), 
 	  m_PEN(1,1), m_PEN_state_signals(1,1), 
 	  m_genestr(1,1), m_dict_weights(1,1), m_segment_loss(1,1,2), 
@@ -523,10 +523,10 @@ void CDynProg::set_a_id(int32_t *a, int32_t p_M, int32_t p_N)
 	ASSERT(p_N==N);
 	ASSERT(p_M==p_N);
 	transition_matrix_a_id.set_array(a, p_N, p_N, true, true);
-	max_a_id = 0;
+	m_max_a_id = 0;
 	for (int32_t i=0; i<p_N; i++)
 		for (int32_t j=0; j<p_N; j++)
-			max_a_id=CMath::max(max_a_id, transition_matrix_a_id.element(i,j));
+			m_max_a_id=CMath::max(m_max_a_id, transition_matrix_a_id.element(i,j));
 }
 
 void CDynProg::set_a_trans_matrix(
@@ -616,15 +616,15 @@ void CDynProg::set_a_trans_matrix(
 		//SG_PRINT("from_state:%i to_state:%i trans_matrix_a_id:%i \n",from_state, to_state,transition_matrix_a_id.element(from_state, to_state));
 	} ;
 
-	max_a_id = 0 ;
+	m_max_a_id = 0 ;
 	for (int32_t i=0; i<N; i++)
 		for (int32_t j=0; j<N; j++)
 		{
 			//if (transition_matrix_a_id.element(i,j))
 			//SG_DEBUG( "(%i,%i)=%i\n", i,j, transition_matrix_a_id.element(i,j)) ;
-			max_a_id = CMath::max(max_a_id, transition_matrix_a_id.element(i,j)) ;
+			m_max_a_id = CMath::max(m_max_a_id, transition_matrix_a_id.element(i,j)) ;
 		}
-	//SG_DEBUG( "max_a_id=%i\n", max_a_id) ;
+	//SG_DEBUG( "m_max_a_id=%i\n", m_max_a_id) ;
 }
 
 void CDynProg::init_svm_arrays(int32_t p_num_degrees, int32_t p_num_svms)
@@ -990,7 +990,7 @@ void CDynProg::best_path_set_dict_weights(
 	m_dict_weights.set_array(dictionary_weights, dict_len, num_svms, true, true) ;
 
 	// initialize, so it does not bother when not used
-	m_segment_loss.resize_array(max_a_id+1, max_a_id+1, 2) ;
+	m_segment_loss.resize_array(m_max_a_id+1, m_max_a_id+1, 2) ;
 	m_segment_loss.zero() ;
 	m_segment_ids.resize_array(m_seq.get_dim2()) ;
 	m_segment_mask.resize_array(m_seq.get_dim2()) ;
@@ -1007,8 +1007,8 @@ void CDynProg::best_path_set_segment_loss(
 	if (2*m!=n)
 		SG_ERROR( "segment_loss should be 2 x quadratic matrix: %i!=%i\n", 2*m, n) ;
 
-	if (m!=max_a_id+1)
-		SG_ERROR( "segment_loss size should match max_a_id: %i!=%i\n", m, max_a_id+1) ;
+	if (m!=m_max_a_id+1)
+		SG_ERROR( "segment_loss size should match m_max_a_id: %i!=%i\n", m, m_max_a_id+1) ;
 
 	m_segment_loss.set_array(segment_loss, m, n/2, 2, true, true) ;
 	/*for (int32_t i=0; i<n; i++)
@@ -1861,8 +1861,8 @@ void CDynProg::init_segment_loss(
 	if (!loss.num_segment_id)
 	{
 		loss.segments_changed       = new int32_t[seqlen] ;
-		loss.num_segment_id         = new float64_t[(max_a_id+1)*seqlen] ;
-		loss.length_segment_id      = new int32_t[(max_a_id+1)*seqlen] ;
+		loss.num_segment_id         = new float64_t[(m_max_a_id+1)*seqlen] ;
+		loss.length_segment_id      = new int32_t[(m_max_a_id+1)*seqlen] ;
 
 		clear_size = seqlen ;
 	}
@@ -1870,7 +1870,7 @@ void CDynProg::init_segment_loss(
 	for (int32_t j=0; j<clear_size; j++)
 	{
 		loss.segments_changed[j]=0 ;
-		for (int32_t i=0; i<max_a_id+1; i++)       
+		for (int32_t i=0; i<m_max_a_id+1; i++)       
 		{
 			loss.num_segment_id[i*seqlen+j] = 0;
 			loss.length_segment_id[i*seqlen+j] = 0;
@@ -1955,10 +1955,10 @@ float64_t CDynProg::extend_segment_loss(
 		return ret ;
 	}
 	
-	CArray2<float64_t> num_segment_id(loss.num_segment_id, loss.seqlen, max_a_id+1, false, false) ;
-	CArray2<int32_t> length_segment_id(loss.length_segment_id, loss.seqlen, max_a_id+1, false, false) ;
+	CArray2<float64_t> num_segment_id(loss.num_segment_id, loss.seqlen, m_max_a_id+1, false, false) ;
+	CArray2<int32_t> length_segment_id(loss.length_segment_id, loss.seqlen, m_max_a_id+1, false, false) ;
 	float64_t ret = 0.0 ;
-	for (int32_t i=0; i<max_a_id+1; i++)
+	for (int32_t i=0; i<m_max_a_id+1; i++)
 	{
 		//SG_DEBUG( "%i: %i, %i, %f (%f), %f (%f)\n", pos, num_segment_id.element(pos, i), length_segment_id.element(pos, i), num_segment_id.element(pos, i)*m_segment_loss.element(i, segment_id,0), m_segment_loss.element(i, segment_id, 0), length_segment_id.element(pos, i)*m_segment_loss.element(i, segment_id, 1), m_segment_loss.element(i, segment_id,1)) ;
 
@@ -1968,7 +1968,7 @@ float64_t CDynProg::extend_segment_loss(
 		//	SG_PRINT("ret:%f pos:%i i:%i segment_id:%i \n",ret,pos,i,segment_id);
 		//	if (ret>0)
 		//	{
-		//		for (int32_t g=0; g<max_a_id+1; g++)
+		//		for (int32_t g=0; g<m_max_a_id+1; g++)
 		//			SG_PRINT("g:%i sid(pos, g):%i    ",g,num_segment_id.element(pos, g));
 		//		SG_PRINT("\n");
 		//	}
@@ -1993,10 +1993,10 @@ void CDynProg::find_segment_loss_till_pos(
 #ifdef DYNPROG_TIMING
 	MyTime.start() ;
 #endif
-	CArray2<float64_t> num_segment_id(loss.num_segment_id, loss.seqlen, max_a_id+1, false, false) ;
-	CArray2<int32_t> length_segment_id(loss.length_segment_id, loss.seqlen, max_a_id+1, false, false) ;
+	CArray2<float64_t> num_segment_id(loss.num_segment_id, loss.seqlen, m_max_a_id+1, false, false) ;
+	CArray2<int32_t> length_segment_id(loss.length_segment_id, loss.seqlen, m_max_a_id+1, false, false) ;
 	
-	for (int32_t i=0; i<max_a_id+1; i++)
+	for (int32_t i=0; i<m_max_a_id+1; i++)
 	{
 		num_segment_id.element(t_end, i) = 0 ;
 		length_segment_id.element(t_end, i) = 0 ;
@@ -2009,11 +2009,11 @@ void CDynProg::find_segment_loss_till_pos(
 		int32_t cur_segment_id = segment_ids.element(ts) ;
 		// allow at most one wobble
 		bool wobble_pos = (CMath::abs(segment_mask.element(ts))<1e-7) && (wobble_pos_segment_id_switch==0) ;
-		if (!(cur_segment_id<=max_a_id))
-			SG_ERROR("(cur_segment_id<=max_a_id), cur_segment_id:%i max_a_id:%i\n",cur_segment_id,max_a_id);
+		if (!(cur_segment_id<=m_max_a_id))
+			SG_ERROR("(cur_segment_id<=m_max_a_id), cur_segment_id:%i m_max_a_id:%i\n",cur_segment_id,m_max_a_id);
 		ASSERT(cur_segment_id>=0) ;
 		
-		for (int32_t i=0; i<max_a_id+1; i++)
+		for (int32_t i=0; i<m_max_a_id+1; i++)
 		{
 			num_segment_id.element(ts, i) = num_segment_id.element(ts+1, i) ;
 			length_segment_id.element(ts, i) = length_segment_id.element(ts+1, i) ;
@@ -3888,3 +3888,67 @@ void CDynProg::best_path_trans_simple(
 	}
 }
 
+int32_t CDynProg::raw_intensities_interval_query(const int32_t from_pos, const int32_t to_pos, float64_t* intensities, int32_t type)
+{
+	ASSERT(from_pos<to_pos);
+	int32_t num_intensities = 0;
+	int32_t* p_tiling_pos  = &m_probe_pos[m_num_probes_cum[type-1]];
+	float64_t* p_tiling_data = &m_raw_intensities[m_num_probes_cum[type-1]];
+	int32_t last_pos;
+	int32_t num = m_num_probes_cum[type-1];
+	while (*p_tiling_pos<to_pos)
+	{
+		if (*p_tiling_pos>=from_pos)
+		{
+			intensities[num_intensities] = *p_tiling_data;
+			num_intensities++;
+		}
+		num++;
+		if (num>=m_num_probes_cum[type])
+			break;
+		last_pos = *p_tiling_pos;
+		p_tiling_pos++;
+		p_tiling_data++;
+		ASSERT(last_pos<*p_tiling_pos);
+	}
+	return num_intensities;
+}
+
+void CDynProg::lookup_content_svm_values(const int32_t from_state, const int32_t to_state, const int32_t from_pos, const int32_t to_pos, float64_t* svm_values, int32_t frame)
+{
+#ifdef DYNPROG_TIMING_DETAIL
+	MyTime.start() ;
+#endif
+//	ASSERT(from_state<to_state);
+//	if (!(from_pos<to_pos))
+//		SG_ERROR("from_pos!<to_pos, from_pos: %i to_pos: %i \n",from_pos,to_pos);
+	for (int32_t i=0;i<num_svms;i++)
+	{
+		float64_t to_val   = m_lin_feat.get_element(i, to_state);
+		float64_t from_val = m_lin_feat.get_element(i, from_state);
+		svm_values[i] = (to_val-from_val)/(to_pos-from_pos);
+	}
+	for (int32_t i=num_svms;i<m_num_lin_feat_plifs_cum[m_num_raw_data];i++)
+	{
+		float64_t to_val   = m_lin_feat.get_element(i, to_state);
+		float64_t from_val = m_lin_feat.get_element(i, from_state);
+		svm_values[i] = to_val-from_val ;
+	}
+
+	// find the correct row with precomputed 
+	if (frame!=-1)
+	{
+		svm_values[4] = 1e10;
+		svm_values[5] = 1e10;
+		svm_values[6] = 1e10;
+		int32_t global_frame = from_pos%3;
+		int32_t row = ((global_frame+frame)%3)+4;
+		float64_t to_val   = m_lin_feat.get_element(row, to_state);
+		float64_t from_val = m_lin_feat.get_element(row, from_state);
+		svm_values[frame+4] = (to_val-from_val)/(to_pos-from_pos);
+	}
+#ifdef DYNPROG_TIMING_DETAIL
+	MyTime.stop() ;
+	content_svm_values_time += MyTime.time_diff_sec() ;
+#endif
+}
