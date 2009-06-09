@@ -907,7 +907,7 @@ protected:
 		/** @return object name */
 		inline virtual const char* get_name() const { return "DynProg"; }
 
-public:	
+protected:
 	/**@name model specific variables.
 	 * these are p,q,a,b,N,M etc
 	 */
@@ -924,7 +924,6 @@ public:
 	CArray<float64_t> initial_state_distribution_p;
 	CArray<float64_t> initial_state_distribution_p_deriv;
 
-protected:
 	/// distribution of end-states
 	CArray<float64_t> end_state_distribution_q;
 	CArray<float64_t> end_state_distribution_q_deriv;

@@ -631,25 +631,25 @@ void CDynProg::init_svm_arrays(int32_t p_num_degrees, int32_t p_num_svms)
 {
 	svm_arrays_clean=false ;
 
-	word_degree.resize_array(num_degrees) ;
+	word_degree.resize_array(p_num_degrees) ;
 	//for (int i=0; i<num_degrees; i++)
 	//  word_degree.set_element(i, 0) ;
 
-	cum_num_words.resize_array(num_degrees+1) ;
+	cum_num_words.resize_array(p_num_degrees+1) ;
 	//for (int i=0; i<num_degrees+1; i++)
 	//  cum_num_words.set_element(i, 0) ;
 	cum_num_words_array=cum_num_words.get_array() ;
 
-	num_words.resize_array(num_degrees) ;
+	num_words.resize_array(p_num_degrees) ;
 	//for (int i=0; i<num_degrees; i++)
 	//  num_words.set_element(i, 0) ;
 	num_words_array=num_words.get_array() ;
 	
 	//svm_values_unnormalized.resize_array(num_degrees, num_svms) ;
-	svm_pos_start.resize_array(num_degrees) ;
+	svm_pos_start.resize_array(p_num_degrees) ;
 	//for (int i=0; i<num_degrees; i++)
 	//  svm_pos_start.set_element(i, 0) ;
-	num_unique_words.resize_array(num_degrees) ;
+	num_unique_words.resize_array(p_num_degrees) ;
 } 
 
 
@@ -804,11 +804,11 @@ void CDynProg::best_path_set_seq(float64_t *seq, int32_t p_N, int32_t seq_len)
 	} ;
 
 	ASSERT(p_N==N);
-	ASSERT(initial_state_distribution_p.get_dim1()==N);
-	ASSERT(end_state_distribution_q.get_dim1()==N);
+	ASSERT(initial_state_distribution_p.get_dim1()==p_N);
+	ASSERT(end_state_distribution_q.get_dim1()==p_N);
 	
-	m_seq.set_array(seq, N, seq_len, 1, true, true) ;
-	this->N=N ;
+	m_seq.set_array(seq, p_N, seq_len, 1, true, true) ;
+	this->N=p_N ;
 
 	m_call=3 ;
 	m_step=2 ;
@@ -824,11 +824,11 @@ void CDynProg::best_path_set_seq3d(
 	} ;
 
 	ASSERT(p_N==N);
-	ASSERT(initial_state_distribution_p.get_dim1()==N);
-	ASSERT(end_state_distribution_q.get_dim1()==N);
+	ASSERT(initial_state_distribution_p.get_dim1()==p_N);
+	ASSERT(end_state_distribution_q.get_dim1()==p_N);
 	
-	m_seq.set_array(seq, N, seq_len, max_num_signals, true, true) ;
-	this->N=N ;
+	m_seq.set_array(seq, p_N, seq_len, max_num_signals, true, true) ;
+	this->N=p_N ;
 
 	m_call=3 ;
 	m_step=2 ;
