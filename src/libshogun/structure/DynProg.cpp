@@ -104,15 +104,15 @@ CDynProg::CDynProg(int32_t p_num_svms /*= 8 */)
 //	  svm_values_unnormalized(num_degrees, num_svms),
 	  svm_pos_start(num_degrees),
 	  num_unique_words(num_degrees),
-	  svm_arrays_clean(true),
+	  m_svm_arrays_clean(true),
 
 	  // single svm
-	  num_svms_single(1),
-	  word_degree_single(1),
-	  num_words_single(4), 
-	  word_used_single(num_words_single),
-	  svm_value_unnormalized_single(num_svms_single),
-	  num_unique_words_single(0),
+	  m_num_svms_single(1),
+	  m_word_degree_single(1),
+	  m_num_words_single(4), 
+	  m_word_used_single(m_num_words_single),
+	  m_svm_value_unnormalized_single(m_num_svms_single),
+	  m_num_unique_words_single(0),
 
 	  m_max_a_id(0), m_seq(1,1,1), m_pos(1), m_orf_info(1,2), 
           m_segment_sum_weights(1,1), m_plif_list(1), 
@@ -629,7 +629,7 @@ void CDynProg::set_a_trans_matrix(
 
 void CDynProg::init_svm_arrays(int32_t p_num_degrees, int32_t p_num_svms)
 {
-	svm_arrays_clean=false ;
+	m_svm_arrays_clean=false ;
 
 	word_degree.resize_array(p_num_degrees) ;
 	//for (int i=0; i<num_degrees; i++)
@@ -656,7 +656,7 @@ void CDynProg::init_svm_arrays(int32_t p_num_degrees, int32_t p_num_svms)
 void CDynProg::init_word_degree_array(
 	int32_t * p_word_degree_array, int32_t num_elem)
 {
-	svm_arrays_clean=false ;
+	m_svm_arrays_clean=false ;
 
 	word_degree.resize_array(num_degrees) ;
 	ASSERT(num_degrees==num_elem);
@@ -669,7 +669,7 @@ void CDynProg::init_word_degree_array(
 void CDynProg::init_cum_num_words_array(
 	int32_t * p_cum_num_words_array, int32_t num_elem)
 {
-	svm_arrays_clean=false ;
+	m_svm_arrays_clean=false ;
 
 	cum_num_words.resize_array(num_degrees+1) ;
 	cum_num_words_array=cum_num_words.get_array() ;
@@ -682,7 +682,7 @@ void CDynProg::init_cum_num_words_array(
 void CDynProg::init_num_words_array(
 	int32_t * p_num_words_array, int32_t num_elem)
 {
-	svm_arrays_clean=false ;
+	m_svm_arrays_clean=false ;
 
 	num_words.resize_array(num_degrees) ;
 	num_words_array=num_words.get_array() ;
@@ -704,7 +704,7 @@ void CDynProg::init_mod_words_array(
 	//		SG_PRINT("%i ",mod_words_input[i*num_elem+j]);
 	//	SG_PRINT("\n");
 	//}
-	svm_arrays_clean=false ;
+	m_svm_arrays_clean=false ;
 
 	ASSERT(num_svms==num_elem);
 	ASSERT(num_columns==2);
@@ -720,7 +720,7 @@ void CDynProg::init_mod_words_array(
 
 void CDynProg::init_sign_words_array(bool* p_sign_words_array, int32_t num_elem)
 {
-	svm_arrays_clean=false ;
+	m_svm_arrays_clean=false ;
 
 	ASSERT(num_svms==num_elem);
 
@@ -731,7 +731,7 @@ void CDynProg::init_sign_words_array(bool* p_sign_words_array, int32_t num_elem)
 void CDynProg::init_string_words_array(
 	int32_t* p_string_words_array, int32_t num_elem)
 {
-	svm_arrays_clean=false ;
+	m_svm_arrays_clean=false ;
 
 	ASSERT(num_svms==num_elem);
 
@@ -757,7 +757,7 @@ bool CDynProg::check_svm_arrays()
 			(sign_words.get_dim1()==num_svms) &&
 			(string_words.get_dim1()==num_svms))
 	{
-		svm_arrays_clean=true ;
+		m_svm_arrays_clean=true ;
 		return true ;
 	}
 	else
@@ -790,14 +790,14 @@ bool CDynProg::check_svm_arrays()
 		if (!(string_words.get_dim1()==num_svms))
 			SG_WARNING("SVM array: string_words.get_dim1()!=num_svms") ;
 
-		svm_arrays_clean=false ;
+		m_svm_arrays_clean=false ;
 		return false ;	
 	}
 }
 
 void CDynProg::best_path_set_seq(float64_t *seq, int32_t p_N, int32_t seq_len)
 {
-	if (!svm_arrays_clean)
+	if (!m_svm_arrays_clean)
 	{
 		SG_ERROR( "SVM arrays not clean") ;
 		return ;
@@ -817,7 +817,7 @@ void CDynProg::best_path_set_seq(float64_t *seq, int32_t p_N, int32_t seq_len)
 void CDynProg::best_path_set_seq3d(
 	float64_t *seq, int32_t p_N, int32_t seq_len, int32_t max_num_signals)
 {
-	if (!svm_arrays_clean)
+	if (!m_svm_arrays_clean)
 	{
 		SG_ERROR( "SVM arrays not clean") ;
 		return ;
@@ -1136,7 +1136,7 @@ void CDynProg::best_path_simple_call(int32_t nbest)
 
 void CDynProg::best_path_deriv_call(int32_t nbest)
 {
-	if (!svm_arrays_clean)
+	if (!m_svm_arrays_clean)
 	{
 		SG_ERROR( "SVM arrays not clean") ;
 		return ;
@@ -1469,14 +1469,14 @@ void CDynProg::translate_from_single_order(
 void CDynProg::reset_svm_value(
 	int32_t pos, int32_t & last_svm_pos, float64_t * svm_value)
 {
-	for (int32_t i=0; i<num_words_single; i++)
-		word_used_single[i]=false ;
+	for (int32_t i=0; i<m_num_words_single; i++)
+		m_word_used_single[i]=false ;
 	for (int32_t s=0; s<num_svms; s++)
-		svm_value_unnormalized_single[s] = 0 ;
+		m_svm_value_unnormalized_single[s] = 0 ;
 	for (int32_t s=0; s<num_svms; s++)
 		svm_value[s] = 0 ;
 	last_svm_pos = pos - 6+1 ;
-	num_unique_words_single=0 ;
+	m_num_unique_words_single=0 ;
 }
 
 void CDynProg::extend_svm_value(
@@ -1485,25 +1485,25 @@ void CDynProg::extend_svm_value(
 	bool did_something = false ;
 	for (int32_t i=last_svm_pos-1; (i>=pos) && (i>=0); i--)
 	{
-		if (wordstr[i]>=num_words_single)
+		if (wordstr[i]>=m_num_words_single)
 			SG_DEBUG( "wordstr[%i]=%i\n", i, wordstr[i]) ;
 		
-		if (!word_used_single[wordstr[i]])
+		if (!m_word_used_single[wordstr[i]])
 		{
-			for (int32_t s=0; s<num_svms_single; s++)
-				svm_value_unnormalized_single[s]+=dict_weights.element(wordstr[i],s) ;
+			for (int32_t s=0; s<m_num_svms_single; s++)
+				m_svm_value_unnormalized_single[s]+=dict_weights.element(wordstr[i],s) ;
 			
-			word_used_single[wordstr[i]]=true ;
-			num_unique_words_single++ ;
+			m_word_used_single[wordstr[i]]=true ;
+			m_num_unique_words_single++ ;
 			did_something=true ;
 		}
 	} ;
-	if (num_unique_words_single>0)
+	if (m_num_unique_words_single>0)
 	{
 		last_svm_pos=pos ;
 		if (did_something)
 			for (int32_t s=0; s<num_svms; s++)
-				svm_value[s]= svm_value_unnormalized_single[s]/sqrt((float64_t)num_unique_words_single) ;  // full normalization
+				svm_value[s]= m_svm_value_unnormalized_single[s]/sqrt((float64_t)m_num_unique_words_single) ;  // full normalization
 	}
 	else
 	{
@@ -1549,7 +1549,7 @@ void CDynProg::best_path_2struct(
 	const int32_t default_look_back = 100 ;
 	int32_t max_look_back = default_look_back ;
 	bool use_svm = false ;
-	ASSERT(dict_len==num_svms*num_words_single) ;
+	ASSERT(dict_len==num_svms*m_num_words_single) ;
 	dict_weights.set_array(dictionary_weights, dict_len, num_svms, false, false) ;
 	dict_weights_array=dict_weights.get_array() ;
 
@@ -1632,7 +1632,7 @@ void CDynProg::best_path_2struct(
 			case 't': wordstr[i]=3 ; break ;
 			default: ASSERT(0) ;
 			}
-		translate_from_single_order(wordstr, genestr_len, word_degree_single-1, word_degree_single) ;
+		translate_from_single_order(wordstr, genestr_len, m_word_degree_single-1, m_word_degree_single) ;
 	}
 	
 	
@@ -2456,7 +2456,7 @@ void CDynProg::best_path_trans(
 	MyTime2.start() ;
 #endif
 	
-	if (!svm_arrays_clean)
+	if (!m_svm_arrays_clean)
 	{
 		SG_ERROR( "SVM arrays not clean") ;
 		return ;
@@ -3373,7 +3373,7 @@ void CDynProg::best_path_trans_deriv(
 	end_state_distribution_q_deriv.resize_array(N) ;
 	transition_matrix_a_deriv.resize_array(N,N) ;
 
-	if (!svm_arrays_clean)
+	if (!m_svm_arrays_clean)
 	{
 		SG_ERROR( "SVM arrays not clean") ;
 		return ;
@@ -3713,7 +3713,7 @@ void CDynProg::best_path_trans_simple(
 	const float64_t *seq_array, int32_t seq_len, int16_t nbest,
 	float64_t *prob_nbest, int32_t *my_state_seq)
 {
-	if (!svm_arrays_clean)
+	if (!m_svm_arrays_clean)
 	{
 		SG_ERROR( "SVM arrays not clean") ;
 		return ;

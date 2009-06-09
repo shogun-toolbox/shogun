@@ -975,23 +975,21 @@ protected:
 	/** number of unique words */
 	CArray<int32_t> num_unique_words;
 	/** SVM arrays clean */
-	bool svm_arrays_clean;
+	bool m_svm_arrays_clean;
 
 	/** number of SVMs single */
-	int32_t num_svms_single;
+	int32_t m_num_svms_single;
 	/** word degree single */
-	int32_t word_degree_single;
-	/** cum num words single */
-	int32_t cum_num_words_single;
+	int32_t m_word_degree_single;
 	/** num words single */
-	int32_t num_words_single;
+	int32_t m_num_words_single;
 
 	/** word used single */
-	CArray<bool> word_used_single;
+	CArray<bool> m_word_used_single;
 	/** SVM value unnormalised single */
-	CArray<float64_t> svm_value_unnormalized_single;
+	CArray<float64_t> m_svm_value_unnormalized_single;
 	/** number of unique words single */
-	int32_t num_unique_words_single;
+	int32_t m_num_unique_words_single;
 
 	/** max a id */
 	int32_t m_max_a_id;
