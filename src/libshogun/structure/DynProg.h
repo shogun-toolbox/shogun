@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2008 Gunnar Raetsch
- * Written (W) 1999-2008 Soeren Sonnenburg
+ * Written (W) 1999-2009 Gunnar Raetsch
+ * Written (W) 1999-2009 Soeren Sonnenburg
  * Written (W) 2008-2009 Jonas Behr
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
@@ -479,42 +479,6 @@ public:
 	void best_path_trans_deriv(int32_t *my_state_seq, int32_t *my_pos_seq, float64_t *my_scores, float64_t* my_losses, int32_t my_seq_len,
 					const float64_t *seq_array, int32_t seq_len, const int32_t *pos, CPlifBase **Plif_matrix,
 					CPlifBase **Plif_state_signals, int32_t max_num_signals, int32_t genestr_num);
-	
-	/** best path 2struct
-	 *
-	 * @param seq sequence
-	 * @param seq_len length of sequence
-	 * @param pos position
-	 * @param Plif_matrix Plif matrix
-	 * @param genestr gene string
-	 * @param genestr_len length of gene string
-	 * @param nbest nbest
-	 * @param prob_nbest prob(ability?) nbest
-	 * @param my_state_seq my state seq
-	 * @param my_pos_seq my pos seq
-	 * @param dictionary_weights dictionary weights
-	 * @param dict_len length of dictionary weights
-	 * @param segment_sum_weights segment sum weights
-	 */
-	void best_path_2struct(const float64_t *seq, int32_t seq_len, const int32_t *pos,
-						   CPlifBase **Plif_matrix,
-						   const char *genestr, int32_t genestr_len,
-						   int16_t nbest,
-						   float64_t *prob_nbest, int32_t *my_state_seq, int32_t *my_pos_seq,
-						   float64_t *dictionary_weights, int32_t dict_len, float64_t *segment_sum_weights);
-
-	/** best path trans simple
-	 *
-	 * @param seq sequence
-	 * @param seq_len length of sequence
-	 * @param nbest nbest
-	 * @param prob_nbest prob(ability?) nbest
-	 * @param my_state_seq my state seq
-	 */
-	void best_path_trans_simple(const float64_t *seq, int32_t seq_len, int16_t nbest,
-								float64_t *prob_nbest, int32_t *my_state_seq);
-
-
 
 	/// access function for number of states N
 	inline T_STATES get_N() const
@@ -992,51 +956,51 @@ protected:
 	int32_t m_max_a_id;
 	
 	// control info
-	/** m step */
+	/** step */
 	int32_t m_step;
-	/** m call */
+	/** call */
 	int32_t m_call;
 
 	// input arguments
-	/** m sequence */
+	/** sequence */
 	CArray3<float64_t> m_seq;
-	/** m position */
+	/** position */
 	CArray<int32_t> m_pos;
-	/** m orf info */
+	/** orf info */
 	CArray2<int32_t> m_orf_info;
-	/** m segment sum weights */
+	/** segment sum weights */
 	CArray2<float64_t> m_segment_sum_weights;
-	/** m Plif list */
+	/** Plif list */
 	CArray<CPlifBase*> m_plif_list;
-	/** m PEN */
+	/** PEN */
 	CArray2<CPlifBase*> m_PEN;
-	/** m PEN state signals */
+	/** PEN state signals */
 	CArray2<CPlifBase*> m_PEN_state_signals;
-	/** m genestr */
+	/** genestr */
 	CArray2<char> m_genestr;
-	/** m dict weights */
+	/** dict weights */
 	CArray2<float64_t> m_dict_weights;
-	/** m segment loss */
+	/** segment loss */
 	CArray3<float64_t> m_segment_loss;
-	/** m segment IDs */
+	/** segment IDs */
 	CArray<int32_t> m_segment_ids;
-	/** m segment mask */
+	/** segment mask */
 	CArray<float64_t> m_segment_mask;
-	/** m my state seq */
+	/** my state seq */
 	CArray<int32_t> m_my_state_seq;
-	/** m my position sequence */
+	/** my position sequence */
 	CArray<int32_t> m_my_pos_seq;
-	/** m my scores */
+	/** my scores */
 	CArray<float64_t> m_my_scores;
-	/** m my losses */
+	/** my losses */
 	CArray<float64_t> m_my_losses;
 
 	// output arguments
-	/** m scores */
+	/** scores */
 	CArray<float64_t> m_scores;
-	/** m states */
+	/** states */
 	CArray2<int32_t> m_states;
-	/** m positions */
+	/** positions */
 	CArray2<int32_t> m_positions;
 
 	/** storeage of stop codons

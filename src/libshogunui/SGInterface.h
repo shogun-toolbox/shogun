@@ -449,8 +449,6 @@ class CSGInterface : public CSGObject
 		bool cmd_best_path_trans_deriv();
 		/** best path no b */
 		bool cmd_best_path_no_b();
-		/** best path trans simple */
-		bool cmd_best_path_trans_simple();
 		/** best path no b trans */
 		bool cmd_best_path_no_b_trans();
 

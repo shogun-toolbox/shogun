@@ -924,16 +924,6 @@ CSGInterfaceMethod sg_methods[]=
 				"prob" USAGE_COMMA "path")
 	},
 	{
-		N_BEST_PATH_TRANS_SIMPLE,
-		(&CSGInterface::cmd_best_path_trans_simple),
-		USAGE_IO(N_BEST_PATH_TRANS_SIMPLE, "p"
-				USAGE_COMMA "q"
-				USAGE_COMMA "cmd_trans"
-				USAGE_COMMA "seq"
-				USAGE_COMMA "nbest",
-				"prob" USAGE_COMMA "path")
-	},
-	{
 		N_BEST_PATH_NO_B_TRANS,
 		(&CSGInterface::cmd_best_path_no_b_trans),
 		USAGE_IO(N_BEST_PATH_NO_B_TRANS, "p"
@@ -6760,59 +6750,6 @@ bool CSGInterface::cmd_best_path_no_b()
 
 	return true;
 }
-
-bool CSGInterface::cmd_best_path_trans_simple()
-{
-	if (m_nrhs!=6 || !create_return_values(2))
-		return false;
-
-	float64_t* p=NULL;
-	int32_t N_p=0;
-	get_real_vector(p, N_p);
-
-	float64_t* q=NULL;
-	int32_t N_q=0;
-	get_real_vector(q, N_q);
-
-	float64_t* cmd_trans=NULL;
-	int32_t M_cmd_trans=0;
-	int32_t N_cmd_trans=0;
-	get_real_matrix(cmd_trans, M_cmd_trans, N_cmd_trans);
-
-	float64_t* seq=NULL;
-	int32_t M_seq=0;
-	int32_t N_seq=0;
-	get_real_matrix(seq, M_seq, N_seq);
-
-	if (N_q!=N_p || N_cmd_trans!=3 || M_seq!=N_p)
-		SG_ERROR("Model matrices not matching in size.\n");
-
-	int32_t nbest=get_int();
-	if (nbest<1)
-		SG_ERROR("nbest < 1.\n");
-
-	CDynProg* h=new CDynProg();
-	h->set_num_states(N_p);
-	h->set_p_vector(p, N_p);
-	h->set_q_vector(q, N_p);
-	h->set_a_trans_matrix(cmd_trans, M_cmd_trans, 3);
-
-	int32_t* path=new int32_t[N_seq*nbest];
-	memset(path, -1, N_seq*nbest*sizeof(int32_t));
-	float64_t* prob=new float64_t[nbest];
-
-	h->best_path_trans_simple(seq, N_seq, nbest, prob, path);
-	SG_UNREF(h);
-
-	set_real_vector(prob, nbest);
-	delete[] prob;
-
-	set_int_matrix(path, nbest, N_seq);
-	delete[] path;
-
-	return true;
-}
-
 
 bool CSGInterface::cmd_best_path_no_b_trans()
 {
