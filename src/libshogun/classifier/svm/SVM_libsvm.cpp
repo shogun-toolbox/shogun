@@ -1313,13 +1313,13 @@ int32_t Solver_NUMC::select_working_set(
 
 	float64_t* Gmaxp = new float64_t[nr_class];
 	float64_t* Gmaxp2 = new float64_t[nr_class];
-	int32_t* Gmaxp_idx = new float64_t[nr_class];
+	int32_t* Gmaxp_idx = new int32_t[nr_class];
 
 	float64_t* Gmaxn = new float64_t[nr_class];
 	float64_t* Gmaxn2 = new float64_t[nr_class];
-	int32_t* Gmaxn_idx = new float64_t[nr_class];
+	int32_t* Gmaxn_idx = new int32_t[nr_class];
 
-	int32_t* Gmin_idx = new float64_t[nr_class];
+	int32_t* Gmin_idx = new int32_t[nr_class];
 	float64_t* obj_diff_min = new float64_t[nr_class];
 
 	for (int32_t i=0; i<nr_class; i++)
@@ -1347,52 +1347,52 @@ int32_t Solver_NUMC::select_working_set(
 		}
 	}
 
-	int32_t ip = Gmaxp_idx;
-	int32_t in = Gmaxn_idx;
-	const Qfloat *Q_ip = NULL;
-	const Qfloat *Q_in = NULL;
-	if(ip != -1) // NULL Q_ip not accessed: Gmaxp=-INF if ip=-1
-		Q_ip = Q->get_Q(ip,active_size);
-	if(in != -1)
-		Q_in = Q->get_Q(in,active_size);
-
-	for(int32_t j=0;j<active_size;j++)
+	for (int32_t c=0; c<nr_class; c++)
 	{
-		int32_t cidx=y[j];
+		int32_t ip = Gmaxp_idx[c];
+		int32_t in = Gmaxn_idx[c];
+		const Qfloat *Q_ip = NULL;
+		const Qfloat *Q_in = NULL;
+		if(ip != -1) // NULL Q_ip not accessed: Gmaxp=-INF if ip=-1
+			Q_ip = Q->get_Q(ip,active_size);
+		if(in != -1)
+			Q_in = Q->get_Q(in,active_size);
 
-		if (!is_lower_bound(j))	
+		for(int32_t j=0;j<active_size;j++)
 		{
-			float64_t grad_diff=Gmaxp[cidx]+G[j];
-			if (G[j] >= Gmaxp2[cidx])
-				Gmaxp2[cidx] = G[j];
-			if (grad_diff > 0)
-			{
-				float64_t obj_diff; 
-				float64_t quad_coef = Q_ip[ip]+QD[j]-2*Q_ip[j];
-				if (quad_coef > 0)
-					obj_diff = -(grad_diff*grad_diff)/quad_coef;
-				else
-					obj_diff = -(grad_diff*grad_diff)/TAU;
+			int32_t cidx=y[j];
 
-				if (obj_diff <= obj_diff_min[cidx])
+			if (!is_lower_bound(j))	
+			{
+				float64_t grad_diff=Gmaxp[cidx]+G[j];
+				if (G[j] >= Gmaxp2[cidx])
+					Gmaxp2[cidx] = G[j];
+				if (grad_diff > 0)
 				{
-					Gmin_idx[cidx]=j;
-					obj_diff_min[cidx] = obj_diff;
+					float64_t obj_diff; 
+					float64_t quad_coef = Q_ip[ip]+QD[j]-2*Q_ip[j];
+					if (quad_coef > 0)
+						obj_diff = -(grad_diff*grad_diff)/quad_coef;
+					else
+						obj_diff = -(grad_diff*grad_diff)/TAU;
+
+					if (obj_diff <= obj_diff_min[cidx])
+					{
+						Gmin_idx[cidx]=j;
+						obj_diff_min[cidx] = obj_diff;
+					}
 				}
 			}
 		}
-	}
 
-	for (int32_t c=0; c<nr_class; c++)
-	{
 		gap=CMath::max(Gmaxp[c]+Gmaxp2[c],Gmaxn[c]+Gmaxn2[c]);
 		if (gap>=best_gap && Gmin_idx[c]>=0 && Gmin_idx[c]<active_size)
 		{
-			if (tmp_y[Gmin_idx] == +1)
-				out_i = Gmaxp_idx;
+			if (y[Gmin_idx[c]] == c)
+				out_i = Gmaxp_idx[c];
 			else
-				out_i = Gmaxn_idx;
-			out_j = Gmin_idx;
+				out_i = Gmaxn_idx[c];
+			out_j = Gmin_idx[c];
 
 			best_gap=gap;
 			best_out_i=out_i;
