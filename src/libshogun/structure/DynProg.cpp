@@ -135,7 +135,7 @@ CDynProg::CDynProg(int32_t p_num_svms /*= 8 */)
 
 	mem_initialized = true ;
 
-	this->N=1;
+	m_N=1;
 	m_step=0;
 
 	m_raw_intensities = NULL;
@@ -225,24 +225,24 @@ void CDynProg::precompute_stop_codons(const char* sequence, int32_t length)
 
 void CDynProg::set_num_states(int32_t p_N)
 {
-	N=p_N ;
+	m_N=p_N ;
 
-	m_transition_matrix_a_id.resize_array(N,N) ;
-	m_transition_matrix_a.resize_array(N,N) ;
-	m_transition_matrix_a_deriv.resize_array(N,N) ;
-	m_initial_state_distribution_p.resize_array(N) ;
-	m_initial_state_distribution_p_deriv.resize_array(N) ;
-	m_end_state_distribution_q.resize_array(N);
-	m_end_state_distribution_q_deriv.resize_array(N) ;
+	m_transition_matrix_a_id.resize_array(m_N,m_N) ;
+	m_transition_matrix_a.resize_array(m_N,m_N) ;
+	m_transition_matrix_a_deriv.resize_array(m_N,m_N) ;
+	m_initial_state_distribution_p.resize_array(m_N) ;
+	m_initial_state_distribution_p_deriv.resize_array(m_N) ;
+	m_end_state_distribution_q.resize_array(m_N);
+	m_end_state_distribution_q_deriv.resize_array(m_N) ;
 
-	m_orf_info.resize_array(N,2) ;
-	m_PEN.resize_array(N,N) ;
-	m_PEN_state_signals.resize_array(N,1) ;
+	m_orf_info.resize_array(m_N,2) ;
+	m_PEN.resize_array(m_N,m_N) ;
+	m_PEN_state_signals.resize_array(m_N,1) ;
 }
 
 int32_t CDynProg::get_num_states()
 {
-	return N;
+	return m_N;
 }
 
 void CDynProg::init_tiling_data(
@@ -495,8 +495,8 @@ void CDynProg::precompute_content_values(
 
 void CDynProg::set_p_vector(float64_t *p, int32_t p_N)
 {
-	if (!(p_N==N))
-		SG_ERROR("length of start prob vector p (%i) is not equal to the number of states (%i), p_N: %i\n",p_N, N);
+	if (!(p_N==m_N))
+		SG_ERROR("length of start prob vector p (%i) is not equal to the number of states (%i), p_N: %i\n",p_N, m_N);
 	//m_orf_info.resize_array(p_N,2);
 	//m_PEN.resize_array(p_N,p_N);
 
@@ -505,14 +505,14 @@ void CDynProg::set_p_vector(float64_t *p, int32_t p_N)
 
 void CDynProg::set_q_vector(float64_t *q, int32_t q_N)
 {
-	if (!(q_N==N))
-		SG_ERROR("length of end prob vector q (%i) is not equal to the number of states (%i), p_N: %i\n",q_N, N);
+	if (!(q_N==m_N))
+		SG_ERROR("length of end prob vector q (%i) is not equal to the number of states (%i), p_N: %i\n",q_N, m_N);
 	m_end_state_distribution_q.set_array(q, q_N, true, true);
 }
 
 void CDynProg::set_a(float64_t *a, int32_t p_M, int32_t p_N)
 {
-	ASSERT(p_N==N);
+	ASSERT(p_N==m_N);
 	ASSERT(p_M==p_N);
 	m_transition_matrix_a.set_array(a, p_N, p_N, true, true);
 	m_transition_matrix_a_deriv.resize_array(p_N, p_N);
@@ -520,7 +520,7 @@ void CDynProg::set_a(float64_t *a, int32_t p_M, int32_t p_N)
 
 void CDynProg::set_a_id(int32_t *a, int32_t p_M, int32_t p_N)
 {
-	ASSERT(p_N==N);
+	ASSERT(p_N==m_N);
 	ASSERT(p_M==p_N);
 	m_transition_matrix_a_id.set_array(a, p_N, p_N, true, true);
 	m_max_a_id = 0;
@@ -545,7 +545,7 @@ void CDynProg::set_a_trans_matrix(
 	trans_list_forward_val = NULL ;
 	trans_list_len = 0 ;
 
-	//SG_PRINT("N=%i\n", N) ;
+	//SG_PRINT("m_N=%i\n", m_N) ;
 	
 	m_transition_matrix_a.zero() ;
 	m_transition_matrix_a_id.zero() ;
@@ -553,14 +553,14 @@ void CDynProg::set_a_trans_matrix(
 	mem_initialized = true ;
 
 	trans_list_forward_cnt=NULL ;
-	trans_list_len = N ;
-	trans_list_forward = new T_STATES*[N] ;
-	trans_list_forward_cnt = new T_STATES[N] ;
-	trans_list_forward_val = new float64_t*[N] ;
-	trans_list_forward_id = new int32_t*[N] ;
+	trans_list_len = m_N ;
+	trans_list_forward = new T_STATES*[m_N] ;
+	trans_list_forward_cnt = new T_STATES[m_N] ;
+	trans_list_forward_val = new float64_t*[m_N] ;
+	trans_list_forward_id = new int32_t*[m_N] ;
 	
 	int32_t start_idx=0;
-	for (int32_t j=0; j<N; j++)
+	for (int32_t j=0; j<m_N; j++)
 	{
 		int32_t old_start_idx=start_idx;
 
@@ -604,8 +604,8 @@ void CDynProg::set_a_trans_matrix(
 			id = (int32_t)a_trans[i+num_trans*3] ;
 		//SG_DEBUG( "id=%i\n", id) ;
 			
-		ASSERT(to_state>=0 && to_state<N);
-		ASSERT(from_state>=0 && from_state<N);
+		ASSERT(to_state>=0 && to_state<m_N);
+		ASSERT(from_state>=0 && from_state<m_N);
 		
 		trans_list_forward[to_state][trans_list_forward_cnt[to_state]]=from_state ;
 		trans_list_forward_val[to_state][trans_list_forward_cnt[to_state]]=val ;
@@ -617,8 +617,8 @@ void CDynProg::set_a_trans_matrix(
 	} ;
 
 	m_max_a_id = 0 ;
-	for (int32_t i=0; i<N; i++)
-		for (int32_t j=0; j<N; j++)
+	for (int32_t i=0; i<m_N; i++)
+		for (int32_t j=0; j<m_N; j++)
 		{
 			//if (m_transition_matrix_a_id.element(i,j))
 			//SG_DEBUG( "(%i,%i)=%i\n", i,j, m_transition_matrix_a_id.element(i,j)) ;
@@ -803,12 +803,12 @@ void CDynProg::best_path_set_seq(float64_t *seq, int32_t p_N, int32_t seq_len)
 		return ;
 	} ;
 
-	ASSERT(p_N==N);
+	ASSERT(p_N==m_N);
 	ASSERT(m_initial_state_distribution_p.get_dim1()==p_N);
 	ASSERT(m_end_state_distribution_q.get_dim1()==p_N);
 	
 	m_seq.set_array(seq, p_N, seq_len, 1, true, true) ;
-	this->N=p_N ;
+	m_N=p_N ;
 
 	m_call=3 ;
 	m_step=2 ;
@@ -823,12 +823,12 @@ void CDynProg::best_path_set_seq3d(
 		return ;
 	} ;
 
-	ASSERT(p_N==N);
+	ASSERT(p_N==m_N);
 	ASSERT(m_initial_state_distribution_p.get_dim1()==p_N);
 	ASSERT(m_end_state_distribution_q.get_dim1()==p_N);
 	
 	m_seq.set_array(seq, p_N, seq_len, max_num_signals, true, true) ;
-	this->N=p_N ;
+	m_N=p_N ;
 
 	m_call=3 ;
 	m_step=2 ;
@@ -849,11 +849,6 @@ void CDynProg::best_path_set_pos(int32_t *pos, int32_t seq_len)
 
 void CDynProg::best_path_set_orf_info(int32_t *orf_info, int32_t m, int32_t n) 
 {
-	//if (m_step!=3)
-	//	SG_ERROR( "please call best_path_set_pos first\n") ;
-		
-	//if (m!=N)
-	//	SG_ERROR( "orf_info size does not match previous info %i!=%i\n", m, N) ;
 	if (n!=2)
 		SG_ERROR( "orf_info size incorrect %i!=2\n", n) ;
 	m_orf_info.set_array(orf_info, m, n, true, true) ;
@@ -868,8 +863,8 @@ void CDynProg::best_path_set_segment_sum_weights(
 	if (m_step!=3)
 		SG_ERROR( "please call best_path_set_pos first\n") ;
 		
-	if (num_states!=N)
-		SG_ERROR( "segment_sum_weights size does not match previous info %i!=%i\n", num_states, N) ;
+	if (num_states!=m_N)
+		SG_ERROR( "segment_sum_weights size does not match previous info %i!=%i\n", num_states, m_N) ;
 	if (seq_len!=m_pos.get_dim1())
 		SG_ERROR( "segment_sum_weights size incorrect %i!=%i\n", seq_len, m_pos.get_dim1()) ;
 
@@ -899,17 +894,17 @@ void CDynProg::best_path_set_plif_id_matrix(
 	if (m_step!=5)
 		SG_ERROR( "please call best_path_set_plif_list first\n") ;
 
-	if ((m!=N) || (n!=N))
-		SG_ERROR( "plif_id_matrix size does not match previous info %i!=%i or %i!=%i\n", m, N, n, N) ;
+	if ((m!=m_N) || (n!=m_N))
+		SG_ERROR( "plif_id_matrix size does not match previous info %i!=%i or %i!=%i\n", m, m_N, n, m_N) ;
 
-	CArray2<int32_t> id_matrix(plif_id_matrix, N, N, false, false) ;
+	CArray2<int32_t> id_matrix(plif_id_matrix, m_N, m_N, false, false) ;
 #ifdef DYNPROG_DEBUG
 	id_matrix.set_name("id_matrix");
 	id_matrix.display_array();
 #endif //DYNPROG_DEBUG
-	m_PEN.resize_array(N, N) ;
-	for (int32_t i=0; i<N; i++)
-		for (int32_t j=0; j<N; j++)
+	m_PEN.resize_array(m_N, m_N) ;
+	for (int32_t i=0; i<m_N; i++)
+		for (int32_t j=0; j<m_N; j++)
 			if (id_matrix.element(i,j)>=0)
 				m_PEN.element(i,j)=m_plif_list[id_matrix.element(i,j)] ;
 			else
@@ -924,15 +919,15 @@ void CDynProg::best_path_set_plif_state_signal_matrix(
 	if (m_step!=6)
 		SG_ERROR( "please call best_path_set_plif_id_matrix first\n") ;
 	
-	if (m!=N)
-		SG_ERROR( "plif_state_signal_matrix size does not match previous info %i!=%i\n", m, N) ;
+	if (m!=m_N)
+		SG_ERROR( "plif_state_signal_matrix size does not match previous info %i!=%i\n", m, m_N) ;
 
 	if (m_seq.get_dim3() != max_num_signals)
 		SG_ERROR( "size(plif_state_signal_matrix,2) does not match with size(m_seq,3): %i!=%i\nSorry, Soeren... interface changed\n", m_seq.get_dim3(), max_num_signals) ;
 
-	CArray2<int32_t> id_matrix(plif_id_matrix, N, max_num_signals, false, false) ;
-	m_PEN_state_signals.resize_array(N, max_num_signals) ;
-	for (int32_t i=0; i<N; i++)
+	CArray2<int32_t> id_matrix(plif_id_matrix, m_N, max_num_signals, false, false) ;
+	m_PEN_state_signals.resize_array(m_N, max_num_signals) ;
+	for (int32_t i=0; i<m_N; i++)
 	{
 		for (int32_t j=0; j<max_num_signals; j++)
 		{
@@ -1036,7 +1031,7 @@ void CDynProg::best_path_call(int32_t nbest, bool use_orf)
 		SG_ERROR( "please call best_path_set_dict_weights first\n") ;
 	if (m_call!=1)
 		SG_ERROR( "please call best_path_set_orf_info first\n") ;
-	ASSERT(N==m_seq.get_dim1()) ;
+	ASSERT(m_N==m_seq.get_dim1()) ;
 	ASSERT(m_seq.get_dim2()==m_pos.get_dim1()) ;
 
 	m_scores.resize_array(nbest) ;
@@ -1071,7 +1066,7 @@ void CDynProg::best_path_deriv_call()
 		//SG_ERROR( "please call best_path_set_dict_weights first\n") ;
 	//if (m_call!=1)
 		//SG_ERROR( "please call best_path_set_orf_info first\n") ;
-	ASSERT(N==m_seq.get_dim1()) ;
+	ASSERT(m_N==m_seq.get_dim1()) ;
 	ASSERT(m_seq.get_dim2()==m_pos.get_dim1()) ;
 
 	m_call=5 ; // or so ...
@@ -1094,7 +1089,7 @@ void CDynProg::best_path_2struct_call(int32_t nbest)
 		SG_ERROR( "please call best_path_set_orf_dict_weights first\n") ;
 	if (m_call!=2)
 		SG_ERROR( "please call best_path_set_segment_sum_weights first\n") ;
-	ASSERT(N==m_seq.get_dim1()) ;
+	ASSERT(m_N==m_seq.get_dim1()) ;
 	ASSERT(m_seq.get_dim2()==m_pos.get_dim1()) ;
 	
 	m_scores.resize_array(nbest) ;
@@ -1120,7 +1115,7 @@ void CDynProg::best_path_simple_call(int32_t nbest)
 		SG_ERROR( "please call best_path_set_seq first\n") ;
 	if (m_call!=3)
 		SG_ERROR( "please call best_path_set_seq first\n") ;
-	ASSERT(N==m_seq.get_dim1()) ;
+	ASSERT(m_N==m_seq.get_dim1()) ;
 
 	m_scores.resize_array(nbest) ;
 	m_states.resize_array(nbest, m_seq.get_dim2()) ;
@@ -1202,12 +1197,12 @@ void CDynProg::best_path_get_losses(float64_t** losses, int32_t* seq_len)
 float64_t CDynProg::best_path_no_b(
 	int32_t max_iter, int32_t &best_iter, int32_t *my_path)
 {
-	CArray2<T_STATES> psi(max_iter, N) ;
-	CArray<float64_t>* delta = new CArray<float64_t>(N) ;
-	CArray<float64_t>* delta_new = new CArray<float64_t>(N) ;
+	CArray2<T_STATES> psi(max_iter, m_N) ;
+	CArray<float64_t>* delta = new CArray<float64_t>(m_N) ;
+	CArray<float64_t>* delta_new = new CArray<float64_t>(m_N) ;
 	
 	{ // initialization
-		for (int32_t i=0; i<N; i++)
+		for (int32_t i=0; i<m_N; i++)
 		{
 			delta->element(i) = get_p(i) ;
 			psi.element(0, i)= 0 ;
@@ -1221,7 +1216,7 @@ float64_t CDynProg::best_path_no_b(
 	for (int32_t t=1; t<max_iter; t++)
 	{
 		CArray<float64_t>* dummy;
-		int32_t NN=N ;
+		int32_t NN=m_N ;
 		for (int32_t j=0; j<NN; j++)
 		{
 			float64_t maxj = delta->element(0) + m_transition_matrix_a.element(0,j);
@@ -1249,7 +1244,7 @@ float64_t CDynProg::best_path_no_b(
 			float64_t maxj=delta->element(0)+get_q(0);
 			int32_t argmax=0;
 			
-			for (int32_t i=1; i<N; i++)
+			for (int32_t i=1; i<m_N; i++)
 			{
 				float64_t temp=delta->element(i)+get_q(i);
 				
@@ -1288,24 +1283,24 @@ void CDynProg::best_path_no_b_trans(
 	int32_t max_iter, int32_t &max_best_iter, int16_t nbest,
 	float64_t *prob_nbest, int32_t *my_paths)
 {
-	//T_STATES *psi=new T_STATES[max_iter*N*nbest] ;
-	CArray3<T_STATES> psi(max_iter, N, nbest) ;
-	CArray3<int16_t> ktable(max_iter, N, nbest) ;
+	//T_STATES *psi=new T_STATES[max_iter*m_N*nbest] ;
+	CArray3<T_STATES> psi(max_iter, m_N, nbest) ;
+	CArray3<int16_t> ktable(max_iter, m_N, nbest) ;
 	CArray2<int16_t> ktable_ends(max_iter, nbest) ;
 
-	CArray<float64_t> tempvv(nbest*N) ;
-	CArray<int32_t> tempii(nbest*N) ;
+	CArray<float64_t> tempvv(nbest*m_N) ;
+	CArray<int32_t> tempii(nbest*m_N) ;
 
 	CArray2<T_STATES> path_ends(max_iter, nbest) ;
-	CArray2<float64_t> *delta=new CArray2<float64_t>(N, nbest) ;
-	CArray2<float64_t> *delta_new=new CArray2<float64_t>(N, nbest) ;
+	CArray2<float64_t> *delta=new CArray2<float64_t>(m_N, nbest) ;
+	CArray2<float64_t> *delta_new=new CArray2<float64_t>(m_N, nbest) ;
 	CArray2<float64_t> delta_end(max_iter, nbest) ;
 
 	CArray2<int32_t> paths(max_iter, nbest) ;
 	paths.set_array(my_paths, max_iter, nbest, false, false) ;
 
 	{ // initialization
-		for (T_STATES i=0; i<N; i++)
+		for (T_STATES i=0; i<m_N; i++)
 		{
 			delta->element(i,0) = get_p(i) ;
 			for (int16_t k=1; k<nbest; k++)
@@ -1321,7 +1316,7 @@ void CDynProg::best_path_no_b_trans(
 	{
 		CArray2<float64_t>* dummy=NULL;
 
-		for (T_STATES j=0; j<N; j++)
+		for (T_STATES j=0; j<m_N; j++)
 		{
 			const T_STATES num_elem   = trans_list_forward_cnt[j] ;
 			const T_STATES *elem_list = trans_list_forward[j] ;
@@ -1335,7 +1330,7 @@ void CDynProg::best_path_no_b_trans(
 					T_STATES ii = elem_list[i] ;
 					
 					tempvv.element(list_len) = -(delta->element(ii,diff) + elem_val[i]) ;
-					tempii.element(list_len) = diff*N + ii ;
+					tempii.element(list_len) = diff*m_N + ii ;
 					list_len++ ;
 				}
 			}
@@ -1346,8 +1341,8 @@ void CDynProg::best_path_no_b_trans(
 				if (k<list_len)
 				{
 					delta_new->element(j,k)  = -tempvv[k] ;
-					psi.element(t,j,k)      = (tempii[k]%N) ;
-					ktable.element(t,j,k)   = (tempii[k]-(tempii[k]%N))/N ;
+					psi.element(t,j,k)      = (tempii[k]%m_N) ;
+					ktable.element(t,j,k)   = (tempii[k]-(tempii[k]%m_N))/m_N ;
 				}
 				else
 				{
@@ -1366,10 +1361,10 @@ void CDynProg::best_path_no_b_trans(
 			int32_t list_len = 0 ;
 			for (int16_t diff=0; diff<nbest; diff++)
 			{
-				for (T_STATES i=0; i<N; i++)
+				for (T_STATES i=0; i<m_N; i++)
 				{
 					tempvv.element(list_len) = -(delta->element(i,diff)+get_q(i));
-					tempii.element(list_len) = diff*N + i ;
+					tempii.element(list_len) = diff*m_N + i ;
 					list_len++ ;
 				}
 			}
@@ -1378,8 +1373,8 @@ void CDynProg::best_path_no_b_trans(
 			for (int16_t k=0; k<nbest; k++)
 			{
 				delta_end.element(t-1,k) = -tempvv[k] ;
-				path_ends.element(t-1,k) = (tempii[k]%N) ;
-				ktable_ends.element(t-1,k) = (tempii[k]-(tempii[k]%N))/N ;
+				path_ends.element(t-1,k) = (tempii[k]%m_N) ;
+				ktable_ends.element(t-1,k) = (tempii[k]-(tempii[k]%m_N))/m_N ;
 			}
 		}
 	}
@@ -1553,11 +1548,11 @@ void CDynProg::best_path_2struct(
 	dict_weights.set_array(dictionary_weights, dict_len, m_num_svms, false, false) ;
 	m_dict_weights_array=dict_weights.get_array() ;
 
-	CArray2<CPlifBase*> PEN(Plif_matrix, N, N, false) ;
-	CArray2<float64_t> seq((float64_t *)seq_array, N, seq_len, false) ;
+	CArray2<CPlifBase*> PEN(Plif_matrix, m_N, m_N, false) ;
+	CArray2<float64_t> seq((float64_t *)seq_array, m_N, seq_len, false) ;
 	
 	float64_t svm_value[m_num_svms] ;
-	float64_t segment_sum_value[N] ;
+	float64_t segment_sum_value[m_N] ;
 	
 	{ // initialize svm_svalue
 		for (int32_t s=0; s<m_num_svms; s++)
@@ -1565,8 +1560,8 @@ void CDynProg::best_path_2struct(
 	}
 	
 	{ // determine maximal length of look-back
-		for (int32_t i=0; i<N; i++)
-			for (int32_t j=0; j<N; j++)
+		for (int32_t i=0; i<m_N; i++)
+			for (int32_t j=0; j<m_N; j++)
 			{
 				CPlifBase *penij=PEN.element(i,j) ;
 				if (penij==NULL)
@@ -1581,9 +1576,9 @@ void CDynProg::best_path_2struct(
 	//SG_DEBUG("use_svm=%i\n", use_svm) ;
 	//SG_DEBUG("max_look_back=%i\n", max_look_back) ;
 	
-	const int32_t look_back_buflen = (max_look_back+1)*nbest*N ;
+	const int32_t look_back_buflen = (max_look_back+1)*nbest*m_N ;
 	//SG_DEBUG("look_back_buflen=%i\n", look_back_buflen) ;
-	/*const float64_t mem_use = (float64_t)(seq_len*N*nbest*(sizeof(T_STATES)+sizeof(int16_t)+sizeof(int32_t))+
+	/*const float64_t mem_use = (float64_t)(seq_len*m_N*nbest*(sizeof(T_STATES)+sizeof(int16_t)+sizeof(int32_t))+
 								look_back_buflen*(2*sizeof(float64_t)+sizeof(int32_t))+
 								seq_len*(sizeof(T_STATES)+sizeof(int32_t))+
 								genestr_len*sizeof(bool))/(1024*1024);*/
@@ -1591,17 +1586,17 @@ void CDynProg::best_path_2struct(
 	
 	/*if (is_big)
 	{
-		SG_DEBUG("calling best_path_2struct: seq_len=%i, N=%i, lookback=%i nbest=%i\n", 
-					 seq_len, N, max_look_back, nbest) ;
+		SG_DEBUG("calling best_path_2struct: seq_len=%i, m_N=%i, lookback=%i nbest=%i\n", 
+					 seq_len, m_N, max_look_back, nbest) ;
 		SG_DEBUG("allocating %1.2fMB of memory\n", 
 					 mem_use) ;
 					 }*/
 	ASSERT(nbest<32000) ;
 		
-	CArray3<float64_t> delta(max_look_back+1, N, nbest) ;
-	CArray3<T_STATES> psi(seq_len,N,nbest) ;
-	CArray3<int16_t> ktable(seq_len,N,nbest) ;
-	CArray3<int32_t> ptable(seq_len,N,nbest) ;
+	CArray3<float64_t> delta(max_look_back+1, m_N, nbest) ;
+	CArray3<T_STATES> psi(seq_len,m_N,nbest) ;
+	CArray3<int16_t> ktable(seq_len,m_N,nbest) ;
+	CArray3<int32_t> ptable(seq_len,m_N,nbest) ;
 
 	CArray<float64_t> delta_end(nbest) ;
 	CArray<T_STATES> path_ends(nbest) ;
@@ -1637,7 +1632,7 @@ void CDynProg::best_path_2struct(
 	
 	
 	{ // initialization
-		for (T_STATES i=0; i<N; i++)
+		for (T_STATES i=0; i<m_N; i++)
 		{
 			delta.element(0,i,0) = get_p(i) + seq.element(i,0) ;
 			psi.element(0,i,0)   = 0 ;
@@ -1660,7 +1655,7 @@ void CDynProg::best_path_2struct(
 		//	SG_PROGRESS(t, 0, seq_len);
 		//SG_PRINT("%i\n", t) ;
 		
-		for (T_STATES j=0; j<N; j++)
+		for (T_STATES j=0; j<m_N; j++)
 		{
 			if (seq.element(j,t)<-1e20)
 			{ // if we cannot observe the symbol here, then we can omit the rest
@@ -1694,14 +1689,14 @@ void CDynProg::best_path_2struct(
 						reset_svm_value(pos[t], last_svm_pos, svm_value) ;
 
 					int32_t last_segment_sum_pos ;
-					reset_segment_sum_value(N, pos[t], last_segment_sum_pos, segment_sum_value) ;
+					reset_segment_sum_value(m_N, pos[t], last_segment_sum_pos, segment_sum_value) ;
 
 					for (int32_t ts=t-1; ts>=0 && pos[t]-pos[ts]<=look_back; ts--)
 					{
 						if (use_svm)
 							extend_svm_value(wordstr, pos[ts], last_svm_pos, svm_value) ;
 
-						extend_segment_sum_value(segment_sum_weights, seq_len, N, pos[ts], last_segment_sum_pos, segment_sum_value) ;
+						extend_segment_sum_value(segment_sum_weights, seq_len, m_N, pos[ts], last_segment_sum_pos, segment_sum_value) ;
 						
 						float64_t pen_val = 0.0 ;
 						if (penalty)
@@ -1712,7 +1707,7 @@ void CDynProg::best_path_2struct(
 							val             += pen_val ;
 							
 							tempvv[list_len] = -val ;
-							tempii[list_len] =  ii + diff*N + ts*N*nbest;
+							tempii[list_len] =  ii + diff*m_N + ts*m_N*nbest;
 							//SG_DEBUG( "%i (%i,%i,%i, %i, %i) ", list_len, diff, ts, i, pos[t]-pos[ts], look_back) ;
 							list_len++ ;
 						}
@@ -1725,9 +1720,9 @@ void CDynProg::best_path_2struct(
 					if (k<list_len)
 					{
 						delta.element(t%max_look_back,j,k)    = -tempvv[k] + seq.element(j,t);
-						psi.element(t,j,k)      = (tempii[k]%N) ;
-						ktable.element(t,j,k)     = (tempii[k]%(N*nbest)-psi.element(t,j,k))/N ;
-						ptable.element(t,j,k)     = (tempii[k]-(tempii[k]%(N*nbest)))/(N*nbest) ;
+						psi.element(t,j,k)      = (tempii[k]%m_N) ;
+						ktable.element(t,j,k)     = (tempii[k]%(m_N*nbest)-psi.element(t,j,k))/m_N ;
+						ptable.element(t,j,k)     = (tempii[k]-(tempii[k]%(m_N*nbest)))/(m_N*nbest) ;
 					}
 					else
 					{
@@ -1745,10 +1740,10 @@ void CDynProg::best_path_2struct(
 		int32_t list_len = 0 ;
 		for (int16_t diff=0; diff<nbest; diff++)
 		{
-			for (T_STATES i=0; i<N; i++)
+			for (T_STATES i=0; i<m_N; i++)
 			{
 				tempvv[list_len] = -(delta.element((seq_len-1)%max_look_back,i,diff)+get_q(i)) ;
-				tempii[list_len] = i + diff*N ;
+				tempii[list_len] = i + diff*m_N ;
 				list_len++ ;
 			}
 		}
@@ -1758,8 +1753,8 @@ void CDynProg::best_path_2struct(
 		for (int16_t k=0; k<nbest; k++)
 		{
 			delta_end.element(k) = -tempvv[k] ;
-			path_ends.element(k) = (tempii[k]%N) ;
-			ktable_end.element(k) = (tempii[k]-path_ends.element(k))/N ;
+			path_ends.element(k) = (tempii[k]%m_N) ;
+			ktable_end.element(k) = (tempii[k]-path_ends.element(k))/m_N ;
 		}
 	}
 	
@@ -2477,23 +2472,23 @@ void CDynProg::best_path_trans(
 	//dict_weights.set_array(dictionary_weights, m_cum_num_words_array[m_num_degrees], m_num_svms, false, false) ;
 	//m_dict_weights_array=dict_weights.get_array() ;
 	
-	SG_DEBUG("N:%i, seq_len:%i, max_num_signals:%i\n",N, seq_len, max_num_signals) ;
+	SG_DEBUG("m_N:%i, seq_len:%i, max_num_signals:%i\n",m_N, seq_len, max_num_signals) ;
 
-//	for (int32_t i=0;i<N*seq_len*max_num_signals;i++)
+//	for (int32_t i=0;i<m_N*seq_len*max_num_signals;i++)
 //		SG_PRINT("(%i)%0.2f ",i,seq_array[i]);
 
-	//CArray2<CPlifBase*> PEN(Plif_matrix, N, N, false, false) ;
-	CArray2<CPlifBase*> PEN(Plif_matrix, N, N, false, true) ;
+	//CArray2<CPlifBase*> PEN(Plif_matrix, m_N, m_N, false, false) ;
+	CArray2<CPlifBase*> PEN(Plif_matrix, m_N, m_N, false, true) ;
 	PEN.set_name("PEN");
-	//CArray2<CPlifBase*> PEN_state_signals(Plif_state_signals, N, max_num_signals, false, false) ;
-	CArray2<CPlifBase*> PEN_state_signals(Plif_state_signals, N, max_num_signals, false, true) ;
+	//CArray2<CPlifBase*> PEN_state_signals(Plif_state_signals, m_N, max_num_signals, false, false) ;
+	CArray2<CPlifBase*> PEN_state_signals(Plif_state_signals, m_N, max_num_signals, false, true) ;
 	PEN_state_signals.set_name("state_signals");
 	
-	CArray2<float64_t> seq(N, seq_len) ;
+	CArray2<float64_t> seq(m_N, seq_len) ;
 	seq.set_name("seq") ;
 	seq.zero() ;
 
-	CArray2<int32_t> orf_info(orf_info_array, N, 2) ;
+	CArray2<int32_t> orf_info(orf_info_array, m_N, 2) ;
 	orf_info.set_name("orf_info") ;
 	//g_orf_info = orf_info ;
 	//orf_info.display_array() ;
@@ -2507,13 +2502,13 @@ void CDynProg::best_path_trans(
 	{ // convert seq_input to seq
       // this is independent of the svm values 
 
-		//CArray3<float64_t> seq_input(seq_array, N, seq_len, max_num_signals) ;
+		//CArray3<float64_t> seq_input(seq_array, m_N, seq_len, max_num_signals) ;
 		CArray3<float64_t> *seq_input=NULL ;
 		if (seq_array!=NULL)
 		{
 			SG_PRINT("using dense seq_array\n") ;
 
-			seq_input=new CArray3<float64_t>(seq_array, N, seq_len, max_num_signals) ;
+			seq_input=new CArray3<float64_t>(seq_array, m_N, seq_len, max_num_signals) ;
 			seq_input->set_name("seq_input") ;
 			//seq_input.display_array() ;
 			
@@ -2528,11 +2523,11 @@ void CDynProg::best_path_trans(
 			ASSERT(max_num_signals==2) ;
 		}
 		
-		for (int32_t i=0; i<N; i++)
+		for (int32_t i=0; i<m_N; i++)
 			for (int32_t j=0; j<seq_len; j++)
 				seq.element(i,j) = 0 ;
 
-		for (int32_t i=0; i<N; i++)
+		for (int32_t i=0; i<m_N; i++)
 		  for (int32_t j=0; j<seq_len; j++)
 		    for (int32_t k=0; k<max_num_signals; k++)
 		      {
@@ -2591,12 +2586,12 @@ void CDynProg::best_path_trans(
 
 	// allow longer transitions than look_back
 	bool long_transitions = false; //m_long_transitions ;
-	CArray2<int32_t> long_transition_content_position(N,N) ;
-	CArray2<int32_t> long_transition_content_start(N,N) ;
-	CArray2<float64_t> long_transition_content_scores(N,N) ;
-	CArray2<float64_t> long_transition_content_scores_pen(N,N) ;
-	CArray2<float64_t> long_transition_content_scores_prev(N,N) ;
-	CArray2<float64_t> long_transition_content_scores_elem(N,N) ;
+	CArray2<int32_t> long_transition_content_position(m_N,m_N) ;
+	CArray2<int32_t> long_transition_content_start(m_N,m_N) ;
+	CArray2<float64_t> long_transition_content_scores(m_N,m_N) ;
+	CArray2<float64_t> long_transition_content_scores_pen(m_N,m_N) ;
+	CArray2<float64_t> long_transition_content_scores_prev(m_N,m_N) ;
+	CArray2<float64_t> long_transition_content_scores_elem(m_N,m_N) ;
 	
 	if (with_loss || nbest!=1)
 	{
@@ -2610,14 +2605,14 @@ void CDynProg::best_path_trans(
 	long_transition_content_start.zero() ;
 	long_transition_content_position.zero() ;
 
-	CArray2<int32_t> look_back(N,N) ;
+	CArray2<int32_t> look_back(m_N,m_N) ;
 	
 	{ // determine maximal length of look-back
-		for (int32_t i=0; i<N; i++)
-			for (int32_t j=0; j<N; j++)
+		for (int32_t i=0; i<m_N; i++)
+			for (int32_t j=0; j<m_N; j++)
 				look_back.set_element(INT_MAX, i, j) ;
 		
-		for (int32_t j=0; j<N; j++)
+		for (int32_t j=0; j<m_N; j++)
 		{
 			// only consider transitions that are actually allowed
 			const T_STATES num_elem   = trans_list_forward_cnt[j] ;
@@ -2660,8 +2655,8 @@ void CDynProg::best_path_trans(
 		max_look_back = CMath::min(m_genestr_len, max_look_back) ;
 
 		int32_t num_long_transitions = 0 ;
-		for (int32_t i=0; i<N; i++)
-			for (int32_t j=0; j<N; j++)
+		for (int32_t i=0; i<m_N; i++)
+			for (int32_t j=0; j<m_N; j++)
 			{
 				if (look_back.get_element(i,j)==m_long_transition_threshold)
 					num_long_transitions++ ;
@@ -2679,10 +2674,10 @@ void CDynProg::best_path_trans(
 	//SG_PRINT("use_svm=%i, genestr_len: \n", use_svm, m_genestr_len) ;
 	SG_DEBUG("use_svm=%i\n", use_svm) ;
 	
-	SG_DEBUG("maxlook: %d N: %d nbest: %d \n", max_look_back, N, nbest);
-	const int32_t look_back_buflen = (max_look_back*N+1)*nbest ;
+	SG_DEBUG("maxlook: %d m_N: %d nbest: %d \n", max_look_back, m_N, nbest);
+	const int32_t look_back_buflen = (max_look_back*m_N+1)*nbest ;
 	SG_DEBUG("look_back_buflen=%i\n", look_back_buflen) ;
-	/*const float64_t mem_use = (float64_t)(seq_len*N*nbest*(sizeof(T_STATES)+sizeof(int16_t)+sizeof(int32_t))+
+	/*const float64_t mem_use = (float64_t)(seq_len*m_N*nbest*(sizeof(T_STATES)+sizeof(int16_t)+sizeof(int32_t))+
 								  look_back_buflen*(2*sizeof(float64_t)+sizeof(int32_t))+
 								  seq_len*(sizeof(T_STATES)+sizeof(int32_t))+
 								  m_genestr_len*sizeof(bool))/(1024*1024);*/
@@ -2691,8 +2686,8 @@ void CDynProg::best_path_trans(
 
 	/*if (is_big)
 	  {
-	  SG_DEBUG("calling best_path_trans: seq_len=%i, N=%i, lookback=%i nbest=%i\n", 
-	  seq_len, N, max_look_back, nbest) ;
+	  SG_DEBUG("calling best_path_trans: seq_len=%i, m_N=%i, lookback=%i nbest=%i\n", 
+	  seq_len, m_N, max_look_back, nbest) ;
 	  SG_DEBUG("allocating %1.2fMB of memory\n", 
 	  mem_use) ;
 	  }*/
@@ -2700,20 +2695,20 @@ void CDynProg::best_path_trans(
 	
 
 	
-	CArray3<float64_t> delta(seq_len, N, nbest) ;
+	CArray3<float64_t> delta(seq_len, m_N, nbest) ;
 	delta.set_name("delta");
 	float64_t* delta_array = delta.get_array() ;
 	//delta.zero() ;
 	
-	CArray3<T_STATES> psi(seq_len, N, nbest) ;
+	CArray3<T_STATES> psi(seq_len, m_N, nbest) ;
 	psi.set_name("psi");
 	//psi.zero() ;
 	
-	CArray3<int16_t> ktable(seq_len, N, nbest) ;
+	CArray3<int16_t> ktable(seq_len, m_N, nbest) ;
 	ktable.set_name("ktable");
 	//ktable.zero() ;
 	
-	CArray3<int32_t> ptable(seq_len, N, nbest) ;	
+	CArray3<int32_t> ptable(seq_len, m_N, nbest) ;	
 	ptable.set_name("ptable");
 	//ptable.zero() ;
 
@@ -2846,15 +2841,15 @@ void CDynProg::best_path_trans(
 	}
 
 	
-    	//CArray2<int32_t*> trans_matrix_svms(N,N);
-  	//CArray2<int32_t> trans_matrix_num_svms(N,N);
+    	//CArray2<int32_t*> trans_matrix_svms(m_N,m_N);
+  	//CArray2<int32_t> trans_matrix_num_svms(m_N,m_N);
 
 	{ // initialization
 
-		for (T_STATES i=0; i<N; i++)
+		for (T_STATES i=0; i<m_N; i++)
 		{
 			//delta.element(0, i, 0) = get_p(i) + seq.element(i,0) ;        // get_p defined in HMM.h to be equiv to initial_state_distribution
-			delta.element(delta_array, 0, i, 0, seq_len, N) = get_p(i) + seq.element(i,0) ;        // get_p defined in HMM.h to be equiv to initial_state_distribution
+			delta.element(delta_array, 0, i, 0, seq_len, m_N) = get_p(i) + seq.element(i,0) ;        // get_p defined in HMM.h to be equiv to initial_state_distribution
 			psi.element(0,i,0)   = 0 ;
 			if (nbest>1)
 				ktable.element(0,i,0)  = 0 ;
@@ -2865,14 +2860,14 @@ void CDynProg::best_path_trans(
 				delta.get_array_size(dim1, dim2, dim3) ;
 				//SG_DEBUG("i=%i, k=%i -- %i, %i, %i\n", i, k, dim1, dim2, dim3) ;
 				//delta.element(0, i, k)    = -CMath::INFTY ;
-				delta.element(delta_array, 0, i, k, seq_len, N)    = -CMath::INFTY ;
+				delta.element(delta_array, 0, i, k, seq_len, m_N)    = -CMath::INFTY ;
 				psi.element(0,i,0)      = 0 ;                  // <--- what's this for?
 				if (nbest>1)
 					ktable.element(0,i,k)     = 0 ;
 				ptable.element(0,i,k)     = 0 ;
 			}
 /*
-			for (T_STATES j=0; j<N; j++)
+			for (T_STATES j=0; j<m_N; j++)
 			{
 				CPlifBase * penalty = PEN.element(i,j) ;
 				int32_t num_current_svms=0;
@@ -2917,13 +2912,13 @@ void CDynProg::best_path_trans(
 			find_segment_loss_till_pos(pos, t, m_segment_ids, m_segment_mask, loss);  
 		}
 		
-		for (T_STATES j=0; j<N; j++)
+		for (T_STATES j=0; j<m_N; j++)
 		{
 			if (seq.element(j,t)<=-1e20)
 			{ // if we cannot observe the symbol here, then we can omit the rest
 				for (int16_t k=0; k<nbest; k++)
 				{
-					delta.element(delta_array, t, j, k, seq_len, N)    = seq.element(j,t) ;
+					delta.element(delta_array, t, j, k, seq_len, m_N)    = seq.element(j,t) ;
 					psi.element(t,j,k)         = 0 ;
 					if (nbest>1)
 						ktable.element(t,j,k)  = 0 ;
@@ -3055,12 +3050,12 @@ void CDynProg::best_path_trans(
 								if (with_loss)
 									val              += segment_loss ;
 								
-								float64_t mval = -(val + delta.element(delta_array, ts, ii, 0, seq_len, N)) ;
+								float64_t mval = -(val + delta.element(delta_array, ts, ii, 0, seq_len, m_N)) ;
 								
 								if (mval<fixedtempvv_)
 								{
 									fixedtempvv_ = mval ;
-									fixedtempii_ = ii + ts*N;
+									fixedtempii_ = ii + ts*m_N;
 									fixed_list_len = 1 ;
 									fixedtemplong = false ;
 								}
@@ -3076,7 +3071,7 @@ void CDynProg::best_path_trans(
 									if (with_loss)
 										val              += segment_loss ;
 									
-									float64_t mval = -(val + delta.element(delta_array, ts, ii, diff, seq_len, N)) ;
+									float64_t mval = -(val + delta.element(delta_array, ts, ii, diff, seq_len, m_N)) ;
 									
 									/* only place -val in fixedtempvv if it is one of the nbest lowest values in there */
 									/* fixedtempvv[i], i=0:nbest-1, is sorted so that fixedtempvv[0] <= fixedtempvv[1] <= ...*/
@@ -3087,7 +3082,7 @@ void CDynProg::best_path_trans(
 										if ( (fixed_list_len<nbest) && ((0==fixed_list_len) || (mval>fixedtempvv[fixed_list_len-1])) )
 										{
 											fixedtempvv[fixed_list_len] = mval ;
-											fixedtempii[fixed_list_len] = ii + diff*N + ts*N*nbest;
+											fixedtempii[fixed_list_len] = ii + diff*m_N + ts*m_N*nbest;
 											fixed_list_len++ ;
 										}
 										else  // must have mval < fixedtempvv[fixed_list_len-1]
@@ -3104,7 +3099,7 @@ void CDynProg::best_path_trans(
 											}
 											
 											fixedtempvv[addhere] = mval;
-											fixedtempii[addhere] = ii + diff*N + ts*N*nbest;
+											fixedtempii[addhere] = ii + diff*m_N + ts*m_N*nbest;
 											
 											if (fixed_list_len < nbest)
 												fixed_list_len++;
@@ -3158,12 +3153,12 @@ void CDynProg::best_path_trans(
 							/* // incomplete extra check
 							   float64_t mval2 = CMath::INFTY ;
 							   if (long_transition_content_position.get_element(ii,j)>0)
-							   mval2 = -( pen_val/2 + delta.element(delta_array, long_transition_content_position.get_element(ii,j), ii, 0, seq_len, N) + elem_val[i]  ) ;
+							   mval2 = -( pen_val/2 + delta.element(delta_array, long_transition_content_position.get_element(ii,j), ii, 0, seq_len, m_N) + elem_val[i]  ) ;
 							   if (fabs(mval-mval2)>1e-8)
 							   SG_PRINT("!!!  mval=%1.2f  mval2=%1.2f\n", mval, mval2) ;
 							   
 							   if (long_transition_content_position.get_element(ii,j)>0)
-							   mval2 = -( pen_val/2 + delta.element(delta_array, long_transition_content_position.get_element(ii,j), ii, 0, seq_len, N) + elem_val[i]  ) ;
+							   mval2 = -( pen_val/2 + delta.element(delta_array, long_transition_content_position.get_element(ii,j), ii, 0, seq_len, m_N) + elem_val[i]  ) ;
 							*/
 
 								
@@ -3176,11 +3171,11 @@ void CDynProg::best_path_trans(
 										 pos[t], j, 
 										 mval, pen_val*0.5, long_transition_content_scores_pen.get_element(ii, j), long_transition_content_scores_elem.get_element(ii, j), long_transition_content_scores_prev.get_element(ii, j), ii, 
 										 pos[long_transition_content_position.get_element(ii, j)], 
-										 fixedtempvv_, (fromtjk%N), pos[(fromtjk-(fromtjk%(N*nbest)))/(N*nbest)]) ;*/
-								ASSERT((fromtjk-(fromtjk%(N*nbest)))/(N*nbest)==0 || pos[(fromtjk-(fromtjk%(N*nbest)))/(N*nbest)]>=pos[long_transition_content_position.get_element(ii, j)] || fixedtemplong) ;
+										 fixedtempvv_, (fromtjk%m_N), pos[(fromtjk-(fromtjk%(m_N*nbest)))/(m_N*nbest)]) ;*/
+								ASSERT((fromtjk-(fromtjk%(m_N*nbest)))/(m_N*nbest)==0 || pos[(fromtjk-(fromtjk%(m_N*nbest)))/(m_N*nbest)]>=pos[long_transition_content_position.get_element(ii, j)] || fixedtemplong) ;
 								
 								fixedtempvv_ = mval ;
-								fixedtempii_ = ii + N*long_transition_content_position.get_element(ii, j) ;
+								fixedtempii_ = ii + m_N*long_transition_content_position.get_element(ii, j) ;
 								fixed_list_len = 1 ;
 								fixedtemplong = true ;
 							}
@@ -3210,8 +3205,8 @@ void CDynProg::best_path_trans(
 								//	SG_PRINT("ts=%i  t=%i  ts2=%i  seq_len=%i\n", pos[ts], pos[t], pos[ts2], seq_len) ;
 								//}
 								
-								float64_t mval_trans = -( elem_val[i] + pen_val*0.5 + delta.element(delta_array, ts2, ii, 0, seq_len, N) ) ;
-								//float64_t mval_trans = -( elem_val[i] + delta.element(delta_array, ts, ii, 0, seq_len, N) ) ; // enable this for the incomplete extra check
+								float64_t mval_trans = -( elem_val[i] + pen_val*0.5 + delta.element(delta_array, ts2, ii, 0, seq_len, m_N) ) ;
+								//float64_t mval_trans = -( elem_val[i] + delta.element(delta_array, ts, ii, 0, seq_len, m_N) ) ; // enable this for the incomplete extra check
 								
 								if (pos[t2] - pos[long_transition_content_position.get_element(ii, j)] > m_long_transition_max)
 								{
@@ -3228,7 +3223,7 @@ void CDynProg::best_path_trans(
 									long_transition_content_scores.set_element(-mval_trans, ii, j) ;
 									long_transition_content_scores_pen.set_element(pen_val*0.5, ii, j) ;
 									long_transition_content_scores_elem.set_element(elem_val[i], ii, j) ;
-									long_transition_content_scores_prev.set_element(delta.element(delta_array, ts2, ii, 0, seq_len, N), ii, j) ;
+									long_transition_content_scores_prev.set_element(delta.element(delta_array, ts2, ii, 0, seq_len, m_N), ii, j) ;
 									long_transition_content_position.set_element(ts2, ii, j) ;
 								}
 
@@ -3236,7 +3231,7 @@ void CDynProg::best_path_trans(
 							}
 							
 							/* // extra check
-							   float64_t mval_trans2 = -( elem_val[i] + pen_val + delta.element(delta_array, ts, ii, 0, seq_len, N) ) ;
+							   float64_t mval_trans2 = -( elem_val[i] + pen_val + delta.element(delta_array, ts, ii, 0, seq_len, m_N) ) ;
 							   if (last_ts==ts && fabs(last_mval-mval_trans2)>1e-5)
 							   SG_PRINT("last_mval=%1.2f at pos %i vs. mval_trans2=%1.2f at pos %i (diff=%f)\n", last_mval, pos[last_ts], mval_trans2, pos[ts], last_mval-mval_trans2) ;
 							*/
@@ -3269,15 +3264,15 @@ void CDynProg::best_path_trans(
 							fromtjk = fixedtempii[k];
 						}
 						
-					    delta.element(delta_array, t, j, k, seq_len, N)    = -minusscore + seq.element(j,t);
-					    psi.element(t,j,k)      = (fromtjk%N) ;
+					    delta.element(delta_array, t, j, k, seq_len, m_N)    = -minusscore + seq.element(j,t);
+					    psi.element(t,j,k)      = (fromtjk%m_N) ;
 						if (nbest>1)
-							ktable.element(t,j,k)   = (fromtjk%(N*nbest)-psi.element(t,j,k))/N ;
-					    ptable.element(t,j,k)   = (fromtjk-(fromtjk%(N*nbest)))/(N*nbest) ;
+							ktable.element(t,j,k)   = (fromtjk%(m_N*nbest)-psi.element(t,j,k))/m_N ;
+					    ptable.element(t,j,k)   = (fromtjk-(fromtjk%(m_N*nbest)))/(m_N*nbest) ;
 					}
 					else
 					{
-						delta.element(delta_array, t, j, k, seq_len, N)    = -CMath::INFTY ;
+						delta.element(delta_array, t, j, k, seq_len, m_N)    = -CMath::INFTY ;
 						psi.element(t,j,k)      = 0 ;
 						if (nbest>1)
 							ktable.element(t,j,k)     = 0 ;
@@ -3296,10 +3291,10 @@ void CDynProg::best_path_trans(
 		int32_t list_len = 0 ;
 		for (int16_t diff=0; diff<nbest; diff++)
 		{
-			for (T_STATES i=0; i<N; i++)
+			for (T_STATES i=0; i<m_N; i++)
 			{
-				oldtempvv[list_len] = -(delta.element(delta_array, (seq_len-1), i, diff, seq_len, N)+get_q(i)) ;
-				oldtempii[list_len] = i + diff*N ;
+				oldtempvv[list_len] = -(delta.element(delta_array, (seq_len-1), i, diff, seq_len, m_N)+get_q(i)) ;
+				oldtempii[list_len] = i + diff*m_N ;
 				list_len++ ;
 			}
 		}
@@ -3309,9 +3304,9 @@ void CDynProg::best_path_trans(
 		for (int16_t k=0; k<nbest; k++)
 		{
 			delta_end.element(k) = -oldtempvv[k] ;
-			path_ends.element(k) = (oldtempii[k]%N) ;
+			path_ends.element(k) = (oldtempii[k]%m_N) ;
 			if (nbest>1)
-				ktable_end.element(k) = (oldtempii[k]-path_ends.element(k))/N ;
+				ktable_end.element(k) = (oldtempii[k]-path_ends.element(k))/m_N ;
 		}
 	}
 	
@@ -3369,9 +3364,9 @@ void CDynProg::best_path_trans_deriv(
 	int32_t seq_len, const int32_t *pos, CPlifBase **Plif_matrix,
 	CPlifBase **Plif_state_signals, int32_t max_num_signals,int32_t genestr_num)
 {	
-	m_initial_state_distribution_p_deriv.resize_array(N) ;
-	m_end_state_distribution_q_deriv.resize_array(N) ;
-	m_transition_matrix_a_deriv.resize_array(N,N) ;
+	m_initial_state_distribution_p_deriv.resize_array(m_N) ;
+	m_end_state_distribution_q_deriv.resize_array(m_N) ;
+	m_transition_matrix_a_deriv.resize_array(m_N,m_N) ;
 
 	if (!m_svm_arrays_clean)
 	{
@@ -3388,13 +3383,13 @@ void CDynProg::best_path_trans_deriv(
 	//dict_weights.set_array(dictionary_weights, m_cum_num_words_array[m_num_degrees], m_num_svms, false, false) ;
 	//m_dict_weights_array=dict_weights.get_array() ;
 	
-	CArray2<CPlifBase*> PEN(Plif_matrix, N, N, false, false) ;
-	CArray2<CPlifBase*> PEN_state_signals(Plif_state_signals, N, max_num_signals, false, false) ;
-	CArray3<float64_t> seq_input(seq_array, N, seq_len, max_num_signals) ;
+	CArray2<CPlifBase*> PEN(Plif_matrix, m_N, m_N, false, false) ;
+	CArray2<CPlifBase*> PEN_state_signals(Plif_state_signals, m_N, max_num_signals, false, false) ;
+	CArray3<float64_t> seq_input(seq_array, m_N, seq_len, max_num_signals) ;
 	
 	{ // determine whether to use svm outputs and clear derivatives
-		for (int32_t i=0; i<N; i++)
-			for (int32_t j=0; j<N; j++)
+		for (int32_t i=0; i<m_N; i++)
+			for (int32_t j=0; j<m_N; j++)
 			{
 				CPlifBase *penij=PEN.element(i,j) ;
 				if (penij==NULL)
@@ -3404,7 +3399,7 @@ void CDynProg::best_path_trans_deriv(
 					use_svm=true ;
 				penij->penalty_clear_derivative() ;
 			}
-		for (int32_t i=0; i<N; i++)
+		for (int32_t i=0; i<m_N; i++)
 			for (int32_t j=0; j<max_num_signals; j++)
 			{
 				CPlifBase *penij=PEN_state_signals.element(i,j) ;
@@ -3418,11 +3413,11 @@ void CDynProg::best_path_trans_deriv(
 
 	{ // set derivatives of p, q and a to zero
 		
-		for (int32_t i=0; i<N; i++)
+		for (int32_t i=0; i<m_N; i++)
 		{
 			m_initial_state_distribution_p_deriv.element(i)=0 ;
 			m_end_state_distribution_q_deriv.element(i)=0 ;
-			for (int32_t j=0; j<N; j++)
+			for (int32_t j=0; j<m_N; j++)
 				m_transition_matrix_a_deriv.element(i,j)=0 ;
 		}
 	}
@@ -3720,15 +3715,15 @@ void CDynProg::best_path_trans_simple(
 	} ;
 
 	int32_t max_look_back = 2 ;
-	const int32_t look_back_buflen = max_look_back*nbest*N ;
+	const int32_t look_back_buflen = max_look_back*nbest*m_N ;
 	ASSERT(nbest<32000) ;
 		
-	CArray2<float64_t> seq((float64_t *)seq_array, N, seq_len, false) ;
+	CArray2<float64_t> seq((float64_t *)seq_array, m_N, seq_len, false) ;
 
-	CArray3<float64_t> delta(max_look_back, N, nbest) ;
-	CArray3<T_STATES> psi(seq_len, N, nbest) ;
-	CArray3<int16_t> ktable(seq_len,N,nbest) ;
-	CArray3<int32_t> ptable(seq_len,N,nbest) ;
+	CArray3<float64_t> delta(max_look_back, m_N, nbest) ;
+	CArray3<T_STATES> psi(seq_len, m_N, nbest) ;
+	CArray3<int16_t> ktable(seq_len,m_N,nbest) ;
+	CArray3<int32_t> ptable(seq_len,m_N,nbest) ;
 
 	CArray<float64_t> delta_end(nbest) ;
 	CArray<T_STATES> path_ends(nbest) ;
@@ -3742,7 +3737,7 @@ void CDynProg::best_path_trans_simple(
 
 	{ // initialization
 
-		for (T_STATES i=0; i<N; i++)
+		for (T_STATES i=0; i<m_N; i++)
 		{
 			delta.element(0,i,0) = get_p(i) + seq.element(i,0) ;        // get_p defined in HMM.h to be equiv to initial_state_distribution
 			psi.element(0,i,0)   = 0 ;
@@ -3761,7 +3756,7 @@ void CDynProg::best_path_trans_simple(
 	// recursion
 	for (int32_t t=1; t<seq_len; t++)
 	{
-		for (T_STATES j=0; j<N; j++)
+		for (T_STATES j=0; j<m_N; j++)
 		{
 			if (seq.element(j,t)<-1e20)
 			{ // if we cannot observe the symbol here, then we can omit the rest
@@ -3800,7 +3795,7 @@ void CDynProg::best_path_trans_simple(
 						      float64_t mval = -val;
 
 						      oldtempvv[old_list_len] = mval ;
-						      oldtempii[old_list_len] = ii + diff*N + ts*N*nbest;
+						      oldtempii[old_list_len] = ii + diff*m_N + ts*m_N*nbest;
 						      old_list_len++ ;
 						    }
 						}
@@ -3823,9 +3818,9 @@ void CDynProg::best_path_trans_simple(
 					    fromtjk = oldtempii[k];
 					    
 					    delta.element(t%max_look_back,j,k)    = -minusscore + seq.element(j,t);
-					    psi.element(t,j,k)      = (fromtjk%N) ;
-					    ktable.element(t,j,k)     = (fromtjk%(N*nbest)-psi.element(t,j,k))/N ;
-					    ptable.element(t,j,k)     = (fromtjk-(fromtjk%(N*nbest)))/(N*nbest) ;
+					    psi.element(t,j,k)      = (fromtjk%m_N) ;
+					    ktable.element(t,j,k)     = (fromtjk%(m_N*nbest)-psi.element(t,j,k))/m_N ;
+					    ptable.element(t,j,k)     = (fromtjk-(fromtjk%(m_N*nbest)))/(m_N*nbest) ;
 					}
 					else
 					{
@@ -3845,10 +3840,10 @@ void CDynProg::best_path_trans_simple(
 		int32_t list_len = 0 ;
 		for (int16_t diff=0; diff<nbest; diff++)
 		{
-			for (T_STATES i=0; i<N; i++)
+			for (T_STATES i=0; i<m_N; i++)
 			{
 				oldtempvv[list_len] = -(delta.element((seq_len-1)%max_look_back,i,diff)+get_q(i)) ;
-				oldtempii[list_len] = i + diff*N ;
+				oldtempii[list_len] = i + diff*m_N ;
 				list_len++ ;
 			}
 		}
@@ -3858,8 +3853,8 @@ void CDynProg::best_path_trans_simple(
 		for (int16_t k=0; k<nbest; k++)
 		{
 			delta_end.element(k) = -oldtempvv[k] ;
-			path_ends.element(k) = (oldtempii[k]%N) ;
-			ktable_end.element(k) = (oldtempii[k]-path_ends.element(k))/N ;
+			path_ends.element(k) = (oldtempii[k]%m_N) ;
+			ktable_end.element(k) = (oldtempii[k]-path_ends.element(k))/m_N ;
 		}
 	}
 	

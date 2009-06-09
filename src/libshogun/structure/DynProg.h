@@ -110,9 +110,9 @@ public:
 	/** set number of states
 	 * use this to set N first
 	 *
-	 * @param p_N new N
+	 * @param N new N
 	 */
-	void set_num_states(int32_t p_N);
+	void set_num_states(int32_t N);
 
 	/** get num states */
 	int32_t get_num_states();
@@ -263,11 +263,11 @@ public:
 	/** set best path seq3d
 	 *
 	 * @param seq the 3D sequence
-	 * @param p_N dimension N
+	 * @param N dimension N
 	 * @param seq_len length of sequence
 	 * @param max_num_signals maximal number of signals
 	 */
-	void best_path_set_seq3d(float64_t *seq, int32_t p_N, int32_t seq_len, int32_t max_num_signals);
+	void best_path_set_seq3d(float64_t *seq, int32_t N, int32_t seq_len, int32_t max_num_signals);
 
 	/** set best path pos
 	 *
@@ -519,7 +519,7 @@ public:
 	/// access function for number of states N
 	inline T_STATES get_N() const
 	  {
-	    return N ;
+	    return m_N ;
 	  }
 	
 	/** access function for probability of end states
@@ -915,7 +915,7 @@ protected:
 	 */
 	//@{
 	/// number of states
-	int32_t N;
+	int32_t m_N;
 
 	/// transition matrix
 	CArray2<int32_t> m_transition_matrix_a_id;
