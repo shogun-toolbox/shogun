@@ -268,11 +268,11 @@ void CDynProg::init_tiling_data(
 	}
 	delete[] m_probe_pos;
 	delete[] m_raw_intensities;
-	m_probe_pos = new int32_t[num_probes];
-	m_raw_intensities = new float64_t[num_probes];
+	m_probe_pos = tmp_probe_pos; //new int32_t[num_probes];
+	m_raw_intensities = tmp_raw_intensities;//new float64_t[num_probes];
 
-	memcpy(m_probe_pos, probe_pos, num_probes*sizeof(int32_t));
-	memcpy(m_raw_intensities, intensities, num_probes*sizeof(float64_t));
+	//memcpy(m_probe_pos, probe_pos, num_probes*sizeof(int32_t));
+	//memcpy(m_raw_intensities, intensities, num_probes*sizeof(float64_t));
 
 }
 
@@ -321,7 +321,7 @@ void CDynProg::precompute_tiling_plifs(
 	CPlif** PEN, const int32_t* tiling_plif_ids,
 	const int32_t num_tiling_plifs, const int32_t seq_len, const int32_t* pos)
 {
-	SG_PRINT("precompute_tiling_plifs:%f num_tiling_plifs:%i\n",m_raw_intensities[0], num_tiling_plifs);
+	//SG_PRINT("precompute_tiling_plifs:%f num_tiling_plifs:%i\n",m_raw_intensities[0], num_tiling_plifs);
 
 	/*int32_t tiling_plif_ids[num_svms];
 	int32_t num = 0;
@@ -545,7 +545,7 @@ void CDynProg::set_a_trans_matrix(
 	trans_list_forward_val = NULL ;
 	trans_list_len = 0 ;
 
-	SG_PRINT("N=%i\n", N) ;
+	//SG_PRINT("N=%i\n", N) ;
 	
 	transition_matrix_a.zero() ;
 	transition_matrix_a_id.zero() ;
@@ -2468,7 +2468,7 @@ void CDynProg::best_path_trans(
 	mod_words.display_array() ;
 	sign_words.display_array() ;
 	string_words.display_array() ;
-	SG_PRINT("use_orf = %i\n", use_orf) ;
+	//SG_PRINT("use_orf = %i\n", use_orf) ;
 #endif
 	
 	int32_t max_look_back = 1000 ;
@@ -2590,7 +2590,7 @@ void CDynProg::best_path_trans(
 	}
 
 	// allow longer transitions than look_back
-	bool long_transitions = m_long_transitions ;
+	bool long_transitions = false; //m_long_transitions ;
 	CArray2<int32_t> long_transition_content_position(N,N) ;
 	CArray2<int32_t> long_transition_content_start(N,N) ;
 	CArray2<float64_t> long_transition_content_scores(N,N) ;
@@ -3151,8 +3151,8 @@ void CDynProg::best_path_trans(
 								lookup_content_svm_values(ts, t, pos[ts], pos[t], svm_value, frame);
 								pen_val = penalty->lookup_penalty(pos[t]-pos[ts], svm_value) ;
 							}
-							if (pos[ts]==3812)
-								SG_PRINT("%i,%i,%i: pen_val=%1.5f (t=%i, ts=%i, ts-1=%i, ts+1=%i)\n", pos[t], j, ii, pen_val, pos[t], pos[ts], pos[ts-1], pos[ts+1]) ;
+							//if (pos[ts]==3812)
+							//	SG_PRINT("%i,%i,%i: pen_val=%1.5f (t=%i, ts=%i, ts-1=%i, ts+1=%i)\n", pos[t], j, ii, pen_val, pos[t], pos[ts], pos[ts-1], pos[ts+1]) ;
 							
 							float64_t mval = -(long_transition_content_scores.get_element(ii, j) + pen_val*0.5) ;
 							/* // incomplete extra check
@@ -3172,11 +3172,11 @@ void CDynProg::best_path_trans(
 							{
 								/* then the long transition is better than the short one => replace it */ 
 								int32_t fromtjk =  fixedtempii_ ;
-								SG_PRINT("%i,%i: Long transition (%1.5f=-(%1.5f+%1.5f+%1.5f+%1.5f), %i) to pos %i better than short transition (%1.5f,%i) to pos %i \n", 
+								/*SG_PRINT("%i,%i: Long transition (%1.5f=-(%1.5f+%1.5f+%1.5f+%1.5f), %i) to pos %i better than short transition (%1.5f,%i) to pos %i \n", 
 										 pos[t], j, 
 										 mval, pen_val*0.5, long_transition_content_scores_pen.get_element(ii, j), long_transition_content_scores_elem.get_element(ii, j), long_transition_content_scores_prev.get_element(ii, j), ii, 
 										 pos[long_transition_content_position.get_element(ii, j)], 
-										 fixedtempvv_, (fromtjk%N), pos[(fromtjk-(fromtjk%(N*nbest)))/(N*nbest)]) ;
+										 fixedtempvv_, (fromtjk%N), pos[(fromtjk-(fromtjk%(N*nbest)))/(N*nbest)]) ;*/
 								ASSERT((fromtjk-(fromtjk%(N*nbest)))/(N*nbest)==0 || pos[(fromtjk-(fromtjk%(N*nbest)))/(N*nbest)]>=pos[long_transition_content_position.get_element(ii, j)] || fixedtemplong) ;
 								
 								fixedtempvv_ = mval ;
@@ -3204,11 +3204,11 @@ void CDynProg::best_path_trans(
 									pen_val = penalty->lookup_penalty(pos[t2]-pos[ts2], svm_value) ;
 								}
 								
-								if (pos[ts2]==3812)
-								{
-									SG_PRINT("%i - %i   vs  %i - %i\n", pos[t], pos[ts], pos[t2], pos[ts2]) ;
-									SG_PRINT("ts=%i  t=%i  ts2=%i  seq_len=%i\n", pos[ts], pos[t], pos[ts2], seq_len) ;
-								}
+								//if (pos[ts2]==3812)
+								//{
+								//	SG_PRINT("%i - %i   vs  %i - %i\n", pos[t], pos[ts], pos[t2], pos[ts2]) ;
+								//	SG_PRINT("ts=%i  t=%i  ts2=%i  seq_len=%i\n", pos[ts], pos[t], pos[ts2], seq_len) ;
+								//}
 								
 								float64_t mval_trans = -( elem_val[i] + pen_val*0.5 + delta.element(delta_array, ts2, ii, 0, seq_len, N) ) ;
 								//float64_t mval_trans = -( elem_val[i] + delta.element(delta_array, ts, ii, 0, seq_len, N) ) ; // enable this for the incomplete extra check
@@ -3518,10 +3518,10 @@ void CDynProg::best_path_trans_deriv(
 			  last_svm_pos[qq]=-1 ;*/
 
 			bool is_long_transition = false ;
-			if (pos[to_pos]-pos[from_pos]>m_long_transition_threshold)
-				is_long_transition = true ;
-			if (m_orf_info.element(from_state,0)!=-1)
-				is_long_transition = false ;
+			//if (pos[to_pos]-pos[from_pos]>m_long_transition_threshold)
+			//	is_long_transition = true ;
+			//if (m_orf_info.element(from_state,0)!=-1)
+			//	is_long_transition = false ;
 				
 			int32_t from_pos_thresh = from_pos ;
 			int32_t to_pos_thresh = to_pos ;
@@ -3625,9 +3625,14 @@ void CDynProg::best_path_trans_deriv(
 					PEN.element(to_state, from_state)->penalty_add_derivative(pos[to_pos]-pos[from_pos], svm_value, 1) ;
 
 				//SG_PRINT("m_num_raw_data = %i \n", m_num_raw_data) ;
+
+				// for tiling array and rna-seq data every single measurement must be added to the derivative 
+				// in contrast to the content svm predictions where we have a single value per transition;
+				// content svm predictions have already been added to the derivative, thus we start with d=1 
+				// instead of d=0
 				for (int32_t d=1; d<=m_num_raw_data; d++) 
 				{
-					ASSERT(!is_long_transition) ; // not sure what has to be done here
+					//ASSERT(!is_long_transition) ; // not sure what has to be done here
 					
 					for (int32_t s=0;s<m_num_lin_feat_plifs_cum[m_num_raw_data];s++)
 						svm_value[s]=-CMath::INFTY;

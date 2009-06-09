@@ -31,7 +31,7 @@
 
 #include <stdio.h>
 
-#define DYNPROG_TIMING
+//#define DYNPROG_TIMING
 
 #ifdef USE_BIGSTATES
 typedef uint16_t T_STATES ;
@@ -617,11 +617,13 @@ public:
 		m_lin_feat.get_array_size(dim1, dim2);
 		return m_lin_feat.get_array();
 	}
-	/** return array of precomputed linear features like content predictions
+	/** set your own array of precomputed linear features like content predictions
 	 *  and PLiFed tiling array data
 	 * Jonas
 	 *
-	 * @return lin_feat_array
+	 * @param p_feat_array array of features
+	 * @param p_num_svms number of tracks
+	 * @param p_seq_len number of candidate positions
 	 */
 	inline void set_lin_feat(float64_t* p_lin_feat, int32_t p_num_svms, int32_t p_seq_len) 
 	{

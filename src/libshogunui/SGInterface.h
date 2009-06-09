@@ -410,6 +410,8 @@ class CSGInterface : public CSGObject
 		 */
 		bool cmd_init_dyn_prog();
 
+		bool cmd_init_intron_list();
+
 		/**
 		 * -precompute tiling features 
 		 *  and save the outputs (# content types x 

@@ -24,6 +24,7 @@
 #include <shogun/structure/PlifArray.h>
 #include <shogun/structure/PlifBase.h>
 #include <shogun/structure/DynProg.h>
+#include <shogun/structure/IntronList.h>
 
 #include <ctype.h>
 
@@ -849,11 +850,17 @@ CSGInterfaceMethod sg_methods[]=
 		(&CSGInterface::cmd_set_lin_feat),
 		(char*) USAGE_I(N_SET_LIN_FEAT, "lin_feat")
 	},
-
 	{
 		(char*) N_INIT_DYN_PROG,
 		(&CSGInterface::cmd_init_dyn_prog),
 		(char*) USAGE_I(N_INIT_DYN_PROG, "num_svms")
+	},
+	{
+		(char*) N_INIT_INTRON_LIST,
+		(&CSGInterface::cmd_init_intron_list),
+		(char*) USAGE_I(N_INIT_INTRON_LIST, "start_positions"
+				USAGE_COMMA "end_positions"
+				USAGE_COMMA "quality")
 	},
 	{
 		(char*) N_PRECOMPUTE_TILING_FEATURES,
@@ -6202,7 +6209,52 @@ bool CSGInterface::cmd_set_feature_matrix_sparse()
 	
 	return true;
 }
+bool CSGInterface::cmd_init_intron_list()
+{
+	//ARG1 start_positions
+	int32_t Nstart_positions;
+	int32_t* start_positions;
+	get_int_vector(start_positions, Nstart_positions);
+        SG_PRINT("Nstart_positions:%i\n",Nstart_positions);
+	
+	//ARG2 end_positions
+	int32_t Nend_positions;
+	int32_t* end_positions;
+	get_int_vector(end_positions, Nend_positions);
+        SG_PRINT("Nend_positions:%i\n",Nend_positions);
 
+	//ARG3 quality	
+	int32_t Nquality;
+        int32_t* quality;
+        get_int_vector(quality, Nquality);
+        SG_PRINT("Nquality:%i\n",Nquality);
+
+	//ARG4 all candidate positions
+	int32_t Nall_pos;
+        int32_t* all_pos;
+        get_int_vector(all_pos, Nall_pos);
+        SG_PRINT("Nall_pos:%i\n",Nall_pos);
+
+	ASSERT(Nquality==Nend_positions);
+	ASSERT(Nend_positions==Nstart_positions);
+
+	CIntronList* intron_list = new CIntronList(all_pos, Nall_pos);
+
+	intron_list->read_introns(start_positions, end_positions, quality, Nstart_positions);
+
+	delete[] start_positions;
+	delete[] end_positions;
+	delete[] quality;
+	delete[] all_pos;
+
+	int32_t test;
+	int32_t testq;
+	intron_list->get_coverage(&test, &testq, 15 ,16);
+
+	SG_PRINT("coverage: %i, quality: %i\n",test, testq);
+	
+	return true;
+}
 bool CSGInterface::cmd_precompute_tiling_features()
 {
 	int32_t* all_pos = ui_structure->get_all_positions();
