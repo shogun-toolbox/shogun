@@ -426,10 +426,6 @@ public:
 
 	/** best path trans
 	 *
-	 * @param seq sequence
-	 * @param seq_len length of sequence
-	 * @param pos position
-	 * @param orf_info orf info
 	 * @param PLif_matrix Plif matrix
 	 * @param Plif_state_signals Plif state signals
 	 * @param max_num_signals maximal number of signals
@@ -440,7 +436,6 @@ public:
 	 */
 	template <int16_t nbest, bool with_loss, bool with_multiple_sequences>
 	void best_path_trans(CSparseFeatures<float64_t> *seq_sparse1, CSparseFeatures<float64_t> *seq_sparse2,
-						 int32_t seq_len, const int32_t *pos,
 						 CPlifBase **PLif_matrix,
 						 CPlifBase **Plif_state_signals, int32_t max_num_signals,
 						 float64_t *prob_nbest, int32_t *my_state_seq, int32_t *my_pos_seq,
@@ -460,9 +455,11 @@ public:
 	 * @param Plif_state_signals Plif state signals
 	 * @param max_num_signals maximal number of signals
 	 */
-	void best_path_trans_deriv(int32_t *my_state_seq, int32_t *my_pos_seq, float64_t *my_scores, float64_t* my_losses, int32_t my_seq_len,
-					const float64_t *seq_array, int32_t seq_len, const int32_t *pos, CPlifBase **Plif_matrix,
-					CPlifBase **Plif_state_signals, int32_t max_num_signals);
+	void best_path_trans_deriv(
+			int32_t* my_state_seq, int32_t *my_pos_seq, float64_t *my_scores,
+			float64_t* my_losses, int32_t my_seq_len, const float64_t *seq_array,
+			int32_t seq_len, CPlifBase **Plif_matrix,
+			CPlifBase **Plif_state_signals, int32_t max_num_signals);
 
 	/// access function for number of states N
 	inline T_STATES get_N() const
@@ -811,8 +808,7 @@ protected:
 	 * @return last value
 	 */
 	float64_t extend_segment_loss(struct segment_loss_struct & loss,
-		const int32_t * pos_array, int32_t segment_id, int32_t pos, int32_t& last_pos,
-		float64_t &last_value);
+		int32_t segment_id, int32_t pos, int32_t& last_pos, float64_t &last_value);
 
 	/** find segment loss till pos
 	 *
@@ -822,7 +818,7 @@ protected:
 	 * @param segment_mask segmend mask
 	 * @param loss segment loss
 	 */
-	void find_segment_loss_till_pos(const int32_t * pos, int32_t t_end,
+	void find_segment_loss_till_pos(int32_t t_end,
 		CArray<int32_t>& segment_ids, CArray<float64_t>& segment_mask,
 		struct segment_loss_struct& loss);
 
