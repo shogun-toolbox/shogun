@@ -6025,10 +6025,9 @@ bool CSGInterface::cmd_set_model()
 	ASSERT(Morf==2)
 
 	ui_structure->set_orf_info(orf_info, Norf, Morf);
-	h->best_path_set_orf_info(orf_info, Norf, Morf);
 
+	h->set_orf_info(orf_info, Norf, Morf);
 	h->set_num_states(num_states) ;
-
 	
 	//ui_structure->set_dyn_prog(h);
 
@@ -6428,34 +6427,28 @@ bool CSGInterface::cmd_best_path_trans()
 	loss=NULL;
 
 	h->set_seq(features, feat_dims[0], feat_dims[1]);
+	h->set_orf_info(orf_info, num_states, 2);
 
 	if (segment_loss_non_zero)
 	{
 	        SG_DEBUG("Using version with segment_loss\n") ;
 	        if (nbest==1)
-	                h->best_path_trans<1,true,false>(features_sparse1, features_sparse2, num_pos, all_pos, orf_info, PEN_matrix, 
+	                h->best_path_trans<1,true,false>(features_sparse1, features_sparse2, num_pos, all_pos, PEN_matrix, 
 													 PEN_state_signal, feat_dims[2], p_prob, my_path, my_pos, use_orf) ;
 	        else
-				h->best_path_trans<2,true,false>(features_sparse1, features_sparse2, num_pos, all_pos, orf_info,PEN_matrix, 
+				h->best_path_trans<2,true,false>(features_sparse1, features_sparse2, num_pos, all_pos,PEN_matrix, 
 												 PEN_state_signal, feat_dims[2], p_prob, my_path, my_pos, use_orf) ;
 	}
 	else
 	{
 	        SG_DEBUG("Using version without segment_loss\n") ;
 	        if (nbest==1)
-	                h->best_path_trans<1,false,false>(features_sparse1, features_sparse2, num_pos, all_pos, orf_info, PEN_matrix, 
+	                h->best_path_trans<1,false,false>(features_sparse1, features_sparse2, num_pos, all_pos, PEN_matrix, 
 				PEN_state_signal, feat_dims[2], p_prob, my_path, my_pos, use_orf) ;
 	        else
-	                h->best_path_trans<2,false,false>(features_sparse1, features_sparse2, num_pos, all_pos, orf_info, PEN_matrix, 
+	                h->best_path_trans<2,false,false>(features_sparse1, features_sparse2, num_pos, all_pos, PEN_matrix, 
 				PEN_state_signal, feat_dims[2], p_prob, my_path, my_pos, use_orf) ;
 	}
-
-	// clean up 
-	//delete_penalty_struct(PEN, Nplif) ;
-	//delete[] PEN_matrix ;
-	//delete[] all_pos ;
-	//delete[] orf_info ;
-	//SG_UNREF(h);
 
 	// transcribe result
 	float64_t* d_my_path= new float64_t[(nbest+nother)*M];

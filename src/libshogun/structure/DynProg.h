@@ -273,7 +273,7 @@ public:
 	 * @param pos the position
 	 * @param seq_len length of sequence
 	 */
-	void best_path_set_pos(int32_t *pos, int32_t seq_len);
+	void set_pos(int32_t* pos, int32_t seq_len);
 
 	/** set best path orf info
 	 * only for best_path_trans
@@ -282,7 +282,7 @@ public:
 	 * @param m dimension m
 	 * @param n dimension n
 	 */
-	void best_path_set_orf_info(int32_t *orf_info, int32_t m, int32_t n);
+	void set_orf_info(int32_t* orf_info, int32_t m, int32_t n);
 
 	/** set best path segment sum weights
 	 * only for best_path_2struct
@@ -441,7 +441,7 @@ public:
 	template <int16_t nbest, bool with_loss, bool with_multiple_sequences>
 	void best_path_trans(CSparseFeatures<float64_t> *seq_sparse1, CSparseFeatures<float64_t> *seq_sparse2,
 						 int32_t seq_len, const int32_t *pos,
-						 const int32_t *orf_info, CPlifBase **PLif_matrix,
+						 CPlifBase **PLif_matrix,
 						 CPlifBase **Plif_state_signals, int32_t max_num_signals,
 						 float64_t *prob_nbest, int32_t *my_state_seq, int32_t *my_pos_seq,
 						 bool use_orf);

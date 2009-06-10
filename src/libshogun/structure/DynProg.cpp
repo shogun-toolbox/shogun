@@ -30,7 +30,7 @@
 template void CDynProg::best_path_trans<1,true,false>(
 	CSparseFeatures<float64_t> *seq_sparse1, CSparseFeatures<float64_t> *seq_sparse2,
 	int32_t seq_len, const int32_t *pos,
-	const int32_t *orf_info, CPlifBase **PLif_matrix,
+	CPlifBase **PLif_matrix,
 	CPlifBase **Plif_state_signals, int32_t max_num_signals,
 	float64_t *prob_nbest, int32_t *my_state_seq,
 	int32_t *my_pos_seq, bool use_orf);
@@ -38,7 +38,7 @@ template void CDynProg::best_path_trans<1,true,false>(
 template void CDynProg::best_path_trans<2,true,false>(
 	CSparseFeatures<float64_t> *seq_sparse1, CSparseFeatures<float64_t> *seq_sparse2,
 	int32_t seq_len, const int32_t *pos,
-	const int32_t *orf_info, CPlifBase **PLif_matrix,
+	CPlifBase **PLif_matrix,
 	CPlifBase **Plif_state_signals, int32_t max_num_signals,
 	float64_t *prob_nbest, int32_t *my_state_seq,
 	int32_t *my_pos_seq, bool use_orf);
@@ -46,7 +46,7 @@ template void CDynProg::best_path_trans<2,true,false>(
 template void CDynProg::best_path_trans<1,false,false>(
 	CSparseFeatures<float64_t> *seq_sparse1, CSparseFeatures<float64_t> *seq_sparse2,
 	int32_t seq_len, const int32_t *pos,
-	const int32_t *orf_info, CPlifBase **PLif_matrix,
+	CPlifBase **PLif_matrix,
 	CPlifBase **Plif_state_signals, int32_t max_num_signals,
 	float64_t *prob_nbest, int32_t *my_state_seq,
 	int32_t *my_pos_seq, bool use_orf);
@@ -54,7 +54,7 @@ template void CDynProg::best_path_trans<1,false,false>(
 template void CDynProg::best_path_trans<2,false,false>(
 	CSparseFeatures<float64_t> *seq_sparse1, CSparseFeatures<float64_t> *seq_sparse2,
 	int32_t seq_len, const int32_t *pos,
-	const int32_t *orf_info, CPlifBase **PLif_matrix,
+	CPlifBase **PLif_matrix,
 	CPlifBase **Plif_state_signals, int32_t max_num_signals,
 	float64_t *prob_nbest, int32_t *my_state_seq,
 	int32_t *my_pos_seq, bool use_orf);
@@ -822,7 +822,7 @@ void CDynProg::best_path_set_seq3d(
 	m_N=p_N ;
 }
 
-void CDynProg::best_path_set_pos(int32_t *pos, int32_t seq_len)  
+void CDynProg::set_pos(int32_t* pos, int32_t seq_len)  
 {
 	if (seq_len!=m_seq.get_dim2())
 		SG_ERROR( "pos size does not match previous info %i!=%i\n", seq_len, m_seq.get_dim2()) ;
@@ -830,11 +830,13 @@ void CDynProg::best_path_set_pos(int32_t *pos, int32_t seq_len)
 	m_pos.set_array(pos, seq_len, true, true) ;
 }
 
-void CDynProg::best_path_set_orf_info(int32_t *orf_info, int32_t m, int32_t n) 
+void CDynProg::set_orf_info(int32_t* orf_info, int32_t m, int32_t n) 
 {
 	if (n!=2)
 		SG_ERROR( "orf_info size incorrect %i!=2\n", n) ;
+
 	m_orf_info.set_array(orf_info, m, n, true, true) ;
+	m_orf_info.set_name("orf_info") ;
 }
 
 void CDynProg::best_path_set_segment_sum_weights(
@@ -984,14 +986,14 @@ void CDynProg::best_path_call(int32_t nbest, bool use_orf)
 	ASSERT(nbest==1||nbest==2) ;
 	if (nbest==1)
 		best_path_trans<1,false,false>(NULL, NULL, m_seq.get_dim2(), m_pos.get_array(), 
-								m_orf_info.get_array(), m_PEN.get_array(),
+								m_PEN.get_array(),
 								m_PEN_state_signals.get_array(), m_PEN_state_signals.get_dim2(),
 								m_scores.get_array(), 
 								m_states.get_array(), m_positions.get_array(),
 								use_orf) ;
 	else
 		best_path_trans<2,false,false>(NULL, NULL, m_seq.get_dim2(), m_pos.get_array(), 
-								m_orf_info.get_array(), m_PEN.get_array(),
+								m_PEN.get_array(),
 								m_PEN_state_signals.get_array(), m_PEN_state_signals.get_dim2(),
 								m_scores.get_array(),
 								m_states.get_array(), m_positions.get_array(),
@@ -1944,12 +1946,12 @@ template <int16_t nbest, bool with_loss, bool with_multiple_sequences>
 void CDynProg::best_path_trans(
 	CSparseFeatures<float64_t> *seq_sparse1, CSparseFeatures<float64_t> *seq_sparse2,
 	int32_t seq_len, const int32_t *pos,
-	const int32_t *orf_info_array, CPlifBase **Plif_matrix,
+	CPlifBase **Plif_matrix,
 	CPlifBase **Plif_state_signals, int32_t max_num_signals,
 	float64_t *prob_nbest, int32_t *my_state_seq,
 	int32_t *my_pos_seq, bool use_orf)
 {
-	const float64_t *seq_array = m_seq.get_array();
+	const float64_t* seq_array = m_seq.get_array();
 #ifdef DYNPROG_TIMING
 	segment_init_time = 0.0 ;
 	segment_pos_time = 0.0 ;
@@ -2001,11 +2003,6 @@ void CDynProg::best_path_trans(
 	CArray2<float64_t> seq(m_N, seq_len) ;
 	seq.set_name("seq") ;
 	seq.zero() ;
-
-	CArray2<int32_t> orf_info(orf_info_array, m_N, 2) ;
-	orf_info.set_name("orf_info") ;
-	//g_orf_info = orf_info ;
-	//orf_info.display_array() ;
 
 	float64_t svm_value[m_num_lin_feat_plifs_cum[m_num_raw_data]] ;
 	{ // initialize svm_svalue
@@ -2145,7 +2142,7 @@ void CDynProg::best_path_trans(
 				}
 				
 				/* if the transition is an ORF or we do computation with loss, we have to disable long transitions */
-				if ((orf_info.element(ii,0)!=-1) || (orf_info.element(j,1)!=-1) || (!long_transitions))
+				if ((m_orf_info.element(ii,0)!=-1) || (m_orf_info.element(j,1)!=-1) || (!long_transitions))
 				{
 					look_back.set_element(CMath::ceil(penij->get_max_value()), j, ii) ;
 					if (CMath::ceil(penij->get_max_value()) > max_look_back)
@@ -2276,7 +2273,6 @@ void CDynProg::best_path_trans(
 
 	PEN.set_name("PEN") ;
 	seq.set_name("seq") ;
-	orf_info.set_name("orf_info") ;
 	
 	delta.set_name("delta") ;
 	psi.set_name("psi") ;
@@ -2315,7 +2311,7 @@ void CDynProg::best_path_trans(
 	PEN.display_size() ;
 	PEN_state_signals.display_size() ;
 	seq.display_size() ;
-	orf_info.display_size() ;
+	m_orf_info.display_size() ;
 	
 	//m_genestr_stop.display_size() ;
 	delta.display_size() ;
@@ -2470,8 +2466,8 @@ void CDynProg::best_path_trans(
 
 					int32_t look_back_ = look_back.element(j, ii) ;
 				
-					int32_t orf_from = orf_info.element(ii,0) ;
-					int32_t orf_to   = orf_info.element(j,1) ;
+					int32_t orf_from = m_orf_info.element(ii,0) ;
+					int32_t orf_to   = m_orf_info.element(j,1) ;
 					if((orf_from!=-1)!=(orf_to!=-1))
 						SG_DEBUG("j=%i  ii=%i  orf_from=%i orf_to=%i p=%1.2f\n", j, ii, orf_from, orf_to, elem_val[i]) ;
 					ASSERT((orf_from!=-1)==(orf_to!=-1)) ;
@@ -2526,7 +2522,7 @@ void CDynProg::best_path_trans(
 							// BEST_PATH_TRANS
 							////////////////////////////////////////////////////////
 
-							int32_t frame = orf_info.element(ii,0);
+							int32_t frame = m_orf_info.element(ii,0);
 							lookup_content_svm_values(ts, t, pos[ts], pos[t], svm_value, frame);
 
 
@@ -2656,7 +2652,7 @@ void CDynProg::best_path_trans(
 							float pen_val = 0.0 ;
 							if (penalty)
 							{
-								int32_t frame = orf_info.element(ii,0);
+								int32_t frame = m_orf_info.element(ii,0);
 								lookup_content_svm_values(ts, t, pos[ts], pos[t], svm_value, frame);
 								pen_val = penalty->lookup_penalty(pos[t]-pos[ts], svm_value) ;
 							}
@@ -2708,7 +2704,7 @@ void CDynProg::best_path_trans(
 								/* recompute penalty, if necessary */
 								if (penalty)
 								{
-									int32_t frame = orf_info.element(ii,0);
+									int32_t frame = m_orf_info.element(ii,0);
 									lookup_content_svm_values(ts2, t, pos[ts2], pos[t2], svm_value, frame);
 									pen_val = penalty->lookup_penalty(pos[t2]-pos[ts2], svm_value) ;
 								}
