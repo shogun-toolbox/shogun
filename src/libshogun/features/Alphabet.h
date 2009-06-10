@@ -246,6 +246,236 @@ class CAlphabet : public CSGObject
 		/** @return object name */
 		inline virtual const char* get_name() const { return "Alphabet"; }
 
+		/** translate from single order
+		 *
+		 * @param obs observation
+		 * @param sequence_length length of sequence
+		 * @param start start
+		 * @param p_order order
+		 * @param max_val maximum value
+		 */
+		template <class ST>
+		static void translate_from_single_order(ST* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val)
+		{
+			int32_t i,j;
+			ST value=0;
+
+			for (i=sequence_length-1; i>= p_order-1; i--) //convert interval of size T
+			{
+				value=0;
+				for (j=i; j>=i-p_order+1; j--)
+					value= (value >> max_val) | (obs[j] << (max_val * (p_order-1)));
+
+				obs[i]= (ST) value;
+			}
+
+			for (i=p_order-2;i>=0;i--)
+			{
+				if (i>=sequence_length)
+					continue;
+
+				value=0;
+				for (j=i; j>=i-p_order+1; j--)
+				{
+					value= (value >> max_val);
+					if (j>=0 && j<sequence_length)
+						value|=obs[j] << (max_val * (p_order-1));
+				}
+				obs[i]=value;
+			}
+
+			// TODO we should get rid of this loop!
+			if (start>0)
+			{
+				for (i=start; i<sequence_length; i++)
+					obs[i-start]=obs[i];
+			}
+		}
+
+		/** translate from single order reversed
+		 *
+		 * @param obs observation
+		 * @param sequence_length length of sequence
+		 * @param start start
+		 * @param p_order order
+		 * @param max_val maximum value
+		 */
+		template <class ST>
+		static void translate_from_single_order_reversed(ST* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val)
+		{
+			int32_t i,j;
+			ST value=0;
+
+			for (i=sequence_length-1; i>= p_order-1; i--) //convert interval of size T
+			{
+				value=0;
+				for (j=i; j>=i-p_order+1; j--)
+					value= (value << max_val) | obs[j];
+
+				obs[i]= (ST) value;
+			}
+
+			for (i=p_order-2;i>=0;i--)
+			{
+				if (i>=sequence_length)
+					continue;
+
+				value=0;
+				for (j=i; j>=i-p_order+1; j--)
+				{
+					value= (value << max_val);
+					if (j>=0 && j<sequence_length)
+						value|=obs[j];
+				}
+				obs[i]=value;
+			}
+
+			// TODO we should get rid of this loop!
+			if (start>0)
+			{
+				for (i=start; i<sequence_length; i++)
+					obs[i-start]=obs[i];
+			}
+		}
+
+		/** translate from single order
+		 *
+		 * @param obs observation
+		 * @param sequence_length length of sequence
+		 * @param start start
+		 * @param p_order order
+		 * @param max_val maximum value
+		 * @param gap gap
+		 */
+		template <class ST>
+		static void translate_from_single_order(ST* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap)
+		{
+			ASSERT(gap>=0);
+
+			const int32_t start_gap=(p_order-gap)/2;
+			const int32_t end_gap=start_gap+gap;
+
+			int32_t i,j;
+			ST value=0;
+
+			// almost all positions
+			for (i=sequence_length-1; i>=p_order-1; i--) //convert interval of size T
+			{
+				value=0;
+				for (j=i; j>=i-p_order+1; j--)
+				{
+					if (i-j<start_gap)
+					{
+						value= (value >> max_val) | (obs[j] << (max_val * (p_order-1-gap)));
+					}
+					else if (i-j>=end_gap)
+					{
+						value= (value >> max_val) | (obs[j] << (max_val * (p_order-1-gap)));
+					}
+				}
+				obs[i]= (ST) value;
+			}
+
+			// the remaining `order` positions
+			for (i=p_order-2;i>=0;i--)
+			{
+				if (i>=sequence_length)
+					continue;
+
+				value=0;
+				for (j=i; j>=i-p_order+1; j--)
+				{
+					if (i-j<start_gap)
+					{
+						value= (value >> max_val);
+						if (j>=0 && j<sequence_length)
+							value|=obs[j] << (max_val * (p_order-1-gap));
+					}
+					else if (i-j>=end_gap)
+					{
+						value= (value >> max_val);
+						if (j>=0 && j<sequence_length)
+							value|=obs[j] << (max_val * (p_order-1-gap));
+					}
+				}
+				obs[i]=value;
+			}
+
+			// TODO we should get rid of this loop!
+			if (start>0)
+			{
+				for (i=start; i<sequence_length; i++)
+					obs[i-start]=obs[i];
+			}
+		}
+
+		/** translate from single order reversed
+		 *
+		 * @param obs observation
+		 * @param sequence_length length of sequence
+		 * @param start start
+		 * @param p_order order
+		 * @param max_val maximum value
+		 * @param gap gap
+		 */
+		template <class ST>
+		static void translate_from_single_order_reversed(ST* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap)
+		{
+			ASSERT(gap>=0);
+
+			const int32_t start_gap=(p_order-gap)/2;
+			const int32_t end_gap=start_gap+gap;
+
+			int32_t i,j;
+			ST value=0;
+
+			// almost all positions
+			for (i=sequence_length-1; i>=p_order-1; i--) //convert interval of size T
+			{
+				value=0;
+				for (j=i; j>=i-p_order+1; j--)
+				{
+					if (i-j<start_gap)
+						value= (value << max_val) | obs[j];
+					else if (i-j>=end_gap)
+						value= (value << max_val) | obs[j];
+				}
+				obs[i]= (ST) value;
+			}
+
+			// the remaining `order` positions
+			for (i=p_order-2;i>=0;i--)
+			{
+				if (i>=sequence_length)
+					continue;
+
+				value=0;
+				for (j=i; j>=i-p_order+1; j--)
+				{
+					if (i-j<start_gap)
+					{
+						value= value << max_val;
+						if (j>=0 && j<sequence_length)
+							value|=obs[j];
+					}
+					else if (i-j>=end_gap)
+					{
+						value= value << max_val;
+						if (j>=0 && j<sequence_length)
+							value|=obs[j];
+					}			
+				}
+				obs[i]=value;
+			}
+
+			// TODO we should get rid of this loop!
+			if (start>0)
+			{
+				for (i=start; i<sequence_length; i++)
+					obs[i-start]=obs[i];
+			}
+		}
+
 
 	protected:
 		/** init map table */
@@ -287,4 +517,29 @@ class CAlphabet : public CSGObject
 		/** histogram */
 		int64_t histogram[1 << (sizeof(uint8_t)*8)];
 };
+
+
+template<> inline void CAlphabet::translate_from_single_order(float32_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap)
+{
+}
+
+template<> inline void CAlphabet::translate_from_single_order(float64_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap)
+{
+}
+
+template<> inline void CAlphabet::translate_from_single_order(floatmax_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap)
+{
+}
+
+template<> inline void CAlphabet::translate_from_single_order_reversed(float32_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap)
+{
+}
+
+template<> inline void CAlphabet::translate_from_single_order_reversed(float64_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap)
+{
+}
+
+template<> inline void CAlphabet::translate_from_single_order_reversed(floatmax_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap)
+{
+}
 #endif

@@ -653,17 +653,6 @@ protected:
 	inline int32_t raw_intensities_interval_query(
 		const int32_t from_pos, const int32_t to_pos, float64_t* intensities, int32_t type);
 
-	/** translate from single order
-	 *
-	 * @param obs observation matrix
-	 * @param sequence_length length of sequence
-	 * @param start start
-	 * @param order order
-	 * @param max_val maximum number of bits, e.g. 2 for DNA
-	 */
-	void translate_from_single_order(uint16_t* obs, int32_t sequence_length, int32_t start,
-		int32_t order, int32_t max_val=2);
-
 	/** reset SVM value
 	 *
 	 * @param pos position
@@ -951,7 +940,7 @@ protected:
 	  
 	  The SVM weights are precomputed in m_dict_weights
 	**/
-	CArray3<uint16_t> m_wordstr;
+	CArray2<uint16_t> m_wordstr;
 	/** dict weights */
 	CArray2<float64_t> m_dict_weights;
 	/** segment loss */

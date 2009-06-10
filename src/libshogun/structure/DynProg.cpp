@@ -414,7 +414,7 @@ void CDynProg::create_word_string(uint16_t*** wordstr)
 					case 't': wordstr[k][j][i]=3 ; break ;
 					default: ASSERT(0) ;
 				}
-			translate_from_single_order(wordstr[k][j], genestr_len, m_word_degree[j]-1, m_word_degree[j]) ;
+			CAlphabet::translate_from_single_order(wordstr[k][j], genestr_len, m_word_degree[j]-1, m_word_degree[j], 2) ;
 		}
 	}
 	//precompute_stop_codons(genestr, genestr_len);
@@ -1286,40 +1286,6 @@ void CDynProg::best_path_no_b_trans(
 
 	delete delta ;
 	delete delta_new ;
-}
-
-
-void CDynProg::translate_from_single_order(
-	uint16_t* obs, int32_t sequence_length, int32_t start, int32_t order,
-	int32_t max_val)
-{
-	int32_t i,j;
-	uint16_t value=0;
-	
-	for (i=sequence_length-1; i>=order-1; i--) //convert interval of size T
-	{
-		value=0;
-		for (j=i; j>=i-order+1; j--)
-			value= (value >> max_val) | (obs[j] << (max_val * (order-1)));
-		
-		obs[i]=value;
-	}
-	
-	for (i=order-2;i>=0;i--)
-	{
-		value=0;
-		for (j=i; j>=i-order+1; j--)
-		{
-			value= (value >> max_val);
-			if (j>=0)
-				value|=obs[j] << (max_val * (order-1));
-		}
-		obs[i]=value;
-		//ASSERT(value<m_num_words) ;
-	}
-	if (start>0)
-		for (i=start; i<sequence_length; i++)	
-			obs[i-start]=obs[i];
 }
 
 void CDynProg::reset_svm_value(
