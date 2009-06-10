@@ -6419,27 +6419,34 @@ bool CSGInterface::cmd_best_path_trans()
 
 	bool segment_loss_non_zero=false;
 	for (int32_t i=0; i<Nloss*Mloss; i++)
+	{
 		if (loss[i]>1e-3)
 			segment_loss_non_zero=true;
-	delete[] loss ; loss=NULL ;
+	}
+
+	delete[] loss;
+	loss=NULL;
+
+	h->set_seq(features, feat_dims[0], feat_dims[1]);
+
 	if (segment_loss_non_zero)
 	{
 	        SG_DEBUG("Using version with segment_loss\n") ;
 	        if (nbest==1)
-	                h->best_path_trans<1,true,false>(features, features_sparse1, features_sparse2, num_pos, all_pos, orf_info, PEN_matrix, 
+	                h->best_path_trans<1,true,false>(features_sparse1, features_sparse2, num_pos, all_pos, orf_info, PEN_matrix, 
 													 PEN_state_signal, feat_dims[2], p_prob, my_path, my_pos, use_orf) ;
 	        else
-				h->best_path_trans<2,true,false>(features, features_sparse1, features_sparse2, num_pos, all_pos, orf_info,PEN_matrix, 
+				h->best_path_trans<2,true,false>(features_sparse1, features_sparse2, num_pos, all_pos, orf_info,PEN_matrix, 
 												 PEN_state_signal, feat_dims[2], p_prob, my_path, my_pos, use_orf) ;
 	}
 	else
 	{
 	        SG_DEBUG("Using version without segment_loss\n") ;
 	        if (nbest==1)
-	                h->best_path_trans<1,false,false>(features, features_sparse1, features_sparse2, num_pos, all_pos, orf_info, PEN_matrix, 
+	                h->best_path_trans<1,false,false>(features_sparse1, features_sparse2, num_pos, all_pos, orf_info, PEN_matrix, 
 				PEN_state_signal, feat_dims[2], p_prob, my_path, my_pos, use_orf) ;
 	        else
-	                h->best_path_trans<2,false,false>(features, features_sparse1, features_sparse2, num_pos, all_pos, orf_info, PEN_matrix, 
+	                h->best_path_trans<2,false,false>(features_sparse1, features_sparse2, num_pos, all_pos, orf_info, PEN_matrix, 
 				PEN_state_signal, feat_dims[2], p_prob, my_path, my_pos, use_orf) ;
 	}
 

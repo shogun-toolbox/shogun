@@ -251,14 +251,13 @@ public:
 	 */
 	bool check_svm_arrays();
 
-	// best_path_trans preparation functions
 	/** set best path seq
 	 *
 	 * @param seq the sequence
 	 * @param N dimension N
 	 * @param seq_len length of sequence
 	 */
-	void best_path_set_seq(float64_t *seq, int32_t N, int32_t seq_len);
+	void set_seq(float64_t* seq, int32_t N, int32_t seq_len);
 
 	/** set best path seq3d
 	 *
@@ -440,7 +439,7 @@ public:
 	 * @param use_orf whether orf shall be used
 	 */
 	template <int16_t nbest, bool with_loss, bool with_multiple_sequences>
-	void best_path_trans(const float64_t *seq, CSparseFeatures<float64_t> *seq_sparse1, CSparseFeatures<float64_t> *seq_sparse2,
+	void best_path_trans(CSparseFeatures<float64_t> *seq_sparse1, CSparseFeatures<float64_t> *seq_sparse2,
 						 int32_t seq_len, const int32_t *pos,
 						 const int32_t *orf_info, CPlifBase **PLif_matrix,
 						 CPlifBase **Plif_state_signals, int32_t max_num_signals,

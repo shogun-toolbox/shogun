@@ -28,7 +28,7 @@
 #include <limits.h>
 
 template void CDynProg::best_path_trans<1,true,false>(
-	const float64_t *seq, CSparseFeatures<float64_t> *seq_sparse1, CSparseFeatures<float64_t> *seq_sparse2,
+	CSparseFeatures<float64_t> *seq_sparse1, CSparseFeatures<float64_t> *seq_sparse2,
 	int32_t seq_len, const int32_t *pos,
 	const int32_t *orf_info, CPlifBase **PLif_matrix,
 	CPlifBase **Plif_state_signals, int32_t max_num_signals,
@@ -36,7 +36,7 @@ template void CDynProg::best_path_trans<1,true,false>(
 	int32_t *my_pos_seq, bool use_orf);
 
 template void CDynProg::best_path_trans<2,true,false>(
-	const float64_t *seq, CSparseFeatures<float64_t> *seq_sparse1, CSparseFeatures<float64_t> *seq_sparse2,
+	CSparseFeatures<float64_t> *seq_sparse1, CSparseFeatures<float64_t> *seq_sparse2,
 	int32_t seq_len, const int32_t *pos,
 	const int32_t *orf_info, CPlifBase **PLif_matrix,
 	CPlifBase **Plif_state_signals, int32_t max_num_signals,
@@ -44,7 +44,7 @@ template void CDynProg::best_path_trans<2,true,false>(
 	int32_t *my_pos_seq, bool use_orf);
 
 template void CDynProg::best_path_trans<1,false,false>(
-	const float64_t *seq, CSparseFeatures<float64_t> *seq_sparse1, CSparseFeatures<float64_t> *seq_sparse2,
+	CSparseFeatures<float64_t> *seq_sparse1, CSparseFeatures<float64_t> *seq_sparse2,
 	int32_t seq_len, const int32_t *pos,
 	const int32_t *orf_info, CPlifBase **PLif_matrix,
 	CPlifBase **Plif_state_signals, int32_t max_num_signals,
@@ -52,7 +52,7 @@ template void CDynProg::best_path_trans<1,false,false>(
 	int32_t *my_pos_seq, bool use_orf);
 
 template void CDynProg::best_path_trans<2,false,false>(
-	const float64_t *seq, CSparseFeatures<float64_t> *seq_sparse1, CSparseFeatures<float64_t> *seq_sparse2,
+	CSparseFeatures<float64_t> *seq_sparse1, CSparseFeatures<float64_t> *seq_sparse2,
 	int32_t seq_len, const int32_t *pos,
 	const int32_t *orf_info, CPlifBase **PLif_matrix,
 	CPlifBase **Plif_state_signals, int32_t max_num_signals,
@@ -790,7 +790,7 @@ bool CDynProg::check_svm_arrays()
 	}
 }
 
-void CDynProg::best_path_set_seq(float64_t *seq, int32_t p_N, int32_t seq_len)
+void CDynProg::set_seq(float64_t* seq, int32_t N, int32_t seq_len)
 {
 	if (!m_svm_arrays_clean)
 	{
@@ -798,12 +798,11 @@ void CDynProg::best_path_set_seq(float64_t *seq, int32_t p_N, int32_t seq_len)
 		return ;
 	} ;
 
-	ASSERT(p_N==m_N);
-	ASSERT(m_initial_state_distribution_p.get_dim1()==p_N);
-	ASSERT(m_end_state_distribution_q.get_dim1()==p_N);
+	ASSERT(N==m_N);
+	ASSERT(m_initial_state_distribution_p.get_dim1()==N);
+	ASSERT(m_end_state_distribution_q.get_dim1()==N);
 	
-	m_seq.set_array(seq, p_N, seq_len, 1, true, true) ;
-	m_N=p_N ;
+	m_seq.set_array(seq, N, seq_len, 1, true, true) ;
 }
 
 void CDynProg::best_path_set_seq3d(
@@ -984,14 +983,14 @@ void CDynProg::best_path_call(int32_t nbest, bool use_orf)
 
 	ASSERT(nbest==1||nbest==2) ;
 	if (nbest==1)
-		best_path_trans<1,false,false>(m_seq.get_array(), NULL, NULL, m_seq.get_dim2(), m_pos.get_array(), 
+		best_path_trans<1,false,false>(NULL, NULL, m_seq.get_dim2(), m_pos.get_array(), 
 								m_orf_info.get_array(), m_PEN.get_array(),
 								m_PEN_state_signals.get_array(), m_PEN_state_signals.get_dim2(),
 								m_scores.get_array(), 
 								m_states.get_array(), m_positions.get_array(),
 								use_orf) ;
 	else
-		best_path_trans<2,false,false>(m_seq.get_array(), NULL, NULL, m_seq.get_dim2(), m_pos.get_array(), 
+		best_path_trans<2,false,false>(NULL, NULL, m_seq.get_dim2(), m_pos.get_array(), 
 								m_orf_info.get_array(), m_PEN.get_array(),
 								m_PEN_state_signals.get_array(), m_PEN_state_signals.get_dim2(),
 								m_scores.get_array(),
@@ -1943,13 +1942,14 @@ bool CDynProg::extend_orf(
 
 template <int16_t nbest, bool with_loss, bool with_multiple_sequences>
 void CDynProg::best_path_trans(
-	const float64_t *seq_array, CSparseFeatures<float64_t> *seq_sparse1, CSparseFeatures<float64_t> *seq_sparse2,
+	CSparseFeatures<float64_t> *seq_sparse1, CSparseFeatures<float64_t> *seq_sparse2,
 	int32_t seq_len, const int32_t *pos,
 	const int32_t *orf_info_array, CPlifBase **Plif_matrix,
 	CPlifBase **Plif_state_signals, int32_t max_num_signals,
 	float64_t *prob_nbest, int32_t *my_state_seq,
 	int32_t *my_pos_seq, bool use_orf)
 {
+	const float64_t *seq_array = m_seq.get_array();
 #ifdef DYNPROG_TIMING
 	segment_init_time = 0.0 ;
 	segment_pos_time = 0.0 ;
