@@ -6373,18 +6373,12 @@ bool CSGInterface::cmd_best_path_trans()
 	if (!h->check_svm_arrays())
 	{
 		SG_ERROR( "svm arrays inconsistent\n") ;
-		delete_penalty_struct(PEN, Nplif) ;
+		CPlif::delete_penalty_struct(PEN, Nplif) ;
 		return false ;
 	}
 	
-	int32_t *my_path = new int32_t[M*(nbest+nother)] ;
-	memset(my_path, -1, M*(nother+nbest)*sizeof(int32_t)) ;
-	int32_t *my_pos = new int32_t[M*(nbest+nother)] ;
-	memset(my_pos, -1, M*(nbest+nother)*sizeof(int32_t)) ;
-
 	SG_DEBUG("best_path_trans: M: %i, Mseg_path: %i\n", M, Mseg_path);
 	
-	float64_t* p_prob = new float64_t[nbest+nother];
 	if (seg_path!=NULL)
 	{
 		int32_t *segment_ids = new int32_t[M] ;
@@ -6435,22 +6429,36 @@ bool CSGInterface::cmd_best_path_trans()
 	{
 	        SG_DEBUG("Using version with segment_loss\n") ;
 	        if (nbest==1)
-	                h->best_path_trans<1,true,false>(PEN_matrix, 
-													 PEN_state_signal, feat_dims[2], p_prob, my_path, my_pos, use_orf) ;
+				h->compute_nbest_paths(PEN_matrix, PEN_state_signal, feat_dims[2],
+						use_orf, 1,true,false) ;
 	        else
-				h->best_path_trans<2,true,false>(PEN_matrix, 
-												 PEN_state_signal, feat_dims[2], p_prob, my_path, my_pos, use_orf) ;
+				h->compute_nbest_paths(PEN_matrix, PEN_state_signal, feat_dims[2],
+						use_orf, 2,true,false) ;
 	}
 	else
 	{
 	        SG_DEBUG("Using version without segment_loss\n") ;
 	        if (nbest==1)
-	                h->best_path_trans<1,false,false>(PEN_matrix, 
-				PEN_state_signal, feat_dims[2], p_prob, my_path, my_pos, use_orf) ;
+				h->compute_nbest_paths(PEN_matrix, PEN_state_signal, feat_dims[2],
+						use_orf, 1,false,false) ;
 	        else
-	                h->best_path_trans<2,false,false>(PEN_matrix, 
-				PEN_state_signal, feat_dims[2], p_prob, my_path, my_pos, use_orf) ;
+				h->compute_nbest_paths(PEN_matrix, PEN_state_signal, feat_dims[2],
+						use_orf, 2,false,false) ;
 	}
+
+	float64_t* p_prob;
+	int32_t n_prob;
+	h->get_scores(&p_prob, &n_prob);
+
+	int32_t* my_path;
+	int32_t n_path;
+	int32_t m_path;
+	h->get_states(&my_path, &n_path, &m_path);
+
+	int32_t* my_pos;
+	int32_t n_pos;
+	int32_t m_pos;
+	h->get_positions(&my_pos, &n_pos, &m_pos);
 
 	// transcribe result
 	float64_t* d_my_path= new float64_t[(nbest+nother)*M];
@@ -6468,8 +6476,8 @@ bool CSGInterface::cmd_best_path_trans()
 	set_real_vector(d_my_path, (nbest+nother)*M);
 	set_real_vector(d_my_pos, (nbest+nother)*M);
 
-	//delete[] my_path ;
-	//delete[] my_pos ;
+	delete[] d_my_path ;
+	delete[] d_my_pos ;
 
 	return true;
 
@@ -6593,7 +6601,7 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 			if (!h->check_svm_arrays())
 			{
 				SG_ERROR( "svm arrays inconsistent\n") ;
-				//delete_penalty_struct(PEN, P) ;
+				//CPlif::delete_penalty_struct(PEN, P) ;
 				return false ;
 			}
 
@@ -6644,13 +6652,20 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 			float64_t* p_A_deriv   = new float64_t[num_states*num_states];
 			float64_t* p_p_deriv   = new float64_t[num_states];
 			float64_t* p_q_deriv   = new float64_t[num_states];
-			float64_t* p_my_scores = new float64_t[Nmypos_seq];
-			float64_t* p_my_losses = new float64_t[Nmypos_seq];
 
 			h->set_pos(all_pos, num_pos);
-			h->best_path_trans_deriv(my_path, my_pos, p_my_scores, p_my_losses, Nmypos_seq, features, 
+			h->best_path_trans_deriv(my_path, my_pos,
+					Nmypos_seq, features, 
 						 num_pos, PEN_matrix, PEN_state_signal, feat_dims[2]);
 			
+			float64_t* p_my_scores;
+			int32_t n_scores;
+			h->get_path_scores(&p_my_scores, &n_scores);
+
+			float64_t* p_my_losses;
+			int32_t n_losses;
+			h->get_path_losses(&p_my_losses, &n_losses);
+
 			for (int32_t i=0; i<num_states; i++)
 			{
 				for (int32_t j=0; j<num_states; j++)
@@ -6669,7 +6684,7 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 			}
 
 			// clean up 
-			//delete_penalty_struct(PEN, Nplif) ;
+			//CPlif::delete_penalty_struct(PEN, Nplif) ;
 			//delete[] PEN_matrix ;
 			//delete[] PEN_state_signal ;
 			//delete[] pos ;
@@ -6685,8 +6700,6 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 			delete[] p_A_deriv ;
 			delete[] p_p_deriv ;
 			delete[] p_q_deriv ;
-			delete[] p_my_scores ;
-			delete[] p_my_losses ;
 
 			delete[] my_path ;
 			delete[] my_pos ;

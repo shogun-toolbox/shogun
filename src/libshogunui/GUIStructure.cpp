@@ -120,7 +120,7 @@ bool CGUIStructure::compute_plif_matrix(
                                 if ((id<0 || id>=num_plifs) && (id!=-1))
                                 {
                                         SG_ERROR( "id out of range\n") ;
-                                        delete_penalty_struct(PEN, num_plifs) ;
+										CPlif::delete_penalty_struct(PEN, num_plifs) ;
                                         return false ;
                                 }
                                 plif = PEN[id] ;
@@ -170,7 +170,7 @@ bool  CGUIStructure::set_signal_plifs(
                 if ((id<0 || id>=Nplif) && (id!=-1))
                 {
                         SG_ERROR( "id out of range\n") ;
-                        delete_penalty_struct(PEN, Nplif) ;
+						CPlif::delete_penalty_struct(PEN, Nplif) ;
                         return false ;
                 }
                 if (id==-1)

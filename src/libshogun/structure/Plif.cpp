@@ -102,7 +102,7 @@ void CPlif::set_plif_name(char *p_name)
 	strcpy(name,p_name) ;
 }
 
-void delete_penalty_struct(CPlif** PEN, int32_t P) 
+void CPlif::delete_penalty_struct(CPlif** PEN, int32_t P) 
 {
 	for (int32_t i=0; i<P; i++)
 		delete PEN[i] ;

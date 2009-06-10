@@ -413,6 +413,8 @@ class CPlif: public CPlifBase
 			SG_PRINT("CPlif(min_value=%1.2f, max_value=%1.2f, use_svm=%i)\n", min_value, max_value, use_svm) ;
 		}
 
+		static void delete_penalty_struct(CPlif** PEN, int32_t P);
+
 		/** @return object name */
 		inline virtual const char* get_name() const { return "Plif"; }
 
@@ -447,6 +449,5 @@ class CPlif: public CPlifBase
 		bool do_calc;
 };
 
-void delete_penalty_struct(CPlif** PEN, int32_t P);
 
 #endif
