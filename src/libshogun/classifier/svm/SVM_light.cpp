@@ -198,7 +198,7 @@ bool CSVMLight::init_cplex()
 
 		if ( env == NULL )
 		{
-			char  errmsg[1024];
+			char  errmsg[4096];
 			SG_WARNING( "Could not open CPLEX environment.\n");
 			CPXgeterrorstring (env, status, errmsg);
 			SG_WARNING( "%s", errmsg);
@@ -259,7 +259,7 @@ bool CSVMLight::cleanup_cplex()
 		
 		if (status)
 		{
-			char  errmsg[1024];
+			char  errmsg[4096];
 			SG_WARNING( "Could not close CPLEX environment.\n");
 			CPXgeterrorstring (env, status, errmsg);
 			SG_WARNING( "%s", errmsg);
@@ -2318,7 +2318,7 @@ float64_t CSVMLight::compute_optimal_betas_via_cplex(float64_t* x, const float64
 
 		int status = CPXnewcols (env, lp_cplex, NUMCOLS, obj, lb, ub, NULL, NULL);
 		if ( status ) {
-			char  errmsg[1024];
+			char  errmsg[4096];
 			CPXgeterrorstring (env, status, errmsg);
 			SG_ERROR( "%s", errmsg);
 		}
@@ -3392,7 +3392,7 @@ void CSVMLight::set_qnorm_constraints(float64_t* beta, int32_t num_kernels)
 		status = CPXdelqconstrs (env, lp_cplex, 0, 0);
 		if (status)
 		{
-			char  errmsg[1024];
+			char  errmsg[4096];
 			CPXgeterrorstring (env, status, errmsg);
 			SG_ERROR("%s", errmsg);
 		}
@@ -3403,7 +3403,12 @@ void CSVMLight::set_qnorm_constraints(float64_t* beta, int32_t num_kernels)
 
 	if (status)
 	{
-		char  errmsg[1024];
+		SG_PRINT("num_kernels+1=%d\n", num_kernels+1);
+		SG_PRINT("const_term=%g\n", const_term);
+		CMath::display_vector(ind, num_kernels+1, "ind");
+		CMath::display_vector(lin_term, num_kernels+1, "lin_term");
+		CMath::display_vector(hess_beta, num_kernels+1, "hess_beta");
+		char  errmsg[4096];
 		CPXgeterrorstring (env, status, errmsg);
 		SG_ERROR("%s", errmsg);
 	}
