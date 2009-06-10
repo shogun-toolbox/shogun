@@ -116,7 +116,7 @@ CDynProg::CDynProg(int32_t p_num_svms /*= 8 */)
 	  m_max_a_id(0), m_seq(1,1,1), m_pos(1), m_orf_info(1,2), 
           m_segment_sum_weights(1,1), m_plif_list(1), 
 	  m_PEN(1,1), m_PEN_state_signals(1,1), 
-	  m_genestr(1), m_dict_weights(1,1), m_segment_loss(1,1,2), 
+	  m_genestr(1), m_wordstr(NULL), m_dict_weights(1,1), m_segment_loss(1,1,2), 
           m_segment_ids(1),
           m_segment_mask(1),
 	  m_scores(1), m_states(1,1), m_positions(1,1), m_genestr_stop(1),
@@ -390,38 +390,40 @@ void CDynProg::precompute_tiling_plifs(
 	delete[] tiling_plif;
 }
 
-void CDynProg::create_word_string(uint16_t*** wordstr)
+void CDynProg::create_word_string()
 {
+	delete[] m_wordstr;
+	m_wordstr=new uint16_t**[5440];
 	int32_t k=0;
 	int32_t genestr_len=m_genestr.get_dim1();
 
-	wordstr[k]=new uint16_t*[m_num_degrees] ;
+	m_wordstr[k]=new uint16_t*[m_num_degrees] ;
 	for (int32_t j=0; j<m_num_degrees; j++)
 	{
-		wordstr[k][j]=NULL ;
+		m_wordstr[k][j]=NULL ;
 		{
-			wordstr[k][j]=new uint16_t[genestr_len] ;
+			m_wordstr[k][j]=new uint16_t[genestr_len] ;
 			for (int32_t i=0; i<genestr_len; i++)
 				switch (m_genestr[i])
 				{
 					case 'A':
-					case 'a': wordstr[k][j][i]=0 ; break ;
+					case 'a': m_wordstr[k][j][i]=0 ; break ;
 					case 'C':
-					case 'c': wordstr[k][j][i]=1 ; break ;
+					case 'c': m_wordstr[k][j][i]=1 ; break ;
 					case 'G':
-					case 'g': wordstr[k][j][i]=2 ; break ;
+					case 'g': m_wordstr[k][j][i]=2 ; break ;
 					case 'T':
-					case 't': wordstr[k][j][i]=3 ; break ;
+					case 't': m_wordstr[k][j][i]=3 ; break ;
 					default: ASSERT(0) ;
 				}
-			CAlphabet::translate_from_single_order(wordstr[k][j], genestr_len, m_word_degree[j]-1, m_word_degree[j], 2) ;
+			CAlphabet::translate_from_single_order(m_wordstr[k][j], genestr_len, m_word_degree[j]-1, m_word_degree[j], 2) ;
 		}
 	}
 	//precompute_stop_codons(genestr, genestr_len);
 }
 
 void CDynProg::precompute_content_values(
-	uint16_t*** wordstr, const int32_t *pos, const int32_t seq_len,
+	const int32_t *pos, const int32_t seq_len,
 	float64_t *dictionary_weights, int32_t dict_len)
 {
 	//SG_PRINT("seq_len=%i, genestr_len=%i, dict_len=%i, m_num_svms=%i, m_num_degrees=%i\n",seq_len, genestr_len, dict_len, m_num_svms, m_num_degrees);
@@ -459,7 +461,7 @@ void CDynProg::precompute_content_values(
 		{
 			for (int32_t j=0; j<m_num_degrees; j++)
 			{
-				uint16_t word = wordstr[0][j][i] ;
+				uint16_t word = m_wordstr[0][j][i] ;
 				for (int32_t s=0; s<m_num_svms; s++)
 				{
 					// check if this k-mere should be considered for this SVM
@@ -482,8 +484,8 @@ void CDynProg::precompute_content_values(
 		}
 	}
 	for (int32_t j=0; j<m_num_degrees; j++)
-		delete[] wordstr[0][j] ;
-	delete[] wordstr[0] ;
+		delete[] m_wordstr[0][j] ;
+	delete[] m_wordstr[0] ;
 }
 
 void CDynProg::set_p_vector(float64_t *p, int32_t p_N)

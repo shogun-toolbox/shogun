@@ -6068,12 +6068,11 @@ bool CSGInterface::cmd_precompute_content_svms()
 	//float64_t* weights = ui_structure->get_content_svm_weights();
 	//int32_t Mweights = h->get_num_svms();
 	//int32_t Nweights = ui_structure->get_num_svm_weights();
-	uint16_t** wordstr[Nweights];
 	h->set_gene_string(seq, seq_len);
-	h->create_word_string(wordstr);
+	h->create_word_string();
 	h->precompute_stop_codons();
 	h->init_content_svm_value_array(num_svms, Npos);
-	h->precompute_content_values(wordstr, all_pos, Npos, weights, Nweights*num_svms);
+	h->precompute_content_values(all_pos, Npos, weights, Nweights*num_svms);
 	SG_DEBUG("precompute_content_svms done\n");
 	return true;
 }

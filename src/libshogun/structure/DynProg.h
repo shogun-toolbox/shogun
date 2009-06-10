@@ -549,7 +549,7 @@ public:
 	 * @param dictionary_weights SVM weight vectors for content prediction
 	 * @param dict_len number of weight vectors 
 	 */
-	void precompute_content_values(uint16_t*** wordstr, const int32_t *pos,
+	void precompute_content_values(const int32_t *pos,
 		const int32_t num_cand_pos, float64_t *dictionary_weights, int32_t dict_len);
 
 
@@ -581,7 +581,7 @@ public:
 	 *
 	 * @param wordstr word strings
 	 */
-	void create_word_string(uint16_t*** wordstr);
+	void create_word_string();
 
 	/** precompute stop codons
 	 */
@@ -714,8 +714,6 @@ protected:
 		int32_t **num_unique_words;
 	};
 
-	//void reset_svm_values(int32_t pos, int32_t * last_svm_pos, float64_t * svm_value) ;
-	//void extend_svm_values(uint16_t** wordstr, int32_t pos, int32_t *last_svm_pos, float64_t* svm_value) ;
 	/** init SVM values
 	 *
 	 * @param svs SVM values
@@ -940,7 +938,7 @@ protected:
 	  
 	  The SVM weights are precomputed in m_dict_weights
 	**/
-	CArray2<uint16_t> m_wordstr;
+	uint16_t*** m_wordstr;
 	/** dict weights */
 	CArray2<float64_t> m_dict_weights;
 	/** segment loss */
