@@ -898,8 +898,6 @@ protected:
 	
 	/** dict weights */
 	CArray2<float64_t> dict_weights;
-	/** dict weights array */
-	float64_t* m_dict_weights_array;
 
 	/** number of degress */
 	int32_t m_num_degrees;
