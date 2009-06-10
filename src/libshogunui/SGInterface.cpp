@@ -6070,10 +6070,10 @@ bool CSGInterface::cmd_precompute_content_svms()
 	//int32_t Nweights = ui_structure->get_num_svm_weights();
 	uint16_t** wordstr[Nweights];
 	h->set_gene_string(seq, seq_len);
-	h->create_word_string(seq, (int32_t) 1, seq_len, wordstr);
-	h->precompute_stop_codons(seq, seq_len);
+	h->create_word_string(wordstr);
+	h->precompute_stop_codons();
 	h->init_content_svm_value_array(num_svms, Npos);
-	h->precompute_content_values(wordstr, all_pos, Npos, seq_len, weights, Nweights*num_svms);
+	h->precompute_content_values(wordstr, all_pos, Npos, weights, Nweights*num_svms);
 	SG_DEBUG("precompute_content_svms done\n");
 	return true;
 }
@@ -6128,7 +6128,7 @@ bool CSGInterface::cmd_set_lin_feat()
 		SG_ERROR("no DynProg object found, use set_model first\n");
 
 	h->set_gene_string(seq, Nseq);
-	h->precompute_stop_codons(seq, Nseq);
+	h->precompute_stop_codons();
 	h->init_content_svm_value_array(num_svms, seq_len);
 	h->set_lin_feat(lin_feat, num_svms, seq_len);
 
@@ -6343,7 +6343,6 @@ bool CSGInterface::cmd_best_path_trans()
 	get_real_matrix(loss, Nloss,Mloss);
 	
 	int32_t M = ui_structure->get_num_positions();
-	int32_t genestr_num = 1; //FIXME
 	
 	/////////////////////////////////////////////////////////////////////////////////
 	// check input
@@ -6429,20 +6428,20 @@ bool CSGInterface::cmd_best_path_trans()
 	        SG_DEBUG("Using version with segment_loss\n") ;
 	        if (nbest==1)
 	                h->best_path_trans<1,true,false>(features, features_sparse1, features_sparse2, num_pos, all_pos, orf_info, PEN_matrix, 
-													 PEN_state_signal, feat_dims[2], genestr_num, p_prob, my_path, my_pos, use_orf) ;
+													 PEN_state_signal, feat_dims[2], p_prob, my_path, my_pos, use_orf) ;
 	        else
 				h->best_path_trans<2,true,false>(features, features_sparse1, features_sparse2, num_pos, all_pos, orf_info,PEN_matrix, 
-												 PEN_state_signal, feat_dims[2], genestr_num, p_prob, my_path, my_pos, use_orf) ;
+												 PEN_state_signal, feat_dims[2], p_prob, my_path, my_pos, use_orf) ;
 	}
 	else
 	{
 	        SG_DEBUG("Using version without segment_loss\n") ;
 	        if (nbest==1)
 	                h->best_path_trans<1,false,false>(features, features_sparse1, features_sparse2, num_pos, all_pos, orf_info, PEN_matrix, 
-				PEN_state_signal, feat_dims[2], genestr_num, p_prob, my_path, my_pos, use_orf) ;
+				PEN_state_signal, feat_dims[2], p_prob, my_path, my_pos, use_orf) ;
 	        else
 	                h->best_path_trans<2,false,false>(features, features_sparse1, features_sparse2, num_pos, all_pos, orf_info, PEN_matrix, 
-				PEN_state_signal, feat_dims[2], genestr_num, p_prob, my_path, my_pos, use_orf) ;
+				PEN_state_signal, feat_dims[2], p_prob, my_path, my_pos, use_orf) ;
 	}
 
 	// clean up 
@@ -6538,7 +6537,6 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 	get_real_matrix(loss, Nloss,Mloss);
 	
 	int32_t M = ui_structure->get_num_positions();
-	int32_t genestr_num = 1; //FIXME
 	
 	// ARG 6
 	// path to calc derivative for 
@@ -6649,7 +6647,7 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 			float64_t* p_my_losses = new float64_t[Nmypos_seq];
 
 			h->best_path_trans_deriv(my_path, my_pos, p_my_scores, p_my_losses, Nmypos_seq, features, 
-						 num_pos, all_pos, PEN_matrix, PEN_state_signal, feat_dims[2], genestr_num) ;
+						 num_pos, all_pos, PEN_matrix, PEN_state_signal, feat_dims[2]);
 			
 			for (int32_t i=0; i<num_states; i++)
 			{

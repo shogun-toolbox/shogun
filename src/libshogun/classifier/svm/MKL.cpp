@@ -214,7 +214,7 @@ bool CMKL::train()
 		while (!converged())
 		{
 			svm->train();
-			perform_mkl_step(alpha, old_alpha, num_alpha, beta, old_beta, num_beta, aux);
+			//perform_mkl_step(alpha, old_alpha, num_alpha, beta, old_beta, num_beta, aux);
 			//compute_wgap();
 
 			mkl_iterations++;

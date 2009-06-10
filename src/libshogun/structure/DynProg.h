@@ -434,7 +434,6 @@ public:
 	 * @param PLif_matrix Plif matrix
 	 * @param Plif_state_signals Plif state signals
 	 * @param max_num_signals maximal number of signals
-	 * @param genestr_num number of gene strings
 	 * @param prob_nbest prob nbest
 	 * @param my_state_seq my state seq
 	 * @param my_pos_seq my pos seq
@@ -445,7 +444,6 @@ public:
 						 int32_t seq_len, const int32_t *pos,
 						 const int32_t *orf_info, CPlifBase **PLif_matrix,
 						 CPlifBase **Plif_state_signals, int32_t max_num_signals,
-						 int32_t genestr_num,
 						 float64_t *prob_nbest, int32_t *my_state_seq, int32_t *my_pos_seq,
 						 bool use_orf);
 
@@ -462,11 +460,10 @@ public:
 	 * @param Plif_matrix Plif matrix
 	 * @param Plif_state_signals Plif state signals
 	 * @param max_num_signals maximal number of signals
-	 * @param genestr_num number of gene strings
 	 */
 	void best_path_trans_deriv(int32_t *my_state_seq, int32_t *my_pos_seq, float64_t *my_scores, float64_t* my_losses, int32_t my_seq_len,
 					const float64_t *seq_array, int32_t seq_len, const int32_t *pos, CPlifBase **Plif_matrix,
-					CPlifBase **Plif_state_signals, int32_t max_num_signals, int32_t genestr_num);
+					CPlifBase **Plif_state_signals, int32_t max_num_signals);
 
 	/// access function for number of states N
 	inline T_STATES get_N() const
@@ -549,13 +546,11 @@ public:
 	 * @param wordstr word strings
 	 * @param pos position
 	 * @param num_cand_pos number of cand position
-	 * @param genestr_len length of DNA-sequence
 	 * @param dictionary_weights SVM weight vectors for content prediction
 	 * @param dict_len number of weight vectors 
 	 */
 	void precompute_content_values(uint16_t*** wordstr, const int32_t *pos,
-		const int32_t num_cand_pos, const int32_t genestr_len,
-		float64_t *dictionary_weights, int32_t dict_len);
+		const int32_t num_cand_pos, float64_t *dictionary_weights, int32_t dict_len);
 
 
 	/** return array of precomputed linear features like content predictions
@@ -584,19 +579,13 @@ public:
 	/** create word string from char*
 	 * Jonas
 	 *
-	 * @param genestr gene string
-	 * @param genestr_num number of gene string
-	 * @param genestr_len length of gene string
 	 * @param wordstr word strings
 	 */
-	void create_word_string(const char* genestr, int32_t genestr_num, int32_t genestr_len, uint16_t*** wordstr);
+	void create_word_string(uint16_t*** wordstr);
 
 	/** precompute stop codons
-	 *
-	 * @param genestr gene string
-	 * @param genestr_len length of gene string
 	 */
-	void precompute_stop_codons(const char* genestr, int32_t genestr_len);
+	void precompute_stop_codons();
 
 	/** access function for matrix a
 	 *
@@ -1012,9 +1001,6 @@ protected:
 	int32_t* m_num_lin_feat_plifs_cum;
 	/** number of additional data tracks like tiling, RNA-Seq, ...*/
 	int32_t m_num_raw_data;
-	/** length of gene string */
-	int32_t m_genestr_len;
-
 
 	bool m_long_transitions ;
 	int32_t m_long_transition_threshold  ;

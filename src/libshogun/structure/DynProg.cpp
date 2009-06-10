@@ -32,7 +32,7 @@ template void CDynProg::best_path_trans<1,true,false>(
 	int32_t seq_len, const int32_t *pos,
 	const int32_t *orf_info, CPlifBase **PLif_matrix,
 	CPlifBase **Plif_state_signals, int32_t max_num_signals,
-	int32_t genestr_num, float64_t *prob_nbest, int32_t *my_state_seq,
+	float64_t *prob_nbest, int32_t *my_state_seq,
 	int32_t *my_pos_seq, bool use_orf);
 
 template void CDynProg::best_path_trans<2,true,false>(
@@ -40,7 +40,7 @@ template void CDynProg::best_path_trans<2,true,false>(
 	int32_t seq_len, const int32_t *pos,
 	const int32_t *orf_info, CPlifBase **PLif_matrix,
 	CPlifBase **Plif_state_signals, int32_t max_num_signals,
-	int32_t genestr_num, float64_t *prob_nbest, int32_t *my_state_seq,
+	float64_t *prob_nbest, int32_t *my_state_seq,
 	int32_t *my_pos_seq, bool use_orf);
 
 template void CDynProg::best_path_trans<1,false,false>(
@@ -48,7 +48,7 @@ template void CDynProg::best_path_trans<1,false,false>(
 	int32_t seq_len, const int32_t *pos,
 	const int32_t *orf_info, CPlifBase **PLif_matrix,
 	CPlifBase **Plif_state_signals, int32_t max_num_signals,
-	int32_t genestr_num, float64_t *prob_nbest, int32_t *my_state_seq,
+	float64_t *prob_nbest, int32_t *my_state_seq,
 	int32_t *my_pos_seq, bool use_orf);
 
 template void CDynProg::best_path_trans<2,false,false>(
@@ -56,7 +56,7 @@ template void CDynProg::best_path_trans<2,false,false>(
 	int32_t seq_len, const int32_t *pos,
 	const int32_t *orf_info, CPlifBase **PLif_matrix,
 	CPlifBase **Plif_state_signals, int32_t max_num_signals,
-	int32_t genestr_num, float64_t *prob_nbest, int32_t *my_state_seq,
+	float64_t *prob_nbest, int32_t *my_state_seq,
 	int32_t *my_pos_seq, bool use_orf);
 
 
@@ -144,7 +144,6 @@ CDynProg::CDynProg(int32_t p_num_svms /*= 8 */)
 	m_num_lin_feat_plifs_cum = new int32_t[100];
 	m_num_lin_feat_plifs_cum[0] = m_num_svms;
 	m_num_raw_data = 0;
-	m_genestr_len = 0;
 #ifdef ARRAY_STATISTICS
 	m_word_degree.set_name("word_degree");
 #endif
@@ -197,22 +196,26 @@ int32_t CDynProg::get_num_svms()
 	return m_num_svms;
 }
 
-void CDynProg::precompute_stop_codons(const char* sequence, int32_t length)
+void CDynProg::precompute_stop_codons()
 {
+	int32_t length=m_genestr.get_dim1();
+
 	m_genestr_stop.resize_array(length) ;
 	m_genestr_stop.zero() ;
 	m_genestr_stop.set_name("genestr_stop") ;
 	{
-	for (int32_t i=0; i<length-2; i++)
-		if ((sequence[i]=='t' || sequence[i]=='T') && 
-			(((sequence[i+1]=='a' || sequence[i+1]=='A') && 
-			  (sequence[i+2]=='a' || sequence[i+2]=='g' || sequence[i+2]=='A' || sequence[i+2]=='G')) ||
-			 ((sequence[i+1]=='g'||sequence[i+1]=='G') && (sequence[i+2]=='a' || sequence[i+2]=='A') )))
-			m_genestr_stop.element(i)=true ;
-		else
-			m_genestr_stop.element(i)=false ;
-	m_genestr_stop.element(length-1)=false ;
-	m_genestr_stop.element(length-1)=false ;
+		for (int32_t i=0; i<length-2; i++)
+			if ((m_genestr[i]=='t' || m_genestr[i]=='T') && 
+					(((m_genestr[i+1]=='a' || m_genestr[i+1]=='A') && 
+					  (m_genestr[i+2]=='a' || m_genestr[i+2]=='g' || m_genestr[i+2]=='A' || m_genestr[i+2]=='G')) ||
+					 ((m_genestr[i+1]=='g'||m_genestr[i+1]=='G') && (m_genestr[i+2]=='a' || m_genestr[i+2]=='A') )))
+			{
+				m_genestr_stop.element(i)=true ;
+			}
+			else
+				m_genestr_stop.element(i)=false ;
+		m_genestr_stop.element(length-1)=false ;
+		m_genestr_stop.element(length-1)=false ;
 	}
 }
 
@@ -387,21 +390,20 @@ void CDynProg::precompute_tiling_plifs(
 	delete[] tiling_plif;
 }
 
-void CDynProg::create_word_string(
-	const char* genestr, int32_t genestr_num, int32_t genestr_len,
-	uint16_t*** wordstr)
+void CDynProg::create_word_string(uint16_t*** wordstr)
 {
-	for (int32_t k=0; k<genestr_num; k++)
+	int32_t k=0;
+	int32_t genestr_len=m_genestr.get_dim1();
+
+	wordstr[k]=new uint16_t*[m_num_degrees] ;
+	for (int32_t j=0; j<m_num_degrees; j++)
 	{
-		wordstr[k]=new uint16_t*[m_num_degrees] ;
-		for (int32_t j=0; j<m_num_degrees; j++)
+		wordstr[k][j]=NULL ;
 		{
-			wordstr[k][j]=NULL ;
-			{
-				wordstr[k][j]=new uint16_t[genestr_len] ;
-				for (int32_t i=0; i<genestr_len; i++)
-					switch (genestr[i])
-					{
+			wordstr[k][j]=new uint16_t[genestr_len] ;
+			for (int32_t i=0; i<genestr_len; i++)
+				switch (m_genestr[i])
+				{
 					case 'A':
 					case 'a': wordstr[k][j][i]=0 ; break ;
 					case 'C':
@@ -411,9 +413,8 @@ void CDynProg::create_word_string(
 					case 'T':
 					case 't': wordstr[k][j][i]=3 ; break ;
 					default: ASSERT(0) ;
-					}
-				translate_from_single_order(wordstr[k][j], genestr_len, m_word_degree[j]-1, m_word_degree[j]) ;
-			}
+				}
+			translate_from_single_order(wordstr[k][j], genestr_len, m_word_degree[j]-1, m_word_degree[j]) ;
 		}
 	}
 	//precompute_stop_codons(genestr, genestr_len);
@@ -421,7 +422,7 @@ void CDynProg::create_word_string(
 
 void CDynProg::precompute_content_values(
 	uint16_t*** wordstr, const int32_t *pos, const int32_t seq_len,
-	const int32_t genestr_len, float64_t *dictionary_weights, int32_t dict_len)
+	float64_t *dictionary_weights, int32_t dict_len)
 {
 	//SG_PRINT("seq_len=%i, genestr_len=%i, dict_len=%i, m_num_svms=%i, m_num_degrees=%i\n",seq_len, genestr_len, dict_len, m_num_svms, m_num_degrees);
 
@@ -447,8 +448,8 @@ void CDynProg::precompute_content_values(
 		float64_t my_svm_values_unnormalized[m_num_svms] ;
 		//SG_PRINT("%i(%i->%i) ",p,from_pos, to_pos);
 		
-	    ASSERT(from_pos<=genestr_len) ;
-	    ASSERT(to_pos<=genestr_len)	;
+	    ASSERT(from_pos<=m_genestr.get_dim1());
+	    ASSERT(to_pos<=m_genestr.get_dim1());
 	    
 	    for (int32_t s=0; s<m_num_svms; s++)
 		{
@@ -904,7 +905,6 @@ void CDynProg::set_gene_string(char* genestr, int32_t genestr_len)
 	ASSERT(genestr_len>0);
 
 	m_genestr.set_array(genestr, genestr_len, true, true) ;
-	m_genestr_len = genestr_len;
 }
 
 void CDynProg::best_path_set_my_state_seq(
@@ -985,14 +985,14 @@ void CDynProg::best_path_call(int32_t nbest, bool use_orf)
 		best_path_trans<1,false,false>(m_seq.get_array(), NULL, NULL, m_seq.get_dim2(), m_pos.get_array(), 
 								m_orf_info.get_array(), m_PEN.get_array(),
 								m_PEN_state_signals.get_array(), m_PEN_state_signals.get_dim2(),
-								1, m_scores.get_array(), 
+								m_scores.get_array(), 
 								m_states.get_array(), m_positions.get_array(),
 								use_orf) ;
 	else
 		best_path_trans<2,false,false>(m_seq.get_array(), NULL, NULL, m_seq.get_dim2(), m_pos.get_array(), 
 								m_orf_info.get_array(), m_PEN.get_array(),
 								m_PEN_state_signals.get_array(), m_PEN_state_signals.get_dim2(),
-								1, m_scores.get_array(),
+								m_scores.get_array(),
 								m_states.get_array(), m_positions.get_array(),
 								use_orf) ;
 }
@@ -1008,7 +1008,7 @@ void CDynProg::best_path_deriv_call()
 	best_path_trans_deriv(m_my_state_seq.get_array(), m_my_pos_seq.get_array(), 
 						  m_my_scores.get_array(), m_my_losses.get_array(), m_my_state_seq.get_array_size(),
 						  m_seq.get_array(), m_seq.get_dim2(), m_pos.get_array(), 
-						  m_PEN.get_array(), m_PEN_state_signals.get_array(), m_PEN_state_signals.get_dim2(), 1) ;
+						  m_PEN.get_array(), m_PEN_state_signals.get_array(), m_PEN_state_signals.get_dim2());
 }
 
 
@@ -1979,7 +1979,7 @@ void CDynProg::best_path_trans(
 	int32_t seq_len, const int32_t *pos,
 	const int32_t *orf_info_array, CPlifBase **Plif_matrix,
 	CPlifBase **Plif_state_signals, int32_t max_num_signals,
-	int32_t genestr_num, float64_t *prob_nbest, int32_t *my_state_seq,
+	float64_t *prob_nbest, int32_t *my_state_seq,
 	int32_t *my_pos_seq, bool use_orf)
 {
 #ifdef DYNPROG_TIMING
@@ -2198,7 +2198,7 @@ void CDynProg::best_path_trans(
 			max_look_back = CMath::max(m_long_transition_threshold, max_look_back) ;
 
 		/* make sure max_look_back is not longer than the whole string */
-		max_look_back = CMath::min(m_genestr_len, max_look_back) ;
+		max_look_back = CMath::min(m_genestr.get_dim1(), max_look_back) ;
 
 		int32_t num_long_transitions = 0 ;
 		for (int32_t i=0; i<m_N; i++)
@@ -2217,7 +2217,7 @@ void CDynProg::best_path_trans(
 		SG_DEBUG("Using %i long transitions\n", num_long_transitions) ;
 	}
 
-	//SG_PRINT("use_svm=%i, genestr_len: \n", use_svm, m_genestr_len) ;
+	//SG_PRINT("use_svm=%i, genestr_len: \n", use_svm, m_genestr.get_dim1()) ;
 	SG_DEBUG("use_svm=%i\n", use_svm) ;
 	
 	SG_DEBUG("maxlook: %d m_N: %d nbest: %d \n", max_look_back, m_N, nbest);
@@ -2226,7 +2226,7 @@ void CDynProg::best_path_trans(
 	/*const float64_t mem_use = (float64_t)(seq_len*m_N*nbest*(sizeof(T_STATES)+sizeof(int16_t)+sizeof(int32_t))+
 								  look_back_buflen*(2*sizeof(float64_t)+sizeof(int32_t))+
 								  seq_len*(sizeof(T_STATES)+sizeof(int32_t))+
-								  m_genestr_len*sizeof(bool))/(1024*1024);*/
+								  m_genestr.get_dim1()*sizeof(bool))/(1024*1024);*/
 
 	//bool is_big = (mem_use>200) || (seq_len>5000) ;
 
@@ -2383,7 +2383,7 @@ void CDynProg::best_path_trans(
 
 	{
 		for (int32_t s=0; s<m_num_svms; s++)
-			ASSERT(m_string_words_array[s]<genestr_num)  ;
+			ASSERT(m_string_words_array[s]<1)  ;
 	}
 
 	
@@ -2908,7 +2908,7 @@ void CDynProg::best_path_trans_deriv(
 	int32_t *my_state_seq, int32_t *my_pos_seq, float64_t *my_scores,
 	float64_t* my_losses,int32_t my_seq_len, const float64_t *seq_array,
 	int32_t seq_len, const int32_t *pos, CPlifBase **Plif_matrix,
-	CPlifBase **Plif_state_signals, int32_t max_num_signals,int32_t genestr_num)
+	CPlifBase **Plif_state_signals, int32_t max_num_signals)
 {	
 	m_initial_state_distribution_p_deriv.resize_array(m_N) ;
 	m_end_state_distribution_q_deriv.resize_array(m_N) ;
