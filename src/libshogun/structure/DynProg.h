@@ -285,20 +285,11 @@ public:
 	 */
 	void set_orf_info(int32_t* orf_info, int32_t m, int32_t n);
 
-	/** set best path segment sum weights
-	 * only for best_path_2struct
-	 *
-	 * @param segment_sum_weights segment sum weights
-	 * @param num_states number of states
-	 * @param seq_len length of sequence
-	 */
-	void best_path_set_segment_sum_weights(float64_t *segment_sum_weights, int32_t num_states, int32_t seq_len);
-
 	/** set best path Plif list
 	 *
 	 * @param plifs list of Plifs
 	 */
-	void best_path_set_plif_list(CDynamicArray<CPlifBase*>* plifs);
+	void set_plif_list(CDynamicArray<CPlifBase*>* plifs);
 
 	/** set best path plif id(entity?) matrix
 	 *
@@ -306,7 +297,7 @@ public:
 	 * @param m dimension m of matrix
 	 * @param n dimension n of matrix
 	 */
-	void best_path_set_plif_id_matrix(int32_t *plif_id_matrix, int32_t m, int32_t n);
+	void set_plif_id_matrix(int32_t *plif_id_matrix, int32_t m, int32_t n);
 
 	/** set best path plif state signal matrix
 	 *
@@ -314,7 +305,7 @@ public:
 	 * @param m dimension m of matrix
 	 * @param n dimension n of matrix
 	 */
-	void best_path_set_plif_state_signal_matrix(int32_t *plif_id_matrix, int32_t m, int32_t n);
+	void set_plif_state_signal_matrix(int32_t *plif_id_matrix, int32_t m, int32_t n);
 
 	/** set best path genesstr
 	 *

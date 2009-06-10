@@ -80,7 +80,7 @@ CDynProg::CDynProg(int32_t p_num_svms /*= 8 */)
 	  m_num_unique_words_single(0),
 
 	  m_max_a_id(0), m_seq(1,1,1), m_pos(1), m_orf_info(1,2), 
-          m_segment_sum_weights(1,1), m_plif_list(1), 
+	  m_plif_list(1), 
 	  m_PEN(1,1), m_PEN_state_signals(1,1), 
 	  m_genestr(1), m_wordstr(NULL), m_dict_weights(1,1), m_segment_loss(1,1,2), 
           m_segment_ids(1),
@@ -828,18 +828,7 @@ void CDynProg::set_sparse_features(CSparseFeatures<float64_t>* seq_sparse1, CSpa
 	SG_REF(m_seq_sparse2);
 }
 
-void CDynProg::best_path_set_segment_sum_weights(
-	float64_t *segment_sum_weights, int32_t num_states, int32_t seq_len)
-{
-	if (num_states!=m_N)
-		SG_ERROR( "segment_sum_weights size does not match previous info %i!=%i\n", num_states, m_N) ;
-	if (seq_len!=m_pos.get_dim1())
-		SG_ERROR( "segment_sum_weights size incorrect %i!=%i\n", seq_len, m_pos.get_dim1()) ;
-
-	m_segment_sum_weights.set_array(segment_sum_weights, num_states, seq_len, true, true) ;
-}
-
-void CDynProg::best_path_set_plif_list(CDynamicArray<CPlifBase*>* plifs)
+void CDynProg::set_plif_list(CDynamicArray<CPlifBase*>* plifs)
 {
 	ASSERT(plifs);
 	CPlifBase** plif_list=plifs->get_array();
@@ -848,7 +837,7 @@ void CDynProg::best_path_set_plif_list(CDynamicArray<CPlifBase*>* plifs)
 	m_plif_list.set_array(plif_list, num_plif, true, true) ;
 }
 
-void CDynProg::best_path_set_plif_id_matrix(
+void CDynProg::set_plif_id_matrix(
 	int32_t *plif_id_matrix, int32_t m, int32_t n)
 {
 	if ((m!=m_N) || (n!=m_N))
@@ -868,7 +857,7 @@ void CDynProg::best_path_set_plif_id_matrix(
 				m_PEN.element(i,j)=NULL ;
 }
 
-void CDynProg::best_path_set_plif_state_signal_matrix(
+void CDynProg::set_plif_state_signal_matrix(
 	int32_t *plif_id_matrix, int32_t m, int32_t max_num_signals)
 {
 	if (m!=m_N)
