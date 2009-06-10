@@ -116,7 +116,7 @@ CDynProg::CDynProg(int32_t p_num_svms /*= 8 */)
 	  m_max_a_id(0), m_seq(1,1,1), m_pos(1), m_orf_info(1,2), 
           m_segment_sum_weights(1,1), m_plif_list(1), 
 	  m_PEN(1,1), m_PEN_state_signals(1,1), 
-	  m_genestr(1,1), m_dict_weights(1,1), m_segment_loss(1,1,2), 
+	  m_genestr(1), m_dict_weights(1,1), m_segment_loss(1,1,2), 
           m_segment_ids(1),
           m_segment_mask(1),
 	  m_scores(1), m_states(1,1), m_positions(1,1), m_genestr_stop(1),
@@ -135,7 +135,6 @@ CDynProg::CDynProg(int32_t p_num_svms /*= 8 */)
 	mem_initialized = true ;
 
 	m_N=1;
-	m_step=0;
 
 	m_raw_intensities = NULL;
 	m_probe_pos = NULL;
@@ -193,11 +192,6 @@ CDynProg::~CDynProg()
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void CDynProg::set_genestr_len(int32_t genestr_len)
-{
-	m_genestr_len = genestr_len;
-}
-
 int32_t CDynProg::get_num_svms()
 {
 	return m_num_svms;
@@ -807,9 +801,6 @@ void CDynProg::best_path_set_seq(float64_t *seq, int32_t p_N, int32_t seq_len)
 	
 	m_seq.set_array(seq, p_N, seq_len, 1, true, true) ;
 	m_N=p_N ;
-
-	m_call=3 ;
-	m_step=2 ;
 }
 
 void CDynProg::best_path_set_seq3d(
@@ -827,22 +818,14 @@ void CDynProg::best_path_set_seq3d(
 	
 	m_seq.set_array(seq, p_N, seq_len, max_num_signals, true, true) ;
 	m_N=p_N ;
-
-	m_call=3 ;
-	m_step=2 ;
 }
 
 void CDynProg::best_path_set_pos(int32_t *pos, int32_t seq_len)  
 {
-	if (m_step!=2)
-		SG_ERROR( "please call best_path_set_seq first\n") ;
-	
 	if (seq_len!=m_seq.get_dim2())
 		SG_ERROR( "pos size does not match previous info %i!=%i\n", seq_len, m_seq.get_dim2()) ;
 
 	m_pos.set_array(pos, seq_len, true, true) ;
-
-	m_step=3 ;
 }
 
 void CDynProg::best_path_set_orf_info(int32_t *orf_info, int32_t m, int32_t n) 
@@ -850,26 +833,17 @@ void CDynProg::best_path_set_orf_info(int32_t *orf_info, int32_t m, int32_t n)
 	if (n!=2)
 		SG_ERROR( "orf_info size incorrect %i!=2\n", n) ;
 	m_orf_info.set_array(orf_info, m, n, true, true) ;
-
-	m_call=1 ;
-	m_step=4 ;
 }
 
 void CDynProg::best_path_set_segment_sum_weights(
 	float64_t *segment_sum_weights, int32_t num_states, int32_t seq_len)
 {
-	if (m_step!=3)
-		SG_ERROR( "please call best_path_set_pos first\n") ;
-		
 	if (num_states!=m_N)
 		SG_ERROR( "segment_sum_weights size does not match previous info %i!=%i\n", num_states, m_N) ;
 	if (seq_len!=m_pos.get_dim1())
 		SG_ERROR( "segment_sum_weights size incorrect %i!=%i\n", seq_len, m_pos.get_dim1()) ;
 
 	m_segment_sum_weights.set_array(segment_sum_weights, num_states, seq_len, true, true) ;
-	
-	m_call=2 ;
-	m_step=4 ;
 }
 
 void CDynProg::best_path_set_plif_list(CDynamicArray<CPlifBase*>* plifs)
@@ -878,20 +852,12 @@ void CDynProg::best_path_set_plif_list(CDynamicArray<CPlifBase*>* plifs)
 	CPlifBase** plif_list=plifs->get_array();
 	int32_t num_plif=plifs->get_num_elements();
 
-	if (m_step!=4)
-		SG_ERROR( "please call best_path_set_orf_info or best_path_segment_sum_weights first\n") ;
-
 	m_plif_list.set_array(plif_list, num_plif, true, true) ;
-
-	m_step=5 ;
 }
 
 void CDynProg::best_path_set_plif_id_matrix(
 	int32_t *plif_id_matrix, int32_t m, int32_t n)
 {
-	if (m_step!=5)
-		SG_ERROR( "please call best_path_set_plif_list first\n") ;
-
 	if ((m!=m_N) || (n!=m_N))
 		SG_ERROR( "plif_id_matrix size does not match previous info %i!=%i or %i!=%i\n", m, m_N, n, m_N) ;
 
@@ -907,16 +873,11 @@ void CDynProg::best_path_set_plif_id_matrix(
 				m_PEN.element(i,j)=m_plif_list[id_matrix.element(i,j)] ;
 			else
 				m_PEN.element(i,j)=NULL ;
-
-	m_step=6 ;
 }
 
 void CDynProg::best_path_set_plif_state_signal_matrix(
 	int32_t *plif_id_matrix, int32_t m, int32_t max_num_signals)
 {
-	if (m_step!=6)
-		SG_ERROR( "please call best_path_set_plif_id_matrix first\n") ;
-	
 	if (m!=m_N)
 		SG_ERROR( "plif_state_signal_matrix size does not match previous info %i!=%i\n", m, m_N) ;
 
@@ -935,23 +896,15 @@ void CDynProg::best_path_set_plif_state_signal_matrix(
 				m_PEN_state_signals.element(i,j)=NULL ;
 		}
 	}
-
-	m_step=6 ;
 }
 
-void CDynProg::best_path_set_genestr(
-	char* genestr, int32_t genestr_len, int32_t genestr_num)
+void CDynProg::set_gene_string(char* genestr, int32_t genestr_len)
 {
-	if (m_step!=6)
-		SG_ERROR( "please call best_path_set_plif_id_matrix first\n") ;
-
 	ASSERT(genestr);
 	ASSERT(genestr_len>0);
-	ASSERT(genestr_num>0);
 
-	m_genestr.set_array(genestr, genestr_len, genestr_num, true, true) ;
-
-	m_step=7 ;
+	m_genestr.set_array(genestr, genestr_len, true, true) ;
+	m_genestr_len = genestr_len;
 }
 
 void CDynProg::best_path_set_my_state_seq(
@@ -974,9 +927,6 @@ void CDynProg::best_path_set_my_pos_seq(int32_t* my_pos_seq, int32_t seq_len)
 void CDynProg::best_path_set_dict_weights(
 	float64_t* dictionary_weights, int32_t dict_len, int32_t n)
 {
-	if (m_step!=7)
-		SG_ERROR( "please call best_path_set_genestr first\n") ;
-
 	if (m_num_svms!=n)
 		SG_ERROR( "m_dict_weights array does not match num_svms=%i!=%i\n", m_num_svms, n) ;
 
@@ -989,8 +939,6 @@ void CDynProg::best_path_set_dict_weights(
 	m_segment_mask.resize_array(m_seq.get_dim2()) ;
 	m_segment_ids.zero() ;
 	m_segment_mask.zero() ;
-
-	m_step=8 ;
 }
 
 void CDynProg::best_path_set_segment_loss(
@@ -1025,10 +973,6 @@ void CDynProg::best_path_set_segment_ids_mask(
 
 void CDynProg::best_path_call(int32_t nbest, bool use_orf) 
 {
-	if (m_step!=8)
-		SG_ERROR( "please call best_path_set_dict_weights first\n") ;
-	if (m_call!=1)
-		SG_ERROR( "please call best_path_set_orf_info first\n") ;
 	ASSERT(m_N==m_seq.get_dim1()) ;
 	ASSERT(m_seq.get_dim2()==m_pos.get_dim1()) ;
 
@@ -1036,38 +980,27 @@ void CDynProg::best_path_call(int32_t nbest, bool use_orf)
 	m_states.resize_array(nbest, m_seq.get_dim2()) ;
 	m_positions.resize_array(nbest, m_seq.get_dim2()) ;
 
-	m_call=1 ;
-
 	ASSERT(nbest==1||nbest==2) ;
-	ASSERT(m_genestr.get_dim2()==1) ;
 	if (nbest==1)
 		best_path_trans<1,false,false>(m_seq.get_array(), NULL, NULL, m_seq.get_dim2(), m_pos.get_array(), 
 								m_orf_info.get_array(), m_PEN.get_array(),
 								m_PEN_state_signals.get_array(), m_PEN_state_signals.get_dim2(),
-								m_genestr.get_dim2(), m_scores.get_array(), 
+								1, m_scores.get_array(), 
 								m_states.get_array(), m_positions.get_array(),
 								use_orf) ;
 	else
 		best_path_trans<2,false,false>(m_seq.get_array(), NULL, NULL, m_seq.get_dim2(), m_pos.get_array(), 
 								m_orf_info.get_array(), m_PEN.get_array(),
 								m_PEN_state_signals.get_array(), m_PEN_state_signals.get_dim2(),
-								m_genestr.get_dim2(), m_scores.get_array(),
+								1, m_scores.get_array(),
 								m_states.get_array(), m_positions.get_array(),
 								use_orf) ;
-
-	m_step=9 ;
 }
 
 void CDynProg::best_path_deriv_call() 
 {
-	//if (m_step!=8)
-		//SG_ERROR( "please call best_path_set_dict_weights first\n") ;
-	//if (m_call!=1)
-		//SG_ERROR( "please call best_path_set_orf_info first\n") ;
 	ASSERT(m_N==m_seq.get_dim1()) ;
 	ASSERT(m_seq.get_dim2()==m_pos.get_dim1()) ;
-
-	m_call=5 ; // or so ...
 
 	m_my_scores.resize_array(m_my_state_seq.get_array_size()) ;
 	m_my_losses.resize_array(m_my_state_seq.get_array_size()) ;
@@ -1075,9 +1008,7 @@ void CDynProg::best_path_deriv_call()
 	best_path_trans_deriv(m_my_state_seq.get_array(), m_my_pos_seq.get_array(), 
 						  m_my_scores.get_array(), m_my_losses.get_array(), m_my_state_seq.get_array_size(),
 						  m_seq.get_array(), m_seq.get_dim2(), m_pos.get_array(), 
-						  m_PEN.get_array(), m_PEN_state_signals.get_array(), m_PEN_state_signals.get_dim2(), m_genestr.get_dim2()) ;
-
-	m_step=12 ;
+						  m_PEN.get_array(), m_PEN_state_signals.get_array(), m_PEN_state_signals.get_dim2(), 1) ;
 }
 
 
@@ -1095,42 +1026,20 @@ void CDynProg::best_path_deriv_call(int32_t nbest)
 
 void CDynProg::best_path_get_scores(float64_t **scores, int32_t *m) 
 {
-	if (m_step!=9 && m_step!=12)
-		SG_ERROR( "please call best_path*_call first\n") ;
-
-	if (m_step==9)
-	{
-		*scores=m_scores.get_array() ;
-		*m=m_scores.get_dim1() ;
-	} else
-	{
-		*scores=m_my_scores.get_array() ;
-		*m=m_my_scores.get_dim1() ;
-	}
-
-	m_step=10 ;
+	*scores=m_scores.get_array();
+	*m=m_scores.get_dim1();
 }
 
 void CDynProg::best_path_get_states(int32_t **states, int32_t *m, int32_t *n) 
 {
-	if (m_step!=10)
-		SG_ERROR( "please call best_path_get_score first\n") ;
-	
 	*states=m_states.get_array() ;
 	*m=m_states.get_dim1() ;
 	*n=m_states.get_dim2() ;
-
-	m_step=11 ;
 }
 
 void CDynProg::best_path_get_positions(
 	int32_t **positions, int32_t *m, int32_t *n)
 {
-	if (m_step!=11)
-		SG_ERROR( "please call best_path_get_positions first\n") ;
-	if (m_call==3)
-		SG_ERROR( "no position information for best_path_simple\n") ;
-	
 	*positions=m_positions.get_array() ;
 	*m=m_positions.get_dim1() ;
 	*n=m_positions.get_dim2() ;

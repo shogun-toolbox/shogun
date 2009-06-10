@@ -6039,9 +6039,9 @@ bool CSGInterface::cmd_precompute_content_svms()
 {
 
 	// ARG 1
-	int32_t Nseq=0;
+	int32_t seq_len=0;
 	char* seq;
-	seq = get_string(Nseq);
+	seq = get_string(seq_len);
 
 	// ARG 2
 	// all feature positions
@@ -6069,11 +6069,11 @@ bool CSGInterface::cmd_precompute_content_svms()
 	//int32_t Mweights = h->get_num_svms();
 	//int32_t Nweights = ui_structure->get_num_svm_weights();
 	uint16_t** wordstr[Nweights];
-	h->create_word_string(seq, (int32_t) 1, Nseq, wordstr);
-	h->precompute_stop_codons(seq, Nseq);
+	h->set_gene_string(seq, seq_len);
+	h->create_word_string(seq, (int32_t) 1, seq_len, wordstr);
+	h->precompute_stop_codons(seq, seq_len);
 	h->init_content_svm_value_array(num_svms, Npos);
-	h->precompute_content_values(wordstr, all_pos, Npos, Nseq, weights, Nweights*num_svms);
-	h->set_genestr_len(Nseq);
+	h->precompute_content_values(wordstr, all_pos, Npos, seq_len, weights, Nweights*num_svms);
 	SG_DEBUG("precompute_content_svms done\n");
 	return true;
 }
@@ -6127,7 +6127,7 @@ bool CSGInterface::cmd_set_lin_feat()
 	if (!h)
 		SG_ERROR("no DynProg object found, use set_model first\n");
 
-	h->set_genestr_len(Nseq);
+	h->set_gene_string(seq, Nseq);
 	h->precompute_stop_codons(seq, Nseq);
 	h->init_content_svm_value_array(num_svms, seq_len);
 	h->set_lin_feat(lin_feat, num_svms, seq_len);

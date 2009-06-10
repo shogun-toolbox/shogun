@@ -320,9 +320,8 @@ public:
 	 *
 	 * @param genestr gene string
 	 * @param genestr_len length of gene string
-	 * @param genestr_num number of gene strings, typically 1
 	 */
-	void best_path_set_genestr(char* genestr, int32_t genestr_len, int32_t genestr_num);
+	void set_gene_string(char* genestr, int32_t genestr_len);
 
 	// additional best_path_trans_deriv functions
 	/** set best path my state sequence
@@ -338,17 +337,6 @@ public:
 	 * @param seq_len length of sequence
 	 */
 	void best_path_set_my_pos_seq(int32_t* my_pos_seq, int32_t seq_len);
-
-	/** set best path single gene string
-	 *
-	 * @param genestr gene string
-	 * @param genestr_len length of gene string
-	 */
-	inline void best_path_set_single_genestr(char* genestr, int32_t genestr_len)
-	{
-		SG_DEBUG("genestrpy: %d", genestr_len);
-		best_path_set_genestr(genestr, genestr_len, 1);
-	}
 
 	/** set best path dict weights
 	 *
@@ -609,13 +597,6 @@ public:
 	 * @param genestr_len length of gene string
 	 */
 	void precompute_stop_codons(const char* genestr, int32_t genestr_len);
-
-	/** set genestr len
-	 *
-	 * @param genestr_len length of gene string
-	 *
-	 */
-	void set_genestr_len(int32_t genestr_len);
 
 	/** access function for matrix a
 	 *
@@ -950,12 +931,6 @@ protected:
 	/** max a id */
 	int32_t m_max_a_id;
 	
-	// control info
-	/** step */
-	int32_t m_step;
-	/** call */
-	int32_t m_call;
-
 	// input arguments
 	/** sequence */
 	CArray3<float64_t> m_seq;
@@ -971,8 +946,23 @@ protected:
 	CArray2<CPlifBase*> m_PEN;
 	/** PEN state signals */
 	CArray2<CPlifBase*> m_PEN_state_signals;
-	/** genestr */
-	CArray2<char> m_genestr;
+	/** a single string (to be segmented) */
+	CArray<char> m_genestr;
+	/** 
+	  wordstr is a vector of L n-gram indices, with wordstr(i) representing a number betweeen 0 and 4095 
+	  corresponding to the 6-mer in genestr(i-5:i) 
+	  pos is a vector of candidate transition positions (it is input to best_path_trans)
+	  t_end is some index in pos
+	  
+	  svs has been initialized by init_svm_values
+	  
+	  At the end of this procedure, 
+	  svs.svm_values[i+s*svs.seqlen] has the value of the s-th SVM on genestr(pos(t_end-i):pos(t_end)) 
+	  for every i satisfying pos(t_end)-pos(t_end-i) <= svs.maxlookback
+	  
+	  The SVM weights are precomputed in m_dict_weights
+	**/
+	CArray3<uint16_t> m_wordstr;
 	/** dict weights */
 	CArray2<float64_t> m_dict_weights;
 	/** segment loss */
