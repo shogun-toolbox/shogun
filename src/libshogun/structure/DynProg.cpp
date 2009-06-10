@@ -81,7 +81,7 @@ CDynProg::CDynProg(int32_t p_num_svms /*= 8 */)
 : CSGObject(), m_transition_matrix_a_id(1,1), m_transition_matrix_a(1,1),
 	m_transition_matrix_a_deriv(1,1), m_initial_state_distribution_p(1),
 	m_initial_state_distribution_p_deriv(1), m_end_state_distribution_q(1),
-	m_end_state_distribution_q_deriv(1), dict_weights(1,1),
+	m_end_state_distribution_q_deriv(1),
 
 	  // multi svm
 	  m_num_degrees(4), 
@@ -431,7 +431,7 @@ void CDynProg::precompute_content_values(
 {
 	//SG_PRINT("seq_len=%i, genestr_len=%i, dict_len=%i, m_num_svms=%i, m_num_degrees=%i\n",seq_len, genestr_len, dict_len, m_num_svms, m_num_degrees);
 
-	dict_weights.set_array(dictionary_weights, dict_len, m_num_svms, false, false) ;
+	m_dict_weights.set_array(dictionary_weights, dict_len, m_num_svms, false, false) ;
 
 	//int32_t d1 = m_mod_words.get_dim1();
 	//int32_t d2 = m_mod_words.get_dim2();
@@ -470,7 +470,7 @@ void CDynProg::precompute_content_values(
 					// check if this k-mere should be considered for this SVM
 					if (m_mod_words.get_element(s,0)==3 && i%3!=m_mod_words.get_element(s,1))
 						continue;
-					my_svm_values_unnormalized[s] += dict_weights[(word+m_cum_num_words_array[j])+s*m_cum_num_words_array[m_num_degrees]] ;
+					my_svm_values_unnormalized[s] += m_dict_weights[(word+m_cum_num_words_array[j])+s*m_cum_num_words_array[m_num_degrees]] ;
 				}
 			}
 		}
@@ -978,7 +978,7 @@ void CDynProg::best_path_set_dict_weights(
 		SG_ERROR( "please call best_path_set_genestr first\n") ;
 
 	if (m_num_svms!=n)
-		SG_ERROR( "dict_weights array does not match num_svms=%i!=%i\n", m_num_svms, n) ;
+		SG_ERROR( "m_dict_weights array does not match num_svms=%i!=%i\n", m_num_svms, n) ;
 
 	m_dict_weights.set_array(dictionary_weights, dict_len, m_num_svms, true, true) ;
 
@@ -1438,7 +1438,7 @@ void CDynProg::extend_svm_value(
 		if (!m_word_used_single[wordstr[i]])
 		{
 			for (int32_t s=0; s<m_num_svms_single; s++)
-				m_svm_value_unnormalized_single[s]+=dict_weights.element(wordstr[i],s) ;
+				m_svm_value_unnormalized_single[s]+=m_dict_weights.element(wordstr[i],s) ;
 			
 			m_word_used_single[wordstr[i]]=true ;
 			m_num_unique_words_single++ ;
@@ -1813,7 +1813,7 @@ void CDynProg::find_svm_values_till_pos(
 	  svs.svm_values[i+s*svs.seqlen] has the value of the s-th SVM on genestr(pos(t_end-i):pos(t_end)) 
 	  for every i satisfying pos(t_end)-pos(t_end-i) <= svs.maxlookback
 	  
-	  The SVM weights are precomputed in dict_weights
+	  The SVM weights are precomputed in m_dict_weights
 	*/
 	
 	for (int32_t j=0; j<m_num_degrees; j++)
@@ -1860,8 +1860,8 @@ void CDynProg::find_svm_values_till_pos(
 					// only count k-mer if in frame (if applicable)
 					//if ((svs.start_pos[s]-i>0) && ((svs.start_pos[s]-i)%m_mod_words_array[s]==0))
 					{
-						my_svm_values_unnormalized[s] += dict_weights[(word+m_cum_num_words_array[j])+s*m_cum_num_words_array[m_num_degrees]] ;
-						//svs.svm_values_unnormalized[j][s]+=dict_weights.element(word+m_cum_num_words_array[j], s) ;
+						my_svm_values_unnormalized[s] += m_dict_weights[(word+m_cum_num_words_array[j])+s*m_cum_num_words_array[m_num_degrees]] ;
+						//svs.svm_values_unnormalized[j][s]+=m_dict_weights.element(word+m_cum_num_words_array[j], s) ;
 						my_num_unique_words[s]++ ;
 						if (m_sign_words_array[s])
 							my_word_used[s][word]=true ;
@@ -1927,7 +1927,7 @@ void CDynProg::find_svm_values_till_pos(
 	  svs.svm_values[i+s*svs.seqlen] has the value of the s-th SVM on genestr(pos(t_end-i):pos(t_end)) 
 	  for every i satisfying pos(t_end)-pos(t_end-i) <= svs.maxlookback
 	  
-	  The SVM weights are precomputed in dict_weights
+	  The SVM weights are precomputed in m_dict_weights
 	*/
 	
 	for (int32_t j=0; j<m_num_degrees; j++)
@@ -1966,8 +1966,8 @@ void CDynProg::find_svm_values_till_pos(
 					// only count k-mer if in frame (if applicable)
 					//if ((svs.start_pos[s]-i>0) && ((svs.start_pos[s]-i)%m_mod_words_array[s]==0))
 					{
-						my_svm_values_unnormalized[s] += dict_weights[(word+m_cum_num_words_array[j])+s*m_cum_num_words_array[m_num_degrees]] ;
-						//svs.svm_values_unnormalized[j][s]+=dict_weights.element(word+m_cum_num_words_array[j], s) ;
+						my_svm_values_unnormalized[s] += m_dict_weights[(word+m_cum_num_words_array[j])+s*m_cum_num_words_array[m_num_degrees]] ;
+						//svs.svm_values_unnormalized[j][s]+=m_dict_weights.element(word+m_cum_num_words_array[j], s) ;
 						my_num_unique_words[s]++ ;
 						if (m_sign_words_array[s])
 							my_word_used[s][word]=true ;
@@ -2388,7 +2388,7 @@ void CDynProg::best_path_trans(
 	//pos_seq.zero() ;
 
 	
-	//dict_weights.set_name("dict_weights") ;
+	m_dict_weights.set_name("dict_weights") ;
 	m_word_degree.set_name("word_degree") ;
 	m_cum_num_words.set_name("cum_num_words") ;
 	m_num_words.set_name("num_words") ;
@@ -2426,7 +2426,7 @@ void CDynProg::best_path_trans(
 	state_seq.display_size() ;
 	pos_seq.display_size() ;
 
-	dict_weights.display_size() ;
+	m_dict_weights.display_size() ;
 	m_word_degree.display_array() ;
 	m_cum_num_words.display_array() ;
 	m_num_words.display_array() ;

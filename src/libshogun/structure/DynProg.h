@@ -896,9 +896,6 @@ protected:
 
 	//@}
 	
-	/** dict weights */
-	CArray2<float64_t> dict_weights;
-
 	/** number of degress */
 	int32_t m_num_degrees;
 	/** number of SVMs */
