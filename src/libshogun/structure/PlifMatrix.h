@@ -46,12 +46,23 @@ class CPlifMatrix: public CSGObject
 		 * @param n dimension n of matrix
 		 */
 		void set_plif_ids(int32_t* ids, int32_t num_ids);
-		void set_plif_min_values(float64_t* plif_values, int32_t num_values);
-		void set_plif_max_values(float64_t* plif_values, int32_t num_values);
+		void set_plif_min_values(float64_t* min_values, int32_t num_values);
+		void set_plif_max_values(float64_t* max_values, int32_t num_values);
+		void set_plif_use_cache(bool* use_cache, int32_t num_values);
+		void set_plif_use_svm(int32_t* use_svm, int32_t num_values);
+		void set_plif_limits(float64_t* limits, int32_t num_plifs, int32_t num_limits);
+		void set_plif_penalties(float64_t* penalties, int32_t num_plifs, int32_t num_limits);
+		void set_plif_names(T_STRING<char>* names, int32_t num_values);
+		void set_plif_transform_type(T_STRING<char>* transform_type, int32_t num_values);
 
-		bool set_plif_struct(float64_t* all_limits,
-				float64_t* all_penalties, T_STRING<char>* names,
-				bool* all_use_cache, int32_t* all_use_svm, T_STRING<char>* all_transform);
+		/// return plif id for idx
+		inline int32_t get_plif_id(int32_t idx)
+		{
+			int32_t id = m_ids[idx];
+			if (id>=m_num_plifs)
+				SG_ERROR("plif id (%i)  exceeds array length (%i)\n",id,m_num_plifs);
+			return id;
+		}
 
 		bool compute_plif_matrix(
 				float64_t* penalties_array, int32_t* Dim, int32_t numDims);
@@ -78,8 +89,6 @@ class CPlifMatrix: public CSGObject
 		int32_t m_num_limits;
 
 		CArray<int32_t> m_ids;
-		CArray<float64_t> m_min_values;
-		CArray<float64_t> m_max_values;
 
 		CPlifBase** m_plif_matrix;
 		CPlifBase** m_state_signals;

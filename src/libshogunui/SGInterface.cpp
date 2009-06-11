@@ -5905,11 +5905,16 @@ bool CSGInterface::cmd_set_plif_struct()
 	pm->set_plif_ids(ids, N);
 	pm->set_plif_min_values(min_values, N);
 	pm->set_plif_max_values(max_values, N);
-	bool ret= pm->set_plif_struct(all_limits, all_penalties,
-			names, all_use_cache, all_use_svm, all_transform);
+	pm->set_plif_use_cache(all_use_cache, N);
+	pm->set_plif_use_svm(all_use_svm, N);
+	pm->set_plif_limits(all_limits, N, M);
+	pm->set_plif_penalties(all_penalties, N, M);
+	pm->set_plif_names(names, N);
+	pm->set_plif_transform_type(all_transform, N);
+
 	delete[] all_limits ;
 	delete[] all_penalties ;
-	return ret ;
+	return true;
 }
 
 bool CSGInterface::cmd_get_plif_struct()
