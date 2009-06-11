@@ -18,6 +18,7 @@
 #include "base/SGObject.h"
 #include "lib/io.h"
 #include "lib/config.h"
+#include "structure/PlifMatrix.h"
 #include "structure/PlifBase.h"
 #include "structure/Plif.h"
 #include "features/StringFeatures.h"
@@ -311,6 +312,12 @@ public:
 	/** set sparse feature matrices */
 	void set_sparse_features(CSparseFeatures<float64_t>* seq_sparse1, CSparseFeatures<float64_t>* seq_sparse2);
 
+	/** set plif matrices
+	 *
+	 * @param pm plif matrix object
+	 */
+	void set_plif_matrices(CPlifMatrix* pm);
+
 	// best_path result retrieval functions
 	/** best path get scores
 	 *
@@ -346,8 +353,7 @@ public:
 	 * @param my_pos_seq my pos seq
 	 * @param use_orf whether orf shall be used
 	 */
-	void compute_nbest_paths(CPlifBase **PLif_matrix,
-						 CPlifBase **Plif_state_signals, int32_t max_num_signals,
+	void compute_nbest_paths(int32_t max_num_signals,
 						 bool use_orf, int16_t nbest, bool with_loss, bool with_multiple_sequences);
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -369,8 +375,7 @@ public:
 	void best_path_trans_deriv(
 			int32_t* my_state_seq, int32_t *my_pos_seq,
 			int32_t my_seq_len, const float64_t *seq_array,
-			int32_t seq_len, CPlifBase **PLif_matrix,
-			CPlifBase **Plif_state_signals, int32_t max_num_signals);
+			int32_t seq_len, int32_t max_num_signals);
 
 	// additional best_path_trans_deriv functions
 	/** set best path my state sequence
@@ -938,6 +943,7 @@ protected:
 
 	CSparseFeatures<float64_t>* m_seq_sparse1;
 	CSparseFeatures<float64_t>* m_seq_sparse2;
+	CPlifMatrix* m_plif_matrices;
 
 	/** storeage of stop codons
 	 *  array of size length(sequence)

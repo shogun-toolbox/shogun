@@ -95,6 +95,7 @@ CDynProg::CDynProg(int32_t p_num_svms /*= 8 */)
 
 	  m_seq_sparse1(NULL),
 	  m_seq_sparse2(NULL),
+	  m_plif_matrices(NULL),
 	  
 	  m_genestr_stop(1),
 	  m_lin_feat(1,1), //by Jonas
@@ -173,6 +174,7 @@ CDynProg::~CDynProg()
 
 	SG_UNREF(m_seq_sparse1);
 	SG_UNREF(m_seq_sparse2);
+	SG_UNREF(m_plif_matrices);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -839,6 +841,15 @@ void CDynProg::set_sparse_features(CSparseFeatures<float64_t>* seq_sparse1, CSpa
 	m_seq_sparse2=seq_sparse2;
 	SG_REF(m_seq_sparse1);
 	SG_REF(m_seq_sparse2);
+}
+
+void CDynProg::set_plif_matrices(CPlifMatrix* pm)
+{
+	SG_UNREF(m_plif_matrices);
+
+	m_plif_matrices=pm;
+
+	SG_REF(m_plif_matrices);
 }
 
 void CDynProg::set_plif_list(CDynamicArray<CPlifBase*>* plifs)
@@ -1886,9 +1897,8 @@ bool CDynProg::extend_orf(
 	return true ;
 }
 
-void CDynProg::compute_nbest_paths(CPlifBase **PLif_matrix, CPlifBase **Plif_state_signals,
-		int32_t max_num_signals,
-		bool use_orf, int16_t nbest, bool with_loss, bool with_multiple_sequences)
+void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
+		int16_t nbest, bool with_loss, bool with_multiple_sequences)
 	{
 
 	//FIXME we need checks here if all the fields are of right size
@@ -1913,6 +1923,9 @@ void CDynProg::compute_nbest_paths(CPlifBase **PLif_matrix, CPlifBase **Plif_sta
 	float64_t* prob_nbest=m_scores.get_array();
 	int32_t* my_state_seq=m_states.get_array();
 	int32_t* my_pos_seq=m_positions.get_array();
+
+	CPlifBase** Plif_matrix=m_plif_matrices->get_plif_matrix();
+	CPlifBase** Plif_state_signals=m_plif_matrices->get_state_signals();
 	//END FIXME
 
 
@@ -1957,8 +1970,8 @@ void CDynProg::compute_nbest_paths(CPlifBase **PLif_matrix, CPlifBase **Plif_sta
 		//	for (int32_t i=0;i<m_N*seq_len*max_num_signals;i++)
 		//		SG_PRINT("(%i)%0.2f ",i,seq_array[i]);
 
-		//CArray2<CPlifBase*> PEN(PLif_matrix, m_N, m_N, false, false) ;
-		CArray2<CPlifBase*> PEN(PLif_matrix, m_N, m_N, false, true) ;
+		//CArray2<CPlifBase*> PEN(Plif_matrix, m_N, m_N, false, false) ;
+		CArray2<CPlifBase*> PEN(Plif_matrix, m_N, m_N, false, true) ;
 		PEN.set_name("PEN");
 		//CArray2<CPlifBase*> PEN_state_signals(Plif_state_signals, m_N, max_num_signals, false, false) ;
 		CArray2<CPlifBase*> PEN_state_signals(Plif_state_signals, m_N, max_num_signals, false, true) ;
@@ -2831,8 +2844,7 @@ void CDynProg::compute_nbest_paths(CPlifBase **PLif_matrix, CPlifBase **Plif_sta
 void CDynProg::best_path_trans_deriv(
 	int32_t *my_state_seq, int32_t *my_pos_seq,
 	int32_t my_seq_len, const float64_t *seq_array,
-	int32_t seq_len, CPlifBase **Plif_matrix,
-	CPlifBase **Plif_state_signals, int32_t max_num_signals)
+	int32_t seq_len, int32_t max_num_signals)
 {	
 	m_initial_state_distribution_p_deriv.resize_array(m_N) ;
 	m_end_state_distribution_q_deriv.resize_array(m_N) ;
@@ -2843,6 +2855,8 @@ void CDynProg::best_path_trans_deriv(
 	m_my_losses.resize_array(my_seq_len);
 	float64_t* my_scores=m_my_scores.get_array();
 	float64_t* my_losses=m_my_losses.get_array();
+	CPlifBase** Plif_matrix=m_plif_matrices->get_plif_matrix();
+	CPlifBase** Plif_state_signals=m_plif_matrices->get_state_signals();
 
 	if (!m_svm_arrays_clean)
 	{

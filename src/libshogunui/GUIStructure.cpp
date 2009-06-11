@@ -23,9 +23,10 @@ CGUIStructure::CGUIStructure(CSGInterface* ui_)
   m_orf_info(NULL), m_use_orf(true), m_mod_words(NULL)
 {
   m_plif_matrix=new CPlifMatrix();
+  SG_REF(m_plif_matrix);
 }
 
 CGUIStructure::~CGUIStructure()
 {
-	delete m_plif_matrix;
+	SG_UNREF(m_plif_matrix);
 }

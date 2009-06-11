@@ -6354,10 +6354,6 @@ bool CSGInterface::cmd_best_path_trans()
 	CPlif** PEN=pm->get_PEN();
 	ASSERT(PEN);
 	
-	CPlifBase** PEN_matrix = pm->get_plif_matrix();
-	CPlifBase** PEN_state_signal = pm->get_state_signals();
-	
-
 	h->set_p_vector(p, num_states);
 	delete[] p ; p=NULL ;
 	h->set_q_vector(q, num_states);
@@ -6428,26 +6424,23 @@ bool CSGInterface::cmd_best_path_trans()
 	h->set_pos(all_pos, num_pos);
 	h->set_orf_info(orf_info, num_states, 2);
 	h->set_sparse_features(features_sparse1, features_sparse2);
+	h->set_plif_matrices(pm);
 
 	if (segment_loss_non_zero)
 	{
 	        SG_DEBUG("Using version with segment_loss\n") ;
 	        if (nbest==1)
-				h->compute_nbest_paths(PEN_matrix, PEN_state_signal, feat_dims[2],
-						use_orf, 1,true,false) ;
+				h->compute_nbest_paths(feat_dims[2], use_orf, 1,true,false);
 	        else
-				h->compute_nbest_paths(PEN_matrix, PEN_state_signal, feat_dims[2],
-						use_orf, 2,true,false) ;
+				h->compute_nbest_paths(feat_dims[2], use_orf, 2,true,false);
 	}
 	else
 	{
 	        SG_DEBUG("Using version without segment_loss\n") ;
 	        if (nbest==1)
-				h->compute_nbest_paths(PEN_matrix, PEN_state_signal, feat_dims[2],
-						use_orf, 1,false,false) ;
+				h->compute_nbest_paths(feat_dims[2], use_orf, 1,false,false);
 	        else
-				h->compute_nbest_paths(PEN_matrix, PEN_state_signal, feat_dims[2],
-						use_orf, 2,false,false) ;
+				h->compute_nbest_paths(feat_dims[2], use_orf, 2,false,false);
 	}
 
 	float64_t* p_prob;
@@ -6489,22 +6482,14 @@ bool CSGInterface::cmd_best_path_trans()
 
 bool CSGInterface::cmd_best_path_trans_deriv()
 {
-//	if (!((m_nrhs==14 && create_return_values(5)) || (m_nrhs==16 && create_return_values(6))))
-//		return false;
-
 	int32_t num_states = ui_structure->get_num_states();
 	int32_t* feat_dims = ui_structure->get_feature_dims();
-	//float64_t* features = (ui_structure->get_feature_matrix(true));
 	float64_t* features = (ui_structure->get_feature_matrix(false));
-	//CArray3<float64_t> features(d_feat, feat_dims[0], feat_dims[1], feat_dims[2], true, true);
-	//features.set_name("features");
 	int32_t* all_pos = ui_structure->get_all_positions();
 	int32_t num_pos = ui_structure->get_num_positions();
-	
+
 	CPlifMatrix* pm=ui_structure->get_plif_matrix();
 	int32_t Nplif = pm->get_num_plifs();
-	CPlifBase** PEN_state_signal = pm->get_state_signals();
-	CPlifBase** PEN_matrix = pm->get_plif_matrix();
 	CPlif** PEN = pm->get_PEN();
 
 	// ARG 1
@@ -6522,7 +6507,7 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 	get_real_vector(q, Nq);
 	if (Nq!=num_states)
 		SG_ERROR("Nq!=num_states; Nq:%i num_states:%i",Nq,num_states);
-		
+
 
 	// ARG 3
 	// segment path (2 x #feature_positions)
@@ -6548,9 +6533,9 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 	int32_t Mloss=0;
 	float64_t* loss=NULL;
 	get_real_matrix(loss, Nloss,Mloss);
-	
+
 	int32_t M = ui_structure->get_num_positions();
-	
+
 	// ARG 6
 	// path to calc derivative for 
 	int32_t Nmystate_seq=0;
@@ -6564,165 +6549,135 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 	get_int_vector(mypos_seq, Nmypos_seq);
 
 
-        //bool use_tiling = false;
-        //if (nrhs==18)
-        //{
-        //        use_tiling = true;
-        //        mx_tiling_data = vals[16];
-        //        mx_tiling_pos = vals[17];
-        //        ASSERT(mxGetN(mx_tiling_data)==mxGetN(mx_tiling_pos));
-	//} ;
+	//a => a_trans
 
-
+	int32_t max_plif_id = 0 ;
+	int32_t max_plif_len = 1 ;
+	for (int32_t i=0; i<Nplif; i++)
 	{
-				
+		if (i>0 && PEN[i]->get_id()!=i)
+			SG_ERROR("PEN[i]->get_id()!=i; PEN[%i]->get_id():%i  ,\n",i, PEN[i]->get_id());
+		if (i>max_plif_id)
+			max_plif_id=i ;
+		if (PEN[i]->get_plif_len()>max_plif_len)
+			max_plif_len=PEN[i]->get_plif_len() ;
+	} ;
+
+
+	CDynProg* h = ui_structure->get_dyn_prog();
+	h->set_num_states(num_states) ;
+	h->set_p_vector(p, num_states) ;
+	h->set_q_vector(q, num_states) ;
+
+	if (seg_path!=NULL) 
+		h->set_a_trans_matrix(a_trans, num_a_trans, Na_trans) ;
+	else
+		h->set_a_trans_matrix(a_trans, num_a_trans, 3) ;
+
+	if (!h->check_svm_arrays())
+		SG_ERROR( "svm arrays inconsistent\n") ;
+
+	int32_t *my_path = new int32_t[Nmypos_seq+1] ;
+	memset(my_path, -1, Nmypos_seq*sizeof(int32_t)) ;
+	int32_t *my_pos = new int32_t[Nmypos_seq+1] ;
+	memset(my_pos, -1, Nmypos_seq*sizeof(int32_t)) ;
+
+	for (int32_t i=0; i<Nmypos_seq; i++)
+	{
+		my_path[i] = mystate_seq[i] ;
+		my_pos[i]  = mypos_seq[i] ;
+	}
+	if (seg_path!=NULL)
+	{
+		int32_t *segment_ids = new int32_t[M] ;
+		float64_t *segment_mask = new float64_t[M] ;
+		for (int32_t i=0; i<M; i++)
 		{
-			//a => a_trans
-
-			int32_t max_plif_id = 0 ;
-			int32_t max_plif_len = 1 ;
-			for (int32_t i=0; i<Nplif; i++)
-			{
-				if (i>0 && PEN[i]->get_id()!=i)
-					SG_ERROR("PEN[i]->get_id()!=i; PEN[%i]->get_id():%i  ,\n",i, PEN[i]->get_id());
-				if (i>max_plif_id)
-					max_plif_id=i ;
-				if (PEN[i]->get_plif_len()>max_plif_len)
-					max_plif_len=PEN[i]->get_plif_len() ;
-			} ;
-
-			
-			CDynProg* h = ui_structure->get_dyn_prog();
-			h->set_num_states(num_states) ;
-
-			h->set_p_vector(p, num_states) ;
-			h->set_q_vector(q, num_states) ;
-			if (seg_path!=NULL) 
-				h->set_a_trans_matrix(a_trans, num_a_trans, Na_trans) ;
-			else
-				h->set_a_trans_matrix(a_trans, num_a_trans, 3) ;
-
-			if (!h->check_svm_arrays())
-			{
-				SG_ERROR( "svm arrays inconsistent\n") ;
-				//CPlif::delete_penalty_struct(PEN, P) ;
-				return false ;
-			}
-
-			int32_t *my_path = new int32_t[Nmypos_seq+1] ;
-			memset(my_path, -1, Nmypos_seq*sizeof(int32_t)) ;
-			int32_t *my_pos = new int32_t[Nmypos_seq+1] ;
-			memset(my_pos, -1, Nmypos_seq*sizeof(int32_t)) ;
-
-			for (int32_t i=0; i<Nmypos_seq; i++)
-			{
-				my_path[i] = mystate_seq[i] ;
-				my_pos[i]  = mypos_seq[i] ;
-			}
-			if (seg_path!=NULL)
-			{
-				int32_t *segment_ids = new int32_t[M] ;
-				float64_t *segment_mask = new float64_t[M] ;
-				for (int32_t i=0; i<M; i++)
-				{
-				        segment_ids[i] = (int32_t)seg_path[2*i] ;
-				        segment_mask[i] = seg_path[2*i+1] ;
-				}
-				h->best_path_set_segment_loss(loss, Nloss, Mloss) ;
-				h->best_path_set_segment_ids_mask(segment_ids, segment_mask, Mseg_path) ;
-				delete[] segment_ids;
-				delete[] segment_mask;
-			}
-			else
-			{
-				float64_t zero2[2] = {0.0, 0.0} ;
-				h->best_path_set_segment_loss(zero2, 2, 1) ;
-				int32_t *izeros = new int32_t[M] ;
-				float64_t *dzeros = new float64_t[M] ;
-				for (int32_t i=0; i<M; i++)
-				{
-					izeros[i]=0 ;
-					dzeros[i]=0.0 ;
-				}
-				h->best_path_set_segment_ids_mask(izeros, dzeros, M) ;
-				delete[] izeros ;
-				delete[] dzeros ;
-			}
-				
-	
-			float64_t* p_Plif_deriv = new float64_t[(max_plif_id+1)*max_plif_len];
-			CArray2<float64_t> a_Plif_deriv(p_Plif_deriv, max_plif_id+1, max_plif_len, false, false) ;
-
-			float64_t* p_A_deriv   = new float64_t[num_states*num_states];
-			float64_t* p_p_deriv   = new float64_t[num_states];
-			float64_t* p_q_deriv   = new float64_t[num_states];
-
-			h->set_pos(all_pos, num_pos);
-			h->best_path_trans_deriv(my_path, my_pos,
-					Nmypos_seq, features, 
-						 num_pos, PEN_matrix, PEN_state_signal, feat_dims[2]);
-			
-			float64_t* p_my_scores;
-			int32_t n_scores;
-			h->get_path_scores(&p_my_scores, &n_scores);
-
-			float64_t* p_my_losses;
-			int32_t n_losses;
-			h->get_path_losses(&p_my_losses, &n_losses);
-
-			for (int32_t i=0; i<num_states; i++)
-			{
-				for (int32_t j=0; j<num_states; j++)
-					p_A_deriv[i+j*num_states] = h->get_a_deriv(i, j) ;
-				p_p_deriv[i]=h->get_p_deriv(i) ;
-				p_q_deriv[i]=h->get_q_deriv(i) ;
-			}
-			
-			for (int32_t id=0; id<=max_plif_id; id++)
-			{
-				int32_t len=0 ;
-				const float64_t * deriv = PEN[id]->get_cum_derivative(len) ;
-				ASSERT(len<=max_plif_len) ;
-				for (int32_t j=0; j<max_plif_len; j++)
-					a_Plif_deriv.element(id, j)= deriv[j] ;
-			}
-
-			// clean up 
-			//CPlif::delete_penalty_struct(PEN, Nplif) ;
-			//delete[] PEN_matrix ;
-			//delete[] PEN_state_signal ;
-			//delete[] pos ;
-			//SG_UNREF(h);
-
-			set_real_vector(p_p_deriv, num_states);
-			set_real_vector(p_q_deriv, num_states);
-			set_real_matrix(p_A_deriv, num_states, num_states);
-			set_real_matrix(p_Plif_deriv, (max_plif_id+1), max_plif_len);
-			set_real_vector(p_my_scores, Nmypos_seq);
-			set_real_vector(p_my_losses, Nmypos_seq);
-
-			delete[] p_A_deriv ;
-			delete[] p_p_deriv ;
-			delete[] p_q_deriv ;
-
-			delete[] my_path ;
-			delete[] my_pos ;
-
-			delete[] p ;
-			delete[] q ;
-			delete[] seg_path ;
-			delete[] a_trans ;
-			delete[] loss ;
-			delete[] mystate_seq ;
-			delete[] mypos_seq ;
-
-			return true ;
+			segment_ids[i] = (int32_t)seg_path[2*i] ;
+			segment_mask[i] = seg_path[2*i+1] ;
 		}
+		h->best_path_set_segment_loss(loss, Nloss, Mloss) ;
+		h->best_path_set_segment_ids_mask(segment_ids, segment_mask, Mseg_path) ;
+		delete[] segment_ids;
+		delete[] segment_mask;
+	}
+	else
+	{
+		float64_t zero2[2] = {0.0, 0.0} ;
+		h->best_path_set_segment_loss(zero2, 2, 1) ;
+		int32_t *izeros = new int32_t[M] ;
+		float64_t *dzeros = new float64_t[M] ;
+		for (int32_t i=0; i<M; i++)
+		{
+			izeros[i]=0 ;
+			dzeros[i]=0.0 ;
+		}
+		h->best_path_set_segment_ids_mask(izeros, dzeros, M) ;
+		delete[] izeros ;
+		delete[] dzeros ;
 	}
 
 
+	float64_t* p_Plif_deriv = new float64_t[(max_plif_id+1)*max_plif_len];
+	CArray2<float64_t> a_Plif_deriv(p_Plif_deriv, max_plif_id+1, max_plif_len, false, false) ;
 
-	return true;
+	float64_t* p_A_deriv   = new float64_t[num_states*num_states];
+	float64_t* p_p_deriv   = new float64_t[num_states];
+	float64_t* p_q_deriv   = new float64_t[num_states];
+
+	h->set_pos(all_pos, num_pos);
+	h->set_plif_matrices(pm);
+	h->best_path_trans_deriv(my_path, my_pos, Nmypos_seq, features, num_pos, feat_dims[2]);
+
+	float64_t* p_my_scores;
+	int32_t n_scores;
+	h->get_path_scores(&p_my_scores, &n_scores);
+
+	float64_t* p_my_losses;
+	int32_t n_losses;
+	h->get_path_losses(&p_my_losses, &n_losses);
+
+	for (int32_t i=0; i<num_states; i++)
+	{
+		for (int32_t j=0; j<num_states; j++)
+			p_A_deriv[i+j*num_states] = h->get_a_deriv(i, j) ;
+
+		p_p_deriv[i]=h->get_p_deriv(i) ;
+		p_q_deriv[i]=h->get_q_deriv(i) ;
+	}
+
+	for (int32_t id=0; id<=max_plif_id; id++)
+	{
+		int32_t len=0 ;
+		const float64_t * deriv = PEN[id]->get_cum_derivative(len) ;
+		ASSERT(len<=max_plif_len) ;
+		for (int32_t j=0; j<max_plif_len; j++)
+			a_Plif_deriv.element(id, j)= deriv[j] ;
+	}
+
+	set_real_vector(p_p_deriv, num_states);
+	set_real_vector(p_q_deriv, num_states);
+	set_real_matrix(p_A_deriv, num_states, num_states);
+	set_real_matrix(p_Plif_deriv, (max_plif_id+1), max_plif_len);
+	set_real_vector(p_my_scores, Nmypos_seq);
+	set_real_vector(p_my_losses, Nmypos_seq);
+
+	delete[] p_A_deriv ;
+	delete[] p_p_deriv ;
+	delete[] p_q_deriv ;
+
+	delete[] my_path ;
+	delete[] my_pos ;
+
+	delete[] p ;
+	delete[] q ;
+	delete[] seg_path ;
+	delete[] a_trans ;
+	delete[] loss ;
+	delete[] mystate_seq ;
+	delete[] mypos_seq ;
+
+	return true ;
 }
 
 bool CSGInterface::cmd_best_path_no_b()

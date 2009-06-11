@@ -1,3 +1,16 @@
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Written (W) 2009 Soeren Sonnenburg
+ * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ */
+
+#ifndef _PLIFMATRIX_H_
+#define _PLIFMATRIX_H_
+
 #include "base/SGObject.h"
 #include "structure/Plif.h"
 #include "structure/PlifBase.h"
@@ -45,4 +58,4 @@ class CPlifMatrix: public CSGObject
 		CPlifBase** m_plif_matrix;
 		CPlifBase** m_state_signals;
 };
-
+#endif /* _PLIFMATRIX_H_ */
