@@ -5902,9 +5902,11 @@ bool CSGInterface::cmd_set_plif_struct()
 	int32_t M = Mlimits; 	
 	CPlifMatrix* pm=ui_structure->get_plif_matrix();
 	pm->create_plifs(N, M);
-	bool ret= pm->set_plif_struct(all_limits, all_penalties, ids,
-			names, min_values, max_values, all_use_cache, all_use_svm,
-			all_transform);
+	pm->set_plif_ids(ids, N);
+	pm->set_plif_min_values(min_values, N);
+	pm->set_plif_max_values(max_values, N);
+	bool ret= pm->set_plif_struct(all_limits, all_penalties,
+			names, all_use_cache, all_use_svm, all_transform);
 	delete[] all_limits ;
 	delete[] all_penalties ;
 	return ret ;

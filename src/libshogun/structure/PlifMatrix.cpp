@@ -2,9 +2,6 @@
 #include "structure/Plif.h"
 #include "structure/PlifArray.h"
 #include "structure/PlifBase.h"
-#include "lib/Array.h"
-#include "lib/Array2.h"
-#include "lib/Array3.h"
 
 CPlifMatrix::CPlifMatrix() : m_PEN(NULL), m_num_plifs(0), m_num_limits(0),
 	m_plif_matrix(NULL), m_state_signals(NULL)
@@ -29,10 +26,37 @@ void CPlifMatrix::create_plifs(int32_t num_plifs, int32_t num_limits)
 		m_PEN[i]=new CPlif(num_limits) ;
 }
 
+void CPlifMatrix::set_plif_ids(int32_t* plif_ids, int32_t num_ids)
+{
+	if (num_ids!=m_num_plifs)
+		SG_ERROR("plif_ids size mismatch (num_ids=%d vs.num_plifs=%d)\n", num_ids, m_num_plifs);
+
+	m_ids.resize_array(m_num_plifs);
+	m_ids.set_array(plif_ids, num_ids, true, true);
+}
+
+void CPlifMatrix::set_plif_min_values(float64_t* plif_values, int32_t num_values)
+{
+	if (num_values!=m_num_plifs)
+		SG_ERROR("plif_values size mismatch (num_values=%d vs.num_plifs=%d)\n", num_values, m_num_plifs);
+
+	m_min_values.resize_array(m_num_plifs);
+	m_min_values.set_array(plif_values, num_values, true, true);
+}
+
+void CPlifMatrix::set_plif_max_values(float64_t* plif_values, int32_t num_values)
+{
+	if (num_values!=m_num_plifs)
+		SG_ERROR("plif_values size mismatch (num_values=%d vs.num_plifs=%d)\n", num_values, m_num_plifs);
+
+	m_max_values.resize_array(m_num_plifs);
+	m_max_values.set_array(plif_values, num_values, true, true);
+}
+
+
 bool CPlifMatrix::set_plif_struct(
 	float64_t* all_limits, float64_t* all_penalties,
-	int32_t* ids, T_STRING<char>* names, float64_t* min_values,
-	float64_t* max_values, bool* all_use_cache, int32_t* all_use_svm,
+	T_STRING<char>* names, bool* all_use_cache, int32_t* all_use_svm,
 	T_STRING<char>* all_transform)
 {
 
@@ -45,14 +69,14 @@ bool CPlifMatrix::set_plif_struct(
 			limits[k] = all_limits[i*m_num_limits+k];
 			penalties[k] = all_penalties[i*m_num_limits+k];
 		}
-		int32_t id = ids[i];
+		int32_t id = m_ids[i];
 		if (id>=m_num_plifs)
 			SG_ERROR("plif id (%i)  exceeds array length (%i)\n",id,m_num_plifs);
 		m_PEN[id]->set_id(id);
 
 		m_PEN[id]->set_plif_name(CStringFeatures<char>::get_zero_terminated_string_copy(names[i]));
-		m_PEN[id]->set_min_value(min_values[i]);
-		m_PEN[id]->set_max_value(max_values[i]);
+		m_PEN[id]->set_min_value(m_min_values[i]);
+		m_PEN[id]->set_max_value(m_max_values[i]);
 		m_PEN[id]->set_use_cache(all_use_cache[i]);
 		m_PEN[id]->set_use_svm(all_use_svm[i]);
 		m_PEN[id]->set_plif_limits(limits, m_num_limits);
@@ -153,23 +177,6 @@ bool  CPlifMatrix::compute_signal_plifs(
 	}
 	m_state_signals=PEN_state_signal;
 	return true;
-}
-
-void CPlifMatrix::set_plif_id_matrix(
-	int32_t *plif_id_matrix, int32_t m, int32_t n)
-{
-	if ((m!=m_num_plifs) || (n!=m_num_plifs))
-		SG_ERROR( "plif_id_matrix size does not match previous info %i!=%i or %i!=%i\n", m, m_num_plifs, n, m_num_plifs) ;
-/*
-	CArray2<int32_t> id_matrix(plif_id_matrix, m_num_plifs, m_num_plifs, false, false) ;
-
-	m_PEN.resize_array(m_num_plifs, m_num_plifs) ;
-	for (int32_t i=0; i<m_num_plifs; i++)
-		for (int32_t j=0; j<m_num_plifs; j++)
-			if (id_matrix.element(i,j)>=0)
-				m_PEN.element(i,j)=m_plif_list[id_matrix.element(i,j)] ;
-			else
-				m_PEN.element(i,j)=NULL ;*/
 }
 
 void CPlifMatrix::set_plif_state_signal_matrix(

@@ -15,6 +15,9 @@
 #include "structure/Plif.h"
 #include "structure/PlifBase.h"
 #include "features/StringFeatures.h"
+#include "lib/Array.h"
+#include "lib/Array2.h"
+#include "lib/Array3.h"
 
 class CPlifMatrix: public CSGObject
 {
@@ -36,18 +39,19 @@ class CPlifMatrix: public CSGObject
 		 */
 		void create_plifs(int32_t num_plifs, int32_t num_limits);
 
-		/** set best path plif id(entity?) matrix
+		/** set plif ids
 		 *
 		 * @param plif_id_matrix plif id matrix
 		 * @param m dimension m of matrix
 		 * @param n dimension n of matrix
 		 */
-		void set_plif_id_matrix(int32_t *plif_id_matrix, int32_t m, int32_t n);
+		void set_plif_ids(int32_t* ids, int32_t num_ids);
+		void set_plif_min_values(float64_t* plif_values, int32_t num_values);
+		void set_plif_max_values(float64_t* plif_values, int32_t num_values);
 
 		bool set_plif_struct(float64_t* all_limits,
-				float64_t* all_penalties, int32_t* ids, T_STRING<char>* names,
-				float64_t* min_values, float64_t* max_values, bool* all_use_cache,
-				int32_t* all_use_svm, T_STRING<char>* all_transform);
+				float64_t* all_penalties, T_STRING<char>* names,
+				bool* all_use_cache, int32_t* all_use_svm, T_STRING<char>* all_transform);
 
 		bool compute_plif_matrix(
 				float64_t* penalties_array, int32_t* Dim, int32_t numDims);
@@ -72,6 +76,10 @@ class CPlifMatrix: public CSGObject
 		CPlif** m_PEN;
 		int32_t m_num_plifs;
 		int32_t m_num_limits;
+
+		CArray<int32_t> m_ids;
+		CArray<float64_t> m_min_values;
+		CArray<float64_t> m_max_values;
 
 		CPlifBase** m_plif_matrix;
 		CPlifBase** m_state_signals;
