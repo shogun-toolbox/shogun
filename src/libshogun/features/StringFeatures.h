@@ -46,14 +46,6 @@ template <class T> struct T_STRING
 };
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
-template <class T> char* get_zero_terminated_string_copy(T_STRING<T> str)
-{
-	int32_t l=str.length;
-	char* s=new char[l+1];
-	memcpy(s, str.string, sizeof(char)*l);
-	s[l]='\0';
-	return s;
-}
 
 /** @brief Template class StringFeatures implements a list of strings.
  *
@@ -1359,10 +1351,17 @@ template <class ST> class CStringFeatures : public CFeatures
 				max_string_length=CMath::max(max_string_length, features[i].length);
 		}
 
+		static ST* get_zero_terminated_string_copy(T_STRING<ST> str)
+		{
+			int32_t l=str.length;
+			ST* s=new ST[l+1];
+			memcpy(s, str.string, sizeof(ST)*l);
+			s[l]='\0';
+			return s;
+		}
+
 		/** @return object name */
 		inline virtual const char* get_name() const { return "StringFeatures"; }
-
-	protected:
 
 	protected:
 

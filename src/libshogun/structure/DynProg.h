@@ -255,28 +255,6 @@ public:
 	 */
 	void set_orf_info(int32_t* orf_info, int32_t m, int32_t n);
 
-	/** set best path Plif list
-	 *
-	 * @param plifs list of Plifs
-	 */
-	void set_plif_list(CDynamicArray<CPlifBase*>* plifs);
-
-	/** set best path plif id(entity?) matrix
-	 *
-	 * @param plif_id_matrix plif id matrix
-	 * @param m dimension m of matrix
-	 * @param n dimension n of matrix
-	 */
-	void set_plif_id_matrix(int32_t *plif_id_matrix, int32_t m, int32_t n);
-
-	/** set best path plif state signal matrix
-	 *
-	 * @param plif_id_matrix plif id matrix
-	 * @param m dimension m of matrix
-	 * @param n dimension n of matrix
-	 */
-	void set_plif_state_signal_matrix(int32_t *plif_id_matrix, int32_t m, int32_t n);
-
 	/** set best path genesstr
 	 *
 	 * @param genestr gene string

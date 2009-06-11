@@ -29,8 +29,6 @@
 //#define USE_TMP_ARRAYCLASS
 //#define DYNPROG_DEBUG
 
-//CArray2<int32_t> g_orf_info(1,1) ;
-
 static int32_t word_degree_default[4]={3,4,5,6} ;
 static int32_t cum_num_words_default[5]={0,64,320,1344,5440} ;
 static int32_t num_words_default[4]=   {64,256,1024,4096} ;
@@ -81,7 +79,7 @@ CDynProg::CDynProg(int32_t p_num_svms /*= 8 */)
 
 	  m_max_a_id(0), m_seq(1,1,1), m_pos(1), m_orf_info(1,2), 
 	  m_plif_list(1), 
-	  m_PEN(1,1), m_PEN_state_signals(1,1), 
+	  m_PEN(1,1),
 	  m_genestr(1), m_wordstr(NULL), m_dict_weights(1,1), m_segment_loss(1,1,2), 
 	  m_segment_ids(1),
 	  m_segment_mask(1),
@@ -220,7 +218,6 @@ void CDynProg::set_num_states(int32_t p_N)
 
 	m_orf_info.resize_array(m_N,2) ;
 	m_PEN.resize_array(m_N,m_N) ;
-	m_PEN_state_signals.resize_array(m_N,1) ;
 }
 
 int32_t CDynProg::get_num_states()
@@ -850,58 +847,6 @@ void CDynProg::set_plif_matrices(CPlifMatrix* pm)
 	m_plif_matrices=pm;
 
 	SG_REF(m_plif_matrices);
-}
-
-void CDynProg::set_plif_list(CDynamicArray<CPlifBase*>* plifs)
-{
-	ASSERT(plifs);
-	CPlifBase** plif_list=plifs->get_array();
-	int32_t num_plif=plifs->get_num_elements();
-
-	m_plif_list.set_array(plif_list, num_plif, true, true) ;
-}
-
-void CDynProg::set_plif_id_matrix(
-	int32_t *plif_id_matrix, int32_t m, int32_t n)
-{
-	if ((m!=m_N) || (n!=m_N))
-		SG_ERROR( "plif_id_matrix size does not match previous info %i!=%i or %i!=%i\n", m, m_N, n, m_N) ;
-
-	CArray2<int32_t> id_matrix(plif_id_matrix, m_N, m_N, false, false) ;
-#ifdef DYNPROG_DEBUG
-	id_matrix.set_name("id_matrix");
-	id_matrix.display_array();
-#endif //DYNPROG_DEBUG
-	m_PEN.resize_array(m_N, m_N) ;
-	for (int32_t i=0; i<m_N; i++)
-		for (int32_t j=0; j<m_N; j++)
-			if (id_matrix.element(i,j)>=0)
-				m_PEN.element(i,j)=m_plif_list[id_matrix.element(i,j)] ;
-			else
-				m_PEN.element(i,j)=NULL ;
-}
-
-void CDynProg::set_plif_state_signal_matrix(
-	int32_t *plif_id_matrix, int32_t m, int32_t max_num_signals)
-{
-	if (m!=m_N)
-		SG_ERROR( "plif_state_signal_matrix size does not match previous info %i!=%i\n", m, m_N) ;
-
-	if (m_seq.get_dim3() != max_num_signals)
-		SG_ERROR( "size(plif_state_signal_matrix,2) does not match with size(m_seq,3): %i!=%i\nSorry, Soeren... interface changed\n", m_seq.get_dim3(), max_num_signals) ;
-
-	CArray2<int32_t> id_matrix(plif_id_matrix, m_N, max_num_signals, false, false) ;
-	m_PEN_state_signals.resize_array(m_N, max_num_signals) ;
-	for (int32_t i=0; i<m_N; i++)
-	{
-		for (int32_t j=0; j<max_num_signals; j++)
-		{
-			if (id_matrix.element(i,j)>=0)
-				m_PEN_state_signals.element(i,j)=m_plif_list[id_matrix.element(i,j)] ;
-			else
-				m_PEN_state_signals.element(i,j)=NULL ;
-		}
-	}
 }
 
 void CDynProg::set_gene_string(char* genestr, int32_t genestr_len)
@@ -3067,16 +3012,6 @@ void CDynProg::best_path_trans_deriv(
 
 #ifdef DYNPROG_DEBUG
 			//SG_DEBUG( "%i. transition penalty: from_state=%i to_state=%i from_pos=%i [%i] to_pos=%i [%i] value=%i\n", i, from_state, to_state, from_pos, m_pos[from_pos], to_pos, m_pos[to_pos], m_pos[to_pos]-m_pos[from_pos]) ;
-
-			/*
-			   int32_t orf_from = g_orf_info.element(from_state,0) ;
-			   int32_t orf_to   = g_orf_info.element(to_state,1) ;
-			   ASSERT((orf_from!=-1)==(orf_to!=-1)) ;
-			   if (orf_from != -1)
-			   total_len = total_len + m_pos[to_pos]-m_pos[from_pos] ;
-
-			   SG_DEBUG( "%i. orf_info: from_orf=%i to_orf=%i orf_diff=%i, len=%i, lenmod3=%i, total_len=%i, total_lenmod3=%i\n", i, orf_from, orf_to, (orf_to-orf_from)%3, m_pos[to_pos]-m_pos[from_pos], (m_pos[to_pos]-m_pos[from_pos])%3, total_len, total_len%3) ;
-			   */
 #endif
 			if (is_long_transition)
 			{
