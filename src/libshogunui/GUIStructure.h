@@ -18,6 +18,7 @@
 #include <shogun/structure/PlifArray.h>
 #include <shogun/structure/PlifBase.h>
 #include <shogun/structure/DynProg.h>
+#include <shogun/structure/PlifMatrix.h>
 
 class CSGInterface;
 
@@ -26,42 +27,6 @@ class CGUIStructure : public CSGObject
 	public:
 		CGUIStructure(CSGInterface* interface);
 		~CGUIStructure();
-
-		bool set_plif_struct(
-			int32_t N, int32_t M, float64_t* all_limits,
-			float64_t* all_penalties, int32_t* ids, T_STRING<char>* names,
-			float64_t* min_values, float64_t* max_values, bool* all_use_cache,
-			int32_t* all_use_svm, T_STRING<char>* all_transform);
-
-		bool compute_plif_matrix(
-			float64_t* penalties_array, int32_t* Dim, int32_t numDims);
-
-		bool set_signal_plifs(
-			int32_t* state_signals, int32_t feat_dim3, int32_t num_states);
-
-		inline CPlif** get_PEN() { return m_PEN; }
-		inline int32_t get_num_plifs() { return m_num_plifs; }
-		inline int32_t get_num_limits() { return m_num_limits; }
-
-		inline bool set_num_states(int32_t num)
-		{
-			//if (!m_num_states || m_num_states==0)
-			m_num_states = num; 
-			//else
-			//	return false;
-			return true;
-		}
-		//inline bool set_plif_matrix(CPlifBase** pm)
-		//{
-		//	if (!m_plif_matrix)
-		//		m_plif_matrix = pm; 
-		//	else
-		//		return false;
-		//	return true;
-		//}
-		//
-		inline  CPlifBase** get_plif_matrix() { return m_plif_matrix; }
-		inline int32_t get_num_states() { return m_num_states; }
 
 		inline bool set_dyn_prog(CDynProg* h)
 		{
@@ -157,12 +122,7 @@ class CGUIStructure : public CSGObject
 		inline float64_t* get_content_svm_weights() { return m_content_svm_weights; }
 		inline int32_t get_num_svm_weights() { return m_num_svm_weights; }
 
-		inline bool set_state_signals(CPlifBase** ss)
-		{
-			m_state_signals = ss;
-			return true;
-		}
-		inline CPlifBase** get_state_signals() { return m_state_signals; }
+		inline CPlifMatrix* get_plif_matrix() { return m_plif_matrix; }
 
 		inline bool set_orf_info(
 			int32_t* orf_info, int32_t Norf_info, int32_t Morf_info)
@@ -198,18 +158,22 @@ class CGUIStructure : public CSGObject
 			return true;	
 		}
 		inline int32_t* get_mod_words() { return m_mod_words; }
+		inline int32_t get_num_states() { return m_num_states; }
+		inline bool set_num_states(int32_t num)
+		{
+			m_num_states = num; 
+			return true;
+		}
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "GUIStructure"; }
 
 	protected:
 		CSGInterface* ui;
-		CPlif** m_PEN;
 		int32_t m_num_plifs;
 		int32_t m_num_limits;
 		int32_t m_num_states;
 		CDynProg* m_dp;
-		CPlifBase** m_plif_matrix;
 		float64_t* m_feature_matrix;
 		CSparseFeatures<float64_t>* m_feature_matrix_sparse1;
 		CSparseFeatures<float64_t>* m_feature_matrix_sparse2;
@@ -218,10 +182,10 @@ class CGUIStructure : public CSGObject
 		int32_t* m_all_positions;
 		float64_t* m_content_svm_weights;
 		int32_t m_num_svm_weights;
-		CPlifBase** m_state_signals;
 		int32_t* m_orf_info;
 		bool m_use_orf;
 		int32_t* m_mod_words;
+		CPlifMatrix* m_plif_matrix;
 };
 #endif
 

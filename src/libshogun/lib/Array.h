@@ -83,7 +83,7 @@ template <class T> class CArray : public CSGObject
 		 * @param initial_size initial size of array
 		 */
 		CArray(int32_t initial_size = 1)
-		: CSGObject(), free_array(true), name(NULL)
+		: CSGObject(), free_array(true), name("Array")
 		{
 			INIT_ARRAY_STATISTICS;
 			array_size = initial_size;
@@ -100,7 +100,7 @@ template <class T> class CArray : public CSGObject
 		 */
 		CArray(T* p_array, int32_t p_array_size, bool p_free_array=true,
 			bool p_copy_array=false)
-		: CSGObject(), array(NULL), free_array(false), name(NULL)
+		: CSGObject(), array(NULL), free_array(false), name("Array")
 		{
 			INIT_ARRAY_STATISTICS;
 			set_array(p_array, p_array_size, p_free_array, p_copy_array);
@@ -112,7 +112,7 @@ template <class T> class CArray : public CSGObject
 		 * @param p_array_size size of another array
 		 */
 		CArray(const T* p_array, int32_t p_array_size)
-		: CSGObject(), array(NULL), free_array(false), name(NULL)
+		: CSGObject(), array(NULL), free_array(false), name("Array")
 		{
 			INIT_ARRAY_STATISTICS;
 			set_array(p_array, p_array_size);
@@ -130,13 +130,13 @@ template <class T> class CArray : public CSGObject
 		 *
 		 * @return name
 		 */
-		inline const char* get_name() const { return name; }
+		inline virtual const char* get_name() const { return name; }
 
 		/** set name
 		 *
 		 * @param p_name new name
 		 */
-		inline void set_name(const char * p_name)
+		inline void set_name(const char* p_name)
 		{
 			name = p_name;
 		}
@@ -372,9 +372,6 @@ template <class T> class CArray : public CSGObject
 			SG_PRINT("\n");
 		}
 
-		/** @return object name */
-		inline virtual const char* get_name() { return "Array"; }
-
 	protected:
 		/** memory for dynamic array */
 		T* array;
@@ -383,7 +380,7 @@ template <class T> class CArray : public CSGObject
 		/** if array must be freed */
 		bool free_array;
 		/** array's name */
-		const char *name;
+		const char* name;
 		/** array statistics */
 		DECLARE_ARRAY_STATISTICS;
 

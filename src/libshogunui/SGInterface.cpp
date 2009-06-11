@@ -5900,18 +5900,21 @@ bool CSGInterface::cmd_set_plif_struct()
 
 	int32_t N = Ncalc;
 	int32_t M = Mlimits; 	
-	bool ret= ui_structure->set_plif_struct(N, M, all_limits, all_penalties, ids,
+	CPlifMatrix* pm=ui_structure->get_plif_matrix();
+	bool ret= pm->set_plif_struct(N, M, all_limits, all_penalties, ids,
 			names, min_values, max_values, all_use_cache, all_use_svm,
 			all_transform);
 	delete[] all_limits ;
 	delete[] all_penalties ;
 	return ret ;
 }
+
 bool CSGInterface::cmd_get_plif_struct()
 {
-	CPlif** PEN = ui_structure->get_PEN();
-	int32_t N = ui_structure->get_num_plifs();
-	int32_t M = ui_structure->get_num_limits();
+	CPlifMatrix* pm=ui_structure->get_plif_matrix();
+	CPlif** PEN = pm->get_PEN();
+	int32_t N = pm->get_num_plifs();
+	int32_t M = pm->get_num_limits();
 
 	
 	int32_t* ids = new int32_t[N];
@@ -5970,7 +5973,7 @@ bool CSGInterface::cmd_init_dyn_prog()
 }
 bool CSGInterface::cmd_set_model()
 {
-
+	CPlifMatrix* pm=ui_structure->get_plif_matrix();
 	CDynProg* h = ui_structure->get_dyn_prog();
 	int32_t num_svms = h->get_num_svms();
 	//CDynProg* h=new CDynProg(Nweights/* = num_svms */);
@@ -5985,7 +5988,9 @@ bool CSGInterface::cmd_set_model()
 	get_real_ndarray(penalties_array,Dim,numDim);
 	ASSERT(numDim==3);
 	ASSERT(Dim[0]==Dim[1]);
-	ASSERT(ui_structure->compute_plif_matrix(penalties_array, Dim, numDim));	
+	if (!pm->compute_plif_matrix(penalties_array, Dim, numDim))
+		SG_ERROR("error computing plif  matrix\n");
+	ui_structure->set_num_states(Dim[0]);
 	delete[] penalties_array ;
 
 	// ARG 2
@@ -6002,7 +6007,6 @@ bool CSGInterface::cmd_set_model()
 	if (Nmod != num_svms)
 		SG_ERROR("should be equal: Nmod: %i, num_svms: %i\n",Nmod,num_svms);
 	ASSERT(Mmod == 2)
-	//ui_structure->set_mod_words(mod_words); 
 	h->init_mod_words_array(mod_words, Nmod, Mmod) ;
 
 	// ARG 4
@@ -6012,7 +6016,7 @@ bool CSGInterface::cmd_set_model()
 	int32_t* state_signals;
 	get_int_matrix(state_signals,num_states,feat_dim3);
 	ASSERT(num_states==Dim[0]);
-	ui_structure->set_signal_plifs(state_signals, feat_dim3, num_states);
+	pm->compute_signal_plifs(state_signals, feat_dim3, num_states);
 
 
 	// ARG 5
@@ -6029,8 +6033,6 @@ bool CSGInterface::cmd_set_model()
 	h->set_orf_info(orf_info, Norf, Morf);
 	h->set_num_states(num_states) ;
 	
-	//ui_structure->set_dyn_prog(h);
-
 	return true;
 }
 
@@ -6245,9 +6247,10 @@ bool CSGInterface::cmd_init_intron_list()
 }
 bool CSGInterface::cmd_precompute_tiling_features()
 {
+	CPlifMatrix* pm=ui_structure->get_plif_matrix();
 	int32_t* all_pos = ui_structure->get_all_positions();
 	int32_t Npos     = ui_structure->get_num_positions();
-	CPlif** PEN  = ui_structure->get_PEN();
+	CPlif** PEN  = pm->get_PEN();
 	CDynProg* h  = ui_structure->get_dyn_prog();
 
 	int32_t Nintensities=0;
@@ -6271,6 +6274,7 @@ bool CSGInterface::cmd_precompute_tiling_features()
 bool CSGInterface::cmd_best_path_trans()
 {
 	CDynProg* h = ui_structure->get_dyn_prog();
+	CPlifMatrix* pm=ui_structure->get_plif_matrix();
 
 	int32_t num_states = h->get_num_states();
 	int32_t* feat_dims = ui_structure->get_feature_dims();
@@ -6281,7 +6285,7 @@ bool CSGInterface::cmd_best_path_trans()
 	int32_t num_pos = ui_structure->get_num_positions();
 	int32_t* orf_info = ui_structure->get_orf_info();
 	bool use_orf = ui_structure->get_use_orf();
-	int32_t Nplif = ui_structure->get_num_plifs();
+	int32_t Nplif = pm->get_num_plifs();
 
 	// ARG 1
 	// transitions from initial state (#states x 1)
@@ -6347,11 +6351,11 @@ bool CSGInterface::cmd_best_path_trans()
 	/////////////////////////////////////////////////////////////////////////////////
 	ASSERT(num_states==Nq);	
 
-	CPlif** PEN=ui_structure->get_PEN();
+	CPlif** PEN=pm->get_PEN();
 	ASSERT(PEN);
 	
-	CPlifBase** PEN_matrix = ui_structure->get_plif_matrix();
-	CPlifBase** PEN_state_signal = ui_structure->get_state_signals();
+	CPlifBase** PEN_matrix = pm->get_plif_matrix();
+	CPlifBase** PEN_state_signal = pm->get_state_signals();
 	
 
 	h->set_p_vector(p, num_states);
@@ -6496,12 +6500,12 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 	//features.set_name("features");
 	int32_t* all_pos = ui_structure->get_all_positions();
 	int32_t num_pos = ui_structure->get_num_positions();
-	//int32_t* orf_info = ui_structure->get_orf_info();
-	//bool use_orf = ui_structure->get_use_orf(); // unused?
-	int32_t Nplif = ui_structure->get_num_plifs();
-	CPlifBase** PEN_state_signal = ui_structure->get_state_signals();
-	CPlifBase** PEN_matrix = ui_structure->get_plif_matrix();
-	CPlif** PEN = ui_structure->get_PEN();
+	
+	CPlifMatrix* pm=ui_structure->get_plif_matrix();
+	int32_t Nplif = pm->get_num_plifs();
+	CPlifBase** PEN_state_signal = pm->get_state_signals();
+	CPlifBase** PEN_matrix = pm->get_plif_matrix();
+	CPlif** PEN = pm->get_PEN();
 
 	// ARG 1
 	// transitions from initial state (#states x 1)
