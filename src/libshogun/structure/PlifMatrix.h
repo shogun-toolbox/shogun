@@ -52,8 +52,8 @@ class CPlifMatrix: public CSGObject
 		void set_plif_use_svm(int32_t* use_svm, int32_t num_values);
 		void set_plif_limits(float64_t* limits, int32_t num_plifs, int32_t num_limits);
 		void set_plif_penalties(float64_t* penalties, int32_t num_plifs, int32_t num_limits);
-		void set_plif_names(T_STRING<char>* names, int32_t num_values);
-		void set_plif_transform_type(T_STRING<char>* transform_type, int32_t num_values);
+		void set_plif_names(T_STRING<char>* names, int32_t num_values, int32_t maxlen=0);
+		void set_plif_transform_type(T_STRING<char>* transform_type, int32_t num_values, int32_t maxlen=0);
 
 		/// return plif id for idx
 		inline int32_t get_plif_id(int32_t idx)

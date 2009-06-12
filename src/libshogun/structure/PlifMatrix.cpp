@@ -129,7 +129,7 @@ void CPlifMatrix::set_plif_penalties(float64_t* penalties, int32_t num_plifs, in
 	}
 }
 
-void CPlifMatrix::set_plif_names(T_STRING<char>* names, int32_t num_values)
+void CPlifMatrix::set_plif_names(T_STRING<char>* names, int32_t num_values, int32_t maxlen)
 {
 	if (num_values!=m_num_plifs)
 		SG_ERROR("names size mismatch (num_values=%d vs.num_plifs=%d)\n", num_values, m_num_plifs);
@@ -141,7 +141,7 @@ void CPlifMatrix::set_plif_names(T_STRING<char>* names, int32_t num_values)
 	}
 }
 
-void CPlifMatrix::set_plif_transform_type(T_STRING<char>* transform_type, int32_t num_values)
+void CPlifMatrix::set_plif_transform_type(T_STRING<char>* transform_type, int32_t num_values, int32_t maxlen)
 {
 	if (num_values!=m_num_plifs)
 		SG_ERROR("transform_type size mismatch (num_values=%d vs.num_plifs=%d)\n", num_values, m_num_plifs);
