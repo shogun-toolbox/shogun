@@ -27,6 +27,7 @@
  #include <shogun/structure/Plif.h>
  #include <shogun/structure/PlifArray.h>
  #include <shogun/structure/DynProg.h>
+ #include <shogun/structure/PlifMatrix.h>
 %}
 
 /* Typemaps */
@@ -87,10 +88,11 @@
 %rename(Plif) CPlif;
 %rename(PlifArray) CPlifArray;
 %rename(DynProg) CDynProg;
+%rename(PlifMatrix) CPlifMatrix;
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/structure/PlifBase.h>
 %include <shogun/structure/Plif.h>
 %include <shogun/structure/PlifArray.h>
 %include <shogun/structure/DynProg.h>
-
+%include <shogun/structure/PlifMatrix.h>
