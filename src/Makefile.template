@@ -196,17 +196,24 @@ install-r: $(TEMPLATE_TARGET)
 
 install-elwms: $(TEMPLATE_TARGET)
 	#one .so file
+ifneq ($(CMDLINE_TARGET),)
 	install -d -m755 $(DESTDIR)$(LIBDIR)/shogun
 	install -m755 $(TEMPLATE_TARGET) $(DESTDIR)$(LIBDIR)/shogun
+endif
 	#python
+ifneq ($(PYTHON_TARGET),)
 	rm -f $(DESTDIR)$(PYDIR)/$(TEMPLATE_TARGET) 
 	install -d -m755 $(DESTDIR)$(PYDIR)
 	cd $(DESTDIR)$(PYDIR) && ln -s $(PRELPATH)/$(TEMPLATE_TARGET)
+endif
 	#octave
+ifneq ($(OCTAVE_TARGET),)
 	install -d -m755 $(DESTDIR)$(OCTDIR)
 	rm -f $(DESTDIR)$(OCTDIR)/elwms.oct
 	cd $(DESTDIR)$(OCTDIR) && ln -s $(ORELPATH)/$(TEMPLATE_TARGET) elwms.oct
+endif
 	#r
+ifneq ($(R_TARGET),)
 	install -d -m755 $(DESTDIR)$(RDIR)/elwms/demo
 	install -d -m755 $(DESTDIR)$(RDIR)/elwms/libs
 	install -d -m755 $(DESTDIR)$(RDIR)/elwms/Meta
@@ -215,6 +222,7 @@ install-elwms: $(TEMPLATE_TARGET)
 	cd $(DESTDIR)$(RDIR)/elwms/libs && ln -s $(RRELPATH)/$(TEMPLATE_TARGET) 
 	install -m644 ../../examples/r/*.R ../../examples/r/graphical/*.R $(DESTDIR)$(RDIR)/elwms/demo
 	../.r-install.sh $(DESTDIR)$(RDIR) elwms $(EXT_LIB)
+endif
 
 install-matlab: $(TEMPLATE_TARGET)
 	@echo "The matlab interface needs to be installed"
