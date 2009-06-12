@@ -338,33 +338,6 @@ int32_t CMath::calcroc(
 	return returnidx;
 }
 
-uint32_t CMath::crc32(uint8_t *data, int32_t len)
-{
-	uint32_t result;
-	int32_t i,j;
-	uint8_t octet;
-
-	result = 0-1;
-	for (i=0; i<len; i++)
-	{
-	octet = *(data++);
-	for (j=0; j<8; j++)
-	{
-	    if ((octet >> 7) ^ (result >> 31))
-	    {
-		result = (result << 1) ^ 0x04c11db7;
-	    }
-	    else
-	    {
-		result = (result << 1);
-	    }
-	    octet <<= 1;
-	}
-    }
-
-    return ~result; 
-}
-
 float64_t CMath::mutual_info(float64_t* p1, float64_t* p2, int32_t len)
 {
 	double e=0;

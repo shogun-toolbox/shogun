@@ -178,9 +178,6 @@ class CMath : public CSGObject
 		/**@name misc functions */
 		//@{
 
-		/// crc32
-		static uint32_t crc32(uint8_t *data, int32_t len);
-
 		static inline float64_t round(float64_t d)
 		{
 			return ::floor(d+0.5);
