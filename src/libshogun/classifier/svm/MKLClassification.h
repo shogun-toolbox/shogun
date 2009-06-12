@@ -158,6 +158,8 @@ class CMKLClassification : public CMKL
 		{
 			return w_gap<epsilon;
 		}
+
+		void set_qnorm_constraints(float64_t* beta, int32_t num_kernels);
 	protected:
 		float64_t* W;
 		float64_t w_gap;

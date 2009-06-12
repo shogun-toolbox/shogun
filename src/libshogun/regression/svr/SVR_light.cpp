@@ -121,9 +121,9 @@ bool CSVRLight::train()
 		set_support_vector(i, model->supvec[i+1]);
 	}
 
-#ifdef USE_CPLEX
-	cleanup_cplex();
-#endif
+//#ifdef USE_CPLEX
+//	cleanup_cplex();
+//#endif
 	
 	if (kernel->has_property(KP_LINADD) && get_linadd_enabled())
 		kernel->clear_normal() ;

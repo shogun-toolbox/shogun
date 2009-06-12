@@ -82,6 +82,16 @@
 
 %apply (double* IN_NDARRAY, int32_t* DIMS, int32_t NDIMS) {(double* src, int32_t* dims, int32_t ndims)}
 
+/* plif matrix functions */
+%apply (int32_t* IN_ARRAY1, int32_t DIM1) {(int32_t* ids, int32_t num_ids)}
+%apply (float64_t* IN_ARRAY1, int32_t DIM1) {(float64_t* min_values, int32_t num_values)}
+%apply (float64_t* IN_ARRAY1, int32_t DIM1) {(float64_t* max_values, int32_t num_values)}
+%apply (bool* IN_ARRAY1, int32_t DIM1) {(bool* use_cache, int32_t num_values)}
+%apply (int32_t* IN_ARRAY1, int32_t DIM1) {(int32_t* use_svm, int32_t num_values)}
+%apply (float64_t* IN_ARRAY2, int32_t DIM1, int32_t DIM2) {(float64_t* limits, int32_t num_plifs, int32_t num_limits)}
+%apply (float64_t* IN_ARRAY2, int32_t DIM1, int32_t DIM2) {(float64_t* penalties, int32_t num_plifs, int32_t num_limits)}
+%apply (T_STRING<char>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(T_STRING<char>* names, int32_t num_values)}
+%apply (T_STRING<char>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(T_STRING<char>* transform_type, int32_t num_values)}
 
 /* Remove C Prefix */
 %rename(PlifBase) CPlifBase;
