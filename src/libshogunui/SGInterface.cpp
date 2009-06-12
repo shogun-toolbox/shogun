@@ -5,6 +5,7 @@
 #include <shogun/lib/config.h>
 #include <shogun/lib/ShogunException.h>
 #include <shogun/lib/Mathematics.h>
+#include <shogun/lib/Hash.h>
 #include <shogun/lib/Signal.h>
 
 #include <shogun/classifier/svm/SVM.h>
@@ -6803,7 +6804,7 @@ bool CSGInterface::cmd_crc()
 		bstring[i]=string[i];
 	delete[] string;
 
-	int32_t val=CMath::crc32(bstring, slen);
+	int32_t val=CHash::crc32(bstring, slen);
 	delete[] bstring;
 	set_int(val);
 

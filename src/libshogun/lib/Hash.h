@@ -18,7 +18,8 @@
 #ifndef HASH_H
 #define HASH_H
 
-#include <stdint.h>
+#include "base/SGObject.h"
+#include "lib/common.h"
 
 #define MD5_DIGEST_LENGTH 16
 
@@ -26,7 +27,7 @@ class CHash : public CSGObject
 {
 	public:
 		CHash() {}
-		virtual ~CHash {}
+		virtual ~CHash() {}
 
 		struct MD5Context {
 			uint32_t buf[4];
