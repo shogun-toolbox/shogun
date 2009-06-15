@@ -84,7 +84,8 @@
 %feature("autodoc", "best_path_get_losses(self) -> numpy 1dim array of float") best_path_get_losses;
 %apply (float64_t** ARGOUT1, int32_t* DIM1) {(float64_t** my_losses, int32_t* seq_len)}
 
-%apply (double* IN_NDARRAY, int32_t* DIMS, int32_t NDIMS) {(double* src, int32_t* dims, int32_t ndims)}
+%apply (float64_t* IN_NDARRAY, int32_t* DIMS, int32_t NDIMS) {(float64_t* seq, int32_t* dims, int32_t ndims)}
+%apply (double* IN_NDARRAY, int32_t* DIMS, int32_t NDIMS) {(double* seq, int32_t* dims, int32_t ndims)}
 
 /* plif matrix functions */
 %apply (int32_t* IN_ARRAY1, int32_t DIM1) {(int32_t* ids, int32_t num_ids)}

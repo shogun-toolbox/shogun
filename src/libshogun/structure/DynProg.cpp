@@ -671,8 +671,15 @@ bool CDynProg::check_svm_arrays()
 	}
 }
 
-void CDynProg::set_observation_matrix(float64_t* seq, int32_t N, int32_t seq_len, int32_t max_num_features)
+void CDynProg::set_observation_matrix(float64_t* seq, int32_t* dims, int32_t ndims)
 {
+	if (ndims!=3)
+		SG_ERROR("Expected 3-dimensional Matrix\n");
+
+	int32_t N=dims[0];
+	int32_t seq_len=dims[1];
+	int32_t max_num_features=dims[2];
+
 	if (!m_svm_arrays_clean)
 	{
 		SG_ERROR( "SVM arrays not clean") ;
