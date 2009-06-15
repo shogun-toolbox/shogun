@@ -77,7 +77,7 @@ CDynProg::CDynProg(int32_t num_svms /*= 8 */)
 	  m_svm_value_unnormalized_single(m_num_svms_single),
 	  m_num_unique_words_single(0),
 
-	  m_max_a_id(0), m_seq(1,1,1), m_pos(1), m_orf_info(1,2), 
+	  m_max_a_id(0), m_observation_matrix(1,1,1), m_pos(1), m_orf_info(1,2), 
 	  m_plif_list(1), 
 	  m_PEN(1,1),
 	  m_genestr(1), m_wordstr(NULL), m_dict_weights(1,1), m_segment_loss(1,1,2), 
@@ -688,7 +688,7 @@ bool CDynProg::check_svm_arrays()
 	}
 }
 
-void CDynProg::set_seq(float64_t* seq, int32_t N, int32_t seq_len, int32_t max_num_features)
+void CDynProg::set_observation_matrix(float64_t* seq, int32_t N, int32_t seq_len, int32_t max_num_features)
 {
 	if (!m_svm_arrays_clean)
 	{
@@ -700,15 +700,13 @@ void CDynProg::set_seq(float64_t* seq, int32_t N, int32_t seq_len, int32_t max_n
 	ASSERT(m_initial_state_distribution_p.get_dim1()==N);
 	ASSERT(m_end_state_distribution_q.get_dim1()==N);
 	
-	m_seq.set_array(seq, N, seq_len, max_num_features, true, true) ;
-	SG_PRINT( "set_seq: dim1: %i, dim2: %i, dim3: %i,\n",m_seq.get_dim1(), m_seq.get_dim2(), m_seq.get_dim3()) ;
+	m_observation_matrix.set_array(seq, N, seq_len, max_num_features, true, true) ;
 }
 
 void CDynProg::set_pos(int32_t* pos, int32_t seq_len)  
 {
-	SG_PRINT( "set_pos: dim1: %i, dim2: %i, dim3: %i,\n",m_seq.get_dim1(), m_seq.get_dim2(), m_seq.get_dim3()) ;
-	if (seq_len!=m_seq.get_dim2())
-		SG_ERROR( "pos size does not match previous info %i!=%i\n", seq_len, m_seq.get_dim2()) ;
+	if (seq_len!=m_observation_matrix.get_dim2())
+		SG_ERROR( "pos size does not match previous info %i!=%i\n", seq_len, m_observation_matrix.get_dim2()) ;
 
 	m_pos.set_array(pos, seq_len, true, true) ;
 }
@@ -781,8 +779,8 @@ void CDynProg::best_path_set_dict_weights(
 	// initialize, so it does not bother when not used
 	m_segment_loss.resize_array(m_max_a_id+1, m_max_a_id+1, 2) ;
 	m_segment_loss.zero() ;
-	m_segment_ids.resize_array(m_seq.get_dim2()) ;
-	m_segment_mask.resize_array(m_seq.get_dim2()) ;
+	m_segment_ids.resize_array(m_observation_matrix.get_dim2()) ;
+	m_segment_mask.resize_array(m_observation_matrix.get_dim2()) ;
 	m_segment_ids.zero() ;
 	m_segment_mask.zero() ;
 }
@@ -1345,16 +1343,16 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 
 	//FIXME these variables can go away when compute_nbest_paths uses them
 	//instead of the local pointers below
-	const float64_t* seq_array = m_seq.get_array();
-	const int32_t seq_len = m_seq.get_dim2();
+	const float64_t* seq_array = m_observation_matrix.get_array();
+	const int32_t seq_len = m_observation_matrix.get_dim2();
 	m_scores.resize_array(nbest) ;
-	m_states.resize_array(nbest, m_seq.get_dim2()) ;
-	m_positions.resize_array(nbest, m_seq.get_dim2()) ;
+	m_states.resize_array(nbest, m_observation_matrix.get_dim2()) ;
+	m_positions.resize_array(nbest, m_observation_matrix.get_dim2()) ;
 
 	for (int32_t i=0; i<nbest; i++)
 	{
 		m_scores[i]=-1;
-		for (int32_t j=0; j<m_seq.get_dim2(); j++)
+		for (int32_t j=0; j<m_observation_matrix.get_dim2(); j++)
 		{
 			m_states.element(i,j)=-1;
 			m_positions.element(i,j)=-1;

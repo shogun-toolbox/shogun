@@ -6429,7 +6429,7 @@ bool CSGInterface::cmd_best_path_trans()
 	delete[] loss;
 	loss=NULL;
 
-	h->set_seq(features, feat_dims[0], feat_dims[1], feat_dims[2]);
+	h->set_observation_matrix(features, feat_dims[0], feat_dims[1], feat_dims[2]);
 	h->set_pos(all_pos, num_pos);
 	h->set_orf_info(orf_info, num_states, 2);
 	h->set_sparse_features(features_sparse1, features_sparse2);
@@ -6634,7 +6634,7 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 	float64_t* p_p_deriv   = new float64_t[num_states];
 	float64_t* p_q_deriv   = new float64_t[num_states];
 
-	h->set_seq(features, feat_dims[0], feat_dims[1], feat_dims[2]);
+	h->set_observation_matrix(features, feat_dims[0], feat_dims[1], feat_dims[2]);
 	h->set_pos(all_pos, num_pos);
 	h->set_plif_matrices(pm);
 	h->best_path_trans_deriv(my_path, my_pos, Nmypos_seq, features, num_pos, feat_dims[2]);
