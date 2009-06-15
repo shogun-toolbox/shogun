@@ -164,35 +164,6 @@ public:
 	 */
 	void set_a_trans_matrix(float64_t *a_trans, int32_t num_trans, int32_t N);
 
-	// content svm related setup functions
-	/** init SVM arrays
-	 *
-	 * @param p_num_degrees number of degrees
-	 * @param p_num_svms number of SVMs
-	 */
-	void init_svm_arrays(int32_t p_num_degrees, int32_t p_num_svms);
-
-	/** init word degree array
-	 *
-	 * @param p_word_degree_array new word degree array
-	 * @param num_elem number of array elements
-	 */
-	void init_word_degree_array(int32_t * p_word_degree_array, int32_t num_elem);
-
-	/** init cum num words array
-	 *
-	 * @param p_cum_num_words_array new cum num words array
-	 * @param num_elem number of array elements
-	 */
-	void init_cum_num_words_array(int32_t * p_cum_num_words_array, int32_t num_elem);
-
-	/** init num words array
-	 *
-	 * @param p_num_words_array new num words array
-	 * @param num_elem number of array elements
-	 */
-	void init_num_words_array(int32_t * p_num_words_array, int32_t num_elem);
-
 	/** init mod words array
 	 *
 	 * @param p_mod_words_array new mod words array
@@ -200,20 +171,6 @@ public:
 	 * @param num_columns number of columns
 	 */
 	void init_mod_words_array(int32_t * p_mod_words_array, int32_t num_elem, int32_t num_columns);
-
-	/** init sign words array
-	 *
-	 * @param p_sign_words_array new sign words array
-	 * @param num_elem number of array elements
-	 */
-	void init_sign_words_array(bool * p_sign_words_array, int32_t num_elem);
-
-	/** init string words array
-	 *
-	 * @param p_string_words_array new string words array
-	 * @param num_elem number of array elements
-	 */
-	void init_string_words_array(int32_t * p_string_words_array, int32_t num_elem);
 
 	/** check SVM arrays
 	 * call this function to check consistency
@@ -229,15 +186,6 @@ public:
 	 * @param seq_len length of sequence
 	 */
 	void set_seq(float64_t* seq, int32_t N, int32_t seq_len);
-
-	/** set best path seq3d
-	 *
-	 * @param seq the 3D sequence
-	 * @param N dimension N
-	 * @param seq_len length of sequence
-	 * @param max_num_signals maximal number of signals
-	 */
-	void best_path_set_seq3d(float64_t *seq, int32_t N, int32_t seq_len, int32_t max_num_signals);
 
 	/** set best path pos
 	 *
@@ -578,47 +526,6 @@ protected:
 	inline int32_t raw_intensities_interval_query(
 		const int32_t from_pos, const int32_t to_pos, float64_t* intensities, int32_t type);
 
-	/** reset SVM value
-	 *
-	 * @param pos position
-	 * @param last_svm_pos last SVM position
-	 * @param svm_value value to set
-	 */
-	void reset_svm_value(int32_t pos, int32_t & last_svm_pos, float64_t * svm_value);
-
-	/** extend SVM value
-	 *
-	 * @param wordstr word string
-	 * @param pos position
-	 * @param last_svm_pos lsat SVM position
-	 * @param svm_value value to set
-	 */
-	void extend_svm_value(uint16_t* wordstr, int32_t pos, int32_t &last_svm_pos,
-		float64_t* svm_value);
-
-	/** reset segment sum value
-	 *
-	 * @param num_states number of states
-	 * @param pos position
-	 * @param last_segment_sum_pos last segment sum position
-	 * @param segment_sum_value value to set
-	 */
-	void reset_segment_sum_value(int32_t num_states, int32_t pos,
-		int32_t & last_segment_sum_pos, float64_t * segment_sum_value);
-
-	/** extend segment sum value
-	 *
-	 * @param segment_sum_weights segment sum weights
-	 * @param seqlen length of sequence
-	 * @param num_states number of states
-	 * @param pos position
-	 * @param last_segment_sum_pos last segment sum position
-	 * @param segment_sum_value value to set
-	 */
-	void extend_segment_sum_value(float64_t *segment_sum_weights, int32_t seqlen,
-		int32_t num_states, int32_t pos, int32_t &last_segment_sum_pos,
-		float64_t* segment_sum_value);
-
 	/** @brief SVM values */
 	struct svm_values_struct
 	{
@@ -638,22 +545,6 @@ protected:
 		/** number of unique words */
 		int32_t **num_unique_words;
 	};
-
-	/** init SVM values
-	 *
-	 * @param svs SVM values
-	 * @param start_pos start position
-	 * @param seqlen length of sequence
-	 * @param howmuchlookback how far to look back
-	 */
-	void init_svm_values(struct svm_values_struct & svs, int32_t start_pos,
-		int32_t seqlen, int32_t howmuchlookback);
-
-	/** clear SVM values
-	 *
-	 * @param svs SVM values
-	 */
-	void clear_svm_values(struct svm_values_struct & svs);
 
 	/** extend orf
 	 *
