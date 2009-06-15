@@ -219,7 +219,7 @@ public:
 	 * @param dict_len length of dictionary weights
 	 * @param n dimension n
 	 */
-	void best_path_set_dict_weights(float64_t* dictionary_weights, int32_t dict_len, int32_t n);
+	void set_dict_weights(float64_t* dictionary_weights, int32_t dict_len, int32_t n);
 
 	/** set best path segment loss
 	 *
@@ -423,9 +423,7 @@ public:
 	 * @param dictionary_weights SVM weight vectors for content prediction
 	 * @param dict_len number of weight vectors 
 	 */
-	void precompute_content_values(const int32_t *pos,
-		const int32_t num_cand_pos, float64_t *dictionary_weights, int32_t dict_len);
-
+	void precompute_content_values(int32_t* pos, int32_t num_cand_pos);
 
 	/** return array of precomputed linear features like content predictions
 	 *  and PLiFed tiling array data

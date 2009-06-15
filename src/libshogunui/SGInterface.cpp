@@ -6082,7 +6082,8 @@ bool CSGInterface::cmd_precompute_content_svms()
 	h->create_word_string();
 	h->precompute_stop_codons();
 	h->init_content_svm_value_array(num_svms, Npos);
-	h->precompute_content_values(all_pos, Npos, weights, Nweights*num_svms);
+	h->set_dict_weights(weights, Nweights, num_svms);
+	h->precompute_content_values(all_pos, Npos);
 	SG_DEBUG("precompute_content_svms done\n");
 	return true;
 }

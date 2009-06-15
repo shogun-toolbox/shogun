@@ -405,24 +405,8 @@ void CDynProg::create_word_string()
 	}
 }
 
-void CDynProg::precompute_content_values(
-	const int32_t *pos, const int32_t seq_len,
-	float64_t *dictionary_weights, int32_t dict_len)
+void CDynProg::precompute_content_values(int32_t* pos, int32_t seq_len)
 {
-	//SG_PRINT("seq_len=%i, genestr_len=%i, dict_len=%i, m_num_svms=%i, m_num_degrees=%i\n",seq_len, genestr_len, dict_len, m_num_svms, m_num_degrees);
-
-	m_dict_weights.set_array(dictionary_weights, dict_len, m_num_svms, false, false) ;
-
-	//int32_t d1 = m_mod_words.get_dim1();
-	//int32_t d2 = m_mod_words.get_dim2();
-	//SG_PRINT("d1:%i, d2:%i \n",d1, d2);
-	//for (int32_t p=0 ; p<d1 ; p++)
-	//{
-	//	for (int32_t q=0 ; q<d2 ; q++)
-	//		SG_PRINT("%i ",m_mod_words.get_element(p,q));
-	//	SG_PRINT("\n");
-	//}
-	
 	for (int32_t s=0; s<m_num_svms; s++)
 	  m_lin_feat.set_element(s, 0, 0.0);
 
@@ -437,9 +421,8 @@ void CDynProg::precompute_content_values(
 	    ASSERT(to_pos<=m_genestr.get_dim1());
 	    
 	    for (int32_t s=0; s<m_num_svms; s++)
-		{
 			my_svm_values_unnormalized[s]=0.0;//precomputed_svm_values.element(s,p);
-		}
+
 	    for (int32_t i=from_pos; i<to_pos; i++)
 		{
 			for (int32_t j=0; j<m_num_degrees; j++)
@@ -447,7 +430,7 @@ void CDynProg::precompute_content_values(
 				uint16_t word = m_wordstr[0][j][i] ;
 				for (int32_t s=0; s<m_num_svms; s++)
 				{
-					// check if this k-mere should be considered for this SVM
+					// check if this k-mer should be considered for this SVM
 					if (m_mod_words.get_element(s,0)==3 && i%3!=m_mod_words.get_element(s,1))
 						continue;
 					my_svm_values_unnormalized[s] += m_dict_weights[(word+m_cum_num_words_array[j])+s*m_cum_num_words_array[m_num_degrees]] ;
@@ -768,7 +751,7 @@ void CDynProg::set_my_pos_seq(int32_t* my_pos_seq, int32_t seq_len)
 		m_my_pos_seq[i]=my_pos_seq[i];
 }
 
-void CDynProg::best_path_set_dict_weights(
+void CDynProg::set_dict_weights(
 	float64_t* dictionary_weights, int32_t dict_len, int32_t n)
 {
 	if (m_num_svms!=n)
