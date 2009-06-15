@@ -184,8 +184,10 @@ public:
 	 * @param seq the sequence
 	 * @param N dimension N
 	 * @param seq_len length of sequence
+	 * @param max_num_features maximal number of signal features that are 
+	 * 	  considered at a single position
 	 */
-	void set_seq(float64_t* seq, int32_t N, int32_t seq_len);
+	void set_seq(float64_t* seq, int32_t N, int32_t seq_len, int32_t max_num_features);
 
 	/** set best path pos
 	 *

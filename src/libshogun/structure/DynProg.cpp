@@ -688,7 +688,7 @@ bool CDynProg::check_svm_arrays()
 	}
 }
 
-void CDynProg::set_seq(float64_t* seq, int32_t N, int32_t seq_len)
+void CDynProg::set_seq(float64_t* seq, int32_t N, int32_t seq_len, int32_t max_num_features)
 {
 	if (!m_svm_arrays_clean)
 	{
@@ -700,11 +700,13 @@ void CDynProg::set_seq(float64_t* seq, int32_t N, int32_t seq_len)
 	ASSERT(m_initial_state_distribution_p.get_dim1()==N);
 	ASSERT(m_end_state_distribution_q.get_dim1()==N);
 	
-	m_seq.set_array(seq, N, seq_len, 1, true, true) ;
+	m_seq.set_array(seq, N, seq_len, max_num_features, true, true) ;
+	SG_PRINT( "set_seq: dim1: %i, dim2: %i, dim3: %i,\n",m_seq.get_dim1(), m_seq.get_dim2(), m_seq.get_dim3()) ;
 }
 
 void CDynProg::set_pos(int32_t* pos, int32_t seq_len)  
 {
+	SG_PRINT( "set_pos: dim1: %i, dim2: %i, dim3: %i,\n",m_seq.get_dim1(), m_seq.get_dim2(), m_seq.get_dim3()) ;
 	if (seq_len!=m_seq.get_dim2())
 		SG_ERROR( "pos size does not match previous info %i!=%i\n", seq_len, m_seq.get_dim2()) ;
 
