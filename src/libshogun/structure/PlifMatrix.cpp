@@ -125,7 +125,7 @@ void CPlifMatrix::set_plif_penalties(float64_t* penalties, int32_t num_plifs, in
 			pen[k] = penalties[i*m_num_limits+k];
 
 		int32_t id=get_plif_id(i);
-		m_PEN[id]->set_plif_penalties(pen, m_num_limits);
+		m_PEN[id]->set_plif_penalty(pen, m_num_limits);
 	}
 }
 
