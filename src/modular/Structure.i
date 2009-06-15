@@ -49,6 +49,10 @@
 %apply (bool* IN_ARRAY1, int32_t DIM1) {(bool * p_sign_words_array, int32_t num_elem)};
 %apply (int32_t* IN_ARRAY1, int32_t DIM1) {(int32_t* p_string_words_array, int32_t num_elem)};
 
+/* PlifMatrix */
+%apply (int32_t* IN_ARRAY2, int32_t DIM1, int32_t DIM2) {(int32_t* state_signals, int32_t feat_dim3, int32_t num_states)};
+
+
 /* best_path_trans preparation functions */
 %apply (float64_t* IN_ARRAY2, int32_t DIM1, int32_t DIM2) {(float64_t* seq, int32_t N, int32_t seq_len)};
 %apply (int32_t* IN_ARRAY1, int32_t DIM1) {(int32_t* pos, int32_t seq_len)};
