@@ -611,6 +611,20 @@ void COctaveInterface::recover_from_exception(void)
   octave_catch_interrupts ();
 }
 
+void COctaveInterface::clear_octave_globals()
+{
+	//string_vector gvars = symbol_table::global_variable_names();
+
+	//int gcount = gvars.length();
+
+	//for (int i = 0; i < gcount; i++)
+	//	symbol_table::clear_global(gvars[i]);
+	int parse_status;
+	eval_string("clear all", false, parse_status);
+	//	symbol_table::clear_global_pattern ("*");
+	//global_sym_tab->clear();
+}
+
 void COctaveInterface::run_octave_init()
 {
 	char* name=strdup("octave");
@@ -650,11 +664,7 @@ bool COctaveInterface::run_octave_helper(CSGInterface* from_if)
 	{
 		int parse_status;
 		char* octave_code=NULL;
-#if OCTAVE_APIVERSION >= 37
-		symbol_table::clear_global_pattern ("*");
-#else
-		global_sym_tab->clear();
-#endif
+		clear_octave_globals();
 
 		for (int i=0; i<from_if->get_nrhs(); i++)
 		{
@@ -675,7 +685,11 @@ bool COctaveInterface::run_octave_helper(CSGInterface* from_if)
 				COctaveInterface* in = new COctaveInterface(args, 1, false);
 				in->create_return_values(1);
 				from_if->translate_arg(from_if, in);
+#if OCTAVE_APIVERSION >= 37
+				symbol_table::varref (var_name) = in->get_return_values()(0);
+#else
 				set_global_value(var_name, in->get_return_values()(0));
+#endif
 				delete[] var_name;
 				SG_UNREF(in);
 			}
@@ -694,16 +708,19 @@ bool COctaveInterface::run_octave_helper(CSGInterface* from_if)
 		octave_value_list results;
 
 #if OCTAVE_APIVERSION >= 37
-		//results = symbol_table::varval("results");
-		results = get_global_value("results", false);
-		sz=results.length();
-		SG_SPRINT("len=%d\n", sz);
+		if (symbol_table::is_variable("results"))
+		{
+			results = symbol_table::varval("results");
+			//results = get_global_value("results", false);
+			sz=results.length();
+		}
 #else
 		if (curr_sym_tab->lookup("results"))
 		{
 			results = get_global_value("results", false);
 			sz=results.length();
 		}
+#endif
 
 		if (sz>0)
 		{
@@ -714,8 +731,6 @@ bool COctaveInterface::run_octave_helper(CSGInterface* from_if)
 				sz=results.length();
 			}
 		}
-#endif
-
 
 		if (sz>0 && from_if->create_return_values(sz))
 		{

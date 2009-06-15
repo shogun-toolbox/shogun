@@ -173,6 +173,9 @@ class COctaveInterface : public CSGInterface
 		static void recover_from_exception();
 
 	private:
+
+		static void clear_octave_globals();
+
 		const octave_value get_arg_increment()
 		{
 			octave_value retval;
