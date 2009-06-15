@@ -655,37 +655,6 @@ protected:
 	 */
 	void clear_svm_values(struct svm_values_struct & svs);
 
-	/** find SVM values till position (swig compatible?)
-	 *
-	 * @param wordstr word string
-	 * @param pos position
-	 * @param t_end t end
-	 * @param svs SVM values
-	 */
-	void find_svm_values_till_pos(uint16_t*** wordstr, const int32_t *pos, int32_t t_end,
-		struct svm_values_struct &svs);
-
-	/** find SVM values till position
-	 *
-	 * @param wordstr word string
-	 * @param pos position
-	 * @param t_end t end
-	 * @param svs SVM values
-	 */
-	void find_svm_values_till_pos(uint16_t** wordstr, const int32_t *pos, int32_t t_end,
-		struct svm_values_struct &svs);
-
-	/** update SVM values till position
-	 *
-	 * @param wordstr word string
-	 * @param pos position
-	 * @param t_end t end
-	 * @param prev_t_end previous t end
-	 * @param svs SVM values
-	 */
-	void update_svm_values_till_pos(uint16_t*** wordstr, const int32_t *pos, int32_t t_end,
-		int32_t prev_t_end, struct svm_values_struct &svs);
-
 	/** extend orf
 	 *
 	 * @param orf_from orf from
