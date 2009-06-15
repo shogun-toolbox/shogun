@@ -726,7 +726,7 @@ protected:
 	
 	// input arguments
 	/** sequence */
-	CArray3<float64_t> m_seq;
+	CArray3<float64_t> m_observation_matrix;
 	/** position */
 	CArray<int32_t> m_pos;
 	/** orf info */
