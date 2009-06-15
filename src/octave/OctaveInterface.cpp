@@ -23,6 +23,7 @@
 #include <shogun/ui/SGInterface.h>
 #include <shogun/lib/ShogunException.h>
 #include <shogun/lib/io.h>
+#include <shogun/lib/config.h>
 #include <shogun/lib/memory.h>
 #include <shogun/base/init.h>
 
@@ -600,7 +601,12 @@ void COctaveInterface::recover_from_exception(void)
   can_interrupt = true;
   octave_interrupt_immediately = 0;
   octave_interrupt_state = 0;
+
+#if OCTAVE_APIVERSION >= 37
+  octave_exception_state = octave_no_exception;
+#else
   octave_allocation_error = 0;
+#endif
   octave_restore_signal_mask ();
   octave_catch_interrupts ();
 }
@@ -644,7 +650,11 @@ bool COctaveInterface::run_octave_helper(CSGInterface* from_if)
 	{
 		int parse_status;
 		char* octave_code=NULL;
+#if OCTAVE_APIVERSION >= 37
+		symbol_table::clear_global_pattern ("*");
+#else
 		global_sym_tab->clear();
+#endif
 
 		for (int i=0; i<from_if->get_nrhs(); i++)
 		{
@@ -671,8 +681,11 @@ bool COctaveInterface::run_octave_helper(CSGInterface* from_if)
 			}
 		}
 
+#if OCTAVE_APIVERSION >= 37
+#else
 		symbol_table* old=curr_sym_tab;
 		curr_sym_tab = global_sym_tab;
+#endif
 		reset_error_handler ();
 		eval_string(octave_code, false, parse_status);
 		delete[] octave_code;
@@ -680,6 +693,12 @@ bool COctaveInterface::run_octave_helper(CSGInterface* from_if)
 		int32_t sz=0;
 		octave_value_list results;
 
+#if OCTAVE_APIVERSION >= 37
+		//results = symbol_table::varval("results");
+		results = get_global_value("results", false);
+		sz=results.length();
+		SG_SPRINT("len=%d\n", sz);
+#else
 		if (curr_sym_tab->lookup("results"))
 		{
 			results = get_global_value("results", false);
@@ -695,6 +714,7 @@ bool COctaveInterface::run_octave_helper(CSGInterface* from_if)
 				sz=results.length();
 			}
 		}
+#endif
 
 
 		if (sz>0 && from_if->create_return_values(sz))
@@ -717,17 +737,20 @@ bool COctaveInterface::run_octave_helper(CSGInterface* from_if)
 			}
 		}
 
+#if OCTAVE_APIVERSION >= 37
+#else
 		curr_sym_tab=old;
+#endif
 	}
 	catch (octave_interrupt_exception)
 	{
 		recover_from_exception ();
-		std::cout << "\n"; 
+		SG_SPRINT("%\n");
 	}
 	catch (std::bad_alloc)
 	{
 		recover_from_exception ();
-		std::cout << "\n"; 
+		SG_SPRINT("%\n");
 	}
 
 	octave_restore_signal_mask();
