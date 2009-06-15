@@ -3408,7 +3408,8 @@ bool CSGInterface::cmd_get_subkernel_weights()
 		int32_t num_weights=-1;
 		weights=((CCombinedKernel *) kernel)->get_subkernel_weights(num_weights);
 
-		set_real_vector(weights, num_weights);
+		// matrices of shape 1 x num_weight are returned
+		set_real_matrix(weights, 1, num_weights);
 		return true;
 	}
 
