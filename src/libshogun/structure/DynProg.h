@@ -96,9 +96,8 @@ public:
 	 *  with size seq_len x num_svms
 	 *
 	 *  @param p_num_svms: number of svm weight vectors for content prediction
-	 *  @param seq_len: number of candidate positions
 	 */
-	void init_content_svm_value_array(const int32_t p_num_svms, const int32_t seq_len);
+	void init_content_svm_value_array(const int32_t p_num_svms);
 
 	/** init CArray for precomputed tiling intensitie-plif-values
 	 *  with size seq_len x num_svms
@@ -108,17 +107,15 @@ public:
 	 *  @param num_probes number of probes
 	 *  @param seq_len: number of candidate positions
 	 */
-	void init_tiling_data(int32_t* probe_pos, float64_t* intensities, const int32_t num_probes, const int32_t seq_len);
+	void init_tiling_data(int32_t* probe_pos, float64_t* intensities, const int32_t num_probes);
 
 	/** precompute tiling Plifs
 	 *
 	 * @param PEN Plif PEN
 	 * @param tiling_plif_ids tiling plif id's
 	 * @param num_tiling_plifs number of tiling plifs
-	 * @param seq_len sequence length
-	 * @param pos pos
 	 */
-	void precompute_tiling_plifs(CPlif** PEN, const int32_t* tiling_plif_ids, const int32_t num_tiling_plifs, const int32_t seq_len, const int32_t* pos);	
+	void precompute_tiling_plifs(CPlif** PEN, const int32_t* tiling_plif_ids, const int32_t num_tiling_plifs);	
 
 	/** append rows to linear features array
  	 * 
@@ -126,7 +123,7 @@ public:
  	 * @param seq_len number of columns == number of candidate positions
  	 * 			(must be equal to the existing num of cols) 
  	 */
-	void resize_lin_feat(int32_t num_new_feat, int32_t seq_len);
+	void resize_lin_feat(int32_t num_new_feat);
 	/** set vector p
 	 *
 	 * @param p new vector p
@@ -303,8 +300,7 @@ public:
 	 */
 	void best_path_trans_deriv(
 			int32_t* my_state_seq, int32_t *my_pos_seq,
-			int32_t my_seq_len, const float64_t *seq_array,
-			int32_t seq_len, int32_t max_num_signals);
+			int32_t my_seq_len, const float64_t *seq_array, int32_t max_num_signals);
 
 	// additional best_path_trans_deriv functions
 	/** set best path my state sequence
@@ -312,14 +308,14 @@ public:
 	 * @param my_state_seq my state sequence
 	 * @param seq_len length of sequence
 	 */
-	void set_my_state_seq(int32_t* my_state_seq, int32_t seq_len);
+	void set_my_state_seq(int32_t* my_state_seq);
 
 	/** set best path my position sequence
 	 *
 	 * @param my_pos_seq my position sequence
 	 * @param seq_len length of sequence
 	 */
-	void set_my_pos_seq(int32_t* my_pos_seq, int32_t seq_len);
+	void set_my_pos_seq(int32_t* my_pos_seq);
 
 	/** get path scores
 	 *
@@ -424,7 +420,7 @@ public:
 	 * @param dictionary_weights SVM weight vectors for content prediction
 	 * @param dict_len number of weight vectors 
 	 */
-	void precompute_content_values(int32_t* pos, int32_t num_cand_pos);
+	void precompute_content_values();
 
 	/** return array of precomputed linear features like content predictions
 	 *  and PLiFed tiling array data
@@ -668,10 +664,7 @@ protected:
 	CArray<float64_t> m_end_state_distribution_q_deriv;
 
 	//@}
-	/** administers a list of introns and quality scores
-	 *  and provides functions for fast access */
-	CIntronList* m_intron_list;
-	
+		
 	/** number of degress */
 	int32_t m_num_degrees;
 	/** number of SVMs */
@@ -729,8 +722,10 @@ protected:
 	// input arguments
 	/** sequence */
 	CArray3<float64_t> m_observation_matrix;
-	/** position */
+	/** candidate position */
 	CArray<int32_t> m_pos;
+	/** number of candidate positions */
+	int32_t m_seq_len; 
 	/** orf info */
 	CArray2<int32_t> m_orf_info;
 	/** segment sum weights */
@@ -791,6 +786,10 @@ protected:
 	 *  array of size length(sequence)
 	 */
 	CArray<bool> m_genestr_stop;
+
+	/** administers a list of introns and quality scores
+	 *  and provides functions for fast access */
+	CIntronList* m_intron_list;
 
 	/**
 	 *  array for storage of precomputed linear features linge content svm values or pliffed tiling data

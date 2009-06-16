@@ -1,4 +1,7 @@
 
+#ifndef __INTRON_LIST__
+#define __INTRON_LIST__
+
 #include "lib/common.h"
 #include "base/SGObject.h"
 
@@ -25,3 +28,4 @@ class CIntronList : public CSGObject
 		int32_t** m_intron_list;
 		int32_t** m_quality_list;
 };
+#endif

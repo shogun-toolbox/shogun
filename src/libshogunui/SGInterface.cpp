@@ -6058,8 +6058,7 @@ bool CSGInterface::cmd_precompute_content_svms()
 	// all feature positions
 	int32_t Npos=0;
 	int32_t* all_pos;
-	get_int_vector(all_pos,Npos);
-	ui_structure->set_all_pos(all_pos,Npos);
+	get_int_vector(all_pos, Npos);
 
 	//ARG 3
 	// content svm weights
@@ -6079,12 +6078,13 @@ bool CSGInterface::cmd_precompute_content_svms()
 	//float64_t* weights = ui_structure->get_content_svm_weights();
 	//int32_t Mweights = h->get_num_svms();
 	//int32_t Nweights = ui_structure->get_num_svm_weights();
+	h->set_pos(all_pos, Npos);
 	h->set_gene_string(seq, seq_len);
 	h->create_word_string();
 	h->precompute_stop_codons();
 	h->init_content_svm_value_array(num_svms, Npos);
 	h->set_dict_weights(weights, Nweights, num_svms);
-	h->precompute_content_values(all_pos, Npos);
+	h->precompute_content_values();
 	SG_DEBUG("precompute_content_svms done\n");
 	return true;
 }
@@ -6115,7 +6115,6 @@ bool CSGInterface::cmd_set_lin_feat()
 	int32_t Npos=0;
 	int32_t* all_pos;
 	get_int_vector(all_pos,Npos);
-	ui_structure->set_all_pos(all_pos,Npos);
 
 	//ARG 3 
 	//
@@ -6138,6 +6137,7 @@ bool CSGInterface::cmd_set_lin_feat()
 	if (!h)
 		SG_ERROR("no DynProg object found, use set_model first\n");
 
+	h->set_pos(all_pos, Npos);
 	h->set_gene_string(seq, Nseq);
 	h->precompute_stop_codons();
 	h->init_content_svm_value_array(num_svms, seq_len);
@@ -6174,7 +6174,6 @@ bool CSGInterface::cmd_set_feature_matrix()
 
 	return true;
 }
-
 bool CSGInterface::cmd_set_feature_matrix_sparse()
 {
 	int32_t num_pos = ui_structure->get_num_positions();
@@ -6500,7 +6499,6 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 	int32_t num_states = ui_structure->get_num_states();
 	int32_t* feat_dims = ui_structure->get_feature_dims();
 	float64_t* features = (ui_structure->get_feature_matrix(false));
-	int32_t* all_pos = ui_structure->get_all_positions();
 	int32_t num_pos = ui_structure->get_num_positions();
 
 	CPlifMatrix* pm=ui_structure->get_plif_matrix();
@@ -6641,7 +6639,6 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 	float64_t* p_q_deriv   = new float64_t[num_states];
 
 	h->set_observation_matrix(features, feat_dims, 3);
-	h->set_pos(all_pos, num_pos);
 	h->set_plif_matrices(pm);
 	h->best_path_trans_deriv(my_path, my_pos, Nmypos_seq, features, num_pos, feat_dims[2]);
 
