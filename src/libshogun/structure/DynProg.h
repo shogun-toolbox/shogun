@@ -187,6 +187,9 @@ public:
 	 */
 	void set_observation_matrix(float64_t* seq, int32_t* dims, int32_t ndims);
 
+	
+	int32_t get_num_positions();
+
 	/** set best path pos
 	 *
 	 * @param pos the position

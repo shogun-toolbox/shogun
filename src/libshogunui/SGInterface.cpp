@@ -6152,7 +6152,6 @@ bool CSGInterface::cmd_set_lin_feat()
 
 bool CSGInterface::cmd_set_feature_matrix()
 {
-	int32_t num_pos = ui_structure->get_num_positions();
 	int32_t num_states = ui_structure->get_num_states();
 
 	//ARG 1
@@ -6162,9 +6161,10 @@ bool CSGInterface::cmd_set_feature_matrix()
 	float64_t* features = NULL;
 	get_real_ndarray(features, Dims, numDims);
 	
-	ASSERT(numDims==3)
-	ASSERT(Dims[0]==num_states)
-	ASSERT(Dims[1]==num_pos)
+	if (numDims!=3)
+		SG_ERROR("expected a 3 dimensional array, got %i dimensions\n", numDims);
+	if (Dims[0]!=num_states)
+		SG_ERROR("number of rows (%i) not equal number of states (%i)\n",Dims[0], num_states);
 	ASSERT(ui_structure->set_feature_matrix(features, Dims));
 
 	ASSERT(ui_structure->set_feature_dims(Dims));
@@ -6295,8 +6295,6 @@ bool CSGInterface::cmd_best_path_trans()
 	float64_t* features = (ui_structure->get_feature_matrix(false));
 	CSparseFeatures<float64_t>* features_sparse1 = (ui_structure->get_feature_matrix_sparse(0));
 	CSparseFeatures<float64_t>* features_sparse2 = (ui_structure->get_feature_matrix_sparse(1));
-	int32_t* all_pos = ui_structure->get_all_positions();
-	int32_t num_pos = ui_structure->get_num_positions();
 	int32_t* orf_info = ui_structure->get_orf_info();
 	bool use_orf = ui_structure->get_use_orf();
 	int32_t Nplif = pm->get_num_plifs();
@@ -6358,7 +6356,7 @@ bool CSGInterface::cmd_best_path_trans()
 	float64_t* loss;
 	get_real_matrix(loss, Nloss,Mloss);
 	
-	int32_t M = ui_structure->get_num_positions();
+	int32_t M = h->get_num_positions();
 	
 	/////////////////////////////////////////////////////////////////////////////////
 	// check input
@@ -6391,7 +6389,7 @@ bool CSGInterface::cmd_best_path_trans()
 		return false ;
 	}
 	
-	SG_DEBUG("best_path_trans: M: %i, Mseg_path: %i\n", M, Mseg_path);
+	SG_PRINT("best_path_trans: M: %i, Mseg_path: %i\n", M, Mseg_path);
 	
 	if (seg_path!=NULL)
 	{
@@ -6400,6 +6398,7 @@ bool CSGInterface::cmd_best_path_trans()
 		for (int32_t i=0; i<M; i++)
 		{
 		        segment_ids[i] = (int32_t)seg_path[2*i] ;
+			SG_PRINT("segment_ids[%i]:%i  ", i, segment_ids[i]);
 		        segment_mask[i] = seg_path[2*i+1] ;
 		}
 		h->best_path_set_segment_loss(loss, Nloss, Mloss) ;
@@ -6435,7 +6434,6 @@ bool CSGInterface::cmd_best_path_trans()
 	loss=NULL;
 
 	h->set_observation_matrix(features, feat_dims, 3);
-	h->set_pos(all_pos, num_pos);
 	h->set_orf_info(orf_info, num_states, 2);
 	h->set_sparse_features(features_sparse1, features_sparse2);
 	h->set_plif_matrices(pm);
@@ -6499,7 +6497,6 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 	int32_t num_states = ui_structure->get_num_states();
 	int32_t* feat_dims = ui_structure->get_feature_dims();
 	float64_t* features = (ui_structure->get_feature_matrix(false));
-	int32_t num_pos = ui_structure->get_num_positions();
 
 	CPlifMatrix* pm=ui_structure->get_plif_matrix();
 	int32_t Nplif = pm->get_num_plifs();

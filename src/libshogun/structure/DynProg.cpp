@@ -681,6 +681,10 @@ void CDynProg::set_observation_matrix(float64_t* seq, int32_t* dims, int32_t ndi
 	
 	m_observation_matrix.set_array(seq, N, m_seq_len, max_num_features, true, true) ;
 }
+int32_t CDynProg::get_num_positions()
+{
+	return m_seq_len;
+}
 
 void CDynProg::set_pos(int32_t* pos, int32_t seq_len)  
 {
@@ -689,6 +693,7 @@ void CDynProg::set_pos(int32_t* pos, int32_t seq_len)
 	
 	m_pos.set_array(pos, seq_len, true, true) ;
 	m_seq_len = seq_len;
+	SG_PRINT("m_seq_len: %i\n", m_seq_len);
 }
 
 void CDynProg::set_orf_info(int32_t* orf_info, int32_t m, int32_t n) 
@@ -1319,6 +1324,9 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 	{
 
 	//FIXME we need checks here if all the fields are of right size
+	SG_PRINT("m_seq_len: %i\n", m_seq_len);
+	SG_PRINT("m_pos[0]: %i\n", m_pos[0]);
+	SG_PRINT("\n");
 
 	//FIXME these variables can go away when compute_nbest_paths uses them
 	//instead of the local pointers below
