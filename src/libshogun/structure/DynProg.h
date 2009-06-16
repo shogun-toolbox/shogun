@@ -21,6 +21,7 @@
 #include "structure/PlifMatrix.h"
 #include "structure/PlifBase.h"
 #include "structure/Plif.h"
+#include "structure/IntronList.h"
 #include "features/StringFeatures.h"
 #include "features/SparseFeatures.h"
 #include "distributions/Distribution.h"
@@ -667,6 +668,9 @@ protected:
 	CArray<float64_t> m_end_state_distribution_q_deriv;
 
 	//@}
+	/** administers a list of introns and quality scores
+	 *  and provides functions for fast access */
+	CIntronList* m_intron_list;
 	
 	/** number of degress */
 	int32_t m_num_degrees;

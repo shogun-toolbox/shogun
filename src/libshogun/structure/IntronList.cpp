@@ -11,8 +11,26 @@
 #include "lib/io.h"
 #include "structure/IntronList.h"
 
-CIntronList::CIntronList(int32_t* all_pos, int32_t len)
+CIntronList::CIntronList()
 :CSGObject()
+{
+	m_length = 0;
+	m_all_pos = NULL;
+	m_intron_list = NULL;
+	m_quality_list = NULL;
+}
+CIntronList::~CIntronList()
+{
+	for (int i=0; i<m_length; i++)
+	{
+		free(m_intron_list[i]);
+		free(m_quality_list[i]);
+	}
+	delete[] m_intron_list;
+	delete[] m_quality_list;
+	delete[] m_all_pos;
+}
+void CIntronList::init_list(int32_t* all_pos, int32_t len)
 {
 	m_length = len;
 	m_all_pos = new int32_t[len];
@@ -36,17 +54,6 @@ CIntronList::CIntronList(int32_t* all_pos, int32_t len)
 		m_quality_list[i] = one;
 		m_quality_list[i][0] = 1;
 	}
-}
-CIntronList::~CIntronList()
-{
-	for (int i=0; i<m_length; i++)
-	{
-		free(m_intron_list[i]);
-		free(m_quality_list[i]);
-	}
-	delete[] m_intron_list;
-	delete[] m_quality_list;
-	delete[] m_all_pos;
 }
 void CIntronList::read_introns(int32_t* start_pos, int32_t* end_pos, int32_t* quality, int32_t len)
 {

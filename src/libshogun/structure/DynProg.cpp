@@ -17,6 +17,7 @@
 #include "features/StringFeatures.h"
 #include "features/Alphabet.h"
 #include "structure/Plif.h"
+#include "structure/IntronList.h"
 #include "lib/Array.h"
 #include "lib/Array2.h"
 #include "lib/Array3.h"
@@ -97,6 +98,7 @@ CDynProg::CDynProg(int32_t num_svms /*= 8 */)
 	  
 	  m_genestr_stop(1),
 	  m_lin_feat(1,1), //by Jonas
+	  m_intron_list(),
 	  m_raw_intensities(NULL),
 	  m_probe_pos(NULL),
 	  m_num_probes_cum(NULL),
@@ -169,6 +171,8 @@ CDynProg::~CDynProg()
 	  delete[] m_num_probes_cum ;
 	if (m_num_lin_feat_plifs_cum)
 	  delete[] m_num_lin_feat_plifs_cum ;
+
+	delete m_intron_list;
 
 	SG_UNREF(m_seq_sparse1);
 	SG_UNREF(m_seq_sparse2);
@@ -695,9 +699,9 @@ void CDynProg::set_observation_matrix(float64_t* seq, int32_t* dims, int32_t ndi
 
 void CDynProg::set_pos(int32_t* pos, int32_t seq_len)  
 {
-	if (seq_len!=m_observation_matrix.get_dim2())
-		SG_ERROR( "pos size does not match previous info %i!=%i\n", seq_len, m_observation_matrix.get_dim2()) ;
-
+	//if (seq_len!=m_observation_matrix.get_dim2())
+	//	SG_ERROR( "pos size does not match previous info %i!=%i\n", seq_len, m_observation_matrix.get_dim2()) ;
+	
 	m_pos.set_array(pos, seq_len, true, true) ;
 }
 
@@ -1925,16 +1929,6 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 
 								int32_t frame = m_orf_info.element(ii,0);
 								lookup_content_svm_values(ts, t, m_pos[ts], m_pos[t], svm_value, frame);
-
-
-								//int32_t offset = plen*m_num_svms ;
-								//for (int32_t ss=0; ss<m_num_svms; ss++)
-								//{
-								//	//svm_value[ss]=svs.svm_values[offset+ss];
-								//	svm_value[ss]=new_svm_value[ss];
-								//	//if (CMath::abs(new_svm_value[ss]-svm_value[ss])>1e-5)
-								//	//	SG_PRINT("ts: %i t: %i  precomp: %f old: %f diff: %f \n",ts, t,new_svm_value[ss],svm_value[ss], CMath::abs(new_svm_value[ss]-svm_value[ss]));
-								//}
 
 								float64_t pen_val = 0.0 ;
 								if (penalty)

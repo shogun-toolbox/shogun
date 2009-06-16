@@ -6,12 +6,16 @@
 class CIntronList : public CSGObject 
 {
 	public:
-		CIntronList(int32_t* all_pos, int32_t len=0);
+		CIntronList();
 		virtual ~CIntronList();
+
+		/** initialize all arrays with the number of candidate positions */
+		void init_list(int32_t* all_pos, int32_t len);	
 
 		/** read introns */
 		void read_introns(int32_t* start_pos, int32_t* end_pos, int32_t* quality, int32_t len);
 
+		/** get coverage and quality score */
 		void get_coverage(int32_t* coverage, int32_t* quality, int32_t from_pos, int32_t to_pos);
 	
 		inline virtual const char* get_name() const { return "IntronList"; }

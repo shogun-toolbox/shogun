@@ -6248,12 +6248,16 @@ bool CSGInterface::cmd_init_intron_list()
 	delete[] quality;
 	delete[] all_pos;
 
-	int32_t test;
-	int32_t testq;
-	intron_list->get_coverage(&test, &testq, 15 ,16);
+	//int32_t test;
+	//int32_t testq;
+	//intron_list->get_coverage(&test, &testq, 15 ,16);
 
-	SG_PRINT("coverage: %i, quality: %i\n",test, testq);
+	//SG_PRINT("coverage: %i, quality: %i\n",test, testq);
 	
+	CDynProg* h = ui_structure->get_dyn_prog();
+	if (!h)
+		SG_ERROR("no DynProg object found, use set_model first\n");
+
 	return true;
 }
 bool CSGInterface::cmd_precompute_tiling_features()
