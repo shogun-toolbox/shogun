@@ -6082,7 +6082,7 @@ bool CSGInterface::cmd_precompute_content_svms()
 	h->set_gene_string(seq, seq_len);
 	h->create_word_string();
 	h->precompute_stop_codons();
-	h->init_content_svm_value_array(num_svms, Npos);
+	h->init_content_svm_value_array(num_svms);
 	h->set_dict_weights(weights, Nweights, num_svms);
 	h->precompute_content_values();
 	SG_DEBUG("precompute_content_svms done\n");
@@ -6140,7 +6140,7 @@ bool CSGInterface::cmd_set_lin_feat()
 	h->set_pos(all_pos, Npos);
 	h->set_gene_string(seq, Nseq);
 	h->precompute_stop_codons();
-	h->init_content_svm_value_array(num_svms, seq_len);
+	h->init_content_svm_value_array(num_svms);
 	h->set_lin_feat(lin_feat, num_svms, seq_len);
 
 	delete[] lin_feat ;
@@ -6238,7 +6238,9 @@ bool CSGInterface::cmd_init_intron_list()
 	ASSERT(Nquality==Nend_positions);
 	ASSERT(Nend_positions==Nstart_positions);
 
-	CIntronList* intron_list = new CIntronList(all_pos, Nall_pos);
+	CIntronList* intron_list = new CIntronList();
+
+	intron_list->init_list(all_pos, Nall_pos);
 
 	intron_list->read_introns(start_positions, end_positions, quality, Nstart_positions);
 
@@ -6262,8 +6264,6 @@ bool CSGInterface::cmd_init_intron_list()
 bool CSGInterface::cmd_precompute_tiling_features()
 {
 	CPlifMatrix* pm=ui_structure->get_plif_matrix();
-	int32_t* all_pos = ui_structure->get_all_positions();
-	int32_t Npos     = ui_structure->get_num_positions();
 	CPlif** PEN  = pm->get_PEN();
 	CDynProg* h  = ui_structure->get_dyn_prog();
 
@@ -6280,8 +6280,8 @@ bool CSGInterface::cmd_precompute_tiling_features()
 	int32_t* tiling_plif_ids;
 	get_int_vector(tiling_plif_ids, Ntiling_plif_ids);
 
-	h->init_tiling_data(probe_pos,intensities, Nprobe_pos,  Npos);
-	h->precompute_tiling_plifs(PEN, tiling_plif_ids, Ntiling_plif_ids, Npos, all_pos);
+	h->init_tiling_data(probe_pos,intensities, Nprobe_pos);
+	h->precompute_tiling_plifs(PEN, tiling_plif_ids, Ntiling_plif_ids);
 	return true;
 }
 
@@ -6640,7 +6640,7 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 
 	h->set_observation_matrix(features, feat_dims, 3);
 	h->set_plif_matrices(pm);
-	h->best_path_trans_deriv(my_path, my_pos, Nmypos_seq, features, num_pos, feat_dims[2]);
+	h->best_path_trans_deriv(my_path, my_pos, Nmypos_seq, features, feat_dims[2]);
 
 	float64_t* p_my_scores;
 	int32_t n_scores;
