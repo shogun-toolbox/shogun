@@ -669,9 +669,7 @@ protected:
 	int32_t m_num_degrees;
 	/** number of SVMs */
 	int32_t m_num_svms;
-	/** number of strings */
-	int32_t m_num_strings;
-	
+
 	/** word degree */
 	CArray<int32_t> m_word_degree;
 	/** cum num words */
@@ -696,26 +694,11 @@ protected:
 	int32_t* m_string_words_array;
 
 	/** SVM start position */
-	CArray<int32_t> m_svm_pos_start;
+//	CArray<int32_t> m_svm_pos_start;
 	/** number of unique words */
 	CArray<int32_t> m_num_unique_words;
 	/** SVM arrays clean */
 	bool m_svm_arrays_clean;
-
-	/** number of SVMs single */
-	int32_t m_num_svms_single;
-	/** word degree single */
-	int32_t m_word_degree_single;
-	/** num words single */
-	int32_t m_num_words_single;
-
-	/** word used single */
-	CArray<bool> m_word_used_single;
-	/** SVM value unnormalised single */
-	CArray<float64_t> m_svm_value_unnormalized_single;
-	/** number of unique words single */
-	int32_t m_num_unique_words_single;
-
 	/** max a id */
 	int32_t m_max_a_id;
 	

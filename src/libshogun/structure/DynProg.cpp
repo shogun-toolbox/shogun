@@ -51,7 +51,6 @@ CDynProg::CDynProg(int32_t num_svms /*= 8 */)
 	  // multi svm
 	  m_num_degrees(4), 
 	  m_num_svms(num_svms), 
-	  m_num_strings(1),
 	  m_word_degree(word_degree_default, m_num_degrees, true, true),
 	  m_cum_num_words(cum_num_words_default, m_num_degrees+1, true, true),
 	  m_cum_num_words_array(m_cum_num_words.get_array()),
@@ -63,20 +62,9 @@ CDynProg::CDynProg(int32_t num_svms /*= 8 */)
 	  m_sign_words_array(m_sign_words.get_array()),
 	  m_string_words(string_words_default, m_num_svms, true, true),
 	  m_string_words_array(m_string_words.get_array()),
-//	  word_used(m_num_degrees, m_num_words[m_num_degrees-1], m_num_strings),
-//	  word_used_array(word_used.get_array()),
-//	  svm_values_unnormalized(m_num_degrees, m_num_svms),
-	  m_svm_pos_start(m_num_degrees),
+	  //m_svm_pos_start(m_num_degrees),
 	  m_num_unique_words(m_num_degrees),
 	  m_svm_arrays_clean(true),
-
-	  // single svm
-	  m_num_svms_single(1),
-	  m_word_degree_single(1),
-	  m_num_words_single(4), 
-	  m_word_used_single(m_num_words_single),
-	  m_svm_value_unnormalized_single(m_num_svms_single),
-	  m_num_unique_words_single(0),
 
 	  m_max_a_id(0), m_observation_matrix(1,1,1), 
 	  m_pos(1), 
@@ -626,7 +614,7 @@ bool CDynProg::check_svm_arrays()
 			//(word_used.get_dim3()==m_num_strings) &&
 			//		(svm_values_unnormalized.get_dim1()==m_num_degrees) &&
 			//		(svm_values_unnormalized.get_dim2()==m_num_svms) &&
-			(m_svm_pos_start.get_dim1()==m_num_degrees) &&
+			//(m_svm_pos_start.get_dim1()==m_num_degrees) &&
 			(m_num_unique_words.get_dim1()==m_num_degrees) &&
 			(m_mod_words.get_dim1()==m_num_svms) &&
 			(m_mod_words.get_dim2()==2) && 
@@ -653,8 +641,8 @@ bool CDynProg::check_svm_arrays()
 			SG_WARNING("SVM array: m_cum_num_words.get_dim1()!=m_num_degrees+1") ;
 		if (!(m_num_words.get_dim1()==m_num_degrees))
 			SG_WARNING("SVM array: m_num_words.get_dim1()==m_num_degrees") ;
-		if (!(m_svm_pos_start.get_dim1()==m_num_degrees))
-			SG_WARNING("SVM array: m_svm_pos_start.get_dim1()!=m_num_degrees") ;
+		//if (!(m_svm_pos_start.get_dim1()==m_num_degrees))
+		//	SG_WARNING("SVM array: m_svm_pos_start.get_dim1()!=m_num_degrees") ;
 		if (!(m_num_unique_words.get_dim1()==m_num_degrees))
 			SG_WARNING("SVM array: m_num_unique_words.get_dim1()!=m_num_degrees") ;
 		if (!(m_mod_words.get_dim1()==m_num_svms))
@@ -1673,7 +1661,7 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 		m_num_words.set_name("num_words") ;
 		//word_used.set_name("word_used") ;
 		//svm_values_unnormalized.set_name("svm_values_unnormalized") ;
-		m_svm_pos_start.set_name("svm_pos_start") ;
+		//m_svm_pos_start.set_name("svm_pos_start") ;
 		m_num_unique_words.set_name("num_unique_words") ;
 
 		PEN.set_name("PEN") ;
@@ -1710,7 +1698,7 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 		m_num_words.display_array() ;
 		//word_used.display_size() ;
 		//svm_values_unnormalized.display_size() ;
-		m_svm_pos_start.display_array() ;
+		//m_svm_pos_start.display_array() ;
 		m_num_unique_words.display_array() ;
 
 		PEN.display_size() ;
