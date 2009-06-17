@@ -1672,6 +1672,7 @@ void CSVMLight::perform_mkl_step(float64_t* beta, float64_t* old_beta, int num_k
 
 		// set weights, store new rho and compute new w gap
 		kernel->set_subkernel_weights(beta, num_kernels) ;
+		CMath::display_vector(beta, num_kernels, "beta");
 		w_gap = CMath::abs(1-rho/mkl_objective) ;
 	}
 
