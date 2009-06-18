@@ -190,6 +190,13 @@ public:
 	
 	int32_t get_num_positions();
 
+	/** set an array of length # candidate positions 
+	 *  which specifies the content type of each pos
+	 *
+	 * @param seg_path seg path
+	 */
+	void set_content_type_array(float64_t* seg_path);
+
 	/** set best path pos
 	 *
 	 * @param pos the position

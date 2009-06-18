@@ -686,6 +686,37 @@ int32_t CDynProg::get_num_positions()
 	return m_seq_len;
 }
 
+void CDynProg::set_content_type_array(float64_t* seg_path)
+{
+	if (seg_path!=NULL)
+	{
+		int32_t *segment_ids = new int32_t[m_seq_len] ;
+		float64_t *segment_mask = new float64_t[m_seq_len] ;
+		for (int32_t i=0; i<m_seq_len; i++)
+		{
+		        segment_ids[i] = (int32_t)seg_path[2*i] ;
+			SG_PRINT("segment_ids[%i]:%i  ", i, segment_ids[i]);
+		        segment_mask[i] = seg_path[2*i+1] ;
+		}
+		best_path_set_segment_ids_mask(segment_ids, segment_mask, m_seq_len) ;
+		delete[] segment_ids;
+		delete[] segment_mask;
+	}
+	else
+	{
+		int32_t *izeros = new int32_t[m_seq_len] ;
+		float64_t *dzeros = new float64_t[m_seq_len] ;
+		for (int32_t i=0; i<m_seq_len; i++)
+		{
+			izeros[i]=0 ;
+			dzeros[i]=0.0 ;
+		}
+		best_path_set_segment_ids_mask(izeros, dzeros, m_seq_len) ;
+		delete[] izeros ;
+		delete[] dzeros ;
+	}
+}
+
 void CDynProg::set_pos(int32_t* pos, int32_t seq_len)  
 {
 	//if (seq_len!=m_observation_matrix.get_dim2())

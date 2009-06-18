@@ -6391,37 +6391,17 @@ bool CSGInterface::cmd_best_path_trans()
 	
 	SG_PRINT("best_path_trans: M: %i, Mseg_path: %i\n", M, Mseg_path);
 	
+
+	h->set_content_type_array(seg_path);
 	if (seg_path!=NULL)
-	{
-		int32_t *segment_ids = new int32_t[M] ;
-		float64_t *segment_mask = new float64_t[M] ;
-		for (int32_t i=0; i<M; i++)
-		{
-		        segment_ids[i] = (int32_t)seg_path[2*i] ;
-			SG_PRINT("segment_ids[%i]:%i  ", i, segment_ids[i]);
-		        segment_mask[i] = seg_path[2*i+1] ;
-		}
 		h->best_path_set_segment_loss(loss, Nloss, Mloss) ;
-		h->best_path_set_segment_ids_mask(segment_ids, segment_mask, Mseg_path) ;
-		delete[] segment_ids;
-		delete[] segment_mask;
-		delete[] seg_path ; seg_path=NULL ;
-	}
 	else
 	{
 		float64_t zero2[2] = {0.0, 0.0} ;
 		h->best_path_set_segment_loss(zero2, 2, 1) ;
-		int32_t *izeros = new int32_t[M] ;
-		float64_t *dzeros = new float64_t[M] ;
-		for (int32_t i=0; i<M; i++)
-		{
-			izeros[i]=0 ;
-			dzeros[i]=0.0 ;
-		}
-		h->best_path_set_segment_ids_mask(izeros, dzeros, M) ;
-		delete[] izeros ;
-		delete[] dzeros ;
 	}
+	delete[] seg_path;
+	
 
 	bool segment_loss_non_zero=false;
 	for (int32_t i=0; i<Nloss*Mloss; i++)
@@ -6597,36 +6577,16 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 		my_path[i] = mystate_seq[i] ;
 		my_pos[i]  = mypos_seq[i] ;
 	}
+
+	h->set_content_type_array(seg_path);
 	if (seg_path!=NULL)
-	{
-		int32_t *segment_ids = new int32_t[M] ;
-		float64_t *segment_mask = new float64_t[M] ;
-		for (int32_t i=0; i<M; i++)
-		{
-			segment_ids[i] = (int32_t)seg_path[2*i] ;
-			segment_mask[i] = seg_path[2*i+1] ;
-		}
 		h->best_path_set_segment_loss(loss, Nloss, Mloss) ;
-		h->best_path_set_segment_ids_mask(segment_ids, segment_mask, Mseg_path) ;
-		delete[] segment_ids;
-		delete[] segment_mask;
-	}
 	else
 	{
 		float64_t zero2[2] = {0.0, 0.0} ;
 		h->best_path_set_segment_loss(zero2, 2, 1) ;
-		int32_t *izeros = new int32_t[M] ;
-		float64_t *dzeros = new float64_t[M] ;
-		for (int32_t i=0; i<M; i++)
-		{
-			izeros[i]=0 ;
-			dzeros[i]=0.0 ;
-		}
-		h->best_path_set_segment_ids_mask(izeros, dzeros, M) ;
-		delete[] izeros ;
-		delete[] dzeros ;
 	}
-
+	delete[] seg_path;
 
 	float64_t* p_Plif_deriv = new float64_t[(max_plif_id+1)*max_plif_len];
 	CArray2<float64_t> a_Plif_deriv(p_Plif_deriv, max_plif_id+1, max_plif_len, false, false) ;
