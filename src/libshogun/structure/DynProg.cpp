@@ -274,7 +274,8 @@ void CDynProg::resize_lin_feat(const int32_t num_new_feat)
                 for(int32_t k=0;k<m_num_lin_feat_plifs_cum[m_num_raw_data-1];k++)
 			tmp[j*(dim1+num_new_feat)+k] = arr[j*dim1+k];
 
-	m_lin_feat.set_array(tmp, dim1+num_new_feat,dim2);
+	m_lin_feat.set_array(tmp, dim1+num_new_feat,dim2, true, true);// copy array and free it later 
+	delete[] tmp;
 
 	/*for(int32_t j=0;j<5;j++)
 	{
@@ -289,27 +290,11 @@ void CDynProg::resize_lin_feat(const int32_t num_new_feat)
 
 	//SG_PRINT("resize_lin_feat: done\n");
 }
-//void CDynProg::precompute_tiling_plifs(CPlif** PEN, const INT* tiling_plif_ids, const INT num_tiling_plifs, const INT seq_len, const INT* pos)
 
 void CDynProg::precompute_tiling_plifs(
 	CPlif** PEN, const int32_t* tiling_plif_ids, const int32_t num_tiling_plifs)
 {
-	//SG_PRINT("precompute_tiling_plifs:%f num_tiling_plifs:%i\n",m_raw_intensities[0], num_tiling_plifs);
-
-	/*int32_t tiling_plif_ids[m_num_svms];
-	int32_t num = 0;
-        for (int32_t i=0; i<num_penalties; i++)
-	{
-		CPlif * plif = PEN[i];
-		if (plif->get_use_svm()>m_num_svms)
-		{
-			tiling_plif_ids[num] = i;
-			num++;
-		}
-	}*/
 	m_num_lin_feat_plifs_cum[m_num_raw_data] = m_num_lin_feat_plifs_cum[m_num_raw_data-1]+ num_tiling_plifs;
-	//for (INT d=0;d<=m_num_raw_data;d++)
-	//	SG_PRINT("lin_feat_plifs%i: %i\n",d,m_num_lin_feat_plifs_cum[d]);
 	float64_t* tiling_plif = new float64_t[num_tiling_plifs];
 	float64_t* svm_value = new float64_t[m_num_lin_feat_plifs_cum[m_num_raw_data]];
 	for (int32_t i=0; i<m_num_lin_feat_plifs_cum[m_num_raw_data]; i++)
@@ -320,11 +305,7 @@ void CDynProg::precompute_tiling_plifs(
 		tiling_plif[i]=0.0;
 		CPlif * plif = PEN[tiling_plif_ids[i]];
 		tiling_rows[i] = plif->get_use_svm();
-		//float64_t* limits = plif->get_plif_limits();
-		//for(int32_t j=0;j<20;j++)
-		//	SG_PRINT("%.2f, ",limits[j]);
-		//SG_PRINT("\n ");
-	//	SG_PRINT("tiling_rows[%i]:%i, tiling_plif_ids[%i]:%i  \n",i,tiling_rows[i],i,tiling_plif_ids[i]);
+
 		ASSERT(tiling_rows[i]-1==m_num_lin_feat_plifs_cum[m_num_raw_data-1]+i)
 	}
 	resize_lin_feat(num_tiling_plifs);
@@ -336,26 +317,17 @@ void CDynProg::precompute_tiling_plifs(
 
 	for (int32_t pos_idx=0;pos_idx<m_seq_len;pos_idx++)
 	{
-		//SG_PRINT("pos[%i]: %i  \n",pos_idx,pos[pos_idx]);
-		//SG_PRINT("*p_tiling_pos: %i  \n",*p_tiling_pos);
 		while (num<m_num_probes_cum[m_num_raw_data]&&*p_tiling_pos<m_pos[pos_idx])
 		{
-			//SG_PRINT("raw_intens: %f  \n",*p_tiling_data);
 			for (int32_t i=0; i<num_tiling_plifs; i++)
 			{
 				svm_value[m_num_lin_feat_plifs_cum[m_num_raw_data-1]+i]=*p_tiling_data;
-				//if (svm_value[m_num_lin_feat+i]>15||svm_value[m_num_lin_feat+i]<4)
-				//	SG_PRINT("uninitialized value, value:%f, i:%i, pos:%i \n", svm_value[m_num_lin_feat+i], i, pos[pos_idx]);
 				CPlif * plif = PEN[tiling_plif_ids[i]];
-				//SG_PRINT("m_num_lin_feat_plifs_cum[m_num_raw_data]:%i, i:%i, plif->get_use_svm():%i\n",m_num_lin_feat_plifs_cum[m_num_raw_data],i, plif->get_use_svm());
 				ASSERT(m_num_lin_feat_plifs_cum[m_num_raw_data-1]+i==plif->get_use_svm()-1);
 				plif->set_do_calc(true);
 				tiling_plif[i]+=plif->lookup_penalty(0,svm_value);
-				//SG_PRINT("true: plif->lookup_penalty: %f  tiling_plif[%i]:%f \n",plif->lookup_penalty(0,svm_value),i,tiling_plif[i]);
 				plif->set_do_calc(false);
-				//SG_PRINT("false: plif->lookup_penalty: %f  \n",plif->lookup_penalty(0,svm_value));
 			}
-			//SG_PRINT("p_tiling_data:%f\n",*p_tiling_data);
 			p_tiling_data++;
 			p_tiling_pos++;
 			num++;
@@ -695,7 +667,6 @@ void CDynProg::set_content_type_array(float64_t* seg_path)
 		for (int32_t i=0; i<m_seq_len; i++)
 		{
 		        segment_ids[i] = (int32_t)seg_path[2*i] ;
-			SG_PRINT("segment_ids[%i]:%i  ", i, segment_ids[i]);
 		        segment_mask[i] = seg_path[2*i+1] ;
 		}
 		best_path_set_segment_ids_mask(segment_ids, segment_mask, m_seq_len) ;
@@ -724,7 +695,6 @@ void CDynProg::set_pos(int32_t* pos, int32_t seq_len)
 	
 	m_pos.set_array(pos, seq_len, true, true) ;
 	m_seq_len = seq_len;
-	SG_PRINT("m_seq_len: %i\n", m_seq_len);
 }
 
 void CDynProg::set_orf_info(int32_t* orf_info, int32_t m, int32_t n) 
@@ -1355,9 +1325,9 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 	{
 
 	//FIXME we need checks here if all the fields are of right size
-	SG_PRINT("m_seq_len: %i\n", m_seq_len);
-	SG_PRINT("m_pos[0]: %i\n", m_pos[0]);
-	SG_PRINT("\n");
+	//SG_PRINT("m_seq_len: %i\n", m_seq_len);
+	//SG_PRINT("m_pos[0]: %i\n", m_pos[0]);
+	//SG_PRINT("\n");
 
 	//FIXME these variables can go away when compute_nbest_paths uses them
 	//instead of the local pointers below
@@ -1449,7 +1419,7 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 			CArray3<float64_t> *seq_input=NULL ;
 			if (seq_array!=NULL)
 			{
-				SG_PRINT("using dense seq_array\n") ;
+				//SG_PRINT("using dense seq_array\n") ;
 
 				seq_input=new CArray3<float64_t>(seq_array, m_N, m_seq_len, max_num_signals) ;
 				seq_input->set_name("seq_input") ;

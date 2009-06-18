@@ -6389,7 +6389,7 @@ bool CSGInterface::cmd_best_path_trans()
 		return false ;
 	}
 	
-	SG_PRINT("best_path_trans: M: %i, Mseg_path: %i\n", M, Mseg_path);
+	SG_DEBUG("best_path_trans: M: %i, Mseg_path: %i\n", M, Mseg_path);
 	
 
 	h->set_content_type_array(seg_path);
@@ -6524,8 +6524,6 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 	float64_t* loss=NULL;
 	get_real_matrix(loss, Nloss,Mloss);
 
-	int32_t M = ui_structure->get_num_positions();
-
 	// ARG 6
 	// path to calc derivative for 
 	int32_t Nmystate_seq=0;
@@ -6586,7 +6584,6 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 		float64_t zero2[2] = {0.0, 0.0} ;
 		h->best_path_set_segment_loss(zero2, 2, 1) ;
 	}
-	delete[] seg_path;
 
 	float64_t* p_Plif_deriv = new float64_t[(max_plif_id+1)*max_plif_len];
 	CArray2<float64_t> a_Plif_deriv(p_Plif_deriv, max_plif_id+1, max_plif_len, false, false) ;
