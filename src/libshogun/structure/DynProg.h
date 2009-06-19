@@ -488,6 +488,12 @@ public:
 	  return m_transition_matrix_a_deriv.element(line_, column); // look also best_path()!
 	}
 	//@}
+	/** set intron list
+	 *  
+	 * @param intron_list
+	 * @param num_plifs number of intron plifs
+	 */
+	void set_intron_list(CIntronList* intron_list, int32_t num_plifs);
 
 protected:
 
@@ -617,6 +623,8 @@ protected:
 	void find_segment_loss_till_pos(int32_t t_end,
 		CArray<int32_t>& segment_ids, CArray<float64_t>& segment_mask,
 		struct segment_loss_struct& loss);
+
+
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "DynProg"; }
@@ -783,6 +791,9 @@ protected:
 	/** administers a list of introns and quality scores
 	 *  and provides functions for fast access */
 	CIntronList* m_intron_list;
+
+	/** number of intron features and plifs*/
+	int32_t m_num_intron_plifs;
 
 	/**
 	 *  array for storage of precomputed linear features linge content svm values or pliffed tiling data

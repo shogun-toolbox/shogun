@@ -6215,25 +6215,25 @@ bool CSGInterface::cmd_init_intron_list()
 	int32_t Nstart_positions;
 	int32_t* start_positions;
 	get_int_vector(start_positions, Nstart_positions);
-        SG_PRINT("Nstart_positions:%i\n",Nstart_positions);
+        //SG_PRINT("Nstart_positions:%i\n",Nstart_positions);
 	
 	//ARG2 end_positions
 	int32_t Nend_positions;
 	int32_t* end_positions;
 	get_int_vector(end_positions, Nend_positions);
-        SG_PRINT("Nend_positions:%i\n",Nend_positions);
+        //SG_PRINT("Nend_positions:%i\n",Nend_positions);
 
 	//ARG3 quality	
 	int32_t Nquality;
         int32_t* quality;
         get_int_vector(quality, Nquality);
-        SG_PRINT("Nquality:%i\n",Nquality);
+        //SG_PRINT("Nquality:%i\n",Nquality);
 
 	//ARG4 all candidate positions
 	int32_t Nall_pos;
         int32_t* all_pos;
         get_int_vector(all_pos, Nall_pos);
-        SG_PRINT("Nall_pos:%i\n",Nall_pos);
+        //SG_PRINT("Nall_pos:%i\n",Nall_pos);
 
 	ASSERT(Nquality==Nend_positions);
 	ASSERT(Nend_positions==Nstart_positions);
@@ -6258,6 +6258,8 @@ bool CSGInterface::cmd_init_intron_list()
 	CDynProg* h = ui_structure->get_dyn_prog();
 	if (!h)
 		SG_ERROR("no DynProg object found, use set_model first\n");
+
+	h->set_intron_list(intron_list, 2);
 
 	return true;
 }

@@ -102,25 +102,29 @@ void CIntronList::read_introns(int32_t* start_pos, int32_t* end_pos, int32_t* qu
  * from_pos and to_pos are indices in the all_pos list
  * not positions in the DNA sequence
  * */
-void CIntronList::get_coverage(int32_t* coverage, int32_t* quality, int32_t from_pos, int32_t to_pos)
+void CIntronList::get_intron_support(int32_t* values, int32_t from_pos, int32_t to_pos)
 {
-	ASSERT(from_pos<m_length)
-	ASSERT(to_pos<m_length)
+	if (from_pos>=m_length)
+		SG_ERROR("from_pos (%i) in not < m_length (%i)\n",to_pos, m_length);
+	if (to_pos>=m_length)
+		SG_ERROR("to_pos (%i) in not < m_length (%i)\n",to_pos, m_length);
 	int32_t* from_list = m_intron_list[to_pos];
 	int32_t* q_list = m_quality_list[to_pos];
 
 	//SG_PRINT("from_list[0]: %i\n", from_list[0]);	
 
-	*coverage = 0;
-	*quality = 0;
+	int32_t coverage = 0;
+	int32_t quality = 0;
 	for (int i=1;i<from_list[0]; i++)
 	{
 		//SG_PRINT("from_list[%i]: %i, m_all_pos[from_pos]:%i\n", i,  from_list[i], m_all_pos[from_pos]);
 		if (from_list[i]==m_all_pos[from_pos])
 		{
 			//SG_PRINT("found intron: %i->%i\n", from_pos, to_pos );
-			*coverage = *coverage+1;
-			*quality = CMath::max(*quality, q_list[i]); 
+			coverage = coverage+1;
+			quality = CMath::max(quality, q_list[i]); 
 		}
 	}	
+	values[0] = coverage;
+	values[1] = quality;
 }

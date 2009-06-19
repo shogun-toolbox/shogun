@@ -32,6 +32,7 @@
 
 static int32_t word_degree_default[4]={3,4,5,6} ;
 static int32_t cum_num_words_default[5]={0,64,320,1344,5440} ;
+static int32_t frame_plifs[3]={4,5,6};
 static int32_t num_words_default[4]=   {64,256,1024,4096} ;
 static int32_t mod_words_default[32] = {1,1,1,1,1,1,1,1,
 									1,1,1,1,1,1,1,1,
@@ -89,6 +90,7 @@ CDynProg::CDynProg(int32_t num_svms /*= 8 */)
 	  
 	  m_genestr_stop(1),
 	  m_intron_list(NULL),
+	  m_num_intron_plifs(0),
 	  m_lin_feat(1,1), //by Jonas
 	  m_raw_intensities(NULL),
 	  m_probe_pos(NULL),
@@ -296,8 +298,8 @@ void CDynProg::precompute_tiling_plifs(
 {
 	m_num_lin_feat_plifs_cum[m_num_raw_data] = m_num_lin_feat_plifs_cum[m_num_raw_data-1]+ num_tiling_plifs;
 	float64_t* tiling_plif = new float64_t[num_tiling_plifs];
-	float64_t* svm_value = new float64_t[m_num_lin_feat_plifs_cum[m_num_raw_data]];
-	for (int32_t i=0; i<m_num_lin_feat_plifs_cum[m_num_raw_data]; i++)
+	float64_t* svm_value = new float64_t[m_num_lin_feat_plifs_cum[m_num_raw_data]+m_num_intron_plifs];
+	for (int32_t i=0; i<m_num_lin_feat_plifs_cum[m_num_raw_data]+m_num_intron_plifs; i++)
 		svm_value[i]=0.0;
 	int32_t tiling_rows[num_tiling_plifs];
 	for (int32_t i=0; i<num_tiling_plifs; i++)
@@ -793,9 +795,9 @@ void CDynProg::best_path_set_segment_ids_mask(
 	for (int32_t i=1;i<m;i++)
 		max_id = CMath::max(max_id,segment_ids[i]);
 	//SG_PRINT("max_id: %i, m:%i\n",max_id, m); 	
-	m_segment_ids.set_array(segment_ids, m, false, true) ;
+	m_segment_ids.set_array(segment_ids, m, true, true) ;
 	m_segment_ids.set_name("m_segment_ids");
-	m_segment_mask.set_array(segment_mask, m, false, true) ;
+	m_segment_mask.set_array(segment_mask, m, true, true) ;
 	m_segment_mask.set_name("m_segment_mask");
 }
 
@@ -1231,7 +1233,8 @@ void CDynProg::find_segment_loss_till_pos(
 		bool wobble_pos = (CMath::abs(segment_mask.element(ts))<1e-7) && (wobble_pos_segment_id_switch==0) ;
 		if (!(cur_segment_id<=m_max_a_id))
 			SG_ERROR("(cur_segment_id<=m_max_a_id), cur_segment_id:%i m_max_a_id:%i\n",cur_segment_id,m_max_a_id);
-		ASSERT(cur_segment_id>=0) ;
+		if (!(cur_segment_id>=0))
+			 SG_ERROR("cur_segment_id<0, cur_segment_id:%i m_max_a_id:%i ts:%i t_end:%i\n",cur_segment_id,m_max_a_id, ts, t_end);
 		
 		for (int32_t i=0; i<m_max_a_id+1; i++)
 		{
@@ -1406,9 +1409,9 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 		seq.set_name("seq") ;
 		seq.zero() ;
 
-		float64_t svm_value[m_num_lin_feat_plifs_cum[m_num_raw_data]] ;
+		float64_t svm_value[m_num_lin_feat_plifs_cum[m_num_raw_data]+m_num_intron_plifs];
 		{ // initialize svm_svalue
-			for (int32_t s=0; s<m_num_lin_feat_plifs_cum[m_num_raw_data]; s++)
+			for (int32_t s=0; s<m_num_lin_feat_plifs_cum[m_num_raw_data]+m_num_intron_plifs; s++)
 				svm_value[s]=0 ;
 		}
 
@@ -2336,10 +2339,10 @@ void CDynProg::best_path_trans_deriv(
 	//m_transition_matrix_a_id.display_array() ;
 
 	// compute derivatives for given path
-	float64_t* svm_value = new float64_t[m_num_lin_feat_plifs_cum[m_num_raw_data]];
-	float64_t* svm_value_part1 = new float64_t[m_num_lin_feat_plifs_cum[m_num_raw_data]];
-	float64_t* svm_value_part2 = new float64_t[m_num_lin_feat_plifs_cum[m_num_raw_data]];
-	for (int32_t s=0; s<m_num_lin_feat_plifs_cum[m_num_raw_data]; s++)
+	float64_t* svm_value = new float64_t[m_num_lin_feat_plifs_cum[m_num_raw_data]+m_num_intron_plifs];
+	float64_t* svm_value_part1 = new float64_t[m_num_lin_feat_plifs_cum[m_num_raw_data]+m_num_intron_plifs];
+	float64_t* svm_value_part2 = new float64_t[m_num_lin_feat_plifs_cum[m_num_raw_data]+m_num_intron_plifs];
+	for (int32_t s=0; s<m_num_lin_feat_plifs_cum[m_num_raw_data]+m_num_intron_plifs; s++)
 	{
 		svm_value[s]=0 ;
 		svm_value_part1[s]=0 ;
@@ -2505,9 +2508,9 @@ void CDynProg::best_path_trans_deriv(
 			// instead of d=0
 			for (int32_t d=1; d<=m_num_raw_data; d++) 
 			{
-				//ASSERT(!is_long_transition) ; // not sure what has to be done here
+				ASSERT(!is_long_transition) ; // not sure what has to be done here
 
-				for (int32_t s=0;s<m_num_lin_feat_plifs_cum[m_num_raw_data];s++)
+				for (int32_t s=0;s<m_num_lin_feat_plifs_cum[m_num_raw_data]+m_num_intron_plifs;s++)
 					svm_value[s]=-CMath::INFTY;
 				float64_t* intensities = new float64_t[m_num_probes_cum[d]];
 				int32_t num_intensities = raw_intensities_interval_query(m_pos[from_pos], m_pos[to_pos],intensities, d);
@@ -2623,21 +2626,41 @@ void CDynProg::lookup_content_svm_values(const int32_t from_state, const int32_t
 		float64_t from_val = m_lin_feat.get_element(i, from_state);
 		svm_values[i] = to_val-from_val ;
 	}
-
-	// find the correct row with precomputed 
+	if (m_intron_list)
+	{
+		int32_t support[m_num_intron_plifs];
+		m_intron_list->get_intron_support(support, from_state, to_state);
+		int32_t intron_list_start = m_num_lin_feat_plifs_cum[m_num_raw_data];
+		int32_t intron_list_end = m_num_lin_feat_plifs_cum[m_num_raw_data]+m_num_intron_plifs; 
+		int32_t cnt = 0;
+		for (int32_t i=intron_list_start; i<intron_list_end;i++)
+		{
+			svm_values[i] = (float64_t) (support[cnt]);
+			cnt++;
+		}
+		//if (to_pos>3990 && to_pos<4010)
+		//	SG_PRINT("from_state:%i to_state:%i support[0]:%i support[1]:%i\n",from_state, to_state, support[0], support[1]);
+	}
+	// find the correct row with precomputed frame predictions
 	if (frame!=-1)
 	{
-		svm_values[4] = 1e10;
-		svm_values[5] = 1e10;
-		svm_values[6] = 1e10;
+		svm_values[frame_plifs[0]] = 1e10;
+		svm_values[frame_plifs[1]] = 1e10;
+		svm_values[frame_plifs[2]] = 1e10;
 		int32_t global_frame = from_pos%3;
 		int32_t row = ((global_frame+frame)%3)+4;
 		float64_t to_val   = m_lin_feat.get_element(row, to_state);
 		float64_t from_val = m_lin_feat.get_element(row, from_state);
-		svm_values[frame+4] = (to_val-from_val)/(to_pos-from_pos);
+		svm_values[frame+frame_plifs[0]] = (to_val-from_val)/(to_pos-from_pos);
 	}
 #ifdef DYNPROG_TIMING_DETAIL
 	MyTime.stop() ;
 	content_svm_values_time += MyTime.time_diff_sec() ;
 #endif
 }
+void CDynProg::set_intron_list(CIntronList* intron_list, int32_t num_plifs)
+{
+	m_intron_list = intron_list;
+	m_num_intron_plifs = num_plifs;
+}
+

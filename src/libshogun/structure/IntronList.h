@@ -19,7 +19,7 @@ class CIntronList : public CSGObject
 		void read_introns(int32_t* start_pos, int32_t* end_pos, int32_t* quality, int32_t len);
 
 		/** get coverage and quality score */
-		void get_coverage(int32_t* coverage, int32_t* quality, int32_t from_pos, int32_t to_pos);
+		void get_intron_support(int32_t* values, int32_t from_pos, int32_t to_pos);
 	
 		inline virtual const char* get_name() const { return "IntronList"; }
 	protected:
