@@ -340,19 +340,31 @@ TYPEMAP_IN2(PyObject,      NPY_OBJECT)
     $1 = (is_array($input)) ? 1 : 0;
 }
 
-%typemap(in) (type* IN_ND_ARRAY, int32_t* DIMS, int32_t NDIMS)
-            (PyObject* array=NULL, int is_new_object)
+%typemap(in) (type* IN_NDARRAY, int32_t* DIMS, int32_t NDIMS)
+            (PyObject* array=NULL, int is_new_object, int32_t* temp_dims=NULL)
 {
     array = make_contiguous($input, &is_new_object, -1,typecode);
     if (!array)
         SWIG_fail;
 
+    int32_t ndim = PyArray_NDIM(array);
+    if (ndim <= 0)
+      SWIG_fail;
+
+    temp_dims = new int32_t[ndim];
+
+    npy_intp* py_dims = PyArray_DIMS(array);
+
+    for (int32_t i=0; i<ndim; i++)
+      temp_dims[i] = py_dims[i];
+    
     $1 = (type*) PyArray_BYTES(array);
-    $2 = PyArray_DIMS(array);
-    $3 = PyArray_NDIM(array);
+    $2 = temp_dims;
+    $3 = ndim;
 }
-%typemap(freearg) (type* IN_ND_ARRAY, int32_t* DIMS, int32_t NDIMS) {
+%typemap(freearg) (type* IN_NDARRAY, int32_t* DIMS, int32_t NDIMS) {
   if (is_new_object$argnum && array$argnum) Py_DECREF(array$argnum);
+  delete[] temp_dims$argnum;
 }
 %enddef
 

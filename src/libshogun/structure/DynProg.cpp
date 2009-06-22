@@ -410,15 +410,15 @@ void CDynProg::precompute_content_values()
 			//SG_PRINT("elem (%i, %i, %f)\n", s, p, prev) ;
 			if (prev<-1e20 || prev>1e20)
 			{
-				SG_PRINT("initialization missing (%i, %i, %f)\n", s, p, prev) ;
+				SG_ERROR("initialization missing (%i, %i, %f)\n", s, p, prev) ;
 				prev=0 ;
 			}
 			m_lin_feat.set_element(prev + my_svm_values_unnormalized[s], s, p+1);
 		}
 	}
-	for (int32_t j=0; j<m_num_degrees; j++)
-		delete[] m_wordstr[0][j] ;
-	delete[] m_wordstr[0] ;
+	//for (int32_t j=0; j<m_num_degrees; j++)
+	//	delete[] m_wordstr[0][j] ;
+	//delete[] m_wordstr[0] ;
 }
 
 void CDynProg::set_p_vector(float64_t *p, int32_t N)
@@ -460,6 +460,9 @@ void CDynProg::set_a_id(int32_t *a, int32_t M, int32_t N)
 void CDynProg::set_a_trans_matrix(
 	float64_t *a_trans, int32_t num_trans, int32_t num_cols)
 {
+
+   CMath::display_matrix(a_trans,num_trans, num_cols,"a_trans");
+
 	if (!((num_cols==3) || (num_cols==4)))
 		SG_ERROR("!((num_cols==3) || (num_cols==4)), num_cols: %i\n",num_cols);
 
@@ -1395,8 +1398,8 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 
 		SG_DEBUG("m_N:%i, m_seq_len:%i, max_num_signals:%i\n",m_N, m_seq_len, max_num_signals) ;
 
-		//	for (int32_t i=0;i<m_N*m_seq_len*max_num_signals;i++)
-		//		SG_PRINT("(%i)%0.2f ",i,seq_array[i]);
+		//for (int32_t i=0;i<m_N*m_seq_len*max_num_signals;i++)
+      //   SG_PRINT("(%i)%0.2f ",i,seq_array[i]);
 
 		//CArray2<CPlifBase*> PEN(Plif_matrix, m_N, m_N, false, false) ;
 		CArray2<CPlifBase*> PEN(Plif_matrix, m_N, m_N, false, true) ;

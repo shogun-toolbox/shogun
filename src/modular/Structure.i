@@ -87,6 +87,10 @@
 %apply (float64_t* IN_NDARRAY, int32_t* DIMS, int32_t NDIMS) {(float64_t* seq, int32_t* dims, int32_t ndims)}
 %apply (double* IN_NDARRAY, int32_t* DIMS, int32_t NDIMS) {(double* seq, int32_t* dims, int32_t ndims)}
 
+%apply (float64_t* IN_NDARRAY, int32_t* DIMS, int32_t NDIMS) {(float64_t* penalties_array, int32_t* Dim, int32_t numDims)}
+%apply (double* IN_NDARRAY, int32_t* DIMS, int32_t NDIMS) {(double* penalties_array, int32_t* Dim, int32_t numDims)}
+
+
 /* plif matrix functions */
 %apply (int32_t* IN_ARRAY1, int32_t DIM1) {(int32_t* ids, int32_t num_ids)}
 %apply (float64_t* IN_ARRAY1, int32_t DIM1) {(float64_t* min_values, int32_t num_values)}
