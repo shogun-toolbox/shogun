@@ -6394,7 +6394,7 @@ bool CSGInterface::cmd_best_path_trans()
 	SG_DEBUG("best_path_trans: M: %i, Mseg_path: %i\n", M, Mseg_path);
 	
 
-	h->set_content_type_array(seg_path);
+	h->set_content_type_array(seg_path,Nseg_path,Mseg_path);
 	if (seg_path!=NULL)
 		h->best_path_set_segment_loss(loss, Nloss, Mloss) ;
 	else
@@ -6578,7 +6578,7 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 		my_pos[i]  = mypos_seq[i] ;
 	}
 
-	h->set_content_type_array(seg_path);
+	h->set_content_type_array(seg_path,Nseg_path,Mseg_path);
 	if (seg_path!=NULL)
 		h->best_path_set_segment_loss(loss, Nloss, Mloss) ;
 	else

@@ -663,8 +663,11 @@ int32_t CDynProg::get_num_positions()
 	return m_seq_len;
 }
 
-void CDynProg::set_content_type_array(float64_t* seg_path)
+void CDynProg::set_content_type_array(float64_t* seg_path, int32_t rows, int32_t cols)
 {
+	ASSERT(rows==2);
+	ASSERT(cols==m_seq_len);
+
 	if (seg_path!=NULL)
 	{
 		int32_t *segment_ids = new int32_t[m_seq_len] ;

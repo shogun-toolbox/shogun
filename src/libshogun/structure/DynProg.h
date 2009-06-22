@@ -195,7 +195,7 @@ public:
 	 *
 	 * @param seg_path seg path
 	 */
-	void set_content_type_array(float64_t* seg_path);
+   void set_content_type_array(float64_t* seg_path, int32_t rows, int32_t cols);
 
 	/** set best path pos
 	 *

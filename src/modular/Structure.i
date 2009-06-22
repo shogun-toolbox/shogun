@@ -72,6 +72,10 @@
 %apply (float64_t* IN_ARRAY2, int32_t DIM1, int32_t DIM2) {(float64_t * segment_loss, int32_t num_segment_id1, int32_t num_segment_id2)}
 %apply (int32_t* IN_ARRAY2, int32_t DIM1, int32_t DIM2) {(int32_t* segment_ids_mask, int32_t m, int32_t n)}
 
+
+%apply (float64_t* IN_ARRAY2, int32_t DIM1, int32_t DIM2) {(float64_t* seg_path, int32_t rows, int32_t cols)};
+
+
 /* best_path result retrieval functions */
 %feature("autodoc", "best_path_get_scores(self) -> numpy 1dim array of float") best_path_get_scores;
 %apply (float64_t** ARGOUT1, int32_t* DIM1) {(float64_t** scores, int32_t* n)};
