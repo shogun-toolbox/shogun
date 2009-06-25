@@ -20,7 +20,7 @@
  * Formally, it computes
  *
  * \f[
- * k({\bf x},{\bf x'})= \frac{1}{scale}{\bf x}\cdot {\bf x'}
+ * k({\bf x},{\bf x'})= {\bf x}\cdot {\bf x'}
  * \f]
  */
 class CLinearKernel: public CSimpleKernel<float64_t>
