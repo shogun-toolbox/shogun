@@ -123,6 +123,23 @@ CDynProg::CDynProg(int32_t num_svms /*= 8 */)
 #ifdef ARRAY_STATISTICS
 	m_word_degree.set_name("word_degree");
 #endif
+
+	m_transition_matrix_a_id.set_name("transition_matrix_a_id");
+	m_transition_matrix_a.set_name("transition_matrix_a");
+	m_transition_matrix_a_deriv.set_name("transition_matrix_a_deriv");
+	m_mod_words.set_name("mod_words");
+	m_orf_info.set_name("orf_info");
+	m_segment_sum_weights.set_name("segment_sum_weights");
+	m_PEN.set_name("PEN");
+	m_PEN_state_signals.set_name("PEN_state_signals");
+	m_dict_weights.set_name("dict_weights");
+	m_states.set_name("states");
+	m_positions.set_name("positions");
+	m_lin_feat.set_name("lin_feat");
+
+
+	m_observation_matrix.set_name("m_observation_matrix");
+	m_segment_loss.set_name("m_segment_loss");
 }
 
 CDynProg::~CDynProg()
@@ -259,8 +276,9 @@ void CDynProg::init_content_svm_value_array(const int32_t p_num_svms)
 	// initialize array
 	for (int s=0; s<p_num_svms; s++)
 	  for (int p=0; p<m_seq_len; p++)
-	    m_lin_feat.set_element(s, p, 0.0) ;
+	    m_lin_feat.set_element(0.0, s, p) ;
 }
+
 void CDynProg::resize_lin_feat(const int32_t num_new_feat)
 {
 	int32_t dim1, dim2;
@@ -375,7 +393,7 @@ void CDynProg::create_word_string()
 void CDynProg::precompute_content_values()
 {
 	for (int32_t s=0; s<m_num_svms; s++)
-	  m_lin_feat.set_element(s, 0, 0.0);
+	  m_lin_feat.set_element(0.0, s, 0);
 
 	for (int32_t p=0 ; p<m_seq_len-1 ; p++)
 	{
@@ -809,39 +827,76 @@ void CDynProg::best_path_set_segment_ids_mask(
 
 void CDynProg::get_scores(float64_t **scores, int32_t *m) 
 {
-	*scores=m_scores.get_array();
-	*m=m_scores.get_dim1();
+   ASSERT(scores && m);
+
+   //*scores=m_scores.get_array();
+   *m=m_scores.get_dim1();
+
+   int32_t sz = sizeof(float64_t)*(*m);
+
+   *scores = (float64_t*) malloc(sz);
+   ASSERT(*scores);
+
+   memcpy(*scores,m_scores.get_array(),sz);
 }
 
 void CDynProg::get_states(int32_t **states, int32_t *m, int32_t *n) 
 {
-	*states=m_states.get_array() ;
+   ASSERT(states && m && n);
+
 	*m=m_states.get_dim1() ;
 	*n=m_states.get_dim2() ;
+
+   int32_t sz = sizeof(int32_t)*( (*m) * (*n) );
+
+   *states = (int32_t*) malloc(sz);
+   ASSERT(*states);
+
+   memcpy(*states,m_states.get_array(),sz);
 }
 
-void CDynProg::get_positions(
-	int32_t **positions, int32_t *m, int32_t *n)
+void CDynProg::get_positions(int32_t **positions, int32_t *m, int32_t *n)
 {
-	*positions=m_positions.get_array() ;
+   ASSERT(positions && m && n);
+
 	*m=m_positions.get_dim1() ;
 	*n=m_positions.get_dim2() ;
+
+   int32_t sz = sizeof(int32_t)*( (*m) * (*n) );
+
+   *positions = (int32_t*) malloc(sz);
+   ASSERT(*positions);
+
+   memcpy(*positions,m_positions.get_array(),sz);
 }
 
 void CDynProg::get_path_scores(float64_t** scores, int32_t* seq_len)
 {
-	ASSERT(scores && seq_len);
-	*scores=m_my_scores.get_array();
-	*seq_len=m_my_scores.get_dim1();
+   ASSERT(scores && seq_len);
+
+   *seq_len=m_my_scores.get_dim1();
+
+   int32_t sz = sizeof(float64_t)*(*seq_len);
+
+   *scores = (float64_t*) malloc(sz);
+   ASSERT(*scores);
+
+   memcpy(*scores,m_my_scores.get_array(),sz);
 }
 
 void CDynProg::get_path_losses(float64_t** losses, int32_t* seq_len)
 {
 	ASSERT(losses && seq_len);
-	*losses=m_my_losses.get_array();
-	*seq_len=m_my_losses.get_dim1();
-}
 
+	*seq_len=m_my_losses.get_dim1();
+
+   int32_t sz = sizeof(float64_t)*(*seq_len);
+
+   *losses = (float64_t*) malloc(sz);
+   ASSERT(*losses);
+
+   memcpy(*losses,m_my_losses.get_array(),sz);
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -849,6 +904,7 @@ float64_t CDynProg::best_path_no_b(
 	int32_t max_iter, int32_t &best_iter, int32_t *my_path)
 {
 	CArray2<T_STATES> psi(max_iter, m_N) ;
+   psi.set_name("psi");
 	CArray<float64_t>* delta = new CArray<float64_t>(m_N) ;
 	CArray<float64_t>* delta_new = new CArray<float64_t>(m_N) ;
 	
@@ -936,18 +992,26 @@ void CDynProg::best_path_no_b_trans(
 {
 	//T_STATES *psi=new T_STATES[max_iter*m_N*nbest] ;
 	CArray3<T_STATES> psi(max_iter, m_N, nbest) ;
+   psi.set_name("psi");
 	CArray3<int16_t> ktable(max_iter, m_N, nbest) ;
+   ktable.set_name("ktable");
 	CArray2<int16_t> ktable_ends(max_iter, nbest) ;
+   ktable_ends.set_name("ktable_ends");
 
 	CArray<float64_t> tempvv(nbest*m_N) ;
 	CArray<int32_t> tempii(nbest*m_N) ;
 
 	CArray2<T_STATES> path_ends(max_iter, nbest) ;
+   path_ends.set_name("path_ends");
 	CArray2<float64_t> *delta=new CArray2<float64_t>(m_N, nbest) ;
+   delta->set_name("delta");
 	CArray2<float64_t> *delta_new=new CArray2<float64_t>(m_N, nbest) ;
+   delta_new->set_name("delta_new");
 	CArray2<float64_t> delta_end(max_iter, nbest) ;
+   delta_end.set_name("delta_end");
 
 	CArray2<int32_t> paths(max_iter, nbest) ;
+   paths.set_name("paths");
 	paths.set_array(my_paths, max_iter, nbest, false, false) ;
 
 	{ // initialization
@@ -1184,7 +1248,10 @@ float64_t CDynProg::extend_segment_loss(
 	}
 	
 	CArray2<float64_t> num_segment_id(loss.num_segment_id, loss.seqlen, m_max_a_id+1, false, false) ;
+   num_segment_id.set_name("num_segment_id");
 	CArray2<int32_t> length_segment_id(loss.length_segment_id, loss.seqlen, m_max_a_id+1, false, false) ;
+   length_segment_id.set_name("length_segment_id");
+
 	float64_t ret = 0.0 ;
 	for (int32_t i=0; i<m_max_a_id+1; i++)
 	{
@@ -1222,7 +1289,9 @@ void CDynProg::find_segment_loss_till_pos(
 	MyTime.start() ;
 #endif
 	CArray2<float64_t> num_segment_id(loss.num_segment_id, loss.seqlen, m_max_a_id+1, false, false) ;
+   num_segment_id.set_name("num_segment_id");
 	CArray2<int32_t> length_segment_id(loss.length_segment_id, loss.seqlen, m_max_a_id+1, false, false) ;
+   length_segment_id.set_name("length_segment_id");
 	
 	for (int32_t i=0; i<m_max_a_id+1; i++)
 	{
@@ -1404,11 +1473,9 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 		//for (int32_t i=0;i<m_N*m_seq_len*max_num_signals;i++)
       //   SG_PRINT("(%i)%0.2f ",i,seq_array[i]);
 
-		//CArray2<CPlifBase*> PEN(Plif_matrix, m_N, m_N, false, false) ;
-		CArray2<CPlifBase*> PEN(Plif_matrix, m_N, m_N, false, true) ;
+		CArray2<CPlifBase*> PEN(Plif_matrix, m_N, m_N, false, false) ;
 		PEN.set_name("PEN");
-		//CArray2<CPlifBase*> PEN_state_signals(Plif_state_signals, m_N, max_num_signals, false, false) ;
-		CArray2<CPlifBase*> PEN_state_signals(Plif_state_signals, m_N, max_num_signals, false, true) ;
+		CArray2<CPlifBase*> PEN_state_signals(Plif_state_signals, m_N, max_num_signals, false, false) ;
 		PEN_state_signals.set_name("state_signals");
 
 		CArray2<float64_t> seq(m_N, m_seq_len) ;
@@ -1509,11 +1576,17 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 		// allow longer transitions than look_back
 		bool long_transitions = false; //m_long_transitions ;
 		CArray2<int32_t> long_transition_content_position(m_N,m_N) ;
+      long_transition_content_position.set_name("long_transition_content_position");
 		CArray2<int32_t> long_transition_content_start(m_N,m_N) ;
+      long_transition_content_start.set_name("long_transition_content_start");
 		CArray2<float64_t> long_transition_content_scores(m_N,m_N) ;
+      long_transition_content_scores.set_name("long_transition_content_scores");
 		CArray2<float64_t> long_transition_content_scores_pen(m_N,m_N) ;
+      long_transition_content_scores_pen.set_name("long_transition_content_scores_pen");
 		CArray2<float64_t> long_transition_content_scores_prev(m_N,m_N) ;
+      long_transition_content_scores_prev.set_name("long_transition_content_scores_prev");
 		CArray2<float64_t> long_transition_content_scores_elem(m_N,m_N) ;
+      long_transition_content_scores_elem.set_name("long_transition_content_scores_elem");
 
 		if (with_loss || nbest!=1)
 		{
@@ -1528,6 +1601,7 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 		long_transition_content_position.zero() ;
 
 		CArray2<int32_t> look_back(m_N,m_N) ;
+      look_back.set_name("look_back");
 
 		{ // determine maximal length of look-back
 			for (int32_t i=0; i<m_N; i++)
@@ -2293,8 +2367,11 @@ void CDynProg::best_path_trans_deriv(
 	bool use_svm = false ;
 
 	CArray2<CPlifBase*> PEN(Plif_matrix, m_N, m_N, false, false) ;
+   PEN.set_name("PEN");
 	CArray2<CPlifBase*> PEN_state_signals(Plif_state_signals, m_N, max_num_signals, false, false) ;
+   PEN_state_signals.set_name("PEN_state_signals");
 	CArray3<float64_t> seq_input(seq_array, m_N, m_seq_len, max_num_signals) ;
+   seq_input.set_name("seq_input");
 
 	{ // determine whether to use svm outputs and clear derivatives
 		for (int32_t i=0; i<m_N; i++)
