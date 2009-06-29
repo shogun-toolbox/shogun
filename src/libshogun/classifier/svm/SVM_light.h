@@ -491,8 +491,10 @@ class CSVMLight : public CSVM
    *
    * @return new objective value
    */
-  float64_t compute_optimal_betas_analytically(float64_t* beta, float64_t* old_beta,
-		  int32_t num_kernels, const float64_t* sumw, float64_t suma, float64_t mkl_objective);
+  float64_t compute_optimal_betas_analytically(
+                  float64_t* beta, const float64_t* old_beta, const int32_t num_kernels,
+		  const int32_t* label, const float64_t* sumw, const float64_t suma,
+                  const float64_t mkl_objective);
 
 /*  float64_t compute_optimal_betas_gradient(float64_t* beta, float64_t* old_beta,
 		  int32_t num_kernels, const float64_t* sumw, float64_t suma, float64_t mkl_objective);
