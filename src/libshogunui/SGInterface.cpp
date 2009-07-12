@@ -4624,77 +4624,93 @@ bool CSGInterface::cmd_get_svm_objective()
 
 bool CSGInterface::cmd_compute_svm_primal_objective()
 {
-	if (m_nrhs!=1 || !create_return_values(1))
-		return false;
-
-	CSVM* svm=(CSVM*) ui_classifier->get_classifier();
-	if (!svm)
-		SG_ERROR("No SVM set.\n");
-
-	set_real(svm->compute_svm_primal_objective());
-
-	return true;
+	return do_compute_objective(SVM_PRIMAL);
 }
 
 bool CSGInterface::cmd_compute_svm_dual_objective()
 {
-	if (m_nrhs!=1 || !create_return_values(1))
-		return false;
-
-	CSVM* svm=(CSVM*) ui_classifier->get_classifier();
-	if (!svm)
-		SG_ERROR("No SVM set.\n");
-
-	set_real(svm->compute_svm_dual_objective());
-
-	return true;
+	return do_compute_objective(SVM_DUAL);
 }
 
 bool CSGInterface::cmd_compute_mkl_dual_objective()
 {
-	if (m_nrhs!=1 || !create_return_values(1))
-		return false;
-
-	CSVM* svm=(CSVM*) ui_classifier->get_classifier();
-	if (!svm)
-		SG_ERROR("No SVM set.\n");
-
-	set_real(svm->compute_mkl_dual_objective());
-
-	return true;
+	return do_compute_objective(MKL_DUAL);
 }
 
 bool CSGInterface::cmd_compute_relative_mkl_duality_gap()
 {
-	if (m_nrhs!=1 || !create_return_values(1))
-		return false;
-
-	CSVM* svm=(CSVM*) ui_classifier->get_classifier();
-	if (!svm)
-		SG_ERROR("No SVM set.\n");
-
-	float64_t primal=svm->compute_mkl_dual_objective();
-	float64_t dual=svm->compute_mkl_primal_objective();
-	set_real((primal-dual)/dual);
-
-	return true;
+	return do_compute_objective(MKL_RELATIVE_DUALITY_GAP);
 }
 
 bool CSGInterface::cmd_compute_absolute_mkl_duality_gap()
 {
+	return do_compute_objective(MKL_ABSOLUTE_DUALITY_GAP);
+}
+
+bool CSGInterface::do_compute_objective(E_WHICH_OBJ obj)
+{
 	if (m_nrhs!=1 || !create_return_values(1))
 		return false;
+
+	float64_t result=23.5;
 
 	CSVM* svm=(CSVM*) ui_classifier->get_classifier();
 	if (!svm)
 		SG_ERROR("No SVM set.\n");
 
-	float64_t primal=svm->compute_mkl_dual_objective();
-	float64_t dual=svm->compute_mkl_primal_objective();
-	set_real(dual-primal);
+	CLabels* trainlabels=NULL;
+	trainlabels=ui->ui_labels->get_train_labels();
 
+	if (!trainlabels)
+		SG_ERROR("No trainlabels available.\n");
+
+	CKernel* kernel=ui->ui_kernel->get_kernel();
+	if (!kernel)
+		SG_ERROR("No kernel available.\n");
+
+	if (!ui->ui_kernel->is_initialized() || !kernel->has_features())
+		SG_ERROR("Kernel not initialized.\n");
+
+	((CKernelMachine*) svm)->set_labels(trainlabels);
+	((CKernelMachine*) svm)->set_kernel(kernel);
+
+
+	switch (obj)
+	{
+		case  SVM_PRIMAL:
+			obj=svm->compute_svm_primal_objective();
+			break;
+		case  SVM_DUAL:
+			obj=svm->compute_svm_dual_objective();
+			break;
+		case  MKL_PRIMAL:
+			obj=svm->compute_mkl_primal_objective();
+			break;
+		case  MKL_DUAL:
+			obj=svm->compute_mkl_dual_objective();
+			break;
+		case  MKL_RELATIVE_DUALITY_GAP:
+			{
+				float64_t primal=svm->compute_mkl_dual_objective();
+				float64_t dual=svm->compute_mkl_primal_objective();
+				obj=(primal-dual)/dual;
+			}
+			break;
+		case  MKL_ABSOLUTE_DUALITY_GAP:
+			{
+				float64_t primal=svm->compute_mkl_dual_objective();
+				float64_t dual=svm->compute_mkl_primal_objective();
+				obj=dual-primal;
+			}
+			break;
+		default:
+			SG_SERROR("Error calling do_compute_objective\n");
+			return false;
+	};
+	set_real(result);
 	return true;
 }
+
 
 bool CSGInterface::cmd_train_classifier()
 {

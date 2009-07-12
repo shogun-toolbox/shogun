@@ -81,6 +81,16 @@ enum IFType
 	ATTR_STRUCT
 };
 
+enum E_WHICH_OBJ
+{
+	SVM_PRIMAL,
+	SVM_DUAL,
+	MKL_PRIMAL,
+	MKL_DUAL,
+	MKL_RELATIVE_DUALITY_GAP,
+	MKL_ABSOLUTE_DUALITY_GAP
+};
+
 class CSGInterface : public CSGObject
 {
 	public:
@@ -721,6 +731,8 @@ class CSGInterface : public CSGObject
 			return get_string(len);
 		}
 	private:
+		/** helper function for computing objective */
+		bool do_compute_objective(E_WHICH_OBJ obj);
 		/** helper function for hmm classify */
 		bool do_hmm_classify(bool linear=false, bool one_class=false);
 		/** helper function for hmm classify on 1 example */
