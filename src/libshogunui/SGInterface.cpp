@@ -4659,16 +4659,16 @@ bool CSGInterface::do_compute_objective(E_WHICH_OBJ obj)
 		SG_ERROR("No SVM set.\n");
 
 	CLabels* trainlabels=NULL;
-	trainlabels=ui->ui_labels->get_train_labels();
+	trainlabels=ui_labels->get_train_labels();
 
 	if (!trainlabels)
 		SG_ERROR("No trainlabels available.\n");
 
-	CKernel* kernel=ui->ui_kernel->get_kernel();
+	CKernel* kernel=ui_kernel->get_kernel();
 	if (!kernel)
 		SG_ERROR("No kernel available.\n");
 
-	if (!ui->ui_kernel->is_initialized() || !kernel->has_features())
+	if (!ui_kernel->is_initialized() || !kernel->has_features())
 		SG_ERROR("Kernel not initialized.\n");
 
 	((CKernelMachine*) svm)->set_labels(trainlabels);
@@ -4678,35 +4678,36 @@ bool CSGInterface::do_compute_objective(E_WHICH_OBJ obj)
 	switch (obj)
 	{
 		case  SVM_PRIMAL:
-			obj=svm->compute_svm_primal_objective();
+			result=svm->compute_svm_primal_objective();
 			break;
 		case  SVM_DUAL:
-			obj=svm->compute_svm_dual_objective();
+			result=svm->compute_svm_dual_objective();
 			break;
 		case  MKL_PRIMAL:
-			obj=svm->compute_mkl_primal_objective();
+			result=svm->compute_mkl_primal_objective();
 			break;
 		case  MKL_DUAL:
-			obj=svm->compute_mkl_dual_objective();
+			result=svm->compute_mkl_dual_objective();
 			break;
 		case  MKL_RELATIVE_DUALITY_GAP:
 			{
 				float64_t primal=svm->compute_mkl_dual_objective();
 				float64_t dual=svm->compute_mkl_primal_objective();
-				obj=(primal-dual)/dual;
+				result=(primal-dual)/dual;
 			}
 			break;
 		case  MKL_ABSOLUTE_DUALITY_GAP:
 			{
 				float64_t primal=svm->compute_mkl_dual_objective();
 				float64_t dual=svm->compute_mkl_primal_objective();
-				obj=dual-primal;
+				result=dual-primal;
 			}
 			break;
 		default:
 			SG_SERROR("Error calling do_compute_objective\n");
 			return false;
 	};
+
 	set_real(result);
 	return true;
 }
