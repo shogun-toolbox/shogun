@@ -2117,10 +2117,10 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 
 							if (ts>0)
 							{
-								ASSERT((m_pos[t]-m_pos[ts-1] >= m_long_transition_threshold) && (m_pos[t]-m_pos[ts] < m_long_transition_threshold))
+								ASSERT((m_pos[t]-m_pos[ts-1] >= m_long_transition_threshold) && (m_pos[t]-m_pos[ts] < m_long_transition_threshold)) ;
 
-									/* only consider this transition, if the right position was found */
-									float pen_val = 0.0 ;
+								/* only consider this transition, if the right position was found */
+								float pen_val = 0.0 ;
 								if (penalty)
 								{
 									int32_t frame = m_orf_info.element(ii,0);
