@@ -49,6 +49,20 @@ class CMKL : public CSVM
 			svm=s;
 		}
 
+		inline CSVM* get_svm()
+		{
+			SG_REF(svm);
+			return svm;
+		}
+
+		inline void set_svm(CSVM* s)
+		{
+			ASSERT(s);
+			SG_REF(s);
+			SG_UNREF(svm);
+			svm=s;
+		}
+
 		virtual bool train();
 
 		/** set C mkl

@@ -22,6 +22,8 @@ CMKL::CMKL(CSVM* s)
 #ifdef USE_GLPK
 	lp_glpk = NULL;
 #endif
+	svm=s;
+	SG_REF(s);
 
 	lp_initialized = false ;
 }
@@ -198,11 +200,19 @@ bool CMKL::train()
 	mkl_iterations = 0;
 	
 	if (interleaved_optimization)
+	{
+		if (svm->get_classifier_type() != CT_LIGHT)
+		{
+			SG_ERROR("Interleaved MKL optimization is currently "
+					"only supported with SVMlight\n");
+		}
 		set_callback_function();
+		svm->train();
+	}
 	else
 	{
-		int32_t num_vectors = 0 ;
-		int32_t num_kernels = 0 ;
+		int32_t num_vectors = 0;
+		int32_t num_kernels = 0;
 		float64_t* alpha=new float64_t[num_vectors];
 		float64_t* old_alpha;
 		float64_t* beta;
