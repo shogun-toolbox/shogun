@@ -9,9 +9,10 @@
  */
 
 #include "classifier/svm/MKL.h"
+#include "classifier/svm/LibSVM.h"
 
 CMKL::CMKL(CSVM* s)
-	: CSVM(), svm(NULL), C_mkl(0), mkl_norm(1), mkl_iterations(0), epsilon(1e-5), interleaved_optimization(false)
+	: CSVM(), svm(NULL), C_mkl(0), mkl_norm(1), mkl_iterations(0), mkl_epsilon(1e-5), interleaved_optimization(false)
 {
 	set_constraint_generator(s);
 #ifdef USE_CPLEX
@@ -23,7 +24,10 @@ CMKL::CMKL(CSVM* s)
 	lp_glpk = NULL;
 #endif
 	svm=s;
-	SG_REF(s);
+
+	if (!svm)
+		svm=new CLibSVM();
+	SG_REF(svm);
 
 	lp_initialized = false ;
 }
@@ -184,9 +188,9 @@ bool CMKL::train()
 	int32_t num_label=labels->get_num_labels();
 
 	SG_INFO( "%d trainlabels\n", num_label);
-	if (epsilon<=0)
-		epsilon=1e-2 ;
-	SG_DEBUG( "mkl_epsilon = %1.1e\n", epsilon) ;
+	if (mkl_epsilon<=0)
+		mkl_epsilon=1e-2 ;
+	SG_DEBUG( "mkl_epsilon = %1.1e\n", mkl_epsilon) ;
 	SG_DEBUG( "C_mkl = %1.1e\n", C_mkl) ;
 	SG_DEBUG( "mkl_norm = %1.3e\n", mkl_norm);
 
@@ -211,25 +215,39 @@ bool CMKL::train()
 	}
 	else
 	{
-		int32_t num_vectors = 0;
-		int32_t num_kernels = 0;
-		float64_t* alpha=new float64_t[num_vectors];
-		float64_t* old_alpha;
-		float64_t* beta;
-		float64_t* old_beta;
-		int32_t num_beta=num_kernels;
-		int32_t num_alpha=num_vectors;
-		void* aux=NULL;
+		//int32_t num_vectors = 0;
+		//int32_t num_kernels = 0;
+		//float64_t* alpha=new float64_t[num_vectors];
+		//float64_t* old_alpha;
+		//float64_t* beta;
+		//float64_t* old_beta;
+		//int32_t num_beta=num_kernels;
+		//int32_t num_alpha=num_vectors;
+		//void* aux=NULL;
 
-		while (!converged())
+		svm->set_bias_enabled(get_bias_enabled());
+		svm->set_epsilon(get_epsilon());
+		svm->set_max_train_time(get_max_train_time());
+		svm->set_nu(get_nu());
+		svm->set_C(get_C1(), get_C2());
+		svm->set_qpsize(get_qpsize());
+		svm->set_shrinking_enabled(get_shrinking_enabled());
+		svm->set_linadd_enabled(get_linadd_enabled());
+		svm->set_batch_computation_enabled(get_batch_computation_enabled());
+		svm->set_labels(labels);
+		svm->set_kernel(kernel);
+
+		while (true)
 		{
 			svm->train();
 			//perform_mkl_step(alpha, old_alpha, num_alpha, beta, old_beta, num_beta, aux);
 			//compute_wgap();
 
 			mkl_iterations++;
+
+			//if (converged())
+				break;
 		}
-		//delete[] ;
 	}
 #ifdef USE_CPLEX
 	cleanup_cplex();

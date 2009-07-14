@@ -82,17 +82,17 @@ class CMKL : public CSVM
 			mkl_norm = norm;
 		}
 
-		/** set epsilon (optimization accuracy for kernel weights)
+		/** set mkl epsilon (optimization accuracy for kernel weights)
 		 *
 		 * @param eps new weight_epsilon
 		 */
-		inline void set_epsilon(float64_t eps) { epsilon=eps; }
+		inline void set_mkl_epsilon(float64_t eps) { mkl_epsilon=eps; }
 
-		/** get epsilon for weights (optimization accuracy for kernel weights)
+		/** get mkl epsilon for weights (optimization accuracy for kernel weights)
 		 *
 		 * @return epsilon for weights
 		 */
-		inline float64_t get_epsilon() { return epsilon; }
+		inline float64_t get_mkl_epsilon() { return mkl_epsilon; }
 
 		/** get number of MKL iterations
 		 *
@@ -161,8 +161,8 @@ class CMKL : public CSVM
 		float64_t mkl_norm;
 		/** number of mkl steps */
 		int32_t mkl_iterations;
-		/** epsilon for multiple kernel learning */
-		float64_t epsilon;
+		/** mkl_epsilon for multiple kernel learning */
+		float64_t mkl_epsilon;
 		/** whether to use mkl wrapper or interleaved opt. */
 		bool interleaved_optimization;
 

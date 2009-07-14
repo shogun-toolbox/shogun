@@ -368,6 +368,67 @@ bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
 	return (classifier!=NULL);
 }
 
+bool CGUIClassifier::train_mkl()
+{
+	CMKL* mkl= (CMKL*) classifier;
+	if (!mkl)
+		SG_ERROR("No SVM available.\n");
+
+	bool oneclass=(mkl->get_classifier_type()==CT_LIBSVMONECLASS);
+	CLabels* trainlabels=NULL;
+	if(!oneclass)
+		trainlabels=ui->ui_labels->get_train_labels();
+	else
+		SG_INFO("Training one class mkl.\n");
+	if (!trainlabels && !oneclass)
+		SG_ERROR("No trainlabels available.\n");
+
+	CKernel* kernel=ui->ui_kernel->get_kernel();
+	if (!kernel)
+		SG_ERROR("No kernel available.\n");
+	if (!ui->ui_kernel->is_initialized() || !kernel->has_features())
+		SG_ERROR("Kernel not initialized.\n");
+
+	int32_t num_vec=kernel->get_num_vec_lhs();
+	if (!oneclass && trainlabels->get_num_labels() != num_vec)
+		SG_ERROR("Number of train labels (%d) and training vectors (%d) differs!\n", trainlabels->get_num_labels(), num_vec);
+
+	SG_INFO("Starting SVM training on %ld vectors using C1=%lf C2=%lf epsilon=%lf\n", num_vec, svm_C1, svm_C2, svm_epsilon);
+
+	mkl->set_bias_enabled(svm_use_bias);
+	mkl->set_epsilon(svm_epsilon);
+	mkl->set_max_train_time(max_train_time);
+	mkl->set_tube_epsilon(svm_tube_epsilon);
+	mkl->set_nu(svm_nu);
+	mkl->set_C(svm_C1, svm_C2);
+	mkl->set_qpsize(svm_qpsize);
+	mkl->set_shrinking_enabled(svm_use_shrinking);
+	mkl->set_linadd_enabled(svm_use_linadd);
+	mkl->set_batch_computation_enabled(svm_use_batch_computation);
+	mkl->set_mkl_epsilon(svm_weight_epsilon);
+	mkl->set_mkl_norm(mkl_norm); 
+	mkl->set_C_mkl(C_mkl);
+
+	if (svm_do_auc_maximization)
+	{
+		CAUCKernel* auc_kernel = new CAUCKernel(10, kernel);
+		CLabels* auc_labels= auc_kernel->setup_auc_maximization(trainlabels);
+		((CKernelMachine*) mkl)->set_labels(auc_labels);
+		((CKernelMachine*) mkl)->set_kernel(auc_kernel);
+		SG_UNREF(auc_labels);
+	}
+	else
+	{
+		if(!oneclass)
+			((CKernelMachine*) mkl)->set_labels(trainlabels);
+		((CKernelMachine*) mkl)->set_kernel(kernel);
+	}
+
+	bool result=mkl->train();
+
+	return result;
+}
+
 bool CGUIClassifier::train_svm()
 {
 	CSVM* svm= (CSVM*) classifier;
@@ -396,11 +457,6 @@ bool CGUIClassifier::train_svm()
 	SG_INFO("Starting SVM training on %ld vectors using C1=%lf C2=%lf epsilon=%lf\n", num_vec, svm_C1, svm_C2, svm_epsilon);
 
 	svm->set_bias_enabled(svm_use_bias);
-	/* mkl
-	svm->set_weight_epsilon(svm_weight_epsilon);
-	svm->set_mkl_norm(svm_mkl_norm); 
-	svm->set_C_mkl(svm_C_mkl);
-	svm->set_mkl_enabled(svm_use_mkl); */
 	svm->set_epsilon(svm_epsilon);
 	svm->set_max_train_time(max_train_time);
 	svm->set_tube_epsilon(svm_tube_epsilon);
@@ -899,7 +955,6 @@ CLabels* CGUIClassifier::classify(CLabels* output)
 
 	switch (classifier->get_classifier_type())
 	{
-		case CT_MKLCLASSIFICATION:
 		case CT_LIGHT:
 		case CT_LIBSVM:
 		case CT_MCSVM:
@@ -913,6 +968,8 @@ CLabels* CGUIClassifier::classify(CLabels* output)
 		case CT_LIBSVMMULTICLASS:
 		case CT_LIBSVMONECLASS:
 		case CT_SVRLIGHT:
+		case CT_MKLCLASSIFICATION:
+		case CT_MKLREGRESSION:
 		case CT_KRR:
 			return classify_kernelmachine(output);
 		case CT_KNN:
@@ -979,7 +1036,6 @@ bool CGUIClassifier::get_trained_classifier(
 		case CT_MCSVM:
 		case CT_GNPPSVM:
 		case CT_LIBSVMMULTICLASS:
-		case CT_MKLCLASSIFICATION:
 		case CT_LIGHT:
 		case CT_LIBSVM:
 		case CT_MPD:
@@ -990,6 +1046,8 @@ bool CGUIClassifier::get_trained_classifier(
 		case CT_LIBSVR:
 		case CT_LIBSVMONECLASS:
 		case CT_SVRLIGHT:
+		case CT_MKLCLASSIFICATION:
+		case CT_MKLREGRESSION:
 		case CT_KRR:
 			return get_svm(weights, rows, cols, bias, brows, bcols, idx);
 			break;

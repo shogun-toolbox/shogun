@@ -160,6 +160,12 @@ class CMKLClassification : public CMKL
 		}
 
 		void set_qnorm_constraints(float64_t* beta, int32_t num_kernels);
+
+		/** get classifier type
+		 *
+		 * @return classifier type MKL_CLASSIFICATION
+		 */
+		virtual inline EClassifierType get_classifier_type() { return CT_MKLCLASSIFICATION; }
 	protected:
 		float64_t* W;
 		float64_t w_gap;

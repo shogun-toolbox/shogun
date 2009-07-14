@@ -158,6 +158,12 @@ class CMKLRegression : public CMKL
 		{
 			return w_gap<epsilon;
 		}
+
+		/** get classifier type
+		 *
+		 * @return classifier type MKL_REGRESSION
+		 */
+		virtual inline EClassifierType get_classifier_type() { return CT_MKLREGRESSION; }
 	protected:
 		float64_t* W;
 		float64_t w_gap;

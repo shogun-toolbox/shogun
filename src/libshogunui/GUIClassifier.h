@@ -85,6 +85,8 @@ class CGUIClassifier : public CSGObject
 		/** set solver type */
 		bool set_solver(char* solver);
 
+		/** train MKL */
+		bool train_mkl();
 		/** train SVM */
 		bool train_svm();
 		/** train K-nearest-neighbour */
