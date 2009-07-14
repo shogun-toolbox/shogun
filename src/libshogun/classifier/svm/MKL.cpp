@@ -8,6 +8,7 @@
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
+#include "lib/Signal.h"
 #include "classifier/svm/MKL.h"
 #include "classifier/svm/LibSVM.h"
 
@@ -201,6 +202,11 @@ bool CMKL::train()
 		init_cplex();
 #endif
 
+#ifdef USE_GLPK
+	if (get_solver_type()==ST_GLPK || get_solver_type()==ST_AUTO)
+		init_glpk();
+#endif
+
 	mkl_iterations = 0;
 	
 	if (interleaved_optimization)
@@ -215,15 +221,10 @@ bool CMKL::train()
 	}
 	else
 	{
-		//int32_t num_vectors = 0;
-		//int32_t num_kernels = 0;
-		//float64_t* alpha=new float64_t[num_vectors];
-		//float64_t* old_alpha;
-		//float64_t* beta;
-		//float64_t* old_beta;
-		//int32_t num_beta=num_kernels;
-		//int32_t num_alpha=num_vectors;
-		//void* aux=NULL;
+		int32_t num_kernels = kernel->get_num_subkernels();
+		float64_t* sumw = new float64_t[num_kernels];
+		float64_t* beta = new float64_t[num_kernels];
+		void* aux=NULL;
 
 		svm->set_bias_enabled(get_bias_enabled());
 		svm->set_epsilon(get_epsilon());
@@ -240,19 +241,59 @@ bool CMKL::train()
 		while (true)
 		{
 			svm->train();
-			//perform_mkl_step(alpha, old_alpha, num_alpha, beta, old_beta, num_beta, aux);
-			//compute_wgap();
+
+			float64_t suma=0;
+			int32_t nsv=svm->get_num_support_vectors();
+			for (int32_t i=0; i<nsv; i++)
+				suma+=CMath::abs(svm->get_alpha(i));
+
+			int32_t nweights=0;
+			const float64_t* old_beta = kernel->get_subkernel_weights(nweights);
+			ASSERT(nweights==num_kernels);
+			ASSERT(old_beta);
+
+			for (int32_t i=0; i<num_kernels; i++)
+			{
+				beta[i]=0;
+				sumw[i]=0;
+			}
+
+			for (int32_t n=0; n<num_kernels; n++)
+			{
+				beta[n]=1.0;
+				kernel->set_subkernel_weights(beta, num_kernels);
+
+				for (int32_t i=0; i<nsv; i++)
+				{   
+					int32_t ii=svm->get_support_vector(i);
+
+					for (int32_t j=0; j<nsv; j++)
+					{   
+						int32_t jj=svm->get_support_vector(j);
+						sumw[n]+=0.5*svm->get_alpha(i)*svm->get_alpha(j)*kernel->kernel(ii,jj);
+					}
+				}
+				beta[n]=0.0;
+			}
+			
+			perform_mkl_step(beta, old_beta, sumw, suma, num_kernels, aux);
+			kernel->set_subkernel_weights(beta, num_kernels);
 
 			mkl_iterations++;
 
-			//if (converged())
+			if (converged() || CSignal::cancel_computations())
 				break;
 		}
+
+		delete[] beta;
+		delete[] sumw;
 	}
 #ifdef USE_CPLEX
 	cleanup_cplex();
 #endif
-
+#ifdef USE_GLPK
+	cleanup_glpk();
+#endif
 
 	int32_t nsv=svm->get_num_support_vectors();
 	create_new_model(nsv);

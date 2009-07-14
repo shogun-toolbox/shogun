@@ -932,11 +932,11 @@ class CMath : public CSGObject
 
 		/// display vector (useful for debugging)
 		template <class T> static void display_vector(
-			T* vector, int32_t n, const char* name="vector");
+			const T* vector, int32_t n, const char* name="vector");
 
 		/// display matrix (useful for debugging)
 		template <class T> static void display_matrix(
-			T* matrix, int32_t rows, int32_t cols, const char* name="matrix");
+			const T* matrix, int32_t rows, int32_t cols, const char* name="matrix");
 
 		/** performs a quicksort on an array output of length size
 		 * it is sorted in ascending order 

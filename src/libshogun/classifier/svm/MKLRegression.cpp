@@ -9,8 +9,9 @@ CMKLRegression::~CMKLRegression()
 {
 }
 
-void CMKLRegression::perform_mkl_step(float64_t* alpha, float64_t* old_alpha, int32_t num_alpha,
-		float64_t* beta, float64_t* old_beta, int32_t num_beta, void* aux)
+void CMKLRegression::perform_mkl_step(
+		float64_t* beta, const float64_t* old_beta, const float64_t* sumw,
+		const float64_t suma, int32_t num_kernels, void* aux)
 {
 }
 

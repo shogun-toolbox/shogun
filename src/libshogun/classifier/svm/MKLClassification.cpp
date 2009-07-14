@@ -2,7 +2,7 @@
 #include "kernel/CombinedKernel.h"
 
 
-CMKLClassification::CMKLClassification(CSVM* s) : CMKL(s)
+CMKLClassification::CMKLClassification(CSVM* s) : CMKL(s), w_gap(1.0), rho(0)
 {
 }
 
@@ -208,64 +208,24 @@ void* CMKLClassification::update_linear_component_mkl_linadd_helper(void* p)
 
 
 
-void CMKLClassification::perform_mkl_step(float64_t* alpha, float64_t* old_alpha, int32_t num_alpha,
-				float64_t* beta, float64_t* old_beta, int32_t num_beta, void* aux)
+void CMKLClassification::perform_mkl_step(
+		float64_t* beta, const float64_t* old_beta, const float64_t* sumw,
+		const float64_t suma, int32_t num_kernels, void* aux)
 {
-	int num_kernels=num_beta;
-	int32_t* label;
-	int32_t* active2dnum;
-	float64_t* a;
-	float64_t* lin;
-	float64_t* sumw;
-	int32_t inner_iters;
-
-	int32_t num_active_rows=0;
-	int32_t num_rows=0;
+	int32_t inner_iters=0;
 	float64_t mkl_objective=0;
-	int nk = (int) num_kernels; // calling external lib
-	float64_t suma = 0 ;
-	int32_t num = kernel->get_num_vec_rhs();
 
-	int32_t count=0;
 
-#ifdef HAVE_LAPACK
-	double* alphay  = new double[num];
-
-	for (int32_t i=0; i<num; i++)
-	{
-		alphay[i]=a[i]*label[i];
-		suma+=a[i];
-	}
-
-	for (int32_t i=0; i<num_kernels; i++)
-		sumw[i]=0;
-
-	cblas_dgemv(CblasColMajor, CblasNoTrans, num_kernels, (int) num, 0.5, (double*) W,
-			num_kernels, alphay, 1, 1.0, (double*) sumw, 1);
-
+			CMath::display_vector(old_beta, num_kernels,"old_beta");
 	mkl_objective=-suma;
 	for (int32_t i=0; i<num_kernels; i++)
+	{
+		beta[i]=old_beta[i];
 		mkl_objective+=old_beta[i]*sumw[i];
-
-	delete[] alphay;
-#else
-	for (int32_t i=0; i<num; i++)
-		suma += a[i];
-
-	mkl_objective=-suma;
-	for (int32_t d=0; d<num_kernels; d++)
-	{
-		sumw[d]=0;
-		for (int32_t i=0; i<num; i++)
-			sumw[d] += a[i]*(0.5*label[i]*W[i*num_kernels+d]);
-		mkl_objective   += old_beta[d]*sumw[d];
 	}
-#endif
-
-	count++ ;
 
 	w_gap = CMath::abs(1-rho/mkl_objective) ;
-	if( (w_gap >= 0.9999*epsilon) || (get_solver_type()==ST_INTERNAL && mkl_norm>1) )
+	if( (w_gap >= 0.9999*mkl_epsilon) || (get_solver_type()==ST_INTERNAL && mkl_norm>1) )
 	{
 		if ( mkl_norm == 1)
 		{
@@ -287,43 +247,15 @@ void CMKLClassification::perform_mkl_step(float64_t* alpha, float64_t* old_alpha
 				rho=compute_optimal_betas_via_cplex(beta, old_beta, num_kernels, sumw, suma, inner_iters);
 			}
 			else
-			{
-				//rho=compute_optimal_betas_analytically(beta, old_beta, num_kernels, sumw, suma, mkl_objective);
-				//rho=compute_optimal_betas_gradient(beta, old_beta, num_kernels, sumw, suma, mkl_objective);
 				rho=compute_optimal_betas_newton(beta, old_beta, num_kernels, sumw, suma, mkl_objective);
-			}
 		}
 
+		CMath::display_vector(beta, num_kernels,"beta");
+		CMath::display_vector(sumw, num_kernels,"sumw");
+		SG_PRINT("obj=%f rho=%f eps=%f mkl_eps=%f suma=%f\n", rho, mkl_objective, epsilon, mkl_epsilon, suma);
 		// set weights, store new rho and compute new w gap
-		kernel->set_subkernel_weights(beta, num_kernels) ;
 		w_gap = CMath::abs(1-rho/mkl_objective) ;
 	}
-
-	// update lin
-#ifdef HAVE_LAPACK
-	cblas_dgemv(CblasColMajor, CblasTrans, nk, (int) num, 1.0, (double*) W,
-			nk, (double*) old_beta, 1, 0.0, (double*) lin, 1);
-#else
-	for (int32_t i=0; i<num; i++)
-		lin[i]=0 ;
-	for (int32_t d=0; d<num_kernels; d++)
-		if (old_beta[d]!=0)
-			for (int32_t i=0; i<num; i++)
-				lin[i] += old_beta[d]*W[i*num_kernels+d] ;
-#endif
-
-	// count actives
-	int32_t jj;
-	for (jj=0;active2dnum[jj]>=0;jj++);
-
-	if (count%10==0)
-	{
-		int32_t start_row = 1 ;
-		if (C_mkl!=0.0)
-			start_row+=2*(num_kernels-1);
-		SG_DEBUG("%i. OBJ: %f  RHO: %f  wgap=%f (activeset=%i; active rows=%i/%i; inner_iters=%d)\n", count, mkl_objective,rho,w_gap,jj,num_active_rows,num_rows-start_row, inner_iters);
-	}
-	mkl_iterations++;
 }
 
 void CMKLClassification::set_callback_function()
@@ -331,7 +263,7 @@ void CMKLClassification::set_callback_function()
 }
 
 float64_t CMKLClassification::compute_optimal_betas_analytically(float64_t* beta,
-		float64_t* old_beta, int32_t num_kernels,
+		const float64_t* old_beta, int32_t num_kernels,
 		const float64_t* sumw, float64_t suma,
     float64_t mkl_objective)
 {
@@ -659,7 +591,7 @@ float64_t CMKLClassification::compute_optimal_betas_newton(float64_t* beta,
 
 
 float64_t CMKLClassification::compute_optimal_betas_newton(float64_t* beta,
-		float64_t* old_beta, int32_t num_kernels,
+		const float64_t* old_beta, int32_t num_kernels,
 		const float64_t* sumw, float64_t suma,
     float64_t mkl_objective)
 {
@@ -687,11 +619,11 @@ float64_t CMKLClassification::compute_optimal_betas_newton(float64_t* beta,
   }
   for( i = 0; i < nofNewtonSteps; ++i ) {
 
-    if( i != 0 ) {
-      for( p=0; p<num_kernels; ++p ) {
-        old_beta[p] = beta[p];
-      }
-    }
+    //if( i != 0 ) {
+    //  for( p=0; p<num_kernels; ++p ) {
+    //    old_beta[p] = beta[p];
+    //  }
+    //}
 
     // compute Newton step (stored in "beta") (Hessian is diagonal)
     const float64_t gqq1 = gamma * mkl_norm * (mkl_norm-1.0);
@@ -805,7 +737,7 @@ float64_t CMKLClassification::compute_optimal_betas_newton(float64_t* beta,
 // }
 
 
-float64_t CMKLClassification::compute_optimal_betas_via_cplex(float64_t* x, float64_t* old_beta, int32_t num_kernels,
+float64_t CMKLClassification::compute_optimal_betas_via_cplex(float64_t* x, const float64_t* old_beta, int32_t num_kernels,
 		  const float64_t* sumw, float64_t suma, int32_t& inner_iters)
 {
 	/*
@@ -1148,7 +1080,7 @@ float64_t CMKLClassification::compute_optimal_betas_via_cplex(float64_t* x, floa
 		return 0;
 }
 
-float64_t CMKLClassification::compute_optimal_betas_via_glpk(float64_t* beta, float64_t* old_beta,
+float64_t CMKLClassification::compute_optimal_betas_via_glpk(float64_t* beta, const float64_t* old_beta,
 		int num_kernels, const float64_t* sumw, float64_t suma, int32_t& inner_iters)
 {
 	SG_DEBUG("MKL via GLPK\n");
@@ -1236,8 +1168,9 @@ float64_t CMKLClassification::compute_optimal_betas_via_glpk(float64_t* beta, fl
 	int32_t num_rows=cur_numrows;
 	ASSERT(cur_numcols<=2*num_kernels+1);
 
-	float64_t *row_primal = new float64_t[cur_numrows];
-	float64_t *row_dual = new float64_t[cur_numrows];
+	float64_t* col_primal = new float64_t[cur_numcols];
+	float64_t* row_primal = new float64_t[cur_numrows];
+	float64_t* row_dual = new float64_t[cur_numrows];
 
 	for (int i=0; i<cur_numrows; i++)
 	{
@@ -1245,11 +1178,12 @@ float64_t CMKLClassification::compute_optimal_betas_via_glpk(float64_t* beta, fl
 		row_dual[i] = lpx_get_row_dual(lp_glpk, i+1);
 	}
 	for (int i=0; i<cur_numcols; i++)
-	{
-		beta[i] = lpx_get_col_prim(lp_glpk, i+1);
-	}
+		col_primal[i] = lpx_get_col_prim(lp_glpk, i+1);
 
-	obj = -beta[2*num_kernels];
+	obj = -col_primal[2*num_kernels];
+
+	for (int i=0; i<num_kernels; i++)
+		beta[i] = col_primal[i];
 
 	int32_t num_active_rows=0;
 	if(res)
@@ -1284,6 +1218,7 @@ float64_t CMKLClassification::compute_optimal_betas_via_glpk(float64_t* beta, fl
 
 	delete[] row_dual;
 	delete[] row_primal;
+	delete[] col_primal;
 #else
 	SG_ERROR("Glpk not enabled at compile time\n");
 #endif

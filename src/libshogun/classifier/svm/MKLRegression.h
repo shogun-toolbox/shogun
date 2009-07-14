@@ -28,24 +28,20 @@ class CMKLRegression : public CMKL
 
 		/** perform single mkl iteration
 		 *
-		 * given the alphas, compute the corresponding optimal betas
+		 * given sum of alphas, objectives for current alphas for each kernel
+		 * and current kernel weighting compute the corresponding optimal beta
 		 *
-		 * @param beta new betas (kernel weights)
-		 * @param old_beta old betas (previous kernel weights)
+		 * @param beta new betas (vector of kernel weights)
+		 * @param old_beta old betas (vector of previous kernel weights)
+		 * @param sumw vector of 1/2*alpha'*K_j*alpha for each kernel j
+		 * @param suma scalar sum_i alpha_i
 		 * @param num_kernels number of kernels
-		 * @param label (from svmlight label)
-		 * @param active2dnum (from svmlight active2dnum)
-		 * @param a (from svmlight alphas)
-		 * @param lin (from svmlight linear components)
-		 * @param sumw 1/2*alpha'*K_j*alpha for each kernel j
-		 * @param inner_iters number of required internal iterations
+		 * @param aux auxilary storage
 		 *
 		 */
-		virtual void perform_mkl_step(float64_t* alpha, float64_t* old_alpha, int32_t num_alpha,
-				float64_t* beta, float64_t* old_beta, int32_t num_beta, void* aux);
-		//virtual void perform_mkl_step(float64_t* beta, float64_t* old_beta, int num_kernels,
-		//		int32_t* label, int32_t* active2dnum,
-		//		float64_t* a, float64_t* lin, float64_t* sumw, int32_t& inner_iters)=0;
+		virtual void perform_mkl_step(
+				float64_t* beta, const float64_t* old_beta, const float64_t* sumw,
+				const float64_t suma, int32_t num_kernels, void* aux);
 
 		virtual void set_callback_function();
 

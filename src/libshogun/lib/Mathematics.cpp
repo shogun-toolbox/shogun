@@ -419,7 +419,7 @@ float64_t* CMath::pinv(
 #endif
 
 template <>
-void CMath::display_vector(uint8_t* vector, int32_t n, const char* name)
+void CMath::display_vector(const uint8_t* vector, int32_t n, const char* name)
 {
 	ASSERT(n>=0);
 	SG_SPRINT("%s=[", name);
@@ -429,7 +429,7 @@ void CMath::display_vector(uint8_t* vector, int32_t n, const char* name)
 }
 
 template <>
-void CMath::display_vector(int32_t* vector, int32_t n, const char* name)
+void CMath::display_vector(const int32_t* vector, int32_t n, const char* name)
 {
 	ASSERT(n>=0);
 	SG_SPRINT("%s=[", name);
@@ -439,7 +439,7 @@ void CMath::display_vector(int32_t* vector, int32_t n, const char* name)
 }
 
 template <>
-void CMath::display_vector(int64_t* vector, int32_t n, const char* name)
+void CMath::display_vector(const int64_t* vector, int32_t n, const char* name)
 {
 	ASSERT(n>=0);
 	SG_SPRINT("%s=[", name);
@@ -449,7 +449,7 @@ void CMath::display_vector(int64_t* vector, int32_t n, const char* name)
 }
 
 template <>
-void CMath::display_vector(float32_t* vector, int32_t n, const char* name)
+void CMath::display_vector(const float32_t* vector, int32_t n, const char* name)
 {
 	ASSERT(n>=0);
 	SG_SPRINT("%s=[", name);
@@ -459,7 +459,7 @@ void CMath::display_vector(float32_t* vector, int32_t n, const char* name)
 }
 
 template <>
-void CMath::display_vector(float64_t* vector, int32_t n, const char* name)
+void CMath::display_vector(const float64_t* vector, int32_t n, const char* name)
 {
 	ASSERT(n>=0);
 	SG_SPRINT("%s=[", name);
@@ -470,7 +470,7 @@ void CMath::display_vector(float64_t* vector, int32_t n, const char* name)
 
 template <>
 void CMath::display_matrix(
-	int32_t* matrix, int32_t rows, int32_t cols, const char* name)
+	const int32_t* matrix, int32_t rows, int32_t cols, const char* name)
 {
 	ASSERT(rows>=0 && cols>=0);
 	SG_SPRINT("%s=[\n", name);
@@ -487,7 +487,7 @@ void CMath::display_matrix(
 
 template <>
 void CMath::display_matrix(
-	float64_t* matrix, int32_t rows, int32_t cols, const char* name)
+	const float64_t* matrix, int32_t rows, int32_t cols, const char* name)
 {
 	ASSERT(rows>=0 && cols>=0);
 	SG_SPRINT("%s=[\n", name);
@@ -501,4 +501,3 @@ void CMath::display_matrix(
 	}
 	SG_SPRINT("]\n");
 }
-
