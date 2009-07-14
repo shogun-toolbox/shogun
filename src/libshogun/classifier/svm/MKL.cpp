@@ -188,12 +188,13 @@ bool CMKL::train()
 
 	int32_t num_label=labels->get_num_labels();
 
-	SG_INFO( "%d trainlabels\n", num_label);
+	SG_INFO("%d trainlabels\n", num_label);
 	if (mkl_epsilon<=0)
 		mkl_epsilon=1e-2 ;
-	SG_DEBUG( "mkl_epsilon = %1.1e\n", mkl_epsilon) ;
-	SG_DEBUG( "C_mkl = %1.1e\n", C_mkl) ;
-	SG_DEBUG( "mkl_norm = %1.3e\n", mkl_norm);
+
+	SG_INFO("mkl_epsilon = %1.1e\n", mkl_epsilon) ;
+	SG_INFO("C_mkl = %1.1e\n", C_mkl) ;
+	SG_INFO("mkl_norm = %1.3e\n", mkl_norm);
 
 #ifdef USE_CPLEX
 	cleanup_cplex();

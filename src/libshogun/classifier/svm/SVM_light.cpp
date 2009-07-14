@@ -232,15 +232,6 @@ bool CSVMLight::train()
 
 	SG_DEBUG( "use_kernel_cache = %i\n", use_kernel_cache) ;
 
-/*
-#ifdef USE_GLPK
-	cleanup_glpk();
-
-	if (get_mkl_enabled() && ( get_solver_type() == ST_GLPK ||
-				( mkl_norm == 1 && get_solver_type()==ST_AUTO)))
-		init_glpk();
-#endif
-	
 	if (kernel->get_kernel_type() == K_COMBINED)
 	{
 		CKernel* kn = ((CCombinedKernel*)kernel)->get_first_kernel();
@@ -252,7 +243,6 @@ bool CSVMLight::train()
 			kn = ((CCombinedKernel*) kernel)->get_next_kernel();
 		}
 	}
-*/
 
 	kernel->resize_kernel_cache(kernel->get_cache_size());
 
@@ -268,7 +258,6 @@ bool CSVMLight::train()
 		set_support_vector(i, model->supvec[i+1]);
 	}
 
-	
 	// in case of LINADD enabled kernels cleanup!
 	if (kernel->has_property(KP_LINADD) && get_linadd_enabled())
 	{

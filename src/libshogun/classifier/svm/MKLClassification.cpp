@@ -215,8 +215,6 @@ void CMKLClassification::perform_mkl_step(
 	int32_t inner_iters=0;
 	float64_t mkl_objective=0;
 
-
-			CMath::display_vector(old_beta, num_kernels,"old_beta");
 	mkl_objective=-suma;
 	for (int32_t i=0; i<num_kernels; i++)
 	{
@@ -250,10 +248,6 @@ void CMKLClassification::perform_mkl_step(
 				rho=compute_optimal_betas_newton(beta, old_beta, num_kernels, sumw, suma, mkl_objective);
 		}
 
-		CMath::display_vector(beta, num_kernels,"beta");
-		CMath::display_vector(sumw, num_kernels,"sumw");
-		SG_PRINT("obj=%f rho=%f eps=%f mkl_eps=%f suma=%f\n", rho, mkl_objective, epsilon, mkl_epsilon, suma);
-		// set weights, store new rho and compute new w gap
 		w_gap = CMath::abs(1-rho/mkl_objective) ;
 	}
 }
