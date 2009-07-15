@@ -14,6 +14,7 @@
 #include "base/Parallel.h"
 
 #include "classifier/svm/SVM.h"
+#include "classifier/svm/MKL.h"
 
 #include <string.h>
 
@@ -49,6 +50,8 @@ CSVM::CSVM(float64_t C, CKernel* k, CLabels* lab)
 
 CSVM::~CSVM()
 {
+	SG_UNREF(mkl);
+
 	delete[] svm_model.alpha;
 	delete[] svm_model.svs;
 
@@ -58,6 +61,7 @@ CSVM::~CSVM()
 void CSVM::set_defaults(int32_t num_sv)
 {
 	callback=NULL;
+	mkl=NULL;
 
 	svm_model.b=0.0;
 	svm_model.alpha=NULL;
@@ -277,6 +281,16 @@ void* CSVM::classify_example_helper(void* p)
 	}
 
 	return NULL;
+}
+
+void CSVM::set_callback_function(CMKL* m, bool (*cb)
+		(CMKL* mkl, const float64_t* sumw, const float64_t suma))
+{
+	SG_UNREF(m);
+
+	callback=cb;
+	mkl=m;
+	SG_REF(mkl);
 }
 
 CLabels* CSVM::classify(CLabels* lab)

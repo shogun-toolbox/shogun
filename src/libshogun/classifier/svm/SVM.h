@@ -11,12 +11,12 @@
 #ifndef _SVM_H___
 #define _SVM_H___
 
-class CKernelMachine;
-
 #include "lib/common.h"
 #include "features/Features.h"
 #include "kernel/Kernel.h"
 #include "kernel/KernelMachine.h"
+
+class CMKL;
 
 /** @brief A generic Support Vector Machine Interface.
  * 
@@ -40,8 +40,6 @@ class CKernelMachine;
  * \f}
  * here C is a pre-specified regularization parameter.
  */
-
-class CMKL;
 
 class CSVM : public CKernelMachine
 {
@@ -401,14 +399,12 @@ class CSVM : public CKernelMachine
 		/** set callback function svm optimizers may call when they have a new
 		 * (small) set of alphas
 		 *
+		 * @param m pointer to mkl object
 		 * @param cb callback function
 		 *
 		 * */
-		void set_callback_function(bool (*cb)
-				(CMKL* mkl, const float64_t* sumw, const float64_t suma))
-		{
-			callback=cb;
-		}
+		void set_callback_function(CMKL* m, bool (*cb)
+				(CMKL* mkl, const float64_t* sumw, const float64_t suma));
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "SVM"; }
@@ -454,5 +450,8 @@ class CSVM : public CKernelMachine
 		/** callback function svm optimizers may call when they have a new
 		 * (small) set of alphas */
 		bool (*callback) (CMKL* mkl, const float64_t* sumw, const float64_t suma);
+		/** mkl object that svm optimizers need to pass when calling the callback
+		 * function */
+		CMKL* mkl;
 };
 #endif

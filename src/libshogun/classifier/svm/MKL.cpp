@@ -35,7 +35,7 @@ CMKL::CMKL(CSVM* s)
 
 CMKL::~CMKL()
 {
-	svm->set_callback_function(NULL);
+	svm->set_callback_function(NULL, NULL);
 	SG_UNREF(svm);
 }
 
@@ -217,7 +217,7 @@ bool CMKL::train()
 			SG_ERROR("Interleaved MKL optimization is currently "
 					"only supported with SVMlight\n");
 		}
-		svm->set_callback_function(perform_mkl_step_helper);
+		svm->set_callback_function(this, perform_mkl_step_helper);
 		svm->train();
 	}
 	else

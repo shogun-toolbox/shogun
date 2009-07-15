@@ -20,6 +20,9 @@ extern "C" {
 }
 #endif
 
+class CSVM;
+class CKernel;
+class CFeatures;
 
 #include "lib/common.h"
 #include "features/Features.h"
