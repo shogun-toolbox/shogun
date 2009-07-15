@@ -107,14 +107,11 @@ class CMKL : public CSVM
 		/** perform single mkl iteration
 		 *
 		 * given sum of alphas, objectives for current alphas for each kernel
-		 * and current kernel weighting compute the corresponding optimal beta
+		 * and current kernel weighting compute the corresponding optimal
+		 * kernel weighting (all via get/set_subkernel_weights in CCombinedKernel)
 		 *
-		 * @param beta new betas (vector of kernel weights)
-		 * @param old_beta old betas (vector of previous kernel weights)
 		 * @param sumw vector of 1/2*alpha'*K_j*alpha for each kernel j
 		 * @param suma scalar sum_i alpha_i
-		 * @param num_kernels number of kernels
-		 * @param aux auxilary storage
 		 *
 		 */
 		virtual bool perform_mkl_step(const float64_t* sumw, float64_t suma)=0;
