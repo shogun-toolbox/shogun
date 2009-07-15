@@ -39,11 +39,7 @@ class CMKLRegression : public CMKL
 		 * @param aux auxilary storage
 		 *
 		 */
-		virtual void perform_mkl_step(
-				float64_t* beta, const float64_t* old_beta, const float64_t* sumw,
-				const float64_t suma, int32_t num_kernels, void* aux);
-
-		virtual void set_callback_function();
+		virtual bool perform_mkl_step(const float64_t* sumw, float64_t suma);
 
 	protected:
 		/** helper for update linear component MKL linadd

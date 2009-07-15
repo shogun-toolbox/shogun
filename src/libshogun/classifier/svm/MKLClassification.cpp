@@ -209,7 +209,7 @@ void* CMKLClassification::update_linear_component_mkl_linadd_helper(void* p)
 
 
 bool CMKLClassification::perform_mkl_step(
-		const float64_t* sumw, const float64_t suma)
+		const float64_t* sumw, float64_t suma)
 {
 	int32_t num_kernels = kernel->get_num_subkernels();
 	int32_t nweights=0;
@@ -257,11 +257,10 @@ bool CMKLClassification::perform_mkl_step(
 	}
 
 	kernel->set_subkernel_weights(beta, num_kernels);
+
+	return converged();
 }
 
-void CMKLClassification::set_callback_function()
-{
-}
 
 float64_t CMKLClassification::compute_optimal_betas_analytically(float64_t* beta,
 		const float64_t* old_beta, int32_t num_kernels,

@@ -217,7 +217,7 @@ bool CMKL::train()
 			SG_ERROR("Interleaved MKL optimization is currently "
 					"only supported with SVMlight\n");
 		}
-		svm->set_callback_function(perform_mkl_step);
+		svm->set_callback_function(perform_mkl_step_helper);
 		svm->train();
 	}
 	else
@@ -245,8 +245,7 @@ bool CMKL::train()
 			compute_sum_beta(sumw);
 
 			mkl_iterations++;
-			if (perform_mkl_step(sumw, suma) ||
-					CSignal::cancel_computations())
+			if (perform_mkl_step(sumw, suma) || CSignal::cancel_computations())
 				break;
 		}
 

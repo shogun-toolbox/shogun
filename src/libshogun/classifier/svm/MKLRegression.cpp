@@ -9,14 +9,10 @@ CMKLRegression::~CMKLRegression()
 {
 }
 
-void CMKLRegression::perform_mkl_step(
-		float64_t* beta, const float64_t* old_beta, const float64_t* sumw,
-		const float64_t suma, int32_t num_kernels, void* aux)
+bool CMKLRegression::perform_mkl_step(
+		const float64_t* sumw, float64_t suma)
 {
-}
-
-void CMKLRegression::set_callback_function()
-{
+	return true;
 }
 
 /*

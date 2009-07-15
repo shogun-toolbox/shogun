@@ -20,6 +20,7 @@ extern "C" {
 }
 #endif
 
+
 #include "lib/common.h"
 #include "features/Features.h"
 #include "kernel/Kernel.h"
@@ -113,9 +114,14 @@ class CMKL : public CSVM
 		 * @param aux auxilary storage
 		 *
 		 */
-		virtual void perform_mkl_step(
-				float64_t* beta, const float64_t* old_beta, const float64_t* sumw,
-				const float64_t suma, int32_t num_kernels, void* aux)=0;
+		virtual bool perform_mkl_step(const float64_t* sumw, float64_t suma)=0;
+
+		static bool perform_mkl_step_helper (CMKL* mkl,
+				const float64_t* sumw, const float64_t suma)
+		{
+			return mkl->perform_mkl_step(sumw, suma);
+		}
+
 
 		inline float64_t compute_sum_alpha()
 		{
@@ -131,6 +137,8 @@ class CMKL : public CSVM
 		{
 			ASSERT(sumw);
 
+			int32_t nsv=svm->get_num_support_vectors();
+			int32_t num_kernels = kernel->get_num_subkernels();
 			float64_t* beta = new float64_t[num_kernels];
 			int32_t nweights=0;
 			const float64_t* old_beta = kernel->get_subkernel_weights(nweights);
@@ -162,12 +170,8 @@ class CMKL : public CSVM
 			}
 			
 			mkl_iterations++;
-			kernel->set_subkernel_weights(old_beta, num_kernels);
+			kernel->set_subkernel_weights( (float64_t*) old_beta, num_kernels);
 		}
-
-		/** assigns the callback function to the svm object
-		 * */
-		virtual void set_callback_function()=0;
 
 	protected:
 
