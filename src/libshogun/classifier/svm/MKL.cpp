@@ -217,15 +217,13 @@ bool CMKL::train()
 			SG_ERROR("Interleaved MKL optimization is currently "
 					"only supported with SVMlight\n");
 		}
-		set_callback_function();
+		svm->set_callback_function(perform_mkl_step);
 		svm->train();
 	}
 	else
 	{
 		int32_t num_kernels = kernel->get_num_subkernels();
 		float64_t* sumw = new float64_t[num_kernels];
-		float64_t* beta = new float64_t[num_kernels];
-		void* aux=NULL;
 
 		svm->set_bias_enabled(get_bias_enabled());
 		svm->set_epsilon(get_epsilon());
@@ -243,50 +241,15 @@ bool CMKL::train()
 		{
 			svm->train();
 
-			float64_t suma=0;
-			int32_t nsv=svm->get_num_support_vectors();
-			for (int32_t i=0; i<nsv; i++)
-				suma+=CMath::abs(svm->get_alpha(i));
-
-			int32_t nweights=0;
-			const float64_t* old_beta = kernel->get_subkernel_weights(nweights);
-			ASSERT(nweights==num_kernels);
-			ASSERT(old_beta);
-
-			for (int32_t i=0; i<num_kernels; i++)
-			{
-				beta[i]=0;
-				sumw[i]=0;
-			}
-
-			for (int32_t n=0; n<num_kernels; n++)
-			{
-				beta[n]=1.0;
-				kernel->set_subkernel_weights(beta, num_kernels);
-
-				for (int32_t i=0; i<nsv; i++)
-				{   
-					int32_t ii=svm->get_support_vector(i);
-
-					for (int32_t j=0; j<nsv; j++)
-					{   
-						int32_t jj=svm->get_support_vector(j);
-						sumw[n]+=0.5*svm->get_alpha(i)*svm->get_alpha(j)*kernel->kernel(ii,jj);
-					}
-				}
-				beta[n]=0.0;
-			}
-			
-			perform_mkl_step(beta, old_beta, sumw, suma, num_kernels, aux);
-			kernel->set_subkernel_weights(beta, num_kernels);
+			float64_t suma=compute_sum_alpha();
+			compute_sum_beta(sumw);
 
 			mkl_iterations++;
-
-			if (converged() || CSignal::cancel_computations())
+			if (perform_mkl_step(sumw, suma) ||
+					CSignal::cancel_computations())
 				break;
 		}
 
-		delete[] beta;
 		delete[] sumw;
 	}
 #ifdef USE_CPLEX

@@ -398,11 +398,14 @@ class CSVM : public CKernelMachine
 		/** set callback function svm optimizers may call when they have a new
 		 * (small) set of alphas
 		 *
+		 *
+		 * 
+		 *
 		 * @param cb callback function
 		 *
 		 * */
 		void set_callback_function(void (*cb)
-				(float64_t* new_a, float64_t* old_a, int32_t num, void* aux))
+				(const float64_t* sumw, const float64_t suma))
 		{
 			callback=cb;
 		}
@@ -450,6 +453,8 @@ class CSVM : public CKernelMachine
 
 		/** callback function svm optimizers may call when they have a new
 		 * (small) set of alphas */
-		void (*callback) (float64_t* new_a, float64_t* old_a, int32_t num, void* aux);
+		void (*callback) (float64_t* beta, const float64_t* old_beta,
+				 const float64_t* sumw, const float64_t suma,
+				 int32_t num_kernels, void* aux);
 };
 #endif

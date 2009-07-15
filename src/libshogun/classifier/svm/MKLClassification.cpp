@@ -208,10 +208,15 @@ void* CMKLClassification::update_linear_component_mkl_linadd_helper(void* p)
 
 
 
-void CMKLClassification::perform_mkl_step(
-		float64_t* beta, const float64_t* old_beta, const float64_t* sumw,
-		const float64_t suma, int32_t num_kernels, void* aux)
+bool CMKLClassification::perform_mkl_step(
+		const float64_t* sumw, const float64_t suma)
 {
+	int32_t num_kernels = kernel->get_num_subkernels();
+	int32_t nweights=0;
+	const float64_t* old_beta = kernel->get_subkernel_weights(nweights);
+	ASSERT(nweights==num_kernels);
+	float64_t* beta = new float64_t[num_kernels];
+
 	int32_t inner_iters=0;
 	float64_t mkl_objective=0;
 
@@ -250,6 +255,8 @@ void CMKLClassification::perform_mkl_step(
 
 		w_gap = CMath::abs(1-rho/mkl_objective) ;
 	}
+
+	kernel->set_subkernel_weights(beta, num_kernels);
 }
 
 void CMKLClassification::set_callback_function()

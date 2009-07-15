@@ -117,6 +117,54 @@ class CMKL : public CSVM
 				float64_t* beta, const float64_t* old_beta, const float64_t* sumw,
 				const float64_t suma, int32_t num_kernels, void* aux)=0;
 
+		inline float64_t compute_sum_alpha()
+		{
+			float64_t suma=0;
+			int32_t nsv=svm->get_num_support_vectors();
+			for (int32_t i=0; i<nsv; i++)
+				suma+=CMath::abs(svm->get_alpha(i));
+
+			return suma;
+		}
+
+		inline void compute_sum_beta(float64_t* sumw)
+		{
+			ASSERT(sumw);
+
+			float64_t* beta = new float64_t[num_kernels];
+			int32_t nweights=0;
+			const float64_t* old_beta = kernel->get_subkernel_weights(nweights);
+			ASSERT(nweights==num_kernels);
+			ASSERT(old_beta);
+
+			for (int32_t i=0; i<num_kernels; i++)
+			{
+				beta[i]=0;
+				sumw[i]=0;
+			}
+
+			for (int32_t n=0; n<num_kernels; n++)
+			{
+				beta[n]=1.0;
+				kernel->set_subkernel_weights(beta, num_kernels);
+
+				for (int32_t i=0; i<nsv; i++)
+				{   
+					int32_t ii=svm->get_support_vector(i);
+
+					for (int32_t j=0; j<nsv; j++)
+					{   
+						int32_t jj=svm->get_support_vector(j);
+						sumw[n]+=0.5*svm->get_alpha(i)*svm->get_alpha(j)*kernel->kernel(ii,jj);
+					}
+				}
+				beta[n]=0.0;
+			}
+			
+			mkl_iterations++;
+			kernel->set_subkernel_weights(old_beta, num_kernels);
+		}
+
 		/** assigns the callback function to the svm object
 		 * */
 		virtual void set_callback_function()=0;
