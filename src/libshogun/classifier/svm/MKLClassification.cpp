@@ -40,6 +40,8 @@ bool CMKLClassification::perform_mkl_step(
 		mkl_objective+=old_beta[i]*sumw[i];
 	}
 
+	SG_PRINT("rho=%f mkl_obj=%f\n", rho, mkl_objective);
+
 	w_gap = CMath::abs(1-rho/mkl_objective) ;
 	if( (w_gap >= 0.9999*mkl_epsilon) || (get_solver_type()==ST_INTERNAL && mkl_norm>1) )
 	{
@@ -70,6 +72,8 @@ bool CMKLClassification::perform_mkl_step(
 	}
 
 	kernel->set_subkernel_weights(beta, num_kernels);
+	CMath::display_vector(old_beta, num_kernels, "old_beta");
+	CMath::display_vector(beta, num_kernels, "beta");
 
 	return converged();
 }

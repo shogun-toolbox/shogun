@@ -286,11 +286,11 @@ void* CSVM::classify_example_helper(void* p)
 void CSVM::set_callback_function(CMKL* m, bool (*cb)
 		(CMKL* mkl, const float64_t* sumw, const float64_t suma))
 {
-	SG_UNREF(m);
-
-	callback=cb;
+	SG_UNREF(mkl);
 	mkl=m;
 	SG_REF(mkl);
+
+	callback=cb;
 }
 
 CLabels* CSVM::classify(CLabels* lab)

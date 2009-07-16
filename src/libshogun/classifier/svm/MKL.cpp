@@ -13,7 +13,7 @@
 #include "classifier/svm/LibSVM.h"
 
 CMKL::CMKL(CSVM* s)
-	: CSVM(), svm(NULL), C_mkl(0), mkl_norm(1), mkl_iterations(0), mkl_epsilon(1e-5), interleaved_optimization(false)
+	: CSVM(), svm(NULL), C_mkl(0), mkl_norm(1), mkl_iterations(0), mkl_epsilon(1e-5), interleaved_optimization(true)
 {
 	set_constraint_generator(s);
 #ifdef USE_CPLEX
@@ -196,6 +196,27 @@ bool CMKL::train()
 	SG_INFO("C_mkl = %1.1e\n", C_mkl) ;
 	SG_INFO("mkl_norm = %1.3e\n", mkl_norm);
 
+	int32_t num_weights = -1;
+	int32_t num_kernels = kernel->get_num_subkernels();
+	const float64_t* beta_const   = kernel->get_subkernel_weights(num_weights);
+	float64_t* beta =  CMath::clone_vector(beta_const, num_weights);
+	ASSERT(num_weights==num_kernels);
+	CMath::scale_vector(1/CMath::qnorm(beta, num_kernels, mkl_norm), beta, num_kernels); //q-norm = 1
+	kernel->set_subkernel_weights(beta, num_kernels);
+
+	svm->set_bias_enabled(get_bias_enabled());
+	svm->set_epsilon(get_epsilon());
+	svm->set_max_train_time(get_max_train_time());
+	svm->set_nu(get_nu());
+	svm->set_C(get_C1(), get_C2());
+	svm->set_qpsize(get_qpsize());
+	svm->set_shrinking_enabled(get_shrinking_enabled());
+	svm->set_linadd_enabled(get_linadd_enabled());
+	svm->set_batch_computation_enabled(get_batch_computation_enabled());
+	svm->set_labels(labels);
+	svm->set_kernel(kernel);
+
+
 #ifdef USE_CPLEX
 	cleanup_cplex();
 
@@ -222,20 +243,7 @@ bool CMKL::train()
 	}
 	else
 	{
-		int32_t num_kernels = kernel->get_num_subkernels();
 		float64_t* sumw = new float64_t[num_kernels];
-
-		svm->set_bias_enabled(get_bias_enabled());
-		svm->set_epsilon(get_epsilon());
-		svm->set_max_train_time(get_max_train_time());
-		svm->set_nu(get_nu());
-		svm->set_C(get_C1(), get_C2());
-		svm->set_qpsize(get_qpsize());
-		svm->set_shrinking_enabled(get_shrinking_enabled());
-		svm->set_linadd_enabled(get_linadd_enabled());
-		svm->set_batch_computation_enabled(get_batch_computation_enabled());
-		svm->set_labels(labels);
-		svm->set_kernel(kernel);
 
 		while (true)
 		{

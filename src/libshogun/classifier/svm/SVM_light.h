@@ -488,6 +488,9 @@ class CSVMLight : public CSVM
 		  int32_t* docs, int32_t *label, int32_t *active2dnum, float64_t *a,
 		  float64_t* a_old, int32_t *working2dnum, int32_t totdoc, float64_t *lin,
 		  float64_t *aicache);
+
+  void call_mkl_callback(float64_t* a, int32_t* label, const float64_t* old_beta, float64_t* lin);
+
   /** select next qp subproblem grad
    *
    * @param label label
@@ -685,7 +688,8 @@ protected:
   float64_t mymaxdiff;
   /** if kernel cache is used */
   bool use_kernel_cache;
-
+  /** mkl converged */
+  bool mkl_converged;
 };
 #endif //USE_SVMLIGHT
 #endif //_SVMLight_H___
