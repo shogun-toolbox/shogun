@@ -449,6 +449,45 @@ class CSVMLight : public CSVM
 	float64_t* a_old, int32_t *working2dnum, int32_t totdoc, float64_t *lin,
 	float64_t *aicache, float64_t* c);
 
+  /** helper for update linear component MKL linadd
+   *
+   * @param p p
+   */
+  static void* update_linear_component_mkl_linadd_helper(void* p);
+
+  /** update linear component MKL
+   *
+   * @param docs docs
+   * @param label label
+   * @param active2dnum active 2D num
+   * @param a a
+   * @param a_old old a
+   * @param working2dnum working 2D num
+   * @param totdoc totdoc
+   * @param lin lin
+   * @param aicache ai cache
+   */
+  void update_linear_component_mkl(
+		  int32_t* docs, int32_t *label, int32_t *active2dnum, float64_t *a,
+		  float64_t* a_old, int32_t *working2dnum, int32_t totdoc, float64_t *lin,
+		  float64_t *aicache);
+
+  /** update linear component MKL
+   *
+   * @param docs docs
+   * @param label label
+   * @param active2dnum active 2D num
+   * @param a a
+   * @param a_old old a
+   * @param working2dnum working 2D num
+   * @param totdoc totdoc
+   * @param lin lin
+   * @param aicache ai cache
+   */
+  void update_linear_component_mkl_linadd(
+		  int32_t* docs, int32_t *label, int32_t *active2dnum, float64_t *a,
+		  float64_t* a_old, int32_t *working2dnum, int32_t totdoc, float64_t *lin,
+		  float64_t *aicache);
   /** select next qp subproblem grad
    *
    * @param label label
