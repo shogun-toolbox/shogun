@@ -40,7 +40,6 @@ class CMKL;
  * \f}
  * here C is a pre-specified regularization parameter.
  */
-
 class CSVM : public CKernelMachine
 {
 	public:
@@ -344,11 +343,17 @@ class CSVM : public CKernelMachine
 			return use_shrinking;
 		}
 
-		/** compute objective
+		/** compute svm dual objective
 		 *
-		 * @return computed objective
+		 * @return computed dual objective
 		 */
-		float64_t compute_objective();
+		float64_t compute_svm_dual_objective();
+
+		/** compute svm primal objective
+		 *
+		 * @return computed svm primal objective
+		 */
+		float64_t compute_svm_primal_objective();
 
 		/** set objective
 		 *

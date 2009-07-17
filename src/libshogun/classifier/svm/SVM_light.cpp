@@ -1509,6 +1509,7 @@ void CSVMLight::update_linear_component(
 	}
 }
 
+
 void CSVMLight::update_linear_component_mkl(
 	int32_t* docs, int32_t* label, int32_t *active2dnum, float64_t *a,
 	float64_t *a_old, int32_t *working2dnum, int32_t totdoc, float64_t *lin,
@@ -1520,7 +1521,6 @@ void CSVMLight::update_linear_component_mkl(
 	int32_t num_kernels = kernel->get_num_subkernels() ;
 	const float64_t* old_beta   = kernel->get_subkernel_weights(num_weights);
 	ASSERT(num_weights==num_kernels);
-
 
 	if ((kernel->get_kernel_type()==K_COMBINED) && 
 			 (!((CCombinedKernel*)kernel)->get_append_subkernel_weights()))// for combined kernel

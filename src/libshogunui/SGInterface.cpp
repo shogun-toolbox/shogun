@@ -9,6 +9,7 @@
 #include <shogun/lib/Signal.h>
 
 #include <shogun/classifier/svm/SVM.h>
+#include <shogun/classifier/svm/MKL.h>
 #include <shogun/kernel/WeightedDegreePositionStringKernel.h>
 #include <shogun/kernel/WeightedDegreeStringKernel.h>
 #include <shogun/kernel/CommWordStringKernel.h>
@@ -86,6 +87,12 @@ CSGInterfaceMethod sg_methods[]=
 			USAGE_STR "TRAIN|TEST" USAGE_STR USAGE_COMMA "features[" USAGE_COMMA "DNABINFILE|<ALPHABET>]")
 	},
 	{
+		N_ADD_MULTIPLE_FEATURES,
+		(&CSGInterface::cmd_add_multiple_features),
+		USAGE_I(N_ADD_MULTIPLE_FEATURES,
+			USAGE_STR "TRAIN|TEST" USAGE_STR USAGE_COMMA "repetitions" USAGE_COMMA "features[" USAGE_COMMA "DNABINFILE|<ALPHABET>]")
+	},
+	{
 		N_ADD_DOTFEATURES,
 		(&CSGInterface::cmd_add_dotfeatures),
 		USAGE_I(N_ADD_DOTFEATURES,
@@ -156,7 +163,7 @@ CSGInterfaceMethod sg_methods[]=
 	{
 		N_SET_KERNEL_NORMALIZATION,
 		(&CSGInterface::cmd_set_kernel_normalization),
-		USAGE_I(N_SET_KERNEL_NORMALIZATION, "IDENTITY|AVGDIAG|SQRTDIAG|FIRSTELEMENT"
+		USAGE_I(N_SET_KERNEL_NORMALIZATION, "IDENTITY|AVGDIAG|SQRTDIAG|FIRSTELEMENT|VARIANCE"
 				USAGE_COMMA "size[" USAGE_COMMA "kernel-specific parameters]")
 	},
 	{
@@ -409,6 +416,36 @@ CSGInterfaceMethod sg_methods[]=
 		N_GET_SVM_OBJECTIVE,
 		(&CSGInterface::cmd_get_svm_objective),
 		USAGE_O(N_GET_SVM_OBJECTIVE, "objective")
+	},
+	{
+		N_COMPUTE_SVM_PRIMAL_OBJECTIVE,
+		(&CSGInterface::cmd_compute_svm_primal_objective),
+		USAGE_O(N_COMPUTE_SVM_PRIMAL_OBJECTIVE, "objective")
+	},
+	{
+		N_COMPUTE_SVM_DUAL_OBJECTIVE,
+		(&CSGInterface::cmd_compute_svm_dual_objective),
+		USAGE_O(N_COMPUTE_SVM_DUAL_OBJECTIVE, "objective")
+	},
+	{
+		N_COMPUTE_MKL_PRIMAL_OBJECTIVE,
+		(&CSGInterface::cmd_compute_svm_primal_objective),
+		USAGE_O(N_COMPUTE_MKL_PRIMAL_OBJECTIVE, "objective")
+	},
+	{
+		N_COMPUTE_MKL_DUAL_OBJECTIVE,
+		(&CSGInterface::cmd_compute_mkl_dual_objective),
+		USAGE_O(N_COMPUTE_MKL_DUAL_OBJECTIVE, "objective")
+	},
+	{
+		N_COMPUTE_RELATIVE_MKL_DUALITY_GAP,
+		(&CSGInterface::cmd_compute_relative_mkl_duality_gap),
+		USAGE_O(N_COMPUTE_RELATIVE_MKL_DUALITY_GAP, "gap")
+	},
+	{
+		N_COMPUTE_ABSOLUTE_MKL_DUALITY_GAP,
+		(&CSGInterface::cmd_compute_absolute_mkl_duality_gap),
+		USAGE_O(N_COMPUTE_ABSOLUTE_MKL_DUALITY_GAP, "gap")
 	},
 	{
 		N_DO_AUC_MAXIMIZATION,
@@ -1655,6 +1692,18 @@ bool CSGInterface::cmd_add_features()
 	return do_set_features(true, false);
 }
 
+bool CSGInterface::cmd_add_multiple_features()
+{
+	if ((m_nrhs!=4 && m_nrhs<5) || !create_return_values(0))
+		return false;
+
+	int32_t repetitions=get_int();
+
+	ASSERT(repetitions>=1);
+
+	return do_set_features(true, false, repetitions);
+}
+
 bool CSGInterface::cmd_add_dotfeatures()
 {
 	if (m_nrhs<3 || !create_return_values(0))
@@ -1671,7 +1720,7 @@ bool CSGInterface::cmd_set_features()
 	return do_set_features(false, false);
 }
 
-bool CSGInterface::do_set_features(bool add, bool check_dot)
+bool CSGInterface::do_set_features(bool add, bool check_dot, int32_t repetitions)
 {
 	int32_t tlen=0;
 	char* target=get_string(tlen);
@@ -1866,18 +1915,30 @@ bool CSGInterface::do_set_features(bool add, bool check_dot)
 		if (!add)
 			ui_features->set_train_features(feat);
 		else if (check_dot)
+		{
+			for (int32_t i=0; i<repetitions; i++)
 			ui_features->add_train_dotfeatures((CDotFeatures*) feat);
+		}
 		else
+		{
+			for (int32_t i=0; i<repetitions; i++)
 			ui_features->add_train_features(feat);
+		}
 	}
 	else
 	{
 		if (!add)
 			ui_features->set_test_features(feat);
 		else if (check_dot)
-			ui_features->add_test_dotfeatures((CDotFeatures*) feat);
+		{
+			for (int32_t i=0; i<repetitions; i++)
+				ui_features->add_test_dotfeatures((CDotFeatures*) feat);
+		}
 		else
-			ui_features->add_test_features(feat);
+		{
+			for (int32_t i=0; i<repetitions; i++)
+				ui_features->add_test_features(feat);
+		}
 	}
 
 	delete[] target;
@@ -4600,6 +4661,100 @@ bool CSGInterface::cmd_get_svm_objective()
 
 	set_real(svm->get_objective());
 
+	return true;
+}
+
+bool CSGInterface::cmd_compute_svm_primal_objective()
+{
+	return do_compute_objective(SVM_PRIMAL);
+}
+
+bool CSGInterface::cmd_compute_svm_dual_objective()
+{
+	return do_compute_objective(SVM_DUAL);
+}
+
+bool CSGInterface::cmd_compute_mkl_dual_objective()
+{
+	return do_compute_objective(MKL_DUAL);
+}
+
+bool CSGInterface::cmd_compute_relative_mkl_duality_gap()
+{
+	return do_compute_objective(MKL_RELATIVE_DUALITY_GAP);
+}
+
+bool CSGInterface::cmd_compute_absolute_mkl_duality_gap()
+{
+	return do_compute_objective(MKL_ABSOLUTE_DUALITY_GAP);
+}
+
+bool CSGInterface::do_compute_objective(E_WHICH_OBJ obj)
+{
+	if (m_nrhs!=1 || !create_return_values(1))
+		return false;
+
+	float64_t result=23.5;
+
+	CSVM* svm=(CSVM*) ui_classifier->get_classifier();
+	if (!svm)
+		SG_ERROR("No SVM set.\n");
+
+	CLabels* trainlabels=NULL;
+	trainlabels=ui_labels->get_train_labels();
+
+	if (!trainlabels)
+		SG_ERROR("No trainlabels available.\n");
+
+	CKernel* kernel=ui_kernel->get_kernel();
+	if (!kernel)
+		SG_ERROR("No kernel available.\n");
+
+	if (!ui_kernel->is_initialized() || !kernel->has_features())
+		SG_ERROR("Kernel not initialized.\n");
+
+	((CKernelMachine*) svm)->set_labels(trainlabels);
+	((CKernelMachine*) svm)->set_kernel(kernel);
+
+
+	switch (obj)
+	{
+		case  SVM_PRIMAL:
+			result=svm->compute_svm_primal_objective();
+			break;
+		case  SVM_DUAL:
+			result=svm->compute_svm_dual_objective();
+			break;
+		case  MKL_PRIMAL:
+			ASSERT( svm->get_classifier_type() == CT_MKLCLASSIFICATION );
+			result=((CMKL*) svm)->compute_mkl_primal_objective();
+			break;
+		case  MKL_DUAL:
+			ASSERT( svm->get_classifier_type() == CT_MKLCLASSIFICATION );
+			result=((CMKL*) svm)->compute_mkl_dual_objective();
+			break;
+		case  MKL_RELATIVE_DUALITY_GAP:
+			{
+				ASSERT( svm->get_classifier_type() == CT_MKLCLASSIFICATION );
+				float64_t primal=((CMKL*) svm)->compute_mkl_dual_objective();
+				float64_t dual=((CMKL*) svm)->compute_mkl_primal_objective();
+				result=(primal-dual)/dual;
+			}
+			break;
+		case  MKL_ABSOLUTE_DUALITY_GAP:
+			{
+				ASSERT( svm->get_classifier_type() == CT_MKLCLASSIFICATION );
+				float64_t primal=((CMKL*) svm)->compute_mkl_dual_objective();
+				float64_t dual=((CMKL*) svm)->compute_mkl_primal_objective();
+				result=dual-primal;
+			}
+			break;
+		default:
+			SG_SERROR("Error calling do_compute_objective\n");
+			return false;
+	};
+
+	set_real(result);
 	return true;
 }
 

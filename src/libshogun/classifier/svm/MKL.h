@@ -86,6 +86,21 @@ class CMKL : public CSVM
 			mkl_norm = norm;
 		}
 
+		/** compute mkl primal objective
+		 *
+		 * @return computed mkl primal objective
+		 */
+		inline float64_t compute_mkl_primal_objective()
+		{
+			return compute_svm_primal_objective();
+		}
+
+		/** compute mkl dual objective
+		 *
+		 * @return computed dual objective
+		 */
+		virtual float64_t compute_mkl_dual_objective()=0;
+
 		/** set mkl epsilon (optimization accuracy for kernel weights)
 		 *
 		 * @param eps new weight_epsilon

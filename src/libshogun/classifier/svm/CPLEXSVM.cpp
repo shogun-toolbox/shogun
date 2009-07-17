@@ -66,7 +66,7 @@ bool CCPLEXSVM::train()
 				j++;
 			}
 		}
-		compute_objective();
+		//compute_objective();
 		SG_INFO( "obj = %.16f, rho = %.16f\n",get_objective(),get_bias());
 		SG_INFO( "Number of SV: %ld\n", get_num_support_vectors());
 

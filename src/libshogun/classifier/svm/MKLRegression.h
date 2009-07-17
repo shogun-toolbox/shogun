@@ -156,6 +156,16 @@ class CMKLRegression : public CMKL
 		 * @return classifier type MKL_REGRESSION
 		 */
 		virtual inline EClassifierType get_classifier_type() { return CT_MKLREGRESSION; }
+
+		/** compute mkl dual objective
+		 *
+		 * @return computed dual objective
+		 */
+		virtual float64_t compute_mkl_dual_objective()
+		{
+			return -99999;
+		}
+
 	protected:
 		float64_t* W;
 		float64_t w_gap;

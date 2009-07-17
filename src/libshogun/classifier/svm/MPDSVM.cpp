@@ -240,7 +240,7 @@ bool CMPDSVM::train()
 			j++;
 		}
 	}
-	compute_objective();
+	compute_svm_dual_objective();
 	SG_INFO( "obj = %.16f, rho = %.16f\n",get_objective(),get_bias());
 	SG_INFO( "Number of SV: %ld\n", get_num_support_vectors());
 

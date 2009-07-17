@@ -82,6 +82,16 @@ enum IFType
 	ATTR_STRUCT
 };
 
+enum E_WHICH_OBJ
+{
+	SVM_PRIMAL,
+	SVM_DUAL,
+	MKL_PRIMAL,
+	MKL_DUAL,
+	MKL_RELATIVE_DUALITY_GAP,
+	MKL_ABSOLUTE_DUALITY_GAP
+};
+
 class CSGInterface : public CSGObject
 {
 	public:
@@ -105,6 +115,8 @@ class CSGInterface : public CSGObject
 		bool cmd_get_features();
 		/** add features */
 		bool cmd_add_features();
+		/** add multiple features */
+		bool cmd_add_multiple_features();
 		/** add dot features */
 		bool cmd_add_dotfeatures();
 		/** set features */
@@ -223,6 +235,16 @@ class CSGInterface : public CSGObject
 		bool cmd_get_classifier();
 		/** get SVM objective */
 		bool cmd_get_svm_objective();
+		/** compute SVM objective from scratch*/
+		bool cmd_compute_svm_primal_objective();
+		/** compute SVM objective from scratch*/
+		bool cmd_compute_svm_dual_objective();
+		/** compute SVM objective from scratch*/
+		bool cmd_compute_mkl_dual_objective();
+		/** compute relative mkl duality gap */
+		bool cmd_compute_relative_mkl_duality_gap();
+		/** compute absolute mkl duality gap */
+		bool cmd_compute_absolute_mkl_duality_gap();
 		/** train classifier/SVM */
 		bool cmd_train_classifier();
 		/** test SVM */
@@ -711,12 +733,14 @@ class CSGInterface : public CSGObject
 			return get_string(len);
 		}
 	private:
+		/** helper function for computing objective */
+		bool do_compute_objective(E_WHICH_OBJ obj);
 		/** helper function for hmm classify */
 		bool do_hmm_classify(bool linear=false, bool one_class=false);
 		/** helper function for hmm classify on 1 example */
 		bool do_hmm_classify_example(bool one_class=false);
 		/** helper function for add/set features */
-		bool do_set_features(bool add=false, bool check_dot=false);
+		bool do_set_features(bool add=false, bool check_dot=false, int32_t repetitions=1);
 
 		/** perform bit embedding */
 		void convert_to_bitembedding(CFeatures* &features, bool convert_to_word, bool convert_to_ulong);

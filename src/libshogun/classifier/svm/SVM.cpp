@@ -436,7 +436,7 @@ float64_t CSVM::classify_example(int32_t num)
 }
 
 
-float64_t CSVM::compute_objective()
+float64_t CSVM::compute_svm_dual_objective()
 {
 	int32_t n=get_num_support_vectors();
 
@@ -445,13 +445,44 @@ float64_t CSVM::compute_objective()
 		objective=0;
 		for (int32_t i=0; i<n; i++)
 		{
-			objective-=get_alpha(i)*labels->get_label(i);
+			int32_t ii=get_support_vector(i);
+			objective-=get_alpha(i)*labels->get_label(ii);
+
 			for (int32_t j=0; j<n; j++)
-				objective+=0.5*get_alpha(i)*get_alpha(j)*kernel->kernel(i,j);
+			{
+				int32_t jj=get_support_vector(j);
+				objective+=0.5*get_alpha(i)*get_alpha(j)*kernel->kernel(ii,jj);
+			}
 		}
 	}
 	else
 		SG_ERROR( "cannot compute objective, labels or kernel not set\n");
 
 	return objective;
+}
+
+float64_t CSVM::compute_svm_primal_objective()
+{
+	int32_t n=get_num_support_vectors();
+	float64_t regularizer=0;
+	float64_t loss=0;
+
+	if (labels && kernel)
+	{
+		for (int32_t i=0; i<n; i++)
+		{
+			int32_t ii=get_support_vector(i);
+			for (int32_t j=0; j<n; j++)
+			{
+				int32_t jj=get_support_vector(j);
+				regularizer-=0.5*get_alpha(i)*get_alpha(j)*kernel->kernel(ii,jj);
+			}
+
+			loss-=C1*CMath::max(0.0, 1.0-get_label(ii)*classify_example(ii));
+		}
+	}
+	else
+		SG_ERROR( "cannot compute objective, labels or kernel not set\n");
+
+	return regularizer+loss;
 }

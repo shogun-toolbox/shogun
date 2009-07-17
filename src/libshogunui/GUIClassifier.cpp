@@ -364,8 +364,6 @@ bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
 	}
 	SG_REF(classifier);
 
-	classifier->set_solver_type(solver_type);
-
 	return (classifier!=NULL);
 }
 
@@ -457,6 +455,7 @@ bool CGUIClassifier::train_svm()
 
 	SG_INFO("Starting SVM training on %ld vectors using C1=%lf C2=%lf epsilon=%lf\n", num_vec, svm_C1, svm_C2, svm_epsilon);
 
+	svm->set_solver_type(solver_type);
 	svm->set_bias_enabled(svm_use_bias);
 	svm->set_epsilon(svm_epsilon);
 	svm->set_max_train_time(max_train_time);
