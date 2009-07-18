@@ -41,6 +41,9 @@ class CMKLRegression : public CMKL
 		 */
 		virtual bool perform_mkl_step(const float64_t* sumw, float64_t suma);
 
+		virtual float64_t compute_sum_alpha();
+		virtual void compute_sum_beta(float64_t* sumw);
+
 	protected:
 		/** helper for update linear component MKL linadd
 		 *
@@ -172,54 +175,4 @@ class CMKLRegression : public CMKL
 		float64_t rho;
 
 };
-//
-//
-//		/** update linear component MKL
-//		 *
-//		 * @param docs docs
-//		 * @param label label
-//		 * @param active2dnum active2dnum
-//		 * @param a a
-//		 * @param a_old a old
-//		 * @param working2dnum working2dnum
-//		 * @param totdoc totdoc
-//		 * @param lin lin
-//		 * @param aicache ai cache
-//		 * @param c c
-//		 */
-//		virtual void update_linear_component_mkl(
-//			int32_t* docs, int32_t *label,
-//			int32_t *active2dnum, float64_t *a, float64_t* a_old,
-//			int32_t *working2dnum, int32_t totdoc,
-//			float64_t *lin, float64_t *aicache, float64_t* c);
-//
-//		/** update linear component MKL linadd
-//		 *
-//		 * @param docs docs
-//		 * @param label label
-//		 * @param active2dnum active2dnum
-//		 * @param a a
-//		 * @param a_old a old
-//		 * @param working2dnum working2dnum
-//		 * @param totdoc totdoc
-//		 * @param lin lin
-//		 * @param aicache ai cache
-//		 * @param c c
-//		 */
-//		virtual void update_linear_component_mkl_linadd(
-//			int32_t* docs, int32_t *label,
-//			int32_t *active2dnum, float64_t *a, float64_t* a_old,
-//			int32_t *working2dnum, int32_t totdoc,
-//			float64_t *lin, float64_t *aicache, float64_t* c);
-//
-//#ifdef USE_CPLEX
-//	cleanup_cplex();
-//
-//	if (get_mkl_enabled())
-//		init_cplex();
-//#else
-//	if (get_mkl_enabled())
-//		SG_ERROR( "CPLEX was disabled at compile-time\n");
-//#endif
-//
 #endif //__MKLREGRESSION_H__

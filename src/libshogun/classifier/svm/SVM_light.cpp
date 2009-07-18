@@ -1711,9 +1711,6 @@ void CSVMLight::call_mkl_callback(float64_t* a, int32_t* label, const float64_t*
 	}
 #endif
 
-	SG_PRINT("suma=%f\n", suma);
-	CMath::display_vector(sumw, num_kernels, "sumw");
-
 	if (callback)
 		mkl_converged=callback(mkl, sumw, suma);
 
@@ -1731,17 +1728,6 @@ void CSVMLight::call_mkl_callback(float64_t* a, int32_t* label, const float64_t*
                 lin[i] += old_beta[d]*W[i*num_kernels+d] ;
 #endif
 
-//    // count actives
-//    int32_t jj;
-//    for (jj=0;active2dnum[jj]>=0;jj++);
-//
-//    if (count%10==0)
-//    {
-//        int32_t start_row = 1 ;
-//        if (C_mkl!=0.0)
-//            start_row+=2*(num_kernels-1);
-//        SG_DEBUG("%i. OBJ: %f  RHO: %f  wgap=%f agap=%f (activeset=%i; active rows=%i/%i; inner_iters=%d)\n", count, mkl_objective,rho,w_gap,mymaxdiff,jj,num_active_rows,num_rows-start_row, inner_iters);
-//    }
 	delete[] sumw;
 	delete[] old_beta;
 

@@ -169,8 +169,7 @@ void CSVRLight::svr_learn()
   //prepare kernel cache for regression (i.e. cachelines are twice of current size)
   kernel->resize_kernel_cache( kernel->get_cache_size(), true);
 
-  /* mkl
-  if ( kernel->has_property(KP_KERNCOMBINATION) && get_mkl_enabled() &&
+  if ( callback &&
 		  (!((CCombinedKernel*)kernel)->get_append_subkernel_weights()) 
 	 )
   {
@@ -182,7 +181,7 @@ void CSVRLight::svr_learn()
 		  kn->resize_kernel_cache( kernel->get_cache_size(), true);
 		  kn = k->get_next_kernel();
 	  }
-  }*/
+  }
 
   runtime_start=get_runtime();
   timing_profile.time_kernel=0;
@@ -197,7 +196,6 @@ void CSVRLight::svr_learn()
 	W=NULL;
 	rho=0 ;
 	w_gap = 1 ;
-	count = 0 ;
 
 	if (kernel->has_property(KP_KERNCOMBINATION))
 	{
@@ -367,13 +365,12 @@ void CSVRLight::update_linear_component(
 
 	if (kernel->has_property(KP_LINADD) && get_linadd_enabled()) 
 	{
-		/* mkl
-		if (kernel->has_property(KP_KERNCOMBINATION) && get_mkl_enabled() ) 
+		if (callback) 
 		{
 			update_linear_component_mkl_linadd(docs, label, active2dnum, a, a_old, working2dnum, 
 											   totdoc,	lin, aicache, c) ;
 		}
-		else*/
+		else
 		{
 			kernel->clear_normal();
 
@@ -436,13 +433,12 @@ void CSVRLight::update_linear_component(
 	}
 	else 
 	{
-		/* mkl
-		if (kernel->has_property(KP_KERNCOMBINATION) && get_mkl_enabled() ) 
+		if (callback)
 		{
 			update_linear_component_mkl(docs, label, active2dnum, a, a_old, working2dnum, 
 										totdoc,	lin, aicache, c) ;
 		}
-		else */ {
+		else {
 			for(jj=0;(i=working2dnum[jj])>=0;jj++) {
 				if(a[i] != a_old[i]) {
 					kernel->get_kernel_row(i,active2dnum,aicache);
@@ -452,6 +448,173 @@ void CSVRLight::update_linear_component(
 			}
 		}
 	}
+}
+
+void CSVRLight::update_linear_component_mkl(
+	int32_t* docs, int32_t* label, int32_t *active2dnum, float64_t *a,
+	float64_t *a_old, int32_t *working2dnum, int32_t totdoc, float64_t *lin,
+	float64_t *aicache, float64_t* c)
+{
+	int32_t num         = totdoc;
+	int32_t num_weights = -1;
+	int32_t num_kernels = kernel->get_num_subkernels() ;
+	const float64_t* old_beta  = kernel->get_subkernel_weights(num_weights);
+
+	ASSERT(num_weights==num_kernels);
+
+	if ((kernel->get_kernel_type()==K_COMBINED) && 
+			 (!((CCombinedKernel*)kernel)->get_append_subkernel_weights()))// for combined kernel
+	{
+		CCombinedKernel* k      = (CCombinedKernel*) kernel;
+		CKernel* kn = k->get_first_kernel() ;
+		int32_t n = 0, i, j ;
+		
+		while (kn!=NULL)
+		{
+			for(i=0;i<num;i++) 
+			{
+				if(a[i] != a_old[i]) 
+				{
+					kn->get_kernel_row(i,NULL,aicache, true);
+					for(j=0;j<num;j++) 
+						W[j*num_kernels+n]+=(a[i]-a_old[i])*aicache[regression_fix_index(j)]*(float64_t)label[i];
+				}
+			}
+			kn = k->get_next_kernel();
+			n++ ;
+		}
+	}
+	else // hope the kernel is fast ...
+	{
+		float64_t* w_backup = new float64_t[num_kernels] ;
+		float64_t* w1 = new float64_t[num_kernels] ;
+		
+		// backup and set to zero
+		for (int32_t i=0; i<num_kernels; i++)
+		{
+			w_backup[i] = old_beta[i] ;
+			w1[i]=0.0 ; 
+		}
+		for (int32_t n=0; n<num_kernels; n++)
+		{
+			w1[n]=1.0 ;
+			kernel->set_subkernel_weights(w1, num_weights) ;
+		
+			for(int32_t i=0;i<num;i++) 
+			{
+				if(a[i] != a_old[i]) 
+				{
+					for(int32_t j=0;j<num;j++) 
+						W[j*num_kernels+n]+=(a[i]-a_old[i])*kernel->kernel(regression_fix_index(i),regression_fix_index(j))*(float64_t)label[i];
+				}
+			}
+			w1[n]=0.0 ;
+		}
+
+		// restore old weights
+		kernel->set_subkernel_weights(w_backup,num_weights) ;
+		
+		delete[] w_backup ;
+		delete[] w1 ;
+	}
+
+	call_mkl_callback(a, label, old_beta, lin, c);
+}
+
+
+void CSVRLight::update_linear_component_mkl_linadd(
+	int32_t* docs, int32_t* label, int32_t *active2dnum, float64_t *a,
+	float64_t *a_old, int32_t *working2dnum, int32_t totdoc, float64_t *lin,
+	float64_t *aicache, float64_t* c)
+{
+	// kernel with LP_LINADD property is assumed to have 
+	// compute_by_subkernel functions
+	int32_t num         = totdoc;
+	int32_t num_weights = -1;
+	int32_t num_kernels = kernel->get_num_subkernels() ;
+	const float64_t* old_beta   = kernel->get_subkernel_weights(num_weights);
+	
+	ASSERT(num_weights==num_kernels);
+	{
+		float64_t* w_backup=new float64_t[num_kernels];
+		float64_t* w1=new float64_t[num_kernels];
+
+		// backup and set to one
+		for (int32_t i=0; i<num_kernels; i++)
+		{
+			w_backup[i] = old_beta[i] ;
+			w1[i]=1.0 ; 
+		}
+		// set the kernel weights
+		kernel->set_subkernel_weights(w1, num_weights) ;
+		
+		// create normal update (with changed alphas only)
+		kernel->clear_normal();
+		for(int32_t ii=0, i=0;(i=working2dnum[ii])>=0;ii++) {
+			if(a[i] != a_old[i]) {
+				kernel->add_to_normal(regression_fix_index(docs[i]), (a[i]-a_old[i])*(float64_t)label[i]);
+			}
+		}
+		
+		// determine contributions of different kernels
+		for (int32_t i=0; i<num; i++)
+			kernel->compute_by_subkernel(i,&W[i*num_kernels]) ;
+
+		// restore old weights
+		kernel->set_subkernel_weights(w_backup,num_weights) ;
+		
+		delete[] w_backup ;
+		delete[] w1 ;
+	}
+
+	call_mkl_callback(a, label, old_beta, lin, c);
+}
+
+void CSVRLight::call_mkl_callback(float64_t* a, int32_t* label, const float64_t* const_beta, float64_t* lin, float64_t* c)
+{
+	int32_t num = kernel->get_num_vec_rhs();
+	int32_t num_kernels = kernel->get_num_subkernels() ;
+	float64_t* old_beta = CMath::clone_vector(const_beta, num_kernels);
+	int nk = (int) num_kernels; // calling external lib
+	float64_t sumalpha = 0;
+	float64_t* sumw=new float64_t[num_kernels];
+
+	for (int32_t i=0; i<num; i++)
+		sumalpha+=a[i]*(learn_parm->eps-label[i]*c[i]);
+
+#ifdef HAVE_LAPACK
+	for (int32_t i=0; i<num_kernels; i++)
+		sumw[i]=0;
+	
+	cblas_dgemv(CblasColMajor, CblasNoTrans, nk, (int) num, 0.5, (double*) W,
+		nk, (double*) a, 1, 1.0, (double*) sumw, 1);
+#else
+	for (int32_t d=0; d<num_kernels; d++)
+	{
+		sumw[d]=0;
+		for(int32_t i=0; i<num; i++)
+			sumw[d] += 0.5*a[i]*label[i]*W[i*num_kernels+d];
+	}
+#endif
+	
+	if (callback)
+		mkl_converged=callback(mkl, sumw, sumalpha);
+	
+	// update lin
+#ifdef HAVE_LAPACK
+	cblas_dgemv(CblasColMajor, CblasTrans, nk, (int) num, 1.0, (double*) W,
+		nk, (double*) old_beta, 1, 0.0, (double*) lin, 1);
+#else
+	for(int32_t i=0; i<num; i++)
+		lin[i]=0 ;
+	for (int32_t d=0; d<num_kernels; d++)
+		if (old_beta[d]!=0)
+			for(int32_t i=0; i<num; i++)
+				lin[i] += old_beta[d]*W[i*num_kernels+d] ;
+#endif
+	
+	delete[] sumw;
+	delete[] old_beta;
 }
 
 
