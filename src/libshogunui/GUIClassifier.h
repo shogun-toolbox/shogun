@@ -74,6 +74,7 @@ class CGUIClassifier : public CSGObject
 		bool set_do_auc_maximization(bool do_auc);
 		bool set_svm_linadd_enabled(bool enabled);
 		bool set_svm_bias_enabled(bool enabled);
+		bool set_mkl_interleaved_enabled(bool enabled);
 		bool set_svm_epsilon(float64_t epsilon);
 		bool set_svr_tube_epsilon(float64_t tube_epsilon);
 		bool set_svm_mkl_parameters(
@@ -125,6 +126,7 @@ class CGUIClassifier : public CSGObject
 		float64_t svm_C2;
 		float64_t C_mkl;
 		float64_t krr_tau;
+		bool mkl_use_interleaved;
 		bool svm_use_bias;
 		bool svm_use_batch_computation;
 		bool svm_use_linadd;

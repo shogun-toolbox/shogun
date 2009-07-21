@@ -1,7 +1,18 @@
-#include "classifier/svm/MKLRegression.h"
+#include "regression/svr/MKLRegression.h"
+#include "regression/svr/LibSVR.h"
+#include "regression/svr/SVR_light.h"
 
 CMKLRegression::CMKLRegression(CSVM* s) : CMKL(s)
 {
+	if (!s)
+	{
+#ifdef USE_SVMLIGHT
+		s=new CSVRLight();
+#endif //USE_SVMLIGHT
+		if (!s)
+			s=new CLibSVR();
+		set_svm(s);
+	}
 }
 
 CMKLRegression::~CMKLRegression()
@@ -20,6 +31,7 @@ float64_t CMKLRegression::compute_sum_alpha()
 	//	suma+=CMath::abs(svm->get_alpha(i))*tube_epsilon-svm->get_alpha(i);
 	//return suma;
 }
+
 float64_t CMKLRegression::compute_mkl_dual_objective()
 {
 	SG_NOTIMPLEMENTED;
@@ -29,4 +41,7 @@ float64_t CMKLRegression::compute_mkl_dual_objective()
 void CMKLRegression::init_training()
 {
 	ASSERT(labels && labels->get_num_labels());
+	ASSERT(svm);
+	ASSERT(svm->get_classifier_type() == CT_SVRLIGHT);
+	ASSERT(interleaved_optimization);
 }

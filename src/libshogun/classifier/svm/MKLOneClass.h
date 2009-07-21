@@ -7,24 +7,24 @@
  * Written (W) 2009 Soeren Sonnenburg
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
-#ifndef __MKLREGRESSION_H__
-#define __MKLREGRESSION_H__
+#ifndef __MKLONECLASS_H__
+#define __MKLONECLASS_H__
 
 #include "lib/common.h"
 #include "classifier/svm/MKL.h"
 
-class CMKLRegression : public CMKL
+class CMKLOneClass : public CMKL
 {
 	public:
 		/** Constructor
 		 *
 		 * @param s SVM to use as constraint generator in MKL SILP
 		 */
-		CMKLRegression(CSVM* s=NULL);
+		CMKLOneClass(CSVM* s=NULL);
 
 		/** Destructor
 		 */
-		virtual ~CMKLRegression();
+		virtual ~CMKLOneClass();
 
 		virtual float64_t compute_sum_alpha();
 
@@ -33,20 +33,8 @@ class CMKLRegression : public CMKL
 
 		/** get classifier type
 		 *
-		 * @return classifier type MKL_REGRESSION
+		 * @return classifier type MKL ONECLASS
 		 */
-		virtual inline EClassifierType get_classifier_type() { return CT_MKLREGRESSION; }
-
-		/** compute mkl dual objective
-		 *
-		 * @return computed dual objective
-		 */
-		virtual float64_t compute_mkl_dual_objective();
-
-	protected:
-		float64_t* W;
-		float64_t w_gap;
-		float64_t rho;
-
+		virtual inline EClassifierType get_classifier_type() { return CT_MKLONECLASS; }
 };
-#endif //__MKLREGRESSION_H__
+#endif //__MKLONECLASS_H__

@@ -26,12 +26,6 @@ class CMKLClassification : public CMKL
 		 */
 		virtual ~CMKLClassification();
 
-		/** compute mkl dual objective
-		 *
-		 * @return computed dual objective
-		 */
-		virtual float64_t compute_mkl_dual_objective();
-
 		virtual float64_t compute_sum_alpha();
 
 	protected:

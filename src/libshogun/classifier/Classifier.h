@@ -60,7 +60,8 @@ enum ESolverType
 	ST_AUTO=0,
 	ST_CPLEX=1,
 	ST_GLPK=2,
-	ST_INTERNAL=3
+	ST_NEWTON=3,
+	ST_DIRECT=4
 };
 
 /** @brief A generic classifier interface.

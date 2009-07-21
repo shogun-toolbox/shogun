@@ -182,6 +182,7 @@
 #define N_SVR_TUBE_EPSILON				"svr_tube_epsilon"
 #define N_SVM_NU						"svm_nu"
 #define N_SVM_USE_BIAS					"svm_use_bias"
+#define N_MKL_USE_INTERLEAVED_OPTIMIZATION	"mkl_use_interleaved_optimization"
 #define N_DO_AUC_MAXIMIZATION			"do_auc_maximization"
 #define N_ADD_STATES					"add_states"
 #define N_APPEND_HMM					"append_hmm"

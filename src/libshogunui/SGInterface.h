@@ -281,6 +281,8 @@ class CSGInterface : public CSGObject
 		bool cmd_set_svm_linadd_enabled();
 		/** set SVM bias enabled */
 		bool cmd_set_svm_bias_enabled();
+		/** set MKL intebias enabled */
+		bool cmd_set_mkl_interleaved_enabled();
 		/** set krr tau */
 		bool cmd_set_krr_tau();
 

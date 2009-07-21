@@ -4,9 +4,9 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2008 Soeren Sonnenburg
+ * Written (W) 1999-2009 Soeren Sonnenburg
  * Written (W) 1999-2008 Gunnar Raetsch
- * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 #include "GUIClassifier.h"
 #include "SGInterface.h"
@@ -39,7 +39,8 @@
 #endif //USE_SVMLIGHT
 
 #include <shogun/classifier/svm/MKLClassification.h>
-#include <shogun/classifier/svm/MKLRegression.h>
+#include <shogun/regression/svr/MKLRegression.h>
+#include <shogun/classifier/svm/MKLOneClass.h>
 #include <shogun/classifier/svm/LibSVM.h>
 #include <shogun/classifier/svm/GPBTSVM.h>
 #include <shogun/classifier/svm/LibSVMOneClass.h>
@@ -79,6 +80,7 @@ CGUIClassifier::CGUIClassifier(CSGInterface* ui_)
 	svm_C1=1;
 	svm_C2=1;
 	C_mkl=0;
+	mkl_use_interleaved=true;
 	svm_weight_epsilon=1e-5;
 	svm_epsilon=1e-5;
 	svm_tube_epsilon=1e-2;
@@ -349,13 +351,17 @@ bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
 	else if (strcmp(name,"MKL_CLASSIFICATION")==0)
 	{
 		SG_UNREF(classifier);
-		//classifier= new CMKLClassification();
 		classifier= new CMKLClassification(new CSVMLight());
+	}
+	else if (strcmp(name,"MKL_ONECLASS")==0)
+	{
+		SG_UNREF(classifier);
+		classifier= new CMKLOneClass();
 	}
 	else if (strcmp(name,"MKL_REGRESSION")==0)
 	{
 		SG_UNREF(classifier);
-		classifier= new CMKLRegression(new CSVRLight());
+		classifier= new CMKLRegression();
 	}
 	else
 	{
@@ -394,6 +400,7 @@ bool CGUIClassifier::train_mkl()
 
 	SG_INFO("Starting SVM training on %ld vectors using C1=%lf C2=%lf epsilon=%lf\n", num_vec, svm_C1, svm_C2, svm_epsilon);
 
+	mkl->set_solver_type(solver_type);
 	mkl->set_bias_enabled(svm_use_bias);
 	mkl->set_epsilon(svm_epsilon);
 	mkl->set_max_train_time(max_train_time);
@@ -407,6 +414,7 @@ bool CGUIClassifier::train_mkl()
 	mkl->set_mkl_epsilon(svm_weight_epsilon);
 	mkl->set_mkl_norm(mkl_norm); 
 	mkl->set_C_mkl(C_mkl);
+	mkl->set_interleaved_optimization_enabled(mkl_use_interleaved);
 
 	if (svm_do_auc_maximization)
 	{
@@ -938,6 +946,17 @@ bool CGUIClassifier::set_svm_bias_enabled(bool enabled)
 	return true;
 }
 
+bool CGUIClassifier::set_mkl_interleaved_enabled(bool enabled)
+{
+	mkl_use_interleaved=enabled;
+	if (mkl_use_interleaved)
+		SG_INFO("Enabling mkl interleaved optimization.\n");
+	else
+		SG_INFO("Disabling mkl interleaved optimization.\n");
+
+	return true;
+}
+
 bool CGUIClassifier::set_do_auc_maximization(bool do_auc)
 {
 	svm_do_auc_maximization=do_auc;
@@ -1341,10 +1360,15 @@ bool CGUIClassifier::set_solver(char* solver)
 {
 	ESolverType s=ST_AUTO;
 
-	if (strncmp(solver,"INTERNAL", 8)==0)
+	if (strncmp(solver,"NEWTON", 6)==0)
 	{
-		SG_INFO("Using INTERNAL solver.\n");
-		s=ST_INTERNAL;
+		SG_INFO("Using NEWTON solver.\n");
+		s=ST_NEWTON;
+	}
+	else if (strncmp(solver,"DIRECT", 6)==0)
+	{
+		SG_INFO("Using DIRECT solver\n");
+		s=ST_DIRECT;
 	}
 	else if (strncmp(solver,"AUTO", 4)==0)
 	{

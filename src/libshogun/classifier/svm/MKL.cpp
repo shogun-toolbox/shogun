@@ -27,19 +27,15 @@ CMKL::CMKL(CSVM* s)
 #ifdef USE_GLPK
 	lp_glpk = NULL;
 #endif
-	svm=s;
-
-	if (!svm)
-		svm=new CLibSVM();
-	SG_REF(svm);
 
 	lp_initialized = false ;
 }
 
 CMKL::~CMKL()
 {
-	svm->set_callback_function(NULL, NULL);
-	SG_UNREF(svm);
+	if (svm)
+		svm->set_callback_function(NULL, NULL);
+	set_constraint_generator(NULL);
 }
 
 void CMKL::init_solver()
@@ -47,15 +43,14 @@ void CMKL::init_solver()
 #ifdef USE_CPLEX
 	cleanup_cplex();
 
-	if (get_solver_type()==ST_CPLEX || get_solver_type()==ST_AUTO)
+	if (get_solver_type()==ST_CPLEX)
 		init_cplex();
 #endif
 
 #ifdef USE_GLPK
 	cleanup_glpk();
 
-	if (get_solver_type() == ST_GLPK ||
-				( mkl_norm == 1 && get_solver_type()==ST_AUTO))
+	if (get_solver_type() == ST_GLPK)
 		init_glpk();
 #endif
 }
@@ -187,6 +182,8 @@ bool CMKL::check_lpx_status(LPX *lp)
 bool CMKL::train()
 {
 	init_training();
+	if (!svm)
+		SG_ERROR("No constraint generator (SVM) set\n");
 
 	int32_t num_label=0;
 	if (labels)
@@ -199,6 +196,7 @@ bool CMKL::train()
 	SG_INFO("mkl_epsilon = %1.1e\n", mkl_epsilon) ;
 	SG_INFO("C_mkl = %1.1e\n", C_mkl) ;
 	SG_INFO("mkl_norm = %1.3e\n", mkl_norm);
+	SG_INFO("solver = %d\n", get_solver_type());
 
 	int32_t num_weights = -1;
 	int32_t num_kernels = kernel->get_num_subkernels();
@@ -223,12 +221,12 @@ bool CMKL::train()
 #ifdef USE_CPLEX
 	cleanup_cplex();
 
-	if (get_solver_type()==ST_CPLEX || get_solver_type()==ST_AUTO)
+	if (get_solver_type()==ST_CPLEX)
 		init_cplex();
 #endif
 
 #ifdef USE_GLPK
-	if (get_solver_type()==ST_GLPK || get_solver_type()==ST_AUTO)
+	if (get_solver_type()==ST_GLPK)
 		init_glpk();
 #endif
 
@@ -302,31 +300,24 @@ bool CMKL::perform_mkl_step(
 	}
 
 	w_gap = CMath::abs(1-rho/mkl_objective) ;
-	if( (w_gap >= 0.9999*mkl_epsilon) || (get_solver_type()==ST_INTERNAL && mkl_norm>1) )
-	{
-		if ( mkl_norm == 1)
-		{
-#ifdef USE_CPLEX
-			if (get_solver_type()==ST_CPLEX || get_solver_type()==ST_AUTO)
-				rho=compute_optimal_betas_via_cplex(beta, old_beta, num_kernels, sumw, suma, inner_iters);
-			else
-				rho=compute_optimal_betas_via_glpk(beta, old_beta, num_kernels, sumw, suma, inner_iters);
-#else
-			if (get_solver_type()==ST_GLPK || get_solver_type()==ST_AUTO)
-				rho=compute_optimal_betas_via_glpk(beta, old_beta, num_kernels, sumw, suma, inner_iters);
-			else
-				rho=compute_optimal_betas_via_cplex(beta, old_beta, num_kernels, sumw, suma, inner_iters);
-#endif
-		}
-		else
-		{
-			if (get_solver_type()==ST_CPLEX) {
-				rho=compute_optimal_betas_via_cplex(beta, old_beta, num_kernels, sumw, suma, inner_iters);
-			}
-			else
-				rho=compute_optimal_betas_newton(beta, old_beta, num_kernels, sumw, suma, mkl_objective);
-		}
 
+	if( (w_gap >= 0.9999*mkl_epsilon) ||
+			(get_solver_type()==ST_AUTO || get_solver_type()==ST_NEWTON || get_solver_type()==ST_DIRECT ) )
+	{
+		if (get_solver_type()==ST_AUTO || get_solver_type()==ST_DIRECT)
+			rho=compute_optimal_betas_directly(beta, old_beta, num_kernels, sumw, suma, mkl_objective);
+		else if (get_solver_type()==ST_NEWTON)
+			rho=compute_optimal_betas_newton(beta, old_beta, num_kernels, sumw, suma, mkl_objective);
+#ifdef USE_CPLEX
+		else if (get_solver_type()==ST_CPLEX)
+			rho=compute_optimal_betas_via_cplex(beta, old_beta, num_kernels, sumw, suma, inner_iters);
+#endif
+#ifdef USE_GLPK
+		else if (get_solver_type()==ST_GLPK)
+			rho=compute_optimal_betas_via_glpk(beta, old_beta, num_kernels, sumw, suma, inner_iters);
+#endif
+		else
+			SG_ERROR("Solver type not supported (not compiled in?)\n");
 		w_gap = CMath::abs(1-rho/mkl_objective) ;
 	}
 
@@ -336,9 +327,9 @@ bool CMKL::perform_mkl_step(
 }
 
 
-float64_t CMKL::compute_optimal_betas_analytically(
+float64_t CMKL::compute_optimal_betas_directly(
   float64_t* beta, const float64_t* old_beta, const int32_t num_kernels,
-  const int32_t* label, const float64_t* sumw, const float64_t suma,
+  const float64_t* sumw, const float64_t suma,
   const float64_t mkl_objective )
 {
   const float64_t epsRegul = 0.01;  // fraction of root mean squared deviation
@@ -395,350 +386,15 @@ float64_t CMKL::compute_optimal_betas_analytically(
   return obj;
 }
 
-/*
-float64_t CMKL::compute_optimal_betas_gradient(float64_t* beta,
-		float64_t* old_beta, int32_t num_kernels,
-		const float64_t* sumw, float64_t suma,
-    float64_t mkl_objective)
-{
-	SG_DEBUG("MKL via GRADIENT\n");
-
-	const float64_t r = mkl_norm / ( mkl_norm - 1.0 );
-	float64_t Z;
-	float64_t obj;
-	float64_t gamma;
-	float64_t maxstep;
-  int32_t p;
-
-	SG_PRINT( "OBJ_old = %f\n", mkl_objective );
-
-	gamma = 0.0;
-	for( p=0; p<num_kernels; ++p ) {
-		gamma += CMath::pow( sumw[p], r );
-	}
-  gamma = CMath::pow( gamma, 1.0/r ) / mkl_norm;
-
-  // compute gradient (stored in "beta")
-  maxstep = CMath::INFTY;
-  maxstep = 0.0;
-	for( p=0; p<num_kernels; ++p ) {
-    ASSERT( 0.0 <= old_beta[p] && old_beta[p] <= 1.0 );
-		beta[p] = gamma * mkl_norm * CMath::pow( old_beta[p], mkl_norm-1 ) - sumw[p];
-    const float64_t step = ( beta[p] > 0.0 ) ? old_beta[p]/beta[p] : (old_beta[p]-1.0)/beta[p];
-    ASSERT( step >= 0.0 );
-    if( step > maxstep ) {
-      maxstep = step;
-    }
-  }
-  ASSERT( maxstep > 0.0 );
-
-  // make gradient step
-	Z = 0.0;
-	for( p=0; p<num_kernels; ++p ) {
-		beta[p] = old_beta[p] - 0.5*maxstep*beta[p];
-    //ASSERT( 0.0 <= beta[p] && beta[p] <= 1.0 );
-    if( beta[p] < 0.0 ) {
-      beta[p] = 0.0;
-    }
-		Z += CMath::pow( beta[p], mkl_norm );
-	}
-	Z = CMath::pow( Z, -1.0/mkl_norm );
-	for( p=0; p<num_kernels; ++p ) {
-		beta[p] *= Z;
-  }
-
-	// CMath::display_vector(beta, num_kernels, "beta_alex");
-	SG_PRINT("Z_alex = %e\n", Z);
-
-	CMath::display_vector( old_beta, num_kernels, "old_beta " );
-	CMath::display_vector( beta,     num_kernels, "beta     " );
-	//CMath::display_vector(beta, num_kernels, "beta_log");
-	//SG_PRINT("Z_log=%f\n", Z);
-	//for (int32_t i=0; i<num_kernels; i++)
-		//beta[i]=(beta[i]+old_beta[i])/2;
-
-	//CMath::scale_vector(1/CMath::qnorm(beta, num_kernels, mkl_norm), beta, num_kernels);
-
-  obj = -suma;
-	for( p=0; p<num_kernels; ++p ) {
-		obj += beta[p] * (sumw[p]);
-  }
-	SG_PRINT( "OBJ = %f\n", obj );
-	return obj;
-}
-*/
-
-/*
-float64_t CMKL::compute_optimal_betas_gradient(float64_t* beta,
-		float64_t* old_beta, int32_t num_kernels,
-		const float64_t* sumw, float64_t suma,
-    float64_t mkl_objective)
-{
-	SG_DEBUG("MKL via GRADIENT-EXP\n");
-
-	const float64_t r = mkl_norm / ( mkl_norm - 1.0 );
-	float64_t Z;
-	float64_t obj;
-	float64_t gamma;
-  int32_t p;
-
-	SG_PRINT( "OBJ_old = %f\n", mkl_objective );
-
-	gamma = 0.0;
-	for( p=0; p<num_kernels; ++p ) {
-		gamma += CMath::pow( sumw[p], r );
-	}
-  gamma = CMath::pow( gamma, 1.0/r ) / mkl_norm;
-
-  // compute gradient (stored in "beta")
-	for( p=0; p<num_kernels; ++p ) {
-    ASSERT( 0.0 <= old_beta[p] && old_beta[p] <= 1.0 );
-		beta[p] = gamma * mkl_norm * CMath::pow( old_beta[p], mkl_norm-1 ) - sumw[p];
-  }
-	for( p=0; p<num_kernels; ++p ) {
-    beta[p] *= ( mkl_norm - 1.0 ) * ( mkl_norm - 1.0 );
-  }
-	CMath::display_vector( beta, num_kernels, "grad" );
-
-  // make gradient step in log-beta space
-  Z = 0.0;
-	for( p=0; p<num_kernels; ++p ) {
-		beta[p] = CMath::log(old_beta[p]) - beta[p] / old_beta[p];
-		beta[p] = CMath::exp( beta[p] );
-    if( beta[p] != beta[p] || beta[p] == CMath::INFTY ) {
-      beta[p] = 0.0;
-    }
-    ASSERT( beta[p] == beta[p] );
-		Z += CMath::pow( beta[p], mkl_norm );
-	}
-	Z = CMath::pow( Z, -1.0/mkl_norm );
-	CMath::display_vector( beta, num_kernels, "pre-beta " );
-	for( p=0; p<num_kernels; ++p ) {
-		beta[p] *= Z;
-  }
-
-	// CMath::display_vector(beta, num_kernels, "beta_alex");
-	SG_PRINT("Z_alex = %e\n", Z);
-
-	CMath::display_vector( old_beta, num_kernels, "old_beta " );
-	CMath::display_vector( beta,     num_kernels, "beta     " );
-
-  obj = -suma;
-	for( p=0; p<num_kernels; ++p ) {
-		obj += beta[p] * (sumw[p]);
-  }
-	SG_PRINT( "OBJ = %f\n", obj );
-	return obj;
-}
-*/
-
-
-/*
-// === primal Newton ===
-float64_t CMKL::compute_optimal_betas_newton(
-  float64_t* beta, const float64_t* old_beta, const int32_t num_kernels,
-  const int32_t* label, const float64_t* sumw, const float64_t suma,
-  const float64_t mkl_objective )
-{
-  const float64_t gamma = 10;
-  //const float64_t margPlusEps = 1.00001;
-  const float64_t epsBeta = 1e-32;
-  const float64_t epsNewt = 0.01;  // line search alpha
-  const float64_t epsStep = 1e-9;
-  const int inLogSpace = 0;
-  const int32_t nSvs = get_num_support_vectors();
-  const int32_t num = kernel->get_num_vec_rhs();
-  //const float64_t C = learn_parm->svm_c;
-  const float64_t C = get_C1();
-  float64_t* newtDir = new float64_t[ num_kernels ];
-  float64_t* newBeta = new float64_t[ num_kernels ];
-  float64_t newtStep;
-  float64_t stepSize;
-  float64_t obj;
-  float64_t Z;
-  int32_t i;
-  int32_t jSv;
-  int32_t l;
-  int32_t p;
-
-  // === init
-  ASSERT( labels && kernel );
-  // --- check beta
-  Z = 0.0;
-  for( p=0; p<num_kernels; ++p ) {
-    beta[p] = old_beta[p];
-    if( !( beta[p] >= epsBeta ) ) {
-      SG_WARNING( "old_beta[%d] = %e  (sumw[.]=%e);  set to %e.  ", p, beta[p], sumw[p], epsBeta );
-      beta[p] = epsBeta;
-    }
-    ASSERT( 0.0 <= beta[p] && beta[p] <= 1.0 );
-    Z += CMath::pow( beta[p], mkl_norm );
-  }
-  Z = CMath::pow( Z, -1.0/mkl_norm );
-  if( !( fabs(Z-1.0) <= 1e-9 ) ) {
-    SG_WARNING( "old_beta not normalized (diff=%e);  forcing normalization.  ", Z-1.0 );
-    for( p=0; p<num_kernels; ++p ) {
-      beta[p] *= Z;
-      if( beta[p] > 1.0 ) {
-	beta[p] = 1.0;
-      }
-      ASSERT( 0.0 <= beta[p] && beta[p] <= 1.0 );
-    }
-  }
-
-  // === compute objective
-  obj = 0.0;
-  for( i=0; i<num; ++i ) {
-    float64_t out_i;
-    out_i = 0.0;
-    for( p=0; p<num_kernels; ++p ) {
-      out_i += beta[p] * W[ i*num_kernels + p ];
-    }
-    if( label[i]*out_i < 1.0 ) {
-      obj += 1.0 - label[i]*out_i;
-    }
-  }
-  obj *= C;
-  ASSERT( obj >= 0.0 );
-  for( i=0; i<num; ++i ) {
-    obj += beta[p] * sumw[p];
-  }
-  ASSERT( obj > 0.0 );
-  const float64_t oldObj = obj;
-  const float64_t obj2 = -compute_mkl_primal_objective();
-  if( !( fabs(obj-obj2) < 1e-6 ) ) {
-    SG_PRINT( "WARN:  %e != %e primal\n", obj, obj2 );
-  }
-  // --- dual
-  float64_t dualObj;
-  dualObj = 0.0;
-  for( p=0; p<num_kernels; ++p ) {
-    dualObj += CMath::pow( sumw[p], mkl_norm/(mkl_norm-1.0) );
-  }
-  dualObj = CMath::pow( dualObj, (mkl_norm-1.0)/mkl_norm );
-  const float64_t dualReg = dualObj;
-  dualObj = suma - dualObj;
-
-  // === compute gradient
-  for( p=0; p<num_kernels; ++p ) {
-    newtDir[p] = 0.0;
-  }
-  for( jSv=0; jSv<nSvs; ++jSv ) {
-    const int32_t j = get_support_vector( jSv );
-    for( p=0; p<num_kernels; ++p ) {
-      newtDir[p] += label[j] * W[ j*num_kernels + p ];
-    }
-  }
-  for( p=0; p<num_kernels; ++p ) {
-    newtDir[p] *= -C;
-    newtDir[p] += sumw[p];
-    //const float64_t eps_p = ( newtDir[p] > 0.0 ) ? newtDir[p] : 0.0;
-    //newtDir[p] += -eps_p;
-    newtDir[p] += gamma * mkl_norm * CMath::pow( beta[p], mkl_norm-1.0 );
-  }
-  
-  // === compute Newton direction (divide by Hessian)
-  const float64_t gqq1 = gamma * mkl_norm * (mkl_norm-1.0);
-  newtStep = 0.0;
-  for( p=0; p<num_kernels; ++p ) {
-    const float64_t t = newtDir[p];
-    newtDir[p] /= gqq1 * CMath::pow( beta[p], mkl_norm-2.0 );
-    newtStep += newtDir[p] * t;
-    newtDir[p] *= -1;
-  }
-  ASSERT( newtStep >= 0.0 );
-  
-  // === line search
-  stepSize = 1.0;
-  while( stepSize >= epsStep ) {
-
-    // --- perform Newton step
-    Z = 0.0;
-    while( Z == 0.0 ) {
-      for( p=0; p<num_kernels; ++p ) {
-        if( inLogSpace ) {
-          newBeta[p] = beta[p] * CMath::exp( - stepSize * newtDir[p] );
-        } else {
-          newBeta[p] = beta[p] - stepSize * newtDir[p];
-        }
-        if( !( newBeta[p] >= epsBeta ) ) {
-          newBeta[p] = epsBeta;
-        }
-        Z += CMath::pow( newBeta[p], mkl_norm );
-      }
-      ASSERT( 0.0 <= Z );
-      Z = CMath::pow( Z, -1.0/mkl_norm );
-      if( Z == 0.0 ) {
-        stepSize /= 2.0;
-      }
-    }
-
-    // --- normalize new beta (wrt p-norm)
-    ASSERT( 0.0 < Z );
-    ASSERT( Z < CMath::INFTY );
-    for( p=0; p<num_kernels; ++p ) {
-      newBeta[p] *= Z;
-      if( newBeta[p] > 1.0 ) {
-        //SG_WARNING( "beta[%d] = %e;  set to 1.  ", p, beta[p] );
-        newBeta[p] = 1.0;
-      }
-      ASSERT( 0.0 <= newBeta[p] && newBeta[p] <= 1.0 );
-    }
-
-    // --- objective decreased?
-    float64_t newtObj;
-    {  // compute new objective
-      newtObj = 0.0;
-      l = 0;
-      for( i=0; i<num; ++i ) {
-	float64_t out_i;
-	out_i = 0.0;
-	for( p=0; p<num_kernels; ++p ) {
-	  out_i += newBeta[p] * W[l];
-	  ++l;
-	}
-	if( label[i]*out_i < 1.0 ) {
-	  newtObj += 1.0 - label[i]*out_i;
-	}
-      }
-      newtObj *= C;
-      ASSERT( newtObj >= 0.0 );
-      for( i=0; i<num; ++i ) {
-	newtObj += newBeta[p] * sumw[p];
-      }
-      ASSERT( newtObj > 0.0 );
-    }
-    //SG_PRINT( "step = %.8f => obj = %e.  \n", stepSize, newtObj );
-    if( newtObj < obj - epsNewt*stepSize*newtStep ) {
-      SG_PRINT( "step %.5f [%e]\n", stepSize, epsNewt*stepSize*newtStep );
-      for( p=0; p<num_kernels; ++p ) {
-        beta[p] = newBeta[p];
-      }
-      obj = newtObj;
-      break;
-    }
-    stepSize /= 2.0;
-  }
-
-  // === finish
-  //SG_PRINT( "MKL primal [%e]: %e -> %e\n", mkl_objective, oldObj, obj );
-  SG_PRINT( "dual: %e (%e) [%e];  primal: %e -> %e\n", dualObj, dualReg, mkl_objective, oldObj, obj );
-  ASSERT( obj <= oldObj );
-  delete[] newtDir;
-  delete[] newBeta;
-  //return obj;
-  return mkl_objective + obj - oldObj;
-}
-*/
-
-
-
 float64_t CMKL::compute_optimal_betas_newton(float64_t* beta,
 		const float64_t* old_beta, int32_t num_kernels,
 		const float64_t* sumw, float64_t suma,
 		 float64_t mkl_objective)
 {
   SG_DEBUG("MKL via NEWTON\n");
+
+  if (mkl_norm==1)
+	  SG_ERROR("MKL via NEWTON works only for norms>1\n");
 
   const double epsBeta = 1e-32;
   const double epsGamma = 1e-12;
@@ -1276,6 +932,10 @@ float64_t CMKL::compute_optimal_betas_via_glpk(float64_t* beta, const float64_t*
 		int num_kernels, const float64_t* sumw, float64_t suma, int32_t& inner_iters)
 {
 	SG_DEBUG("MKL via GLPK\n");
+
+	if (mkl_norm!=1)
+		SG_ERROR("MKL via GLPK works only for norm=1\n");
+
 	float64_t obj=1.0;
 #ifdef USE_GLPK
 	int32_t NUMCOLS = 2*num_kernels + 1 ;
@@ -1421,6 +1081,7 @@ float64_t CMKL::compute_optimal_betas_via_glpk(float64_t* beta, const float64_t*
 void CMKL::compute_sum_beta(float64_t* sumw)
 {
 	ASSERT(sumw);
+	ASSERT(svm);
 
 	int32_t nsv=svm->get_num_support_vectors();
 	int32_t num_kernels = kernel->get_num_subkernels();

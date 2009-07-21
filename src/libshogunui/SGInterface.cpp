@@ -548,6 +548,11 @@ CSGInterfaceMethod sg_methods[]=
 		USAGE_I(N_SVM_USE_BIAS, "enable_bias")
 	},
 	{
+		N_MKL_USE_INTERLEAVED_OPTIMIZATION,
+		(&CSGInterface::cmd_set_mkl_interleaved_enabled),
+		USAGE_I(N_MKL_USE_INTERLEAVED_OPTIMIZATION, "enable_interleaved_optimization")
+	},
+	{
 		N_KRR_TAU,
 		(&CSGInterface::cmd_set_krr_tau),
 		USAGE_I(N_KRR_TAU, "tau")
@@ -5024,6 +5029,16 @@ bool CSGInterface::cmd_set_svm_linadd_enabled()
 }
 
 bool CSGInterface::cmd_set_svm_bias_enabled()
+{
+	if (m_nrhs!=2 || !create_return_values(0))
+		return false;
+
+	bool bias_enabled=get_bool_from_bool_or_str();
+
+	return ui_classifier->set_svm_bias_enabled(bias_enabled);
+}
+
+bool CSGInterface::cmd_set_mkl_interleaved_enabled()
 {
 	if (m_nrhs!=2 || !create_return_values(0))
 		return false;
