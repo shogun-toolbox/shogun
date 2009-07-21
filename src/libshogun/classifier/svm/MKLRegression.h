@@ -27,7 +27,6 @@ class CMKLRegression : public CMKL
 		virtual ~CMKLRegression();
 
 		virtual float64_t compute_sum_alpha();
-		virtual void compute_sum_beta(float64_t* sumw);
 
 	protected:
 		virtual void init_training();
@@ -42,10 +41,7 @@ class CMKLRegression : public CMKL
 		 *
 		 * @return computed dual objective
 		 */
-		virtual float64_t compute_mkl_dual_objective()
-		{
-			return -99999;
-		}
+		virtual float64_t compute_mkl_dual_objective();
 
 	protected:
 		float64_t* W;

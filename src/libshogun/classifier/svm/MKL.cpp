@@ -11,6 +11,7 @@
 #include "lib/Signal.h"
 #include "classifier/svm/MKL.h"
 #include "classifier/svm/LibSVM.h"
+#include "kernel/CombinedKernel.h"
 
 CMKL::CMKL(CSVM* s)
 	: CSVM(), svm(NULL), C_mkl(0), mkl_norm(1),
@@ -185,9 +186,11 @@ bool CMKL::check_lpx_status(LPX *lp)
 
 bool CMKL::train()
 {
-	ASSERT(labels && labels->get_num_labels());
+	init_training();
 
-	int32_t num_label=labels->get_num_labels();
+	int32_t num_label=0;
+	if (labels)
+		labels->get_num_labels();
 
 	SG_INFO("%d trainlabels\n", num_label);
 	if (mkl_epsilon<=0)
@@ -1413,6 +1416,91 @@ float64_t CMKL::compute_optimal_betas_via_glpk(float64_t* beta, const float64_t*
 #endif
 
 	return obj;
+}
+
+void CMKL::compute_sum_beta(float64_t* sumw)
+{
+	ASSERT(sumw);
+
+	int32_t nsv=svm->get_num_support_vectors();
+	int32_t num_kernels = kernel->get_num_subkernels();
+	float64_t* beta = new float64_t[num_kernels];
+	int32_t nweights=0;
+	const float64_t* old_beta = kernel->get_subkernel_weights(nweights);
+	ASSERT(nweights==num_kernels);
+	ASSERT(old_beta);
+
+	for (int32_t i=0; i<num_kernels; i++)
+	{
+		beta[i]=0;
+		sumw[i]=0;
+	}
+
+	for (int32_t n=0; n<num_kernels; n++)
+	{
+		beta[n]=1.0;
+		kernel->set_subkernel_weights(beta, num_kernels);
+
+		for (int32_t i=0; i<nsv; i++)
+		{   
+			int32_t ii=svm->get_support_vector(i);
+
+			for (int32_t j=0; j<nsv; j++)
+			{   
+				int32_t jj=svm->get_support_vector(j);
+				sumw[n]+=0.5*svm->get_alpha(i)*svm->get_alpha(j)*kernel->kernel(ii,jj);
+			}
+		}
+		beta[n]=0.0;
+	}
+
+	mkl_iterations++;
+	kernel->set_subkernel_weights( (float64_t*) old_beta, num_kernels);
+}
+
+
+// assumes that all constraints are satisfied
+float64_t CMKL::compute_mkl_dual_objective()
+{
+	int32_t n=get_num_support_vectors();
+	float64_t mkl_obj=0;
+
+	if (labels && kernel && kernel->get_kernel_type() == K_COMBINED)
+	{
+		CKernel* kn = ((CCombinedKernel*)kernel)->get_first_kernel();
+		while (kn)
+		{
+			float64_t sum=0;
+			for (int32_t i=0; i<n; i++)
+			{
+				int32_t ii=get_support_vector(i);
+
+				for (int32_t j=0; j<n; j++)
+				{
+					int32_t jj=get_support_vector(j);
+					sum+=get_alpha(i)*get_alpha(j)*kn->kernel(ii,jj);
+				}
+			}
+
+			if (mkl_norm==1.0)
+				mkl_obj = CMath::max(mkl_obj, sum);
+			else
+				mkl_obj += CMath::pow(sum, mkl_norm/(mkl_norm-1));
+
+			kn = ((CCombinedKernel*) kernel)->get_next_kernel();
+		}
+
+		if (mkl_norm==1.0)
+			mkl_obj=-0.5*mkl_obj;
+		else
+			mkl_obj= -0.5*CMath::pow(mkl_obj, (mkl_norm-1)/mkl_norm);
+
+		mkl_obj+=compute_sum_alpha();
+	}
+	else
+		SG_ERROR( "cannot compute objective, labels or kernel not set\n");
+
+	return -mkl_obj;
 }
 
 #ifdef USE_CPLEX

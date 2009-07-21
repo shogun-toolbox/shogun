@@ -82,7 +82,7 @@ class CMKL : public CSVM
 		inline void set_mkl_norm(float64_t norm)
 		{
 			if (norm<1)
-				SG_ERROR("Norm must be >= 1, e.g., 1-norm is the standard MKL; 2-norm nonsparse MKL\n");
+				SG_ERROR("Norm must be >= 1, e.g., 1-norm is the standard MKL; norms>1 nonsparse MKL\n");
 			mkl_norm = norm;
 		}
 
@@ -99,7 +99,7 @@ class CMKL : public CSVM
 		 *
 		 * @return computed dual objective
 		 */
-		virtual float64_t compute_mkl_dual_objective()=0;
+		virtual float64_t compute_mkl_dual_objective();
 
 		/** set mkl epsilon (optimization accuracy for kernel weights)
 		 *
@@ -139,7 +139,7 @@ class CMKL : public CSVM
 
 
 		virtual float64_t compute_sum_alpha()=0;
-		virtual void compute_sum_beta(float64_t* sumw)=0;
+		virtual void compute_sum_beta(float64_t* sumw);
 
 	protected:
 		virtual void init_training()=0;
