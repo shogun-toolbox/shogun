@@ -830,9 +830,7 @@ float64_t CMKL::compute_optimal_betas_via_cplex(float64_t* x, const float64_t* o
 		ASSERT(cur_numcols<=2*num_kernels+1);
 
 		float64_t* slack=new float64_t[cur_numrows];
-		float64_t* pi=NULL;
-		if (use_mkl==1)
-			pi=new float64_t[cur_numrows];
+		float64_t* pi=new float64_t[cur_numrows];
 
 		if (x==NULL || slack==NULL || pi==NULL)
 		{
