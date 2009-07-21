@@ -351,7 +351,7 @@ bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
 	else if (strcmp(name,"MKL_CLASSIFICATION")==0)
 	{
 		SG_UNREF(classifier);
-		classifier= new CMKLClassification(new CSVMLight());
+		classifier= new CMKLClassification();
 	}
 	else if (strcmp(name,"MKL_ONECLASS")==0)
 	{
