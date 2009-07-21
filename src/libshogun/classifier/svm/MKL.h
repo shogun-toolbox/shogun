@@ -142,6 +142,8 @@ class CMKL : public CSVM
 		virtual void compute_sum_beta(float64_t* sumw)=0;
 
 	protected:
+		virtual void init_training()=0;
+
 
 		void set_qnorm_constraints(float64_t* beta, int32_t num_kernels);
 
@@ -251,7 +253,6 @@ class CMKL : public CSVM
 
 		virtual bool converged()
 		{
-			SG_PRINT("w_gap=%f rho=%f epsilon=%f\n", w_gap, rho, mkl_epsilon);
 			return w_gap<mkl_epsilon;
 		}
 

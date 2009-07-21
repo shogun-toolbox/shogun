@@ -355,7 +355,7 @@ bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
 	else if (strcmp(name,"MKL_REGRESSION")==0)
 	{
 		SG_UNREF(classifier);
-		classifier= new CMKLRegression();
+		classifier= new CMKLRegression(new CSVRLight());
 	}
 	else
 	{
@@ -795,7 +795,9 @@ bool CGUIClassifier::set_max_train_time(float64_t max)
 bool CGUIClassifier::set_svr_tube_epsilon(float64_t tube_epsilon)
 {
 	if (classifier->get_classifier_type() != CT_LIBSVR &&
-			classifier->get_classifier_type() != CT_SVRLIGHT)
+			classifier->get_classifier_type() != CT_SVRLIGHT &&
+			classifier->get_classifier_type() != CT_MKLREGRESSION
+			)
 	{
 		SG_ERROR("Underlying method not capable of SV-regression\n");
 	}

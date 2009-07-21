@@ -18,6 +18,11 @@ float64_t CMKLClassification::compute_sum_alpha()
 	return suma;
 }
 
+void CMKLClassification::init_training()
+{
+	ASSERT(labels && labels->is_two_class_labeling());
+}
+
 void CMKLClassification::compute_sum_beta(float64_t* sumw)
 {
 	ASSERT(sumw);

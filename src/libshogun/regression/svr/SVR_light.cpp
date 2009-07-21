@@ -121,10 +121,6 @@ bool CSVRLight::train()
 		set_support_vector(i, model->supvec[i+1]);
 	}
 
-//#ifdef USE_CPLEX
-//	cleanup_cplex();
-//#endif
-	
 	if (kernel->has_property(KP_LINADD) && get_linadd_enabled())
 		kernel->clear_normal() ;
 
@@ -169,9 +165,7 @@ void CSVRLight::svr_learn()
   //prepare kernel cache for regression (i.e. cachelines are twice of current size)
   kernel->resize_kernel_cache( kernel->get_cache_size(), true);
 
-  if ( callback &&
-		  (!((CCombinedKernel*)kernel)->get_append_subkernel_weights()) 
-	 )
+  if (kernel->get_kernel_type() == K_COMBINED)
   {
 	  CCombinedKernel* k      = (CCombinedKernel*) kernel;
 	  CKernel* kn = k->get_first_kernel();
@@ -194,10 +188,8 @@ void CSVRLight::svr_learn()
 
 	delete[] W;
 	W=NULL;
-	rho=0 ;
-	w_gap = 1 ;
 
-	if (kernel->has_property(KP_KERNCOMBINATION))
+	if (kernel->has_property(KP_KERNCOMBINATION) && callback)
 	{
 		W = new float64_t[totdoc*kernel->get_num_subkernels()];
 		for (i=0; i<totdoc*kernel->get_num_subkernels(); i++)
@@ -435,8 +427,8 @@ void CSVRLight::update_linear_component(
 	{
 		if (callback)
 		{
-			update_linear_component_mkl(docs, label, active2dnum, a, a_old, working2dnum, 
-										totdoc,	lin, aicache, c) ;
+			update_linear_component_mkl(docs, label, active2dnum,
+					a, a_old, working2dnum, totdoc,	lin, aicache, c) ;
 		}
 		else {
 			for(jj=0;(i=working2dnum[jj])>=0;jj++) {
@@ -518,7 +510,7 @@ void CSVRLight::update_linear_component_mkl(
 		delete[] w1 ;
 	}
 
-	call_mkl_callback(a, label, old_beta, lin, c);
+	call_mkl_callback(a, label, lin, c, totdoc);
 }
 
 
@@ -535,59 +527,63 @@ void CSVRLight::update_linear_component_mkl_linadd(
 	const float64_t* old_beta   = kernel->get_subkernel_weights(num_weights);
 	
 	ASSERT(num_weights==num_kernels);
+
+	float64_t* w_backup=new float64_t[num_kernels];
+	float64_t* w1=new float64_t[num_kernels];
+
+	// backup and set to one
+	for (int32_t i=0; i<num_kernels; i++)
 	{
-		float64_t* w_backup=new float64_t[num_kernels];
-		float64_t* w1=new float64_t[num_kernels];
+		w_backup[i] = old_beta[i] ;
+		w1[i]=1.0 ; 
+	}
+	// set the kernel weights
+	kernel->set_subkernel_weights(w1, num_weights) ;
 
-		// backup and set to one
-		for (int32_t i=0; i<num_kernels; i++)
-		{
-			w_backup[i] = old_beta[i] ;
-			w1[i]=1.0 ; 
+	// create normal update (with changed alphas only)
+	kernel->clear_normal();
+	for(int32_t ii=0, i=0;(i=working2dnum[ii])>=0;ii++) {
+		if(a[i] != a_old[i]) {
+			kernel->add_to_normal(regression_fix_index(docs[i]), (a[i]-a_old[i])*(float64_t)label[i]);
 		}
-		// set the kernel weights
-		kernel->set_subkernel_weights(w1, num_weights) ;
-		
-		// create normal update (with changed alphas only)
-		kernel->clear_normal();
-		for(int32_t ii=0, i=0;(i=working2dnum[ii])>=0;ii++) {
-			if(a[i] != a_old[i]) {
-				kernel->add_to_normal(regression_fix_index(docs[i]), (a[i]-a_old[i])*(float64_t)label[i]);
-			}
-		}
-		
-		// determine contributions of different kernels
-		for (int32_t i=0; i<num; i++)
-			kernel->compute_by_subkernel(i,&W[i*num_kernels]) ;
-
-		// restore old weights
-		kernel->set_subkernel_weights(w_backup,num_weights) ;
-		
-		delete[] w_backup ;
-		delete[] w1 ;
 	}
 
-	call_mkl_callback(a, label, old_beta, lin, c);
+	// determine contributions of different kernels
+	for (int32_t i=0; i<num; i++)
+		kernel->compute_by_subkernel(i,&W[i*num_kernels]) ;
+
+	// restore old weights
+	kernel->set_subkernel_weights(w_backup,num_weights) ;
+
+	delete[] w_backup ;
+	delete[] w1 ;
+
+	call_mkl_callback(a, label, lin, c, totdoc);
 }
 
-void CSVRLight::call_mkl_callback(float64_t* a, int32_t* label, const float64_t* const_beta, float64_t* lin, float64_t* c)
+void CSVRLight::call_mkl_callback(float64_t* a, int32_t* label, float64_t* lin, float64_t* c, int32_t totdoc)
 {
-	int32_t num = kernel->get_num_vec_rhs();
+	int32_t num = totdoc;
 	int32_t num_kernels = kernel->get_num_subkernels() ;
-	float64_t* old_beta = CMath::clone_vector(const_beta, num_kernels);
 	int nk = (int) num_kernels; // calling external lib
 	float64_t sumalpha = 0;
 	float64_t* sumw=new float64_t[num_kernels];
 
 	for (int32_t i=0; i<num; i++)
-		sumalpha+=a[i]*(learn_parm->eps-label[i]*c[i]);
+		sumalpha-=a[i]*(learn_parm->eps-label[i]*c[i]);
 
 #ifdef HAVE_LAPACK
+	double* alphay  = new double[num];
+	for (int32_t i=0; i<num; i++)
+		alphay[i]=a[i]*label[i];
+
 	for (int32_t i=0; i<num_kernels; i++)
 		sumw[i]=0;
 	
 	cblas_dgemv(CblasColMajor, CblasNoTrans, nk, (int) num, 0.5, (double*) W,
-		nk, (double*) a, 1, 1.0, (double*) sumw, 1);
+		nk, (double*) alphay, 1, 1.0, (double*) sumw, 1);
+
+	delete[] alphay;
 #else
 	for (int32_t d=0; d<num_kernels; d++)
 	{
@@ -599,22 +595,24 @@ void CSVRLight::call_mkl_callback(float64_t* a, int32_t* label, const float64_t*
 	
 	if (callback)
 		mkl_converged=callback(mkl, sumw, sumalpha);
-	
+
+	const float64_t* new_beta   = kernel->get_subkernel_weights(num_kernels);
+
 	// update lin
 #ifdef HAVE_LAPACK
 	cblas_dgemv(CblasColMajor, CblasTrans, nk, (int) num, 1.0, (double*) W,
-		nk, (double*) old_beta, 1, 0.0, (double*) lin, 1);
+		nk, (double*) new_beta, 1, 0.0, (double*) lin, 1);
 #else
 	for(int32_t i=0; i<num; i++)
 		lin[i]=0 ;
 	for (int32_t d=0; d<num_kernels; d++)
-		if (old_beta[d]!=0)
+		if (new_beta[d]!=0)
 			for(int32_t i=0; i<num; i++)
-				lin[i] += old_beta[d]*W[i*num_kernels+d] ;
+				lin[i] += new_beta[d]*W[i*num_kernels+d] ;
 #endif
+
 	
 	delete[] sumw;
-	delete[] old_beta;
 }
 
 

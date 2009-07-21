@@ -489,7 +489,7 @@ class CSVMLight : public CSVM
 		  float64_t* a_old, int32_t *working2dnum, int32_t totdoc, float64_t *lin,
 		  float64_t *aicache);
 
-  void call_mkl_callback(float64_t* a, int32_t* label, const float64_t* old_beta, float64_t* lin);
+  void call_mkl_callback(float64_t* a, int32_t* label, float64_t* lin);
 
   /** select next qp subproblem grad
    *
@@ -676,12 +676,6 @@ protected:
    * current alphas)
    */
   float64_t* W;
-  /** current margin */
-  float64_t rho;
-  /** current relative w gap */
-  float64_t w_gap;
-  /** regularization parameter for w smoothing */
-  float64_t lp_C;
   /** number of iteration */
   int32_t count;
   /** current alpha gap */

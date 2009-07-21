@@ -9,12 +9,6 @@ CMKLRegression::~CMKLRegression()
 {
 }
 
-bool CMKLRegression::perform_mkl_step(
-		const float64_t* sumw, float64_t suma)
-{
-	return true;
-}
-
 float64_t CMKLRegression::compute_sum_alpha()
 {
 	// not correct
@@ -24,6 +18,11 @@ float64_t CMKLRegression::compute_sum_alpha()
 		suma+=CMath::abs(svm->get_alpha(i))*tube_epsilon-svm->get_alpha(i);
 
 	return suma;
+}
+
+void CMKLRegression::init_training()
+{
+	ASSERT(labels);
 }
 
 void CMKLRegression::compute_sum_beta(float64_t* sumw)

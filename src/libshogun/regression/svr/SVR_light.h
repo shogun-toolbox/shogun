@@ -156,7 +156,7 @@ class CSVRLight: public CSVMLight
 			int32_t *working2dnum, int32_t totdoc,
 			float64_t *lin, float64_t *aicache, float64_t* c);
 
-		void call_mkl_callback(float64_t* a, int32_t* label, const float64_t* old_beta, float64_t* lin, float64_t* c);
+		void call_mkl_callback(float64_t* a, int32_t* label, float64_t* lin, float64_t* c, int32_t totdoc);
 
 		/** reactivate inactive examples
 		 *

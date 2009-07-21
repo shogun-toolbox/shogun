@@ -149,9 +149,7 @@ void CSVMLight::init()
 	model->index=NULL;
 
 	// MKL stuff
-	rho=0 ;
 	mymaxdiff=1 ;
-	lp_C = 0 ;
 	mkl_converged=false;
 }
 
@@ -296,11 +294,9 @@ void CSVMLight::svm_learn()
 	int32_t* docs=new int32_t[totdoc];
 	delete[] W;
 	W=NULL;
-	rho=0 ;
-	w_gap = 1 ;
 	count = 0 ;
 
-	if (kernel->has_property(KP_KERNCOMBINATION))
+	if (kernel->has_property(KP_KERNCOMBINATION) && callback)
 	{
 		W = new float64_t[totdoc*kernel->get_num_subkernels()];
 		for (i=0; i<totdoc*kernel->get_num_subkernels(); i++)
@@ -617,12 +613,13 @@ int32_t CSVMLight::optimize_to_convergence(int32_t* docs, int32_t* label, int32_
 
   /* repeat this loop until we have convergence */
   CTime start_time; 
+  mkl_converged=false;
 
 #ifdef CYGWIN
-  for (;((iteration<100 || !mkl_converged) || (retrain && (!terminate))); iteration++){
+  for (;((iteration<100 || (!mkl_converged && callback) ) || (retrain && (!terminate))); iteration++){
 #else
 	  CSignal::clear_cancel();
-	  for (;((!CSignal::cancel_computations()) && ((iteration<100 || !mkl_converged) || (retrain && (!terminate)))); iteration++){
+	  for (;((!CSignal::cancel_computations()) && ((iteration<3 || (!mkl_converged && callback) ) || (retrain && (!terminate)))); iteration++){
 #endif
 	  	  
 	  if(use_kernel_cache) 
@@ -1578,7 +1575,7 @@ void CSVMLight::update_linear_component_mkl(
 		delete[] w1 ;
 	}
 	
-	call_mkl_callback(a, label, old_beta, lin);
+	call_mkl_callback(a, label, lin);
 }
 
 
@@ -1656,7 +1653,7 @@ void CSVMLight::update_linear_component_mkl_linadd(
 	delete[] w_backup;
 	delete[] w1;
 
-	call_mkl_callback(a, label, old_beta, lin);
+	call_mkl_callback(a, label, lin);
 }
 
 void* CSVMLight::update_linear_component_mkl_linadd_helper(void* p)
@@ -1672,12 +1669,10 @@ void* CSVMLight::update_linear_component_mkl_linadd_helper(void* p)
 	return NULL ;
 }
 
-void CSVMLight::call_mkl_callback(float64_t* a, int32_t* label, const float64_t* const_beta, float64_t* lin)
+void CSVMLight::call_mkl_callback(float64_t* a, int32_t* label, float64_t* lin)
 {
-
 	int32_t num = kernel->get_num_vec_rhs();
 	int32_t num_kernels = kernel->get_num_subkernels() ;
-	float64_t* old_beta = CMath::clone_vector(const_beta, num_kernels);
 
     int nk = (int) num_kernels; /* calling external lib */
 
@@ -1715,22 +1710,22 @@ void CSVMLight::call_mkl_callback(float64_t* a, int32_t* label, const float64_t*
 		mkl_converged=callback(mkl, sumw, suma);
 
 
+	const float64_t* new_beta   = kernel->get_subkernel_weights(num_kernels);
+
     // update lin
 #ifdef HAVE_LAPACK
     cblas_dgemv(CblasColMajor, CblasTrans, nk, (int) num, 1.0, (double*) W,
-        nk, (double*) old_beta, 1, 0.0, (double*) lin, 1);
+        nk, (double*) new_beta, 1, 0.0, (double*) lin, 1);
 #else
     for (int32_t i=0; i<num; i++)
         lin[i]=0 ;
     for (int32_t d=0; d<num_kernels; d++)
-        if (old_beta[d]!=0)
+        if (new_beta[d]!=0)
             for (int32_t i=0; i<num; i++)
-                lin[i] += old_beta[d]*W[i*num_kernels+d] ;
+                lin[i] += new_beta[d]*W[i*num_kernels+d] ;
 #endif
 
 	delete[] sumw;
-	delete[] old_beta;
-
 }
 
 

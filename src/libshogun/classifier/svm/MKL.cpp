@@ -186,7 +186,6 @@ bool CMKL::check_lpx_status(LPX *lp)
 bool CMKL::train()
 {
 	ASSERT(labels && labels->get_num_labels());
-	ASSERT(labels->is_two_class_labeling());
 
 	int32_t num_label=labels->get_num_labels();
 
@@ -218,7 +217,6 @@ bool CMKL::train()
 	svm->set_labels(labels);
 	svm->set_kernel(kernel);
 
-
 #ifdef USE_CPLEX
 	cleanup_cplex();
 
@@ -235,12 +233,13 @@ bool CMKL::train()
 	
 	if (interleaved_optimization)
 	{
-		if (svm->get_classifier_type() != CT_LIGHT)
+		if (svm->get_classifier_type() != CT_LIGHT && svm->get_classifier_type() != CT_SVRLIGHT)
 		{
 			SG_ERROR("Interleaved MKL optimization is currently "
 					"only supported with SVMlight\n");
 		}
 		svm->set_callback_function(this, perform_mkl_step_helper);
+
 		svm->train();
 	}
 	else
@@ -280,7 +279,6 @@ bool CMKL::train()
 	return true;
 }
 
-
 bool CMKL::perform_mkl_step(
 		const float64_t* sumw, float64_t suma)
 {
@@ -299,8 +297,6 @@ bool CMKL::perform_mkl_step(
 		beta[i]=old_beta[i];
 		mkl_objective+=old_beta[i]*sumw[i];
 	}
-
-	SG_PRINT("rho=%f mkl_obj=%f\n", rho, mkl_objective);
 
 	w_gap = CMath::abs(1-rho/mkl_objective) ;
 	if( (w_gap >= 0.9999*mkl_epsilon) || (get_solver_type()==ST_INTERNAL && mkl_norm>1) )
@@ -332,8 +328,6 @@ bool CMKL::perform_mkl_step(
 	}
 
 	kernel->set_subkernel_weights(beta, num_kernels);
-	CMath::display_vector(old_beta, num_kernels, "old_beta");
-	CMath::display_vector(beta, num_kernels, "beta");
 
 	return converged();
 }

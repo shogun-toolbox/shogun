@@ -36,6 +36,8 @@ class CMKLClassification : public CMKL
 		virtual void compute_sum_beta(float64_t* sumw);
 
 	protected:
+		virtual void init_training();
+
 		/** get classifier type
 		 *
 		 * @return classifier type MKL_CLASSIFICATION
