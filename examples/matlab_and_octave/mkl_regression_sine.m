@@ -21,6 +21,8 @@ rbf_width(3) = 0.5;
 rbf_width(4) = 1;
 rbf_width(5) = 10;
 
+mkl_norm = 1; % >=1
+
 % data
 f = [0.1:0.2:5];   % values for the different frequencies
 no_obs = 1000;     % number of observations
@@ -44,8 +46,9 @@ for kk = 1:length(f)    % big loop for the different learning problems
 
   % initialize MKL-SVR
   sg('new_regression', 'SVRLIGHT');
-  sg('use_mkl', true);
-  sg('mkl_parameters', mkl_eps, 0);
+  sg('mkl_parameters', mkl_eps, 0, mkl_norm);
+  sg('mkl_use_interleaved_optimization', 1); % 0, 1
+  sg('set_solver', 'DIRECT'); % NEWTON, CPLEX, AUTO, GLPK
   sg('c', C);
   sg('svm_epsilon', svm_eps);
   sg('svr_tube_epsilon', svr_tube_eps);

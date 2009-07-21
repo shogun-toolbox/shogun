@@ -22,6 +22,8 @@ rbf_width(8) = 50;
 rbf_width(9) = 100;
 rbf_width(10) = 1000;
 
+mkl_norm = 1; % >=1
+
 % SVM parameter
 C          = 1;
 cache_size = 50;
@@ -55,9 +57,10 @@ for kk = 1:length(f)   % Big loop
 
 	kernels={};
 
-	sg('new_regression', 'SVRLIGHT');
-	sg('use_mkl', true);
-	sg('mkl_parameters', mkl_eps, 0);
+	sg('new_classifier', 'MKL_REGRESSION');
+	sg('mkl_parameters', mkl_eps, 0, mkl_norm);
+	sg('mkl_use_interleaved_optimization', 1); % 0, 1
+	sg('set_solver', 'DIRECT'); % NEWTON, CPLEX, AUTO, GLPK
 	sg('c', C);
 	sg('svm_epsilon',svm_eps);
 	sg('svr_tube_epsilon',svr_tube);

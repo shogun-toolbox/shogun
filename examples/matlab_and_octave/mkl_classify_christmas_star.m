@@ -27,7 +27,7 @@ radius_star(:,2) = 4*ones(length(radius_star(:,1)),1);   % fixed radius 2.class
 rbf_width = [0.01 0.1 1 10 100];     % different width for the five used rbf kernels
 
 
-mkl_norm = 1; % 1 or 2
+mkl_norm = 1; % >=1
 
 rand('state', 17);
 randn('state', 17);
@@ -74,7 +74,10 @@ for kk = 1:size(radius_star,1)
   sg('add_features','TRAIN', train_x);
   sg('add_features','TRAIN', train_x);
   sg('set_labels','TRAIN', train_y);         % set the labels
-  sg('new_svm', 'LIGHT');
+  sg('new_classifier', 'MKL_CLASSIFICATION');
+  sg('mkl_parameters', mkl_eps, 0, mkl_norm);
+  sg('mkl_use_interleaved_optimization', 1); % 0, 1
+  sg('set_solver', 'DIRECT'); % NEWTON, CPLEX, AUTO, GLPK
   sg('use_mkl', true);
   sg('mkl_parameters', mkl_eps, 0, mkl_norm);
   sg('svm_epsilon', svm_eps);
