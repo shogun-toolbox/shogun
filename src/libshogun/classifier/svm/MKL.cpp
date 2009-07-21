@@ -810,7 +810,7 @@ float64_t CMKL::compute_optimal_betas_via_cplex(float64_t* x, const float64_t* o
 				CMath::scale_vector(1/CMath::qnorm(beta, num_kernels, mkl_norm), beta, num_kernels);
 
 				//SG_PRINT("[%d] %f (%f)\n", inner_iters, objval, objval_old);
-				if ((1-abs(objval/objval_old) < 0.1*weight_epsilon)) // && (inner_iters>2))
+				if ((1-abs(objval/objval_old) < 0.1*mkl_epsilon)) // && (inner_iters>2))
 					break;
 
 				objval_old=objval;
