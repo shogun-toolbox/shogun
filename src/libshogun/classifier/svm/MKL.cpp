@@ -4,7 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2009 Soeren Sonnenburg
+ * Written (W) 2004-2009 Soeren Sonnenburg, Gunnar Raetsch
+ *                       Alexander Zien, Marius Kloft, Chen Guohua
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
@@ -587,17 +588,22 @@ float64_t CMKL::compute_optimal_betas_newton(float64_t* beta,
 
 
 
-float64_t CMKL::compute_optimal_betas_via_cplex(float64_t* x, const float64_t* old_beta, int32_t num_kernels,
+float64_t CMKL::compute_optimal_betas_via_cplex(float64_t* new_beta, const float64_t* old_beta, int32_t num_kernels,
 		  const float64_t* sumw, float64_t suma, int32_t& inner_iters)
 {
 	SG_DEBUG("MKL via CPLEX\n");
 
 #ifdef USE_CPLEX
+	ASSERT(new_beta);
+	ASSERT(old_beta);
+
+	int32_t NUMCOLS = 2*num_kernels + 1;
+	double* x=new double[NUMCOLS];
+
 	if (!lp_initialized)
 	{
 		SG_INFO( "creating LP\n") ;
 
-		int32_t NUMCOLS = 2*num_kernels + 1 ;
 		double   obj[NUMCOLS]; /* calling external lib */
 		double   lb[NUMCOLS]; /* calling external lib */
 		double   ub[NUMCOLS]; /* calling external lib */
@@ -832,12 +838,6 @@ float64_t CMKL::compute_optimal_betas_via_cplex(float64_t* x, const float64_t* o
 		float64_t* slack=new float64_t[cur_numrows];
 		float64_t* pi=new float64_t[cur_numrows];
 
-		if (x==NULL || slack==NULL || pi==NULL)
-		{
-			status = CPXERR_NO_MEMORY;
-			SG_ERROR( "Could not allocate memory for solution.\n");
-		}
-
 		/* calling external lib */
 		int solstat=0;
 		double objval=0;
@@ -920,6 +920,10 @@ float64_t CMKL::compute_optimal_betas_via_cplex(float64_t* x, const float64_t* o
 			rho = 1 ;
 		}
 	}
+	for (int32_t i=0; i<num_kernels; i++)
+		new_beta[i]=x[i];
+
+	delete[] x;
 #else
 	SG_ERROR("Cplex not enabled at compile time\n");
 #endif

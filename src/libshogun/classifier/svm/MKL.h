@@ -208,7 +208,7 @@ class CMKL : public CSVM
 		 * using a lp for 1-norm mkl, a qcqp for 2-norm mkl and an
 		 * iterated qcqp for general q-norm mkl.
 		 *
-		 * @param x new betas (kernel weights)
+		 * @param beta new betas (kernel weights)
 		 * @param old_beta old betas (previous kernel weights)
 		 * @param num_kernels number of kernels
 		 * @param sumw 1/2*alpha'*K_j*alpha for each kernel j
@@ -217,7 +217,7 @@ class CMKL : public CSVM
 		 *
 		 * @return new objective value
 		 */
-		float64_t compute_optimal_betas_via_cplex(float64_t* x, const float64_t* old_beta, int32_t num_kernels,
+		float64_t compute_optimal_betas_via_cplex(float64_t* beta, const float64_t* old_beta, int32_t num_kernels,
 				const float64_t* sumw, float64_t suma, int32_t& inner_iters);
 
 		/** given the alphas, compute the corresponding optimal betas
