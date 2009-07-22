@@ -205,6 +205,7 @@
 #define N_HELP							"help"
 #define N_SYSTEM						"!"
 #define N_SET_SOLVER					"set_solver"
+#define N_SET_CONSTRAINT_GENERATOR		"set_constraint_generator"
 #define N_SET_THRESHOLD					"set_threshold"
 #define N_INIT_RANDOM					"init_random"
 #define N_SVM_TRAIN						"svm_train"

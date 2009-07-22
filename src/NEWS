@@ -4,7 +4,9 @@
 	* This release contains several cleanups, features and bugfixes:
 	* Features:
 		- Implements new multiclass svm formulation.
-		- MKL wrapper and chunking algorithm for various SVM solvers.
+		- 1,2 and general q-norm MKL for classification, regression and
+		one-class for wrapper and chunking algorithm for arbitrary (dual) SVM
+		solvers.
 		- Dynamic Programming code is now accessible from python.
 	* Bugfixes:
 		- Correct q-norm MKL for Newton.

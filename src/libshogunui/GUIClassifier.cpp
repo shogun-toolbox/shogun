@@ -65,6 +65,7 @@
 CGUIClassifier::CGUIClassifier(CSGInterface* ui_)
 : CSGObject(), ui(ui_)
 {
+	constraint_generator=NULL;
 	classifier=NULL;
 	max_train_time=0;
 
@@ -101,6 +102,7 @@ CGUIClassifier::CGUIClassifier(CSGInterface* ui_)
 CGUIClassifier::~CGUIClassifier()
 {
 	SG_UNREF(classifier);
+	SG_UNREF(constraint_generator);
 }
 
 bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
@@ -400,6 +402,8 @@ bool CGUIClassifier::train_mkl()
 
 	SG_INFO("Starting SVM training on %ld vectors using C1=%lf C2=%lf epsilon=%lf\n", num_vec, svm_C1, svm_C2, svm_epsilon);
 
+	if (constraint_generator)
+		mkl->set_constraint_generator();
 	mkl->set_solver_type(solver_type);
 	mkl->set_bias_enabled(svm_use_bias);
 	mkl->set_epsilon(svm_epsilon);
@@ -1395,4 +1399,96 @@ bool CGUIClassifier::set_solver(char* solver)
 
 	solver_type=s;
 	return true;
+}
+
+bool CGUIClassifier::set_constraint_generator(char* cg)
+{
+	if (strcmp(name,"LIBSVM_ONECLASS")==0)
+	{
+		SG_UNREF(constraint_generator);
+		constraint_generator = new CLibSVMOneClass();
+		SG_INFO("created SVMlibsvm object for oneclass\n");
+	}
+	else if (strcmp(name,"LIBSVM_MULTICLASS")==0)
+	{
+		SG_UNREF(constraint_generator);
+		constraint_generator = new CLibSVMMultiClass();
+		SG_INFO("created SVMlibsvm object for multiclass\n");
+	}
+	else if (strcmp(name,"LIBSVM_NUMULTICLASS")==0)
+	{
+		SG_UNREF(constraint_generator);
+		constraint_generator= new CLibSVMMultiClass(LIBSVM_NU_SVC);
+		SG_INFO("created SVMlibsvm object for multiclass\n") ;
+	}
+	else if (strcmp(name,"MCSVM")==0)
+	{
+		SG_UNREF(constraint_generator);
+		constraint_generator= new CMCSVM();
+		SG_INFO("created MCSVM object\n") ;
+	}
+	else if (strcmp(name,"LIBSVM_NU")==0)
+	{
+		SG_UNREF(constraint_generator);
+		constraint_generator= new CLibSVM(LIBSVM_NU_SVC);
+		SG_INFO("created SVMlibsvm object\n") ;
+	}
+	else if (strcmp(name,"LIBSVM")==0)
+	{
+		SG_UNREF(constraint_generator);
+		constraint_generator= new CLibSVM();
+		SG_INFO("created SVMlibsvm object\n") ;
+	}
+#ifdef USE_SVMLIGHT
+	else if ((strcmp(name,"LIGHT")==0) || (strcmp(name,"SVMLIGHT")==0))
+	{
+		SG_UNREF(constraint_generator);
+		constraint_generator= new CSVMLight();
+		SG_INFO("created SVMLight object\n") ;
+	}
+	else if (strcmp(name,"SVRLIGHT")==0)
+	{
+		SG_UNREF(constraint_generator);
+		constraint_generator= new CSVRLight();
+		SG_INFO("created SVRLight object\n") ;
+	}
+#endif //USE_SVMLIGHT
+	else if (strcmp(name,"GPBTSVM")==0)
+	{
+		SG_UNREF(constraint_generator);
+		constraint_generator= new CGPBTSVM();
+		SG_INFO("created GPBT-SVM object\n") ;
+	}
+	else if (strcmp(name,"MPDSVM")==0)
+	{
+		SG_UNREF(constraint_generator);
+		constraint_generator= new CMPDSVM();
+		SG_INFO("created MPD-SVM object\n") ;
+	}
+	else if (strcmp(name,"GNPPSVM")==0)
+	{
+		SG_UNREF(constraint_generator);
+		constraint_generator= new CGNPPSVM();
+		SG_INFO("created GNPP-SVM object\n") ;
+	}
+	else if (strcmp(name,"GMNPSVM")==0)
+	{
+		SG_UNREF(constraint_generator);
+		constraint_generator= new CGMNPSVM();
+		SG_INFO("created GMNP-SVM object\n") ;
+	}
+	else if (strcmp(name,"LIBSVR")==0)
+	{
+		SG_UNREF(constraint_generator);
+		constraint_generator= new CLibSVR();
+		SG_INFO("created SVRlibsvm object\n") ;
+	}
+	else
+	{
+		SG_ERROR("Unknown SV-classifier %s.\n", name);
+		return false;
+	}
+	SG_REF(constraint_generator);
+
+	return (constraint_generator!=NULL);
 }

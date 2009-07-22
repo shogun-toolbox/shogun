@@ -85,6 +85,8 @@ class CGUIClassifier : public CSGObject
 		bool set_krr_tau(float64_t tau=1);
 		/** set solver type */
 		bool set_solver(char* solver);
+		/** set constraint generator */
+		bool set_constraint_generator(char* cg);
 
 		/** train MKL */
 		bool train_mkl();
@@ -136,6 +138,7 @@ class CGUIClassifier : public CSGObject
 		bool svm_use_shrinking;
 		bool svm_do_auc_maximization;
 
+		CSVM* constraint_generator;
 		ESolverType solver_type;
 };
 #endif

@@ -188,6 +188,8 @@ class CSGInterface : public CSGObject
 		bool cmd_set_kernel_optimization_type();
 		/** set solver type */
 		bool cmd_set_solver();
+		/** set constraint generator */
+		bool cmd_set_constraint_generator();
 		/** set Salzberg prior probs */
 		bool cmd_set_prior_probs();
 		/** set Salzberg prior probs from labels */

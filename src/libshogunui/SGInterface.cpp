@@ -292,6 +292,13 @@ CSGInterfaceMethod sg_methods[]=
 		USAGE_I(N_SET_SOLVER, USAGE_STR "AUTO|CPLEX|GLPK|INTERNAL" USAGE_STR)
 	},
 	{
+		N_SET_CONSTRAINT_GENERATOR,
+		(&CSGInterface::cmd_set_constraint_generator),
+		USAGE_I(N_SET_CONSTRAINT_GENERATOR, USAGE_STR "LIBSVM_ONECLASS|LIBSVM_MULTICLASS|LIBSVM"
+				"|SVMLIGHT|LIGHT|GPBTSVM|MPDSVM|GNPPSVM|GMNPSVM"
+				USAGE_STR)
+	},
+	{
 		N_SET_PRIOR_PROBS,
 		(&CSGInterface::cmd_set_prior_probs),
 		USAGE_I(N_SET_PRIOR_PROBS, USAGE_STR "pos probs, neg_probs" USAGE_STR)
@@ -4053,6 +4060,20 @@ bool CSGInterface::cmd_set_solver()
 	bool success=ui_classifier->set_solver(solver);
 
 	delete[] solver;
+	return success;
+}
+
+bool CSGInterface::cmd_set_constraint_generator()
+{
+	if (m_nrhs<2 || !create_return_values(0))
+		return false;
+
+	int32_t len=0;
+	char* cg=get_str_from_str_or_direct(len);
+
+	bool success=ui_classifier->set_constraint_generator(cg);
+
+	delete[] name;
 	return success;
 }
 
