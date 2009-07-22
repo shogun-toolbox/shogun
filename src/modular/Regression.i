@@ -30,6 +30,7 @@
  #include <shogun/classifier/svm/SVM.h>
  #include <shogun/classifier/svm/LibSVM.h>
  #include <shogun/regression/svr/LibSVR.h>
+ #include <shogun/regression/svr/MKLRegression.h>
 %}
 
 /* Typemaps */
@@ -46,6 +47,7 @@
 %rename(SVM) CSVM;
 %rename(LibSVM) CLibSVM;
 %rename(LibSVR) CLibSVR;
+%rename(MKLRegression) CMKLRegression;
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/regression/Regression.h>
@@ -55,6 +57,7 @@
 %include <shogun/classifier/svm/SVM.h>
 %include <shogun/classifier/svm/LibSVM.h>
 %include <shogun/regression/svr/LibSVR.h>
+%include <shogun/regression/svr/MKLRegression.h>
 
 #ifdef USE_SVMLIGHT
 %{
