@@ -4073,7 +4073,7 @@ bool CSGInterface::cmd_set_constraint_generator()
 
 	bool success=ui_classifier->set_constraint_generator(cg);
 
-	delete[] name;
+	delete[] cg;
 	return success;
 }
 

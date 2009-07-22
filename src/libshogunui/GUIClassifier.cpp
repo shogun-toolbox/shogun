@@ -403,7 +403,7 @@ bool CGUIClassifier::train_mkl()
 	SG_INFO("Starting SVM training on %ld vectors using C1=%lf C2=%lf epsilon=%lf\n", num_vec, svm_C1, svm_C2, svm_epsilon);
 
 	if (constraint_generator)
-		mkl->set_constraint_generator();
+		mkl->set_constraint_generator(constraint_generator);
 	mkl->set_solver_type(solver_type);
 	mkl->set_bias_enabled(svm_use_bias);
 	mkl->set_epsilon(svm_epsilon);
@@ -1401,7 +1401,7 @@ bool CGUIClassifier::set_solver(char* solver)
 	return true;
 }
 
-bool CGUIClassifier::set_constraint_generator(char* cg)
+bool CGUIClassifier::set_constraint_generator(char* name)
 {
 	if (strcmp(name,"LIBSVM_ONECLASS")==0)
 	{

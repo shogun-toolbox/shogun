@@ -14,6 +14,7 @@
 #include <shogun/lib/config.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/classifier/Classifier.h>
+#include <shogun/classifier/svm/SVM.h>
 
 class CSGInterface;
 
