@@ -5064,9 +5064,9 @@ bool CSGInterface::cmd_set_mkl_interleaved_enabled()
 	if (m_nrhs!=2 || !create_return_values(0))
 		return false;
 
-	bool bias_enabled=get_bool_from_bool_or_str();
+	bool interleaved_enabled=get_bool_from_bool_or_str();
 
-	return ui_classifier->set_svm_bias_enabled(bias_enabled);
+	return ui_classifier->set_mkl_interleaved_enabled(interleaved_enabled);
 }
 
 bool CSGInterface::cmd_set_krr_tau()
