@@ -338,14 +338,17 @@ float64_t CMKL::compute_optimal_betas_directly(
   float64_t Z;
   float64_t preR;
   int32_t p;
+  int32_t nofKernelsGood;
 
   // --- optimal beta
+  nofKernelsGood = num_kernels;
   for( p=0; p<num_kernels; ++p ) {
     if( sumw[p] >= 0.0 && old_beta[p] >= 0.0 ) {
       beta[p] = sumw[p] * old_beta[p]*old_beta[p] / mkl_norm;
       beta[p] = CMath::pow( beta[p], 1.0 / (mkl_norm+1.0) );
     } else {
       beta[p] = 0.0;
+      --nofKernelsGood;
     }
     ASSERT( beta[p] >= 0 );
   }
@@ -369,6 +372,8 @@ float64_t CMKL::compute_optimal_betas_directly(
   const float64_t R = CMath::sqrt( preR / mkl_norm ) * epsRegul;
   if( !( R >= 0 ) ) {
     printf( "MKL-direct: p = %.3f\n", mkl_norm );
+    printf( "MKL-direct: nofKernelsGood = %d\n", nofKernelsGood );
+    printf( "MKL-direct: Z = %e\n", Z );
     printf( "MKL-direct: eps = %e\n", epsRegul );
     for( p=0; p<num_kernels; ++p ) {
       const float64_t t = CMath::pow( old_beta[p] - beta[p], 2.0 );
