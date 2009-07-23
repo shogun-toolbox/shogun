@@ -382,7 +382,8 @@ float64_t CMKL::compute_optimal_betas_directly(
   // --- objective
   obj = -suma;
   for( p=0; p<num_kernels; ++p ) {
-    obj += sumw[p] * old_beta[p]*old_beta[p] / beta[p];
+    //obj += sumw[p] * old_beta[p]*old_beta[p] / beta[p];
+    obj += sumw[p] * beta[p];
   }
   return obj;
 }
