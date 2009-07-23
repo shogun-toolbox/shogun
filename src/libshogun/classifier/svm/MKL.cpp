@@ -366,7 +366,15 @@ float64_t CMKL::compute_optimal_betas_directly(
   for( p=0; p<num_kernels; ++p ) {
     R += CMath::pow( old_beta[p] - beta[p], 2.0 );
   }
+  if( !( R >= 0 ) ) {
+    printf( "MKL-direct: R = %e (%d kernels, %.3f-norm)\n", R, num_kernels, mkl_norm );
+  }
   R = CMath::sqrt( R / mkl_norm ) * epsRegul;
+  if( !( R >= 0 ) ) {
+    printf( "MKL-direct: p = %.3f", mkl_norm );
+    printf( "MKL-direct: eps = %e", epsRegul );
+    printf( "MKL-direct: R = %e", R );
+  }
   ASSERT( R >= 0 );
   Z = 0.0;
   for( p=0; p<num_kernels; ++p ) {
