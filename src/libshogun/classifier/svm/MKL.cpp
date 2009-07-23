@@ -370,6 +370,10 @@ float64_t CMKL::compute_optimal_betas_directly(
   if( !( R >= 0 ) ) {
     printf( "MKL-direct: p = %.3f\n", mkl_norm );
     printf( "MKL-direct: eps = %e\n", epsRegul );
+    for( p=0; p<num_kernels; ++p ) {
+      const float64_t t = CMath::pow( old_beta[p] - beta[p], 2.0 );
+      printf( "MKL-direct: t[%3d] = %e  (diff=%e=%e-%e)\n", p, t, old_beta[p]-beta[p], old_beta[p], beta[p] );
+    }
     printf( "MKL-direct: preR = %e\n", preR );
     printf( "MKL-direct: preR/p = %e\n", preR/mkl_norm );
     printf( "MKL-direct: sqrt(preR/p) = %e\n", CMath::sqrt(preR/mkl_norm) );
