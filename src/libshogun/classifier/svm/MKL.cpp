@@ -302,7 +302,7 @@ bool CMKL::perform_mkl_step(
 
 	w_gap = CMath::abs(1-rho/mkl_objective) ;
 
-	if( (w_gap >= 0.9999*mkl_epsilon) ||
+	if( (w_gap >= mkl_epsilon) ||
 			(get_solver_type()==ST_AUTO || get_solver_type()==ST_NEWTON || get_solver_type()==ST_DIRECT ) )
 	{
 		if (get_solver_type()==ST_AUTO || get_solver_type()==ST_DIRECT)
@@ -347,6 +347,7 @@ float64_t CMKL::compute_optimal_betas_directly(
     } else {
       beta[p] = 0.0;
     }
+    ASSERT( beta[p] >= 0 );
   }
 
   // --- normalize
@@ -355,6 +356,7 @@ float64_t CMKL::compute_optimal_betas_directly(
     Z += CMath::pow( beta[p], mkl_norm );
   }
   Z = CMath::pow( Z, -1.0/mkl_norm );
+  ASSERT( Z >= 0 );
   for( p=0; p<num_kernels; ++p ) {
     beta[p] *= Z;
   }
@@ -365,12 +367,15 @@ float64_t CMKL::compute_optimal_betas_directly(
     R += CMath::pow( old_beta[p] - beta[p], 2.0 );
   }
   R = CMath::sqrt( R / mkl_norm ) * epsRegul;
+  ASSERT( R >= 0 );
   Z = 0.0;
   for( p=0; p<num_kernels; ++p ) {
     beta[p] += R;
     Z += CMath::pow( beta[p], mkl_norm );
+    ASSERT( beta[p] >= 0 );
   }
   Z = CMath::pow( Z, -1.0/mkl_norm );
+  ASSERT( Z >= 0 );
   for( p=0; p<num_kernels; ++p ) {
     beta[p] *= Z;
     ASSERT( beta[p] >= 0.0 );
