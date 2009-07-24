@@ -122,4 +122,3 @@ template <class T> class CBinaryStream : public CSGObject
 		char rw;
 };
 #endif // BINARY_STREAM
-
