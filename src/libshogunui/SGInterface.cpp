@@ -2526,11 +2526,14 @@ bool CSGInterface::cmd_set_kernel_normalization()
 	char* normalization=get_string(len);
 
 	float64_t c=0;
+	float64_t r=0;
 
-	if (m_nrhs==3)
+	if (m_nrhs>=3)
 		c=get_real();
+	if (m_nrhs>=4)
+		r=get_real();
 
-	bool success=ui_kernel->set_normalization(normalization, c);
+	bool success=ui_kernel->set_normalization(normalization, c, r);
 
 	delete[] normalization;
 	return success;

@@ -30,7 +30,7 @@ class CGUIKernel : public CSGObject
 	/** get active kernel */
 	CKernel* get_kernel();
 	/** set normalization */
-	bool set_normalization(char* normalization, float64_t c=0.0);
+	bool set_normalization(char* normalization, float64_t c=0.0, float64_t r=0.0);
 	/** set active kernel */
 	bool set_kernel(CKernel* kern);
 	/** add kernel to a Combined kernel, creating one if necessary */

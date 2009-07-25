@@ -33,6 +33,7 @@
 #include <shogun/kernel/PyramidChi2.h>
 #include <shogun/kernel/AUCKernel.h>
 #include <shogun/kernel/AvgDiagKernelNormalizer.h>
+#include <shogun/kernel/RidgeKernelNormalizer.h>
 #include <shogun/kernel/Chi2Kernel.h>
 #include <shogun/kernel/CombinedKernel.h>
 #include <shogun/kernel/CommUlongStringKernel.h>
@@ -101,6 +102,7 @@
 %rename(PyramidChi2) CPyramidChi2;
 %rename(AUCKernel) CAUCKernel;
 %rename(AvgDiagKernelNormalizer) CAvgDiagKernelNormalizer;
+%rename(RidgeKernelNormalizer) CRidgeKernelNormalizer;
 %rename(Chi2Kernel) CChi2Kernel;
 %rename(CombinedKernel) CCombinedKernel;
 %rename(CommUlongStringKernel) CCommUlongStringKernel;
@@ -176,6 +178,7 @@
 %include <shogun/kernel/PyramidChi2.h>
 %include <shogun/kernel/AUCKernel.h> 
 %include <shogun/kernel/AvgDiagKernelNormalizer.h>
+%include <shogun/kernel/RidgeKernelNormalizer.h>
 %include <shogun/kernel/Chi2Kernel.h>
 %include <shogun/kernel/CombinedKernel.h>
 %include <shogun/kernel/CommUlongStringKernel.h>

@@ -51,6 +51,7 @@
 #include <shogun/kernel/DistanceKernel.h>
 #include <shogun/kernel/TensorProductPairKernel.h>
 #include <shogun/kernel/AvgDiagKernelNormalizer.h>
+#include <shogun/kernel/RidgeKernelNormalizer.h>
 #include <shogun/kernel/FirstElementKernelNormalizer.h>
 #include <shogun/kernel/IdentityKernelNormalizer.h>
 #include <shogun/kernel/SqrtDiagKernelNormalizer.h>
@@ -625,7 +626,7 @@ CKernel* CGUIKernel::create_combined(
 	return kern;
 }
 
-bool CGUIKernel::set_normalization(char* normalization, float64_t c)
+bool CGUIKernel::set_normalization(char* normalization, float64_t c, float64_t r)
 {
 	CKernel* k=kernel;
 
@@ -644,6 +645,11 @@ bool CGUIKernel::set_normalization(char* normalization, float64_t c)
 	{
 		SG_INFO("Average Kernel Diagonal Normalization selected\n");
 		return k->set_normalizer(new CAvgDiagKernelNormalizer(c));
+	}
+	else if (strncmp(normalization,"RIDGE", 5)==0)
+	{
+		SG_INFO("Ridge Kernel Normalization selected\n");
+		return k->set_normalizer(new CRidgeKernelNormalizer(r, c));
 	}
 	else if (strncmp(normalization,"SQRTDIAG", 8)==0)
 	{

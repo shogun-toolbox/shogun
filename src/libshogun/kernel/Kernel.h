@@ -113,6 +113,7 @@ class CKernel : public CSGObject
 	friend class CVarianceKernelNormalizer;
 	friend class CSqrtDiagKernelNormalizer;
 	friend class CAvgDiagKernelNormalizer;
+	friend class CRidgeKernelNormalizer;
 	friend class CFirstElementKernelNormalizer;
 	friend class CTanimotoKernelNormalizer;
 	friend class CDiceKernelNormalizer;

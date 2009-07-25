@@ -32,7 +32,7 @@ template <class T> class CBinaryStream : public CSGObject
 		 * @param fname name of file, zero terminated string
 		 * @param flag determines read or read write mode (currently only 'r' is supported)
 		 */
-		CBinaryStream(const char* fname, char flag='r')
+		CBinaryStream(const char* fname, const char* flag="r")
 		: CSGObject()
 		{
 			fd = fopen(fname, flag);
@@ -44,6 +44,7 @@ template <class T> class CBinaryStream : public CSGObject
 				SG_ERROR("Error determining file size\n");
 
 			length = sb.st_size;
+			SG_DEBUG("Opened file '%s' of size %ld byte\n", fname, length);
 		}
 
 		/** destructor */
@@ -97,16 +98,20 @@ template <class T> class CBinaryStream : public CSGObject
 
 		/** operator overload for file read only access
 		 *
-		 * DOES NOT DO ANY BOUNDS CHECKING
-		 *
 		 * @param index index
 		 * @return element at index
 		 */
 		inline T operator[](int32_t index) const
 		{
-			fseek(fd, sizeof(T)*((int64_t) index), SEEK_SET);
+
+			if (fseek(fd, ((long) sizeof(T))*((long) index), SEEK_SET) != 0)
+				SG_ERROR("Error seeking to %ld\n", sizeof(T)*((int64_t) index));
+
 			T ptr;
-			fread(&ptr, sizeof(T), 1, fd);
+
+			if ( fread(&ptr, sizeof(T), 1, fd) != 1)
+				SG_ERROR("Error calling fread\n");
+
 			return T;
 		}
 
@@ -115,7 +120,7 @@ template <class T> class CBinaryStream : public CSGObject
 
 	protected:
 		/** file descriptor */
-		FILE fd;
+		FILE* fd;
 		/** size of file */
 		uint64_t length;
 		/** mode */
