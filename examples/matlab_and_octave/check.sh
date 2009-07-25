@@ -1,12 +1,25 @@
 #!/bin/bash
 
+MATLAB="$1"
+
 for e in *.m
 do
 	echo -n "running $e .."
-	if octave "$e" >/dev/null 2>&1
+
+	if [ -n "$MATLAB" ]
 	then
-		echo " OK"
+		if cat "$e" | matlab -nojvm -nodesktop -nodisplay >/dev/null
+		then
+			echo " OK"
+		else
+			echo " ERROR"
+		fi
 	else
-		echo " ERROR"
+		if octave "$e" >/dev/null 2>&1
+		then
+			echo " OK"
+		else
+			echo " ERROR"
+		fi
 	fi
 done

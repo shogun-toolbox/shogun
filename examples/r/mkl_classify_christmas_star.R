@@ -78,9 +78,7 @@ for (kk in 1:dim(radius_star)[1]) {
   sg('add_features','TRAIN', train_x)
   sg('add_features','TRAIN', train_x)
   sg('set_labels','TRAIN', train_y)         # set the labels
-  sg('new_svm', 'SVMLIGHT')
-  sg('use_linadd', FALSE)
-  sg('use_mkl', TRUE)
+  sg('new_classifier', 'MKL_CLASSIFICATION')
   sg('mkl_parameters', mkl_eps, 0)
   sg('svm_epsilon', svm_eps)
   sg('set_kernel', 'COMBINED', 0)

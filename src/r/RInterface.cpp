@@ -312,30 +312,57 @@ void CRInterface::get_char_string_list(T_STRING<char>*& strings, int32_t& num_st
 	if (strs == R_NilValue || TYPEOF(strs) != STRSXP)
 		SG_ERROR("Expected String List as argument %d\n", m_rhs_counter);
 
-	max_string_len=0;
-	num_str=Rf_length(strs);
-	strings=new T_STRING<char>[num_str];
-	ASSERT(strings);
+	SG_DEBUG("nrows=%d ncols=%d Rf_length=%d\n", nrows(strs), ncols(strs), Rf_length(strs));
 
-	for (int32_t i=0; i<num_str; i++)
+	if (nrows(strs))
 	{
-		SEXPREC* s= STRING_ELT(strs,i);
-		char* c= (char*) CHAR(s);
-		int32_t len=LENGTH(s);
+		num_str = ncols(strs);
+		max_string_len = nrows(strs);
 
-		if (len && c)
+		strings=new T_STRING<char>[num_str];
+		ASSERT(strings);
+
+		for (int32_t i=0; i<num_str; i++)
 		{
-			char* dst=new char[len+1];
-			strings[i].string=(char*) memcpy(dst, c, len*sizeof(char));
-			strings[i].string[len]='\0';
-			strings[i].length=len;
-			max_string_len=CMath::max(max_string_len, len);
+			char* dst=new char[max_string_len+1];
+			for (int32_t j=0; j<max_string_len; j++)
+			{
+				SEXPREC* s= STRING_ELT(strs,i*max_string_len+j);
+				ASSERT(LENGTH(s)==1);
+				dst[j]=CHAR(s)[0];
+			}
+			strings[i].string=dst;
+			strings[i].string[max_string_len]='\0';
+			strings[i].length=max_string_len;
 		}
-		else
+	}
+	else
+	{
+		max_string_len=0;
+		num_str=Rf_length(strs);
+		strings=new T_STRING<char>[num_str];
+		ASSERT(strings);
+
+		for (int32_t i=0; i<num_str; i++)
 		{
-			SG_WARNING( "string with index %d has zero length\n", i+1);
-			strings[i].string=0;
-			strings[i].length=0;
+			SEXPREC* s= STRING_ELT(strs,i);
+			char* c= (char*) CHAR(s);
+			int32_t len=LENGTH(s);
+
+			if (len && c)
+			{
+				char* dst=new char[len+1];
+				strings[i].string=(char*) memcpy(dst, c, len*sizeof(char));
+				strings[i].string[len]='\0';
+				strings[i].length=len;
+				max_string_len=CMath::max(max_string_len, len);
+			}
+			else
+			{
+				SG_WARNING( "string with index %d has zero length\n", i+1);
+				strings[i].string=0;
+				strings[i].length=0;
+			}
 		}
 	}
 }

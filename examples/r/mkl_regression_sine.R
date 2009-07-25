@@ -20,7 +20,7 @@ rbf_width  <- c(0.005, 0.05, 0.5, 1, 10)
 
 # data
 f <- c(0.1:0.2:5)   # values for the different frequencies
-no_obs <- 1000     # number of observations
+no_obs <- 100     # number of observations
 
 if (debug) {
 	sg('loglevel', 'ALL');
@@ -40,9 +40,7 @@ for (kk in 1:length(f)) {   # big loop for the different learning problems
   train_x <- matrix(train_x, 1, length(train_x))
 
   # initialize MKL-SVR
-  sg('new_svm', 'SVRLIGHT')
-  sg('use_mkl', TRUE)                      
-  sg('use_precompute', 3)
+  sg('new_svm', 'MKL_REGRESSION')
   sg('mkl_parameters', mkl_eps, 0)
   sg('c', C)                
   sg('svm_epsilon', svm_eps)

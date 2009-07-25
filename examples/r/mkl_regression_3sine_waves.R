@@ -39,7 +39,7 @@ f <- c(0:20)  # parameter that varies the frequency of the second sine wave
 
 weights <- array(dim<-c(21,10))
 
-no_obs <- 1000    # number of observations
+no_obs <- 20    # number of observations
 stepsize <- (4*pi)/(no_obs-1)
 train_x <- c(0:(no_obs-1))
 for (i in c(1:no_obs)) {
@@ -63,9 +63,7 @@ for (kk in c(1:length(f))) {  #Big loop
    train_y <- trend + wave1 + wave2
 
    #MK Learning
-   sg('new_svm', 'SVRLIGHT')
-   sg('use_mkl', TRUE)
-   sg('use_precompute', 0)      #precompute every SINGLE kernel!
+   sg('new_svm', 'MKL_REGRESSION')
    sg('mkl_parameters', mkl_eps, 0)
    sg('c', C)
    sg('svm_epsilon', svm_eps)

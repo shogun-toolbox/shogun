@@ -25,7 +25,7 @@ mkl_norm = 1; % >=1
 
 % data
 f = [0.1:0.2:5];   % values for the different frequencies
-no_obs = 1000;     % number of observations
+no_obs = 100;     % number of observations
 
 if debug
 	sg('loglevel', 'ALL');

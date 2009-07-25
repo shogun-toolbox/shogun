@@ -201,6 +201,7 @@ bool CMKL::train()
 
 	int32_t num_weights = -1;
 	int32_t num_kernels = kernel->get_num_subkernels();
+	SG_INFO("num_kernels = %d\n", num_kernels);
 	const float64_t* beta_const   = kernel->get_subkernel_weights(num_weights);
 	float64_t* beta =  CMath::clone_vector(beta_const, num_weights);
 	ASSERT(num_weights==num_kernels);

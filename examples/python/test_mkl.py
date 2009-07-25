@@ -7,8 +7,7 @@ labels=concatenate((-ones([1,num]), ones([1,num])),1)[0]
 features=concatenate((random.normal(size=(2,num))-1,random.normal(size=(2,num))+1),1)
 
 sg('c', 10.)
-sg('new_svm', 'LIBSVM')
-sg('use_mkl', True)
+sg('new_svm', 'MKL_CLASSIFICATION')
 
 sg('set_labels', 'TRAIN', labels)
 sg('add_features', 'TRAIN', features)

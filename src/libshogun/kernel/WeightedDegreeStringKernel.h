@@ -524,6 +524,8 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 */
 		inline bool set_mkl_stepsize(int32_t step)
 		{
+			if (step<1)
+				SG_ERROR("Stepsize must be a positive integer\n");
 			mkl_stepsize=step;
 			return true;
 		}

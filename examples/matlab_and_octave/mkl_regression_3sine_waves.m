@@ -34,7 +34,7 @@ debug = 0;
 
 % data
 f = [0:20];  % parameter that varies the frequency of the second sine wave
-no_obs = 1000;    % number of observations
+no_obs = 20;    % number of observations
 
 if debug
 	sg('loglevel', 'ALL');
