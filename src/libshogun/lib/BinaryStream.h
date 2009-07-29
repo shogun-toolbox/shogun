@@ -25,6 +25,16 @@
 template <class T> class CBinaryStream : public CSGObject
 {
 	public:
+		/** default constructor
+		 */
+		CBinaryStream() : CSGObject()
+		{
+            rw=NULL;
+            m_fname=NULL;
+			fd = NULL:
+			length = 0;
+		}
+
 		/** constructor
 		 *
 		 * open a file for read mode
@@ -35,22 +45,55 @@ template <class T> class CBinaryStream : public CSGObject
 		CBinaryStream(const char* fname, const char* flag="r")
 		: CSGObject()
 		{
+			open_stream(bs.m_fname, bs.rw);
+		}
+
+
+		/* copy constructor
+		 *
+		 * @param bs binary stream to copy from
+		 */
+        CBinaryStream(const CBinaryStream &bs)
+        {
+			open_stream(bs.m_fname, bs.rw);
+            ASSERT(length==bs.length);
+        }
+
+
+		/** destructor */
+		virtual ~CBinaryStream()
+		{
+			close_stream();
+		}
+
+		void open_stream(const char* fname, const char* flag="r")
+		{
+            rw=strdup(flag);
+            m_fname=strdup(fname);
+
 			fd = fopen(fname, flag);
 			if (!fd)
-				SG_ERROR("Error opening file\n");
+                SG_ERROR("Error opening file '%s'\n", m_fname);
 
 			struct stat sb;
 			if (stat(fname, &sb) == -1)
-				SG_ERROR("Error determining file size\n");
+                SG_ERROR("Error determining file size of '%s'\n", m_fname);
 
 			length = sb.st_size;
 			SG_DEBUG("Opened file '%s' of size %ld byte\n", fname, length);
 		}
 
-		/** destructor */
-		virtual ~CBinaryStream()
+		void close_stream()
 		{
-			fclose(fd);
+			free(rw);
+            free(m_fname);
+			if (fd)
+				fclose(fd);
+
+            rw=NULL;
+            m_fname=NULL;
+			fd = NULL:
+			length = 0;
 		}
 
 		/** get the number of objects of type T cointained in the file 
@@ -96,6 +139,28 @@ template <class T> class CBinaryStream : public CSGObject
 			return 0;
 		}
 
+		/** read num elements starting from index into buffer
+		 *
+		 * @param buffer buffer that has to be at least num elements long
+		 * @param index index into file starting from which elements are read
+		 * @param num number of elements to be read
+		 */
+		void pre_buffer(T* buffer, long index, long num) const
+		{           
+			ASSERT(index>=0);
+			ASSERT(num>=0);
+
+			if (num==0)
+				return;
+
+			if (fseek(fd, ((long) sizeof(T))*((long) index), SEEK_SET) != 0)
+				SG_ERROR(stderr, "Error seeking to %ld (file '%s')\n", sizeof(T)*((int64_t) index), m_fname);
+
+			if ( fread(buffer, sizeof(T), num, fd) != num)
+				SG_ERROR(stderr, "Error calling fread (file '%s')\n", m_fname);
+		}
+
+
 		/** operator overload for file read only access
 		 *
 		 * @param index index
@@ -105,12 +170,12 @@ template <class T> class CBinaryStream : public CSGObject
 		{
 
 			if (fseek(fd, ((long) sizeof(T))*((long) index), SEEK_SET) != 0)
-				SG_ERROR("Error seeking to %ld\n", sizeof(T)*((int64_t) index));
+				SG_ERROR(stderr, "Error seeking to %ld (file '%s')\n", sizeof(T)*((int64_t) index), m_fname);
 
 			T ptr;
 
 			if ( fread(&ptr, sizeof(T), 1, fd) != 1)
-				SG_ERROR("Error calling fread\n");
+				SG_ERROR(stderr, "Error calling fread (file '%s')\n", m_fname);
 
 			return T;
 		}
@@ -124,6 +189,9 @@ template <class T> class CBinaryStream : public CSGObject
 		/** size of file */
 		uint64_t length;
 		/** mode */
-		char rw;
+		char* rw;
+        /* fname */
+        char* m_fname;
+
 };
 #endif // BINARY_STREAM
