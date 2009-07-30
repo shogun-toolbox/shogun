@@ -61,6 +61,7 @@
 #include <shogun/kernel/OligoStringKernel.h>
 #include <shogun/kernel/PolyKernel.h>
 #include <shogun/kernel/PolyMatchStringKernel.h>
+#include <shogun/kernel/RegulatoryModulesStringKernel.h>
 #include <shogun/kernel/PolyMatchWordStringKernel.h>
 #include <shogun/kernel/SalzbergWordStringKernel.h>
 #include <shogun/kernel/SigmoidKernel.h>
@@ -131,6 +132,7 @@
 %rename(OligoStringKernel) COligoStringKernel;
 %rename(PolyKernel) CPolyKernel;
 %rename(PolyMatchStringKernel) CPolyMatchStringKernel;
+%rename(RegulatoryModulesStringKernel) CRegulatoryModulesStringKernel;
 %rename(PolyMatchWordStringKernel) CPolyMatchWordStringKernel;
 %rename(SalzbergWordStringKernel) CSalzbergWordStringKernel;
 %rename(SigmoidKernel) CSigmoidKernel;
@@ -205,6 +207,7 @@
 %include <shogun/kernel/OligoStringKernel.h>
 %include <shogun/kernel/PolyKernel.h>
 %include <shogun/kernel/PolyMatchStringKernel.h>
+%include <shogun/kernel/RegulatoryModulesStringKernel.h>
 %include <shogun/kernel/PolyMatchWordStringKernel.h>
 %include <shogun/kernel/SalzbergWordStringKernel.h>
 %include <shogun/kernel/SigmoidKernel.h>

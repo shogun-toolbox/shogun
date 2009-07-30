@@ -69,7 +69,8 @@ enum EKernelType
 	K_PYRAMIDCHI2 = 240,
 	K_OLIGO = 250,
 	K_MATCHWORD = 260,
-	K_TPPK = 270
+	K_TPPK = 270,
+	K_REGULATORYMODULES = 280
 };
 
 enum EKernelProperty
