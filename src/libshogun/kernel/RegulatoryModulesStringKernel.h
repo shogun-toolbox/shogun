@@ -28,7 +28,7 @@ class CRegulatoryModulesStringKernel: public CStringKernel<char>
 		 * @param size cache size
 		 * @param width width
 		 */
-		CRegulatoryModulesStringKernel(int32_t size, float64_t width, int32_t degree, int32_t shift = 0);
+		CRegulatoryModulesStringKernel(int32_t size, float64_t width, int32_t degree, int32_t shift, int32_t window);
 
 		/** constructor
 		 *
@@ -39,7 +39,7 @@ class CRegulatoryModulesStringKernel: public CStringKernel<char>
 		 */
 		CRegulatoryModulesStringKernel(CStringFeatures<char>* lstr, CStringFeatures<char>* rstr, 
 			CSimpleFeatures<uint16_t>* lpos, CSimpleFeatures<uint16_t>* rpos, 
-			float64_t width, int32_t degree, int32_t shift = 0, int32_t size=10);
+			float64_t width, int32_t degree, int32_t shift, int32_t window, int32_t size=10);
 
 		virtual ~CRegulatoryModulesStringKernel();
 
@@ -115,6 +115,9 @@ class CRegulatoryModulesStringKernel: public CStringKernel<char>
 		int32_t degree; 
 		/** shift of Weighted Degree with Shifts kernel part */
 		int32_t shift;
+		
+		//TODO
+		int32_t window;
 
 		/** Matrix of motif positions from sequences left-hand side */
 		CSimpleFeatures<uint16_t>* motif_positions_lhs;

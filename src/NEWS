@@ -8,6 +8,7 @@
 		one-class for wrapper and chunking algorithm for arbitrary (dual) SVM
 		solvers.
 		- Dynamic Programming code is now accessible from python.
+		- Implements Regulatory Modules kernel
 	* Bugfixes:
 		- Correct q-norm MKL for Newton.
 		- upon make install of elwms don't install files into R/octave/python

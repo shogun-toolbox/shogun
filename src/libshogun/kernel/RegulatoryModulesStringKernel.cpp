@@ -14,15 +14,18 @@
 #include "features/SimpleFeatures.h"
 #include "lib/io.h"
 
-CRegulatoryModulesStringKernel::CRegulatoryModulesStringKernel(int32_t size, float64_t w, int32_t d, int32_t s)
-: CStringKernel<char>(size), width(w), degree(d), shift(s), position_weights(NULL), weights(NULL)
+CRegulatoryModulesStringKernel::CRegulatoryModulesStringKernel(
+		int32_t size, float64_t w, int32_t d, int32_t s, int32_t wl)
+: CStringKernel<char>(size), width(w), degree(d), shift(s), window(wl), 
+	motif_positions_lhs(NULL), motif_positions_rhs(NULL), position_weights(NULL), weights(NULL)
 {
 }
 
 CRegulatoryModulesStringKernel::CRegulatoryModulesStringKernel(CStringFeatures<char>* lstr, CStringFeatures<char>* rstr, 
 		CSimpleFeatures<uint16_t>* lpos, CSimpleFeatures<uint16_t>* rpos, 
-		float64_t w, int32_t d, int32_t s, int32_t size)
-: CStringKernel<char>(size), width(w), degree(d), shift(s), position_weights(NULL), weights(NULL)
+		float64_t w, int32_t d, int32_t s, int32_t wl, int32_t size)
+: CStringKernel<char>(size), width(w), degree(d), shift(s), window(wl),
+	motif_positions_lhs(NULL), motif_positions_rhs(NULL), position_weights(NULL), weights(NULL)
 {
 	set_motif_positions(lpos, rpos);
 	init(lstr,rstr);
@@ -40,9 +43,11 @@ bool CRegulatoryModulesStringKernel::init(CFeatures* l, CFeatures* r)
 	ASSERT(motif_positions_rhs);
 	
 	if (l->get_num_vectors() != motif_positions_lhs->get_num_vectors())
-		SG_ERROR("Number of vectors does not agree.\n");
+		SG_ERROR("Number of vectors does not agree (LHS: %d, Motif LHS: %d).\n", 
+				l->get_num_vectors(),  motif_positions_lhs->get_num_vectors());
 	if (r->get_num_vectors() != motif_positions_rhs->get_num_vectors())
-		SG_ERROR("Number of vectors does not agree.\n");
+		SG_ERROR("Number of vectors does not agree (RHS: %d, Motif RHS: %d).\n",
+				r->get_num_vectors(), motif_positions_rhs->get_num_vectors());
 	
 	set_wd_weights();
 	CStringKernel<char>::init(l, r);
@@ -84,7 +89,6 @@ float64_t CRegulatoryModulesStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	int32_t alen, blen;
 	char* avec=((CStringFeatures<char>*) lhs)->get_feature_vector(idx_a, alen);
 	char* bvec=((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen);
-	ASSERT(alen==blen);
 
 	int32_t alen_pos, blen_pos;
 	bool afree_pos, bfree_pos;
@@ -103,9 +107,16 @@ float64_t CRegulatoryModulesStringKernel::compute(int32_t idx_a, int32_t idx_b)
 
 		for (int32_t p2=0; p2<num_pos; p2++) //p+1 and below * 2
 			result_rbf+=CMath::sq( (positions_a[p]-positions_a[p2]) - (positions_b[p]-positions_b[p2]) );
+		
+		int32_t limit = window;
+		if (window + positions_a[p] > alen)
+			limit = alen - positions_a[p];
 
+		if (window + positions_b[p] > blen)
+			limit = CMath::min(limit, blen - positions_b[p]);
+		
 		result_wds+=compute_wds(&avec[positions_a[p]], &bvec[positions_b[p]],
-				alen-CMath::max(positions_a[p], positions_b[p]) );
+				limit);
 	}
 	
 	float64_t result=exp(-result_rbf/width)+result_wds;
