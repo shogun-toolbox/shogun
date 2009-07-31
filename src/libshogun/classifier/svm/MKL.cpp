@@ -37,6 +37,7 @@ CMKL::~CMKL()
 	if (svm)
 		svm->set_callback_function(NULL, NULL);
 	set_constraint_generator(NULL);
+	SG_UNREF(svm);
 }
 
 void CMKL::init_solver()
