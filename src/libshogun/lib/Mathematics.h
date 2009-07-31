@@ -1014,7 +1014,7 @@ class CMath : public CSGObject
 				int32_t end=size-1;
 
 				if (size<1)
-					return -1;
+					return 0;
 
 				while (start<end)
 				{
@@ -1028,10 +1028,7 @@ class CMath : public CSGObject
 						return middle;
 				}
 
-				if (output[start]==elem)
-					return start;
-				else
-					return -1;
+				return start;
 			}
 
 		/* finds an element in a sorted array via binary search

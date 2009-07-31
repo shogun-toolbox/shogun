@@ -160,6 +160,20 @@ template <class T> class CBinaryStream : public CSGObject
 				SG_ERROR(stderr, "Error calling fread (file '%s')\n", m_fname);
 		}
 
+		/** read next
+		 *
+		 * @return next element
+		 */
+		inline T read_next() const
+		{
+			T ptr;
+			if ( fread(&ptr, sizeof(T), 1, fd) != 1)
+			{
+				fprintf(stderr, "Error calling fread (file '%s')\n", m_fname);
+				exit(1);
+			}
+			return ptr;
+		}
 
 		/** operator overload for file read only access
 		 *
