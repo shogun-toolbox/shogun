@@ -10,6 +10,7 @@
 
 #include "features/DotFeatures.h"
 #include "lib/io.h"
+#include "lib/Signal.h"
 #include "base/Parallel.h"
 
 #ifndef WIN32
@@ -43,6 +44,8 @@ void CDotFeatures::dense_dot_range(float64_t* output, int32_t start, int32_t sto
 
 	int32_t num_threads=parallel->get_num_threads();
 	ASSERT(num_threads>0);
+
+	CSignal::clear_cancel();
 
 #ifndef WIN32
 	if (num_threads < 2)
@@ -102,6 +105,11 @@ void CDotFeatures::dense_dot_range(float64_t* output, int32_t start, int32_t sto
 		delete[] threads;
 	}
 #endif
+
+#ifndef WIN32
+		if ( CSignal::cancel_computations() )
+			SG_INFO( "prematurely stopped.           \n");
+#endif
 }
 
 void* CDotFeatures::dense_dot_range_helper(void* p)
@@ -119,7 +127,12 @@ void* CDotFeatures::dense_dot_range_helper(void* p)
 
 	if (alphas)
 	{
-		for (int32_t i=start; i<stop; i++)
+#ifdef WIN32
+		for (int32_t i=start; i<stop i++)
+#else
+		for (int32_t i=start; i<stop &&
+				!CSignal::cancel_computations(); i++)
+#endif
 		{
 			output[i]=alphas[i]*df->dense_dot(i, vec, dim)+bias;
 			if (progress)

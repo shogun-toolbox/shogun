@@ -4,6 +4,7 @@
 #include <stdarg.h>
 
 #include "lib/config.h"
+#include "lib/Signal.h"
 
 #ifdef HAVE_LAPACK
 #include "lib/Mathematics.h"
@@ -55,7 +56,9 @@ void CTron::tron(float64_t *w)
 
 	iter = 1;
 
-	while (iter <= max_iter && search)
+	CSignal::clear_cancel();
+
+	while (iter <= max_iter && search && (!CSignal::cancel_computations()))
 	{
 		cg_iter = trcg(delta, g, s, r);
 

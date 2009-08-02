@@ -13,6 +13,7 @@
 #include "classifier/KNN.h"
 #include "features/Labels.h"
 #include "lib/Mathematics.h"
+#include "lib/Signal.h"
 
 CKNN::CKNN()
 : CDistanceMachine(), k(3), num_classes(0), num_train_labels(0), train_labels(NULL)
@@ -88,7 +89,9 @@ CLabels* CKNN::classify(CLabels* output)
 	ASSERT(classes);
 
 	SG_INFO( "%d test examples\n", num_lab);
-	for (int32_t i=0; i<num_lab; i++)
+	CSignal::clear_cancel();
+
+	for (int32_t i=0; i<num_lab && (!CSignal::cancel_computations()); i++)
 	{
 		if ((i%(num_lab/10+1))== 0)
 			SG_PROGRESS(i, 0, num_lab);

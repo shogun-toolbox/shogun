@@ -264,7 +264,6 @@ void* CSVM::classify_example_helper(void* p)
 #ifdef WIN32
 	for (int32_t vec=params->start; vec<params->end; vec++)
 #else
-	CSignal::clear_cancel();
 	for (int32_t vec=params->start; vec<params->end && 
 			!CSignal::cancel_computations(); vec++)
 #endif
@@ -312,6 +311,8 @@ CLabels* CSVM::classify(CLabels* lab)
 		}
 
 		SG_DEBUG( "computing output on %d test examples\n", num_vectors);
+
+		CSignal::clear_cancel();
 
 		if (io->get_show_progress())
 			io->enable_progress();

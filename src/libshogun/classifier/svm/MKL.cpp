@@ -234,6 +234,7 @@ bool CMKL::train()
 #endif
 
 	mkl_iterations = 0;
+	CSignal::clear_cancel();
 	
 	if (interleaved_optimization)
 	{

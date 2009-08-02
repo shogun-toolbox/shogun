@@ -17,10 +17,11 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA
    $Id: svmsgd.cpp,v 1.13 2007/10/02 20:40:06 cvs Exp $
 
-   Shogun adjustments (w) 2008 Soeren Sonnenburg
+   Shogun adjustments (w) 2008-2009 Soeren Sonnenburg
 */
 
 #include "classifier/svm/SVMSGD.h"
+#include "lib/Signal.h"
 
 // Available losses
 #define HINGELOSS 1
@@ -158,7 +159,9 @@ bool CSVMSGD::train()
 	calibrate();
 
 	SG_INFO("Training on %d vectors\n", num_vec);
-	for(int32_t e=0; e<epochs; e++)
+	CSignal::clear_cancel();
+
+	for(int32_t e=0; e<epochs && (!CSignal::cancel_computations()); e++)
 	{
 		count = skip;
 		for (int32_t i=0; i<num_vec; i++)

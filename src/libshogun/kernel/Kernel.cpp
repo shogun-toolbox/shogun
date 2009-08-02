@@ -13,11 +13,12 @@
  */
 
 #include "lib/config.h"
-
 #include "lib/common.h"
 #include "lib/io.h"
 #include "lib/File.h"
 #include "lib/Time.h"
+#include "lib/Signal.h"
+
 #include "base/Parallel.h"
 
 #include "kernel/Kernel.h"
@@ -104,9 +105,11 @@ void CKernel::get_kernel_matrix(float64_t** dst, int32_t* m, int32_t* n)
 		result=(float64_t*) malloc(sizeof(float64_t)*total_num);
 		ASSERT(result);
 
+		CSignal::clear_cancel();
+
 		if ( lhs && lhs==rhs && num_vec1==num_vec2 )
 		{
-			for (int32_t i=0; i<num_vec1; i++)
+			for (int32_t i=0; i<num_vec1 && (!CSignal::cancel_computations()); i++)
 			{
 				for (int32_t j=i; j<num_vec1; j++)
 				{
@@ -127,7 +130,7 @@ void CKernel::get_kernel_matrix(float64_t** dst, int32_t* m, int32_t* n)
 		}
 		else
 		{
-			for (int32_t i=0; i<num_vec1; i++)
+			for (int32_t i=0; i<num_vec1 && (!CSignal::cancel_computations()); i++)
 			{
 				for (int32_t j=0; j<num_vec2; j++)
 				{
