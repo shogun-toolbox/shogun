@@ -9,6 +9,8 @@
  */
 
 #include "lib/Mathematics.h"
+#include "lib/memory.h"
+#include "lib/Set.h"
 #include "base/init.h"
 #include "base/Parallel.h"
 #include "base/Version.h"
@@ -17,6 +19,9 @@ CParallel* sg_parallel=NULL;
 CIO* sg_io=NULL;
 CVersion* sg_version=NULL;
 CMath* sg_math=NULL;
+#ifdef TRACE_MEMORY_ALLOCS
+CSet<CMemoryBlock>* sg_mallocs=NULL;
+#endif
 
 /// function called to print normal messages
 void (*sg_print_message)(FILE* target, const char* str) = NULL;
@@ -43,7 +48,12 @@ void init_shogun(void (*print_message)(FILE* target, const char* str),
 		sg_version = new CVersion();
 	if (!sg_math)
 		sg_math = new CMath();
+#ifdef TRACE_MEMORY_ALLOCS
+	if (!sg_mallocs)
+		sg_mallocs = new CSet<CMemoryBlock>();
 
+	SG_REF(sg_mallocs);
+#endif
 	SG_REF(sg_io);
 	SG_REF(sg_parallel);
 	SG_REF(sg_version);
@@ -66,4 +76,6 @@ void exit_shogun()
 	SG_UNREF(sg_version);
 	SG_UNREF(sg_parallel);
 	SG_UNREF(sg_io);
+
+// will leak memory alloc statistics on exit
 };

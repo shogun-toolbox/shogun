@@ -1117,9 +1117,9 @@ CSGInterfaceMethod sg_methods[]=
 		USAGE(N_HELP)
 	},
 	{
-		N_WHO,
-		(&CSGInterface::cmd_who),
-		USAGE(N_WHO)
+		N_WHOS,
+		(&CSGInterface::cmd_whos),
+		USAGE(N_WHOS)
 	},
 	{
 		N_SEND_COMMAND,
@@ -7483,7 +7483,7 @@ bool CSGInterface::cmd_help()
 	return true;
 }
 
-bool CSGInterface::cmd_who()
+bool CSGInterface::cmd_whos()
 {
 #ifdef TRACE_MEMORY_ALLOCS
 	SG_PRINT("Blocks allocated by shogun\n");

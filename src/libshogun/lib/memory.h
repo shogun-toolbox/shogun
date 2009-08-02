@@ -11,8 +11,10 @@
 #ifndef __MEMORY_H__
 #define __MEMORY_H__
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <new>
+#include "lib/common.h"
 
 void* operator new(size_t size) throw (std::bad_alloc);
 void operator delete(void *p);
@@ -21,6 +23,43 @@ void* operator new[](size_t size);
 void operator delete[](void *p);
 
 #ifdef TRACE_MEMORY_ALLOCS
+class CMemoryBlock
+{
+	public:
+		CMemoryBlock(void* p)
+		{
+			ptr=p;
+			size=0;
+		}
+
+		CMemoryBlock(void* p, size_t sz)
+		{
+			ptr=p;
+			size=sz;
+		}
+
+        CMemoryBlock(const CMemoryBlock &b)
+        {
+			ptr=b.ptr;
+			size=b.size;
+        }
+
+
+		bool operator==(const CMemoryBlock &b) const
+		{
+			return ptr==b.ptr;
+		}
+
+		void display()
+		{
+			printf("Object at %p of size %lld bytes\n", ptr, (long long int) size);
+		}
+
+	protected:
+		void* ptr;
+		size_t size;
+};
+
 void list_memory_allocs();
 #endif
 

@@ -36,6 +36,8 @@
 #undef length
 #endif
 
+#include "../libshogun/lib/memory.cpp"
+
 void octave_print_message(FILE* target, const char* str)
 {
 	fprintf(target, "%s", str);

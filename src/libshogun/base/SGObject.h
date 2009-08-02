@@ -29,7 +29,6 @@
 #define pthread_mutex_unlock(x)
 #endif
 
-class CSGObject;
 class CIO;
 
 // define reference counter macros

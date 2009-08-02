@@ -203,7 +203,7 @@
 #define N_EXIT							"exit"
 #define N_SYNTAX_HIGHLIGHT				"syntax_highlight"
 #define N_HELP							"help"
-#define N_WHOS							"who"
+#define N_WHOS							"whos"
 #define N_SYSTEM						"!"
 #define N_SET_SOLVER					"set_solver"
 #define N_SET_CONSTRAINT_GENERATOR		"set_constraint_generator"

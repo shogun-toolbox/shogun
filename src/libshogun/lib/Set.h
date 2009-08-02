@@ -13,6 +13,7 @@
 
 #include "lib/common.h"
 #include "lib/Mathematics.h"
+#include "lib/DynamicArray.h"
 #include "base/SGObject.h"
 
 /** @brief Template Set class 
@@ -50,8 +51,9 @@ template <class T> class CSet : public CSGObject
 
 		inline bool contains(T e)
 		{
-			int32_t idx=array->find_element(e);
-			return (idx!=-1);
+			return false;
+			//int32_t idx=array->find_element(e);
+			//return (idx!=-1);
 		}
 
 		/** get number of elements

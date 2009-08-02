@@ -516,6 +516,8 @@ class CSGInterface : public CSGObject
 		bool cmd_get_version();
 		/** issue help message */
 		bool cmd_help();
+		/** list alloc'd memory */
+		bool cmd_whos();
 		/** wrapper for compatibility send_command */
 		bool cmd_send_command();
 		/** execute code under python from octave,... */
