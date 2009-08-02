@@ -15,8 +15,6 @@
 #include "lib/Mathematics.h"
 #include "base/SGObject.h"
 
-template <class T> class CDynamicArray;
-
 /** @brief Template Dynamic array class that creates an array that can be used
  * like a list or an array.
  *
@@ -166,6 +164,29 @@ template <class T> class CDynamicArray : public CSGObject
 		inline bool append_element(T element)
 		{
 			return set_element(element, last_element_idx+1);
+		}
+
+		/** find first occurence of array element and return its index
+		 * or -1 if not available
+		 *
+		 * @param element element to search for
+		 * @return index of element or -1
+		 */
+		int32_t find_element(T element)
+		{
+			int32_t idx=-1;
+			int32_t num=get_num_elements();
+
+			for (int32_t i=0; i<num; i++)
+			{
+				if (array[i] == element)
+				{
+					idx=i;
+					break;
+				}
+			}
+
+			return idx;
 		}
 
 		/** delete array element at idx

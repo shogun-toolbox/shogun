@@ -3,6 +3,7 @@
 #include "SyntaxHighLight.h"
 
 #include <shogun/lib/config.h>
+#include <shogun/lib/memory.h>
 #include <shogun/lib/ShogunException.h>
 #include <shogun/lib/Mathematics.h>
 #include <shogun/lib/Hash.h>
@@ -1114,6 +1115,11 @@ CSGInterfaceMethod sg_methods[]=
 		N_HELP,
 		(&CSGInterface::cmd_help),
 		USAGE(N_HELP)
+	},
+	{
+		N_WHO,
+		(&CSGInterface::cmd_who),
+		USAGE(N_WHO)
 	},
 	{
 		N_SEND_COMMAND,
@@ -7475,6 +7481,19 @@ bool CSGInterface::cmd_help()
 	SG_PRINT("\n");
 
 	return true;
+}
+
+bool CSGInterface::cmd_who()
+{
+#ifdef TRACE_MEMORY_ALLOCS
+	SG_PRINT("Blocks allocated by shogun\n");
+	list_memory_allocs();
+	SG_PRINT("\n");
+	return true;
+#else
+	SG_PRINT("Requires shogun to be compiled with --enable-trace-mallocs\n");
+	return false;
+#endif
 }
 
 bool CSGInterface::cmd_send_command()

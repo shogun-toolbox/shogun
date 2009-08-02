@@ -20,4 +20,8 @@ void operator delete(void *p);
 void* operator new[](size_t size);
 void operator delete[](void *p);
 
+#ifdef TRACE_MEMORY_ALLOCS
+void list_memory_allocs();
+#endif
+
 #endif // __MEMORY_H__
