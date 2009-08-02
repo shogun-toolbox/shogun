@@ -154,7 +154,7 @@ CPreProc* CFeatures::del_preproc(int32_t num)
 
 void CFeatures::list_feature_obj()
 {
-	SG_INFO( "0x%p - ", this);
+	SG_INFO( "%p - ", this);
 	switch (get_feature_class())
 	{
 		case C_UNKNOWN:

@@ -7237,7 +7237,7 @@ bool CSGInterface::cmd_loglevel()
 	char* level=get_str_from_str_or_direct(len);
 
 	if (strmatch(level, "ALL") || strmatch(level, "GCDEBUG"))
-		io->set_loglevel(M_DEBUG);
+		io->set_loglevel(M_GCDEBUG);
 	else if (strmatch(level, "DEBUG"))
 		io->set_loglevel(M_DEBUG);
 	else if (strmatch(level, "INFO"))
