@@ -24,7 +24,6 @@
 #include <shogun/lib/ShogunException.h>
 #include <shogun/lib/io.h>
 #include <shogun/lib/config.h>
-#include <shogun/lib/memory.h>
 #include <shogun/base/init.h>
 
 #ifdef HAVE_PYTHON
