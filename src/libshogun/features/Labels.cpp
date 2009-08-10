@@ -70,15 +70,24 @@ void CLabels::set_labels(float64_t* p_labels, int32_t len)
 bool CLabels::is_two_class_labeling()
 {
 	ASSERT(labels);
+	bool found_plus_one=false;
+	bool found_minus_one=false;
 
 	for (int32_t i=0; i<num_labels; i++)
 	{
-		if  ( !( labels[i]==+1.0 || labels[i]==-1.0) )
-		{
+		if (labels[i]==+1.0)
+			found_plus_one=true;
+		else if (labels[i]==-1.0)
+			found_minus_one=true;
+		else
 			SG_ERROR("Not a two class labeling label[%d]=%f (only +1/-1 allowed)\n", i, labels[i]);
-			return false;
-		}
 	}
+
+	if (!found_plus_one)
+		SG_ERROR("Not a two class labeling - no positively labeled examples found\n");
+	if (!found_minus_one)
+		SG_ERROR("Not a two class labeling - no negatively labeled examples found\n");
+
 	return true;
 }
 
