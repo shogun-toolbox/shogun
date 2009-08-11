@@ -1178,6 +1178,7 @@ float64_t CMKL::compute_mkl_dual_objective()
 			else
 				mkl_obj += CMath::pow(sum, mkl_norm/(mkl_norm-1));
 
+			SG_UNREF(kn);
 			kn = ((CCombinedKernel*) kernel)->get_next_kernel();
 		}
 

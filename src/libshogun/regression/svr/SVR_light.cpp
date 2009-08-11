@@ -173,6 +173,7 @@ void CSVRLight::svr_learn()
 	  while (kn)
 	  {
 		  kn->resize_kernel_cache( kernel->get_cache_size(), true);
+		  SG_UNREF(kn);
 		  kn = k->get_next_kernel();
 	  }
   }
@@ -472,6 +473,7 @@ void CSVRLight::update_linear_component_mkl(
 						W[j*num_kernels+n]+=(a[i]-a_old[i])*aicache[regression_fix_index(j)]*(float64_t)label[i];
 				}
 			}
+			SG_UNREF(kn);
 			kn = k->get_next_kernel();
 			n++ ;
 		}
