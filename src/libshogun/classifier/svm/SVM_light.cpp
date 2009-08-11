@@ -240,6 +240,7 @@ bool CSVMLight::train()
 		{
 			// allocate kernel cache but clean up beforehand
 			kn->resize_kernel_cache(kn->get_cache_size());
+			SG_UNREF(kn);
 			kn = ((CCombinedKernel*) kernel)->get_next_kernel();
 		}
 	}
@@ -429,6 +430,7 @@ void CSVMLight::svm_learn()
 							&& (kn->kernel_cache_space_available())) 
 						kn->cache_kernel_row(i);
 
+				SG_UNREF(kn);
 				kn = k->get_next_kernel();
 			}
 		}
@@ -744,6 +746,7 @@ int32_t CSVMLight::optimize_to_convergence(int32_t* docs, int32_t* label, int32_
 			  while (kn)
 			  {
 				  kn->cache_multiple_kernel_rows(working2dnum, choosenum); 
+				  SG_UNREF(kn);
 				  kn = k->get_next_kernel() ;
 			  }
 		  }
@@ -1537,6 +1540,8 @@ void CSVMLight::update_linear_component_mkl(
 						W[j*num_kernels+n]+=(a[i]-a_old[i])*aicache[j]*(float64_t)label[i];
 				}
 			}
+
+			SG_UNREF(kn);
 			kn = k->get_next_kernel();
 			n++ ;
 		}

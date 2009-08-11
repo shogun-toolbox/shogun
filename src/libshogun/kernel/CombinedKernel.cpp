@@ -47,6 +47,8 @@ CCombinedKernel::CCombinedKernel(int32_t size, bool asw)
 {
 	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
 	kernel_list=new CList<CKernel*>(true);
+	SG_REF(kernel_list);
+
 	SG_INFO("Combined kernel created (%p)\n", this) ;
 	if (append_subkernel_weights)
 		SG_INFO( "(subkernel weights are appended)\n") ;
@@ -769,6 +771,7 @@ bool CCombinedKernel::precompute_subkernels()
 
 	SG_UNREF(kernel_list);
 	kernel_list=new_kernel_list;
+	SG_REF(kernel_list);
 
 	return true;
 }

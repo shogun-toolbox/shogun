@@ -68,12 +68,17 @@ template <class T> class CList : public CSGObject
 
 		virtual ~CList()
 		{
+			SG_DEBUG("Destroying List %p\n", this);
+
 			while (get_num_elements())
 			{
 				T d=delete_element();
 
 				if (delete_data)
+				{
+					SG_DEBUG("Destroying List Element %p\n", d);
 					SG_UNREF(d);
+				}
 			}
 		}
 
