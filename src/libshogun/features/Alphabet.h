@@ -31,6 +31,9 @@ enum EAlphabet
 	/// PROTEIN - letters a-z
 	PROTEIN=3,
 
+	// BINARY just 0 and 1
+	BINARY=4,
+
 	/// ALPHANUM - [0-9a-z]
 	ALPHANUM=5,
 
@@ -60,8 +63,8 @@ enum EAlphabet
  * (bit-)efficient representations, check if a string is valid, compute
  * histograms etc.
  *
- * Currently supported alphabets are DNA, RAWDNA, RNA, PROTEIN, ALPHANUM, CUBE, RAW,
- * IUPAC_NUCLEIC_ACID and IUPAC_AMINO_ACID.
+ * Currently supported alphabets are DNA, RAWDNA, RNA, PROTEIN,
+ * BINARY, ALPHANUM, CUBE, RAW, IUPAC_NUCLEIC_ACID and IUPAC_AMINO_ACID.
  *
  */
 class CAlphabet : public CSGObject
@@ -499,7 +502,7 @@ class CAlphabet : public CSGObject
 		/** MAPTABLE UNDEF */
 		static const uint8_t MAPTABLE_UNDEF;
 		/** alphabet names */
-		static const char* alphabet_names[11];
+		static const char* alphabet_names[12];
 
 	protected:
 		/** alphabet */

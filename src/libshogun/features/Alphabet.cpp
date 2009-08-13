@@ -20,7 +20,7 @@ const uint8_t CAlphabet::B_C=1;
 const uint8_t CAlphabet::B_G=2;
 const uint8_t CAlphabet::B_T=3;
 const uint8_t CAlphabet::MAPTABLE_UNDEF=0xff;
-const char* CAlphabet::alphabet_names[11]={"DNA", "RAWDNA", "RNA", "PROTEIN", "ALPHANUM", "CUBE", "RAW", "IUPAC_NUCLEIC_ACID", "IUPAC_AMINO_ACID", "NONE", "UNKNOWN"};
+const char* CAlphabet::alphabet_names[12]={"DNA", "RAWDNA", "RNA", "PROTEIN", "BINARY", "ALPHANUM", "CUBE", "RAW", "IUPAC_NUCLEIC_ACID", "IUPAC_AMINO_ACID", "NONE", "UNKNOWN"};
 
 CAlphabet::CAlphabet(char* al, int32_t len)
 : CSGObject()
@@ -35,6 +35,8 @@ CAlphabet::CAlphabet(char* al, int32_t len)
 		alpha = RNA;
 	else if (len>=(int32_t) strlen("PROTEIN") && !strncmp(al, "PROTEIN", strlen("PROTEIN")))
 		alpha = PROTEIN;
+	else if (len>=(int32_t) strlen("BINARY") && !strncmp(al, "BINARY", strlen("IBINARY")))
+		alpha = BINARY;
 	else if (len>=(int32_t) strlen("ALPHANUM") && !strncmp(al, "ALPHANUM", strlen("ALPHANUM")))
 		alpha = ALPHANUM;
 	else if (len>=(int32_t) strlen("CUBE") && !strncmp(al, "CUBE", strlen("CUBE")))
@@ -87,6 +89,9 @@ bool CAlphabet::set_alphabet(EAlphabet alpha)
 			break;
 		case PROTEIN:
 			num_symbols = 26;
+			break;
+		case BINARY:
+			num_symbols = 2;
 			break;
 		case ALPHANUM:
 			num_symbols = 36;
@@ -170,6 +175,17 @@ void CAlphabet::init_map_table()
 					maptable_to_char[i]='A'+i+skip ;
 				} ;                   //Translation 012345->acde...xy -- the protein code
 			} ;
+			break;
+
+		case BINARY:
+			valid_chars[(uint8_t) '0']=true;	
+			valid_chars[(uint8_t) '1']=true;	
+
+			maptable_to_bin[(uint8_t) '0']=0;
+			maptable_to_bin[(uint8_t) '1']=1;
+
+			maptable_to_char[0]=(uint8_t) '0';
+			maptable_to_char[1]=(uint8_t) '1';
 			break;
 
 		case ALPHANUM:
@@ -371,6 +387,8 @@ void CAlphabet::init_map_table()
 			maptable_to_char[20]=(uint8_t) 'B'; //B	Asx	Aspartic acid or Asparagine
 			maptable_to_char[21]=(uint8_t) 'Z'; //Z	Glx	Glutamine or Glutamic acid
 			maptable_to_char[22]=(uint8_t) 'X'; //X	Xaa	Any amino acid
+			break;
+
 		default:
 			break; //leave uninitialised
 	};
@@ -489,26 +507,29 @@ const char* CAlphabet::get_alphabet_name(EAlphabet alphabet)
 		case PROTEIN:
 			idx=3;
 			break;
-		case ALPHANUM:
+		case BINARY:
 			idx=4;
 			break;
-		case CUBE:
+		case ALPHANUM:
 			idx=5;
 			break;
-		case RAWBYTE:
+		case CUBE:
 			idx=6;
 			break;
-		case IUPAC_NUCLEIC_ACID:
+		case RAWBYTE:
 			idx=7;
 			break;
-		case IUPAC_AMINO_ACID:
+		case IUPAC_NUCLEIC_ACID:
 			idx=8;
 			break;
-		case NONE:
+		case IUPAC_AMINO_ACID:
 			idx=9;
 			break;
-		default:
+		case NONE:
 			idx=10;
+			break;
+		default:
+			idx=11;
 			break;
 	}
 	return alphabet_names[idx];
