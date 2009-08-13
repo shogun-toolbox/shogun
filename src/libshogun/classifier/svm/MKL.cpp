@@ -208,6 +208,7 @@ bool CMKL::train()
 	ASSERT(num_weights==num_kernels);
 	CMath::scale_vector(1/CMath::qnorm(beta, num_kernels, mkl_norm), beta, num_kernels); //q-norm = 1
 	kernel->set_subkernel_weights(beta, num_kernels);
+	delete[] beta;
 
 	svm->set_bias_enabled(get_bias_enabled());
 	svm->set_epsilon(get_epsilon());
@@ -326,6 +327,7 @@ bool CMKL::perform_mkl_step(
 	}
 
 	kernel->set_subkernel_weights(beta, num_kernels);
+	delete[] beta;
 
 	return converged();
 }
