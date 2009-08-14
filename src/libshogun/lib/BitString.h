@@ -38,11 +38,15 @@ class CBitString : public CSGObject
 			alphabet=new CAlphabet(alpha);
 			int32_t nbits=alphabet->get_num_bits();
 			word_len=width*nbits;
-			mask=0;
 
+			mask=0;
 			for (int32_t j=0; j<word_len; j++)
 				mask=(mask<<1) | (uint64_t) 1;
 			mask<<=sizeof(uint64_t)*8-word_len;
+
+			single_mask=0;
+			for (int32_t j=0; j<nbits; j++)
+				mask=(mask<<1) | (uint64_t) 1;
 		}
 
 		/** destructor */
@@ -196,6 +200,19 @@ class CBitString : public CSGObject
 			length=len;
 		}
 
+		/** creates string of all zeros of len bits
+		 *
+		 * @param len length of string in bits
+		 */
+		void create(uint64_t len)
+		{
+			cleanup();
+			uint64_t stream_len=len/sizeof(uint64_t)+1;
+			string=new uint64_t[stream_len];
+			CMath::fill_vector(string, (int32_t) stream_len, (uint64_t) 0);
+			length=len;
+		}
+
 		inline uint64_t condense(uint64_t bits, uint64_t mask) const
 			{
 				uint64_t res = 0 ;
@@ -245,6 +262,45 @@ class CBitString : public CSGObject
 			return res;
 		}
 
+		inline void set_binary_word(uint16_t word, uint64_t index)
+		{
+			ASSERT(index<length);
+
+			uint64_t bitindex=alphabet->get_num_bits()*index;
+			int32_t ws=8*sizeof(uint64_t);
+			uint64_t i=bitindex/ws;
+			int32_t j=bitindex % ws;
+			int32_t missing=word_len-(ws-j);
+
+			uint64_t sl = j-word_len;
+			uint64_t ml;
+			uint64_t wl;
+			uint64_t mr;
+			uint64_t wr;
+
+			if (sl>0)
+			{
+				ml=mask<<sl;
+				wl=word<<sl
+			}
+			else
+			{
+				sl=-sl;
+				ml=mask>>sl;
+				wl=word>>sl;
+			}
+
+			string[i] = ( string[i] & (~ml) ) | ( wl & ml);
+
+			if (missing>0)
+			{
+				mr = mask<<missing;
+				wr = word<<missing;
+				string[i+1] = ( string[i+1] & (~mr) ) | ( wr & mr);
+			}
+
+		}
+
 		inline uint64_t get_length() const { return length-word_len/alphabet->get_num_bits()+1; }
 
 		/** @return object name */
@@ -258,8 +314,10 @@ class CBitString : public CSGObject
 		/** the length of the bit string */
 		uint64_t length;
 		/** length of a word in bits */
-		int32_t word_len;
+		const int32_t word_len;
 		/** mask */
 		uint64_t mask;
+		/** mask for a single character*/
+		uint64_t single_mask;
 };
 #endif //__BITSTRING_H__
