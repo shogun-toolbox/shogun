@@ -29,14 +29,15 @@ CMKL::CMKL(CSVM* s)
 	lp_glpk = NULL;
 #endif
 
+	SG_DEBUG("creating MKL object %p\n", this);
 	lp_initialized = false ;
 }
 
 CMKL::~CMKL()
 {
+	SG_DEBUG("deleting MKL object %p\n", this);
 	if (svm)
 		svm->set_callback_function(NULL, NULL);
-	set_constraint_generator(NULL);
 	SG_UNREF(svm);
 }
 
@@ -245,8 +246,8 @@ bool CMKL::train()
 					"only supported with SVMlight\n");
 		}
 		svm->set_callback_function(this, perform_mkl_step_helper);
-
 		svm->train();
+		svm->set_callback_function(NULL, NULL);
 	}
 	else
 	{

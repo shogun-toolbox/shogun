@@ -294,6 +294,9 @@ class CMKL : public CSVM
 		bool check_lpx_status(LPX *lp);
 #endif
 
+		/** @return object name */
+		inline virtual const char* get_name() const { return "MKL"; }
+
 	protected:
 		CSVM* svm;
 		/** C_mkl */
