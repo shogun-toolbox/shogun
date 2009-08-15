@@ -30,7 +30,7 @@
  #include <shogun/classifier/svm/SVM.h>
  #include <shogun/classifier/svm/LibSVM.h>
  #include <shogun/regression/svr/LibSVR.h>
- #include <shogun/regression/svr/MKL.h>
+ #include <shogun/classifier/svm/MKL.h>
  #include <shogun/regression/svr/MKLRegression.h>
 %}
 
@@ -59,7 +59,7 @@
 %include <shogun/classifier/svm/SVM.h>
 %include <shogun/classifier/svm/LibSVM.h>
 %include <shogun/regression/svr/LibSVR.h>
-%include <shogun/regression/svr/MKL.h>
+%include <shogun/classifier/svm/MKL.h>
 %include <shogun/regression/svr/MKLRegression.h>
 
 #ifdef USE_SVMLIGHT

@@ -1,20 +1,15 @@
 %generate some toy data
 acgt='ACGT';
 dat={acgt([1*ones(1,10) 2*ones(1,10) 3*ones(1,10) 4*ones(1,10) 1])};
-sg('set_features', 'TRAIN', dat, 'DNA');
-sg('slide_window', 'TRAIN', 5, 1);
 
+sg('set_features', 'TRAIN', dat, 'DNA', 'slide_window', 5, 1);
 f=sg('get_features', 'TRAIN')
 
 
-sg('set_features', 'TRAIN', dat, 'DNA');
-sg('from_position_list','TRAIN', 5, int32([0,1,2,5,15,25,30,36]));
-
+sg('set_features', 'TRAIN', dat, 'DNA', 'from_position_list',5, int32([0,1,2,5,15,25,30,36]));
 f=sg('get_features', 'TRAIN')
 
-sg('set_features', 'TEST', dat, 'DNA');
-sg('from_position_list','TEST', 5, int32([0,1,2,5,15,25,30,36]));
-
+sg('set_features', 'TEST', dat, 'DNA', 'from_position_list',5, int32([0,1,2,5,15,25,30,36]));
 ft=sg('get_features', 'TEST')
 
 C=1;
@@ -36,8 +31,6 @@ km=sg('get_kernel_matrix')
 
 sg('clean_features', 'TRAIN');
 sg('clean_features', 'TEST');
-sg('set_features', 'TRAIN', dat, 'DNA');
-sg('from_position_list','TRAIN', 5, int32([0,1,2,5,15,25,30]+5));
-sg('set_features', 'TRAIN', dat, 'DNA');
-sg('from_position_list','TRAIN', 5, int32([0,1,2,5,15,25]+9));
+sg('set_features', 'TRAIN', dat, 'DNA', 'from_position_list',5, int32([0,1,2,5,15,25,30]+5));
+sg('set_features', 'TRAIN', dat, 'DNA', 'from_position_list',5, int32([0,1,2,5,15,25]+9));
 sg('clean_features', 'TRAIN');

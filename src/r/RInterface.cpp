@@ -314,7 +314,7 @@ void CRInterface::get_char_string_list(T_STRING<char>*& strings, int32_t& num_st
 
 	SG_DEBUG("nrows=%d ncols=%d Rf_length=%d\n", nrows(strs), ncols(strs), Rf_length(strs));
 
-	if (nrows(strs))
+	if (nrows(strs) && ncols(strs)!=1)
 	{
 		num_str = ncols(strs);
 		max_string_len = nrows(strs);
@@ -328,7 +328,8 @@ void CRInterface::get_char_string_list(T_STRING<char>*& strings, int32_t& num_st
 			for (int32_t j=0; j<max_string_len; j++)
 			{
 				SEXPREC* s= STRING_ELT(strs,i*max_string_len+j);
-				ASSERT(LENGTH(s)==1);
+				if (LENGTH(s)!=1)
+					SG_ERROR("LENGTH(s)=%d != 1, nrows(strs)=%d ncols(strs)=%d\n", LENGTH(s), nrows(strs), ncols(strs));
 				dst[j]=CHAR(s)[0];
 			}
 			strings[i].string=dst;

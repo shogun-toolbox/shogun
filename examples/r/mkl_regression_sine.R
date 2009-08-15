@@ -20,7 +20,7 @@ rbf_width  <- c(0.005, 0.05, 0.5, 1, 10)
 
 # data
 f <- c(0.1:0.2:5)   # values for the different frequencies
-no_obs <- 100     # number of observations
+no_obs <- 10     # number of observations
 
 if (debug) {
 	sg('loglevel', 'ALL');

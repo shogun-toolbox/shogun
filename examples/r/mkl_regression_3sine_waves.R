@@ -39,7 +39,7 @@ f <- c(0:20)  # parameter that varies the frequency of the second sine wave
 
 weights <- array(dim<-c(21,10))
 
-no_obs <- 20    # number of observations
+no_obs <- 10    # number of observations
 stepsize <- (4*pi)/(no_obs-1)
 train_x <- c(0:(no_obs-1))
 for (i in c(1:no_obs)) {

@@ -35,41 +35,41 @@ testdat=traindat;
 testlab=trainlab;
 
 %train svm
-sg('send_command', 'threads 1');
-sg('send_command', 'use_linadd 1');
-sg('send_command', 'use_batch_computation 1');
+sg('threads',1);
+sg('use_linadd', 1);
+sg('use_batch_computation', 1);
 sg('progress', 'ON');
 sg('set_features', 'TRAIN', traindat, 'DNA');
 sg('set_labels', 'TRAIN', trainlab);
-sg('send_command', 'svm_use_bias 0');
-sg('send_command', 'new_classifier LIGHT');
+sg('svm_use_bias', 0);
+sg('new_classifier', 'LIGHT');
 
-sg('send_command', sprintf( 'set_kernel WEIGHTEDDEGREE CHAR %i %i %i %i %i %i %i', cache, from_order, max_mismatch, normalize, mkl_stepsize, block, single_degree) );
-sg('send_command', 'init_kernel TRAIN');
+sg('set_kernel', 'WEIGHTEDDEGREE', 'CHAR', cache, from_order, max_mismatch, normalize, mkl_stepsize, block, single_degree);
+sg('init_kernel', 'TRAIN');
 %x=sg('get_subkernel_weights');
 %
-%sg('send_command', sprintf( 'set_kernel WEIGHTEDDEGREE CHAR %i %i %i %i %i %i %i', cache, order, max_mismatch, 0, mkl_stepsize, block, single_degree) );
-%sg('send_command', 'init_kernel TRAIN');
+%sg(sprintf( 'set_kernel WEIGHTEDDEGREE CHAR %i %i %i %i %i %i %i', cache, order, max_mismatch, 0, mkl_stepsize, block, single_degree) );
+%sg('init_kernel TRAIN');
 %sg('set_subkernel_weights',x(1:order));
-%sg('send_command', 'init_kernel TRAIN');
+%sg('init_kernel TRAIN');
 %
 %%kmu=sg('get_kernel_matrix');
 %
-%sg('send_command', sprintf( 'set_kernel WEIGHTEDDEGREE CHAR %i %i %i %i %i %i %i', cache, order, max_mismatch, normalize, mkl_stepsize, block, single_degree) );
-%sg('send_command', 'init_kernel TRAIN');
+%sg(sprintf( 'set_kernel WEIGHTEDDEGREE CHAR %i %i %i %i %i %i %i', cache, order, max_mismatch, normalize, mkl_stepsize, block, single_degree) );
+%sg('init_kernel TRAIN');
 %sg('set_subkernel_weights',x(1:order));
-%sg('send_command', 'init_kernel TRAIN');
+%sg('init_kernel TRAIN');
 %%km=sg('get_kernel_matrix');
 
-%sg('send_command', 'new_classifier LIGHT');
-sg('send_command', sprintf('c %f',C));
+%sg('new_classifier LIGHT');
+sg('c',C);
 tic;
-sg('send_command', 'svm_train');
+sg('svm_train');
 tim_lo=toc;
 
 %evaluate svm on test data
 sg('set_features', 'TEST', testdat, 'DNA');
-sg('send_command', 'init_kernel TEST');
+sg('init_kernel', 'TEST');
 out_ref=sg('svm_classify');
 %prc_ref=calcrfcscore(out_ref, testlab);
 %roc_ref=calcrocscore(out_ref, testlab);
@@ -89,11 +89,11 @@ testdat=uint8(testdat);
 
 sg('set_features', 'TRAIN', traindat', 'RAWDNA');
 sg('set_labels', 'TRAIN', trainlab);
-sg('send_command', sprintf('c %f',C));
-sg('send_command', sprintf('svm_epsilon %f', epsilon));
-sg('send_command', sprintf('new_classifier WDSVMOCAS %d %d', order, from_order));
+sg('c',C);
+sg('svm_epsilon', epsilon);
+sg('new_classifier','WDSVMOCAS',order, from_order);
 tic;
-sg('send_command', 'svm_train');
+sg('svm_train');
 tim_lo=toc;
 
 %evaluate svm on test data

@@ -16,7 +16,7 @@ cache_size <- 50 # cache per kernel in MB
 svm_eps<-1e-3	 # svm epsilon
 mkl_eps<-1e-3	 # mkl epsilon
 
-no_obs <- 200   # number of observations / data points (sum for train and test and both classes)
+no_obs <- 20   # number of observations / data points (sum for train and test and both classes)
 k_star <- 20     # number of "leaves" of the stars
 alpha <- 0.3     # noise level of the data
 

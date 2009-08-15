@@ -1847,6 +1847,7 @@ bool CSGInterface::do_set_features(bool add, bool check_dot, int32_t repetitions
 					SG_ERROR("Couldn't load DNA features from file.\n");
 				}
 				feat=create_custom_string_features((CStringFeatures<uint8_t>*) feat);
+				break;
 			}
 			else
 			{
@@ -1913,8 +1914,6 @@ bool CSGInterface::do_set_features(bool add, bool check_dot, int32_t repetitions
 				SG_ERROR("Couldnt set byte string features.\n");
 			}
 			feat=create_custom_string_features((CStringFeatures<uint8_t>*) feat);
-
-			obtain_from_single_string(feat);
 			break;
 		}
 
