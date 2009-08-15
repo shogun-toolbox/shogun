@@ -76,7 +76,7 @@ sg('set_labels', 'TRAIN', trainlab);
 sg('set_kernel', 'WEIGHTEDDEGREEPOS2', 'CHAR', 10, order, max_mismatch, len, shifts);
 %sg('set_kernel', 'WEIGHTEDDEGREE', 'CHAR', cache, order, max_mismatch, normalize, mkl_stepsize, block, single_degree);
 sg('init_kernel', 'TRAIN');
-sg('new_svm', 'LIGHT');
+sg('new_classifier', 'SVMLIGHT');
 sg('c', C);
 sg('train_classifier');
 

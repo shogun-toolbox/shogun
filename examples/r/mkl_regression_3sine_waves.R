@@ -63,7 +63,7 @@ for (kk in c(1:length(f))) {  #Big loop
    train_y <- trend + wave1 + wave2
 
    #MK Learning
-   sg('new_svm', 'MKL_REGRESSION')
+   sg('new_classifier', 'MKL_REGRESSION')
    sg('mkl_parameters', mkl_eps, 0)
    sg('c', C)
    sg('svm_epsilon', svm_eps)

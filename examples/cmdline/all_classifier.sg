@@ -13,7 +13,7 @@
 	set_kernel WEIGHTEDDEGREE CHAR 10 20
 	set_features TRAIN ../data/fm_train_dna.dat DNA
 	set_labels TRAIN ../data/label_train_dna.dat
-	new_svm LIGHT
+	new_classifier LIGHT
 	svm_epsilon 1e-5
 	svm_use_bias 0
 	c 0.017
@@ -35,7 +35,7 @@ print LibSVM
 set_kernel GAUSSIAN REAL 10 1.2
 set_features TRAIN ../data/fm_train_real.dat
 set_labels TRAIN ../data/label_train_twoclass.dat
-new_svm LIBSVM
+new_classifier LIBSVM
 svm_epsilon 1e-5
 svm_use_bias 0
 c 0.017
@@ -54,7 +54,7 @@ print GPBTSVM
 set_kernel GAUSSIAN REAL 10 1.2
 set_features TRAIN ../data/fm_train_real.dat
 set_labels TRAIN ../data/label_train_twoclass.dat
-new_svm GPBTSVM
+new_classifier GPBTSVM
 svm_epsilon 1e-5
 svm_use_bias 0
 c 0.017
@@ -73,7 +73,7 @@ print MPDSVM
 set_kernel GAUSSIAN REAL 10 1.2
 set_features TRAIN ../data/fm_train_real.dat
 set_labels TRAIN ../data/label_train_twoclass.dat
-new_svm MPDSVM
+new_classifier MPDSVM
 svm_epsilon 1e-5
 svm_use_bias 0
 c 0.017
@@ -92,7 +92,7 @@ print LibSVMMultiClass
 set_kernel GAUSSIAN REAL 10 1.2
 set_features TRAIN ../data/fm_train_real.dat
 set_labels TRAIN ../data/label_train_multiclass.dat
-new_svm LIBSVM_MULTICLASS
+new_classifier LIBSVM_MULTICLASS
 svm_epsilon 1e-5
 svm_use_bias 0
 c 0.017
@@ -111,7 +111,7 @@ print LibSVMOneClass
 set_kernel GAUSSIAN REAL 10 1.2
 set_features TRAIN ../data/fm_train_real.dat
 set_labels TRAIN ../data/label_train_twoclass.dat
-new_svm LIBSVM_ONECLASS
+new_classifier LIBSVM_ONECLASS
 svm_epsilon 1e-5
 svm_use_bias 0
 c 0.017
@@ -130,7 +130,7 @@ print GMNPSVM
 set_kernel GAUSSIAN REAL 10 1.2
 set_features TRAIN ../data/fm_train_real.dat
 set_labels TRAIN ../data/label_train_twoclass.dat
-new_svm GMNPSVM
+new_classifier GMNPSVM
 svm_epsilon 1e-5
 svm_use_bias 0
 c 0.017
@@ -149,7 +149,7 @@ print LibSVM batch
 set_kernel GAUSSIAN REAL 10 1.2
 set_features TRAIN ../data/fm_train_real.dat
 set_labels TRAIN ../data/label_train_twoclass.dat
-new_svm LIBSVM
+new_classifier LIBSVM
 svm_epsilon 1e-5
 svm_use_bias 0
 c 0.017
@@ -176,7 +176,7 @@ out.txt = classify
 %
 %set_features TRAIN ../data/fm_train_sparsereal.dat
 %set_labels TRAIN ../data/label_train_twoclass.dat
-%new_svm SUBGRADIENTSVM
+%new_classifier SUBGRADIENTSVM
 %svm_epsilon 1e-3
 %svm_use_bias 0
 %svm_max_train_time 10
@@ -192,7 +192,7 @@ print SVMOcas
 
 set_features TRAIN ../data/fm_train_sparsereal.dat
 set_labels TRAIN ../data/label_train_twoclass.dat
-new_svm SVMOCAS
+new_classifier SVMOCAS
 svm_epsilon 1e-5
 svm_use_bias 0
 c 0.42
@@ -207,7 +207,7 @@ print SVMSGD
 %
 set_features TRAIN ../data/fm_train_sparsereal.dat
 set_labels TRAIN ../data/label_train_twoclass.dat
-new_svm SVMSGD
+new_classifier SVMSGD
 svm_epsilon 1e-5
 svm_use_bias 0
 c 0.42
@@ -222,7 +222,7 @@ print LibLinear
 
 set_features TRAIN ../data/fm_train_sparsereal.dat
 set_labels TRAIN ../data/label_train_twoclass.dat
-new_svm LIBLINEAR_LR
+new_classifier LIBLINEAR_LR
 svm_epsilon 1e-5
 svm_use_bias 0
 c 0.42
@@ -237,7 +237,7 @@ print SVMLin
 
 set_features TRAIN ../data/fm_train_sparsereal.dat
 set_labels TRAIN ../data/label_train_twoclass.dat
-new_svm SVMLIN
+new_classifier SVMLIN
 svm_epsilon 1e-5
 svm_use_bias 0
 c 0.42

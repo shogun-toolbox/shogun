@@ -40,7 +40,7 @@ for (kk in 1:length(f)) {   # big loop for the different learning problems
   train_x <- matrix(train_x, 1, length(train_x))
 
   # initialize MKL-SVR
-  sg('new_svm', 'MKL_REGRESSION')
+  sg('new_classifier', 'MKL_REGRESSION')
   sg('mkl_parameters', mkl_eps, 0)
   sg('c', C)                
   sg('svm_epsilon', svm_eps)

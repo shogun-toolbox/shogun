@@ -34,7 +34,7 @@ sg('set_features', 'TRAIN', traindat, 'DNA');
 sg('set_labels', 'TRAIN', trainlab);
 sg('set_kernel', 'SLIK', 'CHAR', cache, l, d1, d2);
 sg('init_kernel', 'TRAIN');
-sg('new_svm', 'LIBSVM');
+sg('new_classifier', 'LIBSVM');
 sg('c', C);
 tic;sg('train_classifier');toc;
 

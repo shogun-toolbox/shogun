@@ -60,7 +60,7 @@ sg( 'set_features', 'TRAIN', traindat, 'DNA' );
 sg( 'set_labels', 'TRAIN', trainlab );
 sg( 'set_kernel', 'WEIGHTEDDEGREEPOS2_NONORM', 'CHAR', 10, order, max_mismatch, len, shifts );
 sg( 'init_kernel', 'TRAIN' );
-sg( 'new_svm', 'LIGHT' );
+sg( 'new_classifier', 'SVMLIGHT' );
 sg( 'c', C);
 sg( 'train_classifier' );
 

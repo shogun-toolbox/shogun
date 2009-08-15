@@ -1,6 +1,6 @@
-2009-08-XX Soeren Sonnenburg <sonne@debian.org>
+2009-08-14 Soeren Sonnenburg <sonne@debian.org>
 
-	* SHOGUN Release version 0.7.4 (libshogun 4.0, libshogunui 2.0)
+	* SHOGUN Release version 0.8.0 (libshogun 4.0, libshogunui 2.0)
 	* This release contains several cleanups, features and bugfixes:
 	* Features:
 		- Implements new multiclass svm formulation.
@@ -8,12 +8,14 @@
 		one-class for wrapper and chunking algorithm for arbitrary (dual) SVM
 		solvers.
 		- Dynamic Programming code is now accessible from python.
-		- Implements Regulatory Modules kernel
+		- Implements Regulatory Modules kernel.
+		- Documentation updates (Tutorial, improved installation instructions,
+				overview about the implemented algorithms).
 	* Bugfixes:
 		- Correct q-norm MKL for Newton.
-		- upon make install of elwms don't install files into R/octave/python
+		- Upon make install of elwms don't install files into R/octave/python
 		if these interfaces were not configured
-		- svm-nu parameter was not set correctly.
+		- Svm-nu parameter was not set correctly.
 		- Fix custom kernel initialization.
 		- Correct get_subkernel_weights.
 		- Proper Intel core2 compile flags detection
@@ -23,8 +25,9 @@
 	* Cleanup and API Changes:
 		- Rename svm_one_class_nu to svm_nu.
 		- Clean up dynamic programming code.
-		- remove commands from_position_list and slide_window and move
+		- Remove commands from_position_list and slide_window and move
 		functionallity into set/add_features,
+		- Remove now obsolete legacy examples.
 
 2009-05-02 Soeren Sonnenburg <sonne@debian.org>
 

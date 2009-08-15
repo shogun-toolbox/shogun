@@ -42,7 +42,7 @@ sg('set_kernel', 'WEIGHTEDDEGREE', 'CHAR', cache, order, max_mismatch, normalize
 %sg('set_WD_position_weights', ones(1,100)/100) ;
 sg('init_kernel', 'TRAIN');
 %sg('set_WD_position_weights', ones(1,200)/200) ;
-sg('new_svm', 'LIGHT');
+sg('new_classifier', 'SVMLIGHT');
 sg('c',C);
 tic;sg('train_classifier');toc;
 

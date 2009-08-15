@@ -51,7 +51,7 @@ sg('attach_preproc', 'TRAIN');
 sg('set_kernel', 'WEIGHTEDCOMMSTRING', 'WORD',cache, use_sign, normalization);
 
 sg('init_kernel', 'TRAIN');
-sg('new_svm', 'LIGHT');
+sg('new_classifier', 'SVMLIGHT');
 sg('c',C);
 sg('train_classifier');
 sg('init_kernel_optimization');

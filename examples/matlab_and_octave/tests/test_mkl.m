@@ -26,7 +26,7 @@ kmtest{3}=ones(numtrain,numtrain);
 kmtest{4}=ones(numtrain,numtrain);
 kmtest{5}=eye(numtrain,numtrain);
 
-sg('new_svm', 'LIGHT');
+sg('new_classifier', 'SVMLIGHT');
 sg('clean_features', 'TRAIN');
 sg('clean_kernel') ;
 

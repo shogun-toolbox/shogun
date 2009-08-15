@@ -25,12 +25,13 @@ The following table depicts the status of each interface available in shogun:
 |elwms             | this is the eilerlegendewollmilchsau interface, a chimera |
 |                  | that in one file interfaces to python,octave,r,matlab and |
 |                  | provides the run_python command to run code in python     |
-|                  | using the in octave,r,matlab available variables)         |
+|                  | using the in octave,r,matlab available variables, etc)    |
 +------------------+-----------------------------------------------------------+
 |python-modular    | mature (no known problems)                                |
 |octave-modular    | mature (no known problems)                                |
 |r-modular         | pre-alpha quality (swig does not properly handle reference|
-|                  | counting and thus we see crashes or leaked memory)        |
+|                  | counting and thus we see crashes or leaked memory, thus   |
+|                  | disabled by default.)                                     |
 +==================+===========================================================+
 
-Visit src/README for further information.
+Visit src/README and http://www.shogun-toolbox.org/doc for further information.

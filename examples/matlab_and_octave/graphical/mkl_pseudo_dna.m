@@ -50,7 +50,7 @@ sg('set_features', 'TRAIN', XT, 'DNA');
 sg('set_labels', 'TRAIN', LT);
 
 sg('use_mkl', true);
-sg('new_svm', 'LIGHT');
+sg('new_classifier', 'SVMLIGHT');
 sg('set_kernel', 'WEIGHTEDDEGREE', 'CHAR', 124, order, mismatch, false);
 sg('init_kernel', 'TRAIN');
 sg('c', C);

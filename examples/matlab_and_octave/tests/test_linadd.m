@@ -26,7 +26,7 @@ sg('set_features', 'TRAIN', traindat);
 sg('set_labels', 'TRAIN', trainlab);
 sg('set_kernel', 'LINEAR', 'REAL', 10, 1.0); %die 1.0 entspricht scaling
 sg('init_kernel', 'TRAIN');
-sg('new_svm', 'LIGHT');
+sg('new_classifier', 'SVMLIGHT');
 sg('c', C);
 sg('train_classifier');
 [b, alpha_tmp]=sg('get_svm');

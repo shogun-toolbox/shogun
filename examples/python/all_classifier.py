@@ -37,7 +37,7 @@ def svm_light ():
 	sg('set_labels', 'TRAIN', label_train_dna)
 
 	try:
-		sg('new_svm', 'LIGHT')
+		sg('new_classifier', 'SVMLIGHT')
 	except RuntimeError:
 		return
 
@@ -64,7 +64,7 @@ def libsvm ():
 	sg('init_kernel', 'TRAIN')
 
 	sg('set_labels', 'TRAIN', label_train_twoclass)
-	sg('new_svm', 'LIBSVM')
+	sg('new_classifier', 'LIBSVM')
 	sg('svm_epsilon', epsilon)
 	sg('c', C)
 	sg('svm_use_bias', use_bias)
@@ -88,7 +88,7 @@ def gpbtsvm ():
 	sg('init_kernel', 'TRAIN')
 
 	sg('set_labels', 'TRAIN', label_train_twoclass)
-	sg('new_svm', 'GPBTSVM')
+	sg('new_classifier', 'GPBTSVM')
 	sg('svm_epsilon', epsilon)
 	sg('c', C)
 	sg('svm_use_bias', use_bias)
@@ -112,7 +112,7 @@ def mpdsvm ():
 	sg('init_kernel', 'TRAIN')
 
 	sg('set_labels', 'TRAIN', label_train_twoclass)
-	sg('new_svm', 'MPDSVM')
+	sg('new_classifier', 'MPDSVM')
 	sg('svm_epsilon', epsilon)
 	sg('c', C)
 	sg('svm_use_bias', use_bias)
@@ -136,7 +136,7 @@ def libsvm_multiclass ():
 	sg('init_kernel', 'TRAIN')
 
 	sg('set_labels', 'TRAIN', label_train_multiclass)
-	sg('new_svm', 'LIBSVM_MULTICLASS')
+	sg('new_classifier', 'LIBSVM_MULTICLASS')
 	sg('svm_epsilon', epsilon)
 	sg('c', C)
 	sg('svm_use_bias', use_bias)
@@ -159,7 +159,7 @@ def libsvm_oneclass ():
 	sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width)
 	sg('init_kernel', 'TRAIN')
 
-	sg('new_svm', 'LIBSVM_ONECLASS')
+	sg('new_classifier', 'LIBSVM_ONECLASS')
 	sg('svm_epsilon', epsilon)
 	sg('c', C)
 	sg('svm_use_bias', use_bias)
@@ -183,7 +183,7 @@ def gmnpsvm ():
 	sg('init_kernel', 'TRAIN')
 
 	sg('set_labels', 'TRAIN', label_train_twoclass)
-	sg('new_svm', 'GMNPSVM')
+	sg('new_classifier', 'GMNPSVM')
 	sg('svm_epsilon', epsilon)
 	sg('c', C)
 	sg('svm_use_bias', use_bias)
@@ -211,7 +211,7 @@ def do_batch_linadd ():
 	sg('init_kernel', 'TRAIN')
 
 	sg('set_labels', 'TRAIN', label_train_twoclass)
-	sg('new_svm', 'LIBSVM')
+	sg('new_classifier', 'LIBSVM')
 	sg('svm_epsilon', epsilon)
 	sg('c', C)
 	sg('svm_use_bias', use_bias)

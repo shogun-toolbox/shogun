@@ -17,7 +17,7 @@ sg('set_labels', 'TRAIN', trainlab);
 sg('set_kernel', 'GAUSSIAN', 'REAL', 50, 10);
 sg('init_kernel', 'TRAIN');
 kt=sg('get_kernel_matrix');
-sg('new_svm', 'LIGHT');
+sg('new_classifier', 'SVMLIGHT');
 sg('c', C);
 sg('svm_epsilon', svm_eps);
 tic; sg('train_classifier'); toc;

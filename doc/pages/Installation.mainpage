@@ -5,16 +5,48 @@ to compile SHOGUN on MacOSX and via cygwin on WIN32 platforms. However some
 manual tweakings of configuration files might be necessary.
 
 \section from_package From a Package
-SHOGUN is currently pre-packaged for debian (see http://www.debian.org)
+SHOGUN is currently pre-packaged for debian (see http://www.debian.org) and
+available on MacOSX via macports (see http://www.macports.org )
 
-Depending on the interface you want to use install the package
+\subsection on_debian Installation on Debian/Ubuntu
+On debian, depending on the interface you want, install the package(s)
 
 \verbatim
-shogun-octave - for the static octave interface
-shogun-python - for the static python interface
+libshogun-dev         - for C++ developers building extensions using
+                        libshogun
+shogun-octave         - for the static octave interface
+shogun-octave-modular - for the modular octave interface
+shogun-python         - for the static python interface
 shogun-python-modular - for the modular python interface
-shogun-r - for the r interface
-shogun-readline - for the command-line interface.\endverbatim
+shogun-r              - for the r interface
+shogun-cmdline        - for the command-line interface.
+shogun-elwms          - for the eierlegende wollmilchsau interface
+                        (one interface to r/python/octave allowing
+						to run commands in non-native languages)
+shogun-doc            - for the documentation
+\endverbatim
+
+\subsection on_osx Installation on MacOSX
+
+The mac port is provided by James Kyle (Thanks!!) and makes installations on
+OSX as easy as under linux. To install shogun you will need macports (see
+http://www.macports.org). Then issue
+
+\verbatim
+sudo port selfupdate
+
+sudo port install swig -php5 -ruby -perl +python
+  (shogun users who want the r and octave interfaces should add
+  +octave and/or +r to this list)
+
+sudo port install shogun
+  (for r, octave, and elwms interfaces: +r +octave +elwms)
+\endverbatim
+
+Add \verbatim DYLD_FALLBACK_LIBRARY_PATH=${macports_prefix}/lib \endverbatim
+to your shell profile. *Tip* the default ${macports_prefix} is /opt/local/. In
+that case, the  library path would be /opt/local/lib.
+
 
 \section from_source Installing SHOGUN from Source
 
@@ -73,6 +105,7 @@ where \b interface is one of the following
 
 \li matlab -- for matlab (see http://www.mathworks.com)
 
+(you don't need to compile libshogunui in case you compile a modular interface)
 
 However, just running 
 \verbatim ./configure\endverbatim

@@ -43,7 +43,7 @@ sg('set_WD_position_weights', trainw, 'TRAIN') ;
 sg('set_WD_position_weights', trainw, 'TEST') ;
 
 % train the svm
-sg('new_svm', 'LIGHT');
+sg('new_classifier', 'SVMLIGHT');
 sg('c',C);
 tic; sg('train_classifier'); t=toc
 [b, alphas]=sg('get_svm');

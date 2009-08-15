@@ -42,7 +42,7 @@ sg('progress', 'ON');
 sg('set_features', 'TRAIN', traindat, 'DNA');
 sg('set_labels', 'TRAIN', trainlab);
 sg('send_command', 'svm_use_bias 0');
-sg('send_command', 'new_svm LIGHT');
+sg('send_command', 'new_classifier LIGHT');
 
 sg('send_command', sprintf( 'set_kernel WEIGHTEDDEGREE CHAR %i %i %i %i %i %i %i', cache, from_order, max_mismatch, normalize, mkl_stepsize, block, single_degree) );
 sg('send_command', 'init_kernel TRAIN');
@@ -61,7 +61,7 @@ sg('send_command', 'init_kernel TRAIN');
 %sg('send_command', 'init_kernel TRAIN');
 %%km=sg('get_kernel_matrix');
 
-%sg('send_command', 'new_svm LIGHT');
+%sg('send_command', 'new_classifier LIGHT');
 sg('send_command', sprintf('c %f',C));
 tic;
 sg('send_command', 'svm_train');
@@ -91,7 +91,7 @@ sg('set_features', 'TRAIN', traindat', 'RAWDNA');
 sg('set_labels', 'TRAIN', trainlab);
 sg('send_command', sprintf('c %f',C));
 sg('send_command', sprintf('svm_epsilon %f', epsilon));
-sg('send_command', sprintf('new_svm WDSVMOCAS %d %d', order, from_order));
+sg('send_command', sprintf('new_classifier WDSVMOCAS %d %d', order, from_order));
 tic;
 sg('send_command', 'svm_train');
 tim_lo=toc;

@@ -36,7 +36,7 @@ sg('set_kernel', 'WEIGHTEDDEGREEPOS2', 'CHAR', 10', order, max_mismatch, len, sh
 sg('set_kernel_optimization_type', 'FASTBUTMEMHUNGRY');
 sg('init_kernel', 'TRAIN');
 kt=sg('get_kernel_matrix');
-sg('new_svm', 'LIGHT');
+sg('new_classifier', 'SVMLIGHT');
 sg('c', C);
 tic; sg('train_classifier'); t=toc
 [b, alphas]=sg('get_svm');
@@ -69,7 +69,7 @@ sg('set_kernel', 'WEIGHTEDDEGREEPOS2', 'CHAR', 10, order, max_mismatch, len, shi
 sg('set_kernel_optimization_type', 'FASTBUTMEMHUNGRY');
 sg('init_kernel', 'TRAIN');
 ktref=sg('get_kernel_matrix');
-sg('new_svm', 'LIGHT');
+sg('new_classifier', 'SVMLIGHT');
 sg('c', C);
 tic; sg(train_classifier'); tref=toc
 [bref, alphasref]=sg('get_svm');

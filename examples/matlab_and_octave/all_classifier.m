@@ -29,7 +29,7 @@ try
 	sg('set_kernel', 'WEIGHTEDDEGREE', 'CHAR', size_cache, degree);
 	sg('set_features', 'TRAIN', fm_train_dna, 'DNA');
 	sg('set_labels', 'TRAIN', label_train_dna);
-	sg('new_svm', 'LIGHT');
+	sg('new_classifier', 'SVMLIGHT');
 	sg('svm_epsilon', epsilon);
 	sg('svm_use_bias', use_bias);
 	sg('c', C);
@@ -51,7 +51,7 @@ disp('LibSVM');
 sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width);
 sg('set_features', 'TRAIN', fm_train_real);
 sg('set_labels', 'TRAIN', label_train_twoclass);
-sg('new_svm', 'LIBSVM');
+sg('new_classifier', 'LIBSVM');
 sg('svm_epsilon', epsilon);
 sg('svm_use_bias', use_bias);
 sg('c', C);
@@ -70,7 +70,7 @@ disp('GPBTSVM');
 sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width);
 sg('set_features', 'TRAIN', fm_train_real);
 sg('set_labels', 'TRAIN', label_train_twoclass);
-sg('new_svm', 'GPBTSVM');
+sg('new_classifier', 'GPBTSVM');
 sg('svm_epsilon', epsilon);
 sg('svm_use_bias', use_bias);
 sg('c', C);
@@ -88,7 +88,7 @@ disp('MPDSVM');
 sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width);
 sg('set_features', 'TRAIN', fm_train_real);
 sg('set_labels', 'TRAIN', label_train_twoclass);
-sg('new_svm', 'MPDSVM');
+sg('new_classifier', 'MPDSVM');
 sg('svm_epsilon', epsilon);
 sg('svm_use_bias', use_bias);
 sg('c', C);
@@ -107,7 +107,7 @@ disp('LibSVMMultiClass');
 sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width);
 sg('set_features', 'TRAIN', fm_train_real);
 sg('set_labels', 'TRAIN', label_train_multiclass);
-sg('new_svm', 'LIBSVM_MULTICLASS');
+sg('new_classifier', 'LIBSVM_MULTICLASS');
 sg('svm_epsilon', epsilon);
 sg('svm_use_bias', use_bias);
 sg('c', C);
@@ -125,7 +125,7 @@ disp('LibSVMOneClass');
 
 sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width);
 sg('set_features', 'TRAIN', fm_train_real);
-sg('new_svm', 'LIBSVM_ONECLASS');
+sg('new_classifier', 'LIBSVM_ONECLASS');
 sg('svm_epsilon', epsilon);
 sg('svm_use_bias', use_bias);
 sg('c', C);
@@ -140,7 +140,7 @@ result=sg('classify');
 
 % GMNPSVM
 disp('GMNPSVM');
-sg('new_svm', 'GMNPSVM');
+sg('new_classifier', 'GMNPSVM');
 
 sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width);
 sg('set_features', 'TRAIN', fm_train_real);
@@ -163,7 +163,7 @@ disp('LibSVM batch');
 sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width);
 sg('set_features', 'TRAIN', fm_train_real);
 sg('set_labels', 'TRAIN', label_train_twoclass);
-sg('new_svm', 'LIBSVM');
+sg('new_classifier', 'LIBSVM');
 sg('svm_epsilon', epsilon);
 sg('svm_use_bias', use_bias);
 sg('c', C);
@@ -191,7 +191,7 @@ disp('SubGradientSVM');
 C=0.42;
 sg('set_features', 'TRAIN', sparse(fm_train_real));
 sg('set_labels', 'TRAIN', label_train_twoclass);
-sg('new_svm', 'SUBGRADIENTSVM');
+sg('new_classifier', 'SUBGRADIENTSVM');
 sg('svm_epsilon', epsilon);
 sg('svm_use_bias', use_bias);
 sg('svm_max_train_time', max_train_time);
@@ -204,7 +204,7 @@ sg('c', C);
 
 % SVMOcas
 disp('SVMOcas');
-sg('new_svm', 'SVMOCAS');
+sg('new_classifier', 'SVMOCAS');
 
 sg('set_features', 'TRAIN', sparse(fm_train_real));
 sg('set_labels', 'TRAIN', label_train_twoclass);
@@ -223,7 +223,7 @@ disp('SVMSGD');
 
 sg('set_features', 'TRAIN', sparse(fm_train_real));
 sg('set_labels', 'TRAIN', label_train_twoclass);
-sg('new_svm', 'SVMSGD');
+sg('new_classifier', 'SVMSGD');
 sg('svm_epsilon', epsilon);
 sg('svm_use_bias', use_bias);
 sg('svm_max_train_time', max_train_time);
@@ -236,7 +236,7 @@ result=sg('classify');
 
 % LibLinear
 disp('LibLinear');
-sg('new_svm', 'LIBLINEAR_LR');
+sg('new_classifier', 'LIBLINEAR_LR');
 
 sg('set_features', 'TRAIN', sparse(fm_train_real));
 sg('set_labels', 'TRAIN', label_train_twoclass);
@@ -255,7 +255,7 @@ disp('SVMLin');
 
 sg('set_features', 'TRAIN', sparse(fm_train_real));
 sg('set_labels', 'TRAIN', label_train_twoclass);
-sg('new_svm', 'SVMLIN');
+sg('new_classifier', 'SVMLIN');
 sg('svm_epsilon', epsilon);
 sg('svm_use_bias', use_bias);
 sg('svm_max_train_time', max_train_time);

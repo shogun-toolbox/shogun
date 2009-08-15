@@ -3,7 +3,9 @@
 
   \subsection tut_tut_sec Tutorials
   We provide tutorials for developers that intend to extend shogun
-  or that want to use libshogun from C++ and for the static and modular interfaces:
+  or that want to use libshogun from C++ and for the static and modular interfaces.
+  For a general list of the within shogun implemented machine learning methods
+  see \subpage methods.
 
   \li \subpage developer_tutorial
   \li \subpage static_tutorial

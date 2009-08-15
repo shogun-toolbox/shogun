@@ -31,7 +31,7 @@ sg('set_features', 'TRAIN', traindat, 'DNA');
 sg('set_labels', 'TRAIN', trainlab);
 sg('svm_use_bias', 0);
 sg('svm_epsilon', epsilon);
-sg('new_svm', 'LIGHT');
+sg('new_classifier', 'SVMLIGHT');
 
 sg('set_kernel', 'WEIGHTEDDEGREE', 'CHAR', cache, from_order, max_mismatch, normalize, mkl_stepsize, block, single_degree);
 sg('init_kernel', 'TRAIN');
@@ -47,7 +47,7 @@ sg('init_kernel', 'TRAIN');
 sg('set_subkernel_weights',x(1:order));
 km=sg('get_kernel_matrix');
 
-sg('new_svm', 'LIGHT');
+sg('new_classifier', 'SVMLIGHT');
 sg('c', C);
 tic;
 % this is only necessary for train_classifier not to choke on positive definites
@@ -81,7 +81,7 @@ sg('set_features', 'TRAIN', traindat, 'RAWDNA');
 sg('set_labels', 'TRAIN', trainlab);
 sg('c', C);
 sg('svm_epsilon', epsilon);
-sg('new_svm', 'WDSVMOCAS', order, from_order);
+sg('new_classifier', 'WDSVMOCAS', order, from_order);
 tic;
 sg('train_classifier');
 tim_lo=toc;

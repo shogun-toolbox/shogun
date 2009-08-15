@@ -60,7 +60,7 @@ sg('set_kernel', 'WEIGHTEDDEGREEPOS3', 'CHAR', 10, order, max_mismatch, len, 1, 
 %sg('set_kernel', 'WEIGHTEDDEGREE', 'CHAR', cache, order);
 %sg('set_WD_position_weights', ones(1,100)/100) ;
 sg('init_kernel', 'TRAIN');
-sg('new_svm', 'LIGHT');
+sg('new_classifier', 'SVMLIGHT');
 sg('c',C);
 sg('train_classifier');
 

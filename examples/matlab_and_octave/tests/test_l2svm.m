@@ -99,7 +99,7 @@ sg('set_labels', 'TRAIN', trainlab);
 sg('c', C);
 sg('svm_use_bias', 1);
 sg('svm_qpsize', 42);
-sg('new_classifier', 'LIGHT');
+sg('new_classifier', 'SVMLIGHT');
 sg('set_kernel', 'LINEAR SPARSEREAL', 200, 1.0);
 sg('init_kernel', 'TRAIN');
 tic;

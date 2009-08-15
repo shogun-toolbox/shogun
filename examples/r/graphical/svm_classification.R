@@ -28,7 +28,7 @@ trySVM <- function(c, ktype, dtype, size_cache, wireframe=FALSE) {
   sg('set_labels', 'TRAIN', trainlab)
   sg('set_kernel', ktype, dtype, size_cache)
   sg('init_kernel', 'TRAIN')
-  sg('new_svm', 'LIBSVM')
+  sg('new_classifier', 'LIBSVM')
   sg('c', c)
 
   sg('train_classifier')

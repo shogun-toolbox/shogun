@@ -61,7 +61,7 @@ sg('set_kernel', 'COMMSTRING', 'WORD', cache, use_sign, normalization);
 sg('set_kernel_normalization', 'IDENTITY');
 
 sg('init_kernel', 'TRAIN');
-sg('new_svm', 'LIGHT');
+sg('new_classifier', 'SVMLIGHT');
 sg('c', C);
 sg('train_classifier');
 [b,alphas]=sg('get_svm');

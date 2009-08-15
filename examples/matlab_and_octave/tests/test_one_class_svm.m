@@ -12,7 +12,7 @@ testlab=[-ones(1,num) ones(1,num)];
 sg('set_features', 'TRAIN', traindat);
 sg('set_kernel', 'GAUSSIAN', 'REAL', 100, 0.5);
 sg('init_kernel', 'TRAIN');
-sg('new_svm', 'LIBSVM_ONECLASS');
+sg('new_classifier', 'LIBSVM_ONECLASS');
 sg('svm_one_class_nu', 0.1);
 sg('svm_epsilon', 1e-6);
 sg('train_classifier');

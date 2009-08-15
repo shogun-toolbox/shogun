@@ -37,7 +37,7 @@ sg('set_labels', 'TRAIN', trainlab);
 sg('set_kernel', 'WEIGHTEDDEGREE', 'CHAR', 10, ORDER, MISMATCH);
 
 sg('init_kernel', 'TRAIN');
-sg('new_svm', 'LIGHT');
+sg('new_classifier', 'SVMLIGHT');
 sg('c', C);
 tic;sg('train_classifier');train_time=toc
 

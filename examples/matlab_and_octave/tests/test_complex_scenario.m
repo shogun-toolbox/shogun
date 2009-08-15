@@ -69,7 +69,7 @@ sg('set_kernel_optimization_type', 'FASTBUTMEMHUNGRY');
 %sg('set_kernel_optimization_type', 'SLOWBUTMEMEFFICIENT');
 sg('init_kernel', 'TRAIN');
 kt=sg('get_kernel_matrix');
-sg('new_svm', 'LIGHT');
+sg('new_classifier', 'SVMLIGHT');
 sg('c', C);
 tic; sg('train_classifier'); t=toc
 [b, alphas]=sg('get_svm');
@@ -125,7 +125,7 @@ sg('add_kernel', 4.0, 'GAUSSIAN', 'REAL', 10, 1.0);
 sg('set_kernel_optimization_type', 'SLOWBUTMEMEFFICIENT');
 sg('init_kernel', 'TRAIN');
 ktref=sg('get_kernel_matrix');
-sg('new_svm', 'LIGHT');
+sg('new_classifier', 'SVMLIGHT');
 sg('c', C);
 tic; sg('train_classifier'); tref=toc
 [bref, alphasref]=sg('get_svm');

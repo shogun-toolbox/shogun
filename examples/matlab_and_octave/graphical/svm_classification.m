@@ -7,7 +7,7 @@ sg('set_features', 'TRAIN', traindat);
 sg('set_labels', 'TRAIN', trainlab);
 sg('set_kernel', 'GAUSSIAN', 'REAL', 100, 1.0);
 sg('init_kernel', 'TRAIN');
-sg('new_svm', 'LIBSVM');
+sg('new_classifier', 'LIBSVM');
 sg('svm_epsilon', 1e-3)
 sg('c', 20);
 sg('train_classifier');

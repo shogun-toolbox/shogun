@@ -1,4 +1,12 @@
 /*! \page methods Methods
+
+  Shogun's ML functionality is currently split into feature
+  representations, feature preprocessors, kernels, kernel normalizers,
+  distances, classifier, clustering algorithms, distributions,
+  performance evaluation measures, regression methods, structured
+  output learners. The following gives a brief overview over all the
+  ML related Algorithms/Classes/Methods implemented within shogun.
+
   \section featrep_sec Feature Representations
   Shogun supports a wide range of feature representations. Among them are the so called
   simple features (cf., CSimpleFeatures) that are standard 2-d Matrices, strings
@@ -32,98 +40,173 @@
   fetched from a binary file). It should be noted that all 
   feature objects are derived from CFeatures 
   More complex 
-  CAttributeFeatures
-  CCombinedDotFeatures
-  CCombinedFeatures
-  CDotFeatures
-  CDummyFeatures
-  CExplicitSpecFeatures
-  CImplicitWeightedSpecFeatures
-  CWDFeatures
+  \li CAttributeFeatures - Features of attribute value pairs.
+  \li CCombinedDotFeatures -  Features that allow stacking of dot features.
+  \li CCombinedFeatures - Features that allow stacking of arbitrary features.
+  \li CDotFeatures - Features that support a certain set of features (like multiplication with a scalar + addition to a dense vector). Examples are sparse and dense features.
+  \li CDummyFeatures - Features without content; Only number of vectors is known.
+  \li CExplicitSpecFeatures - Implement spectrum kernel feature space explicitly.
+  \li CImplicitWeightedSpecFeatures - DotFeatures that implicitly implement weighted spectrum kernel features.
+  \li CWDFeatures - DotFeatures that implicitly implement weighted degree kernel features.
 
   In addition, labels are represented in CLabels and the alphabet of a string in CAlphabet.
 
 
-
   \section preproc_sec Preprocessors
-  \li NormOne
-  \li LogPlusOne
-  \li PCACut
-  \li PruneVarSubMean
-  \li Sort
+  The aforementioned features can be on-the-fly preprocessed to e.g. substract the mean or normalize vectors to norm 1 etc. The following pre-processors are implemented
+  \li CNormOne - Normalizes vectors to norm 1.
+  \li CLogPlusOne - add 1 and applies log().
+  \li CPCACut - Keeps eigenvectors with the highest eigenvalues.
+  \li CPruneVarSubMean - removes dimensions with little variance, substracting the mean.
+  \li CSortUlongString - Sorts vectors.
+  \li CSortWordString - Sorts vectors.
+
   \section classifiers_sec Classifiers
+
+  A multitude of Classifiers are implemented in shogun. Among them are several
+  standard 2-class classifiers, 1-class classifiers and multi-class
+  classifiers. Several of them are linear classifiers and SVMs. Among the
+  fastest linear SVM-classifiers are CSGD, CSVMOcas and CLibLinear (capable of
+  dealing with millions of examples and features).
+
   \subsection linclassi_sec Linear Classifiers
-  \li Perceptron
-  \li LDA
-  \li LPM
-  \li LPBoost
-  \li SVMPerf
-  \li LibLinear
-  \li SVMLin
-  \li SVMOcas
-  \li SubgradientSVM,SubgradientLPM
+  \li CPerceptron - standard online perceptron
+  \li CLDA - fishers linear discriminant
+  \li CLPM - linear programming machine (1-norm regularized SVM)
+  \li CLPBoost - linear programming machine using boosting on the features
+  \li CSVMPerf - a linear svm with l2-regularized bias
+  \li CLibLinear - a linear svm with l2-regularized bias
+  \li CSVMLin - a linear svm with l2-regularized bias
+  \li CSVMOcas - a linear svm with l2-regularized bias
+  \li CSubgradientSVM - SVM based on steepest subgradient descent
+  \li CSubgradientLPM - LPM based on steepest subgradient descent
+
   \subsection kernclassi_sec Kernel Methods
   \subsubsection svmclassi_sec Support Vector Machines
-  \li SVMLight
-  \li LibSVM
-  \li MPDSVM
-  \li GPDTSVM
+  \li CSVMLight - A variant of SVMlight using pr_loqo as its internal solver.
+  \li CLibSVM - LibSVM modified to use shoguns kernel framework.
+  \li CMPDSVM - Minimal Primal Dual SVM
+  \li CGPBTSVM - Gradient Projection Technique SVM
+  \li CWDSVMOcas - CSVMOcas based SVM using explicitly spanned WD-Kernel feature space
+  \li CGMNPSVM - A true multiclass one vs. rest SVM
+  \li CGNPPSVM - SVM solver based on the generalized nearest point problem
+  \li CMCSVM - An experimental multiclass SVM
+  \li CLibSVMMultiClass - LibSVMs one vs. one multiclass SVM solver
+  \li CLibSVMOneClass - LibSVMs one-class SVM
+
   \subsection distmachine_sec Distance Machines
-  \li KNN
-  \subsection otherclassi_sec Other Classifiers
-  \li k-Nearest Neighbor
+  \li k-Nearest Neighbor - Standard k-NN
+
   \section regression_sec Regression
   \subsection Support Vector Regression
-  \li SVRLight
-  \li LibSVR
+  \li CSVRLight - SVMLight based SVR
+  \li CLibSVR - LIBSVM based SVR
+
   \subsection other_regress Others
-  \li Kernel Ridge Regression
+  \li CKRR - Kernel Ridge Regression
+
   \section distrib_sec Distributions
-  \li Hidden Markov Models
-  \li Histogram
-  \li Linear HMM
+  \li CHMM - Hidden Markov Models
+  \li CHistogram - Histogram
+  \li CLinearHMM - Markov chains (embedded in ``Linear'' HMMs)
+
   \section cluster_sec Clustering
-  \li Hierarchical
-  \li k-means
+  \li CHierarchical - Agglomerative hierarchical single linkage clustering.
+  \li CKMeans - k-Means Clustering
+
   \section mkl_sec Multiple Kernel Learning
-  \li for Support Vector Regression
-  \li for Support Vector Classification
+  \li CMKLRegression for q-norm MKL with Regression
+  \li CMKLOneClass for q-norm 1-class MKL
+  \li CMKLClassification for q-norm 2-class MKL
+  \li CGMNPMKL for 1-norm multi-class MKL
+
   \section kernels_sec Kernels
-  \li AUC
-  \li Chi2
-  \li Spectrum
-  \li Const Kernel
-  \li User defined CustomKernel
-  \li Diagonal Kernel
-  \li Kernel from Distance
-  \li Fixed Degree StringKernel
-  \li Gaussian
-  \li Gaussian Shift Kernel
-  \li Histogram Kernel
-  \li Linear
-  \li Local Alignment StringKernel
-  \li Locality Improved StringKernel
-  \li Polynomial Kernel
-  \li Salzberg Kernel
-  \li Sigmoid Kernel
-  \li Weighted Spectrum Kernel
-  \li Weighted Degree Kernels
-  \li Match Kernel
+  \li CAUCKernel - To maximize AUC in SVM training (takes a kernel as input)
+  \li CChi2Kernel - Chi^2 Kernel
+  \li CCombinedKernel - Combined kernel to work with multiple kernels
+  \li CCommUlongStringKernel - Spectrum Kernel with spectrums of up to 64bit 
+  \li CCommWordStringKernel - Spectrum kernel with spectrum of up to 16 bit
+  \li CConstKernel - A ``kernel'' returning a constant
+  \li CCustomKernel - A user supplied custom kernel
+  \li CDiagKernel - A kernel with nonzero elements only on the diagonal
+  \li CDistanceKernel - A transformation to transform distances into similarities
+  \li CFixedDegreeStringKernel - A string kernel
+  \li CGaussianKernel - The standard Gaussian kernel
+  \li CGaussianShiftKernel - Gaussian kernel with shift (inspired by the Weighted Degree shift kernel
+  \li CGaussianShortRealKernel - Gaussian Kernel on 32bit Floats
+  \li CHistogramWordStringKernel - A TOP kernel on Sequences
+  \li CLinearByteKernel - Linear Kernel on Bytes
+  \li CLinearKernel - Linear Kernel
+  \li CLinearStringKernel - Linear Kernel on Strings
+  \li CLinearWordKernel - Linear Kernel on Words
+  \li CLocalAlignmentStringKernel - The local alignment kernel
+  \li CLocalityImprovedStringKernel - The locality improved kernel
+  \li CMatchWordStringKernel - Another String kernel
+  \li COligoStringKernel - The oligo string kernel
+  \li CPolyKernel - the polynomial kernel
+  \li CPolyMatchStringKernel - polynomial kernel on strings
+  \li CPolyMatchWordStringKernel - polynomial kernel on strings
+  \li CPyramidChi2 - pyramid chi2 kernel (from image analysis)
+  \li CRegulatoryModulesStringKernel - regulatory modules string kernel
+  \li CSalzbergWordStringKernel - salzberg features based string kernel
+  \li CSigmoidKernel - Tanh sigmoidal kernel
+  \li CSimpleLocalityImprovedStringKernel - A variant of the locality improved kernel
+  \li CSparseGaussianKernel - Gaussian Kernel on sparse features
+  \li CSparseLinearKernel - Linear Kernel on sparse features
+  \li CSparsePolyKernel - Polynomial Kernel on sparse features
+  \li CTensorProductPairKernel - The Tensor Product Pair Kernel (TPPK)
+  \li CWeightedCommWordStringKernel - A weighted (or blended) spectrum kernel
+  \li CWeightedDegreePositionStringKernel - Weighted Degree kernel with shift
+  \li CWeightedDegreeStringKernel - Weighted Degree string kernel
+
+  \subsection kernel_normalizer Kernel Normalizers
+  Since several of the kernels pose numerical challenges to SVM optimizers,
+  kernels can be ``normalized'' for example to have ones on the diagonal.
+
+  \li CSqrtDiagKernelNormalizer - divide kernel by square root of product of diagonal
+  \li CAvgDiagKernelNormalizer - divide by average diagonal value
+  \li CFirstElementKernelNormalizer - divide by first kernel element k(0,0)
+  \li CIdentityKernelNormalizer - no normalization
+  \li CDiceKernelNormalizer - normalization inspired by the dice coefficient
+  \li CRidgeKernelNormalizer - adds a ridge on the kernel diagonal
+  \li CTanimotoKernelNormalizer - tanimoto coefficient inspired normalizer
+  \li CVarianceKernelNormalizer - normalize vectors in feature space to norm 1
+
   \section dist_sec Distances
-  \li Canberra
-  \li Chebyshew
-  \li Euclidian
-  \li Geodesic
-  \li Hamming
-  \li Jensen
-  \li Manhatten
-  \li Minkowski
-  \li Euclidean
+  Distance Measures to measure the distance between objects. They can be used
+  in CDistanceMachine's like CKNN. The following distances are implemented:
+
+  \li CBrayCurtisDistance - Bray curtis distance
+  \li CCanberraMetric - Canberra metric
+  \li CChebyshewMetric - Chebyshew metric
+  \li CChiSquareDistance - Chi^2 distance
+  \li CCosineDistance - Cosine distance
+  \li CEuclidianDistance - Euclidian Distance
+  \li CGeodesicMetric - Geodesic metric
+  \li CHammingWordDistance - Hammin distance
+  \li CJensenMetric - Jensen metric
+  \li CManhattanMetric - Manhatten metric
+  \li CMinkowskiMetric - Minkowski metric
+  \li CTanimotoDistance - Tanimoto distance
+
   \section eval_sec Evaluation
   \subsection perf_sec Performance Measures
-  \li Accuracy
-  \li Test Error
-  \li Balanced Error (BAL)
-  \li ROC
-  \li PRC
+  Performance measures assess the quality of a prediction and are implemented
+	in CPerformanceMeasures. They following measures are implemented:
+  \li  Receiver Operating Curve (ROC)
+  \li  Area under the ROC curve (auROC)
+  \li  Area over the ROC curve (aoROC)
+  \li  Precision Recall Curve (PRC)
+  \li  Area under the PRC (auPRC)
+  \li  Area over the PRC (aoPRC)
+  \li  Detection Error Tradeoff (DET)
+  \li  Area under the DET (auDET)
+  \li  Area over the DET (aoDET)
+  \li  Cross Correlation coefficient (CC)
+  \li  Weighted Relative Accuracy (WRAcc)
+  \li  Balanced Error (BAL)
+  \li  F-Measure
+  \li  Accuracy
+  \li  Error
+
 */
