@@ -61,6 +61,7 @@
  #include <shogun/classifier/svm/SVMSGD.h>
  #include <shogun/classifier/svm/WDSVMOcas.h>
  #include <shogun/classifier/PluginEstimate.h> 
+ #include <shogun/classifier/svm/MKL.h>
  #include <shogun/classifier/svm/MKLClassification.h>
  #include <shogun/classifier/svm/MKLOneClass.h>
 #ifdef USE_SVMLIGHT
@@ -106,6 +107,7 @@
 %rename(SVMSGD) CSVMSGD;
 %rename(WDSVMOcas) CWDSVMOcas;
 %rename(PluginEstimate) CPluginEstimate;
+%rename(MKL) CMKL;
 %rename(MKLClassification) CMKLClassification;
 %rename(MKLOneClass) CMKLOneClass;
 #ifdef USE_SVMLIGHT
@@ -145,6 +147,9 @@
 %include <shogun/classifier/svm/SVMSGD.h>
 %include <shogun/classifier/svm/WDSVMOcas.h>
 %include <shogun/classifier/PluginEstimate.h> 
+%include <shogun/classifier/svm/MKL.h>
+%include <shogun/classifier/svm/MKLClassification.h>
+%include <shogun/classifier/svm/MKLOneClass.h>
 
 #ifdef HAVE_PYTHON
 %pythoncode %{
