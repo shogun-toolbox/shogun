@@ -1,5 +1,822 @@
+2009-08-15  Soeren Sonnenburg <sonne@debian.org>
+
+	* NEWS: remove legacy examples and update documentation/examples
+
+2009-08-14  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/lib/BitString.h: function to set word in bitstring
+	* libshogun/classifier/svm/MKL.cpp, libshogun/classifier/svm/MKL.h,
+	  libshogun/kernel/CombinedKernel.h: fix another memory leak
+	  occurring only with interleaved MKL
+
+2009-08-13  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/features/Alphabet.cpp, libshogun/features/Alphabet.h:
+	  add BINARY alphabet
+	* libshogun/classifier/svm/MKL.cpp: fix another minor memory leak
+	  occurring with mkl
+
+2009-08-11  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/classifier/svm/MKL.cpp,
+	  libshogun/regression/svr/SVR_light.cpp: fix further leaks related
+	  to multiple kernels and mkl
+	* libshogun/classifier/svm/SVM_light.cpp,
+	  libshogun/kernel/CombinedKernel.cpp, libshogun/lib/List.h: fix a
+	  memory leak occurring with svm light linadd and multiple kernels
+
+2009-08-10  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/features/Labels.cpp: be really strict on two-class
+	  labeling test, throw an error if label +1 or -1 or not found or
+	  labels!=+/-1 are found
+
+2009-08-02  Soeren Sonnenburg <sonne@debian.org>
+
+	* octave/OctaveInterface.cpp: memory tracing still does not work
+	  with octave...
+	* libshogun/base/SGObject.h, libshogun/base/init.cpp,
+	  libshogun/lib/Set.h, libshogun/lib/memory.cpp,
+	  libshogun/lib/memory.h, libshogunui/GUICommands.h,
+	  libshogunui/SGInterface.cpp, libshogunui/SGInterface.h,
+	  matlab/MatlabInterface.cpp, octave/OctaveInterface.cpp: memory
+	  tracing finally works ( sg('whos') ), it requires the new/delete
+	  etc operators to be defined/implemented in the
+	  matlab.cpp/octave.cpp otherwise the standard operators
+	  (std:new,...) are used
+	* configure, libshogun/lib/DynamicArray.h, libshogun/lib/Set.h,
+	  libshogun/lib/memory.cpp, libshogun/lib/memory.h,
+	  libshogunui/GUICommands.h, libshogunui/SGInterface.cpp: add
+	  memory alloc tracing (configure --enable-trace-memory-allocs) and
+	  add new command "who" in static interfaces to list shogun alloc'd
+	  objects and their sizes. note that current implementation is very
+	  inefficient - only use for debugging purposes.
+	* libshogun/features/Features.cpp, libshogun/kernel/Kernel.cpp,
+	  libshogunui/SGInterface.cpp: new loglevel ALL/ GCDEBUG (to debug
+	  memory leaks)
+	* libshogun/classifier/KNN.cpp, libshogun/classifier/LPBoost.cpp,
+	  libshogun/classifier/svm/MKL.cpp,
+	  libshogun/classifier/svm/SVM.cpp,
+	  libshogun/classifier/svm/SVMSGD.cpp,
+	  libshogun/classifier/svm/Tron.cpp,
+	  libshogun/classifier/svm/gpdtsolve.cpp,
+	  libshogun/features/DotFeatures.cpp, libshogun/kernel/Kernel.cpp,
+	  libshogun/kernel/RegulatoryModulesStringKernel.cpp,
+	  libshogun/kernel/RegulatoryModulesStringKernel.h: add several
+	  cancel_computation() checks
+
+2009-07-31  Soeren Sonnenburg <sonne@debian.org>
+
+	* NEWS, libshogun/kernel/RegulatoryModulesStringKernel.cpp,
+	  libshogun/kernel/RegulatoryModulesStringKernel.h: several fixes
+	  in RMK
+	* libshogun/classifier/svm/MKL.cpp: fix potential memory leak in
+	  MKL
+	* libshogun/lib/BinaryStream.h, libshogun/lib/Mathematics.h: fix a
+	  bug in binary search and add a read_next function to binary
+	  stream
+
+2009-07-30  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/kernel/Kernel.h,
+	  libshogun/kernel/RegulatoryModulesStringKernel.cpp,
+	  libshogun/kernel/RegulatoryModulesStringKernel.h,
+	  modular/Kernel.i: initial rmk import
+
+2009-07-29  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/lib/BinaryStream.h: add open/close functions and
+	  default constructor
+
+2009-07-25  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/classifier/svm/MKL.cpp,
+	  libshogun/kernel/WeightedDegreeStringKernel.h, r/RInterface.cpp:
+	  get mkl examples for python/r back to work
+	* libshogun/classifier/svm/MKL.cpp,
+	  libshogun/kernel/CommWordStringKernel.h,
+	  libshogun/kernel/Kernel.h,
+	  libshogun/kernel/RidgeKernelNormalizer.h,
+	  libshogun/lib/BinaryStream.h, libshogunui/GUIKernel.cpp,
+	  libshogunui/GUIKernel.h, libshogunui/SGInterface.cpp,
+	  modular/Kernel.i: - implement ridge kernel normalizer and include
+	  in static/modular if's
+	  - minor fixes to binary stream
+
+2009-07-24  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/lib/BinaryStream.h: remove empty line
+
+2009-07-24  Alexander Zien <Alexander.Zien@tuebingen.mpg.de>
+
+	* libshogun/classifier/svm/MKL.cpp: MKL: more more debug output
+
+2009-07-23  Alexander Zien <Alexander.Zien@tuebingen.mpg.de>
+
+	* libshogun/classifier/svm/MKL.cpp: MKL: again, more debug output
+	* libshogun/classifier/svm/MKL.cpp: MKL: even more debug ouput
+	* libshogun/classifier/svm/MKL.cpp: MKL: more debugging output
+	* libshogun/classifier/svm/MKL.cpp: MKL: added assertions and
+	  debug-printfs for strange bug in direct reported by Marius
+	* libshogun/classifier/svm/MKL.cpp:
+
+2009-07-23  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogunui/SGInterface.cpp: fix wrong call to bias enabled
+	  instead of interleaved_enabled
+	* libshogun/classifier/svm/MKL.cpp: compute obj. based on new beta
+	* libshogun/lib/BinaryStream.h: binary mmap alike stream
+
+2009-07-22  Soeren Sonnenburg <sonne@debian.org>
+
+	* modular/Classifier.i, modular/Regression.i: mkl for modular
+	  interfaces
+	* libshogunui/GUIClassifier.cpp, libshogunui/GUIClassifier.h,
+	  libshogunui/SGInterface.cpp: compile fixes
+	* NEWS, libshogunui/GUIClassifier.cpp, libshogunui/GUIClassifier.h,
+	  libshogunui/GUICommands.h, libshogunui/SGInterface.cpp,
+	  libshogunui/SGInterface.h: implement set_constraint_generator (to
+	  allow for arbitrary svm's in mkl wrapper)
+	* libshogun/classifier/svm/MKL.cpp, libshogun/classifier/svm/MKL.h:
+	  fix crasher with CPLEX
+
+2009-07-21  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogunui/GUIClassifier.cpp: compile fix when svmlikght is
+	  disabled
+	* libshogun/classifier/svm/MKL.cpp: another cplex related compile
+	  fix
+	* libshogun/classifier/svm/MKL.cpp: compile fix when cplex is
+	  available
+	* libshogun/classifier/Classifier.h,
+	  libshogun/classifier/svm/MKL.cpp, libshogun/classifier/svm/MKL.h,
+	  libshogun/classifier/svm/MKLClassification.cpp,
+	  libshogun/classifier/svm/MKLClassification.h,
+	  libshogun/classifier/svm/MKLOneClass.cpp,
+	  libshogun/classifier/svm/MKLOneClass.h,
+	  libshogun/classifier/svm/MKLRegression.cpp,
+	  libshogun/classifier/svm/MKLRegression.h,
+	  libshogun/classifier/svm/OneClassMKL.cpp,
+	  libshogun/classifier/svm/OneClassMKL.h,
+	  libshogun/regression/svr/MKLRegression.cpp,
+	  libshogun/regression/svr/MKLRegression.h,
+	  libshogunui/GUIClassifier.cpp, libshogunui/GUIClassifier.h,
+	  libshogunui/GUICommands.h, libshogunui/SGInterface.cpp,
+	  libshogunui/SGInterface.h: set reasonable defaults(?), enable all
+	  potential mkl solvers and add gui command to enable interleaved
+	  optimization
+	* libshogun/classifier/Classifier.h,
+	  libshogun/classifier/svm/MKL.cpp, libshogun/classifier/svm/MKL.h,
+	  libshogun/classifier/svm/MKLClassification.cpp,
+	  libshogun/classifier/svm/MKLClassification.h,
+	  libshogun/classifier/svm/MKLRegression.cpp,
+	  libshogun/classifier/svm/MKLRegression.h,
+	  libshogun/classifier/svm/OneClassMKL.cpp,
+	  libshogun/classifier/svm/OneClassMKL.h: add oneclass mkl
+	* libshogun/base/Version.h, libshogun/classifier/svm/MKL.cpp,
+	  libshogun/classifier/svm/MKL.h,
+	  libshogun/classifier/svm/MKLClassification.cpp,
+	  libshogun/classifier/svm/MKLClassification.h,
+	  libshogun/classifier/svm/MKLRegression.cpp,
+	  libshogun/classifier/svm/MKLRegression.h,
+	  libshogun/classifier/svm/SVM_light.cpp,
+	  libshogun/classifier/svm/SVM_light.h,
+	  libshogun/regression/svr/SVR_light.cpp,
+	  libshogun/regression/svr/SVR_light.h,
+	  libshogunui/GUIClassifier.cpp: mkl regression works again
+
+2009-07-18  Soeren Sonnenburg <sonne@debian.org>
+
+	* NEWS, libshogun/classifier/svm/MKL.cpp,
+	  libshogun/classifier/svm/MKL.h,
+	  libshogun/classifier/svm/MKLClassification.cpp,
+	  libshogun/classifier/svm/MKLClassification.h,
+	  libshogun/classifier/svm/MKLRegression.cpp,
+	  libshogun/classifier/svm/MKLRegression.h,
+	  libshogun/classifier/svm/SVM_light.cpp,
+	  libshogun/regression/svr/SVR_light.cpp,
+	  libshogun/regression/svr/SVR_light.h: restructure MKL framework:
+	  core routines are the same for regression/classification...
+
+2009-07-17  Soeren Sonnenburg <sonne@debian.org>
+
+	* ., .r-install.sh, cmdline, cmdline/CmdLineInterface.cpp,
+	  cmdline/CmdLineInterface.h, cmdline/cmdline.cpp, libshogun/base,
+	  libshogun/classifier, libshogun/classifier/svm/CPLEXSVM.cpp,
+	  libshogun/classifier/svm/MKL.h,
+	  libshogun/classifier/svm/MKLClassification.cpp,
+	  libshogun/classifier/svm/MKLClassification.h,
+	  libshogun/classifier/svm/MKLRegression.h,
+	  libshogun/classifier/svm/MPDSVM.cpp,
+	  libshogun/classifier/svm/SVM.cpp, libshogun/classifier/svm/SVM.h,
+	  libshogun/classifier/svm/SVM_light.cpp, libshogun/clustering,
+	  libshogun/distance, libshogun/distributions,
+	  libshogun/evaluation, libshogun/features,
+	  libshogun/features/ExplicitSpecFeatures.cpp,
+	  libshogun/features/ExplicitSpecFeatures.h, libshogun/kernel,
+	  libshogun/kernel/CommWordStringKernel.h,
+	  libshogun/kernel/FirstElementKernelNormalizer.h,
+	  libshogun/kernel/HistogramWordStringKernel.cpp,
+	  libshogun/kernel/HistogramWordStringKernel.h,
+	  libshogun/kernel/Kernel.h,
+	  libshogun/kernel/MatchWordStringKernel.cpp,
+	  libshogun/kernel/MatchWordStringKernel.h,
+	  libshogun/kernel/PolyMatchWordStringKernel.cpp,
+	  libshogun/kernel/PolyMatchWordStringKernel.h,
+	  libshogun/kernel/SalzbergWordStringKernel.cpp,
+	  libshogun/kernel/SalzbergWordStringKernel.h,
+	  libshogun/kernel/VarianceKernelNormalizer.h, libshogun/lib,
+	  libshogun/preproc, libshogun/regression, libshogun/structure,
+	  libshogunui/GUIClassifier.cpp, libshogunui/GUIClassifier.h,
+	  libshogunui/GUICommands.h, libshogunui/GUIDistance.cpp,
+	  libshogunui/GUIDistance.h, libshogunui/GUIFeatures.cpp,
+	  libshogunui/GUIFeatures.h, libshogunui/GUIHMM.cpp,
+	  libshogunui/GUIHMM.h, libshogunui/GUIKernel.cpp,
+	  libshogunui/GUIKernel.h, libshogunui/GUILabels.cpp,
+	  libshogunui/GUILabels.h, libshogunui/GUIMath.cpp,
+	  libshogunui/GUIMath.h, libshogunui/GUIPluginEstimate.cpp,
+	  libshogunui/GUIPluginEstimate.h, libshogunui/GUIPreProc.cpp,
+	  libshogunui/GUIPreProc.h, libshogunui/GUIStructure.cpp,
+	  libshogunui/GUIStructure.h, libshogunui/GUITime.cpp,
+	  libshogunui/GUITime.h, libshogunui/SGInterface.cpp,
+	  libshogunui/SGInterface.h, libshogunui/SyntaxHighLight.h, matlab,
+	  matlab/MatlabInterface.cpp, matlab/MatlabInterface.h, modular,
+	  modular/Classifier.doxy, modular/Classifier.i,
+	  modular/Clustering.doxy, modular/Clustering.i,
+	  modular/Distance.doxy, modular/Distance.i,
+	  modular/Distribution.doxy, modular/Distribution.i,
+	  modular/Evaluation.doxy, modular/Evaluation.i,
+	  modular/Features.doxy, modular/Features.i, modular/Kernel.doxy,
+	  modular/Kernel.i, modular/Library.doxy, modular/Library.i,
+	  modular/PreProc.doxy, modular/PreProc.i, modular/Regression.doxy,
+	  modular/Regression.i, modular/Structure.doxy,
+	  modular/Structure.i, octave, octave/OctaveInterface.cpp,
+	  octave/OctaveInterface.h, octave_modular,
+	  octave_modular/swig_typemaps.i, python,
+	  python/PythonInterface.cpp, python/PythonInterface.h,
+	  python_modular, python_modular/swig_typemaps.i, r,
+	  r/RInterface.cpp, r/RInterface.h, r_modular,
+	  r_modular/swig_typemaps.i: * merge in changes from mkl-branch
+	  (like more stable mkl impl., obj. computation, multiple features,
+	  other kernel normalizers,...)
+	  - move mkl functions from svmlight to MKL
+	  - move compute objective function for MKL across MKL objects
+
+2009-07-16  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/classifier/svm/MKL.cpp,
+	  libshogun/classifier/svm/MKLClassification.cpp,
+	  libshogun/classifier/svm/SVM.cpp,
+	  libshogun/classifier/svm/SVM_light.cpp,
+	  libshogun/classifier/svm/SVM_light.h,
+	  libshogunui/GUIClassifier.cpp: interleaved mkl seems to work now
+	  :)
+	* libshogun/classifier/svm/MKLClassification.cpp,
+	  libshogun/classifier/svm/MKLClassification.h,
+	  libshogun/classifier/svm/SVM_light.cpp,
+	  libshogun/classifier/svm/SVM_light.h: wip checkin
+
+2009-07-15  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/classifier/svm/MKL.h: fix comment
+	* libshogun/classifier/svm/MKL.cpp, libshogun/classifier/svm/MKL.h,
+	  libshogun/classifier/svm/SVM.cpp, libshogun/classifier/svm/SVM.h:
+	  pass mkl obj in callback function
+	* libshogun/classifier/svm/MKL.cpp, libshogun/classifier/svm/MKL.h,
+	  libshogun/classifier/svm/MKLClassification.cpp,
+	  libshogun/classifier/svm/MKLClassification.h,
+	  libshogun/classifier/svm/MKLRegression.cpp,
+	  libshogun/classifier/svm/MKLRegression.h,
+	  libshogun/classifier/svm/SVM.h: add a helper callback function
+	  that takes an MKL object, sumw and suma as input, finally
+	  compiles and works again w/ wrapper
+	* libshogun/classifier/svm/MKL.cpp, libshogun/classifier/svm/MKL.h,
+	  libshogun/classifier/svm/MKLClassification.cpp,
+	  libshogun/classifier/svm/SVM.h: wip commit
+
+2009-07-14  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/classifier/svm/MKL.cpp,
+	  libshogun/classifier/svm/MKLClassification.cpp,
+	  libshogun/classifier/svm/SVM_light.cpp: remove debug code, minor
+	  cleanup
+	* libshogun/classifier/svm/MKL.cpp, libshogun/classifier/svm/MKL.h,
+	  libshogun/classifier/svm/MKLClassification.cpp,
+	  libshogun/classifier/svm/MKLClassification.h,
+	  libshogun/classifier/svm/MKLRegression.cpp,
+	  libshogun/classifier/svm/MKLRegression.h,
+	  libshogun/lib/Mathematics.cpp, libshogun/lib/Mathematics.h:
+	  1-norm mkl wrapper optimization via glpk works now
+	* libshogun/classifier/svm/MKL.cpp, libshogun/classifier/svm/MKL.h,
+	  libshogun/classifier/svm/MKLClassification.h,
+	  libshogun/classifier/svm/MKLRegression.h,
+	  libshogunui/GUIClassifier.cpp, libshogunui/GUIClassifier.h,
+	  libshogunui/SGInterface.cpp: mkl with nop wrapper works
+
+2009-07-13  Gunnar Raetsch <Gunnar.Raetsch@tuebingen.mpg.de>
+
+	* libshogun/structure/DynProg.cpp: fixed conflict
+
+2009-07-13  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/classifier/svm/MKL.cpp, libshogun/classifier/svm/MKL.h:
+	  further WIP towards general MKL wrapping
+
+2009-06-29  Soeren Sonnenburg <sonne@debian.org>
+
+	* configure: encode full libpath in case of darwin
+
+2009-06-26  Fabio De Bona <Fabio.De.Bona@tuebingen.mpg.de>
+
+	* libshogun/structure/DynProg.cpp: + removed several bugs:
+	  - set_element arguments were in incorrect order
+	  - copy_array/ free_array flags were set incorrectly in some
+	  Array2s
+	  - get_{states,scores,positions} did not copy the array structures
+
+2009-06-25  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/kernel/LinearKernel.h: fix typo in doc
+
+2009-06-22  Fabio De Bona <Fabio.De.Bona@tuebingen.mpg.de>
+
+	* libshogun/structure/DynProg.cpp, libshogun/structure/DynProg.h,
+	  libshogunui/SGInterface.cpp, modular/Structure.i: + added missing
+	  typemap for set_content_type_array
+	  + added asertions
+	* libshogun/structure/DynProg.cpp, modular/Structure.i,
+	  python_modular/swig_typemaps.i: + fixed typemap for 3d array
+	  observation_matrix
+	  + added typemap for compute plif matrix
+
+2009-06-19  Jonas Behr <Jonas.Behr@tuebingen.mpg.de>
+
+	* libshogun/structure/DynProg.cpp, libshogun/structure/DynProg.h,
+	  libshogun/structure/IntronList.cpp,
+	  libshogun/structure/IntronList.h, libshogunui/SGInterface.cpp: --
+	  intron lists can be used now...
+	  output reduced
+
+2009-06-18  Jonas Behr <Jonas.Behr@tuebingen.mpg.de>
+
+	* libshogun/structure/DynProg.cpp, libshogunui/SGInterface.cpp:
+	  double free fixed and output reduced
+	* libshogun/structure/DynProg.cpp, libshogun/structure/DynProg.h,
+	  libshogunui/SGInterface.cpp: -- moved some computations that were
+	  duplicated in SGInterface into DynProg.cpp
+
+2009-06-16  Jonas Behr <Jonas.Behr@tuebingen.mpg.de>
+
+	* libshogun/structure/DynProg.cpp, libshogun/structure/DynProg.h,
+	  libshogunui/SGInterface.cpp: bug fixes
+	* libshogun/structure/DynProg.cpp, libshogun/structure/DynProg.h:
+	  removed member variables that were not in use any more
+	* libshogunui/SGInterface.cpp: compile fixes
+	* libshogun/structure/DynProg.cpp, libshogun/structure/DynProg.h,
+	  libshogun/structure/IntronList.cpp,
+	  libshogun/structure/IntronList.h, libshogunui/SGInterface.cpp: --
+	  setting all_pos and seq_len in the begining as member variables
+	  avoids passing them all the time
+	* libshogun/structure/DynProg.cpp, libshogun/structure/DynProg.h,
+	  libshogun/structure/IntronList.cpp,
+	  libshogun/structure/IntronList.h, libshogunui/SGInterface.cpp:
+	  started to include Intron Lists in DynProg
+
+2009-06-15  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogunui/SGInterface.cpp: fix get_kernel_weights being
+	  transposed to set_kernel_weights
+	* libshogun/structure/DynProg.cpp, libshogun/structure/DynProg.h,
+	  libshogunui/SGInterface.cpp, modular/Structure.i: convert
+	  set_observation_matrix() to use 3d-array
+	* libshogun/structure/DynProg.cpp, libshogun/structure/DynProg.h,
+	  libshogunui/SGInterface.cpp: split up precompute_content_values
+
+2009-06-15  Jonas Behr <Jonas.Behr@tuebingen.mpg.de>
+
+	* libshogun/structure/DynProg.h: rename m_seq in DynProg.h as well
+	* libshogun/structure/DynProg.cpp, libshogun/structure/DynProg.h,
+	  libshogunui/SGInterface.cpp: -- renamed m_seq ->
+	  m_observation_matrix
+	  and the function set_seq -> set_observation_matrix
+	* libshogun/structure/DynProg.cpp, libshogun/structure/DynProg.h,
+	  libshogunui/SGInterface.cpp: -- feature matrix was not set in in
+	  best_path_trans_deriv interface
+	  -- third dimension of feature matrix was ignored
+	* libshogun/structure/PlifMatrix.cpp: fix typo
+	* libshogun/structure/PlifMatrix.cpp: -- bugfix: penalties were
+	  written into the limits array
+	* libshogun/structure/DynProg.cpp, libshogun/structure/DynProg.h:
+	  -- removed functions that were not used any more.
+	  Most of them were related to content svm predictions.
+	  They became useless because these predictions are now
+	  done in a separate step before the decoding.
+
+2009-06-15  Fabio De Bona <Fabio.De.Bona@tuebingen.mpg.de>
+
+	* modular/Structure.i: + added typemap to wrap
+	  pm.compute_signal_plifs(...
+
+2009-06-15  Soeren Sonnenburg <sonne@debian.org>
+
+	* octave/OctaveInterface.cpp, octave/OctaveInterface.h: get things
+	  to work with octave 3.2 and elwms
+	* configure, octave/OctaveInterface.cpp: compile fixes for octave
+	  3.2
+	* libshogun/structure/DynProg.cpp, libshogun/structure/DynProg.h:
+	  remove obsolete find_values_till_pos functions
+
+2009-06-12  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/lib/Hash.h, libshogunui/SGInterface.cpp: collection of
+	  hash functions in CHash
+	* libshogun/lib/Hash.cpp, libshogun/lib/Hash.h,
+	  libshogun/lib/Mathematics.cpp, libshogun/lib/Mathematics.h: add
+	  crc32 and md5 string hashing functions
+	* libshogun/structure/PlifMatrix.cpp,
+	  libshogun/structure/PlifMatrix.h, modular/Structure.i: introduce
+	  dummy parameter maxlen
+	* libshogun/classifier/svm/MKLClassification.h,
+	  libshogun/regression/svr/SVR_light.cpp, modular/Structure.i: -
+	  fill in typemaps
+	  - minor compile fixes w/ cplex
+
+2009-06-12  Fabio De Bona <Fabio.De.Bona@tuebingen.mpg.de>
+
+	* modular/Structure.i: + added PlifMatrix rename/includes
+
+2009-06-12  Soeren Sonnenburg <sonne@debian.org>
+
+	* NEWS: update news
+	* Makefile.template: upon make install of elwms don't install files
+	  into R/octave/python if these interfaces were not configured
+
+2009-06-11  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/structure/PlifMatrix.cpp,
+	  libshogun/structure/PlifMatrix.h, libshogunui/SGInterface.cpp:
+	  get rid of struct monster function. things are fully split up now
+	  and should work under modular interfaces (given typemaps are
+	  added at few places...)
+	* libshogun/structure/PlifMatrix.cpp,
+	  libshogun/structure/PlifMatrix.h, libshogunui/SGInterface.cpp:
+	  remove plif_ids, min and max_values from set_plif_struct
+	* libshogun/features/StringFeatures.h,
+	  libshogun/structure/DynProg.cpp, libshogun/structure/DynProg.h,
+	  libshogun/structure/PlifMatrix.cpp,
+	  libshogun/structure/PlifMatrix.h, libshogunui/SGInterface.cpp:
+	  start to split up set_plif_struct, move
+	  get_zero_terminated_string_copy as static function into
+	  StringFeatures
+	* libshogun/structure/DynProg.cpp, libshogun/structure/DynProg.h,
+	  libshogun/structure/PlifMatrix.h, libshogunui/GUIStructure.cpp,
+	  libshogunui/SGInterface.cpp: git rid of the PlifArray** arguments
+	  in compute_nbest_path / *trans_deriv
+	* libshogun/lib/Array.h, libshogun/structure/PlifMatrix.cpp,
+	  libshogun/structure/PlifMatrix.h, libshogunui/GUIStructure.cpp,
+	  libshogunui/GUIStructure.h, libshogunui/SGInterface.cpp: extract
+	  plif related functions from GUIStructure into new class
+	  PlifMatrix
+
+2009-06-10  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/structure/DynProg.cpp, libshogun/structure/DynProg.h,
+	  libshogun/structure/Plif.cpp, libshogun/structure/Plif.h,
+	  libshogunui/GUIStructure.cpp, libshogunui/SGInterface.cpp: -
+	  remove the output arguments from best_path* functions and use
+	  member variables to store the results and seperate get_*
+	  functions to obtain the output member variables
+	  - properly initialize output member variables
+	  - rename function best_path_trans to compute_nbest_paths() and
+	  remove templated implementation
+	* libshogun/structure/DynProg.cpp, libshogun/structure/DynProg.h:
+	  remove best_path prefix
+	* libshogun/structure/DynProg.cpp, libshogun/structure/DynProg.h,
+	  libshogunui/SGInterface.cpp: remove sparse args from
+	  best_path_trans and move the templated function into the .h file
+	  (yes that is the policy ... should get rid of templates)
+	* libshogun/structure/DynProg.cpp, libshogun/structure/DynProg.h,
+	  libshogunui/SGInterface.cpp: remove orf_info form
+	  best_path_trans{,_derif}
+	* libshogun/structure/DynProg.cpp, libshogun/structure/DynProg.h,
+	  libshogunui/SGInterface.cpp: remove orf_info from best_path_trans
+	* libshogun/structure/DynProg.cpp, libshogun/structure/DynProg.h,
+	  libshogunui/SGInterface.cpp: get rid of seq argument in
+	  best_path_trans
+	* libshogun/structure/DynProg.cpp, libshogun/structure/DynProg.h,
+	  libshogunui/SGInterface.cpp: move wordstr creation into DynProg
+	* libshogun/features/Alphabet.h,
+	  libshogun/features/StringFeatures.h,
+	  libshogun/structure/DynProg.cpp, libshogun/structure/DynProg.h:
+	  remove code duplication and move translate_from_single_order to
+	  Alphabet and make dynprog and stringfeatures use this
+	* libshogun/classifier/svm/MKL.cpp,
+	  libshogun/structure/DynProg.cpp, libshogun/structure/DynProg.h,
+	  libshogunui/SGInterface.cpp: genestr, genestr_num and length are
+	  no longer passed as arguments (internally functions use m_genestr
+	  instead)
+	* libshogun/structure/DynProg.cpp, libshogun/structure/DynProg.h,
+	  libshogunui/SGInterface.cpp: - introduce function
+	  set_gene_string(char* s, int32_t len) (no longer 2d!)
+	  - remove function set_genestr_len, length is obtained from
+	  gene_string anyway
+	  - get rid of all the m_step m_call variables, no one knows which
+	  values they should take anyway
+	* libshogun/structure/DynProg.cpp, libshogun/structure/DynProg.h:
+	  merge member variables dict_weight and m_dict_weight
+	* libshogun/structure/DynProg.cpp, libshogun/structure/DynProg.h:
+	  removed member variable m_dict_weights_array, still works
+
+2009-06-09  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/structure/DynProg.cpp, libshogun/structure/DynProg.h,
+	  libshogunui/SGInterface.cpp, libshogunui/SGInterface.h: - remove
+	  obsolete best_path_2struct/simple functions
+	  - prefix all member variables with m_ (except for dict_weights)
+	* libshogun/structure/DynProg.cpp, libshogun/structure/DynProg.h:
+	  replace N -> m_N
+	* libshogun/structure/DynProg.cpp, libshogun/structure/DynProg.h:
+	  further m_ prefixing
+	* libshogun/structure/DynProg.cpp, libshogun/structure/DynProg.h:
+	  further m_ prefixing
+	* libshogun/structure/DynProg.cpp, libshogun/structure/DynProg.h,
+	  libshogun/structure/IntronList.cpp.o: continue m_ prefixing
+
+2009-06-09  Jonas Behr <Jonas.Behr@tuebingen.mpg.de>
+
+	* libshogun/structure/DynProg.cpp, libshogun/structure/DynProg.h,
+	  libshogun/structure/IntronList.cpp,
+	  libshogun/structure/IntronList.cpp.o,
+	  libshogun/structure/IntronList.h, libshogunui/GUICommands.h,
+	  libshogunui/SGInterface.cpp, libshogunui/SGInterface.h: -- new
+	  class IntronList created
+	  stores a list of supported introns for efficient access during
+	  the dynamic programm
+	  --functions of the class tested with valgrind
+
+2009-06-09  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/structure/DynProg.cpp, libshogun/structure/DynProg.h: -
+	  remove inline functions
+	  - start prefixing member variables with m_ (first m_max_a_id )
+	* libshogun/structure/DynProg.cpp, libshogun/structure/DynProg.h:
+	  fix some obvious mixups between parameters p_N and N etc and make
+	  all variables protected
+	* libshogun/classifier/svm/SVM_libsvm.cpp: compile fixes for
+	  line-search...
+
+2009-06-08  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/classifier/svm/SVM_libsvm.cpp: potentially speed up
+	  multi-class svm working set selection
+
+2009-06-03  Soeren Sonnenburg <sonne@debian.org>
+
+	* python/PythonInterface.cpp: fix rare compilation error
+	* libshogun/kernel/CombinedKernel.cpp: fix custom kernel init
+
+2009-06-02  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/kernel/CombinedKernel.h: fix off by one bug
+	* libshogun/base/SGObject.h, libshogun/classifier/svm/MKL.cpp,
+	  libshogun/lib/io.cpp, libshogun/lib/io.h,
+	  libshogunui/GUIKernel.cpp, libshogunui/SGInterface.cpp,
+	  libshogunui/SGInterface.h: now features can be embedded into
+	  WORD/ULONG immediately without the need for an extra convert cmd,
+	  e.g.
+	  
+	  sg('add_features','TRAIN',{x},'DNAWORD', 3, 'from_position_list',
+	  4, int32([0,1,2,3,4]));
+
+2009-06-01  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogunui/GUIKernel.cpp: fix a crasher when set_kernel is used
+	  followed by add_kernel
+	* CONTRIBUTIONS, libshogunui/GUICommands.h,
+	  libshogunui/GUIFeatures.cpp, libshogunui/GUIFeatures.h,
+	  libshogunui/SGInterface.cpp, libshogunui/SGInterface.h: remove
+	  commands from_position_list and slide_window and move
+	  functionallity into set/add_features, e.g.:
+	  
+	  x='CATCTGACGTCAGGTACGTACGGCGTGGGCATCATG';
+	  sg('add_features','TRAIN',{x},'DNA', 'slide_window', 4, 1,0);
+	  sg('add_features','TRAIN',{x},'DNA', 'from_position_list', 4,
+	  int32([0,1,2,3,4]), 1);
+
+2009-05-31  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/classifier/svm/MCSVM.cpp,
+	  libshogun/classifier/svm/MKLClassification.cpp,
+	  libshogun/classifier/svm/MultiClassSVM.cpp,
+	  libshogun/classifier/svm/SVM_libsvm.cpp,
+	  libshogunui/SGInterface.cpp: fix a couple of memory leaks
+
+2009-05-30  Gunnar Raetsch <Gunnar.Raetsch@tuebingen.mpg.de>
+
+	* libshogun/structure/DynProg.cpp: disabled some experimental code
+	* libshogun/classifier/svm/MKL.cpp,
+	  libshogun/classifier/svm/MKLClassification.cpp: compile fixes ...
+
+2009-05-29  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/classifier/svm/MKL.cpp: further mkl restructuring
+
+2009-05-28  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/classifier/svm/MCSVM.cpp,
+	  libshogun/classifier/svm/MultiClassSVM.h,
+	  libshogun/classifier/svm/SVM_libsvm.cpp,
+	  libshogunui/GUIClassifier.cpp: MCSVM seems to work OK now
+	* libshogun/classifier/svm/MCSVM.cpp: add debug code
+	* libshogun/classifier/svm/MCSVM.cpp,
+	  libshogun/classifier/svm/MCSVM.h,
+	  libshogun/classifier/svm/MultiClassSVM.h,
+	  libshogun/classifier/svm/SVM_libsvm.cpp: more on testing
+	* libshogun/classifier/svm/MCSVM.cpp,
+	  libshogun/classifier/svm/SVM_libsvm.cpp: first attempt on
+	  implementing mc-testing
+	* libshogun/classifier/svm/MCSVM.cpp,
+	  libshogun/classifier/svm/MultiClassSVM.h,
+	  libshogun/classifier/svm/SVM_libsvm.cpp: starting work on passing
+	  the classifier back to shogun for testing
+	* modular/Kernel.i: wrap set_subkernel_weights
+
+2009-05-27  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/classifier/Classifier.h,
+	  libshogun/classifier/svm/MCSVM.h,
+	  libshogun/classifier/svm/SVM_libsvm.cpp,
+	  libshogunui/GUIClassifier.cpp, libshogunui/SGInterface.cpp,
+	  modular/Classifier.i: progress output / bugfixes for MCSVM
+	* libshogun/classifier/svm/MCSVM.cpp,
+	  libshogun/classifier/svm/MCSVM.h: mcsvm entry class
+	* libshogun/classifier/svm/LibSVM.cpp,
+	  libshogun/classifier/svm/LibSVM.h,
+	  libshogun/classifier/svm/LibSVMMultiClass.cpp,
+	  libshogun/classifier/svm/LibSVMMultiClass.h,
+	  libshogun/classifier/svm/LibSVMNU.cpp,
+	  libshogun/classifier/svm/LibSVMNU.h,
+	  libshogun/classifier/svm/SVM_libsvm.cpp,
+	  libshogun/classifier/svm/SVM_libsvm.h,
+	  libshogunui/GUIClassifier.cpp, modular/Classifier.i: merge MCSVM
+	  from multiclass branch
+	* NEWS, libshogun/classifier/svm/MKLClassification.cpp,
+	  libshogun/classifier/svm/MKLClassification.h,
+	  libshogun/classifier/svm/MKLRegression.cpp,
+	  libshogun/classifier/svm/MKLRegression.h,
+	  libshogun/classifier/svm/SVM_libsvm.h,
+	  libshogunui/GUIClassifier.cpp, libshogunui/GUIClassifier.h,
+	  libshogunui/GUICommands.h, libshogunui/SGInterface.cpp,
+	  libshogunui/SGInterface.h: get things to compile again and change
+	  svm_one_class_nu to svm_nu
+	* libshogun/classifier/Classifier.h,
+	  libshogun/classifier/svm/SVM_libsvm.cpp,
+	  libshogunui/GUIClassifier.cpp: starting to port mc svm, *don't
+	  use, won't compile*
+
+2009-05-26  Soeren Sonnenburg <sonne@debian.org>
+
+	* NEWS: change soname
+	* libshogun/classifier/svm/LibSVMMultiClass.cpp,
+	  libshogun/classifier/svm/LibSVMMultiClass.h,
+	  libshogun/classifier/svm/SVM_libsvm.h,
+	  libshogunui/GUIClassifier.cpp: allow nu svm for multiclass
+
+2009-05-22  Gunnar Raetsch <Gunnar.Raetsch@tuebingen.mpg.de>
+
+	* libshogunui/SGInterface.cpp: mem leak fixed
+
+2009-05-22  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/classifier/svm/SVM_libsvm.cpp: fix typo
+	* libshogun/classifier/svm/SVM_libsvm.cpp: remove debug code
+	* libshogun/lib/Array2.h: a default constructor (as this change
+	  implements) is needed to get the modular interfaces to compile
+	* libshogun/classifier/svm/SVM_libsvm.cpp,
+	  libshogunui/SGInterface.cpp: fix libsvmnu
+
+2009-05-22  Gunnar Raetsch <Gunnar.Raetsch@tuebingen.mpg.de>
+
+	* libshogun/structure/DynProg.cpp: fixed finite renaming
+	* libshogun/structure/DynProg.cpp:
+	* libshogun/features/SparseFeatures.h, libshogun/lib/Array.h,
+	  libshogun/structure/DynProg.cpp, libshogun/structure/DynProg.h,
+	  libshogunui/GUICommands.h, libshogunui/GUIStructure.cpp,
+	  libshogunui/GUIStructure.h, libshogunui/SGInterface.cpp,
+	  libshogunui/SGInterface.h: implemented support for sparse seq
+	  arrays (untested)
+	* libshogun/structure/DynProg.cpp, libshogun/structure/DynProg.h,
+	  libshogunui/GUIStructure.cpp, libshogunui/GUIStructure.h,
+	  libshogunui/SGInterface.cpp, octave/OctaveInterface.cpp: cleanups
+	  and memory leak fixes
+
+2009-05-22  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/classifier/svm/LibSVMNU.cpp,
+	  libshogun/classifier/svm/MKLRegression.h, libshogun/lib/Array.h,
+	  libshogun/lib/Array2.h, libshogunui/GUIClassifier.cpp,
+	  libshogunui/SGInterface.cpp, modular/Classifier.i: lots of
+	  compile fixes (dynprog still does not work with modular IF's)
+
+2009-05-20  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/classifier/Classifier.h,
+	  libshogun/classifier/svm/LibSVMNU.cpp,
+	  libshogun/classifier/svm/LibSVMNU.h,
+	  libshogunui/GUIClassifier.cpp, libshogunui/GUIClassifier.h,
+	  modular/Classifier.i: add NU LibSVM
+	* configure: fix mmxext etc detection
+	* configure: merge mplayers recent configure cpu flag detection
+	* configure: fix core2 detection
+	* configure: this should speedup things a lot for core2 and other
+	  recent cpus - fix cpu detection logic
+
+2009-05-18  Gunnar Raetsch <Gunnar.Raetsch@tuebingen.mpg.de>
+
+	* libshogun/structure/DynProg.cpp: still buggy...
+	* libshogun/structure/DynProg.cpp: version without loss seems to
+	  work now.
+	* libshogun/structure/DynProg.cpp, libshogun/structure/DynProg.h,
+	  libshogun/structure/Plif.cpp, libshogun/structure/Plif.h,
+	  libshogun/structure/PlifArray.cpp,
+	  libshogun/structure/PlifArray.h, libshogun/structure/PlifBase.h,
+	  libshogunui/SGInterface.cpp: first part of long transitions code
+	* libshogun/lib/Array.h, libshogun/lib/Array2.h,
+	  libshogun/lib/Array3.h, libshogun/structure/DynProg.cpp:
+	  intermediate code ...
+
+2009-05-18  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/features/Alphabet.h: fix documentation, DNA is only
+	  A,C,G,T
+
+2009-05-17  Gunnar Raetsch <Gunnar.Raetsch@tuebingen.mpg.de>
+
+	* libshogun/lib/Array.h, libshogun/structure/DynProg.cpp,
+	  libshogun/structure/DynProg.h: first changes towards a faster
+	  DynProg + conflict resolution
+	* libshogun/structure/DynProg.cpp, libshogun/structure/DynProg.h:
+	* libshogun/structure/DynProg.cpp, libshogun/structure/Plif.h,
+	  libshogunui/GUIStructure.cpp: one bug fix related to plifs
+	  prepared some extensions
+
+2009-05-14  Soeren Sonnenburg <sonne@debian.org>
+
+	* modular/Library.i: add memorymapped file
+
+2009-05-08  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/classifier/svm/MKL.cpp, libshogun/classifier/svm/MKL.h,
+	  libshogun/classifier/svm/MKLClassification.cpp,
+	  libshogun/classifier/svm/MKLClassification.h,
+	  libshogun/classifier/svm/SVM_light.cpp: broken, but compiles at
+	  least
+	* libshogun/classifier/svm/MKL.cpp, libshogun/classifier/svm/MKL.h,
+	  libshogun/classifier/svm/MKLClassification.cpp,
+	  libshogun/classifier/svm/SVM.cpp, libshogun/classifier/svm/SVM.h:
+	  further restructuring
+
+2009-05-06  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/classifier/svm/MKL.cpp, libshogun/classifier/svm/MKL.h,
+	  libshogun/classifier/svm/MKLClassification.cpp,
+	  libshogun/classifier/svm/MKLClassification.h: work in progress
+	* configure: suppress error on configure
+
+2009-05-05  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/classifier/svm/MKL.cpp,
+	  libshogun/classifier/svm/MKLClassification.cpp: back to broken
+	* libshogunui/GUIClassifier.cpp: fix for one class nu svm, thanks
+	  to motoaki kawanabe
+	* NEWS, libshogun/classifier/svm/MKL.cpp,
+	  libshogun/classifier/svm/MKL.h, libshogunui/GUIClassifier.cpp:
+	  get things back to compile
+	* libshogun/classifier/svm/MKL.cpp, libshogun/classifier/svm/MKL.h,
+	  libshogun/classifier/svm/MKLClassification.h,
+	  libshogun/classifier/svm/MKLMulticlass.h,
+	  libshogun/classifier/svm/MKLRegression.cpp,
+	  libshogun/classifier/svm/MKLRegression.h,
+	  libshogun/classifier/svm/SVM.cpp, libshogun/classifier/svm/SVM.h,
+	  libshogun/classifier/svm/SVM_light.cpp,
+	  libshogun/classifier/svm/SVM_light.h,
+	  libshogun/regression/svr/SVR_light.cpp,
+	  libshogun/regression/svr/SVR_light.h: start cleaning up the MKL
+	  mess(tm), DON'T CURRENTLY USE
+	* libshogun/classifier/svm/MKL.h: start to work on generic MKL
+	  class
+
+2009-05-04  Alexander Zien <Alexander.Zien@tuebingen.mpg.de>
+
+	* libshogun/classifier/svm/SVM_light.cpp: fixed a bug in MKL newton
+
+2009-05-04  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogunui/SGInterface.cpp: fix description
+
 2009-05-02  Soeren Sonnenburg <sonne@debian.org>
 
+	* ChangeLog: updated changelog
 	* NEWS: update NEWS
 	* Makefile.template: get some of the test to compile and actually
 	  run on OSX :)
