@@ -1,5 +1,7 @@
 #include "classifier/svm/MKLClassification.h"
+#ifdef USE_SVMLIGHT
 #include "classifier/svm/SVM_light.h"
+#endif //USE_SVMLIGHT
 #include "classifier/svm/LibSVM.h"
 
 CMKLClassification::CMKLClassification(CSVM* s) : CMKL(s)
