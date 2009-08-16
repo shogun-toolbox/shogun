@@ -1,4 +1,5 @@
 from numpy import *
+from numpy.random import randn
 from shogun.Features import *
 from shogun.Classifier import *
 from shogun.Kernel import *
@@ -9,11 +10,11 @@ width=2.1
 C=1
 epsilon=1e-5
 
-traindata_real=[randn(2,num)-dist, randn(2,num)+dist];
-testdata_real=[randn(2,num)-dist, randn(2,num)+dist];
+traindata_real=concatenate((randn(2,num)-dist, randn(2,num)+dist), axis=1)
+testdata_real=concatenate((randn(2,num)-dist, randn(2,num)+dist), axis=1);
 
-trainlab=[-ones(1,num), ones(1,num)];
-testlab=[-ones(1,num), ones(1,num)];
+trainlab=concatenate((-ones(num), ones(num)));
+testlab=concatenate((-ones(num), ones(num)));
 
 feats_train=RealFeatures(traindata_real);
 feats_test=RealFeatures(testdata_real);
@@ -25,4 +26,5 @@ svm.train();
 
 kernel.init(feats_train, feats_test);
 out=svm.classify().get_labels();
-testerr=mean(sign(out)~=testlab)
+testerr=mean(sign(out)!=testlab)
+print testerr
