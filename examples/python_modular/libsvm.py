@@ -4,11 +4,10 @@ from shogun.Features import *
 from shogun.Classifier import *
 from shogun.Kernel import *
 
-num=1000;
-dist=1;
+num=1000
+dist=1
 width=2.1
 C=1
-epsilon=1e-5
 
 traindata_real=concatenate((randn(2,num)-dist, randn(2,num)+dist), axis=1)
 testdata_real=concatenate((randn(2,num)-dist, randn(2,num)+dist), axis=1);
