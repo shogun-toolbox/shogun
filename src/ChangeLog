@@ -1,5 +1,17 @@
+2009-08-16  Soeren Sonnenburg <sonne@debian.org>
+
+	* NEWS: update news to release date
+
 2009-08-15  Soeren Sonnenburg <sonne@debian.org>
 
+	* configure, libshogunui/SGInterface.cpp, modular/Regression.i,
+	  r/RInterface.cpp: - on darwin use ${_prefix} in library path
+	  - fix MKL modular inclusion
+	  - fix examples for new syntax and a related regression for
+	  WD/SPEC features
+	* modular/Classifier.i, modular/Regression.i: enable new MKL for
+	  python modular
+	* ChangeLog: updated changelog
 	* NEWS: remove legacy examples and update documentation/examples
 
 2009-08-14  Soeren Sonnenburg <sonne@debian.org>
