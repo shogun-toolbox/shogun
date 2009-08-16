@@ -419,6 +419,21 @@ CSGInterfaceMethod sg_methods[]=
 		USAGE_O(N_GET_SVM_OBJECTIVE, "objective")
 	},
 	{
+		N_COMPUTE_SVM_DUAL_OBJECTIVE,
+		(&CSGInterface::cmd_compute_svm_dual_objective),
+		USAGE_O(N_COMPUTE_SVM_DUAL_OBJECTIVE, "objective")
+	},
+	{
+		N_COMPUTE_SVM_PRIMAL_OBJECTIVE,
+		(&CSGInterface::cmd_compute_svm_primal_objective),
+		USAGE_O(N_COMPUTE_SVM_OBJECTIVE, "objective")
+	},
+	{
+		N_COMPUTE_MKL_DUAL_OBJECTIVE,
+		(&CSGInterface::cmd_compute_mkl_dual_objective),
+		USAGE_O(N_COMPUTE_MKL_DUAL_OBJECTIVE, "objective")
+	},
+	{
 		N_DO_AUC_MAXIMIZATION,
 		(&CSGInterface::cmd_do_auc_maximization),
 		USAGE_I(N_DO_AUC_MAXIMIZATION, USAGE_STR "auc" USAGE_STR)
@@ -4558,6 +4573,48 @@ bool CSGInterface::cmd_get_svm_objective()
 		SG_ERROR("No SVM set.\n");
 
 	set_real(svm->get_objective());
+
+	return true;
+}
+
+bool CSGInterface::cmd_compute_svm_primal_objective()
+{
+	if (m_nrhs!=1 || !create_return_values(1))
+		return false;
+
+	CSVM* svm=(CSVM*) ui_classifier->get_classifier();
+	if (!svm)
+		SG_ERROR("No SVM set.\n");
+
+	set_real(svm->compute_svm_primal_objective());
+
+	return true;
+}
+
+bool CSGInterface::cmd_compute_svm_dual_objective()
+{
+	if (m_nrhs!=1 || !create_return_values(1))
+		return false;
+
+	CSVM* svm=(CSVM*) ui_classifier->get_classifier();
+	if (!svm)
+		SG_ERROR("No SVM set.\n");
+
+	set_real(svm->compute_svm_dual_objective());
+
+	return true;
+}
+
+bool CSGInterface::cmd_compute_mkl_dual_objective()
+{
+	if (m_nrhs!=1 || !create_return_values(1))
+		return false;
+
+	CSVM* svm=(CSVM*) ui_classifier->get_classifier();
+	if (!svm)
+		SG_ERROR("No SVM set.\n");
+
+	set_real(svm->compute_mkl_dual_objective());
 
 	return true;
 }

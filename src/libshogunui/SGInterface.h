@@ -226,6 +226,12 @@ class CSGInterface : public CSGObject
 		bool cmd_get_classifier();
 		/** get SVM objective */
 		bool cmd_get_svm_objective();
+		/** compute SVM objective from scratch*/
+		bool cmd_compute_svm_primal_objective();
+		/** compute SVM objective from scratch*/
+		bool cmd_compute_svm_dual_objective();
+		/** compute SVM objective from scratch*/
+		bool cmd_compute_mkl_dual_objective();
 		/** train classifier/SVM */
 		bool cmd_train_classifier();
 		/** test SVM */

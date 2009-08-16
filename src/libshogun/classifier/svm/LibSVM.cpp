@@ -31,24 +31,26 @@ bool CLibSVM::train()
 	struct svm_node* x_space;
 
 	ASSERT(labels && labels->get_num_labels());
-	ASSERT(labels->is_two_class_labeling());
+	//ASSERT(labels->is_two_class_labeling());
 
 	problem.l=labels->get_num_labels();
 	SG_INFO( "%d trainlabels\n", problem.l);
 
 	problem.y=new float64_t[problem.l];
+	problem.true_y=new float64_t[problem.l];
 	problem.x=new struct svm_node*[problem.l];
 	x_space=new struct svm_node[2*problem.l];
 
 	for (int32_t i=0; i<problem.l; i++)
 	{
-		problem.y[i]=labels->get_label(i);
+		problem.true_y[i]=labels->get_label(i);
+		problem.y[i]=1;
 		problem.x[i]=&x_space[2*i];
 		x_space[2*i].index=i;
 		x_space[2*i+1].index=-1;
 	}
 
-	int32_t weights_label[2]={-1,+1};
+	int32_t weights_label[2]={0,+1};
 	float64_t weights[2]={1.0,get_C2()/get_C1()};
 
 	ASSERT(kernel && kernel->has_features());
@@ -65,7 +67,7 @@ bool CLibSVM::train()
 	param.C = get_C1();
 	param.eps = epsilon;
 	param.p = 0.1;
-	param.shrinking = 1;
+	param.shrinking = 0;
 	param.nr_weight = 2;
 	param.weight_label = weights_label;
 	param.weight = weights;

@@ -285,13 +285,14 @@ public:
 	};
 
 	void Solve(
-		int32_t l, const QMatrix& Q, const float64_t *p_, const schar *y_,
+		int32_t l, const QMatrix& Q, const float64_t *p_, const schar *y_, const schar *true_y_,
 		float64_t *alpha_, float64_t Cp, float64_t Cn, float64_t eps,
 		SolutionInfo* si, int32_t shrinking);
 
 protected:
 	int32_t active_size;
 	schar *y;
+	schar *true_y;
 	float64_t *G;		// gradient of objective function
 	enum { LOWER_BOUND, UPPER_BOUND, FREE };
 	char *alpha_status;	// LOWER_BOUND, UPPER_BOUND, FREE
@@ -334,6 +335,7 @@ void Solver::swap_index(int32_t i, int32_t j)
 {
 	Q->swap_index(i,j);
 	swap(y[i],y[j]);
+	swap(true_y[i],true_y[j]);
 	swap(G[i],G[j]);
 	swap(alpha_status[i],alpha_status[j]);
 	swap(alpha[i],alpha[j]);
@@ -383,7 +385,7 @@ void Solver::reconstruct_gradient()
 
 void Solver::Solve(
 	int32_t p_l, const QMatrix& p_Q, const float64_t *p_p,
-	const schar *p_y, float64_t *p_alpha, float64_t p_Cp, float64_t p_Cn,
+	const schar *p_y, const schar *p_true_y, float64_t *p_alpha, float64_t p_Cp, float64_t p_Cn,
 	float64_t p_eps, SolutionInfo* p_si, int32_t shrinking)
 {
 	this->l = p_l;
@@ -391,6 +393,7 @@ void Solver::Solve(
 	QD=Q->get_QD();
 	clone(p, p_p,l);
 	clone(y, p_y,l);
+	clone(true_y, p_true_y,l);
 	clone(alpha,p_alpha,l);
 	this->Cp = p_Cp;
 	this->Cn = p_Cn;
@@ -467,6 +470,8 @@ void Solver::Solve(
 				counter = 1;	// do shrinking next iteration
 		}
 
+		//SG_SPRINT("iter=%d, i=%d j=%d\n", iter, i,j);
+
 		SG_SABS_PROGRESS(gap, -CMath::log10(gap), -CMath::log10(1), -CMath::log10(eps), 6);
 		
 		++iter;
@@ -482,7 +487,7 @@ void Solver::Solve(
 		float64_t old_alpha_i = alpha[i];
 		float64_t old_alpha_j = alpha[j];
 
-		if(y[i]!=y[j])
+		if(true_y[i]!=true_y[j])
 		{
 			float64_t quad_coef = Q_i[i]+Q_j[j]+2*Q_i[j];
 			if (quad_coef <= 0)
@@ -609,6 +614,16 @@ void Solver::Solve(
 						G_bar[k] += C_j * Q_j[k];
 			}
 		}
+
+	// calculate objective value
+	{
+		float64_t v = 0;
+		for(i=0;i<l;i++)
+			v += alpha[i] * (G[i] + p[i]);
+
+		p_si->obj = v/2;
+		SG_SPRINT("obj=%f\n", v/2);
+	}
 	}
 
 	// calculate rho
@@ -623,6 +638,7 @@ void Solver::Solve(
 			v += alpha[i] * (G[i] + p[i]);
 
 		p_si->obj = v/2;
+		SG_SPRINT("obj=%f\n", v/2);
 	}
 
 	// put back the solution
@@ -634,10 +650,11 @@ void Solver::Solve(
 	p_si->upper_bound_p = Cp;
 	p_si->upper_bound_n = Cn;
 
-	SG_SINFO("\noptimization finished, #iter = %d\n",iter);
+	SG_SINFO("\nNEW optimization finished, #iter = %d\n",iter);
 
 	delete[] p;
 	delete[] y;
+	delete[] true_y;
 	delete[] alpha;
 	delete[] alpha_status;
 	delete[] active_set;
@@ -661,8 +678,101 @@ int32_t Solver::select_working_set(
 	int32_t Gmin_idx = -1;
 	float64_t obj_diff_min = INF;
 
+	//CMath::display_vector(G, active_size, "G");
+
+	/*
 	for(int32_t t=0;t<active_size;t++)
-		if(y[t]==+1)
+	{
+			if (!is_upper_bound(t))
+			{
+				if(G[t] <= Gmax)
+				{
+					Gmax=G[t];
+					Gmax_idx=t;
+				}
+			}
+
+			if(!is_lower_bound(t))
+			{
+				if(G[t] >= Gmax2)
+				{
+					Gmax2 = G[t];
+					Gmin_idx = t;
+				}
+			
+	}
+
+	if (CMath::abs(Gmax) < CMath::abs(Gmax2))
+	{
+		Gmax=Gmax2;
+		Gmax_idx=Gmin_idx;
+	}
+
+	if (Gmax<0)
+	{
+		Gmax2= -INF;
+		Gmin_idx=-1;
+
+		for(int32_t t=0;t<active_size;t++)
+		{
+			if (true_y[t]!=true_y[Gmax_idx])
+				continue;
+			if (t==Gmax_idx)
+				continue;
+
+			if(!is_lower_bound(t))
+			{
+				if(G[t] >= Gmax2)
+				{
+					Gmax2 = G[t];
+					Gmin_idx = t;
+				}
+			}
+		}
+
+		Gmax=-Gmax;
+	}
+	else
+	{
+		Gmax2= +INF;
+		Gmin_idx=-1;
+
+		for(int32_t t=0;t<active_size;t++)
+		{
+			if (true_y[t]!=true_y[Gmax_idx])
+				continue;
+			if (t==Gmax_idx)
+				continue;
+
+			if (!is_upper_bound(t))
+			{
+				if(G[t] <= Gmax2)
+				{
+					Gmax2=G[t];
+					Gmin_idx=t;
+				}
+			}
+		}
+
+	}
+
+	Gmax2=CMath::abs(Gmax2);
+
+	gap=Gmax+Gmax2;
+	SG_SPRINT("i=%d j=%d, Gmax=%f, Gmax2=%f gap=%f\n", Gmax_idx, Gmin_idx, Gmax, Gmax2, gap);
+	if(gap < eps)
+		return 1;
+
+	out_i = Gmax_idx;
+	out_j = Gmin_idx;
+	return 0;*/
+
+	static int iter=0;
+
+	iter++;
+	for(int32_t t=0;t<active_size;t++)
+	{
+		if(2*true_y[t]-1==+1)
 		{
 			if(!is_upper_bound(t))
 				if(-G[t] >= Gmax)
@@ -680,6 +790,7 @@ int32_t Solver::select_working_set(
 					Gmax_idx = t;
 				}
 		}
+	}
 
 	int32_t i = Gmax_idx;
 	const Qfloat *Q_i = NULL;
@@ -688,17 +799,26 @@ int32_t Solver::select_working_set(
 
 	for(int32_t j=0;j<active_size;j++)
 	{
-		if(y[j]==+1)
+		//float64_t y_sign=+1;
+		if (true_y[i]!=true_y[j])
+			continue;
+		//if (true_y[i]!=true_y[j])
+		//	y_sign=-1;
+
+		if(2*true_y[j]-1==+1)
 		{
 			if (!is_lower_bound(j))
 			{
 				float64_t grad_diff=Gmax+G[j];
 				if (G[j] >= Gmax2)
+				{
 					Gmax2 = G[j];
-				if (grad_diff > 0)
+					Gmin_idx=j;
+				}
+				/*if (grad_diff > 0)
 				{
 					float64_t obj_diff; 
-					float64_t quad_coef=Q_i[i]+QD[j]-2.0*y[i]*Q_i[j];
+					float64_t quad_coef=Q_i[i]+QD[j]-2.0*y_sign*Q_i[j];
 					if (quad_coef > 0)
 						obj_diff = -(grad_diff*grad_diff)/quad_coef;
 					else
@@ -709,7 +829,7 @@ int32_t Solver::select_working_set(
 						Gmin_idx=j;
 						obj_diff_min = obj_diff;
 					}
-				}
+				}*/
 			}
 		}
 		else
@@ -718,11 +838,14 @@ int32_t Solver::select_working_set(
 			{
 				float64_t grad_diff= Gmax-G[j];
 				if (-G[j] >= Gmax2)
+				{
 					Gmax2 = -G[j];
-				if (grad_diff > 0)
+					Gmin_idx=j;
+				}
+				/*if (grad_diff > 0)
 				{
 					float64_t obj_diff; 
-					float64_t quad_coef=Q_i[i]+QD[j]+2.0*y[i]*Q_i[j];
+					float64_t quad_coef=Q_i[i]+QD[j]-2.0*y_sign*Q_i[j];
 					if (quad_coef > 0)
 						obj_diff = -(grad_diff*grad_diff)/quad_coef;
 					else
@@ -733,13 +856,14 @@ int32_t Solver::select_working_set(
 						Gmin_idx=j;
 						obj_diff_min = obj_diff;
 					}
-				}
+				}*/
 			}
 		}
 	}
 
 	gap=Gmax+Gmax2;
-	if(gap < eps)
+	SG_SPRINT("i=%d j=%d, Gmax=%f, Gmax2=%f gap=%f\n", Gmax_idx, Gmin_idx, Gmax, Gmax2, gap);
+	if(gap < eps && iter > 1000)
 		return 1;
 
 	out_i = Gmax_idx;
@@ -877,11 +1001,11 @@ public:
 	Solver_NU() {}
 	void Solve(
 		int32_t p_l, const QMatrix& p_Q, const float64_t *p_p,
-		const schar *p_y, float64_t* p_alpha, float64_t p_Cp, float64_t p_Cn,
+		const schar *p_y, const schar *p_true_y, float64_t* p_alpha, float64_t p_Cp, float64_t p_Cn,
 		float64_t p_eps, SolutionInfo* p_si, int32_t shrinking)
 	{
 		this->si = p_si;
-		Solver::Solve(p_l,p_Q,p,p_y,p_alpha,p_Cp,p_Cn,p_eps,p_si,shrinking);
+		Solver::Solve(p_l,p_Q,p,p_y,true_y,p_alpha,p_Cp,p_Cn,p_eps,p_si,shrinking);
 	}
 private:
 	SolutionInfo *si;
@@ -1138,10 +1262,11 @@ float64_t Solver_NU::calculate_rho()
 class SVC_Q: public LibSVMKernel
 { 
 public:
-	SVC_Q(const svm_problem& prob, const svm_parameter& param, const schar *y_)
+	SVC_Q(const svm_problem& prob, const svm_parameter& param, const schar *y_, const schar *true_y_)
 	:LibSVMKernel(prob.l, prob.x, param)
 	{
 		clone(y,y_,prob.l);
+		clone(true_y,true_y_,prob.l);
 		cache = new Cache(prob.l,(int64_t)(param.cache_size*(1l<<20)));
 		QD = new Qfloat[prob.l];
 		for(int32_t i=0;i<prob.l;i++)
@@ -1155,7 +1280,12 @@ public:
 		if((start = cache->get_data(i,&data,len)) < len)
 		{
 			for(int32_t j=start;j<len;j++)
-				data[j] = (Qfloat) y[i]*y[j]*kernel_function(i,j);
+			{
+				float64_t y_sign=+1;
+				if (true_y[i]!=true_y[j])
+					y_sign=-1;
+				data[j] = (Qfloat) y_sign*kernel_function(i,j);
+			}
 		}
 		return data;
 	}
@@ -1170,17 +1300,20 @@ public:
 		cache->swap_index(i,j);
 		LibSVMKernel::swap_index(i,j);
 		swap(y[i],y[j]);
+		swap(true_y[i],true_y[j]);
 		swap(QD[i],QD[j]);
 	}
 
 	~SVC_Q()
 	{
 		delete[] y;
+		delete[] true_y;
 		delete cache;
 		delete[] QD;
 	}
 private:
 	schar *y;
+	schar *true_y;
 	Cache *cache;
 	Qfloat *QD;
 };
@@ -1317,6 +1450,7 @@ static void solve_c_svc(
 	int32_t l = prob->l;
 	float64_t *minus_ones = new float64_t[l];
 	schar *y = new schar[l];
+	schar *true_y = new schar[l];
 
 	int32_t i;
 
@@ -1324,11 +1458,32 @@ static void solve_c_svc(
 	{
 		alpha[i] = 0;
 		minus_ones[i] = -1;
-		if(prob->y[i] > 0) y[i] = +1; else y[i]=-1;
+		true_y[i]=prob->true_y[i];
+		y[i]=prob->y[i];
+		//if(prob->y[i] > 0) y[i] = +1; else y[i]=-1;
+	}
+
+	//FIXME
+	for(i=0;i<l;i++)
+	{
+		if (true_y[i]==+1)
+		{
+			alpha[i]=1;
+			break;
+		}
+	}
+
+	for(i=0;i<l;i++)
+	{
+		if (true_y[i]==0)
+		{
+			alpha[i]=1;
+			break;
+		}
 	}
 
 	Solver s;
-	s.Solve(l, SVC_Q(*prob,*param,y), minus_ones, y,
+	s.Solve(l, SVC_Q(*prob,*param,y, true_y), minus_ones, y, true_y,
 		alpha, Cp, Cn, param->eps, si, param->shrinking);
 
 	float64_t sum_alpha=0;
@@ -1343,6 +1498,7 @@ static void solve_c_svc(
 
 	delete[] minus_ones;
 	delete[] y;
+	delete[] true_y;
 }
 
 static void solve_nu_svc(
@@ -1354,6 +1510,7 @@ static void solve_nu_svc(
 	float64_t nu = param->nu;
 
 	schar *y = new schar[l];
+	schar *true_y = new schar[l];
 
 	for(i=0;i<l;i++)
 		if(prob->y[i]>0)
@@ -1382,7 +1539,7 @@ static void solve_nu_svc(
 		zeros[i] = 0;
 
 	Solver_NU s;
-	s.Solve(l, SVC_Q(*prob,*param,y), zeros, y,
+	s.Solve(l, SVC_Q(*prob,*param,y, true_y), zeros, y, true_y,
 		alpha, 1.0, 1.0, param->eps, si,  param->shrinking);
 	float64_t r = si->r;
 
@@ -1397,6 +1554,7 @@ static void solve_nu_svc(
 	si->upper_bound_n = 1/r;
 
 	delete[] y;
+	delete[] true_y;
 	delete[] zeros;
 }
 
@@ -1425,7 +1583,7 @@ static void solve_one_class(
 	}
 
 	Solver s;
-	s.Solve(l, ONE_CLASS_Q(*prob,*param), zeros, ones,
+	s.Solve(l, ONE_CLASS_Q(*prob,*param), zeros, ones, ones,
 		alpha, 1.0, 1.0, param->eps, si, param->shrinking);
 
 	delete[] zeros;
@@ -1440,6 +1598,7 @@ static void solve_epsilon_svr(
 	float64_t *alpha2 = new float64_t[2*l];
 	float64_t *linear_term = new float64_t[2*l];
 	schar *y = new schar[2*l];
+	schar *true_y = new schar[2*l];
 	int32_t i;
 
 	for(i=0;i<l;i++)
@@ -1454,7 +1613,7 @@ static void solve_epsilon_svr(
 	}
 
 	Solver s;
-	s.Solve(2*l, SVR_Q(*prob,*param), linear_term, y,
+	s.Solve(2*l, SVR_Q(*prob,*param), linear_term, y, true_y,
 		alpha2, param->C, param->C, param->eps, si, param->shrinking);
 
 	float64_t sum_alpha = 0;
@@ -1467,7 +1626,7 @@ static void solve_epsilon_svr(
 
 	delete[] alpha2;
 	delete[] linear_term;
-	delete[] y;
+	delete[] true_y;
 }
 
 static void solve_nu_svr(
@@ -1479,6 +1638,7 @@ static void solve_nu_svr(
 	float64_t *alpha2 = new float64_t[2*l];
 	float64_t *linear_term = new float64_t[2*l];
 	schar *y = new schar[2*l];
+	schar *true_y = new schar[2*l];
 	int32_t i;
 
 	float64_t sum = C * param->nu * l / 2;
@@ -1495,7 +1655,7 @@ static void solve_nu_svr(
 	}
 
 	Solver_NU s;
-	s.Solve(2*l, SVR_Q(*prob,*param), linear_term, y,
+	s.Solve(2*l, SVR_Q(*prob,*param), linear_term, y, true_y,
 		alpha2, C, C, param->eps, si, param->shrinking);
 
 	SG_SINFO("epsilon = %f\n",-si->r);
@@ -1506,6 +1666,7 @@ static void solve_nu_svr(
 	delete[] alpha2;
 	delete[] linear_term;
 	delete[] y;
+	delete[] true_y;
 }
 
 //
@@ -1594,7 +1755,7 @@ void svm_group_classes(
 
 	for(i=0;i<l;i++)
 	{
-		int32_t this_label=(int32_t) prob->y[i];
+		int32_t this_label=(int32_t) prob->true_y[i];
 		int32_t j;
 		for(j=0;j<nr_class;j++)
 		{
@@ -1733,19 +1894,23 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 				sub_prob.l = ci+cj;
 				sub_prob.x = Malloc(svm_node *,sub_prob.l);
 				sub_prob.y = Malloc(float64_t, sub_prob.l+1); //dirty hack to surpress valgrind err
+				sub_prob.true_y = Malloc(float64_t, sub_prob.l+1); //dirty hack to surpress valgrind err
 
 				int32_t k;
 				for(k=0;k<ci;k++)
 				{
 					sub_prob.x[k] = x[si+k];
 					sub_prob.y[k] = +1;
+					sub_prob.true_y[k] = prob->true_y[k];
 				}
 				for(k=0;k<cj;k++)
 				{
 					sub_prob.x[ci+k] = x[sj+k];
-					sub_prob.y[ci+k] = -1;
+					sub_prob.y[ci+k] = +1;
+					sub_prob.true_y[ci+k] = prob->true_y[ci+k];
 				}
-				sub_prob.y[sub_prob.l]=-1; //dirty hack to surpress valgrind err
+				sub_prob.y[sub_prob.l]=+1; //dirty hack to surpress valgrind err
+				sub_prob.true_y[sub_prob.l]= prob->true_y[sub_prob.l]; //dirty hack to surpress valgrind err
 				
 				f[p] = svm_train_one(&sub_prob,param,weighted_C[i],weighted_C[j]);
 				for(k=0;k<ci;k++)

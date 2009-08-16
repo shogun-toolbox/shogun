@@ -54,6 +54,8 @@ struct svm_problem
 	int32_t l;
 	/** y */
 	float64_t *y;
+	/** y */
+	float64_t *true_y;
 	/** SVM node x */
 	struct svm_node **x;
 };
