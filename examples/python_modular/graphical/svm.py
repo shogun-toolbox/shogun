@@ -22,7 +22,6 @@ plot(neg[0,:], neg[1,:], "b.")
 labels=util.get_labels()
 train=util.get_realfeatures(pos, neg)
 gk=GaussianKernel(train, train, width)
-#svm = SVMLight(10.0, gk, labels)
 svm = LibSVM(10.0, gk, labels)
 svm.train()
 

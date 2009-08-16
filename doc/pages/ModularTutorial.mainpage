@@ -1,5 +1,133 @@
 /*!
 \page modular_tutorial Tutorial for Modular Interfaces
 
+SHOGUN's "modular" interfaces to Python and Octave are the most powerful
+basically allow for unlimited extensibility (multiple methods like classifiers
+potentially sharing data and interacting). In case you didn't use shogun yet,
+this is what you want (still there are the simpler/less flexible
+\subpage staticinterfaces).
+
+In this tutorial we demonstrate how to use shogun to create a simple
+gaussian kernel based support vector machine classifier but first
+things first. Lets start up python or octave and load the modular
+shogun environment.
+
+\section start_shogun_modular Starting SHOGUN
+
+To load all of shoguns modules under octave start octave and issue
+\verbatim
+init_shogun
+\endverbatim
+
+Under python your have to specify what you want. From We will need
+features and labels to represent our input data, classifier and a
+kernel to compare the similarity of features.
+
+\verbatim
+from shogun.Features import *
+from shogun.Kernel import *
+from shogun.Classifier import *
+\endverbatim
+
+(Note here that shogun.Features contains Labels).
+
+\section docu_shogun_modular Getting Help
+
+Finding the Documentation If you wonder what object classes are there
+and for documentation of the particular class use the classes tab
+above and browse through the the class list. All classes are rather
+thorougly documented (if documentation is not good enough in a
+particular class, please notify us). Note that all classes in the
+classes list (classes tab abov) are all prefixed with a 'C' - that
+really is the only difference to using them from within the python or
+octave modular interfaces (where the C prefix is missing).
+
+Alternatively, under python the same documentation is available via
+python help strings, so you may issue 
+
+\verbatim
+help(<classname>)
+\endverbatim
+
+for example
+\verbatim
+from shogun.Kernel import GaussianKernel
+help(GaussianKernel)
+\endverbatim
+
+or
+
+\verbatim
+import shogun.Kernel
+help(shogun.Kernel)
+\endverbatim
+
+The tutorial below will now just work fine (same syntax) for python
+and octave (though we use a trailing semicolon in octave which is not
+necessary in python).
+
+\section svm_tutorial_modular Creating an SVM classifier
+
+Lets say we have real valued training (and testing) data available in matrix shape with each column describing an object and as many columns as we have examples. To use these within shogun we need to create a shogun feature object, here RealFeatures (for dense real valued feature matrices) like this
+
+\verbatim
+feats_train=RealFeatures(traindata_real);
+feats_test=RealFeatures(testdata_real);
+\endverbatim
+
+Using the these feature object we can now create, e.g., a Gausian
+kernel of a certain width (see also CGaussianKernel) based on our
+training features
+
+\verbatim
+kernel=GaussianKernel(feats_train, feats_train, width);
+\endverbatim
+
+and could now compute the kernel matrix
+\verbatim
+km=kernel.get_kernel_matrix()
+\endverbatim
+
+To train an SVM we need labeled examples, which is a vector of ones
+and minus ones, say stored in the variable trainlab. We now create a
+shogun label object from it
+
+\verbatim
+labels=Labels(trainlab);
+\endverbatim
+
+and well now we only need to specify labels, kernel and the SVM-C parameter (say contained in the variable 'C') and get an SVM:
+
+\verbatim
+svm=LibSVM(C, kernel, labels);
+svm.train();
+\endverbatim
+
+The train command above already trains an SVM. Quiet easy!
+To apply the SVM to unseen test features, initialize the kernel with the test features on the right hand side.
+
+\verbatim
+kernel.init(feats_train, feats_test);
+\endverbatim
+
+and issue classify() to get a shogun Label object from which we can obtain the vector of outputs in native python/octave representation via get_labels() and compute the test error, like
+
+\verbatim
+out=svm.classify().get_labels();
+testerr=mean(sign(out)~=testlab)
+\endverbatim
+
+That's really it. For any of the advanced topics please have a look one of the \b many self-explanatory examples in
+
+\li examples/octave-modular
+\li examples/python-modular
+
+The full, working example is shown below:
+
+For octave:
+
 \verbinclude libsvm.m
+
+For python:
+\verbinclude libsvm.py
 */

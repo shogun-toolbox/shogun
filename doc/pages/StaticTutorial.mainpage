@@ -9,8 +9,120 @@ case you are looking for basically unlimited extensibility (multiple methods
 like classifiers potentially sharing data and interacting) you might want to
 look at the \subpage modular_tutorial "Modular Interfaces" instead.
 
-In this tutorial we demonstrate how to use shogun to create a simple gaussian
-kernel based svm classifier:
+In this tutorial we demonstrate how to use shogun to create a simple
+gaussian kernel based support vector machine classifier but first
+things first. Lets start up R, python, octave or matlab load the shogun
+environment.
 
+\section start_shogun_static Starting SHOGUN
+To start SHOGUN in python, start python and type
+
+\verbatim
+  from sg import sg
+\endverbatim
+
+For R issue (from within R)
+
+\verbatim
+  library(sg)
+\endverbatim
+
+For octave and matlab just make sure sg is in the path (use addpath). For the cmdline interface just start the shogun executable
+
+Now in all languages
+
+\verbatim
+  sg('help')
+\endverbatim
+
+and
+
+\verbatim
+  help
+\endverbatim
+
+in the cmdline interface will show the help screen. If not consult
+\subpage installation on how to install shogun.
+
+\section svm_tutorial_static Creating an SVM classifier
+
+The rest of this tutorial assumes that the cmdline shogun executable
+is used (but hints on how things work using other interfaces). The
+basic syntax is 
+\verbatim
+  <command> <option1> <option2> ...
+\endverbatim
+here options are separated by spaces. For example
+
+\verbatim
+set_kernel GAUSSIAN REAL 10 1.2
+\endverbatim
+
+will create a gaussian kernel that operates on real-valued features uses a kernel cache of size 10 MB and kernel width of 1.2. In analogy the other the cmdline for the other interfaces (python,r,...) would look like
+
+\verbatim
+sg('set_kernel', 'GAUSSIAN', 'REAL', 10, 1.2)
+\endverbatim
+
+Note that there is little difference to the other interfaces, basically only strings are marked as such and arguments comma separated.
+
+We now use two random gaussians as inputs as train data:
+\verbatim
+set_features TRAIN ../data/fm_train_real.dat
+\endverbatim
+
+(For other interfaces sth. like
+\verbatim
+sg('set_features', 'TRAIN', [ randn(2, 100)-1, randn(2,100)+1 ])
+\endverbatim
+would work).
+
+For training a supervised method like an SVM we need a labeling of the training data, which we set via
+\verbatim
+set_labels TRAIN ../data/label_train_twoclass.dat
+\endverbatim
+
+Now we create an SVM and set the SVM-C parameter to some hopefully sane value (which in real applications needs tuning; like the kernel parameters (here kernel width)).
+\verbatim
+new_classifier LIBSVM
+c 1
+\endverbatim
+
+We then assign the training data to the kernel and train our SVM:
+\verbatim
+init_kernel TRAIN
+train_classifier
+\endverbatim
+
+We can now apply our classifier to unseen test data by loading some
+test data, initializing the kernel with test data and classifying the
+examples:
+
+\verbatim
+set_features TEST ../data/fm_test_real.dat
+init_kernel TEST
+out.txt = classify
+\endverbatim
+
+In case we want to save the classifiers, such that we don't have to perform potentially time consuming training again we can save and load like this
+
+\verbatim
+save_classifier libsvm.model
+
+load_classifier libsvm.model LIBSVM
+\endverbatim
+
+Other interfaces (python,r...) would use
+\verbatim
+[b,alphas]=sg('get_classifier')
+
+sg('set_classifier', b, alphas)
+\endverbatim
+
+here.
+
+Finally, the complete example looks like this
 \verbinclude libsvm.sg
+
+and can be found in examples/cmdline/libsvm.sg .
 */

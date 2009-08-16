@@ -15,7 +15,7 @@ The simplest libshogun based program would be
 \verbinclude minimal.cpp
 
 which could be compiled with g++ -lshogun minimal.cpp -o minimal and obviously
-does nothing (apart form initializing and destroying a couple of global shogun
+does nothing (apart from initializing and destroying a couple of global shogun
 objects internally).
 
 In case one wants to redirect shoguns output functions SG_DEBUG(), SG_INFO(),
