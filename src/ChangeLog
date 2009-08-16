@@ -1,5 +1,9 @@
 2009-08-16  Soeren Sonnenburg <sonne@debian.org>
 
+	* libshogun/regression/svr/MKLRegression.cpp: another compile fix
+	* libshogun/classifier/svm/MKLClassification.cpp: fix compile error
+	  w/o svmlight
+	* ChangeLog: updated changelog
 	* NEWS: update news to release date
 
 2009-08-15  Soeren Sonnenburg <sonne@debian.org>
