@@ -1,4 +1,4 @@
-2009-08-14 Soeren Sonnenburg <sonne@debian.org>
+2009-08-16 Soeren Sonnenburg <sonne@debian.org>
 
 	* SHOGUN Release version 0.8.0 (libshogun 4.0, libshogunui 2.0)
 	* This release contains several cleanups, features and bugfixes:
