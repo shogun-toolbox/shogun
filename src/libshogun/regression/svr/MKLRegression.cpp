@@ -1,6 +1,8 @@
 #include "regression/svr/MKLRegression.h"
 #include "regression/svr/LibSVR.h"
+#ifdef USE_SVMLIGHT
 #include "regression/svr/SVR_light.h"
+#endif //USE_SVMLIGHT
 
 CMKLRegression::CMKLRegression(CSVM* s) : CMKL(s)
 {
