@@ -77,6 +77,7 @@
 #define N_BEST_PATH_TRANS_SIMPLE			"best_path_trans_simple"
 #define N_BEST_PATH_NO_B					"best_path_no_b"
 #define N_SET_SVM							"set_svm"
+#define N_SET_LINEAR_CLASSIFIER				"set_linear_classifier"
 #define N_SET_CUSTOM_KERNEL					"set_custom_kernel"
 #define N_SET_KERNEL_INIT					"set_kernel_init"
 #define N_SET_KERNEL_NORMALIZATION			"set_kernel_normalization"

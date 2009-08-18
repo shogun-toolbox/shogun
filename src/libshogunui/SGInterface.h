@@ -229,6 +229,8 @@ class CSGInterface : public CSGObject
 		bool cmd_get_num_svms();
 		/** set SVM */
 		bool cmd_set_svm();
+		/** set linear classifier */
+		bool cmd_set_linear_classifier();
 		/** classify */
 		bool cmd_classify();
 		/** classify example */

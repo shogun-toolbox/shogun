@@ -421,6 +421,11 @@ CSGInterfaceMethod sg_methods[]=
 		USAGE_I(N_SET_SVM, "bias" USAGE_COMMA "alphas")
 	},
 	{
+		N_SET_LINEAR_CLASSIFIER,
+		(&CSGInterface::cmd_set_linear_classifier),
+		USAGE_I(N_SET_LINEAR_CLASSIFIER, "bias" USAGE_COMMA "w")
+	},
+	{
 		N_GET_SVM_OBJECTIVE,
 		(&CSGInterface::cmd_get_svm_objective),
 		USAGE_O(N_GET_SVM_OBJECTIVE, "objective")
@@ -4680,6 +4685,30 @@ bool CSGInterface::cmd_set_svm()
 		svm->set_support_vector(i, (int32_t) alphas[i+num_support_vectors]);
 	}
 	delete[] alphas ;
+
+	return true;
+}
+
+bool CSGInterface::cmd_set_linear_classifier()
+{
+	if (m_nrhs!=3 || !create_return_values(0))
+		return false;
+
+	float64_t bias=get_real();
+
+	float64_t* w=NULL;
+	int32_t len=0;
+	get_real_vector(w, len);
+
+	if (!len)
+		SG_ERROR("No proper weight vector given.\n");
+
+	CLinearClassifier* c=(CLinearClassifier*) ui_classifier->get_classifier();
+	if (!c)
+		SG_ERROR("No Linear Classifier object available.\n");
+
+	c->set_w(w, len);
+	c->set_bias(bias);
 
 	return true;
 }
