@@ -28,6 +28,15 @@ sg('set_features', 'TEST', traindat);
 trainout=sg('classify');
 trainerr=mean(trainlab~=sign(trainout))
 
+sg('new_classifier', 'SVMOCAS');
+sg('set_linear_classifier', b, W');
+
+sg('set_features', 'TEST', traindat);
+trainout2=sg('classify');
+trainerr2=mean(trainlab~=sign(trainout2))
+
+max(abs(trainout-trainout2))
+
 b
 W'
 obj=sum(W.^2)+C*sum((1-trainlab.*(W'*traindat+b)).^2)
