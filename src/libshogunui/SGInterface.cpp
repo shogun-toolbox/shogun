@@ -10,6 +10,7 @@
 #include <shogun/lib/Signal.h>
 
 #include <shogun/classifier/svm/SVM.h>
+#include <shogun/classifier/LinearClassifier.h>
 #include <shogun/classifier/svm/MKL.h>
 #include <shogun/kernel/WeightedDegreePositionStringKernel.h>
 #include <shogun/kernel/WeightedDegreeStringKernel.h>
