@@ -285,7 +285,7 @@ EOF
 			then
 				cc_vendor=sun
 				cc_found=yes
-				cc_version=`cc -V 2>&1 | head -n 1 | cut -f 2 -d ':'`
+				cc_version=`cc -v 2>&1 | head -n 1 | cut -f 2 -d ':'`
 			fi
 		done
 	else
@@ -349,7 +349,7 @@ EOF
 			if cc_check
 			then
 				cxx_found=yes
-				cxx_version=`cc -V 2>&1 | head -n 1 | cut -f 2 -d ':'`
+				cxx_version=`cc -v 2>&1 | head -n 1 | cut -f 2 -d ':'`
 			fi
 		done
 	else
