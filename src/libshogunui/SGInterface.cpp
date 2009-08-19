@@ -4850,6 +4850,7 @@ bool CSGInterface::cmd_train_classifier()
 			return ui_classifier->train_svm();
 		case CT_MKLCLASSIFICATION:
 		case CT_MKLREGRESSION:
+		case CT_MKLONECLASS:
 			return ui_classifier->train_mkl();
 
 		case CT_KRR:

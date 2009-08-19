@@ -5,7 +5,7 @@
 	* Features:
 	    - Implement set_linear_classifier for static interfaces.
 	* Bugfixes:
-		- None
+		- Fix one class MKL for static interfaces.
 	* Cleanup and API Changes:
 		- None
 
