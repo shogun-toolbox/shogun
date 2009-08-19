@@ -1073,6 +1073,7 @@ bool CGUIClassifier::get_trained_classifier(
 		case CT_SVRLIGHT:
 		case CT_MKLCLASSIFICATION:
 		case CT_MKLREGRESSION:
+		case CT_MKLONECLASS:
 		case CT_KRR:
 			return get_svm(weights, rows, cols, bias, brows, bcols, idx);
 			break;
