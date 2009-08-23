@@ -2936,7 +2936,9 @@ test_octave()
 		if test "$_octave" != no
 		then
 			echocheck "octave-config"
-			if test -n "`octave-config -p OCTLIBDIR`" && test -n "`octave-config -p OCTINCLUDEDIR`" && test -n "`octave-config -p INCLUDEDIR`"
+			if test -n "`octave-config -p OCTLIBDIR 2>/dev/null`" \
+				&& test -n "`octave-config -p OCTINCLUDEDIR 2>/dev/null`" \
+				&& test -n "`octave-config -p INCLUDEDIR 2>/dev/null`"
 			then
 				test -n "$_octdir" || _octdir=`octave-config --print LOCALAPIOCTFILEDIR`
 				echores "yes"

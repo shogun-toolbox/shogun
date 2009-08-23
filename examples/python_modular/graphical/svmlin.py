@@ -23,7 +23,7 @@ svm.train()
 
 lk=LinearKernel(dense, dense)
 try:
-	svmlight=SVMLight(C, lk, labels)
+	svmlight=LibSVM(C, lk, labels)
 except NameError:
 	print 'No SVMLight support available'
 	import sys
