@@ -1095,7 +1095,7 @@ class CMath : public CSGObject
 		/// checks whether a float is finite
 		inline static int is_finite(double f)
 		{
-#ifdef isfinite
+#if defined(isfinite) || defined(SUNOS)
             return isfinite(f);
 #else
 			return finite(f);
