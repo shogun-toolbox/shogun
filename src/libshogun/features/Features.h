@@ -48,6 +48,7 @@ enum EFeatureClass
 	C_WD = 70,
 	C_SPEC = 80,
 	C_WEIGHTEDSPEC = 90,
+	C_POLY = 100,
 	C_ANY = 1000
 };
 

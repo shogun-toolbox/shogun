@@ -47,6 +47,7 @@
 #include <shogun/features/FKFeatures.h>
 #include <shogun/features/TOPFeatures.h>
 #include <shogun/features/WDFeatures.h>
+#include <shogun/features/PolyFeatures.h>
 #include <shogun/features/ExplicitSpecFeatures.h>
 #include <shogun/features/ImplicitWeightedSpecFeatures.h>
 %}
@@ -301,6 +302,7 @@
 %rename(FKFeatures) CFKFeatures;
 %rename(TOPFeatures) CTOPFeatures;
 %rename(WDFeatures) CWDFeatures;
+%rename(PolyFeatures) CPolyFeatures;
 %rename(ExplicitSpecFeatures) CExplicitSpecFeatures;
 %rename(ImplicitWeightedSpecFeatures) CImplicitWeightedSpecFeatures;
 
@@ -364,6 +366,7 @@
 %include <shogun/features/FKFeatures.h>
 %include <shogun/features/TOPFeatures.h>
 %include <shogun/features/WDFeatures.h>
+%include <shogun/features/PolyFeatures.h>
 %include <shogun/features/ExplicitSpecFeatures.h>
 %include <shogun/features/ImplicitWeightedSpecFeatures.h>
 

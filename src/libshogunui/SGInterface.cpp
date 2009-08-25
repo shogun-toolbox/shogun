@@ -22,6 +22,7 @@
 #include <shogun/kernel/CustomKernel.h>
 #include <shogun/kernel/SalzbergWordStringKernel.h>
 #include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/PolyFeatures.h>
 #include <shogun/preproc/SortWordString.h>
 
 #include <shogun/structure/Plif.h>
@@ -1701,6 +1702,19 @@ bool CSGInterface::cmd_get_features()
 			break;
 		}
 
+		case C_POLY:
+		{
+
+			float64_t* fmatrix=NULL;
+			int32_t num_feat=0;
+			int32_t num_vec=0;
+
+			((CPolyFeatures*) feat)->get_feature_matrix(&fmatrix, &num_feat, &num_vec);
+			set_real_matrix(fmatrix, num_feat, num_vec);
+			delete[] fmatrix;
+			break;
+		}
+
 		default:
 			SG_NOTIMPLEMENTED;
 	}
@@ -1779,6 +1793,10 @@ bool CSGInterface::do_set_features(bool add, bool check_dot, int32_t repetitions
 			feat=new CSimpleFeatures<float64_t>(0);
 			((CSimpleFeatures<float64_t>*) feat)->
 				set_feature_matrix(fmatrix, num_feat, num_vec);
+
+			if (m_nrhs==5)
+				feat = create_custom_real_features((CSimpleFeatures<float64_t>*) feat);
+			
 			break;
 		}
 
@@ -2555,6 +2573,7 @@ bool CSGInterface::cmd_set_kernel()
 	if (m_nrhs<2 || !create_return_values(0))
 		return false;
 
+	SG_PRINT("SGInterface: set_kernel\n");
 	CKernel* kernel=create_kernel();
 	return ui_kernel->set_kernel(kernel);
 }
@@ -2569,6 +2588,7 @@ bool CSGInterface::cmd_add_kernel()
 	m_nrhs--;
 	CKernel* kernel=create_kernel();
 
+	SG_PRINT("SGInterface: add_kernel\n");
 	return ui_kernel->add_kernel(kernel, weight);
 }
 
@@ -2585,6 +2605,8 @@ CKernel* CSGInterface::create_kernel()
 	CKernel* kernel=NULL;
 	int32_t len=0;
 	char* type=get_str_from_str_or_direct(len);
+
+	SG_PRINT("set_kernel with type: %s\n", type);
 
 	if (strmatch(type, "COMBINED"))
 	{
@@ -3053,6 +3075,7 @@ CKernel* CSGInterface::create_kernel()
 			}
 		}
 
+		SG_PRINT("create POLY kernel with dtype: %s, degree:%i, m_nrhs:%i\n", dtype, degree, m_nrhs);
 		if (strmatch(dtype, "REAL"))
 		{
 			kernel=ui_kernel->create_poly(
@@ -3289,6 +3312,33 @@ CFeatures* CSGInterface::create_custom_string_features(CStringFeatures<uint8_t>*
 		delete[] feature_class_str;
 
 		SG_UNREF(alphabet);
+	}
+
+	return feat;
+}
+
+CFeatures* CSGInterface::create_custom_real_features(CSimpleFeatures<float64_t>* orig_feat)
+{
+	CFeatures* feat=orig_feat;
+
+	if (m_nrhs>4)
+	{
+		int32_t degree=0;
+		int32_t feature_class_len=0;
+		char* feature_class_str=get_string(feature_class_len);
+		ASSERT(feature_class_str);
+		if (strmatch(feature_class_str, "POLY"))
+		{
+			//if (m_nrhs!=7)
+			//	SG_ERROR("Please specify POLY, degree\n");
+
+			degree=get_int();
+			feat = new CPolyFeatures((CSimpleFeatures<float64_t>*) feat, degree);
+		}
+		else 	
+			SG_ERROR("Unknown feature class: %s\n", feature_class_str);
+
+		delete[] feature_class_str;
 	}
 
 	return feat;
