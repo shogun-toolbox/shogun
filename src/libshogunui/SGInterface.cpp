@@ -6207,10 +6207,14 @@ bool CSGInterface::cmd_get_plif_struct()
 
 bool CSGInterface::cmd_init_dyn_prog()
 {
+	CDynProg* h = ui_structure->get_dyn_prog();
+	if (h)
+		delete h;
+
 	//ARG 1
 	int32_t num_svms=get_int();
 
-	CDynProg* h=new CDynProg(num_svms);
+	h=new CDynProg(num_svms);
 	ui_structure->set_dyn_prog(h);
 	return true;
 }
@@ -6251,6 +6255,7 @@ bool CSGInterface::cmd_set_model()
 		SG_ERROR("should be equal: Nmod: %i, num_svms: %i\n",Nmod,num_svms);
 	ASSERT(Mmod == 2)
 	h->init_mod_words_array(mod_words, Nmod, Mmod) ;
+	delete[] mod_words;
 
 	// ARG 4
 	// links: states -> signal plifs (#states x 2)
@@ -6272,8 +6277,9 @@ bool CSGInterface::cmd_set_model()
 	ASSERT(Morf==2)
 
 	ui_structure->set_orf_info(orf_info, Norf, Morf);
-
 	h->set_orf_info(orf_info, Norf, Morf);
+	delete[] orf_info;
+
 	h->set_num_states(num_states) ;
 	
 	return true;
@@ -6313,10 +6319,12 @@ bool CSGInterface::cmd_precompute_content_svms()
 	//int32_t Nweights = ui_structure->get_num_svm_weights();
 	h->set_pos(all_pos, Npos);
 	h->set_gene_string(seq, seq_len);
+	delete[] seq;
 	h->create_word_string();
 	h->precompute_stop_codons();
 	h->init_content_svm_value_array(num_svms);
 	h->set_dict_weights(weights, Nweights, num_svms);
+	delete[] weights;
 	h->precompute_content_values();
 	SG_DEBUG("precompute_content_svms done\n");
 	return true;
@@ -6347,7 +6355,7 @@ bool CSGInterface::cmd_set_lin_feat()
 	// all feature positions
 	int32_t Npos=0;
 	int32_t* all_pos;
-	get_int_vector(all_pos,Npos);
+	get_int_vector(all_pos, Npos);
 
 	//ARG 3 
 	//
