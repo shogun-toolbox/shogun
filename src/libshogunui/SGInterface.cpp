@@ -6207,14 +6207,10 @@ bool CSGInterface::cmd_get_plif_struct()
 
 bool CSGInterface::cmd_init_dyn_prog()
 {
-	CDynProg* h = ui_structure->get_dyn_prog();
-	if (h)
-		delete h;
-
 	//ARG 1
 	int32_t num_svms=get_int();
 
-	h=new CDynProg(num_svms);
+	CDynProg* h=new CDynProg(num_svms);
 	ui_structure->set_dyn_prog(h);
 	return true;
 }
