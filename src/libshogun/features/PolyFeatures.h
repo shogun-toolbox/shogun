@@ -13,7 +13,7 @@ class CPolyFeatures : public CDotFeatures
 		 * @param feat real features
 		 * @param degree degree of the polynomial kernel
 		 */
-		CPolyFeatures(CSimpleFeatures<float64_t>* feat, int32_t degree);
+		CPolyFeatures(CSimpleFeatures<float64_t>* feat, int32_t degree, bool normalize);
 
 		virtual ~CPolyFeatures();
 
@@ -48,12 +48,7 @@ class CPolyFeatures : public CDotFeatures
 
 		}
 
-		virtual float64_t dot(int32_t vec_idx1, int32_t vec_idx2)
-		{
-			SG_PRINT("CPolyFeatures: dot\n");
-			SG_NOTIMPLEMENTED;
-			return 0;
-		};
+		virtual float64_t dot(int32_t vec_idx1, int32_t vec_idx2);
 
 		inline virtual int32_t get_size()
 		{
@@ -71,12 +66,16 @@ class CPolyFeatures : public CDotFeatures
 		void add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val);
 
 	protected: 
+
+		/** store the norm of each training example */
+		void store_normalization_values();
+
 		/** caller function for the recursive function enumerate_multi_index */
 		void store_multi_index();
 
 		/** recursive function enumerating all multi-indices that sum 
 		 *  up to the degree of the polynomial kernel */
-		void enumerate_multi_index(const int32_t feat_idx, int32_t** index, int32_t* exponents, const int32_t degree);
+		void enumerate_multi_index(const int32_t feat_idx, uint16_t** index, uint16_t* exponents, const int32_t degree);
 		/** function calculating the multinomial coefficients for all 
 		 *  multi indices */
 		void store_multinomial_coefficients();
@@ -113,13 +112,18 @@ class CPolyFeatures : public CDotFeatures
 		CSimpleFeatures<float64_t>* m_feat;
 		/** degree of the polynomial kernel */
 		int32_t m_degree;
+		/** normalize */
+		bool m_normalize;
 		/** dimensions of the input space */
 		int32_t m_input_dimensions;
 		/** dimensions of the feature space of the polynomial kernel */
 		int32_t m_output_dimensions;
 		/** flattened matrix of all multi indices that 
 		 *  sum do the degree of the polynomial kernel */
-		int32_t* m_multi_index;
+		uint16_t* m_multi_index;
 		/** multinomial coefficients for all multi-indices */
 		float64_t* m_multinomial_coefficients; 
+		/**store norm of each training example */
+		float32_t* m_normalization_values; 
+
 };

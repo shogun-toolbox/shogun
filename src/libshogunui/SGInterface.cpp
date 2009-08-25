@@ -1798,7 +1798,7 @@ bool CSGInterface::do_set_features(bool add, bool check_dot, int32_t repetitions
 			((CSimpleFeatures<float64_t>*) feat)->
 				set_feature_matrix(fmatrix, num_feat, num_vec);
 
-			if (m_nrhs==5)
+			if (m_nrhs==6)
 				feat = create_custom_real_features((CSimpleFeatures<float64_t>*) feat);
 			
 			break;
@@ -3325,10 +3325,11 @@ CFeatures* CSGInterface::create_custom_real_features(CSimpleFeatures<float64_t>*
 {
 	CFeatures* feat=orig_feat;
 
-	if (m_nrhs>4)
+	if (m_nrhs==6)
 	{
 		int32_t degree=0;
 		int32_t feature_class_len=0;
+		bool normalize;
 		char* feature_class_str=get_string(feature_class_len);
 		ASSERT(feature_class_str);
 		if (strmatch(feature_class_str, "POLY"))
@@ -3337,7 +3338,9 @@ CFeatures* CSGInterface::create_custom_real_features(CSimpleFeatures<float64_t>*
 			//	SG_ERROR("Please specify POLY, degree\n");
 
 			degree=get_int();
-			feat = new CPolyFeatures((CSimpleFeatures<float64_t>*) feat, degree);
+			normalize = get_bool();
+			feat = new CPolyFeatures((CSimpleFeatures<float64_t>*) feat, degree, normalize);
+
 		}
 		else 	
 			SG_ERROR("Unknown feature class: %s\n", feature_class_str);

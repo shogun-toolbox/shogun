@@ -1,28 +1,63 @@
 
 #include "features/PolyFeatures.h"
 
-CPolyFeatures::CPolyFeatures(CSimpleFeatures<float64_t>* feat, int32_t degree)
-	: CDotFeatures(), m_multi_index(NULL), m_multinomial_coefficients(NULL)
+CPolyFeatures::CPolyFeatures(CSimpleFeatures<float64_t>* feat, int32_t degree, bool normalize)
+	: CDotFeatures(), m_multi_index(NULL), m_multinomial_coefficients(NULL), 
+		m_normalization_values(NULL)
 {
 	ASSERT(feat);
 
 	m_feat = feat;
 	SG_REF(m_feat);
 	m_degree=degree;
+	m_normalize=normalize;
 	m_input_dimensions=feat->get_num_features();
 	m_output_dimensions=calc_feature_space_dimensions(m_input_dimensions, m_degree);
 
 	store_multi_index();
 	store_multinomial_coefficients();
-
+	if (m_normalize)
+		store_normalization_values();
 }
 
 CPolyFeatures::~CPolyFeatures()
 {
 	delete[] m_multi_index;
 	delete[] m_multinomial_coefficients;
+	delete[] m_normalization_values;
 	SG_UNREF(m_feat);
 }
+
+float64_t CPolyFeatures::dot(int32_t vec_idx1, int32_t vec_idx2)
+{
+	int32_t len1;
+	bool do_free1;
+	float64_t* vec1 = m_feat->get_feature_vector(vec_idx1, len1, do_free1);
+
+	int32_t len2;
+	bool do_free2;
+	float64_t* vec2 = m_feat->get_feature_vector(vec_idx2, len2, do_free2);
+
+	float64_t sum=0;
+	int cnt=0;
+	for (int j=0; j<m_output_dimensions; j++)
+	{
+		float64_t out1=m_multinomial_coefficients[j];
+		float64_t out2=m_multinomial_coefficients[j];
+		for (int k=0; k<m_degree; k++)
+		{
+			out1*=vec1[m_multi_index[cnt]];
+			out2*=vec2[m_multi_index[cnt]];
+			cnt++;
+		}
+		sum+=out1*out2;
+	}
+	m_feat->free_feature_vector(vec1, len1, do_free1);
+	m_feat->free_feature_vector(vec2, len2, do_free2);
+
+	return sum;
+}
+
 float64_t CPolyFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
 {
 	if (vec2_len != m_output_dimensions)
@@ -45,6 +80,9 @@ float64_t CPolyFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int3
 		}
 		sum+=output*vec2[j];
 	}
+	if (m_normalize)
+		sum = sum/m_normalization_values[vec_idx1];
+
 	m_feat->free_feature_vector(vec, len, do_free);
 	return sum;
 }
@@ -59,6 +97,10 @@ void CPolyFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_
 
 	
 	int cnt=0;
+	float32_t norm_val=1;
+	if (m_normalize)
+		norm_val = m_normalization_values[vec_idx1];
+	alpha/=norm_val;
 	for (int j=0; j<vec2_len; j++)
 	{
 		float64_t output=m_multinomial_coefficients[j];
@@ -74,24 +116,42 @@ void CPolyFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_
 	}
 	m_feat->free_feature_vector(vec, len, do_free);
 }
+void CPolyFeatures::store_normalization_values()
+{
+	delete[] m_normalization_values;
+
+	int32_t num_vec = this->get_num_vectors();
+
+	m_normalization_values=new float32_t[num_vec];
+	for (int i=0; i<num_vec; i++)
+	{
+		float64_t tmp = CMath::sqrt(dot(i,i)); 
+		if (tmp==0)
+			// trap division by zero
+			m_normalization_values[i]=1;
+		else 
+			m_normalization_values[i]=tmp;
+	}
+		
+}
 
 void CPolyFeatures::store_multi_index()
 {
 	delete[] m_multi_index;
 
-        m_multi_index=new int32_t[m_output_dimensions*m_degree];
+        m_multi_index=new uint16_t[m_output_dimensions*m_degree];
 
-        int32_t* exponents = new int32_t[m_input_dimensions];
+        uint16_t* exponents = new uint16_t[m_input_dimensions];
         if (!exponents)
 		SG_ERROR( "Error allocating mem \n");	
 	/*copy adress: otherwise it will be overwritten in recursion*/
-        int32_t* index = m_multi_index;
+        uint16_t* index = m_multi_index;
         enumerate_multi_index(0, &index, exponents, m_degree);
 
 	delete[] exponents;
 }
 
-void CPolyFeatures::enumerate_multi_index(const int32_t feat_idx, int32_t** index, int32_t* exponents, const int32_t degree)
+void CPolyFeatures::enumerate_multi_index(const int32_t feat_idx, uint16_t** index, uint16_t* exponents, const int32_t degree)
 {
 	if (feat_idx==m_input_dimensions-1 || degree==0)
 	{
