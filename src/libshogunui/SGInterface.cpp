@@ -1702,6 +1702,10 @@ bool CSGInterface::cmd_get_features()
 			break;
 		}
 
+		case C_WD:
+		case C_WEIGHTEDSPEC:
+		case C_SPEC:
+		case C_COMBINED_DOT:
 		case C_POLY:
 		{
 
@@ -1709,7 +1713,7 @@ bool CSGInterface::cmd_get_features()
 			int32_t num_feat=0;
 			int32_t num_vec=0;
 
-			((CPolyFeatures*) feat)->get_feature_matrix(&fmatrix, &num_feat, &num_vec);
+			((CDotFeatures*) feat)->get_feature_matrix(&fmatrix, &num_feat, &num_vec);
 			set_real_matrix(fmatrix, num_feat, num_vec);
 			delete[] fmatrix;
 			break;
