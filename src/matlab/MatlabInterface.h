@@ -12,9 +12,9 @@
 #define mxIsLogicalScalarTrue(x) false
 #endif
 
-#include <libshogunui/SGInterface.h>
-#include <libshogun/lib/config.h>
-#include <libshogun/features/StringFeatures.h>
+#include <shogun/ui/SGInterface.h>
+#include <shogun/lib/config.h>
+#include <shogun/features/StringFeatures.h>
 
 class CMatlabInterface : public CSGInterface
 {
