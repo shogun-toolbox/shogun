@@ -37,7 +37,7 @@ class CBitString : public CSGObject
 		{
 			alphabet=new CAlphabet(alpha);
 			int32_t nbits=alphabet->get_num_bits();
-			word_len=width*nbits;
+			word_len = width*nbits;
 
 			mask=0;
 			for (int32_t j=0; j<word_len; j++)
@@ -213,6 +213,7 @@ class CBitString : public CSGObject
 			length=len;
 		}
 
+		/*
 		inline uint64_t condense(uint64_t bits, uint64_t mask) const
 			{
 				uint64_t res = 0 ;
@@ -239,7 +240,7 @@ class CBitString : public CSGObject
 				
 				return res ;
 			}
-		
+		*/
 
 		inline uint64_t operator[](uint64_t index) const
 		{
@@ -281,7 +282,7 @@ class CBitString : public CSGObject
 			if (sl>0)
 			{
 				ml=mask<<sl;
-				wl=word<<sl
+				wl=word<<sl ;
 			}
 			else
 			{
@@ -314,7 +315,7 @@ class CBitString : public CSGObject
 		/** the length of the bit string */
 		uint64_t length;
 		/** length of a word in bits */
-		const int32_t word_len;
+		int32_t word_len;
 		/** mask */
 		uint64_t mask;
 		/** mask for a single character*/
