@@ -140,6 +140,7 @@ CDynProg::CDynProg(int32_t num_svms /*= 8 */)
 
 	m_observation_matrix.set_name("m_observation_matrix");
 	m_segment_loss.set_name("m_segment_loss");
+	m_seg_loss_obj = new CSegmentLoss();
 }
 
 CDynProg::~CDynProg()
@@ -479,7 +480,7 @@ void CDynProg::set_a_trans_matrix(
 	float64_t *a_trans, int32_t num_trans, int32_t num_cols)
 {
 
-   CMath::display_matrix(a_trans,num_trans, num_cols,"a_trans");
+   //CMath::display_matrix(a_trans,num_trans, num_cols,"a_trans");
 
 	if (!((num_cols==3) || (num_cols==4)))
 		SG_ERROR("!((num_cols==3) || (num_cols==4)), num_cols: %i\n",num_cols);
@@ -824,8 +825,9 @@ void CDynProg::best_path_set_segment_ids_mask(
 	m_segment_mask.set_array(segment_mask, m, true, true) ;
 	m_segment_mask.set_name("m_segment_mask");
 	
-	m_seg_los_obj->set_segment_ids(m_segment_ids);
-	m_seg_los_obj->set_segment_mask(m_segment_mask);
+	m_seg_loss_obj->set_segment_mask(&m_segment_mask);
+	m_seg_loss_obj->set_segment_ids(&m_segment_ids);
+	m_seg_loss_obj->compute_loss(m_pos.get_array(), m_seq_len);
 }
 
 void CDynProg::get_scores(float64_t **scores, int32_t *m) 
@@ -2000,8 +2002,12 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 
 								float64_t segment_loss = 0.0 ;
 								if (with_loss)
+								{
 									segment_loss = extend_segment_loss(loss, elem_id[i], ts, loss_last_pos, last_loss) ;
-
+									float32_t loss2 = m_seg_loss_obj->get_segment_loss(ts, t, elem_id[i]);
+									if (loss2>1e-2)
+										SG_PRINT("segment_loss:%f loss2:%f\n", segment_loss, loss2);
+								}
 								////////////////////////////////////////////////////////
 								// BEST_PATH_TRANS
 								////////////////////////////////////////////////////////

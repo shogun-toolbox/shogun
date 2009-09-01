@@ -2,7 +2,7 @@
 #define __OCTAVEINTERFACE__H_
 
 #include <shogun/lib/config.h>
-#include <shogun/ui/SGInterface.h>
+#include <ui/SGInterface.h>
 #include <shogun/lib/memory.h>
 
 #undef HAVE_STAT

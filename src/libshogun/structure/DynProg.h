@@ -22,6 +22,7 @@
 #include "structure/PlifBase.h"
 #include "structure/Plif.h"
 #include "structure/IntronList.h"
+#include "structure/SegmentLoss.h"
 #include "features/StringFeatures.h"
 #include "features/SparseFeatures.h"
 #include "distributions/Distribution.h"
@@ -495,6 +496,12 @@ public:
 	 */
 	void set_intron_list(CIntronList* intron_list, int32_t num_plifs);
 
+	/***/
+	CSegmentLoss* get_segment_loss_object()
+	{
+		return m_seg_loss_obj;
+	}
+	
 protected:
 
 	/* helper functions */
@@ -772,7 +779,7 @@ protected:
 	CArray<float64_t> m_my_losses;
 
 	/***/
-	CSegmentLoss* m_seg_los_obj;
+	CSegmentLoss* m_seg_loss_obj;
 
 	// output arguments
 	/** scores */

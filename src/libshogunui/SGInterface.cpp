@@ -973,26 +973,6 @@ CSGInterfaceMethod sg_methods[]=
 			USAGE_COMMA "my_scores"
 			USAGE_COMMA "my_loss")
 	},
-	{
-		N_BEST_PATH_NO_B,
-		(&CSGInterface::cmd_best_path_no_b),
-		USAGE_IO(N_BEST_PATH_NO_B, "p"
-				USAGE_COMMA "q"
-				USAGE_COMMA "a"
-				USAGE_COMMA "max_iter",
-				"prob" USAGE_COMMA "path")
-	},
-	{
-		N_BEST_PATH_NO_B_TRANS,
-		(&CSGInterface::cmd_best_path_no_b_trans),
-		USAGE_IO(N_BEST_PATH_NO_B_TRANS, "p"
-			USAGE_COMMA "q"
-			USAGE_COMMA "cmd_trans"
-			USAGE_COMMA "max_iter"
-			USAGE_COMMA "nbest",
-			"prob" USAGE_COMMA "path")
-	},
-
 
 	{ "POIM", NULL, NULL },
 	{
@@ -6586,7 +6566,7 @@ bool CSGInterface::cmd_best_path_trans()
 {
 	CDynProg* h = ui_structure->get_dyn_prog();
 
-	CSegmentLoss* seg_loss_obj = h->get_segment_loss();	
+	CSegmentLoss* seg_loss_obj = h->get_segment_loss_object();	
 
 	CPlifMatrix* pm=ui_structure->get_plif_matrix();
 
@@ -6692,19 +6672,20 @@ bool CSGInterface::cmd_best_path_trans()
 	SG_DEBUG("best_path_trans: M: %i, Mseg_path: %i\n", M, Mseg_path);
 	
 
-	h->set_content_type_array(seg_path,Nseg_path,Mseg_path);
 	if (seg_path!=NULL)
+	{
 		h->best_path_set_segment_loss(loss, Nloss, Mloss) ;
 		seg_loss_obj->set_segment_loss(loss, Nloss, Mloss);
+	}
 	else
 	{
 		float64_t zero2[2] = {0.0, 0.0} ;
 		h->best_path_set_segment_loss(zero2, 2, 1) ;
 		seg_loss_obj->set_segment_loss(zero2, 2, 1);
 	}
+	h->set_content_type_array(seg_path,Nseg_path,Mseg_path);
 	delete[] seg_path;
 	
-
 	bool segment_loss_non_zero=false;
 	for (int32_t i=0; i<Nloss*Mloss; i++)
 	{
