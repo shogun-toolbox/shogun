@@ -771,6 +771,9 @@ protected:
 	/** my losses */
 	CArray<float64_t> m_my_losses;
 
+	/***/
+	CSegmentLoss* m_seg_los_obj;
+
 	// output arguments
 	/** scores */
 	CArray<float64_t> m_scores;

@@ -796,6 +796,38 @@ void CDynProg::set_dict_weights(
 	m_segment_mask.zero() ;
 }
 
+void CDynProg::best_path_set_segment_loss(
+	float64_t* segment_loss, int32_t m, int32_t n)
+{
+	// here we need two matrices. Store it in one: 2N x N
+	if (2*m!=n)
+		SG_ERROR( "segment_loss should be 2 x quadratic matrix: %i!=%i\n", 2*m, n) ;
+
+	if (m!=m_max_a_id+1)
+		SG_ERROR( "segment_loss size should match m_max_a_id: %i!=%i\n", m, m_max_a_id+1) ;
+
+	m_segment_loss.set_array(segment_loss, m, n/2, 2, true, true) ;
+	/*for (int32_t i=0; i<n; i++)
+		for (int32_t j=0; j<n; j++)
+		SG_DEBUG( "loss(%i,%i)=%f\n", i,j, m_segment_loss.element(0,i,j)) ;*/
+}
+
+void CDynProg::best_path_set_segment_ids_mask(
+	int32_t* segment_ids, float64_t* segment_mask, int32_t m)
+{
+	int32_t max_id = 0;
+	for (int32_t i=1;i<m;i++)
+		max_id = CMath::max(max_id,segment_ids[i]);
+	//SG_PRINT("max_id: %i, m:%i\n",max_id, m); 	
+	m_segment_ids.set_array(segment_ids, m, true, true) ;
+	m_segment_ids.set_name("m_segment_ids");
+	m_segment_mask.set_array(segment_mask, m, true, true) ;
+	m_segment_mask.set_name("m_segment_mask");
+	
+	m_seg_los_obj->set_segment_ids(m_segment_ids);
+	m_seg_los_obj->set_segment_mask(m_segment_mask);
+}
+
 void CDynProg::get_scores(float64_t **scores, int32_t *m) 
 {
    ASSERT(scores && m);
@@ -867,6 +899,250 @@ void CDynProg::get_path_losses(float64_t** losses, int32_t* seq_len)
    ASSERT(*losses);
 
    memcpy(*losses,m_my_losses.get_array(),sz);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+float64_t CDynProg::best_path_no_b(
+	int32_t max_iter, int32_t &best_iter, int32_t *my_path)
+{
+	CArray2<T_STATES> psi(max_iter, m_N) ;
+   psi.set_name("psi");
+	CArray<float64_t>* delta = new CArray<float64_t>(m_N) ;
+	CArray<float64_t>* delta_new = new CArray<float64_t>(m_N) ;
+	
+	{ // initialization
+		for (int32_t i=0; i<m_N; i++)
+		{
+			delta->element(i) = get_p(i) ;
+			psi.element(0, i)= 0 ;
+		}
+	} 
+	
+	float64_t best_iter_prob = CMath::ALMOST_NEG_INFTY ;
+	best_iter = 0 ;
+	
+	// recursion
+	for (int32_t t=1; t<max_iter; t++)
+	{
+		CArray<float64_t>* dummy;
+		int32_t NN=m_N ;
+		for (int32_t j=0; j<NN; j++)
+		{
+			float64_t maxj = delta->element(0) + m_transition_matrix_a.element(0,j);
+			int32_t argmax=0;
+			
+			for (int32_t i=1; i<NN; i++)
+			{
+				float64_t temp = delta->element(i) + m_transition_matrix_a.element(i,j);
+				
+				if (temp>maxj)
+				{
+					maxj=temp;
+					argmax=i;
+				}
+			}
+			delta_new->element(j)=maxj ;
+			psi.element(t, j)=argmax ;
+		}
+		
+		dummy=delta;
+		delta=delta_new;
+		delta_new=dummy;	//switch delta/delta_new
+		
+		{ //termination
+			float64_t maxj=delta->element(0)+get_q(0);
+			int32_t argmax=0;
+			
+			for (int32_t i=1; i<m_N; i++)
+			{
+				float64_t temp=delta->element(i)+get_q(i);
+				
+				if (temp>maxj)
+				{
+					maxj=temp;
+					argmax=i;
+				}
+			}
+			//pat_prob=maxj;
+			
+			if (maxj>best_iter_prob)
+			{
+				my_path[t]=argmax;
+				best_iter=t ;
+				best_iter_prob = maxj ;
+			} ;
+		} ;
+	}
+
+	
+	{ //state sequence backtracking
+		for (int32_t t = best_iter; t>0; t--)
+		{
+			my_path[t-1]=psi.element(t, my_path[t]);
+		}
+	}
+
+	delete delta ;
+	delete delta_new ;
+	
+	return best_iter_prob ;
+}
+
+void CDynProg::best_path_no_b_trans(
+	int32_t max_iter, int32_t &max_best_iter, int16_t nbest,
+	float64_t *prob_nbest, int32_t *my_paths)
+{
+	//T_STATES *psi=new T_STATES[max_iter*m_N*nbest] ;
+	CArray3<T_STATES> psi(max_iter, m_N, nbest) ;
+   psi.set_name("psi");
+	CArray3<int16_t> ktable(max_iter, m_N, nbest) ;
+   ktable.set_name("ktable");
+	CArray2<int16_t> ktable_ends(max_iter, nbest) ;
+   ktable_ends.set_name("ktable_ends");
+
+	CArray<float64_t> tempvv(nbest*m_N) ;
+	CArray<int32_t> tempii(nbest*m_N) ;
+
+	CArray2<T_STATES> path_ends(max_iter, nbest) ;
+   path_ends.set_name("path_ends");
+	CArray2<float64_t> *delta=new CArray2<float64_t>(m_N, nbest) ;
+   delta->set_name("delta");
+	CArray2<float64_t> *delta_new=new CArray2<float64_t>(m_N, nbest) ;
+   delta_new->set_name("delta_new");
+	CArray2<float64_t> delta_end(max_iter, nbest) ;
+   delta_end.set_name("delta_end");
+
+	CArray2<int32_t> paths(max_iter, nbest) ;
+   paths.set_name("paths");
+	paths.set_array(my_paths, max_iter, nbest, false, false) ;
+
+	{ // initialization
+		for (T_STATES i=0; i<m_N; i++)
+		{
+			delta->element(i,0) = get_p(i) ;
+			for (int16_t k=1; k<nbest; k++)
+			{
+				delta->element(i,k)=-CMath::INFTY ;
+				ktable.element(0,i,k)=0 ;
+			}
+		}
+	}
+	
+	// recursion
+	for (int32_t t=1; t<max_iter; t++)
+	{
+		CArray2<float64_t>* dummy=NULL;
+
+		for (T_STATES j=0; j<m_N; j++)
+		{
+			const T_STATES num_elem   = trans_list_forward_cnt[j] ;
+			const T_STATES *elem_list = trans_list_forward[j] ;
+			const float64_t *elem_val = trans_list_forward_val[j] ;
+			
+			int32_t list_len=0 ;
+			for (int16_t diff=0; diff<nbest; diff++)
+			{
+				for (int32_t i=0; i<num_elem; i++)
+				{
+					T_STATES ii = elem_list[i] ;
+					
+					tempvv.element(list_len) = -(delta->element(ii,diff) + elem_val[i]) ;
+					tempii.element(list_len) = diff*m_N + ii ;
+					list_len++ ;
+				}
+			}
+			CMath::qsort_index(tempvv.get_array(), tempii.get_array(), list_len) ;
+			
+			for (int16_t k=0; k<nbest; k++)
+			{
+				if (k<list_len)
+				{
+					delta_new->element(j,k)  = -tempvv[k] ;
+					psi.element(t,j,k)      = (tempii[k]%m_N) ;
+					ktable.element(t,j,k)   = (tempii[k]-(tempii[k]%m_N))/m_N ;
+				}
+				else
+				{
+					delta_new->element(j,k)  = -CMath::INFTY ;
+					psi.element(t,j,k)      = 0 ;
+					ktable.element(t,j,k)   = 0 ;
+				}
+			}
+		}
+		
+		dummy=delta;
+		delta=delta_new;
+		delta_new=dummy;	//switch delta/delta_new
+		
+		{ //termination
+			int32_t list_len = 0 ;
+			for (int16_t diff=0; diff<nbest; diff++)
+			{
+				for (T_STATES i=0; i<m_N; i++)
+				{
+					tempvv.element(list_len) = -(delta->element(i,diff)+get_q(i));
+					tempii.element(list_len) = diff*m_N + i ;
+					list_len++ ;
+				}
+			}
+			CMath::qsort_index(tempvv.get_array(), tempii.get_array(), list_len) ;
+			
+			for (int16_t k=0; k<nbest; k++)
+			{
+				delta_end.element(t-1,k) = -tempvv[k] ;
+				path_ends.element(t-1,k) = (tempii[k]%m_N) ;
+				ktable_ends.element(t-1,k) = (tempii[k]-(tempii[k]%m_N))/m_N ;
+			}
+		}
+	}
+	
+	{ //state sequence backtracking
+		max_best_iter=0 ;
+		
+		CArray<float64_t> sort_delta_end(max_iter*nbest) ;
+		CArray<int16_t> sort_k(max_iter*nbest) ;
+		CArray<int32_t> sort_t(max_iter*nbest) ;
+		CArray<int32_t> sort_idx(max_iter*nbest) ;
+		
+		int32_t i=0 ;
+		for (int32_t iter=0; iter<max_iter-1; iter++)
+			for (int16_t k=0; k<nbest; k++)
+			{
+				sort_delta_end[i]=-delta_end.element(iter,k) ;
+				sort_k[i]=k ;
+				sort_t[i]=iter+1 ;
+				sort_idx[i]=i ;
+				i++ ;
+			}
+		
+		CMath::qsort_index(sort_delta_end.get_array(), sort_idx.get_array(), (max_iter-1)*nbest) ;
+
+		for (int16_t n=0; n<nbest; n++)
+		{
+			int16_t k=sort_k[sort_idx[n]] ;
+			int32_t iter=sort_t[sort_idx[n]] ;
+			prob_nbest[n]=-sort_delta_end[n] ;
+
+			if (iter>max_best_iter)
+				max_best_iter=iter ;
+			
+			ASSERT(k<nbest) ;
+			ASSERT(iter<max_iter) ;
+			
+			paths.element(iter,n) = path_ends.element(iter-1, k) ;
+			int16_t q   = ktable_ends.element(iter-1, k) ;
+			
+			for (int32_t t = iter; t>0; t--)
+			{
+				paths.element(t-1,n)=psi.element(t, paths.element(t,n), q);
+				q = ktable.element(t, paths.element(t,n), q) ;
+			}
+		}
+	}
+
+	delete delta ;
+	delete delta_new ;
 }
 
 void CDynProg::init_segment_loss(
