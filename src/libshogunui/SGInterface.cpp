@@ -6836,6 +6836,7 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 
 
 	CDynProg* h = ui_structure->get_dyn_prog();
+	CSegmentLoss* seg_loss_obj = h->get_segment_loss_object();
 	h->set_num_states(num_states) ;
 	h->set_p_vector(p, num_states) ;
 	h->set_q_vector(q, num_states) ;
@@ -6859,14 +6860,18 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 		my_pos[i]  = mypos_seq[i] ;
 	}
 
-	h->set_content_type_array(seg_path,Nseg_path,Mseg_path);
 	if (seg_path!=NULL)
+	{
 		h->best_path_set_segment_loss(loss, Nloss, Mloss) ;
+		seg_loss_obj->set_segment_loss(loss, Nloss, Mloss);
+	}
 	else
 	{
 		float64_t zero2[2] = {0.0, 0.0} ;
 		h->best_path_set_segment_loss(zero2, 2, 1) ;
+		seg_loss_obj->set_segment_loss(zero2, 2, 1);
 	}
+	h->set_content_type_array(seg_path,Nseg_path,Mseg_path);
 
 	float64_t* p_Plif_deriv = new float64_t[(max_plif_id+1)*max_plif_len];
 	CArray2<float64_t> a_Plif_deriv(p_Plif_deriv, max_plif_id+1, max_plif_len, false, false) ;

@@ -66,12 +66,12 @@ void CSegmentLoss::compute_loss(int32_t* all_pos, int32_t len)
 	for (int seg_type=0; seg_type<m_num_segment_types; seg_type++)
 	{
 		float32_t value = 0;
-		int32_t last_id = m_segment_ids->element(0);
+		int32_t last_id = -1;
 		int32_t last_pos = all_pos[0];
 		for (int pos=0; pos<len; pos++)
 		{
 			int32_t cur_id = m_segment_ids->element(pos);
-			if (cur_id!=last_id)
+			if (cur_id!=last_id && m_segment_mask->element(pos)>1e-7)
 			{
 				// segment contribution
 				value += m_segment_mask->element(pos)*m_segment_loss.element(cur_id, seg_type, 0);
@@ -83,6 +83,7 @@ void CSegmentLoss::compute_loss(int32_t* all_pos, int32_t len)
 			m_segment_loss_matrix.element(seg_type, pos)=value;
 		}
 	}
+	m_segment_loss_matrix.display_array();	
 }
 float32_t CSegmentLoss::get_segment_loss(int32_t from_pos, int32_t to_pos, int32_t segment_id)
 {
