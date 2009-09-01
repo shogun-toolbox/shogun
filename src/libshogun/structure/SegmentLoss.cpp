@@ -21,13 +21,11 @@ CSegmentLoss::CSegmentLoss()
 }
 CSegmentLoss::~CSegmentLoss()
 {
-	
-	SG_PRINT("destructor\n");
 }
 
 void CSegmentLoss::set_segment_loss(float64_t* segment_loss, int32_t m, int32_t n)
 {
-	SG_PRINT("set_segment_loss\n");
+	//SG_PRINT("set_segment_loss\n");
 	// here we need two matrices. Store it in one: 2N x N
 	if (2*m!=n)
 		SG_ERROR( "segment_loss should be 2 x quadratic matrix: %i!=%i\n", 2*m, n) ;
@@ -43,21 +41,21 @@ void CSegmentLoss::set_segment_loss(float64_t* segment_loss, int32_t m, int32_t 
 void CSegmentLoss::set_segment_ids(CArray<int32_t>* segment_ids)
 {
 
-	SG_PRINT("set_segment_ids\n");
+	//SG_PRINT("set_segment_ids\n");
 	m_segment_ids = segment_ids;
 }
 
 void CSegmentLoss::set_segment_mask(CArray<float64_t>* segment_mask)
 {
-	SG_PRINT("set_segment_mask\n");
+	//SG_PRINT("set_segment_mask\n");
 	m_segment_mask = segment_mask;
 }
 
 void CSegmentLoss::compute_loss(int32_t* all_pos, int32_t len)
 {
-	SG_PRINT("compute loss: len: %i, m_num_segment_types: %i\n", len, m_num_segment_types);
-	SG_PRINT("m_segment_mask->element(0):%f \n", m_segment_mask->element(0));
-	SG_PRINT("m_segment_ids->element(0):%i \n", m_segment_ids->element(0));
+	//SG_PRINT("compute loss: len: %i, m_num_segment_types: %i\n", len, m_num_segment_types);
+	//SG_PRINT("m_segment_mask->element(0):%f \n", m_segment_mask->element(0));
+	//SG_PRINT("m_segment_ids->element(0):%i \n", m_segment_ids->element(0));
 	ASSERT(m_segment_ids->get_dim1()==len);
 	ASSERT(m_segment_mask->get_dim1()==len);
 
@@ -67,11 +65,11 @@ void CSegmentLoss::compute_loss(int32_t* all_pos, int32_t len)
 	{
 		float32_t value = 0;
 		int32_t last_id = -1;
-		int32_t last_pos = all_pos[0];
-		for (int pos=0; pos<len; pos++)
+		int32_t last_pos = all_pos[len-1];
+		for (int pos=len-1;pos>=0; pos--)
 		{
 			int32_t cur_id = m_segment_ids->element(pos);
-			if (cur_id!=last_id && m_segment_mask->element(pos)>1e-7)
+			if (cur_id!=last_id)
 			{
 				// segment contribution
 				value += m_segment_mask->element(pos)*m_segment_loss.element(cur_id, seg_type, 0);
@@ -83,9 +81,26 @@ void CSegmentLoss::compute_loss(int32_t* all_pos, int32_t len)
 			m_segment_loss_matrix.element(seg_type, pos)=value;
 		}
 	}
-	m_segment_loss_matrix.display_array();	
+	//m_segment_loss_matrix.display_array();	
 }
 float32_t CSegmentLoss::get_segment_loss(int32_t from_pos, int32_t to_pos, int32_t segment_id)
 {
-	return m_segment_loss_matrix.element(segment_id, to_pos)-m_segment_loss_matrix.element(segment_id, from_pos);
+	float32_t diff_contrib = m_segment_loss_matrix.element(segment_id, from_pos)-m_segment_loss_matrix.element(segment_id, to_pos);
+	float32_t start_contrib = m_segment_loss.element(segment_id, m_segment_ids->element(to_pos), 0)*m_segment_mask->element(to_pos);
+	//if (from_pos==92)
+	//{
+	//	SG_PRINT("segment_id:%i, from_pos:%i, to_pos:%i\n", segment_id, from_pos, to_pos);
+	//	SG_PRINT("m_segment_ids->element(from_pos):%i, m_segment_ids->element(to_pos):%i\n", m_segment_ids->element(from_pos), m_segment_ids->element(to_pos));
+		//for (int i=from_pos; i<=to_pos; i++)
+		//	SG_PRINT("%f  ", m_segment_loss_matrix.element(segment_id, i));
+		//SG_PRINT(" \n");
+	//}
+	
+	//SG_PRINT("diff_contrib:%f start_contrib:%f\n", diff_contrib, start_contrib);
+	
+	//if (m_segment_ids->element(from_pos)!=m_segment_ids->element(to_pos))
+	//{
+	//	return diff_contrib;
+	//}
+	return start_contrib + diff_contrib;
 }

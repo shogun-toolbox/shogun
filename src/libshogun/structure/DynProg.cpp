@@ -1906,8 +1906,8 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 
 			if (with_loss)
 			{
-				init_segment_loss(loss, m_seq_len, max_look_back);
-				find_segment_loss_till_pos(t, m_segment_ids, m_segment_mask, loss);  
+				//init_segment_loss(loss, m_seq_len, max_look_back);
+				//find_segment_loss_till_pos(t, m_segment_ids, m_segment_mask, loss);  
 			}
 
 			for (T_STATES j=0; j<m_N; j++)
@@ -2005,11 +2005,9 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 								float64_t segment_loss = 0.0 ;
 								if (with_loss)
 								{
-									segment_loss = extend_segment_loss(loss, elem_id[i], ts, loss_last_pos, last_loss) ;
-									//float32_t loss2 = 0.0;
-									//segment_loss = m_seg_loss_obj->get_segment_loss(ts, t, elem_id[i]);
-									//if (loss2>1e-2)
-								//		SG_PRINT("segment_loss:%f loss2:%f\n", segment_loss, loss2);
+									//segment_loss = extend_segment_loss(loss, elem_id[i], ts, loss_last_pos, last_loss) ;
+									segment_loss = m_seg_loss_obj->get_segment_loss(ts, t, elem_id[i]);
+								//	SG_PRINT("segment_loss:%f loss2:%f\n", segment_loss, loss2);
 								}
 								////////////////////////////////////////////////////////
 								// BEST_PATH_TRANS
@@ -2475,17 +2473,17 @@ void CDynProg::best_path_trans_deriv(
 		int32_t to_pos     = my_pos_seq[i+1] ;
 
 		// compute loss relative to another segmentation using the segment_loss function
-		init_segment_loss(loss, m_seq_len, m_pos[to_pos]-m_pos[from_pos]+10);
-		find_segment_loss_till_pos(to_pos,m_segment_ids, m_segment_mask, loss);  
+		//init_segment_loss(loss, m_seq_len, m_pos[to_pos]-m_pos[from_pos]+10);
+		//find_segment_loss_till_pos(to_pos,m_segment_ids, m_segment_mask, loss);  
 
 		int32_t loss_last_pos = to_pos ;
 		float64_t last_loss = 0.0 ;
 		int32_t elem_id = m_transition_matrix_a_id.element(from_state, to_state) ;
-		my_losses[i] = extend_segment_loss(loss, elem_id, from_pos, loss_last_pos, last_loss) ;
-		float64_t loss2 = m_seg_loss_obj->get_segment_loss(from_pos, to_pos, elem_id);
+		//my_losses[i] = extend_segment_loss(loss, elem_id, from_pos, loss_last_pos, last_loss) ;
+		my_losses[i] = m_seg_loss_obj->get_segment_loss(from_pos, to_pos, elem_id);
 		
-		SG_PRINT("losses[%i]:%f loss:%f\n",i, my_losses[i], loss2);
-		SG_PRINT( "%i. segment loss %f (id=%i): from=%i(%i), to=%i(%i)\n", i, my_losses[i], elem_id, from_pos, from_state, to_pos, to_state) ;
+		//SG_PRINT("losses[%i]:%f loss:%f\n",i, my_losses[i], loss2);
+		//SG_PRINT( "%i. segment loss %f (id=%i): from=%i(%i), to=%i(%i)\n", i, my_losses[i], elem_id, from_pos, from_state, to_pos, to_state) ;
 #ifdef DYNPROG_DEBUG
 		io->set_loglevel(M_DEBUG) ;
 		SG_DEBUG( "%i. segment loss %f (id=%i): from=%i(%i), to=%i(%i)\n", i, my_losses[i], elem_id, from_pos, from_state, to_pos, to_state) ;
