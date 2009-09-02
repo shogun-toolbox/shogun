@@ -1599,13 +1599,13 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 		long_transition_content_scores_prev.set_name("long_transition_content_scores_prev");
 		CArray2<float64_t> long_transition_content_scores_elem(m_N,m_N) ;
 		long_transition_content_scores_elem.set_name("long_transition_content_scores_elem");
+#endif		
 		CArray2<float64_t> long_transition_content_scores_loss(m_N,m_N) ;
 		long_transition_content_scores_loss.set_name("long_transition_content_scores_loss");
-#endif		
-		//if (with_loss || nbest!=1)
+
 		if (nbest!=1)
 		{
-			fprintf(stderr, "disabling long transitions\n") ;
+			SG_ERROR("Long transitions are not supported for nbest!=1") ;
 			long_transitions = false ;
 		}
 		long_transition_content_scores.set_const(-CMath::INFTY);
@@ -1613,8 +1613,9 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 		long_transition_content_scores_pen.set_const(0) ;
 		long_transition_content_scores_elem.set_const(0) ;
 		long_transition_content_scores_prev.set_const(0) ;
-		long_transition_content_scores_loss.set_const(0) ;
 #endif
+		if (with_loss)
+			long_transition_content_scores_loss.set_const(0) ;
 		long_transition_content_start.zero() ;
 		long_transition_content_start_position.zero() ;
 #ifdef DYNPROG_DEBUG
@@ -2181,18 +2182,20 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 
 								float64_t mval = -(long_transition_content_scores.get_element(ii, j) + pen_val*0.5) ;
 
+#ifdef DYNPROG_DEBUG
 								float64_t segment_loss=0.0 ;
+#endif
 								float64_t segment_loss_total=0.0 ;
 								if (with_loss)
 								{   // this is the loss for the 3' end fragment of the segment
 									// (the 5' end and the middle section loss is already contained in mval)
 									
-									//segment_loss = extend_segment_loss(loss, elem_id[i], ts, loss_last_pos, last_loss) ;
+#ifdef DYNPROG_DEBUG
+									// this is an alternative, which should be identical, if the loss is additive
 									segment_loss = m_seg_loss_obj->get_segment_loss(long_transition_content_end_position.get_element(ii,j), t, elem_id[i]);
 									//mval -= segment_loss ;
-#ifdef DYNPROG_DEBUG
-									segment_loss_total = m_seg_loss_obj->get_segment_loss(long_transition_content_start_position.get_element(ii,j), t, elem_id[i]);
 #endif
+									segment_loss_total = m_seg_loss_obj->get_segment_loss(long_transition_content_start_position.get_element(ii,j), t, elem_id[i]);
 									mval -= (segment_loss_total-long_transition_content_scores_loss.get_element(ii, j)) ;
 								}
 
@@ -2218,17 +2221,6 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 								}
 #endif
 
-								/* // incomplete extra check
-								   float64_t mval2 = CMath::INFTY ;
-								   if (long_transition_content_position.get_element(ii,j)>0)
-								   mval2 = -( pen_val/2 + delta.element(delta_array, long_transition_content_position.get_element(ii,j), ii, 0, m_seq_len, m_N) + elem_val[i]  ) ;
-								   if (fabs(mval-mval2)>1e-8)
-								   SG_PRINT("!!!  mval=%1.2f  mval2=%1.2f\n", mval, mval2) ;
-
-								   if (long_transition_content_position.get_element(ii,j)>0)
-								   mval2 = -( pen_val/2 + delta.element(delta_array, long_transition_content_position.get_element(ii,j), ii, 0, m_seq_len, m_N) + elem_val[i]  ) ;
-								   */
-
 
 								if ((mval < fixedtempvv_) &&
 									(m_pos[t] - m_pos[long_transition_content_start_position.get_element(ii, j)])<=look_back_orig_ /*m_long_transition_max*/)
@@ -2249,73 +2241,74 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 								}
 
 								int32_t start = long_transition_content_start.get_element(ii, j) ;
-								int32_t t2 = start ;
-								for (int32_t ts2=start; m_pos[t]-m_pos[ts2] > m_long_transition_threshold ; ts2++)
+								int32_t end_3p_part = start ;
+								for (int32_t start_3p_part=start; m_pos[t]-m_pos[start_3p_part] > m_long_transition_threshold ; start_3p_part++)
 								{
-									// find t2, which is greater than ts2 and at least m_long_transition_threshold away
-									while (t2<=t && m_pos[t2+1]-m_pos[ts2]<=m_long_transition_threshold)
-										t2++ ;
+									// find end_3p_part, which is greater than start_3p_part and at least m_long_transition_threshold away
+									while (end_3p_part<=t && m_pos[end_3p_part+1]-m_pos[start_3p_part]<=m_long_transition_threshold)
+										end_3p_part++ ;
 
-									ASSERT(m_pos[t2+1]-m_pos[ts2] > m_long_transition_threshold || t2==t) ;
-									ASSERT(m_pos[t2]-m_pos[ts2] <= m_long_transition_threshold) ;
+									ASSERT(m_pos[end_3p_part+1]-m_pos[start_3p_part] > m_long_transition_threshold || end_3p_part==t) ;
+									ASSERT(m_pos[end_3p_part]-m_pos[start_3p_part] <= m_long_transition_threshold) ;
 
 									/* recompute penalty, if necessary */
 									if (penalty)
 									{
 										int32_t frame = m_orf_info.element(ii,0);
-										lookup_content_svm_values(ts2, t2, m_pos[ts2], m_pos[t2], svm_value, frame); // * t -> t2 
-										pen_val = penalty->lookup_penalty(m_pos[t2]-m_pos[ts2], svm_value) ;
+										lookup_content_svm_values(start_3p_part, end_3p_part, m_pos[start_3p_part], m_pos[end_3p_part], svm_value, frame); // * t -> end_3p_part 
+										pen_val = penalty->lookup_penalty(m_pos[end_3p_part]-m_pos[start_3p_part], svm_value) ;
 									}
 
-									/*if (m_pos[ts2]==1003)
+									/*if (m_pos[start_3p_part]==1003)
 									{
-										SG_PRINT("Part1: %i - %i   vs  %i - %i\n", m_pos[t], m_pos[ts], m_pos[t2], m_pos[ts2]) ;
-										SG_PRINT("Part1: ts=%i  t=%i  ts2=%i  m_seq_len=%i\n", m_pos[ts], m_pos[t], m_pos[ts2], m_seq_len) ;
+										SG_PRINT("Part1: %i - %i   vs  %i - %i\n", m_pos[t], m_pos[ts], m_pos[end_3p_part], m_pos[start_3p_part]) ;
+										SG_PRINT("Part1: ts=%i  t=%i  start_3p_part=%i  m_seq_len=%i\n", m_pos[ts], m_pos[t], m_pos[start_3p_part], m_seq_len) ;
 										}*/
 
-									float64_t mval_trans = -( elem_val[i] + pen_val*0.5 + delta.element(delta_array, ts2, ii, 0, m_seq_len, m_N) ) ;
+									float64_t mval_trans = -( elem_val[i] + pen_val*0.5 + delta.element(delta_array, start_3p_part, ii, 0, m_seq_len, m_N) ) ;
 									//float64_t mval_trans = -( elem_val[i] + delta.element(delta_array, ts, ii, 0, m_seq_len, m_N) ) ; // enable this for the incomplete extra check
 
 									float64_t segment_loss_=0.0 ;
 									if (with_loss)
 									{  // this is the loss from the start of the long segment (5' part + middle section)
 										
-										//segment_loss = extend_segment_loss(loss, elem_id[i], ts, loss_last_pos, last_loss) ;
-										segment_loss_ = m_seg_loss_obj->get_segment_loss(long_transition_content_start_position.get_element(ii,j), t2, elem_id[i]); // * unsure
+										segment_loss_ = m_seg_loss_obj->get_segment_loss(long_transition_content_start_position.get_element(ii,j), end_3p_part, elem_id[i]); // * unsure
 										
 										mval_trans -= segment_loss_ ;
 									}
 
-									if (m_pos[t2] - m_pos[long_transition_content_start_position.get_element(ii, j)] > look_back_orig_/*m_long_transition_max*/)
+									if (m_pos[end_3p_part] - m_pos[long_transition_content_start_position.get_element(ii, j)] > look_back_orig_/*m_long_transition_max*/) // unsure: should it be end_3p_part or t ??
 									{
 										long_transition_content_scores.set_element(-CMath::INFTY, ii, j) ;
 										long_transition_content_start_position.set_element(0, ii, j) ;
+										if (with_loss)
+											long_transition_content_scores_loss.set_element(0.0, ii, j) ;
 #ifdef DYNPROG_DEBUG
 										long_transition_content_scores_pen.set_element(0.0, ii, j) ;
 										long_transition_content_scores_elem.set_element(0.0, ii, j) ;
 										long_transition_content_scores_prev.set_element(0.0, ii, j) ;
 										long_transition_content_end_position.set_element(0, ii, j) ;
-										long_transition_content_scores_loss.set_element(0.0, ii, j) ;
 #endif
 									}
 									if (-long_transition_content_scores.get_element(ii, j) > mval_trans )
 									{
 										/* then the old long transition is either too far away or worse than the current one */
 										long_transition_content_scores.set_element(-mval_trans, ii, j) ;
-										long_transition_content_start_position.set_element(ts2, ii, j) ;
+										long_transition_content_start_position.set_element(start_3p_part, ii, j) ;
+										if (with_loss)
+											long_transition_content_scores_loss.set_element(segment_loss_, ii, j) ;
 #ifdef DYNPROG_DEBUG
 										long_transition_content_scores_pen.set_element(pen_val*0.5, ii, j) ;
 										long_transition_content_scores_elem.set_element(elem_val[i], ii, j) ;
-										long_transition_content_scores_prev.set_element(delta.element(delta_array, ts2, ii, 0, m_seq_len, m_N), ii, j) ;
+										long_transition_content_scores_prev.set_element(delta.element(delta_array, start_3p_part, ii, 0, m_seq_len, m_N), ii, j) ;
 										/*ASSERT(fabs(long_transition_content_scores.get_element(ii, j)-(long_transition_content_scores_pen.get_element(ii, j) +
 										  long_transition_content_scores_elem.get_element(ii, j) + 
 										  long_transition_content_scores_prev.get_element(ii, j)))<1e-6) ;*/
-										long_transition_content_end_position.set_element(t2, ii, j) ;
-										long_transition_content_scores_loss.set_element(segment_loss_, ii, j) ;
+										long_transition_content_end_position.set_element(end_3p_part, ii, j) ;
 #endif
 									}
 									
-									long_transition_content_start.set_element(ts2, ii, j) ;
+									long_transition_content_start.set_element(start_3p_part, ii, j) ;
 								}
 
 								/* // extra check
@@ -2569,21 +2562,23 @@ void CDynProg::best_path_trans_deriv(
 		int32_t from_pos   = my_pos_seq[i] ;
 		int32_t to_pos     = my_pos_seq[i+1] ;
 
-		// compute loss relative to another segmentation using the segment_loss function
-		//init_segment_loss(loss, m_seq_len, m_pos[to_pos]-m_pos[from_pos]+10);
-		//find_segment_loss_till_pos(to_pos,m_segment_ids, m_segment_mask, loss);  
-
 		int32_t loss_last_pos = to_pos ;
 		float64_t last_loss = 0.0 ;
 		int32_t elem_id = m_transition_matrix_a_id.element(from_state, to_state) ;
-		//float64_t old_loss = extend_segment_loss(loss, elem_id, from_pos, loss_last_pos, last_loss) ;
 		my_losses[i] = m_seg_loss_obj->get_segment_loss(from_pos, to_pos, elem_id);
+
 #ifdef DYNPROG_DEBUG
+		// compute loss relative to another segmentation using the segment_loss function
+
+		init_segment_loss(loss, m_seq_len, m_pos[to_pos]-m_pos[from_pos]+10);
+		find_segment_loss_till_pos(to_pos,m_segment_ids, m_segment_mask, loss);  
+		float64_t old_loss = extend_segment_loss(loss, elem_id, from_pos, loss_last_pos, last_loss) ;
+
 		if (i>0)// test if segment loss is additive
 		{
-			float32_t loss1 = m_seg_loss_obj->get_segment_loss(my_pos_seq[i-1]+1, my_pos_seq[i], elem_id);
-			float32_t loss2 = m_seg_loss_obj->get_segment_loss(my_pos_seq[i]+1, my_pos_seq[i+1], elem_id);
-			float32_t loss3 = m_seg_loss_obj->get_segment_loss(my_pos_seq[i-1]+1, my_pos_seq[i+1], elem_id);
+			float32_t loss1 = m_seg_loss_obj->get_segment_loss(my_pos_seq[i-1], my_pos_seq[i], elem_id);
+			float32_t loss2 = m_seg_loss_obj->get_segment_loss(my_pos_seq[i], my_pos_seq[i+1], elem_id);
+			float32_t loss3 = m_seg_loss_obj->get_segment_loss(my_pos_seq[i-1], my_pos_seq[i+1], elem_id);
 			SG_PRINT("loss1:%f loss2:%f loss3:%f, diff:%f\n", loss1, loss2, loss3, loss1+loss2-loss3);
 			if (CMath::abs(loss1+loss2-loss3)>0)
 			{

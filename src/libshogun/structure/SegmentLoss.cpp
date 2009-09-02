@@ -83,14 +83,17 @@ void CSegmentLoss::compute_loss(int32_t* all_pos, int32_t len)
 }
 float32_t CSegmentLoss::get_segment_loss(int32_t from_pos, int32_t to_pos, int32_t segment_id)
 {
-	float32_t diff_contrib = m_segment_loss_matrix.element(segment_id, from_pos)-m_segment_loss_matrix.element(segment_id, to_pos);
+	//to_pos-- ;
+
+	float32_t diff_contrib = m_segment_loss_matrix.element(segment_id, from_pos)-m_segment_loss_matrix.element(segment_id, to_pos-1);
 	float32_t start_contrib = 0;
 
 	//determine if the loss for the last segment 
 	// has to be considered in this segment
 	bool add_start_contrib=false;
 
-	if (to_pos==m_segment_ids->get_array_size())
+	ASSERT(to_pos<=m_segment_ids->get_array_size()-1) ;
+	if (to_pos == m_segment_ids->get_array_size()-1)
 		add_start_contrib = true;
 	else if (m_segment_ids->element(to_pos)!=m_segment_ids->element(to_pos+1))
 		add_start_contrib = true;
