@@ -28,7 +28,7 @@
 #include <ctype.h>
 
 //#define USE_TMP_ARRAYCLASS
-//#define DYNPROG_DEBUG
+#define DYNPROG_DEBUG
 
 static int32_t word_degree_default[4]={3,4,5,6} ;
 static int32_t cum_num_words_default[5]={0,64,320,1344,5440} ;
@@ -98,7 +98,7 @@ CDynProg::CDynProg(int32_t num_svms /*= 8 */)
 	  m_num_lin_feat_plifs_cum(NULL),
 	  m_num_raw_data(0),
 	  
-	  m_long_transitions(false),
+	  m_long_transitions(true),
 	  m_long_transition_threshold(1000),
 	  m_long_transition_max(100000)
 {
@@ -1582,11 +1582,11 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 
 		// allow longer transitions than look_back
 		bool long_transitions = m_long_transitions ;
-		CArray2<int32_t> long_transition_content_position(m_N,m_N) ;
-		long_transition_content_position.set_name("long_transition_content_position");
+		CArray2<int32_t> long_transition_content_start_position(m_N,m_N) ;
+		long_transition_content_start_position.set_name("long_transition_content_start_position");
 #ifdef DYNPROG_DEBUG
-		CArray2<int32_t> long_transition_content_position2(m_N,m_N) ;
-		long_transition_content_position.set_name("long_transition_content_position2");
+		CArray2<int32_t> long_transition_content_end_position(m_N,m_N) ;
+		long_transition_content_end_position.set_name("long_transition_content_end_position");
 #endif
 		CArray2<int32_t> long_transition_content_start(m_N,m_N) ;
 		long_transition_content_start.set_name("long_transition_content_start");
@@ -1599,6 +1599,8 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 		long_transition_content_scores_prev.set_name("long_transition_content_scores_prev");
 		CArray2<float64_t> long_transition_content_scores_elem(m_N,m_N) ;
 		long_transition_content_scores_elem.set_name("long_transition_content_scores_elem");
+		CArray2<float64_t> long_transition_content_scores_loss(m_N,m_N) ;
+		long_transition_content_scores_loss.set_name("long_transition_content_scores_loss");
 #endif		
 		//if (with_loss || nbest!=1)
 		if (nbest!=1)
@@ -1611,11 +1613,12 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 		long_transition_content_scores_pen.set_const(0) ;
 		long_transition_content_scores_elem.set_const(0) ;
 		long_transition_content_scores_prev.set_const(0) ;
+		long_transition_content_scores_loss.set_const(0) ;
 #endif
 		long_transition_content_start.zero() ;
-		long_transition_content_position.zero() ;
+		long_transition_content_start_position.zero() ;
 #ifdef DYNPROG_DEBUG
-		long_transition_content_position2.zero() ;
+		long_transition_content_end_position.zero() ;
 #endif
 
 		CArray2<int32_t> look_back(m_N,m_N) ;
@@ -2152,6 +2155,10 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 						// long transitions, only when not considering ORFs
 						if ( long_transitions && orf_target==-1 && look_back_ == m_long_transition_threshold )
 						{
+							// consider the 3' part at the end of the long segment:
+							// * with length = m_long_transition_threshold
+							// * content prediction and loss only for this part
+
 							// find ts > 0 with distance from m_pos[t] greater m_long_transition_threshold 
 							// precompute: only depends on t
 							int ts = t;
@@ -2174,26 +2181,40 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 								float64_t mval = -(long_transition_content_scores.get_element(ii, j) + pen_val*0.5) ;
 
 								float64_t segment_loss=0.0 ;
+								float64_t segment_loss_total=0.0 ;
 								if (with_loss)
-								{
-
+								{   // this is the loss for the 3' end fragment of the segment
+									// (the 5' end and the middle section loss is already contained in mval)
+									
 									//segment_loss = extend_segment_loss(loss, elem_id[i], ts, loss_last_pos, last_loss) ;
-									segment_loss = m_seg_loss_obj->get_segment_loss(long_transition_content_position.get_element(ii,j), ts, elem_id[i]);
-
-									mval -= segment_loss ;
+									segment_loss = m_seg_loss_obj->get_segment_loss(long_transition_content_end_position.get_element(ii,j), t, elem_id[i]);
+									//mval -= segment_loss ;
+#ifdef DYNPROG_DEBUG
+									segment_loss_total = m_seg_loss_obj->get_segment_loss(long_transition_content_start_position.get_element(ii,j), t, elem_id[i]);
+#endif
+									mval -= (segment_loss_total-long_transition_content_scores_loss.get_element(ii, j)) ;
 								}
 
 #ifdef DYNPROG_DEBUG
-								if (m_pos[t]==1443 || m_pos[t]==4396 || m_pos[t]==6395 || m_pos[t]==8692 || m_pos[t]==12625)
-									SG_PRINT("Part2: %i,%i,%i: val=%1.6f  pen_val*0.5=%1.6f (t=%i, ts=%i, ts-1=%i, ts+1=%i); scores=%1.6f (pen=%1.6f,prev=%1.6f,elem=%1.6f), positions=%i,%i,%i,  loss=%f\n", 
+								if (m_pos[t]==1443 || m_pos[t]==2977 || m_pos[t]==4205 || m_pos[t]==5526 || m_pos[t]==6582 || m_pos[t]==8395 || m_pos[t]==12587)
+								{
+									SG_PRINT("Part2: %i,%i,%i: val=%1.6f  pen_val*0.5=%1.6f (t=%i, ts=%i, ts-1=%i, ts+1=%i); scores=%1.6f (pen=%1.6f,prev=%1.6f,elem=%1.6f,loss=%1.1f), positions=%i,%i,%i,  loss=%1.1f/%1.1f (%i,%i)\n", 
 											 m_pos[t], j, ii, -mval, 0.5*pen_val, m_pos[t], m_pos[ts], m_pos[ts-1], m_pos[ts+1], 
 											 long_transition_content_scores.get_element(ii, j), 
 											 long_transition_content_scores_pen.get_element(ii, j), 
 											 long_transition_content_scores_prev.get_element(ii, j), 
 											 long_transition_content_scores_elem.get_element(ii, j), 
-											 m_pos[long_transition_content_position.get_element(ii,j)], 
-											 m_pos[long_transition_content_position2.get_element(ii,j)], 
-											 m_pos[long_transition_content_start.get_element(ii,j)], segment_loss) ;
+											 long_transition_content_scores_loss.get_element(ii, j), 
+											 m_pos[long_transition_content_start_position.get_element(ii,j)], 
+											 m_pos[long_transition_content_end_position.get_element(ii,j)], 
+											 m_pos[long_transition_content_start.get_element(ii,j)], segment_loss, segment_loss_total, long_transition_content_start_position.get_element(ii,j), t) ;
+									SG_PRINT("LOSS: total=%1.1f (%i-%i)  part1=%1.1f (%i-%i)  part2=%1.1f (%i-%i)  sum=%1.1f  diff=%1.1f\n", 
+											 segment_loss_total, m_pos[long_transition_content_start_position.get_element(ii,j)], m_pos[t], 
+											 long_transition_content_scores_loss.get_element(ii, j), m_pos[long_transition_content_start_position.get_element(ii,j)], m_pos[long_transition_content_end_position.get_element(ii,j)],
+											 segment_loss, m_pos[long_transition_content_end_position.get_element(ii,j)], m_pos[t], 
+											 segment_loss+long_transition_content_scores_loss.get_element(ii, j), 
+											 segment_loss+long_transition_content_scores_loss.get_element(ii, j) - segment_loss_total) ;
+								}
 #endif
 
 								/* // incomplete extra check
@@ -2209,7 +2230,7 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 
 
 								if ((mval < fixedtempvv_) &&
-									(m_pos[t] - m_pos[long_transition_content_position.get_element(ii, j)])<=look_back_orig_ /*m_long_transition_max*/)
+									(m_pos[t] - m_pos[long_transition_content_start_position.get_element(ii, j)])<=look_back_orig_ /*m_long_transition_max*/)
 								{
 									/* then the long transition is better than the short one => replace it */ 
 									int32_t fromtjk =  fixedtempii_ ;
@@ -2218,10 +2239,10 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 									  mval, pen_val*0.5, long_transition_content_scores_pen.get_element(ii, j), long_transition_content_scores_elem.get_element(ii, j), long_transition_content_scores_prev.get_element(ii, j), ii, 
 									  m_pos[long_transition_content_position.get_element(ii, j)], 
 									  fixedtempvv_, (fromtjk%m_N), m_pos[(fromtjk-(fromtjk%(m_N*nbest)))/(m_N*nbest)]) ;*/
-									ASSERT((fromtjk-(fromtjk%(m_N*nbest)))/(m_N*nbest)==0 || m_pos[(fromtjk-(fromtjk%(m_N*nbest)))/(m_N*nbest)]>=m_pos[long_transition_content_position.get_element(ii, j)] || fixedtemplong) ;
+									ASSERT((fromtjk-(fromtjk%(m_N*nbest)))/(m_N*nbest)==0 || m_pos[(fromtjk-(fromtjk%(m_N*nbest)))/(m_N*nbest)]>=m_pos[long_transition_content_start_position.get_element(ii, j)] || fixedtemplong) ;
 
 									fixedtempvv_ = mval ;
-									fixedtempii_ = ii + m_N*long_transition_content_position.get_element(ii, j) ;
+									fixedtempii_ = ii + m_N*long_transition_content_start_position.get_element(ii, j) ;
 									fixed_list_len = 1 ;
 									fixedtemplong = true ;
 								}
@@ -2254,43 +2275,44 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 									float64_t mval_trans = -( elem_val[i] + pen_val*0.5 + delta.element(delta_array, ts2, ii, 0, m_seq_len, m_N) ) ;
 									//float64_t mval_trans = -( elem_val[i] + delta.element(delta_array, ts, ii, 0, m_seq_len, m_N) ) ; // enable this for the incomplete extra check
 
+									float64_t segment_loss_=0.0 ;
 									if (with_loss)
-									{
-										float64_t segment_loss_ ;
+									{  // this is the loss from the start of the long segment (5' part + middle section)
 										
 										//segment_loss = extend_segment_loss(loss, elem_id[i], ts, loss_last_pos, last_loss) ;
-										segment_loss_ = m_seg_loss_obj->get_segment_loss(long_transition_content_position.get_element(ii,j), t2, elem_id[i]); // * unsure
+										segment_loss_ = m_seg_loss_obj->get_segment_loss(long_transition_content_start_position.get_element(ii,j), t2, elem_id[i]); // * unsure
 										
 										mval_trans -= segment_loss_ ;
 									}
 
-									if (m_pos[t2] - m_pos[long_transition_content_position.get_element(ii, j)] > look_back_orig_/*m_long_transition_max*/)
+									if (m_pos[t2] - m_pos[long_transition_content_start_position.get_element(ii, j)] > look_back_orig_/*m_long_transition_max*/)
 									{
 										long_transition_content_scores.set_element(-CMath::INFTY, ii, j) ;
-										long_transition_content_position.set_element(0, ii, j) ;
+										long_transition_content_start_position.set_element(0, ii, j) ;
 #ifdef DYNPROG_DEBUG
-										long_transition_content_scores_pen.set_element(0, ii, j) ;
-										long_transition_content_scores_elem.set_element(0, ii, j) ;
-										long_transition_content_scores_prev.set_element(0, ii, j) ;
-										long_transition_content_position2.set_element(0, ii, j) ;
+										long_transition_content_scores_pen.set_element(0.0, ii, j) ;
+										long_transition_content_scores_elem.set_element(0.0, ii, j) ;
+										long_transition_content_scores_prev.set_element(0.0, ii, j) ;
+										long_transition_content_end_position.set_element(0, ii, j) ;
+										long_transition_content_scores_loss.set_element(0.0, ii, j) ;
 #endif
 									}
-									else
-										if (-long_transition_content_scores.get_element(ii, j) > mval_trans )
-										{
-											/* then the old long transition is either too far away or worse than the current one */
-											long_transition_content_scores.set_element(-mval_trans, ii, j) ;
-											long_transition_content_position.set_element(ts2, ii, j) ;
+									if (-long_transition_content_scores.get_element(ii, j) > mval_trans )
+									{
+										/* then the old long transition is either too far away or worse than the current one */
+										long_transition_content_scores.set_element(-mval_trans, ii, j) ;
+										long_transition_content_start_position.set_element(ts2, ii, j) ;
 #ifdef DYNPROG_DEBUG
-											long_transition_content_scores_pen.set_element(pen_val*0.5, ii, j) ;
-											long_transition_content_scores_elem.set_element(elem_val[i], ii, j) ;
-											long_transition_content_scores_prev.set_element(delta.element(delta_array, ts2, ii, 0, m_seq_len, m_N), ii, j) ;
-											/*ASSERT(fabs(long_transition_content_scores.get_element(ii, j)-(long_transition_content_scores_pen.get_element(ii, j) +
-											  long_transition_content_scores_elem.get_element(ii, j) + 
-											  long_transition_content_scores_prev.get_element(ii, j)))<1e-6) ;*/
-											long_transition_content_position2.set_element(t2, ii, j) ;
+										long_transition_content_scores_pen.set_element(pen_val*0.5, ii, j) ;
+										long_transition_content_scores_elem.set_element(elem_val[i], ii, j) ;
+										long_transition_content_scores_prev.set_element(delta.element(delta_array, ts2, ii, 0, m_seq_len, m_N), ii, j) ;
+										/*ASSERT(fabs(long_transition_content_scores.get_element(ii, j)-(long_transition_content_scores_pen.get_element(ii, j) +
+										  long_transition_content_scores_elem.get_element(ii, j) + 
+										  long_transition_content_scores_prev.get_element(ii, j)))<1e-6) ;*/
+										long_transition_content_end_position.set_element(t2, ii, j) ;
+										long_transition_content_scores_loss.set_element(segment_loss_, ii, j) ;
 #endif
-										}
+									}
 									
 									long_transition_content_start.set_element(ts2, ii, j) ;
 								}
