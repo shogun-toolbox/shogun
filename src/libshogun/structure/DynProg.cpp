@@ -2004,8 +2004,8 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 						}
 
 						int32_t orf_last_pos = m_pos[t] ;
-						int32_t loss_last_pos = t ;
-						float64_t last_loss = 0.0 ;
+						//int32_t loss_last_pos = t ;
+						//float64_t last_loss = 0.0 ;
 
 #ifdef DYNPROG_TIMING
 						MyTime3.start() ;
@@ -2200,7 +2200,7 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 								}
 
 #ifdef DYNPROG_DEBUG
-								if (m_pos[t]==13498 || m_pos[t]==13655 || m_pos[t]==14948)
+								if (0)//m_pos[t]==13498 || m_pos[t]==13655 || m_pos[t]==14948)
 								{
 									SG_PRINT("Part2: %i,%i,%i: val=%1.6f  pen_val*0.5=%1.6f (t=%i, ts=%i, ts-1=%i, ts+1=%i); scores=%1.6f (pen=%1.6f,prev=%1.6f,elem=%1.6f,loss=%1.1f), positions=%i,%i,%i,  loss=%1.1f/%1.1f (%i,%i)\n", 
 											 m_pos[t], j, ii, -mval, 0.5*pen_val, m_pos[t], m_pos[ts], m_pos[ts-1], m_pos[ts+1], 
@@ -2212,13 +2212,15 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 											 m_pos[long_transition_content_start_position.get_element(ii,j)], 
 											 m_pos[long_transition_content_end_position.get_element(ii,j)], 
 											 m_pos[long_transition_content_start.get_element(ii,j)], segment_loss, segment_loss_total, long_transition_content_start_position.get_element(ii,j), t) ;
+								}
+								
+								if (fabs(segment_loss+long_transition_content_scores_loss.get_element(ii, j) - segment_loss_total)>1e-3)
 									SG_PRINT("LOSS: total=%1.1f (%i-%i)  part1=%1.1f (%i-%i)  part2=%1.1f (%i-%i)  sum=%1.1f  diff=%1.1f\n", 
 											 segment_loss_total, m_pos[long_transition_content_start_position.get_element(ii,j)], m_pos[t], 
 											 long_transition_content_scores_loss.get_element(ii, j), m_pos[long_transition_content_start_position.get_element(ii,j)], m_pos[long_transition_content_end_position.get_element(ii,j)],
 											 segment_loss, m_pos[long_transition_content_end_position.get_element(ii,j)], m_pos[t], 
 											 segment_loss+long_transition_content_scores_loss.get_element(ii, j), 
 											 segment_loss+long_transition_content_scores_loss.get_element(ii, j) - segment_loss_total) ;
-								}
 #endif
 
 
