@@ -2200,7 +2200,7 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 								}
 
 #ifdef DYNPROG_DEBUG
-								if (m_pos[t]==1443 || m_pos[t]==2977 || m_pos[t]==4205 || m_pos[t]==5526 || m_pos[t]==6582 || m_pos[t]==8395 || m_pos[t]==12587)
+								if (m_pos[t]==13498 || m_pos[t]==13655 || m_pos[t]==14948)
 								{
 									SG_PRINT("Part2: %i,%i,%i: val=%1.6f  pen_val*0.5=%1.6f (t=%i, ts=%i, ts-1=%i, ts+1=%i); scores=%1.6f (pen=%1.6f,prev=%1.6f,elem=%1.6f,loss=%1.1f), positions=%i,%i,%i,  loss=%1.1f/%1.1f (%i,%i)\n", 
 											 m_pos[t], j, ii, -mval, 0.5*pen_val, m_pos[t], m_pos[ts], m_pos[ts-1], m_pos[ts+1], 
@@ -2585,26 +2585,26 @@ void CDynProg::best_path_trans_deriv(
 				SG_PRINT("losses[%i]:%f old_loss:%f\n",i, my_losses[i], old_loss);
 				SG_PRINT( "%i. segment loss %f (id=%i): from=%i(%i), to=%i(%i)\n", i, my_losses[i], elem_id, from_pos, from_state, to_pos, to_state) ;
 			}
-			from_pos = my_pos_seq[i-1];
+			int from_pos_ = my_pos_seq[i-1];
 			to_pos = my_pos_seq[i];	
 			loss_last_pos = to_pos ;
-			init_segment_loss(loss, m_seq_len, m_pos[to_pos]-m_pos[from_pos]+10);
+			init_segment_loss(loss, m_seq_len, m_pos[to_pos]-m_pos[from_pos_]+10);
 			find_segment_loss_till_pos(to_pos, m_segment_ids, m_segment_mask, loss);  
-			float32_t loss4 = extend_segment_loss(loss, elem_id, from_pos, loss_last_pos, last_loss) ;
+			float32_t loss4 = extend_segment_loss(loss, elem_id, from_pos_, loss_last_pos, last_loss) ;
 
-			from_pos = my_pos_seq[i];
+			from_pos_ = my_pos_seq[i];
 			to_pos = my_pos_seq[i+1];	
 			loss_last_pos = to_pos ;
-			init_segment_loss(loss, m_seq_len, m_pos[to_pos]-m_pos[from_pos]+10);
+			init_segment_loss(loss, m_seq_len, m_pos[to_pos]-m_pos[from_pos_]+10);
 			find_segment_loss_till_pos(to_pos, m_segment_ids, m_segment_mask, loss);  
-			float32_t loss5 = extend_segment_loss(loss, elem_id, from_pos, loss_last_pos, last_loss) ;
+			float32_t loss5 = extend_segment_loss(loss, elem_id, from_pos_, loss_last_pos, last_loss) ;
 
-			from_pos = my_pos_seq[i-1];
+			from_pos_ = my_pos_seq[i-1];
 			to_pos = my_pos_seq[i+1];	
 			loss_last_pos = to_pos ;
-			init_segment_loss(loss, m_seq_len, m_pos[to_pos]-m_pos[from_pos]+10);
+			init_segment_loss(loss, m_seq_len, m_pos[to_pos]-m_pos[from_pos_]+10);
 			find_segment_loss_till_pos(to_pos, m_segment_ids, m_segment_mask, loss);  
-			float32_t loss6 = extend_segment_loss(loss, elem_id, from_pos, loss_last_pos, last_loss) ;
+			float32_t loss6 = extend_segment_loss(loss, elem_id, from_pos_, loss_last_pos, last_loss) ;
 
 			SG_PRINT("loss4:%f loss5:%f loss6:%f, diff:%f\n", loss4, loss5, loss6, loss4+loss5-loss6);
 		}
@@ -2695,7 +2695,7 @@ void CDynProg::best_path_trans_deriv(
 				float64_t pen_value_part1 = PEN.element(to_state, from_state)->lookup_penalty(m_pos[from_pos_thresh]-m_pos[from_pos], svm_value_part1) ;
 				float64_t pen_value_part2 = PEN.element(to_state, from_state)->lookup_penalty(m_pos[to_pos]-m_pos[to_pos_thresh], svm_value_part2) ;
 				nscore= 0.5*pen_value_part1 + 0.5*pen_value_part2 ;
-				//fprintf(stdout, "pen_value_part1=%f  pen_value_part2=%f  nscore=%f\n", pen_value_part1, pen_value_part2, nscore) ;
+				fprintf(stdout, "pen_value_part1=%f  pen_value_part2=%f  nscore=%f\n", pen_value_part1, pen_value_part2, nscore) ;
 			}
 			else
 				nscore = PEN.element(to_state, from_state)->lookup_penalty(m_pos[to_pos]-m_pos[from_pos], svm_value) ;
