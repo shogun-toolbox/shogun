@@ -28,7 +28,7 @@
 #include <ctype.h>
 
 //#define USE_TMP_ARRAYCLASS
-#define DYNPROG_DEBUG
+//#define DYNPROG_DEBUG
 
 static int32_t word_degree_default[4]={3,4,5,6} ;
 static int32_t cum_num_words_default[5]={0,64,320,1344,5440} ;
@@ -2181,47 +2181,54 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 								}
 
 								float64_t mval = -(long_transition_content_scores.get_element(ii, j) + pen_val*0.5) ;
-
+								
+								{
 #ifdef DYNPROG_DEBUG
-								float64_t segment_loss=0.0 ;
+									float64_t segment_loss_part2=0.0 ;
+									float64_t segment_loss_part1=0.0 ;
 #endif
-								float64_t segment_loss_total=0.0 ;
-								if (with_loss)
-								{   // this is the loss for the 3' end fragment of the segment
-									// (the 5' end and the middle section loss is already contained in mval)
+									float64_t segment_loss_total=0.0 ;
+									
+									if (with_loss)
+									{   // this is the loss for the 3' end fragment of the segment
+										// (the 5' end and the middle section loss is already contained in mval)
+										
+#ifdef DYNPROG_DEBUG
+										// this is an alternative, which should be identical, if the loss is additive
+										segment_loss_part2 = m_seg_loss_obj->get_segment_loss_extend(long_transition_content_end_position.get_element(ii,j), t, elem_id[i]);
+										//mval -= segment_loss_part2 ;
+										segment_loss_part1 = m_seg_loss_obj->get_segment_loss(long_transition_content_start_position.get_element(ii,j), long_transition_content_end_position.get_element(ii,j), elem_id[i]);
+#endif
+										segment_loss_total = m_seg_loss_obj->get_segment_loss(long_transition_content_start_position.get_element(ii,j), t, elem_id[i]);
+										mval -= (segment_loss_total-long_transition_content_scores_loss.get_element(ii, j)) ;
+									}
 									
 #ifdef DYNPROG_DEBUG
-									// this is an alternative, which should be identical, if the loss is additive
-									segment_loss = m_seg_loss_obj->get_segment_loss(long_transition_content_end_position.get_element(ii,j), t, elem_id[i]);
-									//mval -= segment_loss ;
+									if (0)//m_pos[t]==13498 || m_pos[t]==13655 || m_pos[t]==14948)
+									{
+										SG_PRINT("Part2: %i,%i,%i: val=%1.6f  pen_val*0.5=%1.6f (t=%i, ts=%i, ts-1=%i, ts+1=%i); scores=%1.6f (pen=%1.6f,prev=%1.6f,elem=%1.6f,loss=%1.1f), positions=%i,%i,%i,  loss=%1.1f/%1.1f (%i,%i)\n", 
+												 m_pos[t], j, ii, -mval, 0.5*pen_val, m_pos[t], m_pos[ts], m_pos[ts-1], m_pos[ts+1], 
+												 long_transition_content_scores.get_element(ii, j), 
+												 long_transition_content_scores_pen.get_element(ii, j), 
+												 long_transition_content_scores_prev.get_element(ii, j), 
+												 long_transition_content_scores_elem.get_element(ii, j), 
+												 long_transition_content_scores_loss.get_element(ii, j), 
+												 m_pos[long_transition_content_start_position.get_element(ii,j)], 
+												 m_pos[long_transition_content_end_position.get_element(ii,j)], 
+												 m_pos[long_transition_content_start.get_element(ii,j)], segment_loss_part2, segment_loss_total, long_transition_content_start_position.get_element(ii,j), t) ;
+									}
+									
+									if (fabs(segment_loss_part2+long_transition_content_scores_loss.get_element(ii, j) - segment_loss_total)>1e-3)
+									{
+										SG_ERROR("LOSS: total=%1.1f (%i-%i)  part1=%1.1f/%1.1f (%i-%i)  part2=%1.1f (%i-%i)  sum=%1.1f  diff=%1.1f\n", 
+												 segment_loss_total, m_pos[long_transition_content_start_position.get_element(ii,j)], m_pos[t], 
+												 long_transition_content_scores_loss.get_element(ii, j), segment_loss_part1, m_pos[long_transition_content_start_position.get_element(ii,j)], m_pos[long_transition_content_end_position.get_element(ii,j)],
+												 segment_loss_part2, m_pos[long_transition_content_end_position.get_element(ii,j)], m_pos[t], 
+												 segment_loss_part2+long_transition_content_scores_loss.get_element(ii, j), 
+												 segment_loss_part2+long_transition_content_scores_loss.get_element(ii, j) - segment_loss_total) ;
+									}
 #endif
-									segment_loss_total = m_seg_loss_obj->get_segment_loss(long_transition_content_start_position.get_element(ii,j), t, elem_id[i]);
-									mval -= (segment_loss_total-long_transition_content_scores_loss.get_element(ii, j)) ;
 								}
-
-#ifdef DYNPROG_DEBUG
-								if (0)//m_pos[t]==13498 || m_pos[t]==13655 || m_pos[t]==14948)
-								{
-									SG_PRINT("Part2: %i,%i,%i: val=%1.6f  pen_val*0.5=%1.6f (t=%i, ts=%i, ts-1=%i, ts+1=%i); scores=%1.6f (pen=%1.6f,prev=%1.6f,elem=%1.6f,loss=%1.1f), positions=%i,%i,%i,  loss=%1.1f/%1.1f (%i,%i)\n", 
-											 m_pos[t], j, ii, -mval, 0.5*pen_val, m_pos[t], m_pos[ts], m_pos[ts-1], m_pos[ts+1], 
-											 long_transition_content_scores.get_element(ii, j), 
-											 long_transition_content_scores_pen.get_element(ii, j), 
-											 long_transition_content_scores_prev.get_element(ii, j), 
-											 long_transition_content_scores_elem.get_element(ii, j), 
-											 long_transition_content_scores_loss.get_element(ii, j), 
-											 m_pos[long_transition_content_start_position.get_element(ii,j)], 
-											 m_pos[long_transition_content_end_position.get_element(ii,j)], 
-											 m_pos[long_transition_content_start.get_element(ii,j)], segment_loss, segment_loss_total, long_transition_content_start_position.get_element(ii,j), t) ;
-								}
-								
-								if (fabs(segment_loss+long_transition_content_scores_loss.get_element(ii, j) - segment_loss_total)>1e-3)
-									SG_PRINT("LOSS: total=%1.1f (%i-%i)  part1=%1.1f (%i-%i)  part2=%1.1f (%i-%i)  sum=%1.1f  diff=%1.1f\n", 
-											 segment_loss_total, m_pos[long_transition_content_start_position.get_element(ii,j)], m_pos[t], 
-											 long_transition_content_scores_loss.get_element(ii, j), m_pos[long_transition_content_start_position.get_element(ii,j)], m_pos[long_transition_content_end_position.get_element(ii,j)],
-											 segment_loss, m_pos[long_transition_content_end_position.get_element(ii,j)], m_pos[t], 
-											 segment_loss+long_transition_content_scores_loss.get_element(ii, j), 
-											 segment_loss+long_transition_content_scores_loss.get_element(ii, j) - segment_loss_total) ;
-#endif
 
 
 								if ((mval < fixedtempvv_) &&
@@ -2270,13 +2277,13 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 									float64_t mval_trans = -( elem_val[i] + pen_val*0.5 + delta.element(delta_array, start_3p_part, ii, 0, m_seq_len, m_N) ) ;
 									//float64_t mval_trans = -( elem_val[i] + delta.element(delta_array, ts, ii, 0, m_seq_len, m_N) ) ; // enable this for the incomplete extra check
 
-									float64_t segment_loss_=0.0 ;
+									float64_t segment_loss_part1=0.0 ;
 									if (with_loss)
 									{  // this is the loss from the start of the long segment (5' part + middle section)
 										
-										segment_loss_ = m_seg_loss_obj->get_segment_loss(long_transition_content_start_position.get_element(ii,j), end_3p_part, elem_id[i]); // * unsure
+										segment_loss_part1 = m_seg_loss_obj->get_segment_loss(start_3p_part /*long_transition_content_start_position.get_element(ii,j)*/, end_3p_part, elem_id[i]); // * unsure
 										
-										mval_trans -= segment_loss_ ;
+										mval_trans -= segment_loss_part1 ;
 									}
 
 									if (m_pos[end_3p_part] - m_pos[long_transition_content_start_position.get_element(ii, j)] > look_back_orig_/*m_long_transition_max*/) // unsure: should it be end_3p_part or t ??
@@ -2298,7 +2305,7 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 										long_transition_content_scores.set_element(-mval_trans, ii, j) ;
 										long_transition_content_start_position.set_element(start_3p_part, ii, j) ;
 										if (with_loss)
-											long_transition_content_scores_loss.set_element(segment_loss_, ii, j) ;
+											long_transition_content_scores_loss.set_element(segment_loss_part1, ii, j) ;
 #ifdef DYNPROG_DEBUG
 										long_transition_content_scores_pen.set_element(pen_val*0.5, ii, j) ;
 										long_transition_content_scores_elem.set_element(elem_val[i], ii, j) ;
@@ -2697,7 +2704,7 @@ void CDynProg::best_path_trans_deriv(
 				float64_t pen_value_part1 = PEN.element(to_state, from_state)->lookup_penalty(m_pos[from_pos_thresh]-m_pos[from_pos], svm_value_part1) ;
 				float64_t pen_value_part2 = PEN.element(to_state, from_state)->lookup_penalty(m_pos[to_pos]-m_pos[to_pos_thresh], svm_value_part2) ;
 				nscore= 0.5*pen_value_part1 + 0.5*pen_value_part2 ;
-				fprintf(stdout, "pen_value_part1=%f  pen_value_part2=%f  nscore=%f\n", pen_value_part1, pen_value_part2, nscore) ;
+				//fprintf(stdout, "pen_value_part1=%f  pen_value_part2=%f  nscore=%f\n", pen_value_part1, pen_value_part2, nscore) ;
 			}
 			else
 				nscore = PEN.element(to_state, from_state)->lookup_penalty(m_pos[to_pos]-m_pos[from_pos], svm_value) ;

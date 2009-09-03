@@ -16,6 +16,7 @@ class CSegmentLoss : public CSGObject
                 virtual ~CSegmentLoss();
 
 		float32_t get_segment_loss(int32_t from_pos, int32_t to_pos, int32_t segment_id);
+		float32_t get_segment_loss_extend(int32_t from_pos, int32_t to_pos, int32_t segment_id);
 
 		/** set best path segment loss
 		 *
@@ -60,32 +61,69 @@ class CSegmentLoss : public CSGObject
 
 inline float32_t CSegmentLoss::get_segment_loss(int32_t from_pos, int32_t to_pos, int32_t segment_id)
 {
-	float32_t diff_contrib = m_segment_loss_matrix.element(segment_id, from_pos)-m_segment_loss_matrix.element(segment_id, to_pos-1);
-	float32_t start_contrib = 0;
 
-	//determine if the loss for the last segment 
-	// has to be considered in this segment
-	bool add_start_contrib=false;
-
-	ASSERT(to_pos<=m_segment_ids->get_array_size()-1) ;
-	if (to_pos == m_segment_ids->get_array_size()-1)
-		add_start_contrib = true;
-	else if (m_segment_ids->element(to_pos)!=m_segment_ids->element(to_pos+1))
-		add_start_contrib = true;
-
-	if (add_start_contrib)
+	/*	int32_t from_pos_shift = from_pos ;
+		if (print)
+		SG_PRINT("# pos=%i,%i  segment_id=%i, m_segment_ids[from-2]=%i (%1.1f), m_segment_ids[from-1]=%i (%1.1f), m_segment_ids[from]=%i (%1.1f), m_segment_ids[from+1]=%i (%1.1f), \n", 
+				 from_pos_shift, to_pos, segment_id, 
+				 m_segment_ids->element(from_pos_shift-2),  m_segment_loss_matrix.element(segment_id, from_pos_shift-2)-m_segment_loss_matrix.element(segment_id, to_pos),
+				 m_segment_ids->element(from_pos_shift-1), m_segment_loss_matrix.element(segment_id, from_pos_shift-1)-m_segment_loss_matrix.element(segment_id, to_pos),
+				 m_segment_ids->element(from_pos_shift), m_segment_loss_matrix.element(segment_id, from_pos_shift)-m_segment_loss_matrix.element(segment_id, to_pos),
+				 m_segment_ids->element(from_pos_shift+1),  m_segment_loss_matrix.element(segment_id, from_pos_shift+1)-m_segment_loss_matrix.element(segment_id, to_pos)) ;
+	while(1)
 	{
-		start_contrib = m_segment_loss.element(segment_id, m_segment_ids->element(to_pos), 0)*m_segment_mask->element(to_pos);
-	}	
-#ifdef DEBUG
-		SG_PRINT("segment_id:%i, from_pos:%i, to_pos:%i\n", segment_id, from_pos, to_pos);
-		for (int i=from_pos; i<=to_pos; i++)
-			SG_PRINT("%i ", m_segment_ids->element(to_pos));
-		SG_PRINT(" \n");
-		//SG_PRINT("m_segment_ids->element(from_pos):%i, m_segment_ids->element(to_pos):%i\n", m_segment_ids->element(from_pos), m_segment_ids->element(to_pos));
-		SG_PRINT("diff_contrib:%f start_contrib:%f\n", diff_contrib, start_contrib);
-#endif	
-	return start_contrib + diff_contrib;
+		while (m_segment_ids->element(from_pos_shift)==m_segment_ids->element(from_pos_shift+1) && from_pos_shift<to_pos)
+			from_pos_shift++ ;
+		if (print)
+			SG_PRINT("# pos=%i,%i  segment_id=%i, m_segment_ids[from-2]=%i (%1.1f), m_segment_ids[from-1]=%i (%1.1f), m_segment_ids[from]=%i (%1.1f), m_segment_ids[from+1]=%i (%1.1f), \n", 
+					 from_pos_shift, to_pos, segment_id, 
+					 m_segment_ids->element(from_pos_shift-2),  m_segment_loss_matrix.element(segment_id, from_pos_shift-2)-m_segment_loss_matrix.element(segment_id, to_pos),
+					 m_segment_ids->element(from_pos_shift-1), m_segment_loss_matrix.element(segment_id, from_pos_shift-1)-m_segment_loss_matrix.element(segment_id, to_pos),
+					 m_segment_ids->element(from_pos_shift), m_segment_loss_matrix.element(segment_id, from_pos_shift)-m_segment_loss_matrix.element(segment_id, to_pos),
+					 m_segment_ids->element(from_pos_shift+1),  m_segment_loss_matrix.element(segment_id, from_pos_shift+1)-m_segment_loss_matrix.element(segment_id, to_pos)) ;
+
+		if (from_pos_shift>=to_pos)
+		{
+			//SG_PRINT("break") ;
+			break ;
+		}
+		else from_pos_shift++ ;
+		} 
+	if (print)
+	SG_PRINT("break\n") ; */
+
+	float32_t diff_contrib = m_segment_loss_matrix.element(segment_id, from_pos)-m_segment_loss_matrix.element(segment_id, to_pos);
+
+	return diff_contrib;
+}
+
+inline float32_t CSegmentLoss::get_segment_loss_extend(int32_t from_pos, int32_t to_pos, int32_t segment_id)
+{
+	int32_t from_pos_shift = from_pos ;
+
+	/*SG_PRINT("segment_id=%i, m_segment_ids[from-2]=%i (%1.1f), m_segment_ids[from-1]=%i (%1.1f), m_segment_ids[from]=%i (%1.1f), m_segment_ids[from+1]=%i (%1.1f), \n", 
+			 segment_id, 
+			 m_segment_ids->element(from_pos_shift-2),  m_segment_loss_matrix.element(segment_id, from_pos_shift-2)-m_segment_loss_matrix.element(segment_id, to_pos),
+			 m_segment_ids->element(from_pos_shift-1), m_segment_loss_matrix.element(segment_id, from_pos_shift-1)-m_segment_loss_matrix.element(segment_id, to_pos),
+			 m_segment_ids->element(from_pos_shift), m_segment_loss_matrix.element(segment_id, from_pos_shift)-m_segment_loss_matrix.element(segment_id, to_pos),
+			 m_segment_ids->element(from_pos_shift+1),  m_segment_loss_matrix.element(segment_id, from_pos_shift+1)-m_segment_loss_matrix.element(segment_id, to_pos)) ;*/
+	
+	while (from_pos_shift<to_pos && m_segment_ids->element(from_pos_shift)==m_segment_ids->element(from_pos_shift+1))
+		from_pos_shift++ ;
+
+	/*SG_PRINT("segment_id=%i, m_segment_ids[from-2]=%i (%1.1f), m_segment_ids[from-1]=%i (%1.1f), m_segment_ids[from]=%i (%1.1f), m_segment_ids[from+1]=%i (%1.1f), \n", 
+			 segment_id, 
+			 m_segment_ids->element(from_pos_shift-2),  m_segment_loss_matrix.element(segment_id, from_pos_shift-2)-m_segment_loss_matrix.element(segment_id, to_pos),
+			 m_segment_ids->element(from_pos_shift-1), m_segment_loss_matrix.element(segment_id, from_pos_shift-1)-m_segment_loss_matrix.element(segment_id, to_pos),
+			 m_segment_ids->element(from_pos_shift), m_segment_loss_matrix.element(segment_id, from_pos_shift)-m_segment_loss_matrix.element(segment_id, to_pos),
+			 m_segment_ids->element(from_pos_shift+1),  m_segment_loss_matrix.element(segment_id, from_pos_shift+1)-m_segment_loss_matrix.element(segment_id, to_pos)) ;*/
+	
+	float32_t diff_contrib = m_segment_loss_matrix.element(segment_id, from_pos_shift)-m_segment_loss_matrix.element(segment_id, to_pos);
+
+	//if (from_pos_shift!=from_pos)
+	//	SG_PRINT("shifting from %i to %i, to_pos=%i, loss=%1.1f\n", from_pos, from_pos_shift, to_pos, diff_contrib) ;
+
+	return diff_contrib;
 }
 
 #endif                 
