@@ -196,7 +196,7 @@ public:
 	 *
 	 * @param seg_path seg path
 	 */
-   void set_content_type_array(float64_t* seg_path, int32_t rows, int32_t cols);
+	void set_content_type_array(float64_t* seg_path, int32_t rows, int32_t cols);
 
 	/** set best path pos
 	 *
@@ -496,12 +496,25 @@ public:
 	 */
 	void set_intron_list(CIntronList* intron_list, int32_t num_plifs);
 
-	/***/
+	/** get the segment loss object */
 	CSegmentLoss* get_segment_loss_object()
 	{
 		return m_seg_loss_obj;
 	}
-	
+
+	/** settings for long transition handling 
+	 *  
+	 *  @param use_long_transitions use the long transition approximation
+	 *  @param threshold use long transition for segments larger than
+	 *  @param max_len allow transitions up to
+	 *  */
+	void long_transition_settings(bool use_long_transitions, int32_t threshold, int32_t max_len)
+	{
+		m_long_transitions = use_long_transitions;
+		m_long_transition_threshold = threshold;
+		m_long_transition_max = max_len;
+	}
+		
 protected:
 
 	/* helper functions */

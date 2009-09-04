@@ -440,6 +440,9 @@ class CSGInterface : public CSGObject
 
 		bool cmd_init_intron_list();
 
+		/** settings for long transition approximation*/
+		bool cmd_long_transition_settings();
+
 		/**
 		 * -precompute tiling features 
 		 *  and save the outputs (# content types x 

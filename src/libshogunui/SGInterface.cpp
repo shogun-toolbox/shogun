@@ -929,6 +929,14 @@ CSGInterfaceMethod sg_methods[]=
 				USAGE_COMMA "tiling_plif_ids")
 	},
 	{
+		(char*) N_LONG_TRANSITION_SETTINGS,
+		(&CSGInterface::cmd_long_transition_settings),
+		(char*) USAGE_I(N_LONG_TRANSITION_SETTINGS, "use_long_transitions"
+				USAGE_COMMA "threshold"
+				USAGE_COMMA "max_len")
+	},
+
+	{
 		(char*) N_SET_MODEL,
 		(&CSGInterface::cmd_set_model),
 		(char*) USAGE_I(N_SET_MODEL, "content_weights"
@@ -6424,7 +6432,20 @@ bool CSGInterface::cmd_set_lin_feat()
 
 	return true;
 }
+bool CSGInterface::cmd_long_transition_settings()
+{
+	bool use_long_transitions = get_bool();
+	int32_t threshold = get_int();
+	int32_t max_len = get_int();
 
+	CDynProg* h = ui_structure->get_dyn_prog();
+        if (!h) 
+                SG_ERROR("no DynProg object found, use set_model first\n");
+
+	h->long_transition_settings(use_long_transitions, threshold, max_len);
+
+	return true;
+}
 bool CSGInterface::cmd_set_feature_matrix()
 {
 	int32_t num_states = ui_structure->get_num_states();

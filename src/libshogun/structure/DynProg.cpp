@@ -28,7 +28,7 @@
 #include <ctype.h>
 
 //#define USE_TMP_ARRAYCLASS
-//#define DYNPROG_DEBUG
+#define DYNPROG_DEBUG
 
 static int32_t word_degree_default[4]={3,4,5,6} ;
 static int32_t cum_num_words_default[5]={0,64,320,1344,5440} ;
@@ -2571,17 +2571,17 @@ void CDynProg::best_path_trans_deriv(
 		int32_t from_pos   = my_pos_seq[i] ;
 		int32_t to_pos     = my_pos_seq[i+1] ;
 
-		int32_t loss_last_pos = to_pos ;
-		float64_t last_loss = 0.0 ;
+		//int32_t loss_last_pos = to_pos ;
+		//float64_t last_loss = 0.0 ;
 		int32_t elem_id = m_transition_matrix_a_id.element(from_state, to_state) ;
 		my_losses[i] = m_seg_loss_obj->get_segment_loss(from_pos, to_pos, elem_id);
 
 #ifdef DYNPROG_DEBUG
 		// compute loss relative to another segmentation using the segment_loss function
 
-		init_segment_loss(loss, m_seq_len, m_pos[to_pos]-m_pos[from_pos]+10);
-		find_segment_loss_till_pos(to_pos,m_segment_ids, m_segment_mask, loss);  
-		float64_t old_loss = extend_segment_loss(loss, elem_id, from_pos, loss_last_pos, last_loss) ;
+		//init_segment_loss(loss, m_seq_len, m_pos[to_pos]-m_pos[from_pos]+10);
+		//find_segment_loss_till_pos(to_pos,m_segment_ids, m_segment_mask, loss);  
+		//float64_t old_loss = extend_segment_loss(loss, elem_id, from_pos, loss_last_pos, last_loss) ;
 
 		if (i>0)// test if segment loss is additive
 		{
@@ -2591,10 +2591,9 @@ void CDynProg::best_path_trans_deriv(
 			SG_PRINT("loss1:%f loss2:%f loss3:%f, diff:%f\n", loss1, loss2, loss3, loss1+loss2-loss3);
 			if (CMath::abs(loss1+loss2-loss3)>0)
 			{
-				SG_PRINT("losses[%i]:%f old_loss:%f\n",i, my_losses[i], old_loss);
 				SG_PRINT( "%i. segment loss %f (id=%i): from=%i(%i), to=%i(%i)\n", i, my_losses[i], elem_id, from_pos, from_state, to_pos, to_state) ;
 			}
-			int from_pos_ = my_pos_seq[i-1];
+			/*int from_pos_ = my_pos_seq[i-1];
 			to_pos = my_pos_seq[i];	
 			loss_last_pos = to_pos ;
 			init_segment_loss(loss, m_seq_len, m_pos[to_pos]-m_pos[from_pos_]+10);
@@ -2615,7 +2614,7 @@ void CDynProg::best_path_trans_deriv(
 			find_segment_loss_till_pos(to_pos, m_segment_ids, m_segment_mask, loss);  
 			float32_t loss6 = extend_segment_loss(loss, elem_id, from_pos_, loss_last_pos, last_loss) ;
 
-			SG_PRINT("loss4:%f loss5:%f loss6:%f, diff:%f\n", loss4, loss5, loss6, loss4+loss5-loss6);
+			SG_PRINT("loss4:%f loss5:%f loss6:%f, diff:%f\n", loss4, loss5, loss6, loss4+loss5-loss6);*/
 		}
 		io->set_loglevel(M_DEBUG) ;
 		SG_DEBUG( "%i. segment loss %f (id=%i): from=%i(%i), to=%i(%i)\n", i, my_losses[i], elem_id, from_pos, from_state, to_pos, to_state) ;

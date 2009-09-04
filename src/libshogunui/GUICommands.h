@@ -70,6 +70,7 @@
 #define N_SET_LIN_FEAT					"set_lin_feat"
 #define N_INIT_DYN_PROG					"init_dyn_prog"
 #define N_PRECOMPUTE_TILING_FEATURES			"precompute_tiling_features"
+#define N_LONG_TRANSITION_SETTINGS			"long_transition_settings"
 #define N_SET_MODEL					"set_model"
 #define N_SET_FEATURE_MATRIX				"set_feature_matrix"
 #define N_SET_FEATURE_MATRIX_SPARSE			"set_feature_matrix_sparse"
