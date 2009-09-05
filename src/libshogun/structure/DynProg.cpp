@@ -288,8 +288,8 @@ void CDynProg::resize_lin_feat(const int32_t num_new_feat)
 	ASSERT(dim2==m_seq_len); // == number of candidate positions
 
 
-	float64_t* arr = m_lin_feat.get_array();
-	float64_t* tmp = new float64_t[(dim1+num_new_feat)*dim2];	
+	float32_t* arr = m_lin_feat.get_array();
+	float32_t* tmp = new float32_t[(dim1+num_new_feat)*dim2];	
 	memset(tmp, 0, (dim1+num_new_feat)*dim2*sizeof(float64_t)) ;
 	for(int32_t j=0;j<m_seq_len;j++)
                 for(int32_t k=0;k<m_num_lin_feat_plifs_cum[m_num_raw_data-1];k++)
@@ -690,11 +690,11 @@ void CDynProg::set_content_type_array(float64_t* seg_path, int32_t rows, int32_t
 	if (seg_path!=NULL)
 	{
 		int32_t *segment_ids = new int32_t[m_seq_len] ;
-		float64_t *segment_mask = new float64_t[m_seq_len] ;
+		float32_t *segment_mask = new float32_t[m_seq_len] ;
 		for (int32_t i=0; i<m_seq_len; i++)
 		{
 		        segment_ids[i] = (int32_t)seg_path[2*i] ;
-		        segment_mask[i] = seg_path[2*i+1] ;
+		        segment_mask[i] = (float32_t) seg_path[2*i+1] ;
 		}
 		best_path_set_segment_ids_mask(segment_ids, segment_mask, m_seq_len) ;
 		delete[] segment_ids;
@@ -703,7 +703,7 @@ void CDynProg::set_content_type_array(float64_t* seg_path, int32_t rows, int32_t
 	else
 	{
 		int32_t *izeros = new int32_t[m_seq_len] ;
-		float64_t *dzeros = new float64_t[m_seq_len] ;
+		float32_t *dzeros = new float32_t[m_seq_len] ;
 		for (int32_t i=0; i<m_seq_len; i++)
 		{
 			izeros[i]=0 ;
@@ -814,7 +814,7 @@ void CDynProg::best_path_set_segment_loss(
 }
 
 void CDynProg::best_path_set_segment_ids_mask(
-	int32_t* segment_ids, float64_t* segment_mask, int32_t m)
+	int32_t* segment_ids, float32_t* segment_mask, int32_t m)
 {
 	int32_t max_id = 0;
 	for (int32_t i=1;i<m;i++)

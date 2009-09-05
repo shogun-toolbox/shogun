@@ -6380,9 +6380,14 @@ bool CSGInterface::cmd_get_lin_feat()
 
 
 	int32_t dim1, dim2 = 0;
-	float64_t* lin_feat = h->get_lin_feat(dim1, dim2);
+	float32_t* lin_feat = h->get_lin_feat(dim1, dim2);
 
-	set_real_matrix(lin_feat, dim1, dim2);
+	float64_t* d_lin_feat = new float64_t[dim1*dim2];
+
+	for (int32_t i=0; i<dim1*dim2; i++)
+		d_lin_feat[i] = (float64_t) lin_feat[i];
+
+	set_real_matrix(d_lin_feat, dim1, dim2);
 
 	return true;
 }
@@ -6404,12 +6409,18 @@ bool CSGInterface::cmd_set_lin_feat()
 	int32_t num_svms, seq_len;
 	float64_t* lin_feat=NULL;
 	get_real_matrix(lin_feat, num_svms, seq_len);
+	float32_t* f_lin_feat = new float32_t[num_svms*seq_len];
+	if (!f_lin_feat)
+		SG_ERROR("no mem\n");
+	for (int32_t i=0; i<seq_len*num_svms; i++)
+		f_lin_feat[i] = (float32_t) lin_feat[i];
+	delete[] lin_feat ;
 
         if (Npos!=seq_len)
 	  {
 	    SG_ERROR("Dimension mismatch: got %i positions and (%ix%i) values\n", Npos, num_svms, seq_len) ;
 
-	    delete[] lin_feat ;
+	    delete[] f_lin_feat ;
 	    delete[] seq ;
 	    delete[] all_pos ;
 	    
@@ -6424,9 +6435,9 @@ bool CSGInterface::cmd_set_lin_feat()
 	h->set_gene_string(seq, Nseq);
 	h->precompute_stop_codons();
 	h->init_content_svm_value_array(num_svms);
-	h->set_lin_feat(lin_feat, num_svms, seq_len);
+	h->set_lin_feat(f_lin_feat, num_svms, seq_len);
 
-	delete[] lin_feat ;
+	delete[] f_lin_feat ;
 	delete[] seq ;
 	delete[] all_pos ;
 
@@ -6702,7 +6713,6 @@ bool CSGInterface::cmd_best_path_trans()
 	{
 		float64_t zero2[2] = {0.0, 0.0} ;
 		h->best_path_set_segment_loss(zero2, 2, 1) ;
-		seg_loss_obj->set_segment_loss(zero2, 2, 1);
 	}
 	h->set_content_type_array(seg_path,Nseg_path,Mseg_path);
 	delete[] seg_path;
@@ -6890,7 +6900,6 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 	{
 		float64_t zero2[2] = {0.0, 0.0} ;
 		h->best_path_set_segment_loss(zero2, 2, 1) ;
-		seg_loss_obj->set_segment_loss(zero2, 2, 1);
 	}
 	h->set_content_type_array(seg_path,Nseg_path,Mseg_path);
 
