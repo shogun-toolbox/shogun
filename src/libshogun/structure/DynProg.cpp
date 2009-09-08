@@ -2750,25 +2750,56 @@ void CDynProg::best_path_trans_deriv(
 			// in contrast to the content svm predictions where we have a single value per transition;
 			// content svm predictions have already been added to the derivative, thus we start with d=1 
 			// instead of d=0
-			for (int32_t d=1; d<=m_num_raw_data; d++) 
+			if (is_long_transition)
 			{
-				ASSERT(!is_long_transition) ; // not sure what has to be done here
-
-				for (int32_t s=0;s<m_num_lin_feat_plifs_cum[m_num_raw_data]+m_num_intron_plifs;s++)
-					svm_value[s]=-CMath::INFTY;
-				float64_t* intensities = new float64_t[m_num_probes_cum[d]];
-				int32_t num_intensities = raw_intensities_interval_query(m_pos[from_pos], m_pos[to_pos],intensities, d);
-				//SG_PRINT("m_pos[from_pos]:%i, m_pos[to_pos]:%i, num_intensities:%i\n",m_pos[from_pos],m_pos[to_pos], num_intensities);
-				for (int32_t k=0;k<num_intensities;k++)
+				for (int32_t d=1; d<=m_num_raw_data; d++) 
 				{
-					for (int32_t j=m_num_lin_feat_plifs_cum[d-1];j<m_num_lin_feat_plifs_cum[d];j++)
-						svm_value[j]=intensities[k];
+					for (int32_t s=0;s<m_num_lin_feat_plifs_cum[m_num_raw_data]+m_num_intron_plifs;s++)
+						svm_value[s]=-CMath::INFTY;
+					float64_t* intensities = new float64_t[m_num_probes_cum[d]];
+					int32_t num_intensities = raw_intensities_interval_query(m_pos[from_pos], m_pos[from_pos_thresh],intensities, d);
+					for (int32_t k=0;k<num_intensities;k++)
+					{
+						for (int32_t j=m_num_lin_feat_plifs_cum[d-1];j<m_num_lin_feat_plifs_cum[d];j++)
+							svm_value[j]=intensities[k];
 
-					PEN.element(to_state, from_state)->penalty_add_derivative(-CMath::INFTY, svm_value, 1) ;	
+						PEN.element(to_state, from_state)->penalty_add_derivative(-CMath::INFTY, svm_value, 0.5) ;	
+
+					}
+					num_intensities = raw_intensities_interval_query(m_pos[to_pos_thresh], m_pos[to_pos],intensities, d);
+					for (int32_t k=0;k<num_intensities;k++)
+					{
+						for (int32_t j=m_num_lin_feat_plifs_cum[d-1];j<m_num_lin_feat_plifs_cum[d];j++)
+							svm_value[j]=intensities[k];
+
+						PEN.element(to_state, from_state)->penalty_add_derivative(-CMath::INFTY, svm_value, 0.5) ;	
+
+					}
+					delete[] intensities;
 
 				}
-				delete[] intensities;
 			}
+			else
+			{
+				for (int32_t d=1; d<=m_num_raw_data; d++) 
+				{
+					for (int32_t s=0;s<m_num_lin_feat_plifs_cum[m_num_raw_data]+m_num_intron_plifs;s++)
+						svm_value[s]=-CMath::INFTY;
+					float64_t* intensities = new float64_t[m_num_probes_cum[d]];
+					int32_t num_intensities = raw_intensities_interval_query(m_pos[from_pos], m_pos[to_pos],intensities, d);
+					//SG_PRINT("m_pos[from_pos]:%i, m_pos[to_pos]:%i, num_intensities:%i\n",m_pos[from_pos],m_pos[to_pos], num_intensities);
+					for (int32_t k=0;k<num_intensities;k++)
+					{
+						for (int32_t j=m_num_lin_feat_plifs_cum[d-1];j<m_num_lin_feat_plifs_cum[d];j++)
+							svm_value[j]=intensities[k];
+
+						PEN.element(to_state, from_state)->penalty_add_derivative(-CMath::INFTY, svm_value, 1) ;	
+
+					}
+					delete[] intensities;
+				}
+			}
+
 		}
 #ifdef DYNPROG_DEBUG
 		SG_DEBUG( "%i. scores[i]=%f\n", i, my_scores[i]) ;
