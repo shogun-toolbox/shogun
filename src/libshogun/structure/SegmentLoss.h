@@ -32,7 +32,7 @@ class CSegmentLoss : public CSGObject
 		 */
 		void set_segment_ids(CArray<int32_t>* segment_ids);
 
-		void set_segment_mask(CArray<float32_t>* segment_mask);
+		void set_segment_mask(CArray<float64_t>* segment_mask);
 
 		void set_num_segment_types(int32_t num_segment_types)
 		{
@@ -54,11 +54,9 @@ class CSegmentLoss : public CSGObject
 		/** segment IDs */
 		CArray<int32_t>* m_segment_ids;
 		/** segment mask */
-		CArray<float32_t>* m_segment_mask;
+		CArray<float64_t>* m_segment_mask;
 		/** number of different segment types (former: max_a_id)*/
 		int32_t m_num_segment_types;
-		
-		bool m_use_loss;
 };
 
 inline float32_t CSegmentLoss::get_segment_loss(int32_t from_pos, int32_t to_pos, int32_t segment_id)

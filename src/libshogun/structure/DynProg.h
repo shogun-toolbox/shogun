@@ -244,7 +244,7 @@ public:
 	 * @param segment_mask segment mask
 	 * @param m dimension m
 	 */
-	void best_path_set_segment_ids_mask(int32_t* segment_ids, float32_t* segment_mask, int32_t m);
+	void best_path_set_segment_ids_mask(int32_t* segment_ids, float64_t* segment_mask, int32_t m);
 
 	/** set sparse feature matrices */
 	void set_sparse_features(CSparseFeatures<float64_t>* seq_sparse1, CSparseFeatures<float64_t>* seq_sparse2);
@@ -439,7 +439,7 @@ public:
 	 *
 	 * @return lin_feat_array
 	 */
-	inline float32_t* get_lin_feat(int32_t & dim1, int32_t & dim2) 
+	inline float64_t* get_lin_feat(int32_t & dim1, int32_t & dim2) 
 	{
 		m_lin_feat.get_array_size(dim1, dim2);
 		return m_lin_feat.get_array();
@@ -452,7 +452,7 @@ public:
 	 * @param p_num_svms number of tracks
 	 * @param p_seq_len number of candidate positions
 	 */
-	inline void set_lin_feat(float32_t* p_lin_feat, int32_t p_num_svms, int32_t p_seq_len) 
+	inline void set_lin_feat(float64_t* p_lin_feat, int32_t p_num_svms, int32_t p_seq_len) 
 	{
  	  m_lin_feat.set_array(p_lin_feat, p_num_svms, p_seq_len, true, true);
 	}
@@ -781,7 +781,7 @@ protected:
 	/** segment IDs */
 	CArray<int32_t> m_segment_ids;
 	/** segment mask */
-	CArray<float32_t> m_segment_mask;
+	CArray<float64_t> m_segment_mask;
 	/** my state seq */
 	CArray<int32_t> m_my_state_seq;
 	/** my position sequence */
@@ -822,7 +822,7 @@ protected:
 	 *  array for storage of precomputed linear features linge content svm values or pliffed tiling data
 	 * Jonas
 	 */
-	CArray2<float32_t> m_lin_feat;
+	CArray2<float64_t> m_lin_feat;
 
 	/** raw intensities */
 	float64_t *m_raw_intensities;

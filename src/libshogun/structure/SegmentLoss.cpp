@@ -17,8 +17,7 @@ CSegmentLoss::CSegmentLoss()
 	m_segment_loss(1,1,2),
 	m_segment_ids(NULL),
 	m_segment_mask(NULL),
-	m_num_segment_types(NULL),
-	m_use_loss(false)
+	m_num_segment_types(NULL)
 {
 }
 CSegmentLoss::~CSegmentLoss()
@@ -32,8 +31,6 @@ void CSegmentLoss::set_segment_loss(float64_t* segment_loss, int32_t m, int32_t 
 		SG_ERROR( "segment_loss should be 2 x quadratic matrix: %i!=%i\n", 2*m, n) ;
 
 	m_num_segment_types = m;
-	if (m>2)
-		m_use_loss = true;
 
 	m_segment_loss.set_array(segment_loss, m, n/2, 2, true, true) ;
 }
@@ -43,17 +40,13 @@ void CSegmentLoss::set_segment_ids(CArray<int32_t>* segment_ids)
 	m_segment_ids = segment_ids;
 }
 
-void CSegmentLoss::set_segment_mask(CArray<float32_t>* segment_mask)
+void CSegmentLoss::set_segment_mask(CArray<float64_t>* segment_mask)
 {
 	m_segment_mask = segment_mask;
 }
 
 void CSegmentLoss::compute_loss(int32_t* all_pos, int32_t len)
 {
-	// for predictions loss is not set and 
-	// this matrix shouldn't (and can't) be computed
-	if (!m_use_loss)
-		return;
 #ifdef DEBUG
 	SG_PRINT("compute loss: len: %i, m_num_segment_types: %i\n", len, m_num_segment_types);
 	SG_PRINT("m_segment_mask->element(0):%f \n", m_segment_mask->element(0));
