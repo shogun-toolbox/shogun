@@ -28,7 +28,7 @@
 #include <ctype.h>
 
 //#define USE_TMP_ARRAYCLASS
-#define DYNPROG_DEBUG
+//#define DYNPROG_DEBUG
 
 static int32_t word_degree_default[4]={3,4,5,6} ;
 static int32_t cum_num_words_default[5]={0,64,320,1344,5440} ;
@@ -290,7 +290,7 @@ void CDynProg::resize_lin_feat(const int32_t num_new_feat)
 
 	float32_t* arr = m_lin_feat.get_array();
 	float32_t* tmp = new float32_t[(dim1+num_new_feat)*dim2];	
-	memset(tmp, 0, (dim1+num_new_feat)*dim2*sizeof(float64_t)) ;
+	memset(tmp, 0, (dim1+num_new_feat)*dim2*sizeof(float32_t)) ;
 	for(int32_t j=0;j<m_seq_len;j++)
                 for(int32_t k=0;k<m_num_lin_feat_plifs_cum[m_num_raw_data-1];k++)
 			tmp[j*(dim1+num_new_feat)+k] = arr[j*dim1+k];
