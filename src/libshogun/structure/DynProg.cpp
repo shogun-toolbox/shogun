@@ -2300,6 +2300,14 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 										long_transition_content_end_position.set_element(0, ii, j) ;
 #endif
 									}
+									if (with_loss)
+									{
+										float64_t old_loss = long_transition_content_scores_loss.get_element(ii, j) ;
+										float64_t new_loss = m_seg_loss_obj->get_segment_loss(long_transition_content_start_position.get_element(ii,j), end_3p_part, elem_id[i]);
+										float64_t score = long_transition_content_scores.get_element(ii, j) - old_loss + new_loss ;
+										long_transition_content_scores.set_element(score, ii, j) ;
+										long_transition_content_scores_loss.set_element(new_loss, ii, j) ;
+									}
 									if (-long_transition_content_scores.get_element(ii, j) > mval_trans )
 									{
 										/* then the old long transition is either too far away or worse than the current one */
