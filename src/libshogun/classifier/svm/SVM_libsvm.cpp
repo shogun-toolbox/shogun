@@ -408,6 +408,7 @@ void Solver::Solve(
 	}
 
 	// initialize gradient
+	CSignal::clear_cancel();
 	{
 		G = new float64_t[l];
 		G_bar = new float64_t[l];
@@ -417,7 +418,10 @@ void Solver::Solve(
 			G[i] = p_p[i];
 			G_bar[i] = 0;
 		}
-		for(i=0;i<l;i++)
+		SG_SINFO("Computing gradient for initial set of non-zero alphas\n");
+		//CMath::display_vector(alpha, l, "alphas");
+		for(i=0;i<l && !CSignal::cancel_computations();i++)
+		{
 			if(!is_lower_bound(i))
 			{
 				const Qfloat *Q_i = Q->get_Q(i,l);
@@ -429,13 +433,15 @@ void Solver::Solve(
 					for(j=0;j<l;j++)
 						G_bar[j] += get_C(i) * Q_i[j];
 			}
+			SG_SPROGRESS(i, 0, l);
+		}
+		SG_SDONE();
 	}
 
 	// optimization step
 
 	int32_t iter = 0;
 	int32_t counter = CMath::min(l,1000)+1;
-	CSignal::clear_cancel();
 
 	while (!CSignal::cancel_computations())
 	{
@@ -1340,45 +1346,42 @@ int32_t Solver_NUMC::select_working_set(
 		}
 	}
 
-	for (int32_t c=0; c<nr_class; c++)
+	for(int32_t j=0;j<active_size;j++)
 	{
-		int32_t ip = Gmaxp_idx[c];
+		int32_t cidx=y[j];
+		int32_t ip = Gmaxp_idx[cidx];
 		const Qfloat *Q_ip = NULL;
 		if(ip != -1) // NULL Q_ip not accessed: Gmaxp=-INF if ip=-1
 			Q_ip = Q->get_Q(ip,active_size);
 
-		for(int32_t j=0;j<active_size;j++)
+		if (!is_lower_bound(j))	
 		{
-			int32_t cidx=y[j];
-
-			if (!is_lower_bound(j))	
+			float64_t grad_diff=Gmaxp[cidx]+G[j];
+			if (G[j] >= Gmaxp2[cidx])
+				Gmaxp2[cidx] = G[j];
+			if (grad_diff > 0)
 			{
-				float64_t grad_diff=Gmaxp[cidx]+G[j];
-				if (G[j] >= Gmaxp2[cidx])
-					Gmaxp2[cidx] = G[j];
-				if (grad_diff > 0)
-				{
-					float64_t obj_diff; 
-					float64_t quad_coef = Q_ip[ip]+QD[j]-2*Q_ip[j];
-					if (quad_coef > 0)
-						obj_diff = -(grad_diff*grad_diff)/quad_coef;
-					else
-						obj_diff = -(grad_diff*grad_diff)/TAU;
+				float64_t obj_diff; 
+				float64_t quad_coef = Q_ip[ip]+QD[j]-2*Q_ip[j];
+				if (quad_coef > 0)
+					obj_diff = -(grad_diff*grad_diff)/quad_coef;
+				else
+					obj_diff = -(grad_diff*grad_diff)/TAU;
 
-					if (obj_diff <= obj_diff_min[cidx])
-					{
-						Gmin_idx[cidx]=j;
-						obj_diff_min[cidx] = obj_diff;
-					}
+				if (obj_diff <= obj_diff_min[cidx])
+				{
+					Gmin_idx[cidx]=j;
+					obj_diff_min[cidx] = obj_diff;
 				}
 			}
 		}
 
-		gap=Gmaxp[c]+Gmaxp2[c];
-		if (gap>=best_gap && Gmin_idx[c]>=0 && Gmin_idx[c]<active_size)
+		gap=Gmaxp[cidx]+Gmaxp2[cidx];
+		if (gap>=best_gap && Gmin_idx[cidx]>=0 &&
+				Gmaxp_idx[cidx]>=0 && Gmin_idx[cidx]<active_size)
 		{
-			out_i = Gmaxp_idx[c];
-			out_j = Gmin_idx[c];
+			out_i = Gmaxp_idx[cidx];
+			out_j = Gmin_idx[cidx];
 
 			best_gap=gap;
 			best_out_i=out_i;

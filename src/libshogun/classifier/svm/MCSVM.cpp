@@ -73,6 +73,32 @@ bool CMCSVM::train()
 	param.weight = weights;
 	param.nr_class=num_classes;
 
+	int32_t* numc=new int32_t[num_classes];
+	CMath::fill_vector(numc, num_classes, 0);
+
+	for (int32_t i=0; i<problem.l; i++)
+		numc[(int32_t) problem.y[i]]++;
+
+	int32_t Nc=0;
+	int32_t Nmin=problem.l;
+	for (int32_t i=0; i<num_classes; i++)
+	{
+		if (numc[i]>0)
+		{
+			Nc++;
+			Nmin=CMath::min(Nmin, numc[i]);
+		}
+
+	}
+
+	float64_t nu_min=((float64_t) Nc)/problem.l;
+	float64_t nu_max=((float64_t) Nc)*Nmin/problem.l;
+
+	SG_INFO("valid nu interval [%f ... %f]\n", nu_min, nu_max);
+
+	if (param.nu<nu_min || param.nu>nu_max)
+		SG_ERROR("nu out of valid range [%f ... %f]\n", nu_min, nu_max);
+
 	const char* error_msg = svm_check_parameter(&problem,&param);
 
 	if(error_msg)
