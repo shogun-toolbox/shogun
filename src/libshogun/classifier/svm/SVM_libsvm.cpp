@@ -1315,10 +1315,6 @@ int32_t Solver_NUMC::select_working_set(
 	float64_t* Gmaxp2 = new float64_t[nr_class];
 	int32_t* Gmaxp_idx = new int32_t[nr_class];
 
-	float64_t* Gmaxn = new float64_t[nr_class];
-	float64_t* Gmaxn2 = new float64_t[nr_class];
-	int32_t* Gmaxn_idx = new int32_t[nr_class];
-
 	int32_t* Gmin_idx = new int32_t[nr_class];
 	float64_t* obj_diff_min = new float64_t[nr_class];
 
@@ -1327,9 +1323,6 @@ int32_t Solver_NUMC::select_working_set(
 		Gmaxp[i]=-INF;
 		Gmaxp2[i]=-INF;
 		Gmaxp_idx[i]=-1;
-		Gmaxn[i]=-INF;
-		Gmaxn2[i]=-INF;
-		Gmaxn_idx[i]=-1;
 		Gmin_idx[i]=-1;
 		obj_diff_min[i]=INF;
 	}
@@ -1350,13 +1343,9 @@ int32_t Solver_NUMC::select_working_set(
 	for (int32_t c=0; c<nr_class; c++)
 	{
 		int32_t ip = Gmaxp_idx[c];
-		int32_t in = Gmaxn_idx[c];
 		const Qfloat *Q_ip = NULL;
-		const Qfloat *Q_in = NULL;
 		if(ip != -1) // NULL Q_ip not accessed: Gmaxp=-INF if ip=-1
 			Q_ip = Q->get_Q(ip,active_size);
-		if(in != -1)
-			Q_in = Q->get_Q(in,active_size);
 
 		for(int32_t j=0;j<active_size;j++)
 		{
@@ -1385,13 +1374,10 @@ int32_t Solver_NUMC::select_working_set(
 			}
 		}
 
-		gap=CMath::max(Gmaxp[c]+Gmaxp2[c],Gmaxn[c]+Gmaxn2[c]);
+		gap=Gmaxp[c]+Gmaxp2[c];
 		if (gap>=best_gap && Gmin_idx[c]>=0 && Gmin_idx[c]<active_size)
 		{
-			if (y[Gmin_idx[c]] == c)
-				out_i = Gmaxp_idx[c];
-			else
-				out_i = Gmaxn_idx[c];
+			out_i = Gmaxp_idx[c];
 			out_j = Gmin_idx[c];
 
 			best_gap=gap;
@@ -1413,9 +1399,6 @@ int32_t Solver_NUMC::select_working_set(
 	delete[] Gmaxp;
 	delete[] Gmaxp2;
 	delete[] Gmaxp_idx;
-	delete[] Gmaxn;
-	delete[] Gmaxn2;
-	delete[] Gmaxn_idx;
 	delete[] Gmin_idx;
 	delete[] obj_diff_min;
 
