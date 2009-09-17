@@ -98,6 +98,8 @@ struct svm_parameter
 	float64_t p;
 	/** use the shrinking heuristics */
 	int32_t shrinking;
+	/** compute bias */
+	bool use_bias;
 };
 
 /** svm_model */

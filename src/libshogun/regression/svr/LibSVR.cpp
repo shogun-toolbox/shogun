@@ -75,6 +75,7 @@ bool CLibSVR::train()
 	param.nr_weight = 2;
 	param.weight_label = weights_label;
 	param.weight = weights;
+	param.use_bias = get_bias_enabled();
 
 	const char* error_msg = svm_check_parameter(&problem,&param);
 

@@ -72,6 +72,7 @@ bool CMCSVM::train()
 	param.weight_label = weights_label;
 	param.weight = weights;
 	param.nr_class=num_classes;
+	param.use_bias = get_bias_enabled();
 
 	int32_t* numc=new int32_t[num_classes];
 	CMath::fill_vector(numc, num_classes, 0);
@@ -118,8 +119,7 @@ bool CMCSVM::train()
 			int32_t num_sv=model->nSV[i];
 
 			CSVM* svm=new CSVM(num_sv);
-			//svm->set_bias(model->rho[i]);
-			svm->set_bias(0);
+			svm->set_bias(model->rho[i]);
 
 			for (int32_t j=0; j<num_sv; j++)
 			{

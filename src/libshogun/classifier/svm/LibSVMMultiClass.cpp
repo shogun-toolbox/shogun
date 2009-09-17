@@ -64,6 +64,7 @@ bool CLibSVMMultiClass::train()
 	param.nr_weight = 0;
 	param.weight_label = NULL;
 	param.weight = NULL;
+	param.use_bias = get_bias_enabled();
 
 	const char* error_msg = svm_check_parameter(&problem,&param);
 

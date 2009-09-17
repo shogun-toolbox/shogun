@@ -612,7 +612,6 @@ void Solver::Solve(
 			}
 		}
 
-#define MCSVM_DEBUG
 #ifdef MCSVM_DEBUG
 		// calculate objective value
 		{
@@ -1171,9 +1170,6 @@ public:
 	{
 		this->si = p_si;
 		Solver::Solve(p_l,p_Q,p_p,p_y,p_alpha,p_Cp,p_Cn,p_eps,p_si,shrinking);
-		float64_t* biases = new float64_t[100];
-		float64_t primal = compute_primal(p_y, p_alpha, biases);
-		delete[] biases;
 	}
 	float64_t compute_primal(const schar* p_y, float64_t* p_alpha, float64_t* biases);
 
@@ -1216,10 +1212,10 @@ float64_t Solver_NUMC::compute_primal(const schar* p_y, float64_t* p_alpha, floa
 			class_count[(int32_t) y[i]]++;
 	}
 
-	CMath::display_vector(class_count, nr_class, "class_count");
+	//CMath::display_vector(class_count, nr_class, "class_count");
 
 	float64_t mu=((float64_t) nr_class)/(nu*l);
-	SG_SPRINT("nr_class=%d, l=%d, active_size=%d, nu=%f, mu=%f\n", nr_class, l, active_size, nu, mu);
+	//SG_SPRINT("nr_class=%d, l=%d, active_size=%d, nu=%f, mu=%f\n", nr_class, l, active_size, nu, mu);
 
 	float64_t rho=0;
 	float64_t quad=0;
@@ -1303,13 +1299,13 @@ float64_t Solver_NUMC::compute_primal(const schar* p_y, float64_t* p_alpha, floa
 		xi+=rho-outputs[i];
 	}
 
-	SG_SPRINT("xi=%f\n", xi);
+	//SG_SPRINT("xi=%f\n", xi);
 
-	SG_SPRINT("quad=%f Cp=%f xi*mu=%f\n", quad, nr_class*rho, xi*mu);
+	//SG_SPRINT("quad=%f Cp=%f xi*mu=%f\n", quad, nr_class*rho, xi*mu);
 
 	float64_t primal=0.5*quad- nr_class*rho+xi*mu;
 
-	SG_SPRINT("primal=%10.10f\n", primal);
+	//SG_SPRINT("primal=%10.10f\n", primal);
 
 	delete[] y;
 	delete[] alpha;
@@ -1831,9 +1827,13 @@ static void solve_nu_multiclass_svc(const svm_problem *prob,
 	model->nSV = Malloc(int32_t, nr_class);
 	model->sv_coef = Malloc(float64_t *,nr_class);
 
+	for (int32_t i=0; i<nr_class; i++)
+		model->rho[i]=0;
 
-	s.compute_primal(y, alpha, model->rho);
+	SG_DEBUG("Computing biases/Primal = %10.10f\n", primal);
+	float64_t primal = s.compute_primal(y, alpha, model->rho);
 	model->objective = si->obj;
+	SG_INFO("Primal = %10.10f\n", primal);
 
 
 	for (int32_t i=0; i<nr_class; i++)
@@ -1844,7 +1844,7 @@ static void solve_nu_multiclass_svc(const svm_problem *prob,
 		class_sv_count[i]=0;
 	}
 
-	for(int32_t i=0;i<prob->l;i++)
+	for (int32_t i=0;i<prob->l;i++)
 	{
 		if(fabs(alpha[i]) > 0)
 		{
