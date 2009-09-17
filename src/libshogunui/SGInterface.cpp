@@ -2566,7 +2566,7 @@ bool CSGInterface::cmd_set_kernel()
 	if (m_nrhs<2 || !create_return_values(0))
 		return false;
 
-	SG_PRINT("SGInterface: set_kernel\n");
+	SG_DEBUG("SGInterface: set_kernel\n");
 	CKernel* kernel=create_kernel();
 	return ui_kernel->set_kernel(kernel);
 }
@@ -2581,7 +2581,7 @@ bool CSGInterface::cmd_add_kernel()
 	m_nrhs--;
 	CKernel* kernel=create_kernel();
 
-	SG_PRINT("SGInterface: add_kernel\n");
+	SG_DEBUG("SGInterface: add_kernel\n");
 	return ui_kernel->add_kernel(kernel, weight);
 }
 
@@ -2599,7 +2599,7 @@ CKernel* CSGInterface::create_kernel()
 	int32_t len=0;
 	char* type=get_str_from_str_or_direct(len);
 
-	SG_PRINT("set_kernel with type: %s\n", type);
+	SG_DEBUG("set_kernel with type: %s\n", type);
 
 	if (strmatch(type, "COMBINED"))
 	{
