@@ -612,6 +612,7 @@ void Solver::Solve(
 			}
 		}
 
+#define MCSVM_DEBUG
 #ifdef MCSVM_DEBUG
 		// calculate objective value
 		{
@@ -622,7 +623,7 @@ void Solver::Solve(
 			p_si->obj = v/2;
 
 			float64_t primal=0;
-			float64_t gap=100000;
+			//float64_t gap=100000;
 			SG_SPRINT("dual obj=%f primal obf=%f gap=%f\n", v/2, primal, gap);
 		}
 #endif
@@ -1170,6 +1171,9 @@ public:
 	{
 		this->si = p_si;
 		Solver::Solve(p_l,p_Q,p_p,p_y,p_alpha,p_Cp,p_Cn,p_eps,p_si,shrinking);
+		float64_t* biases = new float64_t[100];
+		float64_t primal = compute_primal(p_y, p_alpha, biases);
+		delete[] biases;
 	}
 	float64_t compute_primal(const schar* p_y, float64_t* p_alpha, float64_t* biases);
 
@@ -1189,7 +1193,6 @@ private:
 
 float64_t Solver_NUMC::compute_primal(const schar* p_y, float64_t* p_alpha, float64_t* biases)
 {
-	/*
 	clone(y, p_y,l);
 	clone(alpha,p_alpha,l);
 
@@ -1219,46 +1222,72 @@ float64_t Solver_NUMC::compute_primal(const schar* p_y, float64_t* p_alpha, floa
 	SG_SPRINT("nr_class=%d, l=%d, active_size=%d, nu=%f, mu=%f\n", nr_class, l, active_size, nu, mu);
 
 	float64_t rho=0;
+	float64_t quad=0;
+	float64_t* zero_counts  = new float64_t[nr_class];
+
+	for (int32_t i=0; i<nr_class; i++)
+		zero_counts[i]=-INF;
+
 	for (int32_t i=0; i<active_size; i++)
 	{
 		float64_t sum_free=0;
 		float64_t sum_atbound=0;
+		float64_t sum_zero_count=0;
+
 		Qfloat* Q_i = Q->get_Q(i,active_size);
 		outputs[i]=0;
 
 		for (int j=0; j<active_size; j++)
 		{
+			quad+= alpha[i]*alpha[j]*Q_i[j];
 			float64_t tmp= alpha[j]*Q_i[j]/mu;
 
 			if(!is_upper_bound(i) && !is_lower_bound(i))
 				sum_free+=tmp;
 			else
 				sum_atbound+=tmp;
+
+			if (class_count[(int32_t) y[i]] == 0 && y[j]==y[i])
+				sum_zero_count+= tmp;
+		}
+
+		if (class_count[(int32_t) y[i]] == 0)
+		{
+			if (zero_counts[(int32_t) y[i]]<sum_zero_count)
+				zero_counts[(int32_t) y[i]]=sum_zero_count;
 		}
 
 		biases[(int32_t) y[i]]-=sum_free;
 		if (class_count[(int32_t) y[i]] != 0.0)
 			rho+=sum_free/class_count[(int32_t) y[i]];
-		//else
-		//	SG_SPRINT("sum_free=%f, class_count=0\n", sum_free);
 		outputs[i]+=sum_free+sum_atbound;
+	}
+
+	for (int32_t i=0; i<nr_class; i++)
+	{
+		if (class_count[i] == 0.0)
+			rho+=zero_counts[i];
 	}
 
 	rho/=nr_class;
 
 	SG_SPRINT("rho=%f\n", rho);
 
+	float64_t sumb=0;
 	for (int32_t i=0; i<nr_class; i++)
 	{
 		if (class_count[i] != 0.0)
 			biases[i]=biases[i]/class_count[i]+rho;
 		else
-		{
-			SG_SPRINT("biases[i]=%f, class_count=0\n", biases[i]);
-			biases[i]+=rho;
-		}
+			biases[i]+=rho-zero_counts[i];
+
 		SG_SPRINT("biases=%f\n", biases[i]);
+
+		sumb+=biases[i];
 	}
+	SG_SPRINT("sumb=%f\n", sumb);
+
+	delete[] zero_counts;
 
 	for (int32_t i=0; i<l; i++)
 		outputs[i]+=biases[(int32_t) y[i]];
@@ -1276,29 +1305,17 @@ float64_t Solver_NUMC::compute_primal(const schar* p_y, float64_t* p_alpha, floa
 
 	SG_SPRINT("xi=%f\n", xi);
 
-
-	float64_t quad=0;
-
-	for (int32_t i=0; i<active_size; i++)
-	{
-		Qfloat* Q_i = Q->get_Q(i,active_size);
-
-		for (int j=0; j<active_size; j++)
-			quad+= alpha[i]*alpha[j]*Q_i[j];
-	}
-	SG_SPRINT("quad=%f\n", quad);
+	SG_SPRINT("quad=%f Cp=%f xi*mu=%f\n", quad, nr_class*rho, xi*mu);
 
 	float64_t primal=0.5*quad- nr_class*rho+xi*mu;
 
-	SG_SPRINT("primal=%f\n", primal);
+	SG_SPRINT("primal=%10.10f\n", primal);
 
 	delete[] y;
 	delete[] alpha;
 	delete[] alpha_status;
 
 	return primal;
-	*/
-	return 0;
 }
 
 

@@ -1,9 +1,10 @@
 2009-09-XX Soeren Sonnenburg <sonne@debian.org>
 
-	* SHOGUN Release version 0.8.1 (libshogun 4.0, libshogunui 3.0)
+	* SHOGUN Release version 0.8.1 (libshogun 4.1, libshogunui 3.0)
 	* This release contains minor feature enhancements and bugfixes:
 	* Features:
 	    - Implement set_linear_classifier for static interfaces.
+		- Polynomial DotFeatures
 	* Bugfixes:
 		- Fix one class MKL for static interfaces.
 	* Cleanup and API Changes:
