@@ -13,12 +13,12 @@
 #include "lib/io.h"
 
 CMCSVM::CMCSVM()
-: CMultiClassSVM(ONE_VS_REST), model(NULL), norm_wc(NULL)
+: CMultiClassSVM(ONE_VS_REST), model(NULL), norm_wc(NULL), rho(0)
 {
 }
 
 CMCSVM::CMCSVM(float64_t C, CKernel* k, CLabels* lab)
-: CMultiClassSVM(ONE_VS_REST, C, k, lab), model(NULL), norm_wc(NULL)
+: CMultiClassSVM(ONE_VS_REST, C, k, lab), model(NULL), norm_wc(NULL), rho(0)
 {
 }
 
@@ -114,12 +114,15 @@ bool CMCSVM::train()
 		ASSERT(model->nr_class==num_classes);
 		create_multiclass_svm(num_classes);
 
+		rho=model->rho[0];
+
 		for (int32_t i=0; i<num_classes; i++)
 		{
 			int32_t num_sv=model->nSV[i];
 
 			CSVM* svm=new CSVM(num_sv);
-			svm->set_bias(model->rho[i]);
+			svm->set_bias(model->rho[i+1]);
+
 
 			for (int32_t j=0; j<num_sv; j++)
 			{
@@ -178,6 +181,7 @@ void CMCSVM::compute_norm_wc()
 	CMath::display_vector(norm_wc, m_num_svms, "norm_wc");
 }
 
+/*
 CLabels* CMCSVM::classify_one_vs_rest(CLabels* result)
 {
 	ASSERT(m_num_svms>0);
@@ -236,9 +240,11 @@ CLabels* CMCSVM::classify_one_vs_rest(CLabels* result)
 
 	return result;
 }
+*/
 
 float64_t CMCSVM::classify_example(int32_t num)
 {
+	/*
 	ASSERT(m_num_svms>0);
 	float64_t* outputs=new float64_t[m_num_svms];
 	int32_t winner=0;
@@ -253,6 +259,32 @@ float64_t CMCSVM::classify_example(int32_t num)
 			max_out=outputs[i];
 		}
 	}
+	delete[] outputs;
+
+	return winner;
+	*/
+
+	ASSERT(m_num_svms>0);
+	float64_t* outputs=new float64_t[m_num_svms];
+	int32_t winner=0;
+
+	for (int32_t c=0; c<m_num_svms; c++)
+	{
+		outputs[c]=m_svms[c]->get_bias()-rho;
+
+		for (int32_t i=0; i<m_svms[c]->get_num_support_vectors(); i++)
+		{
+			float64_t alpha=m_svms[c]->get_alpha(i);
+			int32_t svidx=m_svms[c]->get_support_vector(i);
+			float64_t v = alpha*kernel->kernel(svidx, num);
+
+			outputs[c] += v;
+
+			for (int32_t j=0; j<m_num_svms; j++)
+				outputs[j] -= v/m_num_svms;
+		}
+	}
+
 	delete[] outputs;
 
 	return winner;

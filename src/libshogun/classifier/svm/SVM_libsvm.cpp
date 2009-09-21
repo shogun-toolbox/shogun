@@ -61,6 +61,9 @@ template <class S, class T> inline void clone(T*& dst, S* src, int32_t n)
 #define TAU 1e-12
 #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
 
+class QMatrix;
+class SVC_QMC;
+
 //
 // Kernel Cache
 //
@@ -1149,6 +1152,75 @@ float64_t Solver_NU::calculate_rho()
 	return (r1-r2)/2;
 }
 
+class SVC_QMC: public LibSVMKernel
+{ 
+public:
+	SVC_QMC(const svm_problem& prob, const svm_parameter& param, const schar *y_, int32_t n_class, float64_t fac)
+	:LibSVMKernel(prob.l, prob.x, param)
+	{
+		nr_class=n_class;
+		factor=fac;
+		clone(y,y_,prob.l);
+		cache = new Cache(prob.l,(int64_t)(param.cache_size*(1l<<20)));
+		QD = new Qfloat[prob.l];
+		for(int32_t i=0;i<prob.l;i++)
+		{
+			QD[i]= factor*(nr_class-1)*kernel_function(i,i);
+		}
+	}
+	
+	Qfloat *get_Q(int32_t i, int32_t len) const
+	{
+		Qfloat *data;
+		int32_t start;
+		if((start = cache->get_data(i,&data,len)) < len)
+		{
+			for(int32_t j=start;j<len;j++)
+			{
+				if (y[i]==y[j])
+					data[j] = factor*(nr_class-1)*kernel_function(i,j);
+				else
+					data[j] = -factor*kernel_function(i,j);
+			}
+		}
+		return data;
+	}
+
+	inline Qfloat get_orig_Qij(Qfloat Q, int32_t i, int32_t j)
+	{
+		if (y[i]==y[j])
+			return Q/(nr_class-1);
+		else
+			return -Q;
+	}
+
+	Qfloat *get_QD() const
+	{
+		return QD;
+	}
+
+	void swap_index(int32_t i, int32_t j) const
+	{
+		cache->swap_index(i,j);
+		LibSVMKernel::swap_index(i,j);
+		CMath::swap(y[i],y[j]);
+		CMath::swap(QD[i],QD[j]);
+	}
+
+	~SVC_QMC()
+	{
+		delete[] y;
+		delete cache;
+		delete[] QD;
+	}
+private:
+	float64_t factor;
+	float64_t nr_class;
+	schar *y;
+	Cache *cache;
+	Qfloat *QD;
+};
+
 //
 // Solver for nu-svm classification and regression
 //
@@ -1171,7 +1243,7 @@ public:
 		this->si = p_si;
 		Solver::Solve(p_l,p_Q,p_p,p_y,p_alpha,p_Cp,p_Cn,p_eps,p_si,shrinking);
 	}
-	float64_t compute_primal(const schar* p_y, float64_t* p_alpha, float64_t* biases);
+	float64_t compute_primal(const schar* p_y, float64_t* p_alpha, float64_t* biases, float64_t* normwcw);
 
 private:
 	SolutionInfo *si;
@@ -1187,7 +1259,7 @@ private:
 	float64_t  nu;
 };
 
-float64_t Solver_NUMC::compute_primal(const schar* p_y, float64_t* p_alpha, float64_t* biases)
+float64_t Solver_NUMC::compute_primal(const schar* p_y, float64_t* p_alpha, float64_t* biases, float64_t* normwcw)
 {
 	clone(y, p_y,l);
 	clone(alpha,p_alpha,l);
@@ -1202,7 +1274,7 @@ float64_t Solver_NUMC::compute_primal(const schar* p_y, float64_t* p_alpha, floa
 	for (int32_t i=0; i<nr_class; i++)
 	{
 		class_count[i]=0;
-		biases[i]=0;
+		biases[i+1]=0;
 	}
 
 	for (int32_t i=0; i<active_size; i++)
@@ -1220,9 +1292,13 @@ float64_t Solver_NUMC::compute_primal(const schar* p_y, float64_t* p_alpha, floa
 	float64_t rho=0;
 	float64_t quad=0;
 	float64_t* zero_counts  = new float64_t[nr_class];
+	float64_t normwc_const = 0;
 
 	for (int32_t i=0; i<nr_class; i++)
+	{
 		zero_counts[i]=-INF;
+		normwcw[i]=0;
+	}
 
 	for (int32_t i=0; i<active_size; i++)
 	{
@@ -1245,6 +1321,14 @@ float64_t Solver_NUMC::compute_primal(const schar* p_y, float64_t* p_alpha, floa
 
 			if (class_count[(int32_t) y[i]] == 0 && y[j]==y[i])
 				sum_zero_count+= tmp;
+
+			SVC_QMC* QMC=(SVC_QMC*) Q;
+			float64_t norm_tmp=alpha[i]*alpha[j]*QMC->get_orig_Qij(Q_i[j], i, j);
+			if (y[i]==y[j])
+				normwcw[(int32_t) y[i]]+=norm_tmp;
+			
+			normwcw[(int32_t) y[i]]-=2.0/nr_class*norm_tmp;
+			normwc_const+=norm_tmp;
 		}
 
 		if (class_count[(int32_t) y[i]] == 0)
@@ -1253,7 +1337,7 @@ float64_t Solver_NUMC::compute_primal(const schar* p_y, float64_t* p_alpha, floa
 				zero_counts[(int32_t) y[i]]=sum_zero_count;
 		}
 
-		biases[(int32_t) y[i]]-=sum_free;
+		biases[(int32_t) y[i]+1]-=sum_free;
 		if (class_count[(int32_t) y[i]] != 0.0)
 			rho+=sum_free/class_count[(int32_t) y[i]];
 		outputs[i]+=sum_free+sum_atbound;
@@ -1263,7 +1347,12 @@ float64_t Solver_NUMC::compute_primal(const schar* p_y, float64_t* p_alpha, floa
 	{
 		if (class_count[i] == 0.0)
 			rho+=zero_counts[i];
+
+		normwcw[i]+=normwc_const/CMath::sq(nr_class);
+		normwcw[i]=CMath::sqrt(normwcw[i]);
 	}
+
+	CMath::display_vector(normwcw, nr_class, "normwcw");
 
 	rho/=nr_class;
 
@@ -1273,20 +1362,22 @@ float64_t Solver_NUMC::compute_primal(const schar* p_y, float64_t* p_alpha, floa
 	for (int32_t i=0; i<nr_class; i++)
 	{
 		if (class_count[i] != 0.0)
-			biases[i]=biases[i]/class_count[i]+rho;
+			biases[i+1]=biases[i+1]/class_count[i]+rho;
 		else
-			biases[i]+=rho-zero_counts[i];
+			biases[i+1]+=rho-zero_counts[i];
 
-		SG_SPRINT("biases=%f\n", biases[i]);
+		SG_SPRINT("biases=%f\n", biases[i+1]);
 
-		sumb+=biases[i];
+		sumb+=biases[i+1];
 	}
 	SG_SPRINT("sumb=%f\n", sumb);
 
 	delete[] zero_counts;
 
 	for (int32_t i=0; i<l; i++)
-		outputs[i]+=biases[(int32_t) y[i]];
+		outputs[i]+=biases[(int32_t) y[i]+1];
+
+	biases[0]=rho;
 
 	//CMath::display_vector(outputs, l, "outputs");
 
@@ -1491,66 +1582,6 @@ private:
 	Qfloat *QD;
 };
 
-class SVC_QMC: public LibSVMKernel
-{ 
-public:
-	SVC_QMC(const svm_problem& prob, const svm_parameter& param, const schar *y_, int32_t n_class, float64_t fac)
-	:LibSVMKernel(prob.l, prob.x, param)
-	{
-		nr_class=n_class;
-		factor=fac;
-		clone(y,y_,prob.l);
-		cache = new Cache(prob.l,(int64_t)(param.cache_size*(1l<<20)));
-		QD = new Qfloat[prob.l];
-		for(int32_t i=0;i<prob.l;i++)
-		{
-			QD[i]= factor*(nr_class-1)*kernel_function(i,i);
-		}
-	}
-	
-	Qfloat *get_Q(int32_t i, int32_t len) const
-	{
-		Qfloat *data;
-		int32_t start;
-		if((start = cache->get_data(i,&data,len)) < len)
-		{
-			for(int32_t j=start;j<len;j++)
-			{
-				if (y[i]==y[j])
-					data[j] = factor*(nr_class-1)*kernel_function(i,j);
-				else
-					data[j] = -factor*kernel_function(i,j);
-			}
-		}
-		return data;
-	}
-
-	Qfloat *get_QD() const
-	{
-		return QD;
-	}
-
-	void swap_index(int32_t i, int32_t j) const
-	{
-		cache->swap_index(i,j);
-		LibSVMKernel::swap_index(i,j);
-		CMath::swap(y[i],y[j]);
-		CMath::swap(QD[i],QD[j]);
-	}
-
-	~SVC_QMC()
-	{
-		delete[] y;
-		delete cache;
-		delete[] QD;
-	}
-private:
-	float64_t factor;
-	float64_t nr_class;
-	schar *y;
-	Cache *cache;
-	Qfloat *QD;
-};
 
 class ONE_CLASS_Q: public LibSVMKernel
 {
@@ -1820,21 +1851,26 @@ static void solve_nu_multiclass_svc(const svm_problem *prob,
 	}
 
 	model->l=l;
-	model->rho = Malloc(float64_t, nr_class);
+	// rho[0]= rho in mcsvm paper, rho[1]...rho[nr_class] is bias in mcsvm paper
+	model->rho = Malloc(float64_t, nr_class+1);
 	model->nr_class = nr_class;
 	model->label = NULL;
 	model->SV = Malloc(svm_node*,nr_class);
 	model->nSV = Malloc(int32_t, nr_class);
 	model->sv_coef = Malloc(float64_t *,nr_class);
+	model->normwcw = Malloc(float64_t,nr_class);
 
-	for (int32_t i=0; i<nr_class; i++)
+	for (int32_t i=0; i<nr_class+1; i++)
 		model->rho[i]=0;
 
-	SG_DEBUG("Computing biases/Primal = %10.10f\n", primal);
-	float64_t primal = s.compute_primal(y, alpha, model->rho);
 	model->objective = si->obj;
-	SG_INFO("Primal = %10.10f\n", primal);
 
+	if (param->use_bias)
+	{
+		SG_SDEBUG("Computing biases and primal objective\n");
+		float64_t primal = s.compute_primal(y, alpha, model->rho, model->normwcw);
+		SG_SINFO("Primal = %10.10f\n", primal);
+	}
 
 	for (int32_t i=0; i<nr_class; i++)
 	{
