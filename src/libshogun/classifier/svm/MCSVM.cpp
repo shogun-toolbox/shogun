@@ -13,18 +13,19 @@
 #include "lib/io.h"
 
 CMCSVM::CMCSVM()
-: CMultiClassSVM(ONE_VS_REST), model(NULL), norm_wc(NULL), rho(0)
+: CMultiClassSVM(ONE_VS_REST), model(NULL), norm_wc(NULL), norm_wcw(NULL), rho(0)
 {
 }
 
 CMCSVM::CMCSVM(float64_t C, CKernel* k, CLabels* lab)
-: CMultiClassSVM(ONE_VS_REST, C, k, lab), model(NULL), norm_wc(NULL), rho(0)
+: CMultiClassSVM(ONE_VS_REST, C, k, lab), model(NULL), norm_wc(NULL), norm_wcw(NULL), rho(0)
 {
 }
 
 CMCSVM::~CMCSVM()
 {
 	delete[] norm_wc;
+	delete[] norm_wcw;
 	//SG_PRINT("deleting MCSVM\n");
 }
 
@@ -116,12 +117,16 @@ bool CMCSVM::train()
 
 		rho=model->rho[0];
 
+		delete[] norm_wcw;
+		norm_wcw = new float64_t[m_num_svms];
+
 		for (int32_t i=0; i<num_classes; i++)
 		{
 			int32_t num_sv=model->nSV[i];
 
 			CSVM* svm=new CSVM(num_sv);
 			svm->set_bias(model->rho[i+1]);
+			norm_wcw[i]=model->normwcw[i];
 
 
 			for (int32_t j=0; j<num_sv; j++)
@@ -181,7 +186,6 @@ void CMCSVM::compute_norm_wc()
 	CMath::display_vector(norm_wc, m_num_svms, "norm_wc");
 }
 
-/*
 CLabels* CMCSVM::classify_one_vs_rest(CLabels* result)
 {
 	ASSERT(m_num_svms>0);
@@ -202,6 +206,11 @@ CLabels* CMCSVM::classify_one_vs_rest(CLabels* result)
 			SG_REF(result);
 		}
 
+		for (int32_t i=0; i<num_vectors; i++)
+		{
+			result->set_label(i, classify_example(i));
+		}
+/*
 		ASSERT(num_vectors==result->get_num_labels());
 		CLabels** outputs=new CLabels*[m_num_svms];
 
@@ -236,11 +245,11 @@ CLabels* CMCSVM::classify_one_vs_rest(CLabels* result)
 			SG_UNREF(outputs[i]);
 
 		delete[] outputs;
+		*/
 	}
 
 	return result;
 }
-*/
 
 float64_t CMCSVM::classify_example(int32_t num)
 {
@@ -269,23 +278,40 @@ float64_t CMCSVM::classify_example(int32_t num)
 	int32_t winner=0;
 
 	for (int32_t c=0; c<m_num_svms; c++)
-	{
 		outputs[c]=m_svms[c]->get_bias()-rho;
+
+	for (int32_t c=0; c<m_num_svms; c++)
+	{
+		float64_t v=0;
 
 		for (int32_t i=0; i<m_svms[c]->get_num_support_vectors(); i++)
 		{
 			float64_t alpha=m_svms[c]->get_alpha(i);
 			int32_t svidx=m_svms[c]->get_support_vector(i);
-			float64_t v = alpha*kernel->kernel(svidx, num);
+			v += alpha*kernel->kernel(svidx, num);
+		}
 
-			outputs[c] += v;
+		outputs[c] += v;
+		for (int32_t j=0; j<m_num_svms; j++)
+			outputs[j] -= v/m_num_svms;
+	}
 
-			for (int32_t j=0; j<m_num_svms; j++)
-				outputs[j] -= v/m_num_svms;
+	for (int32_t j=0; j<m_num_svms; j++)
+		outputs[j]/=norm_wcw[j];
+
+	float64_t max_out=outputs[0];
+	for (int32_t j=0; j<m_num_svms; j++)
+	{
+		if (outputs[j]>max_out)
+		{
+			max_out=outputs[j];
+			winner=j;
 		}
 	}
 
 	delete[] outputs;
+
+	//SG_PRINT("winner = %d\n", winner);
 
 	return winner;
 }

@@ -50,7 +50,7 @@ class CMCSVM : public CMultiClassSVM
 		 */
 		virtual float64_t classify_example(int32_t num);
 
-		//CLabels* classify_one_vs_rest(CLabels* result);
+		CLabels* classify_one_vs_rest(CLabels* result);
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "MCSVM"; }
@@ -69,6 +69,9 @@ class CMCSVM : public CMultiClassSVM
 
 		/** norm of w_c */
 		float64_t* norm_wc;
+
+		/** norm of w_cw */
+		float64_t* norm_wcw;
 
 		/** MCSVM rho */
 		float64_t rho;
