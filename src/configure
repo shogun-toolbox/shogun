@@ -2084,7 +2084,7 @@ EOF
 	rm -f ./"$TMPO" "$TMPC"
 
 	echores "$WORDSIZE bit"
-	if !darwin && test "$WORDSIZE" = 64
+	if ! darwin && test "$WORDSIZE" = 64
 	then
 		DEFINES="$DEFINES -DSWIGWORDSIZE64"
 	fi
