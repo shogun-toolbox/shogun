@@ -20,7 +20,7 @@ The following table depicts the status of each interface available in shogun:
 |libshogun         | mature (no known problems)                                |
 |libshogunui       | mature (no known problems, only required for static       |
 |                  | interfaces)                                               |
-|cmdline           | beta quality (some data types incomplete)                 |
+|cmdline           | stable but some data types incomplete                     |
 |                  |                                                           |
 |elwms             | this is the eilerlegendewollmilchsau interface, a chimera |
 |                  | that in one file interfaces to python,octave,r,matlab and |

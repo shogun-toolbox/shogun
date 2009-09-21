@@ -5,6 +5,7 @@
 	* Features:
 	    - Implement set_linear_classifier for static interfaces.
 		- Polynomial DotFeatures
+		- Speed up MCSVM
 	* Bugfixes:
 		- Fix one class MKL for static interfaces.
 	* Cleanup and API Changes:
