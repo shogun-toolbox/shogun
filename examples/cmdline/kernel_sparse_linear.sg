@@ -1,0 +1,11 @@
+% Sparse Linear
+print SparseLinear
+set_kernel LINEAR SPARSEREAL 10 1.3
+
+set_features TRAIN ../data/fm_train_sparsereal.dat
+init_kernel TRAIN
+km_train.txt = get_kernel_matrix
+
+set_features TEST ../data/fm_test_sparsereal.dat
+init_kernel TEST
+km_test.txt = get_kernel_matrix

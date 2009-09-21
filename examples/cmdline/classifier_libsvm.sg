@@ -1,0 +1,17 @@
+% LibSVM
+print LibSVM
+
+set_kernel GAUSSIAN REAL 10 1.2
+set_features TRAIN ../data/fm_train_real.dat
+set_labels TRAIN ../data/label_train_twoclass.dat
+new_classifier LIBSVM
+svm_epsilon 1e-5
+svm_use_bias 0
+c 0.017
+
+init_kernel TRAIN
+train_classifier
+
+set_features TEST ../data/fm_test_real.dat
+init_kernel TEST
+out.txt = classify

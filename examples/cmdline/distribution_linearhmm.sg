@@ -1,0 +1,15 @@
+% LinearHMM
+print LinearHMM - not yet supported
+
+%new_distribution LinearHMM
+add_preproc SORTWORDSTRING
+
+set_features TRAIN ../data/fm_train_dna.dat DNA
+convert TRAIN STRING CHAR STRING WORD 3 2 0 n
+attach_preproc TRAIN
+
+%train_distribution
+%histo.txt = get_histogram
+
+%get_log_likelihood
+%get_log_likelihood_sample

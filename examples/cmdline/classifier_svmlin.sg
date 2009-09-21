@@ -1,0 +1,14 @@
+% SVMLin
+print SVMLin
+
+set_features TRAIN ../data/fm_train_sparsereal.dat
+set_labels TRAIN ../data/label_train_twoclass.dat
+new_classifier SVMLIN
+svm_epsilon 1e-5
+svm_use_bias 0
+c 0.42
+
+train_classifier
+
+set_features TEST ../data/fm_test_sparsereal.dat
+out.txt = classify

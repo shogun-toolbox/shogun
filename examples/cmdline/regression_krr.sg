@@ -1,0 +1,15 @@
+% kernel ridge regression
+print KRR
+set_kernel GAUSSIAN REAL 10 2.1
+set_features TRAIN ../data/fm_train_real.dat
+set_labels TRAIN ../data/label_train_twoclass.dat
+new_regression KRR
+krr_tau 1.2
+c 0.017
+
+init_kernel TRAIN
+train_regression
+
+set_features TEST ../data/fm_test_real.dat
+init_kernel TEST
+out.txt = classify

@@ -1,0 +1,11 @@
+% Perceptron
+print Perceptron
+
+%set_features TRAIN ../data/fm_train_real.dat
+%set_labels TRAIN ../data/label_train_twoclass.dat
+%new_classifier PERCEPTRON
+%set_perceptron_parameters 1.6 5000
+%train_classifier
+
+%set_features TEST fm_test_real
+%out.txt = classify

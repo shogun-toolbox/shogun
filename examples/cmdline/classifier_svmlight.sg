@@ -1,0 +1,21 @@
+% SVMLight
+%try
+	print SVMLight
+
+	set_kernel WEIGHTEDDEGREE CHAR 10 20
+	set_features TRAIN ../data/fm_train_dna.dat DNA
+	set_labels TRAIN ../data/label_train_dna.dat
+	new_classifier LIGHT
+	svm_epsilon 1e-5
+	svm_use_bias 0
+	c 0.017
+
+	init_kernel TRAIN
+	train_classifier
+
+	set_features TEST ../data/fm_test_dna.dat DNA
+	init_kernel TEST
+	out.txt = classify
+%catch
+%	print No support for SVMLight available.
+%end

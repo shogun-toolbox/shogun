@@ -1,0 +1,16 @@
+% Comm Word String
+print CommWordString
+add_preproc SORTWORDSTRING
+set_kernel COMMSTRING WORD 10 0 FULL
+
+set_features TRAIN ../data/fm_train_dna.dat DNA
+convert TRAIN STRING CHAR STRING WORD 3 2 0 n
+attach_preproc TRAIN
+init_kernel TRAIN
+km_train.txt = get_kernel_matrix
+
+set_features TEST ../data/fm_test_dna.dat DNA
+convert TEST STRING CHAR STRING WORD 3 2 0 n
+attach_preproc TEST
+init_kernel TEST
+km_test.txt = get_kernel_matrix

@@ -1,0 +1,12 @@
+% HMM
+print HMM
+
+new_hmm 3 6
+set_features TRAIN ../data/fm_train_cube.dat CUBE
+convert TRAIN STRING CHAR STRING WORD 1
+bw
+p.txt, q.txt, a.txt, b.txt = get_hmm
+
+%new_hmm 3 6
+%set_hmm p.txt q.txt a.txt b.txt
+%likelihood.txt = hmm_likelihood

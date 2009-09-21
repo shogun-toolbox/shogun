@@ -1,0 +1,23 @@
+% Combined
+print Combined
+clean_features TRAIN
+clean_features TEST
+set_kernel COMBINED 10
+
+add_kernel 1 LINEAR REAL 10
+add_features TRAIN ../data/fm_train_real.dat
+add_features TEST ../data/fm_test_real.dat
+
+add_kernel 1 GAUSSIAN REAL 10 1.
+add_features TRAIN ../data/fm_train_real.dat
+add_features TEST ../data/fm_test_real.dat
+
+add_kernel 1 POLY REAL 10 3 0
+add_features TRAIN ../data/fm_train_real.dat
+add_features TEST ../data/fm_test_real.dat
+
+init_kernel TRAIN
+km_train.txt = get_kernel_matrix
+
+init_kernel TEST
+km_test.txt = get_kernel_matrix

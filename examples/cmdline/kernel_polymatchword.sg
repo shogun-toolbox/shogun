@@ -1,0 +1,11 @@
+% Poly Match Word
+%print PolyMatchWord
+%set_kernel POLYMATCH WORD 10 2 1 1
+
+%set_features TRAIN ../data/fm_train_word.dat
+%init_kernel TRAIN
+%km_train.txt = get_kernel_matrix
+
+%set_features TEST ../data/fm_test_word.dat
+%init_kernel TEST
+%km_test.txt = get_kernel_matrix

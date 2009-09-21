@@ -1,0 +1,11 @@
+% LDA
+print LDA
+
+set_features TRAIN ../data/fm_train_real.dat
+set_labels TRAIN ../data/label_train_twoclass.dat
+new_classifier LDA
+
+train_classifier
+
+set_features TEST ../data/fm_test_real.dat
+out.txt = classify

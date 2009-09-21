@@ -1,0 +1,18 @@
+%
+% misc classifiers
+%
+
+% KNN
+print KNN
+
+set_distance EUCLIDIAN REAL
+set_features TRAIN ../data/fm_train_real.dat
+set_labels TRAIN ../data/label_train_twoclass.dat
+new_classifier KNN
+
+init_distance TRAIN
+train_classifier 3
+
+set_features TEST ../data/fm_test_real.dat
+init_distance TEST
+out.txt = classify

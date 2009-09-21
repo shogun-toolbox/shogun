@@ -1,0 +1,12 @@
+% LinearByte is b0rked
+print LinearByte
+
+%set_kernel LINEAR BYTE size_cache
+
+%set_features TRAIN ../data/fm_train_byte.dat RAWBYTE
+%init_kernel TRAIN
+%km_train.txt = get_kernel_matrix
+
+%set_features TEST ../data/fm_test_byte.dat RAWBYTE
+%init_kernel TEST
+%km_test.txt = get_kernel_matrix

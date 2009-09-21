@@ -1,0 +1,21 @@
+% Plugin Estimate
+print PluginEstimate w/ HistogramWord
+
+set_features TRAIN ../data/fm_train_dna.dat DNA
+convert TRAIN STRING CHAR STRING WORD 3 2 0 n
+
+set_features TEST ../data/fm_test_dna.dat DNA
+convert TEST STRING CHAR STRING WORD 3 2 0 n
+
+new_plugin_estimator 1e-1 1e-1
+set_labels TRAIN ../data/label_train_dna.dat
+train_estimator
+
+set_kernel HISTOGRAM WORD 10
+init_kernel TRAIN
+km_train.txt = get_kernel_matrix
+
+init_kernel TEST
+% not supported yet;
+%	lab.txt = plugin_estimate_classify
+km_text.txt = get_kernel_matrix
