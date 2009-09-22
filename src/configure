@@ -251,16 +251,27 @@ beos()    { issystem "BEOS"    ; return "$?" ; }
 
 set_default_cc()
 {
-	if sunos
+	if test -z "$COMP_C"
 	then
-		COMP_C=suncc
-		COMP_CPP=sunCC
-	else
-		COMP_C=cc
-		COMP_CPP=c++
+		if sunos
+		then
+			COMP_C=suncc
+		else
+			COMP_C=cc
+		fi
+		test "$CC" && COMP_C="$CC"
 	fi
-	test "$CC" && COMP_C="$CC"
-	test "$CXX" && COMP_CPP="$CXX"
+
+	if test -z "$COMP_CPP"
+	then
+		if sunos
+		then
+			COMP_CPP=sunCC
+		else
+			COMP_CPP=c++
+		fi
+		test "$CXX" && COMP_CPP="$CXX"
+	fi
 }
 
 detect_ldd()
@@ -679,8 +690,8 @@ Miscellaneous options:
   --enable-static               build a statically linked binary (to the extend possible);
                                 set further linking options with --enable-static="-lm -lglpk"
   --python=python               use this python executable [python]
-  --cc=COMPILER                 use this C compiler to build shogun [gcc]
-  --cxx=COMPILER                use this C++ compiler to build shogun [g++]
+  --cc=COMPILER                 use this C compiler to build shogun [autodetected]
+  --cxx=COMPILER                use this C++ compiler to build shogun [autodetected]
   --cflags=OPTIONS              use these C compiler options
   --cxxflags=OPTIONS            use these C++ compiler options
   --ldflags=OPTIONS             use these additional linker options
