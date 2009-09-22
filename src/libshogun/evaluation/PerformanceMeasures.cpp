@@ -115,11 +115,8 @@ void CPerformanceMeasures::create_sortedROC()
 	if (m_num_labels<1)
 		SG_ERROR("Need at least one example!\n");
 
-	size_t sz=sizeof(int32_t)*m_num_labels;
-	if (m_sortedROC) delete[] m_sortedROC;
-	m_sortedROC=new int32_t[sz];
-	if (!m_sortedROC)
-		SG_ERROR("Couldn't allocate memory for sorted ROC index!\n");
+	delete[] m_sortedROC;
+	m_sortedROC=new int32_t[m_num_labels];
 
 	for (int32_t i=0; i<m_num_labels; i++)
 		m_sortedROC[i]=i;
@@ -134,8 +131,12 @@ float64_t CPerformanceMeasures::trapezoid_area(
 	float64_t x1, float64_t x2, float64_t y1, float64_t y2)
 {
 	float64_t base=CMath::abs(x1-x2);
-	float64_t height_avg=0.5*(float64_t)(y1+y2);
-	return base*height_avg;
+	float64_t height_avg=0.5*(y1+y2);
+	float64_t result=base*height_avg;
+
+	if (result<0)
+		SG_ERROR("Negative area - x1=%f x2=%f y1=%f y2=%f\n", x1,x2, y1,y2);
+	return result;
 }
 
 void CPerformanceMeasures::compute_confusion_matrix(
@@ -233,8 +234,8 @@ void CPerformanceMeasures::compute_ROC(float64_t** result)
 		float64_t out=m_output->get_label(m_sortedROC[i]);
 		if (out!=out_prev)
 		{
-			r[i]=(float64_t)fp/(float64_t)m_all_false;
-			r[num_roc+i]=(float64_t)tp/(float64_t)m_all_true;
+			r[i]=float64_t(fp)/m_all_false;
+			r[num_roc+i]=float64_t(tp)/m_all_true;
 			m_auROC+=trapezoid_area(fp, fp_prev, tp, tp_prev);
 
 			fp_prev=fp;
@@ -249,15 +250,15 @@ void CPerformanceMeasures::compute_ROC(float64_t** result)
 	}
 
 	// calculate for 1,1
-	r[i]=(float64_t)fp/(float64_t)(m_all_false);
-	r[num_roc+i]=(float64_t)tp/float64_t(m_all_true);
+	r[i]=float64_t(fp)/m_all_false;
+	r[num_roc+i]=float64_t(tp)/m_all_true;
 
 	/* paper says:
 	 * auROC+=trapezoid_area(1, fp_prev, 1, tp_prev)
 	 * wrong? was meant for calculating with rates?
 	 */
 	m_auROC+=trapezoid_area(fp, fp_prev, tp, tp_prev);
-	m_auROC/=(float64_t)(m_all_true*m_all_false); // normalise
+	m_auROC/=float64_t(m_all_true)*m_all_false; // normalise
 	*result=r;
 }
 
@@ -291,8 +292,8 @@ void CPerformanceMeasures::compute_PRC(float64_t** result)
 	{
 		threshold=m_output->get_label(i);
 		compute_confusion_matrix(threshold, &tp, &fp, NULL, NULL);
-		r[i]=(float64_t)tp/(float64_t)m_all_true; // recall
-		r[m_num_labels+i]=(float64_t)tp/(float64_t)(tp+fp); // precision
+		r[i]=float64_t(tp)/m_all_true; // recall
+		r[m_num_labels+i]=float64_t(tp)/(float64_t(tp)+fp); // precision
 	}
 
 	// sort by ascending recall
@@ -341,8 +342,8 @@ void CPerformanceMeasures::compute_DET(float64_t** result)
 	{
 		threshold=m_output->get_label(i);
 		compute_confusion_matrix(threshold, NULL, &fp, &fn, NULL);
-		r[i]=(float64_t)fp/(float64_t)m_all_false;
-		r[m_num_labels+i]=(float64_t)fn/(float64_t)m_all_false;
+		r[i]=float64_t(fp)/m_all_false;
+		r[m_num_labels+i]=float64_t(fn)/m_all_false;
 	}
 
 	// sort by ascending false positive rate
@@ -372,7 +373,7 @@ float64_t CPerformanceMeasures::get_accuracy(float64_t threshold)
 
 	compute_confusion_matrix(threshold, &tp, NULL, NULL, &tn);
 
-	return (float64_t)(tp+tn)/(float64_t)m_num_labels;
+	return (float64_t(tp)+tn)/m_num_labels;
 }
 
 void CPerformanceMeasures::compute_accuracy(
@@ -428,22 +429,22 @@ float64_t CPerformanceMeasures::get_fmeasure(float64_t threshold)
 	if (m_all_true==0)
 		return 0;
 	else
-		recall=(float64_t)tp/(float64_t)m_all_true;
+		recall=float64_t(tp)/m_all_true;
 
-	denominator=(float64_t)(tp+fp);
+	denominator=float64_t(tp)+fp;
 	if (denominator==0)
 		return 0;
 	else
-		precision=(float64_t)tp/denominator;
+		precision=float64_t(tp)/denominator;
 
 	if (recall==0 && precision==0)
 		return 0;
 	else if (recall==0)
-		return 2.0/(1/precision);
+		return 2.0/(1.0/precision);
 	else if (precision==0)
-		return 2.0/(1/recall);
+		return 2.0/(1.0/recall);
 	else
-		return 2.0/(1/precision+1/recall);
+		return 2.0/(1.0/precision+1.0/recall);
 }
 
 void CPerformanceMeasures::get_all_fmeasure(
@@ -477,11 +478,11 @@ float64_t CPerformanceMeasures::get_CC(float64_t threshold)
 
 	compute_confusion_matrix(threshold, &tp, &fp, &fn, &tn);
 
-	radix=(float64_t)(tp+fp)*(tp+fn)*(tn+fp)*(tn+fn);
+	radix=(float64_t(tp)+fp)*(float64_t(tp)+fn)*(float64_t(tn)+fp)*(float64_t(tn)+fn);
 	if (radix<=0)
 		return 0;
 	else
-		return (float64_t)(tp*tn-fp*fn)/CMath::sqrt(radix);
+		return (float64_t(tp)*tn-float64_t(fp)*fn)/CMath::sqrt(radix);
 }
 
 void CPerformanceMeasures::get_all_CC(
@@ -519,16 +520,16 @@ float64_t CPerformanceMeasures::get_WRAcc(float64_t threshold)
 
 	compute_confusion_matrix(threshold, &tp, &fp, &fn, &tn);
 
-	denominator0=(float64_t)(tp+fn);
-	denominator1=(float64_t)(fp+tn);
+	denominator0=float64_t(tp)+fn;
+	denominator1=float64_t(fp)+tn;
 	if (denominator0<=0 && denominator1<=0)
 		return 0;
 	else if (denominator0==0)
-		return -(float64_t)fp/denominator1;
+		return -fp/denominator1;
 	else if (denominator1==0)
-		return (float64_t)tp/denominator0;
+		return tp/denominator0;
 	else
-		return (float64_t)tp/denominator0-(float64_t)fp/denominator1;
+		return tp/denominator0-fp/denominator1;
 }
 
 void CPerformanceMeasures::get_all_WRAcc(
@@ -568,11 +569,11 @@ float64_t CPerformanceMeasures::get_BAL(float64_t threshold)
 	if (m_all_true==0 && m_all_false==0) // actually a logical error
 		return 0;
 	else if (m_all_true==0)
-		return 0.5*((float64_t)fp/(float64_t)m_all_false);
+		return 0.5*fp/m_all_false;
 	else if (m_all_false==0)
-		return 0.5*((float64_t)fn/(float64_t)m_all_true);
+		return 0.5*fn/m_all_true;
 	else
-		return 0.5*((float64_t)fp/(float64_t)m_all_false+(float64_t)fn/(float64_t)m_all_true);
+		return 0.5*(float64_t(fp)/m_all_false+float64_t(fn)/m_all_true);
 }
 
 void CPerformanceMeasures::get_all_BAL(float64_t** result, int32_t* num, int32_t* dim)

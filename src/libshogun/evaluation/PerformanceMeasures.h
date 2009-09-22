@@ -467,6 +467,5 @@ class CPerformanceMeasures : public CSGObject
 		float64_t m_auPRC;
 		/** area under DET; 1 - area over DET */
 		float64_t m_auDET;
-
 };
 #endif /* __PERFORMANCEMEASURES_H_ */
