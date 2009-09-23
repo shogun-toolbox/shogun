@@ -107,6 +107,15 @@ template <class T> class T_STRING
 template <class ST> class CStringFeatures : public CFeatures
 {
 	public:
+		/** default constructor
+		 *
+		 */
+        CStringFeatures() : CFeatures(0), alphabet(NULL), num_vectors(0), features(NULL), 
+        single_string(NULL),length_of_single_string(0),
+        max_string_length(0), order(0), symbol_mask_table(NULL)
+        {
+        }
+
 		/** constructor
 		 *
 		 * @param alpha alphabet (type) to use for string features

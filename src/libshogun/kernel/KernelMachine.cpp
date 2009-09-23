@@ -10,6 +10,13 @@
 
 #include "kernel/KernelMachine.h"
 
+
+#ifdef HAVE_BOOST_SERIALIZATION
+#include <boost/serialization/export.hpp>
+BOOST_IS_ABSTRACT(CKernelMachine);
+#endif //HAVE_BOOST_SERIALIZATION
+
+
 CKernelMachine::CKernelMachine()
 : CClassifier(), kernel(NULL), use_batch_computation(true), use_linadd(true)
 {

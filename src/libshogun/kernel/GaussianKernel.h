@@ -93,6 +93,26 @@ class CGaussianKernel: public CSimpleKernel<float64_t>
 		 */
 		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
 
+#ifdef HAVE_BOOST_SERIALIZATION  
+    private:
+
+        friend class boost::serialization::access;
+        template<class Archive>
+            void serialize(Archive & ar, const unsigned int archive_version)
+            {
+
+                SG_DEBUG("archiving GaussianKernel\n");
+
+                ar & boost::serialization::base_object<CSimpleKernel<float64_t> >(*this);
+
+                ar & width;
+
+                SG_DEBUG("done with GaussianKernel\n");
+
+            }
+#endif //HAVE_BOOST_SERIALIZATION
+
+
 	protected:
 		/** width */
 		float64_t width;

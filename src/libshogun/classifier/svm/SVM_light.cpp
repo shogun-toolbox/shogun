@@ -46,6 +46,13 @@
 #include <pthread.h>
 #endif
 
+
+#ifdef HAVE_BOOST_SERIALIZATION
+#include <boost/serialization/export.hpp>
+BOOST_CLASS_EXPORT(CSVMLight);
+#endif //HAVE_BOOST_SERIALIZATION
+
+
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 struct S_THREAD_PARAM_REACTIVATE_LINADD
 {

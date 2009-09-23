@@ -108,6 +108,36 @@ class CKernelMachine : public CClassifier
 		 */
 		virtual CLabels* classify(CLabels* output=NULL);
 
+#ifdef HAVE_BOOST_SERIALIZATION
+    private:
+
+
+        friend class boost::serialization::access;
+        // When the class Archive corresponds to an output archive, the
+        // & operator is defined similar to <<.  Likewise, when the class Archive
+        // is a type of input archive the & operator is defined similar to >>.
+        template<class Archive>
+            void serialize(Archive & ar, const unsigned int archive_version)
+            {
+
+                std::cout << "archiving CKernelMachine" << std::endl;
+                ar & boost::serialization::base_object<CClassifier>(*this);
+
+                //TODO register other kernels... (not needed if every class is exported)
+                //if it doesn't work, one might need to include the respective headers
+                //ar.register_type(static_cast<CGaussianKernel *>(NULL));
+                //ar.register_type(static_cast<CWeightedDegreeStringKernel *>(NULL));
+
+                ar & kernel;
+
+                ar & use_batch_computation;
+                ar & use_linadd;
+
+                std::cout << "done CKernelMachine" << std::endl;
+            }
+
+#endif //HAVE_BOOST_SERIALIZATION
+
 	protected:
 		/** kernel */
 		CKernel* kernel;

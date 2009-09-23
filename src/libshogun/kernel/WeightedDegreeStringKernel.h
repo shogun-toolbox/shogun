@@ -100,6 +100,19 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 */
 		bool save_init(FILE* dest);
 
+        EWDKernType get_type() const {
+            return type;
+        }
+
+        int32_t get_degree() const {
+            return degree;
+        }
+
+        int32_t get_max_mismatch() const {
+            return max_mismatch;
+        }
+
+
 		/** return what type of kernel we are
 		 *
 		 * @return kernel type WEIGHTEDDEGREE
@@ -653,6 +666,171 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		/** remove lhs from kernel */
 		virtual void remove_lhs();
 
+
+#ifdef HAVE_BOOST_SERIALIZATION
+    private:
+        /*
+           friend class boost::serialization::access;
+
+           template<class Archive>
+           void serialize(Archive & ar, const unsigned int archive_version)
+           {
+
+           SG_DEBUG("archiving CWeightedDegreeStringKernel\n");
+
+           ar & boost::serialization::base_object<CStringKernel<char> >(*this);
+
+           SG_DEBUG("done with CWeightedDegreeStringKernel\n");
+
+           }
+
+*/
+        // serialization needs to split up in save/load because 
+        // the serialization of pointers to natives (int* & friends) 
+        // requires a workaround 
+        friend class boost::serialization::access;
+        //  friend std::ostream & operator<<(std::ostream &os, const CWeightedDegreeStringKernel &gp);
+        //template<class Archive>
+        //friend void boost::serialization::save_construct_data(Archive & ar, const CWeightedDegreeStringKernel* t, const unsigned int file_version);
+        template<class Archive>
+            void save(Archive & ar, const unsigned int archive_version) const
+            {
+
+                SG_DEBUG("archiving CWeightedDegreeStringKernel\n");
+
+                ar & boost::serialization::base_object<CStringKernel<char> >(*this);
+
+
+                ///degree*length weights
+                ///length must match seq_length if != 0
+                ar & mkl_stepsize ;
+                ar & degree;
+                ar & length;
+                ar & max_mismatch ;
+
+                for (int32_t i=0; i<degree*(1+max_mismatch); i++)
+                    ar & weights[i];
+
+                //TODO how long?
+                //float64_t* position_weights ;
+                //float64_t* weights_buffer ;
+
+                ar & seq_length ;
+
+                ar & initialized ;
+                ar & block_computation;
+                //ar & use_normalization ;
+
+                //ar & normalization_const;
+
+                ar & num_block_weights_external;
+                //float64_t* block_weights_external;
+                for (int32_t i=0; i < num_block_weights_external; ++i) 
+                {
+                    ar & block_weights_external[i];
+                }
+
+                //TODO how long
+                //float64_t* block_weights;
+                ar & type;
+                ar & which_degree;
+
+                //TODO implement
+                //CTrie<DNATrie> tries ;
+                //ar & tree_initialized ;
+
+
+                //CWeightedDegreeStringKernel* tmp = const_cast<CWeightedDegreeStringKernel*>(this);
+                //tmp->create_empty_tries();
+                //create_empty_tries();
+
+                SG_DEBUG("done with CWeightedDegreeStringKernel\n");
+
+            }
+
+        template<class Archive>
+            void load(Archive & ar, const unsigned int archive_version)
+            {
+                SG_DEBUG("archiving CWeightedDegreeStringKernel\n");
+
+                ar & boost::serialization::base_object<CStringKernel<char> >(*this);
+
+
+                ///degree*length weights
+                ///length must match seq_length if != 0
+                ar & mkl_stepsize ;
+                ar & degree;
+                ar & length;
+                ar & max_mismatch ;
+
+                weights=new float64_t[degree*(1+max_mismatch)];
+                for (int32_t i=0; i<degree*(1+max_mismatch); i++)
+                    ar & weights[i];
+
+
+                //TODO how long?
+                //float64_t* position_weights ;
+                //float64_t* weights_buffer ;
+
+                ar & seq_length ;
+
+                ar & initialized ;
+                ar & block_computation;
+                //ar & use_normalization ;
+
+                //ar & normalization_const;
+
+                ar & num_block_weights_external;
+                //float64_t* block_weights_external;
+                block_weights_external = new float64_t[num_block_weights_external];
+                for (int32_t i=0; i < num_block_weights_external; ++i) 
+                {
+                    ar & block_weights_external[i];
+                }
+
+                //TODO how long
+                //float64_t* block_weights;
+                ar & type;
+                ar & which_degree;
+
+                //TODO implement
+                //CTrie<DNATrie> tries ;
+                //ar & tree_initialized ;
+
+                SG_DEBUG("done with CWeightedDegreeStringKernel\n");
+
+            }
+
+        BOOST_SERIALIZATION_SPLIT_MEMBER();
+
+
+    public:
+
+        virtual std::string toString() const
+        {
+            std::ostringstream s;
+
+            boost::archive::text_oarchive oa(s);
+
+            oa << *this;
+
+            return s.str();
+        }
+
+        virtual void fromString(std::string str)
+        {
+
+            std::istringstream is(str);
+
+            boost::archive::text_iarchive ia(is);
+
+            ia >> *this;
+
+        }
+
+#endif //HAVE_BOOST_SERIALIZATION
+
+
 	protected:
 		/** degree*length weights
 		 *length must match seq_length if != 0
@@ -701,5 +879,90 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		/** alphabet of features */
 		CAlphabet* alphabet;
 };
+
+
+#ifdef HAVE_BOOST_SERIALIZATION  
+//http://www.koders.com/cpp/fidB8C82A2BBA651A5E4EEC668EDE70B86EA017E937.aspx
+namespace boost { 
+namespace serialization {
+    template<class Archive>
+    inline void save_construct_data(Archive & ar, const CWeightedDegreeStringKernel* const t, const unsigned int file_version)
+    {
+    //TODO it has to be possible to access protected fields directly
+		//CWeightedDegreeStringKernel(INT size, EWDKernType type, INT degree, INT max_mismatch, bool use_normalization=true, bool block_computation=false, INT mkl_stepsize=1, INT which_deg=-1) ;
+      int32_t size = 10;
+      ar << size;
+
+      EWDKernType type = t->get_type();
+      ar << type;
+
+      int32_t degree = t->get_degree();
+      ar << degree;
+
+      int32_t max_mismatch = t->get_max_mismatch();
+      ar << max_mismatch;
+
+      
+/*
+      TODO solution to the problem is that create_empty_tries has to be called
+           _after_ lhs, and rhs are set.
+
+      other solution -> serialize tree
+*/
+
+      ar.register_type(static_cast<CStringFeatures<char> *>(NULL));
+
+      const CStringFeatures<char>* const lhs = dynamic_cast<CStringFeatures<char>* >(const_cast<CWeightedDegreeStringKernel*>(t)->get_lhs());
+      const CStringFeatures<char>* const rhs = dynamic_cast<CStringFeatures<char>* >(const_cast<CWeightedDegreeStringKernel*>(t)->get_rhs());
+      //CStringFeatures<char>* lhs = (CStringFeatures<char>*) (const_cast<CWeightedDegreeStringKernel*>(t)->get_lhs());
+      //CStringFeatures<char>* rhs = (CStringFeatures<char>*) (const_cast<CWeightedDegreeStringKernel*>(t)->get_rhs());
+
+//    const CFeatures* const lhs = t->get_lhs();
+//    const CFeatures* const rhs = t->get_rhs();
+
+      ar << lhs;
+      ar << rhs;
+
+      //ar << dynamic_cast<CStringFeatures<char>*>(rhs);
+      //ar << t->get_lhs();
+      //ar << t->get_rhs();
+
+    }
+
+    template<class Archive>
+    inline void load_construct_data(Archive & ar, CWeightedDegreeStringKernel * t, const unsigned int file_version)
+    {
+
+      SG_SDEBUG("loading WDK from non-defaultconstruct data works\n");
+
+      int32_t size;
+      EWDKernType type;
+      int32_t degree;
+      int32_t max_mismatch;
+
+//      CStringFeatures<char>* lhs;
+//      CStringFeatures<char>* rhs;
+
+      ar >> size;
+      ar >> type;
+      ar >> degree;
+      ar >> max_mismatch;
+
+//      ::new(t)CWeightedDegreeStringKernel(size, type, degree, max_mismatch);
+
+      CStringFeatures<char>* lhs;
+      CStringFeatures<char>* rhs;
+
+      ar >> lhs;
+      ar >> rhs;
+      
+      ::new(t)CWeightedDegreeStringKernel(lhs, rhs, degree);
+
+      t->set_max_mismatch(max_mismatch);
+
+    }
+} // serialization
+} // namespace boost
+#endif //HAVE_BOOST_SERIALIZATION
 
 #endif /* _WEIGHTEDDEGREESTRINGKERNEL_H__ */

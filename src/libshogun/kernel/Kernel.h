@@ -706,6 +706,56 @@ class CKernel : public CSGObject
 		//@}
 
 
+#ifdef HAVE_BOOST_SERIALIZATION  
+    private:
+
+        friend class boost::serialization::access;
+        template<class Archive>
+            void serialize(Archive & ar, const unsigned int archive_version)
+            {
+
+                SG_DEBUG("archiving CKernel\n");
+
+                ar & boost::serialization::base_object<CSGObject>(*this);
+
+                ar & cache_size;
+
+#ifdef USE_SVMLIGHT
+                //TODO
+                //KERNEL_CACHE kernel_cache;
+#endif //USE_SVMLIGHT
+
+                //TODO
+                //KERNELCACHE_ELEM* kernel_matrix;
+
+                //TODO
+                //SHORTREAL * precomputed_matrix ;
+                //ar & precompute_subkernel_matrix ;
+                //ar & precompute_matrix ;
+
+                //TODO register other features
+                //ar.register_type(static_cast<CRealFeatures *>(NULL));
+                //ar.register_type(static_cast<CStringFeatures<CHAR> *>(NULL));
+
+                ar & rhs;
+                ar & lhs;
+
+                ar & combined_kernel_weight ;
+
+                ar & optimization_initialized ;
+
+                ar & opt_type;
+
+                ar & properties;
+
+                SG_DEBUG("done with CKernel\n");
+
+            }
+
+#endif //HAVE_BOOST_SERIALIZATION
+
+
+
 	protected:
 		/// cache_size in MB
 		int32_t cache_size;

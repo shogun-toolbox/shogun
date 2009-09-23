@@ -10,6 +10,13 @@
 
 #include "classifier/Classifier.h"
 
+
+#ifdef HAVE_BOOST_SERIALIZATION
+#include <boost/serialization/export.hpp>
+BOOST_IS_ABSTRACT(CClassifier);
+#endif //HAVE_BOOST_SERIALIZATION
+
+
 CClassifier::CClassifier() : CSGObject(), max_train_time(0), labels(NULL),
 	solver_type(ST_AUTO)
 {

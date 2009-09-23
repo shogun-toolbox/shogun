@@ -414,20 +414,123 @@ class CSVM : public CKernelMachine
 		/** @return object name */
 		inline virtual const char* get_name() const { return "SVM"; }
 
+#ifdef HAVE_BOOST_SERIALIZATION
+        friend class boost::serialization::access;
+        // When the class Archive corresponds to an output archive, the
+        // & operator is defined similar to <<.  Likewise, when the class Archive
+        // is a type of input archive the & operator is defined similar to >>.
+        template<class Archive>
+            void serialize(Archive & ar, const unsigned int archive_version)
+            {
+
+                SG_DEBUG("archiving CSVM\n");
+
+                ar & boost::serialization::base_object<CKernelMachine>(*this);
+                ar & svm_model;
+
+                ar & svm_loaded;
+
+                ar & epsilon;
+                ar & tube_epsilon;
+
+                ar & nu;
+                ar & C1;
+                ar & C2;
+
+                ar & objective;
+
+                ar & qpsize;
+                ar & use_bias;
+                ar & use_shrinking;
+
+                SG_DEBUG("done with CSVM\n");
+            }
+
+    public:
+        virtual void toFile(std::string filename) const
+        {
+
+            std::ofstream os(filename.c_str(), std::ios::binary);
+            boost::archive::binary_oarchive oa(os);
+
+            oa << *this;
+
+        }
+
+        virtual void fromFile(std::string filename)
+        {
+
+            std::ifstream is(filename.c_str(), std::ios::binary);
+            boost::archive::binary_iarchive ia(is);
+
+            ia >> *this;
+
+        }
+
+#endif //HAVE_BOOST_SERIALIZATION
+
 	protected:
 		/** @brief an SVM is defined by support vectors, their coefficients alpha
 		 * and the bias b ( + CKernelMachine::kernel) */
-		struct TModel
-		{
-			/** bias b */
-			float64_t b;
-			/** array of coefficients alpha */
-			float64_t* alpha;
-			/** array of support vectors */
-			int32_t* svs;
-			/** number of support vectors */
-			int32_t num_svs;
-		};
+		class TModel
+        {
+#ifdef HAVE_BOOST_SERIALIZATION
+            private:
+
+                /// serialization needs to split up in save/load because 
+                ///  the serialization of pointers to natives (int* & friends) 
+                ///  requires a workaround 
+                friend class boost::serialization::access;
+                template<class Archive>
+                    void save(Archive & ar, const unsigned int archive_version) const
+                    {
+
+                        ar & b;
+                        ar & num_svs;
+
+                        for (int32_t i=0; i < num_svs; ++i) {
+                            ar & alpha[i];
+                            ar & svs[i];
+                        }
+
+                    }
+
+                template<class Archive>
+                    void load(Archive & ar, const unsigned int archive_version)
+                    {
+
+                        ar & b;
+                        ar & num_svs;
+
+                        if (num_svs > 0)
+                        {
+
+                            alpha = new float64_t[num_svs];
+                            svs = new int32_t[num_svs];
+                            for (int32_t i=0; i< num_svs; ++i){
+                                ar & alpha[i];
+                                ar & svs[i];
+                            }
+
+                        }
+
+
+                    }
+
+                BOOST_SERIALIZATION_SPLIT_MEMBER()
+
+
+#endif //HAVE_BOOST_SERIALIZATION
+            public:
+                /** bias b */
+                float64_t b;
+                /** array of coefficients alpha */
+                float64_t* alpha;
+                /** array of support vectors */
+                int32_t* svs;
+                /** number of support vectors */
+                int32_t num_svs;
+        };
 
 		/** SVM's model */
 		TModel svm_model;

@@ -15,6 +15,15 @@
 
 #include <string.h>
 
+
+#ifdef HAVE_BOOST_SERIALIZATION
+
+#include <boost/serialization/export.hpp>
+BOOST_CLASS_EXPORT(CFeatures);
+
+#endif //HAVE_BOOST_SERIALIZATION
+
+
 CFeatures::CFeatures(int32_t size)
 : CSGObject(), properties(FP_NONE), cache_size(size), preproc(NULL), num_preproc(0),
 	preprocessed(NULL)

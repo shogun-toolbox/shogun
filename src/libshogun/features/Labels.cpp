@@ -15,6 +15,11 @@
 #include "lib/io.h"
 #include "lib/Mathematics.h"
 
+#ifdef HAVE_BOOST_SERIALIZATION
+#include <boost/serialization/export.hpp>
+BOOST_CLASS_EXPORT(CLabels);
+#endif //HAVE_BOOST_SERIALIZATION
+
 CLabels::CLabels()
 : CSGObject()
 {
