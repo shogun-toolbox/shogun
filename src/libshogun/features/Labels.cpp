@@ -61,10 +61,7 @@ void CLabels::set_labels(float64_t* p_labels, int32_t len)
 	num_labels=len;
 
 	delete[] labels;
-	labels=new float64_t[len];
-
-	for (int32_t i=0; i<len; i++)
-		labels[i]=p_labels[i];
+    labels=CMath::clone_vector(p_labels, len);
 }
 
 bool CLabels::is_two_class_labeling()

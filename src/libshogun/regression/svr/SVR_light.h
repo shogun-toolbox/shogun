@@ -71,6 +71,10 @@ class CSVRLight: public CSVMLight
 		 * @param lab labels
 		 */
 		CSVRLight(float64_t C, float64_t epsilon, CKernel* k, CLabels* lab);
+
+		/** default destructor */
+		virtual ~CSVRLight() { }
+
 		/** train regression
 		 *
 		 * @return if training was successful
@@ -96,7 +100,7 @@ class CSVRLight: public CSVMLight
 		 * @param totdoc totdoc
 		 */
 		virtual float64_t compute_objective_function(
-			float64_t *a, float64_t *lin, float64_t *c, float64_t eps,
+			float64_t *a, float64_t *lin, float64_t *c, float64_t* eps,
 			int32_t *label, int32_t totdoc);
 
 		/** update linear component

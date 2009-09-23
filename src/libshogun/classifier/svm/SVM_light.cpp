@@ -147,6 +147,7 @@ void CSVMLight::init()
 	model->supvec=NULL;
 	model->alpha=NULL;
 	model->index=NULL;
+	linear_term=NULL;
 
 	// MKL stuff
 	mymaxdiff=1 ;
@@ -161,6 +162,7 @@ CSVMLight::~CSVMLight()
   delete[] model->index;
   delete[] model;
   delete[] learn_parm;
+  delete[] linear_term;
 
   // MKL stuff
   delete[] W ;
@@ -190,7 +192,6 @@ bool CSVMLight::train()
 	learn_parm->maxiter=100000;
 	learn_parm->svm_iter_to_shrink=100;
 	learn_parm->svm_c=C1;
-	learn_parm->eps=-1.0;      /* equivalent regression epsilon for classification */
 	learn_parm->transduction_posratio=0.33;
 	learn_parm->svm_costratio=C2/C1;
 	learn_parm->svm_costratio_unlab=1.0;
@@ -279,6 +280,22 @@ int32_t CSVMLight::get_runtime()
   return((int32_t)((float64_t)start*100.0/(float64_t)CLOCKS_PER_SEC));
 }
 
+void CSVMLight::set_linear_term(float64_t* lterm, int32_t num)
+{
+	delete[] linear_term;
+
+	if (!labels)
+		SG_ERROR("Please assign labels first!\n");
+
+	int32_t num_labels=labels->get_num_labels();
+
+	if (num_labels!=num)
+		SG_ERROR("Number of labels (%d) does not match number"
+				"of entries (%d) in linear term \n", num_labels, num);
+
+	linear_term=CMath::clone_vector(lterm, num);
+}
+
 void CSVMLight::svm_learn()
 {
 	int32_t *inconsistent, i;
@@ -335,6 +352,14 @@ void CSVMLight::svm_learn()
 	a_fullset = new float64_t[totdoc];
 	xi_fullset = new float64_t[totdoc];
 	lin = new float64_t[totdoc];
+	if (linear_term)
+		learn_parm->eps=CMath::clone_vector(linear_term, totdoc);
+	else
+	{
+		learn_parm->eps=new float64_t[totdoc];      /* equivalent regression epsilon for classification */
+		CMath::fill_vector(learn_parm->eps, totdoc, -1.0);
+	}
+
 	learn_parm->svm_cost = new float64_t[totdoc];
 
 	delete[] model->supvec;
@@ -516,6 +541,7 @@ void CSVMLight::svm_learn()
 	delete[] a_fullset;
 	delete[] xi_fullset;
 	delete[] lin;
+	delete[] learn_parm->eps;
 	delete[] learn_parm->svm_cost;
 	delete[] docs;
 }
@@ -931,7 +957,7 @@ int32_t CSVMLight::optimize_to_convergence(int32_t* docs, int32_t* label, int32_
 }
 
 float64_t CSVMLight::compute_objective_function(
-	float64_t *a, float64_t *lin, float64_t *c, float64_t eps, int32_t *label,
+	float64_t *a, float64_t *lin, float64_t *c, float64_t* eps, int32_t *label,
 	int32_t totdoc)
      /* Return value of objective function. */
      /* Works only relative to the active variables! */
@@ -940,19 +966,7 @@ float64_t CSVMLight::compute_objective_function(
   float64_t criterion=0;
 
   for (int32_t i=0;i<totdoc;i++)
-	  criterion=criterion+(eps-(float64_t)label[i]*c[i])*a[i]+0.5*a[i]*label[i]*lin[i];
-
-
-  /*float64_t check=0;
-  for (int32_t i=0;i<totdoc;i++)
-  {
-	  check+=a[i]*eps-a[i]*label[i];
-	  for (int32_t j=0;j<totdoc;j++)
-		  check+= 0.5*a[i]*label[i]*a[j]*label[j]*kernel->kernel(i,j);
-  }
-
-  SG_INFO("CLASSIFICATION OBJECTIVE %f vs. CHECK %f (diff %f)\n", criterion, check, criterion-check);
-  */
+	  criterion=criterion+(eps[i]-(float64_t)label[i]*c[i])*a[i]+0.5*a[i]*label[i]*lin[i];
 
   return(criterion);
 }
@@ -1152,7 +1166,7 @@ void CSVMLight::compute_matrices_for_optimization_parallel(
 			/* assure starting at feasible point */
 			qp->opt_xinit[i]=a[key[i]];
 			/* set linear part of objective function */
-			qp->opt_g0[i]=(learn_parm->eps-(float64_t)label[key[i]]*c[key[i]])+qp->opt_g0[i]*(float64_t)label[key[i]];    
+			qp->opt_g0[i]=(learn_parm->eps[key[i]]-(float64_t)label[key[i]]*c[key[i]])+qp->opt_g0[i]*(float64_t)label[key[i]];    
 		}
 
 		if(verbosity>=3) {
@@ -1226,9 +1240,9 @@ void CSVMLight::compute_matrices_for_optimization(
 	  /* assure starting at feasible point */
 	  qp->opt_xinit[i]=a[key[i]];
 	  /* set linear part of objective function */
-	  qp->opt_g0[i]=(learn_parm->eps-(float64_t)label[key[i]]*c[key[i]])+qp->opt_g0[i]*(float64_t)label[key[i]];    
+	  qp->opt_g0[i]=(learn_parm->eps[key[i]]-(float64_t)label[key[i]]*c[key[i]]) + qp->opt_g0[i]*(float64_t)label[key[i]];    
   }
-  
+
   if(verbosity>=3) {
 	  SG_DONE();
   }
@@ -1284,7 +1298,7 @@ int32_t CSVMLight::calculate_svm_model(
 
     if((!b_calculated) 
        && (a[i]>learn_parm->epsilon_a) && (a[i]<ex_c)) {   /* calculate b */
-     	model->b=((float64_t)label[i]*learn_parm->eps-c[i]+lin[i]); 
+     	model->b=((float64_t)label[i]*learn_parm->eps[i]-c[i]+lin[i]); 
 	b_calculated=1;
     }
   }      
@@ -1303,14 +1317,14 @@ int32_t CSVMLight::calculate_svm_model(
       ex_c=learn_parm->svm_cost[i]-learn_parm->epsilon_a;
       if(a[i]<ex_c) { 
 	if(label[i]>0)  {
-	  b_temp=-(learn_parm->eps-c[i]+lin[i]);
+	  b_temp=-(learn_parm->eps[i]-c[i]+lin[i]);
 	  if((b_temp>b_low) || (first_low)) {
 	    b_low=b_temp;
 	    first_low=0;
 	  }
 	}
 	else {
-	  b_temp=-(-learn_parm->eps-c[i]+lin[i]);
+	  b_temp=-(-learn_parm->eps[i]-c[i]+lin[i]);
 	  if((b_temp<b_high) || (first_high)) {
 	    b_high=b_temp;
 	    first_high=0;
@@ -1319,14 +1333,14 @@ int32_t CSVMLight::calculate_svm_model(
       }
       else {
 	if(label[i]<0)  {
-	  b_temp=-(-learn_parm->eps-c[i]+lin[i]);
+	  b_temp=-(-learn_parm->eps[i]-c[i]+lin[i]);
 	  if((b_temp>b_low) || (first_low)) {
 	    b_low=b_temp;
 	    first_low=0;
 	  }
 	}
 	else {
-	  b_temp=-(learn_parm->eps-c[i]+lin[i]);
+	  b_temp=-(learn_parm->eps[i]-c[i]+lin[i]);
 	  if((b_temp<b_high) || (first_high)) {
 	    b_high=b_temp;
 	    first_high=0;
@@ -1373,7 +1387,7 @@ int32_t CSVMLight::check_optimality(
 	  if((!inconsistent[i]) && label[i]) {
 		  dist=(lin[i]-model->b)*(float64_t)label[i];/* 'distance' from
 													 hyperplane*/
-		  target=-(learn_parm->eps-(float64_t)label[i]*c[i]);
+		  target=-(learn_parm->eps[i]-(float64_t)label[i]*c[i]);
 		  ex_c=learn_parm->svm_cost[i]-learn_parm->epsilon_a;
 		  if(dist <= 0) {       
 			  (*misclassified)++;  /* does not work due to deactivation of var */
@@ -1771,7 +1785,7 @@ int32_t CSVMLight::select_next_qp_subproblem_grad(
 		   && (label[j])
 		   && (!inconsistent[j]))
 		{
-			selcrit[activedoc]=(float64_t)label[j]*(learn_parm->eps-(float64_t)label[j]*c[j]+(float64_t)label[j]*lin[j]);
+			selcrit[activedoc]=(float64_t)label[j]*(learn_parm->eps[j]-(float64_t)label[j]*c[j]+(float64_t)label[j]*lin[j]);
 			key[activedoc]=j;
 			activedoc++;
 		}
@@ -1808,7 +1822,7 @@ int32_t CSVMLight::select_next_qp_subproblem_grad(
 		   && (label[j])
 		   && (!inconsistent[j])) 
 		{
-			selcrit[activedoc]=-(float64_t)label[j]*(learn_parm->eps-(float64_t)label[j]*c[j]+(float64_t)label[j]*lin[j]);
+			selcrit[activedoc]=-(float64_t)label[j]*(learn_parm->eps[j]-(float64_t)label[j]*c[j]+(float64_t)label[j]*lin[j]);
 			/*  selcrit[activedoc]=-(float64_t)(label[j]*(-1.0+(float64_t)label[j]*lin[j])); */
 			key[activedoc]=j;
 			activedoc++;
@@ -2344,7 +2358,7 @@ void CSVMLight::reactivate_inactive_examples(
     shrink_state->inactive_since[i]=shrink_state->deactnum-1;
     if(!inconsistent[i]) {
       dist=(lin[i]-model->b)*(float64_t)label[i];
-      target=-(learn_parm->eps-(float64_t)label[i]*c[i]);
+      target=-(learn_parm->eps[i]-(float64_t)label[i]*c[i]);
       ex_c=learn_parm->svm_cost[i]-learn_parm->epsilon_a;
       if((a[i]>learn_parm->epsilon_a) && (dist > target)) {
 	if((dist-target)>(*maxdiff))  /* largest violation */
@@ -2418,6 +2432,7 @@ float64_t* CSVMLight::optimize_qp(
 		opt_precision=CMath::max(opt_precision, DEF_PRECISION);
 		sigdig=-log10(opt_precision);
 
+		CMath::display_vector(qp->opt_g0, qp->opt_n, "pr_loqo_c");
 		result=pr_loqo((int32_t)qp->opt_n,(int32_t)qp->opt_m,
 				(float64_t *)qp->opt_g0,(float64_t *)qp->opt_g,
 				(float64_t *)qp->opt_ce,(float64_t *)qp->opt_ce0,

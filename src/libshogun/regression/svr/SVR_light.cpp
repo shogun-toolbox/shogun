@@ -76,7 +76,6 @@ bool CSVRLight::train()
 	learn_parm->maxiter=100000;
 	learn_parm->svm_iter_to_shrink=100;
 	learn_parm->svm_c=get_C1();
-	learn_parm->eps=tube_epsilon;      /* equivalent regression epsilon for classification */
 	learn_parm->transduction_posratio=0.33;
 	learn_parm->svm_costratio=get_C2()/get_C1();
 	learn_parm->svm_costratio_unlab=1.0;
@@ -211,6 +210,13 @@ void CSVRLight::svr_learn()
 	xi_fullset = new float64_t[totdoc];
 	lin = new float64_t[totdoc];
 	learn_parm->svm_cost = new float64_t[totdoc];
+	if (linear_term)
+		learn_parm->eps=CMath::clone_vector(linear_term, totdoc);
+	else
+	{
+		learn_parm->eps=new float64_t[totdoc];      /* equivalent regression epsilon for classification */
+		CMath::fill_vector(learn_parm->eps, totdoc, tube_epsilon);
+	}
 
 	delete[] model->supvec;
 	delete[] model->alpha;
@@ -309,14 +315,14 @@ void CSVRLight::svr_learn()
 }
 
 float64_t CSVRLight::compute_objective_function(
-	float64_t *a, float64_t *lin, float64_t *c, float64_t eps, int32_t *label,
+	float64_t *a, float64_t *lin, float64_t *c, float64_t* eps, int32_t *label,
 	int32_t totdoc)
 {
   /* calculate value of objective function */
   float64_t criterion=0;
 
   for(int32_t i=0;i<totdoc;i++)
-	  criterion+=(eps-(float64_t)label[i]*c[i])*a[i]+0.5*a[i]*label[i]*lin[i];
+	  criterion+=(eps[i]-(float64_t)label[i]*c[i])*a[i]+0.5*a[i]*label[i]*lin[i];
 
   /* float64_t check=0;
   for(int32_t i=0;i<totdoc;i++)
@@ -572,7 +578,7 @@ void CSVRLight::call_mkl_callback(float64_t* a, int32_t* label, float64_t* lin, 
 	float64_t* sumw=new float64_t[num_kernels];
 
 	for (int32_t i=0; i<num; i++)
-		sumalpha-=a[i]*(learn_parm->eps-label[i]*c[i]);
+		sumalpha-=a[i]*(learn_parm->eps[i]-label[i]*c[i]);
 
 #ifdef HAVE_LAPACK
 	double* alphay  = new double[num];
@@ -690,7 +696,7 @@ void CSVRLight::reactivate_inactive_examples(
     shrink_state->inactive_since[i]=shrink_state->deactnum-1;
     if(!inconsistent[i]) {
       dist=(lin[i]-model->b)*(float64_t)label[i];
-      target=-(learn_parm->eps-(float64_t)label[i]*c[i]);
+      target=-(learn_parm->eps[i]-(float64_t)label[i]*c[i]);
       ex_c=learn_parm->svm_cost[i]-learn_parm->epsilon_a;
       if((a[i]>learn_parm->epsilon_a) && (dist > target)) {
 	if((dist-target)>(*maxdiff))  /* largest violation */

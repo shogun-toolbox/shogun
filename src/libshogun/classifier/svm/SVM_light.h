@@ -112,8 +112,8 @@ struct LEARN_PARM {
   int32_t   type;
   /** upper bound C on alphas */
   float64_t svm_c;
-  /** regression epsilon (eps=1.0 for classification */
-  float64_t eps;
+  /** regression epsilon (eps=-1.0 for classification */
+  float64_t* eps;
   /** factor to multiply C for positive examples */
   float64_t svm_costratio;
   /** fraction of unlabeled examples to be */
@@ -262,6 +262,14 @@ class CSVMLight : public CSVM
    */
   int32_t   get_runtime();
 
+  /**
+   * set linear epsilon term
+   *
+   * @param lterm the linear term
+   * @param num length of vector
+   */
+  void set_linear_term(float64_t* lterm, int32_t num);
+
   /** learn SVM */
   void   svm_learn();
 
@@ -298,7 +306,7 @@ class CSVMLight : public CSVM
    * @return something floaty
    */
   virtual float64_t compute_objective_function(
-	float64_t *a, float64_t *lin, float64_t *c, float64_t eps, int32_t *label,
+	float64_t *a, float64_t *lin, float64_t *c, float64_t* eps, int32_t *label,
 	int32_t totdoc);
 
   /** clear index
@@ -669,6 +677,8 @@ protected:
   float64_t* primal;
   /** dual */
   float64_t* dual;
+  /** linear term in qp */
+  float64_t* linear_term;
 
   // MKL stuff
 
