@@ -255,6 +255,64 @@ class CFeatures : public CSGObject
 		{
 			properties &= (properties | p) ^ p;
 		}
+#ifdef HAVE_BOOST_SERIALIZATION
+    private:
+
+        friend class boost::serialization::access;
+        template<class Archive>
+            void save(Archive & ar, const unsigned int archive_version) const
+            {
+
+                std::cout << "archiving Features" << std::endl;
+
+                ar & boost::serialization::base_object<CSGObject>(*this);
+
+                ar & properties;
+                ar & cache_size;
+                ar & num_preproc;
+
+                //TODO
+                //ar & preproc;
+                for (int i=0; i < num_preproc; ++i) {
+                    ar & preprocessed[i];
+                }
+
+                std::cout << "done with Features" << std::endl;
+
+            }
+
+        template<class Archive>
+            void load(Archive & ar, const unsigned int archive_version)
+            {
+
+                std::cout << "archiving Features" << std::endl;
+
+                ar & boost::serialization::base_object<CSGObject>(*this);
+
+                ar & properties;
+                ar & cache_size;
+                ar & num_preproc;
+
+                //TODO
+                //ar & preproc;
+
+                if (num_preproc > 0)
+                {
+                    preprocessed = new bool[num_preproc];
+                    for (int i=0; i< num_preproc; ++i){
+                        ar & preprocessed[i];
+                    }
+
+                }
+
+                std::cout << "done with Features" << std::endl;
+
+            }
+
+        BOOST_SERIALIZATION_SPLIT_MEMBER();
+
+
+#endif //HAVE_BOOST_SERIALIZATION
 
 	private:
 		/** feature properties */
@@ -273,3 +331,4 @@ class CFeatures : public CSGObject
 		bool* preprocessed;
 };
 #endif
+

@@ -60,6 +60,8 @@
 	}
 }
 
+
+
 %ignore NUM_LOG_LEVELS;
 %ignore FBUFSIZE;
 
@@ -71,6 +73,14 @@
 %feature("ref")   CSGObject "SG_REF($this);"
 %feature("unref") CSGObject "SG_UNREF($this);"
 
+
+#ifdef HAVE_BOOST_SERIALIZATION
+
+%include "std_string.i"
+
+#endif //HAVE_BOOST_SERIALIZATION
+
+
 %include <shogun/lib/common.h>
 %include <shogun/lib/ShogunException.h>
 %include <shogun/lib/io.h>
@@ -78,3 +88,29 @@
 %include <shogun/base/Version.h>
 %include <shogun/base/Parallel.h>
 %include "swig_typemaps.i"
+
+
+#ifdef HAVE_BOOST_SERIALIZATION
+
+%pythoncode %{
+   #some guerillapatching 
+   def __getstate__(self):
+
+      state=self.toString()
+
+      return state
+
+
+   def __setstate__(self, state):
+
+      self.__init__()
+      self.fromString(state)
+
+   #attach methods
+   SGObject.__setstate__=__setstate__
+   SGObject.__getstate__=__getstate__
+
+%}
+#endif //HAVE_BOOST_SERIALIZATION
+
+

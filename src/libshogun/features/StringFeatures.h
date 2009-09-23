@@ -37,8 +37,52 @@ template <class ST> class CStringPreProc;
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 /** template class T_STRING */
-template <class T> struct T_STRING
+template <class T> class T_STRING
 {
+#ifdef HAVE_BOOST_SERIALIZATION
+  private:
+
+  friend class boost::serialization::access;
+  template<class Archive>
+  void save(Archive & ar, const unsigned int archive_version) const
+  {
+
+    //std::cout << "archiving T_STRING" << std::endl;
+ 
+  	ar & length;
+
+    for (int i=0; i < length; ++i) {
+      ar & string[i];
+    }
+
+    //std::cout << "done with T_STRING" << std::endl;
+
+  }
+
+  template<class Archive>
+  void load(Archive & ar, const unsigned int archive_version)
+  {
+
+    //std::cout << "archiving T_STRING" << std::endl;
+
+  	ar & length;
+
+    string = new T[length];
+
+    for (int i=0; i < length; ++i) {
+      ar & string[i];
+    }
+
+    //std::cout << "done with T_STRING" << std::endl;
+
+  }
+
+  BOOST_SERIALIZATION_SPLIT_MEMBER();
+ 
+        
+#endif //HAVE_BOOST_SERIALIZATION
+
+    public:
 	/** string */
 	T* string;
 	/** length of string */
@@ -1379,6 +1423,90 @@ template <class ST> class CStringFeatures : public CFeatures
 			features[num].length=len ;
 			features[num].string=string ;
 		}
+
+#ifdef HAVE_BOOST_SERIALIZATION
+    private:
+
+        friend class boost::serialization::access;
+        template<class Archive>
+            void save(Archive & ar, const unsigned int archive_version) const
+            {
+
+                std::cout << "archiving CStringFeatures" << std::endl;
+
+                ar & boost::serialization::base_object<CFeatures>(*this);
+
+                ar & alphabet;
+
+                ar & num_vectors;
+                for (int i=0; i < num_vectors; ++i) {
+                    ar & features[i];
+                }
+
+                ar & length_of_single_string;
+                for (int i=0; i < length_of_single_string; ++i) {
+                    ar & single_string[i];
+                }
+
+                ar & max_string_length;
+                ar & num_symbols;
+                ar & original_num_symbols;
+                ar & order;
+
+                /// order used in higher order mapping
+                //TODO?! how long
+                //ST* symbol_mask_table;
+
+
+                std::cout << "done with CStringFeatures" << std::endl;
+
+            }
+
+        template<class Archive>
+            void load(Archive & ar, const unsigned int archive_version)
+            {
+
+                std::cout << "archiving CStringFeatures" << std::endl;
+
+                ar & boost::serialization::base_object<CFeatures>(*this);
+
+
+                ar & alphabet;
+
+                ar & num_vectors;
+
+                //T_STRING<ST>* features = new T_STRING<ST>[num_vectors];
+                features = new T_STRING<ST>[num_vectors];
+                for (int i=0; i < num_vectors; ++i) {
+                    ar & features[i];
+                }
+
+
+                ar & length_of_single_string;
+
+                //ST* single_string = new ST[length_of_single_string];
+                single_string = new ST[length_of_single_string];
+                for (int i=0; i < length_of_single_string; ++i) {
+                    ar & single_string[i];
+                }
+
+                ar & max_string_length;
+                ar & num_symbols;
+                ar & original_num_symbols;
+                ar & order;
+
+                /// order used in higher order mapping
+                //TODO?! how long -> num_of_symbols?
+                //ST* symbol_mask_table;
+
+                std::cout << "done with CStringFeatures" << std::endl;
+
+            }
+
+        BOOST_SERIALIZATION_SPLIT_MEMBER();
+
+
+#endif //HAVE_BOOST_SERIALIZATION
 
 
 	protected:

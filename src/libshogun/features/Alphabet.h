@@ -100,7 +100,7 @@ class CAlphabet : public CSGObject
 		 *
 		 * @return alphabet
 		 */
-		inline EAlphabet get_alphabet()
+		inline EAlphabet get_alphabet() const
 		{
 			return alphabet;
 		}
@@ -109,7 +109,7 @@ class CAlphabet : public CSGObject
 		 *
 		 * @return number of symbols
 		 */
-		inline int32_t get_num_symbols()
+		inline int32_t get_num_symbols() const
 		{
 			return num_symbols;
 		}
@@ -119,7 +119,7 @@ class CAlphabet : public CSGObject
 		 *
 		 * @return number of necessary storage bits
 		 */
-		inline int32_t get_num_bits()
+		inline int32_t get_num_bits() const
 		{
 			return num_bits;
 		}
@@ -490,6 +490,84 @@ class CAlphabet : public CSGObject
 		 */
 		void copy_histogram(CAlphabet* src);
 
+
+#ifdef HAVE_BOOST_SERIALIZATION  
+    private:
+
+        friend class boost::serialization::access;
+
+        template<class Archive>
+            void serialize(Archive & ar, const unsigned int archive_version)
+            {
+
+                SG_DEBUG("archiving CAlphabet");
+
+                ar & boost::serialization::base_object<CSGObject>(*this);
+
+                ar & num_symbols;
+                ar & num_bits;
+
+                SG_DEBUG("done with CAlphabet");
+
+            }
+
+
+        /*
+           namespace boost { 
+           namespace serialization {
+
+           template<class Archive>
+           inline void save_construct_data(
+           Archive & ar, 
+           const A * a, 
+           const unsigned int // file_version 
+           ){
+        // variable used for construction
+        ar << boost::serialization::make_nvp("i", a->get_i());
+        }
+
+        template<class Archive>
+        inline void load_construct_data(
+        Archive & ar, 
+        A * a, 
+        const unsigned int // file_version 
+        ){
+        int i;
+        ar >> boost::serialization::make_nvp("i", i);
+        ::new(a)A(i);
+        }
+
+        } // serialization
+        } // namespace boost
+        */
+
+        /** Serialization Function: Convert object to a string
+         *
+         * @return string
+         */
+        virtual std::string to_string() const;
+
+        /** Serialization Function: Obtain object from string
+         *
+         * @param filename file name
+         */
+        virtual void from_string(std::string str);
+
+        /** Serialization Function: Save the object to file
+         *
+         * @param filename file name
+         */
+        virtual void to_file(std::string filename) const;
+
+        /** Serialization Function: Load the object from file
+         *
+         * @param filename file name
+         */
+        virtual void from_file(std::string filename);
+
+#endif //HAVE_BOOST_SERIALIZATION
+
+
 	public:
 		/** B_A */
 		static const uint8_t B_A;
@@ -545,4 +623,30 @@ template<> inline void CAlphabet::translate_from_single_order_reversed(float64_t
 template<> inline void CAlphabet::translate_from_single_order_reversed(floatmax_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap)
 {
 }
+
+#ifdef HAVE_BOOST_SERIALIZATION  
+//http://www.koders.com/cpp/fidB8C82A2BBA651A5E4EEC668EDE70B86EA017E937.aspx
+namespace boost { 
+namespace serialization {
+   template<class Archive>
+    inline void save_construct_data(Archive & ar, const CAlphabet* t, const unsigned int archive_version)
+    {
+      EAlphabet a = t->get_alphabet();
+      ar << a; 
+
+    }
+
+    template<class Archive>
+    inline void load_construct_data(Archive & ar, CAlphabet * t, const unsigned int archive_version)
+    {
+
+      EAlphabet a;
+      ar >> a;
+      ::new(t)CAlphabet(a);
+
+    }
+} // serialization
+} // namespace boost
+#endif //HAVE_BOOST_SERIALIZATION
+
 #endif

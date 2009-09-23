@@ -12,8 +12,27 @@
 #define __SGOBJECT_H__
 
 #ifdef HAVE_BOOST_SERIALIZATION
-#include <boost/serialization/access.hpp>
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
+
+#include <boost/archive/binary_oarchive.hpp>
+#include <boost/archive/binary_iarchive.hpp>
+
+#include <boost/serialization/vector.hpp>
+
+//TODO xml will not work right away, every class needs name-value-pairs (NVP)
+//will have to be defined using respective boost macros
+//#include <boost/archive/xml_oarchive.hpp>
+//#include <boost/archive/xml_iarchive.hpp>
+
+//some STL modules needed for serialization
+
 #include <string>
+#include <sstream>
+#include <iostream>
+#include <fstream>
+#include <vector>
+
 #endif //HAVE_BOOST_SERIALIZATION
 
 #include "lib/io.h"
@@ -156,10 +175,10 @@ public:
 	 * @param version_num version number
 	 */
 	template<class Archive>
-		void serialize(Archive & ar, const unsigned int version_num)
+		void serialize(Archive & ar, const unsigned int archive_version)
 		{
 			//ar & test;
-			SG_ERROR("SERIALIZING SGObject: nothing to do");
+			SG_DEBUG("SERIALIZING SGObject");
 		}
 
 #endif //HAVE_BOOST_SERIALIZATION

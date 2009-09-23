@@ -18,26 +18,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+
 #ifdef HAVE_BOOST_SERIALIZATION
-#include <boost/serialization/access.hpp>
-#include <boost/archive/text_oarchive.hpp>
-#include <boost/archive/text_iarchive.hpp>
-#include <boost/archive/binary_oarchive.hpp>
-#include <boost/archive/binary_iarchive.hpp>
 #include <boost/serialization/export.hpp>
-//#include <boost/serialization/vector.hpp>
-//
-////TODO xml will not work right away, every class needs name-value-pairs (NVP)
-////TODO we SHOULD FIX THIS NOW!
-////will have to be defined using respective boost macros
-////#include <boost/archive/xml_oarchive.hpp>
-////#include <boost/archive/xml_iarchive.hpp>
-////some STL modules needed for serialization
-#include <sstream>
-#include <iostream>
-#include <string>
-#include <fstream>
-//#include <vector>
 BOOST_IS_ABSTRACT(CSGObject);
 #endif //HAVE_BOOST_SERIALIZATION
 
