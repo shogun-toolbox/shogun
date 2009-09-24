@@ -1,15 +1,20 @@
-2009-09-XX Soeren Sonnenburg <sonne@debian.org>
+2009-10-XX Soeren Sonnenburg <sonne@debian.org>
 
-	* SHOGUN Release version 0.8.1 (libshogun 4.1, libshogunui 3.0)
+	* SHOGUN Release version 0.9.0 (libshogun 5.0, libshogunui 3.0)
 	* This release contains minor feature enhancements and bugfixes:
 	* Features:
 	    - Implement set_linear_classifier for static interfaces.
-		- Polynomial DotFeatures
-		- Speed up MCSVM
+		- Implement Polynomial DotFeatures.
+		- Speed up MCSVM.
+		- Saving and Loading of shogun objects.
+		- Examples have been polished/split up into separate files.
 	* Bugfixes:
 		- Fix one class MKL for static interfaces.
+		- Fix performance measures integer overflow.
+		- Configure fixes to run under OSX's snow leopard.
 	* Cleanup and API Changes:
-		- None
+		- It is no longer necessary to call init_kernel TRAIN/TEST.
+		- Removed kernel {load,save}_init.
 
 2009-08-16 Soeren Sonnenburg <sonne@debian.org>
 
