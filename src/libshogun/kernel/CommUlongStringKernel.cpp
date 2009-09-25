@@ -75,16 +75,6 @@ void CCommUlongStringKernel::cleanup()
 	CKernel::cleanup();
 }
 
-bool CCommUlongStringKernel::load_init(FILE* src)
-{
-	return false;
-}
-
-bool CCommUlongStringKernel::save_init(FILE* dest)
-{
-	return false;
-}
-
 float64_t CCommUlongStringKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	int32_t alen, blen;

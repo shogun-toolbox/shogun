@@ -61,24 +61,6 @@ class CCombinedKernel : public CKernel
 		/** clean up kernel */
 		virtual void cleanup();
 
-		/** load kernel init_data
-		 *
-		 * NOT IMPLEMENTED!
-		 *
-		 * @param src file to load from
-		 * @return if loading was successful
-		 */
-		virtual bool load_init(FILE* src) { return false; }
-
-		/** save kernel init_data
-		 *
-		 * NOT IMPLEMENTED!
-		 *
-		 * @param dest file to save to
-		 * @return if saving was successful
-		 */
-		virtual bool save_init(FILE* dest) { return false; }
-
 		/** return what type of kernel we are
 		 *
 		 * @return kernel type COMBINED

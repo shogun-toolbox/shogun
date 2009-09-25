@@ -7,24 +7,24 @@
  * Written (W) 2009 Soeren Sonnenburg
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
-#ifndef __MKLONECLASS_H__
-#define __MKLONECLASS_H__
+#ifndef __MKLCLASSIFICATION_H__
+#define __MKLCLASSIFICATION_H__
 
 #include "lib/common.h"
-#include "classifier/svm/MKL.h"
+#include "classifier/mkl/MKL.h"
 
-class CMKLOneClass : public CMKL
+class CMKLClassification : public CMKL
 {
 	public:
 		/** Constructor
 		 *
 		 * @param s SVM to use as constraint generator in MKL SILP
 		 */
-		CMKLOneClass(CSVM* s=NULL);
+		CMKLClassification(CSVM* s=NULL);
 
 		/** Destructor
 		 */
-		virtual ~CMKLOneClass();
+		virtual ~CMKLClassification();
 
 		virtual float64_t compute_sum_alpha();
 
@@ -33,8 +33,8 @@ class CMKLOneClass : public CMKL
 
 		/** get classifier type
 		 *
-		 * @return classifier type MKL ONECLASS
+		 * @return classifier type MKL_CLASSIFICATION
 		 */
-		virtual inline EClassifierType get_classifier_type() { return CT_MKLONECLASS; }
+		virtual inline EClassifierType get_classifier_type() { return CT_MKLCLASSIFICATION; }
 };
-#endif //__MKLONECLASS_H__
+#endif //__MKLCLASSIFICATION_H__

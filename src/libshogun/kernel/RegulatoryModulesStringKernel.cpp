@@ -54,16 +54,6 @@ bool CRegulatoryModulesStringKernel::init(CFeatures* l, CFeatures* r)
 	return init_normalizer();
 }
 
-bool CRegulatoryModulesStringKernel::load_init(FILE* src)
-{
-	return false;
-}
-
-bool CRegulatoryModulesStringKernel::save_init(FILE* dest)
-{
-	return false;
-}
-
 void CRegulatoryModulesStringKernel::set_motif_positions(
 		CSimpleFeatures<uint16_t>* positions_lhs, CSimpleFeatures<uint16_t>* positions_rhs)
 {

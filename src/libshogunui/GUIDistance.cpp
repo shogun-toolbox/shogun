@@ -75,69 +75,7 @@ bool CGUIDistance::set_distance(CDistance* dist)
 		return false;
 }
 
-bool CGUIDistance::load_distance_init(char* param)
-{
-	bool result=false;
-	char filename[1024]="";
-
-	if (distance)
-	{
-		if ((sscanf(param, "%s", filename))==1)
-		{
-			FILE* file=fopen(filename, "r");
-			if ((!file) || (!distance->load_init(file)))
-				SG_ERROR( "reading from file %s failed!\n", filename);
-			else
-			{
-				SG_INFO( "successfully read distance init data from \"%s\" !\n", filename);
-				initialized=true;
-				result=true;
-			}
-
-			if (file)
-				fclose(file);
-		}
-		else
-			SG_ERROR( "see help for params\n");
-	}
-	else
-		SG_ERROR( "no kernel set!\n");
-	return result;
-}
-
-bool CGUIDistance::save_distance_init(char* param)
-{
-	bool result=false;
-	char filename[1024]="";
-
-	if (distance)
-	{
-		if ((sscanf(param, "%s", filename))==1)
-		{
-			FILE* file=fopen(filename, "w");
-			if (!file)
-				SG_ERROR( "fname: %s\n", filename);
-			if ((!file) || (!distance->save_init(file)))
-				SG_ERROR( "writing to file %s failed!\n", filename);
-			else
-			{
-				SG_INFO( "successfully written distance init data into \"%s\" !\n", filename);
-				result=true;
-			}
-
-			if (file)
-				fclose(file);
-		}
-		else
-			SG_ERROR( "see help for params\n");
-	}
-	else
-		SG_ERROR( "no kernel set!\n");
-	return result;
-}
-
-
-bool CGUIDistance::init_distance(char* target)
+bool CGUIDistance::init_distance(const char* target)
 {
 	SG_DEBUG("init_distance start\n.");
 

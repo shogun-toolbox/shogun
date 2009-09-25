@@ -68,6 +68,7 @@ class CIO;
 #define SG_ERROR(...) io->message(M_ERROR, __VA_ARGS__)
 #define SG_PRINT(...) io->message(M_MESSAGEONLY, __VA_ARGS__)
 #define SG_NOTIMPLEMENTED io->not_implemented()
+#define SG_DEPRECATED io->deprecated()
 
 #define SG_PROGRESS(...) io->progress(__VA_ARGS__)
 #define SG_ABS_PROGRESS(...) io->absolute_progress(__VA_ARGS__)
@@ -84,6 +85,7 @@ class CIO;
 #define SG_SABS_PROGRESS(...) sg_io->absolute_progress(__VA_ARGS__)
 #define SG_SDONE() sg_io->done()
 #define SG_SNOTIMPLEMENTED sg_io->not_implemented()
+#define SG_SDEPRECATED io->deprecated()
 
 #define ASSERT(x) { if (!(x)) SG_SERROR("assertion %s failed in file %s line %d\n",#x, __FILE__, __LINE__);}
 
@@ -163,7 +165,13 @@ class CIO
 		/** print error message 'not implemented' */
 		inline void not_implemented() const
 		{
-			message(M_ERROR, "Sorry, not yet implemented\n");
+			message(M_ERROR, "Sorry, not yet implemented.\n");
+		}
+
+		/** print warning message 'function deprecated' */
+		inline void deprecated() const
+		{
+			message(M_WARN, "This function is deprecated and will be removed soon.\n");
 		}
 
 		/** print a buffered message

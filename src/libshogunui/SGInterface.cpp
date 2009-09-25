@@ -11,7 +11,7 @@
 
 #include <shogun/classifier/svm/SVM.h>
 #include <shogun/classifier/LinearClassifier.h>
-#include <shogun/classifier/svm/MKL.h>
+#include <shogun/classifier/mkl/MKL.h>
 #include <shogun/kernel/WeightedDegreePositionStringKernel.h>
 #include <shogun/kernel/WeightedDegreeStringKernel.h>
 #include <shogun/kernel/CommWordStringKernel.h>
@@ -198,22 +198,12 @@ CSGInterfaceMethod sg_methods[]=
 	{
 		N_SAVE_KERNEL,
 		(&CSGInterface::cmd_save_kernel),
-		USAGE_I(N_SAVE_KERNEL, "filename")
-	},
-	{
-		N_LOAD_KERNEL_INIT,
-		(&CSGInterface::cmd_load_kernel_init),
-		USAGE_I(N_LOAD_KERNEL_INIT, "filename")
-	},
-	{
-		N_SAVE_KERNEL_INIT,
-		(&CSGInterface::cmd_save_kernel_init),
-		USAGE_I(N_SAVE_KERNEL_INIT, "filename")
+		USAGE_I(N_SAVE_KERNEL, "filename" USAGE_COMMA USAGE_STR "TRAIN|TEST" USAGE_STR)
 	},
 	{
 		N_GET_KERNEL_MATRIX,
 		(&CSGInterface::cmd_get_kernel_matrix),
-		USAGE_O(N_GET_KERNEL_MATRIX, "K")
+		USAGE_O(N_GET_KERNEL_MATRIX, "K"  USAGE_COMMA USAGE_STR "TRAIN|TEST" USAGE_STR)
 	},
 	{
 		N_SET_WD_POS_WEIGHTS,
@@ -3342,16 +3332,8 @@ CFeatures* CSGInterface::create_custom_real_features(CSimpleFeatures<float64_t>*
 
 bool CSGInterface::cmd_init_kernel()
 {
-	if (m_nrhs<2 || !create_return_values(0))
-		return false;
-
-	int32_t len=0;
-	char* target=get_str_from_str_or_direct(len);
-
-	bool success=ui_kernel->init_kernel(target);
-
-	delete[] target;
-	return success;
+	SG_DEPRECATED;
+	return true;
 }
 
 bool CSGInterface::cmd_clean_kernel()
@@ -3376,52 +3358,33 @@ bool CSGInterface::cmd_save_kernel()
 	return success;
 }
 
-bool CSGInterface::cmd_load_kernel_init()
-{
-	if (m_nrhs<2 || !create_return_values(0))
-		return false;
-
-	int32_t len=0;
-	char* filename=get_str_from_str_or_direct(len);
-
-	bool success=ui_kernel->load_kernel_init(filename);
-
-	delete[] filename;
-	return success;
-}
-
-bool CSGInterface::cmd_save_kernel_init()
-{
-	if (m_nrhs<2 || !create_return_values(0))
-		return false;
-
-	int32_t len=0;
-	char* filename=get_str_from_str_or_direct(len);
-
-	bool success=ui_kernel->save_kernel_init(filename);
-
-	delete[] filename;
-	return success;
-}
-
 bool CSGInterface::cmd_get_kernel_matrix()
 {
-	if (m_nrhs!=1 || !create_return_values(1))
+	if (m_nrhs!=2 || !create_return_values(1))
 		return false;
 
-	CKernel* kernel=ui_kernel->get_kernel();
-	if (!kernel || !kernel->has_features())
-		SG_ERROR("No kernel defined or not initialized.\n");
+	int32_t len=0;
+	char* target=get_string(len);
+	bool success=ui_kernel->init_kernel(target);
 
-	int32_t num_vec_lhs=0;
-	int32_t num_vec_rhs=0;
-	float64_t* kmatrix=NULL;
-	kmatrix=kernel->get_kernel_matrix_real(num_vec_lhs, num_vec_rhs, kmatrix);
+	if (success)
+	{
+		CKernel* kernel=ui_kernel->get_kernel();
+		if (!kernel || !kernel->has_features())
+			SG_ERROR("No kernel defined or not initialized.\n");
 
-	set_real_matrix(kmatrix, num_vec_lhs, num_vec_rhs);
-	delete[] kmatrix;
+		int32_t num_vec_lhs=0;
+		int32_t num_vec_rhs=0;
+		float64_t* kmatrix=NULL;
+		kmatrix=kernel->get_kernel_matrix_real(num_vec_lhs, num_vec_rhs, kmatrix);
 
-	return true;
+		set_real_matrix(kmatrix, num_vec_lhs, num_vec_rhs);
+		delete[] kmatrix;
+	}
+
+	delete[] target;
+
+	return success;
 }
 
 bool CSGInterface::cmd_set_WD_position_weights()
@@ -4279,36 +4242,36 @@ bool CSGInterface::cmd_set_distance()
 
 bool CSGInterface::cmd_init_distance()
 {
-	if (m_nrhs<2 || !create_return_values(0))
-		return false;
-
-	int32_t len=0;
-	char* target=get_str_from_str_or_direct(len);
-
-	bool success=ui_distance->init_distance(target);
-
-	delete[] target;
-	return success;
+	SG_DEPRECATED;
+	return true;
 }
 
 bool CSGInterface::cmd_get_distance_matrix()
 {
-	if (m_nrhs!=1 || !create_return_values(1))
+	if (m_nrhs!=2 || !create_return_values(1))
 		return false;
 
-	CDistance* distance=ui_distance->get_distance();
-	if (!distance || !distance->has_features())
-		SG_ERROR("No distance defined or not initialized.\n");
+	int32_t len=0;
+	char* target=get_string(len);
 
-	int32_t num_vec_lhs=0;
-	int32_t num_vec_rhs=0;
-	float64_t* dmatrix=NULL;
-	dmatrix=distance->get_distance_matrix_real(num_vec_lhs, num_vec_rhs, dmatrix);
+	bool success=ui_distance->init_distance(target);
 
-	set_real_matrix(dmatrix, num_vec_lhs, num_vec_rhs);
-	delete[] dmatrix;
+	if (success)
+	{
+		CDistance* distance=ui_distance->get_distance();
+		if (!distance || !distance->has_features())
+			SG_ERROR("No distance defined or not initialized.\n");
 
-	return true;
+		int32_t num_vec_lhs=0;
+		int32_t num_vec_rhs=0;
+		float64_t* dmatrix=NULL;
+		dmatrix=distance->get_distance_matrix_real(num_vec_lhs, num_vec_rhs, dmatrix);
+
+		set_real_matrix(dmatrix, num_vec_lhs, num_vec_rhs);
+		delete[] dmatrix;
+	}
+
+	return success;
 }
 
 
@@ -7508,7 +7471,7 @@ bool CSGInterface::cmd_whos()
 
 bool CSGInterface::cmd_send_command()
 {
-	SG_WARNING("ATTENTION: You are using a legacy command. Please consider using the new syntax as given by the help command!\n");
+	SG_DEPRECATED;
 
 	int32_t len=0;
 	char* arg=get_string(len);

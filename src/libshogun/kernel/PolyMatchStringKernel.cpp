@@ -45,16 +45,6 @@ void CPolyMatchStringKernel::cleanup()
 	CKernel::cleanup();
 }
 
-bool CPolyMatchStringKernel::load_init(FILE *src)
-{
-	return false;
-}
-
-bool CPolyMatchStringKernel::save_init(FILE *dest)
-{
-	return false;
-}
-
 float64_t CPolyMatchStringKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	int32_t i, alen, blen, sum;

@@ -28,14 +28,3 @@ CDiagKernel::CDiagKernel(CFeatures* l, CFeatures* r, float64_t d)
 CDiagKernel::~CDiagKernel()
 {
 }
-
-bool CDiagKernel::load_init(FILE* src)
-{
-	return false;
-}
-
-bool CDiagKernel::save_init(FILE* dest)
-{
-	return false;
-}
-

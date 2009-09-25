@@ -114,16 +114,6 @@ bool CAUCKernel::init(CFeatures* l, CFeatures* r)
 	return true;
 }
 
-bool CAUCKernel::load_init(FILE* src)
-{
-	return false;
-}
-
-bool CAUCKernel::save_init(FILE* dest)
-{
-	return false;
-}
-
 float64_t CAUCKernel::compute(int32_t idx_a, int32_t idx_b)
 {
   int32_t alen, blen;

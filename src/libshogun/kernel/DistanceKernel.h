@@ -80,20 +80,6 @@ class CDistanceKernel: public CKernel
 		 */
 		inline virtual const char* get_name() const { return distance->get_name(); }
 
-		/** load kernel init_data
-		 *
-		 * @param src file to load from
-		 * @return if loading was successful
-		 */
-		bool load_init(FILE* src);
-
-		/** save kernel init_data
-		 *
-		 * @param dest file to save to
-		 * @return if saving was successful
-		 */
-		bool save_init(FILE* dest);
-
 	protected:
 		/** compute kernel function for features a and b
 		 * idx_{a,b} denote the index of the feature vectors

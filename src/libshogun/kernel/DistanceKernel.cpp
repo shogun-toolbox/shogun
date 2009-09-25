@@ -52,13 +52,3 @@ float64_t CDistanceKernel::compute(int32_t idx_a, int32_t idx_b)
 	float64_t result=distance->distance(idx_a, idx_b);
 	return exp(-result/width);
 }
-
-bool CDistanceKernel::load_init(FILE* src)
-{
-	return false;
-}
-
-bool CDistanceKernel::save_init(FILE* dest)
-{
-	return false;
-}

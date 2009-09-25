@@ -1,4 +1,4 @@
-#include "classifier/svm/MKLClassification.h"
+#include "classifier/mkl/MKLClassification.h"
 #ifdef USE_SVMLIGHT
 #include "classifier/svm/SVM_light.h"
 #endif //USE_SVMLIGHT

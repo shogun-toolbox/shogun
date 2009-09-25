@@ -63,20 +63,6 @@ class CSimpleLocalityImprovedStringKernel: public CStringKernel<char>
 		/** clean up kernel */
 		virtual void cleanup();
 
-		/** load kernel init_data
-		 *
-		 * @param src file to load from
-		 * @return if loading was successful
-		 */
-		bool load_init(FILE *src);
-
-		/** save kernel init_data
-		 *
-		 * @param dest file to save to
-		 * @return if saving was successful
-		 */
-		bool save_init(FILE *dest);
-
 		/** return what type of kernel we are
 		 *
 		 * @return kernel type SIMPLELOCALITYIMPROVED

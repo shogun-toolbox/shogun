@@ -47,16 +47,6 @@ void CSparseLinearKernel::cleanup()
 	CKernel::cleanup();
 }
 
-bool CSparseLinearKernel::load_init(FILE* src)
-{
-	return false;
-}
-
-bool CSparseLinearKernel::save_init(FILE* dest)
-{
-	return false;
-}
-
 void CSparseLinearKernel::clear_normal()
 {
 	int32_t num=((CSparseFeatures<float64_t>*) lhs)->get_num_features();

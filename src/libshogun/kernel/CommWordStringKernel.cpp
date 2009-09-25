@@ -76,16 +76,6 @@ void CCommWordStringKernel::cleanup()
 	CKernel::cleanup();
 }
 
-bool CCommWordStringKernel::load_init(FILE* src)
-{
-	return false;
-}
-
-bool CCommWordStringKernel::save_init(FILE* dest)
-{
-	return false;
-}
-
 float64_t CCommWordStringKernel::compute_diag(int32_t idx_a)
 {
 	int32_t alen;

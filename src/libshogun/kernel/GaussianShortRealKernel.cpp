@@ -36,16 +36,6 @@ bool CGaussianShortRealKernel::init(CFeatures* l, CFeatures* r)
 	return init_normalizer();
 }
 
-bool CGaussianShortRealKernel::load_init(FILE* src)
-{
-	return false;
-}
-
-bool CGaussianShortRealKernel::save_init(FILE* dest)
-{
-	return false;
-}
-
 float64_t CGaussianShortRealKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	int32_t alen, blen;

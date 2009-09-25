@@ -241,24 +241,6 @@ class CKernel : public CSGObject
 		 */
 		bool save(char* fname);
 
-		/** load kernel init_data
-		 *
-		 * abstract base method
-		 *
-		 * @param src file to load from
-		 * @return if loading was successful
-		 */
-		virtual bool load_init(FILE* src)=0;
-
-		/** save kernel init_data
-		 *
-		 * abstract base method
-		 *
-		 * @param dest file to save to
-		 * @return if saving was successful
-		 */
-		virtual bool save_init(FILE* dest)=0;
-
 		/** get left-hand side of features used in kernel
 		 *
 		 * @return features of left-hand side

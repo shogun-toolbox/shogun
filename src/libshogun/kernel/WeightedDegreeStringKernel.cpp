@@ -208,17 +208,6 @@ void CWeightedDegreeStringKernel::cleanup()
 	CKernel::cleanup();
 }
 
-bool CWeightedDegreeStringKernel::load_init(FILE* src)
-{
-	return false;
-}
-
-bool CWeightedDegreeStringKernel::save_init(FILE* dest)
-{
-	return false;
-}
-  
-
 bool CWeightedDegreeStringKernel::init_optimization(int32_t count, int32_t* IDX, float64_t* alphas, int32_t tree_num)
 {
 	if (tree_num<0)

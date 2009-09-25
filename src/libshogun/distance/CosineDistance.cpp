@@ -42,16 +42,6 @@ void CCosineDistance::cleanup()
 {
 }
 
-bool CCosineDistance::load_init(FILE* src)
-{
-	return false;
-}
-
-bool CCosineDistance::save_init(FILE* dest)
-{
-	return false;
-}
-
 float64_t CCosineDistance::compute(int32_t idx_a, int32_t idx_b)
 {
 	int32_t alen, blen;

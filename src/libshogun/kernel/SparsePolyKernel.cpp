@@ -45,16 +45,6 @@ void CSparsePolyKernel::cleanup()
 	CKernel::cleanup();
 }
 
-bool CSparsePolyKernel::load_init(FILE* src)
-{
-	return false;
-}
-
-bool CSparsePolyKernel::save_init(FILE* dest)
-{
-	return false;
-}
-
 float64_t CSparsePolyKernel::compute(int32_t idx_a, int32_t idx_b)
 {
   int32_t alen=0;

@@ -380,14 +380,4 @@ float64_t CMindyGramKernel::compute_optimized(int32_t i)
 
 	return normalizer->normalize_rhs(result, i);
 }
-
-bool CMindyGramKernel::load_init(FILE* src)
-{
-    return false;
-}
-
-bool CMindyGramKernel::save_init(FILE* dest)
-{
-    return false;
-}
 #endif

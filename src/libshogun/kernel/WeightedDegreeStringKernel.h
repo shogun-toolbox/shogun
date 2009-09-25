@@ -86,32 +86,36 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		/** clean up kernel */
 		virtual void cleanup();
 
-		/** load kernel init_data
+		/** get WD kernel weighting type
 		 *
-		 * @param src file to load from
-		 * @return if loading was successful
-		 */
-		bool load_init(FILE* src);
-
-		/** save kernel init_data
+		 * @return weighting type
 		 *
-		 * @param dest file to save to
-		 * @return if saving was successful
+		 * 
+		 * \sa EWDKernType
 		 */
-		bool save_init(FILE* dest);
+		EWDKernType get_type() const
+		{
+			return type;
+		}
 
-        EWDKernType get_type() const {
-            return type;
-        }
+		/** get degree of WD kernel
+		 *
+		 * @return degree of the kernel
+		 */
+		int32_t get_degree() const
+		{
+			return degree;
+		}
 
-        int32_t get_degree() const {
-            return degree;
-        }
-
-        int32_t get_max_mismatch() const {
-            return max_mismatch;
-        }
-
+		/** get the number of mismatches that are allowed in WD kernel
+		 * computation
+		 *
+		 * @return number of mismatches
+		 */
+		int32_t get_max_mismatch() const
+		{
+			return max_mismatch;
+		}
 
 		/** return what type of kernel we are
 		 *
@@ -883,85 +887,86 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 
 #ifdef HAVE_BOOST_SERIALIZATION  
 //http://www.koders.com/cpp/fidB8C82A2BBA651A5E4EEC668EDE70B86EA017E937.aspx
-namespace boost { 
-namespace serialization {
-    template<class Archive>
-    inline void save_construct_data(Archive & ar, const CWeightedDegreeStringKernel* const t, const unsigned int file_version)
-    {
-    //TODO it has to be possible to access protected fields directly
-		//CWeightedDegreeStringKernel(INT size, EWDKernType type, INT degree, INT max_mismatch, bool use_normalization=true, bool block_computation=false, INT mkl_stepsize=1, INT which_deg=-1) ;
-      int32_t size = 10;
-      ar << size;
+namespace boost
+{ 
+	namespace serialization
+	{
+		template<class Archive>
+			inline void save_construct_data(Archive & ar, const CWeightedDegreeStringKernel* const t, const unsigned int file_version)
+			{
+				//TODO it has to be possible to access protected fields directly
+				//CWeightedDegreeStringKernel(INT size, EWDKernType type, INT degree, INT max_mismatch, bool use_normalization=true, bool block_computation=false, INT mkl_stepsize=1, INT which_deg=-1) ;
+				int32_t size = 10;
+				ar << size;
 
-      EWDKernType type = t->get_type();
-      ar << type;
+				EWDKernType type = t->get_type();
+				ar << type;
 
-      int32_t degree = t->get_degree();
-      ar << degree;
+				int32_t degree = t->get_degree();
+				ar << degree;
 
-      int32_t max_mismatch = t->get_max_mismatch();
-      ar << max_mismatch;
+				int32_t max_mismatch = t->get_max_mismatch();
+				ar << max_mismatch;
 
-      
-/*
-      TODO solution to the problem is that create_empty_tries has to be called
-           _after_ lhs, and rhs are set.
+				/*
+				   TODO solution to the problem is that create_empty_tries has to be called
+				   _after_ lhs, and rhs are set.
 
-      other solution -> serialize tree
-*/
+				   other solution -> serialize tree
+				   */
 
-      ar.register_type(static_cast<CStringFeatures<char> *>(NULL));
+				ar.register_type(static_cast<CStringFeatures<char> *>(NULL));
 
-      const CStringFeatures<char>* const lhs = dynamic_cast<CStringFeatures<char>* >(const_cast<CWeightedDegreeStringKernel*>(t)->get_lhs());
-      const CStringFeatures<char>* const rhs = dynamic_cast<CStringFeatures<char>* >(const_cast<CWeightedDegreeStringKernel*>(t)->get_rhs());
-      //CStringFeatures<char>* lhs = (CStringFeatures<char>*) (const_cast<CWeightedDegreeStringKernel*>(t)->get_lhs());
-      //CStringFeatures<char>* rhs = (CStringFeatures<char>*) (const_cast<CWeightedDegreeStringKernel*>(t)->get_rhs());
+				const CStringFeatures<char>* const lhs = dynamic_cast<CStringFeatures<char>* >(const_cast<CWeightedDegreeStringKernel*>(t)->get_lhs());
+				const CStringFeatures<char>* const rhs = dynamic_cast<CStringFeatures<char>* >(const_cast<CWeightedDegreeStringKernel*>(t)->get_rhs());
+				//CStringFeatures<char>* lhs = (CStringFeatures<char>*) (const_cast<CWeightedDegreeStringKernel*>(t)->get_lhs());
+				//CStringFeatures<char>* rhs = (CStringFeatures<char>*) (const_cast<CWeightedDegreeStringKernel*>(t)->get_rhs());
 
-//    const CFeatures* const lhs = t->get_lhs();
-//    const CFeatures* const rhs = t->get_rhs();
+				//    const CFeatures* const lhs = t->get_lhs();
+				//    const CFeatures* const rhs = t->get_rhs();
 
-      ar << lhs;
-      ar << rhs;
+				ar << lhs;
+				ar << rhs;
 
-      //ar << dynamic_cast<CStringFeatures<char>*>(rhs);
-      //ar << t->get_lhs();
-      //ar << t->get_rhs();
+				//ar << dynamic_cast<CStringFeatures<char>*>(rhs);
+				//ar << t->get_lhs();
+				//ar << t->get_rhs();
 
-    }
+			}
 
-    template<class Archive>
-    inline void load_construct_data(Archive & ar, CWeightedDegreeStringKernel * t, const unsigned int file_version)
-    {
+		template<class Archive>
+			inline void load_construct_data(Archive & ar, CWeightedDegreeStringKernel * t, const unsigned int file_version)
+			{
 
-      SG_SDEBUG("loading WDK from non-defaultconstruct data works\n");
+				SG_SDEBUG("loading WDK from non-defaultconstruct data works\n");
 
-      int32_t size;
-      EWDKernType type;
-      int32_t degree;
-      int32_t max_mismatch;
+				int32_t size;
+				EWDKernType type;
+				int32_t degree;
+				int32_t max_mismatch;
 
-//      CStringFeatures<char>* lhs;
-//      CStringFeatures<char>* rhs;
+				//      CStringFeatures<char>* lhs;
+				//      CStringFeatures<char>* rhs;
 
-      ar >> size;
-      ar >> type;
-      ar >> degree;
-      ar >> max_mismatch;
+				ar >> size;
+				ar >> type;
+				ar >> degree;
+				ar >> max_mismatch;
 
-//      ::new(t)CWeightedDegreeStringKernel(size, type, degree, max_mismatch);
+				//      ::new(t)CWeightedDegreeStringKernel(size, type, degree, max_mismatch);
 
-      CStringFeatures<char>* lhs;
-      CStringFeatures<char>* rhs;
+				CStringFeatures<char>* lhs;
+				CStringFeatures<char>* rhs;
 
-      ar >> lhs;
-      ar >> rhs;
-      
-      ::new(t)CWeightedDegreeStringKernel(lhs, rhs, degree);
+				ar >> lhs;
+				ar >> rhs;
 
-      t->set_max_mismatch(max_mismatch);
+				::new(t)CWeightedDegreeStringKernel(lhs, rhs, degree);
 
-    }
-} // serialization
+				t->set_max_mismatch(max_mismatch);
+
+			}
+	} // serialization
 } // namespace boost
 #endif //HAVE_BOOST_SERIALIZATION
 

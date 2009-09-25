@@ -42,16 +42,6 @@ void CCanberraMetric::cleanup()
 {
 }
 
-bool CCanberraMetric::load_init(FILE* src)
-{
-	return false;
-}
-
-bool CCanberraMetric::save_init(FILE* dest)
-{
-	return false;
-}
-
 float64_t CCanberraMetric::compute(int32_t idx_a, int32_t idx_b)
 {
 

@@ -46,16 +46,6 @@ void CLinearKernel::cleanup()
 	CKernel::cleanup();
 }
 
-bool CLinearKernel::load_init(FILE* src)
-{
-	return false;
-}
-
-bool CLinearKernel::save_init(FILE* dest)
-{
-	return false;
-}
-
 void CLinearKernel::clear_normal()
 {
 	int32_t num = ((CSimpleFeatures<float64_t>*) lhs)->get_num_features();

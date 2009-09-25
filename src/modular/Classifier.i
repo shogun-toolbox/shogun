@@ -61,9 +61,9 @@
  #include <shogun/classifier/svm/SVMSGD.h>
  #include <shogun/classifier/svm/WDSVMOcas.h>
  #include <shogun/classifier/PluginEstimate.h> 
- #include <shogun/classifier/svm/MKL.h>
- #include <shogun/classifier/svm/MKLClassification.h>
- #include <shogun/classifier/svm/MKLOneClass.h>
+ #include <shogun/classifier/mkl/MKL.h>
+ #include <shogun/classifier/mkl/MKLClassification.h>
+ #include <shogun/classifier/mkl/MKLOneClass.h>
 #ifdef USE_SVMLIGHT
  #include <shogun/classifier/svm/SVM_light.h>
 #endif //USE_SVMLIGHT
@@ -148,9 +148,9 @@
 %include <shogun/classifier/svm/SVMSGD.h>
 %include <shogun/classifier/svm/WDSVMOcas.h>
 %include <shogun/classifier/PluginEstimate.h> 
-%include <shogun/classifier/svm/MKL.h>
-%include <shogun/classifier/svm/MKLClassification.h>
-%include <shogun/classifier/svm/MKLOneClass.h>
+%include <shogun/classifier/mkl/MKL.h>
+%include <shogun/classifier/mkl/MKLClassification.h>
+%include <shogun/classifier/mkl/MKLOneClass.h>
 
 #ifdef HAVE_PYTHON
 %pythoncode %{

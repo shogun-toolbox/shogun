@@ -42,16 +42,6 @@ void CGeodesicMetric::cleanup()
 {
 }
 
-bool CGeodesicMetric::load_init(FILE* src)
-{
-	return false;
-}
-
-bool CGeodesicMetric::save_init(FILE* dest)
-{
-	return false;
-}
-
 float64_t CGeodesicMetric::compute(int32_t idx_a, int32_t idx_b)
 {
 	int32_t alen, blen;

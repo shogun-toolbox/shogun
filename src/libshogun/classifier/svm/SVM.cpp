@@ -14,7 +14,7 @@
 #include "base/Parallel.h"
 
 #include "classifier/svm/SVM.h"
-#include "classifier/svm/MKL.h"
+#include "classifier/mkl/MKL.h"
 
 #include <string.h>
 

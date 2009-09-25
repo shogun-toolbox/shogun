@@ -11,7 +11,7 @@
 #define __MKLMULTICLASS_H__
 
 #include "lib/common.h"
-#include "classifier/svm/MKL.h"
+#include "classifier/mkl/MKL.h"
 
 #endif //__MKLMULTICLASS_H__
 

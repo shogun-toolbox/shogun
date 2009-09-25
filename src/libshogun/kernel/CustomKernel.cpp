@@ -112,16 +112,6 @@ void CCustomKernel::cleanup()
 	CKernel::cleanup();
 }
 
-bool CCustomKernel::load_init(FILE* src)
-{
-	return false;
-}
-
-bool CCustomKernel::save_init(FILE* dest)
-{
-	return false;
-}
-
 bool CCustomKernel::set_triangle_kernel_matrix_from_triangle(
 	const float64_t* km, int32_t len)
 {

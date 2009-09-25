@@ -157,24 +157,6 @@ class CDistance : public CSGObject
 		 */
 		bool save(char* fname);
 
-		/** load init data from file
-		 *
-		 * abstract base method
-		 *
-		 * @param src file to load from
-		 * @return if loading was successful
-		 */
-		virtual bool load_init(FILE* src)=0;
-
-		/** save init data to file
-		 *
-		 * abstrace base method
-		 *
-		 * @param dest file to save to
-		 * @return if saving was successful
-		 */
-		virtual bool save_init(FILE* dest)=0;
-		
 		/** get left-hand side features used in distance matrix
 		 *
 		 * @return left-hand side features

@@ -43,20 +43,6 @@ class CManhattanWordDistance: public CStringDistance<uint16_t>
 		/** cleanup distance */
 		virtual void cleanup();
 
-		/** load init data from file
-		 *
-		 * @param src file to load from
-		 * @return if loading was successful
-		 */
-		bool load_init(FILE* src);
-
-		/** save init data to file
-		 *
-		 * @param dest file to save to
-		 * @return if saving was successful
-		 */
-		bool save_init(FILE* dest);
-
 		/** get distance type we are
 		 *
 		 * @return distance type MANHATTANWORD

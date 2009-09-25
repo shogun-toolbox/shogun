@@ -39,15 +39,11 @@ class CGUIKernel : public CSGObject
 	bool del_last_kernel();
 
 	/** initialize kernel */
-	bool init_kernel(char* target);
+	bool init_kernel(const char* target);
 	/** initialize kernel  optimization */
 	bool init_kernel_optimization();
 	/** delete kernel optimization */
 	bool delete_kernel_optimization();
-	/** load kernel initialization from file */
-	bool load_kernel_init(char* filename);
-	/** save kernel initialization to file */
-	bool save_kernel_init(char* filename);
 	/** save kernel (matrix) to file */
 	bool save_kernel(char* filename);
 	/** clean/r kernel */

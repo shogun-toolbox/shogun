@@ -53,16 +53,6 @@ void CHammingWordDistance::cleanup()
 {
 }
 
-bool CHammingWordDistance::load_init(FILE* src)
-{
-	return false;
-}
-
-bool CHammingWordDistance::save_init(FILE* dest)
-{
-	return false;
-}
-
 float64_t CHammingWordDistance::compute(int32_t idx_a, int32_t idx_b)
 {
 	int32_t alen, blen;

@@ -63,16 +63,6 @@ void CSparseGaussianKernel::cleanup()
 	CKernel::cleanup();
 }
 
-bool CSparseGaussianKernel::load_init(FILE* src)
-{
-	return false;
-}
-
-bool CSparseGaussianKernel::save_init(FILE* dest)
-{
-	return false;
-}
-
 float64_t CSparseGaussianKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	//float64_t result = sq_lhs[idx_a] + sq_rhs[idx_b];

@@ -43,16 +43,6 @@ void CLinearWordKernel::cleanup()
 	CKernel::cleanup();
 }
 
-bool CLinearWordKernel::load_init(FILE* src)
-{
-	return false;
-}
-
-bool CLinearWordKernel::save_init(FILE* dest)
-{
-	return false;
-}
-
 void CLinearWordKernel::clear_normal()
 {
 	int32_t num = lhs->get_num_vectors();

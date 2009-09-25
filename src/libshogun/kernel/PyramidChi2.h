@@ -71,20 +71,6 @@ public:
 	/** cleanup */
 	virtual void cleanup();
 
-	/* load kernel init_data
-	 *
-	 * @param src source file to load from
-	 * @return if loading was successful
-	 */
-	virtual bool load_init(FILE* src);
-
-	/** save kernel init_data
-	 *
-	 * @param dest destination file to save to
-	 * @return if saving was succesful
-	 */
-	virtual bool save_init(FILE* dest);
-
 	/** return what type of kernel we are Linear,Polynomial, Gaussian,... */
 	virtual EKernelType get_kernel_type()
 	{

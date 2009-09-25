@@ -10,7 +10,7 @@
  */
 
 #include "lib/Signal.h"
-#include "classifier/svm/MKL.h"
+#include "classifier/mkl/MKL.h"
 #include "classifier/svm/LibSVM.h"
 #include "kernel/CombinedKernel.h"
 

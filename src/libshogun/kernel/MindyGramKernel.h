@@ -68,10 +68,6 @@ class CMindyGramKernel: public CKernel
 		virtual void add_to_normal(int32_t idx, float64_t weight);
 		virtual void clear_normal();
 
-		/* Load and ysave functions */
-		bool load_init(FILE* src);
-		bool save_init(FILE* dest);
-
 	protected:
 		/* Kernel function */
 		float64_t compute(int32_t idx_a, int32_t idx_b);

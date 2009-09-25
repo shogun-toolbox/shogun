@@ -64,7 +64,6 @@ CGUIKernel::CGUIKernel(CSGInterface* ui_)
 : CSGObject(), ui(ui_)
 {
 	kernel=NULL;
-	initialized=false;
 }
 
 CGUIKernel::~CGUIKernel()
@@ -682,65 +681,12 @@ bool CGUIKernel::set_kernel(CKernel* kern)
 		SG_UNREF(kernel);
 		SG_REF(kern);
 		kernel=kern;
-
-		// custom kernel does not require init / features
-		if (kern->get_kernel_type()==K_CUSTOM)
-			initialized=true;
-
 		SG_DEBUG("set new kernel (%p).\n", kern);
 
 		return true;
 	}
 	else
 		return false;
-}
-
-bool CGUIKernel::load_kernel_init(char* filename)
-{
-	bool result=false;
-	if (kernel)
-	{
-		FILE* file=fopen(filename, "r");
-		if (!file || !kernel->load_init(file))
-			SG_ERROR("Reading from file %s failed!\n", filename);
-		else
-		{
-			SG_INFO("Successfully read kernel init data from %s!\n", filename);
-			initialized=true;
-			result=true;
-		}
-
-		if (file)
-			fclose(file);
-	}
-	else
-		SG_ERROR("No kernel set!\n");
-
-	return result;
-}
-
-bool CGUIKernel::save_kernel_init(char* filename)
-{
-	bool result=false;
-
-	if (kernel)
-	{
-		FILE* file=fopen(filename, "w");
-		if (!file || !kernel->save_init(file))
-			SG_ERROR("Writing to file %s failed!\n", filename);
-		else
-		{
-			SG_INFO("Successfully written kernel init data into %s!\n", filename);
-			result=true;
-		}
-
-		if (file)
-			fclose(file);
-	}
-	else
-		SG_ERROR("No kernel set!\n");
-
-	return result;
 }
 
 bool CGUIKernel::init_kernel_optimization()
@@ -785,7 +731,7 @@ bool CGUIKernel::delete_kernel_optimization()
 }
 
 
-bool CGUIKernel::init_kernel(char* target)
+bool CGUIKernel::init_kernel(const char* target)
 {
 	if (!kernel)
 		SG_ERROR("No kernel available.\n");

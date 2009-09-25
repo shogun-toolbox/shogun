@@ -123,8 +123,6 @@
 #define N_SAVE_HMM						"save_hmm"
 #define N_LOAD_CLASSIFIER				"load_classifier"
 #define N_SAVE_CLASSIFIER				"save_classifier"
-#define N_LOAD_KERNEL_INIT				"load_kernel_init"
-#define N_SAVE_KERNEL_INIT				"save_kernel_init"
 #define N_LOAD_LABELS					"load_labels"
 #define N_LOAD_FEATURES					"load_features"
 #define N_SAVE_FEATURES					"save_features"

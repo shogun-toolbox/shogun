@@ -45,16 +45,6 @@ void CPolyKernel::cleanup()
 	CKernel::cleanup();
 }
 
-bool CPolyKernel::load_init(FILE* src)
-{
-	return false;
-}
-
-bool CPolyKernel::save_init(FILE* dest)
-{
-	return false;
-}
-
 float64_t CPolyKernel::compute(int32_t idx_a, int32_t idx_b)
 {
   int32_t alen=0;

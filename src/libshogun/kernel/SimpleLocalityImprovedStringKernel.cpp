@@ -93,16 +93,6 @@ void CSimpleLocalityImprovedStringKernel::cleanup()
 	CKernel::cleanup();
 }
 
-bool CSimpleLocalityImprovedStringKernel::load_init(FILE* src)
-{
-	return false;
-}
-
-bool CSimpleLocalityImprovedStringKernel::save_init(FILE* dest)
-{
-	return false;
-}
-
 float64_t CSimpleLocalityImprovedStringKernel::dot_pyr (const char* const x1,
 	     const char* const x2, const int32_t NOF_NTS, const int32_t NTWIDTH,
 	     const int32_t DEGREE1, const int32_t DEGREE2, float64_t *pyra)

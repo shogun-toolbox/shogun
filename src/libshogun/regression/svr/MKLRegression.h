@@ -11,7 +11,7 @@
 #define __MKLREGRESSION_H__
 
 #include "lib/common.h"
-#include "classifier/svm/MKL.h"
+#include "classifier/mkl/MKL.h"
 
 class CMKLRegression : public CMKL
 {

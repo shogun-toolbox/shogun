@@ -38,9 +38,9 @@
 #include <shogun/regression/svr/SVR_light.h>
 #endif //USE_SVMLIGHT
 
-#include <shogun/classifier/svm/MKLClassification.h>
+#include <shogun/classifier/mkl/MKLClassification.h>
 #include <shogun/regression/svr/MKLRegression.h>
-#include <shogun/classifier/svm/MKLOneClass.h>
+#include <shogun/classifier/mkl/MKLOneClass.h>
 #include <shogun/classifier/svm/LibSVM.h>
 #include <shogun/classifier/svm/GPBTSVM.h>
 #include <shogun/classifier/svm/LibSVMOneClass.h>
@@ -393,7 +393,9 @@ bool CGUIClassifier::train_mkl()
 	CKernel* kernel=ui->ui_kernel->get_kernel();
 	if (!kernel)
 		SG_ERROR("No kernel available.\n");
-	if (!ui->ui_kernel->is_initialized() || !kernel->has_features())
+
+	bool success=ui->ui_kernel->init_kernel("TRAIN");
+	if (!success || !ui->ui_kernel->is_initialized() || !kernel->has_features())
 		SG_ERROR("Kernel not initialized.\n");
 
 	int32_t num_vec=kernel->get_num_vec_lhs();
@@ -458,8 +460,11 @@ bool CGUIClassifier::train_svm()
 	CKernel* kernel=ui->ui_kernel->get_kernel();
 	if (!kernel)
 		SG_ERROR("No kernel available.\n");
-	if (!ui->ui_kernel->is_initialized() || !kernel->has_features())
-		SG_ERROR("Kernel not initialized.\n");
+
+	bool success=ui->ui_kernel->init_kernel("TRAIN");
+
+	if (!success || !ui->ui_kernel->is_initialized() || !kernel->has_features())
+		SG_ERROR("Kernel not initialized / no train features available.\n");
 
 	int32_t num_vec=kernel->get_num_vec_lhs();
 	if (!oneclass && trainlabels->get_num_labels() != num_vec)
@@ -507,6 +512,9 @@ bool CGUIClassifier::train_clustering(int32_t k, int32_t max_iter)
 	if (!distance)
 		SG_ERROR("No distance available\n");
 
+	if (!ui->ui_distance->init_distance("TRAIN"))
+		SG_ERROR("Initializing distance with train features failed.\n");
+
 	((CDistanceMachine*) classifier)->set_distance(distance);
 
 	EClassifierType type=classifier->get_classifier_type();
@@ -543,6 +551,8 @@ bool CGUIClassifier::train_knn(int32_t k)
 	{
 		if (distance)
 		{
+			if (!ui->ui_distance->init_distance("TRAIN"))
+				SG_ERROR("Initializing distance with train features failed.\n");
 			((CKNN*) classifier)->set_labels(trainlabels);
 			((CKNN*) classifier)->set_distance(distance);
 			((CKNN*) classifier)->set_k(k);
@@ -1030,15 +1040,19 @@ CLabels* CGUIClassifier::classify_kernelmachine(CLabels* output)
 	if (!classifier)
 		SG_ERROR("No kernelmachine available.\n");
 
-	if (!ui->ui_kernel->get_kernel() ||
-			!ui->ui_kernel->get_kernel()->get_kernel_type()==K_CUSTOM)
+	bool success=true;
+
+	if (ui->ui_kernel->get_kernel()->get_kernel_type()!=K_CUSTOM)
 	{
 		if (!trainfeatures)
 			SG_ERROR("No training features available.\n");
 		if (!testfeatures)
 			SG_ERROR("No test features available.\n");
+
+		success=ui->ui_kernel->init_kernel("TEST");
 	}
-	if (!ui->ui_kernel->is_initialized())
+
+	if (!success || !ui->ui_kernel->is_initialized())
 		SG_ERROR("Kernel not initialized.\n");
 
 	CKernelMachine* km=(CKernelMachine*) classifier;
@@ -1243,7 +1257,9 @@ CLabels* CGUIClassifier::classify_distancemachine(CLabels* output)
 		return NULL;
 	}
 
-	if (!ui->ui_distance->is_initialized())
+	bool success=ui->ui_distance->init_distance("TEST");
+
+	if (!success || !ui->ui_distance->is_initialized())
 	{
 		SG_ERROR("distance not initialized\n") ;
 		return NULL;

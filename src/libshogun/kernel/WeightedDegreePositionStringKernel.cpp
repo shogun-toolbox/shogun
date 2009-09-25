@@ -237,16 +237,6 @@ void CWeightedDegreePositionStringKernel::cleanup()
 	CKernel::cleanup();
 }
 
-bool CWeightedDegreePositionStringKernel::load_init(FILE* src)
-{
-	return false;
-}
-
-bool CWeightedDegreePositionStringKernel::save_init(FILE* dest)
-{
-	return false;
-}
-
 bool CWeightedDegreePositionStringKernel::init_optimization(
 	int32_t p_count, int32_t * IDX, float64_t * alphas, int32_t tree_num,
 	int32_t upto_tree)

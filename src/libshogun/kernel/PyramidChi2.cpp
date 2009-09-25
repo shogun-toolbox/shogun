@@ -87,17 +87,6 @@ CPyramidChi2::~CPyramidChi2()
 	cleanup();
 }
 
-bool CPyramidChi2::load_init(FILE* src)
-{
-	return (false);
-}
-
-bool CPyramidChi2::save_init(FILE* dest)
-{
-	return (false);
-}
-
-
 bool CPyramidChi2::sanitycheck_weak()
 {
 	if (numbinsinhistogram<=0)

@@ -1,4 +1,4 @@
-#include "classifier/svm/MKLOneClass.h"
+#include "classifier/mkl/MKLOneClass.h"
 #include "classifier/svm/LibSVMOneClass.h"
 
 CMKLOneClass::CMKLOneClass(CSVM* s) : CMKL(s)

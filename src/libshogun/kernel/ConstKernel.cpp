@@ -33,13 +33,3 @@ bool CConstKernel::init(CFeatures* l, CFeatures* r)
 	CKernel::init(l, r);
 	return init_normalizer();
 }
-
-bool CConstKernel::load_init(FILE* src)
-{
-	return false;
-}
-
-bool CConstKernel::save_init(FILE* dest)
-{
-	return false;
-}

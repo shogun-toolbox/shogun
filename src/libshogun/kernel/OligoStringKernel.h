@@ -57,24 +57,6 @@ class COligoStringKernel : public CStringKernel<char>
 		 */
 		virtual bool init(CFeatures* l, CFeatures* r);
 
-		/** load kernel init_data
-		 *
-		 * @return if loading was successful
-		 */
-		virtual bool load_init(FILE*)
-		{
-			return false;
-		}
-
-		/** save kernel init_data
-		 *
-		 * @return if saving was successful
-		 */
-		virtual bool save_init(FILE*)
-		{
-			return false;
-		}
-
 		/** return what type of kernel we are
 		 *
 		 * @return kernel type OLIGO

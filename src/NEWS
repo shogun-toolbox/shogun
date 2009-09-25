@@ -15,6 +15,7 @@
 	* Cleanup and API Changes:
 		- It is no longer necessary to call init_kernel TRAIN/TEST.
 		- Removed kernel {load,save}_init.
+		- Move the mkl code from classifier/svm to classifier/mkl
 
 2009-08-16 Soeren Sonnenburg <sonne@debian.org>
 

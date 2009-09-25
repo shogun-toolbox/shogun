@@ -44,16 +44,6 @@ void CLinearStringKernel::cleanup()
 	CKernel::cleanup();
 }
 
-bool CLinearStringKernel::load_init(FILE *src)
-{
-	return false;
-}
-
-bool CLinearStringKernel::save_init(FILE *dest)
-{
-	return false;
-}
-
 void CLinearStringKernel::clear_normal()
 {
 	memset(normal, 0, lhs->get_num_vectors()*sizeof(float64_t));
