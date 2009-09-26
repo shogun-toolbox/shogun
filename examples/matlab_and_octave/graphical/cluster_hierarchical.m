@@ -10,7 +10,6 @@ traindat=traindat(:,i);
 sg('loglevel', 'ALL');
 sg('set_features', 'TRAIN', traindat);
 sg('set_distance', 'EUCLIDIAN', 'REAL')
-sg('init_distance', 'TRAIN');
 sg('new_clustering', 'HIERARCHICAL');
 tic
 sg('train_clustering', k);

@@ -10,7 +10,6 @@ def libsvm_oneclass ():
 	from sg import sg
 	sg('set_features', 'TRAIN', fm_train_real)
 	sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width)
-	sg('init_kernel', 'TRAIN')
 
 	sg('new_classifier', 'LIBSVM_ONECLASS')
 	sg('svm_epsilon', epsilon)
@@ -19,7 +18,6 @@ def libsvm_oneclass ():
 	sg('train_classifier')
 
 	sg('set_features', 'TEST', fm_test_real)
-	sg('init_kernel', 'TEST')
 	result=sg('classify')
 
 if __name__=='__main__':

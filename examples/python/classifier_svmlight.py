@@ -10,7 +10,6 @@ def svm_light ():
 	from sg import sg
 	sg('set_features', 'TRAIN', fm_train_dna, 'DNA')
 	sg('set_kernel', 'WEIGHTEDDEGREE', 'CHAR', size_cache, degree)
-	sg('init_kernel', 'TRAIN')
 
 	sg('set_labels', 'TRAIN', label_train_dna)
 
@@ -25,7 +24,6 @@ def svm_light ():
 	sg('train_classifier')
 
 	sg('set_features', 'TEST', fm_test_dna, 'DNA')
-	sg('init_kernel', 'TEST')
 	result=sg('classify')
 
 if __name__=='__main__':

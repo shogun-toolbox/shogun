@@ -59,7 +59,6 @@ for (kk in 1:length(f)) {   # big loop for the different learning problems
   sg('add_kernel', 1, 'GAUSSIAN', 'REAL', cache_size, rbf_width[3])
   sg('add_kernel', 1, 'GAUSSIAN', 'REAL', cache_size, rbf_width[4])
   sg('add_kernel', 1, 'GAUSSIAN', 'REAL', cache_size, rbf_width[5])
-  sg('init_kernel', 'TRAIN')
   sg('svm_train')
   weights[kk,] <- sg('get_subkernel_weights')
   dummy <- print(sprintf('frequency: %02.2f   rbf-kernel-weights:  %02.2f %02.2f %02.2f %02.2f %02.2f',

@@ -34,18 +34,15 @@ sg('svm_epsilon', epsilon);
 sg('new_classifier', 'SVMLIGHT');
 
 sg('set_kernel', 'WEIGHTEDDEGREE', 'CHAR', cache, from_order, max_mismatch, normalize, mkl_stepsize, block, single_degree);
-sg('init_kernel', 'TRAIN');
 x=sg('get_subkernel_weights');
 
 sg('set_kernel', 'WEIGHTEDDEGREE', 'CHAR', cache, order, max_mismatch, 0, mkl_stepsize, block, single_degree);
-sg('init_kernel', 'TRAIN');
 sg('set_subkernel_weights',x(1:order));
-kmu=sg('get_kernel_matrix');
+kmu=sg('get_kernel_matrix', 'TRAIN');
 
 sg('set_kernel', 'WEIGHTEDDEGREE', 'CHAR', cache, order, max_mismatch, normalize, mkl_stepsize, block, single_degree);
-sg('init_kernel', 'TRAIN');
 sg('set_subkernel_weights',x(1:order));
-km=sg('get_kernel_matrix');
+km=sg('get_kernel_matrix', 'TRAIN');
 
 sg('new_classifier', 'SVMLIGHT');
 sg('c', C);
@@ -56,7 +53,6 @@ tim_lo=toc;
 
 %evaluate svm on test data
 sg('set_features', 'TEST', testdat, 'DNA');
-sg('init_kernel', 'TEST');
 out_ref=sg('classify');
 prc_ref=calcrfcscore(out_ref, testlab);
 roc_ref=calcrocscore(out_ref, testlab);

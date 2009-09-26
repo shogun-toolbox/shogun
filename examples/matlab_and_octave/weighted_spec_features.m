@@ -45,8 +45,7 @@ for o=1:order,
 	sg('add_preproc', 'SORTWORDSTRING');
 	sg('attach_preproc', 'TRAIN');
 	sg('set_kernel', 'COMMSTRING', 'WORD',cache, use_sign, "NO");
-	sg('init_kernel', 'TRAIN');
-	km=km+weights(o)*sg('get_kernel_matrix');
+	km=km+weights(o)*sg('get_kernel_matrix', 'TRAIN');
 end
 
 km2=km;
@@ -64,10 +63,9 @@ sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, 0, 'r
 sg('add_preproc', 'SORTWORDSTRING');
 sg('attach_preproc', 'TRAIN');
 sg('set_kernel', 'WEIGHTEDCOMMSTRING', 'WORD', cache, use_sign, normalization);
-sg('init_kernel', 'TRAIN');
 
 feat=sg('get_features','TRAIN');
-wkm=sg('get_kernel_matrix');
+wkm=sg('get_kernel_matrix', 'TRAIN');
 
 
 fprintf('max diff %g\n', max(abs(wkm(:)-km2(:))))
@@ -86,7 +84,6 @@ sg('set_features', 'TEST', traindat, 'DNA');
 sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, 0, 'r');
 sg('add_preproc', 'SORTWORDSTRING');
 sg('attach_preproc', 'TEST');
-sg('init_kernel', 'TEST');
 out_ref=sg('classify');
 
 sg('c', C);
@@ -100,11 +97,9 @@ sg('set_features', 'TRAIN', traindat, 'DNA');
 sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1);
 sg('set_labels','TRAIN', trainlab);
 sg('set_kernel','CUSTOM', km2, 'FULL');
-sg('init_kernel', 'TRAIN');
 sg('train_classifier');
 sg('set_features', 'TEST', traindat, 'DNA');
 sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1);
-sg('init_kernel', 'TEST');
 out_ref2=sg('classify');
 
 traindat(traindat=='A')=0;

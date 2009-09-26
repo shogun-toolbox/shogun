@@ -26,8 +26,7 @@ mkl_stepsize=1;
 block=0;
 single_degree=-1;
 sg('set_kernel', 'WEIGHTEDDEGREE', 'STRING', cache, order, max_mismatch, normalize, mkl_stepsize, block, single_degree);
-sg('init_kernel', 'TRAIN');
-km=sg('get_kernel_matrix')
+km=sg('get_kernel_matrix', 'TRAIN')
 
 sg('clean_features', 'TRAIN');
 sg('clean_features', 'TEST');

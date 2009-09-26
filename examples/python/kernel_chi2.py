@@ -9,7 +9,6 @@ def chi2 ():
 	sg('set_features', 'TEST', fm_test_real)
 	sg('set_kernel', 'CHI2', 'REAL', size_cache, width)
 	km=sg('get_kernel_matrix', 'TRAIN')
-
 	km=sg('get_kernel_matrix', 'TEST')
 
 if __name__=='__main__':

@@ -12,10 +12,8 @@ set_labels TRAIN ../data/label_train_dna.dat
 train_estimator
 
 set_kernel HISTOGRAM WORD 10
-init_kernel TRAIN
-km_train.txt = get_kernel_matrix
+km_train.txt = get_kernel_matrix TRAIN
 
-init_kernel TEST
 % not supported yet;
 %	lab.txt = plugin_estimate_classify
-km_text.txt = get_kernel_matrix
+km_text.txt = get_kernel_matrix TEST

@@ -4,11 +4,9 @@ def geodesic_metric ():
 	sg('set_distance', 'GEODESIC', 'REAL')
 
 	sg('set_features', 'TRAIN', fm_train_real)
-	sg('init_distance', 'TRAIN')
 	dm=sg('get_distance_matrix')
 
 	sg('set_features', 'TEST', fm_test_real)
-	sg('init_distance', 'TEST')
 	dm=sg('get_distance_matrix')
 
 if __name__=='__main__':

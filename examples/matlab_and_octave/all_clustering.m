@@ -14,7 +14,6 @@ sg('set_features', 'TRAIN', fm_train);
 sg('set_distance', 'EUCLIDIAN', 'REAL');
 sg('new_clustering', 'KMEANS');
 
-sg('init_distance', 'TRAIN');
 sg('train_clustering', k, iter);
 [radi, centers]=sg('get_clustering');
 
@@ -28,6 +27,5 @@ sg('set_features', 'TRAIN', fm_train);
 sg('set_distance', 'EUCLIDIAN', 'REAL');
 sg('new_clustering', 'HIERARCHICAL');
 
-sg('init_distance', 'TRAIN');
 sg('train_clustering', merges);
 [merge_distance, pairs]=sg('get_clustering');

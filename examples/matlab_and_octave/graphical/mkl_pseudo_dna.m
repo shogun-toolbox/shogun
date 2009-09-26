@@ -52,7 +52,6 @@ sg('set_labels', 'TRAIN', LT);
 sg('use_mkl', true);
 sg('new_classifier', 'SVMLIGHT');
 sg('set_kernel', 'WEIGHTEDDEGREE', 'CHAR', 124, order, mismatch, false);
-sg('init_kernel', 'TRAIN');
 sg('c', C);
 
 beta0=sg('get_subkernel_weights');
@@ -66,7 +65,6 @@ sg('train_classifier');
 
 % compute test output and evaluate
 sg('set_features', 'TEST', XV, 'DNA');
-sg('init_kernel', 'TEST');
 out = sg('classify');
 betas=sg('get_subkernel_weights');
 acc=mean(LV==sign(out));

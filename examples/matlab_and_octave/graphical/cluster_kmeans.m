@@ -8,7 +8,6 @@ trainlab=[ones(1,num) 2*ones(1,num) 3*ones(1,num) 4*ones(1,num)];
 sg('loglevel', 'ALL');
 sg('set_features', 'TRAIN', traindat);
 sg('set_distance', 'EUCLIDIAN', 'REAL')
-sg('init_distance', 'TRAIN');
 sg('new_clustering', 'KMEANS');
 sg('train_clustering', k, iter);
 

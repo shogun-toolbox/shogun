@@ -29,7 +29,6 @@ input('key to continue')
 sg('set_features', 'TRAIN', traindat,'DNA');
 sg('set_labels', 'TRAIN', trainlab);
 sg('set_kernel', 'WEIGHTEDDEGREEPOS2', 'CHAR', 10', order, max_mismatch, len, shifts);
-sg('init_kernel', 'TRAIN');
 sg('new_classifier', 'SVMLIGHT');
 sg('c', C);
 sg('train_classifier');
@@ -45,7 +44,6 @@ simpleconsensus=acgt(floor(median(c')))';
 simpleconsensus'
 
 sg('set_features', 'TEST', [ consensus simpleconsensus' traindat(:,end-20)' traindat(:,end)'], 'DNA');
-sg('init_kernel', 'TEST');
 out=sg('classify');
 [b,alphas]=sg('get_svm');
 sprintf('%5f\n', out'-b)
@@ -66,7 +64,6 @@ end
 kmers=acgt(kmers);
 
 sg('set_features', 'TEST', kmers, 'DNA');
-sg('init_kernel', 'TEST');
 out=sg('classify');
 [b,alphas]=sg('get_svm');
 out=out-b;

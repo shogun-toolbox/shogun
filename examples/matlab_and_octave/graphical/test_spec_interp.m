@@ -60,7 +60,6 @@ sg('attach_preproc', 'TRAIN') ;
 sg('set_kernel', 'COMMSTRING', 'WORD', cache, use_sign, normalization);
 sg('set_kernel_normalization', 'IDENTITY');
 
-sg('init_kernel', 'TRAIN');
 sg('new_classifier', 'SVMLIGHT');
 sg('c', C);
 sg('train_classifier');
@@ -75,7 +74,6 @@ sg('set_features', 'TEST', traindat, 'DNA');
 sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1);
 sg('attach_preproc', 'TEST');
 sg('set_labels', 'TEST', trainlab);
-sg('init_kernel', 'TEST');
 out=sg('classify');
 fprintf('accuracy: %f                                                                                         \n', mean(sign(out)==trainlab))
 
@@ -84,7 +82,6 @@ sg('set_features', 'TEST', traindat, 'DNA');
 sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1);
 sg('attach_preproc', 'TEST');
 sg('set_labels', 'TEST', trainlab);
-sg('init_kernel', 'TEST');
 out=sg('classify');
 fprintf('accuracy: %f                                                                                         \n', mean(sign(out)==trainlab))
 
@@ -110,7 +107,6 @@ for o=1:max_order,
 	sg('set_features', 'TEST', kmers, 'DNA');
 	sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1);
 	sg('attach_preproc', 'TEST');
-	sg('init_kernel', 'TEST');
 	out=sg('classify');
 	out=out-b;
 

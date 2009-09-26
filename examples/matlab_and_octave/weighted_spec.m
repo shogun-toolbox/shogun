@@ -36,8 +36,7 @@ for o=1:order,
 	sg('add_preproc', 'SORTWORDSTRING');
 	sg('attach_preproc', 'TRAIN');
 	sg('set_kernel', 'COMMSTRING', 'WORD',cache, use_sign, normalization);
-	sg('init_kernel', 'TRAIN');
-	km=km+weights(o)*sg('get_kernel_matrix');
+	km=km+weights(o)*sg('get_kernel_matrix', 'TRAIN');
 end
 
 %%% wdspec
@@ -46,9 +45,8 @@ sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, 0, 'r
 sg('add_preproc', 'SORTWORDSTRING');
 sg('attach_preproc', 'TRAIN');
 sg('set_kernel', 'WEIGHTEDCOMMSTRING', 'WORD', cache, use_sign, normalization);
-sg('init_kernel', 'TRAIN');
 
-wkm=sg('get_kernel_matrix');
+wkm=sg('get_kernel_matrix', 'TRAIN');
 
 
 max(abs(wkm(:)-km(:)))

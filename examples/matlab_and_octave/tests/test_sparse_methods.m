@@ -43,7 +43,6 @@ sg('set_labels', 'TRAIN', trainlab);
 sg('c', C);
 %sg('set_kernel', 'LINEAR', 'SPARSEREAL', 1000, 1.0);
 sg('set_kernel', 'LINEAR', 'REAL', 10, 1.0);
-sg('init_kernel', 'TRAIN');
 sg('new_classifier', 'SVMLIGHT');
 tic;
 sg('train_classifier');
@@ -52,7 +51,6 @@ timelight=toc
 sg('init_kernel_optimization');
 sg('set_features', 'TEST', traindat);
 %sg('convert', 'TEST', 'SIMPLE', 'REAL', 'SPARSE', 'REAL');
-sg('init_kernel', 'TEST');
 trainout_reflight=sg('classify');
 trainerr_reflight=mean(trainlab~=sign(trainout_reflight))
 
@@ -62,7 +60,6 @@ trainerr_reflight=mean(trainlab~=sign(trainout_reflight))
 %sg('set_labels', 'TRAIN', trainlab);
 %sg('c', C);
 %sg('set_kernel', 'LINEAR', 'SPARSEREAL', 500, 1.0);
-%sg(init_kernel', 'TRAIN');
 %sg('new_classifier', 'LIBSVM');
 %tic;
 %sg('train_classifier');
@@ -71,7 +68,6 @@ trainerr_reflight=mean(trainlab~=sign(trainout_reflight))
 %sg('init_kernel_optimization');
 %sg('set_features', 'TEST', traindat);
 %sg('convert', 'TEST', 'SIMPLE', 'REAL', 'SPARSE', 'REAL');
-%sg('init_kernel', 'TEST');
 %trainout_reflibsvm=sg('classify');
 %trainerr_reflibsvm=mean(trainlab~=sign(trainout_reflibsvm))
 %

@@ -20,11 +20,8 @@ def poly_match_word ():
 	sg('attach_preproc', 'TEST')
 
 	sg('set_kernel', 'POLYMATCH', 'WORD', size_cache, degree, inhomogene, normalize)
-	sg('init_kernel', 'TRAIN')
-	km=sg('get_kernel_matrix')
-
-	sg('init_kernel', 'TEST')
-	km=sg('get_kernel_matrix')
+	km=sg('get_kernel_matrix', 'TRAIN')
+	km=sg('get_kernel_matrix', 'TEST')
 
 if __name__=='__main__':
 	from tools.load import LoadMatrix

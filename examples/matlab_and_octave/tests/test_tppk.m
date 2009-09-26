@@ -4,8 +4,7 @@ pairs=[[0,0]; [0,1]; [0,2]; [1,0]; [1,1]; [1,2]; [2,0]; [2,1]; [2,2]]';
 %sg('loglevel', 'ALL');
 sg('set_features', 'TEST', int32(pairs));
 sg('set_kernel', 'TPPK', 'INT', 10, km);
-sg('init_kernel', 'TEST');
-x=sg('get_kernel_matrix');
+x=sg('get_kernel_matrix', 'TEST');
 
 x_ref=[];
 for i=1:size(pairs,2),

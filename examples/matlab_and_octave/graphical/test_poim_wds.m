@@ -59,7 +59,6 @@ sg( 'use_batch_computation', true);
 sg( 'set_features', 'TRAIN', traindat, 'DNA' );
 sg( 'set_labels', 'TRAIN', trainlab );
 sg( 'set_kernel', 'WEIGHTEDDEGREEPOS2_NONORM', 'CHAR', 10, order, max_mismatch, len, shifts );
-sg( 'init_kernel', 'TRAIN' );
 sg( 'new_classifier', 'SVMLIGHT' );
 sg( 'c', C);
 sg( 'train_classifier' );
@@ -72,7 +71,6 @@ if( 0 )
   T = [ t1 ; t2 ]' 
   sg( 'set_features', 'TEST', T, 'DNA' );
   sg( 'set_labels', 'TEST', ones(1,size(T,2)) );
-  sg( 'init_kernel', 'TEST' );
   out = sg( 'classify' )
 end;
 
@@ -80,7 +78,6 @@ end;
 % % === evaluate SVM on test data
 % sg( 'set_features', 'TEST', testdat, 'DNA' );
 % sg( 'set_labels', 'TEST', testlab );
-% sg( 'init_kernel', 'TEST' );
 % out = sg( 'classify' );
 % fprintf( 'accuracy: %f\n', mean(sign(out)==testlab) );
 
@@ -182,7 +179,6 @@ end;
 P = prod( P, 2 );
 sg( 'set_features', 'TEST', T, 'DNA' );
 sg( 'set_labels', 'TEST', ones(1,N) );
-sg( 'init_kernel', 'TEST' );
 out = sg( 'classify' );
 
 

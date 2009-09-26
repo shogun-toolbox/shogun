@@ -34,15 +34,13 @@ sg('set_labels', 'TEST', testlab);
 %
 sg('set_kernel', 'WEIGHTEDDEGREEPOS2', 'CHAR', 10', order, max_mismatch, len, shifts);
 sg('set_kernel_optimization_type', 'FASTBUTMEMHUNGRY');
-sg('init_kernel', 'TRAIN');
-kt=sg('get_kernel_matrix');
+kt=sg('get_kernel_matrix', 'TEST');
 sg('new_classifier', 'SVMLIGHT');
 sg('c', C);
 tic; sg('train_classifier'); t=toc
 [b, alphas]=sg('get_svm');
 
 tic;
-sg('init_kernel', 'TEST');
 outopt=sg('classify');
 tout=toc
 
@@ -67,15 +65,13 @@ sg('set_labels', 'TEST', testlab);
 %
 sg('set_kernel', 'WEIGHTEDDEGREEPOS2', 'CHAR', 10, order, max_mismatch, len, shifts);
 sg('set_kernel_optimization_type', 'FASTBUTMEMHUNGRY');
-sg('init_kernel', 'TRAIN');
-ktref=sg('get_kernel_matrix');
+ktref=sg('get_kernel_matrix', 'TEST');
 sg('new_classifier', 'SVMLIGHT');
 sg('c', C);
 tic; sg(train_classifier'); tref=toc
 [bref, alphasref]=sg('get_svm');
 tic;
 sg('init_kernel_optimization');
-sg('init_kernel', 'TEST');
 outoptref=sg('classify');
 toutref=toc
 

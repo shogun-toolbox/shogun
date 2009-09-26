@@ -75,7 +75,6 @@ sg('set_features', 'TRAIN', traindat,'DNA');
 sg('set_labels', 'TRAIN', trainlab);
 sg('set_kernel', 'WEIGHTEDDEGREEPOS2', 'CHAR', 10, order, max_mismatch, len, shifts);
 %sg('set_kernel', 'WEIGHTEDDEGREE', 'CHAR', cache, order, max_mismatch, normalize, mkl_stepsize, block, single_degree);
-sg('init_kernel', 'TRAIN');
 sg('new_classifier', 'SVMLIGHT');
 sg('c', C);
 sg('train_classifier');
@@ -83,7 +82,6 @@ sg('train_classifier');
 %evaluate svm on train data
 sg('set_features', 'TEST', traindat,'DNA');
 sg('set_labels', 'TEST', trainlab);
-sg('init_kernel', 'TEST');
 out=sg('classify');
 fprintf('accuracy: %f roc: %f                                                                                        \n', mean(sign(out)==trainlab), calcrocscore(out,trainlab))
 
@@ -91,7 +89,6 @@ fprintf('accuracy: %f roc: %f                                                   
 %evaluate svm on test data
 sg('set_features', 'TEST', testdat,'DNA');
 sg('set_labels', 'TEST', testlab);
-sg('init_kernel', 'TEST');
 out=sg('classify');
 fprintf('accuracy: %f roc: %f                                                                                        \n', mean(sign(out)==testlab), calcrocscore(out,testlab))
 

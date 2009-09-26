@@ -19,11 +19,8 @@ def comm_ulong_string ():
 	sg('attach_preproc', 'TEST')
 
 	sg('set_kernel', 'COMMSTRING', 'ULONG', size_cache, use_sign, normalization)
-	sg('init_kernel', 'TRAIN')
-	km=sg('get_kernel_matrix')
-
-	sg('init_kernel', 'TEST')
-	km=sg('get_kernel_matrix')
+	km=sg('get_kernel_matrix', 'TRAIN')
+	km=sg('get_kernel_matrix', 'TEST')
 
 if __name__=='__main__':
 	from tools.load import LoadMatrix

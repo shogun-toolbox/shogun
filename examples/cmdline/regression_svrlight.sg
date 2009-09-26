@@ -9,11 +9,9 @@
 	svr_tube_epsilon 1e-2
 	c 0.017
 
-	init_kernel TRAIN
 	train_regression
 
 	set_features TEST ../data/fm_test_real.dat
-	init_kernel TEST
 	out.txt = classify
 %catch
 %	disp('No support for SVRLight available.')

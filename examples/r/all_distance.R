@@ -24,11 +24,9 @@ print('BrayCurtisDistance')
 dump <- sg('set_distance', 'BRAYCURTIS', 'REAL')
 
 dump <- sg('set_features', 'TRAIN', fm_train_real)
-dump <- sg('init_distance', 'TRAIN')
 dm <- sg('get_distance_matrix')
 
 dump <- sg('set_features', 'TEST', fm_test_real)
-dump <- sg('init_distance', 'TEST')
 dm <- sg('get_distance_matrix')
 
 
@@ -38,11 +36,9 @@ print('EuclidianDistance')
 dump <- sg('set_distance', 'EUCLIDIAN', 'REAL')
 
 dump <- sg('set_features', 'TRAIN', fm_train_real)
-dump <- sg('init_distance', 'TRAIN')
 dm <- sg('get_distance_matrix')
 
 dump <- sg('set_features', 'TEST', fm_test_real)
-dump <- sg('init_distance', 'TEST')
 dm <- sg('get_distance_matrix')
 
 
@@ -52,11 +48,9 @@ print('CanberraMetric')
 dump <- sg('set_distance', 'CANBERRA', 'REAL')
 
 dump <- sg('set_features', 'TRAIN', fm_train_real)
-dump <- sg('init_distance', 'TRAIN')
 dm <- sg('get_distance_matrix')
 
 dump <- sg('set_features', 'TEST', fm_test_real)
-dump <- sg('init_distance', 'TEST')
 dm <- sg('get_distance_matrix')
 
 
@@ -66,11 +60,9 @@ print('ChebyshewMetric')
 dump <- sg('set_distance', 'CHEBYSHEW', 'REAL')
 
 dump <- sg('set_features', 'TRAIN', fm_train_real)
-dump <- sg('init_distance', 'TRAIN')
 dm <- sg('get_distance_matrix')
 
 dump <- sg('set_features', 'TEST', fm_test_real)
-dump <- sg('init_distance', 'TEST')
 dm <- sg('get_distance_matrix')
 
 
@@ -80,11 +72,9 @@ print('ChiSquareDistance')
 dump <- sg('set_distance', 'CHISQUARE', 'REAL')
 
 dump <- sg('set_features', 'TRAIN', fm_train_real)
-dump <- sg('init_distance', 'TRAIN')
 dm <- sg('get_distance_matrix')
 
 dump <- sg('set_features', 'TEST', fm_test_real)
-dump <- sg('init_distance', 'TEST')
 dm <- sg('get_distance_matrix')
 
 
@@ -94,11 +84,9 @@ print('CosineDistance')
 dump <- sg('set_distance', 'COSINE', 'REAL')
 
 dump <- sg('set_features', 'TRAIN', fm_train_real)
-dump <- sg('init_distance', 'TRAIN')
 dm <- sg('get_distance_matrix')
 
 dump <- sg('set_features', 'TEST', fm_test_real)
-dump <- sg('init_distance', 'TEST')
 dm <- sg('get_distance_matrix')
 
 
@@ -108,11 +96,9 @@ print('GeodesicMetric')
 dump <- sg('set_distance', 'GEODESIC', 'REAL')
 
 dump <- sg('set_features', 'TRAIN', fm_train_real)
-dump <- sg('init_distance', 'TRAIN')
 dm <- sg('get_distance_matrix')
 
 dump <- sg('set_features', 'TEST', fm_test_real)
-dump <- sg('init_distance', 'TEST')
 dm <- sg('get_distance_matrix')
 
 
@@ -122,11 +108,9 @@ print('JensenMetric')
 dump <- sg('set_distance', 'JENSEN', 'REAL')
 
 dump <- sg('set_features', 'TRAIN', fm_train_real)
-dump <- sg('init_distance', 'TRAIN')
 dm <- sg('get_distance_matrix')
 
 dump <- sg('set_features', 'TEST', fm_test_real)
-dump <- sg('init_distance', 'TEST')
 dm <- sg('get_distance_matrix')
 
 
@@ -136,11 +120,9 @@ print('ManhattanMetric')
 dump <- sg('set_distance', 'MANHATTAN', 'REAL')
 
 dump <- sg('set_features', 'TRAIN', fm_train_real)
-dump <- sg('init_distance', 'TRAIN')
 dm <- sg('get_distance_matrix')
 
 dump <- sg('set_features', 'TEST', fm_test_real)
-dump <- sg('init_distance', 'TEST')
 dm <- sg('get_distance_matrix')
 
 
@@ -152,11 +134,9 @@ k <- 3
 dump <- sg('set_distance', 'MINKOWSKI', 'REAL', k)
 
 dump <- sg('set_features', 'TRAIN', fm_train_real)
-dump <- sg('init_distance', 'TRAIN')
 dm <- sg('get_distance_matrix')
 
 dump <- sg('set_features', 'TEST', fm_test_real)
-dump <- sg('init_distance', 'TEST')
 dm <- sg('get_distance_matrix')
 
 
@@ -166,11 +146,9 @@ print('TanimotoDistance')
 dump <- sg('set_distance', 'TANIMOTO', 'REAL')
 
 dump <- sg('set_features', 'TRAIN', fm_train_real)
-dump <- sg('init_distance', 'TRAIN')
 dm <- sg('get_distance_matrix')
 
 dump <- sg('set_features', 'TEST', fm_test_real)
-dump <- sg('init_distance', 'TEST')
 dm <- sg('get_distance_matrix')
 
 
@@ -193,13 +171,11 @@ dump <- sg('add_preproc', 'SORTWORDSTRING')
 dump <- sg('set_features', 'TRAIN', fm_train_dna, 'DNA')
 dump <- sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, gap, reverse)
 dump <- sg('attach_preproc', 'TRAIN')
-dump <- sg('init_distance', 'TRAIN')
 dm <- sg('get_distance_matrix')
 
 dump <- sg('set_features', 'TEST', fm_test_dna, 'DNA')
 dump <- sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, gap, reverse)
 dump <- sg('attach_preproc', 'TEST')
-dump <- sg('init_distance', 'TEST')
 dm <- sg('get_distance_matrix')
 
 
@@ -212,13 +188,11 @@ dump <- sg('add_preproc', 'SORTWORDSTRING')
 dump <- sg('set_features', 'TRAIN', fm_train_dna, 'DNA')
 dump <- sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, gap, reverse)
 dump <- sg('attach_preproc', 'TRAIN')
-dump <- sg('init_distance', 'TRAIN')
 dm <- sg('get_distance_matrix')
 
 dump <- sg('set_features', 'TEST', fm_test_dna, 'DNA')
 dump <- sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, gap, reverse)
 dump <- sg('attach_preproc', 'TEST')
-dump <- sg('init_distance', 'TEST')
 dm <- sg('get_distance_matrix')
 
 
@@ -231,12 +205,10 @@ dump <- sg('add_preproc', 'SORTWORDSTRING')
 dump <- sg('set_features', 'TRAIN', fm_train_dna, 'DNA')
 dump <- sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, gap, reverse)
 dump <- sg('attach_preproc', 'TRAIN')
-dump <- sg('init_distance', 'TRAIN')
 dm <- sg('get_distance_matrix')
 
 dump <- sg('set_features', 'TEST', fm_test_dna, 'DNA')
 dump <- sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, gap, reverse)
 dump <- sg('attach_preproc', 'TEST')
-dump <- sg('init_distance', 'TEST')
 dm <- sg('get_distance_matrix')
 

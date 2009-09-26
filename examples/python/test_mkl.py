@@ -18,6 +18,5 @@ sg('set_kernel', 'COMBINED', 100)
 sg('add_kernel', weight, 'GAUSSIAN', 'REAL', 100, 100.)
 sg('add_kernel', weight, 'GAUSSIAN', 'REAL', 100, 10.)
 sg('add_kernel', weight, 'GAUSSIAN', 'REAL', 100, 1.)
-sg('init_kernel', 'TRAIN')
 sg('train_classifier')
 [bias, alphas]=sg('get_svm');

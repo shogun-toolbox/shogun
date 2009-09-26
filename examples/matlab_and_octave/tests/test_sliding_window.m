@@ -32,8 +32,7 @@ mkl_stepsize=1;
 block=0;
 single_degree=-1;
 sg('set_kernel', 'WEIGHTEDDEGREE', 'STRING', cache, order, max_mismatch, normalize, mkl_stepsize, block, single_degree);
-sg('init_kernel', 'TRAIN');
-km=sg('get_kernel_matrix')
+km=sg('get_kernel_matrix', 'TRAIN')
 
 sg('clean_features', 'TRAIN');
 sg('clean_features', 'TEST');
@@ -75,7 +74,6 @@ sg('add_preproc', 'SORTWORDSTRING');
 sg('attach_preproc', 'TRAIN');
 sg('set_kernel', 'COMMSTRING', 'WORD', cache, use_sign, normalization);
 
-sg('init_kernel', 'TRAIN');
 sg('new_classifier', 'SVMLIGHT');
 sg('c',C);
 sg('train_classifier');
@@ -86,7 +84,6 @@ sg('set_features', 'TEST', testdat1, 'DNA');
 sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1);
 sg('attach_preproc', 'TEST');
 sg('set_labels', 'TEST', testlab);
-sg('init_kernel', 'TEST');
 out2=sg('classify');
 f2=sg('get_features','TEST');
 
@@ -94,7 +91,6 @@ f2=sg('get_features','TEST');
 sg('set_features', 'TEST', testdat1, 'DNA');
 sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1);
 sg('set_labels', 'TEST', testlab);
-sg('init_kernel', 'TEST');
 out1=sg('classify');
 f1=sg('get_features','TEST');
 
@@ -104,7 +100,6 @@ sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1);
 %sg('slide_window', 'TEST', 50, 1, order-1);
 sg('from_position_list','TEST', len, int32(0:(total_test_len-len-order+1)), order-1);
 sg('set_labels', 'TEST', testlab);
-sg('init_kernel', 'TEST');
 out=sg('classify');
 f=sg('get_features','TEST');
 

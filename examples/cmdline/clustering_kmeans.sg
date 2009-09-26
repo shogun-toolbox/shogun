@@ -5,6 +5,5 @@ set_features TRAIN ../data/fm_train_real.dat
 set_distance EUCLIDIAN REAL
 new_clustering KMEANS
 
-init_distance TRAIN
 train_clustering 3 1000
 radi.txt, centers.txt = get_clustering

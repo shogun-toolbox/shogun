@@ -34,7 +34,6 @@ sg('loglevel', 'INFO');
 sg('set_features', 'TRAIN', traindat,'DNA');
 sg('set_labels', 'TRAIN', trainlab);
 sg('set_kernel', 'WEIGHTEDDEGREEPOS2', 'CHAR', 10, order, max_mismatch, len, shifts);
-sg('init_kernel', 'TRAIN');
 sg('new_classifier', 'SVMLIGHT');
 sg('c',C);
 sg('train_classifier');
@@ -51,7 +50,6 @@ x(x=='T')=4;
 acgt(floor(median(x')))
 
 sg('set_features', 'TEST', [ consensus  traindat(:,end)'], 'DNA');
-sg('init_kernel', 'TEST');
 [b,alphas]=sg('get_svm');
 out=sg('classify')-b;
 %out'

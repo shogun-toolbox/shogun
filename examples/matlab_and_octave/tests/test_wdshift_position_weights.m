@@ -36,7 +36,6 @@ mkl_stepsize=1;
 sg('set_kernel', 'WEIGHTEDDEGREEPOS3', 'CHAR', 10', order, mismatch, len, mkl_stepsize, shifts);
 
 % first initialize
-sg('init_kernel', 'TRAIN');
 
 % then set weights
 sg('set_WD_position_weights', trainw, 'TRAIN') ;
@@ -50,7 +49,6 @@ tic; sg('train_classifier'); t=toc
 
 % set features and initialize
 sg('set_features', 'TEST', testdat, 'DNA');
-sg('init_kernel', 'TEST');
 
 % change rhs of weights
 sg('set_WD_position_weights', testw, 'TEST') ;

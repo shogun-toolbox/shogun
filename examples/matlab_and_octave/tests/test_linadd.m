@@ -25,7 +25,6 @@ sg('clean_kernel') ;
 sg('set_features', 'TRAIN', traindat);
 sg('set_labels', 'TRAIN', trainlab);
 sg('set_kernel', 'LINEAR', 'REAL', 10, 1.0); %die 1.0 entspricht scaling
-sg('init_kernel', 'TRAIN');
 sg('new_classifier', 'SVMLIGHT');
 sg('c', C);
 sg('train_classifier');
@@ -34,7 +33,6 @@ sg('init_kernel_optimization');
 
 sg('set_features', 'TEST', valdat);
 sg('set_labels', 'TEST', vallab);
-sg('init_kernel', 'TEST');
 sg('init_kernel_optimization');
 w=sg('get_kernel_optimization');
 

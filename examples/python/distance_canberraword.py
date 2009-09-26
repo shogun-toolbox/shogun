@@ -12,13 +12,11 @@ def canberra_word_distance ():
 	sg('set_features', 'TRAIN', fm_train_dna, 'DNA')
 	sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, gap, reverse)
 	sg('attach_preproc', 'TRAIN')
-	sg('init_distance', 'TRAIN')
 	dm=sg('get_distance_matrix')
 
 	sg('set_features', 'TEST', fm_test_dna, 'DNA')
 	sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, gap, reverse)
 	sg('attach_preproc', 'TEST')
-	sg('init_distance', 'TEST')
 	dm=sg('get_distance_matrix')
 
 if __name__=='__main__':

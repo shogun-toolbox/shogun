@@ -10,7 +10,6 @@ def gpbtsvm ():
 	from sg import sg
 	sg('set_features', 'TRAIN', fm_train_real)
 	sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width)
-	sg('init_kernel', 'TRAIN')
 
 	sg('set_labels', 'TRAIN', label_train_twoclass)
 	sg('new_classifier', 'GPBTSVM')
@@ -20,7 +19,6 @@ def gpbtsvm ():
 	sg('train_classifier')
 
 	sg('set_features', 'TEST', fm_test_real)
-	sg('init_kernel', 'TEST')
 	result=sg('classify')
 
 if __name__=='__main__':

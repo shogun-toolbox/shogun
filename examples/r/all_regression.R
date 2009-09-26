@@ -27,7 +27,6 @@ dosvrlight <- function()
 
 	dump <- sg('set_features', 'TRAIN', fm_train)
 	dump <- sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width)
-	dump <- sg('init_kernel', 'TRAIN')
 
 	dump <- sg('set_labels', 'TRAIN', label_train)
 
@@ -37,7 +36,6 @@ dosvrlight <- function()
 	dump <- sg('train_regression')
 
 	dump <- sg('set_features', 'TEST', fm_test)
-	dump <- sg('init_kernel', 'TEST')
 	result <- sg('classify')
 }
 try(dosvrlight())
@@ -47,7 +45,6 @@ print('LibSVR')
 
 dump <- sg('set_features', 'TRAIN', fm_train)
 dump <- sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width)
-dump <- sg('init_kernel', 'TRAIN')
 
 dump <- sg('set_labels', 'TRAIN', label_train)
 dump <- sg('new_regression', 'LIBSVR')
@@ -56,7 +53,6 @@ dump <- sg('c', C)
 dump <- sg('train_regression')
 
 dump <- sg('set_features', 'TEST', fm_test)
-dump <- sg('init_kernel', 'TEST')
 result <- sg('classify')
 
 
@@ -71,7 +67,6 @@ tau <- 1e-6
 
 dump <- sg('set_features', 'TRAIN', fm_train)
 dump <- sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width)
-dump <- sg('init_kernel', 'TRAIN')
 
 dump <- sg('set_labels', 'TRAIN', label_train)
 
@@ -81,7 +76,6 @@ dump <- sg('c', C)
 dump <- sg('train_regression')
 
 dump <- sg('set_features', 'TEST', fm_test)
-dump <- sg('init_kernel', 'TEST')
 result <- sg('classify')
 
 

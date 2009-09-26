@@ -33,7 +33,6 @@ dosvmlight <- function()
 
 	dump <- sg('set_features', 'TRAIN', fm_train_dna, 'DNA')
 	dump <- sg('set_kernel',  'WEIGHTEDDEGREE', 'CHAR', size_cache, degree)
-	dump <- sg('init_kernel', 'TRAIN')
 
 	dump <- sg('set_labels', 'TRAIN', label_train_dna)
 
@@ -44,7 +43,6 @@ dosvmlight <- function()
 	dump <- sg('train_classifier')
 
 	dump <- sg('set_features', 'TEST', fm_test_dna, 'DNA')
-	dump <- sg('init_kernel', 'TEST')
 	result <- sg('classify')
 }
 try(dosvmlight())
@@ -57,7 +55,6 @@ width <- 2.1
 
 dump <- sg('set_features', 'TRAIN', fm_train_real)
 dump <- sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width)
-dump <- sg('init_kernel', 'TRAIN')
 
 dump <- sg('set_labels', 'TRAIN', label_train_twoclass)
 dump <- sg('new_classifier', 'LIBSVM')
@@ -67,7 +64,6 @@ dump <- sg('svm_use_bias', use_bias)
 dump <- sg('train_classifier')
 
 dump <- sg('set_features', 'TEST', fm_test_real)
-dump <- sg('init_kernel', 'TEST')
 result <- sg('classify')
 
 
@@ -76,7 +72,6 @@ print('GPBTSVM')
 
 dump <- sg('set_features', 'TRAIN', fm_train_real)
 dump <- sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width)
-dump <- sg('init_kernel', 'TRAIN')
 
 dump <- sg('set_labels', 'TRAIN', label_train_twoclass)
 dump <- sg('new_classifier', 'GPBTSVM')
@@ -86,7 +81,6 @@ dump <- sg('svm_use_bias', use_bias)
 dump <- sg('train_classifier')
 
 dump <- sg('set_features', 'TEST', fm_test_real)
-dump <- sg('init_kernel', 'TEST')
 result <- sg('classify')
 
 
@@ -95,7 +89,6 @@ print('MPDSVM')
 
 dump <- sg('set_features', 'TRAIN', fm_train_real)
 dump <- sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width)
-dump <- sg('init_kernel', 'TRAIN')
 
 dump <- sg('set_labels', 'TRAIN', label_train_twoclass)
 dump <- sg('new_classifier', 'MPDSVM')
@@ -105,7 +98,6 @@ dump <- sg('svm_use_bias', use_bias)
 dump <- sg('train_classifier')
 
 dump <- sg('set_features', 'TEST', fm_test_real)
-dump <- sg('init_kernel', 'TEST')
 result <- sg('classify')
 
 
@@ -114,7 +106,6 @@ print('LibSVMMultiClass')
 
 dump <- sg('set_features', 'TRAIN', fm_train_real)
 dump <- sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width)
-dump <- sg('init_kernel', 'TRAIN')
 
 dump <- sg('set_labels', 'TRAIN', label_train_multiclass)
 dump <- sg('new_classifier', 'LIBSVM_MULTICLASS')
@@ -124,7 +115,6 @@ dump <- sg('svm_use_bias', use_bias)
 dump <- sg('train_classifier')
 
 dump <- sg('set_features', 'TEST', fm_test_real)
-dump <- sg('init_kernel', 'TEST')
 result <- sg('classify')
 
 
@@ -133,7 +123,6 @@ print('LibSVMOneClass')
 
 dump <- sg('set_features', 'TRAIN', fm_train_real)
 dump <- sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width)
-dump <- sg('init_kernel', 'TRAIN')
 
 dump <- sg('set_labels', 'TRAIN', label_train_twoclass)
 dump <- sg('new_classifier', 'LIBSVM_ONECLASS')
@@ -143,7 +132,6 @@ dump <- sg('svm_use_bias', use_bias)
 dump <- sg('train_classifier')
 
 dump <- sg('set_features', 'TEST', fm_test_real)
-dump <- sg('init_kernel', 'TEST')
 result <- sg('classify')
 
 
@@ -152,7 +140,6 @@ print('GMNPSVM')
 
 dump <- sg('set_features', 'TRAIN', fm_train_real)
 dump <- sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width)
-dump <- sg('init_kernel', 'TRAIN')
 
 dump <- sg('set_labels', 'TRAIN', label_train_twoclass)
 dump <- sg('new_classifier', 'GMNPSVM')
@@ -162,7 +149,6 @@ dump <- sg('svm_use_bias', use_bias)
 dump <- sg('train_classifier')
 
 dump <- sg('set_features', 'TEST', fm_test_real)
-dump <- sg('init_kernel', 'TEST')
 result <- sg('classify')
 
 
@@ -175,7 +161,6 @@ print('LibSVM batch')
 
 dump <- sg('set_features', 'TRAIN', fm_train_real)
 dump <- sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width)
-dump <- sg('init_kernel', 'TRAIN')
 
 dump <- sg('set_labels', 'TRAIN', label_train_twoclass)
 dump <- sg('new_classifier', 'LIBSVM')
@@ -185,7 +170,6 @@ dump <- sg('svm_use_bias', use_bias)
 dump <- sg('train_classifier')
 
 dump <- sg('set_features', 'TEST', fm_test_real)
-dump <- sg('init_kernel', 'TEST')
 
 objective <- sg('get_svm_objective')
 dump <- sg('use_batch_computation', TRUE)
@@ -217,12 +201,10 @@ k <- 3
 dump <- sg('set_features', 'TRAIN', fm_train_real)
 dump <- sg('set_labels', 'TRAIN', label_train_twoclass)
 dump <- sg('set_distance', 'EUCLIDIAN', 'REAL')
-dump <- sg('init_distance', 'TRAIN')
 dump <- sg('new_classifier', 'KNN')
 dump <- sg('train_classifier', k)
 
 dump <- sg('set_features', 'TEST', fm_test_real)
-dump <- sg('init_distance', 'TEST')
 result <- sg('classify')
 
 

@@ -33,8 +33,7 @@ sg('clean_kernel') ;
 sg('set_labels', 'TRAIN', trainlab);
 sg('set_features','TRAIN', traindat);
 sg('set_kernel', 'GAUSSIAN', 'REAL', cache_size, W0);
-sg('init_kernel', 'TRAIN');
-kmcool=sg('get_kernel_matrix');
+kmcool=sg('get_kernel_matrix', 'TRAIN');
 
 sg('clean_features', 'TRAIN');
 sg('clean_kernel') ;
@@ -51,7 +50,6 @@ sg('add_kernel', 1, 'CUSTOM', kmtrain{2}, 'FULL');
 sg('add_kernel', 1, 'CUSTOM', kmtrain{3}, 'FULL');
 sg('add_kernel', 1, 'CUSTOM', kmcool, 'FULL');
 
-sg('init_kernel', 'TRAIN');
 sg('use_mkl', 1);
 sg('mkl_parameters', mkl_eps, 0);
 sg('c', C);
@@ -75,6 +73,5 @@ sg('add_features','TEST', testdat);
 sg('add_features','TEST', testdat);
 sg('add_features','TEST', testdat);
 sg('set_labels', 'TEST', testlab);
-sg('init_kernel', 'TEST');
 out=sg('classify');
 mean(sign(out)~=testlab)

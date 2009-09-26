@@ -93,7 +93,6 @@ for (kk in c(1:length(f))) {  #Big loop
    sg('add_kernel', 1, 'GAUSSIAN', 'REAL', cache_size, rbf_width[8])
    sg('add_kernel', 1, 'GAUSSIAN', 'REAL', cache_size, rbf_width[9])
    sg('add_kernel', 1, 'GAUSSIAN', 'REAL', cache_size, rbf_width[10])
-   sg('init_kernel', 'TRAIN')
    sg('train_classifier')
 
    weights[kk,] <- get_subkernel_weights()

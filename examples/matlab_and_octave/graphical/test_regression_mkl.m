@@ -20,7 +20,6 @@ testlab=[sin(testdat)];
 %sg('set_features', 'TRAIN', traindat);
 %sg('set_labels', 'TRAIN', trainlab);
 %sg('set_kernel', 'GAUSSIAN', 'REAL', 50, 10);
-%sg('init_kernel', 'TRAIN');
 %sg('c', C);
 %sg('svm_epsilon', svm_eps);
 %sg('svr_tube_epsilon', svm_tube);
@@ -28,7 +27,6 @@ testlab=[sin(testdat)];
 %[b, alphas]=sg('get_svm');
 %sg('set_features', 'TEST', testdat);
 %sg('set_labels', 'TEST', testlab);
-%sg('init_kernel', 'TEST');
 %out=sg('classify');
 
 sg('new_regression', 'SVRLIGHT');
@@ -41,7 +39,6 @@ sg('set_kernel', 'COMBINED', cache_size);
 sg('add_kernel', 1, 'GAUSSIAN', 'REAL', cache_size, W1);
 sg('add_kernel', 1, 'GAUSSIAN', 'REAL', cache_size, W2);
 sg('add_kernel', 1, 'GAUSSIAN', 'REAL', cache_size, W3);
-sg('init_kernel', 'TRAIN');
 sg('use_mkl', true);
 sg('use_precompute', 0);
 sg('mkl_parameters', 1e-3, 0);
@@ -55,7 +52,6 @@ sg('add_features','TEST', testdat);
 sg('add_features','TEST', testdat);
 sg('add_features','TEST', testdat);
 sg('set_labels', 'TEST', testlab);
-sg('init_kernel', 'TEST');
 out2=sg('classify');
 
 clf

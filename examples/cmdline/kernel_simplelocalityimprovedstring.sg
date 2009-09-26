@@ -3,9 +3,7 @@ print SimpleLocalityImprovedString
 set_kernel SLIK CHAR 10 5 5 7
 
 set_features TRAIN ../data/fm_train_dna.dat DNA
-init_kernel TRAIN
-km_train.txt = get_kernel_matrix
+km_train.txt = get_kernel_matrix TRAIN
 
 set_features TEST ../data/fm_test_dna.dat DNA
-init_kernel TEST
-km_test.txt = get_kernel_matrix
+km_test.txt = get_kernel_matrix TEST

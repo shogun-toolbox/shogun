@@ -9,11 +9,9 @@ svm_epsilon 1e-5
 svm_use_bias 0
 c 0.017
 
-init_kernel TRAIN
 train_classifier
 
 set_features TEST ../data/fm_test_real.dat
-init_kernel TEST
 out.txt = classify
 
 

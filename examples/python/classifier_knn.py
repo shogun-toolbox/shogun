@@ -7,12 +7,10 @@ def knn ():
 	sg('set_features', 'TRAIN', fm_train_real)
 	sg('set_labels', 'TRAIN', label_train_multiclass)
 	sg('set_distance', 'EUCLIDIAN', 'REAL')
-	sg('init_distance', 'TRAIN')
 	sg('new_classifier', 'KNN')
 	sg('train_classifier', k)
 
 	sg('set_features', 'TEST', fm_test_real)
-	sg('init_distance', 'TEST')
 	result=sg('classify')
 
 if __name__=='__main__':

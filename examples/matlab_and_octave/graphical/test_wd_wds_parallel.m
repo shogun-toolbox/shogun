@@ -52,7 +52,6 @@ sg('set_features', 'TRAIN', traindat,'DNA');
 sg('set_labels', 'TRAIN', trainlab);
 sg('set_kernel', 'WEIGHTEDDEGREEPOS2', 'CHAR', 10, order, max_mismatch, len, shifts);
 %sg('set_kernel', 'WEIGHTEDDEGREE', 'CHAR', cache, order, max_mismatch, normalize, mkl_stepsize, block, single_degree);
-sg('init_kernel', 'TRAIN');
 sg('new_classifier', 'SVMLIGHT');
 sg('c', C);
 sg('train_classifier');
@@ -62,7 +61,6 @@ sg('threads', 4);
 sg('delete_kernel_optimization');
 sg('set_features', 'TEST', testdat,'DNA');
 sg('set_labels', 'TEST', testlab);
-sg('init_kernel', 'TEST');
 out1=sg('classify');
 fprintf('accuracy: %f                                                                                         \n', mean(sign(out1)==testlab))
 
@@ -71,7 +69,6 @@ sg('threads', 4);
 sg('init_kernel_optimization');
 sg('set_features', 'TEST', testdat,'DNA');
 sg('set_labels', 'TEST', testlab);
-sg('init_kernel', 'TEST');
 out2=sg('classify');
 fprintf('accuracy: %f                                                                                         \n', mean(sign(out2)==testlab))
 
@@ -80,7 +77,6 @@ sg('threads', 4);
 sg('use_batch_computation', true);
 sg('set_features', 'TEST', testdat,'DNA');
 sg('set_labels', 'TEST', testlab);
-sg('init_kernel', 'TEST');
 out3=sg('classify');
 fprintf('accuracy: %f                                                                                         \n', mean(sign(out3)==testlab))
 
@@ -89,7 +85,6 @@ sg('threads', 1);
 sg('delete_kernel_optimization');
 sg('set_features', 'TEST', testdat,'DNA');
 sg('set_labels', 'TEST', testlab);
-sg('init_kernel', 'TEST');
 out4=sg('classify');
 fprintf('accuracy: %f                                                                                         \n', mean(sign(out1)==testlab))
 
@@ -98,7 +93,6 @@ sg('threads', 1);
 sg('init_kernel_optimization');
 sg('set_features', 'TEST', testdat,'DNA');
 sg('set_labels', 'TEST', testlab);
-sg('init_kernel', 'TEST');
 out5=sg('classify');
 fprintf('accuracy: %f                                                                                         \n', mean(sign(out2)==testlab))
 
@@ -107,7 +101,6 @@ sg('threads',  1);
 sg('use_batch_computation', true);
 sg('set_features', 'TEST', testdat,'DNA');
 sg('set_labels', 'TEST', testlab);
-sg('init_kernel', 'TEST');
 out6=sg('classify');
 fprintf('accuracy: %f                                                                                         \n', mean(sign(out3)==testlab))
 max(abs(out1-out2))

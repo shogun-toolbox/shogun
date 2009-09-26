@@ -67,16 +67,14 @@ sg('add_kernel', 1.0, 'LINEAR', 'REAL', 10, 1.0);
 sg('add_kernel', 4.0, 'GAUSSIAN', 'REAL', 10, 1.0);
 sg('set_kernel_optimization_type', 'FASTBUTMEMHUNGRY');
 %sg('set_kernel_optimization_type', 'SLOWBUTMEMEFFICIENT');
-sg('init_kernel', 'TRAIN');
-kt=sg('get_kernel_matrix');
+kt=sg('get_kernel_matrix', 'TRAIN');
 sg('new_classifier', 'SVMLIGHT');
 sg('c', C);
 tic; sg('train_classifier'); t=toc
 [b, alphas]=sg('get_svm');
 
 tic;
-sg('init_kernel', 'TEST');
-kte=sg('get_kernel_matrix');
+kte=sg('get_kernel_matrix', 'TEST');
 outopt=sg('classify');
 tout=toc
 
@@ -123,16 +121,14 @@ sg('add_kernel', 1.0, 'LINEAR', 'REAL', 10, 1.0);
 sg('add_kernel', 4.0, 'GAUSSIAN', 'REAL', 10, 1.0);
 %sg('set_kernel_optimization_type', 'FASTBUTMEMHUNGRY');
 sg('set_kernel_optimization_type', 'SLOWBUTMEMEFFICIENT');
-sg('init_kernel', 'TRAIN');
-ktref=sg('get_kernel_matrix');
+ktref=sg('get_kernel_matrix', 'TRAIN');
 sg('new_classifier', 'SVMLIGHT');
 sg('c', C);
 tic; sg('train_classifier'); tref=toc
 [bref, alphasref]=sg('get_svm');
 tic;
 sg('init_kernel_optimization');
-sg('init_kernel', 'TEST');
-kteref=sg('get_kernel_matrix');
+kteref=sg('get_kernel_matrix', 'TEST');
 outoptref=sg('classify');
 toutref=toc
 

@@ -19,12 +19,10 @@ sg('svm_epsilon', epsilon);
 sg('svm_use_bias', 0);
 sg('c', C);
 
-sg('init_kernel', 'TRAIN');
-km=sg('get_kernel_matrix');
+km=sg('get_kernel_matrix', 'TRAIN');
 tic; sg('train_classifier'); toc
 
 sg('set_features', 'TEST', testdat);
-sg('init_kernel', 'TEST');
 result=sg('classify');
 
 

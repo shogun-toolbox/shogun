@@ -29,13 +29,11 @@ dump <- sg('set_kernel', 'CHI2', 'REAL', size_cache, width)
 
 dump <- sg('set_features', 'TRAIN', fm_train_real)
 dump <- sg('attach_preproc', 'TRAIN')
-dump <- sg('init_kernel', 'TRAIN')
-km <- sg('get_kernel_matrix')
+km <- sg('get_kernel_matrix', 'TRAIN')
 
 dump <- sg('set_features', 'TEST', fm_test_real)
 dump <- sg('attach_preproc', 'TEST')
-dump <- sg('init_kernel', 'TEST')
-km <- sg('get_kernel_matrix')
+km <- sg('get_kernel_matrix', 'TEST')
 
 
 # NormOne
@@ -46,13 +44,11 @@ dump <- sg('set_kernel', 'CHI2', 'REAL', size_cache, width)
 
 dump <- sg('set_features', 'TRAIN', fm_train_real)
 dump <- sg('attach_preproc', 'TRAIN')
-dump <- sg('init_kernel', 'TRAIN')
-km <- sg('get_kernel_matrix')
+km <- sg('get_kernel_matrix', 'TRAIN')
 
 dump <- sg('set_features', 'TEST', fm_test_real)
 dump <- sg('attach_preproc', 'TEST')
-dump <- sg('init_kernel', 'TEST')
-km <- sg('get_kernel_matrix')
+km <- sg('get_kernel_matrix', 'TEST')
 
 
 # PruneVarSubMean
@@ -64,13 +60,11 @@ dump <- sg('set_kernel', 'CHI2', 'REAL', size_cache, width)
 
 dump <- sg('set_features', 'TRAIN', fm_train_real)
 dump <- sg('attach_preproc', 'TRAIN')
-dump <- sg('init_kernel', 'TRAIN')
-km <- sg('get_kernel_matrix')
+km <- sg('get_kernel_matrix', 'TRAIN')
 
 dump <- sg('set_features', 'TEST', fm_test_real)
 dump <- sg('attach_preproc', 'TEST')
-dump <- sg('init_kernel', 'TEST')
-km <- sg('get_kernel_matrix')
+km <- sg('get_kernel_matrix', 'TEST')
 
 
 #
@@ -97,11 +91,8 @@ dump <- sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1
 dump <- sg('attach_preproc', 'TEST')
 
 dump <- sg('set_kernel', 'COMMSTRING', 'WORD', size_cache, use_sign, normalization)
-dump <- sg('init_kernel', 'TRAIN')
-km <- sg('get_kernel_matrix')
-
-dump <- sg('init_kernel', 'TEST')
-km <- sg('get_kernel_matrix')
+km <- sg('get_kernel_matrix', 'TRAIN')
+km <- sg('get_kernel_matrix', 'TEST')
 
 
 # Comm Ulong String
@@ -117,10 +108,5 @@ dump <- sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'ULONG', order, order-
 dump <- sg('attach_preproc', 'TEST')
 
 dump <- sg('set_kernel', 'COMMSTRING', 'ULONG', size_cache, use_sign, normalization)
-dump <- sg('init_kernel', 'TRAIN')
-km <- sg('get_kernel_matrix')
-
-dump <- sg('init_kernel', 'TEST')
-km <- sg('get_kernel_matrix')
-
-
+km <- sg('get_kernel_matrix', 'TRAIN')
+km <- sg('get_kernel_matrix', 'TEST')

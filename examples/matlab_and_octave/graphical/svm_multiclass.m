@@ -8,7 +8,6 @@ sg('loglevel', 'ALL');
 sg('set_features', 'TRAIN', traindat);
 sg('set_labels', 'TRAIN', trainlab);
 sg('set_kernel', 'GAUSSIAN', 'REAL', 100, 2);
-sg('init_kernel', 'TRAIN');
 sg('new_classifier', 'LIBSVM_MULTICLASS');
 %sg('new_classifier', GMNP');
 sg('svm_epsilon', 1e-5)
@@ -20,7 +19,6 @@ ma=max(traindat')+2;
 [x,y]=meshgrid(linspace(mi(1),ma(1),50), linspace(mi(2),ma(2),50));
 testdat=[x(:),y(:)]';
 sg('set_features', 'TEST', testdat);
-sg('init_kernel', 'TEST');
 out=sg('classify');
 
 figure(1)

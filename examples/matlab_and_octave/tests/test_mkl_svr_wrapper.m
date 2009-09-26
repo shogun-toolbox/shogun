@@ -33,28 +33,23 @@ sg('clean_features', 'TRAIN');
 sg('set_features','TRAIN', traindat);
 sg('set_labels', 'TRAIN', trainlab);
 sg('set_kernel', 'GAUSSIAN', 'REAL', cache_size, rbf_width(1));
-sg('init_kernel', 'TRAIN');
-kernels{1}=sg('get_kernel_matrix');
+kernels{1}=sg('get_kernel_matrix', 'TRAIN');
 
 sg('set_features','TRAIN', traindat);
 sg('set_kernel', 'GAUSSIAN', 'REAL', cache_size, rbf_width(2));
-sg('init_kernel', 'TRAIN');
-kernels{2}=sg('get_kernel_matrix');
+kernels{2}=sg('get_kernel_matrix', 'TRAIN');
 
 sg('set_features','TRAIN', traindat);
 sg('set_kernel', 'GAUSSIAN', 'REAL', cache_size, rbf_width(3));
-sg('init_kernel', 'TRAIN');
-kernels{3}=sg('get_kernel_matrix');
+kernels{3}=sg('get_kernel_matrix', 'TRAIN');
 
 sg('set_features','TRAIN', traindat);
 sg('set_kernel', 'GAUSSIAN', 'REAL', cache_size, rbf_width(4));
-sg('init_kernel', 'TRAIN');
-kernels{4}=sg('get_kernel_matrix');
+kernels{4}=sg('get_kernel_matrix', 'TRAIN');
 
 sg('set_features','TRAIN', traindat);
 sg('set_kernel', 'GAUSSIAN', 'REAL', cache_size, rbf_width(5));
-sg('init_kernel', 'TRAIN');
-kernels{5}=sg('get_kernel_matrix');
+kernels{5}=sg('get_kernel_matrix', 'TRAIN');
 
 sg('clean_features',  'TRAIN');
 sg('add_features','TRAIN', traindat);
@@ -69,7 +64,6 @@ sg('add_kernel', 1, 'GAUSSIAN', 'REAL', cache_size, rbf_width(3));
 sg('add_kernel', 1, 'GAUSSIAN', 'REAL', cache_size, rbf_width(4));
 sg('add_kernel', 1, 'GAUSSIAN', 'REAL', cache_size, rbf_width(5));
 
-sg('init_kernel', 'TRAIN');
 sg('use_mkl', 0);
 sg('loglevel', 'ALL');
 sg('mkl_parameters', 1e-3, 0);
@@ -81,7 +75,6 @@ betas=sg('get_subkernel_weights') ;
 betas=betas/sum(betas(:)) ;
 sg('set_subkernel_weights',betas) ;
 
-sg('init_kernel', 'TRAIN');
 sg('c', C);
 
 
@@ -170,7 +163,6 @@ for ii=1:100,
 
 	% update betas in gf
 	sg('set_subkernel_weights',betas) ;
-	sg('init_kernel', 'TRAIN') ;
 end
 toc
 
@@ -181,7 +173,6 @@ sg('add_features','TEST', testdat);
 sg('add_features','TEST', testdat);
 sg('add_features','TEST', testdat);
 sg('set_labels', 'TEST', testlab);
-sg('init_kernel', 'TEST');
 out2=sg('classify');
 
 sum(abs(testlab-out2))

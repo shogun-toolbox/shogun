@@ -23,10 +23,6 @@ sg('add_kernel', 1, 'LINEAR', 'REAL', 10);
 sg('add_kernel', 1, 'GAUSSIAN', 'REAL', 20, 1);
 sg('add_kernel', 1, 'POLY', 'REAL', 50, 3, 0);
 
-sg('init_kernel', 'TRAIN');
 sg('c', 5);
 sg('new_classifier', 'SVMLIGHT');
 sg('train_classifier');
-
-
-Ks=sg('get_kernel_matrix') ;

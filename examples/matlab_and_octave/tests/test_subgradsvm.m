@@ -112,7 +112,6 @@ if run_svmlight,
 	sg('set_labels', 'TRAIN', trainlab);
 	sg('c', C);
 	sg('set_kernel', 'LINEAR', 'SPARSEREAL', 10, 1.0);
-	sg('init_kernel', 'TRAIN');
 	sg('svm_qpsize', 42);
 	sg('svm_epsilon', epsilon);
 	sg('new_classifier', 'SVMLIGHT');
@@ -122,7 +121,6 @@ if run_svmlight,
 
 	sg('init_kernel_optimization');
 	sg('set_features', 'TEST', traindat);
-	sg('init_kernel', 'TEST');
 	obj_light=sg('get_svm_objective')
 	trainout_reflight=sg('classify');
 	trainerr_reflight=mean(trainlab~=sign(trainout_reflight))
@@ -138,7 +136,6 @@ if run_gpbtsvm,
 	sg('set_labels', 'TRAIN', trainlab);
 	sg('c', C);
 	sg('set_kernel', 'LINEAR', 'SPARSEREAL', 10, 1.0);
-	sg('init_kernel', 'TRAIN');
 	sg('svm_qpsize', 500);
 	sg('svm_epsilon', epsilon);
 	sg('new_classifier', 'GPBTSVM');
@@ -148,7 +145,6 @@ if run_gpbtsvm,
 
 	sg('init_kernel_optimization');
 	sg('set_features', 'TEST', traindat);
-	sg('init_kernel', 'TEST');
 	obj_gpbt=sg('get_svm_objective')
 	trainout_refgpbt=sg('classify');
 	trainerr_refgpbt=mean(trainlab~=sign(trainout_refgpbt))
@@ -165,7 +161,6 @@ if run_libsvm,
 	sg('set_labels', 'TRAIN', trainlab);
 	sg('c', C);
 	sg('set_kernel', 'LINEAR', 'SPARSEREAL', 1000, 1.0);
-	sg('init_kernel', 'TRAIN');
 	sg('svm_epsilon', epsilon);
 	sg('new_classifier', 'LIBSVM');
 	tic;
@@ -174,7 +169,6 @@ if run_libsvm,
 
 	sg('init_kernel_optimization');
 	sg('set_features', 'TEST', traindat);
-	sg('init_kernel', 'TEST');
 	obj_libsvm=sg('get_svm_objective')
 	trainout_reflibsvm=sg('classify');
 	trainerr_reflibsvm=mean(trainlab~=sign(trainout_reflibsvm))

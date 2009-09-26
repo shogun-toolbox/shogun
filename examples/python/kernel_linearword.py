@@ -8,11 +8,8 @@ def linear_word ():
 	sg('set_features', 'TRAIN', fm_train_word)
 	sg('set_features', 'TEST', fm_test_word)
 	sg('set_kernel', 'LINEAR', 'WORD', size_cache, scale)
-	sg('init_kernel', 'TRAIN')
-	km=sg('get_kernel_matrix')
-
-	sg('init_kernel', 'TEST')
-	km=sg('get_kernel_matrix')
+	km=sg('get_kernel_matrix', 'TRAIN')
+	km=sg('get_kernel_matrix', 'TEST')
 
 if __name__=='__main__':
 	from tools.load import LoadMatrix

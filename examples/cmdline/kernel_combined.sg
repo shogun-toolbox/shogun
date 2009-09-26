@@ -16,8 +16,6 @@ add_kernel 1 POLY REAL 10 3 0
 add_features TRAIN ../data/fm_train_real.dat
 add_features TEST ../data/fm_test_real.dat
 
-init_kernel TRAIN
-km_train.txt = get_kernel_matrix
+km_train.txt = get_kernel_matrix TRAIN
 
-init_kernel TEST
-km_test.txt = get_kernel_matrix
+km_test.txt = get_kernel_matrix TEST

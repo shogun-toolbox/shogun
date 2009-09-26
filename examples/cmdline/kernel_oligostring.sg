@@ -3,9 +3,7 @@ print Oligo
 set_kernel OLIGO CHAR 10 3 1.2
 
 set_features TRAIN ../data/fm_train_dna.dat DNA
-init_kernel TRAIN
-km_train.txt = get_kernel_matrix
+km_train.txt = get_kernel_matrix TRAIN
 
 set_features TEST ../data/fm_test_dna.dat DNA
-init_kernel TEST
-km_test.txt = get_kernel_matrix
+km_test.txt = get_kernel_matrix TEST

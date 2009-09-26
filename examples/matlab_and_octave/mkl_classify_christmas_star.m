@@ -87,7 +87,6 @@ for kk = 1:size(radius_star,1)
   sg('add_kernel', 1, 'GAUSSIAN', 'REAL', cache_size, rbf_width(4));
   sg('add_kernel', 1, 'GAUSSIAN', 'REAL', cache_size, rbf_width(5));
   sg('c', C);
-  sg('init_kernel', 'TRAIN');
   sg('train_classifier');
   [b,alphas]=sg('get_svm') ;
   w(kk,:) = sg('get_subkernel_weights');
@@ -101,7 +100,6 @@ for kk = 1:size(radius_star,1)
   sg('add_features','TEST',train_x);
   sg('add_features','TEST',train_x);
   sg('set_labels','TEST', train_y);
-  sg('init_kernel', 'TEST');
   sg('set_threshold', 0);
   result.trainout(kk,:)=sg('classify');
   result.trainerr(kk)  = mean(train_y~=sign(result.trainout(kk,:)),2);  
@@ -115,7 +113,6 @@ for kk = 1:size(radius_star,1)
   sg('add_features','TEST',test_x);
   sg('add_features','TEST',test_x);
   sg('set_labels','TEST',test_y);
-  sg('init_kernel', 'TEST');
   sg('set_threshold', 0);
   result.testout(kk,:)=sg('classify');
   result.testerr(kk)  = mean(test_y~=sign(result.testout(kk,:)),2);    

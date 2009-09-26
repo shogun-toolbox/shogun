@@ -19,7 +19,6 @@ testlab=testlab(p);
 sg('set_features', 'TRAIN', traindat);
 sg('set_labels', 'TRAIN', trainlab);
 sg('set_kernel', 'GAUSSIAN', 'REAL', 100);
-sg('init_kernel', 'TRAIN');
 sg('new_classifier', 'GPBTSVM');
 sg('svm_epsilon', 1e-6);
 sg('c', 2);
@@ -30,14 +29,12 @@ time_gpbt(i)=toc
 o=sg('get_svm_objective');
 sg('set_features', 'TEST', testdat);
 sg('set_labels', 'TEST', testlab);
-sg('init_kernel', 'TEST');
 out=sg('classify');
 valerr=mean(testlab~=sign(out));
 
 sg('set_features', 'TRAIN', traindat);
 sg('set_labels', 'TRAIN', trainlab);
 sg('set_kernel', 'GAUSSIAN', 'REAL', 100);
-sg('init_kernel', 'TRAIN');
 sg('new_classifier', 'LIBSVM');
 sg('svm_epsilon', 1e-6);
 sg('c', 2);
@@ -48,14 +45,12 @@ time_libsvm(i)=toc
 o2=sg('get_svm_objective');
 sg('set_features', 'TEST', testdat);
 sg('set_labels', 'TEST', testlab);
-sg('init_kernel', 'TEST');
 out2=sg('classify');
 valerr2=mean(testlab~=sign(out2));
 
 sg('set_features', 'TRAIN', traindat);
 sg('set_labels', 'TRAIN', trainlab);
 sg('set_kernel', 'GAUSSIAN', 'REAL', 100);
-sg('init_kernel', 'TRAIN');
 sg('new_classifier', 'SVMLIGHT');
 sg('svm_epsilon', 1e-6);
 sg('c', 2);
@@ -66,7 +61,6 @@ time_light(i)=toc
 o3=sg('get_svm_objective');
 sg('set_features', 'TEST', testdat);
 sg('set_labels', 'TEST', testlab);
-sg('init_kernel', 'TEST');
 
 out3=sg('classify');
 valerr3=mean(testlab~=sign(out3));

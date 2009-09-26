@@ -39,7 +39,6 @@ sg('set_labels', 'TRAIN', LT)
 sg('set_features', 'TRAIN', XT, 'DNA')
 sg('set_kernel', 'WEIGHTEDDEGREE', 'CHAR', 10, degree, mismatch, FALSE, 1)
 
-sg('init_kernel', 'TRAIN')
 sg('c', C)
 sg('svm_train')
 
@@ -51,7 +50,6 @@ sg('init_kernel_optimization')
 sg('clean_features', 'TEST')
 sg('set_features', 'TEST', XTE, 'DNA')
 
-sg('init_kernel', 'TEST')
 output_xte = sg('classify')
 
 w=sg('get_subkernel_weights')

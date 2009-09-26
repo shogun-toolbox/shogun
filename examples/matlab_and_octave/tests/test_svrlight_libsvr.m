@@ -19,7 +19,6 @@ testlab=testlab(:,p);
 sg('set_features', 'TRAIN', traindat);
 sg('set_labels', 'TRAIN', trainlab);
 sg('set_kernel', 'GAUSSIAN', 'REAL', 10);
-sg('init_kernel', 'TRAIN');
 sg('new_regression', 'LIBSVR');
 sg('c', 2);
 sg('svr_tube_epsilon', 0.1);
@@ -30,14 +29,12 @@ time_libsvm(i)=toc
 o2=sg('get_svm_objective');
 sg('set_features', 'TEST', testdat);
 sg('set_labels', 'TEST', testlab);
-sg('init_kernel', 'TEST');
 out2=sg('classify');
 valerr2=mean(testlab~=sign(out2));
 
 sg('set_features', 'TRAIN', traindat);
 sg('set_labels', 'TRAIN', trainlab);
 sg('set_kernel', 'GAUSSIAN', 'REAL', 10);
-sg('init_kernel', 'TRAIN');
 sg('new_regression', 'SVRLIGHT');
 sg('c', 2);
 tic;
@@ -47,7 +44,6 @@ time_light(i)=toc
 o3=sg('get_svm_objective');
 sg('set_features', 'TEST', testdat);
 sg('set_labels', 'TEST', testlab);
-sg('init_kernel', 'TEST');
 out3=sg('classify');
 valerr3=mean(testlab~=sign(out3));
 

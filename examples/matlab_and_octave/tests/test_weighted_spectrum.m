@@ -42,8 +42,7 @@ for o=1:order,
 	sg('add_preproc', 'SORTWORDSTRING');
 	sg('attach_preproc', 'TRAIN');
 	sg('set_kernel', 'COMMSTRING', 'WORD', cache, use_sign, normalization);
-	sg('init_kernel', 'TRAIN');
-	km=km+weights(o)*sg('get_kernel_matrix');
+	km=km+weights(o)*sg('get_kernel_matrix', 'TRAIN');
 end
 
 %%% wdspec
@@ -52,9 +51,8 @@ sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, 0, 'r
 sg('add_preproc', 'SORTWORDSTRING');
 sg('attach_preproc', 'TRAIN');
 sg('set_kernel', 'WEIGHTEDCOMMSTRING', 'WORD',cache, use_sign, normalization);
-sg('init_kernel', 'TRAIN');
 
-wkm=sg('get_kernel_matrix');
+wkm=sg('get_kernel_matrix', 'TRAIN');
 
 km(1)
 wkm(1)
@@ -71,7 +69,6 @@ sg('add_preproc', 'SORTWORDSTRING');
 sg('attach_preproc', 'TRAIN');
 sg('set_kernel', 'WEIGHTEDCOMMSTRING', 'WORD', cache, use_sign, normalization);
 
-sg('init_kernel', 'TRAIN');
 sg('new_classifier', 'SVMLIGHT');
 sg('c', C);
 sg('train_classifier');
@@ -80,7 +77,6 @@ sg('set_features', 'TEST', testdat, 'DNA');
 sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, 0, 'r');
 sg('attach_preproc', 'TEST');
 sg('set_labels', 'TEST', testlab);
-sg('init_kernel', 'TEST');
 out=sg('classify');
 
 %%% svm linadd on
@@ -93,7 +89,6 @@ sg('add_preproc', 'SORTWORDSTRING');
 sg('attach_preproc', 'TRAIN');
 sg('set_kernel', 'WEIGHTEDCOMMSTRING', 'WORD', cache, use_sign, normalization);
 
-sg('init_kernel', 'TRAIN');
 sg('new_classifier', 'SVMLIGHT');
 sg('c', C);
 sg('train_classifier');
@@ -103,7 +98,6 @@ sg('set_features', 'TEST', testdat, 'DNA');
 sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, 0, 'r');
 sg('attach_preproc', 'TEST');
 sg('set_labels', 'TEST', testlab);
-sg('init_kernel', 'TEST');
 out_linadd=sg('classify');
 
 max(abs(out_linadd-out))

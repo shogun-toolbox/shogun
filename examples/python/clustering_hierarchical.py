@@ -7,7 +7,6 @@ def hierarchical ():
 	from sg import sg
 	sg('set_features', 'TRAIN', fm_train)
 	sg('set_distance', 'EUCLIDIAN', 'REAL')
-	sg('init_distance', 'TRAIN')
 	sg('new_clustering', 'HIERARCHICAL')
 	sg('train_clustering', merges)
 

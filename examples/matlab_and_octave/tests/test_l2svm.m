@@ -68,7 +68,6 @@ obj2=sum(W2.^2)+C*sum(max(1-trainlab.*(W2'*traindat+b2)).^2)
 %%sg('svm_use_bias', 1);
 %%sg('new_classifier', 'GMNPSVM');
 %%sg('set_kernel', 'LINEAR', 'SPARSEREAL', 10, 1.0);
-%%sg('init_kernel', 'TRAIN');
 %%tic;
 %%sg('train_classifier');
 %%timeliblinear=toc
@@ -76,7 +75,6 @@ obj2=sum(W2.^2)+C*sum(max(1-trainlab.*(W2'*traindat+b2)).^2)
 %%%[b3,W3]=sg('get_classifier');
 %%
 %%sg('set_features', 'TEST', traindat);
-%%sg('init_kernel', 'TEST');
 %%trainout3=sg('classify')*2-1;
 %%trainerr3=mean(trainlab~=sign(trainout3))
 %sg('loglevel', 'ERROR');
@@ -87,7 +85,6 @@ sg('svm_use_bias', 1);
 sg('svm_qpsize', 500);
 sg('new_classifier', 'GPBTSVM');
 sg('set_kernel', 'LINEAR', 'SPARSEREAL', 200, 1.0);
-sg('init_kernel', 'TRAIN');
 tic;
 sg('train_classifier');
 time_gpbt=toc
@@ -101,7 +98,6 @@ sg('svm_use_bias', 1);
 sg('svm_qpsize', 42);
 sg('new_classifier', 'SVMLIGHT');
 sg('set_kernel', 'LINEAR SPARSEREAL', 200, 1.0);
-sg('init_kernel', 'TRAIN');
 tic;
 sg('train_classifier');
 time_light=toc
@@ -114,7 +110,6 @@ sg('c', C);
 sg('svm_use_bias', 1);
 sg('new_classifier', 'LIBSVM');
 sg('set_kernel', 'LINEAR', 'SPARSEREAL', 10, 1.0);
-sg('init_kernel', 'TRAIN');
 tic;
 sg('train_classifier');
 time_libsvm=toc

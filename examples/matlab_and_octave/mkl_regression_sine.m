@@ -67,7 +67,6 @@ for kk = 1:length(f)    % big loop for the different learning problems
   sg('add_kernel', 1, 'GAUSSIAN', 'REAL', cache_size, rbf_width(4));
   sg('add_kernel', 1, 'GAUSSIAN', 'REAL', cache_size, rbf_width(5));
 
-  sg('init_kernel', 'TRAIN');
   sg('train_regression');
 
   weights(kk,:) = sg('get_subkernel_weights') ;

@@ -25,13 +25,11 @@ sg('set_kernel', 'CHI2', 'REAL', size_cache, width);
 
 sg('set_features', 'TRAIN', fm_train_real);
 sg('attach_preproc', 'TRAIN');
-sg('init_kernel', 'TRAIN');
-km=sg('get_kernel_matrix');
+km=sg('get_kernel_matrix', 'TRAIN');
 
 sg('set_features', 'TEST', fm_test_real);
 sg('attach_preproc', 'TEST');
-sg('init_kernel', 'TEST');
-km=sg('get_kernel_matrix');
+km=sg('get_kernel_matrix', 'TEST');
 
 % NormOne
 disp('NormOne');
@@ -41,13 +39,11 @@ sg('set_kernel', 'CHI2', 'REAL', size_cache, width);
 
 sg('set_features', 'TRAIN', fm_train_real);
 sg('attach_preproc', 'TRAIN');
-sg('init_kernel', 'TRAIN');
-km=sg('get_kernel_matrix');
+km=sg('get_kernel_matrix', 'TRAIN');
 
 sg('set_features', 'TEST', fm_test_real);
 sg('attach_preproc', 'TEST');
-sg('init_kernel', 'TEST');
-km=sg('get_kernel_matrix');
+km=sg('get_kernel_matrix', 'TEST');
 
 
 % PruneVarSubMean
@@ -60,13 +56,11 @@ sg('set_kernel', 'CHI2', 'REAL', size_cache, width);
 
 sg('set_features', 'TRAIN', fm_train_real);
 sg('attach_preproc', 'TRAIN');
-sg('init_kernel', 'TRAIN');
-km=sg('get_kernel_matrix');
+km=sg('get_kernel_matrix', 'TRAIN');
 
 sg('set_features', 'TEST', fm_test_real);
 sg('attach_preproc', 'TEST');
-sg('init_kernel', 'TEST');
-km=sg('get_kernel_matrix');
+km=sg('get_kernel_matrix', 'TEST');
 
 
 %
@@ -89,14 +83,12 @@ sg('set_kernel', 'COMMSTRING', 'WORD', size_cache, use_sign, normalization);
 sg('set_features', 'TRAIN', fm_train_dna, 'DNA');
 sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, gap, reverse);
 sg('attach_preproc', 'TRAIN');
-sg('init_kernel', 'TRAIN');
-km=sg('get_kernel_matrix');
+km=sg('get_kernel_matrix', 'TRAIN');
 
 sg('set_features', 'TEST', fm_test_dna, 'DNA');
 sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, gap, reverse);
 sg('attach_preproc', 'TEST');
-sg('init_kernel', 'TEST');
-km=sg('get_kernel_matrix');
+km=sg('get_kernel_matrix', 'TEST');
 
 
 % SortUlongString
@@ -108,12 +100,9 @@ sg('set_kernel', 'COMMSTRING', 'ULONG', size_cache, use_sign, normalization);
 sg('set_features', 'TRAIN', fm_train_dna, 'DNA');
 sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'ULONG', order, order-1, gap, reverse);
 sg('attach_preproc', 'TRAIN');
-sg('init_kernel', 'TRAIN');
-km=sg('get_kernel_matrix');
+km=sg('get_kernel_matrix', 'TRAIN');
 
 sg('set_features', 'TEST', fm_test_dna, 'DNA');
 sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'ULONG', order, order-1, gap, reverse);
 sg('attach_preproc', 'TEST');
-sg('init_kernel', 'TEST');
-km=sg('get_kernel_matrix');
-
+km=sg('get_kernel_matrix', 'TEST');

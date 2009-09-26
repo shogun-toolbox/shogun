@@ -12,28 +12,24 @@ testlab=[-ones(1,num/2), ones(1,num/2) ];
 %sg('set_features', 'TRAIN', traindat);
 %sg('set_labels', 'TRAIN', trainlab);
 %sg('set_kernel', 'GAUSSIAN', 'REAL', 100' 1000);
-%sg('init_kernel', 'TRAIN');
 %sg('new_classifier', 'GPBTSVM');
 %sg('c', 2);
 %sg('train_classifier');
 %%[b, alphas]=sg('get_svm');
 %sg('set_features', 'TEST', testdat);
 %sg('set_labels', 'TEST', testlab);
-%sg('init_kernel', 'TEST');
 %out=sg('classify');
 %valerr=mean(testlab~=sign(out));
 %
 %sg('set_features', 'TRAIN', traindat);
 %sg('set_labels', 'TRAIN', trainlab);
 %sg('set_kernel', 'GAUSSIAN', 'REA', 100, 1000);
-%sg('init_kernel', 'TRAIN');
 %sg('new_classifier', 'LIBSVM');
 %sg('c', 2);
 %sg('train_classifier');
 %%[b2, alphas2]=sg('get_svm');
 %sg('set_features', 'TEST', testdat);
 %sg('set_labels', 'TEST', testlab);
-%sg('init_kernel', 'TEST');
 %out2=sg('classify');
 %valerr2=mean(testlab~=sign(out2));
 %

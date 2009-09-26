@@ -59,7 +59,6 @@ sg('set_kernel', 'WEIGHTEDDEGREEPOS3', 'CHAR', 10, order, max_mismatch, len, 1, 
 %sg('set_kernel', 'WEIGHTEDDEGREE', 'CHAR', cache, order, max_mismatch, normalize, mkl_stepsize, block, single_degree);
 %sg('set_kernel', 'WEIGHTEDDEGREE', 'CHAR', cache, order);
 %sg('set_WD_position_weights', ones(1,100)/100) ;
-sg('init_kernel', 'TRAIN');
 sg('new_classifier', 'SVMLIGHT');
 sg('c',C);
 sg('train_classifier');
@@ -77,7 +76,6 @@ sg('train_classifier');
 %sg('set_features', 'TEST', z,'DNA');
 sg('set_features', 'TEST', testdat,'DNA');
 sg('set_labels', 'TEST', testlab);
-sg('init_kernel', 'TEST');
 
   sg('use_batch_computation', false);
   sg('delete_kernel_optimization');
@@ -124,13 +122,11 @@ return
 %evaluate svm on train data
 sg('set_features', 'TEST', traindat,'DNA');
 sg('set_labels', 'TEST', trainlab);
-sg('init_kernel', 'TEST');
 out=sg('classify');
 fprintf('accuracy: %f                                                                                         \n', mean(sign(out)==trainlab))
 
 %evaluate svm on test data
 sg('set_features', 'TEST', testdat,'DNA');
 sg('set_labels', 'TEST', testlab);
-sg('init_kernel', 'TEST');
 out=sg('classify');
 fprintf('accuracy: %f                                                                                         \n', mean(sign(out)==testlab))

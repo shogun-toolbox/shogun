@@ -3,10 +3,7 @@ print Linear
 set_kernel LINEAR REAL 10 1.2
 
 set_features TRAIN ../data/fm_train_real.dat
-init_kernel TRAIN
-km_train.txt = get_kernel_matrix
+km_train.txt = get_kernel_matrix TRAIN
 
 set_features TEST ../data/fm_test_real.dat
-init_kernel TEST
-km_test.txt = get_kernel_matrix
-
+km_test.txt = get_kernel_matrix TEST

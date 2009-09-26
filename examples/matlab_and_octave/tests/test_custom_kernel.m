@@ -15,8 +15,7 @@ testdat(1:10)=traindat(1:10);
 sg('set_features', 'TRAIN', traindat);
 sg('set_labels', 'TRAIN', trainlab);
 sg('set_kernel', 'GAUSSIAN', 'REAL', 50, 10);
-sg('init_kernel', 'TRAIN');
-kt=sg('get_kernel_matrix');
+kt=sg('get_kernel_matrix', 'TRAIN');
 sg('new_classifier', 'SVMLIGHT');
 sg('c', C);
 sg('svm_epsilon', svm_eps);
@@ -24,8 +23,7 @@ tic; sg('train_classifier'); toc;
 [b, alphas]=sg('get_svm');
 sg('set_features', 'TEST', testdat);
 sg('set_labels', 'TEST', testlab);
-sg('init_kernel', 'TEST');
-kte=sg('get_kernel_matrix');
+kte=sg('get_kernel_matrix', 'TEST');
 out=sg('classify');
 valerr=mean(testlab~=sign(out));
 
@@ -36,7 +34,6 @@ abs(kt-kt2)<1e-6
 max(abs(kt(:)-kt2(:)))
 
 sg('set_kernel', 'CUSTOM', kte,'FULL');
-sg('init_kernel', 'TEST');
 kte2=sg('get_kernel_matrix');
 abs(kte-kte2)<1e-6
 max(abs(kte(:)-kte2(:)))

@@ -26,11 +26,9 @@ try
 	sg('svr_tube_epsilon', tube_epsilon);
 	sg('c', C);
 
-	sg('init_kernel', 'TRAIN');
 	sg('train_regression');
 
 	sg('set_features', 'TEST', fm_test);
-	sg('init_kernel', 'TEST');
 	result=sg('classify');
 catch
 	disp('No support for SVRLight available.')
@@ -47,11 +45,9 @@ sg('new_regression', 'LIBSVR');
 sg('svr_tube_epsilon', tube_epsilon);
 sg('c', C);
 
-sg('init_kernel', 'TRAIN');
 sg('train_regression');
 
 sg('set_features', 'TEST', fm_test);
-sg('init_kernel', 'TEST');
 result=sg('classify');
 
 
@@ -71,10 +67,8 @@ sg('new_regression', 'KRR');
 sg('krr_tau', tau);
 sg('c', C);
 
-sg('init_kernel', 'TRAIN');
 sg('train_regression');
 
 sg('set_features', 'TEST', fm_test);
-sg('init_kernel', 'TEST');
 result=sg('classify');
 

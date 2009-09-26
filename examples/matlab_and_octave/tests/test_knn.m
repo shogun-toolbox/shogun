@@ -13,7 +13,6 @@ testlab=[-ones(1,num/2), ones(1,num/2) ];
 sg('set_features', 'TRAIN', traindat);
 sg('set_labels', 'TRAIN', trainlab);
 sg('set_distance', 'MINKOWSKI', 'REAL', 3.0);
-sg('init_distance', 'TRAIN');
 sg('new_classifier', 'KNN');
 sg('train_classifier', 2);
 

@@ -24,13 +24,11 @@ def plugin_estimate_salzberg ():
 	sg('set_kernel', 'SALZBERG', 'WORD', size_cache)
 	#sg('set_prior_probs', 0.4, 0.6)
 	sg('set_prior_probs_from_labels', label_train_dna)
-	sg('init_kernel', 'TRAIN')
-	km=sg('get_kernel_matrix')
+	km=sg('get_kernel_matrix', 'TRAIN')
 
-	sg('init_kernel', 'TEST')
 # not supported yet
 #	lab=sg('plugin_estimate_classify')
-	km=sg('get_kernel_matrix')
+	km=sg('get_kernel_matrix', 'TEST')
 
 if __name__=='__main__':
 	from tools.load import LoadMatrix

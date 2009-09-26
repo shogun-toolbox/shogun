@@ -34,11 +34,9 @@ try
 	sg('svm_use_bias', use_bias);
 	sg('c', C);
 
-	sg('init_kernel', 'TRAIN');
 	sg('train_classifier');
 
 	sg('set_features', 'TEST', fm_test_dna, 'DNA');
-	sg('init_kernel', 'TEST');
 	result=sg('classify');
 catch
 	disp('No support for SVMLight available.')
@@ -56,11 +54,9 @@ sg('svm_epsilon', epsilon);
 sg('svm_use_bias', use_bias);
 sg('c', C);
 
-sg('init_kernel', 'TRAIN');
 sg('train_classifier');
 
 sg('set_features', 'TEST', fm_test_real);
-sg('init_kernel', 'TEST');
 result=sg('classify');
 
 
@@ -75,11 +71,9 @@ sg('svm_epsilon', epsilon);
 sg('svm_use_bias', use_bias);
 sg('c', C);
 
-sg('init_kernel', 'TRAIN');
 sg('train_classifier');
 
 sg('set_features', 'TEST', fm_test_real);
-sg('init_kernel', 'TEST');
 result=sg('classify');
 
 % MPDSVM
@@ -93,11 +87,9 @@ sg('svm_epsilon', epsilon);
 sg('svm_use_bias', use_bias);
 sg('c', C);
 
-sg('init_kernel', 'TRAIN');
 sg('train_classifier');
 
 sg('set_features', 'TEST', fm_test_real);
-sg('init_kernel', 'TEST');
 result=sg('classify');
 
 
@@ -112,11 +104,9 @@ sg('svm_epsilon', epsilon);
 sg('svm_use_bias', use_bias);
 sg('c', C);
 
-sg('init_kernel', 'TRAIN');
 sg('train_classifier');
 
 sg('set_features', 'TEST', fm_test_real);
-sg('init_kernel', 'TEST');
 result=sg('classify');
 
 
@@ -130,11 +120,9 @@ sg('svm_epsilon', epsilon);
 sg('svm_use_bias', use_bias);
 sg('c', C);
 
-sg('init_kernel', 'TRAIN');
 sg('train_classifier');
 
 sg('set_features', 'TEST', fm_test_real);
-sg('init_kernel', 'TEST');
 result=sg('classify');
 
 
@@ -149,11 +137,9 @@ sg('svm_epsilon', epsilon);
 sg('svm_use_bias', use_bias);
 sg('c', C);
 
-sg('init_kernel', 'TRAIN');
 sg('train_classifier');
 
 sg('set_features', 'TEST', fm_test_real);
-sg('init_kernel', 'TEST');
 result=sg('classify');
 
 
@@ -168,11 +154,9 @@ sg('svm_epsilon', epsilon);
 sg('svm_use_bias', use_bias);
 sg('c', C);
 
-sg('init_kernel', 'TRAIN');
 sg('train_classifier');
 
 sg('set_features', 'TEST', fm_test_real);
-sg('init_kernel', 'TEST');
 result=sg('classify');
 
 objective=sg('get_svm_objective');
@@ -279,11 +263,9 @@ sg('set_features', 'TRAIN', fm_train_real);
 sg('set_labels', 'TRAIN', label_train_twoclass);
 sg('new_classifier', 'KNN');
 
-sg('init_distance', 'TRAIN');
 sg('train_classifier', 3);
 
 sg('set_features', 'TEST', fm_test_real);
-sg('init_distance', 'TEST');
 result=sg('classify');
 
 

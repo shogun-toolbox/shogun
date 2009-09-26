@@ -16,11 +16,9 @@ disp('BrayCurtisDistance');
 sg('set_distance', 'BRAYCURTIS', 'REAL');
 
 sg('set_features', 'TRAIN', fm_train_real);;
-sg('init_distance', 'TRAIN');
 dm=sg('get_distance_matrix');
 
 sg('set_features', 'TEST', fm_test_real);;
-sg('init_distance', 'TEST');
 dm=sg('get_distance_matrix');
 
 % Euclidian Distance
@@ -28,11 +26,9 @@ disp('EuclidianDistance');
 sg('set_distance', 'EUCLIDIAN', 'REAL');
 
 sg('set_features', 'TRAIN', fm_train_real);;
-sg('init_distance', 'TRAIN');
 dm=sg('get_distance_matrix');
 
 sg('set_features', 'TEST', fm_test_real);;
-sg('init_distance', 'TEST');
 dm=sg('get_distance_matrix');
 
 
@@ -41,11 +37,9 @@ disp('CanberraMetric');
 sg('set_distance', 'CANBERRA', 'REAL');
 
 sg('set_features', 'TRAIN', fm_train_real);
-sg('init_distance', 'TRAIN');
 dm=sg('get_distance_matrix');
 
 sg('set_features', 'TEST', fm_test_real);;
-sg('init_distance', 'TEST');
 dm=sg('get_distance_matrix');
 
 
@@ -54,11 +48,9 @@ disp('ChebyshewMetric');
 sg('set_distance', 'CHEBYSHEW', 'REAL');
 
 sg('set_features', 'TRAIN', fm_train_real);
-sg('init_distance', 'TRAIN');
 dm=sg('get_distance_matrix');
 
 sg('set_features', 'TEST', fm_test_real);;
-sg('init_distance', 'TEST');
 dm=sg('get_distance_matrix');
 
 
@@ -67,11 +59,9 @@ disp('ChiSquareDistance');
 sg('set_distance', 'CHISQUARE', 'REAL');
 
 sg('set_features', 'TRAIN', fm_train_real);
-sg('init_distance', 'TRAIN');
 dm=sg('get_distance_matrix');
 
 sg('set_features', 'TEST', fm_test_real);;
-sg('init_distance', 'TEST');
 dm=sg('get_distance_matrix');
 
 
@@ -80,11 +70,9 @@ disp('CosineDistance');
 sg('set_distance', 'COSINE', 'REAL');
 
 sg('set_features', 'TRAIN', fm_train_real);
-sg('init_distance', 'TRAIN');
 dm=sg('get_distance_matrix');
 
 sg('set_features', 'TEST', fm_test_real);;
-sg('init_distance', 'TEST');
 dm=sg('get_distance_matrix');
 
 
@@ -93,11 +81,9 @@ disp('GeodesicMetric');
 sg('set_distance', 'GEODESIC', 'REAL');
 
 sg('set_features', 'TRAIN', fm_train_real);
-sg('init_distance', 'TRAIN');
 dm=sg('get_distance_matrix');
 
 sg('set_features', 'TEST', fm_test_real);;
-sg('init_distance', 'TEST');
 dm=sg('get_distance_matrix');
 
 
@@ -106,11 +92,9 @@ disp('JensenMetric');
 sg('set_distance', 'JENSEN', 'REAL');
 
 sg('set_features', 'TRAIN', fm_train_real);
-sg('init_distance', 'TRAIN');
 dm=sg('get_distance_matrix');
 
 sg('set_features', 'TEST', fm_test_real);;
-sg('init_distance', 'TEST');
 dm=sg('get_distance_matrix');
 
 
@@ -119,11 +103,9 @@ disp('ManhattanMetric');
 sg('set_distance', 'MANHATTAN', 'REAL');
 
 sg('set_features', 'TRAIN', fm_train_real);
-sg('init_distance', 'TRAIN');
 dm=sg('get_distance_matrix');
 
 sg('set_features', 'TEST', fm_test_real);;
-sg('init_distance', 'TEST');
 dm=sg('get_distance_matrix');
 
 
@@ -133,11 +115,9 @@ k=3;
 sg('set_distance', 'MINKOWSKI', 'REAL', k);
 
 sg('set_features', 'TRAIN', fm_train_real);
-sg('init_distance', 'TRAIN');
 dm=sg('get_distance_matrix');
 
 sg('set_features', 'TEST', fm_test_real);;
-sg('init_distance', 'TEST');
 dm=sg('get_distance_matrix');
 
 
@@ -146,11 +126,9 @@ disp('TanimotoDistance');
 sg('set_distance', 'TANIMOTO', 'REAL');
 
 sg('set_features', 'TRAIN', fm_train_real);
-sg('init_distance', 'TRAIN');
 dm=sg('get_distance_matrix');
 
 sg('set_features', 'TEST', fm_test_real);;
-sg('init_distance', 'TEST');
 dm=sg('get_distance_matrix');
 
 
@@ -172,13 +150,11 @@ sg('add_preproc', 'SORTWORDSTRING');
 sg('set_features', 'TRAIN', fm_train_dna, 'DNA');
 sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, gap, reverse);
 sg('attach_preproc', 'TRAIN');
-sg('init_distance', 'TRAIN');
 dm=sg('get_distance_matrix');
 
 sg('set_features', 'TEST', fm_test_dna, 'DNA');
 sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, gap, reverse);
 sg('attach_preproc', 'TEST');
-sg('init_distance', 'TEST');
 dm=sg('get_distance_matrix');
 
 
@@ -191,13 +167,11 @@ sg('add_preproc', 'SORTWORDSTRING');
 sg('set_features', 'TRAIN', fm_train_dna, 'DNA');
 sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, gap, reverse);
 sg('attach_preproc', 'TRAIN');
-sg('init_distance', 'TRAIN');
 dm=sg('get_distance_matrix');
 
 sg('set_features', 'TEST', fm_test_dna, 'DNA');
 sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, gap, reverse);
 sg('attach_preproc', 'TEST');
-sg('init_distance', 'TEST');
 dm=sg('get_distance_matrix');
 
 
@@ -210,12 +184,10 @@ sg('add_preproc', 'SORTWORDSTRING');
 sg('set_features', 'TRAIN', fm_train_dna, 'DNA');
 sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, gap, reverse);
 sg('attach_preproc', 'TRAIN');
-sg('init_distance', 'TRAIN');
 dm=sg('get_distance_matrix');
 
 sg('set_features', 'TEST', fm_test_dna, 'DNA');
 sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, gap, reverse);
 sg('attach_preproc', 'TEST');
-sg('init_distance', 'TEST');
 dm=sg('get_distance_matrix');
 

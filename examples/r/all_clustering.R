@@ -18,7 +18,6 @@ iter <- 1000
 
 dump <- sg('set_distance', 'EUCLIDIAN', 'REAL')
 dump <- sg('set_features', 'TRAIN', fm_train)
-dump <- sg('init_distance', 'TRAIN')
 dump <- sg('new_clustering', 'KMEANS')
 dump <- sg('train_clustering', k, iter)
 
@@ -34,7 +33,6 @@ merges=3
 
 dump <- sg('set_features', 'TRAIN', fm_train)
 dump <- sg('set_distance', 'EUCLIDIAN', 'REAL')
-dump <- sg('init_distance', 'TRAIN')
 dump <- sg('new_clustering', 'HIERARCHICAL')
 dump <- sg('train_clustering', merges)
 

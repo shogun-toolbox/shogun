@@ -22,13 +22,11 @@ def plugin_estimate_histogram ():
 	sg('train_estimator')
 
 	sg('set_kernel', 'HISTOGRAM', 'WORD', size_cache)
-	sg('init_kernel', 'TRAIN')
-	km=sg('get_kernel_matrix')
+	km=sg('get_kernel_matrix', 'TRAIN')
 
-	sg('init_kernel', 'TEST')
 # not supported yet
 #	lab=sg('plugin_estimate_classify')
-	km=sg('get_kernel_matrix')
+	km=sg('get_kernel_matrix', 'TEST')
 
 if __name__=='__main__':
 	from tools.load import LoadMatrix

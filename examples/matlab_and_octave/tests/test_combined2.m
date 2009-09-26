@@ -27,42 +27,32 @@ sg('add_kernel', 1, 'LINEAR', 'REAL', 10);
 sg('add_kernel', 2, 'GAUSSIAN', 'REAL', 20, 1);
 sg('add_kernel', 3, 'POLY', 'REAL', 50, 3, 0);
 
-sg('init_kernel', 'TRAIN');
 sg('c', 5);
 sg('new_classifier', 'SVMLIGHT');
 sg('train_classifier');
-trKs=sg('get_kernel_matrix') ;
-
-
-sg('init_kernel', 'TEST');
-Ks=sg('get_kernel_matrix') ;
+trKs=sg('get_kernel_matrix', 'TRAIN') ;
+Ks=sg('get_kernel_matrix', 'TEST') ;
 
 sg('set_features', 'TRAIN', XT1);
 sg('set_features', 'TEST', XT1);
 sg('set_kernel', 'LINEAR', 'REAL', 10);
-sg('init_kernel', 'TRAIN');
-trK1=sg('get_kernel_matrix') ;
-sg('init_kernel', 'TEST');
-K1=sg('get_kernel_matrix') ;
+trK1=sg('get_kernel_matrix', 'TRAIN') ;
+K1=sg('get_kernel_matrix', 'TEST') ;
 
 
 sg('set_features', 'TRAIN', XT2);
 sg('set_features', 'TEST', XT2);
 sg('set_kernel', 'GAUSSIAN', 'REAL', 20, 1);
-sg('init_kernel', 'TRAIN');
-trK2=sg('get_kernel_matrix') ;
-sg('init_kernel', 'TEST');
-K2=sg('get_kernel_matrix') ;
+trK2=sg('get_kernel_matrix', 'TRAIN') ;
+K2=sg('get_kernel_matrix', 'TEST') ;
 
 
 
 sg('set_features', 'TRAIN', XT3);
 sg('set_features', 'TEST', XT3);
 sg('set_kernel', 'POLY', 'REAL', 50, 3, 0);
-sg('init_kernel', 'TRAIN');
-trK3=sg('get_kernel_matrix') ;
-sg('init_kernel', 'TEST');
-K3=sg('get_kernel_matrix') ;
+trK3=sg('get_kernel_matrix', 'TRAIN') ;
+K3=sg('get_kernel_matrix', 'TEST') ;
 
 
 norm(trKs-1*trK1-2*trK2-3*trK3)
