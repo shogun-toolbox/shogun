@@ -567,6 +567,34 @@ bool CGUIClassifier::train_knn(int32_t k)
 	return result;
 }
 
+bool CGUIClassifier::train_krr()
+{
+	CKRR* krr= (CKRR*) classifier;
+	if (!krr)
+		SG_ERROR("No SVM available.\n");
+
+	CLabels* trainlabels=NULL;
+	trainlabels=ui->ui_labels->get_train_labels();
+	if (!trainlabels)
+		SG_ERROR("No trainlabels available.\n");
+
+	CKernel* kernel=ui->ui_kernel->get_kernel();
+	if (!kernel)
+		SG_ERROR("No kernel available.\n");
+
+	bool success=ui->ui_kernel->init_kernel("TRAIN");
+
+	if (!success || !ui->ui_kernel->is_initialized() || !kernel->has_features())
+		SG_ERROR("Kernel not initialized / no train features available.\n");
+
+	int32_t num_vec=kernel->get_num_vec_lhs();
+	if (trainlabels->get_num_labels() != num_vec)
+		SG_ERROR("Number of train labels (%d) and training vectors (%d) differs!\n", trainlabels->get_num_labels(), num_vec);
+
+	bool result=krr->train();
+	return result;
+}
+
 bool CGUIClassifier::train_linear(float64_t gamma)
 {
 	ASSERT(classifier);

@@ -2,8 +2,8 @@
 
 
 degree = 2;
-traindat = [rand(100,50)-1 2+rand(100,50)+1];
-testdat = [rand(100,50)-1 2+rand(100,50)+1];
+traindat = [rand(10,50)-1 2+rand(10,50)+1];
+testdat = [rand(10,50)-1 2+rand(10,50)+1];
 trainlab = [ones(1, 50) -ones(1, 50)];
 
 
@@ -34,7 +34,6 @@ sg('set_features', 'TRAIN', traindat, 'POLY', degree, normalize);
 x = sg('get_features', 'TRAIN');
 
 km2=x'*x;
-keyboard
 sg('c', C);
 sg('svm_epsilon', epsilon);
 sg('svm_use_bias', 0);
@@ -43,6 +42,3 @@ sg('train_classifier');
 
 sg('set_features', 'TEST', testdat, 'POLY', degree, normalize);
 out_wdocas=sg('classify');
-
-
-

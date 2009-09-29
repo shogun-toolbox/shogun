@@ -10,7 +10,7 @@ def distance ():
 	sg('set_distance', 'EUCLIDIAN', 'REAL')
 	sg('set_kernel', 'DISTANCE', size_cache, width)
 	km=sg('get_kernel_matrix', 'TRAIN')
-	km=sg('get_kernel_matrix', 'TEST")
+	km=sg('get_kernel_matrix', 'TEST')
 
 if __name__=='__main__':
 	from tools.load import LoadMatrix

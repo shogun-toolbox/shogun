@@ -3,7 +3,7 @@ print ManhattanMetric
 set_distance MANHATTAN REAL
 
 set_features TRAIN ../data/fm_train_real.dat
-dm_train.txt = get_distance_matrix
+dm_train.txt = get_distance_matrix TRAIN
 
 set_features TEST ../data/fm_test_real.dat
-dm_test.txt = get_distance_matrix
+dm_test.txt = get_distance_matrix TEST

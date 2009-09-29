@@ -8,4 +8,3 @@ sg('new_classifier', 'LIBSVM');
 sg('train_classifier');
 out_all = sg('classify');
 out = sg('classify_example',0);
-

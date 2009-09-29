@@ -4,10 +4,10 @@ def tanimoto_distance ():
 	sg('set_distance', 'TANIMOTO', 'REAL')
 
 	sg('set_features', 'TRAIN', fm_train_real)
-	dm=sg('get_distance_matrix')
+	dm=sg('get_distance_matrix', 'TRAIN')
 
 	sg('set_features', 'TEST', fm_test_real)
-	dm=sg('get_distance_matrix')
+	dm=sg('get_distance_matrix', 'TEST')
 
 if __name__=='__main__':
 	from tools.load import LoadMatrix

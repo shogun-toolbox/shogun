@@ -4863,7 +4863,7 @@ bool CSGInterface::cmd_train_classifier()
 			return ui_classifier->train_mkl();
 
 		case CT_KRR:
-			return ui_classifier->get_classifier()->train();
+			return ui_classifier->train_krr();
 
 		case CT_KNN:
 		{

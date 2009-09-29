@@ -19,7 +19,7 @@ def combined ():
 	sg('add_features', 'TRAIN', fm_train_real)
 	sg('add_features', 'TEST', fm_test_real)
 
-	km=sg('get_kernel_matrix, 'TRAIN')
+	km=sg('get_kernel_matrix', 'TRAIN')
 	km=sg('get_kernel_matrix', 'TEST')
 
 if __name__=='__main__':

@@ -1,8 +1,8 @@
 def do_batch_linadd ():
 	print 'SVMlight batch'
 
-	from shogun.Features import RealFeatures, Labels
-	from shogun.Kernel import GaussianKernel
+	from shogun.Features import StringCharFeatures, Labels, DNA
+	from shogun.Kernel import WeightedDegreeStringKernel
 	try:
 		from shogun.Classifier import SVMLight
 	except ImportError:

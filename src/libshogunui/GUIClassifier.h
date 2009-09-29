@@ -95,6 +95,8 @@ class CGUIClassifier : public CSGObject
 		bool train_svm();
 		/** train K-nearest-neighbour */
 		bool train_knn(int32_t k=3);
+		/** train kernel ridge regression */
+		bool train_krr();
 		/** train clustering */
 		bool train_clustering(int32_t k=3, int32_t max_iter=1000);
 		/** train linear classifier

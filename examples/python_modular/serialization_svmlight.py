@@ -1,7 +1,7 @@
-from Features import *
-from Features import StringCharFeatures, Labels, DNA, Alphabet
-from Kernel import WeightedDegreeStringKernel
-from Classifier import SVMLight
+from shogun.Features import *
+from shogun.Features import StringCharFeatures, Labels, DNA, Alphabet
+from shogun.Kernel import WeightedDegreeStringKernel
+from shogun.Classifier import SVMLight
 import numpy
 
 
