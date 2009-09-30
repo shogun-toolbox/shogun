@@ -160,6 +160,5 @@ set_kernel <- function() {
 		sg('set_kernel_normalization', nname)
 	}
 
-	sg('init_kernel', 'TRAIN')
 	return(TRUE)
 }

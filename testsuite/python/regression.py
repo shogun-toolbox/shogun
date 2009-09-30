@@ -45,7 +45,6 @@ def _evaluate (indata):
 			sv+=item
 		sv=abs(sv-indata['regression_sv_sum'])
 
-	sg('init_kernel', 'TEST')
 	classified=max(abs(sg('classify')-indata['regression_classified']))
 
 	return util.check_accuracy(indata['regression_accuracy'],

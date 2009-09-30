@@ -203,7 +203,7 @@ CSGInterfaceMethod sg_methods[]=
 	{
 		N_GET_KERNEL_MATRIX,
 		(&CSGInterface::cmd_get_kernel_matrix),
-		USAGE_O(N_GET_KERNEL_MATRIX, "K"  USAGE_COMMA USAGE_STR "TRAIN|TEST" USAGE_STR)
+		USAGE_IO(N_GET_KERNEL_MATRIX, "[" USAGE_STR "TRAIN|TEST" USAGE_STR, "K]")
 	},
 	{
 		N_SET_WD_POS_WEIGHTS,
@@ -3360,11 +3360,14 @@ bool CSGInterface::cmd_save_kernel()
 
 bool CSGInterface::cmd_get_kernel_matrix()
 {
-	if (m_nrhs!=2 || !create_return_values(1))
+	if (m_nrhs>2 || !create_return_values(1))
 		return false;
 
 	int32_t len=0;
-	char* target=get_string(len);
+	char* target=NULL;
+	
+	if (m_nrhs==2)
+		target=get_string(len);
 	bool success=ui_kernel->init_kernel(target);
 
 	if (success)

@@ -205,6 +205,4 @@ function y = set_kernel()
 		nname=fix_normalizer_name_inconsistency(kernel_normalizer);
 		sg('set_kernel_normalization', nname);
 	end
-
-	sg('init_kernel', 'TRAIN');
 	y=true;

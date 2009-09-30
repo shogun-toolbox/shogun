@@ -9,11 +9,10 @@ import util
 def _evaluate (indata, prefix):
 	util.set_and_train_kernel(indata)
 
-	kmatrix=sg('get_kernel_matrix')
+	kmatrix=sg('get_kernel_matrix', 'TRAIN')
 	km_train=max(abs(indata['kernel_matrix_train']-kmatrix).flat)
 
-	sg('init_kernel', 'TEST')
-	kmatrix=sg('get_kernel_matrix')
+	kmatrix=sg('get_kernel_matrix', 'TEST')
 	km_test=max(abs(indata['kernel_matrix_test']-kmatrix).flat)
 
 	return util.check_accuracy(

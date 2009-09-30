@@ -7,11 +7,10 @@ import util
 
 
 def _evaluate (indata, prefix):
-	dmatrix=sg('get_distance_matrix')
+	dmatrix=sg('get_distance_matrix', 'TRAIN')
 	dm_train=max(abs(indata['distance_matrix_train']-dmatrix).flat)
 
-	sg('init_distance', 'TEST')
-	dmatrix=sg('get_distance_matrix')
+	dmatrix=sg('get_distance_matrix', 'TEST')
 	dm_test=max(abs(indata['distance_matrix_test']-dmatrix).flat)
 
 	return util.check_accuracy(

@@ -11,11 +11,10 @@ kernel <- function() {
 		return(TRUE)
 	}
 
-	kmatrix <- sg('get_kernel_matrix')
+	kmatrix <- sg('get_kernel_matrix', 'TRAIN')
 	km_train <- max(max(abs(kernel_matrix_train-kmatrix)))
 
-	sg('init_kernel', 'TEST')
-	kmatrix <- sg('get_kernel_matrix')
+	kmatrix <- sg('get_kernel_matrix', 'TEST')
 	km_test <- max(max(abs(kernel_matrix_test-kmatrix)))
 
 	data <- list(km_train, km_test)

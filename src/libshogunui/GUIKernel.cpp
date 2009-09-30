@@ -737,7 +737,7 @@ bool CGUIKernel::init_kernel(const char* target)
 		SG_ERROR("No kernel available.\n");
 
 	// no need to init custom kernel
-	if (kernel->get_kernel_type() == K_CUSTOM)
+	if (kernel->get_kernel_type() == K_CUSTOM || !target)
 		return true;
 
 	EFeatureClass k_fclass=kernel->get_feature_class();

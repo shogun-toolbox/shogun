@@ -16,5 +16,4 @@ function y = set_distance()
 		sg('set_distance', dname, ftype);
 	end
 
-	sg('init_distance', 'TRAIN');
 	y=true;

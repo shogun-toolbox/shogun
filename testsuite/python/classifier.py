@@ -86,9 +86,7 @@ def _evaluate (indata, prefix):
 	bias=0
 	sv=0
 
-	if indata[prefix+'type']=='knn':
-		sg('init_distance', 'TEST')
-	elif indata[prefix+'type']=='lda':
+	if indata[prefix+'type']=='lda':
 		pass
 	else:
 		if indata.has_key(prefix+'label_type') and \
@@ -99,9 +97,6 @@ def _evaluate (indata, prefix):
 			bias=abs(b-indata[prefix+'bias'])
 
 		alphas, sv=_get_alpha_and_sv(indata, prefix)
-
-		if indata[prefix+'type']=='kernel':
-			sg('init_kernel', 'TEST')
 
 	classified=max(abs(sg('classify')-indata[prefix+'classified']))
 

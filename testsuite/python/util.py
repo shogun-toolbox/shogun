@@ -116,10 +116,6 @@ def set_and_train_distance (indata, do_train=True):
 	dname=fix_distance_name_inconsistency(indata[prefix+'name'])
 	sg('set_distance', dname, indata[prefix+'feature_type'].upper(), *dargs)
 
-	if do_train:
-		sg('init_distance', 'TRAIN')
-
-
 def set_and_train_kernel (indata, do_train=True):
 	prefix='kernel_'
 	kargs=get_args(indata, prefix)
@@ -142,11 +138,6 @@ def set_and_train_kernel (indata, do_train=True):
 	else:
 		sg('set_kernel', kname, indata[prefix+'feature_type'].upper(), size,
 			*kargs)
-
-	if do_train:
-		sg('init_kernel', 'TRAIN')
-
-
 
 def convert_features_and_add_preproc (indata, prefix):
 	# having order implies having gap and reverse

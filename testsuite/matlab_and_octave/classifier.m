@@ -86,9 +86,7 @@ function y = classifier(filename)
 	bias=0;
 	sv=0;
 
-	if strcmp(classifier_type, 'knn')==1
-		sg('init_distance', 'TEST');
-	elseif strcmp(classifier_type, 'lda')==1
+	if strcmp(classifier_type, 'lda')==1
 		0; % nop
 	else
 		if ~isempty(classifier_bias) && strcmp(classifier_label_type, 'series')~=1
@@ -122,10 +120,6 @@ function y = classifier(filename)
 				end
 				sv=abs(sv-classifier_sv_sum);
 			end
-		end
-
-		if strcmp(classifier_type, 'kernel')==1
-			sg('init_kernel', 'TEST');
 		end
 	end
 

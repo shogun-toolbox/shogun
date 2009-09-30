@@ -54,7 +54,6 @@ function y = regression(filename)
 		sv=abs(sv-regression_sv_sum);
 	end
 
-	sg('init_kernel', 'TEST');
 	classified=max(abs(sg('classify')-regression_classified));
 
 	data={'classifier', alphas, bias, sv, classified};

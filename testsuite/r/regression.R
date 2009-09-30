@@ -50,7 +50,6 @@ regression <- function(filename) {
 		sv <- abs(sv-regression_sv_sum)
 	}
 
-	sg('init_kernel', 'TEST')
 	classified <- max(abs(sg('classify')-regression_classified))
 
 	data <- list(alphas, bias, sv, classified)

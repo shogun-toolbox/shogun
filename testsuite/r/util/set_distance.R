@@ -13,6 +13,5 @@ set_distance <- function() {
 		sg('set_distance', dname, ftype)
 	}
 
-	sg('init_distance', 'TRAIN')
 	return(TRUE)
 }

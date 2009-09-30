@@ -11,11 +11,10 @@ def _evaluate_kernel (indata, prefix, kernel_is_set=False):
 	if not kernel_is_set:
 		util.set_and_train_kernel(indata)
 
-	kmatrix=sg('get_kernel_matrix')
+	kmatrix=sg('get_kernel_matrix', 'TRAIN')
 	km_train=max(abs(indata[prefix+'matrix_train']-kmatrix).flat)
 
-	sg('init_kernel', 'TEST')
-	kmatrix=sg('get_kernel_matrix')
+	kmatrix=sg('get_kernel_matrix', 'TEST')
 	km_test=max(abs(indata[prefix+'matrix_test']-kmatrix).flat)
 
 	return util.check_accuracy(
@@ -72,7 +71,6 @@ def _evaluate_combined (indata, prefix):
 			sg('add_features', 'TRAIN', subk['data_train'][0])
 			sg('add_features', 'TEST', subk['data_test'][0])
 
-	sg('init_kernel', 'TRAIN')
 	return _evaluate_kernel(indata, prefix, True)
 
 
@@ -87,7 +85,6 @@ def _evaluate_auc (indata, prefix):
 		'test': WordFeatures(indata['data_test'].astype(ushort))}
 	kernel=AUCKernel(10, subk['kernel'])
 
-	sg('init_kernel', 'TRAIN')
 	return _evaluate_kernel(indata, prefix, True)
 
 

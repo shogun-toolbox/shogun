@@ -14,11 +14,10 @@ function y = distance(filename)
 		return;
 	end
 
-	dmatrix=sg('get_distance_matrix');
+	dmatrix=sg('get_distance_matrix', 'TRAIN');
 	dm_train=max(max(abs(distance_matrix_train-dmatrix)));
 
-	sg('init_distance', 'TEST');
-	dmatrix=sg('get_distance_matrix');
+	dmatrix=sg('get_distance_matrix', 'TEST');
 	dm_test=max(max(abs(distance_matrix_test-dmatrix)));
 
 	data={'distance', dm_train, dm_test};

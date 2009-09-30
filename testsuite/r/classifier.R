@@ -73,9 +73,7 @@ classifier <- function(filename) {
 	bias <- 0
 	sv <- 0
 
-	if (regexpr('knn', classifier_type)>0) {
-		sg('init_distance', 'TEST')
-	} else if (regexpr('lda', classifier_type)>0) {
+	if (regexpr('lda', classifier_type)>0) {
 		0 # nop
 	} else {
 		if (exists('classifier_bias') && exists('classifier_label_type') && regexpr('series', classifier_label_type)<=0) {
@@ -108,8 +106,6 @@ classifier <- function(filename) {
 				sv <- abs(sv-classifier_sv_sum)
 			}
 		}
-
-		sg('init_kernel', 'TEST')
 	}
 
 	classified <- max(abs(sg('classify')-classifier_classified))
