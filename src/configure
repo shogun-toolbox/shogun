@@ -2981,6 +2981,7 @@ DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 {
 	int nrhs = prhs.length();
 	octave_value_list plhs;
+	return plhs;
 }
 EOF
 				EXT_IF_SWIG_OCTAVE_MODULAR='stop'
