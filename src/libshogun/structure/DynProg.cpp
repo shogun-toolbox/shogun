@@ -321,7 +321,7 @@ void CDynProg::precompute_tiling_plifs(
 	float64_t* svm_value = new float64_t[m_num_lin_feat_plifs_cum[m_num_raw_data]+m_num_intron_plifs];
 	for (int32_t i=0; i<m_num_lin_feat_plifs_cum[m_num_raw_data]+m_num_intron_plifs; i++)
 		svm_value[i]=0.0;
-	int32_t tiling_rows[num_tiling_plifs];
+	int32_t* tiling_rows = new int32_t[num_tiling_plifs];
 	for (int32_t i=0; i<num_tiling_plifs; i++)
 	{
 		tiling_plif[i]=0.0;
@@ -359,6 +359,7 @@ void CDynProg::precompute_tiling_plifs(
 	}
 	delete[] svm_value;
 	delete[] tiling_plif;
+	delete[] tiling_rows;
 }
 
 void CDynProg::create_word_string()
@@ -401,7 +402,7 @@ void CDynProg::precompute_content_values()
 	{
 		int32_t from_pos = m_pos[p];
 		int32_t to_pos = m_pos[p+1];
-		float64_t my_svm_values_unnormalized[m_num_svms] ;
+		float64_t* my_svm_values_unnormalized = new float64_t[m_num_svms];
 		//SG_PRINT("%i(%i->%i) ",p,from_pos, to_pos);
 		
 	    ASSERT(from_pos<=m_genestr.get_dim1());
@@ -435,6 +436,7 @@ void CDynProg::precompute_content_values()
 			}
 			m_lin_feat.set_element(prev + my_svm_values_unnormalized[s], s, p+1);
 		}
+		delete[] my_svm_values_unnormalized;
 	}
 	//for (int32_t j=0; j<m_num_degrees; j++)
 	//	delete[] m_wordstr[0][j] ;
@@ -1490,7 +1492,7 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 		seq.set_name("seq") ;
 		seq.zero() ;
 
-		float64_t svm_value[m_num_lin_feat_plifs_cum[m_num_raw_data]+m_num_intron_plifs];
+		float64_t* svm_value = new float64_t [m_num_lin_feat_plifs_cum[m_num_raw_data]+m_num_intron_plifs];
 		{ // initialize svm_svalue
 			for (int32_t s=0; s<m_num_lin_feat_plifs_cum[m_num_raw_data]+m_num_intron_plifs; s++)
 				svm_value[s]=0 ;
@@ -1578,7 +1580,8 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 						else
 							break ;
 					}
-			delete seq_input ;
+			delete seq_input;
+			delete svm_value;
 		}
 
 		// allow longer transitions than look_back
@@ -2911,7 +2914,7 @@ void CDynProg::lookup_content_svm_values(const int32_t from_state, const int32_t
 	}
 	if (m_intron_list)
 	{
-		int32_t support[m_num_intron_plifs];
+		int32_t* support = new int32_t[m_num_intron_plifs];
 		m_intron_list->get_intron_support(support, from_state, to_state);
 		int32_t intron_list_start = m_num_lin_feat_plifs_cum[m_num_raw_data];
 		int32_t intron_list_end = m_num_lin_feat_plifs_cum[m_num_raw_data]+m_num_intron_plifs; 
@@ -2923,6 +2926,7 @@ void CDynProg::lookup_content_svm_values(const int32_t from_state, const int32_t
 		}
 		//if (to_pos>3990 && to_pos<4010)
 		//	SG_PRINT("from_state:%i to_state:%i support[0]:%i support[1]:%i\n",from_state, to_state, support[0], support[1]);
+		delete[] support;
 	}
 	// find the correct row with precomputed frame predictions
 	if (frame!=-1)

@@ -31,20 +31,20 @@ extern CIO* sg_io;
 
 /** The io libs output [DEBUG] etc in front of every message 'higher' messages
  * filter output depending on the loglevel, i.e. CRITICAL messages will print
- * all M_CRITICAL TO M_EMERGENCY messages.
+ * all MSG_CRITICAL TO MSG_EMERGENCY messages.
  */
 enum EMessageType
 {
-	M_GCDEBUG,
-	M_DEBUG,
-	M_INFO,
-	M_NOTICE,
-	M_WARN,
-	M_ERROR,
-	M_CRITICAL,
-	M_ALERT,
-	M_EMERGENCY,
-	M_MESSAGEONLY
+	MSG_GCDEBUG,
+	MSG_DEBUG,
+	MSG_INFO,
+	MSG_NOTICE,
+	MSG_WARN,
+	MSG_ERROR,
+	MSG_CRITICAL,
+	MSG_ALERT,
+	MSG_EMERGENCY,
+	MSG_MESSAGEONLY
 };
 
 
@@ -61,12 +61,12 @@ class CIO;
 
 // printf like funktions (with additional severity level)
 // for object derived from CSGObject
-#define SG_GCDEBUG(...) io->message(M_GCDEBUG, __VA_ARGS__)
-#define SG_DEBUG(...) io->message(M_DEBUG, __VA_ARGS__)
-#define SG_INFO(...) io->message(M_INFO, __VA_ARGS__)
-#define SG_WARNING(...) io->message(M_WARN, __VA_ARGS__)
-#define SG_ERROR(...) io->message(M_ERROR, __VA_ARGS__)
-#define SG_PRINT(...) io->message(M_MESSAGEONLY, __VA_ARGS__)
+#define SG_GCDEBUG(...) io->message(MSG_GCDEBUG, __VA_ARGS__)
+#define SG_DEBUG(...) io->message(MSG_DEBUG, __VA_ARGS__)
+#define SG_INFO(...) io->message(MSG_INFO, __VA_ARGS__)
+#define SG_WARNING(...) io->message(MSG_WARN, __VA_ARGS__)
+#define SG_ERROR(...) io->message(MSG_ERROR, __VA_ARGS__)
+#define SG_PRINT(...) io->message(MSG_MESSAGEONLY, __VA_ARGS__)
 #define SG_NOTIMPLEMENTED io->not_implemented()
 #define SG_DEPRECATED io->deprecated()
 
@@ -75,12 +75,12 @@ class CIO;
 #define SG_DONE() io->done()
 
 // printf like function using the global sg_io object
-#define SG_SGCDEBUG(...) sg_io->message(M_GCDEBUG,__VA_ARGS__)
-#define SG_SDEBUG(...) sg_io->message(M_DEBUG,__VA_ARGS__)
-#define SG_SINFO(...) sg_io->message(M_INFO,__VA_ARGS__)
-#define SG_SWARNING(...) sg_io->message(M_WARN,__VA_ARGS__)
-#define SG_SERROR(...) sg_io->message(M_ERROR,__VA_ARGS__)
-#define SG_SPRINT(...) sg_io->message(M_MESSAGEONLY,__VA_ARGS__)
+#define SG_SGCDEBUG(...) sg_io->message(MSG_GCDEBUG,__VA_ARGS__)
+#define SG_SDEBUG(...) sg_io->message(MSG_DEBUG,__VA_ARGS__)
+#define SG_SINFO(...) sg_io->message(MSG_INFO,__VA_ARGS__)
+#define SG_SWARNING(...) sg_io->message(MSG_WARN,__VA_ARGS__)
+#define SG_SERROR(...) sg_io->message(MSG_ERROR,__VA_ARGS__)
+#define SG_SPRINT(...) sg_io->message(MSG_MESSAGEONLY,__VA_ARGS__)
 #define SG_SPROGRESS(...) sg_io->progress(__VA_ARGS__)
 #define SG_SABS_PROGRESS(...) sg_io->absolute_progress(__VA_ARGS__)
 #define SG_SDONE() sg_io->done()
@@ -165,13 +165,13 @@ class CIO
 		/** print error message 'not implemented' */
 		inline void not_implemented() const
 		{
-			message(M_ERROR, "Sorry, not yet implemented.\n");
+			message(MSG_ERROR, "Sorry, not yet implemented.\n");
 		}
 
 		/** print warning message 'function deprecated' */
 		inline void deprecated() const
 		{
-			message(M_WARN, "This function is deprecated and will be removed soon.\n");
+			message(MSG_WARN, "This function is deprecated and will be removed soon.\n");
 		}
 
 		/** print a buffered message

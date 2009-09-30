@@ -24,8 +24,8 @@
 
 #include <stdlib.h>
 
-const EMessageType CIO::levels[NUM_LOG_LEVELS]={M_GCDEBUG, M_DEBUG, M_INFO, M_NOTICE,
-	M_WARN, M_ERROR, M_CRITICAL, M_ALERT, M_EMERGENCY, M_MESSAGEONLY};
+const EMessageType CIO::levels[NUM_LOG_LEVELS]={MSG_GCDEBUG, MSG_DEBUG, MSG_INFO, MSG_NOTICE,
+	MSG_WARN, MSG_ERROR, MSG_CRITICAL, MSG_ALERT, MSG_EMERGENCY, MSG_MESSAGEONLY};
 
 const char* CIO::message_strings[NUM_LOG_LEVELS]={"[GCDEBUG] \0", "[DEBUG] \0", "[INFO] \0",
 	"[NOTICE] \0", "\033[1;34m[WARN]\033[0m \0", "\033[1;31m[ERROR]\033[0m \0",
@@ -39,7 +39,7 @@ char CIO::directory_name[FBUFSIZE];
 
 CIO::CIO()
 : target(stdout), last_progress_time(0), progress_start_time(0),
-	last_progress(1), show_progress(false), loglevel(M_WARN), refcount(0)
+	last_progress(1), show_progress(false), loglevel(MSG_WARN), refcount(0)
 {
 }
 
@@ -68,24 +68,24 @@ void CIO::message(EMessageType prio, const char *fmt, ... ) const
 
 		switch (prio)
 		{
-			case M_GCDEBUG:
-			case M_DEBUG:
-			case M_INFO:
-			case M_NOTICE:
-			case M_MESSAGEONLY:
+			case MSG_GCDEBUG:
+			case MSG_DEBUG:
+			case MSG_INFO:
+			case MSG_NOTICE:
+			case MSG_MESSAGEONLY:
 				if (sg_print_message)
 					sg_print_message(target, s);
 				break;
 
-			case M_WARN:
+			case MSG_WARN:
 				if (sg_print_warning)
 					sg_print_warning(target, s);
 				break;
 
-			case M_ERROR:
-			case M_CRITICAL:
-			case M_ALERT:
-			case M_EMERGENCY:
+			case MSG_ERROR:
+			case MSG_CRITICAL:
+			case MSG_ALERT:
+			case MSG_EMERGENCY:
 				if (sg_print_error)
 					sg_print_error(target, str);
 				throw ShogunException(str);
@@ -153,12 +153,12 @@ void CIO::progress(
 	if (estimate/100>120)
 	{
 		snprintf(str, sizeof(str), "%%s %%%d.%df%%%%    %%1.1f minutes remaining    %%1.1f minutes total    \r",decimals+3, decimals);
-		message(M_MESSAGEONLY, str, prefix, v, (float32_t)estimate/100/60, (float32_t)total_estimate/100/60);
+		message(MSG_MESSAGEONLY, str, prefix, v, (float32_t)estimate/100/60, (float32_t)total_estimate/100/60);
 	}
 	else
 	{
 		snprintf(str, sizeof(str), "%%s %%%d.%df%%%%    %%1.1f seconds remaining    %%1.1f seconds total    \r",decimals+3, decimals);
-		message(M_MESSAGEONLY, str, prefix, v, (float32_t)estimate/100, (float32_t)total_estimate/100);
+		message(MSG_MESSAGEONLY, str, prefix, v, (float32_t)estimate/100, (float32_t)total_estimate/100);
 	}
 
     fflush(target);
@@ -205,12 +205,12 @@ void CIO::absolute_progress(
 	if (estimate/100>120)
 	{
 		snprintf(str, sizeof(str), "%%s %%%d.%df    %%1.1f minutes remaining    %%1.1f minutes total    \r",decimals+3, decimals);
-		message(M_MESSAGEONLY, str, prefix, current_val, (float32_t)estimate/100/60, (float32_t)total_estimate/100/60);
+		message(MSG_MESSAGEONLY, str, prefix, current_val, (float32_t)estimate/100/60, (float32_t)total_estimate/100/60);
 	}
 	else
 	{
 		snprintf(str, sizeof(str), "%%s %%%d.%df    %%1.1f seconds remaining    %%1.1f seconds total    \r",decimals+3, decimals);
-		message(M_MESSAGEONLY, str, prefix, current_val, (float32_t)estimate/100, (float32_t)total_estimate/100);
+		message(MSG_MESSAGEONLY, str, prefix, current_val, (float32_t)estimate/100, (float32_t)total_estimate/100);
 	}
 
     fflush(target);
@@ -221,7 +221,7 @@ void CIO::done()
 	if (!show_progress)
 		return;
 
-	message(M_INFO, "done.\n");
+	message(MSG_INFO, "done.\n");
 }
 
 char* CIO::skip_spaces(char* str)
@@ -277,8 +277,8 @@ const char* CIO::get_msg_intro(EMessageType prio) const
 	for (int32_t i=NUM_LOG_LEVELS-1; i>=0; i--)
 	{
 		// ignore msg if prio's level is under loglevel,
-		// but not if prio's level higher than M_WARN
-		if (levels[i]<loglevel && prio<=M_WARN)
+		// but not if prio's level higher than MSG_WARN
+		if (levels[i]<loglevel && prio<=MSG_WARN)
 			return NULL;
 
 		if (levels[i]==prio)

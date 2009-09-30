@@ -1711,6 +1711,7 @@ template<> inline floatmax_t CStringFeatures<floatmax_t>::shift_symbol(floatmax_
 	return symbol;
 }
 
+#ifndef SUNOS
 template<> 	template <class CT> bool CStringFeatures<float32_t>::obtain_from_char_features(CStringFeatures<CT>* sf, int32_t start, int32_t p_order, int32_t gap, bool rev)
 {
 	return false;
@@ -1723,6 +1724,7 @@ template<> 	template <class CT> bool CStringFeatures<floatmax_t>::obtain_from_ch
 {
 	return false;
 }
+#endif
 
 template<> 	inline void CStringFeatures<float32_t>::embed_features(int32_t p_order)
 {

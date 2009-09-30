@@ -198,7 +198,7 @@ void CPolyFeatures::store_multinomial_coefficients()
 			exponents[m_multi_index[cnt]] ++;
 			cnt++;
 		}
-		m_multinomial_coefficients[j] =  sqrt(multinomialcoef(exponents, m_input_dimensions));
+		m_multinomial_coefficients[j] =  sqrt((double) multinomialcoef(exponents, m_input_dimensions));
 		for (k=0; k<m_input_dimensions; k++)
 		{
 			exponents[k]=0;

@@ -2131,7 +2131,9 @@ EOF
 		COMPFLAGS_CPP="$COMPFLAGS_CPP -D_ALL_SOURCE -D_REENTRANT"
 	elif sunos
 	then
-		true #nop
+		LINKFLAGS="$LINKFLAGS -lsocket  -lnsl"
+		SONAMEOPT="-h "
+		SHAREDOPTS="-G"
 	elif win32
 	then
 		EXT_LIB=dll

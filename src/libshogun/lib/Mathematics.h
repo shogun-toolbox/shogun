@@ -28,6 +28,10 @@
 #include <sys/time.h>
 #include <time.h>
 
+#ifdef SUNOS
+#include <ieeefp.h>
+#endif
+
 /// workaround a bug in std cmath
 #ifdef _GLIBCXX_CMATH
 #if _GLIBCXX_USE_C99_MATH
@@ -1095,8 +1099,8 @@ class CMath : public CSGObject
 		/// checks whether a float is finite
 		inline static int is_finite(double f)
 		{
-#if defined(isfinite) || defined(SUNOS)
-            return isfinite(f);
+#if defined(isfinite) && !defined(SUNOS)
+			return isfinite(f);
 #else
 			return finite(f);
 #endif
@@ -1105,13 +1109,24 @@ class CMath : public CSGObject
 		/// checks whether a float is infinity
 		inline static int is_infinity(double f)
 		{
+#ifdef SUNOS
+			if (fpclass(f) == FP_NINF || fpclass(f) == FP_PINF)
+				return 1;
+			else
+				return 0;
+#else
             return isinf(f);
+#endif
 		}
 
 		/// checks whether a float is nan
 		inline static int is_nan(double f)
 		{
+#ifdef SUNOS
+			return isnand(f);
+#else
             return isnan(f);
+#endif
 		}
 
 

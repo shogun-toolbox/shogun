@@ -20,12 +20,6 @@
 #include "lib/config.h"
 #include "lib/memory.h"
 
-#ifdef SUNOS
-#define bool int
-#define false 0
-#define true 1
-#endif
-
 #ifndef LINUX
 #define RANDOM_MAX 2147483647
 #else

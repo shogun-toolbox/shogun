@@ -1348,8 +1348,8 @@ void CWeightedDegreePositionStringKernel::compute_batch(
 		for (int32_t j=0; j<num_feat && !CSignal::cancel_computations(); j++)
 		{
 			init_optimization(num_suppvec, IDX, alphas, j);
-			pthread_t threads[num_threads-1];
-			S_THREAD_PARAM<DNATrie> params[num_threads];
+			pthread_t* threads = new pthread_t[num_threads-1];
+			S_THREAD_PARAM<DNATrie>* params = new S_THREAD_PARAM<DNATrie>[num_threads];
 			int32_t step= num_vec/num_threads;
 			int32_t t;
 
@@ -1389,6 +1389,9 @@ void CWeightedDegreePositionStringKernel::compute_batch(
 			for (t=0; t<num_threads-1; t++)
 				pthread_join(threads[t], NULL);
 			SG_PROGRESS(j,0,num_feat);
+
+			delete[] params;
+			delete[] threads;
 		}
 	}
 #endif

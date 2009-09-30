@@ -25,7 +25,7 @@ all:  $(PARTDEPS)
 	@echo ==== opts: $(COMPFLAGS_CPP)
 	@echo ============================================================
 	@echo 
-	@+$(foreach part, $(PARTS), make -C $(part) $@ &&) true
+	@+$(foreach part, $(PARTS), $(MAKE) -C $(part) $@ &&) true
 	@echo 
 	@echo ============================================================
 	@echo ==== Done. Check the subdirectories for binaries.

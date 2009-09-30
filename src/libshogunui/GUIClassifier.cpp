@@ -569,6 +569,7 @@ bool CGUIClassifier::train_knn(int32_t k)
 
 bool CGUIClassifier::train_krr()
 {
+#ifdef HAVE_LAPACK
 	CKRR* krr= (CKRR*) classifier;
 	if (!krr)
 		SG_ERROR("No SVM available.\n");
@@ -593,6 +594,9 @@ bool CGUIClassifier::train_krr()
 
 	bool result=krr->train();
 	return result;
+#else
+	return false;
+#endif
 }
 
 bool CGUIClassifier::train_linear(float64_t gamma)

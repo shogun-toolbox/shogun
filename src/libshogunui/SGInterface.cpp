@@ -7219,23 +7219,23 @@ bool CSGInterface::cmd_loglevel()
 	char* level=get_str_from_str_or_direct(len);
 
 	if (strmatch(level, "ALL") || strmatch(level, "GCDEBUG"))
-		io->set_loglevel(M_GCDEBUG);
+		io->set_loglevel(MSG_GCDEBUG);
 	else if (strmatch(level, "DEBUG"))
-		io->set_loglevel(M_DEBUG);
+		io->set_loglevel(MSG_DEBUG);
 	else if (strmatch(level, "INFO"))
-		io->set_loglevel(M_INFO);
+		io->set_loglevel(MSG_INFO);
 	else if (strmatch(level, "NOTICE"))
-		io->set_loglevel(M_NOTICE);
+		io->set_loglevel(MSG_NOTICE);
 	else if (strmatch(level, "WARN"))
-		io->set_loglevel(M_WARN);
+		io->set_loglevel(MSG_WARN);
 	else if (strmatch(level, "ERROR"))
-		io->set_loglevel(M_ERROR);
+		io->set_loglevel(MSG_ERROR);
 	else if (strmatch(level, "CRITICAL"))
-		io->set_loglevel(M_CRITICAL);
+		io->set_loglevel(MSG_CRITICAL);
 	else if (strmatch(level, "ALERT"))
-		io->set_loglevel(M_ALERT);
+		io->set_loglevel(MSG_ALERT);
 	else if (strmatch(level, "EMERGENCY"))
-		io->set_loglevel(M_EMERGENCY);
+		io->set_loglevel(MSG_EMERGENCY);
 	else
 		SG_ERROR("Unknown loglevel '%s'.\n", level);
 

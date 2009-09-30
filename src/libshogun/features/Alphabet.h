@@ -53,7 +53,7 @@ enum EAlphabet
 	NONE=10,
 
 	/// unknown alphabet
-	UNKNOWN=11,
+	UNKNOWN=11
 };
 
 

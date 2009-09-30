@@ -18,6 +18,7 @@
 #endif
 
 #include <stdio.h>
+#include <strings.h>
 
 void cmdline_print_message(FILE* target, const char* str)
 {
@@ -62,9 +63,9 @@ void CCmdLineInterface::reset(const char* line)
 		return;
 
 	char* element=NULL;
-	char delim_equal[]="=";
-	char delim_lhs[]="=, \t\n";
-	char delim_rhs[]=" \t\n";
+	const char delim_equal[]="=";
+	const char delim_lhs[]="=, \t\n";
+	const char delim_rhs[]=" \t\n";
 
 	SG_UNREF(m_lhs);
 	m_lhs=NULL;
@@ -72,7 +73,11 @@ void CCmdLineInterface::reset(const char* line)
 	m_rhs=NULL;
 
 	// split lhs from rhs
+#ifdef SUNOS //for some reason strstr on sunos requires a char* haystack
+	char* equal_sign=strstr((char*) line, delim_equal);
+#else
 	char* equal_sign=strstr(line, delim_equal);
+#endif
 	if (equal_sign)
 	//if (strstr(line, delim_equal))
 	{
@@ -154,6 +159,7 @@ IFType CCmdLineInterface::get_argument_type()
 	// content
 	FILE* fh=fopen((char*) filename, "r");
 	if (!fh)
+		SG_PRINT("Could not find file %s.\n", filename);
 		SG_ERROR("Could not find file %s.\n", filename);
 
 	char* chunk=new char[len+1];
