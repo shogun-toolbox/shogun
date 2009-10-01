@@ -315,7 +315,7 @@ int main()
 	try
 	{
 		sg_version->print_version();
-		sg_io->set_loglevel(M_INFO);
+		sg_io->set_loglevel(MSG_INFO);
 		tester();
 	}
 	catch(ShogunException & sh)

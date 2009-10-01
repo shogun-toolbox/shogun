@@ -58,7 +58,7 @@ int main()
 		uint256_t* a;
 		uint32_t* b;
 		CTime t;
-		t.io->set_loglevel(M_DEBUG);
+		t.io->set_loglevel(MSG_DEBUG);
 
 		SG_SPRINT("gen data..");
 		t.start();

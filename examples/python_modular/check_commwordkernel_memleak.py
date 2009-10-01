@@ -1,6 +1,6 @@
 import gc
 from shogun.Features import Alphabet,StringCharFeatures,StringWordFeatures,DNA
-from shogun.PreProc import SortWordString, M_DEBUG
+from shogun.PreProc import SortWordString, MSG_DEBUG
 from shogun.Kernel import CommWordStringKernel, IdentityKernelNormalizer
 from numpy import mat
 
@@ -62,9 +62,9 @@ for i in xrange(10):
     traindat.set_features(POS+NEG)
     trainudat=StringWordFeatures(traindat.get_alphabet());
     trainudat.obtain_from_char(traindat, order-1, order, gap, reverse)
-    #trainudat.io.set_loglevel(M_DEBUG)
+    #trainudat.io.set_loglevel(MSG_DEBUG)
     pre = SortWordString()
-    #pre.io.set_loglevel(M_DEBUG)
+    #pre.io.set_loglevel(MSG_DEBUG)
     pre.init(trainudat)
     trainudat.add_preproc(pre)
     trainudat.apply_preproc()
