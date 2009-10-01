@@ -1,4 +1,5 @@
 size_cache=10;
+width=1.0;
 
 addpath('tools');
 fm_train_real=load_matrix('../data/fm_train_real.dat');
