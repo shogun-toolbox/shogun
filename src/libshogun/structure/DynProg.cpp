@@ -2640,6 +2640,7 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 
 				while (pos_seq[i]>0)
 				{
+					ASSERT(i+1<m_seq_len);
 					//SG_DEBUG("s=%i p=%i q=%i\n", state_seq[i], pos_seq[i], q) ;
 					state_seq[i+1] = psi.element(pos_seq[i], state_seq[i], q);
 					pos_seq[i+1]   = ptable.element(pos_seq[i], state_seq[i], q) ;
@@ -2654,8 +2655,11 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 					my_state_seq[i+k*m_seq_len] = state_seq[num_states-i-1] ;
 					my_pos_seq[i+k*m_seq_len]   = pos_seq[num_states-i-1] ;
 				}
-				my_state_seq[num_states+k*m_seq_len]=-1 ;
-				my_pos_seq[num_states+k*m_seq_len]=-1 ;
+				if (num_states<m_seq_len)
+				{
+					my_state_seq[num_states+k*m_seq_len]=-1 ;
+					my_pos_seq[num_states+k*m_seq_len]=-1 ;
+				}
 			}
 		}
 
@@ -2788,7 +2792,7 @@ void CDynProg::best_path_trans_deriv(
 	struct segment_loss_struct loss;
 	loss.segments_changed = NULL;
 	loss.num_segment_id = NULL;
-	//SG_DEBUG( "m_seq_len=%i\n", my_seq_len) ;
+	SG_DEBUG( "m_seq_len=%i\n", my_seq_len) ;
 	for (int32_t i=0; i<my_seq_len-1; i++)
 	{
 		if (my_state_seq[i+1]==-1)
