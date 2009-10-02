@@ -105,9 +105,9 @@ void CIntronList::read_introns(int32_t* start_pos, int32_t* end_pos, int32_t* qu
 void CIntronList::get_intron_support(int32_t* values, int32_t from_pos, int32_t to_pos)
 {
 	if (from_pos>=m_length)
-		SG_ERROR("from_pos (%i) in not < m_length (%i)\n",to_pos, m_length);
+		SG_ERROR("from_pos (%i) is not < m_length (%i)\n",to_pos, m_length);
 	if (to_pos>=m_length)
-		SG_ERROR("to_pos (%i) in not < m_length (%i)\n",to_pos, m_length);
+		SG_ERROR("to_pos (%i) is not < m_length (%i)\n",to_pos, m_length);
 	int32_t* from_list = m_intron_list[to_pos];
 	int32_t* q_list = m_quality_list[to_pos];
 
