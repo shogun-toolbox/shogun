@@ -46,7 +46,6 @@
 #include <shogun/kernel/SparsePolyKernel.h>
 #include <shogun/kernel/SparseGaussianKernel.h>
 #include <shogun/kernel/DiagKernel.h>
-#include <shogun/kernel/MindyGramKernel.h>
 #include <shogun/kernel/OligoStringKernel.h>
 #include <shogun/kernel/DistanceKernel.h>
 #include <shogun/kernel/TensorProductPairKernel.h>

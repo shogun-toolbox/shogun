@@ -369,4 +369,3 @@
 %include <shogun/features/PolyFeatures.h>
 %include <shogun/features/ExplicitSpecFeatures.h>
 %include <shogun/features/ImplicitWeightedSpecFeatures.h>
-#endif
