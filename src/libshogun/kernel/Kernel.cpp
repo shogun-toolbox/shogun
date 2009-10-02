@@ -949,9 +949,6 @@ void CKernel::list_kernel()
 		case K_CONST:
 			SG_INFO( "K_CONST ");
 			break;
-		case K_MINDYGRAM:
-			SG_INFO( "K_MINDYGRAM ");
-			break;
 		case K_DISTANCE:
 			SG_INFO( "K_DISTANCE ");
 			break;

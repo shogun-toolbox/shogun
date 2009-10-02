@@ -43,7 +43,6 @@ enum EFeatureClass
 	C_SPARSE = 20,
 	C_STRING = 30,
 	C_COMBINED = 40,
-	C_MINDYGRAM = 50,
 	C_COMBINED_DOT = 60,
 	C_WD = 70,
 	C_SPEC = 80,
