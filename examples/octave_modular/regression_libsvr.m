@@ -13,7 +13,7 @@ feats_test=RealFeatures(fm_test);
 width=2.1;
 kernel=GaussianKernel(feats_train, feats_train, width);
 
-C=0.017;
+C=1.2;
 epsilon=1e-5;
 tube_epsilon=1e-2;
 num_threads=3;

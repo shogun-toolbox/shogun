@@ -3,7 +3,7 @@ def krr ():
 
 	size_cache=10
 	width=2.1
-	C=0.017
+	C=1.2
 	tau=1e-6
 
 	from sg import sg

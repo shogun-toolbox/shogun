@@ -1,7 +1,3 @@
-%
-% SparseLinear classifier
-%
-
 %% SubgradientSVM - often does not converge
 %print SubGradientSVM
 %

@@ -17,7 +17,7 @@ def svm_light ():
 
 	kernel=WeightedDegreeStringKernel(feats_train, feats_train, degree)
 
-	C=0.017
+	C=1.2
 	epsilon=1e-5
 	num_threads=1
 	labels=Labels(label_train_dna)

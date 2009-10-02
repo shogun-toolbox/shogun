@@ -3,7 +3,7 @@ def svm_light ():
 
 	size_cache=10
 	degree=20
-	C=0.017
+	C=1.2
 	epsilon=1e-5
 	use_bias=False
 

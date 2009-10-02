@@ -13,6 +13,3 @@ train_classifier
 
 set_features TEST ../data/fm_test_real.dat
 out.txt = classify
-
-
-
