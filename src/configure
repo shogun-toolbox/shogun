@@ -199,6 +199,7 @@ TMPMAK="./configure-$RANDOM-$$-makefile"
 TMPC="./configure-$RANDOM-$$.c"
 TMPCPP="./configure-$RANDOM-$$.cpp"
 TMPO="./configure-$RANDOM-$$.o"
+TMPSO="./configure-$RANDOM-$$.so"
 TMPS="./configure-$RANDOM-$$.S"
 TMPSS="./configure-$RANDOM-$$.s"
 
@@ -226,7 +227,7 @@ fi
 system_name=`( uname -s ) 2>&1`
 # OS test booleans functions
 issystem() {
-  echo $system_name | tr A-Z a-z | grep -q "`echo $1 | tr A-Z a-z`"
+  echo $system_name | tr A-Z a-z | grep "`echo $1 | tr A-Z a-z`" >/dev/null
 }
 linux()   { issystem "Linux"   ; return "$?" ; }
 sunos()   { issystem "SunOS"   ; return "$?" ; }
@@ -530,6 +531,27 @@ cxx_check() {
 	  echo >> "$TMPLOG"
   return "$TMP"
 }
+
+cxx_check_so() {
+  echo >> "$TMPLOG"
+  cat "$TMPC" >> "$TMPLOG"
+  echo >> "$TMPLOG"
+  echo "$COMP_CPP $INCLUDES $COMPFLAGS_CPP $TMPC -o $TMPSO $LINKFLAGS $@" >> "$TMPLOG"
+  rm -f "$TMPSO"
+  ( "$COMP_CPP" $INCLUDES $COMPFLAGS_CPP "$TMPC" -o "$TMPSO" $LINKFLAGS "$@" ) >> "$TMPLOG" 2>&1
+  TMP="$?"
+  if test -f "$TMPSO"
+  then
+	  echo >> "$TMPLOG"
+	  echo "$LDD $TMPSO" >> "$TMPLOG"
+	  ( $LDD "$TMPSO" ) >> "$TMPLOG" 2>&1
+  else
+	  echo "no object file created" >> "$TMPLOG"
+  fi
+	  echo >> "$TMPLOG"
+  return "$TMP"
+}
+
 
 tmp_run() {
   "$TMPO" >> "$TMPLOG" 2>&1
@@ -2070,7 +2092,7 @@ fi
 
 set_opts()
 {
-	if echo " $MACHINE " | grep -q 'iPhone' >/dev/null
+	if echo " $MACHINE " | grep "iPhone" >/dev/null
 	then
 		POSTLINKCMD="ldid -S"
 	fi
@@ -2102,7 +2124,7 @@ EOF
 
 	if darwin
 	then
-		if ! sed --version 2>/dev/null | grep -q "GNU sed"
+		if ! sed --version 2>/dev/null | grep "GNU sed" >/dev/null
 		then
 			SEDMI='sed -i ""'
 		fi
@@ -2993,8 +3015,14 @@ EOF
 				then
 					LINKFLAGS_OCTAVE="-bundle -Wl,-flat_namespace -L`octave-config -p OCTLIBDIR` -loctinterp -loctave -lcruft $LINKFLAGS_OCTAVE"
 				else
-					OCTLIBDIR=`octave-config -p OCTLIBDIR`
-					LINKFLAGS_OCTAVE="-shared -L $OCTLIBDIR -loctinterp -loctave -lcruft $LINKFLAGS_OCTAVE"
+					if sunos
+					then
+						OCTLIBDIR=`octave-config -p OCTLIBDIR`
+						LINKFLAGS_OCTAVE="-G -L $OCTLIBDIR -loctinterp -loctave -lcruft $LINKFLAGS_OCTAVE"
+					else
+						OCTLIBDIR=`octave-config -p OCTLIBDIR`
+						LINKFLAGS_OCTAVE="-shared -L $OCTLIBDIR -loctinterp -loctave -lcruft $LINKFLAGS_OCTAVE"
+					fi
 				fi
 				OCTAVE_TARGET="sg.oct"
 				INCLUDES_OCTAVE="$INCLUDES_OCTAVE -I`octave-config -p OCTINCLUDEDIR` -I`octave-config -p INCLUDEDIR`"
@@ -3002,7 +3030,7 @@ EOF
 				COMPFLAGS_C_OCTAVE="$COMPFLAGS_C -fPIC"
 
 				echocheck "Octave Developer Files"
-				if LD_LIBRARY_PATH=`octave-config -p OCTLIBDIR` cxx_check $COMPFLAGS_CPP_OCTAVE $INCLUDES_OCTAVE $LINKFLAGS_OCTAVE
+				if LD_LIBRARY_PATH=`octave-config -p OCTLIBDIR` cxx_check_so $COMPFLAGS_CPP_OCTAVE $INCLUDES_OCTAVE $LINKFLAGS_OCTAVE
 				then
 					echores "yes"
 					_octave=yes
@@ -3191,7 +3219,8 @@ test_r()
 		then
 			echores "`echo 'version; quit()' | R  --no-save 2>&1 | grep version\.string | cut -f 4 -d ' '`"
 			test -n "$_rdir" || _rdir=`echo '.libPaths()[1]' | R --no-save 2>/dev/null | grep '^\[1\]' | cut -f 2 -d '"'`
-			R_HOME=`echo 'system("env | grep ^R_HOME")' | R -q --no-save | grep ^R_HOME | cut -f 2 -d '='`
+			R_HOME=`echo 'system("env | grep \"^R_HOME\"")' | R -q --no-save | grep '^R_HOME' | cut -f 2 -d '='`
+
 			PRE_LIB_SWIG_R_MODULAR=
 			EXT_LIB_SWIG_R_MODULAR='so'
 			EXT_IF_SWIG_R_MODULAR='.R'
