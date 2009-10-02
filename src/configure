@@ -44,7 +44,6 @@ EXT_OBJ_C=c.o
 #the defaults are
 _swig_version=0.0.0
 _readline=auto
-_mindy=auto
 _boost_serialization=no
 _r=no
 if [ -e libshogun/classifier/svm/SVM_light.cpp ]; then
@@ -685,7 +684,6 @@ Installation directories:
 
 Optional features:
   --enable-boost-serialization	enable boost serialization support [disabled]
-  --enable-mindy                enable mindy library support (for more efficient n-gram, word-in-a-bag kernel implementations) [auto]
   --enable-readline    	        enable readline in cmdline interface [auto]
   --enable-logcache             enable log (1+exp(x)) log cache (is much faster but less accurate) [disabled]
   --enable-shortrealkernelcache enable kernelcache to use 4-byte-floating-point values instead of 8-byte-doubles [enabled]
@@ -844,8 +842,6 @@ for ac_option do
   --install-path=*)
     _install=$(mangle_homedir_tilde "`echo $ac_option | cut -d '=' -f 2 | sed 's/\/$//'`/install")
     ;;
-  --disable-mindy)		_mindy=no	;;
-  --enable-mindy)		_mindy=yes	;;
   --disable-boost-serialization)		_boost_serialization=no	;;
   --enable-boost-serialization)		_boost_serialization=yes	;;
   --disable-svm-light)	_svm_light=no;	_gpl=yes;;
@@ -2272,26 +2268,6 @@ EOF
 					echores "yes"
 				else
 					echores "no"
-				fi
-			fi
-
-
-
-			if test "$_mindy" = yes || test "$_mindy" = auto
-			then
-cat > $TMPC << EOF
-#include <mindy.h>
-int main(void) { return 0; }
-EOF
-				echocheck "Mindy support"
-				if cc_check -lmindy
-				then
-					HAVE_MINDY='#define HAVE_MINDY 1'
-					DEFINES="$DEFINES -DHAVE_MINDY"
-					LINKFLAGS="$LINKFLAGS -lmindy"
-					echores "yes"
-				else
-					echores "no - never mind"
 				fi
 			fi
 
