@@ -2143,26 +2143,6 @@ bool CSGInterface::cmd_convert()
 				else
 					SG_NOTIMPLEMENTED;
 			}
-#ifdef HAVE_MINDY
-			else if (strmatch(to_class, "MINDYGRAM") &&
-				strmatch(to_type, "ULONG") &&
-				m_nrhs==11)
-			{
-				char* alph=get_str_from_str_or_direct(len);
-				char* embed=get_str_from_str_or_direct(len);
-				int32_t nlen=get_int_from_int_or_str(len);
-				char* delim=get_str_from_str_or_direct(len);
-				float64_t maxv=get_real_from_real_or_str(len);
-
-				result=ui_features.convert_string_char_to_mindy_grams<char>(
-					(CStringFeatures<uint8_t>*) features, alph, embed,
-					nlen, delim, maxv);
-
-				delete[] alph;
-				delete[] embed;
-				delete[] delim;
-			}
-#endif
 			else
 				SG_NOTIMPLEMENTED;
 		} // from_type CHAR
@@ -2215,26 +2195,6 @@ bool CSGInterface::cmd_convert()
 				else
 					SG_NOTIMPLEMENTED;
 			}
-#ifdef HAVE_MINDY
-			else if (strmatch(to_class, "MINDYGRAM") &&
-				strmatch(to_type, "ULONG") &&
-				m_nrhs==11)
-			{
-				char* alph=get_str_from_str_or_direct(len);
-				char* embed=get_str_from_str_or_direct(len);
-				int32_t nlen=get_int_from_int_or_str();
-				char* delim=get_str_from_str_or_direct(len);
-				float64_t maxv=get_real_from_real_or_str(len);
-
-				result=ui_features.convert_string_char_to_mindy_grams<uint8_t>(
-					(CStringFeatures<uint8_t>*) features, alph, embed,
-					nlen, delim, maxv);
-
-				delete[] alph;
-				delete[] embed;
-				delete[] delim;
-			}
-#endif
 			else
 				SG_NOTIMPLEMENTED;
 		} // from_type uint8_t
@@ -3224,24 +3184,6 @@ CKernel* CSGInterface::create_kernel()
 
 		delete[] dtype;
 	}
-
-#ifdef HAVE_MINDY
-	else if (strmatch(type, "MINDYGRAM"))
-	{
-		if (m_nrhs<7)
-			return NULL;
-
-		int32_t size=get_int_from_int_or_str();
-		char* meas_str=get_str_from_str_or_direct(len);
-		char* norm_str=get_str_from_str_or_direct(len);
-		float64_t width=get_real_from_real_or_str();
-		char* param_str=get_str_from_str_or_direct(len);
-
-		kernel=ui_kernel.create_mindygram(
-			size, meas_str, norm_str, width, param_str);
-	}
-#endif
-
 	else
 		SG_NOTIMPLEMENTED;
 

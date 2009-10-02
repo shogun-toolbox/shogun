@@ -60,13 +60,6 @@ class CGUIKernel : public CSGObject
 	/** check if kernel is initialized */
 	bool is_initialized() { return initialized; }
 
-#ifdef HAVE_MINDY
-	/** create a new MindyGram kernel */
-	CKernel* CGUIKernel::create_mindygram(
-		int32_t size=10, char* meas_str=NULL, char* norm_str=NULL,
-		float64_t width=1, char* param_str=NULL)
-#endif
-
 	/** create Oligo kernel */
 	CKernel* create_oligo(int32_t size, int32_t k, float64_t width);
 	/** create a new Diag kernel */

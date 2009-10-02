@@ -24,7 +24,6 @@
 #include <shogun/features/SparseFeatures.h>
 #include <shogun/features/CombinedFeatures.h>
 #include <shogun/features/CombinedDotFeatures.h>
-#include <shogun/features/MindyGramFeatures.h>
 #include <shogun/features/WDFeatures.h>
 #include <shogun/features/ExplicitSpecFeatures.h>
 #include <shogun/features/ImplicitWeightedSpecFeatures.h>
@@ -152,28 +151,6 @@ class CGUIFeatures : public CSGObject
 			return NULL;
 		}
 
-#ifdef HAVE_MINDY
-		template <class CT>
-		CMindyGramFeatures* convert_string_char_to_mindy_grams(
-			CStringFeatures<CT> *src, char* alph, char* embed,
-			int32_t nlen, char* delim, float64_t maxv)
-		{
-			if (!src || !aplh || !embed || !delim) {
-				SG_ERROR("Invalid arguments.\n");
-				return NULL;
-			}
-
-			SG_INFO("Converting string to Mindy features "
-					"(a: %s, e: %s, n: %d, d: '%s', m: %f)\n",
-					alph, embed, nlen, delim, maxv);
-
-			CMindyGramFeatures* mgf=new CMindyGramFeatures(
-				alph, embed, delim, nlen);
-			mgf->import_features(src);
-			mgf->trim_max(maxv);
-			return mgf;
-		}
-#endif
 
 		/** set reference features from target */
 		bool set_reference_features(char* target);

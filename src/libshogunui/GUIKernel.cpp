@@ -76,25 +76,6 @@ CKernel* CGUIKernel::get_kernel()
 	return kernel;
 }
 
-#ifdef HAVE_MINDY
-CKernel* CGUIKernel::create_mindygram(
-	int32_t size, char* meas_str, char* norm_str, float64_t width,
-	char* param_str)
-{
-	CKernel* kern=new CMindyGramKernel(size, meast_str, width);
-	if (!kern)
-		SG_ERROR("Couldn't create MindyGramKernel with size %d, meas_str %s, width %f.\n", size, meas_str, width);
-	else
-		SG_DEBUG("created MindyGramKernel (%p) with size %d, meas_str %s, width %f.\n", kern, size, meas_str, width);
-
-	ENormalizationType normalization=get_normalization_from_str(norm_str);
-	kern->set_norm(normalization);
-	kern->set_param(param_str);
-
-	return kern;
-}
-#endif
-
 CKernel* CGUIKernel::create_oligo(int32_t size, int32_t k, float64_t width)
 {
 	CKernel* kern=new COligoStringKernel(size, k, width);

@@ -57,7 +57,6 @@
 #include <shogun/kernel/LocalAlignmentStringKernel.h>
 #include <shogun/kernel/LocalityImprovedStringKernel.h>
 #include <shogun/kernel/MatchWordStringKernel.h> 
-#include <shogun/kernel/MindyGramKernel.h>
 #include <shogun/kernel/OligoStringKernel.h>
 #include <shogun/kernel/PolyKernel.h>
 #include <shogun/kernel/PolyMatchStringKernel.h>
@@ -126,9 +125,6 @@
 %rename(LocalAlignmentStringKernel) CLocalAlignmentStringKernel;
 %rename(LocalityImprovedStringKernel) CLocalityImprovedStringKernel;
 %rename(MatchWordStringKernel) CMatchWordStringKernel;
-#ifdef HAVE_MINDY
-%rename (MindyGramKernel) CMindyGramKernel;
-#endif
 %rename(OligoStringKernel) COligoStringKernel;
 %rename(PolyKernel) CPolyKernel;
 %rename(PolyMatchStringKernel) CPolyMatchStringKernel;
@@ -203,7 +199,6 @@
 %include <shogun/kernel/LocalAlignmentStringKernel.h>
 %include <shogun/kernel/LocalityImprovedStringKernel.h>
 %include <shogun/kernel/MatchWordStringKernel.h>
-%include <shogun/kernel/MindyGramKernel.h>
 %include <shogun/kernel/OligoStringKernel.h>
 %include <shogun/kernel/PolyKernel.h>
 %include <shogun/kernel/PolyMatchStringKernel.h>
