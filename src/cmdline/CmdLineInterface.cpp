@@ -159,7 +159,6 @@ IFType CCmdLineInterface::get_argument_type()
 	// content
 	FILE* fh=fopen((char*) filename, "r");
 	if (!fh)
-		SG_PRINT("Could not find file %s.\n", filename);
 		SG_ERROR("Could not find file %s.\n", filename);
 
 	char* chunk=new char[len+1];
