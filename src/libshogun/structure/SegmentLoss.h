@@ -21,10 +21,27 @@
 class CSegmentLoss : public CSGObject
 {                         
         public:
+
+		/** constructor
+		 */	
                 CSegmentLoss();
+
                 virtual ~CSegmentLoss();
 
+		/** get segment loss for a given range
+		 * 
+		 * @param from_pos start position
+		 * @param to_pos end position
+		 * @segment_id type of the segment
+		 */
 		float32_t get_segment_loss(int32_t from_pos, int32_t to_pos, int32_t segment_id);
+
+		/** get segment loss for a given range
+		 * 
+		 * @param from_pos start position
+		 * @param to_pos end position
+		 * @segment_id type of the segment
+		 */
 		float32_t get_segment_loss_extend(int32_t from_pos, int32_t to_pos, int32_t segment_id);
 
 		/** set best path segment loss
@@ -41,17 +58,36 @@ class CSegmentLoss : public CSGObject
 		 */
 		void set_segment_ids(CArray<int32_t>* segment_ids);
 
+		/** mask parts of the sequence such that there is no 
+		 *  loss incured there; this is used if there is uncertainty 
+		 *  in the label
+		 * 
+		 * @param segment_mask mask
+		 */
 		void set_segment_mask(CArray<float64_t>* segment_mask);
 
+		/** set num segment types
+		 * 
+		 * @param num_segment_types num segment types
+		 */
 		void set_num_segment_types(int32_t num_segment_types)
 		{
 			m_num_segment_types = num_segment_types;
 		}
-		
+
+		/** compute loss
+		 * 
+		 * @param all_pos all candidate positions
+		 * @param len number of positions
+		 */
 		void compute_loss(int32_t* all_pos, int32_t len);
 
+		/** 
+		 * @return object name 
+		 */
 		inline virtual const char* get_name() const { return "SegmentLoss"; }
 	protected:             
+
 		/** segment loss matrix*/
 		CArray2<float32_t> m_segment_loss_matrix;
 
@@ -60,10 +96,13 @@ class CSegmentLoss : public CSGObject
 		 *  one for segment based loss and 
 		 *  one for length contribution*/
 		CArray3<float64_t> m_segment_loss;
+
 		/** segment IDs */
 		CArray<int32_t>* m_segment_ids;
+
 		/** segment mask */
 		CArray<float64_t>* m_segment_mask;
+
 		/** number of different segment types (former: max_a_id)*/
 		int32_t m_num_segment_types;
 };

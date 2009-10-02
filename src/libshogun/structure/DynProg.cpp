@@ -27,6 +27,7 @@
 #include <time.h>
 #include <ctype.h>
 
+
 //#define USE_TMP_ARRAYCLASS
 //#define DYNPROG_DEBUG
 
@@ -1990,7 +1991,6 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 						  } */
 
 						int32_t look_back_ = look_back.element(j, ii) ;
-						int32_t look_back_orig_ = look_back_orig.element(j, ii) ;
 
 						int32_t orf_from = m_orf_info.element(ii,0) ;
 						int32_t orf_to   = m_orf_info.element(j,1) ;
@@ -2183,16 +2183,12 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 							ASSERT(orf_target>=0 && orf_target<3) ;
 						}
 
-						int32_t orf_last_pos = m_pos[t] ;
 						//int32_t loss_last_pos = t ;
 						//float64_t last_loss = 0.0 ;
 
 #ifdef DYNPROG_TIMING
 						MyTime3.start() ;
 #endif				
-						int32_t num_ok_pos = 0 ;
-						float64_t last_mval=0 ;
-						int32_t last_ts = 0 ;
 
 						/* long transition stuff */
 						/* only do this, if 
