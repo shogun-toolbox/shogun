@@ -3,8 +3,6 @@ init_shogun
 addpath('tools');
 fm_train_real=load_matrix('../data/fm_train_real.dat');
 fm_test_real=load_matrix('../data/fm_test_real.dat');
-fm_train_dna=load_matrix('../data/fm_train_dna.dat');
-fm_test_dna=load_matrix('../data/fm_test_dna.dat');
 
 % euclidian distance
 disp('EuclidianDistance')

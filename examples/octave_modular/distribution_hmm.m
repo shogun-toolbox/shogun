@@ -1,7 +1,6 @@
 init_shogun
 
 addpath('tools');
-fm_train_dna=load_matrix('../data/fm_train_dna.dat');
 
 leng=50;
 rep=5;
@@ -70,4 +69,3 @@ end
 
 hmm.get_log_likelihood();
 hmm.get_log_likelihood_sample();
-

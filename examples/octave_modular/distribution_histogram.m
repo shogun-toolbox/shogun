@@ -3,29 +3,6 @@ init_shogun
 addpath('tools');
 fm_train_dna=load_matrix('../data/fm_train_dna.dat');
 
-leng=50;
-rep=5;
-weight=0.3;
-
-% generate a sequence with characters 1-6 drawn from 3 loaded cubes
-for i = 1:3,
-    a{i}= [ ones(1,ceil(leng*rand)) 2*ones(1,ceil(leng*rand)) 3*ones(1,ceil(leng*rand)) 4*ones(1,ceil(leng*rand)) 5*ones(1,ceil(leng*rand)) 6*ones(1,ceil(leng*rand)) ];
-    a{i}= a{i}(randperm(length(a{i})));
-end
-
-s=[];
-for i = 1:size(a,2),
-    s= [ s i*ones(1,ceil(rep*rand)) ];
-end
-s=s(randperm(length(s)));
-cubesequence={''};
-for i = 1:length(s),
-    f(i)=ceil(((1-weight)*rand+weight)*length(a{s(i)}));
-    t=randperm(length(a{s(i)}));
-    r=a{s(i)}(t(1:f(i)));
-    cubesequence{1}=[cubesequence{1} char(r+'0')];
-end
-
 % Histogram
 disp('Histogram')
 

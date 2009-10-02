@@ -5,7 +5,6 @@ init_shogun
 addpath('tools');
 fm_train=load_matrix('../data/fm_train_real.dat');
 
-
 % KMeans
 disp('KMeans')
 
