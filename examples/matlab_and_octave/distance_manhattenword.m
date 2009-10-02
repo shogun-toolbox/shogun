@@ -1,12 +1,10 @@
 addpath('tools');
-fm_train_real=load_matrix('../data/fm_train_real.dat');
-fm_test_real=load_matrix('../data/fm_test_real.dat');
 fm_train_dna=load_matrix('../data/fm_train_dna.dat');
 fm_test_dna=load_matrix('../data/fm_test_dna.dat');
 
 order=3;
 gap=0;
-reverse='n'; % bit silly to not use boolean, set 'r' to yield true
+reverse='n';
 
 % ManhattanWord Distance
 disp('ManhattanWordDistance');

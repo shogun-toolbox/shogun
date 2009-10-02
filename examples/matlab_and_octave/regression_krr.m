@@ -1,6 +1,6 @@
 size_cache=10;
 width=2.1;
-C=0.017;
+C=1.2;
 tube_epsilon=1e-2;
 
 addpath('tools');

@@ -1,5 +1,3 @@
-% Explicit examples on how to use clustering
-
 addpath('tools');
 fm_train=load_matrix('../data/fm_train_real.dat');
 

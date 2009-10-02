@@ -9,7 +9,6 @@ scale=(dim*mean(traindat(:)));
 traindat=sparse(traindat/scale);
 trainlab=[-ones(1,num/2), +ones(1,num/2) ];
 
-
 sg('set_features', 'TRAIN', traindat);
 sg('set_labels', 'TRAIN', trainlab);
 sg('c', C);

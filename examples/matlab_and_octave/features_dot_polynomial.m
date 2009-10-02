@@ -1,11 +1,7 @@
-
-
-
 degree = 2;
 traindat = [rand(10,50)-1 2+rand(10,50)+1];
 testdat = [rand(10,50)-1 2+rand(10,50)+1];
 trainlab = [ones(1, 50) -ones(1, 50)];
-
 
 C=1;
 size_cache=10; 

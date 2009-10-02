@@ -1,11 +1,6 @@
 leng=50;
 rep=5;
 weight=1;
-order=3;
-gap=0;
-num=12;
-len=23;
-reverse='n'; % bit silly to not use boolean, set 'r' to yield true
 
 addpath('tools');
 fm_train_dna=load_matrix('../data/fm_train_dna.dat');
