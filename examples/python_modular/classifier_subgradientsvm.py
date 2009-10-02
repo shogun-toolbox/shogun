@@ -11,7 +11,7 @@ def subgradient_svm ():
 	feats_test=SparseRealFeatures()
 	feats_test.obtain_from_simple(realfeat)
 
-	C=0.42
+	C=0.9
 	epsilon=1e-3
 	num_threads=1
 	max_train_time=1.

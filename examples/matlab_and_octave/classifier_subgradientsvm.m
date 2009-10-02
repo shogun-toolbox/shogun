@@ -12,7 +12,7 @@ fm_test_real=load_matrix('../data/fm_test_real.dat');
 % SubgradientSVM - often does not converge
 disp('SubGradientSVM');
 
-C=0.42;
+C=0.9;
 sg('set_features', 'TRAIN', sparse(fm_train_real));
 sg('set_labels', 'TRAIN', label_train_twoclass);
 sg('new_classifier', 'SUBGRADIENTSVM');
