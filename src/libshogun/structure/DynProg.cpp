@@ -2669,7 +2669,10 @@ void CDynProg::best_path_trans_deriv(
 				lookup_content_svm_values(from_pos, from_pos_thresh, m_pos[from_pos], m_pos[from_pos_thresh], svm_value_part1, frame);
 
 #ifdef DYNPROG_DEBUG
-				SG_PRINT("part1: pos1: %i  pos2: %i   pos3: %i  svm_value_part1=%1.4f\n", m_pos[from_pos], m_pos[from_pos_thresh], m_pos[from_pos_thresh+1], svm_value_part1) ;
+				SG_PRINT("part1: pos1: %i  pos2: %i   pos3: %i  \nsvm_value_part1: ", m_pos[from_pos], m_pos[from_pos_thresh], m_pos[from_pos_thresh+1]) ;
+				for (int32_t s=0; s<m_num_lin_feat_plifs_cum[m_num_raw_data]+m_num_intron_plifs; s++)
+					SG_PRINT("%1.4f  ", svm_value_part1[s]);
+				SG_PRINT("\n");
 #endif
 
 				while (to_pos_thresh>0 && m_pos[to_pos] - m_pos[to_pos_thresh-1] <= m_long_transition_threshold) // *
@@ -2681,7 +2684,10 @@ void CDynProg::best_path_trans_deriv(
 				lookup_content_svm_values(to_pos_thresh, to_pos, m_pos[to_pos_thresh], m_pos[to_pos], svm_value_part2, frame);
 
 #ifdef DYNPROG_DEBUG
-				SG_PRINT("part2: pos1: %i  pos2: %i   pos3: %i  svm_value_part2=%1.4f\n", m_pos[to_pos], m_pos[to_pos_thresh], m_pos[to_pos_thresh+1], svm_value_part2) ;
+				SG_PRINT("part2: pos1: %i  pos2: %i   pos3: %i  \nsvm_value_part2: ", m_pos[to_pos], m_pos[to_pos_thresh], m_pos[to_pos_thresh+1]) ;
+				for (int32_t s=0; s<m_num_lin_feat_plifs_cum[m_num_raw_data]+m_num_intron_plifs; s++)
+					SG_PRINT("%1.4f  ", svm_value_part2[s]);
+				SG_PRINT("\n");
 #endif
 			}
 			else
@@ -2700,10 +2706,12 @@ void CDynProg::best_path_trans_deriv(
 				}
 
 				lookup_content_svm_values(from_pos, to_pos, m_pos[from_pos],m_pos[to_pos], svm_value, frame);
-				if (false)//(frame>=0)
-					SG_PRINT("svm_values: %f, %f, %f \n", svm_value[4], svm_value[5], svm_value[6]);
-				//SG_PRINT("svm_values: %f, %f, %f, %f \n", svm_value[8], svm_value[9], svm_value[10], svm_value[11]);
-
+#ifdef DYNPROG_DEBUG
+				SG_PRINT("part2: pos1: %i  pos2: %i   \nsvm_values: ", m_pos[from_pos], m_pos[to_pos]) ;
+				for (int32_t s=0; s<m_num_lin_feat_plifs_cum[m_num_raw_data]+m_num_intron_plifs; s++)
+					SG_PRINT("%1.4f  ", svm_value[s]);
+				SG_PRINT("\n");
+#endif
 			}
 		}
 
