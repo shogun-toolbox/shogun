@@ -15,6 +15,7 @@
 #include "base/SGObject.h"
 #include "lib/Mathematics.h"
 #include "features/Labels.h"
+#include "features/Features.h"
 
 
 enum EClassifierType
@@ -88,12 +89,19 @@ class CClassifier : public CSGObject
 		 */
 		virtual bool train() { return false; }
 
-		/** classify object
+		/** classify objects
 		 *
 		 * @param output classified labels
 		 * @return classified labels
 		 */
 		virtual CLabels* classify(CLabels* output=NULL);
+
+		/** classify objects
+		 *
+		 * @param data (test)data to be classified
+		 * @return classified labels
+		 */
+		virtual CLabels* classify(CFeatures* data) { SG_NOTIMPLEMENTED; return NULL; }
 
 		/** classify one example
 		 *

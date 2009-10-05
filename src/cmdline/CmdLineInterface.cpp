@@ -72,14 +72,12 @@ void CCmdLineInterface::reset(const char* line)
 	SG_UNREF(m_rhs);
 	m_rhs=NULL;
 
-	// split lhs from rhs
-#ifdef SUNOS //for some reason strstr on sunos requires a char* haystack
+	/* split lhs from rhs
+	 * for some reason strstr on sunos and newer libc's
+	 * requires a char* haystack
+	 */
 	char* equal_sign=strstr((char*) line, delim_equal);
-#else
-	char* equal_sign=strstr(line, delim_equal);
-#endif
 	if (equal_sign)
-	//if (strstr(line, delim_equal))
 	{
 #ifdef DEBUG_CMDLINEIF
 		SG_PRINT("has lhs!\n");

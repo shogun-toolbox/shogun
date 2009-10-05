@@ -17,7 +17,7 @@
 #include "lib/io.h"
 #include "features/Features.h"
 #include "distance/Distance.h"
-#include "distance/DistanceMachine.h"
+#include "classifier/DistanceMachine.h"
 
 class CDistanceMachine;
 
@@ -68,6 +68,13 @@ class CKNN : public CDistanceMachine
 		 * @return resulting labels
 		 */
 		virtual CLabels* classify(CLabels* output=NULL);
+
+		/** classify objects
+		 *
+		 * @param data (test)data to be classified
+		 * @return classified labels
+		 */
+		virtual CLabels* classify(CFeatures* data);
 
 		/// get output for example "vec_idx"
 		virtual float64_t classify_example(int32_t vec_idx)

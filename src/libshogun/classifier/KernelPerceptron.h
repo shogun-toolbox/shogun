@@ -14,7 +14,7 @@
 #include <stdio.h>
 #include "lib/common.h"
 #include "features/Features.h"
-#include "kernel/KernelMachine.h"
+#include "classifier/KernelMachine.h"
 
 /** @brief Class KernelPerceptron -
  * currently unfinished implementation of a Kernel Perceptron

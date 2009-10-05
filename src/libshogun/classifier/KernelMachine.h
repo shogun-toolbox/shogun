@@ -108,6 +108,13 @@ class CKernelMachine : public CClassifier
 		 */
 		virtual CLabels* classify(CLabels* output=NULL);
 
+		/** classify objects
+		 *
+		 * @param data (test)data to be classified
+		 * @return classified labels
+		 */
+		virtual CLabels* classify(CFeatures* data);
+
 #ifdef HAVE_BOOST_SERIALIZATION
     private:
 

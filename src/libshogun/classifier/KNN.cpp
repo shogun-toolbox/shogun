@@ -148,3 +148,17 @@ bool CKNN::save(FILE* dstfile)
 {
 	return false;
 }
+
+CLabels* CKNN::classify(CFeatures* data)
+{
+	CFeatures* lhs=distance->get_lhs();
+	if (!lhs->get_num_vectors())
+	{
+		SG_UNREF(lhs);
+		SG_ERROR("No vectors on left hand side\n");
+	}
+	distance->init(lhs, data);
+	SG_UNREF(lhs);
+
+	return classify((CLabels*) NULL);
+}

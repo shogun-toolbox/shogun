@@ -35,7 +35,7 @@
 #include "classifier/svm/pr_loqo.h"
 
 #include "kernel/Kernel.h"
-#include "kernel/KernelMachine.h"
+#include "classifier/KernelMachine.h"
 #include "kernel/CombinedKernel.h"
 
 #include <unistd.h>

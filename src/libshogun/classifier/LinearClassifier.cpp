@@ -53,3 +53,13 @@ CLabels* CLinearClassifier::classify(CLabels* output)
 
 	return NULL;
 }
+
+CLabels* CLinearClassifier::classify(CFeatures* data)
+{
+	if (!data)
+		SG_ERROR("No features specified\n");
+	if (!data->has_property(FP_DOT))
+		SG_ERROR("Specified features are not of type CDotFeatures\n");
+	set_features((CDotFeatures*) data);
+	return classify((CLabels*) NULL);
+}

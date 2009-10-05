@@ -17,7 +17,7 @@
 #include "lib/Signal.h"
 #include "lib/Mathematics.h"
 #include "regression/svr/SVR_light.h"
-#include "kernel/KernelMachine.h"
+#include "classifier/KernelMachine.h"
 #include "kernel/CombinedKernel.h"
 
 #include <unistd.h>

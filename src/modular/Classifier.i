@@ -36,7 +36,7 @@
  #include <shogun/classifier/svm/GNPPSVM.h>
  #include <shogun/classifier/svm/GPBTSVM.h>
  #include <shogun/classifier/KernelPerceptron.h> 
- #include <shogun/distance/DistanceMachine.h>
+ #include <shogun/classifier/DistanceMachine.h>
  #include <shogun/classifier/KNN.h>
  #include <shogun/classifier/LDA.h>
  #include <shogun/classifier/svm/LibLinear.h>
@@ -55,8 +55,7 @@
  #include <shogun/classifier/svm/SVM.h>
  #include <shogun/classifier/svm/SVMLin.h>
  #include <shogun/classifier/Classifier.h>
- #include <shogun/kernel/KernelMachine.h>
- #include <shogun/distance/DistanceMachine.h>
+ #include <shogun/classifier/KernelMachine.h>
  #include <shogun/classifier/svm/SVMOcas.h>
  #include <shogun/classifier/svm/SVMSGD.h>
  #include <shogun/classifier/svm/WDSVMOcas.h>
@@ -121,8 +120,8 @@
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/classifier/Classifier.h>
-%include <shogun/kernel/KernelMachine.h>
-%include <shogun/distance/DistanceMachine.h>
+%include <shogun/classifier/KernelMachine.h>
+%include <shogun/classifier/DistanceMachine.h>
 %include <shogun/classifier/svm/SVM.h>
 %include <shogun/classifier/svm/MultiClassSVM.h>
 %include <shogun/classifier/LinearClassifier.h> 

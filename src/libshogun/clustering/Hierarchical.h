@@ -15,7 +15,7 @@
 #include "lib/common.h"
 #include "lib/io.h"
 #include "distance/Distance.h"
-#include "distance/DistanceMachine.h"
+#include "classifier/DistanceMachine.h"
 
 class CDistanceMachine;
 

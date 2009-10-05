@@ -8,7 +8,7 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "kernel/KernelMachine.h"
+#include "classifier/KernelMachine.h"
 
 
 #ifdef HAVE_BOOST_SERIALIZATION
@@ -48,4 +48,21 @@ CLabels* CKernelMachine::classify(CLabels* output)
 	}
 
 	return NULL;
+}
+
+CLabels* CKernelMachine::classify(CFeatures* data)
+{
+	if (!kernel)
+		SG_ERROR("No kernel assigned!\n");
+
+	CFeatures* lhs=kernel->get_lhs();
+	if (!lhs->get_num_vectors())
+	{
+		SG_UNREF(lhs);
+		SG_ERROR("No vectors on left hand side\n");
+	}
+	kernel->init(lhs, data);
+	SG_UNREF(lhs);
+
+	return classify((CLabels*) NULL);
 }

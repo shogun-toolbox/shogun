@@ -31,7 +31,7 @@
 /* Include Module Definitions */
 %include "SGBase.i"
 %{
-#include <shogun/distance/DistanceMachine.h>
+#include <shogun/classifier/DistanceMachine.h>
 #include <shogun/clustering/KMeans.h>
 #include <shogun/clustering/Hierarchical.h>
 %}
@@ -49,6 +49,6 @@
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/classifier/Classifier.h> 
-%include <shogun/distance/DistanceMachine.h>
+%include <shogun/classifier/DistanceMachine.h>
 %include <shogun/clustering/KMeans.h>
 %include <shogun/clustering/Hierarchical.h>

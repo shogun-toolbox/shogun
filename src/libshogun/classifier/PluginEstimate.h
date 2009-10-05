@@ -48,6 +48,13 @@ class CPluginEstimate: public CClassifier
 		/// classify all test features
 		CLabels* classify(CLabels* output=NULL);
 
+		/** classify objects
+		 *
+		 * @param data (test)data to be classified
+		 * @return classified labels
+		 */
+		virtual CLabels* classify(CFeatures* data);
+
 		/** set features
 		 *
 		 * @param feat features to set

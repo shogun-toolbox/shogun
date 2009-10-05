@@ -81,6 +81,21 @@ CLabels* CPluginEstimate::classify(CLabels* result)
 	return result;
 }
 
+CLabels* CPluginEstimate::classify(CFeatures* data)
+{
+	if (!data)
+		SG_ERROR("No features specified\n");
+
+	if (data->get_feature_class() != C_STRING ||
+			data->get_feature_type() != F_WORD)
+	{
+		SG_ERROR("Features not of class string type word\n");
+	}
+
+	set_features((CStringFeatures<uint16_t>*) data);
+	return classify((CLabels*) NULL);
+}
+
 float64_t CPluginEstimate::classify_example(int32_t vec_idx)
 {
 	ASSERT(features);

@@ -17,7 +17,7 @@
 
 #ifdef HAVE_LAPACK
 
-#include "kernel/KernelMachine.h"
+#include "classifier/KernelMachine.h"
 
 /** @brief Class KRR implements Kernel Ridge Regression - a regularized least square
  * method for classification and regression.

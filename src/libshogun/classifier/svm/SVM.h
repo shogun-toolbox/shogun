@@ -14,7 +14,7 @@
 #include "lib/common.h"
 #include "features/Features.h"
 #include "kernel/Kernel.h"
-#include "kernel/KernelMachine.h"
+#include "classifier/KernelMachine.h"
 
 class CMKL;
 

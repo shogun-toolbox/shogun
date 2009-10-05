@@ -153,6 +153,13 @@ class CLinearClassifier : public CClassifier
 			features=feat;
 		}
 
+		/** classify objects
+		 *
+		 * @param data (test)data to be classified
+		 * @return classified labels
+		 */
+		virtual CLabels* classify(CFeatures* data);
+
 		/** get features
 		 *
 		 * @return features

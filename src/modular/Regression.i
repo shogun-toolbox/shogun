@@ -25,7 +25,7 @@
 %{
  #include <shogun/regression/Regression.h>
  #include <shogun/classifier/Classifier.h>
- #include <shogun/kernel/KernelMachine.h>
+ #include <shogun/classifier/KernelMachine.h>
  #include <shogun/regression/KRR.h>
  #include <shogun/classifier/svm/SVM.h>
  #include <shogun/classifier/svm/LibSVM.h>
@@ -54,7 +54,7 @@
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/regression/Regression.h>
 %include <shogun/classifier/Classifier.h>
-%include <shogun/kernel/KernelMachine.h>
+%include <shogun/classifier/KernelMachine.h>
 %include <shogun/regression/KRR.h>
 %include <shogun/classifier/svm/SVM.h>
 %include <shogun/classifier/svm/LibSVM.h>

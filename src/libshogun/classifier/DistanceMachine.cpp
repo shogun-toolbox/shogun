@@ -8,7 +8,7 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST
  */
 
-#include "distance/DistanceMachine.h"
+#include "classifier/DistanceMachine.h"
 
 CDistanceMachine::CDistanceMachine()
 : CClassifier(), distance(NULL)
