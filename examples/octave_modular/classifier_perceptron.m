@@ -1,15 +1,15 @@
 init_shogun
 
-addpath('tools');
-label_train_twoclass=load_matrix('../data/label_train_twoclass.dat');
-fm_train_real=load_matrix('../data/fm_train_real.dat');
-fm_test_real=load_matrix('../data/fm_test_real.dat');
+num=50;
+label_train_twoclass=[-ones(1,num/2) ones(1,num/2)];
+fm_train_real=[randn(5,num/2)-1, randn(5,num/2)+1];
+fm_test_real=[randn(5,num)-1, randn(5,num)+1];
 
 % perceptron
 disp('Perceptron')
 
 feats_train=RealFeatures(fm_train_real);
-feats_test=RealFeatures(fm_train_test);
+feats_test=RealFeatures(fm_test_real);
 
 learn_rate=1.;
 max_iter=1000;
