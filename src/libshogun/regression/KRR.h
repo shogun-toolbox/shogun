@@ -123,6 +123,6 @@ class CKRR : public CKernelMachine
 		float64_t tau;
 };
 
-#endif /* HAVE_LAPACK */
+#endif // HAVE_LAPACK
 
-#endif
+#endif // _KRR_H__
