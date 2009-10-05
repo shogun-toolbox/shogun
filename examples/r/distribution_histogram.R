@@ -1,15 +1,8 @@
-# Explicit examples on how to use distributions
-#
-# run as R --no-save --slave --file=<filename>
-
 library("sg")
-#uncomment if make install does not work and comment the library("sg") line above
-#dyn.load('sg.so')
-#sg <- function(...) .External("sg",...,PACKAGE="sg")
 
 order <- 3
 gap <- 0
-reverse <- 'n' # bit silly to not use boolean, set 'r' to yield true
+reverse <- 'n'
 
 fm_train_dna <- as.matrix(read.table('../data/fm_train_dna.dat'))
 fm_train_cube <- as.matrix(read.table('../data/fm_train_cube.dat', colClasses=c('character')))

@@ -1,9 +1,4 @@
-# run as R --no-save --slave --file=<filename>
-
 library("sg")
-#uncomment if make install does not work and comment the library("sg") line above
-#dyn.load('sg.so')
-#sg <- function(...) .External("sg",...,PACKAGE="sg")
 
 size_cache <- 10
 width <- 2.1
@@ -26,4 +21,3 @@ km <- sg('get_kernel_matrix', 'TRAIN')
 dump <- sg('set_features', 'TEST', fm_test_real)
 dump <- sg('attach_preproc', 'TEST')
 km <- sg('get_kernel_matrix', 'TEST')
-

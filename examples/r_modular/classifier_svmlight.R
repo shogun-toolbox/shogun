@@ -1,18 +1,8 @@
 library(shogun)
 
-# Explicit examples on how to use the different classifiers
-
-fm_train_real <- as.matrix(read.table('../data/fm_train_real.dat'))
-fm_test_real <- as.matrix(read.table('../data/fm_test_real.dat'))
 fm_train_dna <- as.matrix(read.table('../data/fm_train_dna.dat'))
 fm_test_dna <- as.matrix(read.table('../data/fm_test_dna.dat'))
 label_train_dna <- as.real(read.table('../data/label_train_dna42.dat'))
-label_train_twoclass <- as.real(read.table('../data/label_train_twoclass.dat'))
-label_train_multiclass <- as.real(read.table('../data/label_train_multiclass.dat'))
-
-###########################################################################
-# kernel-based SVMs
-###########################################################################
 
 # svm light
 dosvmlight <- function()
@@ -27,7 +17,7 @@ dosvmlight <- function()
 
 	kernel <- WeightedDegreeStringKernel(feats_train, feats_train, degree)
 
-	C <- 0.017
+	C <- 1.017
 	epsilon <- 1e-5
 	num_threads <- as.integer(3)
 	labels <- Labels(as.real(label_train_dna))

@@ -1,14 +1,6 @@
-# Explicit examples on how to use clustering
-#
-# run as R --no-save --slave --file=<filename>
-
 library("sg")
-#uncomment if make install does not work and comment the library("sg") line above
-#dyn.load('sg.so')
-#sg <- function(...) .External("sg",...,PACKAGE="sg")
 
 fm_train <- as.matrix(read.table('../data/fm_train_real.dat'))
-
 
 # KMEANS
 print('KMeans')

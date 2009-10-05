@@ -2,10 +2,6 @@ library(shogun)
 
 fm_train_real <- as.matrix(read.table('../data/fm_train_real.dat'))
 fm_test_real <- as.matrix(read.table('../data/fm_test_real.dat'))
-fm_train_dna <- as.matrix(read.table('../data/fm_train_dna.dat'))
-fm_test_dna <- as.matrix(read.table('../data/fm_test_dna.dat'))
-label_train_dna <- as.real(read.table('../data/label_train_dna42.dat'))
-label_train_twoclass <- as.real(read.table('../data/label_train_twoclass.dat'))
 label_train_multiclass <- as.real(read.table('../data/label_train_multiclass.dat'))
 
 # knn
@@ -17,7 +13,7 @@ distance <- EuclidianDistance()
 
 k <- as.integer(3)
 num_threads <- as.integer(1)
-labels <- Labels(label_train_twoclass)
+labels <- Labels(label_train_multiclass)
 
 knn <- KNN(k, distance, labels)
 dump <- knn$parallel$set_num_threads(knn$parallel, num_threads)
@@ -26,4 +22,3 @@ dump <- knn$train()
 dump <- distance$init(distance, feats_train, feats_test)
 lab <- knn$classify(knn)
 out <- lab$get_labels(lab)
-

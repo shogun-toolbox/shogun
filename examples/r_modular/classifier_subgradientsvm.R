@@ -2,11 +2,7 @@ library(shogun)
 
 fm_train_real <- as.matrix(read.table('../data/fm_train_real.dat'))
 fm_test_real <- as.matrix(read.table('../data/fm_test_real.dat'))
-fm_train_dna <- as.matrix(read.table('../data/fm_train_dna.dat'))
-fm_test_dna <- as.matrix(read.table('../data/fm_test_dna.dat'))
-label_train_dna <- as.real(read.table('../data/label_train_dna42.dat'))
 label_train_twoclass <- as.real(read.table('../data/label_train_twoclass.dat'))
-label_train_multiclass <- as.real(read.table('../data/label_train_multiclass.dat'))
 
 # subgradient based svm
 print('SubGradientSVM')
@@ -18,7 +14,7 @@ realfeat <- RealFeatures(fm_test_real)
 feats_test <- SparseRealFeatures()
 dump <- feats_test$obtain_from_simple(feats_test, realfeat)
 
-C <- 0.42
+C <- 1.42
 epsilon <- 1e-3
 num_threads <- as.integer(1)
 max_train_time <- 1.
@@ -34,4 +30,3 @@ dump <- svm$train()
 dump <- svm$set_features(svm, feats_test)
 lab <- svm$classify(svm)
 out <- lab$get_labels(lab)
-

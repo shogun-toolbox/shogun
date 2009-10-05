@@ -2,10 +2,6 @@ library(shogun)
 
 fm_train_real <- as.matrix(read.table('../data/fm_train_real.dat'))
 fm_test_real <- as.matrix(read.table('../data/fm_test_real.dat'))
-fm_train_dna <- as.matrix(read.table('../data/fm_train_dna.dat'))
-fm_test_dna <- as.matrix(read.table('../data/fm_test_dna.dat'))
-label_train_dna <- as.real(read.table('../data/label_train_dna42.dat'))
-label_train_twoclass <- as.real(read.table('../data/label_train_twoclass.dat'))
 label_train_multiclass <- as.real(read.table('../data/label_train_multiclass.dat'))
 
 # gmnpsvm
@@ -16,7 +12,7 @@ feats_test <- RealFeatures(fm_test_real)
 width <- 2.1
 kernel <- GaussianKernel(feats_train, feats_train, width)
 
-C <- 0.017
+C <- 1.3
 epsilon <- 1e-5
 num_threads <- as.integer(1)
 labels <- Labels(label_train_multiclass)

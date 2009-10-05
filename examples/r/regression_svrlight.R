@@ -1,11 +1,4 @@
-# Explicit examples on how to use regressions
-#
-# run as R --no-save --slave --file=<filename>
-
 library("sg")
-#uncomment if make install does not work and comment the library("sg") line above
-#dyn.load('sg.so')
-#sg <- function(...) .External("sg",...,PACKAGE="sg")
 
 size_cache <- 10
 C <- 10
@@ -15,10 +8,6 @@ width <- 2.1
 fm_train <- as.matrix(read.table('../data/fm_train_real.dat'))
 fm_test <- as.matrix(read.table('../data/fm_test_real.dat'))
 label_train <- as.real(as.matrix(read.table('../data/label_train_twoclass.dat')))
-
-#
-# SVM-based
-#
 
 # SVR Light
 dosvrlight <- function()

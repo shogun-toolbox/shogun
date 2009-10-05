@@ -1,9 +1,6 @@
 library(shogun)
 
-# Explicit examples on how to use distributions
-
 fm_train_dna <- as.matrix(read.table('../data/fm_train_dna.dat'))
-fm_train_cube <- as.matrix(read.table('../data/fm_train_cube.dat', colClasses=c('character')))
 
 # Linear HMM
 print('LinearHMM')

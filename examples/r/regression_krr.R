@@ -1,11 +1,4 @@
-# Explicit examples on how to use regressions
-#
-# run as R --no-save --slave --file=<filename>
-
 library("sg")
-#uncomment if make install does not work and comment the library("sg") line above
-#dyn.load('sg.so')
-#sg <- function(...) .External("sg",...,PACKAGE="sg")
 
 size_cache <- 10
 C <- 10
