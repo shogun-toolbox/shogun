@@ -119,16 +119,16 @@ class CKernelMachine : public CClassifier
 		 */
 		inline float64_t get_bias()
 		{
-			return bias;
+			return m_bias;
 		}
 
 		/** set bias to given value
 		 *
-		 * @param b new bias
+		 * @param bias new bias
 		 */
-		inline void set_bias(float64_t b)
+		inline void set_bias(float64_t bias)
 		{
-			bias=b;
+			m_bias=bias;
 		}
 
 		/** get support vector at given index
@@ -138,8 +138,8 @@ class CKernelMachine : public CClassifier
 		 */
 		inline int32_t get_support_vector(int32_t idx)
 		{
-			ASSERT(svs && idx<num_svs);
-			return svs[idx];
+			ASSERT(m_svs && idx<num_svs);
+			return m_svs[idx];
 		}
 
 		/** get alpha at given index
@@ -149,8 +149,8 @@ class CKernelMachine : public CClassifier
 		 */
 		inline float64_t get_alpha(int32_t idx)
 		{
-			ASSERT(alpha && idx<num_svs);
-			return alpha[idx];
+			ASSERT(m_alpha && idx<num_svs);
+			return m_alpha[idx];
 		}
 
 		/** set support vector at given index to given value
@@ -161,8 +161,8 @@ class CKernelMachine : public CClassifier
 		 */
 		inline bool set_support_vector(int32_t idx, int32_t val)
 		{
-			if (svs && idx<num_svs)
-				svs[idx]=val;
+			if (m_svs && idx<num_svs)
+				m_svs[idx]=val;
 			else
 				return false;
 
@@ -177,8 +177,8 @@ class CKernelMachine : public CClassifier
 		 */
 		inline bool set_alpha(int32_t idx, float64_t val)
 		{
-			if (alpha && idx<num_svs)
-				alpha[idx]=val;
+			if (m_alpha && idx<num_svs)
+				m_alpha[idx]=val;
 			else
 				return false;
 
@@ -202,44 +202,46 @@ class CKernelMachine : public CClassifier
 		void set_alphas(float64_t* alphas, int32_t d)
 		{
 			ASSERT(alphas);
+			ASSERT(m_alpha);
 			ASSERT(d==num_svs);
 
 			for(int32_t i=0; i<d; i++)
-				alpha[i]=alphas[i];
+				m_alpha[i]=alphas[i];
 		}
 
 		/** set support vectors to given values
 		 *
-		 * @param svs array with all support vectors to set
+		 * @param suppvec array with all support vectors to set
 		 * @param d number of support vectors
 		 */
 		void set_support_vectors(int32_t* svs, int32_t d)
 		{
+			ASSERT(m_svs);
 			ASSERT(svs);
 			ASSERT(d==num_svs);
 
 			for(int32_t i=0; i<d; i++)
-				svs[i]=svs[i];
+				m_svs[i]=svs[i];
 		}
 
 		/** get all support vectors (swig compatible)
 		 *
-		 * @param svs array to contain a copy of the support vectors
+		 * @param suppvec array to contain a copy of the support vectors
 		 * @param num number of support vectors in the array
 		 */
-		void get_support_vectors(int32_t** svs, int32_t* num)
+		void get_support_vectors(int32_t** suppvec, int32_t* num)
 		{
 			int32_t nsv = get_num_support_vectors();
 
-			ASSERT(svs && num);
-			*svs=NULL;
+			ASSERT(suppvec && num);
+			*suppvec=NULL;
 			*num=nsv;
 
 			if (nsv>0)
 			{
-				*svs = (int32_t*) malloc(sizeof(int32_t)*nsv);
+				*suppvec = (int32_t*) malloc(sizeof(int32_t)*nsv);
 				for(int32_t i=0; i<nsv; i++)
-					(*svs)[i] = get_support_vector(i);
+					(*suppvec)[i] = get_support_vector(i);
 			}
 		}
 
@@ -270,22 +272,22 @@ class CKernelMachine : public CClassifier
 		 */
 		inline bool create_new_model(int32_t num)
 		{
-			delete[] alpha;
-			delete[] svs;
+			delete[] m_alpha;
+			delete[] m_svs;
 
-			bias=0;
+			m_bias=0;
 			num_svs=num;
 
 			if (num>0)
 			{
-				alpha= new float64_t[num];
-				svs= new int32_t[num];
-				return (alpha!=NULL && svs!=NULL);
+				m_alpha= new float64_t[num];
+				m_svs= new int32_t[num];
+				return (m_alpha!=NULL && m_svs!=NULL);
 			}
 			else
 			{
-				alpha= NULL;
-				svs=NULL;
+				m_alpha= NULL;
+				m_svs=NULL;
 				return true;
 			}
 		}
@@ -349,7 +351,7 @@ class CKernelMachine : public CClassifier
                 ar & use_batch_computation;
                 ar & use_linadd;
                 ar & use_bias;
-                ar & bias;
+                ar & m_bias;
 
                 std::cout << "done CKernelMachine" << std::endl;
             }
@@ -366,8 +368,8 @@ class CKernelMachine : public CClassifier
 					ar & num_svs;
 
 					for (int32_t i=0; i < num_svs; ++i) {
-						ar & alpha[i];
-						ar & svs[i];
+						ar & m_alpha[i];
+						ar & m_svs[i];
 					}
 
 				}
@@ -382,11 +384,11 @@ class CKernelMachine : public CClassifier
 					if (num_svs > 0)
 					{
 
-						alpha = new float64_t[num_svs];
-						svs = new int32_t[num_svs];
+						m_alpha = new float64_t[num_svs];
+						m_svs = new int32_t[num_svs];
 						for (int32_t i=0; i< num_svs; ++i){
-							ar & alpha[i];
-							ar & svs[i];
+							ar & m_alpha[i];
+							ar & m_svs[i];
 						}
 
 					}
@@ -408,11 +410,11 @@ class CKernelMachine : public CClassifier
 		/** if bias shall be used */
 		bool use_bias;
 		/**  bias term b */
-		float64_t bias;
+		float64_t m_bias;
 		/** array of coefficients alpha */
-		float64_t* alpha;
+		float64_t* m_alpha;
 		/** array of ``support vectors'' */
-		int32_t* svs;
+		int32_t* m_svs;
 		/** number of ``support vectors'' */
 		int32_t num_svs;
 };

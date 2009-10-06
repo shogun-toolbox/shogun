@@ -9,20 +9,30 @@
  */
 
 #include "classifier/KernelMachine.h"
-
+#include "lib/Signal.h"
 
 #ifdef HAVE_BOOST_SERIALIZATION
 #include <boost/serialization/export.hpp>
 BOOST_IS_ABSTRACT(CKernelMachine);
 #endif //HAVE_BOOST_SERIALIZATION
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+struct S_THREAD_PARAM
+{
+	CKernelMachine* kernel_machine;
+	CLabels* result;
+	int32_t start;
+	int32_t end;
+	bool verbose;
+};
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 
 CKernelMachine::CKernelMachine()
 : CClassifier(), kernel(NULL), use_batch_computation(true), use_linadd(true), use_bias(true)
 {
-	bias=0.0;
-	alpha=NULL;
-	svs=NULL;
+	m_bias=0.0;
+	m_alpha=NULL;
+	m_svs=NULL;
 	num_svs=0;
 }
 
@@ -30,8 +40,8 @@ CKernelMachine::~CKernelMachine()
 {
 	SG_UNREF(kernel);
 
-	delete[] alpha;
-	delete[] svs;
+	delete[] m_alpha;
+	delete[] m_svs;
 }
 
 bool CKernelMachine::init_kernel_optimization()
@@ -134,7 +144,7 @@ CLabels* CKernelMachine::classify(CLabels* lab)
 			if (num_threads < 2)
 			{
 				S_THREAD_PARAM params;
-				params.svm=this;
+				params.kernel_machine=this;
 				params.result=lab;
 				params.start=0;
 				params.end=num_vectors;
@@ -152,7 +162,7 @@ CLabels* CKernelMachine::classify(CLabels* lab)
 
 				for (t=0; t<num_threads-1; t++)
 				{
-					params[t].svm = this;
+					params[t].kernel_machine = this;
 					params[t].result = lab;
 					params[t].start = t*step;
 					params[t].end = (t+1)*step;
@@ -161,7 +171,7 @@ CLabels* CKernelMachine::classify(CLabels* lab)
 							CKernelMachine::classify_example_helper, (void*)&params[t]);
 				}
 
-				params[t].svm = this;
+				params[t].kernel_machine = this;
 				params[t].result = lab;
 				params[t].start = t*step;
 				params[t].end = num_vectors;
@@ -231,7 +241,7 @@ void* CKernelMachine::classify_example_helper(void* p)
 {
 	S_THREAD_PARAM* params= (S_THREAD_PARAM*) p;
 	CLabels* result=params->result;
-	CKernelMachine* svm=params->svm;
+	CKernelMachine* kernel_machine=params->kernel_machine;
 
 #ifdef WIN32
 	for (int32_t vec=params->start; vec<params->end; vec++)
@@ -248,7 +258,7 @@ void* CKernelMachine::classify_example_helper(void* p)
 				SG_SPROGRESS(v, 0.0, num_vectors-1);
 		}
 
-		result->set_label(vec, svm->classify_example(vec));
+		result->set_label(vec, kernel_machine->classify_example(vec));
 	}
 
 	return NULL;

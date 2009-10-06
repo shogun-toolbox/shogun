@@ -10,7 +10,6 @@
 
 #include "lib/common.h"
 #include "lib/io.h"
-#include "lib/Signal.h"
 #include "base/Parallel.h"
 
 #include "classifier/svm/SVM.h"
@@ -29,16 +28,6 @@ BOOST_IS_ABSTRACT(CSVM);
 #endif //HAVE_BOOST_SERIALIZATION
 
 
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-struct S_THREAD_PARAM
-{
-	CSVM* svm;
-	CLabels* result;
-	int32_t start;
-	int32_t end;
-	bool verbose;
-};
-#endif // DOXYGEN_SHOULD_SKIP_THIS
 
 CSVM::CSVM(int32_t num_sv)
 : CKernelMachine()
