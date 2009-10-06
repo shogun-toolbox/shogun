@@ -101,6 +101,201 @@ class CKernelMachine : public CClassifier
 			return use_linadd ;
 		}
 
+		/** set state of bias
+		 *
+		 * @param enable_bias if bias shall be enabled
+		 */
+		inline void set_bias_enabled(bool enable_bias) { use_bias=enable_bias; }
+
+		/** get state of bias
+		 *
+		 * @return state of bias
+		 */
+		inline bool get_bias_enabled() { return use_bias; }
+
+		/** get bias
+		 *
+		 * @return bias
+		 */
+		inline float64_t get_bias()
+		{
+			return bias;
+		}
+
+		/** set bias to given value
+		 *
+		 * @param b new bias
+		 */
+		inline void set_bias(float64_t b)
+		{
+			bias=b;
+		}
+
+		/** get support vector at given index
+		 *
+		 * @param idx index of support vector
+		 * @return support vector
+		 */
+		inline int32_t get_support_vector(int32_t idx)
+		{
+			ASSERT(svs && idx<num_svs);
+			return svs[idx];
+		}
+
+		/** get alpha at given index
+		 *
+		 * @param idx index of alpha
+		 * @return alpha
+		 */
+		inline float64_t get_alpha(int32_t idx)
+		{
+			ASSERT(alpha && idx<num_svs);
+			return alpha[idx];
+		}
+
+		/** set support vector at given index to given value
+		 *
+		 * @param idx index of support vector
+		 * @param val new value of support vector
+		 * @return if operation was successful
+		 */
+		inline bool set_support_vector(int32_t idx, int32_t val)
+		{
+			if (svs && idx<num_svs)
+				svs[idx]=val;
+			else
+				return false;
+
+			return true;
+		}
+
+		/** set alpha at given index to given value
+		 *
+		 * @param idx index of alpha vector
+		 * @param val new value of alpha vector
+		 * @return if operation was successful
+		 */
+		inline bool set_alpha(int32_t idx, float64_t val)
+		{
+			if (alpha && idx<num_svs)
+				alpha[idx]=val;
+			else
+				return false;
+
+			return true;
+		}
+
+		/** get number of support vectors
+		 *
+		 * @return number of support vectors
+		 */
+		inline int32_t get_num_support_vectors()
+		{
+			return num_svs;
+		}
+
+		/** set alphas to given values
+		 *
+		 * @param alphas array with all alphas to set
+		 * @param d number of alphas (== number of support vectors)
+		 */
+		void set_alphas(float64_t* alphas, int32_t d)
+		{
+			ASSERT(alphas);
+			ASSERT(d==num_svs);
+
+			for(int32_t i=0; i<d; i++)
+				alpha[i]=alphas[i];
+		}
+
+		/** set support vectors to given values
+		 *
+		 * @param svs array with all support vectors to set
+		 * @param d number of support vectors
+		 */
+		void set_support_vectors(int32_t* svs, int32_t d)
+		{
+			ASSERT(svs);
+			ASSERT(d==num_svs);
+
+			for(int32_t i=0; i<d; i++)
+				svs[i]=svs[i];
+		}
+
+		/** get all support vectors (swig compatible)
+		 *
+		 * @param svs array to contain a copy of the support vectors
+		 * @param num number of support vectors in the array
+		 */
+		void get_support_vectors(int32_t** svs, int32_t* num)
+		{
+			int32_t nsv = get_num_support_vectors();
+
+			ASSERT(svs && num);
+			*svs=NULL;
+			*num=nsv;
+
+			if (nsv>0)
+			{
+				*svs = (int32_t*) malloc(sizeof(int32_t)*nsv);
+				for(int32_t i=0; i<nsv; i++)
+					(*svs)[i] = get_support_vector(i);
+			}
+		}
+
+		/** get all alphas (swig compatible)
+		 *
+		 * @param alphas array to contain a copy of the alphas
+		 * @param d1 number of alphas in the array
+		 */
+		void get_alphas(float64_t** alphas, int32_t* d1)
+		{
+			int32_t nsv = get_num_support_vectors();
+
+			ASSERT(alphas && d1);
+			*alphas=NULL;
+			*d1=nsv;
+
+			if (nsv>0)
+			{
+				*alphas = (float64_t*) malloc(nsv*sizeof(float64_t));
+				for(int32_t i=0; i<nsv; i++)
+					(*alphas)[i] = get_alpha(i);
+			}
+		}
+
+		/** create new model
+		 *
+		 * @param num number of alphas and support vectors in new model
+		 */
+		inline bool create_new_model(int32_t num)
+		{
+			delete[] alpha;
+			delete[] svs;
+
+			bias=0;
+			num_svs=num;
+
+			if (num>0)
+			{
+				alpha= new float64_t[num];
+				svs= new int32_t[num];
+				return (alpha!=NULL && svs!=NULL);
+			}
+			else
+			{
+				alpha= NULL;
+				svs=NULL;
+				return true;
+			}
+		}
+
+		/** initialise kernel optimisation
+		 *
+		 * @return if operation was successful
+		 */
+		bool init_kernel_optimization();
+
 		/** classify kernel machine
 		 *
 		 * @param output where resuling labels are stored
@@ -114,6 +309,20 @@ class CKernelMachine : public CClassifier
 		 * @return classified labels
 		 */
 		virtual CLabels* classify(CFeatures* data);
+
+		/** classify one example
+		 *
+		 * @param num which example to classify
+		 * @return classified value
+		 */
+		virtual float64_t classify_example(int32_t num);
+
+		/** classify example helper, used in threads
+		 *
+		 * @param p params of the thread
+		 * @return nothing really
+		 */
+		static void* classify_example_helper(void* p);
 
 #ifdef HAVE_BOOST_SERIALIZATION
     private:
@@ -139,9 +348,53 @@ class CKernelMachine : public CClassifier
 
                 ar & use_batch_computation;
                 ar & use_linadd;
+                ar & use_bias;
+                ar & bias;
 
                 std::cout << "done CKernelMachine" << std::endl;
             }
+
+			/// serialization needs to split up in save/load because 
+			///  the serialization of pointers to natives (int* & friends) 
+			///  requires a workaround 
+			friend class boost::serialization::access;
+			template<class Archive>
+				void save(Archive & ar, const unsigned int archive_version) const
+				{
+
+					ar & b;
+					ar & num_svs;
+
+					for (int32_t i=0; i < num_svs; ++i) {
+						ar & alpha[i];
+						ar & svs[i];
+					}
+
+				}
+
+			template<class Archive>
+				void load(Archive & ar, const unsigned int archive_version)
+				{
+
+					ar & b;
+					ar & num_svs;
+
+					if (num_svs > 0)
+					{
+
+						alpha = new float64_t[num_svs];
+						svs = new int32_t[num_svs];
+						for (int32_t i=0; i< num_svs; ++i){
+							ar & alpha[i];
+							ar & svs[i];
+						}
+
+					}
+
+
+				}
+
+			BOOST_SERIALIZATION_SPLIT_MEMBER()
 
 #endif //HAVE_BOOST_SERIALIZATION
 
@@ -152,6 +405,16 @@ class CKernelMachine : public CClassifier
 		bool use_batch_computation;
 		/** if linadd is enabled */
 		bool use_linadd;
+		/** if bias shall be used */
+		bool use_bias;
+		/**  bias term b */
+		float64_t bias;
+		/** array of coefficients alpha */
+		float64_t* alpha;
+		/** array of ``support vectors'' */
+		int32_t* svs;
+		/** number of ``support vectors'' */
+		int32_t num_svs;
 };
 
 #endif /* _KERNEL_MACHINE_H__ */
