@@ -19,7 +19,8 @@ def libsvr ():
 	svr.train()
 
 	kernel.init(feats_train, feats_test)
-	svr.classify().get_labels()
+	out1=svr.classify().get_labels()
+	out2=svr.classify(feats_test).get_labels()
 
 if __name__=='__main__':
 	from numpy import array
