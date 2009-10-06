@@ -100,6 +100,21 @@ CLabels* CWDSVMOcas::classify(CLabels* output)
 	return NULL;
 }
 
+CLabels* CWDSVMOcas::classify(CFeatures* data)
+{
+	if (!data)
+		SG_ERROR("No features specified\n");
+
+	if (data->get_feature_class() != C_STRING ||
+			data->get_feature_type() != F_BYTE)
+	{
+		SG_ERROR("Features not of class string type byte\n");
+	}
+
+	set_features((CStringFeatures<uint8_t>*) data);
+	return classify((CLabels*) NULL);
+}
+
 int32_t CWDSVMOcas::set_wd_weights()
 {
 	ASSERT(degree>0 && degree<=8);
@@ -118,11 +133,21 @@ int32_t CWDSVMOcas::set_wd_weights()
 	return w_dim_single_c;
 }
 
-bool CWDSVMOcas::train()
+bool CWDSVMOcas::train(CFeatures* data)
 {
 	SG_INFO("C=%f, epsilon=%f, bufsize=%d\n", get_C1(), get_epsilon(), bufsize);
 
 	ASSERT(labels);
+	if (data)
+	{
+		if (data->get_feature_class() != C_STRING ||
+				data->get_feature_type() != F_BYTE)
+		{
+			SG_ERROR("Features not of class string type byte\n");
+		}
+		set_features((CStringFeatures<uint8_t>*) data);
+	}
+
 	ASSERT(get_features());
 	ASSERT(labels->is_two_class_labeling());
 	CAlphabet* alphabet=get_features()->get_alphabet();

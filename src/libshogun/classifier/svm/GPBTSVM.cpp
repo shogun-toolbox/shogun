@@ -28,14 +28,20 @@ CGPBTSVM::~CGPBTSVM()
 	free(model);
 }
 
-bool CGPBTSVM::train()
+bool CGPBTSVM::train(CFeatures* data)
 {
-	float64_t     *solution;                     /* store the solution found       */
-	QPproblem  prob;                          /* object containing the solvers  */
+	float64_t* solution;                     /* store the solution found       */
+	QPproblem prob;                          /* object containing the solvers  */
 
 	ASSERT(kernel);
 	ASSERT(labels && labels->get_num_labels());
 	ASSERT(labels->is_two_class_labeling());
+	if (data)
+	{
+		if (labels->get_num_labels() != data->get_num_vectors())
+			SG_ERROR("Number of training vectors does not match number of labels\n");
+		kernel->init(data, data);
+	}
 
 	int32_t num_lab = 0;
 	int32_t* lab=labels->get_int_labels(num_lab);

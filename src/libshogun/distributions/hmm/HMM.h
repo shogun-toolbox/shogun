@@ -16,6 +16,7 @@
 #include "lib/common.h"
 #include "lib/io.h"
 #include "lib/config.h"
+#include "features/Features.h"
 #include "features/StringFeatures.h"
 #include "distributions/Distribution.h"
 
@@ -25,7 +26,6 @@
 #define USE_HMMPARALLEL_STRUCTURES 1
 #endif
 
-class CHMM;
 /**@name HMM specific types*/
 //@{
 
@@ -487,7 +487,15 @@ class CHMM : public CDistribution
 		/// Destructor - Cleanup
 		virtual ~CHMM();
 
-		virtual inline bool train() { return false; }
+		/** learn distribution
+		 *
+		 * @param data training data (parameter can be avoided if distance or
+		 * kernel-based classifiers are used and distance/kernels are
+		 * initialized with train data)
+		 *
+		 * @return whether training was successful
+		 */
+		virtual bool train(CFeatures* data=NULL);
 		virtual inline int32_t get_num_model_parameters() { return N*(N+M+2); }
 		virtual float64_t get_log_model_parameter(int32_t num_param);
 		virtual float64_t get_log_derivative(int32_t num_param, int32_t num_example);

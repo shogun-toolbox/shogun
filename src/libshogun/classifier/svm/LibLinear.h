@@ -45,8 +45,15 @@ class CLibLinear : public CLinearClassifier
 
 		virtual ~CLibLinear();
 
-		/** train SVM */
-		virtual bool train();
+		/** train linear SVM classifier
+		 *
+		 * @param data training data (parameter can be avoided if distance or
+		 * kernel-based classifiers are used and distance/kernels are
+		 * initialized with train data)
+		 *
+		 * @return whether training was successful
+		 */
+		virtual bool train(CFeatures* data=NULL);
 
 		/** get classifier type
 		 *

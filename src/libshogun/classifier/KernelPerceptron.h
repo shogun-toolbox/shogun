@@ -26,8 +26,15 @@ class CKernelPerceptron : public CKernelMachine
 		CKernelPerceptron();
 		virtual ~CKernelPerceptron();
 
-		/** train KernelPerceptron */
-		virtual bool train();
+		/** train kernel perceptron classifier
+		 *
+		 * @param data training data (parameter can be avoided if distance or
+		 * kernel-based classifiers are used and distance/kernels are
+		 * initialized with train data)
+		 *
+		 * @return whether training was successful
+		 */
+		virtual bool train(CFeatures* data=NULL);
 
 		/** classify one specific example
 		 *

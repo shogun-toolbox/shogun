@@ -431,6 +431,20 @@ CHMM::~CHMM()
 	}
 }
 
+bool CHMM::train(CFeatures* data)
+{
+	if (data)
+	{
+		if (data->get_feature_class() != C_STRING ||
+				data->get_feature_type() != F_WORD)
+		{
+			SG_ERROR("Expected features of class string type word\n");
+		}
+		set_observations((CStringFeatures<uint16_t>*) data);
+	}
+	return baum_welch_viterbi_train(BW_NORMAL);
+}
+
 bool CHMM::alloc_state_dependend_arrays()
 {
 

@@ -179,7 +179,7 @@ CSVMLight::~CSVMLight()
   delete[] primal;
 }
 
-bool CSVMLight::train()
+bool CSVMLight::train(CFeatures* data)
 {
 	//certain setup params	
 	mkl_converged=false;
@@ -209,11 +209,19 @@ bool CSVMLight::train()
 	learn_parm->rho=1.0;
 	learn_parm->xa_depth=0;
 
-    if (!kernel || !kernel->has_features())
-    {
+    if (!kernel)
+        SG_ERROR( "SVM_light can not proceed without kernel!\n");
+
+	if (data)
+	{
+		if (labels->get_num_labels() != data->get_num_vectors())
+			SG_ERROR("Number of training vectors does not match number of labels\n");
+		kernel->init(data, data);
+	}
+
+    if (!kernel->has_features())
         SG_ERROR( "SVM_light can not proceed without initialized kernel!\n");
-        return false ;
-    }
+
 	ASSERT(labels && labels->get_num_labels());
 	ASSERT(labels->is_two_class_labeling());
 	ASSERT(kernel->get_num_vec_lhs()==labels->get_num_labels());

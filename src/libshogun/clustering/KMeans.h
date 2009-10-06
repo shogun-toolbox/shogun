@@ -54,11 +54,15 @@ class CKMeans : public CDistanceMachine
 		 */
 		virtual inline EClassifierType get_classifier_type() { return CT_KMEANS; }
 
-		/** train distance machine
+		/** train k-means
 		 *
-		 * @return if training was successful
+		 * @param data training data (parameter can be avoided if distance or
+		 * kernel-based classifiers are used and distance/kernels are
+		 * initialized with train data)
+		 *
+		 * @return whether training was successful
 		 */
-		virtual bool train();
+		virtual bool train(CFeatures* data=NULL);
 
 		/** load distance machine from file
 		 *

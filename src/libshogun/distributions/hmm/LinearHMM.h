@@ -51,11 +51,15 @@ class CLinearHMM : public CDistribution
 		CLinearHMM(int32_t p_num_features, int32_t p_num_symbols);
 		virtual ~CLinearHMM();
 
-		/** train distribution
+		/** estimate LinearHMM distribution
 		 *
-		 * @return if training was successful
+		 * @param data training data (parameter can be avoided if distance or
+		 * kernel-based classifiers are used and distance/kernels are
+		 * initialized with train data)
+		 *
+		 * @return whether training was successful
 		 */
-		bool train();
+		virtual bool train(CFeatures* data=NULL);
 
 		/** alternative train distribution
 		 *

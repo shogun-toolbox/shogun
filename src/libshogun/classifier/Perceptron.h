@@ -47,9 +47,13 @@ class CPerceptron : public CLinearClassifier
 
 		/** train classifier
 		 *
-		 * @return if training was successful
+		 * @param data training data (parameter can be avoided if distance or
+		 * kernel-based classifiers are used and distance/kernels are
+		 * initialized with train data)
+		 *
+		 * @return whether training was successful
 		 */
-		virtual bool train();
+		virtual bool train(CFeatures* data=NULL);
 
 		/// set learn rate of gradient descent training algorithm
 		inline void set_learn_rate(float64_t r)

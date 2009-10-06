@@ -43,9 +43,13 @@ CKMeans::~CKMeans()
 	delete[] mus;
 }
 
-bool CKMeans::train()
+bool CKMeans::train(CFeatures* data)
 {
 	ASSERT(distance);
+
+	if (data)
+		distance->init(data, data);
+
 	ASSERT(distance->get_feature_type()==F_DREAL);
 	ASSERT(distance->get_distance_type()==D_EUCLIDIAN);
 	CSimpleFeatures<float64_t>* lhs=(CSimpleFeatures<float64_t>*) distance->get_lhs();

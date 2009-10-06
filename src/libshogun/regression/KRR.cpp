@@ -38,11 +38,17 @@ CKRR::~CKRR()
 	delete[] alpha;
 }
 
-bool CKRR::train()
+bool CKRR::train(CFeatures* data)
 {
 	delete[] alpha;
 
 	ASSERT(labels);
+	if (data)
+	{
+		if (labels->get_num_labels() != data->get_num_vectors())
+			SG_ERROR("Number of training vectors does not match number of labels\n");
+		kernel->init(data, data);
+	}
 	ASSERT(kernel && kernel->has_features());
 
 	// Get kernel matrix

@@ -37,8 +37,17 @@ CLinearHMM::~CLinearHMM()
 	delete[] log_transition_probs;
 }
 
-bool CLinearHMM::train()
+bool CLinearHMM::train(CFeatures* data)
 {
+	if (data)
+	{
+		if (data->get_feature_class() != C_STRING ||
+				data->get_feature_type() != F_WORD)
+		{
+			SG_ERROR("Expected features of class string type word!\n");
+		}
+		set_features(data);
+	}
 	delete[] transition_probs;
 	delete[] log_transition_probs;
 	int32_t* int_transition_probs=new int32_t[num_params];

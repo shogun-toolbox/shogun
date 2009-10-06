@@ -27,9 +27,12 @@ CLibSVMOneClass::~CLibSVMOneClass()
 	free(model);
 }
 
-bool CLibSVMOneClass::train()
+bool CLibSVMOneClass::train(CFeatures* data)
 {
 	ASSERT(kernel);
+	if (data)
+		kernel->init(data, data);
+
 	problem.l=kernel->get_num_vec_lhs();
 
 	struct svm_node* x_space;

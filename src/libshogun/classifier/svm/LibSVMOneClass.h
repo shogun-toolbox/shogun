@@ -32,8 +32,15 @@ class CLibSVMOneClass : public CSVM
 		CLibSVMOneClass(float64_t C, CKernel* k);
 		virtual ~CLibSVMOneClass();
 
-		/** train SVM */
-		virtual bool train();
+		/** train SVM
+		 *
+		 * @param data training data (parameter can be avoided if distance or
+		 * kernel-based classifiers are used and distance/kernels are
+		 * initialized with train data)
+		 *
+		 * @return whether training was successful
+		 */
+		virtual bool train(CFeatures* data=NULL);
 
 		/** get classifier type
 		 *

@@ -27,10 +27,19 @@ CMPDSVM::~CMPDSVM()
 {
 }
 
-bool CMPDSVM::train()
+bool CMPDSVM::train(CFeatures* data)
 {
 	ASSERT(labels);
-	ASSERT(kernel && kernel->has_features());
+	ASSERT(kernel);
+
+	if (data)
+	{
+		if (labels->get_num_labels() != data->get_num_vectors())
+			SG_ERROR("Number of training vectors does not match number of labels\n");
+		kernel->init(data, data);
+	}
+	ASSERT(kernel->has_features());
+
 	//const float64_t nu=0.32;
 	const float64_t alpha_eps=1e-12;
 	const float64_t eps=get_epsilon();

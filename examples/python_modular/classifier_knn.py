@@ -7,16 +7,14 @@ def knn ():
 
 	feats_train=RealFeatures(fm_train_real)
 	feats_test=RealFeatures(fm_test_real)
-	distance=EuclidianDistance()
+	distance=EuclidianDistance(feats_train, feats_train)
 
 	k=3
 	labels=Labels(label_train_multiclass)
 
 	knn=KNN(k, distance, labels)
 	knn.train()
-
-	distance.init(feats_train, feats_test)
-	knn.classify().get_labels()
+	output=knn.classify(feats_test).get_labels()
 
 if __name__=='__main__':
 	from tools.load import LoadMatrix

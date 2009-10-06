@@ -19,9 +19,12 @@ def krr ():
 
 	krr=KRR(tau, kernel, labels)
 	krr.train()
+	out1 = krr.classify(feats_test).get_labels()
 
 	kernel.init(feats_train, feats_test)
-	krr.classify().get_labels()
+	out = krr.classify().get_labels()
+	import pdb
+	pdb.set_trace()
 
 if __name__=='__main__':
 	from numpy import array

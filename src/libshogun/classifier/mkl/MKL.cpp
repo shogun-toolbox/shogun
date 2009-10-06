@@ -182,8 +182,18 @@ bool CMKL::check_lpx_status(LPX *lp)
 }
 #endif // USE_GLPK
 
-bool CMKL::train()
+bool CMKL::train(CFeatures* data)
 {
+	ASSERT(kernel);
+	ASSERT(labels && labels->get_num_labels());
+
+	if (data)
+	{
+		if (labels->get_num_labels() != data->get_num_vectors())
+			SG_ERROR("Number of training vectors does not match number of labels\n");
+		kernel->init(data, data);
+	}
+
 	init_training();
 	if (!svm)
 		SG_ERROR("No constraint generator (SVM) set\n");

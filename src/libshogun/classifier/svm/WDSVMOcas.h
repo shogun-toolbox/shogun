@@ -47,11 +47,15 @@ class CWDSVMOcas : public CClassifier
 		 */
 		virtual inline EClassifierType get_classifier_type() { return CT_WDSVMOCAS; }
 
-		/** train SVM
+		/** train classifier
 		 *
-		 * @return if training was succesful
+		 * @param data training data (parameter can be avoided if distance or
+		 * kernel-based classifiers are used and distance/kernels are
+		 * initialized with train data)
+		 *
+		 * @return whether training was successful
 		 */
-		virtual bool train();
+		virtual bool train(CFeatures* data=NULL);
 
 		/** set C
 		 *
@@ -88,13 +92,22 @@ class CWDSVMOcas : public CClassifier
 		 *
 		 * @param feat features to set
 		 */
-		inline void set_features(CStringFeatures<uint8_t>* feat) { features=feat; }
+		inline void set_features(CStringFeatures<uint8_t>* feat)
+		{
+			SG_UNREF(features);
+			SG_REF(feat);
+			features=feat;
+		}
 
 		/** get features
 		 *
 		 * @return features
 		 */
-		inline CStringFeatures<uint8_t>* get_features() { return features; }
+		inline CStringFeatures<uint8_t>* get_features()
+		{
+			SG_REF(features);
+			return features;
+		}
 
 		/** set if bias shall be enabled
 		 *
@@ -143,6 +156,13 @@ class CWDSVMOcas : public CClassifier
 		 * @return resulting labels
 		 */
 		CLabels* classify(CLabels* output=NULL);
+
+		/** classify objects
+		 *
+		 * @param data (test)data to be classified
+		 * @return classified labels
+		 */
+		virtual CLabels* classify(CFeatures* data);
 
 		/** classify one example
 		 *

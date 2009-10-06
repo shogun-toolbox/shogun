@@ -34,9 +34,17 @@ CKNN::~CKNN()
 	delete[] train_labels;
 }
 
-bool CKNN::train()
+bool CKNN::train(CFeatures* data)
 {
 	ASSERT(labels);
+	ASSERT(distance);
+
+	if (data)
+	{
+		if (labels->get_num_labels() != data->get_num_vectors())
+			SG_ERROR("Number of training vectors does not match number of labels\n");
+		distance->init(data, data);
+	}
 
 	train_labels=labels->get_int_labels(num_train_labels);
 	ASSERT(train_labels);
@@ -139,20 +147,13 @@ CLabels* CKNN::classify(CLabels* output)
 	return output;
 }
 
-bool CKNN::load(FILE* srcfile)
-{
-	return false;
-}
-
-bool CKNN::save(FILE* dstfile)
-{
-	return false;
-}
-
 CLabels* CKNN::classify(CFeatures* data)
 {
+	if (!distance)
+		SG_ERROR("No distance assigned!\n");
+
 	CFeatures* lhs=distance->get_lhs();
-	if (!lhs->get_num_vectors())
+	if (!lhs || !lhs->get_num_vectors())
 	{
 		SG_UNREF(lhs);
 		SG_ERROR("No vectors on left hand side\n");
@@ -161,4 +162,14 @@ CLabels* CKNN::classify(CFeatures* data)
 	SG_UNREF(lhs);
 
 	return classify((CLabels*) NULL);
+}
+
+bool CKNN::load(FILE* srcfile)
+{
+	return false;
+}
+
+bool CKNN::save(FILE* dstfile)
+{
+	return false;
 }

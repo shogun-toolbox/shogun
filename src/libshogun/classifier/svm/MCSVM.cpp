@@ -29,12 +29,19 @@ CMCSVM::~CMCSVM()
 	//SG_PRINT("deleting MCSVM\n");
 }
 
-bool CMCSVM::train()
+bool CMCSVM::train(CFeatures* data)
 {
 	struct svm_node* x_space;
 
 	ASSERT(labels && labels->get_num_labels());
 	int32_t num_classes = labels->get_num_classes();
+
+	if (data)
+	{
+		if (labels->get_num_labels() != data->get_num_vectors())
+			SG_ERROR("Number of training vectors does not match number of labels\n");
+		kernel->init(data, data);
+	}
 
 	problem.l=labels->get_num_labels();
 	SG_INFO( "%d trainlabels\n", problem.l);

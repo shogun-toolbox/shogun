@@ -65,9 +65,13 @@ class CLibSVR : public CSVM
 
 		/** train regression
 		 *
-		 * @return if training was successful
+		 * @param data training data (parameter can be avoided if distance or
+		 * kernel-based regressor are used and distance/kernels are
+		 * initialized with train data)
+		 *
+		 * @return whether training was successful
 		 */
-		virtual bool train();
+		virtual bool train(CFeatures* data=NULL);
 
 		/** get classifier type
 		 *

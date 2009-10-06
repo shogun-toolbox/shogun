@@ -244,11 +244,15 @@ class CSVMLight : public CSVM
   /** init SVM */
   void init();
 
-  /** train SVM
+  /** train SVM classifier
    *
-   * @return if training was successful
+   * @param data training data (parameter can be avoided if distance or
+   * kernel-based classifiers are used and distance/kernels are
+   * initialized with train data)
+   *
+   * @return whether training was successful
    */
-  virtual bool train();
+  virtual bool train(CFeatures* data=NULL);
 
   /** get classifier type
    *

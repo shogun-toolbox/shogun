@@ -85,9 +85,17 @@ class CClassifier : public CSGObject
 
 		/** train classifier
 		 *
+		 * @param data training data (parameter can be avoided if distance or
+		 * kernel-based classifiers are used and distance/kernels are
+		 * initialized with train data)
+		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train() { return false; }
+		virtual bool train(CFeatures* data=NULL)
+		{
+			SG_NOTIMPLEMENTED;
+			return false;
+		}
 
 		/** classify objects
 		 *
@@ -101,7 +109,11 @@ class CClassifier : public CSGObject
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual CLabels* classify(CFeatures* data) { SG_NOTIMPLEMENTED; return NULL; }
+		virtual CLabels* classify(CFeatures* data)
+		{
+			SG_NOTIMPLEMENTED;
+			return NULL;
+		}
 
 		/** classify one example
 		 *
@@ -110,7 +122,11 @@ class CClassifier : public CSGObject
 		 * @param num which example to classify
 		 * @return infinite float value
 		 */
-		virtual float64_t classify_example(int32_t num) { return CMath::INFTY; }
+		virtual float64_t classify_example(int32_t num)
+		{ 
+			SG_NOTIMPLEMENTED;
+			return CMath::INFTY;
+		}
 
 		/** load Classifier from file
 		 *

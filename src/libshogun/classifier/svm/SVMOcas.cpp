@@ -44,12 +44,18 @@ CSVMOcas::~CSVMOcas()
 {
 }
 
-bool CSVMOcas::train()
+bool CSVMOcas::train(CFeatures* data)
 {
 	SG_INFO("C=%f, epsilon=%f, bufsize=%d\n", get_C1(), get_epsilon(), bufsize);
 	SG_DEBUG("use_bias = %i\n", get_bias_enabled()) ;
 
 	ASSERT(labels);
+	if (data)
+	{
+		if (!data->has_property(FP_DOT))
+			SG_ERROR("Specified features are not of type CDotFeatures\n");
+		set_features((CDotFeatures*) data);
+	}
 	ASSERT(features);
 	ASSERT(labels->is_two_class_labeling());
 

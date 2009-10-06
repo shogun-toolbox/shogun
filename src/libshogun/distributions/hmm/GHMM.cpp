@@ -19,7 +19,7 @@ CGHMM::~CGHMM()
 {
 }
 
-bool CGHMM::train()
+bool CGHMM::train(CFeatures* data)
 {
 	return false;
 }

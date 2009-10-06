@@ -35,9 +35,15 @@ CLDA::~CLDA()
 {
 }
 
-bool CLDA::train()
+bool CLDA::train(CFeatures* data)
 {
 	ASSERT(labels);
+	if (data)
+	{
+		if (!data->has_property(FP_DOT))
+			SG_ERROR("Specified features are not of type CDotFeatures\n");
+		set_features((CDotFeatures*) data);
+	}
 	ASSERT(features);
 	int32_t num_train_labels=0;
 	int32_t* train_labels=labels->get_int_labels(num_train_labels);

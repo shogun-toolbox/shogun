@@ -52,9 +52,13 @@ class CHierarchical : public CDistanceMachine
 		 */
 		virtual inline EClassifierType get_classifier_type() { return CT_HIERARCHICAL; }
 
-		/** train distance machine
+		/** estimate hierarchical clustering
 		 *
-		 * @return if training was successful
+		 * @param data training data (parameter can be avoided if distance or
+		 * kernel-based classifiers are used and distance/kernels are
+		 * initialized with train data)
+		 *
+		 * @return whether training was successful
 		 */
 		virtual bool train();
 

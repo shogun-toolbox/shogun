@@ -41,13 +41,19 @@ class CDistribution : public CSGObject
 		CDistribution();
 		virtual ~CDistribution();
 
-		/** train distribution
+		/** learn distribution
 		 *
-		 * abstrace base method
+		 * @param data training data (parameter can be avoided if distance or
+		 * kernel-based classifiers are used and distance/kernels are
+		 * initialized with train data)
 		 *
-		 * @return if training was successful
+		 * @return whether training was successful
 		 */
-		virtual bool train()=0;
+		virtual bool train(CFeatures* data=NULL)
+		{
+			SG_NOTIMPLEMENTED;
+			return false;
+		}
 
 		/** get number of parameters in model
 		 *

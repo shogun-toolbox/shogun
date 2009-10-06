@@ -23,7 +23,15 @@ class CCPLEXSVM : public CSVM
 		CCPLEXSVM();
 		virtual ~CCPLEXSVM();
 
-		virtual bool train();
+		/** train SVM classifier
+		 *
+		 * @param data training data (parameter can be avoided if distance or
+		 * kernel-based classifiers are used and distance/kernels are
+		 * initialized with train data)
+		 *
+		 * @return whether training was successful
+		 */
+		virtual bool train(CFeatures* data=NULL);
 
 		virtual inline EClassifierType get_classifier_type() { return CT_CPLEXSVM; }
 };

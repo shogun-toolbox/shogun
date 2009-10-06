@@ -32,10 +32,17 @@ CGMNPSVM::~CGMNPSVM()
 {
 }
 
-bool CGMNPSVM::train()
+bool CGMNPSVM::train(CFeatures* data)
 {
 	ASSERT(kernel);
 	ASSERT(labels && labels->get_num_labels());
+
+	if (data)
+	{
+		if (data->get_num_vectors() != labels->get_num_labels());
+			SG_ERROR("Numbert of vectors does not match number of labels\n");
+		kernel->init(data, data);
+	}
 
 	int32_t num_data = labels->get_num_labels();
 	int32_t num_classes = labels->get_num_classes();

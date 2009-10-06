@@ -39,9 +39,16 @@ CLibLinear::~CLibLinear()
 {
 }
 
-bool CLibLinear::train()
+bool CLibLinear::train(CFeatures* data)
 {
 	ASSERT(labels);
+	if (data)
+	{
+		if (!data->has_property(FP_DOT))
+			SG_ERROR("Specified features are not of type CDotFeatures\n");
+
+		set_features((CDotFeatures*) data);
+	}
 	ASSERT(features);
 	ASSERT(labels->is_two_class_labeling());
 

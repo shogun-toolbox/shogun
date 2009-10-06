@@ -522,11 +522,18 @@ void CSubGradientSVM::cleanup()
 	beta=NULL;
 }
 
-bool CSubGradientSVM::train()
+bool CSubGradientSVM::train(CFeatures* data)
 {
 	tim=0;
 	SG_INFO("C=%f epsilon=%f\n", C1, epsilon);
 	ASSERT(labels);
+
+	if (data)
+	{
+		if (!data->has_property(FP_DOT))
+			SG_ERROR("Specified features are not of type CDotFeatures\n");
+		set_features((CDotFeatures*) data);
+	}
 	ASSERT(get_features());
 
 	int32_t num_iterations=0;

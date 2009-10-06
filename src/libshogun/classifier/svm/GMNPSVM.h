@@ -15,6 +15,7 @@
 
 #include "lib/common.h"
 #include "classifier/svm/MultiClassSVM.h"
+#include "features/Features.h"
 
 /** @brief Class GMNPSVM implements a one vs. rest MultiClass SVM.
  *
@@ -35,8 +36,15 @@ class CGMNPSVM : public CMultiClassSVM
 		CGMNPSVM(float64_t C, CKernel* k, CLabels* lab);
 		virtual ~CGMNPSVM();
 
-		/** train SVM */
-		virtual bool train();
+		/** train SVM
+		 *
+		 * @param data training data (parameter can be avoided if distance or
+		 * kernel-based classifiers are used and distance/kernels are
+		 * initialized with train data)
+		 *
+		 * @return whether training was successful
+		 */
+		virtual bool train(CFeatures* data=NULL);
 
 		/** get classifier type
 		 *

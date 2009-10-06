@@ -23,15 +23,21 @@ CLibSVM::CLibSVM(float64_t C, CKernel* k, CLabels* lab)
 
 CLibSVM::~CLibSVM()
 {
-	//SG_PRINT("deleting LibSVM\n");
 }
 
-bool CLibSVM::train()
+bool CLibSVM::train(CFeatures* data)
 {
 	struct svm_node* x_space;
 
 	ASSERT(labels && labels->get_num_labels());
 	ASSERT(labels->is_two_class_labeling());
+
+	if (data)
+	{
+		if (labels->get_num_labels() != data->get_num_vectors())
+			SG_ERROR("Number of training vectors does not match number of labels\n");
+		kernel->init(data, data);
+	}
 
 	problem.l=labels->get_num_labels();
 	SG_INFO( "%d trainlabels\n", problem.l);

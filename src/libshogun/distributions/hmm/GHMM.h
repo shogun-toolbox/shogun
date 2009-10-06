@@ -25,11 +25,15 @@ class CGHMM : public CDistribution
 		CGHMM();
 		virtual ~CGHMM();
 
-		/** train distribution
+		/** learn distribution
 		 *
-		 * @return if training was successful
+		 * @param data training data (parameter can be avoided if distance or
+		 * kernel-based classifiers are used and distance/kernels are
+		 * initialized with train data)
+		 *
+		 * @return whether training was successful
 		 */
-		virtual bool train();
+		virtual bool train(CFeatures* data=NULL);
 
 		/** get number of model parameters
 		 *

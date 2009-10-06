@@ -30,9 +30,19 @@ CPluginEstimate::~CPluginEstimate()
 	SG_UNREF(features);
 }
 
-bool CPluginEstimate::train()
+bool CPluginEstimate::train(CFeatures* data)
 {
 	ASSERT(labels);
+	if (data)
+	{
+		if (data->get_feature_class() != C_STRING ||
+				data->get_feature_type() != F_WORD)
+		{
+			SG_ERROR("Features not of class string type word\n");
+		}
+
+		set_features((CStringFeatures<uint16_t>*) data);
+	}
 	ASSERT(features);
 
 	delete pos_model;

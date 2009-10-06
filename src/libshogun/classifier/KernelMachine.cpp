@@ -56,7 +56,7 @@ CLabels* CKernelMachine::classify(CFeatures* data)
 		SG_ERROR("No kernel assigned!\n");
 
 	CFeatures* lhs=kernel->get_lhs();
-	if (!lhs->get_num_vectors())
+	if (!lhs || !lhs->get_num_vectors())
 	{
 		SG_UNREF(lhs);
 		SG_ERROR("No vectors on left hand side\n");

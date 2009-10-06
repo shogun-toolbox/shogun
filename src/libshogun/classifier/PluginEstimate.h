@@ -39,11 +39,15 @@ class CPluginEstimate: public CClassifier
 		CPluginEstimate(float64_t pos_pseudo=1e-10, float64_t neg_pseudo=1e-10);
 		virtual ~CPluginEstimate();
 
-		/** train the estimate
+		/** train plugin estimate classifier
 		 *
-		 * @return if training was successful
+		 * @param data training data (parameter can be avoided if distance or
+		 * kernel-based classifiers are used and distance/kernels are
+		 * initialized with train data)
+		 *
+		 * @return whether training was successful
 		 */
-		bool train();
+		virtual bool train(CFeatures* data=NULL);
 
 		/// classify all test features
 		CLabels* classify(CLabels* output=NULL);

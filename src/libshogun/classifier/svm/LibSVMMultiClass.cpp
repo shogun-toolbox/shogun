@@ -26,7 +26,7 @@ CLibSVMMultiClass::~CLibSVMMultiClass()
 	//SG_PRINT("deleting LibSVM\n");
 }
 
-bool CLibSVMMultiClass::train()
+bool CLibSVMMultiClass::train(CFeatures* data)
 {
 	struct svm_node* x_space;
 
@@ -34,6 +34,13 @@ bool CLibSVMMultiClass::train()
 	int32_t num_classes = labels->get_num_classes();
 	problem.l=labels->get_num_labels();
 	SG_INFO( "%d trainlabels, %d classes\n", problem.l, num_classes);
+
+	if (data)
+	{
+		if (labels->get_num_labels() != data->get_num_vectors())
+			SG_ERROR("Number of training vectors does not match number of labels\n");
+		kernel->init(data, data);
+	}
 
 	problem.y=new float64_t[problem.l];
 	problem.x=new struct svm_node*[problem.l];

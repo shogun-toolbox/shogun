@@ -123,10 +123,18 @@ CSVMSGD::~CSVMSGD()
 	w=NULL;
 }
 
-bool CSVMSGD::train()
+bool CSVMSGD::train(CFeatures* data)
 {
 	// allocate memory for w and initialize everyting w and bias with 0
 	ASSERT(labels);
+
+	if (data)
+	{
+		if (!data->has_property(FP_DOT))
+			SG_ERROR("Specified features are not of type CDotFeatures\n");
+		set_features((CDotFeatures*) data);
+	}
+
 	ASSERT(features);
 	ASSERT(labels->is_two_class_labeling());
 

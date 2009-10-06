@@ -57,7 +57,7 @@ CSVRLight::CSVRLight()
 {
 }
 
-bool CSVRLight::train()
+bool CSVRLight::train(CFeatures* data)
 {
 	//certain setup params
 	verbosity=1;
@@ -90,6 +90,19 @@ bool CSVRLight::train()
 	{
 		SG_ERROR( "SVR_light can not proceed without kernel!\n");
 		return false ;
+	}
+
+	if (!labels)
+	{
+		SG_ERROR( "SVR_light can not proceed without labels!\n");
+		return false;
+	}
+
+	if (data)
+	{
+		if (labels->get_num_labels() != data->get_num_vectors())
+			SG_ERROR("Number of training vectors does not match number of labels\n");
+		kernel->init(data, data);
 	}
 
 	if (kernel->has_property(KP_LINADD) && get_linadd_enabled())

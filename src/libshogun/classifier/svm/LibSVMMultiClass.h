@@ -32,11 +32,15 @@ class CLibSVMMultiClass : public CMultiClassSVM
 		CLibSVMMultiClass(float64_t C, CKernel* k, CLabels* lab);
 		virtual ~CLibSVMMultiClass();
 
-		/** train SVM
+		/** train multiclass SVM classifier
 		 *
-		 * @return if training was successful
+		 * @param data training data (parameter can be avoided if distance or
+		 * kernel-based classifiers are used and distance/kernels are
+		 * initialized with train data)
+		 *
+		 * @return whether training was successful
 		 */
-		virtual bool train();
+		virtual bool train(CFeatures* data=NULL);
 
 		/** get classifier type
 		 *

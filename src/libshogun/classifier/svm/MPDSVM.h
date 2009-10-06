@@ -30,8 +30,15 @@ class CMPDSVM : public CSVM
 		CMPDSVM(float64_t C, CKernel* k, CLabels* lab);
 		virtual ~CMPDSVM();
 
-		/** train SVM */
-		virtual bool train();
+		/** train SVM classifier
+		 *
+		 * @param data training data (parameter can be avoided if distance or
+		 * kernel-based classifiers are used and distance/kernels are
+		 * initialized with train data)
+		 *
+		 * @return whether training was successful
+		 */
+		virtual bool train(CFeatures* data=NULL);
 
 		/** get classifier type
 		 *

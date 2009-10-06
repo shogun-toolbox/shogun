@@ -22,7 +22,7 @@ CKernelPerceptron::~CKernelPerceptron()
 {
 }
 
-bool CKernelPerceptron::train()
+bool CKernelPerceptron::train(CFeatures* data)
 {
 	ASSERT(labels);
 	//CLabels* train_labels=labels->get_int_labels(num_train_labels);

@@ -49,7 +49,15 @@ class CLPBoost : public CLinearClassifier
 		CLPBoost();
 		virtual ~CLPBoost();
 
-		virtual bool train();
+		/** train classifier
+		 *
+		 * @param data training data (parameter can be avoided if distance or
+		 * kernel-based classifiers are used and distance/kernels are
+		 * initialized with train data)
+		 *
+		 * @return whether training was successful
+		 */
+		virtual bool train(CFeatures* data=NULL);
 
 		inline virtual EClassifierType get_classifier_type()
 		{
