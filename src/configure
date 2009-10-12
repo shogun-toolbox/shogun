@@ -2952,7 +2952,7 @@ test_octave()
 				&& test -n "`octave-config -p INCLUDEDIR 2>/dev/null`"
 			then
 				test -n "$_octdir" || _octdir=`octave-config --print LOCALAPIOCTFILEDIR`
-				echores "yes"
+				echores "`octave-config -p API_VERSION`"
 			else
 				echores "no"
 				if test "$_octave" = yes
