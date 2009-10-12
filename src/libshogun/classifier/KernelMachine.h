@@ -356,6 +356,7 @@ class CKernelMachine : public CClassifier
                 std::cout << "done CKernelMachine" << std::endl;
             }
 
+            /*
 			/// serialization needs to split up in save/load because 
 			///  the serialization of pointers to natives (int* & friends) 
 			///  requires a workaround 
@@ -397,7 +398,7 @@ class CKernelMachine : public CClassifier
 				}
 
 			BOOST_SERIALIZATION_SPLIT_MEMBER()
-
+            */
 #endif //HAVE_BOOST_SERIALIZATION
 
 	protected:
