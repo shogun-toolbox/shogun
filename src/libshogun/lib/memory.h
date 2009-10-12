@@ -8,19 +8,20 @@
  * Copyright (C) 2008-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
+#ifndef __MEMORY_H__
+#define __MEMORY_H__
+
 #include <stdio.h>
 #include <stdlib.h>
 
 #include <new>
 
 void* operator new(size_t size) throw (std::bad_alloc);
-void operator delete(void *p) throw();
+void operator delete(void *p);
 
-void* operator new[](size_t size) throw (std::bad_alloc);
-void operator delete[](void *p) throw();
+void* operator new[](size_t size);
+void operator delete[](void *p);
 
-#ifndef __MEMORY_H__
-#define __MEMORY_H__
 
 #ifdef TRACE_MEMORY_ALLOCS
 class CMemoryBlock
