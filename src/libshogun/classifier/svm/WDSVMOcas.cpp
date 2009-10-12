@@ -50,6 +50,7 @@ CWDSVMOcas::CWDSVMOcas(E_SVM_TYPE type)
 {
 	w=NULL;
 	old_w=NULL;
+	features=NULL;
 	degree=6;
 	from_degree=40;
 	wd_weights=NULL;
