@@ -200,7 +200,7 @@ class CFeatures : public CSGObject
 
 		/** get memory footprint of one feature
 		 *
-		 * abstrace base method
+		 * abstract base method
 		 *
 		 * @return memory footprint of one feature
 		 */
