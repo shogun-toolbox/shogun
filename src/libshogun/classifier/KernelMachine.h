@@ -226,22 +226,22 @@ class CKernelMachine : public CClassifier
 
 		/** get all support vectors (swig compatible)
 		 *
-		 * @param suppvec array to contain a copy of the support vectors
+		 * @param svs array to contain a copy of the support vectors
 		 * @param num number of support vectors in the array
 		 */
-		void get_support_vectors(int32_t** suppvec, int32_t* num)
+		void get_support_vectors(int32_t** svs, int32_t* num)
 		{
 			int32_t nsv = get_num_support_vectors();
 
-			ASSERT(suppvec && num);
-			*suppvec=NULL;
+			ASSERT(svs && num);
+			*svs=NULL;
 			*num=nsv;
 
 			if (nsv>0)
 			{
-				*suppvec = (int32_t*) malloc(sizeof(int32_t)*nsv);
+				*svs = (int32_t*) malloc(sizeof(int32_t)*nsv);
 				for(int32_t i=0; i<nsv; i++)
-					(*suppvec)[i] = get_support_vector(i);
+					(*svs)[i] = get_support_vector(i);
 			}
 		}
 
