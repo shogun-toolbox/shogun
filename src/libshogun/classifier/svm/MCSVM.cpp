@@ -193,7 +193,7 @@ void CMCSVM::compute_norm_wc()
 	CMath::display_vector(norm_wc, m_num_svms, "norm_wc");
 }
 
-CLabels* CMCSVM::classify_one_vs_rest(CLabels* result)
+CLabels* CMCSVM::classify_one_vs_rest(CLabels* output)
 {
 	ASSERT(m_num_svms>0);
 
@@ -207,18 +207,18 @@ CLabels* CMCSVM::classify_one_vs_rest(CLabels* result)
 	{
 		int32_t num_vectors=kernel->get_num_vec_rhs();
 
-		if (!result)
+		if (!output)
 		{
-			result=new CLabels(num_vectors);
-			SG_REF(result);
+			output=new CLabels(num_vectors);
+			SG_REF(output);
 		}
 
 		for (int32_t i=0; i<num_vectors; i++)
 		{
-			result->set_label(i, classify_example(i));
+			output->set_label(i, classify_example(i));
 		}
 /*
-		ASSERT(num_vectors==result->get_num_labels());
+		ASSERT(num_vectors==output->get_num_labels());
 		CLabels** outputs=new CLabels*[m_num_svms];
 
 		for (int32_t i=0; i<m_num_svms; i++)
@@ -245,7 +245,7 @@ CLabels* CMCSVM::classify_one_vs_rest(CLabels* result)
 				}
 			}
 
-			result->set_label(i, winner);
+			output->set_label(i, winner);
 		}
 
 		for (int32_t i=0; i<m_num_svms; i++)
@@ -255,7 +255,7 @@ CLabels* CMCSVM::classify_one_vs_rest(CLabels* result)
 		*/
 	}
 
-	return result;
+	return output;
 }
 
 float64_t CMCSVM::classify_example(int32_t num)

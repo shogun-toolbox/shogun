@@ -57,7 +57,7 @@ class CMCSVM : public CMultiClassSVM
 		 */
 		virtual float64_t classify_example(int32_t num);
 
-		CLabels* classify_one_vs_rest(CLabels* result);
+		CLabels* classify_one_vs_rest(CLabels* output);
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "MCSVM"; }
