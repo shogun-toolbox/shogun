@@ -209,7 +209,6 @@ class CSVM : public CKernelMachine
                 SG_DEBUG("archiving CSVM\n");
 
                 ar & boost::serialization::base_object<CKernelMachine>(*this);
-                ar & svm_model;
 
                 ar & svm_loaded;
 
@@ -224,6 +223,9 @@ class CSVM : public CKernelMachine
 
                 ar & qpsize;
                 ar & use_shrinking;
+                
+                //TODO serialize mkl object
+		        //CMKL* mkl;
 
                 SG_DEBUG("done with CSVM\n");
             }
