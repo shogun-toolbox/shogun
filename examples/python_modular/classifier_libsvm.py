@@ -20,6 +20,8 @@ def libsvm ():
 
 	kernel.init(feats_train, feats_test)
 	svm.classify().get_labels()
+	sv_idx=svm.get_support_vectors()
+	alphas=svm.get_alphas()
 
 if __name__=='__main__':
 	from tools.load import LoadMatrix
