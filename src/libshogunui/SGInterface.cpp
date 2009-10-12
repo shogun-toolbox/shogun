@@ -1,3 +1,4 @@
+#include "../libshogun/lib/memory.cpp"
 #include "GUICommands.h"
 #include "SGInterface.h"
 #include "SyntaxHighLight.h"
@@ -7403,6 +7404,9 @@ bool CSGInterface::cmd_help()
 
 bool CSGInterface::cmd_whos()
 {
+	if ((m_nrhs!=1) || !create_return_values(0))
+		return false;
+
 #ifdef TRACE_MEMORY_ALLOCS
 	SG_PRINT("Blocks allocated by shogun\n");
 	list_memory_allocs();
@@ -7734,6 +7738,7 @@ bool CSGInterface::handle()
 				command,
 				hilight.get_command_suffix());
 
+	SG_SPRINT("deleting cmd\n");
 	delete[] command;
 	return success;
 }

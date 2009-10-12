@@ -1,6 +1,7 @@
 #ifndef __SGINTERFACE__H_
 #define __SGINTERFACE__H_
 
+#include <shogun/lib/memory.h>
 #include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
 #include <shogun/base/SGObject.h>

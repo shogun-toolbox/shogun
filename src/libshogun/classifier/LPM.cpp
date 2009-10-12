@@ -27,9 +27,15 @@ CLPM::~CLPM()
 {
 }
 
-bool CLPM::train()
+bool CLPM::train(CFeatures* data)
 {
 	ASSERT(labels);
+	if (data)
+	{
+		if (!data->has_property(FP_DOT))
+			SG_ERROR("Specified features are not of type CDotFeatures\n");
+		set_features((CDotFeatures*) data);
+	}
 	ASSERT(features);
 	int32_t num_train_labels=labels->get_num_labels();
 	int32_t num_feat=features->get_dim_feature_space();

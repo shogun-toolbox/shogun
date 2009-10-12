@@ -26,10 +26,17 @@ CCPLEXSVM::~CCPLEXSVM()
 {
 }
 
-bool CCPLEXSVM::train()
+bool CCPLEXSVM::train(CFeatures* data)
 {
 	bool result = false;
 	CCplex cplex;
+
+	if (data)
+	{
+		if (labels->get_num_labels() != data->get_num_vectors())
+			SG_ERROR("Number of training vectors does not match number of labels\n");
+		kernel->init(data, data);
+	}
 
 	if (cplex.init(E_QP))
 	{
