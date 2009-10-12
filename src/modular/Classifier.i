@@ -65,6 +65,7 @@
  #include <shogun/classifier/mkl/MKLOneClass.h>
 #ifdef USE_SVMLIGHT
  #include <shogun/classifier/svm/SVM_light.h>
+ #include <shogun/classifier/svm/DA_SVM.h>
 #endif //USE_SVMLIGHT
 %}
 
@@ -112,6 +113,7 @@
 %rename(MKLOneClass) CMKLOneClass;
 #ifdef USE_SVMLIGHT
 %rename(SVMLight) CSVMLight;
+%rename(DA_SVM) CDA_SVM;
 #endif //USE_SVMLIGHT
 
 /* These functions return new Objects */
@@ -178,4 +180,5 @@
 %ignore TIMING;
 
 %include <shogun/classifier/svm/SVM_light.h>
+%include <shogun/classifier/svm/DA_SVM.h>
 #endif //USE_SVMLIGHT
