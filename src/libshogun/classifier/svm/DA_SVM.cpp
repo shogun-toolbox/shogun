@@ -148,6 +148,7 @@ float64_t CDA_SVM::get_B()
 }
 
 
+
 CLabels* CDA_SVM::classify(CFeatures* data)
 {
 
@@ -167,11 +168,12 @@ CLabels* CDA_SVM::classify(CFeatures* data)
         out_current->set_label(i, out_combined);
     }
 
-    delete[] out_presvm;
+    //delete[] out_presvm;
 
     return out_current;
 
 }
+
 
 /*
 CLabels* CDA_SVM::classify(CLabels* result)
@@ -212,24 +214,24 @@ float64_t CDA_SVM::classify_example(INT num)
   float64_t dist = CSVM::classify_example(num);
 
   //works recursively if several DA_SVMs are stacked into each other
-  
+
   float64_t tmp_dist = presvm->classify_example(num) - presvm->get_bias();
 
   return dist + tmp_dist;
-  
 
-   
+
+
   for(INT i=0; i< presvm->get_num_support_vectors(); i++)
   {
 	dist+= B*(presvm->get_kernel()->kernel(presvm->get_support_vector(i), num)* presvm->get_alpha(i));
   }
-  
+
   //equivalent python code
   //testout=svm_regul.classify().get_labels()+B*(presvm.classify().get_labels()-presvm.get_bias())
 
   //std::cout << "i=" << num << " distance after using v: " << dist << std::endl;
 
   return dist-get_bias();
-  
+
 }
 */

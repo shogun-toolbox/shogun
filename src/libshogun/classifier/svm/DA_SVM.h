@@ -126,7 +126,8 @@ class CDA_SVM : public CSVMLight
 
     }
 
-    int32_t get_num_support_vectors()
+	/*
+    virtual int32_t get_num_support_vectors()
     {
         int32_t current_num = CSVM::get_num_support_vectors();
 
@@ -135,7 +136,7 @@ class CDA_SVM : public CSVMLight
         return current_num + old_num;
     }
 
-    int32_t get_alpha(int32_t idx)
+    virtual int32_t get_alpha(int32_t idx)
     {
         int32_t current_num = CSVM::get_num_support_vectors();
 
@@ -145,30 +146,34 @@ class CDA_SVM : public CSVMLight
         {
             alpha = CSVM::get_alpha(idx);
         } else {
-            alpha = presvm->get_alpha(idx);
+            alpha = B * (presvm->get_alpha(idx) - presvm->get_bias());
         }
 
         return alpha;
-        
+
     }
 
-    int32_t get_support_vector(int32_t idx)
+    virtual int32_t get_support_vector(int32_t idx)
     {
         int32_t current_num = CSVM::get_num_support_vectors();
 
         int32_t old_num = presvm->get_num_support_vectors();
 
-        float64_t alpha = 0.0;
+        int32_t sv_id = -1;
 
         if (idx < current_num)
         {
-            alpha = CSVM::get_support_vector(idx);
+            sv_id = CSVM::get_support_vector(idx);
         } else {
-            alpha = B * presvm->get_support_vector(idx);
+            sv_id = presvm->get_support_vector(idx);
         }
 
-        return alpha;
+        return sv_id;
     }
+
+
+	virtual float64_t get_bias()
+	*/
 
 	protected:
 
