@@ -38,6 +38,7 @@ CDA_SVM::CDA_SVM(float64_t C, CKernel* k, CLabels* lab, CSVM* presvm, float64_t 
 {
 
   init(presvm, B);
+
 }
 
 
@@ -85,7 +86,7 @@ bool CDA_SVM::train()
   for (int32_t i=0; i!=num_training_points; i++)
   {
 
-    lin_term[i] = - (get_label(i) * parent_svm_out->get_label(i)) - 1.0;
+    lin_term[i] = - B*(get_label(i) * parent_svm_out->get_label(i)) - 1.0;
 
   }
 
@@ -119,6 +120,7 @@ float64_t CDA_SVM::get_B()
 {
 
   return B;
+
 }
 
 
@@ -126,10 +128,15 @@ float64_t CDA_SVM::get_B()
 CLabels* CDA_SVM::classify(CFeatures* data)
 {
 
+    ASSERT(presvm->get_bias()==0.0);
+
     int32_t num_examples = data->get_num_vectors();
 
     CLabels* out_current = CSVMLight::classify(data);
+
+    // recursive class if used on DA_SVM object
     CLabels* out_presvm = presvm->classify(data);
+
 
     // combine outputs
     for (int32_t i=0; i!=num_examples; i++)
