@@ -49,7 +49,7 @@ template <class T> class CBinaryStream : public CSGObject
 		}
 
 
-		/* copy constructor
+		/** copy constructor
 		 *
 		 * @param bs binary stream to copy from
 		 */
@@ -66,6 +66,11 @@ template <class T> class CBinaryStream : public CSGObject
 			close_stream();
 		}
 
+		/** open file stream 
+		 *
+		 * @param fname file name
+		 * @param flag flags "r" for reading etc
+		 */
 		void open_stream(const char* fname, const char* flag="r")
 		{
             rw=strdup(flag);
@@ -83,6 +88,7 @@ template <class T> class CBinaryStream : public CSGObject
 			SG_DEBUG("Opened file '%s' of size %ld byte\n", fname, length);
 		}
 
+		/** close a file stream */
 		void close_stream()
 		{
 			free(rw);
@@ -204,8 +210,7 @@ template <class T> class CBinaryStream : public CSGObject
 		uint64_t length;
 		/** mode */
 		char* rw;
-        /* fname */
+        /** fname */
         char* m_fname;
-
 };
 #endif // BINARY_STREAM

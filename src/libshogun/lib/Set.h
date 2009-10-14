@@ -18,30 +18,39 @@
 
 /** @brief Template Set class 
  *
- * Set grows and shrinks dynamically, while elements can be accessed via index.
- * It is performance tuned for simple types like float etc. and for hi-level
- * objects only stores pointers. Note that objects are not automagically SG_REF'd/deleted.
+ * Lazy implementation of a set. Set grows and shrinks dynamically and can be
+ * conveniently iterated through via the [] operator.
  */
 template <class T> class CSet : public CSGObject
 {
 	public:
+		/** Default constructor */
 		CSet()
 		{
 			array = new CDynamicArray<T>();
 			SG_REF(array);
 		}
 
+		/** Default destructor */
 		~CSet()
 		{
 			SG_UNREF(array);
 		}
 
+		/** Add an element to the set
+		 * 
+		 * @param e elemet to be added
+		 */
 		inline void add(T e)
 		{
 			if (!contains(e))
 				array->append_element(e);
 		}
 
+		/** Remove an element from the set
+		 * 
+		 * @param e elemet to be removed
+		 */
 		inline void remove(T e)
 		{
 			int32_t idx=array->find_element(e);
@@ -49,11 +58,14 @@ template <class T> class CSet : public CSGObject
 				array->delete_element(idx);
 		}
 
+		/** Remove an element from the set
+		 * 
+		 * @param e elemet to be removed
+		 */
 		inline bool contains(T e)
 		{
-			return false;
-			//int32_t idx=array->find_element(e);
-			//return (idx!=-1);
+			int32_t idx=array->find_element(e);
+			return (idx!=-1);
 		}
 
 		/** get number of elements
@@ -94,6 +106,7 @@ template <class T> class CSet : public CSGObject
 		inline virtual const char* get_name() const { return "Set"; }
 
 	protected:
+		/** dynamic array the set is based on */
 		CDynamicArray<T>* array;
 };
 

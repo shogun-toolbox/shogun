@@ -242,6 +242,10 @@ class CBitString : public CSGObject
 			}
 		*/
 
+		/** access array by [] operator
+		 *
+		 * @param index index into array
+		 */
 		inline uint64_t operator[](uint64_t index) const
 		{
 			ASSERT(index<length);
@@ -263,6 +267,11 @@ class CBitString : public CSGObject
 			return res;
 		}
 
+		/** set a binary word 
+		 *
+		 * @param word 16 bit word to be set
+		 * @param index word based index
+		 */
 		inline void set_binary_word(uint16_t word, uint64_t index)
 		{
 			ASSERT(index<length);
@@ -302,6 +311,7 @@ class CBitString : public CSGObject
 
 		}
 
+		/** @return length of the string in bits */
 		inline uint64_t get_length() const { return length-word_len/alphabet->get_num_bits()+1; }
 
 		/** @return object name */

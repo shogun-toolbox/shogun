@@ -600,6 +600,7 @@ class CAlphabet : public CSGObject
 };
 
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 template<> inline void CAlphabet::translate_from_single_order(float32_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap)
 {
 }
@@ -623,6 +624,7 @@ template<> inline void CAlphabet::translate_from_single_order_reversed(float64_t
 template<> inline void CAlphabet::translate_from_single_order_reversed(floatmax_t* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap)
 {
 }
+#endif
 
 #ifdef HAVE_BOOST_SERIALIZATION  
 //http://www.koders.com/cpp/fidB8C82A2BBA651A5E4EEC668EDE70B86EA017E937.aspx

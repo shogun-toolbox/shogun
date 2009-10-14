@@ -34,6 +34,7 @@
 #include <shogun/lib/MemoryMappedFile.h>
 #include <shogun/lib/DynamicArray.h>
 #include <shogun/structure/PlifBase.h>
+#include <shogun/lib/Hash.h>
 #include <shogun/lib/Array.h>
 #include <shogun/lib/Array2.h>
 #include <shogun/lib/Array3.h>
@@ -49,6 +50,7 @@
 %rename(Signal) CSignal;
 %rename(SimpleFile) CSimpleFile;
 %rename(Time) CTime;
+%rename(Hash) CHash;
 %rename(MemoryMappedFile) CMemoryMappedFile;
 
 %ignore RADIX_STACK_SIZE;
@@ -77,9 +79,13 @@
 %template(DynamicRealArray) CDynamicArray<float64_t>;
 %template(DynamicPlifArray) CDynamicArray<CPlifBase*>;
 
-/* Template Class Array */
+/* Template Class GCArray */
 %include <shogun/lib/GCArray.h>
 %template(PlifGCArray) CGCArray<CPlifBase*>;
+
+/* Hash */
+%apply (uint8_t* IN_ARRAY1, int32_t DIM1) {(uint8_t* data, int32_t len)};
+%include <shogun/lib/Hash.h>
 
 /* Template Class Array */
 %include <shogun/lib/Array.h>

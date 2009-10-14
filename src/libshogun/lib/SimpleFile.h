@@ -140,6 +140,11 @@ template <class T> class CSimpleFile : public CSGObject
 			return status;
 		}
 
+		/** read a line (buffered; to be implemented)
+		 *
+		 * @param linebuffer to write to
+		 * @param len maximum length
+		 */
 		void get_buffered_line(char* line, uint64_t len)
 		{
 
@@ -163,12 +168,17 @@ template <class T> class CSimpleFile : public CSGObject
 						*/
 		}
 
+		/** free the line buffer */
 		void free_line_buffer()
 		{
 			delete[] line_buffer;
 			line_buffer=NULL;
 		}
 
+		/** set the size of the line buffer
+		 *
+		 * @param bufsize size of the line buffer
+		 */
 		inline void set_line_buffer_size(int32_t bufsize)
 		{
 			if (bufsize<=0)
@@ -197,7 +207,7 @@ template <class T> class CSimpleFile : public CSGObject
 		/** filename */
 		char* filename;
 
-		/* size of line buffer */
+		/** size of line buffer */
 		int32_t line_buffer_size;
 		/** line buffer */
 		char* line_buffer;

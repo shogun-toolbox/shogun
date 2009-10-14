@@ -1,4 +1,17 @@
 /*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Written (W) 2009 Soeren Sonnenburg
+ * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ *
+ * The MD5 and Murmor hashing functions were integrated from public sources.
+ * Their respective copyrights follow.
+ *
+ * MD5
+ *
  * This code implements the MD5 message-digest algorithm.
  * The algorithm is due to Ron Rivest.  This code was
  * written by Colin Plumb in 1993, no copyright is claimed.
@@ -13,6 +26,16 @@
  * MD5Context structure, pass it to MD5Init, call MD5Update as
  * needed on buffers full of bytes, and then call MD5Final, which
  * will fill a supplied 16-byte array with the digest.
+ *
+ * MurmurHash2
+ *
+ * (C) Austin Appleby, released under the MIT License
+ * 
+ *  Note - This code makes a few assumptions about how your machine behaves -
+ * 
+ *  1. We can read a 4-byte value from any address without crashing
+ *  2. It will not produce the same results on little-endian and big-endian
+ *     machines.
  */
 
 #include "lib/common.h"
@@ -45,12 +68,6 @@ uint32_t CHash::crc32(uint8_t *data, int32_t len)
     return ~result; 
 }
 
-
-/*
- * Wrapper for MD5 function compatible to OpenSSL interface.
- * 'buf' needs to provide an allocated array of 16 bytes for 
- * the digest.
- */
 void CHash::MD5(unsigned char *x, unsigned l, unsigned char *buf)
 {
     struct MD5Context ctx;
@@ -82,10 +99,6 @@ void byteReverse(unsigned char *buf, unsigned uint32_t longs)
 #endif
 #endif
 
-/*
- * Start MD5 accumulation.  Set bit count to 0 and buffer to mysterious
- * initialization constants.
- */
 void CHash::MD5Init(struct MD5Context *ctx)
 {
     ctx->buf[0] = 0x67452301;
@@ -97,10 +110,6 @@ void CHash::MD5Init(struct MD5Context *ctx)
     ctx->bits[1] = 0;
 }
 
-/*
- * Update context to reflect the concatenation of another buffer full
- * of bytes.
- */
 void CHash::MD5Update(struct MD5Context *ctx, unsigned char const *buf,
                unsigned len)
 {
@@ -146,10 +155,6 @@ void CHash::MD5Update(struct MD5Context *ctx, unsigned char const *buf,
     memcpy(ctx->in, buf, len);
 }
 
-/*
- * Final wrapup - pad to 64-byte boundary with the bit pattern 
- * 1 0* (64-bit count of bits processed, MSB-first)
- */
 void CHash::MD5Final(unsigned char digest[16], struct MD5Context *ctx)
 {
     unsigned count;
@@ -210,11 +215,6 @@ void CHash::MD5Final(unsigned char digest[16], struct MD5Context *ctx)
 	( w += f(x, y, z) + data,  w = w<<s | w>>(32-s),  w += x )
 #endif
 
-/*
- * The core of the MD5 algorithm, this alters an existing MD5 hash to
- * reflect the addition of 16 longwords of new data.  MD5Update blocks
- * the data and converts bytes into longwords for this routine.
- */
 void CHash::MD5Transform(uint32_t buf[4], uint32_t const in[16])
 {
     register uint32_t a, b, c, d;
@@ -367,5 +367,54 @@ void CHash::MD5Transform(uint32_t buf[4], uint32_t const in[16])
     buf[2] += c;
     buf[3] += d;
 }
+
+uint32_t CHash::MurmurHash2(uint8_t* data, int32_t len, uint32_t seed)
+{
+	// 'm' and 'r' are mixing constants generated offline.
+	// They're not really 'magic', they just happen to work well.
+
+	const uint32_t m = 0x5bd1e995;
+	const int32_t r = 24;
+
+	// Initialize the hash to a 'random' value
+
+	uint32_t h = seed ^ len;
+
+	// Mix 4 bytes at a time into the hash
+
+	while(len >= 4)
+	{
+		uint32_t k = *(uint32_t *)data;
+
+		k *= m; 
+		k ^= k >> r; 
+		k *= m; 
+
+		h *= m; 
+		h ^= k;
+
+		data += 4;
+		len -= 4;
+	}
+
+	// Handle the last few bytes of the input array
+
+	switch(len)
+	{
+		case 3: h ^= data[2] << 16;
+		case 2: h ^= data[1] << 8;
+		case 1: h ^= data[0];
+				h *= m;
+	};
+
+	// Do a few final mixes of the hash to ensure the last few
+	// bytes are well-incorporated.
+
+	h ^= h >> 13;
+	h *= m;
+	h ^= h >> 15;
+
+	return h;
+} 
 
 #endif

@@ -244,7 +244,7 @@ template <class T> class CMemoryMappedFile : public CSGObject
 		/** mode */
 		char rw;
 
-		/* last_written_byte */
+		/** last_written_byte */
 		uint64_t last_written_byte;
 };
 #endif
