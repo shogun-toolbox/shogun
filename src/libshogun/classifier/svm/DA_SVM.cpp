@@ -40,6 +40,7 @@ CDA_SVM::CDA_SVM(float64_t C, CKernel* k, CLabels* lab, CSVM* presvm, float64_t 
   init(presvm, B);
 }
 
+
 void CDA_SVM::init(CSVM* presvm, float64_t B)
 {
 
@@ -48,10 +49,14 @@ void CDA_SVM::init(CSVM* presvm, float64_t B)
 
   //TODO: do some sanity checking, here, check if presvm is trained and if features are of the same type
   this->presvm=presvm;
+
+  //set bias of parent svm to zero
   this->B=B;
   this->trainFactor=1.0;
 
+  this->presvm->set_bias(0.0);
 }
+
 
 CDA_SVM::~CDA_SVM()
 {
@@ -64,60 +69,29 @@ bool CDA_SVM::train()
 
   int32_t num_training_points = get_labels()->get_num_labels();
 
-  double* linear_term = new double[num_training_points];
+
+  float64_t* lin_term = new float64_t[num_training_points];
 
 
-  CKernel* tmp_kernel = presvm->get_kernel();
+  // grab current training features
+  CFeatures* train_data = get_kernel()->get_lhs();
 
 
-  tmp_kernel->init(tmp_kernel->get_lhs(), get_kernel()->get_lhs());
+  // bias of parent SVM was set to zero in constructor, already contains B
+  CLabels* parent_svm_out = presvm->classify(train_data);
 
+
+  // pre-compute linear term
   for (int32_t i=0; i!=num_training_points; i++)
   {
 
-    float64_t tmp=0;
-
-    for (int32_t j=0; j!=presvm->get_num_support_vectors(); j++)
-    {
-
-      float64_t alpha = presvm->get_alpha(j);
-      int32_t sv_idx = presvm->get_support_vector(j);
-      tmp += alpha * tmp_kernel->kernel(sv_idx,i);
-
-    }
-
-    //convex combination
-    //linear_term[i] =  -1.0;
-    //p[idx] = p[idx] - weight*(tmp_lab[idx] * tmp)
-
-    linear_term[i] = - B * (get_label(i) * tmp) - 1.0;
+    lin_term[i] = - (get_label(i) * parent_svm_out->get_label(i)) - 1.0;
 
   }
 
-  /*
-  //output first ten elements
-  std::cout << "pv[0:4]:";
-
-  for (int32_t i=0; i!=4; i++) {
-
-    std::cout << pv[i] << ", ";
-
-  }
-
-  std::cout << std::endl;
-  */
-
-  //output first ten elements
-  std::cout << "alphas[0:4]:";
-
-  for (int32_t i=0; i!=4; i++) {
-
-    std::cout << presvm->get_alpha(i) << ", ";
-
-  }
 
   //set linear term for QP
-  this->set_linear_term(linear_term, num_training_points);
+  this->set_linear_term(lin_term, num_training_points);
 
   //train SVM
   bool success = CSVMLight::train();
@@ -126,7 +100,7 @@ bool CDA_SVM::train()
 
 
   //clean up
-  delete[] linear_term;
+  delete[] lin_term;
 
   return success;
 
@@ -152,86 +126,21 @@ float64_t CDA_SVM::get_B()
 CLabels* CDA_SVM::classify(CFeatures* data)
 {
 
-    set_batch_computation_enabled(false);
     int32_t num_examples = data->get_num_vectors();
 
     CLabels* out_current = CSVMLight::classify(data);
     CLabels* out_presvm = presvm->classify(data);
 
-    float64_t bias = presvm->get_bias();
-
+    // combine outputs
     for (int32_t i=0; i!=num_examples; i++)
     {
-        //combine outputs
-        float64_t out_combined = out_current->get_label(i) + B*(out_presvm->get_label(i) - bias);
 
+        float64_t out_combined = out_current->get_label(i) + B*out_presvm->get_label(i);
         out_current->set_label(i, out_combined);
-    }
 
-    //delete[] out_presvm;
+    }
 
     return out_current;
 
 }
 
-
-/*
-CLabels* CDA_SVM::classify(CLabels* result)
-{
-			SG_NOTIMPLEMENTED;
-			return NULL;
-
-  //for DA-SVM only works in non-batch mode
-  set_batch_computation_enabled(false);
-
-  //assumption is that kernel of postsvm has been initialized
-  //with test features on RHS!
-  CKernel* pre_kernel = presvm->get_kernel();
-
-  std::cout << "initializing pre-kernel" << std::endl;
-
-  ASSERT(pre_kernel);
-  ASSERT(get_kernel());
-  ASSERT(get_kernel()->get_rhs());
-  ASSERT(pre_kernel->get_rhs());
-  ASSERT(pre_kernel->get_lhs());
-
-  pre_kernel->init(pre_kernel->get_lhs(), get_kernel()->get_rhs());
-
-  return CSVM::classify(result);
-
-}
-*/
-/*
-float64_t CDA_SVM::classify_example(INT num)
-{
-
-  //std::cout << "DA_SVM::classify_example" << std::endl;
-
-  ASSERT(CKernelMachine::get_kernel());
-
-  //call classification method from superclass
-  float64_t dist = CSVM::classify_example(num);
-
-  //works recursively if several DA_SVMs are stacked into each other
-
-  float64_t tmp_dist = presvm->classify_example(num) - presvm->get_bias();
-
-  return dist + tmp_dist;
-
-
-
-  for(INT i=0; i< presvm->get_num_support_vectors(); i++)
-  {
-	dist+= B*(presvm->get_kernel()->kernel(presvm->get_support_vector(i), num)* presvm->get_alpha(i));
-  }
-
-  //equivalent python code
-  //testout=svm_regul.classify().get_labels()+B*(presvm.classify().get_labels()-presvm.get_bias())
-
-  //std::cout << "i=" << num << " distance after using v: " << dist << std::endl;
-
-  return dist-get_bias();
-
-}
-*/
