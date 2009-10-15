@@ -28,7 +28,7 @@ extern "C" {
 /** @brief Multiple Kernel Learning
  * 
  * A support vector machine based method for use with multiple kernels.  In
- * Multiple Kernel Learning (MKL) in addition to the SVM $\f\bf\alpha\f$ and
+ * Multiple Kernel Learning (MKL) in addition to the SVM \f$\bf\alpha\f$ and
  * bias term \f$b\f$ the kernel weights \f$\bf\beta\f$ are estimated in
  * training. The resulting kernel method can be stated as
  *
