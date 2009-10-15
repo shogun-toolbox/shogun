@@ -49,9 +49,13 @@ CHierarchical::~CHierarchical()
 	delete[] pairs;
 }
 
-bool CHierarchical::train()
+bool CHierarchical::train(CFeatures* data)
 {
 	ASSERT(distance);
+
+	if (data)
+		distance->init(data, data);
+
 	CFeatures* lhs=distance->get_lhs();
 	ASSERT(lhs);
 

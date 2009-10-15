@@ -117,7 +117,7 @@ struct svm_model
 	float64_t **sv_coef;
 	/** constants in decision functions (rho[n*(n-1)/2]) */
 	float64_t *rho;
-	/* norm_wcw */
+	/** norm_wcw */
 	float64_t *normwcw;
 
 	// for classification only

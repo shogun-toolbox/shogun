@@ -133,6 +133,7 @@ class CWDFeatures : public CDotFeatures
 		void set_wd_weights();
 
 	protected:
+		/** stringfeatures the wdfeatures are based on*/
 		CStringFeatures<uint8_t>* strings;
 
 		/** normalization const */

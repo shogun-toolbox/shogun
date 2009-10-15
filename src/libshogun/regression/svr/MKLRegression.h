@@ -13,6 +13,13 @@
 #include "lib/common.h"
 #include "classifier/mkl/MKL.h"
 
+/** @brief Multiple Kernel Learning for regression
+ * 
+ * Performs support vector regression while learning kernel weights at the same
+ * time. Makes only sense if multiple kernels are used.
+ *
+ * \sa CMKL
+ */
 class CMKLRegression : public CMKL
 {
 	public:

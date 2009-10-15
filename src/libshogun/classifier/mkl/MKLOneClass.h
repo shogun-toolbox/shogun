@@ -13,6 +13,13 @@
 #include "lib/common.h"
 #include "classifier/mkl/MKL.h"
 
+/** @brief Multiple Kernel Learning for one-class-classification
+ * 
+ * Learns a One-Class SVM classifier and its kernel weights. Makes only sense
+ * if multiple kernels are used.
+ *
+ * \sa CMKL
+ */
 class CMKLOneClass : public CMKL
 {
 	public:

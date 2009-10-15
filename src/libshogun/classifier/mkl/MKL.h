@@ -25,6 +25,59 @@ extern "C" {
 #include "kernel/Kernel.h"
 #include "classifier/svm/SVM.h"
 
+/** @brief Multiple Kernel Learning
+ * 
+ * A support vector machine based method for use with multiple kernels.  In
+ * Multiple Kernel Learning (MKL) in addition to the SVM $\f\bf\alpha\f$ and
+ * bias term \f$b\f$ the kernel weights \f$\bf\beta\f$ are estimated in
+ * training. The resulting kernel method can be stated as
+ *
+ *  \f[
+ * 		f({\bf x})=\sum_{i=0}^{N-1} \alpha_i \sum_{j=0}^M \beta_j k_j({\bf x}, {\bf x_i})+b .
+ * 	\f]
+ *
+ * where \f$N\f$ is the number of training examples
+ * \f$\alpha_i\f$ are the weights assigned to each training example
+ * \f$\beta_j\f$ are the weights assigned to each sub-kernel
+ * \f$k_j(x,x')\f$ are sub-kernels
+ * and \f$b\f$ the bias.
+ *
+ * Kernels have to be chosen a-priori. In MKL \f$\alpha_i,\;\beta\f$ and bias are determined
+ * by solving the following optimization program
+ * 
+ * \f{eqnarray*}
+ *    \mbox{min} && \gamma-\sum_{i=1}^N\alpha_i\\
+ *    \mbox{w.r.t.} && \gamma\in R, \alpha\in R^N \nonumber\\
+ *    \mbox{s.t.} && {\bf 0}\leq\alpha\leq{\bf 1}C,\;\;\sum_{i=1}^N \alpha_i y_i=0 \nonumber\\
+ *    && \frac{1}{2}\sum_{i,j=1}^N \alpha_i \alpha_j y_i y_j
+ *       k_k({\bf x}_i,{\bf x}_j)\leq \gamma,\;\;
+ *    \forall k=1,\ldots,K\nonumber\\
+ * \f}
+ * here C is a pre-specified regularization parameter.
+ *
+ * Within shogun this optimization problem is solved using semi-infinite
+ * programming. For 1-norm MKL using one of the two approaches described in
+ *
+ * Soeren Sonnenburg, Gunnar Raetsch, Christin Schaefer, and Bernhard Schoelkopf.
+ * Large Scale Multiple Kernel Learning. Journal of Machine Learning Research, 7:1531-1565, July 2006.
+ *
+ * The first approach (also called the wrapper algorithm) wrapps around a
+ * single kernel SVMs, alternatingly solving for \f$\alpha\f$ and \f$\beta\f$.
+ * It is using a traditional SVM to generate new violated constraings and thus
+ * requires a single kernel SVM and any of the SVMs contained in shogun
+ * can be used. In the MKL step either a linear program is solved via glpk or
+ * cplex or analytically or a newton (for norms>1) step is performed.
+ *
+ * The second much faster but also more memory demanding approach performing
+ * interleaved optimization, is integrated into the chunking-based SVMlight.
+ *
+ * In addition sparsity of MKL can be controlled by the choice of the
+ * \f$L_p\f$-norm regularizing \f$\beta\f$ as described in
+ *
+ * Marius Kloft, Ulf Brefeld, Soeren Sonnenburg, and Alexander Zien. Efficient
+ * and accurate lp-norm multiple kernel learning. In Advances in Neural
+ * Information Processing Systems 21. MIT Press, Cambridge, MA, 2009.
+ */
 class CMKL : public CSVM
 {
 	public:
@@ -98,7 +151,7 @@ class CMKL : public CSVM
 
 		/** set state of optimization (interleaved or wrapper)
 		 *
-		 * @param interleaved if true interleaved optimization is used; wrapper
+		 * @param enable if true interleaved optimization is used; wrapper
 		 * otherwise
 		 */
 		inline void set_interleaved_optimization_enabled(bool enable)
@@ -270,11 +323,16 @@ class CMKL : public CSVM
 		float64_t compute_optimal_betas_newton(float64_t* beta, const float64_t* old_beta,
 				int32_t num_kernels, const float64_t* sumw, float64_t suma, float64_t mkl_objective);
 
+		/** check if mkl converged, i.e. 'gap' is below epsilon
+		 *
+		 * @return whether mkl converged
+		 */
 		virtual bool converged()
 		{
 			return w_gap<mkl_epsilon;
 		}
 
+		/** initialize solver such as glpk or cplex */
 		void init_solver();
 
 #ifdef USE_CPLEX
@@ -295,8 +353,22 @@ class CMKL : public CSVM
 #endif
 
 #ifdef USE_GLPK
+		/** init glpk
+		 *
+		 * @return if init was successful
+		 */
 		bool init_glpk();
+
+		/** cleanup glpk
+		 *
+		 * @return if cleanup was successful
+		 */
 		bool cleanup_glpk();
+
+		/** check glpk error status
+		 *
+		 * @return if in good status
+		 */
 		bool check_lpx_status(LPX *lp);
 #endif
 
@@ -304,6 +376,7 @@ class CMKL : public CSVM
 		inline virtual const char* get_name() const { return "MKL"; }
 
 	protected:
+		/** wrapper SVM */
 		CSVM* svm;
 		/** C_mkl */
 		float64_t C_mkl;
@@ -316,8 +389,12 @@ class CMKL : public CSVM
 		/** whether to use mkl wrapper or interleaved opt. */
 		bool interleaved_optimization;
 
+		/** partial objectives (one per kernel) */
 		float64_t* W;
+
+		/** gap between iterations */
 		float64_t w_gap;
+		/** objective after mkl iterations */
 		float64_t rho;
 
 #ifdef USE_CPLEX

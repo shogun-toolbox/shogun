@@ -27,7 +27,7 @@ class CVarianceKernelNormalizer : public CKernelNormalizer
 	public:
 		/** default constructor
 		 */
-		CVarianceKernelNormalizer() : meandiff(1.0)
+		CVarianceKernelNormalizer() : meandiff(1.0), sqrt_meandiff(1.0)
 		{
 		}
 
@@ -65,6 +65,7 @@ class CVarianceKernelNormalizer : public CKernelNormalizer
 			k->rhs=old_rhs;
 
 			meandiff=1.0/(diag_mean-overall_mean);
+			sqrt_meandiff=CMath::sqrt(meandiff);
 
 			return true;
 		}
@@ -86,7 +87,7 @@ class CVarianceKernelNormalizer : public CKernelNormalizer
 		 */
 		inline virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs)
 		{
-			return value*sqrt(meandiff);
+			return value*sqrt_meandiff;
 		}
 
 		/** normalize only the right hand side vector
@@ -95,14 +96,17 @@ class CVarianceKernelNormalizer : public CKernelNormalizer
 		 */
 		inline virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs)
 		{
-			return value*sqrt(meandiff);
+			return value*sqrt_meandiff;
 		}
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "VarianceKernelNormalizer"; }
 
     protected:
+		/** scaling constant */
 		float64_t meandiff;
+		/** square root of scaling constant */
+		float64_t sqrt_meandiff;
 };
 
 #endif

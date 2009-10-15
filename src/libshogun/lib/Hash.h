@@ -61,12 +61,11 @@ class CHash : public CSGObject
 		/** crc32 checksumming
 		 * 
 		 * @param data data to checksum
-		 * @param length number of bytes
+		 * @param len length in number of bytes
 		 */
 		static uint32_t crc32(uint8_t *data, int32_t len);
 
-		/*
-		 * Wrapper for MD5 function compatible to OpenSSL interface.
+		/** Wrapper for MD5 function compatible to OpenSSL interface.
 		 * 
 		 * @param x data
 		 * @param l length
@@ -78,8 +77,9 @@ class CHash : public CSGObject
 		/** Murmur Hash2
 		 *
 		 * @param data data to checksum (needs to be 32bit aligned on some archs)
-		 * @param length number of bytes
+		 * @param len length in number of bytes
 		 * @param seed initial seed
+		 *
 		 * @return hash
 		 */
 		uint32_t MurmurHash2(uint8_t* data, int32_t len, uint32_t seed);
@@ -116,6 +116,7 @@ class CHash : public CSGObject
 		 */
 		static void MD5Update(struct MD5Context *context,
 				unsigned char const *buf, unsigned len);
+
 		/**
 		 * Final wrapup - pad to 64-byte boundary with the bit pattern 
 		 * 1 0* (64-bit count of bits processed, MSB-first)
@@ -131,7 +132,7 @@ class CHash : public CSGObject
 		 * the data and converts bytes into longwords for this routine.
 		 *
 		 * @param buf 16 byte
-		 * @param buf 64 bytes
+		 * @param in 64 bytes
 		 */
 		static void MD5Transform(uint32_t buf[4], uint32_t const in[16]);
 };

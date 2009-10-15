@@ -142,7 +142,7 @@ template <class T> class CSimpleFile : public CSGObject
 
 		/** read a line (buffered; to be implemented)
 		 *
-		 * @param linebuffer to write to
+		 * @param line linebuffer to write to
 		 * @param len maximum length
 		 */
 		void get_buffered_line(char* line, uint64_t len)

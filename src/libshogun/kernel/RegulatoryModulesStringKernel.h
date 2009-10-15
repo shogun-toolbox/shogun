@@ -26,21 +26,30 @@ class CRegulatoryModulesStringKernel: public CStringKernel<char>
 		/** constructor
 		 *
 		 * @param size cache size
-		 * @param width width
+		 * @param width width of gaussian kernel
+		 * @param degree degree of wds kernel
+		 * @param shift shift of wds kernel
+		 * @param window size of window around motifs to compute wds kernels on
 		 */
 		CRegulatoryModulesStringKernel(int32_t size, float64_t width, int32_t degree, int32_t shift, int32_t window);
 
 		/** constructor
 		 *
-		 * @param l features of left-hand side
-		 * @param r features of right-hand side
-		 * @param width width
+		 * @param lstr string features of left-hand side
+		 * @param rstr string features of right-hand side
+		 * @param lpos motif positions on lhs
+		 * @param rpos motif positions on rhs
+		 * @param width width of gaussian kernel
+		 * @param degree degree of wds kernel
+		 * @param shift shift of wds kernel
+		 * @param window size of window around motifs to compute wds kernels on
 		 * @param size cache size
 		 */
 		CRegulatoryModulesStringKernel(CStringFeatures<char>* lstr, CStringFeatures<char>* rstr, 
 			CSimpleFeatures<uint16_t>* lpos, CSimpleFeatures<uint16_t>* rpos, 
 			float64_t width, int32_t degree, int32_t shift, int32_t window, int32_t size=10);
 
+		/** default destructor */
 		virtual ~CRegulatoryModulesStringKernel();
 
 		/** initialize kernel
@@ -53,7 +62,7 @@ class CRegulatoryModulesStringKernel: public CStringKernel<char>
 
 		/** return what type of kernel we are
 		 *
-		 * @return kernel type GAUSSIAN
+		 * @return kernel type
 		 */
 		virtual EKernelType get_kernel_type() { return K_REGULATORYMODULES; }
 
@@ -63,12 +72,14 @@ class CRegulatoryModulesStringKernel: public CStringKernel<char>
 		 */
 		inline virtual const char* get_name() const { return "RegulatoryModulesStringKernel"; }
 		
-		//FIXME
+		/** set motif positions
+		 *
+		 * @param positions_lhs motif positions on lhs
+		 * @param positions_rhs motif positions on rhs
+		 */
 		void set_motif_positions(
 			CSimpleFeatures<uint16_t>* positions_lhs, CSimpleFeatures<uint16_t>* positions_rhs);
 		
-
-
 	protected:
 		/** compute kernel function for features a and b
 		 * idx_{a,b} denote the index of the feature vectors
@@ -90,7 +101,7 @@ class CRegulatoryModulesStringKernel: public CStringKernel<char>
 		float64_t compute_wds(char* avec, char* bvec, int32_t len);
 
 		
-		//FIXME
+		/** set standard weighted degree kernel weighting */
 		void set_wd_weights();
 
 	protected:
@@ -102,7 +113,7 @@ class CRegulatoryModulesStringKernel: public CStringKernel<char>
 		/** shift of Weighted Degree with Shifts kernel part */
 		int32_t shift;
 		
-		//TODO
+		/** size of window around motifs */
 		int32_t window;
 
 		/** Matrix of motif positions from sequences left-hand side */
@@ -111,10 +122,10 @@ class CRegulatoryModulesStringKernel: public CStringKernel<char>
 		/** Matrix of motif positions from sequences right-hand side */
 		CSimpleFeatures<uint16_t>* motif_positions_rhs;
 
+		/** scaling weights in window */
 		float64_t* position_weights;
 
+		/** weights of WD kernel */
 		float64_t* weights;
-
 };
-
 #endif /* _REGULATORYMODULESSTRINGKERNEL_H__ */

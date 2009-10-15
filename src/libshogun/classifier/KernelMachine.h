@@ -211,7 +211,7 @@ class CKernelMachine : public CClassifier
 
 		/** set support vectors to given values
 		 *
-		 * @param suppvec array with all support vectors to set
+		 * @param svs array with all support vectors to set
 		 * @param d number of support vectors
 		 */
 		void set_support_vectors(int32_t* svs, int32_t d)

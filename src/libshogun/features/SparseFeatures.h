@@ -82,6 +82,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 * @param src dense feature matrix
 		 * @param num_feat number of features
 		 * @param num_vec number of vectors
+		 * @param copy true to copy feature matrix
 		 */
 		CSparseFeatures(TSparse<ST>* src, int32_t num_feat, int32_t num_vec, bool copy=false)
 		: CDotFeatures(0), num_vectors(0), num_features(0),
@@ -181,7 +182,14 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 			return new CSparseFeatures<ST>(*this);
 		}
 
-		ST get_element(int32_t num, int32_t index)
+		/** get a single feature
+		 *
+		 * @param num number of feature vector to retrieve
+		 * @param index index of feature in this vector
+		 *
+		 * @return sum of features that match dimension index and 0 if none is found
+		 */
+		ST get_feature(int32_t num, int32_t index)
 		{
 			ASSERT(index>=0 && index<num_features) ;
 			ASSERT(num>=0 && num<num_vectors) ;

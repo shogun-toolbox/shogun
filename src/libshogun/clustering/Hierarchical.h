@@ -60,7 +60,7 @@ class CHierarchical : public CDistanceMachine
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train();
+		virtual bool train(CFeatures* data=NULL);
 
 		/** load distance machine from file
 		 *
