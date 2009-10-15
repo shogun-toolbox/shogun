@@ -5,7 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 2007-2009 Christian Widmer
- * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 2007-2009 Max-Planck-Society
  */
 
 #ifndef _DA_SVM_H___
@@ -39,6 +39,8 @@ class CDA_SVM : public CSVMLight
 
             ar & presvm;
 
+            ar & B;
+
             ar & trainFactor;
             SG_DEBUG("done archiving CDA_SVM\n");
 
@@ -58,7 +60,7 @@ class CDA_SVM : public CSVMLight
     virtual inline EClassifierType get_classifier_type() { return CT_DASVM; }
 
 	virtual CLabels* classify(CFeatures* data);
-	//virtual CLabels* classify(CLabels* labels=NULL);
+
 
     virtual CSVM* get_presvm();
     virtual float64_t get_B();
@@ -68,7 +70,6 @@ class CDA_SVM : public CSVMLight
 
     CSVM* presvm;
     float64_t B;
-
     float64_t trainFactor;
 
 };

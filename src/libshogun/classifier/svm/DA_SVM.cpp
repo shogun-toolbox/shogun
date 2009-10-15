@@ -1,11 +1,11 @@
 /*
- * This program free software; you can redistribute it and/or modify
+ * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
  *
  * Written (W) 2007-2009 Christian Widmer
- * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 2007-2009 Max-Planck-Society
  */
 
 #include "classifier/svm/DA_SVM.h"
@@ -34,25 +34,25 @@ CDA_SVM::CDA_SVM(std::string presvm_fn, float64_t B) : CSVMLight()
 }
 */
 
-CDA_SVM::CDA_SVM(float64_t C, CKernel* k, CLabels* lab, CSVM* presvm, float64_t B) : CSVMLight(C, k, lab)
+CDA_SVM::CDA_SVM(float64_t C, CKernel* k, CLabels* lab, CSVM* pre_svm, float64_t B_param) : CSVMLight(C, k, lab)
 {
 
-  init(presvm, B);
+  init(pre_svm, B_param);
 
 }
 
 
-void CDA_SVM::init(CSVM* presvm, float64_t B)
+void CDA_SVM::init(CSVM* pre_svm, float64_t B_param)
 {
 
   //increase reference counts
-  SG_REF(presvm);
+  SG_REF(pre_svm);
 
   //TODO: do some sanity checking, here, check if presvm is trained and if features are of the same type
-  this->presvm=presvm;
+  this->presvm=pre_svm;
 
   //set bias of parent svm to zero
-  this->B=B;
+  this->B=B_param;
   this->trainFactor=1.0;
 
   this->presvm->set_bias(0.0);
@@ -61,6 +61,7 @@ void CDA_SVM::init(CSVM* presvm, float64_t B)
 
 CDA_SVM::~CDA_SVM()
 {
+	SG_UNREF(presvm);
 	//SG_PRINT("deleting DA_SVM\n");
 }
 
