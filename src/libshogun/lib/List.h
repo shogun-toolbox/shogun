@@ -309,6 +309,20 @@ template <class T> class CList : public CSGObject
 				return insert_element(data);
 		}
 
+		/** append at end of list
+		 *
+		 * @param data data element to append
+		 * @return if appending was successful
+		 */
+		inline bool append_element_at_listend(T data)
+		{
+			T p = get_last_element();
+			if (delete_data)
+				SG_UNREF(p);
+
+			return append_element(data);
+		}
+
 		/** insert element BEFORE the current element
 		 *
 		 * @param data data element to insert

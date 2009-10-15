@@ -79,7 +79,7 @@ public:
 	virtual EFeatureClass get_feature_class()=0;
 
 	/// return the name of the preprocessor
-	const char * get_name() const { return preproc_name; }
+	virtual const char* get_name() const { return preproc_name; }
 	
 	/// return a FOUR letter id of the preprocessor
 	const char * get_id() const { return preproc_id; }

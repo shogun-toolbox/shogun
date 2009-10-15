@@ -193,8 +193,8 @@ TYPEMAP_ARGOUT2(INTSXP, INTEGER, uint16_t, int, "Word")
 #undef TYPEMAP_ARGOUT2
 
 /* input typemap for CStringFeatures<char> etc */
-%define GET_STRINGLIST(r_type, sg_type, if_type, error_string)
-%typemap(in) (T_STRING<sg_type>* strings, int32_t num_strings, int32_t max_len)
+%define TYPEMAP_STRINGFEATURES_IN(r_type, sg_type, if_type, error_string)
+%typemap(in) (T_STRING<sg_type>* IN_STRINGS, int32_t NUM, int32_t MAXLEN)
 {
     int32_t max_len=0;
     int32_t num_strings=0;
@@ -238,5 +238,5 @@ TYPEMAP_ARGOUT2(INTSXP, INTEGER, uint16_t, int, "Word")
 }
 %enddef
 
-GET_STRINGLIST(STRSXP, char, CHAR, "Char")
-#undef GET_STRINGLIST
+TYPEMAP_STRINGFEATURES_IN(STRSXP, char, CHAR, "Char")
+#undef TYPEMAP_STRINGFEATURES_IN

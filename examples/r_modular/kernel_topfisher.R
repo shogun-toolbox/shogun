@@ -1,5 +1,6 @@
 library(shogun)
 
+size_cache=as.integer(0)
 fm_train_cube <- as.matrix(read.table('../data/fm_train_cube.dat', colClasses=c('character')))
 fm_test_cube <- as.matrix(read.table('../data/fm_test_cube.dat', colClasses=c('character')))
 
@@ -15,7 +16,7 @@ gap <- as.integer(0)
 reverse <- FALSE
 
 charfeat <- StringCharFeatures("CUBE")
-dump <- charfeat$set_string_features(charfeat, fm_train_cube)
+dump <- charfeat$set_features(charfeat, fm_train_cube)
 wordfeats_train <- StringWordFeatures(charfeat$get_alphabet())
 dump <- wordfeats_train$obtain_from_char(wordfeats_train, charfeat, start, order, gap, reverse)
 preproc <- SortWordString()
@@ -24,17 +25,17 @@ dump <- wordfeats_train$add_preproc(wordfeats_train, preproc)
 dump <- wordfeats_train$apply_preproc(wordfeats_train)
 
 charfeat <- StringCharFeatures("CUBE")
-dump <- charfeat$set_string_features(charfeat, fm_test_cube)
+dump <- charfeat$set_features(charfeat, fm_test_cube)
 wordfeats_test <- StringWordFeatures(charfeat$get_alphabet())
 dump <- wordfeats_test$obtain_from_char(wordfeats_test, charfeat, start, order, gap, reverse)
 dump <- wordfeats_test$add_preproc(wordfeats_test, preproc)
 dump <- wordfeats_test$apply_preproc(wordfeats_test)
 
 pos <- HMM(wordfeats_train, N, M, pseudo)
-dump <- pos$train()
+dump <- pos$train(pos)
 dump <- pos$baum_welch_viterbi_train(pos, "BW_NORMAL")
 neg <- HMM(wordfeats_train, N, M, pseudo)
-dump <- neg$train()
+dump <- neg$train(neg)
 dump <- neg$baum_welch_viterbi_train(neg, "BW_NORMAL")
 pos_clone <- HMM(pos)
 neg_clone <- HMM(neg)

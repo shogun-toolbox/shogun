@@ -17,6 +17,6 @@ labels <- Labels(label_train_multiclass)
 
 knn <- KNN(k, distance, labels)
 dump <- knn$parallel$set_num_threads(knn$parallel, num_threads)
-dump <- knn$train()
+dump <- knn$train(knn, feats_train)
 lab <- knn$classify(knn, feats_test)
 out <- lab$get_labels(lab)

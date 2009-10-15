@@ -18,7 +18,7 @@ labels <- Labels(label_train_twoclass)
 perceptron <- Perceptron(feats_train, labels)
 dump <- perceptron$set_learn_rate(perceptron, learn_rate)
 dump <- perceptron$set_max_iter(perceptron, max_iter)
-dump <- perceptron$train()
+dump <- perceptron$train(perceptron)
 
 dump <- perceptron$set_features(perceptron, feats_test)
 lab <- perceptron$classify(perceptron)

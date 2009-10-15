@@ -57,11 +57,11 @@ CFeatures::~CFeatures()
 int32_t CFeatures::add_preproc(CPreProc* p)
 { 
 	SG_INFO( "%d preprocs currently, new preproc list is\n", num_preproc);
-	int32_t i;
+	ASSERT(p);
 
 	bool* preprocd=new bool[num_preproc+1];
 	CPreProc** pps=new CPreProc*[num_preproc+1];
-	for (i=0; i<num_preproc; i++)
+	for (int32_t i=0; i<num_preproc; i++)
 	{
 		pps[i]=preproc[i];
 		preprocd[i]=preprocessed[i];
@@ -75,7 +75,7 @@ int32_t CFeatures::add_preproc(CPreProc* p)
 
 	num_preproc++;
 
-	for (i=0; i<num_preproc; i++)
+	for (int32_t i=0; i<num_preproc; i++)
 		SG_INFO( "preproc[%d]=%s %ld\n",i, preproc[i]->get_name(), preproc[i]) ;
 
 	SG_REF(p);

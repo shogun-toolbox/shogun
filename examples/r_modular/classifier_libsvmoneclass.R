@@ -18,7 +18,7 @@ num_threads <- as.integer(4)
 svm <- LibSVMOneClass(C, kernel)
 dump <- svm$set_epsilon(svm, epsilon)
 dump <- svm$parallel$set_num_threads(svm$parallel, num_threads)
-dump <- svm$train()
+dump <- svm$train(svm)
 
 dump <- kernel$init(kernel, feats_train, feats_test)
 lab <- svm$classify(svm)

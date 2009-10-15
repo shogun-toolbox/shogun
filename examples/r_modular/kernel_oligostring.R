@@ -7,14 +7,14 @@ fm_test_dna <- as.matrix(read.table('../data/fm_test_dna.dat'))
 print('OligoString')
 
 feats_train <- StringCharFeatures("DNA")
-dump <- feats_train$set_string_features(feats_train, fm_train_dna)
+dump <- feats_train$set_features(feats_train, fm_train_dna)
 feats_test <- StringCharFeatures("DNA")
-dump <- feats_test$set_string_features(feats_test, fm_test_dna)
+dump <- feats_test$set_features(feats_test, fm_test_dna)
 k <- as.integer(3)
 width <- 1.2
 size_cache <- as.integer(10)
 
-kernel <- OligoKernel(size_cache,  k, width)
+kernel <- OligoStringKernel(size_cache,  k, width)
 dump <- kernel$init(kernel, feats_train, feats_train)
 
 km_train <- kernel$get_kernel_matrix()

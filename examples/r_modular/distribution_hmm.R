@@ -15,7 +15,7 @@ reverse <- FALSE
 num_examples <- as.integer(2)
 
 charfeat <- StringCharFeatures("CUBE")
-dump <- charfeat$set_string_features(charfeat, fm_train_cube)
+dump <- charfeat$set_features(charfeat, fm_train_cube)
 feats <- StringWordFeatures(charfeat$get_alphabet())
 dump <- feats$obtain_from_char(feats, charfeat, start, order, gap, reverse)
 preproc <- SortWordString()

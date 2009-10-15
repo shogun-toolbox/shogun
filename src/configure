@@ -78,6 +78,7 @@ _bigstates=yes
 _hmmcache=yes
 _debug=no
 _trace_mallocs=no
+_reference_counting=yes
 _hmmdebug=no
 _pathdebug=no
 _profile=no
@@ -705,6 +706,7 @@ Miscellaneous options:
   --disable-cpudetection        disable cpu flags detection and corresponding optimization options [enabled]
   --enable-debug                enable debugging [disabled]
   --enable-trace-mallocs        enable memory allocation tracing [disabled]
+  --disable-reference-counting  disables reference counting causing severe memory leakage [enabled]
   --enable-path-debug	        enable viterbi path debugging [disabled]
   --enable-profile              compile profiling information into shogun [disable]
   --enable-static               build a statically linked binary (to the extend possible);
@@ -878,6 +880,8 @@ for ac_option do
   --enable-debug) 		_debug=yes ;;
   --disable-trace-mallocs) _trace_mallocs=no ;;
   --enable-trace-mallocs) _trace_mallocs=yes ;;
+  --disable-reference-counting) _reference_counting=no ;;
+  --enable-reference-counting) _reference_counting=yes ;;
   --disable-hmm-debug) 	_hmmdebug=no ;;
   --enable-hmm-debug)   _hmmdebug=yes ;;
   --disable-path-debug)	_pathdebug=no ;;
@@ -2591,6 +2595,11 @@ EOF
 			if test "$_trace_mallocs" = yes
 			then
 				DEFINES="$DEFINES -DTRACE_MEMORY_ALLOCS"
+			fi
+
+			if test "$_reference_counting" = yes
+			then
+				DEFINES="$DEFINES -DREFERENCE_COUNTING"
 			fi
 
 			if test "$_hmmdebug" = yes

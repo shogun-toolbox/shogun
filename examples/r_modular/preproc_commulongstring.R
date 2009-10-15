@@ -12,12 +12,12 @@ gap <- as.integer(0)
 reverse <- FALSE
 
 charfeat <- StringCharFeatures("DNA")
-dump <- charfeat$set_string_features(charfeat, fm_train_dna)
+dump <- charfeat$set_features(charfeat, fm_train_dna)
 feats_train <- StringUlongFeatures(charfeat$get_alphabet())
 dump <- feats_train$obtain_from_char(feats_train, charfeat, start, order, gap, reverse)
 
 charfeat <- StringCharFeatures("DNA")
-dump <- charfeat$set_string_features(charfeat, fm_test_dna)
+dump <- charfeat$set_features(charfeat, fm_test_dna)
 feats_test <- StringUlongFeatures(charfeat$get_alphabet())
 dump <- feats_test$obtain_from_char(feats_test, charfeat, start, order, gap, reverse)
 

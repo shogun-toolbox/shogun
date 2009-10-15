@@ -51,8 +51,14 @@
 class CIO;
 
 // define reference counter macros
+//
+#ifdef REFERENCE_COUNTING
 #define SG_REF(x) { if (x) (x)->ref(); }
 #define SG_UNREF(x) { if (x) { if ((x)->unref()==0) (x)=0; } }
+#else
+#define SG_REF(x)
+#define SG_UNREF(x)
+#endif
 
 /** @brief Class SGObject is the base class of all shogun objects.
  *
@@ -87,6 +93,7 @@ public:
 		SG_UNREF(io);
 	}
 
+#ifdef REFERENCE_COUNTING
 	/** increase reference counter
 	 *
 	 * @return reference count
@@ -132,6 +139,7 @@ public:
 			return refcount;
 		}
 	}
+#endif
 
 	/** get the name of the object
 	 *

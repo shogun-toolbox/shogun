@@ -14,7 +14,7 @@ gamma <- 3
 labels <- Labels(label_train_twoclass)
 
 lda <- LDA(gamma, feats_train, labels)
-dump <- lda$train()
+dump <- lda$train(lda)
 
 dump <- lda$get_bias(lda)
 dump <- lda$get_w(lda)

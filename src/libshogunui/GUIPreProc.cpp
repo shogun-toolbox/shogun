@@ -101,9 +101,7 @@ CPreProc* CGUIPreProc::create_generic(EPreProcType type)
 
 bool CGUIPreProc::add_preproc(CPreProc* preproc)
 {
-	CPreProc* p = preprocs->get_last_element();
-	SG_UNREF(p);
-	return preprocs->append_element(preproc);
+	return preprocs->append_element_at_listend(preproc);
 }
 
 bool CGUIPreProc::clean_preproc()
@@ -165,11 +163,7 @@ bool CGUIPreProc::load(char* filename)
 		SG_ERROR("Opening file %s failed\n", filename);
 
 	if (result)
-	{
-		CPreProc* p=preprocs->get_last_element();
-		SG_UNREF(p);
-		result=preprocs->append_element(preproc);
-	}
+		result=preprocs->append_element_at_listend(preproc);
 
 	return result;
 }

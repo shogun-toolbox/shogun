@@ -25,7 +25,7 @@ dump <- svm$set_epsilon(svm, epsilon)
 dump <- svm$parallel$set_num_threads(svm$parallel, num_threads)
 dump <- svm$set_bias_enabled(svm, FALSE)
 dump <- svm$set_max_train_time(svm, max_train_time)
-dump <- svm$train()
+dump <- svm$train(svm)
 
 dump <- svm$set_features(svm, feats_test)
 lab <- svm$classify(svm)

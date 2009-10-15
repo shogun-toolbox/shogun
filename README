@@ -30,8 +30,9 @@ The following table depicts the status of each interface available in shogun:
 |python-modular    | mature (no known problems)                                |
 |octave-modular    | mature (no known problems)                                |
 |r-modular         | pre-alpha quality (swig does not properly handle reference|
-|                  | counting and thus we see crashes or leaked memory, thus   |
-|                  | disabled by default.)                                     |
+|                  | counting and thus only for the brave:                     |
+|                  | --disable-reference-counting to get it to work, but beware|
+|                  | that it will leak memory; disabled by default.)           |
 +==================+===========================================================+
 
 Visit src/README and http://www.shogun-toolbox.org/doc for further information.
