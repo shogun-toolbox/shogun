@@ -52,7 +52,7 @@ class CIO;
 
 // define reference counter macros
 //
-#ifdef REFERENCE_COUNTING
+#ifdef USE_REFERENCE_COUNTING
 #define SG_REF(x) { if (x) (x)->ref(); }
 #define SG_UNREF(x) { if (x) { if ((x)->unref()==0) (x)=0; } }
 #else
@@ -93,7 +93,7 @@ public:
 		SG_UNREF(io);
 	}
 
-#ifdef REFERENCE_COUNTING
+#ifdef USE_REFERENCE_COUNTING
 	/** increase reference counter
 	 *
 	 * @return reference count

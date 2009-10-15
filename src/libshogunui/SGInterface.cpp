@@ -4806,6 +4806,7 @@ bool CSGInterface::cmd_train_classifier()
 		case CT_MKLCLASSIFICATION:
 		case CT_MKLREGRESSION:
 		case CT_MKLONECLASS:
+		case CT_MKLMULTICLASS:
 			return ui_classifier->train_mkl();
 
 		case CT_KRR:
@@ -7738,7 +7739,6 @@ bool CSGInterface::handle()
 				command,
 				hilight.get_command_suffix());
 
-	SG_SPRINT("deleting cmd\n");
 	delete[] command;
 	return success;
 }

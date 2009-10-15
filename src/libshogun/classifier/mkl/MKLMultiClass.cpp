@@ -8,7 +8,7 @@
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "classifier/svm/gmnpmkl.h"
+#include "classifier/mkl/MKLMultiClass.h"
 
 lpwrapper::lpwrapper()
 {
@@ -251,7 +251,7 @@ void glpkwrapper4CGMNPMKL::computeweights(std::vector<float64_t> & weights2)
 }
 
 
-CGMNPMKL::CGMNPMKL()
+CMKLMultiClass::CMKLMultiClass()
 : CMultiClassSVM(ONE_VS_REST)
 {
 	svm=NULL;
@@ -266,7 +266,7 @@ CGMNPMKL::CGMNPMKL()
 	numker=0;
 }
 
-CGMNPMKL::CGMNPMKL(float64_t C, CKernel* k, CLabels* lab)
+CMKLMultiClass::CMKLMultiClass(float64_t C, CKernel* k, CLabels* lab)
 : CMultiClassSVM(ONE_VS_REST, C, k, lab)
 {
 	svm=NULL;
@@ -279,7 +279,7 @@ CGMNPMKL::CGMNPMKL(float64_t C, CKernel* k, CLabels* lab)
 }
 
 
-CGMNPMKL::~CGMNPMKL()
+CMKLMultiClass::~CMKLMultiClass()
 {
 	SG_UNREF(svm);
 	svm=NULL;
@@ -287,7 +287,7 @@ CGMNPMKL::~CGMNPMKL()
 	lpw=NULL;
 }
 
-void CGMNPMKL::lpsetup(const int32_t numkernels)
+void CMKLMultiClass::lpsetup(const int32_t numkernels)
 {
 	numker=numkernels;
 	ASSERT(numker>0);
@@ -305,18 +305,18 @@ void CGMNPMKL::lpsetup(const int32_t numkernels)
 		default:
 		{
 			//std::ostringstream helper;
-			//helper << "CGMNPMKL::setup(const int32_tnumkernels): unknown value for lpwrappertype "<<lpwrappertype <<std::endl;
+			//helper << "CMKLMultiClass::setup(const int32_tnumkernels): unknown value for lpwrappertype "<<lpwrappertype <<std::endl;
 			//throw ShogunException(helper.str().c_str());
 
 			char bla[1000];
-			sprintf(bla,"CGMNPMKL::setup(const int32_tnumkernels): unknown value for lpwrappertype %d\n ",lpwrappertype);
+			sprintf(bla,"CMKLMultiClass::setup(const int32_tnumkernels): unknown value for lpwrappertype %d\n ",lpwrappertype);
 			throw ShogunException(bla);
 		}
 		break;
 	}
 }
 
-void CGMNPMKL::initsvm()
+void CMKLMultiClass::initsvm()
 {
 	ASSERT(labels);
 
@@ -344,24 +344,24 @@ void CGMNPMKL::initsvm()
 	newlab=NULL;
 }
 
-void CGMNPMKL::init()
+void CMKLMultiClass::init()
 {
 
 	if(NULL==kernel)
 	{
 
-		throw ShogunException("CGMNPMKL::init(): the set kernel is NULL ");
+		throw ShogunException("CMKLMultiClass::init(): the set kernel is NULL ");
 	}
 	else
 	{
 		if(kernel->get_kernel_type()!=K_COMBINED)
 		{
 			//std::ostringstream helper;
-			//helper << "CGMNPMKL::init(): given kernel is not of type K_COMBINED "<<k->get_kernel_type() <<std::endl;
+			//helper << "CMKLMultiClass::init(): given kernel is not of type K_COMBINED "<<k->get_kernel_type() <<std::endl;
 			//throw ShogunException(helper.str().c_str());
 
 			char bla[1000];
-			sprintf(bla,"CGMNPMKL::init(): given kernel is not of type K_COMBINED %d \n",kernel->get_kernel_type());
+			sprintf(bla,"CMKLMultiClass::init(): given kernel is not of type K_COMBINED %d \n",kernel->get_kernel_type());
 			throw ShogunException(bla);
 		}
 
@@ -374,7 +374,7 @@ void CGMNPMKL::init()
 }
 
 
-bool CGMNPMKL::evaluatefinishcriterion(const int32_t numberofsilpiterations)
+bool CMKLMultiClass::evaluatefinishcriterion(const int32_t numberofsilpiterations)
 {
 	if((maxiters>0)&&(numberofsilpiterations>=maxiters))
 	{
@@ -397,7 +397,7 @@ bool CGMNPMKL::evaluatefinishcriterion(const int32_t numberofsilpiterations)
 		}
 		delta=sqrt(delta);
 
-		SG_SPRINT( "CGMNPMKL::evaluatefinishcriterion(): L2 norm of changes= %f, required for termination by member variables thresh= %f \n",delta, thresh);
+		SG_SPRINT( "CMKLMultiClass::evaluatefinishcriterion(): L2 norm of changes= %f, required for termination by member variables thresh= %f \n",delta, thresh);
 
 		if( (delta < thresh)&&(numberofsilpiterations>=1) )
 		{
@@ -408,7 +408,7 @@ bool CGMNPMKL::evaluatefinishcriterion(const int32_t numberofsilpiterations)
 	return(false);
 }
 
-void CGMNPMKL::addingweightsstep( const std::vector<float64_t> & curweights)
+void CMKLMultiClass::addingweightsstep( const std::vector<float64_t> & curweights)
 {
 	//weightshistory.push_back(curweights);
 	//error prone?
@@ -457,7 +457,7 @@ void CGMNPMKL::addingweightsstep( const std::vector<float64_t> & curweights)
 	lpw->addconstraint(normw2,sumofsignfreealphas);
 }
 
-float64_t CGMNPMKL::getsumofsignfreealphas()
+float64_t CMKLMultiClass::getsumofsignfreealphas()
 {
 	//returns \sum_y b_y^2-\sum_i \sum_{ y \neq y_i} \alpha_{iy}(b_{y_i}-b_y-1)
 
@@ -513,7 +513,7 @@ float64_t CGMNPMKL::getsumofsignfreealphas()
 	return(sum);
 }
 
-float64_t CGMNPMKL::getsquarenormofprimalcoefficients(
+float64_t CMKLMultiClass::getsquarenormofprimalcoefficients(
 		const int32_t ind)
 {
 	// alphas are already correctly transformed!
@@ -550,7 +550,7 @@ float64_t CGMNPMKL::getsquarenormofprimalcoefficients(
 }
 
 
-bool CGMNPMKL::train(CFeatures* data)
+bool CMKLMultiClass::train(CFeatures* data)
 {
 	ASSERT(kernel);
 	ASSERT(labels && labels->get_num_labels());
@@ -634,7 +634,7 @@ bool CGMNPMKL::train(CFeatures* data)
 
 
 
-float64_t* CGMNPMKL::getsubkernelweights(int32_t & numweights)
+float64_t* CMKLMultiClass::getsubkernelweights(int32_t & numweights)
 {
 	if((numker<=0 )||weightshistory.empty() )
 	{

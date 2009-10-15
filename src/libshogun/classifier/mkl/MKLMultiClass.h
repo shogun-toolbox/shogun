@@ -27,7 +27,7 @@
 #ifdef USE_GLPK
 #include <glpk.h>
 
-/** @brief CGMNPMKL is a class for L1-norm multiclass MKL.
+/** @brief MKLMultiClass is a class for L1-norm multiclass MKL.
  *
  * L1-norm MKL for the multiclass svm CGMNPSVM kit is to be used as all
  * other SVM routines with the set_kernel, set_C, set_labels, set_epsilon
@@ -36,7 +36,7 @@
  *
  * This is based on the free solver glpk solver.
  *
- * \todo check what options to pass from CGMNPMKL to CGMNPSVM
+ * \todo check what options to pass from MKLMultiClass to CGMNPSVM
  * \todo set C_mkl?
  * \todo clear types (float64_t, size_t, int)
  */
@@ -62,7 +62,7 @@ public:
 	
 };
 
-/** @brief CGMNPMKL is a class for L1-norm multiclass MKL. */
+/** @brief MKLMultiClass is a class for L1-norm multiclass MKL. */
 class glpkwrapper: public lpwrapper
 {
 public:
@@ -82,7 +82,7 @@ protected:
 
 #else
 
-/** @brief CGMNPMKL is a class for L1-norm multiclass MKL. */
+/** @brief MKLMultiClass is a class for L1-norm multiclass MKL. */
 class lpwrapper : public CSGObject
 {
 public:
@@ -101,7 +101,7 @@ public:
 	
 };
 
-/** @brief CGMNPMKL is a class for L1-norm multiclass MKL. */
+/** @brief MKLMultiClass is a class for L1-norm multiclass MKL. */
 class glpkwrapper: public lpwrapper
 {
 public:
@@ -122,7 +122,7 @@ protected:
 
 #endif //USE_GLPK
 
-/** @brief CGMNPMKL is a class for L1-norm multiclass MKL. */
+/** @brief MKLMultiClass is a class for L1-norm multiclass MKL. */
 class glpkwrapper4CGMNPMKL: public glpkwrapper
 {
 public:
@@ -145,15 +145,15 @@ public:
 	
 };	
 
-/** @brief CGMNPMKL is a class for L1-norm multiclass MKL.
+/** @brief MKLMultiClass is a class for L1-norm multiclass MKL.
  */
-class CGMNPMKL : public CMultiClassSVM
+class CMKLMultiClass : public CMultiClassSVM
 {
 public:
-	CGMNPMKL();
-	CGMNPMKL(float64_t C, CKernel* k, CLabels* lab);
+	CMKLMultiClass();
+	CMKLMultiClass(float64_t C, CKernel* k, CLabels* lab);
 	
-	virtual ~CGMNPMKL();
+	virtual ~CMKLMultiClass();
 
 	/** train Multiclass MKL classifier
 	 *
@@ -169,7 +169,7 @@ public:
 	 *
 	 * @return classifier type GMNPMKL
 	 */
-	virtual inline EClassifierType get_classifier_type() { return CT_GMNPMKL; }
+	virtual inline EClassifierType get_classifier_type() { return CT_MKLMULTICLASS; }
 	
 	//returns the subkernelweights or NULL if none such have been computed, caller has to delete the returned pointer
 	float64_t* getsubkernelweights(int32_t & numweights);

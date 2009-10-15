@@ -41,6 +41,7 @@
 #include <shogun/classifier/mkl/MKLClassification.h>
 #include <shogun/regression/svr/MKLRegression.h>
 #include <shogun/classifier/mkl/MKLOneClass.h>
+#include <shogun/classifier/mkl/MKLMultiClass.h>
 #include <shogun/classifier/svm/LibSVM.h>
 #include <shogun/classifier/svm/GPBTSVM.h>
 #include <shogun/classifier/svm/LibSVMOneClass.h>
@@ -355,10 +356,20 @@ bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
 		SG_UNREF(classifier);
 		classifier= new CMKLClassification();
 	}
+	else if (strcmp(name,"MKL_MULTICLASS")==0)
+	{
+		SG_UNREF(classifier);
+		classifier= new CMKLClassification();
+	}
 	else if (strcmp(name,"MKL_ONECLASS")==0)
 	{
 		SG_UNREF(classifier);
 		classifier= new CMKLOneClass();
+	}
+	else if (strcmp(name,"MKL_MULTICLASS")==0)
+	{
+		SG_UNREF(classifier);
+		classifier= new CMKLMultiClass();
 	}
 	else if (strcmp(name,"MKL_REGRESSION")==0)
 	{
@@ -850,8 +861,7 @@ bool CGUIClassifier::set_svr_tube_epsilon(float64_t tube_epsilon)
 {
 	if (classifier->get_classifier_type() != CT_LIBSVR &&
 			classifier->get_classifier_type() != CT_SVRLIGHT &&
-			classifier->get_classifier_type() != CT_MKLREGRESSION
-			)
+			classifier->get_classifier_type() != CT_MKLREGRESSION )
 	{
 		SG_ERROR("Underlying method not capable of SV-regression\n");
 	}
@@ -1036,6 +1046,7 @@ CLabels* CGUIClassifier::classify(CLabels* output)
 		case CT_LIBSVMONECLASS:
 		case CT_SVRLIGHT:
 		case CT_MKLCLASSIFICATION:
+		case CT_MKLMULTICLASS:
 		case CT_MKLREGRESSION:
 		case CT_KRR:
 			return classify_kernelmachine(output);
@@ -1120,6 +1131,7 @@ bool CGUIClassifier::get_trained_classifier(
 		case CT_MKLCLASSIFICATION:
 		case CT_MKLREGRESSION:
 		case CT_MKLONECLASS:
+		case CT_MKLMULTICLASS:
 		case CT_KRR:
 			return get_svm(weights, rows, cols, bias, brows, bcols, idx);
 			break;

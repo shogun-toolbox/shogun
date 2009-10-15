@@ -2448,7 +2448,6 @@ float64_t* CSVMLight::optimize_qp(
 		opt_precision=CMath::max(opt_precision, DEF_PRECISION);
 		sigdig=-log10(opt_precision);
 
-		CMath::display_vector(qp->opt_g0, qp->opt_n, "pr_loqo_c");
 		result=pr_loqo((int32_t)qp->opt_n,(int32_t)qp->opt_m,
 				(float64_t *)qp->opt_g0,(float64_t *)qp->opt_g,
 				(float64_t *)qp->opt_ce,(float64_t *)qp->opt_ce0,
