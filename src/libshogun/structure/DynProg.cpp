@@ -1732,15 +1732,6 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 			}
 		}
 
-		/*struct svm_values_struct svs;
-		  svs.num_unique_words = NULL;
-		  svs.svm_values = NULL;
-		  svs.svm_values_unnormalized = NULL;
-		  svs.word_used = NULL;*/
-
-		struct segment_loss_struct loss;
-		loss.segments_changed = NULL;
-		loss.num_segment_id = NULL;
 
 		SG_DEBUG("START_RECURSION \n\n");
 
