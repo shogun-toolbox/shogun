@@ -8,36 +8,36 @@
  * Copyright (C) 2007-2009 Max-Planck-Society
  */
 
-#include "classifier/svm/DA_SVM.h"
+#include "classifier/svm/DomainAdaptationSVM.h"
 #include "lib/io.h"
 #include <iostream>
 
 
 #ifdef HAVE_BOOST_SERIALIZATION
 #include <boost/serialization/export.hpp>
-BOOST_CLASS_EXPORT(CDA_SVM);
+BOOST_CLASS_EXPORT(CDomainAdaptationSVM);
 #endif //HAVE_BOOST_SERIALIZATION
 
 
-CDA_SVM::CDA_SVM() : CSVMLight()
+CDomainAdaptationSVM::CDomainAdaptationSVM() : CSVMLight()
 {
 }
 
-CDA_SVM::CDA_SVM(float64_t C, CKernel* k, CLabels* lab, CSVM* pre_svm, float64_t B_param) : CSVMLight(C, k, lab)
+CDomainAdaptationSVM::CDomainAdaptationSVM(float64_t C, CKernel* k, CLabels* lab, CSVM* pre_svm, float64_t B_param) : CSVMLight(C, k, lab)
 {
 
   init(pre_svm, B_param);
 
 }
 
-CDA_SVM::~CDA_SVM()
+CDomainAdaptationSVM::~CDomainAdaptationSVM()
 {
 	SG_UNREF(presvm);
-	SG_DEBUG("deleting DA_SVM\n");
+	SG_DEBUG("deleting DomainAdaptationSVM\n");
 }
 
 
-void CDA_SVM::init(CSVM* pre_svm, float64_t B_param)
+void CDomainAdaptationSVM::init(CSVM* pre_svm, float64_t B_param)
 {
 
 	// increase reference counts
@@ -54,7 +54,7 @@ void CDA_SVM::init(CSVM* pre_svm, float64_t B_param)
 	is_presvm_sane();
 }
 
-bool CDA_SVM::is_presvm_sane()
+bool CDomainAdaptationSVM::is_presvm_sane()
 {
 
 	if (!presvm) {
@@ -82,7 +82,7 @@ bool CDA_SVM::is_presvm_sane()
 }
 
 
-bool CDA_SVM::train()
+bool CDomainAdaptationSVM::train()
 {
 
   int32_t num_training_points = get_labels()->get_num_labels();
@@ -125,7 +125,7 @@ bool CDA_SVM::train()
 }
 
 
-CSVM* CDA_SVM::get_presvm()
+CSVM* CDomainAdaptationSVM::get_presvm()
 {
 
   return presvm;
@@ -133,7 +133,7 @@ CSVM* CDA_SVM::get_presvm()
 }
 
 
-float64_t CDA_SVM::get_B()
+float64_t CDomainAdaptationSVM::get_B()
 {
 
   return B;
@@ -142,7 +142,7 @@ float64_t CDA_SVM::get_B()
 
 
 
-CLabels* CDA_SVM::classify(CFeatures* data)
+CLabels* CDomainAdaptationSVM::classify(CFeatures* data)
 {
 
     ASSERT(presvm->get_bias()==0.0);
@@ -151,7 +151,7 @@ CLabels* CDA_SVM::classify(CFeatures* data)
 
     CLabels* out_current = CSVMLight::classify(data);
 
-    // recursive call if used on DA_SVM object
+    // recursive call if used on DomainAdaptationSVM object
     CLabels* out_presvm = presvm->classify(data);
 
 

@@ -8,27 +8,24 @@
  * Copyright (C) 2007-2009 Max-Planck-Society
  */
 
-#ifndef _DA_SVM_H___
-#define _DA_SVM_H___
+#ifndef _DomainAdaptation_SVM_H___
+#define _DomainAdaptation_SVM_H___
 
 
 #include "lib/common.h"
-#include "classifier/svm/SVM.h"
-#include "classifier/svm/SVM_libsvm.h"
-#include "classifier/svm/LibSVM.h"
 #include "classifier/svm/SVM_light.h"
 
 #include <stdio.h>
 
 
 /** @brief class DomainAdaptiveSVM */
-class CDA_SVM : public CSVMLight
+class CDomainAdaptationSVM : public CSVMLight
 {
 
 	public:
 
 		/** default constructor */
-		CDA_SVM();
+		CDomainAdaptationSVM();
 
 
 		/** constructor
@@ -39,11 +36,11 @@ class CDA_SVM : public CSVMLight
 		 * @param presvm trained SVM to regularize against
 		 * @param B trade-off constant B
 		 */
-		CDA_SVM(float64_t C, CKernel* k, CLabels* lab, CSVM* presvm, float64_t B);
+		CDomainAdaptationSVM(float64_t C, CKernel* k, CLabels* lab, CSVM* presvm, float64_t B);
 
 
 		/** destructor */
-		virtual ~CDA_SVM();
+		virtual ~CDomainAdaptationSVM();
 
 
 		/** init SVM
@@ -101,7 +98,7 @@ class CDA_SVM : public CSVMLight
 		void serialize(Archive & ar, const unsigned int archive_version)
 		{
 
-			SG_DEBUG("archiving CDA_SVM\n");
+			SG_DEBUG("archiving CDomainAdaptationSVM\n");
 
 			// serialize base class
 			ar & boost::serialization::base_object<CSVMLight>(*this);
@@ -113,7 +110,7 @@ class CDA_SVM : public CSVMLight
 
 			ar & train_factor;
 
-			SG_DEBUG("done archiving CDA_SVM\n");
+			SG_DEBUG("done archiving CDomainAdaptationSVM\n");
 
 		}
 #endif //HAVE_BOOST_SERIALIZATION
