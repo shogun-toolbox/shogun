@@ -106,7 +106,6 @@ public:
 	 *  @param probe_pos local positions of probes
 	 *  @param intensities intensities of probes
 	 *  @param num_probes number of probes
-	 *  @param seq_len: number of candidate positions
 	 */
 	void init_tiling_data(int32_t* probe_pos, float64_t* intensities, const int32_t num_probes);
 
@@ -121,8 +120,6 @@ public:
 	/** append rows to linear features array
  	 * 
  	 * @param num_new_feat number of new rows to add
- 	 * @param seq_len number of columns == number of candidate positions
- 	 * 			(must be equal to the existing num of cols) 
  	 */
 	void resize_lin_feat(int32_t num_new_feat);
 	/** set vector p
@@ -180,21 +177,30 @@ public:
 
 	/** set best path seq
 	 *
-	 * @param seq the sequenceint32_t N, int32_t seq_len, int32_t max_num_features);
-	 * @param N dimension N
-	 * @param seq_len length of sequence
-	 * @param max_num_features maximal number of signal features that are 
-	 * 	  considered at a single position
+	 * @param seq signal features
+	 * @param dims dimensions
+	 * @param number of dimensions
 	 */
 	void set_observation_matrix(float64_t* seq, int32_t* dims, int32_t ndims);
 
-	
+	/** get number of positions; the dynamic program is sparse encoded
+	 *  and this function gives the number of positions that can actually
+	 *  be part of a predicted path
+	 *
+	 * @return number of positions
+	 */	
 	int32_t get_num_positions();
 
-	/** set an array of length # candidate positions 
+	/** set an array of length #(candidate positions) 
 	 *  which specifies the content type of each pos
+	 *  and a mask that determines to which extend the 
+	 *  loss should be applied to this position; this 
+	 *  is a way to encode label confidence via weights 
+	 *  between zero and one
 	 *
 	 * @param seg_path seg path
+	 * @param rows rows
+	 * @param cols cols
 	 */
 	void set_content_type_array(float64_t* seg_path, int32_t rows, int32_t cols);
 
@@ -280,33 +286,28 @@ public:
 	void get_positions(int32_t **positions, int32_t *m, int32_t *n);
 
 
-	/** compute n best viterbi paths
+	/** run the viterbi algorithm to compute the n best viterbi paths
 	 *
-	 * @param PLif_matrix Plif matrix
-	 * @param Plif_state_signals Plif state signals
-	 * @param max_num_signals maximal number of signals
-	 * @param prob_nbest prob nbest
-	 * @param my_state_seq my state seq
-	 * @param my_pos_seq my pos seq
+	 * @param max_num_signals maximal number of signals for a single state
 	 * @param use_orf whether orf shall be used
+	 * @param nbest number of best paths (n)
+	 * @param with_loss use loss
+	 * @param with_multiple_sequences !!!not functional set to false!!!
 	 */
 	void compute_nbest_paths(int32_t max_num_signals,
 						 bool use_orf, int16_t nbest, bool with_loss, bool with_multiple_sequences);
 
 ////////////////////////////////////////////////////////////////////////////////
 
-	/** best path trans derivative
+	/** given a path though the state model and the corresponding
+	 *  positions compute the features. This can be seen as the derivative 
+	 *  of the score (output of dynamic program) with respect to the 
+	 *  parameters
 	 *
-	 * @param my_state_seq my state seq
-	 * @param my_pos_seq my pos seq
-	 * @param my_scores my scores
-	 * @param my_losses my losses
-	 * @param my_seq_len my sequence length
-	 * @param seq_array sequence array
-	 * @param seq_len length of sequence
-	 * @param pos position
-	 * @param PLif_matrix Plif matrix
-	 * @param Plif_state_signals Plif state signals
+	 * @param my_state_seq state sequence of the path
+	 * @param my_pos_seq sequence of positions 
+	 * @param my_seq_len length of state and position sequences
+	 * @param seq_array array of features
 	 * @param max_num_signals maximal number of signals
 	 */
 	void best_path_trans_deriv(
@@ -317,14 +318,12 @@ public:
 	/** set best path my state sequence
 	 *
 	 * @param my_state_seq my state sequence
-	 * @param seq_len length of sequence
 	 */
 	void set_my_state_seq(int32_t* my_state_seq);
 
 	/** set best path my position sequence
 	 *
 	 * @param my_pos_seq my position sequence
-	 * @param seq_len length of sequence
 	 */
 	void set_my_pos_seq(int32_t* my_pos_seq);
 
@@ -423,13 +422,7 @@ public:
 	}
 	
 	/** create array of precomputed content svm values
-	 * Jonas
 	 *
-	 * @param wordstr word strings
-	 * @param pos position
-	 * @param num_cand_pos number of cand position
-	 * @param dictionary_weights SVM weight vectors for content prediction
-	 * @param dict_len number of weight vectors 
 	 */
 	void precompute_content_values();
 
@@ -448,7 +441,7 @@ public:
 	 *  and PLiFed tiling array data
 	 * Jonas
 	 *
-	 * @param p_feat_array array of features
+	 * @param p_lin_feat array of features
 	 * @param p_num_svms number of tracks
 	 * @param p_seq_len number of candidate positions
 	 */
@@ -459,7 +452,6 @@ public:
 	/** create word string from char*
 	 * Jonas
 	 *
-	 * @param wordstr word strings
 	 */
 	void create_word_string();
 
@@ -589,65 +581,9 @@ protected:
 	 */
 	bool extend_orf(int32_t orf_from, int32_t orf_to, int32_t start, int32_t &last_pos, int32_t to);
 
-	/** @brief segment loss */
-	struct segment_loss_struct
-	{
-		/** maximum lookback */
-		int32_t maxlookback;
-		/** sequence length */
-		int32_t seqlen;
-		/** segments changed */
-		int32_t *segments_changed;
-		/** numb segment ID */
-		float64_t *num_segment_id;
-		/** length of segmend ID */
-		int32_t *length_segment_id ;
-	};
+	/** @return object name */
+	inline virtual const char* get_name() const { return "DynProg"; }
 
-	/** init segment loss
-	 *
-	 * @param loss segment loss to init
-	 * @param seqlen length of sequence
-	 * @param howmuchlookback how far to look back
-	 */
-	void init_segment_loss(struct segment_loss_struct & loss, int32_t seqlen,
-		int32_t howmuchlookback);
-
-	/** clear segment loss
-	 *
-	 * @param loss segment loss to clear
-	 */
-	void clear_segment_loss(struct segment_loss_struct & loss);
-
-	/** extend segment loss
-	 *
-	 * @param loss segment loss to extend
-	 * @param pos_array position array
-	 * @param segment_id ID of segment
-	 * @param pos position
-	 * @param last_pos last position
-	 * @param last_value last value
-	 * @return last value
-	 */
-	float64_t extend_segment_loss(struct segment_loss_struct & loss,
-		int32_t segment_id, int32_t pos, int32_t& last_pos, float64_t &last_value);
-
-	/** find segment loss till pos
-	 *
-	 * @param pos position
-	 * @param t_end t end
-	 * @param segment_ids segment IDs
-	 * @param segment_mask segmend mask
-	 * @param loss segment loss
-	 */
-	void find_segment_loss_till_pos(int32_t t_end,
-		CArray<int32_t>& segment_ids, CArray<float64_t>& segment_mask,
-		struct segment_loss_struct& loss);
-
-
-
-		/** @return object name */
-		inline virtual const char* get_name() const { return "DynProg"; }
 private:
 
 	T_STATES trans_list_len;
@@ -791,7 +727,8 @@ protected:
 	/** my losses */
 	CArray<float64_t> m_my_losses;
 
-	/***/
+	/** segment loss object containing the functions
+	 *  to compute the segment loss*/
 	CSegmentLoss* m_seg_loss_obj;
 
 	// output arguments
@@ -802,8 +739,11 @@ protected:
 	/** positions */
 	CArray2<int32_t> m_positions;
 
+	/** sparse feature matrix dim1*/
 	CSparseFeatures<float64_t>* m_seq_sparse1;
+	/** sparse feature matrix dim2*/
 	CSparseFeatures<float64_t>* m_seq_sparse2;
+	/** plif matrices*/
 	CPlifMatrix* m_plif_matrices;
 
 	/** storeage of stop codons
@@ -835,8 +775,15 @@ protected:
 	/** number of additional data tracks like tiling, RNA-Seq, ...*/
 	int32_t m_num_raw_data;
 
+	/** use long transition approximation*/
 	bool m_long_transitions ;
+	/** threshold for transitions that are computed 
+	 *  the traditional way*/
 	int32_t m_long_transition_threshold  ;
+	/** maximal length of a long transition
+	 *  Note: is ignored in the current implementation
+	 *        => arbitrarily long transitions can be decoded
+	 */
 	int32_t m_long_transition_max ;
 
 };

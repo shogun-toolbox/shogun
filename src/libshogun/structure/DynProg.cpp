@@ -1151,213 +1151,6 @@ void CDynProg::best_path_no_b_trans(
 	delete delta_new ;
 }
 
-void CDynProg::init_segment_loss(
-	struct segment_loss_struct & loss, int32_t seqlen, int32_t howmuchlookback)
-{
-#ifdef DYNPROG_TIMING
-	MyTime.start() ;
-#endif
-	int32_t clear_size = CMath::min(howmuchlookback,seqlen) ;
-	
-	if (!loss.num_segment_id)
-	{
-		loss.segments_changed       = new int32_t[seqlen] ;
-		loss.num_segment_id         = new float64_t[(m_max_a_id+1)*seqlen] ;
-		loss.length_segment_id      = new int32_t[(m_max_a_id+1)*seqlen] ;
-
-		clear_size = seqlen ;
-	}
-	
-	for (int32_t j=0; j<clear_size; j++)
-	{
-		loss.segments_changed[j]=0 ;
-		for (int32_t i=0; i<m_max_a_id+1; i++)       
-		{
-			loss.num_segment_id[i*seqlen+j] = 0;
-			loss.length_segment_id[i*seqlen+j] = 0;
-		}
-	}
-
-	loss.maxlookback = howmuchlookback ;
-	loss.seqlen = seqlen;
-
-#ifdef DYNPROG_TIMING
-	MyTime.stop() ;
-	segment_init_time += MyTime.time_diff_sec() ;
-#endif
-}
-
-void CDynProg::clear_segment_loss(struct segment_loss_struct & loss) 
-{
-#ifdef DYNPROG_TIMING
-	MyTime.start() ;
-#endif
-	
-	if (loss.num_segment_id != NULL)
-	{
-		delete[] loss.segments_changed ;
-		delete[] loss.num_segment_id ;
-		delete[] loss.length_segment_id ;
-		loss.segments_changed = NULL ;
-		loss.num_segment_id = NULL ;
-		loss.length_segment_id = NULL ;
-	}
-#ifdef DYNPROG_TIMING
-	MyTime.stop() ;
-	segment_clean_time += MyTime.time_diff_sec() ;
-#endif
-}
-
-float64_t CDynProg::extend_segment_loss(
-	struct segment_loss_struct & loss,
-	int32_t segment_id, int32_t pos, int32_t & last_pos, float64_t &last_value)
-{
-#ifdef DYNPROG_TIMING_DETAIL
-	MyTime.start() ;
-#endif
-	
-	if (pos==last_pos)
-	{		
-#ifdef DYNPROG_TIMING_DETAIL
-		MyTime.stop() ;
-		segment_extend_time += MyTime.time_diff_sec() ;
-#endif
-		return last_value ;
-	}
-	
-	ASSERT(pos<last_pos) ;
-
-	last_pos-- ;
-	bool changed = false ;
-	while (last_pos>=pos)
-	{
-		if (loss.segments_changed[last_pos])
-		{
-			changed=true ;
-			break ;
-		}
-		last_pos-- ;
-	}
-	if (last_pos<pos)
-		last_pos = pos ;
-	
-	if (!changed)
-	{
-		ASSERT(last_pos>=0) ;
-		ASSERT(last_pos<loss.seqlen) ;
-		float64_t length_contrib = (m_pos[last_pos]-m_pos[pos])*m_segment_loss.element(m_segment_ids.element(pos), segment_id, 1) ;
-		float64_t ret = last_value + length_contrib ;
-		last_pos = pos ;
-		
-#ifdef DYNPROG_TIMING_DETAIL
-		MyTime.stop() ;
-		segment_extend_time += MyTime.time_diff_sec() ;
-#endif
-		return ret ;
-	}
-	
-	CArray2<float64_t> num_segment_id(loss.num_segment_id, loss.seqlen, m_max_a_id+1, false, false) ;
-   num_segment_id.set_name("num_segment_id");
-	CArray2<int32_t> length_segment_id(loss.length_segment_id, loss.seqlen, m_max_a_id+1, false, false) ;
-   length_segment_id.set_name("length_segment_id");
-
-	float64_t ret = 0.0 ;
-	for (int32_t i=0; i<m_max_a_id+1; i++)
-	{
-		//SG_DEBUG( "%i: %i, %i, %f (%f), %f (%f)\n", pos, num_segment_id.element(pos, i), length_segment_id.element(pos, i), num_segment_id.element(pos, i)*m_segment_loss.element(i, segment_id,0), m_segment_loss.element(i, segment_id, 0), length_segment_id.element(pos, i)*m_segment_loss.element(i, segment_id, 1), m_segment_loss.element(i, segment_id,1)) ;
-
-		if (num_segment_id.element(pos, i)!=0)
-		{
-			ret += num_segment_id.element(pos, i)*m_segment_loss.element(i, segment_id, 0) ;
-			//SG_PRINT("ret:%f pos:%i i:%i segment_id:%i \n",ret,pos,i,segment_id);
-		//	if (ret>0)
-		//	{
-		//		for (int32_t g=0; g<m_max_a_id+1; g++)
-		//			SG_PRINT("g:%i sid(pos, g):%i    ",g,num_segment_id.element(pos, g));
-		//		SG_PRINT("\n");
-		//	}
-		}
-		if (length_segment_id.element(pos, i)!=0)
-			ret += length_segment_id.element(pos, i)*m_segment_loss.element(i, segment_id, 1) ;
-	}
-	//int i = m_segment_ids.element(pos); 
-	//ret = num_segment_id.element(pos, i)*m_segment_loss.element(i, segment_id, 0);
-	last_pos = pos ;
-	last_value = ret ;
-
-#ifdef DYNPROG_TIMING_DETAIL
-	MyTime.stop() ;
-	segment_extend_time += MyTime.time_diff_sec() ;
-#endif
-	return ret ;
-}
-
-void CDynProg::find_segment_loss_till_pos(
-	int32_t t_end, CArray<int32_t>& segment_ids,
-	CArray<float64_t>& segment_mask, struct segment_loss_struct & loss)
-{
-#ifdef DYNPROG_TIMING
-	MyTime.start() ;
-#endif
-	CArray2<float64_t> num_segment_id(loss.num_segment_id, loss.seqlen, m_max_a_id+1, false, false) ;
-   num_segment_id.set_name("num_segment_id");
-	CArray2<int32_t> length_segment_id(loss.length_segment_id, loss.seqlen, m_max_a_id+1, false, false) ;
-   length_segment_id.set_name("length_segment_id");
-	
-	for (int32_t i=0; i<m_max_a_id+1; i++)
-	{
-		num_segment_id.element(t_end, i) = 0 ;
-		length_segment_id.element(t_end, i) = 0 ;
-	}
-	int32_t wobble_pos_segment_id_switch = 0 ;
-	int32_t last_segment_id = -1 ;
-	int32_t ts = t_end-1 ;       
-	while ((ts>=0) && (m_pos[t_end] - m_pos[ts] <= loss.maxlookback))
-	{
-		int32_t cur_segment_id = segment_ids.element(ts) ;
-		// allow at most one wobble
-		bool wobble_pos = (CMath::abs(segment_mask.element(ts))<1e-7) && (wobble_pos_segment_id_switch==0) ;
-		if (!(cur_segment_id<=m_max_a_id))
-			SG_ERROR("(cur_segment_id<=m_max_a_id), cur_segment_id:%i m_max_a_id:%i\n",cur_segment_id,m_max_a_id);
-		if (!(cur_segment_id>=0))
-			 SG_ERROR("cur_segment_id<0, cur_segment_id:%i m_max_a_id:%i ts:%i t_end:%i\n",cur_segment_id,m_max_a_id, ts, t_end);
-		
-		for (int32_t i=0; i<m_max_a_id+1; i++)
-		{
-			num_segment_id.element(ts, i) = num_segment_id.element(ts+1, i) ;
-			length_segment_id.element(ts, i) = length_segment_id.element(ts+1, i) ;
-		}
-		
-		if (cur_segment_id!=last_segment_id)
-		{
-			if (false)//(wobble_pos)
-			{
-				//SG_DEBUG( "no change at %i: %i, %i\n", ts, last_segment_id, cur_segment_id) ;
-				wobble_pos_segment_id_switch++ ;
-				//ASSERT(wobble_pos_segment_id_switch<=1) ;
-			}
-			else
-			{
-				//SG_DEBUG( "change at %i: %i, %i\n", ts, last_segment_id, cur_segment_id) ;
-				loss.segments_changed[ts] = true ;
-				num_segment_id.element(ts, cur_segment_id) += segment_mask.element(ts);
-				length_segment_id.element(ts, cur_segment_id) += (int32_t)((m_pos[ts+1]-m_pos[ts])*segment_mask.element(ts));
-				wobble_pos_segment_id_switch = 0 ;
-			}
-			last_segment_id = cur_segment_id ;
-		} 
-		else
-			if (!wobble_pos)
-				length_segment_id.element(ts, cur_segment_id) += m_pos[ts+1] - m_pos[ts] ;
-
-		ts--;
-	}
-#ifdef DYNPROG_TIMING
-	MyTime.stop() ;
-	segment_pos_time += MyTime.time_diff_sec() ;
-#endif
-}
-
 bool CDynProg::extend_orf(
 	int32_t orf_from, int32_t orf_to, int32_t start, int32_t &last_pos,
 	int32_t to)
@@ -1958,11 +1751,6 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 			//	SG_PROGRESS(t, 0, m_seq_len);
 			//SG_PRINT("%i\n", t) ;
 
-			if (with_loss)
-			{
-				//init_segment_loss(loss, m_seq_len, max_look_back);
-				//find_segment_loss_till_pos(t, m_segment_ids, m_segment_mask, loss);  
-			}
 
 			for (T_STATES j=0; j<m_N; j++)
 			{
@@ -2059,7 +1847,6 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 								float64_t segment_loss = 0.0 ;
 								if (with_loss)
 								{
-									//segment_loss = extend_segment_loss(loss, elem_id[i], ts, loss_last_pos, last_loss) ;
 									segment_loss = m_seg_loss_obj->get_segment_loss(ts, t, elem_id[i]);
 									//if (segment_loss!=segment_loss2)
 										//SG_PRINT("segment_loss:%f segment_loss2:%f\n", segment_loss, segment_loss2);
@@ -2456,9 +2243,6 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 			}
 		}
 
-		if (with_loss)
-			clear_segment_loss(loss);
-
 		{ //termination
 			int32_t list_len = 0 ;
 			for (int16_t diff=0; diff<nbest; diff++)
@@ -2801,9 +2585,6 @@ void CDynProg::best_path_trans_deriv(
 	total_score += my_scores[0] + my_scores[my_seq_len-1] ;
 	//#endif 		
 
-	struct segment_loss_struct loss;
-	loss.segments_changed = NULL;
-	loss.num_segment_id = NULL;
 	SG_DEBUG( "m_seq_len=%i\n", my_seq_len) ;
 	for (int32_t i=0; i<my_seq_len-1; i++)
 	{
@@ -2820,11 +2601,7 @@ void CDynProg::best_path_trans_deriv(
 		my_losses[i] = m_seg_loss_obj->get_segment_loss(from_pos, to_pos, elem_id);
 
 #ifdef DYNPROG_DEBUG
-		// compute loss relative to another segmentation using the segment_loss function
 
-		//init_segment_loss(loss, m_seq_len, m_pos[to_pos]-m_pos[from_pos]+10);
-		//find_segment_loss_till_pos(to_pos,m_segment_ids, m_segment_mask, loss);  
-		//float64_t old_loss = extend_segment_loss(loss, elem_id, from_pos, loss_last_pos, last_loss) ;
 
 		if (i>0)// test if segment loss is additive
 		{
@@ -2836,28 +2613,6 @@ void CDynProg::best_path_trans_deriv(
 			{
 				SG_PRINT( "%i. segment loss %f (id=%i): from=%i(%i), to=%i(%i)\n", i, my_losses[i], elem_id, from_pos, from_state, to_pos, to_state) ;
 			}
-			/*int from_pos_ = my_pos_seq[i-1];
-			to_pos = my_pos_seq[i];	
-			loss_last_pos = to_pos ;
-			init_segment_loss(loss, m_seq_len, m_pos[to_pos]-m_pos[from_pos_]+10);
-			find_segment_loss_till_pos(to_pos, m_segment_ids, m_segment_mask, loss);  
-			float32_t loss4 = extend_segment_loss(loss, elem_id, from_pos_, loss_last_pos, last_loss) ;
-
-			from_pos_ = my_pos_seq[i];
-			to_pos = my_pos_seq[i+1];	
-			loss_last_pos = to_pos ;
-			init_segment_loss(loss, m_seq_len, m_pos[to_pos]-m_pos[from_pos_]+10);
-			find_segment_loss_till_pos(to_pos, m_segment_ids, m_segment_mask, loss);  
-			float32_t loss5 = extend_segment_loss(loss, elem_id, from_pos_, loss_last_pos, last_loss) ;
-
-			from_pos_ = my_pos_seq[i-1];
-			to_pos = my_pos_seq[i+1];	
-			loss_last_pos = to_pos ;
-			init_segment_loss(loss, m_seq_len, m_pos[to_pos]-m_pos[from_pos_]+10);
-			find_segment_loss_till_pos(to_pos, m_segment_ids, m_segment_mask, loss);  
-			float32_t loss6 = extend_segment_loss(loss, elem_id, from_pos_, loss_last_pos, last_loss) ;
-
-			SG_PRINT("loss4:%f loss5:%f loss6:%f, diff:%f\n", loss4, loss5, loss6, loss4+loss5-loss6);*/
 		}
 		io->set_loglevel(M_DEBUG) ;
 		SG_DEBUG( "%i. segment loss %f (id=%i): from=%i(%i), to=%i(%i)\n", i, my_losses[i], elem_id, from_pos, from_state, to_pos, to_state) ;
@@ -3099,7 +2854,6 @@ void CDynProg::best_path_trans_deriv(
 	//SG_PRINT( "total score = %f \n", total_score) ;
 	//SG_PRINT( "total loss = %f \n", total_loss) ;
 	//#endif
-	clear_segment_loss(loss);
 	delete[] svm_value;
 	delete[] svm_value_part1 ;
 	delete[] svm_value_part2 ;

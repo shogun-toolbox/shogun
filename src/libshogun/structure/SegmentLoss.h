@@ -32,7 +32,7 @@ class CSegmentLoss : public CSGObject
 		 * 
 		 * @param from_pos start position
 		 * @param to_pos end position
-		 * @segment_id type of the segment
+		 * @param segment_id type of the segment
 		 */
 		float32_t get_segment_loss(int32_t from_pos, int32_t to_pos, int32_t segment_id);
 
@@ -40,15 +40,15 @@ class CSegmentLoss : public CSGObject
 		 * 
 		 * @param from_pos start position
 		 * @param to_pos end position
-		 * @segment_id type of the segment
+		 * @param segment_id type of the segment
 		 */
 		float32_t get_segment_loss_extend(int32_t from_pos, int32_t to_pos, int32_t segment_id);
 
 		/** set best path segment loss
 		 *
 		 * @param segment_loss segment loss
-		 * @param num_segment_id1 number of segment id1
-		 * @param num_segment_id2 number of segment id2
+		 * @param m number of segment id1
+		 * @param n  number of segment id2
 		 */
 		void set_segment_loss(float64_t* segment_loss, int32_t m, int32_t n);
 

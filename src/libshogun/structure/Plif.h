@@ -82,6 +82,7 @@ class CPlif: public CPlifBase
 		 *
 		 * @param p_value value
 		 * @param svm_values SVM values
+		 * @param factor factor weighting the added value
 		 */
 		void penalty_add_derivative_svm(
 			float64_t p_value, float64_t* svm_values, float64_t factor) ;
@@ -90,6 +91,7 @@ class CPlif: public CPlifBase
 		 *
 		 * @param p_value value
 		 * @param svm_values SVM values
+		 * @param factor factor weighting the added value
 		 */
 		void penalty_add_derivative(float64_t p_value, float64_t* svm_values, float64_t factor);
 
@@ -413,6 +415,11 @@ class CPlif: public CPlifBase
 			SG_PRINT("CPlif(min_value=%1.2f, max_value=%1.2f, use_svm=%i)\n", min_value, max_value, use_svm) ;
 		}
 
+		/** delete plif struct
+		 *
+		 * @param PEN array of plifs
+		 * @param P id of plif
+		 */
 		static void delete_penalty_struct(CPlif** PEN, int32_t P);
 
 		/** @return object name */
