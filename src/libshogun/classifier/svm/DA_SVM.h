@@ -20,57 +20,123 @@
 
 #include <stdio.h>
 
+
+/** @brief class DomainAdaptiveSVM */
 class CDA_SVM : public CSVMLight
 {
+
+	public:
+
+		/** default constructor */
+		CDA_SVM();
+
+
+		/** constructor
+		 *
+		 * @param C cost constant C
+		 * @param k kernel
+		 * @param lab labels
+		 * @param presvm trained SVM to regularize against
+		 * @param B trade-off constant B
+		 */
+		CDA_SVM(float64_t C, CKernel* k, CLabels* lab, CSVM* presvm, float64_t B);
+
+
+		/** destructor */
+		virtual ~CDA_SVM();
+
+
+		/** init SVM
+		 *
+		 * @param presvm trained SVM to regularize against
+		 * @param B trade-off constant B
+		 * */
+		void init(CSVM* presvm, float64_t B);
+
+
+		/** train SVM classifier
+		 *
+		 * @return whether training was successful
+		 */
+		virtual bool train();
+
+
+		/** get classifier type
+		 *
+		 * @return classifier type LIGHT
+		 */
+		virtual inline EClassifierType get_classifier_type() { return CT_DASVM; }
+
+
+		/** classify objects
+		 *
+		 * @param data (test)data to be classified
+		 * @return classified labels
+		 */
+		virtual CLabels* classify(CFeatures* data);
+
+
+		/** returns SVM that is used as prior information
+		 *
+		 * @return presvm
+		 */
+		virtual CSVM* get_presvm();
+
+
+		/** getter for regularization parameter B
+		 *
+		 * @return regularization parameter B
+		 */
+		virtual float64_t get_B();
+
+
 	private:
 
-/*
 #ifdef HAVE_BOOST_SERIALIZATION
 		friend class boost::serialization::access;
 		// When the class Archive corresponds to an output archive, the
 		// & operator is defined similar to <<.  Likewise, when the class Archive
 		// is a type of input archive the & operator is defined similar to >>.
 		template<class Archive>
-        void serialize(Archive & ar, const unsigned int archive_version)
-        {
-            SG_DEBUG("archiving CDA_SVM\n");
+		void serialize(Archive & ar, const unsigned int archive_version)
+		{
 
-            ar & boost::serialization::base_object<CLibSVM>(*this);
+			SG_DEBUG("archiving CDA_SVM\n");
 
-            ar & presvm;
+			// serialize base class
+			ar & boost::serialization::base_object<CSVMLight>(*this);
 
-            ar & B;
+			// serialize remaining fields
+			ar & presvm;
 
-            ar & trainFactor;
-            SG_DEBUG("done archiving CDA_SVM\n");
+			ar & B;
 
-        }
+			ar & train_factor;
+
+			SG_DEBUG("done archiving CDA_SVM\n");
+
+		}
 #endif //HAVE_BOOST_SERIALIZATION
-*/
-	public:
-    CDA_SVM();
-	CDA_SVM(float64_t C, CKernel* k, CLabels* lab, CSVM* presvm, float64_t B);
-	//CDA_SVM(std::string presvm_fn, float64_t B);
-
-    void init(CSVM* presvm, float64_t B);
-
-	virtual ~CDA_SVM();
-
-	virtual bool train();
-    virtual inline EClassifierType get_classifier_type() { return CT_DASVM; }
-
-	virtual CLabels* classify(CFeatures* data);
-
-
-    virtual CSVM* get_presvm();
-    virtual float64_t get_B();
-
 
 	protected:
 
-    CSVM* presvm;
-    float64_t B;
-    float64_t trainFactor;
+		/** check sanity of presvm
+		 *
+		 * @return true if sane, throws SG_ERROR otherwise
+		 */
+		virtual bool is_presvm_sane();
+
+
+		/** SVM to regularize against */
+		CSVM* presvm;
+
+
+		/** regularization parameter B */
+		float64_t B;
+
+
+		/** flag to switch off regularization in training */
+		float64_t train_factor;
 
 };
 #endif
