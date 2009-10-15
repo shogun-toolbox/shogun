@@ -26,9 +26,15 @@ class CMKLOneClass : public CMKL
 		 */
 		virtual ~CMKLOneClass();
 
+		/** compute beta independent term from objective, e.g., in 2-class MKL
+		 * sum_i alpha_i etc
+		 */
 		virtual float64_t compute_sum_alpha();
 
 	protected:
+		/** check run before starting training (to e.g. check if labeling is
+		 * two-class labeling in classification case
+		 */
 		virtual void init_training();
 
 		/** get classifier type
