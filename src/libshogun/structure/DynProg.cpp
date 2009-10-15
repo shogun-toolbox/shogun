@@ -1493,6 +1493,16 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 		seq.set_name("seq") ;
 		seq.zero() ;
 
+#ifdef DYNPROG_DEBUG
+		SG_PRINT("m_num_raw_data: %i\n",m_num_raw_data);
+		SG_PRINT("m_num_intron_plifs: %i\n", m_num_intron_plifs);
+		SG_PRINT("m_num_svms: %i\n", m_num_svms);
+		SG_PRINT("m_num_lin_feat_plifs_cum: ");
+		for (int i=0; i<=m_num_raw_data; i++)
+			SG_PRINT(" %i  ",m_num_lin_feat_plifs_cum[i]);
+		SG_PRINT("\n");
+#endif
+
 		float64_t* svm_value = new float64_t [m_num_lin_feat_plifs_cum[m_num_raw_data]+m_num_intron_plifs];
 		{ // initialize svm_svalue
 			for (int32_t s=0; s<m_num_lin_feat_plifs_cum[m_num_raw_data]+m_num_intron_plifs; s++)
@@ -1626,6 +1636,12 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 #ifdef DYNPROG_DEBUG
 		long_transition_content_end_position.zero() ;
 #endif
+
+		svm_value = new float64_t [m_num_lin_feat_plifs_cum[m_num_raw_data]+m_num_intron_plifs];
+		{ // initialize svm_svalue
+			for (int32_t s=0; s<m_num_lin_feat_plifs_cum[m_num_raw_data]+m_num_intron_plifs; s++)
+				svm_value[s]=0 ;
+		}
 
 		CArray2<int32_t> look_back(m_N,m_N) ;
 		look_back.set_name("look_back");
