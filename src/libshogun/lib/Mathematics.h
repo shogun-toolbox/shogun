@@ -215,6 +215,17 @@ class CMath : public CSGObject
 				b=c;
 			}
 
+		/// || x ||_2
+		template <class T>
+			static inline T twonorm(T* x, int32_t len)
+			{
+				float64_t result=0;
+				for (int32_t i=0; i<len; i++)
+					result+=x[i]*x[i];
+
+				return CMath::sqrt(result);
+			}
+
 		/// || x ||_q^q
 		template <class T>
 			static inline T qsq(T* x, int32_t len, float64_t q)

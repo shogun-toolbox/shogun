@@ -22,7 +22,7 @@ lpwrapper::~lpwrapper()
 
 void lpwrapper::setup(const int32_t numkernels)
 {
-	throw ShogunException("void lpwrapper::setup(...): not implemented in derived class");
+	SG_ERROR("void lpwrapper::setup(...): not implemented in derived class\n");
 }
 
 void lpwrapper::addconstraint(const ::std::vector<float64_t> & normw2,
@@ -228,23 +228,13 @@ void glpkwrapper4CGMNPMKL::computeweights(std::vector<float64_t> & weights2)
 
 	if(sum>0)
 	{
-	for(int32_t i=0; i< numkernels;++i)
-	{
-		 weights2[i]/=sum;
-	}
+		for(int32_t i=0; i< numkernels;++i)
+		{
+			weights2[i]/=sum;
+		}
 	}
 	else
-	{
-		//std::ostringstream helper;
-		//helper << "void glpkwrapper::computeweights(std::vector<float64_t> & weights2): sum of weights nonpositive "<<sum <<std::endl;
-		//throw ShogunException(helper.str().c_str());
-		char bla[1000];
-		sprintf(bla,"void glpkwrapper::computeweights(std::vector<float64_t> & weights2): sum of weights nonpositive %f\n",sum);
-		throw ShogunException(bla);
-	}
-
-
-
+		SG_ERROR("void glpkwrapper::computeweights(std::vector<float64_t> & weights2): sum of weights nonpositive %f\n",sum);
 #else
 	SG_ERROR("glpk.h from GNU glpk not included at compile time necessary in gmnpmkl.cpp/.h");
 #endif
@@ -346,37 +336,29 @@ void CMKLMultiClass::initsvm()
 
 void CMKLMultiClass::init()
 {
+	if (!kernel)
+		SG_ERROR("CMKLMultiClass::init(): the set kernel is NULL\n");
 
-	if(NULL==kernel)
+	if(kernel->get_kernel_type()!=K_COMBINED)
 	{
+		//std::ostringstream helper;
+		//helper << "CMKLMultiClass::init(): given kernel is not of type K_COMBINED "<<k->get_kernel_type() <<std::endl;
+		//throw ShogunException(helper.str().c_str());
 
-		throw ShogunException("CMKLMultiClass::init(): the set kernel is NULL ");
+		char bla[1000];
+		sprintf(bla,"CMKLMultiClass::init(): given kernel is not of type K_COMBINED %d \n",kernel->get_kernel_type());
+		throw ShogunException(bla);
 	}
-	else
-	{
-		if(kernel->get_kernel_type()!=K_COMBINED)
-		{
-			//std::ostringstream helper;
-			//helper << "CMKLMultiClass::init(): given kernel is not of type K_COMBINED "<<k->get_kernel_type() <<std::endl;
-			//throw ShogunException(helper.str().c_str());
 
-			char bla[1000];
-			sprintf(bla,"CMKLMultiClass::init(): given kernel is not of type K_COMBINED %d \n",kernel->get_kernel_type());
-			throw ShogunException(bla);
-		}
+	numker=dynamic_cast<CCombinedKernel *>(kernel)->get_num_subkernels();
 
-		numker=dynamic_cast<CCombinedKernel *>(kernel)->get_num_subkernels();
-
-		lpsetup(numker);
-
-
-	}
+	lpsetup(numker);
 }
 
 
 bool CMKLMultiClass::evaluatefinishcriterion(const int32_t numberofsilpiterations)
 {
-	if((maxiters>0)&&(numberofsilpiterations>=maxiters))
+	if ((maxiters>0) && (numberofsilpiterations>=maxiters) )
 	{
 		return(true);
 	}
@@ -639,14 +621,14 @@ float64_t* CMKLMultiClass::getsubkernelweights(int32_t & numweights)
 	if((numker<=0 )||weightshistory.empty() )
 	{
 		numweights=0;
-		return(NULL);
+		return NULL;
 	}
 
 	std::vector<float64_t> subkerw=weightshistory.back();
 	ASSERT(numker=subkerw.size());
 	numweights=numker;
 
-	float64_t* res=new  float64_t[numker];
+	float64_t* res=new float64_t[numker];
 	std::copy(subkerw.begin(), subkerw.end(),res);
-	return(res);
+	return res;
 }

@@ -37,7 +37,6 @@
  * This is based on the free solver glpk solver.
  *
  * \todo check what options to pass from MKLMultiClass to CGMNPSVM
- * \todo set C_mkl?
  * \todo clear types (float64_t, size_t, int)
  */
 class lpwrapper
@@ -59,7 +58,6 @@ public:
 			const float64_t sumofpositivealphas); 
 
 	virtual void computeweights(std::vector<float64_t> & weights2); 
-	
 };
 
 /** @brief MKLMultiClass is a class for L1-norm multiclass MKL. */
