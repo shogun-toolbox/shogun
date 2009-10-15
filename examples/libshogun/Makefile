@@ -8,8 +8,10 @@ ifneq (,$(LIB_PATH))
 	LINKFLAGS+=-L$(LIB_PATH)
 endif
 LINKFLAGS=-L$(LIB_PATH) -lshogun
-TARGETS = rbf_svm gnmpmkl minimal minimal_svm dyn_int rbf_kernel revlin_kernel indirect_object gc_array
+TARGETS = rbf_svm mklmulticlass minimal minimal_svm dyn_int rbf_kernel revlin_kernel indirect_object gc_array
 CC=c++
+
+all: $(TARGETS)
 
 clean:
 	rm -f $(TARGETS)

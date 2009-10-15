@@ -17,9 +17,7 @@ def gmnpsvm ():
 	svm=GMNPSVM(C, kernel, labels)
 	svm.set_epsilon(epsilon)
 	svm.train()
-
-	kernel.init(feats_train, feats_test)
-	svm.classify().get_labels()
+	svm.classify(feats_test).get_labels()
 
 if __name__=='__main__':
 	from tools.load import LoadMatrix

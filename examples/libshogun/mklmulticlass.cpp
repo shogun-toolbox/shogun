@@ -8,10 +8,10 @@
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 #include <iostream>
-#include <shogun/classifier/svm/gmnpmkl.h>
 #include <shogun/lib/io.h>
 #include <shogun/kernel/CustomKernel.h>
 #include <shogun/kernel/CombinedKernel.h>
+#include <shogun/classifier/mkl/MKLMultiClass.h>
 
 void print_message(FILE* target, const char* str)
 {
@@ -209,7 +209,7 @@ void tester()
 	//here comes the core stuff
 	float64_t regconst=1.0;
 
-	CGMNPMKL* tsvm =new CGMNPMKL(regconst, ker, lab);
+	CMKLMultiClass* tsvm =new CMKLMultiClass(regconst, ker, lab);
 
 	tsvm->set_epsilon(0.0001); // SVM epsilon
 	// MKL parameters
