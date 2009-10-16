@@ -53,9 +53,13 @@ class CDomainAdaptationSVM : public CSVMLight
 
 		/** train SVM classifier
 		 *
+		 * @param data training data (parameter can be avoided if distance or
+		 * kernel-based classifiers are used and distance/kernels are
+		 * initialized with train data)
+		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train();
+		virtual bool train(CFeatures* data=NULL);
 
 
 		/** get classifier type
@@ -85,6 +89,10 @@ class CDomainAdaptationSVM : public CSVMLight
 		 * @return regularization parameter B
 		 */
 		virtual float64_t get_B();
+
+
+		/** @return object name */
+		inline virtual const char* get_name() const { return "DomainAdaptationSVM"; }
 
 
 	private:

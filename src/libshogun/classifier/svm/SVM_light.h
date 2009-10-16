@@ -34,7 +34,7 @@
 #include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
-#include <time.h> 
+#include <time.h>
 
 # define VERSION       "V3.50 -- correct??"
 # define VERSION_DATE  "01.11.00 -- correct??"
@@ -104,7 +104,7 @@ typedef struct quadratic_program {
 typedef int32_t FNUM;
 
 /** the type used for storing feature values */
-typedef float64_t FVAL;  
+typedef float64_t FVAL;
 
 /** learning parameters */
 struct LEARN_PARM {
@@ -266,13 +266,6 @@ class CSVMLight : public CSVM
    */
   int32_t   get_runtime();
 
-  /**
-   * set linear epsilon term
-   *
-   * @param lterm the linear term
-   * @param num length of vector
-   */
-  void set_linear_term(float64_t* lterm, int32_t num);
 
   /** learn SVM */
   void   svm_learn();
@@ -734,7 +727,7 @@ public:
 
 #endif //HAVE_BOOST_SERIALIZATION
 
-   
+
  protected:
   /** model */
   MODEL* model;
@@ -757,8 +750,7 @@ public:
   float64_t* primal;
   /** dual */
   float64_t* dual;
-  /** linear term in qp */
-  float64_t* linear_term;
+
 
   // MKL stuff
 

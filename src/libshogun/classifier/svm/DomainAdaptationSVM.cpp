@@ -8,9 +8,14 @@
  * Copyright (C) 2007-2009 Max-Planck-Society
  */
 
+#include "lib/config.h"
+
+#ifdef USE_SVMLIGHT
+
 #include "classifier/svm/DomainAdaptationSVM.h"
 #include "lib/io.h"
 #include <iostream>
+#include <vector>
 
 
 #ifdef HAVE_BOOST_SERIALIZATION
@@ -25,9 +30,7 @@ CDomainAdaptationSVM::CDomainAdaptationSVM() : CSVMLight()
 
 CDomainAdaptationSVM::CDomainAdaptationSVM(float64_t C, CKernel* k, CLabels* lab, CSVM* pre_svm, float64_t B_param) : CSVMLight(C, k, lab)
 {
-
   init(pre_svm, B_param);
-
 }
 
 CDomainAdaptationSVM::~CDomainAdaptationSVM()
@@ -39,7 +42,6 @@ CDomainAdaptationSVM::~CDomainAdaptationSVM()
 
 void CDomainAdaptationSVM::init(CSVM* pre_svm, float64_t B_param)
 {
-
 	// increase reference counts
 	SG_REF(pre_svm);
 
@@ -82,62 +84,55 @@ bool CDomainAdaptationSVM::is_presvm_sane()
 }
 
 
-bool CDomainAdaptationSVM::train()
+bool CDomainAdaptationSVM::train(CFeatures* data)
 {
 
-  int32_t num_training_points = get_labels()->get_num_labels();
+	if (data)
+	{
+		if (labels->get_num_labels() != data->get_num_vectors())
+			SG_ERROR("Number of training vectors does not match number of labels\n");
+		kernel->init(data, data);
+	}
+
+	int32_t num_training_points = get_labels()->get_num_labels();
 
 
-  float64_t* lin_term = new float64_t[num_training_points];
+	std::vector<float64_t> lin_term = std::vector<float64_t>(num_training_points);
 
+	// grab current training features
+	CFeatures* train_data = get_kernel()->get_lhs();
 
-  // grab current training features
-  CFeatures* train_data = get_kernel()->get_lhs();
+	// bias of parent SVM was set to zero in constructor, already contains B
+	CLabels* parent_svm_out = presvm->classify(train_data);
 
+	// pre-compute linear term
+	for (int32_t i=0; i!=num_training_points; i++)
+	{
+		lin_term[i] = - B*(get_label(i) * parent_svm_out->get_label(i)) - 1.0;
+	}
 
-  // bias of parent SVM was set to zero in constructor, already contains B
-  CLabels* parent_svm_out = presvm->classify(train_data);
+	//set linear term for QP
+	this->set_linear_term(lin_term);
 
+	//train SVM
+	bool success = CSVMLight::train();
 
-  // pre-compute linear term
-  for (int32_t i=0; i!=num_training_points; i++)
-  {
+	ASSERT(presvm)
 
-    lin_term[i] = - B*(get_label(i) * parent_svm_out->get_label(i)) - 1.0;
-
-  }
-
-
-  //set linear term for QP
-  this->set_linear_term(lin_term, num_training_points);
-
-  //train SVM
-  bool success = CSVMLight::train();
-
-  ASSERT(presvm)
-
-
-  //clean up
-  delete[] lin_term;
-
-  return success;
+	return success;
 
 }
 
 
 CSVM* CDomainAdaptationSVM::get_presvm()
 {
-
-  return presvm;
-
+	return presvm;
 }
 
 
 float64_t CDomainAdaptationSVM::get_B()
 {
-
-  return B;
-
+	return B;
 }
 
 
@@ -158,13 +153,12 @@ CLabels* CDomainAdaptationSVM::classify(CFeatures* data)
     // combine outputs
     for (int32_t i=0; i!=num_examples; i++)
     {
-
         float64_t out_combined = out_current->get_label(i) + B*out_presvm->get_label(i);
         out_current->set_label(i, out_combined);
-
     }
 
     return out_current;
 
 }
 
+#endif //USE_SVMLIGHT

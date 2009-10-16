@@ -19,7 +19,7 @@
 class CMKL;
 
 /** @brief A generic Support Vector Machine Interface.
- * 
+ *
  * A support vector machine is defined as
  *  \f[
  * 		f({\bf x})=\sum_{i=0}^{N-1} \alpha_i k({\bf x}, {\bf x_i})+b
@@ -27,12 +27,12 @@ class CMKL;
  *
  * where \f$N\f$ is the number of training examples
  * \f$\alpha_i\f$ are the weights assigned to each training example
- * \f$k(x,x')\f$ is the kernel 
+ * \f$k(x,x')\f$ is the kernel
  * and \f$b\f$ the bias.
  *
  * Using an a-priori choosen kernel, the \f$\alpha_i\f$ and bias are determined
  * by solving the following quadratic program
- * 
+ *
  * \f{eqnarray*}
  * 		\max_{\bf \alpha} && \sum_{i=0}^{N-1} \alpha_i - \sum_{i=0}^{N-1}\sum_{j=0}^{N-1} \alpha_i y_i \alpha_j y_j  k({\bf x_i}, {\bf x_j})\\
  * 		\mbox{s.t.} && 0\leq\alpha_i\leq C\\
@@ -61,6 +61,23 @@ class CSVM : public CKernelMachine
 		/** set default values for members a SVM object
 		*/
 		void set_defaults(int32_t num_sv=0);
+
+
+		/**
+		 * get linear term
+		 *
+		 * @return lin the linear term
+		 */
+		virtual std::vector<float64_t> get_linear_term();
+
+
+		/**
+		 * set linear term of the QP
+		 *
+		 * @param lin the linear term
+		 */
+		virtual void set_linear_term(std::vector<float64_t> lin);
+
 
 		/** load a SVM from file
 		 * @param svm_file the file handle
@@ -210,6 +227,8 @@ class CSVM : public CKernelMachine
 
                 ar & boost::serialization::base_object<CKernelMachine>(*this);
 
+                ar & linear_term;
+
                 ar & svm_loaded;
 
                 ar & epsilon;
@@ -223,7 +242,7 @@ class CSVM : public CKernelMachine
 
                 ar & qpsize;
                 ar & use_shrinking;
-                
+
                 //TODO serialize mkl object
 		        //CMKL* mkl;
 
@@ -254,6 +273,17 @@ class CSVM : public CKernelMachine
 #endif //HAVE_BOOST_SERIALIZATION
 
 	protected:
+
+		/**
+		 * get linear term copy as dynamic array
+		 *
+		 * @return linear term copied to a dynamic array
+		 */
+		virtual float64_t* get_linear_term_array();
+
+		/** linear term in qp */
+		std::vector<float64_t> linear_term;
+
 		/** if SVM is loaded */
 		bool svm_loaded;
 		/** epsilon */

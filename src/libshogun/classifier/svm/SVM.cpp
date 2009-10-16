@@ -123,13 +123,13 @@ bool CSVM::load(FILE* modelfl)
 		line_number++;
 
 	double_buffer=0;
-	
+
 	if (fscanf(modelfl," b=%lf; \n", &double_buffer) != 1)
 	{
 		result=false;
 		SG_ERROR( "error in svm file, line nr:%d\n", line_number);
 	}
-	
+
 	if (!feof(modelfl))
 		line_number++;
 
@@ -210,7 +210,7 @@ bool CSVM::save(FILE* modelfl)
 
 	SG_DONE();
 	return true ;
-} 
+}
 
 void CSVM::set_callback_function(CMKL* m, bool (*cb)
 		(CMKL* mkl, const float64_t* sumw, const float64_t suma))
@@ -271,4 +271,39 @@ float64_t CSVM::compute_svm_primal_objective()
 		SG_ERROR( "cannot compute objective, labels or kernel not set\n");
 
 	return regularizer+loss;
+}
+
+
+float64_t* CSVM::get_linear_term_array() {
+
+	float64_t* a = new float64_t[linear_term.size()];
+	std::copy( linear_term.begin(), linear_term.end(), a);
+
+	return a;
+
+}
+
+
+
+void CSVM::set_linear_term(std::vector<float64_t> lin)
+{
+
+	if (!labels)
+		SG_ERROR("Please assign labels first!\n");
+
+	int32_t num_labels=labels->get_num_labels();
+
+	if (num_labels!=lin.size())
+		SG_ERROR("Number of labels (%d) does not match number"
+				"of entries (%d) in linear term \n", num_labels, lin.size());
+
+	linear_term = lin;
+
+}
+
+
+std::vector<float64_t> CSVM::get_linear_term() {
+
+	return linear_term;
+
 }
