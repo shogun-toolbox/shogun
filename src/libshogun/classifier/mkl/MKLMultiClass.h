@@ -111,7 +111,7 @@ protected:
 	 */
 	void addingweightsstep( const std::vector<float64_t> & curweights);
 	/** computes the first svm-dependent part used for generating MKL constraints
-	 * it is \f$ \sum_y b_y^2-\sum_i \sum_{ y \neq y_i} \alpha_{iy}(b_{y_i}-b_y-1) \f$
+	 * it is \f$ \sum_y b_y^2-\sum_i \sum_{ y | y \neq y_i} \alpha_{iy}(b_{y_i}-b_y-1) \f$
 	 */
 	float64_t getsumofsignfreealphas();
 	/** computes the second svm-dependent part used for generating MKL constraints

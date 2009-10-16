@@ -9,11 +9,13 @@
  */
 #include <iostream>
 #include <shogun/lib/io.h>
+#include <shogun/lib/ShogunException.h>
 #include <shogun/kernel/CustomKernel.h>
 #include <shogun/kernel/CombinedKernel.h>
 #include <shogun/classifier/mkl/MKLMultiClass.h>
 
 //c++ -I /home/data/THESEUS/installed_software/shogunnewest_cur/include/ -L /home/data/THESEUS/installed_software/shogunnewest_cur/lib -I /home/data/THESEUS/installed_software/glpk_cur/include -L /home/data/THESEUS/installed_software/glpk_cur/lib -lglpk -lshogun mklmulticlass.cpp -O3 -g3 -o mkl
+using namespace shogun;
 
 void print_message(FILE* target, const char* str)
 {
