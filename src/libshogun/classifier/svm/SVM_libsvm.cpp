@@ -2347,16 +2347,6 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 	return model;
 }
 
-const char *svm_type_table[] =
-{
-	"c_svc","nu_svc","one_class","epsilon_svr","nu_svr",NULL
-};
-
-const char *kernel_type_table[]=
-{
-	"linear","polynomial","rbf","sigmoid","precomputed",NULL
-};
-
 void svm_destroy_model(svm_model* model)
 {
 	if(model->free_sv && model->l > 0)

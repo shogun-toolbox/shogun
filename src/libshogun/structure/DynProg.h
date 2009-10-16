@@ -786,5 +786,12 @@ protected:
 	 */
 	int32_t m_long_transition_max ;
 
+	static int32_t word_degree_default[4];
+	static int32_t cum_num_words_default[5];
+	static int32_t frame_plifs[3];
+	static int32_t num_words_default[4];
+	static int32_t mod_words_default[32];
+	static bool sign_words_default[16];
+	static int32_t string_words_default[16];
 };
 #endif

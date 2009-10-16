@@ -21,9 +21,6 @@
 
 #undef DEBUG_SUBGRADIENTSVM
 
-extern float64_t sparsity;
-float64_t tim;
-
 CSubGradientSVM::CSubGradientSVM()
 : CLinearClassifier(), C1(1), C2(1), epsilon(1e-5), qpsize(42),
 	qpsize_max(2000), use_bias(false), delta_active(0), delta_bound(0)
@@ -643,8 +640,8 @@ bool CSubGradientSVM::train(CFeatures* data)
 	SG_INFO("converged after %d iterations\n", num_iterations);
 
 	obj=compute_objective(num_feat, num_vec);
-	SG_INFO("objective: %f alpha: %f dir_deriv: %f num_bound: %d num_active: %d sparsity: %f\n",
-			obj, alpha, dir_deriv, num_bound, num_active, sparsity/num_iterations);
+	SG_INFO("objective: %f alpha: %f dir_deriv: %f num_bound: %d num_active: %d\n",
+			obj, alpha, dir_deriv, num_bound, num_active);
 
 #ifdef DEBUG_SUBGRADIENTSVM
 	CMath::display_vector(w, w_dim, "w");

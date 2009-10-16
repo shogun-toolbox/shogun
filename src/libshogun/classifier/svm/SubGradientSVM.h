@@ -236,6 +236,9 @@ class CSubGradientSVM : public CLinearClassifier
 		float64_t* Z;
 		/** old Z */
 		float64_t* old_Z;
+
+		/** timing measurement */
+		float64_t tim;
 };
 #endif
 

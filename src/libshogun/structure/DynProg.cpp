@@ -31,17 +31,17 @@
 //#define USE_TMP_ARRAYCLASS
 //#define DYNPROG_DEBUG
 
-static int32_t word_degree_default[4]={3,4,5,6} ;
-static int32_t cum_num_words_default[5]={0,64,320,1344,5440} ;
-static int32_t frame_plifs[3]={4,5,6};
-static int32_t num_words_default[4]=   {64,256,1024,4096} ;
-static int32_t mod_words_default[32] = {1,1,1,1,1,1,1,1,
+int32_t CDynProg::word_degree_default[4]={3,4,5,6} ;
+int32_t CDynProg::cum_num_words_default[5]={0,64,320,1344,5440} ;
+int32_t CDynProg::frame_plifs[3]={4,5,6};
+int32_t CDynProg::num_words_default[4]=   {64,256,1024,4096} ;
+int32_t CDynProg::mod_words_default[32] = {1,1,1,1,1,1,1,1,
 									1,1,1,1,1,1,1,1,
 									0,0,0,0,0,0,0,0,
 									0,0,0,0,0,0,0,0} ;  
-static bool sign_words_default[16] = {true,true,true,true,true,true,true,true,
+bool CDynProg::sign_words_default[16] = {true,true,true,true,true,true,true,true,
 									  false,false,false,false,false,false,false,false} ; // whether to use counts or signum of counts
-static int32_t string_words_default[16] = {0,0,0,0,0,0,0,0,
+int32_t CDynProg::string_words_default[16] = {0,0,0,0,0,0,0,0,
 									   1,1,1,1,1,1,1,1} ; // which string should be used
 
 CDynProg::CDynProg(int32_t num_svms /*= 8 */)
