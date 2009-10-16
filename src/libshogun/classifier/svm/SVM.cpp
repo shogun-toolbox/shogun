@@ -293,7 +293,7 @@ void CSVM::set_linear_term(std::vector<float64_t> lin)
 
 	int32_t num_labels=labels->get_num_labels();
 
-	if (num_labels!=lin.size())
+	if (num_labels!=(int32_t)lin.size())
 		SG_ERROR("Number of labels (%d) does not match number"
 				"of entries (%d) in linear term \n", num_labels, lin.size());
 
