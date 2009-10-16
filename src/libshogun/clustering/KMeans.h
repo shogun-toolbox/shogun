@@ -182,7 +182,6 @@ class CKMeans : public CDistanceMachine
 			return dimensions;
 		}
 
-
 	protected:
 		/** sqdist
 		 *
@@ -204,6 +203,29 @@ class CKMeans : public CDistanceMachine
 		 * @param mus_start mus start
 		 */
 		void clustknb(bool use_old_mus, float64_t *mus_start);
+
+		/** classify objects using the currently set features
+		 *
+		 * @return classified labels
+		 */
+		virtual CLabels* classify()
+		{
+			SG_NOTIMPLEMENTED;
+			return NULL;
+		}
+
+		/** classify objects
+		 *
+		 * @param data (test)data to be classified
+		 * @return classified labels
+		 */
+		virtual CLabels* classify(CFeatures* data)
+		{
+			SG_NOTIMPLEMENTED;
+			return NULL;
+		}
+
+
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "KMeans"; }

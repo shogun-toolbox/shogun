@@ -74,22 +74,23 @@ bool CMultiClassSVM::set_svm(int32_t num, CSVM* svm)
 	return false;
 }
 
-CLabels* CMultiClassSVM::classify(CLabels* result)
+CLabels* CMultiClassSVM::classify()
 {
 	if (multiclass_type==ONE_VS_REST)
-		return classify_one_vs_rest(result);
+		return classify_one_vs_rest();
 	else if (multiclass_type==ONE_VS_ONE)
-		return classify_one_vs_one(result);
+		return classify_one_vs_one();
 	else
 		SG_ERROR("unknown multiclass type\n");
 
 	return NULL;
 }
 
-CLabels* CMultiClassSVM::classify_one_vs_one(CLabels* result)
+CLabels* CMultiClassSVM::classify_one_vs_one()
 {
 	ASSERT(m_num_svms>0);
 	ASSERT(m_num_svms==m_num_classes*(m_num_classes-1)/2);
+	CLabels* result=NULL;
 
 	if (!kernel)
 	{
@@ -101,11 +102,8 @@ CLabels* CMultiClassSVM::classify_one_vs_one(CLabels* result)
 	{
 		int32_t num_vectors=kernel->get_num_vec_rhs();
 
-		if (!result)
-		{
-			result=new CLabels(num_vectors);
-			SG_REF(result);
-		}
+		result=new CLabels(num_vectors);
+		SG_REF(result);
 
 		ASSERT(num_vectors==result->get_num_labels());
 		CLabels** outputs=new CLabels*[m_num_svms];
@@ -161,9 +159,10 @@ CLabels* CMultiClassSVM::classify_one_vs_one(CLabels* result)
 	return result;
 }
 
-CLabels* CMultiClassSVM::classify_one_vs_rest(CLabels* result)
+CLabels* CMultiClassSVM::classify_one_vs_rest()
 {
 	ASSERT(m_num_svms>0);
+	CLabels* result=NULL;
 
 	if (!kernel)
 	{
@@ -175,11 +174,8 @@ CLabels* CMultiClassSVM::classify_one_vs_rest(CLabels* result)
 	{
 		int32_t num_vectors=kernel->get_num_vec_rhs();
 
-		if (!result)
-		{
-			result=new CLabels(num_vectors);
-			SG_REF(result);
-		}
+		result=new CLabels(num_vectors);
+		SG_REF(result);
 
 		ASSERT(num_vectors==result->get_num_labels());
 		CLabels** outputs=new CLabels*[m_num_svms];

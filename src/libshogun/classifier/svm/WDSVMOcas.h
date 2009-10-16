@@ -152,10 +152,9 @@ class CWDSVMOcas : public CClassifier
 
 		/** classify all examples
 		 *
-		 * @param output resulting labels
 		 * @return resulting labels
 		 */
-		CLabels* classify(CLabels* output=NULL);
+		CLabels* classify();
 
 		/** classify objects
 		 *

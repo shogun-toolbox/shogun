@@ -86,10 +86,9 @@ class CMultiClassSVM : public CSVM
 
 		/** classify all examples
 		 *
-		 * @param labels resulting labels
 		 * @return resulting labels
 		 */
-		virtual CLabels* classify(CLabels* labels=NULL);
+		virtual CLabels* classify();
 
 		/** classify one example
 		 *
@@ -100,10 +99,9 @@ class CMultiClassSVM : public CSVM
 
 		/** classify one vs rest
 		 *
-		 * @param labels resulting labels
 		 * @return resulting labels
 		 */
-		virtual CLabels* classify_one_vs_rest(CLabels* labels=NULL);
+		virtual CLabels* classify_one_vs_rest();
 
 		/** classify one example one vs rest
 		 *
@@ -114,10 +112,9 @@ class CMultiClassSVM : public CSVM
 
 		/** classify one vs one
 		 *
-		 * @param labels resulting labels
 		 * @return resulting labels
 		 */
-		CLabels* classify_one_vs_one(CLabels* labels=NULL);
+		CLabels* classify_one_vs_one();
 
 		/** classify one example one vs one
 		 *

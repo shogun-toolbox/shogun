@@ -26,25 +26,3 @@ CClassifier::~CClassifier()
 {
     SG_UNREF(labels);
 }
-
-CLabels* CClassifier::classify(CLabels* output)
-{
-	if (labels)
-	{
-		int32_t num=labels->get_num_labels();
-		ASSERT(num>0);
-
-		if (!output)
-		{
-			output=new CLabels(num);
-			SG_REF(output);
-		}
-
-		for (int32_t i=0; i<num; i++)
-			output->set_label(i, classify_example(i));
-
-		return output;
-	}
-
-	return NULL;
-}

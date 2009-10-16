@@ -33,11 +33,11 @@ class CGUIClassifier : public CSGObject
 		/** load classifier from file */
 		bool load(char* filename, char* type);
 		bool save(char* param);
-		CLabels* classify(CLabels* output=NULL);
-		CLabels* classify_kernelmachine(CLabels* output=NULL);
-		CLabels* classify_distancemachine(CLabels* output=NULL);
-		CLabels* classify_linear(CLabels* output=NULL);
-		CLabels* classify_byte_linear(CLabels* output=NULL);
+		CLabels* classify();
+		CLabels* classify_kernelmachine();
+		CLabels* classify_distancemachine();
+		CLabels* classify_linear();
+		CLabels* classify_byte_linear();
 		bool classify_example(int32_t idx, float64_t& result);
 		inline CClassifier* get_classifier() { return classifier; }
 

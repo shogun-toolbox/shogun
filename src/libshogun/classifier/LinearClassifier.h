@@ -135,13 +135,6 @@ class CLinearClassifier : public CClassifier
 		 */
 		virtual bool save(FILE* dstfile);
 
-		/** classify all examples
-		 *
-		 * @param output resulting labels
-		 * @return resulting labels
-		 */
-		virtual CLabels* classify(CLabels* output=NULL);
-
 		/** set features
 		 *
 		 * @param feat features to set
@@ -152,6 +145,13 @@ class CLinearClassifier : public CClassifier
 			SG_REF(feat);
 			features=feat;
 		}
+
+		/** classify all examples
+		 *
+		 * @param output resulting labels
+		 * @return resulting labels
+		 */
+		virtual CLabels* classify();
 
 		/** classify objects
 		 *

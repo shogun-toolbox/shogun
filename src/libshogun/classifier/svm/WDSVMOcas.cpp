@@ -79,7 +79,7 @@ CWDSVMOcas::~CWDSVMOcas()
 {
 }
 
-CLabels* CWDSVMOcas::classify(CLabels* output)
+CLabels* CWDSVMOcas::classify()
 {
 	set_wd_weights();
 	set_normalization_const();
@@ -89,8 +89,8 @@ CLabels* CWDSVMOcas::classify(CLabels* output)
 		int32_t num=features->get_num_vectors();
 		ASSERT(num>0);
 
-		if (!output)
-			output=new CLabels(num);
+		CLabels* output=new CLabels(num);
+		SG_REF(output);
 
 		for (int32_t i=0; i<num; i++)
 			output->set_label(i, classify_example(i));
@@ -113,7 +113,7 @@ CLabels* CWDSVMOcas::classify(CFeatures* data)
 	}
 
 	set_features((CStringFeatures<uint8_t>*) data);
-	return classify((CLabels*) NULL);
+	return classify();
 }
 
 int32_t CWDSVMOcas::set_wd_weights()

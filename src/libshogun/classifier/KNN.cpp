@@ -70,7 +70,7 @@ bool CKNN::train(CFeatures* data)
 	return true;
 }
 
-CLabels* CKNN::classify(CLabels* output)
+CLabels* CKNN::classify()
 {
 	ASSERT(num_classes>0);
 	ASSERT(distance);
@@ -79,11 +79,8 @@ CLabels* CKNN::classify(CLabels* output)
 	int32_t num_lab=distance->get_num_vec_rhs();
 	ASSERT(k<=num_lab);
 
-	if (output && output->get_num_labels()!=num_lab)
-		SG_ERROR("Number of labels mismatches number of outputs\n");
-
-	if (!output)
-		output=new CLabels(num_lab);
+	CLabels* output=new CLabels(num_lab);
+	SG_REF(output);
 
 	//distances to train data and working buffer of train_labels
 	float64_t* dists=new float64_t[num_train_labels];
@@ -161,7 +158,7 @@ CLabels* CKNN::classify(CFeatures* data)
 	distance->init(lhs, data);
 	SG_UNREF(lhs);
 
-	return classify((CLabels*) NULL);
+	return classify();
 }
 
 bool CKNN::load(FILE* srcfile)

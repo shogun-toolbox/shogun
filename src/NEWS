@@ -1,10 +1,11 @@
 2009-10-XX Soeren Sonnenburg <sonne@debian.org>
 
 	* SHOGUN Release version 0.9.0 (libshogun 5.0, libshogunui 3.0)
-	* This release contains minor feature enhancements and bugfixes:
+	* This release contains several cleanups and enhancements:
 	* Features:
 	    - Implement set_linear_classifier for static interfaces.
 		- Implement Polynomial DotFeatures.
+		- Implement domain adaptation SVM
 		- Speed up MCSVM.
 		- Saving and Loading of shogun objects.
 		- Examples have been polished/split up into separate files.
@@ -18,6 +19,9 @@
 		- Removed kernel {load,save}_init.
 		- Move the mkl code from classifier/svm to classifier/mkl.
 		- Removed obsolete mindy support.
+		- CClassifier::classify() no longer has a label as argument.
+		- Introduce CClassifier::train(CFeatures* ) and classify(CFeatures*)
+          for more effective training/testing.
 
 2009-08-16 Soeren Sonnenburg <sonne@debian.org>
 

@@ -75,23 +75,19 @@ bool CKernelMachine::init_kernel_optimization()
 	return false;
 }
 
-CLabels* CKernelMachine::classify(CLabels* lab)
+CLabels* CKernelMachine::classify()
 {
+	CLabels* lab=NULL;
+
 	if (!kernel)
-	{
 		SG_ERROR( "Kernelmachine can not proceed without kernel!\n");
-		return false ;
-	}
 
 	if ( kernel && kernel->get_num_vec_rhs()>0 )
 	{
 		int32_t num_vectors=kernel->get_num_vec_rhs();
 
-		if (!lab)
-		{
-			lab=new CLabels(num_vectors);
-			SG_REF(lab);
-		}
+		lab=new CLabels(num_vectors);
+		SG_REF(lab);
 
 		SG_DEBUG( "computing output on %d test examples\n", num_vectors);
 
@@ -234,7 +230,7 @@ CLabels* CKernelMachine::classify(CFeatures* data)
 	kernel->init(lhs, data);
 	SG_UNREF(lhs);
 
-	return classify((CLabels*) NULL);
+	return classify();
 }
 
 void* CKernelMachine::classify_example_helper(void* p)

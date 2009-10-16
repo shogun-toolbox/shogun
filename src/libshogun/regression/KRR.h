@@ -82,10 +82,9 @@ class CKRR : public CKernelMachine
 
 		/** classify regression
 		 *
-		 * @param output resulting labels
 		 * @return resulting labels
 		 */
-		virtual CLabels* classify(CLabels* output=NULL);
+		virtual CLabels* classify();
 
 		/** classify one example
 		 *

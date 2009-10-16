@@ -163,6 +163,27 @@ class CHierarchical : public CDistanceMachine
 			*num=merges;
 		}
 
+		/** classify objects using the currently set features
+		 *
+		 * @return classified labels
+		 */
+		virtual CLabels* classify()
+		{
+			SG_NOTIMPLEMENTED;
+			return NULL;
+		}
+
+		/** classify objects
+		 *
+		 * @param data (test)data to be classified
+		 * @return classified labels
+		 */
+		virtual CLabels* classify(CFeatures* data)
+		{
+			SG_NOTIMPLEMENTED;
+			return NULL;
+		}
+
 		/** @return object name */
 		inline virtual const char* get_name() const { return "Hierarchical"; }
 

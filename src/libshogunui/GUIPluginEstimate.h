@@ -38,7 +38,7 @@ class CGUIPluginEstimate : public CSGObject
 
 		inline CPluginEstimate* get_estimator() { return estimator; }
 
-		CLabels* classify(CLabels* output=NULL);
+		CLabels* classify();
 		float64_t classify_example(int32_t idx);
 
 		/** @return object name */

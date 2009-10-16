@@ -31,7 +31,7 @@ bool CLinearClassifier::save(FILE* dstfile)
 	return false;
 }
 
-CLabels* CLinearClassifier::classify(CLabels* output)
+CLabels* CLinearClassifier::classify()
 {
 	if (features)
 	{
@@ -42,8 +42,7 @@ CLabels* CLinearClassifier::classify(CLabels* output)
 		float64_t* out=new float64_t[num];
 		features->dense_dot_range(out, 0, num, NULL, w, w_dim, bias);
 
-		if (!output)
-			output=new CLabels(num);
+		CLabels* output=new CLabels(num);
 		output->set_labels(out, num);
 
 		delete[] out;
@@ -61,5 +60,5 @@ CLabels* CLinearClassifier::classify(CFeatures* data)
 	if (!data->has_property(FP_DOT))
 		SG_ERROR("Specified features are not of type CDotFeatures\n");
 	set_features((CDotFeatures*) data);
-	return classify((CLabels*) NULL);
+	return classify();
 }

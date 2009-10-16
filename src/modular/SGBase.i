@@ -28,13 +28,16 @@
 %}
 
 %init %{
+    fprintf(stderr, "initing shogun\n");
+    init_shogun();
+    /*
 #ifndef DISABLE_CANCEL_CALLBACK
     init_shogun(&sg_global_print_message, &sg_global_print_warning,
             &sg_global_print_error, &sg_global_cancel_computations);
 #else
     init_shogun(&sg_global_print_message, &sg_global_print_warning,
             &sg_global_print_error);
-#endif
+#endif*/
 
 #ifdef SWIGPYTHON
 	  import_array();
@@ -60,8 +63,6 @@
 	}
 }
 
-
-
 %ignore NUM_LOG_LEVELS;
 %ignore FBUFSIZE;
 
@@ -73,14 +74,6 @@
 %feature("ref")   CSGObject "SG_REF($this);"
 %feature("unref") CSGObject "SG_UNREF($this);"
 
-
-#ifdef HAVE_BOOST_SERIALIZATION
-
-%include "std_string.i"
-
-#endif //HAVE_BOOST_SERIALIZATION
-
-
 %include <shogun/lib/common.h>
 %include <shogun/lib/ShogunException.h>
 %include <shogun/lib/io.h>
@@ -91,6 +84,8 @@
 
 
 #ifdef HAVE_BOOST_SERIALIZATION
+
+%include "std_string.i"
 
 %pythoncode %{
    #some guerillapatching 
@@ -112,5 +107,3 @@
 
 %}
 #endif //HAVE_BOOST_SERIALIZATION
-
-

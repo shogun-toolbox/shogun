@@ -49,8 +49,11 @@ class CPluginEstimate: public CClassifier
 		 */
 		virtual bool train(CFeatures* data=NULL);
 
-		/// classify all test features
-		CLabels* classify(CLabels* output=NULL);
+		/** classify objects using the currently set features
+		 *
+		 * @return classified labels
+		 */
+		CLabels* classify();
 
 		/** classify objects
 		 *

@@ -9,6 +9,7 @@
  */
 
 #include "classifier/mkl/MKLMultiClass.h"
+#include "lib/io.h"
 
 lpwrapper::lpwrapper()
 {

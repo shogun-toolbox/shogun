@@ -98,23 +98,18 @@ class CClassifier : public CSGObject
 			return false;
 		}
 
-		/** classify objects
+		/** classify objects using the currently set features
 		 *
-		 * @param output classified labels
 		 * @return classified labels
 		 */
-		virtual CLabels* classify(CLabels* output=NULL);
+		virtual CLabels* classify()=0;
 
 		/** classify objects
 		 *
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual CLabels* classify(CFeatures* data)
-		{
-			SG_NOTIMPLEMENTED;
-			return NULL;
-		}
+		virtual CLabels* classify(CFeatures* data)=0;
 
 		/** classify one example
 		 *

@@ -1026,7 +1026,7 @@ bool CGUIClassifier::set_do_auc_maximization(bool do_auc)
 }
 
 
-CLabels* CGUIClassifier::classify(CLabels* output)
+CLabels* CGUIClassifier::classify()
 {
 	ASSERT(classifier);
 
@@ -1049,12 +1049,12 @@ CLabels* CGUIClassifier::classify(CLabels* output)
 		case CT_MKLMULTICLASS:
 		case CT_MKLREGRESSION:
 		case CT_KRR:
-			return classify_kernelmachine(output);
+			return classify_kernelmachine();
 		case CT_KNN:
-			return classify_distancemachine(output);
+			return classify_distancemachine();
 		case CT_PERCEPTRON:
 		case CT_LDA:
-			return classify_linear(output);
+			return classify_linear();
 		case CT_SVMLIN:
 		case CT_SVMPERF:
 		case CT_SUBGRADIENTSVM:
@@ -1064,9 +1064,9 @@ CLabels* CGUIClassifier::classify(CLabels* output)
 		case CT_LPBOOST:
 		case CT_SUBGRADIENTLPM:
 		case CT_LIBLINEAR:
-			return classify_linear(output);
+			return classify_linear();
 		case CT_WDSVMOCAS:
-			return classify_byte_linear(output);
+			return classify_byte_linear();
 		default:
 			SG_ERROR("unknown classifier type\n");
 			break;
@@ -1075,7 +1075,7 @@ CLabels* CGUIClassifier::classify(CLabels* output)
 	return false;
 }
 
-CLabels* CGUIClassifier::classify_kernelmachine(CLabels* output)
+CLabels* CGUIClassifier::classify_kernelmachine()
 {
 	CFeatures* trainfeatures=ui->ui_features->get_train_features();
 	CFeatures* testfeatures=ui->ui_features->get_test_features();
@@ -1103,7 +1103,7 @@ CLabels* CGUIClassifier::classify_kernelmachine(CLabels* output)
 	km->set_batch_computation_enabled(svm_use_batch_computation);
 
 	SG_INFO("Starting kernel machine testing.\n");
-	return classifier->classify(output);
+	return classifier->classify();
 }
 
 bool CGUIClassifier::get_trained_classifier(
@@ -1279,7 +1279,7 @@ bool CGUIClassifier::get_linear(
 	return true;
 }
 
-CLabels* CGUIClassifier::classify_distancemachine(CLabels* output)
+CLabels* CGUIClassifier::classify_distancemachine()
 {
 	CFeatures* trainfeatures=ui->ui_features->get_train_features();
 	CFeatures* testfeatures=ui->ui_features->get_test_features();
@@ -1312,11 +1312,11 @@ CLabels* CGUIClassifier::classify_distancemachine(CLabels* output)
 	((CDistanceMachine*) classifier)->set_distance(
 		ui->ui_distance->get_distance());
 	SG_INFO("starting distance machine testing\n") ;
-	return classifier->classify(output);
+	return classifier->classify();
 }
 
 
-CLabels* CGUIClassifier::classify_linear(CLabels* output)
+CLabels* CGUIClassifier::classify_linear()
 {
 	CFeatures* testfeatures=ui->ui_features->get_test_features();
 
@@ -1338,10 +1338,10 @@ CLabels* CGUIClassifier::classify_linear(CLabels* output)
 
 	((CLinearClassifier*) classifier)->set_features((CDotFeatures*) testfeatures);
 	SG_INFO("starting linear classifier testing\n") ;
-	return classifier->classify(output);
+	return classifier->classify();
 }
 
-CLabels* CGUIClassifier::classify_byte_linear(CLabels* output)
+CLabels* CGUIClassifier::classify_byte_linear()
 {
 	CFeatures* testfeatures=ui->ui_features->get_test_features();
 
@@ -1364,7 +1364,7 @@ CLabels* CGUIClassifier::classify_byte_linear(CLabels* output)
 
 	((CWDSVMOcas*) classifier)->set_features((CStringFeatures<uint8_t>*) testfeatures);
 	SG_INFO("starting linear classifier testing\n") ;
-	return classifier->classify(output);
+	return classifier->classify();
 }
 
 bool CGUIClassifier::classify_example(int32_t idx, float64_t &result)

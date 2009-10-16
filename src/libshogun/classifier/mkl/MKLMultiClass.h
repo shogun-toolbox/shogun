@@ -39,7 +39,7 @@
  * \todo check what options to pass from MKLMultiClass to CGMNPSVM
  * \todo clear types (float64_t, size_t, int)
  */
-class lpwrapper
+class lpwrapper : public CSGObject
 {
 public:
 	int32_t lpwrappertype; // 0 -glpk
@@ -58,6 +58,8 @@ public:
 			const float64_t sumofpositivealphas); 
 
 	virtual void computeweights(std::vector<float64_t> & weights2); 
+
+	inline virtual const char* get_name() const { return "LPWrapper"; }
 };
 
 /** @brief MKLMultiClass is a class for L1-norm multiclass MKL. */

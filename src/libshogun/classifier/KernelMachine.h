@@ -300,10 +300,9 @@ class CKernelMachine : public CClassifier
 
 		/** classify kernel machine
 		 *
-		 * @param output where resuling labels are stored
 		 * @return result labels
 		 */
-		virtual CLabels* classify(CLabels* output=NULL);
+		virtual CLabels* classify();
 
 		/** classify objects
 		 *

@@ -68,10 +68,9 @@ class CKNN : public CDistanceMachine
 
 		/** classify all examples
 		 *
-		 * @param output resulting labels
 		 * @return resulting labels
 		 */
-		virtual CLabels* classify(CLabels* output=NULL);
+		virtual CLabels* classify();
 
 		/** classify objects
 		 *
