@@ -17,8 +17,8 @@
 #include "features/SimpleFeatures.h"
 #include "features/Labels.h"
 
-using namespace shogun;
-
+namespace shogun
+{
 /** @brief The AUC kernel can be used to maximize the area under the receiver operator
  * characteristic curve (AUC) instead of margin in SVM training.
  *
@@ -83,5 +83,5 @@ class CAUCKernel: public CSimpleKernel<uint16_t>
 		/** the subkernel */
 		CKernel* subkernel;
 };
-
+}
 #endif /* _AUCKERNEL_H__ */

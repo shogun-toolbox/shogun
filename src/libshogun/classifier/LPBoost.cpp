@@ -20,6 +20,8 @@
 #include "lib/Signal.h"
 #include "lib/Time.h"
 
+using namespace shogun;
+
 CLPBoost::CLPBoost()
 : CLinearClassifier(), C1(1), C2(1), use_bias(true), epsilon(1e-3)
 {

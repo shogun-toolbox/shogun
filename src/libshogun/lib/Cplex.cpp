@@ -18,6 +18,8 @@
 #include "lib/Signal.h"
 #include "lib/Mathematics.h"
 
+using namespace shogun;
+
 CCplex::CCplex()
 : CSGObject(), env(NULL), lp(NULL), lp_initialized(false)
 {

@@ -19,6 +19,8 @@
 #include "features/Features.h"
 #include "classifier/LinearClassifier.h"
 
+namespace shogun
+{
 /** @brief Class LPM trains a linear classifier called Linear Programming
  * Machine, i.e. a SVM using a \f$\ell_1\f$ norm regularizer.
  *
@@ -92,5 +94,6 @@ class CLPM : public CLinearClassifier
 		bool use_bias;
 		float64_t epsilon;
 };
+}
 #endif //USE_CPLEX
 #endif //_LPM_H___

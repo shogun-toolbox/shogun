@@ -22,9 +22,9 @@
 #include "features/DotFeatures.h"
 #include "features/Labels.h"
 
-#define DEBUG_SUBGRADIENTLPM
+using namespace shogun;
 
-float64_t lpmtim;
+#define DEBUG_SUBGRADIENTLPM
 
 CSubGradientLPM::CSubGradientLPM()
 : CLinearClassifier(), C1(1), C2(1), epsilon(1e-5), qpsize(42),

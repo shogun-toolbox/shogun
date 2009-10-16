@@ -17,6 +17,8 @@
 #include "lib/Mathematics.h"
 #include "lib/Cplex.h"
 
+using namespace shogun;
+
 CLPM::CLPM()
 : CLinearClassifier(), C1(1), C2(1), use_bias(true), epsilon(1e-3)
 {

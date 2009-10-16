@@ -150,7 +150,6 @@ class CLinearClassifier : public CClassifier
 
 		/** classify all examples
 		 *
-		 * @param output resulting labels
 		 * @return resulting labels
 		 */
 		virtual CLabels* classify();

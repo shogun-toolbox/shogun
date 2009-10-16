@@ -13,6 +13,9 @@
 
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/common.h>
+
+namespace shogun
+{
 /** @brief Template class GCArray implements a garbage collecting static array
  *
  * This array is meant to be used for Shogun Objects (CSGObject) only, as it
@@ -83,4 +86,5 @@ template <class T> class CGCArray : public CSGObject
 		/// size of array
 		int32_t size;
 };
+}
 #endif //__GCARRAY_H__

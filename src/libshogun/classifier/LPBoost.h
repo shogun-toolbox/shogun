@@ -22,6 +22,8 @@
 #include "features/SparseFeatures.h"
 #include "classifier/LinearClassifier.h"
 
+namespace shogun
+{
 /** @brief Class LPBoost trains a linear classifier called Linear Programming
  * Machine, i.e. a SVM using a \f$\ell_1\f$ norm regularizer.
  *
@@ -110,5 +112,6 @@ class CLPBoost : public CLinearClassifier
 		TSparse<float64_t>* sfeat;
 
 };
+}
 #endif //USE_CPLEX
 #endif //_LPBOOST_H___

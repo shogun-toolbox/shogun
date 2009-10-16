@@ -24,6 +24,8 @@ extern "C" {
 #include "features/SparseFeatures.h"
 #include "features/Labels.h"
 
+namespace shogun
+{
 enum E_PROB_TYPE
 {
 	E_LINEAR,
@@ -149,5 +151,6 @@ protected:
 
   E_PROB_TYPE problem_type;
 };
+}
 #endif
 #endif

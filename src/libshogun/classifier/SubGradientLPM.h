@@ -23,6 +23,8 @@
 #include "features/Features.h"
 #include "features/Labels.h"
 
+namespace shogun
+{
 /** @brief Class SubGradientSVM trains a linear classifier called Linear
  * Programming Machine, i.e. a SVM using a \f$\ell_1\f$ norm regularizer.
  *
@@ -167,6 +169,8 @@ class CSubGradientLPM : public CLinearClassifier
 		float64_t* beta;
 
 		CCplex* solver;
+		float64_t lpmtim;
 };
+}
 #endif //USE_CPLEX
 #endif //_SUBGRADIENTLPM_H___

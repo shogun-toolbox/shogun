@@ -12,6 +12,8 @@
 
 #include <shogun/lib/common.h>
 
+namespace shogun
+{
 /** @brief an array class that accesses elements indirectly via an index array.
  *
  * It does not store the objects itself, but only indices to objects.
@@ -347,5 +349,5 @@ template <class T, class P> class CIndirectObject
 };
 
 template <class T, class P> P CIndirectObject<T,P>::array;
-
+}
 #endif //__INDIRECTOBJECT_H__

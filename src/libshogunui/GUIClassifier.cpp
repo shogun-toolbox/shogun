@@ -63,6 +63,8 @@
 #include <shogun/classifier/svm/SVMSGD.h>
 #include <shogun/classifier/svm/WDSVMOcas.h>
 
+using namespace shogun;
+
 CGUIClassifier::CGUIClassifier(CSGInterface* ui_)
 : CSGObject(), ui(ui_)
 {

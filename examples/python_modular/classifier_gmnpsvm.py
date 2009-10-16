@@ -16,7 +16,8 @@ def gmnpsvm ():
 
 	svm=GMNPSVM(C, kernel, labels)
 	svm.set_epsilon(epsilon)
-	svm.train()
+	svm.train(feats_train)
+	#kernel.init(feats_train, feats_test)
 	svm.classify(feats_test).get_labels()
 
 if __name__=='__main__':

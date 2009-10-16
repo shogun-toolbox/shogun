@@ -15,6 +15,8 @@
 #include <shogun/lib/io.h>
 #include <shogun/lib/Mathematics.h>
 
+namespace shogun
+{
 /** @brief integer type of dynamic size
  *
  * This object can be used to create huge integers. These integers can be used
@@ -561,4 +563,5 @@ typedef CDynInt<uint64_t,3> uint192_t;
 typedef CDynInt<uint64_t,3> uint256_t;
 typedef CDynInt<uint64_t,3> uint512_t;
 typedef CDynInt<uint64_t,3> uint1024_t;
+}
 #endif // __DYNINT_H__

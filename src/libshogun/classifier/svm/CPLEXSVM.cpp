@@ -17,6 +17,8 @@
 #include "lib/Cplex.h"
 #include "features/Labels.h"
 
+using namespace shogun;
+
 CCPLEXSVM::CCPLEXSVM()
 : CSVM()
 {

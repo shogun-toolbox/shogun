@@ -16,6 +16,8 @@
 #include "classifier/svm/SVM.h"
 #include "lib/Cache.h"
 
+namespace shogun
+{
 /** @brief CplexSVM a SVM solver implementation based on cplex (unfinished). */
 class CCPLEXSVM : public CSVM
 {
@@ -35,6 +37,6 @@ class CCPLEXSVM : public CSVM
 
 		virtual inline EClassifierType get_classifier_type() { return CT_CPLEXSVM; }
 };
-
+}
 #endif
 #endif
