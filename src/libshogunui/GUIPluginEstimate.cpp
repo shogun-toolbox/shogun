@@ -16,6 +16,7 @@
 #include <shogun/lib/io.h>
 #include <shogun/features/StringFeatures.h>
 
+using namespace shogun;
 
 CGUIPluginEstimate::CGUIPluginEstimate(CSGInterface* ui_)
 : CSGObject(), ui(ui_), estimator(NULL),

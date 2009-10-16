@@ -17,6 +17,7 @@
 
 #include <string.h>
 
+using namespace shogun;
 
 CGUILabels::CGUILabels(CSGInterface* ui_)
 : CSGObject(), ui(ui_), train_labels(NULL), test_labels(NULL)

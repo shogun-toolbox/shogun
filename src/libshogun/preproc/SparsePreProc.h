@@ -17,12 +17,11 @@
 
 #include <stdio.h>
 
+namespace shogun
+{
 template <class ST> class TSparse;
 template <class ST> class CSparseFeatures;
 
-
-namespace shogun
-{
 /** @brief Template class SparsePreProc, base class for preprocessors (cf. CPreProc)
  * that apply to CSparseFeatures
  *

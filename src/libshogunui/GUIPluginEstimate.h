@@ -17,6 +17,8 @@
 #include <shogun/classifier/PluginEstimate.h>
 #include <shogun/features/Labels.h>
 
+namespace shogun
+{
 class CSGInterface;
 
 class CGUIPluginEstimate : public CSGObject
@@ -51,4 +53,5 @@ class CGUIPluginEstimate : public CSGObject
 		float64_t pos_pseudo;
 		float64_t neg_pseudo;
 };
+}
 #endif

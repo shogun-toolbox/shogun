@@ -17,6 +17,8 @@
 #include <shogun/distance/Distance.h>
 #include <shogun/features/Features.h>
 
+namespace shogun
+{
 class CSGInterface;
 
 class CGUIDistance : public CSGObject
@@ -51,4 +53,5 @@ class CGUIDistance : public CSGObject
 	CSGInterface* ui;
 	bool initialized;
 };
+}
 #endif //__GUIDISTANCE_H__

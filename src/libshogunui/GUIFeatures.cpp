@@ -15,6 +15,8 @@
 #include <shogun/lib/config.h>
 #include <shogun/lib/io.h>
 
+using namespace shogun;
+
 CGUIFeatures::CGUIFeatures(CSGInterface* ui_)
 : CSGObject(), ui(ui_), train_features(NULL), test_features(NULL),
 	ref_features(NULL)

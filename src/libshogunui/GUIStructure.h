@@ -20,6 +20,8 @@
 #include <shogun/structure/DynProg.h>
 #include <shogun/structure/PlifMatrix.h>
 
+namespace shogun
+{
 class CSGInterface;
 
 class CGUIStructure : public CSGObject
@@ -187,5 +189,6 @@ class CGUIStructure : public CSGObject
 		int32_t* m_mod_words;
 		CPlifMatrix* m_plif_matrix;
 };
+}
 #endif
 

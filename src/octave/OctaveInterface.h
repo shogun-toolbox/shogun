@@ -15,6 +15,8 @@ typedef struct mxArray_tag mxArray;
 
 #include <octave/variables.h>
 
+using namespace shogun;
+
 class COctaveInterface : public CSGInterface
 {
 	public:

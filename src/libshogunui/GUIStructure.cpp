@@ -15,6 +15,8 @@
 #include <shogun/lib/io.h>
 #include <shogun/structure/Plif.h>
 
+using namespace shogun;
+
 CGUIStructure::CGUIStructure(CSGInterface* ui_)
 : ui(ui_), m_dp(NULL), m_feature_matrix(NULL),
   m_feature_matrix_sparse1(NULL), m_feature_matrix_sparse2(NULL),

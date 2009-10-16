@@ -16,6 +16,8 @@
 #include <shogun/base/SGObject.h>
 #include <shogun/kernel/Kernel.h>
 
+namespace shogun
+{
 class CSGInterface;
 
 class CGUIKernel : public CSGObject
@@ -164,4 +166,5 @@ class CGUIKernel : public CSGObject
 	float64_t* get_weights(int32_t order, int32_t max_mismatch);
 
 };
+}
 #endif

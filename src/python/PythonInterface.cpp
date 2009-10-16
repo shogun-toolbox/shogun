@@ -16,6 +16,7 @@
 #include "../r/RInterface.h"
 #endif
 
+using namespace shogun;
 
 void* CPythonInterface::m_pylib=0;
 

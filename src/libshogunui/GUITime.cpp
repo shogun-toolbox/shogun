@@ -11,6 +11,8 @@
 #include "SGInterface.h"
 #include "GUITime.h"
 
+using namespace shogun;
+
 CGUITime::CGUITime(CSGInterface* ui_)
 : CSGObject(), ui(ui_)
 {

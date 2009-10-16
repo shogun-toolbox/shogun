@@ -13,6 +13,8 @@
 
 #include "kernel/KernelNormalizer.h"
 
+namespace shogun
+{
 /** @brief VarianceKernelNormalizer divides by the ``variance''
  *
  * This effectively normalizes the vectors in feature space to variance 1 (see
@@ -108,5 +110,5 @@ class CVarianceKernelNormalizer : public CKernelNormalizer
 		/** square root of scaling constant */
 		float64_t sqrt_meandiff;
 };
-
+}
 #endif

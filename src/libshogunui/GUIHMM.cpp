@@ -19,8 +19,7 @@
 
 #include <unistd.h>
 
-#define TMP_DIR "/tmp/"
-
+using namespace shogun;
 
 CGUIHMM::CGUIHMM(CSGInterface* ui_)
 : CSGObject(), ui(ui_)

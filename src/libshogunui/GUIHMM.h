@@ -17,6 +17,8 @@
 #include <shogun/distributions/hmm/HMM.h>
 #include <shogun/features/Labels.h>
 
+namespace shogun
+{
 class CSGInterface;
 
 class CGUIHMM : public CSGObject
@@ -115,4 +117,5 @@ class CGUIHMM : public CSGObject
 	protected:
 		CSGInterface* ui;
 };
+}
 #endif

@@ -14,6 +14,8 @@
 #include <shogun/lib/config.h>
 #include <shogun/base/SGObject.h>
 
+namespace shogun
+{
 class CSGInterface;
 
 class CGUIMath : public CSGObject
@@ -35,4 +37,5 @@ class CGUIMath : public CSGObject
 		CSGInterface* ui;
 		float64_t threshold;
 };
+}
 #endif

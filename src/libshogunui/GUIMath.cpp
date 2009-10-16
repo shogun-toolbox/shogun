@@ -15,6 +15,8 @@
 #include <shogun/lib/io.h>
 #include <shogun/lib/Mathematics.h>
 
+using namespace shogun;
+
 CGUIMath::CGUIMath(CSGInterface* ui_)
 : CSGObject(), ui(ui_), threshold(0.0)
 {

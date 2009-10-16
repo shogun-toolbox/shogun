@@ -28,6 +28,8 @@
 #include <shogun/features/ExplicitSpecFeatures.h>
 #include <shogun/features/ImplicitWeightedSpecFeatures.h>
 
+namespace shogun
+{
 class CSGInterface;
 
 class CGUIFeatures : public CSGObject
@@ -164,4 +166,5 @@ class CGUIFeatures : public CSGObject
 		CFeatures *test_features;
 		CFeatures *ref_features;
 };
+}
 #endif

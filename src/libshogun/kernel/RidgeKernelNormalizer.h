@@ -13,6 +13,8 @@
 
 #include "kernel/KernelNormalizer.h"
 
+namespace shogun
+{
 /** @brief Normalize the kernel by adding a constant term to its diagonal.
  * This aids kernels to become positive definite (even though they are
  * not - often caused by numerical problems).
@@ -133,5 +135,5 @@ class CRidgeKernelNormalizer : public CKernelNormalizer
 		/// scaling parameter (avg of diagonal)
 		float64_t scale;
 };
-
+}
 #endif // _RIDGEKERNELNORMALIZER_H___

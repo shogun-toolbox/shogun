@@ -15,6 +15,9 @@ extern "C" {
 #include <numpy/arrayobject.h>
 }
 
+
+namespace shogun
+{
 class CPythonInterface : public CSGInterface
 {
 	public:
@@ -193,4 +196,5 @@ class CPythonInterface : public CSGInterface
 		PyObject* m_lhs;
 		PyObject* m_rhs;
 };
+}
 #endif // __PYTHONINTERFACE__H_

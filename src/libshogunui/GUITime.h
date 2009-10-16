@@ -15,6 +15,8 @@
 #include <shogun/lib/Time.h>
 #include <shogun/base/SGObject.h>
 
+namespace shogun
+{
 class CSGInterface;
 
 class CGUITime : public CSGObject
@@ -32,4 +34,5 @@ class CGUITime : public CSGObject
 		CSGInterface* ui;
 		CTime* time;
 };
+}
 #endif

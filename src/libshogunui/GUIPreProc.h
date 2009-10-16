@@ -17,6 +17,8 @@
 #include <shogun/base/SGObject.h>
 #include <shogun/preproc/PreProc.h>
 
+namespace shogun
+{
 class CSGInterface;
 
 class CGUIPreProc : public CSGObject
@@ -60,4 +62,5 @@ class CGUIPreProc : public CSGObject
 		CList<CPreProc*>* preprocs;
 		CSGInterface* ui;
 };
+}
 #endif

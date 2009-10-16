@@ -3,6 +3,8 @@
 
 #include <shogun/ui/SGInterface.h>
 
+namespace shogun
+{
 #define CMDLINE_COMMENT0 '#'
 #define CMDLINE_COMMENT1 '%'
 
@@ -173,4 +175,5 @@ class CCmdLineInterface : public CSGInterface
 		CDynamicArray<char*>* m_lhs;
 		CDynamicArray<char*>* m_rhs;
 };
+}
 #endif // __CMDLINEINTERFACE__H_

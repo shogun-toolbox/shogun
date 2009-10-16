@@ -59,6 +59,8 @@
 
 #include <string.h>
 
+using namespace shogun;
+
 CGUIKernel::CGUIKernel(CSGInterface* ui_)
 : CSGObject(), ui(ui_)
 {

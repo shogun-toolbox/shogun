@@ -33,6 +33,8 @@
 #include <string.h>
 #include <stdio.h>
 
+using namespace shogun;
+
 CGUIPreProc::CGUIPreProc(CSGInterface* ui_)
 : CSGObject(), ui(ui_)
 {

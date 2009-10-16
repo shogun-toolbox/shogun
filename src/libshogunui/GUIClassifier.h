@@ -16,6 +16,8 @@
 #include <shogun/classifier/Classifier.h>
 #include <shogun/classifier/svm/SVM.h>
 
+namespace shogun
+{
 class CSGInterface;
 
 class CGUIClassifier : public CSGObject
@@ -144,4 +146,5 @@ class CGUIClassifier : public CSGObject
 		CSVM* constraint_generator;
 		ESolverType solver_type;
 };
+}
 #endif

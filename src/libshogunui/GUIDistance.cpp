@@ -42,6 +42,7 @@
 #include <shogun/features/SimpleFeatures.h>
 #include <shogun/features/Features.h>
 
+using namespace shogun;
 
 CGUIDistance::CGUIDistance(CSGInterface* ui_)
 : CSGObject(), ui(ui_)

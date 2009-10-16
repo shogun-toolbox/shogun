@@ -23,6 +23,8 @@
 #include "GUITime.h"
 #include "GUIStructure.h"
 
+namespace shogun
+{
 /* Interface datatypes that shogun supports. Note that some interfaces like e.g.
  * octave/matlab cannot distinguish between scalars and matrices and thus might
  * always return more complex types like matrices.
@@ -808,5 +810,6 @@ typedef struct {
 	const char* usage_prefix;
 	const char* usage_suffix;
 } CSGInterfaceMethod;
+}
 
 #endif // __SGINTERFACE__H_

@@ -16,6 +16,8 @@
 #include <shogun/base/SGObject.h>
 #include <shogun/features/Labels.h>
 
+namespace shogun
+{
 class CSGInterface;
 
 class CGUILabels : public CSGObject
@@ -42,4 +44,5 @@ class CGUILabels : public CSGObject
 		CLabels *train_labels;
 		CLabels *test_labels;
 };
+}
 #endif

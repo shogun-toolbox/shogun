@@ -39,6 +39,8 @@ void cmdline_cancel_computations(bool &delayed, bool &immediately)
 {
 }
 
+using namespace shogun;
+
 const int32_t READLINE_BUFFER_SIZE = 10000;
 extern CSGInterface* interface;
 extern CSGInterfaceMethod sg_methods[];

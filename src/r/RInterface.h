@@ -10,6 +10,7 @@ extern "C" {
 #include <Rdefines.h>
 }
 
+using namespace shogun;
 
 class CRInterface : public CSGInterface
 {
