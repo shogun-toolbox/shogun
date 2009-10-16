@@ -116,10 +116,10 @@ template <class T1, class T2> struct thread_qsort
 };
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
-/** @brief Class which collects generic mathematical functions
- */
 namespace shogun
 {
+/** @brief Class which collects generic mathematical functions
+ */
 class CMath : public CSGObject
 {
 	public:

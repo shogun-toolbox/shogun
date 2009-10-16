@@ -12,19 +12,19 @@
 #define MKLMULTICLASS2GLPK_H_
 
 #include <vector>
-
 #include "base/SGObject.h"
 
 #ifdef USE_GLPK
 #include <glpk.h>
 #endif
+
+namespace shogun
+{
 /** @brief MKLMultiClass2glpk is a helper class for MKLMultiClass. 
 *
 *	it solves the corresponding linear problem arising in SIP formulation for MKL using glpk
 *
 */
-namespace shogun
-{
 class MKLMultiClass2glpk: public CSGObject
 {
 public:
@@ -73,9 +73,9 @@ protected:
 	/** GLPK data structure, is not defined in the case #ifndef USE_GLPK
 	*
 	*/
-	#ifdef USE_GLPK
+#ifdef USE_GLPK
 	glp_prob* linearproblem;
-	#endif
+#endif
 };	
 }
 
