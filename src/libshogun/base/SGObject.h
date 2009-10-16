@@ -29,11 +29,12 @@
 
 #include <string>
 #include <sstream>
-#include <iostream>
 #include <fstream>
-#include <vector>
 
 #endif //HAVE_BOOST_SERIALIZATION
+
+#include <iostream>
+#include <vector>
 
 #include "lib/io.h"
 #include "base/Parallel.h"
