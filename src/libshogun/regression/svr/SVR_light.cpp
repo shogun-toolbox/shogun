@@ -65,9 +65,9 @@ bool CSVRLight::train(CFeatures* data)
 	init_iter=500;
 	precision_violations=0;
 	opt_precision=DEF_PRECISION;
-	
+
 	strcpy (learn_parm->predfile, "");
-	learn_parm->biased_hyperplane=1; 
+	learn_parm->biased_hyperplane=1;
 	learn_parm->sharedslack=0;
 	learn_parm->remove_inconsistent=0;
 	learn_parm->skip_final_opt_check=1;
@@ -123,7 +123,7 @@ bool CSVRLight::train(CFeatures* data)
 
 	// train the svm
 	svr_learn();
-	
+
 	// brain damaged svm light work around
 	create_new_model(model->sv_num-1);
 	set_bias(-model->b);
@@ -157,13 +157,13 @@ void CSVRLight::svr_learn()
 	ASSERT(labels);
 	int32_t totdoc=labels->get_num_labels();
 	num_vectors=totdoc;
-	
+
 	// set up regression problem in standard form
 	docs=new int32_t[2*totdoc];
 	label=new int32_t[2*totdoc];
 	c = new float64_t[2*totdoc];
 
-  for(i=0;i<totdoc;i++) {   
+  for(i=0;i<totdoc;i++) {
 	  docs[i]=i;
 	  j=2*totdoc-1-i;
 	  label[i]=+1;
@@ -210,7 +210,7 @@ void CSVRLight::svr_learn()
 	}
 
 	/* make sure -n value is reasonable */
-	if((learn_parm->svm_newvarsinqp < 2) 
+	if((learn_parm->svm_newvarsinqp < 2)
 			|| (learn_parm->svm_newvarsinqp > learn_parm->svm_maxqpsize)) {
 		learn_parm->svm_newvarsinqp=learn_parm->svm_maxqpsize;
 	}
@@ -223,8 +223,8 @@ void CSVRLight::svr_learn()
 	xi_fullset = new float64_t[totdoc];
 	lin = new float64_t[totdoc];
 	learn_parm->svm_cost = new float64_t[totdoc];
-	if (linear_term)
-		learn_parm->eps=CMath::clone_vector(linear_term, totdoc);
+	if (linear_term.size() > 0)
+		learn_parm->eps=get_linear_term_array();
 	else
 	{
 		learn_parm->eps=new float64_t[totdoc];      /* equivalent regression epsilon for classification */
@@ -239,7 +239,7 @@ void CSVRLight::svr_learn()
 	model->index = new int32_t[totdoc+2];
 
 	model->at_upper_bound=0;
-	model->b=0;	       
+	model->b=0;
 	model->supvec[0]=0;  /* element 0 reserved and empty for now */
 	model->alpha[0]=0;
 	model->totdoc=totdoc;
@@ -296,25 +296,25 @@ void CSVRLight::svr_learn()
 		SG_DEBUG( "num sv: %d\n", model->sv_num);
 		for(i=1;i<model->sv_num;i++)
 		{
-			if(fabs(model->alpha[i]) >= 
+			if(fabs(model->alpha[i]) >=
 					(learn_parm->svm_cost[model->supvec[i]]-
-					 learn_parm->epsilon_a)) 
+					 learn_parm->epsilon_a))
 				upsupvecnum++;
 		}
 		SG_INFO( "Number of SV: %ld (including %ld at upper bound)\n",
 				model->sv_num-1,upsupvecnum);
 	}
 
-  /* this makes sure the model we return does not contain pointers to the 
+  /* this makes sure the model we return does not contain pointers to the
      temporary documents */
-  for(i=1;i<model->sv_num;i++) { 
+  for(i=1;i<model->sv_num;i++) {
     j=model->supvec[i];
     if(j >= (totdoc/2)) {
       j=totdoc-j-1;
     }
     model->supvec[i]=j;
   }
-  
+
   shrink_state_cleanup(&shrink_state);
 	delete[] label;
 	delete[] inconsistent;
@@ -354,10 +354,10 @@ float64_t CSVRLight::compute_objective_function(
 void* CSVRLight::update_linear_component_linadd_helper(void *params_)
 {
 	S_THREAD_PARAM * params = (S_THREAD_PARAM*) params_ ;
-	
+
 	int32_t jj=0, j=0 ;
-	
-	for(jj=params->start;(jj<params->end) && (j=params->active2dnum[jj])>=0;jj++) 
+
+	for(jj=params->start;(jj<params->end) && (j=params->active2dnum[jj])>=0;jj++)
 		params->lin[j]+=params->kernel->compute_optimized(CSVRLight::regression_fix_index2(params->docs[j], params->num_vectors));
 
 	return NULL ;
@@ -375,11 +375,11 @@ void CSVRLight::update_linear_component(
 {
 	register int32_t i=0,ii=0,j=0,jj=0;
 
-	if (kernel->has_property(KP_LINADD) && get_linadd_enabled()) 
+	if (kernel->has_property(KP_LINADD) && get_linadd_enabled())
 	{
-		if (callback) 
+		if (callback)
 		{
-			update_linear_component_mkl_linadd(docs, label, active2dnum, a, a_old, working2dnum, 
+			update_linear_component_mkl_linadd(docs, label, active2dnum, a, a_old, working2dnum,
 											   totdoc,	lin, aicache, c) ;
 		}
 		else
@@ -443,7 +443,7 @@ void CSVRLight::update_linear_component(
 			}
 		}
 	}
-	else 
+	else
 	{
 		if (callback)
 		{
@@ -474,21 +474,21 @@ void CSVRLight::update_linear_component_mkl(
 
 	ASSERT(num_weights==num_kernels);
 
-	if ((kernel->get_kernel_type()==K_COMBINED) && 
+	if ((kernel->get_kernel_type()==K_COMBINED) &&
 			 (!((CCombinedKernel*)kernel)->get_append_subkernel_weights()))// for combined kernel
 	{
 		CCombinedKernel* k      = (CCombinedKernel*) kernel;
 		CKernel* kn = k->get_first_kernel() ;
 		int32_t n = 0, i, j ;
-		
+
 		while (kn!=NULL)
 		{
-			for(i=0;i<num;i++) 
+			for(i=0;i<num;i++)
 			{
-				if(a[i] != a_old[i]) 
+				if(a[i] != a_old[i])
 				{
 					kn->get_kernel_row(i,NULL,aicache, true);
-					for(j=0;j<num;j++) 
+					for(j=0;j<num;j++)
 						W[j*num_kernels+n]+=(a[i]-a_old[i])*aicache[regression_fix_index(j)]*(float64_t)label[i];
 				}
 			}
@@ -501,23 +501,23 @@ void CSVRLight::update_linear_component_mkl(
 	{
 		float64_t* w_backup = new float64_t[num_kernels] ;
 		float64_t* w1 = new float64_t[num_kernels] ;
-		
+
 		// backup and set to zero
 		for (int32_t i=0; i<num_kernels; i++)
 		{
 			w_backup[i] = old_beta[i] ;
-			w1[i]=0.0 ; 
+			w1[i]=0.0 ;
 		}
 		for (int32_t n=0; n<num_kernels; n++)
 		{
 			w1[n]=1.0 ;
 			kernel->set_subkernel_weights(w1, num_weights) ;
-		
-			for(int32_t i=0;i<num;i++) 
+
+			for(int32_t i=0;i<num;i++)
 			{
-				if(a[i] != a_old[i]) 
+				if(a[i] != a_old[i])
 				{
-					for(int32_t j=0;j<num;j++) 
+					for(int32_t j=0;j<num;j++)
 						W[j*num_kernels+n]+=(a[i]-a_old[i])*kernel->kernel(regression_fix_index(i),regression_fix_index(j))*(float64_t)label[i];
 				}
 			}
@@ -526,7 +526,7 @@ void CSVRLight::update_linear_component_mkl(
 
 		// restore old weights
 		kernel->set_subkernel_weights(w_backup,num_weights) ;
-		
+
 		delete[] w_backup ;
 		delete[] w1 ;
 	}
@@ -540,13 +540,13 @@ void CSVRLight::update_linear_component_mkl_linadd(
 	float64_t *a_old, int32_t *working2dnum, int32_t totdoc, float64_t *lin,
 	float64_t *aicache, float64_t* c)
 {
-	// kernel with LP_LINADD property is assumed to have 
+	// kernel with LP_LINADD property is assumed to have
 	// compute_by_subkernel functions
 	int32_t num         = totdoc;
 	int32_t num_weights = -1;
 	int32_t num_kernels = kernel->get_num_subkernels() ;
 	const float64_t* old_beta   = kernel->get_subkernel_weights(num_weights);
-	
+
 	ASSERT(num_weights==num_kernels);
 
 	float64_t* w_backup=new float64_t[num_kernels];
@@ -556,7 +556,7 @@ void CSVRLight::update_linear_component_mkl_linadd(
 	for (int32_t i=0; i<num_kernels; i++)
 	{
 		w_backup[i] = old_beta[i] ;
-		w1[i]=1.0 ; 
+		w1[i]=1.0 ;
 	}
 	// set the kernel weights
 	kernel->set_subkernel_weights(w1, num_weights) ;
@@ -600,7 +600,7 @@ void CSVRLight::call_mkl_callback(float64_t* a, int32_t* label, float64_t* lin, 
 
 	for (int32_t i=0; i<num_kernels; i++)
 		sumw[i]=0;
-	
+
 	cblas_dgemv(CblasColMajor, CblasNoTrans, nk, (int) num, 0.5, (double*) W,
 		nk, (double*) alphay, 1, 1.0, (double*) sumw, 1);
 
@@ -613,7 +613,7 @@ void CSVRLight::call_mkl_callback(float64_t* a, int32_t* label, float64_t* lin, 
 			sumw[d] += 0.5*a[i]*label[i]*W[i*num_kernels+d];
 	}
 #endif
-	
+
 	if (callback)
 		mkl_converged=callback(mkl, sumw, sumalpha);
 
@@ -632,7 +632,7 @@ void CSVRLight::call_mkl_callback(float64_t* a, int32_t* label, float64_t* lin, 
 				lin[i] += new_beta[d]*W[i*num_kernels+d] ;
 #endif
 
-	
+
 	delete[] sumw;
 }
 
@@ -651,7 +651,7 @@ void CSVRLight::reactivate_inactive_examples(
   float64_t ex_c,target;
 
   if (kernel->has_property(KP_LINADD) && get_linadd_enabled()) { /* special linear case */
-	  a_old=shrink_state->last_a;    
+	  a_old=shrink_state->last_a;
 
 	  kernel->clear_normal();
 	  int32_t num_modified=0;
@@ -673,7 +673,7 @@ void CSVRLight::reactivate_inactive_examples(
 		  }
 	  }
   }
-  else 
+  else
   {
 	  changed=new int32_t[totdoc];
 	  changed2dnum=new int32_t[totdoc+11];
@@ -683,9 +683,9 @@ void CSVRLight::reactivate_inactive_examples(
 		  if(verbosity>=2) {
 			  SG_INFO( "%ld..",t);
 		  }
-		  a_old=shrink_state->a_history[t];    
+		  a_old=shrink_state->a_history[t];
 		  for(i=0;i<totdoc;i++) {
-			  inactive[i]=((!shrink_state->active[i]) 
+			  inactive[i]=((!shrink_state->active[i])
 					  && (shrink_state->inactive_since[i] == t));
 			  changed[i]= (a[i] != a_old[i]);
 		  }
@@ -719,8 +719,8 @@ void CSVRLight::reactivate_inactive_examples(
 	if((target-dist)>(*maxdiff))  /* largest violation */
 	  (*maxdiff)=target-dist;
       }
-      if((a[i]>(0+learn_parm->epsilon_a)) 
-	 && (a[i]<ex_c)) { 
+      if((a[i]>(0+learn_parm->epsilon_a))
+	 && (a[i]<ex_c)) {
 	shrink_state->active[i]=1;                         /* not at bound */
       }
       else if((a[i]<=(0+learn_parm->epsilon_a)) && (dist < (target+learn_parm->epsilon_shrink))) {
