@@ -248,21 +248,13 @@ CMKLMultiClass::~CMKLMultiClass()
 	lpw=NULL;
 }
 
-void CMKLMultiClass::lpsetup(const int32_t numkernels)
-{
-	ASSERT(numkernels>0);
-
-	if (lpw)
-	{
-		delete lpw;
-	}
-	lpw=new glpkwrapper4CGMNPMKL;
-	lpw->setup(numkernels);
-}
 
 void CMKLMultiClass::initsvm()
 {
-	ASSERT(labels);
+	if (!labels)	
+	{
+		SG_ERROR("CMKLMultiClass::initsvm(): the set labels is NULL\n");
+	}
 
 	SG_UNREF(svm);
 	svm=new CGMNPSVM;
@@ -273,7 +265,11 @@ void CMKLMultiClass::initsvm()
 
 	int32_t numlabels;
 	float64_t * lb=labels->get_labels ( numlabels);
-	ASSERT(numlabels>0);
+
+	if (numlabels<=0)	
+	{
+		SG_ERROR("CMKLMultiClass::initsvm(): the number of labels is nonpositive, do not know how to handle this!\n");
+	}
 
 	CLabels* newlab=new CLabels(lb, labels->get_num_labels() );
 	delete[] lb;
@@ -284,21 +280,28 @@ void CMKLMultiClass::initsvm()
 	newlab=NULL;
 }
 
-void CMKLMultiClass::init()
+void CMKLMultiClass::initlpsolver()
 {
 	if (!kernel)	
 	{
-		SG_ERROR("CMKLMultiClass::init(): the set kernel is NULL\n");
+		SG_ERROR("CMKLMultiClass::initlpsolver(): the set kernel is NULL\n");
 	}
 
 	if (kernel->get_kernel_type()!=K_COMBINED)
 	{
-		SG_ERROR("CMKLMultiClass::init(): given kernel is not of type K_COMBINED %d required by Multiclass Mkl \n",kernel->get_kernel_type());
+		SG_ERROR("CMKLMultiClass::initlpsolver(): given kernel is not of type K_COMBINED %d required by Multiclass Mkl \n",kernel->get_kernel_type());
 	}
 
 	int numker=dynamic_cast<CCombinedKernel *>(kernel)->get_num_subkernels();
 
-	lpsetup(numker);
+	ASSERT(numker>0);
+
+	if (lpw)
+	{
+		delete lpw;
+	}
+	lpw=new glpkwrapper4CGMNPMKL;
+	lpw->setup(numker);
 }
 
 
@@ -370,7 +373,6 @@ void CMKLMultiClass::addingweightsstep( const std::vector<float64_t> & curweight
 
 float64_t CMKLMultiClass::getsumofsignfreealphas()
 {
-	//returns \sum_y b_y^2-\sum_i \sum_{ y \neq y_i} \alpha_{iy}(b_{y_i}-b_y-1)
 
 	std::vector<int> trainlabels2(labels->get_num_labels());
 	int32_t tmpint;
@@ -470,7 +472,7 @@ bool CMKLMultiClass::train(CFeatures* data)
 		kernel->init(data, data);
 	}
 
-	init();
+	initlpsolver();
 	weightshistory.clear();
 
 	int32_t numkernels=dynamic_cast<CCombinedKernel *>(kernel)->get_num_subkernels();

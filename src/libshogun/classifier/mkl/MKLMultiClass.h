@@ -31,13 +31,11 @@
  *
  * L1-norm MKL for the multiclass svm CGMNPSVM kit is to be used as all
  * other SVM routines with the set_kernel, set_C, set_labels, set_epsilon
- * its own parameters are thresh (L2 norm of subkernel weights for termination) and
- * maxiters (how many silp iterations at most in order to force termination)
+ * its own parameters are set via set_mkl_epsilon(float64_t eps ) (L2 norm of subkernel weights for termination) and
+ * via set_max_num_mkliters(int32_t maxnum) (how many silp iterations at most in order to force termination)
  *
  * This is based on the free solver glpk solver.
  *
- * \todo check what options to pass from MKLMultiClass to CGMNPSVM
- * \todo clear types (float64_t, size_t, int)
  */
 class lpwrapper : public CSGObject
 {
@@ -74,7 +72,7 @@ public:
 	
 protected:
 	
-	///prohibit copying, copy constructor by declaring protected?
+	//prohibit copying, copy constructor by declaring it protected, do not know how to copy the glpk basis structure, it is too C like :) and seemingly not intended to be copied 
 	glpkwrapper operator=(glpkwrapper & gl);
 	glpkwrapper(glpkwrapper & gl);
 	glp_prob* linearproblem;
@@ -122,7 +120,11 @@ protected:
 
 #endif //USE_GLPK
 
-/** @brief MKLMultiClass is a class for L1-norm multiclass MKL. */
+/** @brief glpkwrapper4CGMNPMKL is a helper class for CMKLMultiClass. 
+*
+*	it solves the corresponding linear problem using glpk
+*
+*/
 class glpkwrapper4CGMNPMKL: public glpkwrapper
 {
 public:
@@ -172,49 +174,100 @@ public:
 	virtual inline EClassifierType get_classifier_type() { return CT_MKLMULTICLASS; }
 	
 	//returns the subkernelweights or NULL if none such have been computed, caller has to delete the returned pointer
+	/** returns MKL weights for the different kernels
+	 *
+	 * @param numweights is output parameter, is set to zero if no weights have been computed or to the number of MKL weights which is equal to the number of kernels
+	 * 
+	 * @return NULL if no weights have been computed or otherwise an array with the weights
+	 */
 	float64_t* getsubkernelweights(int32_t & numweights);
 	
-
+	/** sets MKL termination threshold
+	 *
+	 * @param eps is the desired threshold value
+	 * the termination criterion is the L2 norm between the current MKL weights and their counterpart from the previous iteration
+	 * 
+	 */
 	void set_mkl_epsilon(float64_t eps ); 
+
+	/** sets maximal number of MKL iterations
+	 *
+	 * @param maxnum is the desired maximal number of MKL iterations; when it is reached the MKL terminates irrespective of the MKL progress 
+	 * set it to a nonpositive value in order to turn it off
+	 * 
+	 */
 	void set_max_num_mkliters(int32_t maxnum);
 	
 protected:
 	
-	//inits LP
-	void lpsetup(const int32_t numkernels);
-	//sets labels for the svm, creates it
+	/** performs some sanity checks (on the provided kernel), inits the GLPK-based LP solver
+	 * 
+	 */
+	void initlpsolver();
+
+	/** inits the underlying Multiclass SVM
+	 * 
+	 */
 	void initsvm();
 	
-	//uses implicitly Ckernel* kernel
-	//inits this class
-	void init();
+
+
 	
-	
+	/** checks MKL for convergence
+	 *
+	 * @param numberofsilpiterations is the number of currently done iterations
+	 * 
+	 */
 	virtual bool evaluatefinishcriterion(const int32_t numberofsilpiterations);
 	
 
-	
+	/** adds a constraint to the LP used in MKL
+	 *
+	 * @param curweights are the current MKL weights
+	 *
+	 * it uses 
+	 * void addingweightsstep( const std::vector<float64_t> & curweights);
+	 * and 
+	 * float64_t getsumofsignfreealphas();
+	 */
 	void addingweightsstep( const std::vector<float64_t> & curweights);
-	//the following two is the actual know how in this class :)
-	// uses the svm
+	/** computes the first svm-dependent part used for generating MKL constraints
+	 * it is \f$ \sum_y b_y^2-\sum_i \sum_{ y \neq y_i} \alpha_{iy}(b_{y_i}-b_y-1) \f$
+	 */
 	float64_t getsumofsignfreealphas();
 	// uses the svm and Ckernel * kernel
+	/** computes the second svm-dependent part used for generating MKL constraints
+	 *
+	 * @param ind is the index of the kernel for which to compute \f$ \|w \|^2  \f$
+	 */
 	float64_t getsquarenormofprimalcoefficients(
 			const int32_t ind);
 	
-		
-	
 
-public:	
 	
 
 protected:
+	/** the multiclass svm for fixed MKL weights
+	*
+	*
+	*/	
 	CGMNPSVM* svm; //the svm in the silp training
-	
+	/** the lp solver wrapper
+	*	
+	*/
 	lpwrapper* lpw; // the lp solver wrapper
+	/** stores the last two mkl iteration weights 
+	*	
+	*/
 	::std::vector< std::vector< float64_t> > weightshistory;
 
-	float64_t mkl_eps; // at what l2 norm of sub kernel weights change to quit
+	/** MKL termination threshold
+	*	is set void set_mkl_epsilon(float64_t eps ); 
+	*/
+	float64_t mkl_eps; 
+	/** maximal number of MKL iterations
+	*	is set by void set_max_num_mkliters(int32_t maxnum);
+	*/
 	int32_t max_num_mkl_iters; // how many iters of silp at max or <0 to ignore this
 
 	
