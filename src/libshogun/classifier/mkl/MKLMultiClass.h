@@ -8,148 +8,25 @@
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#ifndef GMNPMKL_H_
-#define GMNPMKL_H_
+#ifndef MKLMULTICLASS_H_
+#define MKLMULTICLASS_H_
 
 #include <vector>
 
 #include "base/SGObject.h"
-#include "lib/ShogunException.h"
-#include "classifier/svm/GMNPSVM.h"
-#include "kernel/Kernel.h" 
-
-//for the testing method
-#include "kernel/CustomKernel.h" 
+#include "kernel/Kernel.h"  
 #include "kernel/CombinedKernel.h" 
-#include "features/DummyFeatures.h"
+#include "classifier/svm/GMNPSVM.h"
+#include "classifier/mkl/MKLMultiClass2glpk.h"
 
 
-#ifdef USE_GLPK
-#include <glpk.h>
 
 namespace shogun
 {
 /** @brief MKLMultiClass is a class for L1-norm multiclass MKL.
- *
- * L1-norm MKL for the multiclass svm CGMNPSVM kit is to be used as all
- * other SVM routines with the set_kernel, set_C, set_labels, set_epsilon
- * its own parameters are set via set_mkl_epsilon(float64_t eps ) (L2 norm of subkernel weights for termination) and
- * via set_max_num_mkliters(int32_t maxnum) (how many silp iterations at most in order to force termination)
- *
- * This is based on the free solver glpk solver.
- *
- */
-class lpwrapper : public CSGObject
-{
-public:
-	int32_t lpwrappertype; // 0 -glpk
-
-	lpwrapper();
-	
-	virtual ~lpwrapper();
-	
-	virtual void setup(const int32_t numkernels); 
-
-	/** takes a set of \f$\alpha^t H \alpha\f$ and \f$-\sum \alpha\f$
-	 * and adds constraint32_t to the working set
-	 * \f$\theta <= \beta^(1) + -\sum \alpha\f$
-	 */
-	virtual void addconstraint(const ::std::vector<float64_t> & normw2,
-			const float64_t sumofpositivealphas); 
-
-	virtual void computeweights(std::vector<float64_t> & weights2); 
-
-	inline virtual const char* get_name() const { return "LPWrapper"; }
-};
-
-/** @brief MKLMultiClass is a class for L1-norm multiclass MKL. */
-class glpkwrapper: public lpwrapper
-{
-public:
-	
-	glpkwrapper();
-	virtual ~glpkwrapper();
-	
-
-	
-protected:
-	
-	//prohibit copying, copy constructor by declaring it protected, do not know how to copy the glpk basis structure, it is too C like :) and seemingly not intended to be copied 
-	glpkwrapper operator=(glpkwrapper & gl);
-	glpkwrapper(glpkwrapper & gl);
-	glp_prob* linearproblem;
-};
-
-#else
-
-/** @brief MKLMultiClass is a class for L1-norm multiclass MKL. */
-class lpwrapper : public CSGObject
-{
-public:
-	int32_t lpwrappertype; // 0 -glpk
-
-	lpwrapper();
-	
-	virtual ~lpwrapper();
-	
-	virtual void setup(const int32_t numkernels); 
-
-	virtual void addconstraint(const ::std::vector<float64_t> & normw2,
-			const float64_t sumofpositivealphas); 
-
-	virtual void computeweights(std::vector<float64_t> & weights2); 
-	
-};
-
-/** @brief MKLMultiClass is a class for L1-norm multiclass MKL. */
-class glpkwrapper: public lpwrapper
-{
-public:
-	
-	glpkwrapper();
-	virtual ~glpkwrapper();
-	/** @return object name */
-	inline virtual const char* get_name() const { return "GLPKWrapper"; }
-	
-
-	
-protected:
-	
-	//prohibit copying, copy constructor by declaring it protected, do not know how to copy the glpk basis structure, it is too C like :) and seemingly not intended to be copied 
-	glpkwrapper operator=(glpkwrapper & gl);
-	glpkwrapper(glpkwrapper & gl);
-};
-
-#endif //USE_GLPK
-
-/** @brief glpkwrapper4CGMNPMKL is a helper class for CMKLMultiClass. 
 *
-*	it solves the corresponding linear problem using glpk
-*
-*/
-class glpkwrapper4CGMNPMKL: public glpkwrapper
-{
-public:
-	int32_t numkernels;
-
-	glpkwrapper4CGMNPMKL();
-	virtual ~glpkwrapper4CGMNPMKL();
-	
-	
-	virtual void setup(const int32_t numkernels2); 
-
-	// takes a set of alpha^t H alpha and -sum alpha and adds constraint32_t to the working set theta <= \beta^ (1) + -sumalpha  
-	virtual void addconstraint(const ::std::vector<float64_t> & normw2,
-			const float64_t sumofpositivealphas); 
-
-	virtual void computeweights(std::vector<float64_t> & weights2); 
-
-	/** @return object name */
-	inline virtual const char* get_name() const { return "GLPKWrapper4GMNPMKL"; }
-	
-};	
-
-/** @brief MKLMultiClass is a class for L1-norm multiclass MKL.
+*	It is based on the GMNPSVM Multiclass SVM.
+*	Its own parameters are the L2 norm weight change based MKL termination criterion set by void set_mkl_epsilon(float64_t eps ); and the maximal number of MKL iterations set by void set_max_num_mkliters(int32_t maxnum); It passes the regularization constants C1 and C2 to GMNPSVM. 
  */
 class CMKLMultiClass : public CMultiClassSVM
 {
@@ -175,7 +52,7 @@ public:
 	 */
 	virtual inline EClassifierType get_classifier_type() { return CT_MKLMULTICLASS; }
 	
-	//returns the subkernelweights or NULL if none such have been computed, caller has to delete the returned pointer
+
 	/** returns MKL weights for the different kernels
 	 *
 	 * @param numweights is output parameter, is set to zero if no weights have been computed or to the number of MKL weights which is equal to the number of kernels
@@ -237,7 +114,6 @@ protected:
 	 * it is \f$ \sum_y b_y^2-\sum_i \sum_{ y \neq y_i} \alpha_{iy}(b_{y_i}-b_y-1) \f$
 	 */
 	float64_t getsumofsignfreealphas();
-	// uses the svm and Ckernel * kernel
 	/** computes the second svm-dependent part used for generating MKL constraints
 	 *
 	 * @param ind is the index of the kernel for which to compute \f$ \|w \|^2  \f$
@@ -253,11 +129,11 @@ protected:
 	*
 	*
 	*/	
-	CGMNPSVM* svm; //the svm in the silp training
+	CGMNPSVM* svm;
 	/** the lp solver wrapper
 	*	
 	*/
-	lpwrapper* lpw; // the lp solver wrapper
+	MKLMultiClass2glpk* lpw; 
 	/** stores the last two mkl iteration weights 
 	*	
 	*/
@@ -270,7 +146,7 @@ protected:
 	/** maximal number of MKL iterations
 	*	is set by void set_max_num_mkliters(int32_t maxnum);
 	*/
-	int32_t max_num_mkl_iters; // how many iters of silp at max or <0 to ignore this
+	int32_t max_num_mkl_iters; 
 
 	
 };
