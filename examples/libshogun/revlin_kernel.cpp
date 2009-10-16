@@ -5,6 +5,8 @@
 #include <shogun/lib/io.h>
 #include <stdio.h>
 
+using namespace shogun;
+
 class CReverseLinearKernel : public CSimpleKernel<float64_t>
 {
 public:

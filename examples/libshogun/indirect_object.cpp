@@ -6,6 +6,8 @@
 
 #include <stdio.h>
 
+using namespace shogun;
+
 const int l=10;
 
 int main(int argc, char** argv)

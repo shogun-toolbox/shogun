@@ -13,6 +13,8 @@
 #include <shogun/lib/Mathematics.h>
 #include <shogun/lib/DynInt.h>
 
+using namespace shogun;
+
 void print_message(FILE* target, const char* str)
 {
 	fprintf(target, "%s", str);

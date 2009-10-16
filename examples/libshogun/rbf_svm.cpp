@@ -17,6 +17,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+using namespace shogun;
+
 #define NUM 100
 #define DIMS 2
 #define DIST 0.5
@@ -87,9 +89,7 @@ int main()
 	printf("num_sv:%d b:%f\n", svm->get_num_support_vectors(), svm->get_bias());
 
 	// classify + display output
-	CLabels* out_labels= new CLabels(NUM);
-	SG_REF(out_labels);
-	svm->classify(out_labels);
+	CLabels* out_labels=svm->classify();
 
 	for (int32_t i=0; i<NUM; i++)
 		printf("out[%d]=%f\n", i, out_labels->get_label(i));

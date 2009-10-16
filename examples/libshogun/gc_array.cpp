@@ -6,9 +6,9 @@
 
 #include <stdio.h>
 
-const int l=10;
+using namespace shogun;
 
-class CKernel;
+const int l=10;
 
 int main(int argc, char** argv)
 {
