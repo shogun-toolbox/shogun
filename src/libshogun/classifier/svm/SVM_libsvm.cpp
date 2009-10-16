@@ -1,23 +1,23 @@
 /*
  * Copyright (c) 2000-2009 Chih-Chung Chang and Chih-Jen Lin
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright
  * notice, this list of conditions and the following disclaimer.
- * 
+ *
  * 2. Redistributions in binary form must reproduce the above copyright
  * notice, this list of conditions and the following disclaimer in the
  * documentation and/or other materials provided with the distribution.
- * 
+ *
  * 3. Neither name of copyright holders nor the names of its contributors
  * may be used to endorse or promote products derived from this software
  * without specific prior written permission.
- * 
- * 
+ *
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -325,7 +325,7 @@ protected:
 	virtual float64_t calculate_rho();
 	virtual void do_shrinking();
 private:
-	bool be_shrunk(int32_t i, float64_t Gmax1, float64_t Gmax2);	
+	bool be_shrunk(int32_t i, float64_t Gmax1, float64_t Gmax2);
 };
 
 void Solver::swap_index(int32_t i, int32_t j)
@@ -355,7 +355,7 @@ void Solver::reconstruct_gradient()
 	for(j=0;j<active_size;j++)
 		if(is_free(j))
 			nr_free++;
-	
+
 	if (nr_free*l > 2*active_size*(l-active_size))
 	{
 		for(i=active_size;i<l;i++)
@@ -473,11 +473,11 @@ void Solver::Solve(
 		}
 
 		SG_SABS_PROGRESS(gap, -CMath::log10(gap), -CMath::log10(1), -CMath::log10(eps), 6);
-		
+
 		++iter;
 
 		// update alpha[i] and alpha[j], handle bounds carefully
-		
+
 		const Qfloat *Q_i = Q->get_Q(i,active_size);
 		const Qfloat *Q_j = Q->get_Q(j,active_size);
 
@@ -496,7 +496,7 @@ void Solver::Solve(
 			float64_t diff = alpha[i] - alpha[j];
 			alpha[i] += delta;
 			alpha[j] += delta;
-			
+
 			if(diff > 0)
 			{
 				if(alpha[j] < 0)
@@ -578,7 +578,7 @@ void Solver::Solve(
 
 		float64_t delta_alpha_i = alpha[i] - old_alpha_i;
 		float64_t delta_alpha_j = alpha[j] - old_alpha_j;
-		
+
 		for(int32_t k=0;k<active_size;k++)
 		{
 			G[k] += Q_i[k]*delta_alpha_i + Q_j[k]*delta_alpha_j;
@@ -674,7 +674,7 @@ int32_t Solver::select_working_set(
 	// j: minimizes the decrease of obj value
 	//    (if quadratic coefficient <= 0, replace it with tau)
 	//    -y_j*grad(f)_j < -y_i*grad(f)_i, j in I_low(\alpha)
-	
+
 	float64_t Gmax = -INF;
 	float64_t Gmax2 = -INF;
 	int32_t Gmax_idx = -1;
@@ -717,7 +717,7 @@ int32_t Solver::select_working_set(
 					Gmax2 = G[j];
 				if (grad_diff > 0)
 				{
-					float64_t obj_diff; 
+					float64_t obj_diff;
 					float64_t quad_coef=Q_i[i]+QD[j]-2.0*y[i]*Q_i[j];
 					if (quad_coef > 0)
 						obj_diff = -(grad_diff*grad_diff)/quad_coef;
@@ -741,7 +741,7 @@ int32_t Solver::select_working_set(
 					Gmax2 = -G[j];
 				if (grad_diff > 0)
 				{
-					float64_t obj_diff; 
+					float64_t obj_diff;
 					float64_t quad_coef=Q_i[i]+QD[j]+2.0*y[i]*Q_i[j];
 					if (quad_coef > 0)
 						obj_diff = -(grad_diff*grad_diff)/quad_coef;
@@ -797,27 +797,27 @@ void Solver::do_shrinking()
 	// find maximal violating pair first
 	for(i=0;i<active_size;i++)
 	{
-		if(y[i]==+1)	
+		if(y[i]==+1)
 		{
-			if(!is_upper_bound(i))	
+			if(!is_upper_bound(i))
 			{
 				if(-G[i] >= Gmax1)
 					Gmax1 = -G[i];
 			}
-			if(!is_lower_bound(i))	
+			if(!is_lower_bound(i))
 			{
 				if(G[i] >= Gmax2)
 					Gmax2 = G[i];
 			}
 		}
-		else	
+		else
 		{
-			if(!is_upper_bound(i))	
+			if(!is_upper_bound(i))
 			{
 				if(-G[i] >= Gmax2)
 					Gmax2 = -G[i];
 			}
-			if(!is_lower_bound(i))	
+			if(!is_lower_bound(i))
 			{
 				if(G[i] >= Gmax1)
 					Gmax1 = G[i];
@@ -825,7 +825,7 @@ void Solver::do_shrinking()
 		}
 	}
 
-	if(unshrink == false && Gmax1 + Gmax2 <= eps*10) 
+	if(unshrink == false && Gmax1 + Gmax2 <= eps*10)
 	{
 		unshrink = true;
 		reconstruct_gradient();
@@ -885,6 +885,35 @@ float64_t Solver::calculate_rho()
 
 	return r;
 }
+
+
+//
+//Solve with individually weighted examples
+//
+class WeightedSolver : public Solver
+{
+
+public:
+
+	WeightedSolver(float64_t* cost_vec)
+	{
+
+		this->Cs = cost_vec;
+
+	}
+
+	virtual float64_t get_C(int32_t i)
+	{
+
+		return Cs[i];
+	}
+
+protected:
+
+  float64_t* Cs;
+
+};
+
 
 //
 // Solver for nu-svm classification and regression
@@ -967,14 +996,14 @@ int32_t Solver_NU::select_working_set(
 	{
 		if(y[j]==+1)
 		{
-			if (!is_lower_bound(j))	
+			if (!is_lower_bound(j))
 			{
 				float64_t grad_diff=Gmaxp+G[j];
 				if (G[j] >= Gmaxp2)
 					Gmaxp2 = G[j];
 				if (grad_diff > 0)
 				{
-					float64_t obj_diff; 
+					float64_t obj_diff;
 					float64_t quad_coef = Q_ip[ip]+QD[j]-2*Q_ip[j];
 					if (quad_coef > 0)
 						obj_diff = -(grad_diff*grad_diff)/quad_coef;
@@ -998,7 +1027,7 @@ int32_t Solver_NU::select_working_set(
 					Gmaxn2 = -G[j];
 				if (grad_diff > 0)
 				{
-					float64_t obj_diff; 
+					float64_t obj_diff;
 					float64_t quad_coef = Q_in[in]+QD[j]-2*Q_in[j];
 					if (quad_coef > 0)
 						obj_diff = -(grad_diff*grad_diff)/quad_coef;
@@ -1036,14 +1065,14 @@ bool Solver_NU::be_shrunk(
 	{
 		if(y[i]==+1)
 			return(-G[i] > Gmax1);
-		else	
+		else
 			return(-G[i] > Gmax4);
 	}
 	else if(is_lower_bound(i))
 	{
 		if(y[i]==+1)
 			return(G[i] > Gmax2);
-		else	
+		else
 			return(G[i] > Gmax3);
 	}
 	else
@@ -1072,14 +1101,14 @@ void Solver_NU::do_shrinking()
 		if(!is_lower_bound(i))
 		{
 			if(y[i]==+1)
-			{	
+			{
 				if(G[i] > Gmax2) Gmax2 = G[i];
 			}
 			else	if(G[i] > Gmax3) Gmax3 = G[i];
 		}
 	}
 
-	if(unshrink == false && CMath::max(Gmax1+Gmax2,Gmax3+Gmax4) <= eps*10) 
+	if(unshrink == false && CMath::max(Gmax1+Gmax2,Gmax3+Gmax4) <= eps*10)
 	{
 		unshrink = true;
 		reconstruct_gradient();
@@ -1142,18 +1171,18 @@ float64_t Solver_NU::calculate_rho()
 		r1 = sum_free1/nr_free1;
 	else
 		r1 = (ub1+lb1)/2;
-	
+
 	if(nr_free2 > 0)
 		r2 = sum_free2/nr_free2;
 	else
 		r2 = (ub2+lb2)/2;
-	
+
 	si->r = (r1+r2)/2;
 	return (r1-r2)/2;
 }
 
 class SVC_QMC: public LibSVMKernel
-{ 
+{
 public:
 	SVC_QMC(const svm_problem& prob, const svm_parameter& param, const schar *y_, int32_t n_class, float64_t fac)
 	:LibSVMKernel(prob.l, prob.x, param)
@@ -1168,7 +1197,7 @@ public:
 			QD[i]= factor*(nr_class-1)*kernel_function(i,i);
 		}
 	}
-	
+
 	Qfloat *get_Q(int32_t i, int32_t len) const
 	{
 		Qfloat *data;
@@ -1326,7 +1355,7 @@ float64_t Solver_NUMC::compute_primal(const schar* p_y, float64_t* p_alpha, floa
 			float64_t norm_tmp=alpha[i]*alpha[j]*QMC->get_orig_Qij(Q_i[j], i, j);
 			if (y[i]==y[j])
 				normwcw[(int32_t) y[i]]+=norm_tmp;
-			
+
 			normwcw[(int32_t) y[i]]-=2.0/nr_class*norm_tmp;
 			normwc_const+=norm_tmp;
 		}
@@ -1458,14 +1487,14 @@ int32_t Solver_NUMC::select_working_set(
 		if(ip != -1) // NULL Q_ip not accessed: Gmaxp=-INF if ip=-1
 			Q_ip = Q->get_Q(ip,active_size);
 
-		if (!is_lower_bound(j))	
+		if (!is_lower_bound(j))
 		{
 			float64_t grad_diff=Gmaxp[cidx]+G[j];
 			if (G[j] >= Gmaxp2[cidx])
 				Gmaxp2[cidx] = G[j];
 			if (grad_diff > 0)
 			{
-				float64_t obj_diff; 
+				float64_t obj_diff;
 				float64_t quad_coef = Q_ip[ip]+QD[j]-2*Q_ip[j];
 				if (quad_coef > 0)
 					obj_diff = -(grad_diff*grad_diff)/quad_coef;
@@ -1533,7 +1562,7 @@ float64_t Solver_NUMC::calculate_rho()
 // Q matrices for various formulations
 //
 class SVC_Q: public LibSVMKernel
-{ 
+{
 public:
 	SVC_Q(const svm_problem& prob, const svm_parameter& param, const schar *y_)
 	:LibSVMKernel(prob.l, prob.x, param)
@@ -1544,7 +1573,7 @@ public:
 		for(int32_t i=0;i<prob.l;i++)
 			QD[i]= (Qfloat)kernel_function(i,i);
 	}
-	
+
 	Qfloat *get_Q(int32_t i, int32_t len) const
 	{
 		Qfloat *data;
@@ -1594,7 +1623,7 @@ public:
 		for(int32_t i=0;i<prob.l;i++)
 			QD[i]= (Qfloat)kernel_function(i,i);
 	}
-	
+
 	Qfloat *get_Q(int32_t i, int32_t len) const
 	{
 		Qfloat *data;
@@ -1630,7 +1659,7 @@ private:
 };
 
 class SVR_Q: public LibSVMKernel
-{ 
+{
 public:
 	SVR_Q(const svm_problem& prob, const svm_parameter& param)
 	:LibSVMKernel(prob.l, prob.x, param)
@@ -1660,7 +1689,7 @@ public:
 		CMath::swap(index[i],index[j]);
 		CMath::swap(QD[i],QD[j]);
 	}
-	
+
 	Qfloat *get_Q(int32_t i, int32_t len) const
 	{
 		Qfloat *data;
@@ -1713,7 +1742,6 @@ static void solve_c_svc(
 	float64_t *alpha, Solver::SolutionInfo* si, float64_t Cp, float64_t Cn)
 {
 	int32_t l = prob->l;
-	float64_t *minus_ones = new float64_t[l];
 	schar *y = new schar[l];
 
 	int32_t i;
@@ -1721,12 +1749,11 @@ static void solve_c_svc(
 	for(i=0;i<l;i++)
 	{
 		alpha[i] = 0;
-		minus_ones[i] = -1;
 		if(prob->y[i] > 0) y[i] = +1; else y[i]=-1;
 	}
 
 	Solver s;
-	s.Solve(l, SVC_Q(*prob,*param,y), minus_ones, y,
+	s.Solve(l, SVC_Q(*prob,*param,y), prob->pv, y,
 		alpha, Cp, Cn, param->eps, si, param->shrinking);
 
 	float64_t sum_alpha=0;
@@ -1735,6 +1762,42 @@ static void solve_c_svc(
 
 	if (Cp==Cn)
 		SG_SINFO("nu = %f\n", sum_alpha/(param->C*prob->l));
+
+	for(i=0;i<l;i++)
+		alpha[i] *= y[i];
+
+	delete[] y;
+}
+
+
+//two weighted datasets
+static void solve_c_svc_weighted(
+	const svm_problem *prob, const svm_parameter* param,
+	float64_t *alpha, Solver::SolutionInfo* si, float64_t Cp, float64_t Cn)
+{
+	int l = prob->l;
+	float64_t *minus_ones = new float64_t[l];
+	schar *y = new schar[l];
+
+	int i;
+
+	for(i=0;i<l;i++)
+	{
+		alpha[i] = 0;
+		minus_ones[i] = -1;
+		if(prob->y[i] > 0) y[i] = +1; else y[i]=-1;
+	}
+
+	WeightedSolver s = WeightedSolver(prob->C);
+	s.Solve(l, SVC_Q(*prob,*param,y), minus_ones, y,
+		alpha, Cp, Cn, param->eps, si, param->shrinking);
+
+	float64_t sum_alpha=0;
+	for(i=0;i<l;i++)
+		sum_alpha += alpha[i];
+
+	//if (Cp==Cn)
+	//	SG_SINFO("nu = %f\n", sum_alpha/(prob->C*prob->l));
 
 	for(i=0;i<l;i++)
 		alpha[i] *= y[i];
@@ -1887,7 +1950,7 @@ static void solve_nu_multiclass_svc(const svm_problem *prob,
 			model->SV[(int32_t) y[i]][class_sv_count[(int32_t) y[i]]].index = prob->x[i]->index;
 			model->sv_coef[(int32_t) y[i]][class_sv_count[(int32_t) y[i]]] = alpha[i];
 			class_sv_count[(int32_t) y[i]]++;
-		}		
+		}
 	}
 
 	delete[] y;
@@ -2009,7 +2072,7 @@ static void solve_nu_svr(
 struct decision_function
 {
 	float64_t *alpha;
-	float64_t rho;	
+	float64_t rho;
 	float64_t objective;
 };
 
@@ -2173,7 +2236,7 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 				model->SV[j] = prob->x[i];
 				model->sv_coef[0][j] = f.alpha[i];
 				++j;
-			}		
+			}
 
 		free(f.alpha);
 	}
@@ -2196,13 +2259,26 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 		// group training data of the same class
 		svm_group_classes(prob,&nr_class,&label,&start,&count,perm);
 		svm_node **x = Malloc(svm_node *,l);
+		float64_t *C = Malloc(float64_t,l);
+		float64_t *pv = Malloc(float64_t,l);
+
+
+		for(int32_t i=0;i<5;i++)
+		{
+			std::cout << "train" << i << ": " << prob->pv[i] << ", ";
+		}
+		std::cout << std::endl;
+
 		int32_t i;
-		for(i=0;i<l;i++)
+		for(i=0;i<l;i++) {
 			x[i] = prob->x[perm[i]];
+            C[i] = prob->C[perm[i]];
+			pv[i] = prob->pv[perm[i]];
+		}
+
 
 		// calculate weighted C
-
-		float64_t *weighted_C = Malloc(float64_t,  nr_class);
+		float64_t *weighted_C = Malloc(float64_t, nr_class);
 		for(i=0;i<nr_class;i++)
 			weighted_C[i] = param->C;
 		for(i=0;i<param->nr_weight;i++)
@@ -2218,7 +2294,7 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 		}
 
 		// train k*(k-1)/2 models
-		
+
 		bool *nonzero = Malloc(bool,l);
 		for(i=0;i<l;i++)
 			nonzero[i] = false;
@@ -2233,21 +2309,30 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 				int32_t ci = count[i], cj = count[j];
 				sub_prob.l = ci+cj;
 				sub_prob.x = Malloc(svm_node *,sub_prob.l);
-				sub_prob.y = Malloc(float64_t, sub_prob.l+1); //dirty hack to surpress valgrind err
+				sub_prob.y = Malloc(float64_t,sub_prob.l+1); //dirty hack to surpress valgrind err
+				sub_prob.C = Malloc(float64_t,sub_prob.l+1);
+				sub_prob.pv = Malloc(float64_t,sub_prob.l+1);
 
 				int32_t k;
 				for(k=0;k<ci;k++)
 				{
 					sub_prob.x[k] = x[si+k];
 					sub_prob.y[k] = +1;
+                    sub_prob.C[k] = C[si+k];
+                    sub_prob.pv[k] = pv[si+k];
+
 				}
 				for(k=0;k<cj;k++)
 				{
 					sub_prob.x[ci+k] = x[sj+k];
 					sub_prob.y[ci+k] = -1;
+                    sub_prob.C[ci+k] = C[sj+k];
+                    sub_prob.pv[ci+k] = pv[sj+k];
 				}
 				sub_prob.y[sub_prob.l]=-1; //dirty hack to surpress valgrind err
-				
+				sub_prob.C[sub_prob.l]=-1;
+				sub_prob.pv[sub_prob.l]=-1;
+
 				f[p] = svm_train_one(&sub_prob,param,weighted_C[i],weighted_C[j]);
 				for(k=0;k<ci;k++)
 					if(!nonzero[si+k] && fabs(f[p].alpha[k]) > 0)
@@ -2257,6 +2342,8 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 						nonzero[sj+k] = true;
 				free(sub_prob.x);
 				free(sub_prob.y);
+				free(sub_prob.C);
+				free(sub_prob.pv);
 				++p;
 			}
 
@@ -2264,11 +2351,11 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 
 		model->objective = f[0].objective;
 		model->nr_class = nr_class;
-		
+
 		model->label = Malloc(int32_t, nr_class);
 		for(i=0;i<nr_class;i++)
 			model->label[i] = label[i];
-		
+
 		model->rho = Malloc(float64_t, nr_class*(nr_class-1)/2);
 		for(i=0;i<nr_class*(nr_class-1)/2;i++)
 			model->rho[i] = f[i].rho;
@@ -2281,14 +2368,14 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 			int32_t nSV = 0;
 			for(int32_t j=0;j<count[i];j++)
 				if(nonzero[start[i]+j])
-				{	
+				{
 					++nSV;
 					++total_sv;
 				}
 			model->nSV[i] = nSV;
 			nz_count[i] = nSV;
 		}
-		
+
 		SG_SINFO("Total nSV = %d\n",total_sv);
 
 		model->l = total_sv;
@@ -2330,7 +2417,7 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 						model->sv_coef[i][q++] = f[p].alpha[ci+k];
 				++p;
 			}
-		
+
 		free(label);
 		free(count);
 		free(perm);
@@ -2424,7 +2511,7 @@ const char *svm_check_parameter(
 
 
 	// check whether nu-svc is feasible
-	
+
 	if(svm_type == NU_SVC)
 	{
 		int32_t l = prob->l;
@@ -2459,7 +2546,7 @@ const char *svm_check_parameter(
 				++nr_class;
 			}
 		}
-	
+
 		for(i=0;i<nr_class;i++)
 		{
 			int32_t n1 = count[i];

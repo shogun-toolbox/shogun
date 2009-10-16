@@ -56,6 +56,7 @@ class CLibSVM : public CSVM
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "LibSVM"; }
+
 	protected:
 		/** SVM problem */
 		svm_problem problem;

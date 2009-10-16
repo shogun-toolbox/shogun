@@ -11,6 +11,11 @@
 #include "classifier/svm/LibSVM.h"
 #include "lib/io.h"
 
+#ifdef HAVE_BOOST_SERIALIZATION
+#include <boost/serialization/export.hpp>
+BOOST_CLASS_EXPORT(CLibSVM);
+#endif //HAVE_BOOST_SERIALIZATION
+
 CLibSVM::CLibSVM(LIBSVM_SOLVER_TYPE st)
 : CSVM(), model(NULL), solver_type(st)
 {
@@ -24,6 +29,7 @@ CLibSVM::CLibSVM(float64_t C, CKernel* k, CLabels* lab)
 CLibSVM::~CLibSVM()
 {
 }
+
 
 bool CLibSVM::train(CFeatures* data)
 {
@@ -42,8 +48,36 @@ bool CLibSVM::train(CFeatures* data)
 	problem.l=labels->get_num_labels();
 	SG_INFO( "%d trainlabels\n", problem.l);
 
+
+	// set linear term
+	if (!linear_term.empty() && labels->get_num_labels() != (int32_t)linear_term.size())
+		SG_ERROR("Number of training vectors does not match length of linear term\n");
+
+	if (!linear_term.empty()) {
+
+		std::cout << "using manual linear term!!!!!" << std::endl;
+		// set with linear term from base class
+		problem.pv = get_linear_term_array();
+
+	} else {
+
+		std::cout << "using minus ones of length: " << problem.l << std::endl;
+
+		// fill with minus ones
+		problem.pv = new float64_t[problem.l];
+
+		for (int i=0; i!=problem.l; i++) {
+		        problem.pv[i] = -1.0;
+		}
+	}
+
+
+
 	problem.y=new float64_t[problem.l];
 	problem.x=new struct svm_node*[problem.l];
+    problem.C=new float64_t[problem.l];
+
+
 	x_space=new struct svm_node[2*problem.l];
 
 	for (int32_t i=0; i<problem.l; i++)
@@ -77,7 +111,7 @@ bool CLibSVM::train(CFeatures* data)
 	param.weight = weights;
 	param.use_bias = get_bias_enabled();
 
-	const char* error_msg = svm_check_parameter(&problem,&param);
+	const char* error_msg = svm_check_parameter(&problem, &param);
 
 	if(error_msg)
 		SG_ERROR("Error: %s\n",error_msg);
@@ -106,6 +140,10 @@ bool CLibSVM::train(CFeatures* data)
 
 		delete[] problem.x;
 		delete[] problem.y;
+		delete[] problem.pv;
+        delete[] problem.C;
+
+
 		delete[] x_space;
 
 		svm_destroy_model(model);
