@@ -297,10 +297,6 @@ class CSGInterface : public CSGObject
 		bool cmd_add_preproc();
 		/** delete preproc */
 		bool cmd_del_preproc();
-		/** load preproc from file */
-		bool cmd_load_preproc();
-		/** save preproc to file */
-		bool cmd_save_preproc();
 		/** attach preproc to test/train */
 		bool cmd_attach_preproc();
 		/** clear/clean preproc */

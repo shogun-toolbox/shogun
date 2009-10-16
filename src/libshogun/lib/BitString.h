@@ -16,6 +16,8 @@
 #include <shogun/lib/MemoryMappedFile.h>
 #include <shogun/lib/Mathematics.h>
 
+namespace shogun
+{
 /** @brief a string class embedding a string in a compact bit representation
  *
  * especially useful to compactly represent genomic DNA
@@ -331,4 +333,5 @@ class CBitString : public CSGObject
 		/** mask for a single character*/
 		uint64_t single_mask;
 };
+}
 #endif //__BITSTRING_H__

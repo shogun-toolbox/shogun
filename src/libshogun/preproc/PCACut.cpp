@@ -241,29 +241,4 @@ float64_t* CPCACut::apply_to_feature_vector(float64_t* f, int32_t &len)
 	//	  SG_DEBUG( "num_dim: %d\n", num_dim);
 	return ret;
 }
-
-/// initialize preprocessor from file
-bool CPCACut::load_init_data(FILE* src)
-{
-	ASSERT(fread(&num_dim, sizeof(int), 1, src)==1);
-	ASSERT(fread(&num_old_dim, sizeof(int), 1, src)==1);
-	delete[] mean;
-	delete[] T;
-	mean=new float64_t[num_dim];
-	T=new float64_t[num_dim*num_old_dim];
-	ASSERT (mean!=NULL && T!=NULL);
-	ASSERT(fread(mean, sizeof(float64_t), num_old_dim, src)==(uint32_t) num_old_dim);
-	ASSERT(fread(T, sizeof(float64_t), num_dim*num_old_dim, src)==(uint32_t) num_old_dim*num_dim);
-	return true;
-}
-
-/// save init-data (like transforamtion matrices etc) to file
-bool CPCACut::save_init_data(FILE* dst)
-{
-	ASSERT(fwrite(&num_dim, sizeof(int), 1, dst)==1);
-	ASSERT(fwrite(&num_old_dim, sizeof(int), 1, dst)==1);
-	ASSERT(fwrite(mean, sizeof(float64_t), num_old_dim, dst)==(uint32_t) num_old_dim);
-	ASSERT(fwrite(T, sizeof(float64_t), num_dim*num_old_dim, dst)==(uint32_t) num_old_dim*num_dim);
-	return true;
-}
-#endif // HAVE_LAPACK
+#endif

@@ -17,6 +17,8 @@
 #include <stdio.h>
 #include <string.h>
 
+namespace shogun
+{
 /** @brief memory mapped emulation via binary streams (files)
 *
 * Implements memory mapped file emulation (\sa CMemoryMappedFile) via standard
@@ -213,4 +215,5 @@ template <class T> class CBinaryStream : public CSGObject
         /** fname */
         char* m_fname;
 };
+}
 #endif // BINARY_STREAM

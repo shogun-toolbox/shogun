@@ -86,15 +86,3 @@ uint64_t* CSortUlongString::apply_to_string(uint64_t* f, int32_t& len)
 
 	return vec;
 }
-
-/// initialize preprocessor from file
-bool CSortUlongString::load_init_data(FILE* src)
-{
-	return true;
-}
-
-/// save init-data (like transforamtion matrices etc) to file
-bool CSortUlongString::save_init_data(FILE* dst)
-{
-	return true;
-}

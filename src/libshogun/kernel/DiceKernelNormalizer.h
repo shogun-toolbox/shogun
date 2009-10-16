@@ -14,6 +14,8 @@
 #include "kernel/KernelNormalizer.h"
 #include "kernel/CommWordStringKernel.h"
 
+namespace shogun
+{
 /** @brief DiceKernelNormalizer performs kernel normalization inspired by the Dice
  * coefficient (see http://en.wikipedia.org/wiki/Dice's_coefficient) 
  *
@@ -136,5 +138,5 @@ class CDiceKernelNormalizer : public CKernelNormalizer
 		/** flat if optimized diagonal computation is used */
 		bool use_optimized_diagonal_computation;
 };
-
+}
 #endif

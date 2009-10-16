@@ -578,16 +578,6 @@ CSGInterfaceMethod sg_methods[]=
 		USAGE(N_DEL_PREPROC)
 	},
 	{
-		N_LOAD_PREPROC,
-		(&CSGInterface::cmd_load_preproc),
-		USAGE_I(N_LOAD_PREPROC, "filename")
-	},
-	{
-		N_SAVE_PREPROC,
-		(&CSGInterface::cmd_save_preproc),
-		USAGE_I(N_SAVE_PREPROC, "filename")
-	},
-	{
 		N_ATTACH_PREPROC,
 		(&CSGInterface::cmd_attach_preproc),
 		USAGE_I(N_ATTACH_PREPROC, USAGE_STR "TRAIN|TEST" USAGE_STR USAGE_COMMA "force")
@@ -5129,35 +5119,6 @@ bool CSGInterface::cmd_del_preproc()
 		return false;
 
 	return ui_preproc->del_preproc();
-}
-
-bool CSGInterface::cmd_load_preproc()
-{
-	if (m_nrhs!=2 || !create_return_values(0))
-		return false;
-
-	int32_t len=0;
-	char* filename=get_str_from_str_or_direct(len);
-
-	bool success=ui_preproc->load(filename);
-
-	delete[] filename;
-	return success;
-}
-
-bool CSGInterface::cmd_save_preproc()
-{
-	if (m_nrhs<2 || !create_return_values(0))
-		return false;
-
-	int32_t len=0;
-	char* filename=get_str_from_str_or_direct(len);
-	int32_t num_preprocs=get_int_from_int_or_str();
-
-	bool success=ui_preproc->save(filename, num_preprocs);
-
-	delete[] filename;
-	return success;
 }
 
 bool CSGInterface::cmd_attach_preproc()

@@ -204,35 +204,3 @@ float64_t* CPruneVarSubMean::apply_to_feature_vector(float64_t* f, int32_t &len)
 
 	return ret;
 }
-
-/// initialize preprocessor from file
-bool CPruneVarSubMean::load_init_data(FILE* src)
-{
-	bool result=false;
-	int32_t divide=0;
-
-	ASSERT(fread(&divide, sizeof(int32_t), 1, src)==1);
-	ASSERT(fread(&num_idx, sizeof(int32_t), 1, src)==1);
-	SG_INFO( "divide:%d num_idx:%d\n", divide, num_idx);
-	delete[] mean;
-	delete[] idx;
-	delete[] std;
-	idx=new int32_t[num_idx];
-	mean=new float64_t[num_idx];
-	std=new float64_t[num_idx];
-	ASSERT (mean!=NULL && idx!=NULL && std!=NULL);
-	ASSERT(fread(idx, sizeof(int32_t), num_idx, src)==(size_t) num_idx);
-	ASSERT(fread(mean, sizeof(float64_t), num_idx, src)==(size_t) num_idx);
-	ASSERT(fread(std, sizeof(float64_t), num_idx, src)==(size_t) num_idx);
-
-	result=true;
-	divide_by_std=(divide==1);
-	initialized=true;
-	return result;
-}
-
-/// save init-data (like transforamtion matrices etc) to file
-bool CPruneVarSubMean::save_init_data(FILE* dst)
-{
-	return false;
-}

@@ -84,15 +84,3 @@ float64_t* CLogPlusOne::apply_to_feature_vector(float64_t* f, int32_t& len)
 
 	return vec;
 }
-
-/// initialize preprocessor from file
-bool CLogPlusOne::load_init_data(FILE* src)
-{
-	return true;
-}
-
-/// save init-data (like transforamtion matrices etc) to file
-bool CLogPlusOne::save_init_data(FILE* dst)
-{
-	return true;
-}

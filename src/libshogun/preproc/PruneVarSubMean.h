@@ -40,11 +40,6 @@ class CPruneVarSubMean : public CSimplePreProc<float64_t>
 		/// initialize preprocessor from features
 		virtual bool init(CFeatures* f);
 
-		/// initialize preprocessor from file
-		virtual bool load_init_data(FILE* src);
-		/// save init-data (like transforamtion matrices etc) to file
-		virtual bool save_init_data(FILE* dst);
-
 		/// cleanup
 		virtual void cleanup();
 

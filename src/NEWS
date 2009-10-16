@@ -17,6 +17,7 @@
 	* Cleanup and API Changes:
 		- It is no longer necessary to call init_kernel TRAIN/TEST.
 		- Removed kernel {load,save}_init.
+		- Removed preproc {load,save}_init.
 		- Move the mkl code from classifier/svm to classifier/mkl.
 		- Removed obsolete mindy support.
 		- CClassifier::classify() no longer has a label as argument.

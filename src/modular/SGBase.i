@@ -25,6 +25,7 @@
 #ifdef SWIGR
  #include <Rdefines.h>
 #endif
+ using namespace shogun;
 %}
 
 %init %{
@@ -39,7 +40,7 @@
 #ifdef SWIGPYTHON
     import_array();
 #endif
-
+    using namespace shogun;
 %}
 
 %exception
@@ -77,6 +78,8 @@
 %include <shogun/base/SGObject.h>
 %include <shogun/base/Version.h>
 %include <shogun/base/Parallel.h>
+using namespace shogun;
+
 %include "swig_typemaps.i"
 
 %include stl.i
@@ -109,4 +112,5 @@ namespace std {
    SGObject.__getstate__=__getstate__
 
 %}
+
 #endif //HAVE_BOOST_SERIALIZATION

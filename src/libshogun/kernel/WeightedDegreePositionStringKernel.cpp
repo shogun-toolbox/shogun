@@ -913,15 +913,6 @@ bool CWeightedDegreePositionStringKernel::set_weights(
 bool CWeightedDegreePositionStringKernel::set_position_weights(
 	float64_t* pws, int32_t len)
 {
-	//fprintf(stderr, "len=%i\n", len);
-
-	if (len==0)
-	{
-		delete[] position_weights;
-		position_weights = NULL;
-		tries.set_position_weights(position_weights);
-		return true;
-	}
 	if (seq_length==0)
 		seq_length=len;
 

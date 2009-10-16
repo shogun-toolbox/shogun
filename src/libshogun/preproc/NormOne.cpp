@@ -81,15 +81,3 @@ float64_t* CNormOne::apply_to_feature_vector(float64_t* f, int32_t& len)
 
 	return vec;
 }
-
-/// initialize preprocessor from file
-bool CNormOne::load_init_data(FILE* src)
-{
-	return true;
-}
-
-/// save init-data (like transforamtion matrices etc) to file
-bool CNormOne::save_init_data(FILE* dst)
-{
-	return true;
-}

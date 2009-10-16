@@ -14,6 +14,8 @@
 #include "kernel/KernelNormalizer.h"
 #include "kernel/CommWordStringKernel.h"
 
+namespace shogun
+{
 /** @brief TanimotoKernelNormalizer performs kernel normalization inspired by
  * the Tanimoto coefficient (see http://en.wikipedia.org/wiki/Jaccard_index )
  *
@@ -136,5 +138,5 @@ class CTanimotoKernelNormalizer : public CKernelNormalizer
 		/** flat if optimized diagonal computation is used */
 		bool use_optimized_diagonal_computation;
 };
-
+}
 #endif

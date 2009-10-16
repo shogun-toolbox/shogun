@@ -76,25 +76,34 @@
 
 /* Templates Class SimpleDistance*/
 %include <shogun/distance/SimpleDistance.h>
-%template(SimpleRealDistance) CSimpleDistance<float64_t>;
-%template(SimpleWordDistance) CSimpleDistance<uint16_t>;
-%template(SimpleCharDistance) CSimpleDistance<char>;
-%template(SimpleIntDistance) CSimpleDistance<int32_t>;
+namespace shogun
+{
+    %template(SimpleRealDistance) CSimpleDistance<float64_t>;
+    %template(SimpleWordDistance) CSimpleDistance<uint16_t>;
+    %template(SimpleCharDistance) CSimpleDistance<char>;
+    %template(SimpleIntDistance) CSimpleDistance<int32_t>;
+}
 
 /* Templates Class SparseDistance*/
 %include <shogun/distance/SparseDistance.h>
-%template(SparseRealDistance) CSparseDistance<float64_t>;
-%template(SparseWordDistance) CSparseDistance<uint16_t>;
-%template(SparseCharDistance) CSparseDistance<char>;
-%template(SparseIntDistance) CSparseDistance<int32_t>;
+namespace shogun
+{
+    %template(SparseRealDistance) CSparseDistance<float64_t>;
+    %template(SparseWordDistance) CSparseDistance<uint16_t>;
+    %template(SparseCharDistance) CSparseDistance<char>;
+    %template(SparseIntDistance) CSparseDistance<int32_t>;
+}
 
 /* Templates Class StringDistance*/
 %include <shogun/distance/StringDistance.h>
-%template(StringRealDistance) CStringDistance<float64_t>;
-%template(StringWordDistance) CStringDistance<uint16_t>;
-%template(StringCharDistance) CStringDistance<char>;
-%template(StringIntDistance) CStringDistance<int32_t>;
-%template(StringUlongDistance) CStringDistance<uint64_t>;
+namespace shogun
+{
+    %template(StringRealDistance) CStringDistance<float64_t>;
+    %template(StringWordDistance) CStringDistance<uint16_t>;
+    %template(StringCharDistance) CStringDistance<char>;
+    %template(StringIntDistance) CStringDistance<int32_t>;
+    %template(StringUlongDistance) CStringDistance<uint64_t>;
+}
 
 %include <shogun/distance/RealDistance.h>
 %include <shogun/distance/CanberraMetric.h>

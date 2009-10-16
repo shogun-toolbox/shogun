@@ -64,20 +64,23 @@
 %warnfilter(509) CArray3;
 
 /* Include Class Headers to make them visible from within the target language */
-
 /* Template Class DynamicArray */
 %include <shogun/lib/DynamicArray.h>
-%template(DynamicCharArray) CDynamicArray<char>;
-%template(DynamicByteArray) CDynamicArray<uint8_t>;
-%template(DynamicShortArray) CDynamicArray<int16_t>;
-%template(DynamicWordArray) CDynamicArray<uint16_t>;
-%template(DynamicIntArray) CDynamicArray<int32_t>;
-%template(DynamicUIntArray) CDynamicArray<uint32_t>;
-%template(DynamicLongArray) CDynamicArray<int64_t>;
-%template(DynamicULongArray) CDynamicArray<uint64_t>;
-%template(DynamicShortRealArray) CDynamicArray<float32_t>;
-%template(DynamicRealArray) CDynamicArray<float64_t>;
-%template(DynamicPlifArray) CDynamicArray<CPlifBase*>;
+
+namespace shogun
+{
+    %template(DynamicCharArray) CDynamicArray<char>;
+    %template(DynamicByteArray) CDynamicArray<uint8_t>;
+    %template(DynamicShortArray) CDynamicArray<int16_t>;
+    %template(DynamicWordArray) CDynamicArray<uint16_t>;
+    %template(DynamicIntArray) CDynamicArray<int32_t>;
+    %template(DynamicUIntArray) CDynamicArray<uint32_t>;
+    %template(DynamicLongArray) CDynamicArray<int64_t>;
+    %template(DynamicULongArray) CDynamicArray<uint64_t>;
+    %template(DynamicShortRealArray) CDynamicArray<float32_t>;
+    %template(DynamicRealArray) CDynamicArray<float64_t>;
+    %template(DynamicPlifArray) CDynamicArray<CPlifBase*>;
+}
 
 /* Template Class GCArray */
 %include <shogun/lib/GCArray.h>
@@ -89,42 +92,51 @@
 
 /* Template Class Array */
 %include <shogun/lib/Array.h>
-%template(CharArray) CArray<char>;
-%template(ByteArray) CArray<uint8_t>;
-%template(ShortArray) CArray<int16_t>;
-%template(WordArray) CArray<uint16_t>;
-%template(IntArray) CArray<int32_t>;
-%template(UIntArray) CArray<uint32_t>;
-%template(LongArray) CArray<int64_t>;
-%template(ULongArray) CArray<uint64_t>;
-%template(ShortRealArray) CArray<float32_t>;
-%template(RealArray) CArray<float64_t>;
+namespace shogun
+{
+    %template(CharArray) shogun::CArray<char>;
+    %template(ByteArray) CArray<uint8_t>;
+    %template(ShortArray) CArray<int16_t>;
+    %template(WordArray) CArray<uint16_t>;
+    %template(IntArray) CArray<int32_t>;
+    %template(UIntArray) CArray<uint32_t>;
+    %template(LongArray) CArray<int64_t>;
+    %template(ULongArray) CArray<uint64_t>;
+    %template(ShortRealArray) CArray<float32_t>;
+    %template(RealArray) CArray<float64_t>;
+}
 
 /* Template Class Array2 */
 %include <shogun/lib/Array2.h>
-%template(CharArray2) CArray2<char>;
-%template(ByteArray2) CArray2<uint8_t>;
-%template(ShortArray2) CArray2<int16_t>;
-%template(WordArray2) CArray2<uint16_t>;
-%template(IntArray2) CArray2<int32_t>;
-%template(UIntArray2) CArray2<uint32_t>;
-%template(LongArray2) CArray2<int64_t>;
-%template(ULongArray2) CArray2<uint64_t>;
-%template(ShortRealArray2) CArray2<float32_t>;
-%template(RealArray2) CArray2<float64_t>;
+namespace shogun
+{
+    %template(CharArray2) CArray2<char>;
+    %template(ByteArray2) CArray2<uint8_t>;
+    %template(ShortArray2) CArray2<int16_t>;
+    %template(WordArray2) CArray2<uint16_t>;
+    %template(IntArray2) CArray2<int32_t>;
+    %template(UIntArray2) CArray2<uint32_t>;
+    %template(LongArray2) CArray2<int64_t>;
+    %template(ULongArray2) CArray2<uint64_t>;
+    %template(ShortRealArray2) CArray2<float32_t>;
+    %template(RealArray2) CArray2<float64_t>;
+}
 
 /* Template Class Array3 */
 %include <shogun/lib/Array3.h>
-%template(CharArray3) CArray3<char>;
-%template(ByteArray3) CArray3<uint8_t>;
-%template(ShortArray3) CArray3<int16_t>;
-%template(WordArray3) CArray3<uint16_t>;
-%template(IntArray3) CArray3<int32_t>;
-%template(UIntArray3) CArray3<uint32_t>;
-%template(LongArray3) CArray3<int64_t>;
-%template(ULongArray3) CArray3<uint64_t>;
-%template(ShortRealArray3) CArray3<float32_t>;
-%template(RealArray3) CArray3<float64_t>;
+namespace shogun
+{
+    %template(CharArray3) CArray3<char>;
+    %template(ByteArray3) CArray3<uint8_t>;
+    %template(ShortArray3) CArray3<int16_t>;
+    %template(WordArray3) CArray3<uint16_t>;
+    %template(IntArray3) CArray3<int32_t>;
+    %template(UIntArray3) CArray3<uint32_t>;
+    %template(LongArray3) CArray3<int64_t>;
+    %template(ULongArray3) CArray3<uint64_t>;
+    %template(ShortRealArray3) CArray3<float32_t>;
+    %template(RealArray3) CArray3<float64_t>;
+}
 
 %include <shogun/lib/Cache.h>
 %include <shogun/lib/GCArray.h>

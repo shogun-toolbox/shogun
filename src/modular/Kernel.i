@@ -148,29 +148,38 @@
 
 /* Templated Class SimpleKernel */
 %include <shogun/kernel/SimpleKernel.h>
-%template(RealKernel) CSimpleKernel<float64_t>;
-%template(ShortRealKernel) CSimpleKernel<float32_t>;
-%template(WordKernel) CSimpleKernel<uint16_t>;
-%template(CharKernel) CSimpleKernel<char>;
-%template(ByteKernel) CSimpleKernel<uint8_t>;
-%template(IntKernel) CSimpleKernel<int32_t>;
-%template(ShortKernel) CSimpleKernel<int16_t>;
-%template(UlongKernel) CSimpleKernel<uint64_t>;
+namespace shogun
+{
+    %template(RealKernel) CSimpleKernel<float64_t>;
+    %template(ShortRealKernel) CSimpleKernel<float32_t>;
+    %template(WordKernel) CSimpleKernel<uint16_t>;
+    %template(CharKernel) CSimpleKernel<char>;
+    %template(ByteKernel) CSimpleKernel<uint8_t>;
+    %template(IntKernel) CSimpleKernel<int32_t>;
+    %template(ShortKernel) CSimpleKernel<int16_t>;
+    %template(UlongKernel) CSimpleKernel<uint64_t>;
+}
 
 /* Templated Class SparseKernel */
 %include <shogun/kernel/SparseKernel.h>
-%template(SparseRealKernel) CSparseKernel<float64_t>;
-%template(SparseWordKernel) CSparseKernel<uint16_t>;
+namespace shogun
+{
+    %template(SparseRealKernel) CSparseKernel<float64_t>;
+    %template(SparseWordKernel) CSparseKernel<uint16_t>;
+}
 
 /* Templated Class StringKernel */
 %include <shogun/kernel/StringKernel.h>
-%template(StringRealKernel) CStringKernel<float64_t>;
-%template(StringWordKernel) CStringKernel<uint16_t>;
-%template(StringCharKernel) CStringKernel<char>;
-%template(StringIntKernel) CStringKernel<int32_t>;
-%template(StringUlongKernel) CStringKernel<uint64_t>;
-%template(StringShortKernel) CStringKernel<int16_t>;
-%template(StringByteKernel) CStringKernel<uint8_t>;
+namespace shogun
+{
+    %template(StringRealKernel) CStringKernel<float64_t>;
+    %template(StringWordKernel) CStringKernel<uint16_t>;
+    %template(StringCharKernel) CStringKernel<char>;
+    %template(StringIntKernel) CStringKernel<int32_t>;
+    %template(StringUlongKernel) CStringKernel<uint64_t>;
+    %template(StringShortKernel) CStringKernel<int16_t>;
+    %template(StringByteKernel) CStringKernel<uint8_t>;
+}
 
 %include <shogun/kernel/KernelNormalizer.h>
 %include <shogun/kernel/PyramidChi2.h>

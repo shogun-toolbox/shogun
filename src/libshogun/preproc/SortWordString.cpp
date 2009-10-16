@@ -83,15 +83,3 @@ uint16_t* CSortWordString::apply_to_string(uint16_t* f, int32_t& len)
 
 	return vec;
 }
-
-/// initialize preprocessor from file
-bool CSortWordString::load_init_data(FILE* src)
-{
-	return true;
-}
-
-/// save init-data (like transforamtion matrices etc) to file
-bool CSortWordString::save_init_data(FILE* dst)
-{
-	return true;
-}

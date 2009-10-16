@@ -312,48 +312,57 @@
 
 /* Templated Class StringFeatures */
 %include <shogun/features/StringFeatures.h>
-%template(StringBoolFeatures) CStringFeatures<bool>;
-%template(StringCharFeatures) CStringFeatures<char>;
-%template(StringByteFeatures) CStringFeatures<uint8_t>;
-%template(StringShortFeatures) CStringFeatures<int16_t>;
-%template(StringWordFeatures) CStringFeatures<uint16_t>;
-%template(StringIntFeatures) CStringFeatures<int32_t>;
-%template(StringUIntFeatures) CStringFeatures<uint32_t>;
-%template(StringLongFeatures) CStringFeatures<int64_t>;
-%template(StringUlongFeatures) CStringFeatures<uint64_t>;
-%template(StringShortRealFeatures) CStringFeatures<float32_t>;
-%template(StringRealFeatures) CStringFeatures<float64_t>;
-%template(StringLongRealFeatures) CStringFeatures<floatmax_t>;
+namespace shogun
+{
+    %template(StringBoolFeatures) CStringFeatures<bool>;
+    %template(StringCharFeatures) CStringFeatures<char>;
+    %template(StringByteFeatures) CStringFeatures<uint8_t>;
+    %template(StringShortFeatures) CStringFeatures<int16_t>;
+    %template(StringWordFeatures) CStringFeatures<uint16_t>;
+    %template(StringIntFeatures) CStringFeatures<int32_t>;
+    %template(StringUIntFeatures) CStringFeatures<uint32_t>;
+    %template(StringLongFeatures) CStringFeatures<int64_t>;
+    %template(StringUlongFeatures) CStringFeatures<uint64_t>;
+    %template(StringShortRealFeatures) CStringFeatures<float32_t>;
+    %template(StringRealFeatures) CStringFeatures<float64_t>;
+    %template(StringLongRealFeatures) CStringFeatures<floatmax_t>;
+}
 
 /* Templated Class SparseFeatures */
 %include <shogun/features/SparseFeatures.h>
-%template(SparseBoolFeatures) CSparseFeatures<bool>;
-%template(SparseCharFeatures) CSparseFeatures<char>;
-%template(SparseByteFeatures) CSparseFeatures<uint8_t>;
-%template(SparseShortFeatures) CSparseFeatures<int16_t>;
-%template(SparseWordFeatures) CSparseFeatures<uint16_t>;
-%template(SparseIntFeatures) CSparseFeatures<int32_t>;
-%template(SparseUIntFeatures) CSparseFeatures<uint32_t>;
-%template(SparseLongFeatures) CSparseFeatures<int64_t>;
-%template(SparseUlongFeatures) CSparseFeatures<uint64_t>;
-%template(SparseShortRealFeatures) CSparseFeatures<float32_t>;
-%template(SparseRealFeatures) CSparseFeatures<float64_t>;
-%template(SparseLongRealFeatures) CSparseFeatures<floatmax_t>;
+namespace shogun
+{
+    %template(SparseBoolFeatures) CSparseFeatures<bool>;
+    %template(SparseCharFeatures) CSparseFeatures<char>;
+    %template(SparseByteFeatures) CSparseFeatures<uint8_t>;
+    %template(SparseShortFeatures) CSparseFeatures<int16_t>;
+    %template(SparseWordFeatures) CSparseFeatures<uint16_t>;
+    %template(SparseIntFeatures) CSparseFeatures<int32_t>;
+    %template(SparseUIntFeatures) CSparseFeatures<uint32_t>;
+    %template(SparseLongFeatures) CSparseFeatures<int64_t>;
+    %template(SparseUlongFeatures) CSparseFeatures<uint64_t>;
+    %template(SparseShortRealFeatures) CSparseFeatures<float32_t>;
+    %template(SparseRealFeatures) CSparseFeatures<float64_t>;
+    %template(SparseLongRealFeatures) CSparseFeatures<floatmax_t>;
+}
 
 /* Templated Class SimpleFeatures */
 %include <shogun/features/SimpleFeatures.h>
-%template(BoolFeatures) CSimpleFeatures<bool>;
-%template(CharFeatures) CSimpleFeatures<char>;
-%template(ByteFeatures) CSimpleFeatures<uint8_t>;
-%template(WordFeatures) CSimpleFeatures<uint16_t>;
-%template(ShortFeatures) CSimpleFeatures<int16_t>;
-%template(IntFeatures)  CSimpleFeatures<int32_t>;
-%template(UIntFeatures)  CSimpleFeatures<uint32_t>;
-%template(LongIntFeatures)  CSimpleFeatures<int64_t>;
-%template(ULongIntFeatures)  CSimpleFeatures<uint64_t>;
-%template(ShortRealFeatures) CSimpleFeatures<float32_t>;
-%template(RealFeatures) CSimpleFeatures<float64_t>;
-%template(LongRealFeatures) CSimpleFeatures<floatmax_t>;
+namespace shogun
+{
+    %template(BoolFeatures) CSimpleFeatures<bool>;
+    %template(CharFeatures) CSimpleFeatures<char>;
+    %template(ByteFeatures) CSimpleFeatures<uint8_t>;
+    %template(WordFeatures) CSimpleFeatures<uint16_t>;
+    %template(ShortFeatures) CSimpleFeatures<int16_t>;
+    %template(IntFeatures)  CSimpleFeatures<int32_t>;
+    %template(UIntFeatures)  CSimpleFeatures<uint32_t>;
+    %template(LongIntFeatures)  CSimpleFeatures<int64_t>;
+    %template(ULongIntFeatures)  CSimpleFeatures<uint64_t>;
+    %template(ShortRealFeatures) CSimpleFeatures<float32_t>;
+    %template(RealFeatures) CSimpleFeatures<float64_t>;
+    %template(LongRealFeatures) CSimpleFeatures<floatmax_t>;
+}
 
 %include <shogun/features/DummyFeatures.h>
 %include <shogun/features/AttributeFeatures.h>

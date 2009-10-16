@@ -38,7 +38,6 @@
 
 /* Remove C Prefix */
 %rename(PreProc) CPreProc;
-%rename(SimplePreProc) CSimplePreProc;
 %rename(LogPlusOne) CLogPlusOne;
 %rename(NormDerivativeLem3) CNormDerivativeLem3;
 %rename(NormOne) CNormOne;
@@ -53,19 +52,25 @@
 
 /* Templates Class SimplePreProc*/
 %include <shogun/preproc/SimplePreProc.h>
-%template(SimpleRealPreProc) CSimplePreProc<float64_t>;
-%template(SimpleUlongPreProc) CSimplePreProc<uint64_t>;
-%template(SimpleWordPreProc) CSimplePreProc<uint16_t>;
-%template(SimpleShortPreProc) CSimplePreProc<int16_t>;
-%template(SimpleBytePreProc) CSimplePreProc<uint8_t>;
-%template(SimpleCharPreProc) CSimplePreProc<char>;
+namespace shogun
+{
+    %template(SimpleRealPreProc) CSimplePreProc<float64_t>;
+    %template(SimpleUlongPreProc) CSimplePreProc<uint64_t>;
+    %template(SimpleWordPreProc) CSimplePreProc<uint16_t>;
+    %template(SimpleShortPreProc) CSimplePreProc<int16_t>;
+    %template(SimpleBytePreProc) CSimplePreProc<uint8_t>;
+    %template(SimpleCharPreProc) CSimplePreProc<char>;
+}
 
 /* Templates Class StringPreProc*/
 %include <shogun/preproc/StringPreProc.h>
-%template(StringUlongPreProc) CStringPreProc<uint64_t>;
-%template(StringWordPreProc) CStringPreProc<uint16_t>;
-%template(StringBytePreProc) CStringPreProc<uint8_t>;
-%template(StringCharPreProc) CStringPreProc<char>;
+namespace shogun
+{
+    %template(StringUlongPreProc) CStringPreProc<uint64_t>;
+    %template(StringWordPreProc) CStringPreProc<uint16_t>;
+    %template(StringBytePreProc) CStringPreProc<uint8_t>;
+    %template(StringCharPreProc) CStringPreProc<char>;
+}
 
 %include <shogun/preproc/LogPlusOne.h>
 %include <shogun/preproc/NormDerivativeLem3.h>
