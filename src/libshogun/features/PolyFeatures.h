@@ -25,6 +25,7 @@ class CPolyFeatures : public CDotFeatures
 		 * 
 		 * @param feat real features
 		 * @param degree degree of the polynomial kernel
+		 * @param normalize normalize kernel
 		 */
 		CPolyFeatures(CSimpleFeatures<float64_t>* feat, int32_t degree, bool normalize);
 

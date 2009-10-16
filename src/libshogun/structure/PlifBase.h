@@ -57,6 +57,7 @@ class CPlifBase : public CSGObject
 		 *
 		 * @param p_value value
 		 * @param svm_values SVM values
+		 * @param factor factor weighting the added value
 		 */
 		virtual void penalty_add_derivative(
 			float64_t p_value, float64_t* svm_values, float64_t factor)=0 ;

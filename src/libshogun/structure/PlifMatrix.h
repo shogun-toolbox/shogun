@@ -122,7 +122,7 @@ class CPlifMatrix: public CSGObject
 		 * 
 		 * @param penalties plif values: array of length num_plifs*num_limits
 		 * @param num_plifs number of plifs
-		 * @param
+		 * @param num_limits number of support vectors
 		 */
 		void set_plif_penalties(float64_t* penalties, int32_t num_plifs, int32_t num_limits);
 
@@ -162,7 +162,7 @@ class CPlifMatrix: public CSGObject
 		 *  Note: the class PlifArray is derived from PlifBase. It computes 
 		 *        all individual plifs and sums them up.
 		 * 
-		 * @param penalties_array 3D array of plif ids (#states x #states x #(features for each transition))
+		 * @param penalties_array 3D array of plif ids (nofstates x nofstates x nof(features for each transition))
 		 * @param Dim array of dimensions
 		 * @param numDims number of dimensions
 		 * @return success

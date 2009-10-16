@@ -179,7 +179,7 @@ public:
 	 *
 	 * @param seq signal features
 	 * @param dims dimensions
-	 * @param number of dimensions
+	 * @param ndims number of dimensions
 	 */
 	void set_observation_matrix(float64_t* seq, int32_t* dims, int32_t ndims);
 
